@@ -35,10 +35,15 @@ workspace/
 │   ├── gaps.md              # Blocking gaps
 │   ├── requirements.md      # Derived requirements
 │   └── glossary.md
+├── specs/
+│   └── shape/               # Lightweight shape specs (stdlib validation)
 ├── tools/                   # Workspace utilities
 │   ├── bootstrap.py         # Clone external repos
 │   ├── linkcheck.py         # Verify code refs and links
-│   └── gen_refs.py          # Generate permalink files
+│   ├── gen_refs.py          # Generate permalink files
+│   ├── validate_fixtures.py # Validate fixtures against shape specs
+│   ├── run_conformance.py   # Run conformance assertions (offline)
+│   └── gen_coverage.py      # Generate coverage matrix
 ├── externals/               # Cloned repos (gitignored)
 └── workspace.lock.json      # Repository pins
 ```
@@ -47,17 +52,17 @@ workspace/
 
 1. **Bootstrap external repos**:
    ```bash
-   python tools/bootstrap.py
+   make bootstrap
    ```
 
-2. **Check link validity**:
+2. **Run all checks**:
    ```bash
-   python tools/linkcheck.py
+   make check
    ```
 
-3. **Generate reference files**:
+3. **Full CI pipeline locally**:
    ```bash
-   python tools/gen_refs.py
+   make ci
    ```
 
 ## Key Concepts
@@ -78,10 +83,40 @@ Each iteration cycle should update:
 
 ## Tools
 
+### Repository Management
 - `bootstrap.py` - Clone and manage external repositories
 - `linkcheck.py` - Verify code references resolve correctly
 - `gen_refs.py` - Generate GitHub permalinks from lockfile
 
+### Validation & Testing
+- `validate_fixtures.py` - Validate JSON fixtures against shape specifications
+  - Stdlib-only by default, optional `jsonschema` dependency for full validation
+  - `--strict` flag to fail on unknown keys
+- `run_conformance.py` - Run conformance assertions
+  - Checks state, reference, immutability, and query assertions
+  - `--scenario NAME` to run specific scenario
+  - `--verbose` to show all results including passes
+- `gen_coverage.py` - Generate coverage matrix from filesystem state
+  - Outputs both JSON and Markdown formats
+  - Tracks scenario completeness across all projects
+
+### Makefile Targets
+- `make validate` - Validate fixtures
+- `make conformance` - Run conformance tests
+- `make coverage` - Generate coverage matrix
+- `make check` - Run all checks (linkcheck + validate + conformance)
+- `make ci` - Full CI pipeline locally
+
+## CI Integration
+
+GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
+1. Python syntax check
+2. Link integrity validation
+3. Fixture validation
+4. Conformance tests (offline)
+5. Coverage matrix generation
+
 ## Recent Changes
 
+- 2026-01-16: Added tooling suite (validate_fixtures, run_conformance, gen_coverage, CI workflow)
 - 2024-01-15: Initial workspace setup with override-supersede scenario

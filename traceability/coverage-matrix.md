@@ -1,44 +1,32 @@
 # Coverage Matrix
 
-This matrix tracks which scenarios have been validated against which projects.
-
-## Legend
-
-| Symbol | Meaning |
-|--------|---------|
-| ✅ | Fully conformant |
-| 🟡 | Partial / needs work |
-| ❌ | Not conformant |
-| ⬜ | Not evaluated |
-| N/A | Not applicable |
-
-## Scenarios
-
-| Scenario | Spec Sections | Nightscout | Loop | AAPS | Trio | Notes |
-|----------|---------------|------------|------|------|------|-------|
-| [Override Supersede](../conformance/scenarios/override-supersede/) | override, eventStatus | 🟡 | ✅ | 🟡 | ✅ | NS lacks supersession tracking |
-| Profile Switch | profile | ⬜ | ⬜ | ⬜ | ⬜ | Not yet evaluated |
-| Temp Basal | treatment | ⬜ | ⬜ | ⬜ | ⬜ | Not yet evaluated |
-| Bolus Delivery | treatment | ⬜ | ⬜ | ⬜ | ⬜ | Not yet evaluated |
-| CGM Reading Sync | glucoseReading | ⬜ | ⬜ | ⬜ | ⬜ | Not yet evaluated |
+Generated: 2026-01-16T18:44:40.139309+00:00
 
 ## Summary
 
-| Project | ✅ Full | 🟡 Partial | ❌ Fail | ⬜ Pending | Total |
-|---------|---------|------------|---------|------------|-------|
-| Nightscout | 0 | 1 | 0 | 4 | 5 |
-| Loop | 1 | 0 | 0 | 4 | 5 |
-| AAPS | 0 | 1 | 0 | 4 | 5 |
-| Trio | 1 | 0 | 0 | 4 | 5 |
+- Total scenarios: 1
+- Complete: 0
+- Partial: 0
+- Incomplete: 1
+- Average coverage: 40%
 
-## Update Log
+## Scenarios
 
-| Date | Change | Author |
-|------|--------|--------|
-| 2024-01-15 | Initial matrix with Override Supersede scenario | — |
+| Scenario | Reqs | Assert | Fixtures | Schema | Nightscout | Aaps | Loop | Trio | Score |
+|----------|------|--------|----------|--------|------|------|------|------|-------|
+| override-supersede | [ ] | [x] | [ ] | [x] | [x] | [ ] | [ ] | [ ] | 40% |
 
-## Next Steps
+## Legend
 
-1. Complete evaluation for Override Supersede across all projects
-2. Add Profile Switch scenario
-3. Document gaps discovered during evaluation in [gaps.md](./gaps.md)
+- `[x]` Complete/Documented
+- `[~]` Partial/Stub
+- `[ ]` Missing/Incomplete
+
+## Coverage Criteria
+
+A scenario is considered **complete** when it has:
+1. Requirements definition
+2. Assertions file
+3. Test fixtures
+4. Schema link in README
+5. Mapping notes for each project

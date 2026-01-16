@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-01-16T18:44:40.139309+00:00",
+  "scenarios": [
+    {
+      "name": "override-supersede",
+      "path": "conformance/scenarios/override-supersede",
+      "has_requirements": false,
+      "has_assertions": true,
+      "has_schema_link": true,
+      "has_fixtures": false,
+      "project_coverage": {
+        "nightscout": {
+          "status": "documented",
+          "file": "mapping/nightscout/override-supersede.md"
+        },
+        "aaps": {
+          "status": "missing",
+          "file": null
+        },
+        "loop": {
+          "status": "missing",
+          "file": null
+        },
+        "trio": {
+          "status": "missing",
+          "file": null
+        }
+      },
+      "coverage_score": 0.4,
+      "status": "incomplete",
+      "assertions_file": "conformance/assertions/override-supersede.yaml"
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "complete": 0,
+    "partial": 0,
+    "incomplete": 1,
+    "average_score": 0.4
+  },
+  "projects": [
+    "nightscout",
+    "aaps",
+    "loop",
+    "trio"
+  ]
+}

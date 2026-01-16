@@ -1,0 +1,50 @@
+{
+  "$comment": "Lightweight shape spec for override instances - stdlib validator can check this without jsonschema dependency",
+  "name": "override-instance",
+  "version": 1,
+  "required_fields": [
+    "id",
+    "type",
+    "created_at",
+    "name",
+    "started_at",
+    "status"
+  ],
+  "optional_fields": [
+    "updated_at",
+    "source",
+    "authority",
+    "ended_at",
+    "duration_minutes",
+    "target_range",
+    "insulin_sensitivity_factor",
+    "overall_insulin_needs",
+    "supersedes",
+    "superseded_by",
+    "superseded_at"
+  ],
+  "enums": {
+    "type": ["override"],
+    "status": ["active", "completed", "cancelled", "superseded"],
+    "target_range.unit": ["mg/dL", "mmol/L"]
+  },
+  "timestamp_fields": [
+    "created_at",
+    "updated_at",
+    "started_at",
+    "ended_at",
+    "superseded_at"
+  ],
+  "reference_fields": {
+    "supersedes": "id",
+    "superseded_by": "id"
+  },
+  "nested_shapes": {
+    "target_range": {
+      "required_fields": ["min", "max"],
+      "optional_fields": ["unit"],
+      "number_fields": ["min", "max"]
+    }
+  },
+  "strict_mode": false
+}
