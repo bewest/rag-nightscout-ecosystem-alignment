@@ -1,80 +1,20 @@
 # AID Alignment Workspace
 
-A documentation workspace for coordinating semantics, schemas, and conformance across multiple Automated Insulin Delivery (AID) systems: Nightscout, Loop, AAPS, and Trio.
+## Overview
 
-## Project Structure
+The AID Alignment Workspace is a documentation and coordination project aimed at standardizing semantics, schemas, and conformance across multiple Automated Insulin Delivery (AID) systems, including Nightscout, Loop, AAPS, and Trio. Its primary purpose is to facilitate interoperability and ensure consistent data interpretation and behavior across these diverse platforms.
 
-```
-workspace/
-├── docs/                    # Narrative documentation
-│   ├── 00-overview/         # Mission, goals
-│   ├── 10-domain/           # Domain concepts, glossary
-│   ├── 20-specs/            # Spec explanations
-│   ├── 30-design/           # Design proposals
-│   ├── 40-implementation-notes/
-│   ├── 50-testing/
-│   ├── 60-research/
-│   ├── 90-decisions/        # ADRs (Architecture Decision Records)
-│   ├── _includes/           # Shared snippets, code refs
-│   └── _generated/          # Auto-generated files
-├── specs/                   # Normative definitions
-│   ├── openapi/             # OpenAPI specs
-│   ├── jsonschema/          # JSON Schema definitions
-│   └── fixtures/            # Test fixtures
-├── conformance/             # Executable tests
-│   ├── scenarios/           # Test scenarios
-│   ├── assertions/          # Assertion definitions
-│   └── runners/             # Test runners
-├── mapping/                 # Per-project interpretation
-│   ├── nightscout/          # Nightscout schema/API mappings
-│   ├── cross-project/       # Cross-project comparison matrices
-│   ├── aaps/
-│   ├── trio/
-│   └── loop/
-├── traceability/            # Coordination control plane
-│   ├── coverage-matrix.md   # Scenario vs project status
-│   ├── gaps.md              # Blocking gaps
-│   ├── requirements.md      # Derived requirements
-│   └── glossary.md
-├── specs/
-│   └── shape/               # Lightweight shape specs (stdlib validation)
-├── tools/                   # Workspace utilities
-│   ├── bootstrap.py         # Clone external repos
-│   ├── linkcheck.py         # Verify code refs and links
-│   ├── gen_refs.py          # Generate permalink files
-│   ├── validate_fixtures.py # Validate fixtures against shape specs
-│   ├── run_conformance.py   # Run conformance assertions (offline)
-│   └── gen_coverage.py      # Generate coverage matrix
-├── externals/               # Cloned repos (gitignored)
-└── workspace.lock.json      # Repository pins
-```
+The project encompasses:
+- **Normative definitions**: Specifies what "must be true" for data structures and system behavior.
+- **Informative documentation**: Provides explanations, rationale, and cross-project comparisons.
+- **Decision records**: Documents architectural and design decisions with their underlying tradeoffs.
+- **Executable conformance tests**: Verifies that systems adhere to defined specifications.
 
-## Quick Start
+This workspace seeks to improve the understanding, integration, and reliability of AID systems for users and developers alike by providing a centralized, version-controlled source of truth for critical system aspects.
 
-1. **Bootstrap external repos**:
-   ```bash
-   make bootstrap
-   ```
+## User Preferences
 
-2. **Run all checks**:
-   ```bash
-   make check
-   ```
-
-3. **Full CI pipeline locally**:
-   ```bash
-   make ci
-   ```
-
-## Key Concepts
-
-- **Normative** (specs/, conformance/assertions/): Must be true
-- **Informative** (docs/, mapping/): Explanations and rationale
-- **Decisions** (docs/90-decisions/): ADRs explaining tradeoffs
-
-## Workflow
-
-Each iteration cycle should update:
+I want iterative development. Each iteration cycle should update:
 1. Scenario backlog
 2. Requirements snippet
 3. Spec delta (schema changes)
@@ -82,164 +22,38 @@ Each iteration cycle should update:
 5. Conformance update
 6. Gap/coverage update
 
-## Tools
+## System Architecture
 
-### Repository Management
-- `bootstrap.py` - Clone and manage external repositories
-  - Automatically handles submodules for repos with `"submodules": true` in lockfile
-- `checkout_submodules.py` - Initialize git submodules for nested repositories
-  - Uses GIT_DIR/GIT_WORK_TREE to properly handle repos nested inside parent git repos
-  - `./tools/checkout_submodules.py externals/LoopWorkspace` - Checkout specific repo
-  - `./tools/checkout_submodules.py all` - Checkout all repos with submodules flag
-  - `./tools/checkout_submodules.py status --verbose` - Show submodule status
-- `linkcheck.py` - Verify code references resolve correctly
-- `gen_refs.py` - Generate GitHub permalinks from lockfile
+The workspace is structured to separate normative specifications from informative documentation and executable tests.
 
-### Validation & Testing
-- `validate_fixtures.py` - Validate JSON fixtures against shape specifications
-  - Stdlib-only by default, optional `jsonschema` dependency for full validation
-  - `--strict` flag to fail on unknown keys
-- `run_conformance.py` - Run conformance assertions
-  - Checks state, reference, immutability, and query assertions
-  - `--scenario NAME` to run specific scenario
-  - `--verbose` to show all results including passes
-- `gen_coverage.py` - Generate coverage matrix from filesystem state
-  - Outputs both JSON and Markdown formats
-  - Tracks scenario completeness across all projects
+- **`docs/`**: Contains narrative documentation, including overviews, domain concepts, design proposals, implementation notes, research, and architecture decision records (ADRs). It also includes auto-generated files and shared snippets.
+  - **UI/UX Decisions**: The documentation emphasizes clear structure and cross-referencing to enhance usability.
+- **`specs/`**: Houses normative definitions like OpenAPI specifications and JSON Schema definitions, along with test fixtures.
+  - **Technical Implementations**: Utilizes OpenAPI and JSON Schema for rigorous data model definition.
+- **`conformance/`**: Contains executable test scenarios and assertion definitions to validate system behavior against specifications.
+- **`mapping/`**: Provides detailed interpretations and mappings for each AID project (Nightscout, Loop, AAPS, Trio), including cross-project comparison matrices. This section focuses on how each system implements or relates to the common definitions.
+- **`traceability/`**: Manages coordination control, including coverage matrices, identified gaps, and derived requirements.
+- **`tools/`**: A suite of utilities for workspace management, validation, and testing, such as:
+    - `bootstrap.py`: Manages cloning and updating external repositories, including handling git submodules.
+    - `linkcheck.py`: Verifies internal and external code references.
+    - `validate_fixtures.py`: Validates JSON fixtures against defined shape specifications.
+    - `run_conformance.py`: Executes conformance assertions against scenarios.
+    - `gen_coverage.py`: Generates coverage reports.
+- **CI Integration**: A GitHub Actions workflow ensures continuous validation of Python syntax, link integrity, fixture validation, offline conformance tests, and coverage matrix generation.
 
-### Makefile Targets
-- `make bootstrap` - Clone/update all external repositories (with submodules)
-- `make submodules` - Checkout submodules for repos with submodules flag
-- `make validate` - Validate fixtures
-- `make conformance` - Run conformance tests
-- `make coverage` - Generate coverage matrix
-- `make check` - Run all checks (linkcheck + validate + conformance)
-- `make ci` - Full CI pipeline locally
+## External Dependencies
 
-## CI Integration
+The project integrates with and documents the following external Automated Insulin Delivery (AID) systems and related projects:
 
-GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
-1. Python syntax check
-2. Link integrity validation
-3. Fixture validation
-4. Conformance tests (offline)
-5. Coverage matrix generation
-
-## Recent Changes
-
-- 2026-01-16: **Created comprehensive Trio behavior documentation** from Trio source code analysis
-  - `mapping/trio/README.md` - Index with architecture overview, oref0 integration
-  - `mapping/trio/nightscout-sync.md` - NightscoutManager upload/download, treatment mappings
-  - `mapping/trio/algorithm.md` - OpenAPS.swift bridge, JavaScript execution, suggestion parsing
-  - `mapping/trio/insulin-math.md` - IOB calculation via oref0 iob module
-  - `mapping/trio/carb-math.md` - COB calculation, UAM detection, meal module
-  - `mapping/trio/remote-commands.md` - Announcements, remote bolus/carbs/temp basals
-  - `mapping/trio/overrides.md` - Override implementation, oref2_variables
-  - `mapping/trio/safety.md` - Max IOB/SMB limits, autosens bounds, preferences
-  - `mapping/trio/data-models.md` - Swift model to Nightscout field mappings
-  - Updated `cross-project/terminology-matrix.md` with Trio-specific concepts
-- 2026-01-16: **Created comprehensive AAPS behavior documentation** from AndroidAPS source code analysis
-  - `mapping/aaps/README.md` - Index with architecture overview and key source files
-  - `mapping/aaps/nightscout-models.md` - NSSDK local models and NS API mapping
-  - `mapping/aaps/nightscout-sync.md` - NSClientV3 sync flow, identity management
-  - `mapping/aaps/algorithm.md` - OpenAPSSMB algorithm, DynISF, predictions
-  - `mapping/aaps/insulin-math.md` - IOB calculation, biexponential curves
-  - `mapping/aaps/carb-math.md` - COB calculation, UAM detection
-  - `mapping/aaps/profile-switch.md` - ProfileSwitch semantics (GAP-002)
-  - `mapping/aaps/safety.md` - Constraints plugin, objectives system
-  - `mapping/aaps/data-models.md` - Database entities and NS field mappings
-  - Updated `cross-project/terminology-matrix.md` with AAPS-specific concepts
-- 2026-01-16: **Created comprehensive Loop behavior documentation** from LoopWorkspace source code analysis
-  - `mapping/loop/algorithm.md` - Prediction algorithm, effect composition, momentum blending
-  - `mapping/loop/insulin-math.md` - IOB calculation, dose reconciliation, insulin models
-  - `mapping/loop/carb-math.md` - COB calculation, dynamic absorption models
-  - `mapping/loop/dose-math.md` - Correction logic, temp basal/bolus recommendations
-  - `mapping/loop/overrides.md` - Override lifecycle, supersession, presets
-  - `mapping/loop/nightscout-sync.md` - Upload mappings, remote commands
-  - `mapping/loop/safety.md` - Guardrails, limits, suspend thresholds
-  - `mapping/loop/quirks.md` - Edge cases, timing behaviors, gotchas
-  - `mapping/loop/data-models.md` - Core data structures and fields
-- 2026-01-16: Added controller-focused repos (oref0, openaps) to lockfile and cloned them
-- 2026-01-16: Created external inventories for Loop, AAPS, Trio, and oref0/openaps
-- 2026-01-16: Expanded terminology matrix with algorithm/controller concepts (dosing, predictions, safety constraints, pump commands, insulin models)
-- 2026-01-16: Fixed Trio repository checkout
-- 2026-01-16: Added submodule checkout support for nested git repositories (LoopWorkspace)
-- 2026-01-16: Added Nightscout documentation integration (domain models, mappings, cross-project terminology matrix)
-- 2026-01-16: Created external repository inventories (cgm-remote-monitor, nightscout-roles-gateway, nightscout-connect)
-- 2026-01-16: Expanded gaps documentation with authentication and sync identity issues
-- 2026-01-16: Added tooling suite (validate_fixtures, run_conformance, gen_coverage, CI workflow)
-- 2024-01-15: Initial workspace setup with override-supersede scenario
-
-## Key Documentation
-
-### Domain Documentation (docs/10-domain/)
-- `nightscout-data-model.md` - Core Nightscout data model (entries, treatments, profiles, devicestatus)
-- `authority-model.md` - Actor identity and authority hierarchy model
-- `glossary.md` - Terminology definitions with cross-project mappings
-
-### Mapping Documentation (mapping/)
-- `nightscout/data-collections.md` - Field-level mappings for all Nightscout collections
-- `nightscout/authorization.md` - Authentication and permission model mapping
-- `nightscout/override-supersede.md` - Override behavior and supersession tracking
-- `cross-project/terminology-matrix.md` - Rosetta stone for AID system terminology
-
-### Loop Behavior Documentation (mapping/loop/)
-- `README.md` - Index and overview of Loop's architecture
-- `algorithm.md` - Prediction algorithm, effect composition, momentum blending
-- `insulin-math.md` - IOB calculation, dose reconciliation, insulin models
-- `carb-math.md` - COB calculation, dynamic absorption, carb status
-- `dose-math.md` - Correction calculations, temp basal/bolus recommendations
-- `overrides.md` - Override lifecycle, supersession logic, presets
-- `nightscout-sync.md` - Upload mappings, device status, remote commands
-- `safety.md` - Guardrails, suspend threshold, maximum limits
-- `quirks.md` - Edge cases, timing behaviors, known issues
-- `data-models.md` - Core Swift data structures and Nightscout mappings
-
-### AAPS Behavior Documentation (mapping/aaps/)
-- `README.md` - Index and overview of AAPS architecture with key source files
-- `nightscout-models.md` - NSSDK local models (NSBolus, NSCarbs, NSProfileSwitch, etc.)
-- `nightscout-sync.md` - NSClientV3 sync flow, upload/download, identity mapping
-- `algorithm.md` - OpenAPSSMB algorithm, determine-basal, DynISF, predictions
-- `insulin-math.md` - IOB calculation, biexponential curves, insulin models
-- `carb-math.md` - COB calculation, meal detection, UAM (Unannounced Meal)
-- `profile-switch.md` - ProfileSwitch semantics (percentage, timeshift, complete switch)
-- `safety.md` - Constraints plugin, objectives system, max IOB/basal/SMB limits
-- `data-models.md` - Database entities (Bolus, TemporaryBasal, etc.) and NS mappings
-
-### Trio Behavior Documentation (mapping/trio/)
-- `README.md` - Index and overview of Trio architecture, oref0 integration
-- `nightscout-sync.md` - NightscoutManager upload/download, treatment mappings, devicestatus
-- `algorithm.md` - OpenAPS.swift bridge, determine-basal flow, JavaScript execution
-- `insulin-math.md` - IOB calculation via oref0 iob module, insulin curves
-- `carb-math.md` - COB calculation, UAM detection, meal module
-- `remote-commands.md` - Announcements, remote bolus/carbs/temp basals
-- `overrides.md` - Override implementation, oref2_variables, temp targets
-- `safety.md` - Max IOB/SMB limits, autosens bounds, preferences constraints
-- `data-models.md` - Swift model fields to Nightscout field mappings
-
-### Gap Tracking (traceability/gaps.md)
-- GAP-001: Override supersession tracking
-- GAP-002: AAPS ProfileSwitch semantic mismatch
-- GAP-003: Unified sync identity field
-- GAP-AUTH-001: Unverified enteredBy field
-- GAP-AUTH-002: No authority hierarchy
-
-### Controller Inventories (docs/60-research/external-inventories/)
-- `loop-docs.md` - Loop iOS closed-loop system (LoopWorkspace)
-- `aaps-docs.md` - AndroidAPS system structure and algorithm plugins
-- `trio-docs.md` - Trio (FreeAPS) iOS system with oref0 integration
-- `oref0-docs.md` - OpenAPS reference algorithm (determine-basal.js)
-
-## External Repositories (9 total)
-
-| Alias | Repository | Description |
-|-------|------------|-------------|
-| crm | cgm-remote-monitor | Nightscout CGM Remote Monitor |
-| ns-connect | nightscout-connect | Data bridge for CGM sources |
-| ns-gateway | nightscout-roles-gateway | Access control gateway |
-| ns-reporter | nightscout-reporter | PDF reporting |
-| loop | LoopWorkspace | Loop iOS closed-loop |
-| aaps | AndroidAPS | Android closed-loop |
-| trio | Trio | Trio iOS closed-loop |
-| oref0 | oref0 | OpenAPS reference algorithm |
-| openaps | openaps | OpenAPS toolkit
+- **Nightscout Ecosystem**:
+    - `cgm-remote-monitor` (crm): The core Nightscout CGM Remote Monitor.
+    - `nightscout-connect` (ns-connect): Data bridge for CGM sources.
+    - `nightscout-roles-gateway` (ns-gateway): Access control gateway for Nightscout.
+    - `nightscout-reporter` (ns-reporter): PDF reporting tool for Nightscout data.
+- **AID Systems**:
+    - `LoopWorkspace` (loop): The Loop iOS closed-loop system.
+    - `AndroidAPS` (aaps): The Android closed-loop system.
+    - `Trio` (trio): The Trio iOS closed-loop system (formerly FreeAPS).
+- **Algorithms**:
+    - `oref0`: The OpenAPS reference algorithm (determine-basal.js).
+    - `openaps`: The OpenAPS toolkit.
