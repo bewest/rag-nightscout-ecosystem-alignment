@@ -24,3 +24,6 @@ args = "python3 tools/bootstrap.py status"
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[nix]
+packages = ["tree"]
