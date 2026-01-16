@@ -10,20 +10,31 @@ This document tracks gaps that block scenario implementation or conformance. The
 
 **Description**: When a new override is created while another is active, Nightscout does not automatically mark the previous override as superseded. The old override simply expires based on duration.
 
+**Loop-Specific Evidence**: Loop's `TemporaryScheduleOverrideHistory` tracks:
+- `actualEnd` with types: `.natural`, `.early(Date)`, `.deleted`
+- Override events with modification counters
+- Supersession relationships (new override cancels old at `override.startDate.nearestPrevious`)
+
+But `OverrideTreatment` upload only includes `startDate`, `duration`, and settings. None of the lifecycle information is synced.
+
+**Source**: [Loop Override Documentation](../mapping/loop/overrides.md), [Nightscout Sync](../mapping/loop/nightscout-sync.md#gap-001-override-supersession-tracking-critical)
+
 **Impact**: 
 - Cannot query "what override was active at time T" reliably
 - No audit trail of override changes
 - Data imported from Loop/Trio loses supersession relationships
+- Cannot distinguish cancelled overrides from naturally-ended ones
 
 **Possible Solutions**:
-1. Add `superseded_by` and `superseded_at` fields to override documents
-2. Create a new event type for supersession events
-3. Handle in API layer rather than storage
+1. Add `superseded_by`, `actualEndType`, and `actualEndDate` fields to override documents
+2. Loop uploads UPDATE when override ends early or is superseded
+3. Handle in API layer with timestamp-based inference
 
 **Status**: Under discussion
 
 **Related**: 
 - [ADR-001](../docs/90-decisions/adr-001-override-supersession.md)
+- [Loop Override Behavior](../mapping/loop/overrides.md)
 
 ---
 
@@ -52,24 +63,34 @@ This document tracks gaps that block scenario implementation or conformance. The
 
 **Description**: Different AID controllers use different fields for deduplication and sync identity:
 - AAPS uses `identifier`
-- Loop uses `pumpId` + `pumpType` + `pumpSerial`
+- Loop uses `syncIdentifier` (UUID string)
 - xDrip uses `uuid`
+
+**Loop-Specific Evidence**: Loop uses `syncIdentifier` consistently across doses, carbs, and overrides. However, all uploads use POST (not PUT), which may create duplicates.
+
+**Source**: [Loop Nightscout Sync](../mapping/loop/nightscout-sync.md#gap-sync-001-sync-identifier-idempotency)
+```swift
+/* id: objectId, */ /// Specifying _id only works when doing a put (modify); all dose uploads are currently posting
+```
 
 **Impact**:
 - Server-side deduplication is complex
 - Reconciliation logic must know controller-specific patterns
 - No single field for client-provided unique ID
+- POST-based uploads may create duplicates
 
 **Possible Solutions**:
 1. Define a standard `syncId` field all controllers should use
 2. Controllers register their sync identity schema (inversion of control)
 3. Accept current diversity and document mapping rules
+4. Nightscout should support upsert on `syncIdentifier`
 
 **Status**: Under discussion
 
 **Related**:
 - [Treatments Schema](../externals/cgm-remote-monitor/docs/data-schemas/treatments-schema.md)
 - [Data Collections Mapping](../mapping/nightscout/data-collections.md)
+- [Loop Nightscout Sync](../mapping/loop/nightscout-sync.md)
 
 ---
 
@@ -117,6 +138,68 @@ This document tracks gaps that block scenario implementation or conformance. The
 
 **Related**:
 - [Conflict Resolution Proposal](../externals/cgm-remote-monitor/docs/proposals/conflict-resolution.md)
+- [Authority Model](../docs/10-domain/authority-model.md)
+
+---
+
+### GAP-SYNC-002: Effect timelines not uploaded to Nightscout
+
+**Scenario**: Cross-project algorithm comparison, debugging
+
+**Description**: Loop computes individual effect timelines but only uploads the final combined prediction. The component effects are lost.
+
+**Loop-Specific Evidence**: `LoopAlgorithmEffects` contains:
+- `insulin[]` - Expected glucose change from insulin
+- `carbs[]` - Expected glucose change from carbs  
+- `momentum[]` - Short-term trajectory
+- `retrospectiveCorrection[]` - Unexplained discrepancy correction
+- `insulinCounteraction[]` - Observed vs expected glucose change
+
+Only `predicted.values[]` (the combined prediction) is uploaded to `devicestatus.loop`.
+
+**Source**: [Loop Nightscout Sync](../mapping/loop/nightscout-sync.md#gap-sync-002-effect-timelines-not-uploaded)
+
+**Impact**:
+- Cannot debug algorithm behavior from Nightscout data
+- Cannot compare Loop effects to oref0's separate `predBGs.IOB[]`, `predBGs.COB[]`, etc.
+- Critical for cross-project interoperability analysis
+
+**Possible Solutions**:
+1. Loop uploads `effects` object alongside `predicted`
+2. Nightscout defines schema for effect timelines
+3. Optional upload flag for debugging/research mode
+
+**Status**: Under discussion
+
+**Related**:
+- [Loop Algorithm Documentation](../mapping/loop/algorithm.md)
+
+---
+
+### GAP-REMOTE-001: Remote command authorization unverified
+
+**Scenario**: Remote control scenarios, authority hierarchy
+
+**Description**: Loop remote commands (override, carb, bolus) track `remoteAddress` but there's no verification of sender authority.
+
+**Loop-Specific Evidence**: Remote commands set `enactTrigger = .remote(address)` and `enteredBy = "Loop (via remote command)"` but no permission check.
+
+**Source**: [Loop Nightscout Sync](../mapping/loop/nightscout-sync.md#gap-remote-001-remote-command-authorization)
+
+**Impact**:
+- Anyone with Nightscout API access can issue commands
+- No authority hierarchy for remote vs local commands
+- Related to GAP-AUTH-001 (unverified enteredBy)
+
+**Possible Solutions**:
+1. OTP verification for remote commands (Loop already has `OTPManager`)
+2. OIDC-based command authorization
+3. Gateway-level command filtering (NRG)
+
+**Status**: Under discussion
+
+**Related**:
+- [GAP-AUTH-001](#gap-auth-001-enteredby-field-is-unverified)
 - [Authority Model](../docs/10-domain/authority-model.md)
 
 ---

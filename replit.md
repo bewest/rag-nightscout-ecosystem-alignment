@@ -127,6 +127,16 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
 
 ## Recent Changes
 
+- 2026-01-16: **Created comprehensive Loop behavior documentation** from LoopWorkspace source code analysis
+  - `mapping/loop/algorithm.md` - Prediction algorithm, effect composition, momentum blending
+  - `mapping/loop/insulin-math.md` - IOB calculation, dose reconciliation, insulin models
+  - `mapping/loop/carb-math.md` - COB calculation, dynamic absorption models
+  - `mapping/loop/dose-math.md` - Correction logic, temp basal/bolus recommendations
+  - `mapping/loop/overrides.md` - Override lifecycle, supersession, presets
+  - `mapping/loop/nightscout-sync.md` - Upload mappings, remote commands
+  - `mapping/loop/safety.md` - Guardrails, limits, suspend thresholds
+  - `mapping/loop/quirks.md` - Edge cases, timing behaviors, gotchas
+  - `mapping/loop/data-models.md` - Core data structures and fields
 - 2026-01-16: Added controller-focused repos (oref0, openaps) to lockfile and cloned them
 - 2026-01-16: Created external inventories for Loop, AAPS, Trio, and oref0/openaps
 - 2026-01-16: Expanded terminology matrix with algorithm/controller concepts (dosing, predictions, safety constraints, pump commands, insulin models)
@@ -150,6 +160,18 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
 - `nightscout/authorization.md` - Authentication and permission model mapping
 - `nightscout/override-supersede.md` - Override behavior and supersession tracking
 - `cross-project/terminology-matrix.md` - Rosetta stone for AID system terminology
+
+### Loop Behavior Documentation (mapping/loop/)
+- `README.md` - Index and overview of Loop's architecture
+- `algorithm.md` - Prediction algorithm, effect composition, momentum blending
+- `insulin-math.md` - IOB calculation, dose reconciliation, insulin models
+- `carb-math.md` - COB calculation, dynamic absorption, carb status
+- `dose-math.md` - Correction calculations, temp basal/bolus recommendations
+- `overrides.md` - Override lifecycle, supersession logic, presets
+- `nightscout-sync.md` - Upload mappings, device status, remote commands
+- `safety.md` - Guardrails, suspend threshold, maximum limits
+- `quirks.md` - Edge cases, timing behaviors, known issues
+- `data-models.md` - Core Swift data structures and Nightscout mappings
 
 ### Gap Tracking (traceability/gaps.md)
 - GAP-001: Override supersession tracking
