@@ -1,0 +1,41 @@
+{
+  "externals_dir": "externals",
+  "repos": [
+    {
+      "name": "LoopWorkspace",
+      "url": "https://github.com/LoopKit/LoopWorkspace.git",
+      "ref": "main",
+      "description": "Loop iOS app workspace with all dependencies"
+    },
+    {
+      "name": "cgm-remote-monitor",
+      "url": "https://github.com/nightscout/cgm-remote-monitor.git",
+      "ref": "master",
+      "description": "Nightscout CGM Remote Monitor web application"
+    },
+    {
+      "name": "nightscout-connect",
+      "url": "https://github.com/nightscout/nightscout-connect.git",
+      "ref": "main",
+      "description": "Nightscout Connect bridge for data sources"
+    },
+    {
+      "name": "AndroidAPS",
+      "url": "https://github.com/nightscout/AndroidAPS.git",
+      "ref": "master",
+      "description": "Android Artificial Pancreas System"
+    },
+    {
+      "name": "Trio",
+      "url": "https://github.com/nightscout/Trio.git",
+      "ref": "main",
+      "description": "Trio iOS closed-loop system"
+    },
+    {
+      "name": "nightscout-reporter",
+      "url": "https://github.com/zreptil/nightscout-reporter.git",
+      "ref": "master",
+      "description": "Nightscout Reporter for generating PDF reports"
+    }
+  ]
+}
