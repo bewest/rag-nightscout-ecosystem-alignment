@@ -6,10 +6,10 @@ This document details how Trio synchronizes data with Nightscout, including uplo
 
 | File | Purpose |
 |------|---------|
-| `trio:FreeAPS/Sources/Services/Network/NightscoutManager.swift` | Sync orchestration |
-| `trio:FreeAPS/Sources/Services/Network/NightscoutAPI.swift` | HTTP client |
-| `trio:FreeAPS/Sources/Models/NightscoutTreatment.swift` | Treatment model |
-| `trio:FreeAPS/Sources/Models/NightscoutStatus.swift` | DeviceStatus model |
+| `trio:Trio/Sources/Services/Network/NightscoutManager.swift` | Sync orchestration |
+| `trio:Trio/Sources/Services/Network/NightscoutAPI.swift` | HTTP client |
+| `trio:Trio/Sources/Models/NightscoutTreatment.swift` | Treatment model |
+| `trio:Trio/Sources/Models/NightscoutStatus.swift` | DeviceStatus model |
 
 ---
 
@@ -319,21 +319,11 @@ func fetchTempTargets(sinceDate: Date? = nil) -> AnyPublisher<[TempTarget], Swif
 }
 ```
 
-### 4. Announcements Fetch (Remote Commands)
+### 4. Remote Commands
 
-```swift
-// trio:NightscoutAPI.swift#L246-L279
-func fetchAnnouncement(sinceDate: Date? = nil) -> AnyPublisher<[Announcement], Swift.Error> {
-    // GET /api/v1/treatments.json?find[eventType]=Announcement
-    //     &find[enteredBy]=remote
-    components.queryItems = [
-        URLQueryItem(name: "find[eventType]", value: "Announcement"),
-        URLQueryItem(name: "find[enteredBy]", value: Announcement.remote)
-    ]
-}
-```
+**Note (dev branch 0.6.0)**: Remote commands are now handled via the TrioRemoteControl APNS system with encrypted push notifications, replacing the legacy Nightscout Announcement-based system. See [remote-commands.md](remote-commands.md) for the current implementation.
 
-**Important**: Only announcements with `enteredBy: "remote"` are processed for remote commands.
+The legacy Announcement fetch API still exists but is deprecated for remote command processing:
 
 ---
 
@@ -359,8 +349,9 @@ This allows:
 |---------------|--------------|
 | Carbs | `enteredBy != "Trio"` AND `enteredBy != manual` |
 | Temp Targets | `enteredBy != "Trio"` AND `enteredBy != manual` |
-| Announcements | `enteredBy == "remote"` (explicit match) |
 | Glucose | No filter (always fetches all) |
+
+**Note**: Remote commands are no longer fetched from Nightscout. They are received via encrypted APNS push notifications through the TrioRemoteControl system.
 
 ---
 
@@ -368,12 +359,11 @@ This allows:
 
 | Setting | Location | Effect |
 |---------|----------|--------|
-| `isUploadEnabled` | FreeAPSSettings | Master upload toggle |
-| `isDownloadEnabled` | FreeAPSSettings | Master download toggle |
-| `uploadGlucose` | FreeAPSSettings | Enable glucose upload |
-| `allowAnnouncements` | FreeAPSSettings | Enable remote command processing |
-| `useLocalGlucoseSource` | FreeAPSSettings | Use local NS instead of remote |
-| `localGlucosePort` | FreeAPSSettings | Port for local NS (default 1979) |
+| `isUploadEnabled` | TrioSettings | Master upload toggle |
+| `isDownloadEnabled` | TrioSettings | Master download toggle |
+| `uploadGlucose` | TrioSettings | Enable glucose upload |
+| `useLocalGlucoseSource` | TrioSettings | Use local NS instead of remote |
+| `localGlucosePort` | TrioSettings | Port for local NS (default 8080) |
 
 ---
 
@@ -406,4 +396,6 @@ static let timeout: TimeInterval = 60
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-16 | Agent | Deprecated Announcement-based remote commands, added migration note for APNS TrioRemoteControl |
+| 2026-01-16 | Agent | Updated paths to Trio/, updated settings model name to TrioSettings |
 | 2026-01-16 | Agent | Initial Nightscout sync documentation from source analysis |

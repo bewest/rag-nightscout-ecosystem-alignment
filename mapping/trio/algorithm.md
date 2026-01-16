@@ -6,9 +6,9 @@ This document details how Trio executes the oref0 algorithm, including the Swift
 
 | File | Purpose |
 |------|---------|
-| `trio:FreeAPS/Sources/APS/OpenAPS/OpenAPS.swift` | Main algorithm bridge |
-| `trio:FreeAPS/Sources/APS/OpenAPS/JavaScriptWorker.swift` | JS execution engine |
-| `trio:FreeAPS/Sources/APS/APSManager.swift` | Loop orchestration |
+| `trio:Trio/Sources/APS/OpenAPS/OpenAPS.swift` | Main algorithm bridge |
+| `trio:Trio/Sources/APS/OpenAPS/JavaScriptWorker.swift` | JS execution engine |
+| `trio:Trio/Sources/APS/APSManager.swift` | Loop orchestration |
 | `trio:trio-oref/lib/determine-basal/determine-basal.js` | Core oref algorithm |
 
 ---

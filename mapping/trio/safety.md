@@ -6,7 +6,7 @@ This document details Trio's safety mechanisms, including maximum limits, autose
 
 | File | Purpose |
 |------|---------|
-| `trio:FreeAPS/Sources/Models/Preferences.swift` | Safety preferences |
+| `trio:Trio/Sources/Models/Preferences.swift` | Safety preferences |
 | `trio:trio-oref/lib/determine-basal/determine-basal.js` | Algorithm limits |
 
 ---

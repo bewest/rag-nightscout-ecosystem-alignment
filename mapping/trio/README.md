@@ -16,7 +16,7 @@ This directory contains detailed documentation of Trio's actual behavior as extr
 | [algorithm.md](algorithm.md) | OpenAPS.swift bridge, determine-basal flow, suggestion parsing |
 | [insulin-math.md](insulin-math.md) | IOB calculation via oref0 iob module, insulin models |
 | [carb-math.md](carb-math.md) | COB calculation, UAM detection, meal module |
-| [remote-commands.md](remote-commands.md) | Announcements, remote bolus/carbs/temp basals |
+| [remote-commands.md](remote-commands.md) | TrioRemoteControl via APNS, encrypted commands, remote bolus/meal/overrides |
 | [overrides.md](overrides.md) | Override implementation, temp targets, presets |
 | [safety.md](safety.md) | Max IOB/SMB limits, autosens bounds, constraints |
 | [data-models.md](data-models.md) | Swift model fields → Nightscout field mappings |
@@ -25,11 +25,13 @@ This directory contains detailed documentation of Trio's actual behavior as extr
 
 | File | Location | Purpose |
 |------|----------|---------|
-| `APSManager.swift` | `FreeAPS/Sources/APS/` | Main loop controller |
-| `OpenAPS.swift` | `FreeAPS/Sources/APS/OpenAPS/` | JavaScript algorithm bridge |
-| `JavaScriptWorker.swift` | `FreeAPS/Sources/APS/OpenAPS/` | JS execution engine |
-| `NightscoutManager.swift` | `FreeAPS/Sources/Services/Network/` | NS sync orchestration |
-| `NightscoutAPI.swift` | `FreeAPS/Sources/Services/Network/` | NS HTTP client |
+| `APSManager.swift` | `Trio/Sources/APS/` | Main loop controller |
+| `OpenAPS.swift` | `Trio/Sources/APS/OpenAPS/` | JavaScript algorithm bridge |
+| `JavaScriptWorker.swift` | `Trio/Sources/APS/OpenAPS/` | JS execution engine |
+| `NightscoutManager.swift` | `Trio/Sources/Services/Network/` | NS sync orchestration |
+| `NightscoutAPI.swift` | `Trio/Sources/Services/Network/` | NS HTTP client |
+| `TrioRemoteControl.swift` | `Trio/Sources/Services/RemoteControl/` | Secure remote command handling |
+| `TrioSettings.swift` | `Trio/Sources/Models/` | App settings model |
 | `determine-basal.js` | `trio-oref/lib/determine-basal/` | Core oref algorithm |
 | `iob/index.js` | `trio-oref/lib/iob/` | IOB calculation |
 | `meal/index.js` | `trio-oref/lib/meal/` | COB and meal detection |
@@ -106,8 +108,11 @@ This directory contains detailed documentation of Trio's actual behavior as extr
 │  DOWNLOAD FLOW (Nightscout → Trio)                                     │
 │  ├── fetchGlucose() ← /api/v1/entries/sgv.json                         │
 │  ├── fetchCarbs() ← /api/v1/treatments.json?find[carbs][$exists]=true  │
-│  ├── fetchTempTargets() ← eventType=Temporary+Target                   │
-│  └── fetchAnnouncements() ← eventType=Announcement, enteredBy=remote   │
+│  └── fetchTempTargets() ← eventType=Temporary+Target                   │
+│                                                                         │
+│  REMOTE CONTROL (via APNS)                                              │
+│  └── TrioRemoteControl.handleRemoteNotification()                      │
+│      └── Encrypted commands: bolus, meal, tempTarget, override         │
 │                                                                         │
 │  IDENTITY                                                               │
 │  └── enteredBy: "Trio" (static identifier for all uploads)             │
@@ -125,7 +130,7 @@ This directory contains detailed documentation of Trio's actual behavior as extr
 | Autosens | Yes | Retrospective Correction | Yes |
 | Dynamic ISF | Yes (TDD-based) | No | Yes (DynISF) |
 | Autotune | Yes | No | Yes |
-| Remote Commands | Via Announcements | Via Remote Overrides | Via NS commands |
+| Remote Commands | Via encrypted APNS (TrioRemoteControl) | Via Remote Overrides | Via NS commands |
 | Profile Sync | Uploads profile store | N/A | Full ProfileSwitch sync |
 
 ## oref0 Integration
@@ -166,8 +171,54 @@ trio:Path/To/File.swift#L123-L456
 
 This maps to files in the `externals/Trio/` directory.
 
+## CGM Support
+
+### Supported CGM Sources (as of dev branch 0.6.0)
+
+| CGM | Module | Notes |
+|-----|--------|-------|
+| Dexcom G6 | `CGMBLEKit` | Direct Bluetooth connection |
+| Dexcom G7 | `G7SensorKit` | Includes 15-day sensor support |
+| Libre 1/2/3 | `LibreTransmitter` | Via transmitter hardware |
+| Medtronic Guardian | `MinimedKit` | Via RileyLink |
+| Nightscout | Built-in | Remote CGM source |
+| xDrip | Built-in | Local glucose source (port 8080) |
+
+### Recent CGM Updates (2026-01)
+
+- **G7 15-day sensor support** added via G7SensorKit update
+- LibreTransmitter: Reduced logging, improved stability
+- CGMBLEKit: SHA alignment with LoopKit
+
+## iOS Features
+
+### Live Activity
+
+Trio supports iOS Live Activities for lock screen glucose display:
+
+```swift
+// trio:Trio/Sources/Models/TrioSettings.swift
+var useLiveActivity: Bool = false
+var lockScreenView: LockScreenView = .simple
+var smartStackView: LockScreenView = .simple
+```
+
+Live Activity views are defined in `LiveActivity/` module.
+
+### Siri Shortcuts
+
+Bolus shortcuts with safety limits:
+
+```swift
+enum BolusShortcutLimit: String {
+    case notAllowed       // Shortcuts cannot trigger bolus
+    case limitBolusMax    // Limited to max bolus setting
+}
+```
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-16 | Agent | Updated paths from FreeAPS to Trio, added CGM/iOS features, updated remote commands |
 | 2026-01-16 | Agent | Initial Trio behavior documentation from source analysis |

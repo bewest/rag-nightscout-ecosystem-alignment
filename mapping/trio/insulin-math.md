@@ -7,9 +7,9 @@ This document details how Trio calculates Insulin on Board (IOB) and related ins
 | File | Purpose |
 |------|---------|
 | `trio:trio-oref/lib/iob/index.js` | IOB calculation |
-| `trio:FreeAPS/Sources/APS/OpenAPS/OpenAPS.swift` | IOB function call |
-| `trio:FreeAPS/Sources/Models/IOBEntry.swift` | IOB data model |
-| `trio:FreeAPS/Sources/Models/Preferences.swift` | Insulin curve settings |
+| `trio:Trio/Sources/APS/OpenAPS/OpenAPS.swift` | IOB function call |
+| `trio:Trio/Sources/Models/IOBEntry.swift` | IOB data model |
+| `trio:Trio/Sources/Models/Preferences.swift` | Insulin curve settings |
 
 ---
 

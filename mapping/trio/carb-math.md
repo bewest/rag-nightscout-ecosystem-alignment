@@ -7,9 +7,9 @@ This document details how Trio calculates Carbs on Board (COB), meal detection, 
 | File | Purpose |
 |------|---------|
 | `trio:trio-oref/lib/meal/index.js` | COB and meal calculation |
-| `trio:FreeAPS/Sources/APS/OpenAPS/OpenAPS.swift` | Meal function call |
-| `trio:FreeAPS/Sources/Models/CarbsEntry.swift` | Carbs data model |
-| `trio:FreeAPS/Sources/Models/Preferences.swift` | COB settings |
+| `trio:Trio/Sources/APS/OpenAPS/OpenAPS.swift` | Meal function call |
+| `trio:Trio/Sources/Models/CarbsEntry.swift` | Carbs data model |
+| `trio:Trio/Sources/Models/Preferences.swift` | COB settings |
 
 ---
 

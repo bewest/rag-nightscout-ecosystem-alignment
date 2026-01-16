@@ -6,9 +6,11 @@ This document maps Trio's Swift data models to their Nightscout equivalents, pro
 
 | File | Purpose |
 |------|---------|
-| `trio:FreeAPS/Sources/Models/*.swift` | Data model definitions |
-| `trio:FreeAPS/Sources/Models/NightscoutTreatment.swift` | NS treatment model |
-| `trio:FreeAPS/Sources/Models/NightscoutStatus.swift` | NS devicestatus model |
+| `trio:Trio/Sources/Models/*.swift` | Data model definitions |
+| `trio:Trio/Sources/Models/NightscoutTreatment.swift` | NS treatment model |
+| `trio:Trio/Sources/Models/NightscoutStatus.swift` | NS devicestatus model |
+| `trio:Trio/Sources/Models/TrioSettings.swift` | App settings model |
+| `trio:Trio/Sources/Models/TrioCustomOrefVariables.swift` | Custom oref variables |
 
 ---
 
@@ -395,35 +397,140 @@ struct Preferences: JSON {
 }
 ```
 
-### FreeAPSSettings
+### TrioSettings
 
 ```swift
-// trio:FreeAPSSettings.swift
-struct FreeAPSSettings: JSON {
-    var closedLoop: Bool
-    var isUploadEnabled: Bool
-    var isDownloadEnabled: Bool
-    var uploadGlucose: Bool
-    var allowAnnouncements: Bool
-    var units: GlucoseUnits
-    // ... app-specific settings
+// trio:Trio/Sources/Models/TrioSettings.swift
+struct TrioSettings: JSON, Equatable {
+    // Core settings
+    var units: GlucoseUnits = .mgdL
+    var closedLoop: Bool = false
+    var isUploadEnabled: Bool = false
+    var isDownloadEnabled: Bool = false
+    var uploadGlucose: Bool = true
+    
+    // CGM settings
+    var cgm: CGMType = .none
+    var cgmPluginIdentifier: String = ""
+    var useLocalGlucoseSource: Bool = false
+    var localGlucosePort: Int = 8080
+    var smoothGlucose: Bool = false
+    
+    // Glucose display
+    var glucoseBadge: Bool = false
+    var lowGlucose: Decimal = 72
+    var highGlucose: Decimal = 270
+    var high: Decimal = 180
+    var low: Decimal = 70
+    var glucoseColorScheme: GlucoseColorScheme = .staticColor
+    
+    // Notifications
+    var notificationsPump: Bool = true
+    var notificationsCgm: Bool = true
+    var notificationsCarb: Bool = true
+    var notificationsAlgorithm: Bool = true
+    var glucoseNotificationsOption: GlucoseNotificationsOption = .onlyAlarmLimits
+    var addSourceInfoToGlucoseNotifications: Bool = false
+    var carbsRequiredThreshold: Decimal = 10
+    var showCarbsRequiredBadge: Bool = true
+    
+    // Meal handling
+    var useFPUconversion: Bool = true
+    var individualAdjustmentFactor: Decimal = 0.5
+    var timeCap: Decimal = 8
+    var minuteInterval: Decimal = 30
+    var delay: Decimal = 60
+    var maxCarbs: Decimal = 250
+    var maxFat: Decimal = 250
+    var maxProtein: Decimal = 250
+    var fattyMeals: Bool = false           // NEW
+    var fattyMealFactor: Decimal = 0.7     // NEW
+    var sweetMeals: Bool = false           // NEW
+    var sweetMealFactor: Decimal = 1       // NEW
+    
+    // Override settings
+    var overrideFactor: Decimal = 0.8
+    var displayPresets: Bool = true
+    
+    // Bolus settings
+    var confirmBolusFaster: Bool = false
+    var confirmBolus: Bool = false
+    var bolusShortcut: BolusShortcutLimit = .notAllowed  // NEW
+    
+    // iOS features
+    var useLiveActivity: Bool = false              // NEW
+    var lockScreenView: LockScreenView = .simple   // NEW
+    var smartStackView: LockScreenView = .simple   // NEW
+    var useAppleHealth: Bool = false
+    var useCalendar: Bool = false
+    var displayCalendarIOBandCOB: Bool = false
+    var displayCalendarEmojis: Bool = false
+    
+    // Chart settings
+    var xGridLines: Bool = true
+    var yGridLines: Bool = true
+    var rulerMarks: Bool = true
+    var forecastDisplayType: ForecastDisplayType = .cone
+    var eA1cDisplayUnit: EstimatedA1cDisplayUnit = .percent
+    var timeInRangeType: TimeInRangeType = .timeInTightRange  // NEW
+    
+    // Debug
+    var debugOptions: Bool = false
+}
+```
+
+### BolusShortcutLimit (NEW)
+
+```swift
+// trio:Trio/Sources/Models/TrioSettings.swift
+enum BolusShortcutLimit: String, JSON, CaseIterable {
+    case notAllowed        // Shortcuts cannot trigger bolus
+    case limitBolusMax     // Limited to max bolus setting
 }
 ```
 
 ---
 
-## Announcement Model
+## Remote Command Model (NEW)
 
-### Announcement
+### CommandPayload
 
 ```swift
-// trio:Announcement.swift
-struct Announcement: JSON {
-    let createdAt: Date          // created_at
-    let enteredBy: String        // enteredBy
-    let notes: String            // notes (command)
+// Used by TrioRemoteControl for encrypted APNS commands
+struct CommandPayload: Codable {
+    let commandType: CommandType
+    let timestamp: TimeInterval       // Unix epoch seconds
+    
+    // Bolus
+    let bolusAmount: Decimal?
+    
+    // Meal
+    let carbAmount: Decimal?
+    let fatAmount: Decimal?
+    let proteinAmount: Decimal?
+    
+    // Temp Target
+    let targetBG: Decimal?
+    let duration: Decimal?
+    
+    // Override
+    let overrideName: String?
+    
+    // Response
+    let returnNotification: ReturnNotificationInfo?
+}
+
+enum CommandType: String, Codable {
+    case bolus
+    case meal
+    case tempTarget
+    case cancelTempTarget
+    case startOverride
+    case cancelOverride
 }
 ```
+
+**Note**: The legacy Announcement model for Nightscout-based remote commands has been deprecated in favor of the encrypted CommandPayload system.
 
 ---
 
@@ -445,4 +552,5 @@ struct Announcement: JSON {
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-16 | Agent | Updated paths to Trio/, added TrioSettings with new fields, added CommandPayload model |
 | 2026-01-16 | Agent | Initial data models documentation from source analysis |

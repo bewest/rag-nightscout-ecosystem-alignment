@@ -6,10 +6,11 @@ This document details how Trio implements profile overrides and temporary target
 
 | File | Purpose |
 |------|---------|
-| `trio:FreeAPS/Sources/APS/OpenAPS/OpenAPS.swift` | oref2() function |
-| `trio:FreeAPS/Sources/Models/Oref2_variables.swift` | Override state model |
-| `trio:FreeAPS/Sources/Models/TempTarget.swift` | Temp target model |
-| `trio:Core_Data.xcdatamodeld/` | Override CoreData entity |
+| `trio:Trio/Sources/APS/OpenAPS/OpenAPS.swift` | oref2() function |
+| `trio:Trio/Sources/Models/Oref2_variables.swift` | Override state model |
+| `trio:Trio/Sources/Models/TempTarget.swift` | Temp target model |
+| `trio:Trio/Sources/Services/RemoteControl/TrioRemoteControl+Override.swift` | Remote override commands |
+| `trio:Model/Core_Data.xcdatamodeld/` | Override CoreData entity |
 
 ---
 
@@ -323,8 +324,113 @@ func fetchTempTargets(sinceDate: Date? = nil) -> AnyPublisher<[TempTarget], Swif
 
 ---
 
+## Remote Override Control (NEW)
+
+Trio supports starting and canceling overrides via the TrioRemoteControl APNS system.
+
+### Start Override by Name
+
+```swift
+// trio:Trio/Sources/Services/RemoteControl/TrioRemoteControl+Override.swift
+@MainActor internal func handleStartOverrideCommand(_ payload: CommandPayload) async {
+    guard let overrideName = payload.overrideName, !overrideName.isEmpty else {
+        await logError("Override name is missing")
+        return
+    }
+    
+    // Fetch available presets
+    let presetIDs = try await overrideStorage.fetchForOverridePresets()
+    let presets = try presetIDs.compactMap { 
+        try viewContext.existingObject(with: $0) as? OverrideStored 
+    }
+    
+    // Find matching preset by name
+    if let preset = presets.first(where: { $0.name == overrideName }) {
+        await enactOverridePreset(preset: preset, payload: payload)
+    } else {
+        await logError("Override preset '\(overrideName)' not found")
+    }
+}
+```
+
+### Enact Override Preset
+
+```swift
+@MainActor private func enactOverridePreset(preset: OverrideStored, payload: CommandPayload) async {
+    preset.enabled = true
+    preset.date = Date()
+    preset.isUploadedToNS = false
+    
+    // Disable any other active overrides
+    await disableAllActiveOverrides(except: preset.objectID)
+    
+    if viewContext.hasChanges {
+        try viewContext.save()
+        NotificationCenter.default.post(name: .willUpdateOverrideConfiguration, object: nil)
+        await awaitNotification(.didUpdateOverrideConfiguration)
+        await logSuccess("Override started")
+    }
+}
+```
+
+### Cancel All Active Overrides
+
+```swift
+@MainActor internal func handleCancelOverrideCommand(_ payload: CommandPayload) async {
+    await disableAllActiveOverrides()
+    await logSuccess("Override canceled")
+}
+
+@MainActor private func disableAllActiveOverrides(except overrideID: NSManagedObjectID? = nil) async {
+    let ids = try await overrideStorage.loadLatestOverrideConfigurations(fetchLimit: 0)
+    let results = try ids.compactMap { try viewContext.existingObject(with: $0) as? OverrideStored }
+    
+    for canceledOverride in results where canceledOverride.enabled {
+        if let overrideID = overrideID, canceledOverride.objectID == overrideID { continue }
+        
+        // Record the override run
+        let newOverrideRunStored = OverrideRunStored(context: viewContext)
+        newOverrideRunStored.id = UUID()
+        newOverrideRunStored.name = canceledOverride.name
+        newOverrideRunStored.startDate = canceledOverride.date ?? .distantPast
+        newOverrideRunStored.endDate = Date()
+        newOverrideRunStored.target = NSDecimalNumber(decimal: overrideStorage.calculateTarget(override: canceledOverride))
+        newOverrideRunStored.override = canceledOverride
+        newOverrideRunStored.isUploadedToNS = false
+        
+        canceledOverride.enabled = false
+        canceledOverride.isUploadedToNS = false
+    }
+    
+    if viewContext.hasChanges {
+        try viewContext.save()
+        NotificationCenter.default.post(name: .willUpdateOverrideConfiguration, object: nil)
+    }
+}
+```
+
+### Remote Command Payload
+
+```json
+{
+  "commandType": "startOverride",
+  "timestamp": 1705420800,
+  "overrideName": "Exercise"
+}
+```
+
+```json
+{
+  "commandType": "cancelOverride",
+  "timestamp": 1705420800
+}
+```
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-16 | Agent | Updated paths to Trio/, added Remote Override Control section |
 | 2026-01-16 | Agent | Initial overrides documentation from source analysis |

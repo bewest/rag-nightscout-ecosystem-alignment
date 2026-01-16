@@ -1,305 +1,374 @@
-# Trio Remote Commands (Announcements)
+# Trio Remote Commands (TrioRemoteControl)
 
-This document details Trio's remote command system using Nightscout Announcements, enabling remote bolus, temp basal, and loop control.
+This document details Trio's secure remote command system using Apple Push Notifications (APNS) with AES-256-GCM encryption.
 
 ## Source Files
 
 | File | Purpose |
 |------|---------|
-| `trio:FreeAPS/Sources/Models/Announcement.swift` | Announcement model and parsing |
-| `trio:FreeAPS/Sources/APS/FetchAnnouncementsManager.swift` | Announcement fetch and enact |
-| `trio:FreeAPS/Sources/Services/Network/NightscoutAPI.swift` | NS API fetch |
+| `trio:Trio/Sources/Services/RemoteControl/TrioRemoteControl.swift` | Main remote command handler |
+| `trio:Trio/Sources/Services/RemoteControl/TrioRemoteControl+Bolus.swift` | Bolus command processing |
+| `trio:Trio/Sources/Services/RemoteControl/TrioRemoteControl+Meal.swift` | Meal command processing |
+| `trio:Trio/Sources/Services/RemoteControl/TrioRemoteControl+TempTarget.swift` | Temp target commands |
+| `trio:Trio/Sources/Services/RemoteControl/TrioRemoteControl+Override.swift` | Override start/cancel |
+| `trio:Trio/Sources/Services/RemoteControl/SecureMessenger.swift` | AES-GCM encryption/decryption |
+| `trio:Trio/Sources/Services/RemoteControl/RemoteNotificationResponseManager.swift` | Response notifications |
+| `trio:Trio/Sources/Services/RemoteControl/APNSJWTClaims.swift` | APNS JWT authentication |
 
 ---
 
 ## Overview
 
-Trio supports remote commands via Nightscout Announcements. A caregiver or remote user can create an Announcement treatment in Nightscout, which Trio will fetch and execute.
+Trio uses a secure remote command system via Apple Push Notifications with end-to-end encryption. Commands are encrypted with a shared secret using AES-256-GCM, providing authentication and confidentiality.
 
-**Security**: Only announcements with `enteredBy: "remote"` are processed.
+**Security Model**:
+- **Encryption**: AES-256-GCM with SHA256-derived key from shared secret
+- **Authentication**: Shared secret must match between sender and receiver
+- **Replay Protection**: Commands expire after 10 minutes (600 seconds)
+- **Safety Limits**: Max bolus and max IOB checks enforced
 
 ---
 
-## Announcement Structure
+## Architecture
 
-### Nightscout Treatment Format
-
-```json
-{
-  "eventType": "Announcement",
-  "created_at": "2026-01-16T12:00:00.000Z",
-  "enteredBy": "remote",
-  "notes": "bolus: 2.5"
-}
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    Trio Remote Control Flow                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  Caregiver App                                                           │
+│  ├── Create CommandPayload (type, amount, timestamp)                    │
+│  ├── Encrypt with shared secret → AES-256-GCM                           │
+│  └── Send via APNS push notification                                    │
+│                                                                          │
+│  ┌────────────────────────────────────────────────────────────────────┐ │
+│  │                    Apple Push Notification Service                  │ │
+│  │                    (encrypted payload delivery)                     │ │
+│  └──────────────────────────────┬─────────────────────────────────────┘ │
+│                                 │                                        │
+│  ┌──────────────────────────────▼─────────────────────────────────────┐ │
+│  │              TrioRemoteControl.handleRemoteNotification()          │ │
+│  │                                                                     │ │
+│  │  1. Check isTrioRemoteControlEnabled setting                       │ │
+│  │  2. Verify shared secret is configured                             │ │
+│  │  3. Decrypt payload with SecureMessenger                           │ │
+│  │  4. Validate timestamp (within ±10 minutes)                        │ │
+│  │  5. Route to command handler                                       │ │
+│  └──────────────────────────────┬─────────────────────────────────────┘ │
+│                                 │                                        │
+│  ┌──────────────────────────────▼─────────────────────────────────────┐ │
+│  │              Command Handlers                                       │ │
+│  │                                                                     │ │
+│  │  ├── handleBolusCommand()     → Deliver insulin                    │ │
+│  │  ├── handleMealCommand()      → Add carbs + optional bolus         │ │
+│  │  ├── handleTempTargetCommand() → Set temp target                   │ │
+│  │  ├── cancelTempTarget()       → Cancel temp target                 │ │
+│  │  ├── handleStartOverrideCommand() → Start override preset          │ │
+│  │  └── handleCancelOverrideCommand() → Cancel active overrides       │ │
+│  └────────────────────────────────────────────────────────────────────┘ │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Swift Model
+---
+
+## Encryption
+
+### SecureMessenger
 
 ```swift
-// trio:Announcement.swift#L3-L7
-struct Announcement: JSON {
-    let createdAt: Date
-    let enteredBy: String
-    let notes: String
-    
-    static let remote = "remote"
+// trio:Trio/Sources/Services/RemoteControl/SecureMessenger.swift
+struct SecureMessenger {
+    private let sharedKey: [UInt8]
+
+    init?(sharedSecret: String) {
+        guard let secretData = sharedSecret.data(using: .utf8) else {
+            return nil
+        }
+        sharedKey = Array(secretData.sha256())  // SHA256 key derivation
+    }
+
+    func decrypt(base64EncodedString: String) throws -> CommandPayload {
+        guard let combinedData = Data(base64Encoded: base64EncodedString) else {
+            throw NSError(domain: "SecureMessenger", code: 100)
+        }
+
+        let nonceSize = 12
+        let nonce = Array(combinedData.prefix(nonceSize))
+        let ciphertextAndTag = Array(combinedData.suffix(from: nonceSize))
+        
+        let gcm = GCM(iv: nonce, mode: .combined)
+        let aes = try AES(key: sharedKey, blockMode: gcm, padding: .noPadding)
+        let decryptedBytes = try aes.decrypt(ciphertextAndTag)
+        
+        return try JSONDecoder().decode(CommandPayload.self, from: Data(decryptedBytes))
+    }
 }
 ```
 
+### Encryption Details
+
+| Parameter | Value |
+|-----------|-------|
+| Algorithm | AES-256 |
+| Mode | GCM (Galois/Counter Mode) |
+| Key Derivation | SHA256 of shared secret |
+| Nonce Size | 12 bytes |
+| Authentication Tag | Included in ciphertext |
+
 ---
 
-## Supported Commands
+## Command Types
 
 ### 1. Bolus Command
 
-**Format**: `bolus: <amount>`
-
-```
-notes: "bolus: 2.5"
-notes: "bolus:2.5"
-notes: "Bolus: 2.5"
-```
-
-**Parsed as**:
-```swift
-case .bolus(amount):
-    // Delivers amount units of insulin
-```
-
-### 2. Pump Control
-
-**Format**: `pump: <action>`
-
-```
-notes: "pump: suspend"
-notes: "pump: resume"
-```
-
-**Parsed as**:
-```swift
-case .pump(action):
-    // action: .suspend or .resume
-```
-
-### 3. Loop Control
-
-**Format**: `looping: <true/false>`
-
-```
-notes: "looping: false"
-notes: "looping: true"
-```
-
-**Parsed as**:
-```swift
-case .looping(enabled):
-    // Enables or disables closed loop
-```
-
-### 4. Temp Basal
-
-**Format**: `tempbasal: <rate>,<duration>`
-
-```
-notes: "tempbasal: 0.5,30"    // 0.5 U/hr for 30 minutes
-notes: "tempbasal: 0,60"      // Zero temp for 60 minutes
-```
-
-**Parsed as**:
-```swift
-case .tempbasal(rate: rate, duration: duration):
-    // Sets temp basal with specified rate and duration
-```
-
----
-
-## Parsing Logic
+Delivers insulin with safety validations.
 
 ```swift
-// trio:Announcement.swift#L10-L36
-var action: AnnouncementAction? {
-    let components = notes.replacingOccurrences(of: " ", with: "").split(separator: ":")
-    guard components.count == 2 else {
-        return nil
+// trio:TrioRemoteControl+Bolus.swift
+internal func handleBolusCommand(_ payload: CommandPayload) async throws {
+    guard let bolusAmount = payload.bolusAmount else { return }
+    
+    // Safety check 1: Max bolus
+    let maxBolus = settings.pumpSettings.maxBolus
+    if bolusAmount > maxBolus {
+        await logError("Bolus exceeds max allowed")
+        return
     }
     
-    let command = String(components[0]).lowercased()
-    let arguments = String(components[1]).lowercased()
+    // Safety check 2: Max IOB
+    let maxIOB = settings.preferences.maxIOB
+    if (currentIOB + bolusAmount) > maxIOB {
+        await logError("Bolus would exceed max IOB")
+        return
+    }
     
-    switch command {
-    case "bolus":
-        guard let amount = Decimal(from: arguments) else { return nil }
-        return .bolus(amount)
-        
-    case "pump":
-        guard let action = PumpAction(rawValue: arguments) else { return nil }
-        return .pump(action)
-        
-    case "looping":
-        guard let looping = Bool(from: arguments) else { return nil }
-        return .looping(looping)
-        
-    case "tempbasal":
-        let basalComponents = arguments.split(separator: ",")
-        guard basalComponents.count == 2 else { return nil }
-        guard let rate = Decimal(from: String(basalComponents[0])),
-              let duration = Decimal(from: String(basalComponents[1])) else { return nil }
-        return .tempbasal(rate: rate, duration: duration)
-        
-    default:
-        return nil
+    // Safety check 3: Recent boluses
+    let totalRecentBolus = try await fetchTotalRecentBolusAmount(since: commandTime)
+    if totalRecentBolus >= bolusAmount * 0.2 {
+        await logError("Recent boluses exceed 20% of requested amount")
+        return
+    }
+    
+    // Enact bolus
+    await apsManager.enactBolus(amount: Double(bolusAmount), isSMB: false)
+}
+```
+
+### 2. Meal Command
+
+Adds carb entry with optional bolus.
+
+```swift
+// trio:TrioRemoteControl+Meal.swift
+internal func handleMealCommand(_ payload: CommandPayload) async throws {
+    guard let carbAmount = payload.carbAmount else { return }
+    
+    let carbEntry = CarbsEntry(
+        createdAt: Date(),
+        carbs: carbAmount,
+        fat: payload.fatAmount ?? 0,
+        protein: payload.proteinAmount ?? 0,
+        note: "Remote Command",
+        enteredBy: CarbsEntry.manual
+    )
+    
+    await carbsStorage.storeCarbs([carbEntry])
+    await nightscoutManager.uploadCarbs()
+    
+    // Optional bolus follows
+    if payload.bolusAmount != nil {
+        try await handleBolusCommand(payload)
     }
 }
 ```
 
+### 3. Temp Target Command
+
+Sets a temporary glucose target.
+
+```swift
+// trio:TrioRemoteControl+TempTarget.swift
+internal func handleTempTargetCommand(_ payload: CommandPayload) async throws {
+    guard let targetBG = payload.targetBG,
+          let duration = payload.duration else { return }
+    
+    let tempTarget = TempTargetStored(context: viewContext)
+    tempTarget.id = UUID()
+    tempTarget.startDate = Date()
+    tempTarget.targetBottom = NSDecimalNumber(decimal: targetBG)
+    tempTarget.targetTop = NSDecimalNumber(decimal: targetBG)
+    tempTarget.duration = NSDecimalNumber(decimal: duration)
+    tempTarget.enabled = true
+    
+    try viewContext.save()
+}
+```
+
+### 4. Cancel Temp Target
+
+```swift
+internal func cancelTempTarget(_ payload: CommandPayload) async {
+    await disableAllActiveTempTargets()
+    await logSuccess("Temp target canceled")
+}
+```
+
+### 5. Start Override Command
+
+Activates a named override preset.
+
+```swift
+// trio:TrioRemoteControl+Override.swift
+@MainActor internal func handleStartOverrideCommand(_ payload: CommandPayload) async {
+    guard let overrideName = payload.overrideName, !overrideName.isEmpty else {
+        await logError("Override name is missing")
+        return
+    }
+    
+    let presetIDs = try await overrideStorage.fetchForOverridePresets()
+    let presets = try presetIDs.compactMap { 
+        try viewContext.existingObject(with: $0) as? OverrideStored 
+    }
+    
+    if let preset = presets.first(where: { $0.name == overrideName }) {
+        await enactOverridePreset(preset: preset, payload: payload)
+    } else {
+        await logError("Override preset '\(overrideName)' not found")
+    }
+}
+```
+
+### 6. Cancel Override Command
+
+```swift
+@MainActor internal func handleCancelOverrideCommand(_ payload: CommandPayload) async {
+    await disableAllActiveOverrides()
+    await logSuccess("Override canceled")
+}
+```
+
 ---
 
-## Fetch Flow
-
-### Polling Interval
-
-Announcements are fetched every 5 minutes:
+## Command Payload
 
 ```swift
-// trio:FetchAnnouncementsManager.swift#L16
-private let timer = DispatchTimer(timeInterval: 5.minutes.timeInterval)
-```
-
-### Fetch and Process
-
-```swift
-// trio:FetchAnnouncementsManager.swift#L23-L51
-private func subscribe() {
-    timer.publisher
-        .receive(on: processQueue)
-        .flatMap { _ -> AnyPublisher<[Announcement], Never> in
-            guard self.settingsManager.settings.allowAnnouncements else {
-                return Just([]).eraseToAnyPublisher()
-            }
-            return self.nightscoutManager.fetchAnnouncements()
-        }
-        .sink { announcements in
-            // Filter to announcements newer than last sync
-            guard let last = announcements
-                .filter({ $0.createdAt > self.announcementsStorage.syncDate() })
-                .sorted(by: { $0.createdAt < $1.createdAt })
-                .last
-            else { return }
-            
-            // Store and enact
-            self.announcementsStorage.storeAnnouncements([last], enacted: false)
-            
-            if self.settingsManager.settings.allowAnnouncements,
-               let recent = self.announcementsStorage.recent(),
-               recent.action != nil
-            {
-                debug(.nightscout, "New announcements found")
-                self.apsManager.enactAnnouncement(recent)
-            }
-        }
-        .store(in: &lifetime)
-}
-```
-
-### NS API Query
-
-```swift
-// trio:NightscoutAPI.swift#L246-L279
-func fetchAnnouncement(sinceDate: Date? = nil) -> AnyPublisher<[Announcement], Swift.Error> {
-    // GET /api/v1/treatments.json
-    //   ?find[eventType]=Announcement
-    //   &find[enteredBy]=remote
-    //   &find[created_at][$gte]=...
+struct CommandPayload: Codable {
+    let commandType: CommandType
+    let timestamp: TimeInterval       // Unix epoch seconds
     
-    components.queryItems = [
-        URLQueryItem(name: "find[eventType]", value: "Announcement"),
-        URLQueryItem(name: "find[enteredBy]", 
-                    value: Announcement.remote.addingPercentEncoding(
-                        withAllowedCharacters: .urlHostAllowed))
-    ]
+    // Bolus
+    let bolusAmount: Decimal?
+    
+    // Meal
+    let carbAmount: Decimal?
+    let fatAmount: Decimal?
+    let proteinAmount: Decimal?
+    
+    // Temp Target
+    let targetBG: Decimal?
+    let duration: Decimal?            // Minutes
+    
+    // Override
+    let overrideName: String?
+    
+    // Response notification
+    let returnNotification: ReturnNotificationInfo?
 }
+
+enum CommandType: String, Codable {
+    case bolus
+    case meal
+    case tempTarget
+    case cancelTempTarget
+    case startOverride
+    case cancelOverride
+}
+```
+
+---
+
+## Security Validations
+
+### 1. Setting Check
+
+```swift
+let isTrioRemoteControlEnabled = UserDefaults.standard.bool(forKey: "isTrioRemoteControlEnabled")
+guard isTrioRemoteControlEnabled else {
+    await logError("Remote control is disabled in settings")
+    return
+}
+```
+
+### 2. Shared Secret Verification
+
+```swift
+let storedSecret = UserDefaults.standard.string(forKey: "trioRemoteControlSharedSecret") ?? ""
+guard !storedSecret.isEmpty else {
+    await logError("Shared secret is missing in settings")
+    return
+}
+```
+
+### 3. Timestamp Validation
+
+Commands are rejected if older than 10 minutes or with future timestamps:
+
+```swift
+private let timeWindow: TimeInterval = 600  // 10 minutes
+
+let currentTime = Date().timeIntervalSince1970
+let timeDifference = currentTime - commandPayload.timestamp
+
+if timeDifference > timeWindow {
+    await logError("Message is too old (\(Int(timeDifference)) seconds)")
+    return
+}
+
+if timeDifference < -timeWindow {
+    await logError("Message has invalid future timestamp")
+    return
+}
+```
+
+### 4. Bolus Safety Checks
+
+| Check | Condition | Action |
+|-------|-----------|--------|
+| Max Bolus | `bolusAmount > maxBolus` | Reject |
+| Max IOB | `currentIOB + bolusAmount > maxIOB` | Reject |
+| Recent Boluses | Recent boluses ≥ 20% of requested | Reject |
+
+---
+
+## Response Notifications
+
+Trio can send response notifications back to the caregiver app:
+
+```swift
+// trio:RemoteNotificationResponseManager.swift
+await RemoteNotificationResponseManager.shared.sendResponseNotification(
+    to: returnInfo,
+    commandType: payload.commandType,
+    success: true,
+    message: "Bolus started"
+)
 ```
 
 ---
 
 ## Settings
 
-| Setting | Purpose |
-|---------|---------|
-| `allowAnnouncements` | Master toggle for remote command processing |
-
-When `allowAnnouncements` is `false`, announcements are not fetched or processed.
-
----
-
-## Action Types
-
-```swift
-// trio:Announcement.swift#L47-L52
-enum AnnouncementAction {
-    case bolus(Decimal)
-    case pump(PumpAction)
-    case looping(Bool)
-    case tempbasal(rate: Decimal, duration: Decimal)
-}
-
-enum PumpAction: String {
-    case suspend
-    case resume
-}
-```
+| Setting Key | Purpose |
+|-------------|---------|
+| `isTrioRemoteControlEnabled` | Master toggle for remote commands |
+| `trioRemoteControlSharedSecret` | Shared encryption secret |
 
 ---
 
-## Security Considerations
+## Legacy: Nightscout Announcements
 
-### 1. enteredBy Validation
-
-Only announcements with `enteredBy: "remote"` are fetched:
-
-```swift
-URLQueryItem(name: "find[enteredBy]", value: Announcement.remote)
-```
-
-This prevents:
-- Trio's own announcements from being re-processed
-- Other apps' announcements from being interpreted as commands
-
-### 2. Setting Gate
-
-The `allowAnnouncements` setting must be explicitly enabled.
-
-### 3. Timestamp Filtering
-
-Only announcements newer than the last sync date are processed, preventing replay of old commands.
-
----
-
-## Creating Remote Commands
-
-To create a remote command in Nightscout:
-
-### Via Nightscout Careportal
-
-1. Open Nightscout Careportal
-2. Select "Announcement" event type
-3. Set `enteredBy` to "remote"
-4. Enter command in notes field
-5. Submit
-
-### Via Nightscout API
-
-```bash
-curl -X POST "https://your-ns-site.com/api/v1/treatments" \
-  -H "api-secret: $(echo -n 'your-api-secret' | sha1sum | cut -d' ' -f1)" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "eventType": "Announcement",
-    "enteredBy": "remote",
-    "notes": "bolus: 1.5",
-    "created_at": "'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"
-  }'
-```
+**Note**: The previous Nightscout Announcement-based remote command system has been deprecated in favor of the secure APNS-based TrioRemoteControl system. The old system used `enteredBy: remote` announcements with plaintext commands like `bolus: 2.5`.
 
 ---
 
@@ -307,11 +376,62 @@ curl -X POST "https://your-ns-site.com/api/v1/treatments" \
 
 | Feature | Trio | Loop | AAPS |
 |---------|------|------|------|
-| Remote Bolus | Yes (Announcements) | Yes (Remote Overrides) | Yes (NS commands) |
-| Remote Temp Basal | Yes | Via Overrides | Yes |
-| Remote Suspend | Yes (pump: suspend) | Yes | Yes |
-| Remote Loop Control | Yes (looping: bool) | Via Overrides | Yes |
-| Authentication | enteredBy filter | Apple Push + Token | NS + Token |
+| Transport | APNS Push | APNS Push | NS Commands |
+| Encryption | AES-256-GCM | Apple E2E | HMAC signing |
+| Authentication | Shared secret | Apple Push Token | API secret |
+| Remote Bolus | Yes | Yes | Yes |
+| Remote Meal | Yes | No | Yes |
+| Remote Override | Yes (by preset name) | Yes | Yes |
+| Remote Temp Target | Yes | Via Override | Yes |
+| Replay Protection | 10-min timestamp | Nonce | Timestamp |
+
+---
+
+## Creating Remote Commands
+
+To send a remote command to Trio:
+
+### 1. Configure Shared Secret
+
+Both the caregiver app and Trio must use the same shared secret.
+
+### 2. Create Command Payload
+
+```json
+{
+  "commandType": "bolus",
+  "timestamp": 1705420800,
+  "bolusAmount": 2.5
+}
+```
+
+### 3. Encrypt Payload
+
+```python
+from Crypto.Cipher import AES
+import hashlib
+import os
+import base64
+import json
+
+shared_secret = "your_shared_secret"
+key = hashlib.sha256(shared_secret.encode()).digest()
+nonce = os.urandom(12)
+
+payload = json.dumps({
+    "commandType": "bolus",
+    "timestamp": time.time(),
+    "bolusAmount": 2.5
+}).encode()
+
+cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+ciphertext, tag = cipher.encrypt_and_digest(payload)
+encrypted = base64.b64encode(nonce + ciphertext + tag).decode()
+```
+
+### 4. Send via APNS
+
+Send the encrypted payload via Apple Push Notification Service to the Trio device.
 
 ---
 
@@ -319,4 +439,5 @@ curl -X POST "https://your-ns-site.com/api/v1/treatments" \
 
 | Date | Author | Changes |
 |------|--------|---------|
-| 2026-01-16 | Agent | Initial remote commands documentation from source analysis |
+| 2026-01-16 | Agent | Complete rewrite for TrioRemoteControl APNS system (dev branch 0.6.0) |
+| 2026-01-16 | Agent | Initial remote commands documentation (Announcements system) |
