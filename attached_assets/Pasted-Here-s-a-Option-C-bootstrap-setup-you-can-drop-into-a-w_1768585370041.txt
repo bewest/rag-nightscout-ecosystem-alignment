@@ -1,0 +1,184 @@
+Here’s a “Option C” bootstrap setup you can drop into a workspace repo. It keeps externals/ ignored by git, while a lockfile pins which repos + refs to check out.
+
+The initial list below includes:
+	•	LoopKit LoopWorkspace  ￼
+	•	Nightscout cgm-remote-monitor  ￼
+	•	Nightscout nightscout-connect  ￼
+	•	Nightscout AndroidAPS  ￼
+	•	Nightscout Trio  ￼
+
+⸻
+
+1) Add externals/ to .gitignore
+
+# generated checkouts
+externals/
+
+(Optional: keep the directory in git)
+
+mkdir -p externals
+touch externals/.keep
+
+…and in .gitignore:
+
+externals/*
+!externals/.keep
+
+
+
+⸻
+
+2) Create workspace.lock.json
+
+Save this at the repo root:
+
+{
+  "externals_dir": "externals",
+  "repos": [
+    {
+      "name": "LoopWorkspace",
+      "url": "https://github.com/LoopKit/LoopWorkspace.git",
+      "ref": "main"
+    },
+    {
+      "name": "cgm-remote-monitor",
+      "url": "https://github.com/nightscout/cgm-remote-monitor.git",
+      "ref": "master"
+    },
+    {
+      "name": "nightscout-connect",
+      "url": "https://github.com/nightscout/nightscout-connect.git",
+      "ref": "main"
+    },
+    {
+      "name": "AndroidAPS",
+      "url": "https://github.com/nightscout/AndroidAPS.git",
+      "ref": "master"
+    },
+    {
+      "name": "Trio",
+      "url": "https://github.com/nightscout/Trio.git",
+      "ref": "main"
+    }
+  ]
+}
+
+Notes:
+	•	The refs here are “reasonable defaults,” but you can pin to SHAs/tags anytime (recommended once you start doing conformance testing).
+
+⸻
+
+3) Add tools/bootstrap.py
+
+Create tools/bootstrap.py:
+
+#!/usr/bin/env python3
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+def run(cmd, cwd=None):
+    print("+", " ".join(cmd))
+    subprocess.check_call(cmd, cwd=cwd)
+
+def capture(cmd, cwd=None) -> str:
+    return subprocess.check_output(cmd, cwd=cwd, text=True).strip()
+
+def ensure_repo(dest: Path, url: str):
+    if dest.exists() and (dest / ".git").exists():
+        return
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    run(["git", "clone", url, str(dest)])
+
+def checkout_ref(dest: Path, ref: str):
+    run(["git", "fetch", "--all", "--tags", "--prune"], cwd=dest)
+    # Allow: branch name, tag, or SHA
+    run(["git", "checkout", ref], cwd=dest)
+
+def status_line(dest: Path) -> str:
+    head = capture(["git", "rev-parse", "--short", "HEAD"], cwd=dest)
+    branch = capture(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=dest)
+    dirty = capture(["git", "status", "--porcelain"], cwd=dest)
+    return f"{dest.name}: {branch} @ {head}{' (dirty)' if dirty else ''}"
+
+def main():
+    lockfile = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("workspace.lock.json")
+    if not lockfile.exists():
+        print(f"Lockfile not found: {lockfile}", file=sys.stderr)
+        sys.exit(1)
+
+    data = json.loads(lockfile.read_text())
+    externals_dir = Path(data.get("externals_dir", "externals"))
+    repos = data.get("repos", [])
+
+    if not repos:
+        print("No repos in lockfile.", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Bootstrapping into: {externals_dir}/")
+    externals_dir.mkdir(parents=True, exist_ok=True)
+
+    for r in repos:
+        name = r["name"]
+        url = r["url"]
+        ref = r.get("ref", "main")
+        dest = externals_dir / name
+
+        print(f"\n== {name} ==")
+        ensure_repo(dest, url)
+        checkout_ref(dest, ref)
+
+        print(status_line(dest))
+
+    print("\nDone.")
+
+if __name__ == "__main__":
+    main()
+
+Make it executable:
+
+chmod +x tools/bootstrap.py
+
+Run it:
+
+./tools/bootstrap.py
+# or: ./tools/bootstrap.py workspace.lock.json
+
+
+
+⸻
+
+4) “Pinning” workflow (recommended once you’re aligned)
+
+When you want reproducibility, change ref from main/master to an exact SHA:
+
+cd externals/Trio
+git rev-parse HEAD
+# copy SHA into workspace.lock.json as the ref
+
+This gives you “submodule-like determinism” without submodule UX.
+
+⸻
+
+5) Optional: add a tiny Makefile wrapper
+
+bootstrap:
+\t./tools/bootstrap.py
+
+status:
+\t@for d in externals/*/.git; do \
+\t  repo=$$(dirname $$d); \
+\t  echo "== $$(basename $$repo) =="; \
+\t  (cd $$repo && git status -sb); \
+\tdone
+
+
+
+⸻
+
+If you want, I can extend the script to also:
+	•	set up a fork remote automatically (e.g., git remote add fork git@github.com:<you>/<repo>.git)
+	•	support a “work branch” per repo (workspace/<topic>) so agents don’t commit on main/master
+	•	write back a resolved lockfile with exact SHAs after checkout (“freeze” mode)
