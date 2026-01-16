@@ -127,6 +127,17 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
 
 ## Recent Changes
 
+- 2026-01-16: **Created comprehensive AAPS behavior documentation** from AndroidAPS source code analysis
+  - `mapping/aaps/README.md` - Index with architecture overview and key source files
+  - `mapping/aaps/nightscout-models.md` - NSSDK local models and NS API mapping
+  - `mapping/aaps/nightscout-sync.md` - NSClientV3 sync flow, identity management
+  - `mapping/aaps/algorithm.md` - OpenAPSSMB algorithm, DynISF, predictions
+  - `mapping/aaps/insulin-math.md` - IOB calculation, biexponential curves
+  - `mapping/aaps/carb-math.md` - COB calculation, UAM detection
+  - `mapping/aaps/profile-switch.md` - ProfileSwitch semantics (GAP-002)
+  - `mapping/aaps/safety.md` - Constraints plugin, objectives system
+  - `mapping/aaps/data-models.md` - Database entities and NS field mappings
+  - Updated `cross-project/terminology-matrix.md` with AAPS-specific concepts
 - 2026-01-16: **Created comprehensive Loop behavior documentation** from LoopWorkspace source code analysis
   - `mapping/loop/algorithm.md` - Prediction algorithm, effect composition, momentum blending
   - `mapping/loop/insulin-math.md` - IOB calculation, dose reconciliation, insulin models
@@ -172,6 +183,17 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
 - `safety.md` - Guardrails, suspend threshold, maximum limits
 - `quirks.md` - Edge cases, timing behaviors, known issues
 - `data-models.md` - Core Swift data structures and Nightscout mappings
+
+### AAPS Behavior Documentation (mapping/aaps/)
+- `README.md` - Index and overview of AAPS architecture with key source files
+- `nightscout-models.md` - NSSDK local models (NSBolus, NSCarbs, NSProfileSwitch, etc.)
+- `nightscout-sync.md` - NSClientV3 sync flow, upload/download, identity mapping
+- `algorithm.md` - OpenAPSSMB algorithm, determine-basal, DynISF, predictions
+- `insulin-math.md` - IOB calculation, biexponential curves, insulin models
+- `carb-math.md` - COB calculation, meal detection, UAM (Unannounced Meal)
+- `profile-switch.md` - ProfileSwitch semantics (percentage, timeshift, complete switch)
+- `safety.md` - Constraints plugin, objectives system, max IOB/basal/SMB limits
+- `data-models.md` - Database entities (Bolus, TemporaryBasal, etc.) and NS mappings
 
 ### Gap Tracking (traceability/gaps.md)
 - GAP-001: Override supersession tracking

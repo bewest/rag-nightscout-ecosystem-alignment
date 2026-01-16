@@ -278,9 +278,80 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 3. **Nightscout separates Override and Temp Target** - Different eventTypes for different use cases
 4. **Trio follows OpenAPS patterns** - Similar to Nightscout with some extensions
 5. **Loop does not use oref0** - Has its own prediction and dosing algorithm (LoopMath)
-6. **AAPS and Trio embed oref0** - Should produce identical algorithm outputs given identical inputs
+6. **AAPS and Trio embed oref0** - AAPS has ported oref0 to native Kotlin (not JavaScript bridge)
 7. **SMB (Super Micro Bolus)** - Only available in oref1-based systems (AAPS, Trio), not Loop
-8. **Autosens** - Available in oref0/AAPS/Trio, Loop uses different sensitivity approach
+8. **Autosens** - Available in oref0/AAPS/Trio, Loop uses different sensitivity approach (RC)
+9. **Dynamic ISF** - AAPS supports TDD-based variable sensitivity (DynISF), Loop has IRC
+
+---
+
+## AAPS-Specific Concepts
+
+### Nightscout SDK (NSSDK)
+
+AAPS maintains a dedicated Nightscout SDK (`core/nssdk/`) with local model classes:
+
+| AAPS NSSDK Class | Nightscout Collection | Key Fields |
+|------------------|----------------------|------------|
+| `NSSgvV3` | `entries` | `sgv`, `direction`, `noise` |
+| `NSBolus` | `treatments` | `insulin`, `type` (NORMAL/SMB/PRIMING) |
+| `NSCarbs` | `treatments` | `carbs`, `duration` (eCarbs) |
+| `NSTemporaryBasal` | `treatments` | `rate`, `duration`, `type` |
+| `NSProfileSwitch` | `treatments` | `profile`, `percentage`, `timeShift` |
+| `NSTemporaryTarget` | `treatments` | `targetTop`, `targetBottom`, `reason` |
+| `NSDeviceStatus` | `devicestatus` | `openaps`, `pump`, `configuration` |
+| `NSTherapyEvent` | `treatments` | `eventType`, `notes` |
+
+### ProfileSwitch Modifiers (GAP-002)
+
+AAPS ProfileSwitch has semantic fields that Nightscout doesn't distinguish:
+
+| Modifier | Field | Effect |
+|----------|-------|--------|
+| Complete Switch | `profileName` changes | New profile settings |
+| Percentage | `percentage != 100` | All insulin delivery scaled |
+| Time Shift | `timeshift != 0` | Schedule shifted |
+| Duration | `duration > 0` | Temporary vs permanent |
+
+### Bolus Types
+
+AAPS distinguishes bolus types via enum:
+
+| Type | Description | NS Mapping |
+|------|-------------|------------|
+| `NORMAL` | User-initiated bolus | `Meal Bolus` or `Correction Bolus` |
+| `SMB` | Super Micro Bolus (automatic) | `SMB` eventType |
+| `PRIMING` | Pump priming (not therapy) | `Prime` eventType |
+
+### Temp Basal Types
+
+| Type | Description |
+|------|-------------|
+| `NORMAL` | Standard temp basal |
+| `EMULATED_PUMP_SUSPEND` | Suspend via 0% basal |
+| `PUMP_SUSPEND` | Actual pump suspend |
+| `SUPERBOLUS` | Superbolus temp basal |
+| `FAKE_EXTENDED` | Extended bolus emulation |
+
+### Insulin Model Peak Times
+
+| AAPS Plugin | Peak (minutes) | Insulin Type |
+|-------------|----------------|--------------|
+| `InsulinOrefRapidActingPlugin` | 75 | NovoRapid, Humalog, Apidra |
+| `InsulinOrefUltraRapidActingPlugin` | 55 | Fiasp |
+| `InsulinLyumjevPlugin` | 45 | Lyumjev |
+| `InsulinOrefFreePeakPlugin` | Configurable | Custom |
+
+### Dynamic ISF Formula
+
+AAPS DynISF uses TDD-based calculation:
+
+```
+TDD = (tddWeighted8h * 0.33) + (tdd7D * 0.34) + (tdd1D * 0.33)
+variableSens = 1800 / (TDD * ln((glucose / insulinDivisor) + 1))
+```
+
+Where `insulinDivisor` depends on insulin type (55-75).
 
 ---
 
