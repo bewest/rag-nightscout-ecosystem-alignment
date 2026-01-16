@@ -57,3 +57,7 @@ The project integrates with and documents the following external Automated Insul
 - **Algorithms**:
     - `oref0`: The OpenAPS reference algorithm (determine-basal.js).
     - `openaps`: The OpenAPS toolkit.
+- **CGM/Monitoring Apps**:
+    - `nightguard`: iOS/watchOS app for blood glucose monitoring via Nightscout.
+    - `xdripswift` (xdrip4ios): iOS app for CGM data management and Nightscout sync.
+    - `xDrip`: Android xDrip+ app for CGM data collection and Nightscout sync.
