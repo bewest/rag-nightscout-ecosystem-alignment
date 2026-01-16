@@ -12,8 +12,8 @@
     {
       "alias": "crm",
       "name": "cgm-remote-monitor",
-      "url": "https://github.com/nightscout/cgm-remote-monitor.git",
-      "ref": "master",
+      "url": "https://github.com/bewest/cgm-remote-monitor-1.git",
+      "ref": "wip/replit/with-mongodb-update",
       "description": "Nightscout CGM Remote Monitor web application"
     },
     {
@@ -48,7 +48,7 @@
       "alias": "ns-gateway",
       "name": "nightscout-roles-gateway",
       "url": "https://github.com/t1pal/nightscout-roles-gateway.git",
-      "ref": "main",
+      "ref": "replit",
       "description": "Nightscout Roles Gateway for access control"
     }
   ]
