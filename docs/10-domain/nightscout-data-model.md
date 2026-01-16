@@ -239,13 +239,107 @@ This distinction is critical for offline-first sync patterns used by AAPS and Lo
 
 ---
 
+## Consumer Insights (from Nightscout Reporter)
+
+Analysis of Nightscout Reporter (a Dart/AngularDart reporting client) reveals practical implementation patterns for consuming this data model.
+
+### Entry Validation
+
+| Condition | Interpretation |
+|-----------|----------------|
+| `sgv < 20` | Gap/sensor error - treat as missing data |
+| `sgv > 1000` | Invalid reading - treat as missing data |
+| `type == null && sgv > 0` | Infer `type = "sgv"` |
+| `type == null && mbg > 0` | Infer `type = "mbg"` |
+
+### Uploader Detection
+
+The `enteredBy` field can identify the data source:
+
+| Pattern | Uploader |
+|---------|----------|
+| `== "openaps"` (exact) | OpenAPS |
+| `contains("androidaps")` | AAPS |
+| `startsWith("xdrip")` | xDrip+ |
+| `== "spike"` (exact) | Spike iOS |
+| `== "tidepool"` (exact) | Tidepool |
+
+**Gap**: Loop and Trio are not explicitly detected by most consumers.
+
+### Treatment Duration Units
+
+**Important**: Nightscout stores duration in **minutes**. Reporter converts to seconds during parsing (`duration * 60`). Always verify units when reading from different sources.
+
+### Temp Basal Resolution Priority
+
+When `percent`, `absolute`, and `rate` are all present:
+
+1. Use `percent` to calculate from scheduled basal
+2. Use `rate` as direct value
+3. Use `absolute` as fallback (uploader-dependent behavior)
+
+### Bolus Classification
+
+| Classification | Logic |
+|----------------|-------|
+| Meal bolus | `eventType == "meal bolus"` |
+| Carb bolus | `isMealBolus OR (isBolusWizard AND carbs > 0)` |
+| Correction | `NOT isCarbBolus AND NOT isSMB` |
+| SMB | `isSMB == true` flag |
+
+### Blood Glucose Source
+
+Two ways to identify fingerstick readings:
+
+1. `glucoseType == "finger"` - Explicit field
+2. `eventType == "bg check"` - Event-based
+
+### Profile Time Resolution
+
+1. Sort entries by `time`
+2. If first entry doesn't start at midnight, wrap last entry's value
+3. Calculate duration as gap to next entry
+4. Handle timezone offset via `localDiff`
+
+### Unit Conversion
+
+| Conversion | Formula |
+|------------|---------|
+| mg/dL → mmol/L | `value / 18.02` |
+| mmol/L → mg/dL | `value * 18.02` |
+
+Display precision:
+- mg/dL: Integer (0 decimal places)
+- mmol/L: 2 decimal places
+
+### IOB Calculation Model
+
+Reporter uses a bilinear decay model:
+
+| Phase | Time | Curve |
+|-------|------|-------|
+| Pre-peak | 0-75 min | Rising activity |
+| Post-peak | 75-180 min | Declining |
+| Depleted | >180 min | Zero IOB |
+
+Default DIA: 3 hours (scaled by `3.0 / dia` factor)
+
+### COB Calculation Model
+
+- **Delay**: 20 minutes before absorption starts
+- **Rate**: `carbs_hr` from profile (default 12g/hr)
+- **Model**: Linear decay after delay period
+
+---
+
 ## Cross-References
 
 - [Treatments Schema (detailed)](../../externals/cgm-remote-monitor/docs/data-schemas/treatments-schema.md)
 - [Profiles Schema (detailed)](../../externals/cgm-remote-monitor/docs/data-schemas/profiles-schema.md)
 - [Architecture Overview](../../externals/cgm-remote-monitor/docs/architecture-overview.md)
 - [Glossary](./glossary.md)
-- [mapping/nightscout/](../../mapping/nightscout/) - Project-specific interpretations
+- [mapping/nightscout/](../../mapping/nightscout/) - Core NS collection mappings
+- [mapping/nightscout-reporter/](../../mapping/nightscout-reporter/) - Consumer perspective from Reporter
 
 ---
 
@@ -253,4 +347,5 @@ This distinction is critical for offline-first sync patterns used by AAPS and Lo
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-16 | Agent | Added consumer insights from Nightscout Reporter analysis |
 | 2026-01-16 | Agent | Initial extraction from cgm-remote-monitor documentation |
