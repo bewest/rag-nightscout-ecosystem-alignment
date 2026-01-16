@@ -1,6 +1,6 @@
 # CGM Apps Cross-Project Comparison
 
-This matrix compares CGM data management applications: xDrip+ (Android), xDrip4iOS, and related ecosystem apps.
+This matrix compares CGM data management applications: xDrip+ (Android), xDrip4iOS, Nightguard, and related ecosystem apps.
 
 ---
 
@@ -10,9 +10,11 @@ This matrix compares CGM data management applications: xDrip+ (Android), xDrip4i
 |--------|-----------------|-----------|------------|---------------------|
 | **Platform** | Android | iOS | iOS/watchOS | Android |
 | **Language** | Java/Kotlin | Swift | Swift | Kotlin |
-| **Primary Role** | CGM hub + producer | CGM producer | Consumer/follower | Consumer/producer |
-| **License** | GPL-3.0 | GPL-3.0 | GPL-3.0 | AGPL-3.0 |
-| **Codebase Size** | ~16,000 lines (models only) | ~5,000 lines | ~3,000 lines | N/A (integrated) |
+| **Primary Role** | CGM hub + producer | CGM producer | Consumer/follower only | Consumer/producer |
+| **License** | GPL-3.0 | GPL-3.0 | AGPL-3.0 | AGPL-3.0 |
+| **Codebase Size** | ~16,000 lines (models only) | ~5,000 lines | ~16,600 lines | N/A (integrated) |
+| **Repository** | eveningoutpost/dexdrip | JohanDegraeve/xdripswift | nightscout/nightguard | nightscout/AndroidAPS |
+| **Primary API** | `/api/v1/entries` | `/api/v1/entries` | `/api/v2/properties` | `/api/v1/entries` |
 
 ---
 
@@ -45,17 +47,19 @@ This matrix compares CGM data management applications: xDrip+ (Android), xDrip4i
 
 ### API Paths Used
 
-| Path | xDrip+ | xDrip4iOS | Direction |
-|------|--------|-----------|-----------|
-| `POST /api/v1/entries` | Yes | Yes | Upload |
-| `GET /api/v1/entries/sgv.json` | Yes | Yes | Download (follower) |
-| `POST /api/v1/treatments` | Yes | Yes | Upload |
-| `PUT /api/v1/treatments` | Yes | Yes | Update |
-| `DELETE /api/v1/treatments/{id}` | Yes | Yes | Delete |
-| `GET /api/v1/treatments` | Yes | Yes | Download |
-| `POST /api/v1/devicestatus` | Yes | Yes | Upload |
-| `GET /api/v1/devicestatus` | No | Yes | Download |
-| `GET /api/v1/profile` | No | Yes | Download |
+| Path | xDrip+ | xDrip4iOS | Nightguard | Direction |
+|------|--------|-----------|------------|-----------|
+| `POST /api/v1/entries` | Yes | Yes | No | Upload |
+| `GET /api/v1/entries.json` | Yes | Yes | Yes | Download |
+| `GET /api/v2/properties` | No | No | Yes (primary) | Download |
+| `GET /api/v1/status.json` | No | No | Yes | Download |
+| `POST /api/v1/treatments` | Yes | Yes | Yes (care only) | Upload |
+| `PUT /api/v1/treatments` | Yes | Yes | No | Update |
+| `DELETE /api/v1/treatments/{id}` | Yes | Yes | No | Delete |
+| `GET /api/v1/treatments` | Yes | Yes | Yes | Download |
+| `POST /api/v1/devicestatus` | Yes | Yes | No | Upload |
+| `GET /api/v1/devicestatus.json` | No | Yes | Yes | Download |
+| `GET /api/v1/profile` | No | Yes | No | Download |
 
 ### Sync Architecture
 
@@ -70,11 +74,11 @@ This matrix compares CGM data management applications: xDrip+ (Android), xDrip4i
 
 ### Upload Identifiers
 
-| Field | xDrip+ | xDrip4iOS |
-|-------|--------|-----------|
-| `enteredBy` | `"xdrip"` | `"xDrip4iOS"` |
-| `device` | `"xDrip-" + manufacturer + model` | Device name |
-| `uuid` | Client-generated UUID | Client-generated UUID |
+| Field | xDrip+ | xDrip4iOS | Nightguard |
+|-------|--------|-----------|------------|
+| `enteredBy` | `"xdrip"` | `"xDrip4iOS"` | `"nightguard"` |
+| `device` | `"xDrip-" + manufacturer + model` | Device name | N/A |
+| `uuid` | Client-generated UUID | Client-generated UUID | N/A |
 
 ---
 
@@ -142,32 +146,50 @@ This matrix compares CGM data management applications: xDrip+ (Android), xDrip4i
 | **Calendar Integration** | Events for watch complications |
 | **Speak** | Voice announcements |
 
+### Nightguard Only
+
+| Feature | Description |
+|---------|-------------|
+| **Consumer-Only Design** | Pure follower app, no CGM connection |
+| **Advanced Alarm System** | Smart snooze, prediction, edge detection, persistent high |
+| **Yesterday Overlay** | Chart shows previous day as comparison |
+| **Care Data Tracking** | CAGE, SAGE, BAGE display and creation |
+| **Loop Integration** | IOB, COB, temp basal, temp target from devicestatus |
+| **Screen Lock Mode** | Keeps app running overnight for alarms |
+| **3 Widget Types** | Text, timestamp, and gauge widgets |
+| **Watch Complications** | Multiple complication families |
+| **API V2 Properties** | Uses newer consolidated API endpoint |
+
 ---
 
 ## Treatment Event Types
 
-| Event Type | xDrip+ | xDrip4iOS | Nightscout |
-|------------|--------|-----------|------------|
-| Sensor Start | `"Sensor Start"` | `"Sensor Start"` | `"Sensor Start"` |
-| Sensor Stop | `"Sensor Stop"` | N/A | N/A |
-| Meal Bolus | `"Meal Bolus"` | `"Bolus"` | `"Meal Bolus"` |
-| Correction Bolus | `"Correction Bolus"` | `"Bolus"` | `"Correction Bolus"` |
-| Carbs | `"Carb Correction"` | `"Carbs"` | `"Carbs"` |
-| BG Check | `"BG Check"` | `"BG Check"` | `"BG Check"` |
-| Note | `"Note"` | `"Note"` | `"Note"` |
-| Exercise | `"Exercise"` | `"Exercise"` | `"Exercise"` |
-| Temp Basal | N/A (via AAPS) | `"Temp Basal"` | `"Temp Basal"` |
-| Site Change | N/A | `"Site Change"` | `"Site Change"` |
+| Event Type | xDrip+ | xDrip4iOS | Nightguard | Nightscout Canonical |
+|------------|--------|-----------|------------|---------------------|
+| Sensor Start | `"Sensor Start"` | `"Sensor Start"` | `"Sensor Change"` (R/W) * | `"Sensor Start"` |
+| Sensor Stop | `"Sensor Stop"` | N/A | N/A | N/A |
+| Meal Bolus | `"Meal Bolus"` | `"Bolus"` | Read only | `"Meal Bolus"` |
+| Correction Bolus | `"Correction Bolus"` | `"Bolus"` | Read only | `"Correction Bolus"` |
+| Carbs | `"Carb Correction"` | `"Carbs"` | Read only | `"Carbs"` |
+| BG Check | `"BG Check"` | `"BG Check"` | Read only | `"BG Check"` |
+| Note | `"Note"` | `"Note"` | Read only | `"Note"` |
+| Exercise | `"Exercise"` | `"Exercise"` | Read only | `"Exercise"` |
+| Temp Basal | N/A (via AAPS) | `"Temp Basal"` | Read only | `"Temp Basal"` |
+| Site Change | N/A | `"Site Change"` | `"Site Change"` (R/W) | `"Site Change"` |
+| Pump Battery | N/A | `"Pump Battery Change"` | `"Pump Battery Change"` (R/W) | `"Pump Battery Change"` |
+| Temp Target | N/A | N/A | `"Temporary Target"` (R) | `"Temporary Target"` |
+
+\* Nightguard uses non-canonical event names for some treatments (e.g., "Sensor Change" instead of "Sensor Start")
 
 ---
 
 ## Authentication Methods
 
-| Method | xDrip+ | xDrip4iOS |
-|--------|--------|-----------|
-| API_SECRET (SHA1 header) | Yes | Yes |
-| Token (query parameter) | Yes | Yes |
-| Local (no auth) | Port 17580 loopback | N/A |
+| Method | xDrip+ | xDrip4iOS | Nightguard |
+|--------|--------|-----------|------------|
+| API_SECRET (SHA1 header) | Yes | Yes | No (not implemented) |
+| Token (query parameter) | Yes | Yes | Yes (embedded in base URI) |
+| Local (no auth) | Port 17580 loopback | N/A | N/A |
 
 ---
 
@@ -201,6 +223,39 @@ CGM Device → Bluetooth → CGMTransmitter → BgReading (CoreData)
                             Nightscout REST         HealthKit
 ```
 
+### Nightguard
+
+```
+                                Nightscout Server
+                                       ↓
+                           NightscoutService (REST Client)
+                                       ↓
+                           NightscoutCacheService
+                                       ↓
+               ┌───────────────────────┼───────────────────────┐
+               ↓                       ↓                       ↓
+        iOS App (SwiftUI)        Apple Watch         iOS Widgets
+               ↓                       ↓                       ↓
+        ┌──────┴──────┐         WatchConnectivity    TimelineProvider
+        ↓             ↓                ↓                       ↓
+    ChartScene   AlarmRule     Complications         Widget Views
+```
+
+---
+
+## Alarm System Comparison
+
+| Feature | xDrip+ | xDrip4iOS | Nightguard |
+|---------|--------|-----------|------------|
+| **High/Low Alerts** | Yes | Yes | Yes |
+| **Missed Readings** | Yes | Yes | Yes (configurable) |
+| **Edge Detection (Fast Rise/Drop)** | Yes | Basic | Yes (advanced) |
+| **Low Prediction** | Yes | Basic | Yes (15 min lookahead) |
+| **Smart Snooze** | No | No | Yes (trend-aware) |
+| **Persistent High** | No | No | Yes (time-based) |
+| **Snooze Sync (Phone↔Watch)** | N/A | No | Yes |
+| **Background Alarms** | Yes | Yes | Yes (simplified) |
+
 ---
 
 ## Gap Analysis
@@ -222,6 +277,16 @@ CGM Device → Bluetooth → CGMTransmitter → BgReading (CoreData)
 | No Tidepool | No direct upload | Extra step required |
 | No pluggable cal | Native only | Less flexibility |
 | Limited sources | Fewer CGM types | Device limitations |
+
+### Nightguard Gaps
+
+| Gap | Description | Impact |
+|-----|-------------|--------|
+| No CGM connection | Consumer-only, no direct sensor | Depends on Nightscout |
+| No profile download | Cannot display profile data | Limited Loop context |
+| No treatment editing | Can only create care events | Limited management |
+| No HealthKit | No Apple Health integration | Data silo |
+| Limited treatments | Only CAGE/SAGE/BAGE writes | Not a treatment manager |
 
 ---
 
@@ -268,3 +333,17 @@ externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/{path}
 externals/xdripswift/xdrip/Managers/Nightscout/NightscoutSyncManager.swift
 externals/xdripswift/xdrip/Core/Models/BgReading+CoreDataClass.swift
 ```
+
+### Nightguard References
+
+| Claim | Source File | Notes |
+|-------|-------------|-------|
+| `enteredBy: "nightguard"` | `externals/nightguard/nightguard/external/NightscoutService.swift#L983` | Treatment creation |
+| NightscoutData model | `externals/nightguard/nightguard/app/NightscoutData.swift` | Current BG model |
+| BloodSugar model | `externals/nightguard/nightguard/domain/BloodSugar.swift` | Historical BG model |
+| AlarmRule | `externals/nightguard/nightguard/domain/AlarmRule.swift` | Alarm logic |
+| API V2 Properties | `externals/nightguard/nightguard/external/NightscoutService.swift#L421` | Primary data source |
+| Widget Timeline | `externals/nightguard/nightguard Widget Extension/NightguardTimelineProvider.swift` | Widget data |
+| Watch Extension | `externals/nightguard/nightguard WatchKit App/ExtensionDelegate.swift` | Watch app entry |
+
+See `mapping/nightguard/` for comprehensive documentation.

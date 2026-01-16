@@ -59,7 +59,15 @@ The project integrates with and documents the following external Automated Insul
     - `openaps`: The OpenAPS toolkit.
 - **CGM/Monitoring Apps**:
     - `nightguard`: iOS/watchOS app for blood glucose monitoring via Nightscout.
+        - **Comprehensive documentation**: See `mapping/nightguard/` for detailed analysis.
+        - **Role**: Pure consumer/follower app (no CGM connection).
+        - **Unique features**: Advanced alarm system (smart snooze, prediction, edge detection, persistent high), yesterday overlay chart, CAGE/SAGE/BAGE tracking, Loop integration (IOB/COB/temp basal), 3 widget types, Apple Watch app with complications.
+        - **Primary API**: Uses `/api/v2/properties` (unlike other apps using `/api/v1/entries`).
+        - **Key source files**: `external/NightscoutService.swift` (~1,377 lines), `domain/AlarmRule.swift` (~373 lines), `external/NightscoutCacheService.swift` (~330 lines).
     - `xdripswift` (xdrip4ios): iOS app for CGM data management and Nightscout sync.
+        - **Comprehensive documentation**: See `mapping/xdrip4ios/` for detailed analysis.
+        - **Role**: CGM producer + consumer with direct Bluetooth connection.
+        - **Unique features**: Multi-source follower (Nightscout, LibreLinkUp, DexcomShare), treatment sync, HealthKit integration.
     - `xDrip`: Android xDrip+ app for CGM data collection and Nightscout sync.
         - **Comprehensive documentation**: See `mapping/xdrip-android/` for detailed analysis.
         - **Unique features**: Local web server (port 17580), multi-insulin tracking, 20+ data sources, smart pen integrations, pluggable calibration algorithms, Tidepool/InfluxDB/MongoDB direct upload.
