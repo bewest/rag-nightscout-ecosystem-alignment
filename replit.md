@@ -127,6 +127,17 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
 
 ## Recent Changes
 
+- 2026-01-16: **Created comprehensive Trio behavior documentation** from Trio source code analysis
+  - `mapping/trio/README.md` - Index with architecture overview, oref0 integration
+  - `mapping/trio/nightscout-sync.md` - NightscoutManager upload/download, treatment mappings
+  - `mapping/trio/algorithm.md` - OpenAPS.swift bridge, JavaScript execution, suggestion parsing
+  - `mapping/trio/insulin-math.md` - IOB calculation via oref0 iob module
+  - `mapping/trio/carb-math.md` - COB calculation, UAM detection, meal module
+  - `mapping/trio/remote-commands.md` - Announcements, remote bolus/carbs/temp basals
+  - `mapping/trio/overrides.md` - Override implementation, oref2_variables
+  - `mapping/trio/safety.md` - Max IOB/SMB limits, autosens bounds, preferences
+  - `mapping/trio/data-models.md` - Swift model to Nightscout field mappings
+  - Updated `cross-project/terminology-matrix.md` with Trio-specific concepts
 - 2026-01-16: **Created comprehensive AAPS behavior documentation** from AndroidAPS source code analysis
   - `mapping/aaps/README.md` - Index with architecture overview and key source files
   - `mapping/aaps/nightscout-models.md` - NSSDK local models and NS API mapping
@@ -194,6 +205,17 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
 - `profile-switch.md` - ProfileSwitch semantics (percentage, timeshift, complete switch)
 - `safety.md` - Constraints plugin, objectives system, max IOB/basal/SMB limits
 - `data-models.md` - Database entities (Bolus, TemporaryBasal, etc.) and NS mappings
+
+### Trio Behavior Documentation (mapping/trio/)
+- `README.md` - Index and overview of Trio architecture, oref0 integration
+- `nightscout-sync.md` - NightscoutManager upload/download, treatment mappings, devicestatus
+- `algorithm.md` - OpenAPS.swift bridge, determine-basal flow, JavaScript execution
+- `insulin-math.md` - IOB calculation via oref0 iob module, insulin curves
+- `carb-math.md` - COB calculation, UAM detection, meal module
+- `remote-commands.md` - Announcements, remote bolus/carbs/temp basals
+- `overrides.md` - Override implementation, oref2_variables, temp targets
+- `safety.md` - Max IOB/SMB limits, autosens bounds, preferences constraints
+- `data-models.md` - Swift model fields to Nightscout field mappings
 
 ### Gap Tracking (traceability/gaps.md)
 - GAP-001: Override supersession tracking

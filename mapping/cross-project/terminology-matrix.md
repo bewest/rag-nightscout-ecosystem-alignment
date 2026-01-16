@@ -355,9 +355,74 @@ Where `insulinDivisor` depends on insulin type (55-75).
 
 ---
 
+## Trio-Specific Concepts
+
+### oref2 Variables
+
+Trio extends oref0 with additional state tracked in CoreData and passed to the algorithm:
+
+| Variable | Purpose | NS Equivalent |
+|----------|---------|---------------|
+| `average_total_data` | 10-day TDD average | N/A (local only) |
+| `weightedAverage` | Weighted 2h/10d TDD for dynamic ISF | N/A |
+| `past2hoursAverage` | Recent 2-hour TDD | N/A |
+| `overridePercentage` | Active override insulin % | N/A (temp target only syncs) |
+| `useOverride` | Override active flag | N/A |
+| `smbIsOff` | Override disables SMB | N/A |
+| `smbIsScheduledOff` | Time-window SMB disable | N/A |
+| `hbt` | Half-basal exercise target | N/A |
+
+### Remote Commands (Announcements)
+
+Trio supports remote commands via Nightscout Announcements:
+
+| Command | Format | Example |
+|---------|--------|---------|
+| Remote Bolus | `bolus: <units>` | `bolus: 2.5` |
+| Pump Suspend | `pump: suspend` | `pump: suspend` |
+| Pump Resume | `pump: resume` | `pump: resume` |
+| Loop Toggle | `looping: <bool>` | `looping: false` |
+| Temp Basal | `tempbasal: <rate>,<duration>` | `tempbasal: 0.5,30` |
+
+**Security**: Only announcements with `enteredBy: "remote"` are processed.
+
+### Override vs Temp Target
+
+| Feature | Override | Temp Target |
+|---------|----------|-------------|
+| Stored In | CoreData (local) | CoreData + NS |
+| Affects ISF/CR | Yes (percentage) | No |
+| Affects Target | Yes | Yes |
+| Disables SMB | Optional | No |
+| NS Sync | No | Yes |
+| Priority | Lower | Higher (if both active) |
+
+### Insulin Curves
+
+| Curve | JSON Value | Peak (min) | Default DIA |
+|-------|------------|------------|-------------|
+| Rapid Acting | `rapid-acting` | 75 | 5 hours |
+| Ultra Rapid | `ultra-rapid` | 55 | 4 hours |
+| Bilinear | `bilinear` | N/A | Variable |
+| Custom Peak | via `insulinPeakTime` | User-set | Variable |
+
+### Dynamic ISF (Trio)
+
+Trio's dynamic ISF uses TDD-based adjustment:
+
+```
+weightedTDD = (weight × 2h_TDD) + ((1 - weight) × 10d_TDD)
+adjustedISF = baseISF × (referenceWeight / weightedTDD)
+```
+
+Where `weight` is configurable via `weightPercentage` (default 0.65).
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-16 | Agent | Added Trio-specific concepts (oref2 variables, remote commands, overrides, insulin curves, dynamic ISF) |
 | 2026-01-16 | Agent | Added algorithm/controller concepts, safety constraints, pump commands, insulin models, loop states |
 | 2026-01-16 | Agent | Initial cross-project terminology matrix |
