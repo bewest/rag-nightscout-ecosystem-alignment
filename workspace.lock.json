@@ -66,6 +66,27 @@
       "url": "https://github.com/openaps/openaps.git",
       "ref": "master",
       "description": "OpenAPS toolkit - device interface and data management"
+    },
+    {
+      "alias": "nightguard",
+      "name": "nightguard",
+      "url": "https://github.com/nightscout/nightguard.git",
+      "ref": "master",
+      "description": "Nightguard iOS/watchOS app for blood glucose monitoring via Nightscout"
+    },
+    {
+      "alias": "xdrip4ios",
+      "name": "xdripswift",
+      "url": "https://github.com/JohanDegraeve/xdripswift.git",
+      "ref": "master",
+      "description": "xDrip4iOS - iOS app for CGM data management and Nightscout sync"
+    },
+    {
+      "alias": "xdrip",
+      "name": "xDrip",
+      "url": "https://github.com/NightscoutFoundation/xDrip.git",
+      "ref": "master",
+      "description": "xDrip+ Android app for CGM data collection and Nightscout sync"
     }
   ]
 }
