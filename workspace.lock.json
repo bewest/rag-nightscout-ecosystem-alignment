@@ -35,7 +35,7 @@
       "alias": "trio",
       "name": "Trio",
       "url": "https://github.com/nightscout/Trio.git",
-      "ref": "main",
+      "ref": "dev",
       "description": "Trio iOS closed-loop system",
       "submodules": true
     },
