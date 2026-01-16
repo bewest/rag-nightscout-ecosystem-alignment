@@ -36,6 +36,12 @@
       "url": "https://github.com/zreptil/nightscout-reporter.git",
       "ref": "master",
       "description": "Nightscout Reporter for generating PDF reports"
+    },
+    {
+      "name": "nightscout-roles-gateway",
+      "url": "https://github.com/t1pal/nightscout-roles-gateway.git",
+      "ref": "main",
+      "description": "Nightscout Roles Gateway for access control"
     }
   ]
 }
