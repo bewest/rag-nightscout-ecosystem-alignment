@@ -1,43 +1,51 @@
 {
   "externals_dir": "externals",
+  "description": "Pins external repositories for stable code references. Run 'python tools/bootstrap.py' to clone.",
   "repos": [
     {
+      "alias": "loop",
       "name": "LoopWorkspace",
       "url": "https://github.com/LoopKit/LoopWorkspace.git",
       "ref": "main",
       "description": "Loop iOS app workspace with all dependencies"
     },
     {
+      "alias": "crm",
       "name": "cgm-remote-monitor",
       "url": "https://github.com/nightscout/cgm-remote-monitor.git",
       "ref": "master",
       "description": "Nightscout CGM Remote Monitor web application"
     },
     {
+      "alias": "ns-connect",
       "name": "nightscout-connect",
       "url": "https://github.com/nightscout/nightscout-connect.git",
       "ref": "main",
       "description": "Nightscout Connect bridge for data sources"
     },
     {
+      "alias": "aaps",
       "name": "AndroidAPS",
       "url": "https://github.com/nightscout/AndroidAPS.git",
       "ref": "master",
       "description": "Android Artificial Pancreas System"
     },
     {
+      "alias": "trio",
       "name": "Trio",
       "url": "https://github.com/nightscout/Trio.git",
       "ref": "main",
       "description": "Trio iOS closed-loop system"
     },
     {
+      "alias": "ns-reporter",
       "name": "nightscout-reporter",
       "url": "https://github.com/zreptil/nightscout-reporter.git",
       "ref": "master",
       "description": "Nightscout Reporter for generating PDF reports"
     },
     {
+      "alias": "ns-gateway",
       "name": "nightscout-roles-gateway",
       "url": "https://github.com/t1pal/nightscout-roles-gateway.git",
       "ref": "main",

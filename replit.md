@@ -1,57 +1,87 @@
-# Nightscout Alignment Workspace
+# AID Alignment Workspace
 
-## Overview
-A multi-repository workspace bootstrap tool for working across Nightscout, AAPS, Loop, and Trio diabetes management projects. Uses a "bootstrap + lockfile" approach rather than git submodules.
+A documentation workspace for coordinating semantics, schemas, and conformance across multiple Automated Insulin Delivery (AID) systems: Nightscout, Loop, AAPS, and Trio.
 
-## Project Architecture
+## Project Structure
 
 ```
-.
-├── workspace.lock.json    # Manifest defining external repos to clone
-├── tools/
-│   └── bootstrap.py       # Main CLI tool for managing repositories
-├── externals/             # Cloned external repos (git-ignored)
-├── Makefile               # Convenience wrapper
-└── README.md              # User documentation
+workspace/
+├── docs/                    # Narrative documentation
+│   ├── 00-overview/         # Mission, goals
+│   ├── 10-domain/           # Domain concepts, glossary
+│   ├── 20-specs/            # Spec explanations
+│   ├── 30-design/           # Design proposals
+│   ├── 40-implementation-notes/
+│   ├── 50-testing/
+│   ├── 60-research/
+│   ├── 90-decisions/        # ADRs (Architecture Decision Records)
+│   ├── _includes/           # Shared snippets, code refs
+│   └── _generated/          # Auto-generated files
+├── specs/                   # Normative definitions
+│   ├── openapi/             # OpenAPI specs
+│   ├── jsonschema/          # JSON Schema definitions
+│   └── fixtures/            # Test fixtures
+├── conformance/             # Executable tests
+│   ├── scenarios/           # Test scenarios
+│   ├── assertions/          # Assertion definitions
+│   └── runners/             # Test runners
+├── mapping/                 # Per-project interpretation
+│   ├── nightscout/
+│   ├── aaps/
+│   ├── trio/
+│   └── loop/
+├── traceability/            # Coordination control plane
+│   ├── coverage-matrix.md   # Scenario vs project status
+│   ├── gaps.md              # Blocking gaps
+│   ├── requirements.md      # Derived requirements
+│   └── glossary.md
+├── tools/                   # Workspace utilities
+│   ├── bootstrap.py         # Clone external repos
+│   ├── linkcheck.py         # Verify code refs and links
+│   └── gen_refs.py          # Generate permalink files
+├── externals/               # Cloned repos (gitignored)
+└── workspace.lock.json      # Repository pins
 ```
 
-## Key Files
+## Quick Start
 
-- **workspace.lock.json**: JSON manifest listing all external repositories with their URLs and pinned refs (branches, tags, or SHAs)
-- **tools/bootstrap.py**: Python CLI tool with commands: bootstrap, status, freeze, add, remove
-- **Makefile**: Simple make targets for common operations
+1. **Bootstrap external repos**:
+   ```bash
+   python tools/bootstrap.py
+   ```
 
-## Usage
+2. **Check link validity**:
+   ```bash
+   python tools/linkcheck.py
+   ```
 
-```bash
-# Bootstrap all repos
-python3 tools/bootstrap.py
+3. **Generate reference files**:
+   ```bash
+   python tools/gen_refs.py
+   ```
 
-# Check status
-python3 tools/bootstrap.py status
+## Key Concepts
 
-# Pin current commits
-python3 tools/bootstrap.py freeze
+- **Normative** (specs/, conformance/assertions/): Must be true
+- **Informative** (docs/, mapping/): Explanations and rationale
+- **Decisions** (docs/90-decisions/): ADRs explaining tradeoffs
 
-# Add new repo
-python3 tools/bootstrap.py add <name> <url> [ref]
+## Workflow
 
-# Remove repo
-python3 tools/bootstrap.py remove <name> [--delete]
-```
+Each iteration cycle should update:
+1. Scenario backlog
+2. Requirements snippet
+3. Spec delta (schema changes)
+4. Mapping notes (per project)
+5. Conformance update
+6. Gap/coverage update
 
-## Included Repositories
-1. LoopWorkspace - Loop iOS app workspace
-2. cgm-remote-monitor - Nightscout web monitor
-3. nightscout-connect - Nightscout Connect bridge
-4. AndroidAPS - Android Artificial Pancreas System
-5. Trio - Trio iOS closed-loop system
-6. nightscout-reporter - PDF report generator
+## Tools
+
+- `bootstrap.py` - Clone and manage external repositories
+- `linkcheck.py` - Verify code references resolve correctly
+- `gen_refs.py` - Generate GitHub permalinks from lockfile
 
 ## Recent Changes
-- 2026-01-16: Initial setup with bootstrap tool, lockfile manifest, and all core repos
 
-## User Preferences
-- Bash-compatible tooling preferred
-- Simple CLI interface
-- Lockfile-based version pinning for reproducibility
+- 2024-01-15: Initial workspace setup with override-supersede scenario

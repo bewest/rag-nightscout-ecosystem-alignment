@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alignment.aid/schemas/aid-events.schema.json",
+  "title": "AID Events Schema",
+  "description": "Schema for Automated Insulin Delivery events including overrides, treatments, and device data",
+  "type": "object",
+  "definitions": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp in UTC"
+    },
+    "eventId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9-_]+$",
+      "description": "Unique identifier for the event"
+    },
+    "glucoseRange": {
+      "type": "object",
+      "properties": {
+        "min": {
+          "type": "number",
+          "description": "Minimum target glucose (mg/dL)"
+        },
+        "max": {
+          "type": "number",
+          "description": "Maximum target glucose (mg/dL)"
+        },
+        "unit": {
+          "type": "string",
+          "enum": ["mg/dL", "mmol/L"],
+          "default": "mg/dL"
+        }
+      },
+      "required": ["min", "max"]
+    },
+    "eventStatus": {
+      "type": "string",
+      "enum": ["active", "completed", "cancelled", "superseded"],
+      "description": "Current status of the event"
+    },
+    "baseEvent": {
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "#/definitions/eventId" },
+        "type": { "type": "string" },
+        "created_at": { "$ref": "#/definitions/timestamp" },
+        "updated_at": { "$ref": "#/definitions/timestamp" },
+        "source": {
+          "type": "string",
+          "description": "Origin system (loop, aaps, trio, nightscout, etc.)"
+        },
+        "authority": {
+          "type": "string",
+          "description": "System with authority over this data"
+        }
+      },
+      "required": ["id", "type", "created_at"]
+    },
+    "override": {
+      "allOf": [
+        { "$ref": "#/definitions/baseEvent" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "override" },
+            "name": {
+              "type": "string",
+              "description": "Human-readable override name"
+            },
+            "started_at": { "$ref": "#/definitions/timestamp" },
+            "ended_at": { "$ref": "#/definitions/timestamp" },
+            "duration_minutes": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Planned duration in minutes"
+            },
+            "target_range": { "$ref": "#/definitions/glucoseRange" },
+            "insulin_sensitivity_factor": {
+              "type": "number",
+              "description": "Modified ISF value or multiplier"
+            },
+            "overall_insulin_needs": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Percentage of normal insulin needs (100 = normal)"
+            },
+            "status": { "$ref": "#/definitions/eventStatus" },
+            "supersedes": {
+              "$ref": "#/definitions/eventId",
+              "description": "ID of override this one supersedes"
+            },
+            "superseded_by": {
+              "$ref": "#/definitions/eventId",
+              "description": "ID of override that superseded this one"
+            },
+            "superseded_at": { "$ref": "#/definitions/timestamp" }
+          },
+          "required": ["name", "started_at", "status"]
+        }
+      ]
+    },
+    "treatment": {
+      "allOf": [
+        { "$ref": "#/definitions/baseEvent" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "treatment" },
+            "treatment_type": {
+              "type": "string",
+              "enum": ["bolus", "carbs", "correction", "temp_basal"]
+            },
+            "timestamp": { "$ref": "#/definitions/timestamp" },
+            "insulin": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Insulin amount in units"
+            },
+            "carbs": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Carbohydrate amount in grams"
+            },
+            "notes": { "type": "string" }
+          },
+          "required": ["treatment_type", "timestamp"]
+        }
+      ]
+    },
+    "glucoseReading": {
+      "allOf": [
+        { "$ref": "#/definitions/baseEvent" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "glucose" },
+            "timestamp": { "$ref": "#/definitions/timestamp" },
+            "value": {
+              "type": "number",
+              "description": "Glucose value"
+            },
+            "unit": {
+              "type": "string",
+              "enum": ["mg/dL", "mmol/L"],
+              "default": "mg/dL"
+            },
+            "trend": {
+              "type": "string",
+              "enum": ["rising_rapidly", "rising", "stable", "falling", "falling_rapidly"]
+            },
+            "source_type": {
+              "type": "string",
+              "enum": ["cgm", "fingerstick", "calibration"]
+            }
+          },
+          "required": ["timestamp", "value"]
+        }
+      ]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/definitions/override" },
+    { "$ref": "#/definitions/treatment" },
+    { "$ref": "#/definitions/glucoseReading" }
+  ]
+}

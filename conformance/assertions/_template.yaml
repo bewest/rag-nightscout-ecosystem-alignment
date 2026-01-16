@@ -1,0 +1,50 @@
+# Assertions Template
+# Copy this file and customize for your scenario
+
+scenario: scenario-name
+version: 1
+
+assertions:
+  - id: assertion-id
+    description: "Human-readable description of what this checks"
+    type: state  # state | reference | timestamp | immutable | query
+    target: object.field
+    expected: value
+
+  # State assertion - checks a field has expected value
+  - id: example-state
+    description: "Field X has value Y"
+    type: state
+    target: object.field
+    expected: expected_value
+
+  # Reference assertion - checks field references another object
+  - id: example-reference
+    description: "Field X references object Y"
+    type: reference
+    target: object.reference_field
+    expected: referenced_object.id
+
+  # Timestamp assertion - checks timestamp matches
+  - id: example-timestamp
+    description: "Timestamp X matches event Y"
+    type: timestamp
+    target: object.timestamp_field
+    expected: other_object.timestamp_field
+
+  # Immutable assertion - checks fields are not modified
+  - id: example-immutable
+    description: "Core fields remain unchanged"
+    type: immutable
+    fields:
+      - id
+      - created_at
+      - original_value
+
+  # Query assertion - checks query returns expected results
+  - id: example-query
+    description: "Query returns expected objects"
+    type: query
+    query: "endpoint?filter=value"
+    expected_count: 1
+    expected_id: object.id

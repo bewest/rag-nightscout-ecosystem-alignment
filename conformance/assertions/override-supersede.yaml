@@ -1,0 +1,53 @@
+# Assertions for Override Supersede Scenario
+
+scenario: override-supersede
+version: 1
+
+assertions:
+  - id: superseded-status-change
+    description: "Previous override status changes to 'superseded'"
+    type: state
+    target: override.status
+    expected: superseded
+    when: new_override_activated
+
+  - id: superseded-by-reference
+    description: "Previous override has superseded_by pointing to new override"
+    type: reference
+    target: override.superseded_by
+    expected: new_override.id
+
+  - id: superseded-at-timestamp
+    description: "Previous override has superseded_at matching new override start"
+    type: timestamp
+    target: override.superseded_at
+    expected: new_override.started_at
+
+  - id: new-override-active
+    description: "New override has active status"
+    type: state
+    target: new_override.status
+    expected: active
+
+  - id: original-preserved
+    description: "Original override data is not deleted or modified"
+    type: immutable
+    fields:
+      - id
+      - name
+      - started_at
+      - duration_minutes
+      - target_range
+
+  - id: query-active-single
+    description: "Query for active overrides returns only the new override"
+    type: query
+    query: "overrides?status=active"
+    expected_count: 1
+    expected_id: new_override.id
+
+  - id: query-history-both
+    description: "Query for all overrides returns both"
+    type: query
+    query: "overrides?include_superseded=true"
+    expected_count: 2

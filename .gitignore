@@ -29,3 +29,13 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# Generated files
+docs/_generated/
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+.tmp/
