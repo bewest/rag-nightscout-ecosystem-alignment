@@ -8,84 +8,108 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 ### Persistent State (Configuration)
 
-| Alignment Term | Nightscout | Loop | AAPS | Trio |
-|----------------|------------|------|------|------|
-| Profile (config) | `profile` collection, `store` object | `TherapySettings` | `Profile` entity | `FreeAPSSettings` |
-| Basal Schedule | `basal` array in profile | `BasalRateSchedule` | `Profile.basalBlocks` | `basalProfile` |
-| ISF Schedule | `sens` array in profile | `InsulinSensitivitySchedule` | `Profile.isfBlocks` | `sens` array |
-| CR Schedule | `carbratio` array in profile | `CarbRatioSchedule` | `Profile.icBlocks` | `carb_ratio` array |
-| Target Range | `target_low`/`target_high` arrays | `GlucoseRangeSchedule` | `Profile.targetBlocks` | `target_low`/`target_high` |
+| Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|----------------|------------|------|------|------|--------|
+| Profile (config) | `profile` collection, `store` object | `TherapySettings` | `Profile` entity | `FreeAPSSettings` | N/A (CGM-focused) |
+| Basal Schedule | `basal` array in profile | `BasalRateSchedule` | `Profile.basalBlocks` | `basalProfile` | N/A |
+| ISF Schedule | `sens` array in profile | `InsulinSensitivitySchedule` | `Profile.isfBlocks` | `sens` array | N/A |
+| CR Schedule | `carbratio` array in profile | `CarbRatioSchedule` | `Profile.icBlocks` | `carb_ratio` array | N/A |
+| Target Range | `target_low`/`target_high` arrays | `GlucoseRangeSchedule` | `Profile.targetBlocks` | `target_low`/`target_high` | `Pref.highValue`/`lowValue` (display only) |
+
+**Note**: xDrip+ is a CGM data management app, not a closed-loop system. It does not manage therapy profiles but does track glucose thresholds for display/alerts.
+- Core data models: `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/models/`
+- See `mapping/xdrip-android/README.md` for full architecture documentation.
 
 ### Events (Actions/Observations)
 
-| Alignment Term | Nightscout | Loop | AAPS | Trio |
-|----------------|------------|------|------|------|
-| Glucose Entry | `entries` collection, `sgv` field | `StoredGlucoseSample` | `GlucoseValue` entity | `BloodGlucose` |
-| Bolus Event | eventType: `Meal Bolus`, `Correction Bolus` | `DoseEntry` (type: bolus) | `Bolus` entity | `PumpHistoryEvent` |
-| Carb Entry Event | eventType: `Carb Correction` | `StoredCarbEntry` | `Carbs` entity | `CarbsEntry` |
-| Temp Basal Event | eventType: `Temp Basal` | `DoseEntry` (type: tempBasal) | `TemporaryBasal` entity | `TempBasal` |
-| Profile Switch | eventType: `Profile Switch` | N/A (implicit) | `ProfileSwitch` entity | N/A (implicit) |
-| Override (active) | eventType: `Temporary Override` | `TemporaryScheduleOverride` | N/A (via ProfileSwitch) | `Override` |
-| Temporary Target | eventType: `Temporary Target` | via `TemporaryScheduleOverride` | `TempTarget` entity | `TempTarget` |
-| Note/Annotation | eventType: `Note`, `Announcement` | `NoteEntry` | `UserEntry` | `NoteEntry` |
+| Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|----------------|------------|------|------|------|--------|
+| Glucose Entry | `entries` collection, `sgv` field | `StoredGlucoseSample` | `GlucoseValue` entity | `BloodGlucose` | `BgReading` entity |
+| Bolus Event | eventType: `Meal Bolus`, `Correction Bolus` | `DoseEntry` (type: bolus) | `Bolus` entity | `PumpHistoryEvent` | `Treatments.insulin` |
+| Carb Entry Event | eventType: `Carb Correction` | `StoredCarbEntry` | `Carbs` entity | `CarbsEntry` | `Treatments.carbs` |
+| Temp Basal Event | eventType: `Temp Basal` | `DoseEntry` (type: tempBasal) | `TemporaryBasal` entity | `TempBasal` | N/A (via AAPS) |
+| Profile Switch | eventType: `Profile Switch` | N/A (implicit) | `ProfileSwitch` entity | N/A (implicit) | N/A |
+| Override (active) | eventType: `Temporary Override` | `TemporaryScheduleOverride` | N/A (via ProfileSwitch) | `Override` | N/A |
+| Temporary Target | eventType: `Temporary Target` | via `TemporaryScheduleOverride` | `TempTarget` entity | `TempTarget` | N/A |
+| Note/Annotation | eventType: `Note`, `Announcement` | `NoteEntry` | `UserEntry` | `NoteEntry` | `Treatments.notes` |
+| Sensor Start | eventType: `Sensor Start` | `CGMSensorEvent` | `TherapyEvent.SENSOR_CHANGE` | `SensorChange` | `Treatments` (eventType: `Sensor Start`) |
+| Sensor Stop | N/A | N/A | N/A | N/A | `Treatments` (eventType: `Sensor Stop`) |
 
 ### State Snapshots (Point-in-Time)
 
-| Alignment Term | Nightscout | Loop | AAPS | Trio |
-|----------------|------------|------|------|------|
-| Device Status | `devicestatus` collection | `LoopDataManager` snapshot | `DeviceStatus` entity | `DeviceStatus` |
-| Loop/Algorithm State | `loop` in devicestatus | `LoopDataManager.lastLoopCompleted` | `LoopStatus` | `LoopStatus` |
-| Pump State | `pump` in devicestatus | `PumpManagerStatus` | `PumpStatus` | `PumpStatus` |
-| Uploader State | `uploader` in devicestatus | N/A | `UploaderStatus` | `UploaderStatus` |
+| Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|----------------|------------|------|------|------|--------|
+| Device Status | `devicestatus` collection | `LoopDataManager` snapshot | `DeviceStatus` entity | `DeviceStatus` | `uploaderBattery` in POST |
+| Loop/Algorithm State | `loop` in devicestatus | `LoopDataManager.lastLoopCompleted` | `LoopStatus` | `LoopStatus` | N/A (no loop) |
+| Pump State | `pump` in devicestatus | `PumpManagerStatus` | `PumpStatus` | `PumpStatus` | Reads from AAPS broadcast |
+| Uploader State | `uploader` in devicestatus | N/A | `UploaderStatus` | `UploaderStatus` | `NightscoutUploader.last_success_time` |
+
+**Note**: xDrip+ uploads device status but does not run a loop algorithm. It can display AAPS pump status received via broadcast.
+- Device status upload: `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java#L134-L138`
+- AAPS status handler: `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/insulin/aaps/AAPSStatusHandler.java`
 
 ### Derived Values (Computed)
 
-| Alignment Term | Nightscout | Loop | AAPS | Trio |
-|----------------|------------|------|------|------|
-| Insulin on Board | `iob` in devicestatus | `InsulinOnBoard` | `IobTotal` | `IOB` |
-| Carbs on Board | `cob` in devicestatus | `CarbsOnBoard` | `COB` | `COB` |
-| Active Basal Rate | `basal` in loop prediction | `basalDelivery` | `currentBasal` | `basal` |
-| Predicted Glucose | `predBgs` in loop | `predictedGlucose` | `predictedBg` | `predictedBg` |
+| Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|----------------|------------|------|------|------|--------|
+| Insulin on Board | `iob` in devicestatus | `InsulinOnBoard` | `IobTotal` | `IOB` | `Iob.getIobAtTime()` (multi-insulin) |
+| Carbs on Board | `cob` in devicestatus | `CarbsOnBoard` | `COB` | `COB` | N/A (no absorption model) |
+| Active Basal Rate | `basal` in loop prediction | `basalDelivery` | `currentBasal` | `basal` | N/A (no basal control) |
+| Predicted Glucose | `predBgs` in loop | `predictedGlucose` | `predictedBg` | `predictedBg` | N/A (no prediction) |
+| Glucose Delta | `delta` in entries | `glucoseMomentum` | `delta` | `delta` | `BgReading.currentSlope()` |
 
 **Note**: The distinction between persistent configuration, events, state snapshots, and derived values is critical for accurate cross-project translation.
+
+**xDrip+ IOB**: Uses `Iob.java` with multi-insulin support via `InsulinInjection` profiles.
+- Source: `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/models/Iob.java`
+- Multi-insulin: `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/models/InsulinInjection.java`
+- IOB calculation: `Iob.getIobAtTime()` method
 
 ---
 
 ## Profile Settings
 
-| Setting | Nightscout | Loop | AAPS | Trio |
-|---------|------------|------|------|------|
-| Basal Rates | `basal` array | `BasalRateSchedule` | `defaultBasal` | `basalProfile` |
-| ISF (Correction Factor) | `sens` array | `InsulinSensitivitySchedule` | `isf` | `sens` |
-| Carb Ratio | `carbratio` array | `CarbRatioSchedule` | `ic` | `carb_ratio` |
-| Target Range Low | `target_low` array | `GlucoseRangeSchedule` | `targetLow` | `target_low` |
-| Target Range High | `target_high` array | `GlucoseRangeSchedule` | `targetHigh` | `target_high` |
-| Insulin Duration | `dia` | `InsulinModel.effectDuration` | `dia` | `dia` |
-| Units | `units` (`mg/dL` or `mmol/L`) | `HKUnit` | `GlucoseUnit` | `GlucoseUnit` |
+| Setting | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|---------|------------|------|------|------|--------|
+| Basal Rates | `basal` array | `BasalRateSchedule` | `defaultBasal` | `basalProfile` | N/A |
+| ISF (Correction Factor) | `sens` array | `InsulinSensitivitySchedule` | `isf` | `sens` | N/A |
+| Carb Ratio | `carbratio` array | `CarbRatioSchedule` | `ic` | `carb_ratio` | N/A |
+| Target Range Low | `target_low` array | `GlucoseRangeSchedule` | `targetLow` | `target_low` | `Pref.lowValue` (alerts) |
+| Target Range High | `target_high` array | `GlucoseRangeSchedule` | `targetHigh` | `target_high` | `Pref.highValue` (alerts) |
+| Insulin Duration | `dia` | `InsulinModel.effectDuration` | `dia` | `dia` | `Insulin.maxEffect` (per profile) |
+| Units | `units` (`mg/dL` or `mmol/L`) | `HKUnit` | `GlucoseUnit` | `GlucoseUnit` | `Pref.units_mmol` (boolean) |
+
+**Note**: xDrip+ stores target ranges for alert thresholds only, not for dosing calculations.
+- Insulin profiles: `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/insulin/Insulin.java`
+- Alert thresholds: `Pref.getStringToInt("highValue", 170)` and `Pref.getStringToInt("lowValue", 70)`
 
 ---
 
 ## Override/Adjustment Concepts
 
-| Concept | Nightscout | Loop | AAPS | Trio |
-|---------|------------|------|------|------|
-| Override Active | `Temporary Override` active | `overrideContext != nil` | `ProfileSwitch.percentage != 100` | `Override.enabled` |
-| Duration | `duration` (minutes) | `duration` (TimeInterval) | `duration` (minutes) | `duration` (minutes) |
-| Reason/Name | `reason` | `preset.symbol` + `preset.name` | N/A | `reason` |
-| Target Adjustment | `targetTop`/`targetBottom` | `settings.targetRange` | `targetLow`/`targetHigh` | `target` |
-| Overall Insulin % | `insulinNeedsScaleFactor` | `settings.insulinNeedsScaleFactor` | `ProfileSwitch.percentage` | `insulinNeedsScaleFactor` |
-| Supersession | N/A (gap) | Built-in (new cancels old) | N/A (last switch wins) | Built-in |
+| Concept | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|---------|------------|------|------|------|--------|
+| Override Active | `Temporary Override` active | `overrideContext != nil` | `ProfileSwitch.percentage != 100` | `Override.enabled` | N/A (no override) |
+| Duration | `duration` (minutes) | `duration` (TimeInterval) | `duration` (minutes) | `duration` (minutes) | N/A |
+| Reason/Name | `reason` | `preset.symbol` + `preset.name` | N/A | `reason` | N/A |
+| Target Adjustment | `targetTop`/`targetBottom` | `settings.targetRange` | `targetLow`/`targetHigh` | `target` | N/A |
+| Overall Insulin % | `insulinNeedsScaleFactor` | `settings.insulinNeedsScaleFactor` | `ProfileSwitch.percentage` | `insulinNeedsScaleFactor` | N/A |
+| Supersession | N/A (gap) | Built-in (new cancels old) | N/A (last switch wins) | Built-in | N/A |
+
+**Note**: xDrip+ is a CGM app without override/adjustment concepts. It receives and displays AAPS overrides but does not create them.
+- Broadcast receiver for AAPS: `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/services/broadcastservice/BroadcastService.java`
 
 ---
 
 ## Sync Identity Fields
 
-| Controller | Nightscout Field | Purpose |
-|------------|------------------|---------|
-| AAPS | `identifier` | Client-side unique ID |
-| Loop | `pumpId` + `pumpType` + `pumpSerial` | Composite pump event ID |
-| xDrip | `uuid` | Client-generated UUID |
-| Generic | `_id` | MongoDB ObjectId (server-generated) |
+| Controller | Nightscout Field | Purpose | Source Code |
+|------------|------------------|---------|-------------|
+| AAPS | `identifier` | Client-side unique ID | `database/entities/*.kt` |
+| Loop | `pumpId` + `pumpType` + `pumpSerial` | Composite pump event ID | `LoopKit/*.swift` |
+| xDrip+ (Android) | `uuid` | Client-generated UUID | `models/Treatments.java#L85` |
+| xDrip4iOS | `uuid` | Client-generated UUID | `Managers/Nightscout/*.swift` |
+| Generic | `_id` | MongoDB ObjectId (server-generated) | N/A |
 
 **Gap**: No unified sync identity field exists across controllers (GAP-003).
 
@@ -93,13 +117,21 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 ## Authority/Actor Identity
 
-| Concept | Nightscout | Loop | AAPS | Trio |
-|---------|------------|------|------|------|
-| Actor Identity | `enteredBy` (unverified) | `origin` | `pumpType` | `enteredBy` |
-| Authority Level | N/A (gap) | N/A | N/A | N/A |
-| Verified Identity | Proposed (OIDC) | N/A | N/A | N/A |
+| Concept | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|---------|------------|------|------|------|--------|
+| Actor Identity | `enteredBy` (unverified) | `origin` | `pumpType` | `enteredBy` | `enteredBy: "xdrip"` |
+| Authority Level | N/A (gap) | N/A | N/A | N/A | N/A |
+| Verified Identity | Proposed (OIDC) | N/A | N/A | N/A | N/A |
 
 **Gap**: No system tracks verified actor identity with authority levels (GAP-AUTH-001, GAP-AUTH-002).
+
+### xDrip+ Unique Identifiers
+
+| Identifier | Value | Source |
+|------------|-------|--------|
+| `enteredBy` | `"xdrip"` | `Treatments.XDRIP_TAG` constant |
+| `device` | `"xDrip-" + manufacturer + model` | `NightscoutUploader.getDeviceName()` |
+| User-Agent | `"xDrip+ " + BuildConfig.VERSION_NAME` | HTTP headers |
 
 ---
 
@@ -116,11 +148,13 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 ### Device Events
 
-| Event | Nightscout eventType | Loop | AAPS | Trio |
-|-------|---------------------|------|------|------|
-| Sensor Start | `Sensor Start` | `CGMSensorEvent` | `TherapyEvent.SENSOR_CHANGE` | `SensorChange` |
-| Site Change | `Site Change` | `PumpEvent` | `TherapyEvent.CANNULA_CHANGE` | `SiteChange` |
-| Pump Battery | `Pump Battery Change` | `PumpEvent` | `TherapyEvent` | `PumpBattery` |
+| Event | Nightscout eventType | Loop | AAPS | Trio | xDrip+ |
+|-------|---------------------|------|------|------|--------|
+| Sensor Start | `Sensor Start` | `CGMSensorEvent` | `TherapyEvent.SENSOR_CHANGE` | `SensorChange` | `Sensor Start` |
+| Sensor Stop | N/A | N/A | N/A | N/A | `Sensor Stop` (unique) |
+| Site Change | `Site Change` | `PumpEvent` | `TherapyEvent.CANNULA_CHANGE` | `SiteChange` | N/A |
+| Pump Battery | `Pump Battery Change` | `PumpEvent` | `TherapyEvent` | `PumpBattery` | N/A |
+| BG Check | `BG Check` | `BGCheck` | `TherapyEvent.FINGER_STICK_BG_VALUE` | `BGCheck` | `BG Check` |
 
 ---
 
@@ -132,6 +166,21 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 | Loop | `loop:Loop/Models/TemporaryScheduleOverride.swift` |
 | AAPS | `aaps:database/entities/ProfileSwitch.kt` |
 | Trio | `trio:FreeAPS/Sources/Models/Override.swift` |
+| xDrip+ (Android) | N/A (CGM-focused, no override) |
+
+### xDrip+ Key Source Files
+
+| Component | Location | Lines | Purpose |
+|-----------|----------|-------|---------|
+| BgReading | `models/BgReading.java` | ~2,394 | Core glucose entity |
+| Treatments | `models/Treatments.java` | ~1,436 | Treatment/bolus/carb entity |
+| Calibration | `models/Calibration.java` | ~1,123 | Calibration data |
+| UploaderQueue | `utilitymodels/UploaderQueue.java` | ~557 | Multi-destination upload queue |
+| NightscoutUploader | `utilitymodels/NightscoutUploader.java` | ~1,470 | Nightscout REST API client |
+| NightscoutFollow | `cgm/nsfollow/NightscoutFollow.java` | ~135 | Follower mode |
+| DexCollectionType | `utils/DexCollectionType.java` | ~392 | CGM source enum (20+ types) |
+
+**Full documentation**: See `mapping/xdrip-android/` for comprehensive xDrip+ analysis.
 
 ---
 
@@ -504,6 +553,7 @@ oref0's core innovation is deviation analysis:
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-16 | Agent | Integrated xDrip+ (Android) into terminology matrix - events, sync identity, actor identity, device events, code references |
 | 2026-01-16 | Agent | Added oref0-specific concepts (algorithm components, prediction curves, carb model, SMB params, shared IOB formula) |
 | 2026-01-16 | Agent | Added Trio-specific concepts (oref2 variables, remote commands, overrides, insulin curves, dynamic ISF) |
 | 2026-01-16 | Agent | Added algorithm/controller concepts, safety constraints, pump commands, insulin models, loop states |

@@ -61,3 +61,6 @@ The project integrates with and documents the following external Automated Insul
     - `nightguard`: iOS/watchOS app for blood glucose monitoring via Nightscout.
     - `xdripswift` (xdrip4ios): iOS app for CGM data management and Nightscout sync.
     - `xDrip`: Android xDrip+ app for CGM data collection and Nightscout sync.
+        - **Comprehensive documentation**: See `mapping/xdrip-android/` for detailed analysis.
+        - **Unique features**: Local web server (port 17580), multi-insulin tracking, 20+ data sources, smart pen integrations, pluggable calibration algorithms, Tidepool/InfluxDB/MongoDB direct upload.
+        - **Key source files**: `models/BgReading.java` (~2,394 lines), `models/Treatments.java` (~1,436 lines), `utilitymodels/NightscoutUploader.java` (~1,470 lines), `utilitymodels/UploaderQueue.java` (~557 lines).
