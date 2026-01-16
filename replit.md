@@ -127,6 +127,10 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
 
 ## Recent Changes
 
+- 2026-01-16: Added controller-focused repos (oref0, openaps) to lockfile and cloned them
+- 2026-01-16: Created external inventories for Loop, AAPS, Trio, and oref0/openaps
+- 2026-01-16: Expanded terminology matrix with algorithm/controller concepts (dosing, predictions, safety constraints, pump commands, insulin models)
+- 2026-01-16: Fixed Trio repository checkout
 - 2026-01-16: Added submodule checkout support for nested git repositories (LoopWorkspace)
 - 2026-01-16: Added Nightscout documentation integration (domain models, mappings, cross-project terminology matrix)
 - 2026-01-16: Created external repository inventories (cgm-remote-monitor, nightscout-roles-gateway, nightscout-connect)
@@ -153,3 +157,23 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
 - GAP-003: Unified sync identity field
 - GAP-AUTH-001: Unverified enteredBy field
 - GAP-AUTH-002: No authority hierarchy
+
+### Controller Inventories (docs/60-research/external-inventories/)
+- `loop-docs.md` - Loop iOS closed-loop system (LoopWorkspace)
+- `aaps-docs.md` - AndroidAPS system structure and algorithm plugins
+- `trio-docs.md` - Trio (FreeAPS) iOS system with oref0 integration
+- `oref0-docs.md` - OpenAPS reference algorithm (determine-basal.js)
+
+## External Repositories (9 total)
+
+| Alias | Repository | Description |
+|-------|------------|-------------|
+| crm | cgm-remote-monitor | Nightscout CGM Remote Monitor |
+| ns-connect | nightscout-connect | Data bridge for CGM sources |
+| ns-gateway | nightscout-roles-gateway | Access control gateway |
+| ns-reporter | nightscout-reporter | PDF reporting |
+| loop | LoopWorkspace | Loop iOS closed-loop |
+| aaps | AndroidAPS | Android closed-loop |
+| trio | Trio | Trio iOS closed-loop |
+| oref0 | oref0 | OpenAPS reference algorithm |
+| openaps | openaps | OpenAPS toolkit

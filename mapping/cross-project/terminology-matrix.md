@@ -135,12 +135,152 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 ---
 
+## Algorithm/Controller Concepts
+
+### Algorithm Recommendations
+
+| Alignment Term | oref0 | Loop | AAPS | Trio |
+|----------------|-------|------|------|------|
+| Basal Recommendation | `rate`, `duration` in output | `TemporaryBasalRecommendation` | `APSResult.rate` | `Suggestion.rate` |
+| Bolus Recommendation | `units` (SMB) | `BolusRecommendation` | `APSResult.smb` | `Suggestion.units` |
+| Reason/Explanation | `reason` string | `recommendation.notice` | `APSResult.reason` | `Suggestion.reason` |
+| Enact Timestamp | `deliverAt` | `date` | `date` | `deliverAt` |
+
+### Prediction Types
+
+| Alignment Term | oref0 | Loop | AAPS | Trio |
+|----------------|-------|------|------|------|
+| IOB Prediction | `predBGs.IOB[]` | `predictedGlucose` (IOB effect) | `predictions.iob[]` | `predictions.IOB[]` |
+| COB Prediction | `predBGs.COB[]` | `predictedGlucose` (carb effect) | `predictions.cob[]` | `predictions.COB[]` |
+| UAM Prediction | `predBGs.UAM[]` | N/A (no UAM) | `predictions.uam[]` | `predictions.UAM[]` |
+| Zero Temp Prediction | `predBGs.ZT[]` | N/A | `predictions.zt[]` | `predictions.ZT[]` |
+| Eventual BG | `eventualBG` | `predictedGlucose.last` | `eventualBG` | `eventualBG` |
+
+### Insulin Calculations
+
+| Alignment Term | oref0 | Loop | AAPS | Trio |
+|----------------|-------|------|------|------|
+| Total IOB | `iob.iob` | `insulinOnBoard` | `iobTotal.iob` | `iob.iob` |
+| Basal IOB | `iob.basaliob` | `basalDeliveryState.iob` | `iobTotal.basaliob` | `iob.basaliob` |
+| Bolus Snooze IOB | `iob.bolussnooze` | N/A | `iobTotal.bolussnooze` | `iob.bolussnooze` |
+| Insulin Activity | `iob.activity` | `insulinActivityForecast` | `iobTotal.activity` | `iob.activity` |
+
+### Meal/Carb Calculations
+
+| Alignment Term | oref0 | Loop | AAPS | Trio |
+|----------------|-------|------|------|------|
+| Carbs on Board | `meal.mealCOB` | `carbsOnBoard` | `iobCobCalculator.cob` | `meal.carbs` |
+| Meal Absorption | `meal.slopeFromMaxDeviation` | `carbAbsorptionRate` | `carbsFromBolus` | `meal.slopeFromMaxDeviation` |
+| Last Carb Time | `meal.lastCarbTime` | `lastCarbEntry.date` | `mealData.lastCarbTime` | `meal.lastCarbTime` |
+| Unannounced Meal | UAM detection in algorithm | N/A | UAM via openAPSSMB | UAM in oref algorithm |
+
+---
+
+## Safety Constraints
+
+### Maximum Limits
+
+| Alignment Term | oref0 | Loop | AAPS | Trio |
+|----------------|-------|------|------|------|
+| Max IOB | `profile.max_iob` | `settings.maximumActiveInsulin` | `preferences.maxIOB` | `preferences.maxIOB` |
+| Max Basal Rate | `profile.max_basal` | `settings.maximumBasalRate` | `preferences.maxBasal` | `preferences.maxBasal` |
+| Max Bolus | N/A (SMB limit) | `settings.maximumBolus` | `preferences.maxBolus` | `preferences.maxBolus` |
+| Max SMB | `profile.maxSMBBasalMinutes` | N/A (no SMB) | `preferences.maxSMBBasalMinutes` | `preferences.maxSMBBasalMinutes` |
+| Max Daily Basal Multiplier | `profile.max_daily_safety_multiplier` | N/A | `maxDailySafetyMultiplier` | `maxDailySafetyMultiplier` |
+| Current Basal Multiplier | `profile.current_basal_safety_multiplier` | N/A | `currentBasalSafetyMultiplier` | `currentBasalSafetyMultiplier` |
+
+### Low Glucose Safety
+
+| Alignment Term | oref0 | Loop | AAPS | Trio |
+|----------------|-------|------|------|------|
+| Suspend Threshold | N/A (uses min_bg) | `settings.suspendThreshold` | `preferences.lgsThreshold` | `preferences.suspendThreshold` |
+| Min BG Target | `profile.min_bg` | `GlucoseRangeSchedule.minValue` | `profile.targetLow` | `target_low` |
+
+### Autosensitivity
+
+| Alignment Term | oref0 | Loop | AAPS | Trio |
+|----------------|-------|------|------|------|
+| Sensitivity Ratio | `sensitivityRatio` | `insulinSensitivity` | `autosensData.ratio` | `sensitivityRatio` |
+| Autosens Max | `profile.autosens_max` | N/A | `autosensMax` | `autosensMax` |
+| Autosens Min | `profile.autosens_min` | N/A | `autosensMin` | `autosensMin` |
+| Autosens Adjust Targets | `profile.autosens_adjust_targets` | N/A | `autosensAdjustTargets` | `autosensAdjustTargets` |
+
+---
+
+## Pump Commands
+
+### Basal Commands
+
+| Alignment Term | oref0/openaps | Loop | AAPS | Trio |
+|----------------|---------------|------|------|------|
+| Set Temp Basal | `set_temp_basal` | `enactTempBasal()` | `tempBasalAbsolute()` | `enactTempBasal()` |
+| Cancel Temp Basal | `set_temp_basal(rate=0)` | `cancelTempBasal()` | `cancelTempBasal()` | `cancelTempBasal()` |
+| Suspend | `suspend_pump` | `suspendDelivery()` | `suspendPump()` | `suspendDelivery()` |
+| Resume | `resume_pump` | `resumeDelivery()` | `resumePump()` | `resumeDelivery()` |
+
+### Bolus Commands
+
+| Alignment Term | oref0/openaps | Loop | AAPS | Trio |
+|----------------|---------------|------|------|------|
+| Deliver Bolus | N/A (manual) | `enactBolus()` | `deliverBolus()` | `enactBolus()` |
+| Deliver SMB | via rig | N/A (no SMB) | `deliverSMB()` | `enactSMB()` |
+| Cancel Bolus | N/A | `cancelBolus()` | `stopBolusDelivering()` | `cancelBolus()` |
+
+### Status Queries
+
+| Alignment Term | oref0/openaps | Loop | AAPS | Trio |
+|----------------|---------------|------|------|------|
+| Get Pump Status | `read_pump_status` | `getPumpStatus()` | `readPumpStatus()` | `getPumpStatus()` |
+| Get Reservoir | `reservoir` | `reservoirLevel` | `remainingInsulin` | `reservoir` |
+| Get Battery | `battery` | `batteryLevel` | `batteryLevel` | `battery` |
+
+---
+
+## Insulin Models
+
+| Model | oref0 | Loop | AAPS | Trio |
+|-------|-------|------|------|------|
+| Rapid Acting | `rapidActing` | `ExponentialInsulinModel` | `Oref1` | `rapidActing` |
+| Ultra Rapid | `ultraRapid` | `ExponentialInsulinModel(peak)` | `Lyumjev` | `ultraRapid` |
+| Bilinear | `bilinear` | N/A | `bilinear` | `bilinear` |
+| Peak Time | `peak` (minutes) | `peakActivity` | `peak` | `insulinPeak` |
+| DIA | `dia` (hours) | `effectDuration` | `dia` | `dia` |
+
+---
+
+## Loop Cycle States
+
+| Alignment Term | oref0 | Loop | AAPS | Trio |
+|----------------|-------|------|------|------|
+| Loop Running | rig running | `loopManager.isLoopRunning` | `loop.isEnabled` | `isLooping` |
+| Loop Suspended | rig stopped | `loopManager.isSuspended` | `loop.isSuspended` | `isSuspended` |
+| Open Loop Mode | N/A (always closed) | `closedLoop = false` | `isOpenLoop` | `closedLoop = false` |
+| Closed Loop Mode | default | `closedLoop = true` | `isClosedLoop` | `closedLoop = true` |
+| Last Loop Time | cron timestamp | `lastLoopCompleted` | `lastRun` | `lastLoopDate` |
+
+---
+
+## Algorithm Variants
+
+| Variant | oref0 | Loop | AAPS | Trio |
+|---------|-------|------|------|------|
+| AMA (Advanced Meal Assist) | `determine-basal.js` with AMA | N/A | `OpenAPSAMAPlugin` | N/A |
+| SMB (Super Micro Bolus) | oref1 SMB mode | N/A (no SMB) | `OpenAPSSMBPlugin` | oref1 SMB |
+| AutoISF | N/A | N/A | `OpenAPSAutoISFPlugin` | N/A |
+| Autotune | `lib/autotune/` | N/A | `AutotunePlugin` | Autotune module |
+
+---
+
 ## Notes for Implementers
 
 1. **AAPS has no explicit "Override" concept** - Use ProfileSwitch with percentage/target modifications
 2. **Loop conflates overrides and temp targets** - Both are handled via TemporaryScheduleOverride
 3. **Nightscout separates Override and Temp Target** - Different eventTypes for different use cases
 4. **Trio follows OpenAPS patterns** - Similar to Nightscout with some extensions
+5. **Loop does not use oref0** - Has its own prediction and dosing algorithm (LoopMath)
+6. **AAPS and Trio embed oref0** - Should produce identical algorithm outputs given identical inputs
+7. **SMB (Super Micro Bolus)** - Only available in oref1-based systems (AAPS, Trio), not Loop
+8. **Autosens** - Available in oref0/AAPS/Trio, Loop uses different sensitivity approach
 
 ---
 
@@ -148,4 +288,5 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-16 | Agent | Added algorithm/controller concepts, safety constraints, pump commands, insulin models, loop states |
 | 2026-01-16 | Agent | Initial cross-project terminology matrix |

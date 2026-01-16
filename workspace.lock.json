@@ -52,6 +52,20 @@
       "url": "https://github.com/t1pal/nightscout-roles-gateway.git",
       "ref": "replit",
       "description": "Nightscout Roles Gateway for access control"
+    },
+    {
+      "alias": "oref0",
+      "name": "oref0",
+      "url": "https://github.com/openaps/oref0.git",
+      "ref": "dev",
+      "description": "OpenAPS Reference Design - core dosing algorithm (oref0/oref1)"
+    },
+    {
+      "alias": "openaps",
+      "name": "openaps",
+      "url": "https://github.com/openaps/openaps.git",
+      "ref": "master",
+      "description": "OpenAPS toolkit - device interface and data management"
     }
   ]
 }
