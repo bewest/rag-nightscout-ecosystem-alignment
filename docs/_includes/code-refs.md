@@ -34,6 +34,36 @@ Example entries (update with actual paths after running bootstrap):
 |--------|------|---------|
 | crm:lib/server/treatments.js | lib/server/treatments.js | Core treatment handling |
 | crm:lib/api3/generic/update/operation.js | lib/api3/generic/update/operation.js | API v3 update logic |
+| crm:lib/profilefunctions.js | lib/profilefunctions.js | Profile loading and value lookup |
+| crm:lib/authorization/index.js | lib/authorization/index.js | Auth system entry point |
+| crm:lib/server/enclave.js | lib/server/enclave.js | JWT signing and token generation |
+| crm:lib/authorization/delaylist.js | lib/authorization/delaylist.js | Brute-force protection |
+| crm:lib/server/bootevent.js | lib/server/bootevent.js | Server boot sequence |
+| crm:lib/bus.js | lib/bus.js | Internal event bus |
+| crm:lib/plugins/careportal.js | lib/plugins/careportal.js | Core event type definitions |
+| crm:lib/plugins/openaps.js | lib/plugins/openaps.js | OpenAPS event types |
+| crm:lib/plugins/loop.js | lib/plugins/loop.js | Loop event types |
+| crm:lib/data/ddata.js | lib/data/ddata.js | Data processing |
+| crm:lib/server/websocket.js | lib/server/websocket.js | Real-time treatment ingestion |
+| crm:lib/api3/storageSocket.js | lib/api3/storageSocket.js | API v3 storage events |
+| crm:lib/api3/alarmSocket.js | lib/api3/alarmSocket.js | API v3 alarm events |
+| crm:lib/report_plugins/treatments.js | lib/report_plugins/treatments.js | Treatment report (field usage) |
+
+### Nightscout Roles Gateway
+
+| Ref ID | Path | Purpose |
+|--------|------|---------|
+| ns-gateway:lib/policies/index.js | lib/policies/index.js | Policy decision logic |
+| ns-gateway:lib/owner/index.js | lib/owner/index.js | Site owner operations |
+| ns-gateway:lib/privy/index.js | lib/privy/index.js | Identity handling |
+| ns-gateway:lib/registrations/index.js | lib/registrations/index.js | Site registration flow |
+
+### Nightscout Connect
+
+| Ref ID | Path | Purpose |
+|--------|------|---------|
+| ns-connect:lib/sources/dexcomshare.js | lib/sources/dexcomshare.js | Dexcom Share bridge |
+| ns-connect:lib/sources/linkup.js | lib/sources/linkup.js | Libre Link Up bridge |
 
 ### Loop
 

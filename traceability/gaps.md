@@ -46,6 +46,81 @@ This document tracks gaps that block scenario implementation or conformance. The
 
 ---
 
+### GAP-003: No unified sync identity field across controllers
+
+**Scenario**: All data synchronization scenarios
+
+**Description**: Different AID controllers use different fields for deduplication and sync identity:
+- AAPS uses `identifier`
+- Loop uses `pumpId` + `pumpType` + `pumpSerial`
+- xDrip uses `uuid`
+
+**Impact**:
+- Server-side deduplication is complex
+- Reconciliation logic must know controller-specific patterns
+- No single field for client-provided unique ID
+
+**Possible Solutions**:
+1. Define a standard `syncId` field all controllers should use
+2. Controllers register their sync identity schema (inversion of control)
+3. Accept current diversity and document mapping rules
+
+**Status**: Under discussion
+
+**Related**:
+- [Treatments Schema](../externals/cgm-remote-monitor/docs/data-schemas/treatments-schema.md)
+- [Data Collections Mapping](../mapping/nightscout/data-collections.md)
+
+---
+
+### GAP-AUTH-001: `enteredBy` field is unverified
+
+**Scenario**: Authorization and audit scenarios
+
+**Description**: The `enteredBy` field in treatments is a free-form nickname with no authentication verification. Anyone can claim to be anyone.
+
+**Impact**:
+- Cannot audit who actually made changes
+- No accountability for data mutations
+- Cannot implement authority-based conflict resolution
+
+**Possible Solutions**:
+1. OIDC Actor Identity - replace with verified claims
+2. Add separate verified `actor` field alongside legacy `enteredBy`
+3. Gateway-level identity injection
+
+**Status**: Under discussion
+
+**Related**:
+- [OIDC Actor Identity Proposal](../externals/cgm-remote-monitor/docs/proposals/oidc-actor-identity-proposal.md)
+- [Authorization Mapping](../mapping/nightscout/authorization.md)
+
+---
+
+### GAP-AUTH-002: No authority hierarchy in Nightscout
+
+**Scenario**: Conflict resolution scenarios
+
+**Description**: Nightscout treats all authenticated writes equally. There is no concept of authority levels (human > agent > controller).
+
+**Impact**:
+- Controllers can overwrite human-initiated overrides
+- No protection for primary user decisions
+- Cannot implement safe AI agent integration
+
+**Possible Solutions**:
+1. Implement authority levels in API layer
+2. Add authority field to treatments
+3. Handle in gateway layer (NRG)
+
+**Status**: Proposed in conflict-resolution.md
+
+**Related**:
+- [Conflict Resolution Proposal](../externals/cgm-remote-monitor/docs/proposals/conflict-resolution.md)
+- [Authority Model](../docs/10-domain/authority-model.md)
+
+---
+
 ## Resolved Gaps
 
 _None yet._

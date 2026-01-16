@@ -9,7 +9,12 @@ This glossary defines terms as used within this alignment workspace. Projects ma
 ### Profile
 A collection of settings that define how the AID algorithm should behave. Includes basal rates, ISF, CR, and targets.
 
-**See also**: [Override](#override)
+In Nightscout, profiles are stored in a `store` object with named profiles (e.g., "Default", "Weekend").
+
+**See also**: [Override](#override), [Profile Switch](#profile-switch)
+
+### Profile Switch
+A treatment event that changes the active profile. In Nightscout, this is represented as a treatment with `eventType: "Profile Switch"`.
 
 ### Override
 A temporary modification to profile settings. Overrides have a defined duration and can affect one or more profile parameters.
@@ -21,10 +26,25 @@ A temporary modification to profile settings. Overrides have a defined duration 
 - `insulin_sensitivity_factor`: Modified ISF (if any)
 - `overall_insulin_needs`: Percentage modifier (e.g., 110% = more aggressive)
 
+**Nightscout mapping**: Stored as treatments with `eventType: "Temporary Override"` or `"Temporary Target"`.
+
 ### Supersede
 When one event replaces or cancels another. An override that supersedes another means the new override takes effect and the previous one is no longer active.
 
 **Important**: Supersession is not deletion—the original event still exists in history but is marked as superseded.
+
+**Nightscout gap**: Currently no `superseded` or `superseded_by` fields exist (GAP-001).
+
+### Treatment
+Any user intervention or system event related to diabetes management. Includes insulin doses, carb entries, profile switches, notes, and device events.
+
+In Nightscout, treatments are stored in the `treatments` collection with an `eventType` field indicating the type.
+
+### Entry
+A glucose reading from a CGM device. In Nightscout, entries are stored in the `entries` collection with `sgv` (sensor glucose value) and `direction` (trend arrow) fields.
+
+### DeviceStatus
+Current state of a controller, pump, or uploader. Contains loop/algorithm state, pump status, and connectivity information.
 
 ---
 
