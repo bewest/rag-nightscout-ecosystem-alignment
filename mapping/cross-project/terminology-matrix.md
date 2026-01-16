@@ -419,10 +419,92 @@ Where `weight` is configurable via `weightPercentage` (default 0.65).
 
 ---
 
+## oref0-Specific Concepts
+
+### Core Algorithm Components
+
+oref0 is the reference algorithm that powers AAPS (via Kotlin port) and Trio (via embedded JS). Understanding oref0 is essential for understanding these systems.
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| `determine-basal` | `lib/determine-basal/determine-basal.js` | Main algorithm decision engine |
+| `autosens` | `lib/determine-basal/autosens.js` | 24h sensitivity detection |
+| `cob` | `lib/determine-basal/cob.js` | Carb absorption detection |
+| `iob/calculate` | `lib/iob/calculate.js` | IOB calculation with bilinear/exponential curves |
+| `iob/total` | `lib/iob/total.js` | IOB aggregation across treatments |
+
+### Prediction Curves (predBGs)
+
+oref0 outputs four separate prediction curves, each representing a different scenario:
+
+| Curve | Field | Description | Loop Equivalent |
+|-------|-------|-------------|-----------------|
+| IOB | `predBGs.IOB[]` | Insulin-only prediction (baseline) | Combined `predictedGlucose` |
+| COB | `predBGs.COB[]` | With carb absorption (linear decay) | Carb effect component |
+| UAM | `predBGs.UAM[]` | Unannounced meal (deviation-based) | N/A (no UAM) |
+| ZT | `predBGs.ZT[]` | Zero temp "what-if" for safety | N/A |
+
+**Cross-Project Significance**: Loop only uploads combined predictions, not component effects (GAP-SYNC-002). oref0's separate arrays enable algorithm comparison.
+
+### Carb Absorption Model
+
+| Parameter | oref0 | AAPS | Loop | Notes |
+|-----------|-------|------|------|-------|
+| Model Type | Linear decay | Same | PiecewiseLinear (dynamic) | oref0 is simpler |
+| Min Absorption Rate | `min_5m_carbimpact` (8 mg/dL/5m) | Same | `absorptionTimeOverrun` | Prevents stalled COB |
+| Max COB | `maxCOB` (120g) | Same | Per-entry limit | Global cap |
+| Absorption Duration | Calculated from CI | Same | Observed dynamically | Different approaches |
+
+### SMB (Super Micro Bolus) Parameters
+
+| Parameter | oref0 | AAPS | Trio | Description |
+|-----------|-------|------|------|-------------|
+| `maxSMBBasalMinutes` | 75 | Same | Same | Max SMB as minutes of basal |
+| `maxUAMSMBBasalMinutes` | 30 | Same | Same | Max SMB in UAM mode |
+| `SMBInterval` | 3 | Same | Same | Minimum minutes between SMBs |
+| `enableSMB_always` | false | Same | Same | SMB at all times |
+| `enableSMB_with_COB` | true | Same | Same | SMB when COB > 0 |
+| `enableSMB_after_carbs` | true | Same | Same | SMB for 6h after carbs |
+
+### Shared IOB Formula Origin
+
+The exponential insulin activity curve in oref0 was sourced directly from Loop:
+
+```
+oref0:lib/iob/calculate.js#L125
+// Formula source: https://github.com/LoopKit/Loop/issues/388#issuecomment-317938473
+```
+
+This means **oref0, AAPS, Trio, and Loop all use the same exponential insulin model**, enabling direct cross-project IOB comparison for rapid-acting and ultra-rapid insulin types.
+
+### Deviation-Based Algorithm
+
+oref0's core innovation is deviation analysis:
+
+| Term | Calculation | Purpose |
+|------|-------------|---------|
+| BGI | `-activity × sens × 5` | Expected 5-min BG change from insulin |
+| Deviation | `delta - BGI` | Unexplained BG change (carbs, sensitivity) |
+| eventualBG | `BG - (IOB × sens) + deviation` | Where BG is heading |
+
+### Safety Parameters
+
+| Parameter | oref0 Default | Description |
+|-----------|---------------|-------------|
+| `max_iob` | 6 U | Maximum insulin on board |
+| `max_basal` | 4 U/hr | Maximum temp basal rate |
+| `autosens_min` | 0.5 | Minimum sensitivity ratio |
+| `autosens_max` | 2.0 | Maximum sensitivity ratio |
+| `max_daily_safety_multiplier` | 4 | Multiplier on max daily basal |
+| `current_basal_safety_multiplier` | 5 | Multiplier on current basal |
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-16 | Agent | Added oref0-specific concepts (algorithm components, prediction curves, carb model, SMB params, shared IOB formula) |
 | 2026-01-16 | Agent | Added Trio-specific concepts (oref2 variables, remote commands, overrides, insulin curves, dynamic ISF) |
 | 2026-01-16 | Agent | Added algorithm/controller concepts, safety constraints, pump commands, insulin models, loop states |
 | 2026-01-16 | Agent | Initial cross-project terminology matrix |

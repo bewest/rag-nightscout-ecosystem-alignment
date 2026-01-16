@@ -204,6 +204,53 @@ Only `predicted.values[]` (the combined prediction) is uploaded to `devicestatus
 
 ---
 
+## Positive Findings
+
+### FINDING-001: Shared exponential IOB formula across projects
+
+**Discovery**: oref0 analysis revealed that the exponential insulin activity curve was directly sourced from Loop.
+
+**Source**: `oref0:lib/iob/calculate.js#L125`
+```javascript
+// Formula source: https://github.com/LoopKit/Loop/issues/388#issuecomment-317938473
+```
+
+**Impact**:
+- **oref0, AAPS, Trio, and Loop all use the same exponential insulin model**
+- Direct IOB comparison is possible across all major AID systems
+- This is a strong foundation for interoperability
+
+**Related**:
+- [oref0 Insulin Math](../mapping/oref0/insulin-math.md)
+- [Loop Insulin Math](../mapping/loop/insulin-math.md)
+
+---
+
+### FINDING-002: oref0 outputs separate prediction curves (supports GAP-SYNC-002 resolution)
+
+**Discovery**: oref0 (and AAPS/Trio) outputs four separate prediction curves in the algorithm output.
+
+**Source**: `oref0:lib/determine-basal/determine-basal.js#L442-L449`
+```javascript
+rT.predBGs = {
+    IOB: IOBpredBGs,   // Insulin-only prediction
+    ZT: ZTpredBGs,     // Zero temp "what-if"
+    COB: COBpredBGs,   // With carb absorption
+    UAM: UAMpredBGs    // Unannounced meal
+};
+```
+
+**Impact**:
+- Provides reference implementation for what Loop could upload (GAP-SYNC-002)
+- Enables detailed algorithm comparison across projects
+- AAPS and Trio already upload these arrays to Nightscout `devicestatus.openaps`
+
+**Related**:
+- [GAP-SYNC-002](#gap-sync-002-effect-timelines-not-uploaded-to-nightscout)
+- [oref0 Algorithm](../mapping/oref0/algorithm.md)
+
+---
+
 ## Resolved Gaps
 
 _None yet._
