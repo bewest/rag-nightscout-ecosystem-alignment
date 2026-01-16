@@ -22,6 +22,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
+SCRIPT_DIR = Path(__file__).parent
+
 
 def run(cmd: list[str], cwd: Optional[Path] = None, check: bool = True) -> int:
     """Execute a command and print it."""
@@ -71,6 +73,26 @@ def ensure_repo(dest: Path, url: str) -> bool:
         shutil.rmtree(dest)
     
     return run(["git", "clone", "--progress", url, str(dest)]) == 0
+
+
+def checkout_submodules(dest: Path) -> bool:
+    """Initialize submodules for a repository using the dedicated tool."""
+    gitmodules = dest / ".gitmodules"
+    if not gitmodules.exists():
+        return True
+    
+    print(f"  Initializing submodules...")
+    checkout_script = SCRIPT_DIR / "checkout_submodules.py"
+    
+    if not checkout_script.exists():
+        print(f"  ! checkout_submodules.py not found", file=sys.stderr)
+        return False
+    
+    result = subprocess.run(
+        [sys.executable, str(checkout_script), str(dest)],
+        capture_output=False
+    )
+    return result.returncode == 0
 
 
 def checkout_ref(dest: Path, ref: str) -> bool:
@@ -146,6 +168,7 @@ def cmd_bootstrap(args, lockfile_path: Path):
         url = repo["url"]
         ref = repo.get("ref", "main")
         desc = repo.get("description", "")
+        has_submodules = repo.get("submodules", False)
         
         print(f"== {name} ==")
         if desc:
@@ -160,6 +183,9 @@ def cmd_bootstrap(args, lockfile_path: Path):
             continue
         
         if checkout_ref(dest, ref):
+            if has_submodules:
+                if not checkout_submodules(dest):
+                    print(f"  ! Warning: submodule checkout had issues")
             status = get_repo_status(dest)
             print(f"  {format_status_line(name, status, ref)}")
             success_count += 1

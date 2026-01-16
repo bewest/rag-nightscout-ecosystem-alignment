@@ -86,6 +86,12 @@ Each iteration cycle should update:
 
 ### Repository Management
 - `bootstrap.py` - Clone and manage external repositories
+  - Automatically handles submodules for repos with `"submodules": true` in lockfile
+- `checkout_submodules.py` - Initialize git submodules for nested repositories
+  - Uses GIT_DIR/GIT_WORK_TREE to properly handle repos nested inside parent git repos
+  - `./tools/checkout_submodules.py externals/LoopWorkspace` - Checkout specific repo
+  - `./tools/checkout_submodules.py all` - Checkout all repos with submodules flag
+  - `./tools/checkout_submodules.py status --verbose` - Show submodule status
 - `linkcheck.py` - Verify code references resolve correctly
 - `gen_refs.py` - Generate GitHub permalinks from lockfile
 
@@ -102,6 +108,8 @@ Each iteration cycle should update:
   - Tracks scenario completeness across all projects
 
 ### Makefile Targets
+- `make bootstrap` - Clone/update all external repositories (with submodules)
+- `make submodules` - Checkout submodules for repos with submodules flag
 - `make validate` - Validate fixtures
 - `make conformance` - Run conformance tests
 - `make coverage` - Generate coverage matrix
@@ -119,6 +127,7 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
 
 ## Recent Changes
 
+- 2026-01-16: Added submodule checkout support for nested git repositories (LoopWorkspace)
 - 2026-01-16: Added Nightscout documentation integration (domain models, mappings, cross-project terminology matrix)
 - 2026-01-16: Created external repository inventories (cgm-remote-monitor, nightscout-roles-gateway, nightscout-connect)
 - 2026-01-16: Expanded gaps documentation with authentication and sync identity issues

@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance coverage ci check
+.PHONY: bootstrap status freeze clean help validate conformance coverage ci check submodules
 
 # Default target
 help:
@@ -11,6 +11,7 @@ help:
 	@echo ""
 	@echo "Repository management:"
 	@echo "  make bootstrap  - Clone/update all external repositories"
+	@echo "  make submodules - Checkout submodules for repos with submodules flag"
 	@echo "  make status     - Show status of all repositories"
 	@echo "  make freeze     - Pin all repos to current commit SHAs"
 	@echo "  make clean      - Remove all external checkouts (DESTRUCTIVE)"
@@ -38,6 +39,11 @@ bootstrap:
 # Show status of all repositories
 status:
 	@python3 tools/bootstrap.py status
+
+# Checkout submodules for repos with submodules flag
+submodules:
+	@echo "Checking out submodules..."
+	@python3 tools/checkout_submodules.py all
 
 # Freeze current SHAs to lockfile
 freeze:
