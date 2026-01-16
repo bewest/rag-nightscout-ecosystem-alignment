@@ -26,7 +26,8 @@ workspace/
 │   ├── assertions/          # Assertion definitions
 │   └── runners/             # Test runners
 ├── mapping/                 # Per-project interpretation
-│   ├── nightscout/
+│   ├── nightscout/          # Nightscout schema/API mappings
+│   ├── cross-project/       # Cross-project comparison matrices
 │   ├── aaps/
 │   ├── trio/
 │   └── loop/
@@ -118,5 +119,28 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
 
 ## Recent Changes
 
+- 2026-01-16: Added Nightscout documentation integration (domain models, mappings, cross-project terminology matrix)
+- 2026-01-16: Created external repository inventories (cgm-remote-monitor, nightscout-roles-gateway, nightscout-connect)
+- 2026-01-16: Expanded gaps documentation with authentication and sync identity issues
 - 2026-01-16: Added tooling suite (validate_fixtures, run_conformance, gen_coverage, CI workflow)
 - 2024-01-15: Initial workspace setup with override-supersede scenario
+
+## Key Documentation
+
+### Domain Documentation (docs/10-domain/)
+- `nightscout-data-model.md` - Core Nightscout data model (entries, treatments, profiles, devicestatus)
+- `authority-model.md` - Actor identity and authority hierarchy model
+- `glossary.md` - Terminology definitions with cross-project mappings
+
+### Mapping Documentation (mapping/)
+- `nightscout/data-collections.md` - Field-level mappings for all Nightscout collections
+- `nightscout/authorization.md` - Authentication and permission model mapping
+- `nightscout/override-supersede.md` - Override behavior and supersession tracking
+- `cross-project/terminology-matrix.md` - Rosetta stone for AID system terminology
+
+### Gap Tracking (traceability/gaps.md)
+- GAP-001: Override supersession tracking
+- GAP-002: AAPS ProfileSwitch semantic mismatch
+- GAP-003: Unified sync identity field
+- GAP-AUTH-001: Unverified enteredBy field
+- GAP-AUTH-002: No authority hierarchy
