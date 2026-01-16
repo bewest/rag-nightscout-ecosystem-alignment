@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  syntax-check:
+    name: Python Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check Python syntax
+        run: python -m compileall tools/
+
+  link-check:
+    name: Link Integrity
+    runs-on: ubuntu-latest
+    needs: syntax-check
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Bootstrap external repos
+        run: python tools/bootstrap.py bootstrap
+
+      - name: Check links
+        run: python tools/linkcheck.py
+
+  validate-fixtures:
+    name: Fixture Validation
+    runs-on: ubuntu-latest
+    needs: syntax-check
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install optional dependencies
+        run: pip install pyyaml jsonschema || true
+
+      - name: Validate fixtures
+        run: python tools/validate_fixtures.py
+
+  conformance:
+    name: Conformance Tests
+    runs-on: ubuntu-latest
+    needs: validate-fixtures
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install optional dependencies
+        run: pip install pyyaml || true
+
+      - name: Run conformance tests (offline)
+        run: python tools/run_conformance.py
+
+  coverage-matrix:
+    name: Coverage Matrix
+    runs-on: ubuntu-latest
+    needs: syntax-check
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Generate coverage matrix
+        run: python tools/gen_coverage.py
+
+      - name: Check for uncommitted changes
+        run: |
+          git diff --exit-code traceability/coverage-matrix.md || \
+            echo "::warning::Coverage matrix is out of date. Run 'python tools/gen_coverage.py' locally."
