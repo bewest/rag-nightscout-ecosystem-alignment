@@ -116,3 +116,20 @@ Comprehensive cross-system analysis of profile and therapy settings structures:
   - Sync directions: Loop upload-only (optional), AAPS bidirectional, Trio download-only
 - **Terminology matrix updates**: New sections for Profile Data Structures, Timezone Handling, and Profile Sync Direction
 - **New gaps**: GAP-TZ-001 (AAPS DST), GAP-PROFILE-001 through 004 (format transformation, semantic loss, sync identity)
+
+### Treatments Collection Deep Dive (2026-01-17)
+
+Comprehensive field-by-field mapping of treatment events (boluses, carbs, temp basals) across AID systems:
+- **Location**: `docs/10-domain/treatments-deep-dive.md`
+- **Key findings**:
+  - Loop uses `DoseEntry` (bolus/temp basal) and `StoredCarbEntry` with `syncIdentifier` UUID
+  - AAPS uses separate `Bolus`, `Carbs`, `TemporaryBasal` entities with composite `InterfaceIDs`
+  - Trio inherits LoopKit models, uploads via `NightscoutTreatment`
+  - xDrip+ has unique multi-insulin tracking via `insulinJSON` (InsulinInjection array)
+  - Critical unit differences: absorption time (Loop/Trio: seconds, NS: minutes), duration (AAPS: ms, NS: minutes)
+  - AAPS SMBs upload as `eventType: Correction Bolus` with `type: SMB` field (no explicit SMB eventType in NS)
+  - Loop uses POST-only (potential duplicates on retry), xDrip+ uses PUT upsert
+- **Conformance tests**: `conformance/assertions/treatment-sync.yaml` with 11 test scenarios
+- **New requirements**: REQ-040 through REQ-046 (amount preservation, timestamp accuracy, duration normalization, sync identity)
+- **New gaps**: GAP-TREAT-001 through GAP-TREAT-007 (unit mismatches, SMB representation, split boluses, duplicate uploads, retroactive edits, eCarbs support)
+- **Terminology matrix updates**: New Treatment Data Models section with bolus, carb, and temp basal field mappings
