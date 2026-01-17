@@ -1561,10 +1561,109 @@ All systems use **CRC-16 CCITT (XModem)**:
 
 ---
 
+## LoopCaregiver Remote 2.0 Models
+
+> **See Also**: [LoopCaregiver Remote Commands](../loopcaregiver/remote-commands.md), [LoopCaregiver Authentication](../loopcaregiver/authentication.md)
+
+### Remote Command Types
+
+| Action Type | LoopCaregiver | Loop (Receiver) | Description |
+|-------------|---------------|-----------------|-------------|
+| `bolusEntry` | `BolusAction(amountInUnits)` | `BolusRemoteNotification` | Remote insulin delivery |
+| `carbsEntry` | `CarbAction(amountInGrams, absorptionTime?, startDate?)` | `CarbEntryRemoteNotification` | Remote carb entry |
+| `temporaryScheduleOverride` | `OverrideAction(name, durationTime?, remoteAddress)` | `OverrideRemoteNotification` | Activate override by name |
+| `cancelTemporaryOverride` | `OverrideCancelAction(remoteAddress)` | `OverrideCancelRemoteNotification` | Cancel active override |
+| `autobolus` | `AutobolusAction(active)` | Remote 2.0 only | Toggle autobolus on/off |
+| `closedLoop` | `ClosedLoopAction(active)` | Remote 2.0 only | Toggle closed loop on/off |
+
+### Remote Command Status States
+
+| LoopCaregiver State | Nightscout State | Description |
+|---------------------|------------------|-------------|
+| `.pending` | `Pending` | Command uploaded, awaiting Loop pickup |
+| `.inProgress` | `InProgress` | Loop received, executing |
+| `.success` | `Success` | Command completed successfully |
+| `.error(message)` | `Error` | Execution failed with error message |
+
+### Authentication Components
+
+| Component | LoopCaregiver | Loop | Description |
+|-----------|---------------|------|-------------|
+| OTP Secret | `NightscoutCredentials.otpURL` | `OTPSecretStore` (Keychain) | Shared TOTP secret |
+| OTP Manager | `OTPManager` | `OTPManager` | Generates/validates TOTP codes |
+| OTP Parameters | SHA1, 6 digits, 30s | SHA1, 6 digits, 30s | Standard TOTP (RFC 6238) |
+| Credential Service | `NightscoutCredentialService` | N/A | Wraps OTP with auto-refresh |
+
+### QR Code Deep Link Format
+
+| Field | Query Parameter | Required | Description |
+|-------|-----------------|----------|-------------|
+| Looper Name | `name` | Yes | Display name for the looper |
+| Nightscout URL | `nsURL` | Yes | URL-encoded Nightscout server URL |
+| API Secret | `secretKey` | Yes | Nightscout API_SECRET |
+| OTP URL | `otpURL` | Yes | URL-encoded otpauth:// URI |
+| Creation Date | `createdDate` | No | For watch configuration uniqueness |
+
+**Deep Link URL Format**:
+```
+caregiver://createLooper?name={name}&secretKey={api_secret}&nsURL={ns_url_encoded}&otpURL={otp_url_encoded}
+```
+
+**OTP URL Format** (Standard TOTP):
+```
+otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={base32_secret}
+```
+
+### Remote 2.0 vs 1.0 Comparison (LoopCaregiver)
+
+| Aspect | Remote 1.0 | Remote 2.0 |
+|--------|------------|------------|
+| **Protocol** | Direct OTP in request | Command payload with status |
+| **OTP Inclusion** | Query parameter | `otp` field in payload |
+| **Status Tracking** | None | Pending → InProgress → Success/Error |
+| **Command Types** | 4 (bolus, carbs, override, cancel) | 6 (adds autobolus, closedLoop) |
+| **Version Field** | None | `version: "2.0"` |
+| **Enable Flag** | N/A | `settings.remoteCommands2Enabled` |
+
+### Caregiver Safety Features
+
+| Feature | Implementation | Value |
+|---------|----------------|-------|
+| Recommended Bolus Expiry | `calculateValidRecommendedBolus()` | 7 minutes |
+| Post-Bolus Rejection | Compare bolus timestamp vs deviceStatus | Reject if bolus after recommendation |
+| Credential Validation | `checkAuth()` before storing | API call to Nightscout |
+| OTP Refresh | Timer-based (1 second) | Always fresh code |
+
+### Cross-App Command Comparison
+
+| Feature | LoopCaregiver | LoopFollow | Nightguard | Trio Caregiver* |
+|---------|---------------|------------|------------|-----------------|
+| Remote Bolus | ✅ | ❌ | ❌ | ✅ |
+| Remote Carbs | ✅ | ❌ | ❌ | ✅ |
+| Remote Override | ✅ | ✅ | ❌ | ✅ |
+| Cancel Override | ✅ | ✅ | ❌ | ✅ |
+| Autobolus Toggle | ✅ | ❌ | ❌ | N/A |
+| Closed Loop Toggle | ✅ | ❌ | ❌ | N/A |
+| OTP Handling | Automatic | Manual | N/A | N/A (encrypted) |
+| Status Tracking | ✅ | ❌ | N/A | ✅ |
+
+*Trio uses encryption rather than OTP
+
+**Source Files**:
+- `loopcaregiver:LoopCaregiverKit/Sources/.../Nightscout/OTPManager.swift` - TOTP generation
+- `loopcaregiver:LoopCaregiverKit/Sources/.../Nightscout/NightscoutDataSource.swift` - Command upload
+- `loopcaregiver:LoopCaregiverKit/Sources/.../Models/DeepLinkParser.swift` - QR code parsing
+- `loopcaregiver:LoopCaregiverKit/Sources/.../Models/RemoteCommands/Action.swift` - Action types
+
+**Gap Reference**: GAP-REMOTE-005, GAP-REMOTE-006
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-17 | Agent | Added LoopCaregiver Remote 2.0 Models section with command types, status states, auth components, deep links |
 | 2026-01-17 | Agent | Added Libre CGM Protocol Models section with sensor types, FRAM layout, encryption, BLE, transmitter bridges |
 | 2026-01-17 | Agent | Added Carb Absorption Models section with curve types, COB calculation, parameters, UAM handling |
 | 2026-01-17 | Agent | Added Dexcom BLE Protocol Models section with UUIDs, opcodes, message structures, authentication |

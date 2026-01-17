@@ -295,18 +295,43 @@ Comprehensive cross-system analysis of carbohydrate absorption models used by AI
 
 ---
 
+### Cycle 14: LoopCaregiver Remote Commands Protocol (Completed 2026-01-17)
+
+Deep dive into LoopCaregiver's Remote 2.0 protocol implementation, documenting QR code linking, OTP generation, command types, and status tracking.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **Remote Commands Documentation** | `mapping/loopcaregiver/remote-commands.md` | Command types, payload structure, status lifecycle, Remote 2.0 vs 1.0 |
+| **Authentication Documentation** | `mapping/loopcaregiver/authentication.md` | QR code linking, deep link format, OTP generation, credential storage |
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Added LoopCaregiver Remote 2.0 Models section with command types, status states, auth components |
+| **Requirements Update** | `traceability/requirements.md` | Added REQ-REMOTE-007 through REQ-REMOTE-011 for caregiver-specific requirements |
+| **Gaps Update** | `traceability/gaps.md` | Added GAP-REMOTE-005 through GAP-REMOTE-007 for caregiver-specific gaps |
+
+**Key Findings**:
+- **6 Command Types**: bolus, carbs, override, cancelOverride, autobolus, closedLoop (last 2 are Remote 2.0 only)
+- **OTP Protocol**: Standard TOTP (RFC 6238) with SHA1, 6 digits, 30-second period
+- **QR Code Linking**: Deep link format `caregiver://createLooper?name=X&nsURL=X&secretKey=X&otpURL=X`
+- **Status Lifecycle**: Pending → InProgress → Success/Error (tracked via Nightscout polling)
+- **Remote 2.0 Version Flag**: `settings.remoteCommands2Enabled` switches between v1 and v2 protocols
+- **Safety Features**: 7-minute recommended bolus expiry, post-bolus recommendation rejection, credential validation
+- **Security Gap**: Override commands don't require OTP on Loop side (GAP-REMOTE-001 confirmed)
+
+**Source Files Analyzed**:
+- `loopcaregiver:LoopCaregiverKit/Sources/.../Nightscout/OTPManager.swift` - TOTP generation
+- `loopcaregiver:LoopCaregiverKit/Sources/.../Nightscout/NightscoutDataSource.swift` - Command upload and status
+- `loopcaregiver:LoopCaregiverKit/Sources/.../Nightscout/NightscoutCredentialService.swift` - Credential management
+- `loopcaregiver:LoopCaregiverKit/Sources/.../Models/DeepLinkParser.swift` - QR code/deep link parsing
+- `loopcaregiver:LoopCaregiverKit/Sources/.../Models/RemoteCommands/Action.swift` - Command action types
+- `loopcaregiver:LoopCaregiverKit/Sources/.../Models/RemoteCommands/RemoteCommandStatus.swift` - Status model
+- `loopcaregiver:LoopCaregiver/Views/Settings/LooperSetupView.swift` - QR scanning UI
+
+**Gaps Identified**: GAP-REMOTE-005 through GAP-REMOTE-007
+
+---
+
 ## Candidate Next Cycles
 
-### Priority A: Libre BLE Protocol Specification
-
-**Value**: Non-Dexcom CGM coverage needed for completeness.
-
-**Questions to answer**:
-- Libre 2/3 BLE protocol differences
-- NFC vs BLE data paths
-- DiaBLE/xDrip+ Libre implementations
-
-### Priority B: AAPS Plugin Architecture
+### Priority A: AAPS Plugin Architecture
 
 **Value**: Understanding extensibility model for future integrations.
 
@@ -314,6 +339,27 @@ Comprehensive cross-system analysis of carbohydrate absorption models used by AI
 - Plugin interface contracts
 - Dependency injection patterns
 - Plugin lifecycle management
+- How to add new pump/CGM drivers
+
+### Priority B: Loop Watch Complications & Widgets
+
+**Value**: Understanding how Loop surfaces data to Apple Watch and widgets.
+
+**Questions to answer**:
+- Watch complication data flow
+- Widget timeline updates
+- Shared app group data structures
+- Background refresh patterns
+
+### Priority C: Nightscout MongoDB Schema Deep Dive
+
+**Value**: Understanding the actual MongoDB document structures beyond REST API.
+
+**Questions to answer**:
+- Index structures for performance
+- Aggregation pipelines used
+- Data retention and cleanup
+- Migration patterns between versions
 
 ---
 

@@ -36,19 +36,19 @@ LoopCaregiver includes explicit safety warnings:
 | Phase | Status | Notes |
 |-------|--------|-------|
 | Repository Cloned | Complete | externals/LoopCaregiver |
-| Key Files Identified | Pending | |
-| Data Models Extracted | Pending | |
-| Remote Command Protocol Documented | Pending | |
-| Authentication Flow Analyzed | Pending | |
-| Cross-References Updated | Pending | |
+| Key Files Identified | Complete | See source files below |
+| Data Models Extracted | Complete | Action, RemoteCommand, RemoteCommandStatus |
+| Remote Command Protocol Documented | Complete | See remote-commands.md |
+| Authentication Flow Analyzed | Complete | See authentication.md |
+| Cross-References Updated | Complete | Terminology matrix, requirements, gaps |
 
 ## Documentation Index
 
 | Document | Description | Status |
 |----------|-------------|--------|
 | [README.md](README.md) | Overview and discovery status | Complete |
-| remote-commands.md | Remote bolus/carb/override protocol | Pending |
-| authentication.md | OTP and QR code linking flow | Pending |
+| [remote-commands.md](remote-commands.md) | Remote 2.0 protocol, command types, status lifecycle | Complete |
+| [authentication.md](authentication.md) | OTP generation, QR code linking, deep links | Complete |
 | nightscout-sync.md | Nightscout API integration | Pending |
 | data-models.md | Core data structures | Pending |
 

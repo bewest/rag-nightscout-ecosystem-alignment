@@ -1708,3 +1708,75 @@ _None yet._
 
 **Related**: [Links to ADRs, issues, etc.]
 ```
+
+---
+
+## Remote Caregiver Gaps
+
+### GAP-REMOTE-005: remoteAddress Field Purpose Unclear
+
+**Scenario**: Override Remote Commands
+
+**Description**: LoopCaregiver's `OverrideAction` and `OverrideCancelAction` include a `remoteAddress` field that is always set to empty string. The purpose of this field is undocumented in the codebase. It may be intended for APNS device tokens or notification routing, but this is speculation.
+
+**Source**: `loopcaregiver:NightscoutDataSource.swift#L160-L162`
+```swift
+// TODO: remoteAddress should be optional
+let action = NSRemoteAction.override(name: overrideName, durationTime: durationTime, remoteAddress: "")
+```
+
+**Impact**:
+- Unclear if missing remoteAddress causes issues
+- Field appears mandatory but always empty
+- Potential dead code or incomplete feature
+
+**Possible Solutions**:
+1. Investigate Loop-side usage of remoteAddress
+2. Make remoteAddress truly optional
+3. Document intended purpose
+
+**Status**: Under discussion
+
+---
+
+### GAP-REMOTE-006: No Command Retry Mechanism
+
+**Scenario**: Remote Command Reliability
+
+**Description**: LoopCaregiver has no built-in retry mechanism for failed command deliveries. If a command upload fails (network error, server error), the user must manually retry. There's also no indication if a command was partially delivered.
+
+**Source**: `loopcaregiver:NightscoutDataSource.swift` - No retry logic present
+
+**Impact**:
+- Commands may be silently lost on network failures
+- User may be unaware of failed delivery
+- No idempotency handling for retries
+
+**Possible Solutions**:
+1. Implement automatic retry with exponential backoff
+2. Add command queue with persistent storage
+3. Implement idempotency keys to prevent duplicates on retry
+
+**Status**: Under discussion
+
+---
+
+### GAP-REMOTE-007: OTP Secret Stored in App Data, Not Keychain
+
+**Scenario**: Credential Security
+
+**Description**: LoopCaregiver stores the full `otpURL` (including the Base32 secret) in the `NightscoutCredentials` struct, which is likely persisted to app data rather than the Keychain. This differs from Loop which stores OTP secrets in the Keychain.
+
+**Source**: `loopcaregiver:DeepLinkParser.swift#L164` - `otpURL` stored in credentials
+
+**Impact**:
+- OTP secret may be accessible via device backup
+- Less secure than Keychain storage
+- Inconsistent with Loop-side security model
+
+**Possible Solutions**:
+1. Move OTP secret to Keychain
+2. Keep only reference ID in credentials
+3. Document security implications
+
+**Status**: Under discussion

@@ -1243,3 +1243,90 @@ Requirements follow the pattern:
 **Verification**: 
 - [Test steps]
 ```
+
+---
+
+## Remote Caregiver Requirements
+
+### REQ-REMOTE-007: Command Status Display
+
+**Statement**: Caregiver apps MUST display the current status of remote commands to users, including pending, in-progress, success, and error states.
+
+**Rationale**: Caregivers need visibility into whether commands were received and executed successfully to avoid duplicate commands or missed treatments.
+
+**Scenarios**:
+- Remote Bolus Delivery
+- Remote Carb Entry
+
+**Verification**:
+- Send remote command
+- Verify status updates displayed in UI
+- Test error case and confirm error message visible
+
+---
+
+### REQ-REMOTE-008: Recommended Bolus Expiry
+
+**Statement**: Caregiver apps MUST expire recommended bolus values after the device status ages beyond a configurable threshold (default: 7 minutes).
+
+**Rationale**: Stale recommendations based on outdated glucose data could lead to inappropriate dosing.
+
+**Scenarios**:
+- Remote Bolus from Recommendation
+- Stale Data Handling
+
+**Verification**:
+- View recommended bolus
+- Wait for expiry threshold
+- Verify recommendation no longer displayed
+
+---
+
+### REQ-REMOTE-009: Command Creation Timestamp
+
+**Statement**: Remote commands MUST include a creation timestamp for ordering and replay protection.
+
+**Rationale**: Commands may arrive out of order; timestamp enables proper sequencing and detection of stale commands.
+
+**Scenarios**:
+- Command Ordering
+- Replay Prevention
+
+**Verification**:
+- Create multiple commands in sequence
+- Verify createdDate field present
+- Confirm commands processed in timestamp order
+
+---
+
+### REQ-REMOTE-010: Credential Validation Before Storage
+
+**Statement**: Caregiver apps SHOULD validate credentials against the Nightscout server before storing looper profiles.
+
+**Rationale**: Invalid credentials would prevent all remote operations; early validation improves user experience and security.
+
+**Scenarios**:
+- Looper Setup
+- QR Code Linking
+
+**Verification**:
+- Enter invalid credentials
+- Verify validation fails before profile saved
+- Enter valid credentials and confirm success
+
+---
+
+### REQ-REMOTE-011: Post-Bolus Recommendation Rejection
+
+**Statement**: Caregiver apps SHOULD reject recommended bolus values if a bolus has been delivered since the device status timestamp.
+
+**Rationale**: A bolus delivered after the recommendation invalidates it; using stale recommendations could cause stacking.
+
+**Scenarios**:
+- Concurrent Bolus Handling
+- Recommendation Refresh
+
+**Verification**:
+- View recommended bolus
+- Deliver bolus from another source
+- Verify recommendation invalidated on refresh
