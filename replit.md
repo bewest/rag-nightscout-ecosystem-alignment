@@ -168,3 +168,17 @@ Comprehensive field-by-field mapping of glucose data (the Nightscout `entries` c
 - **Suggested requirements**: REQ-ENTRY-001 through REQ-ENTRY-005 (precision preservation, direction mapping, UTC timestamps, source tracking, deduplication)
 - **New gaps**: GAP-ENTRY-001 through GAP-ENTRY-005 (triple arrows, noise handling, source taxonomy, deduplication, iOS raw data)
 - **Completes**: Core collections trifecta (entries, treatments, devicestatus)
+
+### Nightscout API v1 vs v3 Comparison (2026-01-17)
+
+Comprehensive analysis of the two Nightscout API versions, explaining why AAPS uses v3 exclusively while iOS clients continue with v1:
+- **Location**: `docs/10-domain/nightscout-api-comparison.md`
+- **Key findings**:
+  - AAPS is the ONLY v3 client; all iOS systems (Loop, Trio) and xDrip+ use v1 API
+  - Authentication: v1 uses SHA1-hashed API_SECRET (all-or-nothing); v3 uses opaque Bearer tokens with granular Shiro permissions
+  - Document identity: v1 uses `_id` (MongoDB ObjectId); v3 uses `identifier` (server-assigned, immutable)
+  - Sync efficiency: v3 `history/{timestamp}` endpoint enables incremental sync with deletion detection; v1 requires polling
+  - Soft delete: v3 marks deletions with `isValid=false`; v1 hard-deletes are invisible to other clients
+  - Deduplication: v3 returns `isDeduplication` flag; v1 silently accepts duplicates
+- **Terminology matrix updates**: New API Version Models section with client matrix, identity fields, v3 features, sync patterns
+- **New gaps**: GAP-API-001 through GAP-API-005 (deletion detection, identifier inconsistency, iOS adoption path, auth granularity, deduplication behavior)
