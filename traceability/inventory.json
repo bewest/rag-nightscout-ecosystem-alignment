@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-01-17T07:05:12.731781+00:00",
+  "generated_at": "2026-01-17T23:54:34.718810+00:00",
   "summary": {
-    "mapping_projects": 10,
-    "mapping_documents": 70,
-    "specs_total": 2,
-    "specs_openapi": 0,
+    "mapping_projects": 14,
+    "mapping_documents": 85,
+    "specs_total": 7,
+    "specs_openapi": 5,
     "specs_jsonschema": 1,
     "specs_shape": 1,
     "scenarios": 1,
     "assertions": 4,
     "requirements": 26,
-    "docs": 31
+    "docs": 41
   },
   "mapping": {
     "aaps": {
@@ -82,7 +82,7 @@
       ]
     },
     "cross-project": {
-      "document_count": 3,
+      "document_count": 5,
       "documents": [
         {
           "path": "mapping/cross-project/aid-controller-sync-patterns.md",
@@ -92,17 +92,64 @@
           "status": "documented"
         },
         {
+          "path": "mapping/cross-project/capability-layer-matrix.md",
+          "name": "capability-layer-matrix",
+          "word_count": 1485,
+          "has_code_refs": false,
+          "status": "documented"
+        },
+        {
           "path": "mapping/cross-project/cgm-apps-comparison.md",
           "name": "cgm-apps-comparison",
-          "word_count": 2144,
+          "word_count": 2970,
           "has_code_refs": true,
+          "status": "documented"
+        },
+        {
+          "path": "mapping/cross-project/g7-implementation-comparison.md",
+          "name": "g7-implementation-comparison",
+          "word_count": 1905,
+          "has_code_refs": false,
           "status": "documented"
         },
         {
           "path": "mapping/cross-project/terminology-matrix.md",
           "name": "terminology-matrix",
-          "word_count": 8467,
+          "word_count": 13863,
           "has_code_refs": true,
+          "status": "documented"
+        }
+      ]
+    },
+    "diable": {
+      "document_count": 4,
+      "documents": [
+        {
+          "path": "mapping/diable/README.md",
+          "name": "README",
+          "word_count": 1251,
+          "has_code_refs": false,
+          "status": "documented"
+        },
+        {
+          "path": "mapping/diable/cgm-transmitters.md",
+          "name": "cgm-transmitters",
+          "word_count": 2632,
+          "has_code_refs": false,
+          "status": "documented"
+        },
+        {
+          "path": "mapping/diable/data-models.md",
+          "name": "data-models",
+          "word_count": 1948,
+          "has_code_refs": false,
+          "status": "documented"
+        },
+        {
+          "path": "mapping/diable/nightscout-sync.md",
+          "name": "nightscout-sync",
+          "word_count": 1526,
+          "has_code_refs": false,
           "status": "documented"
         }
       ]
@@ -177,6 +224,58 @@
           "path": "mapping/loop/safety.md",
           "name": "safety",
           "word_count": 972,
+          "has_code_refs": true,
+          "status": "documented"
+        }
+      ]
+    },
+    "loopcaregiver": {
+      "document_count": 3,
+      "documents": [
+        {
+          "path": "mapping/loopcaregiver/README.md",
+          "name": "README",
+          "word_count": 1108,
+          "has_code_refs": false,
+          "status": "documented"
+        },
+        {
+          "path": "mapping/loopcaregiver/authentication.md",
+          "name": "authentication",
+          "word_count": 1499,
+          "has_code_refs": true,
+          "status": "documented"
+        },
+        {
+          "path": "mapping/loopcaregiver/remote-commands.md",
+          "name": "remote-commands",
+          "word_count": 1366,
+          "has_code_refs": true,
+          "status": "documented"
+        }
+      ]
+    },
+    "loopfollow": {
+      "document_count": 3,
+      "documents": [
+        {
+          "path": "mapping/loopfollow/README.md",
+          "name": "README",
+          "word_count": 1053,
+          "has_code_refs": false,
+          "status": "documented"
+        },
+        {
+          "path": "mapping/loopfollow/alarm-system.md",
+          "name": "alarm-system",
+          "word_count": 2779,
+          "has_code_refs": false,
+          "status": "documented"
+        },
+        {
+          "path": "mapping/loopfollow/remote-commands.md",
+          "name": "remote-commands",
+          "word_count": 2374,
           "has_code_refs": true,
           "status": "documented"
         }
@@ -499,6 +598,32 @@
         }
       ]
     },
+    "xdrip-js": {
+      "document_count": 3,
+      "documents": [
+        {
+          "path": "mapping/xdrip-js/README.md",
+          "name": "README",
+          "word_count": 1219,
+          "has_code_refs": true,
+          "status": "documented"
+        },
+        {
+          "path": "mapping/xdrip-js/ble-protocol.md",
+          "name": "ble-protocol",
+          "word_count": 2239,
+          "has_code_refs": false,
+          "status": "documented"
+        },
+        {
+          "path": "mapping/xdrip-js/data-models.md",
+          "name": "data-models",
+          "word_count": 1757,
+          "has_code_refs": false,
+          "status": "documented"
+        }
+      ]
+    },
     "xdrip4ios": {
       "document_count": 7,
       "documents": [
@@ -555,7 +680,28 @@
     }
   },
   "specs": {
-    "openapi": [],
+    "openapi": [
+      {
+        "path": "specs/openapi/aid-alignment-extensions.yaml",
+        "name": "aid-alignment-extensions"
+      },
+      {
+        "path": "specs/openapi/aid-devicestatus-2025.yaml",
+        "name": "aid-devicestatus-2025"
+      },
+      {
+        "path": "specs/openapi/aid-entries-2025.yaml",
+        "name": "aid-entries-2025"
+      },
+      {
+        "path": "specs/openapi/aid-profile-2025.yaml",
+        "name": "aid-profile-2025"
+      },
+      {
+        "path": "specs/openapi/aid-treatments-2025.yaml",
+        "name": "aid-treatments-2025"
+      }
+    ],
     "jsonschema": [
       {
         "path": "specs/jsonschema/aid-events.schema.json",
@@ -717,16 +863,36 @@
       "name": "authority-model"
     },
     {
+      "path": "docs/10-domain/carb-absorption-deep-dive.md",
+      "name": "carb-absorption-deep-dive"
+    },
+    {
       "path": "docs/10-domain/cgm-data-sources-deep-dive.md",
       "name": "cgm-data-sources-deep-dive"
+    },
+    {
+      "path": "docs/10-domain/data-rights-primer.md",
+      "name": "data-rights-primer"
     },
     {
       "path": "docs/10-domain/devicestatus-deep-dive.md",
       "name": "devicestatus-deep-dive"
     },
     {
+      "path": "docs/10-domain/dexcom-ble-protocol-deep-dive.md",
+      "name": "dexcom-ble-protocol-deep-dive"
+    },
+    {
       "path": "docs/10-domain/entries-deep-dive.md",
       "name": "entries-deep-dive"
+    },
+    {
+      "path": "docs/10-domain/g7-jpake-implementation-guide.md",
+      "name": "g7-jpake-implementation-guide"
+    },
+    {
+      "path": "docs/10-domain/g7-protocol-specification.md",
+      "name": "g7-protocol-specification"
     },
     {
       "path": "docs/10-domain/glossary.md",
@@ -737,12 +903,20 @@
       "name": "insulin-curves-deep-dive"
     },
     {
+      "path": "docs/10-domain/libre-protocol-deep-dive.md",
+      "name": "libre-protocol-deep-dive"
+    },
+    {
       "path": "docs/10-domain/nightscout-api-comparison.md",
       "name": "nightscout-api-comparison"
     },
     {
       "path": "docs/10-domain/nightscout-data-model.md",
       "name": "nightscout-data-model"
+    },
+    {
+      "path": "docs/10-domain/progressive-enhancement-framework.md",
+      "name": "progressive-enhancement-framework"
     },
     {
       "path": "docs/10-domain/pump-communication-deep-dive.md",
@@ -805,6 +979,10 @@
       "name": "profile-therapy-settings-comparison"
     },
     {
+      "path": "docs/60-research/stakeholder-priority-analysis.md",
+      "name": "stakeholder-priority-analysis"
+    },
+    {
       "path": "docs/90-decisions/_template.md",
       "name": "_template"
     },
@@ -821,8 +999,16 @@
       "name": "adr-003-no-custom-credentials"
     },
     {
+      "path": "docs/DIGITAL-RIGHTS.md",
+      "name": "DIGITAL-RIGHTS"
+    },
+    {
       "path": "docs/_includes/code-refs.md",
       "name": "code-refs"
+    },
+    {
+      "path": "docs/state-of-diabetes-2026.md",
+      "name": "state-of-diabetes-2026"
     },
     {
       "path": "docs/tooling-roadmap.md",
