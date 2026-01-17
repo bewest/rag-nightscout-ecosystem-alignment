@@ -101,6 +101,21 @@
       "url": "https://github.com/xdrip-js/xdrip-js.git",
       "ref": "master",
       "description": "Node.js library for interfacing with Dexcom G5/G6 transmitters via BLE"
+    },
+    {
+      "alias": "loopfollow",
+      "name": "LoopFollow",
+      "url": "https://github.com/loopandlearn/LoopFollow.git",
+      "ref": "main",
+      "description": "LoopFollow iOS/watchOS app for caregivers to monitor Loop/Trio/iAPS users via Nightscout"
+    },
+    {
+      "alias": "loopcaregiver",
+      "name": "LoopCaregiver",
+      "url": "https://github.com/LoopKit/LoopCaregiver.git",
+      "ref": "dev",
+      "description": "LoopCaregiver iOS companion app for remote bolus, carbs, and override control via Nightscout",
+      "submodules": true
     }
   ]
 }

@@ -58,3 +58,6 @@ The project integrates with and documents the following external Automated Insul
     - `xDrip`: Android xDrip+ app for CGM data collection, acting as a producer and consumer with extensive features.
     - `DiaBLE` (diable): iOS/watchOS app for reading Libre sensors directly via NFC/Bluetooth.
     - `xdrip-js`: Node.js library for interfacing with Dexcom G5/G6 transmitters via BLE.
+- **Caregiver/Follower Apps**:
+    - `LoopFollow` (loopfollow): iOS/watchOS app for caregivers to monitor Loop/Trio/iAPS users via Nightscout with comprehensive alarms and remote override support.
+    - `LoopCaregiver` (loopcaregiver): iOS companion app enabling full remote control (bolus, carbs, overrides) for Loop users via Nightscout Remote 2.0 API.
