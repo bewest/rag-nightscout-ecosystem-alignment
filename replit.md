@@ -30,6 +30,15 @@ The workspace is designed to separate normative specifications from informative 
     - `docs/90-decisions/adr-002-sync-identity-strategy.md` - Decision record on sync identity
     - `docs/90-decisions/adr-003-no-custom-credentials.md` - **NEW** Decision record explaining why Nightscout avoids custom username/password authentication in favor of identity federation and zero trust principles
 - **`specs/`**: Houses normative definitions using OpenAPI specifications and JSON Schema, along with test fixtures.
+  - **OpenAPI 3.0 Specifications** (2026-01-17):
+    - `specs/openapi/README.md` - Coverage matrix and methodology documentation
+    - `specs/openapi/aid-entries-2025.yaml` - De facto 2025 entries collection (SGV, MBG, calibration)
+    - `specs/openapi/aid-treatments-2025.yaml` - De facto 2025 treatments with complete eventType catalog
+    - `specs/openapi/aid-devicestatus-2025.yaml` - De facto 2025 devicestatus (Loop/oref0/AAPS variations)
+    - `specs/openapi/aid-profile-2025.yaml` - De facto 2025 profile collection
+    - `specs/openapi/aid-alignment-extensions.yaml` - 2026 alignment extensions addressing 30+ documented gaps
+  - **JSON Schema** (updated 2026-01-17):
+    - `specs/jsonschema/aid-events.schema.json` - Unified schema aligned with OpenAPI specs, includes 2026 extension fields
 - **`conformance/`**: Contains executable test scenarios and assertion definitions to validate system behavior against specifications.
 - **`mapping/`**: Provides detailed interpretations and mappings for each AID project (Nightscout, Loop, AAPS, Trio), including cross-project comparison matrices.
 - **`traceability/`**: Manages coordination control, including coverage matrices, identified gaps, and derived requirements.
