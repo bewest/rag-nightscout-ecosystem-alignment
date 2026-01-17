@@ -13,17 +13,22 @@
 
 Nightscout maintains two parallel API versions:
 
-| Aspect | API v1 | API v3 |
-|--------|--------|--------|
-| **Base Path** | `/api/v1/` | `/api/v3/` |
-| **Primary Client** | Loop, Trio, xDrip+, OpenAPS | AAPS (exclusive) |
-| **Authentication** | SHA1-hashed API_SECRET | Bearer token (opaque access token) |
-| **Document ID** | `_id` (MongoDB ObjectId) | `identifier` (server-assigned) |
-| **Sync Method** | Poll with date filters | Incremental history endpoint |
-| **Deletion** | Hard delete | Soft delete (`isValid=false`) |
-| **Specification** | Implicit (code-defined) | OpenAPI 3.0 |
+| Aspect | API v1 | API v3 REST | v3 alarmSocket | v3 storageSocket |
+|--------|--------|-------------|----------------|------------------|
+| **Base Path** | `/api/v1/` | `/api/v3/` | `/alarm` namespace | `/storage` namespace |
+| **Primary Client** | Loop, Trio, xDrip+, OpenAPS | AAPS (exclusive) | Web clients | AAPS, web clients |
+| **API_SECRET Auth** | ✅ Yes | ❌ Entry-point blocks | ✅ Yes | ❌ No |
+| **JWT Token Auth** | ✅ Yes | ✅ Required (Bearer) | ✅ Yes | ❌ No |
+| **Access Token Auth** | ✅ Yes | ❌ No (Bearer JWT only) | ✅ Yes | ✅ Yes (only method) |
+| **Document ID** | `_id` (MongoDB ObjectId) | `identifier` (server-assigned) | N/A | N/A |
+| **Sync Method** | Poll with date filters | Incremental history | Push (alarms) | Push (storage changes) |
+| **Deletion** | Hard delete | Soft delete (`isValid=false`) | N/A | N/A |
 
-**Key Finding:** AAPS is the *only* major AID controller using API v3. All iOS systems (Loop, Trio) and xDrip+ continue to use v1, creating a bifurcated ecosystem where sync behaviors differ significantly.
+**Key Findings (Updated 2026-01-17):**
+1. AAPS is the *only* major AID controller using API v3. All iOS systems (Loop, Trio) and xDrip+ continue to use v1.
+2. **Both API v1 and v3 use a shared authorization module** (`lib/authorization/index.js`) that handles both API_SECRET and token authentication uniformly.
+3. The v3 REST "token-only" behavior is an **entry-point restriction** in `lib/api3/security.js`, not an architectural limitation.
+4. v3 WebSocket endpoints differ: **alarmSocket** accepts API_SECRET, JWT, and access tokens; **storageSocket** only accepts access tokens (calls `resolveAccessToken` directly).
 
 ---
 
@@ -69,70 +74,230 @@ GET /api/v3/treatments?eventType$eq=Correction%20Bolus&date$gte=1705000000000&li
 
 ## 3. Authentication Mechanisms
 
-### 3.1 API v1: SHA1 Secret
+### 3.1 Shared Authorization Infrastructure
 
-**Method:** SHA1 hash of `API_SECRET` environment variable
+**Key Finding (Verified 2026-01-17):** Both API v1 and v3 use a **shared authorization module** (`lib/authorization/index.js`) that can handle both API_SECRET and token-based authentication uniformly. The apparent differences in authentication between v1 and v3 stem from how each API's entry-point security layer calls this shared module, not from fundamental architectural differences.
 
-**Implementation:**
+**Shared Authorization Module (`lib/authorization/index.js`):**
+
+The core `authorization.resolve()` function (lines 144-220) accepts both mechanisms:
+
+```javascript
+authorization.resolve = async function resolve (data, callback) {
+  // data = { api_secret, token, ip }
+  
+  // 1. Check for API_SECRET first (grants full * permissions)
+  if (data.api_secret && authorizeAdminSecret(data.api_secret)) {
+    var admin = shiroTrie.new();
+    admin.add(['*']);
+    return { shiros: [admin] };
+  }
+  
+  // 2. Then check for JWT/token
+  try {
+    const verified = env.enclave.verifyJWT(data.token);
+    token = verified.accessToken;
+  } catch (err) {}
+  
+  // 3. Also check if api_secret field contains a valid access token
+  if (!token && data.api_secret) {
+    if (storage.doesAccessTokenExist(data.api_secret)) {
+      token = data.api_secret;
+    }
+  }
+  
+  // ... resolve token to permissions via shiros
+};
+```
+
+**Source:** `lib/authorization/index.js` lines 144-220
+
+### 3.2 API v1: Dual Authentication Support
+
+**Method:** API v1 accepts BOTH SHA1-hashed API_SECRET AND opaque access tokens
+
+**API_SECRET Authentication:**
 ```javascript
 // Client-side (Trio example)
 request.addValue(secret.sha1(), forHTTPHeaderField: "api-secret")
 ```
 
-**Transmission options:**
+**Transmission options for API_SECRET:**
 1. Header: `api-secret: <sha1-hash>`
-2. Query: `?token=<sha1-hash>` (legacy)
-3. Query: `?secret=<sha1-hash>` (legacy)
+2. Query: `?secret=<sha1-hash>` (legacy)
 
-**Permissions:** All-or-nothing. Valid secret grants full `*` permissions.
+**Token Authentication:**
+- Query: `?token=<access-token>`
+- Body: `{ "token": "<access-token>" }`
 
-**Source:** `lib/api/verifyauth.js`, `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift`
+**Permissions:** 
+- API_SECRET grants full `*` permissions (all-or-nothing)
+- Access tokens grant role-based Shiro permissions
 
-### 3.2 API v3: Bearer Access Tokens
-
-**Method:** Opaque access tokens created in Nightscout admin panel, transmitted via Bearer header
-
-**Implementation:**
-```kotlin
-// AAPS SDK
-@Headers("Authorization: Bearer $token")
-suspend fun getSgvs(): Response<NSResponse<List<RemoteEntry>>>
+**Server-side Resolution (`lib/authorization/index.js` lines 112-119):**
+```javascript
+authorization.resolveWithRequest = function resolveWithRequest (req, callback) {
+  const resolveData = {
+    api_secret: apiSecretFromRequest(req),  // Extracts from header/query/body
+    token: extractJWTfromRequest(req),       // Extracts from Authorization header/query/body
+    ip: getRemoteIP(req)
+  };
+  authorization.resolve(resolveData, callback);  // Passes BOTH to shared resolver
+};
 ```
 
-**Server-side token resolution:**
+**Source:** `lib/api/verifyauth.js`, `lib/authorization/index.js`, `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift`
+
+### 3.3 API v3: Entry-Point Restrictions
+
+**Critical Distinction:** API v3 has different authentication behavior depending on interface type (REST vs WebSocket).
+
+#### 3.3.1 API v3 REST: Token-Only Entry Point
+
+The v3 REST security layer (`lib/api3/security.js`) only extracts Bearer tokens and does **not** pass API_SECRET to the shared authorization module:
+
 ```javascript
-// lib/api3/security.js
-ctx.authorization.resolve({ token, ip: getRemoteIP(req) }, function resolveFinish (err, result) {
-  // result contains shiros array with permissions
+// lib/api3/security.js - authenticate() function
+function authenticate (opCtx) {
+  let token;
+  if (req.header('Authorization')) {
+    const parts = req.header('Authorization').split(' ');
+    if (parts.length === 2 && parts[0].toLowerCase() === 'bearer') {
+      token = parts[1];
+    }
+  }
+  
+  if (!token) {
+    return reject(HTTP.UNAUTHORIZED);  // Rejects if no Bearer token
+  }
+  
+  // NOTE: Only passes { token, ip } - no api_secret parameter
+  ctx.authorization.resolve({ token, ip: getRemoteIP(req) }, function resolveFinish (err, result) {
+    // ...
+  });
+}
+```
+
+**v3 REST Documentation Claim (`lib/api3/doc/security.md`):**
+> "In APIv3, API_SECRET can no longer be used for authentication or authorization."
+
+**Reality:** This is an **entry-point restriction**, not an architectural limitation. The shared authorization module can handle API_SECRET; the v3 REST security layer simply chooses not to pass it through.
+
+**Token Flow Clarification:**
+The v3 REST workflow is:
+1. Client obtains JWT by calling `/api/v2/authorization/request/{accessToken}` with an opaque access token
+2. Server returns a signed JWT containing the access token
+3. Client sends JWT in `Authorization: Bearer {jwt}` header
+4. Server verifies JWT signature and extracts the access token from the JWT payload
+5. Server resolves access token to permissions via `authorization.resolve()`
+
+**Transmission (v3 REST):**
+- Header: `Authorization: Bearer <jwt>` (required — the Bearer value is a JWT, not an opaque access token)
+
+#### 3.3.2 API v3 WebSocket: Varied Authentication Support
+
+The v3 WebSocket endpoints have **different authentication behaviors**:
+
+##### alarmSocket (`/alarm` namespace) — Full Dual-Auth Support
+
+The alarmSocket supports API_SECRET, JWT tokens, AND access tokens, passing them to the shared authorization module:
+
+```javascript
+// lib/api3/alarmSocket.js - subscribe() function (line 120)
+// Comment at line 61: "Support webclient authorization with api_secret is added"
+return ctx.authorization.resolve({ 
+  api_secret: message.secret,     // Accepts API_SECRET (SHA1 hash)
+  token: message.jwtToken,         // Also accepts JWT token
+  ip: getRemoteIP(socket.request) 
+}, function resolveFinish (err, auth) {
+  // ...
 });
 ```
 
-**Transmission:**
-- Header: `Authorization: Bearer <access-token>`
+Also supports native client accessToken (line 71-72):
+```javascript
+if (message && message.accessToken) {
+  return ctx.authorization.resolveAccessToken(message.accessToken, ...)
+}
+```
+
+**Transmission (alarmSocket):**
+- Message field: `secret` (SHA1-hashed API_SECRET)
+- Message field: `jwtToken` (JWT token)
+- Message field: `accessToken` (opaque access token)
+
+##### storageSocket (`/storage` namespace) — Access Token Only
+
+The storageSocket **only** accepts access tokens and calls `resolveAccessToken` directly (not the full `resolve` function):
+
+```javascript
+// lib/api3/storageSocket.js - subscribe() function (lines 64-78)
+self.subscribe = function subscribe (socket, message, returnCallback) {
+  if (message && message.accessToken) {
+    return ctx.authorization.resolveAccessToken(message.accessToken, function resolveFinish (err, auth) {
+      // ...
+    });
+  }
+  // No API_SECRET or JWT support - returns error if no accessToken
+  returnCallback({ success: false, message: apiConst.MSG.SOCKET_MISSING_OR_BAD_ACCESS_TOKEN });
+};
+```
+
+**Transmission (storageSocket):**
+- Message field: `accessToken` (opaque access token) — **only method**
+
+**Source:** `lib/api3/alarmSocket.js`, `lib/api3/storageSocket.js`
+
+### 3.4 Opaque Access Tokens
+
+**Token Creation:** Access tokens are created in the Nightscout admin panel (`/admin/`) and associated with roles. They are opaque strings (not JWTs) - the server resolves them to permissions via the authorization subsystem.
 
 **Permissions:** Apache Shiro-style granular permissions:
 ```
-api:*:read          // Read all collections
-api:treatments:create,update  // Create and update treatments only
-api:entries:read    // Read entries only
+api:*:read                        // Read all collections
+api:treatments:create,update      // Create and update treatments only
+api:entries:read                  // Read entries only
+notifications:*:ack               // Acknowledge notifications
 ```
 
-**Token Creation:** Access tokens are created in the Nightscout admin panel (`/admin/`) and associated with roles. They are opaque strings, not JWTs - the server resolves them to permissions via the authorization subsystem.
+**Token Resolution (`lib/authorization/storage.js`):**
+- Tokens are matched against stored subjects in the database
+- Each subject has associated roles with Shiro permission strings
+- Permissions are resolved to a `shiros` array for authorization checks
 
-**Source:** `lib/api3/security.js`, Nightscout admin panel
+### 3.5 Authentication Comparison Matrix
 
-### 3.3 Authentication Comparison
+| Aspect | v1 REST | v3 REST | v3 alarmSocket | v3 storageSocket |
+|--------|---------|---------|----------------|------------------|
+| **API_SECRET** | ✅ Yes | ❌ Entry-point blocks | ✅ Yes | ❌ No |
+| **JWT Token (Bearer/jwtToken)** | ✅ Yes | ✅ Required | ✅ Yes | ❌ No |
+| **Access Token (query/body/msg)** | ✅ Yes | ❌ No | ✅ Yes | ✅ Required |
+| **Uses `authorization.resolve()`** | ✅ Yes | ✅ Yes (token only) | ✅ Yes | ❌ No |
+| **Uses `resolveAccessToken()`** | ✅ (fallback) | ❌ No | ✅ (fallback) | ✅ Yes (only) |
+| **Granular Permissions** | ✅ With tokens | ✅ Yes | ✅ Yes | ✅ Yes |
+| **Subject Tracking** | ✅ With tokens | ✅ Yes | ✅ Yes | ✅ Yes |
 
-| Aspect | v1 | v3 |
-|--------|----|----|
-| **Token Type** | SHA1 hash | Opaque access token |
-| **Granularity** | All or nothing | Per-collection, per-operation |
-| **Token Expiry** | Never | Depends on role configuration |
-| **Transmission** | Header or query | Header only (best practice) |
-| **Subject Tracking** | No | Yes (`subject` field on documents) |
-| **Permission Format** | N/A | Apache Shiro (`api:collection:operation`) |
+### 3.6 Design Intent vs Implementation
 
-**Gap Identified:** v1 clients cannot use granular permissions. A "readable" site allows unauthenticated reads, but writes require full API_SECRET.
+**Design Intent:** The shared authorization module (`lib/authorization/index.js`) was designed to handle both API_SECRET and token-based authentication uniformly, using shared code for permission resolution.
+
+**Implementation Reality:**
+- **v1 REST:** Fully implements design intent (both mechanisms via shared `resolve()`)
+- **v3 alarmSocket:** Fully implements design intent (API_SECRET, JWT, and accessToken)
+- **v3 storageSocket:** Partial implementation (accessToken only via `resolveAccessToken()`)
+- **v3 REST:** Artificially restricts to JWT Bearer token only at the security.js entry point
+
+**Gap Identified (GAP-AUTH-001):** The v3 REST security layer's token-only restriction is inconsistent with:
+1. The shared authorization module's dual-auth capability
+2. The v3 alarmSocket interface which accepts both mechanisms
+3. The design intent of unified authentication handling
+
+**Possible Reasons for v3 REST Restriction:**
+- Security preference to deprecate all-or-nothing API_SECRET for REST calls
+- Encouragement of granular permission adoption
+- Simplified OAuth/JWT integration for REST clients
+
+**Gap Identified (GAP-AUTH-002):** v1 clients using API_SECRET cannot use granular permissions. A "readable" site allows unauthenticated reads, but writes require full API_SECRET or a properly configured access token.
 
 ---
 
