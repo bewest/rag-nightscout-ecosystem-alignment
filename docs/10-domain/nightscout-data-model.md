@@ -332,11 +332,152 @@ Default DIA: 3 hours (scaled by `3.0 / dia` factor)
 
 ---
 
+## Server-Side Processing (from Source Code Analysis)
+
+Deep analysis of the cgm-remote-monitor source code reveals important implementation details.
+
+### Treatment Field Transformations
+
+**Source:** `lib/server/treatments.js:prepareData()`
+
+When treatments are saved, the server applies these transformations:
+
+| Transformation | Details |
+|----------------|---------|
+| Timestamp normalization | `created_at` parsed via moment.js, converted to UTC ISO 8601 |
+| UTC offset extraction | `utcOffset` auto-set from parsed timestamp |
+| Numeric coercion | `glucose`, `targetTop`, `targetBottom`, `carbs`, `insulin`, `duration`, `percent`, `absolute`, `relative`, `preBolus` all cast via `Number()` |
+| Empty field cleanup | Fields with value 0, empty string, or NaN are deleted (except `duration`, `absolute`) |
+| Event time override | If `eventTime` is present, it overwrites `created_at`, then `eventTime` is deleted |
+| Announcement flag | `eventType: "Announcement"` sets `isAnnouncement: true` |
+
+### Pre-Bolus Handling (Undocumented Feature)
+
+When `preBolus` field is set on a treatment:
+1. Carbs are removed from the original record
+2. A second treatment is created, offset by `preBolus` minutes
+3. The delayed record receives the carbs
+4. Both records share the same `eventType`
+
+### WebSocket Deduplication Logic
+
+**Source:** `lib/server/websocket.js`
+
+Two-tier deduplication for treatments via WebSocket:
+
+**Tier 1 - Exact Match:**
+```
+{ NSCLIENT_ID: value } OR { created_at, eventType }
+```
+
+**Tier 2 - Similar Match (±2 seconds):**
+```
+created_at within ±2000ms AND matching:
+  - insulin (if present)
+  - carbs (if present)
+  - percent (if present)
+  - absolute (if present)
+  - duration (if present)
+  - NSCLIENT_ID (if present)
+```
+
+### Default Values Applied by Server
+
+**Note:** Defaults differ between ingestion paths. Be aware of which path your client uses.
+
+| Condition | Default | Path |
+|-----------|---------|------|
+| Missing `eventType` | `<none>` | WebSocket (`dbAdd` only) |
+| Missing `created_at` | Current server time | WebSocket (`dbAdd` only) |
+| Missing `created_at` | `moment()` fallback | REST API (`treatments.js`) |
+
+**WebSocket path** (`lib/server/websocket.js:357-361`):
+```javascript
+if (data.collection === 'treatments' && !('eventType' in data.data)) {
+  data.data.eventType = '<none>';
+}
+if (!('created_at' in data.data)) {
+  data.data.created_at = new Date().toISOString();
+}
+```
+
+**REST API path** (`lib/server/treatments.js:203`): Uses `moment()` which defaults to current time if parsing fails.
+
+**API v3 path**: No automatic defaults for `eventType` - requires `date` field (not `created_at`). Uses `API3_CREATED_AT_FALLBACK_ENABLED` to optionally populate `created_at` from `date`.
+
+### API v3 Immutable Fields
+
+**Source:** `lib/api3/generic/update/validate.js`
+
+These fields are enforced as immutable by the API v3 validation layer. Attempts to change them via UPDATE or PATCH return HTTP 400 with message "field {name} cannot be modified":
+
+```javascript
+const immutable = ['identifier', 'date', 'utcOffset', 'eventType', 'device', 'app',
+  'srvCreated', 'subject', 'srvModified', 'modifiedBy', 'isValid'];
+```
+
+| Field | Set By | Notes |
+|-------|--------|-------|
+| `identifier` | Server (auto-generated) | Exception: allowed during deduplication for API v1 docs |
+| `date` | Client on create | Immutable after creation |
+| `utcOffset` | Parsed from date | Immutable after creation |
+| `eventType` | Client on create | Immutable after creation (treatments) |
+| `device` | Client on create | Immutable after creation |
+| `app` | Client on create | Immutable after creation |
+| `srvCreated` | Server | Set on first insert |
+| `srvModified` | Server | Updated on each modification |
+| `subject` | Server (from JWT) | Set on creation |
+| `modifiedBy` | Server | Set on PATCH operations |
+| `isValid` | Server | Set false on delete |
+
+**Note:** Documents with `isReadOnly=true` (or `readOnly`/`readonly` variants) reject all modifications with HTTP 422.
+
+### Indexed Fields (Treatments)
+
+```javascript
+['created_at', 'eventType', 'insulin', 'carbs', 'glucose', 
+ 'enteredBy', 'boluscalc.foods._id', 'notes', 'NSCLIENT_ID',
+ 'percent', 'absolute', 'duration',
+ { 'eventType': 1, 'duration': 1, 'created_at': 1 }]
+```
+
+---
+
+## API v3 Deduplication Rules
+
+When creating documents via API v3 with `API3_DEDUP_FALLBACK_ENABLED=true`:
+
+| Collection | Duplicate Criteria |
+|------------|-------------------|
+| `devicestatus` | `created_at` + `device` |
+| `entries` | `date` + `type` |
+| `food` | `created_at` |
+| `profile` | `created_at` |
+| `treatments` | `created_at` + `eventType` |
+
+Duplicates trigger UPDATE instead of INSERT, returning 200 with `isDeduplication=true`.
+
+---
+
+## Known Implementation Gaps
+
+| Gap ID | Description | Impact |
+|--------|-------------|--------|
+| GAP-001 | No `superseded`/`supersededBy` fields | Cannot track override chains |
+| GAP-002 | Controller sync identity not standardized | Multiple dedup code paths |
+| GAP-003 | No formal schema validation layer | Client-dependent validation |
+| GAP-004 | `eventType` is free-form string | No enumeration enforcement |
+| GAP-005 | No authority field on documents | Cannot determine writer type |
+
+---
+
 ## Cross-References
 
 - [Treatments Schema (detailed)](../../externals/cgm-remote-monitor/docs/data-schemas/treatments-schema.md)
 - [Profiles Schema (detailed)](../../externals/cgm-remote-monitor/docs/data-schemas/profiles-schema.md)
 - [Architecture Overview](../../externals/cgm-remote-monitor/docs/architecture-overview.md)
+- [Source Code Synthesis](../60-research/cgm-remote-monitor-source-synthesis.md)
+- [API v3 Summary](../../specs/openapi/nightscout-api3-summary.md)
 - [Glossary](./glossary.md)
 - [mapping/nightscout/](../../mapping/nightscout/) - Core NS collection mappings
 - [mapping/nightscout-reporter/](../../mapping/nightscout-reporter/) - Consumer perspective from Reporter
@@ -347,5 +488,7 @@ Default DIA: 3 hours (scaled by `3.0 / dia` factor)
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-16 | Agent | Added server-side processing details from source code analysis |
+| 2026-01-16 | Agent | Added implementation gaps and API v3 dedup rules |
 | 2026-01-16 | Agent | Added consumer insights from Nightscout Reporter analysis |
 | 2026-01-16 | Agent | Initial extraction from cgm-remote-monitor documentation |
