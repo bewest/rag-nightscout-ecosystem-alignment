@@ -134,6 +134,22 @@ Comprehensive field-by-field mapping of treatment events (boluses, carbs, temp b
 - **New gaps**: GAP-TREAT-001 through GAP-TREAT-007 (unit mismatches, SMB representation, split boluses, duplicate uploads, retroactive edits, eCarbs support)
 - **Terminology matrix updates**: New Treatment Data Models section with bolus, carb, and temp basal field mappings
 
+### CGM Data Sources Deep Dive (2026-01-17)
+
+Comprehensive analysis of how CGM data flows from sensors to Nightscout entries across xDrip+ (Android), xDrip4iOS, Loop, AAPS, and Trio:
+- **Location**: `docs/10-domain/cgm-data-sources-deep-dive.md`
+- **Key findings**:
+  - xDrip+ Android is primary CGM producer with 20+ data source types and pluggable calibration (5+ algorithms)
+  - xDrip4iOS supports ~6 source types with Native/WebOOP calibration only
+  - Loop and Trio are CGM consumers only (do not upload CGM data to Nightscout)
+  - AAPS receives CGM data from xDrip+ via Android broadcast
+  - Follower modes: Nightscout (real-time), LibreLinkUp (1-3 min), Dexcom Share (~5 min)
+  - xDrip+ provides local web server on port 17580 for alternative data access
+  - Calibration algorithm and sensor provenance are not tracked in Nightscout entries
+- **Terminology matrix updates**: New CGM Source Models section with data source types, calibration models, BgReading entity mapping, follower sources
+- **New requirements**: REQ-050 through REQ-057 (source attribution, UTC timestamps, follower indication, calibration provenance, UUID dedup, raw values, sensor age, bridge devices)
+- **New gaps**: GAP-CGM-001 through GAP-CGM-006 (calibration tracking, bridge info, sensor age, source taxonomy, iOS raw data, follower distinction)
+
 ### Entries Collection Deep Dive (2026-01-17)
 
 Comprehensive field-by-field mapping of glucose data (the Nightscout `entries` collection) across AID systems:
