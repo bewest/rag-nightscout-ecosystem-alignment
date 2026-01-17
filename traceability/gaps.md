@@ -1448,6 +1448,141 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ---
 
+## Libre CGM Protocol Gaps
+
+### GAP-LIBRE-001: Libre 3 Cloud Decryption Dependency
+
+**Scenario**: Libre 3 Direct Connection
+
+**Description**: Libre 3 uses fully encrypted BLE communication with ECDH key exchange. Current open-source implementations (DiaBLE) can connect and receive encrypted data, but full decryption without cloud services is incomplete. Some functionality requires reverse-engineering closed-source libraries or relying on cloud-based OOP servers.
+
+**Source**: `externals/DiaBLE/DiaBLE/Libre3.swift`
+
+**Impact**:
+- Libre 3 support is experimental/partial in open-source apps
+- Users must rely on LibreLink app or patched solutions
+- No offline-only Libre 3 reading capability
+
+**Possible Solutions**:
+1. Complete reverse-engineering of Libre 3 security protocol
+2. Document cloud API for OOP decryption
+3. Wait for community security research
+
+**Status**: Under discussion
+
+---
+
+### GAP-LIBRE-002: Libre 2 Gen2 Session-Based Authentication
+
+**Scenario**: Libre 2 Gen2 (US) NFC/BLE Access
+
+**Description**: Libre 2 Gen2 sensors require session-based authentication that differs from EU Libre 2. The authentication involves challenge-response with proprietary key derivation functions that are only partially documented.
+
+**Source**: `externals/DiaBLE/DiaBLE/Libre2Gen2.swift`
+
+**Impact**:
+- Gen2 support is limited on iOS (Loop, Trio)
+- xDrip+ Android has better Gen2 support via native library
+- Cross-platform parity is not achieved
+
+**Possible Solutions**:
+1. Port xDrip+ Gen2 implementation to Swift
+2. Document session protocol completely
+3. Use bridge transmitters (MiaoMiao, Bubble) for Gen2
+
+**Status**: Under discussion
+
+---
+
+### GAP-LIBRE-003: Transmitter Bridge Firmware Variance
+
+**Scenario**: MiaoMiao/Bubble Data Reliability
+
+**Description**: Third-party transmitter bridges (MiaoMiao, Bubble, etc.) have varying firmware versions with different capabilities. Firmware differences affect:
+- Libre 2 decryption support
+- PatchInfo availability (older firmware may not include it)
+- Battery reporting accuracy
+
+**Source**: `externals/xdripswift/xdrip/BluetoothTransmitter/CGM/Libre/MiaoMiao/CGMMiaoMiaoTransmitter.swift`
+
+**Impact**:
+- Same transmitter may behave differently based on firmware
+- Users may need firmware updates for Libre 2 support
+- Documentation becomes version-dependent
+
+**Possible Solutions**:
+1. Document minimum firmware versions per feature
+2. Implement firmware detection and user notification
+3. Provide firmware update instructions in apps
+
+**Status**: Documentation needed
+
+---
+
+### GAP-LIBRE-004: Calibration Algorithm Not Synced
+
+**Scenario**: Cross-App Glucose Comparison
+
+**Description**: The factory calibration parameters (i1-i6) extracted from FRAM are not synced to Nightscout. Different apps may use different OOP servers or local algorithms, producing slightly different glucose values from the same raw data.
+
+**Source**: `externals/LoopWorkspace/LibreTransmitter/LibreSensor/SensorContents/SensorData.swift#calibrationData`
+
+**Impact**:
+- Same sensor reading may show different values in different apps
+- No way to verify calibration consistency post-hoc
+- Research/comparison compromised
+
+**Possible Solutions**:
+1. Add calibration info to Nightscout entries
+2. Standardize on a single calibration algorithm
+3. Document calibration source in devicestatus
+
+**Status**: Under discussion
+
+---
+
+### GAP-LIBRE-005: Sensor Serial Number Not in Nightscout Entries
+
+**Scenario**: Multi-Sensor Tracking
+
+**Description**: Nightscout entries have `device` field but no dedicated sensor serial number field. The 10-character Libre serial (e.g., "3MH001ABCD") is not consistently captured, making it difficult to track readings across sensor changes.
+
+**Impact**:
+- Cannot query "all readings from sensor X"
+- Sensor session boundaries unclear
+- Harder to correlate sensor failures with readings
+
+**Possible Solutions**:
+1. Add `sensorSerial` field to entries
+2. Use `device` field with consistent format
+3. Track in separate sensor metadata collection
+
+**Status**: Under discussion
+
+---
+
+### GAP-LIBRE-006: NFC vs BLE Data Latency Difference
+
+**Scenario**: Real-Time Glucose Display
+
+**Description**: Libre sensors update FRAM trend data every minute but history every 15 minutes. BLE streaming provides sparse trend (minutes 0, 2, 4, 6, 7, 12, 15) plus 3 history values, while NFC provides full 16 trend + 32 history. The data available via each method differs.
+
+**Source**: `externals/DiaBLE/DiaBLE/Libre2.swift#parseBLEData`
+
+**Impact**:
+- NFC scans may fill gaps BLE misses
+- Hybrid NFC+BLE strategies needed for complete data
+- Backfill logic required
+
+**Possible Solutions**:
+1. Document exact data availability per method
+2. Implement smart gap-filling in apps
+3. Prefer NFC for historical data, BLE for real-time
+
+**Status**: Documented
+
+---
+
 ## Resolved Gaps
 
 _None yet._

@@ -1323,10 +1323,145 @@ All systems use **CRC-16 CCITT (XModem)**:
 
 ---
 
+## Libre CGM Protocol Models
+
+> **See Also**: [Libre Protocol Deep Dive](../../docs/10-domain/libre-protocol-deep-dive.md) for comprehensive protocol specification.
+
+### Sensor Type Detection (from PatchInfo)
+
+| PatchInfo[0] | Sensor Type | Family | Security Generation |
+|--------------|-------------|--------|---------------------|
+| 0xDF, 0xA2 | Libre 1 | 0 | 0 |
+| 0xE5, 0xE6 | Libre US 14-day | 0 | 1 |
+| 0x70 | Libre Pro/H | 1 | 0 |
+| 0x9D, 0xC5 | Libre 2 EU | 3 | 1 |
+| 0xC6, 0x7F | Libre 2+ EU | 3 | 1 |
+| 0x76, 0x2B, 0x2C | Libre 2 Gen2 (US) | 3 | 2 |
+| 24-byte patchInfo | Libre 3 | 4 | 3 |
+
+### Sensor Families
+
+| Family | Raw Value | Sensors | IC Manufacturer |
+|--------|-----------|---------|-----------------|
+| libre1 | 0 | Libre 1 | TI (0x07) |
+| librePro | 1 | Libre Pro/H | TI (0x07) |
+| libre2 | 3 | Libre 2, 2+, Gen2 | TI (0x07) |
+| libre3 | 4 | Libre 3, 3+ | Abbott (0x7a) |
+| libreSense | 7 | Libre Sense (wellness) | TI (0x07) |
+| lingo | 9 | Lingo (wellness) | Abbott (0x7a) |
+
+### FRAM Memory Layout (344 bytes) - Libre 1/2/2+/Gen2 Only
+
+> **Note**: FRAM applies only to NFC-based sensors. Libre 3 is BLE-only and does not use FRAM.
+
+| Region | Offset | Size | Key Fields |
+|--------|--------|------|------------|
+| Header | 0-23 | 24 bytes | CRC (0-1), State (4), Error Code (6), Failure Age (7-8) |
+| Body | 24-319 | 296 bytes | CRC (24-25), Trend Index (26), History Index (27), Trend (28-123), History (124-315), Age (316-317) |
+| Footer | 320-343 | 24 bytes | CRC (320-321), Region (323), Max Life (326-327), Calibration (328+) |
+
+### Glucose Reading Structure (6 bytes)
+
+| Bit Offset | Bit Count | Field | Notes |
+|------------|-----------|-------|-------|
+| 0 | 14 | rawValue | Raw glucose value |
+| 14 | 9 | quality | Data quality (error bits) |
+| 23 | 2 | qualityFlags | Additional flags |
+| 25 | 1 | hasError | Error indicator |
+| 26 | 12 | rawTemperature | Temperature reading (<<2) |
+| 38 | 9 | tempAdjustment | Temperature adjustment (<<2) |
+| 47 | 1 | negativeAdj | Sign bit for adjustment |
+
+### NFC Commands
+
+| Code | Name | Description |
+|------|------|-------------|
+| 0xA1 | Universal Prefix | Execute subcommand |
+| 0xB0 | Read Block | Read single memory block |
+| 0xB3 | Read Blocks | Read multiple blocks |
+
+### NFC Subcommands (via 0xA1)
+
+| Subcode | Name | Description |
+|---------|------|-------------|
+| 0x1A | Unlock | Read FRAM in clear |
+| 0x1B | Activate | Activate sensor |
+| 0x1E | Enable Streaming | Enable BLE (Libre 2) |
+| 0x1F | Get Session Info | Gen2 session info |
+| 0x20 | Read Challenge | Gen2 challenge |
+| 0x21 | Read Blocks | Gen2 FRAM read |
+| 0x22 | Read Attribute | Gen2 sensor state |
+
+### Libre 2 Key Derivation Constants
+
+> **Note**: These are derivation constants, NOT direct encryption keys. Actual keys are derived per-sensor using the 8-byte sensor UID and 6-byte patchInfo as inputs. See [Libre Protocol Deep Dive](../../docs/10-domain/libre-protocol-deep-dive.md#libre-2-encryption) for full algorithm.
+
+| Constant | Value | Purpose |
+|----------|-------|---------|
+| key[0] | 0xA0C5 | XOR derivation constant |
+| key[1] | 0x6860 | XOR derivation constant |
+| key[3] | 0x14C6 | Initial XOR derivation |
+| secret | 0x1b6a | Default secret for key derivation |
+
+### BLE UUIDs
+
+| System | Service UUID | Key Characteristic UUIDs |
+|--------|--------------|--------------------------|
+| Libre 2 | FDE3 | F001 (login), F002 (data) |
+| Libre 3 | Base: 0898xxxx-EF89-11E9-81B4-2A2AE2DBCCE4 | 10CC (data), 1338 (control), 1482 (status), 177A (glucose), 2198 (security), 22CE (challenge), 23FA (cert) |
+
+> **Note**: Libre 3 uses 13+ characteristics. See [Libre Protocol Deep Dive - BLE Service and Characteristic UUIDs](../../docs/10-domain/libre-protocol-deep-dive.md#ble-service-and-characteristic-uuids) for complete list with full UUIDs.
+
+### Libre 3 BLE Characteristics
+
+| UUID Suffix | Name | Purpose |
+|-------------|------|---------|
+| 10CC | data | Data service |
+| 1338 | patchControl | Send commands |
+| 1482 | patchStatus | Sensor status |
+| 177A | oneMinuteReading | Current glucose |
+| 195A | historicalData | Backfill history |
+| 1AB8 | clinicalData | Clinical backfill |
+| 1BEE | eventLog | Event logging |
+| 1D24 | factoryData | Factory data |
+| 2198 | securityCommands | Security protocol |
+| 22CE | challengeData | Auth challenge |
+| 23FA | certificateData | Certificates |
+
+### Transmitter Bridge Protocols
+
+| Device | Service UUID | Start Command | Data Format |
+|--------|--------------|---------------|-------------|
+| MiaoMiao | 6E400001-... (Nordic UART) | 0xF0 | 363+ bytes (18 header + 344 FRAM + patchInfo) |
+| Bubble | 6E400001-... (Nordic UART) | [0x00, 0xA0, interval] | 8 header + 344 FRAM |
+| Blucon | Proprietary | Device-specific | Wrapped FRAM |
+| Atom | 6E400001-... (Nordic UART) | Similar to Bubble | Wrapped FRAM |
+
+### Cross-Implementation Comparison
+
+| Feature | DiaBLE | LibreTransmitter | xDrip4iOS | xDrip+ Android |
+|---------|--------|------------------|-----------|----------------|
+| Libre 1 NFC | ✅ | ✅ | ✅ | ✅ |
+| Libre 2 NFC | ✅ | ✅ | ✅ | ✅ |
+| Libre 2 BLE | ✅ | ✅ | ✅ | ✅ |
+| Libre 2 Gen2 | ⚠️ | ❌ | ⚠️ | ✅ |
+| Libre 3 | ⚠️ | ❌ | ❌ | ⚠️ |
+| Bridge Transmitters | Limited | MiaoMiao, Bubble | MiaoMiao, Bubble, etc. | All |
+
+**Source Files**:
+- DiaBLE: `externals/DiaBLE/DiaBLE/Libre.swift`, `Libre2.swift`, `Libre3.swift`
+- LibreTransmitter: `externals/LoopWorkspace/LibreTransmitter/LibreSensor/`
+- xDrip4iOS: `externals/xdripswift/xdrip/BluetoothTransmitter/CGM/Libre/`
+
+**Gap Reference**: GAP-LIBRE-001 through GAP-LIBRE-006
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-17 | Agent | Added Libre CGM Protocol Models section with sensor types, FRAM layout, encryption, BLE, transmitter bridges |
 | 2026-01-17 | Agent | Added Carb Absorption Models section with curve types, COB calculation, parameters, UAM handling |
 | 2026-01-17 | Agent | Added Dexcom BLE Protocol Models section with UUIDs, opcodes, message structures, authentication |
 | 2026-01-17 | Agent | Added Pump Communication Models section with interface, commands, protocols, and state machines |

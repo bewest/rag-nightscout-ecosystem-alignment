@@ -1039,6 +1039,111 @@ Requirements follow the pattern:
 
 ---
 
+## Libre CGM Protocol Requirements
+
+### REQ-LIBRE-001: Sensor Type Detection from PatchInfo
+
+**Statement**: Systems reading Libre sensors MUST correctly identify sensor type from the `patchInfo` first byte using the documented mapping (0xDF/0xA2→Libre1, 0x9D/0xC5→Libre2, etc.).
+
+**Rationale**: Correct sensor type determines encryption requirements, FRAM layout interpretation, and BLE protocol selection.
+
+**Scenarios**:
+- NFC Sensor Scan
+- BLE Connection
+
+**Verification**:
+- Scan known sensor types and verify detection
+- Test edge cases (Libre 2+ EU: 0xC6, Gen2 US: 0x2C)
+
+---
+
+### REQ-LIBRE-002: FRAM CRC Validation
+
+**Statement**: Before parsing FRAM data, systems MUST validate CRC-16 checksums for header (bytes 0-1), body (bytes 24-25), and footer (bytes 320-321).
+
+**Rationale**: Invalid CRC indicates corrupted or improperly decrypted data, which would produce incorrect glucose values.
+
+**Scenarios**:
+- NFC FRAM Read
+- Transmitter Bridge Data
+
+**Verification**:
+- Read FRAM and verify CRC validation logic
+- Test with intentionally corrupted data
+
+---
+
+### REQ-LIBRE-003: Libre 2 FRAM Decryption
+
+**Statement**: Systems reading Libre 2/US14day sensors MUST decrypt FRAM using the documented XOR cipher with sensor UID and patchInfo as inputs.
+
+**Rationale**: Libre 2 FRAM is encrypted; reading raw data produces invalid glucose values.
+
+**Scenarios**:
+- Libre 2 NFC Scan
+- Transmitter Bridge Decryption
+
+**Verification**:
+- Decrypt known encrypted FRAM and verify glucose values
+- Verify CRC passes after decryption
+
+---
+
+### REQ-LIBRE-004: BLE Streaming Authentication
+
+**Statement**: For Libre 2 BLE streaming, systems MUST use the enable streaming NFC command (0xA1 0x1E) with correct unlock payload to obtain the sensor's MAC address.
+
+**Rationale**: BLE streaming requires prior NFC pairing to establish cryptographic context.
+
+**Scenarios**:
+- Libre 2 BLE Pairing
+- Streaming Reconnection
+
+**Verification**:
+- Execute enable streaming command
+- Verify 6-byte MAC address response
+- Verify BLE connection succeeds
+
+---
+
+### REQ-LIBRE-005: Libre 3 Security Protocol
+
+**Statement**: Libre 3 connections MUST complete the security handshake (challenge-response with ECDH key exchange) before receiving glucose data.
+
+**Rationale**: Libre 3 is fully encrypted; data is unreadable without completing security protocol.
+
+**Scenarios**:
+- Libre 3 BLE Connection
+- Reconnection after disconnect
+
+**Reference**: [Libre Protocol Deep Dive - Security Handshake Sequence](../docs/10-domain/libre-protocol-deep-dive.md#security-handshake-sequence)
+
+**Verification**:
+- Monitor security command sequence on characteristic 2198:
+  - Write `0x11` (readChallenge) to initiate
+  - Receive `0x08 0x17` (challengeLoadDone + status)
+  - Exchange challenge data on 22CE
+  - Write `0x08` (challengeLoadDone) to confirm
+- Verify glucose data received on 177A after handshake completes
+
+---
+
+### REQ-LIBRE-006: Glucose Data Quality Flags
+
+**Statement**: Systems SHOULD interpret the data quality flags in glucose readings and exclude readings with `hasError=true` or invalid quality codes.
+
+**Rationale**: Sensor errors (signal disturbance, calibration issues) produce unreliable glucose values.
+
+**Scenarios**:
+- CGM Data Display
+- Closed-Loop Input
+
+**Verification**:
+- Parse readings with various quality flags
+- Verify error readings are filtered or flagged
+
+---
+
 ## Template
 
 ```markdown
