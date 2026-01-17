@@ -6,6 +6,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Dexcom G7 Protocol Documentation (2026-01-17)
+
+Comprehensive analysis of the Dexcom G7 BLE protocol and J-PAKE authentication, compiled from xDrip Android, DiaBLE, G7SensorKit, and xDrip4iOS source analysis.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **G7 Protocol Specification** | `docs/10-domain/g7-protocol-specification.md` | Complete opcode table (15+ opcodes), BLE characteristics, message formats, authentication state machine, glucose/backfill parsing |
+| **J-PAKE Implementation Guide** | `docs/10-domain/g7-jpake-implementation-guide.md` | Algorithm details, xDrip libkeks architecture, Swift porting roadmap, certificate exchange, proof of possession |
+| **G7 Cross-Project Comparison** | `mapping/cross-project/g7-implementation-comparison.md` | Feature matrix across 6 projects, authentication phase coverage, blockers and gaps |
+
+**Key Findings**:
+- **xDrip Android and Juggluco are the only projects with standalone G7 support** (xDrip via Java `libkeks`, Juggluco via native C++)
+- All iOS projects (DiaBLE, G7SensorKit, xDrip4iOS) require Dexcom app running in background
+- G7 glucose data appears unencrypted in observed BLE traffic - the J-PAKE authentication is the primary barrier
+- J-PAKE uses secp256r1 curve, 160-byte packets, sensor code as password
+- Complete 5-phase authentication sequence documented: J-PAKE → Traditional Auth → Certificate Exchange → Proof of Possession → Bonding
+
+**Source Files Analyzed**:
+- `xDrip:libkeks/src/main/java/jamorham/keks/` (Calc.java, Context.java, Curve.java, Packet.java, DSAChallenger.java)
+- `DiaBLE:DiaBLE/DexcomG7.swift` (BLE traces, opcode definitions)
+- `G7SensorKit:G7SensorKit/Messages/` (G7GlucoseMessage.swift, G7BackfillMessage.swift)
+- `xDrip4iOS:xdrip/BluetoothTransmitter/CGM/Dexcom/Generic/DexcomG7*.swift`
+
+**Gaps Identified**: GAP-G7-001 (No iOS J-PAKE), GAP-G7-002 (Certificate undocumented), GAP-G7-003 (G7SensorKit minimal), GAP-G7-004 (Party IDs unknown)
+
+---
+
 ### Core Collections Trifecta (2026-01-17)
 
 Comprehensive field-by-field mapping of the three main Nightscout data collections:
