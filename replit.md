@@ -44,7 +44,16 @@ The workspace is designed to separate normative specifications from informative 
 - **`conformance/`**: Contains executable test scenarios and assertion definitions to validate system behavior against specifications.
 - **`mapping/`**: Provides detailed interpretations and mappings for each AID project (Nightscout, Loop, AAPS, Trio), including cross-project comparison matrices.
 - **`traceability/`**: Manages coordination control, including coverage matrices, identified gaps, and derived requirements.
-- **`tools/`**: A suite of utilities for workspace management, validation, and testing (e.g., `bootstrap.py` for external repositories, `linkcheck.py`, `validate_fixtures.py`, `run_conformance.py`, `gen_coverage.py`, `gen_inventory.py` for artifact inventory).
+- **`tools/`**: A suite of utilities for workspace management, validation, and testing:
+  - **Repository Management**: `bootstrap.py` (clone/update externals), `checkout_submodules.py`
+  - **Validation**: `linkcheck.py` (internal links), `validate_fixtures.py` (schema validation)
+  - **Conformance**: `run_conformance.py` (offline conformance tests)
+  - **Inventory**: `gen_inventory.py` (artifact inventory), `gen_coverage.py` (coverage matrix), `gen_refs.py` (code reference permalinks)
+  - **Static Verification** (2026-01-17):
+    - `verify_refs.py` - Validates code references in mappings resolve to actual files in externals
+    - `verify_coverage.py` - Analyzes requirement/gap coverage across mappings, specs, and assertions
+    - `verify_terminology.py` - Checks terminology consistency using the terminology matrix as source of truth
+    - `verify_assertions.py` - Traces assertions to requirements, identifies orphaned assertions and uncovered requirements
   - See `docs/tooling-roadmap.md` for proposed future tooling improvements for agent-based SDLC workflows.
 - **CI Integration**: A GitHub Actions workflow ensures continuous validation of code, link integrity, fixture validation, offline conformance tests, and coverage matrix generation.
 
@@ -73,3 +82,38 @@ The project integrates with and documents the following external Automated Insul
 - **Caregiver/Follower Apps**:
     - `LoopFollow` (loopfollow): iOS/watchOS app for caregivers to monitor Loop/Trio/iAPS users via Nightscout with comprehensive alarms and remote override support.
     - `LoopCaregiver` (loopcaregiver): iOS companion app enabling full remote control (bolus, carbs, overrides) for Loop users via Nightscout Remote 2.0 API.
+
+## Static Verification Tools
+
+The workspace includes a suite of static verification tools that analyze JSON, YAML, and Markdown artifacts without requiring external runtime dependencies. These tools provide early validation of documentation quality and conformance coverage.
+
+### Usage
+
+```bash
+make verify              # Run all verification tools
+make verify-refs         # Validate code references
+make verify-coverage     # Analyze requirement/gap coverage
+make verify-terminology  # Check terminology consistency
+make verify-assertions   # Trace assertions to requirements
+```
+
+### Output Reports
+
+All reports are generated in both JSON (machine-readable) and Markdown (human-readable) formats:
+
+| Tool | JSON Output | Markdown Output |
+|------|-------------|-----------------|
+| verify_refs.py | `traceability/refs-validation.json` | `traceability/refs-validation.md` |
+| verify_coverage.py | `traceability/coverage-analysis.json` | `traceability/coverage-analysis.md` |
+| verify_terminology.py | `traceability/terminology-consistency.json` | `traceability/terminology-consistency.md` |
+| verify_assertions.py | `traceability/assertion-trace.json` | `traceability/assertion-trace.md` |
+
+### What Each Tool Validates
+
+1. **verify_refs.py** - Ensures code references like `` `loop:Loop/Models/Override.swift` `` actually resolve to files in the `externals/` directory. Catches stale references when source code evolves.
+
+2. **verify_coverage.py** - Cross-references requirements (REQ-XXX) and gaps (GAP-XXX-YYY) across mappings, specs, and assertions. Identifies requirements with no coverage and orphaned gaps.
+
+3. **verify_terminology.py** - Uses the terminology matrix (`mapping/cross-project/terminology-matrix.md`) as source of truth. Checks that mapping documents use consistent terminology across projects.
+
+4. **verify_assertions.py** - Parses conformance assertion files and maps them to requirements. Identifies orphaned assertions (no linked requirements) and uncovered requirements (no assertions).

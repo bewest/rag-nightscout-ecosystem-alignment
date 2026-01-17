@@ -1,0 +1,660 @@
+{
+  "generated_at": "2026-01-17T21:08:37.432098+00:00",
+  "summary": {
+    "total_refs": 324,
+    "valid": 258,
+    "unknown_alias": 28,
+    "repo_missing": 0,
+    "file_not_found": 23,
+    "path_not_found": 15
+  },
+  "known_aliases": [
+    "loop",
+    "crm",
+    "ns-connect",
+    "aaps",
+    "trio",
+    "ns-reporter",
+    "ns-gateway",
+    "oref0",
+    "openaps",
+    "nightguard",
+    "xdrip4ios",
+    "xdrip",
+    "diable",
+    "xdrip-js",
+    "loopfollow",
+    "loopcaregiver"
+  ],
+  "by_status": {
+    "file_not_found": [
+      {
+        "source_file": "mapping/trio/overrides.md",
+        "line": 10,
+        "ref": "`trio:Trio/Sources/Models/Oref2_variables.swift`",
+        "message": "File not found: Trio/Sources/Models/Oref2_variables.swift"
+      },
+      {
+        "source_file": "mapping/trio/overrides.md",
+        "line": 13,
+        "ref": "`trio:Model/Core_Data.xcdatamodeld/`",
+        "message": "File not found: Model/Core_Data.xcdatamodeld/"
+      },
+      {
+        "source_file": "mapping/trio/nightscout-sync.md",
+        "line": 9,
+        "ref": "`trio:Trio/Sources/Services/Network/NightscoutManager.swift`",
+        "message": "File not found: Trio/Sources/Services/Network/NightscoutManager.swift"
+      },
+      {
+        "source_file": "mapping/trio/nightscout-sync.md",
+        "line": 10,
+        "ref": "`trio:Trio/Sources/Services/Network/NightscoutAPI.swift`",
+        "message": "File not found: Trio/Sources/Services/Network/NightscoutAPI.swift"
+      },
+      {
+        "source_file": "mapping/nightscout/authorization.md",
+        "line": 126,
+        "ref": "`crm:lib/authorization/authorization.js`",
+        "message": "File not found: lib/authorization/authorization.js"
+      },
+      {
+        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
+        "line": 419,
+        "ref": "`trio:Trio/Sources/Services/Network/NightscoutManager.swift`",
+        "message": "File not found: Trio/Sources/Services/Network/NightscoutManager.swift"
+      },
+      {
+        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
+        "line": 420,
+        "ref": "`trio:Trio/Sources/Services/Network/NightscoutAPI.swift`",
+        "message": "File not found: Trio/Sources/Services/Network/NightscoutAPI.swift"
+      },
+      {
+        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
+        "line": 461,
+        "ref": "`trio:NightscoutTreatment.swift#L31`",
+        "message": "File not found: NightscoutTreatment.swift"
+      },
+      {
+        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
+        "line": 462,
+        "ref": "`trio:NightscoutAPI.swift#L296-298`",
+        "message": "File not found: NightscoutAPI.swift"
+      },
+      {
+        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
+        "line": 463,
+        "ref": "`loop:DoseEntry.swift#L39`",
+        "message": "File not found: DoseEntry.swift"
+      },
+      {
+        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
+        "line": 464,
+        "ref": "`loop:DoseEntry.swift#L30-31`",
+        "message": "File not found: DoseEntry.swift"
+      },
+      {
+        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
+        "line": 465,
+        "ref": "`aaps:InterfaceIDs.kt`",
+        "message": "File not found: InterfaceIDs.kt"
+      },
+      {
+        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
+        "line": 466,
+        "ref": "`aaps:InterfaceIDs.kt#pumpId,pumpType,pumpSerial`",
+        "message": "File not found: InterfaceIDs.kt"
+      },
+      {
+        "source_file": "docs/10-domain/devicestatus-deep-dive.md",
+        "line": 838,
+        "ref": "`loop:NightscoutService/NightscoutServiceKit/NightscoutClient.swift`",
+        "message": "File not found: NightscoutService/NightscoutServiceKit/NightscoutClient.swift"
+      },
+      {
+        "source_file": "docs/10-domain/devicestatus-deep-dive.md",
+        "line": 840,
+        "ref": "`trio:Trio/Sources/Services/Network/NightscoutManager.swift`",
+        "message": "File not found: Trio/Sources/Services/Network/NightscoutManager.swift"
+      },
+      {
+        "source_file": "docs/10-domain/entries-deep-dive.md",
+        "line": 228,
+        "ref": "`loop://iPhone`",
+        "message": "File not found: //iPhone"
+      },
+      {
+        "source_file": "docs/10-domain/algorithm-comparison-deep-dive.md",
+        "line": 150,
+        "ref": "`loop:LoopKit/LoopKit/InsulinKit/ExponentialInsulinModelPreset.swift`",
+        "message": "File not found: LoopKit/LoopKit/InsulinKit/ExponentialInsulinModelPreset.swift"
+      },
+      {
+        "source_file": "docs/60-research/controller-registration-protocol-proposal.md",
+        "line": 122,
+        "ref": "`loop:DoseEntry.swift#L39`",
+        "message": "File not found: DoseEntry.swift"
+      },
+      {
+        "source_file": "docs/60-research/controller-registration-protocol-proposal.md",
+        "line": 123,
+        "ref": "`aaps:InterfaceIDs.kt`",
+        "message": "File not found: InterfaceIDs.kt"
+      },
+      {
+        "source_file": "docs/60-research/controller-registration-protocol-proposal.md",
+        "line": 124,
+        "ref": "`trio:NightscoutTreatment.swift#L31`",
+        "message": "File not found: NightscoutTreatment.swift"
+      },
+      {
+        "source_file": "docs/60-research/controller-registration-protocol-proposal.md",
+        "line": 132,
+        "ref": "`loop://iPhone`",
+        "message": "File not found: //iPhone"
+      },
+      {
+        "source_file": "docs/60-research/controller-registration-protocol-proposal.md",
+        "line": 133,
+        "ref": "`openaps://phoneModel`",
+        "message": "File not found: //phoneModel"
+      },
+      {
+        "source_file": "docs/60-research/controller-registration-protocol-proposal.md",
+        "line": 135,
+        "ref": "`openaps://hostname`",
+        "message": "File not found: //hostname"
+      }
+    ],
+    "path_not_found": [
+      {
+        "source_file": "mapping/cross-project/terminology-matrix.md",
+        "line": 347,
+        "ref": "`loop:Loop/Models/TemporaryScheduleOverride.swift`",
+        "message": "Path not found: Loop/Models/TemporaryScheduleOverride.swift"
+      },
+      {
+        "source_file": "mapping/cross-project/terminology-matrix.md",
+        "line": 348,
+        "ref": "`aaps:database/entities/ProfileSwitch.kt`",
+        "message": "Path not found: database/entities/ProfileSwitch.kt"
+      },
+      {
+        "source_file": "mapping/cross-project/terminology-matrix.md",
+        "line": 349,
+        "ref": "`trio:FreeAPS/Sources/Models/Override.swift`",
+        "message": "Path not found: FreeAPS/Sources/Models/Override.swift"
+      },
+      {
+        "source_file": "mapping/cross-project/terminology-matrix.md",
+        "line": 1113,
+        "ref": "`aaps:plugins/main/src/main/kotlin/.../smsCommunicator/`",
+        "message": "Path not found: plugins/main/src/main/kotlin/.../smsCommunicator/"
+      },
+      {
+        "source_file": "mapping/cross-project/terminology-matrix.md",
+        "line": 1675,
+        "ref": "`loopcaregiver:LoopCaregiverKit/Sources/.../Nightscout/OTPManager.swift`",
+        "message": "Path not found: LoopCaregiverKit/Sources/.../Nightscout/OTPManager.swift"
+      },
+      {
+        "source_file": "mapping/cross-project/terminology-matrix.md",
+        "line": 1676,
+        "ref": "`loopcaregiver:LoopCaregiverKit/Sources/.../Nightscout/NightscoutDataSource.swift`",
+        "message": "Path not found: LoopCaregiverKit/Sources/.../Nightscout/NightscoutDataSource.swift"
+      },
+      {
+        "source_file": "mapping/cross-project/terminology-matrix.md",
+        "line": 1677,
+        "ref": "`loopcaregiver:LoopCaregiverKit/Sources/.../Models/DeepLinkParser.swift`",
+        "message": "Path not found: LoopCaregiverKit/Sources/.../Models/DeepLinkParser.swift"
+      },
+      {
+        "source_file": "mapping/cross-project/terminology-matrix.md",
+        "line": 1678,
+        "ref": "`loopcaregiver:LoopCaregiverKit/Sources/.../Models/RemoteCommands/Action.swift`",
+        "message": "Path not found: LoopCaregiverKit/Sources/.../Models/RemoteCommands/Action.swift"
+      },
+      {
+        "source_file": "docs/_generated/refs-summary.md",
+        "line": 25,
+        "ref": "`loop:Loop/Models/Override.swift#L10-L50`",
+        "message": "Path not found: Loop/Models/Override.swift"
+      },
+      {
+        "source_file": "docs/10-domain/devicestatus-deep-dive.md",
+        "line": 796,
+        "ref": "`loop:Loop/Models/StoredDosingDecision.swift`",
+        "message": "Path not found: Loop/Models/StoredDosingDecision.swift"
+      },
+      {
+        "source_file": "docs/10-domain/algorithm-comparison-deep-dive.md",
+        "line": 487,
+        "ref": "`loop:Loop/Managers/LoopDataManager.swift`",
+        "message": "Path not found: Loop/Managers/LoopDataManager.swift"
+      },
+      {
+        "source_file": "docs/10-domain/insulin-curves-deep-dive.md",
+        "line": 280,
+        "ref": "`aaps:plugins/insulin/src/main/kotlin/.../InsulinOrefBasePlugin.kt`",
+        "message": "Path not found: plugins/insulin/src/main/kotlin/.../InsulinOrefBasePlugin.kt"
+      },
+      {
+        "source_file": "docs/10-domain/insulin-curves-deep-dive.md",
+        "line": 319,
+        "ref": "`aaps:plugins/insulin/src/main/kotlin/.../InsulinOrefFreePeakPlugin.kt`",
+        "message": "Path not found: plugins/insulin/src/main/kotlin/.../InsulinOrefFreePeakPlugin.kt"
+      },
+      {
+        "source_file": "docs/10-domain/insulin-curves-deep-dive.md",
+        "line": 414,
+        "ref": "`aaps:plugins/aps/src/main/kotlin/.../OpenAPSSMBPlugin.kt`",
+        "message": "Path not found: plugins/aps/src/main/kotlin/.../OpenAPSSMBPlugin.kt"
+      },
+      {
+        "source_file": "specs/openapi/aid-devicestatus-2025.yaml",
+        "line": 144,
+        "ref": "loop:NightscoutServiceKit/Extensions/StoredDosingDecision.swift",
+        "message": "Path not found: NightscoutServiceKit/Extensions/StoredDosingDecision.swift"
+      }
+    ],
+    "unknown_alias": [
+      {
+        "source_file": "mapping/nightscout-reporter/uploader-detection.md",
+        "line": 25,
+        "ref": "`nr:lib/src/json_data.dart#L11`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/uploader-detection.md",
+        "line": 56,
+        "ref": "`nr:lib/src/json_data.dart#L1166-L1184`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/uploader-detection.md",
+        "line": 99,
+        "ref": "`nr:lib/src/json_data.dart#L454-L469`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/profile-handling.md",
+        "line": 70,
+        "ref": "`nr:lib/src/json_data.dart#L357-L941`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/profile-handling.md",
+        "line": 109,
+        "ref": "`nr:lib/src/json_data.dart#L343-L355`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/profile-handling.md",
+        "line": 193,
+        "ref": "`nr:lib/src/json_data.dart#L581-L610`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/profile-handling.md",
+        "line": 246,
+        "ref": "`nr:lib/src/json_data.dart#L537-L542`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/profile-handling.md",
+        "line": 308,
+        "ref": "`nr:lib/src/json_data.dart#L922-L941`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/profile-handling.md",
+        "line": 342,
+        "ref": "`nr:lib/src/json_data.dart#L318-L341`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/profile-handling.md",
+        "line": 394,
+        "ref": "`nr:lib/src/json_data.dart#L454-L469`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/profile-handling.md",
+        "line": 423,
+        "ref": "`nr:lib/src/json_data.dart#L149-L159`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/profile-handling.md",
+        "line": 443,
+        "ref": "`nr:lib/src/globals.dart`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/unit-conversion.md",
+        "line": 54,
+        "ref": "`nr:lib/src/globals.dart#L192-L199`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/unit-conversion.md",
+        "line": 139,
+        "ref": "`nr:lib/src/json_data.dart#L1373-L1381`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/unit-conversion.md",
+        "line": 202,
+        "ref": "`nr:lib/src/json_data.dart#L149-L159`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/treatment-classification.md",
+        "line": 97,
+        "ref": "`nr:lib/src/json_data.dart#L1186-L1214`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/treatment-classification.md",
+        "line": 173,
+        "ref": "`nr:lib/src/json_data.dart#L1226-L1252`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/calculations.md",
+        "line": 84,
+        "ref": "`nr:lib/src/json_data.dart#L1409-L1440`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/calculations.md",
+        "line": 187,
+        "ref": "`nr:lib/src/json_data.dart#L1442-L1514`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/calculations.md",
+        "line": 306,
+        "ref": "`nr:lib/src/json_data.dart#L2193-L2230`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/calculations.md",
+        "line": 419,
+        "ref": "`nr:lib/src/json_data.dart#L1975-L2038`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/calculations.md",
+        "line": 475,
+        "ref": "`nr:lib/src/json_data.dart#L1906-L1952`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/nightscout-reporter/calculations.md",
+        "line": 519,
+        "ref": "`nr:lib/src/json_data.dart#L2063-L2191`",
+        "message": "Unknown alias 'nr'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/loopcaregiver/authentication.md",
+        "line": 110,
+        "ref": "`caregiver://`",
+        "message": "Unknown alias 'caregiver'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "mapping/loopcaregiver/authentication.md",
+        "line": 423,
+        "ref": "`caregiver://requestWatchConfiguration`",
+        "message": "Unknown alias 'caregiver'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "docs/_generated/refs-summary.md",
+        "line": 21,
+        "ref": "`alias:path/to/file.ext#anchor`",
+        "message": "Unknown alias 'alias'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "docs/10-domain/insulin-curves-deep-dive.md",
+        "line": 148,
+        "ref": "`xDrip:app/src/main/java/com/eveningoutpost/dexdrip/insulin/LinearTrapezoidInsulin.java`",
+        "message": "Unknown alias 'xDrip'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      },
+      {
+        "source_file": "docs/10-domain/insulin-curves-deep-dive.md",
+        "line": 227,
+        "ref": "`xDrip:app/src/main/res/raw/insulin_profiles.json`",
+        "message": "Unknown alias 'xDrip'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
+      }
+    ]
+  },
+  "by_file": {
+    "mapping/trio/remote-commands.md": {
+      "total": 4,
+      "valid": 4,
+      "broken": 0
+    },
+    "mapping/trio/data-models.md": {
+      "total": 4,
+      "valid": 4,
+      "broken": 0
+    },
+    "mapping/trio/overrides.md": {
+      "total": 4,
+      "valid": 2,
+      "broken": 2
+    },
+    "mapping/trio/insulin-math.md": {
+      "total": 4,
+      "valid": 4,
+      "broken": 0
+    },
+    "mapping/trio/safety.md": {
+      "total": 2,
+      "valid": 2,
+      "broken": 0
+    },
+    "mapping/trio/algorithm.md": {
+      "total": 4,
+      "valid": 4,
+      "broken": 0
+    },
+    "mapping/trio/carb-math.md": {
+      "total": 4,
+      "valid": 4,
+      "broken": 0
+    },
+    "mapping/trio/nightscout-sync.md": {
+      "total": 4,
+      "valid": 2,
+      "broken": 2
+    },
+    "mapping/loop/algorithm.md": {
+      "total": 5,
+      "valid": 5,
+      "broken": 0
+    },
+    "mapping/loop/insulin-math.md": {
+      "total": 8,
+      "valid": 8,
+      "broken": 0
+    },
+    "mapping/loop/carb-math.md": {
+      "total": 11,
+      "valid": 11,
+      "broken": 0
+    },
+    "mapping/loop/overrides.md": {
+      "total": 7,
+      "valid": 7,
+      "broken": 0
+    },
+    "mapping/loop/dose-math.md": {
+      "total": 2,
+      "valid": 2,
+      "broken": 0
+    },
+    "mapping/loop/data-models.md": {
+      "total": 1,
+      "valid": 1,
+      "broken": 0
+    },
+    "mapping/loop/safety.md": {
+      "total": 1,
+      "valid": 1,
+      "broken": 0
+    },
+    "mapping/loop/nightscout-sync.md": {
+      "total": 8,
+      "valid": 8,
+      "broken": 0
+    },
+    "mapping/nightscout/authorization.md": {
+      "total": 5,
+      "valid": 4,
+      "broken": 1
+    },
+    "mapping/nightscout/data-collections.md": {
+      "total": 4,
+      "valid": 4,
+      "broken": 0
+    },
+    "mapping/cross-project/aid-controller-sync-patterns.md": {
+      "total": 19,
+      "valid": 11,
+      "broken": 8
+    },
+    "mapping/cross-project/terminology-matrix.md": {
+      "total": 19,
+      "valid": 11,
+      "broken": 8
+    },
+    "mapping/nightscout-reporter/uploader-detection.md": {
+      "total": 3,
+      "valid": 0,
+      "broken": 3
+    },
+    "mapping/nightscout-reporter/profile-handling.md": {
+      "total": 9,
+      "valid": 0,
+      "broken": 9
+    },
+    "mapping/nightscout-reporter/unit-conversion.md": {
+      "total": 3,
+      "valid": 0,
+      "broken": 3
+    },
+    "mapping/nightscout-reporter/treatment-classification.md": {
+      "total": 2,
+      "valid": 0,
+      "broken": 2
+    },
+    "mapping/nightscout-reporter/calculations.md": {
+      "total": 6,
+      "valid": 0,
+      "broken": 6
+    },
+    "mapping/oref0/data-models.md": {
+      "total": 12,
+      "valid": 12,
+      "broken": 0
+    },
+    "mapping/oref0/insulin-math.md": {
+      "total": 12,
+      "valid": 12,
+      "broken": 0
+    },
+    "mapping/oref0/carb-math.md": {
+      "total": 10,
+      "valid": 10,
+      "broken": 0
+    },
+    "mapping/oref0/autosens.md": {
+      "total": 11,
+      "valid": 11,
+      "broken": 0
+    },
+    "mapping/oref0/algorithm.md": {
+      "total": 11,
+      "valid": 11,
+      "broken": 0
+    },
+    "mapping/oref0/safety.md": {
+      "total": 13,
+      "valid": 13,
+      "broken": 0
+    },
+    "mapping/nightguard/data-models.md": {
+      "total": 11,
+      "valid": 11,
+      "broken": 0
+    },
+    "mapping/nightguard/nightscout-sync.md": {
+      "total": 11,
+      "valid": 11,
+      "broken": 0
+    },
+    "mapping/nightguard/alarm-logic.md": {
+      "total": 7,
+      "valid": 7,
+      "broken": 0
+    },
+    "mapping/nightguard/apple-watch.md": {
+      "total": 4,
+      "valid": 4,
+      "broken": 0
+    },
+    "mapping/loopcaregiver/authentication.md": {
+      "total": 2,
+      "valid": 0,
+      "broken": 2
+    },
+    "docs/_generated/refs-summary.md": {
+      "total": 3,
+      "valid": 1,
+      "broken": 2
+    },
+    "docs/10-domain/devicestatus-deep-dive.md": {
+      "total": 13,
+      "valid": 10,
+      "broken": 3
+    },
+    "docs/10-domain/entries-deep-dive.md": {
+      "total": 1,
+      "valid": 0,
+      "broken": 1
+    },
+    "docs/10-domain/algorithm-comparison-deep-dive.md": {
+      "total": 15,
+      "valid": 13,
+      "broken": 2
+    },
+    "docs/10-domain/remote-commands-comparison.md": {
+      "total": 10,
+      "valid": 10,
+      "broken": 0
+    },
+    "docs/10-domain/insulin-curves-deep-dive.md": {
+      "total": 8,
+      "valid": 3,
+      "broken": 5
+    },
+    "docs/10-domain/carb-absorption-deep-dive.md": {
+      "total": 20,
+      "valid": 20,
+      "broken": 0
+    },
+    "docs/60-research/controller-registration-protocol-proposal.md": {
+      "total": 6,
+      "valid": 0,
+      "broken": 6
+    },
+    "specs/openapi/aid-devicestatus-2025.yaml": {
+      "total": 1,
+      "valid": 0,
+      "broken": 1
+    }
+  }
+}

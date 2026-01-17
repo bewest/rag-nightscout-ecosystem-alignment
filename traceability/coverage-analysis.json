@@ -1,0 +1,2855 @@
+{
+  "generated_at": "2026-01-17T21:08:37.939004+00:00",
+  "summary": {
+    "requirements": {
+      "total": 26,
+      "full": 0,
+      "partial": 10,
+      "documented": 8,
+      "none": 8
+    },
+    "gaps": {
+      "total": 68,
+      "addressed": 20,
+      "with_assertions": 7,
+      "orphaned": 4
+    }
+  },
+  "requirements": {
+    "REQ-001": {
+      "id": "REQ-001",
+      "title": "Override Identity",
+      "statement": "Every override MUST have a unique, stable identifier that persists across system restarts and data synchronization.",
+      "line": 18,
+      "mapping_refs": [
+        {
+          "file": "mapping/nightscout/override-supersede.md",
+          "line": 88,
+          "context": "es |\n|-------------|--------|-------|\n| REQ-001: Override Identity | \u2705 | Uses MongoDB _"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "has_mapping": true,
+      "has_assertion": false,
+      "coverage_level": "partial"
+    },
+    "REQ-002": {
+      "id": "REQ-002",
+      "title": "Override Supersession Tracking",
+      "statement": "When an override is superseded, the system MUST record: 1. The ID of the superseding override 2. The timestamp of supersession 3. Update the status to \"superseded\"",
+      "line": 33,
+      "mapping_refs": [
+        {
+          "file": "mapping/nightscout/override-supersede.md",
+          "line": 89,
+          "context": "ide Identity | \u2705 | Uses MongoDB _id |\n| REQ-002: Override Supersession Tracking | \u274c | N"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/90-decisions/adr-001-override-supersession.md",
+          "line": 86,
+          "context": "mance/scenarios/override-supersede/)\n- [REQ-002: Override Supersession Tracking](../../"
+        }
+      ],
+      "total_refs": 2,
+      "has_mapping": true,
+      "has_assertion": false,
+      "coverage_level": "partial"
+    },
+    "REQ-003": {
+      "id": "REQ-003",
+      "title": "Override Status Transitions",
+      "statement": "Override status MUST follow valid transitions: - `active` \u2192 `completed` (duration elapsed) - `active` \u2192 `cancelled` (user cancellation) - `active` \u2192 `superseded` (new override activated)",
+      "line": 52,
+      "mapping_refs": [
+        {
+          "file": "mapping/nightscout/override-supersede.md",
+          "line": 90,
+          "context": "sion Tracking | \u274c | Not implemented |\n| REQ-003: Override Status Transitions | \ud83d\udfe1 | Impl"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "has_mapping": true,
+      "has_assertion": false,
+      "coverage_level": "partial"
+    },
+    "REQ-010": {
+      "id": "REQ-010",
+      "title": "UTC Timestamps",
+      "statement": "All timestamps MUST be in ISO 8601 format with UTC timezone (Z suffix or +00:00).",
+      "line": 72,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 0,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "none"
+    },
+    "REQ-020": {
+      "id": "REQ-020",
+      "title": "Event Immutability",
+      "statement": "Once created, the core identity and timestamp of an event MUST NOT be modified. Only status and relationship fields may be updated.",
+      "line": 88,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 0,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "none"
+    },
+    "REQ-030": {
+      "id": "REQ-030",
+      "title": "Sync Identity Preservation",
+      "statement": "When uploading data to Nightscout, the system MUST include a client-generated identifier that survives the upload/download round-trip.",
+      "line": 104,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 0,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "none"
+    },
+    "REQ-031": {
+      "id": "REQ-031",
+      "title": "Self-Entry Exclusion",
+      "statement": "When downloading treatments, the system SHOULD exclude entries it previously uploaded to avoid duplicate processing.",
+      "line": 120,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 0,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "none"
+    },
+    "REQ-032": {
+      "id": "REQ-032",
+      "title": "Incremental Sync Support",
+      "statement": "The system SHOULD support incremental synchronization using server-provided modification timestamps (`srvModified`).",
+      "line": 136,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 0,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "none"
+    },
+    "REQ-033": {
+      "id": "REQ-033",
+      "title": "Server Deduplication",
+      "statement": "When receiving a POST for a document that matches existing deduplication criteria, the server MUST return the existing document with HTTP 200 (not create a duplicate with 201).",
+      "line": 152,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 0,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "none"
+    },
+    "REQ-034": {
+      "id": "REQ-034",
+      "title": "Cross-Controller Coexistence",
+      "statement": "Multiple controllers MUST be able to upload data to the same Nightscout instance without interfering with each other's records.",
+      "line": 168,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 0,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "none"
+    },
+    "REQ-035": {
+      "id": "REQ-035",
+      "title": "Conflict Detection",
+      "statement": "When updating a document, the system SHOULD support optimistic concurrency via `If-Unmodified-Since` header, returning HTTP 412 if document was modified by another client.",
+      "line": 184,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 0,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "none"
+    },
+    "REQ-040": {
+      "id": "REQ-040",
+      "title": "Bolus Amount Preservation",
+      "statement": "When syncing a bolus treatment, the `insulin` amount MUST be preserved exactly (to 0.01U precision) during upload and download.",
+      "line": 203,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 9,
+          "context": "rvation.\n    \n    requirements:\n      - REQ-040  # Bolus amount preservation\n      - RE"
+        }
+      ],
+      "doc_refs": [],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": true,
+      "coverage_level": "partial"
+    },
+    "REQ-041": {
+      "id": "REQ-041",
+      "title": "Carb Amount Preservation",
+      "statement": "When syncing a carb treatment, the `carbs` amount MUST be preserved exactly (to 0.1g precision) during upload and download.",
+      "line": 220,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 10,
+          "context": "40  # Bolus amount preservation\n      - REQ-041  # Carb amount preservation\n      - REQ"
+        }
+      ],
+      "doc_refs": [],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": true,
+      "coverage_level": "partial"
+    },
+    "REQ-042": {
+      "id": "REQ-042",
+      "title": "Treatment Timestamp Accuracy",
+      "statement": "Treatment timestamps MUST be preserved with millisecond precision during sync.",
+      "line": 237,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 11,
+          "context": "041  # Carb amount preservation\n      - REQ-042  # Timestamp accuracy\n      - REQ-043"
+        }
+      ],
+      "doc_refs": [],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": true,
+      "coverage_level": "partial"
+    },
+    "REQ-043": {
+      "id": "REQ-043",
+      "title": "Automatic Bolus Flag",
+      "statement": "When uploading an automatic bolus (SMB or auto-bolus), the system MUST set `automatic: true` to distinguish from manual boluses.",
+      "line": 256,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 12,
+          "context": "- REQ-042  # Timestamp accuracy\n      - REQ-043  # Automatic bolus flag\n      - REQ-044"
+        }
+      ],
+      "doc_refs": [],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": true,
+      "coverage_level": "partial"
+    },
+    "REQ-044": {
+      "id": "REQ-044",
+      "title": "Duration Unit Normalization",
+      "statement": "When uploading temp basal or eCarbs with duration, the system MUST convert to Nightscout's expected unit (minutes) before upload.",
+      "line": 275,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 13,
+          "context": "REQ-043  # Automatic bolus flag\n      - REQ-044  # Duration unit normalization\n      -"
+        }
+      ],
+      "doc_refs": [],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": true,
+      "coverage_level": "partial"
+    },
+    "REQ-045": {
+      "id": "REQ-045",
+      "title": "Treatment Sync Identity Round-Trip",
+      "statement": "A client-generated sync identifier MUST survive the upload/download round-trip unchanged.",
+      "line": 291,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 14,
+          "context": "# Duration unit normalization\n      - REQ-045  # Sync identity round-trip\n      - REQ"
+        }
+      ],
+      "doc_refs": [],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": true,
+      "coverage_level": "partial"
+    },
+    "REQ-046": {
+      "id": "REQ-046",
+      "title": "Absorption Time Unit Conversion",
+      "statement": "When uploading carb entries with absorption time, the system MUST convert from internal units (typically seconds) to Nightscout's expected unit (minutes).",
+      "line": 310,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 15,
+          "context": "045  # Sync identity round-trip\n      - REQ-046  # Absorption time unit conversion"
+        }
+      ],
+      "doc_refs": [],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": true,
+      "coverage_level": "partial"
+    },
+    "REQ-050": {
+      "id": "REQ-050",
+      "title": "Source Device Attribution",
+      "statement": "Every CGM entry uploaded to Nightscout MUST include a `device` field identifying the uploader application and hardware.",
+      "line": 329,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 658,
+          "context": "|--------|-----------|-----------|\n| **REQ-050** | CGM entries MUST include `device` f"
+        }
+      ],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "documented"
+    },
+    "REQ-051": {
+      "id": "REQ-051",
+      "title": "UTC Timestamp for CGM Entries",
+      "statement": "CGM entry timestamps MUST be epoch milliseconds in UTC, stored in the `date` field.",
+      "line": 345,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 659,
+          "context": "Source attribution for debugging |\n| **REQ-051** | CGM timestamps MUST be epoch millis"
+        }
+      ],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "documented"
+    },
+    "REQ-052": {
+      "id": "REQ-052",
+      "title": "Follower Source Indication",
+      "statement": "CGM entries sourced from follower mode (Nightscout, Dexcom Share, LibreLinkUp) SHOULD indicate follower mode in the `device` field.",
+      "line": 361,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 660,
+          "context": "n UTC | Timezone-agnostic storage |\n| **REQ-052** | Follower-sourced entries SHOULD ind"
+        }
+      ],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "documented"
+    },
+    "REQ-053": {
+      "id": "REQ-053",
+      "title": "Calibration Provenance (Proposed)",
+      "statement": "CGM entries SHOULD include metadata indicating which calibration algorithm produced the glucose value.",
+      "line": 377,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 661,
+          "context": "Distinguish direct vs cloud data |\n| **REQ-053** | Calibration algorithm SHOULD be tra"
+        }
+      ],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "documented"
+    },
+    "REQ-054": {
+      "id": "REQ-054",
+      "title": "Duplicate Prevention via UUID",
+      "statement": "CGM data producers SHOULD generate a client-side UUID for each reading and use upsert semantics to prevent duplicates.",
+      "line": 394,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 662,
+          "context": "metadata | Calibration provenance |\n| **REQ-054** | Duplicate entries SHOULD be prevent"
+        }
+      ],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "documented"
+    },
+    "REQ-055": {
+      "id": "REQ-055",
+      "title": "Raw Sensor Value Preservation",
+      "statement": "When raw sensor values are available, CGM entries SHOULD include `filtered` and `unfiltered` fields.",
+      "line": 410,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 663,
+          "context": "via client UUID | Data integrity |\n| **REQ-055** | Raw sensor values SHOULD be preserv"
+        }
+      ],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "documented"
+    },
+    "REQ-056": {
+      "id": "REQ-056",
+      "title": "Sensor Age Tracking",
+      "statement": "CGM entries SHOULD include sensor age at reading time when available from the transmitter.",
+      "line": 426,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 664,
+          "context": "| Enable recalibration/validation |\n| **REQ-056** | Sensor age at reading time SHOULD b"
+        }
+      ],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "documented"
+    },
+    "REQ-057": {
+      "id": "REQ-057",
+      "title": "Bridge Device Identification",
+      "statement": "When CGM data is received via a bridge device (MiaoMiao, Bubble, etc.), the bridge type SHOULD be distinguishable from the transmitter type.",
+      "line": 443,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 665,
+          "context": "| Reading reliability assessment |\n| **REQ-057** | Bridge device type SHOULD be distin"
+        }
+      ],
+      "total_refs": 1,
+      "has_mapping": false,
+      "has_assertion": false,
+      "coverage_level": "documented"
+    }
+  },
+  "gaps": {
+    "GAP-AUTH-001": {
+      "id": "GAP-AUTH-001",
+      "title": "`enteredBy` field is unverified",
+      "line": 97,
+      "mapping_refs": [
+        {
+          "file": "mapping/loop/nightscout-sync.md",
+          "line": 517,
+          "context": "for who can issue commands\n- Related to GAP-AUTH-001 (unverified enteredBy)\n\n---\n\n## Alignme"
+        },
+        {
+          "file": "mapping/nightscout/authorization.md",
+          "line": 137,
+          "context": "t |\n|--------|-------------|--------|\n| GAP-AUTH-001 | `enteredBy` is unverified | Cannot au"
+        },
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 307,
+          "context": "d actor identity with authority levels (GAP-AUTH-001, GAP-AUTH-002).\n\n### xDrip+ Unique Iden"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 47,
+          "context": "--|\n| **Identity/Authority** | GAP-003, GAP-AUTH-001, GAP-AUTH-002 | `ControllerIdentity`, `"
+        },
+        {
+          "file": "specs/openapi/aid-treatments-2025.yaml",
+          "line": 324,
+          "context": "free-form string.\n          x-aid-gap: GAP-AUTH-001\n          x-aid-gap-note: enteredBy is"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 16,
+          "context": "cal**: Identity and authority (GAP-003, GAP-AUTH-001)\n    2. **High**: Override lifecycle (G"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 41,
+          "context": "GAP-003 (no unified sync identity) and GAP-AUTH-001 (unverified enteredBy).\n      x-aid-202"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 43,
+          "context": "d-2026: true\n      x-aid-gap: [GAP-003, GAP-AUTH-001]\n      x-aid-source: docs/60-research/c"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/nightscout-api-comparison.md",
+          "line": 290,
+          "context": "urity.js entry point\n\n**Gap Identified (GAP-AUTH-001):** The v3 REST security layer's token-"
+        },
+        {
+          "file": "docs/60-research/controller-registration-protocol-proposal.md",
+          "line": 108,
+          "context": "llers register their identity field |\n| GAP-AUTH-001 | `enteredBy` is unverified | No valida"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 210,
+          "context": "| Loop, Trio, AAPS, Research | 4 |\n| **GAP-AUTH-001** | enteredBy unverified | All controll"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 364,
+          "context": "gh GAP-PUMP-009 |\n| Authorization | 2 | GAP-AUTH-001, GAP-AUTH-002 |\n| BLE Protocol | 5 | GA"
+        }
+      ],
+      "total_refs": 12,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-AUTH-002": {
+      "id": "GAP-AUTH-002",
+      "title": "No authority hierarchy in Nightscout",
+      "line": 121,
+      "mapping_refs": [
+        {
+          "file": "mapping/nightscout/authorization.md",
+          "line": 138,
+          "context": "ied | Cannot audit who made changes |\n| GAP-AUTH-002 | No authority hierarchy | All writes t"
+        },
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 307,
+          "context": "ty with authority levels (GAP-AUTH-001, GAP-AUTH-002).\n\n### xDrip+ Unique Identifiers\n\n| Ide"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 47,
+          "context": "ty/Authority** | GAP-003, GAP-AUTH-001, GAP-AUTH-002 | `ControllerIdentity`, `DocumentAuthor"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 87,
+          "context": "r document ownership.\n        Addresses GAP-AUTH-002 (no authority hierarchy).\n      x-aid-2"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 89,
+          "context": "x-aid-2026: true\n      x-aid-gap: GAP-AUTH-002\n      properties:\n        authority:"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/nightscout-api-comparison.md",
+          "line": 300,
+          "context": "ion for REST clients\n\n**Gap Identified (GAP-AUTH-002):** v1 clients using API_SECRET cannot"
+        },
+        {
+          "file": "docs/60-research/controller-registration-protocol-proposal.md",
+          "line": 109,
+          "context": "ollers authenticate at registration |\n| GAP-AUTH-002 | No authority hierarchy | All writes t"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 47,
+          "context": "o authority hierarchy | GAP-REMOTE-001, GAP-AUTH-002 |\n| Algorithm debugging | Effect timeli"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 211,
+          "context": "| All controllers, Followers | 4 |\n| **GAP-AUTH-002** | No authority hierarchy | Loop, Trio"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 299,
+          "context": "earch |\n| **Add authority hierarchy** | GAP-AUTH-002 | High | Depends on OIDC Actor Identity"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 335,
+          "context": "**Authority hierarchy implementation** (GAP-AUTH-002) - Depends on [OIDC Actor Identity prop"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 364,
+          "context": "9 |\n| Authorization | 2 | GAP-AUTH-001, GAP-AUTH-002 |\n| BLE Protocol | 5 | GAP-BLE-001 thro"
+        }
+      ],
+      "total_refs": 12,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-SYNC-004": {
+      "id": "GAP-SYNC-004",
+      "title": "Override supersession not tracked in sync",
+      "line": 145,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/aid-controller-sync-patterns.md",
+          "line": 364,
+          "context": "s | All | Reconciliation complexity |\n| GAP-SYNC-004 | Override supersession not tracked | L"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 48,
+          "context": "` |\n| **Override Lifecycle** | GAP-001, GAP-SYNC-004 | `OverrideLifecycle` |\n| **Profile Sem"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/60-research/controller-registration-protocol-proposal.md",
+          "line": 110,
+          "context": "ority granted based on registration |\n| GAP-SYNC-004 | Override supersession not tracked | N"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 46,
+          "context": "session fields in Nightscout | GAP-001, GAP-SYNC-004 |\n| Remote command security | OTP incon"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 167,
+          "context": "erride lifecycle not tracked | GAP-001, GAP-SYNC-004 |\n| Easy device pairing | No key rotati"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 286,
+          "context": "erride supersession fields** | GAP-001, GAP-SYNC-004 | Medium | Schema + client updates |\n|"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 360,
+          "context": "erride Tracking | 4 | GAP-001, GAP-002, GAP-SYNC-004 |\n| Algorithm Opacity | 8 | GAP-ALG-001"
+        }
+      ],
+      "total_refs": 7,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-SYNC-005": {
+      "id": "GAP-SYNC-005",
+      "title": "Algorithm parameters not synced",
+      "line": 171,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/aid-controller-sync-patterns.md",
+          "line": 365,
+          "context": "d | Loop, Trio | History inaccuracy |\n| GAP-SYNC-005 | Algorithm parameters not synced | All"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 37,
+          "context": "S-001 through GAP-DS-004, GAP-SYNC-002, GAP-SYNC-005 |\n| [`aid-profile-2025.yaml`](./aid-pro"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 48,
+          "context": "timelines not uploaded | GAP-SYNC-002, GAP-SYNC-005 |\n| API v3 adoption | No Swift SDK, mig"
+        }
+      ],
+      "total_refs": 3,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-SYNC-002": {
+      "id": "GAP-SYNC-002",
+      "title": "Effect timelines not uploaded to Nightscout",
+      "line": 205,
+      "mapping_refs": [
+        {
+          "file": "mapping/loop/nightscout-sync.md",
+          "line": 494,
+          "context": "uploads are currently posting\n```\n\n### GAP-SYNC-002: Effect Timelines Not Uploaded\n\n**Issue"
+        },
+        {
+          "file": "mapping/cross-project/aid-controller-sync-patterns.md",
+          "line": 362,
+          "context": "duplicates | Loop | Data integrity |\n| GAP-SYNC-002 | Effect timelines not uploaded | Loop"
+        },
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 982,
+          "context": "ned predictions, not component effects (GAP-SYNC-002). oref0's separate arrays enable algori"
+        },
+        {
+          "file": "mapping/oref0/README.md",
+          "line": 157,
+          "context": ".\n\n## Relevance to Alignment Goals\n\n### GAP-SYNC-002 Resolution\n\noref0 outputs separate pred"
+        },
+        {
+          "file": "mapping/oref0/carb-math.md",
+          "line": 213,
+          "context": "120g (maxCOB) |\n\n## Cross-Project Note: GAP-SYNC-002\n\nThe COB prediction curve (`predBGs.COB"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 37,
+          "context": "overed | GAP-DS-001 through GAP-DS-004, GAP-SYNC-002, GAP-SYNC-005 |\n| [`aid-profile-2025.ya"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 48,
+          "context": "gging | Effect timelines not uploaded | GAP-SYNC-002, GAP-SYNC-005 |\n| API v3 adoption | No"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 145,
+          "context": "rison | Effect timelines not uploaded | GAP-SYNC-002 |\n| IOB reconstruction | Insulin model"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 208,
+          "context": ", Trio, Followers, Caregivers | 4 |\n| **GAP-SYNC-002** | Effect timelines not uploaded | Loo"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 296,
+          "context": "dd effect timelines to devicestatus** | GAP-SYNC-002, GAP-ALG-* | Medium | Controllers, rese"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 336,
+          "context": "**Effect timeline schema and uploads** (GAP-SYNC-002)\n\n**Note**: Phases 2-4 benefit from coo"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 361,
+          "context": "| 8 | GAP-ALG-001 through GAP-ALG-008, GAP-SYNC-002 |\n| Insulin Models | 4 | GAP-INS-001 th"
+        }
+      ],
+      "total_refs": 12,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-REMOTE-001": {
+      "id": "GAP-REMOTE-001",
+      "title": "Remote command authorization unverified",
+      "line": 239,
+      "mapping_refs": [
+        {
+          "file": "mapping/loop/nightscout-sync.md",
+          "line": 512,
+          "context": "e effects on profile not reflected\n\n### GAP-REMOTE-001: Remote Command Authorization\n\n**Issue*"
+        },
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1095,
+          "context": "require OTP for override commands. See [GAP-REMOTE-001](../../traceability/gaps.md#gap-remote-"
+        },
+        {
+          "file": "mapping/loopfollow/remote-commands.md",
+          "line": 526,
+          "context": "override commands skip OTP validation (GAP-REMOTE-001)\n2. **TRC**: Most secure - AES-256-GCM"
+        },
+        {
+          "file": "mapping/loopcaregiver/remote-commands.md",
+          "line": 59,
+          "context": ", `remoteAddress: String` | **No** (See GAP-REMOTE-001) |\n| **Cancel Override** | `cancelTempo"
+        },
+        {
+          "file": "mapping/loopcaregiver/remote-commands.md",
+          "line": 326,
+          "context": "equire OTP validation on the Loop side (GAP-REMOTE-001).\n\n---\n\n## Data Models\n\n### RemoteComma"
+        },
+        {
+          "file": "mapping/loopcaregiver/remote-commands.md",
+          "line": 380,
+          "context": "escription |\n|--------|-------------|\n| GAP-REMOTE-001 | Override commands not protected by OT"
+        },
+        {
+          "file": "mapping/loopcaregiver/authentication.md",
+          "line": 387,
+          "context": "mmands don't require OTP on Loop side | GAP-REMOTE-001 |\n| **QR Security** | QR code screensho"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/remote-commands-comparison.md",
+          "line": 181,
+          "context": "/CR adjustments\n- This is documented as GAP-REMOTE-001\n\n---\n\n### AAPS: SMS with TOTP + PIN\n\n**"
+        },
+        {
+          "file": "docs/10-domain/remote-commands-comparison.md",
+          "line": 580,
+          "context": "intext.\n\n---\n\n## Key Security Gaps\n\n### GAP-REMOTE-001: Loop Override Commands Not Protected b"
+        },
+        {
+          "file": "docs/10-domain/remote-commands-comparison.md",
+          "line": 598,
+          "context": "ct insulin dosing.\n\n**Reference**: See [GAP-REMOTE-001 in gaps.md](../../traceability/gaps.md#"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 47,
+          "context": "inconsistency, no authority hierarchy | GAP-REMOTE-001, GAP-AUTH-002 |\n| Algorithm debugging |"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 106,
+          "context": "s | OTP not required for all commands | GAP-REMOTE-001 |\n| Command status tracking | Different"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 165,
+          "context": "TP inconsistency across command types | GAP-REMOTE-001 |\n| Reliable data sync | Duplicates, zo"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 207,
+          "context": "io, AAPS, Followers, Research | 5 |\n| **GAP-REMOTE-001** | Override commands skip OTP | Loop,"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 287,
+          "context": "s |\n| **OTP for all remote commands** | GAP-REMOTE-001 | Medium* | Requires coordinated releas"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 329,
+          "context": "s)\n\n1. **OTP for all remote commands** (GAP-REMOTE-001) - Requires Loop + caregiver app coordi"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 359,
+          "context": "h GAP-API-005 |\n| Remote Commands | 7 | GAP-REMOTE-001 through GAP-REMOTE-007 |\n| Override Tra"
+        }
+      ],
+      "total_refs": 17,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-PUMP-006": {
+      "id": "GAP-PUMP-006",
+      "title": "Medtronic RF Protocol Lacks Encryption",
+      "line": 276,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 564,
+          "context": "|\n|--------|-------------|--------|\n| **GAP-PUMP-006** | Medtronic RF lacks encryption | Rep"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-PUMP-007": {
+      "id": "GAP-PUMP-007",
+      "title": "Omnipod EAP-AKA Uses Non-Standard Milenage",
+      "line": 301,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 565,
+          "context": "ryption | Replay attacks possible |\n| **GAP-PUMP-007** | Omnipod uses non-standard Milenage"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-PUMP-008": {
+      "id": "GAP-PUMP-008",
+      "title": "Dana RS Encryption Type Detection",
+      "line": 325,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 566,
+          "context": "quires Insulet-specific constants |\n| **GAP-PUMP-008** | Dana RS encryption mode detection |"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-PUMP-009": {
+      "id": "GAP-PUMP-009",
+      "title": "History Entry Size Varies by Medtronic Model",
+      "line": 349,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 567,
+          "context": "e detection | Must handle 3 modes |\n| **GAP-PUMP-009** | Medtronic history size varies by mo"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 363,
+          "context": "ommunication | 9 | GAP-PUMP-001 through GAP-PUMP-009 |\n| Authorization | 2 | GAP-AUTH-001, G"
+        }
+      ],
+      "total_refs": 2,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-TREAT-001": {
+      "id": "GAP-TREAT-001",
+      "title": "Absorption Time Unit Mismatch",
+      "line": 422,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 92,
+          "context": "tifier` | `uuid` |\n\n**Unit Differences (GAP-TREAT-001, GAP-TREAT-002)**:\n- Absorption time: L"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 36,
+          "context": "| treatments | \u2705 Complete | \u2705 Covered | GAP-TREAT-001 through GAP-TREAT-007, GAP-003 |\n| [`ai"
+        },
+        {
+          "file": "specs/openapi/aid-treatments-2025.yaml",
+          "line": 242,
+          "context": "ECONDS internally.\n          x-aid-gap: GAP-TREAT-001\n          x-aid-gap-note: Unit mismatch"
+        }
+      ],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 18,
+          "context": "nversion\n    \n    related_gaps:\n      - GAP-TREAT-001  # Absorption time units\n      - GAP-TR"
+        }
+      ],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 139,
+          "context": "field | `absorptionTime` (minutes) |\n\n**GAP-TREAT-001**: Absorption time units differ (Loop/T"
+        },
+        {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 370,
+          "context": "te();\n```\n\n---\n\n## Identified Gaps\n\n### GAP-TREAT-001: Absorption Time Unit Mismatch\n\n**Issue"
+        },
+        {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 450,
+          "context": "mappings |\n| 2026-01-17 | Agent | Added GAP-TREAT-001 through GAP-TREAT-007 |"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 356,
+          "context": "|--------------|\n| Treatment Sync | 7 | GAP-TREAT-001 through GAP-TREAT-007 |\n| CGM Data Sour"
+        }
+      ],
+      "total_refs": 8,
+      "addressed_in_spec": true,
+      "has_assertion": true
+    },
+    "GAP-TREAT-002": {
+      "id": "GAP-TREAT-002",
+      "title": "Duration Unit Inconsistency",
+      "line": 444,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 92,
+          "context": "` |\n\n**Unit Differences (GAP-TREAT-001, GAP-TREAT-002)**:\n- Absorption time: Loop/Trio use se"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/aid-treatments-2025.yaml",
+          "line": 209,
+          "context": "Trio: Not used\n          x-aid-gap: GAP-TREAT-002\n          x-aid-gap-note: SMB identific"
+        }
+      ],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 19,
+          "context": "AT-001  # Absorption time units\n      - GAP-TREAT-002  # Duration units\n      - GAP-TREAT-003"
+        }
+      ],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 214,
+          "context": "**Nightscout** | Minutes | Native |\n\n**GAP-TREAT-002**: Duration units vary significantly ac"
+        },
+        {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 378,
+          "context": "nversion in upload/download logic.\n\n### GAP-TREAT-002: Duration Unit Inconsistency\n\n**Issue**"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 209,
+          "context": "| Loop, Trio, AAPS, Research | 4 |\n| **GAP-TREAT-002** | Duration unit inconsistency | Loop,"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 297,
+          "context": "ch |\n| **Standardize duration units** | GAP-TREAT-002, GAP-PUMP-003 | Medium* | Convention ch"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 318,
+          "context": "*Document duration unit expectations** (GAP-TREAT-002) - Clarify minutes for Nightscout inter"
+        }
+      ],
+      "total_refs": 8,
+      "addressed_in_spec": true,
+      "has_assertion": true
+    },
+    "GAP-TREAT-003": {
+      "id": "GAP-TREAT-003",
+      "title": "No Explicit SMB Event Type",
+      "line": 469,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 80,
+          "context": "Bolus` (no explicit SMB eventType - see GAP-TREAT-003)\n\n#### Carb Entry Fields\n\n| Field | Nig"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 57,
+          "context": "**Treatment Precision** | GAP-PUMP-005, GAP-TREAT-003 | `TreatmentPrecision` |\n\n---\n\n## Metho"
+        },
+        {
+          "file": "specs/openapi/aid-treatments-2025.yaml",
+          "line": 264,
+          "context": "cted uses SECONDS.\n          x-aid-gap: GAP-TREAT-003\n          x-aid-gap-note: Duration unit"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 524,
+          "context": "GAP-PUMP-005 (delivery uncertainty) and GAP-TREAT-003 (duration units).\n      x-aid-2026: tru"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 526,
+          "context": "6: true\n      x-aid-gap: [GAP-PUMP-005, GAP-TREAT-003]\n      properties:\n        programmedUn"
+        }
+      ],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 20,
+          "context": "GAP-TREAT-002  # Duration units\n      - GAP-TREAT-003  # SMB event type\n      - GAP-TREAT-004"
+        },
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 169,
+          "context": ": true + small amount\n          - Note: GAP-TREAT-003 documents unreliability of inference\n\nc"
+        }
+      ],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 386,
+          "context": "htscout, with explicit conversion.\n\n### GAP-TREAT-003: No Explicit SMB Event Type\n\n**Issue**:"
+        }
+      ],
+      "total_refs": 8,
+      "addressed_in_spec": true,
+      "has_assertion": true
+    },
+    "GAP-TREAT-004": {
+      "id": "GAP-TREAT-004",
+      "title": "Split/Extended Bolus Representation Mismatch",
+      "line": 493,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 21,
+          "context": "GAP-TREAT-003  # SMB event type\n      - GAP-TREAT-004  # Split bolus\n      - GAP-TREAT-005  #"
+        }
+      ],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 396,
+          "context": "tType: \"SMB\"` to Nightscout schema\n\n### GAP-TREAT-004: Split Bolus Representation Mismatch\n\n*"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 67,
+          "context": "as it, but not portable | GAP-PUMP-002, GAP-TREAT-004 |\n| eCarbs support | Has it, but not re"
+        }
+      ],
+      "total_refs": 3,
+      "addressed_in_spec": false,
+      "has_assertion": true
+    },
+    "GAP-TREAT-005": {
+      "id": "GAP-TREAT-005",
+      "title": "Loop POST-Only Creates Duplicates",
+      "line": 518,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 123,
+          "context": "**: GAP-003 (no unified sync identity), GAP-TREAT-005 (Loop POST duplicates)\n\n### Glucose Dat"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 22,
+          "context": "- GAP-TREAT-004  # Split bolus\n      - GAP-TREAT-005  # Loop POST duplicates\n      - GAP-TRE"
+        },
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 125,
+          "context": "t.\n          Loop's POST-only behavior (GAP-TREAT-005) cannot satisfy this test.\n        give"
+        }
+      ],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 405,
+          "context": "uses may not round-trip correctly.\n\n### GAP-TREAT-005: Loop POST-Only Creates Duplicates\n\n**I"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 45,
+          "context": "ST-only creates duplicates, no upsert | GAP-TREAT-005, GAP-003 |\n| Override lifecycle trackin"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 166,
+          "context": "e data sync | Duplicates, zombie data | GAP-TREAT-005, GAP-API-001 |\n| Accurate history | Ove"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 215,
+          "context": "ed | xDrip+, DiaBLE, Research | 3 |\n| **GAP-TREAT-005** | Loop POST-only duplicates | Loop, T"
+        }
+      ],
+      "total_refs": 7,
+      "addressed_in_spec": false,
+      "has_assertion": true
+    },
+    "GAP-TREAT-006": {
+      "id": "GAP-TREAT-006",
+      "title": "Retroactive Edit Handling",
+      "line": 546,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 23,
+          "context": "EAT-005  # Loop POST duplicates\n      - GAP-TREAT-006  # Retroactive edits\n      - GAP-TREAT-"
+        }
+      ],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 418,
+          "context": "s dedup key, or use API v3 upsert.\n\n### GAP-TREAT-006: Retroactive Edit Handling\n\n**Issue**:"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 148,
+          "context": "trails | No edit history, soft delete | GAP-TREAT-006 |\n\n**What Blocks Them**:\n- Metadata not"
+        }
+      ],
+      "total_refs": 3,
+      "addressed_in_spec": false,
+      "has_assertion": true
+    },
+    "GAP-TREAT-007": {
+      "id": "GAP-TREAT-007",
+      "title": "eCarbs Not Universally Supported",
+      "line": 572,
+      "mapping_refs": [],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 36,
+          "context": "ete | \u2705 Covered | GAP-TREAT-001 through GAP-TREAT-007, GAP-003 |\n| [`aid-devicestatus-2025.ya"
+        }
+      ],
+      "assertion_refs": [
+        {
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "line": 24,
+          "context": "-TREAT-006  # Retroactive edits\n      - GAP-TREAT-007  # eCarbs support\n\n    tests:\n      bol"
+        }
+      ],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 427,
+          "context": "treatments may not sync properly.\n\n### GAP-TREAT-007: eCarbs Not Universally Supported\n\n**Is"
+        },
+        {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 450,
+          "context": "7 | Agent | Added GAP-TREAT-001 through GAP-TREAT-007 |"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 68,
+          "context": "as it, but not recognized by iOS apps | GAP-TREAT-007 |\n| Multi-insulin tracking | Would bene"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 356,
+          "context": "atment Sync | 7 | GAP-TREAT-001 through GAP-TREAT-007 |\n| CGM Data Sources | 6 | GAP-CGM-001"
+        }
+      ],
+      "total_refs": 6,
+      "addressed_in_spec": true,
+      "has_assertion": true
+    },
+    "GAP-CGM-001": {
+      "id": "GAP-CGM-001",
+      "title": "DiaBLE lacks treatment support",
+      "line": 1224,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 749,
+          "context": "|\n|--------|-------------|--------|\n| **GAP-CGM-001** | Calibration algorithm not tracked |"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 35,
+          "context": "| GAP-ENTRY-001 through GAP-ENTRY-005, GAP-CGM-001 through GAP-CGM-006 |\n| [`aid-treatment"
+        },
+        {
+          "file": "specs/openapi/README.md",
+          "line": 55,
+          "context": "RawSensorData` |\n| **CGM Provenance** | GAP-CGM-001, GAP-CGM-002, GAP-CGM-003, GAP-CGM-006"
+        },
+        {
+          "file": "specs/openapi/aid-entries-2025.yaml",
+          "line": 301,
+          "context": "gorithm used.\n                Addresses GAP-CGM-001 (calibration provenance not tracked)."
+        },
+        {
+          "file": "specs/openapi/aid-entries-2025.yaml",
+          "line": 309,
+          "context": "aid-2026: true\n              x-aid-gap: GAP-CGM-001\n            sensorId:\n              typ"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 18,
+          "context": "02)\n    3. **Medium**: Data provenance (GAP-CGM-001 through GAP-CGM-006)\n    4. **Low**: En"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 358,
+          "context": "=\n    # CGM DATA PROVENANCE EXTENSIONS (GAP-CGM-001 through GAP-CGM-006)\n    # ============"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 365,
+          "context": "calibration tracking.\n        Addresses GAP-CGM-001 (calibration algorithm), GAP-CGM-002 (b"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 368,
+          "context": "x-aid-2026: true\n      x-aid-gap: [GAP-CGM-001, GAP-CGM-002, GAP-CGM-003]\n      x-aid-"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 385,
+          "context": "description: CGM sensor hardware (GAP-CGM-001)\n        sensorId:\n          type: stri"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 430,
+          "context": "escription: Calibration algorithm used (GAP-CGM-001)\n        rawValue:\n          type: numb"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 236,
+          "context": "ion.\n\n### Calibration Provenance Gap\n\n**GAP-CGM-001**: Nightscout entries do not track whic"
+        },
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 589,
+          "context": "|\n|--------|-------------|--------|\n| **GAP-CGM-001** | Calibration algorithm not tracked i"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 86,
+          "context": "cking | No schema field for algorithm | GAP-CGM-001 |\n| Bridge device attribution | Device"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 147,
+          "context": "tion analysis | Algorithm not tracked | GAP-CGM-001 |\n| Treatment audit trails | No edit hi"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 214,
+          "context": "or iOS | Loop, Trio, Research | 3 |\n| **GAP-CGM-001** | Calibration algorithm not tracked |"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 308,
+          "context": "| **Add calibration algorithm field** | GAP-CGM-001 | Low | CGM producers, research |\n| **A"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 319,
+          "context": "libration algorithm to device string** (GAP-CGM-001) - Convention, no schema change\n\n### Ph"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 357,
+          "context": "AP-TREAT-007 |\n| CGM Data Sources | 6 | GAP-CGM-001 through GAP-CGM-006 |\n| API Fragmentati"
+        }
+      ],
+      "total_refs": 19,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-CGM-002": {
+      "id": "GAP-CGM-002",
+      "title": "xdrip-js limited to Dexcom G5/G6",
+      "line": 1250,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 750,
+          "context": "not determine calibration quality |\n| **GAP-CGM-002** | Bridge device info lost in upload |"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 55,
+          "context": "` |\n| **CGM Provenance** | GAP-CGM-001, GAP-CGM-002, GAP-CGM-003, GAP-CGM-006 | `CGMProvena"
+        },
+        {
+          "file": "specs/openapi/aid-entries-2025.yaml",
+          "line": 316,
+          "context": "aid-2026: true\n              x-aid-gap: GAP-CGM-002\n            transmitterId:"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 365,
+          "context": "es GAP-CGM-001 (calibration algorithm), GAP-CGM-002 (bridge info),\n        GAP-CGM-003 (sen"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 368,
+          "context": "26: true\n      x-aid-gap: [GAP-CGM-001, GAP-CGM-002, GAP-CGM-003]\n      x-aid-source: trace"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 414,
+          "context": "description: Bridge device type (GAP-CGM-002)\n        bridgeFirmware:\n          type"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 417,
+          "context": "description: Bridge firmware version (GAP-CGM-002)\n        calibrationAlgorithm:"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 503,
+          "context": "### Missing Provenance Information\n\n**GAP-CGM-002**: The following provenance information"
+        },
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 590,
+          "context": "not determine calibration quality |\n| **GAP-CGM-002** | Bridge device info lost in upload |"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 87,
+          "context": "ibution | Device field not structured | GAP-CGM-002, GAP-ENTRY-003 |\n| Raw value preservati"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 307,
+          "context": "|\n| **Structure device field format** | GAP-CGM-002, GAP-ENTRY-003 | Low | CGM producers, r"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 317,
+          "context": "1. **Structure device field format** (GAP-CGM-002) - Convention, backwards compatible\n2."
+        }
+      ],
+      "total_refs": 12,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-CGM-003": {
+      "id": "GAP-CGM-003",
+      "title": "Libre 3 encryption not fully documented",
+      "line": 1276,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 751,
+          "context": "| Cannot identify hardware issues |\n| **GAP-CGM-003** | Sensor age not standardized | Canno"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 55,
+          "context": "rovenance** | GAP-CGM-001, GAP-CGM-002, GAP-CGM-003, GAP-CGM-006 | `CGMProvenance` |\n| **In"
+        },
+        {
+          "file": "specs/openapi/aid-entries-2025.yaml",
+          "line": 323,
+          "context": "aid-2026: true\n              x-aid-gap: GAP-CGM-003\n            trendRate:\n              ty"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 366,
+          "context": "hm), GAP-CGM-002 (bridge info),\n        GAP-CGM-003 (sensor age).\n      x-aid-2026: true"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 368,
+          "context": "x-aid-gap: [GAP-CGM-001, GAP-CGM-002, GAP-CGM-003]\n      x-aid-source: traceability/gaps."
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 392,
+          "context": ": Sensor insertion timestamp (epoch ms, GAP-CGM-003)\n        sensorAgeMinutes:\n          ty"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 395,
+          "context": "n: Sensor age at reading time (minutes, GAP-CGM-003)\n        transmitterId:\n          type:"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 591,
+          "context": "| Cannot identify hardware issues |\n| **GAP-CGM-003** | Sensor age not standardized | Canno"
+        }
+      ],
+      "total_refs": 8,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-CGM-004": {
+      "id": "GAP-CGM-004",
+      "title": "No standardized Dexcom BLE protocol specification",
+      "line": 1302,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 752,
+          "context": "Cannot assess reading reliability |\n| **GAP-CGM-004** | No universal source taxonomy | Free"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 52,
+          "context": "| **Source Taxonomy** | GAP-ENTRY-003, GAP-CGM-004 | `SourceTaxonomy` |\n| **Entry Deduplic"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 277,
+          "context": "on.\n        Addresses GAP-ENTRY-003 and GAP-CGM-004 (no universal source taxonomy).\n      x"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 279,
+          "context": ": true\n      x-aid-gap: [GAP-ENTRY-003, GAP-CGM-004]\n      x-aid-source: docs/10-domain/ent"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 592,
+          "context": "Cannot assess reading reliability |\n| **GAP-CGM-004** | No universal source taxonomy | Free"
+        }
+      ],
+      "total_refs": 5,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-CGM-005": {
+      "id": "GAP-CGM-005",
+      "title": "Raw Values Not Uploaded by iOS",
+      "line": 695,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 753,
+          "context": "ee-form `device` field unreliable |\n| **GAP-CGM-005** | Raw values not uploaded by iOS | Ca"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 54,
+          "context": "| **Raw Sensor Data** | GAP-ENTRY-005, GAP-CGM-005 | `RawSensorData` |\n| **CGM Provenance*"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 336,
+          "context": "on.\n        Addresses GAP-ENTRY-005 and GAP-CGM-005 (raw values not from iOS).\n      x-aid-"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 338,
+          "context": ": true\n      x-aid-gap: [GAP-ENTRY-005, GAP-CGM-005]\n      x-aid-source: docs/10-domain/ent"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 593,
+          "context": "ee-form `device` field unreliable |\n| **GAP-CGM-005** | Raw values not uploaded by iOS | Ca"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 88,
+          "context": "servation | iOS APIs don't expose raw | GAP-CGM-005 |\n| Follower source distinction | No so"
+        }
+      ],
+      "total_refs": 6,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-CGM-006": {
+      "id": "GAP-CGM-006",
+      "title": "Follower Source Not Distinguished",
+      "line": 719,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 754,
+          "context": "| Cannot recalibrate or validate |\n| **GAP-CGM-006** | Follower source not distinguished |"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 35,
+          "context": "ough GAP-ENTRY-005, GAP-CGM-001 through GAP-CGM-006 |\n| [`aid-treatments-2025.yaml`](./aid-"
+        },
+        {
+          "file": "specs/openapi/README.md",
+          "line": 55,
+          "context": "GAP-CGM-001, GAP-CGM-002, GAP-CGM-003, GAP-CGM-006 | `CGMProvenance` |\n| **Insulin Metadat"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 18,
+          "context": "*: Data provenance (GAP-CGM-001 through GAP-CGM-006)\n    4. **Low**: Enhanced metadata (tre"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 307,
+          "context": "|\n            Data path type. Addresses GAP-CGM-006 (follower not distinguished).\n\n    Entr"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 358,
+          "context": "VENANCE EXTENSIONS (GAP-CGM-001 through GAP-CGM-006)\n    # ================================"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 440,
+          "context": "description: Data path type (GAP-CGM-006)\n\n    # ==============================="
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 594,
+          "context": "| Cannot recalibrate or validate |\n| **GAP-CGM-006** | Follower source not distinguished |"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 89,
+          "context": "rce distinction | No sourceType field | GAP-CGM-006 |\n\n**What Blocks Them**:\n- Nightscout s"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 309,
+          "context": "|\n| **Add follower source indicator** | GAP-CGM-006 | Low | CGM producers, research |\n\n---"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 357,
+          "context": "Data Sources | 6 | GAP-CGM-001 through GAP-CGM-006 |\n| API Fragmentation | 5 | GAP-API-001"
+        }
+      ],
+      "total_refs": 11,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-REMOTE-002": {
+      "id": "GAP-REMOTE-002",
+      "title": "No Command Signing Across Systems",
+      "line": 743,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/remote-commands-comparison.md",
+          "line": 600,
+          "context": "ified) for full gap documentation.\n\n### GAP-REMOTE-002: No Command Signing Across Systems\n\n**S"
+        }
+      ],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-REMOTE-003": {
+      "id": "GAP-REMOTE-003",
+      "title": "No Key Rotation Mechanism",
+      "line": 772,
+      "mapping_refs": [
+        {
+          "file": "mapping/loopcaregiver/authentication.md",
+          "line": 386,
+          "context": "y** | Shared secret has no expiration | GAP-REMOTE-003 |\n| **Override OTP Skip** | Override co"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/remote-commands-comparison.md",
+          "line": 612,
+          "context": "symmetric signatures for commands.\n\n### GAP-REMOTE-003: No Key Rotation Mechanism\n\n**Severity*"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 108,
+          "context": "ion | No automatic rotation mechanism | GAP-REMOTE-003 |\n| Unified auth experience | Different"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 168,
+          "context": "ing | No key rotation, static secrets | GAP-REMOTE-003 |\n\n**What Blocks Them**:\n- Security imp"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 330,
+          "context": "dination\n2. **Key rotation mechanism** (GAP-REMOTE-003) - Depends on security roadmap\n\n### Pha"
+        }
+      ],
+      "total_refs": 5,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-REMOTE-004": {
+      "id": "GAP-REMOTE-004",
+      "title": "Inconsistent Safety Enforcement Layer",
+      "line": 798,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/remote-commands-comparison.md",
+          "line": 623,
+          "context": "crets increase risk of compromise.\n\n### GAP-REMOTE-004: Inconsistent Safety Enforcement Layer"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 109,
+          "context": "xperience | Different auth per system | GAP-REMOTE-004 |\n\n**What Blocks Them**:\n- Security cha"
+        }
+      ],
+      "total_refs": 2,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-API-001": {
+      "id": "GAP-API-001",
+      "title": "API v1 Cannot Detect Deletions",
+      "line": 825,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1176,
+          "context": "`sort$desc=field` |\n\n**Gap Reference**: GAP-API-001 (v1 cannot detect deletions), GAP-API-0"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/nightscout-api-comparison.md",
+          "line": 629,
+          "context": "ncy |\n\n---\n\n## 11. Identified Gaps\n\n### GAP-API-001: v1 Cannot Detect Deletions\n**Severity:"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 166,
+          "context": "uplicates, zombie data | GAP-TREAT-005, GAP-API-001 |\n| Accurate history | Override lifecyc"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 216,
+          "context": "| Loop, Trio, Nightscout Core | 3 |\n| **GAP-API-001** | v1 cannot detect deletions | Loop,"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 358,
+          "context": "GAP-CGM-006 |\n| API Fragmentation | 5 | GAP-API-001 through GAP-API-005 |\n| Remote Commands"
+        }
+      ],
+      "total_refs": 5,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-INS-001": {
+      "id": "GAP-INS-001",
+      "title": "Insulin Model Metadata Not Synced to Nightscout",
+      "line": 852,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 654,
+          "context": "|\n|--------|-------------|--------|\n| **GAP-INS-001** | Insulin model metadata not synced t"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 38,
+          "context": "ile | \u2705 Complete | \u2705 Covered | GAP-002, GAP-INS-001 through GAP-INS-004 |\n| [`aid-alignment"
+        },
+        {
+          "file": "specs/openapi/README.md",
+          "line": 56,
+          "context": "MProvenance` |\n| **Insulin Metadata** | GAP-INS-001 through GAP-INS-004 | `InsulinMetadata`"
+        },
+        {
+          "file": "specs/openapi/aid-treatments-2025.yaml",
+          "line": 218,
+          "context": "supports multiple)\n          x-aid-gap: GAP-INS-001\n          x-aid-gap-note: Insulin metad"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 485,
+          "context": "adata for treatments.\n        Addresses GAP-INS-001 through GAP-INS-004.\n      x-aid-2026:"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 487,
+          "context": "x-aid-2026: true\n      x-aid-gap: [GAP-INS-001, GAP-INS-002, GAP-INS-003, GAP-INS-004]"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/insulin-curves-deep-dive.md",
+          "line": 472,
+          "context": "n brand/type for dosing decisions\n\nSee [GAP-INS-001](#related-gaps) for details.\n\n---\n\n## C"
+        },
+        {
+          "file": "docs/10-domain/insulin-curves-deep-dive.md",
+          "line": 493,
+          "context": "U100-U500 |\n\n---\n\n## Related Gaps\n\n- **GAP-INS-001**: Insulin model metadata not synced to"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 146,
+          "context": "n | Insulin model metadata not synced | GAP-INS-001, GAP-INS-003 |\n| Calibration analysis |"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 212,
+          "context": "| Loop, Trio, AAPS, Followers | 4 |\n| **GAP-INS-001** | Insulin model not synced | Loop, Tr"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 298,
+          "context": "ts |\n| **Add insulin model metadata** | GAP-INS-001, GAP-INS-003 | Medium | Controllers, re"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 325,
+          "context": "`insulinModel` object to treatments** (GAP-INS-001)\n\n### Phase 3: Security Improvements (C"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 362,
+          "context": ", GAP-SYNC-002 |\n| Insulin Models | 4 | GAP-INS-001 through GAP-INS-004 |\n| Pump Communicat"
+        }
+      ],
+      "total_refs": 13,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-INS-002": {
+      "id": "GAP-INS-002",
+      "title": "No Standardized Multi-Insulin Representation",
+      "line": 886,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 655,
+          "context": "etermine which curve produced IOB |\n| **GAP-INS-002** | No standardized multi-insulin repre"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/aid-profile-2025.yaml",
+          "line": 120,
+          "context": "Trio: settings.dia\n          x-aid-gap: GAP-INS-002\n          x-aid-gap-note: DIA not synce"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 487,
+          "context": "26: true\n      x-aid-gap: [GAP-INS-001, GAP-INS-002, GAP-INS-003, GAP-INS-004]\n      proper"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/insulin-curves-deep-dive.md",
+          "line": 494,
+          "context": "l metadata not synced to Nightscout\n- **GAP-INS-002**: No standardized multi-insulin repres"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 69,
+          "context": "in tracking | Would benefit MDI users | GAP-INS-002 |\n\n**What Blocks Them**:\n- iOS apps don"
+        }
+      ],
+      "total_refs": 5,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-INS-003": {
+      "id": "GAP-INS-003",
+      "title": "Peak Time Customization Not Captured in Treatments",
+      "line": 919,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 656,
+          "context": "ip+ `insulinJSON` is non-portable |\n| **GAP-INS-003** | Peak time customization not capture"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/aid-profile-2025.yaml",
+          "line": 176,
+          "context": "ed across systems.\n          x-aid-gap: GAP-INS-003\n          x-aid-gap-note: Peak time not"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 487,
+          "context": "x-aid-gap: [GAP-INS-001, GAP-INS-002, GAP-INS-003, GAP-INS-004]\n      properties:"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/insulin-curves-deep-dive.md",
+          "line": 495,
+          "context": "rdized multi-insulin representation\n- **GAP-INS-003**: Peak time customization not captured"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 146,
+          "context": "odel metadata not synced | GAP-INS-001, GAP-INS-003 |\n| Calibration analysis | Algorithm no"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 298,
+          "context": "insulin model metadata** | GAP-INS-001, GAP-INS-003 | Medium | Controllers, research |\n| **"
+        }
+      ],
+      "total_refs": 6,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-INS-004": {
+      "id": "GAP-INS-004",
+      "title": "xDrip+ Linear Trapezoid Model Incompatible with AID Exponential",
+      "line": 951,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 657,
+          "context": "oduce historical IOB calculations |\n| **GAP-INS-004** | xDrip+ linear trapezoid model incom"
+        }
+      ],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 38,
+          "context": "Covered | GAP-002, GAP-INS-001 through GAP-INS-004 |\n| [`aid-alignment-extensions.yaml`](."
+        },
+        {
+          "file": "specs/openapi/README.md",
+          "line": 56,
+          "context": "nsulin Metadata** | GAP-INS-001 through GAP-INS-004 | `InsulinMetadata` |\n| **Treatment Pre"
+        },
+        {
+          "file": "specs/openapi/aid-profile-2025.yaml",
+          "line": 193,
+          "context": "x-aid-2026: true\n          x-aid-gap: GAP-INS-004\n\n    TimedValue:\n      type: object"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 485,
+          "context": ".\n        Addresses GAP-INS-001 through GAP-INS-004.\n      x-aid-2026: true\n      x-aid-gap"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 487,
+          "context": "[GAP-INS-001, GAP-INS-002, GAP-INS-003, GAP-INS-004]\n      properties:\n        insulinType:"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/insulin-curves-deep-dive.md",
+          "line": 496,
+          "context": "mization not captured in treatments\n- **GAP-INS-004**: xDrip+ linear trapezoid model incomp"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 362,
+          "context": "nsulin Models | 4 | GAP-INS-001 through GAP-INS-004 |\n| Pump Communication | 9 | GAP-PUMP-0"
+        }
+      ],
+      "total_refs": 8,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-PUMP-001": {
+      "id": "GAP-PUMP-001",
+      "title": "No Standardized Pump Capability Exchange Format",
+      "line": 981,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/pump-communication-deep-dive.md",
+          "line": 640,
+          "context": "aps.md` for detailed gap tracking:\n\n- **GAP-PUMP-001**: No standardized pump capability exch"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 363,
+          "context": "AP-INS-004 |\n| Pump Communication | 9 | GAP-PUMP-001 through GAP-PUMP-009 |\n| Authorization"
+        }
+      ],
+      "total_refs": 2,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-PUMP-002": {
+      "id": "GAP-PUMP-002",
+      "title": "Extended Bolus Not Supported in Loop Ecosystem",
+      "line": 1006,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1262,
+          "context": "on | `Temp Basal` |\n\n**Gap Reference**: GAP-PUMP-002 (extended bolus not in Loop), GAP-PUMP-"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/pump-communication-deep-dive.md",
+          "line": 641,
+          "context": "zed pump capability exchange format\n- **GAP-PUMP-002**: Extended bolus not supported in Loop"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 67,
+          "context": "us support | Has it, but not portable | GAP-PUMP-002, GAP-TREAT-004 |\n| eCarbs support | Has"
+        }
+      ],
+      "total_refs": 3,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-PUMP-003": {
+      "id": "GAP-PUMP-003",
+      "title": "TBR Duration Unit Inconsistency",
+      "line": 1035,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1262,
+          "context": "-PUMP-002 (extended bolus not in Loop), GAP-PUMP-003 (TBR duration units)\n\n---\n\n## Dexcom BL"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/pump-communication-deep-dive.md",
+          "line": 642,
+          "context": "lus not supported in Loop ecosystem\n- **GAP-PUMP-003**: TBR duration units differ (seconds v"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 297,
+          "context": "rdize duration units** | GAP-TREAT-002, GAP-PUMP-003 | Medium* | Convention change across cl"
+        }
+      ],
+      "total_refs": 3,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-PUMP-004": {
+      "id": "GAP-PUMP-004",
+      "title": "Pump Error Codes Not Normalized",
+      "line": 1066,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/pump-communication-deep-dive.md",
+          "line": 643,
+          "context": "n units differ (seconds vs minutes)\n- **GAP-PUMP-004**: Pump error codes not normalized acro"
+        }
+      ],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-PUMP-005": {
+      "id": "GAP-PUMP-005",
+      "title": "No Standard for Delivery Uncertainty Reporting",
+      "line": 1096,
+      "mapping_refs": [],
+      "spec_refs": [
+        {
+          "file": "specs/openapi/README.md",
+          "line": 57,
+          "context": "Metadata` |\n| **Treatment Precision** | GAP-PUMP-005, GAP-TREAT-003 | `TreatmentPrecision` |"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 524,
+          "context": "uncertainty tracking.\n        Addresses GAP-PUMP-005 (delivery uncertainty) and GAP-TREAT-00"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 526,
+          "context": "x-aid-2026: true\n      x-aid-gap: [GAP-PUMP-005, GAP-TREAT-003]\n      properties:"
+        }
+      ],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/pump-communication-deep-dive.md",
+          "line": 644,
+          "context": "codes not normalized across systems\n- **GAP-PUMP-005**: No standard for delivery uncertainty"
+        }
+      ],
+      "total_refs": 4,
+      "addressed_in_spec": true,
+      "has_assertion": false
+    },
+    "GAP-API-002": {
+      "id": "GAP-API-002",
+      "title": "Identifier vs _id Addressing Inconsistency",
+      "line": 1126,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/nightscout-api-comparison.md",
+          "line": 635,
+          "context": "-sync to detect missing documents.\n\n### GAP-API-002: Identifier vs _id Addressing Inconsist"
+        }
+      ],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-API-003": {
+      "id": "GAP-API-003",
+      "title": "No API v3 Adoption Path for iOS Clients",
+      "line": 1149,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1176,
+          "context": "P-API-001 (v1 cannot detect deletions), GAP-API-003 (no v3 adoption path for iOS)\n\n---\n\n##"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/nightscout-api-comparison.md",
+          "line": 641,
+          "context": "ents, `identifier` for v3 clients.\n\n### GAP-API-003: No v3 Adoption Path for iOS Clients\n**"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 49,
+          "context": "| No Swift SDK, migration complexity | GAP-API-003 |\n\n**What Blocks Them**:\n- v3 API requi"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 213,
+          "context": "| Loop, Trio, AAPS, Research | 4 |\n| **GAP-API-003** | No v3 adoption path for iOS | Loop,"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 288,
+          "context": "iver apps |\n| **Create v3 Swift SDK** | GAP-API-003 | High | Major iOS investment |\n\n*OTP c"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 334,
+          "context": "trategic)\n\n1. **Swift SDK for v3 API** (GAP-API-003)\n2. **Authority hierarchy implementatio"
+        }
+      ],
+      "total_refs": 6,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-API-004": {
+      "id": "GAP-API-004",
+      "title": "Authentication Granularity Gap Between v1 and v3",
+      "line": 1175,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/nightscout-api-comparison.md",
+          "line": 647,
+          "context": "to encourage iOS client adoption.\n\n### GAP-API-004: Authentication Granularity Gap\n**Sever"
+        }
+      ],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-API-005": {
+      "id": "GAP-API-005",
+      "title": "Deduplication Behavior Differs Between API Versions",
+      "line": 1199,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/nightscout-api-comparison.md",
+          "line": 653,
+          "context": "s for fine-grained access control.\n\n### GAP-API-005: Deduplication Behavior Differences\n**S"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 358,
+          "context": "Fragmentation | 5 | GAP-API-001 through GAP-API-005 |\n| Remote Commands | 7 | GAP-REMOTE-00"
+        }
+      ],
+      "total_refs": 2,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-BLE-001": {
+      "id": "GAP-BLE-001",
+      "title": "G7 J-PAKE Full Specification Incomplete",
+      "line": 1329,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1365,
+          "context": "ySensorIssue | No |\n\n**Gap Reference**: GAP-BLE-001 (J-PAKE spec), GAP-BLE-002 (certificate"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/dexcom-ble-protocol-deep-dive.md",
+          "line": 607,
+          "context": "---\n\n## Known Gaps and Limitations\n\n### GAP-BLE-001: G7 J-PAKE Full Specification\nThe J-PAK"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 365,
+          "context": "01, GAP-AUTH-002 |\n| BLE Protocol | 5 | GAP-BLE-001 through GAP-BLE-005 |\n| Carb Absorption"
+        }
+      ],
+      "total_refs": 3,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-BLE-002": {
+      "id": "GAP-BLE-002",
+      "title": "G7 Certificate Chain Undocumented",
+      "line": 1351,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1365,
+          "context": "Reference**: GAP-BLE-001 (J-PAKE spec), GAP-BLE-002 (certificate chain)\n\n---\n\n## Carb Absor"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/dexcom-ble-protocol-deep-dive.md",
+          "line": 610,
+          "context": "native libraries (keks, mbedtls).\n\n### GAP-BLE-002: G7 Certificate Chain\nThe certificate e"
+        }
+      ],
+      "total_refs": 2,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-BLE-003": {
+      "id": "GAP-BLE-003",
+      "title": "Service B Purpose Unknown",
+      "line": 1373,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/dexcom-ble-protocol-deep-dive.md",
+          "line": 613,
+          "context": "ols require further documentation.\n\n### GAP-BLE-003: Service B Purpose\nThe secondary Blueto"
+        }
+      ],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-BLE-004": {
+      "id": "GAP-BLE-004",
+      "title": "Anubis Transmitter Extended Commands",
+      "line": 1394,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/dexcom-ble-protocol-deep-dive.md",
+          "line": 616,
+          "context": "teristics are not well understood.\n\n### GAP-BLE-004: Anubis Transmitters\nExtended commands"
+        }
+      ],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-BLE-005": {
+      "id": "GAP-BLE-005",
+      "title": "G7 Encryption Info Format Unknown",
+      "line": 1414,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/dexcom-ble-protocol-deep-dive.md",
+          "line": 619,
+          "context": "0xx that are not fully documented.\n\n### GAP-BLE-005: G7 Encryption\nThe encryption info (0x3"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 365,
+          "context": "BLE Protocol | 5 | GAP-BLE-001 through GAP-BLE-005 |\n| Carb Absorption | 5 | GAP-CARB-001"
+        }
+      ],
+      "total_refs": 2,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-CARB-001": {
+      "id": "GAP-CARB-001",
+      "title": "Absorption Model Not Synced",
+      "line": 1436,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1418,
+          "context": "ightscout absorption time: **minutes** (GAP-CARB-001)\n- AAPS duration: **milliseconds**\n- Ni"
+        },
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1448,
+          "context": "it/*`) + oref0 JS |\n\n**Gap Reference**: GAP-CARB-001 through GAP-CARB-005\n\n---\n\n## Libre CGM"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/carb-absorption-deep-dive.md",
+          "line": 457,
+          "context": "-L31`\n\n---\n\n## 10. Identified Gaps\n\n### GAP-CARB-001: Absorption Model Not Synced\n\n**Descrip"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 366,
+          "context": "h GAP-BLE-005 |\n| Carb Absorption | 5 | GAP-CARB-001 through GAP-CARB-005 |\n| Entry Schema |"
+        }
+      ],
+      "total_refs": 4,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-CARB-002": {
+      "id": "GAP-CARB-002",
+      "title": "Dynamic Absorption State Not Exported",
+      "line": 1458,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1420,
+          "context": "s**\n- Nightscout duration: **minutes** (GAP-CARB-002)\n\n### UAM (Unannounced Meals) Handling"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/carb-absorption-deep-dive.md",
+          "line": 463,
+          "context": "ithout knowing their curve models.\n\n### GAP-CARB-002: Dynamic Absorption State Not Exported"
+        }
+      ],
+      "total_refs": 2,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-CARB-003": {
+      "id": "GAP-CARB-003",
+      "title": "eCarbs Not Supported by iOS Apps",
+      "line": 1480,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/carb-absorption-deep-dive.md",
+          "line": 469,
+          "context": "COB value appears in devicestatus.\n\n### GAP-CARB-003: eCarbs Not Supported by iOS Apps\n\n**De"
+        }
+      ],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-CARB-004": {
+      "id": "GAP-CARB-004",
+      "title": "min_5m_carbimpact Variance",
+      "line": 1504,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/carb-absorption-deep-dive.md",
+          "line": 475,
+          "context": "as instant absorption by iOS apps.\n\n### GAP-CARB-004: min_5m_carbimpact Variance\n\n**Descript"
+        }
+      ],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-CARB-005": {
+      "id": "GAP-CARB-005",
+      "title": "COB Maximum Limits Differ",
+      "line": 1526,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1448,
+          "context": "**Gap Reference**: GAP-CARB-001 through GAP-CARB-005\n\n---\n\n## Libre CGM Protocol Models\n\n> *"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/10-domain/carb-absorption-deep-dive.md",
+          "line": 481,
+          "context": "nificantly between configurations.\n\n### GAP-CARB-005: COB Maximum Limits Differ\n\n**Descripti"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 366,
+          "context": "b Absorption | 5 | GAP-CARB-001 through GAP-CARB-005 |\n| Entry Schema | 5 | GAP-ENTRY-001 th"
+        }
+      ],
+      "total_refs": 3,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LIBRE-001": {
+      "id": "GAP-LIBRE-001",
+      "title": "Libre 3 Cloud Decryption Dependency",
+      "line": 1552,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1582,
+          "context": "smitter/CGM/Libre/`\n\n**Gap Reference**: GAP-LIBRE-001 through GAP-LIBRE-006\n\n---\n\n## LoopCare"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LIBRE-002": {
+      "id": "GAP-LIBRE-002",
+      "title": "Libre 2 Gen2 Session-Based Authentication",
+      "line": 1574,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 0,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LIBRE-003": {
+      "id": "GAP-LIBRE-003",
+      "title": "Transmitter Bridge Firmware Variance",
+      "line": 1596,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 0,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LIBRE-004": {
+      "id": "GAP-LIBRE-004",
+      "title": "Calibration Algorithm Not Synced",
+      "line": 1621,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 0,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LIBRE-005": {
+      "id": "GAP-LIBRE-005",
+      "title": "Sensor Serial Number Not in Nightscout Entries",
+      "line": 1643,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 0,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LIBRE-006": {
+      "id": "GAP-LIBRE-006",
+      "title": "NFC vs BLE Data Latency Difference",
+      "line": 1663,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1582,
+          "context": "*Gap Reference**: GAP-LIBRE-001 through GAP-LIBRE-006\n\n---\n\n## LoopCaregiver Remote 2.0 Model"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-REMOTE-005": {
+      "id": "GAP-REMOTE-005",
+      "title": "remoteAddress Field Purpose Unclear",
+      "line": 1716,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1680,
+          "context": "ift` - Action types\n\n**Gap Reference**: GAP-REMOTE-005, GAP-REMOTE-006\n\n---\n\n## LoopFollow Ala"
+        },
+        {
+          "file": "mapping/loopcaregiver/remote-commands.md",
+          "line": 381,
+          "context": "s not protected by OTP on Loop side |\n| GAP-REMOTE-005 | `remoteAddress` field purpose unclear"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 107,
+          "context": "| Different status models per system | GAP-REMOTE-005 |\n| Key rotation | No automatic rotatio"
+        }
+      ],
+      "total_refs": 3,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-REMOTE-006": {
+      "id": "GAP-REMOTE-006",
+      "title": "No Command Retry Mechanism",
+      "line": 1742,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1680,
+          "context": "pes\n\n**Gap Reference**: GAP-REMOTE-005, GAP-REMOTE-006\n\n---\n\n## LoopFollow Alarm Models\n\n### A"
+        },
+        {
+          "file": "mapping/loopcaregiver/remote-commands.md",
+          "line": 382,
+          "context": "unclear, hardcoded to empty string |\n| GAP-REMOTE-006 | No command retry mechanism for failed"
+        },
+        {
+          "file": "mapping/loopcaregiver/authentication.md",
+          "line": 385,
+          "context": "URL stored in app data, not Keychain | GAP-REMOTE-006 |\n| **No Expiry** | Shared secret has n"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 3,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-REMOTE-007": {
+      "id": "GAP-REMOTE-007",
+      "title": "OTP Secret Stored in App Data, Not Keychain",
+      "line": 1764,
+      "mapping_refs": [],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 359,
+          "context": "e Commands | 7 | GAP-REMOTE-001 through GAP-REMOTE-007 |\n| Override Tracking | 4 | GAP-001, GA"
+        }
+      ],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LF-001": {
+      "id": "GAP-LF-001",
+      "title": "Alarm Configuration Not Synced",
+      "line": 1788,
+      "mapping_refs": [
+        {
+          "file": "mapping/loopfollow/alarm-system.md",
+          "line": 704,
+          "context": "escription |\n|--------|-------------|\n| GAP-LF-001 | Alarm configuration not synced to Nig"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LF-002": {
+      "id": "GAP-LF-002",
+      "title": "No Alarm History or Audit Log",
+      "line": 1810,
+      "mapping_refs": [
+        {
+          "file": "mapping/loopfollow/alarm-system.md",
+          "line": 705,
+          "context": "t synced to Nightscout (local only) |\n| GAP-LF-002 | No alarm history or audit log |\n| GAP"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LF-003": {
+      "id": "GAP-LF-003",
+      "title": "Prediction Data Unavailable for Trio",
+      "line": 1832,
+      "mapping_refs": [
+        {
+          "file": "mapping/loopfollow/alarm-system.md",
+          "line": 706,
+          "context": "002 | No alarm history or audit log |\n| GAP-LF-003 | Prediction data not available for Tri"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LF-004": {
+      "id": "GAP-LF-004",
+      "title": "No Multi-Caregiver Alarm Acknowledgment",
+      "line": 1854,
+      "mapping_refs": [
+        {
+          "file": "mapping/loopfollow/alarm-system.md",
+          "line": 707,
+          "context": "not available for Trio (only Loop) |\n| GAP-LF-004 | No multi-user alarm acknowledgment (c"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LF-005": {
+      "id": "GAP-LF-005",
+      "title": "No Command Status Tracking",
+      "line": 1876,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1825,
+          "context": "ft` - TOTP handling\n\n**Gap Reference**: GAP-LF-005 through GAP-LF-009\n\n---\n\n## Revision Hi"
+        },
+        {
+          "file": "mapping/loopfollow/remote-commands.md",
+          "line": 570,
+          "context": "escription |\n|--------|-------------|\n| GAP-LF-005 | No command status tracking (fire-and-"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 2,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LF-006": {
+      "id": "GAP-LF-006",
+      "title": "No Command History or Audit Log",
+      "line": 1900,
+      "mapping_refs": [
+        {
+          "file": "mapping/loopfollow/remote-commands.md",
+          "line": 571,
+          "context": "d status tracking (fire-and-forget) |\n| GAP-LF-006 | No command history or audit log |\n| G"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LF-007": {
+      "id": "GAP-LF-007",
+      "title": "TRC Return Notification Not Fully Implemented",
+      "line": 1922,
+      "mapping_refs": [
+        {
+          "file": "mapping/loopfollow/remote-commands.md",
+          "line": 572,
+          "context": "6 | No command history or audit log |\n| GAP-LF-007 | TRC return notification not fully imp"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LF-008": {
+      "id": "GAP-LF-008",
+      "title": "Nightscout Remote Lacks OTP Security",
+      "line": 1946,
+      "mapping_refs": [
+        {
+          "file": "mapping/loopfollow/remote-commands.md",
+          "line": 573,
+          "context": "notification not fully implemented |\n| GAP-LF-008 | Nightscout lacks OTP security for tem"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 1,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    },
+    "GAP-LF-009": {
+      "id": "GAP-LF-009",
+      "title": "No Unified Command Abstraction",
+      "line": 1968,
+      "mapping_refs": [
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1825,
+          "context": "**Gap Reference**: GAP-LF-005 through GAP-LF-009\n\n---\n\n## Revision History\n\n| Date | Aut"
+        },
+        {
+          "file": "mapping/loopfollow/remote-commands.md",
+          "line": 574,
+          "context": "lacks OTP security for temp targets |\n| GAP-LF-009 | No unified command abstraction across"
+        }
+      ],
+      "spec_refs": [],
+      "assertion_refs": [],
+      "doc_refs": [],
+      "total_refs": 2,
+      "addressed_in_spec": false,
+      "has_assertion": false
+    }
+  },
+  "uncovered_requirements": [
+    "REQ-010",
+    "REQ-020",
+    "REQ-030",
+    "REQ-031",
+    "REQ-032",
+    "REQ-033",
+    "REQ-034",
+    "REQ-035"
+  ],
+  "orphaned_gaps": [
+    "GAP-LIBRE-002",
+    "GAP-LIBRE-003",
+    "GAP-LIBRE-004",
+    "GAP-LIBRE-005"
+  ]
+}

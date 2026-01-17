@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules
+.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions
 
 # Default target
 help:
@@ -23,6 +23,13 @@ help:
 	@echo "  make inventory  - Generate workspace inventory"
 	@echo "  make check      - Run all checks (linkcheck + validate + conformance)"
 	@echo "  make ci         - Run full CI pipeline locally"
+	@echo ""
+	@echo "Static Verification:"
+	@echo "  make verify     - Run all static verification tools"
+	@echo "  make verify-refs        - Verify code references resolve to files"
+	@echo "  make verify-coverage    - Analyze requirement/gap coverage"
+	@echo "  make verify-terminology - Check terminology consistency"
+	@echo "  make verify-assertions  - Trace assertions to requirements"
 	@echo ""
 	@echo "  make help       - Show this help message"
 	@echo ""
@@ -87,9 +94,45 @@ check: validate conformance
 	@echo "All checks passed!"
 
 # Full CI pipeline
-ci: check coverage
+ci: check coverage verify
 	@echo ""
 	@echo "Checking Python syntax..."
 	@python3 -m compileall tools/
 	@echo ""
 	@echo "CI pipeline complete!"
+
+# Static verification tools (no external runtime required)
+# Uses - prefix to continue even if individual tools find issues
+verify:
+	@echo "Running static verification suite..."
+	@echo ""
+	@echo "=== Verifying code references ==="
+	-@python3 tools/verify_refs.py
+	@echo ""
+	@echo "=== Analyzing coverage ==="
+	-@python3 tools/verify_coverage.py
+	@echo ""
+	@echo "=== Checking terminology consistency ==="
+	-@python3 tools/verify_terminology.py
+	@echo ""
+	@echo "=== Tracing assertions ==="
+	-@python3 tools/verify_assertions.py
+	@echo ""
+	@echo "Verification complete. See traceability/*.md for detailed reports."
+
+# Individual verification targets (will fail on issues for CI use)
+verify-refs:
+	@echo "Verifying code references..."
+	@python3 tools/verify_refs.py
+
+verify-coverage:
+	@echo "Analyzing coverage..."
+	@python3 tools/verify_coverage.py
+
+verify-terminology:
+	@echo "Checking terminology consistency..."
+	@python3 tools/verify_terminology.py
+
+verify-assertions:
+	@echo "Tracing assertions..."
+	@python3 tools/verify_assertions.py
