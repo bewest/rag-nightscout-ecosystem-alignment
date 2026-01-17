@@ -1,65 +1,74 @@
 # CGM Apps Cross-Project Comparison
 
-This matrix compares CGM data management applications: xDrip+ (Android), xDrip4iOS, Nightguard, and related ecosystem apps.
+This matrix compares CGM data management applications: xDrip+ (Android), xDrip4iOS, DiaBLE, Nightguard, xdrip-js, and related ecosystem apps.
 
 ---
 
 ## Platform Overview
 
-| Aspect | xDrip+ (Android) | xDrip4iOS | Nightguard | AAPS (as CGM source) |
-|--------|-----------------|-----------|------------|---------------------|
-| **Platform** | Android | iOS | iOS/watchOS | Android |
-| **Language** | Java/Kotlin | Swift | Swift | Kotlin |
-| **Primary Role** | CGM hub + producer | CGM producer | Consumer/follower only | Consumer/producer |
-| **License** | GPL-3.0 | GPL-3.0 | AGPL-3.0 | AGPL-3.0 |
-| **Codebase Size** | ~16,000 lines (models only) | ~5,000 lines | ~16,600 lines | N/A (integrated) |
-| **Repository** | eveningoutpost/dexdrip | JohanDegraeve/xdripswift | nightscout/nightguard | nightscout/AndroidAPS |
-| **Primary API** | `/api/v1/entries` | `/api/v1/entries` | `/api/v2/properties` | `/api/v1/entries` |
+| Aspect | xDrip+ (Android) | xDrip4iOS | DiaBLE | Nightguard | xdrip-js |
+|--------|-----------------|-----------|--------|------------|----------|
+| **Platform** | Android | iOS | iOS/watchOS | iOS/watchOS | Node.js (OpenAPS rigs) |
+| **Language** | Java/Kotlin | Swift | Swift | Swift | JavaScript |
+| **Primary Role** | CGM hub + producer | CGM producer | CGM producer | Consumer/follower only | BLE library |
+| **License** | GPL-3.0 | GPL-3.0 | GPL-3.0 | AGPL-3.0 | MIT |
+| **Codebase Size** | ~16,000 lines (models only) | ~5,000 lines | ~20,000 lines | ~16,600 lines | ~2,500 lines |
+| **Repository** | eveningoutpost/dexdrip | JohanDegraeve/xdripswift | gui-dos/DiaBLE | nightscout/nightguard | xdrip-js/xdrip-js |
+| **Primary API** | `/api/v1/entries` | `/api/v1/entries` | `/api/v1/entries` | `/api/v2/properties` | N/A (local BLE) |
 
 ---
 
 ## CGM Data Sources
 
-| Source Type | xDrip+ (Android) | xDrip4iOS |
-|-------------|-----------------|-----------|
-| **Dexcom G5** | Direct BT | Direct BT |
-| **Dexcom G6** | Direct BT | Direct BT |
-| **Dexcom G7** | Direct BT | Direct BT |
-| **Dexcom ONE** | Direct BT | Direct BT |
-| **Libre 2** | Via bridge | Direct BT |
-| **Libre 3** | Via companion | No |
-| **Medtrum A6** | Direct BT | No |
-| **GluPro** | Direct BT | No |
-| **MiaoMiao** | Bridge device | Bridge device |
-| **Bubble** | Bridge device | Bridge device |
-| **Wixel/xBridge** | Bridge device | No |
-| **Carelink (630G/640G/670G)** | Cloud follower | No |
-| **Nightscout Follower** | Yes | Yes |
-| **Dexcom Share Follower** | Yes | Yes |
-| **LibreLinkUp Follower** | No | Yes |
-| **Web/Custom Follower** | Yes | No |
-| **Companion Apps** | 5+ (LibreAlarm, NSEmulator, etc.) | No |
-| **Total Source Types** | 20+ | ~6 |
+*Note: Nightguard and xdrip-js are consumer/library apps without direct CGM connections. xdrip-js provides BLE communication for Lookout/Logger apps.*
+
+| Source Type | xDrip+ (Android) | xDrip4iOS | DiaBLE | Nightguard | xdrip-js |
+|-------------|-----------------|-----------|--------|------------|----------|
+| **Dexcom G5** | Direct BT | Direct BT | Direct BT | N/A | Direct BT |
+| **Dexcom G6** | Direct BT | Direct BT | Direct BT | N/A | Direct BT |
+| **Dexcom G7** | Direct BT | Direct BT | Direct BT | N/A | No |
+| **Dexcom ONE+/Stelo** | No | No | Direct BT | N/A | No |
+| **Libre 1** | Via bridge | Via bridge | NFC | N/A | No |
+| **Libre 2** | Via bridge | Direct BT | NFC + BLE | N/A | No |
+| **Libre 2 Gen2** | No | No | NFC + BLE | N/A | No |
+| **Libre 3** | Via companion | No | NFC + BLE (partial) | N/A | No |
+| **Libre Pro/Pro H** | No | No | NFC | N/A | No |
+| **Lingo** | No | No | NFC | N/A | No |
+| **Medtrum A6** | Direct BT | No | No | N/A | No |
+| **GluPro** | Direct BT | No | No | N/A | No |
+| **MiaoMiao** | Bridge device | Bridge device | Bridge device | N/A | No |
+| **Bubble** | Bridge device | Bridge device | Bridge device | N/A | No |
+| **BluCon** | Bridge device | No | Bridge device | N/A | No |
+| **Wixel/xBridge** | Bridge device | No | No | N/A | No |
+| **Carelink (630G/640G/670G)** | Cloud follower | No | No | N/A | No |
+| **Nightscout Follower** | Yes | Yes | No | Yes (primary) | No |
+| **Dexcom Share Follower** | Yes | Yes | No | No | No |
+| **LibreLinkUp Follower** | No | Yes | Yes | No | No |
+| **Web/Custom Follower** | Yes | No | No | No | No |
+| **Companion Apps** | 5+ (LibreAlarm, NSEmulator, etc.) | No | No | N/A | Lookout, Logger |
+| **Total Source Types** | 20+ | ~6 | 12+ | 1 (NS) | 2 (G5/G6) |
 
 ---
 
 ## Nightscout Integration
 
+*Note: xdrip-js is a BLE library without direct Nightscout integration—client apps (Lookout/Logger) handle uploads.*
+
 ### API Paths Used
 
-| Path | xDrip+ | xDrip4iOS | Nightguard | Direction |
-|------|--------|-----------|------------|-----------|
-| `POST /api/v1/entries` | Yes | Yes | No | Upload |
-| `GET /api/v1/entries.json` | Yes | Yes | Yes | Download |
-| `GET /api/v2/properties` | No | No | Yes (primary) | Download |
-| `GET /api/v1/status.json` | No | No | Yes | Download |
-| `POST /api/v1/treatments` | Yes | Yes | Yes (care only) | Upload |
-| `PUT /api/v1/treatments` | Yes | Yes | No | Update |
-| `DELETE /api/v1/treatments/{id}` | Yes | Yes | No | Delete |
-| `GET /api/v1/treatments` | Yes | Yes | Yes | Download |
-| `POST /api/v1/devicestatus` | Yes | Yes | No | Upload |
-| `GET /api/v1/devicestatus.json` | No | Yes | Yes | Download |
-| `GET /api/v1/profile` | No | Yes | No | Download |
+| Path | xDrip+ | xDrip4iOS | DiaBLE | Nightguard | Direction |
+|------|--------|-----------|--------|------------|-----------|
+| `POST /api/v1/entries` | Yes | Yes | Yes | No | Upload |
+| `GET /api/v1/entries.json` | Yes | Yes | Yes | Yes | Download |
+| `GET /api/v2/properties` | No | No | No | Yes (primary) | Download |
+| `GET /api/v1/status.json` | No | No | Yes | Yes | Download |
+| `POST /api/v1/treatments` | Yes | Yes | No | Yes (care only) | Upload |
+| `PUT /api/v1/treatments` | Yes | Yes | No | No | Update |
+| `DELETE /api/v1/treatments/{id}` | Yes | Yes | No | No | Delete |
+| `GET /api/v1/treatments` | Yes | Yes | No | Yes | Download |
+| `POST /api/v1/devicestatus` | Yes | Yes | Yes | No | Upload |
+| `GET /api/v1/devicestatus.json` | No | Yes | No | Yes | Download |
+| `GET /api/v1/profile` | No | Yes | No | No | Download |
 
 ### Sync Architecture
 
@@ -74,11 +83,11 @@ This matrix compares CGM data management applications: xDrip+ (Android), xDrip4i
 
 ### Upload Identifiers
 
-| Field | xDrip+ | xDrip4iOS | Nightguard |
-|-------|--------|-----------|------------|
-| `enteredBy` | `"xdrip"` | `"xDrip4iOS"` | `"nightguard"` |
-| `device` | `"xDrip-" + manufacturer + model` | Device name | N/A |
-| `uuid` | Client-generated UUID | Client-generated UUID | N/A |
+| Field | xDrip+ | xDrip4iOS | DiaBLE | Nightguard |
+|-------|--------|-----------|--------|------------|
+| `enteredBy` | `"xdrip"` | `"xDrip4iOS"` | `"DiaBLE"` | `"nightguard"` |
+| `device` | `"xDrip-" + manufacturer + model` | Device name | `"DiaBLE"` | N/A |
+| `uuid` | Client-generated UUID | Client-generated UUID | N/A | N/A |
 
 ---
 
@@ -159,6 +168,32 @@ This matrix compares CGM data management applications: xDrip+ (Android), xDrip4i
 | **3 Widget Types** | Text, timestamp, and gauge widgets |
 | **Watch Complications** | Multiple complication families |
 | **API V2 Properties** | Uses newer consolidated API endpoint |
+
+### DiaBLE Only
+
+| Feature | Description |
+|---------|-------------|
+| **NFC Direct Reading** | Read Libre sensors via NFC without bridges |
+| **Libre 2/3 BLE Streaming** | Direct Bluetooth to Libre 2/3 sensors |
+| **Dexcom G7 Support** | Native G7 support with backfill |
+| **Sensor Encryption Research** | Publishes technical details for Libre 2/3 encryption |
+| **watchOS Direct BLE** | Experimental direct-to-watch CGM connection |
+| **LibreView CSV Import** | Import data from Abbott's LibreView cloud |
+| **Realm File Parsing** | Read encrypted trident.realm from Libre 3 app |
+| **Temperature Calibration** | Legacy LibreLink 2.3 calibration algorithm |
+| **Dexcom ONE+/Stelo** | Support for newer Dexcom consumer sensors |
+
+### xdrip-js Only
+
+| Feature | Description |
+|---------|-------------|
+| **OpenAPS Integration** | Designed for DIY closed-loop rigs |
+| **Headless Operation** | Runs on Raspberry Pi without display |
+| **Transmitter Reset** | Reset G5/G6 transmitters for extended life |
+| **Custom Calibration** | Linear least squares regression (via Logger) |
+| **Backfill Gap Filling** | Retrieve missed readings from transmitter memory |
+| **Battery Monitoring** | Transmitter battery voltage tracking |
+| **Alternate BT Channel** | Use receiver Bluetooth channel option |
 
 ---
 
@@ -288,6 +323,27 @@ CGM Device → Bluetooth → CGMTransmitter → BgReading (CoreData)
 | No HealthKit | No Apple Health integration | Data silo |
 | Limited treatments | Only CAGE/SAGE/BAGE writes | Not a treatment manager |
 
+### DiaBLE Gaps
+
+| Gap | Description | Impact |
+|-----|-------------|--------|
+| No treatment support | Cannot create/sync treatments | CGM data only |
+| No follower mode | Cannot consume Nightscout data | Primary mode only |
+| No HealthKit | No Apple Health integration | Data silo |
+| Prototype status | Not production-ready | Stability concerns |
+| No profile download | Cannot display profile data | Limited closed-loop context |
+| Libre 3 partial | AES-CCM encryption not fully cracked | Depends on external decryption |
+
+### xdrip-js Gaps
+
+| Gap | Description | Impact |
+|-----|-------------|--------|
+| G5/G6 only | No G7, no Libre sensors | Limited sensor support |
+| No mobile app | Library only, requires host app | Not standalone |
+| No Nightscout direct | Relies on client apps (Lookout/Logger) | Indirect integration |
+| No calibration UI | Raw calibration API only | Developer-focused |
+| Linux/Raspberry Pi focused | Not cross-platform mobile | Niche use case |
+
 ---
 
 ## Recommendations for Alignment
@@ -347,3 +403,30 @@ externals/xdripswift/xdrip/Core/Models/BgReading+CoreDataClass.swift
 | Watch Extension | `externals/nightguard/nightguard WatchKit App/ExtensionDelegate.swift` | Watch app entry |
 
 See `mapping/nightguard/` for comprehensive documentation.
+
+### DiaBLE References
+
+| Claim | Source File | Notes |
+|-------|-------------|-------|
+| Glucose model | `externals/DiaBLE/DiaBLE Playground.swiftpm/Glucose.swift` | Core glucose data structure |
+| Sensor model | `externals/DiaBLE/DiaBLE Playground.swiftpm/Sensor.swift` | CGM sensor abstraction |
+| Nightscout sync | `externals/DiaBLE/DiaBLE Playground.swiftpm/Nightscout.swift` | NS upload/download logic |
+| Libre protocols | `externals/DiaBLE/DiaBLE Playground.swiftpm/Libre*.swift` | Libre 1/2/3/Pro support |
+| Dexcom protocols | `externals/DiaBLE/DiaBLE Playground.swiftpm/Dexcom*.swift` | G5/G6/G7 support |
+| Bridge devices | `externals/DiaBLE/DiaBLE Playground.swiftpm/{MiaoMiao,Bubble,BluCon}.swift` | Third-party bridges |
+| NFC communication | `externals/DiaBLE/DiaBLE Playground.swiftpm/NFC*.swift` | NFC sensor reading |
+
+See `mapping/diable/` for comprehensive documentation.
+
+### xdrip-js References
+
+| Claim | Source File | Notes |
+|-------|-------------|-------|
+| Transmitter class | `externals/xdrip-js/lib/transmitter.js` | Main BLE communication |
+| Glucose structure | `externals/xdrip-js/lib/glucose.js` | Glucose event model |
+| BLE services | `externals/xdrip-js/lib/bluetooth-services.js` | Dexcom UUIDs |
+| Auth messages | `externals/xdrip-js/lib/messages/auth-*.js` | Authentication protocol |
+| Calibration state | `externals/xdrip-js/lib/calibration-state.js` | Session state codes |
+| Backfill parser | `externals/xdrip-js/lib/backfill-parser.js` | Gap filling logic |
+
+See `mapping/xdrip-js/` for comprehensive documentation.

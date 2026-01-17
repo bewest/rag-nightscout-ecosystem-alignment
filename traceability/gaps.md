@@ -1122,6 +1122,110 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ---
 
+### GAP-CGM-001: DiaBLE lacks treatment support
+
+**Scenario**: Bi-directional treatment sync
+
+**Description**: DiaBLE only uploads CGM entries to Nightscout and downloads server status. It cannot create, edit, or sync treatments (bolus, carbs, corrections). Users cannot log insulin or carbs directly from DiaBLE.
+
+**Source**: [DiaBLE Nightscout Sync](../mapping/diable/nightscout-sync.md)
+
+**Impact**:
+- DiaBLE users must use another app for treatment logging
+- No unified CGM + treatment workflow in DiaBLE
+- Cannot use DiaBLE as standalone diabetes management app
+
+**Possible Solutions**:
+1. Add treatment API integration to DiaBLE
+2. Accept DiaBLE as CGM-only producer (current behavior)
+3. Integrate with iOS Shortcuts for treatment logging
+
+**Status**: Informational (DiaBLE design choice)
+
+**Related**:
+- [DiaBLE Documentation](../mapping/diable/)
+- [CGM Apps Comparison](../mapping/cross-project/cgm-apps-comparison.md)
+
+---
+
+### GAP-CGM-002: xdrip-js limited to Dexcom G5/G6
+
+**Scenario**: CGM data collection for OpenAPS rigs
+
+**Description**: xdrip-js only supports Dexcom G5 and G6 transmitters. It cannot read from Dexcom G7, Libre sensors, or bridge devices. Users with newer sensors cannot use xdrip-js-based solutions.
+
+**Source**: [xdrip-js Documentation](../mapping/xdrip-js/)
+
+**Impact**:
+- OpenAPS rigs using Lookout/Logger limited to G5/G6
+- No path for G7 users wanting DIY closed-loop on Raspberry Pi
+- Libre users must use alternative solutions
+
+**Possible Solutions**:
+1. Implement G7 J-PAKE authentication in xdrip-js (complex)
+2. Use alternative libraries for G7/Libre (e.g., cgm-remote-monitor bridge)
+3. Accept limitation (G5/G6 still widely used)
+
+**Status**: Informational (library scope)
+
+**Related**:
+- [xdrip-js BLE Protocol](../mapping/xdrip-js/ble-protocol.md)
+- [CGM Apps Comparison](../mapping/cross-project/cgm-apps-comparison.md)
+
+---
+
+### GAP-CGM-003: Libre 3 encryption not fully documented
+
+**Scenario**: Direct Libre 3 sensor reading
+
+**Description**: DiaBLE documents partial Libre 3 support but notes that AES-128-CCM encryption with ECDH key agreement and Zimperium zShield anti-tampering are not fully cracked. DiaBLE can eavesdrop on BLE traffic but cannot independently decrypt sensor data.
+
+**Source**: [DiaBLE CGM Transmitters](../mapping/diable/cgm-transmitters.md)
+
+**Impact**:
+- Full independent Libre 3 reading requires external decryption
+- Must use trident.realm extraction from rooted devices
+- DIY community lacks complete Libre 3 specification
+
+**Possible Solutions**:
+1. Continue reverse engineering efforts (Juggluco project)
+2. Use LibreLinkUp cloud as alternative data source
+3. Document known encryption parameters for community research
+
+**Status**: Under investigation (community effort)
+
+**Related**:
+- [DiaBLE README](../externals/DiaBLE/README.md)
+- [Libre 3 Technical Blog Post](https://frdmtoplay.com/freeing-glucose-data-from-the-freestyle-libre-3/)
+
+---
+
+### GAP-CGM-004: No standardized Dexcom BLE protocol specification
+
+**Scenario**: Cross-platform CGM integration
+
+**Description**: Dexcom BLE protocol is undocumented by the manufacturer. xdrip-js, DiaBLE, xDrip+, and xDrip4iOS each implement their own reverse-engineered versions. There are subtle differences in authentication handling, backfill parsing, and error recovery.
+
+**Source**: [xdrip-js BLE Protocol](../mapping/xdrip-js/ble-protocol.md), [DiaBLE CGM Transmitters](../mapping/diable/cgm-transmitters.md)
+
+**Impact**:
+- Each implementation may have different bugs or limitations
+- No authoritative source for protocol behavior
+- G6 "Anubis" and G7 protocols add complexity
+
+**Possible Solutions**:
+1. Create community-maintained protocol specification
+2. Cross-reference implementations to identify discrepancies
+3. Accept implementation diversity (current state)
+
+**Status**: Documentation effort
+
+**Related**:
+- [xdrip-js BLE Protocol](../mapping/xdrip-js/ble-protocol.md)
+- [DiaBLE Dexcom Support](../mapping/diable/cgm-transmitters.md)
+
+---
+
 ## Resolved Gaps
 
 _None yet._
