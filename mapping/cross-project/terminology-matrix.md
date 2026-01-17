@@ -37,6 +37,69 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 | Sensor Start | eventType: `Sensor Start` | `CGMSensorEvent` | `TherapyEvent.SENSOR_CHANGE` | `SensorChange` | `Treatments` (eventType: `Sensor Start`) |
 | Sensor Stop | N/A | N/A | N/A | N/A | `Treatments` (eventType: `Sensor Stop`) |
 
+### Treatment Data Models (Deep Dive)
+
+> **See Also**: [Treatments Collection Deep Dive](../../docs/10-domain/treatments-deep-dive.md) for comprehensive field-by-field mappings.
+
+#### Bolus Fields
+
+| Field | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|-------|------------|------|------|------|--------|
+| Insulin Amount | `insulin` | `deliveredUnits` / `programmedUnits` | `amount` | via `DoseEntry` | `insulin` |
+| Bolus Type | `eventType` | `.bolus` (single) | `Type` enum | `.bolus` | N/A |
+| Automatic Flag | `automatic` | `automatic` | via `Type.SMB` | `automatic` | N/A |
+| Sync Identity | `identifier` / `syncIdentifier` | `syncIdentifier` | `interfaceIDs.nightscoutId` | `syncIdentifier` | `uuid` |
+| Insulin Type | `insulinType` | `insulinType?.brandName` | `insulinConfiguration` | N/A | `insulinJSON` |
+| Duration (extended) | `duration` | via `endDate - startDate` | N/A | via `endDate - startDate` | N/A |
+
+**Bolus Type Enums**:
+- **Loop**: Single `.bolus` type (no SMB)
+- **AAPS**: `NORMAL`, `SMB`, `PRIMING` (internal); SMB uploads as `eventType: Correction Bolus` with `type: SMB` field
+- **Nightscout eventType**: `Meal Bolus`, `Correction Bolus`, `Snack Bolus` (no explicit SMB eventType - see GAP-TREAT-003)
+
+#### Carb Entry Fields
+
+| Field | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|-------|------------|------|------|------|--------|
+| Carbs Amount | `carbs` | `quantity` (HKQuantity) | `amount` | via `CarbsEntry` | `carbs` |
+| Absorption Time | `absorptionTime` (min) | `absorptionTime` (sec) | N/A | `absorptionTime` (sec) | N/A |
+| Duration (eCarbs) | `duration` (min) | N/A | `duration` (ms) | N/A | N/A |
+| Food Type | `foodType` | `foodType` | N/A | `foodType` | N/A |
+| Sync Identity | `identifier` | `syncIdentifier` | `interfaceIDs.nightscoutId` | `syncIdentifier` | `uuid` |
+
+**Unit Differences (GAP-TREAT-001, GAP-TREAT-002)**:
+- Absorption time: Loop/Trio use seconds, Nightscout uses minutes
+- Duration: AAPS uses milliseconds, Nightscout uses minutes
+
+#### Temp Basal Fields
+
+| Field | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|-------|------------|------|------|------|--------|
+| Rate | `rate` / `absolute` | `unitsPerHour` | `rate` | via `DoseEntry` | N/A |
+| Is Absolute | `temp: "absolute"` | Always true | `isAbsolute` | Always true | N/A |
+| Percent | `percent` | N/A | `rate - 100` (if relative) | N/A | N/A |
+| Duration | `duration` (min) | `endDate - startDate` (sec) | `duration` (ms) | `endDate - startDate` (sec) | N/A |
+| Type | `eventType` | `DoseType` enum | `Type` enum | `DoseType` | N/A |
+| Automatic | `automatic` | `automatic ?? true` | N/A | `automatic` | N/A |
+
+**Temp Basal Types (AAPS)**:
+- `NORMAL`: Standard temp basal
+- `EMULATED_PUMP_SUSPEND`: Suspend via 0% basal
+- `PUMP_SUSPEND`: Actual pump suspend
+- `SUPERBOLUS`: Superbolus temp basal
+- `FAKE_EXTENDED`: Extended bolus emulation
+
+#### Treatment Sync Identity
+
+| System | Primary ID | Secondary ID | Upload Method |
+|--------|-----------|--------------|---------------|
+| Loop | `syncIdentifier` (UUID) | N/A | POST (v1 API) |
+| AAPS | `interfaceIDs.nightscoutId` | `pumpId` + `pumpType` + `pumpSerial` | PUT (v3 API) |
+| Trio | `syncIdentifier` (UUID) | N/A | POST (v1 API) |
+| xDrip+ | `uuid` | N/A | PUT upsert (v1 API) |
+
+**Gap Reference**: GAP-003 (no unified sync identity), GAP-TREAT-005 (Loop POST duplicates)
+
 ### State Snapshots (Point-in-Time)
 
 | Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ |

@@ -1,0 +1,222 @@
+assertions:
+  treatment-sync:
+    title: Treatment Sync Validation
+    description: |
+      Validates that treatment events (boluses, carbs, temp basals) are correctly
+      synced between AID systems and Nightscout with proper field preservation.
+    
+    requirements:
+      - REQ-040  # Bolus amount preservation
+      - REQ-041  # Carb amount preservation
+      - REQ-042  # Timestamp accuracy
+      - REQ-043  # Automatic bolus flag
+      - REQ-044  # Duration unit normalization
+      - REQ-045  # Sync identity round-trip
+      - REQ-046  # Absorption time unit conversion
+    
+    related_gaps:
+      - GAP-TREAT-001  # Absorption time units
+      - GAP-TREAT-002  # Duration units
+      - GAP-TREAT-003  # SMB event type
+      - GAP-TREAT-004  # Split bolus
+      - GAP-TREAT-005  # Loop POST duplicates
+      - GAP-TREAT-006  # Retroactive edits
+      - GAP-TREAT-007  # eCarbs support
+
+    tests:
+      bolus-amount-roundtrip:
+        description: Bolus insulin amount survives upload/download
+        given:
+          - Bolus with insulin: 2.35 units
+          - syncIdentifier: "test-bolus-001"
+        when:
+          - Upload to Nightscout treatments collection
+          - Download same treatment by syncIdentifier
+        then:
+          - insulin == 2.35
+          - difference <= 0.01
+
+      bolus-automatic-flag:
+        description: Automatic bolus flag is preserved
+        given:
+          - SMB bolus with automatic: true
+          - insulin: 0.5 units
+        when:
+          - Upload to Nightscout
+          - Download and inspect
+        then:
+          - automatic == true
+
+      carbs-amount-roundtrip:
+        description: Carb amount survives upload/download
+        given:
+          - Carb entry with carbs: 45.5 grams
+          - syncIdentifier: "test-carbs-001"
+        when:
+          - Upload to Nightscout treatments collection
+          - Download same treatment
+        then:
+          - carbs == 45.5
+          - difference <= 0.1
+
+      carbs-absorption-time-units:
+        description: Absorption time is correctly converted to minutes
+        given:
+          - Loop carb entry with absorptionTime: 10800 (seconds = 3 hours)
+        when:
+          - Convert to Nightscout format
+          - Upload to treatments
+        then:
+          - absorptionTime == 180 (minutes)
+
+      temp-basal-duration-units:
+        description: Temp basal duration is correctly converted to minutes
+        given:
+          - AAPS temp basal with duration: 1800000 (milliseconds = 30 min)
+        when:
+          - Convert to Nightscout format
+          - Upload to treatments
+        then:
+          - duration == 30 (minutes)
+
+      temp-basal-rate-preservation:
+        description: Temp basal rate preserved exactly
+        given:
+          - Temp basal with rate: 1.25 U/hr
+          - isAbsolute: true
+        when:
+          - Upload to Nightscout
+          - Download and inspect
+        then:
+          - rate == 1.25 OR absolute == 1.25
+
+      treatment-timestamp-precision:
+        description: Treatment timestamp preserved with millisecond precision
+        given:
+          - Treatment with created_at: "2026-01-17T12:34:56.789Z"
+        when:
+          - Upload to Nightscout
+          - Download by _id
+        then:
+          - created_at timestamp matches to millisecond
+
+      sync-identifier-roundtrip:
+        description: Client sync identifier preserved through upload/download
+        status: partial_support
+        note: |
+          Nightscout v1 API stores syncIdentifier but does not expose a direct
+          query API for it. v3 API supports identifier-based queries. Testing
+          may require querying by timestamp window and filtering client-side.
+        given:
+          - Treatment with syncIdentifier: "abc-123-def-456"
+        when:
+          - Upload to Nightscout (Loop)
+          - OR Upload with identifier (AAPS)
+          - Download treatment by timestamp range, filter by syncIdentifier
+        then:
+          - syncIdentifier OR identifier == original value
+
+      deduplication-on-retry:
+        description: Duplicate upload does not create second record
+        status: requires_ns_v3_or_upsert
+        note: |
+          This test requires Nightscout API v3 with identifier-based upsert, or
+          v1 PUT upsert (as xDrip+ uses). Standard v1 POST is not idempotent.
+          Loop's POST-only behavior (GAP-TREAT-005) cannot satisfy this test.
+        given:
+          - Treatment with syncIdentifier: "dup-test-001"
+          - Already uploaded once via PUT/upsert
+        when:
+          - PUT same treatment again (network retry simulation)
+        then:
+          - Only one document exists with that syncIdentifier
+          - HTTP response indicates update (not creation)
+
+      entered-by-self-exclusion:
+        description: Downloads exclude self-uploaded treatments
+        given:
+          - Treatments uploaded by "Loop"
+          - Treatments uploaded by "AAPS"
+        when:
+          - Loop downloads with enteredBy[$ne]=Loop
+        then:
+          - Only AAPS treatments returned
+          - No Loop treatments in response
+
+      ecarbs-duration-preserved:
+        description: Extended carbs duration field preserved
+        given:
+          - AAPS carb entry with duration: 14400000 (ms = 4 hours)
+        when:
+          - Upload to Nightscout
+          - Download and inspect
+        then:
+          - duration == 240 (minutes)
+          - eventType is "Carb Correction" or "Meal Bolus"
+
+      smb-identification:
+        description: SMB can be identified from uploaded treatment
+        given:
+          - AAPS SMB bolus (Type.SMB)
+          - insulin: 0.3 units
+        when:
+          - Upload to Nightscout
+          - Query for automatic boluses
+        then:
+          - Can identify as SMB via:
+            - type: "SMB" field (if present)
+            - OR automatic: true + small amount
+          - Note: GAP-TREAT-003 documents unreliability of inference
+
+cross_system_scenarios:
+  loop-to-nightscout:
+    source: Loop
+    target: Nightscout
+    treatment_types:
+      - bolus
+      - carbs
+      - tempBasal
+      - suspend
+    field_mappings:
+      DoseEntry.deliveredUnits: insulin
+      DoseEntry.startDate: created_at
+      DoseEntry.syncIdentifier: syncIdentifier
+      DoseEntry.automatic: automatic
+      StoredCarbEntry.quantity: carbs
+      StoredCarbEntry.absorptionTime: absorptionTime (seconds→minutes)
+      StoredCarbEntry.foodType: foodType
+
+  aaps-to-nightscout:
+    source: AAPS
+    target: Nightscout
+    treatment_types:
+      - Bolus (NORMAL, SMB, PRIMING)
+      - Carbs (with eCarbs)
+      - TemporaryBasal
+    field_mappings:
+      Bolus.amount: insulin
+      Bolus.timestamp: date
+      Bolus.type: type (NORMAL→Meal Bolus, SMB→Correction Bolus)
+      Bolus.interfaceIDs.nightscoutId: identifier
+      Carbs.amount: carbs
+      Carbs.duration: duration (ms→minutes)
+      TemporaryBasal.rate: rate/absolute
+      TemporaryBasal.isAbsolute: temp type
+      TemporaryBasal.duration: duration (ms→minutes)
+
+  xdrip-to-nightscout:
+    source: xDrip+
+    target: Nightscout
+    treatment_types:
+      - carbs
+      - insulin (with multi-insulin)
+      - notes
+      - sensor events
+    field_mappings:
+      Treatments.insulin: insulin
+      Treatments.carbs: carbs
+      Treatments.timestamp: timestamp
+      Treatments.uuid: uuid (→ _id via conversion)
+      Treatments.insulinJSON: insulinInjections
+      Treatments.eventType: eventType
+      Treatments.enteredBy: enteredBy

@@ -198,6 +198,132 @@ Requirements follow the pattern:
 
 ---
 
+## Treatment Sync Requirements
+
+### REQ-040: Bolus Amount Preservation
+
+**Statement**: When syncing a bolus treatment, the `insulin` amount MUST be preserved exactly (to 0.01U precision) during upload and download.
+
+**Rationale**: Insulin amounts directly affect IOB calculations; any loss of precision impacts dosing safety.
+
+**Scenarios**:
+- [Treatment Sync](../conformance/assertions/treatment-sync.yaml)
+
+**Verification**:
+- Create bolus with `insulin: 2.35`
+- Upload to Nightscout
+- Download from Nightscout
+- Verify `insulin == 2.35`
+
+---
+
+### REQ-041: Carb Amount Preservation
+
+**Statement**: When syncing a carb treatment, the `carbs` amount MUST be preserved exactly (to 0.1g precision) during upload and download.
+
+**Rationale**: Carb amounts directly affect COB calculations and dosing recommendations.
+
+**Scenarios**:
+- [Treatment Sync](../conformance/assertions/treatment-sync.yaml)
+
+**Verification**:
+- Create carbs with `carbs: 45.5`
+- Upload to Nightscout
+- Download from Nightscout
+- Verify `carbs == 45.5`
+
+---
+
+### REQ-042: Treatment Timestamp Accuracy
+
+**Statement**: Treatment timestamps MUST be preserved with millisecond precision during sync.
+
+**Rationale**: Timestamp precision is critical for:
+- Deduplication (same event from multiple sources)
+- IOB decay calculation timing
+- Event ordering in timeline displays
+
+**Scenarios**:
+- [Treatment Sync](../conformance/assertions/treatment-sync.yaml)
+
+**Verification**:
+- Create treatment with timestamp `2026-01-17T12:34:56.789Z`
+- Upload and download
+- Verify timestamp matches exactly
+
+---
+
+### REQ-043: Automatic Bolus Flag
+
+**Statement**: When uploading an automatic bolus (SMB or auto-bolus), the system MUST set `automatic: true` to distinguish from manual boluses.
+
+**Rationale**: Distinguishing automatic from manual boluses is essential for:
+- User review of algorithm behavior
+- Analytics and reporting
+- Troubleshooting dosing decisions
+
+**Scenarios**:
+- [Treatment Sync](../conformance/assertions/treatment-sync.yaml)
+
+**Verification**:
+- Algorithm delivers SMB
+- Verify uploaded treatment has `automatic: true`
+- Manual bolus should have `automatic: false` or undefined
+
+---
+
+### REQ-044: Duration Unit Normalization
+
+**Statement**: When uploading temp basal or eCarbs with duration, the system MUST convert to Nightscout's expected unit (minutes) before upload.
+
+**Rationale**: Duration unit mismatch causes order-of-magnitude errors in temp basal and carb absorption timing.
+
+**Scenarios**:
+- [Treatment Sync](../conformance/assertions/treatment-sync.yaml)
+
+**Verification**:
+- Create temp basal with 30-minute duration (internal units)
+- Upload to Nightscout
+- Verify `duration == 30` (minutes)
+
+---
+
+### REQ-045: Treatment Sync Identity Round-Trip
+
+**Statement**: A client-generated sync identifier MUST survive the upload/download round-trip unchanged.
+
+**Rationale**: Required for:
+- Deduplication on retry
+- Correlating local and remote records
+- Updating existing treatments
+
+**Scenarios**:
+- [Treatment Sync](../conformance/assertions/treatment-sync.yaml)
+
+**Verification**:
+- Upload treatment with `syncIdentifier: "abc-123"`
+- Download treatment
+- Verify sync identifier preserved
+
+---
+
+### REQ-046: Absorption Time Unit Conversion
+
+**Statement**: When uploading carb entries with absorption time, the system MUST convert from internal units (typically seconds) to Nightscout's expected unit (minutes).
+
+**Rationale**: Absorption time directly affects carb effect predictions and COB calculations.
+
+**Scenarios**:
+- [Treatment Sync](../conformance/assertions/treatment-sync.yaml)
+
+**Verification**:
+- Create carb with internal `absorptionTime: 10800` (seconds = 3 hours)
+- Convert to Nightscout format: `absorptionTime: 180` (minutes)
+- Upload to Nightscout
+- Verify `absorptionTime == 180` (minutes)
+
+---
+
 ## Template
 
 ```markdown

@@ -311,6 +311,180 @@ rT.predBGs = {
 
 ---
 
+## Treatment Sync Gaps
+
+### GAP-TREAT-001: Absorption Time Unit Mismatch
+
+**Scenario**: [Treatment Sync Validation](../conformance/assertions/treatment-sync.yaml)
+
+**Description**: Loop and Trio use seconds for carb absorption time; Nightscout stores in minutes. Unit conversion errors can cause significantly incorrect absorption modeling.
+
+**Impact**: 
+- Carb entries with incorrect absorption time affect IOB/COB calculations
+- Cross-system data correlation may misinterpret absorption duration
+
+**Possible Solutions**:
+1. Explicit unit conversion in upload/download logic
+2. Standardize on ISO 8601 duration format
+3. Add `absorptionTimeUnit` field to treatments
+
+**Status**: Under discussion
+
+**Related**:
+- [Treatments Deep Dive](../docs/10-domain/treatments-deep-dive.md)
+
+---
+
+### GAP-TREAT-002: Duration Unit Inconsistency
+
+**Scenario**: [Treatment Sync Validation](../conformance/assertions/treatment-sync.yaml)
+
+**Description**: Duration units vary across systems:
+- Loop: Seconds
+- AAPS: Milliseconds  
+- Nightscout: Minutes
+
+**Impact**:
+- Temp basal duration could be off by orders of magnitude
+- eCarbs duration misinterpreted
+
+**Possible Solutions**:
+1. Standardize on minutes for Nightscout interchange
+2. Use ISO 8601 duration format (`PT30M`)
+3. Explicit unit field on duration
+
+**Status**: Under discussion
+
+**Related**:
+- [Treatments Deep Dive](../docs/10-domain/treatments-deep-dive.md)
+
+---
+
+### GAP-TREAT-003: No Explicit SMB Event Type
+
+**Scenario**: SMB identification and analytics
+
+**Description**: Nightscout lacks an explicit `SMB` eventType. AAPS uploads SMBs with `eventType: "Correction Bolus"` plus a separate `type: "SMB"` field, but other systems may not include this field. Systems without the `type` field must infer SMBs from `automatic: true` + small insulin amount, which is unreliable.
+
+**Impact**:
+- Cannot reliably query for SMB events across all AID systems
+- Manual correction boluses may be confused with automatic SMBs
+- Analytics and reporting vary by system
+
+**Possible Solutions**:
+1. All AID systems adopt AAPS convention of including `type: "SMB"` field
+2. Add explicit `eventType: "SMB"` to Nightscout schema
+3. Add `isSMB: true` boolean field
+
+**Status**: Under discussion
+
+**Related**:
+- [AAPS Bolus Types](../mapping/aaps/README.md)
+- [Treatments Deep Dive](../docs/10-domain/treatments-deep-dive.md)
+
+---
+
+### GAP-TREAT-004: Split/Extended Bolus Representation Mismatch
+
+**Scenario**: Extended bolus round-trip
+
+**Description**: 
+- AAPS represents extended boluses via `FAKE_EXTENDED` temp basal type
+- Loop infers square wave from `duration >= 30min`
+- Nightscout has explicit `splitNow`/`splitExt` fields for combo boluses
+
+**Impact**:
+- Extended/combo boluses may not round-trip correctly between systems
+- Insulin delivery interpretation differs
+
+**Possible Solutions**:
+1. Standardize on Nightscout combo bolus fields
+2. Add explicit `bolusType` enum with `EXTENDED`, `COMBO`, `NORMAL`
+3. Document semantic mapping rules
+
+**Status**: Needs ADR
+
+**Related**:
+- [Treatments Deep Dive](../docs/10-domain/treatments-deep-dive.md)
+
+---
+
+### GAP-TREAT-005: Loop POST-Only Creates Duplicates
+
+**Scenario**: Treatment sync retry scenarios
+
+**Description**: Loop uses POST (not PUT) for treatment uploads, which may create duplicates if network request is retried.
+
+**Source**: `NightscoutServiceKit/Extensions/DoseEntry.swift`
+```swift
+/* id: objectId, */ /// Specifying _id only works when doing a put (modify)
+```
+
+**Impact**:
+- Duplicate treatments in Nightscout after network retries
+- IOB/COB calculations may double-count insulin/carbs
+
+**Possible Solutions**:
+1. Switch to PUT with `syncIdentifier` as dedup key
+2. Use API v3 with `identifier` field
+3. Server-side deduplication on `syncIdentifier`
+
+**Status**: Under discussion
+
+**Related**:
+- [GAP-003](#gap-003-no-unified-sync-identity-field-across-controllers)
+- [Loop Nightscout Sync](../mapping/loop/nightscout-sync.md)
+
+---
+
+### GAP-TREAT-006: Retroactive Edit Handling
+
+**Scenario**: Treatment edit/delete sync
+
+**Description**: 
+- Loop tracks `userUpdatedDate` but doesn't sync updates to Nightscout
+- AAPS uses `isValid: false` for soft deletes
+- Nightscout has no standard edit history or soft delete mechanism
+
+**Impact**:
+- Edited treatments may not sync properly
+- Deleted treatments may persist in Nightscout
+- No audit trail for treatment modifications
+
+**Possible Solutions**:
+1. Add `modifiedAt`, `deletedAt` fields to treatments
+2. Use API v3 `isValid` field consistently
+3. Sync updates via PUT with version tracking
+
+**Status**: Under discussion
+
+**Related**:
+- [Treatments Deep Dive](../docs/10-domain/treatments-deep-dive.md)
+
+---
+
+### GAP-TREAT-007: eCarbs Not Universally Supported
+
+**Scenario**: Extended carbs cross-system sync
+
+**Description**: Extended carbs (eCarbs) with `duration` field are supported by AAPS and Nightscout but not by Loop.
+
+**Impact**:
+- eCarbs entered in AAPS won't be properly interpreted by Loop followers
+- COB calculation differs between systems
+
+**Possible Solutions**:
+1. Loop adds eCarbs support
+2. Nightscout decomposes eCarbs into multiple entries
+3. Document limitation for users
+
+**Status**: Under discussion
+
+**Related**:
+- [Treatments Deep Dive](../docs/10-domain/treatments-deep-dive.md)
+
+---
+
 ## Resolved Gaps
 
 _None yet._
