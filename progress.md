@@ -196,6 +196,40 @@ Comprehensive cross-system analysis of insulin activity curves used by AID syste
 
 ---
 
+### Cycle 11: Dexcom BLE Protocol Specification (Completed 2026-01-17)
+
+Comprehensive reverse-engineered specification of Dexcom G6 and G7 Bluetooth Low Energy protocols based on open-source implementations.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **Dexcom BLE Protocol Deep Dive** | `docs/10-domain/dexcom-ble-protocol-deep-dive.md` | Complete opcode tables, message structures, authentication flows, CRC validation |
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Added BLE Protocol Models section with UUIDs, G6/G7 differences, opcodes, glucose message structures |
+| **Requirements Update** | `traceability/requirements.md` | Added REQ-BLE-001 through REQ-BLE-006 for CRC validation, authentication, glucose extraction, trend conversion |
+| **Gaps Update** | `traceability/gaps.md` | Added GAP-BLE-001 through GAP-BLE-005 for J-PAKE spec, certificate chain, Service B purpose, Anubis commands |
+
+**Key Findings**:
+- **Complete Opcode Table**: Documented all G6 opcodes (0x01-0x51) with Tx/Rx pairs, message structures, and field offsets
+- **G6 vs G7 Protocol Differences**: G6 uses AES-128-ECB challenge-response, G7 uses J-PAKE; G6 has 2 connection slots, G7 has 1 exclusive slot
+- **Authentication Hash Function**: All implementations use identical `hash(data, transmitterID)` = `aes128ecb(data+data, "00"+id+"00"+id)[0:8]`
+- **CRC-16 Validation**: CRC-16 CCITT (XModem) polynomial 0x1021, initial value 0x0000, little-endian in last 2 bytes
+- **Glucose Message Structure**: 12-bit glucose value with display-only flag, signed Int8 trend rate divided by 10
+- **Algorithm/Calibration States**: G6 has 18 states (CalibrationState), G7 has 26 states (AlgorithmState) with different reliability semantics
+- **Backfill Protocol**: G6 uses 0x50/0x51 with 8-byte entries, G7 uses 0x59 with 9-byte entries (3-byte timestamp)
+
+**Source Files Analyzed**:
+- `CGMBLEKit:CGMBLEKit/Opcode.swift` - Complete G6 opcode enumeration
+- `CGMBLEKit:CGMBLEKit/Messages/*.swift` - All G6 Tx/Rx message structures
+- `CGMBLEKit:CGMBLEKit/BluetoothServices.swift` - BLE UUIDs and characteristics
+- `G7SensorKit:G7SensorKit/Messages/G7GlucoseMessage.swift` - G7 glucose message structure
+- `G7SensorKit:G7SensorKit/AlgorithmState.swift` - G7 algorithm state enumeration
+- `xdrip-js:lib/transmitter.js` - Node.js implementation with authentication and backfill
+- `DiaBLE:Dexcom.swift` - Swift implementation with extended opcodes
+- `DiaBLE:DexcomG7.swift` - G7-specific protocol including J-PAKE references
+
+**Gaps Identified**: GAP-BLE-001 through GAP-BLE-005
+
+---
+
 ## Candidate Next Cycles
 
 ### Priority A: Carb Absorption Models Comparison

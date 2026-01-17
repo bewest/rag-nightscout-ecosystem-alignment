@@ -1218,11 +1218,117 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 2. Cross-reference implementations to identify discrepancies
 3. Accept implementation diversity (current state)
 
-**Status**: Documentation effort
+**Status**: Documentation effort → Partially resolved (see `docs/10-domain/dexcom-ble-protocol-deep-dive.md`)
 
 **Related**:
 - [xdrip-js BLE Protocol](../mapping/xdrip-js/ble-protocol.md)
 - [DiaBLE Dexcom Support](../mapping/diable/cgm-transmitters.md)
+- [Dexcom BLE Protocol Deep Dive](../docs/10-domain/dexcom-ble-protocol-deep-dive.md)
+
+---
+
+### GAP-BLE-001: G7 J-PAKE Full Specification Incomplete
+
+**Scenario**: G7 Initial Pairing
+
+**Description**: The J-PAKE (Password Authenticated Key Exchange by Juggling) protocol used by Dexcom G7 for initial pairing is not fully documented. The mathematical operations for key derivation are implemented in native libraries (keks, mbedtls) but the exact message formats and state machine are not fully understood.
+
+**Source**: [Dexcom BLE Protocol Deep Dive](../docs/10-domain/dexcom-ble-protocol-deep-dive.md#g7-j-pake-authentication)
+
+**Impact**:
+- New G7 implementations must reverse-engineer or copy existing code
+- Cannot verify correctness of implementations
+- Security analysis is incomplete
+
+**Possible Solutions**:
+1. Detailed packet capture and analysis of J-PAKE phases
+2. Reverse engineering of official Dexcom app
+3. Collaboration with existing implementations (xDrip+, DiaBLE)
+
+**Status**: Documentation effort
+
+---
+
+### GAP-BLE-002: G7 Certificate Chain Undocumented
+
+**Scenario**: G7 Initial Pairing
+
+**Description**: The certificate exchange (opcode 0x0B) and proof of possession (opcode 0x0C) protocols used after J-PAKE are not fully documented. These establish long-term trust between the sensor and device.
+
+**Source**: [DiaBLE DexcomG7.swift](../externals/DiaBLE/DiaBLE Playground.swiftpm/DexcomG7.swift)
+
+**Impact**:
+- Cannot implement G7 pairing from specification alone
+- Certificate validation logic is unclear
+- Security implications not fully analyzed
+
+**Possible Solutions**:
+1. Packet capture of certificate exchange
+2. Analysis of certificate formats (likely X.509)
+3. Documentation of signature verification
+
+**Status**: Needs investigation
+
+---
+
+### GAP-BLE-003: Service B Purpose Unknown
+
+**Scenario**: BLE Protocol Completeness
+
+**Description**: The secondary Bluetooth service (UUID: F8084532-849E-531C-C594-30F1F86A4EA5) with characteristics E (F8084533) and F (F8084534) is present on Dexcom transmitters but its purpose is unknown.
+
+**Source**: [CGMBLEKit BluetoothServices.swift](../externals/LoopWorkspace/CGMBLEKit/CGMBLEKit/BluetoothServices.swift)
+
+**Impact**:
+- Potentially missing functionality
+- May be used for firmware updates or diagnostics
+
+**Possible Solutions**:
+1. Packet capture during firmware updates
+2. Reverse engineering of Dexcom app
+3. Experimentation with characteristic reads/writes
+
+**Status**: Low priority
+
+---
+
+### GAP-BLE-004: Anubis Transmitter Extended Commands
+
+**Scenario**: G6 Extended Transmitters
+
+**Description**: "Anubis" G6 transmitters (maxRuntimeDays > 120) use extended commands at opcodes 0x3B and 0xF0xx that are not fully documented. These appear related to transmitter reset/restart functionality.
+
+**Source**: [xdrip-js transmitter.js](../externals/xdrip-js/lib/transmitter.js)
+
+**Impact**:
+- Cannot fully support Anubis transmitter features
+- Reset/extend functionality limited
+
+**Possible Solutions**:
+1. Analysis of xDrip+ Android implementation
+2. Documentation of 0xF080 message format
+
+**Status**: Low priority
+
+---
+
+### GAP-BLE-005: G7 Encryption Info Format Unknown
+
+**Scenario**: G7 Advanced Features
+
+**Description**: The encryption info (opcode 0x38) and encryption status (opcode 0x0F) commands for G7 are present but the data format and purpose are unclear. May relate to encrypted data streams.
+
+**Source**: [DiaBLE DexcomG7.swift](../externals/DiaBLE/DiaBLE Playground.swiftpm/DexcomG7.swift)
+
+**Impact**:
+- May be blocking access to additional data
+- Security implications unknown
+
+**Possible Solutions**:
+1. Packet analysis of encryption commands
+2. Cross-reference with official app behavior
+
+**Status**: Needs investigation
 
 ---
 

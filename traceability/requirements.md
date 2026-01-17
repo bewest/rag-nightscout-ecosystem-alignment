@@ -825,6 +825,114 @@ Requirements follow the pattern:
 
 ---
 
+## BLE Protocol Requirements
+
+### REQ-BLE-001: Message CRC Validation
+
+**Statement**: All BLE messages with CRC-16 suffix MUST be validated before processing. Messages with invalid CRC MUST be rejected.
+
+**Rationale**: Ensures data integrity over wireless transmission. CRC-16 CCITT (XModem) is the standard used by Dexcom transmitters.
+
+**Scenarios**:
+- CGM Data Reception
+- Backfill Data Parsing
+
+**Verification**:
+- Compute CRC-16 of payload (excluding last 2 bytes)
+- Compare with CRC in message (little-endian)
+- Verify invalid CRC causes message rejection
+
+**Cross-System Status**:
+- CGMBLEKit: ✅ `Data.isCRCValid`
+- xdrip-js: ✅ CRC validation in message parsing
+- DiaBLE: ✅ CRC validation implemented
+
+---
+
+### REQ-BLE-002: Authentication Before Data Access
+
+**Statement**: BLE clients MUST complete authentication handshake before requesting glucose data. Unauthenticated requests MUST be rejected by the transmitter.
+
+**Rationale**: Ensures only authorized devices can read sensitive health data.
+
+**Scenarios**:
+- Initial Pairing
+- Reconnection
+
+**Verification**:
+- Attempt glucose request before auth: verify failure
+- Complete auth handshake: verify glucose request succeeds
+
+---
+
+### REQ-BLE-003: Glucose Value Extraction
+
+**Statement**: Glucose values MUST be extracted from the lower 12 bits of the glucose field. The upper 4 bits (G6) or specific flag byte (G7) contain display-only flag.
+
+**Rationale**: Ensures consistent glucose interpretation across implementations.
+
+**Scenarios**:
+- Real-time Glucose Reading
+- Backfill Data Parsing
+
+**Verification**:
+- Parse glucose message
+- Extract `glucose = glucoseBytes & 0x0FFF`
+- Verify display-only flag extraction
+
+---
+
+### REQ-BLE-004: Trend Rate Conversion
+
+**Statement**: Trend rate values MUST be interpreted as signed Int8 divided by 10, yielding mg/dL per minute. Value 0x7F (127) indicates unavailable.
+
+**Rationale**: Standardizes trend rate interpretation for consistent trend arrow display.
+
+**Scenarios**:
+- Trend Arrow Display
+- Rate of Change Alerting
+
+**Verification**:
+- Parse trend byte as signed Int8
+- Divide by 10 for mg/dL/min
+- Handle 0x7F as nil/unavailable
+
+---
+
+### REQ-BLE-005: Timestamp Calculation
+
+**Statement**: Glucose timestamps MUST be calculated as activation date plus transmitter time (seconds). Activation date is derived from `Date.now() - currentTime * 1000`.
+
+**Rationale**: Enables accurate historical data reconstruction and correlation with other events.
+
+**Scenarios**:
+- Glucose History Display
+- Data Export
+
+**Verification**:
+- Request TransmitterTime message
+- Calculate activation date
+- Verify glucose timestamps are consistent
+
+---
+
+### REQ-BLE-006: Algorithm State Interpretation
+
+**Statement**: Algorithm/calibration state values MUST be interpreted according to the G6 or G7 state machine. Only specific states indicate reliable glucose readings.
+
+**Rationale**: Prevents display of unreliable readings during warmup, calibration errors, or sensor failures.
+
+**Scenarios**:
+- Glucose Display Logic
+- Alerting Decisions
+
+**Verification**:
+- Parse algorithm state byte
+- Map to known state enum
+- Verify `hasReliableGlucose` logic matches state
+
+---
+
 ## Template
 
 ```markdown

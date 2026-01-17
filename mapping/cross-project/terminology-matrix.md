@@ -1137,10 +1137,114 @@ oref0's core innovation is deviation analysis:
 
 ---
 
+## Dexcom BLE Protocol Models
+
+> **See Also**: [Dexcom BLE Protocol Deep Dive](../../docs/10-domain/dexcom-ble-protocol-deep-dive.md) for comprehensive protocol specification.
+
+### BLE Service and Characteristic UUIDs
+
+| Purpose | UUID | Description |
+|---------|------|-------------|
+| **Advertisement** | `FEBC` | Dexcom advertisement service |
+| **CGM Data Service** | `F8083532-849E-531C-C594-30F1F86A4EA5` | Main data service |
+| **Communication** | `F8083533-849E-531C-C594-30F1F86A4EA5` | Status updates (Read/Notify) |
+| **Control** | `F8083534-849E-531C-C594-30F1F86A4EA5` | Command exchange (Write/Indicate) |
+| **Authentication** | `F8083535-849E-531C-C594-30F1F86A4EA5` | Auth handshake (Write/Indicate) |
+| **Backfill** | `F8083536-849E-531C-C594-30F1F86A4EA5` | Historical data (Read/Write/Notify) |
+| **J-PAKE (G7)** | `F8083538-849E-531C-C594-30F1F86A4EA5` | G7 J-PAKE exchange |
+
+### G6 vs G7 Protocol Differences
+
+| Aspect | G6 | G7 |
+|--------|----|----|
+| **Authentication** | AES-128-ECB challenge-response | J-PAKE (Password Authenticated Key Exchange) |
+| **Connection Slots** | 2 (xDrip + Dexcom app) | 1 (exclusive) |
+| **Glucose Opcode** | 0x30/0x31 or 0x4E/0x4F | 0x4E/0x4F only |
+| **Calibration** | Factory + user calibration | Factory only |
+| **Warmup** | 2 hours | 27 minutes |
+| **Backfill Opcode** | 0x50/0x51 | 0x59 |
+
+### Core Message Opcodes
+
+| Category | Opcode (Tx/Rx) | Purpose |
+|----------|----------------|---------|
+| **Auth Request** | 0x01/0x03 | Initiate authentication |
+| **Auth Challenge** | 0x04/0x05 | Complete authentication |
+| **Keep Alive** | 0x06 | Maintain connection |
+| **Bond Request** | 0x07/0x08 | Request Bluetooth bonding |
+| **Disconnect** | 0x09 | Graceful disconnect |
+| **Battery Status** | 0x22/0x23 | Battery voltage and runtime |
+| **Transmitter Time** | 0x24/0x25 | Current time and session start |
+| **Session Start** | 0x26/0x27 | Start sensor session |
+| **Session Stop** | 0x28/0x29 | Stop sensor session |
+| **Glucose (G5)** | 0x30/0x31 | Request glucose reading |
+| **Calibration Data** | 0x32/0x33 | Get/set calibration |
+| **Calibrate Glucose** | 0x34/0x35 | Submit calibration value |
+| **Reset** | 0x42/0x43 | Reset transmitter |
+| **Version (extended)** | 0x4A/0x4B | Get transmitter version |
+| **Glucose (G6/G7)** | 0x4E/0x4F | Request glucose reading |
+| **Backfill (G6)** | 0x50/0x51 | Request historical data |
+| **Version Extended (G7)** | 0x52/0x53 | Get extended version |
+| **Backfill Finished (G7)** | 0x59 | Backfill complete |
+
+### Glucose Message Structure Comparison
+
+| Field | G6 (0x31/0x4F) | G7 (0x4E) |
+|-------|----------------|-----------|
+| **Opcode** | Byte 0 | Byte 0 |
+| **Status** | Byte 1 | Byte 1 |
+| **Timestamp** | Bytes 6-9 (submessage) | Bytes 2-5 |
+| **Sequence** | Bytes 2-5 | Bytes 6-7 |
+| **Age** | N/A | Bytes 10-11 |
+| **Glucose** | Bytes 10-11 (12-bit) | Bytes 12-13 (12-bit) |
+| **Algorithm State** | Byte 12 | Byte 14 |
+| **Trend** | Byte 13 (signed) | Byte 15 (signed, /10) |
+| **Predicted** | N/A | Bytes 16-17 |
+
+### Authentication Hash Function
+
+| System | Implementation | Key Derivation |
+|--------|----------------|----------------|
+| **CGMBLEKit** | `aes128ecb_encrypt(challenge+challenge, key)` | `key = "00" + transmitterID + "00" + transmitterID` |
+| **xdrip-js** | `crypto.createCipheriv('aes-128-ecb', key, '')` | Same as above |
+| **DiaBLE** | `doubleChallenge.aes128Encrypt(keyData: cryptKey)` | Same as above |
+
+### CRC-16 Implementation
+
+All systems use **CRC-16 CCITT (XModem)**:
+- Polynomial: `0x1021`
+- Initial value: `0x0000`
+- Position: Last 2 bytes of message (little-endian)
+
+### Transmitter ID Formats
+
+| Transmitter | ID Format | Example | Detection |
+|-------------|-----------|---------|-----------|
+| **G5** | 5 alphanumeric | `40XXX` | Length == 5 |
+| **G6** | 6 alphanumeric, starts with 8 | `80XXXX` | `id[0] == '8'` |
+| **G6+** | 6 alphanumeric, 8G/8H/8J/8L/8R | `8GXXXX` | Prefix check |
+| **G7** | DXCM + suffix | `DXCMXX` | Advertisement name |
+
+### Calibration/Algorithm State Mapping
+
+| State Value | G6 Name | G7 Name | Reliable Glucose |
+|-------------|---------|---------|------------------|
+| 0x01 | Stopped | Stopped | No |
+| 0x02 | Warmup | Warmup | No |
+| 0x06 | OK | OK | Yes |
+| 0x07 | NeedCalibration7 | NeedsCalibration | G6: Yes, G7: No |
+| 0x0F | SessionFailure15 | SessionExpired | No |
+| 0x12 | QuestionMarks | TemporarySensorIssue | No |
+
+**Gap Reference**: GAP-BLE-001 (J-PAKE spec), GAP-BLE-002 (certificate chain)
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-17 | Agent | Added Dexcom BLE Protocol Models section with UUIDs, opcodes, message structures, authentication |
 | 2026-01-17 | Agent | Added Pump Communication Models section with interface, commands, protocols, and state machines |
 | 2026-01-17 | Agent | Added API Version Models section with v1/v3 comparison |
 | 2026-01-17 | Agent | Added Remote Command Security Models section with cross-system comparison |
