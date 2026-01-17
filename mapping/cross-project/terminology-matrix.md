@@ -100,6 +100,69 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 **Gap Reference**: GAP-003 (no unified sync identity), GAP-TREAT-005 (Loop POST duplicates)
 
+### Glucose Data Models (Deep Dive)
+
+> **See Also**: [Entries Collection Deep Dive](../../docs/10-domain/entries-deep-dive.md) for comprehensive field-by-field mappings.
+
+#### Core SGV Fields
+
+| Field | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|-------|------------|------|------|------|--------|
+| Glucose Value | `sgv` | `quantity` (HKQuantity) | `value` | `sgv` | `calculated_value` |
+| Timestamp | `date` (epoch ms) | `startDate` | `timestamp` | `date` | `timestamp` |
+| Trend Arrow | `direction` | `trendType` (GlucoseTrend) | `trendArrow` | `direction` | `dg_slope` → direction |
+| Noise Level | `noise` (1-4) | N/A | `noise` | `noise` | `noise` |
+| Device/Source | `device` | `provenanceIdentifier` | `sourceSensor` | N/A | `sensor_uuid` |
+| Sync Identity | `_id` | N/A | `interfaceIDs.nightscoutId` | `_id` | `uuid` |
+
+#### Direction (Trend Arrow) Mapping
+
+| Nightscout | Loop (GlucoseTrend) | AAPS (TrendArrow) | Trio | xDrip+ |
+|------------|---------------------|-------------------|------|--------|
+| `DoubleUp` | `.upUpUp` | `DOUBLE_UP` | `DoubleUp` | `DOUBLE_UP (1)` |
+| `SingleUp` | `.upUp` | `SINGLE_UP` | `SingleUp` | `SINGLE_UP (2)` |
+| `FortyFiveUp` | `.up` | `FORTY_FIVE_UP` | `FortyFiveUp` | `FORTY_FIVE_UP (3)` |
+| `Flat` | `.flat` | `FLAT` | `Flat` | `FLAT (4)` |
+| `FortyFiveDown` | `.down` | `FORTY_FIVE_DOWN` | `FortyFiveDown` | `FORTY_FIVE_DOWN (5)` |
+| `SingleDown` | `.downDown` | `SINGLE_DOWN` | `SingleDown` | `SINGLE_DOWN (6)` |
+| `DoubleDown` | `.downDownDown` | `DOUBLE_DOWN` | `DoubleDown` | `DOUBLE_DOWN (7)` |
+| `NOT COMPUTABLE` | N/A | `NONE` | `notComputable` | `NOT_COMPUTABLE (8)` |
+| N/A | N/A | `TRIPLE_UP` | `TripleUp` | N/A |
+| N/A | N/A | `TRIPLE_DOWN` | `TripleDown` | N/A |
+
+**Gap Reference**: GAP-ENTRY-001 (triple arrows have no NS equivalent)
+
+#### Raw/Filtered Values
+
+| Field | Nightscout | AAPS | xDrip+ | Notes |
+|-------|------------|------|--------|-------|
+| Unfiltered Raw | `unfiltered` | N/A | `raw_data` | Unprocessed sensor signal |
+| Filtered Raw | `filtered` | N/A | `filtered_data` | Noise-reduced signal |
+| Raw Calibrated | N/A | `raw` | `raw_calculated` | Intermediate value |
+
+**Note**: iOS systems (Loop, Trio) do not expose raw sensor values—they rely on transmitter-calibrated readings.
+
+#### CGM vs Meter Reading Distinction
+
+| Reading Type | Nightscout | AAPS | xDrip+ |
+|--------------|------------|------|--------|
+| CGM (continuous) | `entries` (type: `sgv`) | `GlucoseValue` entity | `BgReading` entity |
+| Meter (fingerstick) | `treatments` (eventType: `BG Check`) | `TherapyEvent` (FINGER_STICK_BG_VALUE) | `BloodTest` entity |
+| Calibration | `entries` (type: `cal`) | N/A | `Calibration` entity |
+
+**Key Distinction**: Meter readings are **treatments**, not entries. CGM readings are entries.
+
+#### Glucose Entry Sync Identity
+
+| System | Primary ID | Upload Role | Dedup Strategy |
+|--------|-----------|-------------|----------------|
+| xDrip+ | `uuid` | Primary producer | Upsert by uuid |
+| AAPS | `interfaceIDs.nightscoutId` | Consumer/rebroadcast | Check before insert |
+| Loop | N/A | Typically doesn't upload CGM | N/A |
+| Trio | `_id` | Passthrough | Direct from NS |
+
+**Gap Reference**: GAP-ENTRY-003 (no standardized source taxonomy), GAP-ENTRY-004 (no universal dedup)
+
 ### State Snapshots (Point-in-Time)
 
 | Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ |
