@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-01-17T21:08:41.015991+00:00",
+  "generated_at": "2026-01-17T21:10:42.952389+00:00",
   "summary": {
     "total_assertions": 24,
     "total_tests": 0,
@@ -225,22 +225,22 @@
       "file": "conformance/assertions/treatment-sync.yaml",
       "title": "Treatment Sync",
       "requirements": [
-        "REQ-045",
-        "REQ-041",
-        "REQ-044",
-        "REQ-046",
+        "REQ-043",
         "REQ-042",
+        "REQ-041",
+        "REQ-046",
+        "REQ-045",
         "REQ-040",
-        "REQ-043"
+        "REQ-044"
       ],
       "related_gaps": [
-        "GAP-TREAT-006",
-        "GAP-TREAT-002",
+        "GAP-TREAT-004",
         "GAP-TREAT-007",
         "GAP-TREAT-001",
+        "GAP-TREAT-005",
         "GAP-TREAT-003",
-        "GAP-TREAT-004",
-        "GAP-TREAT-005"
+        "GAP-TREAT-006",
+        "GAP-TREAT-002"
       ],
       "tests": [],
       "parsed_via": "regex"
@@ -248,28 +248,7 @@
   ],
   "traces": {
     "req_to_assertions": {
-      "REQ-045": [
-        {
-          "assertion_id": "treatment-sync",
-          "file": "conformance/assertions/treatment-sync.yaml",
-          "title": "Treatment Sync"
-        }
-      ],
-      "REQ-041": [
-        {
-          "assertion_id": "treatment-sync",
-          "file": "conformance/assertions/treatment-sync.yaml",
-          "title": "Treatment Sync"
-        }
-      ],
-      "REQ-044": [
-        {
-          "assertion_id": "treatment-sync",
-          "file": "conformance/assertions/treatment-sync.yaml",
-          "title": "Treatment Sync"
-        }
-      ],
-      "REQ-046": [
+      "REQ-043": [
         {
           "assertion_id": "treatment-sync",
           "file": "conformance/assertions/treatment-sync.yaml",
@@ -283,6 +262,27 @@
           "title": "Treatment Sync"
         }
       ],
+      "REQ-041": [
+        {
+          "assertion_id": "treatment-sync",
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "title": "Treatment Sync"
+        }
+      ],
+      "REQ-046": [
+        {
+          "assertion_id": "treatment-sync",
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "title": "Treatment Sync"
+        }
+      ],
+      "REQ-045": [
+        {
+          "assertion_id": "treatment-sync",
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "title": "Treatment Sync"
+        }
+      ],
       "REQ-040": [
         {
           "assertion_id": "treatment-sync",
@@ -290,7 +290,7 @@
           "title": "Treatment Sync"
         }
       ],
-      "REQ-043": [
+      "REQ-044": [
         {
           "assertion_id": "treatment-sync",
           "file": "conformance/assertions/treatment-sync.yaml",
@@ -299,14 +299,7 @@
       ]
     },
     "gap_to_assertions": {
-      "GAP-TREAT-006": [
-        {
-          "assertion_id": "treatment-sync",
-          "file": "conformance/assertions/treatment-sync.yaml",
-          "title": "Treatment Sync"
-        }
-      ],
-      "GAP-TREAT-002": [
+      "GAP-TREAT-004": [
         {
           "assertion_id": "treatment-sync",
           "file": "conformance/assertions/treatment-sync.yaml",
@@ -327,6 +320,13 @@
           "title": "Treatment Sync"
         }
       ],
+      "GAP-TREAT-005": [
+        {
+          "assertion_id": "treatment-sync",
+          "file": "conformance/assertions/treatment-sync.yaml",
+          "title": "Treatment Sync"
+        }
+      ],
       "GAP-TREAT-003": [
         {
           "assertion_id": "treatment-sync",
@@ -334,14 +334,14 @@
           "title": "Treatment Sync"
         }
       ],
-      "GAP-TREAT-004": [
+      "GAP-TREAT-006": [
         {
           "assertion_id": "treatment-sync",
           "file": "conformance/assertions/treatment-sync.yaml",
           "title": "Treatment Sync"
         }
       ],
-      "GAP-TREAT-005": [
+      "GAP-TREAT-002": [
         {
           "assertion_id": "treatment-sync",
           "file": "conformance/assertions/treatment-sync.yaml",
