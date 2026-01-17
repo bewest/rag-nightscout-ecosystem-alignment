@@ -22,6 +22,7 @@ The workspace is designed to separate normative specifications from informative 
 
 - **`docs/`**: Contains narrative documentation, including overviews, domain concepts, design proposals, implementation notes, and architecture decision records (ADRs). The UI/UX emphasizes clear structure and cross-referencing.
   - Key new deliverables (2026-01-17):
+    - `docs/10-domain/data-rights-primer.md` - **NEW** Plain-language guide to the Five Fundamental Diabetes Data Rights (Access, Export, Share, Delegate, Audit), multi-stakeholder accessibility for patients, clinicians, developers, and policymakers, "ownership to agency" framing shift
     - `docs/10-domain/progressive-enhancement-framework.md` - **NEW** 10-layer capability ladder for diabetes technology (L0 MDI baseline through L9 delegate agents), design principles (progressive enhancement, graceful degradation, separation of concerns), shared vocabulary for describing any AID system
     - `docs/DIGITAL-RIGHTS.md` - **NEW** Comprehensive guide to legal frameworks protecting open-source diabetes software (GPL v3 licensing, DMCA 1201 exemptions, interoperability defenses, right-to-repair landscape, counter-notice guidance)
     - `docs/10-domain/nightscout-api-comparison.md` - **UPDATED** Major revision to Section 3 (Authentication) based on source code verification. Now accurately documents that both API v1 and v3 use a shared authorization module, with v3 REST restricting to JWT Bearer tokens at the entry point while v3 alarmSocket supports full dual-auth and storageSocket is accessToken-only.

@@ -426,11 +426,19 @@ These generally acknowledge clinical benefits while noting the lack of formal re
 
 ---
 
+## Related Documents
+
+- [Data Rights Primer](10-domain/data-rights-primer.md) - Plain-language guide to the Five Fundamental Diabetes Data Rights (Access, Export, Share, Delegate, Audit)
+- [Progressive Enhancement Framework](10-domain/progressive-enhancement-framework.md) - 10-layer capability model for diabetes technology
+
+---
+
 ## Document History
 
 | Date | Change |
 |------|--------|
 | January 2026 | Initial document created |
+| January 2026 | Added cross-reference to Data Rights Primer |
 
 ---
 

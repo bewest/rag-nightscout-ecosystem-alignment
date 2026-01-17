@@ -347,6 +347,8 @@ This framework provides a conceptual foundation for the AID Alignment Workspace:
 
 ## Related Documents
 
+- [Data Rights Primer](data-rights-primer.md) - Plain-language guide to the Five Fundamental Diabetes Data Rights
+- [Digital Rights and Legal Protections](../DIGITAL-RIGHTS.md) - Legal frameworks (GPL, DMCA, interoperability)
 - [Capability Layer Matrix](../../mapping/cross-project/capability-layer-matrix.md) - System-by-system mapping
 - [Requirements](../../traceability/requirements.md) - REQ-DEGRADE-* requirements
 - [Gaps](../../traceability/gaps.md) - GAP-DELEGATE-* gaps
