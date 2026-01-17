@@ -72,3 +72,19 @@ The project integrates with and documents the following external Automated Insul
         - **Comprehensive documentation**: See `mapping/xdrip-android/` for detailed analysis.
         - **Unique features**: Local web server (port 17580), multi-insulin tracking, 20+ data sources, smart pen integrations, pluggable calibration algorithms, Tidepool/InfluxDB/MongoDB direct upload.
         - **Key source files**: `models/BgReading.java` (~2,394 lines), `models/Treatments.java` (~1,436 lines), `utilitymodels/NightscoutUploader.java` (~1,470 lines), `utilitymodels/UploaderQueue.java` (~557 lines).
+
+## Recent Analysis Documents
+
+### AID Controller Sync Patterns (2026-01-17)
+
+Deep analysis of how Trio, Loop, and AAPS synchronize with Nightscout:
+- **Location**: `mapping/cross-project/aid-controller-sync-patterns.md`
+- **Key findings**:
+  - Trio uses API v1 with `enteredBy` filtering for deduplication
+  - Loop uses `syncIdentifier` UUID but POST-only (potential duplicates)
+  - AAPS uses API v3 with `identifier` + composite pump key
+  - No unified sync identity across controllers (GAP-003)
+  - DeviceStatus structure differs between Loop and oref0-based systems
+- **Conformance tests**: `conformance/assertions/sync-deduplication.yaml`
+- **New requirements**: REQ-030 through REQ-035 (sync identity, dedup, conflict detection)
+- **New gaps**: GAP-SYNC-004 (override sync), GAP-SYNC-005 (algorithm params)

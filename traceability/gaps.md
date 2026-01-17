@@ -142,6 +142,66 @@ But `OverrideTreatment` upload only includes `startDate`, `duration`, and settin
 
 ---
 
+### GAP-SYNC-004: Override supersession not tracked in sync
+
+**Scenario**: [Override Supersede](../conformance/scenarios/override-supersede/), [Sync Deduplication](../conformance/assertions/sync-deduplication.yaml)
+
+**Description**: When an override is superseded by a new override, the lifecycle change is not synced to Nightscout. Loop and Trio only upload the initial override creation, not subsequent status changes.
+
+**Source**: [AID Controller Sync Patterns - Gaps and Recommendations](../mapping/cross-project/aid-controller-sync-patterns.md)
+
+**Impact**:
+- Historical override queries unreliable
+- Cannot determine why an override ended (superseded vs cancelled vs natural end)
+- Related to GAP-001 (override supersession tracking)
+
+**Possible Solutions**:
+1. Upload override UPDATE when superseded
+2. Add `supersededBy`, `actualEndType`, `actualEndDate` fields
+3. Server-side inference from timestamps
+
+**Status**: Under discussion
+
+**Related**:
+- [GAP-001](#gap-001-nightscout-lacks-override-supersession-tracking)
+- [AID Controller Sync Patterns](../mapping/cross-project/aid-controller-sync-patterns.md)
+
+---
+
+### GAP-SYNC-005: Algorithm parameters not synced
+
+**Scenario**: Cross-project algorithm comparison
+
+**Description**: AID controllers do not upload algorithm configuration to Nightscout, making it impossible to understand why different systems make different decisions.
+
+**Controllers affected**: Loop, AAPS, Trio
+
+**Missing data**:
+- Insulin model selection (rapid-acting adult, child, etc.)
+- Retrospective correction type (Standard vs Integral)
+- Carb absorption model parameters
+- Safety limits configuration
+
+**Source**: [AID Controller Sync Patterns - DeviceStatus Comparison](../mapping/cross-project/aid-controller-sync-patterns.md)
+
+**Impact**:
+- Cannot compare algorithm behavior across systems
+- Debugging requires access to device settings
+- Research/audit use cases blocked
+
+**Possible Solutions**:
+1. Add `algorithm` object to devicestatus
+2. Create separate `configuration` collection
+3. Include in profile uploads
+
+**Status**: Under discussion
+
+**Related**:
+- [GAP-SYNC-002](#gap-sync-002-effect-timelines-not-uploaded-to-nightscout)
+- [AID Controller Sync Patterns](../mapping/cross-project/aid-controller-sync-patterns.md)
+
+---
+
 ### GAP-SYNC-002: Effect timelines not uploaded to Nightscout
 
 **Scenario**: Cross-project algorithm comparison, debugging

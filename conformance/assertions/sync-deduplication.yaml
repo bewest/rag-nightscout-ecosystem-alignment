@@ -1,0 +1,181 @@
+# Assertions for Sync Deduplication Scenarios
+# Tests deduplication behavior across AID controllers (Trio, Loop, AAPS)
+# Uses assertion types from conformance/assertions/_template.yaml
+
+scenario: sync-deduplication
+version: 1
+
+assertions:
+  # ============================================
+  # Identity Field Preservation (state assertions)
+  # ============================================
+  
+  - id: syncidentifier-preserved
+    description: "syncIdentifier field preserved through upload/download cycle"
+    type: state
+    target: treatment.syncIdentifier
+    expected: original_syncIdentifier
+    when: after_upload_and_download
+
+  - id: identifier-preserved
+    description: "AAPS identifier field preserved through upload/download cycle"
+    type: state
+    target: treatment.identifier
+    expected: original_identifier
+    when: after_upload_and_download
+
+  - id: enteredby-preserved
+    description: "enteredBy field preserved through upload/download cycle"
+    type: state
+    target: treatment.enteredBy
+    expected: original_enteredBy
+    when: after_upload_and_download
+
+  - id: utcoffset-preserved
+    description: "utcOffset field preserved for timezone handling"
+    type: state
+    target: treatment.utcOffset
+    expected: original_utcOffset
+    when: after_upload_and_download
+
+  - id: softdelete-isvalid-false
+    description: "Soft delete sets isValid=false"
+    type: state
+    target: treatment.isValid
+    expected: false
+    when: after_soft_delete
+
+  # ============================================
+  # Immutable Fields (immutable assertions)
+  # ============================================
+  
+  - id: pump-composite-key-immutable
+    description: "Pump composite key fields remain unchanged after upload"
+    type: immutable
+    fields:
+      - pumpId
+      - pumpType
+      - pumpSerial
+
+  - id: core-treatment-fields-immutable
+    description: "Core identity fields cannot be modified after creation"
+    type: immutable
+    fields:
+      - identifier
+      - date
+      - eventType
+      - app
+      - device
+
+  - id: server-timestamps-immutable
+    description: "Server-managed timestamps cannot be client-modified"
+    type: immutable
+    fields:
+      - srvCreated
+      - _id
+
+  # ============================================
+  # Query Assertions (query assertions)
+  # ============================================
+  
+  - id: enteredby-filter-excludes-self
+    description: "Query with enteredBy[$ne]=Controller excludes that controller's entries"
+    type: query
+    query: "treatments?find[enteredBy][$ne]=Trio"
+    expected_count: 2
+    when: given_trio_aaps_xdrip_treatments
+
+  - id: history-returns-modified-after
+    description: "History endpoint returns documents modified after given timestamp"
+    type: query
+    query: "treatments/history/{last_sync_timestamp}"
+    expected_count: 2
+    when: given_three_treatments_at_different_times
+
+  - id: history-includes-soft-deleted
+    description: "History endpoint includes soft-deleted documents for sync"
+    type: query
+    query: "treatments/history/{before_delete_timestamp}?deleted=true"
+    expected_count: 1
+    when: given_soft_deleted_treatment
+
+  - id: query-by-identifier
+    description: "Can query treatment by client-generated identifier"
+    type: query
+    query: "treatments?identifier={client_uuid}"
+    expected_count: 1
+    expected_id: treatment.id
+
+  - id: cross-controller-coexistence
+    description: "Multiple controllers' treatments exist independently"
+    type: query
+    query: "treatments"
+    expected_count: 3
+    when: given_trio_aaps_loop_treatments
+
+  # ============================================
+  # Reference Assertions (for relationships)
+  # ============================================
+  
+  - id: nightscoutid-references-server
+    description: "Local nightscoutId references server _id"
+    type: reference
+    target: local_treatment.nightscoutId
+    expected: server_treatment._id
+
+  # ============================================
+  # Timestamp Assertions
+  # ============================================
+  
+  - id: srvmodified-updated-on-change
+    description: "srvModified timestamp updated when document modified"
+    type: timestamp
+    target: treatment.srvModified
+    expected: "> original_srvModified"
+    when: after_update
+
+  - id: srvcreated-set-on-create
+    description: "srvCreated timestamp set when document created"
+    type: timestamp
+    target: treatment.srvCreated
+    expected: "> 0"
+    when: after_create
+
+# ============================================
+# Metadata and Cross-References
+# ============================================
+
+cross_references:
+  - document: mapping/cross-project/aid-controller-sync-patterns.md
+    description: "Deep analysis of Trio, Loop, AAPS sync patterns"
+  - document: specs/openapi/nightscout-api3-summary.md
+    description: "API v3 specification with dedup rules"
+  - document: mapping/nightscout/data-collections.md
+    description: "Sync identity field mapping per controller"
+  
+gaps_addressed:
+  - id: GAP-SYNC-001
+    description: "Loop POST vs PUT - tests identifier preservation"
+    assertions: [identifier-preserved, syncidentifier-preserved]
+  - id: GAP-003
+    description: "No unified sync identity - tests cross-controller coexistence"
+    assertions: [cross-controller-coexistence, enteredby-filter-excludes-self]
+
+sources:
+  trio:
+    - file: "trio:Trio/Sources/Services/Network/NightscoutAPI.swift"
+      lines: "291-299"
+      description: "enteredBy exclusion filter in fetchCarbs"
+  loop:
+    - file: "loop:NightscoutService/NightscoutServiceKit/Extensions/DoseEntry.swift"
+      lines: "30-31"
+      description: "syncIdentifier field usage"
+  aaps:
+    - file: "aaps:database/impl/src/main/kotlin/app/aaps/database/entities/embedments/InterfaceIDs.kt"
+      lines: "full"
+      description: "nightscoutId and pump composite key storage"
+  nightscout:
+    - file: "crm:lib/api3/swagger.yaml"
+      description: "API v3 deduplication rules"
+    - file: "crm:lib/api3/generic/create/validate.js"
+      description: "Dedup fallback implementation"
