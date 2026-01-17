@@ -1,0 +1,321 @@
+openapi: 3.0.3
+info:
+  title: AID Profile Collection - De Facto 2025
+  version: 2025.1.0
+  description: |
+    OpenAPI specification for the Nightscout `profile` collection documenting
+    the de facto standard as implemented across AID systems circa 2025.
+    
+    ## Current Limitations
+    - No distinction between prescribed, desired, and effective profiles
+    - AAPS ProfileSwitch semantics differ from Loop overrides (GAP-002)
+    - Profile percentage and timeshift not standardized
+    
+    ## Proposals
+    - See `docs/60-research/profile-model-evolution-proposal.md` for 2026 improvements
+    
+    ## Source References
+    - Deep Dive: `docs/60-research/profile-therapy-settings-comparison.md`
+    - Nightscout: `externals/cgm-remote-monitor/lib/profile/profilefunctions.js`
+
+  contact:
+    name: AID Alignment Workspace
+  license:
+    name: AGPL-3.0
+
+servers:
+  - url: /api/v3
+
+paths:
+  /profile:
+    get:
+      summary: Get profile documents
+      operationId: getProfiles
+      tags: [profile]
+      responses:
+        '200':
+          description: Array of profile documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProfileDocument'
+
+components:
+  schemas:
+    ProfileDocument:
+      type: object
+      description: |
+        Profile document containing one or more named profiles.
+        The `store` object maps profile names to their settings.
+      required:
+        - defaultProfile
+        - store
+      properties:
+        _id:
+          type: string
+        identifier:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        startDate:
+          type: string
+          format: date-time
+          description: When this profile becomes effective
+        defaultProfile:
+          type: string
+          description: Name of the default profile in store
+          example: Default
+        store:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Profile'
+          description: Map of profile name → profile settings
+        units:
+          type: string
+          enum: [mg/dl, mmol]
+          description: Glucose display units
+        enteredBy:
+          type: string
+        mills:
+          type: integer
+          format: int64
+
+        # API v3 metadata
+        utcOffset:
+          type: integer
+        srvCreated:
+          type: integer
+          format: int64
+        srvModified:
+          type: integer
+          format: int64
+        isValid:
+          type: boolean
+          default: true
+
+    Profile:
+      type: object
+      description: |
+        Individual profile settings. Contains time-varying arrays
+        for basal, ISF, and carb ratio.
+      properties:
+        timezone:
+          type: string
+          description: IANA timezone name
+          example: America/New_York
+        dia:
+          type: number
+          description: |
+            Duration of Insulin Action in HOURS.
+            Minimum 5 hours enforced by all AID systems for exponential model.
+          minimum: 2
+          maximum: 10
+          x-aid-controllers:
+            Loop: Settings.insulinModelSettings.effectDuration
+            AAPS: Profile.dia
+            Trio: settings.dia
+          x-aid-gap: GAP-INS-002
+          x-aid-gap-note: DIA not synced to treatments for retrospective analysis
+
+        # Time-varying arrays
+        basal:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimedValue'
+          description: Scheduled basal rates (U/hr) by time of day
+        sens:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimedValue'
+          description: |
+            Insulin Sensitivity Factor by time of day.
+            Units depend on glucose display units (mg/dL or mmol/L per U).
+          x-aid-controllers:
+            Loop: insulinSensitivitySchedule
+            AAPS: ProfileSealed.getIsfList()
+            Trio: profile.sensitivity
+        carbratio:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimedValue'
+          description: |
+            Carb Ratio (g/U) by time of day.
+            Note: Some systems use I:C (insulin per carbs), others C:I (carbs per insulin).
+          x-aid-controllers:
+            Loop: carbRatioSchedule (g/U)
+            AAPS: ProfileSealed.getIcList() (g/U)
+            Trio: profile.carbRatio (g/U)
+        target_low:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimedValue'
+          description: Lower target glucose by time of day
+        target_high:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimedValue'
+          description: Upper target glucose by time of day
+
+        # Additional settings
+        carbs_hr:
+          type: number
+          description: Carb absorption rate (g/hr) - legacy, rarely used
+        delay:
+          type: integer
+          description: Delay before carb absorption starts (minutes)
+
+        # Insulin model (2026 extension candidate)
+        insulinPeakTime:
+          type: integer
+          description: |
+            Insulin activity peak time in minutes.
+            Not standardized across systems.
+          x-aid-gap: GAP-INS-003
+          x-aid-gap-note: Peak time not captured in Nightscout profile
+          x-aid-controllers:
+            Loop: Fixed per insulin type preset
+            AAPS: Free Peak plugin allows 35-120 minutes
+            oref0: Configurable 50-120 min (rapid) or 35-100 min (ultra-rapid)
+        insulinCurve:
+          type: string
+          description: |
+            Insulin curve model name.
+            All major AID systems use exponential model.
+          enum:
+            - rapid-acting
+            - ultra-rapid
+            - bilinear
+            - exponential
+          x-aid-2026: true
+          x-aid-gap: GAP-INS-004
+
+    TimedValue:
+      type: object
+      required:
+        - time
+        - value
+      properties:
+        time:
+          type: string
+          pattern: '^([01]?[0-9]|2[0-3]):[0-5][0-9]$'
+          description: Time of day in HH:MM format (24-hour)
+          example: "08:00"
+        value:
+          type: number
+          description: Value at this time
+        timeAsSeconds:
+          type: integer
+          description: Seconds since midnight (alternative representation)
+
+    # =========================================================================
+    # PROFILE SWITCH (Treatment-based profile activation)
+    # =========================================================================
+    ProfileSwitch:
+      type: object
+      description: |
+        AAPS Profile Switch event. Semantically different from Loop overrides.
+        See GAP-002 for detailed analysis.
+      x-aid-gap: GAP-002
+      x-aid-gap-note: ProfileSwitch vs Override semantic mismatch
+      properties:
+        eventType:
+          const: Profile Switch
+        profile:
+          type: string
+          description: Profile name to switch to
+        percentage:
+          type: integer
+          minimum: 30
+          maximum: 200
+          default: 100
+          description: |
+            Profile percentage adjustment.
+            100 = normal, 150 = 50% more insulin, 50 = half insulin.
+          x-aid-controllers:
+            AAPS: First-class field
+            Loop: Not supported (uses override multiplier)
+            Trio: Uses oref1 profile_percentage
+        timeshift:
+          type: integer
+          description: |
+            Time shift in hours.
+            Shifts the profile schedule forward/backward.
+          x-aid-controllers:
+            AAPS: First-class field
+            Loop: Not supported
+            Trio: Not supported
+        duration:
+          type: integer
+          description: Duration in minutes (0 = permanent until next switch)
+        profileJson:
+          type: string
+          description: Optional inline profile JSON
+        created_at:
+          type: string
+          format: date-time
+
+    # =========================================================================
+    # 2026 EXTENSION: PROFILE MODEL EVOLUTION
+    # =========================================================================
+    ProfileExtended:
+      allOf:
+        - $ref: '#/components/schemas/Profile'
+        - type: object
+          description: |
+            2026 Extension: Enhanced profile model with intent tracking.
+            Addresses GAP-002 and Profile Model Evolution proposal.
+          properties:
+            intent:
+              type: string
+              enum:
+                - switch
+                - percentage_adjustment
+                - time_shift
+                - temporary_modification
+              description: |
+                2026 Extension: Semantic intent of profile change.
+                Addresses ProfileSwitch vs Override confusion.
+              x-aid-2026: true
+              x-aid-gap: GAP-002
+            baseProfile:
+              type: string
+              description: |
+                2026 Extension: Name of base profile being modified.
+                Distinguishes modified profile from new profile.
+              x-aid-2026: true
+            modifiers:
+              type: object
+              description: |
+                2026 Extension: Active modifiers on base profile.
+              x-aid-2026: true
+              properties:
+                percentage:
+                  type: integer
+                  description: Percentage adjustment (100 = normal)
+                timeShiftHours:
+                  type: integer
+                  description: Schedule shift in hours
+                targetOverride:
+                  type: object
+                  properties:
+                    low:
+                      type: number
+                    high:
+                      type: number
+                isfMultiplier:
+                  type: number
+                  description: ISF adjustment multiplier
+            source:
+              type: string
+              enum: [prescribed, user, controller, caregiver]
+              description: |
+                2026 Extension: Who set this profile.
+              x-aid-2026: true
+            authority:
+              type: string
+              description: |
+                2026 Extension: System with authority over profile.
+              x-aid-2026: true

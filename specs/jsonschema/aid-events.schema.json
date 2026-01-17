@@ -2,13 +2,18 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://alignment.aid/schemas/aid-events.schema.json",
   "title": "AID Events Schema",
-  "description": "Schema for Automated Insulin Delivery events including overrides, treatments, and device data",
+  "description": "Schema for Automated Insulin Delivery events including overrides, treatments, glucose readings, and device status. Aligned with OpenAPI specs in specs/openapi/.",
+  "$comment": "Cross-references: aid-entries-2025.yaml, aid-treatments-2025.yaml, aid-devicestatus-2025.yaml, aid-alignment-extensions.yaml",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "timestamp": {
       "type": "string",
       "format": "date-time",
       "description": "ISO 8601 timestamp in UTC"
+    },
+    "epochMillis": {
+      "type": "integer",
+      "description": "Epoch timestamp in milliseconds"
     },
     "eventId": {
       "type": "string",
@@ -37,81 +42,214 @@
     "eventStatus": {
       "type": "string",
       "enum": ["active", "completed", "cancelled", "superseded"],
-      "description": "Current status of the event"
+      "description": "Current status of the event. See GAP-001 for override lifecycle tracking.",
+      "$comment": "Gap reference: GAP-001 (override supersession tracking)"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "DoubleUp",
+        "SingleUp",
+        "FortyFiveUp",
+        "Flat",
+        "FortyFiveDown",
+        "SingleDown",
+        "DoubleDown",
+        "NOT COMPUTABLE",
+        "RATE OUT OF RANGE"
+      ],
+      "description": "Glucose trend direction. Note: TRIPLE_UP/TRIPLE_DOWN from AAPS/Trio map to DoubleUp/DoubleDown (GAP-ENTRY-001)",
+      "$comment": "Gap reference: GAP-ENTRY-001 (triple arrow loss)"
+    },
+    "controllerIdentity": {
+      "type": "object",
+      "description": "2026 Extension: Verified controller identity (GAP-003, GAP-AUTH-001)",
+      "$comment": "Gap reference: GAP-003, GAP-AUTH-001. See aid-alignment-extensions.yaml",
+      "properties": {
+        "controllerId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Server-assigned controller UUID from registration"
+        },
+        "controllerType": {
+          "type": "string",
+          "enum": ["loop", "aaps", "trio", "xdrip", "xdrip4ios", "spike", "nightscout", "caregiver"]
+        },
+        "controllerVersion": {
+          "type": "string",
+          "description": "Semantic version of controller"
+        },
+        "syncIdField": {
+          "type": "string",
+          "enum": ["syncIdentifier", "identifier", "uuid", "_id"],
+          "description": "Field this controller uses for sync identity"
+        }
+      }
+    },
+    "syncMetadata": {
+      "type": "object",
+      "description": "2026 Extension: Unified sync metadata (GAP-003)",
+      "$comment": "Gap reference: GAP-003. See aid-alignment-extensions.yaml",
+      "properties": {
+        "syncId": {
+          "type": "string",
+          "description": "Unified client-assigned sync identifier"
+        },
+        "syncVersion": {
+          "type": "integer",
+          "description": "Monotonic version for conflict detection"
+        },
+        "syncSource": {
+          "type": "string",
+          "description": "Controller that originated this sync"
+        }
+      }
     },
     "baseEvent": {
       "type": "object",
       "properties": {
-        "id": { "$ref": "#/definitions/eventId" },
+        "id": { "$ref": "#/$defs/eventId" },
+        "_id": {
+          "type": "string",
+          "description": "MongoDB document ID"
+        },
+        "identifier": {
+          "type": "string",
+          "description": "API v3 server-assigned identifier"
+        },
         "type": { "type": "string" },
-        "created_at": { "$ref": "#/definitions/timestamp" },
-        "updated_at": { "$ref": "#/definitions/timestamp" },
+        "created_at": { "$ref": "#/$defs/timestamp" },
+        "date": { "$ref": "#/$defs/epochMillis" },
+        "updated_at": { "$ref": "#/$defs/timestamp" },
         "source": {
           "type": "string",
           "description": "Origin system (loop, aaps, trio, nightscout, etc.)"
         },
+        "device": {
+          "type": "string",
+          "description": "Device identifier string"
+        },
         "authority": {
           "type": "string",
-          "description": "System with authority over this data"
+          "description": "System with authority over this data (2026 extension)"
+        },
+        "enteredBy": {
+          "type": "string",
+          "description": "User/device nickname. WARNING: Unverified (GAP-AUTH-001)",
+          "$comment": "Gap reference: GAP-AUTH-001"
+        },
+        "utcOffset": {
+          "type": "integer",
+          "description": "Timezone offset in minutes from UTC"
+        },
+        "isValid": {
+          "type": "boolean",
+          "default": true,
+          "description": "Soft-delete flag (false = deleted)"
         }
       },
-      "required": ["id", "type", "created_at"]
+      "required": ["type", "created_at"]
     },
     "override": {
       "allOf": [
-        { "$ref": "#/definitions/baseEvent" },
+        { "$ref": "#/$defs/baseEvent" },
         {
           "type": "object",
+          "description": "Override/Temporary Target event. See GAP-001 for lifecycle tracking gaps.",
+          "$comment": "OpenAPI: aid-treatments-2025.yaml#/components/schemas/Override. Gap: GAP-001, GAP-002",
           "properties": {
             "type": { "const": "override" },
+            "eventType": {
+              "type": "string",
+              "enum": ["Temporary Override", "Temporary Target"],
+              "description": "Nightscout eventType classification"
+            },
             "name": {
               "type": "string",
-              "description": "Human-readable override name"
+              "description": "Human-readable override name (reason field in Nightscout)"
             },
-            "started_at": { "$ref": "#/definitions/timestamp" },
-            "ended_at": { "$ref": "#/definitions/timestamp" },
+            "reason": {
+              "type": "string",
+              "description": "Override reason (alias for name)"
+            },
+            "started_at": { "$ref": "#/$defs/timestamp" },
+            "ended_at": { "$ref": "#/$defs/timestamp" },
             "duration_minutes": {
               "type": "integer",
               "minimum": 0,
-              "description": "Planned duration in minutes"
+              "description": "Planned duration in minutes. Note: Loop uses seconds internally (GAP-TREAT-003)"
             },
-            "target_range": { "$ref": "#/definitions/glucoseRange" },
+            "target_range": { "$ref": "#/$defs/glucoseRange" },
+            "targetTop": {
+              "type": "number",
+              "description": "Upper target glucose (mg/dL)"
+            },
+            "targetBottom": {
+              "type": "number",
+              "description": "Lower target glucose (mg/dL)"
+            },
             "insulin_sensitivity_factor": {
               "type": "number",
               "description": "Modified ISF value or multiplier"
+            },
+            "insulinNeedsScaleFactor": {
+              "type": "number",
+              "description": "Loop overall insulin needs multiplier (1.0 = 100%)"
             },
             "overall_insulin_needs": {
               "type": "number",
               "minimum": 0,
               "description": "Percentage of normal insulin needs (100 = normal)"
             },
-            "status": { "$ref": "#/definitions/eventStatus" },
+            "status": { "$ref": "#/$defs/eventStatus" },
             "supersedes": {
-              "$ref": "#/definitions/eventId",
-              "description": "ID of override this one supersedes"
+              "$ref": "#/$defs/eventId",
+              "description": "2026 Extension: ID of override this one supersedes (GAP-001)"
             },
             "superseded_by": {
-              "$ref": "#/definitions/eventId",
-              "description": "ID of override that superseded this one"
+              "$ref": "#/$defs/eventId",
+              "description": "2026 Extension: ID of override that superseded this one (GAP-001)"
             },
-            "superseded_at": { "$ref": "#/definitions/timestamp" }
+            "superseded_at": { "$ref": "#/$defs/timestamp" },
+            "endReason": {
+              "type": "string",
+              "enum": ["natural", "cancelled", "superseded", "system"],
+              "description": "2026 Extension: Why override ended (GAP-001)"
+            }
           },
-          "required": ["name", "started_at", "status"]
+          "required": ["started_at"]
         }
       ]
     },
     "treatment": {
       "allOf": [
-        { "$ref": "#/definitions/baseEvent" },
+        { "$ref": "#/$defs/baseEvent" },
         {
           "type": "object",
+          "description": "Treatment event (bolus, carbs, temp basal). See aid-treatments-2025.yaml for full schema.",
+          "$comment": "OpenAPI: aid-treatments-2025.yaml#/components/schemas/Treatment",
           "properties": {
             "type": { "const": "treatment" },
+            "eventType": {
+              "type": "string",
+              "description": "Nightscout treatment classification. See aid-treatments-2025.yaml for full catalog.",
+              "enum": [
+                "Meal Bolus", "Correction Bolus", "Snack Bolus", "Combo Bolus", "Bolus Wizard",
+                "Carb Correction",
+                "Temp Basal", "Temporary Target", "Profile Switch", "Temporary Override",
+                "Site Change", "Sensor Start", "Sensor Change", "Insulin Change", "Pump Battery Change",
+                "BG Check", "Note", "Announcement", "Question", "Exercise",
+                "OpenAPS Offline", "Suspend Pump", "Resume Pump",
+                "SMB", "Target Range", "NS Carbs",
+                "Prime", "<none>"
+              ]
+            },
             "treatment_type": {
               "type": "string",
-              "enum": ["bolus", "carbs", "correction", "temp_basal"]
+              "enum": ["bolus", "carbs", "correction", "temp_basal", "profile_switch"],
+              "description": "Simplified treatment classification"
             },
-            "timestamp": { "$ref": "#/definitions/timestamp" },
+            "timestamp": { "$ref": "#/$defs/timestamp" },
             "insulin": {
               "type": "number",
               "minimum": 0,
@@ -122,46 +260,225 @@
               "minimum": 0,
               "description": "Carbohydrate amount in grams"
             },
-            "notes": { "type": "string" }
+            "absorptionTime": {
+              "type": "integer",
+              "description": "Carb absorption time in MINUTES (Nightscout). Note: Loop/Trio use SECONDS (GAP-TREAT-001)",
+              "$comment": "Gap reference: GAP-TREAT-001"
+            },
+            "duration": {
+              "type": "number",
+              "description": "Duration in MINUTES for temp basal, override, eCarbs. Note: Loop uses SECONDS (GAP-TREAT-003)",
+              "$comment": "Gap reference: GAP-TREAT-003"
+            },
+            "rate": {
+              "type": "number",
+              "description": "Temp basal rate (U/hr)"
+            },
+            "absolute": {
+              "type": "number",
+              "description": "Absolute temp basal rate (U/hr)"
+            },
+            "percent": {
+              "type": "number",
+              "description": "Temp basal as percentage of scheduled"
+            },
+            "automatic": {
+              "type": "boolean",
+              "description": "Whether automatically delivered (SMB, auto-bolus)"
+            },
+            "syncIdentifier": {
+              "type": "string",
+              "description": "Loop/Trio sync identity (UUID). See GAP-003",
+              "$comment": "Gap reference: GAP-003"
+            },
+            "notes": { "type": "string" },
+            "glucose": {
+              "type": "number",
+              "description": "BG value at time of treatment"
+            },
+            "glucoseType": {
+              "type": "string",
+              "enum": ["Sensor", "Finger", "Manual"]
+            },
+            "bolusType": {
+              "type": "string",
+              "enum": ["Normal", "Square", "Dual"]
+            },
+            "smbType": {
+              "type": "string",
+              "description": "AAPS SMB type field. Check this for SMB identification (GAP-TREAT-002)",
+              "$comment": "Gap reference: GAP-TREAT-002"
+            },
+            "pumpId": {
+              "type": "integer",
+              "description": "AAPS pump internal ID"
+            },
+            "pumpType": {
+              "type": "string",
+              "description": "AAPS pump type"
+            },
+            "pumpSerial": {
+              "type": "string",
+              "description": "AAPS pump serial"
+            }
           },
-          "required": ["treatment_type", "timestamp"]
+          "required": ["timestamp"]
         }
       ]
     },
     "glucoseReading": {
       "allOf": [
-        { "$ref": "#/definitions/baseEvent" },
+        { "$ref": "#/$defs/baseEvent" },
         {
           "type": "object",
+          "description": "Glucose entry (SGV, MBG, calibration). See aid-entries-2025.yaml for full schema.",
+          "$comment": "OpenAPI: aid-entries-2025.yaml#/components/schemas/Entry",
           "properties": {
-            "type": { "const": "glucose" },
-            "timestamp": { "$ref": "#/definitions/timestamp" },
+            "type": { 
+              "type": "string",
+              "enum": ["sgv", "mbg", "cal"],
+              "description": "Entry type per Nightscout convention"
+            },
+            "timestamp": { "$ref": "#/$defs/timestamp" },
+            "dateString": { "$ref": "#/$defs/timestamp" },
+            "sgv": {
+              "type": "number",
+              "description": "Sensor glucose value (mg/dL)"
+            },
+            "mbg": {
+              "type": "number",
+              "description": "Meter blood glucose (mg/dL)"
+            },
             "value": {
               "type": "number",
-              "description": "Glucose value"
+              "description": "Glucose value (generic, used in alignment schema)"
             },
             "unit": {
               "type": "string",
               "enum": ["mg/dL", "mmol/L"],
               "default": "mg/dL"
             },
+            "direction": { "$ref": "#/$defs/direction" },
+            "extendedDirection": {
+              "type": "string",
+              "enum": ["TripleUp", "DoubleUp", "SingleUp", "FortyFiveUp", "Flat", "FortyFiveDown", "SingleDown", "DoubleDown", "TripleDown", "NOT COMPUTABLE", "RATE OUT OF RANGE"],
+              "description": "2026 Extension: Direction with triple arrows (GAP-ENTRY-001)",
+              "$comment": "Gap reference: GAP-ENTRY-001"
+            },
             "trend": {
               "type": "string",
-              "enum": ["rising_rapidly", "rising", "stable", "falling", "falling_rapidly"]
+              "enum": ["rising_rapidly", "rising", "stable", "falling", "falling_rapidly"],
+              "description": "Simplified trend (alternative to direction)"
+            },
+            "trendRate": {
+              "type": "number",
+              "description": "2026 Extension: Numeric rate of change (mg/dL/min). More precise than direction string.",
+              "$comment": "Part of ExtendedDirection schema in aid-alignment-extensions.yaml"
+            },
+            "noise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5,
+              "description": "Signal quality (0-5)"
+            },
+            "filtered": {
+              "type": "number",
+              "description": "Filtered raw sensor value"
+            },
+            "unfiltered": {
+              "type": "number",
+              "description": "Unfiltered raw sensor value"
+            },
+            "rssi": {
+              "type": "integer",
+              "description": "Signal strength"
             },
             "source_type": {
               "type": "string",
               "enum": ["cgm", "fingerstick", "calibration"]
+            },
+            "sensorType": {
+              "type": "string",
+              "description": "2026 Extension: CGM sensor hardware type (GAP-CGM-001)",
+              "$comment": "Gap reference: GAP-CGM-001"
+            },
+            "sensorId": {
+              "type": "string",
+              "description": "2026 Extension: Sensor session identifier (GAP-CGM-002)",
+              "$comment": "Gap reference: GAP-CGM-002"
+            },
+            "transmitterId": {
+              "type": "string",
+              "description": "2026 Extension: Transmitter serial (GAP-CGM-003)",
+              "$comment": "Gap reference: GAP-CGM-003"
+            },
+            "calibrationSource": {
+              "type": "string",
+              "description": "2026 Extension: Calibration algorithm used (GAP-CGM-001)",
+              "$comment": "Gap reference: GAP-CGM-001"
+            },
+            "sourceApp": {
+              "type": "string",
+              "enum": ["xdrip_android", "xdrip4ios", "spike", "loop", "aaps", "trio", "dexcom_share", "libre_linkup", "nightscout_follower", "unknown"],
+              "description": "2026 Extension: Canonical source application (GAP-ENTRY-003, GAP-CGM-004)",
+              "$comment": "Gap reference: GAP-ENTRY-003, GAP-CGM-004. See SourceTaxonomy in aid-alignment-extensions.yaml"
+            },
+            "sourceType": {
+              "type": "string",
+              "enum": ["direct", "follower", "cloud", "rebroadcast"],
+              "description": "2026 Extension: Data path type (GAP-CGM-006)",
+              "$comment": "Gap reference: GAP-CGM-006"
+            },
+            "entryUuid": {
+              "type": "string",
+              "format": "uuid",
+              "description": "2026 Extension: Universal deduplication UUID (GAP-ENTRY-004)",
+              "$comment": "Gap reference: GAP-ENTRY-004. See EntryDeduplication in aid-alignment-extensions.yaml"
             }
           },
           "required": ["timestamp", "value"]
         }
       ]
+    },
+    "deviceStatus": {
+      "type": "object",
+      "description": "Device status snapshot. See aid-devicestatus-2025.yaml for full schema.",
+      "$comment": "OpenAPI: aid-devicestatus-2025.yaml#/components/schemas/DeviceStatus",
+      "properties": {
+        "device": {
+          "type": "string",
+          "description": "Device identifier (loop://iPhone, openaps://AAPS, Trio)"
+        },
+        "created_at": { "$ref": "#/$defs/timestamp" },
+        "mills": { "$ref": "#/$defs/epochMillis" },
+        "loop": {
+          "type": "object",
+          "description": "Loop-specific status (flat structure)"
+        },
+        "openaps": {
+          "type": "object",
+          "description": "oref0-based status (AAPS, Trio, OpenAPS - nested structure)"
+        },
+        "pump": {
+          "type": "object",
+          "description": "Pump status"
+        },
+        "uploader": {
+          "type": "object",
+          "description": "Uploader device status"
+        },
+        "override": {
+          "type": "object",
+          "description": "Loop active override status"
+        }
+      },
+      "required": ["device", "created_at"]
     }
   },
   "oneOf": [
-    { "$ref": "#/definitions/override" },
-    { "$ref": "#/definitions/treatment" },
-    { "$ref": "#/definitions/glucoseReading" }
+    { "$ref": "#/$defs/override" },
+    { "$ref": "#/$defs/treatment" },
+    { "$ref": "#/$defs/glucoseReading" },
+    { "$ref": "#/$defs/deviceStatus" }
   ]
 }

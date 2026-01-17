@@ -1,0 +1,508 @@
+openapi: 3.0.3
+info:
+  title: AID DeviceStatus Collection - De Facto 2025
+  version: 2025.1.0
+  description: |
+    OpenAPI specification for the Nightscout `devicestatus` collection documenting
+    the de facto standard as implemented across AID systems circa 2025.
+    
+    ## Critical Structural Difference
+    - **Loop**: Uses `loop` top-level object with flat structure
+    - **oref0-based** (AAPS, Trio, OpenAPS): Use `openaps` with nested structure
+    
+    ## Prediction Formats
+    - **Loop**: Single combined prediction array
+    - **oref0**: Four separate curves (IOB, COB, UAM, ZT)
+    
+    ## Source References
+    - Deep Dive: `docs/10-domain/devicestatus-deep-dive.md`
+    - Algorithm Comparison: `docs/10-domain/algorithm-comparison-deep-dive.md`
+
+  contact:
+    name: AID Alignment Workspace
+  license:
+    name: AGPL-3.0
+
+servers:
+  - url: /api/v3
+
+paths:
+  /devicestatus:
+    get:
+      summary: Search device status records
+      operationId: searchDeviceStatus
+      tags: [devicestatus]
+      parameters:
+        - name: created_at$gte
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: device
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Array of devicestatus documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeviceStatus'
+
+components:
+  parameters:
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 10
+        maximum: 1000
+
+  schemas:
+    DeviceStatus:
+      type: object
+      required:
+        - device
+        - created_at
+      properties:
+        _id:
+          type: string
+        identifier:
+          type: string
+        device:
+          type: string
+          description: |
+            Device identifier string. Format varies by system:
+            - Loop: "loop://{deviceName}"
+            - AAPS: "openaps://{model}"
+            - Trio: "Trio"
+          examples:
+            - loop://iPhone
+            - openaps://AAPS
+            - Trio
+        created_at:
+          type: string
+          format: date-time
+        mills:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+
+        # Loop-specific structure
+        loop:
+          $ref: '#/components/schemas/LoopStatus'
+
+        # oref0-based structure (AAPS, Trio, OpenAPS)
+        openaps:
+          $ref: '#/components/schemas/OpenAPSStatus'
+
+        # Common structures
+        pump:
+          $ref: '#/components/schemas/PumpStatus'
+        uploader:
+          $ref: '#/components/schemas/UploaderStatus'
+        override:
+          $ref: '#/components/schemas/OverrideStatus'
+
+        # AAPS-specific
+        configuration:
+          type: object
+          description: Algorithm configuration snapshot (AAPS only)
+        uploaderBattery:
+          type: integer
+          description: Alternate battery field (AAPS)
+        isCharging:
+          type: boolean
+          description: Charging status (AAPS)
+
+        # API v3 metadata
+        utcOffset:
+          type: integer
+        srvCreated:
+          type: integer
+          format: int64
+        srvModified:
+          type: integer
+          format: int64
+        isValid:
+          type: boolean
+          default: true
+
+    # =========================================================================
+    # LOOP STATUS (Flat Structure)
+    # =========================================================================
+    LoopStatus:
+      type: object
+      description: |
+        Loop-specific status. Uses FLAT structure with direct children.
+        Source: NightscoutServiceKit/Extensions/StoredDosingDecision.swift
+      x-aid-source: loop:NightscoutServiceKit/Extensions/StoredDosingDecision.swift
+      properties:
+        name:
+          type: string
+          description: App bundle name
+          example: Loop
+        version:
+          type: string
+          description: App version
+          example: "3.4.0"
+        timestamp:
+          type: string
+          format: date-time
+        failureReason:
+          type: string
+          description: Error message if loop cycle failed
+
+        iob:
+          $ref: '#/components/schemas/LoopIOB'
+        cob:
+          $ref: '#/components/schemas/LoopCOB'
+        predicted:
+          $ref: '#/components/schemas/LoopPredicted'
+        automaticDoseRecommendation:
+          $ref: '#/components/schemas/LoopDoseRecommendation'
+        enacted:
+          $ref: '#/components/schemas/LoopEnacted'
+        recommendedBolus:
+          type: number
+          description: Recommended manual bolus (U)
+
+    LoopIOB:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        iob:
+          type: number
+          description: Total insulin on board (U)
+      x-aid-gap: GAP-DS-002
+      x-aid-gap-note: Loop does not break down IOB by component (basal vs bolus)
+
+    LoopCOB:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        cob:
+          type: number
+          description: Carbs on board (g)
+
+    LoopPredicted:
+      type: object
+      description: |
+        Loop prediction - SINGLE COMBINED CURVE.
+        Unlike oref0, does not provide separate IOB/COB/UAM/ZT curves.
+      x-aid-gap: GAP-DS-001
+      x-aid-gap-note: Individual effect timelines not exposed
+      properties:
+        startDate:
+          type: string
+          format: date-time
+        values:
+          type: array
+          items:
+            type: number
+          description: |
+            Predicted BG values at 5-minute intervals.
+            UNIT WARNING: Follows user's configured glucose units.
+
+    LoopDoseRecommendation:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        tempBasalAdjustment:
+          type: object
+          properties:
+            rate:
+              type: number
+              description: Recommended temp basal (U/hr)
+            duration:
+              type: number
+              description: Duration in SECONDS
+              x-aid-gap: GAP-DS-003
+              x-aid-gap-note: Loop uses seconds, oref0 uses minutes
+        bolusVolume:
+          type: number
+          description: Recommended auto-bolus (U)
+
+    LoopEnacted:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        rate:
+          type: number
+          description: Enacted temp basal rate (U/hr)
+        duration:
+          type: number
+          description: Duration in SECONDS
+        received:
+          type: boolean
+          description: Whether pump confirmed
+        bolusVolume:
+          type: number
+          description: Enacted auto-bolus (U)
+
+    # =========================================================================
+    # OPENAPS STATUS (Nested Structure) - AAPS, Trio, OpenAPS
+    # =========================================================================
+    OpenAPSStatus:
+      type: object
+      description: |
+        oref0-based status (AAPS, Trio, OpenAPS). Uses NESTED structure.
+        Contains `suggested` (always) and `enacted` (null in open loop).
+      x-aid-source: docs/10-domain/devicestatus-deep-dive.md#openaps-structure
+      properties:
+        iob:
+          $ref: '#/components/schemas/Oref0IOB'
+        suggested:
+          $ref: '#/components/schemas/Oref0Suggested'
+        enacted:
+          $ref: '#/components/schemas/Oref0Enacted'
+
+    Oref0IOB:
+      type: object
+      description: |
+        IOB breakdown with component separation (unlike Loop).
+      properties:
+        iob:
+          type: number
+          description: Total IOB (U)
+        basaliob:
+          type: number
+          description: IOB from temp basals (U)
+        bolussnooze:
+          type: number
+          description: IOB from recent boluses affecting snooze
+        activity:
+          type: number
+          description: Current insulin activity (U/hr)
+        lastBolusTime:
+          type: integer
+          format: int64
+          description: Timestamp of last bolus (epoch ms)
+        lastTemp:
+          type: object
+          properties:
+            rate:
+              type: number
+            duration:
+              type: integer
+            started_at:
+              type: string
+              format: date-time
+
+    Oref0Suggested:
+      type: object
+      description: |
+        Algorithm suggestion. Always present.
+        Contains prediction curves in `predBGs`.
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        bg:
+          type: integer
+          description: Current BG (mg/dL)
+        tick:
+          type: string
+          description: BG delta indicator (+, -, etc.)
+        eventualBG:
+          type: integer
+          description: Predicted eventual BG
+        targetBG:
+          type: integer
+          description: Current target BG
+        insulinReq:
+          type: number
+          description: Insulin required to reach target
+        deliverAt:
+          type: string
+          format: date-time
+        sensitivityRatio:
+          type: number
+          description: Autosens ratio (1.0 = normal)
+        variable_sens:
+          type: number
+          description: Dynamic ISF value (AAPS DynamicISF)
+
+        # Core recommendation
+        rate:
+          type: number
+          description: Suggested temp basal rate (U/hr)
+        duration:
+          type: integer
+          description: Duration in MINUTES (oref0 convention)
+        units:
+          type: number
+          description: SMB units to deliver
+
+        # State values
+        COB:
+          type: integer
+          description: Carbs on board (g)
+        IOB:
+          type: number
+          description: Insulin on board (U)
+
+        # Prediction curves - FOUR SEPARATE CURVES
+        predBGs:
+          $ref: '#/components/schemas/Oref0PredBGs'
+
+        # Reason string
+        reason:
+          type: string
+          description: Human-readable explanation of recommendation
+
+    Oref0PredBGs:
+      type: object
+      description: |
+        Four prediction curves, each representing a different scenario.
+        Values are BG in mg/dL at 5-minute intervals.
+      properties:
+        IOB:
+          type: array
+          items:
+            type: integer
+          description: |
+            Prediction assuming no carb absorption.
+            Most conservative curve.
+        COB:
+          type: array
+          items:
+            type: integer
+          description: |
+            Prediction including expected carb absorption.
+        UAM:
+          type: array
+          items:
+            type: integer
+          description: |
+            Unannounced Meal prediction.
+            Assumes current rise will continue.
+        ZT:
+          type: array
+          items:
+            type: integer
+          description: |
+            Zero Temp prediction.
+            What happens if no more insulin is delivered.
+      x-aid-source: docs/10-domain/algorithm-comparison-deep-dive.md
+
+    Oref0Enacted:
+      type: object
+      description: |
+        Actually enacted recommendation.
+        NULL when running in open loop mode (suggestions only).
+      nullable: true
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        rate:
+          type: number
+          description: Enacted rate (U/hr)
+        duration:
+          type: integer
+          description: Duration in MINUTES
+        units:
+          type: number
+          description: Enacted SMB units
+        received:
+          type: boolean
+          description: Pump confirmation status
+        predBGs:
+          $ref: '#/components/schemas/Oref0PredBGs'
+
+    # =========================================================================
+    # COMMON STRUCTURES
+    # =========================================================================
+    PumpStatus:
+      type: object
+      description: Pump status (may be absent if communication failed)
+      properties:
+        clock:
+          type: string
+          format: date-time
+          description: Pump internal clock
+        reservoir:
+          type: number
+          description: Reservoir level (U)
+        battery:
+          type: object
+          properties:
+            percent:
+              type: integer
+            voltage:
+              type: number
+            status:
+              type: string
+              enum: [normal, low, critical]
+        status:
+          type: object
+          properties:
+            status:
+              type: string
+              enum: [normal, suspended, bolusing]
+            bolusing:
+              type: boolean
+            suspended:
+              type: boolean
+            timestamp:
+              type: string
+              format: date-time
+        extended:
+          type: object
+          description: Pump-specific extended data
+          additionalProperties: true
+
+    UploaderStatus:
+      type: object
+      properties:
+        battery:
+          type: integer
+          description: Phone/rig battery percentage
+        batteryVoltage:
+          type: number
+        name:
+          type: string
+          description: Uploader device name
+
+    OverrideStatus:
+      type: object
+      description: Loop active override (Loop only)
+      x-aid-controllers:
+        Loop: Present when override active
+        AAPS: Uses Profile Switch instead
+        Trio: Uses oref1 profile percentage
+      properties:
+        active:
+          type: boolean
+        name:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        duration:
+          type: number
+          description: Duration in seconds (Loop convention)
+        currentCorrectionRange:
+          type: object
+          properties:
+            minValue:
+              type: number
+            maxValue:
+              type: number
+        multiplier:
+          type: number
+          description: Overall insulin needs multiplier

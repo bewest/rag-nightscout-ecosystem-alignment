@@ -4,6 +4,28 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 ---
 
+## OpenAPI Specification Cross-References
+
+The following OpenAPI 3.0 specifications provide formal schema definitions aligned with this terminology matrix:
+
+| Spec File | Collection | Description |
+|-----------|------------|-------------|
+| [`aid-entries-2025.yaml`](../../specs/openapi/aid-entries-2025.yaml) | `entries` | SGV, MBG, calibration records with direction mapping |
+| [`aid-treatments-2025.yaml`](../../specs/openapi/aid-treatments-2025.yaml) | `treatments` | Bolus, carbs, temp basal, overrides with eventType catalog |
+| [`aid-devicestatus-2025.yaml`](../../specs/openapi/aid-devicestatus-2025.yaml) | `devicestatus` | Loop vs oref0 structure variants, predictions |
+| [`aid-profile-2025.yaml`](../../specs/openapi/aid-profile-2025.yaml) | `profile` | Therapy settings with time-varying schedules |
+| [`aid-alignment-extensions.yaml`](../../specs/openapi/aid-alignment-extensions.yaml) | All | 2026 extensions addressing documented gaps |
+
+**JSON Schema**: [`aid-events.schema.json`](../../specs/jsonschema/aid-events.schema.json) provides unified validation schema with gap annotations.
+
+**Key Annotations**: OpenAPI specs use `x-aid-*` extensions:
+- `x-aid-source`: Source file reference
+- `x-aid-controllers`: Controller support matrix
+- `x-aid-gap`: Related gap ID
+- `x-aid-2026`: Marks 2026 alignment extensions
+
+---
+
 ## Data Concepts
 
 ### Persistent State (Configuration)

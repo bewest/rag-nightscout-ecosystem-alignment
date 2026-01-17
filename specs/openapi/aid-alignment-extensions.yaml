@@ -1,0 +1,630 @@
+openapi: 3.0.3
+info:
+  title: AID 2026 Alignment Extensions
+  version: 2026.1.0
+  description: |
+    OpenAPI specification for proposed 2026 alignment extensions that address
+    documented gaps across the AID ecosystem.
+    
+    ## Design Philosophy
+    - Extensions are additive (backward compatible)
+    - Marked with `x-aid-2026: true` annotation
+    - Each extension references specific GAP-XXX it addresses
+    - Can be adopted incrementally by controllers
+    
+    ## Implementation Priority
+    1. **Critical**: Identity and authority (GAP-003, GAP-AUTH-001)
+    2. **High**: Override lifecycle (GAP-001, GAP-002)
+    3. **Medium**: Data provenance (GAP-CGM-001 through GAP-CGM-006)
+    4. **Low**: Enhanced metadata (trend rates, insulin curves)
+    
+    ## Source References
+    - Gaps: `traceability/gaps.md`
+    - Controller Registration: `docs/60-research/controller-registration-protocol-proposal.md`
+    - Profile Evolution: `docs/60-research/profile-model-evolution-proposal.md`
+
+  contact:
+    name: AID Alignment Workspace
+  license:
+    name: AGPL-3.0
+
+components:
+  schemas:
+    # =========================================================================
+    # IDENTITY AND AUTHORITY EXTENSIONS
+    # =========================================================================
+    
+    ControllerIdentity:
+      type: object
+      description: |
+        2026 Extension: Verified controller identity.
+        Addresses GAP-003 (no unified sync identity) and GAP-AUTH-001 (unverified enteredBy).
+      x-aid-2026: true
+      x-aid-gap: [GAP-003, GAP-AUTH-001]
+      x-aid-source: docs/60-research/controller-registration-protocol-proposal.md
+      properties:
+        controllerId:
+          type: string
+          format: uuid
+          description: |
+            Server-assigned controller UUID from registration.
+            Replaces unverified `enteredBy` field.
+        controllerType:
+          type: string
+          enum:
+            - loop
+            - aaps
+            - trio
+            - xdrip
+            - xdrip4ios
+            - spike
+            - nightscout
+            - caregiver
+          description: Controller application type
+        controllerVersion:
+          type: string
+          description: Semantic version of controller
+        deviceId:
+          type: string
+          description: |
+            Device identifier within controller.
+            For multi-device scenarios (phone + watch).
+        syncIdField:
+          type: string
+          enum:
+            - syncIdentifier
+            - identifier
+            - uuid
+            - _id
+          description: |
+            Field this controller uses for sync identity.
+            Enables per-controller deduplication logic.
+
+    DocumentAuthority:
+      type: object
+      description: |
+        2026 Extension: Authority model for document ownership.
+        Addresses GAP-AUTH-002 (no authority hierarchy).
+      x-aid-2026: true
+      x-aid-gap: GAP-AUTH-002
+      properties:
+        authority:
+          type: string
+          description: Controller ID with authority over this document
+        authorityType:
+          type: string
+          enum:
+            - owner
+            - delegated
+            - inherited
+          description: Type of authority
+        canModify:
+          type: array
+          items:
+            type: string
+          description: Controller IDs permitted to modify
+        readOnly:
+          type: boolean
+          description: Whether document is locked
+
+    # =========================================================================
+    # OVERRIDE LIFECYCLE EXTENSIONS
+    # =========================================================================
+
+    OverrideLifecycle:
+      type: object
+      description: |
+        2026 Extension: Override lifecycle tracking.
+        Addresses GAP-001 (override supersession not tracked).
+      x-aid-2026: true
+      x-aid-gap: GAP-001
+      x-aid-source: traceability/gaps.md#gap-001
+      properties:
+        status:
+          type: string
+          enum:
+            - active
+            - completed
+            - cancelled
+            - superseded
+          description: Current lifecycle status
+        plannedEnd:
+          type: string
+          format: date-time
+          description: Originally planned end time
+        actualEnd:
+          type: string
+          format: date-time
+          description: Actual end time (may differ from planned)
+        endReason:
+          type: string
+          enum:
+            - natural
+            - cancelled
+            - superseded
+            - system
+          description: Why override ended
+        supersedes:
+          type: string
+          description: |
+            ID of override this one superseded.
+            Creates linked list of override history.
+        supersededBy:
+          type: string
+          description: ID of override that superseded this one
+        supersededAt:
+          type: string
+          format: date-time
+          description: When supersession occurred
+
+    # =========================================================================
+    # PROFILE MODIFICATION EXTENSIONS
+    # =========================================================================
+
+    ProfileModification:
+      type: object
+      description: |
+        2026 Extension: Semantic profile modification tracking.
+        Addresses GAP-002 (ProfileSwitch vs Override mismatch).
+      x-aid-2026: true
+      x-aid-gap: GAP-002
+      x-aid-source: docs/60-research/profile-model-evolution-proposal.md
+      properties:
+        intent:
+          type: string
+          enum:
+            - switch
+            - percentage_adjustment
+            - time_shift
+            - target_override
+            - combined
+          description: |
+            What the user intended:
+            - switch: Change to different profile
+            - percentage_adjustment: Same profile, different intensity
+            - time_shift: Same profile, shifted schedule
+            - target_override: Temporary target change
+            - combined: Multiple modifications
+        baseProfile:
+          type: string
+          description: Profile being modified (null if complete switch)
+        modifiers:
+          type: object
+          properties:
+            percentage:
+              type: integer
+              minimum: 30
+              maximum: 250
+              description: Percentage of base profile (100 = normal)
+            timeShiftMinutes:
+              type: integer
+              minimum: -720
+              maximum: 720
+              description: Schedule shift in minutes
+            targetRange:
+              $ref: '#/components/schemas/GlucoseRange'
+            isfMultiplier:
+              type: number
+              minimum: 0.5
+              maximum: 2.0
+              description: ISF adjustment (1.0 = normal)
+            crMultiplier:
+              type: number
+              minimum: 0.5
+              maximum: 2.0
+              description: Carb ratio adjustment (1.0 = normal)
+
+    # =========================================================================
+    # ENTRY GAP EXTENSIONS (GAP-ENTRY-001 through GAP-ENTRY-005)
+    # =========================================================================
+
+    ExtendedDirection:
+      type: object
+      description: |
+        2026 Extension: Extended direction with triple arrow support.
+        Addresses GAP-ENTRY-001 (triple arrows lost on upload).
+      x-aid-2026: true
+      x-aid-gap: GAP-ENTRY-001
+      x-aid-source: docs/10-domain/entries-deep-dive.md#gap-entry-001
+      properties:
+        direction:
+          type: string
+          enum:
+            - TripleUp
+            - DoubleUp
+            - SingleUp
+            - FortyFiveUp
+            - Flat
+            - FortyFiveDown
+            - SingleDown
+            - DoubleDown
+            - TripleDown
+            - NOT COMPUTABLE
+            - RATE OUT OF RANGE
+          description: |
+            Extended direction including triple arrows.
+            Preserves AAPS/Trio granularity.
+        trendRate:
+          type: number
+          description: Numeric rate of change (mg/dL/min)
+
+    NoiseMetadata:
+      type: object
+      description: |
+        2026 Extension: Noise handling and reliability metadata.
+        Addresses GAP-ENTRY-002 (Loop ignores noise level).
+      x-aid-2026: true
+      x-aid-gap: GAP-ENTRY-002
+      x-aid-source: docs/10-domain/entries-deep-dive.md#gap-entry-002
+      properties:
+        noise:
+          type: integer
+          minimum: 0
+          maximum: 5
+          description: Signal quality (0=unknown, 1=clean, 5=blocked)
+        noiseThresholdApplied:
+          type: boolean
+          description: Whether reading was filtered based on noise threshold
+        readingReliability:
+          type: string
+          enum: [reliable, uncertain, unreliable, blocked]
+          description: Overall reading reliability assessment
+
+    SourceTaxonomy:
+      type: object
+      description: |
+        2026 Extension: Standardized source identification.
+        Addresses GAP-ENTRY-003 and GAP-CGM-004 (no universal source taxonomy).
+      x-aid-2026: true
+      x-aid-gap: [GAP-ENTRY-003, GAP-CGM-004]
+      x-aid-source: docs/10-domain/entries-deep-dive.md#gap-entry-003
+      properties:
+        sourceApp:
+          type: string
+          enum:
+            - xdrip_android
+            - xdrip4ios
+            - spike
+            - loop
+            - aaps
+            - trio
+            - dexcom_share
+            - libre_linkup
+            - nightscout_follower
+            - carelink
+            - unknown
+          description: Canonical application identifier
+        sourceAppVersion:
+          type: string
+          description: Application semantic version
+        sourceHardware:
+          type: string
+          description: Device hardware identifier
+        sourceType:
+          type: string
+          enum: [direct, follower, cloud, rebroadcast]
+          description: |
+            Data path type. Addresses GAP-CGM-006 (follower not distinguished).
+
+    EntryDeduplication:
+      type: object
+      description: |
+        2026 Extension: Universal entry deduplication.
+        Addresses GAP-ENTRY-004 (no universal dedup mechanism).
+      x-aid-2026: true
+      x-aid-gap: GAP-ENTRY-004
+      x-aid-source: docs/10-domain/entries-deep-dive.md#gap-entry-004
+      properties:
+        entryUuid:
+          type: string
+          format: uuid
+          description: |
+            Universal client-assigned UUID for entry deduplication.
+            All uploaders should generate and preserve this.
+        originalTimestamp:
+          type: integer
+          format: int64
+          description: Original sensor timestamp (epoch ms)
+        sensorSequence:
+          type: integer
+          description: Sensor's internal sequence number if available
+
+    RawSensorData:
+      type: object
+      description: |
+        2026 Extension: Raw sensor values for calibration.
+        Addresses GAP-ENTRY-005 and GAP-CGM-005 (raw values not from iOS).
+      x-aid-2026: true
+      x-aid-gap: [GAP-ENTRY-005, GAP-CGM-005]
+      x-aid-source: docs/10-domain/entries-deep-dive.md#gap-entry-005
+      properties:
+        filtered:
+          type: number
+          description: Filtered raw sensor value
+        unfiltered:
+          type: number
+          description: Unfiltered raw sensor value
+        rawAvailable:
+          type: boolean
+          description: |
+            Whether raw values are available from this source.
+            iOS CGM APIs typically do not expose raw values.
+        calibrationApplied:
+          type: string
+          enum: [transmitter, app, none]
+          description: Where calibration was applied
+
+    # =========================================================================
+    # CGM DATA PROVENANCE EXTENSIONS (GAP-CGM-001 through GAP-CGM-006)
+    # =========================================================================
+
+    CGMProvenance:
+      type: object
+      description: |
+        2026 Extension: CGM data source and calibration tracking.
+        Addresses GAP-CGM-001 (calibration algorithm), GAP-CGM-002 (bridge info),
+        GAP-CGM-003 (sensor age).
+      x-aid-2026: true
+      x-aid-gap: [GAP-CGM-001, GAP-CGM-002, GAP-CGM-003]
+      x-aid-source: traceability/gaps.md#cgm-data-source-gaps
+      properties:
+        sensorType:
+          type: string
+          enum:
+            - dexcom_g6
+            - dexcom_g7
+            - libre_1
+            - libre_2
+            - libre_2plus
+            - libre_3
+            - libre_pro
+            - medtronic_guardian3
+            - medtronic_guardian4
+            - eversense_e3
+            - unknown
+          description: CGM sensor hardware (GAP-CGM-001)
+        sensorId:
+          type: string
+          description: Unique sensor session identifier
+        sensorStartTime:
+          type: integer
+          format: int64
+          description: Sensor insertion timestamp (epoch ms, GAP-CGM-003)
+        sensorAgeMinutes:
+          type: integer
+          description: Sensor age at reading time (minutes, GAP-CGM-003)
+        transmitterId:
+          type: string
+          description: Transmitter serial number
+        bridgeType:
+          type: string
+          enum:
+            - none
+            - miaomiao
+            - miaomiao2
+            - miaomiao3
+            - bubble
+            - bubble_mini
+            - atom
+            - blucon
+            - rileylink
+            - orangelink
+            - emalink
+            - unknown
+          description: Bridge device type (GAP-CGM-002)
+        bridgeFirmware:
+          type: string
+          description: Bridge firmware version (GAP-CGM-002)
+        calibrationAlgorithm:
+          type: string
+          enum:
+            - native
+            - xdrip_original
+            - xdrip_oop0
+            - xdrip_oop1
+            - xdrip_oop2
+            - libre_oop
+            - spike
+            - manual
+            - unknown
+          description: Calibration algorithm used (GAP-CGM-001)
+        rawValue:
+          type: number
+          description: Pre-calibration raw value
+        isBackfill:
+          type: boolean
+          description: Whether reading was backfilled from sensor memory
+        sourceType:
+          type: string
+          enum: [direct, follower, cloud]
+          description: Data path type (GAP-CGM-006)
+
+    # =========================================================================
+    # ENHANCED GLUCOSE DATA
+    # =========================================================================
+
+    EnhancedGlucose:
+      type: object
+      description: |
+        2026 Extension: Enhanced glucose reading combining all entry/CGM extensions.
+        Composite schema for complete 2026 glucose entry.
+      x-aid-2026: true
+      x-aid-gap: [GAP-ENTRY-001, GAP-ENTRY-002, GAP-ENTRY-003, GAP-ENTRY-004, GAP-ENTRY-005]
+      properties:
+        extendedDirection:
+          $ref: '#/components/schemas/ExtendedDirection'
+        noiseMetadata:
+          $ref: '#/components/schemas/NoiseMetadata'
+        sourceTaxonomy:
+          $ref: '#/components/schemas/SourceTaxonomy'
+        deduplication:
+          $ref: '#/components/schemas/EntryDeduplication'
+        rawData:
+          $ref: '#/components/schemas/RawSensorData'
+        cgmProvenance:
+          $ref: '#/components/schemas/CGMProvenance'
+        trendConfidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Confidence in trend calculation (0-1)
+        algorithmState:
+          type: string
+          description: |
+            Sensor algorithm state.
+            Indicates warmup, calibration needed, etc.
+
+    # =========================================================================
+    # INSULIN METADATA EXTENSIONS
+    # =========================================================================
+
+    InsulinMetadata:
+      type: object
+      description: |
+        2026 Extension: Insulin model metadata for treatments.
+        Addresses GAP-INS-001 through GAP-INS-004.
+      x-aid-2026: true
+      x-aid-gap: [GAP-INS-001, GAP-INS-002, GAP-INS-003, GAP-INS-004]
+      properties:
+        insulinType:
+          type: string
+          description: Insulin product name
+          examples:
+            - Humalog
+            - NovoRapid
+            - Fiasp
+            - Lyumjev
+            - Apidra
+        insulinCurve:
+          type: string
+          enum:
+            - rapid-acting
+            - ultra-rapid
+            - exponential
+            - bilinear
+          description: Activity curve model used
+        dia:
+          type: number
+          description: Duration of Insulin Action (hours)
+        peakTime:
+          type: integer
+          description: Peak activity time (minutes)
+        activityAtDelivery:
+          type: number
+          description: Current insulin activity (U/hr) at delivery time
+
+    # =========================================================================
+    # TREATMENT PRECISION EXTENSIONS
+    # =========================================================================
+
+    TreatmentPrecision:
+      type: object
+      description: |
+        2026 Extension: Delivery precision and uncertainty tracking.
+        Addresses GAP-PUMP-005 (delivery uncertainty) and GAP-TREAT-003 (duration units).
+      x-aid-2026: true
+      x-aid-gap: [GAP-PUMP-005, GAP-TREAT-003]
+      properties:
+        programmedUnits:
+          type: number
+          description: Originally programmed insulin
+        deliveredUnits:
+          type: number
+          description: Actually delivered insulin (after cancellation)
+        deliveryUncertain:
+          type: boolean
+          description: |
+            Whether delivery confirmation was uncertain.
+            Pump may have delivered but didn't confirm.
+        durationUnit:
+          type: string
+          enum:
+            - seconds
+            - minutes
+          description: |
+            Explicit unit for duration field.
+            Eliminates Loop (seconds) vs oref0 (minutes) confusion.
+
+    # =========================================================================
+    # SYNC METADATA
+    # =========================================================================
+
+    SyncMetadata:
+      type: object
+      description: |
+        2026 Extension: Sync operation metadata.
+        Addresses GAP-003 and deduplication challenges.
+      x-aid-2026: true
+      x-aid-gap: GAP-003
+      properties:
+        syncId:
+          type: string
+          description: |
+            Unified client-assigned sync identifier.
+            Replaces fragmented syncIdentifier/identifier/uuid usage.
+        syncVersion:
+          type: integer
+          description: Monotonic version for conflict detection
+        syncSource:
+          type: string
+          description: Controller that originated this sync
+        isDeduplication:
+          type: boolean
+          description: Whether this was a deduplication match
+        deduplicatedFrom:
+          type: string
+          description: Original document ID if deduplicated
+
+    # =========================================================================
+    # UTILITY SCHEMAS
+    # =========================================================================
+
+    GlucoseRange:
+      type: object
+      properties:
+        min:
+          type: number
+          description: Minimum glucose (mg/dL)
+        max:
+          type: number
+          description: Maximum glucose (mg/dL)
+        unit:
+          type: string
+          enum: [mg/dL, mmol/L]
+          default: mg/dL
+
+    # =========================================================================
+    # COMPOSITE: FULL ALIGNED TREATMENT
+    # =========================================================================
+
+    AlignedTreatment:
+      description: |
+        2026 Full Aligned Treatment combining all extensions.
+        Use this as reference for complete 2026 compliance.
+      allOf:
+        - $ref: 'aid-treatments-2025.yaml#/components/schemas/Treatment'
+        - $ref: '#/components/schemas/ControllerIdentity'
+        - $ref: '#/components/schemas/DocumentAuthority'
+        - $ref: '#/components/schemas/SyncMetadata'
+        - $ref: '#/components/schemas/TreatmentPrecision'
+        - $ref: '#/components/schemas/InsulinMetadata'
+
+    AlignedEntry:
+      description: |
+        2026 Full Aligned Entry combining all extensions.
+      allOf:
+        - $ref: 'aid-entries-2025.yaml#/components/schemas/Entry'
+        - $ref: '#/components/schemas/ControllerIdentity'
+        - $ref: '#/components/schemas/CGMProvenance'
+        - $ref: '#/components/schemas/EnhancedGlucose'
+        - $ref: '#/components/schemas/SyncMetadata'
+
+    AlignedOverride:
+      description: |
+        2026 Full Aligned Override combining all extensions.
+      allOf:
+        - $ref: 'aid-treatments-2025.yaml#/components/schemas/Override'
+        - $ref: '#/components/schemas/ControllerIdentity'
+        - $ref: '#/components/schemas/OverrideLifecycle'
+        - $ref: '#/components/schemas/ProfileModification'
+        - $ref: '#/components/schemas/SyncMetadata'

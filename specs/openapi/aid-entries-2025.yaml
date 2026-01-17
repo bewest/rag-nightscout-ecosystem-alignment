@@ -1,0 +1,330 @@
+openapi: 3.0.3
+info:
+  title: AID Entries Collection - De Facto 2025
+  version: 2025.1.0
+  description: |
+    OpenAPI specification for the Nightscout `entries` collection documenting
+    the de facto standard as implemented across AID systems circa 2025.
+    
+    ## Data Flow
+    - **Producers**: xDrip+, xDrip4iOS, DiaBLE, Spike, AAPS (rebroadcast)
+    - **Consumers**: Loop, Trio, AAPS, Nightscout web, follower apps
+    
+    ## Source References
+    - Nightscout API v3: `externals/cgm-remote-monitor/lib/api3/swagger.yaml`
+    - Deep Dive: `docs/10-domain/entries-deep-dive.md`
+    
+  contact:
+    name: AID Alignment Workspace
+  license:
+    name: AGPL-3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+
+servers:
+  - url: /api/v3
+    description: Nightscout API v3
+
+paths:
+  /entries:
+    get:
+      summary: Search glucose entries
+      operationId: searchEntries
+      tags: [entries]
+      parameters:
+        - $ref: '#/components/parameters/dateFilter'
+        - $ref: '#/components/parameters/typeFilter'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: Array of entry documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entry'
+
+components:
+  parameters:
+    dateFilter:
+      name: date$gte
+      in: query
+      schema:
+        type: integer
+      description: Filter entries >= epoch milliseconds
+    typeFilter:
+      name: type
+      in: query
+      schema:
+        $ref: '#/components/schemas/EntryType'
+      description: Filter by entry type
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 10
+        maximum: 1000
+      description: Maximum documents to return
+    skip:
+      name: skip
+      in: query
+      schema:
+        type: integer
+        default: 0
+      description: Documents to skip for pagination
+    sort:
+      name: sort$desc
+      in: query
+      schema:
+        type: string
+        default: date
+      description: Field to sort by descending
+
+  schemas:
+    EntryType:
+      type: string
+      enum: [sgv, mbg, cal]
+      description: |
+        Entry classification:
+        - `sgv`: Sensor Glucose Value (CGM reading)
+        - `mbg`: Meter Blood Glucose (fingerstick)
+        - `cal`: Calibration record
+      x-aid-source: externals/cgm-remote-monitor/lib/api3/swagger.yaml
+
+    Direction:
+      type: string
+      enum:
+        - DoubleUp
+        - SingleUp
+        - FortyFiveUp
+        - Flat
+        - FortyFiveDown
+        - SingleDown
+        - DoubleDown
+        - NOT COMPUTABLE
+        - RATE OUT OF RANGE
+      description: |
+        Glucose trend direction. Maps to rate of change:
+        - DoubleUp: > 3 mg/dL/min
+        - SingleUp: 2-3 mg/dL/min
+        - FortyFiveUp: 1-2 mg/dL/min
+        - Flat: -1 to 1 mg/dL/min
+        - FortyFiveDown: -1 to -2 mg/dL/min
+        - SingleDown: -2 to -3 mg/dL/min
+        - DoubleDown: < -3 mg/dL/min
+      x-aid-controllers:
+        Loop: GlucoseTrend enum (upUpUp, upUp, up, flat, down, downDown, downDownDown)
+        AAPS: TrendArrow enum (includes TRIPLE_UP, TRIPLE_DOWN not in Nightscout)
+        Trio: Direction enum (includes tripleUp, tripleDown)
+        xDrip: Numeric enum 1-9
+      x-aid-gap: GAP-ENTRY-001
+      x-aid-gap-note: Triple arrows (TRIPLE_UP, TRIPLE_DOWN) in AAPS/Trio map to DoubleUp/DoubleDown, losing granularity
+
+    NoiseLevel:
+      type: integer
+      minimum: 0
+      maximum: 5
+      description: |
+        Signal quality indicator:
+        - 0: None/unknown
+        - 1: Clean
+        - 2: Light
+        - 3: Medium
+        - 4: Heavy
+        - 5: Noise blocked reading
+      x-aid-source: docs/10-domain/entries-deep-dive.md#noise-level-mapping
+
+    Entry:
+      type: object
+      required:
+        - type
+        - date
+        - dateString
+      properties:
+        _id:
+          type: string
+          description: MongoDB document ID (ObjectId as string in v1, any string in v3)
+          x-aid-controllers:
+            v1: MongoDB ObjectId
+            v3: Server-assigned identifier
+        identifier:
+          type: string
+          description: |
+            API v3 primary key. Server-assigned, immutable after creation.
+            Used for document addressing in v3 endpoints.
+          x-aid-source: externals/cgm-remote-monitor/lib/api3/generic/update/validate.js
+          x-aid-controllers:
+            AAPS: Uses identifier field
+            Loop: Does not use (v1 only)
+            Trio: Does not use (v1 only)
+        type:
+          $ref: '#/components/schemas/EntryType'
+        sgv:
+          type: number
+          description: |
+            Sensor glucose value in mg/dL.
+            Required when type=sgv.
+          x-aid-controllers:
+            Loop: quantity (HKQuantity)
+            AAPS: value
+            Trio: sgv
+            xDrip: calculated_value
+        mbg:
+          type: number
+          description: |
+            Meter blood glucose value in mg/dL.
+            Required when type=mbg.
+        direction:
+          $ref: '#/components/schemas/Direction'
+        date:
+          type: integer
+          format: int64
+          description: Epoch milliseconds timestamp
+          x-aid-controllers:
+            Loop: startDate (converted)
+            AAPS: timestamp
+            Trio: date
+            xDrip: timestamp
+        dateString:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+        device:
+          type: string
+          description: |
+            Source device identifier. Format varies by uploader.
+          examples:
+            - xDrip-DexcomG6
+            - share2
+            - loop://iPhone
+            - openaps://AAPS
+          x-aid-controllers:
+            Loop: provenanceIdentifier
+            AAPS: sourceSensor
+            xDrip: sensor_uuid
+        noise:
+          $ref: '#/components/schemas/NoiseLevel'
+        filtered:
+          type: number
+          description: |
+            Filtered raw sensor value. Used for calibration algorithms.
+            Typically only populated by xDrip+.
+          x-aid-controllers:
+            AAPS: Not used
+            Loop: Not used
+            xDrip: filtered_data
+        unfiltered:
+          type: number
+          description: |
+            Unfiltered raw sensor value. Used for calibration algorithms.
+            Typically only populated by xDrip+.
+          x-aid-controllers:
+            AAPS: Not used
+            Loop: Not used
+            xDrip: raw_data
+        rssi:
+          type: integer
+          description: Signal strength indicator (dBm)
+        delta:
+          type: number
+          description: |
+            Change from previous reading (mg/dL).
+            Computed field, not always present.
+        scale:
+          type: number
+          description: Calibration scale factor (for type=cal)
+        intercept:
+          type: number
+          description: Calibration intercept (for type=cal)
+        slope:
+          type: number
+          description: Calibration slope (for type=cal)
+        sysTime:
+          type: string
+          format: date-time
+          description: System time when reading was captured (Dexcom Share)
+        units:
+          type: string
+          enum: [mg, mmol]
+          description: |
+            Glucose unit indicator.
+            Note: Values are always stored as mg/dL; this is display preference.
+          x-aid-gap: GAP-ENTRY-002
+          x-aid-gap-note: Unit field usage is inconsistent across uploaders
+
+        # API v3 metadata fields
+        utcOffset:
+          type: integer
+          description: Timezone offset in minutes from UTC
+        app:
+          type: string
+          description: Origin application identifier
+        srvCreated:
+          type: integer
+          format: int64
+          description: Server creation timestamp (epoch ms)
+        srvModified:
+          type: integer
+          format: int64
+          description: Server modification timestamp (epoch ms)
+        subject:
+          type: string
+          description: Creating user/token identifier
+        modifiedBy:
+          type: string
+          description: Last modifier identifier
+        isValid:
+          type: boolean
+          default: true
+          description: |
+            Soft-delete flag. false = document is deleted.
+            Only visible via history endpoint or explicit query.
+          x-aid-source: externals/cgm-remote-monitor/lib/api3/generic/delete/operation.js
+        isReadOnly:
+          type: boolean
+          default: false
+          description: Lock document permanently (HTTP 422 on modify attempts)
+
+    # Extension schemas for 2026 alignment
+    EntryExtended:
+      allOf:
+        - $ref: '#/components/schemas/Entry'
+        - type: object
+          properties:
+            sourceCalibration:
+              type: string
+              description: |
+                2026 Extension: Calibration algorithm used.
+                Addresses GAP-CGM-001 (calibration provenance not tracked).
+              enum:
+                - native
+                - xdrip_native
+                - xdrip_oop
+                - libre_oop
+                - g6_native
+              x-aid-2026: true
+              x-aid-gap: GAP-CGM-001
+            sensorId:
+              type: string
+              description: |
+                2026 Extension: Unique sensor session identifier.
+                Enables grouping readings by sensor session.
+              x-aid-2026: true
+              x-aid-gap: GAP-CGM-002
+            transmitterId:
+              type: string
+              description: |
+                2026 Extension: CGM transmitter identifier.
+                For Dexcom G6/G7, Libre with transmitter.
+              x-aid-2026: true
+              x-aid-gap: GAP-CGM-003
+            trendRate:
+              type: number
+              description: |
+                2026 Extension: Numeric rate of change (mg/dL/min).
+                More precise than direction string.
+              x-aid-2026: true
+              x-aid-gap: GAP-ENTRY-003
