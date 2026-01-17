@@ -133,3 +133,22 @@ Comprehensive field-by-field mapping of treatment events (boluses, carbs, temp b
 - **New requirements**: REQ-040 through REQ-046 (amount preservation, timestamp accuracy, duration normalization, sync identity)
 - **New gaps**: GAP-TREAT-001 through GAP-TREAT-007 (unit mismatches, SMB representation, split boluses, duplicate uploads, retroactive edits, eCarbs support)
 - **Terminology matrix updates**: New Treatment Data Models section with bolus, carb, and temp basal field mappings
+
+### Entries Collection Deep Dive (2026-01-17)
+
+Comprehensive field-by-field mapping of glucose data (the Nightscout `entries` collection) across AID systems:
+- **Location**: `docs/10-domain/entries-deep-dive.md`
+- **Key findings**:
+  - xDrip+ is primary glucose producer; Loop/Trio are consumers only (no CGM upload)
+  - AAPS may rebroadcast readings it receives
+  - Trend arrow mapping differs: AAPS/Trio have `TripleUp`/`TripleDown` with no Nightscout equivalent
+  - Loop ignores noise level; other systems may filter high-noise readings
+  - No standardized source taxonomy (`device` field is free-form text)
+  - Raw/filtered values only available in xDrip+/AAPS (not iOS systems)
+  - Meter readings (fingersticks) are treatments, not entries
+  - xDrip+ local web server (port 17580) provides alternative API path
+- **Terminology matrix updates**: New Glucose Data Models section with SGV fields, direction mapping, raw/filtered values, sync identity
+- **Suggested specs**: SPEC-ENTRY-001 through SPEC-ENTRY-005 (SGV range, direction values, timestamp consistency, noise range, type distinction)
+- **Suggested requirements**: REQ-ENTRY-001 through REQ-ENTRY-005 (precision preservation, direction mapping, UTC timestamps, source tracking, deduplication)
+- **New gaps**: GAP-ENTRY-001 through GAP-ENTRY-005 (triple arrows, noise handling, source taxonomy, deduplication, iOS raw data)
+- **Completes**: Core collections trifecta (entries, treatments, devicestatus)
