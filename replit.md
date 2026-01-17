@@ -75,6 +75,20 @@ The project integrates with and documents the following external Automated Insul
 
 ## Recent Analysis Documents
 
+### DeviceStatus Structure Deep Dive (2026-01-17)
+
+Comprehensive field mapping of the Nightscout `devicestatus` collection across AID systems:
+- **Location**: `docs/10-domain/devicestatus-deep-dive.md`
+- **Key findings**:
+  - Loop uses flat `loop` object with single combined prediction array
+  - oref0-based systems (Trio, AAPS) use nested `openaps` object with 4 prediction curves (IOB, COB, UAM, ZT)
+  - Duration units differ: Loop uses seconds, oref0 uses minutes
+  - `openaps.enacted` is null in open loop mode
+  - `predBGs` can appear under either `suggested` or `enacted` (Trio strips from older)
+- **Analytics helpers**: JavaScript normalization functions for cross-system data extraction
+- **New gaps**: GAP-DS-001 through GAP-DS-004 (effect timelines, prediction incompatibility, duration units, algorithm transparency)
+- **Cross-references**: Added links from Loop, Trio, AAPS nightscout-sync docs
+
 ### AID Controller Sync Patterns (2026-01-17)
 
 Deep analysis of how Trio, Loop, and AAPS synchronize with Nightscout:
