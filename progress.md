@@ -161,24 +161,44 @@ Comprehensive analysis of how AID controllers communicate with insulin pumps, co
 
 ---
 
-## Candidate Next Cycles
+### Insulin Activity Curves Deep Dive (2026-01-17)
 
-### Priority A: Insulin Activity Curves Comparison
+Comprehensive cross-system analysis of insulin activity curves used by AID systems for IOB calculation.
 
-**Value**: Different insulin models affect prediction accuracy and dosing decisions.
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **Insulin Curves Deep Dive** | `docs/10-domain/insulin-curves-deep-dive.md` | Mathematical formulas, cross-system model comparison, DIA enforcement, peak time configuration |
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Added comprehensive Insulin Curve Models section with implementation details, IOB components, xDrip+ multi-insulin |
+| **Requirements Update** | `traceability/requirements.md` | Added REQ-INS-001 through REQ-INS-005 for model consistency, DIA enforcement, peak bounds, activity calculation |
+| **Gaps Update** | `traceability/gaps.md` | Added GAP-INS-001 through GAP-INS-004 for metadata sync, multi-insulin, peak capture, model incompatibility |
 
-**Questions to answer**:
-- What insulin activity models does each system use?
-- How are DIA (duration of insulin action) settings applied?
-- What are the differences between exponential vs bilinear models?
+**Key Findings**:
+- **Shared Mathematical Foundation**: All major AID systems (Loop, oref0, AAPS, Trio) use the **same exponential insulin model**. oref0 explicitly credits Loop as the source in `lib/iob/calculate.js#L125`
+- **Formula Origin**: Loop developed the exponential model; oref0 copied it with attribution; AAPS ported it to Kotlin; Trio uses oref0 JavaScript
+- **xDrip+ Uses Different Model**: Linear trapezoid model with support for 13+ insulin types including long-acting insulins (Lantus, Tresiba, etc.)
+- **DIA Enforcement**: All AID systems enforce 5-hour minimum for exponential model; xDrip+ has no minimum
+- **Peak Time Customization**: oref0 allows 50-120min (rapid) and 35-100min (ultra-rapid); AAPS has Free Peak plugin; Loop uses fixed presets
+- **Multi-Insulin**: xDrip+ uniquely supports multiple insulin types per treatment via `insulinJSON` field
+- **Metadata Gap**: No system syncs insulin model metadata (curve, peak, DIA) to Nightscout
 
-**Deliverables**:
-- `docs/10-domain/insulin-curves-deep-dive.md`
-- Curve formula comparison
+**Source Files Analyzed**:
+- `oref0:lib/iob/calculate.js` - Core IOB calculation (bilinear + exponential)
+- `oref0:lib/iob/total.js` - IOB aggregation and DIA enforcement
+- `aaps:plugins/insulin/src/main/kotlin/.../InsulinOrefBasePlugin.kt` - Kotlin port
+- `aaps:plugins/insulin/src/main/kotlin/.../InsulinLyumjevPlugin.kt` - Lyumjev model
+- `loop:LoopKit/LoopKit/Insulin/ExponentialInsulinModel.swift` - Original exponential formula
+- `loop:LoopKit/LoopKit/InsulinKit/InsulinMath.swift` - IOB calculation
+- `trio:Trio/Sources/Models/Preferences.swift` - Insulin curve settings
+- `xDrip:app/src/main/res/raw/insulin_profiles.json` - 13 insulin type definitions
+- `xDrip:insulin/LinearTrapezoidInsulin.java` - Linear trapezoid implementation
+
+**Gaps Identified**: GAP-INS-001 through GAP-INS-004
 
 ---
 
-### Priority C: Carb Absorption Models Comparison
+## Candidate Next Cycles
+
+### Priority A: Carb Absorption Models Comparison
 
 **Value**: Carb models significantly affect prediction accuracy.
 

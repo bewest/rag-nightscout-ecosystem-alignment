@@ -444,15 +444,93 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 ---
 
-## Insulin Models
+## Insulin Curve Models (Deep Dive)
 
-| Model | oref0 | Loop | AAPS | Trio |
-|-------|-------|------|------|------|
-| Rapid Acting | `rapidActing` | `ExponentialInsulinModel` | `Oref1` | `rapidActing` |
-| Ultra Rapid | `ultraRapid` | `ExponentialInsulinModel(peak)` | `Lyumjev` | `ultraRapid` |
-| Bilinear | `bilinear` | N/A | `bilinear` | `bilinear` |
-| Peak Time | `peak` (minutes) | `peakActivity` | `peak` | `insulinPeak` |
-| DIA | `dia` (hours) | `effectDuration` | `dia` | `dia` |
+> **See Also**: [Insulin Curves Deep Dive](../../docs/10-domain/insulin-curves-deep-dive.md) for comprehensive cross-system analysis of insulin activity curves, mathematical formulas, and IOB calculations.
+
+### Mathematical Model Comparison
+
+| System | Primary Model | Formula Source | Legacy Model |
+|--------|---------------|----------------|--------------|
+| **Loop** | Exponential | Original | N/A |
+| **oref0** | Exponential | Loop (copied) | Bilinear |
+| **AAPS** | Exponential | oref0 (port) | N/A |
+| **Trio** | Exponential | oref0 (via JS) | Bilinear |
+| **xDrip+** | Linear Trapezoid | Independent | N/A |
+
+**Key Finding**: All major AID systems share the **same exponential insulin model**. oref0 explicitly credits Loop as the source: `// Formula source: https://github.com/LoopKit/Loop/issues/388#issuecomment-317938473`
+
+### Insulin Type Presets
+
+| Preset | Loop Peak | oref0 Peak | AAPS Peak | Trio Peak | Delay |
+|--------|-----------|------------|-----------|-----------|-------|
+| Rapid-Acting Adult | 75 min | 75 min | 75 min | 75 min | Loop: 10 min, others: 0 |
+| Rapid-Acting Child | 65 min | N/A | N/A | N/A | 10 min |
+| Ultra-Rapid / Fiasp | 55 min | 55 min | 55 min | 55 min | Loop: 10 min, others: 0 |
+| Lyumjev | **55 min** | 55 min | **45 min** | 55 min | Loop: 10 min, others: 0 |
+| Afrezza (Inhaled) | 29 min | N/A | N/A | N/A | 10 min |
+| Free Peak | N/A | 50-120 min | Configurable | Configurable | 0 |
+
+**Important**: Peak times are NOT equivalent across systems. AAPS Lyumjev uses **45 min** while Loop uses **55 min**. Loop also includes a 10-minute delay before activity starts that oref0/AAPS/Trio do not have.
+
+### DIA (Duration of Insulin Action) Constraints
+
+| System | Minimum DIA | Default DIA | Enforcement |
+|--------|-------------|-------------|-------------|
+| **Loop** | Fixed per preset | 5-6 hr | Hardcoded in model |
+| **oref0 (bilinear)** | 3 hr | 3 hr | Soft clamp |
+| **oref0 (exponential)** | 5 hr | 5 hr | `requireLongDia` flag |
+| **AAPS** | 5 hr | 5 hr | `hardLimits.minDia()` |
+| **Trio** | 5 hr | Profile-defined | Via oref0 |
+| **xDrip+** | None | Per profile | User configurable |
+
+### Insulin Model Implementation
+
+| Aspect | oref0 | Loop | AAPS | Trio | xDrip+ |
+|--------|-------|------|------|------|--------|
+| **Source File** | `lib/iob/calculate.js` | `ExponentialInsulinModel.swift` | `InsulinOrefBasePlugin.kt` | `lib/iob/index.js` | `LinearTrapezoidInsulin.java` |
+| **Model Class** | N/A (function) | `InsulinModel` protocol | `Insulin` interface | N/A (function) | `Insulin` abstract class |
+| **Peak Config** | `profile.insulinPeakTime` | Per preset | Plugin-specific | `preferences.insulinPeakTime` | Per profile JSON |
+| **DIA Config** | `profile.dia` | Per preset | `profile.dia` | `pumpSettings.insulinActionCurve` | `Insulin.maxEffect` |
+| **Custom Peak** | Yes (ranges) | No | Yes (Free Peak) | Yes (via oref0) | Yes (JSON config) |
+
+### IOB Calculation Components
+
+| Component | oref0 | Loop | AAPS | Trio | xDrip+ |
+|-----------|-------|------|------|------|--------|
+| **Total IOB** | `iob.iob` | `insulinOnBoard` | `iobTotal.iob` | `iob.iob` | `Iob.getIobAtTime()` |
+| **Basal IOB** | `iob.basaliob` | N/A (combined) | `iobTotal.basaliob` | `iob.basaliob` | Not applicable (no basal tracking) |
+| **Bolus IOB** | `iob.bolusiob` | N/A (combined) | N/A | `iob.bolusiob` | Not applicable (no basal/bolus split) |
+| **Activity** | `iob.activity` | N/A | `iobTotal.activity` | `iob.activity` | `calculateActivity()` |
+| **Bolus Snooze** | `iob.bolussnooze` | N/A | `iobTotal.bolussnooze` | `iob.bolussnooze` | Not applicable |
+| **Zero Temp IOB** | `iob.iobWithZeroTemp` | N/A | `iobWithZeroTemp` | `iobWithZeroTemp` | Not applicable |
+
+**xDrip+ Note**: xDrip+ tracks total IOB from all insulin injections but does not distinguish basal vs bolus IOB (it tracks injections, not pump-controlled basals). The `Iob.getIobBreakdown()` method provides IOB per insulin type (e.g., NovoRapid vs Lantus), not basal/bolus split.
+
+### xDrip+ Multi-Insulin Support
+
+xDrip+ uniquely supports multiple insulin types per treatment:
+
+| Feature | xDrip+ | AID Systems |
+|---------|--------|-------------|
+| **Multi-Insulin Per Treatment** | ✅ `insulinJSON` array | No |
+| **Long-Acting Insulin Tracking** | ✅ (13+ types) | No |
+| **Concentration Support** | U100-U500 | U100-U200 (AAPS only) |
+| **IOB Per Insulin Type** | ✅ `Iob.getIobBreakdown()` | No |
+| **Smart Pen Integration** | InPen, Pendiq, NovoPen | No |
+
+**xDrip+ Insulin Profiles**: `externals/xDrip/app/src/main/res/raw/insulin_profiles.json`
+
+### Insulin Curve Gap Summary
+
+| Gap ID | Description | Impact |
+|--------|-------------|--------|
+| **GAP-INS-001** | Insulin model metadata not synced to Nightscout | Cannot determine which curve produced IOB |
+| **GAP-INS-002** | No standardized multi-insulin representation | xDrip+ `insulinJSON` is non-portable |
+| **GAP-INS-003** | Peak time customization not captured in treatments | Cannot reproduce historical IOB calculations |
+| **GAP-INS-004** | xDrip+ linear trapezoid model incompatible | IOB values differ from AID exponential models |
+
+**Full gap details**: See [Insulin Curves Deep Dive - Related Gaps](../../docs/10-domain/insulin-curves-deep-dive.md#related-gaps)
 
 ---
 

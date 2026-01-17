@@ -748,6 +748,135 @@ rT.predBGs = {
 
 ---
 
+## Insulin Curve Gaps
+
+### GAP-INS-001: Insulin Model Metadata Not Synced to Nightscout
+
+**Scenario**: Historical IOB reconstruction, algorithm debugging
+
+**Description**: When treatments are uploaded to Nightscout, no metadata about the insulin model used for IOB calculation is included. Specifically missing:
+- Curve type (exponential, bilinear, linear trapezoid)
+- Peak time parameter
+- DIA setting at time of calculation
+- Insulin brand/type
+
+**Source Evidence**:
+- Loop uploads bolus with `insulinType?.brandName` but not curve parameters
+- oref0/Trio upload bolus without any model metadata
+- AAPS stores `insulinConfiguration` locally but doesn't upload to Nightscout
+
+**Impact**:
+- Cannot reproduce historical IOB calculations
+- Cannot determine why predictions differed from outcomes
+- Algorithm debugging requires access to device settings
+- Research use cases blocked
+
+**Possible Solutions**:
+1. Add `insulinModel` object to treatment schema: `{curve, peak, dia}`
+2. Include model metadata in devicestatus uploads
+3. Create separate `algorithmSettings` collection
+
+**Status**: Under discussion
+
+**Related**:
+- [Insulin Curves Deep Dive](../docs/10-domain/insulin-curves-deep-dive.md)
+- REQ-INS-005
+
+---
+
+### GAP-INS-002: No Standardized Multi-Insulin Representation
+
+**Scenario**: MDI users tracking multiple insulin types, smart pen integration
+
+**Description**: xDrip+ uniquely supports tracking multiple insulin types per treatment via `insulinJSON` field containing an array of `InsulinInjection` objects. This format is xDrip+-specific and not recognized by other systems or Nightscout.
+
+**Source Evidence**:
+```java
+// xDrip+ Treatments.java
+@Column(name = "insulinJSON")
+public String insulinJSON;  // JSON array of {profileName, units}
+```
+
+Nightscout treatments only support single `insulin` field.
+
+**Impact**:
+- MDI users cannot track rapid + basal insulin in standard format
+- Smart pen data (InPen, NovoPen) loses insulin type on upload
+- IOB calculations must fall back to single insulin model
+- Cross-system data correlation loses insulin type breakdown
+
+**Possible Solutions**:
+1. Add Nightscout schema support for multi-insulin treatments
+2. Standardize xDrip+ `insulinJSON` format for adoption
+3. Use separate treatment entries per insulin type
+
+**Status**: Under discussion
+
+**Related**:
+- [xDrip+ Insulin Management](../mapping/xdrip-android/insulin-management.md)
+
+---
+
+### GAP-INS-003: Peak Time Customization Not Captured in Treatments
+
+**Scenario**: Custom insulin tuning, historical analysis
+
+**Description**: oref0 and AAPS support custom peak times via `useCustomPeakTime` and `insulinPeakTime` profile settings. However, when treatments are recorded, the peak time used for IOB calculation is not captured.
+
+**Source Evidence**:
+```javascript
+// oref0:lib/iob/calculate.js
+if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined) {
+    peak = profile.insulinPeakTime;  // Custom peak, but not stored in treatment
+}
+```
+
+**Impact**:
+- Cannot reconstruct IOB with correct curve shape
+- Profile changes retroactively affect historical analysis
+- Custom tuning decisions not documented
+
+**Possible Solutions**:
+1. Include `insulinPeakAtDose` in treatment metadata
+2. Capture profile snapshot at treatment time
+3. Store peak time in devicestatus algorithm output
+
+**Status**: Under discussion
+
+**Related**:
+- REQ-INS-003
+- [oref0 Insulin Math](../mapping/oref0/insulin-math.md)
+
+---
+
+### GAP-INS-004: xDrip+ Linear Trapezoid Model Incompatible with AID Exponential
+
+**Scenario**: Cross-system IOB comparison, data portability
+
+**Description**: xDrip+ uses a linear trapezoid model for insulin activity, while all AID systems (Loop, oref0, AAPS, Trio) use the exponential model. These models produce different IOB decay curves from identical dose history.
+
+**Source Evidence**:
+- xDrip+: `LinearTrapezoidInsulin.java` uses onset/peak/duration with linear segments
+- AID systems: Exponential decay with `tau`, `a`, `S` parameters from shared formula
+
+**Impact**:
+- xDrip+ IOB values differ from AAPS IOB for same user
+- Smart pen data imported to AID system uses different curve
+- Cannot directly compare IOB across CGM app vs AID controller
+
+**Possible Solutions**:
+1. xDrip+ adds exponential model option for AID compatibility
+2. Document conversion factors between models
+3. Accept limitation and document for users
+
+**Status**: Under discussion (architectural difference, likely won't converge)
+
+**Related**:
+- [Insulin Curves Deep Dive](../docs/10-domain/insulin-curves-deep-dive.md)
+- [xDrip+ Insulin Management](../mapping/xdrip-android/insulin-management.md)
+
+---
+
 ## Pump Communication Gaps
 
 ### GAP-PUMP-001: No Standardized Pump Capability Exchange Format

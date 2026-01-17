@@ -710,6 +710,121 @@ Requirements follow the pattern:
 
 ---
 
+## Insulin Curve Requirements
+
+### REQ-INS-001: Consistent Exponential Model Across Systems
+
+**Statement**: AID systems using the exponential insulin model MUST use the same mathematical formula to ensure IOB calculations are comparable.
+
+**Rationale**: Different formulas produce different IOB decay curves, leading to inconsistent dosing decisions when comparing systems or switching between them.
+
+**Scenarios**:
+- IOB Comparison (to be created)
+
+**Verification**:
+- Given identical bolus history and DIA settings
+- Calculate IOB using Loop, oref0, AAPS, and Trio
+- Verify IOB values match within 0.01U precision
+
+**Cross-System Status**:
+- Loop: ✅ Original exponential formula
+- oref0: ✅ Copied from Loop (explicitly credited)
+- AAPS: ✅ Port of oref0
+- Trio: ✅ Uses oref0 JavaScript
+
+**Source Reference**: `oref0:lib/iob/calculate.js#L125` cites Loop as formula source.
+
+---
+
+### REQ-INS-002: DIA Minimum Enforcement
+
+**Statement**: AID systems MUST enforce a minimum DIA of 5 hours for exponential insulin models to prevent dangerously fast IOB decay.
+
+**Rationale**: DIA values below 5 hours cause insulin to "disappear" from IOB calculations before it finishes acting, leading to insulin stacking and hypoglycemia.
+
+**Scenarios**:
+- DIA Validation (to be created)
+
+**Verification**:
+- Attempt to set DIA = 3 hours with exponential model → Verify rejection or auto-correction to 5 hours
+- Verify user notification when DIA is adjusted
+
+**Cross-System Status**:
+- Loop: ✅ Fixed DIA per model preset (5-6 hours)
+- oref0: ✅ `requireLongDia` flag enforces 5h minimum
+- AAPS: ✅ `hardLimits.minDia()` returns 5.0
+- Trio: ✅ Via oref0 enforcement
+
+---
+
+### REQ-INS-003: Peak Time Configuration Bounds
+
+**Statement**: When custom peak time is enabled, AID systems MUST clamp the value to valid ranges to prevent unrealistic insulin curves.
+
+**Rationale**: Peak times outside physiological ranges produce unrealistic insulin activity curves that lead to dangerous predictions.
+
+**Scenarios**:
+- Peak Time Validation (to be created)
+
+**Verification**:
+- Rapid-acting: Verify peak clamped to 50-120 min range
+- Ultra-rapid: Verify peak clamped to 35-100 min range
+- Verify user notification when peak is adjusted
+
+**Cross-System Status**:
+- oref0: ✅ Explicit min/max checks in `iobCalcExponential()`
+- AAPS: ✅ Free Peak plugin with hard limits
+- Trio: ✅ Via oref0 enforcement
+- Loop: ✅ Fixed peaks per preset (no custom)
+
+---
+
+### REQ-INS-004: Activity Calculation for BGI
+
+**Statement**: AID systems MUST calculate insulin activity (rate of action) alongside IOB to enable Blood Glucose Impact (BGI) predictions.
+
+**Rationale**: BGI = -activity × ISF × 5 is used to predict how much glucose will drop in the next 5 minutes. Without activity, predictions are incomplete.
+
+**Scenarios**:
+- BGI Calculation (to be created)
+
+**Verification**:
+- Calculate activity from insulin curve formula
+- Compute BGI = -activity × ISF × 5
+- Verify BGI matches observed glucose change (within noise)
+
+**Cross-System Status**:
+- Loop: ✅ Via `percentEffectRemaining` derivative
+- oref0: ✅ `activityContrib` calculated alongside `iobContrib`
+- AAPS: ✅ `result.activityContrib` in `iobCalcForTreatment()`
+- Trio: ✅ Via oref0
+
+---
+
+### REQ-INS-005: Insulin Model Metadata in Treatments (Proposed)
+
+**Statement**: Treatments uploaded to Nightscout SHOULD include insulin model metadata (curve type, peak time, DIA) to enable historical IOB reconstruction.
+
+**Rationale**: Without model metadata, historical IOB values cannot be reproduced, limiting retrospective analysis and debugging.
+
+**Scenarios**:
+- Treatment Upload Validation (to be created)
+
+**Verification**:
+- Upload bolus treatment
+- Verify presence of `insulinModel`, `insulinPeak`, `insulinDIA` fields
+- Download treatment and verify metadata preserved
+
+**Cross-System Status**:
+- Loop: ❌ Not implemented (gap)
+- oref0: ❌ Not implemented (gap)
+- AAPS: ⚠️ Partial via `insulinConfiguration` in database
+- Trio: ❌ Not implemented (gap)
+
+**Gap Reference**: GAP-INS-001
+
+---
+
 ## Template
 
 ```markdown
