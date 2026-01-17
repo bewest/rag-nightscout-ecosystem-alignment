@@ -4,6 +4,36 @@ This document defines the authority hierarchy and identity model used for confli
 
 ---
 
+## Why Nightscout Roles Gateway Exists
+
+Before diving into technical details, it's important to understand the philosophical foundation for identity-based access control in Nightscout.
+
+### The Credential Dilemma
+
+Nightscout has deliberately avoided implementing traditional username/password authentication. This isn't a gap—it's a conscious design choice driven by:
+
+1. **Liability and Risk:** Managing custom credentials exposes the project to breach liability. Nightscout has chosen not to accept the risk of being "hacked" in the traditional credential-theft sense.
+
+2. **Informed Consent over Gatekeeping:** Nightscout prioritizes users exercising their data rights. Access is granted by consent, not by proving knowledge of a secret.
+
+3. **Multi-User Reality:** Even "personal" Nightscout instances have multiple users—the person with diabetes, caregivers, school health staff, endocrinologists. Each may use different identity providers (Google, Apple, clinic SSO). The authentication complexity is the same whether personal or multi-tenant.
+
+4. **Observed Antipatterns:** Experience has shown that username/password flows degrade security hygiene. Users share "mongo strings" in support threads, share passwords with apps and caregivers, and accept third-party client credentials. More password flows compound these problems.
+
+### Zero Trust Direction
+
+Rather than managing credentials, Nightscout Roles Gateway moves toward "zero trust" principles:
+
+- **Never trust, always verify** — Every request is authenticated via federated identity
+- **Identity federation** — External providers (Google, Apple, SSO) manage credentials
+- **Short-lived tokens** — JWT tokens expire, unlike passwords stored forever
+- **Explicit consent** — Users join groups by consciously consenting, not by receiving a password
+- **Policy-driven access** — Schedules and roles control access, not credential possession
+
+For the full rationale, see [ADR-003: No Custom Credentials](../90-decisions/adr-003-no-custom-credentials.md).
+
+---
+
 ## Overview
 
 In multi-user AID systems, conflicts arise when different actors (humans, caregivers, AI agents, controllers) attempt to modify the same state. This model defines:
@@ -216,6 +246,7 @@ Identity-based access requires explicit consent:
 
 ## Cross-References
 
+- [ADR-003: No Custom Credentials](../90-decisions/adr-003-no-custom-credentials.md)
 - [Nightscout Conflict Resolution Proposal](../../externals/cgm-remote-monitor/docs/proposals/conflict-resolution.md)
 - [NRG Access Modes](../../externals/nightscout-roles-gateway/docs/access-modes.md)
 - [NRG Policies and Permissions](../../externals/nightscout-roles-gateway/docs/policies-and-permissions.md)
@@ -227,4 +258,5 @@ Identity-based access requires explicit consent:
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-17 | Agent | Added "Why NRG Exists" philosophy section, linked ADR-003 |
 | 2026-01-16 | Agent | Initial extraction from conflict-resolution.md and NRG docs |

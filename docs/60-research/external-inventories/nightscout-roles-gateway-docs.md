@@ -186,8 +186,22 @@ externals/nightscout-roles-gateway/
 
 ---
 
+## Design Philosophy
+
+The Nightscout Roles Gateway exists because of deliberate architectural decisions:
+
+1. **No custom credentials** — Nightscout avoids implementing username/password to reduce liability and align with data rights principles
+2. **Identity federation** — Authentication delegates to external OAuth2/OIDC providers
+3. **Consent-based access** — Users explicitly consent to share data, rather than proving credential knowledge
+4. **Zero trust direction** — Every request is verified via federated identity, not persistent credentials
+
+See [ADR-003: No Custom Credentials](../../90-decisions/adr-003-no-custom-credentials.md) for the complete rationale.
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-17 | Agent | Added design philosophy section with ADR-003 reference |
 | 2026-01-16 | Agent | Initial inventory |

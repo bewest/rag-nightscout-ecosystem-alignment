@@ -26,6 +26,7 @@ The workspace is designed to separate normative specifications from informative 
     - `docs/60-research/controller-registration-protocol-proposal.md` - **v2** Controller Registration Protocol as Nightscout Core contract with OpenAPI schema, implementation roadmap, and resolved open questions
     - `docs/60-research/profile-model-evolution-proposal.md` - Desired vs observed split, capability tracking
     - `docs/90-decisions/adr-002-sync-identity-strategy.md` - Decision record on sync identity
+    - `docs/90-decisions/adr-003-no-custom-credentials.md` - **NEW** Decision record explaining why Nightscout avoids custom username/password authentication in favor of identity federation and zero trust principles
 - **`specs/`**: Houses normative definitions using OpenAPI specifications and JSON Schema, along with test fixtures.
 - **`conformance/`**: Contains executable test scenarios and assertion definitions to validate system behavior against specifications.
 - **`mapping/`**: Provides detailed interpretations and mappings for each AID project (Nightscout, Loop, AAPS, Trio), including cross-project comparison matrices.
