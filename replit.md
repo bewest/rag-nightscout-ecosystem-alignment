@@ -102,3 +102,17 @@ Deep analysis of how Trio, Loop, and AAPS synchronize with Nightscout:
 - **Conformance tests**: `conformance/assertions/sync-deduplication.yaml`
 - **New requirements**: REQ-030 through REQ-035 (sync identity, dedup, conflict detection)
 - **New gaps**: GAP-SYNC-004 (override sync), GAP-SYNC-005 (algorithm params)
+
+### Profile/Therapy Settings Comparison (2026-01-17)
+
+Comprehensive cross-system analysis of profile and therapy settings structures:
+- **Location**: `docs/60-research/profile-therapy-settings-comparison.md`
+- **Key findings**:
+  - Loop uses `TherapySettings` with `RepeatingScheduleValue<T>` (startTime in seconds)
+  - AAPS uses `ProfileSwitch` entity with duration-based `Block` arrays (`duration=0` = permanent)
+  - Trio fetches profiles from Nightscout (`FetchedNightscoutProfile`) - download only
+  - Nightscout uses `{time, timeAsSeconds, value}` format with `moment-tz` processing
+  - Timezone handling differs: Loop uses `TimeZone` object (DST-aware), AAPS uses fixed `utcOffset` (GAP-TZ-001)
+  - Sync directions: Loop upload-only (optional), AAPS bidirectional, Trio download-only
+- **Terminology matrix updates**: New sections for Profile Data Structures, Timezone Handling, and Profile Sync Direction
+- **New gaps**: GAP-TZ-001 (AAPS DST), GAP-PROFILE-001 through 004 (format transformation, semantic loss, sync identity)
