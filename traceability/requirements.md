@@ -933,6 +933,112 @@ Requirements follow the pattern:
 
 ---
 
+## Carb Absorption Requirements
+
+### REQ-CARB-001: COB Time Granularity Documentation
+
+**Statement**: Systems SHOULD document their COB calculation time granularity in devicestatus or algorithm metadata.
+
+**Rationale**: Different systems use different time granularities (oref0 uses 5-minute intervals; Loop uses variable modeling). Without knowing the granularity, cross-system COB comparison is unreliable.
+
+**Scenarios**:
+- COB Display
+- Cross-System Data Analysis
+
+**Verification**:
+- Check devicestatus or documentation for stated granularity
+- Verify granularity matches documented behavior
+- Note differences across systems
+
+---
+
+### REQ-CARB-002: Absorption Model Reporting
+
+**Statement**: Systems SHOULD report the active absorption model (Parabolic, Linear, PiecewiseLinear) in devicestatus uploads.
+
+**Rationale**: Without knowing which model was used, COB values cannot be correctly interpreted by downstream systems.
+
+**Scenarios**:
+- Cross-System Data Analysis
+- Algorithm Comparison
+
+**Verification**:
+- Upload devicestatus with COB
+- Verify `absorptionModel` field present
+- Confirm model name matches active configuration
+
+---
+
+### REQ-CARB-003: Extended Carbs Distinction
+
+**Statement**: Extended carbs (duration > 0) MUST be clearly distinguished from instant carbs in data representation and must specify the duration in a consistent unit.
+
+**Rationale**: Systems that don't support eCarbs may misinterpret duration carbs as instant, leading to incorrect predictions.
+
+**Scenarios**:
+- eCarb Entry
+- Cross-Platform Sync
+
+**Verification**:
+- Create eCarb entry with duration
+- Sync to Nightscout
+- Verify `duration` field preserved
+- Import to iOS app and verify handling
+
+---
+
+### REQ-CARB-004: Carb Sensitivity Factor Calculation
+
+**Statement**: CSF (Carb Sensitivity Factor) calculation MUST use the formula: `CSF = ISF / CR` (mg/dL per gram of carbs).
+
+**Rationale**: Consistent CSF calculation ensures glucose effects from carbs are comparable across systems.
+
+**Scenarios**:
+- Glucose Prediction
+- Bolus Calculation
+
+**Verification**:
+- Calculate CSF in multiple systems with same ISF/CR
+- Verify results match
+- Test with varying ISF and CR schedules
+
+---
+
+### REQ-CARB-005: Per-Entry Absorption Time (Where Supported)
+
+**Statement**: Systems that support per-entry absorption time (Loop, Trio) SHOULD preserve this field during sync. Systems using profile-based absorption (oref0, AAPS) MAY ignore this field.
+
+**Rationale**: Different foods absorb at different rates. Loop/Trio support per-entry `absorptionTime`; oref0/AAPS use profile-based defaults and do not accept per-entry overrides.
+
+**Scenarios**:
+- Mixed Meal Entry (Loop/Trio)
+- Cross-Platform Sync
+
+**Verification**:
+- Create carb entry with custom absorption time in Loop/Trio
+- Verify COB decay follows specified time
+- Sync to Nightscout and verify `absorptionTime` field preserved
+- Note that oref0/AAPS will use profile-based absorption regardless
+
+---
+
+### REQ-CARB-006: COB Maximum Limits
+
+**Statement**: COB hard limits SHOULD be configurable and MUST be clearly documented per system.
+
+**Rationale**: Different limits (e.g., oref0's 120g cap vs Loop's no cap) can cause confusion and unexpected behavior.
+
+**Scenarios**:
+- Large Meal Entry
+- COB Display
+
+**Verification**:
+- Enter carbs exceeding maxCOB limit
+- Verify COB is capped at documented maximum
+- Confirm limit is surfaced in UI or logs
+
+---
+
 ## Template
 
 ```markdown

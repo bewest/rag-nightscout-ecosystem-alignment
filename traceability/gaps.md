@@ -1332,6 +1332,122 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ---
 
+## Carb Absorption Gaps
+
+### GAP-CARB-001: Absorption Model Not Synced
+
+**Scenario**: Cross-System COB Comparison
+
+**Description**: No AID system syncs which carbohydrate absorption curve model is in use (Parabolic, Linear, PiecewiseLinear) to Nightscout. This information is only available locally on the device.
+
+**Source**: [Carb Absorption Deep Dive](../docs/10-domain/carb-absorption-deep-dive.md)
+
+**Impact**:
+- Cannot accurately compare COB values between systems using different models
+- Downstream analysis tools cannot reproduce COB calculations
+- Research and audit use cases are blocked
+
+**Possible Solutions**:
+1. Add `absorptionModel` field to devicestatus COB object
+2. Include in profile uploads
+3. Document as metadata in carb treatment entries
+
+**Status**: Under discussion
+
+---
+
+### GAP-CARB-002: Dynamic Absorption State Not Exported
+
+**Scenario**: Cross-System Algorithm Analysis
+
+**Description**: Loop's rich dynamic absorption tracking (`observedTimeline`, `AbsorbedCarbValue` with observed/clamped/remaining fields) is not synced to Nightscout. Only the final COB value appears in devicestatus.
+
+**Source**: [Loop CarbStatus.swift](../externals/LoopWorkspace/LoopKit/LoopKit/CarbKit/CarbStatus.swift)
+
+**Impact**:
+- Cannot debug absorption discrepancies from Nightscout data
+- Per-entry absorption progress is lost
+- Cannot reconstruct how Loop adapted absorption rate
+
+**Possible Solutions**:
+1. Add `absorbedCarbs` array to devicestatus with per-entry breakdown
+2. Create separate `carbAbsorption` collection for detailed tracking
+3. Extend treatment with `observedAbsorption` field on update
+
+**Status**: Under discussion
+
+---
+
+### GAP-CARB-003: eCarbs Not Supported by iOS Apps
+
+**Scenario**: Cross-Platform Carb Entry
+
+**Description**: AAPS supports extended carbs (eCarbs) via the `duration` field on Carbs entity, spreading absorption over time. Loop and Trio do not support this feature and treat all carbs as instant.
+
+**Source**: 
+- [AAPS Carbs.kt](../externals/AndroidAPS/database/impl/src/main/kotlin/app/aaps/database/entities/Carbs.kt)
+- [Loop CarbEntry.swift](../externals/LoopWorkspace/LoopKit/LoopKit/CarbKit/CarbEntry.swift)
+
+**Impact**:
+- Carb entries created in AAPS with duration are misinterpreted by iOS apps
+- Users switching between Android and iOS lose eCarb functionality
+- Nightscout displays duration but importing systems may ignore it
+
+**Possible Solutions**:
+1. iOS apps add eCarbs support
+2. Nightscout converts eCarbs to multiple smaller instant entries
+3. Document as incompatibility for user awareness
+
+**Status**: Needs ADR
+
+---
+
+### GAP-CARB-004: min_5m_carbimpact Variance
+
+**Scenario**: COB Decay Rate Comparison
+
+**Description**: The `min_5m_carbimpact` parameter in oref0/AAPS defaults to 3 mg/dL/5m for normal diets but 8 mg/dL/5m for low-carb diets. This significantly affects how quickly COB decays when no absorption is detected.
+
+**Source**: [oref0 cob.js#L189-L194](../externals/oref0/lib/determine-basal/cob.js)
+
+**Impact**:
+- Same carb entry produces different COB timelines with different min_5m_carbimpact settings
+- "Zombie carbs" (COB that never depletes) behavior differs
+- Cross-user comparison invalid without knowing this setting
+
+**Possible Solutions**:
+1. Include `min_5m_carbimpact` in devicestatus
+2. Standardize on a single default across configurations
+3. Document as critical comparison caveat
+
+**Status**: Under discussion
+
+---
+
+### GAP-CARB-005: COB Maximum Limits Differ
+
+**Scenario**: Large Meal Handling
+
+**Description**: oref0/AAPS enforce a hard `maxCOB` cap (default 120g), while Loop has no such limit. This means the same large meal (e.g., 150g carbs) produces different COB values.
+
+**Source**: 
+- [oref0 total.js#L108](../externals/oref0/lib/meal/total.js)
+- Loop has no equivalent cap
+
+**Impact**:
+- Large carb entries produce different COB in different systems
+- Safety implications for high-carb meals
+- Users unaware of capping may be confused by COB discrepancies
+
+**Possible Solutions**:
+1. Loop adds configurable maxCOB option
+2. oref0 makes maxCOB configurable with no-limit option
+3. Document as known difference with safety implications
+
+**Status**: Under discussion
+
+---
+
 ## Resolved Gaps
 
 _None yet._

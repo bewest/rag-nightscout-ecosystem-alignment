@@ -1240,10 +1240,94 @@ All systems use **CRC-16 CCITT (XModem)**:
 
 ---
 
+## Carb Absorption Models
+
+> **See Also**: [Carb Absorption Deep Dive](../../docs/10-domain/carb-absorption-deep-dive.md) for comprehensive mathematical formulas and source code citations.
+
+### Absorption Curve Types
+
+| Model Type | Loop | oref0 | AAPS | Trio |
+|------------|------|-------|------|------|
+| **Parabolic (Scheiner)** | `ParabolicAbsorption` | N/A | N/A | `ParabolicAbsorption` |
+| **Linear** | `LinearAbsorption` | Default (implicit) | Default (implicit) | `LinearAbsorption` |
+| **PiecewiseLinear (Trapezoid)** | `PiecewiseLinearAbsorption` (default) | N/A | N/A | `PiecewiseLinearAbsorption` (default) |
+| **Extended Carbs (eCarbs)** | N/A | N/A | `duration` field on `Carbs` entity | N/A |
+
+### COB Calculation Approach
+
+| Aspect | Loop/Trio | oref0/AAPS |
+|--------|-----------|------------|
+| **Philosophy** | Model-first with dynamic adaptation | Observation-first with min floor |
+| **Absorption Tracking** | Per-entry with `AbsorbedCarbValue` | Global deviation-based inference |
+| **Dynamic Adaptation** | Yes (`observedTimeline`) | No (linear decay) |
+| **Minimum Rate** | Clamping logic | `min_5m_carbimpact` (3 mg/dL/5m) |
+
+### Key Parameters
+
+| Parameter | Loop | oref0 | AAPS | Source (Line) |
+|-----------|------|-------|------|---------------|
+| **Default Absorption Time** | 3 hours | Profile-based | Profile-based | `CarbMath.swift#L14` |
+| **Max Absorption Time** | 10 hours | 6 hours (carb window) | 6 hours | `CarbMath.swift#L13`, `total.js#L49` |
+| **Effect Delay** | 10 minutes | None | None | `CarbMath.swift#L16` |
+| **Initial Overrun Factor** | 1.5x | N/A | N/A | `CarbMath.swift#L15` |
+| **Max COB Cap** | None | 120g (configurable) | 120g | `total.js#L108` |
+| **Min Carb Impact** | N/A | 3 mg/dL/5m (8 for low-carb) | 3 mg/dL/5m | `cob.js#L190` |
+| **Max Absorption Rate** | N/A | 30 g/h | 30 g/h | `determine-basal.js#L480` |
+
+**Source Files**:
+- Loop: `externals/LoopWorkspace/LoopKit/LoopKit/CarbKit/CarbMath.swift`
+- oref0: `externals/oref0/lib/meal/total.js`, `externals/oref0/lib/determine-basal/cob.js`, `externals/oref0/lib/determine-basal/determine-basal.js`
+
+### Carb Entry Field Comparison
+
+| Field | Loop | oref0 | AAPS | Nightscout |
+|-------|------|-------|------|------------|
+| **Amount** | `quantity` (HKQuantity) | `carbs` | `amount` | `carbs` |
+| **Absorption Time** | `absorptionTime` (seconds) | N/A | N/A | `absorptionTime` (minutes) |
+| **Duration (eCarbs)** | N/A | N/A | `duration` (milliseconds) | `duration` (minutes) |
+| **Start Date** | `startDate` | `timestamp` | `timestamp` | `created_at` |
+
+**Unit Conversion Notes**:
+- Loop/Trio absorption time: **seconds**
+- Nightscout absorption time: **minutes** (GAP-CARB-001)
+- AAPS duration: **milliseconds**
+- Nightscout duration: **minutes** (GAP-CARB-002)
+
+### UAM (Unannounced Meals) Handling
+
+| Mechanism | Loop | oref0 | AAPS | Trio |
+|-----------|------|-------|------|------|
+| **Detection** | Retrospective Correction (implicit) | Explicit UAM curve | Explicit UAM | Both (RC + UAM) |
+| **Prediction Curve** | Single combined | Separate `UAMpredBGs` | Separate | Separate |
+| **Decay Model** | Via RC adjustment | Linear decay (3h max) | Linear decay | Linear decay |
+| **Enable Setting** | Always via RC | `enableUAM` profile flag | `enableUAM` | `enableUAM` |
+
+### Glucose Effect Calculation
+
+| System | Formula | Source |
+|--------|---------|--------|
+| **Loop** | `glucoseEffect = ISF / CR * absorbedCarbs` | `CarbMath.swift#L279-L288` |
+| **oref0** | `csf = sens / carb_ratio; effect = csf * carbs` | `determine-basal.js#L477` |
+| **AAPS** | Same as oref0 (JS port) | oref0 JS execution |
+
+### Source Files Reference
+
+| System | Key Carb Absorption Files |
+|--------|---------------------------|
+| **Loop** | `LoopKit/CarbKit/CarbMath.swift`, `CarbStatus.swift`, `AbsorbedCarbValue.swift` |
+| **oref0** | `lib/determine-basal/cob.js`, `lib/meal/total.js`, `lib/determine-basal/determine-basal.js` |
+| **AAPS** | `database/entities/Carbs.kt`, `core/data/iob/CobInfo.kt` |
+| **Trio** | Same as Loop (`LoopKit/CarbKit/*`) + oref0 JS |
+
+**Gap Reference**: GAP-CARB-001 through GAP-CARB-005
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-17 | Agent | Added Carb Absorption Models section with curve types, COB calculation, parameters, UAM handling |
 | 2026-01-17 | Agent | Added Dexcom BLE Protocol Models section with UUIDs, opcodes, message structures, authentication |
 | 2026-01-17 | Agent | Added Pump Communication Models section with interface, commands, protocols, and state machines |
 | 2026-01-17 | Agent | Added API Version Models section with v1/v3 comparison |

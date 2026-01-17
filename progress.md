@@ -230,16 +230,59 @@ Comprehensive reverse-engineered specification of Dexcom G6 and G7 Bluetooth Low
 
 ---
 
+### Cycle 12: Carb Absorption Models Comparison (Completed 2026-01-17)
+
+Comprehensive cross-system analysis of carbohydrate absorption models used by AID systems for COB calculation and glucose prediction.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **Carb Absorption Deep Dive** | `docs/10-domain/carb-absorption-deep-dive.md` | Mathematical formulas, curve types, dynamic vs static absorption, UAM handling, eCarbs |
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Added Carb Absorption Models section with curve types, COB calculation, parameters, UAM handling |
+| **Requirements Update** | `traceability/requirements.md` | Added REQ-CARB-001 through REQ-CARB-006 for COB granularity, model reporting, eCarbs, CSF formula |
+| **Gaps Update** | `traceability/gaps.md` | Added GAP-CARB-001 through GAP-CARB-005 for model sync, dynamic state export, eCarbs portability |
+
+**Key Findings**:
+- **Absorption Model Diversity**: Loop/Trio use pluggable curves (Parabolic, Linear, PiecewiseLinear); oref0/AAPS use linear decay with `min_5m_carbimpact` floor
+- **Dynamic vs Static**: Loop dynamically adapts absorption rate based on observed glucose effects (`observedTimeline`, `AbsorbedCarbValue`); oref0 infers absorption from deviation
+- **PiecewiseLinear Default**: Loop/Trio default to trapezoidal absorption (15% rise, 50% plateau, 35% fall)
+- **min_5m_carbimpact**: oref0/AAPS use 3 mg/dL/5m minimum (8 for low-carb) to prevent "zombie carbs"
+- **eCarbs Gap**: AAPS uniquely supports extended carbs via `duration` field (milliseconds); iOS apps do not
+- **UAM Handling**: oref0 has explicit UAM curve; Loop uses Retrospective Correction implicitly
+- **COB Caps**: oref0/AAPS cap at 120g; Loop has no hard cap
+- **CSF Formula**: All systems use `CSF = ISF / CR` (mg/dL per gram)
+
+**Source Files Analyzed**:
+- `loop:LoopKit/LoopKit/CarbKit/CarbMath.swift` - Absorption models, COB calculation
+- `loop:LoopKit/LoopKit/CarbKit/CarbStatus.swift` - Dynamic absorption tracking
+- `loop:LoopKit/LoopKit/CarbKit/AbsorbedCarbValue.swift` - Observed/clamped absorption
+- `oref0:lib/determine-basal/cob.js` - Deviation-based COB detection
+- `oref0:lib/meal/total.js` - Meal COB calculation with stacking
+- `oref0:lib/determine-basal/determine-basal.js` - COB/UAM prediction curves
+- `aaps:database/entities/Carbs.kt` - eCarbs duration field
+
+**Gaps Identified**: GAP-CARB-001 through GAP-CARB-005
+
+---
+
 ## Candidate Next Cycles
 
-### Priority A: Carb Absorption Models Comparison
+### Priority A: Libre BLE Protocol Specification
 
-**Value**: Carb models significantly affect prediction accuracy.
+**Value**: Non-Dexcom CGM coverage needed for completeness.
 
 **Questions to answer**:
-- Linear vs non-linear absorption models
-- How does UAM (Unannounced Meals) detection work?
-- Extended carb (eCarb) handling differences
+- Libre 2/3 BLE protocol differences
+- NFC vs BLE data paths
+- DiaBLE/xDrip+ Libre implementations
+
+### Priority B: AAPS Plugin Architecture
+
+**Value**: Understanding extensibility model for future integrations.
+
+**Questions to answer**:
+- Plugin interface contracts
+- Dependency injection patterns
+- Plugin lifecycle management
 
 ---
 
