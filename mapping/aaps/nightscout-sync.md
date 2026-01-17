@@ -172,6 +172,8 @@ The plugin stores:
 
 ## Device Status Upload
 
+> **See Also**: [DeviceStatus Structure Deep Dive](../../docs/10-domain/devicestatus-deep-dive.md) for comprehensive cross-system field mapping between Loop, Trio, and AAPS.
+
 AAPS uploads comprehensive device status:
 
 ```kotlin

@@ -44,6 +44,8 @@ Trio uses SHA-1 hashed API secret in the `api-secret` header.
 
 ### 1. Device Status Upload
 
+> **See Also**: [DeviceStatus Structure Deep Dive](../../docs/10-domain/devicestatus-deep-dive.md) for comprehensive cross-system field mapping between Loop, Trio, and AAPS.
+
 **Trigger**: After each loop cycle
 **Endpoint**: `POST /api/v1/devicestatus.json`
 

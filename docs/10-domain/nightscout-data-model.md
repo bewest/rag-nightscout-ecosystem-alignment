@@ -174,22 +174,49 @@ Loop adds `loopSettings` for controller configuration:
 
 Current state of controllers, pumps, and uploaders.
 
+> **Deep Dive Available**: See [DeviceStatus Structure Deep Dive](./devicestatus-deep-dive.md) for comprehensive field mapping across Loop, Trio, and AAPS including cross-system analytics normalization patterns.
+
+### Structural Difference: Loop vs oref0
+
+The DeviceStatus structure varies significantly between systems:
+
+| System | Top-Level Object | Structure Type | Prediction Format |
+|--------|------------------|----------------|-------------------|
+| Loop (iOS) | `loop` | Flat | Single combined array |
+| Trio/AAPS/OpenAPS | `openaps` | Nested | 4 curves (IOB, COB, UAM, ZT) |
+
+**Loop** uses a flat `loop` object with IOB, COB, and a single combined prediction array.
+
+**oref0-based systems** (Trio, AAPS, OpenAPS) use a nested `openaps` object containing `suggested` and `enacted` sub-objects with four separate prediction curves representing different scenarios.
+
 ### Controller Status Objects
 
 | Field | Source | Description |
 |-------|--------|-------------|
-| `loop` | Loop (iOS) | Loop controller state |
-| `openaps` | OpenAPS/AAPS | OpenAPS algorithm state |
+| `loop` | Loop (iOS) | Loop controller state (flat structure) |
+| `openaps` | OpenAPS/AAPS/Trio | OpenAPS algorithm state (nested structure) |
 | `pump` | Various | Pump status and reservoir |
 | `uploader` | Various | Uploader device status |
+| `override` | Loop only | Active override status |
+| `configuration` | AAPS only | Algorithm configuration snapshot |
 
 ### Common Fields
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `device` | String | Device identifier |
+| `device` | String | Device identifier (e.g., `"loop://iPhone"`, `"Trio"`) |
 | `created_at` | String | ISO 8601 timestamp |
 | `mills` | Number | Epoch milliseconds |
+
+### Key Cross-System Differences
+
+| Aspect | Loop | oref0 (Trio/AAPS) |
+|--------|------|-------------------|
+| IOB Location | `loop.iob.iob` | `openaps.iob.iob` |
+| COB Location | `loop.cob.cob` | `openaps.suggested.COB` |
+| Predictions | `loop.predicted.values` (single array) | `openaps.suggested.predBGs.{IOB,COB,UAM,ZT}` |
+| Duration Units | Seconds | Minutes |
+| Algorithm Transparency | Minimal | Extensive (`reason`, `eventualBG`, `ISF`, etc.) |
 
 ---
 

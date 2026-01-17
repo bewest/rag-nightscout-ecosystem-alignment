@@ -108,6 +108,8 @@ case .suspend:
 
 ## Device Status Upload
 
+> **See Also**: [DeviceStatus Structure Deep Dive](../../docs/10-domain/devicestatus-deep-dive.md) for comprehensive cross-system field mapping between Loop, Trio, and AAPS.
+
 ### Source: `StoredDosingDecision.swift` extension
 **File**: `loop:NightscoutService/NightscoutServiceKit/Extensions/StoredDosingDecision.swift`
 
