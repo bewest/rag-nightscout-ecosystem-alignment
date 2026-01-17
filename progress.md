@@ -230,6 +230,37 @@ Comprehensive reverse-engineered specification of Dexcom G6 and G7 Bluetooth Low
 
 ---
 
+### Cycle 13: Pump Protocol Specifications (Completed 2026-01-17)
+
+Comprehensive low-level protocol specification for insulin pump communication across three major pump systems.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **Pump Protocols Specification** | `specs/pump-protocols-spec.md` | Complete message structures, opcodes, encryption mechanisms, delivery constants |
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Added Pump Protocol Models section with transport comparison, message structures, command opcodes |
+| **Requirements Update** | `traceability/requirements.md` | Added REQ-PUMP-007 through REQ-PUMP-010 for nonce management, session security, CRC validation, delivery rate |
+| **Gaps Update** | `traceability/gaps.md` | Added GAP-PUMP-006 through GAP-PUMP-009 for encryption gaps, Milenage constants, Dana modes, Medtronic sizes |
+
+**Key Findings**:
+- **Omnipod DASH**: Uses EAP-AKA with 3GPP Milenage algorithm for session auth (rare in medical devices), AES-128-CCM encryption, X25519 for LTK exchange
+- **Dana RS**: Three encryption evolution stages (DEFAULT → RSv3 → BLE5), CRC polynomial varies by mode, multi-layer XOR encryption
+- **Medtronic RF**: No encryption (plaintext RF), variable history entry sizes per model, requires RileyLink bridge
+- **Security Comparison**: DASH has strongest security (proper crypto), Dana RS has obfuscation, Medtronic has none
+- **Delivery Precision**: All pumps use 0.05U or finer steps; Omnipod delivers 0.025 U/s, Dana RS configurable
+
+**Source Files Analyzed**:
+- `OmniBLE/Bluetooth/MessagePacket.swift` - DASH packet structure
+- `OmniBLE/Bluetooth/Session/SessionEstablisher.swift` - EAP-AKA flow
+- `OmniBLE/Bluetooth/Session/Milenage.swift` - Milenage algorithm
+- `OmniBLE/OmnipodCommon/MessageBlocks/*.swift` - All DASH command blocks
+- `pump/danars/comm/DanaRSPacket.kt` - Dana RS packet structure
+- `pump/danars/encryption/BleEncryption.kt` - Dana RS encryption layers
+- `pump/medtronic/comm/history/pump/PumpHistoryEntryType.kt` - Medtronic history opcodes
+
+**Gaps Identified**: GAP-PUMP-006 through GAP-PUMP-009
+
+---
+
 ### Cycle 12: Carb Absorption Models Comparison (Completed 2026-01-17)
 
 Comprehensive cross-system analysis of carbohydrate absorption models used by AID systems for COB calculation and glucose prediction.

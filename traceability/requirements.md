@@ -685,6 +685,90 @@ Requirements follow the pattern:
 **Cross-System Status**:
 - Loop: ✅ `pumpManager.didAdjustPumpClockBy()` delegate
 - AAPS: ✅ `canHandleDST()` and `timezoneOrDSTChanged()` methods
+
+---
+
+### REQ-PUMP-007: Nonce Management for Pod Commands
+
+**Statement**: Controllers communicating with nonce-protected pumps (Omnipod DASH) MUST track and increment nonces correctly to prevent replay rejection.
+
+**Rationale**: Omnipod DASH pods track the last received nonce and reject commands with stale or duplicate nonces. Incorrect nonce management causes command failures.
+
+**Scenarios**:
+- Pod Nonce Synchronization (to be created)
+
+**Verification**:
+- Send command with valid nonce → Verify acceptance
+- Resend same nonce → Verify rejection
+- After pod rejects nonce → Verify controller resynchronizes
+
+**Cross-System Status**:
+- Loop/Trio: ✅ `NonceResyncableMessageBlock` protocol handles nonce-bearing commands
+- Source: `OmniBLE/OmnipodCommon/MessageBlocks/MessageBlock.swift`
+
+---
+
+### REQ-PUMP-008: BLE Session Establishment Security
+
+**Statement**: BLE-connected pumps with session-based authentication MUST complete mutual authentication before accepting insulin delivery commands.
+
+**Rationale**: Omnipod DASH uses EAP-AKA (Milenage) for session establishment; Dana RS uses passkey + time-based encryption. Commands sent without session establishment are rejected.
+
+**Scenarios**:
+- BLE Session Security (to be created)
+
+**Verification**:
+- Attempt command before session → Verify rejection
+- Complete session establishment → Verify command acceptance
+- Session timeout → Verify re-authentication required
+
+**Cross-System Status**:
+- Omnipod DASH: ✅ EAP-AKA with Milenage algorithm (3GPP standard)
+- Dana RS: ✅ Three encryption modes (DEFAULT, RSv3, BLE5)
+- Source: `OmniBLE/Bluetooth/Session/SessionEstablisher.swift`, `danars/encryption/BleEncryption.kt`
+
+---
+
+### REQ-PUMP-009: CRC Validation for Pump Messages
+
+**Statement**: Controllers MUST validate CRC checksums on all pump response messages and reject messages with invalid checksums.
+
+**Rationale**: RF/BLE transmission errors can corrupt message payloads. CRC validation prevents acting on corrupted commands or status.
+
+**Scenarios**:
+- Message Integrity Validation (to be created)
+
+**Verification**:
+- Receive valid message → Verify CRC passes
+- Inject bit error → Verify CRC fails and message rejected
+- Verify all pump drivers implement CRC validation
+
+**Cross-System Status**:
+- Omnipod DASH: ✅ Checksum in SetInsulinScheduleCommand
+- Dana RS: ✅ CRC-16 with encryption-specific polynomials
+- Medtronic: ✅ CRC validation in history page decoding
+- Source: `SetInsulinScheduleCommand.swift`, `BleEncryption.kt:generateCrc()`
+
+---
+
+### REQ-PUMP-010: Bolus Delivery Rate Configuration
+
+**Statement**: Controllers SHOULD respect pump-specific bolus delivery rates when calculating delivery times and progress updates.
+
+**Rationale**: Different pumps deliver boluses at different rates (Omnipod: 0.025 U/s, Dana RS: configurable). Accurate delivery time estimation requires knowing the actual rate.
+
+**Scenarios**:
+- Bolus Progress Timing (to be created)
+
+**Verification**:
+- 5U bolus on Omnipod → Expect ~400 seconds (0.025 U/s × 200 pulses)
+- 5U bolus on Dana RS Fast → Expect ~60 seconds
+- Verify progress bar timing matches actual delivery
+
+**Cross-System Status**:
+- Omnipod DASH: 0.05U per 2 seconds (0.025 U/s)
+- Dana RS: Configurable (12/30/60 sec per unit)
+- Source: `Pod.swift:bolusDeliveryRate`, Dana RS packet handlers
 - Trio: ✅ Inherits Loop's pattern
 
 ---

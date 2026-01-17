@@ -271,6 +271,105 @@ Only `predicted.values[]` (the combined prediction) is uploaded to `devicestatus
 
 ---
 
+## Pump Protocol Gaps
+
+### GAP-PUMP-006: Medtronic RF Protocol Lacks Encryption
+
+**Scenario**: Pump communication security audit
+
+**Description**: Medtronic pumps using RF communication (via RileyLink) have no encryption on the RF layer. Commands and responses are transmitted in plaintext.
+
+**Source**: Analysis of MinimedKit and AAPS Medtronic driver
+
+**Impact**:
+- Replay attacks possible if attacker captures RF traffic
+- Message tampering theoretically possible (though pump has safety limits)
+- Unlike BLE pumps (DASH, Dana RS), no cryptographic protection
+
+**Possible Solutions**:
+1. Accept as known limitation (Medtronic discontinued Loop-compatible models)
+2. Document security posture difference for users
+3. Use as baseline for security comparison with newer protocols
+
+**Status**: Documentation complete (inherent hardware limitation)
+
+**Related**:
+- [Pump Protocols Spec](../specs/pump-protocols-spec.md#4-cross-protocol-comparison)
+
+---
+
+### GAP-PUMP-007: Omnipod EAP-AKA Uses Non-Standard Milenage
+
+**Scenario**: Cryptographic protocol analysis
+
+**Description**: Omnipod DASH uses 3GPP Milenage algorithm for session establishment, but with non-standard operator keys (MILENAGE_OP constant) that are specific to Insulet.
+
+**Source**: `OmniBLE/Bluetooth/Session/Milenage.swift`
+
+**Impact**:
+- Implementation requires knowledge of Insulet-specific constants
+- Cannot use standard Milenage libraries without modification
+- Reverse-engineering dependency for interoperability
+
+**Possible Solutions**:
+1. Document constants in protocol specification (done)
+2. Accept as implementation detail
+
+**Status**: Documented
+
+**Related**:
+- [Pump Protocols Spec - EAP-AKA](../specs/pump-protocols-spec.md#15-security-session-establishment-eap-aka)
+
+---
+
+### GAP-PUMP-008: Dana RS Encryption Type Detection
+
+**Scenario**: Multi-model Dana pump support
+
+**Description**: Dana pumps use three different encryption modes (DEFAULT, RSv3, BLE5) depending on pump model and firmware. Controllers must detect which mode to use during connection.
+
+**Source**: `pump/danars/encryption/BleEncryption.kt`
+
+**Impact**:
+- Connection logic must handle all three modes
+- CRC calculation differs by mode
+- Upgrade path may require encryption mode transitions
+
+**Possible Solutions**:
+1. Document detection heuristics from AAPS implementation
+2. Create mode-specific initialization sequences
+
+**Status**: Under discussion
+
+**Related**:
+- [Pump Protocols Spec - Dana RS](../specs/pump-protocols-spec.md#2-dana-rsi-ble-protocol)
+
+---
+
+### GAP-PUMP-009: History Entry Size Varies by Medtronic Model
+
+**Scenario**: Medtronic history reconciliation
+
+**Description**: Medtronic history entry sizes vary by pump model (512, 522, 523+). A single history decoder must handle all variants using device-type-specific rules.
+
+**Source**: `pump/medtronic/comm/history/pump/PumpHistoryEntryType.kt`
+
+**Impact**:
+- History parsing must be model-aware
+- New pump models may introduce new entry formats
+- Testing requires access to multiple pump models
+
+**Possible Solutions**:
+1. Document model-specific sizes in spec (done)
+2. Create model detection and routing logic
+
+**Status**: Documented
+
+**Related**:
+- [Pump Protocols Spec - Medtronic History](../specs/pump-protocols-spec.md#34-history-entry-types)
+
+---
+
 ## Positive Findings
 
 ### FINDING-001: Shared exponential IOB formula across projects

@@ -444,6 +444,110 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 ---
 
+## Pump Protocol Models (Deep Dive)
+
+> **See Also**: [Pump Protocols Specification](../../specs/pump-protocols-spec.md) for comprehensive low-level protocol documentation.
+
+### Transport Layer Comparison
+
+| Aspect | Omnipod DASH | Dana RS | Medtronic |
+|--------|--------------|---------|-----------|
+| **Transport** | BLE Direct | BLE Direct | RF (916.5/868 MHz) |
+| **Bridge Device** | No | No | RileyLink required |
+| **MTU** | 20 bytes | 20 bytes | 64 bytes |
+| **Encryption** | AES-128-CCM | Matrix + XOR | None |
+| **Session Auth** | EAP-AKA (Milenage) | Time + Password | Serial check |
+
+### Omnipod DASH Message Structure
+
+| Component | Offset | Size | Description |
+|-----------|--------|------|-------------|
+| Magic | 0 | 2 | "TW" pattern |
+| Flags | 2 | 2 | Version, SAS, TFS, EQOS, ack, priority |
+| Sequence | 4 | 1 | Message sequence number |
+| Ack Num | 5 | 1 | Acknowledgment number |
+| Payload Size | 6 | 2 | 11-bit size (shifted) |
+| Source ID | 8 | 4 | Controller address |
+| Dest ID | 12 | 4 | Pod address |
+| Payload | 16 | N | Data + 8-byte MAC for encrypted |
+
+**Source**: `OmniBLE/Bluetooth/MessagePacket.swift`
+
+### Omnipod DASH Command Opcodes
+
+| Opcode | Command | Direction | Description |
+|--------|---------|-----------|-------------|
+| `0x01` | VersionResponse | Pod→Ctrl | Pod version info |
+| `0x07` | AssignAddress | Ctrl→Pod | Assign pod address |
+| `0x0e` | GetStatus | Ctrl→Pod | Request status |
+| `0x17` | BolusExtra | Ctrl→Pod | Extended bolus params |
+| `0x1a` | SetInsulinSchedule | Ctrl→Pod | Main delivery command |
+| `0x1d` | StatusResponse | Pod→Ctrl | Current status |
+| `0x1f` | CancelDelivery | Ctrl→Pod | Stop delivery |
+
+**Source**: `OmniBLE/OmnipodCommon/MessageBlocks/MessageBlock.swift`
+
+### Omnipod Delivery Constants
+
+| Constant | Value | Unit |
+|----------|-------|------|
+| Pulse Size | 0.05 | U |
+| Pulses per Unit | 20 | pulses/U |
+| Bolus Delivery Rate | 0.025 | U/s |
+| Max Reservoir Reading | 50 | U |
+| Service Duration | 80 | hours |
+
+**Source**: `OmniBLE/OmnipodCommon/Pod.swift`
+
+### Dana RS Packet Structure
+
+| Component | Offset | Size | Description |
+|-----------|--------|------|-------------|
+| Start Bytes | 0 | 2 | `0xA5 0xA5` |
+| Length | 2 | 1 | Packet size - 7 |
+| Type | 3 | 1 | Command type |
+| OpCode | 4 | 1 | Command code |
+| Data | 5 | N | Payload |
+| CRC | -4 | 2 | CRC-16 (big-endian) |
+| End Bytes | -2 | 2 | `0x5A 0x5A` |
+
+**Source**: `pump/danars/comm/DanaRSPacket.kt`
+
+### Dana RS Encryption Modes
+
+| Mode | Description | CRC Variant |
+|------|-------------|-------------|
+| DEFAULT | Legacy (time + password + SN) | Standard polynomial |
+| RSv3 | Pairing key + random key + matrix | Modified polynomial |
+| BLE5 | 6-digit PIN + matrix (Dana-i) | BLE5-specific polynomial |
+
+**Source**: `pump/danars/encryption/BleEncryption.kt`
+
+### Medtronic History Entry Types
+
+| Code | Entry | Head | Date | Body |
+|------|-------|------|------|------|
+| `0x01` | Bolus | 4 (8 on 523+) | 5 | 0 |
+| `0x16` | TempBasalDuration | 2 | 5 | 0 |
+| `0x33` | TempBasalRate | 2 | 5 | 1 |
+| `0x1e` | SuspendPump | 2 | 5 | 0 |
+| `0x6e` | DailyTotals523 | 1 | 2 | 49 |
+
+**Source**: `pump/medtronic/comm/history/pump/PumpHistoryEntryType.kt`
+
+### Pump Protocol Gap Summary
+
+| Gap ID | Description | Impact |
+|--------|-------------|--------|
+| **GAP-PUMP-006** | Medtronic RF lacks encryption | Replay attacks possible |
+| **GAP-PUMP-007** | Omnipod uses non-standard Milenage | Requires Insulet-specific constants |
+| **GAP-PUMP-008** | Dana RS encryption mode detection | Must handle 3 modes |
+| **GAP-PUMP-009** | Medtronic history size varies by model | Parsing must be model-aware |
+
+**Full details**: See [Pump Protocols Specification](../../specs/pump-protocols-spec.md)
+
+---
+
 ## Insulin Curve Models (Deep Dive)
 
 > **See Also**: [Insulin Curves Deep Dive](../../docs/10-domain/insulin-curves-deep-dive.md) for comprehensive cross-system analysis of insulin activity curves, mathematical formulas, and IOB calculations.
