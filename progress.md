@@ -96,22 +96,77 @@ Comprehensive security-focused analysis of how caregivers remotely control AID s
 
 ---
 
+### Nightscout API v1 vs v3 Comparison (2026-01-17)
+
+Comprehensive analysis of the two Nightscout API versions, explaining why AAPS uses v3 exclusively while iOS clients (Loop, Trio) continue with v1.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **API Comparison Deep Dive** | `docs/10-domain/nightscout-api-comparison.md` | Endpoint mapping, auth differences, identifier vs _id, history sync, soft delete |
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Added API Version Models section with client matrix, identity fields, v3 features |
+| **Gaps Update** | `traceability/gaps.md` | Added GAP-API-001 through GAP-API-005 |
+
+**Key Findings**:
+- **AAPS is the ONLY v3 client**: All iOS systems (Loop, Trio) and xDrip+ use v1 API
+- **Authentication**: v1 uses SHA1-hashed API_SECRET (all-or-nothing); v3 uses JWT Bearer tokens with granular Shiro permissions
+- **Document Identity**: v1 uses `_id` (MongoDB ObjectId); v3 uses `identifier` (server-assigned, immutable)
+- **Sync Efficiency**: v3 `history/{timestamp}` endpoint enables incremental sync with deletion detection; v1 requires polling with date filters
+- **Soft Delete**: v3 marks deletions with `isValid=false` so clients can sync deletions; v1 hard-deletes are invisible to other clients
+- **Deduplication**: v3 returns `isDeduplication: true` flag; v1 silently accepts duplicates
+
+**Source Files Analyzed**:
+- `cgm-remote-monitor:lib/api/` (v1 endpoints)
+- `cgm-remote-monitor:lib/api3/` (v3 generic operations, security, history)
+- `AndroidAPS:core/nssdk/` (AAPS v3 SDK implementation)
+- `Trio:Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift` (v1 usage)
+- `cgm-remote-monitor:docs/requirements/api-v1-compatibility-spec.md`
+
+**Gaps Identified**: GAP-API-001 through GAP-API-005
+
+---
+
 ## Candidate Next Cycles
 
-### Priority A: Nightscout API v1 vs v3 (Recommended Next)
+### Priority A: Pump Communication Protocols
 
-**Value**: AAPS uses v3 while others use v1—understanding differences explains sync gaps.
+**Value**: Understanding how AID controllers communicate with insulin pumps explains timing constraints and safety limits.
 
 **Questions to answer**:
-- What are the semantic differences between v1 and v3?
-- How do authentication mechanisms differ?
-- How does `identifier` field work in v3?
-- What migration path exists?
+- What communication protocols do different pumps use (Bluetooth, RF)?
+- How do controllers handle command acknowledgment?
+- What are the timing constraints for bolus/basal commands?
+- How is pump state synchronized?
 
 **Deliverables**:
-- `docs/10-domain/nightscout-api-comparison.md`
-- API endpoint mapping table
-- Gap identification for cross-client compatibility
+- `docs/10-domain/pump-communication-deep-dive.md`
+- Pump protocol comparison table
+- Safety timing requirements
+
+---
+
+### Priority B: Insulin Activity Curves Comparison
+
+**Value**: Different insulin models affect prediction accuracy and dosing decisions.
+
+**Questions to answer**:
+- What insulin activity models does each system use?
+- How are DIA (duration of insulin action) settings applied?
+- What are the differences between exponential vs bilinear models?
+
+**Deliverables**:
+- `docs/10-domain/insulin-curves-deep-dive.md`
+- Curve formula comparison
+
+---
+
+### Priority C: Carb Absorption Models Comparison
+
+**Value**: Carb models significantly affect prediction accuracy.
+
+**Questions to answer**:
+- Linear vs non-linear absorption models
+- How does UAM (Unannounced Meals) detection work?
+- Extended carb (eCarb) handling differences
 
 ---
 

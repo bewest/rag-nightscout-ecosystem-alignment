@@ -723,6 +723,129 @@ rT.predBGs = {
 
 ---
 
+### GAP-API-001: API v1 Cannot Detect Deletions
+
+**Scenario**: Cross-client data synchronization
+
+**Description**: API v1 clients (Loop, Trio, xDrip+, OpenAPS) cannot detect when documents are deleted by other clients or by API v3 soft-delete. The v1 API has no mechanism to return deleted documents.
+
+**Impact**:
+- Stale data may persist in client caches indefinitely
+- Deleted treatments may continue to affect IOB calculations
+- No way to sync deletion events across clients
+- "Zombie" data accumulates over time
+
+**Possible Solutions**:
+1. v1 clients implement periodic full-sync to detect missing documents
+2. Nightscout adds deletion tombstones to v1 responses
+3. v1 clients migrate to v3 history endpoint
+
+**Status**: Under discussion
+
+**Related**:
+- [Nightscout API Comparison](../docs/10-domain/nightscout-api-comparison.md)
+- [API v1 Compatibility Spec](../externals/cgm-remote-monitor/docs/requirements/api-v1-compatibility-spec.md)
+
+---
+
+### GAP-API-002: Identifier vs _id Addressing Inconsistency
+
+**Scenario**: Cross-API document identity
+
+**Description**: API v1 uses `_id` (MongoDB ObjectId), API v3 uses `identifier` (server-assigned). Documents may have both fields with different values, causing confusion when tracking document identity across API versions.
+
+**Impact**:
+- Clients using different APIs cannot reliably reference the same document
+- Deduplication may change `identifier` for v1-created documents
+- No canonical identity field across both APIs
+
+**Possible Solutions**:
+1. Use `_id` as canonical identity for v1 clients, `identifier` for v3 clients
+2. Ensure `identifier` equals `_id` for new documents
+3. Document clear mapping rules
+
+**Status**: Under discussion
+
+**Related**:
+- [Nightscout API Comparison](../docs/10-domain/nightscout-api-comparison.md)
+
+---
+
+### GAP-API-003: No API v3 Adoption Path for iOS Clients
+
+**Scenario**: Ecosystem fragmentation
+
+**Description**: Loop and Trio continue to use API v1 with no apparent migration plans. AAPS is the only major v3 client. This creates ecosystem fragmentation where sync behaviors differ significantly.
+
+**Impact**:
+- iOS clients lack efficient incremental sync capabilities
+- iOS clients cannot detect deletions
+- Different authentication and permission models
+- Bifurcated documentation and tooling
+
+**Possible Solutions**:
+1. Document v3 benefits to encourage iOS client adoption
+2. Create Swift SDK for v3 API
+3. Accept ecosystem bifurcation and document interoperability patterns
+
+**Status**: Under discussion
+
+**Related**:
+- [Nightscout API Comparison](../docs/10-domain/nightscout-api-comparison.md)
+- [Loop Nightscout Sync](../mapping/loop/nightscout-sync.md)
+- [Trio Nightscout Sync](../mapping/trio/nightscout-sync.md)
+
+---
+
+### GAP-API-004: Authentication Granularity Gap Between v1 and v3
+
+**Scenario**: Access control, follower apps
+
+**Description**: API v1 authentication is all-or-nothing (valid secret grants full `*` permissions). Cannot grant read-only access to specific collections without making the entire site public-readable.
+
+**Impact**:
+- Follower apps receive full write access unnecessarily
+- No way to create collection-specific tokens
+- Cannot audit who performed which operations
+- Must choose between full access or public-readable
+
+**Possible Solutions**:
+1. Migrate to v3 JWT tokens for fine-grained access control
+2. Add role-based tokens to v1 API
+3. Use gateway-level access control
+
+**Status**: Under discussion
+
+**Related**:
+- [Nightscout API Comparison](../docs/10-domain/nightscout-api-comparison.md)
+
+---
+
+### GAP-API-005: Deduplication Behavior Differs Between API Versions
+
+**Scenario**: Data integrity, duplicate prevention
+
+**Description**: API v3 returns `isDeduplication: true` when a document matches existing data and provides the existing document's `identifier`. API v1 silently accepts potential duplicates without indication.
+
+**Impact**:
+- v1 clients may create duplicate documents unknowingly
+- v3 clients see duplicates created by v1 clients
+- Inconsistent behavior when same document uploaded via both APIs
+- No way for v1 clients to know if upload was deduplicated
+
+**Possible Solutions**:
+1. Use client-side deduplication with unique `syncIdentifier`
+2. Add deduplication indicator to v1 responses
+3. Use PUT upsert semantics consistently
+
+**Status**: Under discussion
+
+**Related**:
+- [Nightscout API Comparison](../docs/10-domain/nightscout-api-comparison.md)
+- GAP-003 (sync identity)
+
+---
+
 ## Resolved Gaps
 
 _None yet._

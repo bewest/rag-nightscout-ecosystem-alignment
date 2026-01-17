@@ -910,10 +910,74 @@ oref0's core innovation is deviation analysis:
 
 ---
 
+## API Version Models
+
+> **See Also**: [Nightscout API v1 vs v3 Comparison](../../docs/10-domain/nightscout-api-comparison.md)
+
+### API Version by Client
+
+| Client | API Version | Authentication | Sync Method |
+|--------|-------------|----------------|-------------|
+| **AAPS** | v3 | Bearer token (opaque) | History endpoint |
+| **Loop** | v1 | SHA1 secret | Polling with date filter |
+| **Trio** | v1 | SHA1 secret | Polling with date filter |
+| **xDrip+** | v1 | SHA1 secret | Polling with date filter |
+| **OpenAPS** | v1 | SHA1 secret | Polling with date filter |
+| **Nightguard** | v1 | SHA1 secret (read-only) | Polling |
+| **xDrip4iOS** | v1 | SHA1 secret | Polling with date filter |
+
+### Document Identity Fields
+
+| System | API Version | Primary ID | Secondary ID | Update Method |
+|--------|-------------|-----------|--------------|---------------|
+| **Nightscout v1** | v1 | `_id` (MongoDB ObjectId) | N/A | PUT to `/{collection}/{_id}` |
+| **Nightscout v3** | v3 | `identifier` (server-assigned) | `_id` (internal) | PUT/PATCH to `/{collection}/{identifier}` |
+| **AAPS** | v3 | `identifier` | `interfaceIDs.nightscoutId` | PATCH via SDK |
+| **Loop** | v1 | `_id` | `syncIdentifier` | POST (no upsert) |
+| **Trio** | v1 | `_id` | `syncIdentifier` | POST (no upsert) |
+| **xDrip+** | v1 | `_id` | `uuid` | PUT upsert |
+
+### API v3 Exclusive Features
+
+| Feature | Description | Used By |
+|---------|-------------|---------|
+| `identifier` | Server-assigned immutable document ID | AAPS |
+| `history/{timestamp}` | Incremental sync since timestamp | AAPS |
+| `isValid` | Soft-delete flag (false = deleted) | AAPS |
+| `isDeduplication` | Response flag indicating duplicate | AAPS |
+| `srvModified` | Server modification timestamp | AAPS |
+| Bearer Access Tokens | Opaque tokens with Shiro permissions | AAPS |
+| Shiro Permissions | Granular `api:collection:operation` | AAPS |
+
+### Sync Pattern Comparison
+
+| Aspect | v1 Polling | v3 History |
+|--------|------------|------------|
+| Detects Insertions | Yes | Yes |
+| Detects Updates | Partial | Yes |
+| Detects Deletions | No | Yes (`isValid: false`) |
+| Bandwidth Efficiency | Lower | Higher |
+| Time Precision | Seconds | Milliseconds |
+
+### Query Syntax Comparison
+
+| Operation | v1 Syntax | v3 Syntax |
+|-----------|-----------|-----------|
+| Equality | `find[type]=sgv` | `type$eq=sgv` |
+| Greater Than | `find[date][$gte]=1705000000000` | `date$gte=1705000000000` |
+| Less Than | `find[date][$lte]=1705000000000` | `date$lte=1705000000000` |
+| Count/Limit | `count=100` | `limit=100` |
+| Sorting | N/A (server default) | `sort=field` or `sort$desc=field` |
+
+**Gap Reference**: GAP-API-001 (v1 cannot detect deletions), GAP-API-003 (no v3 adoption path for iOS)
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-17 | Agent | Added API Version Models section with v1/v3 comparison |
 | 2026-01-17 | Agent | Added Remote Command Security Models section with cross-system comparison |
 | 2026-01-16 | Agent | Integrated xDrip+ (Android) into terminology matrix - events, sync identity, actor identity, device events, code references |
 | 2026-01-16 | Agent | Added oref0-specific concepts (algorithm components, prediction curves, carb model, SMB params, shared IOB formula) |
