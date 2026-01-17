@@ -87,6 +87,20 @@
       "url": "https://github.com/NightscoutFoundation/xDrip.git",
       "ref": "master",
       "description": "xDrip+ Android app for CGM data collection and Nightscout sync"
+    },
+    {
+      "alias": "diable",
+      "name": "DiaBLE",
+      "url": "https://github.com/gui-dos/DiaBLE.git",
+      "ref": "main",
+      "description": "DiaBLE - Diabetes Libre app for reading Libre sensors on iOS/watchOS"
+    },
+    {
+      "alias": "xdrip-js",
+      "name": "xdrip-js",
+      "url": "https://github.com/xdrip-js/xdrip-js.git",
+      "ref": "master",
+      "description": "Node.js library for interfacing with Dexcom G5/G6 transmitters via BLE"
     }
   ]
 }
