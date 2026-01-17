@@ -27,14 +27,24 @@ make freeze
 
 ## Included Repositories
 
-| Name | Description |
-|------|-------------|
-| LoopWorkspace | Loop iOS app workspace with all dependencies |
-| cgm-remote-monitor | Nightscout CGM Remote Monitor web application |
-| nightscout-connect | Nightscout Connect bridge for data sources |
-| AndroidAPS | Android Artificial Pancreas System |
-| Trio | Trio iOS closed-loop system |
-| nightscout-reporter | Nightscout Reporter for generating PDF reports |
+| Alias | Name | Description |
+|-------|------|-------------|
+| loop | LoopWorkspace | Loop iOS app workspace with all dependencies |
+| crm | cgm-remote-monitor | Nightscout CGM Remote Monitor web application |
+| ns-connect | nightscout-connect | Nightscout Connect bridge for data sources |
+| aaps | AndroidAPS | Android Artificial Pancreas System |
+| trio | Trio | Trio iOS closed-loop system |
+| ns-reporter | nightscout-reporter | Nightscout Reporter for generating PDF reports |
+| ns-gateway | nightscout-roles-gateway | Nightscout Roles Gateway for access control |
+| oref0 | oref0 | OpenAPS Reference Design - core dosing algorithm (oref0/oref1) |
+| openaps | openaps | OpenAPS toolkit - device interface and data management |
+| nightguard | nightguard | Nightguard iOS/watchOS app for blood glucose monitoring via Nightscout |
+| xdrip4ios | xdripswift | xDrip4iOS - iOS app for CGM data management and Nightscout sync |
+| xdrip | xDrip | xDrip+ Android app for CGM data collection and Nightscout sync |
+| diable | DiaBLE | DiaBLE - Diabetes Libre app for reading Libre sensors on iOS/watchOS |
+| xdrip-js | xdrip-js | Node.js library for interfacing with Dexcom G5/G6 transmitters via BLE |
+| loopfollow | LoopFollow | LoopFollow iOS/watchOS app for caregivers to monitor Loop/Trio/iAPS users |
+| loopcaregiver | LoopCaregiver | LoopCaregiver iOS companion app for remote bolus, carbs, and override control |
 
 ## Managing Repositories
 
@@ -69,17 +79,30 @@ make freeze
 ```
 .
 ├── workspace.lock.json    # Manifest of external repos (committed)
-├── tools/
-│   └── bootstrap.py       # Bootstrap and management script
+├── Makefile               # Convenience commands
+├── tools/                 # Bootstrap and utility scripts
+│   └── bootstrap.py       # Clones/updates external repos
 ├── externals/             # Cloned repositories (git-ignored)
-│   ├── .keep
 │   ├── LoopWorkspace/
 │   ├── cgm-remote-monitor/
-│   ├── nightscout-connect/
 │   ├── AndroidAPS/
 │   ├── Trio/
-│   └── nightscout-reporter/
-├── Makefile               # Convenience commands
+│   └── ...                # All 16 repos from workspace.lock.json
+├── mapping/               # Per-project field mapping documentation
+│   ├── aaps/
+│   ├── loop/
+│   ├── trio/
+│   ├── nightscout/
+│   ├── cross-project/     # Cross-project mapping analysis
+│   └── ...
+├── specs/                 # API and protocol specifications
+│   ├── openapi/           # OpenAPI specs for Nightscout API
+│   ├── jsonschema/        # JSON Schema definitions
+│   └── pump-protocols-spec.md
+├── conformance/           # Conformance test scenarios
+│   └── scenarios/
+├── traceability/          # Cross-project traceability documentation
+├── docs/                  # General documentation
 └── README.md
 ```
 
