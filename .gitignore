@@ -1,3 +1,7 @@
+# Replit config
+.replit
+replit.nix
+
 # Generated external checkouts
 externals/*
 !externals/.keep
