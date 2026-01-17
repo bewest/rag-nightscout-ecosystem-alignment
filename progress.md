@@ -69,33 +69,36 @@ Comprehensive analysis of how CGM data flows from sensors to Nightscout entries,
 
 ---
 
-## Candidate Next Cycles
+### Remote Commands Cross-System Comparison (2026-01-17)
 
-### Priority A: Remote Commands Cross-System Comparison (Recommended Next)
+Comprehensive security-focused analysis of how caregivers remotely control AID systems across Trio, Loop, and AAPS.
 
-**Value**: Security-critical—how caregivers remotely control AID systems.
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **Remote Commands Comparison** | `docs/10-domain/remote-commands-comparison.md` | Security models, command types, safety limits, replay protection |
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Added Remote Command Security Models section with transport, auth, OTP, and safety tables |
+| **Requirements Update** | `traceability/requirements.md` | Added REQ-REMOTE-001 through REQ-REMOTE-006 |
+| **Gaps Update** | `traceability/gaps.md` | Expanded GAP-REMOTE-001, added GAP-REMOTE-002 through GAP-REMOTE-004 |
 
-**Current state**: Trio has detailed docs (`mapping/trio/remote-commands.md`), but Loop Caregiver and AAPS NSClient aren't deeply compared.
+**Key Findings**:
+- **Trio**: AES-256-GCM encryption via APNS with SHA256 key derivation, 6 command types, 10-minute timestamp replay protection
+- **Loop**: TOTP OTP (SHA1, 6-digit, 30-sec) for bolus/carbs, **but NOT for overrides** (security gap), 4 command types
+- **AAPS**: SMS-based with phone whitelist + TOTP + PIN, 13+ command types including loop/pump control
+- **Critical Gap**: Loop override commands skip OTP validation (GAP-REMOTE-001)
+- **All Systems**: Safety limits enforced at different layers (Trio in handler, Loop downstream, AAPS via ConstraintChecker)
 
-**Questions to answer**:
-- How do security models differ? (Trio AES-256-GCM vs Loop Caregiver vs AAPS NSClient)
-- What command types are supported per system?
-- How are safety limits enforced remotely?
-- How is replay protection implemented?
+**Source Files Analyzed**:
+- `trio:Trio/Sources/Services/RemoteControl/*.swift` (SecureMessenger, TrioRemoteControl)
+- `loop:NightscoutService/NightscoutServiceKit/RemoteCommands/` (OTPManager, RemoteCommandValidator)
+- `aaps:plugins/main/src/main/kotlin/.../smsCommunicator/` (SmsCommunicatorPlugin, OneTimePassword, AuthRequest)
 
-**Deliverables**:
-- `docs/10-domain/remote-commands-comparison.md`
-- Security model comparison matrix
-- Gap identification for interoperability
-
-**Source files to leverage**:
-- `trio:Trio/Sources/Services/RemoteControl/`
-- `loop:LoopCaregiver/` (if available)
-- `aaps:plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/`
+**Gaps Updated**: GAP-REMOTE-001 (expanded), GAP-REMOTE-002, GAP-REMOTE-003, GAP-REMOTE-004
 
 ---
 
-### Priority B: Nightscout API v1 vs v3
+## Candidate Next Cycles
+
+### Priority A: Nightscout API v1 vs v3 (Recommended Next)
 
 **Value**: AAPS uses v3 while others use v1—understanding differences explains sync gaps.
 

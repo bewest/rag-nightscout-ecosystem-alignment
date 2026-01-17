@@ -458,6 +458,129 @@ Requirements follow the pattern:
 
 ---
 
+## Remote Command Requirements
+
+### REQ-REMOTE-001: Remote Command Authentication
+
+**Statement**: All remote commands that can affect insulin delivery MUST require cryptographic authentication before execution.
+
+**Rationale**: Remote commands can cause dangerous hypo/hyperglycemia. Authentication prevents unauthorized command execution.
+
+**Scenarios** (proposed):
+- Remote Bolus (to be created)
+- Remote Override (to be created)
+
+**Verification**:
+- Send bolus command without valid OTP/encryption → Verify rejection
+- Send bolus command with valid authentication → Verify execution
+- Verify authentication failure is logged
+
+**Cross-System Status**:
+- Trio: ✅ All commands AES-256-GCM encrypted
+- Loop: ⚠️ OTP required for bolus/carbs, **not for overrides** (GAP-REMOTE-001)
+- AAPS: ✅ Phone whitelist + OTP+PIN for all commands
+
+---
+
+### REQ-REMOTE-002: Remote Command Replay Protection
+
+**Statement**: Remote command systems MUST prevent replay attacks where captured commands are re-transmitted.
+
+**Rationale**: Replayed bolus commands could cause dangerous insulin stacking.
+
+**Scenarios** (proposed):
+- Remote Bolus Replay (to be created)
+
+**Verification**:
+- Capture valid remote command
+- Replay command after delay → Verify rejection
+- Verify replay attempt is logged
+
+**Mechanisms**:
+- Trio: Timestamp within ±10 minutes
+- Loop: Expiration date + duplicate tracking + OTP tracking (recent passwords stored)
+- AAPS: Command timeout + min bolus distance
+
+---
+
+### REQ-REMOTE-003: Remote Bolus Safety Limits
+
+**Statement**: Remote bolus commands MUST be rejected if they would exceed configured safety limits (max bolus, max IOB).
+
+**Rationale**: Remote commands should never bypass local safety guards.
+
+**Scenarios** (proposed):
+- Remote Bolus Limits (to be created)
+
+**Verification**:
+- Configure max bolus = 5U
+- Send remote bolus of 6U → Verify rejection with reason
+- Send remote bolus that would exceed max IOB → Verify rejection
+
+**Cross-System Status**:
+- Trio: ✅ Enforced in remote handler (max bolus, max IOB, 20% recent rule)
+- Loop: ✅ Enforced downstream in dosing logic
+- AAPS: ✅ ConstraintChecker applied to all commands
+
+---
+
+### REQ-REMOTE-004: Remote Command Audit Trail
+
+**Statement**: All remote command attempts (successful and failed) MUST be logged with timestamp, source identifier, command type, and outcome.
+
+**Rationale**: Audit trails enable incident investigation and security monitoring.
+
+**Scenarios** (proposed):
+- Remote Command Audit (to be created)
+
+**Verification**:
+- Send remote bolus command
+- Verify log entry includes: timestamp, remote address/phone, amount, success/failure, reason if failed
+
+---
+
+### REQ-REMOTE-005: Remote Command Source Tracking
+
+**Statement**: Treatments created via remote command SHOULD indicate the remote origin in the `enteredBy` or equivalent field.
+
+**Rationale**: Distinguishing remote vs local entries enables caregiver activity analysis.
+
+**Scenarios** (proposed):
+- Remote Treatment Provenance (to be created)
+
+**Verification**:
+- Send remote bolus command
+- Query resulting treatment
+- Verify `enteredBy` indicates remote origin (e.g., "Loop (via remote command)")
+
+**Cross-System Status**:
+- Trio: ✅ `CarbsEntry.manual` or explicit "Remote Command" note
+- Loop: ✅ `enteredBy = "Loop (via remote command)"`
+- AAPS: ✅ `Sources.SMS` enum value
+
+---
+
+### REQ-REMOTE-006: Remote Command Toggle
+
+**Statement**: Remote command functionality MUST be disabled by default and require explicit user action to enable.
+
+**Rationale**: Security-sensitive features should require opt-in.
+
+**Scenarios** (proposed):
+- Remote Command Enable (to be created)
+
+**Verification**:
+- Fresh installation → Verify remote commands disabled
+- Enable remote commands → Verify commands are processed
+- Disable remote commands → Verify commands are rejected
+
+**Cross-System Status**:
+- Trio: ✅ `isTrioRemoteControlEnabled` setting
+- Loop: ✅ Requires OTP setup (implicit enable)
+- AAPS: ✅ `BooleanKey.SmsAllowRemoteCommands` setting
+
+---
+
 ## Template
 
 ```markdown

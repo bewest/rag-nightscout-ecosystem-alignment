@@ -240,19 +240,25 @@ Only `predicted.values[]` (the combined prediction) is uploaded to `devicestatus
 
 **Scenario**: Remote control scenarios, authority hierarchy
 
-**Description**: Loop remote commands (override, carb, bolus) track `remoteAddress` but there's no verification of sender authority.
+**Description**: Loop remote commands (override, carb, bolus) track `remoteAddress` but there's no verification of sender authority. Additionally, override commands explicitly skip OTP validation while bolus/carb commands require it.
 
-**Loop-Specific Evidence**: Remote commands set `enactTrigger = .remote(address)` and `enteredBy = "Loop (via remote command)"` but no permission check.
+**Loop-Specific Evidence**: 
+- Remote commands set `enactTrigger = .remote(address)` and `enteredBy = "Loop (via remote command)"` but no permission check
+- Override commands: `otpValidationRequired() -> Bool { return false }` (OverrideRemoteNotification.swift)
+- Bolus/carb commands: `otpValidationRequired() -> Bool { return true }`
 
-**Source**: [Loop Nightscout Sync](../mapping/loop/nightscout-sync.md#gap-remote-001-remote-command-authorization)
+**Source**: 
+- [Loop Nightscout Sync](../mapping/loop/nightscout-sync.md#gap-remote-001-remote-command-authorization)
+- [Remote Commands Comparison](../docs/10-domain/remote-commands-comparison.md)
 
 **Impact**:
-- Anyone with Nightscout API access can issue commands
+- Anyone with Nightscout API access can issue override commands without OTP
 - No authority hierarchy for remote vs local commands
+- Overrides can significantly affect insulin delivery via ISF/CR adjustments
 - Related to GAP-AUTH-001 (unverified enteredBy)
 
 **Possible Solutions**:
-1. OTP verification for remote commands (Loop already has `OTPManager`)
+1. Require OTP for all remote commands including overrides (recommended)
 2. OIDC-based command authorization
 3. Gateway-level command filtering (NRG)
 
@@ -261,6 +267,7 @@ Only `predicted.values[]` (the combined prediction) is uploaded to `devicestatus
 **Related**:
 - [GAP-AUTH-001](#gap-auth-001-enteredby-field-is-unverified)
 - [Authority Model](../docs/10-domain/authority-model.md)
+- [Remote Commands Comparison](../docs/10-domain/remote-commands-comparison.md)
 
 ---
 
@@ -631,6 +638,88 @@ rT.predBGs = {
 **Related**:
 - [xDrip4iOS Follower Modes](../mapping/xdrip4ios/follower-modes.md)
 - [xDrip+ Data Sources - Cloud Followers](../mapping/xdrip-android/data-sources.md#cloud-follower-sources)
+
+---
+
+### GAP-REMOTE-002: No Command Signing Across Systems
+
+**Scenario**: Remote command security, interoperability
+
+**Description**: None of the systems use asymmetric cryptographic signatures to verify command origin. Trio uses symmetric encryption (AES-256-GCM), which provides integrity via authenticated encryption but requires shared secrets. Loop and AAPS send commands in plaintext (OTP provides auth but not confidentiality or integrity).
+
+**Evidence**:
+- Trio: `SecureMessenger` uses AES-GCM (symmetric)
+- Loop: Commands are JSON in push notification payload (plaintext)
+- AAPS: SMS text commands (plaintext)
+
+**Impact**:
+- Loop: Anyone with Nightscout API access can forge commands (OTP partially mitigates)
+- AAPS: Phone number spoofing could bypass whitelist (OTP still required)
+- No non-repudiation (cannot prove who sent a command)
+
+**Possible Solutions**:
+1. ECDSA signatures on command payloads
+2. HMAC signing with per-command nonces
+3. Mutual TLS for Nightscout command channel
+
+**Status**: Under discussion
+
+**Related**:
+- [Remote Commands Comparison](../docs/10-domain/remote-commands-comparison.md)
+- REQ-REMOTE-001
+
+---
+
+### GAP-REMOTE-003: No Key Rotation Mechanism
+
+**Scenario**: Remote command security, key management
+
+**Description**: None of the systems have visible mechanisms for automatic key rotation:
+- Trio: Shared secret stored indefinitely in UserDefaults
+- Loop: OTP secret can be reset manually but no scheduled rotation
+- AAPS: OTP secret persists until manually regenerated
+
+**Impact**:
+- Long-lived secrets increase risk of compromise
+- Compromised keys remain valid indefinitely
+- No way to detect key compromise
+
+**Possible Solutions**:
+1. Time-limited shared secrets with automatic rotation
+2. Push-based key refresh via APNS/FCM
+3. OIDC-based short-lived tokens
+
+**Status**: Under discussion
+
+**Related**:
+- [Remote Commands Comparison](../docs/10-domain/remote-commands-comparison.md)
+
+---
+
+### GAP-REMOTE-004: Inconsistent Safety Enforcement Layer
+
+**Scenario**: Remote command safety, code architecture
+
+**Description**: Safety limits are enforced at different layers across systems:
+- Trio: Enforces max bolus, max IOB, and 20% recent bolus rule in remote command handler
+- Loop: Delegates to downstream dosing logic (LoopDataManager)
+- AAPS: Uses centralized ConstraintChecker
+
+**Impact**:
+- Harder to audit remote command safety
+- Potential for inconsistent behavior between local and remote commands
+- Different error messages and rejection reasons
+
+**Possible Solutions**:
+1. Standardize safety check layer (recommend command handler)
+2. Document safety enforcement architecture per system
+3. Create unified test suite for remote command limits
+
+**Status**: Under discussion
+
+**Related**:
+- [Remote Commands Comparison](../docs/10-domain/remote-commands-comparison.md)
+- REQ-REMOTE-003
 
 ---
 

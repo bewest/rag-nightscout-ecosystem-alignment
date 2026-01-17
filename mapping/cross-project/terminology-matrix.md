@@ -831,10 +831,90 @@ oref0's core innovation is deviation analysis:
 
 ---
 
+## Remote Command Security Models
+
+> **See Also**: [Remote Commands Cross-System Comparison](../../docs/10-domain/remote-commands-comparison.md) for comprehensive source code analysis.
+
+### Transport and Authentication
+
+| Aspect | Trio | Loop | AAPS |
+|--------|------|------|------|
+| Transport | APNS Push | APNS Push | SMS |
+| Payload Encryption | AES-256-GCM | None | None |
+| Authentication | Shared secret | TOTP OTP | Phone whitelist + TOTP + PIN |
+| Key Derivation | SHA256 | Base32 secret | HMAC key |
+
+### Security Parameters
+
+| Parameter | Trio | Loop | AAPS |
+|-----------|------|------|------|
+| Encryption Algorithm | AES-256-GCM | N/A | N/A |
+| Key Size | 256 bits | 160+ bits (SHA1) | 160 bits |
+| OTP Algorithm | N/A | HMAC-SHA1 | HMAC |
+| OTP Digits | N/A | 6 | 6 + PIN (3+) |
+| OTP Period | N/A | 30 sec | 30 sec |
+| Nonce Size | 12 bytes | N/A | N/A |
+
+### Replay Protection
+
+| Mechanism | Trio | Loop | AAPS |
+|-----------|------|------|------|
+| Timestamp Window | ±10 minutes | Expiration date | Command timeout |
+| Duplicate Detection | Implicit (timestamp) | In-memory tracking | `processed` flag |
+| OTP Reuse Prevention | N/A | Track recent OTPs | Timeout-based |
+| Bolus Distance | Recent bolus check (20%) | N/A | Configurable minimum |
+
+### Command Type Support
+
+| Command | Trio | Loop | AAPS |
+|---------|------|------|------|
+| Remote Bolus | `bolus` | `bolusEntry` | `BOLUS` SMS |
+| Remote Carbs | `meal` | `carbsEntry` | `CARBS` SMS |
+| Override Start | `startOverride` | `temporaryScheduleOverride` | N/A |
+| Override Cancel | `cancelOverride` | `cancelTemporaryOverride` | N/A |
+| Temp Target | `tempTarget` | N/A (via override) | `TARGET` SMS |
+| Cancel TT | `cancelTempTarget` | N/A | `TARGET STOP` SMS |
+| Basal Change | N/A | N/A | `BASAL` SMS |
+| Loop Control | N/A | N/A | `LOOP` SMS |
+| Pump Control | N/A | N/A | `PUMP` SMS |
+| Profile Switch | N/A | N/A | `PROFILE` SMS |
+
+### OTP Requirement per Command
+
+| Command Type | Trio | Loop | AAPS |
+|--------------|------|------|------|
+| Bolus | N/A (encrypted) | **Required** | Required |
+| Carbs | N/A (encrypted) | **Required** | Required |
+| Override | N/A (encrypted) | **Not Required** ⚠️ | N/A |
+| Cancel Override | N/A (encrypted) | **Not Required** ⚠️ | N/A |
+
+**Security Gap**: Loop does not require OTP for override commands. See [GAP-REMOTE-001](../../traceability/gaps.md#gap-remote-001-remote-command-authorization-unverified).
+
+### Safety Enforcement
+
+| Check | Trio | Loop | AAPS |
+|-------|------|------|------|
+| Max Bolus | Remote handler | Downstream | ConstraintChecker |
+| Max IOB | Remote handler | Downstream | ConstraintChecker |
+| Recent Bolus | 20% rule | N/A | Min distance |
+| Queue Empty | N/A | N/A | 3-min wait |
+| Pump Suspended | N/A | N/A | Checked |
+
+### Source File References
+
+| System | Primary Source |
+|--------|---------------|
+| Trio | `trio:Trio/Sources/Services/RemoteControl/` |
+| Loop | `loop:NightscoutService/NightscoutServiceKit/RemoteCommands/` |
+| AAPS | `aaps:plugins/main/src/main/kotlin/.../smsCommunicator/` |
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-17 | Agent | Added Remote Command Security Models section with cross-system comparison |
 | 2026-01-16 | Agent | Integrated xDrip+ (Android) into terminology matrix - events, sync identity, actor identity, device events, code references |
 | 2026-01-16 | Agent | Added oref0-specific concepts (algorithm components, prediction curves, carb model, SMB params, shared IOB formula) |
 | 2026-01-16 | Agent | Added Trio-specific concepts (oref2 variables, remote commands, overrides, insulin curves, dynamic ISF) |
