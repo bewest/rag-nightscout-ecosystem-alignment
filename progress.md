@@ -125,26 +125,45 @@ Comprehensive analysis of the two Nightscout API versions, explaining why AAPS u
 
 ---
 
-## Candidate Next Cycles
+### Pump Communication Protocols (2026-01-17)
 
-### Priority A: Pump Communication Protocols
+Comprehensive analysis of how AID controllers communicate with insulin pumps, covering protocol layers, interface abstractions, and safety patterns.
 
-**Value**: Understanding how AID controllers communicate with insulin pumps explains timing constraints and safety limits.
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **Pump Communication Deep Dive** | `docs/10-domain/pump-communication-deep-dive.md` | BLE vs RF protocols, PumpManager vs Pump interface, command patterns, timing constraints, encryption |
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Added Pump Communication Models section with interface mapping, commands, transport protocols, state machines |
+| **Requirements Update** | `traceability/requirements.md` | Added REQ-PUMP-001 through REQ-PUMP-006 for pump precision, acknowledgment, progress, history, clock, timeouts |
+| **Gaps Update** | `traceability/gaps.md` | Added GAP-PUMP-001 through GAP-PUMP-005 for capability exchange, extended bolus, duration units, error codes, uncertainty |
 
-**Questions to answer**:
-- What communication protocols do different pumps use (Bluetooth, RF)?
-- How do controllers handle command acknowledgment?
-- What are the timing constraints for bolus/basal commands?
-- How is pump state synchronized?
+**Key Findings**:
+- **Protocol split**: Omnipod DASH, Dana RS, Insight use BLE; Omnipod Eros, Medtronic use RF via RileyLink bridge
+- **Interface design**: Loop uses async completion handlers (`PumpManager`); AAPS uses synchronous interface with async execution (`Pump` returns `PumpEnactResult`)
+- **Extended bolus gap**: AAPS supports extended/combo boluses; Loop ecosystem does not (philosophy differs)
+- **TBR duration units**: Loop uses seconds; AAPS uses minutes (conversion needed)
+- **Acknowledgment patterns**: Loop has `deliveryIsUncertain` flag; AAPS has `PumpEnactResult.success` + retry logic
+- **Omnipod DASH encryption**: AES-CCM with LTK exchange during pairing
+- **Dana RS error codes**: `0x10` max bolus, `0x20` command error, `0x40` speed error, `0x80` insulin limit
+- **History reconciliation**: Loop uses `hasNewPumpEvents` delegate; AAPS uses `PumpSync` with temporary ID pattern
 
-**Deliverables**:
-- `docs/10-domain/pump-communication-deep-dive.md`
-- Pump protocol comparison table
-- Safety timing requirements
+**Source Files Analyzed**:
+- `LoopWorkspace/LoopKit/LoopKit/DeviceManager/PumpManager.swift` - Core protocol
+- `LoopWorkspace/LoopKit/LoopKit/DeviceManager/PumpManagerStatus.swift` - Status states
+- `LoopWorkspace/Loop/Loop/Managers/DoseEnactor.swift` - Command sequencing
+- `LoopWorkspace/OmniBLE/OmniBLE/Bluetooth/` - BLE UUIDs, encryption
+- `AndroidAPS/core/interfaces/src/main/kotlin/.../pump/Pump.kt` - Core interface
+- `AndroidAPS/core/interfaces/src/main/kotlin/.../pump/PumpSync.kt` - History sync
+- `AndroidAPS/core/data/src/main/kotlin/.../pump/defs/PumpType.kt` - Pump definitions
+- `AndroidAPS/pump/danars/src/main/kotlin/.../DanaRSPlugin.kt` - Dana RS driver
+- `AndroidAPS/pump/omnipod/dash/src/main/kotlin/.../OmnipodDashPumpPlugin.kt` - DASH driver
+
+**Gaps Identified**: GAP-PUMP-001 through GAP-PUMP-005
 
 ---
 
-### Priority B: Insulin Activity Curves Comparison
+## Candidate Next Cycles
+
+### Priority A: Insulin Activity Curves Comparison
 
 **Value**: Different insulin models affect prediction accuracy and dosing decisions.
 

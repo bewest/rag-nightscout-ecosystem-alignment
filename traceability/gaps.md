@@ -748,6 +748,153 @@ rT.predBGs = {
 
 ---
 
+## Pump Communication Gaps
+
+### GAP-PUMP-001: No Standardized Pump Capability Exchange Format
+
+**Scenario**: Cross-system pump compatibility, pump switching
+
+**Description**: There is no standardized format for exchanging pump capabilities between systems. Each system defines its own `PumpDescription`, `PumpType`, or protocol-specific structures.
+
+**Impact**:
+- Cannot programmatically compare pump capabilities across systems
+- No standard way to communicate pump limits to Nightscout
+- Pump compatibility matrix must be maintained manually
+- New pump support requires updates in each system
+
+**Possible Solutions**:
+1. Define standard JSON schema for pump capabilities
+2. Add pump capabilities to Nightscout `devicestatus`
+3. Create pump registry with standardized attributes
+
+**Status**: Under discussion
+
+**Related**:
+- [Pump Communication Deep Dive](../docs/10-domain/pump-communication-deep-dive.md)
+- REQ-PUMP-001
+
+---
+
+### GAP-PUMP-002: Extended Bolus Not Supported in Loop Ecosystem
+
+**Scenario**: Extended/combo bolus interoperability
+
+**Description**: Loop and Trio do not support extended (square wave) or dual wave (combo) boluses. AAPS supports extended boluses natively via `setExtendedBolus()` and can emulate via `FAKE_EXTENDED` temp basals.
+
+**Evidence**:
+- Loop `PumpManager` has no extended bolus methods
+- AAPS `Pump` interface has `setExtendedBolus()` and `cancelExtendedBolus()`
+- AAPS uploads extended boluses as temp basals with special type
+
+**Impact**:
+- Users switching from AAPS to Loop lose extended bolus capability
+- Extended boluses from AAPS appear as temp basals in Loop/Trio
+- COB calculations may differ between systems during extended bolus
+- No interoperability for extended bolus commands
+
+**Possible Solutions**:
+1. Loop adds extended bolus support to PumpManager protocol
+2. Define standard Nightscout representation for extended boluses
+3. Document limitation for users considering system switch
+
+**Status**: Under discussion (likely won't fix - Loop philosophy differs)
+
+**Related**:
+- [Pump Communication Deep Dive](../docs/10-domain/pump-communication-deep-dive.md)
+
+---
+
+### GAP-PUMP-003: TBR Duration Unit Inconsistency
+
+**Scenario**: Temp basal interoperability, cross-system sync
+
+**Description**: Temp basal duration units differ across systems:
+- Loop: `TimeInterval` (seconds)
+- AAPS: `durationInMinutes` (integer minutes)
+- Nightscout: `duration` (minutes)
+
+**Evidence**:
+- Loop: `enactTempBasal(unitsPerHour: Double, for duration: TimeInterval, ...)`
+- AAPS: `setTempBasalAbsolute(... durationInMinutes: Int, ...)`
+
+**Impact**:
+- Unit conversion errors possible during sync
+- Off-by-one-minute errors in TBR end time
+- Rounding differences may cause TBR overlap or gap
+
+**Possible Solutions**:
+1. All systems normalize to minutes for Nightscout interchange
+2. Use ISO 8601 duration format (`PT30M`)
+3. Explicit unit field in temp basal records
+
+**Status**: Under discussion
+
+**Related**:
+- [Pump Communication Deep Dive](../docs/10-domain/pump-communication-deep-dive.md)
+- GAP-TREAT-002 (duration unit inconsistency)
+
+---
+
+### GAP-PUMP-004: Pump Error Codes Not Normalized
+
+**Scenario**: Error handling, debugging, alerting
+
+**Description**: Each pump driver returns different error codes and messages. There is no cross-system error code taxonomy.
+
+**Evidence**:
+- Dana RS: `0x10` (max bolus), `0x20` (command error), `0x40` (speed error), `0x80` (insulin limit)
+- Omnipod: `PodAlarmType` enum with pod-specific codes
+- Medtronic: Hardware-specific alarm codes
+- Loop: `PumpManagerError` with generic cases
+
+**Impact**:
+- Cannot create unified error handling or alerting
+- Error messages vary widely across systems
+- Debugging requires pump-specific knowledge
+- No standard error taxonomy for Nightscout
+
+**Possible Solutions**:
+1. Define standard error categories (connectivity, delivery, reservoir, battery, etc.)
+2. Map pump-specific codes to standard categories
+3. Add structured error field to Nightscout treatments
+
+**Status**: Under discussion
+
+**Related**:
+- [Pump Communication Deep Dive](../docs/10-domain/pump-communication-deep-dive.md)
+
+---
+
+### GAP-PUMP-005: No Standard for Delivery Uncertainty Reporting
+
+**Scenario**: Safety, IOB accuracy, command verification
+
+**Description**: When pump commands fail or timeout, the delivery state may be uncertain. Loop has `deliveryIsUncertain` flag, but there's no cross-system standard for reporting this state.
+
+**Evidence**:
+- Loop: `PumpManagerStatus.deliveryIsUncertain: Bool`
+- AAPS: Implicit in `PumpEnactResult.success` and retry logic
+- Nightscout: No field for delivery uncertainty
+
+**Impact**:
+- Uncertain deliveries may be double-counted or missed in IOB
+- No way to communicate uncertainty to other clients
+- Users may not understand why bolus "failed" but insulin was delivered
+- Cannot audit delivery uncertainty events
+
+**Possible Solutions**:
+1. Add `deliveryUncertain` field to Nightscout treatments
+2. Create `uncertainDelivery` event type
+3. Standardize uncertainty resolution flow (verify with pump status)
+
+**Status**: Under discussion
+
+**Related**:
+- [Pump Communication Deep Dive](../docs/10-domain/pump-communication-deep-dive.md)
+- REQ-PUMP-002
+
+---
+
 ### GAP-API-002: Identifier vs _id Addressing Inconsistency
 
 **Scenario**: Cross-API document identity

@@ -581,6 +581,135 @@ Requirements follow the pattern:
 
 ---
 
+## Pump Communication Requirements
+
+### REQ-PUMP-001: Pump Precision Constraints
+
+**Statement**: AID controllers MUST round all insulin amounts (bolus and basal) to the pump's supported step size BEFORE sending commands.
+
+**Rationale**: Pumps reject or truncate commands that don't match their precision constraints. Rounding rules should err on the side of safety.
+
+**Scenarios**:
+- Pump Command Precision (to be created)
+
+**Verification**:
+- Request 1.03U bolus on pump with 0.05U step → Verify command uses nearest supported value (1.00U or 1.05U per system rules)
+- Request 0.07U/hr basal on pump with 0.05U step → Verify command uses nearest supported value
+- Verify rounding follows pump-specific rules (Loop rounds to nearest; AAPS applies constraints per pump driver)
+
+**Cross-System Status**:
+- Loop: ✅ `roundToSupportedBolusVolume()`, `roundToSupportedBasalRate()`
+- AAPS: ✅ `constraintChecker.applyBolusConstraints()`
+- Trio: ✅ Inherits Loop's LoopKit implementation
+
+---
+
+### REQ-PUMP-002: Command Acknowledgment Verification
+
+**Statement**: AID controllers MUST verify pump command acknowledgment before recording the dose as delivered.
+
+**Rationale**: Network failures, BLE disconnections, and RF interference can cause commands to fail. Recording unverified doses corrupts IOB calculations.
+
+**Scenarios**:
+- Pump Command Verification (to be created)
+
+**Verification**:
+- Send bolus command → Verify pump acknowledges start (system-specific mechanism)
+- Verify delivery amount matches request (within step precision)
+- On timeout or error → Verify dose NOT recorded as delivered
+- Verify uncertainty is signaled via platform-appropriate mechanism
+
+**Cross-System Status**:
+- Loop: ✅ `PumpManagerStatus.deliveryIsUncertain` flag indicates command uncertainty
+- AAPS: ✅ `PumpEnactResult.success=false` and pump history reconciliation detect failures
+- Trio: ✅ Inherits Loop's `deliveryIsUncertain` pattern
+
+---
+
+### REQ-PUMP-003: Bolus Progress Reporting
+
+**Statement**: AID controllers SHOULD provide real-time bolus delivery progress to the user.
+
+**Rationale**: Large boluses take minutes to deliver. Users need feedback during delivery and ability to cancel.
+
+**Scenarios**:
+- Bolus Progress UI (to be created)
+
+**Verification**:
+- Start 5U bolus → Verify progress updates during delivery
+- Verify "Cancel" option available during delivery
+- Verify final delivered amount reported
+
+**Cross-System Status**:
+- Loop: ✅ `createBolusProgressReporter()`
+- AAPS: ✅ `EventOverviewBolusProgress` events
+- Trio: ✅ Inherits Loop's pattern
+
+---
+
+### REQ-PUMP-004: History Reconciliation
+
+**Statement**: AID controllers MUST periodically reconcile local dose records with pump history to detect manual doses and missed events.
+
+**Rationale**: Users may deliver manual boluses via pump UI. Untracked doses corrupt IOB calculations and lead to incorrect dosing decisions.
+
+**Scenarios**:
+- Pump History Sync (to be created)
+
+**Verification**:
+- Deliver manual bolus via pump UI
+- Verify controller detects dose within next loop cycle
+- Verify IOB calculation includes manual dose
+
+**Cross-System Status**:
+- Loop: ✅ `PumpManagerDelegate.hasNewPumpEvents()` callback
+- AAPS: ✅ `PumpSync.syncBolusWithPumpId()` for history-capable pumps
+- Trio: ✅ Inherits Loop's pattern
+
+---
+
+### REQ-PUMP-005: Clock Drift Handling
+
+**Statement**: AID controllers MUST detect and handle clock drift between controller and pump to maintain accurate dose timing.
+
+**Rationale**: Pump clocks drift over time. Inaccurate timestamps affect IOB decay calculations and event ordering.
+
+**Scenarios**:
+- Pump Clock Sync (to be created)
+
+**Verification**:
+- Pump clock 5 minutes ahead → Verify controller compensates
+- Verify IOB calculations use corrected timestamps
+- Verify user notified of significant drift (>5 minutes)
+
+**Cross-System Status**:
+- Loop: ✅ `pumpManager.didAdjustPumpClockBy()` delegate
+- AAPS: ✅ `canHandleDST()` and `timezoneOrDSTChanged()` methods
+- Trio: ✅ Inherits Loop's pattern
+
+---
+
+### REQ-PUMP-006: Connection Timeout Handling
+
+**Statement**: Pump commands MUST timeout within a reasonable period (30-60 seconds) and report failure rather than hanging indefinitely.
+
+**Rationale**: Stuck commands prevent loop iterations and leave delivery state uncertain.
+
+**Scenarios**:
+- Pump Timeout Handling (to be created)
+
+**Verification**:
+- Move pump out of range during command → Verify timeout within 60 sec
+- Verify clear error message to user
+- Verify loop can continue after timeout
+
+**Cross-System Status**:
+- Loop: ✅ Per-driver timeouts (typically 30 sec)
+- AAPS: ✅ `waitForDisconnectionInSeconds()` and command timeouts
+- Trio: ✅ Inherits Loop's pattern
+
+---
+
 ## Template
 
 ```markdown

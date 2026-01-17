@@ -973,10 +973,97 @@ oref0's core innovation is deviation analysis:
 
 ---
 
+## Pump Communication Models
+
+> **See Also**: [Pump Communication Deep Dive](../../docs/10-domain/pump-communication-deep-dive.md) for comprehensive protocol analysis.
+
+### Pump Interface Abstraction
+
+| Concept | Loop/Trio | AAPS |
+|---------|-----------|------|
+| **Pump Interface** | `PumpManager` protocol | `Pump` interface |
+| **Status Object** | `PumpManagerStatus` | `PumpDescription` + state getters |
+| **Command Result** | `PumpManagerResult<T>` | `PumpEnactResult` |
+| **History Sync** | `PumpManagerDelegate.hasNewPumpEvents()` | `PumpSync` interface |
+| **Connection State** | Implicit (delegate callbacks) | `isConnected()`, `isConnecting()`, `isHandshakeInProgress()` |
+
+### Core Pump Commands
+
+| Command | Loop PumpManager | AAPS Pump |
+|---------|------------------|-----------|
+| **Bolus** | `enactBolus(units:activationType:completion:)` | `deliverTreatment(DetailedBolusInfo)` |
+| **Cancel Bolus** | `cancelBolus(completion:)` | `stopBolusDelivering()` |
+| **Temp Basal** | `enactTempBasal(unitsPerHour:for:completion:)` | `setTempBasalAbsolute(rate, minutes, profile, enforceNew, tbrType)` |
+| **Cancel TBR** | `enactTempBasal(0, 0, completion:)` | `cancelTempBasal(enforceNew)` |
+| **Suspend** | `suspendDelivery(completion:)` | `suspendDelivery()`* or `setTempBasalPercent(0, ...)` |
+| **Resume** | `resumeDelivery(completion:)` | `resumeDelivery()`* or `cancelTempBasal()` |
+| **Set Profile** | `syncBasalRateSchedule(items:completion:)` | `setNewBasalProfile(Profile)` |
+
+*Note: AAPS supports native suspend/resume on some pumps; others emulate via 0% temp basal (`PUMP_SUSPEND` or `EMULATED_PUMP_SUSPEND` types).
+
+### Pump Transport Protocols
+
+| Pump Type | Loop/Trio | AAPS | Protocol |
+|-----------|-----------|------|----------|
+| **Omnipod DASH** | OmniBLE | omnipod-dash | BLE + AES-CCM |
+| **Omnipod Eros** | OmniKit | omnipod-eros | RF 433MHz + RileyLink |
+| **Medtronic** | MinimedKit | medtronic | RF 916MHz + RileyLink |
+| **Dana RS** | N/A | danars | BLE + Custom encryption |
+| **Dana i** | N/A | danars | BLE + Custom encryption |
+| **Accu-Chek Insight** | N/A | insight | BLE + SightParser |
+| **Accu-Chek Combo** | N/A | combov2 | RF + ruffy |
+| **Diaconn G8** | N/A | diaconn | BLE |
+| **Medtrum** | N/A | medtrum | BLE |
+
+### Precision Constraints Comparison
+
+| Pump | Bolus Step | Basal Step | TBR Duration Step |
+|------|------------|------------|-------------------|
+| **Omnipod DASH/Eros** | 0.05 U | 0.05 U/hr | 30 min |
+| **Dana RS** | 0.05 U | 0.01 U/hr | 15/30/60 min |
+| **Medtronic 523/723** | 0.05 U | 0.025 U/hr | 30 min |
+| **Accu-Chek Insight** | 0.01-0.05 U | 0.01 U/hr | 15 min |
+| **Diaconn G8** | 0.01 U | 0.01 U/hr | 30 min |
+
+### Bolus State Machine
+
+| State | Loop `BolusState` | AAPS |
+|-------|-------------------|------|
+| **No Bolus** | `.noBolus` | N/A (no explicit state) |
+| **Initiating** | `.initiating` | Pre-`deliverTreatment()` |
+| **In Progress** | `.inProgress(dose)` | `BolusProgressData.delivering` |
+| **Canceling** | `.canceling` | `stopBolusDelivering()` called |
+| **Uncertain** | `deliveryIsUncertain: true` | `PumpEnactResult.success == false` |
+
+### Basal Delivery State Machine
+
+| State | Loop `BasalDeliveryState` | AAPS |
+|-------|---------------------------|------|
+| **Active (scheduled)** | `.active(at)` | `isSuspended() == false` |
+| **Temp Basal** | `.tempBasal(dose)` | `PumpSync.expectedPumpState().temporaryBasal != null` |
+| **Suspended** | `.suspended(at)` | `isSuspended() == true` |
+| **Initiating TBR** | `.initiatingTempBasal` | N/A |
+| **Canceling TBR** | `.cancelingTempBasal` | N/A |
+
+### Temp Basal Type Enums
+
+| AAPS TBR Type | Description | Nightscout |
+|---------------|-------------|------------|
+| `NORMAL` | Standard temp basal | `Temp Basal` |
+| `EMULATED_PUMP_SUSPEND` | Suspend via 0% basal | `Temp Basal` |
+| `PUMP_SUSPEND` | Actual pump suspend | `Temp Basal` |
+| `SUPERBOLUS` | Superbolus temp basal | `Temp Basal` |
+| `FAKE_EXTENDED` | Extended bolus emulation | `Temp Basal` |
+
+**Gap Reference**: GAP-PUMP-002 (extended bolus not in Loop), GAP-PUMP-003 (TBR duration units)
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-17 | Agent | Added Pump Communication Models section with interface, commands, protocols, and state machines |
 | 2026-01-17 | Agent | Added API Version Models section with v1/v3 comparison |
 | 2026-01-17 | Agent | Added Remote Command Security Models section with cross-system comparison |
 | 2026-01-16 | Agent | Integrated xDrip+ (Android) into terminology matrix - events, sync identity, actor identity, device events, code references |
