@@ -55,3 +55,5 @@ The project integrates with and documents the following external Automated Insul
     - `nightguard`: iOS/watchOS app for blood glucose monitoring via Nightscout, acting as a pure consumer.
     - `xdripswift` (xdrip4ios): iOS app for CGM data management, acting as a producer and consumer.
     - `xDrip`: Android xDrip+ app for CGM data collection, acting as a producer and consumer with extensive features.
+    - `DiaBLE` (diable): iOS/watchOS app for reading Libre sensors directly via NFC/Bluetooth.
+    - `xdrip-js`: Node.js library for interfacing with Dexcom G5/G6 transmitters via BLE.
