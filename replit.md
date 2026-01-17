@@ -23,7 +23,7 @@ The workspace is designed to separate normative specifications from informative 
 - **`docs/`**: Contains narrative documentation, including overviews, domain concepts, design proposals, implementation notes, and architecture decision records (ADRs). The UI/UX emphasizes clear structure and cross-referencing.
   - Key new deliverables (2026-01-17):
     - `docs/30-design/nightscout-integration-guide.md` - Practical guide for app developers
-    - `docs/60-research/controller-registration-protocol-proposal.md` - Inversion of control proposal
+    - `docs/60-research/controller-registration-protocol-proposal.md` - **v2** Controller Registration Protocol as Nightscout Core contract with OpenAPI schema, implementation roadmap, and resolved open questions
     - `docs/60-research/profile-model-evolution-proposal.md` - Desired vs observed split, capability tracking
     - `docs/90-decisions/adr-002-sync-identity-strategy.md` - Decision record on sync identity
 - **`specs/`**: Houses normative definitions using OpenAPI specifications and JSON Schema, along with test fixtures.
