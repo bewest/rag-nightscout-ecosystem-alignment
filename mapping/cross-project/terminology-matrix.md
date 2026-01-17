@@ -479,6 +479,80 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 ---
 
+## CGM Source Models (Deep Dive)
+
+> **See Also**: [CGM Data Sources Deep Dive](../../docs/10-domain/cgm-data-sources-deep-dive.md) for comprehensive analysis of how CGM data flows from sensors to Nightscout.
+
+### Data Source Types
+
+| Source Category | xDrip+ Android | xDrip4iOS | Loop | AAPS |
+|-----------------|----------------|-----------|------|------|
+| **Direct Bluetooth** | G5, G6, G7, Medtrum, GluPro | G5, G6, G7, Libre 2 | CGMBLEKit, G7SensorKit | Via xDrip+ |
+| **Bridge Devices** | 6+ (MiaoMiao, Bubble, Wixel, etc.) | 4 (MiaoMiao, Bubble, Blucon, Atom) | No | Via xDrip+ |
+| **Cloud Followers** | NS, Share, CareLink, WebFollow | NS, Share, LibreLinkUp | Share only | NS only |
+| **Companion Apps** | 5+ (LibreAlarm, NSEmulator, etc.) | No | No | No |
+| **Local Web Server** | Yes (port 17580) | No | No | No |
+| **Total Source Types** | 20+ | ~6 | 3-4 | Via xDrip+ |
+
+### Calibration Models
+
+| System | Calibration Options | Description |
+|--------|---------------------|-------------|
+| **xDrip+ Android** | xDrip Original, Native, Datricsae, Last7Unweighted, FixedSlope | Pluggable algorithms |
+| **xDrip4iOS** | Native, WebOOP | Transmitter calibration or OOP server |
+| **Loop** | Native only | Transmitter-calibrated readings |
+| **AAPS** | Via xDrip+ | Inherits xDrip+ calibration |
+| **Trio** | Native only | Transmitter-calibrated readings |
+
+### BgReading Entity Mapping
+
+| Field | xDrip+ Android | xDrip4iOS | Loop | AAPS | Nightscout |
+|-------|----------------|-----------|------|------|------------|
+| **Glucose Value** | `calculated_value` | `calculatedValue` | `quantity` | `value` | `sgv` |
+| **Timestamp** | `timestamp` | `timeStamp` | `startDate` | `timestamp` | `date` |
+| **Raw Value** | `raw_data` | `rawData` | N/A | N/A | `unfiltered` |
+| **Filtered Value** | `filtered_data` | `filteredData` | N/A | N/A | `filtered` |
+| **Trend Slope** | `dg_slope` | `calculatedValueSlope` | `trendType` | `trendArrow` | `direction` |
+| **Noise** | `noise` | N/A | N/A | `noise` | `noise` |
+| **Sync Identity** | `uuid` | `uuid` | N/A | `interfaceIDs` | `_id` |
+| **Source Info** | `source_info` | `deviceName` | `provenanceIdentifier` | `sourceSensor` | `device` |
+
+### Follower Data Sources
+
+| Follower Type | xDrip+ Android | xDrip4iOS | Loop | Trio |
+|---------------|----------------|-----------|------|------|
+| **Nightscout** | `NSFollow` | `NightscoutFollowManager` | N/A | Via CGMManager |
+| **Dexcom Share** | `SHFollow` | `DexcomShareFollowManager` | `ShareClient` | `ShareClient` |
+| **LibreLinkUp** | No | `LibreLinkUpFollowManager` | No | No |
+| **CareLink** | `CLFollow` | No | No | No |
+| **Generic Web** | `WebFollow` | No | No | No |
+
+### Collection Type Enum (xDrip+ Android)
+
+```java
+// DexCollectionType categories
+usesBluetooth:  BluetoothWixel, DexcomShare, DexbridgeWixel, LimiTTer, ...
+usesWifi:       WifiWixel, WifiBlueToothWixel, Mock, LimiTTerWifi, ...
+usesLibre:      LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi, LibreReceiver
+isPassive:      NSEmulator, NSFollow, SHFollow, WebFollow, LibreReceiver, ...
+usesDexcomRaw:  BluetoothWixel, DexbridgeWixel, WifiWixel, DexcomG5, ...
+```
+
+### CGM Data Provenance Gap Summary
+
+| Gap ID | Description | Impact |
+|--------|-------------|--------|
+| **GAP-CGM-001** | Calibration algorithm not tracked | Cannot determine calibration quality |
+| **GAP-CGM-002** | Bridge device info lost in upload | Cannot identify hardware issues |
+| **GAP-CGM-003** | Sensor age not standardized | Cannot assess reading reliability |
+| **GAP-CGM-004** | No universal source taxonomy | Free-form `device` field unreliable |
+| **GAP-CGM-005** | Raw values not uploaded by iOS | Cannot recalibrate or validate |
+| **GAP-CGM-006** | Follower source not distinguished | Cannot tell direct vs cloud data |
+
+**Full gap details**: See [CGM Data Sources Deep Dive - Gap Summary](../../docs/10-domain/cgm-data-sources-deep-dive.md#gap-summary)
+
+---
+
 ## Algorithm Comparison (Deep Dive)
 
 > **See Also**: [Algorithm Comparison Deep Dive](../../docs/10-domain/algorithm-comparison-deep-dive.md) for comprehensive cross-system analysis explaining why the same CGM data produces different dosing recommendations.

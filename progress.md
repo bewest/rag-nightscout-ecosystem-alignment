@@ -47,33 +47,31 @@ Comprehensive cross-system comparison explaining why the same CGM data produces 
 
 ---
 
-## Candidate Next Cycles
+### CGM Data Source Architecture (2026-01-17)
 
-### Priority A: CGM Data Source Architecture (Recommended Next)
+Comprehensive analysis of how CGM data flows from sensors to Nightscout entries, covering data sources, calibration, and follower modes.
 
-**Value**: Completes the glucose data story by tracing *upstream*—how data flows from transmitter to Nightscout entries.
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **CGM Data Sources Deep Dive** | `docs/10-domain/cgm-data-sources-deep-dive.md` | xDrip+ 20+ source types, pluggable calibration, follower modes, iOS vs Android differences, data provenance tracking |
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Added CGM Source Models section with data source types, calibration models, BgReading entity mapping, follower sources |
+| **Requirements Update** | `traceability/requirements.md` | Added REQ-050 through REQ-057 for CGM data source integrity |
+| **Gaps Update** | `traceability/gaps.md` | Added GAP-CGM-001 through GAP-CGM-006 for data provenance gaps |
 
-**Questions to answer**:
-- How do xDrip+'s 20+ data sources work? (collectors, calibration plugins)
-- How do Loop/Trio CGMManager plugins work?
-- How do follower modes work? (Dexcom Share, LibreLinkUp, Nightscout)
-- How do calibrations flow and affect displayed values?
-- What role does xDrip+'s local web server (port 17580) play as alternative path?
+**Key Findings**:
+- xDrip+ Android is the primary CGM producer with 20+ data source types and pluggable calibration
+- xDrip4iOS supports ~6 source types with Native/WebOOP calibration only
+- Loop and Trio are CGM consumers (do not upload CGM data to Nightscout)
+- AAPS receives CGM data from xDrip+ via broadcast
+- Calibration algorithm and sensor provenance are not tracked in Nightscout entries
 
-**Deliverables**:
-- `docs/10-domain/cgm-data-sources-deep-dive.md`
-- Update terminology matrix with CGM Source Models section
-- Identify gaps in data provenance tracking
-
-**Source files to leverage**:
-- `xdrip:app/src/main/java/com/eveningoutpost/dexdrip/services/` (collectors)
-- `xdrip:app/src/main/java/com/eveningoutpost/dexdrip/calibrations/` (calibration algorithms)
-- `loop:LoopKit/CGMBLEKit/` and `ShareClient/`
-- `xdrip4ios:xdrip/Managers/CGM/` (transmitter managers)
+**Gaps Identified**: GAP-CGM-001 through GAP-CGM-006
 
 ---
 
-### Priority B: Remote Commands Cross-System Comparison
+## Candidate Next Cycles
+
+### Priority A: Remote Commands Cross-System Comparison (Recommended Next)
 
 **Value**: Security-critical—how caregivers remotely control AID systems.
 
@@ -97,7 +95,7 @@ Comprehensive cross-system comparison explaining why the same CGM data produces 
 
 ---
 
-### Priority C: Nightscout API v1 vs v3
+### Priority B: Nightscout API v1 vs v3
 
 **Value**: AAPS uses v3 while others use v1—understanding differences explains sync gaps.
 

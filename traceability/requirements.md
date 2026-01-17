@@ -324,6 +324,140 @@ Requirements follow the pattern:
 
 ---
 
+## CGM Data Source Requirements
+
+### REQ-050: Source Device Attribution
+
+**Statement**: Every CGM entry uploaded to Nightscout MUST include a `device` field identifying the uploader application and hardware.
+
+**Rationale**: Source attribution is essential for debugging data quality issues, identifying duplicate uploaders, and tracking data provenance.
+
+**Scenarios**:
+- [CGM Entry Upload](../conformance/assertions/cgm-upload.yaml)
+
+**Verification**:
+- Upload CGM entry
+- Verify `device` field is present
+- Verify `device` identifies app (e.g., "xDrip-DexcomG6")
+
+---
+
+### REQ-051: UTC Timestamp for CGM Entries
+
+**Statement**: CGM entry timestamps MUST be epoch milliseconds in UTC, stored in the `date` field.
+
+**Rationale**: Timezone-agnostic storage enables consistent cross-timezone queries and prevents DST-related issues.
+
+**Scenarios**:
+- All CGM scenarios
+
+**Verification**:
+- Upload entry with `date` field
+- Verify timestamp is epoch milliseconds
+- Verify `dateString` is UTC (Z suffix)
+
+---
+
+### REQ-052: Follower Source Indication
+
+**Statement**: CGM entries sourced from follower mode (Nightscout, Dexcom Share, LibreLinkUp) SHOULD indicate follower mode in the `device` field.
+
+**Rationale**: Distinguishing direct sensor data from cloud-sourced data is critical for latency analysis and duplicate detection.
+
+**Scenarios**:
+- [CGM Follower Mode](../conformance/assertions/cgm-follower.yaml)
+
+**Verification**:
+- Configure app in follower mode
+- Upload entry
+- Verify `device` includes "follower" or source indication
+
+---
+
+### REQ-053: Calibration Provenance (Proposed)
+
+**Statement**: CGM entries SHOULD include metadata indicating which calibration algorithm produced the glucose value.
+
+**Rationale**: Different calibration algorithms (xDrip Original, Native, WebOOP) can produce significantly different glucose values from the same raw sensor data. Tracking calibration source enables quality assessment.
+
+**Scenarios**:
+- [CGM Calibration Validation](../conformance/assertions/cgm-calibration.yaml)
+
+**Verification**:
+- Upload entry with calibration metadata
+- Verify calibration algorithm is identifiable
+
+**Note**: This is a proposed extension. Current Nightscout schema does not support calibration metadata.
+
+---
+
+### REQ-054: Duplicate Prevention via UUID
+
+**Statement**: CGM data producers SHOULD generate a client-side UUID for each reading and use upsert semantics to prevent duplicates.
+
+**Rationale**: Network retries, multiple uploaders, and cloud-to-cloud sync can create duplicate entries. UUID-based deduplication ensures data integrity.
+
+**Scenarios**:
+- [CGM Deduplication](../conformance/assertions/cgm-dedup.yaml)
+
+**Verification**:
+- Upload entry with `uuid` field
+- Re-upload same entry
+- Verify only one entry exists in Nightscout
+
+---
+
+### REQ-055: Raw Sensor Value Preservation
+
+**Statement**: When raw sensor values are available, CGM entries SHOULD include `filtered` and `unfiltered` fields.
+
+**Rationale**: Raw values enable recalibration, algorithm comparison, and retrospective analysis. iOS systems typically do not expose raw values.
+
+**Scenarios**:
+- [CGM Raw Data](../conformance/assertions/cgm-raw.yaml)
+
+**Verification**:
+- Upload entry from xDrip+
+- Verify `filtered` and `unfiltered` fields present
+- Verify values are numeric sensor readings
+
+---
+
+### REQ-056: Sensor Age Tracking
+
+**Statement**: CGM entries SHOULD include sensor age at reading time when available from the transmitter.
+
+**Rationale**: Sensor accuracy varies with age. Tracking sensor age enables quality assessment and sensor change detection.
+
+**Scenarios**:
+- [CGM Sensor Lifecycle](../conformance/assertions/cgm-sensor.yaml)
+
+**Verification**:
+- xDrip+ local web server includes `sensor.age` and `sensor.start`
+- Verify sensor age is trackable
+
+**Note**: This is a proposed extension. Current Nightscout entries schema does not include sensor age.
+
+---
+
+### REQ-057: Bridge Device Identification
+
+**Statement**: When CGM data is received via a bridge device (MiaoMiao, Bubble, etc.), the bridge type SHOULD be distinguishable from the transmitter type.
+
+**Rationale**: Hardware troubleshooting requires knowing both the bridge device and the underlying sensor/transmitter.
+
+**Scenarios**:
+- [CGM Bridge Device](../conformance/assertions/cgm-bridge.yaml)
+
+**Verification**:
+- Configure MiaoMiao with Libre sensor
+- Upload entry
+- Verify `device` indicates bridge type
+
+**Note**: This is a proposed extension. Current `device` field format is not standardized.
+
+---
+
 ## Template
 
 ```markdown

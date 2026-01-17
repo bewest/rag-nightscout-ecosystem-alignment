@@ -485,6 +485,155 @@ rT.predBGs = {
 
 ---
 
+## CGM Data Source Gaps
+
+### GAP-CGM-001: Calibration Algorithm Not Tracked in Entries
+
+**Scenario**: CGM data quality analysis
+
+**Description**: Nightscout entries do not track which calibration algorithm produced the `sgv` value. A reading from xDrip+ using "xDrip Original" calibration is indistinguishable from one using "Native" calibration.
+
+**Impact**:
+- Cannot determine calibration quality or method
+- Cannot compare readings across calibration algorithms
+- Debugging calibration issues requires access to uploader settings
+
+**Possible Solutions**:
+1. Add `calibration.algorithm` field to entries schema
+2. Include calibration metadata in `device` field format
+3. Create separate `calibration` collection for provenance
+
+**Status**: Under discussion
+
+**Related**:
+- [CGM Data Sources Deep Dive](../docs/10-domain/cgm-data-sources-deep-dive.md)
+- [xDrip+ Calibrations](../mapping/xdrip-android/calibrations.md)
+
+---
+
+### GAP-CGM-002: Bridge Device Info Lost in Upload
+
+**Scenario**: CGM hardware troubleshooting
+
+**Description**: When using bridge devices (MiaoMiao, Bubble, etc.), the bridge type and firmware are not captured in Nightscout entries. Only a combined `device` string is stored.
+
+**Impact**:
+- Cannot identify bridge-specific issues
+- Cannot correlate readings with bridge firmware versions
+- Hardware recommendations require manual user reporting
+
+**Possible Solutions**:
+1. Standardize `device` field format: `{app}-{bridge}-{transmitter}`
+2. Add separate `bridge` object to entries schema
+3. Document bridge info in entry `notes` field
+
+**Status**: Under discussion
+
+**Related**:
+- [xDrip+ Data Sources](../mapping/xdrip-android/data-sources.md)
+- [xDrip4iOS CGM Transmitters](../mapping/xdrip4ios/cgm-transmitters.md)
+
+---
+
+### GAP-CGM-003: Sensor Age Not Standardized
+
+**Scenario**: Sensor lifecycle tracking, reading reliability assessment
+
+**Description**: Sensor age at reading time is not captured in Nightscout entries. xDrip+ local web server includes `sensor.age` but this is not uploaded to Nightscout.
+
+**Impact**:
+- Cannot assess reading reliability based on sensor age
+- Cannot automatically detect sensor changes
+- Cannot correlate sensor performance degradation with age
+
+**Possible Solutions**:
+1. Add `sensorAge` field to entries schema
+2. Add `sensorStart` timestamp field
+3. Include sensor age in extended `device` metadata
+
+**Status**: Under discussion
+
+**Related**:
+- [xDrip+ Local Web Server](../mapping/xdrip-android/local-web-server.md)
+
+---
+
+### GAP-CGM-004: No Universal Source Taxonomy
+
+**Scenario**: Multi-uploader environments, duplicate detection
+
+**Description**: The `device` field in entries is free-form text with no standardized format. Different apps use different conventions:
+- xDrip+: `"xDrip-DexcomG6"`
+- AAPS: `"AAPS"`
+- Spike: `"Spike"`
+- Share: `"share2"`
+
+**Impact**:
+- Programmatic source identification is unreliable
+- Duplicate detection across apps is complex
+- Source-based filtering requires fuzzy matching
+
+**Possible Solutions**:
+1. Define standardized `device` format: `{app}:{version}:{hardware}`
+2. Add separate `source` object with structured fields
+3. Create device registry for canonical names
+
+**Status**: Under discussion
+
+**Related**:
+- [Entries Deep Dive - Source Attribution](../docs/10-domain/entries-deep-dive.md#glucose-source-attribution)
+- [GAP-ENTRY-003](#gap-entry-003)
+
+---
+
+### GAP-CGM-005: Raw Values Not Uploaded by iOS
+
+**Scenario**: Calibration validation, algorithm comparison
+
+**Description**: iOS systems (Loop, Trio, xDrip4iOS) typically do not upload raw sensor values (`filtered`, `unfiltered`) to Nightscout. They rely on transmitter-calibrated readings.
+
+**Impact**:
+- Cannot recalibrate iOS-sourced readings
+- Cannot compare raw vs calibrated values
+- Limits retrospective analysis options
+
+**Possible Solutions**:
+1. iOS apps extract and upload raw values (requires transmitter protocol changes)
+2. Accept limitation and document iOS vs Android differences
+3. Use companion bridges (MiaoMiao) that expose raw values
+
+**Status**: Under discussion (likely won't fix due to iOS CGM API limitations)
+
+**Related**:
+- [xDrip4iOS CGM Transmitters](../mapping/xdrip4ios/cgm-transmitters.md)
+- [GAP-ENTRY-005](../docs/10-domain/entries-deep-dive.md#gap-summary)
+
+---
+
+### GAP-CGM-006: Follower Source Not Distinguished
+
+**Scenario**: Latency analysis, data freshness assessment
+
+**Description**: When CGM data is sourced from follower mode (Nightscout, Dexcom Share, LibreLinkUp), the follower source is not consistently indicated in entries.
+
+**Impact**:
+- Cannot distinguish direct sensor data from cloud-sourced data
+- Cannot assess data latency (follower modes have 1-5+ minute delays)
+- Duplicate detection between direct and follower sources is complex
+
+**Possible Solutions**:
+1. Append "-follower" to `device` field when in follower mode
+2. Add `sourceType` field: `direct` | `follower` | `cloud`
+3. Include original source URL in metadata
+
+**Status**: Under discussion
+
+**Related**:
+- [xDrip4iOS Follower Modes](../mapping/xdrip4ios/follower-modes.md)
+- [xDrip+ Data Sources - Cloud Followers](../mapping/xdrip-android/data-sources.md#cloud-follower-sources)
+
+---
+
 ## Resolved Gaps
 
 _None yet._
