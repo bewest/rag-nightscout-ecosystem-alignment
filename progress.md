@@ -28,37 +28,28 @@ Comprehensive field-by-field mapping of the three main Nightscout data collectio
 | AID Controller Sync Patterns | `mapping/cross-project/aid-controller-sync-patterns.md` | How Trio/Loop/AAPS sync with Nightscout |
 | Profile/Therapy Settings Comparison | `docs/60-research/profile-therapy-settings-comparison.md` | Cross-system profile structure analysis |
 
+### Algorithm Prediction Comparison (2026-01-17)
+
+Comprehensive cross-system comparison explaining why the same CGM data produces different dosing recommendations.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **Algorithm Comparison Deep Dive** | `docs/10-domain/algorithm-comparison-deep-dive.md` | Loop vs oref0 prediction methodology, carb absorption models, sensitivity adjustments, safety guards, SMB logic |
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Added Algorithm Comparison section with prediction methodology, carb models, sensitivity mechanisms |
+
+**Key Findings**:
+- Loop uses single combined prediction curve; oref0/AAPS/Trio use 4 separate curves (IOB, COB, UAM, ZT)
+- Loop's dynamic carb absorption adapts in real-time; oref0 uses linear decay with UAM backup
+- Loop uses Retrospective Correction; oref0/AAPS/Trio use Autosens (AAPS also offers TDD-based Dynamic ISF)
+- SMB (Super Micro Bolus) only available in oref0-based systems, not Loop
+
+**Gaps Identified**: GAP-ALG-001 through GAP-ALG-008
+
 ---
 
 ## Candidate Next Cycles
 
-### Priority A: Algorithm Prediction Comparison (Recommended)
-
-**Value**: Explains *why* systems make different dosing decisions with the same data.
-
-**Current state**: Per-system algorithm docs exist (`mapping/loop/algorithm.md`, `mapping/oref0/algorithm.md`, `mapping/aaps/algorithm.md`, `mapping/trio/algorithm.md`), but no cross-system comparison.
-
-**Questions to answer**:
-- How do prediction methodologies differ? (Loop's single combined curve vs oref0's 4 curves: IOB, COB, UAM, ZT)
-- How do insulin models differ? (exponential decay, DIA handling)
-- How do safety guards compare? (low glucose suspend, max IOB, SMB limits)
-- Why does the same CGM data produce different recommendations?
-
-**Deliverables**:
-- `docs/10-domain/algorithm-comparison-deep-dive.md`
-- Update terminology matrix with Algorithm Concepts section
-- Identify gaps (GAP-ALG-001+)
-- Suggested specs where protocol is clear
-
-**Source files to leverage**:
-- `loop:LoopKit/LoopKit/LoopAlgorithm/LoopAlgorithm.swift`
-- `oref0:lib/determine-basal/determine-basal.js`
-- `aaps:app/src/main/kotlin/app/aaps/plugins/aps/openAPSSMB/`
-- `trio:Trio/Sources/APS/OpenAPS/`
-
----
-
-### Priority B: CGM Data Source Architecture
+### Priority A: CGM Data Source Architecture (Recommended Next)
 
 **Value**: Completes the glucose data story by tracing *upstream*—how data flows from transmitter to Nightscout entries.
 
@@ -82,7 +73,7 @@ Comprehensive field-by-field mapping of the three main Nightscout data collectio
 
 ---
 
-### Priority C: Remote Commands Cross-System Comparison
+### Priority B: Remote Commands Cross-System Comparison
 
 **Value**: Security-critical—how caregivers remotely control AID systems.
 
@@ -106,7 +97,7 @@ Comprehensive field-by-field mapping of the three main Nightscout data collectio
 
 ---
 
-### Priority D: Nightscout API v1 vs v3
+### Priority C: Nightscout API v1 vs v3
 
 **Value**: AAPS uses v3 while others use v1—understanding differences explains sync gaps.
 

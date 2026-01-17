@@ -479,6 +479,55 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 ---
 
+## Algorithm Comparison (Deep Dive)
+
+> **See Also**: [Algorithm Comparison Deep Dive](../../docs/10-domain/algorithm-comparison-deep-dive.md) for comprehensive cross-system analysis explaining why the same CGM data produces different dosing recommendations.
+
+### Prediction Methodology
+
+| Aspect | Loop | oref0/AAPS/Trio |
+|--------|------|-----------------|
+| **Prediction Style** | Single combined curve | 4 separate curves (IOB, COB, UAM, ZT) |
+| **Effect Combination** | All effects summed + momentum blend | Each curve independent |
+| **Decision Basis** | Minimize combined prediction excursions | Use minPredBG across all curves |
+| **UAM Handling** | Implicitly via Retrospective Correction | Explicit UAM curve |
+| **Safety Floor** | Combined prediction minimum | ZT curve provides floor |
+
+### Carb Absorption Models
+
+| Aspect | Loop | oref0/AAPS/Trio |
+|--------|------|-----------------|
+| **Model Type** | Dynamic piecewise linear | Linear decay with assumed rate |
+| **Adaptation** | Real-time based on ICE (Insulin Counteraction Effects) | Limited deviation-based |
+| **Absorption Time** | Per-entry (user or default) | Global `carbs_hr` rate |
+| **Fast Carbs** | Handles via dynamic adaptation | Handled via UAM curve |
+
+### Sensitivity Adjustment Mechanisms
+
+| Mechanism | Loop | oref0 | AAPS | Trio |
+|-----------|------|-------|------|------|
+| **Real-time** | Retrospective Correction | Via deviation | Via deviation | Via deviation |
+| **Historical Pattern** | No | Autosens (8-24h) | Autosens or DynISF | Autosens |
+| **TDD-Based** | No | No | Dynamic ISF option | No |
+| **Override/Preset** | Override presets | Temp target | Profile switch % | Override profiles |
+
+### Algorithm Interoperability Gaps
+
+| Gap ID | Description | Systems Affected |
+|--------|-------------|------------------|
+| **GAP-ALG-001** | Insulin model configuration differs (preset vs DIA field) | Loop vs oref0/AAPS/Trio |
+| **GAP-ALG-002** | Carb absorption model differs (dynamic vs linear) | Loop vs oref0/AAPS/Trio |
+| **GAP-ALG-003** | Sensitivity mechanism differs (RC vs Autosens) | Loop vs oref0/AAPS/Trio |
+| **GAP-ALG-004** | Loop has no explicit UAM curve (relies on RC instead) | Loop |
+| **GAP-ALG-005** | Loop has no SMB algorithm (Loop 3 auto-bolus is distinct from SMB) | Loop |
+| **GAP-ALG-006** | AAPS DynISF is TDD-based while others are deviation-based | AAPS vs others |
+| **GAP-ALG-007** | Trio supports SMB time-window scheduling (`smbIsScheduledOff`) | Trio |
+| **GAP-ALG-008** | Prediction transparency differs (1 combined curve vs 4 separate curves) | Loop vs oref0/AAPS/Trio |
+
+**Full gap details with source citations**: See [Algorithm Comparison Deep Dive - Section 7](../../docs/10-domain/algorithm-comparison-deep-dive.md#7-identified-gaps)
+
+---
+
 ## Notes for Implementers
 
 1. **AAPS has no explicit "Override" concept** - Use ProfileSwitch with percentage/target modifications
