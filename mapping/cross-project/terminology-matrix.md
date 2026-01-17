@@ -10,11 +10,13 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 | Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ |
 |----------------|------------|------|------|------|--------|
-| Profile (config) | `profile` collection, `store` object | `TherapySettings` | `Profile` entity | `FreeAPSSettings` | N/A (CGM-focused) |
-| Basal Schedule | `basal` array in profile | `BasalRateSchedule` | `Profile.basalBlocks` | `basalProfile` | N/A |
-| ISF Schedule | `sens` array in profile | `InsulinSensitivitySchedule` | `Profile.isfBlocks` | `sens` array | N/A |
-| CR Schedule | `carbratio` array in profile | `CarbRatioSchedule` | `Profile.icBlocks` | `carb_ratio` array | N/A |
-| Target Range | `target_low`/`target_high` arrays | `GlucoseRangeSchedule` | `Profile.targetBlocks` | `target_low`/`target_high` | `Pref.highValue`/`lowValue` (display only) |
+| Profile (config) | `profile` collection, `store` object | `TherapySettings` | `ProfileSwitch` entity (with `duration=0`) | Local settings + `FetchedNightscoutProfile` | N/A (CGM-focused) |
+| Basal Schedule | `basal` array in profile | `BasalRateSchedule` | `ProfileSwitch.basalBlocks` | `basal` array (from NS) | N/A |
+| ISF Schedule | `sens` array in profile | `InsulinSensitivitySchedule` | `ProfileSwitch.isfBlocks` | `sens` array (from NS) | N/A |
+| CR Schedule | `carbratio` array in profile | `CarbRatioSchedule` | `ProfileSwitch.icBlocks` | `carbratio` array (from NS) | N/A |
+| Target Range | `target_low`/`target_high` arrays | `GlucoseRangeSchedule` | `ProfileSwitch.targetBlocks` | `target_low`/`target_high` (from NS) | `Pref.highValue`/`lowValue` (display only) |
+
+**Note**: AAPS stores profile data in `ProfileSwitch` entities; a switch with `duration=0` is permanent. Trio fetches profiles from Nightscout (`FetchedNightscoutProfile`) and stores local algorithm settings separately.
 
 **Note**: xDrip+ is a CGM data management app, not a closed-loop system. It does not manage therapy profiles but does track glucose thresholds for display/alerts.
 - Core data models: `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/models/`
@@ -71,17 +73,48 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 | Setting | Nightscout | Loop | AAPS | Trio | xDrip+ |
 |---------|------------|------|------|------|--------|
-| Basal Rates | `basal` array | `BasalRateSchedule` | `defaultBasal` | `basalProfile` | N/A |
-| ISF (Correction Factor) | `sens` array | `InsulinSensitivitySchedule` | `isf` | `sens` | N/A |
-| Carb Ratio | `carbratio` array | `CarbRatioSchedule` | `ic` | `carb_ratio` | N/A |
-| Target Range Low | `target_low` array | `GlucoseRangeSchedule` | `targetLow` | `target_low` | `Pref.lowValue` (alerts) |
-| Target Range High | `target_high` array | `GlucoseRangeSchedule` | `targetHigh` | `target_high` | `Pref.highValue` (alerts) |
+| Basal Rates | `basal` array | `BasalRateSchedule` | `ProfileSwitch.basalBlocks` | `basal` array | N/A |
+| ISF (Correction Factor) | `sens` array | `InsulinSensitivitySchedule` | `ProfileSwitch.isfBlocks` | `sens` array | N/A |
+| Carb Ratio | `carbratio` array | `CarbRatioSchedule` | `ProfileSwitch.icBlocks` | `carbratio` array | N/A |
+| Target Range Low | `target_low` array | `GlucoseRangeSchedule` | `ProfileSwitch.targetBlocks.lowTarget` | `target_low` array | `Pref.lowValue` (alerts) |
+| Target Range High | `target_high` array | `GlucoseRangeSchedule` | `ProfileSwitch.targetBlocks.highTarget` | `target_high` array | `Pref.highValue` (alerts) |
 | Insulin Duration | `dia` | `InsulinModel.effectDuration` | `dia` | `dia` | `Insulin.maxEffect` (per profile) |
 | Units | `units` (`mg/dL` or `mmol/L`) | `HKUnit` | `GlucoseUnit` | `GlucoseUnit` | `Pref.units_mmol` (boolean) |
 
 **Note**: xDrip+ stores target ranges for alert thresholds only, not for dosing calculations.
 - Insulin profiles: `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/insulin/Insulin.java`
 - Alert thresholds: `Pref.getStringToInt("highValue", 170)` and `Pref.getStringToInt("lowValue", 70)`
+
+### Profile Data Structures
+
+| Aspect | Nightscout | Loop | AAPS | Trio |
+|--------|------------|------|------|------|
+| Profile Entity | `profile` collection | `TherapySettings` | `ProfileSwitch` entity | `FetchedNightscoutProfile` (from NS) |
+| Time-Value Format | `{time, timeAsSeconds, value}` | `RepeatingScheduleValue<T>` | `Block` (duration-based) | `NightscoutTimevalue` |
+| Multiple Profiles | `store` dictionary | Single settings | Via named `ProfileSwitch` entries | `store` dictionary |
+| Profile Naming | `defaultProfile` string | None (implicit) | `profileName` field | `defaultProfile` string |
+| Permanent vs Temp | N/A (always stored) | N/A (single config) | `duration=0` = permanent | N/A (uses NS profiles) |
+
+### Timezone Handling
+
+| Aspect | Nightscout | Loop | AAPS | Trio |
+|--------|------------|------|------|------|
+| Storage Format | IANA string | `TimeZone` object | `utcOffset: Long` (ms) | IANA string (from NS) |
+| DST Awareness | Yes (moment-tz) | Yes (Foundation) | No (fixed offset) | Yes (via NS) |
+| Per-Schedule TZ | In each profile | Per `DailyValueSchedule` | Per `ProfileSwitch` event | From profile |
+
+**Gap**: AAPS uses fixed `utcOffset` captured at event time, which does not automatically handle DST transitions (GAP-TZ-001).
+
+### Profile Sync Direction
+
+| System | Upload | Download | Identity Field |
+|--------|--------|----------|----------------|
+| Loop | Optional | No | N/A |
+| AAPS | Yes | Yes | `interfaceIDs.nightscoutId` |
+| Trio | No | Yes | `_id` from NS |
+| xDrip4iOS | No | Yes (read-only) | N/A |
+
+**See Also**: [Profile/Therapy Settings Comparison](../../docs/60-research/profile-therapy-settings-comparison.md) for comprehensive cross-system analysis.
 
 ---
 
