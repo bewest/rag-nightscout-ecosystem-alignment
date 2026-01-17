@@ -27,21 +27,22 @@ LoopFollow is a **follower/caregiver monitoring app** that consolidates T1D mana
 | Phase | Status | Notes |
 |-------|--------|-------|
 | Repository Cloned | Complete | externals/LoopFollow |
-| Key Files Identified | Pending | |
-| Data Models Extracted | Pending | |
-| API Paths Documented | Pending | |
-| Alarm Logic Analyzed | Pending | |
-| Cross-References Updated | Pending | |
+| Key Files Identified | Complete | Alarm/, Remote/, Controllers/Nightscout/ |
+| Data Models Extracted | Complete | Alarm, AlarmData, CommandPayload |
+| API Paths Documented | Partial | Nightscout v1 API only |
+| Alarm Logic Analyzed | Complete | 20 alarm types documented |
+| Remote Commands Analyzed | Complete | 3 protocols (APNS, TRC, NS) |
+| Cross-References Updated | Complete | Terminology matrix, requirements, gaps |
 
 ## Documentation Index
 
 | Document | Description | Status |
 |----------|-------------|--------|
 | [README.md](README.md) | Overview and discovery status | Complete |
-| alarm-system.md | Alarm conditions and notification logic | Pending |
-| nightscout-sync.md | Nightscout API integration patterns | Pending |
-| remote-commands.md | Remote override/temp target protocol | Pending |
-| data-models.md | Core data structures | Pending |
+| [alarm-system.md](alarm-system.md) | All 20 alarm types, conditions, day/night scheduling, snooze | Complete |
+| [remote-commands.md](remote-commands.md) | Loop APNS, TRC, Nightscout remote protocols | Complete |
+| nightscout-sync.md | Nightscout API integration patterns | Future |
+| data-models.md | Core data structures | Future |
 
 ## Key Source Files (To Analyze)
 
@@ -169,4 +170,7 @@ This maps to files in `externals/LoopFollow/`.
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-17 | Agent | Completed alarm-system.md with 20 alarm types, conditions, day/night, snooze |
+| 2026-01-17 | Agent | Completed remote-commands.md with 3 protocols (Loop APNS, TRC, Nightscout) |
+| 2026-01-17 | Agent | Updated cross-references: terminology matrix, requirements, gaps |
 | 2026-01-17 | Agent | Initial discovery stub created |

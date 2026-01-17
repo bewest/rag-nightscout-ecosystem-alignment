@@ -1330,3 +1330,177 @@ Requirements follow the pattern:
 - View recommended bolus
 - Deliver bolus from another source
 - Verify recommendation invalidated on refresh
+
+---
+
+## Caregiver Alarm Requirements
+
+### REQ-ALARM-001: Configurable Glucose Thresholds
+
+**Statement**: Caregiver alarm apps MUST allow configuration of glucose thresholds for low and high alarms.
+
+**Rationale**: Different individuals have different target ranges; one-size-fits-all thresholds lead to alarm fatigue or missed alerts.
+
+**Scenarios**:
+- Low Glucose Alerting
+- High Glucose Alerting
+- Individual Threshold Customization
+
+**Verification**:
+- Configure custom low threshold (e.g., 65 mg/dL)
+- Verify alarm fires at configured threshold
+- Configure custom high threshold (e.g., 200 mg/dL)
+- Verify alarm fires at configured threshold
+
+---
+
+### REQ-ALARM-002: Configurable Snooze Duration
+
+**Statement**: Caregiver alarm apps MUST allow configuration of snooze duration per alarm type.
+
+**Rationale**: Some alarms (e.g., low BG) require shorter snooze intervals than others (e.g., sensor change reminder).
+
+**Scenarios**:
+- Alarm Snooze
+- Snooze Duration Management
+
+**Verification**:
+- Configure different snooze durations for different alarm types
+- Snooze alarm and verify it re-fires after configured duration
+
+---
+
+### REQ-ALARM-003: Day/Night Schedule Support
+
+**Statement**: Caregiver alarm apps SHOULD support different alarm behavior for day vs night hours.
+
+**Rationale**: Nighttime alarms may need different thresholds (lower sensitivity for minor highs) or different sound/vibration patterns to avoid disrupting sleep for non-urgent issues.
+
+**Scenarios**:
+- Night Mode Alarms
+- Time-Based Alarm Configuration
+
+**Verification**:
+- Configure day/night schedule times
+- Verify alarm behavior changes between periods
+- Test sound/activation options per time period
+
+---
+
+### REQ-ALARM-004: Predictive Low Glucose Alarms
+
+**Statement**: Caregiver alarm apps SHOULD support predictive alarms that fire before glucose reaches threshold based on prediction data.
+
+**Rationale**: Reacting to lows only when they occur may not provide enough time for intervention; predictive alarms enable proactive treatment.
+
+**Scenarios**:
+- Predictive Low Alerting
+- Early Warning System
+
+**Verification**:
+- Enable predictive alarm with N-minute look-ahead
+- Verify alarm fires when prediction shows low within window
+- Confirm alarm does not fire for brief predicted dips
+
+---
+
+### REQ-ALARM-005: Persistent Threshold Requirement
+
+**Statement**: Caregiver alarm apps SHOULD support requiring glucose to persist outside threshold for a configurable duration before alarming.
+
+**Rationale**: Brief excursions (compression lows, signal noise) should not trigger alarms; persistence filtering reduces false positives.
+
+**Scenarios**:
+- Persistent High Detection
+- Noise Filtering
+
+**Verification**:
+- Configure persistent duration (e.g., 15 minutes)
+- Verify alarm does not fire for brief threshold crossing
+- Verify alarm fires when threshold crossed for configured duration
+
+---
+
+### REQ-ALARM-006: Rate-of-Change Alarms
+
+**Statement**: Caregiver alarm apps SHOULD support rate-of-change alarms for fast drops and fast rises.
+
+**Rationale**: Rapid glucose changes may indicate emerging hypo/hyperglycemia before thresholds are crossed.
+
+**Scenarios**:
+- Fast Drop Detection
+- Fast Rise Detection
+
+**Verification**:
+- Configure drop rate threshold (e.g., 3 mg/dL/min)
+- Verify alarm fires when glucose drops rapidly
+- Configure rise rate threshold
+- Verify alarm fires when glucose rises rapidly
+
+---
+
+### REQ-ALARM-007: Missed Reading Detection
+
+**Statement**: Caregiver alarm apps MUST alert when glucose readings have not been received for a configurable period.
+
+**Rationale**: Missing data may indicate CGM failure, connectivity issues, or phone problems—all requiring attention.
+
+**Scenarios**:
+- Data Gap Alerting
+- CGM Connectivity Monitoring
+
+**Verification**:
+- Configure missed reading threshold (e.g., 15 minutes)
+- Simulate data gap
+- Verify alarm fires after configured threshold
+
+---
+
+### REQ-ALARM-008: Loop Status Alerting
+
+**Statement**: Caregiver alarm apps MUST alert when the AID loop has not run for a configurable period.
+
+**Rationale**: A non-looping controller provides no automatic basal adjustment—equivalent to open-loop pump therapy with significant safety implications.
+
+**Scenarios**:
+- Loop Failure Detection
+- AID Status Monitoring
+
+**Verification**:
+- Configure not-looping threshold (e.g., 30 minutes)
+- Simulate loop stoppage
+- Verify alarm fires after configured threshold
+
+---
+
+### REQ-ALARM-009: Alarm Priority Ordering
+
+**Statement**: When multiple alarm conditions are met simultaneously, caregiver apps MUST present the highest-priority alarm first.
+
+**Rationale**: Low glucose is more urgent than high glucose; critical alarms should not be obscured by less important ones.
+
+**Scenarios**:
+- Multiple Concurrent Alarms
+- Priority-Based Alerting
+
+**Verification**:
+- Trigger low and high alarms simultaneously
+- Verify low alarm displayed first
+- Snooze low alarm, verify high alarm now displayed
+
+---
+
+### REQ-ALARM-010: Global Snooze/Mute Capability
+
+**Statement**: Caregiver alarm apps SHOULD support a global snooze or mute function for all alarms.
+
+**Rationale**: During meetings, movies, or known high-activity periods, caregivers may need to temporarily suppress all alerts.
+
+**Scenarios**:
+- Meeting Mode
+- Temporary Silence All
+
+**Verification**:
+- Enable global snooze for N minutes
+- Verify all alarms suppressed during period
+- Verify alarms resume after period ends

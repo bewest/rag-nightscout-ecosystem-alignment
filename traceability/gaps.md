@@ -1780,3 +1780,209 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 3. Document security implications
 
 **Status**: Under discussion
+
+---
+
+## LoopFollow Gaps
+
+### GAP-LF-001: Alarm Configuration Not Synced
+
+**Scenario**: Multi-Caregiver Coordination
+
+**Description**: LoopFollow alarm configurations are stored locally only. There is no mechanism to sync alarm settings to Nightscout or between caregiver devices. Each LoopFollow instance must be configured independently.
+
+**Source**: `loopfollow:LoopFollow/Alarm/Alarm.swift` - Stored via `Storage.shared.alarms`
+
+**Impact**:
+- Duplicate configuration effort for multiple caregivers
+- No centralized alarm management
+- Alarm settings lost if device is reset
+
+**Possible Solutions**:
+1. Store alarm configuration in Nightscout profile store
+2. Implement iCloud sync for alarm settings
+3. Export/import configuration as JSON
+
+**Status**: Under discussion
+
+---
+
+### GAP-LF-002: No Alarm History or Audit Log
+
+**Scenario**: Alarm Effectiveness Review
+
+**Description**: LoopFollow does not maintain a history of triggered alarms. Once an alarm is snoozed or cleared, there is no record of when it fired, what triggered it, or how it was resolved.
+
+**Source**: `loopfollow:LoopFollow/Alarm/AlarmManager.swift` - No history persistence
+
+**Impact**:
+- Cannot analyze alarm patterns over time
+- No audit trail for missed alarms
+- Cannot tune alarm thresholds based on historical data
+
+**Possible Solutions**:
+1. Log alarm events to Nightscout treatments collection
+2. Maintain local SQLite database of alarm history
+3. Upload alarm events as announcements
+
+**Status**: Under discussion
+
+---
+
+### GAP-LF-003: Prediction Data Unavailable for Trio
+
+**Scenario**: Predictive Low Glucose Alarm
+
+**Description**: LoopFollow's predictive low alarm relies on prediction data from deviceStatus. While Loop includes `predBgs` in deviceStatus, Trio may not include this data consistently, limiting predictive alarm effectiveness.
+
+**Source**: `loopfollow:LoopFollow/Alarm/AlarmCondition/LowBGCondition.swift#L36-L51`
+
+**Impact**:
+- Predictive alarms only work reliably with Loop
+- Trio users get delayed low alerts (reactive only)
+- Feature parity gap between Loop and Trio monitoring
+
+**Possible Solutions**:
+1. Verify Trio prediction data availability
+2. Document which alarms work with which AID systems
+3. Implement client-side prediction from recent BG data
+
+**Status**: Under discussion
+
+---
+
+### GAP-LF-004: No Multi-Caregiver Alarm Acknowledgment
+
+**Scenario**: Caregiver Team Coordination
+
+**Description**: When multiple caregivers use LoopFollow to monitor the same looper, there is no coordination for alarm acknowledgment. Each caregiver sees independent alarms, and snoozing on one device doesn't affect others.
+
+**Source**: `loopfollow:LoopFollow/Alarm/AlarmManager.swift#L155-L169` - Local snooze only
+
+**Impact**:
+- Multiple caregivers may respond to same alarm
+- No visibility into who acknowledged an alarm
+- Risk of alarm fatigue from duplicate notifications
+
+**Possible Solutions**:
+1. Sync alarm acknowledgment via Nightscout
+2. Implement shared snooze state
+3. Use Nightscout announcements for alarm coordination
+
+**Status**: Under discussion
+
+---
+
+### GAP-LF-005: No Command Status Tracking
+
+**Scenario**: Remote Command Reliability
+
+**Description**: LoopFollow remote commands (TRC, Loop APNS, Nightscout) are fire-and-forget. After sending a command, there is no mechanism to verify it was received or executed. Users must check the looper's app or Nightscout to confirm.
+
+**Source**: 
+- `loopfollow:LoopFollow/Remote/TRC/PushNotificationManager.swift` - Completion only indicates APNS delivery
+- `loopfollow:LoopFollow/Remote/Nightscout/TrioNightscoutRemoteView.swift` - No status polling
+
+**Impact**:
+- Users may not know if command succeeded
+- No retry mechanism for failed commands
+- Commands may be sent multiple times if user is uncertain
+
+**Possible Solutions**:
+1. Implement TRC return notification fully
+2. Poll Nightscout for command status (like LoopCaregiver Remote 2.0)
+3. Show pending command status in UI
+
+**Status**: Under discussion
+
+---
+
+### GAP-LF-006: No Command History or Audit Log
+
+**Scenario**: Remote Command Audit
+
+**Description**: LoopFollow does not maintain a history of commands sent. There is no log of when commands were sent, what parameters were used, or whether they succeeded.
+
+**Source**: No command history persistence in codebase
+
+**Impact**:
+- Cannot audit who sent what command when
+- No visibility for reviewing past remote actions
+- Cannot diagnose command failures retroactively
+
+**Possible Solutions**:
+1. Maintain local command history database
+2. Log commands to Nightscout
+3. Display recent commands in UI
+
+**Status**: Under discussion
+
+---
+
+### GAP-LF-007: TRC Return Notification Not Fully Implemented
+
+**Scenario**: Command Confirmation
+
+**Description**: TRC `CommandPayload` includes a `ReturnNotificationInfo` structure for Trio to send confirmation back to LoopFollow, but this feature does not appear to be fully implemented. The return notification fields are sent but there is no handler for incoming confirmations.
+
+**Source**: 
+- `loopfollow:LoopFollow/Remote/TRC/PushMessage.swift#L32-L48` - ReturnNotificationInfo defined
+- No corresponding notification receiver implementation found
+
+**Impact**:
+- Users cannot get push confirmation of command execution
+- Return notification infrastructure is unused
+- Partial implementation may confuse future developers
+
+**Possible Solutions**:
+1. Implement return notification handler
+2. Remove unused ReturnNotificationInfo structure
+3. Document feature as planned but unimplemented
+
+**Status**: Under discussion
+
+---
+
+### GAP-LF-008: Nightscout Remote Lacks OTP Security
+
+**Scenario**: Temp Target Security
+
+**Description**: LoopFollow's Nightscout-based temp target commands rely solely on API token authentication. Unlike Loop APNS (TOTP) or TRC (encryption), there is no additional security layer.
+
+**Source**: `loopfollow:LoopFollow/Remote/Nightscout/TrioNightscoutRemoteView.swift#L48-L52`
+
+**Impact**:
+- Anyone with the API token can send temp targets
+- No time-based protection against replay
+- Inconsistent security model across remote types
+
+**Possible Solutions**:
+1. Add OTP support for Nightscout commands
+2. Document security limitations
+3. Recommend TRC for secure remote control
+
+**Status**: Under discussion
+
+---
+
+### GAP-LF-009: No Unified Command Abstraction
+
+**Scenario**: Multi-Protocol Remote Control
+
+**Description**: LoopFollow implements three distinct remote protocols (Loop APNS, TRC, Nightscout) with separate codepaths, data structures, and UIs. There is no unified abstraction for sending commands.
+
+**Source**: 
+- `loopfollow:LoopFollow/Remote/RemoteViewController.swift#L33-L60` - Branched view logic
+- Separate command implementations per protocol
+
+**Impact**:
+- Difficulty adding new commands requires changes in multiple places
+- Inconsistent feature support across protocols
+- Code duplication for similar functionality
+
+**Possible Solutions**:
+1. Create protocol-agnostic command abstraction
+2. Implement command factory pattern
+3. Unify UI with backend protocol selection
+
+**Status**: Under discussion

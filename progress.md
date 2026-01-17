@@ -329,6 +329,41 @@ Deep dive into LoopCaregiver's Remote 2.0 protocol implementation, documenting Q
 
 ---
 
+### Cycle 15: LoopFollow Deep Dive (Completed 2026-01-17)
+
+Comprehensive analysis of LoopFollow's alarm system and remote command mechanisms, documenting all 20 alarm types and 3 remote control protocols.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **Alarm System Documentation** | `mapping/loopfollow/alarm-system.md` | 20 alarm types, predictive/persistent conditions, day/night scheduling, snooze behavior |
+| **Remote Commands Documentation** | `mapping/loopfollow/remote-commands.md` | Loop APNS (TOTP), TRC (AES-256-GCM), Nightscout API protocols |
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Added LoopFollow Alarm Models and Remote Command Models sections |
+| **Requirements Update** | `traceability/requirements.md` | Added REQ-ALARM-001 through REQ-ALARM-010 for caregiver alarm requirements |
+| **Gaps Update** | `traceability/gaps.md` | Added GAP-LF-001 through GAP-LF-009 for LoopFollow-specific gaps |
+
+**Key Findings**:
+- **20 Alarm Types**: Low/high BG, fast drop/rise, missed reading, IOB, COB, missed bolus, rec bolus, not looping, build expire, sensor change, pump change, pump volume, battery, battery drop, override start/end, temp target start/end, temporary
+- **Alarm Features**: Predictive look-ahead (low BG), persistent duration, delta-based detection, day/night sound/activation scheduling, global snooze
+- **3 Remote Protocols**: Loop APNS (TOTP+JWT), TRC (AES-256-GCM+JWT), Nightscout (token only)
+- **TRC Commands**: bolus, temp_target, cancel_temp_target, meal (with protein/fat), start_override, cancel_override
+- **Security Comparison**: TRC most secure (encryption); Loop APNS uses TOTP; Nightscout least secure (token only)
+- **Key Differentiator**: LoopFollow supports both Loop (via APNS) and Trio (via TRC/Nightscout) unlike LoopCaregiver
+
+**Source Files Analyzed**:
+- `loopfollow:LoopFollow/Alarm/AlarmType/AlarmType.swift` - 20 alarm types
+- `loopfollow:LoopFollow/Alarm/Alarm.swift` - Alarm model with day/night options
+- `loopfollow:LoopFollow/Alarm/AlarmManager.swift` - Priority-based evaluation, snooze
+- `loopfollow:LoopFollow/Alarm/AlarmCondition/*.swift` - Individual condition implementations
+- `loopfollow:LoopFollow/Remote/TRC/PushNotificationManager.swift` - TRC APNS with JWT
+- `loopfollow:LoopFollow/Remote/TRC/SecureMessenger.swift` - AES-256-GCM encryption
+- `loopfollow:LoopFollow/Remote/LoopAPNS/LoopAPNSService.swift` - Loop APNS commands
+- `loopfollow:LoopFollow/Remote/LoopAPNS/TOTPService.swift` - TOTP management
+- `loopfollow:LoopFollow/Remote/Nightscout/TrioNightscoutRemoteView.swift` - NS temp target
+
+**Gaps Identified**: GAP-LF-001 through GAP-LF-009
+
+---
+
 ## Candidate Next Cycles
 
 ### Priority A: AAPS Plugin Architecture

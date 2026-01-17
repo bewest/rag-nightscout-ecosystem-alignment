@@ -1659,10 +1659,156 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 
 ---
 
+## LoopFollow Alarm Models
+
+### Alarm Types
+
+| Alarm Type | Category | Trigger | Default Threshold |
+|------------|----------|---------|-------------------|
+| `low` | Glucose | BG ≤ threshold | 70 mg/dL |
+| `high` | Glucose | BG ≥ threshold | 180 mg/dL |
+| `fastDrop` | Glucose | N consecutive drops ≥ delta | 18 mg/dL / 2 readings |
+| `fastRise` | Glucose | N consecutive rises ≥ delta | 10 mg/dL / 3 readings |
+| `missedReading` | Glucose | No BG for N minutes | 16 minutes |
+| `temporary` | Glucose | One-time BG limit trigger | User-defined |
+| `iob` | Insulin | IOB ≥ threshold OR bolus pattern | 6 units |
+| `cob` | Food | COB ≥ threshold | 20 grams |
+| `missedBolus` | Insulin | Carbs logged without bolus | 15 min delay |
+| `recBolus` | Insulin | Recommended bolus ≥ threshold | 1 unit |
+| `notLooping` | System | Loop not run for N minutes | 31 minutes |
+| `buildExpire` | System | App expires in N days | 7 days |
+| `sensorChange` | Device | Sensor age ≥ N days | 12 days |
+| `pumpChange` | Device | Pump site age ≥ N days | 12 days |
+| `pump` | Device | Reservoir ≤ N units | 20 units |
+| `battery` | Device | Phone battery ≤ N% | 20% |
+| `batteryDrop` | Device | Battery dropped N% in window | 10% / 15 min |
+| `overrideStart` | Event | Override activated | N/A |
+| `overrideEnd` | Event | Override ended | N/A |
+| `tempTargetStart` | Event | Temp target activated | N/A |
+| `tempTargetEnd` | Event | Temp target ended | N/A |
+
+### Alarm Condition Parameters
+
+| Parameter | Field | Description | Used By |
+|-----------|-------|-------------|---------|
+| BG Above | `aboveBG` | Upper BG threshold (mg/dL) | high, missedBolus |
+| BG Below | `belowBG` | Lower BG threshold (mg/dL) | low |
+| Threshold | `threshold` | Generic limit (units/grams/days/%) | iob, cob, battery, etc. |
+| Predictive | `predictiveMinutes` | Look-ahead for predictions | low |
+| Persistent | `persistentMinutes` | Duration BG must persist | low, high |
+| Delta | `delta` | Change per reading (mg/dL) | fastDrop, fastRise, batteryDrop |
+| Window | `monitoringWindow` | Readings/minutes to observe | fastDrop, fastRise, missedBolus |
+
+### Day/Night Scheduling
+
+| Option Type | Values | Description |
+|-------------|--------|-------------|
+| `ActiveOption` | always, day, night | When alarm is active |
+| `PlaySoundOption` | always, day, night, never | When to play sound |
+| `RepeatSoundOption` | always, day, night, never | When to repeat sound |
+
+**Configuration**: `dayStart` (default 6:00 AM), `nightStart` (default 10:00 PM)
+
+### Comparison with Other Caregiver Apps
+
+| Feature | LoopFollow | LoopCaregiver | Nightguard |
+|---------|------------|---------------|------------|
+| Alarm Types | 20 | ~5 | 3-4 |
+| Predictive Alarms | ✅ (low BG) | ❌ | ❌ |
+| Persistent Alarms | ✅ | ❌ | ❌ |
+| Delta Alarms | ✅ | ❌ | ❌ |
+| Day/Night Scheduling | ✅ | ❌ | ❌ |
+| Custom Sounds | ✅ (20+) | System | System |
+| Missed Bolus | ✅ | ❌ | ❌ |
+| Build Expiration | ✅ | ❌ | ❌ |
+
+**Source Files**:
+- `loopfollow:LoopFollow/Alarm/AlarmType/AlarmType.swift` - Type enumeration
+- `loopfollow:LoopFollow/Alarm/Alarm.swift` - Alarm model
+- `loopfollow:LoopFollow/Alarm/AlarmManager.swift` - Evaluation logic
+- `loopfollow:LoopFollow/Alarm/AlarmCondition/*.swift` - Condition implementations
+
+---
+
+## LoopFollow Remote Command Models
+
+### Remote Types
+
+| Remote Type | Target AID | Transport | Security |
+|-------------|------------|-----------|----------|
+| `loopAPNS` | Loop | Direct APNS | TOTP + JWT |
+| `trc` | Trio | Direct APNS | AES-256-GCM + JWT |
+| `nightscout` | Trio | HTTPS API | Token (careportal) |
+
+### TRC (Trio Remote Control) Commands
+
+| Command | Type String | Parameters |
+|---------|-------------|------------|
+| Bolus | `bolus` | `bolusAmount` (Decimal) |
+| Temp Target | `temp_target` | `target` (Int, mg/dL), `duration` (Int, min) |
+| Cancel Temp Target | `cancel_temp_target` | - |
+| Meal | `meal` | `carbs`, `protein`, `fat` (Int), `bolusAmount`?, `scheduledTime`? |
+| Start Override | `start_override` | `overrideName` (String) |
+| Cancel Override | `cancel_override` | - |
+
+### TRC Encryption (AES-256-GCM)
+
+| Step | Detail |
+|------|--------|
+| 1. Key Derivation | `SHA256(sharedSecret.utf8)` → 256-bit key |
+| 2. Nonce | 12 random bytes (SecRandomCopyBytes) |
+| 3. Encryption | AES-GCM combined mode (ciphertext + auth tag) |
+| 4. Output | `Base64(nonce + encryptedBytes)` |
+
+### Loop APNS Payload Fields
+
+| Field | Description |
+|-------|-------------|
+| `otp` | 6-digit TOTP code |
+| `bolus-entry` | Bolus amount (units) |
+| `carbs-entry` | Carb amount (grams) |
+| `absorption-time` | Carb absorption (hours) |
+| `start-time` | Carb entry time (ISO 8601) |
+| `expiration` | Command expiry (5 minutes) |
+| `remote-address` | "LoopFollow" |
+
+### Nightscout Remote Payload
+
+| Field | Description |
+|-------|-------------|
+| `eventType` | "Temporary Target" |
+| `targetTop` | Target value (mg/dL) |
+| `targetBottom` | Target value (mg/dL) |
+| `duration` | Minutes (0 = cancel) |
+| `enteredBy` | "LoopFollow" |
+| `reason` | "Manual" |
+
+### Remote Security Comparison
+
+| Aspect | Loop APNS | TRC | Nightscout |
+|--------|-----------|-----|------------|
+| Transport | TLS | TLS | TLS |
+| Message Encryption | None | AES-256-GCM | None |
+| Authentication | TOTP (30s) | Shared secret + timestamp | API token |
+| Replay Protection | TOTP period | Timestamp validation | None |
+| Command Types | 3 | 6 | 1 |
+
+**Source Files**:
+- `loopfollow:LoopFollow/Remote/RemoteType.swift` - Type enumeration
+- `loopfollow:LoopFollow/Remote/TRC/PushNotificationManager.swift` - TRC implementation
+- `loopfollow:LoopFollow/Remote/TRC/SecureMessenger.swift` - AES encryption
+- `loopfollow:LoopFollow/Remote/LoopAPNS/LoopAPNSService.swift` - Loop APNS service
+- `loopfollow:LoopFollow/Remote/LoopAPNS/TOTPService.swift` - TOTP handling
+
+**Gap Reference**: GAP-LF-005 through GAP-LF-009
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-17 | Agent | Added LoopFollow Alarm Models and Remote Command Models sections |
 | 2026-01-17 | Agent | Added LoopCaregiver Remote 2.0 Models section with command types, status states, auth components, deep links |
 | 2026-01-17 | Agent | Added Libre CGM Protocol Models section with sensor types, FRAM layout, encryption, BLE, transmitter bridges |
 | 2026-01-17 | Agent | Added Carb Absorption Models section with curve types, COB calculation, parameters, UAM handling |
