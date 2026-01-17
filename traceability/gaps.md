@@ -1986,3 +1986,164 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 3. Unify UI with backend protocol selection
 
 **Status**: Under discussion
+
+---
+
+## Delegation and Agent Gaps
+
+> **See Also**: [Progressive Enhancement Framework](../docs/10-domain/progressive-enhancement-framework.md) for L7-L9 layer definitions.
+> **See Also**: [Capability Layer Matrix](../mapping/cross-project/capability-layer-matrix.md) for system-by-system analysis.
+
+### GAP-DELEGATE-001: No Standardized Authorization Scoping
+
+**Scenario**: Remote Control Delegation (L8)
+
+**Description**: Current remote control implementations provide all-or-nothing authorization. A caregiver either has full remote control access or none. There is no mechanism to scope permissions to specific command types (e.g., "can send temp targets but not boluses").
+
+**Affected Systems**: Loop, AAPS, Trio, LoopCaregiver, LoopFollow
+
+**Source**: 
+- Loop: Single OTP secret grants all command permissions
+- AAPS: Phone whitelist is binary (all or nothing)
+- Trio: Single shared secret for all commands
+
+**Impact**:
+- Cannot implement "observer" role (view-only)
+- Cannot implement "coach" role (suggestions only)
+- Cannot implement "nurse" role (limited commands)
+- Inappropriate for clinical care team integration
+
+**Possible Solutions**:
+1. Implement permission bitmask in authorization
+2. Create role-based access control (RBAC) layer
+3. Use JWT claims for scoped permissions
+4. Define standard permission vocabulary
+
+**Status**: Under discussion
+
+---
+
+### GAP-DELEGATE-002: No Role-Based Permission Model
+
+**Scenario**: Care Team Coordination (L8)
+
+**Description**: No AID system implements role-based permissions for remote control. All authorized parties have equivalent access regardless of their relationship (parent, partner, clinician, coach).
+
+**Affected Systems**: All
+
+**Source**: 
+- No role field in command authentication
+- No permission differentiation by user identity
+- No concept of permission hierarchy
+
+**Impact**:
+- Cannot distinguish parent vs babysitter permissions
+- Cannot limit clinician access to view-only
+- Cannot implement "least privilege" security principle
+- Risk of unauthorized actions by over-privileged users
+
+**Possible Solutions**:
+1. Define standard role vocabulary (primary, caregiver, clinician, observer, agent)
+2. Map roles to permission sets
+3. Store role in Nightscout token or authorization
+4. Implement in gateway layer (NRG)
+
+**Status**: Under discussion
+
+**Related**:
+- [GAP-AUTH-002](#gap-auth-002-no-authority-hierarchy-in-nightscout)
+- [Controller Registration Protocol Proposal](../docs/60-research/controller-registration-protocol-proposal.md)
+
+---
+
+### GAP-DELEGATE-003: No Structured Out-of-Band Signal API
+
+**Scenario**: Agent Context Integration (L9)
+
+**Description**: There is no standardized API for integrating out-of-band signals (exercise, menstrual cycle, sleep, stress) into AID decision-making. Each potential signal source would require custom integration.
+
+**Affected Systems**: All
+
+**Source**: 
+- No exercise detection integration in any open-source AID
+- No hormone cycle awareness
+- No wearable data integration (HR, HRV, steps) beyond CGM
+- Manual overrides are the only mechanism
+
+**Impact**:
+- Agents cannot propose contextually-aware recommendations
+- Users must manually detect and respond to patterns
+- No path to reduced burden through automation
+- Cannot leverage growing wearable ecosystem
+
+**Possible Solutions**:
+1. Define standard "context event" format for Nightscout
+2. Create observer APIs for external signal sources
+3. Implement signal-to-recommendation mapping framework
+4. Start with exercise detection pilot (highest impact)
+
+**Status**: Under discussion
+
+---
+
+### GAP-DELEGATE-004: No Agent Authorization Framework
+
+**Scenario**: Autonomous Agent Operation (L9)
+
+**Description**: There is no framework for authorizing software agents to act on behalf of users. Current systems assume human operators for all commands.
+
+**Affected Systems**: All
+
+**Source**: 
+- `enteredBy` field is unverified string
+- No concept of "agent" vs "human" command source
+- No scoping for agent autonomy bounds
+- No revocation mechanism for agent permissions
+
+**Impact**:
+- Cannot safely deploy autonomous agents
+- Cannot audit human vs machine decisions
+- Cannot implement "human in the loop" for agent actions
+- Cannot limit agent actions to safe bounds
+
+**Possible Solutions**:
+1. Define `actorType` field (human, agent, controller)
+2. Implement agent registration and authorization
+3. Create audit trail for agent actions
+4. Define bounded autonomy specifications
+
+**Status**: Under discussion
+
+**Related**:
+- [GAP-AUTH-001](#gap-auth-001-enteredby-field-is-unverified)
+- [GAP-AUTH-002](#gap-auth-002-no-authority-hierarchy-in-nightscout)
+
+---
+
+### GAP-DELEGATE-005: No Propose-Authorize-Enact Pattern
+
+**Scenario**: Safe Agent Interaction (L9)
+
+**Description**: Current remote command patterns assume immediate execution. There is no standardized workflow for agents to propose actions, await human authorization, and then enact approved actions.
+
+**Affected Systems**: All
+
+**Source**: 
+- Remote commands execute immediately upon receipt
+- No "pending authorization" state for commands
+- No mechanism for human approval of proposed actions
+- No timeout/expiry for unapproved proposals
+
+**Impact**:
+- Agents cannot operate in "propose-only" mode
+- No gradual trust-building path for automation
+- Users must fully trust or fully block agents
+- Cannot implement "confirm to enact" safety pattern
+
+**Possible Solutions**:
+1. Add `status` field to remote commands (proposed, authorized, enacted, expired)
+2. Implement proposal notification to authorized humans
+3. Create authorization workflow with timeout
+4. Define escalation for unacknowledged proposals
+
+**Status**: Under discussion

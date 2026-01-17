@@ -1826,10 +1826,105 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 
 ---
 
+## Capability Layer Models
+
+> **See Also**: [Progressive Enhancement Framework](../../docs/10-domain/progressive-enhancement-framework.md) for complete layer definitions.
+> **See Also**: [Capability Layer Matrix](capability-layer-matrix.md) for system-by-system analysis.
+
+### Layer Vocabulary
+
+| Layer | Name | Key Capability | Example Systems |
+|-------|------|----------------|-----------------|
+| L0 | MDI Baseline | Manual insulin, fingersticks | Syringes, pens, meters |
+| L1 | Structured MDI | Carb counting, logging | Diabetes apps |
+| L2 | CGM Sensing | Continuous glucose, trends | Dexcom, Libre, Medtronic |
+| L3 | Pump Therapy | Programmable basal, bolus | Omnipod, Tandem, Dana |
+| L4 | Manual Pump+CGM | CGM-informed manual control | Pre-automation pump users |
+| L5 | Safety Automation | Suspend, bounded corrections | Basal-IQ, SmartGuard |
+| L6 | Full AID | Closed-loop control | Loop, AAPS, Trio, Control-IQ |
+| L7 | Networked Care | Remote visibility, audit | Nightscout, Dexcom Follow |
+| L8 | Remote Controls | Delegated actions | LoopCaregiver, AAPS SMS |
+| L9 | Delegate Agents | Autonomous agents | (Future) |
+
+### Three-State Model (L6+)
+
+| State | Definition | Examples |
+|-------|------------|----------|
+| **Desired** | What we want to achieve | Targets, ISF, CR, overrides, constraints |
+| **Observed** | What actually happened | Delivered insulin, CGM readings, IOB, COB |
+| **Capabilities** | What's possible now | CGM quality, pump type, comms status, max rates |
+
+**Implementation Mapping**:
+
+| State | Loop | AAPS | Trio |
+|-------|------|------|------|
+| Desired | `TherapySettings`, `TemporaryScheduleOverride` | `ProfileSwitch`, `TempTarget` | Settings + `Override` |
+| Observed | `DoseEntry`, `StoredGlucoseSample`, `InsulinOnBoard` | `Bolus`, `GlucoseValue`, `IobTotal` | via oref0 state |
+| Capabilities | `PumpManagerStatus.deliveryStatus` | `Pump.isSuspended()`, `LoopState` | `LoopStatus` |
+
+### Delegation Authority Levels
+
+| Level | Actor Type | Permissions | Audit |
+|-------|------------|-------------|-------|
+| Primary | Human (person with diabetes) | Full control | Optional |
+| Caregiver | Human (parent, partner) | Scoped by primary | Required |
+| Clinician | Human (healthcare provider) | View + recommend | Required |
+| Observer | Human (friend, teacher) | View only | Optional |
+| Agent | Software | Bounded autonomy | Required |
+| Controller | AID system | Therapy execution | Automatic |
+
+**Current Gap**: No system implements this hierarchy (GAP-DELEGATE-001, GAP-DELEGATE-002)
+
+### Agent Operation Patterns
+
+| Pattern | Description | Trust Level | Implementation |
+|---------|-------------|-------------|----------------|
+| Advisory | Propose only, no action | Low | Notification with suggestion |
+| Confirm-to-Enact | Await human approval | Medium | Proposal + authorization workflow |
+| Bounded Autonomy | Act within strict limits | High | Scoped permissions + rollback |
+| Full Autonomy | Unrestricted action | Maximum | (Not recommended) |
+
+**Current Gap**: No system implements propose-authorize-enact (GAP-DELEGATE-005)
+
+### Out-of-Band Signal Types
+
+| Signal | Sources | Use Cases | Integration Status |
+|--------|---------|-----------|-------------------|
+| Exercise | Calendar, HR, steps, GPS | Pre-exercise target, post-exercise sensitivity | Manual (override) |
+| Menstrual cycle | Cycle apps, user annotation | Hormone-phase sensitivity | Manual |
+| Sleep | Sleep trackers, time-of-day | Overnight targets | Schedule-based |
+| Illness | Self-report, HRV | Sick-day rules | Manual |
+| Meals | Photo, routine, calendar | Carb estimation | Manual |
+
+**Current Gap**: No structured API for context integration (GAP-DELEGATE-003)
+
+### Graceful Degradation Paths
+
+| From Layer | Trigger | To Layer | Action |
+|------------|---------|----------|--------|
+| L6 (AID) | CGM stale | L4 (Manual) | Suspend automation, resume scheduled basal |
+| L6 (AID) | Pump comms fail | L0/L1 (MDI) | Alert user, provide MDI guidance |
+| L8 (Remote) | Network loss | L7 (View) | Maintain read-only access |
+| L8 (Remote) | Push failure | L6 (Local) | Fallback to local control |
+| L9 (Agent) | Context stale | L8 (Human) | Revert to human delegation |
+| L9 (Agent) | Low confidence | L8 (Human) | Switch to propose-only mode |
+
+**Requirement Reference**: REQ-DEGRADE-001 through REQ-DEGRADE-006
+
+**Source Files**:
+- Loop: `LoopDataManager.swift` - staleness checks
+- AAPS: `LoopPlugin.kt` - loop state management
+- Trio: `LoopStatus.swift` - loop state tracking
+
+**Gap Reference**: GAP-DELEGATE-001 through GAP-DELEGATE-005
+
+---
+
 ## Revision History
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-17 | Agent | Added Capability Layer Models section with layer vocabulary, three-state model, delegation authority levels, agent patterns, graceful degradation paths |
 | 2026-01-17 | Agent | Added LoopFollow Alarm Models and Remote Command Models sections |
 | 2026-01-17 | Agent | Added LoopCaregiver Remote 2.0 Models section with command types, status states, auth components, deep links |
 | 2026-01-17 | Agent | Added Libre CGM Protocol Models section with sensor types, FRAM layout, encryption, BLE, transmitter bridges |

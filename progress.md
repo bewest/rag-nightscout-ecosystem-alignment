@@ -391,6 +391,74 @@ Comprehensive analysis of LoopFollow's alarm system and remote command mechanism
 
 ---
 
+### Cycle 16: Progressive Enhancement Framework Integration (Completed 2026-01-17)
+
+Integration of a conceptual capability ladder framework for diabetes technology, derived from community discussions about progressive enhancement and graceful degradation patterns.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| **Progressive Enhancement Framework** | `docs/10-domain/progressive-enhancement-framework.md` | 10-layer capability ladder (L0-L9), design principles, shared vocabulary |
+| **Capability Layer Matrix** | `mapping/cross-project/capability-layer-matrix.md` | Commercial vs open-source system mapping, L8/L9 blockers |
+| **Requirements Update** | `traceability/requirements.md` | Added REQ-DEGRADE-001 through REQ-DEGRADE-006 for graceful degradation |
+| **Gaps Update** | `traceability/gaps.md` | Added GAP-DELEGATE-001 through GAP-DELEGATE-005 for delegation/agent gaps |
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Added Capability Layer Models section |
+
+**Key Concepts Documented**:
+
+**10-Layer Capability Ladder**:
+| Layer | Name | Key Capability |
+|-------|------|----------------|
+| L0 | MDI Baseline | Manual insulin, fingersticks (floor) |
+| L1 | Structured MDI | Carb counting, logging |
+| L2 | CGM Sensing | Continuous glucose, trends |
+| L3 | Pump Therapy | Programmable basal, bolus |
+| L4 | Manual Pump+CGM | CGM-informed manual control |
+| L5 | Safety Automation | Suspend, bounded corrections |
+| L6 | Full AID | Closed-loop control (Loop/AAPS/Trio) |
+| L7 | Networked Care | Remote visibility (Nightscout) |
+| L8 | Remote Controls | Delegated actions at a distance |
+| L9 | Delegate Agents | Autonomous agents with context |
+
+**Core Design Principles**:
+- **Progressive Enhancement**: Add capabilities in layers; each layer independently valuable
+- **Graceful Degradation**: Every layer has explicit fallback mode; system never leaves user unable to manage
+- **Separation of Concerns**: Distinguish therapy intent, delivery, and evidence
+- **Explainability via Traceability**: Every decision points to inputs and rules
+- **Delegation & Stewardship**: Scoped authorization, audit trails, revocation
+
+**System Layer Mapping**:
+| System | L6 (AID) | L7 (Network) | L8 (Remote) | L9 (Agents) |
+|--------|----------|--------------|-------------|-------------|
+| Tandem Control-IQ | Full | Partial | None | None |
+| Omnipod 5 | Full | Partial | None | None |
+| Loop | Full | Full | Partial | None |
+| AAPS | Full | Full (v3) | Partial | None |
+| Trio | Full | Full | Partial | None |
+
+**Key L8/L9 Blockers Identified**:
+- GAP-DELEGATE-001: No standardized authorization scoping (all or nothing)
+- GAP-DELEGATE-002: No role-based permission model (caregiver vs clinician vs agent)
+- GAP-DELEGATE-003: No structured out-of-band signal API (exercise, hormones)
+- GAP-DELEGATE-004: No agent authorization framework
+- GAP-DELEGATE-005: No propose-authorize-enact pattern
+
+**Graceful Degradation Requirements Added**:
+- REQ-DEGRADE-001: Automation disable on CGM loss
+- REQ-DEGRADE-002: Pump communication timeout handling
+- REQ-DEGRADE-003: Remote control fallback
+- REQ-DEGRADE-004: Layer transition logging
+- REQ-DEGRADE-005: Safe state documentation
+- REQ-DEGRADE-006: Delegate agent fallback
+
+**Relationship to Existing Work**:
+- Provides conceptual foundation for existing technical specifications
+- L2-L3 state separation maps to OpenAPI specs
+- L6 three-state model aligns with profile evolution proposal
+- L7 narrative bus concept maps to Nightscout sync patterns
+- L8-L9 gaps identify path forward for remote control and agent work
+
+---
+
 ## Candidate Next Cycles
 
 ### Priority A: AAPS Plugin Architecture

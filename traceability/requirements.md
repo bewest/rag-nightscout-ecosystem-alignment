@@ -1504,3 +1504,115 @@ Requirements follow the pattern:
 - Enable global snooze for N minutes
 - Verify all alarms suppressed during period
 - Verify alarms resume after period ends
+
+---
+
+## Graceful Degradation Requirements
+
+> **See Also**: [Progressive Enhancement Framework](../docs/10-domain/progressive-enhancement-framework.md) for layer definitions.
+
+### REQ-DEGRADE-001: Automation Disable on CGM Loss
+
+**Statement**: AID controllers MUST automatically disable closed-loop automation when CGM data becomes stale or unreliable, falling back to scheduled basal delivery.
+
+**Rationale**: Automation decisions require current glucose evidence. Without reliable CGM, the system should degrade to a known-safe state (scheduled basal) rather than continue making decisions on stale data.
+
+**Scenarios**:
+- CGM Signal Loss
+- Sensor Warmup Period
+- Compression Low Detection
+
+**Verification**:
+- Simulate CGM data gap exceeding staleness threshold
+- Verify automation suspends and basal schedule resumes
+- Verify clear notification to user about fallback state
+
+---
+
+### REQ-DEGRADE-002: Pump Communication Timeout Handling
+
+**Statement**: AID controllers MUST enter a safe fallback state when pump communication fails, with clear indication to the user about current therapy status.
+
+**Rationale**: Pump command failures create uncertainty about actual delivery. The system should inform the user and await confirmation rather than silently failing or retrying indefinitely.
+
+**Scenarios**:
+- Pump Out of Range
+- Bluetooth Disconnection
+- Pod/Pump Occlusion
+
+**Verification**:
+- Simulate pump communication timeout
+- Verify system enters fallback state
+- Verify user notification includes actionable guidance
+
+---
+
+### REQ-DEGRADE-003: Remote Control Fallback
+
+**Statement**: When remote control channels are unavailable, caregiver apps SHOULD continue to provide remote visibility (following) and SHOULD offer out-of-band communication guidance.
+
+**Rationale**: Network failures should not leave caregivers without any visibility. Read-only monitoring should remain available longer than write commands.
+
+**Scenarios**:
+- Nightscout Connectivity Loss
+- Push Notification Failure
+- API Token Expiration
+
+**Verification**:
+- Simulate command channel failure
+- Verify following/monitoring continues
+- Verify UI guidance for alternative communication
+
+---
+
+### REQ-DEGRADE-004: Layer Transition Logging
+
+**Statement**: AID systems MUST log layer transitions (e.g., closed-loop to open-loop, automation to manual) with reason codes and timestamps.
+
+**Rationale**: Understanding why the system changed modes is critical for retrospective analysis, debugging, and user trust.
+
+**Scenarios**:
+- Automation Pause
+- Safety Limit Breach
+- Component Failure
+
+**Verification**:
+- Trigger layer transition (e.g., pause automation)
+- Verify log entry includes reason code
+- Verify log entry includes precise timestamp
+
+---
+
+### REQ-DEGRADE-005: Safe State Documentation
+
+**Statement**: Each AID system SHOULD document its safe states and the conditions that trigger transitions to those states.
+
+**Rationale**: Users, caregivers, and developers need to understand what happens when components fail. This enables appropriate planning and reduces panic during degraded operation.
+
+**Scenarios**:
+- System Documentation
+- User Onboarding
+- Incident Response
+
+**Verification**:
+- Review system documentation for safe state definitions
+- Verify safe states are discoverable in UI/settings
+- Verify safe state behavior matches documentation
+
+---
+
+### REQ-DEGRADE-006: Delegate Agent Fallback
+
+**Statement**: Delegate agents (L9) MUST fall back to human confirmation when confidence is low, context signals are unavailable, or out-of-band data is stale.
+
+**Rationale**: Agents operating with incomplete information should not make autonomous decisions. Graceful degradation means reverting to "propose only" mode.
+
+**Scenarios**:
+- Context Signal Loss
+- Low Confidence Decision
+- Stale Wearable Data
+
+**Verification**:
+- Simulate loss of out-of-band signal
+- Verify agent reverts to propose-only mode
+- Verify agent requests human confirmation

@@ -22,6 +22,7 @@ The workspace is designed to separate normative specifications from informative 
 
 - **`docs/`**: Contains narrative documentation, including overviews, domain concepts, design proposals, implementation notes, and architecture decision records (ADRs). The UI/UX emphasizes clear structure and cross-referencing.
   - Key new deliverables (2026-01-17):
+    - `docs/10-domain/progressive-enhancement-framework.md` - **NEW** 10-layer capability ladder for diabetes technology (L0 MDI baseline through L9 delegate agents), design principles (progressive enhancement, graceful degradation, separation of concerns), shared vocabulary for describing any AID system
     - `docs/DIGITAL-RIGHTS.md` - **NEW** Comprehensive guide to legal frameworks protecting open-source diabetes software (GPL v3 licensing, DMCA 1201 exemptions, interoperability defenses, right-to-repair landscape, counter-notice guidance)
     - `docs/10-domain/nightscout-api-comparison.md` - **UPDATED** Major revision to Section 3 (Authentication) based on source code verification. Now accurately documents that both API v1 and v3 use a shared authorization module, with v3 REST restricting to JWT Bearer tokens at the entry point while v3 alarmSocket supports full dual-auth and storageSocket is accessToken-only.
     - `docs/10-domain/libre-protocol-deep-dive.md` - **NEW** Comprehensive Libre sensor protocol specification (800+ lines) covering all generations (Libre 1/2/2+/Gen2/3/3+), NFC access, FRAM memory layout, encryption schemes, BLE protocols, transmitter bridges, and cross-system compatibility
