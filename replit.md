@@ -24,6 +24,7 @@ The workspace is designed to separate normative specifications from informative 
   - Key new deliverables (2026-01-17):
     - `docs/30-design/nightscout-integration-guide.md` - Practical guide for app developers
     - `docs/60-research/controller-registration-protocol-proposal.md` - Inversion of control proposal
+    - `docs/60-research/profile-model-evolution-proposal.md` - Desired vs observed split, capability tracking
     - `docs/90-decisions/adr-002-sync-identity-strategy.md` - Decision record on sync identity
 - **`specs/`**: Houses normative definitions using OpenAPI specifications and JSON Schema, along with test fixtures.
 - **`conformance/`**: Contains executable test scenarios and assertion definitions to validate system behavior against specifications.

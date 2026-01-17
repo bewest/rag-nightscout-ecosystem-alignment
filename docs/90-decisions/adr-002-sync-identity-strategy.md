@@ -306,6 +306,7 @@ Track progress via:
 
 - [ADR-001: Override Supersession](adr-001-override-supersession.md)
 - [Controller Registration Proposal](../60-research/controller-registration-protocol-proposal.md)
+- [Profile Model Evolution Proposal](../60-research/profile-model-evolution-proposal.md) — Orthogonal schema improvements for profile semantics
 
 ---
 
