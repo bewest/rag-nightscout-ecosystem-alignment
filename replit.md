@@ -31,7 +31,8 @@ The workspace is designed to separate normative specifications from informative 
 - **`conformance/`**: Contains executable test scenarios and assertion definitions to validate system behavior against specifications.
 - **`mapping/`**: Provides detailed interpretations and mappings for each AID project (Nightscout, Loop, AAPS, Trio), including cross-project comparison matrices.
 - **`traceability/`**: Manages coordination control, including coverage matrices, identified gaps, and derived requirements.
-- **`tools/`**: A suite of utilities for workspace management, validation, and testing (e.g., `bootstrap.py` for external repositories, `linkcheck.py`, `validate_fixtures.py`, `run_conformance.py`, `gen_coverage.py`).
+- **`tools/`**: A suite of utilities for workspace management, validation, and testing (e.g., `bootstrap.py` for external repositories, `linkcheck.py`, `validate_fixtures.py`, `run_conformance.py`, `gen_coverage.py`, `gen_inventory.py` for artifact inventory).
+  - See `docs/tooling-roadmap.md` for proposed future tooling improvements for agent-based SDLC workflows.
 - **CI Integration**: A GitHub Actions workflow ensures continuous validation of code, link integrity, fixture validation, offline conformance tests, and coverage matrix generation.
 
 ## External Dependencies
