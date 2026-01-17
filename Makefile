@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance coverage ci check submodules
+.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules
 
 # Default target
 help:
@@ -20,6 +20,7 @@ help:
 	@echo "  make validate   - Validate fixtures against shape specs"
 	@echo "  make conformance- Run conformance assertions (offline)"
 	@echo "  make coverage   - Generate coverage matrix"
+	@echo "  make inventory  - Generate workspace inventory"
 	@echo "  make check      - Run all checks (linkcheck + validate + conformance)"
 	@echo "  make ci         - Run full CI pipeline locally"
 	@echo ""
@@ -72,6 +73,11 @@ conformance:
 coverage:
 	@echo "Generating coverage matrix..."
 	@python3 tools/gen_coverage.py
+
+# Generate workspace inventory
+inventory:
+	@echo "Generating workspace inventory..."
+	@python3 tools/gen_inventory.py
 
 # Run all checks (quick validation)
 check: validate conformance
