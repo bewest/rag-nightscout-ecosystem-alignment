@@ -56,8 +56,16 @@ class WorkflowRunner:
         self.verbose = verbose
         self.results = []
     
-    def run_command(self, name, description, command, critical=True):
-        """Run a command and track results."""
+    def run_command(self, name, description, command, critical=True, timeout=300):
+        """Run a command and track results.
+        
+        Args:
+            name: Command name
+            description: Command description
+            command: Command to run as list
+            critical: Whether failure is critical
+            timeout: Timeout in seconds (default: 300)
+        """
         if self.verbose:
             print(f"\n{'=' * 70}")
             print(f"Running: {name}")
@@ -75,7 +83,7 @@ class WorkflowRunner:
                 cwd=WORKSPACE_ROOT,
                 capture_output=True,
                 text=True,
-                timeout=300  # 5 minute timeout
+                timeout=timeout  # Use provided timeout parameter
             )
             
             duration = (datetime.now() - start_time).total_seconds()

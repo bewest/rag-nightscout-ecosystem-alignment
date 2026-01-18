@@ -224,6 +224,10 @@ def extract_api_endpoints():
         import yaml
         has_yaml = True
     except ImportError:
+        # Log warning but continue without API endpoint extraction
+        import sys
+        print("Warning: PyYAML not available. API endpoint extraction skipped.", file=sys.stderr)
+        print("Install with: pip install pyyaml", file=sys.stderr)
         has_yaml = False
         return endpoints
     

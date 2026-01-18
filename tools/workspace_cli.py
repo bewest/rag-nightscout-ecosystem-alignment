@@ -60,7 +60,8 @@ class WorkspaceCLI:
         if not tool_path.exists():
             return {"error": f"Tool not found: {tool_name}"}
         
-        cmd = ["python3", str(tool_path)] + args
+        # Use sys.executable for better portability across platforms
+        cmd = [sys.executable, str(tool_path)] + args
         
         if self.json_output and "--json" not in args:
             cmd.append("--json")
