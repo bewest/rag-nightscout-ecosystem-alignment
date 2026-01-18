@@ -1,63 +1,71 @@
 # CGM Remote Monitor Analysis - January 18, 2026
 
-**Document Version:** 1.0  
+**Document Version:** 1.1  
 **Last Updated:** 2026-01-18  
 **Branch Analyzed:** `wip/replit/with-mongodb-update`  
-**Commit:** f16c4b5a
+**Source:** Shallow clone from `https://github.com/bewest/cgm-remote-monitor-1.git`
 
 ---
 
 ## Executive Summary
 
-The cgm-remote-monitor team has completed significant work on **Phase 1 of MongoDB Modernization**, achieving a **96.7% test pass rate (29/30 tests)**. Key accomplishments include:
+> **Attribution Notice:** This analysis summarizes claims from the cgm-remote-monitor repository's documentation files. Test pass rates and behavioral validations are reported by the team in their `mongodb-modernization-implementation-plan.md` document and have not been independently verified.
 
-1. **Comprehensive Test Infrastructure** - 3 new test files with 1,229 lines of test code
-2. **Client Pattern Validation** - AAPS, Loop, and Trio deduplication patterns verified
-3. **Flaky Test Detection Tooling** - New script to identify unreliable tests
-4. **Documentation Restructuring** - Reorganized into taxonomic structure with centralized index
-5. **WebSocket Array Deduplication Analysis** - Root cause identified as expected behavior
+The cgm-remote-monitor team reports significant progress on **Phase 1 of MongoDB Modernization** per their documentation. Key items found in their repository:
+
+1. **Test Infrastructure** - 3 new test files with 1,229 lines of test code (line count verified)
+2. **Client Pattern Testing** - Team documents testing of AAPS, Loop, and Trio deduplication patterns
+3. **Flaky Test Detection Tooling** - New `scripts/flaky-test-runner.js` (513 lines verified)
+4. **Documentation Restructuring** - Reorganized into taxonomic structure with centralized `docs/INDEX.md`
+5. **WebSocket Analysis** - `websocket-array-deduplication-issue.md` documents team's analysis
 
 ---
 
 ## Test Coverage Analysis
 
-### New Test Files Created
+> **Source:** Test file existence and line counts are verified from file scans. Test pass rates and behavior claims are from `mongodb-modernization-implementation-plan.md`.
 
-| Test File | Lines | Tests | Focus |
-|-----------|-------|-------|-------|
-| `api.partial-failures.test.js` | 457 | 11 | Batch failures, response ordering, v1 API format |
-| `api.deduplication.test.js` | 399 | 10 | AAPS/Loop/Trio deduplication patterns |
-| `api.aaps-client.test.js` | 376 | 9 | AAPS-specific document formats and metadata |
+### New Test Files Created (Verified Line Counts)
 
-### Test Results Summary
+| Test File | Lines | Focus |
+|-----------|-------|-------|
+| `api.partial-failures.test.js` | 456 | Batch failures, response ordering, v1 API format |
+| `api.deduplication.test.js` | 398 | AAPS/Loop/Trio deduplication patterns |
+| `api.aaps-client.test.js` | 375 | AAPS-specific document formats and metadata |
+| **Total** | **1,229** | |
 
-**Status:** ✅ **29/30 PASSING (96.7%)**
+### Test Results Summary (From Team's Documentation)
 
-**Critical Behaviors Validated:**
-- ✅ Loop response ordering (response[i] matches request[i])
-- ✅ AAPS pumpId+pumpType+pumpSerial deduplication
-- ✅ Loop syncIdentifier deduplication
-- ✅ Trio id field deduplication
-- ✅ Cross-client duplicate isolation
-- ✅ v1 API response format (`[{_id, ok: 1, n: 1}, ...]`)
-- ✅ Batch with deduplicated items returns correct IDs
-- ✅ Client-provided _id handling
+**Reported Status:** 29/30 PASSING (96.7%) - *per mongodb-modernization-implementation-plan.md*
 
-**Known Issue:**
-- ⚠️ 1 test times out (large devicestatus with 500+ prediction values)
-- Likely infrastructure issue, not code bug
-- Real deployments handle large documents fine
+*Note: These results are from the cgm-remote-monitor team's documentation, not independently verified by this analysis.*
+
+**Critical Behaviors Documented as Tested** (per `mongodb-modernization-implementation-plan.md`):
+- Loop response ordering (response[i] matches request[i])
+- AAPS pumpId+pumpType+pumpSerial deduplication
+- Loop syncIdentifier deduplication
+- Trio id field deduplication
+- Cross-client duplicate isolation
+- v1 API response format (`[{_id, ok: 1, n: 1}, ...]`)
+- Batch with deduplicated items returns correct IDs
+- Client-provided _id handling
+
+**Reported Known Issue** (per team documentation):
+- 1 test reportedly times out (large devicestatus with 500+ prediction values)
+- Team attributes this to infrastructure, not code
 
 ---
 
 ## Documentation Restructuring
 
+> **Source:** Directory structure observed from file system scan of `externals/cgm-remote-monitor/docs/`. File counts are verified.
+
 ### New Directory Structure
 
 ```
 docs/
-├── INDEX.md                    # NEW - Central navigation hub
-├── audits/                     # MOVED - System analysis docs
+├── INDEX.md                    # Central navigation hub (75 lines)
+├── audits/                     # System analysis docs (7 files)
 │   ├── api-layer-audit.md
 │   ├── data-layer-audit.md
 │   ├── security-audit.md
@@ -65,30 +73,31 @@ docs/
 │   ├── messaging-subsystem-audit.md
 │   ├── plugin-architecture-audit.md
 │   └── dashboard-ui-audit.md
-├── meta/                       # NEW - Project-level docs
+├── meta/                       # Project-level docs (3 files)
 │   ├── architecture-overview.md
 │   ├── modernization-roadmap.md
 │   └── DOCUMENTATION-PROGRESS.md
-├── requirements/               # Formal requirements
+├── requirements/               # Formal requirements (3 files)
 │   ├── data-shape-requirements.md
 │   ├── authorization-security-requirements.md
 │   └── api-v1-compatibility-requirements.md
-├── test-specs/                 # Test specifications
+├── test-specs/                 # Test specifications (3 files)
 │   ├── shape-handling-tests.md
 │   ├── authorization-tests.md
 │   └── coverage-gaps.md
-├── data-schemas/               # Collection documentation
+├── data-schemas/               # Collection documentation (2 files)
 │   ├── treatments-schema.md
 │   └── profiles-schema.md
-└── proposals/                  # RFC-style proposals
-    ├── mongodb-modernization-implementation-plan.md  # NEW - 940 lines
-    ├── websocket-array-deduplication-issue.md        # NEW - 262 lines
+└── proposals/                  # RFC-style proposals (9 files)
+    ├── mongodb-modernization-implementation-plan.md  # 940 lines
+    ├── websocket-array-deduplication-issue.md        # 262 lines
     ├── oidc-actor-identity-proposal.md
     ├── agent-control-plane-rfc.md
-    └── testing-modernization-proposal.md
+    ├── testing-modernization-proposal.md
+    └── (+ 4 more)
 ```
 
-### Documentation Taxonomy
+### Documentation Taxonomy (observed from repository structure)
 
 | Folder | Purpose | When to Use |
 |--------|---------|-------------|
@@ -103,11 +112,13 @@ docs/
 
 ## Flaky Test Detection Tooling
 
+> **Source:** Script existence and line count verified from file scan. Feature descriptions observed from file contents.
+
 ### New Script: `scripts/flaky-test-runner.js`
 
 **Purpose:** Run tests multiple times to identify inconsistent test behavior
 
-**Features:**
+**Features** (observed from script code):
 - Configurable iterations (default 10, quick mode 3, thorough mode 25)
 - JSON result capture with robust parsing
 - Markdown report generation
@@ -130,48 +141,53 @@ npm run test:flaky:thorough # Thorough mode (25 iterations)
 
 ## WebSocket Array Deduplication Issue
 
-### Summary
+> **Source:** This section summarizes the team's analysis from `websocket-array-deduplication-issue.md`.
 
-When an array of treatments is sent via WebSocket `dbAdd`, items 2+ may be deduplicated against item 1 due to the 2-second deduplication window.
+### Summary (per team documentation)
 
-### Root Cause
+According to the team's analysis, when an array of treatments is sent via WebSocket `dbAdd`, items 2+ may be deduplicated against item 1 due to the 2-second deduplication window.
 
-The deduplication logic uses a 2-second window for similar treatments. When processing arrays sequentially:
+### Root Cause (per team documentation)
+
+Per the team's analysis, the deduplication logic uses a 2-second window for similar treatments. When processing arrays sequentially:
 1. Item 1: Inserted successfully
 2. Item 2: Matches Item 1 (same eventType, within 2s) → Deduplicated
 3. Item 3: Matches Item 1 (same eventType, within 2s) → Deduplicated
 
-### Resolution: **EXPECTED BEHAVIOR**
+### Team's Resolution (per `websocket-array-deduplication-issue.md`)
 
-This is **NOT a bug** - the deduplication is working correctly:
-- Prevents duplicate uploads from clients
+The cgm-remote-monitor team's analysis concludes this is expected behavior:
+- Deduplication prevents duplicate uploads from clients
 - 2-second window accounts for clock drift and retry logic
 - Real clients use unique identifiers (NSCLIENT_ID, syncIdentifier, id)
 - Test scenario was artificial (same eventType within 2 seconds)
 
-### Impact on MongoDB Migration
+### Team's Impact Assessment
 
-**NO IMPACT** - This behavior is unrelated to MongoDB driver version.
+Per the team's documentation, this behavior is unrelated to MongoDB driver version.
 
 ---
 
 ## MongoDB Modernization Status
 
-### Phase 1: Test Infrastructure & Baseline ✅ COMPLETED
+> **Source:** All status and phase information in this section is from `mongodb-modernization-implementation-plan.md`.
 
-- ✅ All fixtures created (AAPS, Loop, Trio, deduplication, edge cases)
-- ✅ Comprehensive test suite (29/30 passing)
-- ✅ Baseline established
-- ✅ Critical behaviors documented
+### Phase 1: Test Infrastructure & Baseline
+**Team-reported status:** Complete (per `mongodb-modernization-implementation-plan.md`)
+- All fixtures created (AAPS, Loop, Trio, deduplication, edge cases)
+- Comprehensive test suite (29/30 passing)
+- Baseline established
+- Critical behaviors documented
 
-### Phase 2: Storage Layer Analysis (NEXT)
-
-Ready to proceed with:
+### Phase 2: Storage Layer Analysis
+**Team-reported status:** Next (per `mongodb-modernization-implementation-plan.md`)
 - Audit current MongoDB usage
 - Map insert operations
 - Identify v1 vs v3 API data flow differences
 
 ### Write Result Format Compatibility
+
+> **Source:** Observed from `mongodb-modernization-implementation-plan.md`
 
 **Critical for driver upgrade:**
 
@@ -184,23 +200,25 @@ Ready to proceed with:
 [{ _id: 'id1', ok: 1, n: 1 }, { _id: 'id2', ok: 1, n: 1 }]
 ```
 
-API layer must translate driver response to v1 expected format.
+Per team documentation, API layer must translate driver response to v1 expected format.
 
 ---
 
 ## Client Deduplication Patterns
 
-### AAPS (AndroidAPS)
+> **Source:** These patterns are documented in `mongodb-modernization-implementation-plan.md` and test file contents.
+
+### AAPS (AndroidAPS) - per team documentation
 - **Treatments:** `pumpId + pumpType + pumpSerial`
 - **Entries:** `date + device + type`
 - **Metadata:** Must preserve `isValid`, `isSMB`, `pumpId`, `pumpType`, `pumpSerial`
 
-### Loop
+### Loop - per team documentation
 - **Deduplication:** `syncIdentifier` (UUID)
-- **Response Ordering:** CRITICAL - array index must match request index
+- **Response Ordering:** Team describes as critical - array index must match request index
 - **Batch Behavior:** Expects N responses for N requests
 
-### Trio
+### Trio - per team documentation
 - **Deduplication:** `id` field (UUID, separate from MongoDB `_id`)
 - **Field Isolation:** `id` must not interfere with MongoDB `_id`
 
@@ -208,32 +226,38 @@ API layer must translate driver response to v1 expected format.
 
 ## Recommendations
 
-### Immediate Actions
+### Recommended Next Steps (per team documentation)
 1. Continue with Phase 2 (Storage Layer Analysis)
 2. Monitor large document performance in production
 3. Consider adding unique constraint on client deduplication fields
 
-### Documentation Actions
-1. ✅ Update test to use unique identifiers (NSCLIENT_ID)
-2. ✅ Rename WebSocket test to reflect actual behavior
-3. ✅ Add explicit deduplication test
+### Suggested Documentation Actions (from `websocket-array-deduplication-issue.md`)
+The team's documentation suggests:
+- Update test to use unique identifiers (NSCLIENT_ID)
+- Rename WebSocket test to reflect actual behavior
+- Add explicit deduplication test
 
-### Future Work
+### Future Work (per team's `mongodb-modernization-implementation-plan.md`)
 - Phase 3: Core Implementation (Write Result Translator)
 - Phase 4: Testing & Validation with real client patterns
 - Phase 5: Driver Upgrade Execution
 
 ---
 
-## Test File Statistics
+## Repository Statistics
+
+> **Source:** All counts in this section are verified from file system scans.
 
 | Metric | Count |
 |--------|-------|
+| Total documentation files | 35 |
+| Audit documents | 7 |
+| Proposals | 9 |
 | Total test files | 88 |
 | API test files | 15 |
-| New test files (this update) | 3 |
+| New client pattern test files | 3 |
 | New lines of test code | 1,229 |
-| Test pass rate | 96.7% |
+| Flaky test runner script | 513 lines |
 
 ---
 

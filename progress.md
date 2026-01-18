@@ -6,6 +6,48 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### CGM Remote Monitor MongoDB Modernization Analysis (2026-01-18)
+
+Deep analysis of the cgm-remote-monitor team's latest work on the `wip/replit/with-mongodb-update` branch.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Analysis Report** | `docs/cgm-remote-monitor-analysis-2026-01-18.md` | Analysis of team's MongoDB modernization work |
+| **Documentation Inventory** | `traceability/cgm-remote-monitor-docs-inventory.md` | Inventory of documentation files found in repository |
+
+**Summary** (sources noted per item):
+- Team reports Phase 1 complete with 29/30 tests passing (per `mongodb-modernization-implementation-plan.md`)
+- 3 new test files with 1,229 lines (verified by line count scan)
+- Documentation restructured with new `docs/INDEX.md` hub (75 lines, verified by line count scan)
+- New `scripts/flaky-test-runner.js` (513 lines, verified by line count scan)
+- WebSocket deduplication analysis (per `websocket-array-deduplication-issue.md`)
+
+**Client Patterns Team Reports as Tested** (per `mongodb-modernization-implementation-plan.md`):
+- Loop response ordering (response[i] matches request[i])
+- AAPS pumpId+pumpType+pumpSerial deduplication
+- Loop syncIdentifier deduplication
+- Trio id field deduplication
+- Cross-client duplicate isolation
+
+**New Test Files** (verified line counts):
+- `tests/api.deduplication.test.js` - 398 lines
+- `tests/api.partial-failures.test.js` - 456 lines
+- `tests/api.aaps-client.test.js` - 375 lines
+
+**Key Documentation** (verified line counts):
+- `externals/cgm-remote-monitor/docs/proposals/mongodb-modernization-implementation-plan.md` (940 lines)
+- `externals/cgm-remote-monitor/docs/proposals/websocket-array-deduplication-issue.md` (262 lines)
+- `externals/cgm-remote-monitor/docs/INDEX.md` (75 lines)
+- `externals/cgm-remote-monitor/scripts/flaky-test-runner.js` (513 lines)
+
+**MongoDB Migration Status** (all status claims per team's `mongodb-modernization-implementation-plan.md`):
+- Phase 1: Test Infrastructure - Team reports complete
+- Phase 2: Storage Layer Analysis - Team reports as next
+- Phase 3: Core Implementation - Team reports as planned
+- Phase 4: Testing & Validation - Team reports as planned
+
+---
+
 ### Dexcom G7 Protocol Documentation (2026-01-17)
 
 Comprehensive analysis of the Dexcom G7 BLE protocol and J-PAKE authentication, compiled from xDrip Android, DiaBLE, G7SensorKit, and xDrip4iOS source analysis.

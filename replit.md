@@ -21,7 +21,9 @@ I want iterative development. Each iteration cycle should update:
 The workspace is designed to separate normative specifications from informative documentation and executable tests.
 
 - **`docs/`**: Contains narrative documentation, including overviews, domain concepts, design proposals, implementation notes, and architecture decision records (ADRs). The UI/UX emphasizes clear structure and cross-referencing.
-  - Key new deliverables (2026-01-17):
+  - Key new deliverables (2026-01-18):
+    - `docs/cgm-remote-monitor-analysis-2026-01-18.md` - **NEW** Analysis of cgm-remote-monitor repository updates (team reports Phase 1 complete per their documentation), documentation restructuring, flaky test tooling, client deduplication patterns
+  - Key deliverables (2026-01-17):
     - `docs/10-domain/data-rights-primer.md` - **NEW** Plain-language guide to the Five Fundamental Diabetes Data Rights (Access, Export, Share, Delegate, Audit), multi-stakeholder accessibility for patients, clinicians, developers, and policymakers, "ownership to agency" framing shift
     - `docs/10-domain/progressive-enhancement-framework.md` - **NEW** 10-layer capability ladder for diabetes technology (L0 MDI baseline through L9 delegate agents), design principles (progressive enhancement, graceful degradation, separation of concerns), shared vocabulary for describing any AID system
     - `docs/DIGITAL-RIGHTS.md` - **NEW** Comprehensive guide to legal frameworks protecting open-source diabetes software (GPL v3 licensing, DMCA 1201 exemptions, interoperability defenses, right-to-repair landscape, counter-notice guidance)
@@ -46,6 +48,8 @@ The workspace is designed to separate normative specifications from informative 
 - **`conformance/`**: Contains executable test scenarios and assertion definitions to validate system behavior against specifications.
 - **`mapping/`**: Provides detailed interpretations and mappings for each AID project (Nightscout, Loop, AAPS, Trio), including cross-project comparison matrices.
 - **`traceability/`**: Manages coordination control, including coverage matrices, identified gaps, and derived requirements.
+  - Key new deliverables (2026-01-18):
+    - `traceability/cgm-remote-monitor-docs-inventory.md` - **NEW** Documentation inventory for cgm-remote-monitor with new taxonomy, test file mapping, and client deduplication patterns
 - **`tools/`**: A suite of utilities for workspace management, validation, and testing:
   - **Repository Management**: `bootstrap.py` (clone/update externals), `checkout_submodules.py`
   - **Validation**: `linkcheck.py` (internal links), `validate_fixtures.py` (schema validation)
