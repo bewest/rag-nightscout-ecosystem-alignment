@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions
+.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli
 
 # Default target
 help:
@@ -30,6 +30,14 @@ help:
 	@echo "  make verify-coverage    - Analyze requirement/gap coverage"
 	@echo "  make verify-terminology - Check terminology consistency"
 	@echo "  make verify-assertions  - Trace assertions to requirements"
+	@echo ""
+	@echo "New Tools (Enhanced Traceability):"
+	@echo "  make query TERM=<term>  - Search documentation for term"
+	@echo "  make trace ID=<id>      - Trace requirement or gap"
+	@echo "  make traceability       - Generate full traceability matrix"
+	@echo "  make validate-json      - Validate JSON/YAML files"
+	@echo "  make workflow TYPE=<type> - Run automated workflow (quick/full/validation/verification)"
+	@echo "  make cli                - Launch interactive workspace CLI"
 	@echo ""
 	@echo "  make help       - Show this help message"
 	@echo ""
@@ -136,3 +144,32 @@ verify-terminology:
 verify-assertions:
 	@echo "Tracing assertions..."
 	@python3 tools/verify_assertions.py
+
+# New tooling targets
+
+# Interactive query tool
+query:
+	@python3 tools/query_workspace.py --search "$(TERM)"
+
+# Trace requirement or gap
+trace:
+	@python3 tools/query_workspace.py --req "$(ID)" || python3 tools/query_workspace.py --gap "$(ID)"
+
+# Generate full traceability matrix
+traceability:
+	@echo "Generating traceability matrix..."
+	@python3 tools/gen_traceability.py
+
+# Validate JSON and YAML files
+validate-json:
+	@echo "Validating JSON/YAML files..."
+	@python3 tools/validate_json.py
+
+# Run automated workflows
+workflow:
+	@echo "Running $(TYPE) workflow..."
+	@python3 tools/run_workflow.py --workflow $(TYPE)
+
+# Interactive CLI
+cli:
+	@python3 tools/workspace_cli.py

@@ -1,0 +1,175 @@
+name: Validation and Verification
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+  workflow_dispatch:
+
+jobs:
+  quick-validation:
+    name: Quick Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Run quick validation
+      run: python3 tools/run_workflow.py --workflow quick --json > quick-validation.json
+    
+    - name: Upload validation results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: quick-validation-results
+        path: quick-validation.json
+  
+  full-validation:
+    name: Full Validation
+    runs-on: ubuntu-latest
+    needs: quick-validation
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install optional dependencies
+      run: |
+        pip install pyyaml || echo "PyYAML installation failed, continuing without it"
+        pip install jsonschema || echo "jsonschema installation failed, continuing without it"
+    
+    - name: Run validation workflow
+      run: python3 tools/run_workflow.py --workflow validation --json > validation.json
+    
+    - name: Upload validation results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: validation-results
+        path: validation.json
+  
+  verification:
+    name: Static Verification
+    runs-on: ubuntu-latest
+    needs: quick-validation
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Run verification workflow
+      run: python3 tools/run_workflow.py --workflow verification --json > verification.json
+    
+    - name: Upload verification results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: verification-results
+        path: verification.json
+  
+  coverage:
+    name: Coverage Analysis
+    runs-on: ubuntu-latest
+    needs: [full-validation, verification]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install optional dependencies
+      run: |
+        pip install pyyaml || echo "PyYAML installation failed, continuing without it"
+    
+    - name: Run coverage workflow
+      run: python3 tools/run_workflow.py --workflow coverage --json > coverage.json
+    
+    - name: Upload coverage results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-results
+        path: coverage.json
+    
+    - name: Upload traceability reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: traceability-reports
+        path: traceability/
+  
+  generate-summary:
+    name: Generate Summary
+    runs-on: ubuntu-latest
+    needs: [quick-validation, full-validation, verification, coverage]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+    
+    - name: Generate summary
+      run: |
+        echo "## Validation and Verification Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f quick-validation-results/quick-validation.json ]; then
+          echo "### Quick Validation" >> $GITHUB_STEP_SUMMARY
+          python3 -c "
+        import json, sys
+        data = json.load(open('quick-validation-results/quick-validation.json'))
+        print(f\"- **Status**: {'✅ Passed' if data['success'] else '❌ Failed'}\")
+        print(f\"- **Duration**: {data['duration_seconds']}s\")
+        print(f\"- **Tasks**: {data['passed']}/{data['total_tasks']} passed\")
+          " >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f validation-results/validation.json ]; then
+          echo "### Full Validation" >> $GITHUB_STEP_SUMMARY
+          python3 -c "
+        import json, sys
+        data = json.load(open('validation-results/validation.json'))
+        print(f\"- **Status**: {'✅ Passed' if data['success'] else '❌ Failed'}\")
+        print(f\"- **Duration**: {data['duration_seconds']}s\")
+        print(f\"- **Tasks**: {data['passed']}/{data['total_tasks']} passed\")
+          " >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f verification-results/verification.json ]; then
+          echo "### Static Verification" >> $GITHUB_STEP_SUMMARY
+          python3 -c "
+        import json, sys
+        data = json.load(open('verification-results/verification.json'))
+        print(f\"- **Status**: {'✅ Passed' if data['success'] else '❌ Failed'}\")
+        print(f\"- **Duration**: {data['duration_seconds']}s\")
+        print(f\"- **Tasks**: {data['passed']}/{data['total_tasks']} passed\")
+          " >> $GITHUB_STEP_SUMMARY
+        fi
