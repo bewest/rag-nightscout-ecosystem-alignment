@@ -1,6 +1,6 @@
 # Assertion Trace Report
 
-Generated: 2026-01-17T21:10:42.952389+00:00
+Generated: 2026-01-18T07:01:08.984606+00:00
 
 ## Summary
 
@@ -11,7 +11,7 @@ Generated: 2026-01-17T21:10:42.952389+00:00
 | Known Requirements | 26 |
 | Requirements with Assertions | 7 |
 | Uncovered Requirements | 19 |
-| Known Gaps | 70 |
+| Known Gaps | 75 |
 | Gaps with Assertions | 7 |
 | Orphaned Assertions | 23 |
 
@@ -45,13 +45,6 @@ These requirements have no assertions:
 
 These assertions have no linked requirements or gaps:
 
-- **superseded-status-change** (`conformance/assertions/override-supersede.yaml`)
-- **superseded-by-reference** (`conformance/assertions/override-supersede.yaml`)
-- **superseded-at-timestamp** (`conformance/assertions/override-supersede.yaml`)
-- **new-override-active** (`conformance/assertions/override-supersede.yaml`)
-- **original-preserved** (`conformance/assertions/override-supersede.yaml`)
-- **query-active-single** (`conformance/assertions/override-supersede.yaml`)
-- **query-history-both** (`conformance/assertions/override-supersede.yaml`)
 - **syncidentifier-preserved** (`conformance/assertions/sync-deduplication.yaml`)
 - **identifier-preserved** (`conformance/assertions/sync-deduplication.yaml`)
 - **enteredby-preserved** (`conformance/assertions/sync-deduplication.yaml`)
@@ -68,6 +61,13 @@ These assertions have no linked requirements or gaps:
 - **nightscoutid-references-server** (`conformance/assertions/sync-deduplication.yaml`)
 - **srvmodified-updated-on-change** (`conformance/assertions/sync-deduplication.yaml`)
 - **srvcreated-set-on-create** (`conformance/assertions/sync-deduplication.yaml`)
+- **superseded-status-change** (`conformance/assertions/override-supersede.yaml`)
+- **superseded-by-reference** (`conformance/assertions/override-supersede.yaml`)
+- **superseded-at-timestamp** (`conformance/assertions/override-supersede.yaml`)
+- **new-override-active** (`conformance/assertions/override-supersede.yaml`)
+- **original-preserved** (`conformance/assertions/override-supersede.yaml`)
+- **query-active-single** (`conformance/assertions/override-supersede.yaml`)
+- **query-history-both** (`conformance/assertions/override-supersede.yaml`)
 
 ## Assertions by File
 

@@ -1,6 +1,6 @@
 # Coverage Analysis Report
 
-Generated: 2026-01-17T21:10:40.257511+00:00
+Generated: 2026-01-18T07:01:07.237079+00:00
 
 ## Summary
 
@@ -18,7 +18,7 @@ Generated: 2026-01-17T21:10:40.257511+00:00
 
 | Metric | Count |
 |--------|-------|
-| Total Gaps | 68 |
+| Total Gaps | 73 |
 | Addressed in Spec | 20 |
 | With Assertions | 7 |
 | Orphaned | 4 |

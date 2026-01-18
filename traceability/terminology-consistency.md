@@ -1,47 +1,47 @@
 # Terminology Consistency Report
 
-Generated: 2026-01-17T21:10:42.813470+00:00
+Generated: 2026-01-18T07:01:08.925762+00:00
 
 ## Summary
 
 | Metric | Value |
 |--------|-------|
-| Alignment Terms | 661 |
-| Project-Specific Terms | 1681 |
-| Projects Covered | Collection, Description, Nightscout, Loop, AAPS, Trio, xDrip+, Upload, Download, Identity Field, Nightscout Field, Purpose, Source Code, Value, Source, Nightscout eventType, Override/Adjustment Model Location, Location, Lines, oref0, oref0/openaps, Omnipod DASH, Dana RS, Medtronic, Offset, Size, Command, Direction, Unit, CRC Variant, Entry, Head, Date, Body, Impact, Primary Model, Formula Source, Legacy Model, Loop Peak, oref0 Peak, AAPS Peak, Trio Peak, Delay, Minimum DIA, Default DIA, Enforcement, AID Systems, xDrip+ Android, xDrip4iOS, Calibration Options, oref0/AAPS/Trio, Systems Affected, Nightscout Collection, Key Fields, Field, Effect, NS Mapping, Peak (minutes), Insulin Type, Format, Example, Override, Temp Target, JSON Value, Peak (min), File, Loop Equivalent, Notes, Calculation, oref0 Default, Primary Source, API Version, Authentication, Sync Method, Primary ID, Update Method, Secondary ID, Used By, v1 Polling, v3 History, v1 Syntax, v3 Syntax, Loop/Trio, Loop PumpManager, AAPS Pump, Protocol, Bolus Step, Basal Step, TBR Duration Step, Loop `BolusState`, Loop `BasalDeliveryState`, UUID, G6, G7, Opcode (Tx/Rx), G6 (0x31/0x4F), G7 (0x4E), Implementation, Key Derivation, ID Format, Detection, G6 Name, G7 Name, Reliable Glucose, oref0/AAPS, Source (Line), Formula, Key Carb Absorption Files, Sensor Type, Family, Security Generation, Raw Value, Sensors, IC Manufacturer, Bit Count, Name, Service UUID, Key Characteristic UUIDs, Start Command, Data Format, DiaBLE, LibreTransmitter, LoopCaregiver, Loop (Receiver), Nightscout State, Query Parameter, Required, Remote 1.0, Remote 2.0, LoopFollow, Nightguard, Trio Caregiver*, Category, Trigger, Default Threshold, Values, Target AID, Transport, Security, Type String, Parameters, Detail, Loop APNS, TRC, Author, Changes |
-| Term Occurrences Scanned | 3749 |
+| Alignment Terms | 693 |
+| Project-Specific Terms | 1777 |
+| Projects Covered | Collection, Description, Nightscout, Loop, AAPS, Trio, xDrip+, Upload, Download, Identity Field, Nightscout Field, Purpose, Source Code, Value, Source, Nightscout eventType, Override/Adjustment Model Location, Location, Lines, oref0, oref0/openaps, Omnipod DASH, Dana RS, Medtronic, Offset, Size, Command, Direction, Unit, CRC Variant, Entry, Head, Date, Body, Impact, Primary Model, Formula Source, Legacy Model, Loop Peak, oref0 Peak, AAPS Peak, Trio Peak, Delay, Minimum DIA, Default DIA, Enforcement, AID Systems, xDrip+ Android, xDrip4iOS, Calibration Options, oref0/AAPS/Trio, Systems Affected, Nightscout Collection, Key Fields, Field, Effect, NS Mapping, Peak (minutes), Insulin Type, Format, Example, Override, Temp Target, JSON Value, Peak (min), File, Loop Equivalent, Notes, Calculation, oref0 Default, Primary Source, API Version, Authentication, Sync Method, Primary ID, Update Method, Secondary ID, Used By, v1 Polling, v3 History, v1 Syntax, v3 Syntax, Loop/Trio, Loop PumpManager, AAPS Pump, Protocol, Bolus Step, Basal Step, TBR Duration Step, Loop `BolusState`, Loop `BasalDeliveryState`, UUID, G6, G7, Opcode (Tx/Rx), G6 (0x31/0x4F), G7 (0x4E), Implementation, Key Derivation, ID Format, Detection, G6 Name, G7 Name, Reliable Glucose, oref0/AAPS, Source (Line), Formula, Key Carb Absorption Files, Sensor Type, Family, Security Generation, Raw Value, Sensors, IC Manufacturer, Bit Count, Name, Service UUID, Key Characteristic UUIDs, Start Command, Data Format, DiaBLE, LibreTransmitter, LoopCaregiver, Loop (Receiver), Nightscout State, Query Parameter, Required, Remote 1.0, Remote 2.0, LoopFollow, Nightguard, Trio Caregiver*, Category, Trigger, Default Threshold, Values, Target AID, Transport, Security, Type String, Parameters, Detail, Loop APNS, TRC, Key Capability, Example Systems, Definition, Examples, Actor Type, Permissions, Audit, Trust Level, Sources, Use Cases, Integration Status, To Layer, Action, Author, Changes |
+| Term Occurrences Scanned | 3901 |
 | Issues Found | 0 |
 
 ## Most Used Terms
 
 | Term | Occurrences | Files | Type |
 |----|-------------|-------|------|
-| Glucose | 71 | 71 | Project |
-| Nightscout | 66 | 66 | Alignment |
-| insulin | 63 | 63 | Project |
-| Insulin | 63 | 63 | Project |
-| timestamp | 59 | 59 | Project |
-| timeStamp | 59 | 59 | Project |
-| Timestamp | 59 | 59 | Alignment |
-| profile | 51 | 51 | Project |
-| Profile | 51 | 51 | Alignment |
+| Glucose | 72 | 72 | Project |
+| Nightscout | 67 | 67 | Alignment |
+| insulin | 64 | 64 | Project |
+| Insulin | 64 | 64 | Project |
+| timestamp | 60 | 60 | Project |
+| timeStamp | 60 | 60 | Project |
+| Timestamp | 60 | 60 | Alignment |
+| profile | 52 | 52 | Project |
+| Profile | 52 | 52 | Alignment |
 | duration | 49 | 49 | Project |
 | Duration | 49 | 49 | Alignment |
 | Minutes | 48 | 48 | Project |
 | Default | 48 | 48 | Project |
 | default | 48 | 48 | Project |
 | DEFAULT | 48 | 48 | Alignment |
+| treatments | 46 | 46 | Project |
+| Treatments | 46 | 46 | Alignment |
 | entries | 46 | 46 | Project |
-| treatments | 45 | 45 | Project |
-| Treatments | 45 | 45 | Alignment |
+| Override | 41 | 41 | Alignment |
 | Temp Basal | 40 | 40 | Alignment |
-| Override | 40 | 40 | Alignment |
 | target | 40 | 40 | Project |
+| System | 37 | 37 | Alignment |
 | device | 37 | 37 | Project |
 | Device | 37 | 37 | Project |
-| System | 36 | 36 | Alignment |
-| devicestatus | 33 | 33 | Project |
-| DeviceStatus | 33 | 33 | Project |
+| devicestatus | 34 | 34 | Project |
+| DeviceStatus | 34 | 34 | Project |
 | battery | 33 | 33 | Project |
 | Custom | 30 | 30 | Project |
 | eventType | 30 | 30 | Project |
