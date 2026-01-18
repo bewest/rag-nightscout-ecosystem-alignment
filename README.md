@@ -108,18 +108,42 @@ make freeze
 
 ## For AI Coding Agents
 
-This workspace is designed to work well with coding agents (Replit, Claude, local LLMs):
+This workspace is designed to work well with coding agents (Replit, GitHub Copilot, Claude, local LLMs):
 
 1. **Predictable layout**: All external repos live in `externals/`
 2. **Version pinning**: Use `make freeze` to lock exact commits
 3. **No cross-repo git pollution**: Each repo maintains its own git history
 4. **Easy reset**: Delete `externals/` and re-run `make bootstrap`
+5. **Enhanced tooling**: Query, trace, and validate with JSON output
+
+### Tooling for Agents
+
+**Quick Start**:
+```bash
+# Interactive exploration
+make cli
+
+# Query documentation
+python3 tools/query_workspace.py --search "authentication" --json
+
+# Trace requirement coverage
+python3 tools/query_workspace.py --tests-for REQ-001 --json
+
+# Validate changes
+python3 tools/run_workflow.py --workflow quick --json
+```
+
+**Documentation**:
+- `docs/TOOLING-GUIDE.md` - Comprehensive guide
+- `docs/TOOLING-QUICKREF.md` - Quick reference
+- `make help` - All available commands
 
 ### Agent Guardrails
 
 - Agents should NOT commit directly to `main`/`master` in external repos
 - Create topic branches: `git checkout -b workspace/feature-name`
 - The workspace repo tracks ONLY configuration, not external code
+- Always validate before committing: `make workflow TYPE=quick`
 
 ## Troubleshooting
 
