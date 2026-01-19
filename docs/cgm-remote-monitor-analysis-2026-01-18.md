@@ -1,7 +1,7 @@
 # CGM Remote Monitor Analysis - January 18, 2026
 
-**Document Version:** 1.1  
-**Last Updated:** 2026-01-18  
+**Document Version:** 1.2  
+**Last Updated:** 2026-01-19  
 **Branch Analyzed:** `wip/replit/with-mongodb-update`  
 **Source:** Shallow clone from `https://github.com/bewest/cgm-remote-monitor-1.git`
 
@@ -18,6 +18,15 @@ The cgm-remote-monitor team reports significant progress on **Phase 1 of MongoDB
 3. **Flaky Test Detection Tooling** - New `scripts/flaky-test-runner.js` (513 lines verified)
 4. **Documentation Restructuring** - Reorganized into taxonomic structure with centralized `docs/INDEX.md`
 5. **WebSocket Analysis** - `websocket-array-deduplication-issue.md` documents team's analysis
+
+### January 19, 2026 Update
+
+**Test Stability Verification Complete:** Comprehensive stress testing performed across 19 key test files shows **100% pass rate** with no flaky behavior detected. Key improvements since January 18:
+
+1. **Flaky Test Fixes** - Three critical fixes applied (floating-point precision, boot optimization, timeout improvements)
+2. **MongoDB Pool Optimization** - Test environment uses `MONGO_POOL_SIZE=2` for determinism
+3. **Timing Instrumentation** - New test helper module with anti-pattern detection
+4. **Test Infrastructure Improvements** - Prediction array truncation (288 elements default)
 
 ---
 
@@ -81,10 +90,11 @@ docs/
 │   ├── data-shape-requirements.md
 │   ├── authorization-security-requirements.md
 │   └── api-v1-compatibility-requirements.md
-├── test-specs/                 # Test specifications (3 files)
+├── test-specs/                 # Test specifications (4 files)
 │   ├── shape-handling-tests.md
 │   ├── authorization-tests.md
-│   └── coverage-gaps.md
+│   ├── coverage-gaps.md
+│   └── flaky-tests.md
 ├── data-schemas/               # Collection documentation (2 files)
 │   ├── treatments-schema.md
 │   └── profiles-schema.md
@@ -136,6 +146,93 @@ npm run test:flaky:thorough # Thorough mode (25 iterations)
 - `flaky-test-results/flaky-test-report-<timestamp>.md` - Human-readable report
 - `flaky-test-results/flaky-test-data-<timestamp>.json` - Raw data
 - `flaky-test-results/iteration-N-results.json` - Per-iteration results
+
+---
+
+## Test Stability Improvements (January 19, 2026)
+
+> **Source:** This section is based on direct observation of `docs/test-specs/flaky-tests.md` and related test infrastructure files.
+
+### Stress Test Results
+
+**Overall Status:** ✅ **TESTS STABLE - VERIFICATION COMPLETE**
+
+Comprehensive stress testing was performed across 19 key test files. All completed runs showed 100% pass rates with no flaky behavior detected.
+
+| Test File | Iterations | Pass Rate | Status |
+|-----------|------------|-----------|--------|
+| api.entries.test.js | 3 | 100% | ✅ Stable |
+| api3.socket.test.js | 3 | 100% | ✅ Stable |
+| api.partial-failures.test.js | 3 | 100% | ✅ Stable |
+| api.deduplication.test.js | 5 | 100% | ✅ Fixed |
+| api3.renderer.test.js | 3 | 100% | ✅ Stable |
+| boluswizardpreview.test.js | 3 | 100% | ✅ Stable |
+| api.treatments.test.js | 5 | 100% | ✅ Stable |
+| api3.create.test.js | 5 | 100% | ✅ Stable |
+| api.aaps-client.test.js | 5 | 100% | ✅ Stable |
+| api.v1-batch-operations.test.js | 5 | 100% | ✅ Stable |
+| websocket.shape-handling.test.js | 5 | 100% | ✅ Stable |
+| concurrent-writes.test.js | 5 | 100% | ✅ Stable |
+| security.test.js | 5 | 100% | ✅ Stable |
+| storage.shape-handling.test.js | 5 | 100% | ✅ Stable |
+| verifyauth.test.js | 5 | 100% | ✅ Stable |
+| api3.security.test.js | 5 | 100% | ✅ Stable |
+| api3.generic.workflow.test.js | 3 | 100% | ✅ Stable |
+| api.devicestatus.test.js | 3 | 100% | ✅ Stable |
+| api.shape-handling.test.js | 5 | 100% | ✅ Fixed (boot optimization) |
+
+### Flaky Test Fixes Applied
+
+#### Fix 1: boluswizardpreview.test.js - Floating-Point Precision (January 19, 2026)
+
+**Problem:** Test `set a pill to the BWP with infos` intermittently failed, expecting `'0.50U'` but receiving `'0.51U'`.
+
+**Root Cause:** The `roundInsulinForDisplayFormat()` function used `Math.floor(insulin / 0.01) * 0.01`. Floating-point precision errors caused values like `0.50499999...` to sometimes produce either `0.50` or `0.51` non-deterministically.
+
+**Fix Applied:** Added epsilon (`1e-9`) before floor operation: `Math.floor(insulin * 100 + 1e-9) / 100`
+
+#### Fix 2: api.shape-handling.test.js - Boot Optimization (January 19, 2026)
+
+**Problem:** Test file was slow (~80s boot overhead) and occasionally timed out during stress testing.
+
+**Root Cause:** Used `beforeEach()` for server boot, causing 26 boots (one per test) at 2-3 seconds each.
+
+**Fix Applied:** Changed `beforeEach()` to `before()` for one-time server boot; kept data cleanup in nested `beforeEach()` hooks.
+
+**Result:** Test execution time reduced from ~80s to ~6s (172ms/test avg) - **93% improvement**
+
+#### Fix 3: api.deduplication.test.js - Timeout and Cleanup (January 2026)
+
+**Problem:** Test `duplicate entry with same date+device+type is detected` intermittently timed out.
+
+**Root Cause:** Server boot overhead (~20s on first test) plus slow database cleanup.
+
+**Fix Applied:** 
+- Increased timeout from 15000ms to 30000ms
+- Changed entries cleanup to use `deleteMany({})` for faster full-collection purge
+- Added devicestatus cleanup to reduce database load
+
+### MongoDB Pool Optimization
+
+**Configuration Changes:**
+- Test environment: `MONGO_POOL_SIZE=2` (configured in `my.test.env`)
+- Production default: `5` for headroom
+- Pool size 1 caused timeouts due to request queuing on concurrent operations
+- Pool size 2 is minimum that handles `concurrent-writes.test.js` (5 parallel requests)
+
+### Timing Instrumentation
+
+New test helper module `tests/lib/test-helpers.js` provides:
+
+| Function | Description |
+|----------|-------------|
+| `waitForConditionWithWarning(options)` | Callback-based polling with warnings |
+| `waitForConditionAsync(options)` | Promise-based polling with warnings |
+| `instrumentedSetTimeout(fn, delay, context)` | setTimeout wrapper with logging |
+| `trackedDelay(ms, reason)` | Promise delay with timing logs |
+| `enableSetTimeoutWarnings(options)` | Enable global setTimeout monitoring |
+
+**Anti-pattern Detection:** Tests can now detect `setTimeout` calls with delays ≥100ms that may cause flakiness.
 
 ---
 
@@ -244,13 +341,104 @@ The team's documentation suggests:
 
 ---
 
+## Modernization Roadmap Summary
+
+> **Source:** This section summarizes the 5-phase modernization plan from `docs/meta/modernization-roadmap.md`.
+
+The cgm-remote-monitor team has documented a comprehensive modernization roadmap addressing technical debt and architecture improvements.
+
+### Phase Overview
+
+| Phase | Focus | Effort | Complexity |
+|-------|-------|--------|------------|
+| **Phase 1** | Security Foundation | Low-Medium | Straightforward |
+| **Phase 2** | Developer Experience | High | Moderate to Complicated |
+| **Phase 3** | Performance & UX | Medium | Moderate |
+| **Phase 4** | Architecture Improvements | High | Complicated |
+| **Phase 5** | UI Modernization | Very High | Complicated |
+
+### Technical Debt Inventory
+
+**Critical Debt (Immediate Action Required):**
+
+| Item | Location | Risk |
+|------|----------|------|
+| Deprecated `request` library | Multiple files | Security |
+| No input validation | API endpoints | Security |
+| No rate limiting | Server | DoS vulnerability |
+| Outdated Node.js support | package.json | Security |
+
+**High Priority Debt:**
+
+| Item | Location | Impact |
+|------|----------|--------|
+| Callback-based async code | Throughout | Maintainability |
+| No TypeScript | Throughout | Developer velocity |
+| Global state (ctx object) | Server code | Testability |
+| jQuery dependency | Client | Bundle size, modernization |
+
+### Key Modernization Strategies
+
+1. **OIDC/OAuth2 Plugin** - External identity federation via nightscout-roles-gateway
+2. **Database Migration System** - migrate-mongo for proper schema migrations
+3. **Event-Driven Refactoring** - Typed EventEmitter replacing Stream-based bus
+4. **Strangler Fig Pattern** - Gradual migration of subsystems
+5. **Feature Flags** - Safe rollout of new functionality
+
+---
+
+## Coverage Gaps (Prioritized)
+
+> **Source:** This section summarizes `docs/test-specs/coverage-gaps.md`.
+
+### High Priority Gaps (Security/Data Critical)
+
+| Area | Gap | Recommended Action |
+|------|-----|-------------------|
+| Authorization | WebSocket Auth (`/storage` subscription) | Add socket.io-client tests for subscribe with/without token |
+| Authorization | JWT Expiration rejection | Create JWT with past exp, verify 401 |
+| Authorization | Permission Wildcards (Shiro patterns) | Test `api:*:read` vs `api:entries:read` |
+| Authorization | API v3 Security model | Create separate API v3 security spec |
+
+### Medium Priority Gaps
+
+| Area | Gap | Recommended Action |
+|------|-----|-------------------|
+| Shape Handling | Response order matches input order | Add order verification tests |
+| Shape Handling | WebSocket + API concurrent writes | Complex test setup needed |
+| Shape Handling | Duplicate identifier handling under load | Stress test harness needed |
+| Shape Handling | Cross-API consistency (v1 vs v3 storage) | Cross-read verification tests |
+| Authorization | Subject CRUD operations | Add API tests for admin endpoints |
+| Authorization | Role Management | Test role creation and permission assignment |
+
+### Low Priority Gaps
+
+| Area | Gap | Recommended Action |
+|------|-----|-------------------|
+| Shape Handling | Null/undefined in array handling | Define expected behavior, add tests |
+| Authorization | Audit Events | Mock bus, verify admin-notify event |
+| Authorization | Delay Cleanup | Fast-forward time, verify cleanup |
+
+### Areas Not Yet Documented
+
+| Area | Source Audit | Priority |
+|------|--------------|----------|
+| API v3 Security | `security-audit.md` | High |
+| Core Calculations (IOB/COB) | `plugin-architecture-audit.md` | High |
+| Real-time Event Bus | `realtime-systems-audit.md` | Medium |
+| Plugin System | `plugin-architecture-audit.md` | Medium |
+| Notification/Messaging | `messaging-subsystem-audit.md` | Medium |
+| Dashboard UI | `dashboard-ui-audit.md` | Low (may be rewritten) |
+
+---
+
 ## Repository Statistics
 
 > **Source:** All counts in this section are verified from file system scans.
 
 | Metric | Count |
 |--------|-------|
-| Total documentation files | 35 |
+| Total documentation files | 36 |
 | Audit documents | 7 |
 | Proposals | 9 |
 | Total test files | 88 |
@@ -258,6 +446,8 @@ The team's documentation suggests:
 | New client pattern test files | 3 |
 | New lines of test code | 1,229 |
 | Flaky test runner script | 513 lines |
+| Test helper module | `tests/lib/test-helpers.js` |
+| Test specs (new) | 4 files |
 
 ---
 
@@ -265,5 +455,10 @@ The team's documentation suggests:
 
 - `externals/cgm-remote-monitor/docs/proposals/mongodb-modernization-implementation-plan.md`
 - `externals/cgm-remote-monitor/docs/proposals/websocket-array-deduplication-issue.md`
+- `externals/cgm-remote-monitor/docs/meta/modernization-roadmap.md`
+- `externals/cgm-remote-monitor/docs/meta/DOCUMENTATION-PROGRESS.md`
+- `externals/cgm-remote-monitor/docs/test-specs/flaky-tests.md`
+- `externals/cgm-remote-monitor/docs/test-specs/coverage-gaps.md`
 - `externals/cgm-remote-monitor/docs/INDEX.md`
 - `externals/cgm-remote-monitor/scripts/flaky-test-runner.js`
+- `externals/cgm-remote-monitor/tests/lib/test-helpers.js`

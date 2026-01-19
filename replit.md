@@ -25,8 +25,15 @@ The workspace is designed to separate normative specifications from informative 
     - `docs/60-research/mongodb-update-readiness-report.md` - **UPDATED** Revised risk matrix based on verified NightscoutKit source; downgraded "Response format breaking change" from HIGH to MEDIUM
     - `docs/60-research/mongodb-modernization-impact-assessment.md` - **UPDATED** Corrected v1 API response requirements; only `_id` required, `ok`/`n` fields not checked by Loop
     - `docs/10-domain/nightscout-api-comparison.md` - **UPDATED** Added Section 8.3 documenting verified client response parsing behavior with source code references
+    - `docs/cgm-remote-monitor-analysis-2026-01-18.md` - **UPDATED v1.2** Integrated January 19, 2026 findings from cgm-remote-monitor sources:
+      - Test stability verification: 100% pass rate across 19 test files in stress testing
+      - Flaky test fixes: floating-point precision, boot optimization, timeout improvements
+      - MongoDB pool optimization: test environment uses `MONGO_POOL_SIZE=2`
+      - Timing instrumentation: new test helper module with anti-pattern detection
+      - Modernization roadmap: 5-phase plan (Security → DevEx → Performance → Architecture → UI)
+      - Coverage gaps: High-priority items (WebSocket Auth, JWT expiration, API v3 Security)
   - Key deliverables (2026-01-18):
-    - `docs/cgm-remote-monitor-analysis-2026-01-18.md` - Analysis of cgm-remote-monitor repository updates (team reports Phase 1 complete per their documentation), documentation restructuring, flaky test tooling, client deduplication patterns
+    - `docs/cgm-remote-monitor-analysis-2026-01-18.md` - Initial analysis of cgm-remote-monitor repository (superseded by v1.2 above)
   - Key deliverables (2026-01-17):
     - `docs/10-domain/data-rights-primer.md` - **NEW** Plain-language guide to the Five Fundamental Diabetes Data Rights (Access, Export, Share, Delegate, Audit), multi-stakeholder accessibility for patients, clinicians, developers, and policymakers, "ownership to agency" framing shift
     - `docs/10-domain/progressive-enhancement-framework.md` - **NEW** 10-layer capability ladder for diabetes technology (L0 MDI baseline through L9 delegate agents), design principles (progressive enhancement, graceful degradation, separation of concerns), shared vocabulary for describing any AID system
