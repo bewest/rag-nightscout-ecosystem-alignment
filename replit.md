@@ -21,8 +21,10 @@ I want iterative development. Each iteration cycle should update:
 The workspace is designed to separate normative specifications from informative documentation and executable tests.
 
 - **`docs/`**: Contains narrative documentation, including overviews, domain concepts, design proposals, implementation notes, and architecture decision records (ADRs). The UI/UX emphasizes clear structure and cross-referencing.
-  - Key new deliverables (2026-01-18):
-    - `docs/cgm-remote-monitor-analysis-2026-01-18.md` - **NEW** Analysis of cgm-remote-monitor repository updates (team reports Phase 1 complete per their documentation), documentation restructuring, flaky test tooling, client deduplication patterns
+  - Key new deliverables (2026-01-19):
+    - `docs/60-research/mongodb-update-readiness-report.md` - **NEW** Team-facing readiness report for MongoDB modernization with phase tracking, risk matrix, actionable recommendations, and testing requirements for Nightscout Core
+  - Key deliverables (2026-01-18):
+    - `docs/cgm-remote-monitor-analysis-2026-01-18.md` - Analysis of cgm-remote-monitor repository updates (team reports Phase 1 complete per their documentation), documentation restructuring, flaky test tooling, client deduplication patterns
   - Key deliverables (2026-01-17):
     - `docs/10-domain/data-rights-primer.md` - **NEW** Plain-language guide to the Five Fundamental Diabetes Data Rights (Access, Export, Share, Delegate, Audit), multi-stakeholder accessibility for patients, clinicians, developers, and policymakers, "ownership to agency" framing shift
     - `docs/10-domain/progressive-enhancement-framework.md` - **NEW** 10-layer capability ladder for diabetes technology (L0 MDI baseline through L9 delegate agents), design principles (progressive enhancement, graceful degradation, separation of concerns), shared vocabulary for describing any AID system
