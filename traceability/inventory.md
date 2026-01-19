@@ -1,20 +1,20 @@
 # Workspace Inventory
 
-Generated: 2026-01-17T07:05:12.731781+00:00
+Generated: 2026-01-17T23:54:34.718810+00:00
 
 ## Summary
 
 | Category | Count |
 |----------|-------|
-| Mapping Projects | 10 |
-| Mapping Documents | 70 |
-| OpenAPI Specs | 0 |
+| Mapping Projects | 14 |
+| Mapping Documents | 85 |
+| OpenAPI Specs | 5 |
 | JSON Schemas | 1 |
 | Shape Specs | 1 |
 | Scenarios | 1 |
 | Assertions | 4 |
 | Requirements | 26 |
-| Documentation Files | 31 |
+| Documentation Files | 41 |
 
 ---
 
@@ -32,11 +32,20 @@ Generated: 2026-01-17T07:05:12.731781+00:00
 - [x] [profile-switch](mapping/aaps/profile-switch.md)
 - [x] [safety](mapping/aaps/safety.md)
 
-### cross-project (3 documents)
+### cross-project (5 documents)
 
 - [x] [aid-controller-sync-patterns](mapping/cross-project/aid-controller-sync-patterns.md) (has code refs)
+- [x] [capability-layer-matrix](mapping/cross-project/capability-layer-matrix.md)
 - [x] [cgm-apps-comparison](mapping/cross-project/cgm-apps-comparison.md) (has code refs)
+- [x] [g7-implementation-comparison](mapping/cross-project/g7-implementation-comparison.md)
 - [x] [terminology-matrix](mapping/cross-project/terminology-matrix.md) (has code refs)
+
+### diable (4 documents)
+
+- [x] [README](mapping/diable/README.md)
+- [x] [cgm-transmitters](mapping/diable/cgm-transmitters.md)
+- [x] [data-models](mapping/diable/data-models.md)
+- [x] [nightscout-sync](mapping/diable/nightscout-sync.md)
 
 ### loop (10 documents)
 
@@ -50,6 +59,18 @@ Generated: 2026-01-17T07:05:12.731781+00:00
 - [x] [overrides](mapping/loop/overrides.md) (has code refs)
 - [x] [quirks](mapping/loop/quirks.md)
 - [x] [safety](mapping/loop/safety.md) (has code refs)
+
+### loopcaregiver (3 documents)
+
+- [x] [README](mapping/loopcaregiver/README.md)
+- [x] [authentication](mapping/loopcaregiver/authentication.md) (has code refs)
+- [x] [remote-commands](mapping/loopcaregiver/remote-commands.md) (has code refs)
+
+### loopfollow (3 documents)
+
+- [x] [README](mapping/loopfollow/README.md)
+- [x] [alarm-system](mapping/loopfollow/alarm-system.md)
+- [x] [remote-commands](mapping/loopfollow/remote-commands.md) (has code refs)
 
 ### nightguard (6 documents)
 
@@ -110,6 +131,12 @@ Generated: 2026-01-17T07:05:12.731781+00:00
 - [x] [local-web-server](mapping/xdrip-android/local-web-server.md) (has code refs)
 - [x] [nightscout-sync](mapping/xdrip-android/nightscout-sync.md)
 
+### xdrip-js (3 documents)
+
+- [x] [README](mapping/xdrip-js/README.md) (has code refs)
+- [x] [ble-protocol](mapping/xdrip-js/ble-protocol.md)
+- [x] [data-models](mapping/xdrip-js/data-models.md)
+
 ### xdrip4ios (7 documents)
 
 - [x] [README](mapping/xdrip4ios/README.md)
@@ -123,6 +150,14 @@ Generated: 2026-01-17T07:05:12.731781+00:00
 ---
 
 ## Specifications
+
+### Openapi (5)
+
+- [aid-alignment-extensions](specs/openapi/aid-alignment-extensions.yaml)
+- [aid-devicestatus-2025](specs/openapi/aid-devicestatus-2025.yaml)
+- [aid-entries-2025](specs/openapi/aid-entries-2025.yaml)
+- [aid-profile-2025](specs/openapi/aid-profile-2025.yaml)
+- [aid-treatments-2025](specs/openapi/aid-treatments-2025.yaml)
 
 ### Jsonschema (1)
 
@@ -187,13 +222,20 @@ Generated: 2026-01-17T07:05:12.731781+00:00
 - [mission](docs/00-overview/mission.md)
 - [algorithm-comparison-deep-dive](docs/10-domain/algorithm-comparison-deep-dive.md)
 - [authority-model](docs/10-domain/authority-model.md)
+- [carb-absorption-deep-dive](docs/10-domain/carb-absorption-deep-dive.md)
 - [cgm-data-sources-deep-dive](docs/10-domain/cgm-data-sources-deep-dive.md)
+- [data-rights-primer](docs/10-domain/data-rights-primer.md)
 - [devicestatus-deep-dive](docs/10-domain/devicestatus-deep-dive.md)
+- [dexcom-ble-protocol-deep-dive](docs/10-domain/dexcom-ble-protocol-deep-dive.md)
 - [entries-deep-dive](docs/10-domain/entries-deep-dive.md)
+- [g7-jpake-implementation-guide](docs/10-domain/g7-jpake-implementation-guide.md)
+- [g7-protocol-specification](docs/10-domain/g7-protocol-specification.md)
 - [glossary](docs/10-domain/glossary.md)
 - [insulin-curves-deep-dive](docs/10-domain/insulin-curves-deep-dive.md)
+- [libre-protocol-deep-dive](docs/10-domain/libre-protocol-deep-dive.md)
 - [nightscout-api-comparison](docs/10-domain/nightscout-api-comparison.md)
 - [nightscout-data-model](docs/10-domain/nightscout-data-model.md)
+- [progressive-enhancement-framework](docs/10-domain/progressive-enhancement-framework.md)
 - [pump-communication-deep-dive](docs/10-domain/pump-communication-deep-dive.md)
 - [remote-commands-comparison](docs/10-domain/remote-commands-comparison.md)
 - [treatments-deep-dive](docs/10-domain/treatments-deep-dive.md)
@@ -209,9 +251,12 @@ Generated: 2026-01-17T07:05:12.731781+00:00
 - [trio-docs](docs/60-research/external-inventories/trio-docs.md)
 - [profile-model-evolution-proposal](docs/60-research/profile-model-evolution-proposal.md)
 - [profile-therapy-settings-comparison](docs/60-research/profile-therapy-settings-comparison.md)
+- [stakeholder-priority-analysis](docs/60-research/stakeholder-priority-analysis.md)
 - [_template](docs/90-decisions/_template.md)
 - [adr-001-override-supersession](docs/90-decisions/adr-001-override-supersession.md)
 - [adr-002-sync-identity-strategy](docs/90-decisions/adr-002-sync-identity-strategy.md)
 - [adr-003-no-custom-credentials](docs/90-decisions/adr-003-no-custom-credentials.md)
+- [DIGITAL-RIGHTS](docs/DIGITAL-RIGHTS.md)
 - [code-refs](docs/_includes/code-refs.md)
+- [state-of-diabetes-2026](docs/state-of-diabetes-2026.md)
 - [tooling-roadmap](docs/tooling-roadmap.md)
