@@ -573,6 +573,67 @@ private enum Config {
 }
 ```
 
+### 8.3 Client Response Parsing Behavior (Verified 2026-01-19)
+
+Understanding how clients actually parse v1 API responses is critical for MongoDB modernization. Source code verification reveals the requirements are **less strict than often assumed**.
+
+#### Loop (NightscoutKit)
+
+**Source:** [`LoopKit/NightscoutKit`](https://github.com/LoopKit/NightscoutKit) - `Sources/NightscoutKit/NightscoutClient.swift` - `postToNS` function
+
+```swift
+guard let insertedEntries = postResponse as? [[String: Any]], 
+      insertedEntries.count == json.count else {
+    completion(.failure(NightscoutError.invalidResponse(...)))
+    return
+}
+
+let ids = insertedEntries.map({ (entry: [String: Any]) -> String in
+    if let id = entry["_id"] as? String {
+        return id
+    } else {
+        return "NA"  // Graceful fallback
+    }
+})
+```
+
+**Actual Requirements:**
+| Requirement | Status | Notes |
+|-------------|--------|-------|
+| Response is array | **Required** | Validated with `as? [[String: Any]]` |
+| Array length matches request | **Required** | Validated with `count == json.count` |
+| Each object has `_id` field | **Preferred** | Falls back to "NA" if missing |
+| Response order preserved | **Required** | Direct index mapping: `syncIdentifier[i]` → `response[i]._id` |
+| `ok` field present | **Not required** | Not checked |
+| `n` field present | **Not required** | Not checked |
+
+**Minimum Viable Response:**
+```json
+[{ "_id": "id1" }, { "_id": "id2" }, { "_id": "id3" }]
+```
+
+#### AAPS (v3 API)
+
+**Source:** `AndroidAPS/core/nssdk/` - `CreateUpdateResponse` data class
+
+AAPS requires the full v3 response schema:
+```kotlin
+data class CreateUpdateResponse(
+    val identifier: String,
+    val isDeduplication: Boolean,
+    val deduplicatedIdentifier: String?,
+    val lastModified: Long
+)
+```
+
+All four fields are used for sync logic. Changes to this schema will break AAPS.
+
+#### Trio
+
+Trio uses similar v1 parsing patterns to Loop. The `id` field (Trio's client-side UUID) is separate from the MongoDB `_id` returned in responses.
+
+**Note:** Trio's response parsing was not directly verified in source code for this analysis; this assessment is based on its documented use of v1 API endpoints with similar batch patterns to Loop.
+
 ---
 
 ## 9. Server-Side Timestamps

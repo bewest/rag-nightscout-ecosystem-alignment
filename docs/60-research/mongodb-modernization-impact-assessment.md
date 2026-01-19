@@ -595,11 +595,14 @@ module.exports = {
    - Return objectIds in submission order
    - Handle partial failures gracefully (some inserted, some failed)
 
-2. **Response format for v1 API**
+2. **Response format for v1 API** *(Verified 2026-01-19 from NightscoutKit source)*
    - Must return array of objects with `_id` field for each submitted item
-   - Format: `[{_id: "objectId1", ok: 1}, {_id: "objectId2", ok: 1}, ...]`
-   - Order must match submission order (Loop depends on this for syncIdentifier mapping)
+   - **Minimum viable format:** `[{_id: "objectId1"}, {_id: "objectId2"}, ...]`
+   - **Note:** Fields `ok` and `n` are NOT required - Loop's NightscoutKit only extracts `_id`
+   - Array length must equal submission array length (Loop validates `insertedEntries.count == json.count`)
+   - Order must match submission order (Loop maps `syncIdentifier[i]` → `response[i]._id`)
    - Deduplicated items must still return an `_id` (the existing document's ID)
+   - Graceful degradation: If `_id` is missing, NightscoutKit returns "NA" instead of failing
 
 3. **Deduplication response for v3 API**
    - Always return `isDeduplication` boolean
@@ -678,7 +681,13 @@ The three major Nightscout clients have distinct but well-defined data patterns:
 - **Loop** requires careful attention to batch semantics, response ordering, and handling of deduplicated items
 - **Trio** uses v1 batching with throttling, similar concerns to Loop
 
-**Critical insight:** All clients depend on stable response formats, not just insert behavior. Even if `insertOne` vs `insertMany` semantics are preserved, changes to the write result format or acknowledgment fields will break synchronization.
+**Critical insight:** All clients depend on stable response formats, not just insert behavior. However, the actual requirements are **less strict than previously documented**:
+
+- **Loop (NightscoutKit):** Only requires `_id` field in each response object. Fields `ok` and `n` are ignored. Array length must match request length. Has graceful fallback to "NA" if `_id` missing.
+- **Trio:** Similar v1 patterns to Loop.
+- **AAPS (v3):** Requires `identifier`, `isDeduplication`, `deduplicatedIdentifier`, `lastModified` fields.
+
+This means the Write Result Translator has more flexibility than initially assumed - it only needs to ensure each response object contains `_id`, not the full `{_id, ok: 1, n: 1}` format.
 
 The provided test fixtures cover:
 1. Client-specific data shapes (aaps, loop, trio fixtures)

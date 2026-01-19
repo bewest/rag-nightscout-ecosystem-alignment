@@ -6,6 +6,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### NightscoutKit Response Format Verification (2026-01-19)
+
+Source code verification of actual Loop client response requirements for v1 API.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Impact Assessment Update** | `docs/60-research/mongodb-modernization-impact-assessment.md` | Corrected v1 response format requirements |
+| **Readiness Report Update** | `docs/60-research/mongodb-update-readiness-report.md` | Revised risk matrix based on verified requirements |
+| **API Comparison Update** | `docs/10-domain/nightscout-api-comparison.md` | Added Section 8.3 documenting client parsing behavior |
+
+**Key Finding:** Loop's NightscoutKit only extracts `_id` from v1 API responses. Fields `ok` and `n` are NOT checked.
+
+**Verified Requirements (from NightscoutKit source):**
+- Response must be array with length matching request length
+- Each object should have `_id` field (graceful fallback to "NA" if missing)
+- Response order must match request order for `syncIdentifier` mapping
+- Fields `ok: 1` and `n: 1` are NOT required (previously over-documented)
+
+**Source Reference:** `LoopKit/NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift` - `postToNS` function
+
+**Risk Impact:** Downgraded "Response format breaking change" from HIGH to MEDIUM in readiness report.
+
+---
+
 ### CGM Remote Monitor MongoDB Modernization Analysis (2026-01-18)
 
 Deep analysis of the cgm-remote-monitor team's latest work on the `wip/replit/with-mongodb-update` branch.

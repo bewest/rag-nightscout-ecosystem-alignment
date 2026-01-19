@@ -57,7 +57,7 @@ One test times out with large devicestatus documents (500+ prediction values). T
 
 | Risk | Impact | Affected Clients | Mitigation |
 |------|--------|------------------|------------|
-| Response format breaking change | **HIGH** | Loop, Trio | Implement Write Result Translator |
+| Response format breaking change | **MEDIUM** | Loop, Trio | Ensure `_id` field present; `ok`/`n` not required |
 | `insertedIds` format change (3.x→4.x+) | **HIGH** | Loop, Trio | API layer must translate to stable v1 format |
 | Batch response ordering loss | **HIGH** | Loop | Explicit ordering tests required |
 | v1 API `insertOne` used for arrays | **MEDIUM** | Loop, Trio | Audit all v1 endpoints |
@@ -68,10 +68,12 @@ One test times out with large devicestatus documents (500+ prediction values). T
 |--------|-------------------|---------------------|
 | insertedIds | `{ '0': id1, '1': id2 }` | `[id1, id2]` |
 
-**v1 API Expected Response:**
+**v1 API Minimum Required Response** *(Verified 2026-01-19 from NightscoutKit source)*:
 ```javascript
-[{ _id: 'id1', ok: 1, n: 1 }, { _id: 'id2', ok: 1, n: 1 }]
+[{ _id: 'id1' }, { _id: 'id2' }]
 ```
+
+**Note:** The `ok: 1` and `n: 1` fields are NOT required by Loop. NightscoutKit's `postToNS` function only extracts the `_id` field from each response object. The array length must match the request array length.
 
 ### Client-Specific Risk Levels
 
