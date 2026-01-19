@@ -22,7 +22,9 @@ The workspace is designed to separate normative specifications from informative 
 
 - **`docs/`**: Contains narrative documentation, including overviews, domain concepts, design proposals, implementation notes, and architecture decision records (ADRs). The UI/UX emphasizes clear structure and cross-referencing.
   - Key new deliverables (2026-01-19):
-    - `docs/60-research/mongodb-update-readiness-report.md` - **NEW** Team-facing readiness report for MongoDB modernization with phase tracking, risk matrix, actionable recommendations, and testing requirements for Nightscout Core
+    - `docs/60-research/mongodb-update-readiness-report.md` - **UPDATED** Revised risk matrix based on verified NightscoutKit source; downgraded "Response format breaking change" from HIGH to MEDIUM
+    - `docs/60-research/mongodb-modernization-impact-assessment.md` - **UPDATED** Corrected v1 API response requirements; only `_id` required, `ok`/`n` fields not checked by Loop
+    - `docs/10-domain/nightscout-api-comparison.md` - **UPDATED** Added Section 8.3 documenting verified client response parsing behavior with source code references
   - Key deliverables (2026-01-18):
     - `docs/cgm-remote-monitor-analysis-2026-01-18.md` - Analysis of cgm-remote-monitor repository updates (team reports Phase 1 complete per their documentation), documentation restructuring, flaky test tooling, client deduplication patterns
   - Key deliverables (2026-01-17):
