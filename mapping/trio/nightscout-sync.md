@@ -6,8 +6,8 @@ This document details how Trio synchronizes data with Nightscout, including uplo
 
 | File | Purpose |
 |------|---------|
-| `trio:Trio/Sources/Services/Network/NightscoutManager.swift` | Sync orchestration |
-| `trio:Trio/Sources/Services/Network/NightscoutAPI.swift` | HTTP client |
+| `trio:Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift` | Sync orchestration |
+| `trio:Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift` | HTTP client |
 | `trio:Trio/Sources/Models/NightscoutTreatment.swift` | Treatment model |
 | `trio:Trio/Sources/Models/NightscoutStatus.swift` | DeviceStatus model |
 

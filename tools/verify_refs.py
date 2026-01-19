@@ -76,13 +76,16 @@ def load_lockfile():
     aliases = {}
     
     for repo in data.get("repos", []):
-        alias = repo.get("alias", repo["name"])
-        aliases[alias] = {
+        repo_info = {
             "name": repo["name"],
             "local_path": WORKSPACE_ROOT / externals_dir / repo["name"],
             "url": repo.get("url", ""),
             "ref": repo.get("ref", "main")
         }
+        alias = repo.get("alias", repo["name"])
+        aliases[alias] = repo_info
+        for extra_alias in repo.get("aliases", []):
+            aliases[extra_alias] = repo_info
     
     return aliases, externals_dir
 

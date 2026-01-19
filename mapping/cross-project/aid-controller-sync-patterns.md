@@ -416,8 +416,8 @@ Based on this analysis, the following conformance tests should be added:
 #### Trio
 | File | Purpose | Key Lines | Evidence For |
 |------|---------|-----------|--------------|
-| `trio:Trio/Sources/Services/Network/NightscoutManager.swift` | Sync orchestration | L303-376, L407-553, L555-569 | Upload triggers, profile sync |
-| `trio:Trio/Sources/Services/Network/NightscoutAPI.swift` | HTTP client | L46-50, L60-98, L101-142, L202-244 | Auth, glucose/carbs/temp target fetch |
+| `trio:Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift` | Sync orchestration | L303-376, L407-553, L555-569 | Upload triggers, profile sync |
+| `trio:Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift` | HTTP client | L46-50, L60-98, L101-142, L202-244 | Auth, glucose/carbs/temp target fetch |
 | `trio:Trio/Sources/Models/NightscoutTreatment.swift` | Treatment model | L12-30, L31 | Field mapping, `enteredBy: "Trio"` |
 
 #### Loop

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-01-19T19:22:17.566786+00:00",
+  "generated_at": "2026-01-19T19:25:53.740272+00:00",
   "summary": {
     "requirements": {
       "total": 26,
@@ -838,14 +838,14 @@
           "context": "uploads are currently posting\n```\n\n### GAP-SYNC-002: Effect Timelines Not Uploaded\n\n**Issue"
         },
         {
-          "file": "mapping/cross-project/aid-controller-sync-patterns.md",
-          "line": 362,
-          "context": "duplicates | Loop | Data integrity |\n| GAP-SYNC-002 | Effect timelines not uploaded | Loop"
-        },
-        {
           "file": "mapping/cross-project/terminology-matrix.md",
           "line": 982,
           "context": "ned predictions, not component effects (GAP-SYNC-002). oref0's separate arrays enable algori"
+        },
+        {
+          "file": "mapping/cross-project/aid-controller-sync-patterns.md",
+          "line": 362,
+          "context": "duplicates | Loop | Data integrity |\n| GAP-SYNC-002 | Effect timelines not uploaded | Loop"
         },
         {
           "file": "mapping/oref0/README.md",

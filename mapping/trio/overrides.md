@@ -7,10 +7,10 @@ This document details how Trio implements profile overrides and temporary target
 | File | Purpose |
 |------|---------|
 | `trio:Trio/Sources/APS/OpenAPS/OpenAPS.swift` | oref2() function |
-| `trio:Trio/Sources/Models/Oref2_variables.swift` | Override state model |
+| `trio:Trio/Sources/APS/Storage/OverrideStorage.swift` | Override state model |
 | `trio:Trio/Sources/Models/TempTarget.swift` | Temp target model |
 | `trio:Trio/Sources/Services/RemoteControl/TrioRemoteControl+Override.swift` | Remote override commands |
-| `trio:Model/Core_Data.xcdatamodeld/` | Override CoreData entity |
+| `trio:Model/TrioCoreDataPersistentContainer.xcdatamodeld/` | Override CoreData entity |
 
 ---
 

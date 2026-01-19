@@ -1,6 +1,6 @@
 # Terminology Consistency Report
 
-Generated: 2026-01-19T19:22:20.726282+00:00
+Generated: 2026-01-19T19:25:57.133154+00:00
 
 ## Summary
 

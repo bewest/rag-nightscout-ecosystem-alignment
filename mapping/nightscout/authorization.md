@@ -123,7 +123,7 @@ actor:
 | Purpose | Location |
 |---------|----------|
 | Auth initialization | `crm:lib/authorization/index.js` |
-| Shiro trie | `crm:lib/authorization/authorization.js` |
+| Shiro trie | `crm:lib/authorization/index.js` |
 | JWT handling | `crm:lib/server/enclave.js` |
 | Brute-force protection | `crm:lib/authorization/delaylist.js` |
 | NRG policy decision | `ns-gateway:lib/policies/index.js` |

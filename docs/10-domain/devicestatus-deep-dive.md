@@ -837,7 +837,7 @@ oref0 exposes extensive algorithm state (`eventualBG`, `sensitivityRatio`, `ISF`
 | Loop | `loop:NightscoutService/NightscoutServiceKit/Extensions/StoredDosingDecision.swift` | DeviceStatus construction |
 | Loop | `loop:NightscoutService/NightscoutServiceKit/NightscoutClient.swift` | Upload logic |
 | Trio | `trio:Trio/Sources/Models/NightscoutStatus.swift` | DeviceStatus model |
-| Trio | `trio:Trio/Sources/Services/Network/NightscoutManager.swift` | Upload orchestration |
+| Trio | `trio:Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift` | Upload orchestration |
 | AAPS | `aaps:core/nssdk/src/main/kotlin/app/aaps/core/nssdk/localmodel/devicestatus/NSDeviceStatus.kt` | DeviceStatus model |
 | AAPS | `aaps:plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/DeviceStatusExtension.kt` | Conversion logic |
 | oref0 | `oref0:lib/determine-basal/determine-basal.js` | Algorithm output structure |

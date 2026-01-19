@@ -41,6 +41,7 @@
     },
     {
       "alias": "ns-reporter",
+      "aliases": ["nr"],
       "name": "nightscout-reporter",
       "url": "https://github.com/zreptil/nightscout-reporter.git",
       "ref": "master",
