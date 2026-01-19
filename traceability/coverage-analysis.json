@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-01-18T07:01:07.237079+00:00",
+  "generated_at": "2026-01-19T19:22:17.566786+00:00",
   "summary": {
     "requirements": {
       "total": 26,
@@ -67,11 +67,6 @@
           "context": "n3 tools/query_workspace.py --tests-for REQ-001 --json\n```\n\n### Example 2: Validate Bef"
         },
         {
-          "file": "docs/tooling-roadmap.md",
-          "line": 59,
-          "context": "n3 tools/query_workspace.py --tests-for REQ-001 --json` to verify coverage before compl"
-        },
-        {
           "file": "docs/TOOLING-QUICKREF.md",
           "line": 16,
           "context": "n\"\n\n# Trace a requirement\nmake trace ID=REQ-001\n\n# Generate traceability reports\nmake t"
@@ -120,6 +115,11 @@
           "file": "docs/TOOLING-QUICKREF.md",
           "line": 286,
           "context": "**Check a requirement**: `make trace ID=REQ-001`\n4. **Run validation**: `make workflow"
+        },
+        {
+          "file": "docs/tooling-roadmap.md",
+          "line": 59,
+          "context": "n3 tools/query_workspace.py --tests-for REQ-001 --json` to verify coverage before compl"
         }
       ],
       "total_refs": 19,
@@ -598,14 +598,14 @@
           "context": "for who can issue commands\n- Related to GAP-AUTH-001 (unverified enteredBy)\n\n---\n\n## Alignme"
         },
         {
-          "file": "mapping/cross-project/terminology-matrix.md",
-          "line": 307,
-          "context": "d actor identity with authority levels (GAP-AUTH-001, GAP-AUTH-002).\n\n### xDrip+ Unique Iden"
-        },
-        {
           "file": "mapping/nightscout/authorization.md",
           "line": 137,
           "context": "t |\n|--------|-------------|--------|\n| GAP-AUTH-001 | `enteredBy` is unverified | Cannot au"
+        },
+        {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 307,
+          "context": "d actor identity with authority levels (GAP-AUTH-001, GAP-AUTH-002).\n\n### xDrip+ Unique Iden"
         }
       ],
       "spec_refs": [
@@ -638,6 +638,11 @@
       "assertion_refs": [],
       "doc_refs": [
         {
+          "file": "docs/10-domain/nightscout-api-comparison.md",
+          "line": 290,
+          "context": "urity.js entry point\n\n**Gap Identified (GAP-AUTH-001):** The v3 REST security layer's token-"
+        },
+        {
           "file": "docs/60-research/controller-registration-protocol-proposal.md",
           "line": 108,
           "context": "llers register their identity field |\n| GAP-AUTH-001 | `enteredBy` is unverified | No valida"
@@ -651,11 +656,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 364,
           "context": "gh GAP-PUMP-009 |\n| Authorization | 2 | GAP-AUTH-001, GAP-AUTH-002 |\n| BLE Protocol | 5 | GA"
-        },
-        {
-          "file": "docs/10-domain/nightscout-api-comparison.md",
-          "line": 290,
-          "context": "urity.js entry point\n\n**Gap Identified (GAP-AUTH-001):** The v3 REST security layer's token-"
         }
       ],
       "total_refs": 12,
@@ -668,6 +668,11 @@
       "line": 121,
       "mapping_refs": [
         {
+          "file": "mapping/nightscout/authorization.md",
+          "line": 138,
+          "context": "ied | Cannot audit who made changes |\n| GAP-AUTH-002 | No authority hierarchy | All writes t"
+        },
+        {
           "file": "mapping/cross-project/terminology-matrix.md",
           "line": 307,
           "context": "ty with authority levels (GAP-AUTH-001, GAP-AUTH-002).\n\n### xDrip+ Unique Identifiers\n\n| Ide"
@@ -676,11 +681,6 @@
           "file": "mapping/cross-project/capability-layer-matrix.md",
           "line": 276,
           "context": "01 | Loop override skips OTP | Loop |\n| GAP-AUTH-002 | No authority hierarchy in Nightscout"
-        },
-        {
-          "file": "mapping/nightscout/authorization.md",
-          "line": 138,
-          "context": "ied | Cannot audit who made changes |\n| GAP-AUTH-002 | No authority hierarchy | All writes t"
         }
       ],
       "spec_refs": [
@@ -702,6 +702,11 @@
       ],
       "assertion_refs": [],
       "doc_refs": [
+        {
+          "file": "docs/10-domain/nightscout-api-comparison.md",
+          "line": 300,
+          "context": "ion for REST clients\n\n**Gap Identified (GAP-AUTH-002):** v1 clients using API_SECRET cannot"
+        },
         {
           "file": "docs/60-research/controller-registration-protocol-proposal.md",
           "line": 109,
@@ -731,11 +736,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 364,
           "context": "9 |\n| Authorization | 2 | GAP-AUTH-001, GAP-AUTH-002 |\n| BLE Protocol | 5 | GAP-BLE-001 thro"
-        },
-        {
-          "file": "docs/10-domain/nightscout-api-comparison.md",
-          "line": 300,
-          "context": "ion for REST clients\n\n**Gap Identified (GAP-AUTH-002):** v1 clients using API_SECRET cannot"
         }
       ],
       "total_refs": 13,
@@ -838,16 +838,6 @@
           "context": "uploads are currently posting\n```\n\n### GAP-SYNC-002: Effect Timelines Not Uploaded\n\n**Issue"
         },
         {
-          "file": "mapping/oref0/carb-math.md",
-          "line": 213,
-          "context": "120g (maxCOB) |\n\n## Cross-Project Note: GAP-SYNC-002\n\nThe COB prediction curve (`predBGs.COB"
-        },
-        {
-          "file": "mapping/oref0/README.md",
-          "line": 157,
-          "context": ".\n\n## Relevance to Alignment Goals\n\n### GAP-SYNC-002 Resolution\n\noref0 outputs separate pred"
-        },
-        {
           "file": "mapping/cross-project/aid-controller-sync-patterns.md",
           "line": 362,
           "context": "duplicates | Loop | Data integrity |\n| GAP-SYNC-002 | Effect timelines not uploaded | Loop"
@@ -856,6 +846,16 @@
           "file": "mapping/cross-project/terminology-matrix.md",
           "line": 982,
           "context": "ned predictions, not component effects (GAP-SYNC-002). oref0's separate arrays enable algori"
+        },
+        {
+          "file": "mapping/oref0/README.md",
+          "line": 157,
+          "context": ".\n\n## Relevance to Alignment Goals\n\n### GAP-SYNC-002 Resolution\n\noref0 outputs separate pred"
+        },
+        {
+          "file": "mapping/oref0/carb-math.md",
+          "line": 213,
+          "context": "120g (maxCOB) |\n\n## Cross-Project Note: GAP-SYNC-002\n\nThe COB prediction curve (`predBGs.COB"
         }
       ],
       "spec_refs": [
@@ -908,34 +908,9 @@
       "line": 239,
       "mapping_refs": [
         {
-          "file": "mapping/loopcaregiver/remote-commands.md",
-          "line": 59,
-          "context": ", `remoteAddress: String` | **No** (See GAP-REMOTE-001) |\n| **Cancel Override** | `cancelTempo"
-        },
-        {
-          "file": "mapping/loopcaregiver/remote-commands.md",
-          "line": 326,
-          "context": "equire OTP validation on the Loop side (GAP-REMOTE-001).\n\n---\n\n## Data Models\n\n### RemoteComma"
-        },
-        {
-          "file": "mapping/loopcaregiver/remote-commands.md",
-          "line": 380,
-          "context": "escription |\n|--------|-------------|\n| GAP-REMOTE-001 | Override commands not protected by OT"
-        },
-        {
-          "file": "mapping/loopcaregiver/authentication.md",
-          "line": 387,
-          "context": "mmands don't require OTP on Loop side | GAP-REMOTE-001 |\n| **QR Security** | QR code screensho"
-        },
-        {
           "file": "mapping/loop/nightscout-sync.md",
           "line": 512,
           "context": "e effects on profile not reflected\n\n### GAP-REMOTE-001: Remote Command Authorization\n\n**Issue*"
-        },
-        {
-          "file": "mapping/loopfollow/remote-commands.md",
-          "line": 526,
-          "context": "override commands skip OTP validation (GAP-REMOTE-001)\n2. **TRC**: Most secure - AES-256-GCM"
         },
         {
           "file": "mapping/cross-project/terminology-matrix.md",
@@ -956,6 +931,31 @@
           "file": "mapping/cross-project/capability-layer-matrix.md",
           "line": 275,
           "context": "o role-based permission model | All |\n| GAP-REMOTE-001 | Loop override skips OTP | Loop |\n| GA"
+        },
+        {
+          "file": "mapping/loopfollow/remote-commands.md",
+          "line": 526,
+          "context": "override commands skip OTP validation (GAP-REMOTE-001)\n2. **TRC**: Most secure - AES-256-GCM"
+        },
+        {
+          "file": "mapping/loopcaregiver/remote-commands.md",
+          "line": 59,
+          "context": ", `remoteAddress: String` | **No** (See GAP-REMOTE-001) |\n| **Cancel Override** | `cancelTempo"
+        },
+        {
+          "file": "mapping/loopcaregiver/remote-commands.md",
+          "line": 326,
+          "context": "equire OTP validation on the Loop side (GAP-REMOTE-001).\n\n---\n\n## Data Models\n\n### RemoteComma"
+        },
+        {
+          "file": "mapping/loopcaregiver/remote-commands.md",
+          "line": 380,
+          "context": "escription |\n|--------|-------------|\n| GAP-REMOTE-001 | Override commands not protected by OT"
+        },
+        {
+          "file": "mapping/loopcaregiver/authentication.md",
+          "line": 387,
+          "context": "mmands don't require OTP on Loop side | GAP-REMOTE-001 |\n| **QR Security** | QR code screensho"
         }
       ],
       "spec_refs": [],
@@ -965,6 +965,21 @@
           "file": "docs/state-of-diabetes-2026.md",
           "line": 189,
           "context": "ct.\n\n3. **OTP for override commands** *(GAP-REMOTE-001)*: The security gap in Loop's remote co"
+        },
+        {
+          "file": "docs/10-domain/remote-commands-comparison.md",
+          "line": 181,
+          "context": "/CR adjustments\n- This is documented as GAP-REMOTE-001\n\n---\n\n### AAPS: SMS with TOTP + PIN\n\n**"
+        },
+        {
+          "file": "docs/10-domain/remote-commands-comparison.md",
+          "line": 580,
+          "context": "intext.\n\n---\n\n## Key Security Gaps\n\n### GAP-REMOTE-001: Loop Override Commands Not Protected b"
+        },
+        {
+          "file": "docs/10-domain/remote-commands-comparison.md",
+          "line": 598,
+          "context": "ct insulin dosing.\n\n**Reference**: See [GAP-REMOTE-001 in gaps.md](../../traceability/gaps.md#"
         },
         {
           "file": "docs/60-research/stakeholder-priority-analysis.md",
@@ -1000,21 +1015,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 359,
           "context": "h GAP-API-005 |\n| Remote Commands | 7 | GAP-REMOTE-001 through GAP-REMOTE-007 |\n| Override Tra"
-        },
-        {
-          "file": "docs/10-domain/remote-commands-comparison.md",
-          "line": 181,
-          "context": "/CR adjustments\n- This is documented as GAP-REMOTE-001\n\n---\n\n### AAPS: SMS with TOTP + PIN\n\n**"
-        },
-        {
-          "file": "docs/10-domain/remote-commands-comparison.md",
-          "line": 580,
-          "context": "intext.\n\n---\n\n## Key Security Gaps\n\n### GAP-REMOTE-001: Loop Override Commands Not Protected b"
-        },
-        {
-          "file": "docs/10-domain/remote-commands-comparison.md",
-          "line": 598,
-          "context": "ct insulin dosing.\n\n**Reference**: See [GAP-REMOTE-001 in gaps.md](../../traceability/gaps.md#"
         }
       ],
       "total_refs": 21,
@@ -1131,11 +1131,6 @@
       ],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 356,
-          "context": "|--------------|\n| Treatment Sync | 7 | GAP-TREAT-001 through GAP-TREAT-007 |\n| CGM Data Sour"
-        },
-        {
           "file": "docs/10-domain/treatments-deep-dive.md",
           "line": 139,
           "context": "field | `absorptionTime` (minutes) |\n\n**GAP-TREAT-001**: Absorption time units differ (Loop/T"
@@ -1149,6 +1144,11 @@
           "file": "docs/10-domain/treatments-deep-dive.md",
           "line": 450,
           "context": "mappings |\n| 2026-01-17 | Agent | Added GAP-TREAT-001 through GAP-TREAT-007 |"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 356,
+          "context": "|--------------|\n| Treatment Sync | 7 | GAP-TREAT-001 through GAP-TREAT-007 |\n| CGM Data Sour"
         }
       ],
       "total_refs": 8,
@@ -1182,6 +1182,16 @@
       ],
       "doc_refs": [
         {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 214,
+          "context": "**Nightscout** | Minutes | Native |\n\n**GAP-TREAT-002**: Duration units vary significantly ac"
+        },
+        {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 378,
+          "context": "nversion in upload/download logic.\n\n### GAP-TREAT-002: Duration Unit Inconsistency\n\n**Issue**"
+        },
+        {
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 209,
           "context": "| Loop, Trio, AAPS, Research | 4 |\n| **GAP-TREAT-002** | Duration unit inconsistency | Loop,"
@@ -1195,16 +1205,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 318,
           "context": "*Document duration unit expectations** (GAP-TREAT-002) - Clarify minutes for Nightscout inter"
-        },
-        {
-          "file": "docs/10-domain/treatments-deep-dive.md",
-          "line": 214,
-          "context": "**Nightscout** | Minutes | Native |\n\n**GAP-TREAT-002**: Duration units vary significantly ac"
-        },
-        {
-          "file": "docs/10-domain/treatments-deep-dive.md",
-          "line": 378,
-          "context": "nversion in upload/download logic.\n\n### GAP-TREAT-002: Duration Unit Inconsistency\n\n**Issue**"
         }
       ],
       "total_refs": 8,
@@ -1282,14 +1282,14 @@
       ],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 67,
-          "context": "as it, but not portable | GAP-PUMP-002, GAP-TREAT-004 |\n| eCarbs support | Has it, but not re"
-        },
-        {
           "file": "docs/10-domain/treatments-deep-dive.md",
           "line": 396,
           "context": "tType: \"SMB\"` to Nightscout schema\n\n### GAP-TREAT-004: Split Bolus Representation Mismatch\n\n*"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 67,
+          "context": "as it, but not portable | GAP-PUMP-002, GAP-TREAT-004 |\n| eCarbs support | Has it, but not re"
         }
       ],
       "total_refs": 3,
@@ -1322,6 +1322,11 @@
       ],
       "doc_refs": [
         {
+          "file": "docs/10-domain/treatments-deep-dive.md",
+          "line": 405,
+          "context": "uses may not round-trip correctly.\n\n### GAP-TREAT-005: Loop POST-Only Creates Duplicates\n\n**I"
+        },
+        {
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 45,
           "context": "ST-only creates duplicates, no upsert | GAP-TREAT-005, GAP-003 |\n| Override lifecycle trackin"
@@ -1335,11 +1340,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 215,
           "context": "ed | xDrip+, DiaBLE, Research | 3 |\n| **GAP-TREAT-005** | Loop POST-only duplicates | Loop, T"
-        },
-        {
-          "file": "docs/10-domain/treatments-deep-dive.md",
-          "line": 405,
-          "context": "uses may not round-trip correctly.\n\n### GAP-TREAT-005: Loop POST-Only Creates Duplicates\n\n**I"
         }
       ],
       "total_refs": 7,
@@ -1361,14 +1361,14 @@
       ],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 148,
-          "context": "trails | No edit history, soft delete | GAP-TREAT-006 |\n\n**What Blocks Them**:\n- Metadata not"
-        },
-        {
           "file": "docs/10-domain/treatments-deep-dive.md",
           "line": 418,
           "context": "s dedup key, or use API v3 upsert.\n\n### GAP-TREAT-006: Retroactive Edit Handling\n\n**Issue**:"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 148,
+          "context": "trails | No edit history, soft delete | GAP-TREAT-006 |\n\n**What Blocks Them**:\n- Metadata not"
         }
       ],
       "total_refs": 3,
@@ -1396,16 +1396,6 @@
       ],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 68,
-          "context": "as it, but not recognized by iOS apps | GAP-TREAT-007 |\n| Multi-insulin tracking | Would bene"
-        },
-        {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 356,
-          "context": "atment Sync | 7 | GAP-TREAT-001 through GAP-TREAT-007 |\n| CGM Data Sources | 6 | GAP-CGM-001"
-        },
-        {
           "file": "docs/10-domain/treatments-deep-dive.md",
           "line": 427,
           "context": "treatments may not sync properly.\n\n### GAP-TREAT-007: eCarbs Not Universally Supported\n\n**Is"
@@ -1414,6 +1404,16 @@
           "file": "docs/10-domain/treatments-deep-dive.md",
           "line": 450,
           "context": "7 | Agent | Added GAP-TREAT-001 through GAP-TREAT-007 |"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 68,
+          "context": "as it, but not recognized by iOS apps | GAP-TREAT-007 |\n| Multi-insulin tracking | Would bene"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 356,
+          "context": "atment Sync | 7 | GAP-TREAT-001 through GAP-TREAT-007 |\n| CGM Data Sources | 6 | GAP-CGM-001"
         }
       ],
       "total_refs": 6,
@@ -1486,6 +1486,16 @@
       "assertion_refs": [],
       "doc_refs": [
         {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 236,
+          "context": "ion.\n\n### Calibration Provenance Gap\n\n**GAP-CGM-001**: Nightscout entries do not track whic"
+        },
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 589,
+          "context": "|\n|--------|-------------|--------|\n| **GAP-CGM-001** | Calibration algorithm not tracked i"
+        },
+        {
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 86,
           "context": "cking | No schema field for algorithm | GAP-CGM-001 |\n| Bridge device attribution | Device"
@@ -1514,16 +1524,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 357,
           "context": "AP-TREAT-007 |\n| CGM Data Sources | 6 | GAP-CGM-001 through GAP-CGM-006 |\n| API Fragmentati"
-        },
-        {
-          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
-          "line": 236,
-          "context": "ion.\n\n### Calibration Provenance Gap\n\n**GAP-CGM-001**: Nightscout entries do not track whic"
-        },
-        {
-          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
-          "line": 589,
-          "context": "|\n|--------|-------------|--------|\n| **GAP-CGM-001** | Calibration algorithm not tracked i"
         }
       ],
       "total_refs": 19,
@@ -1576,6 +1576,16 @@
       "assertion_refs": [],
       "doc_refs": [
         {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 503,
+          "context": "### Missing Provenance Information\n\n**GAP-CGM-002**: The following provenance information"
+        },
+        {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 590,
+          "context": "not determine calibration quality |\n| **GAP-CGM-002** | Bridge device info lost in upload |"
+        },
+        {
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 87,
           "context": "ibution | Device field not structured | GAP-CGM-002, GAP-ENTRY-003 |\n| Raw value preservati"
@@ -1589,16 +1599,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 317,
           "context": "1. **Structure device field format** (GAP-CGM-002) - Convention, backwards compatible\n2."
-        },
-        {
-          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
-          "line": 503,
-          "context": "### Missing Provenance Information\n\n**GAP-CGM-002**: The following provenance information"
-        },
-        {
-          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
-          "line": 590,
-          "context": "not determine calibration quality |\n| **GAP-CGM-002** | Bridge device info lost in upload |"
         }
       ],
       "total_refs": 12,
@@ -1731,14 +1731,14 @@
       "assertion_refs": [],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 88,
-          "context": "servation | iOS APIs don't expose raw | GAP-CGM-005 |\n| Follower source distinction | No so"
-        },
-        {
           "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
           "line": 593,
           "context": "ee-form `device` field unreliable |\n| **GAP-CGM-005** | Raw values not uploaded by iOS | Ca"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 88,
+          "context": "servation | iOS APIs don't expose raw | GAP-CGM-005 |\n| Follower source distinction | No so"
         }
       ],
       "total_refs": 6,
@@ -1791,6 +1791,11 @@
       "assertion_refs": [],
       "doc_refs": [
         {
+          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
+          "line": 594,
+          "context": "| Cannot recalibrate or validate |\n| **GAP-CGM-006** | Follower source not distinguished |"
+        },
+        {
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 89,
           "context": "rce distinction | No sourceType field | GAP-CGM-006 |\n\n**What Blocks Them**:\n- Nightscout s"
@@ -1804,11 +1809,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 357,
           "context": "Data Sources | 6 | GAP-CGM-001 through GAP-CGM-006 |\n| API Fragmentation | 5 | GAP-API-001"
-        },
-        {
-          "file": "docs/10-domain/cgm-data-sources-deep-dive.md",
-          "line": 594,
-          "context": "| Cannot recalibrate or validate |\n| **GAP-CGM-006** | Follower source not distinguished |"
         }
       ],
       "total_refs": 11,
@@ -1848,6 +1848,11 @@
       "assertion_refs": [],
       "doc_refs": [
         {
+          "file": "docs/10-domain/remote-commands-comparison.md",
+          "line": 612,
+          "context": "symmetric signatures for commands.\n\n### GAP-REMOTE-003: No Key Rotation Mechanism\n\n**Severity*"
+        },
+        {
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 108,
           "context": "ion | No automatic rotation mechanism | GAP-REMOTE-003 |\n| Unified auth experience | Different"
@@ -1861,11 +1866,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 330,
           "context": "dination\n2. **Key rotation mechanism** (GAP-REMOTE-003) - Depends on security roadmap\n\n### Pha"
-        },
-        {
-          "file": "docs/10-domain/remote-commands-comparison.md",
-          "line": 612,
-          "context": "symmetric signatures for commands.\n\n### GAP-REMOTE-003: No Key Rotation Mechanism\n\n**Severity*"
         }
       ],
       "total_refs": 5,
@@ -1881,14 +1881,14 @@
       "assertion_refs": [],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 109,
-          "context": "xperience | Different auth per system | GAP-REMOTE-004 |\n\n**What Blocks Them**:\n- Security cha"
-        },
-        {
           "file": "docs/10-domain/remote-commands-comparison.md",
           "line": 623,
           "context": "crets increase risk of compromise.\n\n### GAP-REMOTE-004: Inconsistent Safety Enforcement Layer"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 109,
+          "context": "xperience | Different auth per system | GAP-REMOTE-004 |\n\n**What Blocks Them**:\n- Security cha"
         }
       ],
       "total_refs": 2,
@@ -1910,6 +1910,11 @@
       "assertion_refs": [],
       "doc_refs": [
         {
+          "file": "docs/10-domain/nightscout-api-comparison.md",
+          "line": 690,
+          "context": "ncy |\n\n---\n\n## 11. Identified Gaps\n\n### GAP-API-001: v1 Cannot Detect Deletions\n**Severity:"
+        },
+        {
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 166,
           "context": "uplicates, zombie data | GAP-TREAT-005, GAP-API-001 |\n| Accurate history | Override lifecyc"
@@ -1923,11 +1928,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 358,
           "context": "GAP-CGM-006 |\n| API Fragmentation | 5 | GAP-API-001 through GAP-API-005 |\n| Remote Commands"
-        },
-        {
-          "file": "docs/10-domain/nightscout-api-comparison.md",
-          "line": 629,
-          "context": "ncy |\n\n---\n\n## 11. Identified Gaps\n\n### GAP-API-001: v1 Cannot Detect Deletions\n**Severity:"
         }
       ],
       "total_refs": 5,
@@ -1975,6 +1975,16 @@
       "assertion_refs": [],
       "doc_refs": [
         {
+          "file": "docs/10-domain/insulin-curves-deep-dive.md",
+          "line": 472,
+          "context": "n brand/type for dosing decisions\n\nSee [GAP-INS-001](#related-gaps) for details.\n\n---\n\n## C"
+        },
+        {
+          "file": "docs/10-domain/insulin-curves-deep-dive.md",
+          "line": 493,
+          "context": "U100-U500 |\n\n---\n\n## Related Gaps\n\n- **GAP-INS-001**: Insulin model metadata not synced to"
+        },
+        {
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 146,
           "context": "n | Insulin model metadata not synced | GAP-INS-001, GAP-INS-003 |\n| Calibration analysis |"
@@ -1998,16 +2008,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 362,
           "context": ", GAP-SYNC-002 |\n| Insulin Models | 4 | GAP-INS-001 through GAP-INS-004 |\n| Pump Communicat"
-        },
-        {
-          "file": "docs/10-domain/insulin-curves-deep-dive.md",
-          "line": 472,
-          "context": "n brand/type for dosing decisions\n\nSee [GAP-INS-001](#related-gaps) for details.\n\n---\n\n## C"
-        },
-        {
-          "file": "docs/10-domain/insulin-curves-deep-dive.md",
-          "line": 493,
-          "context": "U100-U500 |\n\n---\n\n## Related Gaps\n\n- **GAP-INS-001**: Insulin model metadata not synced to"
         }
       ],
       "total_refs": 13,
@@ -2027,27 +2027,27 @@
       ],
       "spec_refs": [
         {
-          "file": "specs/openapi/aid-alignment-extensions.yaml",
-          "line": 487,
-          "context": "26: true\n      x-aid-gap: [GAP-INS-001, GAP-INS-002, GAP-INS-003, GAP-INS-004]\n      proper"
-        },
-        {
           "file": "specs/openapi/aid-profile-2025.yaml",
           "line": 120,
           "context": "Trio: settings.dia\n          x-aid-gap: GAP-INS-002\n          x-aid-gap-note: DIA not synce"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 487,
+          "context": "26: true\n      x-aid-gap: [GAP-INS-001, GAP-INS-002, GAP-INS-003, GAP-INS-004]\n      proper"
         }
       ],
       "assertion_refs": [],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 69,
-          "context": "in tracking | Would benefit MDI users | GAP-INS-002 |\n\n**What Blocks Them**:\n- iOS apps don"
-        },
-        {
           "file": "docs/10-domain/insulin-curves-deep-dive.md",
           "line": 494,
           "context": "l metadata not synced to Nightscout\n- **GAP-INS-002**: No standardized multi-insulin repres"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 69,
+          "context": "in tracking | Would benefit MDI users | GAP-INS-002 |\n\n**What Blocks Them**:\n- iOS apps don"
         }
       ],
       "total_refs": 5,
@@ -2067,18 +2067,23 @@
       ],
       "spec_refs": [
         {
-          "file": "specs/openapi/aid-alignment-extensions.yaml",
-          "line": 487,
-          "context": "x-aid-gap: [GAP-INS-001, GAP-INS-002, GAP-INS-003, GAP-INS-004]\n      properties:"
-        },
-        {
           "file": "specs/openapi/aid-profile-2025.yaml",
           "line": 176,
           "context": "ed across systems.\n          x-aid-gap: GAP-INS-003\n          x-aid-gap-note: Peak time not"
+        },
+        {
+          "file": "specs/openapi/aid-alignment-extensions.yaml",
+          "line": 487,
+          "context": "x-aid-gap: [GAP-INS-001, GAP-INS-002, GAP-INS-003, GAP-INS-004]\n      properties:"
         }
       ],
       "assertion_refs": [],
       "doc_refs": [
+        {
+          "file": "docs/10-domain/insulin-curves-deep-dive.md",
+          "line": 495,
+          "context": "rdized multi-insulin representation\n- **GAP-INS-003**: Peak time customization not captured"
+        },
         {
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 146,
@@ -2088,11 +2093,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 298,
           "context": "insulin model metadata** | GAP-INS-001, GAP-INS-003 | Medium | Controllers, research |\n| **"
-        },
-        {
-          "file": "docs/10-domain/insulin-curves-deep-dive.md",
-          "line": 495,
-          "context": "rdized multi-insulin representation\n- **GAP-INS-003**: Peak time customization not captured"
         }
       ],
       "total_refs": 6,
@@ -2122,6 +2122,11 @@
           "context": "nsulin Metadata** | GAP-INS-001 through GAP-INS-004 | `InsulinMetadata` |\n| **Treatment Pre"
         },
         {
+          "file": "specs/openapi/aid-profile-2025.yaml",
+          "line": 193,
+          "context": "x-aid-2026: true\n          x-aid-gap: GAP-INS-004\n\n    TimedValue:\n      type: object"
+        },
+        {
           "file": "specs/openapi/aid-alignment-extensions.yaml",
           "line": 485,
           "context": ".\n        Addresses GAP-INS-001 through GAP-INS-004.\n      x-aid-2026: true\n      x-aid-gap"
@@ -2130,24 +2135,19 @@
           "file": "specs/openapi/aid-alignment-extensions.yaml",
           "line": 487,
           "context": "[GAP-INS-001, GAP-INS-002, GAP-INS-003, GAP-INS-004]\n      properties:\n        insulinType:"
-        },
-        {
-          "file": "specs/openapi/aid-profile-2025.yaml",
-          "line": 193,
-          "context": "x-aid-2026: true\n          x-aid-gap: GAP-INS-004\n\n    TimedValue:\n      type: object"
         }
       ],
       "assertion_refs": [],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 362,
-          "context": "nsulin Models | 4 | GAP-INS-001 through GAP-INS-004 |\n| Pump Communication | 9 | GAP-PUMP-0"
-        },
-        {
           "file": "docs/10-domain/insulin-curves-deep-dive.md",
           "line": 496,
           "context": "mization not captured in treatments\n- **GAP-INS-004**: xDrip+ linear trapezoid model incomp"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 362,
+          "context": "nsulin Models | 4 | GAP-INS-001 through GAP-INS-004 |\n| Pump Communication | 9 | GAP-PUMP-0"
         }
       ],
       "total_refs": 8,
@@ -2163,14 +2163,14 @@
       "assertion_refs": [],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 363,
-          "context": "AP-INS-004 |\n| Pump Communication | 9 | GAP-PUMP-001 through GAP-PUMP-009 |\n| Authorization"
-        },
-        {
           "file": "docs/10-domain/pump-communication-deep-dive.md",
           "line": 640,
           "context": "aps.md` for detailed gap tracking:\n\n- **GAP-PUMP-001**: No standardized pump capability exch"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 363,
+          "context": "AP-INS-004 |\n| Pump Communication | 9 | GAP-PUMP-001 through GAP-PUMP-009 |\n| Authorization"
         }
       ],
       "total_refs": 2,
@@ -2192,14 +2192,14 @@
       "assertion_refs": [],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 67,
-          "context": "us support | Has it, but not portable | GAP-PUMP-002, GAP-TREAT-004 |\n| eCarbs support | Has"
-        },
-        {
           "file": "docs/10-domain/pump-communication-deep-dive.md",
           "line": 641,
           "context": "zed pump capability exchange format\n- **GAP-PUMP-002**: Extended bolus not supported in Loop"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 67,
+          "context": "us support | Has it, but not portable | GAP-PUMP-002, GAP-TREAT-004 |\n| eCarbs support | Has"
         }
       ],
       "total_refs": 3,
@@ -2221,14 +2221,14 @@
       "assertion_refs": [],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 297,
-          "context": "rdize duration units** | GAP-TREAT-002, GAP-PUMP-003 | Medium* | Convention change across cl"
-        },
-        {
           "file": "docs/10-domain/pump-communication-deep-dive.md",
           "line": 642,
           "context": "lus not supported in Loop ecosystem\n- **GAP-PUMP-003**: TBR duration units differ (seconds v"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 297,
+          "context": "rdize duration units** | GAP-TREAT-002, GAP-PUMP-003 | Medium* | Convention change across cl"
         }
       ],
       "total_refs": 3,
@@ -2297,7 +2297,7 @@
       "doc_refs": [
         {
           "file": "docs/10-domain/nightscout-api-comparison.md",
-          "line": 635,
+          "line": 696,
           "context": "-sync to detect missing documents.\n\n### GAP-API-002: Identifier vs _id Addressing Inconsist"
         }
       ],
@@ -2325,6 +2325,11 @@
           "context": ". **Swift SDK for Nightscout API v3** *(GAP-API-003)*: Loop and Trio are stuck on v1. A pro"
         },
         {
+          "file": "docs/10-domain/nightscout-api-comparison.md",
+          "line": 702,
+          "context": "ents, `identifier` for v3 clients.\n\n### GAP-API-003: No v3 Adoption Path for iOS Clients\n**"
+        },
+        {
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 49,
           "context": "| No Swift SDK, migration complexity | GAP-API-003 |\n\n**What Blocks Them**:\n- v3 API requi"
@@ -2343,11 +2348,6 @@
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 334,
           "context": "trategic)\n\n1. **Swift SDK for v3 API** (GAP-API-003)\n2. **Authority hierarchy implementatio"
-        },
-        {
-          "file": "docs/10-domain/nightscout-api-comparison.md",
-          "line": 641,
-          "context": "ents, `identifier` for v3 clients.\n\n### GAP-API-003: No v3 Adoption Path for iOS Clients\n**"
         }
       ],
       "total_refs": 7,
@@ -2364,7 +2364,7 @@
       "doc_refs": [
         {
           "file": "docs/10-domain/nightscout-api-comparison.md",
-          "line": 647,
+          "line": 708,
           "context": "to encourage iOS client adoption.\n\n### GAP-API-004: Authentication Granularity Gap\n**Sever"
         }
       ],
@@ -2381,14 +2381,14 @@
       "assertion_refs": [],
       "doc_refs": [
         {
+          "file": "docs/10-domain/nightscout-api-comparison.md",
+          "line": 714,
+          "context": "s for fine-grained access control.\n\n### GAP-API-005: Deduplication Behavior Differences\n**S"
+        },
+        {
           "file": "docs/60-research/stakeholder-priority-analysis.md",
           "line": 358,
           "context": "Fragmentation | 5 | GAP-API-001 through GAP-API-005 |\n| Remote Commands | 7 | GAP-REMOTE-00"
-        },
-        {
-          "file": "docs/10-domain/nightscout-api-comparison.md",
-          "line": 653,
-          "context": "s for fine-grained access control.\n\n### GAP-API-005: Deduplication Behavior Differences\n**S"
         }
       ],
       "total_refs": 2,
@@ -2410,14 +2410,14 @@
       "assertion_refs": [],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 365,
-          "context": "01, GAP-AUTH-002 |\n| BLE Protocol | 5 | GAP-BLE-001 through GAP-BLE-005 |\n| Carb Absorption"
-        },
-        {
           "file": "docs/10-domain/dexcom-ble-protocol-deep-dive.md",
           "line": 607,
           "context": "---\n\n## Known Gaps and Limitations\n\n### GAP-BLE-001: G7 J-PAKE Full Specification\nThe J-PAK"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 365,
+          "context": "01, GAP-AUTH-002 |\n| BLE Protocol | 5 | GAP-BLE-001 through GAP-BLE-005 |\n| Carb Absorption"
         }
       ],
       "total_refs": 3,
@@ -2493,14 +2493,14 @@
       "assertion_refs": [],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 365,
-          "context": "BLE Protocol | 5 | GAP-BLE-001 through GAP-BLE-005 |\n| Carb Absorption | 5 | GAP-CARB-001"
-        },
-        {
           "file": "docs/10-domain/dexcom-ble-protocol-deep-dive.md",
           "line": 619,
           "context": "0xx that are not fully documented.\n\n### GAP-BLE-005: G7 Encryption\nThe encryption info (0x3"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 365,
+          "context": "BLE Protocol | 5 | GAP-BLE-001 through GAP-BLE-005 |\n| Carb Absorption | 5 | GAP-CARB-001"
         }
       ],
       "total_refs": 2,
@@ -2527,14 +2527,14 @@
       "assertion_refs": [],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 366,
-          "context": "h GAP-BLE-005 |\n| Carb Absorption | 5 | GAP-CARB-001 through GAP-CARB-005 |\n| Entry Schema |"
-        },
-        {
           "file": "docs/10-domain/carb-absorption-deep-dive.md",
           "line": 457,
           "context": "-L31`\n\n---\n\n## 10. Identified Gaps\n\n### GAP-CARB-001: Absorption Model Not Synced\n\n**Descrip"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 366,
+          "context": "h GAP-BLE-005 |\n| Carb Absorption | 5 | GAP-CARB-001 through GAP-CARB-005 |\n| Entry Schema |"
         }
       ],
       "total_refs": 4,
@@ -2616,14 +2616,14 @@
       "assertion_refs": [],
       "doc_refs": [
         {
-          "file": "docs/60-research/stakeholder-priority-analysis.md",
-          "line": 366,
-          "context": "b Absorption | 5 | GAP-CARB-001 through GAP-CARB-005 |\n| Entry Schema | 5 | GAP-ENTRY-001 th"
-        },
-        {
           "file": "docs/10-domain/carb-absorption-deep-dive.md",
           "line": 481,
           "context": "nificantly between configurations.\n\n### GAP-CARB-005: COB Maximum Limits Differ\n\n**Descripti"
+        },
+        {
+          "file": "docs/60-research/stakeholder-priority-analysis.md",
+          "line": 366,
+          "context": "b Absorption | 5 | GAP-CARB-001 through GAP-CARB-005 |\n| Entry Schema | 5 | GAP-ENTRY-001 th"
         }
       ],
       "total_refs": 3,
@@ -2720,14 +2720,14 @@
       "line": 1716,
       "mapping_refs": [
         {
-          "file": "mapping/loopcaregiver/remote-commands.md",
-          "line": 381,
-          "context": "s not protected by OTP on Loop side |\n| GAP-REMOTE-005 | `remoteAddress` field purpose unclear"
-        },
-        {
           "file": "mapping/cross-project/terminology-matrix.md",
           "line": 1680,
           "context": "ift` - Action types\n\n**Gap Reference**: GAP-REMOTE-005, GAP-REMOTE-006\n\n---\n\n## LoopFollow Ala"
+        },
+        {
+          "file": "mapping/loopcaregiver/remote-commands.md",
+          "line": 381,
+          "context": "s not protected by OTP on Loop side |\n| GAP-REMOTE-005 | `remoteAddress` field purpose unclear"
         }
       ],
       "spec_refs": [],
@@ -2749,6 +2749,11 @@
       "line": 1742,
       "mapping_refs": [
         {
+          "file": "mapping/cross-project/terminology-matrix.md",
+          "line": 1680,
+          "context": "pes\n\n**Gap Reference**: GAP-REMOTE-005, GAP-REMOTE-006\n\n---\n\n## LoopFollow Alarm Models\n\n### A"
+        },
+        {
           "file": "mapping/loopcaregiver/remote-commands.md",
           "line": 382,
           "context": "unclear, hardcoded to empty string |\n| GAP-REMOTE-006 | No command retry mechanism for failed"
@@ -2757,11 +2762,6 @@
           "file": "mapping/loopcaregiver/authentication.md",
           "line": 385,
           "context": "URL stored in app data, not Keychain | GAP-REMOTE-006 |\n| **No Expiry** | Shared secret has n"
-        },
-        {
-          "file": "mapping/cross-project/terminology-matrix.md",
-          "line": 1680,
-          "context": "pes\n\n**Gap Reference**: GAP-REMOTE-005, GAP-REMOTE-006\n\n---\n\n## LoopFollow Alarm Models\n\n### A"
         }
       ],
       "spec_refs": [],
@@ -2867,14 +2867,14 @@
       "line": 1876,
       "mapping_refs": [
         {
-          "file": "mapping/loopfollow/remote-commands.md",
-          "line": 570,
-          "context": "escription |\n|--------|-------------|\n| GAP-LF-005 | No command status tracking (fire-and-"
-        },
-        {
           "file": "mapping/cross-project/terminology-matrix.md",
           "line": 1825,
           "context": "ft` - TOTP handling\n\n**Gap Reference**: GAP-LF-005 through GAP-LF-009\n\n---\n\n## Capability"
+        },
+        {
+          "file": "mapping/loopfollow/remote-commands.md",
+          "line": 570,
+          "context": "escription |\n|--------|-------------|\n| GAP-LF-005 | No command status tracking (fire-and-"
         }
       ],
       "spec_refs": [],
@@ -2944,14 +2944,14 @@
       "line": 1968,
       "mapping_refs": [
         {
-          "file": "mapping/loopfollow/remote-commands.md",
-          "line": 574,
-          "context": "lacks OTP security for temp targets |\n| GAP-LF-009 | No unified command abstraction across"
-        },
-        {
           "file": "mapping/cross-project/terminology-matrix.md",
           "line": 1825,
           "context": "**Gap Reference**: GAP-LF-005 through GAP-LF-009\n\n---\n\n## Capability Layer Models\n\n> **S"
+        },
+        {
+          "file": "mapping/loopfollow/remote-commands.md",
+          "line": 574,
+          "context": "lacks OTP security for temp targets |\n| GAP-LF-009 | No unified command abstraction across"
         }
       ],
       "spec_refs": [],
