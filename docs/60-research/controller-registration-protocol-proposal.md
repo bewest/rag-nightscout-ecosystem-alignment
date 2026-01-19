@@ -119,9 +119,9 @@ Before defining the registration protocol, we must understand how each controlle
 
 | Controller | API Version | Primary ID Field | Secondary Fields | Dedup Strategy | Source Reference |
 |------------|-------------|------------------|------------------|----------------|------------------|
-| **Loop** | v1 | `syncIdentifier` (UUID) | `pumpId`, `pumpType`, `pumpSerial` | Server-side POST | `loop:DoseEntry.swift#L39` |
-| **AAPS** | v3 | `identifier` (UUID) | `pumpId` + `pumpType` + `pumpSerial` composite | Client + server | `aaps:InterfaceIDs.kt` |
-| **Trio** | v1 | `enteredBy: "Trio"` | None | Server-side POST + `$ne` filter on download | `trio:NightscoutTreatment.swift#L31` |
+| **Loop** | v1 | `syncIdentifier` (UUID) | `pumpId`, `pumpType`, `pumpSerial` | Server-side POST | `loop:LoopKit/LoopKit/InsulinKit/DoseEntry.swift#L39` |
+| **AAPS** | v3 | `identifier` (UUID) | `pumpId` + `pumpType` + `pumpSerial` composite | Client + server | `aaps:database/impl/src/main/kotlin/app/aaps/database/entities/embedments/InterfaceIDs.kt` |
+| **Trio** | v1 | `enteredBy: "Trio"` | None | Server-side POST + `$ne` filter on download | `trio:Trio/Sources/Models/NightscoutTreatment.swift#L31` |
 | **xDrip** | v1 | `uuid` | None | Client-assigned UUID | WebSocket `NSCLIENT_ID` |
 | **OpenAPS** | v1 | `enteredBy` | None | Relies on server dedup | Bash scripts |
 

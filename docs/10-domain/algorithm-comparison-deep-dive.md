@@ -147,7 +147,7 @@ Loop provides preset exponential models:
 | **lyumjev** | 55 min | 6 hr | Ultra-rapid insulin |
 | **afrezza** | 29 min | Variable | Inhaled insulin |
 
-**Source**: `loop:LoopKit/LoopKit/InsulinKit/ExponentialInsulinModelPreset.swift`
+**Source**: `loop:LoopKit/LoopKit/Insulin/ExponentialInsulinModelPreset.swift`
 
 ### 2.3 oref0/AAPS/Trio Insulin Models
 

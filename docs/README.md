@@ -249,7 +249,7 @@ This documentation structure supports a quality management system by organizing:
 ### Code References
 Always include traceable references to source:
 ```markdown
-**Source**: `loop:LoopKit/LoopKit/InsulinMath.swift#L45-L67`
+**Source**: `loop:LoopKit/LoopKit/InsulinKit/InsulinMath.swift#L45-L67`
 ```
 
 ### Gap Identification

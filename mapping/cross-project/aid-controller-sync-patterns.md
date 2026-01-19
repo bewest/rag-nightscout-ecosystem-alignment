@@ -458,12 +458,12 @@ This document synthesizes and extends analysis from:
 
 | Claim | Evidence Location |
 |-------|-------------------|
-| Trio uses `enteredBy: "Trio"` | `trio:NightscoutTreatment.swift#L31` |
-| Trio excludes own entries with `$ne` filter | `trio:NightscoutAPI.swift#L296-298` |
-| Loop uses `syncIdentifier` for dedup | `loop:DoseEntry.swift#L39` |
-| Loop uses POST only (no PUT) | `loop:DoseEntry.swift#L30-31` (comment) |
-| AAPS uses `identifier` as primary key | `aaps:InterfaceIDs.kt` |
-| AAPS uses pump composite key | `aaps:InterfaceIDs.kt#pumpId,pumpType,pumpSerial` |
+| Trio uses `enteredBy: "Trio"` | `trio:Trio/Sources/Models/NightscoutTreatment.swift#L31` |
+| Trio excludes own entries with `$ne` filter | `trio:Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift#L296-298` |
+| Loop uses `syncIdentifier` for dedup | `loop:LoopKit/LoopKit/InsulinKit/DoseEntry.swift#L39` |
+| Loop uses POST only (no PUT) | `loop:LoopKit/LoopKit/InsulinKit/DoseEntry.swift#L30-31` (comment) |
+| AAPS uses `identifier` as primary key | `aaps:database/impl/src/main/kotlin/app/aaps/database/entities/embedments/InterfaceIDs.kt` |
+| AAPS uses pump composite key | `aaps:database/impl/src/main/kotlin/app/aaps/database/entities/embedments/InterfaceIDs.kt#pumpId,pumpType,pumpSerial` |
 | API v3 dedup uses `created_at` + `eventType` | `specs/openapi/nightscout-api3-summary.md#create-post-collection` |
 
 ---

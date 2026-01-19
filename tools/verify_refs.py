@@ -49,10 +49,19 @@ def parse_code_ref(ref_string):
     - Start with a known alias pattern (lowercase, short)
     - Have a path that looks like a file path (contains / or .)
     - Not look like JSON key:value patterns
+    - Not be URL schemes (e.g., http://, https://, caregiver://)
     
     Aligned with linkcheck.py filtering logic.
     """
     if re.search(r':\s*["\'\[]', ref_string) or ' ' in ref_string:
+        return None
+    
+    # Skip URL schemes (path starts with //)
+    if re.match(r'^[a-zA-Z][a-zA-Z0-9_-]*://', ref_string):
+        return None
+    
+    # Skip example/placeholder patterns
+    if ref_string.startswith('alias:'):
         return None
     
     match = re.match(r'^([a-zA-Z][a-zA-Z0-9_-]{0,15}):([a-zA-Z0-9_./-]+)(?:#(.+))?$', ref_string)

@@ -145,7 +145,7 @@ Activity
 
 xDrip+ uses a fundamentally different model that supports multiple insulin types including long-acting insulins.
 
-**Source**: `xDrip:app/src/main/java/com/eveningoutpost/dexdrip/insulin/LinearTrapezoidInsulin.java`
+**Source**: `xdrip:app/src/main/java/com/eveningoutpost/dexdrip/insulin/LinearTrapezoidInsulin.java`
 
 #### Parameters
 
@@ -224,7 +224,7 @@ public double calculateActivity(long timeMs) {
 
 xDrip+ supports a broader range of insulin types via JSON configuration:
 
-**Source**: `xDrip:app/src/main/res/raw/insulin_profiles.json`
+**Source**: `xdrip:app/src/main/res/raw/insulin_profiles.json`
 
 | Insulin | Type | Onset | Peak | Duration |
 |---------|------|-------|------|----------|

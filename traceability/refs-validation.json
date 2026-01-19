@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-01-19T19:27:05.821566+00:00",
+  "generated_at": "2026-01-19T22:03:32.349374+00:00",
   "summary": {
-    "total_refs": 326,
-    "valid": 289,
-    "unknown_alias": 6,
+    "total_refs": 318,
+    "valid": 303,
+    "unknown_alias": 0,
     "repo_missing": 0,
-    "file_not_found": 16,
+    "file_not_found": 0,
     "path_not_found": 15
   },
   "known_aliases": [
@@ -119,142 +119,6 @@
         "ref": "loop:NightscoutServiceKit/Extensions/StoredDosingDecision.swift",
         "message": "Path not found: NightscoutServiceKit/Extensions/StoredDosingDecision.swift"
       }
-    ],
-    "file_not_found": [
-      {
-        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
-        "line": 461,
-        "ref": "`trio:NightscoutTreatment.swift#L31`",
-        "message": "File not found: NightscoutTreatment.swift"
-      },
-      {
-        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
-        "line": 462,
-        "ref": "`trio:NightscoutAPI.swift#L296-298`",
-        "message": "File not found: NightscoutAPI.swift"
-      },
-      {
-        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
-        "line": 463,
-        "ref": "`loop:DoseEntry.swift#L39`",
-        "message": "File not found: DoseEntry.swift"
-      },
-      {
-        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
-        "line": 464,
-        "ref": "`loop:DoseEntry.swift#L30-31`",
-        "message": "File not found: DoseEntry.swift"
-      },
-      {
-        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
-        "line": 465,
-        "ref": "`aaps:InterfaceIDs.kt`",
-        "message": "File not found: InterfaceIDs.kt"
-      },
-      {
-        "source_file": "mapping/cross-project/aid-controller-sync-patterns.md",
-        "line": 466,
-        "ref": "`aaps:InterfaceIDs.kt#pumpId,pumpType,pumpSerial`",
-        "message": "File not found: InterfaceIDs.kt"
-      },
-      {
-        "source_file": "docs/README.md",
-        "line": 252,
-        "ref": "`loop:LoopKit/LoopKit/InsulinMath.swift#L45-L67`",
-        "message": "File not found: LoopKit/LoopKit/InsulinMath.swift"
-      },
-      {
-        "source_file": "docs/10-domain/entries-deep-dive.md",
-        "line": 228,
-        "ref": "`loop://iPhone`",
-        "message": "File not found: //iPhone"
-      },
-      {
-        "source_file": "docs/10-domain/algorithm-comparison-deep-dive.md",
-        "line": 150,
-        "ref": "`loop:LoopKit/LoopKit/InsulinKit/ExponentialInsulinModelPreset.swift`",
-        "message": "File not found: LoopKit/LoopKit/InsulinKit/ExponentialInsulinModelPreset.swift"
-      },
-      {
-        "source_file": "docs/10-domain/devicestatus-deep-dive.md",
-        "line": 838,
-        "ref": "`loop:NightscoutService/NightscoutServiceKit/NightscoutClient.swift`",
-        "message": "File not found: NightscoutService/NightscoutServiceKit/NightscoutClient.swift"
-      },
-      {
-        "source_file": "docs/60-research/controller-registration-protocol-proposal.md",
-        "line": 122,
-        "ref": "`loop:DoseEntry.swift#L39`",
-        "message": "File not found: DoseEntry.swift"
-      },
-      {
-        "source_file": "docs/60-research/controller-registration-protocol-proposal.md",
-        "line": 123,
-        "ref": "`aaps:InterfaceIDs.kt`",
-        "message": "File not found: InterfaceIDs.kt"
-      },
-      {
-        "source_file": "docs/60-research/controller-registration-protocol-proposal.md",
-        "line": 124,
-        "ref": "`trio:NightscoutTreatment.swift#L31`",
-        "message": "File not found: NightscoutTreatment.swift"
-      },
-      {
-        "source_file": "docs/60-research/controller-registration-protocol-proposal.md",
-        "line": 132,
-        "ref": "`loop://iPhone`",
-        "message": "File not found: //iPhone"
-      },
-      {
-        "source_file": "docs/60-research/controller-registration-protocol-proposal.md",
-        "line": 133,
-        "ref": "`openaps://phoneModel`",
-        "message": "File not found: //phoneModel"
-      },
-      {
-        "source_file": "docs/60-research/controller-registration-protocol-proposal.md",
-        "line": 135,
-        "ref": "`openaps://hostname`",
-        "message": "File not found: //hostname"
-      }
-    ],
-    "unknown_alias": [
-      {
-        "source_file": "mapping/loopcaregiver/authentication.md",
-        "line": 110,
-        "ref": "`caregiver://`",
-        "message": "Unknown alias 'caregiver'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, nr, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
-      },
-      {
-        "source_file": "mapping/loopcaregiver/authentication.md",
-        "line": 423,
-        "ref": "`caregiver://requestWatchConfiguration`",
-        "message": "Unknown alias 'caregiver'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, nr, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
-      },
-      {
-        "source_file": "docs/cgm-remote-monitor-analysis-2026-01-18.md",
-        "line": 6,
-        "ref": "`https://github.com/bewest/cgm-remote-monitor-1.git`",
-        "message": "Unknown alias 'https'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, nr, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
-      },
-      {
-        "source_file": "docs/_generated/refs-summary.md",
-        "line": 21,
-        "ref": "`alias:path/to/file.ext#anchor`",
-        "message": "Unknown alias 'alias'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, nr, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
-      },
-      {
-        "source_file": "docs/10-domain/insulin-curves-deep-dive.md",
-        "line": 148,
-        "ref": "`xDrip:app/src/main/java/com/eveningoutpost/dexdrip/insulin/LinearTrapezoidInsulin.java`",
-        "message": "Unknown alias 'xDrip'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, nr, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
-      },
-      {
-        "source_file": "docs/10-domain/insulin-curves-deep-dive.md",
-        "line": 227,
-        "ref": "`xDrip:app/src/main/res/raw/insulin_profiles.json`",
-        "message": "Unknown alias 'xDrip'. Known aliases: aaps, crm, diable, loop, loopcaregiver, loopfollow, nightguard, nr, ns-connect, ns-gateway, ns-reporter, openaps, oref0, trio, xdrip, xdrip-js, xdrip4ios"
-      }
     ]
   },
   "by_file": {
@@ -355,8 +219,8 @@
     },
     "mapping/cross-project/aid-controller-sync-patterns.md": {
       "total": 19,
-      "valid": 13,
-      "broken": 6
+      "valid": 19,
+      "broken": 0
     },
     "mapping/nightscout-reporter/uploader-detection.md": {
       "total": 3,
@@ -433,60 +297,45 @@
       "valid": 4,
       "broken": 0
     },
-    "mapping/loopcaregiver/authentication.md": {
-      "total": 2,
-      "valid": 0,
-      "broken": 2
-    },
     "docs/README.md": {
       "total": 1,
-      "valid": 0,
-      "broken": 1
-    },
-    "docs/cgm-remote-monitor-analysis-2026-01-18.md": {
-      "total": 1,
-      "valid": 0,
-      "broken": 1
+      "valid": 1,
+      "broken": 0
     },
     "docs/_generated/refs-summary.md": {
-      "total": 3,
+      "total": 2,
       "valid": 1,
-      "broken": 2
-    },
-    "docs/10-domain/entries-deep-dive.md": {
-      "total": 1,
-      "valid": 0,
       "broken": 1
-    },
-    "docs/10-domain/algorithm-comparison-deep-dive.md": {
-      "total": 15,
-      "valid": 13,
-      "broken": 2
     },
     "docs/10-domain/remote-commands-comparison.md": {
       "total": 10,
       "valid": 10,
       "broken": 0
     },
-    "docs/10-domain/insulin-curves-deep-dive.md": {
-      "total": 8,
-      "valid": 3,
-      "broken": 5
-    },
     "docs/10-domain/carb-absorption-deep-dive.md": {
       "total": 20,
       "valid": 20,
       "broken": 0
     },
+    "docs/10-domain/algorithm-comparison-deep-dive.md": {
+      "total": 15,
+      "valid": 14,
+      "broken": 1
+    },
+    "docs/10-domain/insulin-curves-deep-dive.md": {
+      "total": 8,
+      "valid": 5,
+      "broken": 3
+    },
     "docs/10-domain/devicestatus-deep-dive.md": {
       "total": 13,
-      "valid": 11,
-      "broken": 2
+      "valid": 12,
+      "broken": 1
     },
     "docs/60-research/controller-registration-protocol-proposal.md": {
-      "total": 6,
-      "valid": 0,
-      "broken": 6
+      "total": 3,
+      "valid": 3,
+      "broken": 0
     },
     "specs/openapi/aid-devicestatus-2025.yaml": {
       "total": 1,
