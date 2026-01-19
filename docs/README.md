@@ -240,6 +240,7 @@ This documentation structure supports a quality management system by organizing:
 | Decision on which auth model to use | `90-decisions/adr-004-auth-model.md` | Formal decision |
 | Analysis of Trio vs Loop differences | `10-domain/algorithm-comparison-deep-dive.md` | Understanding existing systems |
 | MongoDB upgrade impact analysis | `60-research/mongodb-modernization-impact-assessment.md` | Exploring change implications |
+| MongoDB update readiness for team | `60-research/mongodb-update-readiness-report.md` | Team-facing status and recommendations |
 
 ---
 

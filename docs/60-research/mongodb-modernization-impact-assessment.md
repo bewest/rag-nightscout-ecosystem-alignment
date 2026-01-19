@@ -670,6 +670,8 @@ Before any MongoDB driver update:
 
 ## 7. Conclusion
 
+> **See Also:** For a team-facing readiness summary with phase tracking and actionable recommendations, see [MongoDB Update Readiness Report](./mongodb-update-readiness-report.md).
+
 The three major Nightscout clients have distinct but well-defined data patterns:
 
 - **AAPS** uses v3 API with single-doc operations, but still depends on response schema consistency
