@@ -73,6 +73,14 @@ The workspace is designed to separate normative specifications from informative 
     - `verify_assertions.py` - Traces assertions to requirements, identifies orphaned assertions and uncovered requirements
   - See `docs/tooling-roadmap.md` for proposed future tooling improvements for agent-based SDLC workflows.
 - **CI Integration**: A GitHub Actions workflow ensures continuous validation of code, link integrity, fixture validation, offline conformance tests, and coverage matrix generation.
+- **Agent Tooling Suite** (2026-01-20):
+  - `tools/phase_nav.py` - Document phase tracking and transition suggestions for the 5-phase cycle
+  - `tools/detect_drift.py` - Documentation drift detection from source code
+  - `tools/spec_capture.py` - Implicit requirement extraction and spec verification
+  - `tools/project_seq.py` - Multi-component improvement project management
+  - `tools/agent_context.py` - Single entry point for AI agents to get workspace context
+  - `tools/ai_advisor.py` - AI-powered suggestions using Anthropic integration
+  - Extended `workspace_cli.py` with commands: phase, drift, specs, project, context, advise
 
 ## External Dependencies
 
