@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli
+.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv
 
 # Default target
 help:
@@ -173,3 +173,12 @@ workflow:
 # Interactive CLI
 cli:
 	@python3 tools/workspace_cli.py
+
+# Python venv with sdqctl
+venv:
+@if [ ! -d .venv ]; then \
+echo "Creating venv..."; \
+python3 -m venv .venv; \
+.venv/bin/pip install --quiet click pyyaml rich pydantic; \
+fi
+@echo "Activate with: source activate-sdqctl.sh"
