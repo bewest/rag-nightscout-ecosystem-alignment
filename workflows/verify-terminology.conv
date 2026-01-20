@@ -1,0 +1,46 @@
+# verify-terminology.conv - Check terminology consistency across projects
+# Run: sdqctl run workflows/verify-terminology.conv
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE verification
+MAX-CYCLES 1
+
+# Context - terminology matrix
+CONTEXT @mapping/cross-project/terminology-matrix.md
+
+# Project-specific mappings
+CONTEXT @mapping/*/README.md
+
+# Tool reference
+CONTEXT @tools/verify_terminology.py
+
+CONTEXT-LIMIT 80%
+ON-CONTEXT-LIMIT compact
+
+PROMPT Verify terminology consistency across the Nightscout ecosystem.
+
+PROMPT Check the terminology matrix for:
+  1. Missing entries (terms used in docs but not mapped)
+  2. Conflicting definitions (same term, different meanings)
+  3. Deprecated terms still in use
+  4. New terms needing documentation
+
+PROMPT Cross-reference with project mappings:
+  - Loop terminology
+  - AAPS/oref0 terminology
+  - Nightscout API terminology
+  - xDrip+ terminology
+
+PROMPT Identify terms that need:
+  - Standardization (pick canonical name)
+  - Disambiguation (clarify context)
+  - Deprecation (mark as legacy)
+
+PROMPT Generate consistency report with:
+  - Terms with inconsistencies
+  - Suggested canonical names
+  - Cross-project mapping gaps
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/terminology-consistency.md

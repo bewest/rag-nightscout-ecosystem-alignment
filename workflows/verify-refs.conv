@@ -1,0 +1,39 @@
+# verify-refs.conv - Validate code references resolve to actual files
+# Run: sdqctl run workflows/verify-refs.conv
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE verification
+MAX-CYCLES 1
+
+# Context - traceability docs with code references
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @docs/10-domain/*.md
+
+# Reference to verification tool
+CONTEXT @tools/verify_refs.py
+
+CONTEXT-LIMIT 80%
+ON-CONTEXT-LIMIT compact
+
+PROMPT Validate all code references in traceability documents.
+
+PROMPT Scan for patterns like:
+  - `externals/repo/path/file.ext:line`
+  - `externals/repo/path/file.ext`
+  - Code blocks with file paths
+  
+PROMPT For each reference:
+  1. Check if the file exists in externals/
+  2. If line number specified, verify line exists
+  3. Flag broken references with suggested fixes
+
+PROMPT Generate a validation report with:
+  - Total references found
+  - Valid references (file exists)
+  - Broken references (file missing or line out of range)
+  - Suggested fixes for broken refs
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/refs-validation.md

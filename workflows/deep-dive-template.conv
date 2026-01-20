@@ -1,0 +1,61 @@
+# deep-dive-template.conv - Template for 5-facet component analysis
+# Run: sdqctl run workflows/deep-dive-template.conv
+# 
+# Usage: Copy and customize for specific component analysis
+# Example: sdqctl run workflows/deep-dive-template.conv --var COMPONENT=dexcom-g7
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 5
+
+# Context - customize these for your component
+# CONTEXT @externals/<repo>/path/to/source
+# CONTEXT @docs/10-domain/<component>-deep-dive.md
+
+# Always include traceability docs
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @mapping/cross-project/terminology-matrix.md
+
+CONTEXT-LIMIT 60%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE requirements gaps
+
+CHECKPOINT-AFTER 2
+CHECKPOINT-NAME deep-dive-checkpoint
+
+PROMPT Perform 5-facet analysis of the component.
+
+PROMPT FACET 1 - Terminology Matrix:
+  - Identify all domain terms used
+  - Map to equivalent terms in other projects
+  - Update mapping/cross-project/terminology-matrix.md
+
+PROMPT FACET 2 - Gap Identification:
+  - Find missing features or inconsistencies
+  - Assign GAP-<CATEGORY>-NNN identifiers
+  - Update traceability/gaps.md
+
+PROMPT FACET 3 - Requirements Extraction:
+  - Extract formal requirements (REQ-NNN)
+  - Include rationale and verification criteria
+  - Update traceability/requirements.md
+
+PROMPT FACET 4 - Deep Dive Documentation:
+  - Technical specification with code references
+  - Implementation comparison across projects
+  - Create docs/10-domain/<component>-deep-dive.md
+
+PROMPT FACET 5 - Progress Entry:
+  - Document analysis date and scope
+  - List key findings and gaps identified
+  - Update progress.md with deliverables table
+
+PROMPT Use explicit file:line references:
+  `externals/repo/path/file.ext:45`
+
+PROMPT Generate summary of all 5 facet updates.
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE docs/10-domain/deep-dive-summary.md

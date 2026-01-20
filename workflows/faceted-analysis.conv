@@ -1,0 +1,69 @@
+# faceted-analysis.conv - 5-facet documentation update workflow
+# Run: sdqctl run workflows/faceted-analysis.conv
+# 
+# Multi-cycle workflow for comprehensive component analysis
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 5
+
+# Core traceability documents
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @mapping/cross-project/terminology-matrix.md
+CONTEXT @progress.md
+
+# Domain documentation
+CONTEXT @docs/10-domain/*.md
+
+# Specs for reference
+CONTEXT @specs/openapi/*.yaml
+
+CONTEXT-LIMIT 50%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE requirements gaps terminology
+
+CHECKPOINT-AFTER 1
+CHECKPOINT-NAME faceted-checkpoint
+
+PROMPT Perform comprehensive 5-facet analysis update.
+
+PROMPT This workflow updates all 5 documentation facets:
+
+PROMPT CYCLE 1 - TERMINOLOGY (mapping/cross-project/terminology-matrix.md):
+  - Review recent deep-dive documents for new terms
+  - Add missing cross-project term mappings
+  - Standardize canonical names
+  - Mark deprecated terms
+
+PROMPT CYCLE 2 - GAPS (traceability/gaps.md):
+  - Scan for undocumented gaps
+  - Update existing gap status
+  - Assign new GAP-<CATEGORY>-NNN IDs
+  - Link gaps to requirements
+
+PROMPT CYCLE 3 - REQUIREMENTS (traceability/requirements.md):
+  - Extract requirements from gaps
+  - Update verification criteria
+  - Link to conformance scenarios
+  - Check REQ-NNN numbering
+
+PROMPT CYCLE 4 - DEEP DIVES (docs/10-domain/*.md):
+  - Verify code references are current
+  - Update implementation details
+  - Add missing sections
+
+PROMPT CYCLE 5 - PROGRESS (progress.md):
+  - Add dated entry for this analysis
+  - Document deliverables and key findings
+  - List gaps identified
+  - Track completion status
+
+PROMPT Generate summary of all facet updates with:
+  - Changes made to each document
+  - New IDs assigned
+  - Cross-references added
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE docs/faceted-analysis-summary.md

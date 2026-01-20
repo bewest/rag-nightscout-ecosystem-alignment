@@ -1,0 +1,58 @@
+# gap-detection.conv - Identify missing requirements and coverage gaps
+# Run: sdqctl run workflows/gap-detection.conv
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 3
+
+# Context - existing gaps and requirements
+CONTEXT @traceability/gaps.md
+CONTEXT @traceability/requirements.md
+
+# Specs to check for undocumented features
+CONTEXT @specs/openapi/*.yaml
+
+# Cross-project mappings
+CONTEXT @mapping/cross-project/terminology-matrix.md
+
+# Deep dive docs for implementation details
+CONTEXT @docs/10-domain/*.md
+
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE gaps requirements
+
+PROMPT Detect undocumented gaps and missing requirements.
+
+PROMPT Analyze OpenAPI specs for:
+  1. Fields without gap annotations (x-aid-gap)
+  2. Controller support matrix gaps (x-aid-controllers)
+  3. Undocumented eventTypes
+  4. Missing validation rules
+
+PROMPT Cross-reference implementations:
+  1. Features in code but not in specs
+  2. Spec fields not implemented anywhere
+  3. Behavior differences across projects
+
+PROMPT For each detected gap:
+  - Assign GAP-ID following convention (GAP-<CATEGORY>-NNN)
+  - Describe what's missing
+  - List affected systems
+  - Suggest remediation
+
+PROMPT Check for:
+  - GAP-CGM: CGM data source issues
+  - GAP-TREAT: Treatment handling gaps
+  - GAP-DS: DeviceStatus inconsistencies
+  - GAP-SYNC: Synchronization problems
+  - GAP-ALG: Algorithm comparison gaps
+
+PROMPT Generate gap detection report:
+  - New gaps discovered
+  - Existing gaps needing updates
+  - Suggested new requirements
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/gap-detection.md

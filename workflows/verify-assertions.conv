@@ -1,0 +1,42 @@
+# verify-assertions.conv - Trace assertions to requirements
+# Run: sdqctl run workflows/verify-assertions.conv
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE verification
+MAX-CYCLES 1
+
+# Context - conformance scenarios with assertions
+CONTEXT @conformance/scenarios/**/*.yaml
+CONTEXT @conformance/assertions/**/*.yaml
+
+# Requirements for tracing
+CONTEXT @traceability/requirements.md
+
+# Tool reference
+CONTEXT @tools/verify_assertions.py
+
+CONTEXT-LIMIT 80%
+ON-CONTEXT-LIMIT compact
+
+PROMPT Trace all conformance assertions to requirements.
+
+PROMPT For each assertion in conformance scenarios:
+  1. Extract the assertion statement
+  2. Identify which REQ-NNN it validates
+  3. Check if requirement is explicitly linked
+  4. Flag orphan assertions (no requirement link)
+
+PROMPT For each requirement (REQ-NNN):
+  1. List all assertions that test it
+  2. Identify requirements with no assertions
+  3. Calculate assertion coverage
+
+PROMPT Generate assertion trace report:
+  - Assertions mapped to requirements
+  - Orphan assertions needing REQ links
+  - Requirements lacking assertions
+  - Coverage statistics
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/assertion-trace.md

@@ -1,0 +1,58 @@
+# cross-project-alignment.conv - Compare implementations across repositories
+# Run: sdqctl run workflows/cross-project-alignment.conv
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 3
+
+# Context - cross-project mappings
+CONTEXT @mapping/cross-project/terminology-matrix.md
+CONTEXT @mapping/cross-project/field-mapping.md
+
+# Project-specific mappings
+CONTEXT @mapping/loop/README.md
+CONTEXT @mapping/aaps/README.md
+CONTEXT @mapping/nightscout/README.md
+CONTEXT @mapping/xdrip/README.md
+
+# Specs for reference
+CONTEXT @specs/openapi/aid-treatments-2025.yaml
+CONTEXT @specs/openapi/aid-devicestatus-2025.yaml
+
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE terminology
+
+PROMPT Compare implementations across the Nightscout ecosystem.
+
+PROMPT Analyze treatment sync behavior:
+  - Loop → Nightscout sync fields
+  - AAPS → Nightscout sync fields
+  - Trio → Nightscout sync fields
+  - xDrip+ → AAPS → Nightscout chain
+
+PROMPT Compare DeviceStatus structures:
+  - Loop's predicted glucose format
+  - oref0/AAPS prediction curves (IOB, COB, UAM, ZT)
+  - Trio's OpenAPS structure
+
+PROMPT Identify alignment issues:
+  1. Same concept, different field names
+  2. Same field name, different semantics
+  3. Missing fields in some implementations
+  4. Unit/format inconsistencies
+
+PROMPT For each misalignment:
+  - Document the difference
+  - Identify which projects are affected
+  - Suggest canonical representation
+  - Link to relevant GAP-ID if exists
+
+PROMPT Generate alignment report:
+  - Summary of cross-project differences
+  - Recommended standardizations
+  - Priority fixes for interoperability
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE docs/cross-project-alignment-report.md

@@ -1,0 +1,69 @@
+# ci-pipeline.conv - Full CI pipeline workflow
+# Run: sdqctl run workflows/ci-pipeline.conv
+# Equivalent to: make ci
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE ci
+MAX-CYCLES 2
+
+# Workspace configuration
+CONTEXT @workspace.lock.json
+CONTEXT @Makefile
+
+# All traceability sources
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @conformance/scenarios/**/*.yaml
+
+# Specs for validation
+CONTEXT @specs/openapi/*.yaml
+CONTEXT @specs/jsonschema/*.json
+
+# All tools
+CONTEXT @tools/*.py
+
+CONTEXT-LIMIT 60%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE requirements gaps
+
+CHECKPOINT-AFTER 1
+CHECKPOINT-NAME ci-checkpoint
+
+PROMPT Execute full CI pipeline.
+
+PROMPT STAGE 1 - BOOTSTRAP CHECK:
+  - Verify workspace.lock.json is valid
+  - Check external repos are accessible
+  - Validate Makefile targets
+
+PROMPT STAGE 2 - STATIC VERIFICATION:
+  - Run all verify-*.conv checks
+  - Reference validation
+  - Coverage analysis
+  - Terminology consistency
+  - Assertion tracing
+
+PROMPT STAGE 3 - SPEC VALIDATION:
+  - Validate OpenAPI specs (YAML syntax, schema)
+  - Validate JSON schemas
+  - Check x-aid-* extensions
+
+PROMPT STAGE 4 - CONFORMANCE (offline):
+  - Parse conformance scenarios
+  - Validate assertion syntax
+  - Check scenario structure
+
+PROMPT STAGE 5 - GENERATION:
+  - Generate inventory
+  - Generate traceability matrix
+  - Generate coverage report
+
+PROMPT Generate CI report:
+  - Stage-by-stage results
+  - Overall pass/fail
+  - Artifacts generated
+  - Errors and warnings
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/ci-report.md

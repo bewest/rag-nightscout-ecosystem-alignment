@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv
+.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis
 
 # Default target
 help:
@@ -182,3 +182,16 @@ python3 -m venv .venv; \
 .venv/bin/pip install --quiet click pyyaml rich pydantic; \
 fi
 @echo "Activate with: source activate-sdqctl.sh"
+
+# sdqctl workflow targets
+sdqctl-verify:
+@echo "Running verification workflows..."
+@source activate-sdqctl.sh && sdqctl run workflows/full-verification.conv
+
+sdqctl-gen:
+@echo "Running generation workflows..."
+@source activate-sdqctl.sh && sdqctl flow workflows/gen-*.conv
+
+sdqctl-analysis:
+@echo "Running analysis workflows..."
+@source activate-sdqctl.sh && sdqctl flow workflows/gap-detection.conv workflows/cross-project-alignment.conv

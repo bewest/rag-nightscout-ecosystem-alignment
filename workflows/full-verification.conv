@@ -1,0 +1,55 @@
+# full-verification.conv - Run all verification workflows
+# Run: sdqctl run workflows/full-verification.conv
+# Equivalent to: make verify
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE verification
+MAX-CYCLES 1
+
+# Include all traceability sources
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @conformance/scenarios/**/*.yaml
+CONTEXT @mapping/cross-project/terminology-matrix.md
+CONTEXT @docs/10-domain/*.md
+
+# All verification tools
+CONTEXT @tools/verify_refs.py
+CONTEXT @tools/verify_coverage.py
+CONTEXT @tools/verify_terminology.py
+CONTEXT @tools/verify_assertions.py
+
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+
+PROMPT Run complete verification suite.
+
+PROMPT 1. REFERENCE VALIDATION:
+  - Check all file:line references resolve
+  - Flag broken external links
+  - Verify repository paths exist
+
+PROMPT 2. COVERAGE ANALYSIS:
+  - Requirements with/without scenarios
+  - Gaps with/without remediation
+  - Overall coverage statistics
+
+PROMPT 3. TERMINOLOGY CONSISTENCY:
+  - Cross-project term mapping completeness
+  - Conflicting definitions
+  - Missing canonical names
+
+PROMPT 4. ASSERTION TRACING:
+  - Assertions linked to requirements
+  - Orphan assertions
+  - Requirements without tests
+
+PROMPT Generate unified verification report:
+  - Pass/Fail status for each check
+  - Summary statistics
+  - Priority issues to fix
+  - Recommended next steps
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/full-verification-report.md

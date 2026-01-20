@@ -1,0 +1,50 @@
+# gen-inventory.conv - Generate workspace inventory
+# Run: sdqctl run workflows/gen-inventory.conv
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE generation
+MAX-CYCLES 1
+
+# Context - workspace structure
+CONTEXT @workspace.lock.json
+CONTEXT @README.md
+CONTEXT @Makefile
+
+# Existing inventory for reference
+CONTEXT @traceability/cgm-remote-monitor-docs-inventory.md
+
+# Tool reference
+CONTEXT @tools/gen_inventory.py
+
+CONTEXT-LIMIT 80%
+ON-CONTEXT-LIMIT compact
+
+PROMPT Generate a comprehensive workspace inventory.
+
+PROMPT Catalog all workspace components:
+  1. External repositories (from workspace.lock.json)
+  2. Specification files (specs/openapi/, specs/jsonschema/)
+  3. Mapping documents (mapping/*/)
+  4. Conformance scenarios (conformance/scenarios/)
+  5. Documentation (docs/*/)
+
+PROMPT For each external repository:
+  - Name and URL
+  - Pinned commit SHA
+  - Primary language
+  - Key directories/files
+
+PROMPT For specifications:
+  - OpenAPI specs with version
+  - JSON schemas with purpose
+  - Shape definitions
+
+PROMPT Generate inventory in structured format:
+  - Repository summary table
+  - Spec file listing
+  - Documentation index
+  - Last updated timestamp
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/inventory.md

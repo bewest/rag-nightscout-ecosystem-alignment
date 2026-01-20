@@ -1,0 +1,48 @@
+# gen-traceability.conv - Build full traceability matrix
+# Run: sdqctl run workflows/gen-traceability.conv
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE generation
+MAX-CYCLES 2
+
+# Context - all traceability sources
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @conformance/scenarios/**/*.yaml
+
+# Specs for field coverage
+CONTEXT @specs/openapi/*.yaml
+
+# Tool reference
+CONTEXT @tools/gen_traceability.py
+
+CONTEXT-LIMIT 80%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE requirements gaps
+
+PROMPT Build a complete traceability matrix.
+
+PROMPT Create bidirectional links:
+  - Requirements → Scenarios → Assertions
+  - Gaps → Requirements → Remediation
+  - Specs → Fields → Gaps
+
+PROMPT Generate matrix sections:
+
+PROMPT 1. Requirements Traceability:
+  | REQ-ID | Description | Scenarios | Assertions | Status |
+
+PROMPT 2. Gap Traceability:
+  | GAP-ID | Category | Related REQs | Remediation | Status |
+
+PROMPT 3. Specification Coverage:
+  | Spec | Collection | Fields | Gap Annotations | Coverage % |
+
+PROMPT 4. Cross-References:
+  - Which requirements address which gaps
+  - Which scenarios test which specs
+  - Orphan items needing links
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/traceability-matrix.md

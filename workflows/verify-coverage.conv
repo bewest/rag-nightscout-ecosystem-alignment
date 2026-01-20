@@ -1,0 +1,41 @@
+# verify-coverage.conv - Analyze requirement and gap coverage
+# Run: sdqctl run workflows/verify-coverage.conv
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 1
+
+# Context - requirements and gaps
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+
+# Conformance scenarios for coverage
+CONTEXT @conformance/scenarios/**/*.yaml
+
+# Coverage tool reference
+CONTEXT @tools/verify_coverage.py
+
+CONTEXT-LIMIT 80%
+ON-CONTEXT-LIMIT compact
+
+PROMPT Analyze coverage of requirements and gaps.
+
+PROMPT For each requirement (REQ-NNN):
+  1. Check if linked scenarios exist
+  2. Verify scenarios have assertions
+  3. Calculate coverage percentage
+
+PROMPT For each gap (GAP-XXX-NNN):
+  1. Check if remediation is documented
+  2. Identify if requirements address the gap
+  3. Track open vs resolved gaps
+
+PROMPT Generate coverage matrix showing:
+  - Requirements with full/partial/no coverage
+  - Gaps with/without remediation plans
+  - Overall coverage statistics
+  - Priority items needing attention
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/coverage-analysis.md

@@ -1,0 +1,57 @@
+# gen-coverage-report.conv - Generate coverage matrix with gaps
+# Run: sdqctl run workflows/gen-coverage-report.conv
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE generation
+MAX-CYCLES 1
+
+# Context - coverage sources
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @conformance/scenarios/**/*.yaml
+
+# OpenAPI specs with x-aid-* annotations
+CONTEXT @specs/openapi/aid-entries-2025.yaml
+CONTEXT @specs/openapi/aid-treatments-2025.yaml
+CONTEXT @specs/openapi/aid-devicestatus-2025.yaml
+
+# Tool reference
+CONTEXT @tools/gen_coverage.py
+
+CONTEXT-LIMIT 80%
+ON-CONTEXT-LIMIT compact
+
+PROMPT Generate a detailed coverage report.
+
+PROMPT Analyze coverage by domain:
+
+PROMPT 1. CGM/Entries Coverage:
+  - SGV fields covered by requirements
+  - Calibration handling
+  - Source attribution
+
+PROMPT 2. Treatments Coverage:
+  - Bolus/carb events
+  - Temp basals
+  - Override handling
+  - Sync identity fields
+
+PROMPT 3. DeviceStatus Coverage:
+  - Loop structure
+  - oref0/AAPS structure
+  - Pump status
+
+PROMPT 4. Gap Analysis:
+  - Open gaps by category (GAP-CGM, GAP-TREAT, etc.)
+  - Priority ranking
+  - Remediation status
+
+PROMPT Generate coverage summary:
+  - Overall coverage percentage
+  - Coverage by domain
+  - Critical gaps needing attention
+  - Recommended next actions
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/coverage-matrix.md
