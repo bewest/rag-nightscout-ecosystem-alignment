@@ -560,11 +560,46 @@ workspace_cli.py advise             # Get suggestions
 workspace_cli.py advise analyze <file>
 ```
 
-## Future Enhancements
+## Roadmap & Status
 
-Planned improvements (see `docs/tooling-roadmap.md`):
-- Change detection/diff analysis
-- Visualization (diagrams, heatmaps)
-- Watch mode for continuous validation
-- Enhanced gap analysis
-- Integration with external tools
+### Implementation Status
+
+| Phase | Status | Priority | Tools |
+|-------|--------|----------|-------|
+| 1. Cross-Reference Validation | ✅ Completed | P1 | `verify_refs.py`, `query_workspace.py` |
+| 2. Change Detection | ⏳ Pending | P2 | `detect_drift.py` |
+| 3. Gap Analysis | ✅ Completed | P1 | `gen_traceability.py`, `verify_coverage.py` |
+| 4. Unified CLI | ✅ Completed | P2 | `workspace_cli.py` |
+| 5. Machine-Readable Requirements | ✅ Completed | P3 | `query_workspace.py`, `gen_traceability.py` |
+| 6. Visualization | ⏳ Pending | P3 | `gen_diagrams.py` (proposed) |
+
+### Pending: Change Detection (Phase 2)
+
+**Purpose**: Identify what changed in source repositories since last analysis.
+
+**Features**:
+- Compare current external repo state to pinned SHAs in `workspace.lock.json`
+- List modified files in areas relevant to mapped functionality
+- Flag when analyzed code has drifted significantly
+- Generate "stale analysis" warnings
+
+### Pending: Visualization (Phase 6)
+
+**Purpose**: Generate visual representations of workspace relationships.
+
+**Features**:
+- Mermaid diagrams showing: Source → Mapping → Requirements → Tests
+- Coverage heatmaps by project/feature area
+- Dependency graphs between requirements
+- HTML report with interactive navigation
+
+### Agent-Based SDLC Considerations
+
+When building tools for agent-based workflows:
+
+1. **Structured Output**: Always provide both human-readable (Markdown) and machine-readable (JSON) output
+2. **Exit Codes**: Return meaningful exit codes (0=success, 1=warnings, 2=errors) for workflow automation
+3. **Incremental Mode**: Support `--changed-only` flags to minimize work on large workspaces
+4. **Dry Run**: Support `--dry-run` to preview changes without side effects
+5. **Idempotency**: Running a tool multiple times should produce consistent results
+6. **Context Awareness**: Tools should work from any directory, not just workspace root
