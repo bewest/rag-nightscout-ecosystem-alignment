@@ -404,6 +404,162 @@ For issues or questions:
 2. Review generated reports in `traceability/`
 3. Check workflow output for details
 
+## Cycle-Aware Development Tools
+
+The workspace includes advanced tooling for AI-assisted development cycles:
+
+### 6. Phase Navigator (`phase_nav.py`)
+
+**Purpose**: Track document phases and suggest transitions in the 5-phase engineering cycle.
+
+**Phases**:
+1. Source Analysis - Analyze code, document behavior
+2. Research & Synthesis - Compare implementations, propose improvements
+3. Knowledge Consolidation - Distill research into stable knowledge
+4. Design Guidance - Create actionable implementation guides
+5. Decision Making - Formalize via ADRs
+
+**Usage**:
+```bash
+# Show phase summary
+python3 tools/phase_nav.py summary
+
+# Check phase of a specific document
+python3 tools/phase_nav.py current docs/10-domain/treatments.md
+
+# List all documents by phase
+python3 tools/phase_nav.py list
+
+# Suggest phase transitions
+python3 tools/phase_nav.py suggest --json
+```
+
+### 7. Drift Detector (`detect_drift.py`)
+
+**Purpose**: Detect when documentation drifts from source code.
+
+**Usage**:
+```bash
+# Check all documents for drift
+python3 tools/detect_drift.py
+
+# Show only stale documents
+python3 tools/detect_drift.py --stale-only
+
+# Check specific document
+python3 tools/detect_drift.py --file mapping/loop-sync.md
+
+# JSON output
+python3 tools/detect_drift.py --json
+```
+
+### 8. Spec Capture (`spec_capture.py`)
+
+**Purpose**: Extract implicit requirements from documentation and verify specs against source.
+
+**Usage**:
+```bash
+# Show spec coverage
+python3 tools/spec_capture.py coverage
+
+# Scan all mappings for specs
+python3 tools/spec_capture.py scan
+
+# Extract specs from a document
+python3 tools/spec_capture.py extract mapping/loop-sync.md
+
+# Verify a requirement
+python3 tools/spec_capture.py verify REQ-001
+```
+
+### 9. Project Sequencer (`project_seq.py`)
+
+**Purpose**: Manage multi-component improvement projects with sequenced work items.
+
+**Usage**:
+```bash
+# Show current project status
+python3 tools/project_seq.py status
+
+# Create a new project
+python3 tools/project_seq.py create "Sync Protocol Update"
+
+# Add a component
+python3 tools/project_seq.py add-component "Treatment Sync" --files mapping/treatments.md
+
+# Advance to next phase/component
+python3 tools/project_seq.py advance
+```
+
+### 10. Agent Context Provider (`agent_context.py`)
+
+**Purpose**: Single entry point for AI agents to get workspace context.
+
+**Usage**:
+```bash
+# Get brief context
+python3 tools/agent_context.py brief
+
+# Get context for a specific file
+python3 tools/agent_context.py for docs/10-domain/treatments.md
+
+# Get full context
+python3 tools/agent_context.py full
+
+# Get context for a topic
+python3 tools/agent_context.py topic "sync protocol" --json
+```
+
+### 11. AI Advisor (`ai_advisor.py`)
+
+**Purpose**: AI-powered suggestions for development cycle progression.
+
+**Usage**:
+```bash
+# Get overall suggestions
+python3 tools/ai_advisor.py suggest
+
+# Analyze a specific file
+python3 tools/ai_advisor.py analyze docs/10-domain/treatments.md
+
+# Analyze a topic
+python3 tools/ai_advisor.py topic "authentication"
+```
+
+## Extended Workspace CLI Commands
+
+The workspace CLI now includes these additional commands:
+
+```bash
+# Phase navigation
+workspace_cli.py phase              # Show phase summary
+workspace_cli.py phase suggest      # Suggest transitions
+workspace_cli.py phase <file>       # Check file phase
+
+# Drift detection
+workspace_cli.py drift              # Check all documents
+workspace_cli.py drift --stale-only # Show only stale
+
+# Spec management
+workspace_cli.py specs              # Show coverage
+workspace_cli.py specs scan         # Scan for specs
+workspace_cli.py specs extract <file>
+
+# Project management
+workspace_cli.py project            # Show status
+workspace_cli.py project create "Name"
+workspace_cli.py project advance
+
+# AI context
+workspace_cli.py context            # Brief context
+workspace_cli.py context full       # Full context
+workspace_cli.py context for <file>
+
+# AI advice
+workspace_cli.py advise             # Get suggestions
+workspace_cli.py advise analyze <file>
+```
+
 ## Future Enhancements
 
 Planned improvements (see `docs/tooling-roadmap.md`):

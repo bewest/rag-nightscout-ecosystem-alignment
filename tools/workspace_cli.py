@@ -143,6 +143,83 @@ class WorkspaceCLI:
         """Generate workspace inventory."""
         return self.run_tool("gen_inventory.py", [])
     
+    def cmd_phase(self, args):
+        """Show phase information."""
+        if not args:
+            return self.run_tool("phase_nav.py", ["summary"])
+        
+        subcommand = args[0]
+        if subcommand == "list":
+            return self.run_tool("phase_nav.py", ["list"])
+        elif subcommand == "suggest":
+            return self.run_tool("phase_nav.py", ["suggest"])
+        else:
+            return self.run_tool("phase_nav.py", ["current", subcommand])
+    
+    def cmd_drift(self, args):
+        """Check for documentation drift."""
+        if args and args[0] == "--stale-only":
+            return self.run_tool("detect_drift.py", ["--stale-only"])
+        return self.run_tool("detect_drift.py", [])
+    
+    def cmd_specs(self, args):
+        """Spec capture and coverage."""
+        if not args:
+            return self.run_tool("spec_capture.py", ["coverage"])
+        
+        subcommand = args[0]
+        if subcommand == "scan":
+            return self.run_tool("spec_capture.py", ["scan"])
+        elif subcommand == "extract" and len(args) > 1:
+            return self.run_tool("spec_capture.py", ["extract", args[1]])
+        elif subcommand == "verify" and len(args) > 1:
+            return self.run_tool("spec_capture.py", ["verify", args[1]])
+        else:
+            return self.run_tool("spec_capture.py", ["coverage"])
+    
+    def cmd_project(self, args):
+        """Project management."""
+        if not args:
+            return self.run_tool("project_seq.py", ["status"])
+        
+        subcommand = args[0]
+        if subcommand == "list":
+            return self.run_tool("project_seq.py", ["list"])
+        elif subcommand == "create" and len(args) > 1:
+            return self.run_tool("project_seq.py", ["create", " ".join(args[1:])])
+        elif subcommand == "advance":
+            return self.run_tool("project_seq.py", ["advance"])
+        else:
+            return self.run_tool("project_seq.py", ["status"])
+    
+    def cmd_context(self, args):
+        """Get workspace context for AI agents."""
+        if not args:
+            return self.run_tool("agent_context.py", ["brief"])
+        
+        subcommand = args[0]
+        if subcommand == "full":
+            return self.run_tool("agent_context.py", ["full"])
+        elif subcommand == "for" and len(args) > 1:
+            return self.run_tool("agent_context.py", ["for", args[1]])
+        elif subcommand == "topic" and len(args) > 1:
+            return self.run_tool("agent_context.py", ["topic", " ".join(args[1:])])
+        else:
+            return self.run_tool("agent_context.py", ["brief"])
+    
+    def cmd_advise(self, args):
+        """Get AI-powered advice."""
+        if not args:
+            return self.run_tool("ai_advisor.py", ["suggest"])
+        
+        subcommand = args[0]
+        if subcommand == "analyze" and len(args) > 1:
+            return self.run_tool("ai_advisor.py", ["analyze", args[1]])
+        elif subcommand == "topic" and len(args) > 1:
+            return self.run_tool("ai_advisor.py", ["topic", " ".join(args[1:])])
+        else:
+            return self.run_tool("ai_advisor.py", ["suggest"])
+    
     def cmd_help(self, args):
         """Show help."""
         help_text = """
@@ -156,6 +233,12 @@ Commands:
   trace       Trace requirement/gap
   coverage    Generate coverage reports
   inventory   Generate inventory
+  phase       Phase navigation (list, suggest, <file>)
+  drift       Check documentation drift
+  specs       Spec capture and coverage (scan, extract, verify)
+  project     Project management (list, create, advance)
+  context     AI agent context (full, for <file>, topic <term>)
+  advise      AI-powered advice (analyze <file>, topic <term>)
   help        Show this help
 
 Options:
@@ -166,6 +249,10 @@ Examples:
   workspace_cli.py status
   workspace_cli.py query "authentication"
   workspace_cli.py trace REQ-001
+  workspace_cli.py phase suggest
+  workspace_cli.py drift --stale-only
+  workspace_cli.py context for docs/10-domain/treatments.md
+  workspace_cli.py advise
   workspace_cli.py validate --json
 """
         if self.json_output:

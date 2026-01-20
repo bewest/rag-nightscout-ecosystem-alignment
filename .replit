@@ -1,6 +1,7 @@
 modules = ["python-3.11"]
 [agent]
 expertMode = true
+integrations = ["python_anthropic_ai_integrations:1.0.0"]
 
 [workflows]
 runButton = "Project"
@@ -27,3 +28,4 @@ outputType = "console"
 
 [nix]
 packages = ["tree"]
+channel = "stable-25_05"
