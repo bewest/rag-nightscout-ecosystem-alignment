@@ -1,0 +1,17 @@
+# sdqctl configuration
+# See: https://github.com/bewest/copilot-do-proposal
+
+project:
+  name: my-project
+  
+defaults:
+  adapter: copilot
+  model: gpt-4
+  
+context:
+  limit: 80%
+  on_limit: compact
+  
+checkpoints:
+  enabled: true
+  directory: .sdqctl/checkpoints
