@@ -1,0 +1,132 @@
+# verification-loop.conv - Continuous verification cycle with tool integration
+# Run: sdqctl cycle workflows/iterate/verification-loop.conv -n 5 --session-mode compact
+# This workflow runs Python verification tools and addresses findings
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE verification
+MAX-CYCLES 5
+VALIDATION-MODE lenient
+
+# Core traceability
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @progress.md
+
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE requirements gaps tool-output
+
+# Tool execution settings
+RUN-ON-ERROR continue
+RUN-OUTPUT always
+RUN-OUTPUT-LIMIT 50K
+RUN-TIMEOUT 2m
+
+PROLOGUE Session: {{DATE}} | Iteration: Verification Loop
+PROLOGUE Objective: Run tools, analyze findings, address issues
+
+# Cycle 1: Reference validation
+PROMPT Cycle 1 - REFERENCE VALIDATION
+
+Running verify_refs.py to check code references...
+
+RUN python tools/verify_refs.py --json 2>/dev/null || echo '{"error": "tool not found or failed"}'
+
+PROMPT Analyze the reference validation output:
+1. How many references are valid vs broken?
+2. What are the most common failure patterns?
+3. Which files have the most broken refs?
+
+For each broken reference:
+- Identify the correct file if possible
+- Suggest a fix
+- Note if the referenced code moved or was deleted
+
+# Cycle 2: Coverage analysis
+PROMPT Cycle 2 - COVERAGE ANALYSIS
+
+Running verify_coverage.py to check requirement coverage...
+
+RUN python tools/verify_coverage.py --json 2>/dev/null || echo '{"error": "tool not found or failed"}'
+
+PROMPT Analyze the coverage results:
+1. What percentage of requirements have tests?
+2. Which requirements lack coverage?
+3. Which gaps lack linked requirements?
+
+Prioritize coverage gaps:
+- P0 requirements without tests = critical
+- Gaps without requirements = need extraction
+- Requirements without verification = need scenarios
+
+# Cycle 3: Terminology consistency
+PROMPT Cycle 3 - TERMINOLOGY CONSISTENCY
+
+Running verify_terminology.py to check term usage...
+
+RUN python tools/verify_terminology.py --json 2>/dev/null || echo '{"error": "tool not found or failed"}'
+
+PROMPT Analyze terminology findings:
+1. Are there inconsistent term usages?
+2. Which terms are used but not in the matrix?
+3. Are deprecated terms still referenced?
+
+Suggest standardizations:
+- Terms to add to matrix
+- Terms to deprecate
+- Usage patterns to correct
+
+# Cycle 4: Assertion tracing
+PROMPT Cycle 4 - ASSERTION TRACING
+
+Running verify_assertions.py to check assertion linkage...
+
+RUN python tools/verify_assertions.py --json 2>/dev/null || echo '{"error": "tool not found or failed"}'
+
+PROMPT Analyze assertion tracing:
+1. Are all assertions linked to requirements?
+2. Are there orphan assertions?
+3. Are there requirements without assertions?
+
+Map assertions to requirements:
+- Create missing links
+- Note verification gaps
+
+# Cycle 5: Summary and fixes
+PROMPT Cycle 5 - SUMMARY AND REMEDIATION
+
+Summarize all verification findings:
+
+1. **Reference Health**:
+   - Valid: N%, Broken: N%
+   - Top issues
+
+2. **Coverage Health**:
+   - Requirements covered: N%
+   - Gaps linked: N%
+
+3. **Terminology Health**:
+   - Consistent: N%
+   - Issues found
+
+4. **Assertion Health**:
+   - Linked: N%
+   - Orphans: N
+
+**Remediation Plan** (prioritized):
+1. [Critical fixes]
+2. [Important fixes]
+3. [Nice-to-have fixes]
+
+EPILOGUE Update progress.md with verification loop summary:
+### Verification Loop ({{DATE}})
+| Check | Status | Issues |
+|-------|--------|--------|
+| References | ✅/⚠️/❌ | N issues |
+| Coverage | ✅/⚠️/❌ | N gaps |
+| Terminology | ✅/⚠️/❌ | N inconsistencies |
+| Assertions | ✅/⚠️/❌ | N orphans |
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/verification-report-{{DATE}}.md

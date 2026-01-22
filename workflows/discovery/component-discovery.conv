@@ -1,0 +1,51 @@
+# component-discovery.conv - Discover and catalog components in external repos
+# Run: sdqctl run workflows/discovery/component-discovery.conv
+# Or with apply: sdqctl apply workflows/discovery/component-discovery.conv --components "externals/*/README.md"
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 1
+VALIDATION-MODE lenient
+
+# Core context for cross-reference
+CONTEXT @mapping/README.md
+CONTEXT @progress.md
+
+# Optional - may not exist yet
+CONTEXT-OPTIONAL @mapping/{{COMPONENT_NAME}}/README.md
+
+PROLOGUE Session: {{DATE}} | Discovery: Component Catalog
+PROLOGUE Repository: {{COMPONENT_NAME}}
+
+PROMPT Discover and catalog components in the specified repository.
+
+For each major component found:
+1. **Name and Location** - Where it lives in the codebase
+2. **Purpose** - What it does (CGM reading, bolus calculation, sync, etc.)
+3. **Key Data Structures** - Main types, interfaces, models
+4. **Entry Points** - How it's invoked or configured
+5. **External Dependencies** - What it integrates with
+6. **Nightscout Relevance** - How it relates to CGM Remote Monitor
+
+Create or update `mapping/{{COMPONENT_NAME}}/README.md` with:
+- Component inventory table
+- Architecture overview
+- Integration points
+- Links to source files
+
+PROMPT After cataloging, identify:
+1. Which components lack documentation in mapping/
+2. Which have outdated documentation
+3. Priority order for deep-dive analysis
+
+EPILOGUE Update progress.md with:
+### {{COMPONENT_NAME}} Discovery ({{DATE}})
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| Component Catalog | `mapping/{{COMPONENT_NAME}}/README.md` | Key findings |
+
+**Next Steps**: List priority components for deep-dive
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE mapping/{{COMPONENT_NAME}}/discovery-report.md

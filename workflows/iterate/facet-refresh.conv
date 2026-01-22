@@ -1,0 +1,113 @@
+# facet-refresh.conv - Refresh all 5 facets for a component
+# Run: sdqctl cycle workflows/iterate/facet-refresh.conv -n 5 --session-mode fresh
+# Apply: sdqctl apply workflows/iterate/facet-refresh.conv --components "mapping/*/README.md"
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 5
+VALIDATION-MODE lenient
+
+# Core traceability documents
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @mapping/cross-project/terminology-matrix.md
+CONTEXT @progress.md
+
+# Component-specific (when using apply)
+CONTEXT-OPTIONAL @mapping/{{COMPONENT_NAME}}/README.md
+CONTEXT-OPTIONAL @docs/10-domain/{{COMPONENT_NAME}}-deep-dive.md
+
+CONTEXT-LIMIT 60%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE requirements gaps terminology
+
+PROLOGUE Session: {{DATE}} | Refresh: {{COMPONENT_NAME}} (all 5 facets)
+PROLOGUE Mode: Fresh session each cycle - file changes visible between cycles
+
+# Cycle 1: Terminology refresh
+PROMPT Cycle 1 - TERMINOLOGY REFRESH
+
+Check `mapping/cross-project/terminology-matrix.md`:
+1. Are all terms from {{COMPONENT_NAME}} documented?
+2. Are cross-project mappings complete?
+3. Any deprecated terms to mark?
+4. Any new terms discovered since last update?
+
+If updates needed:
+- Add new term rows
+- Update existing mappings
+- Add source references
+
+# Cycle 2: Gap refresh
+PROMPT Cycle 2 - GAP REFRESH
+
+Check `traceability/gaps.md`:
+1. Review gaps related to {{COMPONENT_NAME}}
+2. Update status: Open → In Progress → Resolved
+3. Are there new undocumented behaviors?
+4. Do existing gaps have current information?
+
+If updates needed:
+- Update gap statuses
+- Add new gaps with GAP-ID
+- Link to requirements if resolved
+
+# Cycle 3: Requirements refresh
+PROMPT Cycle 3 - REQUIREMENTS REFRESH
+
+Check `traceability/requirements.md`:
+1. Do resolved gaps have requirements?
+2. Are requirement statuses current?
+3. Are verification criteria testable?
+4. Are conformance scenarios linked?
+
+If updates needed:
+- Add new requirements from gaps
+- Update statuses
+- Add cross-references
+
+# Cycle 4: Deep dive refresh
+PROMPT Cycle 4 - DEEP DIVE REFRESH
+
+Check `docs/10-domain/{{COMPONENT_NAME}}-deep-dive.md`:
+1. Are code references still valid?
+2. Are implementation details current?
+3. Are all sections complete?
+4. Are related requirements/gaps linked?
+
+If document doesn't exist, create it with:
+- Overview
+- Architecture
+- Key Data Structures
+- Integration Points
+- Code References
+- Related Requirements
+- Known Gaps
+
+# Cycle 5: Progress entry
+PROMPT Cycle 5 - PROGRESS ENTRY
+
+Append refresh summary to `progress.md`:
+
+```markdown
+### {{COMPONENT_NAME}} Refresh ({{DATE}})
+
+5-facet documentation refresh.
+
+| Facet | Status | Changes |
+|-------|--------|---------|
+| Terminology | ✅ Current | N terms updated |
+| Gaps | ✅ Current | N gaps updated |
+| Requirements | ✅ Current | N reqs updated |
+| Deep Dive | ✅ Current | Sections refreshed |
+| Progress | ✅ Logged | This entry |
+
+**Overall Status**: Complete / Needs Follow-up
+**Next Refresh**: Suggested date or trigger
+```
+
+EPILOGUE Summary of all changes made during this 5-facet refresh.
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE docs/facet-refresh-{{COMPONENT_NAME}}-{{DATE}}.md

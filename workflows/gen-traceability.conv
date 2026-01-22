@@ -5,14 +5,15 @@ MODEL claude-sonnet-4
 ADAPTER copilot
 MODE generation
 MAX-CYCLES 2
+VALIDATION-MODE lenient
 
 # Context - all traceability sources
 CONTEXT @traceability/requirements.md
 CONTEXT @traceability/gaps.md
-CONTEXT @conformance/scenarios/**/*.yaml
+CONTEXT-OPTIONAL @conformance/scenarios/**/*.yaml
 
 # Specs for field coverage
-CONTEXT @specs/openapi/*.yaml
+CONTEXT-OPTIONAL @specs/openapi/*.yaml
 
 # Tool reference
 CONTEXT @tools/gen_traceability.py

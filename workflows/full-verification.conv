@@ -6,13 +6,14 @@ MODEL claude-sonnet-4
 ADAPTER copilot
 MODE verification
 MAX-CYCLES 1
+VALIDATION-MODE lenient
 
 # Include all traceability sources
 CONTEXT @traceability/requirements.md
 CONTEXT @traceability/gaps.md
-CONTEXT @conformance/scenarios/**/*.yaml
+CONTEXT-OPTIONAL @conformance/scenarios/**/*.yaml
 CONTEXT @mapping/cross-project/terminology-matrix.md
-CONTEXT @docs/10-domain/*.md
+CONTEXT-OPTIONAL @docs/10-domain/*.md
 
 # All verification tools
 CONTEXT @tools/verify_refs.py

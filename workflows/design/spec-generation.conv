@@ -1,0 +1,102 @@
+# spec-generation.conv - Generate OpenAPI specifications from requirements
+# Run: sdqctl run workflows/design/spec-generation.conv
+# Multi-cycle: sdqctl cycle workflows/design/spec-generation.conv -n 3 --session-mode accumulate
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 3
+VALIDATION-MODE lenient
+
+# Requirements source
+CONTEXT @traceability/requirements.md
+
+# Existing specs for reference
+CONTEXT-OPTIONAL @specs/openapi/aid-treatments-2025.yaml
+CONTEXT-OPTIONAL @specs/openapi/aid-devicestatus-2025.yaml
+CONTEXT-OPTIONAL @specs/openapi/aid-entries-2025.yaml
+
+# JSON Schema for reference
+CONTEXT-OPTIONAL @specs/jsonschema/treatment.schema.json
+CONTEXT-OPTIONAL @specs/jsonschema/devicestatus.schema.json
+
+PROLOGUE Session: {{DATE}} | Design: Specification Generation
+PROLOGUE Objective: Generate or update OpenAPI specs from requirements
+
+# Cycle 1: Identify spec needs
+PROMPT Cycle 1 - Identify requirements needing specifications.
+
+Review `traceability/requirements.md` for requirements that impact API:
+
+1. **Interface requirements** → Need OpenAPI path/operation
+2. **Data structure requirements** → Need JSON Schema
+3. **Validation requirements** → Need OpenAPI constraints
+4. **Compatibility requirements** → Need x-aid-controllers annotations
+
+For each requirement:
+- Which spec file should it update?
+- What changes are needed?
+- Are there conflicts with existing specs?
+
+# Cycle 2: Draft spec updates
+PROMPT Cycle 2 - Draft OpenAPI specification updates.
+
+For each requirement identified:
+
+1. **New endpoints**: Draft OpenAPI path definition
+   ```yaml
+   /api/v3/treatments:
+     post:
+       operationId: createTreatments
+       x-aid-requirement: REQ-NNN
+       # ...
+   ```
+
+2. **Schema updates**: Draft JSON Schema changes
+   ```yaml
+   Treatment:
+     properties:
+       newField:
+         type: string
+         x-aid-requirement: REQ-NNN
+   ```
+
+3. **Annotations**: Add traceability
+   - `x-aid-requirement: REQ-NNN`
+   - `x-aid-gap: GAP-XXX-NNN`
+   - `x-aid-controllers: [loop, aaps, trio]`
+
+# Cycle 3: Generate spec files
+PROMPT Cycle 3 - Create or update specification files.
+
+1. Update existing specs in `specs/openapi/`:
+   - Add new paths/operations
+   - Update schemas
+   - Add traceability annotations
+
+2. Create new specs if needed:
+   - Follow existing naming: `aid-{resource}-2025.yaml`
+   - Include standard headers
+   - Reference shared schemas
+
+3. Update JSON Schemas in `specs/jsonschema/`:
+   - Ensure consistency with OpenAPI
+   - Add validation rules from requirements
+
+4. Document changes:
+   - Which files were modified
+   - What was added/changed
+   - Which requirements are now covered
+
+EPILOGUE Update progress.md with:
+### Specification Generation ({{DATE}})
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| OpenAPI | `specs/openapi/` | N specs updated |
+| JSON Schema | `specs/jsonschema/` | N schemas updated |
+
+**Requirements Covered**: REQ-NNN, ...
+**Spec Changes**: List major changes
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE specs/spec-generation-report.md

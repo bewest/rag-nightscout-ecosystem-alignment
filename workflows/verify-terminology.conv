@@ -5,12 +5,13 @@ MODEL claude-sonnet-4
 ADAPTER copilot
 MODE verification
 MAX-CYCLES 1
+VALIDATION-MODE lenient
 
 # Context - terminology matrix
 CONTEXT @mapping/cross-project/terminology-matrix.md
 
-# Project-specific mappings
-CONTEXT @mapping/*/README.md
+# Project-specific mappings (use optional for glob)
+CONTEXT-OPTIONAL @mapping/*/README.md
 
 # Tool reference
 CONTEXT @tools/verify_terminology.py

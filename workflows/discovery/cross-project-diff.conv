@@ -1,0 +1,115 @@
+# cross-project-diff.conv - Compare implementations across repositories
+# Run: sdqctl run workflows/discovery/cross-project-diff.conv
+# Multi-cycle: sdqctl cycle workflows/discovery/cross-project-diff.conv -n 5 --session-mode accumulate
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 5
+VALIDATION-MODE lenient
+
+# Cross-project mapping
+CONTEXT @mapping/cross-project/terminology-matrix.md
+CONTEXT-OPTIONAL @mapping/cross-project/field-mapping.md
+
+# Project-specific mappings
+CONTEXT-OPTIONAL @mapping/loop/README.md
+CONTEXT-OPTIONAL @mapping/aaps/README.md
+CONTEXT-OPTIONAL @mapping/trio/README.md
+CONTEXT-OPTIONAL @mapping/nightscout/README.md
+CONTEXT-OPTIONAL @mapping/xdrip-android/README.md
+CONTEXT-OPTIONAL @mapping/oref0/README.md
+
+# Specs for reference
+CONTEXT-OPTIONAL @specs/openapi/aid-treatments-2025.yaml
+CONTEXT-OPTIONAL @specs/openapi/aid-devicestatus-2025.yaml
+
+PROLOGUE Session: {{DATE}} | Discovery: Cross-Project Comparison
+PROLOGUE Objective: Identify alignment opportunities across AID systems
+
+# Cycle 1: Treatment sync
+PROMPT Cycle 1 - Compare treatment synchronization.
+
+Analyze treatment upload patterns:
+1. **Loop → Nightscout**: Fields, identifiers, timestamps
+2. **AAPS → Nightscout**: pumpId, pumpType, pumpSerial patterns
+3. **Trio → Nightscout**: OpenAPS structure inheritance
+4. **xDrip+ → AAPS → Nightscout**: Relay chain behavior
+
+For each sync path, document:
+- Required fields
+- Optional fields
+- Deduplication keys
+- Timestamp handling
+
+# Cycle 2: DeviceStatus
+PROMPT Cycle 2 - Compare DeviceStatus structures.
+
+Analyze prediction and status formats:
+1. **Loop's predicted glucose format** - Array structure, units
+2. **oref0/AAPS prediction curves** - IOB, COB, UAM, ZT curves
+3. **Trio's OpenAPS structure** - Legacy compatibility
+4. **Pump status fields** - Battery, reservoir, status
+
+Document differences in:
+- Field names and paths
+- Data types and units
+- Nesting structure
+- Required vs optional
+
+# Cycle 3: CGM data
+PROMPT Cycle 3 - Compare CGM data handling.
+
+Analyze SGV (sensor glucose value) patterns:
+1. **Dexcom sources** - G5, G6, G7 differences
+2. **Libre sources** - Libre 1, 2, 3 differences
+3. **Calibration handling** - Raw vs calibrated
+4. **Trend/direction** - Arrow types and values
+
+Document:
+- Field naming (sgv, glucose, value)
+- Trend representations
+- Source identification
+- Timestamp formats
+
+# Cycle 4: Identification
+PROMPT Cycle 4 - Compare identification strategies.
+
+Analyze how records are uniquely identified:
+1. **Loop**: syncIdentifier patterns
+2. **AAPS**: pumpId + pumpType + pumpSerial
+3. **Trio**: id field usage
+4. **xDrip+**: source timestamps
+
+Document:
+- Deduplication strategies
+- Conflict resolution
+- Update vs insert logic
+- Cross-client isolation
+
+# Cycle 5: Alignment recommendations
+PROMPT Cycle 5 - Generate alignment recommendations.
+
+Based on analysis:
+1. **Same concept, different names** - Standardization opportunities
+2. **Same name, different semantics** - Clarification needed
+3. **Missing in some implementations** - Gap candidates
+4. **Unit/format inconsistencies** - Normalization targets
+
+For each misalignment:
+- Document the difference
+- List affected projects
+- Suggest canonical representation
+- Link to GAP-ID if exists, or suggest creating one
+
+EPILOGUE Update progress.md with:
+### Cross-Project Diff ({{DATE}})
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| Alignment Report | `docs/cross-project-alignment-report.md` | Key findings |
+| Field Mapping | `mapping/cross-project/field-mapping.md` | Updates |
+
+**Alignment Opportunities**: List top 3-5
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE docs/cross-project-alignment-report.md

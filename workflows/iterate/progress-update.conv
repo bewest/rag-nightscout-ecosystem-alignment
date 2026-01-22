@@ -1,0 +1,53 @@
+# progress-update.conv - Update progress.md with session log entry
+# Run: sdqctl run workflows/iterate/progress-update.conv
+# Quick single-cycle workflow for logging a session
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 1
+VALIDATION-MODE lenient
+
+# Core context
+CONTEXT @progress.md
+
+# Recent work products (optional - adjust patterns as needed)
+CONTEXT-OPTIONAL @traceability/gaps.md
+CONTEXT-OPTIONAL @traceability/requirements.md
+
+PROLOGUE Session: {{DATE}} | Iteration: Progress Update
+PROLOGUE Objective: Document today's work in progress.md
+
+PROMPT Review recent changes and update progress.md.
+
+1. **Identify recent changes**:
+   - New or modified files in docs/, mapping/, traceability/
+   - New gaps (GAP-XXX-NNN)
+   - New requirements (REQ-NNN)
+   - Updated specifications
+
+2. **Create session entry** following the established format:
+
+```markdown
+### [Topic/Component] ({{DATE}})
+
+Brief description of what was analyzed or documented.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Document Name | `path/to/file.md` | One-line summary |
+| ... | ... | ... |
+
+**Gaps Identified**: GAP-XXX-001, GAP-XXX-002 (or "None")
+**Requirements Extracted**: REQ-NNN (or "None")
+**Next Steps**: What should be done next
+```
+
+3. **Append to progress.md**:
+   - Add entry under "## Completed Work"
+   - Ensure chronological order (newest first)
+
+EPILOGUE Confirm the progress entry was added with all required sections.
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE docs/progress-update-confirmation.md

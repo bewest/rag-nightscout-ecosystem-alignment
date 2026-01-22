@@ -1,0 +1,93 @@
+# requirement-extraction.conv - Convert gaps into formal requirements
+# Run: sdqctl run workflows/design/requirement-extraction.conv
+# Multi-cycle: sdqctl cycle workflows/design/requirement-extraction.conv -n 3 --session-mode accumulate
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 3
+VALIDATION-MODE lenient
+
+# Core documents
+CONTEXT @traceability/gaps.md
+CONTEXT @traceability/requirements.md
+
+# Reference for existing patterns
+CONTEXT-OPTIONAL @conformance/scenarios/README.md
+
+PROLOGUE Session: {{DATE}} | Design: Requirement Extraction
+PROLOGUE Objective: Convert documented gaps into testable requirements
+
+# Cycle 1: Analyze gaps
+PROMPT Cycle 1 - Analyze open gaps.
+
+Review `traceability/gaps.md` for gaps ready to become requirements:
+
+1. **Filter criteria**:
+   - Status = Open or In Progress
+   - Has clear "Proposed Resolution"
+   - Affects multiple systems (higher priority)
+
+2. **For each candidate gap**:
+   - Can it be expressed as a testable requirement?
+   - What would verification look like?
+   - What are the acceptance criteria?
+
+3. **Categorize**:
+   - Functional requirements (behavior)
+   - Non-functional requirements (performance, security)
+   - Interface requirements (API contracts)
+   - Compatibility requirements (cross-project)
+
+# Cycle 2: Draft requirements
+PROMPT Cycle 2 - Draft requirements from gaps.
+
+For each gap identified in Cycle 1, create a requirement:
+
+Format:
+```markdown
+### REQ-NNN: [Short Title]
+
+**Source Gap**: GAP-XXX-NNN
+**Status**: Draft
+**Priority**: P0 | P1 | P2
+**Type**: Functional | Non-Functional | Interface | Compatibility
+
+**Requirement Statement**:
+The system SHALL [specific, testable behavior].
+
+**Acceptance Criteria**:
+1. Given [precondition], when [action], then [expected result]
+2. ...
+
+**Verification Method**: Test | Inspection | Analysis | Demonstration
+
+**Affected Systems**: Loop, AAPS, Trio, Nightscout
+
+**Notes**: Additional context
+```
+
+Assign REQ-NNN following the existing numbering sequence.
+
+# Cycle 3: Update documents
+PROMPT Cycle 3 - Update requirements.md and cross-reference gaps.
+
+1. Append new requirements to `traceability/requirements.md`
+2. Update linked gaps in `traceability/gaps.md`:
+   - Add "Related Requirement: REQ-NNN"
+   - Update status if requirement covers the gap
+3. Identify requirements that need conformance scenarios
+4. Note any requirements that need OpenAPI spec updates
+
+EPILOGUE Update progress.md with:
+### Requirement Extraction ({{DATE}})
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| Requirements | `traceability/requirements.md` | N new requirements |
+| Gap Updates | `traceability/gaps.md` | N gaps linked |
+
+**New Requirements**: REQ-NNN, REQ-NNN, ...
+**Gaps Covered**: GAP-XXX-NNN, ...
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/requirement-extraction-report.md

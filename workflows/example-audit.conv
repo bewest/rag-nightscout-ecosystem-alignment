@@ -1,0 +1,22 @@
+# Example security audit workflow
+# Run with: sdqctl run workflows/example-audit.conv
+
+MODEL gpt-4
+ADAPTER copilot
+MODE audit
+MAX-CYCLES 1
+
+# Context files to include
+# CONTEXT @lib/auth/*.js
+# CONTEXT @tests/auth.test.js
+
+# Context window settings
+CONTEXT-LIMIT 80%
+ON-CONTEXT-LIMIT compact
+
+PROMPT Analyze the codebase for security vulnerabilities.
+PROMPT Focus on authentication, input validation, and data handling.
+PROMPT Generate a security report with severity ratings.
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE security-audit.md

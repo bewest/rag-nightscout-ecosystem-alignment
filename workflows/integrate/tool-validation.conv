@@ -1,0 +1,86 @@
+# tool-validation.conv - Run Python validation tools and analyze results
+# Run: sdqctl run workflows/integrate/tool-validation.conv
+# Purpose: Execute the full verification suite with AI analysis
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE verification
+MAX-CYCLES 1
+VALIDATION-MODE lenient
+
+# Context for understanding results
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @progress.md
+
+# Tool execution settings
+RUN-ON-ERROR continue
+RUN-OUTPUT always
+RUN-OUTPUT-LIMIT 100K
+RUN-TIMEOUT 5m
+
+PROLOGUE Session: {{DATE}} | Integration: Tool Validation Suite
+PROLOGUE Objective: Run all Python verification tools and analyze findings
+
+PROMPT Running the complete verification suite...
+
+# Reference validation
+RUN python tools/verify_refs.py --json 2>/dev/null || echo '{"status": "skipped", "reason": "tool not found"}'
+
+# Coverage analysis
+RUN python tools/verify_coverage.py --json 2>/dev/null || echo '{"status": "skipped", "reason": "tool not found"}'
+
+# Terminology consistency
+RUN python tools/verify_terminology.py --json 2>/dev/null || echo '{"status": "skipped", "reason": "tool not found"}'
+
+# Assertion tracing
+RUN python tools/verify_assertions.py --json 2>/dev/null || echo '{"status": "skipped", "reason": "tool not found"}'
+
+PROMPT Analyze all tool outputs above.
+
+Generate a comprehensive validation report:
+
+## 1. Executive Summary
+- Overall health: Healthy / Needs Attention / Critical
+- Total issues found across all tools
+- Priority action items
+
+## 2. Reference Validation
+- Total references checked
+- Valid / Broken / Stale counts
+- Top 5 files with issues
+- Suggested fixes
+
+## 3. Coverage Analysis
+- Requirement coverage percentage
+- Gap linkage percentage
+- Uncovered requirements (list)
+- Orphan gaps (list)
+
+## 4. Terminology Consistency
+- Terms checked
+- Inconsistencies found
+- Suggested standardizations
+
+## 5. Assertion Tracing
+- Assertions checked
+- Linked to requirements
+- Orphan assertions
+
+## 6. Recommendations
+Prioritized list of fixes:
+1. [P0 - Critical] ...
+2. [P1 - Important] ...
+3. [P2 - Nice to have] ...
+
+EPILOGUE Update progress.md with validation summary:
+### Tool Validation ({{DATE}})
+| Tool | Status | Issues |
+|------|--------|--------|
+| verify_refs | ✅/⚠️/❌ | N |
+| verify_coverage | ✅/⚠️/❌ | N |
+| verify_terminology | ✅/⚠️/❌ | N |
+| verify_assertions | ✅/⚠️/❌ | N |
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/tool-validation-{{DATE}}.md

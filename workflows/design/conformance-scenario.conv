@@ -1,0 +1,113 @@
+# conformance-scenario.conv - Create conformance test scenarios from requirements
+# Run: sdqctl run workflows/design/conformance-scenario.conv
+# Multi-cycle: sdqctl cycle workflows/design/conformance-scenario.conv -n 3 --session-mode accumulate
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 3
+VALIDATION-MODE lenient
+
+# Requirements source
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+
+# Existing conformance scenarios
+CONTEXT-OPTIONAL @conformance/scenarios/README.md
+CONTEXT-OPTIONAL @conformance/scenarios/**/*.md
+
+# Specs for validation rules
+CONTEXT-OPTIONAL @specs/openapi/aid-treatments-2025.yaml
+
+PROLOGUE Session: {{DATE}} | Design: Conformance Scenarios
+PROLOGUE Objective: Create testable scenarios from requirements
+
+# Cycle 1: Identify requirements needing tests
+PROMPT Cycle 1 - Identify requirements needing conformance scenarios.
+
+Review `traceability/requirements.md`:
+
+1. **Filter**:
+   - Status = Approved or Review
+   - Verification Method = Test
+   - No existing conformance scenario
+
+2. **Prioritize**:
+   - P0 requirements first
+   - Interface/Compatibility requirements (affect multiple systems)
+   - Requirements linked to critical gaps
+
+3. **For each requirement**:
+   - What behavior needs testing?
+   - What are the edge cases?
+   - Which systems should be tested?
+
+# Cycle 2: Design scenarios
+PROMPT Cycle 2 - Design conformance test scenarios.
+
+For each requirement identified, create a scenario:
+
+```markdown
+# Scenario: [Descriptive Name]
+
+## Metadata
+- **Requirement**: REQ-NNN
+- **Gap**: GAP-XXX-NNN (if applicable)
+- **Systems**: Loop, AAPS, Trio
+- **Priority**: P0 | P1 | P2
+
+## Preconditions
+1. System state before test
+2. Required data fixtures
+3. Configuration settings
+
+## Test Steps
+1. Given [initial state]
+2. When [action performed]
+3. Then [expected outcome]
+
+## Expected Results
+- Specific field values
+- Response codes
+- Side effects
+
+## Edge Cases
+1. [Edge case 1]: Expected behavior
+2. [Edge case 2]: Expected behavior
+
+## Fixtures
+- Input data file: `fixtures/scenario-name-input.json`
+- Expected output: `fixtures/scenario-name-expected.json`
+```
+
+# Cycle 3: Create scenario files
+PROMPT Cycle 3 - Create conformance scenario files.
+
+1. Create scenario files in `conformance/scenarios/`:
+   - Organize by category (treatments, devicestatus, entries)
+   - Name format: `{category}/{scenario-name}.md`
+
+2. Create fixture files if needed:
+   - Input data: `conformance/fixtures/{scenario}-input.json`
+   - Expected output: `conformance/fixtures/{scenario}-expected.json`
+
+3. Update `conformance/scenarios/README.md`:
+   - Add new scenarios to index
+   - Update coverage matrix
+
+4. Cross-reference:
+   - Add scenario link to requirement in requirements.md
+   - Update gap status if scenario covers it
+
+EPILOGUE Update progress.md with:
+### Conformance Scenarios ({{DATE}})
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| Scenarios | `conformance/scenarios/` | N scenarios created |
+| Fixtures | `conformance/fixtures/` | N fixtures created |
+
+**Requirements Covered**: REQ-NNN, ...
+**New Scenarios**: scenario-name-1, scenario-name-2, ...
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE conformance/scenario-generation-report.md

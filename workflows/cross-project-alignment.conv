@@ -5,20 +5,22 @@ MODEL claude-sonnet-4
 ADAPTER copilot
 MODE analysis
 MAX-CYCLES 3
+VALIDATION-MODE lenient
 
 # Context - cross-project mappings
 CONTEXT @mapping/cross-project/terminology-matrix.md
-CONTEXT @mapping/cross-project/field-mapping.md
+CONTEXT-OPTIONAL @mapping/cross-project/field-mapping.md
 
 # Project-specific mappings
-CONTEXT @mapping/loop/README.md
-CONTEXT @mapping/aaps/README.md
-CONTEXT @mapping/nightscout/README.md
-CONTEXT @mapping/xdrip/README.md
+CONTEXT-OPTIONAL @mapping/loop/README.md
+CONTEXT-OPTIONAL @mapping/aaps/README.md
+CONTEXT-OPTIONAL @mapping/nightscout/README.md
+CONTEXT-OPTIONAL @mapping/xdrip/README.md
+CONTEXT-OPTIONAL @mapping/xdrip-android/README.md
 
 # Specs for reference
-CONTEXT @specs/openapi/aid-treatments-2025.yaml
-CONTEXT @specs/openapi/aid-devicestatus-2025.yaml
+CONTEXT-OPTIONAL @specs/openapi/aid-treatments-2025.yaml
+CONTEXT-OPTIONAL @specs/openapi/aid-devicestatus-2025.yaml
 
 CONTEXT-LIMIT 70%
 ON-CONTEXT-LIMIT compact

@@ -5,13 +5,14 @@ MODEL claude-sonnet-4
 ADAPTER copilot
 MODE analysis
 MAX-CYCLES 1
+VALIDATION-MODE lenient
 
 # Context - requirements and gaps
 CONTEXT @traceability/requirements.md
 CONTEXT @traceability/gaps.md
 
 # Conformance scenarios for coverage
-CONTEXT @conformance/scenarios/**/*.yaml
+CONTEXT-OPTIONAL @conformance/scenarios/**/*.yaml
 
 # Coverage tool reference
 CONTEXT @tools/verify_coverage.py

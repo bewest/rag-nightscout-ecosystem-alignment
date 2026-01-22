@@ -1,0 +1,91 @@
+# gap-discovery.conv - Identify undocumented gaps and missing requirements
+# Run: sdqctl run workflows/discovery/gap-discovery.conv
+# Multi-cycle: sdqctl cycle workflows/discovery/gap-discovery.conv -n 3 --session-mode accumulate
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 3
+VALIDATION-MODE lenient
+
+# Existing traceability documents
+CONTEXT @traceability/gaps.md
+CONTEXT @traceability/requirements.md
+
+# Cross-project mappings
+CONTEXT @mapping/cross-project/terminology-matrix.md
+
+# Optional specs
+CONTEXT-OPTIONAL @specs/openapi/*.yaml
+
+PROLOGUE Session: {{DATE}} | Discovery: Gap Analysis
+PROLOGUE Objective: Find undocumented behaviors and missing specifications
+
+# Cycle 1: Behavioral gaps
+PROMPT Cycle 1 - Identify behavioral gaps.
+
+Search for undocumented behaviors:
+1. **Implicit Behaviors** - Things that "just work" without specification
+2. **Edge Cases** - Unusual conditions without documented handling
+3. **Cross-Project Differences** - Same feature, different implementations
+4. **Missing Error Handling** - Failure modes not documented
+5. **Assumption Gaps** - Dependencies on undocumented assumptions
+
+For each gap found, gather:
+- Which systems are affected
+- What behavior is undocumented
+- What should be specified
+
+# Cycle 2: Specification gaps
+PROMPT Cycle 2 - Identify specification gaps.
+
+Review OpenAPI specs and documentation:
+1. Fields without gap annotations (`x-aid-gap`)
+2. Controller support matrix gaps (`x-aid-controllers`)
+3. Undocumented `eventTypes`
+4. Missing validation rules
+5. Format inconsistencies
+
+Cross-reference with implementations:
+- Features in code but not in specs
+- Spec fields not implemented anywhere
+- Behavior differences across projects
+
+# Cycle 3: Document gaps
+PROMPT Cycle 3 - Document discovered gaps.
+
+For each gap identified:
+1. Assign GAP-ID following convention:
+   - GAP-CGM-NNN: CGM data source issues
+   - GAP-TREAT-NNN: Treatment handling
+   - GAP-DS-NNN: DeviceStatus inconsistencies
+   - GAP-SYNC-NNN: Synchronization problems
+   - GAP-ALG-NNN: Algorithm comparison
+
+2. Format entry for gaps.md:
+   ```markdown
+   ### GAP-<CATEGORY>-NNN: Short Title
+   
+   **Status**: Open | In Progress | Resolved
+   **Affected Systems**: Loop, AAPS, Trio, Nightscout
+   **Priority**: P0 | P1 | P2
+   
+   **Description**: What is missing or undocumented
+   
+   **Impact**: Why this matters
+   
+   **Proposed Resolution**: What should be done
+   ```
+
+3. Link to related requirements if they exist
+
+EPILOGUE Update progress.md with:
+### Gap Discovery ({{DATE}})
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| Gap Updates | `traceability/gaps.md` | N gaps identified |
+
+**New Gaps**: GAP-XXX-001, GAP-XXX-002, ...
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/gap-discovery.md

@@ -5,10 +5,11 @@ MODEL claude-sonnet-4
 ADAPTER copilot
 MODE verification
 MAX-CYCLES 1
+VALIDATION-MODE lenient
 
 # Context - conformance scenarios with assertions
-CONTEXT @conformance/scenarios/**/*.yaml
-CONTEXT @conformance/assertions/**/*.yaml
+CONTEXT-OPTIONAL @conformance/scenarios/**/*.yaml
+CONTEXT-OPTIONAL @conformance/assertions/**/*.yaml
 
 # Requirements for tracing
 CONTEXT @traceability/requirements.md

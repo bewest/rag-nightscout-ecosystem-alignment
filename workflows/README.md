@@ -11,6 +11,47 @@ source activate-sdqctl.sh
 
 ## Workflow Categories
 
+### Discovery Workflows (NEW)
+
+Located in `discovery/`:
+
+| Workflow | Purpose |
+|----------|---------|
+| `discovery/component-discovery.conv` | Find and catalog components in repos |
+| `discovery/terminology-extraction.conv` | Extract terms from source code |
+| `discovery/gap-discovery.conv` | Identify undocumented gaps |
+| `discovery/cross-project-diff.conv` | Compare implementations across repos |
+
+### Design Workflows (NEW)
+
+Located in `design/`:
+
+| Workflow | Purpose |
+|----------|---------|
+| `design/deep-dive-template.conv` | 5-facet component analysis template |
+| `design/requirement-extraction.conv` | Convert gaps to formal requirements |
+| `design/spec-generation.conv` | Generate OpenAPI specs from requirements |
+| `design/conformance-scenario.conv` | Create conformance test scenarios |
+
+### Iteration Workflows (NEW)
+
+Located in `iterate/`:
+
+| Workflow | Purpose |
+|----------|---------|
+| `iterate/progress-update.conv` | Update progress.md with session log |
+| `iterate/facet-refresh.conv` | Refresh all 5 facets for a component |
+| `iterate/verification-loop.conv` | Continuous verification cycle |
+
+### Integration Workflows (NEW)
+
+Located in `integrate/`:
+
+| Workflow | Purpose |
+|----------|---------|
+| `integrate/tool-validation.conv` | Run Python tools, analyze results |
+| `integrate/ci-pipeline.conv` | Full CI pipeline with RUN commands |
+
 ### Verification Workflows
 
 | Workflow | Purpose | Equivalent |
@@ -34,7 +75,6 @@ source activate-sdqctl.sh
 |----------|---------|
 | `gap-detection.conv` | Identify missing requirements/coverage |
 | `cross-project-alignment.conv` | Compare implementations across repos |
-| `deep-dive-template.conv` | Template for 5-facet analysis |
 
 ### Composite Workflows
 
@@ -58,6 +98,25 @@ sdqctl flow workflows/gen-*.conv --parallel 3
 
 # Multi-cycle analysis with compaction
 sdqctl cycle workflows/gap-detection.conv --max-cycles 3
+
+# Discovery with fresh session mode (sees file changes between cycles)
+sdqctl cycle workflows/discovery/component-discovery.conv -n 3 --session-mode fresh
+
+# Apply a workflow to multiple components
+sdqctl apply workflows/design/deep-dive-template.conv \
+  --components "mapping/*/README.md" \
+  --progress progress.md
+```
+
+## Validation Modes
+
+All workflows now support lenient validation for aspirational patterns:
+
+```bash
+# Validate with lenient mode
+sdqctl validate workflows/*.conv --allow-missing
+
+# Or workflows include VALIDATION-MODE lenient
 ```
 
 ## Makefile Integration
@@ -77,10 +136,11 @@ MODEL claude-sonnet-4
 ADAPTER copilot
 MODE verification
 MAX-CYCLES 1
+VALIDATION-MODE lenient
 
 CONTEXT @traceability/requirements.md
 CONTEXT @traceability/gaps.md
-CONTEXT @tools/verify_refs.py
+CONTEXT-OPTIONAL @conformance/scenarios/**/*.yaml
 
 PROMPT Validate all code references in requirements and gaps.
 
@@ -89,3 +149,8 @@ OUTPUT-FILE traceability/refs-validation.md
 ```
 
 See [sdqctl documentation](https://github.com/bewest/copilot-do-proposal/tree/main/sdqctl) for full directive reference.
+
+## Documentation
+
+- [NIGHTSCOUT-SDQCTL-GUIDE.md](../docs/NIGHTSCOUT-SDQCTL-GUIDE.md) - Full guide for using sdqctl with this workspace
+- [CONTINUATION-PROMPTS.md](../docs/CONTINUATION-PROMPTS.md) - Ready-to-use prompts for continuing work

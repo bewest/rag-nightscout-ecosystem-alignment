@@ -1,0 +1,74 @@
+# terminology-extraction.conv - Extract and standardize terminology from source code
+# Run: sdqctl run workflows/discovery/terminology-extraction.conv
+# Multi-cycle: sdqctl cycle workflows/discovery/terminology-extraction.conv -n 3 --session-mode accumulate
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 3
+VALIDATION-MODE lenient
+
+# Core terminology document
+CONTEXT @mapping/cross-project/terminology-matrix.md
+
+# Optional project-specific contexts
+CONTEXT-OPTIONAL @mapping/loop/README.md
+CONTEXT-OPTIONAL @mapping/aaps/README.md
+CONTEXT-OPTIONAL @mapping/trio/README.md
+CONTEXT-OPTIONAL @mapping/nightscout/README.md
+
+PROLOGUE Session: {{DATE}} | Discovery: Terminology Extraction
+PROLOGUE Focus: Cross-project term standardization
+
+# Cycle 1: Extract terms
+PROMPT Cycle 1 - Extract terms from source code and documentation.
+
+Search for terminology in these categories:
+1. **CGM Terms**: glucose values, trends, calibrations, sensor sessions
+2. **Treatment Terms**: boluses, basals, carbs, corrections, overrides
+3. **Algorithm Terms**: IOB, COB, predictions, targets, safety limits
+4. **Sync Terms**: identifiers, timestamps, deduplication keys
+5. **DeviceStatus Terms**: pump state, loop state, enacted recommendations
+
+For each term found:
+- Note the exact name used in each project
+- Identify the canonical name (if one exists)
+- Flag inconsistencies (same concept, different names)
+
+# Cycle 2: Cross-reference
+PROMPT Cycle 2 - Cross-reference terms across projects.
+
+For terms identified in Cycle 1:
+1. Build a mapping table:
+   | Canonical | Loop | AAPS | Trio | xDrip | Nightscout |
+   |-----------|------|------|------|-------|------------|
+   
+2. Identify:
+   - Terms unique to one project
+   - Terms with conflicting meanings
+   - Missing terms (gaps in coverage)
+
+3. Flag any terms that need GAP entries
+
+# Cycle 3: Update documents
+PROMPT Cycle 3 - Update terminology documentation.
+
+1. Append new terms to `mapping/cross-project/terminology-matrix.md`
+2. Mark deprecated or legacy terms
+3. Add source references for each term
+4. Note any recommended standardizations
+
+Format for new entries:
+| Term | Category | Loop | AAPS | Trio | Nightscout | Notes |
+|------|----------|------|------|------|------------|-------|
+
+EPILOGUE Update progress.md with:
+### Terminology Extraction ({{DATE}})
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| Term Matrix | `mapping/cross-project/terminology-matrix.md` | N new terms |
+
+**Terms Needing Standardization**: List terms with conflicts
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE docs/terminology-extraction-report.md

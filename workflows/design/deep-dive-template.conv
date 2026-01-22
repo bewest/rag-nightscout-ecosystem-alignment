@@ -1,0 +1,122 @@
+# deep-dive-template.conv - Template for 5-facet component analysis
+# Run: sdqctl run workflows/design/deep-dive-template.conv
+# Apply to components: sdqctl apply workflows/design/deep-dive-template.conv --components "mapping/*/README.md"
+# Multi-cycle: sdqctl cycle workflows/design/deep-dive-template.conv -n 5 --session-mode fresh
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 5
+VALIDATION-MODE lenient
+
+# Core traceability documents
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @mapping/cross-project/terminology-matrix.md
+CONTEXT @progress.md
+
+# Component-specific context (when using apply command)
+CONTEXT-OPTIONAL @mapping/{{COMPONENT_NAME}}/README.md
+
+CONTEXT-LIMIT 50%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE requirements gaps terminology
+
+CHECKPOINT-AFTER 1
+CHECKPOINT-NAME deep-dive-checkpoint
+
+PROLOGUE Session: {{DATE}} | Deep Dive: {{COMPONENT_NAME}}
+PROLOGUE Methodology: 5-facet documentation (terminology → gaps → requirements → deep-dive → progress)
+
+# Cycle 1: Terminology
+PROMPT Cycle 1 - TERMINOLOGY FACET
+
+Review and update `mapping/cross-project/terminology-matrix.md`:
+1. Extract new terms from the {{COMPONENT_NAME}} component
+2. Add cross-project mappings (Loop, AAPS, Trio, Nightscout names)
+3. Standardize to canonical names
+4. Mark any deprecated terms
+5. Note source file references
+
+Format new entries as:
+| Term | Category | Loop | AAPS | Trio | Nightscout | Notes |
+|------|----------|------|------|------|------------|-------|
+
+# Cycle 2: Gaps
+PROMPT Cycle 2 - GAPS FACET
+
+Review and update `traceability/gaps.md`:
+1. Scan for undocumented behaviors in {{COMPONENT_NAME}}
+2. Update status of existing gaps (Open → In Progress → Resolved)
+3. Assign new GAP-<CATEGORY>-NNN IDs using convention:
+   - GAP-CGM: CGM data
+   - GAP-TREAT: Treatments
+   - GAP-DS: DeviceStatus
+   - GAP-SYNC: Synchronization
+   - GAP-ALG: Algorithms
+4. Link gaps to affected requirements
+5. Note priority (P0/P1/P2)
+
+# Cycle 3: Requirements
+PROMPT Cycle 3 - REQUIREMENTS FACET
+
+Review and update `traceability/requirements.md`:
+1. Extract requirements from gaps discovered in Cycle 2
+2. Update verification criteria for existing requirements
+3. Link to conformance scenarios if they exist
+4. Check REQ-NNN numbering sequence
+5. Assign priority and status
+
+Format:
+### REQ-NNN: Title
+**Status**: Draft | Review | Approved
+**Priority**: P0 | P1 | P2
+**Verification**: How to test this requirement
+**Related Gaps**: GAP-XXX-NNN
+
+# Cycle 4: Deep Dive Document
+PROMPT Cycle 4 - DEEP DIVE FACET
+
+Create or update `docs/10-domain/{{COMPONENT_NAME}}-deep-dive.md`:
+1. Verify code references are current
+2. Update implementation details
+3. Add missing sections:
+   - Overview
+   - Architecture
+   - Key Data Structures
+   - Integration Points
+   - Code References
+   - Related Requirements
+   - Known Gaps
+4. Cross-reference with terminology matrix
+
+# Cycle 5: Progress Log
+PROMPT Cycle 5 - PROGRESS FACET
+
+Append session entry to `progress.md`:
+
+```markdown
+### {{COMPONENT_NAME}} Deep Dive ({{DATE}})
+
+Analysis of {{COMPONENT_NAME}} implementation and documentation.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Terminology | `mapping/cross-project/terminology-matrix.md` | N new terms |
+| Gaps | `traceability/gaps.md` | N gaps identified/updated |
+| Requirements | `traceability/requirements.md` | N requirements extracted |
+| Deep Dive | `docs/10-domain/{{COMPONENT_NAME}}-deep-dive.md` | Key findings |
+
+**Gaps Identified**: GAP-XXX-001, GAP-XXX-002
+**Requirements Extracted**: REQ-NNN
+**Next Steps**: What should be done next
+```
+
+EPILOGUE Generate summary of all facet updates:
+- Changes made to each document
+- New IDs assigned
+- Cross-references added
+- Recommendations for follow-up
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE docs/deep-dive-{{COMPONENT_NAME}}-summary.md

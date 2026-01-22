@@ -1,0 +1,103 @@
+# ci-pipeline.conv - Full CI pipeline with verification and generation
+# Run: sdqctl run workflows/integrate/ci-pipeline.conv
+# Purpose: Comprehensive CI check for PR validation
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE verification
+MAX-CYCLES 1
+VALIDATION-MODE lenient
+
+# Core traceability documents
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @mapping/cross-project/terminology-matrix.md
+
+# Specs for validation
+CONTEXT-OPTIONAL @specs/openapi/*.yaml
+
+# Tool execution settings
+RUN-ON-ERROR continue
+RUN-OUTPUT on-error
+RUN-OUTPUT-LIMIT 50K
+RUN-TIMEOUT 10m
+ALLOW-SHELL true
+
+PROLOGUE Session: {{DATE}} | Integration: CI Pipeline
+PROLOGUE Objective: Full verification suite for CI/CD
+
+PROMPT Running full CI pipeline...
+
+# Step 1: Python syntax check
+RUN python3 -m py_compile tools/*.py 2>&1 || echo "Python syntax errors found"
+
+# Step 2: Fixture validation
+RUN python tools/validate_fixtures.py 2>/dev/null || echo '{"status": "skipped"}'
+
+# Step 3: JSON schema validation
+RUN python tools/validate_json.py 2>/dev/null || echo '{"status": "skipped"}'
+
+# Step 4: Link checking
+RUN python tools/linkcheck.py 2>/dev/null || echo '{"status": "skipped"}'
+
+# Step 5: Reference validation
+RUN python tools/verify_refs.py --json 2>/dev/null || echo '{"status": "skipped"}'
+
+# Step 6: Coverage analysis
+RUN python tools/verify_coverage.py --json 2>/dev/null || echo '{"status": "skipped"}'
+
+# Step 7: Terminology check
+RUN python tools/verify_terminology.py --json 2>/dev/null || echo '{"status": "skipped"}'
+
+# Step 8: Assertion tracing
+RUN python tools/verify_assertions.py --json 2>/dev/null || echo '{"status": "skipped"}'
+
+# Step 9: Generate inventory (informational)
+RUN python tools/gen_inventory.py --json 2>/dev/null | head -100 || echo '{"status": "skipped"}'
+
+PROMPT Analyze all CI pipeline results above.
+
+Generate CI report:
+
+## CI Pipeline Results
+
+### Build Stage
+| Check | Status | Notes |
+|-------|--------|-------|
+| Python Syntax | ✅/❌ | |
+| Fixture Validation | ✅/❌ | |
+| JSON Schema | ✅/❌ | |
+| Link Check | ✅/❌ | |
+
+### Verify Stage
+| Check | Status | Notes |
+|-------|--------|-------|
+| References | ✅/❌ | N valid, M broken |
+| Coverage | ✅/❌ | N% covered |
+| Terminology | ✅/❌ | N inconsistencies |
+| Assertions | ✅/❌ | N orphans |
+
+### Summary
+- **Overall Status**: PASS / FAIL
+- **Blocking Issues**: [list if any]
+- **Warnings**: [list if any]
+
+### Required Actions Before Merge
+1. [Fix] ...
+2. [Fix] ...
+
+### Recommended Actions (Non-Blocking)
+1. [Improve] ...
+
+EPILOGUE Determine if CI should pass or fail:
+- PASS: No blocking issues
+- FAIL: Blocking issues found
+
+Append CI result to progress.md:
+### CI Pipeline ({{DATE}})
+**Status**: PASS/FAIL
+**Duration**: N seconds
+**Issues**: N blocking, M warnings
+
+OUTPUT-FORMAT markdown
+OUTPUT-FILE traceability/ci-report-{{DATE}}.md

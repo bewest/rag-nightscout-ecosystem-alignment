@@ -5,16 +5,17 @@ MODEL claude-sonnet-4
 ADAPTER copilot
 MODE generation
 MAX-CYCLES 1
+VALIDATION-MODE lenient
 
 # Context - coverage sources
 CONTEXT @traceability/requirements.md
 CONTEXT @traceability/gaps.md
-CONTEXT @conformance/scenarios/**/*.yaml
+CONTEXT-OPTIONAL @conformance/scenarios/**/*.yaml
 
 # OpenAPI specs with x-aid-* annotations
-CONTEXT @specs/openapi/aid-entries-2025.yaml
-CONTEXT @specs/openapi/aid-treatments-2025.yaml
-CONTEXT @specs/openapi/aid-devicestatus-2025.yaml
+CONTEXT-OPTIONAL @specs/openapi/aid-entries-2025.yaml
+CONTEXT-OPTIONAL @specs/openapi/aid-treatments-2025.yaml
+CONTEXT-OPTIONAL @specs/openapi/aid-devicestatus-2025.yaml
 
 # Tool reference
 CONTEXT @tools/gen_coverage.py
