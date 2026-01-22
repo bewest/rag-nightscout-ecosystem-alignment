@@ -6,6 +6,34 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### sdqctl Integration (2026-01-22)
+
+Full integration of sdqctl 0.1.1 workflow orchestration into the workspace.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Integration Guide** | `docs/NIGHTSCOUT-SDQCTL-GUIDE.md` | Maps sdqctl to 5-facet methodology |
+| **Feedback Report** | `docs/sdqctl-integration-feedback.md` | Documents validation issues and P0 fixes |
+| **Continuation Prompts** | `docs/CONTINUATION-PROMPTS.md` | Ready-to-use prompts for workflows |
+| **Proposals Reference** | `docs/sdqctl-proposals/` | VERIFICATION-DIRECTIVES and RUN-BRANCHING proposals |
+| **Updated Workflows** | `workflows/*.conv` | 9 files updated with VALIDATION-MODE lenient |
+| **New Workflow Categories** | `workflows/{discovery,design,iterate,integrate}/` | 14 new structured workflow files |
+
+**Key Updates from sdqctl Team:**
+- P0 fixes implemented: `VALIDATION-MODE lenient`, `CONTEXT-OPTIONAL`, glob pattern fixes
+- Loop detection with `STOP_FILE` template variable
+- SDK integration proposal with 34 event types
+- VERIFICATION-DIRECTIVES proposal for built-in verification
+
+**Validation Results:** All 27 workflows now validate successfully with `--allow-missing` flag.
+
+**New Directives Available:**
+- `VALIDATION-MODE lenient` - Warn on missing context, don't fail
+- `CONTEXT-OPTIONAL @pattern` - Never fails, only warns
+- `CONTEXT-EXCLUDE pattern` - Skip from validation entirely
+
+---
+
 ### NightscoutKit Response Format Verification (2026-01-19)
 
 Source code verification of actual Loop client response requirements for v1 API.
