@@ -6,6 +6,111 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Gap Discovery & Specification Analysis Session (2026-01-23)
+
+Comprehensive gap analysis across Nightscout ecosystem: searched external repositories for undocumented behaviors, cross-referenced OpenAPI specs with controller implementations, and documented 16 new gaps with 14 corresponding requirements.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Behavioral Gaps (9)** | `traceability/gaps.md` | GAP-BATCH-001-003, GAP-PRED-001, GAP-TZ-001-003, GAP-ERR-001-003 |
+| **Specification Gaps (7)** | `traceability/gaps.md` | GAP-SPEC-001-007 |
+| **New Requirements (14)** | `traceability/requirements.md` | REQ-BATCH-001-003, REQ-TZ-001-002, REQ-ERR-001-003, REQ-SPEC-001-004 |
+
+#### Batch Operation Gaps (Critical)
+
+| Gap ID | Issue | Impact |
+|--------|-------|--------|
+| GAP-BATCH-001 | `id` field NOT unique-indexed in MongoDB | Batch inserts can create duplicates |
+| GAP-BATCH-002 | Loop requires response order = request order | Wrong syncIdentifier→objectId mappings |
+| GAP-BATCH-003 | Deduplicated items must return existing ID | Missing positions corrupt sync state |
+
+**Source**: `cgm-remote-monitor:tests/api.partial-failures.test.js`
+
+#### Timezone/DST Gaps
+
+| Gap ID | Issue | Affected Systems |
+|--------|-------|------------------|
+| GAP-TZ-001 | Most pumps return `canHandleDST() = false` | Medtronic, Omnipod DASH/Eros, Dana-R |
+| GAP-TZ-002 | Medtrum GMT+12 timezone bug workaround | Medtrum pumps |
+| GAP-TZ-003 | utcOffset recalculated from dateString | All Nightscout uploads |
+
+#### Error Handling Gaps
+
+| Gap ID | Issue | Risk |
+|--------|-------|------|
+| GAP-ERR-001 | Empty array creates phantom record | Masks bugs |
+| GAP-ERR-002 | Medtronic CRC mismatch ignored | Corrupted data used |
+| GAP-ERR-003 | Unknown history entries: 0x2e, 0x3a, 0x51, 0x52, 0x54, 0x55 | Silent data loss |
+
+#### Specification Gaps
+
+| Gap ID | Missing From Spec |
+|--------|-------------------|
+| GAP-SPEC-001 | Remote command eventTypes (`Temporary Override Cancel`, `Remote Carbs Entry`, `Remote Bolus Entry`) |
+| GAP-SPEC-002 | 17+ AAPS fields (`durationInMilliseconds`, `bolusCalculatorResult`, `isSMB`, etc.) |
+| GAP-SPEC-003 | `Effective Profile Switch` eventType with `original*` fields |
+| GAP-SPEC-004 | BolusCalculatorResult JSON schema (20+ fields) |
+| GAP-SPEC-005 | `FAKE_EXTENDED` temp basal type for extended boluses |
+| GAP-SPEC-006 | `isValid` soft-delete semantics |
+| GAP-SPEC-007 | Deduplication key fields (`created_at` + `eventType`) |
+
+#### Other Gaps
+
+| Gap ID | Issue |
+|--------|-------|
+| GAP-PRED-001 | Prediction arrays truncated to 12 entries |
+
+**Source Files Analyzed:**
+- `externals/cgm-remote-monitor/tests/api.partial-failures.test.js`
+- `externals/cgm-remote-monitor/tests/api.v1-batch-operations.test.js`
+- `externals/cgm-remote-monitor/lib/server/loop.js`
+- `externals/cgm-remote-monitor/lib/api3/swagger.yaml`
+- `externals/AndroidAPS/core/nssdk/src/main/kotlin/.../RemoteTreatment.kt`
+- `externals/AndroidAPS/pump/medtronic/comm/history/`
+- `externals/AndroidAPS/pump/*/driver/*PumpPlugin.kt`
+
+**Total New Gaps**: 16 | **Total New Requirements**: 14
+
+---
+
+### STPA Traceability Framework & Validation Tooling (2026-01-23)
+
+Introduction of FDA-compatible hazard analysis framework and code reference validation tooling.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **STPA Framework Proposal** | `docs/sdqctl-proposals/STPA-TRACEABILITY-FRAMEWORK.md` | 446-line proposal for FDA Design Controls using STPA methodology |
+| **Code Reference Validator** | `tools/validate_refs.py` | Python tool to validate `repo:path` code references against externals/ |
+| **Validation Report** | `traceability/refs-validation.md` | Markdown report: 302/321 references valid, 19 broken identified |
+| **Validation JSON** | `traceability/refs-validation.json` | Machine-readable validation results |
+
+**Key STPA Framework Concepts:**
+- Maps AID systems as control loops (Controller → Actuator → Process → Sensor)
+- Introduces Unsafe Control Action (UCA) taxonomy: not provided, provided incorrectly, wrong timing, wrong duration
+- Links existing GAPs to causal factors for UCAs
+- Proposes `traceability/stpa/` directory structure for hazard analysis artifacts
+- Addresses FDA 21 CFR 820.30 Design Controls gap
+
+**Validation Tool Features:**
+- Parses `repo:path` and `repo:path#Lnn` reference formats
+- Supports ellipsis paths (`plugins/.../file.kt`)
+- Maps 16 repository aliases to externals/ directories
+- Generates both markdown and JSON reports
+- Identifies: valid, file not found, path not found, unknown alias, repo missing
+
+**Key Findings from Validation:**
+- 94% of code references are valid (302/321)
+- 17 "path not found" errors due to ellipsis patterns (expected, for readability)
+- 1 file not found (stale reference)
+- 1 unknown alias (typo)
+
+**Files with Most Broken References:**
+- `mapping/cross-project/terminology-matrix.md` (8 ellipsis patterns)
+- `docs/10-domain/insulin-curves-deep-dive.md` (4 ellipsis patterns)
+- `docs/CONTINUATION-PROMPTS.md` (3 placeholder paths)
+
+---
+
 ### sdqctl Integration (2026-01-22)
 
 Full integration of sdqctl 0.1.1 workflow orchestration into the workspace.

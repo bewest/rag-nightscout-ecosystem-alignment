@@ -1682,6 +1682,543 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ---
 
+## Batch Operation Gaps
+
+### GAP-BATCH-001: Batch Deduplication Not Enforced at Database Level
+
+**Scenario**: High-throughput batch uploads
+
+**Description**: The `id` field used by Trio and other clients for deduplication is NOT enforced as unique by MongoDB. Nightscout relies on application-level deduplication queries (checking if id exists before insert), not database-level unique constraints. This means duplicate `id` values CAN be inserted if sent in a batch, because batch inserts don't perform per-document deduplication checks.
+
+**Source**: `cgm-remote-monitor:tests/api.partial-failures.test.js:62-107`
+```javascript
+// QUIRK/BEHAVIOR: The 'id' field is used by clients (Trio, etc.) for deduplication
+// but is NOT enforced as unique by MongoDB unless explicitly indexed.
+// This means duplicate 'id' values CAN be inserted if sent in a batch,
+// because the batch insert doesn't perform per-document deduplication checks.
+```
+
+**Impact**:
+- Batch operations can create duplicate documents with same `id`
+- Network retries during batch uploads may create duplicates
+- Trio throttled pipelines may insert duplicates under high load
+- Data integrity depends on client-side dedup, not server enforcement
+
+**Possible Solutions**:
+1. Add unique index on `id` field (breaking change for existing data)
+2. Implement per-document deduplication in batch insert handler
+3. Document behavior and recommend client-side deduplication
+4. Use `identifier` field with v3 API for server-enforced uniqueness
+
+**Status**: Under discussion
+
+---
+
+### GAP-BATCH-002: Response Order Critical for Loop syncIdentifier Mapping
+
+**Scenario**: Loop batch treatment uploads
+
+**Description**: Loop caches syncIdentifier→objectId mappings based on response array order. If the response order doesn't match the request order, Loop maps wrong IDs which breaks update and delete operations.
+
+**Source**: `cgm-remote-monitor:tests/api.partial-failures.test.js:138-182`
+```javascript
+// SPEC: Loop caches syncIdentifier→objectId mapping based on response array order
+// CRITICAL: If order doesn't match, Loop maps wrong IDs and breaks update/delete
+```
+
+**Impact**:
+- Wrong ID mappings cause silent data corruption
+- Updates may modify wrong documents
+- Deletes may remove wrong documents
+- Hard to debug because no immediate error
+
+**Possible Solutions**:
+1. Server guarantees response order matches request order (current behavior, needs testing)
+2. Loop should match by syncIdentifier in response, not by position
+3. Server includes syncIdentifier in response for verification
+4. Add test coverage to prevent regression
+
+**Status**: Under discussion
+
+**Related**:
+- GAP-TREAT-005 (Loop POST duplicates)
+- REQ-045 (Sync identity round-trip)
+
+---
+
+### GAP-BATCH-003: Deduplicated Items Must Return All Positions
+
+**Scenario**: Batch upload with some duplicates
+
+**Description**: Loop expects N responses for N requests, even if some items are deduplicated. Missing positions in the response array break the syncIdentifier cache, causing subsequent operations to fail.
+
+**Source**: `cgm-remote-monitor:tests/api.partial-failures.test.js:186-212`
+```javascript
+// SPEC: Loop expects N responses for N requests, even if some are deduplicated
+// CRITICAL: Missing positions in response breaks syncIdentifier cache
+```
+
+**Impact**:
+- If server returns fewer items than submitted, Loop cache is corrupted
+- Subsequent updates/deletes fail silently or target wrong documents
+- Deduplicated items must still appear in response with their existing `_id`
+
+**Possible Solutions**:
+1. Server always returns N items for N-item batch (current expected behavior)
+2. Deduplicated items return existing document's `_id`
+3. Document expected response format in API specification
+4. Add conformance tests
+
+**Status**: Under discussion
+
+---
+
+## Prediction Data Gaps
+
+### GAP-PRED-001: Prediction Array Truncation Behavior Undocumented
+
+**Scenario**: OpenAPS/AAPS devicestatus uploads with large prediction arrays
+
+**Description**: Nightscout may truncate prediction arrays based on `PREDICTIONS_MAX_SIZE` environment variable. This behavior is server-configurable and varies between installations. Clients have no way to know if their predictions were truncated.
+
+**Source**: `cgm-remote-monitor:tests/api.partial-failures.test.js:402-550`
+```javascript
+// SPEC: When PREDICTIONS_MAX_SIZE env var is set, prediction arrays
+// are truncated to that size
+// SPEC: Setting PREDICTIONS_MAX_SIZE=0 explicitly disables truncation
+```
+
+**Impact**:
+- Algorithm debugging may be impossible if predictions are truncated
+- Different Nightscout installations behave differently
+- No indication to clients that data was truncated
+- Research and audit use cases affected
+
+**Possible Solutions**:
+1. Document `PREDICTIONS_MAX_SIZE` behavior in API spec
+2. Add response header indicating truncation occurred
+3. Standardize default behavior across installations
+4. Add `truncated: true` flag to devicestatus when applicable
+
+**Status**: Under discussion
+
+**Related**:
+- GAP-SYNC-002 (Effect timelines not uploaded)
+
+---
+
+## Timezone and DST Gaps
+
+### GAP-TZ-001: Most Pump Drivers Cannot Handle DST
+
+**Scenario**: DST transitions with active AID therapy
+
+**Description**: Most AAPS pump drivers return `canHandleDST(): Boolean = false`, including Medtronic, Dana-R, Omnipod DASH, and Omnipod Eros. During DST transitions, these pumps cannot automatically adjust their internal clocks, leading to potential timing mismatches.
+
+**Source**:
+- `AndroidAPS/pump/medtronic/...MedtronicPumpPlugin.kt:259` - `canHandleDST(): Boolean = false`
+- `AndroidAPS/pump/omnipod/dash/...OmnipodDashPumpPlugin.kt:987` - `canHandleDST(): Boolean = false`
+- `AndroidAPS/pump/omnipod/eros/...OmnipodErosPumpPlugin.kt:769` - `canHandleDST(): Boolean = false`
+- `AndroidAPS/pump/danar/...AbstractDanaRPlugin.kt:361` - `canHandleDST(): Boolean = false`
+
+**Impact**:
+- Basal schedules may be off by 1 hour during DST transitions
+- IOB calculations may be affected by timestamp mismatches
+- User intervention required to adjust pump time
+- Potential for dosing errors during transition period
+
+**Possible Solutions**:
+1. Document DST handling limitations per pump
+2. Alert users before DST transitions
+3. Implement manual DST adjustment workflow
+4. Note: Medtrum pump supports DST (`canHandleDST(): Boolean = true`)
+
+**Status**: Documented (inherent hardware/firmware limitation)
+
+---
+
+### GAP-TZ-002: Medtrum Timezone GMT+12 Bug
+
+**Scenario**: Users in Pacific timezones (Fiji, New Zealand)
+
+**Description**: Medtrum pump driver has a workaround for a bug where timezone settings fail for GMT > +12. This affects users in Pacific timezones.
+
+**Source**: `AndroidAPS/pump/medtrum/...SetTimeZonePacket.kt:29`
+```kotlin
+// Workaround for bug where it fails to set timezone > GMT + 12
+```
+
+**Impact**:
+- Users in affected timezones may have incorrect pump time
+- Basal schedules may be misaligned with local time
+- Workaround behavior is undocumented
+
+**Possible Solutions**:
+1. Document affected timezones
+2. Implement proper timezone mapping for high-offset zones
+3. Add user notification for affected timezones
+
+**Status**: Under discussion
+
+---
+
+### GAP-TZ-003: utcOffset Recalculation on Upload
+
+**Scenario**: Cross-timezone sync
+
+**Description**: Nightscout recalculates `utcOffset` from the `dateString`'s timezone, rather than preserving the client-provided value. This can lead to unexpected behavior when uploading data from a device in a different timezone than the dateString indicates.
+
+**Source**: `cgm-remote-monitor:tests/api.aaps-client.test.js:337`
+```javascript
+// QUIRK/FEATURE: Nightscout recalculates utcOffset from the dateString's timezone
+```
+
+**Impact**:
+- Client-provided utcOffset may be overwritten
+- Timezone handling differs between API v1 and v3
+- Historical data analysis may be affected
+
+**Possible Solutions**:
+1. Document utcOffset handling behavior
+2. Preserve client-provided utcOffset when valid
+3. Add configuration option for behavior
+
+**Status**: Under discussion
+
+---
+
+## Error Handling Gaps
+
+### GAP-ERR-001: Empty Array Creates Empty Treatment
+
+**Scenario**: Edge case - empty batch upload
+
+**Description**: Sending an empty array `[]` to the treatments API does not return an error. Instead, current behavior creates an empty treatment with auto-generated `created_at`. This is surprising behavior that may mask client-side bugs.
+
+**Source**: `cgm-remote-monitor:tests/api.v1-batch-operations.test.js:163-164`
+```javascript
+// SPEC: Edge case - empty array should not error (Section 4.6)
+// NOTE: Current behavior creates empty treatment with auto-generated created_at
+```
+
+**Impact**:
+- May create phantom treatments
+- Client bugs may go undetected
+- Data pollution with empty records
+
+**Possible Solutions**:
+1. Return HTTP 400 for empty array
+2. Return HTTP 200 with empty array response
+3. Document current behavior
+4. Add validation to reject truly empty items
+
+**Status**: Under discussion
+
+---
+
+### GAP-ERR-002: CRC Mismatch Ignored in Medtronic History
+
+**Scenario**: Medtronic pump history download
+
+**Description**: Medtronic history pages with CRC mismatches are logged as warnings but the data is processed anyway. This could lead to corrupted data being used for IOB calculations.
+
+**Source**: `AndroidAPS/pump/medtronic/...RawHistoryPage.kt:39`
+```kotlin
+Locale.ENGLISH, "Stored CRC (%d) is different than calculated (%d), but ignored for now.", crcStored,
+```
+
+**Impact**:
+- Corrupted pump history may be used
+- IOB calculations may be incorrect
+- Silent data corruption possible
+
+**Possible Solutions**:
+1. Retry history download on CRC mismatch
+2. Alert user to potential data corruption
+3. Exclude entries with CRC mismatch from calculations
+4. Log as error instead of warning
+
+**Status**: Under discussion
+
+---
+
+### GAP-ERR-003: Unknown Pump History Entries Silently Ignored
+
+**Scenario**: New pump firmware with new entry types
+
+**Description**: Medtronic pump history decoder silently ignores unknown entry types. Several entry types are marked with `/* TODO */` and have unknown purposes. New firmware versions may introduce entry types that are completely ignored.
+
+**Source**: `AndroidAPS/pump/medtronic/...PumpHistoryEntryType.kt:13-17`
+```kotlin
+/* TODO */ EventUnknown_MM512_0x2e(0x2e, "Unknown Event 0x2e", PumpHistoryEntryGroup.Unknown, 2, 5, 100),
+/* TODO */ ConfirmInsulinChange(0x3a, "Confirm Insulin Change", PumpHistoryEntryGroup.Unknown),
+/* TODO */ Sensor_0x51(0x51, "Unknown Event 0x51", PumpHistoryEntryGroup.Unknown),
+/* TODO */ Sensor_0x52(0x52, "Unknown Event 0x52", PumpHistoryEntryGroup.Unknown),
+```
+
+**Impact**:
+- Undiscovered boluses or temp basals may be missed
+- IOB calculations may be incomplete
+- No visibility into unknown events
+
+**Possible Solutions**:
+1. Log unknown entries with full data for analysis
+2. Surface unknown entries to user for reporting
+3. Community effort to document unknown entry types
+4. Add mechanism to report unknown entries
+
+**Status**: Under discussion
+
+---
+
+## Specification Gaps
+
+### GAP-SPEC-001: Remote Command eventTypes Missing from OpenAPI Spec
+
+**Scenario**: Remote command processing
+
+**Description**: The Nightscout server recognizes special remote command eventTypes that are not listed in the OpenAPI spec's eventType enum:
+- `Temporary Override Cancel` - cancels active override
+- `Remote Carbs Entry` - adds carbs remotely
+- `Remote Bolus Entry` - requests bolus remotely
+
+These are used exclusively for Loop remote commands via APNS but are undocumented in the API specification.
+
+**Source**: `cgm-remote-monitor:lib/server/loop.js:65-106`
+
+**Impact**:
+- Clients cannot discover valid remote command eventTypes from spec
+- No validation rules documented for remote command fields
+- Missing required fields documentation (remoteCarbs, remoteBolus, etc.)
+
+**Possible Solutions**:
+1. Add remote command eventTypes to treatments spec with required field documentation
+2. Create separate remote commands API specification
+3. Document as extension to base treatments schema
+
+**Status**: Under discussion
+
+**Related**:
+- GAP-REMOTE-001, GAP-REMOTE-002
+- [Remote Commands Comparison](../docs/10-domain/remote-commands-comparison.md)
+
+---
+
+### GAP-SPEC-002: AAPS Treatment Fields Not in AID Spec
+
+**Scenario**: AAPS treatment sync round-trip
+
+**Description**: The AAPS SDK `RemoteTreatment` model includes many fields not documented in the AID treatments OpenAPI spec:
+
+**Missing fields**:
+| Field | Type | Purpose |
+|-------|------|---------|
+| `durationInMilliseconds` | Long | Alternative duration representation |
+| `endId` | Long | ID of record that ended this treatment |
+| `autoForced` | Boolean | RunningMode auto-forced flag |
+| `mode` | String | RunningMode type |
+| `reasons` | String | RunningMode reasons |
+| `location` | String | Site management location |
+| `arrow` | String | Site management arrow indicator |
+| `isSMB` | Boolean | Explicit SMB identifier |
+| `relative` | Double | Relative rate for extended bolus |
+| `isEmulatingTempBasal` | Boolean | Extended bolus emulation flag |
+| `extendedEmulated` | Object | Nested treatment for emulated extended bolus |
+| `bolusCalculatorResult` | String | Full bolus wizard calculation JSON |
+| `originalProfileName` | String | Effective Profile Switch original |
+| `originalCustomizedName` | String | Effective Profile Switch customization |
+| `originalTimeshift` | Long | Original profile timeshift |
+| `originalPercentage` | Int | Original profile percentage |
+| `originalDuration` | Long | Original duration before modification |
+| `originalEnd` | Long | Original end timestamp |
+| `enteredinsulin` | Double | Alternative insulin field for combo bolus |
+
+**Source**: `AndroidAPS:core/nssdk/src/main/kotlin/.../RemoteTreatment.kt:41-87`
+
+**Impact**:
+- Spec consumers miss fields needed for AAPS compatibility
+- Round-trip data loss for AAPS-originated treatments
+- Incomplete validation rules
+
+**Possible Solutions**:
+1. Add all AAPS fields to aid-treatments-2025.yaml with x-aid-controllers annotations
+2. Create AAPS-specific extension schema
+3. Document as "implementation-specific" extensions
+
+**Status**: Under discussion
+
+**Related**:
+- GAP-TREAT-003, GAP-TREAT-004
+- [Treatments Deep Dive](../docs/10-domain/treatments-deep-dive.md)
+
+---
+
+### GAP-SPEC-003: Effective Profile Switch vs Profile Switch Distinction
+
+**Scenario**: Profile tracking across systems
+
+**Description**: AAPS uploads both `Profile Switch` and `Effective Profile Switch` eventTypes. The latter includes `original*` prefixed fields tracking what changed from the base profile. This distinction is not captured in the spec.
+
+**Source**: `AndroidAPS:core/nssdk/src/main/kotlin/.../RemoteTreatment.kt:69-74`
+
+**Evidence**:
+```kotlin
+@SerializedName("originalProfileName") val originalProfileName: String? = null,
+@SerializedName("originalCustomizedName") val originalCustomizedName: String? = null,
+@SerializedName("originalTimeshift") val originalTimeshift: Long? = null,
+@SerializedName("originalPercentage") val originalPercentage: Int? = null,
+@SerializedName("originalDuration") val originalDuration: Long? = null,
+@SerializedName("originalEnd") val originalEnd: Long? = null,
+```
+
+**Impact**:
+- Cannot distinguish calculated effective profile from user-initiated switch
+- Profile history reconstruction incomplete
+- Algorithm comparison missing profile context
+
+**Possible Solutions**:
+1. Add `Effective Profile Switch` to eventType enum
+2. Document `original*` fields in Profile Switch schema
+3. Create ProfileSwitchTreatment discriminated union
+
+**Status**: Needs ADR
+
+---
+
+### GAP-SPEC-004: BolusCalculatorResult JSON Not Parsed
+
+**Scenario**: Bolus wizard audit trail
+
+**Description**: AAPS uploads `bolusCalculatorResult` as a JSON string containing detailed bolus calculation parameters. This is documented as a string field but the internal structure is not specified.
+
+**Source**: `AndroidAPS:core/nssdk/src/main/kotlin/.../RemoteTreatment.kt:76`
+
+**Sample structure**:
+```json
+{
+  "basalIOB": -0.247,
+  "bolusIOB": -1.837,
+  "carbs": 45.0,
+  "carbsInsulin": 9.0,
+  "glucoseValue": 134.0,
+  "glucoseInsulin": 0.897,
+  "glucoseDifference": 44.0,
+  "ic": 5.0,
+  "isf": 49.0,
+  "targetBGLow": 90.0,
+  "targetBGHigh": 90.0,
+  "totalInsulin": 7.34,
+  "percentageCorrection": 90,
+  "profileName": "Tuned 13/01 90%Lyum",
+  ...
+}
+```
+
+**Impact**:
+- Bolus audit trail requires parsing embedded JSON
+- No schema validation for calculator parameters
+- Cannot query by calculator inputs
+
+**Possible Solutions**:
+1. Define BolusCalculatorResult as object schema in spec
+2. Recommend storing as structured object instead of string
+3. Document required fields for bolus wizard auditing
+
+**Status**: Under discussion
+
+---
+
+### GAP-SPEC-005: FAKE_EXTENDED Temp Basal Type Undocumented
+
+**Scenario**: Extended bolus handling
+
+**Description**: AAPS uses `type: "FAKE_EXTENDED"` for extended boluses implemented as temp basals. This is not documented in the treatments spec.
+
+**Source**: `AndroidAPS:core/nssdk/src/main/kotlin/.../RemoteTreatment.kt:77`
+```kotlin
+@SerializedName("type") val type: String? = null,  // "NORMAL", "SMB", "FAKE_EXTENDED"
+```
+
+**Impact**:
+- Extended bolus treatments not identified correctly
+- IOB calculation may double-count if both bolus and temp basal components exist
+- Related to GAP-TREAT-004 (extended bolus representation)
+
+**Possible Solutions**:
+1. Add FAKE_EXTENDED to BolusType enum with documentation
+2. Add isExtendedBolus boolean flag
+3. Document relationship between extended bolus and temp basal treatments
+
+**Status**: Under discussion
+
+**Related**:
+- GAP-TREAT-004
+
+---
+
+### GAP-SPEC-006: isValid Soft Delete Semantics Not Specified
+
+**Scenario**: Treatment deletion sync
+
+**Description**: API v3 uses `isValid: false` for soft-deleted documents, but the spec doesn't define:
+- When isValid should be set to false
+- Whether clients should filter by isValid
+- Behavior when isValid is missing (null vs true)
+
+**Source**: `AndroidAPS:core/nssdk/src/main/kotlin/.../RemoteTreatment.kt:30`
+```kotlin
+@SerializedName("isValid") val isValid: Boolean? = null,
+```
+
+**Impact**:
+- Clients may display deleted treatments
+- Sync logic varies by implementation
+- Related to GAP-TREAT-006 (retroactive edit handling)
+
+**Possible Solutions**:
+1. Document isValid semantics in spec
+2. Add isValid query filter documentation
+3. Specify default value when field is missing
+
+**Status**: Under discussion
+
+**Related**:
+- GAP-TREAT-006, GAP-API-001
+
+---
+
+### GAP-SPEC-007: Deduplication Key Fields Undocumented
+
+**Scenario**: Batch upload deduplication
+
+**Description**: The Nightscout API uses `created_at` + `eventType` as the deduplication key for treatments, but this is not explicitly documented in the OpenAPI spec. Additionally, the spec doesn't document:
+- `identifier` field behavior for API v3
+- `date` + `device` + `eventType` alternative key
+- Priority when multiple identity fields are present
+
+**Source**: `cgm-remote-monitor:lib/api3/swagger.yaml:1103`
+```yaml
+The server calculates the identifier in such a way that duplicate records are automatically merged 
+(deduplicating is made by `date`, `device` and `eventType` fields).
+```
+
+**Impact**:
+- Clients may not include required deduplication fields
+- Duplicate detection varies between v1 and v3 APIs
+- Related to GAP-003, GAP-BATCH-001
+
+**Possible Solutions**:
+1. Document deduplication algorithm per API version
+2. Add x-deduplication-key extension to spec
+3. Specify which fields form the composite key
+
+**Status**: Under discussion
+
+**Related**:
+- GAP-003, GAP-BATCH-001, GAP-BATCH-002
+
+---
+
 ## Resolved Gaps
 
 _None yet._

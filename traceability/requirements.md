@@ -1616,3 +1616,232 @@ Requirements follow the pattern:
 - Simulate loss of out-of-band signal
 - Verify agent reverts to propose-only mode
 - Verify agent requests human confirmation
+
+---
+
+## Batch Operation Requirements
+
+### REQ-BATCH-001: Response Order Must Match Request Order
+
+**Statement**: When processing batch uploads, the server MUST return responses in the same order as the input array.
+
+**Rationale**: Loop caches syncIdentifier→objectId mappings based on response position. Mismatched order causes wrong ID assignments.
+
+**Scenarios**:
+- Batch Treatment Upload
+- Batch Entry Upload
+
+**Verification**:
+- Submit batch of 5 treatments with distinct syncIdentifiers
+- Verify response[i]._id corresponds to request[i].syncIdentifier
+- Verify no position swaps occur
+
+**Gap Reference**: GAP-BATCH-002
+
+---
+
+### REQ-BATCH-002: Deduplicated Items Return Existing ID
+
+**Statement**: When a batch item is deduplicated, the server MUST return the existing document's `_id` at that position, not omit it.
+
+**Rationale**: Clients expect N responses for N requests. Missing positions corrupt sync state.
+
+**Scenarios**:
+- Batch with Duplicates
+- Network Retry Handling
+
+**Verification**:
+- Submit batch with one duplicate item
+- Verify response array has same length as request
+- Verify duplicate position returns existing _id
+
+**Gap Reference**: GAP-BATCH-003
+
+---
+
+### REQ-BATCH-003: Partial Failure Response Format
+
+**Statement**: When some items in a batch fail validation, the server SHOULD return a response array with success/failure indicators per item, preserving order.
+
+**Rationale**: Clients need to know which items succeeded and which failed to update local state.
+
+**Scenarios**:
+- Mixed Validity Batch
+
+**Verification**:
+- Submit batch with valid and invalid items
+- Verify response indicates status per item
+- Verify response order matches request
+
+---
+
+## Timezone Requirements
+
+### REQ-TZ-001: DST Transition Notification
+
+**Statement**: AID systems with pumps that cannot handle DST SHOULD notify users before DST transitions.
+
+**Rationale**: Most pump drivers cannot automatically adjust for DST. User intervention is required.
+
+**Scenarios**:
+- DST Transition Handling
+
+**Verification**:
+- Configure pump with `canHandleDST() = false`
+- Approach DST boundary (±24 hours)
+- Verify user notification generated
+
+**Gap Reference**: GAP-TZ-001
+
+---
+
+### REQ-TZ-002: Preserve Client utcOffset
+
+**Statement**: The server SHOULD preserve client-provided `utcOffset` values when they are valid, rather than recalculating from dateString.
+
+**Rationale**: Client may have authoritative timezone information; server recalculation may lose precision.
+
+**Scenarios**:
+- Cross-Timezone Sync
+
+**Verification**:
+- Upload treatment with explicit utcOffset
+- Download and verify utcOffset preserved
+- Compare with dateString-derived offset
+
+**Gap Reference**: GAP-TZ-003
+
+---
+
+## Error Handling Requirements
+
+### REQ-ERR-001: Empty Array Handling
+
+**Statement**: Batch endpoints SHOULD return an empty success response for empty arrays, NOT create phantom records.
+
+**Rationale**: Creating records from empty input is surprising behavior that masks bugs.
+
+**Scenarios**:
+- Empty Batch Upload
+
+**Verification**:
+- Submit empty array `[]` to treatments endpoint
+- Verify HTTP 200 with empty array response (or 400 error)
+- Verify no phantom records created
+
+**Gap Reference**: GAP-ERR-001
+
+---
+
+### REQ-ERR-002: CRC Validation Enforcement
+
+**Statement**: Pump drivers SHOULD reject or retry data with invalid CRC, not silently use corrupted data.
+
+**Rationale**: CRC failures indicate data corruption that could affect dosing calculations.
+
+**Scenarios**:
+- Pump History Corruption
+
+**Verification**:
+- Simulate CRC mismatch in pump history
+- Verify retry or rejection behavior
+- Verify corrupted data not used for IOB
+
+**Gap Reference**: GAP-ERR-002
+
+---
+
+### REQ-ERR-003: Unknown Entry Type Logging
+
+**Statement**: Pump history decoders SHOULD log unknown entry types with full data for community analysis.
+
+**Rationale**: Unknown entries may contain critical dosing information that is being silently discarded.
+
+**Scenarios**:
+- New Firmware Entry Types
+
+**Verification**:
+- Inject unknown entry type in history
+- Verify entry logged with full byte data
+- Verify user can report unknown entries
+
+**Gap Reference**: GAP-ERR-003
+
+---
+
+## Specification Requirements
+
+### REQ-SPEC-001: Document All Valid eventTypes
+
+**Statement**: The OpenAPI specification MUST enumerate all valid eventType values including remote command types.
+
+**Rationale**: Clients cannot implement correct behavior without knowing valid eventTypes.
+
+**Scenarios**:
+- Remote Command Processing
+- Treatment Type Validation
+
+**Verification**:
+- Compare spec enum to all eventTypes used in Nightscout server code
+- Verify all Loop/AAPS/Trio eventTypes are represented
+- Verify remote command types are documented
+
+**Gap Reference**: GAP-SPEC-001
+
+---
+
+### REQ-SPEC-002: Document Controller-Specific Fields
+
+**Statement**: The treatments schema SHOULD document all fields used by major AID controllers with x-aid-controllers annotations.
+
+**Rationale**: Enables round-trip data preservation and cross-system compatibility.
+
+**Scenarios**:
+- AAPS Treatment Sync
+- Loop Treatment Sync
+- Cross-System Data Analysis
+
+**Verification**:
+- Compare AAPS RemoteTreatment model fields to spec
+- Compare Loop treatment upload fields to spec
+- Verify no data loss on upload/download cycle
+
+**Gap Reference**: GAP-SPEC-002
+
+---
+
+### REQ-SPEC-003: Document Deduplication Algorithm
+
+**Statement**: The API specification MUST document the deduplication key fields for each collection.
+
+**Rationale**: Clients need to know which fields to include to prevent duplicates.
+
+**Scenarios**:
+- Batch Treatment Upload
+- Network Retry Handling
+
+**Verification**:
+- Verify spec documents `created_at` + `eventType` key for treatments
+- Verify spec documents `date` + `device` + `eventType` key for v3
+- Verify behavior when dedup key fields are missing
+
+**Gap Reference**: GAP-SPEC-007
+
+---
+
+### REQ-SPEC-004: Define isValid Semantics
+
+**Statement**: The API specification MUST define the semantics of the `isValid` field including default value and deletion behavior.
+
+**Rationale**: Consistent soft-delete handling across clients.
+
+**Scenarios**:
+- Treatment Deletion
+- Sync History Query
+
+**Verification**:
+- Document when isValid should be set to false
+- Document default value when field is missing
+- Document query behavior for isValid filter
+
+**Gap Reference**: GAP-SPEC-006
