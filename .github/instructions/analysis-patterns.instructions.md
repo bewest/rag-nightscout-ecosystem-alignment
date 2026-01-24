@@ -185,7 +185,7 @@ Brief description of what was analyzed.
 
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
-| Doc Name | `path/to/file.md` | Summary |
+| Doc Name | `docs/10-domain/component-deep-dive.md` | Summary |
 
 **Key Findings**:
 - Finding 1

@@ -157,9 +157,9 @@ LoopFollow is a **follower/caregiver monitoring app** that consolidates T1D mana
 
 ## Code Citation Format
 
-Throughout this documentation, code references use:
+Throughout this documentation, code references use the format:
 ```
-loopfollow:LoopFollow/path/to/file.swift#L123-L456
+loopfollow:LoopFollow/LoopFollow/Models/File.swift#L123-L456
 ```
 
 This maps to files in `externals/LoopFollow/`.

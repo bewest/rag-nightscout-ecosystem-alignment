@@ -178,9 +178,9 @@ LoopCaregiver uses Nightscout's Remote 2.0 API for commands:
 
 ## Code Citation Format
 
-Throughout this documentation, code references use:
+Throughout this documentation, code references use the format:
 ```
-loopcaregiver:LoopCaregiver/path/to/file.swift#L123-L456
+loopcaregiver:LoopCaregiver/LoopCaregiver/Views/File.swift#L123-L456
 ```
 
 This maps to files in `externals/LoopCaregiver/`.

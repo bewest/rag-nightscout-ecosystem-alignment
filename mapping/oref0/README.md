@@ -147,7 +147,7 @@ This is significant for cross-project alignment - both oref0 and Loop use the sa
 
 Throughout this documentation, code references use the format:
 ```
-oref0:path/to/file.js#L123-L456
+oref0:lib/determine-basal/determine-basal.js#L123-L456
 ```
 
 This maps to files in the `externals/oref0/` directory.

@@ -47,7 +47,7 @@
 
 | Purpose | Location | Notes |
 |---------|----------|-------|
-| [What] | `path/to/file.ts#L10-L50` | [Context] |
+| [What] | `alias:Full/Path/From/Root/File.ts#L10-L50` | [Context] |
 
 ## Conformance Status
 

@@ -51,12 +51,13 @@ All mappings reference source code from `externals/` submodules:
 
 Source citations follow the pattern:
 ```
-{project}:{path/to/file}#L{start}-L{end}
+{alias}:{Full/Path/From/Repo/Root/File.ext}#L{start}-L{end}
 ```
 
 Example:
 ```
-xdrip-android:models/Treatments.java#L76
+trio:Trio/Sources/Models/Preferences.swift#L22
+loop:LoopKit/LoopKit/TemporaryScheduleOverride.swift#L45-L60
 ```
 
 Maps to:

@@ -35,7 +35,7 @@ Brief description of what was analyzed or documented.
 
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
-| Document Name | `path/to/file.md` | One-line summary |
+| Document Name | `docs/10-domain/component-deep-dive.md` | One-line summary |
 | ... | ... | ... |
 
 **Gaps Identified**: GAP-XXX-001, GAP-XXX-002 (or "None")

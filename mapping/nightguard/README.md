@@ -222,9 +222,9 @@ func transformToCurrentDay(yesterdaysValues: [BloodSugar]) -> [BloodSugar] {
 
 ## Code Citation Format
 
-Throughout this documentation, code references use:
+Throughout this documentation, code references use the format:
 ```
-nightguard:nightguard/path/to/file.swift#L123-L456
+nightguard:nightguard/NightguardModel/File.swift#L123-L456
 ```
 
 This maps to files in `externals/nightguard/`.

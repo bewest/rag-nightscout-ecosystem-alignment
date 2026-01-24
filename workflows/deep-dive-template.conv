@@ -10,7 +10,7 @@ MODE analysis
 MAX-CYCLES 5
 
 # Context - customize these for your component
-# CONTEXT @externals/<repo>/path/to/source
+# CONTEXT @externals/<repo>/Full/Path/To/Source/Directory
 # CONTEXT @docs/10-domain/<component>-deep-dive.md
 
 # Always include traceability docs

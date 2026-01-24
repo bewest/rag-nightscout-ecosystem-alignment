@@ -59,8 +59,8 @@ Deep dive into {{PROJECT}}'s implementation of {{COMPONENT}}.
 5. Note any gaps for traceability/gaps.md
 
 Reference format for code:
-- Use `project:path/to/file.ext#L123` for line references
-- Example: `loop:LoopKit/Sources/Treatment.swift#L45`
+- Use `alias:Full/Path/To/File.ext#L123` for line references
+- Example: `loop:LoopKit/LoopKit/TemporaryScheduleOverride.swift#L45`
 ```
 
 ### Compare Implementations
@@ -344,15 +344,15 @@ Brief description of what this component does.
 ## Implementation Details
 
 ### Loop
-- Location: `loop:path/to/file.swift`
+- Location: `loop:LoopKit/LoopKit/TemporaryScheduleOverride.swift`
 - Key behavior: ...
 
 ### AAPS
-- Location: `aaps:path/to/file.kt`
+- Location: `aaps:database/impl/src/main/kotlin/app/aaps/database/entities/TemporaryTarget.kt`
 - Key behavior: ...
 
 ### Nightscout
-- Location: `crm:lib/server/file.js`
+- Location: `crm:lib/server/treatments.js`
 - Key behavior: ...
 
 ## Integration Points
@@ -443,7 +443,7 @@ Brief description of what was analyzed or documented.
 
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
-| [Name] | `path/to/file.md` | One-line summary |
+| [Name] | `docs/10-domain/component-deep-dive.md` | One-line summary |
 | ... | ... | ... |
 
 **Gaps Identified**: GAP-XXX-001, GAP-XXX-002 (or "None")

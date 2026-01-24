@@ -240,9 +240,9 @@ URLQueryItem(name: "token", value: token)
 
 ## Code Citation Format
 
-Throughout this documentation, code references use:
+Throughout this documentation, code references use the format:
 ```
-xdrip:xdrip/path/to/file.swift#L123-L456
+xdrip4ios:xdripswift/Sources/File.swift#L123-L456
 ```
 
 This maps to files in `externals/xdripswift/`.

@@ -157,7 +157,7 @@ AAPS has a dedicated Nightscout SDK (`core/nssdk/`) with local model classes tha
 
 Throughout this documentation, code references use the format:
 ```
-aaps:path/to/File.kt#L123-L456
+aaps:database/impl/src/main/kotlin/app/aaps/database/entities/File.kt#L123-L456
 ```
 
 This maps to files in the `externals/AndroidAPS/` directory.
