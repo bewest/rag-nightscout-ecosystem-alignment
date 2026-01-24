@@ -288,9 +288,106 @@ make traceability
 5. **Generate reports**: `make traceability`
 6. **Read full guide**: `docs/TOOLING-GUIDE.md`
 
+---
+
+## sdqctl Commands (2026-01+)
+
+sdqctl provides orchestration for AI-assisted workflows and code reference validation.
+
+### Activation
+
+```bash
+# From workspace root
+source activate-sdqctl.sh
+
+# Or use absolute path
+/path/to/sdqctl/bin/sdqctl
+```
+
+### Verify References
+
+```bash
+# Verify all @-refs and alias:refs
+sdqctl verify refs
+
+# With fix suggestions (finds moved files)
+sdqctl verify refs --suggest-fixes
+
+# JSON output for CI
+sdqctl verify refs --json
+```
+
+### Extract Code Content (refcat)
+
+```bash
+# Extract specific lines
+sdqctl refcat "trio:Trio/Sources/Models/Preferences.swift#L1-L30"
+
+# Multiple refs
+sdqctl refcat "loop:Loop/README.md" "aaps:README.md"
+
+# From workflow context
+sdqctl refcat --from-workflow workflows/verify-refs.conv --list-files
+```
+
+**Important:** Use full paths from repo root, not short-form:
+```bash
+# ✅ CORRECT
+sdqctl refcat "trio:Trio/Sources/Models/Preferences.swift"
+
+# ❌ INCORRECT (won't resolve)
+sdqctl refcat "trio:Preferences.swift"
+```
+
+### Validate Workflows
+
+```bash
+# Check workflow syntax and context files
+sdqctl validate workflows/verify-refs.conv
+
+# Preview without execution
+sdqctl render run workflows/gen-inventory.conv --plan
+```
+
+### Run Workflows
+
+```bash
+# Single workflow
+sdqctl run workflows/verify-refs.conv
+
+# Multi-cycle with compaction
+sdqctl cycle workflows/gap-detection.conv --max-cycles 3
+
+# Batch workflows
+sdqctl flow workflows/verify-*.conv --parallel 3
+```
+
+### Reference Format for Documentation
+
+When writing documentation with code refs, use **full paths**:
+
+```markdown
+# ✅ Correct (validates)
+See `trio:Trio/Sources/Models/Preferences.swift#L22` for the setting.
+The algorithm runs in `trio:Trio/Sources/APS/OpenAPS/OpenAPS.swift#L448-L463`.
+
+# ❌ Incorrect (won't validate)
+See `trio:Preferences.swift` for the setting.
+```
+
+To find the correct path:
+```bash
+find externals/Trio -name "Preferences.swift"
+# → externals/Trio/Trio/Sources/Models/Preferences.swift
+# Use: trio:Trio/Sources/Models/Preferences.swift
+```
+
+---
+
 ## Support
 
 - Full documentation: `docs/TOOLING-GUIDE.md`
+- sdqctl guide: `docs/NIGHTSCOUT-SDQCTL-GUIDE.md`
 - Tool help: `python3 tools/<tool>.py --help`
 - Makefile targets: `make help`
 - Roadmap: `docs/tooling-roadmap.md`
