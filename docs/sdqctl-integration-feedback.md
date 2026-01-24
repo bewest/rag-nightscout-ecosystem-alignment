@@ -2,55 +2,62 @@
 
 **From:** rag-nightscout-ecosystem-alignment workspace  
 **To:** sdqctl development team  
-**Date:** 2026-01-21  
-**sdqctl Version Tested:** 0.1.0
+**Date:** 2026-01-24 (Updated)  
+**sdqctl Version Tested:** 0.1.0 → 0.1.1
 
 ---
 
 ## Executive Summary
 
-We've been evaluating sdqctl for orchestrating AI-assisted workflows in a complex multi-repository documentation workspace. Our workspace has evolved over months through iterative Replit AI development, resulting in 15 ConversationFile workflows, 14+ Python tools, and extensive cross-project documentation.
+We've been evaluating sdqctl for orchestrating AI-assisted workflows in a complex multi-repository documentation workspace. Our workspace has evolved over months through iterative Replit AI development, resulting in 14 ConversationFile workflows, 14+ Python tools, and extensive cross-project documentation.
 
-**Key Finding:** 8 of 15 workflows (53%) fail `sdqctl validate` due to strict context pattern matching. This blocks adoption for exploratory development workflows.
+**UPDATE (2026-01-24):** After iterative improvements, **all 14 workflows now pass validation**. Key improvements:
 
-### Compatibility Score
+- **50% reduction in false positives** (502 → 249 broken refs)
+- **Glob pattern fixes** resolved all `@mapping/*/README.md` style issues
+- **VALIDATION-MODE lenient** directive now available for exploratory workflows
+- **verify refs** now supports `alias:path` references using refcat resolution
 
-| Category | Status | Notes |
-|----------|--------|-------|
-| ConversationFile parsing | ✅ Works | All .conv files parse correctly |
-| Context file resolution | ⚠️ Partial | Single files work; globs have issues |
-| Validation strictness | ❌ Blocking | No way to run with missing optional files |
-| Command coverage | ⚠️ Partial | Missing workspace/verify/trace commands |
+### Compatibility Score (Updated)
 
-### Top Recommendations
+| Category | Previous | Current | Notes |
+|----------|----------|---------|-------|
+| ConversationFile parsing | ✅ Works | ✅ Works | All .conv files parse correctly |
+| Context file resolution | ⚠️ Partial | ✅ Works | Globs and wildcards fully supported |
+| Validation strictness | ❌ Blocking | ✅ Resolved | `VALIDATION-MODE lenient` available |
+| Command coverage | ⚠️ Partial | ✅ Full | verify refs/links/traceability implemented |
 
-1. **P0:** Add `--allow-missing` flag or `MODE lenient` directive
-2. **P0:** Fix glob pattern matching for `@mapping/*/README.md` style patterns
-3. **P1:** Make CONTEXT validation warn by default, fail only with `--strict`
-4. **P2:** Implement workspace/verify/trace subcommands per INTEGRATION-PROPOSAL.md
+### Resolved P0 Issues
+
+1. ~~**P0:** Add `--allow-missing` flag or `MODE lenient` directive~~ → ✅ `VALIDATION-MODE lenient`
+2. ~~**P0:** Fix glob pattern matching for `@mapping/*/README.md` style patterns~~ → ✅ Fixed
+3. ~~**P1:** Make CONTEXT validation warn by default~~ → ✅ Lenient mode available
+4. ~~**P2:** Implement workspace/verify/trace subcommands~~ → ✅ `sdqctl verify refs/links/traceability`
 
 ---
 
 ## Part 1: Validation Issues
 
-### 1.1 Workflow Validation Matrix
+### 1.1 Workflow Validation Matrix (Updated 2026-01-24)
 
-| Workflow | Status | Failure Reason |
-|----------|--------|----------------|
-| `deep-dive-template.conv` | ✅ Valid | - |
-| `example-audit.conv` | ✅ Valid | - |
-| `faceted-analysis.conv` | ✅ Valid | - |
-| `gap-detection.conv` | ✅ Valid | - |
-| `gen-inventory.conv` | ✅ Valid | - |
-| `verify-refs.conv` | ✅ Valid | - |
-| `ci-pipeline.conv` | ❌ Failed | `@conformance/scenarios/**/*.yaml` matches no files |
-| `cross-project-alignment.conv` | ❌ Failed | Missing `field-mapping.md` and `mapping/xdrip/` |
-| `full-verification.conv` | ❌ Failed | `@conformance/scenarios/**/*.yaml` matches no files |
-| `gen-coverage-report.conv` | ❌ Failed | `@conformance/scenarios/**/*.yaml` matches no files |
-| `gen-traceability.conv` | ❌ Failed | `@conformance/scenarios/**/*.yaml` matches no files |
-| `verify-assertions.conv` | ❌ Failed | Multiple YAML patterns match no files |
-| `verify-coverage.conv` | ❌ Failed | `@conformance/scenarios/**/*.yaml` matches no files |
-| `verify-terminology.conv` | ❌ Failed | `@mapping/*/README.md` pattern issue |
+| Workflow | Previous | Current | Notes |
+|----------|----------|---------|-------|
+| `ci-pipeline.conv` | ❌ Failed | ✅ Valid | Glob patterns fixed |
+| `cross-project-alignment.conv` | ❌ Failed | ✅ Valid | Path resolution improved |
+| `deep-dive-template.conv` | ✅ Valid | ✅ Valid | - |
+| `example-audit.conv` | ✅ Valid | ✅ Valid | - |
+| `faceted-analysis.conv` | ✅ Valid | ✅ Valid | - |
+| `full-verification.conv` | ❌ Failed | ✅ Valid | CONTEXT-OPTIONAL now recognized |
+| `gap-detection.conv` | ✅ Valid | ✅ Valid | - |
+| `gen-coverage-report.conv` | ❌ Failed | ✅ Valid | Glob patterns fixed |
+| `gen-inventory.conv` | ✅ Valid | ✅ Valid | - |
+| `gen-traceability.conv` | ❌ Failed | ✅ Valid | Glob patterns fixed |
+| `verify-assertions.conv` | ❌ Failed | ✅ Valid | YAML patterns now work |
+| `verify-coverage.conv` | ❌ Failed | ✅ Valid | Glob patterns fixed |
+| `verify-refs.conv` | ✅ Valid | ✅ Valid | - |
+| `verify-terminology.conv` | ❌ Failed | ✅ Valid | `@mapping/*/README.md` fixed |
+
+**Result: 14/14 workflows pass (was 6/14)**
 
 ### 1.2 Root Cause Analysis
 
@@ -433,6 +440,100 @@ rag-nightscout-ecosystem-alignment/
 - [INTEGRATION-PROPOSAL.md](../externals/copilot-do-proposal/sdqctl/INTEGRATION-PROPOSAL.md) - sdqctl team's integration roadmap
 - [workflows/README.md](../workflows/README.md) - Workflow documentation
 - [replit.md](../replit.md) - Workspace overview and patterns
+
+---
+
+## Part 6: Recent Improvements (2026-01-24)
+
+This section documents the improvements made since the original feedback.
+
+### 6.1 verify refs Now Supports Alias References
+
+The `sdqctl verify refs` command now validates both `@-references` and `alias:path` references:
+
+```bash
+# Verify all references in workspace
+sdqctl verify refs
+
+# With fix suggestions
+sdqctl verify refs --suggest-fixes
+
+# JSON output for CI integration
+sdqctl verify refs --json > refs-report.json
+```
+
+**Example output:**
+```
+✗ FAILED: Scanned 552 file(s), found 845 reference(s): 596 valid, 249 broken
+  ERROR mapping/trio/README.md:42: Broken alias reference: trio:Preferences.swift
+  HINT: Expected at externals/Trio/Preferences.swift
+  SUGGEST: Found: externals/Trio/Trio/Sources/Models/Preferences.swift
+```
+
+### 6.2 refcat for Code Extraction
+
+Use `refcat` to extract code snippets for context:
+
+```bash
+# Extract with line range
+sdqctl refcat "loop:LoopKit/LoopKit/TemporaryScheduleOverride.swift#L1-L20"
+
+# List what a workflow would gather
+sdqctl refcat --from-workflow workflows/verify-refs.conv --list-files
+```
+
+### 6.3 Iterative Improvement Workflows
+
+Two new workflows for improving sdqctl tools themselves:
+
+```bash
+# 3-cycle false positive reduction workflow
+sdqctl cycle examples/workflows/tooling/refcat-improvement.conv -n 3
+
+# 5-cycle TDD pattern for verifier improvements
+sdqctl cycle examples/workflows/tooling/verifier-test-loop.conv -n 5
+```
+
+### 6.4 False Positive Reduction Progress
+
+| Version | Broken Refs | Method |
+|---------|-------------|--------|
+| Initial | 502 | - |
+| +Root-first resolution | 297 | Try workspace root before file-relative |
+| +TLD exclusions | 271 | Case-insensitive .edu/.gov/.com |
+| +Connection strings | 259 | localhost:, mongo:, redis: |
+| +Unix sockets | 258 | sock:, unix:, docker: |
+| +Timestamps | 251 | mm:, ss:, hh: |
+| +path/to fixes | 249 | Replaced antipattern with real paths |
+
+**Remaining 249 broken refs are real documentation issues** requiring path updates.
+
+### 6.5 Correct Reference Format
+
+For sdqctl tools to validate refs, use full paths from repo root:
+
+```markdown
+# ✅ CORRECT: Full path from repo root
+See `trio:Trio/Sources/Models/Preferences.swift#L22` for the setting.
+
+# ❌ INCORRECT: Short-form (won't validate)
+See `trio:Preferences.swift` for the setting.
+
+# ❌ AVOID: Placeholder paths
+See `loop:path/to/file.swift` for the implementation.
+```
+
+### 6.6 Remaining Work
+
+The 249 remaining broken refs need ecosystem maintainer action:
+
+| Category | Count | Action |
+|----------|-------|--------|
+| Short-form refs | 140+ | Use full paths |
+| Moved files | 80+ | Update to new locations |
+| Missing files | 20+ | Create or remove refs |
+
+**To fix:** Run `sdqctl verify refs --suggest-fixes` and update paths.
 
 ---
 
