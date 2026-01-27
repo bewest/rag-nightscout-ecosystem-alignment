@@ -101,3 +101,17 @@ Items ready for immediate work. Keep this at 3 items.
 - [traceability/requirements.md](../../traceability/requirements.md) - Extracted requirements
 - [docs/OPEN-QUESTIONS.md](../OPEN-QUESTIONS.md) - Blocked items (if exists)
 - [progress.md](../../progress.md) - Completion log
+
+---
+
+## sdqctl Enhancement Requests
+
+Track tooling improvements that would help ecosystem alignment workflows.
+
+| Priority | Enhancement | Proposal | Notes |
+|----------|-------------|----------|-------|
+| P2 | HELP-INLINE directive | [sdqctl/HELP-INLINE.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/HELP-INLINE.md) | Allow HELP anywhere in workflow, not just prologues |
+| P2 | REFCAT glob support | [sdqctl/REFCAT-DESIGN.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/REFCAT-DESIGN.md) | Multi-file patterns: `@externals/**/*Treatment*.swift` |
+| P3 | Ecosystem help topics | New | gap-ids, 5-facet, stpa, conformance, nightscout |
+| P3 | VERIFY stpa-hazards | New | Check STPA hazard traceability |
+| P3 | RUN-CONFORMANCE | New | Execute conformance test scenarios |
