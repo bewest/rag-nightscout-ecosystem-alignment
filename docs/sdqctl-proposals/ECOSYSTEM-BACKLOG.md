@@ -115,3 +115,17 @@ Track tooling improvements that would help ecosystem alignment workflows.
 | P3 | Ecosystem help topics | New | gap-ids, 5-facet, stpa, conformance, nightscout |
 | P3 | VERIFY stpa-hazards | New | Check STPA hazard traceability |
 | P3 | RUN-CONFORMANCE | New | Execute conformance test scenarios |
+
+---
+
+## Agentic Automation (R&D)
+
+Future tooling for autonomous ecosystem analysis and contribution.
+
+| Priority | Enhancement | Proposal | Notes |
+|----------|-------------|----------|-------|
+| P3 | `sdqctl agent analyze` | [sdqctl/AGENTIC-ANALYSIS.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/AGENTIC-ANALYSIS.md) | Autonomous multi-cycle deep-dive with auto 5-facet updates |
+| P3 | `sdqctl watch` | [sdqctl/CONTINUOUS-MONITORING.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/CONTINUOUS-MONITORING.md) | Monitor external repos for alignment-relevant changes |
+| P3 | `sdqctl drift` | [sdqctl/CONTINUOUS-MONITORING.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/CONTINUOUS-MONITORING.md) | One-shot drift detection since last analysis |
+| P3 | `sdqctl delegate` | [sdqctl/UPSTREAM-CONTRIBUTIONS.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/UPSTREAM-CONTRIBUTIONS.md) | Draft upstream fixes for identified gaps |
+| P3 | `sdqctl upstream status` | [sdqctl/UPSTREAM-CONTRIBUTIONS.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/UPSTREAM-CONTRIBUTIONS.md) | Track contribution status across repos |

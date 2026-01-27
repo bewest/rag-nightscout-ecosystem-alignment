@@ -12,6 +12,14 @@ This directory contains copies of sdqctl development proposals relevant to the N
 | [STPA-TRACEABILITY-FRAMEWORK.md](./STPA-TRACEABILITY-FRAMEWORK.md) | Framework | STPA integration patterns |
 | [ECOSYSTEM-BACKLOG.md](./ECOSYSTEM-BACKLOG.md) | Active | Prioritized analysis task queue |
 
+## Agentic Automation (R&D)
+
+| Proposal | Status | Description |
+|----------|--------|-------------|
+| [AGENTIC-ANALYSIS.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/AGENTIC-ANALYSIS.md) | R&D | `sdqctl agent analyze` - Autonomous multi-cycle deep-dive |
+| [CONTINUOUS-MONITORING.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/CONTINUOUS-MONITORING.md) | R&D | `sdqctl watch/drift` - Monitor repos for changes |
+| [UPSTREAM-CONTRIBUTIONS.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/UPSTREAM-CONTRIBUTIONS.md) | R&D | `sdqctl delegate` - Draft upstream fixes |
+
 ## Source
 
 These files are copied from [sdqctl/proposals/](https://github.com/bewest/copilot-do-proposal/tree/main/sdqctl/proposals) for reference.
