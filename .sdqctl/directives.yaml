@@ -1,0 +1,32 @@
+# sdqctl Plugin Manifest for Nightscout Ecosystem Alignment
+# See: sdqctl docs/PLUGIN-AUTHORING.md
+
+version: 1
+directives:
+  VERIFY:
+    # Hello world plugin - demonstrates plugin system end-to-end
+    hello-world:
+      handler: python tools/verify_hello.py
+      description: "Demo plugin: verify hello world"
+      timeout: 10
+
+    # Real verifiers from the ecosystem tools
+    ecosystem-gaps:
+      handler: python tools/verify_coverage.py
+      description: "Verify GAP coverage across projects"
+      timeout: 60
+
+    terminology-matrix:
+      handler: python tools/verify_terminology.py
+      description: "Verify terminology matrix coverage"
+      timeout: 60
+
+    assertion-coverage:
+      handler: python tools/verify_assertions.py
+      description: "Verify assertion test coverage"
+      timeout: 60
+
+    ref-integrity:
+      handler: python tools/verify_refs.py
+      description: "Verify reference integrity"
+      timeout: 60
