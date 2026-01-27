@@ -113,6 +113,7 @@ Track tooling improvements that would help ecosystem alignment workflows.
 | P2 | HELP-INLINE directive | [sdqctl/HELP-INLINE.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/HELP-INLINE.md) | Allow HELP anywhere in workflow, not just prologues |
 | P2 | REFCAT glob support | [sdqctl/REFCAT-DESIGN.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/REFCAT-DESIGN.md) | Multi-file patterns: `@externals/**/*Treatment*.swift` |
 | P2 | Plugin System | [sdqctl/PLUGIN-SYSTEM.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/PLUGIN-SYSTEM.md) | Write custom directives for ecosystem independently |
+| P2 | LSP Integration | [sdqctl/LSP-INTEGRATION.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/LSP-INTEGRATION.md) | Semantic code queries: type extraction, cross-project comparison. `sdqctl lsp type Treatment --repos Loop,AAPS` |
 | P3 | Ecosystem help topics | New | gap-ids, 5-facet, stpa, conformance, nightscout |
 | P3 | VERIFY stpa-hazards | New | Check STPA hazard traceability |
 | P3 | RUN-CONFORMANCE | New | Execute conformance test scenarios |
