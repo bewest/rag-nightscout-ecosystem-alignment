@@ -9,6 +9,13 @@ This directory contains both **authored documentation** and **generated verifica
 | `gaps.md` | Documented semantic and technical gaps across the AID ecosystem |
 | `requirements.md` | Derived requirements from gap analysis |
 | `*-inventory.md` | Manual documentation inventories |
+| `stpa/` | STPA hazard analysis artifacts |
+
+## STPA Subdirectory
+
+| File | Purpose |
+|------|---------|
+| `stpa/cross-project-patterns.md` | Cross-project UCA patterns and shared safety constraints |
 
 ## Generated Reports (Excluded from Git)
 
