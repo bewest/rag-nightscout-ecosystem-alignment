@@ -1,0 +1,199 @@
+# gap-to-proposal.conv - Generate RFC/ADR proposal from a GAP entry
+#
+# A workflow for converting identified gaps into formal proposals (RFC or ADR).
+# Direction specifies which GAP-ID to convert and the proposal type.
+#
+# Usage:
+#   # Generate RFC from a specific gap
+#   sdqctl iterate workflows/generation/gap-to-proposal.conv \
+#     --prologue "GAP-ID: GAP-API-003. Type: RFC. Target: cgm-remote-monitor"
+#
+#   # Generate ADR for a design decision
+#   sdqctl iterate "Create ADR for GAP-SYNC-001 deletion sync" \
+#     workflows/generation/gap-to-proposal.conv
+#
+# I/O Contract:
+#   INPUT:  Direction via --prologue (GAP-ID, proposal type)
+#           traceability/gaps.md (gap details)
+#           templates/rfc-template.md or templates/adr-template.md
+#   OUTPUT: proposals/{gap-id}-proposal.md (new proposal)
+#           progress.md (dated completion entry)
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE documentation
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+
+# Load gap details
+CONTEXT @traceability/gaps.md
+CONTEXT @traceability/requirements.md
+
+# Load templates
+CONTEXT-OPTIONAL @templates/rfc-template.md
+CONTEXT-OPTIONAL @templates/adr-template.md
+
+# === Phase 1: Gap Analysis ===
+PROMPT ## Phase 1: Analyze the Gap
+
+Based on the GAP-ID provided in the prologue, analyze the gap to understand:
+
+1. **Gap Details**: Find the gap entry in traceability/gaps.md
+2. **Scope**: What systems are affected?
+3. **Impact**: Why does this matter?
+4. **Complexity**: How much work to fix?
+
+**Output:**
+```markdown
+### Gap Analysis
+
+**GAP-ID:** [from prologue]
+**Title:** [from gap entry]
+**Affected Systems:** [list]
+**Impact Level:** Critical | High | Medium | Low
+
+**Root Cause:**
+[Why this gap exists]
+
+**Proposed Solution:**
+[High-level approach to fix]
+
+**Proposal Type:** RFC | ADR
+- RFC: For changes requiring community consensus
+- ADR: For architectural/design decisions
+```
+
+COMPACT
+
+# === Phase 2: Generate Proposal ===
+PROMPT ## Phase 2: Generate Proposal Document
+
+Based on the analysis, generate a formal proposal document.
+
+**For RFC (Request for Comments):**
+```markdown
+# RFC: [Title from Gap]
+
+## Status
+Draft
+
+## Summary
+[1-2 sentence summary of the proposed change]
+
+## Motivation
+[Why is this change needed? Reference GAP-ID]
+
+## Detailed Design
+
+### Current Behavior
+[How things work now]
+
+### Proposed Behavior
+[How things should work]
+
+### API Changes
+[Any API modifications needed]
+
+### Data Model Changes
+[Any schema/data changes]
+
+## Implementation
+
+### Affected Repositories
+- [ ] cgm-remote-monitor
+- [ ] Loop
+- [ ] AAPS
+- [ ] Trio
+- [ ] xDrip+
+
+### Migration Path
+[How to migrate existing data/behavior]
+
+### Backward Compatibility
+[Impact on existing clients]
+
+## Alternatives Considered
+[Other approaches and why they were rejected]
+
+## Open Questions
+[Unresolved issues needing discussion]
+
+## References
+- [GAP-ID](../traceability/gaps.md#gap-xxx-nnn)
+- [Related REQ](../traceability/requirements.md#req-nnn)
+```
+
+**For ADR (Architecture Decision Record):**
+```markdown
+# ADR-NNN: [Decision Title]
+
+## Status
+Proposed | Accepted | Deprecated | Superseded
+
+## Context
+[What is the issue? Reference GAP-ID]
+
+## Decision
+[What is the change being proposed]
+
+## Consequences
+
+### Positive
+- [Benefit 1]
+- [Benefit 2]
+
+### Negative
+- [Tradeoff 1]
+- [Tradeoff 2]
+
+### Neutral
+- [Observation]
+
+## References
+- [GAP-ID](../traceability/gaps.md#gap-xxx-nnn)
+```
+
+Save to `proposals/{gap-id}-proposal.md`.
+
+COMPACT
+
+# === Phase 3: Cross-Reference & Summary ===
+PROMPT ## Phase 3: Cross-Reference and Summary
+
+### Update Gap Entry
+Add proposal reference to the original gap in `traceability/gaps.md`:
+```markdown
+**Proposal:** [proposals/{gap-id}-proposal.md](../proposals/{gap-id}-proposal.md)
+```
+
+### Progress Entry
+Append to `progress.md`:
+```markdown
+### Proposal: [GAP-ID] ({{DATE}})
+
+Generated [RFC|ADR] proposal from gap.
+
+| Deliverable | Location |
+|-------------|----------|
+| Proposal | `proposals/{gap-id}-proposal.md` |
+
+**Gap:** [GAP-ID]: [Title]
+**Type:** RFC | ADR
+**Status:** Draft
+```
+
+### Summary
+```
+### Proposal Generated
+
+**Gap:** [GAP-ID]
+**Proposal:** proposals/{gap-id}-proposal.md
+**Type:** RFC | ADR
+**Status:** Draft
+
+**Next steps:**
+1. Review proposal with stakeholders
+2. Address open questions
+3. Move to "Accepted" status
+4. Begin implementation
+```

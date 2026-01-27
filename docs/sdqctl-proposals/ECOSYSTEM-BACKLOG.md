@@ -1,0 +1,103 @@
+# Ecosystem Alignment Backlog
+
+Prioritized queue of analysis tasks for the Nightscout AID ecosystem alignment project.
+Use this as input for process-oriented workflows.
+
+## How to Use
+
+Pick items from the Ready Queue and run with appropriate workflow:
+
+```bash
+# For comparison tasks
+sdqctl iterate workflows/analysis/compare-feature.conv \
+  --prologue "Focus: [item from queue]"
+
+# For gap discovery
+sdqctl iterate workflows/analysis/gap-discovery.conv \
+  --prologue "Area: [item from queue]"
+
+# For deep dives
+sdqctl iterate workflows/analysis/deep-dive.conv \
+  --prologue "Topic: [item from queue]"
+```
+
+---
+
+## Ready Queue (3 items)
+
+Items ready for immediate work. Keep this at 3 items.
+
+### 1. [P1] Compare remote bolus command handling
+**Type:** Comparison | **Effort:** Medium
+**Repos:** Loop, AAPS, Trio, Nightscout
+**Focus:** How each system validates and executes remote bolus commands
+**Workflow:** `compare-feature.conv`
+
+### 2. [P1] Extract AAPS NSClient upload schema
+**Type:** Extraction | **Effort:** Medium
+**Source:** `externals/AndroidAPS/core/nssdk/`
+**Focus:** Document all fields uploaded to Nightscout
+**Workflow:** `extract-spec.conv`
+
+### 3. [P2] Map timezone/DST handling terminology
+**Type:** Terminology | **Effort:** Low
+**Repos:** All pumps in AAPS, Loop, Trio
+**Focus:** How each system handles DST transitions
+**Workflow:** `terminology-alignment.conv`
+
+---
+
+## Backlog (Prioritized)
+
+### P0 - Critical
+
+*None currently*
+
+### P1 - High Value
+
+- [ ] **Compare override/profile switch semantics** - Loop overrides vs AAPS ProfileSwitch vs Trio overrides
+- [ ] **Extract Nightscout v3 treatments schema** - Document all supported fields and eventTypes
+- [ ] **Deep dive: Batch operation ordering** - Document order-preservation requirements for sync
+- [ ] **Gap discovery: Prediction array formats** - IOB/COB/UAM/ZT curve differences
+
+### P2 - Normal
+
+- [ ] **Compare carb absorption models** - Linear vs nonlinear vs dynamic
+- [ ] **Extract Loop sync identity fields** - What makes a treatment unique in Loop
+- [ ] **Map pump communication terminology** - Reservoir, cartridge, pod, etc.
+- [ ] **Deep dive: Authentication flows** - API secret vs tokens vs JWT
+
+### P3 - Nice to Have
+
+- [ ] **Compare CGM sensor session handling** - Start, stop, calibration
+- [ ] **Extract xDrip+ Nightscout fields** - What xDrip+ uploads
+- [ ] **Map algorithm terminology** - ISF, CR, DIA, UAM across systems
+
+---
+
+## Completed
+
+*Move items here after workflow completion*
+
+| Date | Item | Outcome |
+|------|------|---------|
+| | | |
+
+---
+
+## Queue Discipline
+
+1. **Ready Queue**: Exactly 3 actionable items
+2. **New discoveries**: Add to appropriate priority level in Backlog
+3. **Blocked items**: Move to docs/OPEN-QUESTIONS.md with blocker
+4. **Completed items**: Move to Completed table with outcome summary
+5. **After each workflow**: Replenish Ready Queue from Backlog
+
+---
+
+## Related Documents
+
+- [traceability/gaps.md](../../traceability/gaps.md) - Identified gaps
+- [traceability/requirements.md](../../traceability/requirements.md) - Extracted requirements
+- [docs/OPEN-QUESTIONS.md](../OPEN-QUESTIONS.md) - Blocked items (if exists)
+- [progress.md](../../progress.md) - Completion log

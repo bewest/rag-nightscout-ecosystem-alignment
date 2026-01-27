@@ -53,6 +53,15 @@ Located in `maintenance/`:
 | `maintenance/5-facet-update.conv` | Update all 5 documentation facets | `--prologue "Recent work: G7 analysis"` |
 | `maintenance/terminology-alignment.conv` | Map terms across projects | `--prologue "Domain: insulin dosing"` |
 
+### Generation Workflows
+
+Located in `generation/`:
+
+| Workflow | Purpose | Example |
+|----------|---------|---------|
+| `generation/gap-to-proposal.conv` | Generate RFC/ADR from GAP-ID | `--prologue "GAP-ID: GAP-API-003. Type: RFC"` |
+| `generation/gen-conformance.conv` | Generate conformance test scenarios | `--prologue "REQ-ID: REQ-BATCH-001"` |
+
 ### I/O Contracts
 
 Every process-oriented workflow documents its I/O contract:

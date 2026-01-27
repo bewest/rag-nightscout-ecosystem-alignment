@@ -1,0 +1,252 @@
+# gen-conformance.conv - Generate conformance test scenarios
+#
+# A workflow for creating conformance test scenarios from requirements or gaps.
+# Direction specifies what behavior to test and which systems to cover.
+#
+# Usage:
+#   # Generate test for a requirement
+#   sdqctl iterate workflows/generation/gen-conformance.conv \
+#     --prologue "REQ-ID: REQ-BATCH-001. Systems: Loop, AAPS, Nightscout"
+#
+#   # Generate test for a gap remediation
+#   sdqctl iterate "Create conformance test for GAP-SYNC-001 fix" \
+#     workflows/generation/gen-conformance.conv
+#
+# I/O Contract:
+#   INPUT:  Direction via --prologue (REQ-ID or GAP-ID, systems)
+#           traceability/requirements.md
+#           traceability/gaps.md
+#           conformance/scenarios/*.yaml (existing scenarios)
+#   OUTPUT: conformance/scenarios/{scenario-name}/*.yaml
+#           conformance/scenarios/{scenario-name}/README.md
+#           progress.md (dated completion entry)
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE documentation
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+
+# Load requirements and gaps
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+
+# Load existing scenarios for reference
+CONTEXT-OPTIONAL @conformance/scenarios/README.md
+CONTEXT-OPTIONAL @conformance/scenarios/**/scenario.yaml
+
+# === Phase 1: Behavior Analysis ===
+PROMPT ## Phase 1: Analyze Behavior to Test
+
+Based on the REQ-ID or GAP-ID provided, analyze what behavior needs conformance testing.
+
+**Your task:**
+1. Find the requirement or gap entry
+2. Identify the specific behavior to verify
+3. Determine which systems should be tested
+4. Define success criteria
+
+**Output:**
+```markdown
+### Conformance Test Scope
+
+**Source:** [REQ-NNN or GAP-XXX-NNN]
+**Title:** [from entry]
+**Behavior:** [What specifically to test]
+
+**Systems to test:**
+- [ ] Loop → Nightscout
+- [ ] AAPS → Nightscout
+- [ ] Trio → Nightscout
+- [ ] Nightscout API v1
+- [ ] Nightscout API v3
+
+**Success Criteria:**
+1. [Criterion 1]
+2. [Criterion 2]
+
+**Edge Cases:**
+- [Edge case 1]
+- [Edge case 2]
+```
+
+COMPACT
+
+# === Phase 2: Generate Scenario Structure ===
+PROMPT ## Phase 2: Generate Scenario Files
+
+Create the conformance scenario structure.
+
+### Directory Structure
+```
+conformance/scenarios/{scenario-name}/
+├── README.md           # Human-readable description
+├── scenario.yaml       # Machine-readable scenario definition
+├── fixtures/           # Test fixtures
+│   ├── input.json      # Input data
+│   └── expected.json   # Expected output
+└── assertions.yaml     # Verification assertions
+```
+
+### scenario.yaml Format
+```yaml
+# scenario.yaml
+name: {scenario-name}
+description: |
+  [Description of what this scenario tests]
+  
+source:
+  requirement: REQ-NNN  # or gap: GAP-XXX-NNN
+  
+systems:
+  - loop
+  - aaps
+  - trio
+  - nightscout
+
+preconditions:
+  - [Precondition 1]
+  - [Precondition 2]
+
+steps:
+  - action: [Action description]
+    system: [which system]
+    input: fixtures/input.json
+    
+  - action: [Next action]
+    system: [which system]
+    
+postconditions:
+  - [Expected state 1]
+  - [Expected state 2]
+
+assertions:
+  - type: field_equals
+    path: $.result.field
+    expected: "value"
+    
+  - type: field_exists
+    path: $.result.id
+    
+  - type: array_length
+    path: $.items
+    min: 1
+```
+
+### README.md Format
+```markdown
+# Scenario: {Scenario Name}
+
+## Purpose
+[What this scenario verifies]
+
+## Source
+- Requirement: [REQ-NNN](../../traceability/requirements.md#req-nnn)
+- Gap: [GAP-XXX-NNN](../../traceability/gaps.md#gap-xxx-nnn)
+
+## Systems Tested
+- Loop
+- AAPS
+- Nightscout
+
+## Test Steps
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+## Expected Behavior
+[What should happen]
+
+## Verification
+Run with:
+\`\`\`bash
+python3 tools/run_conformance.py conformance/scenarios/{scenario-name}
+\`\`\`
+```
+
+Create the scenario directory and files.
+
+COMPACT
+
+# === Phase 3: Generate Fixtures ===
+PROMPT ## Phase 3: Generate Test Fixtures
+
+Create realistic test fixtures for the scenario.
+
+### input.json
+```json
+{
+  "_comment": "Test input for {scenario-name}",
+  "description": "[What this input represents]",
+  "data": {
+    // Realistic test data matching the scenario
+  }
+}
+```
+
+### expected.json
+```json
+{
+  "_comment": "Expected output for {scenario-name}",
+  "description": "[What the output should look like]",
+  "data": {
+    // Expected result structure
+  }
+}
+```
+
+**Fixture Guidelines:**
+- Use realistic field names from actual implementations
+- Include edge cases (empty arrays, null values, etc.)
+- Reference actual field mappings from terminology matrix
+- Include timestamps in ISO 8601 format
+
+COMPACT
+
+# === Phase 4: Summary ===
+PROMPT ## Phase 4: Summary and Cross-Reference
+
+### Update Requirement/Gap Entry
+Add scenario reference to the source entry:
+```markdown
+**Conformance Test:** [conformance/scenarios/{scenario-name}](../conformance/scenarios/{scenario-name})
+```
+
+### Progress Entry
+Append to `progress.md`:
+```markdown
+### Conformance Scenario: {Scenario Name} ({{DATE}})
+
+Generated conformance test scenario.
+
+| Deliverable | Location |
+|-------------|----------|
+| Scenario | `conformance/scenarios/{scenario-name}/` |
+| Fixtures | `conformance/scenarios/{scenario-name}/fixtures/` |
+
+**Source:** [REQ-NNN or GAP-XXX-NNN]
+**Systems:** Loop, AAPS, Nightscout
+```
+
+### Summary
+```
+### Conformance Scenario Generated
+
+**Scenario:** {scenario-name}
+**Source:** [REQ-NNN or GAP-XXX-NNN]
+**Location:** conformance/scenarios/{scenario-name}/
+
+**Files created:**
+- scenario.yaml
+- README.md
+- fixtures/input.json
+- fixtures/expected.json
+- assertions.yaml
+
+**Run with:**
+python3 tools/run_conformance.py conformance/scenarios/{scenario-name}
+```
+
+# Validate YAML syntax
+RUN python3 -c "import yaml; yaml.safe_load(open('conformance/scenarios/*/scenario.yaml'))" 2>/dev/null && echo "✓ YAML valid" || echo "⚠ YAML validation skipped"
+RUN-ON-ERROR continue
