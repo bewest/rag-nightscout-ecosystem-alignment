@@ -1,0 +1,236 @@
+# gap-discovery.conv - Process-oriented systematic gap identification
+#
+# A generic workflow for discovering undocumented gaps, missing specs, and
+# inconsistencies. Direction is injected via --prologue or adjacent prompt.
+#
+# Usage:
+#   # Discover gaps in a specific area
+#   sdqctl iterate workflows/analysis/gap-discovery.conv \
+#     --prologue "Area: Nightscout API v3. Focus: undocumented fields in treatments."
+#
+#   # Discover gaps across all batch operations
+#   sdqctl iterate "Find undocumented behaviors in Nightscout batch APIs" \
+#     workflows/analysis/gap-discovery.conv
+#
+#   # Via shell variable
+#   area="pump timezone handling"
+#   sdqctl iterate workflows/analysis/gap-discovery.conv --prologue "Area: $area"
+#
+# I/O Contract:
+#   INPUT:  Direction via --prologue (area to analyze)
+#           specs/openapi/*.yaml (existing specs)
+#           conformance/scenarios/*.yaml (test scenarios)
+#           Source code in externals/
+#   OUTPUT: traceability/gaps.md (new GAP-XXX entries)
+#           traceability/requirements.md (new REQ-NNN if behaviors need standardizing)
+#           traceability/gap-discovery.md (session report)
+#           progress.md (dated completion entry)
+#   ESCALATE: docs/OPEN-QUESTIONS.md (ambiguities)
+#             proposals/*.md (items needing design)
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 3
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE gaps requirements
+
+# Load existing gaps to avoid duplicates
+CONTEXT @traceability/gaps.md
+CONTEXT @traceability/requirements.md
+
+# Specs to check for undocumented features
+CONTEXT-OPTIONAL @specs/openapi/*.yaml
+
+# Cross-project mappings for consistency checks
+CONTEXT @mapping/cross-project/terminology-matrix.md
+
+# === Phase 1: Area Analysis ===
+PROMPT ## Phase 1: Area Analysis
+
+Based on the area specified in the prologue, identify what to analyze for gaps.
+
+**Your task:**
+1. Identify relevant source files in externals/
+2. Identify relevant specs in specs/
+3. Identify relevant tests in conformance/
+4. List what "complete" looks like for this area
+
+**Output:**
+```markdown
+### Gap Discovery Scope
+
+**Area:** [from prologue]
+**Focus:** [specific aspect if mentioned]
+
+**Sources to analyze:**
+- Code: `externals/repo/path/...`
+- Specs: `specs/openapi/...`
+- Tests: `conformance/scenarios/...`
+
+**Completeness criteria:**
+- [ ] All fields documented in spec
+- [ ] All behaviors have test coverage
+- [ ] All implementations consistent
+- [ ] Error cases documented
+```
+
+COMPACT
+
+# === Phase 2: Code vs Spec Analysis ===
+PROMPT ## Phase 2: Code vs Spec Comparison
+
+Compare what's implemented in code vs what's documented in specs.
+
+**Discover:**
+
+### Undocumented Fields
+Fields in code but not in specs:
+| Field | Found In | Type | Notes |
+|-------|----------|------|-------|
+| `fieldName` | repo:path:line | string | Not in OpenAPI |
+
+### Unimplemented Spec Fields
+Fields in specs but not found in implementations:
+| Field | Spec | Expected Type | Notes |
+|-------|------|---------------|-------|
+| `specField` | aid-treatments.yaml | string | No implementation found |
+
+### Type Mismatches
+Where spec and code disagree:
+| Field | Spec Type | Code Type | Location |
+|-------|-----------|-----------|----------|
+
+### Undocumented Behaviors
+Behaviors in code without specification:
+- [behavior]: `file:line` - [description]
+
+COMPACT
+
+# === Phase 3: Gap Documentation ===
+PROMPT ## Phase 3: Document Gaps
+
+For each issue found in Phase 2, create a formal GAP entry.
+
+**Gap ID format:** `GAP-<CATEGORY>-<NNN>`
+
+**Categories:**
+| Prefix | Domain |
+|--------|--------|
+| SPEC | Specification gaps (missing from docs) |
+| IMPL | Implementation gaps (missing from code) |
+| BATCH | Batch operation issues |
+| TZ | Timezone/DST handling |
+| ERR | Error handling gaps |
+| TYPE | Type inconsistencies |
+| SYNC | Synchronization issues |
+| PRED | Prediction/algorithm gaps |
+
+**For each gap:**
+```markdown
+### GAP-XXX-NNN: [Title]
+
+**Description**: [What is missing or inconsistent]
+
+**Affected Systems**: [List: Loop, AAPS, Trio, Nightscout, xDrip+]
+
+**Impact**: [Interoperability | Data Integrity | Safety | UX]
+
+**Evidence**:
+- Code: `externals/repo/path/file.ext:line`
+- Spec: `specs/openapi/file.yaml` (or "missing")
+
+**Remediation**: [Suggested fix]
+
+**Priority**: P0 | P1 | P2
+```
+
+Append to `traceability/gaps.md`. Check existing gaps to avoid duplicates.
+
+COMPACT
+
+# === Phase 4: Requirements & Summary ===
+PROMPT ## Phase 4: Requirements Extraction & Summary
+
+### Extract Requirements
+If any gap reveals a behavior that SHOULD be standardized, create a requirement:
+
+```markdown
+### REQ-NNN: [Title]
+
+**Statement**: The system MUST/SHOULD/MAY [behavior]
+
+**Rationale**: [Why this matters - reference gaps]
+
+**Related Gaps**: GAP-XXX-001, ...
+
+**Verification**: [How to test]
+```
+
+Append to `traceability/requirements.md`.
+
+### Generate Session Report
+Create `traceability/gap-discovery-{{DATE}}.md`:
+```markdown
+# Gap Discovery: [Area] ({{DATE}})
+
+## Scope
+[What was analyzed]
+
+## Findings Summary
+| Category | New Gaps | Existing | Total |
+|----------|----------|----------|-------|
+| SPEC | N | N | N |
+| IMPL | N | N | N |
+| ... | ... | ... | ... |
+
+## New Gaps
+- GAP-XXX-001: [title]
+- GAP-XXX-002: [title]
+
+## New Requirements
+- REQ-NNN: [title]
+
+## Source Files Analyzed
+- `externals/repo/path/file.ext`
+
+## Next Steps
+- [Recommended follow-up]
+```
+
+### Progress Entry
+Append to `progress.md`:
+```markdown
+### Gap Discovery: [Area] ({{DATE}})
+
+Systematic gap analysis of [area].
+
+| Category | Gaps Found | Requirements |
+|----------|------------|--------------|
+| [cat] | N | N |
+
+**New Gaps:** GAP-XXX-001, GAP-XXX-002, ...
+**Source Files:** [count] files analyzed
+```
+
+### Summary
+```
+### Gap Discovery Complete
+
+**Area:** [area]
+**New gaps found:** N
+**New requirements:** N
+**Duplicates skipped:** N
+
+**By category:**
+- GAP-SPEC: N
+- GAP-IMPL: N
+- ...
+
+**Escalated:** N items to OPEN-QUESTIONS
+```
+
+# Post-flight verification
+RUN python3 tools/gen_traceability.py --json > /dev/null 2>&1 && echo "✓ Traceability valid" || echo "⚠ Traceability check failed"
+RUN-ON-ERROR continue

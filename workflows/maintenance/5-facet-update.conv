@@ -1,0 +1,141 @@
+# 5-facet-update.conv - Standalone 5-facet documentation update
+#
+# A focused workflow for ensuring all 5 facets are updated from recent work.
+# Use when you've done analysis but need to ensure documentation is complete.
+#
+# Usage:
+#   # Update facets from recent analysis
+#   sdqctl iterate workflows/maintenance/5-facet-update.conv \
+#     --prologue "Recent work: Analyzed Dexcom G7 protocol. Findings in notes.md"
+#
+#   # Update facets from a session
+#   sdqctl iterate "Update 5 facets from today's treatment sync analysis" \
+#     workflows/maintenance/5-facet-update.conv
+#
+# I/O Contract:
+#   INPUT:  Direction via --prologue (what was analyzed, where findings are)
+#           Existing traceability docs
+#   OUTPUT: All 5 facets updated as needed
+#           progress.md (dated completion entry)
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE documentation
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+
+# Load all traceability docs
+CONTEXT @traceability/gaps.md
+CONTEXT @traceability/requirements.md
+CONTEXT @mapping/cross-project/terminology-matrix.md
+CONTEXT @progress.md
+
+# === Phase 1: Assess Current State ===
+PROMPT ## Phase 1: Assess What Needs Updating
+
+Based on the recent work described in the prologue, assess which facets need updates.
+
+**5-Facet Checklist:**
+
+| Facet | File | Needs Update? | Notes |
+|-------|------|---------------|-------|
+| 1. Terminology | `mapping/cross-project/terminology-matrix.md` | ? | New terms? |
+| 2. Gaps | `traceability/gaps.md` | ? | New gaps found? |
+| 3. Requirements | `traceability/requirements.md` | ? | New REQs? |
+| 4. Deep Dive | `docs/10-domain/*.md` | ? | New/updated doc? |
+| 5. Progress | `progress.md` | Yes | Always log |
+
+**From the prologue, identify:**
+- What was analyzed
+- Key findings
+- Any new terms, gaps, or requirements mentioned
+
+COMPACT
+
+# === Phase 2: Update Each Facet ===
+PROMPT ## Phase 2: Update Required Facets
+
+For each facet marked as needing update in Phase 1:
+
+### Facet 1: Terminology Matrix
+If new terms were discovered, add to `mapping/cross-project/terminology-matrix.md`:
+```markdown
+| Alignment Term | Nightscout | Loop | AAPS | Trio | Notes |
+|----------------|------------|------|------|------|-------|
+| [New Term] | [field] | [type] | [entity] | [struct] | [context] |
+```
+
+### Facet 2: Gaps
+If new gaps were found, add to `traceability/gaps.md`:
+```markdown
+### GAP-XXX-NNN: [Title]
+**Description**: [What's missing]
+**Affected Systems**: [List]
+**Impact**: [Why it matters]
+**Remediation**: [Suggested fix]
+```
+
+### Facet 3: Requirements
+If behaviors should be standardized, add to `traceability/requirements.md`:
+```markdown
+### REQ-NNN: [Title]
+**Statement**: The system MUST/SHOULD/MAY...
+**Rationale**: [Why needed]
+**Verification**: [How to test]
+```
+
+### Facet 4: Deep Dive
+If comprehensive documentation was created, ensure it exists at:
+`docs/10-domain/{topic}-deep-dive.md`
+
+### Facet 5: Progress
+**Always** append an entry to `progress.md`:
+```markdown
+### [Topic] ({{DATE}})
+
+[Brief description of work done]
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| [What] | `path/to/file.md` | [Key insight] |
+
+**Gaps:** [GAP IDs or "None"]
+**Requirements:** [REQ IDs or "None"]
+```
+
+COMPACT
+
+# === Phase 3: Verify & Summarize ===
+PROMPT ## Phase 3: Verification & Summary
+
+### Verification
+Confirm all updates were made:
+
+| Facet | Updated | Details |
+|-------|---------|---------|
+| Terminology | ✓/✗ | N terms added |
+| Gaps | ✓/✗ | GAP-XXX-001, ... |
+| Requirements | ✓/✗ | REQ-NNN, ... |
+| Deep Dive | ✓/✗ | path/to/doc.md |
+| Progress | ✓ | Entry added |
+
+### Summary
+```
+### 5-Facet Update Complete
+
+**Context:** [What was the recent work]
+
+**Updates Made:**
+- Terminology: N new terms
+- Gaps: N new entries (GAP-XXX-001, ...)
+- Requirements: N new entries (REQ-NNN, ...)
+- Deep Dive: [created/updated/N/A]
+- Progress: Entry added
+
+**Files Modified:**
+- [list of files touched]
+```
+
+# Post-flight verification
+RUN python3 tools/gen_traceability.py --json > /dev/null 2>&1 && echo "✓ Traceability valid" || echo "⚠ Traceability check failed"
+RUN-ON-ERROR continue

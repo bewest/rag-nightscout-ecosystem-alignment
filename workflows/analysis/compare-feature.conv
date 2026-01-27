@@ -1,0 +1,203 @@
+# compare-feature.conv - Process-oriented cross-project feature comparison
+#
+# A generic workflow for comparing any feature across Nightscout ecosystem projects.
+# Direction is injected via --prologue or adjacent prompt, NOT baked into the workflow.
+#
+# Usage:
+#   # Via --prologue (recommended)
+#   sdqctl iterate workflows/analysis/compare-feature.conv \
+#     --prologue "Focus: treatment sync. Repos: Loop, AAPS, Trio. Aspect: remote bolus commands."
+#
+#   # Via adjacent prompt (elides into workflow)
+#   sdqctl iterate "Compare CGM data handling in xDrip+ vs Nightscout" \
+#     workflows/analysis/compare-feature.conv
+#
+#   # Via shell variable expansion
+#   feature="insulin curves"
+#   sdqctl iterate workflows/analysis/compare-feature.conv --prologue "Focus: $feature"
+#
+# I/O Contract:
+#   INPUT:  Direction via --prologue or adjacent prompt
+#           traceability/gaps.md (existing gaps)
+#           mapping/cross-project/terminology-matrix.md (existing mappings)
+#   OUTPUT: docs/10-domain/{topic}-comparison.md (deep dive)
+#           traceability/gaps.md (new GAP-XXX entries appended)
+#           traceability/requirements.md (new REQ-NNN if needed)
+#           mapping/cross-project/terminology-matrix.md (new terms)
+#           progress.md (dated completion entry)
+#   ESCALATE: docs/OPEN-QUESTIONS.md (needs human decision)
+#             proposals/*.md (needs design spec)
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE analysis
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE gaps requirements terminology
+
+# Pre-flight: Verify existing references are valid
+VERIFY refs
+VERIFY-ON-ERROR continue
+
+# Load existing traceability and mapping context
+CONTEXT @traceability/gaps.md
+CONTEXT @traceability/requirements.md
+CONTEXT @mapping/cross-project/terminology-matrix.md
+
+# === Phase 1: Feature Survey ===
+PROMPT ## Phase 1: Feature Survey
+
+Based on the direction provided in the prologue or preceding prompt, analyze the specified feature across the relevant repositories.
+
+**Your task:**
+1. Identify which repositories contain the feature (check externals/)
+2. Locate the relevant source files using file exploration
+3. Document the implementation approach in each system
+
+**Output a comparison table:**
+| Aspect | Loop | AAPS | Trio | Nightscout | xDrip+ |
+|--------|------|------|------|------------|--------|
+| Field names | ... | ... | ... | ... | ... |
+| Data types | ... | ... | ... | ... | ... |
+| Behaviors | ... | ... | ... | ... | ... |
+| Validation | ... | ... | ... | ... | ... |
+
+Include explicit file references: `externals/repo/path/file.ext:line`
+
+COMPACT
+
+# === Phase 2: Gap Identification ===
+PROMPT ## Phase 2: Gap Identification
+
+Based on the comparison from Phase 1, document inconsistencies as GAP-XXX entries.
+
+**Gap ID format:** `GAP-<CATEGORY>-<NNN>`
+
+**Categories:**
+| Prefix | Domain |
+|--------|--------|
+| CGM | CGM data sources |
+| TREAT | Treatments |
+| DS | DeviceStatus |
+| SYNC | Synchronization |
+| ALG | Algorithm |
+| API | API compatibility |
+| REMOTE | Remote commands |
+| PUMP | Pump communication |
+
+**For each gap, document:**
+```markdown
+### GAP-XXX-NNN: [Title]
+
+**Description**: [What is missing/inconsistent]
+
+**Affected Systems**: [List of systems]
+
+**Impact**: [Why this matters for interoperability]
+
+**Remediation**: [Suggested fix or standardization]
+
+**Source**: [file:line references]
+```
+
+Append new gaps to traceability/gaps.md (do not duplicate existing).
+
+COMPACT
+
+# === Phase 3: Update 5 Facets ===
+PROMPT ## Phase 3: Update All 5 Facets
+
+Ensure this analysis updates all 5 facets of the documentation system:
+
+### Facet 1: Terminology Matrix
+Add new cross-project term mappings to `mapping/cross-project/terminology-matrix.md`:
+```markdown
+| Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|----------------|------------|------|------|------|--------|
+| [New Term]     | [field]    | [type] | [entity] | [struct] | [class] |
+```
+
+### Facet 2: Gaps
+Gaps already added in Phase 2 ✓
+
+### Facet 3: Requirements
+If any behaviors should be standardized, extract as REQ-NNN:
+```markdown
+### REQ-NNN: [Title]
+
+**Statement**: The system MUST/SHOULD/MAY...
+
+**Rationale**: [Why needed]
+
+**Verification**: [How to test]
+```
+
+Append to `traceability/requirements.md`.
+
+### Facet 4: Deep Dive
+Create comprehensive documentation at `docs/10-domain/{topic}-comparison.md`:
+- Technical specification with code references
+- Implementation comparison table
+- Key differences and recommendations
+
+### Facet 5: Progress
+Append dated entry to `progress.md`:
+```markdown
+### [Topic] Comparison ({{DATE}})
+
+[Brief description]
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Comparison Doc | `docs/10-domain/X-comparison.md` | [Summary] |
+| Gaps Added | `traceability/gaps.md` | GAP-XXX-001, ... |
+
+**Source Files Analyzed:**
+- `externals/repo/path/file.ext`
+```
+
+COMPACT
+
+# === Phase 4: Escalation & Summary ===
+PROMPT ## Phase 4: Escalation & Summary
+
+### Escalation
+Route items needing human decision or further work:
+
+**To docs/OPEN-QUESTIONS.md (Pending section):**
+- Design questions with multiple valid approaches
+- Ambiguities needing clarification
+- Scope decisions
+
+**To proposals/*.md:**
+- Items needing detailed design specification
+- Breaking changes requiring RFC
+
+### Summary
+Output a summary of this analysis:
+```
+### Comparison Complete
+
+**Topic:** [What was compared]
+**Repositories analyzed:** [List]
+
+**Files Modified:**
+- docs/10-domain/{topic}-comparison.md (created)
+- traceability/gaps.md (N gaps added)
+- traceability/requirements.md (N reqs added)
+- mapping/cross-project/terminology-matrix.md (N terms)
+- progress.md (entry added)
+
+**New GAP entries:** GAP-XXX-001, GAP-XXX-002, ...
+**New REQ entries:** REQ-NNN, ...
+**Escalated items:** N to OPEN-QUESTIONS, N to proposals
+
+**Key findings:**
+1. [Finding 1]
+2. [Finding 2]
+3. [Finding 3]
+```
+
+# Post-flight: Verify traceability
+RUN python3 tools/gen_traceability.py --json > /dev/null 2>&1 && echo "✓ Traceability valid" || echo "⚠ Traceability check failed"
+RUN-ON-ERROR continue

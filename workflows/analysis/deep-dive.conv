@@ -1,0 +1,235 @@
+# deep-dive.conv - Process-oriented comprehensive topic analysis
+#
+# A generic workflow for creating in-depth documentation on any topic in the
+# Nightscout ecosystem. Direction is injected via --prologue or adjacent prompt.
+#
+# Usage:
+#   # Deep dive on a protocol
+#   sdqctl iterate workflows/analysis/deep-dive.conv \
+#     --prologue "Topic: Dexcom G7 BLE protocol. Focus: authentication handshake."
+#
+#   # Deep dive on a component
+#   sdqctl iterate "Analyze Loop's LoopDataManager state machine" \
+#     workflows/analysis/deep-dive.conv
+#
+#   # Via shell variable
+#   topic="insulin curve models"
+#   sdqctl iterate workflows/analysis/deep-dive.conv --prologue "Topic: $topic"
+#
+# I/O Contract:
+#   INPUT:  Direction via --prologue (topic and focus area)
+#           Source code in externals/
+#           Existing deep dives in docs/10-domain/
+#   OUTPUT: docs/10-domain/{topic}-deep-dive.md (comprehensive documentation)
+#           All 5 facets updated (terminology, gaps, requirements, deep dive, progress)
+#   ESCALATE: docs/OPEN-QUESTIONS.md (unresolved questions)
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE analysis
+MAX-CYCLES 5
+CONTEXT-LIMIT 60%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE findings sources
+
+# Load existing traceability for context
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+CONTEXT @mapping/cross-project/terminology-matrix.md
+
+CHECKPOINT-AFTER 2
+CHECKPOINT-NAME deep-dive-checkpoint
+
+# === Phase 1: Topic Scoping ===
+PROMPT ## Phase 1: Topic Scoping
+
+Based on the topic provided in the prologue, define the scope of this deep dive.
+
+**Your task:**
+1. Identify which repositories contain relevant code
+2. List the key source files to analyze
+3. Identify any existing documentation on this topic
+4. Define the boundaries of the analysis
+
+**Output:**
+```markdown
+### Deep Dive Scope
+
+**Topic:** [from prologue]
+**Focus Area:** [specific aspect if mentioned]
+
+**Repositories involved:**
+- [repo1]: [what aspect]
+- [repo2]: [what aspect]
+
+**Key source files:**
+1. `externals/repo/path/file.ext` - [role]
+2. ...
+
+**Existing documentation:**
+- `docs/10-domain/related.md` - [relevance]
+- ...
+
+**Out of scope:**
+- [explicitly excluded topics]
+```
+
+COMPACT
+
+# === Phase 2: Technical Analysis ===
+PROMPT ## Phase 2: Technical Analysis
+
+Perform detailed technical analysis of the topic.
+
+**For each repository involved:**
+
+### Implementation Details
+- Data structures and types used
+- Key algorithms and logic flows
+- External dependencies
+- Error handling patterns
+
+### Code References
+Use explicit file:line references:
+```
+See `externals/repo/path/file.ext:45-67` for the main implementation.
+```
+
+### Behavioral Observations
+- Normal operation flow
+- Edge cases and error conditions
+- Performance characteristics
+- Security considerations
+
+### Cross-Project Comparison
+If multiple implementations exist, compare:
+| Aspect | Loop | AAPS | Trio | Nightscout |
+|--------|------|------|------|------------|
+| Approach | ... | ... | ... | ... |
+| Pros | ... | ... | ... | ... |
+| Cons | ... | ... | ... | ... |
+
+COMPACT
+
+# === Phase 3: 5-Facet Documentation ===
+PROMPT ## Phase 3: Update All 5 Facets
+
+### Facet 1: Terminology
+Add new terms to `mapping/cross-project/terminology-matrix.md`:
+- Domain-specific terms discovered
+- Cross-project mappings for the same concept
+
+### Facet 2: Gaps
+Add any gaps found to `traceability/gaps.md`:
+- Missing features or documentation
+- Inconsistencies between implementations
+- Interoperability issues
+
+### Facet 3: Requirements
+Extract requirements to `traceability/requirements.md`:
+- Behaviors that should be standardized
+- Safety-critical constraints
+- Interoperability requirements
+
+### Facet 4: Deep Dive Document
+Create `docs/10-domain/{topic}-deep-dive.md` with structure:
+
+```markdown
+# {Topic} Deep Dive
+
+## Overview
+[High-level summary]
+
+## Background
+[Context and motivation]
+
+## Technical Details
+[From Phase 2 analysis]
+
+## Implementation Comparison
+[Cross-project table if applicable]
+
+## Key Findings
+1. [Finding with source reference]
+2. ...
+
+## Gaps Identified
+- GAP-XXX-001: [description]
+
+## Requirements Extracted
+- REQ-NNN: [description]
+
+## Open Questions
+- [Unresolved items]
+
+## References
+- `externals/repo/path/file.ext` - [description]
+```
+
+### Facet 5: Progress Entry
+Append to `progress.md`:
+```markdown
+### {Topic} Deep Dive ({{DATE}})
+
+Comprehensive analysis of [topic] across [repos].
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep Dive | `docs/10-domain/{topic}-deep-dive.md` | [summary] |
+
+**Gaps Identified:** GAP-XXX-001, ...
+**Requirements:** REQ-NNN, ...
+
+**Source Files Analyzed:**
+- `externals/repo/path/file.ext`
+```
+
+COMPACT
+
+# === Phase 4: Quality & Summary ===
+PROMPT ## Phase 4: Quality Check & Summary
+
+### Verify Completeness
+Check that all 5 facets were updated:
+- [ ] Terminology matrix updated
+- [ ] Gaps documented
+- [ ] Requirements extracted (if applicable)
+- [ ] Deep dive document created
+- [ ] Progress entry added
+
+### Escalation
+Route unresolved questions to `docs/OPEN-QUESTIONS.md`:
+```markdown
+### [Topic] - [Question] (Pending)
+**Context:** [Brief context]
+**Options:**
+1. [Option A]
+2. [Option B]
+**Recommendation:** [If any]
+```
+
+### Summary
+```
+### Deep Dive Complete
+
+**Topic:** [topic]
+**Document:** docs/10-domain/{topic}-deep-dive.md
+
+**5-Facet Checklist:**
+✓ Terminology: N new terms
+✓ Gaps: GAP-XXX-001, ...
+✓ Requirements: REQ-NNN, ...
+✓ Deep Dive: [word count] words
+✓ Progress: Entry added
+
+**Key insights:**
+1. [Insight 1]
+2. [Insight 2]
+3. [Insight 3]
+
+**Open questions escalated:** N
+```
+
+# Post-flight verification
+RUN python3 tools/gen_traceability.py --json > /dev/null 2>&1 && echo "✓ Traceability valid" || echo "⚠ Traceability check failed"
+RUN-ON-ERROR continue

@@ -1,0 +1,172 @@
+# terminology-alignment.conv - Cross-project terminology mapping
+#
+# A focused workflow for discovering and documenting how different projects
+# name the same concepts. Direction via --prologue specifies the domain.
+#
+# Usage:
+#   # Map terminology for a specific domain
+#   sdqctl iterate workflows/maintenance/terminology-alignment.conv \
+#     --prologue "Domain: insulin dosing. Terms: basal, bolus, TBR, SMB"
+#
+#   # Discover terminology from source
+#   sdqctl iterate "Map CGM-related terms across Loop, AAPS, and Nightscout" \
+#     workflows/maintenance/terminology-alignment.conv
+#
+# I/O Contract:
+#   INPUT:  Direction via --prologue (domain and/or specific terms)
+#           Source code in externals/
+#           Existing terminology matrix
+#   OUTPUT: mapping/cross-project/terminology-matrix.md (updated)
+#           progress.md (dated completion entry)
+#   ESCALATE: docs/OPEN-QUESTIONS.md (ambiguous mappings)
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE analysis
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+
+# Load existing terminology
+CONTEXT @mapping/cross-project/terminology-matrix.md
+
+# === Phase 1: Term Discovery ===
+PROMPT ## Phase 1: Term Discovery
+
+Based on the domain specified in the prologue, discover relevant terms across projects.
+
+**Your task:**
+1. If specific terms were provided, use those
+2. If just a domain was provided, discover key terms from source code
+3. Search each project for the term or concept
+
+**For each project, find:**
+- The field name used in data models
+- The variable name used in code
+- The API field name in requests/responses
+- Any aliases or variations
+
+**Output:**
+```markdown
+### Terms to Map
+
+**Domain:** [from prologue]
+
+**Candidate terms:**
+1. [term1] - [what concept it represents]
+2. [term2] - [what concept it represents]
+...
+
+**Projects to check:**
+- Loop (Swift)
+- AAPS (Kotlin)
+- Trio (Swift)
+- Nightscout (JavaScript/TypeScript)
+- xDrip+ (Java)
+- oref0 (JavaScript)
+```
+
+COMPACT
+
+# === Phase 2: Cross-Project Mapping ===
+PROMPT ## Phase 2: Cross-Project Mapping
+
+For each term identified in Phase 1, find its representation in each project.
+
+**Search patterns:**
+- Data model definitions (struct, class, interface, type)
+- API request/response fields
+- Database schema fields
+- Configuration keys
+
+**Build mapping table:**
+
+| Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ | oref0 | Notes |
+|----------------|------------|------|------|------|--------|-------|-------|
+| [Concept] | [field] | [property] | [field] | [property] | [field] | [variable] | [context] |
+
+**For each mapping, note:**
+- The exact field/property name
+- The containing type/class
+- File reference: `externals/repo/path:line`
+
+**Document variations:**
+- Same concept, different names → add to matrix
+- Same name, different semantics → note in "Notes" column
+- Missing in some projects → mark as "-" or "N/A"
+
+COMPACT
+
+# === Phase 3: Update Terminology Matrix ===
+PROMPT ## Phase 3: Update Terminology Matrix
+
+Update `mapping/cross-project/terminology-matrix.md` with new mappings.
+
+**Ensure consistent format:**
+```markdown
+## [Domain Section]
+
+| Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ | oref0 | Notes |
+|----------------|------------|------|------|------|--------|-------|-------|
+| `basalRate` | `rate` | `basalRate` | `baseBasalRate` | `basalRate` | `profile.basal` | `current_basal` | mg/dL/hr |
+```
+
+**Conventions:**
+- Use backticks for field names
+- Use "N/A" if concept doesn't exist
+- Use "-" if not yet researched
+- Add source reference in Notes if non-obvious
+
+**Handle ambiguities:**
+If a term has unclear mappings:
+1. Document what's known
+2. Add to `docs/OPEN-QUESTIONS.md`:
+```markdown
+### Terminology: [Term] Mapping Unclear (Pending)
+**Context:** [What we know]
+**Options:** [Possible interpretations]
+**Needs:** [What would resolve this]
+```
+
+COMPACT
+
+# === Phase 4: Summary ===
+PROMPT ## Phase 4: Summary
+
+### Progress Entry
+Append to `progress.md`:
+```markdown
+### Terminology Alignment: [Domain] ({{DATE}})
+
+Mapped terminology for [domain] across [N] projects.
+
+| Term | Projects Mapped | Notes |
+|------|-----------------|-------|
+| [term1] | 6/6 | All consistent |
+| [term2] | 4/6 | Missing in xDrip+, oref0 |
+
+**New mappings added:** N
+**Ambiguities escalated:** N
+```
+
+### Summary
+```
+### Terminology Alignment Complete
+
+**Domain:** [domain]
+**Terms mapped:** N
+**Projects covered:** Loop, AAPS, Trio, Nightscout, xDrip+, oref0
+
+**New mappings:**
+- [term1]: All projects consistent
+- [term2]: [notes on variations]
+
+**Escalated to OPEN-QUESTIONS:** N items
+
+**Files updated:**
+- mapping/cross-project/terminology-matrix.md
+- progress.md
+```
+
+# Post-flight verification
+RUN grep -c "^\|" mapping/cross-project/terminology-matrix.md 2>/dev/null && echo "✓ Matrix has entries" || echo "⚠ Matrix empty or missing"
+RUN-ON-ERROR continue

@@ -1,0 +1,181 @@
+# extract-spec.conv - Process-oriented specification extraction from source code
+#
+# A generic workflow for extracting specifications, schemas, and API definitions
+# from source code. Direction is injected via --prologue or adjacent prompt.
+#
+# Usage:
+#   # Extract JSON schema from Kotlin data classes
+#   sdqctl iterate workflows/analysis/extract-spec.conv \
+#     --prologue "Extract: RemoteTreatment schema from AAPS. Path: AndroidAPS/core/nssdk"
+#
+#   # Extract OpenAPI gaps from cgm-remote-monitor
+#   sdqctl iterate "Extract undocumented fields from Nightscout treatments API" \
+#     workflows/analysis/extract-spec.conv
+#
+#   # Extract Swift struct definitions
+#   feature="LoopDataManager state machine"
+#   sdqctl iterate workflows/analysis/extract-spec.conv --prologue "Extract: $feature"
+#
+# I/O Contract:
+#   INPUT:  Direction via --prologue (what to extract, from where)
+#           Source code in externals/
+#           Existing specs in specs/
+#   OUTPUT: specs/jsonschema/{topic}.schema.json (JSON Schema)
+#           specs/openapi/{topic}.yaml (OpenAPI fragments)
+#           traceability/gaps.md (spec gaps found)
+#           progress.md (dated completion entry)
+#   ESCALATE: docs/OPEN-QUESTIONS.md (ambiguous type mappings)
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE analysis
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE schema types
+
+# Load existing specs for reference
+CONTEXT-OPTIONAL @specs/openapi/aid-treatments-2025.yaml
+CONTEXT-OPTIONAL @specs/jsonschema/*.schema.json
+CONTEXT @traceability/gaps.md
+
+# === Phase 1: Source Discovery ===
+PROMPT ## Phase 1: Source Discovery
+
+Based on the direction provided, locate the source files to extract specifications from.
+
+**Your task:**
+1. Identify the repository and path specified in the prologue
+2. List all relevant source files (models, DTOs, API controllers)
+3. Determine the source language (Swift, Kotlin, TypeScript, Python, Java)
+
+**Output:**
+```
+### Source Files Identified
+
+**Repository:** [alias]
+**Language:** [Swift/Kotlin/TypeScript/etc]
+**Base Path:** externals/[repo]/[path]
+
+**Files to extract:**
+1. `path/to/Model.swift` - [description]
+2. `path/to/DTO.kt` - [description]
+...
+```
+
+Read the identified files to understand their structure.
+
+COMPACT
+
+# === Phase 2: Schema Extraction ===
+PROMPT ## Phase 2: Schema Extraction
+
+Extract formal specifications from the source code identified in Phase 1.
+
+**For each type/model/struct, document:**
+
+### Field Extraction Table
+| Field | Type | Required | Description | Validation |
+|-------|------|----------|-------------|------------|
+| id | string | yes | Unique identifier | UUID format |
+| ... | ... | ... | ... | ... |
+
+### Type Mappings
+Map source language types to JSON Schema types:
+- `String` → `{ "type": "string" }`
+- `Int` → `{ "type": "integer" }`
+- `Double` → `{ "type": "number" }`
+- `Bool` → `{ "type": "boolean" }`
+- `Date` → `{ "type": "string", "format": "date-time" }`
+- `[T]` → `{ "type": "array", "items": {...} }`
+- `Optional<T>` → field not in `required`
+
+### Enum Values
+For any enumeration types, list all possible values.
+
+Include explicit source references: `file.ext:line`
+
+COMPACT
+
+# === Phase 3: Generate JSON Schema ===
+PROMPT ## Phase 3: Generate JSON Schema
+
+Based on the extraction in Phase 2, generate a valid JSON Schema.
+
+**Output format:**
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nightscout.github.io/schemas/{topic}.schema.json",
+  "title": "[Type Name]",
+  "description": "Extracted from [source file]",
+  "type": "object",
+  "properties": {
+    "fieldName": {
+      "type": "string",
+      "description": "Field description"
+    }
+  },
+  "required": ["field1", "field2"],
+  "x-source": "[repo:path/file.ext]",
+  "x-extracted-date": "{{DATE}}"
+}
+```
+
+Save to `specs/jsonschema/{topic}.schema.json`.
+
+**Document any ambiguities:**
+- Types that don't map cleanly to JSON Schema
+- Optional vs nullable semantics
+- Default values
+- Validation constraints in code vs schema
+
+COMPACT
+
+# === Phase 4: Gap Analysis & Summary ===
+PROMPT ## Phase 4: Gap Analysis & Summary
+
+### Spec Gaps
+Document any gaps between the extracted spec and existing documentation:
+
+**Compare to existing specs:**
+- Fields in code but not in specs → GAP-SPEC-NNN
+- Fields in specs but not in code → GAP-IMPL-NNN
+- Type mismatches → GAP-TYPE-NNN
+
+Append new gaps to `traceability/gaps.md`.
+
+### Escalation
+Route ambiguities to `docs/OPEN-QUESTIONS.md`:
+- Unclear type mappings
+- Conflicting behaviors
+- Design decisions needed
+
+### Progress Entry
+Append to `progress.md`:
+```markdown
+### Spec Extraction: [Topic] ({{DATE}})
+
+**Source:** `externals/[repo]/[path]`
+**Output:** `specs/jsonschema/{topic}.schema.json`
+
+| Field | Type | Notes |
+|-------|------|-------|
+| ... | ... | ... |
+
+**Gaps Found:** GAP-SPEC-001, ...
+```
+
+### Summary
+```
+### Extraction Complete
+
+**Source:** [repo:path]
+**Schema generated:** specs/jsonschema/{topic}.schema.json
+**Fields extracted:** N
+**Gaps identified:** N
+**Ambiguities escalated:** N
+```
+
+# Validate generated JSON if present
+RUN python3 -c "import json; json.load(open('specs/jsonschema/*.schema.json'))" 2>/dev/null && echo "✓ JSON valid" || echo "⚠ No schema generated or invalid JSON"
+RUN-ON-ERROR continue

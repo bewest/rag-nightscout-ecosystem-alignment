@@ -9,9 +9,70 @@ Declarative workflows for automating traceability operations using [sdqctl](http
 source activate-sdqctl.sh
 ```
 
-## Workflow Categories
+## Process-Oriented Workflows (Recommended)
 
-### Discovery Workflows (NEW)
+These workflows are **generic processes** - direction is injected via `--prologue` or adjacent prompts, not baked into the workflow. This makes them reusable across different topics.
+
+### Analysis Workflows
+
+Located in `analysis/`:
+
+| Workflow | Purpose | Example |
+|----------|---------|---------|
+| `analysis/compare-feature.conv` | Cross-project feature comparison | `--prologue "Focus: treatment sync"` |
+| `analysis/extract-spec.conv` | Extract specs from source code | `--prologue "Extract: RemoteTreatment from AAPS"` |
+| `analysis/deep-dive.conv` | Comprehensive topic analysis | `--prologue "Topic: Dexcom G7 protocol"` |
+| `analysis/gap-discovery.conv` | Systematic gap identification | `--prologue "Area: batch API behaviors"` |
+
+**Usage Patterns:**
+
+```bash
+# Via --prologue (recommended)
+sdqctl iterate workflows/analysis/compare-feature.conv \
+  --prologue "Focus: treatment sync. Repos: Loop, AAPS, Trio."
+
+# Via adjacent prompt (elides into workflow)
+sdqctl iterate "Compare insulin curve models in Loop vs AAPS" \
+  workflows/analysis/compare-feature.conv
+
+# Via shell variable expansion
+feature="remote bolus commands"
+sdqctl iterate workflows/analysis/compare-feature.conv --prologue "Focus: $feature"
+
+# With separator for distinct turns
+sdqctl iterate -- "First gather context on treatments" --- \
+  workflows/analysis/gap-discovery.conv
+```
+
+### Maintenance Workflows
+
+Located in `maintenance/`:
+
+| Workflow | Purpose | Example |
+|----------|---------|---------|
+| `maintenance/5-facet-update.conv` | Update all 5 documentation facets | `--prologue "Recent work: G7 analysis"` |
+| `maintenance/terminology-alignment.conv` | Map terms across projects | `--prologue "Domain: insulin dosing"` |
+
+### I/O Contracts
+
+Every process-oriented workflow documents its I/O contract:
+
+```
+INPUT:   Direction via --prologue (what to do)
+         Source files (traceability/*.md, externals/*)
+OUTPUT:  Updated documentation (gaps.md, requirements.md, deep-dives)
+         progress.md entry (always)
+ESCALATE: docs/OPEN-QUESTIONS.md (needs human decision)
+          proposals/*.md (needs design spec)
+```
+
+---
+
+## Legacy Workflows
+
+The workflows below are domain-specific (direction baked in). Consider using the process-oriented alternatives above.
+
+### Discovery Workflows
 
 Located in `discovery/`:
 
