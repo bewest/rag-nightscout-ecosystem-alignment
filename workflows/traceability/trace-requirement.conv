@@ -1,0 +1,148 @@
+# trace-requirement.conv - Full traceability chain for a requirement
+#
+# Trace a requirement through implementation, tests, and documentation.
+# Shows the complete chain: REQ → Code → Tests → Gaps → Proposals
+#
+# Usage:
+#   sdqctl iterate workflows/traceability/trace-requirement.conv \
+#     --prologue "REQ-ID: REQ-BATCH-001"
+#
+#   sdqctl iterate "Trace REQ-010 timestamp handling" \
+#     workflows/traceability/trace-requirement.conv
+#
+# I/O Contract:
+#   INPUT:  Direction via --prologue (REQ-ID to trace)
+#           traceability/requirements.md
+#           traceability/gaps.md
+#           conformance/scenarios/
+#           Source code in externals/
+#   OUTPUT: traceability/{req-id}-trace.md (trace report)
+#           progress.md (dated completion entry)
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE analysis
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+
+# Load traceability docs
+CONTEXT @traceability/requirements.md
+CONTEXT @traceability/gaps.md
+
+# === Phase 1: Requirement Analysis ===
+PROMPT ## Phase 1: Analyze the Requirement
+
+Based on the REQ-ID provided in the prologue, analyze the requirement:
+
+1. Find the requirement in traceability/requirements.md
+2. Extract the requirement statement, rationale, and verification criteria
+3. Identify related gaps (if any)
+
+**Output:**
+```markdown
+### Requirement Details
+
+**ID:** [REQ-NNN]
+**Title:** [from entry]
+**Statement:** [The system MUST/SHOULD/MAY...]
+**Rationale:** [Why this requirement exists]
+
+**Verification Criteria:**
+- [Criterion 1]
+- [Criterion 2]
+
+**Related Gaps:**
+- [GAP-XXX-NNN]: [Brief description]
+```
+
+COMPACT
+
+# === Phase 2: Implementation Trace ===
+PROMPT ## Phase 2: Trace to Implementation
+
+Find where this requirement is implemented in the codebase.
+
+**Search for:**
+1. Code that implements the required behavior
+2. Comments or documentation referencing the REQ-ID
+3. Related data structures or APIs
+
+**For each implementation found:**
+```markdown
+### Implementation: [System]
+
+**Repository:** [repo name]
+**File:** `externals/repo/path/file.ext`
+**Lines:** [start-end]
+
+**How it implements the requirement:**
+[Description of the implementation approach]
+```
+
+**Implementation Coverage:**
+| System | Implemented | Location | Notes |
+|--------|-------------|----------|-------|
+| Loop | ✓/✗ | `path/file.ext:line` | [notes] |
+| AAPS | ✓/✗ | `path/file.ext:line` | [notes] |
+| Trio | ✓/✗ | `path/file.ext:line` | [notes] |
+| Nightscout | ✓/✗ | `path/file.ext:line` | [notes] |
+
+COMPACT
+
+# === Phase 3: Test Trace ===
+PROMPT ## Phase 3: Trace to Tests
+
+Find tests that verify this requirement.
+
+**Search for:**
+1. Conformance scenarios in conformance/scenarios/
+2. Unit tests in external repos
+3. Integration tests
+
+**Test Coverage:**
+| Verification Criterion | Test | Status |
+|-----------------------|------|--------|
+| [Criterion 1] | [test name or "None"] | ✓/✗ |
+| [Criterion 2] | [test name or "None"] | ✓/✗ |
+
+**Coverage Gaps:**
+- [Untested criteria or edge cases]
+
+COMPACT
+
+# === Phase 4: Traceability Report ===
+PROMPT ## Phase 4: Generate Traceability Report
+
+Create a comprehensive trace report at traceability/{req-id}-trace.md:
+
+```markdown
+# Traceability Report: [REQ-ID]
+
+## Requirement
+**ID:** [REQ-NNN]
+**Title:** [Title]
+**Statement:** [Full statement]
+
+## Traceability Matrix
+
+| Artifact | Status | Location |
+|----------|--------|----------|
+| Requirement | ✓ Documented | traceability/requirements.md |
+| Loop Impl | ✓/✗ | externals/Loop/... |
+| AAPS Impl | ✓/✗ | externals/AndroidAPS/... |
+| Trio Impl | ✓/✗ | externals/Trio/... |
+| Nightscout Impl | ✓/✗ | externals/cgm-remote-monitor/... |
+| Conformance Test | ✓/✗ | conformance/scenarios/... |
+
+## Gaps
+- [Related gaps or coverage gaps]
+
+## Recommendations
+1. [Recommendation based on analysis]
+```
+
+Append progress entry and output summary.
+
+# Post-flight
+RUN python3 tools/gen_traceability.py --json > /dev/null 2>&1 && echo "✓ Traceability valid" || echo "⚠ Check failed"
+RUN-ON-ERROR continue

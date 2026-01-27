@@ -62,6 +62,27 @@ Located in `generation/`:
 | `generation/gap-to-proposal.conv` | Generate RFC/ADR from GAP-ID | `--prologue "GAP-ID: GAP-API-003. Type: RFC"` |
 | `generation/gen-conformance.conv` | Generate conformance test scenarios | `--prologue "REQ-ID: REQ-BATCH-001"` |
 
+### Traceability Workflows
+
+Located in `traceability/`:
+
+| Workflow | Purpose | Example |
+|----------|---------|---------|
+| `traceability/trace-requirement.conv` | Full traceability chain for REQ-ID | `--prologue "REQ-ID: REQ-BATCH-001"` |
+| `traceability/trace-gap.conv` | Gap impact analysis | `--prologue "GAP-ID: GAP-SYNC-001"` |
+
+**Usage Patterns:**
+
+```bash
+# Trace a requirement through implementation and tests
+sdqctl iterate workflows/traceability/trace-requirement.conv \
+  --prologue "REQ-ID: REQ-BATCH-001"
+
+# Analyze gap impact across the ecosystem
+sdqctl iterate "Analyze impact of GAP-API-003" \
+  workflows/traceability/trace-gap.conv
+```
+
 ### I/O Contracts
 
 Every process-oriented workflow documents its I/O contract:

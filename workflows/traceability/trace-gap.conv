@@ -1,0 +1,179 @@
+# trace-gap.conv - Gap impact analysis workflow
+#
+# Analyze a gap's impact across the ecosystem: affected systems, related
+# requirements, potential fixes, and remediation priority.
+#
+# Usage:
+#   sdqctl iterate workflows/traceability/trace-gap.conv \
+#     --prologue "GAP-ID: GAP-BATCH-001"
+#
+#   sdqctl iterate "Analyze impact of GAP-SYNC-001" \
+#     workflows/traceability/trace-gap.conv
+#
+# I/O Contract:
+#   INPUT:  Direction via --prologue (GAP-ID to analyze)
+#           traceability/gaps.md
+#           traceability/requirements.md
+#           Source code in externals/
+#   OUTPUT: traceability/{gap-id}-impact.md (impact report)
+#           progress.md (dated completion entry)
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE analysis
+CONTEXT-LIMIT 70%
+ON-CONTEXT-LIMIT compact
+
+# Load traceability docs
+CONTEXT @traceability/gaps.md
+CONTEXT @traceability/requirements.md
+
+# === Phase 1: Gap Analysis ===
+PROMPT ## Phase 1: Analyze the Gap
+
+Based on the GAP-ID provided in the prologue:
+
+1. Find the gap in traceability/gaps.md
+2. Extract description, affected systems, and current status
+3. Identify related requirements
+
+**Output:**
+```markdown
+### Gap Details
+
+**ID:** [GAP-XXX-NNN]
+**Title:** [from entry]
+**Description:** [What is missing or inconsistent]
+**Category:** [SPEC|IMPL|SYNC|etc]
+
+**Affected Systems:**
+- [System 1]
+- [System 2]
+
+**Current Status:** [Open|In Progress|Resolved]
+
+**Related Requirements:**
+- [REQ-NNN]: [How it relates]
+```
+
+COMPACT
+
+# === Phase 2: Impact Assessment ===
+PROMPT ## Phase 2: Assess Impact
+
+Analyze the gap's impact on the ecosystem.
+
+**Impact Dimensions:**
+
+### Data Integrity Impact
+- Can this gap cause data loss or corruption?
+- Can it cause duplicate records?
+- Score: None | Low | Medium | High | Critical
+
+### Interoperability Impact
+- Does this prevent systems from syncing correctly?
+- Does it cause different behavior across systems?
+- Score: None | Low | Medium | High | Critical
+
+### Safety Impact
+- Could this affect insulin dosing decisions?
+- Could it cause incorrect glucose readings?
+- Score: None | Low | Medium | High | Critical
+
+### User Experience Impact
+- Does this cause confusion or unexpected behavior?
+- Score: None | Low | Medium | High
+
+**Impact Summary:**
+| Dimension | Score | Notes |
+|-----------|-------|-------|
+| Data Integrity | [score] | [notes] |
+| Interoperability | [score] | [notes] |
+| Safety | [score] | [notes] |
+| User Experience | [score] | [notes] |
+
+**Overall Priority:** P0 | P1 | P2 | P3
+
+COMPACT
+
+# === Phase 3: Remediation Analysis ===
+PROMPT ## Phase 3: Remediation Options
+
+Analyze potential fixes for this gap.
+
+**For each remediation option:**
+```markdown
+### Option N: [Name]
+
+**Approach:** [How this would fix the gap]
+
+**Changes Required:**
+| Repository | Change | Complexity |
+|------------|--------|------------|
+| [repo] | [description] | Low/Med/High |
+
+**Pros:**
+- [Benefit 1]
+
+**Cons:**
+- [Tradeoff 1]
+
+**Breaking Changes:** Yes/No
+**Migration Required:** Yes/No
+```
+
+**Recommendation:**
+[Which option is recommended and why]
+
+COMPACT
+
+# === Phase 4: Impact Report ===
+PROMPT ## Phase 4: Generate Impact Report
+
+Create impact report at traceability/{gap-id}-impact.md:
+
+```markdown
+# Gap Impact Analysis: [GAP-ID]
+
+## Gap Summary
+**ID:** [GAP-XXX-NNN]
+**Title:** [Title]
+**Category:** [Category]
+
+## Impact Assessment
+
+| Dimension | Score | Justification |
+|-----------|-------|---------------|
+| Data Integrity | [score] | [brief] |
+| Interoperability | [score] | [brief] |
+| Safety | [score] | [brief] |
+| User Experience | [score] | [brief] |
+
+**Overall Priority:** [P0/P1/P2/P3]
+
+## Affected Systems
+- [System with details]
+
+## Remediation Options
+
+### Recommended: [Option Name]
+[Summary of recommended approach]
+
+### Alternatives
+- [Alternative 1]: [brief]
+
+## Related Artifacts
+- Requirements: [REQ-NNN]
+- Proposals: [if any]
+- Tests: [if any]
+
+## Next Steps
+1. [Action item]
+2. [Action item]
+```
+
+Append progress entry and output summary.
+
+# Post-flight
+RUN python3 tools/gen_traceability.py --json > /dev/null 2>&1 && echo "✓ Traceability valid" || echo "⚠ Check failed"
+RUN-ON-ERROR continue
