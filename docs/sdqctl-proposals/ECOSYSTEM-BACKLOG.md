@@ -90,6 +90,9 @@ Items ready for immediate work. Keep this at 3 items.
 - [ ] **Playwright adoption proposal for cgm-remote-monitor** - E2E testing modernization
   - From: LIVE-BACKLOG request
   - Focus: Test coverage, CI integration, migration from existing tests
+- [ ] **sdqctl tools vs custom py tools proposal** - Evaluate tooling consolidation
+  - From: LIVE-BACKLOG request
+  - Focus: Compare sdqctl capabilities vs tools/*.py, deprecation candidates
 
 ---
 

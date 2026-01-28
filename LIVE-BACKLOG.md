@@ -3,8 +3,7 @@
 > **Purpose**: Midflight requests from humans during sdqctl processing sessions.  
 > **Parent**: [ECOSYSTEM-BACKLOG.md](docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md)
 
-* Can we consider a proposal using sdqctl tools in favor of or deprecating some of our custom py tools?
-* Where do we put advice to avoid speculating on the future in terms of time horizons.  Do not use "2 weeks" days or months, but rather refer to the complexity of the work in terms of straightforward/simples to complicated or hard to understand and comprehend and by effort in terms of the size of the working materials (lines of code/files/deliverables, etc).
+_(No pending requests)_
 
 ---
 
@@ -12,6 +11,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| sdqctl tools vs custom py tools proposal | P2 | → Queued to tooling backlog | 2026-01-28 |
+| Guidance: avoid time speculation, use complexity/effort | - | → Add to workspace conventions | 2026-01-28 |
 | Playwright adoption proposal | P2 | → Queued to tooling backlog | 2026-01-28 |
 | Re-prioritize after modernization updates | - | ✅ Addressed | 2026-01-28 |
 | cgm-remote-monitor vs Nocturne modernization analysis | P1 | ✅ Complete | 2026-01-28 |
