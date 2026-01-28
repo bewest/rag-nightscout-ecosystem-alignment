@@ -5,6 +5,7 @@
 
 
 * cgm-remote-monitor is interetsed in adopting playwright, let's propose adoption plan for playwright among modernization efforts.
+* consider if everything is correctly prioritized given the updates we've made.
 
 ---
 

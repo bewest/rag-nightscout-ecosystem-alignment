@@ -16,6 +16,10 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 | [`aid-profile-2025.yaml`](../../specs/openapi/aid-profile-2025.yaml) | `profile` | Therapy settings with time-varying schedules |
 | [`aid-alignment-extensions.yaml`](../../specs/openapi/aid-alignment-extensions.yaml) | All | 2026 extensions addressing documented gaps |
 
+**Origin Schema Extractions**:
+- [`mapping/nightscout/v3-treatments-schema.md`](../nightscout/v3-treatments-schema.md) - 21+ eventTypes, deduplication rules
+- [`mapping/aaps/nsclient-schema.md`](../aaps/nsclient-schema.md) - 70+ fields, 25 eventTypes
+
 **JSON Schema**: [`aid-events.schema.json`](../../specs/jsonschema/aid-events.schema.json) provides unified validation schema with gap annotations.
 
 **Key Annotations**: OpenAPI specs use `x-aid-*` extensions:

@@ -33,11 +33,11 @@ Items ready for immediate work. Keep this at 3 items.
 **Focus:** Loop overrides vs AAPS ProfileSwitch vs Trio overrides
 **Workflow:** `compare-feature.conv`
 
-### 3. [P1] Extract Nightscout v3 treatments schema
-**Type:** Extraction | **Effort:** Medium
-**Source:** `externals/cgm-remote-monitor/lib/api3/`
-**Focus:** Document all supported fields and eventTypes from origin
-**Workflow:** `extract-spec.conv`
+### 3. [P0] Full audit: cgm-remote-monitor
+**Type:** Audit | **Effort:** Large
+**Source:** `externals/cgm-remote-monitor/`
+**Focus:** API v3, plugins (38), sync, authentication
+**Workflow:** `deep-dive.conv` (multi-cycle)
 
 ---
 
@@ -45,9 +45,7 @@ Items ready for immediate work. Keep this at 3 items.
 
 ### P0 - Critical
 
-- [ ] **Full audit: cgm-remote-monitor** - Central Nightscout server (v15.0.4), only 32 lines documented
-  - Components: lib/ (api3, plugins, server), views/, translations/
-  - Focus: API v3 collections, sync behavior, authentication, plugin system
+- [x] ~~**Full audit: cgm-remote-monitor**~~ - Promoted to Ready Queue #3
   - Workflow: `deep-dive.conv` with multiple cycles
 
 ### P1 - High Value
@@ -97,6 +95,7 @@ Items ready for immediate work. Keep this at 3 items.
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-28 | Extract Nightscout v3 treatments schema | `mapping/nightscout/v3-treatments-schema.md` - 248 lines, 21+ eventTypes |
 | 2026-01-28 | Modernization analysis: cgm-remote-monitor vs Nocturne | `docs/sdqctl-proposals/nocturne-modernization-analysis.md` - 350 lines, full comparison |
 | 2026-01-28 | Initial audit: share2nightscout-bridge | `docs/10-domain/share2nightscout-bridge-deep-dive.md` - 328 lines, 3 gaps (GAP-SHARE-001-003) |
 | 2026-01-28 | Initial audit: nocturne | `docs/10-domain/nocturne-deep-dive.md` - 279 lines, 3 gaps (GAP-NOCTURNE-001-003) |

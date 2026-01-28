@@ -6,6 +6,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nightscout v3 Treatments Schema (2026-01-28)
+
+Extracted authoritative treatments schema from origin Nightscout server.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Schema** | `mapping/nightscout/v3-treatments-schema.md` | 248 lines, 21+ eventTypes |
+
+#### Key Findings
+
+| Aspect | Details |
+|--------|---------|
+| **eventTypes** | 21+ types (careportal + OpenAPS plugins) |
+| **Date formats** | Accepts ms, seconds, or ISO-8601 |
+| **Deduplication** | By identifier or `created_at + eventType` |
+| **Duration** | Always minutes |
+
+#### NS vs AAPS Comparison
+- AAPS has `pumpId`/`pumpSerial` for dedup (NS doesn't)
+- AAPS has bolus `type` field (NORMAL/SMB)
+- eventTypes mostly compatible (different naming)
+
+---
+
 ### Modernization Analysis: cgm-remote-monitor vs Nocturne (2026-01-28)
 
 Comprehensive comparison of original Nightscout server vs Nocturne .NET rewrite.
