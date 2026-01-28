@@ -6,6 +6,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Remote Bolus Command Comparison (2026-01-28)
+
+Cross-system analysis of remote bolus handling in Loop, AAPS, Trio, and Nightscout.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Comparison** | `docs/10-domain/remote-bolus-comparison.md` | 348 lines, 4 systems |
+
+#### Key Findings
+
+| System | Auth | Key Safety Feature |
+|--------|------|-------------------|
+| Loop | OTP + APNs | 5-min expiration |
+| AAPS | SMS passcode | 15-min distance |
+| Trio | AES-256 | 20% rule + IOB check |
+| Nightscout | API secret | Relay only (no limits) |
+
+**Gaps Identified**: GAP-REMOTE-001 through GAP-REMOTE-004
+
+---
+
 ### Nightscout v3 Treatments Schema (2026-01-28)
 
 Extracted authoritative treatments schema from origin Nightscout server.

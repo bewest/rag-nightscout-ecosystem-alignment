@@ -21,23 +21,22 @@
 
 Items ready for immediate work. Keep this at 3 items.
 
-### 1. [P1] Compare remote bolus command handling
-**Type:** Comparison | **Effort:** Medium
-**Repos:** Loop, AAPS, Trio, Nightscout
-**Focus:** How each system validates and executes remote bolus commands
-**Workflow:** `compare-feature.conv`
-
-### 2. [P1] Compare override/profile switch semantics
+### 1. [P1] Compare override/profile switch semantics
 **Type:** Comparison | **Effort:** Medium
 **Repos:** Loop, AAPS, Trio
 **Focus:** Loop overrides vs AAPS ProfileSwitch vs Trio overrides
 **Workflow:** `compare-feature.conv`
 
-### 3. [P0] Full audit: cgm-remote-monitor
+### 2. [P0] Full audit: cgm-remote-monitor
 **Type:** Audit | **Effort:** Large
 **Source:** `externals/cgm-remote-monitor/`
 **Focus:** API v3, plugins (38), sync, authentication
 **Workflow:** `deep-dive.conv` (multi-cycle)
+
+### 3. [P1] Deep dive: Batch operation ordering
+**Type:** Analysis | **Effort:** Medium
+**Focus:** Document order-preservation requirements for sync
+**Workflow:** `gap-discovery.conv`
 
 ---
 
@@ -45,7 +44,7 @@ Items ready for immediate work. Keep this at 3 items.
 
 ### P0 - Critical
 
-- [x] ~~**Full audit: cgm-remote-monitor**~~ - Promoted to Ready Queue #3
+- [x] ~~**Full audit: cgm-remote-monitor**~~ - Promoted to Ready Queue #2
   - Workflow: `deep-dive.conv` with multiple cycles
 
 ### P1 - High Value
@@ -98,6 +97,7 @@ Items ready for immediate work. Keep this at 3 items.
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-28 | Compare remote bolus command handling | `docs/10-domain/remote-bolus-comparison.md` - 348 lines, 4 systems, 2 new gaps |
 | 2026-01-28 | Extract Nightscout v3 treatments schema | `mapping/nightscout/v3-treatments-schema.md` - 248 lines, 21+ eventTypes |
 | 2026-01-28 | Modernization analysis: cgm-remote-monitor vs Nocturne | `docs/sdqctl-proposals/nocturne-modernization-analysis.md` - 350 lines, full comparison |
 | 2026-01-28 | Initial audit: share2nightscout-bridge | `docs/10-domain/share2nightscout-bridge-deep-dive.md` - 328 lines, 3 gaps (GAP-SHARE-001-003) |

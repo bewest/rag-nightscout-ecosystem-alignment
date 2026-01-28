@@ -2939,3 +2939,58 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 3. Document risk and mitigation
 
 **Status**: Under discussion
+
+---
+
+### GAP-REMOTE-008: Nightscout has no server-side bolus limits
+
+**Scenario**: Remote bolus safety
+
+**Description**: Nightscout acts purely as a relay for remote bolus commands, sending them via APNs without any server-side validation of bolus amounts. The max bolus, max IOB, and other safety limits are only enforced on the receiving client (Loop/Trio).
+
+**Evidence**:
+- `externals/cgm-remote-monitor/lib/server/loop.js:95-104`: Only checks `remoteBolus > 0`, no upper limit
+- No access to user's max bolus setting
+- No IOB awareness
+
+**Impact**:
+- Malformed API requests could relay excessive bolus amounts
+- Server cannot provide defense-in-depth
+- Compromised API secret = unrestricted command access
+
+**Possible Solutions**:
+1. Add optional `maxRemoteBolus` setting to Nightscout config
+2. Store max bolus from profile and validate against it
+3. Accept as design (client is authoritative)
+
+**Status**: Under discussion
+
+**Related**:
+- [Remote Bolus Comparison](../docs/10-domain/remote-bolus-comparison.md)
+
+---
+
+### GAP-REMOTE-009: No unified remote command protocol
+
+**Scenario**: Cross-system interoperability
+
+**Description**: Loop, AAPS, and Trio use completely different payload formats and authentication mechanisms for remote commands:
+- Loop: JSON with `bolus-entry`, OTP via APNs
+- AAPS: SMS text commands with passcode confirmation
+- Trio: Encrypted JSON with shared secret via APNs
+
+**Impact**:
+- Caregivers need different apps/tools for different AID systems
+- No single caregiver app can work across all systems
+- Documentation and support burden multiplied
+
+**Possible Solutions**:
+1. Define common `RemoteCommand` schema in Nightscout API v4
+2. Create universal caregiver app with system adapters
+3. Accept divergence (different systems, different needs)
+
+**Status**: Under discussion
+
+**Related**:
+- [Remote Bolus Comparison](../docs/10-domain/remote-bolus-comparison.md)
+- GAP-REMOTE-004

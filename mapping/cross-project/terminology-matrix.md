@@ -1207,7 +1207,9 @@ oref0's core innovation is deviation analysis:
 
 ## Remote Command Security Models
 
-> **See Also**: [Remote Commands Cross-System Comparison](../../docs/10-domain/remote-commands-comparison.md) for comprehensive source code analysis.
+> **See Also**: 
+> - [Remote Commands Cross-System Comparison](../../docs/10-domain/remote-commands-comparison.md) - Architecture and source analysis
+> - [Remote Bolus Comparison](../../docs/10-domain/remote-bolus-comparison.md) - Safety validation deep dive
 
 ### Transport and Authentication
 
