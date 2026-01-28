@@ -93,6 +93,8 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 - Absorption time: Loop/Trio use seconds, Nightscout uses minutes
 - Duration: AAPS uses milliseconds, Nightscout uses minutes
 
+**Validated by**: `tools/test_conversions.py` with test cases in `conformance/unit-conversions/conversions.yaml`
+
 #### Temp Basal Fields
 
 | Field | Nightscout | Loop | AAPS | Trio | xDrip+ |

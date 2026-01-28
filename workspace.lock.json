@@ -6,117 +6,183 @@
       "alias": "loop",
       "name": "LoopWorkspace",
       "url": "https://github.com/LoopKit/LoopWorkspace.git",
-      "ref": "main",
+      "ref": "fa39dbf9110928b6b32006cfcdcd2f9a1f4c89f0",
       "description": "Loop iOS app workspace with all dependencies",
-      "submodules": true
+      "submodules": true,
+      "frozen_at": "2026-01-28T15:03:43.347228",
+      "frozen_from": "main"
     },
     {
       "alias": "crm",
       "name": "cgm-remote-monitor",
       "url": "https://github.com/bewest/cgm-remote-monitor-1.git",
-      "ref": "wip/replit/with-mongodb-update",
-      "description": "Nightscout CGM Remote Monitor web application"
+      "ref": "3764790ef7a72a296cda0a6c33967542ed4d7888",
+      "description": "Nightscout CGM Remote Monitor web application",
+      "frozen_at": "2026-01-28T15:03:43.367223",
+      "frozen_from": "wip/replit/with-mongodb-update"
     },
     {
       "alias": "ns-connect",
       "name": "nightscout-connect",
       "url": "https://github.com/nightscout/nightscout-connect.git",
-      "ref": "main",
-      "description": "Nightscout Connect bridge for data sources"
+      "ref": "1e63c53910251bcfc98931b21615def07c21f64f",
+      "description": "Nightscout Connect bridge for data sources",
+      "frozen_at": "2026-01-28T15:03:43.372294",
+      "frozen_from": "main"
     },
     {
       "alias": "aaps",
       "name": "AndroidAPS",
       "url": "https://github.com/nightscout/AndroidAPS.git",
-      "ref": "master",
-      "description": "Android Artificial Pancreas System"
+      "ref": "796d36ef0df2a4e62a17188e1e459290f35c4eac",
+      "description": "Android Artificial Pancreas System",
+      "frozen_at": "2026-01-28T15:03:43.398307",
+      "frozen_from": "master"
     },
     {
       "alias": "trio",
       "name": "Trio",
       "url": "https://github.com/nightscout/Trio.git",
-      "ref": "dev",
+      "ref": "63bd24b00b092c7a4490cba1cbfcea205fad945f",
       "description": "Trio iOS closed-loop system",
-      "submodules": true
+      "submodules": true,
+      "frozen_at": "2026-01-28T15:03:43.439100",
+      "frozen_from": "dev"
     },
     {
       "alias": "ns-reporter",
-      "aliases": ["nr"],
+      "aliases": [
+        "nr"
+      ],
       "name": "nightscout-reporter",
       "url": "https://github.com/zreptil/nightscout-reporter.git",
-      "ref": "master",
-      "description": "Nightscout Reporter for generating PDF reports"
+      "ref": "518d61fb1d8d61bb127fd4de1c60e28278b39a62",
+      "description": "Nightscout Reporter for generating PDF reports",
+      "frozen_at": "2026-01-28T15:03:43.452014",
+      "frozen_from": "master"
     },
     {
       "alias": "ns-gateway",
       "name": "nightscout-roles-gateway",
       "url": "https://github.com/t1pal/nightscout-roles-gateway.git",
-      "ref": "replit",
-      "description": "Nightscout Roles Gateway for access control"
+      "ref": "90840acee1ec641d881512e91f1728f7ed8f7817",
+      "description": "Nightscout Roles Gateway for access control",
+      "frozen_at": "2026-01-28T15:03:43.463516",
+      "frozen_from": "replit"
     },
     {
       "alias": "oref0",
       "name": "oref0",
       "url": "https://github.com/openaps/oref0.git",
-      "ref": "dev",
-      "description": "OpenAPS Reference Design - core dosing algorithm (oref0/oref1)"
+      "ref": "3430f6bf542956574ac65f07f46912ac67bcf9e0",
+      "description": "OpenAPS Reference Design - core dosing algorithm (oref0/oref1)",
+      "frozen_at": "2026-01-28T15:03:43.474980",
+      "frozen_from": "dev"
     },
     {
       "alias": "openaps",
       "name": "openaps",
       "url": "https://github.com/openaps/openaps.git",
-      "ref": "master",
-      "description": "OpenAPS toolkit - device interface and data management"
+      "ref": "bd9a831887ec779f39620b9d6c720e6d3bef3835",
+      "description": "OpenAPS toolkit - device interface and data management",
+      "frozen_at": "2026-01-28T15:03:43.485962",
+      "frozen_from": "master"
     },
     {
       "alias": "nightguard",
       "name": "nightguard",
       "url": "https://github.com/nightscout/nightguard.git",
-      "ref": "master",
-      "description": "Nightguard iOS/watchOS app for blood glucose monitoring via Nightscout"
+      "ref": "08af7259539de02df1433a93f2069e41a03f0f75",
+      "description": "Nightguard iOS/watchOS app for blood glucose monitoring via Nightscout",
+      "frozen_at": "2026-01-28T15:03:43.498638",
+      "frozen_from": "master"
     },
     {
       "alias": "xdrip4ios",
       "name": "xdripswift",
       "url": "https://github.com/JohanDegraeve/xdripswift.git",
-      "ref": "master",
-      "description": "xDrip4iOS - iOS app for CGM data management and Nightscout sync"
+      "ref": "3e96b097b4e01769434157f17949bc3a371c4a0b",
+      "description": "xDrip4iOS - iOS app for CGM data management and Nightscout sync",
+      "frozen_at": "2026-01-28T15:03:43.515315",
+      "frozen_from": "master"
     },
     {
       "alias": "xdrip",
       "name": "xDrip",
       "url": "https://github.com/NightscoutFoundation/xDrip.git",
-      "ref": "master",
-      "description": "xDrip+ Android app for CGM data collection and Nightscout sync"
+      "ref": "5ddd6b4d7f89c014ab628e81d112d6f159fad964",
+      "description": "xDrip+ Android app for CGM data collection and Nightscout sync",
+      "frozen_at": "2026-01-28T15:03:43.533494",
+      "frozen_from": "master"
     },
     {
       "alias": "diable",
       "name": "DiaBLE",
       "url": "https://github.com/gui-dos/DiaBLE.git",
-      "ref": "main",
-      "description": "DiaBLE - Diabetes Libre app for reading Libre sensors on iOS/watchOS"
+      "ref": "eb5beeee0e22f2282b4b641cd9fdb474609cd99b",
+      "description": "DiaBLE - Diabetes Libre app for reading Libre sensors on iOS/watchOS",
+      "frozen_at": "2026-01-28T15:03:43.540391",
+      "frozen_from": "main"
     },
     {
       "alias": "xdrip-js",
       "name": "xdrip-js",
       "url": "https://github.com/xdrip-js/xdrip-js.git",
-      "ref": "master",
-      "description": "Node.js library for interfacing with Dexcom G5/G6 transmitters via BLE"
+      "ref": "0cd1c555bce9bcf3571639aa4fb8e3ce8b83335b",
+      "description": "Node.js library for interfacing with Dexcom G5/G6 transmitters via BLE",
+      "frozen_at": "2026-01-28T15:03:43.547752",
+      "frozen_from": "master"
     },
     {
       "alias": "loopfollow",
       "name": "LoopFollow",
       "url": "https://github.com/loopandlearn/LoopFollow.git",
-      "ref": "main",
-      "description": "LoopFollow iOS/watchOS app for caregivers to monitor Loop/Trio/iAPS users via Nightscout"
+      "ref": "a608efd4198bb4499acb21dafdce44dab8efe7a6",
+      "description": "LoopFollow iOS/watchOS app for caregivers to monitor Loop/Trio/iAPS users via Nightscout",
+      "frozen_at": "2026-01-28T15:03:43.560073",
+      "frozen_from": "main"
     },
     {
       "alias": "loopcaregiver",
       "name": "LoopCaregiver",
       "url": "https://github.com/LoopKit/LoopCaregiver.git",
-      "ref": "dev",
+      "ref": "e2173c6a15f041d45cf1c729b0abeabcc5e099fb",
       "description": "LoopCaregiver iOS companion app for remote bolus, carbs, and override control via Nightscout",
-      "submodules": true
+      "submodules": true,
+      "frozen_at": "2026-01-28T15:03:43.569884",
+      "frozen_from": "dev"
+    },
+    {
+      "name": "nocturne",
+      "url": "https://github.com/nightscout/nocturne.git",
+      "ref": "0fe4f7bf6ca1deb5d8a169d9981f937a710c554d",
+      "description": "Nightscout client app",
+      "frozen_at": "2026-01-28T15:03:43.588046",
+      "frozen_from": "main"
+    },
+    {
+      "name": "Trio-dev",
+      "url": "https://github.com/nightscout/Trio.git",
+      "ref": "576d323c4cdad4de47575b1add1c5dc0ddc252ce",
+      "description": "Trio development branch",
+      "frozen_at": "2026-01-28T15:03:43.697393",
+      "frozen_from": "dev"
+    },
+    {
+      "name": "share2nightscout-bridge",
+      "url": "https://github.com/nightscout/share2nightscout-bridge.git",
+      "ref": "a40d6a45fbac932fbd9af68b1ef0a4bc29d6bb82",
+      "description": "Dexcom Share to Nightscout bridge",
+      "frozen_at": "2026-01-28T15:03:43.703016",
+      "frozen_from": "dev"
+    },
+    {
+      "name": "cgm-remote-monitor-official",
+      "url": "https://github.com/nightscout/cgm-remote-monitor.git",
+      "ref": "e74f53c07791ea61e7e64b0d5735aa76c2a8b2a9",
+      "description": "Official Nightscout server (dev branch)",
+      "frozen_at": "2026-01-28T15:03:43.759545",
+      "frozen_from": "dev"
     }
   ]
 }

@@ -6,6 +6,74 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### AAPS NSClient Schema Extraction (2026-01-28)
+
+Documented complete Nightscout upload schema from AAPS NSClient SDK.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **NSClient Schema** | `mapping/aaps/nsclient-schema.md` | 70+ fields across 3 collections |
+| **README Update** | `mapping/aaps/README.md` | Added to documentation index |
+
+#### Key Findings
+
+| Collection | Fields | Key Types |
+|------------|--------|-----------|
+| `treatments` | 50+ | Bolus, Carbs, TempBasal, ProfileSwitch, TempTarget |
+| `entries` | 15 | SGV with direction, noise, filtered/unfiltered |
+| `devicestatus` | 20+ | Pump, OpenAPS (suggested/enacted), Configuration |
+
+#### EventType Enum (25 types)
+Site management, CGM, Glucose, Bolus, Carbs, Targets, Profile, Basal, Notes
+
+#### Unit Conventions Documented
+- `duration`: minutes (Nightscout) vs milliseconds (AAPS internal)
+- `utcOffset`: minutes
+- `durationInMilliseconds`: AAPS-specific field
+
+---
+
+### Workspace Expansion (2026-01-28)
+
+Added 4 new repositories from live backlog requests. Workspace now has 20 repos.
+
+| Repo | URL | Branch | Purpose |
+|------|-----|--------|---------|
+| `nocturne` | nightscout/nocturne | main | Nightscout client app |
+| `Trio-dev` | nightscout/Trio | dev | Trio development branch |
+| `share2nightscout-bridge` | nightscout/share2nightscout-bridge | dev | Dexcom Share bridge |
+| `cgm-remote-monitor-official` | nightscout/cgm-remote-monitor | dev | Official NS server |
+
+---
+
+### Cross-Project Test Harness Tooling (2026-01-28)
+
+Implemented new tooling for cross-project integration testing and unit conversion validation.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Unit Conversion Tests** | `tools/test_conversions.py` | 20 test cases for time/glucose/insulin conversions |
+| **Conversion Fixtures** | `conformance/unit-conversions/conversions.yaml` | GAP-TREAT validated conversions |
+| **Mock Nightscout Server** | `tools/mock_nightscout.py` | In-memory API v1/v3 mock |
+| **Makefile Targets** | `Makefile` | `make conversions`, `make mock-nightscout` |
+| **Tooling Backlog** | `docs/sdqctl-proposals/backlogs/tooling.md` | Updated with harness roadmap |
+
+#### Key Features
+
+| Tool | Capability |
+|------|------------|
+| `test_conversions.py` | Validates time (s/ms/min), glucose (mg/dL↔mmol/L), insulin precision |
+| `mock_nightscout.py` | POST/GET/PUT/DELETE for entries, treatments, devicestatus |
+
+#### Conversions Tested
+
+- Loop `absorptionTime` (seconds) → Nightscout (minutes)
+- AAPS `duration` (milliseconds) → Nightscout (minutes)
+- Glucose mg/dL ↔ mmol/L (factor: 18.0182)
+- Insulin/carb precision preservation
+
+---
+
 ### Timezone/DST Handling Deep Dive (2026-01-28)
 
 Comprehensive cross-project analysis of timezone and DST handling across the Nightscout ecosystem. Documented how each system stores, interprets, and synchronizes timezone information.

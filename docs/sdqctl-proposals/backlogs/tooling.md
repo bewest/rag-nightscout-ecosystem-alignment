@@ -13,7 +13,31 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
 | 1 | LSP-based claim verification | P2 | Medium | Resolve `...` placeholder paths |
-| 2 | Full audit: nightscout-roles-gateway | P3 | Medium | OAuth 2.0 RBAC controller |
+| 2 | Cross-repo fixture extractor | P2 | Medium | Pull test data from AAPS/Loop/xDrip |
+| 3 | Transformation pipeline tester | P2 | High | Test field transforms in isolation |
+| 4 | Integration test runner | P3 | High | Orchestrate full cross-project tests |
+
+---
+
+## Completed
+
+| Item | Date | Notes |
+|------|------|-------|
+| Unit conversion test suite | 2026-01-28 | `tools/test_conversions.py` + 20 test cases |
+| Mock Nightscout server | 2026-01-28 | `tools/mock_nightscout.py` v1/v3 API |
+| Plugin system validation | 2026-01-28 | All 5 plugins work |
+| backlog-cycle.conv workflow | 2026-01-28 | Orchestration pattern |
+
+---
+
+## Cross-Project Test Harness (In Progress)
+
+| Component | Status | File | Description |
+|-----------|--------|------|-------------|
+| Unit conversions | ✅ Done | `tools/test_conversions.py` | Time/glucose/insulin precision |
+| Mock server | ✅ Done | `tools/mock_nightscout.py` | HTTP mock for API v1/v3 |
+| Fixture extractor | 📋 Planned | `tools/extract_fixtures.py` | Pull from external repos |
+| Transform tester | 📋 Planned | `tools/test_transforms.py` | Field mapping validation |
 
 ---
 
@@ -41,15 +65,6 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | P3 | `sdqctl drift` | [CONTINUOUS-MONITORING.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/CONTINUOUS-MONITORING.md) | Drift detection |
 | P3 | `sdqctl delegate` | [UPSTREAM-CONTRIBUTIONS.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/UPSTREAM-CONTRIBUTIONS.md) | Draft upstream fixes |
 | P3 | `sdqctl upstream status` | [UPSTREAM-CONTRIBUTIONS.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/UPSTREAM-CONTRIBUTIONS.md) | Track contributions |
-
----
-
-## Completed
-
-| Item | Date | Notes |
-|------|------|-------|
-| Plugin system validation | 2026-01-28 | All 5 plugins work |
-| backlog-cycle.conv workflow | 2026-01-28 | Orchestration pattern |
 
 ---
 

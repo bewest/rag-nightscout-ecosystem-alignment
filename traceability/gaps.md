@@ -429,6 +429,8 @@ rT.predBGs = {
 - Carb entries with incorrect absorption time affect IOB/COB calculations
 - Cross-system data correlation may misinterpret absorption duration
 
+**Test Coverage**: `conformance/unit-conversions/conversions.yaml` - Tests `loop-absorption-time-3hr`, `loop-absorption-time-2hr`
+
 **Possible Solutions**:
 1. Explicit unit conversion in upload/download logic
 2. Standardize on ISO 8601 duration format
@@ -453,6 +455,8 @@ rT.predBGs = {
 **Impact**:
 - Temp basal duration could be off by orders of magnitude
 - eCarbs duration misinterpreted
+
+**Test Coverage**: `conformance/unit-conversions/conversions.yaml` - Tests `aaps-temp-basal-duration-*`, `aaps-ecarbs-duration-4hr`
 
 **Possible Solutions**:
 1. Standardize on minutes for Nightscout interchange

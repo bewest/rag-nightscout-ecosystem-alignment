@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis
+.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions mock-nightscout
 
 # Default target
 help:
@@ -19,10 +19,12 @@ help:
 	@echo "Validation & Testing:"
 	@echo "  make validate   - Validate fixtures against shape specs"
 	@echo "  make conformance- Run conformance assertions (offline)"
+	@echo "  make conversions- Run unit conversion tests"
 	@echo "  make coverage   - Generate coverage matrix"
 	@echo "  make inventory  - Generate workspace inventory"
 	@echo "  make check      - Run all checks (linkcheck + validate + conformance)"
 	@echo "  make ci         - Run full CI pipeline locally"
+	@echo "  make mock-nightscout - Start mock Nightscout server (port 5555)"
 	@echo ""
 	@echo "Static Verification:"
 	@echo "  make verify     - Run all static verification tools"
@@ -101,6 +103,16 @@ check: validate conformance
 	@echo ""
 	@echo "All checks passed!"
 
+# Run unit conversion tests
+conversions:
+	@echo "Running unit conversion tests..."
+	@python3 tools/test_conversions.py
+
+# Start mock Nightscout server
+mock-nightscout:
+	@echo "Starting mock Nightscout server on port 5555..."
+	@python3 tools/mock_nightscout.py --port 5555
+
 # Full CI pipeline
 ci: check coverage verify
 	@echo ""
@@ -176,22 +188,22 @@ cli:
 
 # Python venv with sdqctl
 venv:
-@if [ ! -d .venv ]; then \
-echo "Creating venv..."; \
-python3 -m venv .venv; \
-.venv/bin/pip install --quiet click pyyaml rich pydantic; \
-fi
-@echo "Activate with: source activate-sdqctl.sh"
+	@if [ ! -d .venv ]; then \
+		echo "Creating venv..."; \
+		python3 -m venv .venv; \
+		.venv/bin/pip install --quiet click pyyaml rich pydantic; \
+	fi
+	@echo "Activate with: source activate-sdqctl.sh"
 
 # sdqctl workflow targets
 sdqctl-verify:
-@echo "Running verification workflows..."
-@source activate-sdqctl.sh && sdqctl run workflows/full-verification.conv
+	@echo "Running verification workflows..."
+	@source activate-sdqctl.sh && sdqctl run workflows/full-verification.conv
 
 sdqctl-gen:
-@echo "Running generation workflows..."
-@source activate-sdqctl.sh && sdqctl flow workflows/gen-*.conv
+	@echo "Running generation workflows..."
+	@source activate-sdqctl.sh && sdqctl flow workflows/gen-*.conv
 
 sdqctl-analysis:
-@echo "Running analysis workflows..."
-@source activate-sdqctl.sh && sdqctl flow workflows/gap-detection.conv workflows/cross-project-alignment.conv
+	@echo "Running analysis workflows..."
+	@source activate-sdqctl.sh && sdqctl flow workflows/gap-detection.conv workflows/cross-project-alignment.conv

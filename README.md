@@ -87,7 +87,7 @@ make freeze
 │   ├── cgm-remote-monitor/
 │   ├── AndroidAPS/
 │   ├── Trio/
-│   └── ...                # All 16 repos from workspace.lock.json
+│   └── ...                # All 20 repos from workspace.lock.json
 ├── mapping/               # Per-project field mapping documentation
 │   ├── aaps/
 │   ├── loop/

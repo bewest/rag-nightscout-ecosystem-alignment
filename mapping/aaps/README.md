@@ -12,6 +12,7 @@ This directory contains detailed documentation of AndroidAPS (AAPS) behavior as 
 
 | Document | Description |
 |----------|-------------|
+| [nsclient-schema.md](nsclient-schema.md) | **Complete NSClient upload schema (70+ fields)** |
 | [nightscout-models.md](nightscout-models.md) | NSSDK local models and Nightscout API mapping |
 | [nightscout-sync.md](nightscout-sync.md) | NSClientV3 sync flow, upload/download logic |
 | [algorithm.md](algorithm.md) | OpenAPSSMB algorithm, predictions, dynamic ISF |

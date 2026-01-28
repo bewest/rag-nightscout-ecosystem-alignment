@@ -36,28 +36,26 @@ CONTEXT-LIMIT 65%
 ON-CONTEXT-LIMIT compact
 
 # Load backlog state - check LIVE first for human requests, then main + domains
-CONTEXT @LIVE-BACKLOG.md
-CONTEXT @docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md
-CONTEXT @docs/sdqctl-proposals/backlogs/cgm-sources.md
-CONTEXT @docs/sdqctl-proposals/backlogs/aid-algorithms.md
-CONTEXT @docs/sdqctl-proposals/backlogs/nightscout-api.md
-CONTEXT @docs/sdqctl-proposals/backlogs/sync-identity.md
-CONTEXT @docs/sdqctl-proposals/backlogs/tooling.md
-CONTEXT @progress.md
 
 # === Phase 1: Task Selection ===
 PROMPT ## Phase 1: Task Selection
 
+Look in appropriate areas for backlog material
+* LIVE-BACKLOG.md
+* docs/sdqctl-proposals/backlogs/*
+* docs/sdqctl-proposals/*
+
 Review the current backlog state and select the next task.
 
 **Rules:**
-1. If LIVE-BACKLOG.md has an Active Task, continue that work
+1. Look for taskable and ACTIVE work areas in the main backlog and select a reasonable
+   chunk of work for one full iteration of the software development lifecycle.
 2. Otherwise, select from Immediate Queue (priority order)
 3. If Immediate Queue is empty, pull from ECOSYSTEM-BACKLOG.md Ready Queue
-4. If user provided --prologue guidance, honor priorities/skips
 
 **Check for blockers:**
-- If task needs files that don't exist, note as blocker
+- If task needs files that don't exist, note as blocker, suraface to an
+  appropriate dedicated open questions doc.
 - If task depends on incomplete work, note dependency
 - If task is stale (>3 cycles untouched), consider demotion
 
@@ -66,7 +64,7 @@ Review the current backlog state and select the next task.
 ### Selected Task
 
 **Task:** [title]
-**Type:** [Comparison|Extraction|Deep-Dive|Gap-Discovery|Traceability]
+**Type:** [Comparison|Extraction|Deep-Dive|Gap-Discovery|Traceability|<other-appropriate-type>]
 **Source:** [which backlog/queue]
 **Blocked:** [No|Yes - reason]
 
@@ -113,6 +111,8 @@ Perform the selected task based on its type.
 4. Classify gaps by severity
 
 ### Traceability Tasks
+* Propose ways to create tests/harnessses or test plans in the apporpriately
+  detailed documents.
 1. Trace from requirement to implementation
 2. Find gaps in coverage
 3. Update traceability matrix
@@ -151,13 +151,18 @@ File: `docs/10-domain/{topic}-deep-dive.md`
 - Include code references
 
 **Facet 5: Progress**
-File: `progress.md`
-- Add dated completion entry
+* Update the the open questions with any issues that are blocking or need
+  clarification in the appropriate open questions document.
 - Summary table of deliverables
+
 
 **Be surgical - only update what changed.**
 
 COMPACT
+PROMPT ## Verification stage
+If the traceability and other tools apply, let's use the available tools to
+ensure that the updates we've made are accurate
+Let's record our work in git as appropriate.
 
 # === Phase 4: Groom Backlog ===
 PROMPT ## Phase 4: Groom Backlog
@@ -202,6 +207,25 @@ Any decisions needed from human:
 
 COMPACT
 
+PROMPT Documentation quality
+Do not let backlog[s] or other progress or tracker document exceed 1000 lines.
+Ensure that the knowledge and updates from finished work are well integrated
+into appropriate documenation across the project, keep backlog queues limited
+to under 500 lines while allowing them to refer to other detailed documents or
+proposals for upcoming or recent work, while appropriately archiving old
+interstitial, duplicative, or bloated material.
+
+Integrate any relevant information we learned into more detailed proposals if
+appropriate.
+If appropriate, integrate feedback from what we've learned or maintenance
+issues back into the backlog.  For example, if certain documentation should be
+audited or new repos are underdocumented, insert an appropriate backlog item
+somewhere to be included in future development.  Consider if any recent work
+can add context to proposals or gives yields insight into additional
+integration or alignment ideas at the product or process level.
+
+PROMPT ## Phase 5: Cycle Summary
+
 # === Phase 5: Cycle Summary ===
 PROMPT ## Phase 5: Cycle Summary
 
@@ -219,7 +243,6 @@ Summarize what was accomplished and what's next.
 - [ ] gaps.md: [N gaps added]
 - [ ] requirements.md: [N requirements added]
 - [ ] {topic}-deep-dive.md: [description]
-- [ ] progress.md: [dated entry added]
 
 **Backlog Changes:**
 - Completed: [task moved to Completed table]
@@ -229,6 +252,8 @@ Summarize what was accomplished and what's next.
 
 **Open Questions Surfaced:** [N]
 
+Important, record our work in git as appropriate.
+
 **Next Immediate Queue:**
 1. [task 1]
 2. [task 2]
@@ -237,13 +262,5 @@ Summarize what was accomplished and what's next.
 **Ready for next cycle:** [Yes|No - reason]
 ```
 
-**Update Session Log**
-Append to LIVE-BACKLOG.md Session Log:
-| {{TIMESTAMP}} | Cycle complete | [task] → [outcome] |
 
-# Post-flight verification
-RUN grep -c "Active Task" LIVE-BACKLOG.md && echo "✓ Live backlog exists"
-RUN-ON-ERROR continue
-
-RUN grep -c "^| " docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md | head -1 && echo "✓ Ecosystem backlog has entries"
-RUN-ON-ERROR continue
+COMPACT

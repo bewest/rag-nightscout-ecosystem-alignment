@@ -281,6 +281,8 @@ Requirements follow the pattern:
 **Scenarios**:
 - [Treatment Sync](../conformance/assertions/treatment-sync.yaml)
 
+**Automated Tests**: `tools/test_conversions.py` - `aaps-temp-basal-duration-*`, `aaps-ecarbs-duration-4hr`
+
 **Verification**:
 - Create temp basal with 30-minute duration (internal units)
 - Upload to Nightscout
@@ -315,6 +317,8 @@ Requirements follow the pattern:
 
 **Scenarios**:
 - [Treatment Sync](../conformance/assertions/treatment-sync.yaml)
+
+**Automated Tests**: `tools/test_conversions.py` - `loop-absorption-time-3hr`, `loop-absorption-time-2hr`
 
 **Verification**:
 - Create carb with internal `absorptionTime: 10800` (seconds = 3 hours)

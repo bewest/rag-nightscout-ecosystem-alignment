@@ -27,17 +27,17 @@ Items ready for immediate work. Keep this at 3 items.
 **Focus:** How each system validates and executes remote bolus commands
 **Workflow:** `compare-feature.conv`
 
-### 2. [P1] Extract AAPS NSClient upload schema
-**Type:** Extraction | **Effort:** Medium
-**Source:** `externals/AndroidAPS/core/nssdk/`
-**Focus:** Document all fields uploaded to Nightscout
-**Workflow:** `extract-spec.conv`
-
-### 3. [P1] Compare override/profile switch semantics
+### 2. [P1] Compare override/profile switch semantics
 **Type:** Comparison | **Effort:** Medium
 **Repos:** Loop, AAPS, Trio
 **Focus:** Loop overrides vs AAPS ProfileSwitch vs Trio overrides
 **Workflow:** `compare-feature.conv`
+
+### 3. [P1] Initial audit: nocturne
+**Type:** Audit | **Effort:** Medium
+**Source:** `externals/nocturne/`
+**Focus:** Architecture, NS API usage, client features
+**Workflow:** `deep-dive.conv`
 
 ---
 
@@ -52,6 +52,15 @@ Items ready for immediate work. Keep this at 3 items.
 
 ### P1 - High Value
 
+- [ ] **Modernization analysis: cgm-remote-monitor vs Nocturne** - Gap/feature/impact analysis
+  - Compare: architecture, API compatibility, feature parity
+  - Output: Proposal with migration path options and interoperability impact
+  - Depends: Initial audit of nocturne (#3 in Ready Queue)
+- [ ] **PR analysis: cgm-remote-monitor** - Review open PRs for ecosystem impact
+- [ ] **PR analysis: share2nightscout-bridge** - Review open PRs
+- [ ] **Initial audit: share2nightscout-bridge** - Dexcom Share integration
+  - Source: `externals/share2nightscout-bridge/`
+  - Focus: Auth flow, data transformation, upload patterns
 - [ ] **Extract Nightscout v3 treatments schema** - Document all supported fields and eventTypes
 - [ ] **Deep dive: Batch operation ordering** - Document order-preservation requirements for sync
 - [ ] **Gap discovery: Prediction array formats** - IOB/COB/UAM/ZT curve differences
@@ -66,11 +75,9 @@ Items ready for immediate work. Keep this at 3 items.
 - [ ] **Extract Loop sync identity fields** - What makes a treatment unique in Loop
 - [ ] **Map pump communication terminology** - Reservoir, cartridge, pod, etc.
 - [ ] **Deep dive: Authentication flows** - API secret vs tokens vs JWT
-- [ ] **LSP-based documentation claim verification** - Use LSP semantic queries to verify:
-  - File paths with `...` placeholders (15 broken refs use this pattern)
-  - Type signatures claimed in deep-dives match actual code
-  - Cross-project terminology claims (e.g., "Loop calls this X, AAPS calls it Y")
-  - See: `traceability/refs-validation.md` for current broken refs
+- [ ] **Cross-repo fixture extraction** - Pull test fixtures from AAPS/Loop/xDrip repos
+  - Enables: integration testing with real data shapes
+  - See: [tooling backlog](backlogs/tooling.md#cross-project-test-harness-in-progress)
 - [ ] **Full audit: nightscout-connect** - NS client library (v0.0.12), 22 lines documented
   - Components: lib/, commands/, machines.md (state machine docs)
   - Focus: Cloud platform connectors, sync protocols
@@ -81,6 +88,10 @@ Items ready for immediate work. Keep this at 3 items.
 - [ ] **Compare CGM sensor session handling** - Start, stop, calibration
 - [ ] **Extract xDrip+ Nightscout fields** - What xDrip+ uploads
 - [ ] **Map algorithm terminology** - ISF, CR, DIA, UAM across systems
+- [ ] **LSP-based documentation claim verification** - See [tooling backlog](backlogs/tooling.md)
+- [ ] **Reporting needs analysis** - Compare nightscout-reporter vs built-in reports
+  - Source: `externals/nightscout-reporter/` (zreptil)
+  - Focus: Report types, data requirements, export formats, user needs
 - [ ] **Full audit: nightscout-roles-gateway** - OAuth 2.0 RBAC controller, 39 lines documented
   - Components: lib/, migrations/, Ory Hydra/Kratos integration
   - Focus: Role-based access control, OAuth flows, API authorization
@@ -92,6 +103,9 @@ Items ready for immediate work. Keep this at 3 items.
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-28 | Extract AAPS NSClient upload schema | `mapping/aaps/nsclient-schema.md` - 70+ fields, 25 eventTypes |
+| 2026-01-28 | Workspace expansion (4 repos) | nocturne, Trio-dev, share2nightscout-bridge, cgm-remote-monitor-official added |
+| 2026-01-28 | Cross-project test harness tooling | `test_conversions.py` (20 tests), `mock_nightscout.py` (API v1/v3), Makefile targets |
 | 2026-01-28 | Map timezone/DST handling terminology | +150 lines terminology matrix, 4 new gaps (GAP-TZ-004-007), pump DST handling documented |
 
 ---

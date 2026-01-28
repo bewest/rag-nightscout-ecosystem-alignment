@@ -1,0 +1,302 @@
+# Unit Conversion Test Cases
+# Validates cross-system unit transformations in the Nightscout ecosystem
+#
+# Related gaps:
+#   GAP-TREAT-001: Absorption time units (seconds vs minutes)
+#   GAP-TREAT-002: Duration units (milliseconds vs minutes)
+#   GAP-TZ-004: Timezone offset handling
+#
+# Related requirements:
+#   REQ-044: Duration unit normalization
+#   REQ-046: Absorption time unit conversion
+
+conversions:
+
+  # === Time Duration Conversions ===
+
+  - id: loop-absorption-time-3hr
+    description: Loop absorptionTime in seconds to Nightscout minutes
+    source_system: Loop
+    target_system: Nightscout
+    field: absorptionTime
+    input:
+      value: 10800
+      unit: seconds
+    expected:
+      value: 180
+      unit: minutes
+    precision: 0
+    references:
+      - "GAP-TREAT-001"
+      - "REQ-046"
+
+  - id: loop-absorption-time-2hr
+    description: Standard 2-hour absorption time
+    source_system: Loop
+    target_system: Nightscout
+    field: absorptionTime
+    input:
+      value: 7200
+      unit: seconds
+    expected:
+      value: 120
+      unit: minutes
+    precision: 0
+
+  - id: aaps-temp-basal-duration-30min
+    description: AAPS temp basal duration in milliseconds to minutes
+    source_system: AAPS
+    target_system: Nightscout
+    field: duration
+    input:
+      value: 1800000
+      unit: milliseconds
+    expected:
+      value: 30
+      unit: minutes
+    precision: 0
+    references:
+      - "GAP-TREAT-002"
+      - "REQ-044"
+
+  - id: aaps-ecarbs-duration-4hr
+    description: AAPS extended carbs duration
+    source_system: AAPS
+    target_system: Nightscout
+    field: duration
+    input:
+      value: 14400000
+      unit: milliseconds
+    expected:
+      value: 240
+      unit: minutes
+    precision: 0
+
+  - id: aaps-temp-basal-duration-5min
+    description: Short temp basal (edge case)
+    source_system: AAPS
+    target_system: Nightscout
+    field: duration
+    input:
+      value: 300000
+      unit: milliseconds
+    expected:
+      value: 5
+      unit: minutes
+    precision: 0
+
+  # === Glucose Unit Conversions ===
+
+  - id: glucose-mgdl-to-mmol-100
+    description: Standard glucose 100 mg/dL to mmol/L
+    source_system: any
+    target_system: any
+    field: glucose
+    input:
+      value: 100
+      unit: mg/dL
+    expected:
+      value: 5.55
+      unit: mmol/L
+    precision: 2
+    notes: "Factor: 18.0182"
+
+  - id: glucose-mgdl-to-mmol-180
+    description: High glucose 180 mg/dL to mmol/L
+    source_system: any
+    target_system: any
+    field: glucose
+    input:
+      value: 180
+      unit: mg/dL
+    expected:
+      value: 9.99
+      unit: mmol/L
+    precision: 2
+
+  - id: glucose-mgdl-to-mmol-70
+    description: Low glucose 70 mg/dL to mmol/L
+    source_system: any
+    target_system: any
+    field: glucose
+    input:
+      value: 70
+      unit: mg/dL
+    expected:
+      value: 3.88
+      unit: mmol/L
+    precision: 2
+    notes: "70 / 18.0182 = 3.8849..."
+
+  - id: glucose-mmol-to-mgdl-10
+    description: Reverse conversion 10 mmol/L to mg/dL
+    source_system: any
+    target_system: any
+    field: glucose
+    input:
+      value: 10.0
+      unit: mmol/L
+    expected:
+      value: 180
+      unit: mg/dL
+    precision: 0
+
+  - id: glucose-mmol-to-mgdl-5
+    description: Reverse conversion 5 mmol/L to mg/dL
+    source_system: any
+    target_system: any
+    field: glucose
+    input:
+      value: 5.0
+      unit: mmol/L
+    expected:
+      value: 90
+      unit: mg/dL
+    precision: 0
+
+  # === Timestamp Conversions ===
+
+  - id: epoch-ms-to-iso-basic
+    description: Epoch milliseconds to ISO-8601
+    source_system: any
+    target_system: Nightscout
+    field: timestamp
+    input:
+      value: 1706540096789
+      unit: epoch_ms
+    expected:
+      value: "2024-01-29T14:54:56.789Z"
+      unit: iso8601
+    precision: 0
+    notes: "UTC timestamp verified"
+
+  - id: epoch-s-to-epoch-ms
+    description: Unix epoch seconds to milliseconds
+    source_system: any
+    target_system: any
+    field: timestamp
+    input:
+      value: 1706540096
+      unit: epoch_s
+    expected:
+      value: 1706540096000
+      unit: epoch_ms
+    precision: 0
+
+  # === Insulin Precision ===
+
+  - id: insulin-precision-hundredths
+    description: Insulin amount preserves hundredths precision
+    source_system: Loop
+    target_system: Nightscout
+    field: insulin
+    input:
+      value: 2.35
+      unit: units
+    expected:
+      value: 2.35
+      unit: units
+    precision: 2
+    references:
+      - "REQ-040"
+
+  - id: insulin-smb-small-dose
+    description: SMB small dose precision
+    source_system: AAPS
+    target_system: Nightscout
+    field: insulin
+    input:
+      value: 0.05
+      unit: units
+    expected:
+      value: 0.05
+      unit: units
+    precision: 2
+
+  # === Carb Precision ===
+
+  - id: carbs-decimal-precision
+    description: Carb amount with decimal
+    source_system: Loop
+    target_system: Nightscout
+    field: carbs
+    input:
+      value: 45.5
+      unit: grams
+    expected:
+      value: 45.5
+      unit: grams
+    precision: 1
+    references:
+      - "REQ-041"
+
+  # === ISF/CR Conversions ===
+
+  - id: isf-mgdl-per-unit
+    description: Insulin sensitivity factor in mg/dL per unit
+    source_system: Loop
+    target_system: Nightscout
+    field: isf
+    input:
+      value: 50
+      unit: mg/dL/U
+    expected:
+      value: 50
+      unit: mg/dL/U
+    precision: 0
+
+  - id: isf-mmol-to-mgdl
+    description: Convert ISF from mmol/L/U to mg/dL/U
+    source_system: any
+    target_system: any
+    field: isf
+    input:
+      value: 2.8
+      unit: mmol/L/U
+    expected:
+      value: 50
+      unit: mg/dL/U
+    precision: 0
+    notes: "2.8 * 18.0182 ≈ 50"
+
+  - id: cr-grams-per-unit
+    description: Carb ratio in grams per unit
+    source_system: Loop
+    target_system: Nightscout
+    field: carbratio
+    input:
+      value: 10
+      unit: g/U
+    expected:
+      value: 10
+      unit: g/U
+    precision: 0
+
+  # === Edge Cases ===
+
+  - id: zero-duration
+    description: Zero duration edge case
+    source_system: AAPS
+    target_system: Nightscout
+    field: duration
+    input:
+      value: 0
+      unit: milliseconds
+    expected:
+      value: 0
+      unit: minutes
+    precision: 0
+
+  - id: fractional-minutes
+    description: Non-integer minute conversion
+    source_system: AAPS
+    target_system: Nightscout
+    field: duration
+    input:
+      value: 150000
+      unit: milliseconds
+    expected:
+      value: 2.5
+      unit: minutes
+    precision: 1
+    notes: "2.5 minutes - verify rounding behavior"

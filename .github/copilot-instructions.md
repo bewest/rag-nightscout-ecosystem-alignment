@@ -2,7 +2,7 @@
 
 ## Overview
 
-This workspace coordinates cross-project analysis of 16 CGM/AID (Continuous Glucose Monitor / Automated Insulin Delivery) repositories to ensure interoperability and data alignment across the Nightscout ecosystem.
+This workspace coordinates cross-project analysis of 20 CGM/AID (Continuous Glucose Monitor / Automated Insulin Delivery) repositories to ensure interoperability and data alignment across the Nightscout ecosystem.
 
 ## Repository Structure
 
@@ -15,7 +15,7 @@ externals/           # Git-ignored external repos (reproducible via workspace.lo
   ├── xDrip/              # xDrip+ Android CGM app
   ├── xdripswift/         # xDrip4iOS app
   ├── DiaBLE/             # DiaBLE iOS Libre reader
-  └── ... (16 repos total)
+  └── ... (20 repos total)
 mapping/             # Per-project and cross-project field mappings
 specs/               # OpenAPI 3.0 and JSON Schema specifications
 conformance/         # Test scenarios and assertions (YAML)
