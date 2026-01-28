@@ -1,0 +1,244 @@
+# backlog-cycle.conv - Comprehensive backlog-driven work cycle
+#
+# A single workflow that:
+# 1. Selects a task from the live backlog
+# 2. Executes the appropriate analysis/work
+# 3. Updates all 5 facets with findings
+# 4. Grooms the backlog (move completed, replenish queue, archive stale)
+# 5. Surfaces open questions for human review
+# 6. Generates new tasks from discoveries
+#
+# Usage:
+#   # Run one complete cycle
+#   sdqctl iterate workflows/orchestration/backlog-cycle.conv
+#
+#   # Run multiple cycles
+#   sdqctl iterate workflows/orchestration/backlog-cycle.conv -n 3
+#
+#   # With specific guidance
+#   sdqctl iterate workflows/orchestration/backlog-cycle.conv \
+#     --prologue "Prioritize: remote bolus comparison. Skip: openaps audit"
+#
+# I/O Contract:
+#   INPUT:  LIVE-BACKLOG.md (active work queue)
+#           docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md (primary backlog)
+#           User direction via --prologue (optional)
+#   OUTPUT: Updated 5 facets (terminology, gaps, requirements, deep-dive, progress)
+#           Updated LIVE-BACKLOG.md
+#           Updated ECOSYSTEM-BACKLOG.md (completed items moved)
+#   ESCALATE: Open questions to LIVE-BACKLOG.md "Open Questions" section
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE analysis
+CONTEXT-LIMIT 65%
+ON-CONTEXT-LIMIT compact
+MAX-CYCLES 5
+
+# Load backlog state
+CONTEXT @LIVE-BACKLOG.md
+CONTEXT @docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md
+CONTEXT @progress.md
+
+# === Phase 1: Task Selection ===
+PROMPT ## Phase 1: Task Selection
+
+Review the current backlog state and select the next task.
+
+**Rules:**
+1. If LIVE-BACKLOG.md has an Active Task, continue that work
+2. Otherwise, select from Immediate Queue (priority order)
+3. If Immediate Queue is empty, pull from ECOSYSTEM-BACKLOG.md Ready Queue
+4. If user provided --prologue guidance, honor priorities/skips
+
+**Check for blockers:**
+- If task needs files that don't exist, note as blocker
+- If task depends on incomplete work, note dependency
+- If task is stale (>3 cycles untouched), consider demotion
+
+**Output:**
+```markdown
+### Selected Task
+
+**Task:** [title]
+**Type:** [Comparison|Extraction|Deep-Dive|Gap-Discovery|Traceability]
+**Source:** [which backlog/queue]
+**Blocked:** [No|Yes - reason]
+
+**Plan:**
+1. [first step]
+2. [second step]
+3. [update facets]
+```
+
+**Update LIVE-BACKLOG.md:**
+Move selected task to "Active Task" section.
+
+COMPACT
+
+# === Phase 2: Execute Work ===
+PROMPT ## Phase 2: Execute Work
+
+Perform the selected task based on its type.
+
+**Work Patterns by Type:**
+
+### Comparison Tasks
+1. Search each repo for the feature/concept
+2. Document differences in terminology, behavior, structure
+3. Create comparison table
+4. Identify gaps (inconsistencies = potential gaps)
+
+### Extraction Tasks
+1. Navigate to source path
+2. Document schemas, fields, structures
+3. Map to existing OpenAPI specs or create new entries
+4. Note anything undocumented
+
+### Deep-Dive Tasks
+1. Explore repo structure
+2. Document key components
+3. Trace data flows
+4. Build terminology mappings
+
+### Gap-Discovery Tasks
+1. Compare actual behavior to expectations
+2. Find undocumented features
+3. Find inconsistencies between systems
+4. Classify gaps by severity
+
+### Traceability Tasks
+1. Trace from requirement to implementation
+2. Find gaps in coverage
+3. Update traceability matrix
+
+**Code References:**
+Always use format: `repo:path/from/repo/root.ext:line`
+Example: `LoopWorkspace:LoopKit/LoopKit/InsulinKit/InsulinMath.swift:42`
+
+**Document findings as you work.**
+
+COMPACT
+
+# === Phase 3: Update 5 Facets ===
+PROMPT ## Phase 3: Update 5 Facets
+
+Update all relevant project facets based on your findings.
+
+**Facet 1: Terminology Matrix**
+File: `mapping/cross-project/terminology-matrix.md`
+- Add new term mappings discovered
+- Use table format: | Term | NS | Loop | AAPS | Trio | xDrip | oref0 | Notes |
+
+**Facet 2: Gaps**
+File: `traceability/gaps.md`
+- Add new gaps with proper IDs: GAP-XXX-NNN
+- Include: Description, Affected Systems, Impact, Remediation
+
+**Facet 3: Requirements**
+File: `traceability/requirements.md`
+- Extract any requirements discovered
+- Use REQ-NNN format with Statement, Rationale, Verification
+
+**Facet 4: Deep Dive** (if applicable)
+File: `docs/10-domain/{topic}-deep-dive.md`
+- Add or update technical documentation
+- Include code references
+
+**Facet 5: Progress**
+File: `progress.md`
+- Add dated completion entry
+- Summary table of deliverables
+
+**Be surgical - only update what changed.**
+
+COMPACT
+
+# === Phase 4: Groom Backlog ===
+PROMPT ## Phase 4: Groom Backlog
+
+Maintain backlog hygiene after completing work.
+
+**Step 1: Close Active Task**
+In LIVE-BACKLOG.md:
+- Clear "Active Task" section
+- Add entry to "Findings to Integrate" if there's doc work pending
+- Or note as complete if fully integrated
+
+**Step 2: Move to Completed**
+In ECOSYSTEM-BACKLOG.md:
+- Move completed item to Completed table
+- Add outcome summary
+
+**Step 3: Replenish Immediate Queue**
+In LIVE-BACKLOG.md:
+- If Immediate Queue < 3 items, pull from ECOSYSTEM-BACKLOG.md Ready Queue
+- If Ready Queue < 3 items, promote from Backlog
+
+**Step 4: Generate New Tasks** (if applicable)
+From discoveries in Phase 2/3:
+- New gaps → may warrant new backlog items
+- New terminology domains → may need mapping work
+- Blockers found → create follow-up items
+
+Add new items to ECOSYSTEM-BACKLOG.md at appropriate priority.
+Consider related backlogs listed in LIVE-BACKLOG.md.
+
+**Step 5: Identify Stale Items**
+Items not touched in 3+ cycles:
+- Demote priority, or
+- Move to OPEN-QUESTIONS.md as blocked, or
+- Archive if no longer relevant
+
+**Step 6: Surface Open Questions**
+Any decisions needed from human:
+- Add to LIVE-BACKLOG.md "Open Questions" section
+- Include context and options
+
+COMPACT
+
+# === Phase 5: Cycle Summary ===
+PROMPT ## Phase 5: Cycle Summary
+
+Summarize what was accomplished and what's next.
+
+**Output:**
+```markdown
+### Backlog Cycle Complete
+
+**Task Completed:** [title]
+**Type:** [type]
+
+**Facets Updated:**
+- [ ] terminology-matrix.md: [N terms added/updated]
+- [ ] gaps.md: [N gaps added]
+- [ ] requirements.md: [N requirements added]
+- [ ] {topic}-deep-dive.md: [description]
+- [ ] progress.md: [dated entry added]
+
+**Backlog Changes:**
+- Completed: [task moved to Completed table]
+- New items: [N items generated from discoveries]
+- Replenished: [items promoted to Immediate Queue]
+- Stale: [items demoted/archived]
+
+**Open Questions Surfaced:** [N]
+
+**Next Immediate Queue:**
+1. [task 1]
+2. [task 2]
+3. [task 3]
+
+**Ready for next cycle:** [Yes|No - reason]
+```
+
+**Update Session Log**
+Append to LIVE-BACKLOG.md Session Log:
+| {{TIMESTAMP}} | Cycle complete | [task] → [outcome] |
+
+# Post-flight verification
+RUN grep -c "Active Task" LIVE-BACKLOG.md && echo "✓ Live backlog exists"
+RUN-ON-ERROR continue
+
+RUN grep -c "^| " docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md | head -1 && echo "✓ Ecosystem backlog has entries"
+RUN-ON-ERROR continue
