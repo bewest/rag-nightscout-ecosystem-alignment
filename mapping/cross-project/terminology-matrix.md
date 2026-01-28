@@ -28,6 +28,20 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 
 ## Data Concepts
 
+### Server Implementations
+
+| Aspect | cgm-remote-monitor | Nocturne |
+|--------|-------------------|----------|
+| Language | JavaScript (Node.js) | C# (.NET 10) |
+| Database | MongoDB | PostgreSQL |
+| Cache | In-memory | Redis |
+| Real-time | Socket.IO | SignalR (+ Socket.IO bridge) |
+| Algorithm | JS oref | Rust oref (FFI/WASM) |
+| API Versions | v1, v2, v3 | v1, v2, v3, v4 (extensions) |
+| Connectors | Via share2nightscout-bridge | 8 native (Dexcom, Libre, Glooko, MiniMed, MFP, NS, TConnect, Tidepool) |
+
+**Source**: `externals/nocturne/AGENTS.md`, `docs/10-domain/nocturne-deep-dive.md`
+
 ### Persistent State (Configuration)
 
 | Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ |

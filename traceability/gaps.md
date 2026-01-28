@@ -2794,3 +2794,76 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 4. Define escalation for unacknowledged proposals
 
 **Status**: Under discussion
+
+
+---
+
+### GAP-NOCTURNE-001: V4 endpoints are Nocturne-specific
+
+**Scenario**: Cross-project API compatibility
+
+**Description**: Nocturne introduces V4 API endpoints (`/api/v4/...`) that provide enhanced functionality not present in cgm-remote-monitor. These endpoints have no cross-project standard.
+
+**Affected Systems**: Nocturne, any clients adopting V4
+
+**Source**: `externals/nocturne/src/API/Nocturne.API/Controllers/V4/`
+
+**Impact**:
+- Clients using V4 endpoints won't work with cgm-remote-monitor
+- No interoperability guarantee for V4 features
+- Potential ecosystem fragmentation
+
+**Possible Solutions**:
+1. Document V4 endpoints as optional extensions
+2. Propose V4 endpoints as Nightscout RFC
+3. Mark V4 as Nocturne-only, maintain V3 parity
+
+**Status**: Under discussion
+
+---
+
+### GAP-NOCTURNE-002: Rust oref implementation may diverge
+
+**Scenario**: Algorithm consistency across implementations
+
+**Description**: Nocturne contains a native Rust implementation of oref algorithms (`src/Core/oref/`). This independent implementation may produce different results than the JavaScript oref0/oref1.
+
+**Affected Systems**: Nocturne, any system comparing algorithm outputs
+
+**Source**: `externals/nocturne/src/Core/oref/Cargo.toml`
+
+**Impact**:
+- Potential calculation differences (IOB, COB, dosing)
+- Difficult to debug cross-implementation issues
+- No conformance test suite between implementations
+
+**Possible Solutions**:
+1. Create cross-implementation test vectors
+2. Document any intentional algorithm differences
+3. Generate reference outputs for comparison
+
+**Status**: Under discussion
+
+---
+
+### GAP-NOCTURNE-003: SignalR to Socket.IO bridge adds latency
+
+**Scenario**: Real-time data streaming
+
+**Description**: Nocturne uses SignalR for real-time updates, with a bridge to Socket.IO for legacy client compatibility. This adds latency and complexity.
+
+**Affected Systems**: Nocturne, Socket.IO clients (xDrip+, etc.)
+
+**Source**: `externals/nocturne/src/Web/packages/bridge/`
+
+**Impact**:
+- Additional latency for real-time glucose updates
+- Extra failure point in data pipeline
+- Clients must support either SignalR or use bridge
+
+**Possible Solutions**:
+1. Maintain parallel Socket.IO and SignalR endpoints
+2. Measure and document latency impact
+3. Provide native SignalR clients for major platforms
+
+**Status**: Under discussion

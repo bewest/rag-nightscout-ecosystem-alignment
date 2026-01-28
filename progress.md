@@ -6,6 +6,40 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne Initial Audit (2026-01-28)
+
+Complete architectural audit of Nocturne - .NET 10 rewrite of Nightscout.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/nocturne-deep-dive.md` | 279 lines, full architecture |
+
+#### Key Findings
+
+| Aspect | Details |
+|--------|---------|
+| **Scale** | 927 C# files, 438 Svelte components, ~334K LOC |
+| **API Parity** | Full v1/v2/v3 compatibility confirmed |
+| **Connectors** | 8 native (Dexcom, Libre, Glooko, MiniMed, MFP, NS, TConnect, Tidepool) |
+| **Algorithm** | Native Rust oref with FFI/WASM support |
+| **Frontend** | SvelteKit 2 + Svelte 5 + Tailwind CSS 4 |
+
+#### Architecture Comparison
+
+| cgm-remote-monitor | Nocturne |
+|-------------------|----------|
+| JavaScript/Node.js | C# .NET 10 |
+| MongoDB | PostgreSQL |
+| Socket.IO | SignalR |
+| JS oref | Rust oref |
+
+#### Gaps Identified
+- GAP-NOCTURNE-001: V4 endpoints Nocturne-specific
+- GAP-NOCTURNE-002: Rust oref may diverge from JS
+- GAP-NOCTURNE-003: SignalR→Socket.IO bridge latency
+
+---
+
 ### AAPS NSClient Schema Extraction (2026-01-28)
 
 Documented complete Nightscout upload schema from AAPS NSClient SDK.
