@@ -1,7 +1,7 @@
 # backlog-cycle.conv - Comprehensive backlog-driven work cycle
 #
 # A single workflow that:
-# 1. Selects a task from the live backlog
+# 1. Selects a task from backlogs (Ready Queue or domain backlogs)
 # 2. Executes the appropriate analysis/work
 # 3. Updates all 5 facets with findings
 # 4. Grooms the backlog (move completed, replenish queue, archive stale)
@@ -20,24 +20,29 @@
 #     --prologue "Prioritize: remote bolus comparison. Skip: openaps audit"
 #
 # I/O Contract:
-#   INPUT:  LIVE-BACKLOG.md (active work queue)
-#           docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md (primary backlog)
+#   INPUT:  docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md (main backlog with Ready Queue)
+#           docs/sdqctl-proposals/backlogs/*.md (domain backlogs for detail)
+#           LIVE-BACKLOG.md (midflight human requests - check first!)
 #           User direction via --prologue (optional)
 #   OUTPUT: Updated 5 facets (terminology, gaps, requirements, deep-dive, progress)
-#           Updated LIVE-BACKLOG.md
-#           Updated ECOSYSTEM-BACKLOG.md (completed items moved)
-#   ESCALATE: Open questions to LIVE-BACKLOG.md "Open Questions" section
+#           Updated domain backlog (completed items)
+#           Updated ECOSYSTEM-BACKLOG.md (Ready Queue refreshed)
+#   ESCALATE: Open questions to LIVE-BACKLOG.md
 
 MODEL claude-sonnet-4-20250514
 ADAPTER copilot
 MODE analysis
 CONTEXT-LIMIT 65%
 ON-CONTEXT-LIMIT compact
-MAX-CYCLES 5
 
-# Load backlog state
+# Load backlog state - check LIVE first for human requests, then main + domains
 CONTEXT @LIVE-BACKLOG.md
 CONTEXT @docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md
+CONTEXT @docs/sdqctl-proposals/backlogs/cgm-sources.md
+CONTEXT @docs/sdqctl-proposals/backlogs/aid-algorithms.md
+CONTEXT @docs/sdqctl-proposals/backlogs/nightscout-api.md
+CONTEXT @docs/sdqctl-proposals/backlogs/sync-identity.md
+CONTEXT @docs/sdqctl-proposals/backlogs/tooling.md
 CONTEXT @progress.md
 
 # === Phase 1: Task Selection ===

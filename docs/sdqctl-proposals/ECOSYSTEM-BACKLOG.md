@@ -1,59 +1,19 @@
 # Ecosystem Alignment Backlog
 
-Prioritized queue of analysis tasks for the Nightscout AID ecosystem alignment project.
-Use this as input for process-oriented workflows.
+> **Last Updated**: 2026-01-28  
+> **Purpose**: Track active work items across all domains  
+> **Archive**: Completed work → [`archive/`](archive/)
 
-## How to Use
+## Domain Backlogs
 
-### Single Item from Ready Queue
-
-Pick items and run with appropriate workflow:
-
-```bash
-# For comparison tasks
-sdqctl iterate workflows/analysis/compare-feature.conv \
-  --prologue "Focus: remote bolus commands. Repos: Loop, AAPS, Trio, Nightscout"
-
-# For gap discovery
-sdqctl iterate workflows/analysis/gap-discovery.conv \
-  --prologue "Repo: cgm-remote-monitor. Focus: API v3, sync, auth"
-
-# For deep dives (multi-cycle)
-sdqctl iterate workflows/analysis/deep-dive.conv \
-  --prologue "Repo: openaps. Component: algorithm core" \
-  -n 5 --session-mode fresh
-
-# For spec extraction
-sdqctl iterate workflows/analysis/extract-spec.conv \
-  --prologue "Source: externals/AndroidAPS/core/nssdk/. Focus: Nightscout upload fields"
-```
-
-### Batch Processing Multiple Items
-
-```bash
-# Apply workflow to multiple repos
-sdqctl apply workflows/analysis/gap-discovery.conv \
-  --components "externals/*/README.md" \
-  --progress progress.md
-
-# Apply to specific under-documented repos
-for repo in cgm-remote-monitor openaps nightscout-connect; do
-  sdqctl iterate workflows/analysis/gap-discovery.conv \
-    --prologue "Repo: $repo. Quick audit for backlog scoping."
-done
-```
-
-### Verification After Changes
-
-```bash
-# Run all verification plugins
-sdqctl verify plugin ref-integrity
-sdqctl verify plugin ecosystem-gaps
-sdqctl verify plugin terminology-matrix
-
-# Or use the CI pipeline workflow
-sdqctl iterate workflows/integrate/ci-pipeline.conv
-```
+| Domain | File | Description |
+|--------|------|-------------|
+| CGM Sources | [backlogs/cgm-sources.md](backlogs/cgm-sources.md) | xDrip+, DiaBLE, Dexcom, Libre protocols |
+| AID Algorithms | [backlogs/aid-algorithms.md](backlogs/aid-algorithms.md) | Loop, AAPS, Trio, oref0 comparison |
+| Nightscout API | [backlogs/nightscout-api.md](backlogs/nightscout-api.md) | Collections, auth, API v3 |
+| Sync & Identity | [backlogs/sync-identity.md](backlogs/sync-identity.md) | Deduplication, timestamps, sync IDs |
+| Tooling | [backlogs/tooling.md](backlogs/tooling.md) | sdqctl enhancements, plugins, automation |
+| Live requests | [../../LIVE-BACKLOG.md](../../LIVE-BACKLOG.md) | Midflight human requests |
 
 ---
 
@@ -155,31 +115,26 @@ Items ready for immediate work. Keep this at 3 items.
 
 ---
 
-## sdqctl Enhancement Requests
+## How to Use
 
-Track tooling improvements that would help ecosystem alignment workflows.
+### Run from Ready Queue
 
-| Priority | Enhancement | Proposal | Notes |
-|----------|-------------|----------|-------|
-| P2 | HELP-INLINE directive | [sdqctl/HELP-INLINE.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/HELP-INLINE.md) | Allow HELP anywhere in workflow, not just prologues |
-| P2 | REFCAT glob support | [sdqctl/REFCAT-DESIGN.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/REFCAT-DESIGN.md) | Multi-file patterns: `@externals/**/*Treatment*.swift` |
-| P2 | Plugin System | [sdqctl/PLUGIN-SYSTEM.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/PLUGIN-SYSTEM.md) | Write custom directives for ecosystem independently |
-| P2 | LSP Integration | [sdqctl/LSP-INTEGRATION.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/LSP-INTEGRATION.md) | Semantic code queries: type extraction, cross-project comparison. Key use case: resolve `...` placeholder paths in refs (15 broken). `sdqctl lsp type Treatment --repos Loop,AAPS` |
-| P3 | Ecosystem help topics | New | gap-ids, 5-facet, stpa, conformance, nightscout |
-| P3 | VERIFY stpa-hazards | New | Check STPA hazard traceability |
-| P3 | RUN-CONFORMANCE | New | Execute conformance test scenarios |
-| P3 | STPA Deep Integration | [sdqctl/STPA-DEEP-INTEGRATION.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/STPA-DEEP-INTEGRATION.md) | Usage guide + improvement predictions for ecosystem |
+```bash
+# Comparison tasks
+sdqctl iterate workflows/analysis/compare-feature.conv \
+  --prologue "Focus: remote bolus. Repos: Loop, AAPS, Trio"
 
----
+# Gap discovery
+sdqctl iterate workflows/analysis/gap-discovery.conv \
+  --prologue "Repo: cgm-remote-monitor. Focus: API v3"
 
-## Agentic Automation (R&D)
+# Full backlog cycle (selects task automatically)
+sdqctl iterate workflows/orchestration/backlog-cycle.conv
+```
 
-Future tooling for autonomous ecosystem analysis and contribution.
+### Verification
 
-| Priority | Enhancement | Proposal | Notes |
-|----------|-------------|----------|-------|
-| P3 | `sdqctl agent analyze` | [sdqctl/AGENTIC-ANALYSIS.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/AGENTIC-ANALYSIS.md) | Autonomous multi-cycle deep-dive with auto 5-facet updates |
-| P3 | `sdqctl watch` | [sdqctl/CONTINUOUS-MONITORING.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/CONTINUOUS-MONITORING.md) | Monitor external repos for alignment-relevant changes |
-| P3 | `sdqctl drift` | [sdqctl/CONTINUOUS-MONITORING.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/CONTINUOUS-MONITORING.md) | One-shot drift detection since last analysis |
-| P3 | `sdqctl delegate` | [sdqctl/UPSTREAM-CONTRIBUTIONS.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/UPSTREAM-CONTRIBUTIONS.md) | Draft upstream fixes for identified gaps |
-| P3 | `sdqctl upstream status` | [sdqctl/UPSTREAM-CONTRIBUTIONS.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/UPSTREAM-CONTRIBUTIONS.md) | Track contribution status across repos |
+```bash
+sdqctl verify plugin ref-integrity
+sdqctl verify plugin ecosystem-gaps
+``` |
