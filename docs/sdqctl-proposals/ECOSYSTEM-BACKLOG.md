@@ -5,20 +5,54 @@ Use this as input for process-oriented workflows.
 
 ## How to Use
 
-Pick items from the Ready Queue and run with appropriate workflow:
+### Single Item from Ready Queue
+
+Pick items and run with appropriate workflow:
 
 ```bash
 # For comparison tasks
 sdqctl iterate workflows/analysis/compare-feature.conv \
-  --prologue "Focus: [item from queue]"
+  --prologue "Focus: remote bolus commands. Repos: Loop, AAPS, Trio, Nightscout"
 
 # For gap discovery
 sdqctl iterate workflows/analysis/gap-discovery.conv \
-  --prologue "Area: [item from queue]"
+  --prologue "Repo: cgm-remote-monitor. Focus: API v3, sync, auth"
 
-# For deep dives
+# For deep dives (multi-cycle)
 sdqctl iterate workflows/analysis/deep-dive.conv \
-  --prologue "Topic: [item from queue]"
+  --prologue "Repo: openaps. Component: algorithm core" \
+  -n 5 --session-mode fresh
+
+# For spec extraction
+sdqctl iterate workflows/analysis/extract-spec.conv \
+  --prologue "Source: externals/AndroidAPS/core/nssdk/. Focus: Nightscout upload fields"
+```
+
+### Batch Processing Multiple Items
+
+```bash
+# Apply workflow to multiple repos
+sdqctl apply workflows/analysis/gap-discovery.conv \
+  --components "externals/*/README.md" \
+  --progress progress.md
+
+# Apply to specific under-documented repos
+for repo in cgm-remote-monitor openaps nightscout-connect; do
+  sdqctl iterate workflows/analysis/gap-discovery.conv \
+    --prologue "Repo: $repo. Quick audit for backlog scoping."
+done
+```
+
+### Verification After Changes
+
+```bash
+# Run all verification plugins
+sdqctl verify plugin ref-integrity
+sdqctl verify plugin ecosystem-gaps
+sdqctl verify plugin terminology-matrix
+
+# Or use the CI pipeline workflow
+sdqctl iterate workflows/integrate/ci-pipeline.conv
 ```
 
 ---
