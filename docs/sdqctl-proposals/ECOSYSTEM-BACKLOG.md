@@ -21,21 +21,20 @@
 
 Items ready for immediate work. Keep this at 3 items.
 
-### 1. [P1] Compare override/profile switch semantics
-**Type:** Comparison | **Effort:** Medium
-**Repos:** Loop, AAPS, Trio
-**Focus:** Loop overrides vs AAPS ProfileSwitch vs Trio overrides
-**Workflow:** `compare-feature.conv`
-
-### 2. [P0] Full audit: cgm-remote-monitor
+### 1. [P0] Full audit: cgm-remote-monitor
 **Type:** Audit | **Effort:** Large
 **Source:** `externals/cgm-remote-monitor/`
 **Focus:** API v3, plugins (38), sync, authentication
 **Workflow:** `deep-dive.conv` (multi-cycle)
 
-### 3. [P1] Deep dive: Batch operation ordering
+### 2. [P1] Deep dive: Batch operation ordering
 **Type:** Analysis | **Effort:** Medium
 **Focus:** Document order-preservation requirements for sync
+**Workflow:** `gap-discovery.conv`
+
+### 3. [P1] Gap discovery: Prediction array formats
+**Type:** Analysis | **Effort:** Medium
+**Focus:** IOB/COB/UAM/ZT curve differences across systems
 **Workflow:** `gap-discovery.conv`
 
 ---
@@ -51,8 +50,8 @@ Items ready for immediate work. Keep this at 3 items.
 
 - [ ] **PR analysis: cgm-remote-monitor** - Review open PRs for ecosystem impact
 - [ ] **PR analysis: share2nightscout-bridge** - Review open PRs
-- [x] ~~**Deep dive: Batch operation ordering**~~ - Promoted to Ready Queue #3
-- [ ] **Gap discovery: Prediction array formats** - IOB/COB/UAM/ZT curve differences
+- [x] ~~**Deep dive: Batch operation ordering**~~ - Promoted to Ready Queue #2
+- [x] ~~**Gap discovery: Prediction array formats**~~ - Promoted to Ready Queue #3
 - [ ] **Full audit: openaps** - Algorithm origins, Python-based (setup.py), 36 lines documented
   - Components: openaps/ module, bin/, Makefile
   - Focus: Historical context, oref0 relationship, device abstractions
@@ -97,6 +96,7 @@ Items ready for immediate work. Keep this at 3 items.
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-28 | Compare override/profile switch semantics | `docs/10-domain/override-profile-switch-comparison.md` - 331 lines, 4 new gaps |
 | 2026-01-28 | Compare remote bolus command handling | `docs/10-domain/remote-bolus-comparison.md` - 348 lines, 4 systems, 2 new gaps |
 | 2026-01-28 | Extract Nightscout v3 treatments schema | `mapping/nightscout/v3-treatments-schema.md` - 248 lines, 21+ eventTypes |
 | 2026-01-28 | Modernization analysis: cgm-remote-monitor vs Nocturne | `docs/sdqctl-proposals/nocturne-modernization-analysis.md` - 350 lines, full comparison |

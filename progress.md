@@ -6,6 +6,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Override/Profile Switch Comparison (2026-01-28)
+
+Cross-system analysis of therapy adjustment semantics across Loop, AAPS, and Trio.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Comparison** | `docs/10-domain/override-profile-switch-comparison.md` | 331 lines, 3 systems |
+
+#### Key Findings
+
+| System | Model | NS eventType |
+|--------|-------|--------------|
+| Loop | TemporaryScheduleOverride | Temporary Override |
+| AAPS | ProfileSwitch + TempTarget | Profile Switch + Temporary Target |
+| Trio | Override + TempTarget | Temporary Override + Temporary Target |
+
+**Gaps Identified**: GAP-OVERRIDE-001 through GAP-OVERRIDE-004
+
+---
+
 ### Remote Bolus Command Comparison (2026-01-28)
 
 Cross-system analysis of remote bolus handling in Loop, AAPS, Trio, and Nightscout.

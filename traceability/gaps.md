@@ -2994,3 +2994,112 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 **Related**:
 - [Remote Bolus Comparison](../docs/10-domain/remote-bolus-comparison.md)
 - GAP-REMOTE-004
+
+---
+
+### GAP-OVERRIDE-001: No unified override/profile-switch model
+
+**Scenario**: Cross-system therapy adjustment tracking
+
+**Description**: Loop uses `Temporary Override` eventType, AAPS uses `Profile Switch`, and they have different semantics. No unified schema to translate between them.
+
+**Evidence**:
+- Loop: `externals/LoopWorkspace/LoopKit/LoopKit/TemporaryScheduleOverride.swift`
+- AAPS: `externals/AndroidAPS/database/impl/src/main/kotlin/app/aaps/database/entities/ProfileSwitch.kt`
+
+**Impact**:
+- Cannot query "what therapy adjustment was active at time T" across systems
+- Follower apps must handle multiple eventTypes with different semantics
+- Analytics tools cannot aggregate override usage across AID systems
+
+**Possible Solutions**:
+1. Define abstract `TherapyAdjustment` schema that both map to
+2. Add cross-reference fields linking equivalent concepts
+3. Accept as fundamental design difference
+
+**Status**: Under discussion
+
+**Related**:
+- [Override/Profile Switch Comparison](../docs/10-domain/override-profile-switch-comparison.md)
+- GAP-002
+
+---
+
+### GAP-OVERRIDE-002: AAPS percentage vs Loop insulinNeedsScaleFactor inversion
+
+**Scenario**: Cross-system data interpretation
+
+**Description**: Loop and AAPS use inverted semantics for insulin scaling:
+- Loop: `insulinNeedsScaleFactor = 0.5` means 50% less insulin need
+- AAPS: `percentage = 50` means 50% of normal insulin
+
+Mathematically equivalent but semantically confusing.
+
+**Evidence**:
+- Loop: `TemporaryScheduleOverrideSettings.insulinNeedsScaleFactor`
+- AAPS: `ProfileSwitch.percentage`
+
+**Impact**:
+- Follower apps must invert the value when displaying
+- Easy to misinterpret without documentation
+
+**Possible Solutions**:
+1. Document mapping: `aaps.percentage = loop.insulinNeedsScaleFactor * 100`
+2. Add standardized field in Nightscout schema
+
+**Status**: Documented
+
+**Related**:
+- [Override/Profile Switch Comparison](../docs/10-domain/override-profile-switch-comparison.md)
+
+---
+
+### GAP-OVERRIDE-003: TempTarget vs Override separation inconsistent
+
+**Scenario**: Cross-system therapy adjustment modeling
+
+**Description**: Systems handle target range overrides differently:
+- Loop: Target is part of override (`targetRange` in settings)
+- AAPS/Trio: TempTarget is a separate entity from ProfileSwitch/Override
+
+**Impact**:
+- May have active TempTarget AND ProfileSwitch simultaneously in AAPS
+- Combining target + insulin adjustment requires different logic per system
+- Analytics must join multiple eventTypes in AAPS
+
+**Possible Solutions**:
+1. Accept as fundamental design difference
+2. Document in terminology matrix
+3. Create virtual "combined adjustment" view in Nightscout
+
+**Status**: Documented
+
+**Related**:
+- [Override/Profile Switch Comparison](../docs/10-domain/override-profile-switch-comparison.md)
+
+---
+
+### GAP-OVERRIDE-004: Trio advanced override settings not in Nightscout
+
+**Scenario**: Trio override visibility in followers
+
+**Description**: Trio's advanced override fields have no Nightscout representation:
+- `smbIsOff` (disable SMB)
+- `isfAndCr` (apply to ISF and CR)
+- `smbMinutes`, `uamMinutes` (timing overrides)
+
+**Evidence**: `externals/Trio/Trio/Sources/Models/Override.swift`
+
+**Impact**:
+- Following a Trio user, cannot see full override configuration
+- Cannot analyze SMB behavior during overrides
+
+**Possible Solutions**:
+1. Add extension fields to Nightscout treatment schema
+2. Include in devicestatus instead
+3. Accept as Trio-specific detail
+
+**Status**: Under discussion
+
+**Related**:
+- [Override/Profile Switch Comparison](../docs/10-domain/override-profile-switch-comparison.md)
