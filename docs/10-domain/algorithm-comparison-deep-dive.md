@@ -484,7 +484,7 @@ if (maxDelta > 0.2 * bg) {
 | **Sudden Rise Protection** | N/A | Yes (maxDelta > 20% BG) | Yes | Yes |
 
 **Source References**:
-- Loop: `loop:LoopKit/LoopKit/TherapySettings.swift`, `loop:Loop/Managers/LoopDataManager.swift`
+- Loop: `loop:LoopKit/LoopKit/TherapySettings.swift`, `loop:Loop/Loop/Managers/LoopDataManager.swift`
 - oref0: `oref0:lib/determine-basal/determine-basal.js#L51-L126` (SMB enable logic)
 - AAPS: `aaps:plugins/aps/src/main/kotlin/app/aaps/plugins/aps/openAPSSMB/DetermineBasalSMB.kt`
 - Trio: `trio:trio-oref/lib/determine-basal/determine-basal.js#L47-L142`

@@ -1887,6 +1887,112 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ---
 
+### GAP-TZ-004: utcOffset Unit Mismatch Between Nightscout and AAPS
+
+**Scenario**: Cross-system sync between AAPS and Nightscout
+
+**Description**: Nightscout stores and expects `utcOffset` in **minutes** (e.g., `-480` for UTC-8), while AAPS stores `utcOffset` internally in **milliseconds** (e.g., `-28800000` for UTC-8). This unit mismatch requires careful conversion during sync.
+
+**Source**:
+- Nightscout: `cgm-remote-monitor:lib/api3/generic/collection.js:182` - `doc.utcOffset = m.utcOffset()` (moment returns minutes)
+- AAPS SDK: `core/nssdk/remotemodel/RemoteTreatment.kt:23` - `utcOffset: Long?` (documented as "minutes" in comments)
+- AAPS DB: `database/entities/interfaces/DBEntryWithTime.kt:6` - `var utcOffset: Long` (milliseconds internally)
+
+**Impact**:
+- Potential off-by-factor-of-60000 if units confused
+- AAPS SDK correctly handles conversion, but custom clients may not
+- Documentation unclear about which unit applies where
+
+**Possible Solutions**:
+1. Document unit expectations clearly in API specs
+2. Add validation for reasonable offset ranges
+3. Standardize on one unit (minutes) across all systems
+
+**Status**: Documented
+
+---
+
+### GAP-TZ-005: AAPS Fixed Offset Storage Breaks Historical DST Analysis
+
+**Scenario**: Analyzing historical data that spans DST transitions
+
+**Description**: AAPS captures `utcOffset` at event creation time using `TimeZone.getDefault().getOffset(timestamp)`. This captures the offset **at that moment** including DST, but the offset is fixed and won't update when viewing historical data. This means reconstructing local time from historical events may be incorrect if DST status has changed.
+
+**Source**: `AndroidAPS/database/entities/Bolus.kt:43`
+```kotlin
+override var utcOffset: Long = TimeZone.getDefault().getOffset(timestamp).toLong(),
+```
+
+**Impact**:
+- Historical reports may show incorrect local times for events near DST transitions
+- Cannot retroactively determine if DST was in effect for old events
+- Schedule alignment analysis across DST boundaries is unreliable
+- Exported data may have misleading timezone information
+
+**Possible Solutions**:
+1. Store IANA timezone identifier alongside offset
+2. Use offset calculated for the event's timestamp, not current time (already done for most events)
+3. Document limitation in data export documentation
+
+**Status**: Documented (architectural limitation)
+
+---
+
+### GAP-TZ-006: Loop Uploads Non-Standard Timezone Format
+
+**Scenario**: Loop profile sync to Nightscout
+
+**Description**: Loop uploads timezone strings with non-standard casing (`ETC/GMT+8` instead of `Etc/GMT+8`). Nightscout has a workaround but it's incomplete (uses `replace` instead of case-insensitive matching).
+
+**Source**: `cgm-remote-monitor:lib/profilefunctions.js:179-181`
+```javascript
+// Work around Loop uploading non-ISO compliant time zone string
+if (rVal) rVal.replace('ETC','Etc');
+```
+
+**Note**: This code has a bug - it calls `replace` but doesn't assign the result.
+
+**Impact**:
+- Timezone lookup may fail with uppercase prefix
+- Profile time calculations may use fallback behavior
+- Inconsistent behavior between Loop and other clients
+
+**Possible Solutions**:
+1. Fix Loop to use standard IANA format (`Etc/GMT+8`)
+2. Fix Nightscout to use `rVal = rVal.replace('ETC','Etc')` (assign result)
+3. Use case-insensitive timezone lookup
+
+**Status**: Bug identified
+
+---
+
+### GAP-TZ-007: Missing Timezone Fallback Uses Server Local Time
+
+**Scenario**: Profile uploaded without timezone field
+
+**Description**: When a profile is uploaded without a `timezone` field, Nightscout falls back to the server's local timezone. This can cause schedule misalignment when the server is in a different timezone than the user.
+
+**Source**: `cgm-remote-monitor:lib/profilefunctions.js:107-110`
+```javascript
+// Use local time zone if profile doesn't contain a time zone
+// This WILL break on the server; added warnings elsewhere that this is missing
+// TODO: Better warnings to user for missing configuration
+```
+
+**Impact**:
+- Basal rates may be applied at wrong times
+- ISF/CR lookups return incorrect values for time of day
+- User may not realize timezone is missing
+
+**Possible Solutions**:
+1. Require timezone in profile validation
+2. Default to UTC instead of server local
+3. Add prominent UI warning when timezone missing
+
+**Status**: Under discussion
+
+---
+
 ## Error Handling Gaps
 
 ### GAP-ERR-001: Empty Array Creates Empty Treatment

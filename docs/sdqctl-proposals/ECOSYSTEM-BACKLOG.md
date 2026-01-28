@@ -39,11 +39,11 @@ Items ready for immediate work. Keep this at 3 items.
 **Focus:** Document all fields uploaded to Nightscout
 **Workflow:** `extract-spec.conv`
 
-### 3. [P2] Map timezone/DST handling terminology
-**Type:** Terminology | **Effort:** Low
-**Repos:** All pumps in AAPS, Loop, Trio
-**Focus:** How each system handles DST transitions
-**Workflow:** `terminology-alignment.conv`
+### 3. [P1] Compare override/profile switch semantics
+**Type:** Comparison | **Effort:** Medium
+**Repos:** Loop, AAPS, Trio
+**Focus:** Loop overrides vs AAPS ProfileSwitch vs Trio overrides
+**Workflow:** `compare-feature.conv`
 
 ---
 
@@ -55,7 +55,6 @@ Items ready for immediate work. Keep this at 3 items.
 
 ### P1 - High Value
 
-- [ ] **Compare override/profile switch semantics** - Loop overrides vs AAPS ProfileSwitch vs Trio overrides
 - [ ] **Extract Nightscout v3 treatments schema** - Document all supported fields and eventTypes
 - [ ] **Deep dive: Batch operation ordering** - Document order-preservation requirements for sync
 - [ ] **Gap discovery: Prediction array formats** - IOB/COB/UAM/ZT curve differences
@@ -66,6 +65,11 @@ Items ready for immediate work. Keep this at 3 items.
 - [ ] **Extract Loop sync identity fields** - What makes a treatment unique in Loop
 - [ ] **Map pump communication terminology** - Reservoir, cartridge, pod, etc.
 - [ ] **Deep dive: Authentication flows** - API secret vs tokens vs JWT
+- [ ] **LSP-based documentation claim verification** - Use LSP semantic queries to verify:
+  - File paths with `...` placeholders (15 broken refs use this pattern)
+  - Type signatures claimed in deep-dives match actual code
+  - Cross-project terminology claims (e.g., "Loop calls this X, AAPS calls it Y")
+  - See: `traceability/refs-validation.md` for current broken refs
 
 ### P3 - Nice to Have
 
@@ -77,11 +81,9 @@ Items ready for immediate work. Keep this at 3 items.
 
 ## Completed
 
-*Move items here after workflow completion*
-
 | Date | Item | Outcome |
 |------|------|---------|
-| | | |
+| 2026-01-28 | Map timezone/DST handling terminology | +150 lines terminology matrix, 4 new gaps (GAP-TZ-004-007), pump DST handling documented |
 
 ---
 
@@ -113,7 +115,7 @@ Track tooling improvements that would help ecosystem alignment workflows.
 | P2 | HELP-INLINE directive | [sdqctl/HELP-INLINE.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/HELP-INLINE.md) | Allow HELP anywhere in workflow, not just prologues |
 | P2 | REFCAT glob support | [sdqctl/REFCAT-DESIGN.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/REFCAT-DESIGN.md) | Multi-file patterns: `@externals/**/*Treatment*.swift` |
 | P2 | Plugin System | [sdqctl/PLUGIN-SYSTEM.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/PLUGIN-SYSTEM.md) | Write custom directives for ecosystem independently |
-| P2 | LSP Integration | [sdqctl/LSP-INTEGRATION.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/LSP-INTEGRATION.md) | Semantic code queries: type extraction, cross-project comparison. `sdqctl lsp type Treatment --repos Loop,AAPS` |
+| P2 | LSP Integration | [sdqctl/LSP-INTEGRATION.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/LSP-INTEGRATION.md) | Semantic code queries: type extraction, cross-project comparison. Key use case: resolve `...` placeholder paths in refs (15 broken). `sdqctl lsp type Treatment --repos Loop,AAPS` |
 | P3 | Ecosystem help topics | New | gap-ids, 5-facet, stpa, conformance, nightscout |
 | P3 | VERIFY stpa-hazards | New | Check STPA hazard traceability |
 | P3 | RUN-CONFORMANCE | New | Execute conformance test scenarios |

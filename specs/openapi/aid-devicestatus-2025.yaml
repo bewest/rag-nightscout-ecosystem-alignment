@@ -140,8 +140,8 @@ components:
       type: object
       description: |
         Loop-specific status. Uses FLAT structure with direct children.
-        Source: NightscoutServiceKit/Extensions/StoredDosingDecision.swift
-      x-aid-source: loop:NightscoutServiceKit/Extensions/StoredDosingDecision.swift
+        Source: NightscoutService/NightscoutServiceKit/Extensions/StoredDosingDecision.swift
+      x-aid-source: loop:NightscoutService/NightscoutServiceKit/Extensions/StoredDosingDecision.swift
       properties:
         name:
           type: string

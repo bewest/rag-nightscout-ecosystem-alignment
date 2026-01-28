@@ -6,6 +6,52 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Timezone/DST Handling Deep Dive (2026-01-28)
+
+Comprehensive cross-project analysis of timezone and DST handling across the Nightscout ecosystem. Documented how each system stores, interprets, and synchronizes timezone information.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Terminology Matrix Update** | `mapping/cross-project/terminology-matrix.md` | Expanded Timezone Handling section with 7 detailed tables |
+| **New Gaps (4)** | `traceability/gaps.md` | GAP-TZ-004 through GAP-TZ-007 |
+
+#### Key Findings
+
+| System | TZ Storage | DST Aware | Key Issue |
+|--------|-----------|-----------|-----------|
+| **Nightscout** | IANA string in profile | ✅ Yes (moment-tz) | Recalculates utcOffset from dateString |
+| **Loop** | `TimeZone` object (fixed offset) | ✅ Yes (Foundation) | Uses non-standard `ETC/GMT` format |
+| **AAPS** | `utcOffset: Long` (ms) | ❌ No (fixed at capture) | Cannot reconstruct DST status historically |
+| **Trio** | From NS profile | ✅ Yes (via NS) | Inherits NS timezone |
+| **oref0** | Uses `moment-timezone` | ✅ Yes | N/A (no profile storage) |
+
+#### Pump DST Support
+
+| Status | Pumps |
+|--------|-------|
+| **✅ Can handle DST** | Medtrum, Combo v2 |
+| **❌ Cannot handle DST** | Medtronic, Omnipod DASH/Eros, Dana RS/R, Equil |
+
+#### New Gaps Documented
+
+| Gap ID | Description |
+|--------|-------------|
+| **GAP-TZ-004** | utcOffset unit mismatch: Nightscout uses minutes, AAPS uses milliseconds |
+| **GAP-TZ-005** | AAPS fixed offset storage breaks historical DST analysis |
+| **GAP-TZ-006** | Loop uploads non-standard `ETC/GMT` timezone format (and NS workaround is buggy) |
+| **GAP-TZ-007** | Missing timezone fallback uses server local time |
+
+**Source Files Analyzed**:
+- `externals/AndroidAPS/database/entities/interfaces/DBEntryWithTime.kt`
+- `externals/AndroidAPS/core/data/pump/defs/TimeChangeType.kt`
+- `externals/LoopWorkspace/LoopKit/LoopKit/DailyValueSchedule.swift`
+- `externals/LoopWorkspace/RileyLinkKit/Common/TimeZone.swift`
+- `externals/cgm-remote-monitor/lib/profilefunctions.js`
+- `externals/cgm-remote-monitor/lib/api3/generic/collection.js`
+- `externals/AndroidAPS/pump/medtrum/src/main/kotlin/.../SetTimeZonePacket.kt`
+
+---
+
 ### Gap Discovery & Specification Analysis Session (2026-01-23)
 
 Comprehensive gap analysis across Nightscout ecosystem: searched external repositories for undocumented behaviors, cross-referenced OpenAPI specs with controller implementations, and documented 16 new gaps with 14 corresponding requirements.

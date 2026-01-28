@@ -65,7 +65,7 @@ iob = dose × (1 - S × (1-a) × ((t²/(τ×td×(1-a)) - t/τ - 1) × e^(-t/τ) 
 | System | File | Language |
 |--------|------|----------|
 | oref0 | `lib/iob/calculate.js#L83-L143` | JavaScript |
-| AAPS | `plugins/insulin/src/main/kotlin/.../InsulinOrefBasePlugin.kt` | Kotlin |
+| AAPS | `aaps:plugins/insulin/src/main/kotlin/app/aaps/plugins/insulin/InsulinOrefBasePlugin.kt` | Kotlin |
 | Loop | `LoopKit/LoopKit/Insulin/ExponentialInsulinModel.swift` | Swift |
 | Trio | `trio-oref/lib/iob/index.js` | JavaScript (via oref0) |
 
@@ -277,7 +277,7 @@ if (defaults.requireLongDia && dia < 5) {
 
 ### AAPS DIA Enforcement
 
-**Source**: `aaps:plugins/insulin/src/main/kotlin/.../InsulinOrefBasePlugin.kt`
+**Source**: `aaps:plugins/insulin/src/main/kotlin/app/aaps/plugins/insulin/InsulinOrefBasePlugin.kt`
 
 ```kotlin
 override val dia: Double
@@ -316,7 +316,7 @@ Configuration via profile:
 
 ### AAPS Free Peak
 
-**Source**: `aaps:plugins/insulin/src/main/kotlin/.../InsulinOrefFreePeakPlugin.kt`
+**Source**: `aaps:plugins/insulin/src/main/kotlin/app/aaps/plugins/insulin/InsulinOrefFreePeakPlugin.kt`
 
 ```kotlin
 class InsulinOrefFreePeakPlugin : InsulinOrefBasePlugin {
@@ -411,7 +411,7 @@ val bgi = round((-iob_data.activity * sens * 5), 2)
 
 AAPS implements Dynamic ISF which adjusts sensitivity based on insulin type:
 
-**Source**: `aaps:plugins/aps/src/main/kotlin/.../OpenAPSSMBPlugin.kt`
+**Source**: `aaps:plugins/aps/src/main/kotlin/app/aaps/plugins/aps/openAPSSMB/OpenAPSSMBPlugin.kt`
 
 ```kotlin
 // In calculateRawDynIsf()

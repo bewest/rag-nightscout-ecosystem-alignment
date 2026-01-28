@@ -245,13 +245,151 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 
 ### Timezone Handling
 
-| Aspect | Nightscout | Loop | AAPS | Trio |
-|--------|------------|------|------|------|
-| Storage Format | IANA string | `TimeZone` object | `utcOffset: Long` (ms) | IANA string (from NS) |
-| DST Awareness | Yes (moment-tz) | Yes (Foundation) | No (fixed offset) | Yes (via NS) |
-| Per-Schedule TZ | In each profile | Per `DailyValueSchedule` | Per `ProfileSwitch` event | From profile |
+> **See Also**: [Timezone/DST Gap Summary](#timezone-and-dst-gap-summary) for interoperability issues.
 
-**Gap**: AAPS uses fixed `utcOffset` captured at event time, which does not automatically handle DST transitions (GAP-TZ-001).
+#### Profile/Schedule Timezone Storage
+
+| Aspect | Nightscout | Loop | AAPS | Trio | xDrip+ | oref0 |
+|--------|------------|------|------|------|--------|-------|
+| **Profile TZ Format** | IANA string (`"US/Eastern"`) | `TimeZone` object | N/A (uses device TZ) | IANA string (from NS) | N/A | N/A |
+| **Schedule TZ** | Per-profile `timezone` field | Per `DailyValueSchedule.timeZone` | Per `ProfileSwitch.utcOffset` | From NS profile | N/A | N/A |
+| **TZ Library** | `moment-timezone` | Foundation `TimeZone` | Java `TimeZone` | Foundation `TimeZone` | Java `TimeZone` | `moment-timezone` |
+
+**Source Code References**:
+- Nightscout: `cgm-remote-monitor:lib/profilefunctions.js:178` - `profile['timezone']`
+- Loop: `LoopKit/LoopKit/DailyValueSchedule.swift:103` - `public var timeZone: TimeZone`
+- AAPS: `database/entities/ProfileSwitch.kt:42` - `utcOffset: Long = TimeZone.getDefault().getOffset(timestamp)`
+
+#### Event Timestamp/Offset Storage
+
+| Aspect | Nightscout | Loop | AAPS | Trio | xDrip+ | oref0 |
+|--------|------------|------|------|------|--------|-------|
+| **Event Offset Field** | `utcOffset` (minutes) | N/A | `utcOffset` (ms) | N/A | N/A | N/A |
+| **Offset Calculation** | From `dateString` TZ | N/A | `TimeZone.getOffset(timestamp)` | N/A | N/A | N/A |
+| **Offset Auto-Parse** | Yes (API3) | N/A | Yes | N/A | N/A | N/A |
+
+**Unit Difference (GAP-TZ-004)**:
+- **Nightscout API**: `utcOffset` in **minutes** (e.g., `-480` for UTC-8)
+- **AAPS internal**: `utcOffset` in **milliseconds** (e.g., `-28800000` for UTC-8)
+
+**Source Code References**:
+- Nightscout: `cgm-remote-monitor:lib/api3/generic/collection.js:182` - `doc.utcOffset = m.utcOffset()` (minutes)
+- AAPS: `database/entities/interfaces/DBEntryWithTime.kt:6` - `var utcOffset: Long` (milliseconds)
+
+#### DST (Daylight Saving Time) Awareness
+
+| Aspect | Nightscout | Loop | AAPS | Trio | xDrip+ |
+|--------|------------|------|------|------|--------|
+| **DST Automatic** | Yes (IANA rules) | Yes (Foundation) | **No** (fixed offset at capture) | Yes (via NS) | Partial |
+| **DST Detection** | `moment-tz` | System | N/A | System | `TimeZone.getDSTSavings()` |
+| **Profile TZ DST** | Automatic | Automatic | N/A (no IANA) | Automatic | N/A |
+
+**Critical Gap (GAP-TZ-005)**: AAPS captures `utcOffset` at event creation time using `TimeZone.getDefault().getOffset(timestamp)`. This captures the **current** offset including DST, but the offset is **fixed** and won't update when DST transitions occur. Historical data analysis crossing DST boundaries may misinterpret times.
+
+#### Pump Timezone/DST Handling
+
+| Pump Driver | Can Handle DST | Auto-Update | Source |
+|-------------|----------------|-------------|--------|
+| **Medtronic** | ❌ No | User intervention | `MedtronicPumpPlugin.kt:259` |
+| **Omnipod DASH** | ❌ No | User intervention | `OmnipodDashPumpPlugin.kt:987` |
+| **Omnipod Eros** | ❌ No | Event-driven | `OmnipodErosPumpPlugin.kt:769` |
+| **Dana RS/R** | ❌ No | User intervention | `AbstractDanaRPlugin.kt:361` |
+| **Medtrum** | ✅ Yes | Automatic | `MedtrumPlugin.kt:408` |
+| **Combo v2** | ✅ Yes | Automatic | `ComboV2Plugin.kt:1417` |
+| **Equil** | ❌ No | Event-driven | `EquilPumpPlugin.kt:314` |
+
+**AAPS TimeChangeType Enum** (`core/data/pump/defs/TimeChangeType.kt`):
+```kotlin
+enum class TimeChangeType {
+    TimezoneChanged, DSTStarted, DSTEnded, TimeChanged
+}
+```
+
+**Source**: `Pump.timezoneOrDSTChanged(timeChangeType: TimeChangeType)` callback
+
+#### Loop "Fixed" Timezone Pattern
+
+Loop uses a "fixed" timezone pattern to ensure schedule consistency:
+
+```swift
+// RileyLinkKit/Common/TimeZone.swift:12-13
+static var currentFixed: TimeZone {
+    return TimeZone(secondsFromGMT: TimeZone.current.secondsFromGMT())!
+}
+```
+
+This creates a timezone with a **fixed UTC offset** (no DST rules) from the current moment. This ensures:
+- Schedules don't shift during DST transitions
+- Pump-stored schedules remain consistent
+- Explicit user action required to update schedules after TZ change
+
+**Implication**: Loop schedules are stored with fixed offsets, not IANA identifiers. A schedule created at `-0800` (PST) remains at `-0800` even when DST starts (PDT would be `-0700`).
+
+#### Nightscout Profile Timezone Quirks
+
+**Loop Non-Standard Format (GAP-TZ-006)**:
+```javascript
+// lib/profilefunctions.js:179-181
+// Work around Loop uploading non-ISO compliant time zone string
+if (rVal) rVal.replace('ETC','Etc');
+```
+
+Loop uploads timezone strings like `ETC/GMT+8` instead of the standard `Etc/GMT+8`.
+
+**Missing Timezone Fallback**:
+```javascript
+// lib/profilefunctions.js:107-110
+// Use local time zone if profile doesn't contain a time zone
+// This WILL break on the server; added warnings elsewhere that this is missing
+```
+
+If no timezone is specified, Nightscout uses server local time, which can cause schedule misalignment.
+
+#### utcOffset Recalculation Behavior (GAP-TZ-003)
+
+Nightscout API v3 recalculates `utcOffset` from the `dateString` timezone if not explicitly provided:
+
+```javascript
+// lib/api3/generic/collection.js:181-183
+if (typeof doc.utcOffset === 'undefined') {
+  doc.utcOffset = m.utcOffset();
+}
+```
+
+**Implication**: Client-provided `utcOffset` is preserved if present, but parsed from timestamp otherwise. This can lead to unexpected behavior when:
+1. Client is in different TZ than the dateString indicates
+2. Historical data is uploaded with ISO timestamps without offset
+
+#### Schedule Offset Calculation
+
+Loop's schedule offset logic handles the relationship between absolute time and schedule position:
+
+```swift
+// DailyValueSchedule.swift:126-132
+func scheduleOffset(for date: Date) -> TimeInterval {
+    // The time interval since a reference date in the specified time zone
+    let interval = date.timeIntervalSinceReferenceDate + TimeInterval(timeZone.secondsFromGMT(for: date))
+    
+    // The offset of the time interval since the last occurrence of the reference time
+    return ((interval - referenceTimeInterval).truncatingRemainder(dividingBy: repeatInterval)) + referenceTimeInterval
+}
+```
+
+This uses `secondsFromGMT(for: date)` which **does** account for DST at the specific date, allowing proper schedule lookup even across DST boundaries.
+
+#### Timezone and DST Gap Summary
+
+| Gap ID | Description | Impact | Systems |
+|--------|-------------|--------|---------|
+| **GAP-TZ-001** | Most pump drivers cannot handle DST | Basal schedules off by 1h during transitions | AAPS (Medtronic, Omnipod, Dana) |
+| **GAP-TZ-002** | Medtrum GMT+12 bug | Incorrect pump time in Pacific timezones | AAPS Medtrum |
+| **GAP-TZ-003** | Nightscout recalculates utcOffset | Client offset may be overwritten | Nightscout API v3 |
+| **GAP-TZ-004** | utcOffset unit mismatch | Minutes (NS) vs milliseconds (AAPS) | NS ↔ AAPS sync |
+| **GAP-TZ-005** | AAPS fixed offset storage | Historical DST analysis incorrect | AAPS data export |
+| **GAP-TZ-006** | Loop non-standard TZ format | `ETC/GMT` vs `Etc/GMT` case mismatch | Loop → NS |
+| **GAP-TZ-007** | Missing TZ fallback | Server local time used if missing | All clients |
+
+**Full Gap Details**: See [Timezone and DST Gaps](../../traceability/gaps.md#timezone-and-dst-gaps)
 
 ### Profile Sync Direction
 
@@ -344,9 +482,9 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 | Project | Override/Adjustment Model Location |
 |---------|-----------------------------------|
 | Nightscout | `crm:lib/plugins/careportal.js` |
-| Loop | `loop:Loop/Models/TemporaryScheduleOverride.swift` |
-| AAPS | `aaps:database/entities/ProfileSwitch.kt` |
-| Trio | `trio:FreeAPS/Sources/Models/Override.swift` |
+| Loop | `loop:LoopKit/LoopKit/TemporaryScheduleOverride.swift` |
+| AAPS | `aaps:database/impl/src/main/kotlin/app/aaps/database/entities/ProfileSwitch.kt` |
+| Trio | `trio:Trio/Sources/Models/Override.swift` |
 | xDrip+ (Android) | N/A (CGM-focused, no override) |
 
 ### xDrip+ Key Source Files
@@ -1110,7 +1248,7 @@ oref0's core innovation is deviation analysis:
 |--------|---------------|
 | Trio | `trio:Trio/Sources/Services/RemoteControl/` |
 | Loop | `loop:NightscoutService/NightscoutServiceKit/RemoteCommands/` |
-| AAPS | `aaps:plugins/main/src/main/kotlin/.../smsCommunicator/` |
+| AAPS | `aaps:plugins/main/src/main/kotlin/app/aaps/plugins/main/general/smsCommunicator/` |
 
 ---
 
@@ -1672,10 +1810,10 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 *Trio uses encryption rather than OTP
 
 **Source Files**:
-- `loopcaregiver:LoopCaregiverKit/Sources/.../Nightscout/OTPManager.swift` - TOTP generation
-- `loopcaregiver:LoopCaregiverKit/Sources/.../Nightscout/NightscoutDataSource.swift` - Command upload
-- `loopcaregiver:LoopCaregiverKit/Sources/.../Models/DeepLinkParser.swift` - QR code parsing
-- `loopcaregiver:LoopCaregiverKit/Sources/.../Models/RemoteCommands/Action.swift` - Action types
+- `loopcaregiver:LoopCaregiverKit/Sources/LoopCaregiverKit/Nightscout/OTPManager.swift` - TOTP generation
+- `loopcaregiver:LoopCaregiverKit/Sources/LoopCaregiverKit/Nightscout/NightscoutDataSource.swift` - Command upload
+- `loopcaregiver:LoopCaregiverKit/Sources/LoopCaregiverKit/Models/DeepLinkParser.swift` - QR code parsing
+- `loopcaregiver:LoopCaregiverKit/Sources/LoopCaregiverKit/Models/RemoteCommands/Action.swift` - Action types
 
 **Gap Reference**: GAP-REMOTE-005, GAP-REMOTE-006
 

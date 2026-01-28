@@ -793,7 +793,7 @@ function detectSystem(devicestatus) {
 
 Loop computes individual effect timelines (insulin, carbs, momentum, retrospective correction) internally but does NOT upload them. This limits debugging and cross-project comparison.
 
-**Source**: Analysis of `loop:Loop/Models/StoredDosingDecision.swift` and `loop:NightscoutService/` shows effect arrays are computed but not included in the DeviceStatus upload.
+**Source**: Analysis of `loop:NightscoutService/NightscoutServiceKit/Extensions/StoredDosingDecision.swift` and `loop:NightscoutService/` shows effect arrays are computed but not included in the DeviceStatus upload.
 
 **Proposal** (not yet implemented): Consider adding optional effect timeline upload:
 ```json
