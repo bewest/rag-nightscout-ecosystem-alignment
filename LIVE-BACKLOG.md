@@ -3,9 +3,7 @@
 > **Purpose**: Midflight requests from humans during sdqctl processing sessions.  
 > **Parent**: [ECOSYSTEM-BACKLOG.md](docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md)
 
-
-* cgm-remote-monitor is interetsed in adopting playwright, let's propose adoption plan for playwright among modernization efforts.
-* consider if everything is correctly prioritized given the updates we've made.
+_(No pending requests)_
 
 ---
 
@@ -13,6 +11,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Playwright adoption proposal | P2 | → Queued to tooling backlog | 2026-01-28 |
+| Re-prioritize after modernization updates | - | ✅ Addressed | 2026-01-28 |
 | cgm-remote-monitor vs Nocturne modernization analysis | P1 | ✅ Complete | 2026-01-28 |
 | Reorganize related work into groups | - | Addressed via domain backlogs structure | 2026-01-28 |
 | Reporting needs analysis (nightscout-reporter, zreptil) | P2 | → Queued to analysis backlog | 2026-01-28 |

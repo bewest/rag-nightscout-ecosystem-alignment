@@ -88,6 +88,9 @@ Items ready for immediate work. Keep this at 3 items.
   - Components: lib/, migrations/, Ory Hydra/Kratos integration
   - Focus: Role-based access control, OAuth flows, API authorization
   - Workflow: `gap-discovery.conv`
+- [ ] **Playwright adoption proposal for cgm-remote-monitor** - E2E testing modernization
+  - From: LIVE-BACKLOG request
+  - Focus: Test coverage, CI integration, migration from existing tests
 
 ---
 
