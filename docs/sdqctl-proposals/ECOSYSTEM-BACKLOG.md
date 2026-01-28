@@ -27,15 +27,16 @@ Items ready for immediate work. Keep this at 3 items.
 **Focus:** API v3, plugins (38), sync, authentication
 **Workflow:** `deep-dive.conv` (multi-cycle)
 
-### 2. [P1] Deep dive: Batch operation ordering
-**Type:** Analysis | **Effort:** Medium
-**Focus:** Document order-preservation requirements for sync
-**Workflow:** `gap-discovery.conv`
-
-### 3. [P1] Gap discovery: Prediction array formats
+### 2. [P1] Gap discovery: Prediction array formats
 **Type:** Analysis | **Effort:** Medium
 **Focus:** IOB/COB/UAM/ZT curve differences across systems
 **Workflow:** `gap-discovery.conv`
+
+### 3. [P1] Full audit: openaps
+**Type:** Audit | **Effort:** Medium
+**Source:** `externals/oref0/`
+**Focus:** Algorithm origins, oref0 relationship
+**Workflow:** `deep-dive.conv`
 
 ---
 
@@ -96,6 +97,7 @@ Items ready for immediate work. Keep this at 3 items.
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-28 | Deep dive: Batch operation ordering | `docs/10-domain/batch-ordering-deep-dive.md` - 334 lines, 3 requirements |
 | 2026-01-28 | Compare override/profile switch semantics | `docs/10-domain/override-profile-switch-comparison.md` - 331 lines, 4 new gaps |
 | 2026-01-28 | Compare remote bolus command handling | `docs/10-domain/remote-bolus-comparison.md` - 348 lines, 4 systems, 2 new gaps |
 | 2026-01-28 | Extract Nightscout v3 treatments schema | `mapping/nightscout/v3-treatments-schema.md` - 248 lines, 21+ eventTypes |

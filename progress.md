@@ -6,6 +6,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Batch Operation Ordering Deep Dive (2026-01-28)
+
+Analysis of sync order requirements and ID mapping patterns across Loop, AAPS, Nightscout.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/batch-ordering-deep-dive.md` | 334 lines |
+
+#### Key Findings
+
+| System | Strategy | Order Sensitive |
+|--------|----------|-----------------|
+| Loop | v1 batch + zip() | ✅ Critical |
+| AAPS | Sequential v3 | ❌ N/A |
+| NS v3 | Single-doc only | ❌ N/A |
+
+**Key Recommendation**: Parse `identifier` from response, not positional matching.
+
+---
+
 ### Override/Profile Switch Comparison (2026-01-28)
 
 Cross-system analysis of therapy adjustment semantics across Loop, AAPS, and Trio.
