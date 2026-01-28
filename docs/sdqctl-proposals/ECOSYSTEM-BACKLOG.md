@@ -33,12 +33,11 @@ Items ready for immediate work. Keep this at 3 items.
 **Focus:** Loop overrides vs AAPS ProfileSwitch vs Trio overrides
 **Workflow:** `compare-feature.conv`
 
-### 3. [P1] Modernization analysis: cgm-remote-monitor vs Nocturne
-**Type:** Analysis | **Effort:** Large
-**Repos:** cgm-remote-monitor, nocturne
-**Focus:** Gap/feature/impact analysis, migration paths
-**Prereq:** ✅ nocturne audit complete
-**Workflow:** `compare-feature.conv`
+### 3. [P1] Extract Nightscout v3 treatments schema
+**Type:** Extraction | **Effort:** Medium
+**Source:** `externals/cgm-remote-monitor/lib/api3/`
+**Focus:** Document all supported fields and eventTypes from origin
+**Workflow:** `extract-spec.conv`
 
 ---
 
@@ -55,13 +54,14 @@ Items ready for immediate work. Keep this at 3 items.
 
 - [ ] **PR analysis: cgm-remote-monitor** - Review open PRs for ecosystem impact
 - [ ] **PR analysis: share2nightscout-bridge** - Review open PRs
-- [ ] **Extract Nightscout v3 treatments schema** - Document all supported fields and eventTypes
 - [ ] **Deep dive: Batch operation ordering** - Document order-preservation requirements for sync
 - [ ] **Gap discovery: Prediction array formats** - IOB/COB/UAM/ZT curve differences
 - [ ] **Full audit: openaps** - Algorithm origins, Python-based (setup.py), 36 lines documented
   - Components: openaps/ module, bin/, Makefile
   - Focus: Historical context, oref0 relationship, device abstractions
   - Workflow: `deep-dive.conv`
+- [ ] **Algorithm conformance suite** - Create test vectors for Rust vs JS oref comparison
+  - From: Modernization analysis next steps
 
 ### P2 - Normal
 
@@ -97,6 +97,7 @@ Items ready for immediate work. Keep this at 3 items.
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-28 | Modernization analysis: cgm-remote-monitor vs Nocturne | `docs/sdqctl-proposals/nocturne-modernization-analysis.md` - 350 lines, full comparison |
 | 2026-01-28 | Initial audit: share2nightscout-bridge | `docs/10-domain/share2nightscout-bridge-deep-dive.md` - 328 lines, 3 gaps (GAP-SHARE-001-003) |
 | 2026-01-28 | Initial audit: nocturne | `docs/10-domain/nocturne-deep-dive.md` - 279 lines, 3 gaps (GAP-NOCTURNE-001-003) |
 | 2026-01-28 | Extract AAPS NSClient upload schema | `mapping/aaps/nsclient-schema.md` - 70+ fields, 25 eventTypes |

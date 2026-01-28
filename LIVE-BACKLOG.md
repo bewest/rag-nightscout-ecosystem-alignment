@@ -4,7 +4,7 @@
 > **Parent**: [ECOSYSTEM-BACKLOG.md](docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md)
 
 
-
+* cgm-remote-monitor is interetsed in adopting playwright, let's propose adoption plan for playwright among modernization efforts.
 
 ---
 
@@ -12,7 +12,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
-| cgm-remote-monitor vs Nocturne modernization analysis | P1 | → Queued to ecosystem backlog | 2026-01-28 |
+| cgm-remote-monitor vs Nocturne modernization analysis | P1 | ✅ Complete | 2026-01-28 |
 | Reorganize related work into groups | - | Addressed via domain backlogs structure | 2026-01-28 |
 | Reporting needs analysis (nightscout-reporter, zreptil) | P2 | → Queued to analysis backlog | 2026-01-28 |
 | Add nocturne, Trio-dev, share2nightscout-bridge repos | P0 | ✅ Complete | 2026-01-28 |

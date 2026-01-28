@@ -123,8 +123,16 @@ Questions requiring formal architectural decision records.
 1. Standardize on Nightscout's combo bolus fields
 2. Add explicit `bolusType` enum: `EXTENDED`, `COMBO`, `NORMAL`
 3. Document semantic mapping without schema change
+4. Inversion of control: AID systems declare their entity types
 
-**Needs**: ADR
+**Action**: Queue code analysis to:
+- Integrate all existing docs on this issue
+- Analyze semantic meaning across systems
+- Develop proposals with impact analysis for:
+  - Standardization approach
+  - Inversion of control (controllers declare types)
+
+**Needs**: ADR after analysis
 
 **Related**:
 - [GAP-TREAT-004](../traceability/gaps.md#gap-treat-004-splitextended-bolus-representation-mismatch)
@@ -167,7 +175,10 @@ Questions about priorities, scope, and project direction.
 
 **Source**: [LIVE-BACKLOG.md](../LIVE-BACKLOG.md) - "modernization plan for cgm-remote-monitor vs adopting Nocturne"
 
-**Blocks**: Long-term roadmap prioritization
+**Resolution**: Both - parallel analysis. Queue:
+1. cgm-remote-monitor gap analysis and evolution proposals
+2. Nocturne architecture audit
+3. Interoperability spec focus (platform-agnostic)
 
 **Owner**: Nightscout Foundation / Community
 
@@ -184,6 +195,8 @@ Questions about priorities, scope, and project direction.
 - Sync identity (syncId/identifier)
 - Core treatment fields (insulin, carbs, created_at)
 - devicestatus structure
+
+**Action**: Queue analysis to identify common ground across controllers first, then define minimal spec based on intersection.
 
 **Blocks**: Conformance test prioritization, spec versioning
 
@@ -243,6 +256,13 @@ Questions explicitly listed in existing ADRs.
 1. Standardize on minutes (Nightscout convention)
 2. Use ISO 8601 durations (`PT30M`)
 3. Add explicit unit field
+4. Accept diversity - document conversions only
+
+**Action**: Queue impact analysis for each alternative:
+- Migration cost per option
+- Breaking change assessment
+- Implementation complexity
+- Cross-system conversion reliability
 
 **Related**:
 - [GAP-TREAT-001](../traceability/gaps.md#gap-treat-001-absorption-time-unit-mismatch)
@@ -257,6 +277,12 @@ Questions explicitly listed in existing ADRs.
 **Current State**:
 - Nightscout: minutes
 - AAPS internal: milliseconds
+
+**Options**:
+1. Standardize on minutes (Nightscout convention)
+2. Accept diversity and document mapping
+
+**Action**: Queue impact analysis (combine with OQ-030 duration analysis)
 
 **Related**:
 - [GAP-TZ-004](../traceability/gaps.md#gap-tz-004-utcoffset-unit-mismatch-between-nightscout-and-aaps)

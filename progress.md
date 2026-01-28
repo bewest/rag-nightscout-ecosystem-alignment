@@ -6,6 +6,29 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Modernization Analysis: cgm-remote-monitor vs Nocturne (2026-01-28)
+
+Comprehensive comparison of original Nightscout server vs Nocturne .NET rewrite.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Analysis** | `docs/sdqctl-proposals/nocturne-modernization-analysis.md` | 350 lines, full comparison |
+
+#### Key Findings
+
+| Aspect | cgm-remote-monitor | Nocturne |
+|--------|-------------------|----------|
+| Codebase | 35K LOC JS | 334K LOC C# |
+| Plugins | 38 | Service-based |
+| Connectors | Via bridges | 8 native |
+| API Parity | v1/v2/v3 (origin) | v1/v2/v3 + v4 |
+| Database | MongoDB | PostgreSQL |
+
+#### Recommendation
+Both should be maintained for ecosystem diversity. Nocturne viable for new deployments; migration requires testing.
+
+---
+
 ### share2nightscout-bridge Audit (2026-01-28)
 
 Complete audit of Dexcom Share → Nightscout bridge.

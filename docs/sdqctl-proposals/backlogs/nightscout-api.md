@@ -16,6 +16,8 @@ Covers: cgm-remote-monitor, entries, treatments, devicestatus, profile
 | 2 | Full audit: cgm-remote-monitor | P0 | High | API v3, sync, auth, plugin system |
 | 3 | Deep dive: Authentication flows | P2 | Medium | API secret vs tokens vs JWT |
 | 4 | Compare remote bolus command handling | P1 | Medium | Validation, execution, safety |
+| 5 | **Audit: Nocturne architecture** | P1 | Medium | OQ-020 - modernization path analysis |
+| 6 | **Interoperability spec draft** | P1 | Medium | OQ-021 - minimal viable spec |
 
 ---
 

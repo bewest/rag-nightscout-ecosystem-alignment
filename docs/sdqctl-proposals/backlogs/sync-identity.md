@@ -19,6 +19,8 @@ Covers: syncIdentifier, interfaceIDs, uuid, timestamps, batch ordering
 | 5 | Trace REQ-031 through REQ-035 | P1 | Low | 5 uncovered sync requirements |
 | 6 | **Code analysis: identifier vs syncIdentifier** | P1 | Low | OQ-001 - trace usage across repos |
 | 7 | **Code analysis: Loop batch order dependency** | P1 | Low | OQ-002 - check if Loop requires order |
+| 8 | **Impact analysis: Duration unit standardization** | P1 | Medium | OQ-030 - analyze all 4 alternatives |
+| 9 | **Impact analysis: utcOffset unit** | P1 | Low | OQ-031 - combine with duration analysis |
 
 ---
 
