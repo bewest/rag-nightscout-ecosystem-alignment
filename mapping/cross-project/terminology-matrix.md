@@ -42,6 +42,18 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 
 **Source**: `externals/nocturne/AGENTS.md`, `docs/10-domain/nocturne-deep-dive.md`
 
+### Dexcom Share API (share2nightscout-bridge)
+
+| Endpoint | Purpose | Server |
+|----------|---------|--------|
+| `/ShareWebServices/Services/General/AuthenticatePublisherAccount` | Get accountId | US: share2.dexcom.com, EU: shareous1.dexcom.com |
+| `/ShareWebServices/Services/General/LoginPublisherAccountById` | Get sessionID | Same |
+| `/ShareWebServices/Services/Publisher/ReadPublisherLatestGlucoseValues` | Fetch glucose | Same |
+
+**Trend Mapping**: Dexcom `Trend` (0-9) → Nightscout `direction` (DoubleUp, SingleUp, FortyFiveUp, Flat, FortyFiveDown, SingleDown, DoubleDown, etc.)
+
+**Source**: `externals/share2nightscout-bridge/index.js:56-66`, `docs/10-domain/share2nightscout-bridge-deep-dive.md`
+
 ### Persistent State (Configuration)
 
 | Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ |

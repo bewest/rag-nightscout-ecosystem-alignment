@@ -2867,3 +2867,75 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 3. Provide native SignalR clients for major platforms
 
 **Status**: Under discussion
+
+---
+
+### GAP-SHARE-001: No Nightscout API v3 support
+
+**Scenario**: Modern Nightscout integration
+
+**Description**: share2nightscout-bridge uses only API v1 (`/api/v1/entries.json`). It does not use v3 features like `identifier`, `srvModified`, or the v3 endpoints.
+
+**Affected Systems**: share2nightscout-bridge, Nightscout v3 clients
+
+**Source**: `externals/share2nightscout-bridge/index.js:50-51`
+
+**Impact**:
+- No deduplication via identifier
+- Cannot use v3-only features
+- Entries lack server timestamps
+
+**Possible Solutions**:
+1. Add v3 endpoint support as option
+2. Generate client-side identifiers
+3. Use v3 upsert for deduplication
+
+**Status**: Under discussion
+
+---
+
+### GAP-SHARE-002: No backfill or gap detection
+
+**Scenario**: Reliable data continuity
+
+**Description**: The bridge fetches the latest N readings but does not detect or fill gaps. If the bridge is down, readings are lost.
+
+**Affected Systems**: share2nightscout-bridge
+
+**Source**: `externals/share2nightscout-bridge/index.js:177-198`
+
+**Impact**:
+- Data gaps during bridge downtime
+- No historical backfill capability
+- No overlap detection with existing data
+
+**Possible Solutions**:
+1. Query Nightscout for last entry before fetch
+2. Implement gap detection and backfill
+3. Increase default maxCount/minutes on restart
+
+**Status**: Under discussion
+
+---
+
+### GAP-SHARE-003: Hardcoded Dexcom application ID
+
+**Scenario**: Long-term maintainability
+
+**Description**: The bridge uses a hardcoded application ID (`d89443d2-327c-4a6f-89e5-496bbb0317db`) for Dexcom authentication. If Dexcom revokes this ID, all bridges break.
+
+**Affected Systems**: share2nightscout-bridge, any fork using same ID
+
+**Source**: `externals/share2nightscout-bridge/index.js:42`
+
+**Impact**:
+- Single point of failure for ecosystem
+- Cannot easily rotate credentials
+- Dexcom could block at any time
+
+**Possible Solutions**:
+1. Make application ID configurable
+2. Register official Nightscout app with Dexcom
+3. Document risk and mitigation
+
+**Status**: Under discussion

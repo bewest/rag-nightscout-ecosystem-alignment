@@ -33,11 +33,12 @@ Items ready for immediate work. Keep this at 3 items.
 **Focus:** Loop overrides vs AAPS ProfileSwitch vs Trio overrides
 **Workflow:** `compare-feature.conv`
 
-### 3. [P1] Initial audit: share2nightscout-bridge
-**Type:** Audit | **Effort:** Medium
-**Source:** `externals/share2nightscout-bridge/`
-**Focus:** Auth flow, data transformation, upload patterns
-**Workflow:** `deep-dive.conv`
+### 3. [P1] Modernization analysis: cgm-remote-monitor vs Nocturne
+**Type:** Analysis | **Effort:** Large
+**Repos:** cgm-remote-monitor, nocturne
+**Focus:** Gap/feature/impact analysis, migration paths
+**Prereq:** ✅ nocturne audit complete
+**Workflow:** `compare-feature.conv`
 
 ---
 
@@ -52,10 +53,6 @@ Items ready for immediate work. Keep this at 3 items.
 
 ### P1 - High Value
 
-- [ ] **Modernization analysis: cgm-remote-monitor vs Nocturne** - Gap/feature/impact analysis
-  - Compare: architecture, API compatibility, feature parity
-  - Output: Proposal with migration path options and interoperability impact
-  - Prereq: ✅ nocturne audit complete (see `docs/10-domain/nocturne-deep-dive.md`)
 - [ ] **PR analysis: cgm-remote-monitor** - Review open PRs for ecosystem impact
 - [ ] **PR analysis: share2nightscout-bridge** - Review open PRs
 - [ ] **Extract Nightscout v3 treatments schema** - Document all supported fields and eventTypes
@@ -100,6 +97,7 @@ Items ready for immediate work. Keep this at 3 items.
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-28 | Initial audit: share2nightscout-bridge | `docs/10-domain/share2nightscout-bridge-deep-dive.md` - 328 lines, 3 gaps (GAP-SHARE-001-003) |
 | 2026-01-28 | Initial audit: nocturne | `docs/10-domain/nocturne-deep-dive.md` - 279 lines, 3 gaps (GAP-NOCTURNE-001-003) |
 | 2026-01-28 | Extract AAPS NSClient upload schema | `mapping/aaps/nsclient-schema.md` - 70+ fields, 25 eventTypes |
 | 2026-01-28 | Workspace expansion (4 repos) | nocturne, Trio-dev, share2nightscout-bridge, cgm-remote-monitor-official added |

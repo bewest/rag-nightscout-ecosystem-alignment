@@ -17,6 +17,7 @@ Covers: Loop, AAPS, Trio, oref0/oref1, OpenAPS
 | 3 | Compare carb absorption models | P2 | Medium | Linear vs nonlinear vs dynamic |
 | 4 | Full audit: openaps | P1 | High | Algorithm origins, oref0 relationship |
 | 5 | Map algorithm terminology | P3 | Low | ISF, CR, DIA, UAM across systems |
+| 6 | **Analyze Nocturne override/supersession proposals** | P1 | Low | OQ-010 - check Nocturne sources |
 
 ---
 

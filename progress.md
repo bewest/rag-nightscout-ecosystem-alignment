@@ -6,6 +6,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### share2nightscout-bridge Audit (2026-01-28)
+
+Complete audit of Dexcom Share → Nightscout bridge.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/share2nightscout-bridge-deep-dive.md` | 328 lines, full flow |
+
+#### Key Findings
+
+| Aspect | Details |
+|--------|---------|
+| **Scale** | 447 lines JavaScript, single file |
+| **Dexcom API** | Auth + Login + Fetch (US/EU servers) |
+| **Output** | Nightscout API v1 `/api/v1/entries.json` only |
+| **Poll Interval** | 2.5 minutes default |
+| **Trend Mapping** | 10 Dexcom trends → Nightscout directions |
+
+#### Gaps Identified
+- GAP-SHARE-001: No Nightscout API v3 support
+- GAP-SHARE-002: No backfill/gap detection logic
+- GAP-SHARE-003: Hardcoded application ID may break
+
+---
+
 ### Nocturne Initial Audit (2026-01-28)
 
 Complete architectural audit of Nocturne - .NET 10 rewrite of Nightscout.

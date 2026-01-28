@@ -49,6 +49,8 @@ Questions that directly block active backlog items.
 
 **Owner**: Nightscout API maintainers
 
+**Action**: Code analysis to determine Loop's dependency on order. Preference: support both approaches if feasible.
+
 **Related**:
 - [GAP-BATCH-002](../traceability/gaps.md#gap-batch-002-response-order-critical-for-loop-syncidentifier-mapping)
 - [GAP-BATCH-003](../traceability/gaps.md#gap-batch-003-deduplicated-items-must-return-all-positions)
@@ -66,7 +68,9 @@ Questions that directly block active backlog items.
 2. Keep current behavior (overrides are less dangerous than insulin delivery)
 3. Make OTP configurable per command type
 
-**Blocks**: Remote command security audit, authority model implementation
+**Resolution**: Nightscout already requires API_SECRET or NS JWT/token authorization before any remote commands can be sent. OTP is a *second factor* on top of Nightscout auth. Current behavior (no OTP for overrides) is acceptable given NS auth is required.
+
+**Status**: ✅ Resolved - keep current behavior, document that NS auth is the primary gate
 
 **Owner**: Loop/Trio maintainers
 
@@ -91,7 +95,14 @@ Questions requiring formal architectural decision records.
 2. Accept both as valid representations with documented differences
 3. Create hybrid schema accommodating both patterns
 
-**Needs**: ADR-004
+**Notes from discussion**:
+- Nightscout prefers event-based tracking with clean begin/end semantics
+- "New record supersedes old" is more ergonomic than "old record is superseded by new" in NS workflows
+- Nocturne sources may have relevant proposals on this topic
+
+**Action**: Queue code analysis of ProfileSwitch vs Override semantics, review Nocturne for related proposals
+
+**Needs**: ADR-004 after analysis complete
 
 **Related**:
 - [GAP-002](../traceability/gaps.md#gap-002-aaps-profileswitch-vs-override-semantic-mismatch)

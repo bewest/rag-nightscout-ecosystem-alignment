@@ -18,6 +18,7 @@ Covers: syncIdentifier, interfaceIDs, uuid, timestamps, batch ordering
 | 4 | Full audit: nightscout-connect | P2 | Medium | Cloud platform connectors |
 | 5 | Trace REQ-031 through REQ-035 | P1 | Low | 5 uncovered sync requirements |
 | 6 | **Code analysis: identifier vs syncIdentifier** | P1 | Low | OQ-001 - trace usage across repos |
+| 7 | **Code analysis: Loop batch order dependency** | P1 | Low | OQ-002 - check if Loop requires order |
 
 ---
 
