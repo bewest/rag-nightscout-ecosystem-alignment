@@ -51,7 +51,7 @@ Items ready for immediate work. Keep this at 3 items.
 
 - [ ] **PR analysis: cgm-remote-monitor** - Review open PRs for ecosystem impact
 - [ ] **PR analysis: share2nightscout-bridge** - Review open PRs
-- [ ] **Deep dive: Batch operation ordering** - Document order-preservation requirements for sync
+- [x] ~~**Deep dive: Batch operation ordering**~~ - Promoted to Ready Queue #3
 - [ ] **Gap discovery: Prediction array formats** - IOB/COB/UAM/ZT curve differences
 - [ ] **Full audit: openaps** - Algorithm origins, Python-based (setup.py), 36 lines documented
   - Components: openaps/ module, bin/, Makefile
