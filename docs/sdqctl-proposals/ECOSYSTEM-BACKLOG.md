@@ -51,13 +51,20 @@ Items ready for immediate work. Keep this at 3 items.
 
 ### P0 - Critical
 
-*None currently*
+- [ ] **Full audit: cgm-remote-monitor** - Central Nightscout server (v15.0.4), only 32 lines documented
+  - Components: lib/ (api3, plugins, server), views/, translations/
+  - Focus: API v3 collections, sync behavior, authentication, plugin system
+  - Workflow: `deep-dive.conv` with multiple cycles
 
 ### P1 - High Value
 
 - [ ] **Extract Nightscout v3 treatments schema** - Document all supported fields and eventTypes
 - [ ] **Deep dive: Batch operation ordering** - Document order-preservation requirements for sync
 - [ ] **Gap discovery: Prediction array formats** - IOB/COB/UAM/ZT curve differences
+- [ ] **Full audit: openaps** - Algorithm origins, Python-based (setup.py), 36 lines documented
+  - Components: openaps/ module, bin/, Makefile
+  - Focus: Historical context, oref0 relationship, device abstractions
+  - Workflow: `deep-dive.conv`
 
 ### P2 - Normal
 
@@ -70,12 +77,20 @@ Items ready for immediate work. Keep this at 3 items.
   - Type signatures claimed in deep-dives match actual code
   - Cross-project terminology claims (e.g., "Loop calls this X, AAPS calls it Y")
   - See: `traceability/refs-validation.md` for current broken refs
+- [ ] **Full audit: nightscout-connect** - NS client library (v0.0.12), 22 lines documented
+  - Components: lib/, commands/, machines.md (state machine docs)
+  - Focus: Cloud platform connectors, sync protocols
+  - Workflow: `gap-discovery.conv`
 
 ### P3 - Nice to Have
 
 - [ ] **Compare CGM sensor session handling** - Start, stop, calibration
 - [ ] **Extract xDrip+ Nightscout fields** - What xDrip+ uploads
 - [ ] **Map algorithm terminology** - ISF, CR, DIA, UAM across systems
+- [ ] **Full audit: nightscout-roles-gateway** - OAuth 2.0 RBAC controller, 39 lines documented
+  - Components: lib/, migrations/, Ory Hydra/Kratos integration
+  - Focus: Role-based access control, OAuth flows, API authorization
+  - Workflow: `gap-discovery.conv`
 
 ---
 
