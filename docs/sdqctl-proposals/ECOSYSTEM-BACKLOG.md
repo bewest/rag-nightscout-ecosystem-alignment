@@ -40,10 +40,10 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Level 4: Gap verification - GAP-API-* 
+### 4. [P2] Level 4: Gap verification - GAP-SYNC-* 
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #20
-**Focus:** Verify Nightscout API gaps are still open
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #21
+**Focus:** Verify sync identity gaps are still open
 **Method:** Grep source for gap resolution evidence
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
@@ -62,6 +62,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 4: GAP-API-* verification~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 6 claims verified: **100% accurate**
+- GAP-API-001: v1 cannot detect deletions (v3 has isValid=false)
+- GAP-API-002: `_id` vs `identifier` fallback confirmed
+- GAP-API-003: No v3 for iOS (AAPS has NSClientV3Plugin, Loop has none)
+- GAP-API-004/005: Auth and dedup differences verified
 
 ### ~~[P2] Level 4: GAP-ALG-* verification~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

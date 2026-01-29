@@ -8,6 +8,23 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 4: GAP-API-* Verification (2026-01-29)
+
+Verified Nightscout API gap accuracy against cgm-remote-monitor source.
+
+| Claim | Evidence | Status |
+|-------|----------|--------|
+| GAP-API-001: v1 cannot detect deletions | v3 has `isValid=false`, v1 has no mechanism | ✅ Verified |
+| GAP-API-002: `_id` vs `identifier` | `utils.js:15,113-140` fallback logic | ✅ Verified |
+| GAP-API-003: No v3 for iOS | Loop no v3 refs, AAPS has `NSClientV3Plugin` | ✅ Verified |
+| GAP-API-004: v1 all-or-nothing auth | `api-secret` full access, v3 has `permissionGroups` | ✅ Verified |
+| GAP-API-005: Dedup behavior differs | v3 `isDeduplication` field, v1 silent | ✅ Verified |
+| v3 srvModified tracking | 50+ refs in v3 code | ✅ Verified |
+
+**Level 4 Progress**: 3/6 items complete (50%)
+
+---
+
 ### Level 4: GAP-ALG-* Verification (2026-01-29)
 
 Verified algorithm gap accuracy against source code and conformance suite.
