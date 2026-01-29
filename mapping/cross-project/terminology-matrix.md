@@ -274,7 +274,11 @@ See: [`mapping/nightscout-roles-gateway/`](../nightscout-roles-gateway/)
 | `FactoryTimestamp` | `date` (epoch ms) |
 | `TrendArrow` | `direction` |
 
-**Source**: `externals/nightscout-librelink-up/src/`, `docs/10-domain/nightscout-librelink-up-deep-dive.md`
+**Timestamp Pattern**: LibreLink provides two timestamps:
+- `FactoryTimestamp` - Sensor time (factory calibrated) → **Used for Nightscout**
+- `Timestamp` - Phone local time → Not used (avoids timezone issues)
+
+**Source**: `externals/nightscout-librelink-up/src/`, `mapping/nightscout-librelink-up/entries.md`
 
 **Gap Reference**: GAP-LIBRELINK-001 (no v3 API), GAP-LIBRELINK-002 (no backfill), GAP-LIBRELINK-003 (5 trend values only)
 
