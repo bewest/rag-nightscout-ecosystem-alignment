@@ -139,7 +139,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | 19 | Verify GAP-ALG-* accuracy | P2 | aid-algorithms | ✅ **100% accurate** (7 claims verified) |
 | 20 | Verify GAP-API-* accuracy | P2 | nightscout-api | ✅ **100% accurate** (6 claims verified) |
 | 21 | Verify GAP-SYNC-* accuracy | P2 | sync-identity | ✅ **100% accurate** (9 claims verified) |
-| 22 | Verify GAP-TREAT-* accuracy | P2 | treatments | Pending |
+| 22 | Verify GAP-TREAT-* accuracy | P2 | treatments | ✅ **100% accurate** (11 claims verified) |
 | 23 | Verify GAP-CONNECT-* accuracy | P2 | connectors | Pending |
 
 ### Level 5: Requirements Traceability
@@ -166,6 +166,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 
 | Item | Date | Notes |
 |------|------|-------|
+| Item #22: GAP-TREAT-* verification | 2026-01-29 | **100% accurate** - 11 claims verified (override gaps, remote cmd, SMB type) |
 | Item #21: GAP-SYNC-* verification | 2026-01-29 | **100% accurate** - 9 claims verified (ObjectIdCache, v1 API, TZ gaps) |
 | Item #20: GAP-API-* verification | 2026-01-29 | **100% accurate** - 6 claims verified (v1/v3 diff, dedup, auth, iOS adoption) |
 | Item #19: GAP-ALG-* verification | 2026-01-29 | **100% accurate** - 7 claims verified (conformance, 85 vectors, 30.6% pass) |

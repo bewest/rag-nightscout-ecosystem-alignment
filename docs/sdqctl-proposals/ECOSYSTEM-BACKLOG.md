@@ -40,10 +40,10 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Level 4: Gap verification - GAP-TREAT-* 
+### 4. [P2] Level 4: Gap verification - GAP-CONNECT-* 
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #22
-**Focus:** Verify treatment gaps are still open
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #23
+**Focus:** Verify connector gaps are still open
 **Method:** Grep source for gap resolution evidence
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
@@ -62,6 +62,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 4: GAP-TREAT-* verification~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 11 claims verified: **100% accurate**
+- GAP-OVERRIDE-001/002: Loop vs AAPS model, percentage inversion
+- GAP-OVERRIDE-004/005/007: Trio settings lost, uses Exercise eventType
+- GAP-REMOTE-001/008: Override OTP not required, no server bolus limits
+- GAP-TREAT-001/003/005: Absorption units, SMB type field, POST duplicates
 
 ### ~~[P2] Level 4: GAP-SYNC-* verification~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

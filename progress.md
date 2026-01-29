@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 4: GAP-TREAT-* Verification (2026-01-29)
+
+Verified treatment gap accuracy against Loop, AAPS, Trio, and Nightscout source code.
+
+| Claim | Evidence | Status |
+|-------|----------|--------|
+| GAP-OVERRIDE-001: Loop vs AAPS model | Loop `TemporaryOverride`, AAPS `ProfileSwitch` | ✅ Verified |
+| GAP-OVERRIDE-002: Percentage inversion | AAPS `percentage`, Loop `insulinNeedsScaleFactor` | ✅ Verified |
+| GAP-OVERRIDE-004/007: Trio settings lost | `OverrideStorage.swift` uploads only duration/notes | ✅ Verified |
+| GAP-OVERRIDE-005: Trio uses Exercise | `nsExercise = "Exercise"` in helper | ✅ Verified |
+| GAP-REMOTE-001: Override OTP not required | `OverrideRemoteNotification.swift:44-46` returns false | ✅ Verified |
+| GAP-REMOTE-008: No server bolus limits | `loop.js:96` only checks `> 0.0` | ✅ Verified |
+| GAP-TREAT-001: Loop absorption in seconds | `TimeInterval` throughout CarbKit | ✅ Verified |
+| GAP-TREAT-003: AAPS SMB type field | `type: "SMB"` in RemoteTreatment.kt | ✅ Verified |
+| GAP-TREAT-005: Loop POST duplicates | `DoseEntry.swift` comment confirms | ✅ Verified |
+
+**Level 4 Progress**: 5/6 items complete (83%)
+
+---
+
 ### Level 4: GAP-SYNC-* Verification (2026-01-29)
 
 Verified sync identity and timezone gap accuracy against source code.
