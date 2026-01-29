@@ -12,7 +12,7 @@ Covers: xDrip+, xDrip4iOS, DiaBLE, Dexcom G6/G7, Libre 2/3, Medtronic CGM
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | Extract xDrip+ Nightscout fields | P3 | Medium | What xDrip+ uploads to NS |
+| (none) | | | | Backlog empty - needs triage |
 
 ---
 
@@ -20,6 +20,7 @@ Covers: xDrip+, xDrip4iOS, DiaBLE, Dexcom G6/G7, Libre 2/3, Medtronic CGM
 
 | Item | Date | Notes |
 |------|------|-------|
+| Extract xDrip+ Nightscout fields | 2026-01-29 | 370 lines, GAP-XDRIP-001..003 |
 | Compare CGM sensor session handling | 2026-01-29 | 407 lines deep dive, GAP-SESSION-001..004 |
 | Full audit: DiaBLE Libre protocol | 2026-01-29 | 487 lines deep dive, GAP-DIABLE-002/003 |
 | Full audit: nightscout-librelink-up | 2026-01-29 | 378 lines, LibreView integration |
@@ -31,6 +32,7 @@ Covers: xDrip+, xDrip4iOS, DiaBLE, Dexcom G6/G7, Libre 2/3, Medtronic CGM
 
 ## References
 
+- [mapping/xdrip/nightscout-fields.md](../../../mapping/xdrip/nightscout-fields.md)
 - [docs/10-domain/cgm-session-handling-deep-dive.md](../../10-domain/cgm-session-handling-deep-dive.md)
 - [docs/10-domain/nightscout-librelink-up-deep-dive.md](../../10-domain/nightscout-librelink-up-deep-dive.md)
 - [docs/10-domain/tconnectsync-deep-dive.md](../../10-domain/tconnectsync-deep-dive.md)

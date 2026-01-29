@@ -63,12 +63,8 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### ~~6. [P3] Compare CGM sensor session handling~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (407 lines, 4 gaps GAP-SESSION-001 to 004)
 
-### 7. [P3] Extract xDrip+ Nightscout fields
-**Type:** Analysis | **Effort:** Medium
-**Repos:** xDrip
-**Focus:** What xDrip+ uploads to Nightscout, field mapping
-**Workflow:** `extract-spec.conv`
-**Source:** cgm-sources backlog
+### ~~7. [P3] Extract xDrip+ Nightscout fields~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (370 lines, 2 docs, 3 gaps GAP-XDRIP-001 to 003)
 
 ### 8. [P3] Map algorithm terminology
 **Type:** Analysis | **Effort:** Low

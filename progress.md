@@ -8,6 +8,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### xDrip+ Nightscout Field Mapping (2026-01-29)
+
+Created comprehensive field mapping for xDrip+ Nightscout uploads.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Field Mapping** | `mapping/xdrip/nightscout-fields.md` | 306 lines |
+| **README** | `mapping/xdrip/README.md` | 64 lines |
+
+**Key Findings**:
+- Uses Nightscout v1 API only (entries, treatments, devicestatus, activity)
+- Device string format: `"xDrip-{collection_method}"` with optional source_info
+- Treatment sync via UUID field and lookup/delete pattern
+- Activity endpoint for heart rate, steps, motion (non-standard)
+- Supports 20+ CGM data sources via collection method setting
+- GZIP compression support for uploads
+
+**Gaps Identified**: GAP-XDRIP-001, GAP-XDRIP-002, GAP-XDRIP-003
+
+---
+
 ### CGM Sensor Session Handling Comparison (2026-01-29)
 
 Created cross-project comparison of CGM sensor session handling across xDrip+, DiaBLE, Loop, and AAPS.

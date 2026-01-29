@@ -1109,3 +1109,55 @@ wercker.yml  # Defunct service
 **Source**: `docs/10-domain/cgm-session-handling-deep-dive.md`
 
 ---
+
+
+### GAP-XDRIP-001: No Nightscout v3 API Support
+
+**Description**: xDrip+ uses only Nightscout v1 API endpoints. No support for v3 identifier-based sync, atomic upserts, or modern API features.
+
+**Affected Systems**: xDrip+, Nightscout
+
+**Impact**:
+- Relies on UUID lookup for updates/deletes rather than atomic upserts
+- No identifier field usage for deduplication
+- Less efficient sync protocol
+
+**Remediation**: Add v3 API support with proper identifier-based sync.
+
+**Source**: `mapping/xdrip/nightscout-fields.md`
+
+---
+
+### GAP-XDRIP-002: Activity Data Schema Not Standardized
+
+**Description**: Heart rate, steps, and motion uploads use `/api/v1/activity` endpoint with xDrip+-specific schema. This is not a core Nightscout collection.
+
+**Affected Systems**: xDrip+, Nightscout, follower apps
+
+**Impact**:
+- Activity data may not be visible in all Nightscout frontends
+- No standard for other apps to upload activity data
+- Heart rate especially useful for caregivers monitoring exercise
+
+**Remediation**: Standardize activity data schema in Nightscout core.
+
+**Source**: `mapping/xdrip/nightscout-fields.md`
+
+---
+
+### GAP-XDRIP-003: Device String Format Not Machine-Parseable
+
+**Description**: xDrip+ device string format `"xDrip-{method} {source_info}"` mixes app name, collection method, and source info in free-form text.
+
+**Affected Systems**: xDrip+, Nightscout, analytics
+
+**Impact**:
+- Difficult to programmatically identify CGM source type from device field
+- Analytics/reporting can't reliably segment by data source
+- Inconsistent with structured device identifiers in other apps
+
+**Remediation**: Consider structured device identifier format like `xDrip://{method}/{source}`.
+
+**Source**: `mapping/xdrip/nightscout-fields.md`
+
+---

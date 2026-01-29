@@ -2126,6 +2126,26 @@ DiaBLE uses the **sensor type name** as the Nightscout `device` field:
 
 **Note**: DiaBLE does NOT include app name in device field (unlike xDrip+ which uses `"xDrip-LibreOOP"`).
 
+### xDrip+ Nightscout Device Identifier Pattern
+
+xDrip+ uses `"xDrip-{collection_method}"` with optional source info appended:
+
+| Collection Method | xDrip+ `device` Value | Description |
+|-------------------|----------------------|-------------|
+| BluetoothWixel | `"xDrip-BluetoothWixel"` | Classic Dexcom with Wixel bridge |
+| DexcomG5 | `"xDrip-DexcomG5"` | Dexcom G5/G6/G7 direct |
+| LibreOOP | `"xDrip-LibreOOP"` | Libre with out-of-process algorithm |
+| Libre2 | `"xDrip-Libre2"` | Libre 2 direct BLE |
+| Medtronic640g | `"xDrip-Medtronic640g"` | Medtronic pump CGM |
+| Follower | `"xDrip-Follower"` | Following another xDrip+ |
+| NSClient | `"xDrip-NSClient"` | Following Nightscout |
+
+**Source**: `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java:649-657`
+
+**Note**: If `source_info` preference enabled, device string becomes `"xDrip-{method} {source_info}"`.
+
+**Gap**: GAP-XDRIP-003 - Device string format not machine-parseable.
+
 ### DiaBLE Data Quality Flags
 
 DiaBLE tracks sensor data quality with detailed error flags not exposed to Nightscout:
