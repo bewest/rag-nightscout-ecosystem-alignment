@@ -40,12 +40,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Accuracy: Verify treatments deep dive
+### 4. [P2] Accuracy: Verify libre-protocol deep dive
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #14
-**Focus:** Validate treatments collection structure claims
-**Files:** `docs/10-domain/treatments-deep-dive.md`
-**Method:** Grep source for documented fields
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #16
+**Focus:** Validate Libre protocol claims
+**Files:** `docs/10-domain/libre-protocol-deep-dive.md`
+**Method:** Grep source for documented protocols
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -63,6 +63,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 3: Treatments deep dive~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 8 claims verified: **100% accurate**
+- Loop: `deliveredUnits`, `syncIdentifier`, `automatic` boolean
+- AAPS: `amount`, Bolus.Type enum, `interfaceIDs.nightscoutId`
+- xDrip+: `uuid` for sync identity
+- SMB: AAPS → eventType "Correction Bolus"
 
 ### ~~[P2] Level 3: Entries deep dive~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

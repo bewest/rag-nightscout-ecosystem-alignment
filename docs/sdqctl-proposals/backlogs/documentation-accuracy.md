@@ -75,7 +75,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | 11 | Verify algorithm-comparison-deep-dive.md claims | P2 | aid-algorithms | ✅ **100% accurate** |
 | 12 | Verify devicestatus-deep-dive.md claims | P2 | nightscout-api | ✅ **100% accurate** |
 | 13 | Verify entries-deep-dive.md claims | P2 | nightscout-api | ✅ **100% accurate** |
-| 14 | Verify treatments-deep-dive.md claims | P2 | nightscout-api | Pending |
+| 14 | Verify treatments-deep-dive.md claims | P2 | nightscout-api | ✅ **100% accurate** |
 | 15 | Verify pump-communication-deep-dive.md claims | P3 | pumps | Pending |
 | 16 | Verify libre-protocol-deep-dive.md claims | P2 | cgm-sources | Pending |
 | 17 | Verify g7-protocol-specification.md claims | P1 | cgm-sources | ✅ **100% accurate** |
@@ -107,6 +107,12 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 - Loop: `HKQuantity` for glucose, `provenanceIdentifier` for device, `GlucoseTrend` enum
 - AAPS: `value` field (GlucoseValue.kt:40), `trendArrow` enum
 - Nightscout: entry types sgv/mbg/cal confirmed in data-layer-audit.md
+
+**Finding (2026-01-29)**: Treatments deep dive verified:
+- Loop: `deliveredUnits`, `syncIdentifier`, `automatic` boolean (DoseEntry.swift)
+- AAPS: `amount` field, Bolus.Type enum (NORMAL/SMB/PRIMING), interfaceIDs.nightscoutId
+- xDrip+: `uuid` for sync identity (Treatments.java:297, NightscoutUploader.java:782)
+- SMB mapping: AAPS SMB → eventType "Correction Bolus" (BolusExtension.kt:28)
 
 ### Level 4: Gap Verification
 

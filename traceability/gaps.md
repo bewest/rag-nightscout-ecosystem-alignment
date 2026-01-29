@@ -35,6 +35,7 @@ Total: 220 gaps across 7 domains
 | 2026-01-29 | cgm-sources | CGM data sources deep dive | 100% accurate (8 claims verified) |
 | 2026-01-29 | nightscout-api | DeviceStatus deep dive | 100% accurate (8 claims verified) |
 | 2026-01-29 | nightscout-api | Entries deep dive | 100% accurate (8 claims verified) |
+| 2026-01-29 | nightscout-api | Treatments deep dive | 100% accurate (8 claims verified) |
 
 ## Mapping Verification Status
 

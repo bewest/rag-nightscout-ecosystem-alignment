@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 3: Treatments Deep Dive (2026-01-29)
+
+Verified treatments-deep-dive.md claims against source code.
+
+| Claim | Source | Status |
+|-------|--------|--------|
+| Loop `deliveredUnits` | `DoseEntry.swift:40` | ✅ Verified |
+| AAPS `amount` for insulin | `Bolus.kt:44` | ✅ Verified |
+| AAPS Bolus.Type enum | `Bolus.kt:52-55` (NORMAL, SMB, PRIMING) | ✅ Verified |
+| Loop `syncIdentifier` | `DoseEntry.swift:40` | ✅ Verified |
+| AAPS `interfaceIDs.nightscoutId` | Transaction files | ✅ Verified |
+| Loop `automatic` boolean | `DoseEntry.swift:22`, `UnfinalizedDose.swift:59` | ✅ Verified |
+| xDrip+ `uuid` for sync | `Treatments.java:297`, `NightscoutUploader.java:782` | ✅ Verified |
+| AAPS SMB eventType | `BolusExtension.kt:28` (Correction Bolus) | ✅ Verified |
+
+**Level 3 Progress**: 6/8 items complete (75%)
+
+---
+
 ### Level 3: Entries Deep Dive (2026-01-29)
 
 Verified entries-deep-dive.md claims against source code.

@@ -43,8 +43,9 @@ Total: 185 requirements (180 unique)
 | 2026-01-29 | cgm-data-sources-deep-dive.md | REQ-050-059 (CGM data source) |
 | 2026-01-29 | devicestatus-deep-dive.md | REQ-030 (field validation), REQ-010 (timestamp) |
 | 2026-01-29 | entries-deep-dive.md | REQ-050-059 (CGM data source), REQ-030 (field validation) |
+| 2026-01-29 | treatments-deep-dive.md | REQ-TREAT (treatments), REQ-020 (sync identity) |
 
 **Level 2 Complete**: 5/5 mapping verifications passed (100%)
-**Level 3 Progress**: 5/8 deep dive verifications (62.5%)
+**Level 3 Progress**: 6/8 deep dive verifications (75%)
 
 *Last updated: 2026-01-29*
