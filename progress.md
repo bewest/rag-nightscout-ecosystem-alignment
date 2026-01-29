@@ -8,6 +8,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### tconnectsync Field Mapping (2026-01-29)
+
+Created comprehensive field mapping documentation for Tandem t:connect sync tool.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **README** | `mapping/tconnectsync/README.md` | 79 lines, index |
+| **Models** | `mapping/tconnectsync/models.md` | 159 lines, Bolus/TherapyEvent/Profile |
+| **API** | `mapping/tconnectsync/api.md` | 198 lines, t:connect endpoints |
+| **Treatments** | `mapping/tconnectsync/treatments.md` | 171 lines, 10+ treatment types |
+
+**Key Findings**:
+- Maps 10+ t:connect events to Nightscout treatment types
+- Uses v1 API only (no v3 support - GAP-TCONNECT-001)
+- 3 auth methods: OIDC, Android credentials, web form
+- No trend direction in CGM data (GAP-TCONNECT-004)
+- Batch sync only, no real-time push
+
+**Gaps Identified**: GAP-TCONNECT-004 (no trend direction)
+
+---
+
 ### Nocturne Field Mapping (2026-01-29)
 
 Created comprehensive field mapping documentation for Nocturne .NET rewrite.

@@ -357,3 +357,20 @@ osx_image: xcode12.4
 **Source**: `machines.md:163-169`
 
 ---
+
+### GAP-TCONNECT-004: No Trend Direction from t:connect
+
+**Description**: The t:connect API does not provide glucose trend direction. CGM entries uploaded to Nightscout via tconnectsync will lack the `direction` field.
+
+**Affected Systems**: tconnectsync, Nightscout
+
+**Impact**:
+- No trend arrows for t:connect-sourced CGM data in Nightscout UI
+- Reduced situational awareness for users viewing data
+- Loop/AAPS algorithms may not receive trend data if sourced from t:connect
+
+**Remediation**: Calculate direction from consecutive readings if needed, or document as limitation.
+
+**Source**: `mapping/tconnectsync/treatments.md`
+
+---
