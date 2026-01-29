@@ -71,7 +71,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 
 | # | Item | Priority | Domain | Status |
 |---|------|----------|--------|--------|
-| 10 | Verify cgm-data-sources-deep-dive.md claims | P2 | cgm-sources | Pending |
+| 10 | Verify cgm-data-sources-deep-dive.md claims | P2 | cgm-sources | ✅ **100% accurate** |
 | 11 | Verify algorithm-comparison-deep-dive.md claims | P2 | aid-algorithms | ✅ **100% accurate** |
 | 12 | Verify devicestatus-deep-dive.md claims | P2 | nightscout-api | Pending |
 | 13 | Verify entries-deep-dive.md claims | P2 | nightscout-api | Pending |
@@ -79,6 +79,14 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | 15 | Verify pump-communication-deep-dive.md claims | P3 | pumps | Pending |
 | 16 | Verify libre-protocol-deep-dive.md claims | P2 | cgm-sources | Pending |
 | 17 | Verify g7-protocol-specification.md claims | P1 | cgm-sources | ✅ **100% accurate** |
+
+**Finding (2026-01-29)**: CGM data sources deep dive verified:
+- xDrip+: 26 data source types (DexCollectionType.java enum)
+- xDrip+: Ob1 collector for Dexcom (Ob1G5StateMachine, Ob1G5CollectionService)
+- xDrip+: NSFollow, SHFollow follower types (SourceWizard.java:60-61)
+- Loop: CGMBLEKit and G7SensorKit exist
+- xDrip4iOS: Dexcom, Libre, Generic CGM categories
+- LibreLinkUp: /llu/connections endpoint confirmed
 
 **Finding (2026-01-29)**: Algorithm comparison deep dive verified:
 - oref0: 4 prediction arrays (IOB/COB/UAM/ZT) at determine-basal.js:442-445
@@ -123,6 +131,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 
 | Item | Date | Notes |
 |------|------|-------|
+| Item #10: CGM data sources deep dive | 2026-01-29 | **100% accurate** - 8 major claims verified |
 | Item #11: Algorithm comparison deep dive | 2026-01-29 | **100% accurate** - 7 major claims verified |
 | Item #9: Terminology matrix sampling | 2026-01-29 | **100% accurate** - 15 terms verified across 6 repos |
 | Item #7-8: Loop + Trio mappings | 2026-01-29 | **100% accurate** - syncIdentifier, OpenAPSStatus verified |
@@ -133,7 +142,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | Initial cohesiveness audit proposal | 2026-01-29 | Queued to this backlog |
 
 **Level 2 Complete**: 5/5 mapping items verified (100%)
-**Level 3 Progress**: 2/8 deep dive items verified (25%)
+**Level 3 Progress**: 3/8 deep dive items verified (37.5%)
 
 ### Verification Details: Terminology Matrix (2026-01-29)
 

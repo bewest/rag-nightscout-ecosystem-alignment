@@ -8,6 +8,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 3: CGM Data Sources Deep Dive (2026-01-29)
+
+Verified cgm-data-sources-deep-dive.md claims against source code.
+
+| Claim | Source | Status |
+|-------|--------|--------|
+| xDrip+ 20+ data sources | `DexCollectionType.java` (26 enums) | ✅ Verified |
+| xDrip+ Ob1 collector | `Ob1G5StateMachine`, `Ob1G5CollectionService` | ✅ Verified |
+| xDrip+ NSFollow/SHFollow | `SourceWizard.java:60-61` | ✅ Verified |
+| Loop CGMBLEKit | `LoopWorkspace/CGMBLEKit/` | ✅ Verified |
+| Loop G7SensorKit | `LoopWorkspace/G7SensorKit/` | ✅ Verified |
+| xDrip4iOS CGM types | `BluetoothTransmitter/CGM/` (3 dirs) | ✅ Verified |
+| LibreLinkUp endpoint | `/llu/connections` in tests | ✅ Verified |
+
+**Level 3 Progress**: 3/8 items complete (37.5%)
+
+---
+
 ### Level 3: Algorithm Comparison Deep Dive (2026-01-29)
 
 Verified algorithm-comparison-deep-dive.md claims against source code.

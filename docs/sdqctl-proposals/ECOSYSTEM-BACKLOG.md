@@ -40,12 +40,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Accuracy: Verify CGM data sources deep dive
+### 4. [P2] Accuracy: Verify devicestatus deep dive
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #10
-**Focus:** Validate CGM source claims
-**Files:** `docs/10-domain/cgm-data-sources-deep-dive.md`
-**Method:** Grep source for documented protocols
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #12
+**Focus:** Validate devicestatus structure claims
+**Files:** `docs/10-domain/devicestatus-deep-dive.md`
+**Method:** Grep source for documented fields
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -63,6 +63,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 3: CGM data sources deep dive~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 8 claims verified: **100% accurate**
+- xDrip+: 26 data source types, Ob1 collector, NSFollow/SHFollow
+- Loop: CGMBLEKit, G7SensorKit verified
+- xDrip4iOS: Dexcom, Libre, Generic CGM types
+- LibreLinkUp: /llu/connections endpoint confirmed
 
 ### ~~[P2] Level 3: Algorithm comparison deep dive~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
