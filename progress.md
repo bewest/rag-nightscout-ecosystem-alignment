@@ -6,6 +6,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### tconnectsync Deep Dive (2026-01-29)
+
+Full audit of Tandem t:connect to Nightscout sync tool.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/tconnectsync-deep-dive.md` | 368 lines |
+
+#### Key Findings
+
+| Component | Purpose | Files |
+|-----------|---------|-------|
+| API | t:connect OAuth2/OIDC auth | 7 files, 1400+ lines |
+| Domain | Bolus, TherapyEvent, Profile | 3 key models |
+| Sync | NS v1 API upload | 10+ treatment types |
+
+| Treatment Type | NS eventType |
+|----------------|--------------|
+| Combo Bolus | `Combo Bolus` |
+| Temp Basal | `Temp Basal` |
+| Site Change | `Site Change` |
+| Exercise/Sleep | `Exercise`, `Sleep` |
+
+**Gaps Identified**: GAP-TCONNECT-001, GAP-TCONNECT-002, GAP-TCONNECT-003
+
+---
+
 ### OpenAPS/oref0 Deep Dive (2026-01-29)
 
 Full audit of the foundational OpenAPS ecosystem - the original DIY closed-loop system.

@@ -58,6 +58,29 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 
 **Source**: `externals/share2nightscout-bridge/index.js:56-66`, `docs/10-domain/share2nightscout-bridge-deep-dive.md`
 
+### Tandem t:connect API (tconnectsync)
+
+| Endpoint | Purpose | Auth |
+|----------|---------|------|
+| `/tconnect/controliq/api/therapytimeline/users/{guid}` | Therapy events | OIDC |
+| `/tconnect/therapyevents/api/TherapyEvents/{start}/{end}` | Therapy events | OIDC |
+| `/cloud/usersettings/api/UserProfile` | Pump profile | Android OAuth |
+| `/therapytimeline2csv/{guid}/{start}/{end}` | Historical CSV | Web session |
+
+**Treatment Mapping**:
+
+| tconnectsync | Nightscout eventType |
+|--------------|---------------------|
+| Bolus | `Combo Bolus` |
+| Temp Basal | `Temp Basal` |
+| Basal Suspension | `Basal Suspension` |
+| Site Change | `Site Change` |
+| Exercise/Sleep | `Exercise`, `Sleep` |
+
+**Source**: `externals/tconnectsync/tconnectsync/sync/`, `docs/10-domain/tconnectsync-deep-dive.md`
+
+**Gap Reference**: GAP-TCONNECT-001 (no v3 API), GAP-TCONNECT-002 (limited Control-IQ data), GAP-TCONNECT-003 (batch only)
+
 ### Persistent State (Configuration)
 
 | Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ |

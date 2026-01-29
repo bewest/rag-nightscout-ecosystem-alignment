@@ -1923,6 +1923,65 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ---
 
+## tconnectsync Gaps
+
+### GAP-TCONNECT-001: No API v3 Support
+
+**Scenario**: Syncing Tandem pump data to Nightscout with deduplication
+
+**Description**: tconnectsync uses Nightscout API v1 only. Does not leverage v3 deduplication or identifier fields.
+
+**Source**: `externals/tconnectsync/tconnectsync/nightscout.py`
+
+**Impact**:
+- No automatic deduplication on Nightscout side
+- Re-syncs may create duplicate treatments
+- Missing `identifier` field for sync tracking
+
+**Remediation**: Add v3 API support with proper identifiers.
+
+**Status**: Enhancement candidate
+
+---
+
+### GAP-TCONNECT-002: Limited Control-IQ Algorithm Data
+
+**Scenario**: Debugging Control-IQ decisions in Nightscout
+
+**Description**: While pump events are synced, detailed Control-IQ algorithm decisions (predicted glucose, auto-basal adjustments) are not extracted or uploaded to devicestatus.
+
+**Source**: `externals/tconnectsync/tconnectsync/api/controliq.py`
+
+**Impact**:
+- Cannot visualize Control-IQ decision-making in Nightscout
+- Limited debugging of algorithm behavior
+- No prediction curves like AAPS/Loop provide
+
+**Remediation**: Extract and upload to devicestatus if available from API.
+
+**Status**: Enhancement candidate
+
+---
+
+### GAP-TCONNECT-003: No Real-Time Sync
+
+**Scenario**: Real-time monitoring of Tandem pump via Nightscout
+
+**Description**: tconnectsync is batch-based; requires manual or cron execution. No push/webhook capability from t:connect cloud.
+
+**Source**: tconnectsync architecture (pull-based)
+
+**Impact**:
+- Delay between pump events and Nightscout visibility
+- Not suitable for real-time caregiver monitoring
+- Must run periodically via cron
+
+**Remediation**: Document as platform limitation; t:connect API doesn't support push.
+
+**Status**: Platform limitation
+
+---
+
 ## Timezone and DST Gaps
 
 ### GAP-TZ-001: Most Pump Drivers Cannot Handle DST
