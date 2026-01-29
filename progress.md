@@ -8,6 +8,40 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### nightscout-connect Design Review (2026-01-29)
+
+Comprehensive design review of nightscout-connect XState architecture, vendor extensibility, and refactoring suggestions.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Design Review** | `docs/10-domain/nightscout-connect-design-review.md` | 340 lines, 7 refactoring suggestions |
+| **Gaps Added** | `traceability/connectors-gaps.md` | GAP-CONNECT-004 through 006 |
+
+**Key Findings**:
+- Excellent XState usage: hierarchical machines, parallel states, service injection
+- 5 vendors supported: Nightscout, Dexcom Share, Glooko, LibreLinkUp, Minimed Carelink
+- Clean builder pattern for vendor registration
+- Uses exponential backoff, schedule alignment, session reuse
+
+**Refactoring Priorities**:
+1. Add `@xstate/test` model-based testing (no tests currently)
+2. Add API v3 output driver (v1 only)
+3. Add TypeScript type definitions
+
+**Gaps Identified**:
+| Gap ID | Issue |
+|--------|-------|
+| GAP-CONNECT-004 | No test suite |
+| GAP-CONNECT-005 | No TypeScript types |
+| GAP-CONNECT-006 | Brittle adapter pattern |
+
+**Source Files**:
+- `externals/nightscout-connect/lib/builder.js`
+- `externals/nightscout-connect/lib/machines/*.js`
+- `externals/nightscout-connect/machines.md`
+
+---
+
 ### Nightscout API v3 Deep Dive (2026-01-29)
 
 Comprehensive analysis of Nightscout API v3 architecture, collections, operations, and sync patterns.

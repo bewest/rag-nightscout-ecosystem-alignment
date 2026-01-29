@@ -21,38 +21,31 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] nightscout-connect Design Review
-**Type:** Analysis | **Effort:** Medium
-**Repos:** nightscout-connect
-**Focus:** XState usage, modern patterns, vendor extensibility, refactoring suggestions
-**Workflow:** `design-review.conv`
-**Source:** LIVE-BACKLOG human request
-
-### 2. [P2] Device Status collection deep dive
+### 1. [P2] Device Status collection deep dive
 **Type:** Analysis | **Effort:** Medium
 **Repos:** cgm-remote-monitor, AAPS, Loop
 **Focus:** Document devicestatus structure differences between controllers
 **Workflow:** `gap-discovery.conv`
 
-### 3. [P2] Profile collection deep dive
+### 2. [P2] Profile collection deep dive
 **Type:** Analysis | **Effort:** Medium
 **Repos:** cgm-remote-monitor, AAPS, Loop, Trio
 **Focus:** Document profile structure and sync patterns
 **Workflow:** `gap-discovery.conv`
 
-### 4. [P2] Algorithm conformance: AAPS Kotlin runner
+### 3. [P2] Algorithm conformance: AAPS Kotlin runner
 **Type:** Implementation | **Effort:** High
 **Repos:** AndroidAPS
 **Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
 
-### 5. [P3] Map algorithm terminology
+### 4. [P3] Map algorithm terminology
 **Type:** Documentation | **Effort:** Low
 **Focus:** ISF, CR, DIA, UAM across oref0/AAPS/Loop/Trio
 **Workflow:** `terminology-sync.conv`
 
-### 6. [P3] cgm-remote-monitor Design Review
+### 5. [P3] cgm-remote-monitor Design Review
 **Type:** Analysis | **Effort:** High
 **Repos:** cgm-remote-monitor
 **Focus:** Refactoring recommendations based on 6-layer audit findings

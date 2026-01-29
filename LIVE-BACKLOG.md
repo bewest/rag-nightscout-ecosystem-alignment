@@ -9,6 +9,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| nightscout-connect design review request | P2 | ✅ Complete (340 lines, 3 gaps) | 2026-01-29 |
 | Nocturne/cgm-remote-monitor collaboration feasibility | P3 | → Queued to analysis backlog | 2026-01-29 |
 | Control-plane/desired-state roadmap evaluation | P2 | → Queued to architecture backlog | 2026-01-29 |
 | cgm-remote-monitor design review + refactoring recs | P3 | → Queued to Ready Queue | 2026-01-29 |

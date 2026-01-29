@@ -303,4 +303,57 @@ osx_image: xcode12.4
 
 ---
 
+## nightscout-connect Design Review Gaps
+
+---
+
+### GAP-CONNECT-004: No Test Suite
+
+**Description**: Package has `"test": "echo \"Error: no test specified\" && exit 1"` - no automated tests despite complex XState state machine logic.
+
+**Affected Systems**: nightscout-connect
+
+**Impact**:
+- Regressions possible when adding vendors or upgrading XState
+- No confidence in refactoring
+- Cannot verify behavior across state transitions
+
+**Remediation**: Add `@xstate/test` model-based tests + integration tests for vendor drivers.
+
+**Source**: `package.json:13-14`
+
+---
+
+### GAP-CONNECT-005: No TypeScript Types
+
+**Description**: Pure JavaScript with no type definitions for machine contexts, events, or vendor interfaces.
+
+**Affected Systems**: nightscout-connect
+
+**Impact**:
+- Harder to maintain and refactor safely
+- No IDE autocomplete for complex machine contexts
+- Error-prone vendor implementation
+
+**Remediation**: Add TypeScript or `.d.ts` type definitions for FetchContext, SessionContext, and VendorDriver interfaces.
+
+**Source**: `lib/machines/*.js` (all files)
+
+---
+
+### GAP-CONNECT-006: Brittle Adapter Pattern
+
+**Description**: Per machines.md, "the builder and the adapter preludes at the beginning of the machine sources are brittle."
+
+**Affected Systems**: nightscout-connect
+
+**Impact**:
+- Coupling between vendor code and machine configuration
+- Inconsistent naming across adapters
+- Promises mixed with utilities in impl objects
+
+**Remediation**: Define formal VendorDriver interface contract with validation.
+
+**Source**: `machines.md:163-169`
+
 ---
