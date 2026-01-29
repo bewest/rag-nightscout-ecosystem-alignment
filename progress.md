@@ -8,6 +8,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 3: Libre Protocol Deep Dive (2026-01-29)
+
+Verified libre-protocol-deep-dive.md claims against source code.
+
+| Claim | Source | Status |
+|-------|--------|--------|
+| Libre 1 NFC unencrypted | `Libre.swift:91-93` (encryptedFram empty) | ✅ Verified |
+| Libre 2 encrypted FRAM | `Libre.swift:86,93`, `OOP.swift:390` | ✅ Verified |
+| Libre 3 ECDH + AES-CCM | `Libre3.swift:1011-1012`, `Crypto.swift:11-19` | ✅ Verified |
+| PatchInfo byte mappings | `Libre.swift:11-18` (0xDF→libre1, 0x9D→libre2) | ✅ Verified |
+| NFC command 0xA1 | `NFC.swift:55-56,280` | ✅ Verified |
+| IC Manufacturer 0x07/0x7a | `Abbott.swift:59`, `Libre2Gen2.swift:131` | ✅ Verified |
+| 60 min warmup | `Console.swift:190` | ✅ Verified |
+
+**Level 3 Progress**: 7/8 items complete (87.5%)
+
+---
+
 ### Level 3: Treatments Deep Dive (2026-01-29)
 
 Verified treatments-deep-dive.md claims against source code.

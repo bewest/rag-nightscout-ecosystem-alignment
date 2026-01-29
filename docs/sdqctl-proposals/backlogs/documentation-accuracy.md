@@ -77,7 +77,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | 13 | Verify entries-deep-dive.md claims | P2 | nightscout-api | ✅ **100% accurate** |
 | 14 | Verify treatments-deep-dive.md claims | P2 | nightscout-api | ✅ **100% accurate** |
 | 15 | Verify pump-communication-deep-dive.md claims | P3 | pumps | Pending |
-| 16 | Verify libre-protocol-deep-dive.md claims | P2 | cgm-sources | Pending |
+| 16 | Verify libre-protocol-deep-dive.md claims | P2 | cgm-sources | ✅ **100% accurate** |
 | 17 | Verify g7-protocol-specification.md claims | P1 | cgm-sources | ✅ **100% accurate** |
 
 **Finding (2026-01-29)**: CGM data sources deep dive verified:
@@ -113,6 +113,15 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 - AAPS: `amount` field, Bolus.Type enum (NORMAL/SMB/PRIMING), interfaceIDs.nightscoutId
 - xDrip+: `uuid` for sync identity (Treatments.java:297, NightscoutUploader.java:782)
 - SMB mapping: AAPS SMB → eventType "Correction Bolus" (BolusExtension.kt:28)
+
+**Finding (2026-01-29)**: Libre protocol deep dive verified:
+- Libre 1: NFC unencrypted (Libre.swift:91-93 encryptedFram empty for libre1)
+- Libre 2: Encrypted FRAM + BLE (Libre.swift:86,93, OOP.swift:390)
+- Libre 3: ECDH + AES-CCM (Libre3.swift:1011-1012, Crypto.swift:11-19)
+- PatchInfo bytes: 0xDF→libre1, 0x9D→libre2, 0x76→libre2Gen2 (Libre.swift:11-18)
+- NFC command 0xA1 for patchInfo (NFC.swift:55-56,280)
+- IC Manufacturer: 0x07 (TI) vs 0x7a (Abbott) (Abbott.swift:59, Libre2Gen2.swift:131)
+- 60 min warmup period (Console.swift:190)
 
 ### Level 4: Gap Verification
 

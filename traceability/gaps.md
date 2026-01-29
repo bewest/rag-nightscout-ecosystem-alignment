@@ -33,6 +33,7 @@ Total: 220 gaps across 7 domains
 | 2026-01-29 | cgm-sources | GAP-BLE-001, GAP-BLE-002 | Still open (J-PAKE, certs undocumented) |
 | 2026-01-29 | aid-algorithms | Algorithm comparison claims | 100% accurate (7 claims verified) |
 | 2026-01-29 | cgm-sources | CGM data sources deep dive | 100% accurate (8 claims verified) |
+| 2026-01-29 | cgm-sources | Libre protocol deep dive | 100% accurate (7 claims verified) |
 | 2026-01-29 | nightscout-api | DeviceStatus deep dive | 100% accurate (8 claims verified) |
 | 2026-01-29 | nightscout-api | Entries deep dive | 100% accurate (8 claims verified) |
 | 2026-01-29 | nightscout-api | Treatments deep dive | 100% accurate (8 claims verified) |

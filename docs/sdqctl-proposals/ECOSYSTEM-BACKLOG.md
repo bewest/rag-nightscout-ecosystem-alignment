@@ -40,11 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Accuracy: Verify libre-protocol deep dive
+### 4. [P3] Accuracy: Verify pump-communication deep dive
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #16
-**Focus:** Validate Libre protocol claims
-**Files:** `docs/10-domain/libre-protocol-deep-dive.md`
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #15
+**Focus:** Validate pump communication claims
+**Files:** `docs/10-domain/pump-communication-deep-dive.md`
 **Method:** Grep source for documented protocols
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
@@ -63,6 +63,15 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 3: Libre protocol deep dive~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 7 claims verified: **100% accurate**
+- Libre 1: NFC unencrypted (Libre.swift:91-93)
+- Libre 2: Encrypted FRAM + BLE (Libre.swift:86,93, OOP.swift:390)
+- Libre 3: ECDH + AES-CCM (Libre3.swift:1011-1012, Crypto.swift:11-19)
+- PatchInfo bytes: 0xDF→libre1, 0x9D→libre2 (Libre.swift:11-18)
+- NFC 0xA1, IC Manufacturer 0x07/0x7a, 60 min warmup
 
 ### ~~[P2] Level 3: Treatments deep dive~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
