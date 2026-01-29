@@ -242,7 +242,9 @@ See: [`mapping/nightscout-roles-gateway/`](../nightscout-roles-gateway/)
 
 **Source**: `externals/tconnectsync/tconnectsync/sync/`, `docs/10-domain/tconnectsync-deep-dive.md`
 
-**Gap Reference**: GAP-TCONNECT-001 (no v3 API), GAP-TCONNECT-002 (limited Control-IQ data), GAP-TCONNECT-003 (batch only)
+**Gap Reference**: GAP-TCONNECT-001 (no v3 API), GAP-TCONNECT-002 (limited Control-IQ data), GAP-TCONNECT-003 (batch only), GAP-TCONNECT-004 (no trend direction)
+
+**Mapping Docs**: `mapping/tconnectsync/` (607 lines, 4 docs)
 
 ### LibreLink Up API (nightscout-librelink-up)
 
