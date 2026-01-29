@@ -9,6 +9,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Broken refs fix (LSP claim verification) | P2 | ✅ Complete (3 refs fixed, 92% valid) | 2026-01-29 |
 | sdqctl tools vs custom py tools proposal | P2 | ✅ Complete (140 lines, 4 deprecate, 3 integrate) | 2026-01-29 |
 | Hygiene tooling suite verification | P0 | ✅ Complete (3 tools verified working) | 2026-01-29 |
 | nightscout-roles-gateway audit | P2 | ✅ Complete (260 lines existing, 1 gap, 4 reqs) | 2026-01-29 |

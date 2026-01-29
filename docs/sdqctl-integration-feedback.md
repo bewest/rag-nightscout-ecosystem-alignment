@@ -465,7 +465,7 @@ sdqctl verify refs --json > refs-report.json
 **Example output:**
 ```
 ✗ FAILED: Scanned 552 file(s), found 845 reference(s): 596 valid, 249 broken
-  ERROR mapping/trio/README.md:42: Broken alias reference: trio:Preferences.swift
+  ERROR mapping/trio/README.md:42: Broken alias reference: trio:Trio/Sources/Models/Preferences.swift
   HINT: Expected at externals/Trio/Preferences.swift
   SUGGEST: Found: externals/Trio/Trio/Sources/Models/Preferences.swift
 ```
@@ -517,7 +517,7 @@ For sdqctl tools to validate refs, use full paths from repo root:
 See `trio:Trio/Sources/Models/Preferences.swift#L22` for the setting.
 
 # ❌ INCORRECT: Short-form (won't validate)
-See `trio:Preferences.swift` for the setting.
+See `trio:Trio/Sources/Models/Preferences.swift` for the setting.
 
 # ❌ AVOID: Placeholder paths
 See `loop:path/to/file.swift` for the implementation.

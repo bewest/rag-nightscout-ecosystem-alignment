@@ -336,7 +336,7 @@ sdqctl refcat --from-workflow workflows/verify-refs.conv --list-files
 sdqctl refcat "trio:Trio/Sources/Models/Preferences.swift"
 
 # ❌ INCORRECT (won't resolve)
-sdqctl refcat "trio:Preferences.swift"
+sdqctl refcat "trio:Trio/Sources/Models/Preferences.swift"
 ```
 
 ### Validate Workflows
@@ -372,7 +372,7 @@ See `trio:Trio/Sources/Models/Preferences.swift#L22` for the setting.
 The algorithm runs in `trio:Trio/Sources/APS/OpenAPS/OpenAPS.swift#L448-L463`.
 
 # ❌ Incorrect (won't validate)
-See `trio:Preferences.swift` for the setting.
+See `trio:Trio/Sources/Models/Preferences.swift` for the setting.
 ```
 
 To find the correct path:

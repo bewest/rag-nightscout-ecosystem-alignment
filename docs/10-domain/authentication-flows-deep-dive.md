@@ -352,7 +352,7 @@ final String hashedSecret = Hashing.sha1()
 | `nightscout:lib/authorization/endpoints.js` | REST endpoints |
 | `nightscout:lib/authorization/delaylist.js` | Rate limiting |
 | `nightscout:lib/server/enclave.js` | Secret hashing, JWT signing |
-| `aaps:plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/NSClientV3Service.kt` | AAPS auth |
+| `aaps:plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/services/NSClientV3Service.kt` | AAPS auth |
 | `loop:NightscoutService/NightscoutServiceKit/NightscoutService.swift` | Loop auth |
 | `xdrip:app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java` | xDrip+ auth |
 

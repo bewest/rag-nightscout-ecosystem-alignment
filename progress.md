@@ -8,6 +8,23 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Broken References Fix (2026-01-29)
+
+Fixed broken code references in active documentation files.
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Valid refs | 352 (91.2%) | 355 (92.0%) |
+| Broken refs | 34 | 31 |
+
+**Fixed**:
+- `trio:Preferences.swift` → full path (2 files)
+- `aaps:NSClientV3Service.kt` → correct `/services/` path (1 file)
+
+**Remaining**: 31 broken (archive files, intentional examples)
+
+---
+
 ### sdqctl vs Custom Python Tools Comparison (2026-01-29)
 
 Analyzed 32 Python tools against sdqctl capabilities.
