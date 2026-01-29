@@ -9,6 +9,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Algorithm conformance: Schema + fixture extraction | P2 | ✅ Complete (85 vectors) | 2026-01-29 |
+| Backlog grooming + archive | - | ✅ Complete | 2026-01-29 |
 | Authentication flows deep dive | P2 | ✅ Complete | 2026-01-29 |
 | Remote Commands API specification | P2 | ✅ Complete | 2026-01-29 |
 | Multi-Insulin API specification | P1 | ✅ Complete | 2026-01-29 |
