@@ -24,15 +24,18 @@ See [gaps.md](gaps.md) for the index.
 **Possible Solutions**:
 1. ✅ Implement conformance vector format (DONE: `conformance-vector-v1.json`)
 2. ✅ Extract vectors from AAPS (DONE: 85 vectors extracted)
-3. 🔄 Create cross-project runners for each implementation (IN PROGRESS)
-4. CI integration to detect behavioral drift
+3. ✅ oref0 runner complete (DONE: 26/85 pass, reveals AAPS drift)
+4. 🔄 AAPS Kotlin runner (IN PROGRESS)
+5. Loop Swift runner (TODO)
+6. CI integration to detect behavioral drift
 
-**Status**: Partially addressed - schema + vectors complete, runners pending
+**Status**: Substantially addressed - oref0 runner reveals 69% divergence from AAPS
 
 **Related**:
 - [Algorithm Conformance Suite Proposal](../docs/sdqctl-proposals/algorithm-conformance-suite.md)
 - `conformance/schemas/conformance-vector-v1.json`
-- `tools/extract_vectors.py`
+- `conformance/runners/oref0-runner.js`
+- `conformance/results/oref0-results.json`
 
 ---
 
@@ -42,27 +45,31 @@ See [gaps.md](gaps.md) for the index.
 
 **Scenario**: AAPS Kotlin vs upstream oref0 JavaScript
 
-**Description**: AAPS Kotlin implementation may have diverged from upstream oref0 JavaScript. The ReplayApsResultsTest compares JS vs KT within AAPS but not against upstream oref0.
+**Description**: AAPS Kotlin implementation has diverged from upstream oref0 JavaScript. The ReplayApsResultsTest compares JS vs KT within AAPS but not against upstream oref0.
 
 **Evidence**:
-```kotlin
-// AAPS: ReplayApsResultsTest.kt compares internal JS vs KT
-// but does NOT compare against externals/oref0
-```
+- oref0-runner.js: 26/85 AAPS vectors pass against upstream oref0 (31%)
+- Key differences:
+  - eventualBG calculation differs significantly (e.g., 146 vs 80 in TV-017)
+  - AAPS iob_data includes iobWithZeroTemp projections; oref0 logs "Problem with iobArray"
+  - AAPS modifies IOB array handling for SMB prediction
 
 **Impact**:
-- AAPS users may experience different dosing than OpenAPS rig users with identical settings
+- AAPS users experience different dosing than OpenAPS rig users with identical settings
+- 69% of test scenarios produce different outputs
 - No clear compatibility guarantees between implementations
 
 **Possible Solutions**:
-1. Include upstream oref0 in AAPS conformance testing
-2. Create shared test vectors that both projects run
-3. Document known behavioral differences
+1. ✅ Create shared test vectors (DONE: 85 vectors)
+2. ✅ Run AAPS vectors against upstream oref0 (DONE: 26/85 pass)
+3. 🔄 Document specific behavioral differences
+4. Propose harmonization where clinically appropriate
 
-**Status**: Proposal created
+**Status**: Quantified - 69% divergence measured
 
 **Related**:
 - [Algorithm Conformance Suite Proposal](../docs/sdqctl-proposals/algorithm-conformance-suite.md)
+- `conformance/results/oref0-results.json` - detailed failure analysis
 
 ---
 

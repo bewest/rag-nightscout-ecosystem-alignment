@@ -2401,6 +2401,7 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-29 | Agent | Added oref0 runner results, conformance runner table, 69% AAPS divergence finding |
 | 2026-01-29 | Agent | Added API v3 Deduplication Keys and Timestamp Fields tables from API layer audit |
 | 2026-01-29 | Agent | Added Algorithm Conformance Testing section with entry points, input/output shapes, test fixture locations |
 | 2026-01-17 | Agent | Added Capability Layer Models section with layer vocabulary, three-state model, delegation authority levels, agent patterns, graceful degradation paths |
@@ -2980,6 +2981,22 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 | **expected** | Expected algorithm output (rates, durations) | `expected` object |
 | **assertions** | Semantic behavioral checks | `assertions` array |
 
+### Conformance Runners
+
+| Runner | Target Algorithm | Location | Status |
+|--------|-----------------|----------|--------|
+| **oref0-runner** | oref0 determine-basal | `conformance/runners/oref0-runner.js` | ✅ Complete |
+| **aaps-runner** | AAPS Kotlin algorithm | `conformance/runners/aaps/` | 🔄 Planned |
+| **loop-runner** | Loop algorithm | `conformance/runners/loop/` | 🔄 Planned |
+
+### oref0 Runner Results (2026-01-29)
+
+| Category | Passed | Total | Rate | Notes |
+|----------|--------|-------|------|-------|
+| basal-adjustment | 24 | 77 | 31% | eventualBG differs |
+| low-glucose-suspend | 2 | 8 | 25% | Safety logic matches |
+| **Total** | 26 | 85 | **31%** | 69% divergence from AAPS |
+
 ### Test Vector Categories
 
 | Category | Description | Use Case |
@@ -3004,4 +3021,4 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 | `safety_limit` | Output within safety bounds |
 | `eventual_in_range` | Predicted BG reaches target |
 
-**Source**: `conformance/schemas/conformance-vector-v1.json`
+**Source**: `conformance/schemas/conformance-vector-v1.json`, `conformance/runners/oref0-runner.js`
