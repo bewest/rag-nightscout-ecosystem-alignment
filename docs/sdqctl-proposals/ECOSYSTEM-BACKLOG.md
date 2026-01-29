@@ -86,9 +86,9 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 - [x] ~~**Compare carb absorption models**~~ - ✅ Completed (471 lines, 3 gaps)
 - [x] ~~**Extract Loop sync identity fields**~~ - ✅ Completed (318 lines, 3 gaps)
-- [ ] **Algorithm conformance: Schema + fixture extraction** - Phase 1 of conformance suite
+- [x] ~~**Algorithm conformance: Schema + fixture extraction**~~ - ✅ Completed (85 vectors)
   - From: Algorithm conformance suite proposal
-  - Deliverables: `conformance-vector-v1.json` schema, 50+ vectors from AAPS
+  - Deliverables: `conformance-vector-v1.json` schema, 85 vectors from AAPS
 - [ ] **Algorithm conformance: oref0 runner** - Phase 2 of conformance suite
   - From: Algorithm conformance suite proposal
   - Deliverables: `conformance/runners/oref0-runner.js`, Makefile target

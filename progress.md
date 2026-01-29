@@ -1648,3 +1648,37 @@ Proposal for enhancing nightscout-connect based on tconnectsync and nightscout-l
 - nightscout-connect deep dive (Cycle 8)
 - tconnectsync deep dive
 - nightscout-librelink-up deep dive
+
+---
+
+### Algorithm Conformance Schema + Fixture Extraction (2026-01-29)
+
+Phase 1 implementation of cross-project algorithm conformance testing infrastructure.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **JSON Schema** | `conformance/schemas/conformance-vector-v1.json` | 260 lines, full test vector format |
+| **Extraction Script** | `tools/extract_vectors.py` | 230 lines, AAPS → conformance converter |
+| **Test Vectors** | `conformance/vectors/` | 85 vectors from AAPS replay tests |
+| **Makefile Target** | `make extract-vectors` | Automation hook |
+
+**Vector Distribution**:
+| Category | Count | Description |
+|----------|-------|-------------|
+| basal-adjustment | 77 | Temp basal rate changes |
+| low-glucose-suspend | 8 | LGS safety scenarios |
+
+**Schema Features**:
+- Unified input format: glucoseStatus, iob, profile, mealData
+- Expected outputs with ranges: rate, duration, eventualBG
+- Semantic assertions: rate_increased, rate_zero, safety_limit, smb_delivered
+- originalOutput preservation for debugging
+
+**Next Steps**:
+- Phase 2: oref0-runner.js to execute vectors against oref0
+- Phase 3: AAPS Kotlin runner for JS vs KT comparison
+- Phase 4: Cross-language comparison matrix
+
+**Source Files Analyzed**:
+- `externals/AndroidAPS/app/src/androidTest/assets/results/*.json` (85 fixtures)
+- `externals/AndroidAPS/app/src/androidTest/kotlin/app/aaps/ReplayApsResultsTest.kt`
