@@ -1667,6 +1667,27 @@ This differs from cgm-remote-monitor where `date` (epoch ms) and `dateString` (I
 
 **Source**: `mapping/nocturne/models.md`
 
+### Dexcom Share Timestamp Pattern
+
+Dexcom Share API uses a .NET-style serialized DateTime format:
+
+```
+/Date(1234567890123-0500)/
+```
+
+| Component | Description |
+|-----------|-------------|
+| `1234567890123` | Unix epoch milliseconds |
+| `-0500` | Timezone offset (optional) |
+
+Parsing requires regex: `/Date\((\d+)([+-]\d{4})?\)/`
+
+share2nightscout-bridge converts to Nightscout format:
+- `date` ← extracted epoch ms
+- `dateString` ← `new Date(epoch).toISOString()`
+
+**Source**: `mapping/share2nightscout-bridge/entries.md`
+
 ### Query Syntax Comparison
 
 | Operation | v1 Syntax | v3 Syntax |
