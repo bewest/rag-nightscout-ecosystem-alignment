@@ -17,23 +17,47 @@
 
 ---
 
-## Ready Queue (3 items)
+## Ready Queue (5-10 items)
 
-Items ready for immediate work. Keep this at 3 items.
+Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P0] Full audit: cgm-remote-monitor
-**Type:** Audit | **Effort:** Large
-**Source:** `externals/cgm-remote-monitor/`
-**Focus:** API v3, plugins (38), sync, authentication
-**Workflow:** `deep-dive.conv` (multi-cycle)
+### 1. [P1] Interoperability spec draft
+**Type:** Specification | **Effort:** Medium
+**Repos:** All
+**Focus:** Define minimal viable interoperability spec (OQ-021)
+**Workflow:** `extract-spec.conv`
 
-### 2. [P1] Full audit: openaps
-**Type:** Audit | **Effort:** Medium
-**Source:** `externals/oref0/`
-**Focus:** Algorithm origins, oref0 relationship
+### 2. [P0] cgm-remote-monitor: Database layer audit
+**Type:** Deep Dive | **Effort:** Medium
+**Source:** `externals/cgm-remote-monitor-official/` (bewest/mongo-5x branch)
+**Focus:** MongoDB 5.x compatibility, indexes, schema
 **Workflow:** `deep-dive.conv`
 
-### 3. [P2] Algorithm conformance suite
+### 3. [P1] Extract Loop sync identity fields
+**Type:** Extraction | **Effort:** Medium
+**Source:** `externals/LoopWorkspace/`
+**Focus:** What makes a treatment unique in Loop, complete sync identity picture
+**Workflow:** `extract-spec.conv`
+
+### 4. [P1] Compare override/profile switch semantics
+**Type:** Comparison | **Effort:** Medium
+**Repos:** Loop, AAPS, Trio
+**Focus:** Loop overrides vs AAPS ProfileSwitch vs Trio overrides
+**Workflow:** `compare-feature.conv`
+
+### 5. [P1] Playwright adoption proposal
+**Type:** Proposal | **Effort:** Low
+**Source:** `externals/cgm-remote-monitor-official/`
+**Focus:** Propose adoption plan for Playwright testing in cgm-remote-monitor modernization
+**Workflow:** `proposal.conv`
+
+### 6. [P1] Full audit: tconnectsync
+**Type:** Audit | **Effort:** Medium
+**Source:** `externals/tconnectsync/`
+**Focus:** Tandem t:connect to Nightscout sync, API integration
+**Workflow:** `deep-dive.conv`
+
+### 7. [P2] Algorithm conformance suite
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Create test vectors for Rust vs JS oref comparison
 **Workflow:** `tools/`
@@ -44,8 +68,13 @@ Items ready for immediate work. Keep this at 3 items.
 
 ### P0 - Critical
 
-- [x] ~~**Full audit: cgm-remote-monitor**~~ - Promoted to Ready Queue #2
-  - Workflow: `deep-dive.conv` with multiple cycles
+- [ ] **cgm-remote-monitor audit** (chunked, using bewest/mongo-5x branch)
+  - [x] Database layer (MongoDB 5.x compat, indexes, schema) → **Ready Queue #2**
+  - [ ] API layer (lib/api3/, v1/v2/v3 endpoints, collections)
+  - [ ] Plugin system (lib/plugins/, 38 plugins, reports)
+  - [ ] Sync/upload logic (lib/server/, socket.io, data flow)
+  - [ ] Authentication (lib/authorization/, tokens, roles)
+  - [ ] Frontend (views/, translations/, client bundles)
 
 ### P1 - High Value
 
@@ -53,13 +82,10 @@ Items ready for immediate work. Keep this at 3 items.
 - [ ] **PR analysis: share2nightscout-bridge** - Review open PRs
 - [x] ~~**Deep dive: Batch operation ordering**~~ - Completed
 - [x] ~~**Gap discovery: Prediction array formats**~~ - Completed (319 lines, 3 gaps)
-- [x] ~~**Full audit: openaps**~~ - Promoted to Ready Queue #2
+- [x] ~~**Full audit: openaps**~~ - Completed (371 lines, 3 gaps)
 - [ ] **Algorithm conformance suite** - Create test vectors for Rust vs JS oref comparison
   - From: Modernization analysis next steps
-- [ ] **Full audit: tconnectsync** - Tandem t:connect to Nightscout sync (Python)
-  - Source: `externals/tconnectsync/`
-  - Focus: API integration, data mapping, sync protocols
-  - Workflow: `deep-dive.conv`
+- [x] ~~**Full audit: tconnectsync**~~ - Promoted to Ready Queue #6
 - [ ] **Full audit: nightscout-librelink-up** - LibreLink Up to Nightscout bridge (TypeScript)
   - Source: `externals/nightscout-librelink-up/`
   - Focus: Libre API, data mapping, NS upload format
@@ -68,7 +94,7 @@ Items ready for immediate work. Keep this at 3 items.
 ### P2 - Normal
 
 - [ ] **Compare carb absorption models** - Linear vs nonlinear vs dynamic
-- [ ] **Extract Loop sync identity fields** - What makes a treatment unique in Loop
+- [x] ~~**Extract Loop sync identity fields**~~ - Promoted to Ready Queue #3
 - [ ] **Map pump communication terminology** - Reservoir, cartridge, pod, etc.
 - [ ] **Deep dive: Authentication flows** - API secret vs tokens vs JWT
 - [ ] **Cross-repo fixture extraction** - Pull test fixtures from AAPS/Loop/xDrip repos
@@ -95,9 +121,7 @@ Items ready for immediate work. Keep this at 3 items.
   - Components: lib/, migrations/, Ory Hydra/Kratos integration
   - Focus: Role-based access control, OAuth flows, API authorization
   - Workflow: `gap-discovery.conv`
-- [ ] **Playwright adoption proposal for cgm-remote-monitor** - E2E testing modernization
-  - From: LIVE-BACKLOG request
-  - Focus: Test coverage, CI integration, migration from existing tests
+- [x] ~~**Playwright adoption proposal for cgm-remote-monitor**~~ - Promoted to Ready Queue #5
 - [ ] **sdqctl tools vs custom py tools proposal** - Evaluate tooling consolidation
   - From: LIVE-BACKLOG request
   - Focus: Compare sdqctl capabilities vs tools/*.py, deprecation candidates
@@ -108,6 +132,7 @@ Items ready for immediate work. Keep this at 3 items.
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-29 | Full audit: openaps/oref0 | `docs/10-domain/openaps-oref0-deep-dive.md` - 371 lines, 3 gaps (GAP-OREF-001-003) |
 | 2026-01-28 | Gap discovery: Prediction array formats | `docs/10-domain/prediction-arrays-comparison.md` - 319 lines, 3 gaps (GAP-PRED-002-004) |
 | 2026-01-28 | Deep dive: Batch operation ordering | `docs/10-domain/batch-ordering-deep-dive.md` - 334 lines, 3 requirements |
 | 2026-01-28 | Compare override/profile switch semantics | `docs/10-domain/override-profile-switch-comparison.md` - 331 lines, 4 new gaps |
@@ -125,7 +150,7 @@ Items ready for immediate work. Keep this at 3 items.
 
 ## Queue Discipline
 
-1. **Ready Queue**: Exactly 3 actionable items
+1. **Ready Queue**: 5-10 actionable items (visibility for horizontal work)
 2. **New discoveries**: Add to appropriate priority level in Backlog
 3. **Blocked items**: Move to docs/OPEN-QUESTIONS.md with blocker
 4. **Completed items**: Move to Completed table with outcome summary

@@ -9,6 +9,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Playwright adoption proposal | P1 | → **Ready Queue #5** | 2026-01-29 |
+| Backlog priority review & reorganization | - | ✅ Complete | 2026-01-29 |
 | Add tconnectsync repo + queue analysis | P1 | ✅ Added to workspace, queued | 2026-01-29 |
 | Add nightscout-librelink-up repo + queue analysis | P1 | ✅ Added to workspace, queued | 2026-01-29 |
 | nightscout-connect benchmarking proposal | P2 | → Queued to tooling backlog | 2026-01-29 |

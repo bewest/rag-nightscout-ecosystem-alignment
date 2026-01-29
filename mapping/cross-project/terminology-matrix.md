@@ -253,6 +253,21 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 
 **Gap Reference**: GAP-PRED-002 (Loop single vs oref multi-curve), GAP-PRED-003 (interval not standardized), GAP-PRED-004 (no confidence bounds)
 
+#### oref0 Algorithm Components
+
+| Component | oref0 File | AAPS Equivalent | Trio Equivalent |
+|-----------|------------|-----------------|-----------------|
+| **Main Algorithm** | `lib/determine-basal/determine-basal.js` | `DetermineBasalAdapterSMBJS.kt` | `OpenAPS.swift` |
+| **Autosens** | `lib/determine-basal/autosens.js` | `AutosensDataStore.kt` | `Autosens.swift` |
+| **IOB Calculation** | `lib/iob/calculate.js` | `IobCobCalculator.kt` | `IOBCalculator.swift` |
+| **COB Calculation** | `lib/determine-basal/cob.js` | `CobInfo.kt` | `COBCalculator.swift` |
+| **Profile** | `lib/profile/` | `ProfileStore.kt` | `ProfileManager.swift` |
+| **Autotune** | `lib/autotune/` | `AutotunePlugin.kt` | `Autotune.swift` |
+
+**Deep Dive**: [`docs/10-domain/openaps-oref0-deep-dive.md`](../../docs/10-domain/openaps-oref0-deep-dive.md)
+
+**Gap Reference**: GAP-OREF-001 (no npm package), GAP-OREF-002 (openaps unmaintained), GAP-OREF-003 (oref0 vs oref1 unclear)
+
 **Note**: The distinction between persistent configuration, events, state snapshots, and derived values is critical for accurate cross-project translation.
 
 **xDrip+ IOB**: Uses `Iob.java` with multi-insulin support via `InsulinInjection` profiles.

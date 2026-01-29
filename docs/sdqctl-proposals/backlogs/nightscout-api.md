@@ -12,12 +12,17 @@ Covers: cgm-remote-monitor, entries, treatments, devicestatus, profile
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | Extract Nightscout v3 treatments schema | P1 | Medium | All supported fields and eventTypes |
-| 2 | Full audit: cgm-remote-monitor | P0 | High | API v3, sync, auth, plugin system |
-| 3 | Deep dive: Authentication flows | P2 | Medium | API secret vs tokens vs JWT |
-| 4 | Compare remote bolus command handling | P1 | Medium | Validation, execution, safety |
-| 5 | **Audit: Nocturne architecture** | P1 | Medium | OQ-020 - modernization path analysis |
-| 6 | **Interoperability spec draft** | P1 | Medium | OQ-021 - minimal viable spec |
+| 1 | Extract Nightscout v3 treatments schema | P1 | Medium | → Ready Queue (ECOSYSTEM-BACKLOG) |
+| 2 | cgm-remote-monitor: Database layer audit | P0 | Medium | → Ready Queue #2, mongo-5x branch |
+| 3 | cgm-remote-monitor: API layer audit | P0 | Medium | Queued after DB layer |
+| 4 | cgm-remote-monitor: Plugin system audit | P0 | Medium | Queued |
+| 5 | cgm-remote-monitor: Sync/upload audit | P0 | Medium | Queued |
+| 6 | cgm-remote-monitor: Authentication audit | P0 | Medium | Queued |
+| 7 | Compare remote bolus handling | P1 | Medium | → Ready Queue |
+| 8 | Deep dive: Authentication flows | P2 | Medium | After chunked audit |
+| 9 | Playwright adoption proposal | P1 | Low | → Ready Queue #5 |
+| 10 | Audit: Nocturne architecture | P1 | Medium | OQ-020 modernization path |
+| 11 | Interoperability spec draft | P1 | Medium | → Ready Queue #1 |
 
 ---
 

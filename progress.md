@@ -6,6 +6,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### OpenAPS/oref0 Deep Dive (2026-01-29)
+
+Full audit of the foundational OpenAPS ecosystem - the original DIY closed-loop system.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/openaps-oref0-deep-dive.md` | 371 lines, 2 repos |
+
+#### Key Findings
+
+| Component | Purpose | Language |
+|-----------|---------|----------|
+| openaps | Device toolkit (pump/CGM drivers) | Python |
+| oref0 | Reference algorithm (determine-basal) | JavaScript |
+
+| Algorithm File | Lines | Function |
+|----------------|-------|----------|
+| determine-basal.js | 1192 | Main dosing calculation |
+| autosens.js | 454 | Sensitivity detection |
+| cob.js | 211 | Carbs on board |
+| iob/history.js | 572 | IOB history processing |
+
+**Gaps Identified**: GAP-OREF-001, GAP-OREF-002, GAP-OREF-003
+
+---
+
 ### Prediction Array Formats Comparison (2026-01-28)
 
 Cross-system analysis of glucose prediction array formats across Loop, AAPS, and Trio.

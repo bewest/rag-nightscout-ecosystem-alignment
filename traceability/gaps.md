@@ -1866,6 +1866,63 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ---
 
+## OpenAPS/oref0 Gaps
+
+### GAP-OREF-001: No oref0 Package Published to npm
+
+**Scenario**: Integrating oref0 algorithm into other Node.js projects
+
+**Description**: oref0 is not published as an npm package. Users must clone the repo and run from source. There's no `npm install oref0`.
+
+**Source**: `externals/oref0/package.json` - not published to npm registry
+
+**Impact**:
+- Makes integration with other Node.js projects difficult
+- Each project (AAPS, Trio) re-implements in native language
+- No versioned releases for dependency management
+
+**Status**: Design choice - algorithm evolved into native ports
+
+---
+
+### GAP-OREF-002: openaps Python Package Unmaintained
+
+**Scenario**: Adding new pump or CGM support to openaps toolkit
+
+**Description**: The openaps Python package hasn't been updated significantly; focus shifted to AndroidAPS and Loop ecosystems. New device support goes to AAPS/Loop first.
+
+**Source**: `externals/openaps/` - limited recent commits
+
+**Impact**:
+- New pump/CGM support goes to AAPS first
+- openaps/oref0 rig has limited device support
+- Legacy Medtronic-focused
+
+**Status**: Expected - ecosystem evolved to mobile apps
+
+---
+
+### GAP-OREF-003: oref0 vs oref1 Distinction Unclear
+
+**Scenario**: Understanding which features are oref0 vs oref1 when porting
+
+**Description**: oref1 added SMB (Super Micro Bolus) support but the code is in the same repository with no clear versioning or feature flags to distinguish oref0 vs oref1 capabilities.
+
+**Source**: `externals/oref0/lib/determine-basal/determine-basal.js` - SMB logic mixed with base algorithm
+
+**Impact**:
+- Difficult to know which features are oref0 vs oref1
+- Porting to other systems requires understanding implicit feature sets
+- Documentation often conflates the two
+
+**Possible Solutions**:
+1. Document oref0 vs oref1 feature matrix
+2. Add feature flags in algorithm
+
+**Status**: Documentation gap
+
+---
+
 ## Timezone and DST Gaps
 
 ### GAP-TZ-001: Most Pump Drivers Cannot Handle DST
