@@ -3423,3 +3423,84 @@ No standard format or prefix convention exists.
 
 **Related**:
 - [Loop Sync Identity Fields](../mapping/loop/sync-identity-fields.md)
+
+---
+
+## Database Layer Gaps
+
+### GAP-DB-001: Entries batch ordering not guaranteed
+
+**Scenario**: CGM data with same timestamp
+
+**Description**: The `lib/server/entries.js` uses `forEach` for batch inserts, which does not guarantee order. If two entries have the same `sysTime`, insertion order may vary.
+
+**Evidence**:
+- `externals/cgm-remote-monitor-official/lib/server/entries.js:98` - uses `forEach`
+- Compare with `lib/server/treatments.js:21` which uses `async.eachSeries`
+
+**Impact**:
+- CGM readings with same timestamp may appear in random order
+- Affects historical data display when multiple readings arrive simultaneously
+
+**Possible Solutions**:
+1. Use `async.eachSeries` like treatments
+2. Add sequence number for same-timestamp entries
+3. Sort by `_id` as secondary key
+
+**Status**: Under discussion
+
+**Related**:
+- [cgm-remote-monitor Database Deep Dive](../docs/10-domain/cgm-remote-monitor-database-deep-dive.md)
+
+---
+
+### GAP-DB-002: MongoDB driver deprecated patterns
+
+**Scenario**: Node.js 18+ console warnings
+
+**Description**: Uses deprecated `ObjectID` import and connection options (`useNewUrlParser`, `useUnifiedTopology`).
+
+**Evidence**:
+- `externals/cgm-remote-monitor-official/lib/storage/mongo-storage.js:28-30` - deprecated options
+- `externals/cgm-remote-monitor-official/lib/api3/storage/mongoCollection/utils.js:6` - `ObjectID` import
+
+**Impact**:
+- Console warnings in Node.js 18+
+- May cause issues with MongoDB 6.x+ driver
+
+**Possible Solutions**:
+1. Upgrade to `mongodb` 4.x or 5.x driver
+2. Use `ObjectId` import (new naming)
+3. Remove deprecated options (defaults in 4.x+)
+
+**Status**: Documented
+
+**Related**:
+- [cgm-remote-monitor Database Deep Dive](../docs/10-domain/cgm-remote-monitor-database-deep-dive.md)
+
+---
+
+### GAP-DB-003: No bulk write optimization
+
+**Scenario**: Large batch uploads
+
+**Description**: All batch operations use sequential single-document operations rather than MongoDB's `bulkWrite()` API.
+
+**Evidence**:
+- `externals/cgm-remote-monitor-official/lib/server/entries.js:98` - `forEach` with individual updates
+- No `bulkWrite` usage in codebase
+
+**Impact**:
+- Higher latency for large uploads (100+ documents)
+- More round-trips to MongoDB
+- Potential timeout issues on slow connections
+
+**Possible Solutions**:
+1. Implement `bulkWrite` for batch inserts
+2. Use `{ ordered: true }` to preserve insertion order
+3. Batch into chunks of 100-500 documents
+
+**Status**: Under discussion
+
+**Related**:
+- [cgm-remote-monitor Database Deep Dive](../docs/10-domain/cgm-remote-monitor-database-deep-dive.md)

@@ -27,31 +27,25 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Define minimal viable interoperability spec (OQ-021)
 **Workflow:** `extract-spec.conv`
 
-### 2. [P0] cgm-remote-monitor: Database layer audit
-**Type:** Deep Dive | **Effort:** Medium
-**Source:** `externals/cgm-remote-monitor-official/` (bewest/mongo-5x branch)
-**Focus:** MongoDB 5.x compatibility, indexes, schema
-**Workflow:** `deep-dive.conv`
-
-### 3. [P1] Compare override/profile switch semantics
+### 2. [P1] Compare override/profile switch semantics
 **Type:** Comparison | **Effort:** Medium
 **Repos:** Loop, AAPS, Trio
 **Focus:** Loop overrides vs AAPS ProfileSwitch vs Trio overrides
 **Workflow:** `compare-feature.conv`
 
-### 4. [P1] Playwright adoption proposal
+### 3. [P1] Playwright adoption proposal
 **Type:** Proposal | **Effort:** Low
 **Source:** `externals/cgm-remote-monitor-official/`
 **Focus:** Propose adoption plan for Playwright testing in cgm-remote-monitor modernization
 **Workflow:** `proposal.conv`
 
-### 5. [P1] PR analysis: cgm-remote-monitor
+### 4. [P1] PR analysis: cgm-remote-monitor
 **Type:** Analysis | **Effort:** Medium
 **Source:** `externals/cgm-remote-monitor-official/`
 **Focus:** Review open PRs for ecosystem impact
 **Workflow:** `gap-discovery.conv`
 
-### 6. [P2] Algorithm conformance suite
+### 5. [P2] Algorithm conformance suite
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Create test vectors for Rust vs JS oref comparison
 **Workflow:** `tools/`
@@ -63,7 +57,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### P0 - Critical
 
 - [ ] **cgm-remote-monitor audit** (chunked, using bewest/mongo-5x branch)
-  - [x] Database layer (MongoDB 5.x compat, indexes, schema) → **Ready Queue #2**
+  - [x] ~~Database layer (MongoDB 5.x compat, indexes, schema)~~ - ✅ Completed (455 lines, 3 gaps)
   - [ ] API layer (lib/api3/, v1/v2/v3 endpoints, collections)
   - [ ] Plugin system (lib/plugins/, 38 plugins, reports)
   - [ ] Sync/upload logic (lib/server/, socket.io, data flow)
@@ -81,6 +75,9 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
   - From: Modernization analysis next steps
 - [x] ~~**Full audit: tconnectsync**~~ - Completed (368 lines, 3 gaps)
 - [x] ~~**Full audit: nightscout-librelink-up**~~ - Completed (378 lines, 3 gaps)
+- [ ] **Cross-project testing plan (Trio/Loop on Ubuntu)** - System requirements for iOS dev/test
+  - From: LIVE-BACKLOG request
+  - Focus: Define Ubuntu-compatible testing strategies for Swift projects
 
 ### P2 - Normal
 
@@ -101,6 +98,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [ ] **Documentation reorganization proposal** - AI vs human comprehension analysis
   - From: LIVE-BACKLOG request
   - Focus: Consolidate duplicate materials, optimize structure for tooling vs projects
+- [ ] **Chunk gaps.md into manageable pieces** - Split by domain category
+  - From: LIVE-BACKLOG request
+  - Focus: CGM, Treatments, Sync, Override, Database, etc.
+- [ ] **Large file analysis + chunking proposal** - Identify files hard to reason about
+  - From: LIVE-BACKLOG request
+  - Focus: Files >500 lines, autonomous workflow optimization
 
 ### P3 - Nice to Have
 
@@ -126,6 +129,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-29 | cgm-remote-monitor database layer audit | `docs/10-domain/cgm-remote-monitor-database-deep-dive.md` - 455 lines, 3 gaps (GAP-DB-001-003), Loop ordering verified |
 | 2026-01-29 | Extract Loop sync identity fields | `mapping/loop/sync-identity-fields.md` - 318 lines, 3 gaps (GAP-SYNC-005-007), ObjectIdCache pattern |
 | 2026-01-29 | Full audit: nightscout-librelink-up | `docs/10-domain/nightscout-librelink-up-deep-dive.md` - 378 lines, 3 gaps (GAP-LIBRELINK-001-003) |
 | 2026-01-29 | Full audit: tconnectsync | `docs/10-domain/tconnectsync-deep-dive.md` - 368 lines, 3 gaps (GAP-TCONNECT-001-003) |

@@ -6,6 +6,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### cgm-remote-monitor Database Layer Audit (2026-01-29)
+
+Full audit of Nightscout's MongoDB storage layer for Loop compatibility.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/cgm-remote-monitor-database-deep-dive.md` | 455 lines, 6 collections, indexes, ordering |
+| **Gaps** | `traceability/gaps.md` | GAP-DB-001/002/003 added |
+
+**Key Findings**:
+- MongoDB driver 3.6.0 (compatible with MongoDB 5.x)
+- Treatment batch ordering preserved via `async.eachSeries`
+- Loop's ordering requirement is satisfied
+- Entries use `forEach` (unordered) but not critical for Loop
+- API v3 uses `identifier` field with fallback deduplication
+
+---
+
 ### Loop Sync Identity Fields Extraction (2026-01-29)
 
 Extracted sync identity patterns from Loop/LoopKit for cross-project comparison.
