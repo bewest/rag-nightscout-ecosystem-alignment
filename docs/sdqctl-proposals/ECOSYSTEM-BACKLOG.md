@@ -86,7 +86,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [x] ~~**Chunk gaps.md into manageable pieces**~~ - ✅ Completed (index + 7 domain files)
   - From: LIVE-BACKLOG request
   - Focus: CGM, Treatments, Sync, Override, Database, etc.
-- [ ] **Large file analysis + chunking proposal** - Identify files hard to reason about
+- [x] ~~**Large file analysis + chunking proposal**~~ - ✅ Complete (174 lines, no chunking needed)
   - From: LIVE-BACKLOG request
   - Focus: Files >500 lines, autonomous workflow optimization
 
@@ -94,7 +94,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 - [ ] **Compare CGM sensor session handling** - Start, stop, calibration
 - [ ] **Extract xDrip+ Nightscout fields** - What xDrip+ uploads
-- [ ] **Map algorithm terminology** - ISF, CR, DIA, UAM across systems
+- [x] ~~**Map algorithm terminology**~~ - ✅ Already complete (3024-line matrix)
 - [ ] **LSP-based documentation claim verification** - See [tooling backlog](backlogs/tooling.md)
 - [ ] **Reporting needs analysis** - Compare nightscout-reporter vs built-in reports
   - Source: `externals/nightscout-reporter/` (zreptil)
