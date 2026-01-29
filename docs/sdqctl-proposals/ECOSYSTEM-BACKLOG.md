@@ -40,11 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Accuracy: Verify CGM mapping coverage
+### 4. [P2] Accuracy: Verify Loop/Trio sync identity mapping
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #5-6
-**Focus:** Confirm mapping docs match source fields
-**Files:** `mapping/xdrip/nightscout-fields.md`, `mapping/aaps/nsclient-upload.md`
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #7-8
+**Focus:** Confirm syncIdentifier usage in Loop, Trio devicestatus fields
+**Files:** `mapping/loop/sync-identity-fields.md`, `mapping/trio/devicestatus-upload.md`
 **Method:** Grep source for documented field names
 
 ### 5. [P2] Accuracy: Audit algorithm-comparison claims
@@ -70,6 +70,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Accuracy: Verify xDrip + AAPS mappings~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- `mapping/xdrip-android/nightscout-sync.md`: **100% accurate**
+- `mapping/aaps/nsclient-schema.md`: **100% accurate**
+- Source files verified: UploaderQueue.java, NightscoutUploader.java, RemoteTreatment.kt, RemoteEntry.kt, EventType.kt
 
 ### ~~[P2] Accuracy: Verify G7 protocol claims~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

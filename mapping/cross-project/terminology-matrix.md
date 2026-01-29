@@ -1437,6 +1437,14 @@ AAPS maintains a dedicated Nightscout SDK (`core/nssdk/`) with local model class
 | `NSDeviceStatus` | `devicestatus` | `openaps`, `pump`, `configuration` |
 | `NSTherapyEvent` | `treatments` | `eventType`, `notes` |
 
+**Remote Model Classes** (verified 2026-01-29):
+
+| Remote Model | Source | Key Fields |
+|--------------|--------|------------|
+| `RemoteTreatment` | `remotemodel/RemoteTreatment.kt:18-79` | `identifier`, `eventType`, `insulin`, `carbs`, `isSMB` |
+| `RemoteEntry` | `remotemodel/RemoteEntry.kt:15-34` | `type`, `sgv`, `direction`, `noise`, `filtered` |
+| `EventType` | `localmodel/treatment/EventType.kt` | 25 enum values mapping to NS eventTypes |
+
 ### ProfileSwitch Modifiers (GAP-002)
 
 AAPS ProfileSwitch has semantic fields that Nightscout doesn't distinguish:

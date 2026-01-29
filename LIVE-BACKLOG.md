@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Level 2 mapping verification (xDrip + AAPS) | P2 | ✅ Complete (100% accurate, 3 facets updated) | 2026-01-29 |
 | Backlog grooming (Phase 4) | P0 | ✅ Complete (319→258 lines, 7 items in queue) | 2026-01-29 |
 | 5-facet updates (Phase 3) | P2 | ✅ Complete (terminology +20 lines, gaps verified) | 2026-01-29 |
 | Accuracy verification: G7 claims + refs | P1 | ✅ Complete (G7 100%, refs 91% valid) | 2026-01-29 |

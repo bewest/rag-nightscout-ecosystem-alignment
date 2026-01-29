@@ -24,4 +24,11 @@ Total: 185 requirements (180 unique)
 
 **Source**: `python tools/verify_assertions.py`
 
+## Mapping Verification (Supporting Evidence)
+
+| Date | Mapping Verified | Requirements Supported |
+|------|------------------|------------------------|
+| 2026-01-29 | xdrip-android/nightscout-sync.md | REQ-020 (sync identity), REQ-050 (CGM upload) |
+| 2026-01-29 | aaps/nsclient-schema.md | REQ-030 (field validation), REQ-010 (timestamp) |
+
 *Last updated: 2026-01-29*

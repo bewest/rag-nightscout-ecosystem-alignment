@@ -32,4 +32,11 @@ Total: 220 gaps across 7 domains
 |------|--------|---------------|--------|
 | 2026-01-29 | cgm-sources | GAP-BLE-001, GAP-BLE-002 | Still open (J-PAKE, certs undocumented) |
 
+## Mapping Verification Status
+
+| Date | Mapping | Result | Impact on Gaps |
+|------|---------|--------|----------------|
+| 2026-01-29 | xdrip-android/nightscout-sync.md | 100% accurate | No gap changes needed |
+| 2026-01-29 | aaps/nsclient-schema.md | 100% accurate | No gap changes needed |
+
 *Last updated: 2026-01-29*
