@@ -3553,3 +3553,29 @@ See `docs/10-domain/cgm-trend-arrow-standardization.md` for full cross-project m
 | `suspendThreshold` | Return 0 if prediction below |
 | `BolusRecommendationNotice` | Warnings (below target, etc.) |
 | `volumeRounder` | Pump-specific dose rounding |
+
+## Sensitivity Adjustment Terms
+
+### Core Concepts
+
+| Concept | oref0/AAPS | Loop | Description |
+|---------|------------|------|-------------|
+| Sensitivity detection | Autosens | Retrospective Correction | Adjusts for sensitivity changes |
+| Output | sensitivityRatio (0.7-1.3) | Glucose correction effect | How result is expressed |
+| Detection window | 8h / 24h | 30min / 180min (IRC) | Time horizon for analysis |
+| Dynamic ISF | Dynamic ISF | Glucose-based application factor | BG-dependent ISF |
+
+### AAPS Sensitivity Plugins
+
+| Plugin | Window | Method |
+|--------|--------|--------|
+| SensitivityOref1Plugin | 8h or 24h | Median of deviations |
+| SensitivityAAPSPlugin | 24h | Weighted average |
+| SensitivityWeightedAveragePlugin | Configurable | Time-weighted |
+
+### Loop Retrospective Correction
+
+| Type | Window | Controller |
+|------|--------|------------|
+| StandardRetrospectiveCorrection | 30 min | Proportional (P) |
+| IntegralRetrospectiveCorrection | 180 min | PID |

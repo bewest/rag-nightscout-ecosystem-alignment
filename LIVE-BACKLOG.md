@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Autosens/Dynamic ISF comparison | P2 | ✅ Complete (4 gaps, 3 reqs, ratio vs RC) | 2026-01-29 |
 | Bolus wizard formula comparison (Loop vs AAPS) | P2 | ✅ Complete (4 gaps, 3 reqs, prediction vs arithmetic) | 2026-01-29 |
 | Profile schema alignment (Loop vs AAPS vs Trio) | P2 | ✅ Complete (5 gaps, 4 reqs, time format/safety limits) | 2026-01-29 |
 | Devicestatus schema audit (Loop vs oref0) | P2 | ✅ Complete (4 gaps, prediction format differences) | 2026-01-29 |

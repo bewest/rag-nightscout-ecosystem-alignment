@@ -1565,3 +1565,27 @@ Compared bolus calculation formulas across AAPS, Loop, and Trio.
 **Source Files Analyzed**:
 - `externals/AndroidAPS/core/objects/wizard/BolusWizard.kt:154-284`
 - `externals/LoopWorkspace/LoopKit/LoopAlgorithm/DoseMath.swift:540-575`
+
+### Autosens/Dynamic ISF Comparison (2026-01-29)
+
+Compared sensitivity adjustment algorithms across oref0, AAPS, and Loop.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep dive | `docs/10-domain/autosens-dynamic-isf-comparison.md` | 9.4KB |
+| Gap additions | `traceability/aid-algorithms-gaps.md` | GAP-SENS-001-004 |
+| Requirements | `traceability/aid-algorithms-requirements.md` | REQ-SENS-001-003 |
+
+**Key Findings**:
+- Autosens: Ratio multiplier (0.7-1.3) over 8-24h window
+- Loop Standard RC: Proportional controller over 30min
+- Loop Integral RC: PID controller over 180min with memory
+- Output differs: ratio vs glucose effect
+
+**Gaps Identified**: GAP-SENS-001 (output format), GAP-SENS-002 (window mismatch), GAP-SENS-003 (no Loop Autosens), GAP-SENS-004 (Dynamic ISF)
+
+**Source Files Analyzed**:
+- `externals/oref0/lib/determine-basal/autosens.js:11-200`
+- `externals/AndroidAPS/plugins/sensitivity/SensitivityOref1Plugin.kt:57-207`
+- `externals/LoopWorkspace/.../StandardRetrospectiveCorrection.swift:17-71`
+- `externals/LoopWorkspace/.../IntegralRetrospectiveCorrection.swift:18-75`

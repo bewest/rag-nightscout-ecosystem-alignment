@@ -708,3 +708,63 @@ See [requirements.md](requirements.md) for the index.
 **Gap**: Related to treatment sync
 
 **Source**: `docs/10-domain/bolus-wizard-formula-comparison.md`
+
+## Sensitivity Adjustment Requirements
+
+### REQ-SENS-001: Document Sensitivity Method
+
+**Statement**: Each controller SHOULD document its sensitivity adjustment algorithm.
+
+**Rationale**: Autosens (ratio multiplier) vs Loop RC (prediction effect) work differently.
+
+**Scenarios**:
+- User switches from AAPS to Loop
+- Comparing algorithm behaviors
+
+**Verification**:
+- Documentation describes method clearly
+- Expected behavior documented
+
+**Gap**: GAP-SENS-001
+
+**Source**: `docs/10-domain/autosens-dynamic-isf-comparison.md`
+
+---
+
+### REQ-SENS-002: Sensitivity Visibility in Nightscout
+
+**Statement**: Sensitivity adjustments SHOULD be visible in Nightscout devicestatus.
+
+**Rationale**: AAPS reports sensitivityRatio; Loop RC effect not itemized.
+
+**Scenarios**:
+- Retrospective analysis of sensitivity changes
+- Debugging algorithm behavior
+
+**Verification**:
+- devicestatus includes sensitivity data
+- Reports can chart sensitivity over time
+
+**Gap**: GAP-SENS-001
+
+**Source**: `docs/10-domain/autosens-dynamic-isf-comparison.md`
+
+---
+
+### REQ-SENS-003: Document Detection Windows
+
+**Statement**: Controllers SHOULD document their sensitivity detection time windows.
+
+**Rationale**: Autosens 8-24h vs Loop RC 30-180 min affects response time.
+
+**Scenarios**:
+- Understanding lag in sensitivity detection
+- Debugging unexpected behavior
+
+**Verification**:
+- Documentation states window duration
+- Behavior matches documented windows
+
+**Gap**: GAP-SENS-002
+
+**Source**: `docs/10-domain/autosens-dynamic-isf-comparison.md`

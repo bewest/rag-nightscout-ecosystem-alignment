@@ -41,21 +41,29 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Autosens/Dynamic ISF comparison
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Compare sensitivity adjustment algorithms across systems
-**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
-**Context:** Autosens vs Retrospective Correction vs Dynamic ISF
-
-### 5. [P2] Carb absorption model comparison
+### 4. [P2] Carb absorption model comparison
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Compare carb absorption algorithms (linear vs dynamic)
 **Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
 **Context:** Loop dynamic absorption vs oref0 linear decay vs UAM
 
+### 5. [P2] Prediction curve documentation
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Document prediction curve generation across systems
+**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
+**Context:** Loop single curve vs oref0 4 curves (IOB, COB, UAM, ZT)
+
 ---
 
 ## Completed Items
+
+### ~~[P2] Autosens/Dynamic ISF comparison~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Deep dive: `docs/10-domain/autosens-dynamic-isf-comparison.md` (9.4KB)
+- Compared sensitivity algorithms: Autosens vs Retrospective Correction
+- 4 gaps identified: GAP-SENS-001/002/003/004
+- 3 requirements added: REQ-SENS-001/002/003
+- Key finding: Ratio output (0.7-1.3) vs glucose effect; 8-24h vs 30-180min windows
 
 ### ~~[P2] Bolus wizard formula comparison~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

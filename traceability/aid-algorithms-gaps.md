@@ -826,3 +826,51 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Impact:** AAPS trend correction is linear extrapolation (15min × 3); Loop uses full prediction.
 
 **Remediation:** Document different approaches to trend handling.
+
+## Sensitivity Adjustment Gaps
+
+### GAP-SENS-001: Different Output Representations
+
+**Description:** Autosens outputs a ratio (0.7-1.3) that multiplies ISF/basal, while Loop RC outputs glucose effects added to prediction.
+
+**Source:** 
+- `externals/oref0/lib/determine-basal/autosens.js`
+- `externals/LoopWorkspace/.../StandardRetrospectiveCorrection.swift`
+
+**Impact:** Cannot directly compare sensitivity adjustments between systems.
+
+**Remediation:** Document equivalent effects; both achieve similar outcomes via different mechanisms.
+
+### GAP-SENS-002: Detection Window Mismatch
+
+**Description:** Autosens uses 8-24h windows; Loop RC uses 30-180 min windows.
+
+**Source:** 
+- `externals/AndroidAPS/.../SensitivityOref1Plugin.kt:86`
+- `externals/LoopWorkspace/.../StandardRetrospectiveCorrection.swift:18`
+
+**Impact:** Different response times to sensitivity changes.
+
+**Remediation:** Document expected behavior differences for users.
+
+### GAP-SENS-003: No Autosens Equivalent in Loop
+
+**Description:** Loop doesn't have direct ISF/basal multiplier like Autosens. Uses prediction adjustments instead.
+
+**Source:** Loop architecture uses prediction adjustments, not parameter modification.
+
+**Impact:** Users switching from AAPS to Loop may miss Autosens-like behavior.
+
+**Remediation:** Explain that IRC provides similar long-term adaptation.
+
+### GAP-SENS-004: Dynamic ISF Not Standardized
+
+**Description:** Dynamic ISF implementations vary between oref1 and Loop experimental features.
+
+**Source:** 
+- oref1: `adjustmentFactor` config
+- Loop: `GlucoseBasedApplicationFactorSelectionView.swift`
+
+**Impact:** Different aggression at high BG levels between systems.
+
+**Remediation:** Document formula differences and expected behaviors.
