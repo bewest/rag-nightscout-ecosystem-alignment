@@ -35,26 +35,26 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `implementation.conv`
 **Note:** Proposal complete, needs PR to upstream
 
-### 3. [P2] Trace sync requirements REQ-031 to REQ-035
-**Type:** Analysis | **Effort:** Low
-**Repos:** Cross-project
-**Focus:** 5 uncovered sync requirements need scenario tracing
-**Workflow:** `traceability.conv`
-**Source:** sync-identity backlog
-
-### 4. [P2] Transform pipeline tester
+### 3. [P2] Transform pipeline tester
 **Type:** Implementation | **Effort:** High
 **Repos:** Cross-project
 **Focus:** Test field transforms in isolation (time/glucose/insulin)
 **Workflow:** `implementation.conv`
 **Source:** tooling backlog
 
-### 5. [P2] DiaBLE Libre protocol audit
+### 4. [P2] DiaBLE Libre protocol audit
 **Type:** Analysis | **Effort:** High
 **Repos:** DiaBLE
 **Focus:** BLE traces, calibration, Libre 2/3 support
 **Workflow:** `extract-spec.conv`
 **Source:** cgm-sources backlog
+
+### 5. [P2] Duration/utcOffset unit impact analysis
+**Type:** Analysis | **Effort:** Medium
+**Repos:** Cross-project
+**Focus:** OQ-030/OQ-031 - standardize time unit conventions
+**Workflow:** `analysis.conv`
+**Source:** sync-identity backlog
 
 ---
 

@@ -176,3 +176,137 @@ See [requirements.md](requirements.md) for the index.
 ## Error Handling Requirements
 
 ---
+
+---
+
+## Sync Identity Requirements (REQ-030 to REQ-035)
+
+---
+
+### REQ-030: Sync Identity Preservation
+
+**Statement**: The server MUST preserve client-provided sync identity fields (`identifier`, `syncIdentifier`) and return them unchanged in responses.
+
+**Rationale**: Clients use these fields to correlate local records with server records. Modification breaks sync state.
+
+**Scenarios**:
+- Treatment upload with `identifier`
+- Dose upload with `syncIdentifier`
+- Round-trip verification
+
+**Verification**:
+- Upload document with explicit identifier
+- Fetch document and verify identifier unchanged
+- Test with Loop, AAPS, and Trio clients
+
+**Source**: `mapping/cross-project/aid-controller-sync-patterns.md`
+
+---
+
+### REQ-031: Self-Entry Exclusion
+
+**Statement**: When fetching records from Nightscout, AID controllers SHOULD exclude their own entries using `enteredBy` filter to avoid processing duplicates.
+
+**Rationale**: Prevents controllers from re-processing their own uploaded treatments, which could cause dosing loops or duplicate COB/IOB calculations.
+
+**Scenarios**:
+- Trio fetches carbs with `enteredBy != "Trio"`
+- Loop fetches treatments excluding own entries
+- AAPS filters by `enteredBy`
+
+**Verification**:
+- Verify Trio uses `$ne` filter: `Trio/Sources/Services/Network/NightscoutAPI.swift:296-298`
+- Verify Loop excludes own uploads
+- Test cross-controller scenario where A's entries are visible to B
+
+**Source**: `mapping/cross-project/aid-controller-sync-patterns.md:46`, `mapping/trio/carb-math.md:278`
+
+---
+
+### REQ-032: Incremental Sync Support
+
+**Statement**: The API MUST support incremental sync using `srvModified` timestamp to fetch only records changed since last sync.
+
+**Rationale**: Full-table fetches are inefficient. Clients need to sync only delta changes.
+
+**Scenarios**:
+- AAPS fetches treatments where `srvModified > lastLoadedSrvModified`
+- nightscout-connect tracks sync bookmark
+- Initial sync followed by incremental updates
+
+**Verification**:
+- Query `/api/v3/treatments?srvModified$gt=<timestamp>`
+- Verify only modified records returned
+- Test pagination with incremental sync
+
+**Source**: `mapping/cross-project/aid-controller-sync-patterns.md:252`, `mapping/cgm-remote-monitor/api-versions.md:14`
+
+**Gap Reference**: GAP-API-003 (v1 API lacks srvModified)
+
+---
+
+### REQ-033: Server Deduplication
+
+**Statement**: The server MUST deduplicate uploads using a consistent algorithm: `identifier` field takes precedence, with fallback to `created_at + eventType`.
+
+**Rationale**: Multiple clients may upload the same treatment. Server must prevent duplicates while allowing updates.
+
+**Scenarios**:
+- Loop uploads treatment, network retry sends again
+- AAPS and Trio both upload same carb entry
+- V1 upload followed by v3 update
+
+**Verification**:
+- Upload treatment with `identifier`
+- Re-upload same treatment, verify no duplicate created
+- Verify existing `_id` returned for duplicate
+
+**Source**: `mapping/cross-project/aid-controller-sync-patterns.md:381-382`, `mapping/cgm-remote-monitor/deduplication.md`
+
+**Gap Reference**: GAP-SYNC-009 (v1 lacks identifier field)
+
+---
+
+### REQ-034: Cross-Controller Coexistence
+
+**Statement**: Multiple AID controllers SHOULD be able to write to the same Nightscout instance without data corruption or conflicts.
+
+**Rationale**: Users may run Loop on phone and AAPS on tablet, or transition between systems. Data must not be lost.
+
+**Scenarios**:
+- Loop and AAPS both active
+- Trio replaces Loop, historical data preserved
+- Caregiver Loop + patient AAPS
+
+**Verification**:
+- Upload from Controller A, verify Controller B can read
+- Both controllers write, verify no overwrites
+- Verify `enteredBy` field distinguishes sources
+
+**Source**: `mapping/cross-project/interoperability-matrix.md:100`, `docs/10-domain/authority-model.md:39`
+
+**Gap Reference**: GAP-SYNC-008 (no conflict resolution)
+
+---
+
+### REQ-035: Conflict Detection
+
+**Statement**: The server SHOULD detect and report conflicts when multiple clients update the same record concurrently.
+
+**Rationale**: Last-write-wins without notification can silently lose data. Clients need to handle conflicts.
+
+**Scenarios**:
+- Loop and AAPS update same treatment
+- Offline client syncs stale data
+- Concurrent edits from multiple caregivers
+
+**Verification**:
+- Update treatment from two clients simultaneously
+- Verify conflict detected (409 response or version mismatch)
+- Verify client can resolve conflict
+
+**Source**: `docs/10-domain/cgm-remote-monitor-sync-deep-dive.md:420`, `docs/10-domain/cgm-remote-monitor-design-review.md`
+
+**Gap Reference**: GAP-SYNC-008, REQ-NS-028
+
+---

@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Trace sync requirements REQ-031 to REQ-035 | P2 | ✅ Complete (6 REQs, 18 scenarios, 126 total) | 2026-01-29 |
 | Fix backlog checkbox format inconsistency | P1 | ✅ Complete (tooling.md fixed, format verified) | 2026-01-29 |
 | Reevaluate sdqctl-proposals for taskable work | P2 | ✅ Complete (14 proposals audited, 3 new items) | 2026-01-29 |
 | Chunk docs accuracy review into backlog items | P2 | ✅ Complete (queued to documentation backlog) | 2026-01-29 |

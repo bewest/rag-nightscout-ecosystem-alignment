@@ -455,3 +455,28 @@ Processed 3 pending human requests from LIVE-BACKLOG.
 | Research/Draft | 4 | nocturne-modernization, STPA, nightscout-connect |
 | Complete | 5 | hygiene-tooling, tools-comparison, etc. |
 
+
+---
+
+### Sync Requirements Traceability (2026-01-29)
+
+Added detailed requirements REQ-030 through REQ-035 with scenarios and source references.
+
+| Requirement | Title | Scenarios | Gap Refs |
+|-------------|-------|-----------|----------|
+| REQ-030 | Sync Identity Preservation | 3 | - |
+| REQ-031 | Self-Entry Exclusion | 3 | - |
+| REQ-032 | Incremental Sync Support | 3 | GAP-API-003 |
+| REQ-033 | Server Deduplication | 3 | GAP-SYNC-009 |
+| REQ-034 | Cross-Controller Coexistence | 3 | GAP-SYNC-008 |
+| REQ-035 | Conflict Detection | 3 | GAP-SYNC-008, REQ-NS-028 |
+
+**Source Files Referenced**:
+- `mapping/cross-project/aid-controller-sync-patterns.md`
+- `mapping/trio/carb-math.md`
+- `mapping/cgm-remote-monitor/api-versions.md`
+- `mapping/cgm-remote-monitor/deduplication.md`
+- `docs/10-domain/authority-model.md`
+
+**Requirements Total**: 126 (+6)
+
