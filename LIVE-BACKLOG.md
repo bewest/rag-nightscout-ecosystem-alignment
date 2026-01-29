@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Create mapping: tconnectsync | P3 | ✅ Complete (607 lines, 4 docs, 1 gap) | 2026-01-29 |
 | Create mapping: nocturne | P3 | ✅ Complete (702 lines, 4 docs, 3 gaps) | 2026-01-29 |
 | Duration/utcOffset unit impact analysis | P2 | ✅ Complete (256 lines, 4 REQs, 4 alternatives) | 2026-01-29 |
 | Trace sync requirements REQ-031 to REQ-035 | P2 | ✅ Complete (6 REQs, 18 scenarios, 126 total) | 2026-01-29 |

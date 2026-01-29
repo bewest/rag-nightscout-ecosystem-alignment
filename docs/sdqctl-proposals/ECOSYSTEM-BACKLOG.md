@@ -49,6 +49,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Source:** cgm-sources backlog
 
+### 5. [P3] Create mapping: share2nightscout-bridge
+**Type:** Analysis | **Effort:** Medium
+**Repos:** share2nightscout-bridge
+**Focus:** Dexcom Share bridge field mappings
+**Workflow:** `gap-discovery.conv`
+**Source:** Deep-dives exist (2 docs)
+
 ---
 
 ## Backlog (Prioritized)
@@ -109,11 +116,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 - [x] ~~**Create mapping: nocturne**~~ - ✅ **COMPLETE** (702 lines, 4 docs, 3 gaps)
 - [x] ~~**Create mapping: tconnectsync**~~ - ✅ **COMPLETE** (607 lines, 4 docs, 1 gap)
-- [ ] **Create mapping: share2nightscout-bridge**
-  - Repos: share2nightscout-bridge
-  - Focus: Dexcom Share bridge field mappings
-  - Source: Deep-dives exist (2 docs)
-  - Workflow: `gap-discovery.conv`
+- [x] ~~**Create mapping: share2nightscout-bridge**~~ - Promoted to Ready Queue #5
 - [ ] **Create mapping: nightscout-librelink-up**
   - Repos: nightscout-librelink-up
   - Focus: LibreLink Up bridge field mappings
