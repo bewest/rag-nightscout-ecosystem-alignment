@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Duration/utcOffset Unit Impact Analysis (2026-01-29)
+
+Analyzed unit inconsistencies across AID systems for duration and timezone fields.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Impact Analysis** | `docs/10-domain/duration-utcoffset-unit-analysis.md` | 256 lines |
+| **Requirements** | REQ-UNIT-001 to REQ-UNIT-004 | 4 new requirements |
+
+**Key Findings**:
+- Duration: NS=minutes, Loop=seconds, AAPS=milliseconds (60x/60000x mismatch)
+- utcOffset: NS=minutes, AAPS internal=milliseconds
+- 4 standardization alternatives evaluated (recommend Option 1 Enhanced)
+- AAPS preserves `durationInMilliseconds` for round-trip accuracy
+
+**Gaps Addressed**: GAP-TREAT-002, GAP-TZ-004, GAP-PUMP-003
+
+---
+
 ### Ecosystem Open PR Analysis (2026-01-29)
 
 Analyzed open PRs across 6 key repositories for interoperability impact.

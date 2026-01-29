@@ -10,10 +10,7 @@ Covers: syncIdentifier, interfaceIDs, uuid, timestamps, batch ordering
 
 ## Active Items
 
-| # | Item | Priority | Effort | Notes |
-|---|------|----------|--------|-------|
-| 1 | Impact analysis: Duration unit standardization | P2 | Medium | OQ-030 - all 4 alternatives |
-| 2 | Impact analysis: utcOffset unit | P2 | Low | OQ-031 - combine with duration |
+(none - pending next triage)
 
 ---
 
@@ -21,6 +18,7 @@ Covers: syncIdentifier, interfaceIDs, uuid, timestamps, batch ordering
 
 | Item | Date | Notes |
 |------|------|-------|
+| Duration/utcOffset unit impact analysis | 2026-01-29 | OQ-030/031 combined, 4 alternatives, 4 REQs |
 | Trace REQ-031 through REQ-035 | 2026-01-29 | 6 requirements with scenarios and source refs |
 | Extract Loop sync identity fields | 2026-01-29 | 318 lines, ObjectIdCache pattern |
 | Full audit: nightscout-connect | 2026-01-29 | 527 lines, XState machines, 5 sources |

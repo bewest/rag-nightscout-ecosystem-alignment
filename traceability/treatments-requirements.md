@@ -497,6 +497,86 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
+## Unit Handling Requirements
+
+---
+
+### REQ-UNIT-001: Duration Unit Documentation
+
+**Statement**: API specifications MUST clearly document the unit for all duration fields.
+
+**Rationale**: Prevents off-by-60x (seconds vs minutes) or off-by-60000x (milliseconds vs minutes) errors during data sync.
+
+**Scenarios**:
+- Treatment Sync Validation
+- Temp Basal Upload
+- eCarbs Duration Upload
+
+**Verification**:
+- OpenAPI spec includes unit in field description
+- All duration fields have explicit unit annotations
+
+**Source**: [Duration/utcOffset Analysis](../docs/10-domain/duration-utcoffset-unit-analysis.md), GAP-TREAT-002
+
+---
+
+### REQ-UNIT-002: Duration Validation
+
+**Statement**: The server SHOULD validate duration fields are within reasonable ranges (0 < duration ≤ 1440 minutes).
+
+**Rationale**: Catches unit confusion early—30000 minutes (20+ days) indicates milliseconds passed as minutes.
+
+**Scenarios**:
+- Treatment Upload Validation
+- Duration Range Check
+
+**Verification**:
+- Reject `duration > 1440` with warning or error
+- Reject `duration <= 0`
+- Accept valid duration values (e.g., 30, 60, 120)
+
+**Source**: [Duration/utcOffset Analysis](../docs/10-domain/duration-utcoffset-unit-analysis.md), GAP-TREAT-002
+
+---
+
+### REQ-UNIT-003: utcOffset Validation
+
+**Statement**: The server SHOULD validate utcOffset is within ±840 minutes (±14 hours).
+
+**Rationale**: Catches millisecond values being passed as minutes—a common unit confusion error.
+
+**Scenarios**:
+- Treatment Sync Validation
+- Timezone Offset Check
+
+**Verification**:
+- Reject `|utcOffset| > 840` with error
+- Log warning for unusual offsets (e.g., > 720)
+- Accept valid offsets (e.g., -480, 330, 0)
+
+**Source**: [Duration/utcOffset Analysis](../docs/10-domain/duration-utcoffset-unit-analysis.md), GAP-TZ-004
+
+---
+
+### REQ-UNIT-004: Preserve High-Precision Fields
+
+**Statement**: The server SHOULD preserve AAPS-specific high-precision fields (e.g., `durationInMilliseconds`) for round-trip accuracy.
+
+**Rationale**: Allows AAPS to recover original precision when syncing back from Nightscout.
+
+**Scenarios**:
+- AAPS Treatment Sync
+- Round-Trip Precision
+
+**Verification**:
+- Upload treatment with `durationInMilliseconds` field
+- Retrieve treatment and verify field preserved unchanged
+- Sync back to AAPS and confirm precision maintained
+
+**Source**: [Duration/utcOffset Analysis](../docs/10-domain/duration-utcoffset-unit-analysis.md)
+
+---
+
 ## Caregiver Alarm Requirements
 
 ---

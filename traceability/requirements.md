@@ -10,8 +10,8 @@ This document is an index of requirements organized by domain.
 - [Other](other-requirements.md) - 0 requirements
 - [Pumps](pumps-requirements.md) - 10 requirements
 - [Sync Identity](sync-identity-requirements.md) - 14 requirements
-- [Treatments](treatments-requirements.md) - 24 requirements
+- [Treatments](treatments-requirements.md) - 28 requirements
 
-Total: 126 requirements
+Total: 130 requirements
 
 *Last chunked: 2026-01-28*

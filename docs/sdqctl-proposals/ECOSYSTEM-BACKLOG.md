@@ -49,12 +49,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Source:** cgm-sources backlog
 
-### 5. [P2] Duration/utcOffset unit impact analysis
-**Type:** Analysis | **Effort:** Medium
-**Repos:** Cross-project
-**Focus:** OQ-030/OQ-031 - standardize time unit conventions
-**Workflow:** `analysis.conv`
-**Source:** sync-identity backlog
+---
 
 ---
 
