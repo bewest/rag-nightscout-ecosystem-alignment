@@ -55,6 +55,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### ~~5. [P3] Create mapping: nightscout-librelink-up~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (608 lines, 3 docs, 3 gaps)
 
+### 5. [P3] Deep dive: LoopFollow
+**Type:** Analysis | **Effort:** Medium
+**Repos:** LoopFollow
+**Focus:** Caregiver monitoring architecture, Nightscout data consumption
+**Workflow:** `extract-spec.conv`
+**Context:** iOS/watchOS app for monitoring Loop/Trio users
+
 ---
 
 ## Backlog (Prioritized)
@@ -117,11 +124,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [x] ~~**Create mapping: tconnectsync**~~ - ✅ **COMPLETE** (607 lines, 4 docs, 1 gap)
 - [x] ~~**Create mapping: share2nightscout-bridge**~~ - Promoted to Ready Queue #5
 - [x] ~~**Create mapping: nightscout-librelink-up**~~ - Promoted to Ready Queue #5
-- [ ] **Deep dive: LoopFollow**
-  - Repos: LoopFollow
-  - Focus: Caregiver monitoring architecture, Nightscout data consumption
-  - Context: iOS/watchOS app for monitoring Loop/Trio users
-  - Workflow: `extract-spec.conv`
+- [x] ~~**Deep dive: LoopFollow**~~ - Promoted to Ready Queue #5
 - [ ] **Deep dive: LoopCaregiver**
   - Repos: LoopCaregiver
   - Focus: Remote command architecture, Nightscout command channel
