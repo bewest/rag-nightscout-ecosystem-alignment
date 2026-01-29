@@ -36,25 +36,31 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 3. [P2] CGM trend arrow standardization
-**Type:** Documentation | **Effort:** Low
-**Focus:** Map all 7 projects to unified trend arrow enum
-**Backlog:** [cgm-sources.md](backlogs/cgm-sources.md)
-**Context:** Different projects use different trend representations
-
-### 4. [P2] API v3 pagination compliance
+### 3. [P2] API v3 pagination compliance
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Document srvModified-based pagination across clients
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 5. [P3] WebSocket event coverage
+### 4. [P3] WebSocket event coverage
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
+### 5. [P2] Sync identity field audit
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Verify sync identity mappings across all controllers
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md)
+**Context:** Follow-up from cross-controller conflict analysis
+
 ---
 
 ## Completed Items
+
+### ~~[P2] CGM trend arrow standardization~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Deep dive: `docs/10-domain/cgm-trend-arrow-standardization.md` (9.6KB)
+- Mapped 7 projects to unified enum
+- 2 gaps identified: GAP-CGM-033 (AAPS triple), GAP-CGM-034 (Libre granularity)
 
 ### ~~[P3] sdqctl VERIFY .conv Directive (Phase 2)~~ ✅ ENHANCED
 **Status:** Enhanced 2026-01-29

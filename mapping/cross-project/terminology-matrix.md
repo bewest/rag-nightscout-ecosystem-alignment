@@ -3422,3 +3422,19 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 | 6 | Proposals | Cross-reference coherence |
 
 **Source**: `docs/sdqctl-proposals/backlogs/documentation-accuracy.md`
+
+## Trend Arrow Standardization
+
+See `docs/10-domain/cgm-trend-arrow-standardization.md` for full cross-project mapping.
+
+| Term | Nightscout | xDrip+ | Loop | AAPS | DiaBLE |
+|------|------------|--------|------|------|--------|
+| Rising very rapidly | DoubleUp (1) | DOUBLE_UP | upUpUp | DOUBLE_UP | risingQuickly |
+| Rising rapidly | SingleUp (2) | SINGLE_UP | upUp | SINGLE_UP | rising |
+| Rising | FortyFiveUp (3) | UP_45 | up | FORTY_FIVE_UP | rising |
+| Stable | Flat (4) | FLAT | flat | FLAT | stable |
+| Falling | FortyFiveDown (5) | DOWN_45 | down | FORTY_FIVE_DOWN | falling |
+| Falling rapidly | SingleDown (6) | SINGLE_DOWN | downDown | SINGLE_DOWN | falling |
+| Falling very rapidly | DoubleDown (7) | DOUBLE_DOWN | downDownDown | DOUBLE_DOWN | fallingQuickly |
+| Not computable | NOT COMPUTABLE (8) | NOT_COMPUTABLE | - | NONE | notDetermined |
+| Rate out of range | RATE OUT OF RANGE (9) | OUT_OF_RANGE | - | TRIPLE_UP/DOWN | - |

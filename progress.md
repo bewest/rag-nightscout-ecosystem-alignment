@@ -1423,3 +1423,29 @@ Enhanced proposal with real-world usage patterns from 31-item verification.
 - Clear request: parser support for VERIFY directive in .conv
 
 **Status**: Phase 1 (CLI) complete, Phase 2 (directives) pending sdqctl core changes
+
+### CGM Trend Arrow Standardization (2026-01-29)
+
+Mapped trend arrow representations across 7 major projects.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Standardization doc | `docs/10-domain/cgm-trend-arrow-standardization.md` | 9.6KB |
+| Terminology update | `mapping/cross-project/terminology-matrix.md` | +16 lines |
+| Gap additions | `traceability/cgm-sources-gaps.md` | GAP-CGM-033/034 |
+
+**Key Findings**:
+- Nightscout DIRECTIONS is canonical (IDs 0-9)
+- xDrip+, Loop, Trio: 1:1 compatible
+- AAPS: Has TRIPLE_UP/DOWN not in Nightscout
+- DiaBLE/Libre: Only 6 levels vs Dexcom's 9
+
+**Gaps Identified**: GAP-CGM-033 (AAPS triple arrows), GAP-CGM-034 (Libre granularity)
+
+**Source Files Analyzed**:
+- `externals/cgm-remote-monitor/lib/server/pebble.js:8-19`
+- `externals/xDrip/app/.../Dex_Constants.java:86-96`
+- `externals/LoopWorkspace/LoopKit/.../GlucoseTrend.swift:12-37`
+- `externals/AndroidAPS/core/data/.../TrendArrow.kt:3-14`
+- `externals/DiaBLE/DiaBLE/App.swift:94-112`
+- `externals/xdripswift/.../BgReading+CoreDataClass.swift:64-81`

@@ -1301,3 +1301,23 @@ wercker.yml  # Defunct service
 **Status**: Open - Architectural limitation
 
 ---
+
+### GAP-CGM-033: AAPS Triple Arrow Support
+
+**Description:** AAPS supports TRIPLE_UP and TRIPLE_DOWN trend arrows, but Nightscout has no equivalent. These are displayed as "X" in AAPS.
+
+**Source:** `externals/AndroidAPS/core/data/src/main/kotlin/app/aaps/core/data/model/TrendArrow.kt:5,13`
+
+**Impact:** Extreme rate of change data may be lost when syncing to Nightscout.
+
+**Remediation:** Consider adding optional TRIPLE_UP (0) and TRIPLE_DOWN (10) to Nightscout DIRECTIONS.
+
+### GAP-CGM-034: Libre Trend Arrow Granularity
+
+**Description:** Libre sensors provide only 6 trend levels vs Dexcom's 9. DiaBLE uses Libre's native enum which doesn't distinguish between SingleUp/FortyFiveUp or SingleDown/FortyFiveDown.
+
+**Source:** `externals/DiaBLE/DiaBLE/App.swift:94-112`
+
+**Impact:** Trend precision is reduced when using Libre sensors through DiaBLE.
+
+**Remediation:** When syncing Libre data to Nightscout, map `rising` to `FortyFiveUp` and `falling` to `FortyFiveDown` for conservative display.
