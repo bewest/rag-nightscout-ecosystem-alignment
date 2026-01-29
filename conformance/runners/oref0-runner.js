@@ -392,12 +392,11 @@ for (let i = 0; i < args.length; i++) {
         vectorsDir = args[++i];
     } else if (args[i] === '--output' && args[i+1]) {
         outputFile = args[++i];
-    } else if (args[i] === '--quiet' || args[i] === '-q') {
-        QUIET_MODE = true;
     } else if (args[i] === '--help') {
         log('Usage: node oref0-runner.js [--vectors DIR] [--output FILE] [--quiet]');
         process.exit(0);
     }
+    // --quiet/-q already parsed at startup
 }
 
 const exitCode = runConformanceTests(vectorsDir, outputFile);

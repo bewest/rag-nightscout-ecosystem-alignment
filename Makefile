@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions hygiene-tests hygiene-unit hygiene-all mock-nightscout extract-vectors
+.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions hygiene-tests hygiene-unit hygiene-all mock-nightscout extract-vectors conformance-oref0
 
 # Default target
 help:
@@ -136,6 +136,11 @@ mock-nightscout:
 extract-vectors:
 	@echo "Extracting conformance vectors from AAPS..."
 	@python3 tools/extract_vectors.py --limit 85
+
+conformance-oref0:
+	@echo "Running oref0 conformance tests..."
+	@cd externals/oref0 && npm install --silent 2>/dev/null || true
+	@node conformance/runners/oref0-runner.js --quiet
 
 # Full CI pipeline
 ci: check coverage verify hygiene-all

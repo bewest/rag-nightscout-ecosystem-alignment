@@ -4,6 +4,7 @@
 > **Parent**: [ECOSYSTEM-BACKLOG.md](docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md)
 
 ---
+* Add a high priority item to the queue: Please do use the tools to help groom the progress file.
 
 ## Processed
 
