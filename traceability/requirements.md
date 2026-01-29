@@ -34,6 +34,14 @@ Total: 185 requirements (180 unique)
 | 2026-01-29 | trio/nightscout-sync.md | REQ-030 (field validation), REQ-060 (algorithm) |
 | 2026-01-29 | terminology-matrix.md (10% sample) | Cross-domain terminology accuracy |
 
+## Deep Dive Verification (Supporting Evidence)
+
+| Date | Deep Dive | Requirements Supported |
+|------|-----------|------------------------|
+| 2026-01-29 | algorithm-comparison-deep-dive.md | REQ-060-069 (algorithm behavior) |
+| 2026-01-29 | g7-protocol-specification.md | REQ-050-059 (CGM data source) |
+
 **Level 2 Complete**: 5/5 mapping verifications passed (100%)
+**Level 3 Progress**: 2/8 deep dive verifications (25%)
 
 *Last updated: 2026-01-29*

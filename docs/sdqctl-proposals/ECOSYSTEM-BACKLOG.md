@@ -40,12 +40,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Accuracy: Audit algorithm-comparison claims
+### 4. [P2] Accuracy: Verify CGM data sources deep dive
 **Type:** Verification | **Effort:** Medium
 **Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #10
-**Focus:** Validate prediction array format claims
-**Files:** `docs/10-domain/algorithm-comparison-deep-dive.md`
-**Method:** Verify IOB/COB/UAM/ZT array structure in source
+**Focus:** Validate CGM source claims
+**Files:** `docs/10-domain/cgm-data-sources-deep-dive.md`
+**Method:** Grep source for documented protocols
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -63,6 +63,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 3: Algorithm comparison deep dive~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 7 claims verified: **100% accurate**
+- oref0: 4 prediction arrays, SMB, Autosens verified
+- AAPS: Dynamic ISF (TDD-based) verified
+- Loop: Retrospective Correction, Automatic Bolus verified
+- Trio: JavaScript calls verified
 
 ### ~~[P2] Level 2: Terminology matrix sampling~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

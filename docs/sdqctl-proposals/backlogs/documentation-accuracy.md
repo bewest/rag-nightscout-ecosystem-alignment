@@ -72,13 +72,21 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | # | Item | Priority | Domain | Status |
 |---|------|----------|--------|--------|
 | 10 | Verify cgm-data-sources-deep-dive.md claims | P2 | cgm-sources | Pending |
-| 11 | Verify algorithm-comparison-deep-dive.md claims | P2 | aid-algorithms | Pending |
+| 11 | Verify algorithm-comparison-deep-dive.md claims | P2 | aid-algorithms | ✅ **100% accurate** |
 | 12 | Verify devicestatus-deep-dive.md claims | P2 | nightscout-api | Pending |
 | 13 | Verify entries-deep-dive.md claims | P2 | nightscout-api | Pending |
 | 14 | Verify treatments-deep-dive.md claims | P2 | nightscout-api | Pending |
 | 15 | Verify pump-communication-deep-dive.md claims | P3 | pumps | Pending |
 | 16 | Verify libre-protocol-deep-dive.md claims | P2 | cgm-sources | Pending |
 | 17 | Verify g7-protocol-specification.md claims | P1 | cgm-sources | ✅ **100% accurate** |
+
+**Finding (2026-01-29)**: Algorithm comparison deep dive verified:
+- oref0: 4 prediction arrays (IOB/COB/UAM/ZT) at determine-basal.js:442-445
+- oref0: SMB function at determine-basal.js:51, Autosens at :128,:249
+- AAPS: Dynamic ISF (TDD-based) at OpenAPSSMBPlugin.kt:268
+- Loop: Retrospective Correction at LoopMath.swift:16-17
+- Loop: Automatic Bolus option at LoopDataManager.swift:1819
+- Trio: JavaScript calls at Script.swift:9, OpenAPS.swift:803
 
 ### Level 4: Gap Verification
 
@@ -115,6 +123,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 
 | Item | Date | Notes |
 |------|------|-------|
+| Item #11: Algorithm comparison deep dive | 2026-01-29 | **100% accurate** - 7 major claims verified |
 | Item #9: Terminology matrix sampling | 2026-01-29 | **100% accurate** - 15 terms verified across 6 repos |
 | Item #7-8: Loop + Trio mappings | 2026-01-29 | **100% accurate** - syncIdentifier, OpenAPSStatus verified |
 | Item #5-6: Mapping verification | 2026-01-29 | **100% accurate** - xDrip + AAPS mappings verified |
@@ -124,6 +133,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | Initial cohesiveness audit proposal | 2026-01-29 | Queued to this backlog |
 
 **Level 2 Complete**: 5/5 mapping items verified (100%)
+**Level 3 Progress**: 2/8 deep dive items verified (25%)
 
 ### Verification Details: Terminology Matrix (2026-01-29)
 

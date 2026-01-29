@@ -8,6 +8,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 3: Algorithm Comparison Deep Dive (2026-01-29)
+
+Verified algorithm-comparison-deep-dive.md claims against source code.
+
+| Claim | Source | Status |
+|-------|--------|--------|
+| oref0: 4 prediction arrays | `determine-basal.js:442-445` | ✅ Verified |
+| oref0: SMB function | `determine-basal.js:51` | ✅ Verified |
+| oref0: Autosens | `determine-basal.js:128,249` | ✅ Verified |
+| AAPS: Dynamic ISF (TDD) | `OpenAPSSMBPlugin.kt:268` | ✅ Verified |
+| Loop: Retrospective Correction | `LoopMath.swift:16-17` | ✅ Verified |
+| Loop: Automatic Bolus | `LoopDataManager.swift:1819` | ✅ Verified |
+| Trio: JavaScript calls | `Script.swift:9` | ✅ Verified |
+
+**Level 3 Progress**: 2/8 items complete (25%)
+
+---
+
 ### Accuracy Verification: G7 Protocol + Refs (2026-01-29)
 
 Executed first accuracy verification items from bottom-up queue.
