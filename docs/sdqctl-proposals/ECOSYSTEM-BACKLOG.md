@@ -27,19 +27,25 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Define minimal viable interoperability spec (OQ-021)
 **Workflow:** `extract-spec.conv`
 
-### 2. [P1] Compare override/profile switch semantics
-**Type:** Comparison | **Effort:** Medium
-**Repos:** Loop, AAPS, Trio
-**Focus:** Loop overrides vs AAPS ProfileSwitch vs Trio overrides
-**Workflow:** `compare-feature.conv`
-
-### 3. [P1] PR analysis: cgm-remote-monitor
+### 2. [P1] PR analysis: cgm-remote-monitor
 **Type:** Analysis | **Effort:** Medium
 **Source:** `externals/cgm-remote-monitor-official/`
 **Focus:** Review open PRs for ecosystem impact
 **Workflow:** `gap-discovery.conv`
 
-### 4. [P2] Algorithm conformance suite
+### 3. [P1] Cross-project testing plan
+**Type:** Tooling | **Effort:** Low
+**Repos:** Trio, Loop
+**Focus:** Define Ubuntu-compatible testing strategies for Swift AID projects
+**Workflow:** `tools/`
+
+### 4. [P1] Statistics API proposal
+**Type:** Specification | **Effort:** Medium
+**Repos:** cgm-remote-monitor
+**Focus:** MCP-informed aggregate endpoints based on reports + zreptil needs
+**Workflow:** `extract-spec.conv`
+
+### 5. [P2] Algorithm conformance suite
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Create test vectors for Rust vs JS oref comparison
 **Workflow:** `tools/`
@@ -126,6 +132,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-29 | Compare override/profile switch semantics | `docs/10-domain/override-profile-switch-comparison.md` - 416 lines, 3 gaps (GAP-OVERRIDE-005-007), Trio Exercise eventType |
 | 2026-01-29 | Playwright adoption proposal | `docs/sdqctl-proposals/playwright-adoption-proposal.md` - 316 lines, 4-phase plan, ~5-8 days effort |
 | 2026-01-29 | cgm-remote-monitor database layer audit | `docs/10-domain/cgm-remote-monitor-database-deep-dive.md` - 455 lines, 3 gaps (GAP-DB-001-003), Loop ordering verified |
 | 2026-01-29 | Extract Loop sync identity fields | `mapping/loop/sync-identity-fields.md` - 318 lines, 3 gaps (GAP-SYNC-005-007), ObjectIdCache pattern |

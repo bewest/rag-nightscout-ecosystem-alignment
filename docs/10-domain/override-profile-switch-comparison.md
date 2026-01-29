@@ -1,7 +1,8 @@
 # Override and Profile Switch Comparison
 
 > **Sources**: Loop, AAPS, Trio, Nightscout  
-> **Last Updated**: 2026-01-28
+> **Last Updated**: 2026-01-29  
+> **Analysis Depth**: Deep (source code analysis)
 
 ## Overview
 
@@ -207,9 +208,38 @@ struct TempTarget {
 
 ### Nightscout Sync
 
-Uses Loop's eventTypes:
-- `Temporary Override`
-- `Temporary Target`
+**eventType**: `Exercise` (NOT `Temporary Override`)
+
+**Key Finding**: Trio does NOT use Loop's `Temporary Override` eventType. Instead, it repurposes the standard `Exercise` eventType:
+
+```swift
+// OverrideStored+helper.swift:34-36
+enum EventType: String, JSON {
+    case nsExercise = "Exercise"
+}
+
+// OverrideStorage.swift:261-269
+return NightscoutExercise(
+    duration: Int(truncating: duration),
+    eventType: OverrideStored.EventType.nsExercise,  // "Exercise"
+    createdAt: override.date ?? Date(),
+    enteredBy: NightscoutExercise.local,  // "Trio"
+    notes: override.name ?? "Custom Override",
+    id: UUID(uuidString: override.id ?? UUID().uuidString)
+)
+```
+
+**Uploaded Fields**:
+- `eventType`: "Exercise"
+- `duration`: minutes (43200 for indefinite = 30 days)
+- `notes`: override name
+- `enteredBy`: "Trio"
+- `created_at`: start timestamp
+
+**Missing from Upload**:
+- `percentage` (insulin scaling)
+- `target` (override target)
+- `smbIsOff`, `smbMinutes`, `uamMinutes` (algorithm controls)
 
 ---
 
@@ -239,28 +269,37 @@ Uses Loop's eventTypes:
 
 ### Nightscout eventType Mapping
 
-| System | Override Type | NS eventType |
-|--------|---------------|--------------|
-| Loop | TemporaryScheduleOverride | `Temporary Override` |
-| AAPS | ProfileSwitch | `Profile Switch` |
-| AAPS | TempTarget | `Temporary Target` |
-| Trio | Override | `Temporary Override` |
-| Trio | TempTarget | `Temporary Target` |
+| System | Override Type | NS eventType | Notes |
+|--------|---------------|--------------|-------|
+| Loop | TemporaryScheduleOverride | `Temporary Override` | Custom type, rich data |
+| AAPS | ProfileSwitch | `Profile Switch` | Standard NS type, full profile |
+| AAPS | TempTarget | `Temporary Target` | Standard NS type |
+| **Trio** | Override | `Exercise` | **Repurposed standard type** |
+| Trio | TempTarget | `Temporary Target` | Standard NS type |
+
+**Critical Finding**: Trio uses `Exercise` eventType for overrides, NOT `Temporary Override`. This means:
+- Trio overrides show as "Exercise" events in Nightscout
+- Loop and Trio override data is NOT interchangeable
+- Nightscout visualization differs between systems
 
 ---
 
 ## Gaps Identified
 
-### GAP-OVERRIDE-001: No unified override/profile-switch model
+### GAP-OVERRIDE-001: Incompatible eventTypes Across Systems
 
-**Description**: Loop uses `Temporary Override`, AAPS uses `Profile Switch`, and they have different semantics. No way to translate between them.
+**Description**: Each system uses a different Nightscout eventType:
+- Loop: `Temporary Override` (custom type)
+- AAPS: `Profile Switch` (standard type)
+- Trio: `Exercise` (repurposed standard type)
 
 **Impact**:
-- Loop overrides appear as different eventType than AAPS profile switches
-- Cannot query "what therapy adjustment was active at time T" across systems
-- Follower apps must handle multiple eventTypes
+- Overrides from one system don't appear correctly in another system's views
+- No unified "what adjustment was active at time T" query
+- Careportal doesn't have unified override entry
+- Follower apps must handle three different patterns
 
-**Remediation**: Define abstract `TherapyAdjustment` schema that both map to.
+**Remediation**: Define standard `Override` eventType in Nightscout with fields from all systems.
 
 ### GAP-OVERRIDE-002: AAPS percentage vs Loop insulinNeedsScaleFactor
 
@@ -296,6 +335,47 @@ These are mathematically equivalent but semantically inverted.
 
 ---
 
+## Sync Identity Patterns
+
+| System | ID Field | Type | Storage | Deduplication |
+|--------|----------|------|---------|---------------|
+| Loop | `syncIdentifier` | UUID | Memory + NS | Client-side |
+| AAPS | `interfaceIDs.nightscoutId` | String | Room DB | Server-side (v3) |
+| Trio | `id` | UUID string | CoreData | Client-side |
+
+### Loop Sync Identity
+
+```swift
+// TemporaryScheduleOverride.swift:56-57
+public let syncIdentifier: UUID
+
+// OverrideTreament.swift:59
+self.init(..., id: override.syncIdentifier.uuidString)
+```
+
+### AAPS Sync Identity
+
+```kotlin
+// ProfileSwitch.kt:39-40
+@Embedded
+override var interfaceIDs_backing: InterfaceIDs? = InterfaceIDs()
+
+// ProfileSwitchExtension.kt:61
+identifier = ids.nightscoutId
+```
+
+### Trio Sync Identity
+
+```swift
+// OverrideStored+CoreDataProperties.swift:15
+@NSManaged var id: String?
+
+// OverrideStorage.swift:127-128
+newOverride.id = UUID().uuidString
+```
+
+---
+
 ## Summary Table
 
 | Aspect | Loop | AAPS | Trio | Recommendation |
@@ -304,7 +384,8 @@ These are mathematically equivalent but semantically inverted.
 | **Target Handling** | In override | Separate TT | Both | Accept difference |
 | **Insulin Scaling** | Factor (0.0-2.0) | Percentage (1-200) | Percentage | Map: % = factor×100 |
 | **End Tracking** | ✅ | ❌ | ❌ | Add to AAPS/Trio |
-| **NS eventType** | Temporary Override | Profile Switch | Temporary Override | Accept difference |
+| **NS eventType** | Temporary Override | Profile Switch | **Exercise** | Standardize to Override |
+| **Sync Identity** | syncIdentifier (UUID) | interfaceIDs | id (UUID string) | All use UUID pattern |
 
 ---
 
@@ -323,9 +404,13 @@ These are mathematically equivalent but semantically inverted.
 ### Trio
 - `externals/Trio/Trio/Sources/Models/Override.swift`
 - `externals/Trio/Trio/Sources/Models/TempTarget.swift`
-- `externals/Trio/LoopKit/LoopKit/TemporaryScheduleOverride.swift`
+- `externals/Trio/Model/Classes+Properties/OverrideStored+CoreDataProperties.swift`
+- `externals/Trio/Model/Helper/OverrideStored+helper.swift` (EventType = Exercise)
+- `externals/Trio/Trio/Sources/APS/Storage/OverrideStorage.swift` (Nightscout upload)
+- `externals/Trio/Trio/Sources/Models/NightscoutExercise.swift`
 
 ### Nightscout
-- `externals/cgm-remote-monitor/lib/plugins/loop.js` (Temporary Override)
-- `externals/cgm-remote-monitor/lib/plugins/openaps.js` (Temporary Target)
-- `externals/cgm-remote-monitor/lib/plugins/careportal.js` (Profile Switch)
+- `externals/cgm-remote-monitor-official/lib/server/loop.js:62-73` (Temporary Override handling)
+- `externals/cgm-remote-monitor-official/lib/plugins/loop.js`
+- `externals/cgm-remote-monitor-official/lib/plugins/openaps.js` (Temporary Target)
+- `externals/cgm-remote-monitor-official/lib/plugins/careportal.js` (Profile Switch)

@@ -3504,3 +3504,105 @@ No standard format or prefix convention exists.
 
 **Related**:
 - [cgm-remote-monitor Database Deep Dive](../docs/10-domain/cgm-remote-monitor-database-deep-dive.md)
+
+---
+
+### GAP-OVERRIDE-005: Trio uses Exercise eventType for overrides
+
+**Scenario**: Cross-system override visualization
+
+**Description**: Trio uploads overrides as `Exercise` eventType to Nightscout, not `Temporary Override` like Loop. This makes Trio overrides invisible in Loop-focused Nightscout views and vice versa.
+
+**Evidence**:
+```swift
+// OverrideStored+helper.swift:34-36
+enum EventType: String, JSON {
+    case nsExercise = "Exercise"
+}
+```
+
+**Impact**:
+- Trio overrides appear as "Exercise" events in Nightscout
+- Loop/Trio override data not interchangeable
+- Followers using Loop-compatible apps don't see Trio overrides correctly
+
+**Possible Solutions**:
+1. Trio could adopt `Temporary Override` eventType (breaking change)
+2. Nightscout could normalize both to standard `Override` type
+3. Add cross-system mapping layer
+
+**Status**: Documented
+
+**Related**:
+- [Override Comparison](../docs/10-domain/override-profile-switch-comparison.md)
+- GAP-OVERRIDE-001
+
+---
+
+### GAP-OVERRIDE-006: Three incompatible eventTypes for therapy adjustments
+
+**Scenario**: Unified override visualization
+
+**Description**: Loop uses `Temporary Override`, AAPS uses `Profile Switch`, Trio uses `Exercise`. All represent similar user intent (temporary therapy adjustment) but are incompatible.
+
+**Evidence**:
+| System | eventType |
+|--------|-----------|
+| Loop | `Temporary Override` |
+| AAPS | `Profile Switch` |
+| Trio | `Exercise` |
+
+**Impact**:
+- No unified "what adjustment was active at time T" query
+- Careportal doesn't have unified override entry
+- Follower apps must handle three different patterns
+- Cannot aggregate override usage across systems
+
+**Possible Solutions**:
+1. Define standard `Override` eventType in Nightscout
+2. Add eventType aliasing/normalization
+3. Document mapping for follower apps
+
+**Status**: Documented
+
+**Related**:
+- [Override Comparison](../docs/10-domain/override-profile-switch-comparison.md)
+- GAP-001, GAP-002
+
+---
+
+### GAP-OVERRIDE-007: Trio override upload loses algorithm settings
+
+**Scenario**: Nightscout data completeness
+
+**Description**: Trio's override upload only includes `duration`, `notes` (name), and `eventType`. The rich algorithm settings (`smbIsOff`, `percentage`, `target`, `smbMinutes`, `uamMinutes`) are not uploaded.
+
+**Evidence**:
+```swift
+// OverrideStorage.swift:261-269
+return NightscoutExercise(
+    duration: Int(truncating: duration),
+    eventType: OverrideStored.EventType.nsExercise,
+    createdAt: override.date ?? Date(),
+    enteredBy: NightscoutExercise.local,
+    notes: override.name ?? "Custom Override",
+    id: UUID(uuidString: override.id ?? UUID().uuidString)
+)
+// Missing: percentage, target, smbIsOff, smbMinutes, uamMinutes
+```
+
+**Impact**:
+- Nightscout doesn't reflect actual therapy adjustment
+- Cannot analyze insulin percentage changes from Nightscout data
+- Following a Trio user, cannot see full override configuration
+
+**Possible Solutions**:
+1. Add extension fields to Nightscout treatment schema
+2. Trio uploads additional fields in `notes` or custom fields
+3. Define standard override schema that includes oref1 fields
+
+**Status**: Documented
+
+**Related**:
+- [Override Comparison](../docs/10-domain/override-profile-switch-comparison.md)
+- GAP-OVERRIDE-004

@@ -6,6 +6,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Override/Profile Switch Comparison Update (2026-01-29)
+
+Updated override comparison with deep source code analysis across Loop, AAPS, and Trio.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/override-profile-switch-comparison.md` | 416 lines, enhanced with Trio Exercise eventType |
+| **Gaps** | `traceability/gaps.md` | GAP-OVERRIDE-005/006/007 added |
+
+**Key Findings**:
+- **Critical**: Trio uses `Exercise` eventType (NOT `Temporary Override`)
+- Loop: `Temporary Override` with syncIdentifier (UUID)
+- AAPS: `Profile Switch` with interfaceIDs.nightscoutId
+- Three incompatible eventTypes for similar user intent
+- Trio override upload loses algorithm settings (smbIsOff, percentage, target)
+
+---
+
 ### Playwright Adoption Proposal (2026-01-29)
 
 Proposal for E2E testing adoption in cgm-remote-monitor using Playwright.
