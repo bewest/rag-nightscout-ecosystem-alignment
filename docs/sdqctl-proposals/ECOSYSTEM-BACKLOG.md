@@ -35,6 +35,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `design-review.conv`
 **Source:** LIVE-BACKLOG human request
 
+### 3. [P2] Reporting needs analysis
+**Type:** Analysis | **Effort:** Medium
+**Repos:** nightscout-reporter, cgm-remote-monitor
+**Focus:** Compare nightscout-reporter vs built-in reports
+**Workflow:** `gap-discovery.conv`
+
 ---
 
 ## Backlog (Prioritized)
@@ -96,7 +102,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [x] ~~**Extract xDrip+ Nightscout fields**~~ - ✅ Already complete (506 lines in mapping/xdrip-android/nightscout-sync.md)
 - [x] ~~**Map algorithm terminology**~~ - ✅ Already complete (3024-line matrix)
 - [ ] **LSP-based documentation claim verification** - See [tooling backlog](backlogs/tooling.md)
-- [ ] **Reporting needs analysis** - Compare nightscout-reporter vs built-in reports
+- [x] ~~**Reporting needs analysis**~~ - Promoted to Ready Queue #3
   - Source: `externals/nightscout-reporter/` (zreptil)
   - Focus: Report types, data requirements, export formats, user needs
 - [ ] **Full audit: nightscout-roles-gateway** - OAuth 2.0 RBAC controller, 39 lines documented
