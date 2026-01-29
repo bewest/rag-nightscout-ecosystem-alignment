@@ -32,6 +32,16 @@ Total: 185 requirements (180 unique)
 
 **Uncovered**: REQ-SYNC-001 (WebSocket docs), REQ-SYNC-002 (v1/v3 identity), REQ-SYNC-003 (status response)
 
+### REQ-TREAT-* Coverage (Level 5 #25)
+
+| Total | Covered | Uncovered | % |
+|-------|---------|-----------|---|
+| 7 | 7 | 0 | 100% |
+
+**All covered** via `treatment-sync.yaml`: REQ-TREAT-040 to REQ-TREAT-046
+
+**Related gaps**: REQ-REMOTE-* (0%), REQ-ALARM-* (0%), REQ-UNIT-* (0%)
+
 ## Mapping Verification (Supporting Evidence)
 
 | Date | Mapping Verified | Requirements Supported |

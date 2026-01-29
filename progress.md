@@ -8,6 +8,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 5: REQ-TREAT-* Traceability (2026-01-29)
+
+Audited REQ-TREAT-* requirements for assertion coverage.
+
+| Metric | Value |
+|--------|-------|
+| Total REQ-TREAT-* | 7 |
+| With assertions | 7 (100%) |
+| Without coverage | 0 (0%) |
+
+**All covered** via `conformance/assertions/treatment-sync.yaml`:
+- REQ-TREAT-040 to REQ-TREAT-046 (bolus, carbs, timestamp, duration, sync)
+
+**Related gaps identified**:
+- REQ-REMOTE-*: 11 reqs, 0% coverage
+- REQ-ALARM-*: 10 reqs, 0% coverage
+- REQ-UNIT-*: 4 reqs, 0% coverage
+
+**Accuracy**: 100% ✅
+
+---
+
 ### Level 5: REQ-SYNC-* Traceability (2026-01-29)
 
 Audited REQ-SYNC-* requirements for assertion coverage using `verify_assertions.py`.

@@ -40,11 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Level 5: Requirements traceability - REQ-TREAT-*
+### 4. [P2] Level 5: Requirements traceability - REQ-CONNECT-*
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #25
-**Focus:** Audit REQ-TREAT-* coverage by test scenarios
-**Method:** Verify each REQ-TREAT-* has test scenario
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #26
+**Focus:** Audit REQ-CONNECT-* completeness (ensure all 28 GAPs have REQs)
+**Method:** Cross-reference gaps.md with connectors-requirements.md
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -62,6 +62,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 5: REQ-TREAT-* traceability~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 7 requirements audited, **100% covered** (7/7)
+- All via treatment-sync.yaml: REQ-TREAT-040 to REQ-TREAT-046
+- Related gaps: REQ-REMOTE-* (0%), REQ-ALARM-* (0%), REQ-UNIT-* (0%)
 
 ### ~~[P2] Level 5: REQ-SYNC-* traceability~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
