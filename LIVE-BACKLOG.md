@@ -14,7 +14,6 @@
 | Control-plane/desired-state roadmap evaluation | P2 | → Queued to architecture backlog | 2026-01-29 |
 | cgm-remote-monitor design review + refactoring recs | P3 | → Queued to Ready Queue | 2026-01-29 |
 | Nightscout API v3 Collection deep dive | P2 | ✅ Complete (290 lines, 3 gaps, 3 reqs) | 2026-01-29 |
-| nightscout-connect design review request | P2 | → Queued to Ready Queue | 2026-01-29 |
 | Progress.md grooming (escalated) | P2 | ✅ Complete (807 lines, archive created) | 2026-01-29 |
 | Algorithm conformance: oref0 runner | P2 | ✅ Complete (26/85 pass, 69% divergence) | 2026-01-29 |
 | Progress.md grooming request | P2 | ✅ Complete (merged with escalated request) | 2026-01-29 |
