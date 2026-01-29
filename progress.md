@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 3: DeviceStatus Deep Dive (2026-01-29)
+
+Verified devicestatus-deep-dive.md claims against source code.
+
+| Claim | Source | Status |
+|-------|--------|--------|
+| Loop uses `loop` top-level | `StoredDosingDecision.swift:150` | ✅ Verified |
+| Trio/AAPS use `openaps` top-level | `NightscoutStatus.swift:5`, `NSDeviceStatus.kt:30` | ✅ Verified |
+| Loop device format `loop://` | `StoredDosingDecision.swift:146` | ✅ Verified |
+| Trio device = `"Trio"` | `NightscoutTreatment.swift:27` | ✅ Verified |
+| AAPS device format `openaps://` | `NSDeviceStatus.kt:26` | ✅ Verified |
+| oref0 predBGs (IOB/COB/UAM/ZT) | `determine-basal.js:657-690` | ✅ Verified |
+| Loop overrideStatus field | `StoredDosingDecision.swift:118,160` | ✅ Verified |
+| AAPS pump.reservoir/clock | `NSDeviceStatus.kt:35-36` | ✅ Verified |
+
+**Level 3 Progress**: 4/8 items complete (50%)
+
+---
+
 ### Level 3: CGM Data Sources Deep Dive (2026-01-29)
 
 Verified cgm-data-sources-deep-dive.md claims against source code.

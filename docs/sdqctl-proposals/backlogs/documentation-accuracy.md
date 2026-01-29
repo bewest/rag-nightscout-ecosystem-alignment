@@ -73,7 +73,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 |---|------|----------|--------|--------|
 | 10 | Verify cgm-data-sources-deep-dive.md claims | P2 | cgm-sources | ✅ **100% accurate** |
 | 11 | Verify algorithm-comparison-deep-dive.md claims | P2 | aid-algorithms | ✅ **100% accurate** |
-| 12 | Verify devicestatus-deep-dive.md claims | P2 | nightscout-api | Pending |
+| 12 | Verify devicestatus-deep-dive.md claims | P2 | nightscout-api | ✅ **100% accurate** |
 | 13 | Verify entries-deep-dive.md claims | P2 | nightscout-api | Pending |
 | 14 | Verify treatments-deep-dive.md claims | P2 | nightscout-api | Pending |
 | 15 | Verify pump-communication-deep-dive.md claims | P3 | pumps | Pending |
@@ -95,6 +95,12 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 - Loop: Retrospective Correction at LoopMath.swift:16-17
 - Loop: Automatic Bolus option at LoopDataManager.swift:1819
 - Trio: JavaScript calls at Script.swift:9, OpenAPS.swift:803
+
+**Finding (2026-01-29)**: DeviceStatus deep dive verified:
+- Loop: `loop` top-level object, device format `loop://`, override field present
+- Trio: `openaps` top-level, device = "Trio" (NightscoutTreatment.local)
+- AAPS: `openaps` top-level, device format `openaps://`, pump.reservoir/clock fields
+- oref0: predBGs with IOB/COB/UAM/ZT arrays at determine-basal.js:657-690
 
 ### Level 4: Gap Verification
 

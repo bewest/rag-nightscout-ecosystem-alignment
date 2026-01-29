@@ -40,11 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Accuracy: Verify devicestatus deep dive
+### 4. [P2] Accuracy: Verify entries deep dive
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #12
-**Focus:** Validate devicestatus structure claims
-**Files:** `docs/10-domain/devicestatus-deep-dive.md`
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #13
+**Focus:** Validate entries collection structure claims
+**Files:** `docs/10-domain/entries-deep-dive.md`
 **Method:** Grep source for documented fields
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
@@ -63,6 +63,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 3: DeviceStatus deep dive~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 8 claims verified: **100% accurate**
+- Loop: `loop` top-level, `loop://` device format, overrideStatus field
+- Trio: `openaps` top-level, device = "Trio"
+- AAPS: `openaps` top-level, `openaps://` device format
+- oref0: predBGs with IOB/COB/UAM/ZT arrays
 
 ### ~~[P2] Level 3: CGM data sources deep dive~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
