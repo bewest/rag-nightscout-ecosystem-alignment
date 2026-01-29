@@ -21,36 +21,36 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] Algorithm conformance: Schema + fixture extraction
+### 1. [P2] Algorithm conformance: oref0 runner
 **Type:** Implementation | **Effort:** Medium
-**Repos:** AAPS, oref0
-**Focus:** Phase 1 of conformance suite - JSON schema + 50 vectors from AAPS
+**Repos:** oref0
+**Focus:** Phase 2 of conformance suite - Node.js runner for oref0
 **Workflow:** `extract-spec.conv`
-**Note:** Follow-on from algorithm-conformance-suite.md proposal
+**Note:** Follow-on from schema + fixture extraction (complete)
 
-### 2. [P2] Cross-repo fixture extraction
-**Type:** Implementation | **Effort:** Medium
-**Repos:** AAPS, Loop, xDrip+
-**Focus:** Pull test fixtures for integration testing
-**Workflow:** `extract-spec.conv`
-
-### 3. [P2] Nightscout APIv3 Collection deep dive
+### 2. [P2] Nightscout APIv3 Collection deep dive
 **Type:** Analysis | **Effort:** Medium
 **Repos:** cgm-remote-monitor
 **Focus:** Document all APIv3 collections, operations, authorization
 **Workflow:** `gap-discovery.conv`
 
-### 4. [P2] Device Status collection deep dive
+### 3. [P2] Device Status collection deep dive
 **Type:** Analysis | **Effort:** Medium
 **Repos:** cgm-remote-monitor, AAPS, Loop
 **Focus:** Document devicestatus structure differences between controllers
 **Workflow:** `gap-discovery.conv`
 
-### 5. [P2] Profile collection deep dive
+### 4. [P2] Profile collection deep dive
 **Type:** Analysis | **Effort:** Medium
 **Repos:** cgm-remote-monitor, AAPS, Loop, Trio
 **Focus:** Document profile structure and sync patterns
 **Workflow:** `gap-discovery.conv`
+
+### 5. [P2] Hygiene: Chunk progress.md
+**Type:** Maintenance | **Effort:** Low
+**Focus:** Split 1684-line progress.md into archive + current
+**Workflow:** Manual or `doc_chunker.py`
+**Note:** Exceeds 500-line threshold
 
 ---
 

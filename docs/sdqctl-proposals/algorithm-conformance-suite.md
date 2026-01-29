@@ -218,18 +218,19 @@ conformance/
 
 ## Implementation Plan
 
-### Phase 1: Schema & Fixture Extraction (2-3 days)
+### Phase 1: Schema & Fixture Extraction ✅ COMPLETE
 
 **Tasks**:
-1. Define `conformance-vector-v1.json` JSON Schema
-2. Extract test vectors from oref0 examples
-3. Extract test vectors from AAPS replay test fixtures
-4. Normalize to common format
+1. ✅ Define `conformance-vector-v1.json` JSON Schema
+2. Extract test vectors from oref0 examples (deferred to Phase 2)
+3. ✅ Extract test vectors from AAPS replay test fixtures
+4. ✅ Normalize to common format
 
 **Deliverables**:
-- `conformance/schemas/conformance-vector-v1.json`
-- `conformance/vectors/` with 20+ initial vectors
-- `tools/extract_vectors.py` extraction script
+- ✅ `conformance/schemas/conformance-vector-v1.json` (260 lines)
+- ✅ `conformance/vectors/` with 85 vectors (77 basal, 8 LGS)
+- ✅ `tools/extract_vectors.py` extraction script
+- ✅ `make extract-vectors` Makefile target
 
 ### Phase 2: JavaScript Runner (1-2 days)
 
@@ -451,9 +452,9 @@ conformance/
 
 | Phase | Effort | Dependencies |
 |-------|--------|--------------|
-| Schema + Fixture Extraction | Medium | None |
-| JavaScript Runner | Low | Phase 1 |
-| Kotlin Runner | Medium | Phase 1, Android SDK |
+| Schema + Fixture Extraction | ✅ Complete | None |
+| JavaScript Runner | Low | Phase 1 ✅ |
+| Kotlin Runner | Medium | Phase 1 ✅, Android SDK |
 | Cross-Language Comparison | Medium | Phases 2-3 |
 | Rust Runner | Medium | Rust oref implementation |
 | **Total** | High | ~10-15 days |
@@ -462,25 +463,25 @@ conformance/
 
 ## Success Criteria
 
-| Metric | Target |
-|--------|--------|
-| Test vectors | 50+ covering all categories |
-| oref0 pass rate | 100% (baseline) |
-| AAPS JS vs KT match | 95%+ |
-| Cross-project comparison report | Generated |
-| Gaps documented | All behavioral differences |
+| Metric | Target | Status |
+|--------|--------|--------|
+| Test vectors | 50+ covering all categories | ✅ 85 vectors |
+| oref0 pass rate | 100% (baseline) | Pending runner |
+| AAPS JS vs KT match | 95%+ | Pending runner |
+| Cross-project comparison report | Generated | Pending |
+| Gaps documented | All behavioral differences | Pending |
 
 ---
 
 ## Recommendations
 
-| Priority | Action | Impact |
-|----------|--------|--------|
-| P1 | Create conformance vector schema | Enables all other work |
-| P1 | Extract vectors from AAPS replay tests | 50+ ready-made vectors |
-| P2 | Build oref0-runner.js | Baseline validation |
-| P2 | Integrate with `make conformance` | CI automation |
-| P3 | Define semantic equivalence for Loop | Enable Loop comparison |
+| Priority | Action | Impact | Status |
+|----------|--------|--------|--------|
+| P1 | Create conformance vector schema | Enables all other work | ✅ Complete |
+| P1 | Extract vectors from AAPS replay tests | 50+ ready-made vectors | ✅ 85 vectors |
+| P2 | Build oref0-runner.js | Baseline validation | Next |
+| P2 | Integrate with `make conformance` | CI automation | Pending |
+| P3 | Define semantic equivalence for Loop | Enable Loop comparison | Pending |
 
 ---
 
