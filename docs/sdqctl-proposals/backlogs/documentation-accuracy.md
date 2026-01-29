@@ -148,7 +148,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 |---|------|----------|--------|---------------------|--------|
 | 24 | Audit REQ-SYNC-* → scenario coverage | P2 | sync-identity | Run `python tools/verify_assertions.py` | ✅ 83% covered (15/18) |
 | 25 | Audit REQ-TREAT-* → scenario coverage | P2 | treatments | Verify each REQ has test scenario | ✅ 100% covered (7/7) |
-| 26 | Audit REQ-CONNECT-* completeness | P2 | connectors | Ensure all 28 GAPs have REQs |
+| 26 | Audit REQ-CONNECT-* completeness | P2 | connectors | Ensure all 28 GAPs have REQs | ✅ 100% complete (28/28) |
 | 27 | Audit REQ-API-* → OpenAPI alignment | P2 | nightscout-api | Check specs match requirements |
 
 ### Level 6: Proposal Coherence

@@ -40,11 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Level 5: Requirements traceability - REQ-CONNECT-*
+### 4. [P2] Level 5: Requirements traceability - REQ-API-*
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #26
-**Focus:** Audit REQ-CONNECT-* completeness (ensure all 28 GAPs have REQs)
-**Method:** Cross-reference gaps.md with connectors-requirements.md
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #27
+**Focus:** Audit REQ-API-* → OpenAPI alignment
+**Method:** Check specs match requirements
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -62,6 +62,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 5: REQ-CONNECT-* completeness~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 28 GAPs audited, **100% have REQs** (28/28)
+- Perfect 1:1 GAP→REQ mapping across all 8 connector categories
+- No orphaned gaps
 
 ### ~~[P2] Level 5: REQ-TREAT-* traceability~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
