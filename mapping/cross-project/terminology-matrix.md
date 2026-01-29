@@ -154,6 +154,17 @@ Cross-project comparison of authentication mechanisms. See [`authentication-flow
 **Permission Format**: `{domain}:{collection}:{action}`
 - Example: `api:entries:read`, `api:treatments:create`, `*`
 
+**Enterprise RBAC (roles-gateway)**:
+
+| Feature | Description |
+|---------|-------------|
+| Multi-site | Single gateway manages multiple Nightscout instances |
+| Group-based | Users assigned to groups with policies |
+| Scheduled | Time-based access windows (school hours) |
+| HIPAA audit | Consent logging for compliance |
+
+See: [`mapping/nightscout-roles-gateway/`](../nightscout-roles-gateway/)
+
 **Deep Dive**: [`docs/10-domain/authentication-flows-deep-dive.md`](../../docs/10-domain/authentication-flows-deep-dive.md)
 
 ---

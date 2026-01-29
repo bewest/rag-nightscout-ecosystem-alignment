@@ -1359,3 +1359,20 @@ _None yet._
 **Source**: `docs/10-domain/reporting-needs-analysis.md`
 
 ---
+
+### GAP-RG-001: No Standard Nightscout Integration for Roles Gateway
+
+**Description**: The nightscout-roles-gateway provides enterprise RBAC functionality but requires separate deployment and does not integrate into the core Nightscout installation.
+
+**Affected Systems**: nightscout-roles-gateway, cgm-remote-monitor
+
+**Impact**:
+- Enterprise deployments require separate infrastructure
+- No turnkey multi-user support in core Nightscout
+- School/clinic use cases need custom setup
+
+**Remediation**: Consider integration pathway or plugin architecture for roles-gateway.
+
+**Source**: `mapping/nightscout-roles-gateway/authorization.md`
+
+---

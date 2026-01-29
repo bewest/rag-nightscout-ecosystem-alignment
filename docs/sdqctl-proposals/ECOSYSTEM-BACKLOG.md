@@ -35,11 +35,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `design-review.conv`
 **Source:** LIVE-BACKLOG human request
 
-### 3. [P2] Full audit: nightscout-roles-gateway
+### 3. [P1] PR analysis: cgm-remote-monitor
 **Type:** Analysis | **Effort:** Medium
-**Repos:** nightscout-roles-gateway
-**Focus:** OAuth 2.0 RBAC controller, Ory Hydra/Kratos integration
-**Workflow:** `gap-discovery.conv`
+**Repos:** cgm-remote-monitor
+**Focus:** Review open PRs for ecosystem impact, identify interop issues
+**Workflow:** `pr-analysis.conv`
 
 ---
 
@@ -105,7 +105,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [x] ~~**Reporting needs analysis**~~ - ✅ Complete (250 lines, 3 gaps)
   - Source: `externals/nightscout-reporter/` (zreptil)
   - Focus: Report types, data requirements, export formats, user needs
-- [x] ~~**Full audit: nightscout-roles-gateway**~~ - Promoted to Ready Queue #3
+- [x] ~~**Full audit: nightscout-roles-gateway**~~ - ✅ **COMPLETE** (260 lines existing, 1 gap, 4 reqs migrated)
   - Components: lib/, migrations/, Ory Hydra/Kratos integration
   - Focus: Role-based access control, OAuth flows, API authorization
   - Workflow: `gap-discovery.conv`

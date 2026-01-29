@@ -8,6 +8,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### nightscout-roles-gateway Audit (2026-01-29)
+
+Verified comprehensive existing documentation and migrated gaps/requirements to traceability.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Authorization** | `mapping/nightscout-roles-gateway/authorization.md` | 114 lines (existing) |
+| **Integration** | `mapping/nightscout-roles-gateway/integration.md` | 107 lines (existing) |
+| **Gap Migration** | `traceability/nightscout-api-gaps.md` | GAP-RG-001 added |
+| **Requirements** | `traceability/nightscout-api-requirements.md` | REQ-RG-001-004 added |
+
+**Key Findings**:
+- Three-mode access control (anonymous, identity-mapped, API secret bypass)
+- Kratos/Hydra OAuth integration
+- Time-based scheduled policies for schools/clinics
+- HIPAA-adjacent audit trail via consent logging
+- Not yet integrated into core Nightscout (requires separate deployment)
+
+**Gaps Added**: GAP-RG-001
+
+---
+
 ### Large File Analysis (2026-01-29)
 
 Analyzed 53 files over 500 lines for autonomous workflow optimization.

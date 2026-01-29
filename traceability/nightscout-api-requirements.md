@@ -594,6 +594,73 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
+## Roles Gateway Requirements
+
+---
+
+### REQ-RG-001: Three Access Mode Support
+
+**Statement**: The roles gateway MUST support three orthogonal access modes: anonymous, identity-mapped, and API secret bypass.
+
+**Rationale**: Different use cases require different authentication approaches - public dashboards, school/clinic RBAC, and legacy uploader compatibility.
+
+**Scenarios**:
+- Public site view (anonymous access)
+- School health office with scheduled access (identity-mapped)
+- Legacy CGM uploader (API secret bypass)
+
+**Verification**:
+- `require_identities=false` allows anonymous access
+- `require_identities=true` enforces identity check
+- `exempt_matching_api_secret=true` allows API secret bypass
+
+**Source**: `mapping/nightscout-roles-gateway/authorization.md`
+
+---
+
+### REQ-RG-002: API Secret Hashing
+
+**Statement**: API secrets MUST be SHA1 hashed in storage, never stored in plaintext.
+
+**Rationale**: Security requirement to protect credentials in case of database breach.
+
+**Verification**:
+- `nightscout_secrets` table stores only hashed values
+- Comparison done via hash match
+
+**Source**: `externals/nightscout-roles-gateway/lib/tokens/index.js`
+
+---
+
+### REQ-RG-003: Time-Based Access Policies
+
+**Statement**: The gateway MUST support time-based access policies with weekly schedules.
+
+**Rationale**: School/clinic deployments need access restrictions during off-hours.
+
+**Verification**:
+- Policies can specify start/end times
+- Weekly schedule with fill patterns
+- Scheduled policies applied correctly
+
+**Source**: `externals/nightscout-roles-gateway/lib/policies/index.js`
+
+---
+
+### REQ-RG-004: Group Membership Audit
+
+**Statement**: The gateway MUST log group consent for HIPAA-adjacent audit requirements.
+
+**Rationale**: Healthcare compliance requires audit trail of who accessed what data.
+
+**Verification**:
+- `/api/v1/privy/:identity/groups/joined` endpoint records consent
+- `joined_groups` table maintains audit trail
+
+**Source**: `externals/nightscout-roles-gateway/lib/routes.js:316-317`
+
+---
+
 ## Interoperability Requirements
 
 ---
