@@ -153,7 +153,7 @@ Always use format: `repo:path/from/repo/root.ext:line`
 
 
 
-COMPACT
+# COMPACT
 
 # === Phase 3: Update 5 Facets ===
 PROMPT ## Phase 3: Update 5 Facets
@@ -231,8 +231,8 @@ For the task we just completed:
 - If Ready Queue < 5 items, promote from Backlog
 - Prioritize P0 → P1 → P2
 
-**Step 4: Lint Check**
-If the lint output above shows misplaced items:
+**Step 4: Organization Quality Check**
+If the output above shows potentially misplaced items:
 - Move items to correct domain files
 - Or note for next cycle if non-critical
 
@@ -245,7 +245,7 @@ From discoveries:
 Any decisions needed from human:
 - Add to docs/OPEN-QUESTIONS.md with proper OQ-NNN ID
 
-COMPACT
+# COMPACT
 
 # === Phase 5: Commit Work ===
 PROMPT ## Phase 5: Commit Work
@@ -263,7 +263,7 @@ After commit, confirm with `git log --oneline -1`
 - Note the error
 - Do NOT proceed to next cycle until resolved, create a STOPAUTOMATION file.
 
-COMPACT
+# COMPACT
 
 # === Phase 6: Cycle Summary ===
 PROMPT ## Phase 6: Cycle Summary

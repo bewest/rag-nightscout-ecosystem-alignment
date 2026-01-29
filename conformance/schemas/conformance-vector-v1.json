@@ -1,0 +1,329 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://nightscout.github.io/schemas/conformance-vector-v1.json",
+  "title": "AID Algorithm Conformance Test Vector",
+  "description": "Cross-project test vector format for AID algorithm validation",
+  "type": "object",
+  "required": ["version", "metadata", "input", "expected"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Schema version (semver)"
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["id", "name", "category"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^TV-\\d{3}$",
+          "description": "Test vector ID (TV-001 through TV-999)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable test name"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "basal-adjustment",
+            "smb-delivery",
+            "low-glucose-suspend",
+            "carb-absorption",
+            "safety-limits",
+            "autosens",
+            "exercise-mode"
+          ],
+          "description": "Test category for organization"
+        },
+        "source": {
+          "type": "string",
+          "description": "Origin of test data (e.g., 'aaps/replay/2023-10-28')"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of what this test validates"
+        },
+        "algorithm": {
+          "type": "string",
+          "enum": ["OpenAPSSMBPlugin", "OpenAPSAMAPlugin", "oref0", "oref1", "Loop"],
+          "description": "Source algorithm implementation"
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "required": ["glucoseStatus", "iob", "profile"],
+      "properties": {
+        "glucoseStatus": {
+          "type": "object",
+          "required": ["glucose"],
+          "properties": {
+            "glucose": {
+              "type": "number",
+              "minimum": 20,
+              "maximum": 600,
+              "description": "Current glucose in mg/dL"
+            },
+            "glucoseUnit": {
+              "type": "string",
+              "enum": ["mg/dL", "mmol/L"],
+              "default": "mg/dL"
+            },
+            "delta": {
+              "type": "number",
+              "description": "5-minute glucose change"
+            },
+            "shortAvgDelta": {
+              "type": "number",
+              "description": "15-minute average delta"
+            },
+            "longAvgDelta": {
+              "type": "number",
+              "description": "45-minute average delta"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Glucose reading timestamp"
+            },
+            "noise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4,
+              "description": "CGM noise level (0=clean, 4=very noisy)"
+            }
+          }
+        },
+        "iob": {
+          "type": "object",
+          "required": ["iob"],
+          "properties": {
+            "iob": {
+              "type": "number",
+              "description": "Total insulin on board (U)"
+            },
+            "basalIob": {
+              "type": "number",
+              "description": "Basal IOB component (U)"
+            },
+            "bolusIob": {
+              "type": "number",
+              "description": "Bolus IOB component (U)"
+            },
+            "activity": {
+              "type": "number",
+              "description": "Current insulin activity"
+            },
+            "iobWithZeroTemp": {
+              "type": "object",
+              "description": "IOB projection if temp basal were zero"
+            }
+          }
+        },
+        "profile": {
+          "type": "object",
+          "required": ["basalRate", "sensitivity", "carbRatio", "targetLow", "targetHigh"],
+          "properties": {
+            "basalRate": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Current scheduled basal rate (U/hr)"
+            },
+            "sensitivity": {
+              "type": "number",
+              "minimum": 1,
+              "description": "Insulin sensitivity factor (mg/dL per U)"
+            },
+            "carbRatio": {
+              "type": "number",
+              "minimum": 1,
+              "description": "Carb ratio (g per U)"
+            },
+            "targetLow": {
+              "type": "number",
+              "description": "Target range low (mg/dL)"
+            },
+            "targetHigh": {
+              "type": "number",
+              "description": "Target range high (mg/dL)"
+            },
+            "maxIob": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Maximum IOB safety limit (U)"
+            },
+            "maxBasal": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Maximum basal rate (U/hr)"
+            },
+            "dia": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 8,
+              "description": "Duration of insulin action (hours)"
+            },
+            "maxDailyBasal": {
+              "type": "number",
+              "description": "Max daily scheduled basal rate"
+            }
+          }
+        },
+        "mealData": {
+          "type": "object",
+          "properties": {
+            "carbs": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Active carbs entered (g)"
+            },
+            "cob": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Carbs on board (g)"
+            },
+            "lastCarbTime": {
+              "type": "integer",
+              "description": "Timestamp of last carb entry (ms)"
+            },
+            "slopeFromMaxDeviation": {
+              "type": "number",
+              "description": "UAM detection slope from max"
+            },
+            "slopeFromMinDeviation": {
+              "type": "number",
+              "description": "UAM detection slope from min"
+            }
+          }
+        },
+        "currentTemp": {
+          "type": "object",
+          "properties": {
+            "rate": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Current temp basal rate (U/hr)"
+            },
+            "duration": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Remaining temp basal duration (minutes)"
+            }
+          }
+        },
+        "autosensData": {
+          "type": "object",
+          "properties": {
+            "ratio": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 2.0,
+              "description": "Autosens ratio (1.0 = normal)"
+            }
+          }
+        },
+        "microBolusAllowed": {
+          "type": "boolean",
+          "description": "Whether SMB is enabled"
+        },
+        "flatBGsDetected": {
+          "type": "boolean",
+          "description": "Whether flat BGs detected (SMB safety)"
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "description": "Expected outputs (ranges or exact values)",
+      "properties": {
+        "rate": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "object", "properties": {"min": {"type": "number"}, "max": {"type": "number"}}}
+          ],
+          "description": "Expected temp basal rate"
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Expected temp basal duration (minutes)"
+        },
+        "smb": {
+          "type": "number",
+          "description": "Expected SMB units"
+        },
+        "smbAllowed": {
+          "type": "boolean",
+          "description": "Whether SMB should be allowed"
+        },
+        "eventualBG": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "object", "properties": {"min": {"type": "number"}, "max": {"type": "number"}}}
+          ],
+          "description": "Expected eventual BG prediction"
+        },
+        "insulinReq": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "object", "properties": {"min": {"type": "number"}, "max": {"type": "number"}}}
+          ],
+          "description": "Expected insulin requirement"
+        },
+        "reasonContains": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Substrings that should appear in reason"
+        },
+        "cob": {
+          "type": "number",
+          "description": "Expected COB value"
+        },
+        "iob": {
+          "type": "number",
+          "description": "Expected IOB value"
+        }
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "description": "Semantic assertions for cross-algorithm comparison",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "rate_increased",
+              "rate_decreased",
+              "rate_zero",
+              "rate_unchanged",
+              "smb_delivered",
+              "no_smb",
+              "safety_limit",
+              "eventual_in_range",
+              "suspend_active"
+            ],
+            "description": "Assertion type"
+          },
+          "baseline": {
+            "type": "number",
+            "description": "Baseline value for comparison"
+          },
+          "field": {
+            "type": "string",
+            "description": "Field to check for safety limits"
+          },
+          "min": {"type": "number"},
+          "max": {"type": "number"}
+        }
+      }
+    },
+    "originalOutput": {
+      "type": "object",
+      "description": "Preserved original algorithm output for reference"
+    }
+  }
+}

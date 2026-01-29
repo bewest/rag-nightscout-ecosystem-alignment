@@ -6,6 +6,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Authentication Flows Deep Dive (2026-01-29)
+
+Comprehensive analysis of Nightscout authentication and authorization system.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/authentication-flows-deep-dive.md` | 362 lines, 3 auth methods, 4 gaps |
+| **Gaps Added** | `traceability/nightscout-api-gaps.md` | GAP-AUTH-001 through GAP-AUTH-004 |
+| **Terminology** | `mapping/cross-project/terminology-matrix.md` | Added Authentication Concepts section |
+
+**Key Findings**:
+- API_SECRET grants full `*` access, bypassing RBAC
+- JWT secret stored in node_modules (lost on npm update)
+- No account lockout (only delay list)
+- enteredBy field unverified
+- No token revocation mechanism
+
+**Client Auth Patterns**:
+| Client | Method | Transport |
+|--------|--------|-----------|
+| AAPS | Access Token | WebSocket |
+| Loop | API Secret | REST |
+| xDrip+ | SHA1 Secret | REST |
+
+---
+
 ### Remote Commands API Specification (2026-01-29)
 
 OpenAPI 3.0 specification for Remote Commands collection based on PR#7791 and Loop RemoteCommand protocol.

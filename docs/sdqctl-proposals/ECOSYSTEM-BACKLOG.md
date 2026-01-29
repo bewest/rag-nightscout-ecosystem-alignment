@@ -28,28 +28,28 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from algorithm-conformance-suite.md proposal
 
-### 2. [P2] Deep dive: Authentication flows
-**Type:** Analysis | **Effort:** Medium
-**Repos:** cgm-remote-monitor
-**Focus:** API secret vs tokens vs JWT comparison
-**Workflow:** `gap-discovery.conv`
-
-### 3. [P2] Cross-repo fixture extraction
+### 2. [P2] Cross-repo fixture extraction
 **Type:** Implementation | **Effort:** Medium
 **Repos:** AAPS, Loop, xDrip+
 **Focus:** Pull test fixtures for integration testing
 **Workflow:** `extract-spec.conv`
 
-### 4. [P2] Nightscout APIv3 Collection deep dive
+### 3. [P2] Nightscout APIv3 Collection deep dive
 **Type:** Analysis | **Effort:** Medium
 **Repos:** cgm-remote-monitor
 **Focus:** Document all APIv3 collections, operations, authorization
 **Workflow:** `gap-discovery.conv`
 
-### 5. [P2] Device Status collection deep dive
+### 4. [P2] Device Status collection deep dive
 **Type:** Analysis | **Effort:** Medium
 **Repos:** cgm-remote-monitor, AAPS, Loop
 **Focus:** Document devicestatus structure differences between controllers
+**Workflow:** `gap-discovery.conv`
+
+### 5. [P2] Profile collection deep dive
+**Type:** Analysis | **Effort:** Medium
+**Repos:** cgm-remote-monitor, AAPS, Loop, Trio
+**Focus:** Document profile structure and sync patterns
 **Workflow:** `gap-discovery.conv`
 
 ---

@@ -9,6 +9,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Authentication flows deep dive | P2 | ✅ Complete | 2026-01-29 |
 | Remote Commands API specification | P2 | ✅ Complete | 2026-01-29 |
 | Multi-Insulin API specification | P1 | ✅ Complete | 2026-01-29 |
 | Heart Rate API specification | P1 | ✅ Complete | 2026-01-29 |

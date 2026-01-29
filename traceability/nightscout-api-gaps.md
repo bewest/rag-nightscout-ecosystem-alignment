@@ -1035,3 +1035,79 @@ _None yet._
 - 5 conformance scenarios
 
 ---
+
+## Authentication Gaps
+
+---
+
+### GAP-AUTH-001: JWT Secret Storage Location
+
+**Scenario**: JWT invalidation after npm update
+
+**Description**: JWT secret is stored in `node_modules/.cache/.jwt-secret`, which can be deleted during npm install/update operations.
+
+**Affected Systems**: All clients using JWT authentication
+
+**Impact**:
+- All JWTs become invalid after npm operations
+- Users must re-authenticate
+- No warning before invalidation
+
+**Remediation**: Store JWT secret in environment variable or persistent config file outside node_modules.
+
+**Source**: `ns:lib/server/enclave.js`
+
+---
+
+### GAP-AUTH-002: No Account Lockout
+
+**Scenario**: Brute force attack on API
+
+**Description**: Rate limiting only delays requests (5s per failure), never blocks them. No maximum attempt limit or account lockout.
+
+**Affected Systems**: Nightscout server security
+
+**Impact**:
+- Brute force attacks possible with patience
+- No alerting on repeated failures
+- No automatic blocking
+
+**Remediation**: Implement lockout after N failed attempts with admin unlock capability.
+
+**Source**: `ns:lib/authorization/delaylist.js`
+
+---
+
+### GAP-AUTH-003: enteredBy Field Unverified
+
+**Scenario**: Treatment audit trail
+
+**Description**: The `enteredBy` field in treatments is user-supplied and not verified against authenticated identity.
+
+**Affected Systems**: Audit, compliance, multi-user scenarios
+
+**Impact**:
+- Any authenticated user can claim any identity
+- Audit logs unreliable
+- No accountability for actions
+
+**Remediation**: Auto-populate `enteredBy` from authenticated subject, or validate against allowed values.
+
+---
+
+### GAP-AUTH-004: No Token Revocation
+
+**Scenario**: Compromised access token
+
+**Description**: Access tokens can only be revoked by deleting the entire subject. No selective token revocation mechanism.
+
+**Affected Systems**: Security incident response
+
+**Impact**:
+- Compromised token requires deleting all permissions
+- Cannot revoke single token if multiple issued
+- No token invalidation list
+
+**Remediation**: Implement JWT ID (jti) blacklist for selective revocation.
+
+---

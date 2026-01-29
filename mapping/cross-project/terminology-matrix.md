@@ -129,6 +129,35 @@ Pending → In-Progress → Complete
 
 ---
 
+### Authentication Concepts
+
+Cross-project comparison of authentication mechanisms. See [`authentication-flows-deep-dive.md`](../../docs/10-domain/authentication-flows-deep-dive.md).
+
+| Concept | Nightscout | AAPS | Loop | xDrip+ |
+|---------|------------|------|------|--------|
+| **Primary Auth** | API Secret + JWT | Access Token | API Secret | SHA1 Secret |
+| **Transport** | REST + WebSocket | WebSocket | REST | REST |
+| **Token Storage** | MongoDB | Preferences | Keychain | Preferences |
+| **Hashing** | SHA1/SHA512 | N/A | N/A | SHA1 |
+| **Rate Limiting** | Delay list | N/A | N/A | N/A |
+
+**Permission Model (Shiro-Trie)**:
+
+| Role | Permissions | Use Case |
+|------|-------------|----------|
+| `admin` | `['*']` | Full access |
+| `readable` | `['*:*:read']` | Read-only |
+| `careportal` | `['api:treatments:create']` | Careportal entry |
+| `devicestatus-upload` | `['api:devicestatus:create']` | Device status only |
+| `status-only` | `['api:status:read']` | Status endpoint only |
+
+**Permission Format**: `{domain}:{collection}:{action}`
+- Example: `api:entries:read`, `api:treatments:create`, `*`
+
+**Deep Dive**: [`docs/10-domain/authentication-flows-deep-dive.md`](../../docs/10-domain/authentication-flows-deep-dive.md)
+
+---
+
 ### Statistics API Concepts
 
 | Concept | Definition | Formula/Source |

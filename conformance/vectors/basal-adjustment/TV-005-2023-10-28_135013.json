@@ -1,0 +1,140 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "id": "TV-005",
+    "name": "AAPS replay 2023-10-28_135013",
+    "category": "basal-adjustment",
+    "source": "aaps/replay/2023-10-28_135013",
+    "description": "Extracted from AAPS ReplayApsResultsTest fixture",
+    "algorithm": "OpenAPSSMBPlugin"
+  },
+  "input": {
+    "glucoseStatus": {
+      "glucose": 86.2,
+      "glucoseUnit": "mg/dL",
+      "delta": 8.81,
+      "shortAvgDelta": 5.1,
+      "longAvgDelta": 0.48,
+      "timestamp": "2023-10-28T11:50:00Z",
+      "noise": 0
+    },
+    "iob": {
+      "iob": -0.486,
+      "basalIob": -0.486,
+      "bolusIob": 0,
+      "activity": -0.0051,
+      "iobWithZeroTemp": {
+        "iob": -0.486,
+        "basaliob": -0.486,
+        "bolussnooze": 0,
+        "activity": -0.0051,
+        "lastBolusTime": 0,
+        "time": "2023-10-28T11:50:10.310Z"
+      }
+    },
+    "profile": {
+      "basalRate": 0.85,
+      "sensitivity": 84.70588235294117,
+      "carbRatio": 2.3529411764705883,
+      "targetLow": 99,
+      "targetHigh": 99,
+      "maxIob": 3,
+      "maxBasal": 1,
+      "dia": 5,
+      "maxDailyBasal": 0.85
+    },
+    "mealData": {
+      "carbs": 0,
+      "cob": 0,
+      "lastCarbTime": 0,
+      "slopeFromMaxDeviation": 0,
+      "slopeFromMinDeviation": 2.9761250000000006
+    },
+    "currentTemp": {
+      "rate": 0.935,
+      "duration": 25
+    },
+    "autosensData": {
+      "ratio": 1
+    },
+    "microBolusAllowed": false,
+    "flatBGsDetected": false
+  },
+  "expected": {
+    "eventualBG": 145,
+    "insulinReq": 0.4,
+    "cob": 0,
+    "iob": -0.486
+  },
+  "assertions": [],
+  "originalOutput": {
+    "temp": "absolute",
+    "bg": 86.2,
+    "tick": "+9",
+    "eventualBG": 145,
+    "targetBG": 99,
+    "insulinReq": 0.4,
+    "deliverAt": "2023-10-28T11:50:12.563Z",
+    "sensitivityRatio": 1,
+    "predBGs": {
+      "IOB": [
+        86,
+        91,
+        96,
+        100,
+        104,
+        108,
+        111,
+        115,
+        118,
+        120,
+        122,
+        124,
+        126,
+        127,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        137,
+        138,
+        139,
+        139,
+        140,
+        140,
+        141,
+        141,
+        141,
+        142,
+        142,
+        142,
+        142,
+        143,
+        143,
+        143,
+        143,
+        143,
+        143,
+        144
+      ],
+      "ZT": [
+        86,
+        88,
+        91,
+        93,
+        95,
+        98,
+        101
+      ]
+    },
+    "COB": 0,
+    "IOB": -0.486,
+    "reason": "COB: 0, Dev: 1.0, BGI: 0.1, ISF: 4.7, CR: 2.35, Target: 5.5, minPredBG 7.4, minGuardBG 5.1, IOBpredBG 8.0; Eventual BG 8.1 >= 5.5, adj. req. rate: 1.65 to maxSafeBasal: 1, temp 0.94 < 1U/hr.  25m left and 0.935 ~ req 1U/hr: no temp required",
+    "timestamp": "2023-10-28T11:50:12.639Z"
+  }
+}

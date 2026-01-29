@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions hygiene-tests mock-nightscout
+.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions hygiene-tests hygiene-unit hygiene-all mock-nightscout extract-vectors
 
 # Default target
 help:
@@ -20,7 +20,9 @@ help:
 	@echo "  make validate   - Validate fixtures against shape specs"
 	@echo "  make conformance- Run conformance assertions (offline)"
 	@echo "  make conversions- Run unit conversion tests"
-	@echo "  make hygiene-tests - Run hygiene tool tests"
+	@echo "  make hygiene-unit  - Run hygiene tool unit tests (isolated)"
+	@echo "  make hygiene-tests - Run hygiene tool integration tests (real files)"
+	@echo "  make hygiene-all   - Run all hygiene tests (unit + integration)"
 	@echo "  make coverage   - Generate coverage matrix"
 	@echo "  make inventory  - Generate workspace inventory"
 	@echo "  make check      - Run all checks (linkcheck + validate + conformance)"
@@ -109,9 +111,20 @@ conversions:
 	@echo "Running unit conversion tests..."
 	@python3 tools/test_conversions.py
 
-# Test hygiene tools
+# Test hygiene tools (integration tests against real files)
 hygiene-tests:
-	@echo "Running hygiene tool tests..."
+	@echo "Running hygiene tool integration tests..."
+	@python3 tools/test_hygiene_tools.py
+
+# Unit tests for hygiene tools (isolated parsing logic)
+hygiene-unit:
+	@echo "Running hygiene tool unit tests..."
+	@python3 tools/test_hygiene_tools_unit.py
+
+# All hygiene tests (unit + integration)
+hygiene-all:
+	@echo "Running all hygiene tests..."
+	@python3 tools/test_hygiene_tools_unit.py
 	@python3 tools/test_hygiene_tools.py
 
 # Start mock Nightscout server
@@ -119,8 +132,13 @@ mock-nightscout:
 	@echo "Starting mock Nightscout server on port 5555..."
 	@python3 tools/mock_nightscout.py --port 5555
 
+# Extract conformance vectors from AAPS
+extract-vectors:
+	@echo "Extracting conformance vectors from AAPS..."
+	@python3 tools/extract_vectors.py --limit 85
+
 # Full CI pipeline
-ci: check coverage verify hygiene-tests
+ci: check coverage verify hygiene-all
 	@echo ""
 	@echo "Checking Python syntax..."
 	@python3 -m compileall tools/

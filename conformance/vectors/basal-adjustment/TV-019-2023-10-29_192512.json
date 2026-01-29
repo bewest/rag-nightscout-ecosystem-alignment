@@ -1,0 +1,97 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "id": "TV-019",
+    "name": "AAPS replay 2023-10-29_192512",
+    "category": "basal-adjustment",
+    "source": "aaps/replay/2023-10-29_192512",
+    "description": "Extracted from AAPS ReplayApsResultsTest fixture",
+    "algorithm": "OpenAPSAMAPlugin"
+  },
+  "input": {
+    "glucoseStatus": {
+      "glucose": 77,
+      "glucoseUnit": "mg/dL",
+      "delta": -15.31,
+      "shortAvgDelta": -10.2,
+      "longAvgDelta": -10.04,
+      "timestamp": null,
+      "noise": 0
+    },
+    "iob": {
+      "iob": -0.431,
+      "basalIob": -0.431,
+      "bolusIob": 0,
+      "activity": -0.0023,
+      "iobWithZeroTemp": {
+        "iob": -0.431,
+        "basaliob": -0.431,
+        "bolussnooze": 0,
+        "activity": -0.0023,
+        "lastBolusTime": 0,
+        "time": "2023-10-29T18:26:00.000Z"
+      }
+    },
+    "profile": {
+      "basalRate": 1.04,
+      "sensitivity": 72,
+      "carbRatio": 2,
+      "targetLow": 99,
+      "targetHigh": 99,
+      "maxIob": 3,
+      "maxBasal": 3.12,
+      "dia": 3,
+      "maxDailyBasal": 1.04
+    },
+    "mealData": {
+      "carbs": 0,
+      "cob": 0,
+      "lastCarbTime": null,
+      "slopeFromMaxDeviation": null,
+      "slopeFromMinDeviation": null
+    },
+    "currentTemp": {
+      "rate": 0,
+      "duration": 105
+    },
+    "autosensData": {
+      "ratio": 1
+    },
+    "microBolusAllowed": false,
+    "flatBGsDetected": false
+  },
+  "expected": {
+    "eventualBG": 42,
+    "cob": 0,
+    "iob": -0.431
+  },
+  "assertions": [],
+  "originalOutput": {
+    "temp": "absolute",
+    "bg": 77,
+    "tick": -15,
+    "eventualBG": 42,
+    "snoozeBG": 42,
+    "predBGs": {
+      "IOB": [
+        77,
+        63,
+        51,
+        40,
+        39,
+        39,
+        39,
+        39,
+        39,
+        39,
+        39,
+        39,
+        39
+      ]
+    },
+    "COB": 0,
+    "IOB": -0.431,
+    "reason": "COB: 0, Dev: -66, BGI: 0.83, ISF: 4.0, Target: 5.5; Eventual BG 2.3 < 5.5, setting -2.12U/hr, but 105m left and 0 ~ req 0U/hr: no action required",
+    "timestamp": "2023-10-29T18:25:12.818Z"
+  }
+}
