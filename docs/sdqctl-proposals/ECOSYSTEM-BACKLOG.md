@@ -40,10 +40,10 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Level 4: Gap verification - GAP-SYNC-* 
+### 4. [P2] Level 4: Gap verification - GAP-TREAT-* 
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #21
-**Focus:** Verify sync identity gaps are still open
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #22
+**Focus:** Verify treatment gaps are still open
 **Method:** Grep source for gap resolution evidence
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
@@ -62,6 +62,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 4: GAP-SYNC-* verification~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 9 claims verified: **100% accurate**
+- GAP-SYNC-001/005/006: Loop POST-only, ObjectIdCache 24h expiry, v1 API only
+- GAP-SYNC-007: syncIdentifier format varies (no validation)
+- GAP-TZ-002/005/006/007: Medtrum workaround, AAPS fixed offset, Nightscout bugs
 
 ### ~~[P2] Level 4: GAP-API-* verification~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

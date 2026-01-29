@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 4: GAP-SYNC-* Verification (2026-01-29)
+
+Verified sync identity and timezone gap accuracy against source code.
+
+| Claim | Evidence | Status |
+|-------|----------|--------|
+| GAP-SYNC-001: Loop POST-only, no upsert | No PUT endpoints in NightscoutService | ✅ Verified |
+| GAP-SYNC-002: Effect timelines not uploaded | `LoopAlgorithmEffects` exists but not synced | ✅ Verified |
+| GAP-SYNC-005: ObjectIdCache not persistent | 24h expiry, memory-only (`NightscoutService.swift:27`) | ✅ Verified |
+| GAP-SYNC-006: Loop v1 API only | `apiSecret` auth, no v3 in NightscoutService | ✅ Verified |
+| GAP-SYNC-007: syncIdentifier format varies | No format validation in ObjectIDMapping | ✅ Verified |
+| GAP-TZ-002: Medtrum GMT+12 bug | `SetTimeZonePacket.kt:29-34` workaround | ✅ Verified |
+| GAP-TZ-005: AAPS fixed offset storage | 40+ entities use `getOffset(timestamp)` | ✅ Verified |
+| GAP-TZ-006: Loop ETC timezone format | `profilefunctions.js:179-180` buggy replace | ✅ Verified |
+| GAP-TZ-007: Missing TZ uses server local | `profilefunctions.js:108-110` explicit TODO | ✅ Verified |
+
+**Level 4 Progress**: 4/6 items complete (67%)
+
+---
+
 ### Level 4: GAP-API-* Verification (2026-01-29)
 
 Verified Nightscout API gap accuracy against cgm-remote-monitor source.
