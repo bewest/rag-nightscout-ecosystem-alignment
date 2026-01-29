@@ -33,6 +33,21 @@ Executed first accuracy verification items from bottom-up queue.
 
 ---
 
+### Level 2: Mapping Verification (2026-01-29)
+
+Verified xDrip and AAPS mapping documents against source code.
+
+| Mapping | Result | Files Checked |
+|---------|--------|---------------|
+| `mapping/xdrip-android/nightscout-sync.md` | **100% accurate** | `UploaderQueue.java`, `NightscoutUploader.java` |
+| `mapping/aaps/nsclient-schema.md` | **100% accurate** | `RemoteTreatment.kt`, `RemoteEntry.kt`, `EventType.kt` |
+
+**Fields Verified**:
+- xDrip: UploaderQueue bitfields, SGV upload fields (sgv, direction, date), treatment fields (eventType, carbs)
+- AAPS: Treatment schema (identifier, eventType, insulin, carbs, duration), Entry schema (type, sgv, direction, noise)
+
+---
+
 ### Bottom-up Accuracy Review Queue (2026-01-29)
 
 Created systematic verification queue for documentation accuracy, organized from evidence sources through to proposals.

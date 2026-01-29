@@ -42,13 +42,17 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 
 ### Level 2: Mapping Accuracy Verification
 
-| # | Item | Priority | Domain | Verification Method |
-|---|------|----------|--------|---------------------|
-| 5 | Audit mapping/xdrip/nightscout-fields.md | P2 | cgm-sources | Grep source for field names, confirm exists |
-| 6 | Audit mapping/aaps/nsclient-upload.md | P2 | nightscout-api | Verify eventType strings in source |
-| 7 | Audit mapping/loop/sync-identity-fields.md | P2 | sync-identity | Verify syncIdentifier usage in LoopKit |
-| 8 | Audit mapping/trio/devicestatus-upload.md | P2 | nightscout-api | Verify openaps.* fields in Trio source |
-| 9 | Audit terminology-matrix.md row by row | P3 | cross-project | Sample 10% of terms, verify in source |
+| # | Item | Priority | Domain | Status |
+|---|------|----------|--------|--------|
+| 5 | Audit mapping/xdrip-android/nightscout-sync.md | P2 | cgm-sources | ✅ **100% accurate** |
+| 6 | Audit mapping/aaps/nsclient-schema.md | P2 | nightscout-api | ✅ **100% accurate** |
+| 7 | Audit mapping/loop/sync-identity-fields.md | P2 | sync-identity | Pending |
+| 8 | Audit mapping/trio/devicestatus-upload.md | P2 | nightscout-api | Pending |
+| 9 | Audit terminology-matrix.md row by row | P3 | cross-project | Pending |
+
+**Finding (2026-01-29)**: xDrip and AAPS mappings verified against source:
+- xDrip: UploaderQueue bitfields, SGV fields, treatment fields all match source
+- AAPS: RemoteTreatment.kt, RemoteEntry.kt, EventType.kt all match schema doc
 
 ### Level 3: Deep Dive Claim Verification
 
@@ -98,10 +102,28 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 
 | Item | Date | Notes |
 |------|------|-------|
+| Item #5-6: Mapping verification | 2026-01-29 | **100% accurate** - xDrip + AAPS mappings verified |
 | Item #17: G7 protocol claims | 2026-01-29 | **100% accurate** - All opcodes, UUIDs, curves verified vs source |
 | Item #1-4: Source refs | 2026-01-29 | **91% valid** (356/391), 2 intentional example refs |
 | Broken refs fix (LSP claim verification) | 2026-01-29 | 3 refs fixed, 92% valid |
 | Initial cohesiveness audit proposal | 2026-01-29 | Queued to this backlog |
+
+### Verification Details: Mappings (2026-01-29)
+
+**xDrip nightscout-sync.md**:
+| Claim | Source | Status |
+|-------|--------|--------|
+| UploaderQueue bitfields | `UploaderQueue.java:75-79` | ✅ Verified |
+| NightscoutUploader.java ~1470 lines | `NightscoutUploader.java` | ✅ 1469 lines |
+| SGV fields (sgv, direction, date, filtered) | `NightscoutUploader.java:666-689` | ✅ Verified |
+| Treatment fields (eventType, carbs, insulin) | `NightscoutUploader.java:779-782` | ✅ Verified |
+
+**AAPS nsclient-schema.md**:
+| Claim | Source | Status |
+|-------|--------|--------|
+| RemoteTreatment.kt fields | `RemoteTreatment.kt:18-79` | ✅ Verified |
+| RemoteEntry.kt SGV fields | `RemoteEntry.kt:15-34` | ✅ Verified |
+| EventType enum values | `EventType.kt:27-36` | ✅ Verified |
 
 ### Verification Details: G7 Protocol (2026-01-29)
 
