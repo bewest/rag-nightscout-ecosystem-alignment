@@ -1193,21 +1193,27 @@ xDrip+ uniquely supports multiple insulin types per treatment:
 | DIA Setting | ✅ | ✅ | ✅ | ✅ |
 | UAM Detection | ✅ | ⚠️ Notify only | ✅ | ✅ |
 | SMB Delivery | ✅ | ❌ | ✅ | ✅ |
-| Autosens | ✅ | ❌ | ✅ | ✅ |
+| Autosens | ✅ | ❌ (uses RC) | ✅ | ✅ |
 | Dynamic ISF | ❌ | ❌ | ✅ (DynISF) | ✅ |
 | Autotune | ✅ | ❌ | ✅ | ✅ |
+| 4 Prediction Curves | ✅ | ❌ (single) | ✅ | ✅ |
+| RetrospectiveCorrection | ❌ | ✅ | ❌ | ❌ |
 
 ### Key Differences Summary
 
-1. **Loop vs oref0 family**: Loop lacks UAM (full), SMB, and Autosens. Uses different paradigm (single prediction curve vs 4 curves).
+1. **Loop vs oref0 family**: Loop lacks UAM (full), SMB, and Autosens. Uses different paradigm (single prediction curve vs 4 curves). Uses RetrospectiveCorrection instead of Autosens.
 
 2. **Terminology variance**:
    - ISF: `sens` (oref0/Trio) vs `insulinSensitivity` (Loop) vs `isf` (AAPS)
    - CR: `carb_ratio` (oref0) vs `carbRatio` (Loop) vs `ic` (AAPS)
 
-3. **Config structure**: oref0/Trio use flat JSON config; AAPS uses entity blocks; Loop uses Swift structs.
+3. **Config structure**: oref0/Trio use flat JSON config; AAPS uses entity blocks; Loop uses Swift structs with schedule arrays.
 
-**Gap Reference**: GAP-ALG-005 (Loop lacks SMB/UAM), GAP-ALG-006 (DynISF TDD-based vs deviation-based)
+4. **Input formats**: oref0 expects pre-computed IOB/COB; Loop computes from raw dose/carb history.
+
+**Gap Reference**: GAP-ALG-005 (Loop lacks SMB/UAM), GAP-ALG-006 (DynISF TDD-based vs deviation-based), GAP-ALG-013..016 (Loop architecture differences)
+
+**See Also**: [Loop vs oref0 Semantic Equivalence](../../docs/10-domain/loop-oref0-semantic-equivalence.md)
 
 ### AAPS-Specific Algorithm Variants
 

@@ -638,3 +638,89 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Status**: Documented
 
 ---
+
+## Loop Algorithm Gaps
+
+### GAP-ALG-013: Loop Has No Autosens
+
+**Scenario**: Cross-system sensitivity ratio comparison
+
+**Description**: Loop does not implement Autosens sensitivity ratio. Uses RetrospectiveCorrection which adjusts predictions but not profile values (ISF, basal).
+
+**Source**: `LoopAlgorithm.swift:120-126`, no Autosens equivalent
+
+**Impact**:
+- Cannot compare `sensitivityRatio` output across systems
+- Loop users cannot get automated profile adjustments
+- Different sensitivity response than oref0-based systems
+
+**Possible Solutions**:
+1. Document as architectural difference (not a bug)
+2. Consider adding Autosens as optional feature in Loop
+
+**Status**: Documented
+
+---
+
+### GAP-ALG-014: Loop Prediction Is Single Curve
+
+**Scenario**: Algorithm debugging and prediction component analysis
+
+**Description**: Loop produces one combined prediction curve; oref0 produces 4 separate curves (IOB, COB, UAM, ZT). Loop effects are available but combined into single trajectory.
+
+**Source**: `LoopAlgorithm.swift:168` - `LoopMath.predictGlucose()`
+
+**Impact**:
+- Cannot compare individual prediction components directly
+- Debugging requires examining effect arrays separately
+- Cross-system prediction comparison limited to final values
+
+**Possible Solutions**:
+1. Add devicestatus output showing effect-isolated predictions
+2. Use Loop's `effects` struct for component analysis
+
+**Status**: Documented
+
+---
+
+### GAP-ALG-015: Loop Does Not Expose UAM Curve
+
+**Scenario**: Unannounced meal handling comparison
+
+**Description**: Loop has no explicit UAM (Unannounced Meal) curve. Unexpected rises are handled via RetrospectiveCorrection which detects discrepancies but doesn't project continued absorption.
+
+**Source**: Architectural difference - Loop uses RC, oref0 uses UAM curve
+
+**Impact**:
+- Cannot validate UAM-specific behavior in Loop
+- Different response to unannounced carbs
+- Loop may be slower to respond to large unlogged meals
+
+**Possible Solutions**:
+1. Document as design difference
+2. Evaluate if RC provides equivalent safety
+
+**Status**: Documented
+
+---
+
+### GAP-ALG-016: Different IOB/COB Calculation Timing
+
+**Scenario**: Algorithm conformance testing with pre-computed inputs
+
+**Description**: oref0 expects pre-computed IOB/COB as input; Loop computes them from dose/carb history during prediction. Same raw data can produce different IOB values depending on calculation timing and method.
+
+**Source**: `LoopAlgorithm.swift:95-103` vs `oref0/lib/iob/total.js`
+
+**Impact**:
+- oref0 test vectors cannot be directly used for Loop testing
+- Different IOB at same timestamp possible
+- Conformance testing requires raw history, not computed values
+
+**Possible Solutions**:
+1. Create Loop-specific test vectors with raw dose history
+2. Use Loop's `live_capture_input.json` format for testing
+
+**Status**: Documented
+
+---

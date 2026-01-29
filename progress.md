@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Loop vs oref0 Semantic Equivalence Analysis (2026-01-29)
+
+Analyzed Loop algorithm to determine conformance testing feasibility with oref0 vectors.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/loop-oref0-semantic-equivalence.md` | 400 lines |
+
+**Key Findings**:
+- Loop uses single combined prediction curve (vs oref0's 4 curves)
+- Loop has no Autosens - uses RetrospectiveCorrection instead
+- Loop has no SMB or UAM curve
+- Direct output comparison NOT feasible
+- Loop needs its own Swift-based conformance runner
+- oref0 test vectors cannot be reused (missing raw dose history)
+
+**Gaps Identified**: GAP-ALG-013, GAP-ALG-014, GAP-ALG-015, GAP-ALG-016
+
+---
+
 ### AAPS vs oref0 Divergence Analysis (2026-01-29)
 
 Analyzed 69% divergence in conformance testing between AAPS and oref0 algorithm outputs.

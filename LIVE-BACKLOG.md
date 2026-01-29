@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Semantic equivalence for Loop | P3 | ✅ Complete (400 lines, 4 gaps) | 2026-01-29 |
 | Document AAPS vs oref0 divergence | P3 | ✅ Complete (280 lines, 4 gaps) | 2026-01-29 |
 | Map algorithm terminology | P3 | ✅ Complete (+95 lines) | 2026-01-29 |
 | Extract xDrip+ Nightscout fields | P3 | ✅ Complete (370 lines, 3 gaps) | 2026-01-29 |
