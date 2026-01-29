@@ -111,9 +111,13 @@ COMPACT
 # === Phase 2: Execute Work ===
 PROMPT ## Phase 2: Execute Work
 
+**Document findings as you work.**
 Perform the selected task based on its type.
 
 **Work Patterns by Type:**
+**Code References:**
+Always use format: `repo:path/from/repo/root.ext:line`
+
 
 ### Comparison Tasks
 1. Search each repo for the feature/concept
@@ -142,10 +146,12 @@ Perform the selected task based on its type.
 2. Draft proposal document
 3. Include rationale, alternatives, recommendations
 
-**Code References:**
-Always use format: `repo:path/from/repo/root.ext:line`
+### Tooling and Testing Tasks
+1. Implement the task by making the appropriate changes.
+2. Verify the accuracy of the changes, use tools and tests when appropriate.
 
-**Document findings as you work.**
+
+
 
 COMPACT
 
@@ -243,38 +249,29 @@ COMPACT
 
 # === Phase 5: Commit Work ===
 PROMPT ## Phase 5: Commit Work
-
+ELIDE
 RUN git --no-pager status && echo "---" && git --no-pager diff --stat
+ELIDE
 
 PROMPT **MANDATORY: Commit all changes from this cycle.**
 
-Review the git status above. Commit with:
-
-```bash
-git add -A
-git commit -m "docs: [brief description] (Cycle N)"
-```
-
-Where:
-- [brief description] = main deliverable (e.g., "tconnectsync deep dive", "OQ-001 resolution")
-- N = next cycle number after last commit
-
+Let's record our work in git appropriately.
 **Verification:**
 After commit, confirm with `git log --oneline -1`
 
 **If commit fails:**
 - Note the error
-- Do NOT proceed to next cycle until resolved
+- Do NOT proceed to next cycle until resolved, create a STOPAUTOMATION file.
 
 COMPACT
 
 # === Phase 6: Cycle Summary ===
 PROMPT ## Phase 6: Cycle Summary
-
+ELIDE
 RUN python tools/queue_stats.py 2>/dev/null || echo "Stats: unavailable"
-RUN python tools/doc_chunker.py --check 2>/dev/null | grep -E "⚠️|recommendations" | head -3
+ELIDE
 RUN git --no-pager log --oneline -1
-
+ELIDE
 PROMPT Summarize what was accomplished.
 
 **Output:**
@@ -286,15 +283,10 @@ PROMPT Summarize what was accomplished.
 
 **Facets Updated:**
 - [ ] terminology-matrix.md: [N terms]
-- [ ] {domain}-gaps.md: [N gaps added to correct domain file]
-- [ ] {domain}-requirements.md: [N requirements]
+- [ ] gaps.md: [N gaps added]
+- [ ] requirements.md: [N requirements]
 - [ ] {topic}-deep-dive.md: [created/updated]
 - [ ] progress.md: [entry added]
-
-**Hygiene Status:**
-- Queue health: [from queue_stats output]
-- Files over threshold: [any warnings from doc_chunker]
-- Lint status: [OK / N misplaced items]
 
 **Backlog Changes:**
 - LIVE-BACKLOG: [item moved to Processed]

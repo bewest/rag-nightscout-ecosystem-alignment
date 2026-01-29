@@ -1008,3 +1008,30 @@ _None yet._
 ## nightscout-connect Gaps
 
 ---
+
+### GAP-REMOTE-CMD: Remote Commands API Not Merged
+
+**Status**: ✅ Addressed in specification
+
+**Scenario**: Caregiver remote bolus/carb commands
+
+**Description**: PR#7791 adds remote command queue for Loop caregiver features, but has been stalled since 2022. Prevents caregivers from sending remote bolus, carb entries, and overrides.
+
+**Affected Systems**: Loop, Trio, caregivers
+
+**Impact**:
+- Caregivers cannot remotely manage children's diabetes
+- Loop remote features incomplete without Nightscout integration
+- 3+ years of waiting for critical caregiver functionality
+
+**Remediation**: ✅ OpenAPI spec created: `specs/openapi/aid-commands-2025.yaml` (738 lines)
+
+**Specification Coverage**:
+- 7 endpoints: CRUD + list + delete all
+- 4 action types: bolus, carbs, override, cancelOverride
+- State machine: Pending → In-Progress → Complete/Error
+- OTP security model documented
+- Push notification flow documented
+- 5 conformance scenarios
+
+---

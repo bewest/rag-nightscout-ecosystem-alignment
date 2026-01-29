@@ -6,6 +6,35 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Remote Commands API Specification (2026-01-29)
+
+OpenAPI 3.0 specification for Remote Commands collection based on PR#7791 and Loop RemoteCommand protocol.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **OpenAPI Spec** | `specs/openapi/aid-commands-2025.yaml` | 738 lines, 7 endpoints, full schema |
+| **Gap Updated** | `traceability/nightscout-api-gaps.md` | GAP-REMOTE-CMD marked addressed |
+| **Terminology** | `mapping/cross-project/terminology-matrix.md` | Added Remote Commands section |
+
+**Key Schema Features**:
+- 4 action types: bolus, carbs, override, cancelOverride
+- State machine: Pending → In-Progress → Complete/Error
+- OTP security validation
+- Push notification integration (APNs)
+
+**Controller Support**:
+- Loop: Full (push notifications)
+- Trio: Full (push notifications)
+- AAPS: None (uses SMS instead)
+- xDrip+: None (display only)
+
+**Source Files Analyzed**:
+- `ns:lib/api/remotecommands/index.js`
+- `ns:lib/server/remotecommands.js`
+- `loop:NightscoutService/NightscoutServiceKit/RemoteCommands/Actions/*.swift`
+
+---
+
 ### Insulin Profiles API Specification (2026-01-29)
 
 OpenAPI 3.0 specification for Insulin Profiles collection based on PR#8261 and cross-project analysis.

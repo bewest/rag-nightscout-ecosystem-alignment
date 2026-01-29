@@ -81,11 +81,51 @@ Cross-project field mapping for insulin type definitions. See [`aid-insulin-2025
 | Loop | No | N/A | Fixed models, not configurable |
 | Trio | Yes | No | oref0 models via profile.json |
 | nightscout-reporter | Yes | Read | Reads for IOB curve display |
-| Loop | None | No HR collection |
-| Trio | None | No HR collection |
-| xDrip+ | Partial | Display only |
 
-**Specification**: [`specs/openapi/aid-heartrate-2025.yaml`](../../specs/openapi/aid-heartrate-2025.yaml)
+**Specification**: [`specs/openapi/aid-insulin-2025.yaml`](../../specs/openapi/aid-insulin-2025.yaml)
+
+---
+
+### Remote Commands Collection (API v1)
+
+Cross-project mapping for caregiver remote actions. See [`aid-commands-2025.yaml`](../../specs/openapi/aid-commands-2025.yaml).
+
+| Action Type | Nightscout | Loop Action | AAPS SMS |
+|-------------|------------|-------------|----------|
+| **Bolus** | `bolus` | `bolusEntry(BolusAction)` | `BOLUS` |
+| **Carbs** | `carbs` | `carbsEntry(CarbAction)` | `CARBS` |
+| **Override** | `override` | `temporaryScheduleOverride` | `TARGET` |
+| **Cancel** | `cancelOverride` | `cancelTemporaryOverride` | `CANCEL` |
+
+**Command State Machine**:
+```
+Pending → In-Progress → Complete
+                     └→ Error
+```
+
+**Action Parameters**:
+
+| Action | Required Fields | Optional Fields |
+|--------|-----------------|-----------------|
+| bolus | `units` (double) | - |
+| carbs | `grams` (double) | `absorption`, `foodType`, `startDate` |
+| override | `name` (string) | `durationTime`, `remoteAddress` |
+| cancelOverride | - | `reason` |
+
+**Security Model**:
+- OTP (One-Time Password) validation
+- Expiration time checking
+- State machine prevents duplicate execution
+
+**Controller Support**:
+| System | Support | Transport | Notes |
+|--------|---------|-----------|-------|
+| Loop | Full | Push Notification (APNs) | Primary consumer |
+| Trio | Full | Push Notification | Same as Loop |
+| AAPS | None | SMS only | Uses SmsCommunicatorPlugin |
+| xDrip+ | None | Display only | No command execution |
+
+**Specification**: [`specs/openapi/aid-commands-2025.yaml`](../../specs/openapi/aid-commands-2025.yaml)
 
 ---
 

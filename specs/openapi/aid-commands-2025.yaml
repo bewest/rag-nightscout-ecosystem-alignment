@@ -1,0 +1,738 @@
+openapi: 3.0.3
+info:
+  title: Nightscout Remote Commands API
+  version: 1.0.0
+  description: |
+    Remote Commands API for Nightscout, enabling caregiver-initiated actions 
+    on AID systems (Loop, AAPS, Trio) via push notifications.
+    
+    Based on PR#7791 implementation and Loop RemoteCommand protocol.
+    
+    ## Overview
+    
+    This collection provides a command queue for remote actions:
+    - **Bolus**: Remote insulin delivery
+    - **Carbs**: Remote carb entry
+    - **Override**: Temporary schedule override
+    - **Cancel Override**: Cancel active override
+    
+    ## Security Model
+    
+    Remote commands require:
+    1. **OTP (One-Time Password)**: Time-based validation
+    2. **Expiration**: Commands expire after configurable period
+    3. **State Machine**: Pending → In-Progress → Complete/Error
+    
+    ## Gap Reference
+    - GAP-REMOTE-CMD: Remote Commands Not Merged
+    
+    ## Requirements
+    - REQ-PR-004: Remote Command Support
+    
+    ## Cross-Project Support
+    
+    | System | Transport | Command Types |
+    |--------|-----------|---------------|
+    | Loop | Push Notification | bolus, carbs, override, cancelOverride |
+    | AAPS | SMS | bolus, carbs, basal, extended, target |
+    | Trio | Push Notification | bolus, carbs, override |
+    | xDrip+ | N/A | Display only |
+    
+  contact:
+    name: Nightscout Foundation
+  license:
+    name: AGPL-3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+  x-aid-gap:
+    - GAP-REMOTE-CMD
+  x-aid-source:
+    - ns:lib/api/remotecommands/index.js
+    - ns:lib/server/remotecommands.js
+    - loop:NightscoutService/NightscoutServiceKit/RemoteCommands/Actions/Action.swift
+
+servers:
+  - url: /api/v1
+    description: Nightscout API v1 (PR#7791 implementation)
+
+tags:
+  - name: remotecommands
+    description: Remote command queue operations
+
+paths:
+  /remotecommands:
+    get:
+      tags:
+        - remotecommands
+      summary: List remote commands
+      description: |
+        Returns remote commands with optional filtering by date and state.
+        Default limit is 100, or 1000 if date filter is applied.
+      operationId: getRemoteCommands
+      parameters:
+        - name: count
+          in: query
+          description: Maximum number of records to return
+          schema:
+            type: integer
+            default: 100
+            maximum: 1000
+        - name: find[created_at][$gt]
+          in: query
+          description: Filter commands created after this date
+          schema:
+            type: string
+            format: date-time
+        - name: find[created_at][$lt]
+          in: query
+          description: Filter commands created before this date
+          schema:
+            type: string
+            format: date-time
+        - name: find[status.state]
+          in: query
+          description: Filter by command state
+          schema:
+            type: string
+            enum:
+              - Pending
+              - In-Progress
+              - Complete
+              - Error
+      responses:
+        '200':
+          description: List of remote commands
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RemoteCommand'
+              examples:
+                pendingBolus:
+                  summary: Pending bolus command
+                  value:
+                    - _id: "639cdffd5d3b3f5b697370a7"
+                      actionType: "bolus"
+                      actionOptions:
+                        units: 1.5
+                      otp: "123456"
+                      sendNotification: true
+                      status:
+                        state: "Pending"
+                        message: "Command Pending"
+                      created_at: "2024-01-15T10:30:00.000Z"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_secret: []
+      x-aid-permissions:
+        - api:remotecommands:read
+
+    post:
+      tags:
+        - remotecommands
+      summary: Create remote command
+      description: |
+        Creates a new remote command in Pending state.
+        
+        If `sendNotification: true`, triggers push notification to Loop via APNs.
+        
+        ## Command Flow
+        1. Caregiver creates command with OTP
+        2. If sendNotification=true, push notification sent to Loop
+        3. Loop validates OTP and expiration
+        4. Loop executes action and updates status via PUT
+      operationId: createRemoteCommand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteCommandInput'
+            examples:
+              bolusCommand:
+                summary: Remote bolus command
+                value:
+                  actionType: "bolus"
+                  actionOptions:
+                    units: 1.5
+                  otp: "123456"
+                  sendNotification: true
+              carbCommand:
+                summary: Remote carb entry
+                value:
+                  actionType: "carbs"
+                  actionOptions:
+                    grams: 30
+                    absorption: 3.0
+                  otp: "654321"
+                  sendNotification: true
+              overrideCommand:
+                summary: Temporary override
+                value:
+                  actionType: "override"
+                  actionOptions:
+                    name: "Exercise"
+                    durationTime: 3600
+                  otp: "789012"
+                  sendNotification: true
+      responses:
+        '200':
+          description: Command created
+          headers:
+            Location:
+              description: URL of created command
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RemoteCommand'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          description: Push notification failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - api_secret: []
+      x-aid-permissions:
+        - api:remotecommands:create
+
+    delete:
+      tags:
+        - remotecommands
+      summary: Delete commands matching query
+      description: |
+        Deletes remote commands matching the query criteria.
+        Use with caution - supports bulk deletion.
+      operationId: deleteRemoteCommands
+      parameters:
+        - name: find[status.state]
+          in: query
+          description: Delete commands in this state
+          schema:
+            type: string
+        - name: find[created_at][$lt]
+          in: query
+          description: Delete commands created before this date
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Deletion result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      n:
+                        type: integer
+                        description: Number of documents deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_secret: []
+      x-aid-permissions:
+        - api:remotecommands:delete
+
+  /remotecommands/{id}:
+    get:
+      tags:
+        - remotecommands
+      summary: Get command by ID
+      operationId: getRemoteCommandById
+      parameters:
+        - $ref: '#/components/parameters/commandId'
+      responses:
+        '200':
+          description: Remote command
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RemoteCommand'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - api_secret: []
+
+    put:
+      tags:
+        - remotecommands
+      summary: Update command status
+      description: |
+        Updates command status. Used by Loop to report execution result.
+        
+        ## State Transitions
+        - Pending → In-Progress: Only allowed if current state is Pending
+        - In-Progress → Complete: Command executed successfully
+        - In-Progress → Error: Command execution failed
+        
+        Race condition protection: Setting state to "In-Progress" requires
+        current state to be "Pending".
+      operationId: updateRemoteCommand
+      parameters:
+        - $ref: '#/components/parameters/commandId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteCommandUpdate'
+            examples:
+              inProgress:
+                summary: Mark as in progress
+                value:
+                  status:
+                    state: "In-Progress"
+                    message: "Executing bolus"
+              complete:
+                summary: Mark as complete
+                value:
+                  status:
+                    state: "Complete"
+                    message: "Bolus delivered: 1.5U"
+              error:
+                summary: Mark as error
+                value:
+                  status:
+                    state: "Error"
+                    message: "OTP expired"
+      responses:
+        '200':
+          description: Command updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteCommand'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Command not found or state transition not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - api_secret: []
+      x-aid-permissions:
+        - api:remotecommands:update
+
+    delete:
+      tags:
+        - remotecommands
+      summary: Delete command by ID
+      operationId: deleteRemoteCommandById
+      parameters:
+        - $ref: '#/components/parameters/commandId'
+      responses:
+        '200':
+          description: Command deleted
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_secret: []
+      x-aid-permissions:
+        - api:remotecommands:delete
+
+  /remotecommands/*:
+    delete:
+      tags:
+        - remotecommands
+      summary: Delete all commands
+      description: |
+        Deletes ALL remote commands. Use with extreme caution.
+      operationId: deleteAllRemoteCommands
+      responses:
+        '200':
+          description: All commands deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      n:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_secret: []
+      x-aid-permissions:
+        - api:remotecommands:delete
+
+components:
+  schemas:
+    RemoteCommand:
+      type: object
+      description: |
+        Remote command for AID system execution.
+        
+        ## Cross-Project Mapping
+        
+        | Nightscout | Loop Action | AAPS SMS |
+        |------------|-------------|----------|
+        | bolus | bolusEntry(BolusAction) | BOLUS |
+        | carbs | carbsEntry(CarbAction) | CARBS |
+        | override | temporaryScheduleOverride | TARGET |
+        | cancelOverride | cancelTemporaryOverride | CANCEL |
+      required:
+        - _id
+        - actionType
+        - status
+      properties:
+        _id:
+          type: string
+          pattern: '^[a-f0-9]{24}$'
+          description: MongoDB ObjectID
+          example: "639cdffd5d3b3f5b697370a7"
+        actionType:
+          type: string
+          description: |
+            Type of remote action to execute.
+            
+            Maps to Loop Action enum:
+            - bolus → bolusEntry(BolusAction)
+            - carbs → carbsEntry(CarbAction)
+            - override → temporaryScheduleOverride(OverrideAction)
+            - cancelOverride → cancelTemporaryOverride(OverrideCancelAction)
+          enum:
+            - bolus
+            - carbs
+            - override
+            - cancelOverride
+          example: "bolus"
+          x-aid-source:
+            - loop:NightscoutService/NightscoutServiceKit/RemoteCommands/Actions/Action.swift
+        actionOptions:
+          oneOf:
+            - $ref: '#/components/schemas/BolusOptions'
+            - $ref: '#/components/schemas/CarbOptions'
+            - $ref: '#/components/schemas/OverrideOptions'
+            - $ref: '#/components/schemas/CancelOverrideOptions'
+          description: Action-specific parameters
+        otp:
+          type: string
+          description: |
+            One-Time Password for command validation.
+            Loop validates OTP against shared secret and expiration.
+          example: "123456"
+          x-aid-source:
+            - loop:NightscoutService/NightscoutServiceKit/RemoteCommands/Validators/RemoteCommandValidator.swift
+        sendNotification:
+          type: boolean
+          description: |
+            If true, Nightscout sends push notification to Loop via APNs.
+            If false, command is stored but no notification sent.
+          default: false
+          example: true
+        status:
+          $ref: '#/components/schemas/CommandStatus'
+        created_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when command was created
+          example: "2024-01-15T10:30:00.000Z"
+      x-aid-controllers:
+        loop:
+          supported: true
+          transport: "Push Notification (APNs)"
+          actions: ["bolus", "carbs", "override", "cancelOverride"]
+        aaps:
+          supported: false
+          notes: "AAPS uses SMS commands, not Nightscout API"
+        trio:
+          supported: true
+          transport: "Push Notification"
+          actions: ["bolus", "carbs", "override"]
+        xdrip:
+          supported: false
+          notes: "Display only"
+
+    RemoteCommandInput:
+      type: object
+      description: Input schema for creating remote commands
+      required:
+        - actionType
+        - otp
+      properties:
+        actionType:
+          type: string
+          enum:
+            - bolus
+            - carbs
+            - override
+            - cancelOverride
+        actionOptions:
+          oneOf:
+            - $ref: '#/components/schemas/BolusOptions'
+            - $ref: '#/components/schemas/CarbOptions'
+            - $ref: '#/components/schemas/OverrideOptions'
+            - $ref: '#/components/schemas/CancelOverrideOptions'
+        otp:
+          type: string
+          description: One-Time Password
+        sendNotification:
+          type: boolean
+          default: false
+        status:
+          $ref: '#/components/schemas/CommandStatus'
+
+    RemoteCommandUpdate:
+      type: object
+      description: Update schema for command status
+      properties:
+        status:
+          $ref: '#/components/schemas/CommandStatus'
+
+    CommandStatus:
+      type: object
+      description: |
+        Command execution state.
+        
+        State machine:
+        ```
+        Pending → In-Progress → Complete
+                             └→ Error
+        ```
+      required:
+        - state
+      properties:
+        state:
+          type: string
+          enum:
+            - Pending
+            - In-Progress
+            - Complete
+            - Error
+          description: Current command state
+          example: "Pending"
+        message:
+          type: string
+          description: Human-readable status message
+          example: "Command Pending"
+
+    BolusOptions:
+      type: object
+      description: |
+        Bolus command parameters.
+        Maps to Loop BolusAction.
+      required:
+        - units
+      properties:
+        units:
+          type: number
+          format: double
+          description: Insulin amount in units
+          minimum: 0.05
+          maximum: 30
+          example: 1.5
+      x-aid-source:
+        - loop:NightscoutService/NightscoutServiceKit/RemoteCommands/Actions/BolusAction.swift
+
+    CarbOptions:
+      type: object
+      description: |
+        Carb entry command parameters.
+        Maps to Loop CarbAction.
+      required:
+        - grams
+      properties:
+        grams:
+          type: number
+          format: double
+          description: Carbohydrate amount in grams
+          minimum: 1
+          maximum: 250
+          example: 30
+        absorption:
+          type: number
+          format: double
+          description: Absorption time in hours
+          minimum: 0.5
+          maximum: 8
+          example: 3.0
+        foodType:
+          type: string
+          description: Food type description
+          example: "Pizza"
+        startDate:
+          type: string
+          format: date-time
+          description: When carbs were consumed (defaults to now)
+      x-aid-source:
+        - loop:NightscoutService/NightscoutServiceKit/RemoteCommands/Actions/CarbAction.swift
+
+    OverrideOptions:
+      type: object
+      description: |
+        Temporary override command parameters.
+        Maps to Loop OverrideAction.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Override preset name (must exist in Loop)
+          example: "Exercise"
+        durationTime:
+          type: integer
+          description: Override duration in seconds (null = indefinite)
+          minimum: 300
+          maximum: 86400
+          example: 3600
+        remoteAddress:
+          type: string
+          description: IP address of caregiver initiating override
+      x-aid-source:
+        - loop:NightscoutService/NightscoutServiceKit/RemoteCommands/Actions/OverrideAction.swift
+
+    CancelOverrideOptions:
+      type: object
+      description: |
+        Cancel override command parameters.
+        Maps to Loop OverrideCancelAction.
+      properties:
+        reason:
+          type: string
+          description: Optional reason for cancellation
+
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 500
+        message:
+          type: string
+          example: "Mongo Error"
+        description:
+          type: string
+
+  parameters:
+    commandId:
+      name: id
+      in: path
+      required: true
+      description: MongoDB ObjectID of the command
+      schema:
+        type: string
+        pattern: '^[a-f0-9]{24}$'
+      example: "639cdffd5d3b3f5b697370a7"
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 401
+              message:
+                type: string
+                example: "Unauthorized"
+
+    NotFound:
+      description: Command not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "Missing"
+
+  securitySchemes:
+    api_secret:
+      type: apiKey
+      in: header
+      name: api-secret
+      description: SHA1 hash of the API_SECRET environment variable
+
+x-aid-implementation-notes:
+  security-model:
+    description: |
+      Remote commands require multi-layer security:
+      
+      1. **API Secret**: Standard Nightscout authentication
+      2. **OTP Validation**: Loop validates one-time password
+      3. **Expiration**: Commands expire after configurable period
+      4. **State Machine**: Prevents duplicate execution
+      
+      Loop implementation:
+      - `RemoteCommandValidator.swift` handles OTP/expiration
+      - `RecentNotifications` actor prevents duplicate processing
+
+  push-notifications:
+    description: |
+      When sendNotification=true, Nightscout triggers APNs push to Loop.
+      See `lib/server/loop.js` for notification implementation.
+      
+      Requires:
+      - LOOP_PUSH_SERVER_ENVIRONMENT (production/sandbox)
+      - LOOP_APNS_KEY
+      - LOOP_APNS_KEY_ID
+      - LOOP_DEVELOPER_TEAM_ID
+
+  aaps-alternative:
+    description: |
+      AAPS uses SMS for remote commands, not Nightscout API.
+      See `SmsCommunicatorPlugin.kt` for implementation.
+      
+      SMS commands: BOLUS, CARBS, BASAL, EXTENDED, TARGET, PROFILE
+
+x-aid-conformance-scenarios:
+  - id: CMD-001
+    title: Create bolus command with notification
+    given: Valid API secret and Loop configured
+    when: POST /remotecommands with bolus action, sendNotification=true
+    then: Command created in Pending state, push notification sent
+
+  - id: CMD-002
+    title: State transition to In-Progress
+    given: Command exists in Pending state
+    when: PUT /remotecommands/{id} with state=In-Progress
+    then: State updated, command locked for execution
+
+  - id: CMD-003
+    title: Prevent duplicate execution
+    given: Command exists in In-Progress state
+    when: PUT /remotecommands/{id} with state=In-Progress
+    then: 404 error (state transition not allowed)
+
+  - id: CMD-004
+    title: Complete command with result
+    given: Command exists in In-Progress state
+    when: PUT /remotecommands/{id} with state=Complete, message="Bolus delivered"
+    then: Command marked complete with result message
+
+  - id: CMD-005
+    title: Remote carb entry with absorption
+    given: Valid API secret
+    when: POST /remotecommands with carbs action, grams=30, absorption=3.0
+    then: Command created, Loop receives CarbAction

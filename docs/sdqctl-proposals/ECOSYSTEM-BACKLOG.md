@@ -40,17 +40,16 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Pull test fixtures for integration testing
 **Workflow:** `extract-spec.conv`
 
-### 4. [P2] Remote Commands API specification
-**Type:** Specification | **Effort:** Medium
-**Repos:** cgm-remote-monitor (PR#7791)
-**Focus:** Document command queue for remote AID control
-**Workflow:** `extract-spec.conv`
-**Note:** Critical Loop caregiver feature, stalled 3+ years
-
-### 5. [P2] Nightscout APIv3 Collection deep dive
+### 4. [P2] Nightscout APIv3 Collection deep dive
 **Type:** Analysis | **Effort:** Medium
 **Repos:** cgm-remote-monitor
 **Focus:** Document all APIv3 collections, operations, authorization
+**Workflow:** `gap-discovery.conv`
+
+### 5. [P2] Device Status collection deep dive
+**Type:** Analysis | **Effort:** Medium
+**Repos:** cgm-remote-monitor, AAPS, Loop
+**Focus:** Document devicestatus structure differences between controllers
 **Workflow:** `gap-discovery.conv`
 
 ---

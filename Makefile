@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions mock-nightscout
+.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions hygiene-tests mock-nightscout
 
 # Default target
 help:
@@ -20,6 +20,7 @@ help:
 	@echo "  make validate   - Validate fixtures against shape specs"
 	@echo "  make conformance- Run conformance assertions (offline)"
 	@echo "  make conversions- Run unit conversion tests"
+	@echo "  make hygiene-tests - Run hygiene tool tests"
 	@echo "  make coverage   - Generate coverage matrix"
 	@echo "  make inventory  - Generate workspace inventory"
 	@echo "  make check      - Run all checks (linkcheck + validate + conformance)"
@@ -108,13 +109,18 @@ conversions:
 	@echo "Running unit conversion tests..."
 	@python3 tools/test_conversions.py
 
+# Test hygiene tools
+hygiene-tests:
+	@echo "Running hygiene tool tests..."
+	@python3 tools/test_hygiene_tools.py
+
 # Start mock Nightscout server
 mock-nightscout:
 	@echo "Starting mock Nightscout server on port 5555..."
 	@python3 tools/mock_nightscout.py --port 5555
 
 # Full CI pipeline
-ci: check coverage verify
+ci: check coverage verify hygiene-tests
 	@echo ""
 	@echo "Checking Python syntax..."
 	@python3 -m compileall tools/
