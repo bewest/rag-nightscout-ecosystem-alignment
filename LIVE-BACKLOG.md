@@ -9,6 +9,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Statistics API proposal (MCP + reports + zreptil) | P1 | → Queued to P1 backlog | 2026-01-29 |
 | Chunk gaps.md into manageable pieces | P2 | → Queued to P2 backlog | 2026-01-29 |
 | Large file analysis + chunking proposal | P2 | → Queued to P2 backlog | 2026-01-29 |
 | Cross-project testing plan (Trio/Loop on Ubuntu) | P1 | → Queued to P1 backlog | 2026-01-29 |

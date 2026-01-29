@@ -6,6 +6,22 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Playwright Adoption Proposal (2026-01-29)
+
+Proposal for E2E testing adoption in cgm-remote-monitor using Playwright.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Proposal** | `docs/sdqctl-proposals/playwright-adoption-proposal.md` | 316 lines, 4-phase plan |
+
+**Key Points**:
+- Current: 78 Mocha tests, no E2E, browser testing disabled
+- Recommendation: Playwright over Cypress (multi-browser, Socket.IO)
+- Effort: ~5-8 days initial investment
+- Benefits: Safe refactoring, UI regression detection, cross-browser
+
+---
+
 ### cgm-remote-monitor Database Layer Audit (2026-01-29)
 
 Full audit of Nightscout's MongoDB storage layer for Loop compatibility.

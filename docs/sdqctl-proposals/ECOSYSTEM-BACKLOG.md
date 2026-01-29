@@ -33,19 +33,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Loop overrides vs AAPS ProfileSwitch vs Trio overrides
 **Workflow:** `compare-feature.conv`
 
-### 3. [P1] Playwright adoption proposal
-**Type:** Proposal | **Effort:** Low
-**Source:** `externals/cgm-remote-monitor-official/`
-**Focus:** Propose adoption plan for Playwright testing in cgm-remote-monitor modernization
-**Workflow:** `proposal.conv`
-
-### 4. [P1] PR analysis: cgm-remote-monitor
+### 3. [P1] PR analysis: cgm-remote-monitor
 **Type:** Analysis | **Effort:** Medium
 **Source:** `externals/cgm-remote-monitor-official/`
 **Focus:** Review open PRs for ecosystem impact
 **Workflow:** `gap-discovery.conv`
 
-### 5. [P2] Algorithm conformance suite
+### 4. [P2] Algorithm conformance suite
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Create test vectors for Rust vs JS oref comparison
 **Workflow:** `tools/`
@@ -78,6 +72,9 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [ ] **Cross-project testing plan (Trio/Loop on Ubuntu)** - System requirements for iOS dev/test
   - From: LIVE-BACKLOG request
   - Focus: Define Ubuntu-compatible testing strategies for Swift projects
+- [ ] **Statistics API proposal** - MCP-informed stats endpoints for Nightscout
+  - From: LIVE-BACKLOG request
+  - Focus: Aggregate endpoints based on reports + zreptil nightscout-reporter needs
 
 ### P2 - Normal
 
@@ -129,6 +126,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-29 | Playwright adoption proposal | `docs/sdqctl-proposals/playwright-adoption-proposal.md` - 316 lines, 4-phase plan, ~5-8 days effort |
 | 2026-01-29 | cgm-remote-monitor database layer audit | `docs/10-domain/cgm-remote-monitor-database-deep-dive.md` - 455 lines, 3 gaps (GAP-DB-001-003), Loop ordering verified |
 | 2026-01-29 | Extract Loop sync identity fields | `mapping/loop/sync-identity-fields.md` - 318 lines, 3 gaps (GAP-SYNC-005-007), ObjectIdCache pattern |
 | 2026-01-29 | Full audit: nightscout-librelink-up | `docs/10-domain/nightscout-librelink-up-deep-dive.md` - 378 lines, 3 gaps (GAP-LIBRELINK-001-003) |
