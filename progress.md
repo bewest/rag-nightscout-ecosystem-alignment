@@ -8,6 +8,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### xdrip-js Deep Dive (2026-01-29)
+
+Analyzed xdrip-js Node.js CGM interface library for Raspberry Pi-based Dexcom receivers.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/xdrip-js-deep-dive.md` | 380 lines, architecture + integration |
+| **Gaps** | `traceability/cgm-sources-gaps.md` | +4 gaps (GAP-XDRIPJS-001 to 004) |
+| **Gaps Index** | `traceability/gaps.md` | 216 → 220 total |
+
+**Key Findings**:
+- Library-only architecture (no built-in Nightscout upload)
+- G5/G6 only (no G7 J-PAKE support)
+- Deprecated noble BLE library (2018 fork)
+- Trend-to-direction mapping not standardized
+
+**Gaps Identified**:
+| Gap | Title |
+|-----|-------|
+| GAP-XDRIPJS-001 | No G7 Support |
+| GAP-XDRIPJS-002 | Deprecated BLE Library (noble) |
+| GAP-XDRIPJS-003 | No Direct Nightscout Integration |
+| GAP-XDRIPJS-004 | Trend-to-Direction Mapping Not Standardized |
+
+---
+
 ### Connectors Requirements Generation (2026-01-29)
 
 Generated 28 requirements from 28 connector gaps, closing the connectors domain requirements gap.

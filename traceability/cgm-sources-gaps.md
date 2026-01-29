@@ -1161,3 +1161,80 @@ wercker.yml  # Defunct service
 **Source**: `mapping/xdrip/nightscout-fields.md`
 
 ---
+
+---
+
+## xdrip-js Gaps
+
+---
+
+### GAP-XDRIPJS-001: No G7 Support
+
+**Description**: xdrip-js only supports Dexcom G5 and G6 transmitters. G7 uses J-PAKE authentication which is not implemented.
+
+**Affected Systems**: xdrip-js, Lookout, OpenAPS rigs using xdrip-js
+
+**Impact**:
+- Users with G7 cannot use xdrip-js-based solutions
+- Forces migration to xDrip+ on Android or Dexcom ONE
+- Limits longevity of Raspberry Pi-based CGM receivers
+
+**Remediation**: Implement J-PAKE authentication per GAP-G7-001.
+
+**Source**: `externals/xdrip-js/lib/transmitter.js`
+
+**Related**: GAP-CGM-002
+
+---
+
+### GAP-XDRIPJS-002: Deprecated BLE Library (noble)
+
+**Description**: The project depends on a forked version of noble, which is no longer maintained. The npm noble package was last updated in 2018.
+
+**Affected Systems**: xdrip-js, any Node.js BLE application
+
+**Impact**:
+- Compatibility issues with newer Bluetooth stacks
+- Security vulnerabilities in unmaintained code
+- Installation difficulties on modern Node.js versions
+
+**Source**: `externals/xdrip-js/package.json:18`
+
+**Remediation**: Migrate to @abandonware/noble or node-ble.
+
+---
+
+### GAP-XDRIPJS-003: No Direct Nightscout Integration
+
+**Description**: xdrip-js is a library only; it does not upload to Nightscout directly. Users must use Lookout or Logger client apps.
+
+**Affected Systems**: xdrip-js users
+
+**Impact**:
+- Additional software layer required
+- Lookout/Logger may have their own bugs
+- No standardized upload format
+
+**Remediation**: Add optional Nightscout uploader module or document standard format.
+
+**Source**: `externals/xdrip-js/README.md`
+
+---
+
+### GAP-XDRIPJS-004: Trend-to-Direction Mapping Not Standardized
+
+**Description**: xdrip-js provides numeric trend (mg/dL per 10 min), but Nightscout expects string direction. The conversion thresholds vary between implementations.
+
+**Affected Systems**: xdrip-js → Nightscout data flow
+
+**Impact**:
+- Inconsistent trend arrows across clients
+- No authoritative mapping table
+- Potential for clinical confusion
+
+**Source**: Not defined in xdrip-js; left to client apps
+
+**Remediation**: Define standard mapping in Nightscout entries spec.
+
+---
+

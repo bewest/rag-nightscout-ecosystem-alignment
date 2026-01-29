@@ -54,16 +54,16 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 5. [P3] Deep dive: xdrip-js Node.js CGM interface
-**Type:** Documentation | **Effort:** Medium
-**Repos:** xdrip-js
-**Focus:** Node.js Dexcom G5/G6 BLE interface for Raspberry Pi
-**Context:** CGM sources backlog needs items
-**Deliverables:** Deep dive documentation, 3+ gaps identified
-
 ---
 
 ## Completed Items
+
+### ~~[P3] Deep dive: xdrip-js Node.js CGM interface~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Created `docs/10-domain/xdrip-js-deep-dive.md` (380 lines)
+- 4 gaps identified: GAP-XDRIPJS-001 to 004
+- Key findings: No G7 support, deprecated noble BLE library
+- Total gaps: 216 → 220
 
 ### ~~[P2] Connectors Requirements Generation~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

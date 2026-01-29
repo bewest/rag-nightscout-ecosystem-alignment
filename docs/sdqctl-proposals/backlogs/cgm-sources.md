@@ -12,9 +12,8 @@ Covers: xDrip+, xDrip4iOS, DiaBLE, Dexcom G6/G7, Libre 2/3, Medtronic CGM
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | Deep dive: xdrip-js | P3 | Medium | Node.js Dexcom G5/G6 BLE for RPi |
-| 2 | CGM trend arrow standardization | P3 | Low | Map all 7 projects to unified enum |
-| 3 | Libre 3 protocol gap analysis | P2 | High | Currently "eavesdrop only" - document limits |
+| 1 | CGM trend arrow standardization | P3 | Low | Map all 7 projects to unified enum |
+| 2 | Libre 3 protocol gap analysis | P2 | High | Currently "eavesdrop only" - document limits |
 
 ---
 
@@ -22,6 +21,7 @@ Covers: xDrip+, xDrip4iOS, DiaBLE, Dexcom G6/G7, Libre 2/3, Medtronic CGM
 
 | Item | Date | Notes |
 |------|------|-------|
+| Deep dive: xdrip-js | 2026-01-29 | 380 lines, GAP-XDRIPJS-001..004 |
 | Extract xDrip+ Nightscout fields | 2026-01-29 | 370 lines, GAP-XDRIP-001..003 |
 | Compare CGM sensor session handling | 2026-01-29 | 407 lines deep dive, GAP-SESSION-001..004 |
 | Full audit: DiaBLE Libre protocol | 2026-01-29 | 487 lines deep dive, GAP-DIABLE-002/003 |

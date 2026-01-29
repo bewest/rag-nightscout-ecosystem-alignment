@@ -3375,6 +3375,9 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 | `GAP-LIBRELINK-NNN` | nightscout-librelink-up | GAP-LIBRELINK-001 |
 | `GAP-LOOPFOLLOW-NNN` | LoopFollow | GAP-LOOPFOLLOW-001 |
 | `GAP-LOOPCAREGIVER-NNN` | LoopCaregiver | GAP-LOOPCAREGIVER-001 |
+| `GAP-XDRIPJS-NNN` | xdrip-js Node.js | GAP-XDRIPJS-001 |
+| `GAP-XDRIP-NNN` | xDrip+ Android | GAP-XDRIP-001 |
+| `GAP-CGM-NNN` | CGM general | GAP-CGM-001 |
 
 ### Traceability Concepts
 
