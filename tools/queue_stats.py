@@ -114,6 +114,70 @@ def git_status() -> tuple[int, int]:
         return 0, 0
 
 
+def count_open_questions() -> tuple[int, int]:
+    """Count open questions (unresolved, total)."""
+    try:
+        content = Path("docs/OPEN-QUESTIONS.md").read_text(encoding='utf-8')
+    except FileNotFoundError:
+        return 0, 0
+    
+    # Count all OQ entries
+    total = len(re.findall(r'^### OQ-\d+', content, re.MULTILINE))
+    
+    # Count resolved (in Resolved table or marked resolved)
+    resolved_section = re.search(r'^## Resolved', content, re.MULTILINE)
+    if resolved_section:
+        resolved_content = content[resolved_section.start():]
+        resolved = len(re.findall(r'\| OQ-\d+', resolved_content))
+    else:
+        resolved = 0
+    
+    return total - resolved, total
+
+
+def count_backlog_items() -> dict:
+    """Count items in ecosystem and domain backlogs."""
+    result = {
+        "ready_queue": 0,
+        "backlog": 0,
+        "domain_backlogs": {},
+        "total_undone": 0
+    }
+    
+    # Count Ready Queue
+    try:
+        content = Path("docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md").read_text(encoding='utf-8')
+        result["ready_queue"] = len(re.findall(r'^### \d+\.', content, re.MULTILINE))
+        
+        # Count Backlog section items (unchecked only)
+        backlog_match = re.search(r'^## Backlog(.*?)(?=^## |\Z)', content, re.MULTILINE | re.DOTALL)
+        if backlog_match:
+            result["backlog"] = len(re.findall(r'^- \[ \]', backlog_match.group(1), re.MULTILINE))
+    except FileNotFoundError:
+        pass
+    
+    # Count domain backlogs
+    backlog_dir = Path("docs/sdqctl-proposals/backlogs")
+    if backlog_dir.exists():
+        for f in backlog_dir.glob("*.md"):
+            try:
+                content = f.read_text(encoding='utf-8')
+                # Count unchecked items
+                unchecked = len(re.findall(r'^- \[ \]', content, re.MULTILINE))
+                if unchecked > 0:
+                    result["domain_backlogs"][f.stem] = unchecked
+            except:
+                pass
+    
+    result["total_undone"] = (
+        result["ready_queue"] + 
+        result["backlog"] + 
+        sum(result["domain_backlogs"].values())
+    )
+    
+    return result
+
+
 def get_last_cycle() -> tuple[str, int]:
     """Get last commit hash and cycle number if present."""
     try:
@@ -286,6 +350,11 @@ def main():
         help='Show full dashboard'
     )
     parser.add_argument(
+        '--totals',
+        action='store_true',
+        help='Show total backlog items and open questions'
+    )
+    parser.add_argument(
         '--route',
         type=str,
         metavar='PREFIX',
@@ -303,6 +372,41 @@ def main():
                 print(f"{result['prefix']} → {result['file']}")
             else:
                 print(f"{result['prefix']} → {result['file']} (default/other)")
+        sys.exit(0)
+    
+    # Handle --totals
+    if args.totals:
+        oq_open, oq_total = count_open_questions()
+        backlog = count_backlog_items()
+        
+        if args.json:
+            result = {
+                "open_questions": {"unresolved": oq_open, "total": oq_total},
+                "backlog": backlog,
+                "grand_total": backlog["total_undone"] + oq_open
+            }
+            print(json.dumps(result, indent=2))
+        else:
+            lines = []
+            lines.append("=" * 50)
+            lines.append("BACKLOG & OPEN QUESTIONS SUMMARY")
+            lines.append("=" * 50)
+            lines.append("")
+            lines.append(f"Open Questions: {oq_open} unresolved / {oq_total} total")
+            lines.append("")
+            lines.append("Backlog Items:")
+            lines.append(f"  Ready Queue:     {backlog['ready_queue']}")
+            lines.append(f"  Ecosystem:       {backlog['backlog']}")
+            
+            if backlog["domain_backlogs"]:
+                lines.append("  Domain backlogs:")
+                for domain, count in sorted(backlog["domain_backlogs"].items()):
+                    lines.append(f"    {domain}: {count}")
+            
+            lines.append("")
+            lines.append(f"TOTAL: {backlog['total_undone']} backlog + {oq_open} OQ = {backlog['total_undone'] + oq_open}")
+            lines.append("=" * 50)
+            print("\n".join(lines))
         sys.exit(0)
     
     stats = collect_stats()

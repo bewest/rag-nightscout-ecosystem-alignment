@@ -28,12 +28,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
 
-### 2. [P3] Map algorithm terminology
-**Type:** Documentation | **Effort:** Low
-**Focus:** ISF, CR, DIA, UAM across oref0/AAPS/Loop/Trio
-**Workflow:** `terminology-sync.conv`
-
-### 3. [P3] cgm-remote-monitor Design Review
+### 2. [P3] cgm-remote-monitor Design Review
 **Type:** Analysis | **Effort:** High
 **Repos:** cgm-remote-monitor
 **Focus:** Refactoring recommendations based on 6-layer audit findings
