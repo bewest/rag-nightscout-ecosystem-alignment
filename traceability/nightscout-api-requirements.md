@@ -744,3 +744,83 @@ See [requirements.md](requirements.md) for the index.
 **Source**: `docs/10-domain/cgm-remote-monitor-design-review.md`
 
 ---
+
+## DeviceStatus Schema Requirements
+
+### REQ-DS-001: Unified Prediction Format
+
+**Statement**: Nightscout SHOULD provide a unified prediction format that normalizes Loop and oref0 prediction arrays.
+
+**Rationale**: Loop uses single `predicted.values` array while oref0 uses 4 separate curves (IOB, COB, UAM, ZT). Third-party tools must implement dual parsers.
+
+**Scenarios**:
+- Third-party tool displays predictions from any controller
+- Report generates unified prediction chart
+
+**Verification**:
+- API endpoint returns normalized prediction structure
+- Both Loop and oref0 data parse to same format
+
+**Gap**: GAP-DS-001
+
+**Source**: `docs/10-domain/nightscout-devicestatus-schema-audit.md`
+
+---
+
+### REQ-DS-002: IOB Component Breakdown
+
+**Statement**: All controllers SHOULD report IOB with basal and bolus components.
+
+**Rationale**: Loop reports only total IOB, while oref0 provides `basaliob` and `bolusiob`. This limits analysis capabilities.
+
+**Scenarios**:
+- Report shows IOB by source (basal vs bolus)
+- Retrospective analysis of insulin delivery
+
+**Verification**:
+- devicestatus includes `iob.basaliob` and `iob.bolusiob`
+- Reports can chart IOB components separately
+
+**Gap**: GAP-DS-002
+
+**Source**: `docs/10-domain/nightscout-devicestatus-schema-audit.md`
+
+---
+
+### REQ-DS-003: Override Status Reporting
+
+**Statement**: All controllers SHOULD report active override/temporary target status in devicestatus.
+
+**Rationale**: Loop has `status.override` but oref0 uses profile switches, which aren't visible in devicestatus.
+
+**Scenarios**:
+- Dashboard shows active override for any controller
+- Reports annotate periods with overrides active
+
+**Verification**:
+- devicestatus includes override field for all controllers
+- Profile switch events linked to devicestatus
+
+**Gap**: GAP-DS-003
+
+**Source**: `docs/10-domain/nightscout-devicestatus-schema-audit.md`
+
+---
+
+### REQ-DS-004: Eventual BG Prediction
+
+**Statement**: All controllers SHOULD report `eventualBG` prediction endpoint.
+
+**Rationale**: oref0 explicitly reports `eventualBG`, Loop does not. This limits prediction visualization.
+
+**Scenarios**:
+- Dashboard shows eventual BG for any controller
+- Alerts based on eventual BG threshold
+
+**Verification**:
+- devicestatus includes `eventualBG` field
+- Value represents prediction endpoint (2-6 hours out)
+
+**Gap**: GAP-DS-004
+
+**Source**: `docs/10-domain/nightscout-devicestatus-schema-audit.md`
