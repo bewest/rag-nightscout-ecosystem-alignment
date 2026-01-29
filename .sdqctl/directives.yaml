@@ -30,3 +30,30 @@ directives:
       handler: python tools/verify_refs.py
       description: "Verify reference integrity"
       timeout: 60
+
+  HYGIENE:
+    # Workflow hygiene tools
+    queue-stats:
+      handler: python tools/queue_stats.py --json
+      description: "Quick queue and file size status"
+      timeout: 10
+
+    check-queues:
+      handler: python tools/backlog_hygiene.py --check --json
+      description: "Validate backlog queue health"
+      timeout: 30
+
+    check-sizes:
+      handler: python tools/doc_chunker.py --check --json
+      description: "Check file sizes against thresholds"
+      timeout: 30
+
+    plan-chunks:
+      handler: python tools/doc_chunker.py --plan traceability/gaps.md --json
+      description: "Generate chunking plan for gaps.md"
+      timeout: 30
+
+    archive-old:
+      handler: python tools/backlog_hygiene.py --archive-completed --days 14 --dry-run --json
+      description: "Preview archiving old completed items"
+      timeout: 30
