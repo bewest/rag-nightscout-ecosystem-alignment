@@ -3522,3 +3522,34 @@ See `docs/10-domain/cgm-trend-arrow-standardization.md` for full cross-project m
 |-------|-------------|
 | `percentage` | Scale profile 50-200% |
 | `timeshift` | Shift schedule by hours |
+
+## Bolus Wizard/Calculator Terms
+
+### Calculation Components
+
+| Concept | AAPS | Loop | Description |
+|---------|------|------|-------------|
+| Carb bolus | `insulinFromCarbs` | Included in recommendation | Carbs ÷ ICR |
+| Correction bolus | `insulinFromBG` | `insulinCorrection` | BG adjustment |
+| IOB subtraction | `insulinFromBolusIOB` + `insulinFromBasalIOB` | `pendingInsulin` | Active insulin |
+| Trend correction | `insulinFromTrend` | Via prediction | BG momentum |
+| Total result | `calculatedTotalInsulin` | `ManualBolusRecommendation.amount` | Final dose |
+
+### AAPS-Specific Features
+
+| Term | Description |
+|------|-------------|
+| `SuperBolus` | Add 2h basal to bolus, suspend basal |
+| `insulinFromCOB` | Cover unabsorbed carbs |
+| `percentageCorrection` | Scale result 0-200% |
+| `positiveIOBOnly` | Ignore negative IOB |
+| `includeBolusIOB` / `includeBasalIOB` | Toggle IOB components |
+
+### Loop-Specific Features
+
+| Term | Description |
+|------|-------------|
+| `pendingInsulin` | All active + scheduled insulin |
+| `suspendThreshold` | Return 0 if prediction below |
+| `BolusRecommendationNotice` | Warnings (below target, etc.) |
+| `volumeRounder` | Pump-specific dose rounding |

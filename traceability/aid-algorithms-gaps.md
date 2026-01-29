@@ -780,3 +780,49 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Impact:** Loop's curve-based insulin action doesn't map to simple DIA value.
 
 **Remediation:** Define mapping between Loop model presets and equivalent DIA values.
+
+## Bolus Wizard Gaps
+
+### GAP-BOLUS-001: Prediction-Based vs Arithmetic Formula
+
+**Description:** Loop uses prediction-based bolus calculation while AAPS uses traditional arithmetic formula. Same inputs produce different recommendations.
+
+**Source:** 
+- `externals/AndroidAPS/.../BolusWizard.kt:210-216`
+- `externals/LoopWorkspace/.../DoseMath.swift:275-332`
+
+**Impact:** Users switching between systems see different bolus recommendations for identical situations.
+
+**Remediation:** Document expected differences; different approaches are intentional design choices.
+
+### GAP-BOLUS-002: IOB Handling Mismatch
+
+**Description:** AAPS separates bolus/basal IOB with user toggles; Loop uses combined pending insulin.
+
+**Source:** 
+- `externals/AndroidAPS/.../BolusWizard.kt:235-242`
+- `externals/LoopWorkspace/.../DoseMath.swift:546`
+
+**Impact:** Different IOB subtraction behavior; AAPS allows excluding basal IOB.
+
+**Remediation:** Document as intentional design difference.
+
+### GAP-BOLUS-003: SuperBolus Not Portable
+
+**Description:** AAPS SuperBolus feature (add 2h basal to bolus) has no Loop equivalent.
+
+**Source:** `externals/AndroidAPS/.../BolusWizard.kt:248-253`
+
+**Impact:** Feature not available when switching to Loop.
+
+**Remediation:** Document as AAPS-specific feature.
+
+### GAP-BOLUS-004: Trend Correction Differences
+
+**Description:** AAPS has explicit trend correction toggle; Loop incorporates trend via prediction model.
+
+**Source:** `externals/AndroidAPS/.../BolusWizard.kt:222-225`
+
+**Impact:** AAPS trend correction is linear extrapolation (15min × 3); Loop uses full prediction.
+
+**Remediation:** Document different approaches to trend handling.

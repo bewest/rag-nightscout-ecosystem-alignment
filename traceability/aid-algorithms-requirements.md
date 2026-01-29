@@ -648,3 +648,63 @@ See [requirements.md](requirements.md) for the index.
 **Gap**: GAP-PROF-005
 
 **Source**: `docs/10-domain/profile-schema-alignment.md`
+
+## Bolus Wizard Requirements
+
+### REQ-BOLUS-001: Document Calculation Approach
+
+**Statement**: Each controller SHOULD document its bolus calculation approach clearly.
+
+**Rationale**: Loop uses prediction-based calculation while AAPS uses traditional arithmetic. Users need to understand expected differences.
+
+**Scenarios**:
+- User switches from AAPS to Loop
+- Comparing recommendations between systems
+
+**Verification**:
+- Documentation describes formula used
+- Examples show calculation steps
+
+**Gap**: GAP-BOLUS-001
+
+**Source**: `docs/10-domain/bolus-wizard-formula-comparison.md`
+
+---
+
+### REQ-BOLUS-002: IOB Subtraction Transparency
+
+**Statement**: Controllers SHOULD clearly indicate what IOB components are subtracted.
+
+**Rationale**: AAPS allows toggling basal/bolus IOB separately; Loop combines them.
+
+**Scenarios**:
+- User wants to exclude basal IOB
+- Debugging unexpected recommendations
+
+**Verification**:
+- UI shows IOB breakdown
+- Documentation explains IOB handling
+
+**Gap**: GAP-BOLUS-002
+
+**Source**: `docs/10-domain/bolus-wizard-formula-comparison.md`
+
+---
+
+### REQ-BOLUS-003: Nightscout Wizard Sync
+
+**Statement**: Bolus wizard inputs SHOULD sync to Nightscout for retrospective analysis.
+
+**Rationale**: AAPS sends full BolusCalculatorResult; Loop sends limited data.
+
+**Scenarios**:
+- Retrospective review of bolus decisions
+- Endo/CDE reviewing patient data
+
+**Verification**:
+- Wizard inputs visible in Nightscout reports
+- BCR data available via API
+
+**Gap**: Related to treatment sync
+
+**Source**: `docs/10-domain/bolus-wizard-formula-comparison.md`

@@ -1543,3 +1543,25 @@ Analyzed profile/therapy settings schemas across Loop, AAPS, Trio, and Nightscou
 - `externals/LoopWorkspace/LoopKit/LoopKit/TherapySettings.swift:11-69`
 - `externals/AndroidAPS/core/interfaces/profile/Profile.kt:14-133`
 - `externals/AndroidAPS/core/interfaces/profile/PureProfile.kt:9-18`
+
+### Bolus Wizard Formula Comparison (2026-01-29)
+
+Compared bolus calculation formulas across AAPS, Loop, and Trio.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep dive | `docs/10-domain/bolus-wizard-formula-comparison.md` | 10.4KB |
+| Gap additions | `traceability/aid-algorithms-gaps.md` | GAP-BOLUS-001-004 |
+| Requirements | `traceability/aid-algorithms-requirements.md` | REQ-BOLUS-001-003 |
+
+**Key Findings**:
+- AAPS: Traditional arithmetic formula (BG - target) / ISF
+- Loop: Prediction-based using entire BG curve and insulin effect modeling
+- AAPS has SuperBolus, percentage scaling, separate basal/bolus IOB toggles
+- Loop has suspend threshold protection, dynamic targets
+
+**Gaps Identified**: GAP-BOLUS-001 (formula approach), GAP-BOLUS-002 (IOB handling), GAP-BOLUS-003 (SuperBolus), GAP-BOLUS-004 (trend correction)
+
+**Source Files Analyzed**:
+- `externals/AndroidAPS/core/objects/wizard/BolusWizard.kt:154-284`
+- `externals/LoopWorkspace/LoopKit/LoopAlgorithm/DoseMath.swift:540-575`

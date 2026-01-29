@@ -41,21 +41,29 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Bolus wizard formula comparison
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Compare bolus calculator implementations across controllers
-**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
-**Context:** IOB subtraction, target correction, carb ratio application
-
-### 5. [P2] Autosens/Dynamic ISF comparison
+### 4. [P2] Autosens/Dynamic ISF comparison
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Compare sensitivity adjustment algorithms across systems
 **Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
 **Context:** Autosens vs Retrospective Correction vs Dynamic ISF
 
+### 5. [P2] Carb absorption model comparison
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Compare carb absorption algorithms (linear vs dynamic)
+**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
+**Context:** Loop dynamic absorption vs oref0 linear decay vs UAM
+
 ---
 
 ## Completed Items
+
+### ~~[P2] Bolus wizard formula comparison~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Deep dive: `docs/10-domain/bolus-wizard-formula-comparison.md` (10.4KB)
+- Compared AAPS arithmetic vs Loop prediction-based formulas
+- 4 gaps identified: GAP-BOLUS-001/002/003/004
+- 3 requirements added: REQ-BOLUS-001/002/003
+- Key finding: Loop uses prediction curve; AAPS has SuperBolus, % scaling
 
 ### ~~[P2] Profile schema alignment~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
