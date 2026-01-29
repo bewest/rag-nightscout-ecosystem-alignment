@@ -240,6 +240,19 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 | Predicted Glucose | `predBgs` in loop | `predictedGlucose` | `predictedBg` | `predictedBg` | N/A (no prediction) |
 | Glucose Delta | `delta` in entries | `glucoseMomentum` | `delta` | `delta` | `BgReading.currentSlope()` |
 
+#### Prediction Array Formats
+
+| Aspect | Loop | AAPS/Trio (oref) |
+|--------|------|------------------|
+| **Model** | Single combined curve | 4 separate curves (IOB/COB/UAM/ZT) |
+| **NS Field** | `loop.predicted.values` | `openaps.suggested.predBGs.*` |
+| **Data Type** | Decimal (HKQuantity) | Integer mg/dL |
+| **Interval** | Variable | 5 minutes fixed |
+
+**Deep Dive**: [`docs/10-domain/prediction-arrays-comparison.md`](../../docs/10-domain/prediction-arrays-comparison.md)
+
+**Gap Reference**: GAP-PRED-002 (Loop single vs oref multi-curve), GAP-PRED-003 (interval not standardized), GAP-PRED-004 (no confidence bounds)
+
 **Note**: The distinction between persistent configuration, events, state snapshots, and derived values is critical for accurate cross-project translation.
 
 **xDrip+ IOB**: Uses `Iob.java` with multi-insulin support via `InsulinInjection` profiles.

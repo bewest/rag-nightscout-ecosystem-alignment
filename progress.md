@@ -6,6 +6,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Prediction Array Formats Comparison (2026-01-28)
+
+Cross-system analysis of glucose prediction array formats across Loop, AAPS, and Trio.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Comparison** | `docs/10-domain/prediction-arrays-comparison.md` | 319 lines, 3 systems |
+
+#### Key Findings
+
+| System | Prediction Model | devicestatus Field |
+|--------|------------------|-------------------|
+| Loop | Single combined curve | `loop.predicted.values` |
+| AAPS | 4 separate curves (IOB/COB/UAM/ZT) | `openaps.suggested.predBGs.*` |
+| Trio | 4 separate curves (IOB/COB/UAM/ZT) | `openaps.suggested.predBGs.*` |
+
+**Gaps Identified**: GAP-PRED-002, GAP-PRED-003, GAP-PRED-004
+
+---
+
 ### Batch Operation Ordering Deep Dive (2026-01-28)
 
 Analysis of sync order requirements and ID mapping patterns across Loop, AAPS, Nightscout.

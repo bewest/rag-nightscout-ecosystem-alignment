@@ -27,16 +27,16 @@ Items ready for immediate work. Keep this at 3 items.
 **Focus:** API v3, plugins (38), sync, authentication
 **Workflow:** `deep-dive.conv` (multi-cycle)
 
-### 2. [P1] Gap discovery: Prediction array formats
-**Type:** Analysis | **Effort:** Medium
-**Focus:** IOB/COB/UAM/ZT curve differences across systems
-**Workflow:** `gap-discovery.conv`
-
-### 3. [P1] Full audit: openaps
+### 2. [P1] Full audit: openaps
 **Type:** Audit | **Effort:** Medium
 **Source:** `externals/oref0/`
 **Focus:** Algorithm origins, oref0 relationship
 **Workflow:** `deep-dive.conv`
+
+### 3. [P2] Algorithm conformance suite
+**Type:** Tooling | **Effort:** Medium
+**Focus:** Create test vectors for Rust vs JS oref comparison
+**Workflow:** `tools/`
 
 ---
 
@@ -51,12 +51,9 @@ Items ready for immediate work. Keep this at 3 items.
 
 - [ ] **PR analysis: cgm-remote-monitor** - Review open PRs for ecosystem impact
 - [ ] **PR analysis: share2nightscout-bridge** - Review open PRs
-- [x] ~~**Deep dive: Batch operation ordering**~~ - Promoted to Ready Queue #2
-- [x] ~~**Gap discovery: Prediction array formats**~~ - Promoted to Ready Queue #3
-- [ ] **Full audit: openaps** - Algorithm origins, Python-based (setup.py), 36 lines documented
-  - Components: openaps/ module, bin/, Makefile
-  - Focus: Historical context, oref0 relationship, device abstractions
-  - Workflow: `deep-dive.conv`
+- [x] ~~**Deep dive: Batch operation ordering**~~ - Completed
+- [x] ~~**Gap discovery: Prediction array formats**~~ - Completed (319 lines, 3 gaps)
+- [x] ~~**Full audit: openaps**~~ - Promoted to Ready Queue #2
 - [ ] **Algorithm conformance suite** - Create test vectors for Rust vs JS oref comparison
   - From: Modernization analysis next steps
 
@@ -100,6 +97,7 @@ Items ready for immediate work. Keep this at 3 items.
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-28 | Gap discovery: Prediction array formats | `docs/10-domain/prediction-arrays-comparison.md` - 319 lines, 3 gaps (GAP-PRED-002-004) |
 | 2026-01-28 | Deep dive: Batch operation ordering | `docs/10-domain/batch-ordering-deep-dive.md` - 334 lines, 3 requirements |
 | 2026-01-28 | Compare override/profile switch semantics | `docs/10-domain/override-profile-switch-comparison.md` - 331 lines, 4 new gaps |
 | 2026-01-28 | Compare remote bolus command handling | `docs/10-domain/remote-bolus-comparison.md` - 348 lines, 4 systems, 2 new gaps |

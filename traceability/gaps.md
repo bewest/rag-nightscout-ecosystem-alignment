@@ -1811,6 +1811,61 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ---
 
+### GAP-PRED-002: Loop Single Prediction Incompatible with oref Multi-Curve Display
+
+**Scenario**: Viewing Loop predictions in Nightscout alongside AAPS/Trio users
+
+**Description**: Loop uploads a single combined prediction curve (`loop.predicted.values`), while Nightscout's OpenAPS plugin expects separate `predBGs.IOB`, `predBGs.COB`, `predBGs.UAM`, `predBGs.ZT` arrays. Loop predictions cannot show IOB/COB/UAM/ZT toggle.
+
+**Source**: `NightscoutServiceKit/Extensions/StoredDosingDecision.swift`, `cgm-remote-monitor/lib/plugins/openaps.js`
+
+**Impact**:
+- Loop predictions display as single line; AAPS/Trio show 4 toggleable curves
+- Different visualization experience between Loop and AAPS/Trio users
+- Harder to compare algorithm behavior across systems
+
+**Status**: Design difference - document as expected behavior
+
+---
+
+### GAP-PRED-003: Prediction Interval Not Standardized
+
+**Scenario**: Comparing prediction accuracy across systems
+
+**Description**: AAPS/Trio use fixed 5-minute intervals for prediction arrays; Loop may use variable intervals based on algorithm timing and available glucose data.
+
+**Source**: `LoopAlgorithm/GlucosePredictionAlgorithm.swift`, `app.aaps.core.interfaces.aps.Predictions`
+
+**Impact**:
+- Cannot directly compare prediction arrays between systems
+- Interpolation needed for cross-system accuracy analysis
+- Time alignment complexity for research
+
+**Status**: Under investigation
+
+---
+
+### GAP-PRED-004: No Prediction Confidence or Uncertainty
+
+**Scenario**: Assessing prediction reliability for algorithm tuning
+
+**Description**: None of the AID systems upload prediction confidence intervals or uncertainty bounds. Only point estimates are available.
+
+**Source**: All prediction implementations
+
+**Impact**:
+- Cannot assess prediction reliability
+- Algorithm comparison limited to point estimates
+- No way to detect high-uncertainty situations
+
+**Possible Solutions**:
+1. Add optional `confidenceBounds` field to prediction format
+2. Include standard deviation or percentile ranges
+
+**Status**: Future enhancement consideration
+
+---
+
 ## Timezone and DST Gaps
 
 ### GAP-TZ-001: Most Pump Drivers Cannot Handle DST
