@@ -40,10 +40,10 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Level 4: Gap verification - GAP-ALG-* 
+### 4. [P2] Level 4: Gap verification - GAP-API-* 
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #19
-**Focus:** Verify algorithm-related gaps are still open
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #20
+**Focus:** Verify Nightscout API gaps are still open
 **Method:** Grep source for gap resolution evidence
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
@@ -62,6 +62,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 4: GAP-ALG-* verification~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 7 claims verified: **100% accurate**
+- GAP-ALG-001: oref0 runner exists, 85 AAPS vectors confirmed
+- GAP-ALG-002: 30.6% pass rate (69.4% divergence) verified
+- GAP-ALG-003: oref0 4 curves vs Loop single curve confirmed
+- GAP-CARB-001: Still open
 
 ### ~~[P3] Level 3: Pump communication deep dive~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

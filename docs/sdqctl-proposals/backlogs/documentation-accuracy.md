@@ -136,7 +136,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | # | Item | Priority | Domain | Status |
 |---|------|----------|--------|--------|
 | 18 | Verify GAP-CGM-* accuracy | P2 | cgm-sources | ✅ GAP-BLE-001/002 confirmed open |
-| 19 | Verify GAP-ALG-* accuracy | P2 | aid-algorithms | Pending |
+| 19 | Verify GAP-ALG-* accuracy | P2 | aid-algorithms | ✅ **100% accurate** (7 claims verified) |
 | 20 | Verify GAP-API-* accuracy | P2 | nightscout-api | Pending |
 | 21 | Verify GAP-SYNC-* accuracy | P2 | sync-identity | Pending |
 | 22 | Verify GAP-TREAT-* accuracy | P2 | treatments | Pending |
@@ -166,6 +166,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 
 | Item | Date | Notes |
 |------|------|-------|
+| Item #19: GAP-ALG-* verification | 2026-01-29 | **100% accurate** - 7 claims verified (conformance, 85 vectors, 30.6% pass) |
 | Item #10: CGM data sources deep dive | 2026-01-29 | **100% accurate** - 8 major claims verified |
 | Item #11: Algorithm comparison deep dive | 2026-01-29 | **100% accurate** - 7 major claims verified |
 | Item #9: Terminology matrix sampling | 2026-01-29 | **100% accurate** - 15 terms verified across 6 repos |

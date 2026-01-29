@@ -8,6 +8,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 4: GAP-ALG-* Verification (2026-01-29)
+
+Verified algorithm gap accuracy against source code and conformance suite.
+
+| Claim | Evidence | Status |
+|-------|----------|--------|
+| GAP-ALG-001: oref0 runner exists | `conformance/runners/oref0-runner.js` | ✅ Verified |
+| GAP-ALG-001: 85 AAPS vectors | `androidTest/assets/results/*.json` = 85 files | ✅ Verified |
+| GAP-ALG-002: 69% divergence | `conformance-summary.json`: 30.6% pass = 69.4% fail | ✅ Verified |
+| GAP-ALG-003: oref0 4 curves | `determine-basal.js:442-445` (IOB/COB/UAM/ZT) | ✅ Verified |
+| GAP-ALG-003: Loop single curve | `predictedGlucose` array | ✅ Verified |
+| oref0 test files exist | `tests/*.test.js` (5+ files) | ✅ Verified |
+| GAP-CARB-001: Still open | No resolution found | ✅ Verified |
+
+**Level 4 Progress**: 2/6 items complete (33%)
+
+---
+
 ### Level 3: Pump Communication Deep Dive (2026-01-29)
 
 Verified pump-communication-deep-dive.md claims against source code.
