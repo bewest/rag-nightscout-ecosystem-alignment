@@ -2,7 +2,7 @@
 
 > **Domain**: Nightscout collections, API v3, authentication  
 > **Parent**: [ECOSYSTEM-BACKLOG.md](../ECOSYSTEM-BACKLOG.md)  
-> **Last Updated**: 2026-01-28
+> **Last Updated**: 2026-01-29
 
 Covers: cgm-remote-monitor, entries, treatments, devicestatus, profile
 
@@ -22,7 +22,37 @@ Covers: cgm-remote-monitor, entries, treatments, devicestatus, profile
 | 8 | Deep dive: Authentication flows | P2 | Medium | After chunked audit |
 | 9 | Playwright adoption proposal | P1 | Low | → Ready Queue #5 |
 | 10 | Audit: Nocturne architecture | P1 | Medium | OQ-020 modernization path |
-| 11 | Interoperability spec draft | P1 | Medium | → Ready Queue #1 |
+| 11 | **Minimal Interop Spec v1** | P1 | Medium | OQ-021 - fields identified, need formal spec |
+
+### Minimal Interop Spec v1 Details (OQ-021)
+
+**Status**: Fields identified via code analysis (2026-01-29), formal spec creation pending.
+
+**Treatment Fields (Common Ground)**:
+| Field | Type | Description |
+|-------|------|-------------|
+| `created_at` | ISO 8601 | When treatment occurred |
+| `eventType` | string | Classification |
+| `enteredBy` | string | Source identifier |
+| `insulin` | number | Bolus units (for bolus) |
+| `carbs` | number | Grams (for carb events) |
+
+**DeviceStatus Fields (Common Ground)**:
+| Field | Type | Description |
+|-------|------|-------------|
+| `device` | string | APS system ID |
+| `date`/`mills` | timestamp | When generated |
+| `openaps.iob` | number | Insulin on board |
+| `pump.battery.percent` | number | Pump battery % |
+| `pump.reservoir` | number | Reservoir units |
+| `uploader.battery` | number | Phone battery % |
+
+**Behaviors**:
+- Timestamp: ISO 8601 UTC (REQ-010)
+- Batch order: Preserved (REQ-036)
+- Deduplication: `created_at` + `eventType` + `device`
+
+**Next Step**: Create `specs/minimal-interop-v1.yaml` (OpenAPI 3.0 format)
 
 ---
 

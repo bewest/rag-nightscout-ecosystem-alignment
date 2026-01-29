@@ -1,0 +1,264 @@
+# backlog-cycle-v2.conv - Improved backlog-driven work cycle with git hygiene
+#
+# Improvements over v1:
+# - RUN git status injected at key checkpoints for awareness
+# - Explicit LIVE-BACKLOG processing with move to Processed table
+# - Mandatory commit step with verification
+# - Queue validation after each cycle
+# - Better phase separation with COMPACT-PRESERVE
+#
+# Usage:
+#   sdqctl iterate workflows/orchestration/backlog-cycle-v2.conv
+#   sdqctl iterate workflows/orchestration/backlog-cycle-v2.conv -n 3
+#   sdqctl iterate workflows/orchestration/backlog-cycle-v2.conv \
+#     --prologue "Prioritize: remote bolus comparison"
+#
+# I/O Contract:
+#   INPUT:  LIVE-BACKLOG.md (check FIRST for human requests)
+#           docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md (Ready Queue)
+#           docs/sdqctl-proposals/backlogs/*.md (domain backlogs)
+#   OUTPUT: Updated 5 facets, committed to git
+#           Updated backlogs with items moved to Processed/Completed
+#   ESCALATE: Open questions to docs/OPEN-QUESTIONS.md
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE analysis
+CONTEXT-LIMIT 65%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE git-status selected-task findings
+
+# === Git and RUN settings ===
+RUN-ON-ERROR continue
+RUN-OUTPUT always
+RUN-OUTPUT-LIMIT 20K
+RUN-TIMEOUT 30s
+
+# === Phase 0: State Check ===
+PROMPT ## Phase 0: State Check
+
+Check current git and backlog state before starting work.
+
+RUN git --no-pager status --short && echo "---" && git --no-pager log --oneline -3
+
+PROMPT Review the git status above:
+1. Are there uncommitted changes from previous cycles?
+2. What was the last committed cycle?
+
+**If uncommitted work exists:**
+- Review what's pending
+- Commit if work is complete: `git add -A && git commit -m "docs: [description] (Cycle N)"`
+- Or note as work-in-progress
+
+**Output current state:**
+```markdown
+### State Check
+- Uncommitted files: [N]
+- Last cycle: [N]
+- Action: [Commit pending / Clean / WIP noted]
+```
+
+COMPACT
+
+# === Phase 1: Task Selection ===
+PROMPT ## Phase 1: Task Selection
+
+RUN cat LIVE-BACKLOG.md | head -40
+
+PROMPT Review LIVE-BACKLOG.md above for **unprocessed human requests**.
+
+**Priority Order:**
+1. **LIVE-BACKLOG bullet points** (not yet in Processed table) - HIGHEST
+2. Ready Queue from ECOSYSTEM-BACKLOG.md
+3. Domain backlogs (backlogs/*.md)
+
+**For LIVE-BACKLOG items:**
+- If selecting a LIVE item, immediately add it to the Processed table with status "→ In Progress"
+- Format: `| Item description | Priority | → In Progress | {{DATE}} |`
+
+**Check for blockers:**
+- If task needs files that don't exist → note blocker
+- If task depends on incomplete work → note dependency
+
+**Output:**
+```markdown
+### Selected Task
+
+**Task:** [title]
+**Type:** [Comparison|Extraction|Deep-Dive|Gap-Discovery|Proposal]
+**Source:** [LIVE-BACKLOG / Ready Queue #N / domain-backlog.md]
+**LIVE-BACKLOG Updated:** [Yes - moved to Processed / N/A]
+
+**Plan:**
+1. [first step]
+2. [second step]
+3. [update facets]
+```
+
+COMPACT
+
+# === Phase 2: Execute Work ===
+PROMPT ## Phase 2: Execute Work
+
+Perform the selected task based on its type.
+
+**Work Patterns by Type:**
+
+### Comparison Tasks
+1. Search each repo for the feature/concept
+2. Document differences in terminology, behavior, structure
+3. Create comparison table
+4. Identify gaps (inconsistencies = potential gaps)
+
+### Extraction Tasks
+1. Navigate to source path
+2. Document schemas, fields, structures
+3. Map to existing OpenAPI specs or create new entries
+
+### Deep-Dive Tasks
+1. Explore repo structure
+2. Document key components
+3. Trace data flows
+4. Build terminology mappings
+
+### Gap-Discovery Tasks
+1. Compare actual behavior to expectations
+2. Find undocumented features
+3. Find inconsistencies between systems
+
+### Proposal Tasks
+1. Research existing approaches
+2. Draft proposal document
+3. Include rationale, alternatives, recommendations
+
+**Code References:**
+Always use format: `repo:path/from/repo/root.ext:line`
+
+**Document findings as you work.**
+
+COMPACT
+
+# === Phase 3: Update 5 Facets ===
+PROMPT ## Phase 3: Update 5 Facets
+
+RUN git --no-pager status --short
+
+PROMPT Update all relevant project facets based on your findings.
+
+**Facet 1: Terminology Matrix**
+File: `mapping/cross-project/terminology-matrix.md`
+- Add new term mappings discovered
+
+**Facet 2: Gaps**
+File: `traceability/gaps.md`
+- Add new gaps with proper IDs: GAP-XXX-NNN
+
+**Facet 3: Requirements**
+File: `traceability/requirements.md`
+- Extract any requirements discovered (REQ-NNN format)
+
+**Facet 4: Deep Dive** (if applicable)
+File: `docs/10-domain/{topic}-deep-dive.md`
+- Add or update technical documentation
+
+**Facet 5: Progress**
+File: `progress.md`
+- Add entry with summary table of deliverables
+
+**Be surgical - only update what changed.**
+
+COMPACT
+
+# === Phase 4: Groom Backlogs ===
+PROMPT ## Phase 4: Groom Backlogs
+
+Maintain backlog hygiene after completing work.
+
+RUN head -50 LIVE-BACKLOG.md
+
+PROMPT **Step 1: Update LIVE-BACKLOG.md Processed Table**
+For the task we just completed:
+- Update status from "→ In Progress" to "✅ Complete" or "→ Queued to [backlog]"
+- Add date
+
+**Step 2: Move to Completed in ECOSYSTEM-BACKLOG.md**
+- Move item to Completed table with outcome summary
+- Strike through in Ready Queue or Backlog
+
+**Step 3: Replenish Queues**
+- If Ready Queue < 5 items, promote from Backlog
+- Prioritize P0 → P1 → P2
+
+**Step 4: Generate New Tasks** (if applicable)
+From discoveries:
+- New gaps → may warrant new backlog items
+- Blockers found → create follow-up items
+
+**Step 5: Surface Open Questions**
+Any decisions needed from human:
+- Add to docs/OPEN-QUESTIONS.md with proper OQ-NNN ID
+
+COMPACT
+
+# === Phase 5: Commit Work ===
+PROMPT ## Phase 5: Commit Work
+
+RUN git --no-pager status && echo "---" && git --no-pager diff --stat
+
+PROMPT **MANDATORY: Commit all changes from this cycle.**
+
+Review the git status above. Commit with:
+
+```bash
+git add -A
+git commit -m "docs: [brief description] (Cycle N)"
+```
+
+Where:
+- [brief description] = main deliverable (e.g., "tconnectsync deep dive", "OQ-001 resolution")
+- N = next cycle number after last commit
+
+**Verification:**
+After commit, confirm with `git log --oneline -1`
+
+**If commit fails:**
+- Note the error
+- Do NOT proceed to next cycle until resolved
+
+COMPACT
+
+# === Phase 6: Cycle Summary ===
+PROMPT ## Phase 6: Cycle Summary
+
+RUN git --no-pager log --oneline -1 && echo "---" && head -30 docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md | grep -E "^### [0-9]"
+
+PROMPT Summarize what was accomplished.
+
+**Output:**
+```markdown
+### Backlog Cycle Complete
+
+**Task Completed:** [title]
+**Commit:** [hash] [message]
+
+**Facets Updated:**
+- [ ] terminology-matrix.md: [N terms]
+- [ ] gaps.md: [N gaps added]
+- [ ] requirements.md: [N requirements]
+- [ ] {topic}-deep-dive.md: [created/updated]
+- [ ] progress.md: [entry added]
+
+**Backlog Changes:**
+- LIVE-BACKLOG: [item moved to Processed]
+- ECOSYSTEM-BACKLOG: [item moved to Completed]
+- New items generated: [N]
+
+**Next Ready Queue:**
+1. [task 1]
+2. [task 2]
+3. [task 3]
+
+**Ready for next cycle:** [Yes|No - reason]
+```
+
+COMPACT

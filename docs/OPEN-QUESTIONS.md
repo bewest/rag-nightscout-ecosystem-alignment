@@ -45,15 +45,22 @@ Questions that directly block active backlog items.
 2. Server returns identifier in each response item - clients match by key
 3. Clients should not rely on order - require identifiers
 
-**Blocks**: Loop sync reliability (GAP-BATCH-002), batch testing scenarios
+**Resolution**: ✅ **Verified - Nightscout already preserves order.**
 
-**Owner**: Nightscout API maintainers
+Analysis (2026-01-29) confirmed:
+- Loop uses positional matching via `zip()` (`NightscoutService.swift:209-214`)
+- Nightscout API v1 uses `async.eachSeries()` (`lib/server/treatments.js:21`) - sequential processing preserves order
+- Response includes full object with `_id` added
 
-**Action**: Code analysis to determine Loop's dependency on order. Preference: support both approaches if feasible.
+**Requirement Added**: REQ-036 (Batch Response Order Preservation)
+
+**Status**: ✅ Resolved - documented as requirement, no code changes needed
+
+**Owner**: N/A - verified behavior
 
 **Related**:
+- [REQ-036](../traceability/requirements.md#req-036-batch-response-order-preservation)
 - [GAP-BATCH-002](../traceability/gaps.md#gap-batch-002-response-order-critical-for-loop-syncidentifier-mapping)
-- [GAP-BATCH-003](../traceability/gaps.md#gap-batch-003-deduplicated-items-must-return-all-positions)
 
 ---
 
@@ -190,13 +197,17 @@ Questions about priorities, scope, and project direction.
 
 **Context**: Current gaps document everything that differs. We need to identify the essential interoperability requirements that would enable reliable data exchange.
 
-**Candidates**:
-- Timestamp format (REQ-010: UTC ISO 8601)
-- Sync identity (syncId/identifier)
-- Core treatment fields (insulin, carbs, created_at)
-- devicestatus structure
+**Analysis Complete (2026-01-29)**:
 
-**Action**: Queue analysis to identify common ground across controllers first, then define minimal spec based on intersection.
+Code analysis across Loop, AAPS, Trio, and Nightscout identified the common ground:
+
+**Treatment Fields**: `created_at`, `eventType`, `enteredBy`, `insulin`, `carbs`
+**DeviceStatus Fields**: `device`, `date`/`mills`, `openaps.iob`, `pump.battery.percent`, `pump.reservoir`, `uploader.battery`
+**Behaviors**: ISO 8601 UTC timestamps, batch order preservation, dedup by `created_at` + `eventType` + `device`
+
+**Status**: Fields identified. Formal spec creation queued in nightscout-api backlog (Item #11).
+
+**Next Step**: Create `specs/minimal-interop-v1.yaml` (OpenAPI 3.0 format)
 
 **Blocks**: Conformance test prioritization, spec versioning
 
@@ -293,7 +304,8 @@ Questions explicitly listed in existing ADRs.
 
 | ID | Question | Resolution | Date |
 |----|----------|------------|------|
-| - | - | - | - |
+| OQ-002 | Batch response order guarantee | Verified - Nightscout preserves order via `async.eachSeries()`. Added REQ-036. | 2026-01-29 |
+| OQ-003 | Override OTP validation requirement | Keep current behavior - NS auth is primary gate | 2026-01-28 |
 
 ---
 

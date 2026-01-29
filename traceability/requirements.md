@@ -198,6 +198,30 @@ Requirements follow the pattern:
 
 ---
 
+### REQ-036: Batch Response Order Preservation
+
+**Statement**: When processing a batch POST request (array of documents), the server MUST return response items in the same order as the request items.
+
+**Rationale**: Loop and other clients use positional matching (`zip()`) to map response `_id` values back to local `syncIdentifier` values. Out-of-order responses cause incorrect ID mappings, leading to updates/deletes targeting wrong records.
+
+**Scenarios**:
+- [Batch Upload](../conformance/assertions/batch-upload.yaml)
+
+**Verification**:
+- POST array of 5 treatments with distinct `created_at` values
+- Verify response array has same length and order as request
+- Verify each response item's `created_at` matches corresponding request item
+
+**Code References**:
+- Loop: `NightscoutService.swift:209-214` - uses `zip(syncIdentifiers, createdObjectIds)`
+- Nightscout: `lib/server/treatments.js:21` - uses `async.eachSeries()` (sequential processing preserves order)
+
+**Status**: Verified - Nightscout API v1 uses sequential processing which preserves order.
+
+**Gap Reference**: GAP-BATCH-002
+
+---
+
 ## Treatment Sync Requirements
 
 ### REQ-040: Bolus Amount Preservation
@@ -1849,3 +1873,642 @@ Requirements follow the pattern:
 - Document query behavior for isValid filter
 
 **Gap Reference**: GAP-SPEC-006
+
+---
+
+## Algorithm Conformance Requirements
+
+### REQ-ALG-001: Cross-Project Test Vector Format
+
+**Statement**: The ecosystem MUST define a unified JSON schema for algorithm test vectors that can be executed by any AID implementation.
+
+**Rationale**: Enables automated detection of behavioral differences across oref0, AAPS, Loop, and Trio algorithm implementations.
+
+**Scenarios**:
+- Algorithm Conformance Testing
+- Cross-Project Regression Detection
+- New Implementation Validation
+
+**Verification**:
+- Schema validates all extracted test vectors
+- At least 50 vectors covering all categories
+- Runners exist for oref0, AAPS, and Loop
+
+**Gap Reference**: GAP-ALG-001
+
+---
+
+### REQ-ALG-002: Semantic Equivalence Assertions
+
+**Statement**: The conformance suite MUST support semantic assertions (e.g., "rate increased", "no SMB") rather than only exact value matching.
+
+**Rationale**: Different algorithm architectures (Loop combined curve vs oref 4-curve) produce different numerical values for equivalent clinical decisions.
+
+**Scenarios**:
+- Loop vs oref Comparison
+- Algorithm Migration Validation
+
+**Verification**:
+- Assertion types include: rate_increased, rate_decreased, no_smb, eventual_in_range
+- Baseline field allows relative assertions
+- Tests pass when clinical behavior matches, not just values
+
+**Gap Reference**: GAP-ALG-003
+
+---
+
+### REQ-ALG-003: Safety Limit Validation
+
+**Statement**: The conformance suite MUST include test vectors that verify safety limits (max IOB, max basal) are enforced.
+
+**Rationale**: Safety-critical limits must be validated across all implementations to prevent overdosing.
+
+**Scenarios**:
+- Max IOB Enforcement
+- Max Basal Rate Enforcement
+- Low Glucose Suspend
+
+**Verification**:
+- Test vectors exist for each safety category
+- All implementations pass safety limit tests
+- Failures are treated as critical
+
+**Gap Reference**: GAP-ALG-001
+
+---
+
+### REQ-ALG-004: Baseline Regression Detection
+
+**Statement**: The conformance suite SHOULD detect when an implementation's behavior drifts from a known baseline.
+
+**Rationale**: Algorithm updates should be intentional; accidental behavioral changes could affect patient safety.
+
+**Scenarios**:
+- oref0 Upstream Update
+- AAPS Kotlin Migration
+- Version Upgrade Validation
+
+**Verification**:
+- Baseline results stored per implementation
+- CI detects changes from baseline
+- Drift report generated with affected vectors
+
+**Gap Reference**: GAP-ALG-002
+
+---
+
+## API Layer Requirements
+
+### REQ-API-001: Document Deduplication Keys Per Collection
+
+**Statement**: The API specification MUST document the deduplication key fields for each collection.
+
+**Rationale**: AID controllers must know which fields trigger dedup to avoid duplicate treatments and ensure proper sync behavior.
+
+**Scenarios**:
+- Treatment batch upload from Loop
+- Retry after network failure
+- AAPS sync with existing data
+
+**Verification**:
+- Spec documents `identifier` as primary key
+- Spec documents fallback keys per collection
+- Spec documents `API3_DEDUP_FALLBACK_ENABLED` behavior
+
+**Gap Reference**: GAP-API-006
+
+---
+
+### REQ-API-002: Provide Machine-Readable API Specification
+
+**Statement**: The API SHOULD provide an OpenAPI 3.0 specification for automated client generation.
+
+**Rationale**: Enables SDK generation, request validation, and reduces integration errors.
+
+**Scenarios**:
+- New client development
+- API version migration
+- Automated testing
+
+**Verification**:
+- OpenAPI spec exists and validates
+- Spec covers all v3 endpoints
+- Spec includes request/response schemas
+
+**Gap Reference**: GAP-API-006
+
+---
+
+### REQ-API-003: Document Timestamp Field Per Collection
+
+**Statement**: The API specification MUST document the canonical timestamp field name and format for each collection.
+
+**Rationale**: Clients need consistent timestamp handling for cross-collection queries and data correlation.
+
+**Scenarios**:
+- Time-range queries across collections
+- Data export/import
+- Historical analysis
+
+**Verification**:
+- Spec documents timestamp field per collection
+- Spec documents format (epoch vs ISO-8601)
+- Examples show correct field usage
+
+**Gap Reference**: GAP-API-008
+
+---
+
+## Plugin System Requirements
+
+### REQ-PLUGIN-001: Document DeviceStatus Schema Per Controller
+
+**Statement**: The API specification MUST document the expected devicestatus fields for each AID controller (Loop, OpenAPS, AAPS, Trio).
+
+**Rationale**: Controllers upload different field structures; plugins must know what to expect.
+
+**Scenarios**:
+- Loop devicestatus upload
+- AAPS devicestatus upload
+- Plugin status display
+
+**Verification**:
+- Spec documents Loop `status.loop` structure
+- Spec documents OpenAPS `status.openaps` structure
+- Spec documents required vs optional fields
+
+**Gap Reference**: GAP-PLUGIN-001, GAP-PLUGIN-003
+
+---
+
+### REQ-PLUGIN-002: Normalize Prediction Format
+
+**Statement**: The visualization layer SHOULD normalize prediction data to a common format regardless of source controller.
+
+**Rationale**: Enables consistent prediction display across Loop, OpenAPS, and AAPS.
+
+**Scenarios**:
+- Loop single-curve prediction display
+- OpenAPS multi-curve prediction display
+- Cross-controller comparison
+
+**Verification**:
+- Prediction visualization handles both formats
+- Documentation describes normalization approach
+- Unit tests cover both input formats
+
+**Gap Reference**: GAP-PLUGIN-002
+
+---
+
+### REQ-PLUGIN-003: Document IOB/COB Calculation Models
+
+**Statement**: The specification SHOULD document the IOB and COB calculation algorithms used by Nightscout plugins.
+
+**Rationale**: Enables cross-project validation and ensures consistent insulin/carb tracking.
+
+**Scenarios**:
+- IOB calculation verification
+- COB absorption validation
+- Algorithm conformance testing
+
+**Verification**:
+- IOB exponential decay model documented
+- COB absorption model documented
+- Formulas match implementation
+
+**Gap Reference**: GAP-ALG-001
+
+---
+
+## Sync/Upload Requirements
+
+### REQ-SYNC-001: Document WebSocket API
+
+**Statement**: The specification MUST document all Socket.IO events, payloads, and authentication requirements.
+
+**Rationale**: Enables third-party clients to implement real-time sync correctly.
+
+**Scenarios**:
+- Client connecting to receive dataUpdate
+- Custom dashboard implementation
+- Mobile app Socket.IO integration
+
+**Verification**:
+- All events documented with payload schemas
+- Authentication flow documented
+- Error handling documented
+
+**Gap Reference**: GAP-API-006
+
+---
+
+### REQ-SYNC-002: Consistent Sync Identity Across API Versions
+
+**Statement**: All API versions MUST generate consistent `identifier` fields using the same algorithm.
+
+**Rationale**: Prevents duplicates when clients switch between v1 and v3 APIs.
+
+**Scenarios**:
+- V1 upload followed by v3 update
+- Migration from v1 to v3 client
+- Mixed-version client ecosystem
+
+**Verification**:
+- V1 uploads include identifier field
+- Same document matches across API versions
+- Migration path documented
+
+**Gap Reference**: GAP-SYNC-009
+
+---
+
+### REQ-SYNC-003: Sync Status Response
+
+**Statement**: Upload endpoints SHOULD return sync metadata including insert/update counts and identifiers.
+
+**Rationale**: Enables clients to verify sync success and handle retries appropriately.
+
+**Scenarios**:
+- Client retry after network failure
+- Bulk upload status tracking
+- Conflict detection
+
+**Verification**:
+- Response includes inserted/updated counts
+- Response includes document identifiers
+- Conflicts are reported
+
+**Gap Reference**: GAP-SYNC-010
+
+---
+
+## Authentication Requirements
+
+### REQ-AUTH-001: Document Permission Strings
+
+**Statement**: The specification MUST document all permission strings used across API endpoints.
+
+**Rationale**: Enables client developers to request appropriate permissions for their use case.
+
+**Scenarios**:
+- Client requesting minimal permissions
+- Custom role creation
+- Permission troubleshooting
+
+**Verification**:
+- All endpoints list required permission
+- Permission format documented
+- Wildcard behavior documented
+
+**Gap Reference**: GAP-API-006
+
+---
+
+### REQ-AUTH-002: Token Revocation Capability
+
+**Statement**: The authorization system SHOULD provide a mechanism to revoke access tokens without deleting subjects.
+
+**Rationale**: Enables security response to compromised tokens while preserving audit history.
+
+**Scenarios**:
+- Token compromise response
+- Device decommissioning
+- Permission change enforcement
+
+**Verification**:
+- Revocation endpoint exists
+- Revoked tokens rejected
+- Revocation logged
+
+**Gap Reference**: GAP-AUTH-002
+
+---
+
+### REQ-AUTH-003: Document Role Requirements Per Endpoint
+
+**Statement**: The OpenAPI specification SHOULD include required permissions for each endpoint.
+
+**Rationale**: Enables automated permission checking and client-side validation.
+
+**Scenarios**:
+- API client development
+- Permission audit
+- Automated testing
+
+**Verification**:
+- `x-required-permission` extension on endpoints
+- Role-to-permission mapping documented
+- Default roles documented
+
+**Gap Reference**: GAP-AUTH-001
+
+---
+
+## Frontend/UI Requirements
+
+### REQ-UI-001: Document Frontend Architecture
+
+**Statement**: The specification SHOULD include a frontend developer guide covering bundle structure, plugin UI development, and chart customization.
+
+**Rationale**: Enables contributors to extend Nightscout frontend without extensive codebase archaeology.
+
+**Scenarios**:
+- New plugin development
+- Chart customization
+- Translation contribution
+
+**Verification**:
+- Developer guide exists
+- Build process documented
+- Plugin UI API documented
+
+**Gap Reference**: GAP-UI-001
+
+---
+
+### REQ-UI-002: Chart Accessibility
+
+**Statement**: The glucose chart SHOULD provide accessible alternatives for visually impaired users.
+
+**Rationale**: Ensures Nightscout is usable by all users regardless of visual ability.
+
+**Scenarios**:
+- Screen reader navigation
+- Keyboard-only access
+- Data table view
+
+**Verification**:
+- ARIA labels on chart elements
+- Data table alternative available
+- Keyboard navigation functional
+
+**Gap Reference**: GAP-UI-002
+
+---
+
+### REQ-UI-003: Offline Data Access
+
+**Statement**: The application SHOULD cache recent data for offline viewing.
+
+**Rationale**: Enables glucose monitoring during connectivity interruptions.
+
+**Scenarios**:
+- Network disconnection
+- Poor mobile signal
+- Airplane mode with cached data
+
+**Verification**:
+- Recent SGVs cached locally
+- Offline indicator displayed
+- Data refreshes on reconnection
+
+**Gap Reference**: GAP-UI-003
+
+---
+
+## Interoperability Requirements
+
+### REQ-INTEROP-001: Standard Timestamp Format
+
+**Statement**: All applications MUST use ISO 8601 format for string timestamps and Unix milliseconds for numeric timestamps.
+
+**Rationale**: Inconsistent timestamp formats cause parsing failures and sync issues across the ecosystem.
+
+**Scenarios**:
+- Cross-controller data sync
+- Third-party integration
+- Data export/import
+
+**Verification**:
+- String dates match ISO 8601 pattern
+- Numeric dates are Unix milliseconds
+- Timezone handling documented
+
+**Gap Reference**: GAP-SYNC-009
+
+---
+
+### REQ-INTEROP-002: Standard eventType Values
+
+**Statement**: Applications SHOULD use standard eventType values as defined in the interoperability specification.
+
+**Rationale**: Non-standard eventTypes cause display issues and break treatment categorization.
+
+**Scenarios**:
+- Treatment synchronization
+- Report generation
+- Plugin visualization
+
+**Verification**:
+- eventType matches specification catalog
+- Unknown eventTypes handled gracefully
+- Mapping documented for legacy values
+
+**Gap Reference**: GAP-TREAT-001
+
+---
+
+### REQ-INTEROP-003: Device Identifier Inclusion
+
+**Statement**: All uploads MUST include a device identifier field for source tracking.
+
+**Rationale**: Enables deduplication, conflict detection, and audit trails.
+
+**Scenarios**:
+- Multi-device sync
+- Duplicate detection
+- Source attribution
+
+**Verification**:
+- `device` field present on entries
+- `device` field present on devicestatus
+- `enteredBy` field present on treatments
+
+**Gap Reference**: GAP-SYNC-008
+
+---
+
+## nightscout-connect Requirements
+
+### REQ-CONNECT-001: XState Machine Testability
+
+**Statement**: Bridge applications SHOULD use state machine patterns for testable, deterministic data flow.
+
+**Rationale**: XState enables injecting mock services, replaying event sequences, and verifying state transitions without network I/O.
+
+**Scenarios**:
+- Unit testing fetch cycles
+- Simulating session expiry
+- Verifying retry behavior
+
+**Verification**:
+- Machine definitions exportable
+- Services injectable at runtime
+- State snapshots capturable
+
+**Implementation Reference**: `lib/machines/*.js`
+
+---
+
+### REQ-CONNECT-002: Source Transform Standardization
+
+**Statement**: Data transform functions MUST produce Nightscout-compatible batches with entries, treatments, devicestatus, and profile arrays.
+
+**Rationale**: Consistent output format enables unified output drivers and simplifies testing.
+
+**Scenarios**:
+- Multi-source aggregation
+- Output driver switching
+- Transform validation
+
+**Verification**:
+- Transform returns `{ entries: [], treatments: [], devicestatus: [], profile: [] }`
+- Each item has required fields per collection spec
+- Device field populated for source attribution
+
+**Gap Reference**: GAP-CONNECT-002
+
+---
+
+### REQ-CONNECT-003: Exponential Backoff on Failure
+
+**Statement**: Bridge applications MUST implement exponential backoff when fetch cycles fail.
+
+**Rationale**: Prevents overwhelming vendor APIs during outages and respects rate limits.
+
+**Scenarios**:
+- Network timeout
+- Authentication failure
+- Rate limiting
+
+**Verification**:
+- Delay increases with consecutive failures
+- Maximum retry count enforced
+- Successful fetch resets backoff
+
+**Implementation Reference**: `lib/backoff.js`, `lib/machines/fetch.js:61-67`
+
+---
+
+## Carb Absorption Requirements
+
+### REQ-CARB-001: COB Model Type Annotation
+
+**Statement**: Nightscout devicestatus uploads SHOULD include carb absorption model type annotation with COB values.
+
+**Rationale**: COB values from different models (predictive vs reactive) are not comparable and should be labeled.
+
+**Scenarios**:
+- Multi-controller households
+- User switching between systems
+- Historical data analysis
+
+**Verification**:
+- devicestatus.cob includes model field
+- UI displays model type when available
+- Reports group by model type
+
+**Gap Reference**: GAP-CARB-001
+
+---
+
+### REQ-CARB-002: Minimum Carb Impact Documentation
+
+**Statement**: AID systems MUST document their minimum carb impact floor and its effect on COB decay.
+
+**Rationale**: The min_5m_carbimpact parameter significantly affects how quickly COB decays and should be understood by users.
+
+**Scenarios**:
+- Configuring absorption settings
+- Troubleshooting "stuck" COB
+- Comparing system behavior
+
+**Verification**:
+- min_5m_carbimpact documented in user guide
+- Effect on COB decay explained
+- Comparison with other systems provided
+
+**Gap Reference**: GAP-CARB-003
+
+---
+
+### REQ-CARB-003: Absorption Model Selection
+
+**Statement**: AID systems supporting multiple absorption models SHOULD allow user selection with clear documentation of differences.
+
+**Rationale**: Different absorption patterns (fast vs slow carbs) benefit from different models.
+
+**Scenarios**:
+- High-fat meals (slower absorption)
+- Simple carbs (faster absorption)
+- Mixed meals
+
+**Verification**:
+- Model selection available in settings
+- Each model's characteristics documented
+- Guidance on when to use each model
+
+**Implementation Reference**: Loop CarbMath.swift supports Linear, Parabolic, PiecewiseLinear
+
+---
+
+## Vendor Interop Requirements
+
+### REQ-BRIDGE-001: v3 API Support for Bridge Applications
+
+**Statement**: Bridge applications uploading to Nightscout SHOULD support API v3 for UPSERT semantics.
+
+**Rationale**: v3 API provides identifier-based deduplication, preventing duplicate records on re-runs.
+
+**Scenarios**:
+- Recovery from network failures
+- Scheduled re-sync operations
+- Multi-instance deployments
+
+**Verification**:
+- Bridge supports v3 endpoints
+- Records include `identifier` field
+- Re-runs don't create duplicates
+
+**Gap Reference**: GAP-CONNECT-001
+
+---
+
+### REQ-BRIDGE-002: Client-Side Sync Identity Generation
+
+**Statement**: Bridge applications SHOULD generate deterministic UUIDs for uploaded records.
+
+**Rationale**: Enables idempotent uploads and cross-system deduplication matching Nightscout's sync identity spec.
+
+**Scenarios**:
+- Re-uploading historical data
+- Multiple bridges for same source
+- Disaster recovery
+
+**Verification**:
+- UUID v5 generated from source|date|type
+- Consistent across re-runs
+- Matches Nightscout identifier format
+
+**Gap Reference**: GAP-CONNECT-003
+
+---
+
+### REQ-BRIDGE-003: Complete Collection Coverage
+
+**Statement**: Bridge applications SHOULD upload all available data types (entries, treatments, devicestatus) from their source.
+
+**Rationale**: Incomplete data limits Nightscout's value as a unified diabetes data platform.
+
+**Scenarios**:
+- Algorithm analysis requiring IOB/COB
+- Report generation
+- Caregiver monitoring
+
+**Verification**:
+- Transform outputs all 3 collection arrays
+- Empty arrays for unavailable data (not omitted)
+- Device field populated for attribution
+
+**Gap Reference**: GAP-CONNECT-002
