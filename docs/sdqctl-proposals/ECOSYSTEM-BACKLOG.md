@@ -40,11 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P3] Level 6: Proposal coherence - lsp-integration-proposal.md
+### 4. [P2] Level 6: Proposal coherence - nocturne-modernization-analysis.md
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #30
-**Focus:** Verify LSP claims
-**Method:** Check LSP feature claims against actual implementation
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #31
+**Focus:** Cross-check with nocturne source
+**Method:** Compare analysis claims with externals/nocturne
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -62,6 +62,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P3] Level 6: lsp-integration-proposal.md coherence~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Coherence: **40%** - Proposal is forward-looking (describes what to build)
+- Phase 1 partial: verify_refs.py has line anchor parsing
+- Not implemented: lsp_query.py, LSP integrations, symbol verification
 
 ### ~~[P2] Level 6: statistics-api-proposal.md coherence~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

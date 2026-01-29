@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Level 6 #30: lsp-integration-proposal.md | P3 | ✅ Complete (40% coherent, forward-looking) | 2026-01-29 |
 | Level 6 #29: statistics-api-proposal.md | P2 | ✅ Complete (100% coherent, 5/5 reqs) | 2026-01-29 |
 | Level 6 #28: algorithm-conformance-suite.md | P2 | ✅ Complete (80% coherent, 2/5 phases done) | 2026-01-29 |
 | Level 5 #27: REQ-API-* OpenAPI alignment | P2 | ✅ Complete (63% specced, 22/35) **LEVEL 5 DONE** | 2026-01-29 |

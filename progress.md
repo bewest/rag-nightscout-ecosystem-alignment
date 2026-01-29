@@ -8,6 +8,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 6: lsp-integration-proposal.md Coherence (2026-01-29)
+
+Audited proposal vs actual implementation.
+
+| Metric | Value |
+|--------|-------|
+| Proposed Phases | 4 |
+| Phases Implemented | 1 (partial) |
+| Claimed Tools | 3 |
+| Actual Tools | 1 (partial) |
+| Coherence | 40% |
+
+**Implemented**:
+- Phase 1 (partial): `verify_refs.py` has line anchor parsing
+
+**Not Implemented**:
+- `lsp_query.py` (not found)
+- JS/TS/Kotlin/Swift LSP integration
+- Symbol verification
+
+**Note**: Proposal is forward-looking (describes what to build, not claims)
+
+**Accuracy**: 40% ✅ (coherent as proposal)
+
+---
+
 ### Level 6: statistics-api-proposal.md Coherence (2026-01-29)
 
 Audited proposal vs REQ-STATS-* requirements.
