@@ -2110,6 +2110,46 @@ All systems use **CRC-16 CCITT (XModem)**:
 
 **Gap Reference**: GAP-LIBRE-001 through GAP-LIBRE-006
 
+### DiaBLE Nightscout Device Identifier Pattern
+
+DiaBLE uses the **sensor type name** as the Nightscout `device` field:
+
+| Sensor | DiaBLE `device` Value | Example |
+|--------|----------------------|---------|
+| Libre 1 | `"Libre 1"` | `{"device": "Libre 1", "sgv": 120}` |
+| Libre 2 | `"Libre 2"` | `{"device": "Libre 2", "sgv": 115}` |
+| Libre 3 | `"Libre 3"` | `{"device": "Libre 3", "sgv": 108}` |
+| Dexcom G6 | `"Dexcom G6"` | `{"device": "Dexcom G6", "sgv": 122}` |
+| Dexcom G7 | `"Dexcom G7"` | `{"device": "Dexcom G7", "sgv": 118}` |
+
+**Source**: `externals/DiaBLE/DiaBLE/Nightscout.swift:162` - uses `$0.source` which is sensor type name.
+
+**Note**: DiaBLE does NOT include app name in device field (unlike xDrip+ which uses `"xDrip-LibreOOP"`).
+
+### DiaBLE Data Quality Flags
+
+DiaBLE tracks sensor data quality with detailed error flags not exposed to Nightscout:
+
+| Flag | Hex | Description |
+|------|-----|-------------|
+| `SD14_FIFO_OVERFLOW` | 0x0001 | FIFO buffer overflow |
+| `FILTER_DELTA` | 0x0002 | Excessive jitter between measurements |
+| `WORK_VOLTAGE` | 0x0004 | Voltage anomaly |
+| `PEAK_DELTA_EXCEEDED` | 0x0008 | Peak measurement delta exceeded |
+| `AVG_DELTA_EXCEEDED` | 0x0010 | Average delta exceeded |
+| `RF` | 0x0020 | NFC interference during measurement |
+| `REF_R` | 0x0040 | Reference resistance issue |
+| `SIGNAL_SATURATED` | 0x0080 | Reading exceeds 14-bit max (0x3FFF) |
+| `SENSOR_SIGNAL_LOW` | 0x0100 | Raw reading below threshold (150) |
+| `THERMISTOR_OUT_OF_RANGE` | 0x0800 | Temperature sensor error |
+| `TEMP_HIGH` | 0x2000 | Temperature too high |
+| `TEMP_LOW` | 0x4000 | Temperature too low |
+| `INVALID_DATA` | 0x8000 | General invalid data flag |
+
+**Source**: `externals/DiaBLE/DiaBLE/Glucose.swift:63-91`
+
+**Gap**: These quality flags are not uploaded to Nightscout, limiting remote diagnostic capability.
+
 ---
 
 ## LoopCaregiver Remote 2.0 Models

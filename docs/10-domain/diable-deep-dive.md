@@ -553,22 +553,7 @@ struct DiaBLEApp: App {
 
 ## Interoperability Gaps
 
-### GAP-DIABLE-001: No Trend Direction Upload
-
-**Description**: DiaBLE does not upload trend direction to Nightscout. The source code has a TODO comment for direction calculation.
-
-**Source**: `externals/DiaBLE/DiaBLE/Nightscout.swift:163`
-
-**Impact**:
-- Nightscout graphs lack trend arrows
-- Follower apps cannot display direction
-- Missing data for AID systems consuming from Nightscout
-
-**Remediation**: Implement direction calculation from rate of change data.
-
----
-
-### GAP-DIABLE-002: No Treatment Support
+### GAP-CGM-001: No Treatment Support (Existing)
 
 **Description**: DiaBLE only uploads CGM entries and cannot create, edit, or sync treatments. Users must use another app for treatment logging.
 
@@ -580,6 +565,23 @@ struct DiaBLEApp: App {
 - Cannot use as standalone diabetes management
 
 **Remediation**: Accept as design choice (CGM-only producer) or add treatment API.
+
+**Note**: This gap was previously documented in `traceability/cgm-sources-gaps.md`.
+
+---
+
+### GAP-DIABLE-002: No Trend Direction Upload
+
+**Description**: DiaBLE does not upload trend direction to Nightscout. The source code has a TODO comment for direction calculation.
+
+**Source**: `externals/DiaBLE/DiaBLE/Nightscout.swift:163`
+
+**Impact**:
+- Nightscout graphs lack trend arrows
+- Follower apps cannot display direction
+- Missing data for AID systems consuming from Nightscout
+
+**Remediation**: Implement direction calculation from rate of change data.
 
 ---
 
