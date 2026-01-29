@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Compare CGM sensor session handling | P3 | ✅ Complete (407 lines, 4 gaps) | 2026-01-29 |
 | Deep dive: DiaBLE Libre protocol | P2 | ✅ Complete (487 lines, 2 gaps) | 2026-01-29 |
 | Deep dive: LoopCaregiver | P3 | ✅ Complete (417 lines, 3 gaps) | 2026-01-29 |
 | Deep dive: LoopFollow | P3 | ✅ Complete (411 lines, 3 gaps) | 2026-01-29 |

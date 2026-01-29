@@ -70,6 +70,20 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Source:** cgm-sources backlog
 
+### 8. [P3] Map algorithm terminology
+**Type:** Analysis | **Effort:** Low
+**Repos:** Loop, AAPS, Trio, oref0
+**Focus:** ISF, CR, DIA, UAM terminology across systems
+**Workflow:** `compare.conv`
+**Source:** aid-algorithms backlog
+
+### 9. [P3] Document AAPS vs oref0 divergence
+**Type:** Analysis | **Effort:** Low
+**Repos:** AndroidAPS, oref0
+**Focus:** Document the 69% output differences found in conformance testing
+**Workflow:** `extract-spec.conv`
+**Source:** aid-algorithms backlog
+
 ---
 
 ## Backlog (Prioritized)
