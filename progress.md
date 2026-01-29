@@ -8,6 +8,74 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Assertion-to-Requirement Linkage Audit (2026-01-29)
+
+Linked all 23 orphaned assertions to requirements, improving traceability coverage.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Sync Requirements** | `traceability/sync-identity-requirements.md` | +20 REQs (REQ-SYNC-036 to REQ-SYNC-050, REQ-OVERRIDE-001 to 005) |
+| **Treatment Requirements** | `traceability/treatments-requirements.md` | +7 REQs (REQ-TREAT-040 to REQ-TREAT-046) |
+| **Sync Gap** | `traceability/sync-identity-gaps.md` | +1 GAP (GAP-SYNC-001) |
+| **Updated Assertions** | `conformance/assertions/*.yaml` | 3 files updated with requirement links |
+| **Enhanced verify_assertions.py** | `tools/verify_assertions.py` | +20 lines, multi-file loading |
+
+**Before/After**:
+| Metric | Before | After |
+|--------|--------|-------|
+| Orphaned assertions | 23 | 0 |
+| Requirements covered | 7 | 27 |
+| Known requirements | 0 | 155 |
+| Known gaps | 0 | 200 |
+| Requirement coverage | 0% | 17.4% |
+
+**Tool Improvements**:
+- `verify_assertions.py` now scans all `*-requirements.md` and `*-gaps.md` files
+- `verify_assertions.py` merges scenario-level requirements with assertion-level
+- `REQ_PATTERN` updated to match domain-prefixed IDs (e.g., `REQ-SYNC-036`)
+
+**Requirements Created**:
+- REQ-SYNC-036 to 050: Sync deduplication (identity preservation, queries, timestamps)
+- REQ-OVERRIDE-001 to 005: Override supersede behavior
+- REQ-TREAT-040 to 046: Treatment sync validation
+
+---
+
+### Backlog Replenishment and Tooling Proposals (2026-01-29)
+
+Comprehensive state check and backlog refresh with new tooling proposals.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Audit Tooling Proposal** | `docs/sdqctl-proposals/audit-verification-tooling-proposal.md` | 6 new tools proposed |
+| **Ready Queue** | `docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md` | 7 items refreshed |
+| **Domain Backlogs** | `docs/sdqctl-proposals/backlogs/*.md` | 11 new items across 4 domains |
+
+**Key Findings**:
+- 23 orphaned assertions with 0% requirement coverage
+- 28 connector gaps with 0 requirements → need REQ generation
+- 69% algorithm divergence discovered manually → needs CI visibility
+- 8% broken refs → need automated refresh
+
+**New Backlog Items Added**:
+1. [P1] Assertion-to-Requirement Linkage Audit
+2. [P2] Connectors Requirements Generation
+3. [P2] sdqctl VERIFY Directive Implementation
+4. [P2] Conformance Test Executor Integration
+5. [P3] CGM trend arrow standardization
+6. [P3] Libre 3 protocol gap analysis
+7. [P2] Playwright E2E PR submission
+
+**Tooling Proposals Created**:
+- verify_traceability.py - Gap→REQ→Scenario coverage
+- link_assertions.py - Orphan linking
+- gen_requirements.py - REQ generation from gaps
+- run_conformance_ci.py - CI integration
+- detect_stale_refs.py - Staleness detection
+- ecosystem-audit plugin - Unified audit command
+
+---
+
 ### Algorithm Conformance Suite Orchestrator (2026-01-29)
 
 Created unified orchestrator for running algorithm conformance tests.

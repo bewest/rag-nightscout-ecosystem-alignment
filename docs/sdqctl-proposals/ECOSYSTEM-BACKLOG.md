@@ -28,35 +28,59 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
 
-### ~~2. [P2] Transform pipeline tester~~ ✅ COMPLETE
-**Status:** Completed 2026-01-29 (1,433 lines, 28 tests)
-- test_transforms.py: Field transform test runner
-- 5 transform types: rename, extract, coerce, default, compute
-- Test vectors for entries, treatments, devicestatus
+### 2. [P2] Connectors Requirements Generation
+**Type:** Traceability | **Effort:** Medium
+**Focus:** Extract REQs from 28 GAP-CONNECT-* entries
+**Context:** `traceability/connectors-gaps.md` has 596 lines, 28 gaps, 0 requirements
+**Deliverables:**
+- Create `traceability/connectors-requirements.md`
+- Extract 15-20 REQ-CONNECT-* requirements
+- Link to existing gaps
+**Lesson Learned:** Gaps without requirements can't be verified
 
-### ~~3. [P2] LSP-based claim verification - Phase 1~~ ✅ COMPLETE
-**Status:** Completed 2026-01-29 (Phase 1 only)
-- Line anchor validation (#L10, #L10-L50)
-- 135 refs with anchors, 134 valid (99.3%)
-- Phase 2 (JS/TS LSP) deferred
+### 3. [P2] sdqctl VERIFY Directive Implementation
+**Type:** Tooling | **Effort:** High
+**Proposal:** [VERIFICATION-DIRECTIVES.md](VERIFICATION-DIRECTIVES.md)
+**Focus:** Built-in `VERIFY refs`, `VERIFY traceability` directives
+**Context:** Current workflows use `RUN python tools/verify_*.py` - fragile
+**Deliverables:**
+- Core verifier library (refs, links, terminology, traceability)
+- CLI commands `sdqctl verify refs`, `sdqctl verify all`
+- `.conv` directive support
 
-### 4. [P3] Algorithm conformance: Loop Swift runner
+### 4. [P2] Conformance Test Executor Integration
+**Type:** Tooling | **Effort:** Medium
+**Focus:** Integrate `conformance_suite.py` with sdqctl
+**Context:** Orchestrator exists but manual invocation required
+**Deliverables:**
+- `sdqctl run conformance` CLI command
+- CI workflow for continuous algorithm validation
+- GitHub Actions integration template
+
+### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### ~~5. [P3] Integration test runner~~ ✅ COMPLETE
-**Status:** Completed 2026-01-29 (308 lines)
-- conformance_suite.py: Orchestrates all runners
-- Unified JSON/markdown reports
-- CI mode with exit codes
-- oref0 working, aaps/loop stubs ready
+### 6. [P3] Deep dive: xdrip-js Node.js CGM interface
+**Type:** Documentation | **Effort:** Medium
+**Repos:** xdrip-js
+**Focus:** Node.js Dexcom G5/G6 BLE interface for Raspberry Pi
+**Context:** CGM sources backlog needs items
+**Deliverables:** Deep dive documentation, 3+ gaps identified
 
 ---
 
 ## Completed Items
+
+### ~~[P1] Assertion-to-Requirement Linkage Audit~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Linked 23 orphaned assertions to requirements
+- Created 27 new REQs (REQ-SYNC-036 to 050, REQ-OVERRIDE-001 to 005, REQ-TREAT-040 to 046)
+- Requirement coverage: 0% → 17.4%
+- Fixed verify_assertions.py to scan all traceability files
 
 ### ~~[P2] Playwright adoption: Implementation~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (591 lines, 4 files)

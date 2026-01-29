@@ -5,6 +5,29 @@
 scenario: sync-deduplication
 version: 1
 
+# Link to requirements in traceability/sync-identity-requirements.md
+requirements:
+  - REQ-SYNC-036  # syncIdentifier preservation
+  - REQ-SYNC-037  # identifier preservation
+  - REQ-SYNC-038  # enteredBy preservation
+  - REQ-SYNC-039  # utcOffset preservation
+  - REQ-SYNC-040  # Soft delete isValid=false
+  - REQ-SYNC-041  # Pump composite key immutability
+  - REQ-SYNC-042  # Core treatment fields immutability
+  - REQ-SYNC-043  # Server timestamps immutability
+  - REQ-SYNC-044  # enteredBy self-exclusion filter
+  - REQ-SYNC-045  # History modified-after filter
+  - REQ-SYNC-046  # History includes deleted
+  - REQ-SYNC-047  # Query by identifier
+  - REQ-SYNC-048  # Cross-controller coexistence
+  - REQ-SYNC-049  # srvModified updated on change
+  - REQ-SYNC-050  # srvCreated set on creation
+
+related_gaps:
+  - GAP-SYNC-001  # Loop POST vs PUT
+  - GAP-SYNC-008  # No conflict resolution
+  - GAP-SYNC-009  # v1 lacks identifier field
+
 assertions:
   # ============================================
   # Identity Field Preservation (state assertions)

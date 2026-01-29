@@ -38,7 +38,7 @@ CONFORMANCE_DIR = WORKSPACE_ROOT / "conformance"
 ASSERTIONS_DIR = CONFORMANCE_DIR / "assertions"
 TRACEABILITY_DIR = WORKSPACE_ROOT / "traceability"
 
-REQ_PATTERN = re.compile(r'\b(REQ-\d{3})\b')
+REQ_PATTERN = re.compile(r'\b(REQ-(?:[A-Z]+-)?[0-9]{2,3})\b')
 GAP_PATTERN = re.compile(r'\b(GAP-[A-Z]+-\d{3})\b')
 
 
@@ -63,29 +63,45 @@ def extract_assertions(filepath):
     rel_path = str(filepath.relative_to(WORKSPACE_ROOT))
     
     if data and isinstance(data, dict):
+        # Get scenario-level requirements and gaps (applies to all assertions in file)
+        scenario_requirements = data.get("requirements", [])
+        scenario_gaps = data.get("related_gaps", [])
+        
         assertions_data = data.get("assertions", {})
         if isinstance(assertions_data, dict):
             for key, value in assertions_data.items():
                 if isinstance(value, dict):
+                    # Merge scenario-level requirements with assertion-level
+                    assertion_reqs = value.get("requirements", [])
+                    all_reqs = list(set(scenario_requirements + assertion_reqs))
+                    assertion_gaps = value.get("related_gaps", [])
+                    all_gaps = list(set(scenario_gaps + assertion_gaps))
+                    
                     assertions.append({
                         "id": key,
                         "file": rel_path,
                         "title": value.get("title", key),
                         "description": value.get("description", ""),
-                        "requirements": value.get("requirements", []),
-                        "related_gaps": value.get("related_gaps", []),
+                        "requirements": all_reqs,
+                        "related_gaps": all_gaps,
                         "tests": list(value.get("tests", {}).keys()) if isinstance(value.get("tests"), dict) else []
                     })
         elif isinstance(assertions_data, list):
             for item in assertions_data:
                 if isinstance(item, dict):
+                    # Merge scenario-level requirements with assertion-level
+                    assertion_reqs = item.get("requirements", [])
+                    all_reqs = list(set(scenario_requirements + assertion_reqs))
+                    assertion_gaps = item.get("related_gaps", [])
+                    all_gaps = list(set(scenario_gaps + assertion_gaps))
+                    
                     assertions.append({
                         "id": item.get("id", filepath.stem),
                         "file": rel_path,
                         "title": item.get("title", ""),
                         "description": item.get("description", ""),
-                        "requirements": item.get("requirements", []),
-                        "related_gaps": item.get("related_gaps", []),
+                        "requirements": all_reqs,
+                        "related_gaps": all_gaps,
                         "tests": list(item.get("tests", {}).keys()) if isinstance(item.get("tests"), dict) else []
                     })
     
@@ -107,32 +123,48 @@ def extract_assertions(filepath):
     return assertions
 
 
-def extract_requirements_list(requirements_file):
-    """Extract requirement IDs from requirements.md."""
+def extract_requirements_list(traceability_dir):
+    """Extract requirement IDs from all *-requirements.md files."""
     requirements = set()
     
-    if not requirements_file.exists():
+    if not traceability_dir.exists():
         return requirements
     
-    content = requirements_file.read_text(errors="ignore")
+    # Scan all requirements files in traceability directory
+    for req_file in traceability_dir.glob("*-requirements.md"):
+        content = req_file.read_text(errors="ignore")
+        for match in REQ_PATTERN.finditer(content):
+            requirements.add(match.group(1))
     
-    for match in REQ_PATTERN.finditer(content):
-        requirements.add(match.group(1))
+    # Also check the main requirements.md
+    main_file = traceability_dir / "requirements.md"
+    if main_file.exists():
+        content = main_file.read_text(errors="ignore")
+        for match in REQ_PATTERN.finditer(content):
+            requirements.add(match.group(1))
     
     return requirements
 
 
-def extract_gaps_list(gaps_file):
-    """Extract gap IDs from gaps.md."""
+def extract_gaps_list(traceability_dir):
+    """Extract gap IDs from all *-gaps.md files."""
     gaps = set()
     
-    if not gaps_file.exists():
+    if not traceability_dir.exists():
         return gaps
     
-    content = gaps_file.read_text(errors="ignore")
+    # Scan all gap files in traceability directory
+    for gap_file in traceability_dir.glob("*-gaps.md"):
+        content = gap_file.read_text(errors="ignore")
+        for match in GAP_PATTERN.finditer(content):
+            gaps.add(match.group(1))
     
-    for match in GAP_PATTERN.finditer(content):
-        gaps.add(match.group(1))
+    # Also check the main gaps.md
+    main_file = traceability_dir / "gaps.md"
+    if main_file.exists():
+        content = main_file.read_text(errors="ignore")
+        for match in GAP_PATTERN.finditer(content):
+            gaps.add(match.group(1))
     
     return gaps
 
@@ -352,8 +384,8 @@ def main():
     print(f"  Found {len(all_assertions)} assertion groups")
     
     print("Loading known requirements and gaps...")
-    known_requirements = extract_requirements_list(TRACEABILITY_DIR / "requirements.md")
-    known_gaps = extract_gaps_list(TRACEABILITY_DIR / "gaps.md")
+    known_requirements = extract_requirements_list(TRACEABILITY_DIR)
+    known_gaps = extract_gaps_list(TRACEABILITY_DIR)
     print(f"  {len(known_requirements)} requirements, {len(known_gaps)} gaps")
     
     print("Analyzing traces...")

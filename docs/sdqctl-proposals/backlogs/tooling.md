@@ -12,8 +12,30 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt pending |
-| 2 | LSP-based claim verification (Phase 2+) | P3 | Medium | JS/TS LSP integration deferred |
+| 1 | sdqctl VERIFY directive implementation | P2 | High | Built-in verification (refs, traceability, assertions) |
+| 2 | Conformance test executor integration | P2 | Medium | `sdqctl run conformance` + CI workflow |
+| 3 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt pending |
+| 4 | LSP-based claim verification (Phase 2+) | P3 | Medium | JS/TS LSP integration deferred |
+
+---
+
+## New Tooling Proposals (from lessons learned)
+
+### Proposal: Gap-to-Requirement Generator
+**Source:** connectors-gaps.md has 28 gaps, 0 requirements
+**Problem:** Gaps without requirements can't be formally verified
+**Solution:** Create `tools/gen_requirements.py` to:
+- Parse GAP-* entries from traceability/*.md
+- Generate REQ-* stubs with template
+- Suggest verification scenarios
+
+### Proposal: Conformance CI Integration
+**Source:** oref0 runner revealed 69% divergence - manual discovery
+**Problem:** Algorithm drift not visible until explicit audit
+**Solution:** GitHub Actions workflow for:
+- Nightly conformance runs
+- Slack/email on divergence increase
+- Dashboard badge for pass rate
 
 ---
 
@@ -21,6 +43,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | Item | Date | Notes |
 |------|------|-------|
+| Assertion→Requirement coverage validator | 2026-01-29 | Enhanced verify_assertions.py: multi-file, scenario inheritance |
 | Integration test runner | 2026-01-29 | `tools/conformance_suite.py` - orchestrator + reports |
 | LSP claim verification Phase 1 | 2026-01-29 | Line anchor validation, 99.3% valid |
 | Transformation pipeline tester | 2026-01-29 | `tools/test_transforms.py` + 28 test cases |

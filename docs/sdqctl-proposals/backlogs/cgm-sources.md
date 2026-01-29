@@ -12,7 +12,9 @@ Covers: xDrip+, xDrip4iOS, DiaBLE, Dexcom G6/G7, Libre 2/3, Medtronic CGM
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| (none) | | | | Backlog empty - needs triage |
+| 1 | Deep dive: xdrip-js | P3 | Medium | Node.js Dexcom G5/G6 BLE for RPi |
+| 2 | CGM trend arrow standardization | P3 | Low | Map all 7 projects to unified enum |
+| 3 | Libre 3 protocol gap analysis | P2 | High | Currently "eavesdrop only" - document limits |
 
 ---
 

@@ -310,3 +310,420 @@ See [requirements.md](requirements.md) for the index.
 **Gap Reference**: GAP-SYNC-008, REQ-NS-028
 
 ---
+
+## Sync Deduplication Requirements (REQ-SYNC-036 to REQ-SYNC-043)
+
+---
+
+### REQ-SYNC-036: syncIdentifier Field Preservation
+
+**Statement**: The server MUST preserve the `syncIdentifier` field exactly as provided by the client through upload and download cycles.
+
+**Rationale**: Loop uses syncIdentifier to correlate local DoseEntry records with Nightscout. Modification breaks sync state.
+
+**Scenarios**:
+- Loop uploads bolus with syncIdentifier
+- Download same treatment, verify syncIdentifier unchanged
+- Network retry with same syncIdentifier
+
+**Verification**:
+- Upload treatment with `syncIdentifier: "test-uuid-123"`
+- GET treatment by _id
+- Verify `syncIdentifier == "test-uuid-123"`
+
+**Assertion**: `syncidentifier-preserved`
+
+---
+
+### REQ-SYNC-037: identifier Field Preservation
+
+**Statement**: The server MUST preserve the `identifier` field exactly as provided by AAPS clients through upload and download cycles.
+
+**Rationale**: AAPS uses identifier for deduplication and sync. Modification causes duplicate records.
+
+**Scenarios**:
+- AAPS uploads treatment with identifier
+- Download same treatment, verify identifier unchanged
+- V3 API upsert by identifier
+
+**Verification**:
+- Upload treatment with `identifier: "AAPS-bolus-12345"`
+- GET treatment by identifier
+- Verify `identifier == "AAPS-bolus-12345"`
+
+**Assertion**: `identifier-preserved`
+
+---
+
+### REQ-SYNC-038: enteredBy Field Preservation
+
+**Statement**: The server MUST preserve the `enteredBy` field exactly as provided by clients.
+
+**Rationale**: Controllers use enteredBy for self-exclusion filtering. Modification breaks cross-controller coexistence.
+
+**Scenarios**:
+- Loop uploads with enteredBy="Loop"
+- AAPS queries with enteredBy[$ne]=AAPS
+- Trio filters by enteredBy
+
+**Verification**:
+- Upload treatment with `enteredBy: "Loop"`
+- GET treatment
+- Verify `enteredBy == "Loop"`
+
+**Assertion**: `enteredby-preserved`
+
+---
+
+### REQ-SYNC-039: utcOffset Field Preservation
+
+**Statement**: The server MUST preserve the `utcOffset` field when provided by clients for timezone handling.
+
+**Rationale**: utcOffset enables correct local time display without dateString parsing. Required for timezone-aware reporting.
+
+**Scenarios**:
+- Upload treatment with explicit utcOffset
+- Download in different timezone
+- Historical analysis with original timezone
+
+**Verification**:
+- Upload treatment with `utcOffset: -300`
+- GET treatment
+- Verify `utcOffset == -300`
+
+**Assertion**: `utcoffset-preserved`
+
+---
+
+### REQ-SYNC-040: Soft Delete Sets isValid=false
+
+**Statement**: When soft-deleting a document, the server MUST set `isValid=false` rather than physically deleting.
+
+**Rationale**: Soft deletes enable sync clients to detect deletions via history endpoint.
+
+**Scenarios**:
+- Delete treatment via v3 API
+- Query history endpoint for deleted records
+- Client sync detects deletion
+
+**Verification**:
+- Create treatment
+- DELETE treatment via v3 API
+- GET with deleted=true, verify isValid=false
+
+**Assertion**: `softdelete-isvalid-false`
+
+---
+
+### REQ-SYNC-041: Pump Composite Key Immutability
+
+**Statement**: The pump composite key fields (pumpId, pumpType, pumpSerial) MUST NOT be modifiable after document creation.
+
+**Rationale**: Pump composite key is used for deduplication. Modification could create duplicates or orphans.
+
+**Scenarios**:
+- Upload treatment with pump composite key
+- Attempt to modify pumpId
+- Verify modification rejected or ignored
+
+**Verification**:
+- Create treatment with pumpId, pumpType, pumpSerial
+- PATCH with different pumpId
+- GET and verify original pumpId preserved
+
+**Assertion**: `pump-composite-key-immutable`
+
+---
+
+### REQ-SYNC-042: Core Treatment Fields Immutability
+
+**Statement**: Core identity fields (identifier, date, eventType, app, device) SHOULD NOT be modifiable after document creation.
+
+**Rationale**: These fields define document identity. Modification breaks referential integrity.
+
+**Scenarios**:
+- Upload treatment with identifier
+- Attempt to modify eventType
+- Verify modification rejected
+
+**Verification**:
+- Create treatment with identifier and eventType
+- PATCH with different eventType
+- Verify original preserved or update rejected
+
+**Assertion**: `core-treatment-fields-immutable`
+
+---
+
+### REQ-SYNC-043: Server Timestamps Immutability
+
+**Statement**: Server-managed timestamps (srvCreated, _id) MUST NOT be client-modifiable.
+
+**Rationale**: These are server-authoritative fields. Client modification would break data integrity.
+
+**Scenarios**:
+- Upload treatment with custom _id
+- Attempt to modify srvCreated
+- Verify server ignores client values
+
+**Verification**:
+- Create treatment with custom _id value
+- Verify server-assigned _id used
+- PATCH with different srvCreated, verify ignored
+
+**Assertion**: `server-timestamps-immutable`
+
+---
+
+## Query Behavior Requirements (REQ-SYNC-044 to REQ-SYNC-048)
+
+---
+
+### REQ-SYNC-044: enteredBy Self-Exclusion Filter
+
+**Statement**: The API MUST support `enteredBy[$ne]=<value>` filter to exclude a controller's own entries.
+
+**Rationale**: Controllers must not re-process their own uploads. Self-exclusion prevents dosing loops.
+
+**Scenarios**:
+- Trio queries with enteredBy[$ne]=Trio
+- Loop downloads excluding own entries
+- Cross-controller data sharing
+
+**Verification**:
+- Create treatments from Trio, AAPS, xDrip+
+- Query with `enteredBy[$ne]=Trio`
+- Verify only AAPS and xDrip+ returned
+
+**Assertion**: `enteredby-filter-excludes-self`
+
+---
+
+### REQ-SYNC-045: History Endpoint Modified-After Filter
+
+**Statement**: The history endpoint MUST return documents modified after a given timestamp.
+
+**Rationale**: Enables incremental sync by fetching only changed records.
+
+**Scenarios**:
+- Initial sync, store srvModified
+- Wait, modify some records
+- Fetch history with last srvModified
+
+**Verification**:
+- Create 3 treatments at T1, T2, T3
+- Query history with timestamp between T1 and T3
+- Verify only T2 and T3 treatments returned
+
+**Assertion**: `history-returns-modified-after`
+
+---
+
+### REQ-SYNC-046: History Endpoint Includes Deleted
+
+**Statement**: The history endpoint MUST include soft-deleted documents when requested.
+
+**Rationale**: Sync clients need to detect server-side deletions to update local state.
+
+**Scenarios**:
+- Create treatment, sync client downloads
+- Delete treatment on server
+- Sync client queries history, detects deletion
+
+**Verification**:
+- Create treatment at T1
+- Delete treatment
+- Query history with deleted=true
+- Verify deleted document returned with isValid=false
+
+**Assertion**: `history-includes-soft-deleted`
+
+---
+
+### REQ-SYNC-047: Query by Client Identifier
+
+**Statement**: The API MUST support querying treatments by client-generated identifier field.
+
+**Rationale**: Enables direct lookup without timestamp-based search. Required for idempotent operations.
+
+**Scenarios**:
+- AAPS checks if treatment already uploaded
+- Loop verifies sync success
+- Retry with same identifier
+
+**Verification**:
+- Create treatment with identifier="client-uuid-123"
+- Query `treatments?identifier=client-uuid-123`
+- Verify single matching document returned
+
+**Assertion**: `query-by-identifier`
+
+---
+
+### REQ-SYNC-048: Cross-Controller Coexistence
+
+**Statement**: The server MUST support multiple AID controllers writing treatments simultaneously without data loss.
+
+**Rationale**: Users may run multiple controllers. Data from all sources must be preserved.
+
+**Scenarios**:
+- Loop and AAPS both active
+- Each uploads treatments
+- Query returns all treatments
+
+**Verification**:
+- Upload treatment from Loop, AAPS, Trio
+- Query all treatments
+- Verify 3 distinct treatments exist
+
+**Assertion**: `cross-controller-coexistence`
+
+---
+
+## Server Timestamp Requirements (REQ-SYNC-049 to REQ-SYNC-050)
+
+---
+
+### REQ-SYNC-049: srvModified Updated on Change
+
+**Statement**: The server MUST update the `srvModified` timestamp whenever a document is modified.
+
+**Rationale**: srvModified enables incremental sync. Must reflect actual modification time.
+
+**Scenarios**:
+- Create treatment, note srvModified
+- Update treatment
+- Verify srvModified increased
+
+**Verification**:
+- Create treatment, capture srvModified as T1
+- PATCH treatment with new notes
+- GET treatment, verify srvModified > T1
+
+**Assertion**: `srvmodified-updated-on-change`
+
+---
+
+### REQ-SYNC-050: srvCreated Set on Creation
+
+**Statement**: The server MUST set `srvCreated` timestamp when a document is first created.
+
+**Rationale**: srvCreated indicates when server received the document. Required for audit and sync ordering.
+
+**Scenarios**:
+- Create treatment
+- Verify srvCreated is set
+- srvCreated never changes on update
+
+**Verification**:
+- Create treatment
+- GET treatment, verify srvCreated > 0
+- Update treatment, verify srvCreated unchanged
+
+**Assertion**: `srvcreated-set-on-create`
+
+---
+
+## Override Requirements (REQ-OVERRIDE-001 to REQ-OVERRIDE-005)
+
+---
+
+### REQ-OVERRIDE-001: Superseded Status Change
+
+**Statement**: When a new override is activated, the previous override's status MUST change to 'superseded'.
+
+**Rationale**: Only one override can be active. Previous override must be marked as replaced.
+
+**Scenarios**:
+- Create override A (active)
+- Create override B
+- Verify A status = superseded
+
+**Verification**:
+- Create override with status=active
+- Create new override
+- GET original override, verify status=superseded
+
+**Assertion**: `superseded-status-change`
+
+---
+
+### REQ-OVERRIDE-002: Superseded-By Reference
+
+**Statement**: When an override is superseded, it MUST have a `superseded_by` field pointing to the new override.
+
+**Rationale**: Enables audit trail and override history navigation.
+
+**Scenarios**:
+- Override A superseded by B
+- A.superseded_by = B.id
+- Query override chain
+
+**Verification**:
+- Create override A
+- Create override B
+- GET A, verify superseded_by = B.id
+
+**Assertion**: `superseded-by-reference`
+
+---
+
+### REQ-OVERRIDE-003: Superseded-At Timestamp
+
+**Statement**: When an override is superseded, it MUST have a `superseded_at` timestamp matching the new override's start time.
+
+**Rationale**: Enables precise duration calculation for superseded override.
+
+**Scenarios**:
+- Override A superseded at T
+- B started at T
+- A.superseded_at = B.started_at
+
+**Verification**:
+- Create override A
+- Create override B with started_at = T
+- GET A, verify superseded_at = T
+
+**Assertion**: `superseded-at-timestamp`
+
+---
+
+### REQ-OVERRIDE-004: Original Override Data Preserved
+
+**Statement**: When an override is superseded, its original data (name, duration, target_range) MUST NOT be modified.
+
+**Rationale**: Historical data must be preserved for analysis and audit.
+
+**Scenarios**:
+- Override A with name="Exercise"
+- A superseded by B
+- A.name still = "Exercise"
+
+**Verification**:
+- Create override A with name, duration, target_range
+- Supersede with override B
+- GET A, verify original fields unchanged
+
+**Assertion**: `original-preserved`
+
+---
+
+### REQ-OVERRIDE-005: Query Active Returns Single
+
+**Statement**: Query for active overrides MUST return at most one override.
+
+**Rationale**: Only one override can be active at a time. Query must reflect this invariant.
+
+**Scenarios**:
+- Multiple overrides exist
+- Query status=active
+- Only newest active returned
+
+**Verification**:
+- Create overrides A, B (B supersedes A)
+- Query `overrides?status=active`
+- Verify exactly 1 result (B)
+
+**Assertion**: `query-active-single`
+
+---

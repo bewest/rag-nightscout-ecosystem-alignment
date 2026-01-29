@@ -3,6 +3,17 @@
 scenario: override-supersede
 version: 1
 
+# Link to requirements in traceability/sync-identity-requirements.md
+requirements:
+  - REQ-OVERRIDE-001  # Superseded status change
+  - REQ-OVERRIDE-002  # Superseded-by reference
+  - REQ-OVERRIDE-003  # Superseded-at timestamp
+  - REQ-OVERRIDE-004  # Original data preserved
+  - REQ-OVERRIDE-005  # Query active returns single
+
+related_gaps:
+  - GAP-TREAT-006  # Override supersede semantics
+
 assertions:
   - id: superseded-status-change
     description: "Previous override status changes to 'superseded'"

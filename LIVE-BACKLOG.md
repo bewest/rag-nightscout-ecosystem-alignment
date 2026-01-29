@@ -13,6 +13,10 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Assertion-to-Requirement Linkage Audit | P1 | ✅ Complete (27 REQs, 0 orphans, 17.4% coverage) | 2026-01-29 |
+| Backlog grooming + Ready Queue refresh | P0 | ✅ Complete (6 items in queue, 13 across domains) | 2026-01-29 |
+| Audit verification tooling proposal | P2 | ✅ Complete (311 lines, 6 tools proposed) | 2026-01-29 |
+| verify_assertions.py enhancement | P2 | ✅ Complete (+70 lines, multi-file loading) | 2026-01-29 |
 | Integration test runner | P3 | ✅ Complete (308 lines, orchestrator) | 2026-01-29 |
 | LSP claim verification Phase 1 | P2 | ✅ Complete (+80 lines, 99.3% valid) | 2026-01-29 |
 | Transform pipeline tester | P2 | ✅ Complete (1,433 lines, 28 tests) | 2026-01-29 |

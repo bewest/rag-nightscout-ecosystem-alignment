@@ -3329,3 +3329,47 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 | `eventual_in_range` | Predicted BG reaches target |
 
 **Source**: `conformance/schemas/conformance-vector-v1.json`, `conformance/runners/oref0-runner.js`
+
+---
+
+## Traceability Terminology
+
+### Requirement ID Formats
+
+| Format | Domain | Example |
+|--------|--------|---------|
+| `REQ-NNN` | General/legacy | REQ-030 |
+| `REQ-SYNC-NNN` | Sync & identity | REQ-SYNC-036 |
+| `REQ-TREAT-NNN` | Treatments | REQ-TREAT-040 |
+| `REQ-ALG-NNN` | Algorithms | REQ-ALG-001 |
+| `REQ-BLE-NNN` | BLE/CGM protocols | REQ-BLE-001 |
+| `REQ-OVERRIDE-NNN` | Override behavior | REQ-OVERRIDE-001 |
+| `REQ-UNIT-NNN` | Unit handling | REQ-UNIT-001 |
+| `REQ-ALARM-NNN` | Caregiver alarms | REQ-ALARM-001 |
+| `REQ-REMOTE-NNN` | Remote commands | REQ-REMOTE-001 |
+| `REQ-CONNECT-NNN` | Connectors | REQ-CONNECT-001 |
+
+### Gap ID Formats
+
+| Format | Domain | Example |
+|--------|--------|---------|
+| `GAP-SYNC-NNN` | Sync & identity | GAP-SYNC-001 |
+| `GAP-TREAT-NNN` | Treatments | GAP-TREAT-001 |
+| `GAP-ALG-NNN` | Algorithms | GAP-ALG-001 |
+| `GAP-BLE-NNN` | BLE/CGM protocols | GAP-BLE-001 |
+| `GAP-BATCH-NNN` | Batch operations | GAP-BATCH-001 |
+| `GAP-TZ-NNN` | Timezone handling | GAP-TZ-001 |
+| `GAP-SESSION-NNN` | CGM session | GAP-SESSION-001 |
+| `GAP-CONNECT-NNN` | Connectors | GAP-CONNECT-001 |
+
+### Traceability Concepts
+
+| Term | Definition |
+|------|------------|
+| **Orphaned assertion** | Assertion with no linked REQ or GAP |
+| **Scenario-level requirements** | REQs declared at file level, apply to all assertions |
+| **Requirement coverage** | % of REQs with linked assertions |
+| **Gap coverage** | % of GAPs with linked assertions |
+| **Traceability matrix** | REQ → Spec → Test linkage |
+
+**Source**: `tools/verify_assertions.py`, `traceability/assertion-trace.md`

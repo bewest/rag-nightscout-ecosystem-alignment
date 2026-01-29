@@ -577,6 +577,154 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
+## Treatment Sync Requirements (REQ-TREAT-040 to REQ-TREAT-046)
+
+---
+
+### REQ-TREAT-040: Bolus Amount Preservation
+
+**Statement**: The server MUST preserve bolus insulin amounts with at least 0.01 unit precision through upload/download cycles.
+
+**Rationale**: Insulin amounts are safety-critical. Loss of precision could affect IOB calculations.
+
+**Scenarios**:
+- Bolus upload with 2.35 units
+- Download same treatment
+- Verify insulin == 2.35
+
+**Verification**:
+- Upload bolus with `insulin: 2.35`
+- GET treatment by _id
+- Verify `|insulin - 2.35| <= 0.01`
+
+**Assertion**: `bolus-amount-roundtrip` (treatment-sync.yaml)
+
+---
+
+### REQ-TREAT-041: Carb Amount Preservation
+
+**Statement**: The server MUST preserve carb amounts with at least 0.1 gram precision through upload/download cycles.
+
+**Rationale**: Carb amounts affect COB calculations and bolus recommendations.
+
+**Scenarios**:
+- Carb upload with 45.5 grams
+- Download same treatment
+- Verify carbs == 45.5
+
+**Verification**:
+- Upload carbs with `carbs: 45.5`
+- GET treatment by _id
+- Verify `|carbs - 45.5| <= 0.1`
+
+**Assertion**: `carbs-amount-roundtrip` (treatment-sync.yaml)
+
+---
+
+### REQ-TREAT-042: Timestamp Millisecond Precision
+
+**Statement**: The server MUST preserve treatment timestamps with millisecond precision.
+
+**Rationale**: Millisecond precision required for ordering and deduplication of rapid events.
+
+**Scenarios**:
+- Treatment with timestamp 2026-01-17T12:34:56.789Z
+- Download same treatment
+- Verify milliseconds preserved
+
+**Verification**:
+- Upload treatment with `created_at: "2026-01-17T12:34:56.789Z"`
+- GET treatment by _id
+- Verify timestamp matches to millisecond
+
+**Assertion**: `treatment-timestamp-precision` (treatment-sync.yaml)
+
+---
+
+### REQ-TREAT-043: Automatic Bolus Flag Preservation
+
+**Statement**: The server MUST preserve the `automatic` boolean flag for SMB identification.
+
+**Rationale**: Distinguishes user-initiated boluses from algorithm-initiated SMBs for reporting.
+
+**Scenarios**:
+- SMB with automatic=true
+- Manual bolus with automatic=false/absent
+- Download and verify flag preserved
+
+**Verification**:
+- Upload bolus with `automatic: true`
+- GET treatment by _id
+- Verify `automatic == true`
+
+**Assertion**: `bolus-automatic-flag` (treatment-sync.yaml)
+
+---
+
+### REQ-TREAT-044: Duration Unit Normalization
+
+**Statement**: Treatment duration MUST be stored in minutes. Clients MUST convert from native units.
+
+**Rationale**: Loop uses seconds, AAPS uses milliseconds. Standard minutes enables cross-project compatibility.
+
+**Scenarios**:
+- Loop temp basal: 1800 seconds → 30 minutes
+- AAPS temp basal: 1800000 ms → 30 minutes
+- Nightscout stores 30 minutes
+
+**Verification**:
+- Upload temp basal with `duration: 1800000` (AAPS ms format)
+- GET treatment
+- Verify `duration == 30` (minutes)
+
+**Assertion**: `temp-basal-duration-units` (treatment-sync.yaml)
+
+**Gap Reference**: GAP-TREAT-002
+
+---
+
+### REQ-TREAT-045: Sync Identity Round-Trip
+
+**Statement**: Client sync identity fields (syncIdentifier, identifier) MUST survive upload/download cycles unchanged.
+
+**Rationale**: Sync identity enables deduplication and correlation between local and server records.
+
+**Scenarios**:
+- Loop uploads with syncIdentifier
+- AAPS uploads with identifier
+- Download and verify preserved
+
+**Verification**:
+- Upload treatment with `syncIdentifier: "abc-123-def-456"`
+- GET treatment by _id
+- Verify `syncIdentifier == "abc-123-def-456"`
+
+**Assertion**: `sync-identifier-roundtrip` (treatment-sync.yaml)
+
+---
+
+### REQ-TREAT-046: Absorption Time Unit Conversion
+
+**Statement**: Carb absorption time MUST be stored in minutes. Clients MUST convert from native units.
+
+**Rationale**: Loop uses seconds for absorptionTime. Standard minutes enables cross-project compatibility.
+
+**Scenarios**:
+- Loop carb: absorptionTime 10800 seconds → 180 minutes
+- AAPS carb: already in minutes
+- Nightscout stores 180 minutes
+
+**Verification**:
+- Upload carb with `absorptionTime: 10800` (Loop seconds format)
+- GET treatment
+- Verify `absorptionTime == 180` (minutes)
+
+**Assertion**: `carbs-absorption-time-units` (treatment-sync.yaml)
+
+**Gap Reference**: GAP-TREAT-001
+
+---
+
 ## Caregiver Alarm Requirements
 
 ---

@@ -5,6 +5,30 @@ See [gaps.md](gaps.md) for the index.
 
 ---
 
+### GAP-SYNC-001: Loop Uses POST-only, No Idempotent Upsert
+
+**Scenario**: Network retry during treatment upload
+
+**Description**: Loop uses POST-only uploads without PUT/upsert semantics. When a network timeout occurs after the server receives the treatment but before Loop receives the response, a retry creates a duplicate document. AAPS uses upsert with identifier, xDrip+ uses PUT with uuid.
+
+**Source**: STPA analysis (`traceability/stpa/cross-project-patterns.md`)
+
+**Impact**:
+- Network retries may create duplicate bolus/carb records
+- Duplicate boluses could affect IOB calculations
+- Users may see duplicated treatments in Nightscout
+
+**Possible Solutions**:
+1. Loop adopts PUT/upsert with syncIdentifier
+2. Nightscout server-side deduplication on syncIdentifier
+3. Post-upload deduplication scan
+
+**Status**: Documented
+
+**Assertion References**: `syncidentifier-preserved`, `identifier-preserved`
+
+---
+
 ### GAP-BATCH-001: Batch Deduplication Not Enforced at Database Level
 
 **Scenario**: High-throughput batch uploads

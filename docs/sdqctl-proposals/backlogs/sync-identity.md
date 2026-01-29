@@ -10,7 +10,19 @@ Covers: syncIdentifier, interfaceIDs, uuid, timestamps, batch ordering
 
 ## Active Items
 
-(none - pending next triage)
+| # | Item | Priority | Effort | Notes |
+|---|------|----------|--------|-------|
+| 1 | Cross-controller conflict detection | P2 | Medium | Document actual behavior when Loop+Trio sync |
+
+---
+
+## Completed
+
+| Item | Date | Notes |
+|------|------|-------|
+| Orphaned assertion linkage | 2026-01-29 | 23→0 orphans, +20 REQs created |
+| Override-supersede requirements | 2026-01-29 | REQ-OVERRIDE-001 to 005 created |
+| Duration/utcOffset unit impact analysis | 2026-01-29 | OQ-030/031 combined, 4 alternatives, 4 REQs |
 
 ---
 

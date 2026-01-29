@@ -6,13 +6,13 @@ assertions:
       synced between AID systems and Nightscout with proper field preservation.
     
     requirements:
-      - REQ-040  # Bolus amount preservation
-      - REQ-041  # Carb amount preservation
-      - REQ-042  # Timestamp accuracy
-      - REQ-043  # Automatic bolus flag
-      - REQ-044  # Duration unit normalization
-      - REQ-045  # Sync identity round-trip
-      - REQ-046  # Absorption time unit conversion
+      - REQ-TREAT-040  # Bolus amount preservation
+      - REQ-TREAT-041  # Carb amount preservation
+      - REQ-TREAT-042  # Timestamp accuracy
+      - REQ-TREAT-043  # Automatic bolus flag
+      - REQ-TREAT-044  # Duration unit normalization
+      - REQ-TREAT-045  # Sync identity round-trip
+      - REQ-TREAT-046  # Absorption time unit conversion
     
     related_gaps:
       - GAP-TREAT-001  # Absorption time units

@@ -12,7 +12,9 @@ Covers: cgm-remote-monitor, entries, treatments, devicestatus, profile
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| - | (none - items promoted to Ready Queue or completed) | - | - | - |
+| 1 | Playwright E2E PR submission | P2 | Low | Package conformance/e2e-nightscout for upstream PR |
+| 2 | API v3 pagination compliance | P2 | Medium | Document srvModified-based pagination across clients |
+| 3 | WebSocket event coverage | P3 | Medium | Map socket.io events vs REST for real-time sync |
 
 ---
 
