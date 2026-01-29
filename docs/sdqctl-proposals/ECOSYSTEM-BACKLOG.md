@@ -40,11 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Level 5: Requirements traceability - REQ-API-*
+### 4. [P2] Level 6: Proposal coherence - algorithm-conformance-suite.md
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #27
-**Focus:** Audit REQ-API-* → OpenAPI alignment
-**Method:** Check specs match requirements
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #28
+**Focus:** Verify proposal vs actual runners
+**Method:** Compare proposal claims with conformance/ implementation
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -62,6 +62,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 5: REQ-API-* OpenAPI alignment~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 - **LEVEL 5 COMPLETE!**
+- 35 requirements audited, **63% have OpenAPI spec** (22/35)
+- Covered: REQ-API/API3/SPEC/PLUGIN/ERR/NS-* via 8 specs
+- Gaps: REQ-STATS-* (5), REQ-AUTH-* (3), REQ-RG-* (4)
 
 ### ~~[P2] Level 5: REQ-CONNECT-* completeness~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

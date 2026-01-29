@@ -50,6 +50,14 @@ Total: 185 requirements (180 unique)
 
 **Perfect 1:1 mapping**: All 8 connector categories have corresponding requirements
 
+### REQ-API-* OpenAPI Alignment (Level 5 #27) - **LEVEL 5 COMPLETE**
+
+| Total | With Spec | No Spec | Out of Scope | % |
+|-------|-----------|---------|--------------|---|
+| 35 | 22 | 10 | 3 | 63% |
+
+**Gaps**: REQ-STATS-* (5), REQ-AUTH-* (3), REQ-RG-* (4) need OpenAPI specs
+
 ## Mapping Verification (Supporting Evidence)
 
 | Date | Mapping Verified | Requirements Supported |

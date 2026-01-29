@@ -8,6 +8,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 5: REQ-API-* OpenAPI Alignment (2026-01-29)
+
+Audited API requirements → OpenAPI spec alignment. **LEVEL 5 COMPLETE!**
+
+| Metric | Value |
+|--------|-------|
+| Total API Requirements | 35 |
+| With OpenAPI spec | 22 (63%) |
+| Without spec | 10 (29%) |
+| Out of scope (UI) | 3 (8%) |
+
+**Covered** (22): REQ-API/API3/SPEC/PLUGIN/ERR/NS-* via 8 OpenAPI specs
+
+**Gaps** (10):
+- REQ-STATS-* (5): No dedicated spec (proposed only)
+- REQ-AUTH-* (3): No auth spec
+- REQ-RG-* (4): Roles-gateway not specced
+
+**Accuracy**: 100% ✅ - **Level 5 Complete: 4/4 (100%)**
+
+---
+
 ### Level 5: REQ-CONNECT-* Completeness (2026-01-29)
 
 Audited connector GAP→REQ completeness.

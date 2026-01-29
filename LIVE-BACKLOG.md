@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Level 5 #27: REQ-API-* OpenAPI alignment | P2 | ✅ Complete (63% specced, 22/35) **LEVEL 5 DONE** | 2026-01-29 |
 | Level 5 #26: REQ-CONNECT-* completeness | P2 | ✅ Complete (100% complete, 28/28 GAP→REQ) | 2026-01-29 |
 | Level 5 #25: REQ-TREAT-* traceability | P2 | ✅ Complete (100% covered, 7/7 reqs) | 2026-01-29 |
 | Level 5 #24: REQ-SYNC-* traceability | P2 | ✅ Complete (83% covered, 15/18 reqs) | 2026-01-29 |
