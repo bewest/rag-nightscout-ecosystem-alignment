@@ -14,7 +14,6 @@ Covers: xDrip+, xDrip4iOS, DiaBLE, Dexcom G6/G7, Libre 2/3, Medtronic CGM
 |---|------|----------|--------|-------|
 | 1 | Compare CGM sensor session handling | P3 | Medium | Start, stop, calibration across systems |
 | 2 | Extract xDrip+ Nightscout fields | P3 | Medium | What xDrip+ uploads to NS |
-| 3 | Full audit: DiaBLE Libre protocol | P2 | High | BLE traces, calibration |
 
 ---
 
@@ -22,6 +21,7 @@ Covers: xDrip+, xDrip4iOS, DiaBLE, Dexcom G6/G7, Libre 2/3, Medtronic CGM
 
 | Item | Date | Notes |
 |------|------|-------|
+| Full audit: DiaBLE Libre protocol | 2026-01-29 | 487 lines deep dive, GAP-DIABLE-002/003 |
 | Full audit: nightscout-librelink-up | 2026-01-29 | 378 lines, LibreView integration |
 | Full audit: tconnectsync | 2026-01-29 | 368 lines, Tandem Control-IQ bridge |
 | Dexcom G7 BLE protocol analysis | 2026-01-26 | Deep dive, GAP-G7-001..003 |

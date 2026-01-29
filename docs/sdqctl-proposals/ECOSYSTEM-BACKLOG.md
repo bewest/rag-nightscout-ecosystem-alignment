@@ -64,6 +64,20 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Context:** OpenAPS toolkit - pumps, CGMs, data management
 
+### 6. [P3] Compare CGM sensor session handling
+**Type:** Analysis | **Effort:** Medium
+**Repos:** xDrip+, DiaBLE, Loop, AAPS
+**Focus:** Start/stop/calibration events across systems
+**Workflow:** `compare.conv`
+**Source:** cgm-sources backlog
+
+### 7. [P3] Extract xDrip+ Nightscout fields
+**Type:** Analysis | **Effort:** Medium
+**Repos:** xDrip
+**Focus:** What xDrip+ uploads to Nightscout, field mapping
+**Workflow:** `extract-spec.conv`
+**Source:** cgm-sources backlog
+
 ---
 
 ## Backlog (Prioritized)
