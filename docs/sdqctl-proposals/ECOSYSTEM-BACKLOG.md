@@ -35,10 +35,10 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `design-review.conv`
 **Source:** LIVE-BACKLOG human request
 
-### 3. [P2] sdqctl tools vs custom py tools proposal
-**Type:** Analysis | **Effort:** Medium
-**Focus:** Compare sdqctl capabilities vs tools/*.py, identify deprecation candidates
-**Source:** LIVE-BACKLOG request
+### 3. [P2] LSP-based documentation claim verification
+**Type:** Implementation | **Effort:** Medium
+**Focus:** Resolve `...` placeholder paths in mapping docs using LSP
+**Backlog:** [tooling.md](backlogs/tooling.md)
 
 ---
 
@@ -110,7 +110,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
   - Focus: Role-based access control, OAuth flows, API authorization
   - Workflow: `gap-discovery.conv`
 - [x] ~~**Playwright adoption proposal for cgm-remote-monitor**~~ - Promoted to Ready Queue #5
-- [ ] **sdqctl tools vs custom py tools proposal** - Evaluate tooling consolidation
+- [x] ~~**sdqctl tools vs custom py tools proposal**~~ - ✅ **COMPLETE** (140 lines, 4 deprecate, 3 integrate, 23 keep)
   - From: LIVE-BACKLOG request
   - Focus: Compare sdqctl capabilities vs tools/*.py, deprecation candidates
 

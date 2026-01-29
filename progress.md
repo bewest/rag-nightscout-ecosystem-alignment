@@ -8,6 +8,22 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### sdqctl vs Custom Python Tools Comparison (2026-01-29)
+
+Analyzed 32 Python tools against sdqctl capabilities.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Proposal** | `docs/sdqctl-proposals/tools-comparison-proposal.md` | 140 lines |
+
+**Key Findings**:
+- 4 tools to deprecate (workflow orchestration → use sdqctl)
+- 3 tools to integrate as sdqctl plugins (hygiene tools)
+- 2 tools to evaluate further (ai_advisor, workspace_cli)
+- 23 tools to keep (domain-specific)
+
+---
+
 ### Hygiene Tooling Suite Verification (2026-01-29)
 
 Verified all three hygiene tools are implemented and working.
