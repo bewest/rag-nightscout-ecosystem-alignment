@@ -40,19 +40,18 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Accuracy: Verify Loop/Trio sync identity mapping
-**Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #7-8
-**Focus:** Confirm syncIdentifier usage in Loop, Trio devicestatus fields
-**Files:** `mapping/loop/sync-identity-fields.md`, `mapping/trio/devicestatus-upload.md`
-**Method:** Grep source for documented field names
-
-### 5. [P2] Accuracy: Audit algorithm-comparison claims
+### 4. [P2] Accuracy: Audit algorithm-comparison claims
 **Type:** Verification | **Effort:** Medium
 **Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #11
 **Focus:** Validate prediction array format claims
 **Files:** `docs/10-domain/algorithm-comparison-deep-dive.md`
 **Method:** Verify IOB/COB/UAM/ZT array structure in source
+
+### 5. [P2] Accuracy: Sample terminology-matrix.md (10%)
+**Type:** Verification | **Effort:** Medium
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #9
+**Focus:** Random sample 10% of terminology rows, verify in source
+**Method:** Select diverse terms across domains, grep for evidence
 
 ### 6. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -70,6 +69,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Accuracy: Verify Loop + Trio mappings~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- `mapping/loop/sync-identity-fields.md`: **100% accurate**
+- `mapping/trio/nightscout-sync.md`: **100% accurate**
+- Source files verified: DoseEntry.swift, ObjectIdCache.swift, NightscoutAPI.swift, NightscoutStatus.swift
 
 ### ~~[P2] Accuracy: Verify xDrip + AAPS mappings~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

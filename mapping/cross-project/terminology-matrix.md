@@ -712,7 +712,9 @@ This uses `secondsFromGMT(for: date)` which **does** account for DST at the spec
 |------------|------------------|---------|-------------|
 | AAPS | `identifier` | Client-side unique ID | `database/entities/*.kt` |
 | Loop | `syncIdentifier` | Pump hex or UUID | `LoopKit/DoseEntry.swift`, `CarbKit/StoredCarbEntry.swift` |
-| Loop (cache) | ObjectIdCache | Maps syncIdentifier → NS _id (24hr memory) | `NightscoutKit/NightscoutUploader.swift` |
+| Loop (cache) | ObjectIdCache | Maps syncIdentifier → NS _id (24hr memory) | `NightscoutServiceKit/ObjectIdCache.swift` |
+| Trio | `syncIdentifier` | Inherits Loop pattern | `Trio/Sources/Services/Network/Nightscout/` |
+| Trio (status) | OpenAPSStatus | DeviceStatus upload (iob, suggested, enacted) | `Trio/Sources/Models/NightscoutStatus.swift:10-14` |
 | xDrip+ (Android) | `uuid` | Client-generated UUID | `models/Treatments.java#L85` |
 | xDrip4iOS | `uuid` | Client-generated UUID | `Managers/Nightscout/*.swift` |
 | Generic | `_id` | MongoDB ObjectId (server-generated) | N/A |

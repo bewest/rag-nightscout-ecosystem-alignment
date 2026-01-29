@@ -46,13 +46,17 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 |---|------|----------|--------|--------|
 | 5 | Audit mapping/xdrip-android/nightscout-sync.md | P2 | cgm-sources | ✅ **100% accurate** |
 | 6 | Audit mapping/aaps/nsclient-schema.md | P2 | nightscout-api | ✅ **100% accurate** |
-| 7 | Audit mapping/loop/sync-identity-fields.md | P2 | sync-identity | Pending |
-| 8 | Audit mapping/trio/devicestatus-upload.md | P2 | nightscout-api | Pending |
+| 7 | Audit mapping/loop/sync-identity-fields.md | P2 | sync-identity | ✅ **100% accurate** |
+| 8 | Audit mapping/trio/nightscout-sync.md | P2 | nightscout-api | ✅ **100% accurate** |
 | 9 | Audit terminology-matrix.md row by row | P3 | cross-project | Pending |
 
 **Finding (2026-01-29)**: xDrip and AAPS mappings verified against source:
 - xDrip: UploaderQueue bitfields, SGV fields, treatment fields all match source
 - AAPS: RemoteTreatment.kt, RemoteEntry.kt, EventType.kt all match schema doc
+
+**Finding (2026-01-29)**: Loop and Trio mappings verified against source:
+- Loop: DoseEntry.swift:24 syncIdentifier, ObjectIdCache.swift structure, 24h cache lifetime all verified
+- Trio: NightscoutAPI.swift SHA-1 auth, NightscoutStatus.swift OpenAPSStatus fields (iob, suggested, enacted) verified
 
 ### Level 3: Deep Dive Claim Verification
 
@@ -102,6 +106,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 
 | Item | Date | Notes |
 |------|------|-------|
+| Item #7-8: Loop + Trio mappings | 2026-01-29 | **100% accurate** - syncIdentifier, OpenAPSStatus verified |
 | Item #5-6: Mapping verification | 2026-01-29 | **100% accurate** - xDrip + AAPS mappings verified |
 | Item #17: G7 protocol claims | 2026-01-29 | **100% accurate** - All opcodes, UUIDs, curves verified vs source |
 | Item #1-4: Source refs | 2026-01-29 | **91% valid** (356/391), 2 intentional example refs |
@@ -124,6 +129,21 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | RemoteTreatment.kt fields | `RemoteTreatment.kt:18-79` | ✅ Verified |
 | RemoteEntry.kt SGV fields | `RemoteEntry.kt:15-34` | ✅ Verified |
 | EventType enum values | `EventType.kt:27-36` | ✅ Verified |
+
+**Loop sync-identity-fields.md**:
+| Claim | Source | Status |
+|-------|--------|--------|
+| DoseEntry.syncIdentifier | `DoseEntry.swift:24` | ✅ Verified |
+| StoredGlucoseSample.syncIdentifier | `StoredGlucoseSample.swift:18` | ✅ Verified |
+| ObjectIdCache structure | `ObjectIdCache.swift:11,50,65` | ✅ Verified |
+| 24h cache lifetime | `NightscoutService.swift:27` | ✅ Verified |
+
+**Trio nightscout-sync.md**:
+| Claim | Source | Status |
+|-------|--------|--------|
+| SHA-1 api-secret header | `NightscoutAPI.swift:57` | ✅ Verified |
+| OpenAPSStatus fields (iob, suggested, enacted) | `NightscoutStatus.swift:11-14` | ✅ Verified |
+| NightscoutManager uploadStatus | `NightscoutManager.swift:392-480` | ✅ Verified |
 
 ### Verification Details: G7 Protocol (2026-01-29)
 
