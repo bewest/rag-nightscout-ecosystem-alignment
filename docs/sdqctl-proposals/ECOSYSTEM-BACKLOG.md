@@ -35,11 +35,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `design-review.conv`
 **Source:** LIVE-BACKLOG human request
 
-### 3. [P1] PR analysis: cgm-remote-monitor
-**Type:** Analysis | **Effort:** Medium
-**Repos:** cgm-remote-monitor
-**Focus:** Review open PRs for ecosystem impact, identify interop issues
-**Workflow:** `pr-analysis.conv`
+### 3. [P0] Hygiene tooling suite
+**Type:** Implementation | **Effort:** Medium
+**Focus:** queue_stats.py, backlog_hygiene.py, doc_chunker.py
+**Design:** `docs/sdqctl-proposals/backlogs/hygiene-tooling-design.md`
+**Note:** Enables autonomous workflow optimization
 
 ---
 
@@ -58,7 +58,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 ### P1 - High Value
 
-- [ ] **PR analysis: cgm-remote-monitor** - Review open PRs for ecosystem impact
+- [x] ~~**PR analysis: cgm-remote-monitor**~~ - ✅ **COMPLETE** (388 lines, 68 PRs analyzed)
 - [x] ~~**PR analysis: share2nightscout-bridge**~~ - Completed (242 lines, 3 gaps)
 - [x] ~~**Deep dive: Batch operation ordering**~~ - Completed
 - [x] ~~**Gap discovery: Prediction array formats**~~ - Completed (319 lines, 3 gaps)
