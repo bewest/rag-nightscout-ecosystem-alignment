@@ -69,12 +69,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### ~~8. [P3] Map algorithm terminology~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (+95 lines terminology, ISF/CR/DIA/UAM/SMB/Autosens mapped)
 
-### 9. [P3] Document AAPS vs oref0 divergence
-**Type:** Analysis | **Effort:** Low
-**Repos:** AndroidAPS, oref0
-**Focus:** Document the 69% output differences found in conformance testing
-**Workflow:** `extract-spec.conv`
-**Source:** aid-algorithms backlog
+### ~~9. [P3] Document AAPS vs oref0 divergence~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (280 lines, 4 gaps GAP-ALG-009 to 012)
+- Core oref0 (OpenAPSSMBPlugin): 94% pass rate - effectively identical
+- DynamicISF: 18% pass rate - AAPS-specific TDD-based ISF
+- AutoISF: 5% pass rate - AAPS-specific sigmoid-adjusted ISF
 
 ---
 

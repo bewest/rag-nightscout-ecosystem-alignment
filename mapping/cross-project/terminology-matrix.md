@@ -1209,6 +1209,33 @@ xDrip+ uniquely supports multiple insulin types per treatment:
 
 **Gap Reference**: GAP-ALG-005 (Loop lacks SMB/UAM), GAP-ALG-006 (DynISF TDD-based vs deviation-based)
 
+### AAPS-Specific Algorithm Variants
+
+AAPS extends oref0 with additional ISF calculation algorithms not present in vanilla oref0:
+
+| Algorithm | Class | ISF Calculation | Pass Rate vs oref0 |
+|-----------|-------|-----------------|---------------------|
+| **OpenAPSSMBPlugin** | Standard oref0 port | Static from profile | 94% |
+| **OpenAPSAMAPlugin** | Advanced Meal Assist | Static from profile | 67% |
+| **OpenAPSSMBDynamicISFPlugin** | TDD-based ISF | `1800 / (TDD × ln(BG/divisor + 1))` | 18% |
+| **OpenAPSSMBAutoISFPlugin** | Sigmoid-adjusted ISF | Multi-factor: BG, bolus time, exercise | 5% |
+
+**Dynamic ISF Formula**:
+```kotlin
+// externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/openAPSSMB/DetermineBasalAdapterSMBDynamicISFJS.kt
+val variableSensitivity = 1800 / (tdd * ln((glucose / insulinDivisor) + 1))
+```
+
+**TDD Weighting**:
+```kotlin
+val tddWeightedFromLast8H = ((1.4 * tddLast4H) + (0.6 * tddLast8to4H)) * 3
+val tdd = ((tddWeightedFromLast8H * 0.33) + (tdd7D * 0.34) + (tdd1D * 0.33)) * adjustmentFactor
+```
+
+**Gap Reference**: GAP-ALG-009 (DynamicISF not in oref0), GAP-ALG-010 (AutoISF not in oref0)
+
+**See Also**: [AAPS vs oref0 Divergence Analysis](../../docs/10-domain/aaps-oref0-divergence-analysis.md)
+
 ---
 
 ## CGM Source Models (Deep Dive)

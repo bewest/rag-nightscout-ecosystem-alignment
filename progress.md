@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### AAPS vs oref0 Divergence Analysis (2026-01-29)
+
+Analyzed 69% divergence in conformance testing between AAPS and oref0 algorithm outputs.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/aaps-oref0-divergence-analysis.md` | 280 lines |
+
+**Key Findings**:
+- 85 test vectors from AAPS ReplayApsResultsTest fixtures
+- OpenAPSSMBPlugin (vanilla oref0): 94% pass rate - effectively identical
+- OpenAPSSMBDynamicISFPlugin: 18% pass rate - major divergence
+- OpenAPSSMBAutoISFPlugin: 5% pass rate - very high divergence
+- Root cause: DynamicISF and AutoISF are AAPS-specific extensions not in oref0
+- Core oref0 algorithm is preserved in AAPS Kotlin port
+
+**Gaps Identified**: GAP-ALG-009, GAP-ALG-010, GAP-ALG-011, GAP-ALG-012
+
+---
+
 ### Algorithm Core Terminology Mapping (2026-01-29)
 
 Added comprehensive algorithm terminology mapping across Loop, AAPS, Trio, and oref0.

@@ -551,4 +551,90 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ## OpenAPS/oref0 Gaps
 
+### GAP-ALG-009: DynamicISF Not Present in oref0
+
+**Scenario**: Running AAPS DynamicISF test vectors against vanilla oref0
+
+**Description**: AAPS's DynamicISF algorithm calculates variable insulin sensitivity based on Total Daily Dose (TDD) using formula `1800 / (TDD × ln(BG/divisor + 1))`. This algorithm is not present in vanilla oref0, which uses static ISF from profile.
+
+**Source**: Conformance testing (85 vectors, 44 DynamicISF, 18% pass rate)
+
+**Impact**:
+- 52% of AAPS test vectors cannot pass oref0 validation
+- eventualBG calculations diverge significantly
+- Cross-system conformance testing requires algorithm-specific runners
+
+**Possible Solutions**:
+1. Create separate conformance runner for DynamicISF
+2. Add DynamicISF calculation to conformance suite
+3. Filter test vectors to SMBPlugin-only for oref0 testing
+
+**Status**: Documented
+
+---
+
+### GAP-ALG-010: AutoISF Not Present in oref0
+
+**Scenario**: Running AAPS AutoISF test vectors against vanilla oref0
+
+**Description**: AAPS's AutoISF algorithm uses sigmoid-based ISF adjustment considering BG level, time since last bolus, exercise activity, and accelerating/decelerating BG. This is entirely AAPS-specific and not present in oref0.
+
+**Source**: Conformance testing (85 vectors, 22 AutoISF, 5% pass rate)
+
+**Impact**:
+- 26% of AAPS test vectors virtually all fail oref0 validation
+- AutoISF produces significantly different dosing recommendations
+- Cross-system algorithm comparison requires algorithm-specific testing
+
+**Possible Solutions**:
+1. Create AAPS Kotlin-based conformance runner
+2. Document AutoISF as AAPS-specific extension
+3. Separate conformance suites by algorithm variant
+
+**Status**: Documented
+
+---
+
+### GAP-ALG-011: LGS Duration Differences
+
+**Scenario**: Low Glucose Suspend temp basal duration comparison
+
+**Description**: oref0 uses 30-minute temp basals by default; AAPS uses 120 minutes for Low Glucose Suspend situations. Both achieve same safety goal (zero insulin delivery) but duration differs.
+
+**Source**: Conformance testing LGS category (6/8 failures on duration)
+
+**Impact**:
+- LGS tests fail on duration even when rate is correct (0)
+- Different pump command frequency between systems
+- No functional difference in safety behavior
+
+**Possible Solutions**:
+1. Update assertions to allow 30 OR 120 minute duration for LGS
+2. Document as expected behavioral difference
+3. Normalize duration expectations in test framework
+
+**Status**: Documented
+
+---
+
+### GAP-ALG-012: DIA Minimum Enforcement Differences
+
+**Scenario**: Profile with DIA < 5 hours configured
+
+**Description**: oref0 enforces minimum 5-hour DIA (Duration of Insulin Action); AAPS allows user-configured lower values. When profile has DIA=3, oref0 treats it as DIA=5, causing different IOB decay calculations.
+
+**Source**: Test vector TV-017 (DIA=3, eventualBG 80 expected vs 146 actual)
+
+**Impact**:
+- IOB calculations diverge when profile DIA < 5 hours
+- eventualBG predictions differ
+- Safety: oref0's enforcement is more conservative
+
+**Possible Solutions**:
+1. Document as expected behavior difference
+2. Add DIA normalization to test vector transform
+3. Warn when DIA < 5 in input validation
+
+**Status**: Documented
+
 ---
