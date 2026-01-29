@@ -21,36 +21,36 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] Algorithm conformance: oref0 runner
-**Type:** Implementation | **Effort:** Medium
-**Repos:** oref0
-**Focus:** Phase 2 of conformance suite - Node.js runner for oref0
-**Workflow:** `extract-spec.conv`
-**Note:** Follow-on from schema + fixture extraction (complete)
-
-### 2. [P2] Nightscout APIv3 Collection deep dive
+### 1. [P2] Nightscout APIv3 Collection deep dive
 **Type:** Analysis | **Effort:** Medium
 **Repos:** cgm-remote-monitor
 **Focus:** Document all APIv3 collections, operations, authorization
 **Workflow:** `gap-discovery.conv`
 
-### 3. [P2] Device Status collection deep dive
+### 2. [P2] Device Status collection deep dive
 **Type:** Analysis | **Effort:** Medium
 **Repos:** cgm-remote-monitor, AAPS, Loop
 **Focus:** Document devicestatus structure differences between controllers
 **Workflow:** `gap-discovery.conv`
 
-### 4. [P2] Profile collection deep dive
+### 3. [P2] Profile collection deep dive
 **Type:** Analysis | **Effort:** Medium
 **Repos:** cgm-remote-monitor, AAPS, Loop, Trio
 **Focus:** Document profile structure and sync patterns
 **Workflow:** `gap-discovery.conv`
 
-### 5. [P2] Hygiene: Chunk progress.md
+### 4. [P2] Hygiene: Chunk progress.md
 **Type:** Maintenance | **Effort:** Low
-**Focus:** Split 1684-line progress.md into archive + current
+**Focus:** Split 1700+ line progress.md into archive + current
 **Workflow:** Manual or `doc_chunker.py`
 **Note:** Exceeds 500-line threshold
+
+### 5. [P2] Algorithm conformance: AAPS Kotlin runner
+**Type:** Implementation | **Effort:** High
+**Repos:** AndroidAPS
+**Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
+**Workflow:** `extract-spec.conv`
+**Note:** Follow-on from oref0 runner (complete)
 
 ---
 
@@ -133,6 +133,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-29 | Algorithm conformance: oref0 runner | `oref0-runner.js` - 400+ lines, 26/85 pass |
 | 2026-01-29 | Algorithm conformance: Schema + fixture extraction | 85 vectors, schema, extraction script |
 | 2026-01-29 | Heart Rate API specification | `aid-heartrate-2025.yaml` - 447 lines |
 | 2026-01-29 | Statistics API proposal | 480 lines, 3 gaps, 5 reqs |

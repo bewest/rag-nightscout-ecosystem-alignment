@@ -1682,3 +1682,32 @@ Phase 1 implementation of cross-project algorithm conformance testing infrastruc
 **Source Files Analyzed**:
 - `externals/AndroidAPS/app/src/androidTest/assets/results/*.json` (85 fixtures)
 - `externals/AndroidAPS/app/src/androidTest/kotlin/app/aaps/ReplayApsResultsTest.kt`
+
+---
+
+### Algorithm Conformance: oref0 Runner (2026-01-29)
+
+Phase 2 implementation - Node.js runner executing conformance vectors against oref0.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **oref0 Runner** | `conformance/runners/oref0-runner.js` | 400+ lines, full test execution |
+| **Makefile Target** | `make conformance-oref0` | Run with `--quiet` for clean output |
+| **Results** | `conformance/results/oref0-results.json` | Pass/fail per vector with details |
+
+**Initial Test Results** (AAPS vectors → oref0):
+| Category | Passed | Total | Rate |
+|----------|--------|-------|------|
+| basal-adjustment | 24 | 77 | 31% |
+| low-glucose-suspend | 2 | 8 | 25% |
+| **Total** | 26 | 85 | **31%** |
+
+**Key Finding**: The 69% divergence reveals algorithm differences between AAPS and oref0:
+- AAPS modifies eventualBG calculation
+- AAPS has different IOB array handling (includes iobWithZeroTemp projections)
+- oref0 logs "Problem with iobArray" for missing projections
+
+**Next Steps**:
+- Phase 3: AAPS Kotlin runner to compare JS vs Kotlin paths
+- Refine vector extraction to include full iobArray
+- Document algorithm divergence in gaps

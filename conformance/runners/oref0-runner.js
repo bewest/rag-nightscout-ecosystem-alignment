@@ -21,17 +21,21 @@ const DEFAULT_OUTPUT = path.join(WORKSPACE_ROOT, 'conformance/results/oref0-resu
 // Console management - parse args early to set QUIET_MODE before requiring oref0
 const originalConsoleError = console.error;
 const originalConsoleLog = console.log;
+const originalStderrWrite = process.stderr.write.bind(process.stderr);
+const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 let QUIET_MODE = process.argv.includes('--quiet') || process.argv.includes('-q');
 
 function suppressConsole() {
     if (QUIET_MODE) {
         console.error = () => {};
         console.log = () => {};
+        process.stderr.write = () => true;
     }
 }
 function restoreConsole() {
     console.error = originalConsoleError;
     console.log = originalConsoleLog;
+    process.stderr.write = originalStderrWrite;
 }
 function log(...args) {
     originalConsoleLog.apply(console, args);
