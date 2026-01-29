@@ -8,6 +8,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Device Status Collection Deep Dive - Gaps Migration (2026-01-29)
+
+Found existing comprehensive deep dive (863 lines). Migrated 4 gaps to traceability.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/devicestatus-deep-dive.md` | 863 lines (pre-existing) |
+| **Gaps Added** | `traceability/nightscout-api-gaps.md` | GAP-DS-001 through 004 |
+
+**Key Findings** (from existing doc):
+- Loop uses flat `loop` object; oref0 systems use nested `openaps` object
+- Loop: single combined prediction; oref0: 4 curves (IOB, COB, UAM, ZT)
+- Duration units differ: Loop=seconds, oref0=minutes
+- Loop exposes less algorithm state than oref0
+
+**Gaps Migrated**:
+| Gap ID | Issue |
+|--------|-------|
+| GAP-DS-001 | No effect timelines in Loop |
+| GAP-DS-002 | Prediction array incompatibility |
+| GAP-DS-003 | Duration unit inconsistency |
+| GAP-DS-004 | Missing algorithm transparency in Loop |
+
+---
+
 ### nightscout-connect Design Review (2026-01-29)
 
 Comprehensive design review of nightscout-connect XState architecture, vendor extensibility, and refactoring suggestions.

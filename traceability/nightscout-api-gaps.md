@@ -1172,3 +1172,75 @@ _None yet._
 **Source**: `lib/api3/shared/fieldsProjector.js`
 
 ---
+
+## DeviceStatus Structure Gaps
+
+---
+
+### GAP-DS-001: No Effect Timelines in Loop
+
+**Description**: Loop computes individual effect timelines (insulin, carbs, momentum, retrospective correction) internally but does NOT upload them to devicestatus.
+
+**Affected Systems**: Loop, cross-system analytics
+
+**Impact**:
+- Cannot debug Loop algorithm decisions
+- Cannot compare Loop effects to oref0's detailed output
+- Limited retrospective analysis
+
+**Remediation**: Add optional effect timeline upload to Loop devicestatus.
+
+**Source**: `docs/10-domain/devicestatus-deep-dive.md`
+
+---
+
+### GAP-DS-002: Prediction Array Incompatibility
+
+**Description**: Loop uploads single combined prediction array; oref0 systems provide four separate curves (IOB, COB, UAM, ZT).
+
+**Affected Systems**: Loop, Trio, AAPS, analytics tools
+
+**Impact**:
+- Cannot directly compare predictions between systems
+- Different semantics for prediction interpretation
+- Analytics must handle both formats
+
+**Remediation**: Document clearly which prediction to use for comparison purposes.
+
+**Source**: `docs/10-domain/devicestatus-deep-dive.md`
+
+---
+
+### GAP-DS-003: Duration Unit Inconsistency
+
+**Description**: Loop uses seconds for duration; oref0 systems use minutes.
+
+**Affected Systems**: Loop, Trio, AAPS, OpenAPS
+
+**Impact**:
+- Analytics code must convert between units
+- Risk of off-by-60x errors
+- Cross-system comparison requires normalization
+
+**Remediation**: Document conversion requirements; consider standardizing in future specs.
+
+**Source**: `docs/10-domain/devicestatus-deep-dive.md`
+
+---
+
+### GAP-DS-004: Missing Algorithm Transparency in Loop
+
+**Description**: oref0 exposes extensive algorithm state (eventualBG, sensitivityRatio, ISF, CR, deviation, reason). Loop uploads minimal algorithm context.
+
+**Affected Systems**: Loop, analytics tools
+
+**Impact**:
+- Cannot understand Loop algorithm decisions
+- Limited debugging capability
+- Cannot compute similar metrics retrospectively
+
+**Remediation**: Consider adding optional algorithm context fields to Loop devicestatus.
+
+**Source**: `docs/10-domain/devicestatus-deep-dive.md`
+
+---
