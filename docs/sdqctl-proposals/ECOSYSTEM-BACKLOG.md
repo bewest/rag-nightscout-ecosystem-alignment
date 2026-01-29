@@ -40,11 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Level 6: Proposal coherence - algorithm-conformance-suite.md
+### 4. [P2] Level 6: Proposal coherence - statistics-api-proposal.md
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #28
-**Focus:** Verify proposal vs actual runners
-**Method:** Compare proposal claims with conformance/ implementation
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #29
+**Focus:** Check endpoint specs vs actual needs
+**Method:** Compare proposal with REQ-STATS-* requirements
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -62,6 +62,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 6: algorithm-conformance-suite.md coherence~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Coherence: **80%** - Phases 1-2 done, 3-5 correctly marked pending
+- oref0-runner.js exists (13KB), 85 vectors, 30.6% pass rate
+- Minor issue: file tree shows future runners as existing
 
 ### ~~[P2] Level 5: REQ-API-* OpenAPI alignment~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 - **LEVEL 5 COMPLETE!**
