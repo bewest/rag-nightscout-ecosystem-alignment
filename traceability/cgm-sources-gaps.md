@@ -1040,3 +1040,72 @@ wercker.yml  # Defunct service
 **Source**: `mapping/nocturne/connectors.md`
 
 ---
+
+
+### GAP-SESSION-001: No Standard Sensor Session Event Schema
+
+**Description**: Each CGM system (xDrip+, DiaBLE, Loop, AAPS) tracks sensor sessions differently. There is no common Nightscout API schema for session start/stop/change events.
+
+**Affected Systems**: xDrip+, DiaBLE, Loop, AAPS, Nightscout
+
+**Impact**:
+- Session start/stop times don't sync reliably between systems
+- Different session identity patterns cause confusion
+- Caregivers can't see consistent sensor change history
+
+**Remediation**: Define standard `Sensor Session Start/Stop` treatment types with fields for session identity, warm-up duration, and expected lifetime.
+
+**Source**: `docs/10-domain/cgm-session-handling-deep-dive.md`
+
+---
+
+### GAP-SESSION-002: Warm-up Period Not Uploaded to Nightscout
+
+**Description**: CGM sensors have varying warm-up periods (30min to 2hr) but this duration is not included in Nightscout data uploads.
+
+**Affected Systems**: xDrip+, DiaBLE, Loop, AAPS, Nightscout
+
+**Impact**:
+- Downstream consumers can't determine if readings are during warm-up
+- No filtering of potentially inaccurate early readings
+- Caregivers may see unreliable data without warning
+
+**Remediation**: Add `warmupDuration` field to CGM entries or devicestatus; include `isWarmingUp` flag on readings during warm-up.
+
+**Source**: `docs/10-domain/cgm-session-handling-deep-dive.md`
+
+---
+
+### GAP-SESSION-003: DiaBLE Has No Session Upload Capability
+
+**Description**: DiaBLE tracks sensor session states internally (`SensorState` enum with notActivated, warmingUp, active, expired, shutdown, failure) but does not upload session events to Nightscout.
+
+**Affected Systems**: DiaBLE, Nightscout
+
+**Impact**:
+- Sensor changes in DiaBLE aren't visible in Nightscout
+- No session history for DiaBLE users
+- Caregivers can't see sensor lifecycle events
+
+**Remediation**: Add session event upload to DiaBLE Nightscout integration using standard treatment types.
+
+**Source**: `docs/10-domain/cgm-session-handling-deep-dive.md`
+
+---
+
+### GAP-SESSION-004: Calibration State Not Synchronized
+
+**Description**: xDrip+ and Loop track detailed calibration states (25+ states including WarmingUp, NeedsFirstCalibration, CalibrationConfused, etc.) but this state information isn't shared via Nightscout.
+
+**Affected Systems**: xDrip+, Loop, AAPS, Nightscout
+
+**Impact**:
+- Other systems can't warn users about calibration issues
+- No visibility into calibration problems from follower apps
+- Caregivers can't see when calibration is needed
+
+**Remediation**: Add calibration state to devicestatus or create dedicated calibration event type with state details.
+
+**Source**: `docs/10-domain/cgm-session-handling-deep-dive.md`
+
+---

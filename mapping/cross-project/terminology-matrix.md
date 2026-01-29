@@ -2152,6 +2152,65 @@ DiaBLE tracks sensor data quality with detailed error flags not exposed to Night
 
 ---
 
+## CGM Sensor Session Terminology
+
+> **See Also**: [CGM Session Handling Deep Dive](../../docs/10-domain/cgm-session-handling-deep-dive.md)
+
+### Sensor Session States
+
+| Alignment Term | xDrip+ | DiaBLE | Loop | AAPS |
+|----------------|--------|--------|------|------|
+| Not Started | `CalibrationState.Unknown` | `.notActivated` | `notYetStarted` | Missing `SENSOR_CHANGE` |
+| Warming Up | `CalibrationState.WarmingUp (0x02)` | `.warmingUp` | `warmup` | Calculated from start |
+| Active | Implied | `.active` | `ready` | Implied |
+| Expired | ✅ | `.expired` | `sessionExpired` | Via age trigger |
+| Failed | ✅ | `.failure` | `sessionFailedDuetoUnrecoverableError` | Via missing data |
+| Stopped | `Sensor.stopped_at` | `.shutdown` | `stopped`, `sessionEnded` | `SENSOR_STOPPED` |
+
+### Calibration State Terminology
+
+| Alignment Term | xDrip+ Hex | DiaBLE | Loop |
+|----------------|------------|--------|------|
+| Needs First Cal | `0x04` | `calibrationsPermitted` | `needFirstInitialCalibration` |
+| Needs Second Cal | `0x05` | N/A | `needSecondInitialCalibration` |
+| Calibration OK | `0x06` | N/A | `ok` |
+| Calibration Error | `0x08-0x0e` | N/A | `calibrationError*` |
+| Cal Sent | `0xC3` | N/A | N/A |
+
+### Warm-up Duration Constants
+
+| Sensor | Duration | xDrip+ Source | DiaBLE Source |
+|--------|----------|---------------|---------------|
+| Dexcom G6 | 2 hours | `SensorDays.warmupMs` | From transmitter |
+| Dexcom G7 | Variable | `VersionRequest2RxMessage.warmupSeconds` | `warmupLength` field |
+| Libre 1/2 | 1 hour | `SensorDays.java` | Frame `[316-317]` |
+| Libre 3 | 1 hour | N/A | `warmupTime × 5 min` |
+| Medtrum | 30 min | `SensorDays.java` | N/A |
+
+### Session Identity Fields
+
+| System | Session Tracking | Calibration Tracking |
+|--------|------------------|----------------------|
+| xDrip+ | `sensor.uuid` | `calibration.uuid` |
+| DiaBLE | `activationTime` | N/A (no upload) |
+| Loop | `syncIdentifier` | `syncIdentifier` |
+| AAPS | `SENSOR_CHANGE` event + `nightscoutId` | `FINGER_STICK_BG_VALUE` event |
+
+### Nightscout Treatment Event Types
+
+| Event | eventType | Purpose |
+|-------|-----------|---------|
+| Sensor Start | `Sensor Start` | New sensor insertion |
+| Sensor Change | `Sensor Start` (implicit) | Session start/restart |
+| Sensor Stop | N/A (no standard) | Session end |
+| Calibration | `BG Check` | Finger-stick BG value |
+
+**Deep Dive**: [`docs/10-domain/cgm-session-handling-deep-dive.md`](../../docs/10-domain/cgm-session-handling-deep-dive.md)
+
+**Gap Reference**: GAP-SESSION-001 (no standard schema), GAP-SESSION-002 (no warm-up upload), GAP-SESSION-003 (DiaBLE no session upload), GAP-SESSION-004 (calibration state not synced)
+
+---
+
 ## LoopCaregiver Remote 2.0 Models
 
 > **See Also**: [LoopCaregiver Remote Commands](../loopcaregiver/remote-commands.md), [LoopCaregiver Authentication](../loopcaregiver/authentication.md)

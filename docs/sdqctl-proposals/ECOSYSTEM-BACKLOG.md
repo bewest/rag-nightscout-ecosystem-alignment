@@ -57,19 +57,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### ~~5. [P3] Deep dive: LoopCaregiver~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (417 lines, 3 gaps)
 
-### 5. [P3] Deep dive: openaps toolkit
-**Type:** Analysis | **Effort:** Medium
-**Repos:** openaps
-**Focus:** Device interface layer (vs oref0 algorithm layer)
-**Workflow:** `extract-spec.conv`
-**Context:** OpenAPS toolkit - pumps, CGMs, data management
+### ~~5. [P3] Deep dive: openaps toolkit~~ ✅ COMPLETE
+**Status:** Pre-existing documentation covers this (371 lines deep dive at `docs/10-domain/openaps-oref0-deep-dive.md`, 3 gaps)
 
-### 6. [P3] Compare CGM sensor session handling
-**Type:** Analysis | **Effort:** Medium
-**Repos:** xDrip+, DiaBLE, Loop, AAPS
-**Focus:** Start/stop/calibration events across systems
-**Workflow:** `compare.conv`
-**Source:** cgm-sources backlog
+### ~~6. [P3] Compare CGM sensor session handling~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (407 lines, 4 gaps GAP-SESSION-001 to 004)
 
 ### 7. [P3] Extract xDrip+ Nightscout fields
 **Type:** Analysis | **Effort:** Medium

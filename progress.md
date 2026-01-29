@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### CGM Sensor Session Handling Comparison (2026-01-29)
+
+Created cross-project comparison of CGM sensor session handling across xDrip+, DiaBLE, Loop, and AAPS.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/cgm-session-handling-deep-dive.md` | 407 lines |
+
+**Key Findings**:
+- xDrip+: Comprehensive CalibrationState enum with 25+ states
+- DiaBLE: SensorState enum (notActivated, warmingUp, active, expired, shutdown, failure)
+- Loop: CgmEvent model with explicit warmupPeriod property
+- AAPS: TherapyEvent types (SENSOR_CHANGE, SENSOR_STARTED, SENSOR_STOPPED)
+- No standard Nightscout schema for session events
+- Warm-up duration varies by sensor (30min to 2hr) but not uploaded
+
+**Gaps Identified**: GAP-SESSION-001, GAP-SESSION-002, GAP-SESSION-003, GAP-SESSION-004
+
+---
+
 ### DiaBLE Deep Dive (2026-01-29)
 
 Created comprehensive deep-dive documentation for DiaBLE iOS/watchOS CGM reader application.
