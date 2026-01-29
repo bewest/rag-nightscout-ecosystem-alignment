@@ -27,6 +27,30 @@ Analyzed 53 files over 500 lines for autonomous workflow optimization.
 
 ---
 
+### Reporting Needs Analysis (2026-01-29)
+
+Comparison of nightscout-reporter vs cgm-remote-monitor built-in reports.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Analysis** | `docs/10-domain/reporting-needs-analysis.md` | 250 lines |
+| **Gaps Added** | `traceability/nightscout-api-gaps.md` | GAP-REPORT-001-003 |
+
+**Key Findings**:
+- cgm-remote-monitor: 11 report plugins (4,738 lines), HTML only
+- nightscout-reporter: 17 print forms (15,000+ lines), PDF export
+- Both compute statistics client-side (duplication)
+- nightscout-reporter has superior PDF generation and multi-language
+
+**Gaps Identified**:
+| Gap ID | Issue |
+|--------|-------|
+| GAP-REPORT-001 | No server-side statistics API |
+| GAP-REPORT-002 | No PDF export in cgm-remote-monitor |
+| GAP-REPORT-003 | Loop analysis fragmented |
+
+---
+
 ### CGM Sensor Session Handling Comparison (2026-01-29)
 
 Cross-system analysis of sensor session start/stop and calibration patterns.

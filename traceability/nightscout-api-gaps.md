@@ -1310,3 +1310,52 @@ _None yet._
 **Remediation**: Consider adding optional profile download for caregiver mode.
 
 **Source**: `docs/60-research/profile-therapy-settings-comparison.md`
+
+### GAP-REPORT-001: No Server-Side Statistics API
+
+**Description**: Both cgm-remote-monitor and nightscout-reporter compute statistics client-side, duplicating logic and preventing standardization.
+
+**Affected Systems**: cgm-remote-monitor, nightscout-reporter, all report consumers
+
+**Impact**:
+- Inconsistent calculations between clients
+- High client-side computation load
+- No standard statistics endpoint
+
+**Remediation**: Implement statistics-api-proposal.md server-side endpoints.
+
+**Source**: `docs/10-domain/reporting-needs-analysis.md`
+
+---
+
+### GAP-REPORT-002: No PDF Export in cgm-remote-monitor
+
+**Description**: Built-in reports render HTML only. Users wanting PDF must use nightscout-reporter or browser print-to-PDF.
+
+**Affected Systems**: cgm-remote-monitor
+
+**Impact**:
+- Suboptimal for clinical sharing
+- Requires separate tool for print
+
+**Remediation**: Add PDF export capability or integrate with nightscout-reporter.
+
+**Source**: `docs/10-domain/reporting-needs-analysis.md`
+
+---
+
+### GAP-REPORT-003: Loop Analysis Fragmented
+
+**Description**: Loop/OpenAPS analysis exists in loopalyzer.js for cgm-remote-monitor, but nightscout-reporter uses uploader detection heuristics instead of dedicated analysis.
+
+**Affected Systems**: cgm-remote-monitor, nightscout-reporter
+
+**Impact**:
+- Inconsistent loop analysis across tools
+- Different metrics computed
+
+**Remediation**: Standardize loop analysis metrics.
+
+**Source**: `docs/10-domain/reporting-needs-analysis.md`
+
+---
