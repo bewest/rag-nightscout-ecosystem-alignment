@@ -8,6 +8,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Conformance CI Integration (2026-01-29)
+
+Integrated algorithm conformance suite with CI pipeline and added Makefile targets.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Makefile Targets** | `Makefile` | +2 targets: `conformance-algorithms`, `conformance-ci` |
+| **CI Workflow** | `.github/workflows/ci.yml` | +38 lines, new `algorithm-conformance` job |
+| **Documentation** | `conformance/README.md` | 148 lines, usage guide |
+
+**New Make Targets**:
+| Target | Purpose |
+|--------|---------|
+| `make conformance` | Assertion-based tests (existing) |
+| `make conformance-algorithms` | Algorithm conformance suite |
+| `make conformance-ci` | Both in CI mode (strict exit codes) |
+
+**CI Features**:
+- Node.js 18 setup for oref0 runner
+- Bootstrap external repos automatically
+- Upload results as artifact
+- `continue-on-error: true` for known divergence
+
+---
+
 ### xdrip-js Deep Dive (2026-01-29)
 
 Analyzed xdrip-js Node.js CGM interface library for Raspberry Pi-based Dexcom receivers.

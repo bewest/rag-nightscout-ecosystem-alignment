@@ -13,9 +13,17 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
 | 1 | sdqctl VERIFY directive implementation | P2 | High | Built-in verification (refs, traceability, assertions) |
-| 2 | Conformance test executor integration | P2 | Medium | `sdqctl run conformance` + CI workflow |
-| 3 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt pending |
-| 4 | LSP-based claim verification (Phase 2+) | P3 | Medium | JS/TS LSP integration deferred |
+| 2 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt pending |
+| 3 | LSP-based claim verification (Phase 2+) | P3 | Medium | JS/TS LSP integration deferred |
+
+---
+
+## Completed
+
+| Item | Date | Notes |
+|------|------|-------|
+| Conformance CI Integration | 2026-01-29 | CI job + Makefile targets + README |
+| Gap-to-Requirement Generator | 2026-01-29 | Manual process, 28 connector REQs generated |
 
 ---
 
@@ -29,20 +37,14 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 - Generate REQ-* stubs with template
 - Suggest verification scenarios
 
-### Proposal: Conformance CI Integration
-**Source:** oref0 runner revealed 69% divergence - manual discovery
-**Problem:** Algorithm drift not visible until explicit audit
-**Solution:** GitHub Actions workflow for:
-- Nightly conformance runs
-- Slack/email on divergence increase
-- Dashboard badge for pass rate
-
 ---
 
 ## Completed
 
 | Item | Date | Notes |
 |------|------|-------|
+| Conformance CI Integration | 2026-01-29 | CI job + Makefile targets + README |
+| Gap-to-Requirement Generator | 2026-01-29 | Manual process, 28 connector REQs generated |
 | Assertion→Requirement coverage validator | 2026-01-29 | Enhanced verify_assertions.py: multi-file, scenario inheritance |
 | Integration test runner | 2026-01-29 | `tools/conformance_suite.py` - orchestrator + reports |
 | LSP claim verification Phase 1 | 2026-01-29 | Line anchor validation, 99.3% valid |

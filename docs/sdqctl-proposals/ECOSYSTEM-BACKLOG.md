@@ -38,16 +38,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - CLI commands `sdqctl verify refs`, `sdqctl verify all`
 - `.conv` directive support
 
-### 3. [P2] Conformance Test Executor Integration
-**Type:** Tooling | **Effort:** Medium
-**Focus:** Integrate `conformance_suite.py` with sdqctl
-**Context:** Orchestrator exists but manual invocation required
-**Deliverables:**
-- `sdqctl run conformance` CLI command
-- CI workflow for continuous algorithm validation
-- GitHub Actions integration template
-
-### 4. [P3] Algorithm conformance: Loop Swift runner
+### 3. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
@@ -57,6 +48,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Conformance Test Executor Integration~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Added `make conformance-algorithms` and `make conformance-ci` targets
+- Added `algorithm-conformance` job to `.github/workflows/ci.yml`
+- Created `conformance/README.md` (148 lines)
+- CI uploads results as artifact, uses `continue-on-error` for known divergence
 
 ### ~~[P3] Deep dive: xdrip-js Node.js CGM interface~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

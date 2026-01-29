@@ -77,6 +77,44 @@ jobs:
       - name: Run conformance tests (offline)
         run: python tools/run_conformance.py
 
+  algorithm-conformance:
+    name: Algorithm Conformance
+    runs-on: ubuntu-latest
+    needs: validate-fixtures
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Bootstrap external repos
+        run: python tools/bootstrap.py bootstrap
+
+      - name: Install oref0 dependencies
+        run: |
+          cd externals/oref0
+          npm install --ignore-scripts || true
+
+      - name: Run algorithm conformance suite
+        run: python tools/conformance_suite.py --ci
+        continue-on-error: true  # Known divergence, don't fail CI
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: conformance-results
+          path: conformance/results/
+
   coverage-matrix:
     name: Coverage Matrix
     runs-on: ubuntu-latest

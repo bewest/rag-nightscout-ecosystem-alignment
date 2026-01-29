@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions hygiene-tests hygiene-unit hygiene-all mock-nightscout extract-vectors conformance-oref0
+.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions hygiene-tests hygiene-unit hygiene-all mock-nightscout extract-vectors conformance-oref0
 
 # Default target
 help:
@@ -19,6 +19,8 @@ help:
 	@echo "Validation & Testing:"
 	@echo "  make validate   - Validate fixtures against shape specs"
 	@echo "  make conformance- Run conformance assertions (offline)"
+	@echo "  make conformance-algorithms - Run algorithm conformance suite (oref0, etc.)"
+	@echo "  make conformance-ci - Run all conformance in CI mode (strict exit codes)"
 	@echo "  make conversions- Run unit conversion tests"
 	@echo "  make hygiene-unit  - Run hygiene tool unit tests (isolated)"
 	@echo "  make hygiene-tests - Run hygiene tool integration tests (real files)"
@@ -88,6 +90,17 @@ validate:
 conformance:
 	@echo "Running conformance tests..."
 	@python3 tools/run_conformance.py
+
+# Run algorithm conformance suite (oref0, aaps, loop)
+conformance-algorithms:
+	@echo "Running algorithm conformance suite..."
+	@python3 tools/conformance_suite.py
+
+# Run all conformance in CI mode (strict exit codes)
+conformance-ci:
+	@echo "Running conformance suite in CI mode..."
+	@python3 tools/run_conformance.py
+	@python3 tools/conformance_suite.py --ci
 
 # Generate coverage matrix
 coverage:
