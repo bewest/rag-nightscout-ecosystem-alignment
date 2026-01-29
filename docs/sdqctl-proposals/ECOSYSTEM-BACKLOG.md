@@ -56,6 +56,14 @@ Items ready for immediate work. Keep this at 3 items.
 - [x] ~~**Full audit: openaps**~~ - Promoted to Ready Queue #2
 - [ ] **Algorithm conformance suite** - Create test vectors for Rust vs JS oref comparison
   - From: Modernization analysis next steps
+- [ ] **Full audit: tconnectsync** - Tandem t:connect to Nightscout sync (Python)
+  - Source: `externals/tconnectsync/`
+  - Focus: API integration, data mapping, sync protocols
+  - Workflow: `deep-dive.conv`
+- [ ] **Full audit: nightscout-librelink-up** - LibreLink Up to Nightscout bridge (TypeScript)
+  - Source: `externals/nightscout-librelink-up/`
+  - Focus: Libre API, data mapping, NS upload format
+  - Workflow: `deep-dive.conv`
 
 ### P2 - Normal
 
@@ -70,6 +78,9 @@ Items ready for immediate work. Keep this at 3 items.
   - Components: lib/, commands/, machines.md (state machine docs)
   - Focus: Cloud platform connectors, sync protocols
   - Workflow: `gap-discovery.conv`
+- [ ] **nightscout-connect benchmarking proposal** - Sync method comparison
+  - From: LIVE-BACKLOG request
+  - Focus: Benchmark sync methods, vendor compatibility (Tandem, Glooko, LibreLink)
 
 ### P3 - Nice to Have
 

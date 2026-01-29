@@ -183,6 +183,24 @@
       "description": "Official Nightscout server (dev branch)",
       "frozen_at": "2026-01-28T15:03:43.759545",
       "frozen_from": "dev"
+    },
+    {
+      "alias": "tconnectsync",
+      "name": "tconnectsync",
+      "url": "https://github.com/jwoglom/tconnectsync.git",
+      "ref": "68dcb259111ad0f6eba3db838f2d3347cf414fa3",
+      "description": "Tandem t:connect to Nightscout sync tool (Python)",
+      "frozen_at": "2026-01-29T00:01:00.000000",
+      "frozen_from": "main"
+    },
+    {
+      "alias": "librelink-up",
+      "name": "nightscout-librelink-up",
+      "url": "https://github.com/timoschlueter/nightscout-librelink-up.git",
+      "ref": "7ffdfc35a753f2eb299192a4a87d474262df5d52",
+      "description": "LibreLink Up to Nightscout bridge (TypeScript)",
+      "frozen_at": "2026-01-29T00:01:00.000000",
+      "frozen_from": "main"
     }
   ]
 }

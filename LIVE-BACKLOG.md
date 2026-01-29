@@ -3,14 +3,15 @@
 > **Purpose**: Midflight requests from humans during sdqctl processing sessions.  
 > **Parent**: [ECOSYSTEM-BACKLOG.md](docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md)
 
-_(No pending requests)_
-
 ---
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Add tconnectsync repo + queue analysis | P1 | ✅ Added to workspace, queued | 2026-01-29 |
+| Add nightscout-librelink-up repo + queue analysis | P1 | ✅ Added to workspace, queued | 2026-01-29 |
+| nightscout-connect benchmarking proposal | P2 | → Queued to tooling backlog | 2026-01-29 |
 | sdqctl tools vs custom py tools proposal | P2 | → Queued to tooling backlog | 2026-01-28 |
 | Guidance: avoid time speculation, use complexity/effort | - | → Add to workspace conventions | 2026-01-28 |
 | Playwright adoption proposal | P2 | → Queued to tooling backlog | 2026-01-28 |
