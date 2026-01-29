@@ -5,7 +5,7 @@ This document is an index of gaps organized by domain.
 ## Domain Files
 
 - [Aid Algorithms](aid-algorithms-gaps.md) - 28 gaps
-- [Cgm Sources](cgm-sources-gaps.md) - 53 gaps
+- [Cgm Sources](cgm-sources-gaps.md) - 56 gaps
 - [Connectors](connectors-gaps.md) - 28 gaps
 - [Nightscout Api](nightscout-api-gaps.md) - 55 gaps
 - [Pumps](pumps-gaps.md) - 9 gaps
@@ -17,14 +17,14 @@ This document is an index of gaps organized by domain.
 | Domain | Gap Count | File | Last Verified |
 |--------|-----------|------|---------------|
 | nightscout-api | 55 | [nightscout-api-gaps.md](nightscout-api-gaps.md) | - |
-| cgm-sources | 53 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-01-29 (G7 gaps confirmed) |
+| cgm-sources | 56 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-01-29 (3 Libre 3 gaps added) |
 | aid-algorithms | 28 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | - |
 | connectors | 28 | [connectors-gaps.md](connectors-gaps.md) | - |
 | sync-identity | 27 | [sync-identity-gaps.md](sync-identity-gaps.md) | 2026-01-29 (3 cross-controller gaps added) |
 | treatments | 23 | [treatments-gaps.md](treatments-gaps.md) | - |
 | pumps | 9 | [pumps-gaps.md](pumps-gaps.md) | - |
 
-Total: 223 gaps across 7 domains
+Total: 226 gaps across 7 domains
 
 ## Verification Status
 

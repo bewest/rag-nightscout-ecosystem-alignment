@@ -29,20 +29,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
 
-### 2. [P2] Libre 3 protocol gap analysis
-**Type:** Analysis | **Effort:** High
-**Repos:** DiaBLE, xDrip+, xdripswift
-**Focus:** Document "eavesdrop only" limitations for Libre 3
-**Source:** CGM sources backlog
-
-### 3. [P3] Algorithm conformance: Loop Swift runner
+### 2. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 4. [P3] sdqctl VERIFY .conv Directive (Phase 2)
+### 3. [P3] sdqctl VERIFY .conv Directive (Phase 2)
 **Type:** Tooling | **Effort:** Medium
 **Proposal:** [VERIFICATION-DIRECTIVES.md](VERIFICATION-DIRECTIVES.md)
 **Focus:** Native `VERIFY refs` directive in .conv workflows
@@ -51,6 +45,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Libre 3 protocol gap analysis~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Deep dive: `docs/10-domain/libre3-protocol-gap-analysis.md`
+- 3 gaps identified: GAP-CGM-030/031/032
+- Key finding: ECDH encryption blocks direct BLE access
+- Only legal access: LibreLinkUp API (1-5 min delay)
 
 ### ~~[P2] Cross-controller conflict detection~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

@@ -1238,3 +1238,66 @@ wercker.yml  # Defunct service
 
 ---
 
+
+## Libre 3 Protocol Gaps
+
+---
+
+### GAP-CGM-030: Libre 3 Direct BLE Access Blocked
+
+**Description**: Libre 3 uses ECDH encryption that requires Abbott private keys. Third-party apps cannot decrypt BLE data without using proprietary libraries.
+
+**Affected Systems**: DiaBLE, xDrip+, xdripswift, AAPS, Loop (via bridges)
+
+**Impact**:
+- Users must run official Abbott app
+- Data delayed through LibreLinkUp (1-5 min)
+- No offline/direct sensor access
+- Privacy concerns (data through Abbott servers)
+
+**Current Workarounds**:
+1. LibreLinkUp API polling (1-5 min delay)
+2. Juggluco with extracted native library (legal concerns)
+3. Eavesdrop mode (requires official app running)
+
+**Source**: `DiaBLE/Libre3.swift:713-782` - eavesdrop logic
+
+**Status**: Open - No known legal solution
+
+---
+
+### GAP-CGM-031: Libre 3 NFC Limited to Activation
+
+**Description**: Unlike Libre 1/2, Libre 3 NFC cannot read glucose history. NFC is only used for initial activation and BLE PIN retrieval.
+
+**Affected Systems**: All NFC-based readers (DiaBLE, xDrip+)
+
+**Impact**:
+- Cannot scan sensor for retrospective data
+- Must rely on BLE (which is encrypted)
+- No manual scan fallback
+
+**Source**: `DiaBLE/Libre3.swift:832-848` - activation commands only
+
+**Status**: Open - Hardware/firmware limitation
+
+---
+
+### GAP-CGM-032: LibreLinkUp API Dependency
+
+**Description**: Third-party apps must use LibreLinkUp API as data source for Libre 3, creating dependency on Abbott cloud infrastructure.
+
+**Affected Systems**: xdripswift, nightscout-librelink-up, AAPS
+
+**Impact**:
+- Internet required for glucose data
+- Subject to API changes/deprecation (see GAP-LIBRELINK-001)
+- Privacy concerns (all data through Abbott servers)
+- Latency (1-5 minutes vs real-time BLE)
+- No local-only operation possible
+
+**Source**: `xdripswift/Libre3HeartBeatBluetoothTransmitter.swift:75-80`
+
+**Status**: Open - Architectural limitation
+
+---

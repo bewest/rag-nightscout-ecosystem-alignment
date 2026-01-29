@@ -8,6 +8,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Libre 3 Protocol Gap Analysis (2026-01-29)
+
+Analyzed "eavesdrop only" limitations for Libre 3 vs Libre 1/2.
+
+| Metric | Value |
+|--------|-------|
+| Source files analyzed | 5 |
+| Gaps identified | 3 |
+| Apps reviewed | DiaBLE, xdripswift, xDrip+ |
+
+**Key Findings**:
+- Libre 3 uses ECDH encryption requiring Abbott private keys
+- Third-party apps cannot decrypt BLE data directly
+- Only legal access: LibreLinkUp API (1-5 min delay)
+- xDrip+ has no native Libre 3 support
+
+**Gaps Added**:
+- GAP-CGM-030: Direct BLE access blocked
+- GAP-CGM-031: NFC limited to activation
+- GAP-CGM-032: LibreLinkUp API dependency
+
+**Deliverables**:
+- `docs/10-domain/libre3-protocol-gap-analysis.md` (8.8KB)
+- `traceability/cgm-sources-gaps.md` (+63 lines, 3 gaps)
+
+---
+
 ### Cross-Controller Conflict Detection Analysis (2026-01-29)
 
 Analyzed behavior when Loop + Trio sync to same Nightscout instance.
