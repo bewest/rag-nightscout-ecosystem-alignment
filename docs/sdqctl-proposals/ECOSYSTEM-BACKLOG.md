@@ -35,6 +35,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `design-review.conv`
 **Source:** LIVE-BACKLOG human request
 
+### 3. [P2] Full audit: nightscout-roles-gateway
+**Type:** Analysis | **Effort:** Medium
+**Repos:** nightscout-roles-gateway
+**Focus:** OAuth 2.0 RBAC controller, Ory Hydra/Kratos integration
+**Workflow:** `gap-discovery.conv`
+
 ---
 
 ## Backlog (Prioritized)
@@ -99,7 +105,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [x] ~~**Reporting needs analysis**~~ - ✅ Complete (250 lines, 3 gaps)
   - Source: `externals/nightscout-reporter/` (zreptil)
   - Focus: Report types, data requirements, export formats, user needs
-- [ ] **Full audit: nightscout-roles-gateway** - OAuth 2.0 RBAC controller, 39 lines documented
+- [x] ~~**Full audit: nightscout-roles-gateway**~~ - Promoted to Ready Queue #3
   - Components: lib/, migrations/, Ory Hydra/Kratos integration
   - Focus: Role-based access control, OAuth flows, API authorization
   - Workflow: `gap-discovery.conv`
