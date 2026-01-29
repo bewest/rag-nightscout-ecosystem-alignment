@@ -8,6 +8,19 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Hygiene: Chunk progress.md (2026-01-29)
+
+Maintenance task to reduce progress.md from 1713 to 807 lines (53% reduction).
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Archive** | `docs/archive/progress-archive-2026-01-17-to-23.md` | 916 lines, Jan 17-23 entries |
+| **Current** | `progress.md` | 807 lines, Jan 28-29 entries |
+
+**Approach**: Split at date boundary (2026-01-28), archive older entries, add link header.
+
+---
+
 ### Authentication Flows Deep Dive (2026-01-29)
 
 Comprehensive analysis of Nightscout authentication and authorization system.
