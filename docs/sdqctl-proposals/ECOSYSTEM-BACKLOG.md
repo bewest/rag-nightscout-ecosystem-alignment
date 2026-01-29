@@ -42,12 +42,8 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `implementation.conv`
 **Source:** tooling backlog
 
-### 4. [P2] DiaBLE Libre protocol audit
-**Type:** Analysis | **Effort:** High
-**Repos:** DiaBLE
-**Focus:** BLE traces, calibration, Libre 2/3 support
-**Workflow:** `extract-spec.conv`
-**Source:** cgm-sources backlog
+### ~~4. [P2] DiaBLE Libre protocol audit~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (487 lines deep dive, 2 new gaps, GAP-DIABLE-002/003)
 
 ### ~~5. [P3] Create mapping: share2nightscout-bridge~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (424 lines, 3 docs, 3 gaps)

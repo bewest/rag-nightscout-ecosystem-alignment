@@ -988,7 +988,43 @@ wercker.yml  # Defunct service
 
 ---
 
-### GAP-CONNECTOR-003: CareLink Connector Requires Web Scraping
+## DiaBLE Interoperability Gaps
+
+---
+
+### GAP-DIABLE-002: No Trend Direction Upload to Nightscout
+
+**Description**: DiaBLE does not upload trend direction to Nightscout. The source code has a TODO comment for direction calculation, but it is not implemented.
+
+**Affected Systems**: DiaBLE, Nightscout, follower apps
+
+**Impact**:
+- Nightscout graphs lack trend arrows for DiaBLE-sourced data
+- Follower apps (LoopFollow, Nightguard) cannot display direction
+- Missing trend data for AID systems consuming from Nightscout
+
+**Remediation**: Implement direction calculation from rate of change data already available in sensor readings.
+
+**Source**: `externals/DiaBLE/DiaBLE/Nightscout.swift:163`
+
+---
+
+### GAP-DIABLE-003: No Nightscout v3 API Support
+
+**Description**: DiaBLE uses only Nightscout v1 API endpoints (`api/v1/entries`). No support for v3 features like identifier-based sync or atomic operations.
+
+**Affected Systems**: DiaBLE, Nightscout
+
+**Impact**:
+- Relies on date-based deduplication rather than proper sync identity
+- No atomic upsert operations
+- May create duplicates if timing varies between uploads
+
+**Remediation**: Add v3 API support with proper `identifier` field handling for robust deduplication.
+
+**Source**: `externals/DiaBLE/DiaBLE/Nightscout.swift:40-45`
+
+---
 
 **Description**: Medtronic CareLink has no official API. Nocturne's MiniMed connector must use web scraping, which is fragile.
 

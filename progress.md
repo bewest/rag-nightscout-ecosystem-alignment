@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### DiaBLE Deep Dive (2026-01-29)
+
+Created comprehensive deep-dive documentation for DiaBLE iOS/watchOS CGM reader application.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/diable-deep-dive.md` | 487 lines |
+
+**Key Findings**:
+- Supports both Abbott Libre (1/2/3) and Dexcom (G6/G7) sensors
+- Nightscout integration: v1 API only, SGV entries upload, no treatments
+- Libre 3: Partial support (eavesdrop mode, cannot decrypt independently)
+- Dexcom G7: App-dependent (no standalone J-PAKE authentication)
+- Native Apple Watch app with direct BLE connectivity proof-of-concept
+- Temperature-based calibration from LibreLink 2.3 algorithm
+
+**Gaps Identified**: GAP-DIABLE-002, GAP-DIABLE-003 (GAP-CGM-001 previously existed)
+
+---
+
 ### LoopCaregiver Deep Dive (2026-01-29)
 
 Created comprehensive deep-dive documentation for LoopCaregiver remote command app.
