@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Playwright adoption: Implementation | P2 | ✅ Complete (591 lines, 4 files) | 2026-01-29 |
 | Semantic equivalence for Loop | P3 | ✅ Complete (400 lines, 4 gaps) | 2026-01-29 |
 | Document AAPS vs oref0 divergence | P3 | ✅ Complete (280 lines, 4 gaps) | 2026-01-29 |
 | Map algorithm terminology | P3 | ✅ Complete (+95 lines) | 2026-01-29 |

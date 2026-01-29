@@ -28,12 +28,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
 
-### 2. [P2] Playwright adoption: Implementation
-**Type:** Implementation | **Effort:** Medium
-**Repos:** cgm-remote-monitor
-**Focus:** Add E2E tests per playwright-adoption-proposal.md
-**Workflow:** `implementation.conv`
-**Note:** Proposal complete, needs PR to upstream
+### ~~2. [P2] Playwright adoption: Implementation~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (591 lines, 4 files)
+- playwright.config.js: Multi-browser configuration
+- dashboard.spec.js: 8 E2E scenarios
+- api.spec.js: 9 API smoke tests
+- README.md: Setup instructions and CI integration
 
 ### 3. [P2] Transform pipeline tester
 **Type:** Implementation | **Effort:** High
