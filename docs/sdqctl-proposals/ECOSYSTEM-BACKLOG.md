@@ -61,6 +61,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### ~~5. [P3] Deep dive: LoopCaregiver~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (417 lines, 3 gaps)
 
+### 5. [P3] Deep dive: openaps toolkit
+**Type:** Analysis | **Effort:** Medium
+**Repos:** openaps
+**Focus:** Device interface layer (vs oref0 algorithm layer)
+**Workflow:** `extract-spec.conv`
+**Context:** OpenAPS toolkit - pumps, CGMs, data management
+
 ---
 
 ## Backlog (Prioritized)
@@ -125,11 +132,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [x] ~~**Create mapping: nightscout-librelink-up**~~ - Promoted to Ready Queue #5
 - [x] ~~**Deep dive: LoopFollow**~~ - Promoted to Ready Queue #5
 - [x] ~~**Deep dive: LoopCaregiver**~~ - Promoted to Ready Queue #5
-- [ ] **Deep dive: openaps toolkit**
-  - Repos: openaps
-  - Focus: Device interface layer (vs oref0 algorithm layer)
-  - Context: OpenAPS toolkit - pumps, CGMs, data management
-  - Workflow: `extract-spec.conv`
+- [x] ~~**Deep dive: openaps toolkit**~~ - Promoted to Ready Queue #5
 - [ ] **Deep dive: xdrip-js**
   - Repos: xdrip-js
   - Focus: Node.js Dexcom G5/G6 BLE interface
