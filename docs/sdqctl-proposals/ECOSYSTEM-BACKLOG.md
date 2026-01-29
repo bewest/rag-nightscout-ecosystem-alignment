@@ -47,15 +47,23 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
 **Context:** ISF, CR, basal rate representation differences
 
-### 5. [P2] Nightscout devicestatus schema audit
+### 5. [P2] Bolus wizard formula comparison
 **Type:** Documentation | **Effort:** Medium
-**Focus:** Compare Loop vs oref0 devicestatus structures
-**Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
-**Context:** Different prediction array formats between controllers
+**Focus:** Compare bolus calculator implementations across controllers
+**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
+**Context:** IOB subtraction, target correction, carb ratio application
 
 ---
 
 ## Completed Items
+
+### ~~[P2] Nightscout devicestatus schema audit~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Deep dive: `docs/10-domain/nightscout-devicestatus-schema-audit.md` (9.2KB)
+- Compared Loop `status.loop` vs oref0 `status.openaps` structures
+- 4 gaps identified: GAP-DS-001/002/003/004
+- 4 requirements added: REQ-DS-001/002/003/004
+- Key finding: Incompatible prediction formats (single vs 4 curves)
 
 ### ~~[P2] Sync identity field audit~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
