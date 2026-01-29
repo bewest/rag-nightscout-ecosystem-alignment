@@ -571,7 +571,9 @@ No standard format or prefix convention exists.
 2. Add validation for reasonable offset ranges
 3. Standardize on one unit (minutes) across all systems
 
-**Status**: Documented
+**Status**: Analyzed - see [Duration/utcOffset Impact Analysis](../docs/10-domain/duration-utcoffset-unit-analysis.md)
+
+**Requirements**: REQ-UNIT-001, REQ-UNIT-003
 
 ---
 

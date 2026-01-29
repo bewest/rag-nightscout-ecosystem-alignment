@@ -542,10 +542,13 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 2. Use ISO 8601 duration format (`PT30M`)
 3. Explicit unit field on duration
 
-**Status**: Under discussion
+**Status**: Analyzed - see [Duration/utcOffset Impact Analysis](../docs/10-domain/duration-utcoffset-unit-analysis.md)
+
+**Requirements**: REQ-UNIT-001, REQ-UNIT-002, REQ-UNIT-004
 
 **Related**:
 - [Treatments Deep Dive](../docs/10-domain/treatments-deep-dive.md)
+- [Duration/utcOffset Impact Analysis](../docs/10-domain/duration-utcoffset-unit-analysis.md)
 
 ---
 
