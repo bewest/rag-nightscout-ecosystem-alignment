@@ -3459,3 +3459,35 @@ See `docs/10-domain/cgm-trend-arrow-standardization.md` for full cross-project m
 | nightscoutObjectId | Loop | Cached NS _id |
 | ids.nightscoutId | AAPS | Stored NS _id after sync |
 | uuid | xDrip+ | Local treatment UUID |
+
+## DeviceStatus Schema Terms
+
+### Prediction Structures
+
+| Term | Loop | oref0/AAPS/Trio | Description |
+|------|------|-----------------|-------------|
+| predicted | `loop.predicted.values` | - | Single combined prediction array |
+| predBGs | - | `openaps.suggested.predBGs` | Container for 4 prediction curves |
+| predBGs.IOB | - | ✅ | IOB-only prediction |
+| predBGs.COB | - | ✅ | With carb absorption |
+| predBGs.UAM | - | ✅ | Unannounced meal detection |
+| predBGs.ZT | - | ✅ | Zero-temp prediction |
+| eventualBG | - | ✅ | Final predicted BG value |
+
+### IOB Structures
+
+| Field | Loop | oref0/AAPS | Description |
+|-------|------|------------|-------------|
+| iob | ✅ | ✅ | Total insulin on board |
+| basaliob | - | ✅ | Basal component of IOB |
+| bolusiob | - | ✅ | Bolus component of IOB |
+| activity | - | ✅ | Insulin activity rate |
+
+### Status Namespace
+
+| Namespace | Controller | Description |
+|-----------|-----------|-------------|
+| status.loop | Loop | iOS Loop status |
+| status.openaps | AAPS/Trio/oref0 | oref0-based systems |
+| status.override | Loop | Override/target override status |
+| status.pump | All | Pump status info |

@@ -1406,3 +1406,49 @@ _None yet._
 **Impact:** Moderate efficiency but misses per-document sync precision.
 
 **Remediation:** Add API v3 support as alternative, track `srvModified` per document.
+
+---
+
+## DeviceStatus Schema Gaps
+
+### GAP-DS-001: Incompatible Prediction Formats
+
+**Description:** Loop uses single `predicted.values` array while oref0 uses four separate `predBGs.*` curves (IOB, COB, UAM, ZT). Nightscout must implement dual parsers.
+
+**Source:** 
+- `externals/cgm-remote-monitor/lib/report_plugins/daytoday.js:347-357`
+- `externals/LoopWorkspace/.../StoredDosingDecision.swift:155`
+
+**Impact:** Reports must conditionally parse either format; no unified prediction visualization API.
+
+**Remediation:** Define unified prediction schema with optional curve decomposition.
+
+### GAP-DS-002: Missing Basal/Bolus IOB Split in Loop
+
+**Description:** Loop reports only total IOB, while oref0 provides `basaliob` and `bolusiob` components.
+
+**Source:** `externals/AndroidAPS/.../NSDeviceStatus.kt:57`
+
+**Impact:** Nightscout displays can't show IOB breakdown for Loop users.
+
+**Remediation:** Loop could add optional `basaliob`/`bolusiob` fields.
+
+### GAP-DS-003: No Override Status in oref0
+
+**Description:** Loop has `status.override` for temporary target overrides, but oref0 uses different mechanism (profile switches).
+
+**Source:** `externals/LoopWorkspace/.../StoredDosingDecision.swift:160`
+
+**Impact:** Override visualization only works for Loop users.
+
+**Remediation:** AAPS could add equivalent override reporting to devicestatus.
+
+### GAP-DS-004: Missing eventualBG in Loop
+
+**Description:** oref0 explicitly reports `eventualBG` prediction endpoint, Loop does not include this field.
+
+**Source:** `externals/cgm-remote-monitor/lib/plugins/openaps.js`
+
+**Impact:** Loop users don't see eventual BG prediction in Nightscout displays.
+
+**Remediation:** Loop could add `eventualBG` field to match oref0 format.

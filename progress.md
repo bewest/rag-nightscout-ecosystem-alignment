@@ -1495,3 +1495,27 @@ Audited sync identity fields across 5 systems.
 - `externals/LoopWorkspace/.../ObjectIdCache.swift:56-58`
 - `externals/AndroidAPS/.../IDs.kt:1-17`
 - `externals/xDrip/.../Treatments.java:95-96`
+
+### Nightscout Devicestatus Schema Audit (2026-01-29)
+
+Audited devicestatus schema differences between Loop and oref0 systems.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Audit doc | `docs/10-domain/nightscout-devicestatus-schema-audit.md` | 9.2KB |
+| Gap additions | `traceability/nightscout-api-gaps.md` | GAP-DS-001/002/003/004 |
+
+**Key Findings**:
+- Loop: Single `predicted.values` array in `status.loop`
+- oref0: Four curves (IOB/COB/UAM/ZT) in `status.openaps.suggested.predBGs`
+- Loop missing: eventualBG, basaliob/bolusiob split
+- oref0 missing: override status field
+- Nightscout handles both via conditional parsing
+
+**Gaps Identified**: GAP-DS-001 (prediction format), GAP-DS-002 (IOB split), GAP-DS-003 (override), GAP-DS-004 (eventualBG)
+
+**Source Files Analyzed**:
+- `externals/cgm-remote-monitor/lib/plugins/loop.js:97-145`
+- `externals/cgm-remote-monitor/lib/plugins/openaps.js:214-238`
+- `externals/LoopWorkspace/.../StoredDosingDecision.swift:145-161`
+- `externals/AndroidAPS/.../NSDeviceStatus.kt:13-60`
