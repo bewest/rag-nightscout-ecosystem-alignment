@@ -42,7 +42,15 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `implementation.conv`
 **Source:** tooling backlog
 
-### ~~4. [P2] DiaBLE Libre protocol audit~~ ✅ COMPLETE
+### 4. [P3] Semantic equivalence for Loop
+**Type:** Analysis | **Effort:** Medium
+**Repos:** LoopWorkspace
+**Focus:** Enable Loop algorithm comparison with oref0 test vectors
+**Workflow:** `extract-spec.conv`
+**Source:** aid-algorithms backlog
+**Note:** Requires understanding Loop's prediction model to create compatible vectors
+
+### ~~5. [P2] DiaBLE Libre protocol audit~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (487 lines deep dive, 2 new gaps, GAP-DIABLE-002/003)
 
 ### ~~5. [P3] Create mapping: share2nightscout-bridge~~ ✅ COMPLETE
