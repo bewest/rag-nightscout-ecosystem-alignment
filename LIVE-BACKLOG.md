@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| sdqctl VERIFY CLI Discovery | P2 | ✅ Complete (CLI exists, +2 Make targets) | 2026-01-29 |
 | Conformance CI Integration | P2 | ✅ Complete (3 targets, CI job, README) | 2026-01-29 |
 | xdrip-js Deep Dive | P3 | ✅ Complete (380 lines, 4 gaps) | 2026-01-29 |
 | Connectors Requirements Generation | P2 | ✅ Complete (28 REQs, 8 prefixes, 100% gap coverage) | 2026-01-29 |

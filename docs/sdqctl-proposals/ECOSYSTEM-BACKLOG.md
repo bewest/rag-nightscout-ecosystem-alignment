@@ -28,26 +28,41 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
 
-### 2. [P2] sdqctl VERIFY Directive Implementation
-**Type:** Tooling | **Effort:** High
-**Proposal:** [VERIFICATION-DIRECTIVES.md](VERIFICATION-DIRECTIVES.md)
-**Focus:** Built-in `VERIFY refs`, `VERIFY traceability` directives
-**Context:** Current workflows use `RUN python tools/verify_*.py` - fragile
-**Deliverables:**
-- Core verifier library (refs, links, terminology, traceability)
-- CLI commands `sdqctl verify refs`, `sdqctl verify all`
-- `.conv` directive support
+### 2. [P2] Libre 3 protocol gap analysis
+**Type:** Analysis | **Effort:** High
+**Repos:** DiaBLE, xDrip+, xdripswift
+**Focus:** Document "eavesdrop only" limitations for Libre 3
+**Source:** CGM sources backlog
 
-### 3. [P3] Algorithm conformance: Loop Swift runner
+### 3. [P2] Playwright E2E PR submission
+**Type:** Upstream | **Effort:** Low
+**Repos:** cgm-remote-monitor
+**Focus:** Package `conformance/e2e-nightscout` for upstream PR
+**Source:** Nightscout API backlog
+
+### 4. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
+### 5. [P3] sdqctl VERIFY .conv Directive (Phase 2)
+**Type:** Tooling | **Effort:** Medium
+**Proposal:** [VERIFICATION-DIRECTIVES.md](VERIFICATION-DIRECTIVES.md)
+**Focus:** Native `VERIFY refs` directive in .conv workflows
+**Context:** CLI commands already exist (`sdqctl verify refs`), Phase 2 adds directive support
+
 ---
 
 ## Completed Items
+
+### ~~[P2] sdqctl VERIFY Directive Implementation~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Discovered `sdqctl verify` CLI already implemented
+- Added `make sdqctl-verify-refs` and `make sdqctl-verify-all` targets
+- Updated VERIFICATION-DIRECTIVES.md status to IMPLEMENTED
+- Phase 2 (.conv directive) remains as separate item
 
 ### ~~[P2] Conformance Test Executor Integration~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

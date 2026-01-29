@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions hygiene-tests hygiene-unit hygiene-all mock-nightscout extract-vectors conformance-oref0
+.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions hygiene-tests hygiene-unit hygiene-all mock-nightscout extract-vectors conformance-oref0
 
 # Default target
 help:
@@ -198,6 +198,15 @@ verify-terminology:
 verify-assertions:
 	@echo "Tracing assertions..."
 	@python3 tools/verify_assertions.py
+
+# sdqctl-based verification (preferred when sdqctl available)
+sdqctl-verify-refs:
+	@echo "Verifying code references (sdqctl)..."
+	@. ./activate-sdqctl.sh && sdqctl verify refs -v
+
+sdqctl-verify-all:
+	@echo "Running full verification suite (sdqctl)..."
+	@. ./activate-sdqctl.sh && sdqctl verify all -v
 
 # New tooling targets
 

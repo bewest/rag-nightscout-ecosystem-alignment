@@ -12,8 +12,8 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | sdqctl VERIFY directive implementation | P2 | High | Built-in verification (refs, traceability, assertions) |
-| 2 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt pending |
+| 1 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt pending |
+| 2 | sdqctl VERIFY .conv directive (Phase 2) | P3 | Medium | CLI complete, directive parsing pending |
 | 3 | LSP-based claim verification (Phase 2+) | P3 | Medium | JS/TS LSP integration deferred |
 
 ---
@@ -22,6 +22,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | Item | Date | Notes |
 |------|------|-------|
+| sdqctl VERIFY CLI | 2026-01-29 | CLI already existed, added Make targets |
 | Conformance CI Integration | 2026-01-29 | CI job + Makefile targets + README |
 | Gap-to-Requirement Generator | 2026-01-29 | Manual process, 28 connector REQs generated |
 

@@ -8,6 +8,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### sdqctl VERIFY CLI Discovery (2026-01-29)
+
+Discovered that `sdqctl verify` CLI commands are already implemented and functional. Updated proposal status and added Makefile integration targets.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Proposal Update** | `docs/sdqctl-proposals/VERIFICATION-DIRECTIVES.md` | Status → ✅ IMPLEMENTED |
+| **Makefile Targets** | `Makefile` | +2 targets: `sdqctl-verify-refs`, `sdqctl-verify-all` |
+
+**Available sdqctl verify Commands**:
+| Command | Purpose |
+|---------|---------|
+| `sdqctl verify refs` | Validate @-references and alias:refs |
+| `sdqctl verify all` | Run all verifications |
+| `sdqctl verify terminology` | Term consistency |
+| `sdqctl verify assertions` | Assertion tracing |
+
+**Key Finding**: The VERIFY CLI was already implemented in sdqctl. Remaining work is Phase 2: native VERIFY directive in .conv files.
+
+---
+
 ### Conformance CI Integration (2026-01-29)
 
 Integrated algorithm conformance suite with CI pipeline and added Makefile targets.

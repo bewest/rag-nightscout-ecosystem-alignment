@@ -1,9 +1,49 @@
 # Proposal: Unified Verification Directives
 
 **Date:** 2026-01-22  
-**Status:** Proposal  
+**Status:** ✅ IMPLEMENTED  
+**Updated:** 2026-01-29  
 **Author:** Generated via sdqctl planning session  
 **Related:** INTEGRATION-PROPOSAL.md (Phase 3: Verify Commands)
+
+## Implementation Status
+
+| Component | Status | Location |
+|-----------|--------|----------|
+| Python verify tools | ✅ Complete | `tools/verify_*.py` |
+| Makefile targets | ✅ Complete | `make verify`, `make verify-refs`, etc. |
+| sdqctl workflow | ✅ Complete | `workflows/full-verification.conv` |
+| Native `sdqctl verify` CLI | ✅ Complete | `sdqctl verify refs`, `sdqctl verify all`, etc. |
+| VERIFY directive in .conv | ⏳ Phase 2 | Requires sdqctl core directive support |
+
+### Available sdqctl verify Commands
+
+```bash
+sdqctl verify refs          # Validate @-references and alias:refs
+sdqctl verify links         # Check URLs and file links
+sdqctl verify terminology   # Term consistency against glossary
+sdqctl verify assertions    # Assertion tracing
+sdqctl verify coverage      # Traceability coverage metrics
+sdqctl verify traceability  # STPA/IEC 62304 links
+sdqctl verify all           # Run all verifications
+sdqctl verify plugin NAME   # Run custom plugin verifier
+```
+
+### Recommended Usage
+
+```bash
+# Quick verification (JSON for CI)
+sdqctl verify refs --json
+
+# Full verification suite
+sdqctl verify all -v
+
+# Suggest fixes for broken refs
+sdqctl verify refs --suggest-fixes
+```
+
+**Current approach:** `sdqctl verify refs` CLI commands work now.  
+**Target approach (Phase 2):** Native `VERIFY refs` directive in .conv files.
 
 ---
 
