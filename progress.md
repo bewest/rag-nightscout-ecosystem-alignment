@@ -1472,3 +1472,26 @@ Analyzed srvModified-based pagination across 4 major clients.
 - `externals/AndroidAPS/plugins/sync/.../LoadBgWorker.kt`
 - `externals/Trio/.../NightscoutAPI.swift:14-18`
 - `externals/xDrip/.../NightscoutUploader.java:410-437`
+
+### Sync Identity Field Audit (2026-01-29)
+
+Audited sync identity fields across 5 systems.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Audit doc | `docs/10-domain/sync-identity-field-audit.md` | 9.6KB |
+| Gap additions | `traceability/sync-identity-gaps.md` | GAP-SYNC-023/024/025 |
+
+**Key Findings**:
+- Nightscout: UUID v5 from device+date+eventType
+- Loop/Trio: syncIdentifier cached locally, NOT sent to NS
+- AAPS: Best practice - stores nightscoutId after sync
+- xDrip+: uuid column but not sent as identifier
+
+**Gaps Identified**: GAP-SYNC-023 (Loop/Trio), GAP-SYNC-024 (xDrip+), GAP-SYNC-025 (no standard)
+
+**Source Files Analyzed**:
+- `externals/cgm-remote-monitor/lib/api3/shared/operationTools.js:97-107`
+- `externals/LoopWorkspace/.../ObjectIdCache.swift:56-58`
+- `externals/AndroidAPS/.../IDs.kt:1-17`
+- `externals/xDrip/.../Treatments.java:95-96`

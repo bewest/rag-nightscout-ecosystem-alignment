@@ -3448,3 +3448,14 @@ See `docs/10-domain/cgm-trend-arrow-standardization.md` for full cross-project m
 | Last-Modified | HTTP header with latest timestamp | All clients |
 | /history | v3 incremental sync endpoint | AAPS only |
 | identifier | Client-provided unique ID | All clients |
+
+## Sync Identity Fields
+
+| Term | System | Description |
+|------|--------|-------------|
+| identifier | Nightscout | UUID v5 from device+date+eventType |
+| _id | Nightscout | MongoDB ObjectId |
+| syncIdentifier | Loop/Trio | Client-generated UUID |
+| nightscoutObjectId | Loop | Cached NS _id |
+| ids.nightscoutId | AAPS | Stored NS _id after sync |
+| uuid | xDrip+ | Local treatment UUID |

@@ -768,3 +768,31 @@ if (rVal) rVal.replace('ETC','Etc');
 **Status**: Open
 
 ---
+
+### GAP-SYNC-023: Loop/Trio Missing identifier Field
+
+**Description:** Loop and Trio cache Nightscout `_id` locally but don't send `identifier` on uploads. Server calculates identifier from device+date+eventType.
+
+**Source:** `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/ObjectIdCache.swift:56-58`
+
+**Impact:** Cross-device sync may create duplicates; server's identifier won't match client's syncIdentifier.
+
+**Remediation:** Send `syncIdentifier` as `identifier` field in upload payload.
+
+### GAP-SYNC-024: xDrip+ UUID Not Sent as identifier
+
+**Description:** xDrip+ generates local UUIDs but doesn't send them to Nightscout, relying on Last-Modified header for sync instead.
+
+**Source:** `externals/xDrip/.../models/Treatments.java:95-96`
+
+**Impact:** No server-side deduplication based on client identity.
+
+**Remediation:** Send `uuid` as `identifier` in Nightscout API v3 calls.
+
+### GAP-SYNC-025: No Cross-Controller Identity Standard
+
+**Description:** Each system uses different ID naming conventions (syncIdentifier, nightscoutId, uuid). No shared standard for portable identity.
+
+**Impact:** Records uploaded from different controllers may duplicate when syncing to same Nightscout.
+
+**Remediation:** Define standard identifier format; all clients adopt UUID v5 calculation or prefix with controller name.

@@ -41,21 +41,28 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Sync identity field audit
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Verify sync identity mappings across all controllers
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md)
-**Context:** Follow-up from cross-controller conflict analysis
-
-### 5. [P2] Profile schema alignment
+### 4. [P2] Profile schema alignment
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Compare profile/therapy settings across Loop, AAPS, Trio
 **Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
 **Context:** ISF, CR, basal rate representation differences
 
+### 5. [P2] Nightscout devicestatus schema audit
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Compare Loop vs oref0 devicestatus structures
+**Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
+**Context:** Different prediction array formats between controllers
+
 ---
 
 ## Completed Items
+
+### ~~[P2] Sync identity field audit~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Deep dive: `docs/10-domain/sync-identity-field-audit.md` (9.6KB)
+- Audited 5 systems: Nightscout, Loop, Trio, AAPS, xDrip+
+- 3 gaps identified: GAP-SYNC-023/024/025
+- Key finding: Only AAPS properly stores nightscoutId
 
 ### ~~[P2] API v3 pagination compliance~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
