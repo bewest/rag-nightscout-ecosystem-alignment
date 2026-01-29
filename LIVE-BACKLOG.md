@@ -13,6 +13,10 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Backlog grooming (Phase 4) | P0 | ✅ Complete (319→258 lines, 7 items in queue) | 2026-01-29 |
+| 5-facet updates (Phase 3) | P2 | ✅ Complete (terminology +20 lines, gaps verified) | 2026-01-29 |
+| Accuracy verification: G7 claims + refs | P1 | ✅ Complete (G7 100%, refs 91% valid) | 2026-01-29 |
+| Bottom-up accuracy review queue creation | P2 | ✅ Complete (31 items, 6 levels, 3 tool proposals) | 2026-01-29 |
 | Playwright E2E PR Submission | P2 | ✅ Complete (PR guide, 18 tests ready) | 2026-01-29 |
 | sdqctl VERIFY CLI Discovery | P2 | ✅ Complete (CLI exists, +2 Make targets) | 2026-01-29 |
 | Conformance CI Integration | P2 | ✅ Complete (3 targets, CI job, README) | 2026-01-29 |

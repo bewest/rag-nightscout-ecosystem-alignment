@@ -14,6 +14,8 @@ Covers: Loop, AAPS, Trio, oref0/oref1, OpenAPS
 |---|------|----------|--------|-------|
 | 1 | Algorithm conformance: AAPS runner | P2 | High | Phase 3 - Kotlin runner for JS vs KT comparison |
 | 2 | Algorithm conformance: Loop runner | P3 | High | Swift runner for semantic validation |
+| 3 | **Verify algorithm comparison claims** | P2 | Medium | [Accuracy backlog #11](documentation-accuracy.md) - prediction arrays |
+| 4 | **Verify GAP-ALG-* freshness** | P2 | Medium | [Accuracy backlog #19](documentation-accuracy.md) |
 
 ---
 

@@ -14,16 +14,22 @@ This document is an index of gaps organized by domain.
 
 ## Quick Reference
 
-| Domain | Gap Count | File |
-|--------|-----------|------|
-| nightscout-api | 55 | [nightscout-api-gaps.md](nightscout-api-gaps.md) |
-| cgm-sources | 53 | [cgm-sources-gaps.md](cgm-sources-gaps.md) |
-| aid-algorithms | 28 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) |
-| connectors | 28 | [connectors-gaps.md](connectors-gaps.md) |
-| sync-identity | 24 | [sync-identity-gaps.md](sync-identity-gaps.md) |
-| treatments | 23 | [treatments-gaps.md](treatments-gaps.md) |
-| pumps | 9 | [pumps-gaps.md](pumps-gaps.md) |
+| Domain | Gap Count | File | Last Verified |
+|--------|-----------|------|---------------|
+| nightscout-api | 55 | [nightscout-api-gaps.md](nightscout-api-gaps.md) | - |
+| cgm-sources | 53 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-01-29 (G7 gaps confirmed) |
+| aid-algorithms | 28 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | - |
+| connectors | 28 | [connectors-gaps.md](connectors-gaps.md) | - |
+| sync-identity | 24 | [sync-identity-gaps.md](sync-identity-gaps.md) | - |
+| treatments | 23 | [treatments-gaps.md](treatments-gaps.md) | - |
+| pumps | 9 | [pumps-gaps.md](pumps-gaps.md) | - |
 
 Total: 220 gaps across 7 domains
+
+## Verification Status
+
+| Date | Domain | Gaps Verified | Result |
+|------|--------|---------------|--------|
+| 2026-01-29 | cgm-sources | GAP-BLE-001, GAP-BLE-002 | Still open (J-PAKE, certs undocumented) |
 
 *Last updated: 2026-01-29*

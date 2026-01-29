@@ -14,4 +14,14 @@ This document is an index of requirements organized by domain.
 
 Total: 185 requirements (180 unique)
 
+## Coverage Status
+
+| Metric | Value | Date |
+|--------|-------|------|
+| Requirements with scenarios | 27/180 | 2026-01-29 |
+| Orphaned assertions | 0 | 2026-01-29 |
+| Requirement coverage | 15% | 2026-01-29 |
+
+**Source**: `python tools/verify_assertions.py`
+
 *Last updated: 2026-01-29*

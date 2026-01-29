@@ -13,6 +13,7 @@
 | Nightscout API | [backlogs/nightscout-api.md](backlogs/nightscout-api.md) | Collections, auth, API v3 |
 | Sync & Identity | [backlogs/sync-identity.md](backlogs/sync-identity.md) | Deduplication, timestamps, sync IDs |
 | Tooling | [backlogs/tooling.md](backlogs/tooling.md) | sdqctl enhancements, plugins, automation |
+| **Documentation Accuracy** | [backlogs/documentation-accuracy.md](backlogs/documentation-accuracy.md) | Bottom-up claim verification |
 | Live requests | [../../LIVE-BACKLOG.md](../../LIVE-BACKLOG.md) | Midflight human requests |
 
 ---
@@ -34,19 +35,33 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document "eavesdrop only" limitations for Libre 3
 **Source:** CGM sources backlog
 
-### 3. [P3] Algorithm conformance: Loop Swift runner
+### 3. [P2] Cross-controller conflict detection
+**Type:** Analysis | **Effort:** Medium
+**Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
+**Source:** Sync & Identity backlog
+
+### 4. [P2] Accuracy: Verify CGM mapping coverage
+**Type:** Verification | **Effort:** Medium
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #5-6
+**Focus:** Confirm mapping docs match source fields
+**Files:** `mapping/xdrip/nightscout-fields.md`, `mapping/aaps/nsclient-upload.md`
+**Method:** Grep source for documented field names
+
+### 5. [P2] Accuracy: Audit algorithm-comparison claims
+**Type:** Verification | **Effort:** Medium
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #11
+**Focus:** Validate prediction array format claims
+**Files:** `docs/10-domain/algorithm-comparison-deep-dive.md`
+**Method:** Verify IOB/COB/UAM/ZT array structure in source
+
+### 6. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 4. [P2] Cross-controller conflict detection
-**Type:** Analysis | **Effort:** Medium
-**Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
-**Source:** Sync & Identity backlog
-
-### 5. [P3] sdqctl VERIFY .conv Directive (Phase 2)
+### 7. [P3] sdqctl VERIFY .conv Directive (Phase 2)
 **Type:** Tooling | **Effort:** Medium
 **Proposal:** [VERIFICATION-DIRECTIVES.md](VERIFICATION-DIRECTIVES.md)
 **Focus:** Native `VERIFY refs` directive in .conv workflows
@@ -55,6 +70,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Accuracy: Verify G7 protocol claims~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- G7 protocol specification: **100% accurate**
+- All opcodes, UUIDs, curves verified against DiaBLE, xDrip sources
+- GAP-BLE-001/002 confirmed still open
 
 ### ~~[P2] Playwright E2E PR Submission~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
@@ -149,89 +170,25 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 ### P0 - Critical
 
-- [x] ~~**Hygiene tooling suite**~~ - ✅ **COMPLETE** (queue_stats.py, backlog_hygiene.py, doc_chunker.py)
-- [x] ~~**cgm-remote-monitor audit**~~ (chunked, using bewest/mongo-5x branch) - ✅ **COMPLETE**
-  - [x] ~~Database layer (MongoDB 5.x compat, indexes, schema)~~ - ✅ Completed (455 lines, 3 gaps)
-  - [x] ~~API layer (lib/api3/, v1/v2/v3 endpoints, collections)~~ - ✅ Completed (397 lines, 3 gaps)
-  - [x] ~~Plugin system (lib/plugins/, 38 plugins, reports)~~ - ✅ Completed (436 lines, 3 gaps)
-  - [x] ~~Sync/upload logic (lib/server/, socket.io, data flow)~~ - ✅ Completed (520 lines, 3 gaps)
-  - [x] ~~Authentication (lib/authorization/, tokens, roles)~~ - ✅ Completed (475 lines, 3 gaps)
-  - [x] ~~Frontend (views/, translations/, client bundles)~~ - ✅ Completed (468 lines, 3 gaps)
-  - **Total: 2,751 lines, 18 gaps across 6 deep dives**
+*All P0 items complete. See Completed (Recent) table.*
 
 ### P1 - High Value
 
-- [x] ~~**PR analysis: cgm-remote-monitor**~~ - ✅ **COMPLETE** (388 lines, 68 PRs analyzed)
-- [x] ~~**PR analysis: share2nightscout-bridge**~~ - Completed (242 lines, 3 gaps)
-- [x] ~~**Deep dive: Batch operation ordering**~~ - Completed
-- [x] ~~**Gap discovery: Prediction array formats**~~ - Completed (319 lines, 3 gaps)
-- [x] ~~**Full audit: openaps**~~ - Completed (371 lines, 3 gaps)
-- [x] ~~**Algorithm conformance suite**~~ - Proposal created (400+ lines, 3 gaps, 5-phase plan)
-- [x] ~~**Full audit: tconnectsync**~~ - Completed (368 lines, 3 gaps)
-- [x] ~~**Full audit: nightscout-librelink-up**~~ - Completed (378 lines, 3 gaps)
-- [x] ~~**Cross-project testing plan (Trio/Loop on Ubuntu)**~~ - Completed (363 lines, 3 gaps)
-- [x] ~~**Statistics API proposal**~~ - ✅ Completed (480 lines, 6 endpoints, MCP resources)
-  - From: LIVE-BACKLOG request
-  - Focus: Aggregate endpoints based on reports + zreptil nightscout-reporter needs
+*All P1 items complete. See Completed (Recent) table.*
 
 ### P2 - Normal
 
-- [x] ~~**Compare carb absorption models**~~ - ✅ Completed (471 lines, 3 gaps)
-- [x] ~~**Extract Loop sync identity fields**~~ - ✅ Completed (318 lines, 3 gaps)
-- [x] ~~**Algorithm conformance: Schema + fixture extraction**~~ - ✅ Completed (85 vectors)
-  - From: Algorithm conformance suite proposal
-  - Deliverables: `conformance-vector-v1.json` schema, 85 vectors from AAPS
-- [x] ~~**Algorithm conformance: oref0 runner**~~ - ✅ Completed (26/85 pass, 69% divergence)
-  - From: Algorithm conformance suite proposal
-  - Deliverables: `conformance/runners/oref0-runner.js`, Makefile target
-- [x] ~~**Map pump communication terminology**~~ - ✅ Completed (~150 lines, 10 tables)
-- [x] ~~**Deep dive: Authentication flows**~~ - Promoted to Ready Queue #5
-- [x] ~~**Cross-repo fixture extraction**~~ - Promoted to Ready Queue #5
-- [x] ~~**Full audit: nightscout-connect**~~ - ✅ Completed (527 lines, 3 gaps)
-- [x] ~~**nightscout-connect vendor interop proposal**~~ - ✅ Completed (418 lines, 3 reqs)
-- [x] ~~**Documentation reorganization proposal**~~ - ✅ Complete (223 lines)
-  - From: LIVE-BACKLOG request
-  - Focus: Consolidate duplicate materials, optimize structure for tooling vs projects
-- [x] ~~**Chunk gaps.md into manageable pieces**~~ - ✅ Completed (index + 7 domain files)
-  - From: LIVE-BACKLOG request
-  - Focus: CGM, Treatments, Sync, Override, Database, etc.
-- [x] ~~**Large file analysis + chunking proposal**~~ - ✅ Complete (174 lines, no chunking needed)
-  - From: LIVE-BACKLOG request
-  - Focus: Files >500 lines, autonomous workflow optimization
+*All P2 items complete. See Completed (Recent) table.*
 
 ### P3 - Nice to Have
 
-- [x] ~~**Create mapping: nocturne**~~ - ✅ **COMPLETE** (702 lines, 4 docs, 3 gaps)
-- [x] ~~**Create mapping: tconnectsync**~~ - ✅ **COMPLETE** (607 lines, 4 docs, 1 gap)
-- [x] ~~**Create mapping: share2nightscout-bridge**~~ - Promoted to Ready Queue #5
-- [x] ~~**Create mapping: nightscout-librelink-up**~~ - Promoted to Ready Queue #5
-- [x] ~~**Deep dive: LoopFollow**~~ - Promoted to Ready Queue #5
-- [x] ~~**Deep dive: LoopCaregiver**~~ - Promoted to Ready Queue #5
-- [x] ~~**Deep dive: openaps toolkit**~~ - Promoted to Ready Queue #5
-- [ ] **Deep dive: xdrip-js**
+- [x] ~~**Deep dive: xdrip-js**~~ - ✅ Complete (380 lines, 4 gaps GAP-XDRIPJS-001..004)
   - Repos: xdrip-js
   - Focus: Node.js Dexcom G5/G6 BLE interface
   - Context: Raspberry Pi CGM receiver use case
   - Workflow: `extract-spec.conv`
-- [ ] **Generate requirements: connectors domain**
-  - Focus: Extract REQs from 15 GAP-CONNECT-* entries
-  - Context: Connectors domain has 15 gaps, 0 requirements
-  - Workflow: `gap-discovery.conv`
-- [x] ~~**Compare CGM sensor session handling**~~ - ✅ Complete (353 lines, 3 gaps)
-- [x] ~~**Extract xDrip+ Nightscout fields**~~ - ✅ Already complete (506 lines in mapping/xdrip-android/nightscout-sync.md)
-- [x] ~~**Map algorithm terminology**~~ - ✅ Already complete (3024-line matrix)
-- [x] ~~**LSP-based documentation claim verification**~~ - ✅ **COMPLETE** (verify_refs.py exists, fixed 3 refs, 92% valid)
-- [x] ~~**Reporting needs analysis**~~ - ✅ Complete (250 lines, 3 gaps)
-  - Source: `externals/nightscout-reporter/` (zreptil)
-  - Focus: Report types, data requirements, export formats, user needs
-- [x] ~~**Full audit: nightscout-roles-gateway**~~ - ✅ **COMPLETE** (260 lines existing, 1 gap, 4 reqs migrated)
-  - Components: lib/, migrations/, Ory Hydra/Kratos integration
-  - Focus: Role-based access control, OAuth flows, API authorization
-  - Workflow: `gap-discovery.conv`
-- [x] ~~**Playwright adoption proposal for cgm-remote-monitor**~~ - Promoted to Ready Queue #5
-- [x] ~~**sdqctl tools vs custom py tools proposal**~~ - ✅ **COMPLETE** (140 lines, 4 deprecate, 3 integrate, 23 keep)
-  - From: LIVE-BACKLOG request
-  - Focus: Compare sdqctl capabilities vs tools/*.py, deprecation candidates
+
+*Completed P3 items moved to Completed (Recent) table below.*
 
 ---
 
@@ -241,6 +198,9 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-29 | **Accuracy: G7 protocol verification** | 100% accurate, GAP-BLE-001/002 confirmed |
+| 2026-01-29 | **Accuracy: Source refs verification** | 91% valid (356/391), active docs 100% |
+| 2026-01-29 | Deep dive: xdrip-js | 380 lines, 4 gaps |
 | 2026-01-29 | Hygiene: Chunk progress.md | 1713→807 lines, archive created |
 | 2026-01-29 | Algorithm conformance: oref0 runner | `oref0-runner.js` - 400+ lines, 26/85 pass |
 | 2026-01-29 | Algorithm conformance: Schema + fixture extraction | 85 vectors, schema, extraction script |
@@ -250,7 +210,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 | 2026-01-29 | Interoperability Spec v1 | RFC-style, synthesizes 6 audits |
 | 2026-01-29 | cgm-remote-monitor 6-layer audit | 2,751 lines total, 18 gaps |
 | 2026-01-29 | Cross-project testing plan | 4 strategies for Swift on Linux |
-| 2026-01-29 | Playwright adoption proposal | 4-phase E2E testing plan |
+| 2026-01-29 | Playwright adoption (proposal + implementation) | 591 lines, 18 tests, PR ready |
 
 ---
 

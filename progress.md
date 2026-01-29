@@ -8,6 +8,65 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Accuracy Verification: G7 Protocol + Refs (2026-01-29)
+
+Executed first accuracy verification items from bottom-up queue.
+
+| Item | Result | Method |
+|------|--------|--------|
+| **#17: G7 protocol claims** | **100% accurate** | Manual grep vs 5 source files |
+| **#1-4: Source refs** | **91% valid** (356/391) | `python tools/verify_refs.py` |
+
+**G7 Claims Verified**:
+| Claim | Source Evidence |
+|-------|-----------------|
+| Service UUID `F8083532-...` | `DiaBLE/Dexcom.swift:51` |
+| 26 opcodes defined | `DiaBLE/DexcomG7.swift:20-47` |
+| secp256r1 curve | `xDrip/libkeks/Curve.java:24` |
+| J-PAKE auth flow | `xDrip/libkeks/Calc.java` |
+| G7SensorKit files (7) | `LoopWorkspace/G7SensorKit/...` |
+
+**Refs Breakdown**:
+- 356 valid refs (91%)
+- 35 broken (33 in archive, 2 intentional examples)
+- Active docs: 100% valid
+
+---
+
+### Bottom-up Accuracy Review Queue (2026-01-29)
+
+Created systematic verification queue for documentation accuracy, organized from evidence sources through to proposals.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Documentation Accuracy Backlog** | `docs/sdqctl-proposals/backlogs/documentation-accuracy.md` | 31 items across 6 levels |
+| **Backlog Updates** | All 5 domain backlogs | Verification items cross-referenced |
+| **Ready Queue Additions** | `ECOSYSTEM-BACKLOG.md` | +3 accuracy items (#6-8) |
+
+**6-Level Verification Hierarchy**:
+| Level | Focus | Items |
+|-------|-------|-------|
+| 1 | Evidence Sources | 4 items (code ref verification) |
+| 2 | Mappings | 5 items (field coverage) |
+| 3 | Deep Dives | 8 items (claim verification) |
+| 4 | Gaps | 6 items (freshness check) |
+| 5 | Requirements | 4 items (scenario coverage) |
+| 6 | Proposals | 4 items (coherence) |
+
+**Tool Proposals for sdqctl Team**:
+- `verify_gap_freshness.py` - Check if documented gaps still exist
+- `verify_mapping_coverage.py` - Compare mapping docs vs source fields
+- `sample_terminology.py` - Random sample verification of terminology
+
+**Current Verification Tooling State**:
+| Tool | Status | Coverage |
+|------|--------|----------|
+| `verify_refs.py` | ✅ Working | 91% valid (356/391 refs) |
+| `verify_assertions.py` | ✅ Working | 15% REQ coverage (27/180) |
+| `gen_coverage.py` | ✅ Working | Traceability matrix |
+
+---
+
 ### Playwright E2E PR Submission (2026-01-29)
 
 Created PR submission guide for Playwright E2E tests to be contributed to cgm-remote-monitor.

@@ -14,6 +14,9 @@ Covers: cgm-remote-monitor, entries, treatments, devicestatus, profile
 |---|------|----------|--------|-------|
 | 1 | API v3 pagination compliance | P2 | Medium | Document srvModified-based pagination across clients |
 | 2 | WebSocket event coverage | P3 | Medium | Map socket.io events vs REST for real-time sync |
+| 3 | **Verify devicestatus/entries claims** | P2 | Medium | [Accuracy backlog #12-14](documentation-accuracy.md) |
+| 4 | **Verify GAP-API-* freshness** | P2 | Medium | [Accuracy backlog #20](documentation-accuracy.md) - check if closed in PRs |
+| 5 | **Audit REQ-API-* → OpenAPI alignment** | P2 | Medium | [Accuracy backlog #27](documentation-accuracy.md) |
 
 ---
 

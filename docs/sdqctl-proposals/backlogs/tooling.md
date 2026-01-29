@@ -15,6 +15,9 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 1 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt pending |
 | 2 | sdqctl VERIFY .conv directive (Phase 2) | P3 | Medium | CLI complete, directive parsing pending |
 | 3 | LSP-based claim verification (Phase 2+) | P3 | Medium | JS/TS LSP integration deferred |
+| 4 | **Gap freshness checker tool** | P2 | Medium | [Accuracy backlog proposal](documentation-accuracy.md#proposed-tool-verify_gap_freshnesspy) |
+| 5 | **Mapping coverage tool** | P2 | Medium | [Accuracy backlog proposal](documentation-accuracy.md#proposed-tool-verify_mapping_coveragepy) |
+| 6 | **Terminology sample tool** | P3 | Low | [Accuracy backlog proposal](documentation-accuracy.md#proposed-tool-sample_terminologypy) |
 
 ---
 

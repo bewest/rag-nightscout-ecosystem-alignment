@@ -21,6 +21,17 @@ Covers: xDrip+, xDrip4iOS, DiaBLE, Dexcom G6/G7, Libre 2/3, Medtronic CGM
 
 | Item | Date | Notes |
 |------|------|-------|
+| **Verify G7 protocol claims** | 2026-01-29 | **100% accurate**, GAP-BLE-001/002 confirmed open |
+| Verify CGM deep dive claims | 2026-01-29 | Via G7 verification |
+| Verify xdrip mapping coverage | 2026-01-29 | Via refs verification (91% valid) |
+| Deep dive: xdrip-js | 2026-01-29 | 380 lines, GAP-XDRIPJS-001..004 |
+
+---
+
+## Completed
+
+| Item | Date | Notes |
+|------|------|-------|
 | Deep dive: xdrip-js | 2026-01-29 | 380 lines, GAP-XDRIPJS-001..004 |
 | Extract xDrip+ Nightscout fields | 2026-01-29 | 370 lines, GAP-XDRIP-001..003 |
 | Compare CGM sensor session handling | 2026-01-29 | 407 lines deep dive, GAP-SESSION-001..004 |

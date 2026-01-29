@@ -3390,3 +3390,25 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 | **Traceability matrix** | REQ → Spec → Test linkage |
 
 **Source**: `tools/verify_assertions.py`, `traceability/assertion-trace.md`
+
+### Verification Concepts
+
+| Term | Definition |
+|------|------------|
+| **Claim verification** | Validating doc statements against source code |
+| **Ref validation** | Checking `repo:path` references resolve to files |
+| **Gap freshness** | Confirming documented gaps still exist |
+| **Mapping coverage** | % of source fields documented in mappings |
+| **Accuracy rate** | % of claims verified as correct |
+
+**Verification Levels** (bottom-up):
+| Level | Focus | Method |
+|-------|-------|--------|
+| 1 | Evidence sources | `verify_refs.py` |
+| 2 | Mappings | Grep field names in source |
+| 3 | Deep dives | Manual claim extraction + grep |
+| 4 | Gaps | `verify_gap_freshness.py` (proposed) |
+| 5 | Requirements | `verify_assertions.py` |
+| 6 | Proposals | Cross-reference coherence |
+
+**Source**: `docs/sdqctl-proposals/backlogs/documentation-accuracy.md`
