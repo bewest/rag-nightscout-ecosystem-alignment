@@ -33,31 +33,25 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** MongoDB 5.x compatibility, indexes, schema
 **Workflow:** `deep-dive.conv`
 
-### 3. [P1] Extract Loop sync identity fields
-**Type:** Extraction | **Effort:** Medium
-**Source:** `externals/LoopWorkspace/`
-**Focus:** What makes a treatment unique in Loop, complete sync identity picture
-**Workflow:** `extract-spec.conv`
-
-### 4. [P1] Compare override/profile switch semantics
+### 3. [P1] Compare override/profile switch semantics
 **Type:** Comparison | **Effort:** Medium
 **Repos:** Loop, AAPS, Trio
 **Focus:** Loop overrides vs AAPS ProfileSwitch vs Trio overrides
 **Workflow:** `compare-feature.conv`
 
-### 5. [P1] Playwright adoption proposal
+### 4. [P1] Playwright adoption proposal
 **Type:** Proposal | **Effort:** Low
 **Source:** `externals/cgm-remote-monitor-official/`
 **Focus:** Propose adoption plan for Playwright testing in cgm-remote-monitor modernization
 **Workflow:** `proposal.conv`
 
-### 6. [P1] PR analysis: cgm-remote-monitor
+### 5. [P1] PR analysis: cgm-remote-monitor
 **Type:** Analysis | **Effort:** Medium
 **Source:** `externals/cgm-remote-monitor-official/`
 **Focus:** Review open PRs for ecosystem impact
 **Workflow:** `gap-discovery.conv`
 
-### 7. [P2] Algorithm conformance suite
+### 6. [P2] Algorithm conformance suite
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Create test vectors for Rust vs JS oref comparison
 **Workflow:** `tools/`
@@ -91,7 +85,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### P2 - Normal
 
 - [ ] **Compare carb absorption models** - Linear vs nonlinear vs dynamic
-- [x] ~~**Extract Loop sync identity fields**~~ - Promoted to Ready Queue #3
+- [x] ~~**Extract Loop sync identity fields**~~ - ✅ Completed (318 lines, 3 gaps)
 - [ ] **Map pump communication terminology** - Reservoir, cartridge, pod, etc.
 - [ ] **Deep dive: Authentication flows** - API secret vs tokens vs JWT
 - [ ] **Cross-repo fixture extraction** - Pull test fixtures from AAPS/Loop/xDrip repos
@@ -101,9 +95,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
   - Components: lib/, commands/, machines.md (state machine docs)
   - Focus: Cloud platform connectors, sync protocols
   - Workflow: `gap-discovery.conv`
-- [ ] **nightscout-connect benchmarking proposal** - Sync method comparison
+- [ ] **nightscout-connect vendor interop proposal** - Tandem + Libre integration enhancements
   - From: LIVE-BACKLOG request
-  - Focus: Benchmark sync methods, vendor compatibility (Tandem, Glooko, LibreLink)
+  - Focus: Apply tconnectsync/librelink-up learnings to nightscout-connect
+- [ ] **Documentation reorganization proposal** - AI vs human comprehension analysis
+  - From: LIVE-BACKLOG request
+  - Focus: Consolidate duplicate materials, optimize structure for tooling vs projects
 
 ### P3 - Nice to Have
 
@@ -129,6 +126,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-29 | Extract Loop sync identity fields | `mapping/loop/sync-identity-fields.md` - 318 lines, 3 gaps (GAP-SYNC-005-007), ObjectIdCache pattern |
 | 2026-01-29 | Full audit: nightscout-librelink-up | `docs/10-domain/nightscout-librelink-up-deep-dive.md` - 378 lines, 3 gaps (GAP-LIBRELINK-001-003) |
 | 2026-01-29 | Full audit: tconnectsync | `docs/10-domain/tconnectsync-deep-dive.md` - 368 lines, 3 gaps (GAP-TCONNECT-001-003) |
 | 2026-01-29 | Full audit: openaps/oref0 | `docs/10-domain/openaps-oref0-deep-dive.md` - 371 lines, 3 gaps (GAP-OREF-001-003) |

@@ -6,6 +6,23 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Loop Sync Identity Fields Extraction (2026-01-29)
+
+Extracted sync identity patterns from Loop/LoopKit for cross-project comparison.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Mapping** | `mapping/loop/sync-identity-fields.md` | 318 lines, syncIdentifier + ObjectIdCache patterns |
+| **Gaps** | `traceability/gaps.md` | GAP-SYNC-005/006/007 added |
+
+**Key Findings**:
+- Loop uses `syncIdentifier` (pump hex or UUID) as primary identity
+- `ObjectIdCache` maps to Nightscout `_id` (24-hour memory-only)
+- Uses v1 POST only - no server-side deduplication
+- Duplicates possible on app restart due to cache loss
+
+---
+
 ### nightscout-librelink-up Deep Dive (2026-01-29)
 
 Full audit of LibreLink Up to Nightscout bridge.

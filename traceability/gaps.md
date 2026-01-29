@@ -3333,3 +3333,93 @@ Mathematically equivalent but semantically confusing.
 
 **Related**:
 - [Override/Profile Switch Comparison](../docs/10-domain/override-profile-switch-comparison.md)
+
+---
+
+## Sync Identity Gaps
+
+### GAP-SYNC-005: Loop ObjectIdCache not persistent
+
+**Scenario**: Treatment deduplication across app restarts
+
+**Description**: Loop uses an in-memory `ObjectIdCache` to map `syncIdentifier` → Nightscout `_id`. This cache is purged on app restart or expiration (24 hours), causing Loop to lose knowledge of previously uploaded treatments.
+
+**Evidence**:
+- `externals/LoopWorkspace/LoopKit/NightscoutKit/NightscoutUploader.swift` - ObjectIdCache implementation
+- Cache lifetime: 24 hours, memory-only
+
+**Impact**:
+- After app restart, Loop may re-upload treatments if it cannot find existing records
+- Duplicate treatments in Nightscout if server doesn't deduplicate
+- AAPS and xDrip+ persist sync IDs to database, avoiding this issue
+
+**Possible Solutions**:
+1. Persist ObjectIdCache to UserDefaults or CoreData
+2. Use Nightscout v3 PUT with `identifier` for server-side dedup
+3. Query Nightscout for existing treatments on startup
+
+**Status**: Under discussion
+
+**Related**:
+- [Loop Sync Identity Fields](../mapping/loop/sync-identity-fields.md)
+- GAP-SYNC-006
+
+---
+
+### GAP-SYNC-006: Loop uses Nightscout v1 API only
+
+**Scenario**: Treatment deduplication and update semantics
+
+**Description**: Loop uploads treatments via `POST /api/v1/treatments` which creates new records. The v3 API's `PUT /api/v3/treatments/{identifier}` would enable server-side upsert semantics, eliminating client-side dedup logic.
+
+**Evidence**:
+- `externals/LoopWorkspace/LoopKit/NightscoutKit/NightscoutClient.swift` - only v1 endpoints
+- No `identifier` field usage for upsert
+
+**Impact**:
+- Requires client-side ObjectIdCache for deduplication
+- No atomic upsert - must query then decide POST vs PUT
+- AAPS uses v3 with interfaceIDs for reliable dedup
+
+**Possible Solutions**:
+1. Migrate Loop uploads to v3 PUT with `identifier = syncIdentifier`
+2. Use v1 POST but include `identifier` for server dedup (if supported)
+3. Accept as design limitation, rely on ObjectIdCache
+
+**Status**: Under discussion
+
+**Related**:
+- [Loop Sync Identity Fields](../mapping/loop/sync-identity-fields.md)
+- GAP-SYNC-005
+
+---
+
+### GAP-SYNC-007: syncIdentifier format not standardized
+
+**Scenario**: Cross-system treatment correlation
+
+**Description**: Loop's `syncIdentifier` format varies by source:
+- Pump events: Hex string of raw pump data (variable length)
+- Carb entries: UUID string
+- HealthKit: Composite with source device
+
+No standard format or prefix convention exists.
+
+**Evidence**:
+- `externals/LoopWorkspace/LoopKit/LoopKit/DoseEntry.swift` - pumpEventDose creates hex
+- `externals/LoopWorkspace/LoopKit/LoopKit/CarbKit/StoredCarbEntry.swift` - uses UUID
+
+**Impact**:
+- Cannot reliably parse syncIdentifier to determine source type
+- Collision risk between hex pump data and UUID formats unlikely but possible
+- AAPS uses structured `interfaceIDs` object with typed fields
+
+**Possible Solutions**:
+1. Add type prefix: `pump:HEXDATA`, `carb:UUID`, `healthkit:UUID`
+2. Document current formats for consumers
+3. Accept variability, rely on eventType for disambiguation
+
+**Status**: Documented
+
+**Related**:
+- [Loop Sync Identity Fields](../mapping/loop/sync-identity-fields.md)

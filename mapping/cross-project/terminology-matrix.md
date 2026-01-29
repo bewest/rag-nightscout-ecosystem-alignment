@@ -537,15 +537,18 @@ This uses `secondsFromGMT(for: date)` which **does** account for DST at the spec
 
 ## Sync Identity Fields
 
+> **See Also**: [Loop Sync Identity Deep Dive](../loop/sync-identity-fields.md) for ObjectIdCache pattern and treatment deduplication analysis.
+
 | Controller | Nightscout Field | Purpose | Source Code |
 |------------|------------------|---------|-------------|
 | AAPS | `identifier` | Client-side unique ID | `database/entities/*.kt` |
-| Loop | `pumpId` + `pumpType` + `pumpSerial` | Composite pump event ID | `LoopKit/*.swift` |
+| Loop | `syncIdentifier` | Pump hex or UUID | `LoopKit/DoseEntry.swift`, `CarbKit/StoredCarbEntry.swift` |
+| Loop (cache) | ObjectIdCache | Maps syncIdentifier → NS _id (24hr memory) | `NightscoutKit/NightscoutUploader.swift` |
 | xDrip+ (Android) | `uuid` | Client-generated UUID | `models/Treatments.java#L85` |
 | xDrip4iOS | `uuid` | Client-generated UUID | `Managers/Nightscout/*.swift` |
 | Generic | `_id` | MongoDB ObjectId (server-generated) | N/A |
 
-**Gap**: No unified sync identity field exists across controllers (GAP-003).
+**Gap**: No unified sync identity field exists across controllers (GAP-003). Loop's ObjectIdCache is memory-only (GAP-SYNC-005), Loop uses v1 API only (GAP-SYNC-006), syncIdentifier format varies (GAP-SYNC-007).
 
 ---
 

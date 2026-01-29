@@ -3,13 +3,16 @@
 > **Purpose**: Midflight requests from humans during sdqctl processing sessions.  
 > **Parent**: [ECOSYSTEM-BACKLOG.md](docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md)
 
----
+* consider chunking and breaking up the gaps file/area to be easier to consume.
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
-| Playwright adoption proposal | P1 | → **Ready Queue #5** | 2026-01-29 |
+| nightscout-connect vendor interop proposal | P2 | → Queued to P2 backlog | 2026-01-29 |
+| Mongo 5x batch ordering verification | P1 | → Ready Queue #2 (DB audit) | 2026-01-29 |
+| Documentation reorganization proposal | P2 | → Queued to P2 backlog | 2026-01-29 |
+| Playwright adoption proposal | P1 | → **Ready Queue #4** | 2026-01-29 |
 | Backlog priority review & reorganization | - | ✅ Complete | 2026-01-29 |
 | Add tconnectsync repo + queue analysis | P1 | ✅ Added to workspace, queued | 2026-01-29 |
 | Add nightscout-librelink-up repo + queue analysis | P1 | ✅ Added to workspace, queued | 2026-01-29 |
