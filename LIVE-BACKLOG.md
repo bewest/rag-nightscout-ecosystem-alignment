@@ -4,12 +4,13 @@
 > **Parent**: [ECOSYSTEM-BACKLOG.md](docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md)
 
 ---
-* Add a high priority item to the queue: Please do use the tools to help groom the progress file.
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Algorithm conformance: oref0 runner | P2 | ✅ Complete (26/85 pass, 69% divergence) | 2026-01-29 |
+| Progress.md grooming request | P2 | → Queued to Ready Queue | 2026-01-29 |
 | Algorithm conformance: Schema + fixture extraction | P2 | ✅ Complete (85 vectors) | 2026-01-29 |
 | Backlog grooming + archive | - | ✅ Complete | 2026-01-29 |
 | Authentication flows deep dive | P2 | ✅ Complete | 2026-01-29 |
