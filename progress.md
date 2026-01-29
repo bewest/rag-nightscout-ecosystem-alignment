@@ -8,6 +8,37 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Connectors Requirements Generation (2026-01-29)
+
+Generated 28 requirements from 28 connector gaps, closing the connectors domain requirements gap.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Connectors Requirements** | `traceability/connectors-requirements.md` | 28 REQs covering 8 connector prefixes |
+| **Requirements Index** | `traceability/requirements.md` | Updated to 185 (180 unique) |
+| **Terminology Matrix** | `mapping/cross-project/terminology-matrix.md` | +14 connector REQ/GAP prefixes |
+
+**Requirements Created by Prefix**:
+| Prefix | Count | Focus |
+|--------|-------|-------|
+| REQ-CONNECT-* | 6 | nightscout-connect core |
+| REQ-NOCTURNE-* | 3 | Nocturne-specific |
+| REQ-TCONNECT-* | 4 | tconnectsync |
+| REQ-TEST-* | 3 | Testing infrastructure |
+| REQ-SHARE-* | 3 | share2nightscout-bridge |
+| REQ-LIBRELINK-* | 3 | nightscout-librelink-up |
+| REQ-LOOPFOLLOW-* | 3 | LoopFollow |
+| REQ-LOOPCAREGIVER-* | 3 | LoopCaregiver |
+
+**Metrics**:
+| Metric | Before | After |
+|--------|--------|-------|
+| Total requirements | 157 | 185 (180 unique) |
+| Connectors domain | 0 REQs | 28 REQs |
+| Gap-to-REQ coverage | 28 gaps / 0 REQs | 28 gaps / 28 REQs |
+
+---
+
 ### Assertion-to-Requirement Linkage Audit (2026-01-29)
 
 Linked all 23 orphaned assertions to requirements, improving traceability coverage.

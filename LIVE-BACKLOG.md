@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Connectors Requirements Generation | P2 | ✅ Complete (28 REQs, 8 prefixes, 100% gap coverage) | 2026-01-29 |
 | Assertion-to-Requirement Linkage Audit | P1 | ✅ Complete (27 REQs, 0 orphans, 17.4% coverage) | 2026-01-29 |
 | Backlog grooming + Ready Queue refresh | P0 | ✅ Complete (6 items in queue, 13 across domains) | 2026-01-29 |
 | Audit verification tooling proposal | P2 | ✅ Complete (311 lines, 6 tools proposed) | 2026-01-29 |

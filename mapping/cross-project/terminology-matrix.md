@@ -3347,7 +3347,14 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 | `REQ-UNIT-NNN` | Unit handling | REQ-UNIT-001 |
 | `REQ-ALARM-NNN` | Caregiver alarms | REQ-ALARM-001 |
 | `REQ-REMOTE-NNN` | Remote commands | REQ-REMOTE-001 |
-| `REQ-CONNECT-NNN` | Connectors | REQ-CONNECT-001 |
+| `REQ-CONNECT-NNN` | nightscout-connect | REQ-CONNECT-001 |
+| `REQ-NOCTURNE-NNN` | Nocturne-specific | REQ-NOCTURNE-001 |
+| `REQ-TCONNECT-NNN` | tconnectsync | REQ-TCONNECT-001 |
+| `REQ-TEST-NNN` | Testing infrastructure | REQ-TEST-001 |
+| `REQ-SHARE-NNN` | share2nightscout-bridge | REQ-SHARE-001 |
+| `REQ-LIBRELINK-NNN` | nightscout-librelink-up | REQ-LIBRELINK-001 |
+| `REQ-LOOPFOLLOW-NNN` | LoopFollow | REQ-LOOPFOLLOW-001 |
+| `REQ-LOOPCAREGIVER-NNN` | LoopCaregiver | REQ-LOOPCAREGIVER-001 |
 
 ### Gap ID Formats
 
@@ -3360,7 +3367,14 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 | `GAP-BATCH-NNN` | Batch operations | GAP-BATCH-001 |
 | `GAP-TZ-NNN` | Timezone handling | GAP-TZ-001 |
 | `GAP-SESSION-NNN` | CGM session | GAP-SESSION-001 |
-| `GAP-CONNECT-NNN` | Connectors | GAP-CONNECT-001 |
+| `GAP-CONNECT-NNN` | nightscout-connect | GAP-CONNECT-001 |
+| `GAP-NOCTURNE-NNN` | Nocturne-specific | GAP-NOCTURNE-001 |
+| `GAP-TCONNECT-NNN` | tconnectsync | GAP-TCONNECT-001 |
+| `GAP-TEST-NNN` | Testing infrastructure | GAP-TEST-001 |
+| `GAP-SHARE-NNN` | share2nightscout-bridge | GAP-SHARE-001 |
+| `GAP-LIBRELINK-NNN` | nightscout-librelink-up | GAP-LIBRELINK-001 |
+| `GAP-LOOPFOLLOW-NNN` | LoopFollow | GAP-LOOPFOLLOW-001 |
+| `GAP-LOOPCAREGIVER-NNN` | LoopCaregiver | GAP-LOOPCAREGIVER-001 |
 
 ### Traceability Concepts
 

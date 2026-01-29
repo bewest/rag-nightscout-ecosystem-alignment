@@ -28,17 +28,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
 
-### 2. [P2] Connectors Requirements Generation
-**Type:** Traceability | **Effort:** Medium
-**Focus:** Extract REQs from 28 GAP-CONNECT-* entries
-**Context:** `traceability/connectors-gaps.md` has 596 lines, 28 gaps, 0 requirements
-**Deliverables:**
-- Create `traceability/connectors-requirements.md`
-- Extract 15-20 REQ-CONNECT-* requirements
-- Link to existing gaps
-**Lesson Learned:** Gaps without requirements can't be verified
-
-### 3. [P2] sdqctl VERIFY Directive Implementation
+### 2. [P2] sdqctl VERIFY Directive Implementation
 **Type:** Tooling | **Effort:** High
 **Proposal:** [VERIFICATION-DIRECTIVES.md](VERIFICATION-DIRECTIVES.md)
 **Focus:** Built-in `VERIFY refs`, `VERIFY traceability` directives
@@ -48,7 +38,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - CLI commands `sdqctl verify refs`, `sdqctl verify all`
 - `.conv` directive support
 
-### 4. [P2] Conformance Test Executor Integration
+### 3. [P2] Conformance Test Executor Integration
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Integrate `conformance_suite.py` with sdqctl
 **Context:** Orchestrator exists but manual invocation required
@@ -57,14 +47,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - CI workflow for continuous algorithm validation
 - GitHub Actions integration template
 
-### 5. [P3] Algorithm conformance: Loop Swift runner
+### 4. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 6. [P3] Deep dive: xdrip-js Node.js CGM interface
+### 5. [P3] Deep dive: xdrip-js Node.js CGM interface
 **Type:** Documentation | **Effort:** Medium
 **Repos:** xdrip-js
 **Focus:** Node.js Dexcom G5/G6 BLE interface for Raspberry Pi
@@ -74,6 +64,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Connectors Requirements Generation~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Created `traceability/connectors-requirements.md` with 28 requirements
+- 8 REQ prefixes: CONNECT, NOCTURNE, TCONNECT, TEST, SHARE, LIBRELINK, LOOPFOLLOW, LOOPCAREGIVER
+- Total requirements: 157 → 185 (180 unique)
+- 100% gap-to-REQ coverage for connectors domain
 
 ### ~~[P1] Assertion-to-Requirement Linkage Audit~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
