@@ -8,6 +8,39 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nightscout API v3 Deep Dive (2026-01-29)
+
+Comprehensive analysis of Nightscout API v3 architecture, collections, operations, and sync patterns.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/nightscout-apiv3-deep-dive.md` | 290 lines, 6 collections, 8 operations |
+| **Gaps Added** | `traceability/nightscout-api-gaps.md` | GAP-API3-001 through GAP-API3-003 |
+| **Requirements** | `traceability/nightscout-api-requirements.md` | REQ-API3-001 through REQ-API3-003 |
+
+**Key Findings**:
+- 6 collections: devicestatus, entries, food, profile, settings, treatments
+- 8 operations per collection: SEARCH, CREATE, READ, UPDATE, PATCH, DELETE, HISTORY, plus version endpoints
+- shiro-trie permission model: `api:{collection}:{operation}`
+- Query operators: eq, ne, gt, gte, lt, lte, in, nin, re
+- Deduplication via `identifier` with per-collection fallback fields
+- History endpoint returns soft-deleted docs (`isValid=false`) for sync completeness
+
+**Gaps Identified**:
+| Gap ID | Issue |
+|--------|-------|
+| GAP-API3-001 | No batch operations for bulk sync |
+| GAP-API3-002 | Offset pagination inefficient for large datasets |
+| GAP-API3-003 | Field projection lacks exclusion syntax |
+
+**Source Files**:
+- `externals/cgm-remote-monitor/lib/api3/index.js`
+- `externals/cgm-remote-monitor/lib/api3/generic/setup.js`
+- `externals/cgm-remote-monitor/lib/api3/generic/search/input.js`
+- `externals/cgm-remote-monitor/lib/api3/generic/history/operation.js`
+
+---
+
 ### Hygiene: Chunk progress.md (2026-01-29)
 
 Maintenance task to reduce progress.md from 1713 to 807 lines (53% reduction).

@@ -5,6 +5,8 @@
 
 ---
 
+* Add to queue to assess feasibility of Nightscout adopting the svelte frontend from Nocturne as a collaborative project? and splitting cgm-remote-monitor?  Evaluate suggestions for these two projects collaborating given the roadmap and objectives shared.  Low priority.
+* Evaluate the proposals across the board and the high level goal of agentic automated insulin delivery systems to evaluate a roadmap for Nightscout ecosystem to adopt the "control-plane" concept of desired state vs observed state.  What are other strategies or mechanisms for this principle to become useful that might be simpler than every controller registering their schemas?
 ## Processed
 
 | Item | Priority | Status | Date |

@@ -12,10 +12,9 @@ Covers: cgm-remote-monitor, entries, treatments, devicestatus, profile
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | Nightscout APIv3 Collection deep dive | P2 | Medium | → Ready Queue #2 |
-| 2 | Device Status collection deep dive | P2 | Medium | → Ready Queue #3 |
-| 3 | Profile collection deep dive | P2 | Medium | → Ready Queue #4 |
-| 4 | Playwright adoption: Implementation | P2 | Medium | Proposal complete, needs PR |
+| 1 | Device Status collection deep dive | P2 | Medium | → Ready Queue #3 |
+| 2 | Profile collection deep dive | P2 | Medium | → Ready Queue #4 |
+| 3 | Playwright adoption: Implementation | P2 | Medium | Proposal complete, needs PR |
 
 ---
 
@@ -23,6 +22,7 @@ Covers: cgm-remote-monitor, entries, treatments, devicestatus, profile
 
 | Item | Date | Notes |
 |------|------|-------|
+| Nightscout APIv3 Collection deep dive | 2026-01-29 | 290 lines, 3 gaps, 3 requirements |
 | cgm-remote-monitor 6-layer audit | 2026-01-29 | 2,751 lines, 18 gaps (DB, API, Plugin, Sync, Auth, Frontend) |
 | Interoperability Spec v1 | 2026-01-29 | 316 lines, RFC-style MUST/SHOULD/MAY |
 | Authentication flows deep dive | 2026-01-29 | 362 lines, 4 gaps |

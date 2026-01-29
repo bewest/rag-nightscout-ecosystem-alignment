@@ -530,6 +530,70 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
+## API v3 Sync Requirements
+
+---
+
+### REQ-API3-001: History Endpoint Completeness
+
+**Statement**: The `/history` endpoint MUST return all modified documents including soft-deleted ones (`isValid=false`).
+
+**Rationale**: Clients need delete notifications to achieve full synchronization. Missing delete events cause stale data accumulation.
+
+**Scenarios**:
+- Treatment deleted in web UI, Loop must remove from IOB
+- Device status pruned, client cache must update
+- Entry soft-deleted, all clients must reflect
+
+**Verification**:
+- History response includes documents with `isValid: false`
+- Deleted documents appear within srvModified window
+- No silent document disappearance
+
+**Source**: `lib/api3/generic/history/operation.js`
+
+---
+
+### REQ-API3-002: Deduplication Determinism
+
+**Statement**: Deduplication MUST be deterministic based on `identifier` or collection-specific fallback fields.
+
+**Rationale**: Prevents duplicate documents from sync race conditions. Critical for treatment safety (duplicate boluses).
+
+**Scenarios**:
+- Loop retries failed upload - no duplicate treatment
+- AAPS uploads same reading twice - no duplicate SGV
+- Network timeout causes retry - dedup handles gracefully
+
+**Verification**:
+- Identical POST requests don't create duplicates
+- Fallback dedup uses documented fields per collection
+- `API3_DEDUP_FALLBACK_ENABLED` behavior documented
+
+**Source**: `lib/api3/generic/setup.js:29-93`
+
+---
+
+### REQ-API3-003: srvModified Monotonicity
+
+**Statement**: `srvModified` MUST be monotonically increasing within server timeline for a collection.
+
+**Rationale**: Ensures history sync doesn't miss documents. If srvModified goes backward, incremental sync could skip updates.
+
+**Scenarios**:
+- High-frequency updates (multiple per second)
+- Server time correction
+- Distributed Nightscout deployment
+
+**Verification**:
+- Sequential updates produce increasing srvModified values
+- Clock adjustment doesn't cause srvModified regression
+- History endpoint returns in srvModified order
+
+**Source**: `lib/api3/generic/history/operation.js:115-119`
+
+---
+
 ## Interoperability Requirements
 
 ---

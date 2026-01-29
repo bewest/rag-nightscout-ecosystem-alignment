@@ -1111,3 +1111,64 @@ _None yet._
 **Remediation**: Implement JWT ID (jti) blacklist for selective revocation.
 
 ---
+
+## API v3 Architecture Gaps
+
+---
+
+### GAP-API3-001: No Batch Operations
+
+**Scenario**: Bulk data synchronization
+
+**Description**: API v3 lacks batch create/update/delete operations. Each document requires an individual HTTP request.
+
+**Affected Systems**: All clients performing bulk sync (historical import, large uploads)
+
+**Impact**:
+- Performance bottleneck for bulk uploads
+- High HTTP overhead for large datasets
+- Sync timeouts for historical data
+
+**Remediation**: Add `POST /{collection}/batch` endpoint accepting array of documents.
+
+**Source**: `lib/api3/generic/` (no batch operation exists)
+
+---
+
+### GAP-API3-002: No Cursor-Based Pagination
+
+**Scenario**: Large dataset traversal
+
+**Description**: API v3 uses offset pagination (`skip`) which is inefficient for large datasets. Skip values over ~10000 cause performance issues.
+
+**Affected Systems**: Clients querying large collections
+
+**Impact**:
+- Performance degrades with high skip values
+- Risk of missing documents during pagination
+- MongoDB performance issues
+
+**Remediation**: Add `cursor` parameter using `srvModified` + `identifier` for stable pagination.
+
+**Source**: `lib/api3/generic/search/input.js:119-133`
+
+---
+
+### GAP-API3-003: Limited Field Projection Syntax
+
+**Scenario**: Bandwidth optimization
+
+**Description**: The `fields` parameter only supports comma-separated field inclusion. Cannot exclude specific large fields.
+
+**Affected Systems**: Mobile clients, bandwidth-constrained connections
+
+**Impact**:
+- Cannot exclude just one large field (must list all others)
+- Verbose requests for simple exclusions
+- No nested field projection
+
+**Remediation**: Support `fields=-largeField` exclusion syntax or MongoDB-style projection.
+
+**Source**: `lib/api3/shared/fieldsProjector.js`
+
+---

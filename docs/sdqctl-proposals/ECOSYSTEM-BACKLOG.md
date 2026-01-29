@@ -21,13 +21,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] Nightscout APIv3 Collection deep dive
-**Type:** Analysis | **Effort:** Medium
-**Repos:** cgm-remote-monitor
-**Focus:** Document all APIv3 collections, operations, authorization
-**Workflow:** `gap-discovery.conv`
-
-### 2. [P2] nightscout-connect Design Review
+### 1. [P2] nightscout-connect Design Review
 **Type:** Analysis | **Effort:** Medium
 **Repos:** nightscout-connect
 **Focus:** XState usage, modern patterns, vendor extensibility, refactoring suggestions
