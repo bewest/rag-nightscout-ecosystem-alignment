@@ -16,6 +16,9 @@ __pycache__/
 .eggs/
 dist/
 build/
+.pytest_cache/
+.coverage
+htmlcov/
 
 # Environment
 .env
@@ -52,10 +55,15 @@ traceability/coverage-matrix.md
 traceability/inventory.json
 traceability/inventory.md
 
-# Logs
-*.log
+# Conformance test results (regeneratable)
+conformance/results/
 
-# Temporary files
+# Workflow control files
+STOPAUTOMATION
+
+# Logs and temp files
+*.log
+*.bak
 tmp/
 .tmp/
 attached_assets/
