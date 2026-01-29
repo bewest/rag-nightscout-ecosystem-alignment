@@ -61,7 +61,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [x] ~~**Full audit: tconnectsync**~~ - Completed (368 lines, 3 gaps)
 - [x] ~~**Full audit: nightscout-librelink-up**~~ - Completed (378 lines, 3 gaps)
 - [x] ~~**Cross-project testing plan (Trio/Loop on Ubuntu)**~~ - Completed (363 lines, 3 gaps)
-- [ ] **Statistics API proposal** - MCP-informed stats endpoints for Nightscout
+- [x] ~~**Statistics API proposal**~~ - ✅ Completed (480 lines, 6 endpoints, MCP resources)
   - From: LIVE-BACKLOG request
   - Focus: Aggregate endpoints based on reports + zreptil nightscout-reporter needs
 
@@ -72,7 +72,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [x] ~~**Algorithm conformance: Schema + fixture extraction**~~ - ✅ Completed (85 vectors)
   - From: Algorithm conformance suite proposal
   - Deliverables: `conformance-vector-v1.json` schema, 85 vectors from AAPS
-- [ ] **Algorithm conformance: oref0 runner** - Phase 2 of conformance suite
+- [x] ~~**Algorithm conformance: oref0 runner**~~ - ✅ Completed (26/85 pass, 69% divergence)
   - From: Algorithm conformance suite proposal
   - Deliverables: `conformance/runners/oref0-runner.js`, Makefile target
 - [x] ~~**Map pump communication terminology**~~ - ✅ Completed (~150 lines, 10 tables)
@@ -83,7 +83,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [ ] **Documentation reorganization proposal** - AI vs human comprehension analysis
   - From: LIVE-BACKLOG request
   - Focus: Consolidate duplicate materials, optimize structure for tooling vs projects
-- [ ] **Chunk gaps.md into manageable pieces** - Split by domain category
+- [x] ~~**Chunk gaps.md into manageable pieces**~~ - ✅ Completed (index + 7 domain files)
   - From: LIVE-BACKLOG request
   - Focus: CGM, Treatments, Sync, Override, Database, etc.
 - [ ] **Large file analysis + chunking proposal** - Identify files hard to reason about
