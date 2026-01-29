@@ -429,3 +429,58 @@ osx_image: xcode12.4
 **Source**: `mapping/share2nightscout-bridge/api.md`
 
 ---
+
+## nightscout-librelink-up Gaps
+
+---
+
+### GAP-LIBRELINK-001: No Nightscout API v3 Support
+
+**Description**: nightscout-librelink-up has a v3 client stub that throws "Not implemented". Only v1 API is functional.
+
+**Affected Systems**: nightscout-librelink-up, Nightscout
+
+**Impact**:
+- No server-side deduplication
+- No `identifier` field for sync tracking
+- Duplicates possible on bridge restart
+
+**Remediation**: Implement v3 client with proper identifiers.
+
+**Source**: `mapping/nightscout-librelink-up/entries.md`
+
+---
+
+### GAP-LIBRELINK-002: No Historical Backfill
+
+**Description**: While GraphResponse interface exists for historical data, only current readings are uploaded. No catch-up mechanism for missed readings.
+
+**Affected Systems**: nightscout-librelink-up, Nightscout
+
+**Impact**:
+- Data gaps if bridge is offline
+- No automatic recovery of missed readings
+- Users must manually backfill
+
+**Remediation**: Add optional historical fetch using graph endpoint.
+
+**Source**: `mapping/nightscout-librelink-up/entries.md`
+
+---
+
+### GAP-LIBRELINK-003: Trend Arrow Limited to 5 Values
+
+**Description**: LibreLink Up provides only 5 trend values (1-5) vs Nightscout's 9. No DoubleUp/DoubleDown available.
+
+**Affected Systems**: nightscout-librelink-up, Nightscout
+
+**Impact**:
+- Loss of precision for rapid glucose changes
+- Libre sensors may not report extreme trends
+- Data consumers may expect full range
+
+**Remediation**: Document as sensor/API limitation; map to closest available direction.
+
+**Source**: `mapping/nightscout-librelink-up/entries.md`
+
+---

@@ -52,12 +52,8 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### ~~5. [P3] Create mapping: share2nightscout-bridge~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (424 lines, 3 docs, 3 gaps)
 
-### 5. [P3] Create mapping: nightscout-librelink-up
-**Type:** Analysis | **Effort:** Medium
-**Repos:** nightscout-librelink-up
-**Focus:** LibreLink Up bridge field mappings
-**Workflow:** `gap-discovery.conv`
-**Source:** Deep-dive exists (`docs/10-domain/nightscout-librelink-up-deep-dive.md`)
+### ~~5. [P3] Create mapping: nightscout-librelink-up~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (608 lines, 3 docs, 3 gaps)
 
 ---
 

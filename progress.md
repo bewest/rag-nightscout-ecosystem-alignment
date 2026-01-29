@@ -8,6 +8,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### nightscout-librelink-up Field Mapping (2026-01-29)
+
+Created comprehensive field mapping documentation for LibreLink Up bridge.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **README** | `mapping/nightscout-librelink-up/README.md` | 76 lines, index |
+| **API** | `mapping/nightscout-librelink-up/api.md` | 258 lines, LibreLink Up API |
+| **Entries** | `mapping/nightscout-librelink-up/entries.md` | 274 lines, field mapping |
+
+**Key Findings**:
+- 8 API regions (EU, EU2, US, AU, DE, FR, JP, AP)
+- Multi-patient support via `LINK_UP_CONNECTION`
+- Trend arrow limited to 5 values (no DoubleUp/DoubleDown)
+- Uses FactoryTimestamp (sensor time) not local phone time
+- v1 API only (v3 stub throws error)
+
+**Gaps Identified**: GAP-LIBRELINK-001, GAP-LIBRELINK-002, GAP-LIBRELINK-003
+
+---
+
 ### share2nightscout-bridge Field Mapping (2026-01-29)
 
 Created comprehensive field mapping documentation for Dexcom Share bridge.
