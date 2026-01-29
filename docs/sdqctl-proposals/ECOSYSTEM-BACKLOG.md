@@ -35,11 +35,10 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `design-review.conv`
 **Source:** LIVE-BACKLOG human request
 
-### 3. [P0] Hygiene tooling suite
-**Type:** Implementation | **Effort:** Medium
-**Focus:** queue_stats.py, backlog_hygiene.py, doc_chunker.py
-**Design:** `docs/sdqctl-proposals/backlogs/hygiene-tooling-design.md`
-**Note:** Enables autonomous workflow optimization
+### 3. [P2] sdqctl tools vs custom py tools proposal
+**Type:** Analysis | **Effort:** Medium
+**Focus:** Compare sdqctl capabilities vs tools/*.py, identify deprecation candidates
+**Source:** LIVE-BACKLOG request
 
 ---
 
@@ -47,6 +46,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 ### P0 - Critical
 
+- [x] ~~**Hygiene tooling suite**~~ - ✅ **COMPLETE** (queue_stats.py, backlog_hygiene.py, doc_chunker.py)
 - [x] ~~**cgm-remote-monitor audit**~~ (chunked, using bewest/mongo-5x branch) - ✅ **COMPLETE**
   - [x] ~~Database layer (MongoDB 5.x compat, indexes, schema)~~ - ✅ Completed (455 lines, 3 gaps)
   - [x] ~~API layer (lib/api3/, v1/v2/v3 endpoints, collections)~~ - ✅ Completed (397 lines, 3 gaps)

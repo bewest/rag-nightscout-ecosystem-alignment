@@ -8,6 +8,22 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Hygiene Tooling Suite Verification (2026-01-29)
+
+Verified all three hygiene tools are implemented and working.
+
+| Tool | Lines | Status |
+|------|-------|--------|
+| `tools/queue_stats.py` | - | ✅ One-line status output |
+| `tools/backlog_hygiene.py` | 413 | ✅ Queue validation |
+| `tools/doc_chunker.py` | 1164 | ✅ Size checking |
+
+**Design Doc**: `docs/sdqctl-proposals/hygiene-tooling-design.md` (466 lines)
+
+**Finding**: progress.md needs chunking (1060 lines, 2.1x over threshold)
+
+---
+
 ### nightscout-roles-gateway Audit (2026-01-29)
 
 Verified comprehensive existing documentation and migrated gaps/requirements to traceability.
