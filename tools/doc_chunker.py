@@ -843,6 +843,195 @@ def execute_progress_chunking(path: Path, plan: dict, dry_run: bool = False) -> 
     return result
 
 
+def get_next_id(prefix: str) -> dict:
+    """Get the next available ID for a given prefix."""
+    prefix = prefix.upper()
+    
+    # Determine if this is a GAP or REQ
+    if prefix.startswith("GAP-"):
+        pattern = re.compile(rf'^### ({re.escape(prefix)}-?)(\d+)', re.MULTILINE)
+        search_dir = Path("traceability")
+        file_glob = "*-gaps.md"
+    elif prefix.startswith("REQ-"):
+        pattern = re.compile(rf'^### ({re.escape(prefix)}-?)(\d+)', re.MULTILINE)
+        search_dir = Path("traceability")
+        file_glob = "*-requirements.md"
+    else:
+        return {"error": f"Prefix must start with GAP- or REQ-, got: {prefix}"}
+    
+    max_num = 0
+    found_ids = []
+    
+    # Search all relevant files
+    for file_path in search_dir.glob(file_glob):
+        content = file_path.read_text(encoding='utf-8')
+        for match in pattern.finditer(content):
+            num = int(match.group(2))
+            found_ids.append(f"{match.group(1)}{num:03d}")
+            max_num = max(max_num, num)
+    
+    # Also check the index file
+    index_file = search_dir / ("gaps.md" if "GAP" in prefix else "requirements.md")
+    if index_file.exists():
+        content = index_file.read_text(encoding='utf-8')
+        for match in pattern.finditer(content):
+            num = int(match.group(2))
+            found_ids.append(f"{match.group(1)}{num:03d}")
+            max_num = max(max_num, num)
+    
+    next_num = max_num + 1
+    next_id = f"{prefix}-{next_num:03d}"
+    
+    # Determine target file
+    if prefix.startswith("GAP-"):
+        for domain, prefixes in GAP_DOMAIN_MAP.items():
+            if prefix in prefixes:
+                target_file = f"traceability/{domain}-gaps.md"
+                break
+        else:
+            target_file = "traceability/gaps.md"
+    else:
+        # REQ prefix - extract fine domain
+        fine_domain = prefix.replace("REQ-", "").lower()
+        for group_name, prefixes in REQ_PREFIX_GROUPS.items():
+            if fine_domain in prefixes:
+                target_file = f"traceability/{group_name}-requirements.md"
+                break
+        else:
+            target_file = "traceability/requirements.md"
+    
+    return {
+        "prefix": prefix,
+        "next_id": next_id,
+        "next_number": next_num,
+        "existing_count": len(found_ids),
+        "max_existing": max_num,
+        "target_file": target_file
+    }
+
+
+def lint_domain_files() -> dict:
+    """Lint domain files to check if items are in the correct files."""
+    result = {
+        "misplaced": [],
+        "correct": 0,
+        "total": 0,
+        "files_checked": [],
+        "warnings": [],
+        "health": "ok"
+    }
+    
+    # Check all gap domain files
+    gap_files = list(Path("traceability").glob("*-gaps.md"))
+    for gap_file in gap_files:
+        if not gap_file.exists():
+            continue
+        
+        # Extract expected domain from filename
+        expected_domain = gap_file.stem.replace("-gaps", "")
+        result["files_checked"].append(str(gap_file))
+        
+        content = gap_file.read_text(encoding='utf-8')
+        
+        # Find all gap IDs in this file
+        for match in re.finditer(r'^### (GAP-[A-Z]+-\d+)', content, re.MULTILINE):
+            gap_id = match.group(1)
+            result["total"] += 1
+            
+            # Determine correct domain for this gap
+            correct_domain = None
+            for domain, prefixes in GAP_DOMAIN_MAP.items():
+                for prefix in prefixes:
+                    if gap_id.startswith(prefix):
+                        correct_domain = domain
+                        break
+                if correct_domain:
+                    break
+            
+            if correct_domain is None:
+                correct_domain = "other"
+            
+            if correct_domain == expected_domain:
+                result["correct"] += 1
+            else:
+                result["misplaced"].append({
+                    "id": gap_id,
+                    "current_file": str(gap_file),
+                    "expected_domain": correct_domain,
+                    "expected_file": f"traceability/{correct_domain}-gaps.md"
+                })
+    
+    # Check all requirement domain files
+    req_files = list(Path("traceability").glob("*-requirements.md"))
+    for req_file in req_files:
+        if not req_file.exists():
+            continue
+        
+        expected_domain = req_file.stem.replace("-requirements", "")
+        result["files_checked"].append(str(req_file))
+        
+        content = req_file.read_text(encoding='utf-8')
+        
+        for match in re.finditer(r'^### (REQ-[A-Z]+-\d+)', content, re.MULTILINE):
+            req_id = match.group(1)
+            result["total"] += 1
+            
+            # Determine correct domain
+            prefix_match = re.match(r'REQ-([A-Z]+)-\d+', req_id)
+            if prefix_match:
+                fine_domain = prefix_match.group(1).lower()
+                correct_domain = "other"
+                for group_name, prefixes in REQ_PREFIX_GROUPS.items():
+                    if fine_domain in prefixes:
+                        correct_domain = group_name
+                        break
+            else:
+                correct_domain = "other"
+            
+            if correct_domain == expected_domain:
+                result["correct"] += 1
+            else:
+                result["misplaced"].append({
+                    "id": req_id,
+                    "current_file": str(req_file),
+                    "expected_domain": correct_domain,
+                    "expected_file": f"traceability/{correct_domain}-requirements.md"
+                })
+    
+    # Set health based on misplaced count
+    if result["misplaced"]:
+        result["health"] = "warning"
+        result["warnings"].append(f"{len(result['misplaced'])} items in wrong domain files")
+    
+    return result
+
+
+def format_lint_report(result: dict) -> str:
+    """Format lint results as human-readable report."""
+    lines = []
+    lines.append("=" * 60)
+    lines.append("DOMAIN FILE LINT CHECK")
+    lines.append("=" * 60)
+    lines.append(f"Files checked: {len(result['files_checked'])}")
+    lines.append(f"Items checked: {result['total']}")
+    lines.append(f"Correct: {result['correct']}")
+    lines.append(f"Misplaced: {len(result['misplaced'])}")
+    
+    if result["misplaced"]:
+        lines.append("")
+        lines.append("MISPLACED ITEMS:")
+        for item in result["misplaced"][:10]:  # Limit to 10
+            lines.append(f"  {item['id']}: {item['current_file']} → {item['expected_file']}")
+        if len(result["misplaced"]) > 10:
+            lines.append(f"  ... and {len(result['misplaced']) - 10} more")
+    
+    lines.append("")
+    lines.append(f"HEALTH: {result['health'].upper()}")
+    lines.append("=" * 60)
+    
+    return "\n".join(lines)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Document chunking tool for oversized files."
@@ -851,11 +1040,34 @@ def main():
     parser.add_argument('--analyze', type=str, help='Analyze file structure')
     parser.add_argument('--plan', type=str, help='Generate chunking plan')
     parser.add_argument('--chunk', type=str, help='Execute chunking')
+    parser.add_argument('--lint', action='store_true', help='Lint domain files for misplaced items')
+    parser.add_argument('--next-id', type=str, metavar='PREFIX', help='Get next available ID (e.g., --next-id GAP-CGM)')
     parser.add_argument('--dry-run', action='store_true', help='Preview chunking without writing files')
     parser.add_argument('--json', action='store_true', help='Output as JSON')
     args = parser.parse_args()
     
-    if args.analyze:
+    if args.next_id:
+        result = get_next_id(args.next_id)
+        if args.json:
+            print(json.dumps(result, indent=2))
+        else:
+            if "error" in result:
+                print(f"Error: {result['error']}", file=sys.stderr)
+                sys.exit(1)
+            print(f"Next ID: {result['next_id']}")
+            print(f"Target file: {result['target_file']}")
+            print(f"Existing: {result['existing_count']} (max: {result['max_existing']})")
+        sys.exit(0)
+    
+    elif args.lint:
+        result = lint_domain_files()
+        if args.json:
+            print(json.dumps(result, indent=2))
+        else:
+            print(format_lint_report(result))
+        sys.exit(1 if result["misplaced"] else 0)
+    
+    elif args.analyze:
         path = Path(args.analyze)
         if 'gaps' in str(path):
             analysis = analyze_gaps_file(path)

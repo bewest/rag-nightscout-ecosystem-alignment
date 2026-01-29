@@ -6,6 +6,7 @@
 # - Mandatory commit step with verification
 # - Queue validation after each cycle
 # - Better phase separation with COMPACT-PRESERVE
+# - Hygiene tools integration (queue_stats, doc_chunker --lint, --route, --next-id)
 #
 # Usage:
 #   sdqctl iterate workflows/orchestration/backlog-cycle-v2.conv
@@ -37,25 +38,34 @@ RUN-TIMEOUT 30s
 # === Phase 0: State Check ===
 PROMPT ## Phase 0: State Check
 
-Check current git and backlog state before starting work.
+Check current git, queue, and file hygiene before starting work.
 
 ELIDE
 RUN python tools/queue_stats.py 2>/dev/null || echo "Stats: unavailable"
 ELIDE
+RUN python tools/doc_chunker.py --check 2>/dev/null | grep -E "⚠️|OK|OVER" | head -5
+ELIDE
 RUN git --no-pager status --short | head -15
 ELIDE
-PROMPT Review the git status above:
-1. Are there uncommitted changes from previous cycles?
-2. What was the last committed cycle?
+PROMPT Review the status above:
+
+1. **Queue Health**: Are LIVE pending and Ready Queue in range?
+2. **File Sizes**: Any files over threshold needing attention?
+3. **Git Status**: Are there uncommitted changes from previous cycles?
 
 **If uncommitted work exists:**
 - Review what's pending
 - Commit if work is complete: `git add -A && git commit -m "docs: [description] (Cycle N)"`
 - Or note as work-in-progress
 
+**If files are over threshold:**
+- Note for Phase 4 grooming (may need to defer to chunking cycle)
+
 **Output current state:**
 ```markdown
 ### State Check
+- Queue health: [healthy/warning/critical]
+- Files over threshold: [none / list files]
 - Uncommitted files: [N]
 - Last cycle: [N]
 - Action: [Commit pending / Clean / WIP noted]
@@ -146,17 +156,41 @@ RUN git --no-pager status --short
 ELIDE
 PROMPT Update all relevant project facets based on your findings.
 
+**IMPORTANT: Use domain-specific files, NOT the index files!**
+
+To find the correct file and next ID for a new gap or requirement:
+```bash
+# Example: Adding a CGM-related gap
+python tools/doc_chunker.py --next-id GAP-CGM
+# Output: GAP-CGM-007 → traceability/cgm-sources-gaps.md
+
+# Example: Adding a pump requirement  
+python tools/doc_chunker.py --next-id REQ-PUMP
+# Output: REQ-PUMP-011 → traceability/pumps-requirements.md
+```
+
 **Facet 1: Terminology Matrix**
 File: `mapping/cross-project/terminology-matrix.md`
 - Add new term mappings discovered
 
-**Facet 2: Gaps**
-File: `traceability/gaps.md`
-- Add new gaps with proper IDs: GAP-XXX-NNN
+**Facet 2: Gaps** (use domain files!)
+Use: `python tools/doc_chunker.py --next-id GAP-{PREFIX}` to get file + ID
+- cgm-sources-gaps.md: GAP-CGM, GAP-G7, GAP-LIBRE, GAP-BLE, GAP-LF
+- sync-identity-gaps.md: GAP-SYNC, GAP-BATCH, GAP-TZ
+- nightscout-api-gaps.md: GAP-API, GAP-AUTH, GAP-UI, GAP-DB
+- aid-algorithms-gaps.md: GAP-ALG, GAP-OREF, GAP-PRED, GAP-CARB
+- treatments-gaps.md: GAP-TREAT, GAP-OVERRIDE, GAP-REMOTE
+- pumps-gaps.md: GAP-PUMP
+- connectors-gaps.md: GAP-CONNECT, GAP-TCONNECT
 
-**Facet 3: Requirements**
-File: `traceability/requirements.md`
-- Extract any requirements discovered (REQ-NNN format)
+**Facet 3: Requirements** (use domain files!)
+Use: `python tools/doc_chunker.py --next-id REQ-{PREFIX}` to get file + ID
+- cgm-sources-requirements.md: REQ-CGM, REQ-BLE, REQ-LIBRE
+- sync-identity-requirements.md: REQ-SYNC, REQ-BATCH, REQ-TZ
+- nightscout-api-requirements.md: REQ-API, REQ-AUTH, REQ-UI
+- aid-algorithms-requirements.md: REQ-ALG, REQ-CARB, REQ-INS
+- treatments-requirements.md: REQ-TREAT, REQ-REMOTE, REQ-ALARM
+- pumps-requirements.md: REQ-PUMP
 
 **Facet 4: Deep Dive** (if applicable)
 File: `docs/10-domain/{topic}-deep-dive.md`
@@ -176,6 +210,8 @@ Maintain backlog hygiene after completing work.
 ELIDE
 RUN head -50 LIVE-BACKLOG.md
 ELIDE
+RUN python tools/doc_chunker.py --lint 2>/dev/null | grep -E "Misplaced|HEALTH|OK" | head -3
+ELIDE
 PROMPT **Step 1: Update LIVE-BACKLOG.md Processed Table**
 For the task we just completed:
 - Update status from "→ In Progress" to "✅ Complete" or "→ Queued to [backlog]"
@@ -189,12 +225,17 @@ For the task we just completed:
 - If Ready Queue < 5 items, promote from Backlog
 - Prioritize P0 → P1 → P2
 
-**Step 4: Generate New Tasks** (if applicable)
+**Step 4: Lint Check**
+If the lint output above shows misplaced items:
+- Move items to correct domain files
+- Or note for next cycle if non-critical
+
+**Step 5: Generate New Tasks** (if applicable)
 From discoveries:
 - New gaps → may warrant new backlog items
 - Blockers found → create follow-up items
 
-**Step 5: Surface Open Questions**
+**Step 6: Surface Open Questions**
 Any decisions needed from human:
 - Add to docs/OPEN-QUESTIONS.md with proper OQ-NNN ID
 
@@ -231,6 +272,7 @@ COMPACT
 PROMPT ## Phase 6: Cycle Summary
 
 RUN python tools/queue_stats.py 2>/dev/null || echo "Stats: unavailable"
+RUN python tools/doc_chunker.py --check 2>/dev/null | grep -E "⚠️|recommendations" | head -3
 RUN git --no-pager log --oneline -1
 
 PROMPT Summarize what was accomplished.
@@ -244,10 +286,15 @@ PROMPT Summarize what was accomplished.
 
 **Facets Updated:**
 - [ ] terminology-matrix.md: [N terms]
-- [ ] gaps.md: [N gaps added]
-- [ ] requirements.md: [N requirements]
+- [ ] {domain}-gaps.md: [N gaps added to correct domain file]
+- [ ] {domain}-requirements.md: [N requirements]
 - [ ] {topic}-deep-dive.md: [created/updated]
 - [ ] progress.md: [entry added]
+
+**Hygiene Status:**
+- Queue health: [from queue_stats output]
+- Files over threshold: [any warnings from doc_chunker]
+- Lint status: [OK / N misplaced items]
 
 **Backlog Changes:**
 - LIVE-BACKLOG: [item moved to Processed]

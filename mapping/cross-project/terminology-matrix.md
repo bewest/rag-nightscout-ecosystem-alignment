@@ -48,6 +48,39 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 | System | Support | Notes |
 |--------|---------|-------|
 | AAPS | Full | Primary source, Wear OS collection |
+
+---
+
+### Insulin Profiles Collection (API v1)
+
+Cross-project field mapping for insulin type definitions. See [`aid-insulin-2025.yaml`](../../specs/openapi/aid-insulin-2025.yaml).
+
+| Field | Nightscout | AAPS | oref0 | xDrip+ |
+|-------|------------|------|-------|--------|
+| **Name** | `name` | `insulinLabel` | `profile.insulinType` | `Insulin.name` |
+| **DIA** | `dia` (hours) | `insulinEndTime` (ms) | `profile.dia` (hours) | `Insulin.maxEffect` (hours) |
+| **Peak** | `peak` (min) | `peak` (ms) | `profile.insulinPeakTime` (min) | `Insulin.peak` (min) |
+| **Curve** | `curve` | model class | `profile.curve` | (derived from maxEffect) |
+| **Active** | `active` (bolus/basal) | N/A | N/A | N/A |
+| **Concentration** | `concentration` | N/A | N/A | `Insulin.concentration` |
+
+**Curve Models**:
+| Model | Peak | DIA Min | Systems |
+|-------|------|---------|---------|
+| `rapid-acting` | ~75 min | 5h | oref0, AAPS, Trio |
+| `ultra-rapid` | ~55 min | 5h | oref0, AAPS, Trio |
+| `bilinear` | 75 min fixed | 3h | oref0 (legacy) |
+| `ultra-long` | 360-540 min | 24h | Basal insulins |
+| `free-peak` | User-defined | 5h | AAPS, Trio |
+
+**Controller Support**:
+| System | Support | Sync | Notes |
+|--------|---------|------|-------|
+| xDrip+ | Yes | Yes | InsulinInjection.insulin name |
+| AAPS | Yes | No | insulinConfiguration in Bolus entity |
+| Loop | No | N/A | Fixed models, not configurable |
+| Trio | Yes | No | oref0 models via profile.json |
+| nightscout-reporter | Yes | Read | Reads for IOB curve display |
 | Loop | None | No HR collection |
 | Trio | None | No HR collection |
 | xDrip+ | Partial | Display only |

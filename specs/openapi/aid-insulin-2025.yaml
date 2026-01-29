@@ -1,0 +1,576 @@
+openapi: 3.0.3
+info:
+  title: Nightscout Insulin Profiles API
+  version: 1.0.0
+  description: |
+    Insulin Profiles collection API for Nightscout, enabling storage of 
+    insulin type definitions with activity curves for IOB calculations.
+    
+    Based on PR#8261 implementation, AAPS insulin models, and oref0 curves.
+    
+    ## Overview
+    
+    This collection stores insulin profile definitions that describe:
+    - Insulin type (rapid-acting, ultra-rapid, custom)
+    - Duration of Insulin Action (DIA)
+    - Peak activity time
+    - Activity curve model
+    
+    Controllers use these profiles to calculate IOB (Insulin on Board)
+    using the selected curve model.
+    
+    ## Gap Reference
+    - GAP-INSULIN-001: Multi-Insulin Support Not Standardized
+    - GAP-INS-001: Nightscout Profile Missing Peak/Curve Type
+    
+    ## Requirements
+    - REQ-PR-003: Multi-Insulin Collection Support
+    
+    ## Cross-Project Alignment
+    
+    | Field | xDrip+ | AAPS | oref0 | Nightscout |
+    |-------|--------|------|-------|------------|
+    | name | InsulinInjection.insulin | insulinLabel | profile.insulinType | name |
+    | dia | Insulin.maxEffect | insulinEndTime | profile.dia | dia |
+    | peak | Insulin.peak | peak | profile.insulinPeakTime | peak |
+    | curve | (derived from maxEffect) | model class | profile.curve | curve |
+    
+  contact:
+    name: Nightscout Foundation
+  license:
+    name: AGPL-3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+  x-aid-gap:
+    - GAP-INSULIN-001
+    - GAP-INS-001
+  x-aid-source:
+    - ns:lib/api/insulin/index.js
+    - ns:lib/server/insulin.js
+    - aaps:plugins/insulin/src/main/kotlin/app/aaps/plugins/insulin/InsulinOrefRapidActingPlugin.kt
+    - oref0:lib/iob/calculate.js
+
+servers:
+  - url: /api/v1
+    description: Nightscout API v1 (PR#8261 implementation)
+
+tags:
+  - name: insulin
+    description: Insulin profile operations
+
+paths:
+  /insulin:
+    get:
+      tags:
+        - insulin
+      summary: List insulin profiles
+      description: |
+        Returns all insulin profiles defined in the system.
+        Profiles define insulin activity curves for IOB calculations.
+      operationId: getInsulins
+      responses:
+        '200':
+          description: List of insulin profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Insulin'
+              examples:
+                multipleInsulins:
+                  summary: Multiple insulin types
+                  value:
+                    - _id: "507f1f77bcf86cd799439011"
+                      name: "NovoRapid"
+                      dia: 5
+                      peak: 75
+                      curve: "rapid-acting"
+                      active: "bolus"
+                      created_at: "2024-01-15T10:30:00.000Z"
+                    - _id: "507f1f77bcf86cd799439012"
+                      name: "Tresiba"
+                      dia: 24
+                      peak: 540
+                      curve: "ultra-long"
+                      active: "basal"
+                      created_at: "2024-01-15T10:30:00.000Z"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_secret: []
+
+    post:
+      tags:
+        - insulin
+      summary: Create insulin profile
+      description: |
+        Creates a new insulin profile. Name must be unique.
+        Supports batch creation via array.
+      operationId: createInsulin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/InsulinInput'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/InsulinInput'
+            examples:
+              rapidActing:
+                summary: Rapid-acting insulin
+                value:
+                  name: "Humalog"
+                  dia: 5
+                  peak: 75
+                  curve: "rapid-acting"
+                  active: "bolus"
+              ultraRapid:
+                summary: Ultra-rapid insulin
+                value:
+                  name: "Fiasp"
+                  dia: 5
+                  peak: 55
+                  curve: "ultra-rapid"
+                  active: "bolus"
+      responses:
+        '200':
+          description: Insulin profile created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insulin'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          description: Duplicate name error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - api_secret: []
+      x-aid-permissions:
+        - api:insulin:create
+
+    put:
+      tags:
+        - insulin
+      summary: Update insulin profile
+      description: |
+        Updates an existing insulin profile. Requires _id field.
+      operationId: updateInsulin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insulin'
+      responses:
+        '200':
+          description: Insulin profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insulin'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_secret: []
+      x-aid-permissions:
+        - api:insulin:update
+
+  /insulin/bolus:
+    get:
+      tags:
+        - insulin
+      summary: Get active bolus insulin
+      description: |
+        Returns the insulin profile marked as active for bolus dosing.
+        Only one profile can be active for bolus at a time.
+      operationId: getBolusInsulin
+      responses:
+        '200':
+          description: Active bolus insulin profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insulin'
+              example:
+                _id: "507f1f77bcf86cd799439011"
+                name: "NovoRapid"
+                dia: 5
+                peak: 75
+                curve: "rapid-acting"
+                active: "bolus"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_secret: []
+
+  /insulin/basal:
+    get:
+      tags:
+        - insulin
+      summary: Get active basal insulin
+      description: |
+        Returns the insulin profile marked as active for basal dosing.
+        Only one profile can be active for basal at a time.
+        
+        Note: PR#8261 has a bug where /basal calls the bolus() function.
+      operationId: getBasalInsulin
+      responses:
+        '200':
+          description: Active basal insulin profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insulin'
+              example:
+                _id: "507f1f77bcf86cd799439012"
+                name: "Tresiba"
+                dia: 24
+                peak: 540
+                curve: "ultra-long"
+                active: "basal"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_secret: []
+      x-aid-note: |
+        Bug in PR#8261: basal endpoint calls bolus() function.
+        See lib/api/insulin/index.js line 28.
+
+  /insulin/{_id}:
+    delete:
+      tags:
+        - insulin
+      summary: Delete insulin profile
+      description: |
+        Deletes an insulin profile by its MongoDB ObjectID.
+      operationId: deleteInsulin
+      parameters:
+        - name: _id
+          in: path
+          required: true
+          description: MongoDB ObjectID of the insulin profile
+          schema:
+            type: string
+            pattern: '^[a-f0-9]{24}$'
+          example: "507f1f77bcf86cd799439011"
+      responses:
+        '200':
+          description: Insulin profile deleted
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - api_secret: []
+      x-aid-permissions:
+        - api:insulin:delete
+
+components:
+  schemas:
+    Insulin:
+      type: object
+      description: |
+        Insulin profile defining activity curve characteristics.
+        
+        ## Cross-Project Mapping
+        
+        | Nightscout | AAPS | oref0 | xDrip+ |
+        |------------|------|-------|--------|
+        | name | insulinLabel | insulinType | Insulin.name |
+        | dia | insulinEndTime (ms) | dia (hours) | maxEffect (hours) |
+        | peak | peak (ms) | insulinPeakTime (min) | peak (min) |
+        | curve | model class name | curve | (derived) |
+        | active | (N/A) | (N/A) | (N/A) |
+      required:
+        - _id
+        - name
+      properties:
+        _id:
+          type: string
+          pattern: '^[a-f0-9]{24}$'
+          description: MongoDB ObjectID
+          example: "507f1f77bcf86cd799439011"
+        name:
+          type: string
+          description: |
+            Unique insulin type name.
+            Common values: NovoRapid, Humalog, Fiasp, Lyumjev, Tresiba, Lantus
+          example: "NovoRapid"
+          x-aid-source:
+            - xdrip:app/src/main/java/com/eveningoutpost/dexdrip/models/Insulin.java
+            - aaps:core/interfaces/src/main/kotlin/app/aaps/core/interfaces/insulin/Insulin.kt
+        dia:
+          type: number
+          format: float
+          description: |
+            Duration of Insulin Action in hours.
+            
+            Minimum values:
+            - AAPS exponential: 5 hours (hardcoded in HardLimits)
+            - oref0 exponential: 5 hours (requireLongDia flag)
+            - oref0 bilinear: 3 hours (legacy)
+          minimum: 3
+          maximum: 36
+          example: 5
+          x-aid-source:
+            - aaps:core/main/src/main/kotlin/app/aaps/core/main/constraints/ConstraintObject.kt
+            - oref0:lib/iob/calculate.js
+        peak:
+          type: integer
+          description: |
+            Time to peak insulin activity in minutes.
+            
+            Typical values by insulin type:
+            - Lyumjev: 45 min
+            - Ultra-rapid (Fiasp): 55 min
+            - Rapid-acting: 75 min
+            - Regular: 120 min
+            - Long-acting: 360-540 min
+          minimum: 30
+          maximum: 720
+          example: 75
+          x-aid-source:
+            - aaps:plugins/insulin/src/main/kotlin/app/aaps/plugins/insulin/InsulinOrefRapidActingPlugin.kt
+            - oref0:lib/iob/calculate.js
+        curve:
+          type: string
+          description: |
+            Insulin activity curve model.
+            
+            Models:
+            - `rapid-acting`: Standard oref0 exponential model (peak ~75min)
+            - `ultra-rapid`: Faster curve for Fiasp/Lyumjev (peak ~55min)
+            - `bilinear`: Legacy triangular model (oref0 only)
+            - `ultra-long`: Long-acting basal insulins (24h+ DIA)
+            - `free-peak`: User-configurable peak time
+          enum:
+            - rapid-acting
+            - ultra-rapid
+            - bilinear
+            - ultra-long
+            - free-peak
+          example: "rapid-acting"
+          x-aid-source:
+            - oref0:lib/iob/calculate.js
+            - aaps:plugins/insulin/src/main/kotlin/app/aaps/plugins/insulin/
+        active:
+          type: string
+          description: |
+            Marks this profile as the active insulin for bolus or basal.
+            Only one profile can be active per category.
+          enum:
+            - bolus
+            - basal
+          example: "bolus"
+        concentration:
+          type: string
+          description: |
+            Insulin concentration. Most insulins are U100 (100 units/mL).
+            Some concentrated insulins use U200, U300, or U500.
+          enum:
+            - U100
+            - U200
+            - U300
+            - U500
+          default: "U100"
+          example: "U100"
+          x-aid-source:
+            - xdrip:app/src/main/java/com/eveningoutpost/dexdrip/models/Insulin.java
+        created_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when profile was created
+          example: "2024-01-15T10:30:00.000Z"
+      x-aid-controllers:
+        loop:
+          supported: false
+          notes: Loop uses fixed insulin models, not configurable profiles
+        aaps:
+          supported: true
+          sync: false
+          notes: AAPS stores insulinLabel in Bolus entity, not synced to Nightscout
+        trio:
+          supported: true
+          sync: false
+          notes: Trio uses oref0 models via profile.json
+        xdrip:
+          supported: true
+          sync: true
+          notes: xDrip+ uses InsulinInjection with insulin name field
+        nightscout-reporter:
+          supported: true
+          sync: true
+          notes: Reads insulin collection for reporting
+
+    InsulinInput:
+      type: object
+      description: Input schema for creating insulin profiles
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Unique insulin type name
+          example: "NovoRapid"
+        dia:
+          type: number
+          format: float
+          description: Duration of Insulin Action in hours
+          minimum: 3
+          maximum: 36
+          example: 5
+        peak:
+          type: integer
+          description: Time to peak insulin activity in minutes
+          minimum: 30
+          maximum: 720
+          example: 75
+        curve:
+          type: string
+          enum:
+            - rapid-acting
+            - ultra-rapid
+            - bilinear
+            - ultra-long
+            - free-peak
+          example: "rapid-acting"
+        active:
+          type: string
+          enum:
+            - bolus
+            - basal
+          example: "bolus"
+        concentration:
+          type: string
+          enum:
+            - U100
+            - U200
+            - U300
+            - U500
+          default: "U100"
+
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 500
+        message:
+          type: string
+          example: "Data Error"
+        description:
+          type: string
+          example: "insulin profile with this name (NovoRapid) already present - use update instead"
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 401
+              message:
+                type: string
+                example: "Unauthorized"
+
+    BadRequest:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "Not Found"
+
+  securitySchemes:
+    api_secret:
+      type: apiKey
+      in: header
+      name: api-secret
+      description: |
+        SHA1 hash of the API_SECRET environment variable.
+        Used for server-to-server authentication.
+
+x-aid-implementation-notes:
+  pr8261-bugs:
+    - location: lib/api/insulin/index.js:28
+      description: |
+        The /insulin/basal endpoint incorrectly calls ctx.insulin.bolus()
+        instead of ctx.insulin.basal().
+  
+  missing-features:
+    - description: |
+        No validation of DIA minimum values against curve type.
+        AAPS enforces 5h minimum for exponential models.
+    - description: |
+        No activity curve calculation endpoints.
+        IOB calculations must be done client-side.
+  
+  integration-patterns:
+    xdrip:
+      description: |
+        xDrip+ InsulinInjection stores insulin name that should match
+        a profile in this collection. Supports multiple insulins per treatment.
+    aaps:
+      description: |
+        AAPS Bolus entity has insulinConfiguration with insulinLabel.
+        Currently NOT synced to Nightscout insulin collection.
+    reporter:
+      description: |
+        nightscout-reporter reads insulin profiles for IOB curve rendering.
+        Uses dia and peak for activity calculations.
+
+x-aid-conformance-scenarios:
+  - id: INS-001
+    title: Create rapid-acting insulin profile
+    given: Empty insulin collection
+    when: POST /insulin with NovoRapid profile (dia=5, peak=75)
+    then: Profile created with curve=rapid-acting
+  
+  - id: INS-002
+    title: Prevent duplicate insulin names
+    given: NovoRapid profile exists
+    when: POST /insulin with name=NovoRapid
+    then: 500 error with duplicate message
+  
+  - id: INS-003
+    title: Get active bolus insulin
+    given: NovoRapid marked as active=bolus
+    when: GET /insulin/bolus
+    then: Returns NovoRapid profile
+  
+  - id: INS-004
+    title: Multi-insulin treatment sync
+    given: xDrip+ treatment with insulinInjections array
+    when: Synced to Nightscout
+    then: Each injection insulin name matches insulin collection profile

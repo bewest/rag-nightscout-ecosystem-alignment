@@ -6,6 +6,34 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Insulin Profiles API Specification (2026-01-29)
+
+OpenAPI 3.0 specification for Insulin Profiles collection based on PR#8261 and cross-project analysis.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **OpenAPI Spec** | `specs/openapi/aid-insulin-2025.yaml` | 576 lines, 5 endpoints, full schema |
+| **Gap Updated** | `traceability/aid-algorithms-gaps.md` | GAP-INSULIN-001 marked addressed |
+| **Terminology** | `mapping/cross-project/terminology-matrix.md` | Added Insulin Profiles section |
+
+**Key Schema Fields**:
+- `name` (string) - Insulin type name (NovoRapid, Fiasp, etc.)
+- `dia` (number) - Duration of Insulin Action in hours
+- `peak` (integer) - Time to peak activity in minutes
+- `curve` (enum) - Activity model (rapid-acting, ultra-rapid, bilinear, etc.)
+- `active` (enum) - Bolus or basal designation
+- `concentration` (enum) - U100/U200/U300/U500
+
+**Bug Found**: PR#8261 /insulin/basal endpoint calls bolus() function (line 28)
+
+**Controller Support**:
+- xDrip+: Full (InsulinInjection.insulin)
+- AAPS: Partial (insulinConfiguration not synced)
+- nightscout-reporter: Read-only
+- Loop/Trio: Not supported
+
+---
+
 ### Heart Rate API Specification (2026-01-29)
 
 OpenAPI 3.0 specification for HeartRate collection based on PR#8083 and AAPS entity.

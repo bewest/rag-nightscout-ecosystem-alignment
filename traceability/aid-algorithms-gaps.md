@@ -359,6 +359,8 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ### GAP-INSULIN-001: Multi-Insulin API Not Standardized
 
+**Status**: ✅ Addressed in specification
+
 **Description**: Multiple insulin profile support (names, curves, colors) exists in PR#8261 and is already used by xDrip+ and nightscout-reporter, but not merged into Nightscout core.
 
 **Affected Systems**: xDrip+, nightscout-reporter, Loop, Trio, AAPS
@@ -368,7 +370,14 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 - IOB calculations cannot reference user-defined curves
 - Insulin type not synchronized across systems
 
-**Remediation**: Merge PR#8261 and document insulin collection in OpenAPI spec.
+**Remediation**: ✅ OpenAPI spec created: `specs/openapi/aid-insulin-2025.yaml` (576 lines)
+
+**Specification Coverage**:
+- 5 endpoints: CRUD + bolus/basal active
+- Insulin schema with DIA, peak, curve, concentration
+- Cross-project field mapping table
+- 4 conformance scenarios
+- Bug noted: PR#8261 /basal endpoint calls bolus() function
 
 ---
 

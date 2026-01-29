@@ -9,6 +9,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Multi-Insulin API specification | P1 | ✅ Complete | 2026-01-29 |
 | Heart Rate API specification | P1 | ✅ Complete | 2026-01-29 |
 | Statistics API proposal (MCP + reports + zreptil) | P1 | ✅ Complete | 2026-01-29 |
 | PR analysis for cgm-remote-monitor | P1 | ✅ Complete | 2026-01-29 |

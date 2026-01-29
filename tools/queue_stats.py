@@ -285,7 +285,25 @@ def main():
         action='store_true',
         help='Show full dashboard'
     )
+    parser.add_argument(
+        '--route',
+        type=str,
+        metavar='PREFIX',
+        help='Show which file to use for a gap/req prefix (e.g., --route GAP-CGM)'
+    )
     args = parser.parse_args()
+    
+    # Handle --route separately
+    if args.route:
+        result = route_prefix(args.route)
+        if args.json:
+            print(json.dumps(result, indent=2))
+        else:
+            if result["found"]:
+                print(f"{result['prefix']} → {result['file']}")
+            else:
+                print(f"{result['prefix']} → {result['file']} (default/other)")
+        sys.exit(0)
     
     stats = collect_stats()
     
@@ -303,6 +321,57 @@ def main():
         sys.exit(0)  # Warnings don't fail the workflow
     
     sys.exit(0)
+
+
+def route_prefix(prefix: str) -> dict:
+    """Determine which file to use for a given gap/req prefix."""
+    prefix = prefix.upper()
+    
+    # Gap prefix to domain file mapping
+    GAP_ROUTES = {
+        "cgm-sources": ["GAP-CGM", "GAP-G7", "GAP-LIBRE", "GAP-DEXCOM", "GAP-BLE", "GAP-LIBRELINK", "GAP-SHARE", "GAP-BRIDGE", "GAP-LF"],
+        "sync-identity": ["GAP-SYNC", "GAP-BATCH", "GAP-TZ", "GAP-DELEGATE"],
+        "nightscout-api": ["GAP-API", "GAP-AUTH", "GAP-UI", "GAP-DB", "GAP-PLUGIN", "GAP-STATS", "GAP-ERR", "GAP-SPEC"],
+        "aid-algorithms": ["GAP-ALG", "GAP-OREF", "GAP-PRED", "GAP-IOB", "GAP-CARB", "GAP-INS", "GAP-INSULIN"],
+        "treatments": ["GAP-TREAT", "GAP-OVERRIDE", "GAP-REMOTE", "GAP-PROF"],
+        "connectors": ["GAP-CONNECT", "GAP-TCONNECT", "GAP-NOCTURNE", "GAP-TEST"],
+        "pumps": ["GAP-PUMP"],
+    }
+    
+    # Req prefix to domain file mapping
+    REQ_ROUTES = {
+        "cgm-sources": ["REQ-CGM", "REQ-BLE", "REQ-LIBRE", "REQ-CONNECT", "REQ-BRIDGE"],
+        "sync-identity": ["REQ-SYNC", "REQ-BATCH", "REQ-TZ"],
+        "nightscout-api": ["REQ-API", "REQ-AUTH", "REQ-UI", "REQ-PLUGIN", "REQ-ERR", "REQ-STATS", "REQ-SPEC"],
+        "aid-algorithms": ["REQ-ALG", "REQ-CARB", "REQ-INS", "REQ-DEGRADE", "REQ-PR"],
+        "treatments": ["REQ-TREAT", "REQ-REMOTE", "REQ-ALARM", "REQ-INTEROP"],
+        "pumps": ["REQ-PUMP"],
+    }
+    
+    # Check if it's a GAP or REQ prefix
+    if prefix.startswith("GAP-"):
+        routes = GAP_ROUTES
+        file_template = "traceability/{domain}-gaps.md"
+        default_file = "traceability/gaps.md"
+    elif prefix.startswith("REQ-"):
+        routes = REQ_ROUTES
+        file_template = "traceability/{domain}-requirements.md"
+        default_file = "traceability/requirements.md"
+    else:
+        return {"prefix": prefix, "file": "unknown", "found": False, "error": "Prefix must start with GAP- or REQ-"}
+    
+    # Find matching domain
+    for domain, prefixes in routes.items():
+        for p in prefixes:
+            if prefix.startswith(p):
+                return {
+                    "prefix": prefix,
+                    "domain": domain,
+                    "file": file_template.format(domain=domain),
+                    "found": True
+                }
+    
+    return {"prefix": prefix, "file": default_file, "found": False, "domain": "other"}
 
 
 if __name__ == "__main__":
