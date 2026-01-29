@@ -1,0 +1,323 @@
+# Field Transform Test Cases: Treatments Collection
+# Maps bolus, carbs, temp basal, and profile switches
+
+tests:
+
+  # === Bolus Transforms ===
+
+  - id: bolus-simple
+    description: Simple bolus treatment
+    source_system: Loop
+    target_system: Nightscout
+    input:
+      insulin: 2.5
+      programmedAmount: 2.5
+      timestamp: 1706540096000
+      automatic: false
+    transforms:
+      - type: rename
+        from: timestamp
+        to: created_at
+      - type: default
+        field: eventType
+        value: "Bolus"
+    expected:
+      insulin: 2.5
+      created_at: 1706540096000
+      eventType: "Bolus"
+
+  - id: bolus-with-carbs
+    description: Meal bolus with carbs
+    source_system: Loop
+    target_system: Nightscout
+    input:
+      insulin: 5.0
+      carbs: 45
+      absorptionTime: 10800
+      timestamp: 1706540096000
+    transforms:
+      - type: rename
+        from: timestamp
+        to: created_at
+      - type: compute
+        to: absorptionTimeMinutes
+        expression: "${absorptionTime} / 60"
+      - type: default
+        field: eventType
+        value: "Meal Bolus"
+    expected:
+      insulin: 5.0
+      carbs: 45
+      absorptionTimeMinutes: 180
+      created_at: 1706540096000
+      eventType: "Meal Bolus"
+
+  - id: smb-bolus
+    description: Super Micro Bolus from AAPS
+    source_system: AAPS
+    target_system: Nightscout
+    input:
+      insulin: 0.1
+      isSMB: true
+      timestamp: 1706540096000
+    transforms:
+      - type: rename
+        from: timestamp
+        to: created_at
+      - type: compute
+        to: eventType
+        expression: '"SMB"'
+    expected:
+      insulin: 0.1
+      created_at: 1706540096000
+      eventType: "SMB"
+
+  # === Carb Entry Transforms ===
+
+  - id: carbs-simple
+    description: Simple carb entry
+    source_system: Loop
+    target_system: Nightscout
+    input:
+      carbs: 30
+      absorptionTime: 7200
+      timestamp: 1706540096000
+    transforms:
+      - type: rename
+        from: timestamp
+        to: created_at
+      - type: default
+        field: eventType
+        value: "Carb Correction"
+    expected:
+      carbs: 30
+      created_at: 1706540096000
+      eventType: "Carb Correction"
+
+  - id: ecarbs-extended
+    description: Extended carbs (eCarbs) from AAPS
+    source_system: AAPS
+    target_system: Nightscout
+    input:
+      carbs: 60
+      duration: 14400000
+      timestamp: 1706540096000
+    transforms:
+      - type: rename
+        from: timestamp
+        to: created_at
+      - type: compute
+        to: durationMinutes
+        expression: "${duration} / 60000"
+      - type: default
+        field: eventType
+        value: "eCarbs"
+    expected:
+      carbs: 60
+      durationMinutes: 240
+      created_at: 1706540096000
+      eventType: "eCarbs"
+
+  # === Temp Basal Transforms ===
+
+  - id: temp-basal-absolute
+    description: Absolute temp basal rate
+    source_system: AAPS
+    target_system: Nightscout
+    input:
+      rate: 1.5
+      duration: 1800000
+      isAbsolute: true
+      timestamp: 1706540096000
+    transforms:
+      - type: rename
+        from: rate
+        to: absolute
+      - type: compute
+        to: durationMinutes
+        expression: "${duration} / 60000"
+      - type: rename
+        from: timestamp
+        to: created_at
+      - type: default
+        field: eventType
+        value: "Temp Basal"
+    expected:
+      absolute: 1.5
+      durationMinutes: 30
+      created_at: 1706540096000
+      eventType: "Temp Basal"
+
+  - id: temp-basal-percent
+    description: Percentage temp basal
+    source_system: AAPS
+    target_system: Nightscout
+    input:
+      percent: 150
+      duration: 3600000
+      isAbsolute: false
+      timestamp: 1706540096000
+    transforms:
+      - type: compute
+        to: durationMinutes
+        expression: "${duration} / 60000"
+      - type: rename
+        from: timestamp
+        to: created_at
+      - type: default
+        field: eventType
+        value: "Temp Basal"
+    expected:
+      percent: 150
+      durationMinutes: 60
+      created_at: 1706540096000
+      eventType: "Temp Basal"
+
+  # === Profile Switch Transforms ===
+
+  - id: profile-switch-simple
+    description: Simple profile switch
+    source_system: AAPS
+    target_system: Nightscout
+    input:
+      profileName: "Day"
+      percentage: 100
+      timeshift: 0
+      timestamp: 1706540096000
+    transforms:
+      - type: rename
+        from: profileName
+        to: profile
+      - type: rename
+        from: timestamp
+        to: created_at
+      - type: default
+        field: eventType
+        value: "Profile Switch"
+    expected:
+      profile: "Day"
+      percentage: 100
+      created_at: 1706540096000
+      eventType: "Profile Switch"
+
+  - id: profile-switch-with-adjustments
+    description: Profile switch with percentage adjustment
+    source_system: AAPS
+    target_system: Nightscout
+    input:
+      profileName: "Exercise"
+      percentage: 80
+      timeshift: -60
+      duration: 7200000
+      timestamp: 1706540096000
+    transforms:
+      - type: rename
+        from: profileName
+        to: profile
+      - type: compute
+        to: durationMinutes
+        expression: "${duration} / 60000"
+      - type: rename
+        from: timestamp
+        to: created_at
+      - type: default
+        field: eventType
+        value: "Profile Switch"
+    expected:
+      profile: "Exercise"
+      percentage: 80
+      timeshift: -60
+      durationMinutes: 120
+      created_at: 1706540096000
+      eventType: "Profile Switch"
+
+  # === Override/Temp Target Transforms ===
+
+  - id: temp-target-exercise
+    description: Exercise temp target
+    source_system: Trio
+    target_system: Nightscout
+    input:
+      name: "Exercise"
+      targetBottom: 140
+      targetTop: 160
+      duration: 3600
+      timestamp: 1706540096000
+    transforms:
+      - type: rename
+        from: name
+        to: reason
+      - type: compute
+        to: durationMinutes
+        expression: "${duration} / 60"
+      - type: rename
+        from: timestamp
+        to: created_at
+      - type: default
+        field: eventType
+        value: "Temporary Target"
+    expected:
+      reason: "Exercise"
+      targetBottom: 140
+      targetTop: 160
+      durationMinutes: 60
+      created_at: 1706540096000
+      eventType: "Temporary Target"
+
+  - id: loop-override-transform
+    description: Loop override to temp target
+    source_system: Loop
+    target_system: Nightscout
+    input:
+      overrideName: "Pre-Meal"
+      targetRange:
+        minValue: 80
+        maxValue: 80
+      insulinNeedsScaleFactor: 1.5
+      duration: 3600
+      syncIdentifier: "abc-123"
+    transforms:
+      - type: rename
+        from: overrideName
+        to: reason
+      - type: extract
+        from: targetRange.minValue
+        to: targetBottom
+      - type: extract
+        from: targetRange.maxValue
+        to: targetTop
+      - type: compute
+        to: durationMinutes
+        expression: "${duration} / 60"
+      - type: default
+        field: eventType
+        value: "Temporary Target"
+    expected:
+      reason: "Pre-Meal"
+      targetBottom: 80
+      targetTop: 80
+      durationMinutes: 60
+      eventType: "Temporary Target"
+
+  # === Announcement/Note Transforms ===
+
+  - id: announcement-transform
+    description: Announcement event
+    source_system: AAPS
+    target_system: Nightscout
+    input:
+      notes: "Sensor change"
+      enteredBy: "AndroidAPS"
+      timestamp: 1706540096000
+    transforms:
+      - type: rename
+        from: timestamp
+        to: created_at
+      - type: default
+        field: eventType
+        value: "Announcement"
+    expected:
+      notes: "Sensor change"
+      enteredBy: "AndroidAPS"
+      created_at: 1706540096000
+      eventType: "Announcement"

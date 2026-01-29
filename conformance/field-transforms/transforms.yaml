@@ -1,0 +1,188 @@
+# Field Transform Test Cases
+# Validates cross-system field mappings in the Nightscout ecosystem
+
+tests:
+
+  # === Loop → Nightscout Entries ===
+
+  - id: loop-sgv-to-entries
+    description: Loop SGV entry to Nightscout entries format
+    source_system: Loop
+    target_system: Nightscout
+    input:
+      glucoseValue: 120
+      glucoseTrend: "Flat"
+      date: 1706540096000
+      deviceId: "Loop"
+    transforms:
+      - type: rename
+        from: glucoseValue
+        to: sgv
+      - type: rename
+        from: glucoseTrend
+        to: direction
+      - type: default
+        field: type
+        value: "sgv"
+    expected:
+      sgv: 120
+      direction: "Flat"
+      date: 1706540096000
+      type: "sgv"
+
+  # === AAPS → Nightscout Treatments ===
+
+  - id: aaps-temp-basal-transform
+    description: AAPS temp basal to Nightscout treatment
+    source_system: AAPS
+    target_system: Nightscout
+    input:
+      temporaryBasal:
+        rate: 1.5
+        durationInMinutes: 30
+        isAbsolute: true
+      timestamp: 1706540096000
+      pumpSerial: "123456"
+    transforms:
+      - type: extract
+        from: temporaryBasal.rate
+        to: absolute
+      - type: extract
+        from: temporaryBasal.durationInMinutes
+        to: duration
+      - type: rename
+        from: timestamp
+        to: created_at
+      - type: default
+        field: eventType
+        value: "Temp Basal"
+    expected:
+      absolute: 1.5
+      duration: 30
+      created_at: 1706540096000
+      eventType: "Temp Basal"
+
+  # === xDrip → Nightscout Entries ===
+
+  - id: xdrip-bg-reading-transform
+    description: xDrip+ BgReading to Nightscout entry
+    source_system: xDrip
+    target_system: Nightscout
+    input:
+      calculated_value: 115.5
+      slope_name: "DoubleUp"
+      timestamp: 1706540096000
+      source: "G6 Native"
+    transforms:
+      - type: rename
+        from: calculated_value
+        to: sgv
+      - type: rename
+        from: slope_name
+        to: direction
+      - type: coerce
+        field: sgv
+        to_type: integer
+      - type: default
+        field: type
+        value: "sgv"
+    expected:
+      sgv: 115
+      direction: "DoubleUp"
+      timestamp: 1706540096000
+      type: "sgv"
+
+  # === Nightscout DeviceStatus Extraction ===
+
+  - id: devicestatus-iob-extraction
+    description: Extract IOB from nested deviceStatus
+    source_system: Nightscout
+    target_system: Display
+    input:
+      device: "loop://iPhone"
+      created_at: "2024-01-29T14:54:56.000Z"
+      loop:
+        iob:
+          iob: 2.35
+          timestamp: "2024-01-29T14:54:56.000Z"
+        predicted:
+          values: [120, 115, 110]
+    transforms:
+      - type: extract
+        from: loop.iob.iob
+        to: iob
+      - type: extract
+        from: loop.predicted.values[0]
+        to: predictedBG
+    expected:
+      iob: 2.35
+      predictedBG: 120
+      device: "loop://iPhone"
+
+  # === Trio Override Transform ===
+
+  - id: trio-override-to-treatment
+    description: Trio override to Nightscout treatment
+    source_system: Trio
+    target_system: Nightscout
+    input:
+      overrideName: "Exercise"
+      targetRange:
+        lower: 140
+        upper: 160
+      duration: 3600
+      insulinNeedsScaleFactor: 0.8
+    transforms:
+      - type: rename
+        from: overrideName
+        to: reason
+      - type: extract
+        from: targetRange.lower
+        to: targetBottom
+      - type: extract
+        from: targetRange.upper
+        to: targetTop
+      - type: compute
+        to: durationMinutes
+        expression: "${duration} / 60"
+      - type: default
+        field: eventType
+        value: "Temporary Target"
+    expected:
+      reason: "Exercise"
+      targetBottom: 140
+      targetTop: 160
+      durationMinutes: 60
+      eventType: "Temporary Target"
+
+  # === Type Coercion Tests ===
+
+  - id: coerce-string-to-number
+    description: Coerce string glucose to number
+    source_system: any
+    target_system: any
+    input:
+      sgv: "120"
+      direction: "Flat"
+    transforms:
+      - type: coerce
+        field: sgv
+        to_type: number
+    expected:
+      sgv: 120.0
+      direction: "Flat"
+
+  - id: coerce-number-to-string
+    description: Coerce numeric ID to string
+    source_system: any
+    target_system: any
+    input:
+      _id: 12345
+      sgv: 120
+    transforms:
+      - type: coerce
+        field: _id
+        to_type: string
+    expected:
+      _id: "12345"
+      sgv: 120

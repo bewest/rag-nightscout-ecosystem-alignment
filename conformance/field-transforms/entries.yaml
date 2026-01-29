@@ -1,0 +1,139 @@
+# Field Transform Test Cases: Entries Collection
+# Maps SGV/calibration data across systems
+
+tests:
+
+  # === Direction Arrow Mapping ===
+
+  - id: direction-flat
+    description: Flat direction mapping
+    source_system: any
+    target_system: Nightscout
+    input:
+      sgv: 120
+      trend: 4
+    transforms:
+      - type: compute
+        to: direction
+        expression: '"Flat"'
+    expected:
+      sgv: 120
+      direction: "Flat"
+
+  - id: direction-fortyfivedoubleup
+    description: FortyFiveUp trend to direction
+    source_system: Dexcom
+    target_system: Nightscout
+    input:
+      sgv: 150
+      trend: 2
+      trendDescription: "FortyFiveUp"
+    transforms:
+      - type: rename
+        from: trendDescription
+        to: direction
+    expected:
+      sgv: 150
+      direction: "FortyFiveUp"
+
+  # === Noise Level Mapping ===
+
+  - id: noise-clean
+    description: Clean noise level (1)
+    source_system: xDrip
+    target_system: Nightscout
+    input:
+      sgv: 100
+      noise: 1
+    transforms: []
+    expected:
+      sgv: 100
+      noise: 1
+
+  - id: noise-light
+    description: Light noise level (2)
+    source_system: xDrip
+    target_system: Nightscout
+    input:
+      sgv: 100
+      noise: 2
+    transforms: []
+    expected:
+      sgv: 100
+      noise: 2
+
+  # === Calibration Entry ===
+
+  - id: mbg-calibration
+    description: Manual blood glucose calibration
+    source_system: xDrip
+    target_system: Nightscout
+    input:
+      mbg: 110
+      type: "mbg"
+      date: 1706540096000
+      enteredBy: "xDrip"
+    transforms: []
+    expected:
+      mbg: 110
+      type: "mbg"
+      date: 1706540096000
+
+  # === Device Field Normalization ===
+
+  - id: device-from-loop
+    description: Loop device identifier
+    source_system: Loop
+    target_system: Nightscout
+    input:
+      sgv: 120
+      device: "loop://iPhone"
+    transforms: []
+    expected:
+      sgv: 120
+      device: "loop://iPhone"
+
+  - id: device-from-aaps
+    description: AAPS device identifier format
+    source_system: AAPS
+    target_system: Nightscout
+    input:
+      sgv: 115
+      device: "AndroidAPS-DexcomG6"
+    transforms: []
+    expected:
+      sgv: 115
+      device: "AndroidAPS-DexcomG6"
+
+  # === Date Format Normalization ===
+
+  - id: date-epoch-passthrough
+    description: Epoch milliseconds passthrough
+    source_system: any
+    target_system: Nightscout
+    input:
+      sgv: 120
+      date: 1706540096000
+    transforms:
+      - type: coerce
+        field: date
+        to_type: integer
+    expected:
+      sgv: 120
+      date: 1706540096000
+
+  # === Filtered/Unfiltered Values ===
+
+  - id: filtered-value-preserve
+    description: Preserve filtered raw value
+    source_system: xDrip
+    target_system: Nightscout
+    input:
+      sgv: 120
+      filtered: 160000
+      unfiltered: 155000
+    transforms: []
+    expected:
+      sgv: 120
+      filtered: 160000
+      unfiltered: 155000

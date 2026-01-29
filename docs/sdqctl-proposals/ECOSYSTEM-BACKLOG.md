@@ -28,12 +28,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
 
-### 2. [P2] Transform pipeline tester
-**Type:** Implementation | **Effort:** High
-**Repos:** Cross-project
-**Focus:** Test field transforms in isolation (time/glucose/insulin)
-**Workflow:** `implementation.conv`
-**Source:** tooling backlog
+### ~~2. [P2] Transform pipeline tester~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (1,433 lines, 28 tests)
+- test_transforms.py: Field transform test runner
+- 5 transform types: rename, extract, coerce, default, compute
+- Test vectors for entries, treatments, devicestatus
 
 ### 3. [P2] LSP-based claim verification
 **Type:** Implementation | **Effort:** Medium

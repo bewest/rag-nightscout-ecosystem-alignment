@@ -14,8 +14,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 |---|------|----------|--------|-------|
 | 1 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt pending |
 | 2 | LSP-based claim verification | P2 | Medium | [4-phase proposal](../lsp-integration-proposal.md) |
-| 3 | Transformation pipeline tester | P2 | High | Test field transforms in isolation |
-| 4 | Integration test runner | P3 | High | Orchestrate full cross-project tests |
+| 3 | Integration test runner | P3 | High | Orchestrate full cross-project tests |
 
 ---
 
@@ -23,6 +22,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | Item | Date | Notes |
 |------|------|-------|
+| Transformation pipeline tester | 2026-01-29 | `tools/test_transforms.py` + 28 test cases |
 | Hygiene tooling suite | 2026-01-29 | queue_stats.py, backlog_hygiene.py, doc_chunker.py verified |
 | Conformance schema + vector extraction | 2026-01-29 | `conformance-vector-v1.json` + 85 vectors from AAPS |
 | Algorithm conformance suite proposal | 2026-01-29 | `docs/sdqctl-proposals/algorithm-conformance-suite.md` - 510 lines, 5-phase plan |
@@ -43,7 +43,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | Vector extractor | ✅ Done | `tools/extract_vectors.py` | Pull from AAPS replay tests |
 | Test vectors | ✅ Done | `conformance/vectors/` | 85 vectors (77 basal, 8 LGS) |
 | Conformance runners | 📋 Proposed | `conformance/runners/` | oref0, AAPS, Loop runners |
-| Transform tester | 📋 Planned | `tools/test_transforms.py` | Field mapping validation |
+| Transform tester | ✅ Done | `tools/test_transforms.py` | Field mapping validation (28 tests) |
 
 ---
 

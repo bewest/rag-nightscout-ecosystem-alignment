@@ -8,6 +8,29 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Field Transform Test Suite (2026-01-29)
+
+Created comprehensive field transform testing infrastructure.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Test Runner** | `tools/test_transforms.py` | 617 lines |
+| **Core Transforms** | `conformance/field-transforms/transforms.yaml` | 188 lines |
+| **Entry Transforms** | `conformance/field-transforms/entries.yaml` | 139 lines |
+| **Treatment Transforms** | `conformance/field-transforms/treatments.yaml` | 323 lines |
+| **README** | `conformance/field-transforms/README.md` | 166 lines |
+
+**Transform Types Supported**:
+- rename, extract, coerce, default, compute
+- Nested field extraction with dot notation
+- Array index support (`values[0]`)
+
+**Test Coverage**: 28 passing tests across Loop, AAPS, Trio, xDrip → Nightscout
+
+**Total**: 1,433 lines
+
+---
+
 ### Playwright E2E Test Suite for Nightscout (2026-01-29)
 
 Created Playwright E2E test infrastructure for cgm-remote-monitor.

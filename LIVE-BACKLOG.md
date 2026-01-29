@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Transform pipeline tester | P2 | ✅ Complete (1,433 lines, 28 tests) | 2026-01-29 |
 | Playwright adoption: Implementation | P2 | ✅ Complete (591 lines, 4 files) | 2026-01-29 |
 | Semantic equivalence for Loop | P3 | ✅ Complete (400 lines, 4 gaps) | 2026-01-29 |
 | Document AAPS vs oref0 divergence | P3 | ✅ Complete (280 lines, 4 gaps) | 2026-01-29 |
