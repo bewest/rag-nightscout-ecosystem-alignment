@@ -35,6 +35,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `design-review.conv`
 **Source:** LIVE-BACKLOG human request
 
+### 3. [P2] Extract xDrip+ Nightscout fields
+**Type:** Analysis | **Effort:** Medium
+**Repos:** xDrip
+**Focus:** Document what xDrip+ uploads to Nightscout
+**Workflow:** `gap-discovery.conv`
+
 ---
 
 ## Backlog (Prioritized)
@@ -93,7 +99,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### P3 - Nice to Have
 
 - [ ] **Compare CGM sensor session handling** - Start, stop, calibration
-- [ ] **Extract xDrip+ Nightscout fields** - What xDrip+ uploads
+- [x] ~~**Extract xDrip+ Nightscout fields**~~ - Promoted to Ready Queue #3
 - [x] ~~**Map algorithm terminology**~~ - ✅ Already complete (3024-line matrix)
 - [ ] **LSP-based documentation claim verification** - See [tooling backlog](backlogs/tooling.md)
 - [ ] **Reporting needs analysis** - Compare nightscout-reporter vs built-in reports
