@@ -691,3 +691,80 @@ if (rVal) rVal.replace('ETC','Etc');
 ## Error Handling Gaps
 
 ---
+
+
+## Cross-Controller Gaps
+
+---
+
+### GAP-SYNC-020: No Cross-Controller Deduplication
+
+**Description**: Nightscout does not detect when the same treatment is entered in multiple controllers (e.g., Loop and Trio) and uploaded to the same instance.
+
+**Affected Systems**: Nightscout, Loop, Trio, AAPS
+
+**Impact**:
+- Duplicate treatment records stored
+- Incorrect IOB/COB calculations (doubled carbs, doubled boluses)
+- Misleading historical data
+
+**Source**: Deep dive analysis of `cgm-remote-monitor/lib/server/websocket.js:364` and `api3/storage/mongoCollection/utils.js:130`
+
+**Current Behavior**: Deduplication based on `identifier` or `NSCLIENT_ID` only. No cross-controller awareness.
+
+**Remediation**:
+1. Add fuzzy deduplication: same amount ± tolerance, same eventType, within 2-minute window
+2. Add `sourceController` field to all treatments
+3. Warn user when identical treatment from different controllers detected
+
+**Status**: Open
+
+---
+
+### GAP-SYNC-021: No Controller Conflict Warning
+
+**Description**: Nightscout does not warn when multiple AID controllers (Loop, Trio, AAPS) are uploading deviceStatus to the same instance simultaneously.
+
+**Affected Systems**: Nightscout UI, Loop, Trio, AAPS
+
+**Impact**:
+- User may not realize both controllers are active
+- Conflicting therapy decisions possible
+- Caregiver confusion about which controller is in charge
+
+**Source**: Analysis of `loop.js:135` and `openaps.js:87` - both plugins can be active simultaneously
+
+**Current Behavior**: Most recent deviceStatus displayed. No collision warning.
+
+**Remediation**:
+1. Add detection: if deviceStatus from different controllers within 5 minutes, show warning
+2. Add `x-controller-id` header to API requests
+3. Display active controller prominently in UI pill
+
+**Status**: Open
+
+---
+
+### GAP-SYNC-022: Profile Sync Ambiguity
+
+**Description**: When multiple controllers upload profiles to the same Nightscout instance, there is no indication which profile is authoritative.
+
+**Affected Systems**: Nightscout, Loop, Trio
+
+**Impact**:
+- Caregiver may see wrong profile
+- Uncertainty about which settings are active
+- Potential for therapy errors if wrong profile assumed
+
+**Source**: Cross-controller conflict analysis
+
+**Current Behavior**: Most recent profile displayed. No source attribution.
+
+**Remediation**:
+1. Add `sourceController` field to profile records
+2. Display profile source in UI
+3. Warn if profiles from different controllers conflict
+
+**Status**: Open
+
+---

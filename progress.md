@@ -8,6 +8,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Cross-Controller Conflict Detection Analysis (2026-01-29)
+
+Analyzed behavior when Loop + Trio sync to same Nightscout instance.
+
+| Metric | Value |
+|--------|-------|
+| Source files analyzed | 12 |
+| Gaps identified | 3 |
+| Risk level | Medium |
+
+**Key Findings**:
+- deviceStatus: Loop uses `status.loop`, Trio uses `status.openaps` - no conflict
+- enteredBy: Loop `loop://{device}`, Trio `Trio` - distinguishable
+- Deduplication: identifier-based only, no cross-controller awareness
+- Safe for read-only; caution for bidirectional sync
+
+**Gaps Added**:
+- GAP-SYNC-020: No cross-controller deduplication
+- GAP-SYNC-021: No controller conflict warning
+- GAP-SYNC-022: Profile sync ambiguity
+
+**Deliverables**:
+- `docs/10-domain/cross-controller-conflicts-deep-dive.md` (7.4KB)
+- `traceability/sync-identity-gaps.md` (+77 lines, 3 gaps)
+
+---
+
 ### Level 6: nocturne-modernization-analysis.md Coherence (2026-01-29)
 
 Audited analysis document vs actual nocturne source code.

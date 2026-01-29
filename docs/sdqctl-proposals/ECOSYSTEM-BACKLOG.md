@@ -35,19 +35,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document "eavesdrop only" limitations for Libre 3
 **Source:** CGM sources backlog
 
-### 3. [P2] Cross-controller conflict detection
-**Type:** Analysis | **Effort:** Medium
-**Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
-**Source:** Sync & Identity backlog
-
-### 4. [P3] Algorithm conformance: Loop Swift runner
+### 3. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 5. [P3] sdqctl VERIFY .conv Directive (Phase 2)
+### 4. [P3] sdqctl VERIFY .conv Directive (Phase 2)
 **Type:** Tooling | **Effort:** Medium
 **Proposal:** [VERIFICATION-DIRECTIVES.md](VERIFICATION-DIRECTIVES.md)
 **Focus:** Native `VERIFY refs` directive in .conv workflows
@@ -56,6 +51,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Cross-controller conflict detection~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Deep dive: `docs/10-domain/cross-controller-conflicts-deep-dive.md`
+- 3 gaps identified: GAP-SYNC-020/021/022
+- Risk: Medium (safe for read-only, caution for bidirectional)
+- Key finding: Loop/Trio use different deviceStatus namespaces
 
 ### ~~[P2] Level 6: nocturne-modernization-analysis.md coherence~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
