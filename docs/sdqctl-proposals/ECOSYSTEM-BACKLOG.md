@@ -58,6 +58,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### ~~5. [P3] Deep dive: LoopFollow~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (411 lines, 3 gaps)
 
+### 5. [P3] Deep dive: LoopCaregiver
+**Type:** Analysis | **Effort:** Medium
+**Repos:** LoopCaregiver
+**Focus:** Remote command architecture, Nightscout command channel
+**Workflow:** `extract-spec.conv`
+**Context:** iOS companion app for remote bolus, carbs, override control
+
 ---
 
 ## Backlog (Prioritized)
@@ -121,11 +128,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [x] ~~**Create mapping: share2nightscout-bridge**~~ - Promoted to Ready Queue #5
 - [x] ~~**Create mapping: nightscout-librelink-up**~~ - Promoted to Ready Queue #5
 - [x] ~~**Deep dive: LoopFollow**~~ - Promoted to Ready Queue #5
-- [ ] **Deep dive: LoopCaregiver**
-  - Repos: LoopCaregiver
-  - Focus: Remote command architecture, Nightscout command channel
-  - Context: iOS companion app for remote bolus, carbs, override control
-  - Workflow: `extract-spec.conv`
+- [x] ~~**Deep dive: LoopCaregiver**~~ - Promoted to Ready Queue #5
 - [ ] **Deep dive: openaps toolkit**
   - Repos: openaps
   - Focus: Device interface layer (vs oref0 algorithm layer)
