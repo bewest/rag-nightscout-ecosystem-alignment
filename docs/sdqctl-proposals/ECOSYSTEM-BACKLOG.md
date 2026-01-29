@@ -39,18 +39,17 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document profile structure and sync patterns
 **Workflow:** `gap-discovery.conv`
 
-### 4. [P2] Hygiene: Chunk progress.md
-**Type:** Maintenance | **Effort:** Low
-**Focus:** Split 1700+ line progress.md into archive + current
-**Workflow:** Manual or `doc_chunker.py`
-**Note:** Exceeds 500-line threshold
-
-### 5. [P2] Algorithm conformance: AAPS Kotlin runner
+### 4. [P2] Algorithm conformance: AAPS Kotlin runner
 **Type:** Implementation | **Effort:** High
 **Repos:** AndroidAPS
 **Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
+
+### 5. [P3] Map algorithm terminology
+**Type:** Documentation | **Effort:** Low
+**Focus:** ISF, CR, DIA, UAM across oref0/AAPS/Loop/Trio
+**Workflow:** `terminology-sync.conv`
 
 ---
 
@@ -133,6 +132,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-29 | Hygiene: Chunk progress.md | 1713→807 lines, archive created |
 | 2026-01-29 | Algorithm conformance: oref0 runner | `oref0-runner.js` - 400+ lines, 26/85 pass |
 | 2026-01-29 | Algorithm conformance: Schema + fixture extraction | 85 vectors, schema, extraction script |
 | 2026-01-29 | Heart Rate API specification | `aid-heartrate-2025.yaml` - 447 lines |
