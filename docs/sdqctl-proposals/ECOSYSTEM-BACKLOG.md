@@ -127,45 +127,20 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 ---
 
-## Completed
+## Completed (Recent)
+
+*Older items archived to [`archive/2026-01-backlog-archive.md`](archive/2026-01-backlog-archive.md)*
 
 | Date | Item | Outcome |
 |------|------|---------|
-| 2026-01-29 | Heart Rate API specification | `specs/openapi/aid-heartrate-2025.yaml` - 447 lines, GAP-API-HR addressed, 6 endpoints, AAPS entity mapping |
-| 2026-01-29 | Statistics API proposal | `docs/sdqctl-proposals/statistics-api-proposal.md` - 480 lines, 3 gaps (GAP-STATS-001-003), 5 reqs (REQ-STATS-001-005), 6 endpoints, MCP resources |
-| 2026-01-29 | PR analysis: cgm-remote-monitor | `docs/10-domain/cgm-remote-monitor-pr-analysis.md` - 380 lines, 4 gaps (GAP-API-HR, GAP-INSULIN-001, GAP-REMOTE-CMD, GAP-TZ-001), 68 PRs categorized, Tier 1 ecosystem PRs identified |
-| 2026-01-29 | nightscout-connect vendor interop proposal | `docs/sdqctl-proposals/nightscout-connect-vendor-interop.md` - 418 lines, 3 reqs (REQ-BRIDGE-001-003), v3 API, sync identity |
-| 2026-01-29 | Map pump communication terminology | `mapping/cross-project/terminology-matrix.md` - ~150 lines, 10 tables, pump states/bolus/reservoir |
-| 2026-01-29 | Compare carb absorption models | `docs/10-domain/carb-absorption-comparison.md` - 471 lines, 3 gaps (GAP-CARB-001-003), Loop vs oref0 paradigms |
-| 2026-01-29 | Full audit: nightscout-connect | `docs/10-domain/nightscout-connect-deep-dive.md` - 527 lines, 3 gaps (GAP-CONNECT-001-003), XState machines, 5 sources |
-| 2026-01-29 | Interoperability Spec v1 | `specs/interoperability-spec-v1.md` - 316 lines, 3 reqs (REQ-INTEROP-001-003), RFC-style MUST/SHOULD/MAY, synthesizes 6 audits |
-| 2026-01-29 | cgm-remote-monitor Frontend audit | `docs/10-domain/cgm-remote-monitor-frontend-deep-dive.md` - 468 lines, 3 gaps (GAP-UI-001-003), D3, plugins, i18n |
-| 2026-01-29 | cgm-remote-monitor Authentication audit | `docs/10-domain/cgm-remote-monitor-auth-deep-dive.md` - 475 lines, 3 gaps (GAP-AUTH-003-005), Shiro, JWT, roles |
-| 2026-01-29 | cgm-remote-monitor Sync/upload audit | `docs/10-domain/cgm-remote-monitor-sync-deep-dive.md` - 520 lines, 3 gaps (GAP-SYNC-008-010), WebSocket, sync identity |
-| 2026-01-29 | cgm-remote-monitor Plugin system audit | `docs/10-domain/cgm-remote-monitor-plugin-deep-dive.md` - 436 lines, 3 gaps (GAP-PLUGIN-001-003), IOB/COB, Loop/OpenAPS |
-| 2026-01-29 | cgm-remote-monitor API layer audit | `docs/10-domain/cgm-remote-monitor-api-deep-dive.md` - 397 lines, 3 gaps (GAP-API-006-008), dedup keys, Socket.IO |
-| 2026-01-29 | Algorithm conformance suite proposal | `docs/sdqctl-proposals/algorithm-conformance-suite.md` - 400+ lines, 3 gaps (GAP-ALG-001-003), test vector schema, 5-phase plan |
-| 2026-01-29 | PR analysis: share2nightscout-bridge | `docs/10-domain/share2nightscout-bridge-pr-analysis.md` - 242 lines, 3 gaps (GAP-BRIDGE-001-003), 1 PR, 13 issues |
-| 2026-01-29 | Cross-project testing plan | `docs/sdqctl-proposals/cross-project-testing-plan.md` - 363 lines, 3 gaps (GAP-TEST-001-003), 4 strategies |
-| 2026-01-29 | Compare override/profile switch semantics | `docs/10-domain/override-profile-switch-comparison.md` - 416 lines, 3 gaps (GAP-OVERRIDE-005-007), Trio Exercise eventType |
-| 2026-01-29 | Playwright adoption proposal | `docs/sdqctl-proposals/playwright-adoption-proposal.md` - 316 lines, 4-phase plan, ~5-8 days effort |
-| 2026-01-29 | cgm-remote-monitor database layer audit | `docs/10-domain/cgm-remote-monitor-database-deep-dive.md` - 455 lines, 3 gaps (GAP-DB-001-003), Loop ordering verified |
-| 2026-01-29 | Extract Loop sync identity fields | `mapping/loop/sync-identity-fields.md` - 318 lines, 3 gaps (GAP-SYNC-005-007), ObjectIdCache pattern |
-| 2026-01-29 | Full audit: nightscout-librelink-up | `docs/10-domain/nightscout-librelink-up-deep-dive.md` - 378 lines, 3 gaps (GAP-LIBRELINK-001-003) |
-| 2026-01-29 | Full audit: tconnectsync | `docs/10-domain/tconnectsync-deep-dive.md` - 368 lines, 3 gaps (GAP-TCONNECT-001-003) |
-| 2026-01-29 | Full audit: openaps/oref0 | `docs/10-domain/openaps-oref0-deep-dive.md` - 371 lines, 3 gaps (GAP-OREF-001-003) |
-| 2026-01-28 | Gap discovery: Prediction array formats | `docs/10-domain/prediction-arrays-comparison.md` - 319 lines, 3 gaps (GAP-PRED-002-004) |
-| 2026-01-28 | Deep dive: Batch operation ordering | `docs/10-domain/batch-ordering-deep-dive.md` - 334 lines, 3 requirements |
-| 2026-01-28 | Compare override/profile switch semantics | `docs/10-domain/override-profile-switch-comparison.md` - 331 lines, 4 new gaps |
-| 2026-01-28 | Compare remote bolus command handling | `docs/10-domain/remote-bolus-comparison.md` - 348 lines, 4 systems, 2 new gaps |
-| 2026-01-28 | Extract Nightscout v3 treatments schema | `mapping/nightscout/v3-treatments-schema.md` - 248 lines, 21+ eventTypes |
-| 2026-01-28 | Modernization analysis: cgm-remote-monitor vs Nocturne | `docs/sdqctl-proposals/nocturne-modernization-analysis.md` - 350 lines, full comparison |
-| 2026-01-28 | Initial audit: share2nightscout-bridge | `docs/10-domain/share2nightscout-bridge-deep-dive.md` - 328 lines, 3 gaps (GAP-SHARE-001-003) |
-| 2026-01-28 | Initial audit: nocturne | `docs/10-domain/nocturne-deep-dive.md` - 279 lines, 3 gaps (GAP-NOCTURNE-001-003) |
-| 2026-01-28 | Extract AAPS NSClient upload schema | `mapping/aaps/nsclient-schema.md` - 70+ fields, 25 eventTypes |
-| 2026-01-28 | Workspace expansion (4 repos) | nocturne, Trio-dev, share2nightscout-bridge, cgm-remote-monitor-official added |
-| 2026-01-28 | Cross-project test harness tooling | `test_conversions.py` (20 tests), `mock_nightscout.py` (API v1/v3), Makefile targets |
-| 2026-01-28 | Map timezone/DST handling terminology | +150 lines terminology matrix, 4 new gaps (GAP-TZ-004-007), pump DST handling documented |
+| 2026-01-29 | Algorithm conformance: Schema + fixture extraction | 85 vectors, schema, extraction script |
+| 2026-01-29 | Heart Rate API specification | `aid-heartrate-2025.yaml` - 447 lines |
+| 2026-01-29 | Statistics API proposal | 480 lines, 3 gaps, 5 reqs |
+| 2026-01-29 | PR analysis: cgm-remote-monitor | 380 lines, 68 PRs |
+| 2026-01-29 | Interoperability Spec v1 | RFC-style, synthesizes 6 audits |
+| 2026-01-29 | cgm-remote-monitor 6-layer audit | 2,751 lines total, 18 gaps |
+| 2026-01-29 | Cross-project testing plan | 4 strategies for Swift on Linux |
+| 2026-01-29 | Playwright adoption proposal | 4-phase E2E testing plan |
 
 ---
 
