@@ -39,7 +39,9 @@ PROMPT ## Phase 0: State Check
 
 Check current git and backlog state before starting work.
 
+ELIDE
 RUN python tools/queue_stats.py 2>/dev/null || echo "Stats: unavailable"
+ELIDE
 RUN git --no-pager status --short | head -15
 ELIDE
 PROMPT Review the git status above:
@@ -58,8 +60,6 @@ PROMPT Review the git status above:
 - Last cycle: [N]
 - Action: [Commit pending / Clean / WIP noted]
 ```
-
-COMPACT
 
 # === Phase 1: Task Selection ===
 PROMPT ## Phase 1: Task Selection
@@ -143,7 +143,7 @@ COMPACT
 PROMPT ## Phase 3: Update 5 Facets
 
 RUN git --no-pager status --short
-
+ELIDE
 PROMPT Update all relevant project facets based on your findings.
 
 **Facet 1: Terminology Matrix**
@@ -172,11 +172,10 @@ COMPACT
 
 # === Phase 4: Groom Backlogs ===
 PROMPT ## Phase 4: Groom Backlogs
-
 Maintain backlog hygiene after completing work.
-
+ELIDE
 RUN head -50 LIVE-BACKLOG.md
-
+ELIDE
 PROMPT **Step 1: Update LIVE-BACKLOG.md Processed Table**
 For the task we just completed:
 - Update status from "→ In Progress" to "✅ Complete" or "→ Queued to [backlog]"

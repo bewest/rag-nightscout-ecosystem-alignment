@@ -1,6 +1,6 @@
 # Ecosystem Alignment Backlog
 
-> **Last Updated**: 2026-01-28  
+> **Last Updated**: 2026-01-29  
 > **Purpose**: Track active work items across all domains  
 > **Archive**: Completed work → [`archive/`](archive/)
 
@@ -21,34 +21,38 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P1] Interoperability spec draft
-**Type:** Specification | **Effort:** Medium
-**Repos:** All
-**Focus:** Define minimal viable interoperability spec (OQ-021)
+### 1. [P1] Multi-Insulin API specification
+**Type:** Specification | **Effort:** Small
+**Repos:** cgm-remote-monitor (PR#8261)
+**Focus:** Document insulin entity collection schema for OpenAPI spec
 **Workflow:** `extract-spec.conv`
+**Note:** Already used by xDrip+ and nightscout-reporter
 
-### 2. [P1] PR analysis: cgm-remote-monitor
+### 2. [P2] Algorithm conformance: Schema + fixture extraction
+**Type:** Implementation | **Effort:** Medium
+**Repos:** AAPS, oref0
+**Focus:** Phase 1 of conformance suite - JSON schema + 50 vectors from AAPS
+**Workflow:** `extract-spec.conv`
+**Note:** Follow-on from algorithm-conformance-suite.md proposal
+
+### 3. [P2] Deep dive: Authentication flows
 **Type:** Analysis | **Effort:** Medium
-**Source:** `externals/cgm-remote-monitor-official/`
-**Focus:** Review open PRs for ecosystem impact
-**Workflow:** `gap-discovery.conv`
-
-### 3. [P1] Statistics API proposal
-**Type:** Specification | **Effort:** Medium
 **Repos:** cgm-remote-monitor
-**Focus:** MCP-informed aggregate endpoints based on reports + zreptil needs
-**Workflow:** `extract-spec.conv`
-
-### 4. [P2] Compare carb absorption models
-**Type:** Analysis | **Effort:** Medium
-**Repos:** Loop, AAPS, Trio, oref0
-**Focus:** Linear vs nonlinear vs dynamic absorption algorithms
+**Focus:** API secret vs tokens vs JWT comparison
 **Workflow:** `gap-discovery.conv`
 
-### 5. [P2] Algorithm conformance suite
-**Type:** Tooling | **Effort:** Medium
-**Focus:** Create test vectors for Rust vs JS oref comparison
-**Workflow:** `tools/`
+### 4. [P2] Cross-repo fixture extraction
+**Type:** Implementation | **Effort:** Medium
+**Repos:** AAPS, Loop, xDrip+
+**Focus:** Pull test fixtures for integration testing
+**Workflow:** `extract-spec.conv`
+
+### 5. [P2] Remote Commands API specification
+**Type:** Specification | **Effort:** Medium
+**Repos:** cgm-remote-monitor (PR#7791)
+**Focus:** Document command queue for remote AID control
+**Workflow:** `extract-spec.conv`
+**Note:** Critical Loop caregiver feature, stalled 3+ years
 
 ---
 
@@ -56,13 +60,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 ### P0 - Critical
 
-- [ ] **cgm-remote-monitor audit** (chunked, using bewest/mongo-5x branch)
+- [x] ~~**cgm-remote-monitor audit**~~ (chunked, using bewest/mongo-5x branch) - ✅ **COMPLETE**
   - [x] ~~Database layer (MongoDB 5.x compat, indexes, schema)~~ - ✅ Completed (455 lines, 3 gaps)
-  - [ ] API layer (lib/api3/, v1/v2/v3 endpoints, collections)
-  - [ ] Plugin system (lib/plugins/, 38 plugins, reports)
-  - [ ] Sync/upload logic (lib/server/, socket.io, data flow)
-  - [ ] Authentication (lib/authorization/, tokens, roles)
-  - [ ] Frontend (views/, translations/, client bundles)
+  - [x] ~~API layer (lib/api3/, v1/v2/v3 endpoints, collections)~~ - ✅ Completed (397 lines, 3 gaps)
+  - [x] ~~Plugin system (lib/plugins/, 38 plugins, reports)~~ - ✅ Completed (436 lines, 3 gaps)
+  - [x] ~~Sync/upload logic (lib/server/, socket.io, data flow)~~ - ✅ Completed (520 lines, 3 gaps)
+  - [x] ~~Authentication (lib/authorization/, tokens, roles)~~ - ✅ Completed (475 lines, 3 gaps)
+  - [x] ~~Frontend (views/, translations/, client bundles)~~ - ✅ Completed (468 lines, 3 gaps)
+  - **Total: 2,751 lines, 18 gaps across 6 deep dives**
 
 ### P1 - High Value
 
@@ -71,8 +76,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [x] ~~**Deep dive: Batch operation ordering**~~ - Completed
 - [x] ~~**Gap discovery: Prediction array formats**~~ - Completed (319 lines, 3 gaps)
 - [x] ~~**Full audit: openaps**~~ - Completed (371 lines, 3 gaps)
-- [ ] **Algorithm conformance suite** - Create test vectors for Rust vs JS oref comparison
-  - From: Modernization analysis next steps
+- [x] ~~**Algorithm conformance suite**~~ - Proposal created (400+ lines, 3 gaps, 5-phase plan)
 - [x] ~~**Full audit: tconnectsync**~~ - Completed (368 lines, 3 gaps)
 - [x] ~~**Full audit: nightscout-librelink-up**~~ - Completed (378 lines, 3 gaps)
 - [x] ~~**Cross-project testing plan (Trio/Loop on Ubuntu)**~~ - Completed (363 lines, 3 gaps)
@@ -82,20 +86,19 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 ### P2 - Normal
 
-- [x] ~~**Compare carb absorption models**~~ - Promoted to Ready Queue #4
+- [x] ~~**Compare carb absorption models**~~ - ✅ Completed (471 lines, 3 gaps)
 - [x] ~~**Extract Loop sync identity fields**~~ - ✅ Completed (318 lines, 3 gaps)
-- [ ] **Map pump communication terminology** - Reservoir, cartridge, pod, etc.
-- [ ] **Deep dive: Authentication flows** - API secret vs tokens vs JWT
-- [ ] **Cross-repo fixture extraction** - Pull test fixtures from AAPS/Loop/xDrip repos
-  - Enables: integration testing with real data shapes
-  - See: [tooling backlog](backlogs/tooling.md#cross-project-test-harness-in-progress)
-- [ ] **Full audit: nightscout-connect** - NS client library (v0.0.12), 22 lines documented
-  - Components: lib/, commands/, machines.md (state machine docs)
-  - Focus: Cloud platform connectors, sync protocols
-  - Workflow: `gap-discovery.conv`
-- [ ] **nightscout-connect vendor interop proposal** - Tandem + Libre integration enhancements
-  - From: LIVE-BACKLOG request
-  - Focus: Apply tconnectsync/librelink-up learnings to nightscout-connect
+- [ ] **Algorithm conformance: Schema + fixture extraction** - Phase 1 of conformance suite
+  - From: Algorithm conformance suite proposal
+  - Deliverables: `conformance-vector-v1.json` schema, 50+ vectors from AAPS
+- [ ] **Algorithm conformance: oref0 runner** - Phase 2 of conformance suite
+  - From: Algorithm conformance suite proposal
+  - Deliverables: `conformance/runners/oref0-runner.js`, Makefile target
+- [x] ~~**Map pump communication terminology**~~ - ✅ Completed (~150 lines, 10 tables)
+- [x] ~~**Deep dive: Authentication flows**~~ - Promoted to Ready Queue #5
+- [x] ~~**Cross-repo fixture extraction**~~ - Promoted to Ready Queue #5
+- [x] ~~**Full audit: nightscout-connect**~~ - ✅ Completed (527 lines, 3 gaps)
+- [x] ~~**nightscout-connect vendor interop proposal**~~ - ✅ Completed (418 lines, 3 reqs)
 - [ ] **Documentation reorganization proposal** - AI vs human comprehension analysis
   - From: LIVE-BACKLOG request
   - Focus: Consolidate duplicate materials, optimize structure for tooling vs projects
@@ -130,6 +133,20 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-29 | Heart Rate API specification | `specs/openapi/aid-heartrate-2025.yaml` - 447 lines, GAP-API-HR addressed, 6 endpoints, AAPS entity mapping |
+| 2026-01-29 | Statistics API proposal | `docs/sdqctl-proposals/statistics-api-proposal.md` - 480 lines, 3 gaps (GAP-STATS-001-003), 5 reqs (REQ-STATS-001-005), 6 endpoints, MCP resources |
+| 2026-01-29 | PR analysis: cgm-remote-monitor | `docs/10-domain/cgm-remote-monitor-pr-analysis.md` - 380 lines, 4 gaps (GAP-API-HR, GAP-INSULIN-001, GAP-REMOTE-CMD, GAP-TZ-001), 68 PRs categorized, Tier 1 ecosystem PRs identified |
+| 2026-01-29 | nightscout-connect vendor interop proposal | `docs/sdqctl-proposals/nightscout-connect-vendor-interop.md` - 418 lines, 3 reqs (REQ-BRIDGE-001-003), v3 API, sync identity |
+| 2026-01-29 | Map pump communication terminology | `mapping/cross-project/terminology-matrix.md` - ~150 lines, 10 tables, pump states/bolus/reservoir |
+| 2026-01-29 | Compare carb absorption models | `docs/10-domain/carb-absorption-comparison.md` - 471 lines, 3 gaps (GAP-CARB-001-003), Loop vs oref0 paradigms |
+| 2026-01-29 | Full audit: nightscout-connect | `docs/10-domain/nightscout-connect-deep-dive.md` - 527 lines, 3 gaps (GAP-CONNECT-001-003), XState machines, 5 sources |
+| 2026-01-29 | Interoperability Spec v1 | `specs/interoperability-spec-v1.md` - 316 lines, 3 reqs (REQ-INTEROP-001-003), RFC-style MUST/SHOULD/MAY, synthesizes 6 audits |
+| 2026-01-29 | cgm-remote-monitor Frontend audit | `docs/10-domain/cgm-remote-monitor-frontend-deep-dive.md` - 468 lines, 3 gaps (GAP-UI-001-003), D3, plugins, i18n |
+| 2026-01-29 | cgm-remote-monitor Authentication audit | `docs/10-domain/cgm-remote-monitor-auth-deep-dive.md` - 475 lines, 3 gaps (GAP-AUTH-003-005), Shiro, JWT, roles |
+| 2026-01-29 | cgm-remote-monitor Sync/upload audit | `docs/10-domain/cgm-remote-monitor-sync-deep-dive.md` - 520 lines, 3 gaps (GAP-SYNC-008-010), WebSocket, sync identity |
+| 2026-01-29 | cgm-remote-monitor Plugin system audit | `docs/10-domain/cgm-remote-monitor-plugin-deep-dive.md` - 436 lines, 3 gaps (GAP-PLUGIN-001-003), IOB/COB, Loop/OpenAPS |
+| 2026-01-29 | cgm-remote-monitor API layer audit | `docs/10-domain/cgm-remote-monitor-api-deep-dive.md` - 397 lines, 3 gaps (GAP-API-006-008), dedup keys, Socket.IO |
+| 2026-01-29 | Algorithm conformance suite proposal | `docs/sdqctl-proposals/algorithm-conformance-suite.md` - 400+ lines, 3 gaps (GAP-ALG-001-003), test vector schema, 5-phase plan |
 | 2026-01-29 | PR analysis: share2nightscout-bridge | `docs/10-domain/share2nightscout-bridge-pr-analysis.md` - 242 lines, 3 gaps (GAP-BRIDGE-001-003), 1 PR, 13 issues |
 | 2026-01-29 | Cross-project testing plan | `docs/sdqctl-proposals/cross-project-testing-plan.md` - 363 lines, 3 gaps (GAP-TEST-001-003), 4 strategies |
 | 2026-01-29 | Compare override/profile switch semantics | `docs/10-domain/override-profile-switch-comparison.md` - 416 lines, 3 gaps (GAP-OVERRIDE-005-007), Trio Exercise eventType |

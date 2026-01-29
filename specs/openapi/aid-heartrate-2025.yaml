@@ -1,0 +1,447 @@
+openapi: 3.0.3
+info:
+  title: Nightscout Heart Rate API
+  version: 1.0.0
+  description: |
+    Heart Rate collection API for Nightscout, enabling storage of biometric 
+    data from AID systems and wearable devices.
+    
+    Based on PR#8083 implementation and AAPS HeartRate entity.
+    
+    ## Gap Reference
+    - GAP-API-HR: Heart Rate Collection Not Implemented
+    
+    ## Requirements
+    - REQ-PR-001: Heart Rate Collection Support
+  contact:
+    name: Nightscout Foundation
+  license:
+    name: AGPL-3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+
+servers:
+  - url: /api/v3
+    description: Nightscout API v3
+
+tags:
+  - name: heartrate
+    description: Heart rate data operations
+
+paths:
+  /heartrate:
+    get:
+      tags:
+        - heartrate
+      summary: List heart rate readings
+      description: |
+        Returns heart rate readings within the specified date range.
+        Supports pagination and filtering.
+      operationId: getHeartRates
+      parameters:
+        - $ref: '#/components/parameters/date_gte'
+        - $ref: '#/components/parameters/date_lte'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/fields'
+      responses:
+        '200':
+          description: List of heart rate readings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HeartRate'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_secret: []
+        - jwt: ['heartrate:read']
+
+    post:
+      tags:
+        - heartrate
+      summary: Create heart rate reading
+      description: |
+        Creates a new heart rate reading. Supports batch creation via array.
+      operationId: createHeartRate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/HeartRateInput'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/HeartRateInput'
+      responses:
+        '201':
+          description: Heart rate reading created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HeartRate'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_secret: []
+        - jwt: ['heartrate:create']
+
+  /heartrate/{identifier}:
+    get:
+      tags:
+        - heartrate
+      summary: Get heart rate reading by ID
+      operationId: getHeartRateById
+      parameters:
+        - $ref: '#/components/parameters/identifier'
+      responses:
+        '200':
+          description: Heart rate reading
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HeartRate'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - api_secret: []
+        - jwt: ['heartrate:read']
+
+    put:
+      tags:
+        - heartrate
+      summary: Update heart rate reading
+      operationId: updateHeartRate
+      parameters:
+        - $ref: '#/components/parameters/identifier'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HeartRateInput'
+      responses:
+        '200':
+          description: Heart rate reading updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HeartRate'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - api_secret: []
+        - jwt: ['heartrate:update']
+
+    delete:
+      tags:
+        - heartrate
+      summary: Delete heart rate reading
+      operationId: deleteHeartRate
+      parameters:
+        - $ref: '#/components/parameters/identifier'
+      responses:
+        '204':
+          description: Heart rate reading deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - api_secret: []
+        - jwt: ['heartrate:delete']
+
+  /heartrate/history:
+    get:
+      tags:
+        - heartrate
+      summary: Get heart rate history since timestamp
+      description: |
+        Returns heart rate readings modified since the given timestamp.
+        Used for incremental sync.
+      operationId: getHeartRateHistory
+      parameters:
+        - name: last
+          in: query
+          description: Last sync timestamp (epoch milliseconds)
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Heart rate readings since timestamp
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HeartRate'
+                  lastModified:
+                    type: integer
+                    format: int64
+                    description: Timestamp of most recent modification
+      security:
+        - api_secret: []
+        - jwt: ['heartrate:read']
+
+components:
+  schemas:
+    HeartRate:
+      type: object
+      description: |
+        Heart rate reading from wearable device or AID system.
+        
+        **AAPS Source**: `database/entities/HeartRate.kt`
+        **PR#8083 Implementation**: `lib/server/heartrate.js`
+      required:
+        - beatsPerMinute
+        - timestamp
+      properties:
+        _id:
+          type: string
+          description: MongoDB ObjectId
+          example: "507f1f77bcf86cd799439011"
+          readOnly: true
+        identifier:
+          type: string
+          format: uuid
+          description: |
+            Stable identifier for sync operations.
+            Used for deduplication across systems.
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        beatsPerMinute:
+          type: number
+          format: double
+          minimum: 20
+          maximum: 300
+          description: Heart rate value in beats per minute (BPM)
+          example: 72.5
+          x-aid-source: "aaps:database/impl/src/main/kotlin/app/aaps/database/entities/HeartRate.kt"
+        timestamp:
+          type: integer
+          format: int64
+          description: |
+            End of sampling period in milliseconds since epoch (UTC).
+            AAPS uses this as the primary timestamp field.
+          example: 1706500800000
+          x-aid-source: "aaps:database/impl/src/main/kotlin/app/aaps/database/entities/HeartRate.kt"
+        date:
+          type: string
+          format: date-time
+          description: ISO8601 timestamp (alternative to epoch milliseconds)
+          example: "2026-01-29T12:00:00.000Z"
+        duration:
+          type: integer
+          format: int64
+          description: |
+            Duration of sampling period in milliseconds.
+            AAPS typically samples over 60-second windows.
+          default: 60000
+          example: 60000
+          x-aid-source: "aaps:database/impl/src/main/kotlin/app/aaps/database/entities/HeartRate.kt"
+        device:
+          type: string
+          description: |
+            Source device identifier (e.g., smartwatch name/model).
+            Used for attribution and filtering.
+          example: "Galaxy Watch 5"
+          x-aid-source: "aaps:database/impl/src/main/kotlin/app/aaps/database/entities/HeartRate.kt"
+        utcOffset:
+          type: integer
+          format: int64
+          description: UTC offset in milliseconds for local time calculation
+          default: 0
+          example: -18000000
+          x-aid-source: "aaps:database/impl/src/main/kotlin/app/aaps/database/entities/HeartRate.kt"
+        isValid:
+          type: boolean
+          description: Data validity flag (false if unreliable reading)
+          default: true
+          example: true
+          x-aid-source: "aaps:database/impl/src/main/kotlin/app/aaps/database/entities/HeartRate.kt"
+        created_at:
+          type: string
+          format: date-time
+          description: Server-side creation timestamp
+          readOnly: true
+          example: "2026-01-29T12:00:05.123Z"
+        srvCreated:
+          type: integer
+          format: int64
+          description: Server creation timestamp (epoch ms)
+          readOnly: true
+        srvModified:
+          type: integer
+          format: int64
+          description: Server modification timestamp (epoch ms)
+          readOnly: true
+        subject:
+          type: string
+          description: Subject identifier for multi-user installations
+          example: "patient1"
+      x-aid-controllers:
+        aaps: full
+        loop: none
+        trio: none
+        xdrip: partial
+      x-aid-gap: GAP-API-HR
+
+    HeartRateInput:
+      type: object
+      description: Input schema for creating/updating heart rate readings
+      required:
+        - beatsPerMinute
+      properties:
+        identifier:
+          type: string
+          format: uuid
+          description: Client-generated sync identifier
+        beatsPerMinute:
+          type: number
+          format: double
+          minimum: 20
+          maximum: 300
+        timestamp:
+          type: integer
+          format: int64
+          description: Epoch milliseconds (required if date not provided)
+        date:
+          type: string
+          format: date-time
+          description: ISO8601 timestamp (required if timestamp not provided)
+        duration:
+          type: integer
+          format: int64
+          default: 60000
+        device:
+          type: string
+        utcOffset:
+          type: integer
+          format: int64
+          default: 0
+        isValid:
+          type: boolean
+          default: true
+
+  parameters:
+    identifier:
+      name: identifier
+      in: path
+      required: true
+      description: Heart rate reading identifier (_id or identifier field)
+      schema:
+        type: string
+
+    date_gte:
+      name: date$gte
+      in: query
+      description: Filter readings on or after this date
+      schema:
+        type: string
+        format: date-time
+
+    date_lte:
+      name: date$lte
+      in: query
+      description: Filter readings on or before this date
+      schema:
+        type: string
+        format: date-time
+
+    limit:
+      name: limit
+      in: query
+      description: Maximum number of results
+      schema:
+        type: integer
+        default: 100
+        maximum: 1000
+
+    skip:
+      name: skip
+      in: query
+      description: Number of results to skip (pagination)
+      schema:
+        type: integer
+        default: 0
+
+    sort:
+      name: sort
+      in: query
+      description: |
+        Sort order. Prefix with - for descending.
+        Example: -timestamp (newest first)
+      schema:
+        type: string
+        default: "-timestamp"
+
+    fields:
+      name: fields
+      in: query
+      description: Comma-separated list of fields to return
+      schema:
+        type: string
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 401
+              message:
+                type: string
+                example: "Unauthorized"
+
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: "beatsPerMinute is required"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "Heart rate reading not found"
+
+  securitySchemes:
+    api_secret:
+      type: apiKey
+      in: header
+      name: api-secret
+      description: SHA1 hash of API_SECRET
+
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token with heartrate permissions

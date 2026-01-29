@@ -41,7 +41,7 @@ GAP_DOMAIN_MAP = {
     "pumps": ["GAP-PUMP"],
 }
 
-# Requirement range to domain mapping
+# Requirement prefix groupings - map fine-grained prefixes to coarse domains
 REQ_DOMAIN_MAP = {
     "core": list(range(1, 10)),          # REQ-001-009: Override behavior
     "timestamps": list(range(10, 20)),    # REQ-010-019: Timestamp handling
@@ -49,6 +49,16 @@ REQ_DOMAIN_MAP = {
     "treatments": list(range(40, 50)),    # REQ-040-049: Treatment sync
     "cgm": list(range(50, 60)),           # REQ-050-059: CGM data source
     "algorithms": list(range(60, 70)),    # REQ-060-069: Algorithm
+}
+
+# Group fine-grained REQ prefixes into broader domains
+REQ_PREFIX_GROUPS = {
+    "cgm-sources": ["cgm", "ble", "libre", "connect", "bridge"],
+    "sync-identity": ["sync", "batch", "tz", "timestamps"],
+    "nightscout-api": ["api", "auth", "ui", "plugin", "err", "stats", "spec"],
+    "aid-algorithms": ["alg", "carb", "ins", "degrade", "pr"],
+    "treatments": ["treatments", "remote", "alarm", "interop"],
+    "pumps": ["pump"],
 }
 
 
@@ -296,7 +306,18 @@ def plan_requirements_chunking(analysis: dict) -> dict:
     else:
         avg_lines_per_req = 20
     
-    for domain, reqs in analysis["by_domain"].items():
+    # Group fine-grained domains into broader domains
+    grouped_reqs = defaultdict(list)
+    for fine_domain, reqs in analysis["by_domain"].items():
+        # Find the broad domain
+        broad_domain = "other"
+        for group_name, prefixes in REQ_PREFIX_GROUPS.items():
+            if fine_domain in prefixes:
+                broad_domain = group_name
+                break
+        grouped_reqs[broad_domain].extend(reqs)
+    
+    for domain, reqs in grouped_reqs.items():
         if domain == "other" and len(reqs) < 3:
             continue
             
@@ -311,6 +332,11 @@ def plan_requirements_chunking(analysis: dict) -> dict:
             "estimated_lines": estimated_lines
         }
         plan["chunks"].append(chunk_info)
+        
+        if estimated_lines > plan["threshold"]:
+            plan["warnings"].append(
+                f"{chunk_file} will be over threshold ({estimated_lines} > {plan['threshold']})"
+            )
     
     return plan
 
@@ -451,6 +477,372 @@ def format_plan_report(plan: dict) -> str:
     return "\n".join(lines)
 
 
+def execute_gaps_chunking(path: Path, plan: dict, dry_run: bool = False) -> dict:
+    """Execute chunking for gaps.md."""
+    result = {
+        "source": str(path),
+        "dry_run": dry_run,
+        "chunks_created": [],
+        "index_updated": False,
+        "errors": []
+    }
+    
+    if not path.exists():
+        result["errors"].append(f"Source file not found: {path}")
+        return result
+    
+    content = path.read_text(encoding='utf-8')
+    
+    # Parse all gap sections with their full content
+    # Pattern: ### GAP-XXX-NNN: Title ... until next ### or end
+    gap_pattern = r'^(### GAP-[A-Z]+-\d+:.+?)(?=^### GAP-|\Z)'
+    gaps_content = {}
+    
+    for match in re.finditer(gap_pattern, content, re.MULTILINE | re.DOTALL):
+        gap_text = match.group(1).strip()
+        # Extract gap ID
+        id_match = re.match(r'### (GAP-[A-Z]+-\d+)', gap_text)
+        if id_match:
+            gap_id = id_match.group(1)
+            gaps_content[gap_id] = gap_text
+    
+    # Organize gaps by domain
+    domain_gaps = defaultdict(list)
+    for gap_id, gap_text in gaps_content.items():
+        domain = get_domain_for_gap(gap_id)
+        domain_gaps[domain].append((gap_id, gap_text))
+    
+    # Create domain files
+    for chunk in plan["chunks"]:
+        domain = chunk["domain"]
+        chunk_path = Path(chunk["file"])
+        
+        if domain not in domain_gaps:
+            continue
+        
+        # Sort gaps by ID
+        sorted_gaps = sorted(domain_gaps[domain], key=lambda x: x[0])
+        
+        # Build chunk content
+        chunk_lines = [
+            f"# {domain.replace('-', ' ').title()} Gaps",
+            "",
+            f"Domain-specific gaps extracted from gaps.md.",
+            f"See [gaps.md](gaps.md) for the index.",
+            "",
+            "---",
+            ""
+        ]
+        
+        for gap_id, gap_text in sorted_gaps:
+            chunk_lines.append(gap_text)
+            chunk_lines.append("")
+            chunk_lines.append("---")
+            chunk_lines.append("")
+        
+        chunk_content = "\n".join(chunk_lines)
+        
+        if dry_run:
+            result["chunks_created"].append({
+                "file": str(chunk_path),
+                "gaps": len(sorted_gaps),
+                "lines": chunk_content.count('\n') + 1,
+                "preview": chunk_content[:500] + "..." if len(chunk_content) > 500 else chunk_content
+            })
+        else:
+            chunk_path.parent.mkdir(parents=True, exist_ok=True)
+            chunk_path.write_text(chunk_content, encoding='utf-8')
+            result["chunks_created"].append({
+                "file": str(chunk_path),
+                "gaps": len(sorted_gaps),
+                "lines": chunk_content.count('\n') + 1
+            })
+    
+    # Create index file
+    if not dry_run:
+        index_lines = [
+            "# Gaps",
+            "",
+            "This document is an index of gaps organized by domain.",
+            "",
+            "## Domain Files",
+            "",
+        ]
+        
+        for chunk in sorted(plan["chunks"], key=lambda x: x["domain"]):
+            domain = chunk["domain"]
+            chunk_file = Path(chunk["file"]).name
+            gap_count = len(domain_gaps.get(domain, []))
+            index_lines.append(f"- [{domain.replace('-', ' ').title()}]({chunk_file}) - {gap_count} gaps")
+        
+        index_lines.append("")
+        index_lines.append("## Quick Reference")
+        index_lines.append("")
+        index_lines.append("| Domain | Gap Count | File |")
+        index_lines.append("|--------|-----------|------|")
+        
+        for chunk in sorted(plan["chunks"], key=lambda x: -len(domain_gaps.get(x["domain"], []))):
+            domain = chunk["domain"]
+            chunk_file = Path(chunk["file"]).name
+            gap_count = len(domain_gaps.get(domain, []))
+            index_lines.append(f"| {domain} | {gap_count} | [{chunk_file}]({chunk_file}) |")
+        
+        index_lines.append("")
+        index_lines.append(f"Total: {len(gaps_content)} gaps across {len(plan['chunks'])} domains")
+        index_lines.append("")
+        index_lines.append(f"*Last chunked: {datetime.now().strftime('%Y-%m-%d')}*")
+        
+        index_content = "\n".join(index_lines)
+        path.write_text(index_content, encoding='utf-8')
+        result["index_updated"] = True
+        result["index_lines"] = len(index_lines)
+    
+    return result
+
+
+def get_domain_for_gap(gap_id: str) -> str:
+    """Get domain for a gap ID."""
+    for domain, prefixes in GAP_DOMAIN_MAP.items():
+        for prefix in prefixes:
+            if gap_id.startswith(prefix):
+                return domain
+    return "other"
+
+
+def execute_requirements_chunking(path: Path, plan: dict, dry_run: bool = False) -> dict:
+    """Execute chunking for requirements.md."""
+    result = {
+        "source": str(path),
+        "dry_run": dry_run,
+        "chunks_created": [],
+        "index_updated": False,
+        "errors": []
+    }
+    
+    if not path.exists():
+        result["errors"].append(f"Source file not found: {path}")
+        return result
+    
+    content = path.read_text(encoding='utf-8')
+    
+    # Parse requirement sections - handles REQ-XXX-NNN format
+    req_pattern = r'^(### REQ-[A-Z]+-\d+:.+?)(?=^### REQ-|\Z)'
+    reqs_content = {}
+    
+    for match in re.finditer(req_pattern, content, re.MULTILINE | re.DOTALL):
+        req_text = match.group(1).strip()
+        id_match = re.match(r'### (REQ-[A-Z]+-\d+)', req_text)
+        if id_match:
+            req_id = id_match.group(1)
+            reqs_content[req_id] = req_text
+    
+    # Organize by broad domain using REQ_PREFIX_GROUPS
+    domain_reqs = defaultdict(list)
+    for req_id, req_text in reqs_content.items():
+        # Extract fine domain from REQ-DOMAIN-NNN
+        domain_match = re.match(r'REQ-([A-Z]+)-\d+', req_id)
+        if domain_match:
+            fine_domain = domain_match.group(1).lower()
+            # Map to broad domain
+            broad_domain = "other"
+            for group_name, prefixes in REQ_PREFIX_GROUPS.items():
+                if fine_domain in prefixes:
+                    broad_domain = group_name
+                    break
+        else:
+            broad_domain = "other"
+        domain_reqs[broad_domain].append((req_id, req_text))
+    
+    # Create domain files
+    for chunk in plan["chunks"]:
+        domain = chunk["domain"]
+        chunk_path = Path(chunk["file"])
+        
+        if domain not in domain_reqs:
+            continue
+        
+        sorted_reqs = sorted(domain_reqs[domain], key=lambda x: x[0])
+        
+        chunk_lines = [
+            f"# {domain.replace('-', ' ').title()} Requirements",
+            "",
+            f"Domain-specific requirements extracted from requirements.md.",
+            f"See [requirements.md](requirements.md) for the index.",
+            "",
+            "---",
+            ""
+        ]
+        
+        for req_id, req_text in sorted_reqs:
+            chunk_lines.append(req_text)
+            chunk_lines.append("")
+            chunk_lines.append("---")
+            chunk_lines.append("")
+        
+        chunk_content = "\n".join(chunk_lines)
+        
+        if dry_run:
+            result["chunks_created"].append({
+                "file": str(chunk_path),
+                "requirements": len(sorted_reqs),
+                "lines": chunk_content.count('\n') + 1
+            })
+        else:
+            chunk_path.parent.mkdir(parents=True, exist_ok=True)
+            chunk_path.write_text(chunk_content, encoding='utf-8')
+            result["chunks_created"].append({
+                "file": str(chunk_path),
+                "requirements": len(sorted_reqs),
+                "lines": chunk_content.count('\n') + 1
+            })
+    
+    # Create index
+    if not dry_run:
+        index_lines = [
+            "# Requirements",
+            "",
+            "This document is an index of requirements organized by domain.",
+            "",
+            "## Domain Files",
+            "",
+        ]
+        
+        for chunk in sorted(plan["chunks"], key=lambda x: x["domain"]):
+            domain = chunk["domain"]
+            chunk_file = Path(chunk["file"]).name
+            req_count = len(domain_reqs.get(domain, []))
+            index_lines.append(f"- [{domain.replace('-', ' ').title()}]({chunk_file}) - {req_count} requirements")
+        
+        index_lines.append("")
+        index_lines.append(f"Total: {len(reqs_content)} requirements")
+        index_lines.append("")
+        index_lines.append(f"*Last chunked: {datetime.now().strftime('%Y-%m-%d')}*")
+        
+        path.write_text("\n".join(index_lines), encoding='utf-8')
+        result["index_updated"] = True
+    
+    return result
+
+
+def get_domain_for_req(req_id: str) -> str:
+    """Get domain for a requirement ID."""
+    num_match = re.search(r'\d+', req_id)
+    if not num_match:
+        return "other"
+    
+    num = int(num_match.group())
+    for domain, numbers in REQ_DOMAIN_MAP.items():
+        if num in numbers:
+            return domain
+    return "other"
+
+
+def execute_progress_chunking(path: Path, plan: dict, dry_run: bool = False) -> dict:
+    """Execute chunking for progress.md."""
+    result = {
+        "source": str(path),
+        "dry_run": dry_run,
+        "chunks_created": [],
+        "index_updated": False,
+        "errors": []
+    }
+    
+    if not path.exists():
+        result["errors"].append(f"Source file not found: {path}")
+        return result
+    
+    content = path.read_text(encoding='utf-8')
+    
+    # Parse progress entries by month
+    entry_pattern = r'^(### .+?\(\d{4}-\d{2}-\d{2}\).+?)(?=^### |\Z)'
+    entries_by_month = defaultdict(list)
+    
+    for match in re.finditer(entry_pattern, content, re.MULTILINE | re.DOTALL):
+        entry_text = match.group(1).strip()
+        date_match = re.search(r'\((\d{4}-\d{2})-\d{2}\)', entry_text)
+        if date_match:
+            month = date_match.group(1)
+            entries_by_month[month].append(entry_text)
+    
+    # Create monthly archive files
+    for chunk in plan["chunks"]:
+        month = chunk["month"]
+        chunk_path = Path(chunk["file"])
+        
+        if month not in entries_by_month:
+            continue
+        
+        entries = entries_by_month[month]
+        
+        chunk_lines = [
+            f"# Progress - {month}",
+            "",
+            f"Monthly progress archive.",
+            f"See [progress.md](../progress.md) for the current index.",
+            "",
+            "---",
+            ""
+        ]
+        
+        for entry in entries:
+            chunk_lines.append(entry)
+            chunk_lines.append("")
+            chunk_lines.append("---")
+            chunk_lines.append("")
+        
+        chunk_content = "\n".join(chunk_lines)
+        
+        if dry_run:
+            result["chunks_created"].append({
+                "file": str(chunk_path),
+                "entries": len(entries),
+                "lines": chunk_content.count('\n') + 1
+            })
+        else:
+            chunk_path.parent.mkdir(parents=True, exist_ok=True)
+            chunk_path.write_text(chunk_content, encoding='utf-8')
+            result["chunks_created"].append({
+                "file": str(chunk_path),
+                "entries": len(entries),
+                "lines": chunk_content.count('\n') + 1
+            })
+    
+    # Keep only current month in index
+    if not dry_run:
+        current_month = datetime.now().strftime('%Y-%m')
+        current_entries = entries_by_month.get(current_month, [])
+        
+        index_lines = [
+            "# Progress",
+            "",
+            "Current month's progress. See archives for older entries.",
+            "",
+            "## Archives",
+            "",
+        ]
+        
+        for month in sorted(entries_by_month.keys(), reverse=True):
+            if month != current_month:
+                archive_file = f"docs/progress-archive/{month}.md"
+                count = len(entries_by_month[month])
+                index_lines.append(f"- [{month}]({archive_file}) - {count} entries")
+        
+        index_lines.append("")
+        index_lines.append("---")
+        index_lines.append("")
+        
+        for entry in current_entries:
+            index_lines.append(entry)
+            index_lines.append("")
+            index_lines.append("---")
+            index_lines.append("")
+        
+        path.write_text("\n".join(index_lines), encoding='utf-8')
+        result["index_updated"] = True
+    
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Document chunking tool for oversized files."
@@ -458,7 +850,8 @@ def main():
     parser.add_argument('--check', action='store_true', help='Check which files need chunking')
     parser.add_argument('--analyze', type=str, help='Analyze file structure')
     parser.add_argument('--plan', type=str, help='Generate chunking plan')
-    parser.add_argument('--chunk', type=str, help='Execute chunking (not yet implemented)')
+    parser.add_argument('--chunk', type=str, help='Execute chunking')
+    parser.add_argument('--dry-run', action='store_true', help='Preview chunking without writing files')
     parser.add_argument('--json', action='store_true', help='Output as JSON')
     args = parser.parse_args()
     
@@ -508,9 +901,36 @@ def main():
             print(format_plan_report(plan))
     
     elif args.chunk:
-        print("Chunking execution not yet implemented.", file=sys.stderr)
-        print("Use --plan to preview, then manually execute.", file=sys.stderr)
-        sys.exit(1)
+        path = Path(args.chunk)
+        dry_run = args.dry_run
+        
+        if 'gaps' in str(path):
+            analysis = analyze_gaps_file(path)
+            plan = plan_gaps_chunking(analysis)
+            result = execute_gaps_chunking(path, plan, dry_run)
+        elif 'requirements' in str(path):
+            analysis = analyze_requirements_file(path)
+            plan = plan_requirements_chunking(analysis)
+            result = execute_requirements_chunking(path, plan, dry_run)
+        elif 'progress' in str(path):
+            analysis = analyze_progress_file(path)
+            plan = plan_progress_chunking(analysis)
+            result = execute_progress_chunking(path, plan, dry_run)
+        else:
+            print(f"Unknown file type: {path}", file=sys.stderr)
+            sys.exit(1)
+        
+        if args.json:
+            print(json.dumps(result, indent=2))
+        else:
+            print(f"Chunking {'preview' if dry_run else 'complete'}: {path}")
+            for chunk in result["chunks_created"]:
+                print(f"  Created: {chunk['file']}")
+            if result.get("index_updated"):
+                print(f"  Index updated: {path}")
+            if result.get("errors"):
+                for err in result["errors"]:
+                    print(f"  ERROR: {err}", file=sys.stderr)
     
     else:
         # Default: check

@@ -1,0 +1,902 @@
+# Cgm Sources Gaps
+
+Domain-specific gaps extracted from gaps.md.
+See [gaps.md](gaps.md) for the index.
+
+---
+
+### GAP-BLE-001: G7 J-PAKE Full Specification Incomplete
+
+**Scenario**: G7 Initial Pairing
+
+**Description**: The J-PAKE (Password Authenticated Key Exchange by Juggling) protocol used by Dexcom G7 for initial pairing is not fully documented. The mathematical operations for key derivation are implemented in native libraries (keks, mbedtls) but the exact message formats and state machine are not fully understood.
+
+**Source**: [Dexcom BLE Protocol Deep Dive](../docs/10-domain/dexcom-ble-protocol-deep-dive.md#g7-j-pake-authentication)
+
+**Impact**:
+- New G7 implementations must reverse-engineer or copy existing code
+- Cannot verify correctness of implementations
+- Security analysis is incomplete
+
+**Possible Solutions**:
+1. Detailed packet capture and analysis of J-PAKE phases
+2. Reverse engineering of official Dexcom app
+3. Collaboration with existing implementations (xDrip+, DiaBLE)
+
+**Status**: Documentation effort
+
+---
+
+---
+
+### GAP-BLE-002: G7 Certificate Chain Undocumented
+
+**Scenario**: G7 Initial Pairing
+
+**Description**: The certificate exchange (opcode 0x0B) and proof of possession (opcode 0x0C) protocols used after J-PAKE are not fully documented. These establish long-term trust between the sensor and device.
+
+**Source**: [DiaBLE DexcomG7.swift](../externals/DiaBLE/DiaBLE Playground.swiftpm/DexcomG7.swift)
+
+**Impact**:
+- Cannot implement G7 pairing from specification alone
+- Certificate validation logic is unclear
+- Security implications not fully analyzed
+
+**Possible Solutions**:
+1. Packet capture of certificate exchange
+2. Analysis of certificate formats (likely X.509)
+3. Documentation of signature verification
+
+**Status**: Needs investigation
+
+---
+
+---
+
+### GAP-BLE-003: Service B Purpose Unknown
+
+**Scenario**: BLE Protocol Completeness
+
+**Description**: The secondary Bluetooth service (UUID: F8084532-849E-531C-C594-30F1F86A4EA5) with characteristics E (F8084533) and F (F8084534) is present on Dexcom transmitters but its purpose is unknown.
+
+**Source**: [CGMBLEKit BluetoothServices.swift](../externals/LoopWorkspace/CGMBLEKit/CGMBLEKit/BluetoothServices.swift)
+
+**Impact**:
+- Potentially missing functionality
+- May be used for firmware updates or diagnostics
+
+**Possible Solutions**:
+1. Packet capture during firmware updates
+2. Reverse engineering of Dexcom app
+3. Experimentation with characteristic reads/writes
+
+**Status**: Low priority
+
+---
+
+---
+
+### GAP-BLE-004: Anubis Transmitter Extended Commands
+
+**Scenario**: G6 Extended Transmitters
+
+**Description**: "Anubis" G6 transmitters (maxRuntimeDays > 120) use extended commands at opcodes 0x3B and 0xF0xx that are not fully documented. These appear related to transmitter reset/restart functionality.
+
+**Source**: [xdrip-js transmitter.js](../externals/xdrip-js/lib/transmitter.js)
+
+**Impact**:
+- Cannot fully support Anubis transmitter features
+- Reset/extend functionality limited
+
+**Possible Solutions**:
+1. Analysis of xDrip+ Android implementation
+2. Documentation of 0xF080 message format
+
+**Status**: Low priority
+
+---
+
+---
+
+### GAP-BLE-005: G7 Encryption Info Format Unknown
+
+**Scenario**: G7 Advanced Features
+
+**Description**: The encryption info (opcode 0x38) and encryption status (opcode 0x0F) commands for G7 are present but the data format and purpose are unclear. May relate to encrypted data streams.
+
+**Source**: [DiaBLE DexcomG7.swift](../externals/DiaBLE/DiaBLE Playground.swiftpm/DexcomG7.swift)
+
+**Impact**:
+- May be blocking access to additional data
+- Security implications unknown
+
+**Possible Solutions**:
+1. Packet analysis of encryption commands
+2. Cross-reference with official app behavior
+
+**Status**: Needs investigation
+
+---
+
+## Carb Absorption Gaps
+
+---
+
+### GAP-BRIDGE-001: Node.js 16+ EOL blocks upgrades
+
+**Scenario**: share2nightscout-bridge Node compatibility
+
+**Description**: The `package.json` engines field restricts to Node 8-16, all of which are end-of-life. This blocks cgm-remote-monitor upgrade to Node 22+ (PR #8357).
+
+**Evidence**:
+```json
+"engines": {
+  "node": "16.x || 14.x || 12.x || 10.x || 8.x"
+}
+```
+
+**Impact**:
+- Cannot upgrade Nightscout to Node 22+
+- Security vulnerabilities in EOL Node versions
+- Deployment platform compatibility issues
+
+**Possible Solutions**:
+1. Complete `wip/bewest/axios` branch migration
+2. Deprecate in favor of cgm-remote-monitor `connect` module
+3. Update engines field after dependency modernization
+
+**Status**: Open - WIP branch exists
+
+**Related**:
+- [PR Analysis](../docs/10-domain/share2nightscout-bridge-pr-analysis.md)
+- [GitHub Issue #61](https://github.com/nightscout/share2nightscout-bridge/issues/61)
+
+---
+
+---
+
+### GAP-BRIDGE-002: Deprecated `request` npm package
+
+**Scenario**: share2nightscout-bridge dependency modernization
+
+**Description**: The sole dependency `request` is deprecated since 2020 and has known vulnerabilities. No active maintenance.
+
+**Evidence**:
+```json
+"dependencies": {
+  "request": "^2.88.0"
+}
+```
+
+**Impact**:
+- Security vulnerabilities unpatched
+- Node.js compatibility issues with newer versions
+- npm audit warnings
+
+**Possible Solutions**:
+1. Migrate to `axios` (WIP branch exists)
+2. Migrate to native `fetch` (Node 18+)
+3. Migrate to `node-fetch` or `got`
+
+**Status**: Open - WIP branch `wip/bewest/axios` in progress
+
+**Related**:
+- [PR Analysis](../docs/10-domain/share2nightscout-bridge-pr-analysis.md)
+
+---
+
+---
+
+### GAP-BRIDGE-003: No CI/CD pipeline
+
+**Scenario**: share2nightscout-bridge automated testing
+
+**Description**: The project uses `wercker.yml` but Wercker service is defunct. No GitHub Actions or other CI configured.
+
+**Evidence**:
+```
+wercker.yml  # Defunct service
+```
+
+**Impact**:
+- PRs not automatically tested
+- No confidence in merge safety
+- Manual testing burden
+
+**Possible Solutions**:
+1. Add GitHub Actions workflow
+2. Add simple npm test action
+3. Consider deprecation if connect module preferred
+
+**Status**: Documented
+
+**Related**:
+- [PR Analysis](../docs/10-domain/share2nightscout-bridge-pr-analysis.md)
+
+---
+
+## Algorithm Conformance Gaps
+
+---
+
+### GAP-CGM-001: DiaBLE lacks treatment support
+
+**Scenario**: Bi-directional treatment sync
+
+**Description**: DiaBLE only uploads CGM entries to Nightscout and downloads server status. It cannot create, edit, or sync treatments (bolus, carbs, corrections). Users cannot log insulin or carbs directly from DiaBLE.
+
+**Source**: [DiaBLE Nightscout Sync](../mapping/diable/nightscout-sync.md)
+
+**Impact**:
+- DiaBLE users must use another app for treatment logging
+- No unified CGM + treatment workflow in DiaBLE
+- Cannot use DiaBLE as standalone diabetes management app
+
+**Possible Solutions**:
+1. Add treatment API integration to DiaBLE
+2. Accept DiaBLE as CGM-only producer (current behavior)
+3. Integrate with iOS Shortcuts for treatment logging
+
+**Status**: Informational (DiaBLE design choice)
+
+**Related**:
+- [DiaBLE Documentation](../mapping/diable/)
+- [CGM Apps Comparison](../mapping/cross-project/cgm-apps-comparison.md)
+
+---
+
+---
+
+### GAP-CGM-002: xdrip-js limited to Dexcom G5/G6
+
+**Scenario**: CGM data collection for OpenAPS rigs
+
+**Description**: xdrip-js only supports Dexcom G5 and G6 transmitters. It cannot read from Dexcom G7, Libre sensors, or bridge devices. Users with newer sensors cannot use xdrip-js-based solutions.
+
+**Source**: [xdrip-js Documentation](../mapping/xdrip-js/)
+
+**Impact**:
+- OpenAPS rigs using Lookout/Logger limited to G5/G6
+- No path for G7 users wanting DIY closed-loop on Raspberry Pi
+- Libre users must use alternative solutions
+
+**Possible Solutions**:
+1. Implement G7 J-PAKE authentication in xdrip-js (complex)
+2. Use alternative libraries for G7/Libre (e.g., cgm-remote-monitor bridge)
+3. Accept limitation (G5/G6 still widely used)
+
+**Status**: Informational (library scope)
+
+**Related**:
+- [xdrip-js BLE Protocol](../mapping/xdrip-js/ble-protocol.md)
+- [CGM Apps Comparison](../mapping/cross-project/cgm-apps-comparison.md)
+
+---
+
+---
+
+### GAP-CGM-003: Libre 3 encryption not fully documented
+
+**Scenario**: Direct Libre 3 sensor reading
+
+**Description**: DiaBLE documents partial Libre 3 support but notes that AES-128-CCM encryption with ECDH key agreement and Zimperium zShield anti-tampering are not fully cracked. DiaBLE can eavesdrop on BLE traffic but cannot independently decrypt sensor data.
+
+**Source**: [DiaBLE CGM Transmitters](../mapping/diable/cgm-transmitters.md)
+
+**Impact**:
+- Full independent Libre 3 reading requires external decryption
+- Must use trident.realm extraction from rooted devices
+- DIY community lacks complete Libre 3 specification
+
+**Possible Solutions**:
+1. Continue reverse engineering efforts (Juggluco project)
+2. Use LibreLinkUp cloud as alternative data source
+3. Document known encryption parameters for community research
+
+**Status**: Under investigation (community effort)
+
+**Related**:
+- [DiaBLE README](../externals/DiaBLE/README.md)
+- [Libre 3 Technical Blog Post](https://frdmtoplay.com/freeing-glucose-data-from-the-freestyle-libre-3/)
+
+---
+
+---
+
+### GAP-CGM-004: No standardized Dexcom BLE protocol specification
+
+**Scenario**: Cross-platform CGM integration
+
+**Description**: Dexcom BLE protocol is undocumented by the manufacturer. xdrip-js, DiaBLE, xDrip+, and xDrip4iOS each implement their own reverse-engineered versions. There are subtle differences in authentication handling, backfill parsing, and error recovery.
+
+**Source**: [xdrip-js BLE Protocol](../mapping/xdrip-js/ble-protocol.md), [DiaBLE CGM Transmitters](../mapping/diable/cgm-transmitters.md)
+
+**Impact**:
+- Each implementation may have different bugs or limitations
+- No authoritative source for protocol behavior
+- G6 "Anubis" and G7 protocols add complexity
+
+**Possible Solutions**:
+1. Create community-maintained protocol specification
+2. Cross-reference implementations to identify discrepancies
+3. Accept implementation diversity (current state)
+
+**Status**: Documentation effort → Partially resolved (see `docs/10-domain/dexcom-ble-protocol-deep-dive.md`)
+
+**Related**:
+- [xdrip-js BLE Protocol](../mapping/xdrip-js/ble-protocol.md)
+- [DiaBLE Dexcom Support](../mapping/diable/cgm-transmitters.md)
+- [Dexcom BLE Protocol Deep Dive](../docs/10-domain/dexcom-ble-protocol-deep-dive.md)
+
+---
+
+---
+
+### GAP-CGM-005: Raw Values Not Uploaded by iOS
+
+**Scenario**: Calibration validation, algorithm comparison
+
+**Description**: iOS systems (Loop, Trio, xDrip4iOS) typically do not upload raw sensor values (`filtered`, `unfiltered`) to Nightscout. They rely on transmitter-calibrated readings.
+
+**Impact**:
+- Cannot recalibrate iOS-sourced readings
+- Cannot compare raw vs calibrated values
+- Limits retrospective analysis options
+
+**Possible Solutions**:
+1. iOS apps extract and upload raw values (requires transmitter protocol changes)
+2. Accept limitation and document iOS vs Android differences
+3. Use companion bridges (MiaoMiao) that expose raw values
+
+**Status**: Under discussion (likely won't fix due to iOS CGM API limitations)
+
+**Related**:
+- [xDrip4iOS CGM Transmitters](../mapping/xdrip4ios/cgm-transmitters.md)
+- [GAP-ENTRY-005](../docs/10-domain/entries-deep-dive.md#gap-summary)
+
+---
+
+---
+
+### GAP-CGM-006: Follower Source Not Distinguished
+
+**Scenario**: Latency analysis, data freshness assessment
+
+**Description**: When CGM data is sourced from follower mode (Nightscout, Dexcom Share, LibreLinkUp), the follower source is not consistently indicated in entries.
+
+**Impact**:
+- Cannot distinguish direct sensor data from cloud-sourced data
+- Cannot assess data latency (follower modes have 1-5+ minute delays)
+- Duplicate detection between direct and follower sources is complex
+
+**Possible Solutions**:
+1. Append "-follower" to `device` field when in follower mode
+2. Add `sourceType` field: `direct` | `follower` | `cloud`
+3. Include original source URL in metadata
+
+**Status**: Under discussion
+
+**Related**:
+- [xDrip4iOS Follower Modes](../mapping/xdrip4ios/follower-modes.md)
+- [xDrip+ Data Sources - Cloud Followers](../mapping/xdrip-android/data-sources.md#cloud-follower-sources)
+
+---
+
+---
+
+### GAP-LF-001: Alarm Configuration Not Synced
+
+**Scenario**: Multi-Caregiver Coordination
+
+**Description**: LoopFollow alarm configurations are stored locally only. There is no mechanism to sync alarm settings to Nightscout or between caregiver devices. Each LoopFollow instance must be configured independently.
+
+**Source**: `loopfollow:LoopFollow/Alarm/Alarm.swift` - Stored via `Storage.shared.alarms`
+
+**Impact**:
+- Duplicate configuration effort for multiple caregivers
+- No centralized alarm management
+- Alarm settings lost if device is reset
+
+**Possible Solutions**:
+1. Store alarm configuration in Nightscout profile store
+2. Implement iCloud sync for alarm settings
+3. Export/import configuration as JSON
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-LF-002: No Alarm History or Audit Log
+
+**Scenario**: Alarm Effectiveness Review
+
+**Description**: LoopFollow does not maintain a history of triggered alarms. Once an alarm is snoozed or cleared, there is no record of when it fired, what triggered it, or how it was resolved.
+
+**Source**: `loopfollow:LoopFollow/Alarm/AlarmManager.swift` - No history persistence
+
+**Impact**:
+- Cannot analyze alarm patterns over time
+- No audit trail for missed alarms
+- Cannot tune alarm thresholds based on historical data
+
+**Possible Solutions**:
+1. Log alarm events to Nightscout treatments collection
+2. Maintain local SQLite database of alarm history
+3. Upload alarm events as announcements
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-LF-003: Prediction Data Unavailable for Trio
+
+**Scenario**: Predictive Low Glucose Alarm
+
+**Description**: LoopFollow's predictive low alarm relies on prediction data from deviceStatus. While Loop includes `predBgs` in deviceStatus, Trio may not include this data consistently, limiting predictive alarm effectiveness.
+
+**Source**: `loopfollow:LoopFollow/Alarm/AlarmCondition/LowBGCondition.swift#L36-L51`
+
+**Impact**:
+- Predictive alarms only work reliably with Loop
+- Trio users get delayed low alerts (reactive only)
+- Feature parity gap between Loop and Trio monitoring
+
+**Possible Solutions**:
+1. Verify Trio prediction data availability
+2. Document which alarms work with which AID systems
+3. Implement client-side prediction from recent BG data
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-LF-004: No Multi-Caregiver Alarm Acknowledgment
+
+**Scenario**: Caregiver Team Coordination
+
+**Description**: When multiple caregivers use LoopFollow to monitor the same looper, there is no coordination for alarm acknowledgment. Each caregiver sees independent alarms, and snoozing on one device doesn't affect others.
+
+**Source**: `loopfollow:LoopFollow/Alarm/AlarmManager.swift#L155-L169` - Local snooze only
+
+**Impact**:
+- Multiple caregivers may respond to same alarm
+- No visibility into who acknowledged an alarm
+- Risk of alarm fatigue from duplicate notifications
+
+**Possible Solutions**:
+1. Sync alarm acknowledgment via Nightscout
+2. Implement shared snooze state
+3. Use Nightscout announcements for alarm coordination
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-LF-005: No Command Status Tracking
+
+**Scenario**: Remote Command Reliability
+
+**Description**: LoopFollow remote commands (TRC, Loop APNS, Nightscout) are fire-and-forget. After sending a command, there is no mechanism to verify it was received or executed. Users must check the looper's app or Nightscout to confirm.
+
+**Source**: 
+- `loopfollow:LoopFollow/Remote/TRC/PushNotificationManager.swift` - Completion only indicates APNS delivery
+- `loopfollow:LoopFollow/Remote/Nightscout/TrioNightscoutRemoteView.swift` - No status polling
+
+**Impact**:
+- Users may not know if command succeeded
+- No retry mechanism for failed commands
+- Commands may be sent multiple times if user is uncertain
+
+**Possible Solutions**:
+1. Implement TRC return notification fully
+2. Poll Nightscout for command status (like LoopCaregiver Remote 2.0)
+3. Show pending command status in UI
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-LF-006: No Command History or Audit Log
+
+**Scenario**: Remote Command Audit
+
+**Description**: LoopFollow does not maintain a history of commands sent. There is no log of when commands were sent, what parameters were used, or whether they succeeded.
+
+**Source**: No command history persistence in codebase
+
+**Impact**:
+- Cannot audit who sent what command when
+- No visibility for reviewing past remote actions
+- Cannot diagnose command failures retroactively
+
+**Possible Solutions**:
+1. Maintain local command history database
+2. Log commands to Nightscout
+3. Display recent commands in UI
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-LF-007: TRC Return Notification Not Fully Implemented
+
+**Scenario**: Command Confirmation
+
+**Description**: TRC `CommandPayload` includes a `ReturnNotificationInfo` structure for Trio to send confirmation back to LoopFollow, but this feature does not appear to be fully implemented. The return notification fields are sent but there is no handler for incoming confirmations.
+
+**Source**: 
+- `loopfollow:LoopFollow/Remote/TRC/PushMessage.swift#L32-L48` - ReturnNotificationInfo defined
+- No corresponding notification receiver implementation found
+
+**Impact**:
+- Users cannot get push confirmation of command execution
+- Return notification infrastructure is unused
+- Partial implementation may confuse future developers
+
+**Possible Solutions**:
+1. Implement return notification handler
+2. Remove unused ReturnNotificationInfo structure
+3. Document feature as planned but unimplemented
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-LF-008: Nightscout Remote Lacks OTP Security
+
+**Scenario**: Temp Target Security
+
+**Description**: LoopFollow's Nightscout-based temp target commands rely solely on API token authentication. Unlike Loop APNS (TOTP) or TRC (encryption), there is no additional security layer.
+
+**Source**: `loopfollow:LoopFollow/Remote/Nightscout/TrioNightscoutRemoteView.swift#L48-L52`
+
+**Impact**:
+- Anyone with the API token can send temp targets
+- No time-based protection against replay
+- Inconsistent security model across remote types
+
+**Possible Solutions**:
+1. Add OTP support for Nightscout commands
+2. Document security limitations
+3. Recommend TRC for secure remote control
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-LF-009: No Unified Command Abstraction
+
+**Scenario**: Multi-Protocol Remote Control
+
+**Description**: LoopFollow implements three distinct remote protocols (Loop APNS, TRC, Nightscout) with separate codepaths, data structures, and UIs. There is no unified abstraction for sending commands.
+
+**Source**: 
+- `loopfollow:LoopFollow/Remote/RemoteViewController.swift#L33-L60` - Branched view logic
+- Separate command implementations per protocol
+
+**Impact**:
+- Difficulty adding new commands requires changes in multiple places
+- Inconsistent feature support across protocols
+- Code duplication for similar functionality
+
+**Possible Solutions**:
+1. Create protocol-agnostic command abstraction
+2. Implement command factory pattern
+3. Unify UI with backend protocol selection
+
+**Status**: Under discussion
+
+---
+
+## Delegation and Agent Gaps
+
+> **See Also**: [Progressive Enhancement Framework](../docs/10-domain/progressive-enhancement-framework.md) for L7-L9 layer definitions.
+> **See Also**: [Capability Layer Matrix](../mapping/cross-project/capability-layer-matrix.md) for system-by-system analysis.
+
+---
+
+### GAP-LIBRE-001: Libre 3 Cloud Decryption Dependency
+
+**Scenario**: Libre 3 Direct Connection
+
+**Description**: Libre 3 uses fully encrypted BLE communication with ECDH key exchange. Current open-source implementations (DiaBLE) can connect and receive encrypted data, but full decryption without cloud services is incomplete. Some functionality requires reverse-engineering closed-source libraries or relying on cloud-based OOP servers.
+
+**Source**: `externals/DiaBLE/DiaBLE/Libre3.swift`
+
+**Impact**:
+- Libre 3 support is experimental/partial in open-source apps
+- Users must rely on LibreLink app or patched solutions
+- No offline-only Libre 3 reading capability
+
+**Possible Solutions**:
+1. Complete reverse-engineering of Libre 3 security protocol
+2. Document cloud API for OOP decryption
+3. Wait for community security research
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-LIBRE-002: Libre 2 Gen2 Session-Based Authentication
+
+**Scenario**: Libre 2 Gen2 (US) NFC/BLE Access
+
+**Description**: Libre 2 Gen2 sensors require session-based authentication that differs from EU Libre 2. The authentication involves challenge-response with proprietary key derivation functions that are only partially documented.
+
+**Source**: `externals/DiaBLE/DiaBLE/Libre2Gen2.swift`
+
+**Impact**:
+- Gen2 support is limited on iOS (Loop, Trio)
+- xDrip+ Android has better Gen2 support via native library
+- Cross-platform parity is not achieved
+
+**Possible Solutions**:
+1. Port xDrip+ Gen2 implementation to Swift
+2. Document session protocol completely
+3. Use bridge transmitters (MiaoMiao, Bubble) for Gen2
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-LIBRE-003: Transmitter Bridge Firmware Variance
+
+**Scenario**: MiaoMiao/Bubble Data Reliability
+
+**Description**: Third-party transmitter bridges (MiaoMiao, Bubble, etc.) have varying firmware versions with different capabilities. Firmware differences affect:
+- Libre 2 decryption support
+- PatchInfo availability (older firmware may not include it)
+- Battery reporting accuracy
+
+**Source**: `externals/xdripswift/xdrip/BluetoothTransmitter/CGM/Libre/MiaoMiao/CGMMiaoMiaoTransmitter.swift`
+
+**Impact**:
+- Same transmitter may behave differently based on firmware
+- Users may need firmware updates for Libre 2 support
+- Documentation becomes version-dependent
+
+**Possible Solutions**:
+1. Document minimum firmware versions per feature
+2. Implement firmware detection and user notification
+3. Provide firmware update instructions in apps
+
+**Status**: Documentation needed
+
+---
+
+---
+
+### GAP-LIBRE-004: Calibration Algorithm Not Synced
+
+**Scenario**: Cross-App Glucose Comparison
+
+**Description**: The factory calibration parameters (i1-i6) extracted from FRAM are not synced to Nightscout. Different apps may use different OOP servers or local algorithms, producing slightly different glucose values from the same raw data.
+
+**Source**: `externals/LoopWorkspace/LibreTransmitter/LibreSensor/SensorContents/SensorData.swift#calibrationData`
+
+**Impact**:
+- Same sensor reading may show different values in different apps
+- No way to verify calibration consistency post-hoc
+- Research/comparison compromised
+
+**Possible Solutions**:
+1. Add calibration info to Nightscout entries
+2. Standardize on a single calibration algorithm
+3. Document calibration source in devicestatus
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-LIBRE-005: Sensor Serial Number Not in Nightscout Entries
+
+**Scenario**: Multi-Sensor Tracking
+
+**Description**: Nightscout entries have `device` field but no dedicated sensor serial number field. The 10-character Libre serial (e.g., "3MH001ABCD") is not consistently captured, making it difficult to track readings across sensor changes.
+
+**Impact**:
+- Cannot query "all readings from sensor X"
+- Sensor session boundaries unclear
+- Harder to correlate sensor failures with readings
+
+**Possible Solutions**:
+1. Add `sensorSerial` field to entries
+2. Use `device` field with consistent format
+3. Track in separate sensor metadata collection
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-LIBRE-006: NFC vs BLE Data Latency Difference
+
+**Scenario**: Real-Time Glucose Display
+
+**Description**: Libre sensors update FRAM trend data every minute but history every 15 minutes. BLE streaming provides sparse trend (minutes 0, 2, 4, 6, 7, 12, 15) plus 3 history values, while NFC provides full 16 trend + 32 history. The data available via each method differs.
+
+**Source**: `externals/DiaBLE/DiaBLE/Libre2.swift#parseBLEData`
+
+**Impact**:
+- NFC scans may fill gaps BLE misses
+- Hybrid NFC+BLE strategies needed for complete data
+- Backfill logic required
+
+**Possible Solutions**:
+1. Document exact data availability per method
+2. Implement smart gap-filling in apps
+3. Prefer NFC for historical data, BLE for real-time
+
+**Status**: Documented
+
+---
+
+## Batch Operation Gaps
+
+---
+
+### GAP-LIBRELINK-001: API v3 Not Implemented
+
+**Scenario**: Uploading LibreLink glucose data with deduplication
+
+**Description**: The v3 client exists in nightscout-librelink-up but throws "Not implemented". Only v1 API is functional.
+
+**Source**: `externals/nightscout-librelink-up/src/nightscout/apiv3.ts`
+
+**Impact**:
+- No automatic deduplication on Nightscout side
+- Missing `identifier` field for sync tracking
+- Same limitation as tconnectsync and share2nightscout-bridge
+
+**Remediation**: Implement v3 client with proper identifiers.
+
+**Status**: Enhancement candidate
+
+---
+
+---
+
+### GAP-LIBRELINK-002: No Historical Backfill
+
+**Scenario**: Recovering from service downtime
+
+**Description**: While `GraphResponse` interface exists for historical data, only current readings are uploaded. No catch-up mechanism for gaps.
+
+**Source**: `externals/nightscout-librelink-up/src/interfaces/librelink/graph-response.ts`
+
+**Impact**:
+- Gaps in data if bridge service is down
+- No automatic recovery of missed readings
+- Manual intervention required
+
+**Remediation**: Add optional historical fetch and backfill on startup.
+
+**Status**: Enhancement candidate
+
+---
+
+---
+
+### GAP-LIBRELINK-003: Trend Arrow Limited to 5 Values
+
+**Scenario**: Displaying rapid glucose changes
+
+**Description**: LibreLink Up provides only 5 trend values (1-5) mapping to SingleDown through SingleUp. Nightscout supports 9 directions including DoubleUp/DoubleDown.
+
+**Source**: `externals/nightscout-librelink-up/src/nightscout/interface.ts`
+
+**Impact**:
+- Loss of precision for rapid glucose changes
+- No DoubleUp/DoubleDown representation
+- Libre sensors may not report extreme trends
+
+**Remediation**: Document as sensor/API limitation; map to closest available.
+
+**Status**: Platform limitation
+
+---
+
+## Timezone and DST Gaps
+
+---
+
+### GAP-SHARE-001: No Nightscout API v3 support
+
+**Scenario**: Modern Nightscout integration
+
+**Description**: share2nightscout-bridge uses only API v1 (`/api/v1/entries.json`). It does not use v3 features like `identifier`, `srvModified`, or the v3 endpoints.
+
+**Affected Systems**: share2nightscout-bridge, Nightscout v3 clients
+
+**Source**: `externals/share2nightscout-bridge/index.js:50-51`
+
+**Impact**:
+- No deduplication via identifier
+- Cannot use v3-only features
+- Entries lack server timestamps
+
+**Possible Solutions**:
+1. Add v3 endpoint support as option
+2. Generate client-side identifiers
+3. Use v3 upsert for deduplication
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-SHARE-002: No backfill or gap detection
+
+**Scenario**: Reliable data continuity
+
+**Description**: The bridge fetches the latest N readings but does not detect or fill gaps. If the bridge is down, readings are lost.
+
+**Affected Systems**: share2nightscout-bridge
+
+**Source**: `externals/share2nightscout-bridge/index.js:177-198`
+
+**Impact**:
+- Data gaps during bridge downtime
+- No historical backfill capability
+- No overlap detection with existing data
+
+**Possible Solutions**:
+1. Query Nightscout for last entry before fetch
+2. Implement gap detection and backfill
+3. Increase default maxCount/minutes on restart
+
+**Status**: Under discussion
+
+---
+
+---
+
+### GAP-SHARE-003: Hardcoded Dexcom application ID
+
+**Scenario**: Long-term maintainability
+
+**Description**: The bridge uses a hardcoded application ID (`d89443d2-327c-4a6f-89e5-496bbb0317db`) for Dexcom authentication. If Dexcom revokes this ID, all bridges break.
+
+**Affected Systems**: share2nightscout-bridge, any fork using same ID
+
+**Source**: `externals/share2nightscout-bridge/index.js:42`
+
+**Impact**:
+- Single point of failure for ecosystem
+- Cannot easily rotate credentials
+- Dexcom could block at any time
+
+**Possible Solutions**:
+1. Make application ID configurable
+2. Register official Nightscout app with Dexcom
+3. Document risk and mitigation
+
+**Status**: Under discussion
+
+---
+
+---

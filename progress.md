@@ -6,6 +6,226 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Heart Rate API Specification (2026-01-29)
+
+OpenAPI 3.0 specification for HeartRate collection based on PR#8083 and AAPS entity.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **OpenAPI Spec** | `specs/openapi/aid-heartrate-2025.yaml` | 447 lines, 6 endpoints, full schema |
+| **Gap Updated** | `traceability/gaps.md` | GAP-API-HR marked addressed |
+| **Requirement** | `traceability/requirements.md` | REQ-PR-001 linked to spec |
+
+**Key Schema Fields**:
+- `beatsPerMinute` (double) - HR value in BPM
+- `timestamp` (int64) - Epoch milliseconds
+- `duration` (int64) - Sampling window
+- `device` (string) - Source device
+- `identifier` (uuid) - Sync identity
+
+**Controller Support**:
+- AAPS: Full (primary source)
+- Loop/Trio: None
+- xDrip+: Partial (display only)
+
+---
+
+### Statistics API Proposal (2026-01-29)
+
+Comprehensive API specification for server-side glucose statistics with MCP integration.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Proposal** | `docs/sdqctl-proposals/statistics-api-proposal.md` | 480 lines, 6 endpoints, MCP resources |
+| **Gaps** | `traceability/gaps.md` | GAP-STATS-001/002/003 added |
+| **Requirements** | `traceability/requirements.md` | REQ-STATS-001-005 added |
+
+**Key Features**:
+- `/api/v3/stats/daily` - Per-day glucose aggregations
+- `/api/v3/stats/summary` - Period summaries with A1C/GMI
+- `/api/v3/stats/hourly` - Hourly percentile distributions
+- `/api/v3/stats/treatments` - Insulin/carb aggregations
+- MCP resources for AI integration
+
+**Benefits**:
+- 90% reduction in data transfer for reports
+- Server-side caching with MongoDB aggregation
+- Standard formulas: A1C (DCCT/IFCC), GMI, GVI, PGS
+
+---
+
+### cgm-remote-monitor PR Analysis (2026-01-29)
+
+Analysis of 68 open PRs for ecosystem impact and project trajectory.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **PR Analysis** | `docs/10-domain/cgm-remote-monitor-pr-analysis.md` | 380 lines, 68 PRs categorized |
+| **Gaps** | `traceability/gaps.md` | GAP-API-HR, GAP-INSULIN-001, GAP-REMOTE-CMD, GAP-TZ-001 |
+| **Requirements** | `traceability/requirements.md` | REQ-PR-001/002/003/004 added |
+
+**Key Findings**:
+- 68 open PRs spanning 2021-2026
+- PR#8083 (Heart Rate) blocked AAPS integration for 2.5 years
+- PR#8261 (Multi-Insulin) already used by xDrip+/reporter but not merged
+- PR#7791 (Remote Commands) critical Loop caregiver feature stalled 3+ years
+- Active modernization wave: Lodash, Moment, crypto-browserify removal
+
+**Tier 1 Ecosystem PRs**:
+1. #8421 MongoDB 5x (bewest) - 117 files
+2. #8083 Heart Rate (buessow) - AAPS blocked
+3. #8261 Multi-Insulin (gruoner) - in production
+4. #7791 Remote Commands (gestrich) - Loop caregivers
+
+---
+
+### cgm-remote-monitor Frontend Audit (2026-01-29)
+
+Comprehensive analysis of Nightscout's client-side architecture, D3.js charts, and plugin UI.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/cgm-remote-monitor-frontend-deep-dive.md` | 468 lines, D3, plugins, i18n |
+| **Gaps** | `traceability/gaps.md` | GAP-UI-001/002/003 added |
+| **Requirements** | `traceability/requirements.md` | REQ-UI-001/002/003 added |
+
+**Key Findings**:
+- Webpack bundles: main, clocks, reports
+- D3.js dual-view chart: focus (70%) + context (30%) with brush
+- Plugin UI: 4 container types (pill-major/minor/status, drawer)
+- 33 languages via JSON translation files
+- Vanilla JS/jQuery architecture (no component framework)
+
+**Recommendations**:
+1. Document frontend architecture for contributors
+2. Add chart accessibility (ARIA, keyboard nav)
+3. Implement offline data caching
+
+---
+
+### cgm-remote-monitor Authentication Audit (2026-01-29)
+
+Comprehensive analysis of Nightscout's authorization system, Shiro permissions, and token handling.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/cgm-remote-monitor-auth-deep-dive.md` | 475 lines, Shiro, JWT, roles |
+| **Gaps** | `traceability/gaps.md` | GAP-AUTH-003/004/005 added |
+| **Requirements** | `traceability/requirements.md` | REQ-AUTH-001/002/003 added |
+
+**Key Findings**:
+- Shiro-style hierarchical permissions: `domain:collection:action`
+- 7 default roles (admin, readable, careportal, devicestatus-upload, etc.)
+- API_SECRET grants full `*` admin access, bypassing RBAC
+- JWT tokens: 8-hour lifetime, symmetric key signing
+- Rate limiting: 5 seconds per failed attempt, cumulative
+
+**Recommendations**:
+1. Document all permission strings
+2. Add token revocation mechanism
+3. Deprecate API_SECRET for write operations
+
+---
+
+### cgm-remote-monitor Sync/Upload Audit (2026-01-29)
+
+Comprehensive analysis of Nightscout's real-time sync, Socket.IO architecture, and upload handlers.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/cgm-remote-monitor-sync-deep-dive.md` | 520 lines, WebSocket, sync identity |
+| **Gaps** | `traceability/gaps.md` | GAP-SYNC-008/009/010 added |
+| **Requirements** | `traceability/requirements.md` | REQ-SYNC-001/002/003 added |
+
+**Key Findings**:
+- Socket.IO uses 3 namespaces (`/`, `/alarm`, `/storage`)
+- Delta compression: only changes broadcast, 512-byte threshold
+- Sync identity: UUID v5 from device+date+eventType
+- 3-tier dedup: identifier → _id → fallback fields
+- LoadRetro: 24-hour devicestatus history on demand
+
+**Recommendations**:
+1. Document WebSocket API with event schemas
+2. Backfill identifier field in v1 API uploads
+3. Return sync metadata in upload responses
+
+---
+
+### cgm-remote-monitor Plugin System Audit (2026-01-29)
+
+Comprehensive analysis of Nightscout's 38-plugin architecture and data pipeline.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/cgm-remote-monitor-plugin-deep-dive.md` | 436 lines, IOB/COB, Loop/OpenAPS |
+| **Gaps** | `traceability/gaps.md` | GAP-PLUGIN-001/002/003 added |
+| **Requirements** | `traceability/requirements.md` | REQ-PLUGIN-001/002/003 added |
+
+**Key Findings**:
+- 38 plugins with standardized lifecycle (setProperties, checkNotifications)
+- IOB/COB use device-first with treatment fallback calculation
+- Loop: single prediction array; OpenAPS: 6 curves (IOB, ZT, COB, aCOB, UAM)
+- AAPS uses OpenAPS plugin (no dedicated AAPS plugin)
+- Typo tolerance: accepts both `received` and `recieved` fields
+
+**Recommendations**:
+1. Document devicestatus schema per controller
+2. Normalize prediction format in visualization
+3. Document IOB/COB calculation models
+
+---
+
+### cgm-remote-monitor API Layer Audit (2026-01-29)
+
+Comprehensive analysis of Nightscout's v1 and v3 REST API architecture.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/cgm-remote-monitor-api-deep-dive.md` | 397 lines, v1/v3 comparison, dedup logic |
+| **Gaps** | `traceability/gaps.md` | GAP-API-006/007/008 added |
+| **Requirements** | `traceability/requirements.md` | REQ-API-001/002/003 added |
+
+**Key Findings**:
+- v3 API uses UPSERT semantics (duplicates updated, not rejected)
+- Dedup keys: treatments use `created_at + eventType`, entries use `date + type`
+- Socket.IO broadcasts via `dataUpdate` event to `DataReceivers` room
+- Shiro-style permissions: `api:collection:action`
+
+**Recommendations**:
+1. Document dedup keys per collection in API spec
+2. Generate OpenAPI 3.0 specification for v3
+3. Standardize timestamp field names across collections
+
+---
+
+### Algorithm Conformance Suite Proposal (2026-01-29)
+
+Proposal for cross-project AID algorithm testing infrastructure.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Proposal** | `docs/sdqctl-proposals/algorithm-conformance-suite.md` | 400+ lines, test vector schema, 5-phase plan |
+| **Gaps** | `traceability/gaps.md` | GAP-ALG-001/002/003 added |
+
+**Key Findings**:
+- oref0: Mocha tests with inline fixtures, ~40 test scenarios
+- AAPS: ReplayApsResultsTest with 50+ JSON fixtures, compares JS vs Kotlin
+- Loop: XCTest with scattered fixtures in LoopKitTests/Fixtures/
+- No cross-project test vectors exist today
+
+**Proposed Architecture**:
+1. Unified test vector JSON schema (`conformance-vector-v1.json`)
+2. Category-based vectors: basal-adjustment, smb-delivery, safety-limits, etc.
+3. Language-specific runners: oref0-runner.js, aaps-runner.kt, loop-runner.swift
+4. Cross-language comparison matrix and gap documentation
+
+**Recommendations**:
+1. Extract 50+ vectors from AAPS replay test fixtures (ready-made)
+2. Create oref0-runner.js as baseline validator
+3. Define semantic equivalence for Loop vs oref comparison
+
+---
+
 ### share2nightscout-bridge PR Analysis (2026-01-29)
 
 Analyzed open PRs, issues, and WIP branches for ecosystem impact.
@@ -1204,3 +1424,144 @@ Each cycle should update:
 - Conformance tests can be added later when protocol understanding is solidified
 - Leverage downloaded source code (`externals/`) for verification
 - Keep terminology matrix updated as the rosetta stone for cross-project translation
+
+---
+
+### Interoperability Specification v1 (2026-01-29)
+
+Synthesized 6 audit documents into minimal viable interoperability specification.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Spec** | `specs/interoperability-spec-v1.md` | 316 lines, 8 sections |
+| **Requirements** | `traceability/requirements.md` | REQ-INTEROP-001/002/003 added |
+
+**Key Contents**:
+- Conformance levels (Reader, Uploader, Controller)
+- Core data schemas (entries, treatments, devicestatus)
+- API v1/v3 compatibility requirements
+- Authentication and permission model
+- Sync identity and deduplication rules
+- Real-time Socket.IO integration
+- MUST/SHOULD/MAY requirements
+
+**Based On**:
+- cgm-remote-monitor 6-layer audit (2,751 lines, 18 gaps)
+- Algorithm conformance suite proposal
+- Existing OpenAPI specs and integration guide
+
+---
+
+### Full Audit: nightscout-connect (2026-01-29)
+
+Comprehensive analysis of the nightscout-connect bridge application (v0.0.12).
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/nightscout-connect-deep-dive.md` | 527 lines, XState architecture |
+| **Gaps** | `traceability/gaps.md` | GAP-CONNECT-001/002/003 |
+| **Requirements** | `traceability/requirements.md` | REQ-CONNECT-001/002/003 |
+
+**Key Findings**:
+- XState state machine architecture (Poller → Session → Cycle → Fetch)
+- 5 source drivers: Dexcom Share, LibreLinkUp, Nightscout, Glooko, Minimed CareLink
+- 3 output modes: REST API (v1), internal DB, filesystem
+- Only Minimed uploads all 3 collections (entries, treatments, devicestatus)
+- Well-structured but missing automated tests
+
+**Gaps Identified**: GAP-CONNECT-001 (v1 only), GAP-CONNECT-002 (inconsistent coverage), GAP-CONNECT-003 (no dedup)
+
+**Source Files Analyzed**:
+- `externals/nightscout-connect/lib/machines/*.js` (state machines)
+- `externals/nightscout-connect/lib/sources/*.js` (vendor drivers)
+- `externals/nightscout-connect/lib/outputs/*.js` (persistence)
+- `externals/nightscout-connect/machines.md` (architecture docs)
+
+---
+
+### Compare Carb Absorption Models (2026-01-29)
+
+Cross-project analysis of carb absorption algorithms in Loop, AAPS, Trio, and oref0.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Comparison** | `docs/10-domain/carb-absorption-comparison.md` | 471 lines, 4 systems |
+| **Gaps** | `traceability/gaps.md` | GAP-CARB-001/002/003 |
+| **Requirements** | `traceability/requirements.md` | REQ-CARB-001/002/003 |
+
+**Key Findings**:
+- Two paradigms: Predictive (Loop) vs Reactive (oref0/AAPS/Trio)
+- Loop: 3 absorption curves (Linear, Parabolic, Piecewise Linear)
+- oref0: Deviation-based with min_5m_carbimpact floor (8 mg/dL)
+- COB semantics differ fundamentally between paradigms
+- UAM detection: Loop implicit, oref0 explicit slope analysis
+
+**Gaps Identified**: 
+- GAP-CARB-001 (incompatible COB semantics)
+- GAP-CARB-002 (no standard format)
+- GAP-CARB-003 (UAM variance)
+
+**Source Files Analyzed**:
+- `externals/LoopWorkspace/LoopKit/LoopKit/CarbKit/CarbMath.swift`
+- `externals/oref0/lib/determine-basal/cob.js`
+- `externals/AndroidAPS/workflow/src/main/kotlin/app/aaps/workflow/iob/IobCobOrefWorker.kt`
+- `externals/Trio/trio-oref/lib/meal/total.js`
+
+---
+
+### Map Pump Communication Terminology (2026-01-29)
+
+Cross-project mapping of pump-related terminology across Loop, AAPS, and xDrip+.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Terminology** | `mapping/cross-project/terminology-matrix.md` | ~150 lines, 10 tables |
+
+**Categories Mapped**:
+- Insulin container (reservoir/cartridge)
+- Device types (pod vs pump)
+- Battery/power status
+- Pump states (suspended, delivering, etc.)
+- Bolus states and types
+- Temp basal types
+- Pod setup states
+- Nightscout devicestatus.pump structure
+
+**Key Findings**:
+- Loop uses Swift enums (BasalDeliveryState, BolusState)
+- AAPS uses Kotlin enums (MedtrumPumpState, TB.Type)
+- xDrip+ focuses on display/status (PumpStatus.java)
+- Nightscout pump object structure documented
+
+**Source Files Analyzed**:
+- `LoopKit/DeviceManager/PumpManagerStatus.swift`
+- `core/data/src/main/kotlin/app/aaps/core/data/pump/defs/Pump.kt`
+- `app/src/main/java/com/eveningoutpost/dexdrip/models/PumpStatus.java`
+
+---
+
+### nightscout-connect Vendor Interop Proposal (2026-01-29)
+
+Proposal for enhancing nightscout-connect based on tconnectsync and nightscout-librelink-up patterns.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Proposal** | `docs/sdqctl-proposals/nightscout-connect-vendor-interop.md` | 418 lines, 5 recommendations |
+| **Requirements** | `traceability/requirements.md` | REQ-BRIDGE-001/002/003 |
+
+**Key Recommendations**:
+- P0: Add v3 API output driver (addresses GAP-CONNECT-001)
+- P1: Extend source data coverage (addresses GAP-CONNECT-002)
+- P1: Implement client-side sync identity (addresses GAP-CONNECT-003)
+- P2: Add Tandem/Control-IQ source (ports tconnectsync)
+- P2: Add XState test suite
+
+**Implementation Roadmap**:
+- Phase 1 (Foundation): 3.5 days - v3 driver, sync identity
+- Phase 2 (Coverage): 4 days - enhanced transforms
+- Phase 3 (Expansion): 8 days - Tandem source, tests
+
+**Based On**:
+- nightscout-connect deep dive (Cycle 8)
+- tconnectsync deep dive
+- nightscout-librelink-up deep dive

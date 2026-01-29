@@ -32,6 +32,56 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 
 ## Data Concepts
 
+### Heart Rate Collection (API v3)
+
+| Field | Type | Description | Source |
+|-------|------|-------------|--------|
+| `beatsPerMinute` | double | Heart rate in BPM (20-300) | AAPS HeartRate.kt |
+| `timestamp` | int64 | End of sample (epoch ms) | AAPS HeartRate.kt |
+| `duration` | int64 | Sample window (default 60s) | AAPS HeartRate.kt |
+| `device` | string | Source device name | AAPS HeartRate.kt |
+| `utcOffset` | int64 | Timezone offset (ms) | AAPS HeartRate.kt |
+| `isValid` | boolean | Data validity flag | AAPS HeartRate.kt |
+| `identifier` | uuid | Sync identity | Nightscout pattern |
+
+**Controller Support**:
+| System | Support | Notes |
+|--------|---------|-------|
+| AAPS | Full | Primary source, Wear OS collection |
+| Loop | None | No HR collection |
+| Trio | None | No HR collection |
+| xDrip+ | Partial | Display only |
+
+**Specification**: [`specs/openapi/aid-heartrate-2025.yaml`](../../specs/openapi/aid-heartrate-2025.yaml)
+
+---
+
+### Statistics API Concepts
+
+| Concept | Definition | Formula/Source |
+|---------|------------|----------------|
+| TIR (Time in Range) | % of readings between 70-180 mg/dL | count_in_range / total × 100 |
+| A1C (DCCT) | Estimated HbA1c percentage | (mean_glucose + 46.7) / 28.7 |
+| A1C (IFCC) | Estimated HbA1c mmol/mol | (A1C_DCCT - 2.15) × 10.929 |
+| GMI | Glucose Management Indicator | 3.31 + (0.02392 × mean_glucose) |
+| GVI | Glycemic Variability Index | Σ√(ΔTime² + ΔGlucose²) / Σ ΔTime |
+| PGS | Patient Glycemic Status | GVI × Mean × (1 - TIR_multiplier) |
+| CV | Coefficient of Variation | (StdDev / Mean) × 100 |
+| TDD | Total Daily Dose | basal + bolus insulin |
+
+**Thresholds (ADA Consensus)**:
+| Range | mg/dL | Target |
+|-------|-------|--------|
+| Very Low | < 54 | < 1% |
+| Low | 54-70 | < 4% |
+| In Range | 70-180 | > 70% |
+| High | 180-250 | < 25% |
+| Very High | > 250 | < 5% |
+
+**Source**: `docs/sdqctl-proposals/statistics-api-proposal.md`, Nathan et al. 2008
+
+---
+
 ### Server Implementations
 
 | Aspect | cgm-remote-monitor | Nocturne |
@@ -1076,6 +1126,45 @@ usesDexcomRaw:  BluetoothWixel, DexbridgeWixel, WifiWixel, DexcomG5, ...
 
 ---
 
+## Pending API Extensions (from PR Analysis)
+
+These concepts are in open PRs awaiting merge:
+
+### Heart Rate Collection (PR#8083)
+
+| Concept | Status | Description |
+|---------|--------|-------------|
+| HeartRate collection | Pending | New APIv3 collection for HR data |
+| HR timestamp | Pending | ISO8601 with millisecond precision |
+| HR source | Pending | Device that captured HR (watch, pump) |
+| HR bpm | Pending | Beats per minute value |
+
+**Gap**: GAP-API-HR
+
+### Multi-Insulin API (PR#8261)
+
+| Concept | xDrip+ | nightscout-reporter | Nightscout |
+|---------|--------|---------------------|------------|
+| Insulin entity | ✓ uses | ✓ uses | pending |
+| Insulin curve | custom JSON | custom JSON | pending |
+| Insulin color | #RRGGBB | #RRGGBB | pending |
+| Insulin active | boolean | boolean | pending |
+
+**Gap**: GAP-INSULIN-001
+
+### Remote Commands (PR#7791)
+
+| Concept | Loop | Nightscout |
+|---------|------|------------|
+| Command queue | push notification | pending |
+| Command status | none | pending |
+| Command expiration | implicit | pending |
+| Delivery confirmation | none | pending |
+
+**Gap**: GAP-REMOTE-CMD
+
+---
+
 ## AAPS-Specific Concepts
 
 ### Nightscout SDK (NSSDK)
@@ -1420,6 +1509,34 @@ oref0's core innovation is deviation analysis:
 | Detects Deletions | No | Yes (`isValid: false`) |
 | Bandwidth Efficiency | Lower | Higher |
 | Time Precision | Seconds | Milliseconds |
+
+### API v3 Deduplication Keys
+
+> **See Also**: [API Deep Dive](../../docs/10-domain/cgm-remote-monitor-api-deep-dive.md)
+
+| Collection | Primary Key | Fallback Keys | Source |
+|------------|-------------|---------------|--------|
+| entries | `identifier` | `date`, `type` | `lib/api3/generic/setup.js` |
+| treatments | `identifier` | `created_at`, `eventType` | `lib/api3/generic/setup.js` |
+| devicestatus | `identifier` | `created_at`, `device` | `lib/api3/generic/setup.js` |
+| profile | `identifier` | `created_at` | `lib/api3/generic/setup.js` |
+| food | `identifier` | `created_at` | `lib/api3/generic/setup.js` |
+| settings | `identifier` | (none) | `lib/api3/generic/setup.js` |
+
+**Behavior**: When duplicate found → UPSERT (update, not reject)  
+**Control**: `API3_DEDUP_FALLBACK_ENABLED` environment variable  
+**Gap Reference**: GAP-API-005, GAP-API-006
+
+### Timestamp Fields by Collection
+
+| Collection | Primary Timestamp | Format | Usage |
+|------------|------------------|--------|-------|
+| entries | `date` | Epoch milliseconds | CGM reading time |
+| treatments | `created_at` | ISO-8601 string | Treatment creation time |
+| devicestatus | `created_at` | ISO-8601 string | Status report time |
+| profile | `created_at` | ISO-8601 string | Profile creation time |
+
+**Gap Reference**: GAP-API-008
 
 ### Query Syntax Comparison
 
@@ -2182,6 +2299,8 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-01-29 | Agent | Added API v3 Deduplication Keys and Timestamp Fields tables from API layer audit |
+| 2026-01-29 | Agent | Added Algorithm Conformance Testing section with entry points, input/output shapes, test fixture locations |
 | 2026-01-17 | Agent | Added Capability Layer Models section with layer vocabulary, three-state model, delegation authority levels, agent patterns, graceful degradation paths |
 | 2026-01-17 | Agent | Added LoopFollow Alarm Models and Remote Command Models sections |
 | 2026-01-17 | Agent | Added LoopCaregiver Remote 2.0 Models section with command types, status states, auth components, deep links |
@@ -2196,3 +2315,549 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 | 2026-01-16 | Agent | Added Trio-specific concepts (oref2 variables, remote commands, overrides, insulin curves, dynamic ISF) |
 | 2026-01-16 | Agent | Added algorithm/controller concepts, safety constraints, pump commands, insulin models, loop states |
 | 2026-01-16 | Agent | Initial cross-project terminology matrix |
+
+## Algorithm Conformance Testing
+
+> **See Also**: [Algorithm Conformance Suite Proposal](../../docs/sdqctl-proposals/algorithm-conformance-suite.md)
+
+### Algorithm Entry Points
+
+| Alignment Term | oref0 | AAPS | Loop | Trio |
+|----------------|-------|------|------|------|
+| Main Function | `determine_basal()` | `DetermineBasalSMB.kt` | `LoopAlgorithm.run()` | `OpenAPS.makeProfiles()` |
+| JS Adapter | N/A (native JS) | `DetermineBasalAdapterSMBJS.kt` | N/A | N/A |
+| Input Type | Function params | `GlucoseStatus`, `IobTotal`, etc. | `LoopAlgorithmInput` | JS objects |
+| Output Type | JSON object | `APSResult` | `LoopAlgorithmOutput` | `Suggestion` |
+
+### Algorithm Input Shapes (Conformance Mapping)
+
+| Conformance Field | oref0 | AAPS | Loop |
+|-------------------|-------|------|------|
+| `glucoseStatus.glucose` | `glucose_status.glucose` | `glucoseStatus.glucose` | `glucoseHistory.last().quantity` |
+| `glucoseStatus.delta` | `glucose_status.delta` | `glucoseStatus.delta` | Computed from history |
+| `iob.iob` | `iob_data.iob` | `iobTotal.iob` | `insulinOnBoard` |
+| `iob.basalIob` | `iob_data.basaliob` | `iobTotal.basaliob` | N/A (combined) |
+| `profile.sensitivity` | `profile.sens` | `profile.sens` | `settings.sensitivity` |
+| `profile.carbRatio` | `profile.carb_ratio` | `profile.carb_ratio` | `settings.carbRatio` |
+| `profile.targetLow` | `profile.min_bg` | `profile.target_bg` | `settings.target.lowerBound` |
+| `mealData.cob` | `meal_data.mealCOB` | `mealData.mealCOB` | `carbsOnBoard` |
+
+### Algorithm Output Shapes (Conformance Mapping)
+
+| Conformance Field | oref0 | AAPS | Loop |
+|-------------------|-------|------|------|
+| `rate` | `suggested.rate` | `result.rate` | `tempBasal.rate` |
+| `duration` | `suggested.duration` | `result.duration` | `tempBasal.duration` |
+| `smb` | `suggested.units` | `result.smb` | N/A (no SMB) |
+| `eventualBG` | `suggested.eventualBG` | `result.eventualBG` | `predictedGlucose.last` |
+| `reason` | `suggested.reason` | `result.reason` | `recommendation.notice` |
+
+### Test Fixture Locations
+
+| Project | Test Framework | Fixture Path |
+|---------|---------------|--------------|
+| oref0 | Mocha + Should.js | `tests/determine-basal.test.js` (inline) |
+| AAPS | JUnit + JSONAssert | `app/src/androidTest/assets/results/*.json` |
+| Loop | XCTest | `LoopKitTests/Fixtures/{DoseMath,CarbKit,InsulinKit}/` |
+| Trio | XCTest | Uses LoopKit fixtures |
+
+**Gap Reference**: GAP-ALG-001 (no cross-project vectors), GAP-ALG-002 (drift detection), GAP-ALG-003 (semantic mapping)
+
+
+## Plugin System Architecture
+
+> **See Also**: [Plugin Deep Dive](../../docs/10-domain/cgm-remote-monitor-plugin-deep-dive.md)
+
+### Plugin Types
+
+| Type | Purpose | Examples |
+|------|---------|----------|
+| `pill-primary` | Main display element | bgnow |
+| `pill-major` | Key metrics | iob |
+| `pill-minor` | Secondary metrics | cob, insulinage, sensorage |
+| `pill-status` | System status | loop, openaps, pump |
+| `notification` | Alerts | simplealarms, treatmentnotify |
+| `drawer` | UI panels | careportal, boluscalc |
+| `forecast` | Predictions | ar2 |
+
+### IOB Calculation Sources
+
+| Source | Priority | Path | Controller |
+|--------|----------|------|------------|
+| Loop devicestatus | 1 | `status.loop.iob` | Loop |
+| OpenAPS devicestatus | 1 | `status.openaps.iob[0]` | OpenAPS/AAPS |
+| Pump devicestatus | 2 | `status.pump.iob` | Pump-reported |
+| Treatment fallback | 3 | Calculated from `treatments` | All |
+
+### COB Calculation Sources
+
+| Source | Priority | Freshness | Path |
+|--------|----------|-----------|------|
+| OpenAPS suggested | 1 | 10 min | `status.openaps.suggested.COB` |
+| OpenAPS enacted | 1 | 10 min | `status.openaps.enacted.COB` |
+| Loop COB | 1 | 10 min | `status.loop.cob.cob` |
+| Treatment fallback | 2 | N/A | Calculated from `treatments` |
+
+### Prediction Format Comparison
+
+| Aspect | Loop | OpenAPS/AAPS |
+|--------|------|--------------|
+| Structure | Single array | 6 separate arrays |
+| Field | `predicted.values[]` | `predBGs.{IOB,ZT,COB,aCOB,UAM}[]` |
+| Interval | 5 minutes | 5 minutes |
+| Start time | `predicted.startDate` | Inferred |
+
+**Gap Reference**: GAP-PLUGIN-002
+
+### Controller Status Symbols
+
+| Symbol | Loop Meaning | OpenAPS Meaning |
+|--------|--------------|-----------------|
+| ↻ | Looping | Looping |
+| ⌁ | Enacted | Enacted (received) |
+| ⏀ | Recommendation | - |
+| ◉ | - | Waiting |
+| x | Error | Not enacted |
+| ⚠ | Warning | Warning |
+
+
+## Sync/Upload Architecture
+
+> **See Also**: [Sync Deep Dive](../../docs/10-domain/cgm-remote-monitor-sync-deep-dive.md)
+
+### Socket.IO Namespaces
+
+| Namespace | Purpose | Key Events |
+|-----------|---------|------------|
+| `/` (default) | Main data channel | `dataUpdate`, `authorize`, `loadRetro` |
+| `/alarm` | Alarm notifications | `alarm`, `urgent_alarm`, `clear_alarm`, `ack` |
+| `/storage` | CRUD notifications | `create`, `update`, `delete` |
+
+### Socket.IO Events
+
+| Event | Direction | Payload | Purpose |
+|-------|-----------|---------|---------|
+| `dataUpdate` | Server→Client | Delta object | Incremental data broadcast |
+| `retroUpdate` | Server→Client | `{devicestatus: [...]}` | Historical data |
+| `authorize` | Client→Server | Secret/token | Authentication |
+| `loadRetro` | Client→Server | - | Request history |
+| `connected` | Server→Client | - | Auth success |
+| `clients` | Server→Client | Number | Active client count |
+
+### Sync Identity Components
+
+| Collection | UUID v5 Input | Dedup Fallback Fields |
+|------------|---------------|----------------------|
+| entries | `device \| date \| type` | `date`, `type` |
+| treatments | `device \| created_at \| eventType` | `created_at`, `eventType` |
+| devicestatus | `created_at \| device` | `created_at`, `device` |
+
+### Event Bus Flow
+
+| Event | Trigger | Listener | Result |
+|-------|---------|----------|--------|
+| `tick` | Timer (heartbeat) | bootevent | Refresh data |
+| `data-received` | Upload handler | bootevent | Reload from DB |
+| `data-loaded` | Dataloader | bootevent | Process plugins |
+| `data-processed` | Plugin processing | websocket | Broadcast delta |
+
+**Gap Reference**: GAP-SYNC-008, GAP-SYNC-009, GAP-SYNC-010
+
+
+## Authentication Architecture
+
+> **See Also**: [Auth Deep Dive](../../docs/10-domain/cgm-remote-monitor-auth-deep-dive.md)
+
+### Permission String Format
+
+```
+[domain]:[collection]:[action]
+```
+
+| Component | Examples | Description |
+|-----------|----------|-------------|
+| domain | `api`, `admin` | Top-level namespace |
+| collection | `entries`, `treatments`, `subjects` | Resource type |
+| action | `read`, `create`, `update`, `delete` | Operation |
+
+### Default Roles
+
+| Role | Permissions | Use Case |
+|------|-------------|----------|
+| `admin` | `['*']` | Full access |
+| `denied` | `[]` | No access |
+| `status-only` | `['api:status:read']` | Read status only |
+| `readable` | `['*:*:read']` | Read-only access |
+| `careportal` | `['api:treatments:create']` | Treatment creation |
+| `devicestatus-upload` | `['api:devicestatus:create']` | Device uploads |
+| `activity` | `['api:activity:create']` | Activity logs |
+
+### Authentication Methods
+
+| Method | Header/Param | Grants | Use Case |
+|--------|--------------|--------|----------|
+| API Secret | `api-secret` header | `*` (admin) | Legacy, admin ops |
+| JWT Token | `Authorization: Bearer` | Per-subject roles | API v3, modern clients |
+| Access Token | `?token=` param | Per-subject roles | Initial auth, get JWT |
+
+### Token Formats
+
+| Type | Format | Lifetime | Example |
+|------|--------|----------|---------|
+| API Secret | User-defined string | Permanent | `my-secret-key-123` |
+| Access Token | `{name}-{digest}` | Permanent | `myuploader-a1b2c3d4e5f6` |
+| JWT | Base64 encoded | 8 hours | `eyJhbGciOiJIUzI1NiIs...` |
+
+### Rate Limiting
+
+| Trigger | Delay | Cumulative |
+|---------|-------|------------|
+| Failed auth | 5 seconds | Yes |
+| Cleanup | 60 seconds | - |
+
+**Gap Reference**: GAP-AUTH-001, GAP-AUTH-002, GAP-AUTH-003
+
+
+## Frontend Architecture
+
+> **See Also**: [Frontend Deep Dive](../../docs/10-domain/cgm-remote-monitor-frontend-deep-dive.md)
+
+### Chart Components
+
+| Component | Purpose | Technology |
+|-----------|---------|------------|
+| Focus View | Main glucose display (70%) | D3.js |
+| Context View | Timeline brush (30%) | D3.js |
+| Basals | Basal rate area chart | D3.js stepAfter |
+| Treatment Markers | Bolus/carb arcs | SVG arcs |
+
+### D3 Scales
+
+| Scale | Type | Domain | Purpose |
+|-------|------|--------|---------|
+| xScale | Time | Brush extent | Focus X-axis |
+| xScale2 | Time | Full data | Context X-axis |
+| yScale | Linear/Log | 30 to max SGV | Focus Y-axis |
+| futureOpacity | Linear | 0.8 to 0.1 | Prediction fade |
+
+### Plugin UI Containers
+
+| Type | CSS Class | Examples |
+|------|-----------|----------|
+| `pill-major` | `.majorPills` | IOB, COB |
+| `pill-minor` | `.minorPills` | Pump age, sensor age |
+| `pill-status` | `.statusPills` | Loop, OpenAPS |
+| `drawer` | `#drawer` | Careportal, bolus calc |
+
+### Bundle Structure
+
+| Bundle | Entry Point | Purpose |
+|--------|-------------|---------|
+| `bundle.source.js` | `lib/client/index.js` | Main app |
+| `bundle.clocks.source.js` | `lib/client/clock-client.js` | Clock view |
+| `bundle.reports.source.js` | `lib/client/report-client.js` | Reports |
+
+### Translation System
+
+| Component | Purpose |
+|-----------|---------|
+| `language.set()` | Set current language |
+| `language.translate()` | Translate string |
+| `language.DOMtranslate()` | Auto-translate DOM |
+| Placeholders | `%1`, `%2` for params |
+
+**Languages**: 33 (Arabic, Chinese, English, French, German, Japanese, Spanish, etc.)
+
+**Gap Reference**: GAP-UI-001, GAP-UI-002, GAP-UI-003
+
+
+## Interoperability Specification
+
+> **See Also**: [Interoperability Spec](../../specs/interoperability-spec-v1.md)
+
+### Conformance Levels
+
+| Level | Description | Required Sections |
+|-------|-------------|-------------------|
+| Reader | Read-only data access | 2, 3, 4 |
+| Uploader | Write glucose/treatments | 2-6 |
+| Controller | Full AID integration | All |
+
+### Requirement Keywords (RFC 2119)
+
+| Keyword | Meaning |
+|---------|---------|
+| MUST | Absolute requirement |
+| SHOULD | Recommended, may be ignored with reason |
+| MAY | Optional |
+
+### Core Collections Summary
+
+| Collection | Purpose | Dedup Key |
+|------------|---------|-----------|
+| entries | Glucose readings | `date` + `type` |
+| treatments | Boluses, carbs, events | `created_at` + `eventType` |
+| devicestatus | Controller state | `created_at` + `device` |
+| profile | Therapy settings | `created_at` |
+
+### Standard eventTypes
+
+| Category | eventTypes |
+|----------|------------|
+| Insulin | Correction Bolus, Meal Bolus, Temp Basal |
+| Carbs | Carb Correction, Meal Bolus |
+| Targets | Temporary Target, Profile Switch |
+| Events | Note, Exercise, Site Change, Sensor Start |
+
+
+## nightscout-connect Bridge
+
+> **See Also**: [nightscout-connect Deep Dive](../../docs/10-domain/nightscout-connect-deep-dive.md)
+
+### XState Machine Terms
+
+| Term | Description |
+|------|-------------|
+| Poller | Top-level bus machine owning session and cycles |
+| Session Machine | Manages authentication lifecycle |
+| Cycle Machine | Periodic polling loop for one data type |
+| Fetch Machine | Single data fetch with retry logic |
+| Frame | One complete fetch attempt |
+
+### Machine States
+
+| Machine | States |
+|---------|--------|
+| Fetch | Idle, Waiting, Auth, DetermineGaps, Fetching, Transforming, Persisting, Success, Error, Done |
+| Session | Inactive, Authenticating, Authorizing, Established, Active, Refreshing, Expired |
+| Cycle | Init, Ready, Operating, After |
+
+### Key Events
+
+| Event | Direction | Purpose |
+|-------|-----------|---------|
+| SESSION_REQUIRED | fetch → session | Request active session |
+| SESSION_RESOLVED | session → fetch | Provide session token |
+| GAP_ANALYSIS | fetch → source | Determine query window |
+| DATA_RECEIVED | fetch → transform | Raw vendor data |
+| STORE | fetch → output | Persist data |
+
+### Source Drivers
+
+| Source | Vendor | Data Types |
+|--------|--------|------------|
+| dexcomshare | Dexcom Share | entries |
+| librelinkup | LibreLinkUp | entries |
+| nightscout | Nightscout | entries |
+| glooko | Glooko | treatments |
+| minimedcarelink | Medtronic CareLink | entries, treatments, devicestatus |
+
+### Builder Pattern
+
+| Method | Purpose |
+|--------|---------|
+| support_session() | Register auth promises |
+| register_loop() | Create polling cycle |
+| tracker_for() | Gap analysis setup |
+
+
+## Carb Absorption Models
+
+> **See Also**: [Carb Absorption Comparison](../../docs/10-domain/carb-absorption-comparison.md)
+
+### Model Paradigms
+
+| Paradigm | Description | Systems |
+|----------|-------------|---------|
+| Predictive | Models expected absorption curve, adjusts based on observed effects | Loop |
+| Reactive | Infers absorption from glucose deviation vs insulin prediction | oref0, AAPS, Trio |
+
+### Absorption Curve Types
+
+| Curve | Description | System |
+|-------|-------------|--------|
+| Linear | Constant absorption rate over time | Loop, oref0 |
+| Parabolic (Scheiner) | Slower start/end, peak in middle | Loop |
+| Piecewise Linear | Rise (0-15%), plateau (15-50%), fall (50-100%) | Loop (default) |
+| Bilinear/Weighted | Dynamic based on max absorption time | AAPS |
+
+### Key Parameters
+
+| Parameter | Loop | oref0 | AAPS | Trio |
+|-----------|------|-------|------|------|
+| Default Absorption Time | 3h | Profile | Profile | Profile |
+| Max Absorption Time | 10h | 6h | Configurable | 6h |
+| Min 5m Impact | Curve-based | 8 mg/dL | 8 mg/dL | 8 mg/dL |
+| Max COB | None | None | None | 120g |
+
+### Key Formulas
+
+| Formula | Description |
+|---------|-------------|
+| CSF = ISF / CR | Carb Sensitivity Factor |
+| CI = deviation × CR / ISF | Carb Impact (oref0) |
+| COB = carbs × (1 - %absorbed) | COB (Loop) |
+| COB = carbs - Σ(absorbed) | COB (oref0) |
+
+### UAM Detection
+
+| System | Method |
+|--------|--------|
+| Loop | Implicit via retrospective correction |
+| oref0 | Explicit deviation slope analysis |
+| AAPS | enableUAM constraint |
+| Trio | enableUAM setting |
+
+
+## Pump Communication Terminology
+
+> **Systems**: Loop, AAPS, xDrip+
+
+### Insulin Container Terms
+
+| Concept | Loop | AAPS | xDrip+ | Nightscout |
+|---------|------|------|--------|------------|
+| Insulin container | `reservoir` | `reservoirLevel` | `reservoirAmount` | `pump.reservoir` |
+| Container level | `reservoirLevel` | `reservoirLevel: Double` | `reservoirRemainingUnits` | `pump.reservoir.amount` |
+| Low warning | N/A (app handles) | `PUMP_LOW_RESERVOIR` | N/A | N/A |
+| Empty state | N/A | `RESERVOIR_EMPTY` | N/A | N/A |
+
+**Source References**:
+- Loop: `LoopKit/InsulinKit/PumpEventType.swift:88`
+- AAPS: `core/data/src/main/kotlin/app/aaps/core/data/pump/defs/Pump.kt:124`
+- xDrip+: `app/src/main/java/com/eveningoutpost/dexdrip/models/PumpStatus.java:19`
+
+### Device Type Terms
+
+| Concept | Loop | AAPS | xDrip+ |
+|---------|------|------|--------|
+| Patch pump | `pod` | `Pod` | N/A |
+| Traditional pump | `pump` | `Pump` | `pump` |
+| Full replacement | `ReplaceableComponent.pump` | `PodStatus.DEACTIVATED` | N/A |
+| Infusion set | `infusionSet` | N/A | N/A |
+
+**Source References**:
+- Loop: `LoopKit/InsulinKit/PumpEventType.swift:89-90`
+- AAPS: `pump/medtrum/src/main/kotlin/app/aaps/pump/medtrum/comm/enums/PodStatus.kt`
+
+### Battery/Power Terms
+
+| Concept | Loop | AAPS | xDrip+ | Nightscout |
+|---------|------|------|--------|------------|
+| Battery level | `pumpBatteryChargeRemaining` | `batteryLevel: Int?` | `pumpBatteryLevelPercent` | `pump.battery.percent` |
+| Low battery | N/A | `PUMP_LOW_BATTERY` | N/A | N/A |
+| Battery out | N/A | `BATTERY_OUT` | N/A | N/A |
+
+**Source References**:
+- Loop: `LoopKit/DeviceManager/PumpManagerStatus.swift:64`
+- AAPS: `core/data/src/main/kotlin/app/aaps/core/data/pump/defs/Pump.kt:129`
+- xDrip+: `app/src/main/java/com/eveningoutpost/dexdrip/utils/framework/RecentData.java`
+
+### Pump State Terms
+
+| State | Loop | AAPS | xDrip+ |
+|-------|------|------|--------|
+| Active/Delivering | `BasalDeliveryState.active` | `ACTIVE` | N/A |
+| Suspended | `BasalDeliveryState.suspended` | `SUSPENDED`, `PAUSED` | `pumpSuspended` |
+| Suspending | `BasalDeliveryState.suspending` | N/A | N/A |
+| Resuming | `BasalDeliveryState.resuming` | N/A | N/A |
+| Temp basal | `BasalDeliveryState.tempBasal` | `TemporaryBasal` | N/A |
+| Occlusion | N/A | `OCCLUSION` | N/A |
+| Expired | N/A | `EXPIRED` | N/A |
+
+**Source References**:
+- Loop: `LoopKit/DeviceManager/PumpManagerStatus.swift:39-45`
+- AAPS: `pump/medtrum/src/main/kotlin/app/aaps/pump/medtrum/comm/enums/MedtrumPumpState.kt`
+- xDrip+: `app/src/main/java/com/eveningoutpost/dexdrip/utils/framework/RecentData.java`
+
+### Bolus State Terms
+
+| State | Loop | AAPS | xDrip+ |
+|-------|------|------|--------|
+| No bolus | `BolusState.noBolus` | N/A | N/A |
+| Initiating | `BolusState.initiating` | N/A | N/A |
+| In progress | `BolusState.inProgress` | `NORMAL` | N/A |
+| SMB | N/A | `SMB` | N/A |
+| Priming | N/A | `PRIMING` | N/A |
+| Extended | N/A | `extendedBolus` | N/A |
+
+**Source References**:
+- Loop: `LoopKit/DeviceManager/PumpManagerStatus.swift:56-58`
+- AAPS: `core/data/src/main/kotlin/app/aaps/core/data/db/BS.kt:36-39`
+
+### Bolus Activation Types (Loop)
+
+| Type | Description |
+|------|-------------|
+| `automatic` | Closed-loop automatic bolus |
+| `manualRecommendationAccepted` | User accepted recommendation |
+| `manualRecommendationChanged` | User modified recommendation |
+| `manualNoRecommendation` | Manual entry without recommendation |
+
+**Source**: `LoopKit/DeviceManager/BolusActivationType.swift:9-14`
+
+### Temp Basal Types (AAPS)
+
+| Type | Description |
+|------|-------------|
+| `NORMAL` | Standard temp basal |
+| `EMULATED_PUMP_SUSPEND` | Emulated via zero temp |
+| `PUMP_SUSPEND` | Actual pump suspend |
+| `SUPERBOLUS` | Superbolus mode |
+| `FAKE_EXTENDED` | Emulated extended bolus |
+
+**Source**: `core/interfaces/src/main/kotlin/app/aaps/core/interfaces/pump/PumpSync.kt:300-320`
+
+### Pod Setup States (Loop/OmniKit)
+
+| State | Description |
+|-------|-------------|
+| `podPaired` | Pod successfully paired |
+| `cannulaInserting` | Cannula insertion in progress |
+| `priming` | Pod priming |
+| `running` | Pod active |
+
+**Source**: `OmniKit/PumpManager/PodState.swift:14-20`
+
+### Pump Event Types (Loop)
+
+| Event | Description |
+|-------|-------------|
+| `prime` | Pump/pod priming |
+| `rewind` | Reservoir change |
+| `suspend` | Delivery suspended |
+| `resume` | Delivery resumed |
+| `tempBasal` | Temp basal set |
+
+**Source**: `LoopKit/InsulinKit/PumpEventType.swift:16-24`
+
+### xDrip+ Pump Integration
+
+| Field | Source | Description |
+|-------|--------|-------------|
+| `pumpModelNumber` | RecentData | Device model |
+| `pumpSuspended` | RecentData | Boolean suspension |
+| `pumpCommunicationState` | RecentData | Connection status |
+| `pumpBannerState` | RecentData | Banner alerts list |
+
+**Source**: `app/src/main/java/com/eveningoutpost/dexdrip/utils/framework/RecentData.java`
+
+### Nightscout devicestatus.pump Structure
+
+```json
+{
+  "pump": {
+    "reservoir": 150.5,
+    "battery": {
+      "percent": 75
+    },
+    "iob": {
+      "bolusiob": 2.5
+    },
+    "status": {
+      "suspended": false
+    }
+  }
+}
+```
+
