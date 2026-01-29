@@ -40,20 +40,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Level 6: Proposal coherence - nocturne-modernization-analysis.md
-**Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #31
-**Focus:** Cross-check with nocturne source
-**Method:** Compare analysis claims with externals/nocturne
-
-### 5. [P3] Algorithm conformance: Loop Swift runner
+### 4. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 6. [P3] sdqctl VERIFY .conv Directive (Phase 2)
+### 5. [P3] sdqctl VERIFY .conv Directive (Phase 2)
 **Type:** Tooling | **Effort:** Medium
 **Proposal:** [VERIFICATION-DIRECTIVES.md](VERIFICATION-DIRECTIVES.md)
 **Focus:** Native `VERIFY refs` directive in .conv workflows
@@ -62,6 +56,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 6: nocturne-modernization-analysis.md coherence~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Coherence: **83%** (10/12 claims verified)
+- Exact: 927 C# files, 438 Svelte, PostgreSQL, Aspire, SignalR, Rust oref
+- Close: LOC 84%, Connectors 11 vs 8
+- Unverified: Redis, V4 endpoints
+- **LEVEL 6 COMPLETE (4/4)**
 
 ### ~~[P3] Level 6: lsp-integration-proposal.md coherence~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

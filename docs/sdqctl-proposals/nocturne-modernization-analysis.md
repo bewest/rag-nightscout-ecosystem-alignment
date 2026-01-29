@@ -31,7 +31,7 @@ This document provides a comprehensive comparison between the original Nightscou
 | **Language** | JavaScript (Node.js) | C# (.NET 10) |
 | **Runtime** | Node.js 16-20 | .NET 10 (cross-platform) |
 | **Database** | MongoDB | PostgreSQL |
-| **Cache** | In-memory | Redis |
+| **Cache** | In-memory | In-memory (no Redis) |
 | **Real-time** | Socket.IO | SignalR (+ bridge) |
 | **Frontend** | Backbone.js + EJS | SvelteKit 2 + Svelte 5 |
 | **Build** | Webpack | .NET Aspire |
@@ -42,7 +42,7 @@ This document provides a comprehensive comparison between the original Nightscou
 | Metric | cgm-remote-monitor | Nocturne |
 |--------|-------------------|----------|
 | **Main Language Files** | 293 JS files | 927 C# files |
-| **Lines of Code** | ~35,000 (lib/) | ~334,000 |
+| **Lines of Code** | ~35,000 (lib/) | ~282,000 |
 | **Plugins/Extensions** | 38 plugins | Service-based |
 | **Frontend Components** | 4 JS + 1 EJS | 438 Svelte |
 | **Dependencies** | ~80 npm packages | .NET + pnpm |
@@ -103,11 +103,12 @@ This document provides a comprehensive comparison between the original Nightscou
 | Glooko | OAuth | ✅ Polling |
 | MiniMed CareLink | Username/password | ✅ Polling |
 | MyFitnessPal | OAuth | ✅ Polling |
+| MyLife | OAuth | ✅ Polling |
 | Nightscout | API_SECRET | ✅ Sync |
 | TConnectSync | OAuth | ✅ Polling |
 | Tidepool | OAuth | ✅ Polling |
 
-**Advantage**: Nocturne has 8 native connectors; cgm-remote-monitor requires separate bridges.
+**Advantage**: Nocturne has 9 native connectors; cgm-remote-monitor requires separate bridges.
 
 **Risk**: share2nightscout-bridge uses hardcoded Dexcom app ID (GAP-SHARE-003).
 
