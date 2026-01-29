@@ -1651,6 +1651,20 @@ oref0's core innovation is deviation analysis:
 
 **Gap Reference**: GAP-API-008
 
+### Nocturne Timestamp Pattern
+
+Nocturne uses a "Mills-first" pattern where `Mills` (Unix epoch milliseconds) is the canonical timestamp:
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `Mills` | long | **Source of truth** (Unix ms) |
+| `Date` | DateTime? | Computed from Mills |
+| `DateString` | string? | ISO-8601, computed |
+
+This differs from cgm-remote-monitor where `date` (epoch ms) and `dateString` (ISO-8601) may be set independently.
+
+**Source**: `mapping/nocturne/models.md`
+
 ### Query Syntax Comparison
 
 | Operation | v1 Syntax | v3 Syntax |
