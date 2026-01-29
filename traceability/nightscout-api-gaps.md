@@ -1244,3 +1244,69 @@ _None yet._
 **Source**: `docs/10-domain/devicestatus-deep-dive.md`
 
 ---
+
+### GAP-PROFILE-001: Unit Representation Mismatch
+
+**Description**: Loop uses HealthKit units (`HKQuantity`) with type safety; Nightscout uses string representations ("mg/dl", "mmol"). Unit precision may be lost during conversion.
+
+**Affected Systems**: Loop, Nightscout
+
+**Impact**:
+- Potential precision loss during unit conversion
+- HealthKit's type-safe units become loosely typed strings
+- May affect edge cases in ISF/CR calculations
+
+**Remediation**: Document acceptable precision loss; consider adding unit metadata to Nightscout profile schema.
+
+**Source**: `docs/60-research/profile-therapy-settings-comparison.md`
+
+---
+
+### GAP-PROFILE-002: Time Block vs Start-Time Format
+
+**Description**: AAPS uses duration-based blocks (`Block` with duration in ms); Nightscout uses start-time arrays (`time` + `timeAsSeconds`). Requires bidirectional conversion logic.
+
+**Affected Systems**: AAPS, Nightscout
+
+**Impact**:
+- Conversion logic required in AAPS NSClient
+- Edge cases possible around midnight wraparound
+- Duration-based format more explicit about schedule coverage
+
+**Remediation**: Document conversion algorithms; consider supporting both formats in future spec.
+
+**Source**: `docs/60-research/profile-therapy-settings-comparison.md`
+
+---
+
+### GAP-PROFILE-003: Loop Has No Profile Naming
+
+**Description**: Loop treats therapy settings as a single unnamed entity. Cannot reference profiles by name in cross-system scenarios where AAPS/Trio support multiple named profiles.
+
+**Affected Systems**: Loop, AAPS, Trio
+
+**Impact**:
+- Cannot correlate Loop settings to named Nightscout profiles
+- Profile switch events don't translate to Loop
+- Multi-profile workflows (work vs home) not expressible in Loop
+
+**Remediation**: Loop could adopt optional profile naming for Nightscout compatibility.
+
+**Source**: `docs/60-research/profile-therapy-settings-comparison.md`
+
+---
+
+### GAP-PROFILE-004: Loop Download-Only
+
+**Description**: Loop uploads profiles to Nightscout but does not download them. Settings cannot be remotely updated via Nightscout.
+
+**Affected Systems**: Loop, Nightscout
+
+**Impact**:
+- Loop is source-of-truth for its own settings
+- Remote configuration (caregiver scenario) not possible
+- Differs from Trio which downloads profiles from Nightscout
+
+**Remediation**: Consider adding optional profile download for caregiver mode.
+
+**Source**: `docs/60-research/profile-therapy-settings-comparison.md`

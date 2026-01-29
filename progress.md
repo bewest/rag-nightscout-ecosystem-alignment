@@ -8,6 +8,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Profile Collection Deep Dive - Gaps Migration (2026-01-29)
+
+Found existing comprehensive comparison (557 lines). Migrated 4 gaps to traceability.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Comparison Doc** | `docs/60-research/profile-therapy-settings-comparison.md` | 557 lines (pre-existing) |
+| **Gaps Added** | `traceability/nightscout-api-gaps.md` | GAP-PROFILE-001 through 004 |
+
+**Key Findings** (from existing doc):
+- Loop uses HealthKit units; Nightscout uses strings
+- AAPS uses duration blocks; Nightscout uses start-time arrays
+- Loop has no profile naming (single anonymous profile)
+- Loop upload-only; Trio download-only; AAPS bidirectional
+
+**Gaps Migrated**:
+| Gap ID | Issue |
+|--------|-------|
+| GAP-PROFILE-001 | Unit representation mismatch (HKQuantity vs string) |
+| GAP-PROFILE-002 | Time block vs start-time format |
+| GAP-PROFILE-003 | Loop has no profile naming |
+| GAP-PROFILE-004 | Loop doesn't download profiles |
+
+---
+
 ### Device Status Collection Deep Dive - Gaps Migration (2026-01-29)
 
 Found existing comprehensive deep dive (863 lines). Migrated 4 gaps to traceability.
