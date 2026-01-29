@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 3: Entries Deep Dive (2026-01-29)
+
+Verified entries-deep-dive.md claims against source code.
+
+| Claim | Source | Status |
+|-------|--------|--------|
+| xDrip+ `calculated_value` | `BgReading.java:119-120` | ✅ Verified |
+| Loop `HKQuantity` glucose | `NewGlucoseSample.swift` | ✅ Verified |
+| AAPS `value` field | `GlucoseValue.kt:40` | ✅ Verified |
+| xDrip+ `dg_slope` trend | `BgReading.java:188-189` | ✅ Verified |
+| Entry types sgv/mbg/cal | `data-layer-audit.md:73` | ✅ Verified |
+| Loop `provenanceIdentifier` | `CachedGlucoseObject+CoreDataProperties.swift:22` | ✅ Verified |
+| AAPS `trendArrow` | `GlucoseValue.kt:41` | ✅ Verified |
+| Loop `GlucoseTrend` | `GlucoseDisplayable.swift:20` | ✅ Verified |
+
+**Level 3 Progress**: 5/8 items complete (62.5%)
+
+---
+
 ### Level 3: DeviceStatus Deep Dive (2026-01-29)
 
 Verified devicestatus-deep-dive.md claims against source code.

@@ -42,8 +42,9 @@ Total: 185 requirements (180 unique)
 | 2026-01-29 | g7-protocol-specification.md | REQ-050-059 (CGM data source) |
 | 2026-01-29 | cgm-data-sources-deep-dive.md | REQ-050-059 (CGM data source) |
 | 2026-01-29 | devicestatus-deep-dive.md | REQ-030 (field validation), REQ-010 (timestamp) |
+| 2026-01-29 | entries-deep-dive.md | REQ-050-059 (CGM data source), REQ-030 (field validation) |
 
 **Level 2 Complete**: 5/5 mapping verifications passed (100%)
-**Level 3 Progress**: 4/8 deep dive verifications (50%)
+**Level 3 Progress**: 5/8 deep dive verifications (62.5%)
 
 *Last updated: 2026-01-29*

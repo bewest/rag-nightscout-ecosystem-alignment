@@ -74,7 +74,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | 10 | Verify cgm-data-sources-deep-dive.md claims | P2 | cgm-sources | ✅ **100% accurate** |
 | 11 | Verify algorithm-comparison-deep-dive.md claims | P2 | aid-algorithms | ✅ **100% accurate** |
 | 12 | Verify devicestatus-deep-dive.md claims | P2 | nightscout-api | ✅ **100% accurate** |
-| 13 | Verify entries-deep-dive.md claims | P2 | nightscout-api | Pending |
+| 13 | Verify entries-deep-dive.md claims | P2 | nightscout-api | ✅ **100% accurate** |
 | 14 | Verify treatments-deep-dive.md claims | P2 | nightscout-api | Pending |
 | 15 | Verify pump-communication-deep-dive.md claims | P3 | pumps | Pending |
 | 16 | Verify libre-protocol-deep-dive.md claims | P2 | cgm-sources | Pending |
@@ -101,6 +101,12 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 - Trio: `openaps` top-level, device = "Trio" (NightscoutTreatment.local)
 - AAPS: `openaps` top-level, device format `openaps://`, pump.reservoir/clock fields
 - oref0: predBGs with IOB/COB/UAM/ZT arrays at determine-basal.js:657-690
+
+**Finding (2026-01-29)**: Entries deep dive verified:
+- xDrip+: `calculated_value` for glucose (BgReading.java:119), `dg_slope` for trend
+- Loop: `HKQuantity` for glucose, `provenanceIdentifier` for device, `GlucoseTrend` enum
+- AAPS: `value` field (GlucoseValue.kt:40), `trendArrow` enum
+- Nightscout: entry types sgv/mbg/cal confirmed in data-layer-audit.md
 
 ### Level 4: Gap Verification
 

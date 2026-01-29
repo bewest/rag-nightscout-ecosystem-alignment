@@ -40,11 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Accuracy: Verify entries deep dive
+### 4. [P2] Accuracy: Verify treatments deep dive
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #13
-**Focus:** Validate entries collection structure claims
-**Files:** `docs/10-domain/entries-deep-dive.md`
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #14
+**Focus:** Validate treatments collection structure claims
+**Files:** `docs/10-domain/treatments-deep-dive.md`
 **Method:** Grep source for documented fields
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
@@ -63,6 +63,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 3: Entries deep dive~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 8 claims verified: **100% accurate**
+- xDrip+: `calculated_value`, `dg_slope` for trend
+- Loop: `HKQuantity`, `provenanceIdentifier`, `GlucoseTrend`
+- AAPS: `value` field, `trendArrow` enum
+- Nightscout: sgv/mbg/cal entry types
 
 ### ~~[P2] Level 3: DeviceStatus deep dive~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
