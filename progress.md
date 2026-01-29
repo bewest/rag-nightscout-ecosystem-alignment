@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 3: Pump Communication Deep Dive (2026-01-29)
+
+Verified pump-communication-deep-dive.md claims against source code.
+
+| Claim | Source | Status |
+|-------|--------|--------|
+| Omnipod Eros 433.91 MHz | `PodComms.swift:560` | ✅ Verified |
+| Medtronic 916.5/868 MHz | `PumpOpsSession.swift:795,797` | ✅ Verified |
+| RileyLink submodule | `.gitmodules:13-15` | ✅ Verified |
+| PumpManager protocol | `PumpManager.swift:67` | ✅ Verified |
+| enactBolus method | `PumpManager.swift:170` | ✅ Verified |
+| enactTempBasal method | `PumpManager.swift:186` | ✅ Verified |
+| BasalDeliveryState/BolusState | `PumpManagerStatus.swift:38-60` | ✅ Verified |
+| AAPS Pump interface | `Pump.kt:19` | ✅ Verified |
+
+**Level 3 Progress**: 8/8 items complete (100%) ✅
+
+---
+
 ### Level 3: Libre Protocol Deep Dive (2026-01-29)
 
 Verified libre-protocol-deep-dive.md claims against source code.

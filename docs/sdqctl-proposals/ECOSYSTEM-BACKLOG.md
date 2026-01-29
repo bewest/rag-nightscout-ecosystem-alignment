@@ -40,12 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P3] Accuracy: Verify pump-communication deep dive
+### 4. [P2] Level 4: Gap verification - GAP-ALG-* 
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #15
-**Focus:** Validate pump communication claims
-**Files:** `docs/10-domain/pump-communication-deep-dive.md`
-**Method:** Grep source for documented protocols
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #19
+**Focus:** Verify algorithm-related gaps are still open
+**Method:** Grep source for gap resolution evidence
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -63,6 +62,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P3] Level 3: Pump communication deep dive~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 8 claims verified: **100% accurate**
+- Omnipod Eros: 433.91 MHz RF (PodComms.swift:560)
+- Medtronic: 916.5/868 MHz (PumpOpsSession.swift:795,797)
+- Loop PumpManager: enactBolus, enactTempBasal (PumpManager.swift:170,186)
+- AAPS Pump: interface at Pump.kt:19
 
 ### ~~[P2] Level 3: Libre protocol deep dive~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

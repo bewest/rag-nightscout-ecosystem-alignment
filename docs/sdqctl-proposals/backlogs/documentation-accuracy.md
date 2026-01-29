@@ -76,7 +76,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | 12 | Verify devicestatus-deep-dive.md claims | P2 | nightscout-api | ✅ **100% accurate** |
 | 13 | Verify entries-deep-dive.md claims | P2 | nightscout-api | ✅ **100% accurate** |
 | 14 | Verify treatments-deep-dive.md claims | P2 | nightscout-api | ✅ **100% accurate** |
-| 15 | Verify pump-communication-deep-dive.md claims | P3 | pumps | Pending |
+| 15 | Verify pump-communication-deep-dive.md claims | P3 | pumps | ✅ **100% accurate** |
 | 16 | Verify libre-protocol-deep-dive.md claims | P2 | cgm-sources | ✅ **100% accurate** |
 | 17 | Verify g7-protocol-specification.md claims | P1 | cgm-sources | ✅ **100% accurate** |
 
@@ -122,6 +122,14 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 - NFC command 0xA1 for patchInfo (NFC.swift:55-56,280)
 - IC Manufacturer: 0x07 (TI) vs 0x7a (Abbott) (Abbott.swift:59, Libre2Gen2.swift:131)
 - 60 min warmup period (Console.swift:190)
+
+**Finding (2026-01-29)**: Pump communication deep dive verified:
+- Omnipod Eros: 433.91 MHz RF (PodComms.swift:560)
+- Medtronic: 916.x MHz US, 868.x MHz EU (PumpOpsSession.swift:795,797)
+- RileyLink: Submodule at RileyLinkKit (gitmodules:13-15)
+- Loop PumpManager: Protocol at PumpManager.swift:67 with enactBolus(:170), enactTempBasal(:186)
+- PumpManagerStatus: BasalDeliveryState/BolusState enums (PumpManagerStatus.swift:38-60)
+- AAPS Pump: Interface at Pump.kt:19 with deliverBolus, connect/disconnect
 
 ### Level 4: Gap Verification
 
