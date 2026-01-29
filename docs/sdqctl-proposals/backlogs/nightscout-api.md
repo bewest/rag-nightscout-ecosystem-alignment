@@ -12,7 +12,7 @@ Covers: cgm-remote-monitor, entries, treatments, devicestatus, profile
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | Playwright adoption: Implementation | P2 | Medium | Proposal complete, needs PR |
+| - | (none - items promoted to Ready Queue or completed) | - | - | - |
 
 ---
 
@@ -20,6 +20,7 @@ Covers: cgm-remote-monitor, entries, treatments, devicestatus, profile
 
 | Item | Date | Notes |
 |------|------|-------|
+| Playwright adoption: Implementation | 2026-01-29 | 591 lines, 4 files, ready for PR |
 | cgm-remote-monitor design review | 2026-01-29 | 319 lines, 18 gaps synthesized, 5-phase refactoring plan, 4 new REQs |
 | Profile collection deep dive | 2026-01-29 | Pre-existing 557 lines, migrated 4 gaps |
 | Device Status collection deep dive | 2026-01-29 | Pre-existing 863 lines, migrated 4 gaps |
