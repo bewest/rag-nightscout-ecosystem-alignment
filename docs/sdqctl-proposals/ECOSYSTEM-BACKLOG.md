@@ -49,12 +49,8 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Source:** cgm-sources backlog
 
-### 5. [P3] Create mapping: share2nightscout-bridge
-**Type:** Analysis | **Effort:** Medium
-**Repos:** share2nightscout-bridge
-**Focus:** Dexcom Share bridge field mappings
-**Workflow:** `gap-discovery.conv`
-**Source:** Deep-dives exist (2 docs)
+### ~~5. [P3] Create mapping: share2nightscout-bridge~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (424 lines, 3 docs, 3 gaps)
 
 ---
 

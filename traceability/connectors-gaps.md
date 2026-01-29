@@ -374,3 +374,58 @@ osx_image: xcode12.4
 **Source**: `mapping/tconnectsync/treatments.md`
 
 ---
+
+## share2nightscout-bridge Gaps
+
+---
+
+### GAP-SHARE-001: No Nightscout API v3 Support
+
+**Description**: share2nightscout-bridge uses Nightscout API v1 only. Does not set `identifier`, `srvModified`, or other v3 fields.
+
+**Affected Systems**: share2nightscout-bridge, Nightscout
+
+**Impact**:
+- No server-side deduplication
+- Duplicates possible on bridge restart or overlap
+- Cannot track sync state across restarts
+
+**Remediation**: Add v3 API support with proper identifiers.
+
+**Source**: `mapping/share2nightscout-bridge/entries.md`
+
+---
+
+### GAP-SHARE-002: No Backfill/Gap Detection Logic
+
+**Description**: share2nightscout-bridge does not detect gaps in CGM data. If the bridge is offline, missed readings are not backfilled when it comes back online.
+
+**Affected Systems**: share2nightscout-bridge, Nightscout
+
+**Impact**:
+- Data gaps during bridge downtime
+- No automatic recovery of missed readings
+- Users must manually backfill or accept gaps
+
+**Remediation**: Add gap detection and backfill logic using `minutes` parameter.
+
+**Source**: `mapping/share2nightscout-bridge/entries.md`
+
+---
+
+### GAP-SHARE-003: Hardcoded Application ID
+
+**Description**: share2nightscout-bridge uses a hardcoded Dexcom application ID (`d89443d2-327c-4a6f-89e5-496bbb0317db`). If Dexcom revokes or changes this ID, the bridge will break.
+
+**Affected Systems**: share2nightscout-bridge
+
+**Impact**:
+- Single point of failure
+- No user-configurable alternative
+- Dependent on Dexcom not revoking the ID
+
+**Remediation**: Make application ID configurable, or use official Dexcom developer credentials.
+
+**Source**: `mapping/share2nightscout-bridge/api.md`
+
+---

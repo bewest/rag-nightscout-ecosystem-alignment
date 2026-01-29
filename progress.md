@@ -8,6 +8,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### share2nightscout-bridge Field Mapping (2026-01-29)
+
+Created comprehensive field mapping documentation for Dexcom Share bridge.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **README** | `mapping/share2nightscout-bridge/README.md` | 70 lines, index |
+| **API** | `mapping/share2nightscout-bridge/api.md` | 178 lines, Dexcom Share API |
+| **Entries** | `mapping/share2nightscout-bridge/entries.md` | 176 lines, field mapping |
+
+**Key Findings**:
+- Dexcom timestamp format: `/Date(milliseconds-offset)/` parsed with regex
+- Trend values 0-9 map to direction strings
+- Device identifier always `"share2"`
+- Uses v1 API only (no v3 support - GAP-SHARE-001)
+- No backfill logic for missed readings (GAP-SHARE-002)
+- Hardcoded applicationId (GAP-SHARE-003)
+
+**Gaps Identified**: GAP-SHARE-001, GAP-SHARE-002, GAP-SHARE-003
+
+---
+
 ### tconnectsync Field Mapping (2026-01-29)
 
 Created comprehensive field mapping documentation for Tandem t:connect sync tool.
