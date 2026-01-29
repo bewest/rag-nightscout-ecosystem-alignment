@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Level 4: GAP-CONNECT-* Verification (2026-01-29)
+
+Verified connector gap accuracy against source code. **LEVEL 4 COMPLETE!**
+
+| Claim | Evidence | Status |
+|-------|----------|--------|
+| GAP-CONNECT-001: nightscout-connect v1 only | `nightscout.js:35,48` - `/api/v1/` | ✅ Verified |
+| GAP-CONNECT-004: No test suite | `package.json` - `echo "no test"` | ✅ Verified |
+| GAP-TCONNECT-001: tconnectsync v1 only | `nightscout.py` - `api/v1/` | ✅ Verified |
+| GAP-SHARE-001: share2nightscout-bridge v1 only | `index.js` - `/api/v1/entries.json` | ✅ Verified |
+| GAP-SHARE-003: Hardcoded app ID | `d89443d2-327c...` in index.js | ✅ Verified |
+| GAP-LIBRELINK-001: v3 stub throws | `apiv3.ts` - `'Not implemented'` | ✅ Verified |
+| GAP-LOOPFOLLOW-001: v1 API only | `NightscoutUtils.swift` - `/api/v1/` | ✅ Verified |
+| GAP-LOOPCAREGIVER-001: Loop-only | All refs Loop-specific | ✅ Verified |
+
+**Level 4 Complete**: 6/6 items (100%) ✅
+
+---
+
 ### Level 4: GAP-TREAT-* Verification (2026-01-29)
 
 Verified treatment gap accuracy against Loop, AAPS, Trio, and Nightscout source code.

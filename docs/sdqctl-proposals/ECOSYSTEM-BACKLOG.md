@@ -40,11 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Level 4: Gap verification - GAP-CONNECT-* 
+### 4. [P2] Level 5: Requirements traceability - REQ-SYNC-*
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #23
-**Focus:** Verify connector gaps are still open
-**Method:** Grep source for gap resolution evidence
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #24
+**Focus:** Audit REQ-SYNC-* coverage by test scenarios
+**Method:** Run `python tools/verify_assertions.py`
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -62,6 +62,14 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 4: GAP-CONNECT-* verification~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 - **LEVEL 4 COMPLETE!**
+- 8 claims verified: **100% accurate**
+- GAP-CONNECT-001/004: nightscout-connect v1 only, no test suite
+- GAP-TCONNECT/SHARE/LIBRELINK: All v1 API only
+- GAP-SHARE-003: Hardcoded Dexcom app ID confirmed
+- GAP-LOOPFOLLOW/LOOPCAREGIVER-001: v1 only, Loop-only
 
 ### ~~[P2] Level 4: GAP-TREAT-* verification~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
