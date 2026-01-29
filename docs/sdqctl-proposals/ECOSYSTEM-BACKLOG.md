@@ -34,18 +34,17 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document "eavesdrop only" limitations for Libre 3
 **Source:** CGM sources backlog
 
-### 3. [P2] Playwright E2E PR submission
-**Type:** Upstream | **Effort:** Low
-**Repos:** cgm-remote-monitor
-**Focus:** Package `conformance/e2e-nightscout` for upstream PR
-**Source:** Nightscout API backlog
-
-### 4. [P3] Algorithm conformance: Loop Swift runner
+### 3. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
+
+### 4. [P2] Cross-controller conflict detection
+**Type:** Analysis | **Effort:** Medium
+**Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
+**Source:** Sync & Identity backlog
 
 ### 5. [P3] sdqctl VERIFY .conv Directive (Phase 2)
 **Type:** Tooling | **Effort:** Medium
@@ -56,6 +55,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Playwright E2E PR Submission~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Created `conformance/e2e-nightscout/PR-SUBMISSION.md` (4.6 KB)
+- Package ready with 18 tests (10 API, 8 Dashboard)
+- Includes PR template, submission steps, CI guidance
 
 ### ~~[P2] sdqctl VERIFY Directive Implementation~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

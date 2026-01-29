@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Playwright E2E PR Submission (2026-01-29)
+
+Created PR submission guide for Playwright E2E tests to be contributed to cgm-remote-monitor.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **PR Guide** | `conformance/e2e-nightscout/PR-SUBMISSION.md` | 4.6 KB, full PR template |
+
+**Package Contents** (ready for upstream PR):
+| File | Tests | Purpose |
+|------|-------|---------|
+| `api.spec.js` | 10 | API v1/v3 smoke tests |
+| `dashboard.spec.js` | 8 | UI, Socket.IO, mobile |
+| `playwright.config.js` | - | Multi-browser config |
+
+**Next Step**: Submit PR to `nightscout/cgm-remote-monitor:dev`
+
+---
+
 ### sdqctl VERIFY CLI Discovery (2026-01-29)
 
 Discovered that `sdqctl verify` CLI commands are already implemented and functional. Updated proposal status and added Makefile integration targets.

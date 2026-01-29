@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Playwright E2E PR Submission | P2 | ✅ Complete (PR guide, 18 tests ready) | 2026-01-29 |
 | sdqctl VERIFY CLI Discovery | P2 | ✅ Complete (CLI exists, +2 Make targets) | 2026-01-29 |
 | Conformance CI Integration | P2 | ✅ Complete (3 targets, CI job, README) | 2026-01-29 |
 | xdrip-js Deep Dive | P3 | ✅ Complete (380 lines, 4 gaps) | 2026-01-29 |
