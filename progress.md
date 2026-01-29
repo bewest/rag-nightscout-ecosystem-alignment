@@ -27,6 +27,30 @@ Analyzed 53 files over 500 lines for autonomous workflow optimization.
 
 ---
 
+### CGM Sensor Session Handling Comparison (2026-01-29)
+
+Cross-system analysis of sensor session start/stop and calibration patterns.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Comparison** | `docs/10-domain/cgm-session-handling-comparison.md` | 353 lines |
+| **Gaps Added** | `traceability/cgm-sources-gaps.md` | GAP-SESSION-001-003 |
+
+**Key Findings**:
+- xDrip+ uses database entity model with pluggable calibration algorithms
+- Loop uses BLE message protocol with 17-state calibration machine
+- AAPS delegates session management to CGM source apps
+- Only xDrip+ uploads sensor lifecycle events to Nightscout
+
+**Gaps Identified**:
+| Gap ID | Issue |
+|--------|-------|
+| GAP-SESSION-001 | Session events not standardized |
+| GAP-SESSION-002 | Calibration state not exposed |
+| GAP-SESSION-003 | Pluggable calibration unique to xDrip+ |
+
+---
+
 ### Documentation Reorganization Proposal (2026-01-29)
 
 Analyzed documentation structure for AI and human comprehension optimization.

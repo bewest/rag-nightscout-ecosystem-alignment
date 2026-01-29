@@ -900,3 +900,54 @@ wercker.yml  # Defunct service
 ---
 
 ---
+
+### GAP-SESSION-001: Session Events Not Standardized
+
+**Description**: Only xDrip+ consistently uploads sensor start/stop events to Nightscout. Loop and AAPS do not upload session lifecycle events.
+
+**Affected Systems**: Loop, AAPS, Nightscout analytics
+
+**Impact**:
+- Cannot track sensor history from Nightscout alone
+- Analytics cannot correlate readings with sensor age
+- No cross-system session awareness
+
+**Remediation**: Define standard `Sensor Start`/`Sensor Stop` treatment types with required fields.
+
+**Source**: `docs/10-domain/cgm-session-handling-comparison.md`
+
+---
+
+### GAP-SESSION-002: Calibration State Not Exposed
+
+**Description**: Loop has a rich 17-state calibration state machine (CalibrationState.swift), but this state is not exposed to Nightscout or other systems.
+
+**Affected Systems**: Loop, Nightscout, analytics tools
+
+**Impact**:
+- Cannot diagnose calibration issues remotely
+- No visibility into warmup progress
+- Analytics cannot distinguish calibration errors from sensor failures
+
+**Remediation**: Add `calibrationState` field to devicestatus.
+
+**Source**: `docs/10-domain/cgm-session-handling-comparison.md`
+
+---
+
+### GAP-SESSION-003: Pluggable Calibration Algorithms Unique to xDrip+
+
+**Description**: Only xDrip+ supports user-selectable calibration algorithms (XDripOriginal, Native, Datricsae, FixedSlope, LastSevenUnweighted). Loop and AAPS use native sensor calibration only.
+
+**Affected Systems**: xDrip+, Loop, AAPS
+
+**Impact**:
+- Users switching from xDrip+ may lose preferred algorithm
+- No cross-system calibration comparison possible
+- Algorithm choice not preserved in Nightscout
+
+**Remediation**: Document as intentional difference; xDrip+'s flexibility is a feature not requiring standardization.
+
+**Source**: `docs/10-domain/cgm-session-handling-comparison.md`
+
+---

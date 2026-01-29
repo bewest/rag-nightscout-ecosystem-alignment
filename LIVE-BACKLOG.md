@@ -9,6 +9,9 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Assess proposals for alternative approaches | - | ✅ Assessed - no alternatives needed | 2026-01-29 |
+| Assess proposals ready for implementation | - | ✅ Playwright ready, Algorithm Phase 2 ready | 2026-01-29 |
+| Evaluate underdocumented repos | - | ✅ Assessed - all repos have mapping/ docs | 2026-01-29 |
 | nightscout-connect design review request | P2 | ✅ Complete (340 lines, 3 gaps) | 2026-01-29 |
 | Nocturne/cgm-remote-monitor collaboration feasibility | P3 | → Queued to analysis backlog | 2026-01-29 |
 | Control-plane/desired-state roadmap evaluation | P2 | → Queued to architecture backlog | 2026-01-29 |
