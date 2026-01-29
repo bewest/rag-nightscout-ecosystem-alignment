@@ -55,12 +55,8 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### ~~5. [P3] Create mapping: nightscout-librelink-up~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (608 lines, 3 docs, 3 gaps)
 
-### 5. [P3] Deep dive: LoopFollow
-**Type:** Analysis | **Effort:** Medium
-**Repos:** LoopFollow
-**Focus:** Caregiver monitoring architecture, Nightscout data consumption
-**Workflow:** `extract-spec.conv`
-**Context:** iOS/watchOS app for monitoring Loop/Trio users
+### ~~5. [P3] Deep dive: LoopFollow~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (411 lines, 3 gaps)
 
 ---
 

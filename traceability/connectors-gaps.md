@@ -484,3 +484,58 @@ osx_image: xcode12.4
 **Source**: `mapping/nightscout-librelink-up/entries.md`
 
 ---
+
+## LoopFollow Gaps
+
+---
+
+### GAP-LOOPFOLLOW-001: API v1 Only
+
+**Description**: LoopFollow uses Nightscout API v1 exclusively. No v3 API support implemented.
+
+**Affected Systems**: LoopFollow, Nightscout
+
+**Impact**:
+- Cannot leverage v3 features (identifiers, server-side filtering)
+- No sync identity awareness
+- May miss real-time updates available in v3
+
+**Remediation**: Add v3 API support for improved filtering and real-time features.
+
+**Source**: `docs/10-domain/loopfollow-deep-dive.md`
+
+---
+
+### GAP-LOOPFOLLOW-002: No WebSocket/Server-Sent Events
+
+**Description**: LoopFollow uses polling for data updates. No real-time push support via WebSocket or SSE.
+
+**Affected Systems**: LoopFollow
+
+**Impact**:
+- Delays between data availability and display
+- Higher battery/network usage from polling
+- Not truly real-time monitoring
+
+**Remediation**: Implement WebSocket or SSE listener for real-time updates.
+
+**Source**: `docs/10-domain/loopfollow-deep-dive.md`
+
+---
+
+### GAP-LOOPFOLLOW-003: Treatment eventType Hardcoding
+
+**Description**: Treatment categorization relies on exact string matching of eventTypes. Unknown types logged but not displayed.
+
+**Affected Systems**: LoopFollow
+
+**Impact**:
+- New eventTypes from Loop/Trio/AAPS may be missed
+- Requires code update for new treatment types
+- Silent failures for unrecognized treatments
+
+**Remediation**: Add extensible eventType handling or periodic sync with Nightscout eventType registry.
+
+**Source**: `docs/10-domain/loopfollow-deep-dive.md`
+
+---

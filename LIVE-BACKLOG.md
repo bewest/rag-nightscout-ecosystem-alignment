@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Deep dive: LoopFollow | P3 | ✅ Complete (411 lines, 3 gaps) | 2026-01-29 |
 | Create mapping: nightscout-librelink-up | P3 | ✅ Complete (608 lines, 3 docs, 3 gaps) | 2026-01-29 |
 | Create mapping: share2nightscout-bridge | P3 | ✅ Complete (424 lines, 3 docs, 3 gaps) | 2026-01-29 |
 | Create mapping: tconnectsync | P3 | ✅ Complete (607 lines, 4 docs, 1 gap) | 2026-01-29 |

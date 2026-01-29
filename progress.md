@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### LoopFollow Deep Dive (2026-01-29)
+
+Created comprehensive deep-dive documentation for LoopFollow caregiver monitoring app.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/loopfollow-deep-dive.md` | 411 lines |
+
+**Key Findings**:
+- Consumes Nightscout API v1: entries, treatments, devicestatus, profile
+- Supports Loop, OpenAPS, and Trio devicestatus formats
+- Multi-source: Dexcom Share primary with Nightscout fallback
+- Remote commands via APNS (Loop), TRC (Trio), Nightscout
+- Multi-instance: 3 concurrent LoopFollow apps supported
+
+**Gaps Identified**: GAP-LOOPFOLLOW-001, GAP-LOOPFOLLOW-002, GAP-LOOPFOLLOW-003
+
+---
+
 ### nightscout-librelink-up Field Mapping (2026-01-29)
 
 Created comprehensive field mapping documentation for LibreLink Up bridge.
