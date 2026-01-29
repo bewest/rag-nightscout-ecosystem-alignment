@@ -2963,3 +2963,45 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 }
 ```
 
+
+---
+
+## Algorithm Conformance Testing
+
+### Test Vector Format
+
+| Term | Definition | Schema Location |
+|------|------------|-----------------|
+| **Test Vector** | Standardized input/output pair for algorithm validation | `conformance/schemas/conformance-vector-v1.json` |
+| **glucoseStatus** | Current CGM reading + deltas | `input.glucoseStatus` |
+| **iob** | Insulin on board snapshot | `input.iob` |
+| **profile** | Current therapy settings | `input.profile` |
+| **mealData** | Carb/COB information | `input.mealData` |
+| **expected** | Expected algorithm output (rates, durations) | `expected` object |
+| **assertions** | Semantic behavioral checks | `assertions` array |
+
+### Test Vector Categories
+
+| Category | Description | Use Case |
+|----------|-------------|----------|
+| `basal-adjustment` | Temp basal rate changes | Normal glucose management |
+| `smb-delivery` | SuperMicroBolus scenarios | Rapid correction |
+| `low-glucose-suspend` | LGS safety behavior | Hypoglycemia prevention |
+| `carb-absorption` | COB impact on dosing | Meal handling |
+| `safety-limits` | Max IOB/basal enforcement | Safety validation |
+| `autosens` | Sensitivity adjustments | Dynamic tuning |
+| `exercise-mode` | Override/activity adjustments | Activity handling |
+
+### Assertion Types
+
+| Assertion | Validates |
+|-----------|-----------|
+| `rate_increased` | Temp basal > scheduled basal |
+| `rate_decreased` | Temp basal < scheduled basal |
+| `rate_zero` | Temp basal suspended (0 U/hr) |
+| `smb_delivered` | SMB bolus issued |
+| `no_smb` | SMB withheld |
+| `safety_limit` | Output within safety bounds |
+| `eventual_in_range` | Predicted BG reaches target |
+
+**Source**: `conformance/schemas/conformance-vector-v1.json`

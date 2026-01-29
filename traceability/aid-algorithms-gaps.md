@@ -13,7 +13,7 @@ See [gaps.md](gaps.md) for the index.
 
 **Evidence**:
 - oref0: `tests/determine-basal.test.js` with inline fixtures
-- AAPS: `app/src/androidTest/assets/results/*.json` (~50 files)
+- AAPS: `app/src/androidTest/assets/results/*.json` (~85 files)
 - Loop: `LoopKitTests/Fixtures/` scattered JSON files
 
 **Impact**:
@@ -22,14 +22,17 @@ See [gaps.md](gaps.md) for the index.
 - Safety-critical algorithm changes may go unvalidated
 
 **Possible Solutions**:
-1. Implement conformance vector format (see proposal)
-2. Create cross-project runners for each implementation
-3. CI integration to detect behavioral drift
+1. ✅ Implement conformance vector format (DONE: `conformance-vector-v1.json`)
+2. ✅ Extract vectors from AAPS (DONE: 85 vectors extracted)
+3. 🔄 Create cross-project runners for each implementation (IN PROGRESS)
+4. CI integration to detect behavioral drift
 
-**Status**: Proposal created
+**Status**: Partially addressed - schema + vectors complete, runners pending
 
 **Related**:
 - [Algorithm Conformance Suite Proposal](../docs/sdqctl-proposals/algorithm-conformance-suite.md)
+- `conformance/schemas/conformance-vector-v1.json`
+- `tools/extract_vectors.py`
 
 ---
 

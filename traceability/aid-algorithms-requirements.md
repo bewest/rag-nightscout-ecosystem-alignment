@@ -17,9 +17,14 @@ See [requirements.md](requirements.md) for the index.
 - New Implementation Validation
 
 **Verification**:
-- Schema validates all extracted test vectors
-- At least 50 vectors covering all categories
-- Runners exist for oref0, AAPS, and Loop
+- ✅ Schema validates all extracted test vectors
+- ✅ At least 50 vectors covering all categories (85 extracted)
+- 🔄 Runners exist for oref0, AAPS, and Loop (pending)
+
+**Status**: Partially implemented
+- `conformance/schemas/conformance-vector-v1.json` - Schema complete
+- `conformance/vectors/` - 85 vectors extracted from AAPS
+- `tools/extract_vectors.py` - Extraction tooling complete
 
 **Gap Reference**: GAP-ALG-001
 
@@ -38,9 +43,11 @@ See [requirements.md](requirements.md) for the index.
 - Algorithm Migration Validation
 
 **Verification**:
-- Assertion types include: rate_increased, rate_decreased, no_smb, eventual_in_range
-- Baseline field allows relative assertions
-- Tests pass when clinical behavior matches, not just values
+- ✅ Assertion types include: rate_increased, rate_decreased, no_smb, eventual_in_range
+- ✅ Baseline field allows relative assertions
+- 🔄 Tests pass when clinical behavior matches, not just values (needs runner)
+
+**Status**: Schema complete, validation pending runner implementation
 
 **Gap Reference**: GAP-ALG-003
 
