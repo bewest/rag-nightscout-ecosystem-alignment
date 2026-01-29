@@ -9,12 +9,12 @@ Scans mapping documents for code reference patterns like:
 Validates that:
 1. The alias matches a known repository in workspace.lock.json
 2. The referenced file exists in externals/<repo>/
+3. Line anchors (#L10, #L10-L50) are within file bounds
 
 Usage:
     python tools/verify_refs.py              # Validate all references
     python tools/verify_refs.py --verbose    # Show all refs, not just broken
     python tools/verify_refs.py --json       # Output JSON report
-    python tools/verify_refs.py --fix-stale  # Suggest fixes for stale refs
 
 Outputs:
     traceability/refs-validation.json  - Machine-readable validation report
@@ -149,9 +149,10 @@ def extract_refs_from_file(filepath):
 
 
 def validate_ref(ref, aliases):
-    """Validate a single reference."""
+    """Validate a single reference including line anchors."""
     alias = ref["alias"]
     path = ref["path"]
+    anchor = ref.get("anchor")
     
     if alias not in aliases:
         return {
@@ -170,27 +171,85 @@ def validate_ref(ref, aliases):
     
     file_path = local_path / path
     
-    if file_path.exists():
+    if not file_path.exists():
+        parent_dir = file_path.parent
+        if parent_dir.exists():
+            similar = [f.name for f in parent_dir.iterdir() if f.is_file()][:5]
+            return {
+                "status": "file_not_found",
+                "message": f"File not found: {path}",
+                "searched_in": str(local_path.relative_to(WORKSPACE_ROOT)),
+                "similar_files": similar
+            }
         return {
-            "status": "valid",
-            "resolved_path": str(file_path.relative_to(WORKSPACE_ROOT))
+            "status": "path_not_found",
+            "message": f"Path not found: {path}",
+            "searched_in": str(local_path.relative_to(WORKSPACE_ROOT))
         }
     
-    parent_dir = file_path.parent
-    if parent_dir.exists():
-        similar = [f.name for f in parent_dir.iterdir() if f.is_file()][:5]
-        return {
-            "status": "file_not_found",
-            "message": f"File not found: {path}",
-            "searched_in": str(local_path.relative_to(WORKSPACE_ROOT)),
-            "similar_files": similar
-        }
+    # File exists - now validate line anchor if present
+    resolved_path = str(file_path.relative_to(WORKSPACE_ROOT))
+    
+    if anchor:
+        line_result = validate_line_anchor(file_path, anchor)
+        if line_result:
+            return {
+                **line_result,
+                "resolved_path": resolved_path
+            }
     
     return {
-        "status": "path_not_found",
-        "message": f"Path not found: {path}",
-        "searched_in": str(local_path.relative_to(WORKSPACE_ROOT))
+        "status": "valid",
+        "resolved_path": resolved_path
     }
+
+
+def validate_line_anchor(file_path, anchor):
+    """
+    Validate a line anchor like L10 or L10-L50.
+    
+    Returns None if valid, or a dict with status/message if invalid.
+    """
+    # Parse line anchor: L10, L10-L50, L10-50
+    match = re.match(r'L(\d+)(?:-L?(\d+))?', anchor)
+    if not match:
+        # Not a line anchor (could be a symbol anchor like #someFunction)
+        return None
+    
+    start_line = int(match.group(1))
+    end_line = int(match.group(2)) if match.group(2) else start_line
+    
+    # Validate line numbers
+    if start_line < 1:
+        return {
+            "status": "invalid_line",
+            "message": f"Line {start_line} is invalid (must be >= 1)"
+        }
+    
+    if end_line < start_line:
+        return {
+            "status": "invalid_range",
+            "message": f"Line range {start_line}-{end_line} is invalid (end < start)"
+        }
+    
+    # Count lines in file
+    try:
+        with open(file_path, 'r', errors='ignore') as f:
+            total_lines = sum(1 for _ in f)
+    except Exception as e:
+        return {
+            "status": "read_error",
+            "message": f"Could not read file: {e}"
+        }
+    
+    if end_line > total_lines:
+        return {
+            "status": "line_out_of_range",
+            "message": f"Line {end_line} exceeds file length ({total_lines} lines)"
+        }
+    
+    # Valid line anchor
+    return None
 
 
 def scan_directory(directory, aliases, file_patterns=("*.md", "*.yaml", "*.yml")):
@@ -219,6 +278,9 @@ def generate_report(results, aliases):
     by_file = defaultdict(list)
     by_alias = defaultdict(list)
     
+    # Track refs with line anchors for separate stats
+    refs_with_anchors = [r for r in results if r.get("anchor") and r.get("anchor").startswith("L")]
+    
     for r in results:
         by_status[r["status"]].append(r)
         by_file[r["source_file"]].append(r)
@@ -232,7 +294,14 @@ def generate_report(results, aliases):
             "unknown_alias": len(by_status.get("unknown_alias", [])),
             "repo_missing": len(by_status.get("repo_missing", [])),
             "file_not_found": len(by_status.get("file_not_found", [])),
-            "path_not_found": len(by_status.get("path_not_found", []))
+            "path_not_found": len(by_status.get("path_not_found", [])),
+            # New line validation stats
+            "line_out_of_range": len(by_status.get("line_out_of_range", [])),
+            "invalid_line": len(by_status.get("invalid_line", [])),
+            "invalid_range": len(by_status.get("invalid_range", [])),
+            # Line anchor coverage
+            "refs_with_line_anchors": len(refs_with_anchors),
+            "line_anchors_valid": len([r for r in refs_with_anchors if r["status"] == "valid"])
         },
         "known_aliases": list(aliases.keys()),
         "by_status": {
@@ -278,6 +347,14 @@ def generate_markdown(report):
         f"| Repository Missing | {report['summary']['repo_missing']} |",
         f"| File Not Found | {report['summary']['file_not_found']} |",
         f"| Path Not Found | {report['summary']['path_not_found']} |",
+        f"| Line Out of Range | {report['summary'].get('line_out_of_range', 0)} |",
+        "",
+        "### Line Anchor Validation",
+        "",
+        f"| Metric | Count |",
+        f"|--------|-------|",
+        f"| Refs with Line Anchors | {report['summary'].get('refs_with_line_anchors', 0)} |",
+        f"| Line Anchors Valid | {report['summary'].get('line_anchors_valid', 0)} |",
         "",
     ]
     
@@ -285,7 +362,10 @@ def generate_markdown(report):
         report['summary']['unknown_alias'] +
         report['summary']['repo_missing'] +
         report['summary']['file_not_found'] +
-        report['summary']['path_not_found']
+        report['summary']['path_not_found'] +
+        report['summary'].get('line_out_of_range', 0) +
+        report['summary'].get('invalid_line', 0) +
+        report['summary'].get('invalid_range', 0)
     )
     
     if broken_count == 0:

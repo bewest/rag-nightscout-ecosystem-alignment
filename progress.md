@@ -8,6 +8,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Line Anchor Validation for verify_refs.py (2026-01-29)
+
+Implemented Phase 1 of LSP integration proposal - line anchor validation.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Enhanced verify_refs.py** | `tools/verify_refs.py` | +80 lines (406 → 486) |
+
+**New Capabilities**:
+- Validates `#L10` and `#L10-L50` line anchors
+- Checks line numbers are within file bounds
+- Reports `line_out_of_range`, `invalid_line`, `invalid_range` errors
+- Line anchor coverage stats in report
+
+**Validation Results**:
+- 390 total refs scanned
+- 135 refs with line anchors
+- 134 line anchors valid (99.3%)
+
+---
+
 ### Field Transform Test Suite (2026-01-29)
 
 Created comprehensive field transform testing infrastructure.

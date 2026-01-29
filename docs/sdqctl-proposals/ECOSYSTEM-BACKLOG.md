@@ -34,12 +34,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - 5 transform types: rename, extract, coerce, default, compute
 - Test vectors for entries, treatments, devicestatus
 
-### 3. [P2] LSP-based claim verification
-**Type:** Implementation | **Effort:** Medium
-**Repos:** Cross-project
-**Focus:** Implement phase 1-2 of lsp-integration-proposal.md
-**Workflow:** `implementation.conv`
-**Source:** tooling backlog
+### ~~3. [P2] LSP-based claim verification - Phase 1~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (Phase 1 only)
+- Line anchor validation (#L10, #L10-L50)
+- 135 refs with anchors, 134 valid (99.3%)
+- Phase 2 (JS/TS LSP) deferred
 
 ### 4. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
