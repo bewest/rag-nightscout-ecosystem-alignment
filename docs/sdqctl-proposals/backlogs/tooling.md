@@ -2,7 +2,7 @@
 
 > **Domain**: sdqctl enhancements, workflow improvements, automation  
 > **Parent**: [ECOSYSTEM-BACKLOG.md](../ECOSYSTEM-BACKLOG.md)  
-> **Last Updated**: 2026-01-28
+> **Last Updated**: 2026-01-29
 
 Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
@@ -12,10 +12,27 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | LSP-based claim verification | P2 | Medium | Resolve `...` placeholder paths |
-| 2 | Cross-repo fixture extractor | P2 | Medium | Pull test data from AAPS/Loop/xDrip |
-| 3 | Transformation pipeline tester | P2 | High | Test field transforms in isolation |
-| 4 | Integration test runner | P3 | High | Orchestrate full cross-project tests |
+| 1 | **Hygiene tooling suite** | P0 | Medium | queue_stats.py, backlog_hygiene.py, doc_chunker.py |
+| 2 | Algorithm conformance schema | P2 | Medium | `conformance-vector-v1.json` - see proposal |
+| 3 | Algorithm conformance runners | P2 | High | oref0-runner.js, aaps-runner.kt |
+| 4 | LSP-based claim verification | P2 | Medium | Resolve `...` placeholder paths |
+| 5 | Cross-repo fixture extractor | P2 | Medium | Pull test data from AAPS/Loop/xDrip |
+| 6 | Transformation pipeline tester | P2 | High | Test field transforms in isolation |
+| 7 | Integration test runner | P3 | High | Orchestrate full cross-project tests |
+
+### Hygiene Tooling Suite (P0)
+
+**Design**: [`hygiene-tooling-design.md`](hygiene-tooling-design.md)
+
+| Tool | Purpose | Priority |
+|------|---------|----------|
+| `queue_stats.py` | One-line status for RUN integration | P0 |
+| `backlog_hygiene.py` | Queue validation & archiving | P1 |
+| `doc_chunker.py` | Split oversized files | P1 |
+| HYGIENE directive | sdqctl plugin for hygiene checks | P2 |
+
+**Thresholds**: 800 lines (traceability), 500 lines (backlogs/progress)
+**Chunking**: Domain-aligned, index + sibling files
 
 ---
 
@@ -23,6 +40,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | Item | Date | Notes |
 |------|------|-------|
+| Algorithm conformance suite proposal | 2026-01-29 | `docs/sdqctl-proposals/algorithm-conformance-suite.md` - 510 lines, 5-phase plan |
 | Unit conversion test suite | 2026-01-28 | `tools/test_conversions.py` + 20 test cases |
 | Mock Nightscout server | 2026-01-28 | `tools/mock_nightscout.py` v1/v3 API |
 | Plugin system validation | 2026-01-28 | All 5 plugins work |
@@ -36,6 +54,8 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 |-----------|--------|------|-------------|
 | Unit conversions | ✅ Done | `tools/test_conversions.py` | Time/glucose/insulin precision |
 | Mock server | ✅ Done | `tools/mock_nightscout.py` | HTTP mock for API v1/v3 |
+| Conformance schema | 📋 Proposed | `conformance/schemas/conformance-vector-v1.json` | Test vector format |
+| Conformance runners | 📋 Proposed | `conformance/runners/` | oref0, AAPS, Loop runners |
 | Fixture extractor | 📋 Planned | `tools/extract_fixtures.py` | Pull from external repos |
 | Transform tester | 📋 Planned | `tools/test_transforms.py` | Field mapping validation |
 
