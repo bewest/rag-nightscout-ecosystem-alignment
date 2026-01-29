@@ -80,7 +80,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [x] ~~**Cross-repo fixture extraction**~~ - Promoted to Ready Queue #5
 - [x] ~~**Full audit: nightscout-connect**~~ - ✅ Completed (527 lines, 3 gaps)
 - [x] ~~**nightscout-connect vendor interop proposal**~~ - ✅ Completed (418 lines, 3 reqs)
-- [ ] **Documentation reorganization proposal** - AI vs human comprehension analysis
+- [x] ~~**Documentation reorganization proposal**~~ - ✅ Complete (223 lines)
   - From: LIVE-BACKLOG request
   - Focus: Consolidate duplicate materials, optimize structure for tooling vs projects
 - [x] ~~**Chunk gaps.md into manageable pieces**~~ - ✅ Completed (index + 7 domain files)

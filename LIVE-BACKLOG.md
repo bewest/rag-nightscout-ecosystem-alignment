@@ -36,7 +36,7 @@
 | Cross-project testing plan (Trio/Loop on Ubuntu) | P1 | ✅ Complete | 2026-01-29 |
 | nightscout-connect vendor interop proposal | P2 | ✅ Complete | 2026-01-29 |
 | Mongo 5x batch ordering verification | P1 | ✅ Complete | 2026-01-29 |
-| Documentation reorganization proposal | P2 | → Queued to P2 backlog | 2026-01-29 |
+| Documentation reorganization proposal | P2 | ✅ Complete (223 lines) | 2026-01-29 |
 | Playwright adoption proposal | P1 | ✅ Complete | 2026-01-29 |
 | Backlog priority review & reorganization | - | ✅ Complete | 2026-01-29 |
 | Add tconnectsync repo + queue analysis | P1 | ✅ Complete | 2026-01-29 |
