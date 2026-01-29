@@ -3491,3 +3491,34 @@ See `docs/10-domain/cgm-trend-arrow-standardization.md` for full cross-project m
 | status.openaps | AAPS/Trio/oref0 | oref0-based systems |
 | status.override | Loop | Override/target override status |
 | status.pump | All | Pump status info |
+
+## Profile/Therapy Settings Terms
+
+### Core Profile Fields
+
+| Concept | Nightscout | Loop | AAPS |
+|---------|------------|------|------|
+| Basal schedule | `basal[]` | `basalRateSchedule` | `basalBlocks` |
+| ISF schedule | `sens[]` | `insulinSensitivitySchedule` | `isfBlocks` |
+| Carb ratio | `carbratio[]` | `carbRatioSchedule` | `icBlocks` |
+| Target range | `target_low[]` + `target_high[]` | `glucoseTargetRangeSchedule` | `targetBlocks` |
+| DIA | `dia` (hours) | `defaultRapidActingModel` (preset) | `dia` (hours) |
+| Units | `units` | `HKUnit` | `glucoseUnit` |
+| Timezone | `timezone` (string) | `timeZone` (TimeZone) | `timeZone` (TimeZone) |
+
+### Safety Limits (Loop-only)
+
+| Field | Description |
+|-------|-------------|
+| `maximumBasalRatePerHour` | Max temp basal rate |
+| `maximumBolus` | Max single bolus |
+| `suspendThreshold` | Low glucose suspend level |
+| `correctionRangeOverrides` | Pre-meal and workout targets |
+| `overridePresets` | Named override configurations |
+
+### Profile Switching (AAPS-only)
+
+| Field | Description |
+|-------|-------------|
+| `percentage` | Scale profile 50-200% |
+| `timeshift` | Shift schedule by hours |

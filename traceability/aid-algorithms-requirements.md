@@ -568,3 +568,83 @@ See [requirements.md](requirements.md) for the index.
 ## Statistics API Requirements
 
 ---
+
+## Profile Schema Requirements
+
+### REQ-PROF-001: Standard Time Format
+
+**Statement**: Profile schedules SHOULD use seconds from midnight for time representation.
+
+**Rationale**: Nightscout uses "HH:MM" strings while Loop/AAPS use integers. Standardization prevents conversion errors.
+
+**Scenarios**:
+- Profile sync from Loop to Nightscout
+- Profile import in AAPS from Nightscout
+
+**Verification**:
+- Time values consistently parse to same minute-of-day
+- No off-by-one errors at midnight boundary
+
+**Gap**: GAP-PROF-001
+
+**Source**: `docs/10-domain/profile-schema-alignment.md`
+
+---
+
+### REQ-PROF-002: Safety Limits in Profile
+
+**Statement**: Nightscout profile collection SHOULD support optional safety limit fields.
+
+**Rationale**: Loop has maxBasal, maxBolus, suspendThreshold that don't sync to Nightscout.
+
+**Scenarios**:
+- View all therapy settings in Nightscout
+- Restore safety limits to new device
+
+**Verification**:
+- Profile includes optional safety limit fields
+- Controllers can read/write these values
+
+**Gap**: GAP-PROF-002
+
+**Source**: `docs/10-domain/profile-schema-alignment.md`
+
+---
+
+### REQ-PROF-003: Override Presets Sync
+
+**Statement**: Nightscout profile SHOULD support override preset configurations.
+
+**Rationale**: Loop's named overrides (Exercise, Pre-Meal) don't sync to Nightscout.
+
+**Scenarios**:
+- View override presets in Nightscout
+- Share override configs between devices
+
+**Verification**:
+- Profile includes override presets array
+- Presets include name, target range, duration
+
+**Gap**: GAP-PROF-003
+
+**Source**: `docs/10-domain/profile-schema-alignment.md`
+
+---
+
+### REQ-PROF-004: Insulin Model Mapping
+
+**Statement**: Controllers SHOULD document mapping between insulin model presets and equivalent DIA values.
+
+**Rationale**: Loop uses curve-based models while Nightscout/AAPS use scalar DIA.
+
+**Scenarios**:
+- Display equivalent DIA for Loop users
+- Convert between systems
+
+**Verification**:
+- Documented mapping table exists
+- Round-trip conversion preserves behavior
+
+**Gap**: GAP-PROF-005
+
+**Source**: `docs/10-domain/profile-schema-alignment.md`

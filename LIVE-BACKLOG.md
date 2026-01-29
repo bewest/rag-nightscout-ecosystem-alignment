@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Profile schema alignment (Loop vs AAPS vs Trio) | P2 | ✅ Complete (5 gaps, 4 reqs, time format/safety limits) | 2026-01-29 |
 | Devicestatus schema audit (Loop vs oref0) | P2 | ✅ Complete (4 gaps, prediction format differences) | 2026-01-29 |
 | Libre 3 protocol gap analysis | P2 | ✅ Complete (3 gaps, ECDH encryption) | 2026-01-29 |
 | Cross-controller conflict detection | P2 | ✅ Complete (3 gaps, deep dive) | 2026-01-29 |

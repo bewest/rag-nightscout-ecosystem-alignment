@@ -41,21 +41,29 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Profile schema alignment
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Compare profile/therapy settings across Loop, AAPS, Trio
-**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
-**Context:** ISF, CR, basal rate representation differences
-
-### 5. [P2] Bolus wizard formula comparison
+### 4. [P2] Bolus wizard formula comparison
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Compare bolus calculator implementations across controllers
 **Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
 **Context:** IOB subtraction, target correction, carb ratio application
 
+### 5. [P2] Autosens/Dynamic ISF comparison
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Compare sensitivity adjustment algorithms across systems
+**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
+**Context:** Autosens vs Retrospective Correction vs Dynamic ISF
+
 ---
 
 ## Completed Items
+
+### ~~[P2] Profile schema alignment~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Deep dive: `docs/10-domain/profile-schema-alignment.md` (11.6KB)
+- Compared profile/therapy settings across Loop, AAPS, Trio, Nightscout
+- 5 gaps identified: GAP-PROF-001/002/003/004/005
+- 4 requirements added: REQ-PROF-001/002/003/004
+- Key finding: Time format mismatch, missing safety limits in Nightscout
 
 ### ~~[P2] Nightscout devicestatus schema audit~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

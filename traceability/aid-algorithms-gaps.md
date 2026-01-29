@@ -724,3 +724,59 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Status**: Documented
 
 ---
+
+## Profile Schema Gaps
+
+### GAP-PROF-001: Time Format Incompatibility
+
+**Description:** Nightscout uses string "HH:MM" format while Loop/AAPS use integer seconds from midnight.
+
+**Source:** 
+- `externals/cgm-remote-monitor/lib/profile/profileeditor.js:32`
+- `externals/AndroidAPS/core/interfaces/profile/Profile.kt:133`
+
+**Impact:** Profile sync requires format conversion; potential off-by-one errors at midnight boundary.
+
+**Remediation:** Standardize on seconds from midnight with conversion utilities.
+
+### GAP-PROF-002: Missing Safety Limits in Nightscout
+
+**Description:** Nightscout profile lacks `maximumBasalRatePerHour`, `maximumBolus`, and `suspendThreshold` found in Loop.
+
+**Source:** `externals/LoopWorkspace/LoopKit/LoopKit/TherapySettings.swift:19-23`
+
+**Impact:** Safety limits not portable between systems; each controller must manage locally.
+
+**Remediation:** Add optional safety limit fields to Nightscout profile schema.
+
+### GAP-PROF-003: No Override Presets in Nightscout
+
+**Description:** Loop's `overridePresets` and `correctionRangeOverrides` have no Nightscout equivalent.
+
+**Source:** `externals/LoopWorkspace/LoopKit/LoopKit/TherapySettings.swift:15-17`
+
+**Impact:** Override configurations not synced; must be configured separately on each device.
+
+**Remediation:** Add override preset array to Nightscout profile collection.
+
+### GAP-PROF-004: Profile Switching Features (AAPS-only)
+
+**Description:** AAPS supports `percentage` and `timeshift` for profile switching; not in Loop or Nightscout.
+
+**Source:** `externals/AndroidAPS/core/interfaces/profile/Profile.kt:36-41`
+
+**Impact:** Profile switch events sync as treatments but actual percentages not in profile.
+
+**Remediation:** Document as AAPS-specific feature; consider adding to Nightscout profile.
+
+### GAP-PROF-005: DIA vs Insulin Model Mismatch
+
+**Description:** Nightscout/AAPS use scalar DIA hours while Loop uses exponential insulin model presets.
+
+**Source:**
+- `externals/cgm-remote-monitor/lib/profile/profileeditor.js:30`
+- `externals/LoopWorkspace/LoopKit/LoopKit/TherapySettings.swift:31`
+
+**Impact:** Loop's curve-based insulin action doesn't map to simple DIA value.
+
+**Remediation:** Define mapping between Loop model presets and equivalent DIA values.

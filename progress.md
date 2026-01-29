@@ -1519,3 +1519,27 @@ Audited devicestatus schema differences between Loop and oref0 systems.
 - `externals/cgm-remote-monitor/lib/plugins/openaps.js:214-238`
 - `externals/LoopWorkspace/.../StoredDosingDecision.swift:145-161`
 - `externals/AndroidAPS/.../NSDeviceStatus.kt:13-60`
+
+### Profile Schema Alignment (2026-01-29)
+
+Analyzed profile/therapy settings schemas across Loop, AAPS, Trio, and Nightscout.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep dive | `docs/10-domain/profile-schema-alignment.md` | 11.6KB |
+| Gap additions | `traceability/aid-algorithms-gaps.md` | GAP-PROF-001-005 |
+| Requirements | `traceability/aid-algorithms-requirements.md` | REQ-PROF-001-004 |
+
+**Key Findings**:
+- Time format mismatch: NS "HH:MM" vs Loop/AAPS seconds-from-midnight
+- Loop has safety limits (maxBasal, suspendThreshold) not in Nightscout
+- AAPS has profile switching (percentage, timeshift) not in Loop
+- DIA scalar vs insulin model preset incompatibility
+
+**Gaps Identified**: GAP-PROF-001 (time format), GAP-PROF-002 (safety limits), GAP-PROF-003 (overrides), GAP-PROF-004 (switching), GAP-PROF-005 (DIA model)
+
+**Source Files Analyzed**:
+- `externals/cgm-remote-monitor/lib/profile/profileeditor.js:30-70`
+- `externals/LoopWorkspace/LoopKit/LoopKit/TherapySettings.swift:11-69`
+- `externals/AndroidAPS/core/interfaces/profile/Profile.kt:14-133`
+- `externals/AndroidAPS/core/interfaces/profile/PureProfile.kt:9-18`
