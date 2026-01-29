@@ -21,19 +21,20 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] Algorithm conformance: AAPS Kotlin runner
-**Type:** Implementation | **Effort:** High
-**Repos:** AndroidAPS
-**Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
-**Workflow:** `extract-spec.conv`
-**Note:** Follow-on from oref0 runner (complete)
-
-### 2. [P3] cgm-remote-monitor Design Review
+### 1. [P1] cgm-remote-monitor Design Review ⬆️
 **Type:** Analysis | **Effort:** High
 **Repos:** cgm-remote-monitor
 **Focus:** Refactoring recommendations based on 6-layer audit findings
 **Workflow:** `design-review.conv`
 **Source:** LIVE-BACKLOG human request
+**Note:** Elevated priority - comprehensive audit complete, ready for recommendations
+
+### 2. [P2] Algorithm conformance: AAPS Kotlin runner
+**Type:** Implementation | **Effort:** High
+**Repos:** AndroidAPS
+**Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
+**Workflow:** `extract-spec.conv`
+**Note:** Follow-on from oref0 runner (complete)
 
 ---
 
@@ -93,6 +94,50 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 ### P3 - Nice to Have
 
+- [ ] **Create mapping: nocturne**
+  - Repos: nocturne
+  - Focus: Nightscout client app field mappings
+  - Source: Deep-dive exists (`docs/10-domain/nocturne-deep-dive.md`)
+  - Workflow: `gap-discovery.conv`
+- [ ] **Create mapping: tconnectsync**
+  - Repos: tconnectsync
+  - Focus: Tandem t:connect to Nightscout sync field mappings
+  - Source: Deep-dive exists (`docs/10-domain/tconnectsync-deep-dive.md`)
+  - Workflow: `gap-discovery.conv`
+- [ ] **Create mapping: share2nightscout-bridge**
+  - Repos: share2nightscout-bridge
+  - Focus: Dexcom Share bridge field mappings
+  - Source: Deep-dives exist (2 docs)
+  - Workflow: `gap-discovery.conv`
+- [ ] **Create mapping: nightscout-librelink-up**
+  - Repos: nightscout-librelink-up
+  - Focus: LibreLink Up bridge field mappings
+  - Source: Deep-dive exists (`docs/10-domain/nightscout-librelink-up-deep-dive.md`)
+  - Workflow: `gap-discovery.conv`
+- [ ] **Deep dive: LoopFollow**
+  - Repos: LoopFollow
+  - Focus: Caregiver monitoring architecture, Nightscout data consumption
+  - Context: iOS/watchOS app for monitoring Loop/Trio users
+  - Workflow: `extract-spec.conv`
+- [ ] **Deep dive: LoopCaregiver**
+  - Repos: LoopCaregiver
+  - Focus: Remote command architecture, Nightscout command channel
+  - Context: iOS companion app for remote bolus, carbs, override control
+  - Workflow: `extract-spec.conv`
+- [ ] **Deep dive: openaps toolkit**
+  - Repos: openaps
+  - Focus: Device interface layer (vs oref0 algorithm layer)
+  - Context: OpenAPS toolkit - pumps, CGMs, data management
+  - Workflow: `extract-spec.conv`
+- [ ] **Deep dive: xdrip-js**
+  - Repos: xdrip-js
+  - Focus: Node.js Dexcom G5/G6 BLE interface
+  - Context: Raspberry Pi CGM receiver use case
+  - Workflow: `extract-spec.conv`
+- [ ] **Generate requirements: connectors domain**
+  - Focus: Extract REQs from 15 GAP-CONNECT-* entries
+  - Context: Connectors domain has 15 gaps, 0 requirements
+  - Workflow: `gap-discovery.conv`
 - [x] ~~**Compare CGM sensor session handling**~~ - ✅ Complete (353 lines, 3 gaps)
 - [x] ~~**Extract xDrip+ Nightscout fields**~~ - ✅ Already complete (506 lines in mapping/xdrip-android/nightscout-sync.md)
 - [x] ~~**Map algorithm terminology**~~ - ✅ Already complete (3024-line matrix)
