@@ -951,3 +951,56 @@ wercker.yml  # Defunct service
 **Source**: `docs/10-domain/cgm-session-handling-comparison.md`
 
 ---
+
+## Nocturne Connector Gaps
+
+---
+
+### GAP-CONNECTOR-001: No xDrip+ Connector in Nocturne
+
+**Description**: Nocturne's 8 native connectors do not include xDrip+. xDrip+ has a local API but it's designed for same-device communication, not cloud sync.
+
+**Affected Systems**: Nocturne, xDrip+
+
+**Impact**:
+- xDrip+ users must use Nightscout connector as intermediary
+- Data flow: xDrip+ → Nightscout → Nocturne (extra hop)
+
+**Remediation**: Document as acceptable; xDrip+ → NS sync is mature path.
+
+**Source**: `mapping/nocturne/connectors.md`
+
+---
+
+### GAP-CONNECTOR-002: No Eversense Connector in Nocturne
+
+**Description**: Nocturne lacks an Eversense connector. Eversense has limited API availability and the implantable sensor market is smaller.
+
+**Affected Systems**: Nocturne, Eversense users
+
+**Impact**:
+- Eversense users cannot sync directly to Nocturne
+- Must use bridge or xDrip+ intermediary
+
+**Remediation**: Low priority; limited user base. Monitor for API availability.
+
+**Source**: `mapping/nocturne/connectors.md`
+
+---
+
+### GAP-CONNECTOR-003: CareLink Connector Requires Web Scraping
+
+**Description**: Medtronic CareLink has no official API. Nocturne's MiniMed connector must use web scraping, which is fragile.
+
+**Affected Systems**: Nocturne, Medtronic users
+
+**Impact**:
+- Connector breaks when CareLink UI changes
+- No guaranteed data availability
+- May violate terms of service
+
+**Remediation**: Document fragility; consider deprecation warning.
+
+**Source**: `mapping/nocturne/connectors.md`
+
+---

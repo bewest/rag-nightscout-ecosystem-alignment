@@ -8,6 +8,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne Field Mapping (2026-01-29)
+
+Created comprehensive field mapping documentation for Nocturne .NET rewrite.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **README** | `mapping/nocturne/README.md` | 64 lines, index |
+| **Models** | `mapping/nocturne/models.md` | 187 lines, 6 models |
+| **Connectors** | `mapping/nocturne/connectors.md` | 244 lines, 8 connectors |
+| **API Versions** | `mapping/nocturne/api-versions.md` | 207 lines, v1-v4 coverage |
+
+**Key Findings**:
+- Full v1/v2/v3 API parity with cgm-remote-monitor
+- 8 native connectors (Dexcom, Libre, Glooko, CareLink, MFP, NS, t:connect, Tidepool)
+- V4 endpoints are Nocturne-specific (GAP-NOCTURNE-001)
+- Rust oref implementation for algorithm calculations
+
+**Gaps Identified**: GAP-CONNECTOR-001, GAP-CONNECTOR-002, GAP-CONNECTOR-003
+
+---
+
 ### Duration/utcOffset Unit Impact Analysis (2026-01-29)
 
 Analyzed unit inconsistencies across AID systems for duration and timezone fields.

@@ -49,15 +49,6 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Source:** cgm-sources backlog
 
-### 5. [P3] Create mapping: nocturne
-**Type:** Analysis | **Effort:** Medium
-**Repos:** nocturne
-**Focus:** Nightscout client app field mappings
-**Workflow:** `gap-discovery.conv`
-**Source:** Deep-dive exists
-
----
-
 ---
 
 ## Backlog (Prioritized)
@@ -116,7 +107,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 ### P3 - Nice to Have
 
-- [x] ~~**Create mapping: nocturne**~~ - Promoted to Ready Queue #5
+- [x] ~~**Create mapping: nocturne**~~ - ✅ **COMPLETE** (702 lines, 4 docs, 3 gaps)
 - [ ] **Create mapping: tconnectsync**
   - Repos: tconnectsync
   - Focus: Tandem t:connect to Nightscout sync field mappings
