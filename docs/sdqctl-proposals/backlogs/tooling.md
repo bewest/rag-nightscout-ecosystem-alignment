@@ -14,7 +14,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 |---|------|----------|--------|-------|
 | 1 | **Hygiene tooling suite** | P0 | Medium | queue_stats.py, backlog_hygiene.py, doc_chunker.py |
 | 2 | Algorithm conformance runners | P2 | High | oref0-runner.js, aaps-runner.kt |
-| 3 | LSP-based claim verification | P2 | Medium | Resolve `...` placeholder paths |
+| 3 | LSP-based claim verification | P2 | Medium | [4-phase proposal](../lsp-integration-proposal.md) |
 | 4 | Transformation pipeline tester | P2 | High | Test field transforms in isolation |
 | 5 | Integration test runner | P3 | High | Orchestrate full cross-project tests |
 
@@ -68,7 +68,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | P2 | HELP-INLINE directive | [sdqctl/HELP-INLINE.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/HELP-INLINE.md) | Allow HELP anywhere in workflow |
 | P2 | REFCAT glob support | [sdqctl/REFCAT-DESIGN.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/REFCAT-DESIGN.md) | `@externals/**/*Treatment*.swift` |
 | P2 | Plugin System | [sdqctl/PLUGIN-SYSTEM.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/PLUGIN-SYSTEM.md) | Custom directives for ecosystem |
-| P2 | LSP Integration | [sdqctl/LSP-INTEGRATION.md](https://github.com/bewest/copilot-do-proposal/blob/main/sdqctl/proposals/LSP-INTEGRATION.md) | Semantic code queries |
+| P2 | LSP Integration | [lsp-integration-proposal.md](../lsp-integration-proposal.md) | Semantic code queries (4-phase plan) |
 | P3 | Ecosystem help topics | New | gap-ids, 5-facet, stpa, conformance |
 | P3 | VERIFY stpa-hazards | New | Check STPA hazard traceability |
 | P3 | RUN-CONFORMANCE | New | Execute conformance test scenarios |
