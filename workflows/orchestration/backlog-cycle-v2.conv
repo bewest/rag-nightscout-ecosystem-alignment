@@ -237,6 +237,10 @@ If the output above shows potentially misplaced items:
 - Or note for next cycle if non-critical
 
 **Step 5: Generate New Tasks** (if applicable)
+Look across all backlogs and proposals for more eligible items that can be
+ready for work docs/sdqctl-proposals/backlogs/*.md or effectively chunked for
+some progress.
+
 From discoveries:
 - New gaps → may warrant new backlog items
 - Blockers found → create follow-up items

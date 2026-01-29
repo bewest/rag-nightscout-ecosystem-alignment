@@ -5,10 +5,17 @@
 
 ---
 
+## Pending
+
+* Reevaluate all docs/sdqctl-proposals/* for taskable work.
+* Chunk a systematic review of docs for accuracy across several methodical backlog items.
+
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Backlog grooming + Ready Queue replenishment | P0 | ✅ Complete (5 items in queue, 3 archives) | 2026-01-29 |
+| Progress.md archiving (429 lines) | P0 | ✅ Complete (3 batch archives created) | 2026-01-29 |
 | Broken refs fix (LSP claim verification) | P2 | ✅ Complete (3 refs fixed, 92% valid) | 2026-01-29 |
 | sdqctl tools vs custom py tools proposal | P2 | ✅ Complete (140 lines, 4 deprecate, 3 integrate) | 2026-01-29 |
 | Hygiene tooling suite verification | P0 | ✅ Complete (3 tools verified working) | 2026-01-29 |
@@ -19,7 +26,7 @@
 | nightscout-connect design review request | P2 | ✅ Complete (340 lines, 3 gaps) | 2026-01-29 |
 | Nocturne/cgm-remote-monitor collaboration feasibility | P3 | → Queued to analysis backlog | 2026-01-29 |
 | Control-plane/desired-state roadmap evaluation | P2 | → Queued to architecture backlog | 2026-01-29 |
-| cgm-remote-monitor design review + refactoring recs | P3 | → Queued to Ready Queue | 2026-01-29 |
+| cgm-remote-monitor design review + refactoring recs | P1 | ✅ Complete (318 lines, 18 gaps, 5 phases) | 2026-01-29 |
 | Nightscout API v3 Collection deep dive | P2 | ✅ Complete (290 lines, 3 gaps, 3 reqs) | 2026-01-29 |
 | Progress.md grooming (escalated) | P2 | ✅ Complete (807 lines, archive created) | 2026-01-29 |
 | Algorithm conformance: oref0 runner | P2 | ✅ Complete (26/85 pass, 69% divergence) | 2026-01-29 |

@@ -21,20 +21,40 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P1] cgm-remote-monitor Design Review ⬆️
-**Type:** Analysis | **Effort:** High
-**Repos:** cgm-remote-monitor
-**Focus:** Refactoring recommendations based on 6-layer audit findings
-**Workflow:** `design-review.conv`
-**Source:** LIVE-BACKLOG human request
-**Note:** Elevated priority - comprehensive audit complete, ready for recommendations
-
-### 2. [P2] Algorithm conformance: AAPS Kotlin runner
+### 1. [P2] Algorithm conformance: AAPS Kotlin runner
 **Type:** Implementation | **Effort:** High
 **Repos:** AndroidAPS
 **Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
+
+### 2. [P2] Playwright adoption: Implementation
+**Type:** Implementation | **Effort:** Medium
+**Repos:** cgm-remote-monitor
+**Focus:** Add E2E tests per playwright-adoption-proposal.md
+**Workflow:** `implementation.conv`
+**Note:** Proposal complete, needs PR to upstream
+
+### 3. [P2] Trace sync requirements REQ-031 to REQ-035
+**Type:** Analysis | **Effort:** Low
+**Repos:** Cross-project
+**Focus:** 5 uncovered sync requirements need scenario tracing
+**Workflow:** `traceability.conv`
+**Source:** sync-identity backlog
+
+### 4. [P2] Transform pipeline tester
+**Type:** Implementation | **Effort:** High
+**Repos:** Cross-project
+**Focus:** Test field transforms in isolation (time/glucose/insulin)
+**Workflow:** `implementation.conv`
+**Source:** tooling backlog
+
+### 5. [P2] DiaBLE Libre protocol audit
+**Type:** Analysis | **Effort:** High
+**Repos:** DiaBLE
+**Focus:** BLE traces, calibration, Libre 2/3 support
+**Workflow:** `extract-spec.conv`
+**Source:** cgm-sources backlog
 
 ---
 

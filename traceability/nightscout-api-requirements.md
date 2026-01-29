@@ -664,3 +664,83 @@ See [requirements.md](requirements.md) for the index.
 ## Interoperability Requirements
 
 ---
+
+### REQ-NS-025: Ordered Batch Write Guarantee
+
+**Statement**: The Nightscout API MUST preserve insertion order when processing batch uploads.
+
+**Rationale**: Loop and other AID clients depend on chronological ordering for CGM data continuity. Unordered writes can cause gaps in glucose display.
+
+**Scenarios**:
+- Loop uploads 100 SGV entries in batch
+- AAPS uploads treatments with timestamps
+
+**Verification**:
+- Use `bulkWrite({ordered: true})` or equivalent
+- Test: upload batch, verify order matches input
+
+**Gap**: GAP-DB-001
+
+**Source**: `docs/10-domain/cgm-remote-monitor-design-review.md`
+
+---
+
+### REQ-NS-026: Token Revocation Support
+
+**Statement**: The Nightscout API SHOULD support token revocation to invalidate compromised credentials.
+
+**Rationale**: Currently no mechanism exists to revoke a compromised JWT or subject token until the subject is deleted.
+
+**Scenarios**:
+- User suspects token compromise
+- Admin needs to revoke caregiver access
+
+**Verification**:
+- Revocation endpoint or admin UI
+- Revoked tokens rejected on subsequent requests
+
+**Gap**: GAP-AUTH-004
+
+**Source**: `docs/10-domain/cgm-remote-monitor-design-review.md`
+
+---
+
+### REQ-NS-027: OpenAPI Specification
+
+**Statement**: The Nightscout API SHOULD publish an OpenAPI 3.0 specification for all v3 endpoints.
+
+**Rationale**: Enables SDK generation, automated testing, and documentation accuracy.
+
+**Scenarios**:
+- Developer generates TypeScript client
+- CI validates request/response formats
+
+**Verification**:
+- `swagger/openapi-v3.yaml` exists and validates
+- Generated client successfully calls all endpoints
+
+**Gap**: GAP-API-001, GAP-API-006
+
+**Source**: `docs/10-domain/cgm-remote-monitor-design-review.md`
+
+---
+
+### REQ-NS-028: Sync Conflict Detection
+
+**Statement**: The Nightscout API SHOULD detect and report sync conflicts when multiple clients update the same record.
+
+**Rationale**: Current last-write-wins behavior can silently lose data from slower clients.
+
+**Scenarios**:
+- Loop and AAPS both update same treatment
+- Offline client syncs stale data
+
+**Verification**:
+- Version field incremented on updates
+- 409 Conflict returned for stale updates
+
+**Gap**: GAP-SYNC-008
+
+**Source**: `docs/10-domain/cgm-remote-monitor-design-review.md`
+
+---
