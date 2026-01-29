@@ -124,3 +124,5 @@
 | Set up official cgm-remote-monitor dev branch | P0 | ✅ Complete | 2026-01-28 |
 | PR analysis for share2nightscout-bridge | P1 | ✅ Complete | 2026-01-28 |
 | Reorganize backlogs per copilot-do-proposal pattern | P1 | ✅ Complete | 2026-01-28 |
+| sdqctl VERIFY directive enhancement | P3 | ✅ Enhanced | 2026-01-29 |
+| Ready queue replenishment (3 items) | - | ✅ Complete | 2026-01-29 |

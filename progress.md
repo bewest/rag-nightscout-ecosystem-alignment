@@ -1407,3 +1407,19 @@ Added detailed requirements REQ-030 through REQ-035 with scenarios and source re
 
 **Requirements Total**: 126 (+6)
 
+
+### sdqctl VERIFY Directive Enhancement (2026-01-29)
+
+Enhanced proposal with real-world usage patterns from 31-item verification.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Proposal Enhancement | `docs/sdqctl-proposals/VERIFICATION-DIRECTIVES.md` | +171 lines |
+
+**Key Additions**:
+- 5 real-world usage patterns from verification experience
+- Lessons learned from 31-item verification (91% refs valid)
+- Implementation priority (P1/P2/P3) for sdqctl team
+- Clear request: parser support for VERIFY directive in .conv
+
+**Status**: Phase 1 (CLI) complete, Phase 2 (directives) pending sdqctl core changes

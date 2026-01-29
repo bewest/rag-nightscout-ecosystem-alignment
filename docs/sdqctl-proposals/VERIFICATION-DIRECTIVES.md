@@ -1,10 +1,16 @@
 # Proposal: Unified Verification Directives
 
 **Date:** 2026-01-22  
-**Status:** ✅ IMPLEMENTED  
+**Status:** ✅ Phase 1 IMPLEMENTED | ⏳ Phase 2 PENDING  
 **Updated:** 2026-01-29  
 **Author:** Generated via sdqctl planning session  
 **Related:** INTEGRATION-PROPOSAL.md (Phase 3: Verify Commands)
+
+## Executive Summary
+
+This proposal defines native `VERIFY` directives for sdqctl .conv workflows, enabling declarative verification without external tool dependencies. Phase 1 (CLI commands) is complete; Phase 2 (native directives) requires sdqctl core changes.
+
+**Key Request for sdqctl Team**: Implement `VERIFY` directive support in the .conv parser to enable the Phase 2 workflow patterns documented below.
 
 ## Implementation Status
 
@@ -563,3 +569,167 @@ This proposal should be merged with or replace Phase 3 of INTEGRATION-PROPOSAL.m
 - `docs/TRACEABILITY-WORKFLOW.md` - Current traceability documentation
 - `examples/workflows/verify-with-run.conv` - Current RUN-based approach
 - `examples/workflows/traceability/verification-loop.conv` - Traceability example
+
+---
+
+## Real-World Usage Patterns (from rag-nightscout-ecosystem verification)
+
+This section documents actual verification patterns discovered during the bottom-up accuracy verification of 31 documentation items across the Nightscout ecosystem.
+
+### Pattern 1: Claim Extraction and Verification
+
+During verification, we repeatedly needed to:
+1. Extract claims from documentation
+2. Grep source code for evidence
+3. Verify line numbers are accurate
+
+**Current Approach (manual)**:
+```bash
+# Extract claims manually, then verify each
+grep -n "pattern" externals/repo/path/file.ext
+```
+
+**Desired Directive**:
+```dockerfile
+VERIFY claims docs/10-domain/some-deep-dive.md
+# Extracts code references, validates they exist
+```
+
+### Pattern 2: Cross-Reference Validation
+
+Many documents reference other documents. Broken cross-references were common.
+
+**Example broken refs found**:
+- `../../traceability/gaps/sync-identity-gaps.md` (path didn't exist)
+- `mapping/cross-project/terminology-matrix.md` (relative path wrong)
+
+**Desired Directive**:
+```dockerfile
+VERIFY refs --scope docs/
+VERIFY refs --fix-paths  # Auto-correct relative paths
+```
+
+### Pattern 3: Gap Registry Consistency
+
+Gap IDs must be unique and follow naming conventions (GAP-XXX-NNN).
+
+**Issues found**:
+- Duplicate gap IDs across files
+- Missing gap IDs in index
+- Inconsistent numbering
+
+**Desired Directive**:
+```dockerfile
+VERIFY gaps --check-uniqueness
+VERIFY gaps --check-index traceability/gaps.md
+```
+
+### Pattern 4: Requirement Coverage
+
+Requirements must trace to test scenarios. Coverage analysis was manual.
+
+**Desired Directive**:
+```dockerfile
+VERIFY coverage --reqs traceability/requirements.md --scenarios conformance/scenarios/
+```
+
+### Pattern 5: Terminology Consistency
+
+Terms must match the terminology matrix across all documents.
+
+**Issues found**:
+- "syncIdentifier" vs "sync_identifier" vs "SyncID"
+- "deviceStatus" vs "DeviceStatus" vs "device_status"
+
+**Desired Directive**:
+```dockerfile
+VERIFY terminology --matrix mapping/cross-project/terminology-matrix.md
+```
+
+---
+
+## Lessons Learned from 31-Item Verification
+
+### What Worked Well
+
+1. **`sdqctl verify refs` CLI** - Fast line-number validation
+2. **JSON output** - Easy to parse in workflows
+3. **Makefile targets** - `make verify` for quick checks
+
+### What Was Missing
+
+| Need | Current Solution | Proposed Directive |
+|------|------------------|-------------------|
+| Claim extraction | Manual grep | `VERIFY claims FILE` |
+| Path auto-fix | Manual edit | `VERIFY refs --fix-paths` |
+| Gap uniqueness | Manual review | `VERIFY gaps --unique` |
+| Coverage matrix | `verify_assertions.py` | `VERIFY coverage` |
+| Terminology check | Manual | `VERIFY terminology` |
+
+### Verification Statistics
+
+From our 31-item verification:
+- **91%** of code references were valid
+- **3** path corrections needed per deep dive (average)
+- **0** broken external URLs (all internal refs)
+- **6** new gaps identified from verification
+
+### Recommended Default Workflow
+
+```dockerfile
+# ecosystem-verify.conv
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE audit
+
+# Phase 1: Static checks (no AI needed)
+VERIFY refs
+VERIFY links
+VERIFY terminology
+
+# Phase 2: AI-assisted analysis
+PROMPT Based on verification results:
+1. Summarize any broken references
+2. Identify terminology inconsistencies
+3. Recommend fixes
+
+OUTPUT-FILE reports/verification-{{DATE}}.md
+```
+
+---
+
+## Implementation Priority for sdqctl Team
+
+Based on actual usage, prioritize these features:
+
+### High Priority (P1)
+
+1. **`VERIFY refs`** - Line-number validation in .conv
+2. **`VERIFY-OUTPUT always`** - Inject results into prompt
+3. **`--fix-paths`** - Auto-correct relative paths
+
+### Medium Priority (P2)
+
+4. **`VERIFY terminology`** - Term consistency
+5. **`VERIFY gaps`** - Gap registry validation
+6. **`VERIFY coverage`** - Requirement coverage
+
+### Lower Priority (P3)
+
+7. **`VERIFY claims`** - Extract and validate claims
+8. **`{{VERIFY_RESULTS}}`** - Template variable
+9. **Parallel verification** - Multiple VERIFY in parallel
+
+---
+
+## Request for sdqctl Team
+
+To enable Phase 2, we need:
+
+1. **Parser support** for `VERIFY` directive in .conv files
+2. **Result injection** into prompt context
+3. **Configuration** via `VERIFY-ON-ERROR`, `VERIFY-OUTPUT`
+
+The CLI commands (`sdqctl verify refs`, etc.) already work. The gap is only in .conv directive support.
+
+**Benefit**: Enables fully declarative verification workflows without external tool dependencies, making sdqctl workflows portable across projects.

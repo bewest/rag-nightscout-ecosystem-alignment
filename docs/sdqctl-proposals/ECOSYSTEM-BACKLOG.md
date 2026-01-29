@@ -36,15 +36,32 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 3. [P3] sdqctl VERIFY .conv Directive (Phase 2)
-**Type:** Tooling | **Effort:** Medium
-**Proposal:** [VERIFICATION-DIRECTIVES.md](VERIFICATION-DIRECTIVES.md)
-**Focus:** Native `VERIFY refs` directive in .conv workflows
-**Context:** CLI commands already exist (`sdqctl verify refs`), Phase 2 adds directive support
+### 3. [P2] CGM trend arrow standardization
+**Type:** Documentation | **Effort:** Low
+**Focus:** Map all 7 projects to unified trend arrow enum
+**Backlog:** [cgm-sources.md](backlogs/cgm-sources.md)
+**Context:** Different projects use different trend representations
+
+### 4. [P2] API v3 pagination compliance
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Document srvModified-based pagination across clients
+**Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
+
+### 5. [P3] WebSocket event coverage
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Map socket.io events vs REST for real-time sync
+**Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
 ---
 
 ## Completed Items
+
+### ~~[P3] sdqctl VERIFY .conv Directive (Phase 2)~~ ✅ ENHANCED
+**Status:** Enhanced 2026-01-29
+- Proposal: [VERIFICATION-DIRECTIVES.md](VERIFICATION-DIRECTIVES.md) (+171 lines)
+- Added 5 real-world usage patterns from 31-item verification
+- Added lessons learned, implementation priority (P1/P2/P3)
+- Clear request for sdqctl team: parser support for VERIFY directive
 
 ### ~~[P2] Libre 3 protocol gap analysis~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
