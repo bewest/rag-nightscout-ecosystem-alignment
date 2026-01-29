@@ -6,6 +6,29 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Cross-project Testing Plan (2026-01-29)
+
+Proposal for Ubuntu-compatible testing strategies for Swift AID projects.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Proposal** | `docs/sdqctl-proposals/cross-project-testing-plan.md` | 363 lines, 4 strategies |
+| **Gaps** | `traceability/gaps.md` | GAP-TEST-001/002/003 added |
+
+**Key Findings**:
+- Trio: GitHub Actions (macOS-15), 211 test files
+- Loop: Travis CI (outdated xcode12.4), 233 test files
+- LoopKit Package.swift marked "not complete yet"
+- Swift on Linux lacks CoreData/HealthKit/UIKit
+
+**Strategies Proposed**:
+1. Extract pure-Swift algorithm packages (Medium effort, High impact)
+2. Remote macOS test execution (Low effort)
+3. Test fixture extraction (Low effort, High impact)
+4. Docker-based Swift testing (Limited scope)
+
+---
+
 ### Override/Profile Switch Comparison Update (2026-01-29)
 
 Updated override comparison with deep source code analysis across Loop, AAPS, and Trio.

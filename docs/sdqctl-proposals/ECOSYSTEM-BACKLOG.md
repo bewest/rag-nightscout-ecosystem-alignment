@@ -33,17 +33,17 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Review open PRs for ecosystem impact
 **Workflow:** `gap-discovery.conv`
 
-### 3. [P1] Cross-project testing plan
-**Type:** Tooling | **Effort:** Low
-**Repos:** Trio, Loop
-**Focus:** Define Ubuntu-compatible testing strategies for Swift AID projects
-**Workflow:** `tools/`
-
-### 4. [P1] Statistics API proposal
+### 3. [P1] Statistics API proposal
 **Type:** Specification | **Effort:** Medium
 **Repos:** cgm-remote-monitor
 **Focus:** MCP-informed aggregate endpoints based on reports + zreptil needs
 **Workflow:** `extract-spec.conv`
+
+### 4. [P1] PR analysis: share2nightscout-bridge
+**Type:** Analysis | **Effort:** Low
+**Source:** `externals/share2nightscout-bridge/`
+**Focus:** Review open PRs for ecosystem impact
+**Workflow:** `gap-discovery.conv`
 
 ### 5. [P2] Algorithm conformance suite
 **Type:** Tooling | **Effort:** Medium
@@ -132,6 +132,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-29 | Cross-project testing plan | `docs/sdqctl-proposals/cross-project-testing-plan.md` - 363 lines, 3 gaps (GAP-TEST-001-003), 4 strategies |
 | 2026-01-29 | Compare override/profile switch semantics | `docs/10-domain/override-profile-switch-comparison.md` - 416 lines, 3 gaps (GAP-OVERRIDE-005-007), Trio Exercise eventType |
 | 2026-01-29 | Playwright adoption proposal | `docs/sdqctl-proposals/playwright-adoption-proposal.md` - 316 lines, 4-phase plan, ~5-8 days effort |
 | 2026-01-29 | cgm-remote-monitor database layer audit | `docs/10-domain/cgm-remote-monitor-database-deep-dive.md` - 455 lines, 3 gaps (GAP-DB-001-003), Loop ordering verified |

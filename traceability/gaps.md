@@ -3606,3 +3606,90 @@ return NightscoutExercise(
 **Related**:
 - [Override Comparison](../docs/10-domain/override-profile-switch-comparison.md)
 - GAP-OVERRIDE-004
+
+---
+
+### GAP-TEST-001: No cross-project test harness for Swift
+
+**Scenario**: Algorithm validation across implementations
+
+**Description**: No mechanism to run Loop/Trio algorithm tests against Nightscout data or compare with AAPS/oref results.
+
+**Evidence**:
+- Loop and Trio both have 200+ test files but isolated to their projects
+- No shared test fixtures between Swift and JavaScript implementations
+- Cannot validate algorithm consistency across implementations
+
+**Impact**:
+- Algorithm divergence may go undetected
+- No regression testing for cross-system data compatibility
+- Cannot verify prediction accuracy across implementations
+
+**Possible Solutions**:
+1. Extract algorithm packages with shared test fixtures
+2. Create JSON test vectors that all implementations consume
+3. Build cross-language comparison harness
+
+**Status**: Documented
+
+**Related**:
+- [Cross-project Testing Plan](../docs/sdqctl-proposals/cross-project-testing-plan.md)
+
+---
+
+### GAP-TEST-002: LoopKit Package.swift incomplete
+
+**Scenario**: SPM-based cross-platform testing
+
+**Description**: LoopKit Package.swift exists but is explicitly marked as non-functional due to bundle resource issues.
+
+**Evidence**:
+```swift
+// LoopKit/Package.swift:4-8
+// *************** Not complete yet, do not expect this to work! ***********************
+// There are issues with how test fixtures are copied into the bundle...
+```
+
+**Impact**:
+- Cannot use SPM for cross-platform testing
+- No Linux/macOS test execution via `swift test`
+- Blocks algorithm extraction strategy
+
+**Possible Solutions**:
+1. Fix resource copying in Package.swift
+2. Extract algorithm-only package without resources
+3. Use Xcode-only testing (current state)
+
+**Status**: Documented
+
+**Related**:
+- [Cross-project Testing Plan](../docs/sdqctl-proposals/cross-project-testing-plan.md)
+
+---
+
+### GAP-TEST-003: Loop uses outdated Travis CI
+
+**Scenario**: Modern CI for Loop tests
+
+**Description**: Loop uses Travis CI with Xcode 12.4 (2021). No GitHub Actions workflow for tests. Trio has modern GitHub Actions.
+
+**Evidence**:
+```yaml
+# Loop/.travis.yml
+osx_image: xcode12.4
+```
+
+**Impact**:
+- Test infrastructure may be broken or outdated
+- Missing modern Xcode/iOS features
+- No parity with Trio's CI approach
+
+**Possible Solutions**:
+1. Migrate to GitHub Actions with modern Xcode
+2. Add unit_tests.yml similar to Trio's workflow
+3. Update to current macOS/Xcode versions
+
+**Status**: Documented
+
+**Related**:
+- [Cross-project Testing Plan](../docs/sdqctl-proposals/cross-project-testing-plan.md)
