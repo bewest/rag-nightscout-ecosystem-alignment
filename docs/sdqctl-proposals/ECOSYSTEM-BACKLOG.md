@@ -40,11 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Level 6: Proposal coherence - statistics-api-proposal.md
+### 4. [P3] Level 6: Proposal coherence - lsp-integration-proposal.md
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #29
-**Focus:** Check endpoint specs vs actual needs
-**Method:** Compare proposal with REQ-STATS-* requirements
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #30
+**Focus:** Verify LSP claims
+**Method:** Check LSP feature claims against actual implementation
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -62,6 +62,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 6: statistics-api-proposal.md coherence~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Coherence: **100%** - All 5 REQ-STATS-* requirements addressed
+- 4 endpoints defined with full schemas
+- MCP integration included (Phase 3)
 
 ### ~~[P2] Level 6: algorithm-conformance-suite.md coherence~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

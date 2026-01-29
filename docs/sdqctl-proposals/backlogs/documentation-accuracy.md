@@ -156,7 +156,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | # | Item | Priority | Domain | Verification Method | Status |
 |---|------|----------|--------|---------------------|--------|
 | 28 | Audit algorithm-conformance-suite.md | P2 | aid-algorithms | Verify proposal vs actual runners | ✅ 80% coherent (2/5 phases done) |
-| 29 | Audit statistics-api-proposal.md | P2 | nightscout-api | Check endpoint specs vs actual needs |
+| 29 | Audit statistics-api-proposal.md | P2 | nightscout-api | Check endpoint specs vs actual needs | ✅ 100% coherent (5/5 reqs) |
 | 30 | Audit lsp-integration-proposal.md | P3 | tooling | Verify LSP claims |
 | 31 | Audit nocturne-modernization-analysis.md | P2 | connectors | Cross-check with nocturne source |
 
