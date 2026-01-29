@@ -1108,6 +1108,109 @@ xDrip+ uniquely supports multiple insulin types per treatment:
 
 ---
 
+## Algorithm Core Terminology
+
+> **See Also**: [Algorithm Comparison Deep Dive](../../docs/10-domain/algorithm-comparison-deep-dive.md)
+
+### Insulin Sensitivity Factor (ISF)
+
+| System | Term | Type/Class | File |
+|--------|------|------------|------|
+| **oref0** | `sens` | Number (mg/dL/U) | `lib/profile/isf.js` |
+| **Loop** | `insulinSensitivity` | `InsulinSensitivitySchedule` | `LoopKit/TherapySettings.swift` |
+| **AAPS** | `isf` / `getIsfMgdl()` | `ProfileSwitch.isfBlocks` | `core/interfaces/profile/Profile.kt` |
+| **Trio** | `sensitivity` | `InsulinSensitivityEntry` | `Models/InsulinSensitivities.swift` |
+
+**Description**: Drop in glucose (mg/dL or mmol/L) expected from one unit of insulin.
+
+### Carb Ratio (CR / ICR)
+
+| System | Term | Type/Class | File |
+|--------|------|------------|------|
+| **oref0** | `carb_ratio` | Number (g/U) | `lib/profile/carbs.js` |
+| **Loop** | `carbRatio` | `CarbRatioSchedule` | `LoopKit/TherapySettings.swift` |
+| **AAPS** | `ic` / `getIc()` | `ProfileSwitch.icBlocks` | `core/interfaces/profile/Profile.kt` |
+| **Trio** | `ratio` | `CarbRatioEntry` | `Models/CarbRatios.swift` |
+
+**Description**: Grams of carbohydrates covered by one unit of insulin.
+
+### Duration of Insulin Action (DIA)
+
+| System | Term | Type/Class | Default | File |
+|--------|------|------------|---------|------|
+| **oref0** | `dia` | Number (hours) | 5-6h | `lib/iob/total.js` |
+| **Loop** | `actionDuration` | `TimeInterval` | 360 min (6h) | `LoopKit/InsulinKit/ExponentialInsulinModel.swift` |
+| **AAPS** | `dia` | Double (hours) | 5h min | `OapsProfile.kt` |
+| **Trio** | `actionDuration` | `TimeInterval` | From model | `LoopKit/InsulinKit/ExponentialInsulinModel.swift` |
+
+**Description**: Time over which insulin has glucose-lowering effect.
+
+### Unannounced Meal Detection (UAM)
+
+| System | Term | Supported | Configuration | File |
+|--------|------|-----------|---------------|------|
+| **oref0** | `enableUAM` | ✅ Yes | Boolean flag | `lib/profile/index.js` |
+| **Loop** | `MissedMeal` | ⚠️ Notification only | Detection, no dosing | `Managers/MissedMealSettings.swift` |
+| **AAPS** | `enableUAM` | ✅ Yes | Boolean + `maxUAMSMBBasalMinutes` | `SMBDefaults.kt` |
+| **Trio** | `enableUAM` | ✅ Yes | Boolean + `maxUAMSMBBasalMinutes` | `SMBSettingsStateModel.swift` |
+
+**Description**: Detection of carb absorption from unannounced/un-logged meals. Allows algorithm to respond to rising glucose even without carb entry.
+
+**Gap**: Loop does not have full UAM - only missed meal notifications without automatic dosing adjustment.
+
+### Super Micro Bolus (SMB)
+
+| System | Term | Supported | Configuration Flags | File |
+|--------|------|-----------|---------------------|------|
+| **oref0** | `enableSMB_*` | ✅ Yes (oref1) | `enableSMB_with_COB`, `enableSMB_always`, `enableSMB_after_carbs` | `lib/profile/index.js` |
+| **Loop** | N/A | ❌ No | N/A | N/A |
+| **AAPS** | `SMB` | ✅ Yes | `SMBInterval`, `maxSMBBasalMinutes`, multiple enable flags | `SMBDefaults.kt` |
+| **Trio** | `SMB` | ✅ Yes | `enableSMBAlways`, `enableSMBWithCOB`, `enableSMBWithTemptarget`, etc. | `SMBSettingsStateModel.swift` |
+
+**Description**: Small bolus doses delivered automatically to accelerate glucose correction beyond what temp basal alone can achieve.
+
+**Gap**: Loop does not support SMB. Uses temp basal adjustments only.
+
+### Autosens (Sensitivity Detection)
+
+| System | Term | Output | Range | File |
+|--------|------|--------|-------|------|
+| **oref0** | `sensitivityRatio` | Multiplier (0.7-1.2 default) | `autosens_min` to `autosens_max` | `lib/determine-basal/autosens.js` |
+| **Loop** | N/A | ❌ No autosens | N/A | N/A (uses `RetrospectiveCorrection`) |
+| **AAPS** | `AutosensResult.ratio` | Multiplier | Configurable min/max | `core/interfaces/aps/AutosensResult.kt` |
+| **Trio** | `autosens.ratio` | Multiplier | Configurable | `Models/Autosens.swift` |
+
+**Description**: Automatic detection of insulin sensitivity changes based on recent glucose deviations from predictions.
+
+**Loop Alternative**: `RetrospectiveCorrection` detects discrepancies but does NOT adjust ISF dynamically.
+
+### Feature Support Matrix
+
+| Feature | oref0 | Loop | AAPS | Trio |
+|---------|-------|------|------|------|
+| ISF Schedule | ✅ | ✅ | ✅ | ✅ |
+| Carb Ratio Schedule | ✅ | ✅ | ✅ | ✅ |
+| DIA Setting | ✅ | ✅ | ✅ | ✅ |
+| UAM Detection | ✅ | ⚠️ Notify only | ✅ | ✅ |
+| SMB Delivery | ✅ | ❌ | ✅ | ✅ |
+| Autosens | ✅ | ❌ | ✅ | ✅ |
+| Dynamic ISF | ❌ | ❌ | ✅ (DynISF) | ✅ |
+| Autotune | ✅ | ❌ | ✅ | ✅ |
+
+### Key Differences Summary
+
+1. **Loop vs oref0 family**: Loop lacks UAM (full), SMB, and Autosens. Uses different paradigm (single prediction curve vs 4 curves).
+
+2. **Terminology variance**:
+   - ISF: `sens` (oref0/Trio) vs `insulinSensitivity` (Loop) vs `isf` (AAPS)
+   - CR: `carb_ratio` (oref0) vs `carbRatio` (Loop) vs `ic` (AAPS)
+
+3. **Config structure**: oref0/Trio use flat JSON config; AAPS uses entity blocks; Loop uses Swift structs.
+
+**Gap Reference**: GAP-ALG-005 (Loop lacks SMB/UAM), GAP-ALG-006 (DynISF TDD-based vs deviation-based)
+
+---
+
 ## CGM Source Models (Deep Dive)
 
 > **See Also**: [CGM Data Sources Deep Dive](../../docs/10-domain/cgm-data-sources-deep-dive.md) for comprehensive analysis of how CGM data flows from sensors to Nightscout.

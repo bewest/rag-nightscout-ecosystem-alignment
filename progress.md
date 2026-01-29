@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Algorithm Core Terminology Mapping (2026-01-29)
+
+Added comprehensive algorithm terminology mapping across Loop, AAPS, Trio, and oref0.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Terminology** | `mapping/cross-project/terminology-matrix.md` | +95 lines |
+
+**Key Findings**:
+- ISF: `sens` (oref0/Trio) vs `insulinSensitivity` (Loop) vs `isf/getIsfMgdl()` (AAPS)
+- CR: `carb_ratio` (oref0) vs `carbRatio` (Loop) vs `ic/getIc()` (AAPS)
+- DIA: Consistent `dia` or `actionDuration` across systems
+- UAM: Full support in oref0/AAPS/Trio; notification-only in Loop (`MissedMeal`)
+- SMB: Supported in oref0/AAPS/Trio; NOT supported in Loop
+- Autosens: Supported in oref0/AAPS/Trio; NOT in Loop (uses `RetrospectiveCorrection`)
+
+**Gaps Referenced**: GAP-ALG-005 (Loop lacks SMB/UAM), GAP-ALG-006 (DynISF differences)
+
+---
+
 ### xDrip+ Nightscout Field Mapping (2026-01-29)
 
 Created comprehensive field mapping for xDrip+ Nightscout uploads.

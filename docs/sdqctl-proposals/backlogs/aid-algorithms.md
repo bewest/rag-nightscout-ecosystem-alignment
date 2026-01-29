@@ -13,9 +13,8 @@ Covers: Loop, AAPS, Trio, oref0/oref1, OpenAPS
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
 | 1 | Algorithm conformance: AAPS runner | P2 | High | Phase 3 - Kotlin runner for JS vs KT comparison |
-| 2 | Map algorithm terminology | P3 | Low | ISF, CR, DIA, UAM across systems |
-| 3 | Semantic equivalence for Loop | P3 | Medium | Enable Loop comparison with oref |
-| 4 | Document AAPS vs oref0 divergence | P3 | Low | 69% output differences found |
+| 2 | Semantic equivalence for Loop | P3 | Medium | Enable Loop comparison with oref |
+| 3 | Document AAPS vs oref0 divergence | P3 | Low | 69% output differences found |
 
 ---
 
@@ -23,6 +22,7 @@ Covers: Loop, AAPS, Trio, oref0/oref1, OpenAPS
 
 | Item | Date | Notes |
 |------|------|-------|
+| Map algorithm terminology | 2026-01-29 | +95 lines, ISF/CR/DIA/UAM/SMB/Autosens |
 | Algorithm conformance: oref0 runner | 2026-01-29 | 400+ lines, 26/85 pass (31%), 69% divergence |
 | Algorithm conformance: Schema + extraction | 2026-01-29 | 85 vectors, `conformance-vector-v1.json` |
 | Compare carb absorption models | 2026-01-29 | 471 lines, Loop vs oref0 paradigms |

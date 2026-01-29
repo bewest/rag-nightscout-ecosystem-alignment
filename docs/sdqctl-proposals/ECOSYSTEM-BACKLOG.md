@@ -66,12 +66,8 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### ~~7. [P3] Extract xDrip+ Nightscout fields~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (370 lines, 2 docs, 3 gaps GAP-XDRIP-001 to 003)
 
-### 8. [P3] Map algorithm terminology
-**Type:** Analysis | **Effort:** Low
-**Repos:** Loop, AAPS, Trio, oref0
-**Focus:** ISF, CR, DIA, UAM terminology across systems
-**Workflow:** `compare.conv`
-**Source:** aid-algorithms backlog
+### ~~8. [P3] Map algorithm terminology~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (+95 lines terminology, ISF/CR/DIA/UAM/SMB/Autosens mapped)
 
 ### 9. [P3] Document AAPS vs oref0 divergence
 **Type:** Analysis | **Effort:** Low

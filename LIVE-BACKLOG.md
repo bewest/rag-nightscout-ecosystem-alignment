@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Map algorithm terminology | P3 | ✅ Complete (+95 lines) | 2026-01-29 |
 | Extract xDrip+ Nightscout fields | P3 | ✅ Complete (370 lines, 3 gaps) | 2026-01-29 |
 | Compare CGM sensor session handling | P3 | ✅ Complete (407 lines, 4 gaps) | 2026-01-29 |
 | Deep dive: DiaBLE Libre protocol | P2 | ✅ Complete (487 lines, 2 gaps) | 2026-01-29 |
