@@ -1449,3 +1449,26 @@ Mapped trend arrow representations across 7 major projects.
 - `externals/AndroidAPS/core/data/.../TrendArrow.kt:3-14`
 - `externals/DiaBLE/DiaBLE/App.swift:94-112`
 - `externals/xdripswift/.../BgReading+CoreDataClass.swift:64-81`
+
+### API v3 Pagination Compliance (2026-01-29)
+
+Analyzed srvModified-based pagination across 4 major clients.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Compliance doc | `docs/10-domain/api-v3-pagination-compliance.md` | 9.3KB |
+| Gap additions | `traceability/nightscout-api-gaps.md` | GAP-API-010/011/012 |
+
+**Key Findings**:
+- AAPS: Only client with full API v3 support
+- Loop/Trio: Use API v1, no incremental sync
+- xDrip+: Partial (Last-Modified header with v1)
+- Server: srvModified-based /history endpoint documented
+
+**Gaps Identified**: GAP-API-010 (Loop), GAP-API-011 (Trio), GAP-API-012 (xDrip+)
+
+**Source Files Analyzed**:
+- `externals/cgm-remote-monitor/lib/api3/generic/history/operation.js`
+- `externals/AndroidAPS/plugins/sync/.../LoadBgWorker.kt`
+- `externals/Trio/.../NightscoutAPI.swift:14-18`
+- `externals/xDrip/.../NightscoutUploader.java:410-437`

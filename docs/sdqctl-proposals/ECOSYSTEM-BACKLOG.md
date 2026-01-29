@@ -36,25 +36,32 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 3. [P2] API v3 pagination compliance
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Document srvModified-based pagination across clients
-**Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
-
-### 4. [P3] WebSocket event coverage
+### 3. [P3] WebSocket event coverage
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 5. [P2] Sync identity field audit
+### 4. [P2] Sync identity field audit
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Verify sync identity mappings across all controllers
 **Backlog:** [sync-identity.md](backlogs/sync-identity.md)
 **Context:** Follow-up from cross-controller conflict analysis
 
+### 5. [P2] Profile schema alignment
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Compare profile/therapy settings across Loop, AAPS, Trio
+**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
+**Context:** ISF, CR, basal rate representation differences
+
 ---
 
 ## Completed Items
+
+### ~~[P2] API v3 pagination compliance~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- Deep dive: `docs/10-domain/api-v3-pagination-compliance.md` (9.3KB)
+- Key finding: Only AAPS uses v3; Loop/Trio/xDrip+ use v1
+- 3 gaps identified: GAP-API-010/011/012
 
 ### ~~[P2] CGM trend arrow standardization~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

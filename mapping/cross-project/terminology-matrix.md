@@ -3438,3 +3438,13 @@ See `docs/10-domain/cgm-trend-arrow-standardization.md` for full cross-project m
 | Falling very rapidly | DoubleDown (7) | DOUBLE_DOWN | downDownDown | DOUBLE_DOWN | fallingQuickly |
 | Not computable | NOT COMPUTABLE (8) | NOT_COMPUTABLE | - | NONE | notDetermined |
 | Rate out of range | RATE OUT OF RANGE (9) | OUT_OF_RANGE | - | TRIPLE_UP/DOWN | - |
+
+## API v3 Pagination Terms
+
+| Term | Description | Used By |
+|------|-------------|---------|
+| srvModified | Server timestamp of last modification | Nightscout v3, AAPS |
+| srvCreated | Server timestamp of creation | Nightscout v3, AAPS |
+| Last-Modified | HTTP header with latest timestamp | All clients |
+| /history | v3 incremental sync endpoint | AAPS only |
+| identifier | Client-provided unique ID | All clients |

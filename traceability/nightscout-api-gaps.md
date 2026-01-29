@@ -1376,3 +1376,33 @@ _None yet._
 **Source**: `mapping/nightscout-roles-gateway/authorization.md`
 
 ---
+
+### GAP-API-010: Loop Missing API v3 Pagination
+
+**Description:** Loop uses API v1 with no incremental sync. Re-fetches all data on each sync.
+
+**Source:** `externals/LoopWorkspace/NightscoutService/`
+
+**Impact:** Higher server load, slower sync, battery drain from redundant data transfer.
+
+**Remediation:** Migrate NightscoutServiceKit to use API v3 `/history` endpoints with `srvModified` tracking.
+
+### GAP-API-011: Trio Missing API v3 Pagination
+
+**Description:** Trio uses API v1 with count-based fetching. Uses date filtering but not server-side modification tracking.
+
+**Source:** `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift:14-18`
+
+**Impact:** Same as Loop - no incremental sync capability.
+
+**Remediation:** Add `srvModified` tracking and migrate to `/api/v3/{collection}/history` endpoints.
+
+### GAP-API-012: xDrip+ Partial Pagination Compliance
+
+**Description:** xDrip+ correctly uses `Last-Modified` header but with API v1 endpoints. Misses v3 per-document `srvModified` precision.
+
+**Source:** `externals/xDrip/app/.../NightscoutUploader.java:410-437`
+
+**Impact:** Moderate efficiency but misses per-document sync precision.
+
+**Remediation:** Add API v3 support as alternative, track `srvModified` per document.
