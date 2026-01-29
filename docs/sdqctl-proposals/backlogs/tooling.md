@@ -14,7 +14,6 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 |---|------|----------|--------|-------|
 | 1 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt pending |
 | 2 | LSP-based claim verification (Phase 2+) | P3 | Medium | JS/TS LSP integration deferred |
-| 3 | Integration test runner | P3 | High | Orchestrate full cross-project tests |
 
 ---
 
@@ -22,6 +21,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | Item | Date | Notes |
 |------|------|-------|
+| Integration test runner | 2026-01-29 | `tools/conformance_suite.py` - orchestrator + reports |
 | LSP claim verification Phase 1 | 2026-01-29 | Line anchor validation, 99.3% valid |
 | Transformation pipeline tester | 2026-01-29 | `tools/test_transforms.py` + 28 test cases |
 | Hygiene tooling suite | 2026-01-29 | queue_stats.py, backlog_hygiene.py, doc_chunker.py verified |

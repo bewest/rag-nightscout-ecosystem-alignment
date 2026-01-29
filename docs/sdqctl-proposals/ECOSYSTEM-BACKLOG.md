@@ -47,12 +47,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 5. [P3] Integration test runner
-**Type:** Implementation | **Effort:** High
-**Repos:** Cross-project
-**Focus:** Orchestrate full cross-project conformance tests
-**Workflow:** `implementation.conv`
-**Source:** tooling backlog
+### ~~5. [P3] Integration test runner~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (308 lines)
+- conformance_suite.py: Orchestrates all runners
+- Unified JSON/markdown reports
+- CI mode with exit codes
+- oref0 working, aaps/loop stubs ready
 
 ---
 

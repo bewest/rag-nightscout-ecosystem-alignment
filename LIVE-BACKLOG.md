@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Integration test runner | P3 | ✅ Complete (308 lines, orchestrator) | 2026-01-29 |
 | LSP claim verification Phase 1 | P2 | ✅ Complete (+80 lines, 99.3% valid) | 2026-01-29 |
 | Transform pipeline tester | P2 | ✅ Complete (1,433 lines, 28 tests) | 2026-01-29 |
 | Playwright adoption: Implementation | P2 | ✅ Complete (591 lines, 4 files) | 2026-01-29 |

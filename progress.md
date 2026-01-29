@@ -8,6 +8,29 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Algorithm Conformance Suite Orchestrator (2026-01-29)
+
+Created unified orchestrator for running algorithm conformance tests.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Orchestrator** | `tools/conformance_suite.py` | 308 lines |
+| **JSON Report** | `conformance/results/conformance-summary.json` | Unified results |
+| **Markdown Report** | `conformance/results/conformance-summary.md` | Human-readable |
+
+**Features**:
+- Runs oref0-runner.js (aaps/loop stubs ready)
+- Aggregates results by category
+- CI mode with strict exit codes
+- `--report-only` for regenerating from cached results
+
+**Current Results** (oref0):
+- 85 tests, 26 passed (30.6%)
+- basal-adjustment: 77 tests, 31% pass
+- low-glucose-suspend: 8 tests, 25% pass
+
+---
+
 ### Line Anchor Validation for verify_refs.py (2026-01-29)
 
 Implemented Phase 1 of LSP integration proposal - line anchor validation.
