@@ -18,11 +18,19 @@ Total: 185 requirements (180 unique)
 
 | Metric | Value | Date |
 |--------|-------|------|
-| Requirements with scenarios | 27/180 | 2026-01-29 |
+| Requirements with scenarios | 27/184 | 2026-01-29 |
 | Orphaned assertions | 0 | 2026-01-29 |
-| Requirement coverage | 15% | 2026-01-29 |
+| Requirement coverage | 14.7% | 2026-01-29 |
 
 **Source**: `python tools/verify_assertions.py`
+
+### REQ-SYNC-* Coverage (Level 5 #24)
+
+| Total | Covered | Uncovered | % |
+|-------|---------|-----------|---|
+| 18 | 15 | 3 | 83% |
+
+**Uncovered**: REQ-SYNC-001 (WebSocket docs), REQ-SYNC-002 (v1/v3 identity), REQ-SYNC-003 (status response)
 
 ## Mapping Verification (Supporting Evidence)
 

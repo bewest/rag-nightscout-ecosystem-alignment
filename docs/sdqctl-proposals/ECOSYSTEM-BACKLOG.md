@@ -40,11 +40,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Document actual behavior when Loop+Trio sync to same Nightscout
 **Source:** Sync & Identity backlog
 
-### 4. [P2] Level 5: Requirements traceability - REQ-SYNC-*
+### 4. [P2] Level 5: Requirements traceability - REQ-TREAT-*
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #24
-**Focus:** Audit REQ-SYNC-* coverage by test scenarios
-**Method:** Run `python tools/verify_assertions.py`
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #25
+**Focus:** Audit REQ-TREAT-* coverage by test scenarios
+**Method:** Verify each REQ-TREAT-* has test scenario
 
 ### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
@@ -62,6 +62,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 5: REQ-SYNC-* traceability~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 18 requirements audited, **83% covered** (15/18)
+- Covered: REQ-SYNC-036 to REQ-SYNC-050 via sync-deduplication.yaml
+- Uncovered: REQ-SYNC-001 (docs), REQ-SYNC-002 (v1/v3), REQ-SYNC-003 (status)
 
 ### ~~[P2] Level 4: GAP-CONNECT-* verification~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 - **LEVEL 4 COMPLETE!**
