@@ -1982,6 +1982,65 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ---
 
+## LibreLink Up Bridge Gaps
+
+### GAP-LIBRELINK-001: API v3 Not Implemented
+
+**Scenario**: Uploading LibreLink glucose data with deduplication
+
+**Description**: The v3 client exists in nightscout-librelink-up but throws "Not implemented". Only v1 API is functional.
+
+**Source**: `externals/nightscout-librelink-up/src/nightscout/apiv3.ts`
+
+**Impact**:
+- No automatic deduplication on Nightscout side
+- Missing `identifier` field for sync tracking
+- Same limitation as tconnectsync and share2nightscout-bridge
+
+**Remediation**: Implement v3 client with proper identifiers.
+
+**Status**: Enhancement candidate
+
+---
+
+### GAP-LIBRELINK-002: No Historical Backfill
+
+**Scenario**: Recovering from service downtime
+
+**Description**: While `GraphResponse` interface exists for historical data, only current readings are uploaded. No catch-up mechanism for gaps.
+
+**Source**: `externals/nightscout-librelink-up/src/interfaces/librelink/graph-response.ts`
+
+**Impact**:
+- Gaps in data if bridge service is down
+- No automatic recovery of missed readings
+- Manual intervention required
+
+**Remediation**: Add optional historical fetch and backfill on startup.
+
+**Status**: Enhancement candidate
+
+---
+
+### GAP-LIBRELINK-003: Trend Arrow Limited to 5 Values
+
+**Scenario**: Displaying rapid glucose changes
+
+**Description**: LibreLink Up provides only 5 trend values (1-5) mapping to SingleDown through SingleUp. Nightscout supports 9 directions including DoubleUp/DoubleDown.
+
+**Source**: `externals/nightscout-librelink-up/src/nightscout/interface.ts`
+
+**Impact**:
+- Loss of precision for rapid glucose changes
+- No DoubleUp/DoubleDown representation
+- Libre sensors may not report extreme trends
+
+**Remediation**: Document as sensor/API limitation; map to closest available.
+
+**Status**: Platform limitation
+
+---
+
 ## Timezone and DST Gaps
 
 ### GAP-TZ-001: Most Pump Drivers Cannot Handle DST

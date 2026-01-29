@@ -2,7 +2,7 @@
 
 > **Domain**: Data synchronization, deduplication, identity fields  
 > **Parent**: [ECOSYSTEM-BACKLOG.md](../ECOSYSTEM-BACKLOG.md)  
-> **Last Updated**: 2026-01-28
+> **Last Updated**: 2026-01-29
 
 Covers: syncIdentifier, interfaceIDs, uuid, timestamps, batch ordering
 
@@ -15,10 +15,27 @@ Covers: syncIdentifier, interfaceIDs, uuid, timestamps, batch ordering
 | 1 | **Extract Loop sync identity fields** | P1 | Medium | → Ready Queue #3 |
 | 2 | Deep dive: Batch operation ordering | P1 | Medium | Order-preservation for sync |
 | 3 | Trace REQ-031 through REQ-035 | P1 | Low | 5 uncovered sync requirements |
-| 4 | Code analysis: identifier vs syncIdentifier | P1 | Low | OQ-001 - trace usage across repos |
+| 4 | **OQ-001 Resolution: Sync identity terminology** | P1 | Low | Document-only approach - see below |
 | 5 | Full audit: nightscout-connect | P2 | Medium | Cloud platform connectors |
 | 6 | Impact analysis: Duration unit standardization | P1 | Medium | OQ-030 - all 4 alternatives |
 | 7 | Impact analysis: utcOffset unit | P1 | Low | OQ-031 - combine with duration |
+
+### OQ-001 Resolution Work Items (P1)
+
+**Decision**: Document-only approach - no new `syncId` field.
+
+| # | Task | Effort |
+|---|------|--------|
+| 4a | Update `docs/OPEN-QUESTIONS.md` - mark OQ-001 resolved | Low |
+| 4b | Update `mapping/cross-project/terminology-matrix.md` - add sync identity definitions | Low |
+| 4c | Update `docs/90-decisions/adr-002-sync-identity-strategy.md` - clarify document-only | Low |
+| 4d | Add progress entry for OQ-001 resolution | Low |
+
+**Key Findings from Analysis (2026-01-29)**:
+- NS v3 `identifier`: Deterministic UUID v5 (device+date+eventType), server-side, for API deduplication
+- Loop/Trio `syncIdentifier`: Random UUID, client-side, for sync state tracking
+- AAPS `interfaceIDs.nightscoutId`: Stores NS identifier, multi-level dedup (nightscoutId → pumpId → timestamp)
+- **Conclusion**: These serve complementary purposes, not replaceable - document relationship only
 
 ---
 

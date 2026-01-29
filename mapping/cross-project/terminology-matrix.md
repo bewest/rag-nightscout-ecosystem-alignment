@@ -81,6 +81,38 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 
 **Gap Reference**: GAP-TCONNECT-001 (no v3 API), GAP-TCONNECT-002 (limited Control-IQ data), GAP-TCONNECT-003 (batch only)
 
+### LibreLink Up API (nightscout-librelink-up)
+
+| Endpoint | Purpose | Auth |
+|----------|---------|------|
+| `POST /llu/auth/login` | Authentication | Email/password |
+| `GET /llu/connections` | Patient list | Bearer token |
+| `GET /llu/connections/{id}/graph` | Historical glucose | Bearer token |
+
+**API Regions**: EU, EU2, US, AU, DE, FR, JP, AP (`api-{region}.libreview.io`)
+
+**Trend Mapping** (LibreLink → Nightscout):
+
+| LibreLink TrendArrow | Nightscout direction |
+|---------------------|---------------------|
+| 1 | `SingleDown` |
+| 2 | `FortyFiveDown` |
+| 3 | `Flat` |
+| 4 | `FortyFiveUp` |
+| 5 | `SingleUp` |
+
+**Field Mapping**:
+
+| LibreLink | Nightscout |
+|-----------|------------|
+| `ValueInMgPerDl` | `sgv` |
+| `FactoryTimestamp` | `date` (epoch ms) |
+| `TrendArrow` | `direction` |
+
+**Source**: `externals/nightscout-librelink-up/src/`, `docs/10-domain/nightscout-librelink-up-deep-dive.md`
+
+**Gap Reference**: GAP-LIBRELINK-001 (no v3 API), GAP-LIBRELINK-002 (no backfill), GAP-LIBRELINK-003 (5 trend values only)
+
 ### Persistent State (Configuration)
 
 | Alignment Term | Nightscout | Loop | AAPS | Trio | xDrip+ |

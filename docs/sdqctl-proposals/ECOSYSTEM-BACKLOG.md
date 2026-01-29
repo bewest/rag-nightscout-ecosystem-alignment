@@ -51,11 +51,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Propose adoption plan for Playwright testing in cgm-remote-monitor modernization
 **Workflow:** `proposal.conv`
 
-### 6. [P1] Full audit: nightscout-librelink-up
-**Type:** Audit | **Effort:** Medium
-**Source:** `externals/nightscout-librelink-up/`
-**Focus:** LibreLink Up to Nightscout bridge, Libre API
-**Workflow:** `deep-dive.conv`
+### 6. [P1] PR analysis: cgm-remote-monitor
+**Type:** Analysis | **Effort:** Medium
+**Source:** `externals/cgm-remote-monitor-official/`
+**Focus:** Review open PRs for ecosystem impact
+**Workflow:** `gap-discovery.conv`
 
 ### 7. [P2] Algorithm conformance suite
 **Type:** Tooling | **Effort:** Medium
@@ -86,7 +86,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - [ ] **Algorithm conformance suite** - Create test vectors for Rust vs JS oref comparison
   - From: Modernization analysis next steps
 - [x] ~~**Full audit: tconnectsync**~~ - Completed (368 lines, 3 gaps)
-- [x] ~~**Full audit: nightscout-librelink-up**~~ - Promoted to Ready Queue #6
+- [x] ~~**Full audit: nightscout-librelink-up**~~ - Completed (378 lines, 3 gaps)
 
 ### P2 - Normal
 
@@ -129,6 +129,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Date | Item | Outcome |
 |------|------|---------|
+| 2026-01-29 | Full audit: nightscout-librelink-up | `docs/10-domain/nightscout-librelink-up-deep-dive.md` - 378 lines, 3 gaps (GAP-LIBRELINK-001-003) |
 | 2026-01-29 | Full audit: tconnectsync | `docs/10-domain/tconnectsync-deep-dive.md` - 368 lines, 3 gaps (GAP-TCONNECT-001-003) |
 | 2026-01-29 | Full audit: openaps/oref0 | `docs/10-domain/openaps-oref0-deep-dive.md` - 371 lines, 3 gaps (GAP-OREF-001-003) |
 | 2026-01-28 | Gap discovery: Prediction array formats | `docs/10-domain/prediction-arrays-comparison.md` - 319 lines, 3 gaps (GAP-PRED-002-004) |
