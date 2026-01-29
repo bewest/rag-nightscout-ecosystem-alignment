@@ -3,7 +3,7 @@
 > **Purpose**: Midflight requests from humans during sdqctl processing sessions.  
 > **Parent**: [ECOSYSTEM-BACKLOG.md](docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md)
 
-*(No pending requests)*
+* For each of the projects, let's queue an analysis of the PRs to get a sense of project trajectory and development or maintenance working materials.  Then let's queue additional analysis for modernization and alignment to the backlog[s].
 
 ## Processed
 

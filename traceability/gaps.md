@@ -3693,3 +3693,93 @@ osx_image: xcode12.4
 
 **Related**:
 - [Cross-project Testing Plan](../docs/sdqctl-proposals/cross-project-testing-plan.md)
+
+
+---
+
+### GAP-BRIDGE-001: Node.js 16+ EOL blocks upgrades
+
+**Scenario**: share2nightscout-bridge Node compatibility
+
+**Description**: The `package.json` engines field restricts to Node 8-16, all of which are end-of-life. This blocks cgm-remote-monitor upgrade to Node 22+ (PR #8357).
+
+**Evidence**:
+```json
+"engines": {
+  "node": "16.x || 14.x || 12.x || 10.x || 8.x"
+}
+```
+
+**Impact**:
+- Cannot upgrade Nightscout to Node 22+
+- Security vulnerabilities in EOL Node versions
+- Deployment platform compatibility issues
+
+**Possible Solutions**:
+1. Complete `wip/bewest/axios` branch migration
+2. Deprecate in favor of cgm-remote-monitor `connect` module
+3. Update engines field after dependency modernization
+
+**Status**: Open - WIP branch exists
+
+**Related**:
+- [PR Analysis](../docs/10-domain/share2nightscout-bridge-pr-analysis.md)
+- [GitHub Issue #61](https://github.com/nightscout/share2nightscout-bridge/issues/61)
+
+---
+
+### GAP-BRIDGE-002: Deprecated `request` npm package
+
+**Scenario**: share2nightscout-bridge dependency modernization
+
+**Description**: The sole dependency `request` is deprecated since 2020 and has known vulnerabilities. No active maintenance.
+
+**Evidence**:
+```json
+"dependencies": {
+  "request": "^2.88.0"
+}
+```
+
+**Impact**:
+- Security vulnerabilities unpatched
+- Node.js compatibility issues with newer versions
+- npm audit warnings
+
+**Possible Solutions**:
+1. Migrate to `axios` (WIP branch exists)
+2. Migrate to native `fetch` (Node 18+)
+3. Migrate to `node-fetch` or `got`
+
+**Status**: Open - WIP branch `wip/bewest/axios` in progress
+
+**Related**:
+- [PR Analysis](../docs/10-domain/share2nightscout-bridge-pr-analysis.md)
+
+---
+
+### GAP-BRIDGE-003: No CI/CD pipeline
+
+**Scenario**: share2nightscout-bridge automated testing
+
+**Description**: The project uses `wercker.yml` but Wercker service is defunct. No GitHub Actions or other CI configured.
+
+**Evidence**:
+```
+wercker.yml  # Defunct service
+```
+
+**Impact**:
+- PRs not automatically tested
+- No confidence in merge safety
+- Manual testing burden
+
+**Possible Solutions**:
+1. Add GitHub Actions workflow
+2. Add simple npm test action
+3. Consider deprecation if connect module preferred
+
+**Status**: Documented
+
+**Related**:
+- [PR Analysis](../docs/10-domain/share2nightscout-bridge-pr-analysis.md)
