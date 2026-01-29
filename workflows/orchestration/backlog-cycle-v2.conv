@@ -39,8 +39,9 @@ PROMPT ## Phase 0: State Check
 
 Check current git and backlog state before starting work.
 
-RUN git --no-pager status --short && echo "---" && git --no-pager log --oneline -3
-
+RUN python tools/queue_stats.py 2>/dev/null || echo "Stats: unavailable"
+RUN git --no-pager status --short | head -15
+ELIDE
 PROMPT Review the git status above:
 1. Are there uncommitted changes from previous cycles?
 2. What was the last committed cycle?
@@ -62,9 +63,9 @@ COMPACT
 
 # === Phase 1: Task Selection ===
 PROMPT ## Phase 1: Task Selection
-
+ELIDE
 RUN cat LIVE-BACKLOG.md | head -40
-
+ELIDE
 PROMPT Review LIVE-BACKLOG.md above for **unprocessed human requests**.
 
 **Priority Order:**
@@ -230,7 +231,8 @@ COMPACT
 # === Phase 6: Cycle Summary ===
 PROMPT ## Phase 6: Cycle Summary
 
-RUN git --no-pager log --oneline -1 && echo "---" && head -30 docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md | grep -E "^### [0-9]"
+RUN python tools/queue_stats.py 2>/dev/null || echo "Stats: unavailable"
+RUN git --no-pager log --oneline -1
 
 PROMPT Summarize what was accomplished.
 
