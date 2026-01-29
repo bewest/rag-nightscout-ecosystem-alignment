@@ -40,5 +40,6 @@ Total: 220 gaps across 7 domains
 | 2026-01-29 | aaps/nsclient-schema.md | 100% accurate | No gap changes needed |
 | 2026-01-29 | loop/sync-identity-fields.md | 100% accurate | No gap changes needed |
 | 2026-01-29 | trio/nightscout-sync.md | 100% accurate | No gap changes needed |
+| 2026-01-29 | terminology-matrix.md (10% sample) | 100% accurate | No gap changes needed |
 
 *Last updated: 2026-01-29*

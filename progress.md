@@ -33,9 +33,9 @@ Executed first accuracy verification items from bottom-up queue.
 
 ---
 
-### Level 2: Mapping Verification (2026-01-29)
+### Level 2: Mapping Verification (2026-01-29) ✅ COMPLETE
 
-Verified xDrip, AAPS, Loop, and Trio mapping documents against source code.
+Verified xDrip, AAPS, Loop, Trio mappings and terminology matrix against source code.
 
 | Mapping | Result | Files Checked |
 |---------|--------|---------------|
@@ -43,14 +43,14 @@ Verified xDrip, AAPS, Loop, and Trio mapping documents against source code.
 | `mapping/aaps/nsclient-schema.md` | **100% accurate** | `RemoteTreatment.kt`, `RemoteEntry.kt`, `EventType.kt` |
 | `mapping/loop/sync-identity-fields.md` | **100% accurate** | `DoseEntry.swift`, `ObjectIdCache.swift`, `NightscoutService.swift` |
 | `mapping/trio/nightscout-sync.md` | **100% accurate** | `NightscoutAPI.swift`, `NightscoutStatus.swift`, `NightscoutManager.swift` |
+| `terminology-matrix.md` (10% sample) | **100% accurate** | 15 terms across 6 repos |
 
-**Fields Verified**:
-- xDrip: UploaderQueue bitfields, SGV upload fields (sgv, direction, date), treatment fields (eventType, carbs)
-- AAPS: Treatment schema (identifier, eventType, insulin, carbs, duration), Entry schema (type, sgv, direction, noise)
-- Loop: syncIdentifier in DoseEntry:24, StoredGlucoseSample:18, ObjectIdCache structure, 24h cache lifetime
-- Trio: SHA-1 api-secret auth, OpenAPSStatus fields (iob, suggested, enacted, version)
+**Terminology Sample Verified**:
+- AAPS: HeartRate fields, insulinEndTime, TrendArrow enum
+- oref0: curve models (rapid-acting), prediction arrays (IOB/COB/UAM/ZT)
+- Nightscout: direction values, secp256r1 curve
 
-**Level 2 Progress**: 4/5 items complete (80%)
+**Level 2 Complete**: 5/5 items (100%)
 
 ---
 

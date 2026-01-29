@@ -48,7 +48,7 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 | 6 | Audit mapping/aaps/nsclient-schema.md | P2 | nightscout-api | ✅ **100% accurate** |
 | 7 | Audit mapping/loop/sync-identity-fields.md | P2 | sync-identity | ✅ **100% accurate** |
 | 8 | Audit mapping/trio/nightscout-sync.md | P2 | nightscout-api | ✅ **100% accurate** |
-| 9 | Audit terminology-matrix.md row by row | P3 | cross-project | Pending |
+| 9 | Audit terminology-matrix.md (10% sample) | P3 | cross-project | ✅ **100% accurate** |
 
 **Finding (2026-01-29)**: xDrip and AAPS mappings verified against source:
 - xDrip: UploaderQueue bitfields, SGV fields, treatment fields all match source
@@ -57,6 +57,15 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 **Finding (2026-01-29)**: Loop and Trio mappings verified against source:
 - Loop: DoseEntry.swift:24 syncIdentifier, ObjectIdCache.swift structure, 24h cache lifetime all verified
 - Trio: NightscoutAPI.swift SHA-1 auth, NightscoutStatus.swift OpenAPSStatus fields (iob, suggested, enacted) verified
+
+**Finding (2026-01-29)**: Terminology matrix 10% sample (15 terms) verified:
+- HeartRate fields: beatsPerMinute, duration, device, utcOffset, isValid (HeartRate.kt:21-31)
+- AAPS insulinEndTime (ms) verified (ProfileSealed.kt:237)
+- TrendArrow enum: DOUBLE_DOWN, SINGLE_DOWN, FortyFiveDown (TrendArrow.kt:10-12)
+- oref0 curve models: rapid-acting, ultra-rapid (profile/index.js:62)
+- oref0 prediction arrays: IOBpredBGs, COBpredBGs, UAMpredBGs, ZTpredBGs (determine-basal.js:442-445)
+- Nightscout direction values: Flat, FortyFiveUp (fixtures verified)
+- secp256r1 curve name (Curve.java:24)
 
 ### Level 3: Deep Dive Claim Verification
 
@@ -106,12 +115,33 @@ Level 6: Proposals/Designs    (docs/sdqctl-proposals/*.md)
 
 | Item | Date | Notes |
 |------|------|-------|
+| Item #9: Terminology matrix sampling | 2026-01-29 | **100% accurate** - 15 terms verified across 6 repos |
 | Item #7-8: Loop + Trio mappings | 2026-01-29 | **100% accurate** - syncIdentifier, OpenAPSStatus verified |
 | Item #5-6: Mapping verification | 2026-01-29 | **100% accurate** - xDrip + AAPS mappings verified |
 | Item #17: G7 protocol claims | 2026-01-29 | **100% accurate** - All opcodes, UUIDs, curves verified vs source |
 | Item #1-4: Source refs | 2026-01-29 | **91% valid** (356/391), 2 intentional example refs |
 | Broken refs fix (LSP claim verification) | 2026-01-29 | 3 refs fixed, 92% valid |
 | Initial cohesiveness audit proposal | 2026-01-29 | Queued to this backlog |
+
+**Level 2 Complete**: 5/5 mapping items verified (100%)
+
+### Verification Details: Terminology Matrix (2026-01-29)
+
+| Term/Field | Source | Status |
+|------------|--------|--------|
+| HeartRate.beatsPerMinute | `HeartRate.kt:25` | ✅ Verified |
+| HeartRate.duration | `HeartRate.kt:21` | ✅ Verified |
+| HeartRate.utcOffset | `HeartRate.kt:28` | ✅ Verified |
+| AAPS insulinEndTime (ms) | `ProfileSealed.kt:237` | ✅ Verified |
+| TrendArrow.DOUBLE_DOWN | `TrendArrow.kt:12` | ✅ Verified |
+| TrendArrow.FortyFiveDown | `TrendArrow.kt:10` | ✅ Verified |
+| oref0 rapid-acting curve | `profile/index.js:62` | ✅ Verified |
+| oref0 IOBpredBGs array | `determine-basal.js:443` | ✅ Verified |
+| oref0 COBpredBGs array | `determine-basal.js:442` | ✅ Verified |
+| oref0 UAMpredBGs array | `determine-basal.js:444` | ✅ Verified |
+| oref0 ZTpredBGs array | `determine-basal.js:445` | ✅ Verified |
+| Nightscout direction "Flat" | `api3/doc/formats.md:31` | ✅ Verified |
+| secp256r1 curve | `Curve.java:24` | ✅ Verified |
 
 ### Verification Details: Mappings (2026-01-29)
 

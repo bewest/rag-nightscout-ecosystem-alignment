@@ -42,25 +42,19 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 ### 4. [P2] Accuracy: Audit algorithm-comparison claims
 **Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #11
+**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #10
 **Focus:** Validate prediction array format claims
 **Files:** `docs/10-domain/algorithm-comparison-deep-dive.md`
 **Method:** Verify IOB/COB/UAM/ZT array structure in source
 
-### 5. [P2] Accuracy: Sample terminology-matrix.md (10%)
-**Type:** Verification | **Effort:** Medium
-**Source:** [documentation-accuracy.md](backlogs/documentation-accuracy.md) #9
-**Focus:** Random sample 10% of terminology rows, verify in source
-**Method:** Select diverse terms across domains, grep for evidence
-
-### 6. [P3] Algorithm conformance: Loop Swift runner
+### 5. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 7. [P3] sdqctl VERIFY .conv Directive (Phase 2)
+### 6. [P3] sdqctl VERIFY .conv Directive (Phase 2)
 **Type:** Tooling | **Effort:** Medium
 **Proposal:** [VERIFICATION-DIRECTIVES.md](VERIFICATION-DIRECTIVES.md)
 **Focus:** Native `VERIFY refs` directive in .conv workflows
@@ -69,6 +63,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Level 2: Terminology matrix sampling~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29
+- 15 terms sampled across 6 repos: **100% accurate**
+- HeartRate fields, TrendArrow enum, oref0 prediction arrays verified
+- **Level 2 Complete**: 5/5 mapping verifications passed
 
 ### ~~[P2] Accuracy: Verify Loop + Trio mappings~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29
