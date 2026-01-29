@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### LoopCaregiver Deep Dive (2026-01-29)
+
+Created comprehensive deep-dive documentation for LoopCaregiver remote command app.
+
+| Deliverable | Location | Summary |
+|-------------|----------|---------|
+| **Deep Dive** | `docs/10-domain/loopcaregiver-deep-dive.md` | 417 lines |
+
+**Key Findings**:
+- Remote commands: Bolus, Carbs, Override, Autobolus, Closed Loop
+- Security: API secret + TOTP + 5-minute expiration
+- V1 commands via push notifications
+- V2 commands (experimental) add status tracking
+- Loop-only support (no Trio/OpenAPS)
+
+**Gaps Identified**: GAP-LOOPCAREGIVER-001, GAP-LOOPCAREGIVER-002, GAP-LOOPCAREGIVER-003
+
+---
+
 ### LoopFollow Deep Dive (2026-01-29)
 
 Created comprehensive deep-dive documentation for LoopFollow caregiver monitoring app.

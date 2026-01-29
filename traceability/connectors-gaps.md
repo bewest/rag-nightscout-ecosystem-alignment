@@ -539,3 +539,58 @@ osx_image: xcode12.4
 **Source**: `docs/10-domain/loopfollow-deep-dive.md`
 
 ---
+
+## LoopCaregiver Gaps
+
+---
+
+### GAP-LOOPCAREGIVER-001: Loop-Only Support
+
+**Description**: LoopCaregiver only works with Loop. No support for Trio, OpenAPS, or AAPS.
+
+**Affected Systems**: LoopCaregiver, Trio, OpenAPS, AAPS
+
+**Impact**:
+- Trio users must use different apps (LoopFollow + TRC)
+- No unified caregiver experience across AID systems
+- Parallel development of similar features
+
+**Remediation**: Abstract command layer to support multiple AID targets.
+
+**Source**: `docs/10-domain/loopcaregiver-deep-dive.md`
+
+---
+
+### GAP-LOOPCAREGIVER-002: Experimental V2 Commands
+
+**Description**: Remote Commands 2.0 (with status tracking) requires non-mainline branches of both Nightscout and Loop.
+
+**Affected Systems**: LoopCaregiver, Nightscout, Loop
+
+**Impact**:
+- Most users don't have command status tracking
+- Special deployment complexity
+- Branch maintenance burden
+
+**Remediation**: Merge V2 features to mainline branches.
+
+**Source**: `docs/10-domain/loopcaregiver-deep-dive.md`
+
+---
+
+### GAP-LOOPCAREGIVER-003: No Standard Command API
+
+**Description**: Commands use proprietary push notification format, not a standard Nightscout API endpoint.
+
+**Affected Systems**: LoopCaregiver, Nightscout
+
+**Impact**:
+- Not interoperable with other systems
+- Tightly coupled to Loop implementation
+- No command history in standard Nightscout
+
+**Remediation**: Define standard remote command API in Nightscout.
+
+**Source**: `docs/10-domain/loopcaregiver-deep-dive.md`
+
+---

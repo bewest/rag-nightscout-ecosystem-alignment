@@ -58,12 +58,8 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ### ~~5. [P3] Deep dive: LoopFollow~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29 (411 lines, 3 gaps)
 
-### 5. [P3] Deep dive: LoopCaregiver
-**Type:** Analysis | **Effort:** Medium
-**Repos:** LoopCaregiver
-**Focus:** Remote command architecture, Nightscout command channel
-**Workflow:** `extract-spec.conv`
-**Context:** iOS companion app for remote bolus, carbs, override control
+### ~~5. [P3] Deep dive: LoopCaregiver~~ ✅ COMPLETE
+**Status:** Completed 2026-01-29 (417 lines, 3 gaps)
 
 ---
 
