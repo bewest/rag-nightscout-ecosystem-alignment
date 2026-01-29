@@ -32,10 +32,10 @@
 | Heart Rate API specification | P1 | ✅ Complete | 2026-01-29 |
 | Statistics API proposal (MCP + reports + zreptil) | P1 | ✅ Complete | 2026-01-29 |
 | PR analysis for cgm-remote-monitor | P1 | ✅ Complete | 2026-01-29 |
-| PR analysis for all projects | P1 | → Queued to analysis backlog | 2026-01-29 |
+| PR analysis for all projects | P1 | ✅ Complete (51 PRs, 19 interop-relevant) | 2026-01-29 |
 | Swift development setup on Linux research | P2 | → Queued to tooling backlog | 2026-01-29 |
 | Timezone handling bugs in cgm-remote-monitor reporting | P2 | → Queued to analysis backlog | 2026-01-29 |
-| Add node-multienv repo + Nocturne hosting readiness | P1 | → Queued to infrastructure backlog | 2026-01-29 |
+| Add node-multienv repo + Nocturne hosting readiness | P1 | ⚠️ Blocked (repo not public) | 2026-01-29 |
 | Fix broken refs audit | P2 | → Queued to maintenance backlog | 2026-01-29 |
 | Cohesiveness & comprehensibility audit proposal | P2 | → Queued to documentation backlog | 2026-01-29 |
 | Chunk gaps.md into manageable pieces | P2 | ✅ Complete (now index + 7 domain files) | 2026-01-29 |
