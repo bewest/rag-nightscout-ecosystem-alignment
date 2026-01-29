@@ -7,13 +7,15 @@
 
 ## Pending
 
-* Reevaluate all docs/sdqctl-proposals/* for taskable work.
-* Chunk a systematic review of docs for accuracy across several methodical backlog items.
+(none)
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Fix backlog checkbox format inconsistency | P1 | ✅ Complete (tooling.md fixed, format verified) | 2026-01-29 |
+| Reevaluate sdqctl-proposals for taskable work | P2 | ✅ Complete (14 proposals audited, 3 new items) | 2026-01-29 |
+| Chunk docs accuracy review into backlog items | P2 | ✅ Complete (queued to documentation backlog) | 2026-01-29 |
 | Backlog grooming + Ready Queue replenishment | P0 | ✅ Complete (5 items in queue, 3 archives) | 2026-01-29 |
 | Progress.md archiving (429 lines) | P0 | ✅ Complete (3 batch archives created) | 2026-01-29 |
 | Broken refs fix (LSP claim verification) | P2 | ✅ Complete (3 refs fixed, 92% valid) | 2026-01-29 |

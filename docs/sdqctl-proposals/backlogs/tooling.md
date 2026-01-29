@@ -12,25 +12,10 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | **Hygiene tooling suite** | P0 | Medium | queue_stats.py, backlog_hygiene.py, doc_chunker.py |
-| 2 | Algorithm conformance runners | P2 | High | oref0-runner.js, aaps-runner.kt |
-| 3 | LSP-based claim verification | P2 | Medium | [4-phase proposal](../lsp-integration-proposal.md) |
-| 4 | Transformation pipeline tester | P2 | High | Test field transforms in isolation |
-| 5 | Integration test runner | P3 | High | Orchestrate full cross-project tests |
-
-### Hygiene Tooling Suite (P0)
-
-**Design**: [`hygiene-tooling-design.md`](hygiene-tooling-design.md)
-
-| Tool | Purpose | Priority |
-|------|---------|----------|
-| `queue_stats.py` | One-line status for RUN integration | P0 |
-| `backlog_hygiene.py` | Queue validation & archiving | P1 |
-| `doc_chunker.py` | Split oversized files | P1 |
-| HYGIENE directive | sdqctl plugin for hygiene checks | P2 |
-
-**Thresholds**: 800 lines (traceability), 500 lines (backlogs/progress)
-**Chunking**: Domain-aligned, index + sibling files
+| 1 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt pending |
+| 2 | LSP-based claim verification | P2 | Medium | [4-phase proposal](../lsp-integration-proposal.md) |
+| 3 | Transformation pipeline tester | P2 | High | Test field transforms in isolation |
+| 4 | Integration test runner | P3 | High | Orchestrate full cross-project tests |
 
 ---
 
@@ -38,6 +23,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | Item | Date | Notes |
 |------|------|-------|
+| Hygiene tooling suite | 2026-01-29 | queue_stats.py, backlog_hygiene.py, doc_chunker.py verified |
 | Conformance schema + vector extraction | 2026-01-29 | `conformance-vector-v1.json` + 85 vectors from AAPS |
 | Algorithm conformance suite proposal | 2026-01-29 | `docs/sdqctl-proposals/algorithm-conformance-suite.md` - 510 lines, 5-phase plan |
 | Unit conversion test suite | 2026-01-28 | `tools/test_conversions.py` + 20 test cases |

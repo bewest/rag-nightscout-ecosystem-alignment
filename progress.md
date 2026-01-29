@@ -427,3 +427,31 @@ Full audit of the foundational OpenAPS ecosystem - the original DIY closed-loop 
 
 
 > **Archive**: 2026-01-28 entries moved to [progress-archive-2026-01-28.md](docs/archive/progress-archive-2026-01-28.md)
+
+---
+
+### LIVE-BACKLOG Hygiene Cycle (2026-01-29)
+
+Processed 3 pending human requests from LIVE-BACKLOG.
+
+| Request | Action | Result |
+|---------|--------|--------|
+| Fix backlog checkbox format | Audited all backlogs | tooling.md fixed (hygiene suite → completed) |
+| Reevaluate sdqctl-proposals | Audited 14 proposals | 2 already in queue, 3 new items identified |
+| Chunk docs accuracy review | Queued to documentation | Added systematic review item |
+
+#### Format Issues Fixed
+
+| File | Issue | Fix |
+|------|-------|-----|
+| `backlogs/tooling.md` | Hygiene suite still in Active | Moved to Completed table |
+
+#### Proposals Audit Summary
+
+| Status | Count | Examples |
+|--------|-------|----------|
+| Ready for implementation | 2 | playwright-adoption, algorithm-conformance |
+| Needs upstream review | 3 | statistics-api, HELP-INLINE, RUN-BRANCHING |
+| Research/Draft | 4 | nocturne-modernization, STPA, nightscout-connect |
+| Complete | 5 | hygiene-tooling, tools-comparison, etc. |
+
