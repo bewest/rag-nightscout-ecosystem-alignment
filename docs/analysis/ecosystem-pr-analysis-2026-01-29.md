@@ -26,10 +26,23 @@
 
 | PR | Title | Author | Date | Alignment Impact |
 |----|-------|--------|------|------------------|
-| #8422 | Fix api3 limit error when limit is string | KelvinKramp | 2026-01-25 | **API v3 bug fix** - affects all clients |
+| #8422 | Fix api3 limit error when limit is string | KelvinKramp | 2026-01-25 | **API v3 bug fix** - affects all clients ✅ Reviewed |
 | #8421 | Wip/bewest/mongodb 5x | bewest | 2026-01-19 | **Infrastructure** - MongoDB 5.x+ support |
 | #8419 | Add tests for iOS loop push notifications and websockets | je-l | 2026-01-15 | **Loop integration** - push notification testing |
 | #8405 | Fix timezone display to show device timezone | ryceg | 2025-11-18 | **GAP-TZ-xxx** - timezone handling |
+
+### PR #8422 Review (2026-01-30)
+
+**Problem**: `API3_MAX_LIMIT` env var as string causes 500 error (parseInt not called)
+
+**Fix**: `parseInt(maxLimitRaw) || apiConst.API3_MAX_LIMIT` - safely parse string to int
+
+**OpenAPI Compliance**:
+- Our spec (`aid-entries-2025.yaml`) defines `limit` as `integer`
+- Fix makes API tolerant of string input while returning proper integer behavior
+- No interoperability gap - this is a robustness fix
+
+**Recommendation**: Safe to merge, improves API stability
 
 ### Other Notable PRs
 

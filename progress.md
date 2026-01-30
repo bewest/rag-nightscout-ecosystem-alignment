@@ -8,6 +8,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### PR #8422 OpenAPI Compliance Review (2026-01-30)
+
+Reviewed cgm-remote-monitor PR #8422 for alignment with OpenAPI specs.
+
+| Aspect | Finding |
+|--------|---------|
+| PR Title | Fix api3 limit error when limit is string |
+| Problem | `API3_MAX_LIMIT` env var as string → 500 error |
+| Fix | `parseInt(maxLimitRaw) || default` |
+| OpenAPI | `limit` param is `integer` - fix makes API tolerant |
+| Gap Impact | None - robustness fix, not interop issue |
+
+**Recommendation**: Safe to merge
+
+**Source**: nightscout-api.md #14
+
+---
+
 ### Tooling Deprecation Evaluation (2026-01-30)
 
 tooling #11: Confirm redundant tools identified for deprecation.

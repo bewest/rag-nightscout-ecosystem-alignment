@@ -36,12 +36,31 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
+### 3. [P2] PR #8405 timezone review against GAP-TZ-*
+**Type:** Verification | **Effort:** Low
+**Repos:** cgm-remote-monitor
+**Focus:** Review PR for alignment with GAP-TZ-002/005/006/007
+**Source:** nightscout-api.md #15
+
+### 4. [P2] PR #8421 MongoDB 5x review against GAP-DB-001
+**Type:** Verification | **Effort:** Low
+**Repos:** cgm-remote-monitor
+**Focus:** Review infrastructure PR for gap resolution
+**Source:** nightscout-api.md #17
+
+### 5. [P2] Idiomatic sdqctl workflow integration
+**Type:** Refactoring | **Effort:** Medium
+**Repos:** workflows/
+**Focus:** Replace custom VERIFY patterns with `sdqctl verify` calls in .conv files
+**Source:** tooling.md #15
+
 ---
 
 ## Recently Completed (2026-01-30)
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **PR #8422 OpenAPI compliance review** | `ecosystem-pr-analysis-2026-01-29.md` | Safe to merge - robustness fix, no interop gap |
 | **Tooling deprecation evaluation** | tooling.md #11 | 7 tools identified for deprecation |
 | **Aid-algorithms cross-ref completion** | Cross-ref to documentation-accuracy.md #11, #19 | Medium-effort items cleared; high-effort remain |
 | **Sync-identity cross-ref completion** | Cross-ref to documentation-accuracy.md #7, #21, #24 | All 4 sync-identity items complete |
