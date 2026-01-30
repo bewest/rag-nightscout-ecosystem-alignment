@@ -15,6 +15,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 18) | P0 | ✅ Complete (Ready Queue 2 items, tooling deprecation done) | 2026-01-30 |
+| Tooling deprecation evaluation (#11) | P3 | ✅ Complete (7 tools identified for deprecation) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 17) | P0 | ✅ Complete (Ready Queue 2 items, aid-algorithms medium items done) | 2026-01-30 |
 | Aid-algorithms cross-ref (#3, #4) | P2 | ✅ Complete (cross-ref to accuracy #11, #19) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 16) | P0 | ✅ Complete (Ready Queue 2 items, all sync-identity items done) | 2026-01-30 |

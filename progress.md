@@ -8,6 +8,19 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Tooling Deprecation Evaluation (2026-01-30)
+
+tooling #11: Confirm redundant tools identified for deprecation.
+
+| Action | Count | Tools |
+|--------|-------|-------|
+| Deprecate | 7 | verify_refs, verify_terminology, linkcheck, verify_hello, run_workflow, phase_nav, project_seq |
+| Keep | 27 | Domain-specific with no sdqctl equivalent |
+
+**Status**: Migration eval already documented; marked complete.
+
+---
+
 ### Aid-Algorithms Cross-Reference Completion (2026-01-30)
 
 aid-algorithms #3, #4: Cross-references to existing verification in documentation-accuracy.md.
