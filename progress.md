@@ -8,6 +8,35 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne Override/Temporary Target Analysis (2026-01-30)
+
+Analyzed how Nocturne handles Loop Override and AAPS Temporary Target events.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Analysis doc | `docs/10-domain/nocturne-override-temptarget-analysis.md` | 250+ lines, 2 REQs, 3 GAPs |
+
+**Key Findings**:
+- **EventType Distinction**: Loop uses `Temporary Override`; AAPS uses `Temporary Target` - no unification
+- **Field Semantics**: Override has `insulinNeedsScaleFactor`; TempTarget has `targetTop`/`targetBottom`
+- **Supersession**: Neither system tracks override supersession
+- **V4 StateSpan**: Provides unified query but no override linking
+- **Duration Units**: Presets in seconds; treatments in minutes (conversion required)
+
+**Gaps Added**: GAP-OVRD-005, GAP-OVRD-006, GAP-OVRD-007
+
+**Requirements Added**: REQ-OVRD-004, REQ-OVRD-005
+
+**Source Files Analyzed**:
+- `externals/nocturne/src/Core/Nocturne.Core.Models/Treatment.cs`
+- `externals/nocturne/src/Core/Nocturne.Core.Models/LoopModels.cs`
+- `externals/nocturne/src/API/Nocturne.API/Services/LoopService.cs`
+- `externals/cgm-remote-monitor/lib/server/loop.js`
+
+**OQ-010 Research Queue**: Item #8 of 7 complete (originally 7 items, now extended)
+
+---
+
 ### Nocturne vs cgm-remote-monitor Profile Sync Comparison (2026-01-30)
 
 Compared profile collection sync behavior between Nocturne and cgm-remote-monitor implementations.

@@ -53,13 +53,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Key Finding:** Deduplication, srvModified, and delete semantics all differ
 **Gaps Added:** GAP-SYNC-038, GAP-SYNC-039, GAP-SYNC-040
 
-### 6. [P2] OQ-010 Research: Nocturne Override/Temporary Target
-**Type:** Analysis | **Effort:** Medium
-**Repos:** nocturne
-**Focus:** How Nocturne stores and serves override vs temporary target events
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md#8-p2-nocturne-overridetemporary-target-representation)
-**Blocks:** OQ-010 resolution
-**Next:** Item #8 in OQ-010 queue
+### 6. ~~[P2] OQ-010 Research: Nocturne Override/Temporary Target~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `docs/10-domain/nocturne-override-temptarget-analysis.md`
+**Key Finding:** No unified Override/TempTarget; no supersession tracking
+**Gaps Added:** GAP-OVRD-005, GAP-OVRD-006, GAP-OVRD-007
 
 ### 7. [P2] OQ-010 Research: Nocturne V4 ProfileSwitch extensions
 **Type:** Discovery | **Effort:** Low
@@ -67,6 +65,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Identify any V4-specific profile/override endpoints
 **Backlog:** [sync-identity.md](backlogs/sync-identity.md#9-p2-nocturne-v4-profileswitch-extensions)
 **Blocks:** OQ-010 resolution
+**Next:** Item #9 in OQ-010 queue
 
 ---
 

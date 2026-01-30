@@ -58,6 +58,9 @@ Nocturne (.NET 10)
 | GAP-SYNC-038 | Profile deduplication fallback missing (no created_at) | Documented |
 | GAP-SYNC-039 | Profile srvModified field missing | Documented |
 | GAP-SYNC-040 | Profile uses hard delete (cgm-remote-monitor uses soft) | Documented |
+| GAP-OVRD-005 | No unified Override/TempTarget representation | Documented |
+| GAP-OVRD-006 | Override supersession not tracked | Documented |
+| GAP-OVRD-007 | Duration unit mismatch (preset seconds, treatment minutes) | Documented |
 
 ---
 
@@ -69,6 +72,7 @@ Nocturne (.NET 10)
 | [nocturne-profileswitch-analysis.md](../../docs/10-domain/nocturne-profileswitch-analysis.md) | ProfileSwitch treatment handling |
 | [nocturne-percentage-timeshift-handling.md](../../docs/10-domain/nocturne-percentage-timeshift-handling.md) | API vs internal scaling behavior |
 | [nocturne-cgm-remote-monitor-profile-sync.md](../../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md) | Profile sync comparison |
+| [nocturne-override-temptarget-analysis.md](../../docs/10-domain/nocturne-override-temptarget-analysis.md) | Override vs TempTarget handling |
 
 ---
 

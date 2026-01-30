@@ -107,7 +107,7 @@ Questions requiring formal architectural decision records.
 - "New record supersedes old" is more ergonomic than "old record is superseded by new" in NS workflows
 - Nocturne sources may have relevant proposals on this topic
 
-**Action**: Systematic Nocturne analysis in progress (3/7 complete)
+**Action**: Systematic Nocturne analysis in progress (4/7 complete)
 
 **Analysis Progress**:
 1. ✅ Nocturne ProfileSwitch treatment model - **Complete** ([analysis](10-domain/nocturne-profileswitch-analysis.md))
@@ -119,8 +119,10 @@ Questions requiring formal architectural decision records.
 3. ✅ Nocturne vs cgm-remote-monitor Profile sync - **Complete** ([comparison](10-domain/nocturne-cgm-remote-monitor-profile-sync.md))
    - Key finding: Deduplication, srvModified, and delete semantics all differ
    - Added: GAP-SYNC-038/039/040, REQ-SYNC-059/060/061
-4. ⏳ Nocturne Override/Temporary Target representation - **Next**
-5. ⬜ Nocturne V4 ProfileSwitch extensions
+4. ✅ Nocturne Override/Temporary Target representation - **Complete** ([analysis](10-domain/nocturne-override-temptarget-analysis.md))
+   - Key finding: No unification of Override vs TempTarget; no supersession tracking
+   - Added: GAP-OVRD-005/006/007, REQ-OVRD-004/005
+5. ⏳ Nocturne V4 ProfileSwitch extensions - **Next**
 6. ⬜ Nocturne Rust oref profile handling
 7. ⬜ ADR-004 draft (after above complete)
 
@@ -132,6 +134,7 @@ Questions requiring formal architectural decision records.
 - [Sync Identity Backlog: OQ-010 Queue](sdqctl-proposals/backlogs/sync-identity.md#oq-010-research-queue-profileswitch--nocturne)
 - [Profile Switch Sync Comparison](10-domain/profile-switch-sync-comparison.md)
 - [Nocturne ProfileSwitch Analysis](10-domain/nocturne-profileswitch-analysis.md)
+- [Nocturne Override Analysis](10-domain/nocturne-override-temptarget-analysis.md)
 - [Nocturne Deep Dive](10-domain/nocturne-deep-dive.md)
 
 ---

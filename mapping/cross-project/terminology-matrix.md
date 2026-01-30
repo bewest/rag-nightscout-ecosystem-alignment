@@ -3864,3 +3864,39 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 **Related Gaps**: GAP-SYNC-038, GAP-SYNC-039, GAP-SYNC-040
 
 **Source**: [Profile Sync Comparison](../../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md)
+
+### Override vs Temporary Target (Loop vs AAPS)
+
+| Aspect | Loop Override | AAPS Temporary Target |
+|--------|--------------|----------------------|
+| **eventType** | `Temporary Override` | `Temporary Target` |
+| **Cancel eventType** | `Temporary Override Cancel` | `Temporary Target` with `duration=0` |
+| **Target Fields** | None (uses insulinNeedsScaleFactor) | `targetTop`, `targetBottom` |
+| **Insulin Adjustment** | `insulinNeedsScaleFactor` (0.9 = 90%) | None (uses Profile Switch) |
+| **Reason Field** | Free text (preset name) | Enum (Eating Soon, Activity, etc.) |
+| **Duration Unit** | Treatment: minutes; Preset: seconds | Treatment: minutes (stored) |
+
+### Override Fields Comparison
+
+| Field | Loop | AAPS | Nocturne | cgm-remote-monitor |
+|-------|------|------|----------|-------------------|
+| `insulinNeedsScaleFactor` | ✅ | ❌ | ✅ | ✅ |
+| `targetTop` | ❌ | ✅ | ✅ | ✅ |
+| `targetBottom` | ❌ | ✅ | ✅ | ✅ |
+| `reason` | Preset name | Enum | ✅ | ✅ |
+| `reasonDisplay` | ✅ | ❌ | ✅ | ✅ |
+| `duration` | minutes | minutes | ✅ | ✅ |
+
+### V4 StateSpan Override Categories
+
+| Category | States | Description |
+|----------|--------|-------------|
+| `Override` | None, Custom | User-defined override active |
+| `TempBasal` | Active, Cancelled | Temporary basal rate |
+| `PumpMode` | Automatic, Manual, Boost, EaseOff, Sleep, Exercise | Pump operational mode |
+
+**Note**: V4 StateSpan abstracts both Loop Override and AAPS TempTarget as `Override.Custom`.
+
+**Related Gaps**: GAP-OVRD-005, GAP-OVRD-006, GAP-OVRD-007
+
+**Source**: [Nocturne Override Analysis](../../docs/10-domain/nocturne-override-temptarget-analysis.md)

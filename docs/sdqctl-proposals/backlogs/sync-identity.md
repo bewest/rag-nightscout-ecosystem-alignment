@@ -82,10 +82,20 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 **Type:** Analysis | **Effort:** Medium  
 **Repos:** nocturne  
 **Focus:** How Nocturne stores and serves override vs temporary target events  
-**Questions:**
-- Does Nocturne distinguish Loop Override from AAPS Temporary Target?
-- Are these stored in treatments with different eventTypes?
-- What supersession tracking exists (if any)?
+**Status:** ✅ COMPLETE 2026-01-30
+**Deliverable:** `docs/10-domain/nocturne-override-temptarget-analysis.md`
+**Key Findings:**
+- Loop uses `Temporary Override`; AAPS uses `Temporary Target` - no unification
+- No supersession tracking in either system
+- V4 StateSpan provides unified query but no override linking
+- Duration unit mismatch: presets in seconds, treatments in minutes
+**Gaps Added:** GAP-OVRD-005, GAP-OVRD-006, GAP-OVRD-007
+**Requirements Added:** REQ-OVRD-004, REQ-OVRD-005
+
+**Questions Answered:**
+- ✅ Yes, Nocturne distinguishes Loop Override from AAPS Temporary Target (different eventTypes)
+- ✅ Both stored in treatments with different eventTypes
+- ✅ No supersession tracking exists
 
 **Related Gaps:** GAP-OVRD-001, GAP-OVRD-002
 
@@ -126,6 +136,7 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 
 | Item | Date | Notes |
 |------|------|-------|
+| Nocturne Override/TempTarget representation | 2026-01-30 | Item #8; GAP-OVRD-005/006/007, 2 REQs |
 | Nocturne vs cgm-remote-monitor Profile sync | 2026-01-30 | Item #7; GAP-SYNC-038/039/040, 3 REQs |
 | Nocturne percentage/timeshift handling | 2026-01-30 | Item #6; GAP-NOCTURNE-005, 2 REQs |
 | Nocturne ProfileSwitch treatment model | 2026-01-30 | Item #5; GAP-NOCTURNE-004, 3 REQs |

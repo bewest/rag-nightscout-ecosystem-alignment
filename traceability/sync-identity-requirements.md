@@ -820,6 +820,38 @@ See [requirements.md](requirements.md) for the index.
 
 **Verification**: Duration value validation in synced treatments.
 
+### REQ-OVRD-004: Cross-Type Override Query
+
+**Statement**: The API MAY provide a unified query for all target-modifying treatments (Override and Temporary Target).
+
+**Rationale**: Simplifies client code that needs to understand "what's affecting targets right now."
+
+**Scenarios**:
+- Query returns both Loop Override and AAPS Temporary Target
+- Results normalized to common schema
+
+**Verification**: Query `eventType=Temporary Override,Temporary Target` returns both types.
+
+**Gap Reference**: GAP-OVRD-005
+
+**Source**: [Nocturne Override Analysis](../docs/10-domain/nocturne-override-temptarget-analysis.md)
+
+### REQ-OVRD-005: Duration Unit Documentation
+
+**Statement**: Systems MUST document duration units (seconds vs minutes) for all override-related fields.
+
+**Rationale**: Prevents off-by-60x conversion errors between LoopOverridePreset (seconds) and Treatment (minutes).
+
+**Scenarios**:
+- LoopOverridePreset.Duration documented as seconds
+- Treatment.Duration documented as minutes
+- Conversion explicitly noted
+
+**Verification**: Documentation review for duration units.
+
+**Gap Reference**: GAP-OVRD-007
+
+**Source**: [Nocturne Override Analysis](../docs/10-domain/nocturne-override-temptarget-analysis.md)
 
 ---
 

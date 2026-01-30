@@ -901,6 +901,55 @@ if (rVal) rVal.replace('ETC','Etc');
 
 **Remediation**: Nightscout normalizes to minutes; apps should convert accordingly.
 
+### GAP-OVRD-005: No Unified Override Representation
+
+**Description**: Loop `Temporary Override` and AAPS `Temporary Target` are stored separately with different field semantics. No mapping or unification exists in Nocturne or cgm-remote-monitor.
+
+**Affected Systems**: Cross-controller queries, Nightscout UI, statistics
+
+**Evidence**:
+- Loop: `eventType: "Temporary Override"` with `insulinNeedsScaleFactor`
+- AAPS: `eventType: "Temporary Target"` with `targetTop`/`targetBottom`
+- Nocturne: Both stored as-is in treatments collection
+
+**Impact**: Cannot query "all active target modifications" without checking both eventTypes with different field interpretations.
+
+**Remediation**: Define normalized schema or query helper that abstracts both types.
+
+**Source**: [Nocturne Override Analysis](../docs/10-domain/nocturne-override-temptarget-analysis.md)
+
+### GAP-OVRD-006: Override Supersession Not Tracked
+
+**Description**: Neither Nocturne nor cgm-remote-monitor tracks override supersession. When a new override activates, the old override treatment is not updated.
+
+**Affected Systems**: All
+
+**Evidence**:
+- Nocturne: No `supersededBy` or `status` field update on old treatment
+- cgm-remote-monitor: No supersession tracking
+- V4 StateSpan: Provides time-range queries but no override linking
+
+**Impact**: Cannot determine override history chain or why overrides ended (superseded vs cancelled vs expired).
+
+**Remediation**: Implement REQ-OVERRIDE-001 through REQ-OVERRIDE-005.
+
+**Source**: [Nocturne Override Analysis](../docs/10-domain/nocturne-override-temptarget-analysis.md)
+
+### GAP-OVRD-007: Duration Unit Mismatch in Loop Presets
+
+**Description**: LoopOverridePreset.Duration is in seconds; Treatment.Duration is in minutes. Conversion required.
+
+**Affected Systems**: Loop, Nocturne
+
+**Evidence**:
+- `LoopModels.cs:182-183`: `Duration` in seconds
+- `Treatment.cs:182`: `Duration` in minutes
+
+**Impact**: Off-by-60x errors if units confused.
+
+**Remediation**: Document unit expectations; add validation.
+
+**Source**: [Nocturne Override Analysis](../docs/10-domain/nocturne-override-temptarget-analysis.md)
 
 ---
 
