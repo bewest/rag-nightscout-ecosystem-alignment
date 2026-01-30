@@ -874,3 +874,31 @@ See [requirements.md](requirements.md) for the index.
 **Rationale**: Users need to understand how insulin curve timing affects dosing.
 
 **Verification**: Documentation review for all insulin presets.
+
+---
+
+## Target Range Requirements
+
+### REQ-TGT-001: Target Range Format Documentation
+
+**Statement**: Systems MUST document whether target range is stored as min/max pair or single value.
+
+**Rationale**: Different formats (Loop's ClosedRange vs oref0's min_bg/max_bg) can cause sync/import issues.
+
+**Verification**: Schema review for target representation.
+
+### REQ-TGT-002: Target Calculation Transparency
+
+**Statement**: Systems SHOULD document how the algorithm uses target ranges (midpoint, dynamic, etc.).
+
+**Rationale**: Users need to understand correction behavior - Loop uses dynamic targeting while oref0 uses static midpoint.
+
+**Verification**: Algorithm documentation review.
+
+### REQ-TGT-003: Temp Target Side Effects Documentation
+
+**Statement**: Systems MUST document any side effects of temp targets (sensitivity adjustment, SMB enable).
+
+**Rationale**: oref0 ties SMB enable and sensitivity ratio to temp targets; users may expect simple target changes.
+
+**Verification**: Documentation audit for temp target behavior.

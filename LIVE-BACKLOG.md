@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Target range handling comparison | P2 | ✅ Complete (4 gaps, 3 reqs, dynamic vs static targeting) | 2026-01-30 |
 | Insulin model comparison (Loop vs oref0) | P2 | ✅ Complete (4 gaps, 3 reqs, identical exponential formula) | 2026-01-30 |
 | Temp basal vs SMB dosing comparison | P2 | ✅ Complete (4 gaps, 3 reqs, temp vs micro-bolus) | 2026-01-30 |
 | Prediction curve documentation | P2 | ✅ Complete (4 gaps, 3 reqs, single vs 4 curves) | 2026-01-30 |

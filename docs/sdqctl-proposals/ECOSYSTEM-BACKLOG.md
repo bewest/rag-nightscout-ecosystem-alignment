@@ -41,20 +41,25 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Target range handling comparison
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Compare target/correction range handling
-**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
-**Context:** Loop correction range vs oref0 target_bg
-
-### 5. [P2] Override/temporary target sync
+### 4. [P2] Override/temporary target sync
 **Type:** Documentation | **Effort:** Medium
 **Focus:** How overrides sync to Nightscout
 **Backlog:** [sync-identity.md](backlogs/sync-identity.md)
 
+### 5. [P2] Basal schedule comparison
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Compare basal rate scheduling across systems
+**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
+
 ---
 
 ## Completed Items
+
+### ~~[P2] Target range handling comparison~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `docs/10-domain/target-range-handling-comparison.md`
+**Key Finding:** Loop dynamic targeting vs oref0 static midpoint
+**Gaps Added:** GAP-TGT-001 to GAP-TGT-004
 
 ### ~~[P2] Insulin model comparison~~ ✅ COMPLETE
 **Completed:** 2026-01-30

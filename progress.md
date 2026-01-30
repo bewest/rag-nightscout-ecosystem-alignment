@@ -8,6 +8,40 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Target Range Handling Comparison (2026-01-30)
+
+Compared target glucose range handling across Loop and oref0/AAPS.
+
+| Metric | Value |
+|--------|-------|
+| Source files analyzed | 4 |
+| Gaps identified | 4 (TGT-001 to TGT-004) |
+| Key finding | Loop dynamic targeting vs oref0 static midpoint |
+
+**Key Findings**:
+- Loop uses **dynamic targeting** (suspend threshold → midpoint over insulin effect)
+- oref0 uses **static midpoint**: `target_bg = (min_bg + max_bg) / 2`
+- oref0 adjusts targets based on autosens ratio; Loop does not
+- oref0 ties SMB enable/disable to temp target value; Loop is independent
+
+**Gaps Added**:
+- GAP-TGT-001: Different algorithm targeting behavior
+- GAP-TGT-002: Autosens target adjustment not in Loop
+- GAP-TGT-003: Temp target sensitivity adjustment
+- GAP-TGT-004: SMB enable tied to target in oref0
+
+**Requirements Added**:
+- REQ-TGT-001: Target range format documentation
+- REQ-TGT-002: Target calculation transparency
+- REQ-TGT-003: Temp target side effects documentation
+
+**Deliverables**:
+- `docs/10-domain/target-range-handling-comparison.md` (10.7KB)
+- `traceability/aid-algorithms-gaps.md` (+4 gaps)
+- `traceability/aid-algorithms-requirements.md` (+3 requirements)
+
+---
+
 ### Insulin Model Comparison (2026-01-30)
 
 Compared exponential and bilinear insulin activity models across Loop and oref0/AAPS.

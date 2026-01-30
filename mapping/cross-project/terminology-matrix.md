@@ -3702,3 +3702,38 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | Loop | 6 hours | ExponentialInsulinModel presets |
 | oref0 bilinear | 3 hours | calculate.js:37 |
 | oref0 exponential | User-configured | Profile setting |
+
+## Target Range Terms
+
+### Data Structures
+
+| Concept | Loop | oref0/AAPS | Description |
+|---------|------|------------|-------------|
+| Target range | `ClosedRange<HKQuantity>` | `min_bg`, `max_bg` | Glucose target bounds |
+| Target value | `averageValue` | `target_bg` | Algorithm correction target |
+| Suspend threshold | `suspendThreshold` | (derived from min_bg) | Low glucose safety limit |
+
+### Range Schedules
+
+| Term | Loop | oref0/AAPS | Nightscout |
+|------|------|------------|------------|
+| Lower bound | `correctionRange.lowerBound` | `min_bg` | `target_low` |
+| Upper bound | `correctionRange.upperBound` | `max_bg` | `target_high` |
+| Schedule | `GlucoseRangeSchedule` | Profile arrays | `target_low[]`, `target_high[]` |
+
+### Override/Temp Target
+
+| Concept | Loop | oref0/AAPS | Description |
+|---------|------|------------|-------------|
+| Pre-meal | `preMealTargetRange` preset | Manual temp target | Tighter pre-meal range |
+| Exercise | `workoutTargetRange` preset | Manual temp target | Higher exercise range |
+| Temp target active | Override applied | `temptargetSet = true` | Flag for temp vs scheduled |
+| Half-basal target | N/A | `half_basal_exercise_target` | Target for 50% basal (default 160) |
+
+### Autosens Target Adjustment (oref0 only)
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `sensitivity_raises_target` | true | Raise target when insulin sensitive |
+| `resistance_lowers_target` | false | Lower target when insulin resistant |
+| Minimum target | 80 mg/dL | Safety floor for adjusted target |

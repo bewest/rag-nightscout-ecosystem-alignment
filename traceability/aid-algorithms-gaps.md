@@ -1108,3 +1108,63 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Impact**: Positive - formula consistency ensures IOB compatibility.
 
 **Status**: Verified as aligned - no remediation needed.
+
+---
+
+## Target Range Gaps
+
+### GAP-TGT-001: Different Algorithm Targeting Behavior
+
+**Description**: Loop uses dynamic targeting (suspend→midpoint over time); oref0 uses static midpoint.
+
+**Affected Systems**: Loop vs oref0/AAPS
+
+**Evidence**:
+- Loop: `DoseMath.swift:200-214` - `targetGlucoseValue()` blends over effect duration
+- oref0: `determine-basal.js:243` - Static `(min_bg + max_bg) / 2`
+
+**Impact**: Same target range settings produce different correction behavior.
+
+**Remediation**: Document for users migrating between systems.
+
+### GAP-TGT-002: Autosens Target Adjustment Not in Loop
+
+**Description**: oref0 adjusts targets based on autosens ratio; Loop does not.
+
+**Affected Systems**: Loop vs oref0/AAPS
+
+**Evidence**:
+- oref0: `determine-basal.js:296-311` - `sensitivity_raises_target`, `resistance_lowers_target`
+- Loop: No equivalent in DoseMath.swift
+
+**Impact**: oref0 is more aggressive in adjusting for insulin resistance/sensitivity.
+
+**Remediation**: Design difference - document expected behavior.
+
+### GAP-TGT-003: Temp Target Sensitivity Adjustment
+
+**Description**: oref0 adjusts sensitivity ratio based on temp target magnitude; Loop overrides are simpler.
+
+**Affected Systems**: Loop vs oref0/AAPS
+
+**Evidence**:
+- oref0: `determine-basal.js:259-277` - Formula: `c/(c+target_bg-normalTarget)`
+- Loop: Override just replaces range, no sensitivity calculation
+
+**Impact**: Exercise modes behave differently between systems.
+
+**Remediation**: Document the formula for users expecting equivalent behavior.
+
+### GAP-TGT-004: SMB Enable Tied to Target in oref0
+
+**Description**: oref0 enables/disables SMB based on target value; Loop has no such coupling.
+
+**Affected Systems**: Loop vs oref0/AAPS
+
+**Evidence**:
+- oref0: `determine-basal.js:63-64, 103-107` - `enableSMB_with_temptarget`, high target disables SMB
+- Loop: Auto bolus enable is independent of target
+
+**Impact**: Temp targets have different side effects between systems.
+
+**Remediation**: Document for users expecting similar behavior.
