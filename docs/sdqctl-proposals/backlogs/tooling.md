@@ -29,9 +29,11 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 15 | **Idiomatic sdqctl workflow integration** | P2 | Medium | Replace custom VERIFY patterns with `sdqctl verify` calls in .conv files |
 | 16 | **LSP verification setup research** | P2 | High | Document requirements for JS/TS LSP setup, Kotlin/Java LSP prerequisites, Swift limitations |
 | 17 | **Nightscout PR coherence review protocol** | P2 | Medium | Systematic review methodology for cgm-remote-monitor PRs against proposals/backlogs |
-| 18 | **Tool coverage audit** | P1 | Medium | Test each verification tool against fixtures, show parsed vs ignored patterns |
+| 18 | ~~**Tool coverage audit**~~ | ~~P1~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/tool-coverage-audit.md` |
 | 19 | **Documentation parse audit** | P1 | Medium | Scan all docs for patterns tools recognize, flag docs with no tool coverage |
 | 20 | **Known vs unknown dashboard** | P2 | Low | Summary view: repos analyzed, gaps identified, coverage %, confidence levels |
+| 21 | **Fix verify_coverage.py** | P1 | Low | Update to scan `*-requirements.md` pattern like verify_assertions |
+| 22 | **Extend verify_refs to conformance/** | P2 | Low | Add `conformance/**/*.md` to scan patterns |
 
 ---
 

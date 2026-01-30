@@ -10,6 +10,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Tool Coverage Audit (2026-01-30)
+
+Cycle 22: Analyzed what each verification tool parses and identified coverage gaps.
+
+| Metric | Value |
+|--------|-------|
+| Verification tools | 7 (6 active) |
+| Total docs | 351 |
+| Docs covered | 313 (89%) |
+| Docs uncovered | 38 (11%) |
+
+**Key Findings**:
+- `verify_coverage.py` broken - scans wrong file patterns
+- `conformance/**/*.md` (9 files) has no tool coverage
+- `docs/` only validated for code refs, no semantic checks
+
+**Deliverable**: `docs/10-domain/tool-coverage-audit.md`
+
+**New Items**: tooling.md #21 (fix verify_coverage), #22 (extend verify_refs)
+
+---
+
 ### Prioritization & Backlog Restructure (2026-01-30)
 
 Planning session to chunk and prioritize work based on 5 uncertainty areas identified.
