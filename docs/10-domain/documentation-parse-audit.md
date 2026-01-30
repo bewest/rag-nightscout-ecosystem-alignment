@@ -86,25 +86,22 @@ Core traceability docs not validated.
 
 ## Recommendations
 
-### P1: Extend verify_refs Scope (tooling.md #22+)
+### ~~P1: Extend verify_refs Scope~~ ✅ COMPLETE (2026-01-30)
 
-Current scan patterns:
+tooling.md #22 - Cycle 26 completed.
+
+Current scan patterns (after fix):
 ```
 mapping/**/*.md
 docs/**/*.md
-specs/**/*.yaml
-```
-
-Add:
-```
-conformance/**/*.md
-specs/**/*.md
+specs/**/*.md, *.yaml
 traceability/**/*.md
+conformance/**/*.md, *.yaml
 ```
 
-**Impact**: +22 files covered
+**Impact**: 300→353 files covered (+53 files)
 
-### P2: Extend verify_assertions Scope (NEW)
+### P2: Extend verify_assertions Scope (tooling.md #23)
 
 Current scan patterns:
 ```

@@ -12,9 +12,9 @@
 |--------|-------|
 | Total verification tools | 7 |
 | Active tools (scan files) | 6 |
-| Total docs in workspace | 351 |
-| Docs with tool coverage | 313 (89%) |
-| Docs without coverage | 38 (11%) |
+| Total docs in workspace | 353 |
+| Docs with tool coverage | 345 (98%) |
+| Docs without coverage | 8 (2%) - conformance/*.yaml outside assertions/ |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Tool | Purpose | Scan Patterns | Files | Status |
 |------|---------|---------------|-------|--------|
-| `verify_refs` | Validate code refs to externals/ | `mapping/**/*.md`, `docs/**/*.md`, `specs/**/*.yaml` | 300 | ✅ Active |
+| `verify_refs` | Validate code refs to externals/ | `mapping/**`, `docs/**`, `specs/**`, `traceability/**`, `conformance/**` | 353 | ✅ Active |
 | `verify_mapping_coverage` | Field mappings vs source | `mapping/**/*.md` | 123 | ✅ Active |
 | `verify_gap_freshness` | Check gaps still open | `traceability/*-gaps.md` | 7 | ✅ Active |
-| `verify_assertions` | Trace assertions→REQ/GAP | `conformance/assertions/**/*.yaml` | 4 | ✅ Active |
-| `verify_coverage` | REQ/GAP coverage analysis | `traceability/requirements.md`, `gaps.md` | 2 | ⚠️ Broken |
+| `verify_assertions` | Trace assertions→REQ/GAP | `conformance/assertions/**/*.yaml` | 4 | ⚠️ Narrow scope |
+| `verify_coverage` | REQ/GAP coverage analysis | `traceability/*-requirements.md`, `*-gaps.md` | 2 | ✅ Fixed |
 | `verify_terminology` | Term consistency | `mapping/cross-project/terminology-matrix.md` | 1 | ✅ Active |
 | `verify_hello` | Plugin health check | (none) | 0 | ✅ Utility |
 
@@ -44,15 +44,11 @@
 
 **Remediation**: ✅ Fixed in cycle 23 - now scans `*-requirements.md` and `*-gaps.md` patterns + updated REQ regex for `REQ-DOMAIN-NNN` format. Result: 0→242 reqs, 0→289 gaps.
 
-### 2. Conformance .md Files Not Validated
+### 2. ~~Conformance .md Files Not Validated~~ ✅ FIXED (Cycle 26)
 
 **Files**: 9 markdown files in `conformance/` (READMEs, scenarios)
 
-**Tools That Skip**:
-- `verify_refs` only scans mapping/docs/specs
-- No tool validates conformance scenario READMEs
-
-**Remediation**: Extend `verify_refs` to include `conformance/**/*.md`.
+**Remediation**: ✅ Extended `verify_refs` to include `conformance/**/*.md` and `traceability/**/*.md`.
 
 ### 3. High-Value Coverage Areas
 
@@ -60,16 +56,16 @@
 |-----------|-------|---------------|
 | mapping/ | 123 | verify_refs, verify_mapping_coverage, verify_terminology |
 | docs/ | 169 | verify_refs |
-| traceability/ | 9 | verify_assertions, verify_coverage, verify_gap_freshness |
+| traceability/ | 9 | verify_refs, verify_assertions, verify_coverage, verify_gap_freshness |
 | specs/ | 8 | verify_refs |
-| conformance/ | 4 YAML, 9 MD | verify_assertions (YAML only) |
+| conformance/ | 17 | verify_refs (MD), verify_assertions (YAML - narrow scope) |
 
 ### 4. Tool Overlap
 
 - **mapping/**:  Covered by 3 tools (verify_refs, verify_mapping_coverage, verify_terminology)
-- **traceability/**: Covered by 3 tools (verify_assertions, verify_coverage, verify_gap_freshness)
+- **traceability/**: Covered by 4 tools (verify_refs, verify_assertions, verify_coverage, verify_gap_freshness)
 - **docs/**: Covered by 1 tool (verify_refs)
-- **conformance/**: YAML covered, MD not covered
+- **conformance/**: verify_refs (all), verify_assertions (assertions/ only - needs #23)
 
 ---
 
@@ -88,9 +84,9 @@ for req_file in TRACEABILITY_DIR.glob("*-requirements.md"):
 
 ### ~~P1: Fix verify_coverage~~ ✅ COMPLETE (Cycle 23)
 
-### P2: Extend verify_refs to conformance/
+### ~~P2: Extend verify_refs to conformance/~~ ✅ COMPLETE (Cycle 26)
 
-Add `conformance/**/*.md` to scan patterns.
+Added `conformance/**/*.md` and `traceability/**/*.md` to scan patterns.
 
 ### P3: Add docs/ deep-dive tool
 
@@ -107,10 +103,10 @@ Add `conformance/**/*.md` to scan patterns.
 |---------|-------|------------|-----|
 | `mapping/**/*.md` | 123 | 3 tools | ✅ Good |
 | `docs/**/*.md` | 169 | 1 tool | ⚠️ Only code refs |
-| `traceability/**/*.md` | 9 | 3 tools | ✅ Good |
+| `traceability/**/*.md` | 9 | 4 tools | ✅ Good |
 | `specs/**/*.yaml` | 8 | 1 tool | ⚠️ Only code refs |
-| `conformance/**/*.yaml` | 4 | 1 tool | ✅ Assertions |
-| `conformance/**/*.md` | 9 | 0 tools | ❌ No coverage |
+| `conformance/**/*.yaml` | 8 | 1 tool (narrow) | ⚠️ assertions/ only |
+| `conformance/**/*.md` | 9 | 1 tool | ✅ verify_refs |
 
 ---
 
