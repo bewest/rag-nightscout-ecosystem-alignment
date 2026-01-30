@@ -900,3 +900,27 @@ if (rVal) rVal.replace('ETC','Etc');
 **Impact**: Duration conversion required when syncing between systems.
 
 **Remediation**: Nightscout normalizes to minutes; apps should convert accordingly.
+
+
+---
+
+### GAP-NOCTURNE-004: ProfileSwitch Percentage/Timeshift Application Divergence
+
+**Description**: Nocturne actively applies `percentage` and `timeshift` fields from ProfileSwitch treatments when computing profile values for algorithm calculations. cgm-remote-monitor only displays these values without applying them to calculations.
+
+**Affected Systems**: Nocturne, cgm-remote-monitor
+
+**Evidence**:
+- Nocturne: `src/API/Nocturne.API/Services/ProfileService.cs:175-241` applies percentage scaling to basal, ISF, CR
+- cgm-remote-monitor: Displays percentage/timeshift in treatments but does not apply them
+
+**Impact**:
+- Users migrating from cgm-remote-monitor to Nocturne may see different IOB/COB/predictions
+- Algorithm recommendations differ based on server platform
+- Same ProfileSwitch treatment produces different effective profiles on each platform
+
+**Remediation**: Document as expected divergence. Nocturne behavior is more correct per AAPS semantics (percentage is meant to affect actual insulin delivery). Consider adding percentage application to cgm-remote-monitor for consistency.
+
+**Source**: [Nocturne ProfileSwitch Analysis](../docs/10-domain/nocturne-profileswitch-analysis.md)
+
+**Status**: Documented

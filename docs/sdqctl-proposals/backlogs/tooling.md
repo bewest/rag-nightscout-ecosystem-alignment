@@ -25,6 +25,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 11 | **Deprecate redundant tools** | P3 | Low | 7 tools overlap with sdqctl - see [migration eval](#sdqctl-migration-evaluation) |
 | 12 | ~~**Unit tests for kept tools**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `tools/test_verify_tools_unit.py` (17 tests) |
 | 13 | ~~**sdqctl usage documentation**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `docs/TOOLING-GUIDE.md` (+60 lines) |
+| 14 | **backlog-cycle-v3.conv** | P3 | Medium | Leverage ELIDE, mixed tools, cyclic prompts ([LIVE-BACKLOG](../../../LIVE-BACKLOG.md)) |
 
 ---
 

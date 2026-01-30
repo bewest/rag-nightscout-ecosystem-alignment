@@ -8,6 +8,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne ProfileSwitch Treatment Model Analysis (2026-01-30)
+
+Analyzed how Nocturne handles AAPS ProfileSwitch events, including percentage and timeshift application.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep dive | `docs/10-domain/nocturne-profileswitch-analysis.md` | 300+ lines, 3 REQs, 1 GAP |
+
+**Key Finding**: Nocturne **actively applies** percentage/timeshift adjustments to profile calculations, while cgm-remote-monitor only displays them.
+
+**Fields Analyzed**:
+- `profileJson` - Stored as JSONB, preserved through API
+- `percentage` - Applied: basal×%, ISF÷%, CR÷%
+- `timeshift` - Applied: schedule rotation in hours
+- `CircadianPercentageProfile` - Boolean flag triggers application logic
+
+**Source Files**:
+- `src/Core/Nocturne.Core.Models/Treatment.cs:413-519`
+- `src/API/Nocturne.API/Services/ProfileService.cs:175-241`
+
+**Gaps Added**: GAP-NOCTURNE-004 (percentage application divergence)
+
+**Requirements Added**: REQ-SYNC-054, REQ-SYNC-055, REQ-SYNC-056
+
+---
+
 ### sdqctl Usage Documentation (2026-01-30)
 
 Expanded `docs/TOOLING-GUIDE.md` with comprehensive sdqctl integration guide.

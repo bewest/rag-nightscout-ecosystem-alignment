@@ -357,3 +357,20 @@ Event recording when profile becomes active:
 **Verification**: Upload same profile twice; verify single document in collection.
 
 **Gap**: GAP-SYNC-036
+
+---
+
+## 11. Nocturne-Specific Findings
+
+See [Nocturne ProfileSwitch Analysis](nocturne-profileswitch-analysis.md) for detailed Nocturne implementation analysis.
+
+**Key Discovery**: Nocturne **actively applies** `percentage` and `timeshift` from ProfileSwitch treatments when computing profile values for algorithm calculations, while cgm-remote-monitor only displays these values.
+
+| Server | Percentage Effect | Timeshift Effect |
+|--------|-------------------|------------------|
+| **Nocturne** | basal×%, ISF÷%, CR÷% | Schedule rotation |
+| **cgm-remote-monitor** | Display only | Display only |
+
+**Gap Added**: GAP-NOCTURNE-004
+
+**Requirements Added**: REQ-SYNC-054, REQ-SYNC-055, REQ-SYNC-056

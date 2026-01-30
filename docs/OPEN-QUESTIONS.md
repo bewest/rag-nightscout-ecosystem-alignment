@@ -107,13 +107,28 @@ Questions requiring formal architectural decision records.
 - "New record supersedes old" is more ergonomic than "old record is superseded by new" in NS workflows
 - Nocturne sources may have relevant proposals on this topic
 
-**Action**: Queue code analysis of ProfileSwitch vs Override semantics, review Nocturne for related proposals
+**Action**: Systematic Nocturne analysis in progress (1/7 complete)
+
+**Analysis Progress**:
+1. ✅ Nocturne ProfileSwitch treatment model - **Complete** ([analysis](10-domain/nocturne-profileswitch-analysis.md))
+   - Key finding: Nocturne applies percentage/timeshift; cgm-remote-monitor doesn't
+   - Added: GAP-NOCTURNE-004, REQ-SYNC-054/055/056
+2. ⏳ Nocturne percentage/timeshift handling - **Next**
+3. ⬜ Nocturne vs cgm-remote-monitor Profile collection sync
+4. ⬜ Nocturne Override/Temporary Target representation
+5. ⬜ Nocturne V4 ProfileSwitch extensions
+6. ⬜ Nocturne Rust oref profile handling
+7. ⬜ ADR-004 draft (after above complete)
 
 **Needs**: ADR-004 after analysis complete
 
 **Related**:
 - [GAP-002](../traceability/gaps.md#gap-002-aaps-profileswitch-vs-override-semantic-mismatch)
-- [Ready Queue #2: Compare override/profile switch semantics](sdqctl-proposals/ECOSYSTEM-BACKLOG.md)
+- [GAP-NOCTURNE-004](../traceability/sync-identity-gaps.md#gap-nocturne-004-profileswitch-percentagetimeshift-application-divergence)
+- [Sync Identity Backlog: OQ-010 Queue](sdqctl-proposals/backlogs/sync-identity.md#oq-010-research-queue-profileswitch--nocturne)
+- [Profile Switch Sync Comparison](10-domain/profile-switch-sync-comparison.md)
+- [Nocturne ProfileSwitch Analysis](10-domain/nocturne-profileswitch-analysis.md)
+- [Nocturne Deep Dive](10-domain/nocturne-deep-dive.md)
 
 ---
 

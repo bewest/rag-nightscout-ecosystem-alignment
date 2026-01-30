@@ -3560,6 +3560,19 @@ See `docs/10-domain/cgm-trend-arrow-standardization.md` for full cross-project m
 |-------|-------------|
 | `percentage` | Scale profile 50-200% |
 | `timeshift` | Shift schedule by hours |
+| `CircadianPercentageProfile` | Boolean flag indicating CPP-style scaling |
+| `profileJson` | Embedded complete profile data (JSONB in Nocturne) |
+
+### Profile Percentage Application (Nocturne vs cgm-remote-monitor)
+
+| Server | Percentage Behavior | Timeshift Behavior |
+|--------|--------------------|--------------------|
+| **Nocturne** | Applied to basal×%, ISF÷%, CR÷% | Applied as schedule rotation |
+| **cgm-remote-monitor** | Display only | Display only |
+
+**Source**: [Nocturne ProfileSwitch Analysis](../../docs/10-domain/nocturne-profileswitch-analysis.md)
+
+**Gap**: GAP-NOCTURNE-004
 
 ## Bolus Wizard/Calculator Terms
 

@@ -47,6 +47,28 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Load only task-relevant repos to reduce 3.4M tokens/cycle
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
+### 5. [P2] OQ-010 Research: Nocturne percentage/timeshift handling
+**Type:** Analysis | **Effort:** Medium
+**Repos:** nocturne
+**Focus:** How Nocturne applies percentage/timeshift when Loop/Trio fetch profiles
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md#6-p2-nocturne-percentagetimeshift-handling)
+**Prerequisite:** Item #5 complete ✅
+**Blocks:** OQ-010 resolution, ADR-004 draft
+
+### 6. [P2] OQ-010 Research: Nocturne vs cgm-remote-monitor Profile sync
+**Type:** Comparison | **Effort:** Medium
+**Repos:** nocturne, cgm-remote-monitor
+**Focus:** Compare profile sync behavior between implementations
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md#7-p2-nocturne-vs-cgm-remote-monitor-profile-collection-sync)
+**Blocks:** OQ-010 resolution
+
+### 7. [P2] OQ-010 Research: Nocturne Override/Temporary Target
+**Type:** Analysis | **Effort:** Medium
+**Repos:** nocturne
+**Focus:** How Nocturne stores and serves override vs temporary target events
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md#8-p2-nocturne-overridetemporary-target-representation)
+**Blocks:** OQ-010 resolution
+
 ---
 
 ## Completed Items

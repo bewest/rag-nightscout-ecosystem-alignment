@@ -276,4 +276,6 @@ Nocturne includes a native Rust implementation of the OpenAPS reference algorith
 1. **Compare oref implementations** - Rust vs JavaScript algorithm outputs
 2. **Extract V4 endpoint schema** - Document Nocturne-specific extensions
 3. **Run parity tests** - Use Nocturne's test suite against cgm-remote-monitor
-4. **Profile sync analysis** - Compare profile format handling
+4. ~~**Profile sync analysis** - Compare profile format handling~~ ✅ Complete - see [ProfileSwitch Analysis](nocturne-profileswitch-analysis.md)
+5. **Override/Temporary Target representation** - How Nocturne distinguishes these
+6. **Percentage/timeshift when Loop/Trio fetch** - Cross-controller behavior

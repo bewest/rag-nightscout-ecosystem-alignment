@@ -819,3 +819,70 @@ See [requirements.md](requirements.md) for the index.
 **Rationale**: Loop (seconds) vs AAPS (milliseconds) requires conversion for interoperability.
 
 **Verification**: Duration value validation in synced treatments.
+
+
+---
+
+## ProfileSwitch Sync Requirements
+
+### REQ-SYNC-054: ProfileSwitch Percentage Application
+
+**Statement**: Servers ingesting ProfileSwitch treatments with `percentage != 100` SHOULD apply scaling to returned profile values.
+
+**Rationale**: AAPS percentage adjustments are meant to affect actual insulin delivery, not just display. Without application, the profile percentage field is meaningless for algorithm calculations.
+
+**Scenarios**:
+- AAPS uploads ProfileSwitch with percentage=150
+- Server applies 1.5x scaling to basal, 0.667x to ISF/CR
+- Algorithm uses scaled values
+
+**Verification**:
+- Create ProfileSwitch with `percentage=150`
+- Query current basal via API
+- Verify basal is 1.5x the base profile value
+
+**Source**: [Nocturne ProfileSwitch Analysis](../docs/10-domain/nocturne-profileswitch-analysis.md)
+
+**Gap Reference**: GAP-NOCTURNE-004
+
+---
+
+### REQ-SYNC-055: ProfileSwitch Timeshift Application
+
+**Statement**: Servers ingesting ProfileSwitch treatments with `timeshift != 0` SHOULD rotate schedule lookup time accordingly.
+
+**Rationale**: AAPS timeshift is meant to shift the basal/ISF/CR schedule for travel or circadian rhythm adjustments. Without application, the timeshift field is display-only.
+
+**Scenarios**:
+- AAPS uploads ProfileSwitch with timeshift=6 (hours)
+- Server rotates schedule lookup by 6 hours
+- 6am values returned when querying midnight
+
+**Verification**:
+- Create ProfileSwitch with `timeshift=6`
+- Query profile value at midnight (local)
+- Verify returned value matches 6am schedule entry
+
+**Source**: [Nocturne ProfileSwitch Analysis](../docs/10-domain/nocturne-profileswitch-analysis.md)
+
+---
+
+### REQ-SYNC-056: ProfileJson Embedding Storage
+
+**Statement**: Servers receiving ProfileSwitch treatments with `profileJson` SHOULD store the embedded profile data for historical retrieval.
+
+**Rationale**: AAPS embeds complete profile data in ProfileSwitch events. This enables reconstruction of exact profile used at any historical time.
+
+**Scenarios**:
+- AAPS uploads ProfileSwitch with embedded profileJson
+- Historical query retrieves ProfileSwitch
+- Embedded profileJson available in response
+
+**Verification**:
+- Upload ProfileSwitch with `profileJson` containing complete profile
+- Query treatments for Profile Switch eventType
+- Verify `profileJson` field is present and complete
+
+**Source**: [Nocturne ProfileSwitch Analysis](../docs/10-domain/nocturne-profileswitch-analysis.md)
+
+**Gap Reference**: GAP-SYNC-036

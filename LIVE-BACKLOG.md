@@ -13,6 +13,9 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming | P0 | ✅ Complete (5→7 Ready Queue, dedup sync-identity) | 2026-01-30 |
+| Backlog-cycle-v3.conv proposal | P3 | → Queued to [tooling.md](docs/sdqctl-proposals/backlogs/tooling.md) | 2026-01-30 |
+| OQ-010 ProfileSwitch research queue (Nocturne focus) | P2 | ✅ Complete (7 items in sync-identity backlog) | 2026-01-30 |
 | Document new tooling usage | P3 | ✅ Complete (+60 lines, sdqctl guide) | 2026-01-30 |
 | Unit test coverage for tools/ | P2 | ✅ Complete (17 tests, 6 tools covered) | 2026-01-30 |
 | Evaluate idiomatic sdqctl migration | P2 | ✅ Complete (7 deprecate, 3 integrate, 27 keep) | 2026-01-30 |
