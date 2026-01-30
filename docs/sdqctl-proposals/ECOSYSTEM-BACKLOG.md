@@ -47,14 +47,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Load only task-relevant repos to reduce 3.4M tokens/cycle
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
-### 5. [P2] OQ-010 Extended #17: Nocturne srvModified field implementation
-**Type:** Gap Remediation | **Effort:** Medium
-**Repos:** nocturne, cgm-remote-monitor
-**Focus:** Analyze impact of missing srvModified in Nocturne Profile model
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md#17-p2-nocturne-srvmodified-field-implementation)
-**Related Gap:** GAP-SYNC-039, GAP-MIGRATION-001
-
-### 6. [P2] OQ-010 Extended #18: Soft-delete vs hard-delete interop
+### 5. [P2] OQ-010 Extended #18: Soft-delete vs hard-delete interop
 **Type:** Analysis | **Effort:** Medium
 **Repos:** nocturne, cgm-remote-monitor
 **Focus:** Document deletion behavior differences and sync impact
@@ -67,6 +60,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| OQ-010 Extended #17: srvModified gap | `docs/10-domain/nocturne-srvmodified-gap-analysis.md` | No remediation needed - SysUpdatedAt used |
 | OQ-010 Extended #16: Connector polling | `docs/10-domain/nocturne-connector-coordination.md` | Sidecar arch, loop-back risk |
 | OQ-010 Extended #15: PostgreSQL migration | `mapping/nocturne/migration-field-fidelity.md` | Full field fidelity via typed+JSONB |
 | OQ-010 Extended #14: StateSpan proposal | `statespan-standardization-proposal.md` | V3 extension recommended |

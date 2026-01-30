@@ -261,8 +261,9 @@ Per user request (2026-01-30), additional research focused on Nocturne as it rel
 - What is current Profile modification tracking mechanism?
 - Impact on profile history queries?
 
-**Related Gap:** GAP-SYNC-039  
+**Related Gap:** GAP-SYNC-039, GAP-MIGRATION-001  
 **Deliverable:** `docs/10-domain/nocturne-srvmodified-gap-analysis.md`
+**Status:** ✅ Complete (2026-01-30) - No remediation required; SysUpdatedAt used for lastModified
 
 ### 18. [P2] Nocturne soft-delete vs hard-delete interop
 **Type:** Analysis | **Effort:** Medium  
@@ -283,6 +284,7 @@ Per user request (2026-01-30), additional research focused on Nocturne as it rel
 
 | Item | Date | Notes |
 |------|------|-------|
+| Nocturne srvModified gap analysis | 2026-01-30 | Item #17; No remediation required - SysUpdatedAt used |
 | Nocturne connector polling coordination | 2026-01-30 | Item #16; GAP-CONNECT-010/011/012, REQ-CONNECT-010/011/012 |
 | PostgreSQL migration field fidelity | 2026-01-30 | Item #15; GAP-MIGRATION-001/002/003, REQ-MIGRATION-001-004 |
 | StateSpan standardization proposal | 2026-01-30 | Item #14; GAP-STATESPAN-001/002/003, REQ-STATESPAN-001-005 |

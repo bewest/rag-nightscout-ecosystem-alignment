@@ -1020,13 +1020,16 @@ if (rVal) rVal.replace('ETC','Etc');
 - cgm-remote-monitor: `lib/api3/generic/update/replace.js:28-29` - sets `srvModified`
 - Nocturne: `src/Core/Nocturne.Core.Models/Profile.cs` - no srvModified property
 
-**Impact**: Cannot efficiently poll for profile changes using V3 sync pattern.
+**Impact Analysis** (updated 2026-01-30):
+- ✅ `/api/v3/lastModified` endpoint uses `UpdatedAtPg` for profiles (correct behavior)
+- ✅ AAPS profile sync works (uses endpoint, not per-record field)
+- ⚠️ Per-record srvModified inspection not available (low impact)
 
-**Remediation**: Add `srvModified` property to Profile model; auto-update on save.
+**Remediation**: No change required. The `/api/v3/lastModified` endpoint correctly uses `UpdatedAtPg` for profile modification tracking.
 
-**Source**: [Profile Sync Comparison](../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md)
+**Source**: [Profile Sync Comparison](../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md), [srvModified Gap Analysis](../docs/10-domain/nocturne-srvmodified-gap-analysis.md)
 
-**Status**: Open
+**Status**: ✅ No Remediation Required (2026-01-30)
 
 ---
 
@@ -1221,9 +1224,9 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ### GAP-MIGRATION-001: srvModified Not Distinct from Mills
 
-**Description**: Nocturne computes `srvModified` from `mills` rather than storing it independently. This means `srvModified` reflects event time, not server modification time.
+**Description**: Nocturne computes `srvModified` from `mills` rather than storing it independently. This means per-record `srvModified` reflects event time, not server modification time.
 
-**Affected Systems**: Nocturne, sync clients using `srvModified$gt` filter
+**Affected Systems**: Nocturne, clients inspecting per-record `srvModified`
 
 **Evidence**:
 - `externals/nocturne/src/Core/Nocturne.Core.Models/Treatment.cs:30-31`
@@ -1232,16 +1235,19 @@ if (rVal) rVal.replace('ETC','Etc');
   public long? SrvModified => Mills > 0 ? Mills : null;
   ```
 
-**Impact**:
-- Cannot distinguish between "when event occurred" and "when server processed it"
-- Incremental sync based on `srvModified > lastSync` may miss backdated events
-- Updating a treatment doesn't change its `srvModified`
+**Impact Analysis** (updated 2026-01-30):
+- ✅ `/api/v3/lastModified` endpoint uses `SysUpdatedAt` (correct behavior)
+- ✅ AAPS incremental sync works (uses endpoint, not per-record field)
+- ✅ Loop incremental sync works (uses endpoint, not per-record field)
+- ⚠️ Per-record inspection shows event time, not modification time (low impact)
 
-**Remediation**: Store `srvModified` as separate column, update on every write.
+**Remediation**: No change required. The `/api/v3/lastModified` endpoint correctly uses `SysUpdatedAt` for modification tracking, which is what sync clients rely on.
 
 **Related**: GAP-SYNC-039
 
-**Status**: Open
+**Analysis**: [srvModified Gap Analysis](../docs/10-domain/nocturne-srvmodified-gap-analysis.md)
+
+**Status**: ✅ No Remediation Required (2026-01-30)
 
 ---
 

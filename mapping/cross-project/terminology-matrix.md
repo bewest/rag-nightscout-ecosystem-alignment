@@ -766,11 +766,13 @@ Nocturne's PostgreSQL schema uses a hybrid approach: typed columns for known fie
 |---------|------------------------------|----------------------|-------|
 | **Primary Key** | `_id` (ObjectId) | `Id` (UUIDv7) | Time-ordered UUID |
 | **Migration Ref** | N/A | `original_id` (varchar 24) | Preserves MongoDB ObjectId |
-| **Server Modified** | `srvModified` (stored) | Computed from `mills` | GAP-MIGRATION-001 |
-| **Server Created** | `srvCreated` (stored) | Computed from `mills` | GAP-MIGRATION-002 |
+| **Server Modified** | `srvModified` (stored) | `sys_updated_at` (for /lastModified) | Per-record: computed from `mills` |
+| **Server Created** | `srvCreated` (stored) | `sys_created_at` | Per-record: computed from `mills` |
 | **Arbitrary Fields** | Any field stored | `additional_properties` JSONB | Captures unknown fields |
 | **Nested Objects** | Embedded documents | JSONB columns | Full structure preserved |
 | **PG Timestamps** | N/A | `sys_created_at`, `sys_updated_at` | PostgreSQL-native tracking |
+
+> **Note**: Nocturne's `/api/v3/lastModified` endpoint uses `sys_updated_at` for modification tracking, not per-record `srvModified`. This provides correct sync behavior despite semantic difference. See [srvModified Gap Analysis](../../docs/10-domain/nocturne-srvmodified-gap-analysis.md).
 
 **Key Entity Columns**:
 

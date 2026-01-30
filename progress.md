@@ -8,6 +8,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne srvModified Gap Analysis (2026-01-30)
+
+OQ-010 Extended Item #17: Analyzed srvModified field implementation differences.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Gap Analysis | `docs/10-domain/nocturne-srvmodified-gap-analysis.md` | 200+ lines, full remediation analysis |
+| Gap Updates | `traceability/sync-identity-gaps.md` | GAP-MIGRATION-001, GAP-SYNC-039 updated |
+
+**Key Findings**:
+- **Per-record srvModified**: Nocturne returns `Mills` (event time), not server modification time
+- **LastModified endpoint**: Correctly uses `SysUpdatedAt` for modification tracking
+- **Sync impact**: None - AAPS/Loop use endpoint, not per-record field
+- **Recommendation**: No remediation required
+
+**Semantic Difference**:
+| cgm-remote-monitor | Nocturne |
+|-------------------|----------|
+| `srvModified` = server modification time | `srvModified` = event time (`Mills`) |
+| `/lastModified` uses `srvModified` | `/lastModified` uses `SysUpdatedAt` |
+
+**OQ-010 Extended Research Queue**: Item #17 of 18 complete
+
+---
+
 ### Nocturne Connector Coordination Analysis (2026-01-30)
 
 OQ-010 Extended Item #16: Analyzed multi-connector polling architecture and loop-back risks.
