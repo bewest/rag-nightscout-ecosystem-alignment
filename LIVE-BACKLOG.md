@@ -7,12 +7,14 @@
 
 ## Pending
 
-(none)
+* **Unit test coverage for tools/** - Ensure each tool in `tools/` has unit tests that use synthetic fixtures (not external repos) to validate parsing/logic in isolation. Currently only 4 test files for 27 tools to keep. Priority: P2
+* **Document new tooling usage** - Create usage guide for sdqctl integration (`sdqctl verify`, `sdqctl drift`, workflow directives). Include examples for common workflows. Priority: P3
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Evaluate idiomatic sdqctl migration | P2 | ✅ Complete (7 deprecate, 3 integrate, 27 keep) | 2026-01-30 |
 | Token efficiency dashboard | P3 | ✅ Complete (198 commits, +70K lines, 39 tools) | 2026-01-30 |
 | Mapping coverage tool | P2 | ✅ Complete (93 files, 73-88% avg coverage) | 2026-01-30 |
 | Gap freshness checker tool | P2 | ✅ Complete (268 GAPs, LIKELY_OPEN/NEEDS_REVIEW status) | 2026-01-30 |

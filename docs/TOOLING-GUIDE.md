@@ -566,12 +566,25 @@ workspace_cli.py advise analyze <file>
 
 | Phase | Status | Priority | Tools |
 |-------|--------|----------|-------|
-| 1. Cross-Reference Validation | ✅ Completed | P1 | `verify_refs.py`, `query_workspace.py` |
+| 1. Cross-Reference Validation | ✅ Completed | P1 | `sdqctl verify refs`, `query_workspace.py` |
 | 2. Change Detection | ⏳ Pending | P2 | `detect_drift.py` |
 | 3. Gap Analysis | ✅ Completed | P1 | `gen_traceability.py`, `verify_coverage.py` |
-| 4. Unified CLI | ✅ Completed | P2 | `workspace_cli.py` |
+| 4. Unified CLI | ✅ Completed | P2 | `sdqctl verify all` |
 | 5. Machine-Readable Requirements | ✅ Completed | P3 | `query_workspace.py`, `gen_traceability.py` |
 | 6. Visualization | ⏳ Pending | P3 | `gen_diagrams.py` (proposed) |
+
+### sdqctl Integration (2026-01-30)
+
+Several custom tools now have sdqctl equivalents. Prefer sdqctl for consistency:
+
+| Task | Preferred | Legacy (deprecated) |
+|------|-----------|---------------------|
+| Validate refs | `sdqctl verify refs` | `python tools/verify_refs.py` |
+| Check terminology | `sdqctl verify terminology` | `python tools/verify_terminology.py` |
+| Check links | `sdqctl verify links` | `python tools/linkcheck.py` |
+| Run all checks | `sdqctl verify all` | `make check` |
+
+See [tools-comparison-proposal.md](sdqctl-proposals/tools-comparison-proposal.md) for full migration details.
 
 ### Pending: Change Detection (Phase 2)
 

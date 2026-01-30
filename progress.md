@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### sdqctl Tool Migration Evaluation (2026-01-30)
+
+Evaluated overlap between 39 custom Python tools and sdqctl CLI.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Updated proposal | `docs/sdqctl-proposals/tools-comparison-proposal.md` | Detailed overlap matrix |
+
+**Findings**:
+
+| Action | Count | Tools |
+|--------|-------|-------|
+| Deprecate | 7 | verify_refs, verify_terminology, linkcheck, verify_hello, run_workflow, phase_nav, project_seq |
+| Integrate | 3 | queue_stats, backlog_hygiene, doc_chunker → sdqctl plugins |
+| Keep | 27 | Domain-specific with no sdqctl equivalent |
+
+**Key insight**: `sdqctl verify` already provides idiomatic subcommands for refs, terminology, links, assertions, coverage, traceability. Custom tools for gap freshness, mapping coverage, fixture validation provide unique value.
+
+---
+
 ### Efficiency Dashboard Tool (2026-01-30)
 
 Created `tools/efficiency_dashboard.py` to track productivity metrics.

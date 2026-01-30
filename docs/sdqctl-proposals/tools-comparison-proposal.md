@@ -32,17 +32,26 @@ The workspace has 32 custom Python tools in `tools/` alongside sdqctl, a vendor-
 | `backlog_hygiene.py` | Queue validation | sdqctl directive | **Keep** - integrate as directive |
 | `doc_chunker.py` | Split large files | sdqctl directive | **Keep** - integrate as directive |
 
-### Category 3: Verification (keep - specialized)
+### Category 3: Verification (sdqctl integration assessment)
 
-| Tool | Purpose | Why Keep |
-|------|---------|----------|
-| `verify_refs.py` | Validate code references | Domain-specific logic |
-| `verify_terminology.py` | Terminology consistency | Domain-specific logic |
-| `verify_assertions.py` | Map assertions to requirements | Domain-specific logic |
-| `verify_coverage.py` | Cross-reference coverage | Domain-specific logic |
-| `linkcheck.py` | Check broken links | Standard utility |
-| `validate_json.py` | JSON schema validation | Standard utility |
-| `validate_fixtures.py` | Fixture shape validation | Domain-specific |
+**2026-01-30 Update**: Detailed comparison of custom tools vs `sdqctl verify` subcommands.
+
+| Custom Tool | sdqctl Equivalent | Overlap | Recommendation |
+|-------------|-------------------|---------|----------------|
+| `verify_refs.py` | `sdqctl verify refs` | **High** - both validate alias:path refs | **Deprecate** - use sdqctl |
+| `verify_terminology.py` | `sdqctl verify terminology` | **High** - both check term consistency | **Deprecate** - use sdqctl |
+| `verify_assertions.py` | `sdqctl verify assertions` | **Partial** - sdqctl checks code assertions; custom traces REQs | **Keep** - different purpose |
+| `verify_coverage.py` | `sdqctl verify coverage` | **Partial** - sdqctl checks STPA metrics; custom checks REQ→mapping | **Keep** - different purpose |
+| `verify_gap_freshness.py` | None | **None** - unique functionality | **Keep** - unique |
+| `verify_mapping_coverage.py` | None | **None** - unique functionality | **Keep** - unique |
+| `verify_hello.py` | `sdqctl verify plugin` | **Full** - test artifact only | **Deprecate** - use plugin system |
+| `linkcheck.py` | `sdqctl verify links` | **High** - both validate URLs/file links | **Deprecate** - use sdqctl |
+| `validate_json.py` | None | **None** - JSON schema validation | **Keep** - unique |
+| `validate_fixtures.py` | None | **None** - fixture shape validation | **Keep** - unique |
+
+**Summary**:
+- **Deprecate (4)**: verify_refs.py, verify_terminology.py, verify_hello.py, linkcheck.py
+- **Keep (6)**: verify_assertions.py, verify_coverage.py, verify_gap_freshness.py, verify_mapping_coverage.py, validate_json.py, validate_fixtures.py
 
 ### Category 4: Generation (keep - specialized)
 
@@ -99,10 +108,10 @@ The workspace has 32 custom Python tools in `tools/` alongside sdqctl, a vendor-
 
 | Action | Count | Tools |
 |--------|-------|-------|
-| **Deprecate** | 4 | run_workflow, phase_nav, project_seq, verify_hello |
+| **Deprecate** | 7 | run_workflow, phase_nav, project_seq, verify_hello, verify_refs, verify_terminology, linkcheck |
 | **Integrate** | 3 | queue_stats, backlog_hygiene, doc_chunker → sdqctl plugins |
 | **Evaluate** | 2 | ai_advisor, workspace_cli |
-| **Keep** | 23 | Domain-specific, verification, generation, testing |
+| **Keep** | 27 | Domain-specific verification (6), generation (4), conformance (4), bootstrap (2), AI (3), utilities (2), tests (6) |
 
 ---
 

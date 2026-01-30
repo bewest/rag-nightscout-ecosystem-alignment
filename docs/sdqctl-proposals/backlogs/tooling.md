@@ -2,7 +2,7 @@
 
 > **Domain**: sdqctl enhancements, workflow improvements, automation  
 > **Parent**: [ECOSYSTEM-BACKLOG.md](../ECOSYSTEM-BACKLOG.md)  
-> **Last Updated**: 2026-01-29
+> **Last Updated**: 2026-01-30
 
 Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
@@ -22,6 +22,33 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 8 | **REFCAT caching proposal** | P2 | Medium | [From iterate report](../iterate-effectiveness-report.md) - est. 20-40% token reduction |
 | 9 | ~~**Token efficiency dashboard**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `tools/efficiency_dashboard.py` |
 | 10 | **Selective repo loading** | P2 | Medium | Load only task-relevant repos - reduce 3.4M tokens/cycle |
+| 11 | **Deprecate redundant tools** | P3 | Low | 7 tools overlap with sdqctl - see [migration eval](#sdqctl-migration-evaluation) |
+| 12 | **Unit tests for kept tools** | P2 | Medium | 4 test files for 27 tools - need synthetic fixtures |
+| 13 | **sdqctl usage documentation** | P3 | Low | Document `sdqctl verify` integration patterns |
+
+---
+
+## sdqctl Migration Evaluation
+
+**Date**: 2026-01-30  
+**Source**: [tools-comparison-proposal.md](../tools-comparison-proposal.md)
+
+| Action | Count | Tools |
+|--------|-------|-------|
+| **Deprecate** | 7 | verify_refs, verify_terminology, linkcheck, verify_hello, run_workflow, phase_nav, project_seq |
+| **Integrate** | 3 | queue_stats, backlog_hygiene, doc_chunker → sdqctl plugins |
+| **Keep** | 27 | Domain-specific with no sdqctl equivalent |
+
+**Overlap with sdqctl verify**:
+
+| Custom Tool | sdqctl Equivalent | Status |
+|-------------|-------------------|--------|
+| `verify_refs.py` | `sdqctl verify refs` | Deprecate |
+| `verify_terminology.py` | `sdqctl verify terminology` | Deprecate |
+| `linkcheck.py` | `sdqctl verify links` | Deprecate |
+| `verify_hello.py` | `sdqctl verify plugin` | Deprecate (test artifact) |
+| `verify_assertions.py` | `sdqctl verify assertions` | Keep (different purpose) |
+| `verify_coverage.py` | `sdqctl verify coverage` | Keep (different purpose) |
 
 ---
 
@@ -29,33 +56,13 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | Item | Date | Notes |
 |------|------|-------|
+| sdqctl migration evaluation | 2026-01-30 | 7 deprecate, 3 integrate, 27 keep |
 | Token efficiency dashboard | 2026-01-30 | `tools/efficiency_dashboard.py`, `make efficiency-dashboard` |
 | Mapping coverage tool | 2026-01-30 | `tools/verify_mapping_coverage.py`, `make verify-mapping-coverage` |
 | Gap freshness checker tool | 2026-01-30 | `tools/verify_gap_freshness.py`, `make verify-gap-freshness` |
 | Terminology sample tool | 2026-01-30 | `tools/sample_terminology.py`, `make verify-terminology` |
 | Gap deduplication tool | 2026-01-30 | `tools/find_gap_duplicates.py`, `make verify-gap-duplicates` |
 | sdqctl VERIFY CLI | 2026-01-29 | CLI already existed, added Make targets |
-| Conformance CI Integration | 2026-01-29 | CI job + Makefile targets + README |
-| Gap-to-Requirement Generator | 2026-01-29 | Manual process, 28 connector REQs generated |
-
----
-
-## New Tooling Proposals (from lessons learned)
-
-### Proposal: Gap-to-Requirement Generator
-**Source:** connectors-gaps.md has 28 gaps, 0 requirements
-**Problem:** Gaps without requirements can't be formally verified
-**Solution:** Create `tools/gen_requirements.py` to:
-- Parse GAP-* entries from traceability/*.md
-- Generate REQ-* stubs with template
-- Suggest verification scenarios
-
----
-
-## Completed
-
-| Item | Date | Notes |
-|------|------|-------|
 | Conformance CI Integration | 2026-01-29 | CI job + Makefile targets + README |
 | Gap-to-Requirement Generator | 2026-01-29 | Manual process, 28 connector REQs generated |
 | Assertion→Requirement coverage validator | 2026-01-29 | Enhanced verify_assertions.py: multi-file, scenario inheritance |
