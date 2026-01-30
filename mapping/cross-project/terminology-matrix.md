@@ -3923,3 +3923,28 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 **Related Gaps**: GAP-OVRD-005, GAP-OVRD-006, GAP-OVRD-007
 
 **Source**: [Nocturne Override Analysis](../../docs/10-domain/nocturne-override-temptarget-analysis.md)
+
+---
+
+## Rust oref vs JS oref0 Profile Parsing
+
+| Aspect | Rust oref (Nocturne) | JS oref0 (AAPS/Trio) | Notes |
+|--------|---------------------|---------------------|-------|
+| Schedule format | minutes from midnight | minutes from midnight | Equivalent |
+| Schedule sorting | by `i` index | by `i` index | Equivalent |
+| Basal lookup | `basal_lookup()` | `basalLookup()` | Same algorithm |
+| ISF lookup | `isf_lookup()` | `isfLookup()` | Same algorithm |
+| CR lookup | `carb_ratio_lookup()` | `carbLookup()` | Same algorithm |
+| Rounding | 3 decimal places | 3 decimal places | Equivalent |
+| Fallback | last schedule entry | last schedule entry | Same behavior |
+
+### Profile Flow: PredictionService vs ProfileService
+
+| Service | Applies Percentage | Applies Timeshift | Used By |
+|---------|-------------------|-------------------|---------|
+| `ProfileService` | ✅ | ✅ | Chart data, statistics |
+| `PredictionService` | ❌ | ❌ | Rust oref predictions |
+
+**Related Gaps**: GAP-OREF-001, GAP-OREF-002, GAP-OREF-003
+
+**Source**: [Nocturne Rust oref Profile Analysis](../../docs/10-domain/nocturne-rust-oref-profile-analysis.md)

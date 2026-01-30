@@ -58,6 +58,9 @@ Nocturne (.NET 10)
 | GAP-SYNC-038 | Profile deduplication fallback missing (no created_at) | Documented |
 | GAP-SYNC-039 | Profile srvModified field missing | Documented |
 | GAP-SYNC-040 | Profile uses hard delete (cgm-remote-monitor uses soft) | Documented |
+| GAP-OREF-001 | PredictionService bypasses ProfileService | Documented |
+| GAP-OREF-002 | OrefProfile lacks full schedule support | Documented |
+| GAP-OREF-003 | No timeshift propagation to Rust | Documented |
 | GAP-OVRD-005 | No unified Override/TempTarget representation | Documented |
 | GAP-OVRD-006 | Override supersession not tracked | Documented |
 | GAP-OVRD-007 | Duration unit mismatch (preset seconds, treatment minutes) | Documented |

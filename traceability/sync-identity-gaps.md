@@ -1090,3 +1090,68 @@ if (rVal) rVal.replace('ETC','Etc');
 **Source**: [Nocturne V4 ProfileSwitch Extensions](../docs/10-domain/nocturne-v4-profile-extensions.md)
 
 **Status**: Open
+
+---
+
+## Rust oref Profile Integration Gaps
+
+### GAP-OREF-001: PredictionService Bypasses ProfileService
+
+**Description**: Nocturne's `PredictionService` reads profiles directly from the database via `_postgresService.GetProfilesAsync()`, bypassing `ProfileService` which applies percentage/timeshift from active ProfileSwitch treatments.
+
+**Affected Systems**: Nocturne predictions when AAPS ProfileSwitch is active
+
+**Evidence**:
+- `PredictionService.cs:165-186` - reads from database directly
+- `ProfileService.cs:228-241` - applies percentage/timeshift (not used by PredictionService)
+- `OrefProfile` receives raw values: `CurrentBasal = activeStore.Basal?.FirstOrDefault()?.Value`
+
+**Impact**: Algorithm predictions use raw profile values instead of scaled values. A 150% ProfileSwitch is ignored by predictions, leading to incorrect IOB/COB calculations.
+
+**Remediation**: Inject `IProfileService` into `PredictionService`; use `GetBasalRate()`, `GetSensitivity()`, `GetCarbRatio()` methods instead of direct database access.
+
+**Source**: [Nocturne Rust oref Profile Analysis](../docs/10-domain/nocturne-rust-oref-profile-analysis.md)
+
+**Status**: Open
+
+---
+
+### GAP-OREF-002: OrefProfile Lacks Full Schedule Support
+
+**Description**: The C# `OrefProfile` model only passes single current values (`CurrentBasal`, `Sens`, `CarbRatio`) to Rust oref, not the full time-varying schedules that Rust oref supports.
+
+**Affected Systems**: Nocturne algorithm accuracy for multi-rate profiles
+
+**Evidence**:
+- Rust `Profile` has `basal_profile: Vec<BasalScheduleEntry>`
+- C# `OrefProfile` has `CurrentBasal: double`
+- `PredictionService.cs:176`: `CurrentBasal = activeStore.Basal?.FirstOrDefault()?.Value`
+
+**Impact**: Multi-rate profile schedules are reduced to first/current value only. Time-of-day variations ignored in predictions.
+
+**Remediation**: Extend `OrefProfile` to include schedule arrays; serialize full schedules to Rust.
+
+**Source**: [Nocturne Rust oref Profile Analysis](../docs/10-domain/nocturne-rust-oref-profile-analysis.md)
+
+**Status**: Open
+
+---
+
+### GAP-OREF-003: No Timeshift Propagation to Rust
+
+**Description**: Even if percentage is applied, timeshift rotation is not propagated to Rust oref for schedule lookups.
+
+**Affected Systems**: Users with timeshift-based ProfileSwitch (travel, circadian adjustments)
+
+**Evidence**:
+- `ProfileService.cs:189-190` applies timeshift via `adjustedTime`
+- `PredictionService` does not use adjusted time for oref calls
+- Rust oref uses raw UTC time for schedule lookups
+
+**Impact**: Rust oref uses wrong time-of-day for schedule lookups when timeshift is active.
+
+**Remediation**: Either apply timeshift in C# before calling Rust, or pass timeshift parameter to Rust.
+
+**Source**: [Nocturne Rust oref Profile Analysis](../docs/10-domain/nocturne-rust-oref-profile-analysis.md)
+
+**Status**: Open

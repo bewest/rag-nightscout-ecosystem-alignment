@@ -121,14 +121,18 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 
 **Related Gap:** GAP-NOCTURNE-001
 
-### 10. [P3] Nocturne Rust oref profile handling
+### 10. [P3] Nocturne Rust oref profile handling ✅
 **Type:** Analysis | **Effort:** High  
 **Repos:** nocturne  
 **Focus:** How Rust oref implementation uses profile data  
 **Questions:**
-- Does Rust oref consume percentage-scaled profiles?
-- Same basal/ISF/CR block parsing as JS oref?
-- Any divergence in profile time interpretation?
+- ✅ Does Rust oref consume percentage-scaled profiles? → **NO** (PredictionService bypasses ProfileService)
+- ✅ Same basal/ISF/CR block parsing as JS oref? → **YES** (minutes-from-midnight, i-index sorting)
+- ✅ Any divergence in profile time interpretation? → **NO** (algorithm equivalent)
+
+**Deliverable:** [Rust oref Profile Analysis](../../docs/10-domain/nocturne-rust-oref-profile-analysis.md)
+
+**Gaps Added:** GAP-OREF-001, GAP-OREF-002, GAP-OREF-003
 
 **Related Gap:** GAP-NOCTURNE-002
 

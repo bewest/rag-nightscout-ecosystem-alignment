@@ -7,12 +7,23 @@
 
 ## Pending
 
-(none)
+Please add appropriate items to queue to update the docs in order to fix the following issues with sdqctl verify all:
+
+  ✗ refs: Scanned 764 file(s), found 989 reference(s): 686 valid, 303 broken
+  ✗ links: Scanned 572 file(s), found 2613 link(s): 1789 valid, 52 broken, 772 external
+  ✗ traceability: Scanned 765 file(s), found 682 artifact(s): 369 orphan(s), 0 broken link(s), 0% 
+  trace coverage
+  ✗ terminology: Scanned 610 file(s) (no glossary found): 5 deprecated, 734 capitalization
+  ✓ assertions: Scanned 10356 file(s), found 1146 assertion(s): 131 with messages (11%), 0 with 
+  trace IDs (0%)
+
+  Some verifications failed
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| OQ-010 Item #10: Rust oref profile handling | P2 | ✅ Complete (GAP-OREF-001/002/003, 3 REQs) | 2026-01-30 |
 | OQ-010 Item #9: V4 ProfileSwitch extensions | P2 | ✅ Complete (GAP-V4-001/002, 2 REQs) | 2026-01-30 |
 | OQ-010 Item #8: Override/TempTarget analysis | P2 | ✅ Complete (GAP-OVRD-005/006/007, 2 REQs) | 2026-01-30 |
 | OQ-010 Item #7: Profile sync comparison | P2 | ✅ Complete (GAP-SYNC-038/039/040, 3 REQs) | 2026-01-30 |

@@ -8,6 +8,38 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne Rust oref Profile Handling Analysis (2026-01-30)
+
+Analyzed how Nocturne's Rust oref implementation consumes profile data and compared with JS oref0.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Analysis doc | `docs/10-domain/nocturne-rust-oref-profile-analysis.md` | 290+ lines, 3 REQs, 3 GAPs |
+
+**Key Findings**:
+- **Algorithm Equivalent**: Rust oref parses basal/ISF/CR schedules identically to JS oref0
+- **Same Format**: Both use minutes-from-midnight, i-index sorting, 3-decimal rounding
+- **CRITICAL GAP**: PredictionService bypasses ProfileService - raw values sent to Rust oref
+- **Percentage Ignored**: Active ProfileSwitch percentage/timeshift NOT applied to predictions
+- **Single Values**: C# OrefProfile passes only current values, not full schedules
+
+**Gaps Added**: GAP-OREF-001, GAP-OREF-002, GAP-OREF-003
+
+**Requirements Added**: REQ-OREF-001, REQ-OREF-002, REQ-OREF-003
+
+**Source Files Analyzed**:
+- `externals/nocturne/src/Core/oref/src/profile/basal.rs`
+- `externals/nocturne/src/Core/oref/src/types/profile.rs`
+- `externals/nocturne/src/Core/Nocturne.Core.Oref/OrefService.cs`
+- `externals/nocturne/src/Core/Nocturne.Core.Oref/Models/OrefModels.cs`
+- `externals/nocturne/src/API/Nocturne.API/Services/PredictionService.cs`
+- `externals/nocturne/src/API/Nocturne.API/Services/ProfileService.cs`
+- `externals/oref0/lib/profile/basal.js`
+
+**OQ-010 Research Queue**: Item #10 of 7 complete (originally 7 items, now extended)
+
+---
+
 ### Nocturne V4 ProfileSwitch Extensions Discovery (2026-01-30)
 
 Analyzed Nocturne V4 API extensions for profile and override tracking beyond V3 baseline.

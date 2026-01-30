@@ -107,7 +107,7 @@ Questions requiring formal architectural decision records.
 - "New record supersedes old" is more ergonomic than "old record is superseded by new" in NS workflows
 - Nocturne sources may have relevant proposals on this topic
 
-**Action**: Systematic Nocturne analysis in progress (5/7 complete)
+**Action**: Systematic Nocturne analysis in progress (6/7 complete)
 
 **Analysis Progress**:
 1. ✅ Nocturne ProfileSwitch treatment model - **Complete** ([analysis](10-domain/nocturne-profileswitch-analysis.md))
@@ -125,7 +125,9 @@ Questions requiring formal architectural decision records.
 5. ✅ Nocturne V4 ProfileSwitch extensions - **Complete** ([analysis](10-domain/nocturne-v4-profile-extensions.md))
    - Key finding: V4 StateSpan API provides profile activation history (not in V3)
    - Added: GAP-V4-001/002, REQ-V4-001/002
-6. ⏳ Nocturne Rust oref profile handling - **Next**
+6. ✅ Nocturne Rust oref profile handling - **Complete** ([analysis](10-domain/nocturne-rust-oref-profile-analysis.md))
+   - Key finding: Rust oref parses same as JS oref0; PredictionService bypasses ProfileService
+   - Added: GAP-OREF-001/002/003, REQ-OREF-001/002/003
 7. ⬜ ADR-004 draft (after above complete)
 
 **Needs**: ADR-004 after analysis complete
@@ -133,11 +135,13 @@ Questions requiring formal architectural decision records.
 **Related**:
 - [GAP-002](../traceability/gaps.md#gap-002-aaps-profileswitch-vs-override-semantic-mismatch)
 - [GAP-NOCTURNE-004](../traceability/sync-identity-gaps.md#gap-nocturne-004-profileswitch-percentagetimeshift-application-divergence)
+- [GAP-OREF-001](../traceability/sync-identity-gaps.md#gap-oref-001-predictionservice-bypasses-profileservice)
 - [Sync Identity Backlog: OQ-010 Queue](sdqctl-proposals/backlogs/sync-identity.md#oq-010-research-queue-profileswitch--nocturne)
 - [Profile Switch Sync Comparison](10-domain/profile-switch-sync-comparison.md)
 - [Nocturne ProfileSwitch Analysis](10-domain/nocturne-profileswitch-analysis.md)
 - [Nocturne Override Analysis](10-domain/nocturne-override-temptarget-analysis.md)
 - [Nocturne V4 Extensions](10-domain/nocturne-v4-profile-extensions.md)
+- [Nocturne Rust oref Analysis](10-domain/nocturne-rust-oref-profile-analysis.md)
 - [Nocturne Deep Dive](10-domain/nocturne-deep-dive.md)
 
 ---

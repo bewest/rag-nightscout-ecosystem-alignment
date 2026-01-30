@@ -1048,3 +1048,71 @@ See [requirements.md](requirements.md) for the index.
 **Gap Reference**: GAP-V4-002
 
 **Source**: [Nocturne V4 ProfileSwitch Extensions](../docs/10-domain/nocturne-v4-profile-extensions.md)
+
+---
+
+## Rust oref Integration Requirements
+
+### REQ-OREF-001: Percentage Application for Predictions
+
+**Statement**: Prediction calculations SHOULD apply active ProfileSwitch percentage to basal/ISF/CR values.
+
+**Rationale**: Ensures predictions match actual insulin delivery when percentage adjustment is active.
+
+**Scenarios**:
+- User activates ProfileSwitch with percentage=150
+- Query predictions for next 6 hours
+- Verify predictions use scaled basal (150% of base)
+
+**Verification**:
+- Create ProfileSwitch with percentage=150
+- Verify predictions use scaled basal
+- Compare with ProfileService.GetBasalRate() output
+
+**Gap Reference**: GAP-OREF-001
+
+**Source**: [Nocturne Rust oref Profile Analysis](../docs/10-domain/nocturne-rust-oref-profile-analysis.md)
+
+---
+
+### REQ-OREF-002: Full Schedule Propagation
+
+**Statement**: Algorithm implementations SHOULD receive full time-varying schedules, not just current values.
+
+**Rationale**: Enables accurate multi-hour predictions that account for scheduled rate changes throughout the day.
+
+**Scenarios**:
+- Profile has 4 different basal rates across day
+- Generate 24-hour prediction
+- Verify prediction uses correct rate per time block
+
+**Verification**:
+- Submit profile with multiple basal rates
+- Verify oref receives full schedule array
+- Verify predictions vary correctly across rate boundaries
+
+**Gap Reference**: GAP-OREF-002
+
+**Source**: [Nocturne Rust oref Profile Analysis](../docs/10-domain/nocturne-rust-oref-profile-analysis.md)
+
+---
+
+### REQ-OREF-003: Rust/JS Oref Equivalence Testing
+
+**Statement**: Rust oref and JS oref0 SHOULD produce equivalent outputs for identical inputs.
+
+**Rationale**: Ensures Nocturne users get same algorithm behavior as AAPS/Trio.
+
+**Scenarios**:
+- Feed identical profile/glucose/treatment data to both implementations
+- Compare IOB, COB, and prediction outputs
+- Document any numerical differences
+
+**Verification**:
+- Create test harness with identical inputs
+- Compare outputs within tolerance (e.g., 0.001)
+- Flag any significant divergence
+
+**Gap Reference**: N/A (testing requirement)
+
+**Source**: [Nocturne Rust oref Profile Analysis](../docs/10-domain/nocturne-rust-oref-profile-analysis.md)
