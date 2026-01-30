@@ -8,6 +8,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Basal Schedule Comparison (2026-01-30)
+
+Compared basal rate schedule handling across Loop, AAPS, Trio, oref0, and Nightscout.
+
+| Metric | Value |
+|--------|-------|
+| Source files analyzed | 10 |
+| Gaps identified | 5 (GAP-PROF-006 to GAP-SYNC-020) |
+| Requirements extracted | 3 (REQ-PROF-005 to REQ-PROF-007) |
+| Key finding | Time format: "HH:MM" (NS) vs seconds (Loop) vs minutes (oref0) |
+
+**Key Findings**:
+- Nightscout uses "HH:MM" strings while all controllers use numeric offsets
+- oref0 uses minutes; Loop/Trio/AAPS use seconds from midnight
+- Basal rate precision varies: 3 decimal places (oref0) to pump step size (AAPS)
+- No standardized event for basal schedule changes
+
+**Deliverables**:
+- `docs/10-domain/basal-schedule-comparison.md` (10KB) - Full comparison
+- `traceability/aid-algorithms-gaps.md` - 5 new gaps
+- `traceability/aid-algorithms-requirements.md` - 3 new requirements
+- `mapping/cross-project/terminology-matrix.md` - Basal time format table
+
+---
+
 ### sdqctl iterate Effectiveness Analysis (2026-01-30)
 
 Analyzed the effectiveness of a 40-cycle `sdqctl iterate` run.

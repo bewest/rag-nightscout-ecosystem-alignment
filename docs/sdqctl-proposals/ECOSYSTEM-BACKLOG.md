@@ -41,12 +41,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Basal schedule comparison
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Compare basal rate scheduling across systems
-**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
-
-### 5. [P2] Profile switch sync
+### 4. [P2] Profile switch sync
 **Type:** Documentation | **Effort:** Medium
 **Focus:** How profile switches sync to Nightscout
 **Backlog:** [sync-identity.md](backlogs/sync-identity.md)
@@ -54,6 +49,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Basal schedule comparison~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `docs/10-domain/basal-schedule-comparison.md`
+**Key Finding:** Time format: "HH:MM" (NS) vs seconds (Loop/AAPS) vs minutes (oref0)
+**Gaps Added:** GAP-PROF-006 to GAP-PROF-008, GAP-SYNC-020
 
 ### ~~[P2] Override/temporary target sync~~ ✅ COMPLETE
 **Completed:** 2026-01-30

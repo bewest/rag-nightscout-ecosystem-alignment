@@ -781,6 +781,57 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 **Remediation:** Define mapping between Loop model presets and equivalent DIA values.
 
+### GAP-PROF-006: Basal Schedule Time Format Inconsistency
+
+**Description:** Nightscout uses "HH:MM" strings for basal schedule times while controllers use numeric offsets (seconds or minutes from midnight).
+
+**Source:**
+- `externals/cgm-remote-monitor/lib/profile/profileeditor.js:146` - "time" as "HH:MM"
+- `externals/LoopWorkspace/LoopKit/LoopKit/DailyValueSchedule.swift:14` - startTime as TimeInterval (seconds)
+- `externals/oref0/lib/profile/basal.js:24` - minutes from midnight
+
+**Impact:** Parsing errors, timezone confusion, potential off-by-one minute issues during conversion.
+
+**Remediation:** Standardize on seconds-from-midnight with explicit timezone in profile.
+
+### GAP-PROF-007: 30-Minute Basal Rate Granularity
+
+**Description:** AAPS supports 30-minute basal rate granularity (`is30minBasalRatesCapable`) but Nightscout profile schema assumes hourly boundaries.
+
+**Source:**
+- `externals/AndroidAPS/core/data/src/main/kotlin/app/aaps/core/data/pump/defs/PumpDescription.kt:59` - `is30minBasalRatesCapable`
+- `externals/cgm-remote-monitor/lib/profile/profileeditor.js` - No 30-min validation
+
+**Impact:** Pumps with 30-minute granularity may lose precision when syncing via Nightscout.
+
+**Remediation:** Extend Nightscout profile to support sub-hourly time boundaries (validate any HH:MM, not just :00).
+
+### GAP-PROF-008: Basal Rate Precision Varies
+
+**Description:** Different systems use different basal rate precision:
+- Loop: Double (full precision)
+- AAPS: Constrained by basalStep (e.g., 0.01 U/hr)
+- oref0: 3 decimal places
+- Nightscout: Arbitrary JS number
+
+**Source:**
+- `externals/oref0/lib/profile/basal.js:29` - `Math.round(basalRate*1000)/1000`
+- `externals/AndroidAPS/core/data/src/main/kotlin/app/aaps/core/data/pump/defs/PumpDescription.kt:23` - `basalStep`
+
+**Impact:** Rounding differences when syncing basal profiles between systems.
+
+**Remediation:** Document precision requirements; recommend 3 decimal places as minimum.
+
+### GAP-SYNC-020: Basal Schedule Change Events
+
+**Description:** No standardized event type for "basal schedule was changed" across systems.
+
+**Source:** No explicit event type in Nightscout treatments collection for profile schedule modifications.
+
+**Impact:** Schedule changes may not propagate consistently; no audit trail for profile edits.
+
+**Remediation:** Define profile change event type with before/after snapshots.
+
 ## Bolus Wizard Gaps
 
 ### GAP-BOLUS-001: Prediction-Based vs Arithmetic Formula

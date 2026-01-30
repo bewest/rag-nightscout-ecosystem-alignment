@@ -367,6 +367,34 @@ See: [`mapping/nightscout-roles-gateway/`](../nightscout-roles-gateway/)
 - `SUPERBOLUS`: Superbolus temp basal
 - `FAKE_EXTENDED`: Extended bolus emulation
 
+#### Basal Schedule Time Format
+
+| System | Time Storage | Format Example (6:00 AM) | Unit |
+|--------|--------------|--------------------------|------|
+| Nightscout | `time` | `"06:00"` | HH:MM string |
+| Loop | `startTime` | `21600.0` | TimeInterval (seconds) |
+| AAPS | `timeAsSeconds` | `21600` | Int (seconds) |
+| oref0 | `minutes` | `360` | Int (minutes) |
+| Trio | `startTime` | `21600.0` | TimeInterval (seconds) |
+
+**Conversion Requirements**:
+- Nightscout → Controllers: Parse `"HH:MM"` → `hours*3600 + minutes*60`
+- Controllers → Nightscout: Format seconds → `"HH:MM"`
+- oref0 ↔ Others: `minutes * 60` or `seconds / 60`
+
+**Gap Reference**: GAP-PROF-006 (time format inconsistency)
+
+#### Basal Schedule Value Precision
+
+| System | Precision | Constraint Source |
+|--------|-----------|-------------------|
+| Loop | Double (full) | N/A |
+| AAPS | `basalStep` (e.g., 0.01) | `PumpDescription.basalStep` |
+| oref0 | 3 decimal places | `Math.round(rate*1000)/1000` |
+| Nightscout | JS Number | N/A |
+
+**Gap Reference**: GAP-PROF-008 (precision varies)
+
 #### Treatment Sync Identity
 
 | System | Primary ID | Secondary ID | Upload Method |

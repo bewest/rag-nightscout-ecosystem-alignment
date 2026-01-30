@@ -649,6 +649,67 @@ See [requirements.md](requirements.md) for the index.
 
 **Source**: `docs/10-domain/profile-schema-alignment.md`
 
+### REQ-PROF-005: Basal Time Format Conversion
+
+**Statement**: Controllers MUST convert Nightscout "HH:MM" time strings to numeric seconds-from-midnight using profile timezone.
+
+**Rationale**: Nightscout uses string format while all controllers use numeric offsets. Consistent conversion prevents parsing errors.
+
+**Scenarios**:
+- Loop reads basal schedule from Nightscout profile
+- AAPS uploads profile changes back to Nightscout
+- Trio initializes from fetched profile
+
+**Verification**:
+- Unit tests with edge cases (midnight, noon, DST transitions)
+- Round-trip test: upload → download → compare
+
+**Gap**: GAP-PROF-006
+
+**Source**: `docs/10-domain/basal-schedule-comparison.md`
+
+---
+
+### REQ-PROF-006: Basal Rate Precision
+
+**Statement**: Controllers SHOULD preserve basal rate precision to at least 0.01 U/hr during sync operations.
+
+**Rationale**: Common pump step size is 0.01 U/hr; truncating precision may affect insulin delivery.
+
+**Scenarios**:
+- Profile sync between systems
+- Rate display in UI
+
+**Verification**:
+- Round-trip test: export → import → compare rates
+- Precision check against pump basalStep
+
+**Gap**: GAP-PROF-008
+
+**Source**: `docs/10-domain/basal-schedule-comparison.md`
+
+---
+
+### REQ-PROF-007: Total Daily Basal Validation
+
+**Statement**: Controllers SHOULD validate that total daily basal equals sum of (segment_duration × rate) for all 24 hours.
+
+**Rationale**: Catches incomplete or malformed basal profiles before use.
+
+**Scenarios**:
+- Profile import validation
+- UI profile editor save
+
+**Verification**:
+- Calculate TDD from schedule segments
+- Compare to expected 24h coverage
+
+**Gap**: N/A (best practice)
+
+**Source**: `docs/10-domain/basal-schedule-comparison.md`
+
+---
+
 ## Bolus Wizard Requirements
 
 ### REQ-BOLUS-001: Document Calculation Approach
