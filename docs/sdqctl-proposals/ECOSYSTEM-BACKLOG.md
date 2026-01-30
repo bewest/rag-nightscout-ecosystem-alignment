@@ -36,30 +36,35 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 3. [P1] Gap deduplication tool
-**Type:** Tooling | **Effort:** Low
-**Focus:** Detect and report duplicate GAP-* entries across traceability files
-**Backlog:** [tooling.md](backlogs/tooling.md)
-**Note:** 2 duplicates found in iterate report
-
-### 4. [P3] Terminology sample tool
+### 3. [P3] Terminology sample tool
 **Type:** Tooling | **Effort:** Low
 **Focus:** Random sample terminology matrix entries for verification
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
-### 5. [P2] Gap freshness checker tool
+### 4. [P2] Gap freshness checker tool
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Check if GAP-* issues have been resolved in upstream PRs
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
-### 6. [P2] Mapping coverage tool
+### 5. [P2] Mapping coverage tool
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Verify mapping docs cover all fields in source schemas
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
+### 6. [P2] Fix 26 duplicate GAP definitions
+**Type:** Maintenance | **Effort:** Medium
+**Focus:** Deduplicate GAP entries found by find_gap_duplicates.py
+**Note:** Run `make verify-gap-duplicates` to see list
+
 ---
 
 ## Completed Items
+
+### ~~[P1] Gap deduplication tool~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `tools/find_gap_duplicates.py`
+**Key Finding:** 26 duplicates across 255 unique GAP IDs
+**Makefile:** `make verify-gap-duplicates`
 
 ### ~~[P2] Verify algorithm comparison claims~~ ✅ COMPLETE
 **Completed:** 2026-01-29

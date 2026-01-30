@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Gap Deduplication Tool (2026-01-30)
+
+Created `tools/find_gap_duplicates.py` to detect duplicate GAP-* definitions.
+
+| Metric | Value |
+|--------|-------|
+| Tool created | `tools/find_gap_duplicates.py` |
+| Makefile target | `make verify-gap-duplicates` |
+| Unique GAP IDs | 255 |
+| **Duplicates found** | 26 |
+
+**Key Finding**: 26 GAP IDs have duplicate definitions across traceability files. Most are in the same file (e.g., nightscout-api-gaps.md has GAP-AUTH-001 twice with different titles). Needs dedup cleanup.
+
+**Deliverables**:
+- `tools/find_gap_duplicates.py` (120 lines)
+- Makefile integration
+
+---
+
 ### Backlog Consolidation (2026-01-30)
 
 Discovered Ready Queue had stale entries pointing to already-completed work. Consolidated.

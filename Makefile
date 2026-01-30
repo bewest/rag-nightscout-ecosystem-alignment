@@ -37,6 +37,7 @@ help:
 	@echo "  make verify-coverage    - Analyze requirement/gap coverage"
 	@echo "  make verify-terminology - Check terminology consistency"
 	@echo "  make verify-assertions  - Trace assertions to requirements"
+	@echo "  make verify-gap-duplicates - Find duplicate GAP definitions"
 	@echo ""
 	@echo "New Tools (Enhanced Traceability):"
 	@echo "  make query TERM=<term>  - Search documentation for term"
@@ -180,6 +181,9 @@ verify:
 	@echo "=== Tracing assertions ==="
 	-@python3 tools/verify_assertions.py
 	@echo ""
+	@echo "=== Finding duplicate GAP definitions ==="
+	-@python3 tools/find_gap_duplicates.py
+	@echo ""
 	@echo "Verification complete. See traceability/*.md for detailed reports."
 
 # Individual verification targets (will fail on issues for CI use)
@@ -198,6 +202,10 @@ verify-terminology:
 verify-assertions:
 	@echo "Tracing assertions..."
 	@python3 tools/verify_assertions.py
+
+verify-gap-duplicates:
+	@echo "Finding duplicate GAP definitions..."
+	@python3 tools/find_gap_duplicates.py
 
 # sdqctl-based verification (preferred when sdqctl available)
 sdqctl-verify-refs:
