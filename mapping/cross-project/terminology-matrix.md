@@ -306,12 +306,17 @@ See: [`mapping/nightscout-roles-gateway/`](../nightscout-roles-gateway/)
 | Bolus Event | eventType: `Meal Bolus`, `Correction Bolus` | `DoseEntry` (type: bolus) | `Bolus` entity | `PumpHistoryEvent` | `Treatments.insulin` |
 | Carb Entry Event | eventType: `Carb Correction` | `StoredCarbEntry` | `Carbs` entity | `CarbsEntry` | `Treatments.carbs` |
 | Temp Basal Event | eventType: `Temp Basal` | `DoseEntry` (type: tempBasal) | `TemporaryBasal` entity | `TempBasal` | N/A (via AAPS) |
-| Profile Switch | eventType: `Profile Switch` | N/A (implicit) | `ProfileSwitch` entity | N/A (implicit) | N/A |
+| Profile Switch | eventType: `Profile Switch` | N/A (uploads to `profile` collection) | `ProfileSwitch` entity | N/A (uploads to `profile` collection) | N/A |
 | Override (active) | eventType: `Temporary Override` | `TemporaryScheduleOverride` | N/A (via ProfileSwitch) | `Override` | N/A |
 | Temporary Target | eventType: `Temporary Target` | via `TemporaryScheduleOverride` | `TempTarget` entity | `TempTarget` | N/A |
 | Note/Annotation | eventType: `Note`, `Announcement` | `NoteEntry` | `UserEntry` | `NoteEntry` | `Treatments.notes` |
 | Sensor Start | eventType: `Sensor Start` | `CGMSensorEvent` | `TherapyEvent.SENSOR_CHANGE` | `SensorChange` | `Treatments` (eventType: `Sensor Start`) |
 | Sensor Stop | N/A | N/A | N/A | N/A | `Treatments` (eventType: `Sensor Stop`) |
+
+**Note**: Profile Switch behavior differs significantly:
+- **AAPS**: Uploads `ProfileSwitch` entity to `treatments` with eventType `Profile Switch`, includes embedded profile JSON
+- **Loop/Trio**: Upload to `profile` collection only; no treatment event created (GAP-SYNC-026)
+- AAPS supports `percentage` (scaling) and `timeshift` (rotation) not used by Loop/Trio (GAP-SYNC-028)
 
 ### Treatment Data Models (Deep Dive)
 

@@ -624,6 +624,72 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
+## Profile Switch Requirements (REQ-SYNC-051 to REQ-SYNC-053)
+
+### REQ-SYNC-051: Profile Change Visibility
+
+**Statement**: Controllers SHOULD create `Profile Switch` treatment events when the active profile changes.
+
+**Rationale**: Enables retrospective analysis of profile changes in Nightscout timeline.
+
+**Scenarios**:
+- User changes profile in AAPS
+- Check treatments collection for Profile Switch event
+
+**Verification**:
+- Change profile
+- GET treatments with eventType=Profile Switch
+- Verify new event exists
+
+**Gap**: GAP-SYNC-026
+
+**Source**: `docs/10-domain/profile-switch-sync-comparison.md`
+
+---
+
+### REQ-SYNC-052: Percentage Handling
+
+**Statement**: Controllers fetching Profile Switch treatments with `percentage != 100` SHOULD apply scaling or warn user.
+
+**Rationale**: AAPS percentage adjustments affect actual insulin delivery; other controllers may not understand.
+
+**Scenarios**:
+- AAPS uploads Profile Switch with percentage=150
+- Loop/Trio fetch from NS
+- Verify warning or scaling applied
+
+**Verification**:
+- Create Profile Switch with percentage=150
+- Fetch in non-AAPS controller
+- Verify warning displayed or scaling applied
+
+**Gap**: GAP-SYNC-028
+
+**Source**: `docs/10-domain/profile-switch-sync-comparison.md`
+
+---
+
+### REQ-SYNC-053: Profile Deduplication
+
+**Statement**: Controllers uploading profiles SHOULD use consistent identity to prevent duplicates.
+
+**Rationale**: Avoid multiple profile documents for same logical profile.
+
+**Scenarios**:
+- Upload profile twice with same name
+- Verify single document in collection
+
+**Verification**:
+- Upload profile "Default"
+- Upload profile "Default" again
+- GET profile collection, count documents with name "Default"
+
+**Gap**: GAP-SYNC-027
+
+**Source**: `docs/10-domain/profile-switch-sync-comparison.md`
+
+---
+
 ## Override Requirements (REQ-OVERRIDE-001 to REQ-OVERRIDE-005)
 
 ---

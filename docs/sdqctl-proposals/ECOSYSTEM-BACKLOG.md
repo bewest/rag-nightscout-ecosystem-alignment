@@ -41,17 +41,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Profile switch sync
-**Type:** Documentation | **Effort:** Medium
-**Focus:** How profile switches sync to Nightscout
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md)
-
-### 5. [P2] Cross-controller conflict detection
+### 4. [P2] Cross-controller conflict detection
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Document behavior when Loop+Trio sync simultaneously
 **Backlog:** [sync-identity.md](backlogs/sync-identity.md)
 
-### 6. [P2] Libre 3 protocol gap analysis
+### 5. [P2] Libre 3 protocol gap analysis
 **Type:** Documentation | **Effort:** High
 **Focus:** Document "eavesdrop only" limitations vs full pairing
 **Backlog:** [cgm-sources.md](backlogs/cgm-sources.md)
@@ -59,6 +54,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P2] Profile switch sync~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `docs/10-domain/profile-switch-sync-comparison.md`
+**Key Finding:** AAPS uses `Profile Switch` treatments; Loop/Trio upload to `profile` collection only
+**Gaps Added:** GAP-SYNC-026 to GAP-SYNC-028
 
 ### ~~[P2] Basal schedule comparison~~ ✅ COMPLETE
 **Completed:** 2026-01-30

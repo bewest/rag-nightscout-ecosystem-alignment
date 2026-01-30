@@ -8,6 +8,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Profile Switch Sync Comparison (2026-01-30)
+
+Analyzed how profile switches sync to Nightscout across AAPS, Loop, and Trio.
+
+| Metric | Value |
+|--------|-------|
+| Source files analyzed | 9 |
+| Gaps identified | 3 (GAP-SYNC-026 to GAP-SYNC-028) |
+| Requirements extracted | 3 (REQ-SYNC-051 to REQ-SYNC-053) |
+| Key finding | AAPS uses `Profile Switch` treatments; Loop/Trio upload to `profile` collection only |
+
+**Key Findings**:
+- AAPS creates `Profile Switch` treatment events with embedded profile JSON
+- Loop/Trio upload to `profile` collection without treatment events
+- AAPS supports `percentage` and `timeshift` not understood by other systems
+- Profile change history not visible in NS timeline for Loop/Trio users
+
+**Deliverables**:
+- `docs/10-domain/profile-switch-sync-comparison.md` (11KB)
+- `traceability/sync-identity-gaps.md` (+3 gaps)
+- `traceability/sync-identity-requirements.md` (+3 requirements)
+- `mapping/cross-project/terminology-matrix.md` (updated Profile Switch note)
+
+---
+
 ### Basal Schedule Comparison (2026-01-30)
 
 Compared basal rate schedule handling across Loop, AAPS, Trio, oref0, and Nightscout.

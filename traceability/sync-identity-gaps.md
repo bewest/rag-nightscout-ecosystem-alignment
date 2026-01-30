@@ -799,6 +799,50 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ---
 
+## Profile Switch Sync Gaps
+
+### GAP-SYNC-026: No Profile Switch Events from Loop/Trio
+
+**Description:** Loop and Trio upload profiles to the `profile` collection but do not create `Profile Switch` treatment events. Profile change history is not tracked in the treatments timeline.
+
+**Affected Systems:** Loop, Trio, Nightscout
+
+**Source:**
+- `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/NightscoutService.swift:367` - uploads to profile collection only
+- `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift:411` - uploads to profile collection only
+
+**Impact:** Cannot retrospectively analyze when profiles changed; different timeline visibility vs AAPS users.
+
+**Remediation:** Controllers could optionally create `Profile Switch` treatment events when uploading new profiles.
+
+### GAP-SYNC-027: ProfileSwitch Embedded JSON Size
+
+**Description:** AAPS embeds complete profile JSON in `profileJson` field of Profile Switch treatments, duplicating data and increasing document size.
+
+**Affected Systems:** AAPS, Nightscout
+
+**Source:**
+- `externals/AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/localmodel/treatment/NSProfileSwitch.kt:24` - `profileJson: JSONObject?`
+
+**Impact:** Large treatment documents; data duplication between `profile` and `treatments` collections.
+
+**Remediation:** Consider storing profile reference ID instead of embedded JSON.
+
+### GAP-SYNC-028: Percentage/Timeshift Not Portable
+
+**Description:** AAPS Profile Switch supports `percentage` (insulin scaling) and `timeshift` (schedule rotation) features that are not understood by Loop or Trio.
+
+**Affected Systems:** AAPS, Loop, Trio
+
+**Source:**
+- `externals/AndroidAPS/database/impl/src/main/kotlin/app/aaps/database/entities/ProfileSwitch.kt:49-50` - `timeshift: Long`, `percentage: Int`
+
+**Impact:** Multi-controller households may see confusing profile data; percentage adjustments not applied by Loop/Trio.
+
+**Remediation:** Document as AAPS-specific feature; Loop/Trio should ignore or warn on percentage!=100.
+
+---
+
 ## Override/Temp Target Sync Gaps
 
 ### GAP-OVRD-001: Different eventTypes for Target Overrides
