@@ -8,6 +8,19 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Broken Refs Remediation (2026-01-30)
+
+Fixed broken code references in active documentation.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Ref fixes | `docs/10-domain/authentication-flows-deep-dive.md` | 5 refs: `nightscout:` → `crm:` |
+| Validation | `traceability/refs-validation.md` | 360/392 valid (92%) |
+
+**Result**: Fixed alias usage in authentication deep dive. Remaining broken refs are in archive (29) or intentional examples (3).
+
+---
+
 ### ADR-004: ProfileSwitch → Override Mapping Rules (2026-01-30)
 
 Drafted architectural decision record resolving OQ-010 based on 6 prior analyses.
