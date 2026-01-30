@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Mapping Coverage Tool (2026-01-30)
+
+Created `tools/verify_mapping_coverage.py` to verify mapping docs cover source fields.
+
+| Metric | Value |
+|--------|-------|
+| Tool created | `tools/verify_mapping_coverage.py` |
+| Makefile target | `make verify-mapping-coverage` |
+| Mapping files found | 93 |
+| Default sample | 5 files |
+| Coverage thresholds | GOOD ≥80%, REVIEW 50-79%, LOW <50% |
+
+**Features**:
+- Parse documented fields from backticks and tables
+- Map to external repos via REPO_MAPPING dictionary
+- Grep-verify each field against source code
+- JSON output for CI integration
+
+---
+
 ### Gap Freshness Checker Tool (2026-01-30)
 
 Created `tools/verify_gap_freshness.py` to check if documented gaps are still open.

@@ -15,7 +15,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 1 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt pending |
 | 2 | sdqctl VERIFY .conv directive (Phase 2) | P3 | Medium | CLI complete, directive parsing pending |
 | 3 | LSP-based claim verification (Phase 2+) | P3 | Medium | JS/TS LSP integration deferred |
-| 4 | **Mapping coverage tool** | P2 | Medium | [Accuracy backlog proposal](documentation-accuracy.md#proposed-tool-verify_mapping_coveragepy) |
+| 4 | ~~**Mapping coverage tool**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `tools/verify_mapping_coverage.py` |
 | 5 | ~~**Gap freshness checker tool**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `tools/verify_gap_freshness.py` |
 | 6 | ~~**Terminology sample tool**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `tools/sample_terminology.py` |
 | 7 | ~~**Gap deduplication tool**~~ | ~~P1~~ | ~~Low~~ | ✅ COMPLETE - `tools/find_gap_duplicates.py` |
@@ -29,6 +29,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | Item | Date | Notes |
 |------|------|-------|
+| Mapping coverage tool | 2026-01-30 | `tools/verify_mapping_coverage.py`, `make verify-mapping-coverage` |
 | Gap freshness checker tool | 2026-01-30 | `tools/verify_gap_freshness.py`, `make verify-gap-freshness` |
 | Terminology sample tool | 2026-01-30 | `tools/sample_terminology.py`, `make verify-terminology` |
 | Gap deduplication tool | 2026-01-30 | `tools/find_gap_duplicates.py`, `make verify-gap-duplicates` |

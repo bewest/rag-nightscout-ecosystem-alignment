@@ -36,25 +36,32 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 3. [P2] Mapping coverage tool
-**Type:** Tooling | **Effort:** Medium
-**Focus:** Verify mapping docs cover all fields in source schemas
-**Backlog:** [tooling.md](backlogs/tooling.md)
-
-### 4. [P2] REFCAT caching proposal
+### 3. [P2] REFCAT caching proposal
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Cache external repo parsing to reduce token usage 20-40%
 **Backlog:** [tooling.md](backlogs/tooling.md)
 **Source:** [iterate-effectiveness-report.md](iterate-effectiveness-report.md)
 
-### 5. [P2] Selective repo loading
+### 4. [P2] Selective repo loading
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Load only task-relevant repos to reduce 3.4M tokens/cycle
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
+### 5. [P3] Token efficiency dashboard
+**Type:** Tooling | **Effort:** Low
+**Focus:** Track cost/deliverable metrics across backlog cycles
+**Backlog:** [tooling.md](backlogs/tooling.md)
+**Source:** [iterate-effectiveness-report.md](iterate-effectiveness-report.md)
+
 ---
 
 ## Completed Items
+
+### ~~[P2] Mapping coverage tool~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `tools/verify_mapping_coverage.py`
+**Key Finding:** 93 mapping files, 73-88% average coverage
+**Makefile:** `make verify-mapping-coverage`
 
 ### ~~[P2] Gap freshness checker tool~~ ✅ COMPLETE
 **Completed:** 2026-01-30

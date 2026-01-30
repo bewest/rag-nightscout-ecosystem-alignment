@@ -39,6 +39,7 @@ help:
 	@echo "  make verify-assertions  - Trace assertions to requirements"
 	@echo "  make verify-gap-duplicates - Find duplicate GAP definitions"
 	@echo "  make verify-gap-freshness - Check if gaps are still open (10 sample)"
+	@echo "  make verify-mapping-coverage - Check mapping doc coverage (5 sample)"
 	@echo ""
 	@echo "New Tools (Enhanced Traceability):"
 	@echo "  make query TERM=<term>  - Search documentation for term"
@@ -215,6 +216,10 @@ verify-terminology:
 verify-gap-freshness:
 	@echo "Checking gap freshness (sample of 10)..."
 	@python3 tools/verify_gap_freshness.py --sample 10
+
+verify-mapping-coverage:
+	@echo "Checking mapping doc coverage (sample of 5)..."
+	@python3 tools/verify_mapping_coverage.py --sample 5
 
 # sdqctl-based verification (preferred when sdqctl available)
 sdqctl-verify-refs:
