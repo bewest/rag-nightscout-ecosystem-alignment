@@ -15,6 +15,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 25) | P0 | ✅ Complete (doc parse audit, 30 uncovered, #23 added) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 24) | P0 | ✅ Complete (Trio-dev analysis, 8 items queued) | 2026-01-30 |
 | Trio-dev checkout + methodical analysis | P2 | ✅ Queued 8 items: aid-algorithms #5-8, nightscout-api #20-22 | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 23) | P0 | ✅ Complete (fix verify_coverage.py, 0→242 reqs) | 2026-01-30 |

@@ -22,18 +22,17 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P1] Documentation parse audit
-**Type:** Verification | **Effort:** Medium
-**Domain:** Tooling
-**Focus:** Scan all docs for patterns tools recognize, flag docs with no tool coverage
-**Deliverable:** List of docs not validated by any tool
-**Source:** tooling.md #19
-
-### 2. [P2] Extend verify_refs to conformance/
+### 1. [P2] Extend verify_refs scope
 **Type:** Enhancement | **Effort:** Low
 **Domain:** Tooling
-**Focus:** Add `conformance/**/*.md` to scan patterns
-**Source:** tooling.md #22 (from tool coverage audit)
+**Focus:** Add `conformance/**/*.md`, `specs/**/*.md`, `traceability/**/*.md` (+22 files)
+**Source:** tooling.md #22 (from doc parse audit)
+
+### 2. [P3] Extend verify_assertions scope
+**Type:** Enhancement | **Effort:** Low
+**Domain:** Tooling
+**Focus:** Add `conformance/**/*.yaml` (not just assertions/) (+8 files)
+**Source:** tooling.md #23 (from doc parse audit)
 
 ### 3. [P2] State ontology definition
 **Type:** Architecture | **Effort:** Medium
@@ -80,6 +79,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Documentation parse audit** | `docs/10-domain/documentation-parse-audit.md` | 30 uncovered (8%), 91%→99% after fixes |
 | **Trio-dev checkout + analysis** | aid-algorithms.md #5-8, nightscout-api.md #20-22 | 8 integration items queued from structure analysis |
 | **Fix verify_coverage.py** | `tools/verify_coverage.py` | 0→242 reqs, 0→289 gaps - tool now functional |
 | **Tool coverage audit** | `docs/10-domain/tool-coverage-audit.md` | 89% coverage, verify_coverage.py broken, conformance/*.md uncovered |

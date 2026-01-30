@@ -30,10 +30,11 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 16 | **LSP verification setup research** | P2 | High | Document requirements for JS/TS LSP setup, Kotlin/Java LSP prerequisites, Swift limitations |
 | 17 | **Nightscout PR coherence review protocol** | P2 | Medium | Systematic review methodology for cgm-remote-monitor PRs against proposals/backlogs |
 | 18 | ~~**Tool coverage audit**~~ | ~~P1~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/tool-coverage-audit.md` |
-| 19 | **Documentation parse audit** | P1 | Medium | Scan all docs for patterns tools recognize, flag docs with no tool coverage |
+| 19 | ~~**Documentation parse audit**~~ | ~~P1~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/documentation-parse-audit.md` (30 uncovered, 91%→99% after fixes) |
 | 20 | **Known vs unknown dashboard** | P2 | Low | Summary view: repos analyzed, gaps identified, coverage %, confidence levels |
 | 21 | ~~**Fix verify_coverage.py**~~ | ~~P1~~ | ~~Low~~ | ✅ COMPLETE - Fixed glob patterns + REQ-DOMAIN-NNN regex (0→242 reqs, 0→289 gaps) |
-| 22 | **Extend verify_refs to conformance/** | P2 | Low | Add `conformance/**/*.md` to scan patterns |
+| 22 | **Extend verify_refs scope** | P2 | Low | Add `conformance/**/*.md`, `specs/**/*.md`, `traceability/**/*.md` (+22 files) |
+| 23 | **Extend verify_assertions scope** | P3 | Low | Add `conformance/**/*.yaml` (not just assertions/) (+8 files) |
 
 ---
 

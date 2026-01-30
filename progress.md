@@ -10,6 +10,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Documentation Parse Audit (2026-01-30)
+
+Cycle 25: Identified docs with no tool coverage.
+
+| Metric | Value |
+|--------|-------|
+| Total docs | 352 |
+| Covered | 322 (91%) |
+| Uncovered | 30 (8%) |
+
+**Uncovered Categories**:
+- conformance/*.md: 9 files
+- conformance/*.yaml: 8 files (non-assertions)
+- specs/*.md: 3 files
+- traceability/*.md: 10 files (4 generated)
+
+**Projected After Fixes**: 91% → 99% coverage
+
+**Deliverable**: `docs/10-domain/documentation-parse-audit.md`
+
+**New Item**: tooling.md #23 (extend verify_assertions)
+
+---
+
 ### Trio-dev Checkout + Methodical Analysis (2026-01-30)
 
 Cycle 24: Analyzed Trio-dev structure and queued integration work items.

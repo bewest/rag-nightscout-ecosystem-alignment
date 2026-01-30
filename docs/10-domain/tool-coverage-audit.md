@@ -116,7 +116,6 @@ Add `conformance/**/*.md` to scan patterns.
 
 ## Next Steps
 
-1. ~~**Fix verify_coverage** (tooling.md #21) - P1~~ ✅ COMPLETE
+1. ~~**Fix verify_coverage** (tooling.md #21) - P1~~ ✅ COMPLETE (Cycle 23)
 2. **Extend verify_refs** (tooling.md #22) - P2
-3. **Documentation parse audit** (tooling.md #19) - P1
-3. **Documentation parse audit** (tooling.md #19) - In progress
+3. ~~**Documentation parse audit** (tooling.md #19) - P1~~ ✅ COMPLETE (Cycle 25) → See `documentation-parse-audit.md`
