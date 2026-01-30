@@ -10,6 +10,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### cgm-remote-monitor Analysis Depth Matrix (2026-01-30)
+
+Cycle 30: Created completeness grid for all Nightscout API collections.
+
+**Deliverable**: `docs/10-domain/cgm-remote-monitor-analysis-depth-matrix.md`
+
+**Coverage Summary**:
+| Collection | Coverage | Status |
+|------------|----------|--------|
+| treatments | 100% | ✅ Fully covered |
+| profile | 83% | ✅ Fully covered |
+| devicestatus | 75% | ⚠️ Partial |
+| entries | 67% | ⚠️ Partial |
+| food | 8% | ❌ Not covered |
+| activity | 8% | ❌ Not covered |
+
+**Average Coverage**: 57%
+
+**nightscout-api.md #18**: ✅ COMPLETE
+
+---
+
 ### GAP-SYNC Ontology Classification (2026-01-30)
 
 Cycle 29: Classified all 22 GAP-SYNC-* entries by Observed/Desired/Control ontology.
