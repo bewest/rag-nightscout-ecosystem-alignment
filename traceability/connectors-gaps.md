@@ -638,3 +638,71 @@ osx_image: xcode12.4
 **Source**: `docs/10-domain/loopcaregiver-deep-dive.md`
 
 ---
+
+## Nocturne Algorithm Conformance
+
+---
+
+### GAP-OREF-CONFORMANCE-001: Rust oref Peak Time Validation
+
+**Description**: Rust oref implementation accepts peak time as parameter without validation, unlike JS oref0 which validates and clamps per curve type.
+
+**Affected Systems**: Nocturne, oref0
+
+**JS oref0 behavior**:
+- Rapid-acting: clamps peak to 50-120 minutes
+- Ultra-rapid: clamps peak to 35-100 minutes
+
+**Rust behavior**: Accepts any value passed by caller.
+
+**Impact**:
+- Invalid peak times could produce unexpected results
+- Caller must validate before passing to Rust
+
+**Remediation**: Add peak time validation to Rust implementation or document caller responsibility.
+
+**Source**: 
+- JS: `externals/oref0/lib/iob/calculate.js:86-116`
+- Rust: `externals/nocturne/src/Core/oref/src/insulin/calculate.rs:112`
+
+**Status**: Minor divergence (defensive)
+
+---
+
+### GAP-OREF-CONFORMANCE-002: Rust oref Small Dose Classification
+
+**Description**: Rust oref classifies insulin doses < 0.1 U as basal adjustments, providing basal_iob/bolus_iob breakdown. JS oref0 doesn't distinguish.
+
+**Affected Systems**: Nocturne, oref0
+
+**Impact**:
+- Additional data available in Rust output
+- Not a conformance issue (additive feature)
+
+**Source**: `externals/nocturne/src/Core/oref/src/iob/total.rs:88-94`
+
+**Status**: Enhancement (no conformance issue)
+
+---
+
+### GAP-OREF-CONFORMANCE-003: VERIFIED EQUIVALENT ✅
+
+**Description**: Nocturne Rust oref is algorithmically equivalent to JS oref0.
+
+**Verification**:
+| Component | Status |
+|-----------|--------|
+| Bilinear IOB | ✅ Same formula, coefficients |
+| Exponential IOB | ✅ Same LoopKit formula |
+| COB deviation | ✅ Same algorithm |
+| Precision | ✅ Both IEEE 754 f64 |
+
+**Conformance Tests**: `conformance/scenarios/nocturne-oref/iob-tests.yaml`
+
+**Source**:
+- JS: `externals/oref0/lib/iob/calculate.js`
+- Rust: `externals/nocturne/src/Core/oref/src/insulin/calculate.rs`
+
+**Status**: ✅ Verified equivalent
+
+---

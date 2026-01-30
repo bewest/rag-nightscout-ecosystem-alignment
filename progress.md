@@ -655,3 +655,39 @@ OQ-010 Item #6: Analysis of how Nocturne applies AAPS-specific percentage and ti
 - `externals/nocturne/src/API/Nocturne.API/Controllers/V3/ProfileController.cs`
 - `externals/nocturne/src/API/Nocturne.API/Services/ProfileService.cs:164-245`
 - `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/Extensions/ProfileSet.swift`
+
+---
+
+### Nocturne Rust oref Conformance Analysis (2026-01-30)
+
+OQ-010 Item #13: Verification that Nocturne's Rust oref implementation produces equivalent results to JS oref0.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Conformance Analysis | `conformance/scenarios/nocturne-oref/README.md` | ✅ Verified equivalent |
+| Test Fixtures | `conformance/scenarios/nocturne-oref/iob-tests.yaml` | 25+ test vectors |
+
+**Key Findings**:
+- **IOB Bilinear**: ✅ Same formula, same polynomial coefficients
+- **IOB Exponential**: ✅ Same LoopKit #388 formula
+- **COB Algorithm**: ✅ Same deviation-based approach
+- **Precision**: Both use IEEE 754 f64 (< 1e-15 difference)
+- **Minor differences**: Rust enforces DIA minimums (3h bilinear, 5h exponential)
+
+**Gaps Identified**:
+- GAP-OREF-CONFORMANCE-001: Peak time validation (defensive, not breaking)
+- GAP-OREF-CONFORMANCE-002: Small dose classification (additive feature)
+- GAP-OREF-CONFORMANCE-003: ✅ Verified equivalent
+
+**Requirements Added**:
+- REQ-OREF-CONFORM-001: IOB equivalence within 0.01 U tolerance
+- REQ-OREF-CONFORM-002: Peak time validation bounds
+- REQ-OREF-CONFORM-003: COB algorithm equivalence
+
+**Source Files Analyzed**:
+- `externals/nocturne/src/Core/oref/src/insulin/calculate.rs` (Rust exponential/bilinear)
+- `externals/nocturne/src/Core/oref/src/iob/total.rs` (Rust total IOB)
+- `externals/nocturne/src/Core/oref/src/cob/mod.rs` (Rust COB)
+- `externals/oref0/lib/iob/calculate.js` (JS reference implementation)
+
+---

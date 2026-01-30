@@ -1,0 +1,328 @@
+# Nocturne Rust oref IOB Conformance Tests
+# Validates that Rust implementation matches JS oref0 output
+
+metadata:
+  name: IOB Calculation Conformance
+  version: "1.0"
+  description: |
+    Test vectors comparing Nocturne Rust oref to JS oref0.
+    Both implementations should produce equivalent results within tolerance.
+  related_gaps:
+    - GAP-NOCTURNE-002
+  references:
+    - externals/oref0/lib/iob/calculate.js
+    - externals/nocturne/src/Core/oref/src/insulin/calculate.rs
+    - https://github.com/LoopKit/Loop/issues/388#issuecomment-317938473
+
+# Tolerance for floating point comparison
+default_tolerance: 0.01
+
+tests:
+  # ========================================
+  # BILINEAR CURVE TESTS
+  # ========================================
+  
+  - id: BL-001
+    name: Bilinear at t=0 (full IOB)
+    curve: bilinear
+    inputs:
+      insulin: 2.0
+      minutes_ago: 0.0
+      dia: 3.0
+    expected:
+      iob: 2.0
+      activity: 0.0
+    notes: At injection time, all insulin is IOB and no activity yet
+
+  - id: BL-002
+    name: Bilinear at t=30 (before peak)
+    curve: bilinear
+    inputs:
+      insulin: 1.0
+      minutes_ago: 30.0
+      dia: 3.0
+    expected:
+      iob: 0.929
+      activity_positive: true
+    notes: Before 75-min peak, activity increasing linearly
+
+  - id: BL-003
+    name: Bilinear at t=75 (at peak)
+    curve: bilinear
+    inputs:
+      insulin: 1.0
+      minutes_ago: 75.0
+      dia: 3.0
+    expected:
+      iob: 0.556
+      activity_at_peak: true
+    notes: Maximum activity at peak, IOB around half
+
+  - id: BL-004
+    name: Bilinear at t=120 (after peak)
+    curve: bilinear
+    inputs:
+      insulin: 1.0
+      minutes_ago: 120.0
+      dia: 3.0
+    expected:
+      iob_less_than: 0.3
+      activity_positive: true
+    notes: After peak, both IOB and activity declining
+
+  - id: BL-005
+    name: Bilinear at t=180 (end of DIA)
+    curve: bilinear
+    inputs:
+      insulin: 1.0
+      minutes_ago: 180.0
+      dia: 3.0
+    expected:
+      iob: 0.0
+      activity: 0.0
+    notes: At 3h DIA, all insulin absorbed
+
+  - id: BL-006
+    name: Bilinear with longer DIA
+    curve: bilinear
+    inputs:
+      insulin: 1.0
+      minutes_ago: 180.0
+      dia: 5.0
+    expected:
+      iob_greater_than: 0.0
+    notes: With 5h DIA, still has IOB at 3h
+
+  - id: BL-007
+    name: Bilinear time scaling
+    curve: bilinear
+    inputs:
+      insulin: 2.0
+      minutes_ago: 60.0
+      dia: 3.0
+    expected:
+      iob_less_than: 1.45
+      iob_greater_than: 0.5
+    notes: From JS test - IOB should be less than 1.45
+
+  # ========================================
+  # EXPONENTIAL CURVE TESTS (Rapid-Acting)
+  # ========================================
+
+  - id: EXP-RA-001
+    name: Rapid-acting at t=0
+    curve: rapid-acting
+    inputs:
+      insulin: 1.0
+      minutes_ago: 0.0
+      dia: 5.0
+      peak: 75
+    expected:
+      iob: 1.0
+      activity_near_zero: true
+    notes: Full IOB, activity starts at zero
+
+  - id: EXP-RA-002
+    name: Rapid-acting at t=75 (peak)
+    curve: rapid-acting
+    inputs:
+      insulin: 1.0
+      minutes_ago: 75.0
+      dia: 5.0
+      peak: 75
+    expected:
+      activity_at_peak: true
+      iob_less_than: 0.8
+    notes: Maximum activity at 75-min peak
+
+  - id: EXP-RA-003
+    name: Rapid-acting at t=150
+    curve: rapid-acting
+    inputs:
+      insulin: 1.0
+      minutes_ago: 150.0
+      dia: 5.0
+      peak: 75
+    expected:
+      iob_less_than: 0.4
+    notes: Roughly half DIA, significant absorption
+
+  - id: EXP-RA-004
+    name: Rapid-acting at t=300 (end of DIA)
+    curve: rapid-acting
+    inputs:
+      insulin: 1.0
+      minutes_ago: 300.0
+      dia: 5.0
+      peak: 75
+    expected:
+      iob: 0.0
+      activity: 0.0
+    notes: At 5h DIA, all absorbed
+
+  - id: EXP-RA-005
+    name: Rapid-acting after DIA
+    curve: rapid-acting
+    inputs:
+      insulin: 1.0
+      minutes_ago: 400.0
+      dia: 5.0
+      peak: 75
+    expected:
+      iob: 0.0
+      activity: 0.0
+    notes: Beyond DIA returns zero
+
+  # ========================================
+  # EXPONENTIAL CURVE TESTS (Ultra-Rapid)
+  # ========================================
+
+  - id: EXP-UR-001
+    name: Ultra-rapid at t=0
+    curve: ultra-rapid
+    inputs:
+      insulin: 1.0
+      minutes_ago: 0.0
+      dia: 5.0
+      peak: 55
+    expected:
+      iob: 1.0
+    notes: Full IOB at injection
+
+  - id: EXP-UR-002
+    name: Ultra-rapid at t=55 (peak)
+    curve: ultra-rapid
+    inputs:
+      insulin: 1.0
+      minutes_ago: 55.0
+      dia: 5.0
+      peak: 55
+    expected:
+      activity_at_peak: true
+    notes: Peak at 55 min (earlier than rapid-acting)
+
+  - id: EXP-UR-003
+    name: Ultra-rapid faster decay comparison
+    curve: ultra-rapid
+    inputs:
+      insulin: 1.0
+      minutes_ago: 120.0
+      dia: 5.0
+      peak: 55
+    expected:
+      iob_less_than: 0.5
+    notes: Should have less IOB than rapid-acting at same time
+
+  # ========================================
+  # CURVE COMPARISON TESTS
+  # ========================================
+
+  - id: CMP-001
+    name: Ultra-rapid faster than rapid-acting
+    description: At 2h, ultra-rapid should have less IOB remaining
+    comparison:
+      baseline:
+        curve: rapid-acting
+        inputs:
+          insulin: 1.0
+          minutes_ago: 120.0
+          dia: 5.0
+          peak: 75
+      compare_to:
+        curve: ultra-rapid
+        inputs:
+          insulin: 1.0
+          minutes_ago: 120.0
+          dia: 5.0
+          peak: 55
+    expected:
+      compare_iob: less_than
+    notes: Ultra-rapid decays faster due to earlier peak
+
+  # ========================================
+  # EDGE CASE TESTS
+  # ========================================
+
+  - id: EDGE-001
+    name: Zero insulin
+    curve: rapid-acting
+    inputs:
+      insulin: 0.0
+      minutes_ago: 60.0
+      dia: 5.0
+      peak: 75
+    expected:
+      iob: 0.0
+      activity: 0.0
+    notes: No insulin, no IOB
+
+  - id: EDGE-002
+    name: Negative time (future dose)
+    curve: rapid-acting
+    inputs:
+      insulin: 1.0
+      minutes_ago: -10.0
+      dia: 5.0
+      peak: 75
+    expected:
+      iob: 0.0
+      activity: 0.0
+    notes: Future doses not counted
+
+  - id: EDGE-003
+    name: Very small insulin
+    curve: rapid-acting
+    inputs:
+      insulin: 0.001
+      minutes_ago: 60.0
+      dia: 5.0
+      peak: 75
+    expected:
+      iob_less_than: 0.001
+    notes: Proportional to insulin amount
+
+  - id: EDGE-004
+    name: Large insulin dose
+    curve: bilinear
+    inputs:
+      insulin: 10.0
+      minutes_ago: 0.0
+      dia: 3.0
+    expected:
+      iob: 10.0
+    notes: Scales linearly with dose
+
+  # ========================================
+  # TOTAL IOB TESTS (Multiple Treatments)
+  # ========================================
+
+  - id: TOT-001
+    name: Two boluses at different times
+    curve: rapid-acting
+    inputs:
+      dia: 5.0
+      peak: 75
+      treatments:
+        - insulin: 1.0
+          minutes_ago: 0
+        - insulin: 1.0
+          minutes_ago: 60
+    expected:
+      iob_greater_than: 1.0
+      iob_less_than: 2.0
+    notes: Total from both, second partially absorbed
+
+  - id: TOT-002
+    name: Negative insulin reduces IOB
+    curve: rapid-acting
+    inputs:
+      dia: 5.0
+      peak: 75
+      treatments:
+        - insulin: 2.0
+          minutes_ago: 0
+        - insulin: -0.5
+          minutes_ago: 0
+    expected:
+      iob: 1.5
+    notes: Net IOB from positive + negative insulin

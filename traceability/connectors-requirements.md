@@ -654,3 +654,70 @@ See [requirements.md](requirements.md) for the index.
 **Gap Reference**: GAP-LOOPCAREGIVER-003
 
 ---
+
+## Algorithm Conformance Requirements
+
+---
+
+### REQ-OREF-CONFORM-001: Cross-Implementation IOB Equivalence
+
+**Statement**: Rust oref implementations MUST produce IOB values within 0.01 U tolerance of JS oref0 for identical inputs.
+
+**Rationale**: Algorithm drift between implementations causes inconsistent dosing predictions and user confusion.
+
+**Scenarios**:
+- Bilinear curve at t=0, t=peak, t=DIA
+- Exponential rapid-acting curve
+- Exponential ultra-rapid curve
+
+**Verification**:
+- Run conformance tests in `conformance/scenarios/nocturne-oref/iob-tests.yaml`
+- Compare output values within tolerance
+- All test cases pass
+
+**Gap Reference**: GAP-OREF-CONFORMANCE-003
+
+---
+
+### REQ-OREF-CONFORM-002: Peak Time Validation
+
+**Statement**: oref implementations SHOULD validate peak time parameters against curve-specific bounds.
+
+**Rationale**: Invalid peak times can produce unexpected insulin action curves.
+
+**Peak Time Bounds**:
+| Curve | Min | Max |
+|-------|-----|-----|
+| Rapid-acting | 50 min | 120 min |
+| Ultra-rapid | 35 min | 100 min |
+
+**Verification**:
+- Pass out-of-bounds peak time
+- Implementation either clamps or rejects
+- No undefined behavior
+
+**Gap Reference**: GAP-OREF-CONFORMANCE-001
+
+---
+
+### REQ-OREF-CONFORM-003: COB Algorithm Equivalence
+
+**Statement**: Rust oref COB calculation MUST match JS oref0 deviation-based algorithm.
+
+**Rationale**: COB drives carb absorption and prediction curves across all oref-based systems.
+
+**Algorithm Steps**:
+1. Bucket glucose to 5-minute intervals
+2. Calculate BGI from IOB activity
+3. Deviation = actual delta - expected BGI
+4. Carb impact = max(deviation, min_5m_carbimpact)
+5. Absorbed = CI × CR / ISF
+
+**Verification**:
+- Provide identical glucose + treatment history
+- Compare carbs_absorbed within tolerance
+- All deviation calculations match
+
+**Gap Reference**: GAP-OREF-CONFORMANCE-003
+
+---

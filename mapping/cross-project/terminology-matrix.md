@@ -3971,3 +3971,49 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 **Related Gaps**: GAP-OREF-001, GAP-OREF-002, GAP-OREF-003
 
 **Source**: [Nocturne Rust oref Profile Analysis](../../docs/10-domain/nocturne-rust-oref-profile-analysis.md)
+
+---
+
+## Insulin Action Curves: JS oref0 vs Rust oref
+
+### Bilinear Curve (Legacy)
+
+| Constant | JS oref0 | Rust oref | Match |
+|----------|----------|-----------|-------|
+| Default DIA | 3.0 h | 3.0 h | ✅ |
+| Peak time | 75 min | 75 min | ✅ |
+| End time | 180 min | 180 min | ✅ |
+| IOB formula pre-peak | `(-0.001852*x1²) + (0.001852*x1) + 1.0` | Same | ✅ |
+| IOB formula post-peak | `(0.001323*x2²) + (-0.054233*x2) + 0.555560` | Same | ✅ |
+
+### Exponential Curve (Rapid/Ultra-Rapid)
+
+| Variable | JS oref0 | Rust oref | Formula |
+|----------|----------|-----------|---------|
+| tau | ✅ | ✅ | `peak × (1 - peak/end) / (1 - 2×peak/end)` |
+| a | ✅ | ✅ | `2 × tau / end` |
+| S | ✅ | ✅ | `1 / (1 - a + (1+a) × exp(-end/tau))` |
+| activity | ✅ | ✅ | `insulin × (S/tau²) × t × (1-t/end) × exp(-t/tau)` |
+| IOB | ✅ | ✅ | Complex formula from LoopKit #388 |
+
+### Peak Time Defaults
+
+| Curve | JS oref0 | Rust oref | Notes |
+|-------|----------|-----------|-------|
+| Rapid-acting | 75 min | 75 min | ✅ Validated to 50-120 |
+| Ultra-rapid | 55 min | 55 min | ✅ Validated to 35-100 |
+
+### Key Differences
+
+| Aspect | JS oref0 | Rust oref |
+|--------|----------|-----------|
+| DIA minimum (bilinear) | Implicit | Enforced (`max(dia, 3.0)`) |
+| DIA minimum (exponential) | Implicit | Enforced (`max(dia, 5.0)`) |
+| Peak validation | In function | Caller responsibility |
+| Basal/bolus classification | None | < 0.1 U → basal |
+
+**Conformance Tests**: `conformance/scenarios/nocturne-oref/iob-tests.yaml`
+
+**Related Gaps**: GAP-OREF-CONFORMANCE-001, GAP-OREF-CONFORMANCE-002, GAP-OREF-CONFORMANCE-003
+
+**Source**: [Nocturne oref Conformance Analysis](../../conformance/scenarios/nocturne-oref/README.md)
