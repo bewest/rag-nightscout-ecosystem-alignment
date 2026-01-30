@@ -22,13 +22,37 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] Algorithm conformance: AAPS Kotlin runner (PARKED)
+### 1. [P2] Idiomatic sdqctl workflow integration
+**Type:** Implementation | **Effort:** Medium
+**Source:** tooling.md #15
+**Focus:** Replace custom VERIFY patterns with `sdqctl verify` calls in .conv files
+**Outcome:** Standardized verification across all workflows
+
+### 2. [P2] LSP verification setup research
+**Type:** Research | **Effort:** High
+**Source:** tooling.md #16
+**Focus:** Document requirements for JS/TS LSP, Kotlin/Java LSP, Swift limitations
+**Outcome:** Roadmap for LSP-based claim verification
+
+### 3. [P2] Nightscout PR coherence review protocol
+**Type:** Documentation | **Effort:** Medium
+**Source:** tooling.md #17
+**Focus:** Systematic review methodology for cgm-remote-monitor PRs against proposals/backlogs
+**Outcome:** Reusable PR review checklist
+
+### 4. [P2] Known vs unknown dashboard
+**Type:** Implementation | **Effort:** Low
+**Source:** tooling.md #20
+**Focus:** Summary view: repos analyzed, gaps identified, coverage %, confidence levels
+**Outcome:** At-a-glance project health view
+
+### 5. [P2] Algorithm conformance: AAPS Kotlin runner (PARKED)
 **Type:** Implementation | **Effort:** High
 **Repos:** AndroidAPS
 **Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
 **Note:** Requires JVM setup - parked until visibility work complete
 
-### 2. [P3] Algorithm conformance: Loop Swift runner (PARKED)
+### 6. [P3] Algorithm conformance: Loop Swift runner (PARKED)
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
