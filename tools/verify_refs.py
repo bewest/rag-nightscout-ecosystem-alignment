@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
 """
-Reference Validator - verifies code references in mapping documents resolve to actual files.
+Reference Validator - verifies code references in documents resolve to actual files.
 
-Scans mapping documents for code reference patterns like:
+Scans documents for code reference patterns like:
 - `alias:path/to/file.ext`
 - `alias:path/to/file.ext#L10-L50`
+
+Directories scanned:
+- mapping/**/*.md
+- docs/**/*.md
+- specs/**/*.md, *.yaml
+- traceability/**/*.md
+- conformance/**/*.md, *.yaml
 
 Validates that:
 1. The alias matches a known repository in workspace.lock.json
@@ -33,7 +40,9 @@ WORKSPACE_ROOT = Path(__file__).parent.parent
 LOCKFILE = WORKSPACE_ROOT / "workspace.lock.json"
 MAPPING_DIR = WORKSPACE_ROOT / "mapping"
 DOCS_DIR = WORKSPACE_ROOT / "docs"
+SPECS_DIR = WORKSPACE_ROOT / "specs"
 TRACEABILITY_DIR = WORKSPACE_ROOT / "traceability"
+CONFORMANCE_DIR = WORKSPACE_ROOT / "conformance"
 EXTERNALS_DIR = WORKSPACE_ROOT / "externals"
 
 CODE_REF_PATTERN = re.compile(r'`([a-zA-Z0-9_-]+:[^`]+)`')
@@ -441,10 +450,17 @@ def main():
         print(f"Scanning {DOCS_DIR}...")
         all_results.extend(scan_directory(DOCS_DIR, aliases))
     
-    specs_dir = WORKSPACE_ROOT / "specs"
-    if specs_dir.exists():
-        print(f"Scanning {specs_dir}...")
-        all_results.extend(scan_directory(specs_dir, aliases))
+    if SPECS_DIR.exists():
+        print(f"Scanning {SPECS_DIR}...")
+        all_results.extend(scan_directory(SPECS_DIR, aliases))
+    
+    if TRACEABILITY_DIR.exists():
+        print(f"Scanning {TRACEABILITY_DIR}...")
+        all_results.extend(scan_directory(TRACEABILITY_DIR, aliases))
+    
+    if CONFORMANCE_DIR.exists():
+        print(f"Scanning {CONFORMANCE_DIR}...")
+        all_results.extend(scan_directory(CONFORMANCE_DIR, aliases))
     
     report = generate_report(all_results, aliases)
     

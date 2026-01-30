@@ -10,6 +10,22 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Extend verify_refs Scope (2026-01-30)
+
+Cycle 26: Added traceability/ and conformance/ to verify_refs scan directories.
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Files scanned | 300 | 353 |
+| Total refs | 300 | 441 |
+| Valid refs | 253 | 377 |
+
+**Changes**: `tools/verify_refs.py` - added TRACEABILITY_DIR, CONFORMANCE_DIR constants and scan calls.
+
+**tooling.md #22**: ✅ COMPLETE
+
+---
+
 ### Documentation Parse Audit (2026-01-30)
 
 Cycle 25: Identified docs with no tool coverage.

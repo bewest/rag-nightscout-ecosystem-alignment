@@ -33,7 +33,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 19 | ~~**Documentation parse audit**~~ | ~~P1~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/documentation-parse-audit.md` (30 uncovered, 91%→99% after fixes) |
 | 20 | **Known vs unknown dashboard** | P2 | Low | Summary view: repos analyzed, gaps identified, coverage %, confidence levels |
 | 21 | ~~**Fix verify_coverage.py**~~ | ~~P1~~ | ~~Low~~ | ✅ COMPLETE - Fixed glob patterns + REQ-DOMAIN-NNN regex (0→242 reqs, 0→289 gaps) |
-| 22 | **Extend verify_refs scope** | P2 | Low | Add `conformance/**/*.md`, `specs/**/*.md`, `traceability/**/*.md` (+22 files) |
+| 22 | ~~**Extend verify_refs scope**~~ | ~~P2~~ | ~~Low~~ | ✅ COMPLETE - Added traceability/, conformance/ (300→353 files, 441 refs validated) |
 | 23 | **Extend verify_assertions scope** | P3 | Low | Add `conformance/**/*.yaml` (not just assertions/) (+8 files) |
 
 ---
