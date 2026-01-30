@@ -15,6 +15,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 10) | P0 | ✅ Complete (Ready Queue 2 items, selective loading complete) | 2026-01-30 |
+| Selective repo loading proposal | P2 | ✅ Complete (40-60% token reduction, combined 60-80%) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 9) | P0 | ✅ Complete (Ready Queue 3 items, REFCAT complete) | 2026-01-30 |
 | REFCAT caching proposal | P2 | ✅ Complete (20-40% token reduction, 4-phase plan) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 8) | P0 | ✅ Complete (Ready Queue 4 items, bridge deprecation complete) | 2026-01-30 |

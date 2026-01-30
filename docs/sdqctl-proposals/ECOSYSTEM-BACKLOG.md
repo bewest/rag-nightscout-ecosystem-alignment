@@ -29,12 +29,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
 
-### 2. [P2] Selective repo loading
-**Type:** Tooling | **Effort:** Medium
-**Focus:** Load only task-relevant repos to reduce 3.4M tokens/cycle
-**Backlog:** [tooling.md](backlogs/tooling.md)
-
-### 3. [P3] Algorithm conformance: Loop Swift runner
+### 2. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
@@ -47,6 +42,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Selective repo loading** | `docs/sdqctl-proposals/selective-repo-loading-proposal.md` | 40-60% token reduction, combined 60-80% |
 | **REFCAT caching proposal** | `docs/sdqctl-proposals/refcat-caching-proposal.md` | 20-40% token reduction, 4-phase plan |
 | **Bridge deprecation plan** | `docs/10-domain/bridge-deprecation-plan.md` | Full parity in nightscout-connect; archive Mar 31 |
 | **PR adoption sequencing proposal** | `docs/10-domain/pr-adoption-sequencing-proposal.md` | 4-phase plan: Feb→Mar→Apr→Q2 |

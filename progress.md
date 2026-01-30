@@ -8,6 +8,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Selective Repo Loading Proposal (2026-01-30)
+
+Ready Queue Item #2: Token efficiency via task-aware repo selection.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Proposal | `docs/sdqctl-proposals/selective-repo-loading-proposal.md` | 8.4KB, 5-phase plan |
+
+**Token Savings Estimate**:
+| Scenario | Savings | Combined w/REFCAT |
+|----------|---------|-------------------|
+| Conservative | 40% | 60% |
+| Optimistic | 60% | 80% |
+
+**Implementation**: 8 hours
+
+---
+
 ### REFCAT Caching Proposal (2026-01-30)
 
 Ready Queue Item #2: Token efficiency improvement proposal.
