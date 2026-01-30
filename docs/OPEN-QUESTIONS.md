@@ -107,7 +107,7 @@ Questions requiring formal architectural decision records.
 - "New record supersedes old" is more ergonomic than "old record is superseded by new" in NS workflows
 - Nocturne sources may have relevant proposals on this topic
 
-**Action**: Systematic Nocturne analysis in progress (2/7 complete)
+**Action**: Systematic Nocturne analysis in progress (3/7 complete)
 
 **Analysis Progress**:
 1. ✅ Nocturne ProfileSwitch treatment model - **Complete** ([analysis](10-domain/nocturne-profileswitch-analysis.md))
@@ -116,8 +116,10 @@ Questions requiring formal architectural decision records.
 2. ✅ Nocturne percentage/timeshift handling - **Complete** ([analysis](10-domain/nocturne-percentage-timeshift-handling.md))
    - Key finding: Profile API returns raw; internal calculations use scaled values
    - Added: GAP-NOCTURNE-005, REQ-SYNC-057/058
-3. ⏳ Nocturne vs cgm-remote-monitor Profile collection sync - **Next**
-4. ⬜ Nocturne Override/Temporary Target representation
+3. ✅ Nocturne vs cgm-remote-monitor Profile sync - **Complete** ([comparison](10-domain/nocturne-cgm-remote-monitor-profile-sync.md))
+   - Key finding: Deduplication, srvModified, and delete semantics all differ
+   - Added: GAP-SYNC-038/039/040, REQ-SYNC-059/060/061
+4. ⏳ Nocturne Override/Temporary Target representation - **Next**
 5. ⬜ Nocturne V4 ProfileSwitch extensions
 6. ⬜ Nocturne Rust oref profile handling
 7. ⬜ ADR-004 draft (after above complete)

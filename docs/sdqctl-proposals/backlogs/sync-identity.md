@@ -62,10 +62,19 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 **Type:** Comparison | **Effort:** Medium  
 **Repos:** nocturne, cgm-remote-monitor  
 **Focus:** Compare profile sync behavior between implementations  
-**Questions:**
-- Same deduplication logic for `profile` collection?
-- Same handling of `defaultProfile` field?
-- V3 `srvModified` behavior for profile changes?
+**Status:** ✅ COMPLETE 2026-01-30
+**Deliverable:** `docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md`
+**Key Findings:**
+- Deduplication: cgm-remote-monitor uses `created_at` fallback; Nocturne does not
+- srvModified: Missing from Nocturne Profile model
+- Delete: cgm-remote-monitor soft deletes; Nocturne hard deletes
+**Gaps Added:** GAP-SYNC-038, GAP-SYNC-039, GAP-SYNC-040
+**Requirements Added:** REQ-SYNC-059, REQ-SYNC-060, REQ-SYNC-061
+
+**Questions Answered:**
+- ✅ Different deduplication: cgm-remote-monitor uses `identifier` OR `created_at`; Nocturne only `Id`/`OriginalId`
+- ✅ Same `defaultProfile` handling: both use "Default" as convention
+- ✅ srvModified differs: cgm-remote-monitor has explicit field; Nocturne uses Mills
 
 **Related Gap:** GAP-SYNC-036
 
@@ -117,6 +126,7 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 
 | Item | Date | Notes |
 |------|------|-------|
+| Nocturne vs cgm-remote-monitor Profile sync | 2026-01-30 | Item #7; GAP-SYNC-038/039/040, 3 REQs |
 | Nocturne percentage/timeshift handling | 2026-01-30 | Item #6; GAP-NOCTURNE-005, 2 REQs |
 | Nocturne ProfileSwitch treatment model | 2026-01-30 | Item #5; GAP-NOCTURNE-004, 3 REQs |
 | Orphaned assertion linkage | 2026-01-29 | 23→0 orphans, +20 REQs created |

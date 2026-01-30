@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| OQ-010 Item #7: Profile sync comparison | P2 | ✅ Complete (GAP-SYNC-038/039/040, 3 REQs) | 2026-01-30 |
 | OQ-010 Item #6: percentage/timeshift handling | P2 | ✅ Complete (GAP-NOCTURNE-005, 2 REQs) | 2026-01-30 |
 | Phase 4 backlog grooming | P0 | ✅ Complete (5→7 Ready Queue, dedup sync-identity) | 2026-01-30 |
 | Backlog-cycle-v3.conv proposal | P3 | → Queued to [tooling.md](docs/sdqctl-proposals/backlogs/tooling.md) | 2026-01-30 |

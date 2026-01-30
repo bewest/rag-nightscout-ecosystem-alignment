@@ -3837,3 +3837,30 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | `GetActiveProfileTreatment` | Nocturne method to find active ProfileSwitch treatment at given time |
 | Effective Profile | Computed profile values after applying active ProfileSwitch percentage/timeshift |
 | Raw Profile | Profile values as stored, without ProfileSwitch adjustments |
+
+### Profile Collection Sync (cgm-remote-monitor vs Nocturne)
+
+| Aspect | cgm-remote-monitor | Nocturne |
+|--------|-------------------|----------|
+| **Dedup Primary** | `identifier` field | `Id` (GUID v7) |
+| **Dedup Fallback** | `created_at` field | `OriginalId` (MongoDB migration) |
+| **srvModified** | Explicit field, auto-updated | Not on Profile model (uses Mills) |
+| **srvCreated** | Explicit field, set on insert | Not on Profile model |
+| **Delete Behavior** | Soft delete (`isValid: false`) | Hard delete (removal) |
+| **Sort Field** | `startDate` descending | `Mills` descending |
+| **defaultProfile** | Convention ("Default") | Default value ("Default") |
+
+### Profile Sync Identity Fields
+
+| Field | cgm-remote-monitor | Nocturne | Purpose |
+|-------|-------------------|----------|---------|
+| `identifier` | V3 dedup primary | Not used | Client-provided unique ID |
+| `_id` | MongoDB ObjectId | EF Core Id | Server-assigned identity |
+| `created_at` | V3 dedup fallback | Stored but not dedup | Creation timestamp |
+| `OriginalId` | N/A | MongoDB migration | Preserves original ObjectId |
+| `Mills` | V1 timestamp | V1/V3 timestamp | Epoch milliseconds |
+| `srvModified` | Server mod time | N/A | Incremental sync tracking |
+
+**Related Gaps**: GAP-SYNC-038, GAP-SYNC-039, GAP-SYNC-040
+
+**Source**: [Profile Sync Comparison](../../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md)

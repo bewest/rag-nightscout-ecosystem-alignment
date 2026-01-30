@@ -2,7 +2,7 @@
 
 > **Source**: `externals/nocturne/`  
 > **Deep Dive**: [nocturne-deep-dive.md](../../docs/10-domain/nocturne-deep-dive.md)  
-> **Last Updated**: 2026-01-29
+> **Last Updated**: 2026-01-30
 
 Nocturne is a .NET 10 rewrite of the Nightscout API with full v1/v2/v3 compatibility and native data connectors.
 
@@ -55,6 +55,9 @@ Nocturne (.NET 10)
 | GAP-NOCTURNE-003 | SignalR→Socket.IO bridge adds latency | Documented |
 | GAP-NOCTURNE-004 | ProfileSwitch percentage/timeshift applied (cgm-remote-monitor doesn't) | Documented |
 | GAP-NOCTURNE-005 | Profile API returns raw values despite active ProfileSwitch | Documented |
+| GAP-SYNC-038 | Profile deduplication fallback missing (no created_at) | Documented |
+| GAP-SYNC-039 | Profile srvModified field missing | Documented |
+| GAP-SYNC-040 | Profile uses hard delete (cgm-remote-monitor uses soft) | Documented |
 
 ---
 
@@ -65,6 +68,7 @@ Nocturne (.NET 10)
 | [nocturne-deep-dive.md](../../docs/10-domain/nocturne-deep-dive.md) | Architecture overview |
 | [nocturne-profileswitch-analysis.md](../../docs/10-domain/nocturne-profileswitch-analysis.md) | ProfileSwitch treatment handling |
 | [nocturne-percentage-timeshift-handling.md](../../docs/10-domain/nocturne-percentage-timeshift-handling.md) | API vs internal scaling behavior |
+| [nocturne-cgm-remote-monitor-profile-sync.md](../../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md) | Profile sync comparison |
 
 ---
 

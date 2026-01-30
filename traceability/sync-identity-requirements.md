@@ -906,3 +906,69 @@ See [requirements.md](requirements.md) for the index.
 **Verification**: Fetch profile with active ProfileSwitch; verify response includes percentage/timeshift fields.
 
 **Gap**: GAP-NOCTURNE-005
+
+---
+
+## Profile Sync Requirements
+
+### REQ-SYNC-059: Profile Deduplication Consistency
+
+**Statement**: Servers SHOULD implement consistent profile deduplication using both `identifier` and `created_at` fallback fields.
+
+**Rationale**: Ensures V1 and V3 API uploads are deduplicated consistently across implementations.
+
+**Scenarios**:
+- Upload profile without identifier
+- Upload same profile again with same created_at
+- Verify only one profile exists
+
+**Verification**:
+- Upload profile without identifier twice with same `created_at`
+- Verify single profile exists
+
+**Gap Reference**: GAP-SYNC-038
+
+**Source**: [Profile Sync Comparison](../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md)
+
+---
+
+### REQ-SYNC-060: Profile srvModified Support
+
+**Statement**: Servers SHOULD track `srvModified` timestamp on Profile documents for sync polling.
+
+**Rationale**: Enables efficient incremental sync by clients using `srvModified$gt` filter.
+
+**Scenarios**:
+- Update profile
+- Query with srvModified$gt filter
+- Only updated profiles returned
+
+**Verification**:
+- Update profile; verify `srvModified` changes
+- Query with `srvModified$gt` filter
+
+**Gap Reference**: GAP-SYNC-039
+
+**Source**: [Profile Sync Comparison](../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md)
+
+---
+
+### REQ-SYNC-061: Profile Soft Delete
+
+**Statement**: Servers SHOULD implement soft delete for profiles (set `isValid: false`) rather than hard delete.
+
+**Rationale**: Allows sync clients to detect deletions and remove local copies.
+
+**Scenarios**:
+- Delete profile
+- Query with isValid=false
+- Deleted profile returned with deletion marker
+
+**Verification**:
+- Delete profile
+- Verify `isValid: false` and `srvModified` updated
+- Verify still queryable
+
+**Gap Reference**: GAP-SYNC-040
+
+**Source**: [Profile Sync Comparison](../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md)

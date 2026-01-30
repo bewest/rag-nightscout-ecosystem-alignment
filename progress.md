@@ -8,6 +8,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne vs cgm-remote-monitor Profile Sync Comparison (2026-01-30)
+
+Compared profile collection sync behavior between Nocturne and cgm-remote-monitor implementations.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Comparison doc | `docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md` | 200+ lines, 3 REQs, 3 GAPs |
+
+**Key Findings**:
+- **Deduplication**: cgm-remote-monitor uses `identifier` OR `created_at` fallback; Nocturne only uses `Id`/`OriginalId`
+- **srvModified**: Missing from Nocturne Profile model; breaks sync polling
+- **Delete semantics**: cgm-remote-monitor soft deletes (isValid=false); Nocturne hard deletes
+
+**Gaps Added**: GAP-SYNC-038, GAP-SYNC-039, GAP-SYNC-040
+
+**Requirements Added**: REQ-SYNC-059, REQ-SYNC-060, REQ-SYNC-061
+
+**Source Files Analyzed**:
+- `externals/cgm-remote-monitor/lib/api3/generic/setup.js:65-73`
+- `externals/cgm-remote-monitor/lib/api3/storage/mongoCollection/utils.js:130-169`
+- `externals/nocturne/src/Core/Nocturne.Core.Models/Profile.cs`
+- `externals/nocturne/src/Infrastructure/Nocturne.Infrastructure.Data/Repositories/ProfileRepository.cs`
+
+**OQ-010 Research Queue**: Item #7 of 7 complete
+
+---
+
 ### Nocturne ProfileSwitch Treatment Model Analysis (2026-01-30)
 
 Analyzed how Nocturne handles AAPS ProfileSwitch events, including percentage and timeshift application.

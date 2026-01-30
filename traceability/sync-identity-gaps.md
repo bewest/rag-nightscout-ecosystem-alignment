@@ -936,3 +936,65 @@ if (rVal) rVal.replace('ETC','Etc');
 **Remediation**: Consider adding an `/api/v4/profile/effective` endpoint that returns computed values with active ProfileSwitch applied, or add metadata to profile responses indicating active ProfileSwitch details.
 
 **Related**: GAP-NOCTURNE-004, GAP-SYNC-037
+
+---
+
+## Profile Sync Divergences
+
+### GAP-SYNC-038: Profile Deduplication Fallback Missing in Nocturne
+
+**Description**: Nocturne lacks `created_at` fallback deduplication for profiles. cgm-remote-monitor uses `identifier` OR `created_at` for deduplication; Nocturne only uses `Id`/`OriginalId`.
+
+**Affected Systems**: Controllers uploading profiles via V1 API to Nocturne
+
+**Evidence**:
+- cgm-remote-monitor: `lib/api3/generic/setup.js:65-73` - `dedupFallbackFields: ['created_at']`
+- Nocturne: `src/Infrastructure/Nocturne.Infrastructure.Data/Repositories/ProfileRepository.cs:159-167` - only checks `Id` or `OriginalId`
+
+**Impact**: Duplicate profiles may accumulate when uploading without identifiers.
+
+**Remediation**: Add `created_at` fallback matching to Nocturne's `CreateProfilesAsync`.
+
+**Source**: [Profile Sync Comparison](../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md)
+
+**Status**: Open
+
+---
+
+### GAP-SYNC-039: Profile srvModified Field Missing in Nocturne
+
+**Description**: Nocturne's Profile model lacks `srvModified` field. cgm-remote-monitor auto-updates `srvModified` on every profile modification for sync tracking.
+
+**Affected Systems**: Clients using `srvModified$gt` filter for profile sync
+
+**Evidence**:
+- cgm-remote-monitor: `lib/api3/generic/update/replace.js:28-29` - sets `srvModified`
+- Nocturne: `src/Core/Nocturne.Core.Models/Profile.cs` - no srvModified property
+
+**Impact**: Cannot efficiently poll for profile changes using V3 sync pattern.
+
+**Remediation**: Add `srvModified` property to Profile model; auto-update on save.
+
+**Source**: [Profile Sync Comparison](../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md)
+
+**Status**: Open
+
+---
+
+### GAP-SYNC-040: Profile Delete Semantics Differ
+
+**Description**: cgm-remote-monitor uses soft delete (sets `isValid: false`); Nocturne uses hard delete (removes from database).
+
+**Affected Systems**: Sync clients expecting deleted profiles to remain visible with isValid=false
+
+**Evidence**:
+- cgm-remote-monitor: Soft delete with `isValid: false`, `srvModified` updated
+- Nocturne: Hard delete from database
+
+**Impact**: Clients may not detect profile deletions when syncing with Nocturne.
+
+**Remediation**: Implement soft delete in Nocturne with isValid field.
+
+**Source**: [Profile Sync Comparison](../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md)
+
+**Status**: Open
