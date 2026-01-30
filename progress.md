@@ -8,6 +8,35 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne V3 API Parity Analysis (2026-01-30)
+
+OQ-010 Extended API Item #6: Comprehensive V3 API behavioral comparison.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Test Scenarios | `conformance/scenarios/nocturne-v3-parity/` | 3 scenario files |
+| README | `nocturne-v3-parity/README.md` | 250+ lines, executive summary |
+| Query Tests | `query-parameters.yaml` | 18 scenarios |
+| Filter Tests | `filter-operators.yaml` | 22 scenarios |
+| History Tests | `history-endpoint.yaml` | 8 scenarios + workarounds |
+
+**Key Findings**:
+- **Query parameters**: ✅ Full parity (9 operators, date parsing)
+- **History endpoint**: ❌ **MISSING** in Nocturne (GAP-SYNC-041)
+- **ETag handling**: Different strategies (timestamp vs content-hash)
+- **Pagination**: Nocturne enhanced (X-Total-Count, Link headers)
+- **Soft delete**: ❌ Not supported (GAP-SYNC-040)
+
+**Critical Gap**: Missing `/api/v3/{collection}/history/{lastModified}` endpoint
+- Primary sync mechanism for AAPS/Loop
+- No workaround for soft-delete detection
+
+**Gaps Identified**: GAP-SYNC-041, GAP-API-010, GAP-API-011
+
+**OQ-010 Extended Research Queue**: API Item #6 of 4 complete
+
+---
+
 ### Nocturne Deletion Semantics Analysis (2026-01-30)
 
 OQ-010 Extended Item #18: Analyzed soft-delete vs hard-delete behavior differences.

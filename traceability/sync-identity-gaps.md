@@ -1062,6 +1062,41 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ---
 
+### GAP-SYNC-041: Missing V3 History Endpoint in Nocturne
+
+**Description**: Nocturne does not implement the `/api/v3/{collection}/history/{lastModified}` endpoint that AAPS and Loop use for incremental sync. This endpoint returns all records modified since a given timestamp, sorted by `srvModified` ascending, and includes soft-deleted records.
+
+**Affected Systems**: AAPS, Loop, Trio, any V3 API sync client
+
+**Evidence**:
+- cgm-remote-monitor: `lib/api3/generic/history/operation.js` - Full history endpoint implementation
+  - Accepts `lastModified` URL param or `Last-Modified` header
+  - Returns records with `srvModified > lastModified` (URL) or `>= lastModified` (header)
+  - Sets `ETag: W/"<maxSrvModified>"` weak ETag
+  - Includes soft-deleted records (`isValid=false`)
+- Nocturne: No history endpoint in `Controllers/V3/` directory
+  - Search conducted: `grep -r history Controllers/V3/` - no matches
+  - Clients must use workaround: `?srvModified$gte=X&sort=srvModified`
+
+**Impact**:
+- **HIGH** - Primary sync mechanism for AID clients is unavailable
+- Clients cannot detect soft-deleted records (Nocturne uses hard delete)
+- No weak ETag for efficient conditional sync polling
+- Workaround query does not include deleted records
+
+**Remediation**:
+1. Implement `/api/v3/{collection}/history/{lastModified}` endpoint
+2. Accept both URL parameter and `Last-Modified` header
+3. Include soft-deleted records (requires GAP-SYNC-040 fix first)
+4. Set `Last-Modified` and `ETag: W/"<maxSrvModified>"` response headers
+5. Sort results by `srvModified` ascending
+
+**Source**: [V3 API Parity Analysis](../conformance/scenarios/nocturne-v3-parity/README.md)
+
+**Status**: Open - High Priority
+
+---
+
 ## V4 API Extension Gaps
 
 ### GAP-V4-001: StateSpan API Not Standardized

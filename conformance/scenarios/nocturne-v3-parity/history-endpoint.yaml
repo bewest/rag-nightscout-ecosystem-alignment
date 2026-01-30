@@ -1,0 +1,181 @@
+# V3 History Endpoint Test Scenarios
+# Tests history/sync endpoint parity - CRITICAL GAP in Nocturne
+
+scenarios:
+  - name: "History endpoint with URL parameter"
+    description: "Test history endpoint with lastModified in URL"
+    endpoint: "/api/v3/entries/history/1705320000000"
+    method: GET
+    expected:
+      cgm_remote_monitor:
+        status: 200
+        filter: { "field": "srvModified", "operator": "gt", "value": 1705320000000 }
+        sort: { "srvModified": 1 }
+        headers:
+          - "Last-Modified"
+          - "ETag"
+      nocturne:
+        status: 404
+        message: "Endpoint not implemented"
+    parity: false
+    gap: "GAP-SYNC-041"
+    impact: "HIGH - AAPS/Loop sync broken"
+
+  - name: "History endpoint with Last-Modified header"
+    description: "Test history with header timestamp"
+    endpoint: "/api/v3/treatments/history"
+    method: GET
+    headers:
+      "Last-Modified": "Thu, 15 Jan 2024 12:00:00 GMT"
+    expected:
+      cgm_remote_monitor:
+        status: 200
+        filter: { "field": "srvModified", "operator": "gte" }
+        includes_deleted: true  # isValid=false records
+      nocturne:
+        status: 404
+    parity: false
+    gap: "GAP-SYNC-041"
+
+  - name: "History without timestamp"
+    description: "Test history without lastModified"
+    endpoint: "/api/v3/entries/history"
+    method: GET
+    expected:
+      cgm_remote_monitor:
+        status: 400
+        message: "Missing or bad Last-Modified header"
+      nocturne:
+        status: 404
+    parity: false
+    notes: "cgm-remote-monitor requires timestamp"
+
+  - name: "History ETag response"
+    description: "Verify weak ETag format"
+    endpoint: "/api/v3/entries/history/1705320000000"
+    method: GET
+    expected:
+      cgm_remote_monitor:
+        headers:
+          ETag: 'W/"1705406400000"'  # Weak ETag with max srvModified
+          "Last-Modified": "RFC 2616 date format"
+      nocturne:
+        headers: null
+    parity: false
+    gap: "GAP-SYNC-041"
+
+  - name: "History includes soft-deleted"
+    description: "Test that history returns isValid=false records"
+    endpoint: "/api/v3/treatments/history/1705320000000"
+    method: GET
+    setup:
+      - "Create treatment"
+      - "Soft delete treatment (isValid=false)"
+    expected:
+      cgm_remote_monitor:
+        result_includes: { "isValid": false }
+        comment: "Clients can detect deletions"
+      nocturne:
+        behavior: "Hard delete - record gone"
+    parity: false
+    gap: "GAP-SYNC-040"
+
+  - name: "History sort order"
+    description: "Verify ascending srvModified sort"
+    endpoint: "/api/v3/entries/history/1705320000000"
+    method: GET
+    expected:
+      cgm_remote_monitor:
+        sort_field: "srvModified"
+        sort_order: "ascending"
+        comment: "Oldest changes first for sync"
+      nocturne:
+        behavior: "Endpoint missing"
+    parity: false
+
+  - name: "History fields projection"
+    description: "Test field selection on history"
+    endpoint: "/api/v3/entries/history/1705320000000"
+    method: GET
+    params:
+      fields: "date,sgv,srvModified"
+    expected:
+      cgm_remote_monitor:
+        status: 200
+        result_fields: ["date", "sgv", "srvModified"]
+      nocturne:
+        status: 404
+    parity: false
+
+  - name: "History limit parameter"
+    description: "Test pagination on history"
+    endpoint: "/api/v3/entries/history/1705320000000"
+    method: GET
+    params:
+      limit: 100
+    expected:
+      cgm_remote_monitor:
+        status: 200
+        max_results: 100
+      nocturne:
+        status: 404
+    parity: false
+
+---
+# Workaround scenarios for Nocturne
+
+workarounds:
+  - name: "Nocturne sync via search with srvModified filter"
+    description: "Alternative sync pattern for Nocturne"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "srvModified$gte": 1705320000000
+      sort: srvModified
+      limit: 1000
+    expected:
+      status: 200
+      limitations:
+        - "Does not include soft-deleted records"
+        - "ETag is content-hash, not timestamp-based"
+        - "Must manually check for deletions"
+    notes: "This is how clients must sync with Nocturne currently"
+
+  - name: "Nocturne deletion detection workaround"
+    description: "Detect deletions via identifier comparison"
+    algorithm: |
+      1. Fetch all identifiers from Nocturne
+      2. Compare with local cache
+      3. Records in cache but not in response = deleted
+    limitations:
+      - "Requires full scan of collection"
+      - "Memory intensive for large collections"
+      - "Race condition window during sync"
+    gap: "GAP-SYNC-040"
+
+---
+# Recommendations for Nocturne
+
+recommendations:
+  - priority: "HIGH"
+    action: "Implement /api/v3/{collection}/history endpoint"
+    details: |
+      1. Accept lastModified as URL param or Last-Modified header
+      2. Filter by srvModified$gt (URL param) or srvModified$gte (header)
+      3. Sort by srvModified ascending
+      4. Include isValid=false records
+      5. Set Last-Modified and weak ETag headers
+
+  - priority: "HIGH"
+    action: "Implement soft delete with isValid field"
+    details: |
+      1. Add isValid column to all collections
+      2. DELETE sets isValid=false, not remove
+      3. Read endpoint returns 410 GONE for isValid=false
+      4. History includes all records regardless of isValid
+
+  - priority: "MEDIUM"
+    action: "Match cgm-remote-monitor weak ETag format"
+    details: |
+      Use W/"<maxSrvModified>" format for history endpoint
+      to enable If-None-Match conditional sync

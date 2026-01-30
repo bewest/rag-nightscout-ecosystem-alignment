@@ -29,13 +29,21 @@ Per OQ-010 extended research request (2026-01-30), focused analysis of Nocturne 
 **Repos:** nocturne, cgm-remote-monitor  
 **Focus:** Verify identical behavior for V3 endpoints between implementations  
 **Questions:**
-- Are all V3 query parameters supported (`count`, `skip`, `date$gte`, etc.)?
-- Does ETag/srvModified behavior match exactly?
-- Are partial failure responses identical?
-- Edge cases: empty results, invalid parameters, auth errors?
+- ✅ Are all V3 query parameters supported (`count`, `skip`, `date$gte`, etc.)? → **YES** (full parity)
+- ⚠️ Does ETag/srvModified behavior match exactly? → **NO** (different strategies)
+- ✅ Are partial failure responses identical? → **YES** (same format)
+- ✅ Edge cases: empty results, invalid parameters, auth errors? → **YES** (similar handling)
 
-**Related Gap:** GAP-NOCTURNE-001  
+**Related Gap:** GAP-NOCTURNE-001, GAP-SYNC-041, GAP-API-010, GAP-API-011  
 **Deliverable:** `conformance/scenarios/nocturne-v3-parity/` test cases
+**Status:** ✅ COMPLETE 2026-01-30
+
+**Key Findings:**
+- Query parameter support: Full parity (9 operators, date field auto-parsing)
+- **CRITICAL**: Missing `/api/v3/{collection}/history` endpoint (GAP-SYNC-041)
+- ETag: cgm-remote-monitor uses timestamp-based weak ETag, Nocturne uses content-hash
+- Nocturne enhanced: X-Total-Count, Link headers for pagination
+- Soft delete: Not supported in Nocturne (links to GAP-SYNC-040)
 
 ### 7. [P2] Nocturne eventType normalization behavior
 **Type:** Analysis | **Effort:** Medium  
@@ -82,6 +90,7 @@ Per OQ-010 extended research request (2026-01-30), focused analysis of Nocturne 
 
 | Item | Date | Notes |
 |------|------|-------|
+| V3 API behavioral parity testing | 2026-01-30 | Item #6; GAP-SYNC-041 (missing history), 40+ test scenarios |
 | Playwright E2E PR submission | 2026-01-29 | PR-SUBMISSION.md created, 18 tests ready |
 | Playwright adoption: Implementation | 2026-01-29 | 591 lines, 4 files, ready for PR |
 | cgm-remote-monitor design review | 2026-01-29 | 319 lines, 18 gaps synthesized, 5-phase refactoring plan, 4 new REQs |

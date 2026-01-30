@@ -517,6 +517,12 @@ See [requirements.md](requirements.md) for the index.
 
 **Assertion**: `history-returns-modified-after`
 
+**Implementation Status**:
+| System | Status | Notes |
+|--------|--------|-------|
+| cgm-remote-monitor | ✅ Compliant | `/api/v3/{collection}/history/{ts}` |
+| Nocturne | ❌ Non-compliant | Missing history endpoint (GAP-SYNC-041) |
+
 ---
 
 ### REQ-SYNC-046: History Endpoint Includes Deleted
@@ -537,6 +543,12 @@ See [requirements.md](requirements.md) for the index.
 - Verify deleted document returned with isValid=false
 
 **Assertion**: `history-includes-soft-deleted`
+
+**Implementation Status**:
+| System | Status | Notes |
+|--------|--------|-------|
+| cgm-remote-monitor | ✅ Compliant | Soft delete, history includes deleted |
+| Nocturne | ❌ Non-compliant | Missing history endpoint (GAP-SYNC-041), hard delete (GAP-SYNC-040) |
 
 ---
 

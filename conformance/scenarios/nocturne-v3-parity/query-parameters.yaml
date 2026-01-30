@@ -1,0 +1,189 @@
+# V3 Query Parameter Test Scenarios
+# Tests parameter parsing parity between cgm-remote-monitor and Nocturne
+
+scenarios:
+  - name: "Default limit behavior"
+    description: "Test default limit when not specified"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params: {}
+    expected:
+      cgm_remote_monitor:
+        default_limit: 10
+        max_limit: 1000
+      nocturne:
+        default_limit: 100
+        max_limit: 1000
+    parity: false
+    gap: "GAP-API-010"
+    notes: "Different defaults but max limit identical"
+
+  - name: "Explicit limit parameter"
+    description: "Test explicit limit parameter"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      limit: 50
+    expected:
+      result_count: 50
+    parity: true
+
+  - name: "Limit exceeds maximum"
+    description: "Test limit capping at max"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      limit: 2000
+    expected:
+      effective_limit: 1000
+    parity: true
+    notes: "Both cap at 1000"
+
+  - name: "Negative limit"
+    description: "Test negative limit handling"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      limit: -5
+    expected:
+      status: 400
+      message: "Parameter limit out of tolerance"
+    parity: true
+
+  - name: "Skip parameter"
+    description: "Test skip/offset parameter"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      skip: 100
+    expected:
+      offset: 100
+    parity: true
+    notes: "Skip is alias for offset in both"
+
+  - name: "Invalid skip parameter"
+    description: "Test invalid skip value"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      skip: -10
+    expected:
+      cgm_remote_monitor:
+        status: 400
+        message: "Parameter skip out of tolerance"
+      nocturne:
+        effective_offset: 0  # Nocturne clamps to 0
+    parity: false
+    notes: "Different error handling for negative skip"
+
+  - name: "Offset parameter (Nocturne-only)"
+    description: "Test offset parameter"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      offset: 50
+    expected:
+      cgm_remote_monitor:
+        ignored: true  # offset not recognized
+      nocturne:
+        effective_offset: 50
+    parity: false
+    notes: "cgm-remote-monitor only supports skip, not offset"
+
+  - name: "Sort ascending"
+    description: "Test ascending sort"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      sort: date
+    expected:
+      sort_order: "ascending"
+    parity: true
+
+  - name: "Sort descending"
+    description: "Test descending sort with sort$desc"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      sort$desc: date
+    expected:
+      sort_order: "descending"
+    parity: true
+
+  - name: "Sort conflict (both sort and sort$desc)"
+    description: "Test conflicting sort parameters"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      sort: date
+      sort$desc: date
+    expected:
+      status: 400
+    parity: true
+    notes: "Both reject conflicting sort params"
+
+  - name: "Field projection"
+    description: "Test fields parameter for projection"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      fields: "date,sgv,direction"
+    expected:
+      result_fields: ["date", "sgv", "direction"]
+      excluded_fields: ["device", "type", "noise"]
+    parity: true
+
+  - name: "Empty fields parameter"
+    description: "Test empty fields returns all"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      fields: ""
+    expected:
+      result_fields: "all"
+    parity: true
+
+  - name: "Date filter with ISO string"
+    description: "Test date parsing from ISO string"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "date$gte": "2024-01-15T12:00:00Z"
+    expected:
+      parsed_value: 1705320000000  # milliseconds
+    parity: true
+    notes: "Both parse ISO dates to milliseconds"
+
+  - name: "Date filter with milliseconds"
+    description: "Test date with raw milliseconds"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "date$gte": "1705320000000"
+    expected:
+      parsed_value: 1705320000000
+    parity: true
+
+  - name: "srvModified filter"
+    description: "Test srvModified date parsing"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "srvModified$gte": "2024-01-15T12:00:00Z"
+    expected:
+      parsed_value: 1705320000000
+    parity: true
+
+  - name: "created_at filter"
+    description: "Test created_at date handling"
+    endpoint: "/api/v3/treatments"
+    method: GET
+    params:
+      "created_at$gte": "2024-01-15T12:00:00Z"
+    expected:
+      cgm_remote_monitor:
+        parsed_format: "ISO string"  # created_at stays as ISO
+      nocturne:
+        parsed_format: "milliseconds"  # Nocturne converts all dates
+    parity: false
+    notes: "Different handling for created_at date format"

@@ -209,6 +209,23 @@ See: [`mapping/nightscout-roles-gateway/`](../nightscout-roles-gateway/)
 
 **Source**: `externals/nocturne/AGENTS.md`, `docs/10-domain/nocturne-deep-dive.md`
 
+### V3 API Behavioral Comparison
+
+| Feature | cgm-remote-monitor | Nocturne | Parity |
+|---------|-------------------|----------|--------|
+| Query params (`limit`, `skip`, `sort`) | ✅ Full | ✅ Full | ✅ |
+| Filter operators (9: eq, ne, gt, gte, lt, lte, in, nin, re) | ✅ Full | ✅ Full | ✅ |
+| Default limit | 10 | 100 | ⚠️ Different |
+| `offset` parameter | ❌ | ✅ | Nocturne adds |
+| **History endpoint** (`/history/{ts}`) | ✅ Full | ❌ Missing | ⚠️ **GAP-SYNC-041** |
+| ETag on search | Disabled | SHA256 hash | Different strategy |
+| ETag on history | `W/"srvModified"` weak | N/A | ⚠️ **GAP-SYNC-041** |
+| Pagination headers | None | X-Total-Count, Link | Nocturne enhanced |
+| Soft delete (isValid=false) | ✅ | ❌ Hard delete | ⚠️ **GAP-SYNC-040** |
+| 410 GONE response | ✅ | ❌ 404 | ⚠️ **GAP-SYNC-040** |
+
+**Source**: `conformance/scenarios/nocturne-v3-parity/README.md`
+
 ### Dexcom Share API (share2nightscout-bridge)
 
 | Endpoint | Purpose | Server |

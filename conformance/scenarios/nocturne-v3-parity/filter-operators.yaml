@@ -1,0 +1,231 @@
+# V3 Filter Operator Test Scenarios
+# Tests filter operator parity between cgm-remote-monitor and Nocturne
+
+scenarios:
+  - name: "Implicit eq operator"
+    description: "Test default equals without operator suffix"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      type: sgv
+    expected:
+      filter: { "field": "type", "operator": "eq", "value": "sgv" }
+    parity: true
+
+  - name: "Explicit eq operator"
+    description: "Test explicit equals with $eq suffix"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "type$eq": sgv
+    expected:
+      filter: { "field": "type", "operator": "eq", "value": "sgv" }
+    parity: true
+
+  - name: "ne operator (not equals)"
+    description: "Test not equals operator"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "type$ne": mbg
+    expected:
+      excludes_type: "mbg"
+    parity: true
+
+  - name: "gt operator (greater than)"
+    description: "Test greater than operator"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "sgv$gt": 180
+    expected:
+      filter: { "field": "sgv", "operator": "gt", "value": 180 }
+      result_sgv_min: 181
+    parity: true
+
+  - name: "gte operator (greater or equal)"
+    description: "Test greater than or equal operator"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "sgv$gte": 180
+    expected:
+      filter: { "field": "sgv", "operator": "gte", "value": 180 }
+      result_sgv_min: 180
+    parity: true
+
+  - name: "lt operator (less than)"
+    description: "Test less than operator"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "sgv$lt": 70
+    expected:
+      filter: { "field": "sgv", "operator": "lt", "value": 70 }
+      result_sgv_max: 69
+    parity: true
+
+  - name: "lte operator (less or equal)"
+    description: "Test less than or equal operator"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "sgv$lte": 70
+    expected:
+      filter: { "field": "sgv", "operator": "lte", "value": 70 }
+      result_sgv_max: 70
+    parity: true
+
+  - name: "Range query (gte + lte)"
+    description: "Test combined range filter"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "sgv$gte": 70
+      "sgv$lte": 180
+    expected:
+      result_sgv_range: [70, 180]
+    parity: true
+
+  - name: "in operator"
+    description: "Test in-array operator"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "type$in": "sgv,mbg,cal"
+    expected:
+      filter: { "field": "type", "operator": "in", "value": ["sgv", "mbg", "cal"] }
+    parity: true
+    notes: "Both parse comma-separated into array"
+
+  - name: "nin operator (not in)"
+    description: "Test not-in-array operator"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "type$nin": "cal,mbg"
+    expected:
+      excludes_types: ["cal", "mbg"]
+    parity: true
+
+  - name: "re operator (regex)"
+    description: "Test regex match operator"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "device$re": "dexcom.*G6"
+    expected:
+      filter: { "field": "device", "operator": "re", "value": "dexcom.*G6" }
+    parity: true
+    notes: "Case sensitivity may differ"
+
+  - name: "Unsupported operator"
+    description: "Test unknown operator rejection"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "sgv$like": "180"
+    expected:
+      cgm_remote_monitor:
+        status: 400
+        message: "Unsupported filter operator like"
+      nocturne:
+        status: 200
+        behavior: "Ignores unknown operator with warning"
+    parity: false
+    notes: "Different error handling for unknown operators"
+
+  - name: "Boolean value parsing"
+    description: "Test boolean string conversion"
+    endpoint: "/api/v3/treatments"
+    method: GET
+    params:
+      isSMB: "true"
+    expected:
+      parsed_value: true  # boolean, not string
+    parity: true
+
+  - name: "Boolean false value"
+    description: "Test false boolean parsing"
+    endpoint: "/api/v3/treatments"
+    method: GET
+    params:
+      isSMB: "false"
+    expected:
+      parsed_value: false
+    parity: true
+
+  - name: "Numeric value parsing"
+    description: "Test numeric string conversion"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "sgv$gte": "180"
+    expected:
+      parsed_value: 180  # number, not string
+    parity: true
+
+  - name: "String in single quotes"
+    description: "Test quoted string handling"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      device: "'xDrip'"
+    expected:
+      parsed_value: "xDrip"  # quotes stripped
+    parity: true
+
+  - name: "Multiple filters on same field"
+    description: "Test range with same field"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      "date$gte": "1705320000000"
+      "date$lte": "1705406400000"
+    expected:
+      filter_count: 2
+      filters:
+        - { "field": "date", "operator": "gte" }
+        - { "field": "date", "operator": "lte" }
+    parity: true
+
+  - name: "Multiple filters on different fields"
+    description: "Test compound filter"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      type: sgv
+      "sgv$gte": 180
+    expected:
+      filter_count: 2
+      behavior: "AND logic"
+    parity: true
+
+  - name: "Empty filter value"
+    description: "Test empty filter handling"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      type: ""
+    expected:
+      cgm_remote_monitor:
+        filter_applied: true
+        matches: "empty string"
+      nocturne:
+        filter_applied: false
+        behavior: "Ignores null/empty"
+    parity: false
+
+  - name: "Reserved parameter ignored"
+    description: "Test reserved params not treated as filters"
+    endpoint: "/api/v3/entries"
+    method: GET
+    params:
+      token: "abc123"
+      limit: 10
+      type: sgv
+    expected:
+      filter_count: 1
+      filter: { "field": "type" }
+      reserved_ignored: ["token", "limit"]
+    parity: true

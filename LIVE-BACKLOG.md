@@ -9,12 +9,13 @@
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| OQ-010 Extended: Nocturne systematic research | P2 | 4 remaining (API #6-9); sync-identity queue complete! |
+| OQ-010 Extended: Nocturne systematic research | P2 | 3 remaining (API #7-9); API #6 complete! |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| OQ-010 Extended API #6: V3 parity testing | P2 | ✅ Complete (GAP-SYNC-041 missing history) | 2026-01-30 |
 | OQ-010 Extended #18: Deletion semantics analysis | P2 | ✅ Complete (soft delete recommended) | 2026-01-30 |
 | OQ-010 Extended #17: srvModified gap analysis | P2 | ✅ Complete (no remediation needed) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 4) | P0 | ✅ Complete (Ready Queue 6 items, #18 fixed) | 2026-01-30 |
