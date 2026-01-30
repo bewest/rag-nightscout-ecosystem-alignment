@@ -20,6 +20,84 @@ Covers: cgm-remote-monitor, Nocturne, entries, treatments, devicestatus, profile
 
 ---
 
+## Nightscout PR Triage & Adoption Research
+
+Research stream focused on evaluating, sequencing, and proposing adoption of cgm-remote-monitor PRs.
+
+### 10. [P1] PR adoption sequencing proposal
+**Type:** Research | **Effort:** High  
+**Repos:** cgm-remote-monitor  
+**Focus:** Create prioritized roadmap for merging 68 open PRs based on ecosystem impact  
+**Questions:**
+- Which PRs unblock other work (dependency graph)?
+- What's the optimal merge sequence to minimize breakage?
+- Which PRs should be bundled with Node.js/MongoDB upgrades?
+- What testing is required before each merge?
+
+**Related Doc:** `docs/10-domain/cgm-remote-monitor-pr-analysis.md`  
+**Deliverable:** `docs/sdqctl-proposals/cgm-pr-adoption-roadmap.md`  
+**Status:** PROPOSED
+
+### 11. [P1] Node.js LTS impact analysis ✅ COMPLETE
+**Type:** Research | **Effort:** Medium  
+**Repos:** cgm-remote-monitor, share2nightscout-bridge, nightscout-connect, minimed-connect-to-nightscout  
+**Focus:** Map project Node.js versions against LTS support windows  
+**Deliverable:** `docs/10-domain/node-lts-upgrade-analysis.md`  
+**Status:** ✅ COMPLETE 2026-01-30
+
+**Key Findings:**
+- All JS projects on EOL Node versions (16/14, EOL 2023)
+- `request` package blocks upgrades (deprecated 2020)
+- Target: Node 22 LTS (EOL 2027-04-30)
+- Phased plan: nightscout-connect → deprecate bridges → cgm-remote-monitor
+
+**Gaps Added:** GAP-NODE-001, GAP-NODE-002, GAP-NODE-003
+
+### 12. [P2] Connector bridge deprecation plan
+**Type:** Research | **Effort:** High  
+**Repos:** share2nightscout-bridge, minimed-connect-to-nightscout, nightscout-connect  
+**Focus:** Plan to consolidate legacy bridges into nightscout-connect  
+**Rationale:**
+- share2nightscout-bridge: Single-purpose (Dexcom Share only), outdated Node.js
+- minimed-connect-to-nightscout: Single-purpose (Medtronic CareLink only)
+- nightscout-connect: Multi-vendor architecture, already supports both sources
+
+**Questions:**
+- What functionality exists in legacy bridges not in nightscout-connect?
+- What's the migration path for users?
+- What documentation is needed?
+- Should legacy repos be archived or marked deprecated?
+
+**Gap Coverage:**
+- GAP-SHARE-001/002/003: All addressed by nightscout-connect v3 API support
+- GAP-CONNECT-001/002/003: nightscout-connect's own improvement needs
+
+**Deliverable:** `docs/sdqctl-proposals/bridge-consolidation-plan.md`  
+**Status:** PROPOSED
+
+### 13. [P2] High-value PR deep-dive
+**Type:** Analysis | **Effort:** Medium  
+**Repos:** cgm-remote-monitor  
+**Focus:** Deep analysis of top 5 ecosystem-impacting PRs
+
+**Target PRs:**
+1. PR#8421 - MongoDB 5x Support (bewest, 2026-01-19)
+2. PR#8083 - Heart Rate Storage (buessow, 2023-08-26)
+3. PR#8261 - Multi-Insulin API (gruoner, 2024-05-09)
+4. PR#7791 - Remote Commands (gestrich, 2022-12-29)
+5. PR#8419 - iOS Loop Push Tests (je-l, 2026-01-15)
+
+**Per-PR Analysis:**
+- Dependencies and blockers
+- Breaking changes assessment
+- Test coverage requirements
+- Ecosystem client impact
+
+**Deliverable:** `docs/10-domain/priority-pr-deep-dives.md`  
+**Status:** PROPOSED
+
+---
+
 ## Nocturne API Compatibility Research
 
 Per OQ-010 extended research request (2026-01-30), focused analysis of Nocturne API behavior.

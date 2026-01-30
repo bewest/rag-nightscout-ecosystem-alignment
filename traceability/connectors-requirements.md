@@ -778,3 +778,62 @@ See [requirements.md](requirements.md) for the index.
 **Status**: ✅ Implemented
 
 ---
+
+
+## Node.js & Dependency Requirements
+
+---
+
+### REQ-NODE-001: Minimum Node.js LTS
+
+**Statement**: All Nightscout JavaScript projects MUST specify a currently-supported Node.js LTS version in `engines.node`.
+
+**Rationale**: EOL Node.js versions receive no security updates, leaving users vulnerable.
+
+**Current LTS Versions** (2026-01-30):
+- Node 24: EOL 2028-04-30
+- Node 22: EOL 2027-04-30
+- Node 20: EOL 2026-04-30
+
+**Verification**: 
+- CI matrix includes minimum and latest LTS
+- `engines.node` specifies supported version
+
+**Gap Reference**: GAP-NODE-001
+
+**Source**: [Node.js LTS Upgrade Analysis](../docs/10-domain/node-lts-upgrade-analysis.md)
+
+---
+
+### REQ-NODE-002: No Deprecated Dependencies
+
+**Statement**: Projects SHOULD NOT depend on packages deprecated more than 2 years.
+
+**Rationale**: Deprecated packages receive no security updates and may break on newer Node.js.
+
+**Known Violations**:
+- `request` package (deprecated 2020-02-11)
+
+**Verification**: 
+- `npm audit` in CI pipeline
+- Dependency age check
+
+**Gap Reference**: GAP-NODE-002
+
+**Source**: [Node.js LTS Upgrade Analysis](../docs/10-domain/node-lts-upgrade-analysis.md)
+
+---
+
+### REQ-NODE-003: Engines Field Required
+
+**Statement**: All npm packages MUST include `engines.node` field in package.json.
+
+**Rationale**: Enables npm to warn users of incompatible Node.js versions during install.
+
+**Verification**: 
+- package.json lint check
+- npm install on unsupported version fails
+
+**Gap Reference**: GAP-NODE-003
+
+**Source**: [Node.js LTS Upgrade Analysis](../docs/10-domain/node-lts-upgrade-analysis.md)

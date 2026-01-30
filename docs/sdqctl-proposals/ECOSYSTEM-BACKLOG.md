@@ -22,36 +22,50 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] Algorithm conformance: AAPS Kotlin runner
+### 1. [P1] PR adoption sequencing proposal
+**Type:** Research | **Effort:** High
+**Repos:** cgm-remote-monitor
+**Focus:** Prioritized roadmap for 68 open PRs
+**Backlog:** [nightscout-api.md](backlogs/nightscout-api.md#10)
+**Note:** Ecosystem-wide impact assessment
+
+### 2. [P2] Connector bridge deprecation plan
+**Type:** Research | **Effort:** High
+**Focus:** Consolidate share2nightscout-bridge + minimed-connect into nightscout-connect
+**Backlog:** [nightscout-api.md](backlogs/nightscout-api.md#12)
+**Note:** Informed by Node.js LTS analysis - bridges on EOL Node
+
+### 3. [P2] High-value PR deep-dive
+**Type:** Analysis | **Effort:** Medium
+**Repos:** cgm-remote-monitor
+**Focus:** Top 5 PRs: MongoDB 5x, Heart Rate, Multi-Insulin, Remote Commands, Push Tests
+**Backlog:** [nightscout-api.md](backlogs/nightscout-api.md#13)
+**Note:** Feeds into PR adoption sequencing
+
+### 4. [P2] Algorithm conformance: AAPS Kotlin runner
 **Type:** Implementation | **Effort:** High
 **Repos:** AndroidAPS
 **Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
 
-### 2. [P3] Algorithm conformance: Loop Swift runner
-**Type:** Implementation | **Effort:** High
-**Repos:** LoopWorkspace
-**Focus:** Swift-based runner for Loop algorithm testing
-**Workflow:** `extract-spec.conv`
-**Note:** Required for Loop conformance per GAP-ALG-013
-
-### 3. [P2] REFCAT caching proposal
+### 5. [P2] REFCAT caching proposal
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Cache external repo parsing to reduce token usage 20-40%
 **Backlog:** [tooling.md](backlogs/tooling.md)
 **Source:** [iterate-effectiveness-report.md](iterate-effectiveness-report.md)
 
-### 4. [P2] Selective repo loading
+### 6. [P2] Selective repo loading
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Load only task-relevant repos to reduce 3.4M tokens/cycle
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
-### 5. [P2] OQ-010 Extended API #8: V2 DData endpoint
-**Type:** Verification | **Effort:** Medium
-**Repos:** nocturne, cgm-remote-monitor
-**Focus:** Verify DData combined response matches Loop/AAPS expectations
-**Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
+### 7. [P3] Algorithm conformance: Loop Swift runner
+**Type:** Implementation | **Effort:** High
+**Repos:** LoopWorkspace
+**Focus:** Swift-based runner for Loop algorithm testing
+**Workflow:** `extract-spec.conv`
+**Note:** Required for Loop conformance per GAP-ALG-013
 
 ---
 
@@ -59,6 +73,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Node.js LTS impact analysis** | `docs/10-domain/node-lts-upgrade-analysis.md` | All JS on EOL Node 16/14; target Node 22 |
 | OQ-010 Extended API #7: eventType | `docs/10-domain/nocturne-eventtype-handling.md` | High parity, immutability gap |
 | OQ-010 Extended API #6: V3 parity | `conformance/scenarios/nocturne-v3-parity/` | Missing history endpoint (GAP-SYNC-041) |
 | OQ-010 Extended #16: Connector polling | `docs/10-domain/nocturne-connector-coordination.md` | Sidecar arch, loop-back risk |

@@ -8,6 +8,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Node.js LTS Upgrade Analysis (2026-01-30)
+
+Ready Queue Item #2: Analyze Node.js LTS support across Nightscout ecosystem.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Analysis | `docs/10-domain/node-lts-upgrade-analysis.md` | 9.6KB, 4-phase plan |
+
+**Key Findings**:
+- **All JS projects on EOL Node versions** (16/14, EOL 2023)
+- **Blocker**: `request` package deprecated 2020
+- **Target**: Node 22 LTS (EOL 2027-04-30)
+- **Urgent**: Node 20 EOL in 3 months (2026-04-30)
+
+**Upgrade Sequence**:
+1. nightscout-connect: add engines field (Low)
+2. share2nightscout-bridge: **deprecate** (Low)
+3. cgm-remote-monitor: Node 22 + request→axios (High)
+4. minimed-connect-to-nightscout: **deprecate** (Low)
+
+**Gaps Identified**: GAP-NODE-001, GAP-NODE-002, GAP-NODE-003
+
+**Requirements Added**: REQ-NODE-001, REQ-NODE-002, REQ-NODE-003
+
+---
+
 ### Nocturne Authentication Compatibility Analysis (2026-01-30)
 
 OQ-010 Extended API Item #9: Compare auth mechanisms between implementations.

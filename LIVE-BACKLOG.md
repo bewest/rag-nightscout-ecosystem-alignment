@@ -9,12 +9,15 @@
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| (none) | - | OQ-010 Extended complete! |
+| (none) | - | PR/deprecation research queued! |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 5) | P0 | ✅ Complete (Ready Queue 7 items, Node.js complete) | 2026-01-30 |
+| Node.js LTS impact analysis | P1 | ✅ Complete (3 gaps, 3 reqs, 4-phase plan) | 2026-01-30 |
+| Nightscout PR research + deprecation planning | P1 | ✅ Queued (4 items to backlogs) | 2026-01-30 |
 | OQ-010 Extended API #9: Authentication compatibility | P3 | ✅ Complete (**FULL PARITY**) | 2026-01-30 |
 | OQ-010 Extended API #8: V2 DData completeness | P2 | ✅ Complete (high parity, GAP-API-016) | 2026-01-30 |
 | OQ-010 Extended API #7: eventType normalization | P2 | ✅ Complete (high parity, minor gaps) | 2026-01-30 |

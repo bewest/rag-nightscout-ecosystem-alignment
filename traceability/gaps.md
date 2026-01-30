@@ -6,7 +6,7 @@ This document is an index of gaps organized by domain.
 
 - [Aid Algorithms](aid-algorithms-gaps.md) - 53 gaps
 - [Cgm Sources](cgm-sources-gaps.md) - 58 gaps
-- [Connectors](connectors-gaps.md) - 28 gaps
+- [Connectors](connectors-gaps.md) - 31 gaps
 - [Nightscout Api](nightscout-api-gaps.md) - 62 gaps
 - [Pumps](pumps-gaps.md) - 9 gaps
 - [Sync Identity](sync-identity-gaps.md) - 30 gaps
@@ -20,11 +20,11 @@ This document is an index of gaps organized by domain.
 | cgm-sources | 58 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-01-29 (3 Libre 3 gaps added) |
 | aid-algorithms | 61 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-01-30 (4 target range gaps added) |
 | sync-identity | 34 | [sync-identity-gaps.md](sync-identity-gaps.md) | 2026-01-30 (4 override sync gaps added) |
-| connectors | 28 | [connectors-gaps.md](connectors-gaps.md) | - |
+| connectors | 31 | [connectors-gaps.md](connectors-gaps.md) | 2026-01-30 (GAP-NODE-001/002/003 added) |
 | treatments | 23 | [treatments-gaps.md](treatments-gaps.md) | - |
 | pumps | 9 | [pumps-gaps.md](pumps-gaps.md) | - |
 
-Total: 276 gaps across 7 domains
+Total: 279 gaps across 7 domains
 
 ## Verification Status
 

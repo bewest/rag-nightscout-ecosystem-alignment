@@ -763,3 +763,68 @@ osx_image: xcode12.4
 **Remediation**: Document expected behavior; consider connector-side pre-dedup for known overlap scenarios.
 
 **Status**: Documented (by design)
+
+---
+
+## Node.js & Dependency Gaps
+
+---
+
+### GAP-NODE-001: EOL Node.js Versions
+
+**Description**: All JavaScript Nightscout projects specify EOL Node.js versions in `engines` field. cgm-remote-monitor targets Node 16/14 (EOL 2023), share2nightscout-bridge supports Node 8-16.
+
+**Affected Systems**: cgm-remote-monitor, share2nightscout-bridge
+
+**Impact**: 
+- Security vulnerabilities unpatched
+- No upstream bug fixes
+- Hosting provider deprecation warnings
+- Incompatibility with modern npm packages
+
+**Remediation**: Upgrade to Node 22 LTS (EOL 2027-04-30).
+
+**Source**: `package.json` engines fields
+
+**Status**: Open
+
+**Analysis**: [node-lts-upgrade-analysis.md](../docs/10-domain/node-lts-upgrade-analysis.md)
+
+---
+
+### GAP-NODE-002: Deprecated `request` Package
+
+**Description**: Both cgm-remote-monitor and share2nightscout-bridge depend on the deprecated `request` package (deprecated 2020-02-11).
+
+**Affected Systems**: cgm-remote-monitor, share2nightscout-bridge
+
+**Impact**:
+- No security updates since 2020
+- Blocks Node.js upgrades
+- Known vulnerabilities
+
+**Remediation**: 
+- cgm-remote-monitor: Migrate to axios (already in dependencies)
+- share2nightscout-bridge: Deprecate in favor of nightscout-connect
+
+**Source**: 
+- `externals/cgm-remote-monitor/package.json`: `"request": "^2.88.2"`
+- `externals/share2nightscout-bridge/package.json`: `"request": "^2.88.0"`
+
+**Status**: Open
+
+---
+
+### GAP-NODE-003: Missing engines Field
+
+**Description**: nightscout-connect lacks `engines` field in package.json, making Node.js compatibility unclear to users and npm.
+
+**Affected Systems**: nightscout-connect, nightscout-librelink-up
+
+**Impact**: Users may inadvertently run on incompatible Node versions.
+
+**Remediation**: Add `"engines": { "node": ">=18" }` to package.json.
+
+**Source**: `externals/nightscout-connect/package.json`
+
+**Status**: Open
