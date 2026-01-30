@@ -365,7 +365,7 @@ return NightscoutExercise(
 
 **Description**: LoopCaregiver's `OverrideAction` and `OverrideCancelAction` include a `remoteAddress` field that is always set to empty string. The purpose of this field is undocumented in the codebase. It may be intended for APNS device tokens or notification routing, but this is speculation.
 
-**Source**: `loopcaregiver:NightscoutDataSource.swift#L160-L162`
+**Source**: `loopcaregiver:LoopCaregiverKit/Sources/LoopCaregiverKit/Nightscout/NightscoutDataSource.swift#L160-L162`
 ```swift
 // TODO: remoteAddress should be optional
 let action = NSRemoteAction.override(name: overrideName, durationTime: durationTime, remoteAddress: "")
@@ -393,7 +393,7 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 
 **Description**: LoopCaregiver has no built-in retry mechanism for failed command deliveries. If a command upload fails (network error, server error), the user must manually retry. There's also no indication if a command was partially delivered.
 
-**Source**: `loopcaregiver:NightscoutDataSource.swift` - No retry logic present
+**Source**: `loopcaregiver:LoopCaregiverKit/Sources/LoopCaregiverKit/Nightscout/NightscoutDataSource.swift` - No retry logic present
 
 **Impact**:
 - Commands may be silently lost on network failures
@@ -417,7 +417,7 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 
 **Description**: LoopCaregiver stores the full `otpURL` (including the Base32 secret) in the `NightscoutCredentials` struct, which is likely persisted to app data rather than the Keychain. This differs from Loop which stores OTP secrets in the Keychain.
 
-**Source**: `loopcaregiver:DeepLinkParser.swift#L164` - `otpURL` stored in credentials
+**Source**: `loopcaregiver:LoopCaregiverKit/Sources/LoopCaregiverKit/Models/DeepLinkParser.swift#L164` - `otpURL` stored in credentials
 
 **Impact**:
 - OTP secret may be accessible via device backup

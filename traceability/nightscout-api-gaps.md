@@ -1055,7 +1055,7 @@ _None yet._
 
 **Remediation**: Store JWT secret in environment variable or persistent config file outside node_modules.
 
-**Source**: `ns:lib/server/enclave.js`
+**Source**: `crm:lib/server/enclave.js`
 
 ---
 
@@ -1074,7 +1074,7 @@ _None yet._
 
 **Remediation**: Implement lockout after N failed attempts with admin unlock capability.
 
-**Source**: `ns:lib/authorization/delaylist.js`
+**Source**: `crm:lib/authorization/delaylist.js`
 
 ---
 

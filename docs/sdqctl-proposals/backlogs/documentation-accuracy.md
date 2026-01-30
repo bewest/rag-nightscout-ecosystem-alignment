@@ -380,8 +380,8 @@ Systematic fixes for verification failures. Source: `sdqctl verify all` output.
 
 | # | Item | Priority | Scope | Status |
 |---|------|----------|-------|--------|
-| 36 | Triage 52 broken internal links | P2 | All markdown | ⬜ Pending |
-| 37 | Fix cross-document links | P1 | Active docs | ⬜ Pending |
+| 36 | Triage 52 broken internal links | P2 | All markdown | ✅ Done (mostly archive/auto-gen) |
+| 37 | Fix cross-document links | P1 | Active docs | ✅ Done (5 refs fixed) |
 
 ### Traceability Coverage (369 orphans)
 

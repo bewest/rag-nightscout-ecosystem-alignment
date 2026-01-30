@@ -15,9 +15,10 @@ Fixed broken code references in active documentation.
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
 | Ref fixes | `docs/10-domain/authentication-flows-deep-dive.md` | 5 refs: `nightscout:` → `crm:` |
+| Link fixes | `traceability/nightscout-api-gaps.md`, `treatments-gaps.md` | 5 refs: `ns:` → `crm:`, paths fixed |
 | Validation | `traceability/refs-validation.md` | 360/392 valid (92%) |
 
-**Result**: Fixed alias usage in authentication deep dive. Remaining broken refs are in archive (29) or intentional examples (3).
+**Result**: Fixed alias usage and paths. Remaining errors are in archive or auto-generated files.
 
 ---
 
