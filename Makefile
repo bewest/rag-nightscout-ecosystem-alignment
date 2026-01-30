@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions hygiene-tests hygiene-unit hygiene-all mock-nightscout extract-vectors conformance-oref0
+.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0
 
 # Default target
 help:
@@ -23,6 +23,8 @@ help:
 	@echo "  make conformance-ci - Run all conformance in CI mode (strict exit codes)"
 	@echo "  make conversions- Run unit conversion tests"
 	@echo "  make hygiene-unit  - Run hygiene tool unit tests (isolated)"
+	@echo "  make verify-unit   - Run verification tool unit tests (isolated)"
+	@echo "  make unit-tests    - Run all unit tests (hygiene + verify)"
 	@echo "  make hygiene-tests - Run hygiene tool integration tests (real files)"
 	@echo "  make hygiene-all   - Run all hygiene tests (unit + integration)"
 	@echo "  make coverage   - Generate coverage matrix"
@@ -138,11 +140,22 @@ hygiene-unit:
 	@echo "Running hygiene tool unit tests..."
 	@python3 tools/test_hygiene_tools_unit.py
 
+# Unit tests for verification tools (isolated parsing logic)
+verify-unit:
+	@echo "Running verification tool unit tests..."
+	@python3 tools/test_verify_tools_unit.py
+
 # All hygiene tests (unit + integration)
 hygiene-all:
 	@echo "Running all hygiene tests..."
 	@python3 tools/test_hygiene_tools_unit.py
 	@python3 tools/test_hygiene_tools.py
+
+# All unit tests (hygiene + verify)
+unit-tests:
+	@echo "Running all unit tests..."
+	@python3 tools/test_hygiene_tools_unit.py
+	@python3 tools/test_verify_tools_unit.py
 
 # Start mock Nightscout server
 mock-nightscout:

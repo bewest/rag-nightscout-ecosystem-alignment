@@ -23,7 +23,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 9 | ~~**Token efficiency dashboard**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `tools/efficiency_dashboard.py` |
 | 10 | **Selective repo loading** | P2 | Medium | Load only task-relevant repos - reduce 3.4M tokens/cycle |
 | 11 | **Deprecate redundant tools** | P3 | Low | 7 tools overlap with sdqctl - see [migration eval](#sdqctl-migration-evaluation) |
-| 12 | **Unit tests for kept tools** | P2 | Medium | 4 test files for 27 tools - need synthetic fixtures |
+| 12 | ~~**Unit tests for kept tools**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `tools/test_verify_tools_unit.py` (17 tests) |
 | 13 | **sdqctl usage documentation** | P3 | Low | Document `sdqctl verify` integration patterns |
 
 ---
@@ -56,6 +56,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | Item | Date | Notes |
 |------|------|-------|
+| Unit tests for verify tools | 2026-01-30 | `tools/test_verify_tools_unit.py` - 17 tests, 6 tools covered |
 | sdqctl migration evaluation | 2026-01-30 | 7 deprecate, 3 integrate, 27 keep |
 | Token efficiency dashboard | 2026-01-30 | `tools/efficiency_dashboard.py`, `make efficiency-dashboard` |
 | Mapping coverage tool | 2026-01-30 | `tools/verify_mapping_coverage.py`, `make verify-mapping-coverage` |

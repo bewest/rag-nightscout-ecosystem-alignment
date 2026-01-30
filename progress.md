@@ -8,6 +8,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Unit Tests for Verification Tools (2026-01-30)
+
+Created `tools/test_verify_tools_unit.py` with 17 synthetic fixture tests.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Unit test file | `tools/test_verify_tools_unit.py` | 17 tests, all passing |
+
+**Coverage Added**:
+
+| Tool | Tests | Functions Tested |
+|------|-------|------------------|
+| verify_assertions.py | 5 | REQ/GAP patterns, YAML parsing |
+| verify_coverage.py | 1 | requirement extraction |
+| verify_gap_freshness.py | 2 | gap ID patterns, status detection |
+| verify_mapping_coverage.py | 2 | field extraction from tables/code blocks |
+| validate_json.py | 3 | JSON/YAML loading, ShapeValidator |
+| validate_fixtures.py | 3 | infer_shape_type, ValidationError |
+| Integration | 1 | extract_assertions with scenario inheritance |
+
+**Total unit tests in workspace**: 45 (28 hygiene + 17 verify)
+
+---
+
 ### sdqctl Tool Migration Evaluation (2026-01-30)
 
 Evaluated overlap between 39 custom Python tools and sdqctl CLI.
