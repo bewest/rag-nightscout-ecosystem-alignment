@@ -575,16 +575,112 @@ workspace_cli.py advise analyze <file>
 
 ### sdqctl Integration (2026-01-30)
 
-Several custom tools now have sdqctl equivalents. Prefer sdqctl for consistency:
+The `sdqctl` CLI provides idiomatic verification commands that replace several custom Python tools.
 
-| Task | Preferred | Legacy (deprecated) |
+#### Quick Start
+
+```bash
+# Activate environment with sdqctl
+source .venv/bin/activate
+
+# Run all verifications
+sdqctl verify all
+
+# Run specific checks
+sdqctl verify refs           # Validate alias:path references
+sdqctl verify terminology    # Check term consistency
+sdqctl verify links          # Validate URLs and file links
+sdqctl verify traceability   # Check STPA/IEC 62304 links
+```
+
+#### Available Subcommands
+
+| Command | Purpose | Options |
+|---------|---------|---------|
+| `sdqctl verify all` | Run all verifications | `--json`, `--strict`, `-v` |
+| `sdqctl verify refs` | Validate @-refs and alias:path refs | `--json`, `-p PATH` |
+| `sdqctl verify terminology` | Check terms against glossary | `--json`, `-v` |
+| `sdqctl verify links` | Validate URLs and file links | `--json`, `--strict` |
+| `sdqctl verify assertions` | Check assertion documentation | `--json`, `-v` |
+| `sdqctl verify coverage` | Traceability coverage metrics | `--json`, `-v` |
+| `sdqctl verify traceability` | STPA/IEC 62304 link verification | `--coverage`, `--strict` |
+| `sdqctl verify trace` | Verify specific trace link | `--json` |
+| `sdqctl verify plugin` | Run custom plugin verifier | Plugin-specific |
+
+#### Common Workflows
+
+**CI Integration:**
+```bash
+# Strict mode for CI (exit code 1 on warnings)
+sdqctl verify all --strict --json
+```
+
+**Targeted Verification:**
+```bash
+# Check only a specific directory
+sdqctl verify refs -p mapping/
+
+# Verbose output for debugging
+sdqctl verify terminology -v
+```
+
+**JSON Output for Automation:**
+```bash
+# Parse with jq
+sdqctl verify all --json | jq '.summary'
+```
+
+#### Migration from Custom Tools
+
+| Task | Preferred (sdqctl) | Legacy (deprecated) |
 |------|-----------|---------------------|
 | Validate refs | `sdqctl verify refs` | `python tools/verify_refs.py` |
 | Check terminology | `sdqctl verify terminology` | `python tools/verify_terminology.py` |
 | Check links | `sdqctl verify links` | `python tools/linkcheck.py` |
 | Run all checks | `sdqctl verify all` | `make check` |
 
+**Tools that remain unique** (no sdqctl equivalent):
+- `verify_gap_freshness.py` - Check if GAPs are still open
+- `verify_mapping_coverage.py` - Validate mapping docs cover source fields
+- `verify_assertions.py` - Trace assertions to requirements (different from sdqctl assertions)
+- `verify_coverage.py` - REQ→mapping coverage (different from sdqctl coverage)
+- `validate_json.py` - JSON schema validation
+- `validate_fixtures.py` - Fixture shape validation
+
 See [tools-comparison-proposal.md](sdqctl-proposals/tools-comparison-proposal.md) for full migration details.
+
+#### Drift Detection
+
+Monitor external repositories for changes that may affect alignment:
+
+```bash
+# Show drift summary
+sdqctl drift status
+
+# Detect changes since a date
+sdqctl drift detect --since 2026-01-01
+
+# Generate drift report
+sdqctl drift --report docs/drift.md
+```
+
+#### Workflow Execution
+
+Execute AI-assisted workflows with sdqctl:
+
+```bash
+# Single execution of a workflow
+sdqctl iterate workflow.conv
+
+# Multi-cycle iteration
+sdqctl iterate workflow.conv -n 5
+
+# Inline prompt execution
+sdqctl run "Audit authentication module"
+
+# Batch execution
+sdqctl flow workflows/*.conv --parallel 4
+```
 
 ### Pending: Change Detection (Phase 2)
 

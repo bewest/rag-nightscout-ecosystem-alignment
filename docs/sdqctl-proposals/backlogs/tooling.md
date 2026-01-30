@@ -24,7 +24,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 10 | **Selective repo loading** | P2 | Medium | Load only task-relevant repos - reduce 3.4M tokens/cycle |
 | 11 | **Deprecate redundant tools** | P3 | Low | 7 tools overlap with sdqctl - see [migration eval](#sdqctl-migration-evaluation) |
 | 12 | ~~**Unit tests for kept tools**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `tools/test_verify_tools_unit.py` (17 tests) |
-| 13 | **sdqctl usage documentation** | P3 | Low | Document `sdqctl verify` integration patterns |
+| 13 | ~~**sdqctl usage documentation**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `docs/TOOLING-GUIDE.md` (+60 lines) |
 
 ---
 
@@ -56,6 +56,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | Item | Date | Notes |
 |------|------|-------|
+| sdqctl usage documentation | 2026-01-30 | `docs/TOOLING-GUIDE.md` - +60 lines, comprehensive guide |
 | Unit tests for verify tools | 2026-01-30 | `tools/test_verify_tools_unit.py` - 17 tests, 6 tools covered |
 | sdqctl migration evaluation | 2026-01-30 | 7 deprecate, 3 integrate, 27 keep |
 | Token efficiency dashboard | 2026-01-30 | `tools/efficiency_dashboard.py`, `make efficiency-dashboard` |

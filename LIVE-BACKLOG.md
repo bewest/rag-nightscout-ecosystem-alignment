@@ -7,12 +7,13 @@
 
 ## Pending
 
-* **Document new tooling usage** - Create usage guide for sdqctl integration (`sdqctl verify`, `sdqctl drift`, workflow directives). Include examples for common workflows. Priority: P3
+(none)
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Document new tooling usage | P3 | ✅ Complete (+60 lines, sdqctl guide) | 2026-01-30 |
 | Unit test coverage for tools/ | P2 | ✅ Complete (17 tests, 6 tools covered) | 2026-01-30 |
 | Evaluate idiomatic sdqctl migration | P2 | ✅ Complete (7 deprecate, 3 integrate, 27 keep) | 2026-01-30 |
 | Token efficiency dashboard | P3 | ✅ Complete (198 commits, +70K lines, 39 tools) | 2026-01-30 |

@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### sdqctl Usage Documentation (2026-01-30)
+
+Expanded `docs/TOOLING-GUIDE.md` with comprehensive sdqctl integration guide.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Usage guide | `docs/TOOLING-GUIDE.md` | +60 lines, 40 sdqctl references |
+
+**Sections Added**:
+- Quick Start commands
+- All 9 verify subcommands with options
+- Common workflows (CI, targeted, JSON)
+- Migration table (4 deprecated tools)
+- Unique tools list (6 to keep)
+- Drift detection commands
+- Workflow execution examples
+
+---
+
 ### Unit Tests for Verification Tools (2026-01-30)
 
 Created `tools/test_verify_tools_unit.py` with 17 synthetic fixture tests.
