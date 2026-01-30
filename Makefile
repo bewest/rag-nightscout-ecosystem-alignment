@@ -48,6 +48,7 @@ help:
 	@echo "  make validate-json      - Validate JSON/YAML files"
 	@echo "  make workflow TYPE=<type> - Run automated workflow (quick/full/validation/verification)"
 	@echo "  make cli                - Launch interactive workspace CLI"
+	@echo "  make efficiency-dashboard - Show productivity metrics (last 7 days)"
 	@echo ""
 	@echo "  make help       - Show this help message"
 	@echo ""
@@ -197,10 +198,6 @@ verify-coverage:
 	@echo "Analyzing coverage..."
 	@python3 tools/verify_coverage.py
 
-verify-terminology:
-	@echo "Checking terminology consistency..."
-	@python3 tools/verify_terminology.py
-
 verify-assertions:
 	@echo "Tracing assertions..."
 	@python3 tools/verify_assertions.py
@@ -220,6 +217,9 @@ verify-gap-freshness:
 verify-mapping-coverage:
 	@echo "Checking mapping doc coverage (sample of 5)..."
 	@python3 tools/verify_mapping_coverage.py --sample 5
+
+efficiency-dashboard:
+	@python3 tools/efficiency_dashboard.py --days 7
 
 # sdqctl-based verification (preferred when sdqctl available)
 sdqctl-verify-refs:

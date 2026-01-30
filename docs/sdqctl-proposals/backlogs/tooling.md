@@ -20,7 +20,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 6 | ~~**Terminology sample tool**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `tools/sample_terminology.py` |
 | 7 | ~~**Gap deduplication tool**~~ | ~~P1~~ | ~~Low~~ | ✅ COMPLETE - `tools/find_gap_duplicates.py` |
 | 8 | **REFCAT caching proposal** | P2 | Medium | [From iterate report](../iterate-effectiveness-report.md) - est. 20-40% token reduction |
-| 9 | **Token efficiency dashboard** | P3 | Low | [From iterate report](../iterate-effectiveness-report.md) - track cost/deliverable |
+| 9 | ~~**Token efficiency dashboard**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `tools/efficiency_dashboard.py` |
 | 10 | **Selective repo loading** | P2 | Medium | Load only task-relevant repos - reduce 3.4M tokens/cycle |
 
 ---
@@ -29,6 +29,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | Item | Date | Notes |
 |------|------|-------|
+| Token efficiency dashboard | 2026-01-30 | `tools/efficiency_dashboard.py`, `make efficiency-dashboard` |
 | Mapping coverage tool | 2026-01-30 | `tools/verify_mapping_coverage.py`, `make verify-mapping-coverage` |
 | Gap freshness checker tool | 2026-01-30 | `tools/verify_gap_freshness.py`, `make verify-gap-freshness` |
 | Terminology sample tool | 2026-01-30 | `tools/sample_terminology.py`, `make verify-terminology` |

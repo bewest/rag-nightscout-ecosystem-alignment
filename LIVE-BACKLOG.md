@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Token efficiency dashboard | P3 | ✅ Complete (198 commits, +70K lines, 39 tools) | 2026-01-30 |
 | Mapping coverage tool | P2 | ✅ Complete (93 files, 73-88% avg coverage) | 2026-01-30 |
 | Gap freshness checker tool | P2 | ✅ Complete (268 GAPs, LIKELY_OPEN/NEEDS_REVIEW status) | 2026-01-30 |
 | Override/temporary target sync comparison | P2 | ✅ Complete (4 gaps, 3 reqs, eventType differences) | 2026-01-30 |

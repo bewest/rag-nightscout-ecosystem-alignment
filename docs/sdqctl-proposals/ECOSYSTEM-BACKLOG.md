@@ -47,15 +47,15 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Load only task-relevant repos to reduce 3.4M tokens/cycle
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
-### 5. [P3] Token efficiency dashboard
-**Type:** Tooling | **Effort:** Low
-**Focus:** Track cost/deliverable metrics across backlog cycles
-**Backlog:** [tooling.md](backlogs/tooling.md)
-**Source:** [iterate-effectiveness-report.md](iterate-effectiveness-report.md)
-
 ---
 
 ## Completed Items
+
+### ~~[P3] Token efficiency dashboard~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `tools/efficiency_dashboard.py`
+**Key Finding:** 198 commits, +70K lines in 7 days, 39 tools
+**Makefile:** `make efficiency-dashboard`
 
 ### ~~[P2] Mapping coverage tool~~ ✅ COMPLETE
 **Completed:** 2026-01-30

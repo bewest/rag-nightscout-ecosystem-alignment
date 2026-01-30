@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Efficiency Dashboard Tool (2026-01-30)
+
+Created `tools/efficiency_dashboard.py` to track productivity metrics.
+
+| Metric | Value |
+|--------|-------|
+| Tool created | `tools/efficiency_dashboard.py` |
+| Makefile target | `make efficiency-dashboard` |
+| Default range | Last 7 days |
+| Sections | Overall, Tools, Types, Daily, Recent |
+
+**Features**:
+- Parse git log for commits with stats
+- Calculate lines/commit, files/commit averages
+- Categorize by conventional commit types
+- Daily activity breakdown
+- JSON output for CI integration
+
+---
+
 ### Mapping Coverage Tool (2026-01-30)
 
 Created `tools/verify_mapping_coverage.py` to verify mapping docs cover source fields.
