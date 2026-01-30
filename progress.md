@@ -8,6 +8,20 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Sync-Identity Cross-Reference Completion (2026-01-30)
+
+sync-identity #2, #3, #4: Cross-references to existing verification in documentation-accuracy.md.
+
+| Item | Reference | Status |
+|------|-----------|--------|
+| #2 Verify mapping | accuracy #7 | 100% accurate |
+| #3 Verify GAP-SYNC-* | accuracy #21 | 100% accurate (9 claims) |
+| #4 Audit REQ-SYNC-* | accuracy #24 | 83% covered (15/18) |
+
+**All 4 sync-identity active items now complete.**
+
+---
+
 ### Devicestatus/Entries Claims Verification (2026-01-30)
 
 nightscout-api #3: Cross-reference to existing verification in documentation-accuracy.md.

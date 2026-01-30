@@ -42,6 +42,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Sync-identity cross-ref completion** | Cross-ref to documentation-accuracy.md #7, #21, #24 | All 4 sync-identity items complete |
 | **Devicestatus/entries claims verification** | Cross-ref to documentation-accuracy.md #12-14 | Already verified 100% accurate (2026-01-29) |
 | **REQ-API → OpenAPI alignment audit** | `docs/10-domain/req-api-openapi-alignment-audit.md` | 67% full coverage, 33% partial; need x-aid-req annotations |
 | **GAP-API freshness verification** | `docs/10-domain/gap-api-freshness-verification.md` | 3 addressed by PR, 2 partial, 11 open |

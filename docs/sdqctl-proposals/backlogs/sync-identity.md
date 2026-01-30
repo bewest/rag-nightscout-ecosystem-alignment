@@ -19,9 +19,9 @@ Per [OQ-010](../../OPEN-QUESTIONS.md#oq-010-profileswitch--override-mapping), th
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
 | 1 | ~~Cross-controller conflict detection~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE 2026-01-29 |
-| 2 | **Verify sync-identity mapping** | P2 | Medium | [Accuracy backlog #7](documentation-accuracy.md) |
-| 3 | **Verify GAP-SYNC-* freshness** | P2 | Medium | [Accuracy backlog #21](documentation-accuracy.md) |
-| 4 | **Audit REQ-SYNC-* scenario coverage** | P2 | Medium | [Accuracy backlog #24](documentation-accuracy.md) |
+| 2 | ~~Verify sync-identity mapping~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - [Accuracy backlog #7](documentation-accuracy.md) verified 100% accurate |
+| 3 | ~~Verify GAP-SYNC-* freshness~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - [Accuracy backlog #21](documentation-accuracy.md) verified 100% accurate |
+| 4 | ~~Audit REQ-SYNC-* scenario coverage~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - [Accuracy backlog #24](documentation-accuracy.md) 83% covered (15/18) |
 
 ---
 
