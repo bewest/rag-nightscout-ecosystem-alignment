@@ -11,6 +11,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### LSP Verification Setup Research (2026-01-30)
+
+Cycle 34: Documented LSP requirements for claim verification.
+
+**Deliverable**: `docs/10-domain/lsp-verification-setup-requirements.md` (10KB)
+
+**Language Coverage**:
+| Language | LSP Server | Linux | Effort | Priority |
+|----------|------------|-------|--------|----------|
+| JS/TS | tsserver | ✅ Ready | Low | P1 |
+| Kotlin | kotlin-language-server | ✅ Feasible | Medium | P2 |
+| Java | Eclipse JDT LS | ✅ Feasible | Medium | P2 |
+| Python | pyright | ✅ Ready | Low | P3 |
+| Swift | sourcekit-lsp | ⚠️ Limited | High | P4 |
+
+**Key Finding**: Swift LSP requires macOS for iOS projects (no UIKit/HealthKit on Linux).
+
+**Phased Roadmap**:
+- Phase 1: JS/TS (1 day) - covers Nightscout
+- Phase 2: Kotlin/Java (2-3 days) - covers AAPS/xDrip
+- Phase 3: Python (2 hours) - covers tools/
+- Phase 4: Swift (deferred) - requires macOS CI
+
+**tooling.md #16**: ✅ COMPLETE
+
+---
+
 ### Known vs Unknown Dashboard (2026-01-30)
 
 Cycle 33: Created project health summary tool.

@@ -28,11 +28,18 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Replace custom VERIFY patterns with `sdqctl verify` calls in .conv files
 **Outcome:** Standardized verification across all workflows
 
-### 2. [P2] LSP verification setup research
+### 2. [P2] LSP verification setup research ✅ COMPLETE
 **Type:** Research | **Effort:** High
 **Source:** tooling.md #16
 **Focus:** Document requirements for JS/TS LSP, Kotlin/Java LSP, Swift limitations
-**Outcome:** Roadmap for LSP-based claim verification
+**Deliverable:** `docs/10-domain/lsp-verification-setup-requirements.md`
+**Status:** ✅ COMPLETE 2026-01-30
+
+**Key Findings:**
+- JS/TS: Ready (tsserver, low effort)
+- Kotlin/Java: Feasible (JDK + Gradle sync required)
+- Swift: Limited on Linux (no iOS frameworks)
+- Phased approach: JS/TS → Kotlin/Java → Python → Swift (macOS only)
 
 ### 3. [P2] Nightscout PR coherence review protocol
 **Type:** Documentation | **Effort:** Medium
