@@ -35,7 +35,7 @@ help:
 	@echo "  make verify     - Run all static verification tools"
 	@echo "  make verify-refs        - Verify code references resolve to files"
 	@echo "  make verify-coverage    - Analyze requirement/gap coverage"
-	@echo "  make verify-terminology - Check terminology consistency"
+	@echo "  make verify-terminology - Sample and verify terminology matrix (15 terms)"
 	@echo "  make verify-assertions  - Trace assertions to requirements"
 	@echo "  make verify-gap-duplicates - Find duplicate GAP definitions"
 	@echo ""
@@ -206,6 +206,10 @@ verify-assertions:
 verify-gap-duplicates:
 	@echo "Finding duplicate GAP definitions..."
 	@python3 tools/find_gap_duplicates.py
+
+verify-terminology:
+	@echo "Sampling terminology matrix for verification..."
+	@python3 tools/sample_terminology.py --sample-size 15
 
 # sdqctl-based verification (preferred when sdqctl available)
 sdqctl-verify-refs:

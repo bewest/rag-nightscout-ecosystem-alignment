@@ -36,17 +36,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 3. [P3] Terminology sample tool
-**Type:** Tooling | **Effort:** Low
-**Focus:** Random sample terminology matrix entries for verification
-**Backlog:** [tooling.md](backlogs/tooling.md)
-
-### 4. [P2] Gap freshness checker tool
+### 3. [P2] Gap freshness checker tool
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Check if GAP-* issues have been resolved in upstream PRs
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
-### 5. [P2] Mapping coverage tool
+### 4. [P2] Mapping coverage tool
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Verify mapping docs cover all fields in source schemas
 **Backlog:** [tooling.md](backlogs/tooling.md)
@@ -54,6 +49,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 ---
 
 ## Completed Items
+
+### ~~[P3] Terminology sample tool~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `tools/sample_terminology.py`
+**Key Finding:** 354 terms in matrix, 90-100% verified against source
+**Makefile:** `make verify-terminology`
 
 ### ~~[P2] Fix 26 duplicate GAP definitions~~ ✅ COMPLETE
 **Completed:** 2026-01-30

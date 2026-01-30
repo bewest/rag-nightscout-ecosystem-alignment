@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Terminology Sample Tool (2026-01-30)
+
+Created `tools/sample_terminology.py` to verify terminology matrix entries against source code.
+
+| Metric | Value |
+|--------|-------|
+| Tool created | `tools/sample_terminology.py` |
+| Makefile target | `make verify-terminology` |
+| Terms in matrix | 354 |
+| Default sample | 15 terms |
+| Accuracy achieved | 90-100% |
+
+**Features**:
+- Random sampling with reproducible seed
+- JSON output for CI integration
+- Grep-based verification against externals/
+- Exit code 0 if ≥80% verified
+
+---
+
 ### Fix 26 Duplicate GAP Definitions (2026-01-30)
 
 Resolved all duplicate GAP IDs found by `find_gap_duplicates.py`.

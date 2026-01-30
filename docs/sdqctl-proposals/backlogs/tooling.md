@@ -17,7 +17,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 3 | LSP-based claim verification (Phase 2+) | P3 | Medium | JS/TS LSP integration deferred |
 | 4 | **Gap freshness checker tool** | P2 | Medium | [Accuracy backlog proposal](documentation-accuracy.md#proposed-tool-verify_gap_freshnesspy) |
 | 5 | **Mapping coverage tool** | P2 | Medium | [Accuracy backlog proposal](documentation-accuracy.md#proposed-tool-verify_mapping_coveragepy) |
-| 6 | **Terminology sample tool** | P3 | Low | [Accuracy backlog proposal](documentation-accuracy.md#proposed-tool-sample_terminologypy) |
+| 6 | ~~**Terminology sample tool**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `tools/sample_terminology.py` |
 | 7 | ~~**Gap deduplication tool**~~ | ~~P1~~ | ~~Low~~ | ✅ COMPLETE - `tools/find_gap_duplicates.py` |
 | 8 | **REFCAT caching proposal** | P2 | Medium | [From iterate report](../iterate-effectiveness-report.md) - est. 20-40% token reduction |
 | 9 | **Token efficiency dashboard** | P3 | Low | [From iterate report](../iterate-effectiveness-report.md) - track cost/deliverable |
@@ -29,6 +29,8 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | Item | Date | Notes |
 |------|------|-------|
+| Terminology sample tool | 2026-01-30 | `tools/sample_terminology.py`, `make verify-terminology` |
+| Gap deduplication tool | 2026-01-30 | `tools/find_gap_duplicates.py`, `make verify-gap-duplicates` |
 | sdqctl VERIFY CLI | 2026-01-29 | CLI already existed, added Make targets |
 | Conformance CI Integration | 2026-01-29 | CI job + Makefile targets + README |
 | Gap-to-Requirement Generator | 2026-01-29 | Manual process, 28 connector REQs generated |
