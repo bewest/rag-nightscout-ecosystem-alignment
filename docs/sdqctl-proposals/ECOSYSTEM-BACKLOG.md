@@ -46,6 +46,16 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** How profile switches sync to Nightscout
 **Backlog:** [sync-identity.md](backlogs/sync-identity.md)
 
+### 5. [P2] Cross-controller conflict detection
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Document behavior when Loop+Trio sync simultaneously
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md)
+
+### 6. [P2] Libre 3 protocol gap analysis
+**Type:** Documentation | **Effort:** High
+**Focus:** Document "eavesdrop only" limitations vs full pairing
+**Backlog:** [cgm-sources.md](backlogs/cgm-sources.md)
+
 ---
 
 ## Completed Items
