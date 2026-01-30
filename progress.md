@@ -8,6 +8,40 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Insulin Model Comparison (2026-01-30)
+
+Compared exponential and bilinear insulin activity models across Loop and oref0/AAPS.
+
+| Metric | Value |
+|--------|-------|
+| Source files analyzed | 2 |
+| Gaps identified | 4 (INS-005 to INS-008) |
+| Key finding | Formula identical (Loop issue #388) |
+
+**Key Findings**:
+- Loop and oref0 use **identical exponential formula** from Loop issue #388
+- oref0 also supports legacy bilinear model; Loop is exponential-only
+- Loop has explicit delay parameter (10 min default); oref0 bakes delay into peak
+- oref0 allows custom peak times (50-120 or 35-100 min); Loop uses fixed presets
+
+**Gaps Added**:
+- GAP-INS-005: Bilinear model not in Loop
+- GAP-INS-006: Delay parameter handling differs
+- GAP-INS-007: Custom peak time UX differs
+- GAP-INS-008: Identical exponential formula verified
+
+**Requirements Added**:
+- REQ-INS-001: Exponential formula consistency
+- REQ-INS-002: DIA range validation
+- REQ-INS-003: Peak time documentation
+
+**Deliverables**:
+- `docs/10-domain/insulin-model-comparison.md` (8.7KB)
+- `traceability/aid-algorithms-gaps.md` (+4 gaps)
+- `traceability/aid-algorithms-requirements.md` (+3 requirements)
+
+---
+
 ### Libre 3 Protocol Gap Analysis (2026-01-29)
 
 Analyzed "eavesdrop only" limitations for Libre 3 vs Libre 1/2.

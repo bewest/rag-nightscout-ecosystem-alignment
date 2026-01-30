@@ -846,3 +846,31 @@ See [requirements.md](requirements.md) for the index.
 **Rationale**: Users need to know when and why automatic boluses are enabled.
 
 **Verification**: UI review for condition display.
+
+---
+
+## Insulin Model Requirements
+
+### REQ-INS-001: Exponential Formula Consistency
+
+**Statement**: Systems using exponential insulin model MUST use compatible formula (tau/a/S parameters from Loop issue #388).
+
+**Rationale**: Loop and oref0 share the same formula source, ensuring IOB calculations match.
+
+**Verification**: Compare IOB output for same insulin dose and time inputs.
+
+### REQ-INS-002: DIA Range Validation
+
+**Statement**: Systems MUST validate DIA is within safe bounds (typically 3-8 hours).
+
+**Rationale**: Extreme DIA values can cause unsafe dosing calculations.
+
+**Verification**: Test boundary values in profile settings.
+
+### REQ-INS-003: Peak Time Documentation
+
+**Statement**: Systems SHOULD document peak time values for each insulin preset (Humalog, Fiasp, etc.).
+
+**Rationale**: Users need to understand how insulin curve timing affects dosing.
+
+**Verification**: Documentation review for all insulin presets.

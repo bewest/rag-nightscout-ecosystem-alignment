@@ -1,6 +1,6 @@
 # Ecosystem Alignment Backlog
 
-> **Last Updated**: 2026-01-29  
+> **Last Updated**: 2026-01-30  
 > **Purpose**: Track active work items across all domains  
 > **Archive**: Completed work → [`archive/`](archive/)
 
@@ -41,21 +41,26 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Insulin model comparison
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Compare insulin activity models across systems
-**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
-**Context:** Exponential curves, DIA settings, peak times
-
-### 5. [P2] Target range handling comparison
+### 4. [P2] Target range handling comparison
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Compare target/correction range handling
 **Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
 **Context:** Loop correction range vs oref0 target_bg
 
+### 5. [P2] Override/temporary target sync
+**Type:** Documentation | **Effort:** Medium
+**Focus:** How overrides sync to Nightscout
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md)
+
 ---
 
 ## Completed Items
+
+### ~~[P2] Insulin model comparison~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `docs/10-domain/insulin-model-comparison.md`
+**Key Finding:** Loop and oref0 use identical exponential formula (Loop issue #388)
+**Gaps Added:** GAP-INS-005 to GAP-INS-008
 
 ### ~~[P2] Temp basal vs SMB dosing comparison~~ ✅ COMPLETE
 **Status:** Completed 2026-01-30

@@ -1048,3 +1048,63 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Impact**: SMB can deliver corrections faster.
 
 **Remediation**: Design difference - document expected response times.
+
+---
+
+## Insulin Model Gaps
+
+### GAP-INS-005: Bilinear Model Not Supported in Loop
+
+**Description**: Loop only supports exponential model; oref0 has legacy bilinear option.
+
+**Affected Systems**: Loop vs oref0/AAPS
+
+**Evidence**:
+- oref0: `calculate.js:24-28` - conditional bilinear/exponential selection
+- Loop: Only ExponentialInsulinModel.swift exists
+
+**Impact**: Users preferring simpler bilinear model cannot use Loop. Minor - exponential is more accurate.
+
+**Remediation**: Document as design choice; exponential is preferred.
+
+### GAP-INS-006: Delay Parameter Handling Differs
+
+**Description**: Loop has explicit delay parameter (default 10 min); oref0 bakes delay into peak time.
+
+**Affected Systems**: Loop vs oref0
+
+**Evidence**:
+- Loop: `ExponentialInsulinModel.swift:14` - `public let delay: TimeInterval`
+- oref0: No delay parameter in `calculate.js`
+
+**Impact**: Slightly different curve start behavior for same peak time setting.
+
+**Remediation**: Document for users migrating between systems.
+
+### GAP-INS-007: Custom Peak Time UX Differs
+
+**Description**: Loop uses fixed presets; oref0 allows custom peak with validation bounds.
+
+**Affected Systems**: Loop vs oref0/AAPS
+
+**Evidence**:
+- oref0: `calculate.js:87-116` - peak bounds 50-120 (rapid) or 35-100 (ultra-rapid)
+- Loop: Fixed preset values per insulin type
+
+**Impact**: oref0/AAPS users have more tuning flexibility.
+
+**Remediation**: Consider adding custom peak to Loop presets.
+
+### GAP-INS-008: Identical Exponential Formula Verified
+
+**Description**: Both Loop and oref0 use identical exponential formula from Loop issue #388.
+
+**Affected Systems**: Loop, oref0, AAPS, Trio
+
+**Evidence**:
+- oref0: `calculate.js:125-136` explicitly cites Loop issue #388
+- Loop: `ExponentialInsulinModel.swift:32-34` - original source
+
+**Impact**: Positive - formula consistency ensures IOB compatibility.
+
+**Status**: Verified as aligned - no remediation needed.

@@ -3663,3 +3663,42 @@ See `docs/10-domain/cgm-trend-arrow-standardization.md` for full cross-project m
 | Dose fraction | partialApplicationFactor | insulinReq/2 | 40% / 50% |
 | Max dose | maxAutomaticBolus | maxSMBBasalMinutes × basal | User set |
 | Interval | 5 min cycle | SMBInterval | 5 / 3 min |
+
+## Insulin Model Terms
+
+### Model Types
+
+| Term | Loop | oref0/AAPS | Description |
+|------|------|------------|-------------|
+| Exponential | ExponentialInsulinModel | iobCalcExponential | Curved decay with tau/a/S |
+| Bilinear | N/A | iobCalcBilinear | Legacy triangular model |
+| Activity curve | percentEffectRemaining | activityContrib | Insulin action over time |
+
+### Formula Parameters (Shared)
+
+Both Loop and oref0 use identical exponential formula from Loop issue #388:
+
+| Parameter | Loop | oref0 | Description |
+|-----------|------|-------|-------------|
+| Duration | actionDuration | dia × 60 | Total duration (min) |
+| Peak time | peakActivityTime | peak | Time to max activity |
+| Delay | delay | (none) | Effect delay (10 min default) |
+| Time constant | τ (tau) | tau | Decay constant |
+| Rise factor | a | a | Curve rise factor |
+| Scale factor | S | S | Normalization factor |
+
+### Insulin Presets
+
+| Insulin Type | Loop Peak | oref0 Curve | oref0 Peak |
+|--------------|-----------|-------------|------------|
+| Rapid-acting (Humalog/Novolog) | 75 min | rapid-acting | 75 min (50-120) |
+| Ultra-rapid (Fiasp/Lyumjev) | 55 min | ultra-rapid | 55 min (35-100) |
+| Afrezza | 29 min | N/A | N/A |
+
+### DIA Defaults
+
+| System | Default DIA | Source |
+|--------|-------------|--------|
+| Loop | 6 hours | ExponentialInsulinModel presets |
+| oref0 bilinear | 3 hours | calculate.js:37 |
+| oref0 exponential | User-configured | Profile setting |

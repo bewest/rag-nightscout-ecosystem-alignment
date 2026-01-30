@@ -18,13 +18,13 @@ This document is an index of gaps organized by domain.
 |--------|-----------|------|---------------|
 | nightscout-api | 62 | [nightscout-api-gaps.md](nightscout-api-gaps.md) | 2026-01-29 (4 devicestatus schema gaps added) |
 | cgm-sources | 58 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-01-29 (3 Libre 3 gaps added) |
-| aid-algorithms | 41 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-01-29 (4 sensitivity gaps added) |
+| aid-algorithms | 57 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-01-30 (4 insulin model gaps added) |
 | connectors | 28 | [connectors-gaps.md](connectors-gaps.md) | - |
 | sync-identity | 30 | [sync-identity-gaps.md](sync-identity-gaps.md) | 2026-01-29 (3 cross-controller gaps added) |
 | treatments | 23 | [treatments-gaps.md](treatments-gaps.md) | - |
 | pumps | 9 | [pumps-gaps.md](pumps-gaps.md) | - |
 
-Total: 263 gaps across 7 domains
+Total: 267 gaps across 7 domains
 
 ## Verification Status
 
