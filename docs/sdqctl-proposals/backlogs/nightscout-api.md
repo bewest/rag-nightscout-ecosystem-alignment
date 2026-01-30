@@ -70,13 +70,20 @@ Per OQ-010 extended research request (2026-01-30), focused analysis of Nocturne 
 **Repos:** nocturne, cgm-remote-monitor  
 **Focus:** Verify DData combined response matches Loop/AAPS expectations  
 **Questions:**
-- Are all Loop-expected fields in `/api/v2/ddata`?
-- Is `lastProfileFromSwitch` populated correctly?
-- Does `devicestatus.loop` structure match exactly?
-- Are AAPS `openaps` fields all present?
+- ✅ Are all Loop-expected fields in `/api/v2/ddata`? → **YES** (all core collections)
+- ⚠️ Is `lastProfileFromSwitch` populated correctly? → **NO** (missing - GAP-API-016)
+- ✅ Does `devicestatus.loop` structure match exactly? → **YES** (typed model)
+- ✅ Are AAPS `openaps` fields all present? → **YES** (typed model)
 
-**Related Gap:** GAP-API-001  
+**Related Gap:** GAP-API-016  
 **Deliverable:** `docs/10-domain/nocturne-ddata-analysis.md`
+**Status:** ✅ COMPLETE 2026-01-30
+
+**Key Findings:**
+- High parity - all 8 core collections present (sgvs, treatments, profiles, devicestatus, etc.)
+- One missing field: `lastProfileFromSwitch` (low impact, can compute from profileTreatments)
+- Loop/OpenAPS devicestatus structures fully covered with typed models
+- Nocturne enhanced: 8 pre-filtered treatment lists (sitechange, tempbasal, etc.)
 
 ### 9. [P3] Nocturne authentication mode compatibility
 **Type:** Analysis | **Effort:** Low  
@@ -97,6 +104,7 @@ Per OQ-010 extended research request (2026-01-30), focused analysis of Nocturne 
 
 | Item | Date | Notes |
 |------|------|-------|
+| V2 DData endpoint completeness | 2026-01-30 | Item #8; High parity, GAP-API-016 (one missing field) |
 | eventType normalization behavior | 2026-01-30 | Item #7; High parity, GAP-TREAT-010/011 (minor) |
 | V3 API behavioral parity testing | 2026-01-30 | Item #6; GAP-SYNC-041 (missing history), 40+ test scenarios |
 | Playwright E2E PR submission | 2026-01-29 | PR-SUBMISSION.md created, 18 tests ready |

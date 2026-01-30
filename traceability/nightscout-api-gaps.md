@@ -1455,3 +1455,34 @@ _None yet._
 **Impact:** Loop users don't see eventual BG prediction in Nightscout displays.
 
 **Remediation:** Loop could add `eventualBG` field to match oref0 format.
+
+---
+
+## V2 DData Endpoint Gaps
+
+---
+
+### GAP-API-016: Nocturne Missing lastProfileFromSwitch in DData
+
+**Scenario:** Profile switch synchronization via DData endpoint
+
+**Description:** The `/api/v2/ddata` endpoint in Nocturne does not populate the `lastProfileFromSwitch` field, which cgm-remote-monitor computes from the most recent Profile Switch treatment.
+
+**Evidence:**
+- cgm-remote-monitor: `lib/data/dataloader.js:364-374` - Computes lastProfileFromSwitch
+- Nocturne: `Core/Models/DData.cs` - Field not present in model
+
+**Affected Systems:** Loop, Nightguard, any client using lastProfileFromSwitch for active profile determination
+
+**Impact:** Low - Clients can compute from `profileTreatments` list in same response
+
+**Remediation:** 
+1. Add `LastProfileFromSwitch` property to Nocturne `DData.cs`
+2. In `DDataService.GetDData()`, find latest Profile Switch treatment before request time
+3. Extract and assign the `profile` field
+
+**Status:** Open - Low Priority
+
+**Related:**
+- [Nocturne DData Analysis](../docs/10-domain/nocturne-ddata-analysis.md)
+- GAP-SYNC-040 (deletion semantics)

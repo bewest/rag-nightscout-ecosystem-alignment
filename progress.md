@@ -8,6 +8,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne V2 DData Endpoint Analysis (2026-01-30)
+
+OQ-010 Extended API Item #8: Verify DData combined response matches Loop/AAPS expectations.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Analysis | `docs/10-domain/nocturne-ddata-analysis.md` | 290+ lines |
+
+**Key Findings**:
+- **High parity** - All 8 core collections present
+- **One gap** - `lastProfileFromSwitch` missing (GAP-API-016)
+- **Loop devicestatus** - Full typed model coverage
+- **OpenAPS devicestatus** - Full typed model coverage
+- **Nocturne bonus** - Pre-filtered treatment lists (8 additional)
+
+**Gaps Identified**: GAP-API-016 (lastProfileFromSwitch missing)
+
+**OQ-010 Extended**: API Item #8 of 4 complete (3/4)
+
+---
+
 ### Nocturne eventType Handling Analysis (2026-01-30)
 
 OQ-010 Extended API Item #7: Compare eventType normalization behavior.

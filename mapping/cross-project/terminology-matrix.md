@@ -239,6 +239,20 @@ See: [`mapping/nightscout-roles-gateway/`](../nightscout-roles-gateway/)
 
 **Common eventTypes**: BG Check, Meal Bolus, Correction Bolus, Temp Basal, Profile Switch, Site Change, Sensor Start, Exercise, Note, Announcement
 
+**Source**: `docs/10-domain/nocturne-eventtype-handling.md`
+
+### V2 DData Endpoint Comparison
+
+| Field | cgm-remote-monitor | Nocturne | Parity |
+|-------|-------------------|----------|--------|
+| Core collections (sgvs, treatments, profiles, etc.) | ✅ All 8 | ✅ All 8 | ✅ |
+| `lastProfileFromSwitch` | ✅ Populated | ❌ Missing | ⚠️ **GAP-API-016** |
+| `devicestatus.loop` | ✅ Raw JSON | ✅ Typed model | ✅ |
+| `devicestatus.openaps` | ✅ Raw JSON | ✅ Typed model | ✅ |
+| Pre-filtered treatment lists | ❌ | ✅ (8 lists) | Nocturne enhanced |
+
+**Source**: `docs/10-domain/nocturne-ddata-analysis.md`
+
 **Nocturne-only types**: Suspend Pump, Resume Pump, Calibration, Pod Change, Transmitter Sensor Insert
 
 **Missing from Nocturne enum**: Temporary Target (but accepted as string)
