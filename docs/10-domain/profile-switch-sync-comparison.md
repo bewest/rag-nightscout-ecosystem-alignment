@@ -374,3 +374,22 @@ See [Nocturne ProfileSwitch Analysis](nocturne-profileswitch-analysis.md) for de
 **Gap Added**: GAP-NOCTURNE-004
 
 **Requirements Added**: REQ-SYNC-054, REQ-SYNC-055, REQ-SYNC-056
+
+## 12. API vs Internal Scaling (Nocturne)
+
+See [Nocturne Percentage/Timeshift Handling](nocturne-percentage-timeshift-handling.md) for detailed analysis.
+
+**Key Discovery**: Nocturne applies percentage/timeshift scaling in two different contexts:
+
+| Context | Scaling Applied? |
+|---------|-----------------|
+| **Profile API (V1/V3)** | ❌ No - returns raw profile |
+| **Internal calculations (IOB/COB/Bolus)** | ✅ Yes - via `GetValueByTime()` |
+
+**Impact on Cross-Controller Scenarios**:
+- Loop/Trio fetch raw profiles via API → unaware of AAPS percentage adjustments
+- Nocturne's own displays show scaled values → visual divergence from Loop/Trio
+
+**Gap Added**: GAP-NOCTURNE-005
+
+**Requirements Added**: REQ-SYNC-057 (effective values API), REQ-SYNC-058 (metadata in response)

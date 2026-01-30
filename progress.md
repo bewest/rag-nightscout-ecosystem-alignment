@@ -440,3 +440,27 @@ Compared exponential and bilinear insulin activity models across Loop and oref0/
 
 ---
 
+
+### Nocturne Percentage/Timeshift Handling Analysis (2026-01-30)
+
+OQ-010 Item #6: Analysis of how Nocturne applies AAPS-specific percentage and timeshift fields.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep Dive | `docs/10-domain/nocturne-percentage-timeshift-handling.md` | Profile API returns raw; internal uses scaled |
+
+**Key Findings**:
+- Nocturne Profile API (V1/V3) returns **raw** profile data without scaling
+- Scaling only applied internally via `GetValueByTime()` for IOB/COB/bolus
+- Loop/Trio fetch raw profiles and are unaware of AAPS percentage/timeshift
+- Creates divergence: Nocturne displays use scaled; Loop/Trio algorithms use raw
+
+**Gaps Identified**: GAP-NOCTURNE-005
+
+**Requirements Added**: REQ-SYNC-057, REQ-SYNC-058
+
+**Source Files Analyzed**:
+- `externals/nocturne/src/API/Nocturne.API/Controllers/V1/ProfileController.cs`
+- `externals/nocturne/src/API/Nocturne.API/Controllers/V3/ProfileController.cs`
+- `externals/nocturne/src/API/Nocturne.API/Services/ProfileService.cs:164-245`
+- `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/Extensions/ProfileSet.swift`

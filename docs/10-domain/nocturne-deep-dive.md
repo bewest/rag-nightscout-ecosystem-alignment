@@ -239,6 +239,12 @@ Nocturne includes a native Rust implementation of the OpenAPS reference algorith
 | GAP-NOCTURNE-001 | V4 endpoints are Nocturne-specific, no cross-project standard |
 | GAP-NOCTURNE-002 | Rust oref implementation may diverge from JS oref0/oref1 |
 | GAP-NOCTURNE-003 | SignalR→Socket.IO bridge adds latency vs native Socket.IO |
+| GAP-NOCTURNE-004 | ProfileSwitch percentage/timeshift applied internally (cgm-remote-monitor doesn't) |
+| GAP-NOCTURNE-005 | Profile API returns raw values despite active ProfileSwitch |
+
+See also:
+- [ProfileSwitch Analysis](nocturne-profileswitch-analysis.md) - Treatment model handling
+- [Percentage/Timeshift Handling](nocturne-percentage-timeshift-handling.md) - API vs internal scaling
 
 ### Opportunities
 

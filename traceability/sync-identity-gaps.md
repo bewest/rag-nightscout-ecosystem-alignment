@@ -924,3 +924,15 @@ if (rVal) rVal.replace('ETC','Etc');
 **Source**: [Nocturne ProfileSwitch Analysis](../docs/10-domain/nocturne-profileswitch-analysis.md)
 
 **Status**: Documented
+
+### GAP-NOCTURNE-005: Profile API Returns Raw Values Despite Active ProfileSwitch
+
+**Description**: Nocturne's Profile API endpoints (V1/V3) return raw profile data without applying percentage/timeshift from active ProfileSwitch treatments. Internal calculations (IOB, COB, bolus wizard) do apply scaling, creating a divergence between API consumers and Nocturne's own displays.
+
+**Affected Systems**: Loop, Trio, any client fetching profiles via API while AAPS ProfileSwitch is active.
+
+**Impact**: Controllers like Loop/Trio receive raw profiles and cannot detect that AAPS has activated a percentage-based profile adjustment. This means their algorithms operate on different effective values than AAPS intended.
+
+**Remediation**: Consider adding an `/api/v4/profile/effective` endpoint that returns computed values with active ProfileSwitch applied, or add metadata to profile responses indicating active ProfileSwitch details.
+
+**Related**: GAP-NOCTURNE-004, GAP-SYNC-037

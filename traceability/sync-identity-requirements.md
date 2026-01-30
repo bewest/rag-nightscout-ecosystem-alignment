@@ -886,3 +886,23 @@ See [requirements.md](requirements.md) for the index.
 **Source**: [Nocturne ProfileSwitch Analysis](../docs/10-domain/nocturne-profileswitch-analysis.md)
 
 **Gap Reference**: GAP-SYNC-036
+
+### REQ-SYNC-057: Profile Effective Values API
+
+**Statement**: Servers MAY provide an API endpoint returning effective profile values at a given time, with active ProfileSwitch percentage/timeshift applied.
+
+**Rationale**: Allows cross-controller clients to receive computed values without implementing ProfileSwitch interpretation logic themselves.
+
+**Verification**: Request effective profile with active 150% ProfileSwitch; verify basal×1.5, ISF÷1.5, CR÷1.5 in response.
+
+**Gap**: GAP-NOCTURNE-005
+
+### REQ-SYNC-058: ProfileSwitch Metadata in Profile Response
+
+**Statement**: Servers MAY include active ProfileSwitch metadata (percentage, timeshift, CircadianPercentageProfile) in profile API responses.
+
+**Rationale**: Even if raw values returned, clients can detect and apply ProfileSwitch adjustments themselves if metadata included.
+
+**Verification**: Fetch profile with active ProfileSwitch; verify response includes percentage/timeshift fields.
+
+**Gap**: GAP-NOCTURNE-005

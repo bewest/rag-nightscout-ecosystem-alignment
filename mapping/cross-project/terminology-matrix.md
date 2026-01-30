@@ -3819,3 +3819,21 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | EATING_SOON | "Eating Soon" | Pre-Meal preset |
 | AUTOMATION | "Automation" | (none) |
 | WEAR | "Wear" | (none) |
+
+### Profile API vs Internal Calculations
+
+| Context | Description | Nocturne | cgm-remote-monitor |
+|---------|-------------|----------|-------------------|
+| Profile API (V1/V3) | Values returned to clients | Raw/unscaled | Raw/unscaled |
+| Internal IOB | Values used for IOB display | Scaled (if CircadianPercentageProfile) | Raw |
+| Internal COB | Values used for COB display | Scaled (if CircadianPercentageProfile) | Raw |
+| Bolus Wizard | Values used for recommendations | Scaled (if CircadianPercentageProfile) | Raw |
+
+### GetValueByTime Pattern
+
+| Term | Description |
+|------|-------------|
+| `GetValueByTime` | Nocturne method that retrieves profile value at specific time, optionally applying CircadianPercentageProfile scaling |
+| `GetActiveProfileTreatment` | Nocturne method to find active ProfileSwitch treatment at given time |
+| Effective Profile | Computed profile values after applying active ProfileSwitch percentage/timeshift |
+| Raw Profile | Profile values as stored, without ProfileSwitch adjustments |

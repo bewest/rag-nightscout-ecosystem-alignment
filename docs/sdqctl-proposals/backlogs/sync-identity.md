@@ -45,10 +45,16 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 **Type:** Analysis | **Effort:** Medium  
 **Repos:** nocturne  
 **Focus:** How Nocturne handles AAPS-specific `percentage` and `timeshift` fields  
-**Questions:**
-- Does Nocturne apply percentage scaling when serving profiles?
-- Is timeshift rotation applied or stored as metadata?
-- What happens when Loop/Trio fetch AAPS ProfileSwitch with percentage!=100?
+**Status:** ✅ COMPLETE 2026-01-30
+**Deliverable:** `docs/10-domain/nocturne-percentage-timeshift-handling.md`
+**Key Finding:** Profile API returns raw values; scaling only applied internally for IOB/COB/bolus
+**Gaps Added:** GAP-NOCTURNE-005
+**Requirements Added:** REQ-SYNC-057, REQ-SYNC-058
+
+**Questions Answered:**
+- ✅ Nocturne applies percentage scaling internally only (not via API)
+- ✅ Timeshift rotation applied internally only
+- ✅ Loop/Trio receive raw profiles, unaware of AAPS percentage!=100
 
 **Related Gap:** GAP-SYNC-037
 
@@ -111,6 +117,7 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 
 | Item | Date | Notes |
 |------|------|-------|
+| Nocturne percentage/timeshift handling | 2026-01-30 | Item #6; GAP-NOCTURNE-005, 2 REQs |
 | Nocturne ProfileSwitch treatment model | 2026-01-30 | Item #5; GAP-NOCTURNE-004, 3 REQs |
 | Orphaned assertion linkage | 2026-01-29 | 23→0 orphans, +20 REQs created |
 | Override-supersede requirements | 2026-01-29 | REQ-OVERRIDE-001 to 005 created |

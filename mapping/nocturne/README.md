@@ -54,6 +54,7 @@ Nocturne (.NET 10)
 | GAP-NOCTURNE-002 | Rust oref may diverge from JS oref | Monitoring |
 | GAP-NOCTURNE-003 | SignalR→Socket.IO bridge adds latency | Documented |
 | GAP-NOCTURNE-004 | ProfileSwitch percentage/timeshift applied (cgm-remote-monitor doesn't) | Documented |
+| GAP-NOCTURNE-005 | Profile API returns raw values despite active ProfileSwitch | Documented |
 
 ---
 
@@ -63,6 +64,7 @@ Nocturne (.NET 10)
 |----------|-------|
 | [nocturne-deep-dive.md](../../docs/10-domain/nocturne-deep-dive.md) | Architecture overview |
 | [nocturne-profileswitch-analysis.md](../../docs/10-domain/nocturne-profileswitch-analysis.md) | ProfileSwitch treatment handling |
+| [nocturne-percentage-timeshift-handling.md](../../docs/10-domain/nocturne-percentage-timeshift-handling.md) | API vs internal scaling behavior |
 
 ---
 
