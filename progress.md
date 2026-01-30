@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### GAP-API Freshness Verification (2026-01-30)
+
+nightscout-api #4: Verify GAP-API-* gaps against open/merged PRs.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Freshness Report | `docs/10-domain/gap-api-freshness-verification.md` | 8.1KB, 16 gaps analyzed |
+
+**Status Summary**:
+| Status | Count | Examples |
+|--------|-------|----------|
+| 🟢 ADDRESSED_BY_PR | 3 | GAP-API-015, GAP-API-016 |
+| 🟡 PARTIAL | 2 | GAP-API-006, GAP-API-012 |
+| 🔴 OPEN | 11 | GAP-API-001 through GAP-API-014 |
+
+**Key Finding**: #7791 (Remote Commands) addresses GAP-API-015 but blocked on security review.
+
+---
+
 ### StateSpan Client SDK Patterns (2026-01-30)
 
 sync-identity #21: Document how clients would consume StateSpan API.

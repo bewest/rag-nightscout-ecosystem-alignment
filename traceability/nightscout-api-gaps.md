@@ -3,6 +3,8 @@
 Domain-specific gaps extracted from gaps.md.
 See [gaps.md](gaps.md) for the index.
 
+> **Freshness Verification**: See [gap-api-freshness-verification.md](../docs/10-domain/gap-api-freshness-verification.md) for PR coverage analysis (2026-01-30).
+
 ---
 
 ### GAP-API-001: API v1 Cannot Detect Deletions
