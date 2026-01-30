@@ -395,8 +395,8 @@ Systematic fixes for verification failures. Source: `sdqctl verify all` output.
 
 | # | Item | Priority | Scope | Status |
 |---|------|----------|-------|--------|
-| 41 | Create glossary.md | P2 | docs/ | ⬜ Pending |
-| 42 | Fix deprecated term usage | P1 | All | ⬜ Pending |
-| 43 | Standardize capitalization (batch) | P3 | All | ⬜ Pending |
+| 41 | Create glossary.md | P2 | docs/ | ✅ Already exists (105 lines) |
+| 42 | Fix deprecated term usage | P1 | All | ✅ Done (5 terms → "synthesis cycle") |
+| 43 | Standardize capitalization (batch) | P3 | All | ⬜ Pending (724 warnings) |
 
 **Source**: LIVE-BACKLOG.md pending item (2026-01-30)

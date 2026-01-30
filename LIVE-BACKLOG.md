@@ -13,6 +13,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Item #42: Fix deprecated term usage | P1 | ✅ Complete (5 terms fixed) | 2026-01-30 |
+| Item #41: Create glossary.md | P2 | ✅ Already exists (105 lines) | 2026-01-30 |
 | Item #37: Fix cross-document links | P1 | ✅ Complete (5 refs fixed) | 2026-01-30 |
 | Item #34: Fix active docs broken refs | P1 | ✅ Complete (5 fixed, 360/392 valid) | 2026-01-30 |
 | OQ-010 Item #11: ADR-004 ProfileSwitch mapping | P2 | ✅ Complete (OQ-010 RESOLVED) | 2026-01-30 |

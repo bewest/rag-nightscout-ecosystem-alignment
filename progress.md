@@ -8,6 +8,19 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Terminology Cleanup (2026-01-30)
+
+Fixed deprecated term usage and broken workflow link.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Term fixes | `docs/sdqctl-proposals/RUN-BRANCHING.md` | 5 deprecated terms → "synthesis cycle" |
+| Link fix | Same file | Fixed broken workflow link |
+
+**Result**: `sdqctl verify terminology` now shows 0 deprecated (was 5).
+
+---
+
 ### Broken Refs Remediation (2026-01-30)
 
 Fixed broken code references in active documentation.
