@@ -8,6 +8,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### REFCAT Caching Proposal (2026-01-30)
+
+Ready Queue Item #2: Token efficiency improvement proposal.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Proposal | `docs/sdqctl-proposals/refcat-caching-proposal.md` | 9.0KB, 4-phase plan |
+
+**Token Savings Estimate**:
+| Scenario | Savings | Cost Reduction |
+|----------|---------|----------------|
+| Conservative | 20% | $2.05/cycle |
+| Optimistic | 40% | $4.11/cycle |
+
+**Implementation**: 12 hours over 2 weeks
+
+---
+
 ### Bridge Deprecation Plan (2026-01-30)
 
 Ready Queue Item #1: Consolidate legacy bridges into nightscout-connect.

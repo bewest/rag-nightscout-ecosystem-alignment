@@ -19,7 +19,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 5 | ~~**Gap freshness checker tool**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `tools/verify_gap_freshness.py` |
 | 6 | ~~**Terminology sample tool**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `tools/sample_terminology.py` |
 | 7 | ~~**Gap deduplication tool**~~ | ~~P1~~ | ~~Low~~ | ✅ COMPLETE - `tools/find_gap_duplicates.py` |
-| 8 | **REFCAT caching proposal** | P2 | Medium | [From iterate report](../iterate-effectiveness-report.md) - est. 20-40% token reduction |
+| 8 | ~~**REFCAT caching proposal**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/sdqctl-proposals/refcat-caching-proposal.md` |
 | 9 | ~~**Token efficiency dashboard**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `tools/efficiency_dashboard.py` |
 | 10 | **Selective repo loading** | P2 | Medium | Load only task-relevant repos - reduce 3.4M tokens/cycle |
 | 11 | **Deprecate redundant tools** | P3 | Low | 7 tools overlap with sdqctl - see [migration eval](#sdqctl-migration-evaluation) |
