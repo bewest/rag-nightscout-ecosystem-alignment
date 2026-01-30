@@ -177,18 +177,21 @@ Per user request (2026-01-30), additional research focused on Nocturne as it rel
 **Gaps Added:** GAP-BRIDGE-001, GAP-BRIDGE-002
 **Gap Updated:** GAP-NOCTURNE-003 (confirmed with measurements)
 
-### 13. [P2] Nocturne Rust oref algorithm conformance testing
+### 13. [P2] Nocturne Rust oref algorithm conformance testing ✅
 **Type:** Verification | **Effort:** High  
 **Repos:** nocturne, oref0  
 **Focus:** Create test vectors comparing JS oref0 vs Rust oref outputs  
-**Questions:**
-- Do IOB calculations match for same input?
-- Do COB calculations match for same input?
-- Any edge cases where outputs diverge?
-- What is precision difference (float rounding)?
+**Status:** ✅ COMPLETE 2026-01-30
+**Deliverable:** `conformance/scenarios/nocturne-oref/README.md`, `iob-tests.yaml`
 
-**Related Gap:** GAP-NOCTURNE-002, GAP-OREF-001  
-**Deliverable:** `conformance/scenarios/nocturne-oref/` test fixtures + report
+**Key Findings:**
+- IOB bilinear: ✅ Same formula, same polynomial coefficients
+- IOB exponential: ✅ Same LoopKit #388 formula
+- COB algorithm: ✅ Same deviation-based approach
+- Precision: Both IEEE 754 f64, < 1e-15 difference
+
+**Gaps Added:** GAP-OREF-CONFORMANCE-001, GAP-OREF-CONFORMANCE-002, GAP-OREF-CONFORMANCE-003
+**Requirements Added:** REQ-OREF-CONFORM-001, REQ-OREF-CONFORM-002, REQ-OREF-CONFORM-003
 
 ### 14. [P2] Nocturne V4 StateSpan standardization proposal
 **Type:** Proposal | **Effort:** Medium  
