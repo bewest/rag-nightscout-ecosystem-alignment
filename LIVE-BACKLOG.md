@@ -15,6 +15,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 17) | P0 | ✅ Complete (Ready Queue 2 items, aid-algorithms medium items done) | 2026-01-30 |
+| Aid-algorithms cross-ref (#3, #4) | P2 | ✅ Complete (cross-ref to accuracy #11, #19) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 16) | P0 | ✅ Complete (Ready Queue 2 items, all sync-identity items done) | 2026-01-30 |
 | Sync-identity cross-ref (#2, #3, #4) | P2 | ✅ Complete (cross-ref to accuracy #7, #21, #24) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 15) | P0 | ✅ Complete (Ready Queue 2 items, all nightscout-api items done) | 2026-01-30 |

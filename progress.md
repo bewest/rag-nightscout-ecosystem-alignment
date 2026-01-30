@@ -8,6 +8,19 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Aid-Algorithms Cross-Reference Completion (2026-01-30)
+
+aid-algorithms #3, #4: Cross-references to existing verification in documentation-accuracy.md.
+
+| Item | Reference | Status |
+|------|-----------|--------|
+| #3 Verify algorithm claims | accuracy #11 | 100% accurate |
+| #4 Verify GAP-ALG-* | accuracy #19 | 100% accurate (7 claims) |
+
+**Only high-effort items (#1, #2) remain - require JVM/Swift setup.**
+
+---
+
 ### Sync-Identity Cross-Reference Completion (2026-01-30)
 
 sync-identity #2, #3, #4: Cross-references to existing verification in documentation-accuracy.md.
