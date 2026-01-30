@@ -22,14 +22,20 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] Algorithm conformance: AAPS Kotlin runner
+### 1. [P3] StateSpan client SDK patterns
+**Type:** Research | **Effort:** Medium
+**Focus:** Document how clients would consume StateSpan API
+**Backlog:** sync-identity #21
+**Note:** Follow-on from StateSpan gap remediation mapping (complete)
+
+### 2. [P2] Algorithm conformance: AAPS Kotlin runner
 **Type:** Implementation | **Effort:** High
 **Repos:** AndroidAPS
 **Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
 
-### 2. [P3] Algorithm conformance: Loop Swift runner
+### 3. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
@@ -42,6 +48,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **StateSpan gap remediation mapping** | `docs/10-domain/statespan-gap-remediation-mapping.md` | 12 gaps fully addressed, 8 partial, 27 unaffected |
 | **Selective repo loading** | `docs/sdqctl-proposals/selective-repo-loading-proposal.md` | 40-60% token reduction, combined 60-80% |
 | **REFCAT caching proposal** | `docs/sdqctl-proposals/refcat-caching-proposal.md` | 20-40% token reduction, 4-phase plan |
 | **Bridge deprecation plan** | `docs/10-domain/bridge-deprecation-plan.md` | Full parity in nightscout-connect; archive Mar 31 |

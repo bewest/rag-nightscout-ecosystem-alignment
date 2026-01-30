@@ -342,6 +342,7 @@ StateSpan provides a cleaner abstraction for time-ranged system states than the 
 
 ## References
 
+- [StateSpan Gap Remediation Mapping](../10-domain/statespan-gap-remediation-mapping.md) - Analysis of 47 gaps, 12 fully addressed
 - [Nocturne V4 StateSpan Implementation](../../externals/nocturne/src/Core/Nocturne.Core.Models/StateSpan.cs)
 - [Nocturne StateSpan Controller](../../externals/nocturne/src/API/Nocturne.API/Controllers/V4/StateSpansController.cs)
 - [Nocturne V4 Profile Extensions](../10-domain/nocturne-v4-profile-extensions.md)

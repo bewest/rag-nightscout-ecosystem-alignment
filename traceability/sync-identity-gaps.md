@@ -3,6 +3,8 @@
 Domain-specific gaps extracted from gaps.md.
 See [gaps.md](gaps.md) for the index.
 
+> **StateSpan Remediation**: See [statespan-gap-remediation-mapping.md](../docs/10-domain/statespan-gap-remediation-mapping.md) for analysis of which gaps can be addressed by StateSpan V3 extension.
+
 ---
 
 ### GAP-SYNC-001: Loop Uses POST-only, No Idempotent Upsert

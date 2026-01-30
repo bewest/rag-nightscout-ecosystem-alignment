@@ -8,6 +8,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### StateSpan Gap Remediation Mapping (2026-01-30)
+
+sync-identity #20: Map which existing gaps StateSpan V3 could address.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Mapping doc | `docs/10-domain/statespan-gap-remediation-mapping.md` | 11KB, 47 gaps analyzed |
+
+**Remediation Summary**:
+| Category | Count | Percentage |
+|----------|-------|------------|
+| Fully addressed | 12 gaps | 26% |
+| Partially addressed | 8 gaps | 17% |
+| Unaffected | 27 gaps | 57% |
+
+**High-Value Targets**: GAP-V4-001, GAP-V4-002, GAP-OVRD-005, GAP-SYNC-004
+
+---
+
 ### Selective Repo Loading Proposal (2026-01-30)
 
 Ready Queue Item #2: Token efficiency via task-aware repo selection.
