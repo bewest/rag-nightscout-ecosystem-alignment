@@ -10,6 +10,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### PR Recommendation Packaging (2026-01-30)
+
+Cycle 31: Created maintainer-focused recommendations document.
+
+**Deliverable**: `docs/10-domain/nightscout-maintainer-recommendations.md`
+
+**Priority Areas**:
+1. Quick Win PRs (6 PRs ready to merge)
+2. Sync & Identity (22 gaps, profile sync priority)
+3. API Completeness (food/activity specs needed)
+4. Controller Output (unified schema RFC)
+
+**Roadmap**: Feb→Apr 2026 phased implementation
+
+**nightscout-api.md #19**: ✅ COMPLETE
+
+---
+
 ### cgm-remote-monitor Analysis Depth Matrix (2026-01-30)
 
 Cycle 30: Created completeness grid for all Nightscout API collections.

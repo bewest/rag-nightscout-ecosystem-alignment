@@ -22,20 +22,13 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] PR recommendation packaging
-**Type:** Deliverable | **Effort:** Medium
-**Domain:** Nightscout API
-**Focus:** Format findings as actionable maintainer recommendations
-**Audience:** Nightscout maintainers
-**Source:** nightscout-api.md #19
-
-### 2. [P2] Algorithm conformance: AAPS Kotlin runner (PARKED)
+### 1. [P2] Algorithm conformance: AAPS Kotlin runner (PARKED)
 **Type:** Implementation | **Effort:** High
 **Repos:** AndroidAPS
 **Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
 **Note:** Requires JVM setup - parked until visibility work complete
 
-### 3. [P3] Algorithm conformance: Loop Swift runner (PARKED)
+### 2. [P3] Algorithm conformance: Loop Swift runner (PARKED)
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
@@ -47,6 +40,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **PR recommendation packaging** | `docs/10-domain/nightscout-maintainer-recommendations.md` | 4 priority areas: PRs, sync gaps, API completeness, controller output |
 | **cgm-remote-monitor analysis depth matrix** | `docs/10-domain/cgm-remote-monitor-analysis-depth-matrix.md` | 57% avg coverage, 2 collections (food, activity) need specs |
 | **Classify GAP-SYNC-* by ontology** | `traceability/sync-identity-gaps.md` | 22 gaps classified: 6 Observed, 8 Desired, 2 Control, 6 Cross-category |
 | **State ontology definition** | `docs/architecture/state-ontology.md` | Observed/Desired/Control categories defined with sync semantics |
