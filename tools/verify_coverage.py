@@ -4,7 +4,9 @@ Coverage Analyzer - cross-references requirements with mappings, specs, and asse
 
 Extracts requirement IDs (REQ-XXX, GAP-XXX) from:
 - traceability/requirements.md
+- traceability/*-requirements.md (domain-specific)
 - traceability/gaps.md
+- traceability/*-gaps.md (domain-specific)
 
 Then scans for references in:
 - mapping/**/*.md
@@ -37,12 +39,13 @@ SPECS_DIR = WORKSPACE_ROOT / "specs"
 CONFORMANCE_DIR = WORKSPACE_ROOT / "conformance"
 DOCS_DIR = WORKSPACE_ROOT / "docs"
 
-REQ_PATTERN = re.compile(r'\b(REQ-\d{3})\b')
+# Match both REQ-NNN and REQ-DOMAIN-NNN patterns
+REQ_PATTERN = re.compile(r'\b(REQ-[A-Z]*-?\d{3})\b')
 GAP_PATTERN = re.compile(r'\b(GAP-[A-Z]+-\d{3})\b')
 
 
 def extract_requirements(filepath):
-    """Extract requirement definitions from requirements.md."""
+    """Extract requirement definitions from requirements files."""
     requirements = {}
     
     if not filepath.exists():
@@ -54,7 +57,8 @@ def extract_requirements(filepath):
     current_statement = []
     
     for line in content.split('\n'):
-        req_header = re.match(r'^###\s+(REQ-\d{3}):', line)
+        # Match both REQ-NNN and REQ-DOMAIN-NNN patterns
+        req_header = re.match(r'^###\s+(REQ-[A-Z]*-?\d{3}):', line)
         if req_header:
             if current_req and current_statement:
                 requirements[current_req]["statement"] = ' '.join(current_statement).strip()
@@ -320,11 +324,21 @@ def main():
     args = parser.parse_args()
     
     print("Extracting requirements...")
-    requirements = extract_requirements(TRACEABILITY_DIR / "requirements.md")
+    requirements = {}
+    # Scan main requirements.md
+    requirements.update(extract_requirements(TRACEABILITY_DIR / "requirements.md"))
+    # Scan domain-specific *-requirements.md files
+    for req_file in TRACEABILITY_DIR.glob("*-requirements.md"):
+        requirements.update(extract_requirements(req_file))
     print(f"  Found {len(requirements)} requirements")
     
     print("Extracting gaps...")
-    gaps = extract_gaps(TRACEABILITY_DIR / "gaps.md")
+    gaps = {}
+    # Scan main gaps.md
+    gaps.update(extract_gaps(TRACEABILITY_DIR / "gaps.md"))
+    # Scan domain-specific *-gaps.md files
+    for gap_file in TRACEABILITY_DIR.glob("*-gaps.md"):
+        gaps.update(extract_gaps(gap_file))
     print(f"  Found {len(gaps)} gaps")
     
     patterns = [REQ_PATTERN, GAP_PATTERN]

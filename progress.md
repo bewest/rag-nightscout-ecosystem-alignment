@@ -10,6 +10,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Fix verify_coverage.py (2026-01-30)
+
+Cycle 23: Fixed broken verification tool identified in cycle 22 audit.
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Requirements found | 0 | 242 |
+| Gaps found | 0 | 289 |
+
+**Fixes Applied**:
+1. Glob patterns: `*-requirements.md` and `*-gaps.md`
+2. REQ regex: `REQ-[A-Z]*-?\d{3}` to match `REQ-SYNC-001` etc.
+3. Docstring updated
+
+**Source**: tooling.md #21
+
+---
+
 ### Tool Coverage Audit (2026-01-30)
 
 Cycle 22: Analyzed what each verification tool parses and identified coverage gaps.

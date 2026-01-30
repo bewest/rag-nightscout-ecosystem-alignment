@@ -22,59 +22,53 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P1] Fix verify_coverage.py
-**Type:** Bug Fix | **Effort:** Low
-**Domain:** Tooling
-**Focus:** Update to scan `*-requirements.md` pattern like verify_assertions
-**Source:** tooling.md #21 (from tool coverage audit)
-
-### 2. [P1] Documentation parse audit
+### 1. [P1] Documentation parse audit
 **Type:** Verification | **Effort:** Medium
 **Domain:** Tooling
 **Focus:** Scan all docs for patterns tools recognize, flag docs with no tool coverage
 **Deliverable:** List of docs not validated by any tool
 **Source:** tooling.md #19
 
-### 3. [P2] Extend verify_refs to conformance/
+### 2. [P2] Extend verify_refs to conformance/
 **Type:** Enhancement | **Effort:** Low
 **Domain:** Tooling
 **Focus:** Add `conformance/**/*.md` to scan patterns
 **Source:** tooling.md #22 (from tool coverage audit)
 
-### 4. [P2] State ontology definition
+### 3. [P2] State ontology definition
 **Type:** Architecture | **Effort:** Medium
 **Domain:** Cross-cutting
 **Focus:** Define observed/desired/control state categories
 **Deliverable:** `docs/architecture/state-ontology.md`
 **Source:** [state-ontology-proposal.md](state-ontology-proposal.md) Phase 1
 
-### 5. [P2] cgm-remote-monitor analysis depth matrix
+### 4. [P2] cgm-remote-monitor analysis depth matrix
 **Type:** Audit | **Effort:** Medium
 **Domain:** Nightscout API
 **Focus:** Completeness grid for all collections (entries, treatments, devicestatus, profile, food, activity)
 **Source:** nightscout-api.md #18
 
-### 6. [P2] PR recommendation packaging
+### 5. [P2] PR recommendation packaging
 **Type:** Deliverable | **Effort:** Medium
 **Domain:** Nightscout API
 **Focus:** Format findings as actionable maintainer recommendations
 **Audience:** Nightscout maintainers
 **Source:** nightscout-api.md #19
 
-### 7. [P2] Classify GAP-SYNC-* by ontology category
+### 6. [P2] Classify GAP-SYNC-* by ontology category
 **Type:** Analysis | **Effort:** Low
 **Domain:** Sync & Identity
 **Focus:** Add ontology category to each sync-related gap
-**Prerequisites:** Item #4
+**Prerequisites:** Item #3
 **Source:** sync-identity.md #22
 
-### 8. [P2] Algorithm conformance: AAPS Kotlin runner (PARKED)
+### 7. [P2] Algorithm conformance: AAPS Kotlin runner (PARKED)
 **Type:** Implementation | **Effort:** High
 **Repos:** AndroidAPS
 **Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
 **Note:** Requires JVM setup - parked until visibility work complete
 
-### 9. [P3] Algorithm conformance: Loop Swift runner (PARKED)
+### 8. [P3] Algorithm conformance: Loop Swift runner (PARKED)
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
@@ -86,6 +80,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Fix verify_coverage.py** | `tools/verify_coverage.py` | 0→242 reqs, 0→289 gaps - tool now functional |
 | **Tool coverage audit** | `docs/10-domain/tool-coverage-audit.md` | 89% coverage, verify_coverage.py broken, conformance/*.md uncovered |
 | **Progress.md archive hygiene** | `progress-archive-2026-01-30-batch2.md` | 1209→60 lines (95% reduction) |
 | **PR #8405 timezone review** | GAP-TZ-001 updated, `ecosystem-pr-analysis` | GAP-TZ-001 addressed by PR, safe to merge |

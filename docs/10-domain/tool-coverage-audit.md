@@ -34,7 +34,7 @@
 
 ## Findings
 
-### 1. verify_coverage is Broken
+### 1. ~~verify_coverage is Broken~~ ✅ FIXED (Cycle 23)
 
 **Symptom**: Reports 0 requirements when `verify_assertions` finds 247.
 
@@ -42,7 +42,7 @@
 
 **Impact**: Coverage analysis unreliable.
 
-**Remediation**: Update to scan `*-requirements.md` and `*-gaps.md` patterns like `verify_assertions` does.
+**Remediation**: ✅ Fixed in cycle 23 - now scans `*-requirements.md` and `*-gaps.md` patterns + updated REQ regex for `REQ-DOMAIN-NNN` format. Result: 0→242 reqs, 0→289 gaps.
 
 ### 2. Conformance .md Files Not Validated
 
@@ -86,6 +86,8 @@ for req_file in TRACEABILITY_DIR.glob("*-requirements.md"):
     requirements.update(extract_requirements(req_file))
 ```
 
+### ~~P1: Fix verify_coverage~~ ✅ COMPLETE (Cycle 23)
+
 ### P2: Extend verify_refs to conformance/
 
 Add `conformance/**/*.md` to scan patterns.
@@ -114,6 +116,7 @@ Add `conformance/**/*.md` to scan patterns.
 
 ## Next Steps
 
-1. **Fix verify_coverage** (tooling.md #21) - P1
+1. ~~**Fix verify_coverage** (tooling.md #21) - P1~~ ✅ COMPLETE
 2. **Extend verify_refs** (tooling.md #22) - P2
+3. **Documentation parse audit** (tooling.md #19) - P1
 3. **Documentation parse audit** (tooling.md #19) - In progress

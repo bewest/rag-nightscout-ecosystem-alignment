@@ -9,12 +9,13 @@
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| (none) | - | StateSpan V3 research queued! |
+| Trio-dev checkout + methodical analysis | P2 | SSH git url updated in workspace.lock.json; queue bottom-up integration work |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 23) | P0 | ✅ Complete (fix verify_coverage.py, 0→242 reqs) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 22) | P0 | ✅ Complete (tool coverage audit, 2 new items added) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 21) | P0 | ✅ Complete (progress.md hygiene, 1209→60 lines) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 20) | P0 | ✅ Complete (Ready Queue 5→4 items, PR #8405 review done) | 2026-01-30 |

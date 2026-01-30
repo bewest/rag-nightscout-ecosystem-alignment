@@ -32,7 +32,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 18 | ~~**Tool coverage audit**~~ | ~~P1~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/tool-coverage-audit.md` |
 | 19 | **Documentation parse audit** | P1 | Medium | Scan all docs for patterns tools recognize, flag docs with no tool coverage |
 | 20 | **Known vs unknown dashboard** | P2 | Low | Summary view: repos analyzed, gaps identified, coverage %, confidence levels |
-| 21 | **Fix verify_coverage.py** | P1 | Low | Update to scan `*-requirements.md` pattern like verify_assertions |
+| 21 | ~~**Fix verify_coverage.py**~~ | ~~P1~~ | ~~Low~~ | ✅ COMPLETE - Fixed glob patterns + REQ-DOMAIN-NNN regex (0→242 reqs, 0→289 gaps) |
 | 22 | **Extend verify_refs to conformance/** | P2 | Low | Add `conformance/**/*.md` to scan patterns |
 
 ---
