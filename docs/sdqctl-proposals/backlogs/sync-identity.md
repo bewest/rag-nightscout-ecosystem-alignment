@@ -283,6 +283,10 @@ Per user request (2026-01-30), additional research focused on Nocturne as it rel
 
 | Item | Date | Notes |
 |------|------|-------|
+| Nocturne connector polling coordination | 2026-01-30 | Item #16; GAP-CONNECT-010/011/012, REQ-CONNECT-010/011/012 |
+| PostgreSQL migration field fidelity | 2026-01-30 | Item #15; GAP-MIGRATION-001/002/003, REQ-MIGRATION-001-004 |
+| StateSpan standardization proposal | 2026-01-30 | Item #14; GAP-STATESPAN-001/002/003, REQ-STATESPAN-001-005 |
+| Rust oref conformance testing | 2026-01-30 | Item #13; ✅ Verified equivalent, 25 test vectors |
 | Nocturne SignalR bridge analysis | 2026-01-30 | Item #12; GAP-BRIDGE-001/002, REQ-BRIDGE-001/002/003 |
 | ADR-004 ProfileSwitch mapping | 2026-01-30 | Item #11; OQ-010 resolved |
 | Nocturne Rust oref profile handling | 2026-01-30 | Item #10; GAP-OREF-001/002/003, 3 REQs |

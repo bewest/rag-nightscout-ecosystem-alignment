@@ -54,11 +54,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Backlog:** [sync-identity.md](backlogs/sync-identity.md#17-p2-nocturne-srvmodified-field-implementation)
 **Related Gap:** GAP-SYNC-039, GAP-MIGRATION-001
 
-### 6. [P2] OQ-010 Extended #18: Event sourcing pattern
+### 6. [P2] OQ-010 Extended #18: Soft-delete vs hard-delete interop
 **Type:** Analysis | **Effort:** Medium
-**Repos:** nocturne
-**Focus:** Document Nocturne's event sourcing architecture
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md#18-p2-nocturne-event-sourcing-pattern)
+**Repos:** nocturne, cgm-remote-monitor
+**Focus:** Document deletion behavior differences and sync impact
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md#18-p2-nocturne-soft-delete-vs-hard-delete-interop)
+**Related Gap:** GAP-SYNC-040
 
 ---
 
