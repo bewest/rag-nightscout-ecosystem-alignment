@@ -28,7 +28,34 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Replace custom VERIFY patterns with `sdqctl verify` calls in .conv files
 **Outcome:** Standardized verification across all workflows
 
-### 2. [P2] LSP verification setup research ✅ COMPLETE
+### 2. [P2] Trio-dev oref integration mapping
+**Type:** Analysis | **Effort:** Medium
+**Source:** aid-algorithms.md #5
+**Repos:** Trio
+**Focus:** Map `trio-oref/lib/` JS files to oref0, document divergence
+**Outcome:** Understand Trio's oref implementation vs upstream
+
+### 3. [P2] Trio Nightscout sync analysis
+**Type:** Analysis | **Effort:** Medium
+**Source:** aid-algorithms.md #6
+**Repos:** Trio
+**Focus:** Analyze `NightscoutManager.swift`, `NightscoutAPI.swift` for treatment/profile sync
+**Outcome:** Document sync patterns and gaps
+
+### 4. [P2] Trio OpenAPS.swift bridge analysis
+**Type:** Analysis | **Effort:** Low
+**Source:** aid-algorithms.md #7
+**Repos:** Trio
+**Focus:** Analyze Swift↔JS bridge in `OpenAPS.swift` (37KB)
+**Outcome:** Understand data flow between Swift and oref engine
+
+### 5. [P3] backlog-cycle-v3.conv
+**Type:** Documentation | **Effort:** Medium
+**Source:** tooling.md #14
+**Focus:** Leverage ELIDE, mixed tools, cyclic prompts
+**Outcome:** Improved cycle efficiency
+
+### 6. [P2] LSP verification setup research ✅ COMPLETE
 **Type:** Research | **Effort:** High
 **Source:** tooling.md #16
 **Focus:** Document requirements for JS/TS LSP, Kotlin/Java LSP, Swift limitations
