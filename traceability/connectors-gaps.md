@@ -706,3 +706,60 @@ osx_image: xcode12.4
 **Status**: ✅ Verified equivalent
 
 ---
+
+## Nocturne Connector Coordination Gaps
+
+---
+
+### GAP-CONNECT-010: No Connector Poll Staggering
+
+**Description**: Nocturne connectors poll independently with no startup jitter or coordination. Multiple connectors may poll simultaneously, causing API load spikes.
+
+**Affected Systems**: Nocturne
+
+**Impact**: 
+- Burst of outbound requests at startup
+- Potential rate-limiting if all connectors hit APIs simultaneously
+
+**Source**: `src/Connectors/Nocturne.Connectors.Core/Services/ResilientPollingHostedService.cs:62`
+
+**Remediation**: Add startup jitter or stagger connector initialization.
+
+**Status**: Open (minor impact for typical 2-3 connectors)
+
+---
+
+### GAP-CONNECT-011: No Explicit Loop-Back Prevention
+
+**Description**: Nightscout connector does not filter out data that originated from Nocturne. Circular sync possible with misconfigured topology.
+
+**Affected Systems**: Nocturne Nightscout connector
+
+**Impact**: 
+- Circular sync possible with bidirectional Nocturne↔Nightscout configuration
+- Data may accumulate duplicate sources
+
+**Source**: `src/Connectors/Nocturne.Connectors.Nightscout/Services/NightscoutConnectorService.cs`
+
+**Remediation**: 
+1. Filter by `device` or `app` field on fetch
+2. Add `enteredBy` exclusion (similar to AAPS `enteredBy[$ne]`)
+3. Document recommended topology
+
+**Status**: Open
+
+---
+
+### GAP-CONNECT-012: Cross-Connector Deduplication Delegated to Server
+
+**Description**: Same CGM reading from multiple sources (e.g., Dexcom direct + via upstream Nightscout) handled by server-side deduplication, not connectors.
+
+**Affected Systems**: Nocturne
+
+**Impact**: Relies on server-side dedup which may use different matching criteria than expected.
+
+**Source**: By design - connectors use incremental sync via timestamps
+
+**Remediation**: Document expected behavior; consider connector-side pre-dedup for known overlap scenarios.
+
+**Status**: Documented (by design)

@@ -8,6 +8,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne Connector Coordination Analysis (2026-01-30)
+
+OQ-010 Extended Item #16: Analyzed multi-connector polling architecture and loop-back risks.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep Dive | `docs/10-domain/nocturne-connector-coordination.md` | 300+ lines, architecture diagram |
+| Gap Updates | `traceability/connectors-gaps.md` | GAP-CONNECT-010/011/012 |
+| Req Updates | `traceability/connectors-requirements.md` | REQ-CONNECT-010/011/012 |
+
+**Key Findings**:
+- **Sidecar architecture**: Each connector runs independently with own timer
+- **DataSource tagging**: Full provenance tracking via `data_source` field
+- **Resilient polling**: 10s fast poll → exponential backoff (30+ failures)
+- **Loop-back risk**: No explicit prevention for Nightscout↔Nocturne bidirectional sync (GAP-CONNECT-011)
+- **Cross-connector dedup**: Delegated to server-side matching
+
+**Source Files Analyzed**:
+- `externals/nocturne/src/Connectors/Nocturne.Connectors.Core/Services/ResilientPollingHostedService.cs`
+- `externals/nocturne/src/Connectors/Nocturne.Connectors.Nightscout/Services/NightscoutConnectorService.cs`
+- `externals/nocturne/src/Core/Nocturne.Core.Constants/DataSources.cs`
+
+**OQ-010 Extended Research Queue**: Item #16 of 18 complete
+
+---
+
 ### PostgreSQL Migration Field Fidelity Analysis (2026-01-30)
 
 OQ-010 Extended Item #15: Verified field mapping between cgm-remote-monitor MongoDB and Nocturne PostgreSQL.

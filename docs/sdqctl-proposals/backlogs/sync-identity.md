@@ -235,6 +235,7 @@ Per user request (2026-01-30), additional research focused on Nocturne as it rel
 
 **Related Gaps:** GAP-SYNC-039, GAP-NOCTURNE-001  
 **Deliverable:** `mapping/nocturne/migration-field-fidelity.md`
+**Status:** ✅ Complete (2026-01-30)
 
 ### 16. [P3] Nocturne connector polling interval coordination
 **Type:** Analysis | **Effort:** Low  
@@ -246,8 +247,9 @@ Per user request (2026-01-30), additional research focused on Nocturne as it rel
 - How does Nightscout→Nocturne connector handle data that came from Nocturne?
 - Any deduplication for multi-source same-data?
 
-**Related Gaps:** GAP-CONNECT-001, GAP-NOCTURNE-001  
+**Related Gaps:** GAP-CONNECT-010, GAP-CONNECT-011, GAP-CONNECT-012  
 **Deliverable:** `docs/10-domain/nocturne-connector-coordination.md`
+**Status:** ✅ Complete (2026-01-30)
 
 ### 17. [P2] Nocturne srvModified field implementation
 **Type:** Gap Remediation | **Effort:** Medium  

@@ -721,3 +721,60 @@ See [requirements.md](requirements.md) for the index.
 **Gap Reference**: GAP-OREF-CONFORMANCE-003
 
 ---
+
+## Nocturne Connector Coordination Requirements
+
+---
+
+### REQ-CONNECT-010: DataSource Tagging
+
+**Statement**: Connectors MUST tag all submitted data with their `data_source` identifier.
+
+**Rationale**: Enables filtering, auditing, and cleanup by data origin.
+
+**Verification**: Query entries by `data_source`, verify connector attribution.
+
+**Source**: [Connector Coordination Analysis](../docs/10-domain/nocturne-connector-coordination.md)
+
+**Status**: ✅ Implemented
+
+---
+
+### REQ-CONNECT-011: Resilient Polling
+
+**Statement**: Connectors SHOULD implement adaptive polling with fast reconnection and exponential backoff.
+
+**Rationale**: Balances quick recovery with API rate-limit respect.
+
+**Polling Modes**:
+| State | Interval | Trigger |
+|-------|----------|---------|
+| Healthy | 5 min (config) | Success |
+| Disconnected | 10 sec | First failure |
+| Extended | Backoff to 5 min | 30+ failures |
+
+**Verification**: 
+- Disconnect network, verify 10s polling begins
+- After 30 failures, verify backoff increases
+
+**Source**: [Connector Coordination Analysis](../docs/10-domain/nocturne-connector-coordination.md)
+
+**Status**: ✅ Implemented
+
+---
+
+### REQ-CONNECT-012: Incremental Sync
+
+**Statement**: Connectors SHOULD track last successful sync timestamp and only fetch new data.
+
+**Rationale**: Reduces API load and bandwidth; enables backfill on reconnection.
+
+**Verification**: 
+- Initial sync fetches all data in range
+- Subsequent syncs only fetch new records
+
+**Source**: [Connector Coordination Analysis](../docs/10-domain/nocturne-connector-coordination.md)
+
+**Status**: ✅ Implemented
+
+---

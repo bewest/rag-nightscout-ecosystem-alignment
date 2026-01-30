@@ -9,12 +9,13 @@
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| OQ-010 Extended: Nocturne systematic research | P2 | 7 remaining (#16-18, API #6-9); Item #15 complete |
+| OQ-010 Extended: Nocturne systematic research | P2 | 6 remaining (#17-18, API #6-9); Item #16 complete |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| OQ-010 Extended #16: Connector polling coordination | P2 | ✅ Complete (sidecar arch, 3 gaps, 3 reqs) | 2026-01-30 |
 | OQ-010 Extended #15: PostgreSQL migration fidelity | P2 | ✅ Complete (full fidelity, 3 gaps, 4 reqs) | 2026-01-30 |
 | OQ-010 Extended #14: StateSpan standardization | P2 | ✅ Complete (V3 extension recommended, 3 gaps, 5 reqs) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 3) | P0 | ✅ Complete (Ready Queue updated, #15 promoted) | 2026-01-30 |
