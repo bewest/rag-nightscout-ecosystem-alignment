@@ -8,6 +8,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Gap Freshness Checker Tool (2026-01-30)
+
+Created `tools/verify_gap_freshness.py` to check if documented gaps are still open.
+
+| Metric | Value |
+|--------|-------|
+| Tool created | `tools/verify_gap_freshness.py` |
+| Makefile target | `make verify-gap-freshness` |
+| GAP definitions parsed | 268 |
+| Default sample | 10 gaps |
+| Status categories | LIKELY_OPEN, NEEDS_REVIEW, NO_TERMS |
+
+**Features**:
+- Check specific gap with `--gap GAP-XXX-NNN`
+- Random sampling with reproducible seed
+- JSON output for CI integration
+- Grep-based verification against externals/
+- Extracts search terms from title and code references
+
+---
+
 ### Terminology Sample Tool (2026-01-30)
 
 Created `tools/sample_terminology.py` to verify terminology matrix entries against source code.

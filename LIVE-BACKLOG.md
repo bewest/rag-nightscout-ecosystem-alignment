@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Gap freshness checker tool | P2 | ✅ Complete (268 GAPs, LIKELY_OPEN/NEEDS_REVIEW status) | 2026-01-30 |
 | Override/temporary target sync comparison | P2 | ✅ Complete (4 gaps, 3 reqs, eventType differences) | 2026-01-30 |
 | Target range handling comparison | P2 | ✅ Complete (4 gaps, 3 reqs, dynamic vs static targeting) | 2026-01-30 |
 | Insulin model comparison (Loop vs oref0) | P2 | ✅ Complete (4 gaps, 3 reqs, identical exponential formula) | 2026-01-30 |

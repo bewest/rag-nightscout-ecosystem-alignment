@@ -38,6 +38,7 @@ help:
 	@echo "  make verify-terminology - Sample and verify terminology matrix (15 terms)"
 	@echo "  make verify-assertions  - Trace assertions to requirements"
 	@echo "  make verify-gap-duplicates - Find duplicate GAP definitions"
+	@echo "  make verify-gap-freshness - Check if gaps are still open (10 sample)"
 	@echo ""
 	@echo "New Tools (Enhanced Traceability):"
 	@echo "  make query TERM=<term>  - Search documentation for term"
@@ -210,6 +211,10 @@ verify-gap-duplicates:
 verify-terminology:
 	@echo "Sampling terminology matrix for verification..."
 	@python3 tools/sample_terminology.py --sample-size 15
+
+verify-gap-freshness:
+	@echo "Checking gap freshness (sample of 10)..."
+	@python3 tools/verify_gap_freshness.py --sample 10
 
 # sdqctl-based verification (preferred when sdqctl available)
 sdqctl-verify-refs:
