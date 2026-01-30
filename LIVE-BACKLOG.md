@@ -9,12 +9,15 @@
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| (none) | - | PR/deprecation research queued! |
+| (none) | - | StateSpan V3 research queued! |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 6) | P0 | ✅ Complete (Ready Queue 6 items, PR deep-dive complete) | 2026-01-30 |
+| High-value PR deep-dive | P2 | ✅ Complete (5 PRs analyzed, merge sequence: #8419→#8083→#8261→#8421→#7791) | 2026-01-30 |
+| StateSpan V3 integration research | P2 | ✅ Queued (3 items to sync-identity backlog) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 5) | P0 | ✅ Complete (Ready Queue 7 items, Node.js complete) | 2026-01-30 |
 | Node.js LTS impact analysis | P1 | ✅ Complete (3 gaps, 3 reqs, 4-phase plan) | 2026-01-30 |
 | Nightscout PR research + deprecation planning | P1 | ✅ Queued (4 items to backlogs) | 2026-01-30 |

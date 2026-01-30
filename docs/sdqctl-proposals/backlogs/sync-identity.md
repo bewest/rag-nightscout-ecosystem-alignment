@@ -317,3 +317,52 @@ Per user request (2026-01-30), additional research focused on Nocturne as it rel
 - [mapping/loop/sync-identity-fields.md](../../../mapping/loop/sync-identity-fields.md)
 - [docs/10-domain/nightscout-connect-deep-dive.md](../../10-domain/nightscout-connect-deep-dive.md)
 - [mapping/cross-project/terminology-matrix.md](../../../mapping/cross-project/terminology-matrix.md)
+
+---
+
+## StateSpan V3 Integration Research
+
+Per user request (2026-01-30): Research integrating StateSpan as a solution for gaps, with possible V3 integration.
+
+### 19. [P2] StateSpan V3 extension specification
+**Type:** Proposal | **Effort:** High  
+**Repos:** cgm-remote-monitor, nocturne  
+**Focus:** Draft V3 API extension for StateSpan endpoints  
+**Prerequisites:** Item #14 (StateSpan standardization proposal) ✅
+
+**Deliverables:**
+- OpenAPI spec: `specs/openapi/aid-statespan-2025.yaml`
+- Migration guide from treatment-based to StateSpan queries
+
+**Questions:**
+- What's the minimal StateSpan subset for V3? (Profile, Override, TempBasal)
+- How do StateSpans coexist with existing treatments collection?
+- What index strategy for MongoDB StateSpan queries?
+
+**Gap Coverage:** GAP-STATESPAN-001, GAP-STATESPAN-002
+**Status:** PROPOSED
+
+### 20. [P2] StateSpan gap remediation mapping
+**Type:** Analysis | **Effort:** Medium  
+**Focus:** Map which existing gaps StateSpan could address  
+**Prerequisites:** Item #14 ✅
+
+**Candidate Gaps:**
+- GAP-OVRD-001/002/003/004: Override lifecycle tracking
+- GAP-SYNC-004: Override supersession
+- GAP-PROF-001: Profile activation history
+- GAP-001: Override vs ProfileSwitch representation
+
+**Deliverable:** `docs/10-domain/statespan-gap-remediation-mapping.md`
+**Status:** PROPOSED
+
+### 21. [P3] StateSpan client SDK patterns
+**Type:** Research | **Effort:** Medium  
+**Focus:** Document how clients would consume StateSpan API  
+**Questions:**
+- Query patterns: "active state at time T" vs "all states in range"
+- Caching strategy for state timeline
+- Relationship to existing devicestatus/treatments queries
+
+**Deliverable:** `docs/10-domain/statespan-client-sdk-patterns.md`
+**Status:** PROPOSED

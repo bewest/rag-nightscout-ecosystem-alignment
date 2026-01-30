@@ -35,32 +35,25 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md#12)
 **Note:** Informed by Node.js LTS analysis - bridges on EOL Node
 
-### 3. [P2] High-value PR deep-dive
-**Type:** Analysis | **Effort:** Medium
-**Repos:** cgm-remote-monitor
-**Focus:** Top 5 PRs: MongoDB 5x, Heart Rate, Multi-Insulin, Remote Commands, Push Tests
-**Backlog:** [nightscout-api.md](backlogs/nightscout-api.md#13)
-**Note:** Feeds into PR adoption sequencing
-
-### 4. [P2] Algorithm conformance: AAPS Kotlin runner
+### 3. [P2] Algorithm conformance: AAPS Kotlin runner
 **Type:** Implementation | **Effort:** High
 **Repos:** AndroidAPS
 **Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
 **Workflow:** `extract-spec.conv`
 **Note:** Follow-on from oref0 runner (complete)
 
-### 5. [P2] REFCAT caching proposal
+### 4. [P2] REFCAT caching proposal
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Cache external repo parsing to reduce token usage 20-40%
 **Backlog:** [tooling.md](backlogs/tooling.md)
 **Source:** [iterate-effectiveness-report.md](iterate-effectiveness-report.md)
 
-### 6. [P2] Selective repo loading
+### 5. [P2] Selective repo loading
 **Type:** Tooling | **Effort:** Medium
 **Focus:** Load only task-relevant repos to reduce 3.4M tokens/cycle
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
-### 7. [P3] Algorithm conformance: Loop Swift runner
+### 6. [P3] Algorithm conformance: Loop Swift runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
@@ -73,6 +66,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **High-value PR deep-dive** | `docs/10-domain/priority-pr-deep-dives.md` | Merge: #8419→#8083→#8261→#8421→#7791 |
 | **Node.js LTS impact analysis** | `docs/10-domain/node-lts-upgrade-analysis.md` | All JS on EOL Node 16/14; target Node 22 |
 | OQ-010 Extended API #7: eventType | `docs/10-domain/nocturne-eventtype-handling.md` | High parity, immutability gap |
 | OQ-010 Extended API #6: V3 parity | `conformance/scenarios/nocturne-v3-parity/` | Missing history endpoint (GAP-SYNC-041) |
