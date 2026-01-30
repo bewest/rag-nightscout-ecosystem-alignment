@@ -7,17 +7,7 @@
 
 ## Pending
 
-Please add appropriate items to queue to update the docs in order to fix the following issues with sdqctl verify all:
-
-  ✗ refs: Scanned 764 file(s), found 989 reference(s): 686 valid, 303 broken
-  ✗ links: Scanned 572 file(s), found 2613 link(s): 1789 valid, 52 broken, 772 external
-  ✗ traceability: Scanned 765 file(s), found 682 artifact(s): 369 orphan(s), 0 broken link(s), 0% 
-  trace coverage
-  ✗ terminology: Scanned 610 file(s) (no glossary found): 5 deprecated, 734 capitalization
-  ✓ assertions: Scanned 10356 file(s), found 1146 assertion(s): 131 with messages (11%), 0 with 
-  trace IDs (0%)
-
-  Some verifications failed
+(none - sdqctl verify issues queued to [documentation-accuracy.md](docs/sdqctl-proposals/backlogs/documentation-accuracy.md#sdqctl-verify-remediation-queue))
 
 ## Processed
 

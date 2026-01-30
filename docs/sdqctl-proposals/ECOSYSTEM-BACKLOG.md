@@ -65,13 +65,18 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Key Finding:** V4 StateSpan API provides profile activation history (not in V3)
 **Gaps Added:** GAP-V4-001, GAP-V4-002
 
-### 8. [P2] OQ-010 Research: Nocturne Rust oref profile handling
-**Type:** Analysis | **Effort:** High
-**Repos:** nocturne
-**Focus:** How Rust oref implementation uses profile data
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md#10-p3-nocturne-rust-oref-profile-handling)
+### 8. ~~[P2] OQ-010 Research: Nocturne Rust oref profile handling~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `docs/10-domain/nocturne-rust-oref-profile-analysis.md`
+**Key Finding:** PredictionService bypasses ProfileService - raw values to Rust oref
+**Gaps Added:** GAP-OREF-001, GAP-OREF-002, GAP-OREF-003
+
+### 9. [P2] OQ-010: ADR-004 draft - ProfileSwitch → Override mapping
+**Type:** Decision | **Effort:** Medium
+**Focus:** Draft architectural decision record for OQ-010 resolution
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md#11-p2-adr-004-draft-profileswitch--override-mapping-rules)
+**Prerequisites:** Items 5-8 complete ✅
 **Blocks:** OQ-010 resolution
-**Next:** Item #10 in OQ-010 queue
 
 ---
 

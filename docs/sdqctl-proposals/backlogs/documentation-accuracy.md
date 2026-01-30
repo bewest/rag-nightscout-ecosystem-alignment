@@ -361,3 +361,42 @@ VERIFY: refs
 | 32 | VERIFICATION-DIRECTIVES.md enhancement | ✅ Complete | +171 lines |
 
 **Methodology**: Added real-world patterns from 31-item verification experience
+
+---
+
+## sdqctl Verify Remediation Queue
+
+Systematic fixes for verification failures. Source: `sdqctl verify all` output.
+
+### Broken References (303 broken)
+
+| # | Item | Priority | Scope | Status |
+|---|------|----------|-------|--------|
+| 33 | Triage broken refs by category | P2 | All | ⬜ Pending |
+| 34 | Fix active docs broken refs | P1 | docs/, mapping/ | ⬜ Pending |
+| 35 | Archive or remove stale refs | P3 | Archive files | ⬜ Pending |
+
+### Broken Links (52 broken)
+
+| # | Item | Priority | Scope | Status |
+|---|------|----------|-------|--------|
+| 36 | Triage 52 broken internal links | P2 | All markdown | ⬜ Pending |
+| 37 | Fix cross-document links | P1 | Active docs | ⬜ Pending |
+
+### Traceability Coverage (369 orphans)
+
+| # | Item | Priority | Scope | Status |
+|---|------|----------|-------|--------|
+| 38 | Identify high-value orphan artifacts | P2 | traceability/ | ⬜ Pending |
+| 39 | Add trace links to key GAPs/REQs | P2 | gaps.md, requirements.md | ⬜ Pending |
+| 40 | Create traceability matrix for priority domains | P2 | sync-identity, cgm | ⬜ Pending |
+
+### Terminology Consistency (5 deprecated, 734 capitalization)
+
+| # | Item | Priority | Scope | Status |
+|---|------|----------|-------|--------|
+| 41 | Create glossary.md | P2 | docs/ | ⬜ Pending |
+| 42 | Fix deprecated term usage | P1 | All | ⬜ Pending |
+| 43 | Standardize capitalization (batch) | P3 | All | ⬜ Pending |
+
+**Source**: LIVE-BACKLOG.md pending item (2026-01-30)
