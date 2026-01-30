@@ -1218,3 +1218,97 @@ See [requirements.md](requirements.md) for the index.
 **Gap Reference**: GAP-STATESPAN-001
 
 **Source**: [StateSpan Standardization Proposal](../docs/sdqctl-proposals/statespan-standardization-proposal.md)
+
+---
+
+## PostgreSQL Migration Requirements
+
+---
+
+### REQ-MIGRATION-001: Original ID Preservation
+
+**Statement**: PostgreSQL entities MUST include an `original_id` column to preserve MongoDB ObjectId during migration.
+
+**Rationale**: Enables backward compatibility with sync clients that reference MongoDB `_id`.
+
+**Scenarios**:
+- Migrate MongoDB entries collection to PostgreSQL
+- Query by original MongoDB _id
+- Cross-reference historical data
+
+**Verification**:
+- Migrate document with `_id: "507f1f77bcf86cd799439011"`
+- Query PostgreSQL by `original_id`
+- Verify original_id matches source _id
+
+**Source**: [Migration Field Fidelity Analysis](../mapping/nocturne/migration-field-fidelity.md)
+
+**Status**: ✅ Verified in Nocturne
+
+---
+
+### REQ-MIGRATION-002: Arbitrary Field Preservation
+
+**Statement**: PostgreSQL entities SHOULD include an `additional_properties` JSONB column to preserve unknown fields.
+
+**Rationale**: Prevents data loss when migrating documents with plugin-specific or future fields not in schema.
+
+**Scenarios**:
+- Migrate treatment with custom plugin field
+- Query returns original field value
+- No data loss during round-trip
+
+**Verification**:
+- Migrate document with `custom_field: "value"`
+- Query via API
+- Verify `custom_field` in response
+
+**Source**: [Migration Field Fidelity Analysis](../mapping/nocturne/migration-field-fidelity.md)
+
+**Status**: ✅ Verified in Nocturne
+
+---
+
+### REQ-MIGRATION-003: Nested Object JSONB Storage
+
+**Statement**: DeviceStatus nested objects (loop, openaps, pump, etc.) SHOULD be stored as JSONB columns, not flattened.
+
+**Rationale**: Preserves full structure for controller-specific data without requiring schema changes for each controller.
+
+**Scenarios**:
+- Store Loop deviceStatus with complex predictions array
+- Store AAPS deviceStatus with oref1 suggested/enacted
+- Query nested fields via JSONB operators
+
+**Verification**:
+- Upload deviceStatus with `loop.predicted.IOB` array
+- Query via API
+- Verify nested structure intact
+
+**Source**: [Migration Field Fidelity Analysis](../mapping/nocturne/migration-field-fidelity.md)
+
+**Status**: ✅ Verified in Nocturne
+
+---
+
+### REQ-MIGRATION-004: srvModified Independent Storage
+
+**Statement**: Servers SHOULD store `srvModified` as a separate column updated on every write, not computed from `mills`.
+
+**Rationale**: Enables correct incremental sync behavior where backdated events are still detected by `srvModified$gt` filters.
+
+**Scenarios**:
+- Backdate treatment to yesterday
+- Sync client queries since last sync
+- Backdated treatment returned (srvModified > lastSync)
+
+**Verification**:
+- Create treatment with `mills` from yesterday
+- Verify `srvModified` is current server time
+- Query with `srvModified$gt` correctly returns document
+
+**Gap Reference**: GAP-MIGRATION-001, GAP-SYNC-039
+
+**Source**: [Migration Field Fidelity Analysis](../mapping/nocturne/migration-field-fidelity.md)
+
+**Status**: Open (Nocturne computes from mills)

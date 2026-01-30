@@ -758,6 +758,33 @@ Nocturne's V4 API provides time-ranged state tracking not available in V3 or cgm
 
 **Gap Reference**: GAP-V4-001 (not standardized), GAP-V4-002 (no V3 equivalent)
 
+### PostgreSQL Migration Concepts (Nocturne)
+
+Nocturne's PostgreSQL schema uses a hybrid approach: typed columns for known fields, JSONB for nested objects.
+
+| Concept | MongoDB (cgm-remote-monitor) | PostgreSQL (Nocturne) | Notes |
+|---------|------------------------------|----------------------|-------|
+| **Primary Key** | `_id` (ObjectId) | `Id` (UUIDv7) | Time-ordered UUID |
+| **Migration Ref** | N/A | `original_id` (varchar 24) | Preserves MongoDB ObjectId |
+| **Server Modified** | `srvModified` (stored) | Computed from `mills` | GAP-MIGRATION-001 |
+| **Server Created** | `srvCreated` (stored) | Computed from `mills` | GAP-MIGRATION-002 |
+| **Arbitrary Fields** | Any field stored | `additional_properties` JSONB | Captures unknown fields |
+| **Nested Objects** | Embedded documents | JSONB columns | Full structure preserved |
+| **PG Timestamps** | N/A | `sys_created_at`, `sys_updated_at` | PostgreSQL-native tracking |
+
+**Key Entity Columns**:
+
+| Entity | Typed Columns | JSONB Columns | Notes |
+|--------|---------------|---------------|-------|
+| EntryEntity | 30+ (sgv, direction, trend...) | `meta`, `scaled`, `additional_properties` | Full CGM coverage |
+| TreatmentEntity | 60+ (insulin, carbs, duration...) | `boluscalc`, `profileJson`, `additional_properties` | AAPS + Loop fields |
+| DeviceStatusEntity | 10 (device, mills, utcOffset...) | `loop`, `openaps`, `pump`, `override`, `cgm`... | Nested as JSONB |
+| ProfileEntity | 10 (defaultProfile, units...) | `store_json`, `loop_settings_json`, `additional_properties` | Schedules as JSON |
+
+**Gap Reference**: GAP-MIGRATION-001-003
+
+**Source**: [Migration Field Fidelity Analysis](../../mapping/nocturne/migration-field-fidelity.md)
+
 ---
 
 ## Sync Identity Fields

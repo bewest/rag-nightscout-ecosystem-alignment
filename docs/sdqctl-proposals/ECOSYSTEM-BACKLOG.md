@@ -47,25 +47,24 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Load only task-relevant repos to reduce 3.4M tokens/cycle
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
-### 5. [P2] OQ-010 Extended #15: PostgreSQL migration field fidelity
-**Type:** Verification | **Effort:** Medium
-**Repos:** nocturne
-**Focus:** Verify cgm-remote-monitor fields preserved in PostgreSQL migration
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md#15-p2-nocturne-postgresql-migration-field-fidelity)
-**Related Gap:** GAP-SYNC-039, GAP-NOCTURNE-001
-
-### 6. [P2] OQ-010 Extended #16: Connector polling coordination
+### 5. [P2] OQ-010 Extended #16: Connector polling coordination
 **Type:** Analysis | **Effort:** Low
 **Repos:** nocturne
 **Focus:** Document how multiple connectors coordinate polling
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md#16-p3-nocturne-connector-polling-interval-coordination)
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md#16-p2-nocturne-connector-polling-coordination)
 
-### 7. [P2] OQ-010 Extended #17: Nocturne srvModified field implementation
+### 6. [P2] OQ-010 Extended #17: Nocturne srvModified field implementation
 **Type:** Gap Remediation | **Effort:** Medium
 **Repos:** nocturne, cgm-remote-monitor
 **Focus:** Analyze impact of missing srvModified in Nocturne Profile model
 **Backlog:** [sync-identity.md](backlogs/sync-identity.md#17-p2-nocturne-srvmodified-field-implementation)
-**Related Gap:** GAP-SYNC-039
+**Related Gap:** GAP-SYNC-039, GAP-MIGRATION-001
+
+### 7. [P2] OQ-010 Extended #18: Event sourcing pattern
+**Type:** Analysis | **Effort:** Medium
+**Repos:** nocturne
+**Focus:** Document Nocturne's event sourcing architecture
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md#18-p2-nocturne-event-sourcing-pattern)
 
 ---
 
@@ -73,6 +72,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| OQ-010 Extended #15: PostgreSQL migration | `mapping/nocturne/migration-field-fidelity.md` | Full field fidelity via typed+JSONB |
 | OQ-010 Extended #14: StateSpan proposal | `statespan-standardization-proposal.md` | V3 extension recommended |
 | OQ-010 Extended #13: Rust oref conformance | `conformance/scenarios/nocturne-oref/` | ✅ Verified equivalent to JS oref0 |
 | OQ-010 Extended #12: SignalR bridge | `nocturne-signalr-bridge-analysis.md` | 5-10ms latency, full event parity |

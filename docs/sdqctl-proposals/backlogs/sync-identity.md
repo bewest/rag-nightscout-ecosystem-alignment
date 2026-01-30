@@ -209,15 +209,29 @@ Per user request (2026-01-30), additional research focused on Nocturne as it rel
 **Gaps Added:** GAP-STATESPAN-001, GAP-STATESPAN-002, GAP-STATESPAN-003
 **Requirements Added:** REQ-STATESPAN-001 through REQ-STATESPAN-005
 
-### 15. [P2] Nocturne PostgreSQL migration field fidelity
+### 15. [P2] Nocturne PostgreSQL migration field fidelity ✅
 **Type:** Verification | **Effort:** Medium  
 **Repos:** nocturne  
 **Focus:** Verify all cgm-remote-monitor fields are preserved in migration  
-**Questions:**
-- Which MongoDB fields have no PostgreSQL equivalent?
-- Is `OriginalId` preservation sufficient for sync identity?
-- Are nested objects (Loop/AAPS deviceStatus) fully preserved?
-- What happens to plugin-specific treatment fields?
+**Status:** ✅ COMPLETE 2026-01-30
+**Deliverable:** `mapping/nocturne/migration-field-fidelity.md`
+
+**Key Findings:**
+- **Full field fidelity** through hybrid approach: typed columns + JSONB
+- 60+ typed treatment columns, including AAPS/Loop-specific fields
+- Nested objects stored as JSONB (loop, openaps, pump, etc.)
+- `additional_properties` JSONB captures arbitrary unknown fields
+- `original_id` preserves MongoDB ObjectId for migration tracking
+- **srvModified gap**: Computed from mills, not stored independently
+
+**Questions Answered:**
+- ✅ No MongoDB fields lost - all captured in typed columns or JSONB
+- ✅ `OriginalId` sufficient for migration identity
+- ✅ Nested objects fully preserved via JSONB columns
+- ✅ Plugin fields captured in `additional_properties` JSONB
+
+**Gaps Added:** GAP-MIGRATION-001, GAP-MIGRATION-002, GAP-MIGRATION-003
+**Requirements Added:** REQ-MIGRATION-001 through REQ-MIGRATION-004
 
 **Related Gaps:** GAP-SYNC-039, GAP-NOCTURNE-001  
 **Deliverable:** `mapping/nocturne/migration-field-fidelity.md`

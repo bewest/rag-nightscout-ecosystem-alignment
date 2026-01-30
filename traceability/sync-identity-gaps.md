@@ -1214,3 +1214,81 @@ if (rVal) rVal.replace('ETC','Etc');
 **Remediation**: StateSpan categories for Sleep, Exercise, Illness, Travel (Phase 2).
 
 **Status**: Open
+
+---
+
+## PostgreSQL Migration Gaps
+
+### GAP-MIGRATION-001: srvModified Not Distinct from Mills
+
+**Description**: Nocturne computes `srvModified` from `mills` rather than storing it independently. This means `srvModified` reflects event time, not server modification time.
+
+**Affected Systems**: Nocturne, sync clients using `srvModified$gt` filter
+
+**Evidence**:
+- `externals/nocturne/src/Core/Nocturne.Core.Models/Treatment.cs:30-31`
+  ```csharp
+  [JsonPropertyName("srvModified")]
+  public long? SrvModified => Mills > 0 ? Mills : null;
+  ```
+
+**Impact**:
+- Cannot distinguish between "when event occurred" and "when server processed it"
+- Incremental sync based on `srvModified > lastSync` may miss backdated events
+- Updating a treatment doesn't change its `srvModified`
+
+**Remediation**: Store `srvModified` as separate column, update on every write.
+
+**Related**: GAP-SYNC-039
+
+**Status**: Open
+
+---
+
+### GAP-MIGRATION-002: srvCreated Also Computed from Mills
+
+**Description**: Like `srvModified`, Nocturne's `srvCreated` is computed from `mills` rather than representing actual server creation timestamp.
+
+**Affected Systems**: Nocturne, audit trail consumers
+
+**Evidence**:
+- `externals/nocturne/src/Core/Nocturne.Core.Models/Extensions/EntryResponseExtensions.cs:195`
+  ```csharp
+  public long? SrvCreated => _entry.Mills > 0 ? _entry.Mills : null;
+  ```
+
+**Impact**:
+- No server-side audit trail of when documents were created
+- Backdated events appear to have been created in the past
+
+**Remediation**: Use PostgreSQL `sys_created_at` column for `srvCreated` value.
+
+**Status**: Open
+
+---
+
+### GAP-MIGRATION-003: Original MongoDB ID Truncation Risk
+
+**Description**: `original_id` column is VARCHAR(24), matching MongoDB ObjectId hex length. However, some systems (xDrip+, custom) may use longer UUIDs as identifiers.
+
+**Affected Systems**: Migration from non-MongoDB sources
+
+**Evidence**:
+- `externals/nocturne/src/Infrastructure/Nocturne.Infrastructure.Data/Entities/EntryEntity.cs:23-24`
+  ```csharp
+  [Column("original_id")]
+  [MaxLength(24)]
+  public string? OriginalId { get; set; }
+  ```
+
+**Impact**:
+- UUID identifiers (36 chars) would be truncated
+- May cause sync identity loss for xDrip+ entries
+
+**Remediation**: Increase `MaxLength` to 36 or 64 for UUID compatibility.
+
+**Status**: Open
+
+---
+
+**Source**: [Migration Field Fidelity Analysis](../mapping/nocturne/migration-field-fidelity.md)

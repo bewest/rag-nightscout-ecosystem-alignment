@@ -8,6 +8,34 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### PostgreSQL Migration Field Fidelity Analysis (2026-01-30)
+
+OQ-010 Extended Item #15: Verified field mapping between cgm-remote-monitor MongoDB and Nocturne PostgreSQL.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Field Mapping | `mapping/nocturne/migration-field-fidelity.md` | 300+ lines, comprehensive field tables |
+| Gap Updates | `traceability/sync-identity-gaps.md` | GAP-MIGRATION-001/002/003 |
+| Req Updates | `traceability/sync-identity-requirements.md` | REQ-MIGRATION-001-004 |
+
+**Key Findings**:
+- **Full field fidelity** achieved through typed columns + JSONB
+- **60+ treatment columns**: All AAPS/Loop fields preserved (percentage, timeshift, insulinNeedsScaleFactor)
+- **Nested objects**: DeviceStatus uses JSONB for loop/openaps/pump (no flattening)
+- **Arbitrary fields**: `additional_properties` JSONB captures unknown fields
+- **srvModified issue**: Computed from `mills`, not stored independently (GAP-MIGRATION-001)
+- **original_id**: Preserves MongoDB ObjectId for migration tracking
+
+**Source Files Analyzed**:
+- `externals/nocturne/src/Infrastructure/Nocturne.Infrastructure.Data/Entities/EntryEntity.cs`
+- `externals/nocturne/src/Infrastructure/Nocturne.Infrastructure.Data/Entities/TreatmentEntity.cs`
+- `externals/nocturne/src/Infrastructure/Nocturne.Infrastructure.Data/Entities/DeviceStatusEntity.cs`
+- `externals/nocturne/src/Infrastructure/Nocturne.Infrastructure.Data/Entities/ProfileEntity.cs`
+
+**OQ-010 Extended Research Queue**: Item #15 of 18 complete
+
+---
+
 ### Nocturne SignalR→Socket.IO Bridge Analysis (2026-01-30)
 
 OQ-010 Extended Item #12: Analyzed bridge for event parity, latency, and compatibility.
