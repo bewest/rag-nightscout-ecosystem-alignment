@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Bridge Deprecation Plan (2026-01-30)
+
+Ready Queue Item #1: Consolidate legacy bridges into nightscout-connect.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Plan | `docs/10-domain/bridge-deprecation-plan.md` | 8.5KB, migration guide included |
+
+**Bridges Deprecated**:
+| Bridge | Issue | Replacement |
+|--------|-------|-------------|
+| share2nightscout-bridge | `request` pkg deprecated | nightscout-connect |
+| minimed-connect-to-nightscout | EOL Node, separate maintenance | nightscout-connect |
+
+**Timeline**: Deprecation banners Feb 15 → Archive Mar 31
+
+**Requirements Added**: REQ-BRIDGE-001 (bridge consolidation)
+
+---
+
 ### PR Adoption Sequencing Proposal (2026-01-30)
 
 Ready Queue Item #1: Prioritized roadmap for 68 open PRs.

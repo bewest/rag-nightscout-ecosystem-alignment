@@ -54,27 +54,24 @@ Research stream focused on evaluating, sequencing, and proposing adoption of cgm
 
 **Gaps Added:** GAP-NODE-001, GAP-NODE-002, GAP-NODE-003
 
-### 12. [P2] Connector bridge deprecation plan
+### 12. [P2] Connector bridge deprecation plan ✅ COMPLETE
 **Type:** Research | **Effort:** High  
 **Repos:** share2nightscout-bridge, minimed-connect-to-nightscout, nightscout-connect  
-**Focus:** Plan to consolidate legacy bridges into nightscout-connect  
-**Rationale:**
-- share2nightscout-bridge: Single-purpose (Dexcom Share only), outdated Node.js
-- minimed-connect-to-nightscout: Single-purpose (Medtronic CareLink only)
-- nightscout-connect: Multi-vendor architecture, already supports both sources
+**Deliverable:** `docs/10-domain/bridge-deprecation-plan.md`  
+**Status:** ✅ COMPLETE 2026-01-30
 
-**Questions:**
-- What functionality exists in legacy bridges not in nightscout-connect?
-- What's the migration path for users?
-- What documentation is needed?
-- Should legacy repos be archived or marked deprecated?
+**Key Findings:**
+- Full feature parity between legacy bridges and nightscout-connect
+- Dexcom Share: ✅ Full parity (US/OUS servers, auth, glucose, trends)
+- Minimed CareLink: ✅ Full parity (EU/US, M2M auth, multi-patient)
+- Migration guide included with env var mapping
 
-**Gap Coverage:**
-- GAP-SHARE-001/002/003: All addressed by nightscout-connect v3 API support
-- GAP-CONNECT-001/002/003: nightscout-connect's own improvement needs
+**Timeline:**
+- Feb 15: Deprecation banners in READMEs
+- Mar 01: Final npm releases with warnings
+- Mar 31: Repositories archived
 
-**Deliverable:** `docs/sdqctl-proposals/bridge-consolidation-plan.md`  
-**Status:** PROPOSED
+**Requirements Added:** REQ-BRIDGE-001
 
 ### 13. [P2] High-value PR deep-dive
 **Type:** Analysis | **Effort:** Medium  

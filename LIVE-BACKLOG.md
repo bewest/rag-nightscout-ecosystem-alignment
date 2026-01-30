@@ -15,6 +15,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 8) | P0 | ✅ Complete (Ready Queue 4 items, bridge deprecation complete) | 2026-01-30 |
+| Connector bridge deprecation plan | P2 | ✅ Complete (full parity in nightscout-connect, archive Mar 31) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 7) | P0 | ✅ Complete (Ready Queue 5 items, PR sequencing complete) | 2026-01-30 |
 | PR adoption sequencing proposal | P1 | ✅ Complete (4-phase plan: Feb→Mar→Apr→Q2) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 6) | P0 | ✅ Complete (Ready Queue 6 items, PR deep-dive complete) | 2026-01-30 |

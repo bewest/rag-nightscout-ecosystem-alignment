@@ -837,3 +837,31 @@ See [requirements.md](requirements.md) for the index.
 **Gap Reference**: GAP-NODE-003
 
 **Source**: [Node.js LTS Upgrade Analysis](../docs/10-domain/node-lts-upgrade-analysis.md)
+
+
+---
+
+### REQ-BRIDGE-001: Bridge Consolidation into nightscout-connect
+
+**Statement**: Legacy bridge packages SHOULD be deprecated in favor of nightscout-connect.
+
+**Rationale**: 
+- Reduces maintenance burden (3 packages → 1)
+- Eliminates deprecated dependencies (`request` package)
+- Provides consistent state machine architecture (xstate)
+- Enables feature reuse across vendors
+
+**Affected Packages**:
+- share2nightscout-bridge → DEPRECATED
+- minimed-connect-to-nightscout → DEPRECATED
+
+**Migration Path**: [Bridge Deprecation Plan](../docs/10-domain/bridge-deprecation-plan.md)
+
+**Verification**: 
+- Legacy packages archived on GitHub
+- npm deprecation warnings published
+- Documentation updated
+
+**Gap Reference**: GAP-NODE-002, GAP-NODE-003
+
+**Source**: [Bridge Deprecation Plan](../docs/10-domain/bridge-deprecation-plan.md)
