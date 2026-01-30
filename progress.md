@@ -8,6 +8,35 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne V4 ProfileSwitch Extensions Discovery (2026-01-30)
+
+Analyzed Nocturne V4 API extensions for profile and override tracking beyond V3 baseline.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Analysis doc | `docs/10-domain/nocturne-v4-profile-extensions.md` | 240+ lines, 2 REQs, 2 GAPs |
+
+**Key Findings**:
+- **StateSpan API**: V4 provides `/api/v4/state-spans/profiles` for profile activation history
+- **No V3 Equivalent**: V3 only has profile document CRUD, not activation tracking
+- **ChartDataController**: Returns `ProfileSpans` in chart data response for visualization
+- **StateSpan Model**: Includes `CanonicalId` for deduplication, `Sources` for multi-source merge
+- **9 Categories**: Profile, Override, TempBasal, PumpMode, PumpConnectivity, Sleep, Exercise, Illness, Travel
+
+**Gaps Added**: GAP-V4-001, GAP-V4-002
+
+**Requirements Added**: REQ-V4-001, REQ-V4-002
+
+**Source Files Analyzed**:
+- `externals/nocturne/src/API/Nocturne.API/Controllers/V4/StateSpansController.cs`
+- `externals/nocturne/src/Core/Nocturne.Core.Models/StateSpan.cs`
+- `externals/nocturne/src/Core/Nocturne.Core.Models/StateSpanEnums.cs`
+- `externals/nocturne/src/API/Nocturne.API/Controllers/V4/ChartDataController.cs`
+
+**OQ-010 Research Queue**: Item #9 of 7 complete (originally 7 items, now extended)
+
+---
+
 ### Nocturne Override/Temporary Target Analysis (2026-01-30)
 
 Analyzed how Nocturne handles Loop Override and AAPS Temporary Target events.

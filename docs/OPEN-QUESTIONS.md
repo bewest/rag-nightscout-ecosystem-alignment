@@ -107,7 +107,7 @@ Questions requiring formal architectural decision records.
 - "New record supersedes old" is more ergonomic than "old record is superseded by new" in NS workflows
 - Nocturne sources may have relevant proposals on this topic
 
-**Action**: Systematic Nocturne analysis in progress (4/7 complete)
+**Action**: Systematic Nocturne analysis in progress (5/7 complete)
 
 **Analysis Progress**:
 1. ✅ Nocturne ProfileSwitch treatment model - **Complete** ([analysis](10-domain/nocturne-profileswitch-analysis.md))
@@ -122,8 +122,10 @@ Questions requiring formal architectural decision records.
 4. ✅ Nocturne Override/Temporary Target representation - **Complete** ([analysis](10-domain/nocturne-override-temptarget-analysis.md))
    - Key finding: No unification of Override vs TempTarget; no supersession tracking
    - Added: GAP-OVRD-005/006/007, REQ-OVRD-004/005
-5. ⏳ Nocturne V4 ProfileSwitch extensions - **Next**
-6. ⬜ Nocturne Rust oref profile handling
+5. ✅ Nocturne V4 ProfileSwitch extensions - **Complete** ([analysis](10-domain/nocturne-v4-profile-extensions.md))
+   - Key finding: V4 StateSpan API provides profile activation history (not in V3)
+   - Added: GAP-V4-001/002, REQ-V4-001/002
+6. ⏳ Nocturne Rust oref profile handling - **Next**
 7. ⬜ ADR-004 draft (after above complete)
 
 **Needs**: ADR-004 after analysis complete
@@ -135,6 +137,7 @@ Questions requiring formal architectural decision records.
 - [Profile Switch Sync Comparison](10-domain/profile-switch-sync-comparison.md)
 - [Nocturne ProfileSwitch Analysis](10-domain/nocturne-profileswitch-analysis.md)
 - [Nocturne Override Analysis](10-domain/nocturne-override-temptarget-analysis.md)
+- [Nocturne V4 Extensions](10-domain/nocturne-v4-profile-extensions.md)
 - [Nocturne Deep Dive](10-domain/nocturne-deep-dive.md)
 
 ---

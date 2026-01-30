@@ -1004,3 +1004,47 @@ See [requirements.md](requirements.md) for the index.
 **Gap Reference**: GAP-SYNC-040
 
 **Source**: [Profile Sync Comparison](../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md)
+
+---
+
+## V4 API Requirements
+
+### REQ-V4-001: StateSpan Portability
+
+**Statement**: Future Nightscout API versions SHOULD include StateSpan-like time-range tracking for profiles and overrides.
+
+**Rationale**: Enables profile change history and override tracking across implementations. Currently only available in Nocturne V4 API.
+
+**Scenarios**:
+- Query profile activation history over time range
+- Determine which profile was active at a specific point
+- Build profile timeline for retrospective analysis
+
+**Verification**:
+- API spec includes time-ranged state tracking endpoints
+- Profile spans queryable by time range
+
+**Gap Reference**: GAP-V4-001
+
+**Source**: [Nocturne V4 ProfileSwitch Extensions](../docs/10-domain/nocturne-v4-profile-extensions.md)
+
+---
+
+### REQ-V4-002: Profile Activation Events
+
+**Statement**: Servers SHOULD track profile activation events with timestamps.
+
+**Rationale**: Enables retrospective analysis of which profile was active at any point. Currently V3 only stores profile documents, not activation history.
+
+**Scenarios**:
+- User activates profile "Exercise" at 10:00
+- Query profile state at 10:30
+- Verify "Exercise" returned as active profile
+
+**Verification**:
+- Query profile history returns activation timestamps
+- Active profile determinable for any historical time
+
+**Gap Reference**: GAP-V4-002
+
+**Source**: [Nocturne V4 ProfileSwitch Extensions](../docs/10-domain/nocturne-v4-profile-extensions.md)

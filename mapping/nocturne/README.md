@@ -61,6 +61,8 @@ Nocturne (.NET 10)
 | GAP-OVRD-005 | No unified Override/TempTarget representation | Documented |
 | GAP-OVRD-006 | Override supersession not tracked | Documented |
 | GAP-OVRD-007 | Duration unit mismatch (preset seconds, treatment minutes) | Documented |
+| GAP-V4-001 | V4 StateSpan API not standardized (Nocturne-specific) | Documented |
+| GAP-V4-002 | Profile activation history not in V3 | Documented |
 
 ---
 
@@ -73,6 +75,7 @@ Nocturne (.NET 10)
 | [nocturne-percentage-timeshift-handling.md](../../docs/10-domain/nocturne-percentage-timeshift-handling.md) | API vs internal scaling behavior |
 | [nocturne-cgm-remote-monitor-profile-sync.md](../../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md) | Profile sync comparison |
 | [nocturne-override-temptarget-analysis.md](../../docs/10-domain/nocturne-override-temptarget-analysis.md) | Override vs TempTarget handling |
+| [nocturne-v4-profile-extensions.md](../../docs/10-domain/nocturne-v4-profile-extensions.md) | V4 StateSpan profile endpoints |
 
 ---
 

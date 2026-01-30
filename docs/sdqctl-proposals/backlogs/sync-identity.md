@@ -103,10 +103,21 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 **Type:** Discovery | **Effort:** Low  
 **Repos:** nocturne  
 **Focus:** Identify any V4-specific profile/override endpoints  
-**Questions:**
-- Does V4 API have profile-specific endpoints beyond V3?
-- Any state-span tracking for profile activations?
-- Any proposal for standardized profile change history?
+**Status:** ✅ COMPLETE 2026-01-30
+**Deliverable:** `docs/10-domain/nocturne-v4-profile-extensions.md`
+**Key Findings:**
+- V4 StateSpan API (`/api/v4/state-spans/profiles`) provides profile activation history
+- V3 API only has profile document CRUD, not activation tracking
+- ChartDataController returns ProfileSpans in chart data response
+- StateSpan model includes CanonicalId for deduplication, Sources array for merge
+- 9 categories: Profile, Override, TempBasal, PumpMode, PumpConnectivity, Sleep, Exercise, Illness, Travel
+**Gaps Added:** GAP-V4-001, GAP-V4-002
+**Requirements Added:** REQ-V4-001, REQ-V4-002
+
+**Questions Answered:**
+- ✅ Yes, V4 has profile-specific endpoints (`/api/v4/state-spans/profiles`)
+- ✅ Yes, state-span tracking for profile activations exists
+- ✅ StateSpan model provides foundation but is Nocturne-specific (not standardized)
 
 **Related Gap:** GAP-NOCTURNE-001
 
@@ -136,6 +147,7 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 
 | Item | Date | Notes |
 |------|------|-------|
+| Nocturne V4 ProfileSwitch extensions | 2026-01-30 | Item #9; GAP-V4-001/002, 2 REQs |
 | Nocturne Override/TempTarget representation | 2026-01-30 | Item #8; GAP-OVRD-005/006/007, 2 REQs |
 | Nocturne vs cgm-remote-monitor Profile sync | 2026-01-30 | Item #7; GAP-SYNC-038/039/040, 3 REQs |
 | Nocturne percentage/timeshift handling | 2026-01-30 | Item #6; GAP-NOCTURNE-005, 2 REQs |

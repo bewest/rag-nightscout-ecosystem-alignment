@@ -735,6 +735,29 @@ This uses `secondsFromGMT(for: date)` which **does** account for DST at the spec
 **Note**: xDrip+ is a CGM app without override/adjustment concepts. It receives and displays AAPS overrides but does not create them.
 - Broadcast receiver for AAPS: `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/services/broadcastservice/BroadcastService.java`
 
+### V4 StateSpan API (Nocturne-Specific)
+
+Nocturne's V4 API provides time-ranged state tracking not available in V3 or cgm-remote-monitor.
+
+| Concept | V3 API | V4 API (Nocturne) | Notes |
+|---------|--------|-------------------|-------|
+| Profile CRUD | `/api/v3/profile` | Same | Document operations |
+| Profile history query | ❌ Not available | `/api/v4/state-spans/profiles` | Time-range queries |
+| Override history query | ❌ Not available | `/api/v4/state-spans/overrides` | Time-range queries |
+| Active state query | Query treatments | `?active=true` filter | Simplified |
+| Activity tracking | ❌ Not available | Sleep, Exercise, Illness, Travel | User-annotated |
+
+**StateSpan Categories** (Nocturne V4):
+| Category | States | Purpose |
+|----------|--------|---------|
+| `Profile` | Active | Tracks which profile is active over time |
+| `Override` | None, Custom | Override status with metadata |
+| `TempBasal` | Active, Cancelled | Temporary basal rate spans |
+| `PumpMode` | Automatic, Limited, Manual, etc. | Pump operational mode |
+| `Sleep/Exercise/Illness/Travel` | User-defined | User-annotated activity periods |
+
+**Gap Reference**: GAP-V4-001 (not standardized), GAP-V4-002 (no V3 equivalent)
+
 ---
 
 ## Sync Identity Fields

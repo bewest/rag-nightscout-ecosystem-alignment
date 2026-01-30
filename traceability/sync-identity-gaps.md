@@ -1047,3 +1047,46 @@ if (rVal) rVal.replace('ETC','Etc');
 **Source**: [Profile Sync Comparison](../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md)
 
 **Status**: Open
+
+---
+
+## V4 API Extension Gaps
+
+### GAP-V4-001: StateSpan API Not Standardized
+
+**Description**: Nocturne's V4 StateSpan API (`/api/v4/state-spans`) provides time-ranged state tracking for profiles and overrides, but this is proprietary and not part of any Nightscout standard.
+
+**Affected Systems**: Loop, Trio, AAPS, cgm-remote-monitor
+
+**Evidence**:
+- Nocturne: `src/API/Nocturne.API/Controllers/V4/StateSpansController.cs` - full CRUD for state spans
+- cgm-remote-monitor: No equivalent endpoint or data model
+
+**Impact**: V4 features for profile activation history and override tracking are not portable across ecosystem. Clients cannot consume or produce compatible data when switching between Nocturne and cgm-remote-monitor.
+
+**Remediation**: Propose StateSpan as RFC for Nightscout v4 API standard.
+
+**Source**: [Nocturne V4 ProfileSwitch Extensions](../docs/10-domain/nocturne-v4-profile-extensions.md)
+
+**Status**: Open
+
+---
+
+### GAP-V4-002: Profile Activation History Not in V3
+
+**Description**: V3 API has no mechanism to query profile activation history. Only profile documents can be queried via `/api/v3/profile`, not when they were activated or which profile was active at a given time.
+
+**Affected Systems**: All using V3 API
+
+**Evidence**:
+- V3 API: Only `/api/v3/profile` for document CRUD
+- V4 API: `/api/v4/state-spans/profiles` provides activation history
+- V4 ChartDataController returns `ProfileSpans` in response
+
+**Impact**: Cannot build profile timeline or retrospectively analyze which profile was active at any point without using V4 StateSpan API (Nocturne-specific).
+
+**Remediation**: Add profile activation events to V3 treatments collection or migrate to V4 with StateSpan.
+
+**Source**: [Nocturne V4 ProfileSwitch Extensions](../docs/10-domain/nocturne-v4-profile-extensions.md)
+
+**Status**: Open
