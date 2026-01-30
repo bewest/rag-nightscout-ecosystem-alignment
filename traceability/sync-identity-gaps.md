@@ -518,6 +518,11 @@ No standard format or prefix convention exists.
 
 **Remediation**: Merge PR#8405 timezone utility, ensure consistent use of profile timezone.
 
+**Status**: ⚠️ ADDRESSED_BY_PR #8405 (pending merge)
+- PR adds device timezone display from profile
+- Shows both device/browser times when different
+- Creates shared `timeformat` utility module
+
 ---
 
 ---

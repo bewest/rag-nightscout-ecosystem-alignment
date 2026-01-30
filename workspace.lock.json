@@ -162,8 +162,8 @@
     },
     {
       "name": "Trio-dev",
-      "url": "https://github.com/nightscout/Trio.git",
-      "ref": "576d323c4cdad4de47575b1add1c5dc0ddc252ce",
+      "url": "git@github.com:nightscout/Trio-dev.git",
+      "ref": "dev",
       "description": "Trio development branch",
       "frozen_at": "2026-01-28T15:03:43.697393",
       "frozen_from": "dev"

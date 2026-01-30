@@ -15,6 +15,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 20) | P0 | ✅ Complete (Ready Queue 5→4 items, PR #8405 review done) | 2026-01-30 |
+| PR #8405 timezone review | P2 | ✅ Complete (GAP-TZ-001 addressed, safe to merge) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 19) | P0 | ✅ Complete (Ready Queue 2→5 items, PR #8422 review done) | 2026-01-30 |
 | PR #8422 OpenAPI compliance review | P2 | ✅ Complete (safe to merge, robustness fix, no interop gap) | 2026-01-30 |
 | backlog-cycle-v3 + LSP research + PR review queue | P2 | ✅ Queued to [tooling.md](docs/sdqctl-proposals/backlogs/tooling.md) + [nightscout-api.md](docs/sdqctl-proposals/backlogs/nightscout-api.md) | 2026-01-30 |

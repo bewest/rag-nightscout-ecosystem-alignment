@@ -8,6 +8,23 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### PR #8405 Timezone Review (2026-01-30)
+
+Reviewed cgm-remote-monitor PR #8405 for GAP-TZ-* alignment.
+
+| Aspect | Finding |
+|--------|---------|
+| PR Title | Fix timezone display to show device timezone |
+| Problem | Caregivers see browser time, not device time |
+| Fix | Fetch profile timezone, display both when different |
+| Gap Impact | GAP-TZ-001 ✅ addressed, GAP-TZ-007 ⚠️ partial |
+
+**Recommendation**: Safe to merge - UX improvement for caregivers
+
+**Source**: nightscout-api.md #15
+
+---
+
 ### PR #8422 OpenAPI Compliance Review (2026-01-30)
 
 Reviewed cgm-remote-monitor PR #8422 for alignment with OpenAPI specs.
