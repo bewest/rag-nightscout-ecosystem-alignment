@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| OQ-010 Item #9: V4 ProfileSwitch extensions | P2 | ✅ Complete (GAP-V4-001/002, 2 REQs) | 2026-01-30 |
 | OQ-010 Item #8: Override/TempTarget analysis | P2 | ✅ Complete (GAP-OVRD-005/006/007, 2 REQs) | 2026-01-30 |
 | OQ-010 Item #7: Profile sync comparison | P2 | ✅ Complete (GAP-SYNC-038/039/040, 3 REQs) | 2026-01-30 |
 | OQ-010 Item #6: percentage/timeshift handling | P2 | ✅ Complete (GAP-NOCTURNE-005, 2 REQs) | 2026-01-30 |

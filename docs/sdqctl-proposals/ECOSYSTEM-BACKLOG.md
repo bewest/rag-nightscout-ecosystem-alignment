@@ -59,13 +59,19 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Key Finding:** No unified Override/TempTarget; no supersession tracking
 **Gaps Added:** GAP-OVRD-005, GAP-OVRD-006, GAP-OVRD-007
 
-### 7. [P2] OQ-010 Research: Nocturne V4 ProfileSwitch extensions
-**Type:** Discovery | **Effort:** Low
+### 7. ~~[P2] OQ-010 Research: Nocturne V4 ProfileSwitch extensions~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `docs/10-domain/nocturne-v4-profile-extensions.md`
+**Key Finding:** V4 StateSpan API provides profile activation history (not in V3)
+**Gaps Added:** GAP-V4-001, GAP-V4-002
+
+### 8. [P2] OQ-010 Research: Nocturne Rust oref profile handling
+**Type:** Analysis | **Effort:** High
 **Repos:** nocturne
-**Focus:** Identify any V4-specific profile/override endpoints
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md#9-p2-nocturne-v4-profileswitch-extensions)
+**Focus:** How Rust oref implementation uses profile data
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md#10-p3-nocturne-rust-oref-profile-handling)
 **Blocks:** OQ-010 resolution
-**Next:** Item #9 in OQ-010 queue
+**Next:** Item #10 in OQ-010 queue
 
 ---
 
