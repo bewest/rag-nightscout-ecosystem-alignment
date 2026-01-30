@@ -10,6 +10,21 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Extend verify_assertions Scope (2026-01-30)
+
+Cycle 27: Extended verify_assertions to scan all conformance YAML files.
+
+| Metric | Before | After |
+|--------|--------|-------|
+| YAML files scanned | 4 | 12 |
+| Assertion groups | ~4 | 25 |
+
+**Changes**: `tools/verify_assertions.py` - changed from `assertions/*.yaml` to `conformance/**/*.yaml`.
+
+**tooling.md #23**: ✅ COMPLETE
+
+---
+
 ### Extend verify_refs Scope (2026-01-30)
 
 Cycle 26: Added traceability/ and conformance/ to verify_refs scan directories.

@@ -8,6 +8,9 @@ identifying:
 2. Requirements with no assertions
 3. Gaps referenced by assertions but not addressed
 
+Directories scanned:
+- conformance/**/*.yaml (all YAML files, not just assertions/)
+
 Usage:
     python tools/verify_assertions.py              # Full analysis
     python tools/verify_assertions.py --json       # Output JSON only
@@ -374,8 +377,9 @@ def main():
     print("Extracting assertions...")
     all_assertions = []
     
-    if ASSERTIONS_DIR.exists():
-        for filepath in ASSERTIONS_DIR.glob("*.yaml"):
+    # Scan all YAML files in conformance/ recursively
+    if CONFORMANCE_DIR.exists():
+        for filepath in CONFORMANCE_DIR.glob("**/*.yaml"):
             if filepath.name.startswith('_'):
                 continue
             assertions = extract_assertions(filepath)

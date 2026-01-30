@@ -13,8 +13,8 @@
 | Total verification tools | 7 |
 | Active tools (scan files) | 6 |
 | Total docs in workspace | 353 |
-| Docs with tool coverage | 345 (98%) |
-| Docs without coverage | 8 (2%) - conformance/*.yaml outside assertions/ |
+| Docs with tool coverage | 353 (100%) |
+| Docs without coverage | 0 |
 
 ---
 
@@ -25,7 +25,7 @@
 | `verify_refs` | Validate code refs to externals/ | `mapping/**`, `docs/**`, `specs/**`, `traceability/**`, `conformance/**` | 353 | ✅ Active |
 | `verify_mapping_coverage` | Field mappings vs source | `mapping/**/*.md` | 123 | ✅ Active |
 | `verify_gap_freshness` | Check gaps still open | `traceability/*-gaps.md` | 7 | ✅ Active |
-| `verify_assertions` | Trace assertions→REQ/GAP | `conformance/assertions/**/*.yaml` | 4 | ⚠️ Narrow scope |
+| `verify_assertions` | Trace assertions→REQ/GAP | `conformance/**/*.yaml` | 12 | ✅ Fixed |
 | `verify_coverage` | REQ/GAP coverage analysis | `traceability/*-requirements.md`, `*-gaps.md` | 2 | ✅ Fixed |
 | `verify_terminology` | Term consistency | `mapping/cross-project/terminology-matrix.md` | 1 | ✅ Active |
 | `verify_hello` | Plugin health check | (none) | 0 | ✅ Utility |
@@ -58,14 +58,14 @@
 | docs/ | 169 | verify_refs |
 | traceability/ | 9 | verify_refs, verify_assertions, verify_coverage, verify_gap_freshness |
 | specs/ | 8 | verify_refs |
-| conformance/ | 17 | verify_refs (MD), verify_assertions (YAML - narrow scope) |
+| conformance/ | 17 | verify_refs (MD), verify_assertions (all YAML) |
 
 ### 4. Tool Overlap
 
 - **mapping/**:  Covered by 3 tools (verify_refs, verify_mapping_coverage, verify_terminology)
 - **traceability/**: Covered by 4 tools (verify_refs, verify_assertions, verify_coverage, verify_gap_freshness)
 - **docs/**: Covered by 1 tool (verify_refs)
-- **conformance/**: verify_refs (all), verify_assertions (assertions/ only - needs #23)
+- **conformance/**: verify_refs (MD), verify_assertions (all YAML) ✅ Full coverage
 
 ---
 
@@ -105,7 +105,7 @@ Added `conformance/**/*.md` and `traceability/**/*.md` to scan patterns.
 | `docs/**/*.md` | 169 | 1 tool | ⚠️ Only code refs |
 | `traceability/**/*.md` | 9 | 4 tools | ✅ Good |
 | `specs/**/*.yaml` | 8 | 1 tool | ⚠️ Only code refs |
-| `conformance/**/*.yaml` | 8 | 1 tool (narrow) | ⚠️ assertions/ only |
+| `conformance/**/*.yaml` | 12 | 1 tool | ✅ verify_assertions |
 | `conformance/**/*.md` | 9 | 1 tool | ✅ verify_refs |
 
 ---
@@ -113,5 +113,8 @@ Added `conformance/**/*.md` and `traceability/**/*.md` to scan patterns.
 ## Next Steps
 
 1. ~~**Fix verify_coverage** (tooling.md #21) - P1~~ ✅ COMPLETE (Cycle 23)
-2. **Extend verify_refs** (tooling.md #22) - P2
+2. ~~**Extend verify_refs** (tooling.md #22) - P2~~ ✅ COMPLETE (Cycle 26)
 3. ~~**Documentation parse audit** (tooling.md #19) - P1~~ ✅ COMPLETE (Cycle 25) → See `documentation-parse-audit.md`
+4. ~~**Extend verify_assertions** (tooling.md #23) - P3~~ ✅ COMPLETE (Cycle 27)
+
+**All doc parse audit remediation items complete. Tool coverage: 100%**

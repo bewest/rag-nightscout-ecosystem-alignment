@@ -101,19 +101,16 @@ conformance/**/*.md, *.yaml
 
 **Impact**: 300→353 files covered (+53 files)
 
-### P2: Extend verify_assertions Scope (tooling.md #23)
+### ~~P2: Extend verify_assertions Scope~~ ✅ COMPLETE (2026-01-30)
 
-Current scan patterns:
-```
-conformance/assertions/**/*.yaml
-```
+tooling.md #23 - Cycle 27 completed.
 
-Add:
+Current scan patterns (after fix):
 ```
 conformance/**/*.yaml
 ```
 
-**Impact**: +8 files covered
+**Impact**: 4→12 YAML files covered (+8 files)
 
 ### P3: Exclude Generated Files
 
