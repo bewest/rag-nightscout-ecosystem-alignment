@@ -277,6 +277,7 @@ Per user request (2026-01-30), additional research focused on Nocturne as it rel
 
 **Related Gap:** GAP-SYNC-040  
 **Deliverable:** `docs/10-domain/nocturne-deletion-semantics.md`
+**Status:** ✅ Complete (2026-01-30) - Remediation recommended (soft delete)
 
 ---
 
@@ -284,6 +285,7 @@ Per user request (2026-01-30), additional research focused on Nocturne as it rel
 
 | Item | Date | Notes |
 |------|------|-------|
+| Nocturne deletion semantics analysis | 2026-01-30 | Item #18; GAP-SYNC-040 updated, remediation recommended |
 | Nocturne srvModified gap analysis | 2026-01-30 | Item #17; No remediation required - SysUpdatedAt used |
 | Nocturne connector polling coordination | 2026-01-30 | Item #16; GAP-CONNECT-010/011/012, REQ-CONNECT-010/011/012 |
 | PostgreSQL migration field fidelity | 2026-01-30 | Item #15; GAP-MIGRATION-001/002/003, REQ-MIGRATION-001-004 |

@@ -47,12 +47,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Load only task-relevant repos to reduce 3.4M tokens/cycle
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
-### 5. [P2] OQ-010 Extended #18: Soft-delete vs hard-delete interop
+### 5. [P2] OQ-010 Extended API #6: V3 Entries controller coverage
 **Type:** Analysis | **Effort:** Medium
 **Repos:** nocturne, cgm-remote-monitor
-**Focus:** Document deletion behavior differences and sync impact
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md#18-p2-nocturne-soft-delete-vs-hard-delete-interop)
-**Related Gap:** GAP-SYNC-040
+**Focus:** Compare V3 Entries API implementation between systems
+**Backlog:** [api.md](backlogs/api.md)
 
 ---
 
@@ -60,6 +59,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| OQ-010 Extended #18: Deletion semantics | `docs/10-domain/nocturne-deletion-semantics.md` | Hard delete breaks sync; soft delete recommended |
 | OQ-010 Extended #17: srvModified gap | `docs/10-domain/nocturne-srvmodified-gap-analysis.md` | No remediation needed - SysUpdatedAt used |
 | OQ-010 Extended #16: Connector polling | `docs/10-domain/nocturne-connector-coordination.md` | Sidecar arch, loop-back risk |
 | OQ-010 Extended #15: PostgreSQL migration | `mapping/nocturne/migration-field-fidelity.md` | Full field fidelity via typed+JSONB |

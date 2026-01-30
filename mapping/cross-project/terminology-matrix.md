@@ -3957,6 +3957,8 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | **Sort Field** | `startDate` descending | `Mills` descending |
 | **defaultProfile** | Convention ("Default") | Default value ("Default") |
 
+> **Delete Semantics**: cgm-remote-monitor soft deletes by setting `isValid: false` and updating `srvModified`. Nocturne hard deletes (removes record). This affects sync clients that rely on detecting deletions via `isValid` field. See [Deletion Semantics Analysis](../../docs/10-domain/nocturne-deletion-semantics.md).
+
 ### Profile Sync Identity Fields
 
 | Field | cgm-remote-monitor | Nocturne | Purpose |

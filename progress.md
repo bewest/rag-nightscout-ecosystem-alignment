@@ -8,6 +8,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne Deletion Semantics Analysis (2026-01-30)
+
+OQ-010 Extended Item #18: Analyzed soft-delete vs hard-delete behavior differences.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep Dive | `docs/10-domain/nocturne-deletion-semantics.md` | 250+ lines, remediation options |
+| Gap Updates | `traceability/sync-identity-gaps.md` | GAP-SYNC-040 updated with analysis |
+
+**Key Findings**:
+- **cgm-remote-monitor**: Soft delete (isValid=false), records visible in history
+- **Nocturne**: Hard delete (record removed), no history tracking
+- **Sync impact**: Clients can't detect server-side deletions
+- **Recommendation**: Implement soft delete with isValid field
+
+**Affected Scenarios**:
+- Multi-device sync (stale data on other devices)
+- Audit trail (no record of deletions)
+- Undo capability (deleted data unrecoverable)
+
+**OQ-010 Extended Research Queue**: Item #18 of 18 complete (sync-identity queue done!)
+
+---
+
 ### Nocturne srvModified Gap Analysis (2026-01-30)
 
 OQ-010 Extended Item #17: Analyzed srvModified field implementation differences.

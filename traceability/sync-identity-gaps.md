@@ -1033,23 +1033,32 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ---
 
-### GAP-SYNC-040: Profile Delete Semantics Differ
+### GAP-SYNC-040: Delete Semantics Differ (Hard vs Soft Delete)
 
-**Description**: cgm-remote-monitor uses soft delete (sets `isValid: false`); Nocturne uses hard delete (removes from database).
+**Description**: cgm-remote-monitor uses soft delete (sets `isValid: false`); Nocturne uses hard delete (removes from database). This affects all collections, not just profiles.
 
-**Affected Systems**: Sync clients expecting deleted profiles to remain visible with isValid=false
+**Affected Systems**: Sync clients (AAPS, Loop) expecting deleted records visible via history endpoint with `isValid=false`
 
 **Evidence**:
-- cgm-remote-monitor: Soft delete with `isValid: false`, `srvModified` updated
-- Nocturne: Hard delete from database
+- cgm-remote-monitor: `lib/api3/generic/delete/operation.js:75-86` - Soft delete by default
+- Nocturne: `TreatmentRepository.cs:256` - `_context.Treatments.Remove(entity)`
+- AAPS: `RemoteTreatment.kt:30` - Expects `isValid` field
 
-**Impact**: Clients may not detect profile deletions when syncing with Nocturne.
+**Impact** (analyzed 2026-01-30):
+- ❌ Clients can't detect server-side deletions via sync
+- ❌ No audit trail for deleted records
+- ❌ Undo/recovery not possible
+- ❌ Multi-device sync may have stale data
 
-**Remediation**: Implement soft delete in Nocturne with isValid field.
+**Remediation**: Implement soft delete pattern:
+1. Add `is_valid` column to entities
+2. Modify delete to set `is_valid = false`
+3. Add `is_valid = true` filter to normal queries
+4. Implement history endpoint for deleted records
 
-**Source**: [Profile Sync Comparison](../docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md)
+**Source**: [Deletion Semantics Analysis](../docs/10-domain/nocturne-deletion-semantics.md)
 
-**Status**: Open
+**Status**: Open - Remediation Recommended
 
 ---
 
