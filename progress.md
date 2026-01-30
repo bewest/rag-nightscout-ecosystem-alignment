@@ -10,6 +10,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Prioritization & Backlog Restructure (2026-01-30)
+
+Planning session to chunk and prioritize work based on 5 uncertainty areas identified.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| State Ontology Proposal | `docs/sdqctl-proposals/state-ontology-proposal.md` | observed/desired/control framing |
+| Ready Queue Update | `ECOSYSTEM-BACKLOG.md` | 8 items, visibility work prioritized |
+| Tooling backlog items | `backlogs/tooling.md` | #18, #19, #20 added |
+| Nightscout API backlog items | `backlogs/nightscout-api.md` | #18, #19 added |
+| Sync-identity backlog item | `backlogs/sync-identity.md` | #22 added |
+
+**Uncertainty Areas Addressed**:
+1. Tool effectiveness → Tool coverage audit (#18) and parse audit (#19)
+2. Source completeness → cgm-remote-monitor depth matrix (#18)
+3. Audience clarity → Nightscout maintainers + AID vendors (resolved)
+4. Conceptual framing → State ontology proposal (NEW)
+5. Management path → PR recommendation packaging (#19)
+
+**Ready Queue Prioritization**:
+- P1: Visibility work (tool audit, parse audit)
+- P2: Conceptual work (ontology, depth matrix, packaging)
+- PARKED: Algorithm runners (JVM/Swift) until visibility complete
+
+---
+
 ### Progress Archive Hygiene (2026-01-30)
 
 Cycle 21 maintenance: Archived progress.md entries to reduce file size.
