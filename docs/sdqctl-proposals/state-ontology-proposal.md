@@ -1,7 +1,8 @@
 # State Ontology Proposal: Observed / Desired / Control
 
-> **Status**: PROPOSED  
+> **Status**: ✅ IMPLEMENTED  
 > **Created**: 2026-01-30  
+> **Implemented**: 2026-01-30 → [`docs/architecture/state-ontology.md`](../architecture/state-ontology.md)  
 > **Purpose**: Clarify conceptual distinction between observed state, desired state, and control decisions across the ecosystem
 
 ---
@@ -88,11 +89,11 @@ Algorithm outputs and reasoning:
 
 ## Implementation Phases
 
-### Phase 1: Ontology Definition
+### Phase 1: Ontology Definition ✅ COMPLETE
 
-- [ ] Create `docs/architecture/state-ontology.md` defining the three categories
-- [ ] Map each Nightscout collection/field to ontology category
-- [ ] Document sync semantics per category
+- [x] Create `docs/architecture/state-ontology.md` defining the three categories
+- [x] Map each Nightscout collection/field to ontology category
+- [x] Document sync semantics per category
 
 ### Phase 2: Gap Classification
 

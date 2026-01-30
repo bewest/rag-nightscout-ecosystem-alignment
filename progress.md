@@ -10,6 +10,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### State Ontology Definition (2026-01-30)
+
+Cycle 28: Created foundational architecture document defining Observed/Desired/Control state categories.
+
+**Deliverable**: `docs/architecture/state-ontology.md`
+
+**Categories Defined**:
+| Category | Definition | Sync Pattern |
+|----------|------------|--------------|
+| Observed | What happened (SGV, bolus) | Push, immutable |
+| Desired | What user wants (profile, targets) | Bidirectional, mutable |
+| Control | What algorithm decides (temps, SMBs) | Push, read-only |
+
+**Collection Mapping**: entries (100% observed), profile (100% desired), treatments (mixed), devicestatus (mixed).
+
+**Unblocks**: #1 Classify GAP-SYNC-* by ontology category
+
+---
+
 ### Extend verify_assertions Scope (2026-01-30)
 
 Cycle 27: Extended verify_assertions to scan all conformance YAML files.

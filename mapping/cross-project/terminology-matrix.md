@@ -30,6 +30,26 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 
 ---
 
+## State Ontology Categories
+
+> **Reference**: [`docs/architecture/state-ontology.md`](../../docs/architecture/state-ontology.md)
+
+Each data field belongs to one of three ontology categories:
+
+| Category | Definition | Sync Pattern | Examples |
+|----------|------------|--------------|----------|
+| **Observed** | What actually happened | Push, immutable | SGV, delivered bolus, actual carbs |
+| **Desired** | What user/clinician wants | Bidirectional, mutable | Profile settings, temp targets |
+| **Control** | What algorithm recommends/enacts | Push, read-only | Predictions, auto temps, SMBs |
+
+**Collection Distribution**:
+- `entries`: 100% Observed
+- `profile`: 100% Desired
+- `treatments`: Mixed (40% Observed, 35% Desired, 25% Control)
+- `devicestatus`: Mixed (30% Observed, 70% Control)
+
+---
+
 ## Data Concepts
 
 ### Heart Rate Collection (API v3)

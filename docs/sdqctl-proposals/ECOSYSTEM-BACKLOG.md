@@ -22,12 +22,12 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] State ontology definition
-**Type:** Architecture | **Effort:** Medium
-**Domain:** Cross-cutting
-**Focus:** Define observed/desired/control state categories
-**Deliverable:** `docs/architecture/state-ontology.md`
-**Source:** [state-ontology-proposal.md](state-ontology-proposal.md) Phase 1
+### 1. [P2] Classify GAP-SYNC-* by ontology category
+**Type:** Analysis | **Effort:** Low
+**Domain:** Sync & Identity
+**Focus:** Add ontology category to each sync-related gap
+**Prerequisites:** State ontology ✅
+**Source:** sync-identity.md #22
 
 ### 2. [P2] cgm-remote-monitor analysis depth matrix
 **Type:** Audit | **Effort:** Medium
@@ -42,20 +42,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Audience:** Nightscout maintainers
 **Source:** nightscout-api.md #19
 
-### 4. [P2] Classify GAP-SYNC-* by ontology category
-**Type:** Analysis | **Effort:** Low
-**Domain:** Sync & Identity
-**Focus:** Add ontology category to each sync-related gap
-**Prerequisites:** Item #1
-**Source:** sync-identity.md #22
-
-### 5. [P2] Algorithm conformance: AAPS Kotlin runner (PARKED)
+### 4. [P2] Algorithm conformance: AAPS Kotlin runner (PARKED)
 **Type:** Implementation | **Effort:** High
 **Repos:** AndroidAPS
 **Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
 **Note:** Requires JVM setup - parked until visibility work complete
 
-### 6. [P3] Algorithm conformance: Loop Swift runner (PARKED)
+### 5. [P3] Algorithm conformance: Loop Swift runner (PARKED)
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
@@ -67,6 +60,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **State ontology definition** | `docs/architecture/state-ontology.md` | Observed/Desired/Control categories defined with sync semantics |
 | **Extend verify_assertions scope** | `tools/verify_assertions.py` | 4→12 YAML files, now scans conformance/**/*.yaml |
 | **Extend verify_refs scope** | `tools/verify_refs.py` | 300→353 files, now scans traceability/, conformance/ |
 | **Documentation parse audit** | `docs/10-domain/documentation-parse-audit.md` | 30 uncovered (8%), 91%→99% after fixes |
