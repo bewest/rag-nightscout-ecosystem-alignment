@@ -8,6 +8,35 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### sdqctl iterate Effectiveness Analysis (2026-01-30)
+
+Analyzed the effectiveness of a 40-cycle `sdqctl iterate` run.
+
+| Metric | Value |
+|--------|-------|
+| Run duration | 230 minutes (3.8 hours) |
+| Total cost | ~$419 (137M tokens) |
+| Commits produced | 49 |
+| Lines added | 11,064 |
+| ROI multiplier | 14-36x vs manual |
+
+**Key Findings**:
+- Cost per commit: $8.55
+- Cost per line: $0.038 (~26 lines per dollar)
+- Tool success rate: 99.65% (2,014/2,021)
+- Quality: Claims verified accurate, 2 duplicate GAPs found
+
+**Deliverables**:
+- `docs/sdqctl-proposals/iterate-effectiveness-report.md` (8.1KB)
+- 4 new tooling backlog items added
+
+**Recommendations**:
+- Implement REFCAT caching (est. 20-40% token reduction)
+- Add gap deduplication tool
+- Selective repo loading by task keywords
+
+---
+
 ### Override/Temporary Target Sync Comparison (2026-01-30)
 
 Compared how Loop overrides and AAPS temp targets sync to Nightscout.

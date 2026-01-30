@@ -18,6 +18,10 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 4 | **Gap freshness checker tool** | P2 | Medium | [Accuracy backlog proposal](documentation-accuracy.md#proposed-tool-verify_gap_freshnesspy) |
 | 5 | **Mapping coverage tool** | P2 | Medium | [Accuracy backlog proposal](documentation-accuracy.md#proposed-tool-verify_mapping_coveragepy) |
 | 6 | **Terminology sample tool** | P3 | Low | [Accuracy backlog proposal](documentation-accuracy.md#proposed-tool-sample_terminologypy) |
+| 7 | **Gap deduplication tool** | P1 | Low | [From iterate report](../iterate-effectiveness-report.md) - 2 dupes found |
+| 8 | **REFCAT caching proposal** | P2 | Medium | [From iterate report](../iterate-effectiveness-report.md) - est. 20-40% token reduction |
+| 9 | **Token efficiency dashboard** | P3 | Low | [From iterate report](../iterate-effectiveness-report.md) - track cost/deliverable |
+| 10 | **Selective repo loading** | P2 | Medium | Load only task-relevant repos - reduce 3.4M tokens/cycle |
 
 ---
 
