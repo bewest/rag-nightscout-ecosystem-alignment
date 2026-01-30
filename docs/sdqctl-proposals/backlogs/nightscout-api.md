@@ -17,6 +17,8 @@ Covers: cgm-remote-monitor, Nocturne, entries, treatments, devicestatus, profile
 | 3 | ~~Verify devicestatus/entries claims~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - [Accuracy backlog #12-14](documentation-accuracy.md) verified 2026-01-29 |
 | 4 | ~~Verify GAP-API-* freshness~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/gap-api-freshness-verification.md` |
 | 5 | ~~Audit REQ-API-* → OpenAPI alignment~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/req-api-openapi-alignment-audit.md` |
+| 18 | **cgm-remote-monitor analysis depth matrix** | P2 | Medium | Completeness grid: schema spec exists? gap analysis done? requirements traced? |
+| 19 | **PR recommendation packaging** | P2 | Medium | Format findings as actionable maintainer recommendations linked to GAPs |
 
 ---
 

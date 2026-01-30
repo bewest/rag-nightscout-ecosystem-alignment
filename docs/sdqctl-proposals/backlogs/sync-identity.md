@@ -379,3 +379,21 @@ Per user request (2026-01-30): Research integrating StateSpan as a solution for 
 - ✅ Query patterns: Both "active at T" and "all in range" supported
 - ✅ Caching: 3 strategies with different trade-offs documented
 - ✅ Relationship: Complementary to devicestatus, migration path from treatments
+
+---
+
+## State Ontology Integration
+
+Per [state-ontology-proposal.md](../state-ontology-proposal.md), sync-identity items should be classified by state type:
+
+| State Type | Sync Pattern | Example Items |
+|------------|--------------|---------------|
+| **Observed** | Push, immutable | SGV sync, delivered bolus sync |
+| **Desired** | Bidirectional, conflict resolution | Profile sync, target sync |
+| **Control** | Push from controller, read-only | Algorithm output, enacted changes |
+
+### 22. [P2] Classify GAP-SYNC-* by ontology category
+**Type:** Analysis | **Effort:** Low  
+**Focus:** Add ontology category to each sync-related gap  
+**Prerequisites:** [state-ontology-proposal.md](../state-ontology-proposal.md) Phase 1  
+**Deliverable:** Updated `traceability/sync-identity-gaps.md` with ontology column
