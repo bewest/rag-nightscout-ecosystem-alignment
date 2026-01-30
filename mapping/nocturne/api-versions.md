@@ -187,7 +187,17 @@ Nocturne includes a SignalR → Socket.IO bridge for legacy client compatibility
 Client (Socket.IO) → Bridge → SignalR Hub → Nocturne
 ```
 
-See GAP-NOCTURNE-003 for latency implications.
+**Event Parity** (2026-01-30 analysis):
+| Event | Status |
+|-------|--------|
+| `dataUpdate` | ✅ Translated (id→_id, value→sgv) |
+| `alarm`/`urgent_alarm` | ✅ Split by level |
+| `create`/`update`/`delete` | ✅ With colName/doc wrapper |
+| `clients` | ❌ Not bridged (GAP-BRIDGE-001) |
+
+**Latency**: 5-10ms overhead per message (GAP-NOCTURNE-003)
+
+See [SignalR Bridge Analysis](../../docs/10-domain/nocturne-signalr-bridge-analysis.md) for details.
 
 ---
 

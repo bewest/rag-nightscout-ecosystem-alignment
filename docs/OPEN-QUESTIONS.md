@@ -91,7 +91,7 @@ Analysis (2026-01-29) confirmed:
 
 Questions requiring formal architectural decision records.
 
-### OQ-010: ProfileSwitch → Override mapping ✅ RESOLVED
+### OQ-010: ProfileSwitch → Override mapping ✅ RESOLVED + EXTENDED
 
 **Question**: Should AAPS ProfileSwitch be accepted as a valid representation of overrides, or must there be explicit mapping?
 
@@ -112,6 +112,12 @@ Questions requiring formal architectural decision records.
 5. ✅ Nocturne V4 ProfileSwitch extensions ([analysis](10-domain/nocturne-v4-profile-extensions.md))
 6. ✅ Nocturne Rust oref profile handling ([analysis](10-domain/nocturne-rust-oref-profile-analysis.md))
 7. ✅ ADR-004 draft ([decision](90-decisions/adr-004-profile-override-mapping.md))
+
+**Extended Research** (2026-01-30): 11 additional Nocturne-focused items queued:
+- Sync-identity backlog #12-18: SignalR bridge, Rust oref conformance, V4 StateSpan, PostgreSQL migration, connector coordination, srvModified gap, deletion semantics
+- Nightscout-API backlog #6-9: V3 parity testing, eventType normalization, DData completeness, auth compatibility
+
+See [Sync Identity Backlog - OQ-010 Extended](sdqctl-proposals/backlogs/sync-identity.md#oq-010-extended-nocturne-systematic-research)
 
 **Gaps Addressed**: GAP-NOCTURNE-004/005, GAP-OVRD-005/006, GAP-OREF-001
 

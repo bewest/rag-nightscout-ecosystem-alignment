@@ -157,10 +157,111 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 
 ---
 
+## OQ-010 Extended: Nocturne Systematic Research
+
+Per user request (2026-01-30), additional research focused on Nocturne as it relates to issues mentioned across the docs. These items extend the resolved OQ-010 with deeper Nocturne-specific analysis.
+
+### 12. [P2] Nocturne SignalR→Socket.IO bridge behavior ✅
+**Type:** Analysis | **Effort:** Medium  
+**Repos:** nocturne  
+**Focus:** Document message translation, latency impact, event fidelity  
+**Status:** ✅ COMPLETE 2026-01-30
+**Deliverable:** `docs/10-domain/nocturne-signalr-bridge-analysis.md`
+
+**Key Findings:**
+- Bridge provides **functional parity** for core events (dataUpdate, alarm, storage)
+- Latency overhead: **5-10ms** per message (acceptable for CGM data)
+- Event ordering preserved within event types
+- Missing features: `clients` event, compression
+
+**Gaps Added:** GAP-BRIDGE-001, GAP-BRIDGE-002
+**Gap Updated:** GAP-NOCTURNE-003 (confirmed with measurements)
+
+### 13. [P2] Nocturne Rust oref algorithm conformance testing
+**Type:** Verification | **Effort:** High  
+**Repos:** nocturne, oref0  
+**Focus:** Create test vectors comparing JS oref0 vs Rust oref outputs  
+**Questions:**
+- Do IOB calculations match for same input?
+- Do COB calculations match for same input?
+- Any edge cases where outputs diverge?
+- What is precision difference (float rounding)?
+
+**Related Gap:** GAP-NOCTURNE-002, GAP-OREF-001  
+**Deliverable:** `conformance/scenarios/nocturne-oref/` test fixtures + report
+
+### 14. [P2] Nocturne V4 StateSpan standardization proposal
+**Type:** Proposal | **Effort:** Medium  
+**Repos:** nocturne, cgm-remote-monitor  
+**Focus:** Evaluate V4 StateSpan model for ecosystem adoption  
+**Questions:**
+- Is StateSpan model generalizable to cgm-remote-monitor?
+- What subset would be minimal viable standard?
+- How would Loop/AAPS/Trio consume StateSpan data?
+- Should this be V3 extension or new V4 standard?
+
+**Related Gap:** GAP-NOCTURNE-001, GAP-V4-001  
+**Deliverable:** `docs/sdqctl-proposals/statespan-standardization-proposal.md`
+
+### 15. [P2] Nocturne PostgreSQL migration field fidelity
+**Type:** Verification | **Effort:** Medium  
+**Repos:** nocturne  
+**Focus:** Verify all cgm-remote-monitor fields are preserved in migration  
+**Questions:**
+- Which MongoDB fields have no PostgreSQL equivalent?
+- Is `OriginalId` preservation sufficient for sync identity?
+- Are nested objects (Loop/AAPS deviceStatus) fully preserved?
+- What happens to plugin-specific treatment fields?
+
+**Related Gaps:** GAP-SYNC-039, GAP-NOCTURNE-001  
+**Deliverable:** `mapping/nocturne/migration-field-fidelity.md`
+
+### 16. [P3] Nocturne connector polling interval coordination
+**Type:** Analysis | **Effort:** Low  
+**Repos:** nocturne  
+**Focus:** Document how multiple connectors coordinate polling  
+**Questions:**
+- Are connector polls staggered or concurrent?
+- What prevents rate-limit exhaustion with multiple CGM sources?
+- How does Nightscout→Nocturne connector handle data that came from Nocturne?
+- Any deduplication for multi-source same-data?
+
+**Related Gaps:** GAP-CONNECT-001, GAP-NOCTURNE-001  
+**Deliverable:** `docs/10-domain/nocturne-connector-coordination.md`
+
+### 17. [P2] Nocturne srvModified field implementation
+**Type:** Gap Remediation | **Effort:** Medium  
+**Repos:** nocturne, cgm-remote-monitor  
+**Focus:** Analyze impact of missing srvModified in Nocturne Profile model  
+**Questions:**
+- Does missing srvModified break Loop/AAPS sync polling?
+- Can Nocturne add srvModified to maintain V3 parity?
+- What is current Profile modification tracking mechanism?
+- Impact on profile history queries?
+
+**Related Gap:** GAP-SYNC-039  
+**Deliverable:** `docs/10-domain/nocturne-srvmodified-gap-analysis.md`
+
+### 18. [P2] Nocturne soft-delete vs hard-delete interop
+**Type:** Analysis | **Effort:** Medium  
+**Repos:** nocturne, cgm-remote-monitor  
+**Focus:** Document deletion behavior differences and sync impact  
+**Questions:**
+- Does hard-delete break isValid=false sync pattern?
+- How do Loop/AAPS handle deleted treatments from Nocturne?
+- Is there audit trail for deletions?
+- Impact on undo/recovery scenarios?
+
+**Related Gap:** GAP-SYNC-040  
+**Deliverable:** `docs/10-domain/nocturne-deletion-semantics.md`
+
+---
+
 ## Completed
 
 | Item | Date | Notes |
 |------|------|-------|
+| Nocturne SignalR bridge analysis | 2026-01-30 | Item #12; GAP-BRIDGE-001/002, REQ-BRIDGE-001/002/003 |
 | ADR-004 ProfileSwitch mapping | 2026-01-30 | Item #11; OQ-010 resolved |
 | Nocturne Rust oref profile handling | 2026-01-30 | Item #10; GAP-OREF-001/002/003, 3 REQs |
 | Nocturne V4 ProfileSwitch extensions | 2026-01-30 | Item #9; GAP-V4-001/002, 2 REQs |

@@ -2,9 +2,9 @@
 
 > **Domain**: Nightscout collections, API v3, authentication  
 > **Parent**: [ECOSYSTEM-BACKLOG.md](../ECOSYSTEM-BACKLOG.md)  
-> **Last Updated**: 2026-01-29
+> **Last Updated**: 2026-01-30
 
-Covers: cgm-remote-monitor, entries, treatments, devicestatus, profile
+Covers: cgm-remote-monitor, Nocturne, entries, treatments, devicestatus, profile
 
 ---
 
@@ -17,6 +17,64 @@ Covers: cgm-remote-monitor, entries, treatments, devicestatus, profile
 | 3 | **Verify devicestatus/entries claims** | P2 | Medium | [Accuracy backlog #12-14](documentation-accuracy.md) |
 | 4 | **Verify GAP-API-* freshness** | P2 | Medium | [Accuracy backlog #20](documentation-accuracy.md) - check if closed in PRs |
 | 5 | **Audit REQ-API-* → OpenAPI alignment** | P2 | Medium | [Accuracy backlog #27](documentation-accuracy.md) |
+
+---
+
+## Nocturne API Compatibility Research
+
+Per OQ-010 extended research request (2026-01-30), focused analysis of Nocturne API behavior.
+
+### 6. [P2] Nocturne V3 API behavioral parity testing
+**Type:** Verification | **Effort:** High  
+**Repos:** nocturne, cgm-remote-monitor  
+**Focus:** Verify identical behavior for V3 endpoints between implementations  
+**Questions:**
+- Are all V3 query parameters supported (`count`, `skip`, `date$gte`, etc.)?
+- Does ETag/srvModified behavior match exactly?
+- Are partial failure responses identical?
+- Edge cases: empty results, invalid parameters, auth errors?
+
+**Related Gap:** GAP-NOCTURNE-001  
+**Deliverable:** `conformance/scenarios/nocturne-v3-parity/` test cases
+
+### 7. [P2] Nocturne eventType normalization behavior
+**Type:** Analysis | **Effort:** Medium  
+**Repos:** nocturne, cgm-remote-monitor  
+**Focus:** Compare how treatment eventTypes are normalized/stored  
+**Questions:**
+- Are eventTypes case-sensitive in Nocturne vs cgm-remote-monitor?
+- Does Nocturne normalize whitespace/aliases?
+- Are unknown eventTypes accepted or rejected?
+- Treatment.EventType enum vs string handling?
+
+**Related Gap:** GAP-TREAT-001  
+**Deliverable:** `docs/10-domain/nocturne-eventtype-handling.md`
+
+### 8. [P2] Nocturne V2 DData endpoint completeness
+**Type:** Verification | **Effort:** Medium  
+**Repos:** nocturne, cgm-remote-monitor  
+**Focus:** Verify DData combined response matches Loop/AAPS expectations  
+**Questions:**
+- Are all Loop-expected fields in `/api/v2/ddata`?
+- Is `lastProfileFromSwitch` populated correctly?
+- Does `devicestatus.loop` structure match exactly?
+- Are AAPS `openaps` fields all present?
+
+**Related Gap:** GAP-API-001  
+**Deliverable:** `docs/10-domain/nocturne-ddata-analysis.md`
+
+### 9. [P3] Nocturne authentication mode compatibility
+**Type:** Analysis | **Effort:** Low  
+**Repos:** nocturne, cgm-remote-monitor  
+**Focus:** Compare auth mechanisms (API_SECRET, JWT, readable token)  
+**Questions:**
+- Does Nocturne accept legacy `api_secret` header?
+- Is JWT token format compatible with cgm-remote-monitor?
+- Are readable/admin/devicestatus tokens interchangeable?
+- Any auth-related behavioral differences?
+
+**Related Gap:** GAP-AUTH-001  
+**Deliverable:** `docs/10-domain/nocturne-auth-compatibility.md`
 
 ---
 

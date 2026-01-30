@@ -140,9 +140,53 @@ See [gaps.md](gaps.md) for the index.
 2. Measure and document latency impact
 3. Provide native SignalR clients for major platforms
 
-**Status**: Under discussion
+**Status**: Documented - [Detailed analysis](../docs/10-domain/nocturne-signalr-bridge-analysis.md)
+
+**Measured Impact** (2026-01-30): 5-10ms additional latency per message - acceptable for CGM data.
 
 ---
+
+### GAP-BRIDGE-001: Missing `clients` Event in Bridge
+
+**Scenario**: Displaying connected client count
+
+**Description**: Nocturne SignalR→Socket.IO bridge does not forward client count updates. cgm-remote-monitor emits `clients` event when watchers join/leave.
+
+**Affected Systems**: Nocturne bridge, legacy web UIs
+
+**Source**: `externals/nocturne/src/Web/packages/bridge/src/lib/socketio-server.ts`
+
+**Impact**:
+- Legacy web UI may show incorrect watcher count
+- No visibility into connected clients
+
+**Possible Solutions**:
+1. Add `clients` event emission to bridge
+2. Use SignalR-native client count mechanism
+
+**Status**: Documented
+
+---
+
+### GAP-BRIDGE-002: No Compression in Bridge
+
+**Scenario**: High-bandwidth real-time streaming
+
+**Description**: Nocturne bridge does not enable Socket.IO compression. cgm-remote-monitor uses `.compress(true)` on broadcasts.
+
+**Affected Systems**: Nocturne bridge, mobile clients on metered connections
+
+**Source**: `externals/cgm-remote-monitor/lib/server/websocket.js:136` vs `externals/nocturne/src/Web/packages/bridge/`
+
+**Impact**:
+- Higher bandwidth usage
+- May affect mobile data consumption
+
+**Possible Solutions**:
+1. Enable compression in Socket.IO server config
+2. Add `.compress(true)` to broadcast calls
+
+**Status**: Documented
 
 ---
 

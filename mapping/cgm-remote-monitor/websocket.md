@@ -136,3 +136,18 @@ Line 100: `['sgvs', 'treatments', 'mbgs', 'cals', 'devicestatus']`
 | Test File | Purpose |
 |-----------|---------|
 | `tests/websocket.shape-handling.test.js` | Array input behavior |
+
+---
+
+## Nocturne Comparison
+
+Nocturne uses SignalR instead of Socket.IO, with a bridge for legacy client compatibility.
+
+| Aspect | cgm-remote-monitor | Nocturne |
+|--------|-------------------|----------|
+| Protocol | Socket.IO | SignalR + Bridge |
+| Compression | ✅ `.compress(true)` | ❌ Not enabled (GAP-BRIDGE-002) |
+| `clients` event | ✅ Broadcasts count | ❌ Not bridged (GAP-BRIDGE-001) |
+| Latency | Native | +5-10ms via bridge |
+
+See [Nocturne SignalR Bridge Analysis](../../docs/10-domain/nocturne-signalr-bridge-analysis.md) for details.

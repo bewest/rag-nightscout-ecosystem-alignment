@@ -8,6 +8,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne SignalR→Socket.IO Bridge Analysis (2026-01-30)
+
+OQ-010 Extended Item #12: Analyzed bridge for event parity, latency, and compatibility.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep Dive | `docs/10-domain/nocturne-signalr-bridge-analysis.md` | 293 lines, event mapping table |
+| Gap Update | `traceability/connectors-gaps.md` | GAP-NOCTURNE-003 confirmed (5-10ms latency) |
+| New Gaps | Same file | GAP-BRIDGE-001/002 added |
+
+**Key Findings**:
+- **Functional parity** for core events: `dataUpdate`, `alarm`, `create/update/delete`
+- **Latency**: 5-10ms overhead (acceptable for 5-min CGM intervals)
+- **Missing**: `clients` event (GAP-BRIDGE-001), compression (GAP-BRIDGE-002)
+- **Event ordering**: Preserved within event types
+
+**Source Files Analyzed**:
+- `externals/nocturne/src/Web/packages/bridge/src/lib/signalr-client.ts`
+- `externals/nocturne/src/Web/packages/bridge/src/lib/message-translator.ts`
+- `externals/nocturne/src/Web/packages/bridge/src/lib/socketio-server.ts`
+- `externals/cgm-remote-monitor/lib/server/websocket.js`
+
+**OQ-010 Extended Research Queue**: Item #12 of 18 complete
+
+---
+
 ### Terminology Cleanup (2026-01-30)
 
 Fixed deprecated term usage and broken workflow link.

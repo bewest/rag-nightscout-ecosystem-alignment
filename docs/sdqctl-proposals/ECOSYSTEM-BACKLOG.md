@@ -47,35 +47,39 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Load only task-relevant repos to reduce 3.4M tokens/cycle
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
-### 5. ~~[P2] OQ-010 Research: Nocturne vs cgm-remote-monitor Profile sync~~ ✅ COMPLETE
-**Completed:** 2026-01-30
-**Deliverable:** `docs/10-domain/nocturne-cgm-remote-monitor-profile-sync.md`
-**Key Finding:** Deduplication, srvModified, and delete semantics all differ
-**Gaps Added:** GAP-SYNC-038, GAP-SYNC-039, GAP-SYNC-040
+### 5. [P2] OQ-010 Extended #13: Nocturne Rust oref conformance testing
+**Type:** Verification | **Effort:** High
+**Repos:** nocturne, oref0
+**Focus:** Create test vectors comparing JS oref0 vs Rust oref outputs
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md#13-p2-nocturne-rust-oref-algorithm-conformance-testing)
+**Related Gap:** GAP-NOCTURNE-002, GAP-OREF-001
 
-### 6. ~~[P2] OQ-010 Research: Nocturne Override/Temporary Target~~ ✅ COMPLETE
-**Completed:** 2026-01-30
-**Deliverable:** `docs/10-domain/nocturne-override-temptarget-analysis.md`
-**Key Finding:** No unified Override/TempTarget; no supersession tracking
-**Gaps Added:** GAP-OVRD-005, GAP-OVRD-006, GAP-OVRD-007
+### 6. [P2] OQ-010 Extended #14: V4 StateSpan standardization proposal
+**Type:** Proposal | **Effort:** Medium
+**Repos:** nocturne, cgm-remote-monitor
+**Focus:** Evaluate V4 StateSpan model for ecosystem adoption
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md#14-p2-nocturne-v4-statespan-standardization-proposal)
+**Related Gap:** GAP-NOCTURNE-001, GAP-V4-001
 
-### 7. ~~[P2] OQ-010 Research: Nocturne V4 ProfileSwitch extensions~~ ✅ COMPLETE
-**Completed:** 2026-01-30
-**Deliverable:** `docs/10-domain/nocturne-v4-profile-extensions.md`
-**Key Finding:** V4 StateSpan API provides profile activation history (not in V3)
-**Gaps Added:** GAP-V4-001, GAP-V4-002
+### 7. [P2] OQ-010 Extended #17: Nocturne srvModified field implementation
+**Type:** Gap Remediation | **Effort:** Medium
+**Repos:** nocturne, cgm-remote-monitor
+**Focus:** Analyze impact of missing srvModified in Nocturne Profile model
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md#17-p2-nocturne-srvmodified-field-implementation)
+**Related Gap:** GAP-SYNC-039
 
-### 8. ~~[P2] OQ-010 Research: Nocturne Rust oref profile handling~~ ✅ COMPLETE
-**Completed:** 2026-01-30
-**Deliverable:** `docs/10-domain/nocturne-rust-oref-profile-analysis.md`
-**Key Finding:** PredictionService bypasses ProfileService - raw values to Rust oref
-**Gaps Added:** GAP-OREF-001, GAP-OREF-002, GAP-OREF-003
+---
 
-### 9. ~~[P2] OQ-010: ADR-004 draft - ProfileSwitch → Override mapping~~ ✅ COMPLETE
-**Completed:** 2026-01-30
-**Deliverable:** `docs/90-decisions/adr-004-profile-override-mapping.md`
-**Key Finding:** Dual-representation acceptance with explicit mapping rules
-**OQ-010:** ✅ RESOLVED (7/7 complete)
+## Recently Completed (2026-01-30)
+
+| Item | Deliverable | Key Finding |
+|------|-------------|-------------|
+| OQ-010 Extended #12: SignalR bridge | `nocturne-signalr-bridge-analysis.md` | 5-10ms latency, full event parity |
+| OQ-010 #11: ADR-004 ProfileSwitch | `adr-004-profile-override-mapping.md` | Dual-representation acceptance |
+| OQ-010 #10: Rust oref profile | `nocturne-rust-oref-profile-analysis.md` | PredictionService bypasses ProfileService |
+| OQ-010 #9: V4 extensions | `nocturne-v4-profile-extensions.md` | StateSpan API for profile history |
+| OQ-010 #8: Override/TempTarget | `nocturne-override-temptarget-analysis.md` | No unified representation |
+| OQ-010 #7: Profile sync comparison | `nocturne-cgm-remote-monitor-profile-sync.md` | Dedup/srvModified/delete differ |
 
 ---
 

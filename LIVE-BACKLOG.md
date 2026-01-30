@@ -7,12 +7,16 @@
 
 ## Pending
 
-(none - sdqctl verify issues queued to [documentation-accuracy.md](docs/sdqctl-proposals/backlogs/documentation-accuracy.md#sdqctl-verify-remediation-queue))
+| Item | Priority | Notes |
+|------|----------|-------|
+| OQ-010 Extended: Nocturne systematic research | P2 | 10 remaining (#13-18, API #6-9); Ready Queue replenished |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 2) | P0 | ✅ Complete (Ready Queue 4→7 items) | 2026-01-30 |
+| OQ-010 Extended #12: SignalR bridge analysis | P2 | ✅ Complete (GAP-BRIDGE-001/002, 5-10ms latency) | 2026-01-30 |
 | Item #42: Fix deprecated term usage | P1 | ✅ Complete (5 terms fixed) | 2026-01-30 |
 | Item #41: Create glossary.md | P2 | ✅ Already exists (105 lines) | 2026-01-30 |
 | Item #37: Fix cross-document links | P1 | ✅ Complete (5 refs fixed) | 2026-01-30 |
@@ -23,9 +27,9 @@
 | OQ-010 Item #8: Override/TempTarget analysis | P2 | ✅ Complete (GAP-OVRD-005/006/007, 2 REQs) | 2026-01-30 |
 | OQ-010 Item #7: Profile sync comparison | P2 | ✅ Complete (GAP-SYNC-038/039/040, 3 REQs) | 2026-01-30 |
 | OQ-010 Item #6: percentage/timeshift handling | P2 | ✅ Complete (GAP-NOCTURNE-005, 2 REQs) | 2026-01-30 |
-| Phase 4 backlog grooming | P0 | ✅ Complete (5→7 Ready Queue, dedup sync-identity) | 2026-01-30 |
+| Phase 4 backlog grooming (cycle 1) | P0 | ✅ Complete (5→7 Ready Queue, dedup sync-identity) | 2026-01-30 |
 | Backlog-cycle-v3.conv proposal | P3 | → Queued to [tooling.md](docs/sdqctl-proposals/backlogs/tooling.md) | 2026-01-30 |
-| OQ-010 ProfileSwitch research queue (Nocturne focus) | P2 | ✅ Complete (7 items in sync-identity backlog) | 2026-01-30 |
+| OQ-010 ProfileSwitch research queue (Nocturne focus) | P2 | ✅ Complete (11 items queued: sync-identity + API) | 2026-01-30 |
 | Document new tooling usage | P3 | ✅ Complete (+60 lines, sdqctl guide) | 2026-01-30 |
 | Unit test coverage for tools/ | P2 | ✅ Complete (17 tests, 6 tools covered) | 2026-01-30 |
 | Evaluate idiomatic sdqctl migration | P2 | ✅ Complete (7 deprecate, 3 integrate, 27 keep) | 2026-01-30 |

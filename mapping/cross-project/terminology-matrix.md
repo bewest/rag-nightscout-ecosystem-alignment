@@ -2925,6 +2925,29 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 
 > **Note**: `dbAdd`/`dbUpdate`/`dbRemove` are legacy v1 channel only. Controllers use REST; these events are primarily for web interface. See GAP-API-013.
 
+### SignalR → Socket.IO Bridge (Nocturne)
+
+Nocturne uses SignalR for real-time events. A TypeScript bridge translates to Socket.IO for legacy clients.
+
+**Source**: `externals/nocturne/src/Web/packages/bridge/`
+
+| SignalR Event | Socket.IO Event | Translation | Parity |
+|---------------|-----------------|-------------|--------|
+| `dataUpdate` | `dataUpdate` | SGV normalization (id→_id) | ✅ |
+| `alarm` | `alarm` or `urgent_alarm` | Split by level | ✅ |
+| `clear_alarm` | `clear_alarm` | Pass-through | ✅ |
+| `announcement` | `announcement` | Add defaults | ✅ |
+| `notification` | `notification` | Add defaults | ✅ |
+| `create` | `create` | Add colName/doc wrapper | ✅ |
+| `update` | `update` | Add colName/doc wrapper | ✅ |
+| `delete` | `delete` | Add colName/doc wrapper | ✅ |
+| N/A | `clients` | ❌ Not bridged | GAP-BRIDGE-001 |
+| N/A | `loadRetro` | ❌ Not bridged | — |
+
+**Latency Impact**: Bridge adds 5-10ms per message (GAP-NOCTURNE-003).
+
+**See Also**: [SignalR Bridge Analysis](../../docs/10-domain/nocturne-signalr-bridge-analysis.md)
+
 ### Sync Identity Components
 
 | Collection | UUID v5 Input | Dedup Fallback Fields |

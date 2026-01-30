@@ -191,6 +191,66 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
+### REQ-BRIDGE-001: Core Event Parity
+
+**Statement**: SignalR→Socket.IO bridges MUST translate all core events: `dataUpdate`, `alarm`, `urgent_alarm`, `clear_alarm`, `announcement`, `notification`, `create`, `update`, `delete`.
+
+**Rationale**: Legacy clients (Loop, AAPS, xDrip+) depend on these events for real-time updates.
+
+**Scenarios**:
+- SGV entry created → `create` event received by Socket.IO clients
+- Alarm triggered → `alarm` or `urgent_alarm` event received
+- Treatment updated → `update` event with colName/doc structure
+
+**Verification**:
+- Connect legacy Socket.IO client
+- Trigger each event type on server
+- Verify client receives correctly formatted event
+
+**Gap Reference**: GAP-NOCTURNE-003, [Analysis](../docs/10-domain/nocturne-signalr-bridge-analysis.md)
+
+---
+
+### REQ-BRIDGE-002: SGV Data Format Translation
+
+**Statement**: Bridges MUST normalize SGV data to include `_id`, `sgv`, `date`, `dateString`, `direction`, `type` fields expected by legacy clients.
+
+**Rationale**: Legacy clients parse specific field names; Nocturne uses different internal field names.
+
+**Scenarios**:
+- `id` → `_id`
+- `value` → `sgv`
+- `timestamp` → `date`
+- Missing `dateString` → computed from date
+
+**Verification**:
+- Send Nocturne-format SGV via SignalR
+- Verify Socket.IO client receives cgm-remote-monitor format
+
+**Gap Reference**: [Analysis](../docs/10-domain/nocturne-signalr-bridge-analysis.md)
+
+---
+
+### REQ-BRIDGE-003: Event Ordering Preservation
+
+**Statement**: Bridges MUST preserve event ordering within each event type.
+
+**Rationale**: Out-of-order glucose readings could confuse trend calculations and displays.
+
+**Scenarios**:
+- Multiple `dataUpdate` events sent in sequence
+- Bridge delivers in same sequence
+- Clients process in order
+
+**Verification**:
+- Send 10 sequential SGV readings
+- Verify client receives in same order
+- No reordering observed
+
+**Gap Reference**: [Analysis](../docs/10-domain/nocturne-signalr-bridge-analysis.md)
+
+---
+
 ## tconnectsync Requirements
 
 ---
