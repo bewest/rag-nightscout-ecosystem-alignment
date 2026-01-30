@@ -989,3 +989,62 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Impact**: Users may miss important prediction scenarios (especially ZT for safety).
 
 **Remediation**: Add UI option to display all curves simultaneously.
+
+## Dosing Mechanism Gaps
+
+### GAP-DOSE-001: SMB Not Available in Loop
+
+**Description**: Loop does not have equivalent to oref0 SMB with 3-minute frequency and 50% insulinReq dosing.
+
+**Affected Systems**: Loop vs oref0/AAPS/Trio
+
+**Evidence**:
+- oref0: `determine-basal.js:1100` - `microBolus = Math.min(insulinReq/2, maxBolus)`
+- Loop: Uses `partialApplicationFactor` (40%) with 5-min cycles
+
+**Impact**: Faster meal response possible with SMB.
+
+**Remediation**: Loop Auto Bolus provides similar capability; document differences.
+
+### GAP-DOSE-002: Different Safety Mechanisms
+
+**Description**: SMB pairs with zero temp for safety; Loop uses IOB limits and partial application.
+
+**Affected Systems**: Loop vs oref0/AAPS
+
+**Evidence**:
+- oref0: `determine-basal.js:1120` - `smbLowTempReq` calculation with zero temp
+- Loop: `DoseMath.swift:425-428` - `additionalActiveInsulinClamp`
+
+**Impact**: Different fallback behavior if pump disconnects or issues occur.
+
+**Remediation**: Document safety models for each system.
+
+### GAP-DOSE-003: SMB Enable Conditions Mismatch
+
+**Description**: oref0 has 6+ SMB enable conditions; Loop auto bolus is simpler on/off.
+
+**Affected Systems**: Loop vs oref0/AAPS
+
+**Evidence**:
+- oref0: `determine-basal.js:72-124` - `enableSMB_always`, `_with_COB`, `_after_carbs`, `_with_temptarget`, `_high_bg`
+- AAPS: `BooleanKey.kt:50-54` - 5 SMB enable settings
+- Loop: Single setting
+
+**Impact**: Different automatic dosing behavior in different contexts.
+
+**Remediation**: Document enable condition differences for users.
+
+### GAP-DOSE-004: Dosing Frequency Difference
+
+**Description**: SMB can run every 3 min; Loop cycles every 5 min.
+
+**Affected Systems**: Loop vs oref0/AAPS
+
+**Evidence**:
+- oref0: `determine-basal.js:1133-1136` - `SMBInterval = 3` (configurable 1-10)
+- Loop: Fixed 5-minute loop cycle
+
+**Impact**: SMB can deliver corrections faster.
+
+**Remediation**: Design difference - document expected response times.

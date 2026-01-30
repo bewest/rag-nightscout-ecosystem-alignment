@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Temp basal vs SMB dosing comparison | P2 | ✅ Complete (4 gaps, 3 reqs, temp vs micro-bolus) | 2026-01-30 |
 | Prediction curve documentation | P2 | ✅ Complete (4 gaps, 3 reqs, single vs 4 curves) | 2026-01-30 |
 | Carb absorption model comparison | P2 | ✅ Complete (4 gaps, 3 reqs, model vs deviation) | 2026-01-30 |
 | Autosens/Dynamic ISF comparison | P2 | ✅ Complete (4 gaps, 3 reqs, ratio vs RC) | 2026-01-29 |

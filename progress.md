@@ -1637,3 +1637,26 @@ Documented prediction curve generation across Loop and oref0/AAPS.
 - `externals/LoopWorkspace/LoopKit/LoopKit/LoopAlgorithm/LoopAlgorithm.swift:74-188`
 - `externals/oref0/lib/determine-basal/determine-basal.js:442-720`
 - `externals/cgm-remote-monitor/lib/report_plugins/daytoday.js:347-360`
+
+### Temp Basal vs SMB Dosing Comparison (2026-01-30)
+
+Compared automatic dosing mechanisms across Loop and oref0/AAPS.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep dive | `docs/10-domain/temp-basal-vs-smb-comparison.md` | 10.4KB |
+| Gap additions | `traceability/aid-algorithms-gaps.md` | GAP-DOSE-001-004 |
+| Requirements | `traceability/aid-algorithms-requirements.md` | REQ-DOSE-001-003 |
+
+**Key Findings**:
+- Loop: Temp basal primary, auto bolus with partialApplicationFactor (40%)
+- oref0: SMB with insulinReq/2, paired with zero temp safety
+- SMB has 6+ enable conditions vs Loop simple on/off
+- SMB interval 3 min vs Loop 5 min cycles
+
+**Gaps Identified**: GAP-DOSE-001 (no SMB in Loop), GAP-DOSE-002 (safety mechanisms), GAP-DOSE-003 (enable conditions), GAP-DOSE-004 (frequency)
+
+**Source Files Analyzed**:
+- `externals/LoopWorkspace/LoopKit/LoopKit/LoopAlgorithm/DoseMath.swift:40-576`
+- `externals/oref0/lib/determine-basal/determine-basal.js:53-160, 1070-1160`
+- `externals/AndroidAPS/core/keys/src/main/kotlin/app/aaps/core/keys/BooleanKey.kt:50-54`

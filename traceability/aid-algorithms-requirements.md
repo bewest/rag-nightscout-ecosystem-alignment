@@ -820,3 +820,29 @@ See [requirements.md](requirements.md) for the index.
 **Rationale**: ZT curve is important for safety; users benefit from seeing all scenarios.
 
 **Verification**: Settings UI check.
+
+## Dosing Mechanism Requirements
+
+### REQ-DOSE-001: Dosing Mechanism Documentation
+
+**Statement**: AID systems MUST document their primary automatic dosing mechanism (temp basal, SMB, or auto bolus).
+
+**Rationale**: Users need to understand how insulin is delivered automatically.
+
+**Verification**: Documentation review.
+
+### REQ-DOSE-002: Safety Net Documentation
+
+**Statement**: Systems using automatic boluses MUST document safety mechanisms (zero temp, IOB limits).
+
+**Rationale**: Users need to understand fallback behavior if pump disconnects.
+
+**Verification**: Safety documentation audit.
+
+### REQ-DOSE-003: Enable Condition Transparency
+
+**Statement**: Systems with conditional SMB/auto-bolus SHOULD clearly display which conditions are active.
+
+**Rationale**: Users need to know when and why automatic boluses are enabled.
+
+**Verification**: UI review for condition display.

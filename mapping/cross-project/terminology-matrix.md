@@ -3634,3 +3634,32 @@ See `docs/10-domain/cgm-trend-arrow-standardization.md` for full cross-project m
 |--------|-------------------|
 | Loop | `loop.predicted.values` |
 | oref0/AAPS | `openaps.suggested.predBGs.{IOB,COB,UAM,ZT}` |
+
+## Dosing Mechanism Terms
+
+### Core Concepts
+
+| Term | Loop | oref0/AAPS | Description |
+|------|------|------------|-------------|
+| Temp basal | TempBasalRecommendation | rate/duration | Rate change above/below scheduled |
+| SMB | N/A | microBolus | Super Micro Bolus - immediate small bolus |
+| Auto bolus | partialBolus | N/A | Loop's automatic bolus with partial factor |
+| Zero temp | suspend | smbLowTempReq | Safety temp of 0 U/hr |
+
+### SMB Enable Conditions (oref0/AAPS)
+
+| Condition | Setting | Trigger |
+|-----------|---------|---------|
+| Always on | enableSMB_always | User preference |
+| With COB | enableSMB_with_COB | meal_data.mealCOB > 0 |
+| After carbs | enableSMB_after_carbs | Within 6h of carb entry |
+| Low target | enableSMB_with_temptarget | target_bg < 100 |
+| High BG | enableSMB_high_bg | bg >= high_bg threshold |
+
+### Dosing Parameters
+
+| Parameter | Loop | oref0/AAPS | Default |
+|-----------|------|------------|---------|
+| Dose fraction | partialApplicationFactor | insulinReq/2 | 40% / 50% |
+| Max dose | maxAutomaticBolus | maxSMBBasalMinutes × basal | User set |
+| Interval | 5 min cycle | SMBInterval | 5 / 3 min |

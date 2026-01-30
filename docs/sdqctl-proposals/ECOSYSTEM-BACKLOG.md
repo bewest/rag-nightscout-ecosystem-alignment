@@ -41,21 +41,29 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Temp basal vs SMB dosing comparison
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Compare temp basal adjustments vs SMB micro-dosing
-**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
-**Context:** Loop temp basal only vs oref0/AAPS SMB capability
-
-### 5. [P2] Insulin model comparison
+### 4. [P2] Insulin model comparison
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Compare insulin activity models across systems
 **Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
 **Context:** Exponential curves, DIA settings, peak times
 
+### 5. [P2] Target range handling comparison
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Compare target/correction range handling
+**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
+**Context:** Loop correction range vs oref0 target_bg
+
 ---
 
 ## Completed Items
+
+### ~~[P2] Temp basal vs SMB dosing comparison~~ ✅ COMPLETE
+**Status:** Completed 2026-01-30
+- Deep dive: `docs/10-domain/temp-basal-vs-smb-comparison.md` (10.4KB)
+- Compared Loop temp basal/auto bolus vs oref0 SMB micro-dosing
+- 4 gaps identified: GAP-DOSE-001/002/003/004
+- 3 requirements added: REQ-DOSE-001/002/003
+- Key finding: SMB 3min/50% vs Loop 5min/40%; different safety mechanisms
 
 ### ~~[P2] Prediction curve documentation~~ ✅ COMPLETE
 **Status:** Completed 2026-01-30
