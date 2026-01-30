@@ -4217,3 +4217,28 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 **Related Gaps**: GAP-V4-001, GAP-V4-002, GAP-STATESPAN-001
 
 **Source**: [StateSpan Standardization Proposal](../../docs/sdqctl-proposals/statespan-standardization-proposal.md)
+
+---
+
+## Algorithm Engine Integration
+
+### JS Engine Embedding
+
+| System | Engine | Integration | Notes |
+|--------|--------|-------------|-------|
+| Loop | N/A | Native Swift | No JS bridge |
+| AAPS | N/A | Kotlin port | Ported oref to Kotlin |
+| Trio | JavaScriptCore | Swift↔JS bridge | 5-context pool |
+| oref0 | Node.js | Native JS | Reference implementation |
+
+### Trio Bridge Functions
+
+| Swift Function | JS Bundle | Purpose |
+|---------------|-----------|---------|
+| `iob()` | bundle/iob.js | Insulin on board calculation |
+| `meal()` | bundle/meal.js | Carb absorption estimation |
+| `autosense()` | bundle/autosens.js | Sensitivity ratio detection |
+| `determineBasal()` | bundle/determine-basal.js | Main algorithm loop |
+| `makeProfile()` | bundle/profile.js | Profile construction |
+
+**Source**: `externals/Trio/Trio/Sources/APS/OpenAPS/OpenAPS.swift`

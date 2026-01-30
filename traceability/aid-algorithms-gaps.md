@@ -1104,3 +1104,49 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Impact**: Temp targets have different side effects between systems.
 
 **Remediation**: Document for users expecting similar behavior.
+
+---
+
+## Trio Bridge Gaps
+
+### GAP-TRIO-BRIDGE-001: No Type Safety Across Bridge
+
+**Description**: JSON serialization loses Swift type information; JS returns untyped objects.
+
+**Affected Systems**: Trio
+
+**Evidence**:
+- `OpenAPS.swift:617-625` - `worker.call()` returns `RawJSON` (String)
+- Codable parsing may fail silently with missing fields
+
+**Impact**: Runtime errors possible if JS output doesn't match expected structure.
+
+**Remediation**: Trio uses Codable with optional fields for graceful degradation.
+
+### GAP-TRIO-BRIDGE-002: Synchronous JS Execution
+
+**Description**: JS calls block the context pool; long algorithm runs could exhaust pool.
+
+**Affected Systems**: Trio
+
+**Evidence**:
+- `JavaScriptWorker.swift:35` - Pool size of 5 contexts
+- Algorithm calls are synchronous within context
+
+**Impact**: 5-context pool may bottleneck under heavy concurrent load.
+
+**Remediation**: Pool size configurable; async/await prevents UI blocking.
+
+### GAP-TRIO-BRIDGE-003: Middleware Security
+
+**Description**: Custom middleware can modify algorithm behavior arbitrarily.
+
+**Affected Systems**: Trio
+
+**Evidence**:
+- `OpenAPS.swift:798-813` - `middlewareScript()` loads user JS
+- No validation or sandboxing of middleware code
+
+**Impact**: User-installed scripts could produce dangerous dosing decisions.
+
+**Remediation**: Trio requires explicit user action to enable middleware.

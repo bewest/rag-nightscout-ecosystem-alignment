@@ -18,7 +18,7 @@ Covers: Loop, AAPS, Trio, oref0/oref1, OpenAPS
 | 4 | ~~Verify GAP-ALG-* freshness~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - [Accuracy backlog #19](documentation-accuracy.md) verified 100% accurate |
 | 5 | **Trio-dev oref integration mapping** | P2 | Medium | Map `trio-oref/lib/` JS files to oref0, document divergence |
 | 6 | **Trio Nightscout sync analysis** | P2 | Medium | Analyze `NightscoutManager.swift`, `NightscoutAPI.swift` for treatment/profile sync |
-| 7 | **Trio OpenAPS.swift bridge analysis** | P2 | Low | Analyze Swift↔JS bridge in `OpenAPS.swift` (37KB) |
+| 7 | ~~**Trio OpenAPS.swift bridge analysis**~~ | ~~P2~~ | ~~Low~~ | ✅ COMPLETE - `docs/10-domain/trio-openaps-bridge-analysis.md` |
 | 8 | **Trio APSManager comparison** | P2 | Medium | Compare `APSManager.swift` (55KB) with Loop's LoopDataManager |
 
 ---
