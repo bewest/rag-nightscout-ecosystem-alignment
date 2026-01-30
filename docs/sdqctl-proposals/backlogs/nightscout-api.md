@@ -205,6 +205,18 @@ Per OQ-010 extended research request (2026-01-30), focused analysis of Nocturne 
 
 ---
 
+## Trio-dev Integration Analysis
+
+Source: `externals/Trio-dev/` (LIVE-BACKLOG 2026-01-30)
+
+| # | Item | Priority | Effort | Notes |
+|---|------|----------|--------|-------|
+| 20 | **Trio NightscoutManager.swift analysis** | P2 | Medium | Analyze upload/download sync logic, treatment handling |
+| 21 | **Trio NightscoutAPI.swift protocol mapping** | P2 | Low | Map API calls to Nightscout endpoints |
+| 22 | **Trio NightscoutTreatment.swift model comparison** | P2 | Low | Compare treatment model with OpenAPI spec |
+
+---
+
 ## PR Coherence Review Queue
 
 Systematic review of cgm-remote-monitor PRs for alignment with proposals and backlogs.

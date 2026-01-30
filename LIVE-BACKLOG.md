@@ -9,12 +9,14 @@
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| Trio-dev checkout + methodical analysis | P2 | SSH git url updated in workspace.lock.json; queue bottom-up integration work |
+| (none) | - | Trio-dev items queued to aid-algorithms.md + nightscout-api.md |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 24) | P0 | ✅ Complete (Trio-dev analysis, 8 items queued) | 2026-01-30 |
+| Trio-dev checkout + methodical analysis | P2 | ✅ Queued 8 items: aid-algorithms #5-8, nightscout-api #20-22 | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 23) | P0 | ✅ Complete (fix verify_coverage.py, 0→242 reqs) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 22) | P0 | ✅ Complete (tool coverage audit, 2 new items added) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 21) | P0 | ✅ Complete (progress.md hygiene, 1209→60 lines) | 2026-01-30 |

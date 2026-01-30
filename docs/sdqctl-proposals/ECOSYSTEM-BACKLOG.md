@@ -80,6 +80,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Trio-dev checkout + analysis** | aid-algorithms.md #5-8, nightscout-api.md #20-22 | 8 integration items queued from structure analysis |
 | **Fix verify_coverage.py** | `tools/verify_coverage.py` | 0→242 reqs, 0→289 gaps - tool now functional |
 | **Tool coverage audit** | `docs/10-domain/tool-coverage-audit.md` | 89% coverage, verify_coverage.py broken, conformance/*.md uncovered |
 | **Progress.md archive hygiene** | `progress-archive-2026-01-30-batch2.md` | 1209→60 lines (95% reduction) |
