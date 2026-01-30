@@ -5,12 +5,112 @@
 #   GAP-TREAT-001: Absorption time units (seconds vs minutes)
 #   GAP-TREAT-002: Duration units (milliseconds vs minutes)
 #   GAP-TZ-004: Timezone offset handling
+#   GAP-PROF-006: Basal schedule time format differences
 #
 # Related requirements:
 #   REQ-044: Duration unit normalization
 #   REQ-046: Absorption time unit conversion
+#   REQ-PROF-005: Basal time format conversion
 
 conversions:
+
+  # === Basal Schedule Time Conversions (GAP-PROF-006) ===
+
+  - id: basal-time-midnight-ns-to-seconds
+    description: Nightscout "00:00" to seconds from midnight
+    source_system: Nightscout
+    target_system: Loop
+    field: basal.time
+    input:
+      value: "00:00"
+      unit: "HH:MM"
+    expected:
+      value: 0
+      unit: seconds
+    precision: 0
+    references:
+      - "GAP-PROF-006"
+      - "REQ-PROF-005"
+
+  - id: basal-time-6am-ns-to-seconds
+    description: Nightscout "06:00" to seconds from midnight
+    source_system: Nightscout
+    target_system: Loop
+    field: basal.time
+    input:
+      value: "06:00"
+      unit: "HH:MM"
+    expected:
+      value: 21600
+      unit: seconds
+    precision: 0
+    references:
+      - "GAP-PROF-006"
+
+  - id: basal-time-noon-ns-to-seconds
+    description: Nightscout "12:00" to seconds from midnight
+    source_system: Nightscout
+    target_system: Loop
+    field: basal.time
+    input:
+      value: "12:00"
+      unit: "HH:MM"
+    expected:
+      value: 43200
+      unit: seconds
+    precision: 0
+
+  - id: basal-time-6pm-ns-to-seconds
+    description: Nightscout "18:00" to seconds from midnight
+    source_system: Nightscout
+    target_system: Loop
+    field: basal.time
+    input:
+      value: "18:00"
+      unit: "HH:MM"
+    expected:
+      value: 64800
+      unit: seconds
+    precision: 0
+
+  - id: basal-time-2359-ns-to-seconds
+    description: Nightscout "23:59" edge case to seconds
+    source_system: Nightscout
+    target_system: Loop
+    field: basal.time
+    input:
+      value: "23:59"
+      unit: "HH:MM"
+    expected:
+      value: 86340
+      unit: seconds
+    precision: 0
+
+  - id: basal-time-seconds-to-oref0-minutes
+    description: Loop seconds to oref0 minutes
+    source_system: Loop
+    target_system: oref0
+    field: basal.time
+    input:
+      value: 21600
+      unit: seconds
+    expected:
+      value: 360
+      unit: minutes
+    precision: 0
+
+  - id: basal-time-minutes-to-ns
+    description: oref0 minutes to Nightscout "HH:MM"
+    source_system: oref0
+    target_system: Nightscout
+    field: basal.time
+    input:
+      value: 360
+      unit: minutes
+    expected:
+      value: "06:00"
+      unit: "HH:MM"
+    precision: 0
 
   # === Time Duration Conversions ===
 

@@ -126,6 +126,13 @@ components:
           items:
             $ref: '#/components/schemas/TimedValue'
           description: Scheduled basal rates (U/hr) by time of day
+          x-aid-gap: GAP-PROF-006
+          x-aid-gap-note: Time format differs - Nightscout uses "HH:MM" string, controllers use numeric offsets
+          x-aid-controllers:
+            Loop: BasalRateSchedule (TimeInterval seconds)
+            AAPS: ProfileSwitch.basalBlocks (timeAsSeconds int)
+            Trio: basal array (from NS)
+            oref0: basalprofile_data (minutes int)
         sens:
           type: array
           items:
@@ -194,6 +201,10 @@ components:
 
     TimedValue:
       type: object
+      description: |
+        Time-value pair for schedule items (basal, ISF, CR, targets).
+        Controllers must convert between string time and numeric offsets.
+        See GAP-PROF-006 for format differences.
       required:
         - time
         - value
@@ -208,7 +219,10 @@ components:
           description: Value at this time
         timeAsSeconds:
           type: integer
-          description: Seconds since midnight (alternative representation)
+          description: |
+            Seconds since midnight (alternative representation).
+            Controllers use this internally: Loop/AAPS (seconds), oref0 (minutes).
+          x-aid-gap: GAP-PROF-006
 
     # =========================================================================
     # PROFILE SWITCH (Treatment-based profile activation)
