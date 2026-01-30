@@ -69,6 +69,64 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
+## WebSocket Requirements
+
+### REQ-API-004: Document WebSocket Capabilities
+
+**Statement**: Nightscout documentation SHOULD clearly describe both WebSocket channels and their limitations.
+
+**Rationale**: Developers need to understand which channel suits their use case.
+
+**Scenarios**:
+- Developer choosing between REST and WebSocket
+- Client implementing real-time updates
+- Understanding v1 vs v3 channel differences
+
+**Verification**:
+- Documentation exists for both `/` and `/storage` namespaces
+- Supported events listed
+- Authentication methods documented
+
+**Gap Reference**: GAP-API-013
+
+---
+
+### REQ-API-005: Cross-Channel Event Propagation
+
+**Statement**: Changes via any entry point (v1 REST, v3 REST, WebSocket v1) SHOULD be broadcast on all WebSocket channels.
+
+**Rationale**: Clients shouldn't need to know which API was used for the original write.
+
+**Scenarios**:
+- Loop uploads via v1 REST, follower subscribes to v3 storage
+- Web interface uses WebSocket v1, AAPS listens on v3
+
+**Verification**:
+- Create treatment via v1 POST
+- Verify `/storage` channel receives `create` event
+
+**Gap Reference**: GAP-API-014
+
+---
+
+### REQ-API-006: WebSocket Rate Limiting
+
+**Statement**: WebSocket write operations SHOULD be rate-limited to prevent abuse.
+
+**Rationale**: Prevent DOS attacks via rapid `dbAdd` events.
+
+**Scenarios**:
+- Malicious client sends flood of events
+- Misbehaving client in tight loop
+
+**Verification**:
+- Send 100 `dbAdd` events in 1 second
+- Verify rate limit response or throttling
+
+**Gap Reference**: N/A (best practice)
+
+---
+
 ## Plugin System Requirements
 
 ---

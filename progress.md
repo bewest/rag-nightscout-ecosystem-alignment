@@ -8,6 +8,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### WebSocket Event Coverage (2026-01-30)
+
+Mapped Nightscout Socket.IO events vs REST API for real-time sync.
+
+| Metric | Value |
+|--------|-------|
+| Source files analyzed | 4 |
+| Gaps identified | 3 (GAP-API-013 to GAP-API-015) |
+| Requirements extracted | 3 (REQ-API-004 to REQ-API-006) |
+| Key finding | APIv3 /storage channel doesn't capture v1 API changes |
+
+**Key Findings**:
+- Two WebSocket channels: legacy `/` (bidirectional) and APIv3 `/storage` (read-only)
+- Controllers use REST; WebSocket primarily for web interface
+- APIv3 storage channel only broadcasts v3 API changes (GAP-API-014)
+- No alarm state events exposed via WebSocket
+
+**Deliverables**:
+- `docs/10-domain/websocket-event-coverage.md` (10KB)
+- `traceability/nightscout-api-gaps.md` (+3 gaps)
+- `traceability/nightscout-api-requirements.md` (+3 requirements)
+
+---
+
 ### Profile Switch Sync Comparison (2026-01-30)
 
 Analyzed how profile switches sync to Nightscout across AAPS, Loop, and Trio.

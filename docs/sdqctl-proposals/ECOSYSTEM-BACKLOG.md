@@ -36,24 +36,47 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 3. [P3] WebSocket event coverage
+### 3. [P2] API v3 pagination compliance
 **Type:** Documentation | **Effort:** Medium
-**Focus:** Map socket.io events vs REST for real-time sync
+**Focus:** Document srvModified-based pagination across clients
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Cross-controller conflict detection
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Document behavior when Loop+Trio sync simultaneously
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md)
-
-### 5. [P2] Libre 3 protocol gap analysis
-**Type:** Documentation | **Effort:** High
-**Focus:** Document "eavesdrop only" limitations vs full pairing
+### 4. [P3] CGM trend arrow standardization
+**Type:** Documentation | **Effort:** Low
+**Focus:** Map all 7 projects to unified trend arrow enum
 **Backlog:** [cgm-sources.md](backlogs/cgm-sources.md)
+
+### 5. [P2] Verify algorithm comparison claims
+**Type:** Accuracy | **Effort:** Medium
+**Focus:** Validate prediction array documentation against source
+**Backlog:** [documentation-accuracy.md](backlogs/documentation-accuracy.md)
+
+### 6. [P2] Verify sync-identity mapping
+**Type:** Accuracy | **Effort:** Medium
+**Focus:** Validate syncIdentifier field mappings against source
+**Backlog:** [documentation-accuracy.md](backlogs/documentation-accuracy.md)
 
 ---
 
 ## Completed Items
+
+### ~~[P3] WebSocket event coverage~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `docs/10-domain/websocket-event-coverage.md`
+**Key Finding:** APIv3 /storage channel doesn't capture v1 API changes
+**Gaps Added:** GAP-API-013, GAP-API-014, GAP-API-015
+
+### ~~[P2] Libre 3 protocol gap analysis~~ ✅ COMPLETE
+**Completed:** 2026-01-29
+**Deliverable:** `docs/10-domain/libre3-protocol-gap-analysis.md`
+**Key Finding:** ECDH encryption blocks direct BLE; only LibreLinkUp API (1-5 min delay)
+**Gaps Added:** GAP-CGM-030, GAP-CGM-031, GAP-CGM-032
+
+### ~~[P2] Cross-controller conflict detection~~ ✅ COMPLETE
+**Completed:** 2026-01-29
+**Deliverable:** `docs/10-domain/cross-controller-conflicts-deep-dive.md`
+**Key Finding:** Distinct namespaces (loop vs openaps) prevent collision; enteredBy distinguishes controllers
+**Gaps Added:** GAP-SYNC-020, GAP-SYNC-021, GAP-SYNC-022
 
 ### ~~[P2] Profile switch sync~~ ✅ COMPLETE
 **Completed:** 2026-01-30
@@ -166,20 +189,6 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - Added 5 real-world usage patterns from 31-item verification
 - Added lessons learned, implementation priority (P1/P2/P3)
 - Clear request for sdqctl team: parser support for VERIFY directive
-
-### ~~[P2] Libre 3 protocol gap analysis~~ ✅ COMPLETE
-**Status:** Completed 2026-01-29
-- Deep dive: `docs/10-domain/libre3-protocol-gap-analysis.md`
-- 3 gaps identified: GAP-CGM-030/031/032
-- Key finding: ECDH encryption blocks direct BLE access
-- Only legal access: LibreLinkUp API (1-5 min delay)
-
-### ~~[P2] Cross-controller conflict detection~~ ✅ COMPLETE
-**Status:** Completed 2026-01-29
-- Deep dive: `docs/10-domain/cross-controller-conflicts-deep-dive.md`
-- 3 gaps identified: GAP-SYNC-020/021/022
-- Risk: Medium (safe for read-only, caution for bidirectional)
-- Key finding: Loop/Trio use different deviceStatus namespaces
 
 ### ~~[P2] Level 6: nocturne-modernization-analysis.md coherence~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

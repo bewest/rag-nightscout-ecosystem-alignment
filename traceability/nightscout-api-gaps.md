@@ -1409,6 +1409,43 @@ _None yet._
 
 ---
 
+## WebSocket Gaps
+
+### GAP-API-013: Legacy WebSocket Not Used by Controllers
+
+**Description:** All major controllers (Loop, AAPS, Trio) use REST APIs for upload. The legacy WebSocket `dbAdd`/`dbUpdate` events are primarily used by the web interface.
+
+**Source:** 
+- Loop: `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/NightscoutService.swift` (REST only)
+- AAPS: `externals/AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/NSAndroidClientImpl.kt` (REST only)
+- Trio: `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift` (REST only)
+
+**Impact:** Real-time sync benefits underutilized; controllers poll REST endpoints.
+
+**Remediation:** Document WebSocket as optional performance optimization.
+
+### GAP-API-014: APIv3 WebSocket Doesn't Capture V1 Changes
+
+**Description:** The APIv3 `/storage` channel only broadcasts changes made via APIv3 REST endpoints. Changes via APIv1 or WebSocket v1 are not included.
+
+**Source:** `externals/cgm-remote-monitor/lib/api3/doc/socket.md` - "Only changes made via APIv3 are being broadcasted"
+
+**Impact:** Clients subscribed to APIv3 storage miss updates from Loop (uses v1 API).
+
+**Remediation:** Consolidate event bus to broadcast all changes regardless of entry point.
+
+### GAP-API-015: No Alarm/Notification WebSocket Channel
+
+**Description:** Alarm state changes (urgent high, stale data, etc.) are not exposed via WebSocket events.
+
+**Source:** `externals/cgm-remote-monitor/lib/server/websocket.js` - no alarm event handling
+
+**Impact:** Follower apps must poll for alarm state.
+
+**Remediation:** Add `alarm` event to storage channel.
+
+---
+
 ## DeviceStatus Schema Gaps
 
 ### GAP-DS-001: Incompatible Prediction Formats

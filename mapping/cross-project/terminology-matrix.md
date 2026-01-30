@@ -2896,6 +2896,11 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 | `loadRetro` | Client→Server | - | Request history |
 | `connected` | Server→Client | - | Auth success |
 | `clients` | Server→Client | Number | Active client count |
+| `dbAdd` | Client→Server | `{collection, data}` | Insert document (v1 only) |
+| `dbUpdate` | Client→Server | `{collection, data}` | Update document (v1 only) |
+| `dbRemove` | Client→Server | `{collection, _id}` | Delete document (v1 only) |
+
+> **Note**: `dbAdd`/`dbUpdate`/`dbRemove` are legacy v1 channel only. Controllers use REST; these events are primarily for web interface. See GAP-API-013.
 
 ### Sync Identity Components
 
