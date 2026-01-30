@@ -8,6 +8,18 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Devicestatus/Entries Claims Verification (2026-01-30)
+
+nightscout-api #3: Cross-reference to existing verification in documentation-accuracy.md.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Prior Verification | `docs/sdqctl-proposals/backlogs/documentation-accuracy.md` | #12-14 verified 2026-01-29 |
+
+**Status**: Already complete - devicestatus, entries, treatments deep-dives verified 100% accurate.
+
+---
+
 ### REQ-API → OpenAPI Alignment Audit (2026-01-30)
 
 nightscout-api #5: Audit REQ-API-* requirements against OpenAPI specs.

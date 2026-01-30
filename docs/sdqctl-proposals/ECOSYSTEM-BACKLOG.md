@@ -42,6 +42,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Devicestatus/entries claims verification** | Cross-ref to documentation-accuracy.md #12-14 | Already verified 100% accurate (2026-01-29) |
 | **REQ-API → OpenAPI alignment audit** | `docs/10-domain/req-api-openapi-alignment-audit.md` | 67% full coverage, 33% partial; need x-aid-req annotations |
 | **GAP-API freshness verification** | `docs/10-domain/gap-api-freshness-verification.md` | 3 addressed by PR, 2 partial, 11 open |
 | **StateSpan client SDK patterns** | `docs/10-domain/statespan-client-sdk-patterns.md` | 4 query patterns, 3 caching strategies, platform SDKs |

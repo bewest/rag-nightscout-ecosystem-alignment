@@ -15,6 +15,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 15) | P0 | ✅ Complete (Ready Queue 2 items, all nightscout-api items done) | 2026-01-30 |
+| Devicestatus/entries claims verification | P2 | ✅ Complete (cross-ref to documentation-accuracy.md #12-14) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 14) | P0 | ✅ Complete (Ready Queue 2 items, REQ-API audit complete) | 2026-01-30 |
 | REQ-API → OpenAPI alignment audit | P2 | ✅ Complete (67% full coverage, 33% partial) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 13) | P0 | ✅ Complete (Ready Queue 2 items, GAP-API verified) | 2026-01-30 |
