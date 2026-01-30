@@ -8,6 +8,21 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Backlog Consolidation (2026-01-30)
+
+Discovered Ready Queue had stale entries pointing to already-completed work. Consolidated.
+
+| Metric | Value |
+|--------|-------|
+| Stale items removed | 4 |
+| Items already complete | CGM arrows, API v3 pagination, algorithm claims, sync-identity |
+| Ready Queue after | 2 (High-effort only) |
+| Commit | `f2356bd` |
+
+**Key Finding**: Documentation accuracy verification (Levels 1-6) was 100% complete as of 2026-01-29. Ready Queue needs replenishment from new work sources.
+
+---
+
 ### WebSocket Event Coverage (2026-01-30)
 
 Mapped Nightscout Socket.IO events vs REST API for real-time sync.

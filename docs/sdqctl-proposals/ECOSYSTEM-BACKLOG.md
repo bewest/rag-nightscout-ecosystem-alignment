@@ -36,6 +36,27 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
+### 3. [P1] Gap deduplication tool
+**Type:** Tooling | **Effort:** Low
+**Focus:** Detect and report duplicate GAP-* entries across traceability files
+**Backlog:** [tooling.md](backlogs/tooling.md)
+**Note:** 2 duplicates found in iterate report
+
+### 4. [P3] Terminology sample tool
+**Type:** Tooling | **Effort:** Low
+**Focus:** Random sample terminology matrix entries for verification
+**Backlog:** [tooling.md](backlogs/tooling.md)
+
+### 5. [P2] Gap freshness checker tool
+**Type:** Tooling | **Effort:** Medium
+**Focus:** Check if GAP-* issues have been resolved in upstream PRs
+**Backlog:** [tooling.md](backlogs/tooling.md)
+
+### 6. [P2] Mapping coverage tool
+**Type:** Tooling | **Effort:** Medium
+**Focus:** Verify mapping docs cover all fields in source schemas
+**Backlog:** [tooling.md](backlogs/tooling.md)
+
 ---
 
 ## Completed Items
