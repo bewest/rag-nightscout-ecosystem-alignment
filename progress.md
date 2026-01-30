@@ -11,6 +11,34 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Known vs Unknown Dashboard (2026-01-30)
+
+Cycle 33: Created project health summary tool.
+
+**Deliverable**: `tools/known_unknown_dashboard.py`
+
+**Metrics Generated**:
+| Metric | Value | Status |
+|--------|-------|--------|
+| Repos Cloned | 22/22 | ✅ |
+| Mapping Projects | 23 | ✅ |
+| Total Gaps | 294 | ✅ |
+| Total Requirements | 260 | ✅ |
+| Deep Dives | 32 | ✅ |
+| OpenAPI Specs | 8 | ✅ |
+| Coverage | 105% | ✅ |
+| **Confidence** | **HIGH** (101%) | ✅ |
+
+**Features**:
+- `--json` for machine-readable output
+- `--markdown` for human-readable format
+- Gap/requirement breakdown by category
+- Mapping coverage per project
+
+**tooling.md #20**: ✅ COMPLETE
+
+---
+
 ### Housekeeping + Ready Queue Replenishment (2026-01-30)
 
 Cycle 32: Pushed commits, archived progress.md, replenished Ready Queue.

@@ -40,11 +40,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Systematic review methodology for cgm-remote-monitor PRs against proposals/backlogs
 **Outcome:** Reusable PR review checklist
 
-### 4. [P2] Known vs unknown dashboard
+### 4. [P2] Known vs unknown dashboard ✅ COMPLETE
 **Type:** Implementation | **Effort:** Low
 **Source:** tooling.md #20
 **Focus:** Summary view: repos analyzed, gaps identified, coverage %, confidence levels
-**Outcome:** At-a-glance project health view
+**Deliverable:** `tools/known_unknown_dashboard.py`
+**Status:** ✅ COMPLETE 2026-01-30
 
 ### 5. [P2] Algorithm conformance: AAPS Kotlin runner (PARKED)
 **Type:** Implementation | **Effort:** High

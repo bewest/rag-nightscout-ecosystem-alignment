@@ -31,7 +31,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 17 | **Nightscout PR coherence review protocol** | P2 | Medium | Systematic review methodology for cgm-remote-monitor PRs against proposals/backlogs |
 | 18 | ~~**Tool coverage audit**~~ | ~~P1~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/tool-coverage-audit.md` |
 | 19 | ~~**Documentation parse audit**~~ | ~~P1~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/documentation-parse-audit.md` (30 uncovered, 91%→99% after fixes) |
-| 20 | **Known vs unknown dashboard** | P2 | Low | Summary view: repos analyzed, gaps identified, coverage %, confidence levels |
+| 20 | ~~**Known vs unknown dashboard**~~ | ~~P2~~ | ~~Low~~ | ✅ COMPLETE - `tools/known_unknown_dashboard.py` |
 | 21 | ~~**Fix verify_coverage.py**~~ | ~~P1~~ | ~~Low~~ | ✅ COMPLETE - Fixed glob patterns + REQ-DOMAIN-NNN regex (0→242 reqs, 0→289 gaps) |
 | 22 | ~~**Extend verify_refs scope**~~ | ~~P2~~ | ~~Low~~ | ✅ COMPLETE - Added traceability/, conformance/ (300→353 files, 441 refs validated) |
 | 23 | ~~**Extend verify_assertions scope**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - Now scans conformance/**/*.yaml (4→12 files, 25 assertion groups) |
