@@ -183,7 +183,7 @@ Nightscout shows most recent deviceStatus in pill display.
 
 **Remediation**: Add deduplication based on timestamp + amount + eventType within tolerance window.
 
-### GAP-SYNC-021: No Controller Conflict Warning
+### GAP-SYNC-030: No Controller Conflict Warning
 
 **Description**: Nightscout does not warn when multiple controllers upload to same instance.
 
@@ -191,7 +191,7 @@ Nightscout shows most recent deviceStatus in pill display.
 
 **Remediation**: Add warning when deviceStatus from different controllers received within 5 minutes.
 
-### GAP-SYNC-022: Profile Sync Ambiguity
+### GAP-SYNC-031: Profile Sync Ambiguity
 
 **Description**: When multiple controllers upload profiles, no indication which is authoritative.
 

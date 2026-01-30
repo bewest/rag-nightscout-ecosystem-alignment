@@ -250,7 +250,7 @@ Event recording when profile becomes active:
 
 ## 7. Gap Analysis
 
-### GAP-SYNC-026: No Profile Switch Events from Loop/Trio
+### GAP-SYNC-035: No Profile Switch Events from Loop/Trio
 
 **Description**: Loop and Trio upload profiles to the `profile` collection but do not create `Profile Switch` treatment events. This means profile change history is not tracked in the treatments timeline.
 
@@ -265,7 +265,7 @@ Event recording when profile becomes active:
 
 ---
 
-### GAP-SYNC-027: ProfileSwitch Embedded JSON Size
+### GAP-SYNC-036: ProfileSwitch Embedded JSON Size
 
 **Description**: AAPS embeds complete profile JSON in `profileJson` field of Profile Switch treatments. This duplicates data and increases treatment document size.
 
@@ -280,7 +280,7 @@ Event recording when profile becomes active:
 
 ---
 
-### GAP-SYNC-028: Percentage/Timeshift Not Portable
+### GAP-SYNC-037: Percentage/Timeshift Not Portable
 
 **Description**: AAPS Profile Switch supports `percentage` (insulin scaling) and `timeshift` (schedule rotation) features that are not understood by Loop or Trio.
 
@@ -332,7 +332,7 @@ Event recording when profile becomes active:
 
 **Verification**: Check treatments collection for `eventType: "Profile Switch"` after profile change.
 
-**Gap**: GAP-SYNC-026
+**Gap**: GAP-SYNC-035
 
 ---
 
@@ -344,7 +344,7 @@ Event recording when profile becomes active:
 
 **Verification**: Test with percentage=150 profile switch; verify scaled or warned.
 
-**Gap**: GAP-SYNC-028
+**Gap**: GAP-SYNC-037
 
 ---
 
@@ -356,4 +356,4 @@ Event recording when profile becomes active:
 
 **Verification**: Upload same profile twice; verify single document in collection.
 
-**Gap**: GAP-SYNC-027
+**Gap**: GAP-SYNC-036

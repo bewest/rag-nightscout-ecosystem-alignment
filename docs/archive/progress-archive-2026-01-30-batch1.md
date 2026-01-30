@@ -43,8 +43,8 @@ Analyzed behavior when Loop + Trio sync to same Nightscout instance.
 
 **Gaps Added**:
 - GAP-SYNC-020: No cross-controller deduplication
-- GAP-SYNC-021: No controller conflict warning
-- GAP-SYNC-022: Profile sync ambiguity
+- GAP-SYNC-030: No controller conflict warning
+- GAP-SYNC-031: Profile sync ambiguity
 
 **Deliverables**:
 - `docs/10-domain/cross-controller-conflicts-deep-dive.md` (7.4KB)
@@ -1470,7 +1470,7 @@ Audited sync identity fields across 5 systems.
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
 | Audit doc | `docs/10-domain/sync-identity-field-audit.md` | 9.6KB |
-| Gap additions | `traceability/sync-identity-gaps.md` | GAP-SYNC-023/024/025 |
+| Gap additions | `traceability/sync-identity-gaps.md` | GAP-SYNC-032/024/025 |
 
 **Key Findings**:
 - Nightscout: UUID v5 from device+date+eventType
@@ -1478,7 +1478,7 @@ Audited sync identity fields across 5 systems.
 - AAPS: Best practice - stores nightscoutId after sync
 - xDrip+: uuid column but not sent as identifier
 
-**Gaps Identified**: GAP-SYNC-023 (Loop/Trio), GAP-SYNC-024 (xDrip+), GAP-SYNC-025 (no standard)
+**Gaps Identified**: GAP-SYNC-032 (Loop/Trio), GAP-SYNC-033 (xDrip+), GAP-SYNC-034 (no standard)
 
 **Source Files Analyzed**:
 - `externals/cgm-remote-monitor/lib/api3/shared/operationTools.js:97-107`

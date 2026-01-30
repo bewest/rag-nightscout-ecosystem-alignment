@@ -100,7 +100,7 @@ public struct ObjectIdCache {
 3. Loop caches `syncIdentifier → _id` mapping
 4. Future updates use cached `_id` for PATCH/DELETE
 
-### GAP-SYNC-023: Loop Does Not Send identifier to Nightscout
+### GAP-SYNC-032: Loop Does Not Send identifier to Nightscout
 
 Loop sends data to Nightscout but does not populate the `identifier` field. This means Nightscout calculates it server-side, potentially causing mismatches if the same data is uploaded from multiple sources.
 
@@ -125,7 +125,7 @@ syncIdentifier: status.glucoseSyncIdentifier ?? UUID().uuidString
 ### Behavior
 - Inherits `ObjectIdCache` from LoopKit
 - Same mapping strategy as Loop
-- Same gap applies (GAP-SYNC-023)
+- Same gap applies (GAP-SYNC-032)
 
 ---
 
@@ -199,7 +199,7 @@ if (!doesRemoteFileExist(thistreatment.uuid)) {
 | `uuid` | String | Client-generated UUID |
 | `_id` | Long | Local SQLite row ID |
 
-### GAP-SYNC-024: xDrip+ UUID Not Mapped to Nightscout identifier
+### GAP-SYNC-033: xDrip+ UUID Not Mapped to Nightscout identifier
 
 xDrip+ generates UUIDs locally but doesn't send them as `identifier` to Nightscout API v3. This prevents server-side deduplication from working correctly.
 
@@ -235,7 +235,7 @@ xDrip+ uuid ─────────────┘
 
 ## Gaps Identified
 
-### GAP-SYNC-023: Loop/Trio Missing identifier Field
+### GAP-SYNC-032: Loop/Trio Missing identifier Field
 
 **Description:** Loop and Trio cache Nightscout `_id` locally but don't send `identifier` on uploads. Server calculates identifier, which may differ from client's `syncIdentifier`.
 
@@ -250,7 +250,7 @@ xDrip+ uuid ─────────────┘
 1. Send `syncIdentifier` as `identifier` field in upload payload
 2. Use UUID v5 with same namespace as Nightscout for compatibility
 
-### GAP-SYNC-024: xDrip+ UUID Not Sent as identifier
+### GAP-SYNC-033: xDrip+ UUID Not Sent as identifier
 
 **Description:** xDrip+ generates local UUIDs but doesn't send them to Nightscout, relying on Last-Modified header for sync instead.
 
@@ -260,7 +260,7 @@ xDrip+ uuid ─────────────┘
 
 **Remediation:** Send `uuid` as `identifier` in Nightscout API calls.
 
-### GAP-SYNC-025: No Cross-Controller Identity Standard
+### GAP-SYNC-034: No Cross-Controller Identity Standard
 
 **Description:** Each system uses different ID naming conventions (`syncIdentifier`, `nightscoutId`, `uuid`). No shared standard for portable identity.
 

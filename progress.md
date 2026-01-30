@@ -8,6 +8,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Fix 26 Duplicate GAP Definitions (2026-01-30)
+
+Resolved all duplicate GAP IDs found by `find_gap_duplicates.py`.
+
+| Action | Count |
+|--------|-------|
+| Removed duplicate sections | 16 |
+| Renumbered colliding IDs | 17 |
+| Cross-references updated | 11 files |
+| Net lines removed | 292 |
+| Unique GAP IDs after | 265 |
+
+**ID Renumbering**:
+- GAP-AUTH-001/002 (later defs) → GAP-AUTH-006/007
+- GAP-DS-001-004 (later defs) → GAP-DS-005-008
+- GAP-SESSION-001-003 (later defs) → GAP-SESSION-004-006
+- GAP-SYNC-020-028 → GAP-SYNC-029-037
+
+**Removed Duplicates**: CARB-001-004, PRED-001-004, AUTH-003-004, LIBRELINK-001-003, SHARE-001-003
+
+---
+
 ### Gap Deduplication Tool (2026-01-30)
 
 Created `tools/find_gap_duplicates.py` to detect duplicate GAP-* definitions.
@@ -73,7 +95,7 @@ Analyzed how profile switches sync to Nightscout across AAPS, Loop, and Trio.
 | Metric | Value |
 |--------|-------|
 | Source files analyzed | 9 |
-| Gaps identified | 3 (GAP-SYNC-026 to GAP-SYNC-028) |
+| Gaps identified | 3 (GAP-SYNC-035 to GAP-SYNC-037) |
 | Requirements extracted | 3 (REQ-SYNC-051 to REQ-SYNC-053) |
 | Key finding | AAPS uses `Profile Switch` treatments; Loop/Trio upload to `profile` collection only |
 

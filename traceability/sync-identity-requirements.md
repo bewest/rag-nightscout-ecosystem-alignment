@@ -641,7 +641,7 @@ See [requirements.md](requirements.md) for the index.
 - GET treatments with eventType=Profile Switch
 - Verify new event exists
 
-**Gap**: GAP-SYNC-026
+**Gap**: GAP-SYNC-035
 
 **Source**: `docs/10-domain/profile-switch-sync-comparison.md`
 
@@ -663,7 +663,7 @@ See [requirements.md](requirements.md) for the index.
 - Fetch in non-AAPS controller
 - Verify warning displayed or scaling applied
 
-**Gap**: GAP-SYNC-028
+**Gap**: GAP-SYNC-037
 
 **Source**: `docs/10-domain/profile-switch-sync-comparison.md`
 
@@ -684,7 +684,7 @@ See [requirements.md](requirements.md) for the index.
 - Upload profile "Default" again
 - GET profile collection, count documents with name "Default"
 
-**Gap**: GAP-SYNC-027
+**Gap**: GAP-SYNC-036
 
 **Source**: `docs/10-domain/profile-switch-sync-comparison.md`
 

@@ -51,14 +51,15 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Verify mapping docs cover all fields in source schemas
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
-### 6. [P2] Fix 26 duplicate GAP definitions
-**Type:** Maintenance | **Effort:** Medium
-**Focus:** Deduplicate GAP entries found by find_gap_duplicates.py
-**Note:** Run `make verify-gap-duplicates` to see list
-
 ---
 
 ## Completed Items
+
+### ~~[P2] Fix 26 duplicate GAP definitions~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** Removed/renumbered 26 duplicate GAP IDs
+**Key Finding:** 265 unique GAP IDs after cleanup (was 255 with duplicates)
+**Renumbered:** AUTH→006-007, DS→005-008, SESSION→004-006, SYNC→029-037
 
 ### ~~[P1] Gap deduplication tool~~ ✅ COMPLETE
 **Completed:** 2026-01-30
@@ -104,13 +105,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Completed:** 2026-01-29
 **Deliverable:** `docs/10-domain/cross-controller-conflicts-deep-dive.md`
 **Key Finding:** Distinct namespaces (loop vs openaps) prevent collision; enteredBy distinguishes controllers
-**Gaps Added:** GAP-SYNC-020, GAP-SYNC-021, GAP-SYNC-022
+**Gaps Added:** GAP-SYNC-020, GAP-SYNC-030, GAP-SYNC-031
 
 ### ~~[P2] Profile switch sync~~ ✅ COMPLETE
 **Completed:** 2026-01-30
 **Deliverable:** `docs/10-domain/profile-switch-sync-comparison.md`
 **Key Finding:** AAPS uses `Profile Switch` treatments; Loop/Trio upload to `profile` collection only
-**Gaps Added:** GAP-SYNC-026 to GAP-SYNC-028
+**Gaps Added:** GAP-SYNC-035 to GAP-SYNC-037
 
 ### ~~[P2] Basal schedule comparison~~ ✅ COMPLETE
 **Completed:** 2026-01-30
@@ -196,7 +197,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Status:** Completed 2026-01-29
 - Deep dive: `docs/10-domain/sync-identity-field-audit.md` (9.6KB)
 - Audited 5 systems: Nightscout, Loop, Trio, AAPS, xDrip+
-- 3 gaps identified: GAP-SYNC-023/024/025
+- 3 gaps identified: GAP-SYNC-032/024/025
 - Key finding: Only AAPS properly stores nightscoutId
 
 ### ~~[P2] API v3 pagination compliance~~ ✅ COMPLETE

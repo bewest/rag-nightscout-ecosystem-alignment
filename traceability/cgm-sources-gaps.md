@@ -754,150 +754,7 @@ wercker.yml  # Defunct service
 
 ---
 
-## Batch Operation Gaps
-
----
-
-### GAP-LIBRELINK-001: API v3 Not Implemented
-
-**Scenario**: Uploading LibreLink glucose data with deduplication
-
-**Description**: The v3 client exists in nightscout-librelink-up but throws "Not implemented". Only v1 API is functional.
-
-**Source**: `externals/nightscout-librelink-up/src/nightscout/apiv3.ts`
-
-**Impact**:
-- No automatic deduplication on Nightscout side
-- Missing `identifier` field for sync tracking
-- Same limitation as tconnectsync and share2nightscout-bridge
-
-**Remediation**: Implement v3 client with proper identifiers.
-
-**Status**: Enhancement candidate
-
----
-
----
-
-### GAP-LIBRELINK-002: No Historical Backfill
-
-**Scenario**: Recovering from service downtime
-
-**Description**: While `GraphResponse` interface exists for historical data, only current readings are uploaded. No catch-up mechanism for gaps.
-
-**Source**: `externals/nightscout-librelink-up/src/interfaces/librelink/graph-response.ts`
-
-**Impact**:
-- Gaps in data if bridge service is down
-- No automatic recovery of missed readings
-- Manual intervention required
-
-**Remediation**: Add optional historical fetch and backfill on startup.
-
-**Status**: Enhancement candidate
-
----
-
----
-
-### GAP-LIBRELINK-003: Trend Arrow Limited to 5 Values
-
-**Scenario**: Displaying rapid glucose changes
-
-**Description**: LibreLink Up provides only 5 trend values (1-5) mapping to SingleDown through SingleUp. Nightscout supports 9 directions including DoubleUp/DoubleDown.
-
-**Source**: `externals/nightscout-librelink-up/src/nightscout/interface.ts`
-
-**Impact**:
-- Loss of precision for rapid glucose changes
-- No DoubleUp/DoubleDown representation
-- Libre sensors may not report extreme trends
-
-**Remediation**: Document as sensor/API limitation; map to closest available.
-
-**Status**: Platform limitation
-
----
-
 ## Timezone and DST Gaps
-
----
-
-### GAP-SHARE-001: No Nightscout API v3 support
-
-**Scenario**: Modern Nightscout integration
-
-**Description**: share2nightscout-bridge uses only API v1 (`/api/v1/entries.json`). It does not use v3 features like `identifier`, `srvModified`, or the v3 endpoints.
-
-**Affected Systems**: share2nightscout-bridge, Nightscout v3 clients
-
-**Source**: `externals/share2nightscout-bridge/index.js:50-51`
-
-**Impact**:
-- No deduplication via identifier
-- Cannot use v3-only features
-- Entries lack server timestamps
-
-**Possible Solutions**:
-1. Add v3 endpoint support as option
-2. Generate client-side identifiers
-3. Use v3 upsert for deduplication
-
-**Status**: Under discussion
-
----
-
----
-
-### GAP-SHARE-002: No backfill or gap detection
-
-**Scenario**: Reliable data continuity
-
-**Description**: The bridge fetches the latest N readings but does not detect or fill gaps. If the bridge is down, readings are lost.
-
-**Affected Systems**: share2nightscout-bridge
-
-**Source**: `externals/share2nightscout-bridge/index.js:177-198`
-
-**Impact**:
-- Data gaps during bridge downtime
-- No historical backfill capability
-- No overlap detection with existing data
-
-**Possible Solutions**:
-1. Query Nightscout for last entry before fetch
-2. Implement gap detection and backfill
-3. Increase default maxCount/minutes on restart
-
-**Status**: Under discussion
-
----
-
----
-
-### GAP-SHARE-003: Hardcoded Dexcom application ID
-
-**Scenario**: Long-term maintainability
-
-**Description**: The bridge uses a hardcoded application ID (`d89443d2-327c-4a6f-89e5-496bbb0317db`) for Dexcom authentication. If Dexcom revokes this ID, all bridges break.
-
-**Affected Systems**: share2nightscout-bridge, any fork using same ID
-
-**Source**: `externals/share2nightscout-bridge/index.js:42`
-
-**Impact**:
-- Single point of failure for ecosystem
-- Cannot easily rotate credentials
-- Dexcom could block at any time
-
-**Possible Solutions**:
-1. Make application ID configurable
-2. Register official Nightscout app with Dexcom
-3. Document risk and mitigation
-
-**Status**: Under discussion
-
----
 
 ---
 
@@ -1042,7 +899,7 @@ wercker.yml  # Defunct service
 ---
 
 
-### GAP-SESSION-001: No Standard Sensor Session Event Schema
+### GAP-SESSION-004: No Standard Sensor Session Event Schema
 
 **Description**: Each CGM system (xDrip+, DiaBLE, Loop, AAPS) tracks sensor sessions differently. There is no common Nightscout API schema for session start/stop/change events.
 
@@ -1059,7 +916,7 @@ wercker.yml  # Defunct service
 
 ---
 
-### GAP-SESSION-002: Warm-up Period Not Uploaded to Nightscout
+### GAP-SESSION-005: Warm-up Period Not Uploaded to Nightscout
 
 **Description**: CGM sensors have varying warm-up periods (30min to 2hr) but this duration is not included in Nightscout data uploads.
 
@@ -1076,7 +933,7 @@ wercker.yml  # Defunct service
 
 ---
 
-### GAP-SESSION-003: DiaBLE Has No Session Upload Capability
+### GAP-SESSION-006: DiaBLE Has No Session Upload Capability
 
 **Description**: DiaBLE tracks sensor session states internally (`SensorState` enum with notActivated, warmingUp, active, expired, shutdown, failure) but does not upload session events to Nightscout.
 
@@ -1093,7 +950,7 @@ wercker.yml  # Defunct service
 
 ---
 
-### GAP-SESSION-004: Calibration State Not Synchronized
+### GAP-SESSION-007: Calibration State Not Synchronized
 
 **Description**: xDrip+ and Loop track detailed calibration states (25+ states including WarmingUp, NeedsFirstCalibration, CalibrationConfused, etc.) but this state information isn't shared via Nightscout.
 

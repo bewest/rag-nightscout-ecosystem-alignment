@@ -697,7 +697,7 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ---
 
-### GAP-SYNC-020: No Cross-Controller Deduplication
+### GAP-SYNC-029: No Cross-Controller Deduplication
 
 **Description**: Nightscout does not detect when the same treatment is entered in multiple controllers (e.g., Loop and Trio) and uploaded to the same instance.
 
@@ -721,7 +721,7 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ---
 
-### GAP-SYNC-021: No Controller Conflict Warning
+### GAP-SYNC-030: No Controller Conflict Warning
 
 **Description**: Nightscout does not warn when multiple AID controllers (Loop, Trio, AAPS) are uploading deviceStatus to the same instance simultaneously.
 
@@ -745,7 +745,7 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ---
 
-### GAP-SYNC-022: Profile Sync Ambiguity
+### GAP-SYNC-031: Profile Sync Ambiguity
 
 **Description**: When multiple controllers upload profiles to the same Nightscout instance, there is no indication which profile is authoritative.
 
@@ -769,7 +769,7 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ---
 
-### GAP-SYNC-023: Loop/Trio Missing identifier Field
+### GAP-SYNC-032: Loop/Trio Missing identifier Field
 
 **Description:** Loop and Trio cache Nightscout `_id` locally but don't send `identifier` on uploads. Server calculates identifier from device+date+eventType.
 
@@ -779,7 +779,7 @@ if (rVal) rVal.replace('ETC','Etc');
 
 **Remediation:** Send `syncIdentifier` as `identifier` field in upload payload.
 
-### GAP-SYNC-024: xDrip+ UUID Not Sent as identifier
+### GAP-SYNC-033: xDrip+ UUID Not Sent as identifier
 
 **Description:** xDrip+ generates local UUIDs but doesn't send them to Nightscout, relying on Last-Modified header for sync instead.
 
@@ -789,7 +789,7 @@ if (rVal) rVal.replace('ETC','Etc');
 
 **Remediation:** Send `uuid` as `identifier` in Nightscout API v3 calls.
 
-### GAP-SYNC-025: No Cross-Controller Identity Standard
+### GAP-SYNC-034: No Cross-Controller Identity Standard
 
 **Description:** Each system uses different ID naming conventions (syncIdentifier, nightscoutId, uuid). No shared standard for portable identity.
 
@@ -801,7 +801,7 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ## Profile Switch Sync Gaps
 
-### GAP-SYNC-026: No Profile Switch Events from Loop/Trio
+### GAP-SYNC-035: No Profile Switch Events from Loop/Trio
 
 **Description:** Loop and Trio upload profiles to the `profile` collection but do not create `Profile Switch` treatment events. Profile change history is not tracked in the treatments timeline.
 
@@ -815,7 +815,7 @@ if (rVal) rVal.replace('ETC','Etc');
 
 **Remediation:** Controllers could optionally create `Profile Switch` treatment events when uploading new profiles.
 
-### GAP-SYNC-027: ProfileSwitch Embedded JSON Size
+### GAP-SYNC-036: ProfileSwitch Embedded JSON Size
 
 **Description:** AAPS embeds complete profile JSON in `profileJson` field of Profile Switch treatments, duplicating data and increasing document size.
 
@@ -828,7 +828,7 @@ if (rVal) rVal.replace('ETC','Etc');
 
 **Remediation:** Consider storing profile reference ID instead of embedded JSON.
 
-### GAP-SYNC-028: Percentage/Timeshift Not Portable
+### GAP-SYNC-037: Percentage/Timeshift Not Portable
 
 **Description:** AAPS Profile Switch supports `percentage` (insulin scaling) and `timeshift` (schedule rotation) features that are not understood by Loop or Trio.
 

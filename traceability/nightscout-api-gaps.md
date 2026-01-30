@@ -1040,7 +1040,7 @@ _None yet._
 
 ---
 
-### GAP-AUTH-001: JWT Secret Storage Location
+### GAP-AUTH-006: JWT Secret Storage Location
 
 **Scenario**: JWT invalidation after npm update
 
@@ -1059,7 +1059,7 @@ _None yet._
 
 ---
 
-### GAP-AUTH-002: No Account Lockout
+### GAP-AUTH-007: No Account Lockout
 
 **Scenario**: Brute force attack on API
 
@@ -1075,40 +1075,6 @@ _None yet._
 **Remediation**: Implement lockout after N failed attempts with admin unlock capability.
 
 **Source**: `ns:lib/authorization/delaylist.js`
-
----
-
-### GAP-AUTH-003: enteredBy Field Unverified
-
-**Scenario**: Treatment audit trail
-
-**Description**: The `enteredBy` field in treatments is user-supplied and not verified against authenticated identity.
-
-**Affected Systems**: Audit, compliance, multi-user scenarios
-
-**Impact**:
-- Any authenticated user can claim any identity
-- Audit logs unreliable
-- No accountability for actions
-
-**Remediation**: Auto-populate `enteredBy` from authenticated subject, or validate against allowed values.
-
----
-
-### GAP-AUTH-004: No Token Revocation
-
-**Scenario**: Compromised access token
-
-**Description**: Access tokens can only be revoked by deleting the entire subject. No selective token revocation mechanism.
-
-**Affected Systems**: Security incident response
-
-**Impact**:
-- Compromised token requires deleting all permissions
-- Cannot revoke single token if multiple issued
-- No token invalidation list
-
-**Remediation**: Implement JWT ID (jti) blacklist for selective revocation.
 
 ---
 
@@ -1448,7 +1414,7 @@ _None yet._
 
 ## DeviceStatus Schema Gaps
 
-### GAP-DS-001: Incompatible Prediction Formats
+### GAP-DS-005: Incompatible Prediction Formats
 
 **Description:** Loop uses single `predicted.values` array while oref0 uses four separate `predBGs.*` curves (IOB, COB, UAM, ZT). Nightscout must implement dual parsers.
 
@@ -1460,7 +1426,7 @@ _None yet._
 
 **Remediation:** Define unified prediction schema with optional curve decomposition.
 
-### GAP-DS-002: Missing Basal/Bolus IOB Split in Loop
+### GAP-DS-006: Missing Basal/Bolus IOB Split in Loop
 
 **Description:** Loop reports only total IOB, while oref0 provides `basaliob` and `bolusiob` components.
 
@@ -1470,7 +1436,7 @@ _None yet._
 
 **Remediation:** Loop could add optional `basaliob`/`bolusiob` fields.
 
-### GAP-DS-003: No Override Status in oref0
+### GAP-DS-007: No Override Status in oref0
 
 **Description:** Loop has `status.override` for temporary target overrides, but oref0 uses different mechanism (profile switches).
 
@@ -1480,7 +1446,7 @@ _None yet._
 
 **Remediation:** AAPS could add equivalent override reporting to devicestatus.
 
-### GAP-DS-004: Missing eventualBG in Loop
+### GAP-DS-008: Missing eventualBG in Loop
 
 **Description:** oref0 explicitly reports `eventualBG` prediction endpoint, Loop does not include this field.
 
