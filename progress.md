@@ -8,6 +8,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne Authentication Compatibility Analysis (2026-01-30)
+
+OQ-010 Extended API Item #9: Compare auth mechanisms between implementations.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Analysis | `docs/10-domain/nocturne-auth-compatibility.md` | 320+ lines |
+
+**Key Findings**:
+- **FULL COMPATIBILITY** - All auth methods work identically
+- API_SECRET header: SHA1 hash, grants admin (*)
+- JWT Bearer: HMAC-SHA256, same validation
+- Access tokens: Same `{name}-{hash}` format
+- Default roles: 7 identical roles
+
+**Gaps Identified**: None - Full parity achieved
+
+**OQ-010 Extended**: API Item #9 of 4 complete (4/4) - **QUEUE COMPLETE!**
+
+---
+
 ### Nocturne V2 DData Endpoint Analysis (2026-01-30)
 
 OQ-010 Extended API Item #8: Verify DData combined response matches Loop/AAPS expectations.

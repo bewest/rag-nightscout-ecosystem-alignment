@@ -253,6 +253,29 @@ See: [`mapping/nightscout-roles-gateway/`](../nightscout-roles-gateway/)
 
 **Source**: `docs/10-domain/nocturne-ddata-analysis.md`
 
+### Authentication Comparison
+
+| Method | cgm-remote-monitor | Nocturne | Parity |
+|--------|-------------------|----------|--------|
+| API_SECRET header | SHA1 hash → admin (*) | SHA1 hash → admin (*) | ✅ |
+| JWT Bearer token | HMAC-SHA256, 8h default | HMAC-SHA256, falls back to API_SECRET | ✅ |
+| Access token format | `{name}-{sha1_16}` | `{name}-{sha1_16}` | ✅ |
+| Query `?token=` | ✅ Supported | ✅ Supported | ✅ |
+| Query `?secret=` | ✅ Supported | ✅ Supported | ✅ |
+
+**Default Roles** (identical in both):
+| Role | Permissions |
+|------|-------------|
+| admin | `*` |
+| readable | `*:*:read` |
+| careportal | `api:treatments:create` |
+| devicestatus-upload | `api:devicestatus:create` |
+| status-only | `api:status:read` |
+| activity | `api:activity:create` |
+| denied | (none) |
+
+**Source**: `docs/10-domain/nocturne-auth-compatibility.md`
+
 **Nocturne-only types**: Suspend Pump, Resume Pump, Calibration, Pod Change, Transmitter Sensor Insert
 
 **Missing from Nocturne enum**: Temporary Target (but accepted as string)

@@ -9,12 +9,13 @@
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| OQ-010 Extended: Nocturne systematic research | P2 | 1 remaining (API #9); API #8 complete! |
+| (none) | - | OQ-010 Extended complete! |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| OQ-010 Extended API #9: Authentication compatibility | P3 | ✅ Complete (**FULL PARITY**) | 2026-01-30 |
 | OQ-010 Extended API #8: V2 DData completeness | P2 | ✅ Complete (high parity, GAP-API-016) | 2026-01-30 |
 | OQ-010 Extended API #7: eventType normalization | P2 | ✅ Complete (high parity, minor gaps) | 2026-01-30 |
 | OQ-010 Extended API #6: V3 parity testing | P2 | ✅ Complete (GAP-SYNC-041 missing history) | 2026-01-30 |

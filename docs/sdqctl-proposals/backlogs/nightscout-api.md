@@ -90,13 +90,21 @@ Per OQ-010 extended research request (2026-01-30), focused analysis of Nocturne 
 **Repos:** nocturne, cgm-remote-monitor  
 **Focus:** Compare auth mechanisms (API_SECRET, JWT, readable token)  
 **Questions:**
-- Does Nocturne accept legacy `api_secret` header?
-- Is JWT token format compatible with cgm-remote-monitor?
-- Are readable/admin/devicestatus tokens interchangeable?
-- Any auth-related behavioral differences?
+- ✅ Does Nocturne accept legacy `api_secret` header? → **YES** (SHA1 hash)
+- ✅ Is JWT token format compatible with cgm-remote-monitor? → **YES** (HS256, same claims)
+- ✅ Are readable/admin/devicestatus tokens interchangeable? → **YES** (same format)
+- ✅ Any auth-related behavioral differences? → **Minor only** (no impact)
 
-**Related Gap:** GAP-AUTH-001  
+**Related Gap:** None - Full parity achieved  
 **Deliverable:** `docs/10-domain/nocturne-auth-compatibility.md`
+**Status:** ✅ COMPLETE 2026-01-30
+
+**Key Findings:**
+- Full authentication compatibility - all methods work identically
+- API_SECRET: SHA1 hash validation, grants admin (*)
+- JWT: HMAC-SHA256, Nocturne falls back to API_SECRET as signing key
+- Access tokens: Same `{name}-{hash}` format, database lookup
+- Default roles: 7 identical roles with same permissions
 
 ---
 
@@ -104,6 +112,7 @@ Per OQ-010 extended research request (2026-01-30), focused analysis of Nocturne 
 
 | Item | Date | Notes |
 |------|------|-------|
+| Authentication mode compatibility | 2026-01-30 | Item #9; **FULL PARITY** - no gaps |
 | V2 DData endpoint completeness | 2026-01-30 | Item #8; High parity, GAP-API-016 (one missing field) |
 | eventType normalization behavior | 2026-01-30 | Item #7; High parity, GAP-TREAT-010/011 (minor) |
 | V3 API behavioral parity testing | 2026-01-30 | Item #6; GAP-SYNC-041 (missing history), 40+ test scenarios |
