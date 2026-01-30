@@ -796,3 +796,63 @@ if (rVal) rVal.replace('ETC','Etc');
 **Impact:** Records uploaded from different controllers may duplicate when syncing to same Nightscout.
 
 **Remediation:** Define standard identifier format; all clients adopt UUID v5 calculation or prefix with controller name.
+
+---
+
+## Override/Temp Target Sync Gaps
+
+### GAP-OVRD-001: Different eventTypes for Target Overrides
+
+**Description**: Loop uses eventType `Override`, AAPS uses `Temporary Target` - they don't map to each other.
+
+**Affected Systems**: Loop vs AAPS
+
+**Evidence**:
+- Loop: `OverrideTreament.swift` creates eventType `Override`
+- AAPS: `NSTemporaryTarget.kt:29` uses `EventType.TEMPORARY_TARGET`
+
+**Impact**: A Loop override is not recognized as a temp target by AAPS and vice versa.
+
+**Remediation**: Nightscout could map between them, or each app could recognize both types.
+
+### GAP-OVRD-002: insulinNeedsScaleFactor Not in AAPS
+
+**Description**: Loop overrides can adjust insulin sensitivity; AAPS temp targets cannot.
+
+**Affected Systems**: Loop vs AAPS
+
+**Evidence**:
+- Loop: `OverrideTreament.swift:59` includes `insulinNeedsScaleFactor`
+- AAPS: `NSTemporaryTarget.kt` has no equivalent field
+
+**Impact**: Loop overrides with insulin adjustment don't translate to AAPS.
+
+**Remediation**: Document as design difference; AAPS uses profile switching for insulin adjustment.
+
+### GAP-OVRD-003: Reason Enum vs Free Text
+
+**Description**: AAPS uses enum with 6 values; Loop uses free text from preset names.
+
+**Affected Systems**: Loop vs AAPS
+
+**Evidence**:
+- AAPS: `NSTemporaryTarget.Reason` enum with CUSTOM, HYPOGLYCEMIA, ACTIVITY, etc.
+- Loop: `OverrideTreament.swift:30-39` maps context to string
+
+**Impact**: Loop preset names like "🏃 Running" don't map to AAPS reasons.
+
+**Remediation**: Nightscout could normalize reasons; apps could recognize common patterns.
+
+### GAP-OVRD-004: Duration Units Differ
+
+**Description**: Loop uses seconds; AAPS uses milliseconds for temp target duration.
+
+**Affected Systems**: Loop vs AAPS
+
+**Evidence**:
+- Loop: `TemporaryScheduleOverride.swift:26-31` uses TimeInterval (seconds)
+- AAPS: `NSTemporaryTarget.kt:24` documents duration in milliseconds
+
+**Impact**: Duration conversion required when syncing between systems.
+
+**Remediation**: Nightscout normalizes to minutes; apps should convert accordingly.

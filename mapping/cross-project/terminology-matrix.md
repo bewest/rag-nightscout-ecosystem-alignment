@@ -3737,3 +3737,34 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | `sensitivity_raises_target` | true | Raise target when insulin sensitive |
 | `resistance_lowers_target` | false | Lower target when insulin resistant |
 | Minimum target | 80 mg/dL | Safety floor for adjusted target |
+
+## Override/Temp Target Sync Terms
+
+### eventType Mapping
+
+| Concept | Loop | AAPS | Nightscout eventType |
+|---------|------|------|---------------------|
+| Override | `TemporaryScheduleOverride` | N/A | `Override` |
+| Temp target | (part of override) | `TemporaryTarget` | `Temporary Target` |
+| Cancel | Duration = 0 | Duration = 0 | `Temporary Target` with duration 0 |
+
+### Treatment Fields
+
+| Field | Loop | AAPS | Description |
+|-------|------|------|-------------|
+| Target range | `correctionRange` [min, max] | `targetTop`, `targetBottom` | Override target bounds |
+| Insulin adjustment | `insulinNeedsScaleFactor` | N/A | Sensitivity multiplier |
+| Reason | Free text (preset name) | Enum (6 values) | Override reason |
+| Duration | Seconds (0 = indefinite) | Milliseconds | Override length |
+| Identity | `syncIdentifier` UUID | `identifier` + pump IDs | Dedup key |
+
+### AAPS Temp Target Reasons
+
+| Reason | Text | Loop Equivalent |
+|--------|------|-----------------|
+| CUSTOM | "Custom" | Custom Override |
+| HYPOGLYCEMIA | "Hypo" | (none) |
+| ACTIVITY | "Activity" | Workout preset |
+| EATING_SOON | "Eating Soon" | Pre-Meal preset |
+| AUTOMATION | "Automation" | (none) |
+| WEAR | "Wear" | (none) |

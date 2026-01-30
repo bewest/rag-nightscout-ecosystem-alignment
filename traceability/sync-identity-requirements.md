@@ -727,3 +727,29 @@ See [requirements.md](requirements.md) for the index.
 **Assertion**: `query-active-single`
 
 ---
+
+## Override/Temp Target Sync Requirements
+
+### REQ-OVRD-001: eventType Documentation
+
+**Statement**: Systems MUST document which eventType(s) they use for target overrides.
+
+**Rationale**: Loop `Override` vs AAPS `Temporary Target` causes interoperability confusion.
+
+**Verification**: Documentation review for eventType usage.
+
+### REQ-OVRD-002: Insulin Adjustment Sync
+
+**Statement**: Systems that support insulin sensitivity adjustment SHOULD sync this to Nightscout.
+
+**Rationale**: Loop's `insulinNeedsScaleFactor` is important for understanding override behavior.
+
+**Verification**: Field presence in synced treatments.
+
+### REQ-OVRD-003: Duration Unit Normalization
+
+**Statement**: Systems MUST normalize duration to consistent units when syncing.
+
+**Rationale**: Loop (seconds) vs AAPS (milliseconds) requires conversion for interoperability.
+
+**Verification**: Duration value validation in synced treatments.

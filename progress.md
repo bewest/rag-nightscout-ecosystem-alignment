@@ -8,6 +8,41 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Override/Temporary Target Sync Comparison (2026-01-30)
+
+Compared how Loop overrides and AAPS temp targets sync to Nightscout.
+
+| Metric | Value |
+|--------|-------|
+| Source files analyzed | 4 |
+| Gaps identified | 4 (OVRD-001 to OVRD-004) |
+| Key finding | Different eventTypes (Override vs Temporary Target) |
+
+**Key Findings**:
+- Loop uses eventType `Override` with `insulinNeedsScaleFactor`
+- AAPS uses eventType `Temporary Target` with only target range
+- Reason formats differ: Loop free text vs AAPS 6-value enum
+- Duration units differ: Loop seconds, AAPS milliseconds
+- Both use `duration = 0` for cancellation
+
+**Gaps Added**:
+- GAP-OVRD-001: Different eventTypes for target overrides
+- GAP-OVRD-002: insulinNeedsScaleFactor not in AAPS
+- GAP-OVRD-003: Reason enum vs free text
+- GAP-OVRD-004: Duration units differ
+
+**Requirements Added**:
+- REQ-OVRD-001: eventType documentation
+- REQ-OVRD-002: Insulin adjustment sync
+- REQ-OVRD-003: Duration unit normalization
+
+**Deliverables**:
+- `docs/10-domain/override-temp-target-sync-comparison.md` (10.2KB)
+- `traceability/sync-identity-gaps.md` (+4 gaps)
+- `traceability/sync-identity-requirements.md` (+3 requirements)
+
+---
+
 ### Target Range Handling Comparison (2026-01-30)
 
 Compared target glucose range handling across Loop and oref0/AAPS.

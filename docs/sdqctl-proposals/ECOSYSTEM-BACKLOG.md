@@ -41,19 +41,25 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Override/temporary target sync
-**Type:** Documentation | **Effort:** Medium
-**Focus:** How overrides sync to Nightscout
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md)
-
-### 5. [P2] Basal schedule comparison
+### 4. [P2] Basal schedule comparison
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Compare basal rate scheduling across systems
 **Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
 
+### 5. [P2] Profile switch sync
+**Type:** Documentation | **Effort:** Medium
+**Focus:** How profile switches sync to Nightscout
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md)
+
 ---
 
 ## Completed Items
+
+### ~~[P2] Override/temporary target sync~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `docs/10-domain/override-temp-target-sync-comparison.md`
+**Key Finding:** Loop Override vs AAPS Temporary Target - different eventTypes
+**Gaps Added:** GAP-OVRD-001 to GAP-OVRD-004
 
 ### ~~[P2] Target range handling comparison~~ ✅ COMPLETE
 **Completed:** 2026-01-30
