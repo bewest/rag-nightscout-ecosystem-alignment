@@ -364,10 +364,18 @@ Per user request (2026-01-30): Research integrating StateSpan as a solution for 
 ### 21. [P3] StateSpan client SDK patterns
 **Type:** Research | **Effort:** Medium  
 **Focus:** Document how clients would consume StateSpan API  
-**Questions:**
-- Query patterns: "active state at time T" vs "all states in range"
-- Caching strategy for state timeline
-- Relationship to existing devicestatus/treatments queries
-
+**Status:** ✅ COMPLETE 2026-01-30
 **Deliverable:** `docs/10-domain/statespan-client-sdk-patterns.md`
-**Status:** PROPOSED
+
+**Key Findings:**
+- 4 query patterns: active state, time range, multi-category, glucose correlation
+- 3 caching strategies: sliding window (real-time), incremental sync (offline-first), category-specific TTL
+- Platform SDKs: Swift (Loop/Trio), Kotlin (AAPS), Java (xDrip+)
+- Fallback pattern for servers without StateSpan support
+- Socket.IO events for real-time cache invalidation
+- Migration checklist for client developers (8 items)
+
+**Questions Answered:**
+- ✅ Query patterns: Both "active at T" and "all in range" supported
+- ✅ Caching: 3 strategies with different trade-offs documented
+- ✅ Relationship: Complementary to devicestatus, migration path from treatments

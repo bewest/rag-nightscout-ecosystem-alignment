@@ -15,6 +15,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 12) | P0 | ✅ Complete (Ready Queue 2 items, SDK patterns complete) | 2026-01-30 |
+| StateSpan client SDK patterns | P3 | ✅ Complete (4 query patterns, 3 caching strategies, platform SDKs) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 11) | P0 | ✅ Complete (Ready Queue 3 items, StateSpan mapping complete) | 2026-01-30 |
 | StateSpan gap remediation mapping | P2 | ✅ Complete (12 gaps fully addressed, 8 partial, 27 unaffected) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 10) | P0 | ✅ Complete (Ready Queue 2 items, selective loading complete) | 2026-01-30 |

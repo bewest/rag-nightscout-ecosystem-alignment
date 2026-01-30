@@ -8,6 +8,20 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### StateSpan Client SDK Patterns (2026-01-30)
+
+sync-identity #21: Document how clients would consume StateSpan API.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| SDK Patterns | `docs/10-domain/statespan-client-sdk-patterns.md` | 21KB, 4 query patterns, 3 caching strategies |
+
+**Query Patterns**: Active state, time range, multi-category, glucose correlation
+**Caching Strategies**: Sliding window, incremental sync, category-specific TTL
+**Platform SDKs**: Swift (Loop), Kotlin (AAPS), Java (xDrip+)
+
+---
+
 ### StateSpan Gap Remediation Mapping (2026-01-30)
 
 sync-identity #20: Map which existing gaps StateSpan V3 could address.
