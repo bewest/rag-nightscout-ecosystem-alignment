@@ -91,58 +91,34 @@ Analysis (2026-01-29) confirmed:
 
 Questions requiring formal architectural decision records.
 
-### OQ-010: ProfileSwitch → Override mapping
+### OQ-010: ProfileSwitch → Override mapping ✅ RESOLVED
 
 **Question**: Should AAPS ProfileSwitch be accepted as a valid representation of overrides, or must there be explicit mapping?
 
-**Context**: AAPS uses `ProfileSwitch` events with percentage/target modifications rather than explicit overrides. Loop/Trio use explicit override records. Cross-project queries need to understand both.
+**Resolution**: [ADR-004](90-decisions/adr-004-profile-override-mapping.md) - Dual-representation acceptance with explicit mapping rules
 
-**Options**:
-1. Define explicit mapping rules (ADR-004)
-2. Accept both as valid representations with documented differences
-3. Create hybrid schema accommodating both patterns
+**Decision Summary**:
+1. Accept both Override (Loop/Trio) and ProfileSwitch (AAPS) as valid
+2. Define semantic equivalence rules for cross-system translation
+3. Require percentage application at query time (addresses GAP-OREF-001)
+4. Recommend StateSpan model for profile history
+5. Provide explicit cross-query translation rules
 
-**Notes from discussion**:
-- Nightscout prefers event-based tracking with clean begin/end semantics
-- "New record supersedes old" is more ergonomic than "old record is superseded by new" in NS workflows
-- Nocturne sources may have relevant proposals on this topic
+**Analysis Progress** (7/7 complete):
+1. ✅ Nocturne ProfileSwitch treatment model ([analysis](10-domain/nocturne-profileswitch-analysis.md))
+2. ✅ Nocturne percentage/timeshift handling ([analysis](10-domain/nocturne-percentage-timeshift-handling.md))
+3. ✅ Nocturne vs cgm-remote-monitor Profile sync ([comparison](10-domain/nocturne-cgm-remote-monitor-profile-sync.md))
+4. ✅ Nocturne Override/Temporary Target representation ([analysis](10-domain/nocturne-override-temptarget-analysis.md))
+5. ✅ Nocturne V4 ProfileSwitch extensions ([analysis](10-domain/nocturne-v4-profile-extensions.md))
+6. ✅ Nocturne Rust oref profile handling ([analysis](10-domain/nocturne-rust-oref-profile-analysis.md))
+7. ✅ ADR-004 draft ([decision](90-decisions/adr-004-profile-override-mapping.md))
 
-**Action**: Systematic Nocturne analysis in progress (6/7 complete)
-
-**Analysis Progress**:
-1. ✅ Nocturne ProfileSwitch treatment model - **Complete** ([analysis](10-domain/nocturne-profileswitch-analysis.md))
-   - Key finding: Nocturne applies percentage/timeshift; cgm-remote-monitor doesn't
-   - Added: GAP-NOCTURNE-004, REQ-SYNC-054/055/056
-2. ✅ Nocturne percentage/timeshift handling - **Complete** ([analysis](10-domain/nocturne-percentage-timeshift-handling.md))
-   - Key finding: Profile API returns raw; internal calculations use scaled values
-   - Added: GAP-NOCTURNE-005, REQ-SYNC-057/058
-3. ✅ Nocturne vs cgm-remote-monitor Profile sync - **Complete** ([comparison](10-domain/nocturne-cgm-remote-monitor-profile-sync.md))
-   - Key finding: Deduplication, srvModified, and delete semantics all differ
-   - Added: GAP-SYNC-038/039/040, REQ-SYNC-059/060/061
-4. ✅ Nocturne Override/Temporary Target representation - **Complete** ([analysis](10-domain/nocturne-override-temptarget-analysis.md))
-   - Key finding: No unification of Override vs TempTarget; no supersession tracking
-   - Added: GAP-OVRD-005/006/007, REQ-OVRD-004/005
-5. ✅ Nocturne V4 ProfileSwitch extensions - **Complete** ([analysis](10-domain/nocturne-v4-profile-extensions.md))
-   - Key finding: V4 StateSpan API provides profile activation history (not in V3)
-   - Added: GAP-V4-001/002, REQ-V4-001/002
-6. ✅ Nocturne Rust oref profile handling - **Complete** ([analysis](10-domain/nocturne-rust-oref-profile-analysis.md))
-   - Key finding: Rust oref parses same as JS oref0; PredictionService bypasses ProfileService
-   - Added: GAP-OREF-001/002/003, REQ-OREF-001/002/003
-7. ⬜ ADR-004 draft (after above complete)
-
-**Needs**: ADR-004 after analysis complete
+**Gaps Addressed**: GAP-NOCTURNE-004/005, GAP-OVRD-005/006, GAP-OREF-001
 
 **Related**:
+- [ADR-004: ProfileSwitch → Override Mapping](90-decisions/adr-004-profile-override-mapping.md)
 - [GAP-002](../traceability/gaps.md#gap-002-aaps-profileswitch-vs-override-semantic-mismatch)
-- [GAP-NOCTURNE-004](../traceability/sync-identity-gaps.md#gap-nocturne-004-profileswitch-percentagetimeshift-application-divergence)
-- [GAP-OREF-001](../traceability/sync-identity-gaps.md#gap-oref-001-predictionservice-bypasses-profileservice)
-- [Sync Identity Backlog: OQ-010 Queue](sdqctl-proposals/backlogs/sync-identity.md#oq-010-research-queue-profileswitch--nocturne)
-- [Profile Switch Sync Comparison](10-domain/profile-switch-sync-comparison.md)
-- [Nocturne ProfileSwitch Analysis](10-domain/nocturne-profileswitch-analysis.md)
-- [Nocturne Override Analysis](10-domain/nocturne-override-temptarget-analysis.md)
-- [Nocturne V4 Extensions](10-domain/nocturne-v4-profile-extensions.md)
-- [Nocturne Rust oref Analysis](10-domain/nocturne-rust-oref-profile-analysis.md)
-- [Nocturne Deep Dive](10-domain/nocturne-deep-dive.md)
+- [Sync Identity Backlog](sdqctl-proposals/backlogs/sync-identity.md#oq-010-research-queue-profileswitch--nocturne)
 
 ---
 

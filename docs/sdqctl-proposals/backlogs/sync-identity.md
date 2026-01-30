@@ -136,14 +136,24 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 
 **Related Gap:** GAP-NOCTURNE-002
 
-### 11. [P2] ADR-004 draft: ProfileSwitch → Override mapping rules
+### 11. [P2] ADR-004 draft: ProfileSwitch → Override mapping rules ✅
 **Type:** Decision | **Effort:** Medium  
 **Repos:** (workspace internal)  
 **Focus:** Draft architectural decision record for OQ-010 resolution  
-**Prerequisites:** Items 5-10 above  
+**Prerequisites:** Items 5-10 above ✅
 **Deliverable:** `docs/90-decisions/adr-004-profile-override-mapping.md`
 
-**Blocks:** OQ-010 resolution
+**Completed:** 2026-01-30
+
+**Decision Summary:**
+1. Accept both Override and ProfileSwitch as valid representations
+2. Define semantic equivalence rules for translation
+3. Require percentage application at query time
+4. Recommend StateSpan model for profile history
+
+**Gaps Addressed:** GAP-NOCTURNE-004/005, GAP-OVRD-005/006, GAP-OREF-001
+
+**OQ-010:** ✅ RESOLVED
 
 ---
 
@@ -151,6 +161,8 @@ Items queued for systematic analysis of ProfileSwitch/Override alignment with No
 
 | Item | Date | Notes |
 |------|------|-------|
+| ADR-004 ProfileSwitch mapping | 2026-01-30 | Item #11; OQ-010 resolved |
+| Nocturne Rust oref profile handling | 2026-01-30 | Item #10; GAP-OREF-001/002/003, 3 REQs |
 | Nocturne V4 ProfileSwitch extensions | 2026-01-30 | Item #9; GAP-V4-001/002, 2 REQs |
 | Nocturne Override/TempTarget representation | 2026-01-30 | Item #8; GAP-OVRD-005/006/007, 2 REQs |
 | Nocturne vs cgm-remote-monitor Profile sync | 2026-01-30 | Item #7; GAP-SYNC-038/039/040, 3 REQs |

@@ -71,12 +71,11 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Key Finding:** PredictionService bypasses ProfileService - raw values to Rust oref
 **Gaps Added:** GAP-OREF-001, GAP-OREF-002, GAP-OREF-003
 
-### 9. [P2] OQ-010: ADR-004 draft - ProfileSwitch → Override mapping
-**Type:** Decision | **Effort:** Medium
-**Focus:** Draft architectural decision record for OQ-010 resolution
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md#11-p2-adr-004-draft-profileswitch--override-mapping-rules)
-**Prerequisites:** Items 5-8 complete ✅
-**Blocks:** OQ-010 resolution
+### 9. ~~[P2] OQ-010: ADR-004 draft - ProfileSwitch → Override mapping~~ ✅ COMPLETE
+**Completed:** 2026-01-30
+**Deliverable:** `docs/90-decisions/adr-004-profile-override-mapping.md`
+**Key Finding:** Dual-representation acceptance with explicit mapping rules
+**OQ-010:** ✅ RESOLVED (7/7 complete)
 
 ---
 

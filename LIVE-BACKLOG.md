@@ -13,6 +13,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| OQ-010 Item #11: ADR-004 ProfileSwitch mapping | P2 | ✅ Complete (OQ-010 RESOLVED) | 2026-01-30 |
 | OQ-010 Item #10: Rust oref profile handling | P2 | ✅ Complete (GAP-OREF-001/002/003, 3 REQs) | 2026-01-30 |
 | OQ-010 Item #9: V4 ProfileSwitch extensions | P2 | ✅ Complete (GAP-V4-001/002, 2 REQs) | 2026-01-30 |
 | OQ-010 Item #8: Override/TempTarget analysis | P2 | ✅ Complete (GAP-OVRD-005/006/007, 2 REQs) | 2026-01-30 |

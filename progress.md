@@ -8,6 +8,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### ADR-004: ProfileSwitch → Override Mapping Rules (2026-01-30)
+
+Drafted architectural decision record resolving OQ-010 based on 6 prior analyses.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| ADR-004 | `docs/90-decisions/adr-004-profile-override-mapping.md` | 222 lines, 5 decisions |
+
+**Key Decisions**:
+- **Dual acceptance**: Both Override (Loop/Trio) and ProfileSwitch (AAPS) are valid
+- **Semantic equivalence**: `insulinNeedsScaleFactor` ↔ `percentage/100`
+- **Percentage requirement**: Servers MUST apply percentage at query time
+- **StateSpan recommended**: V4 model for profile activation history
+- **Translation rules**: Explicit cross-system query mapping
+
+**Gaps Addressed**: GAP-NOCTURNE-004/005, GAP-OVRD-005/006, GAP-OREF-001
+
+**OQ-010 Research Queue**: Item #11 of 11 complete (7/7 in original scope) ✅ RESOLVED
+
+---
+
 ### Nocturne Rust oref Profile Handling Analysis (2026-01-30)
 
 Analyzed how Nocturne's Rust oref implementation consumes profile data and compared with JS oref0.
