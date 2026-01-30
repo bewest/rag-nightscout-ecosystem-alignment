@@ -2975,6 +2975,38 @@ Nocturne uses SignalR for real-time events. A TypeScript bridge translates to So
 
 **See Also**: [SignalR Bridge Analysis](../../docs/10-domain/nocturne-signalr-bridge-analysis.md)
 
+### Nocturne Connector Architecture
+
+> **See Also**: [Connector Coordination Analysis](../../docs/10-domain/nocturne-connector-coordination.md)
+
+#### Connector Concepts
+
+| Term | Definition | Source |
+|------|------------|--------|
+| **Sidecar Pattern** | Each connector runs as independent background service with own polling timer | Nocturne architecture |
+| **DataSource** | Origin identifier for data provenance (e.g., `dexcom-connector`, `nightscout-connector`) | `Nocturne.Core.Constants/DataSources.cs` |
+| **Resilient Polling** | Adaptive polling with fast reconnect (10s) and exponential backoff after failures | `ResilientPollingHostedService.cs` |
+| **Incremental Sync** | Fetch only new data since last successful sync timestamp | Connector pattern |
+
+#### DataSource Identifiers
+
+| Connector | DataSource Value | Description |
+|-----------|------------------|-------------|
+| Dexcom Share | `dexcom-share-connector` | Dexcom cloud follower |
+| Dexcom G7 | `dexcom-g7-connector` | Direct G7 BLE |
+| Nightscout | `nightscout-connector` | Upstream Nightscout |
+| LibreLinkUp | `librelink-connector` | Abbott cloud |
+
+#### Polling States
+
+| State | Interval | Condition |
+|-------|----------|-----------|
+| Healthy | `SyncIntervalMinutes` (default 5) | Successful sync |
+| Disconnected | 10 seconds | First failure (fast recovery) |
+| Extended Backoff | Up to 5 min | 30+ consecutive failures |
+
+**Gap Reference**: GAP-CONNECT-010, GAP-CONNECT-011, GAP-CONNECT-012
+
 ### Sync Identity Components
 
 | Collection | UUID v5 Input | Dedup Fallback Fields |
