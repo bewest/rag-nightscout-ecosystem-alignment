@@ -3606,3 +3606,31 @@ See `docs/10-domain/cgm-trend-arrow-standardization.md` for full cross-project m
 |-----------|---------|-------|
 | AMA | 3 mg/dL/5m | 1-12 |
 | SMB | 8 mg/dL/5m | 1-12 |
+
+## Prediction Curve Terms
+
+### Curve Types
+
+| Term | Loop | oref0/AAPS | Description |
+|------|------|------------|-------------|
+| IOB prediction | (combined) | predBGs.IOB | BG forecast with insulin only |
+| COB prediction | (combined) | predBGs.COB | BG forecast with carb absorption |
+| UAM prediction | N/A | predBGs.UAM | BG forecast from unannounced meal |
+| ZT prediction | N/A | predBGs.ZT | BG forecast if zero temp basal |
+| Combined prediction | predicted.values | N/A | Single summed forecast |
+
+### Effect Components
+
+| Effect | Loop | oref0/AAPS |
+|--------|------|------------|
+| Insulin effect | insulinEffects | predBGI |
+| Carb effect | carbEffects | predCI |
+| Momentum | momentumEffects | delta/avgDelta |
+| Retrospective | rcEffect | deviation |
+
+### Output Locations
+
+| System | Devicestatus Path |
+|--------|-------------------|
+| Loop | `loop.predicted.values` |
+| oref0/AAPS | `openaps.suggested.predBGs.{IOB,COB,UAM,ZT}` |

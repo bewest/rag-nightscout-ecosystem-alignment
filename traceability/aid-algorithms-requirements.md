@@ -794,3 +794,29 @@ See [requirements.md](requirements.md) for the index.
 **Rationale**: Users need to understand how COB is calculated for accurate meal management.
 
 **Verification**: Documentation review.
+
+## Prediction Curve Requirements
+
+### REQ-PRED-001: Prediction Structure Documentation
+
+**Statement**: AID systems MUST document their prediction curve structure and interpretation.
+
+**Rationale**: Users and developers need to understand single vs multi-curve predictions.
+
+**Verification**: Documentation review.
+
+### REQ-PRED-002: Prediction Curve Labeling
+
+**Statement**: Systems displaying predictions SHOULD label the curve type (Loop, IOB, COB, UAM, ZT).
+
+**Rationale**: Different curves represent different scenarios with different implications.
+
+**Verification**: UI audit for prediction labels.
+
+### REQ-PRED-003: Multi-Curve Display Option
+
+**Statement**: Nightscout SHOULD provide option to display all oref0 prediction curves.
+
+**Rationale**: ZT curve is important for safety; users benefit from seeing all scenarios.
+
+**Verification**: Settings UI check.

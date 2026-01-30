@@ -1614,3 +1614,26 @@ Compared carb absorption algorithms across Loop and oref0/AAPS.
 - `externals/oref0/lib/determine-basal/cob.js:1-200`
 - `externals/oref0/lib/determine-basal/determine-basal.js:500-660`
 - `externals/AndroidAPS/core/interfaces/src/main/kotlin/app/aaps/core/interfaces/aps/AutosensData.kt`
+
+### Prediction Curve Documentation (2026-01-30)
+
+Documented prediction curve generation across Loop and oref0/AAPS.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep dive | `docs/10-domain/prediction-curve-documentation.md` | 11.7KB |
+| Gap additions | `traceability/aid-algorithms-gaps.md` | GAP-PRED-001-004 |
+| Requirements | `traceability/aid-algorithms-requirements.md` | REQ-PRED-001-003 |
+
+**Key Findings**:
+- Loop: Single combined prediction from summed effects
+- oref0: 4 separate curves (IOB, COB, UAM, ZT) for different scenarios
+- ZT curve unique to oref0 - shows "pump suspended" scenario
+- Nightscout selects COB > UAM > IOB priority for display
+
+**Gaps Identified**: GAP-PRED-001 (structure incompatibility), GAP-PRED-002 (no ZT in Loop), GAP-PRED-003 (momentum difference), GAP-PRED-004 (NS curve selection)
+
+**Source Files Analyzed**:
+- `externals/LoopWorkspace/LoopKit/LoopKit/LoopAlgorithm/LoopAlgorithm.swift:74-188`
+- `externals/oref0/lib/determine-basal/determine-basal.js:442-720`
+- `externals/cgm-remote-monitor/lib/report_plugins/daytoday.js:347-360`

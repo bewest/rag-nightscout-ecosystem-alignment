@@ -41,21 +41,29 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Prediction curve documentation
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Document prediction curve generation across systems
-**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
-**Context:** Loop single curve vs oref0 4 curves (IOB, COB, UAM, ZT)
-
-### 5. [P2] Temp basal vs SMB dosing comparison
+### 4. [P2] Temp basal vs SMB dosing comparison
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Compare temp basal adjustments vs SMB micro-dosing
 **Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
 **Context:** Loop temp basal only vs oref0/AAPS SMB capability
 
+### 5. [P2] Insulin model comparison
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Compare insulin activity models across systems
+**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
+**Context:** Exponential curves, DIA settings, peak times
+
 ---
 
 ## Completed Items
+
+### ~~[P2] Prediction curve documentation~~ ✅ COMPLETE
+**Status:** Completed 2026-01-30
+- Deep dive: `docs/10-domain/prediction-curve-documentation.md` (11.7KB)
+- Compared Loop single curve vs oref0 4 curves (IOB, COB, UAM, ZT)
+- 4 gaps identified: GAP-PRED-001/002/003/004
+- 3 requirements added: REQ-PRED-001/002/003
+- Key finding: Loop sums effects; oref0 shows separate scenarios
 
 ### ~~[P2] Carb absorption model comparison~~ ✅ COMPLETE
 **Status:** Completed 2026-01-30

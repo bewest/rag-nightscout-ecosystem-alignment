@@ -933,3 +933,59 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Impact**: Very slow absorbing meals (high fat/protein) handled differently.
 
 **Remediation**: Document in user guidance for meal types.
+
+## Prediction Curve Gaps
+
+### GAP-PRED-001: Prediction Structure Incompatibility
+
+**Description**: Loop outputs single combined prediction curve; oref0/AAPS outputs 4 separate curves (IOB, COB, UAM, ZT).
+
+**Affected Systems**: Loop, AAPS, Trio, Nightscout
+
+**Evidence**:
+- Loop: `LoopAlgorithm.swift:168` - `LoopMath.predictGlucose()` returns single array
+- oref0: `determine-basal.js:649-690` - `rT.predBGs = {IOB, ZT, COB, UAM}`
+
+**Impact**: Nightscout must conditionally parse both formats; comparison tools need adaptation.
+
+**Remediation**: Documented; fundamental design difference.
+
+### GAP-PRED-002: No Zero-Temp Curve in Loop
+
+**Description**: Loop does not generate a "zero temp" prediction scenario showing BG if pump suspended.
+
+**Affected Systems**: Loop vs oref0/AAPS
+
+**Evidence**:
+- oref0: `determine-basal.js:445,583` - `ZTpredBGs` with `iobWithZeroTemp.activity`
+- Loop: No equivalent curve
+
+**Impact**: Loop users cannot visualize "what if pump stops" scenario.
+
+**Remediation**: Design difference - Loop handles safety differently.
+
+### GAP-PRED-003: Momentum Effect Not Explicit in oref0
+
+**Description**: oref0 uses delta/avgDelta but does not track momentum as a separate named effect.
+
+**Affected Systems**: Loop vs oref0
+
+**Evidence**:
+- Loop: `LoopAlgorithm.swift:160-166` - `momentumEffects = momentumInputData.linearMomentumEffect()`
+- oref0: Uses deviation calculations instead
+
+**Impact**: Effect decomposition differs between systems.
+
+**Remediation**: Document in algorithm comparison.
+
+### GAP-PRED-004: Arbitrary Curve Selection in Nightscout
+
+**Description**: Nightscout selects COB > UAM > IOB priority for display, hiding other curves.
+
+**Affected Systems**: Nightscout
+
+**Evidence**: `daytoday.js:353-357` - `if (predBGs.COB) {...} else if (predBGs.UAM) {...} else {IOB}`
+
+**Impact**: Users may miss important prediction scenarios (especially ZT for safety).
+
+**Remediation**: Add UI option to display all curves simultaneously.

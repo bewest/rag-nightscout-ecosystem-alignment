@@ -4,7 +4,7 @@ This document is an index of requirements organized by domain.
 
 ## Domain Files
 
-- [Aid Algorithms](aid-algorithms-requirements.md) - 38 requirements
+- [Aid Algorithms](aid-algorithms-requirements.md) - 41 requirements
 - [Cgm Sources](cgm-sources-requirements.md) - 18 requirements
 - [Connectors](connectors-requirements.md) - 28 requirements
 - [Nightscout Api](nightscout-api-requirements.md) - 39 requirements
@@ -12,7 +12,7 @@ This document is an index of requirements organized by domain.
 - [Sync Identity](sync-identity-requirements.md) - 34 requirements
 - [Treatments](treatments-requirements.md) - 35 requirements
 
-Total: 202 requirements (197 unique)
+Total: 205 requirements (200 unique)
 
 ## Coverage Status
 
@@ -85,6 +85,7 @@ Total: 202 requirements (197 unique)
 | 2026-01-29 | bolus-wizard-formula-comparison.md | REQ-BOLUS-001-003 (bolus wizard) |
 | 2026-01-29 | autosens-dynamic-isf-comparison.md | REQ-SENS-001-003 (sensitivity) |
 | 2026-01-29 | carb-absorption-model-comparison.md | REQ-CARB-001-003 (carb absorption) |
+| 2026-01-30 | prediction-curve-documentation.md | REQ-PRED-001-003 (predictions) |
 
 **Level 2 Complete**: 5/5 mapping verifications passed (100%)
 **Level 3 Complete**: 8/8 deep dive verifications (100%) ✅

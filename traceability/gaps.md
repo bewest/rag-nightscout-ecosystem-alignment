@@ -4,7 +4,7 @@ This document is an index of gaps organized by domain.
 
 ## Domain Files
 
-- [Aid Algorithms](aid-algorithms-gaps.md) - 45 gaps
+- [Aid Algorithms](aid-algorithms-gaps.md) - 49 gaps
 - [Cgm Sources](cgm-sources-gaps.md) - 58 gaps
 - [Connectors](connectors-gaps.md) - 28 gaps
 - [Nightscout Api](nightscout-api-gaps.md) - 62 gaps
@@ -24,7 +24,7 @@ This document is an index of gaps organized by domain.
 | treatments | 23 | [treatments-gaps.md](treatments-gaps.md) | - |
 | pumps | 9 | [pumps-gaps.md](pumps-gaps.md) | - |
 
-Total: 255 gaps across 7 domains
+Total: 259 gaps across 7 domains
 
 ## Verification Status
 
