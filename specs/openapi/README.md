@@ -100,6 +100,7 @@ Specs are validated against:
 - [`traceability/gaps.md`](../../traceability/gaps.md) - All identified gaps
 - [`traceability/requirements.md`](../../traceability/requirements.md) - Derived requirements
 - [`mapping/cross-project/terminology-matrix.md`](../../mapping/cross-project/terminology-matrix.md) - Rosetta stone
+- [`docs/10-domain/req-api-openapi-alignment-audit.md`](../../docs/10-domain/req-api-openapi-alignment-audit.md) - REQ-API → OpenAPI coverage audit
 
 ---
 

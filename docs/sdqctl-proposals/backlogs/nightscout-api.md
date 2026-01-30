@@ -16,7 +16,7 @@ Covers: cgm-remote-monitor, Nocturne, entries, treatments, devicestatus, profile
 | 2 | ~~WebSocket event coverage~~ | ~~P3~~ | ~~Medium~~ | ✅ COMPLETE 2026-01-30 |
 | 3 | **Verify devicestatus/entries claims** | P2 | Medium | [Accuracy backlog #12-14](documentation-accuracy.md) |
 | 4 | ~~Verify GAP-API-* freshness~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/gap-api-freshness-verification.md` |
-| 5 | **Audit REQ-API-* → OpenAPI alignment** | P2 | Medium | [Accuracy backlog #27](documentation-accuracy.md) |
+| 5 | ~~Audit REQ-API-* → OpenAPI alignment~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/req-api-openapi-alignment-audit.md` |
 
 ---
 

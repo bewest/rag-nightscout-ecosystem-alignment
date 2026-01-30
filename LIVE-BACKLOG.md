@@ -15,6 +15,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 14) | P0 | ✅ Complete (Ready Queue 2 items, REQ-API audit complete) | 2026-01-30 |
+| REQ-API → OpenAPI alignment audit | P2 | ✅ Complete (67% full coverage, 33% partial) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 13) | P0 | ✅ Complete (Ready Queue 2 items, GAP-API verified) | 2026-01-30 |
 | GAP-API freshness verification | P2 | ✅ Complete (3 addressed by PR, 2 partial, 11 open) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 12) | P0 | ✅ Complete (Ready Queue 2 items, SDK patterns complete) | 2026-01-30 |

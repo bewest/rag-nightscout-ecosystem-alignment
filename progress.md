@@ -8,6 +8,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### REQ-API → OpenAPI Alignment Audit (2026-01-30)
+
+nightscout-api #5: Audit REQ-API-* requirements against OpenAPI specs.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Alignment Audit | `docs/10-domain/req-api-openapi-alignment-audit.md` | 7.7KB, 6 reqs analyzed |
+
+**Coverage Summary**:
+| Status | Count | Percentage |
+|--------|-------|------------|
+| ✅ Fully covered | 4 | 67% |
+| ⚠️ Partially covered | 2 | 33% |
+
+**Recommendations**: Add `x-aid-req` annotations, create AsyncAPI spec for WebSocket
+
+---
+
 ### GAP-API Freshness Verification (2026-01-30)
 
 nightscout-api #4: Verify GAP-API-* gaps against open/merged PRs.
