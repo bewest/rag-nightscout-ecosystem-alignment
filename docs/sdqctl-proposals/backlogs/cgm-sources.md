@@ -12,7 +12,7 @@ Covers: xDrip+, xDrip4iOS, DiaBLE, Dexcom G6/G7, Libre 2/3, Medtronic CGM
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | CGM trend arrow standardization | P3 | Low | Map all 7 projects to unified enum |
+| 1 | ~~CGM trend arrow standardization~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE (doc exists) |
 | 2 | ~~Libre 3 protocol gap analysis~~ | ~~P2~~ | ~~High~~ | ✅ COMPLETE 2026-01-29 |
 
 ---

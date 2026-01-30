@@ -36,29 +36,31 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Workflow:** `extract-spec.conv`
 **Note:** Required for Loop conformance per GAP-ALG-013
 
-### 3. [P2] API v3 pagination compliance
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Document srvModified-based pagination across clients
-**Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
-
-### 4. [P3] CGM trend arrow standardization
-**Type:** Documentation | **Effort:** Low
-**Focus:** Map all 7 projects to unified trend arrow enum
-**Backlog:** [cgm-sources.md](backlogs/cgm-sources.md)
-
-### 5. [P2] Verify algorithm comparison claims
-**Type:** Accuracy | **Effort:** Medium
-**Focus:** Validate prediction array documentation against source
-**Backlog:** [documentation-accuracy.md](backlogs/documentation-accuracy.md)
-
-### 6. [P2] Verify sync-identity mapping
-**Type:** Accuracy | **Effort:** Medium
-**Focus:** Validate syncIdentifier field mappings against source
-**Backlog:** [documentation-accuracy.md](backlogs/documentation-accuracy.md)
-
 ---
 
 ## Completed Items
+
+### ~~[P2] Verify algorithm comparison claims~~ ✅ COMPLETE
+**Completed:** 2026-01-29
+**Deliverable:** `docs/sdqctl-proposals/backlogs/documentation-accuracy.md#11`
+**Key Finding:** 100% accurate - 7 claims verified (oref0 arrays, AAPS Dynamic ISF, Loop RC)
+
+### ~~[P2] Verify sync-identity mapping~~ ✅ COMPLETE
+**Completed:** 2026-01-29
+**Deliverable:** `docs/sdqctl-proposals/backlogs/documentation-accuracy.md#7`
+**Key Finding:** 100% accurate - syncIdentifier, ObjectIdCache, 24h cache lifetime verified
+
+### ~~[P2] API v3 pagination compliance~~ ✅ COMPLETE
+**Completed:** 2026-01-29
+**Deliverable:** `docs/10-domain/api-v3-pagination-compliance.md`
+**Key Finding:** AAPS only client with full API v3; Loop/Trio use v1
+**Gaps Added:** GAP-API-010, GAP-API-011, GAP-API-012
+
+### ~~[P3] CGM trend arrow standardization~~ ✅ COMPLETE
+**Completed:** 2026-01-29
+**Deliverable:** `docs/10-domain/cgm-trend-arrow-standardization.md`
+**Key Finding:** Nightscout string format is de facto interchange
+**Gaps Added:** GAP-CGM-033, GAP-CGM-034
 
 ### ~~[P3] WebSocket event coverage~~ ✅ COMPLETE
 **Completed:** 2026-01-30
