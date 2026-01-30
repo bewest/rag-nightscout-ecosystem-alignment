@@ -22,11 +22,18 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] Idiomatic sdqctl workflow integration
+### 1. [P2] Idiomatic sdqctl workflow integration ✅ COMPLETE
 **Type:** Implementation | **Effort:** Medium
 **Source:** tooling.md #15
 **Focus:** Replace custom VERIFY patterns with `sdqctl verify` calls in .conv files
-**Outcome:** Standardized verification across all workflows
+**Deliverable:** `docs/10-domain/sdqctl-workflow-integration.md`
+**Status:** ✅ COMPLETE 2026-01-30
+
+**Key Outcomes:**
+- Created comprehensive integration guide (5KB)
+- Added 3 Makefile targets: sdqctl-cycle, sdqctl-cycle-multi, sdqctl-verify-parallel
+- Documented all sdqctl commands and patterns
+- Added help text for new targets
 
 ### 2. [P2] Trio-dev oref integration mapping
 **Type:** Analysis | **Effort:** Medium

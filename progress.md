@@ -12,6 +12,29 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### sdqctl Workflow Integration (2026-01-30)
+
+Cycle 38: Standardized sdqctl usage across workflows and Makefile.
+
+**Deliverable**: `docs/10-domain/sdqctl-workflow-integration.md` (5KB)
+
+**New Makefile Targets**:
+| Target | Purpose |
+|--------|---------|
+| `make sdqctl-cycle` | Single backlog cycle |
+| `make sdqctl-cycle-multi N=5` | Multi-cycle execution |
+| `make sdqctl-verify-parallel` | Parallel verification |
+
+**Patterns Documented**:
+- `sdqctl run` - Single workflow
+- `sdqctl iterate -n N` - Multi-cycle
+- `sdqctl flow --parallel` - Batch execution
+- `--json-errors` - CI integration
+
+**tooling.md #15**: ✅ COMPLETE
+
+---
+
 ### Trio OpenAPS.swift Bridge Analysis (2026-01-30)
 
 Cycle 37: Analyzed Swift↔JS bridge in Trio for algorithm execution.

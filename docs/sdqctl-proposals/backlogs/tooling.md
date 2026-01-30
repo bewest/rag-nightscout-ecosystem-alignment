@@ -26,7 +26,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 12 | ~~**Unit tests for kept tools**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `tools/test_verify_tools_unit.py` (17 tests) |
 | 13 | ~~**sdqctl usage documentation**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `docs/TOOLING-GUIDE.md` (+60 lines) |
 | 14 | **backlog-cycle-v3.conv** | P3 | Medium | Leverage ELIDE, mixed tools, cyclic prompts ([LIVE-BACKLOG](../../../LIVE-BACKLOG.md)) |
-| 15 | **Idiomatic sdqctl workflow integration** | P2 | Medium | Replace custom VERIFY patterns with `sdqctl verify` calls in .conv files |
+| 15 | ~~**Idiomatic sdqctl workflow integration**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/sdqctl-workflow-integration.md` |
 | 16 | ~~**LSP verification setup research**~~ | ~~P2~~ | ~~High~~ | ✅ COMPLETE - `docs/10-domain/lsp-verification-setup-requirements.md` |
 | 17 | ~~**Nightscout PR coherence review protocol**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/nightscout-pr-review-protocol.md` |
 | 18 | ~~**Tool coverage audit**~~ | ~~P1~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/tool-coverage-audit.md` |

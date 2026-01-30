@@ -4242,3 +4242,17 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | `makeProfile()` | bundle/profile.js | Profile construction |
 
 **Source**: `externals/Trio/Trio/Sources/APS/OpenAPS/OpenAPS.swift`
+
+---
+
+## sdqctl Workflow Commands
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `run` | Single workflow execution | `sdqctl run workflow.conv` |
+| `iterate` | Multi-cycle execution | `sdqctl iterate workflow.conv -n 5` |
+| `flow` | Batch/parallel execution | `sdqctl flow *.conv --parallel 4` |
+| `apply` | Apply to components | `sdqctl apply workflow.conv --components "*.js"` |
+| `status` | Session status | `sdqctl status` |
+
+**Source**: `docs/10-domain/sdqctl-workflow-integration.md`

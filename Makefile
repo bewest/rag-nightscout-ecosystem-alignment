@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-gen sdqctl-analysis conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0
+.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0
 
 # Default target
 help:
@@ -51,6 +51,14 @@ help:
 	@echo "  make workflow TYPE=<type> - Run automated workflow (quick/full/validation/verification)"
 	@echo "  make cli                - Launch interactive workspace CLI"
 	@echo "  make efficiency-dashboard - Show productivity metrics (last 7 days)"
+	@echo ""
+	@echo "sdqctl Workflows:"
+	@echo "  make sdqctl-verify      - Run full verification (sequential)"
+	@echo "  make sdqctl-verify-parallel - Run verification checks (parallel)"
+	@echo "  make sdqctl-cycle       - Run single backlog cycle"
+	@echo "  make sdqctl-cycle-multi N=5 - Run N backlog cycles"
+	@echo "  make sdqctl-gen         - Run generation workflows"
+	@echo "  make sdqctl-analysis    - Run analysis workflows"
 	@echo ""
 	@echo "  make help       - Show this help message"
 	@echo ""
@@ -286,6 +294,10 @@ sdqctl-verify:
 	@echo "Running verification workflows..."
 	@source activate-sdqctl.sh && sdqctl run workflows/full-verification.conv
 
+sdqctl-verify-parallel:
+	@echo "Running verification workflows (parallel)..."
+	@source activate-sdqctl.sh && sdqctl flow workflows/verify-*.conv --parallel 4
+
 sdqctl-gen:
 	@echo "Running generation workflows..."
 	@source activate-sdqctl.sh && sdqctl flow workflows/gen-*.conv
@@ -293,3 +305,11 @@ sdqctl-gen:
 sdqctl-analysis:
 	@echo "Running analysis workflows..."
 	@source activate-sdqctl.sh && sdqctl flow workflows/gap-detection.conv workflows/cross-project-alignment.conv
+
+sdqctl-cycle:
+	@echo "Running single backlog cycle..."
+	@source activate-sdqctl.sh && sdqctl iterate workflows/orchestration/backlog-cycle-v2.conv
+
+sdqctl-cycle-multi:
+	@echo "Running $(N) backlog cycles..."
+	@source activate-sdqctl.sh && sdqctl iterate workflows/orchestration/backlog-cycle-v2.conv -n $(N)
