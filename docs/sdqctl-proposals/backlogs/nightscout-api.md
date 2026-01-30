@@ -24,19 +24,20 @@ Covers: cgm-remote-monitor, Nocturne, entries, treatments, devicestatus, profile
 
 Research stream focused on evaluating, sequencing, and proposing adoption of cgm-remote-monitor PRs.
 
-### 10. [P1] PR adoption sequencing proposal
+### 10. [P1] PR adoption sequencing proposal ✅ COMPLETE
 **Type:** Research | **Effort:** High  
 **Repos:** cgm-remote-monitor  
-**Focus:** Create prioritized roadmap for merging 68 open PRs based on ecosystem impact  
-**Questions:**
-- Which PRs unblock other work (dependency graph)?
-- What's the optimal merge sequence to minimize breakage?
-- Which PRs should be bundled with Node.js/MongoDB upgrades?
-- What testing is required before each merge?
+**Deliverable:** `docs/10-domain/pr-adoption-sequencing-proposal.md`  
+**Status:** ✅ COMPLETE 2026-01-30
 
-**Related Doc:** `docs/10-domain/cgm-remote-monitor-pr-analysis.md`  
-**Deliverable:** `docs/sdqctl-proposals/cgm-pr-adoption-roadmap.md`  
-**Status:** PROPOSED
+**Key Findings:**
+- 4-phase plan: Feb quick wins → Mar infra → Apr API+deprecations → Q2 cleanup
+- Phase 1: #8419, #8083, #8261, #8281, #8377, #8378
+- Phase 2: #8421 MongoDB 5x + Lodash/Moment removal = v15.1.0
+- Phase 3: #7791 requires security audit before merge
+- Deprecate share2nightscout-bridge and minimed-connect-to-nightscout
+
+**Gaps Closed**: GAP-API-HR, GAP-INSULIN-001, GAP-DB-001, GAP-NODE-001/002, GAP-REMOTE-CMD
 
 ### 11. [P1] Node.js LTS impact analysis ✅ COMPLETE
 **Type:** Research | **Effort:** Medium  

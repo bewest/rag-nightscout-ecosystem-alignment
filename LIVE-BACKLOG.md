@@ -15,6 +15,8 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 7) | P0 | ✅ Complete (Ready Queue 5 items, PR sequencing complete) | 2026-01-30 |
+| PR adoption sequencing proposal | P1 | ✅ Complete (4-phase plan: Feb→Mar→Apr→Q2) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 6) | P0 | ✅ Complete (Ready Queue 6 items, PR deep-dive complete) | 2026-01-30 |
 | High-value PR deep-dive | P2 | ✅ Complete (5 PRs analyzed, merge sequence: #8419→#8083→#8261→#8421→#7791) | 2026-01-30 |
 | StateSpan V3 integration research | P2 | ✅ Queued (3 items to sync-identity backlog) | 2026-01-30 |

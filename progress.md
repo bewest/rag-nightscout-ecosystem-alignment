@@ -8,6 +8,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### PR Adoption Sequencing Proposal (2026-01-30)
+
+Ready Queue Item #1: Prioritized roadmap for 68 open PRs.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Proposal | `docs/10-domain/pr-adoption-sequencing-proposal.md` | 9.5KB, 4-phase plan |
+
+**Phased Timeline**:
+| Phase | Timeline | PRs | Focus |
+|-------|----------|-----|-------|
+| Phase 1 | Feb 2026 | 6 | Quick wins (tests, HR, insulin) |
+| Phase 2 | Mar 2026 | 3 | Infrastructure (MongoDB 5x, Node 22) |
+| Phase 3 | Apr 2026 | 4 | API features + bridge deprecations |
+| Phase 4 | Q2 2026 | 5+ | Long-tail cleanup |
+
+**Key Recommendations**:
+- Merge #8419 immediately (low risk, testing baseline)
+- Bundle #8421 + modernization for v15.1.0
+- Security audit required for #7791 before merge
+- Deprecate share2nightscout-bridge and minimed-connect-to-nightscout
+
+**Gaps Closed**: GAP-API-HR, GAP-INSULIN-001, GAP-DB-001, GAP-NODE-001/002, GAP-REMOTE-CMD, GAP-TZ-001
+
+---
+
 ### Priority PR Deep-Dives (2026-01-30)
 
 Ready Queue Item #3: Deep analysis of top 5 ecosystem-impacting PRs.
