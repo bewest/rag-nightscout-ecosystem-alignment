@@ -22,33 +22,26 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] Classify GAP-SYNC-* by ontology category
-**Type:** Analysis | **Effort:** Low
-**Domain:** Sync & Identity
-**Focus:** Add ontology category to each sync-related gap
-**Prerequisites:** State ontology ✅
-**Source:** sync-identity.md #22
-
-### 2. [P2] cgm-remote-monitor analysis depth matrix
+### 1. [P2] cgm-remote-monitor analysis depth matrix
 **Type:** Audit | **Effort:** Medium
 **Domain:** Nightscout API
 **Focus:** Completeness grid for all collections (entries, treatments, devicestatus, profile, food, activity)
 **Source:** nightscout-api.md #18
 
-### 3. [P2] PR recommendation packaging
+### 2. [P2] PR recommendation packaging
 **Type:** Deliverable | **Effort:** Medium
 **Domain:** Nightscout API
 **Focus:** Format findings as actionable maintainer recommendations
 **Audience:** Nightscout maintainers
 **Source:** nightscout-api.md #19
 
-### 4. [P2] Algorithm conformance: AAPS Kotlin runner (PARKED)
+### 3. [P2] Algorithm conformance: AAPS Kotlin runner (PARKED)
 **Type:** Implementation | **Effort:** High
 **Repos:** AndroidAPS
 **Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
 **Note:** Requires JVM setup - parked until visibility work complete
 
-### 5. [P3] Algorithm conformance: Loop Swift runner (PARKED)
+### 4. [P3] Algorithm conformance: Loop Swift runner (PARKED)
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
@@ -60,6 +53,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Classify GAP-SYNC-* by ontology** | `traceability/sync-identity-gaps.md` | 22 gaps classified: 6 Observed, 8 Desired, 2 Control, 6 Cross-category |
 | **State ontology definition** | `docs/architecture/state-ontology.md` | Observed/Desired/Control categories defined with sync semantics |
 | **Extend verify_assertions scope** | `tools/verify_assertions.py` | 4→12 YAML files, now scans conformance/**/*.yaml |
 | **Extend verify_refs scope** | `tools/verify_refs.py` | 300→353 files, now scans traceability/, conformance/ |

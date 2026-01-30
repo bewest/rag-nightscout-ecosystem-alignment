@@ -7,7 +7,48 @@ See [gaps.md](gaps.md) for the index.
 
 ---
 
+## Ontology Classification
+
+> **Reference**: [`docs/architecture/state-ontology.md`](../docs/architecture/state-ontology.md)
+
+Each sync gap is classified by the state category it primarily affects:
+
+| Gap ID | Title | Ontology | Rationale |
+|--------|-------|----------|-----------|
+| GAP-SYNC-001 | POST-only, No Upsert | Observed | Treatment sync (bolus, carbs) |
+| GAP-SYNC-002 | Effect timelines not uploaded | Control | Algorithm prediction curves |
+| GAP-SYNC-004 | Override supersession not tracked | Desired | User intent (overrides) |
+| GAP-SYNC-005 | ObjectIdCache not persistent | Observed | Treatment dedup state |
+| GAP-SYNC-006 | Loop uses v1 API only | Cross-category | API version affects all types |
+| GAP-SYNC-007 | syncIdentifier not standardized | Cross-category | Identity affects all types |
+| GAP-SYNC-008 | No conflict resolution | Desired | Mutable state needs merge |
+| GAP-SYNC-009 | V1 lacks identifier | Cross-category | Identity affects all types |
+| GAP-SYNC-010 | No sync status feedback | Cross-category | UX for all sync |
+| GAP-SYNC-029 | No cross-controller dedup | Observed | Treatment deduplication |
+| GAP-SYNC-030 | No controller conflict warning | Control | Multi-controller scenario |
+| GAP-SYNC-031 | Profile sync ambiguity | Desired | Therapy settings |
+| GAP-SYNC-032 | Missing identifier field | Observed | Treatment identity |
+| GAP-SYNC-033 | xDrip+ UUID not sent | Observed | Treatment identity |
+| GAP-SYNC-034 | No cross-controller identity | Cross-category | Identity affects all types |
+| GAP-SYNC-035 | No Profile Switch events | Desired | Profile activation |
+| GAP-SYNC-036 | ProfileSwitch JSON size | Desired | Profile sync payload |
+| GAP-SYNC-037 | Percentage/timeshift not portable | Desired | Profile modification |
+| GAP-SYNC-038 | Profile dedup fallback missing | Desired | Profile identity |
+| GAP-SYNC-039 | Profile srvModified missing | Desired | Profile versioning |
+| GAP-SYNC-040 | Delete semantics differ | Cross-category | Affects all deletions |
+| GAP-SYNC-041 | Missing v3 history endpoint | Cross-category | API feature affects all |
+
+**Summary**:
+- **Observed**: 6 gaps (treatment sync, deduplication)
+- **Desired**: 8 gaps (profile, overrides, user intent)
+- **Control**: 2 gaps (algorithm output, multi-controller)
+- **Cross-category**: 6 gaps (API/identity infrastructure)
+
+---
+
 ### GAP-SYNC-001: Loop Uses POST-only, No Idempotent Upsert
+
+**Ontology**: Observed (treatment sync)
 
 **Scenario**: Network retry during treatment upload
 
@@ -297,6 +338,8 @@ See [gaps.md](gaps.md) for the index.
 
 ### GAP-SYNC-002: Effect timelines not uploaded to Nightscout
 
+**Ontology**: Control (algorithm prediction curves)
+
 **Scenario**: Cross-project algorithm comparison, debugging
 
 **Description**: Loop computes individual effect timelines but only uploads the final combined prediction. The component effects are lost.
@@ -333,6 +376,8 @@ Only `predicted.values[]` (the combined prediction) is uploaded to `devicestatus
 
 ### GAP-SYNC-004: Override supersession not tracked in sync
 
+**Ontology**: Desired (user intent (overrides))
+
 **Scenario**: [Override Supersede](../conformance/scenarios/override-supersede/), [Sync Deduplication](../conformance/assertions/sync-deduplication.yaml)
 
 **Description**: When an override is superseded by a new override, the lifecycle change is not synced to Nightscout. Loop and Trio only upload the initial override creation, not subsequent status changes.
@@ -360,6 +405,8 @@ Only `predicted.values[]` (the combined prediction) is uploaded to `devicestatus
 ---
 
 ### GAP-SYNC-005: Loop ObjectIdCache not persistent
+
+**Ontology**: Observed (treatment dedup state)
 
 **Scenario**: Treatment deduplication across app restarts
 
@@ -391,6 +438,8 @@ Only `predicted.values[]` (the combined prediction) is uploaded to `devicestatus
 
 ### GAP-SYNC-006: Loop uses Nightscout v1 API only
 
+**Ontology**: Cross-category (API version affects all types)
+
 **Scenario**: Treatment deduplication and update semantics
 
 **Description**: Loop uploads treatments via `POST /api/v1/treatments` which creates new records. The v3 API's `PUT /api/v3/treatments/{identifier}` would enable server-side upsert semantics, eliminating client-side dedup logic.
@@ -420,6 +469,8 @@ Only `predicted.values[]` (the combined prediction) is uploaded to `devicestatus
 ---
 
 ### GAP-SYNC-007: syncIdentifier format not standardized
+
+**Ontology**: Cross-category (identity affects all types)
 
 **Scenario**: Cross-system treatment correlation
 
@@ -457,6 +508,8 @@ No standard format or prefix convention exists.
 
 ### GAP-SYNC-008: No Cross-Client Sync Conflict Resolution
 
+**Ontology**: Desired (mutable state needs merge)
+
 **Scenario**: Multiple clients uploading conflicting data simultaneously.
 
 **Description**: The UPSERT system replaces documents based on sync identity, but provides no conflict resolution or merge strategy. Last-write-wins may cause data loss.
@@ -473,6 +526,8 @@ No standard format or prefix convention exists.
 
 ### GAP-SYNC-009: V1 API Lacks Identifier Field
 
+**Ontology**: Cross-category (identity affects all types)
+
 **Scenario**: Legacy clients using v1 API endpoints.
 
 **Description**: V1 API does not generate or require the `identifier` field. Deduplication relies on legacy field matching only, which may fail for edge cases.
@@ -488,6 +543,8 @@ No standard format or prefix convention exists.
 ---
 
 ### GAP-SYNC-010: No Sync Status Feedback
+
+**Ontology**: Cross-category (UX for all sync)
 
 **Scenario**: Client needs confirmation of successful sync.
 
@@ -706,6 +763,8 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ### GAP-SYNC-029: No Cross-Controller Deduplication
 
+**Ontology**: Observed (treatment deduplication)
+
 **Description**: Nightscout does not detect when the same treatment is entered in multiple controllers (e.g., Loop and Trio) and uploaded to the same instance.
 
 **Affected Systems**: Nightscout, Loop, Trio, AAPS
@@ -730,6 +789,8 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ### GAP-SYNC-030: No Controller Conflict Warning
 
+**Ontology**: Control (multi-controller scenario)
+
 **Description**: Nightscout does not warn when multiple AID controllers (Loop, Trio, AAPS) are uploading deviceStatus to the same instance simultaneously.
 
 **Affected Systems**: Nightscout UI, Loop, Trio, AAPS
@@ -753,6 +814,8 @@ if (rVal) rVal.replace('ETC','Etc');
 ---
 
 ### GAP-SYNC-031: Profile Sync Ambiguity
+
+**Ontology**: Desired (therapy settings)
 
 **Description**: When multiple controllers upload profiles to the same Nightscout instance, there is no indication which profile is authoritative.
 
@@ -999,6 +1062,8 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ### GAP-SYNC-038: Profile Deduplication Fallback Missing in Nocturne
 
+**Ontology**: Desired (profile identity)
+
 **Description**: Nocturne lacks `created_at` fallback deduplication for profiles. cgm-remote-monitor uses `identifier` OR `created_at` for deduplication; Nocturne only uses `Id`/`OriginalId`.
 
 **Affected Systems**: Controllers uploading profiles via V1 API to Nocturne
@@ -1018,6 +1083,8 @@ if (rVal) rVal.replace('ETC','Etc');
 ---
 
 ### GAP-SYNC-039: Profile srvModified Field Missing in Nocturne
+
+**Ontology**: Desired (profile versioning)
 
 **Description**: Nocturne's Profile model lacks `srvModified` field. cgm-remote-monitor auto-updates `srvModified` on every profile modification for sync tracking.
 
@@ -1041,6 +1108,8 @@ if (rVal) rVal.replace('ETC','Etc');
 ---
 
 ### GAP-SYNC-040: Delete Semantics Differ (Hard vs Soft Delete)
+
+**Ontology**: Cross-category (affects all deletions)
 
 **Description**: cgm-remote-monitor uses soft delete (sets `isValid: false`); Nocturne uses hard delete (removes from database). This affects all collections, not just profiles.
 
@@ -1070,6 +1139,8 @@ if (rVal) rVal.replace('ETC','Etc');
 ---
 
 ### GAP-SYNC-041: Missing V3 History Endpoint in Nocturne
+
+**Ontology**: Cross-category (API feature affects all)
 
 **Description**: Nocturne does not implement the `/api/v3/{collection}/history/{lastModified}` endpoint that AAPS and Loop use for incremental sync. This endpoint returns all records modified since a given timestamp, sorted by `srvModified` ascending, and includes soft-deleted records.
 

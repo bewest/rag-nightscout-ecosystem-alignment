@@ -392,8 +392,13 @@ Per [state-ontology-proposal.md](../state-ontology-proposal.md), sync-identity i
 | **Desired** | Bidirectional, conflict resolution | Profile sync, target sync |
 | **Control** | Push from controller, read-only | Algorithm output, enacted changes |
 
-### 22. [P2] Classify GAP-SYNC-* by ontology category
+### 22. ~~[P2] Classify GAP-SYNC-* by ontology category~~ ✅ COMPLETE
 **Type:** Analysis | **Effort:** Low  
-**Focus:** Add ontology category to each sync-related gap  
-**Prerequisites:** [state-ontology-proposal.md](../state-ontology-proposal.md) Phase 1  
-**Deliverable:** Updated `traceability/sync-identity-gaps.md` with ontology column
+**Status:** ✅ COMPLETE 2026-01-30
+**Deliverable:** `traceability/sync-identity-gaps.md` with ontology classification table + individual tags
+**Key Findings:**
+- 22 GAP-SYNC-* entries classified
+- Observed: 6 gaps (treatment sync, deduplication)
+- Desired: 8 gaps (profile, overrides, user intent)
+- Control: 2 gaps (algorithm output, multi-controller)
+- Cross-category: 6 gaps (API/identity infrastructure)
