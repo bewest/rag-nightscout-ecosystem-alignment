@@ -41,21 +41,29 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Map socket.io events vs REST for real-time sync
 **Backlog:** [nightscout-api.md](backlogs/nightscout-api.md)
 
-### 4. [P2] Carb absorption model comparison
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Compare carb absorption algorithms (linear vs dynamic)
-**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
-**Context:** Loop dynamic absorption vs oref0 linear decay vs UAM
-
-### 5. [P2] Prediction curve documentation
+### 4. [P2] Prediction curve documentation
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Document prediction curve generation across systems
 **Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
 **Context:** Loop single curve vs oref0 4 curves (IOB, COB, UAM, ZT)
 
+### 5. [P2] Temp basal vs SMB dosing comparison
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Compare temp basal adjustments vs SMB micro-dosing
+**Backlog:** [aid-algorithms.md](backlogs/aid-algorithms.md)
+**Context:** Loop temp basal only vs oref0/AAPS SMB capability
+
 ---
 
 ## Completed Items
+
+### ~~[P2] Carb absorption model comparison~~ ✅ COMPLETE
+**Status:** Completed 2026-01-30
+- Deep dive: `docs/10-domain/carb-absorption-model-comparison.md` (9.8KB)
+- Compared Loop model-based vs oref0 deviation-based absorption
+- 4 gaps identified: GAP-CARB-001/002/003/004
+- 3 requirements added: REQ-CARB-001/002/003
+- Key finding: Loop uses curves; oref0 uses min_5m_carbimpact + UAM
 
 ### ~~[P2] Autosens/Dynamic ISF comparison~~ ✅ COMPLETE
 **Status:** Completed 2026-01-29

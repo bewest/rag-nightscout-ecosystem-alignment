@@ -3579,3 +3579,30 @@ See `docs/10-domain/cgm-trend-arrow-standardization.md` for full cross-project m
 |------|--------|------------|
 | StandardRetrospectiveCorrection | 30 min | Proportional (P) |
 | IntegralRetrospectiveCorrection | 180 min | PID |
+
+## Carb Absorption Terms
+
+### Core Concepts
+
+| Concept | Loop | oref0/AAPS | Description |
+|---------|------|------------|-------------|
+| Carbs on Board | COB | mealCOB | Unabsorbed carbohydrates |
+| Absorption model | Parabolic/Piecewise | Deviation-based | How carbs become glucose |
+| Minimum impact | absorptionTimeOverrun | min_5m_carbimpact | Floor for slow absorption |
+| Unannounced meal | N/A | UAM | Detect carbs without entry |
+
+### Absorption Parameters
+
+| Parameter | Loop | oref0/AAPS | Default |
+|-----------|------|------------|---------|
+| Max duration | maximumAbsorptionTimeInterval | 6h window | 10h / 6h |
+| Default duration | defaultAbsorptionTime | N/A | 3h |
+| Effect delay | defaultEffectDelay | Immediate | 10min / 0 |
+| Overrun factor | defaultAbsorptionTimeOverrun | N/A | 1.5x |
+
+### AAPS min_5m_carbimpact Values
+
+| Algorithm | Default | Range |
+|-----------|---------|-------|
+| AMA | 3 mg/dL/5m | 1-12 |
+| SMB | 8 mg/dL/5m | 1-12 |

@@ -1589,3 +1589,28 @@ Compared sensitivity adjustment algorithms across oref0, AAPS, and Loop.
 - `externals/AndroidAPS/plugins/sensitivity/SensitivityOref1Plugin.kt:57-207`
 - `externals/LoopWorkspace/.../StandardRetrospectiveCorrection.swift:17-71`
 - `externals/LoopWorkspace/.../IntegralRetrospectiveCorrection.swift:18-75`
+
+### Carb Absorption Model Comparison (2026-01-30)
+
+Compared carb absorption algorithms across Loop and oref0/AAPS.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep dive | `docs/10-domain/carb-absorption-model-comparison.md` | 9.8KB |
+| Gap additions | `traceability/aid-algorithms-gaps.md` | GAP-CARB-001-004 |
+| Requirements | `traceability/aid-algorithms-requirements.md` | REQ-CARB-001-003 |
+
+**Key Findings**:
+- Loop: Model-based (parabolic/piecewise curves), observedProgress tracking
+- oref0/AAPS: Deviation-based with min_5m_carbimpact floor, UAM detection
+- Max duration differs: Loop 10h vs oref0 6h
+- Loop has no UAM equivalent; requires explicit carb entry
+
+**Gaps Identified**: GAP-CARB-001 (model incompatibility), GAP-CARB-002 (no min_5m_carbimpact in Loop), GAP-CARB-003 (no UAM in Loop), GAP-CARB-004 (duration mismatch)
+
+**Source Files Analyzed**:
+- `externals/LoopWorkspace/LoopKit/LoopKit/CarbKit/CarbMath.swift:1-200`
+- `externals/LoopWorkspace/LoopKit/LoopKit/CarbKit/AbsorbedCarbValue.swift:1-80`
+- `externals/oref0/lib/determine-basal/cob.js:1-200`
+- `externals/oref0/lib/determine-basal/determine-basal.js:500-660`
+- `externals/AndroidAPS/core/interfaces/src/main/kotlin/app/aaps/core/interfaces/aps/AutosensData.kt`

@@ -768,3 +768,29 @@ See [requirements.md](requirements.md) for the index.
 **Gap**: GAP-SENS-002
 
 **Source**: `docs/10-domain/autosens-dynamic-isf-comparison.md`
+
+## Carb Absorption Requirements
+
+### REQ-CARB-001: COB Display Source Attribution
+
+**Statement**: Systems displaying COB MUST indicate which algorithm calculated it.
+
+**Rationale**: Loop and oref0 COB values are not directly comparable due to different calculation methods.
+
+**Verification**: Check UI for source indicator.
+
+### REQ-CARB-002: min_5m_carbimpact Configuration
+
+**Statement**: oref0-based systems SHOULD expose min_5m_carbimpact as a configurable setting.
+
+**Rationale**: Critical tuning parameter affecting carb absorption rate floor (default: AMA=3, SMB=8 mg/dL/5m).
+
+**Verification**: Settings UI audit.
+
+### REQ-CARB-003: Absorption Model Documentation
+
+**Statement**: AID systems MUST document their carb absorption model type and key parameters.
+
+**Rationale**: Users need to understand how COB is calculated for accurate meal management.
+
+**Verification**: Documentation review.

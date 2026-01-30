@@ -874,3 +874,62 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Impact:** Different aggression at high BG levels between systems.
 
 **Remediation:** Document formula differences and expected behaviors.
+
+## Carb Absorption Gaps
+
+### GAP-CARB-001: Absorption Model Incompatibility
+
+**Description**: Loop uses model-based curves (parabolic/piecewise); oref0 uses deviation detection with min_5m_carbimpact floor.
+
+**Affected Systems**: Loop, AAPS, Trio, oref0
+
+**Evidence**:
+- Loop: `CarbMath.swift:109-148` - ParabolicAbsorption, PiecewiseLinearAbsorption
+- oref0: `cob.js:188-191` - `ci = Math.max(deviation, currentDeviation/2, profile.min_5m_carbimpact)`
+
+**Impact**: COB values differ between systems for the same meal input.
+
+**Remediation**: Document expected variance; this is a fundamental design difference.
+
+### GAP-CARB-002: min_5m_carbimpact Not in Loop
+
+**Description**: Loop has no equivalent to the min_5m_carbimpact floor that ensures minimum absorption rate during flat BG.
+
+**Affected Systems**: Loop vs oref0/AAPS
+
+**Evidence**:
+- oref0: `profile/index.js:35` - `min_5m_carbimpact: 8 // mg/dL per 5m`
+- Loop: Uses `absorptionTimeOverrun` (1.5x) instead
+
+**Impact**: Loop may track absorption differently during flat glucose periods.
+
+**Remediation**: Design difference - document for users.
+
+### GAP-CARB-003: UAM Not Available in Loop
+
+**Description**: Loop lacks Unannounced Meal (UAM) detection that oref0/AAPS uses to respond to rising BG without carb entry.
+
+**Affected Systems**: Loop vs oref0/AAPS/Trio
+
+**Evidence**:
+- oref0: `determine-basal.js:460-461` - `var enableUAM=(profile.enableUAM)`
+- oref0: `determine-basal.js:597-610` - UAMpredBGs calculation
+- Loop: No equivalent feature
+
+**Impact**: Loop requires explicit carb entry for all meals.
+
+**Remediation**: Design difference - Loop philosophy requires accurate carb logging.
+
+### GAP-CARB-004: Maximum Duration Mismatch
+
+**Description**: Loop allows up to 10h absorption; oref0 only considers 6h after meal.
+
+**Affected Systems**: Loop vs oref0/AAPS
+
+**Evidence**:
+- Loop: `CarbMath.swift:13` - `maximumAbsorptionTimeInterval = .hours(10)`
+- oref0: `cob.js:57` - `if (hoursAfterMeal > 6 || foundPreMealBG)`
+
+**Impact**: Very slow absorbing meals (high fat/protein) handled differently.
+
+**Remediation**: Document in user guidance for meal types.
