@@ -47,19 +47,18 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Load only task-relevant repos to reduce 3.4M tokens/cycle
 **Backlog:** [tooling.md](backlogs/tooling.md)
 
-### 5. [P2] OQ-010 Extended #14: V4 StateSpan standardization proposal
-**Type:** Proposal | **Effort:** Medium
-**Repos:** nocturne, cgm-remote-monitor
-**Focus:** Evaluate V4 StateSpan model for ecosystem adoption
-**Backlog:** [sync-identity.md](backlogs/sync-identity.md#14-p2-nocturne-v4-statespan-standardization-proposal)
-**Related Gap:** GAP-NOCTURNE-001, GAP-V4-001
-
-### 6. [P2] OQ-010 Extended #15: PostgreSQL migration field fidelity
+### 5. [P2] OQ-010 Extended #15: PostgreSQL migration field fidelity
 **Type:** Verification | **Effort:** Medium
 **Repos:** nocturne
 **Focus:** Verify cgm-remote-monitor fields preserved in PostgreSQL migration
 **Backlog:** [sync-identity.md](backlogs/sync-identity.md#15-p2-nocturne-postgresql-migration-field-fidelity)
 **Related Gap:** GAP-SYNC-039, GAP-NOCTURNE-001
+
+### 6. [P2] OQ-010 Extended #16: Connector polling coordination
+**Type:** Analysis | **Effort:** Low
+**Repos:** nocturne
+**Focus:** Document how multiple connectors coordinate polling
+**Backlog:** [sync-identity.md](backlogs/sync-identity.md#16-p3-nocturne-connector-polling-interval-coordination)
 
 ### 7. [P2] OQ-010 Extended #17: Nocturne srvModified field implementation
 **Type:** Gap Remediation | **Effort:** Medium
@@ -74,6 +73,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| OQ-010 Extended #14: StateSpan proposal | `statespan-standardization-proposal.md` | V3 extension recommended |
 | OQ-010 Extended #13: Rust oref conformance | `conformance/scenarios/nocturne-oref/` | ✅ Verified equivalent to JS oref0 |
 | OQ-010 Extended #12: SignalR bridge | `nocturne-signalr-bridge-analysis.md` | 5-10ms latency, full event parity |
 | OQ-010 #11: ADR-004 ProfileSwitch | `adr-004-profile-override-mapping.md` | Dual-representation acceptance |

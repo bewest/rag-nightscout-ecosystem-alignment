@@ -691,3 +691,35 @@ OQ-010 Item #13: Verification that Nocturne's Rust oref implementation produces 
 - `externals/oref0/lib/iob/calculate.js` (JS reference implementation)
 
 ---
+
+### Nocturne V4 StateSpan Standardization Proposal (2026-01-30)
+
+OQ-010 Item #14: Evaluate V4 StateSpan model for ecosystem adoption.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Standardization Proposal | `docs/sdqctl-proposals/statespan-standardization-proposal.md` | Recommend V3 extension |
+
+**Key Findings**:
+- StateSpan provides cleaner abstraction for time-ranged states than treatments
+- 9 categories: Profile, Override, TempBasal, PumpMode, PumpConnectivity, Sleep, Exercise, Illness, Travel
+- Minimal viable subset: Profile, Override, TempBasal, PumpMode (Phase 1)
+- Recommendation: Add as V3 extension for backward compatibility
+
+**Gaps Identified**: GAP-STATESPAN-001, GAP-STATESPAN-002, GAP-STATESPAN-003
+
+**Requirements Added**: REQ-STATESPAN-001 through REQ-STATESPAN-005
+
+**Migration Path**:
+1. Phase 1: StateSpan collection + read API
+2. Phase 2: Auto-translation from treatments
+3. Phase 3: Native StateSpan writes
+4. Phase 4: Deprecate treatment-based queries
+
+**Source Files Analyzed**:
+- `externals/nocturne/src/Core/Nocturne.Core.Models/StateSpan.cs`
+- `externals/nocturne/src/Core/Nocturne.Core.Models/StateSpanEnums.cs`
+- `externals/nocturne/src/API/Nocturne.API/Controllers/V4/StateSpansController.cs`
+- `externals/cgm-remote-monitor/lib/server/loop.js` (Override handling)
+
+---

@@ -1155,3 +1155,62 @@ if (rVal) rVal.replace('ETC','Etc');
 **Source**: [Nocturne Rust oref Profile Analysis](../docs/10-domain/nocturne-rust-oref-profile-analysis.md)
 
 **Status**: Open
+
+---
+
+## StateSpan Standardization Gaps
+
+---
+
+### GAP-STATESPAN-001: No Standard Time-Range State API
+
+**Description**: cgm-remote-monitor stores time-ranged states (profile, override, temp basal) as treatments with implicit durations. No dedicated collection or API for querying state history by time range.
+
+**Affected Systems**: cgm-remote-monitor, Loop, AAPS, Trio, xDrip+
+
+**Impact**:
+- Must calculate end times from duration or next event
+- Cancel events disconnected from originals
+- Time-range queries inefficient
+- Pump mode not queryable
+
+**Remediation**: Adopt StateSpan collection with V3 API endpoint (see proposal).
+
+**Source**: [StateSpan Standardization Proposal](../docs/sdqctl-proposals/statespan-standardization-proposal.md)
+
+**Status**: Proposal drafted
+
+---
+
+### GAP-STATESPAN-002: Treatment Cancel Events Disconnected
+
+**Description**: `Temporary Override Cancel` treatment has no foreign key linking to the original override it cancels.
+
+**Affected Systems**: cgm-remote-monitor, Loop
+
+**Evidence**:
+- `externals/cgm-remote-monitor/lib/server/loop.js:65`
+- Cancel event matched by timestamp proximity, not ID
+
+**Impact**: Ambiguous which override was cancelled when multiple active.
+
+**Remediation**: StateSpan model with explicit `endMills` eliminates need for cancel events.
+
+**Status**: Open
+
+---
+
+### GAP-STATESPAN-003: No User Activity Annotations
+
+**Description**: cgm-remote-monitor has no standard way to record sleep, exercise, illness, or travel periods that affect insulin sensitivity.
+
+**Affected Systems**: All AID consumers
+
+**Impact**:
+- Cannot contextualize glucose patterns with activities
+- No retrospective analysis by activity type
+- Algorithm adjustments require manual correlation
+
+**Remediation**: StateSpan categories for Sleep, Exercise, Illness, Travel (Phase 2).
+
+**Status**: Open

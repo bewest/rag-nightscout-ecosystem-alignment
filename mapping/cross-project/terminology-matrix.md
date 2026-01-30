@@ -4017,3 +4017,47 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 **Related Gaps**: GAP-OREF-CONFORMANCE-001, GAP-OREF-CONFORMANCE-002, GAP-OREF-CONFORMANCE-003
 
 **Source**: [Nocturne oref Conformance Analysis](../../conformance/scenarios/nocturne-oref/README.md)
+
+---
+
+## StateSpan vs Treatments: Time-Ranged State Tracking
+
+### Concept Mapping
+
+| Concept | cgm-remote-monitor | Nocturne V4 | Standardization |
+|---------|-------------------|-------------|-----------------|
+| Profile history | Treatment (Profile Switch) | StateSpan (Profile) | StateSpan proposed |
+| Override tracking | Treatment (Temporary Override) | StateSpan (Override) | StateSpan proposed |
+| TempBasal tracking | Treatment (Temp Basal) | StateSpan (TempBasal) | StateSpan proposed |
+| Pump mode | deviceStatus only | StateSpan (PumpMode) | StateSpan proposed |
+| Sleep annotation | ❌ | StateSpan (Sleep) | Phase 2 |
+| Exercise annotation | ❌ | StateSpan (Exercise) | Phase 2 |
+
+### StateSpan Model
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | UUID |
+| `category` | enum | Profile, Override, TempBasal, PumpMode, etc. |
+| `state` | string | State value within category |
+| `startMills` | long | Epoch milliseconds start |
+| `endMills` | long? | Epoch milliseconds end (null = active) |
+| `source` | string | Data source identifier |
+| `metadata` | object | Category-specific fields |
+| `originalId` | string | Source system ID for dedup |
+| `canonicalId` | string | Cross-source dedup group |
+
+### StateSpan Categories
+
+| Category | States | Equivalent Treatment eventType |
+|----------|--------|-------------------------------|
+| `Profile` | Active | `Profile Switch` |
+| `Override` | None, Custom | `Temporary Override`, `Temporary Target` |
+| `TempBasal` | Active, Cancelled | `Temp Basal` |
+| `PumpMode` | Automatic, Manual, Boost, Sleep, etc. | (deviceStatus only) |
+| `Sleep` | (user-defined) | ❌ |
+| `Exercise` | (user-defined) | ❌ |
+
+**Related Gaps**: GAP-V4-001, GAP-V4-002, GAP-STATESPAN-001
+
+**Source**: [StateSpan Standardization Proposal](../../docs/sdqctl-proposals/statespan-standardization-proposal.md)

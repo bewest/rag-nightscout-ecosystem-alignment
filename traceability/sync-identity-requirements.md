@@ -1116,3 +1116,105 @@ See [requirements.md](requirements.md) for the index.
 **Gap Reference**: N/A (testing requirement)
 
 **Source**: [Nocturne Rust oref Profile Analysis](../docs/10-domain/nocturne-rust-oref-profile-analysis.md)
+
+---
+
+## StateSpan Requirements
+
+---
+
+### REQ-STATESPAN-001: Time Range Query
+
+**Statement**: StateSpan API MUST support time-range queries with `from` and `to` parameters.
+
+**Rationale**: Core use case for state history visualization and analysis.
+
+**Scenarios**:
+- Query profile history for past 24 hours
+- Query active overrides during a specific period
+- Filter pump mode changes by date range
+
+**Verification**:
+- `GET /api/v3/state-spans?from=...&to=...` returns spans overlapping range
+- Spans fully outside range are excluded
+- Partially overlapping spans are included
+
+**Gap Reference**: GAP-STATESPAN-001
+
+---
+
+### REQ-STATESPAN-002: Category Filtering
+
+**Statement**: StateSpan API MUST support filtering by category enum.
+
+**Rationale**: Enables focused queries for specific state types.
+
+**Scenarios**:
+- Query only Profile spans
+- Query only Override spans
+- Query only PumpMode spans
+
+**Verification**:
+- `?category=Profile` returns only Profile spans
+- Invalid category returns 400 Bad Request
+
+**Gap Reference**: GAP-STATESPAN-001
+
+---
+
+### REQ-STATESPAN-003: Active Span Query
+
+**Statement**: StateSpan API MUST support querying currently active spans.
+
+**Rationale**: Common need to know current profile/override/pump mode.
+
+**Scenarios**:
+- Get currently active profile
+- Check if any override is active
+- Determine current pump mode
+
+**Verification**:
+- `?active=true` returns spans where `endMills` is null
+- `?active=false` returns spans with `endMills` set
+
+**Gap Reference**: GAP-STATESPAN-001
+
+---
+
+### REQ-STATESPAN-004: Treatment Auto-Translation
+
+**Statement**: Implementation SHOULD auto-generate StateSpans from treatment writes for backward compatibility.
+
+**Rationale**: Enables gradual migration without breaking existing treatment-based workflows.
+
+**Scenarios**:
+- Write Profile Switch treatment → Profile StateSpan created
+- Write Temporary Override treatment → Override StateSpan created
+- Write Temp Basal treatment → TempBasal StateSpan created
+
+**Verification**:
+- POST treatment with eventType "Profile Switch"
+- GET state-spans returns corresponding Profile span
+
+**Gap Reference**: GAP-STATESPAN-001
+
+---
+
+### REQ-STATESPAN-005: Source Tracking
+
+**Statement**: StateSpan MUST include `source` field identifying data origin.
+
+**Rationale**: Enables deduplication and source attribution in multi-uploader scenarios.
+
+**Scenarios**:
+- StateSpan from Loop has `source: "Loop"`
+- StateSpan from AAPS has `source: "AAPS"`
+- StateSpan from manual entry has `source: "manual"`
+
+**Verification**:
+- Created StateSpan includes source field
+- Source field is filterable in queries
+
+**Gap Reference**: GAP-STATESPAN-001
+
+**Source**: [StateSpan Standardization Proposal](../docs/sdqctl-proposals/statespan-standardization-proposal.md)

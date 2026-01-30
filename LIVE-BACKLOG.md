@@ -9,12 +9,13 @@
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| OQ-010 Extended: Nocturne systematic research | P2 | 9 remaining (#14-18, API #6-9); Item #13 complete |
+| OQ-010 Extended: Nocturne systematic research | P2 | 8 remaining (#15-18, API #6-9); Item #14 complete |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| OQ-010 Extended #14: StateSpan standardization | P2 | ✅ Complete (V3 extension recommended, 3 gaps, 5 reqs) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 3) | P0 | ✅ Complete (Ready Queue updated, #15 promoted) | 2026-01-30 |
 | OQ-010 Extended #13: Rust oref conformance testing | P2 | ✅ Complete (verified equivalent, 25 test vectors) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 2) | P0 | ✅ Complete (Ready Queue 4→7 items) | 2026-01-30 |
