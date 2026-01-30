@@ -26,6 +26,9 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 12 | ~~**Unit tests for kept tools**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `tools/test_verify_tools_unit.py` (17 tests) |
 | 13 | ~~**sdqctl usage documentation**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `docs/TOOLING-GUIDE.md` (+60 lines) |
 | 14 | **backlog-cycle-v3.conv** | P3 | Medium | Leverage ELIDE, mixed tools, cyclic prompts ([LIVE-BACKLOG](../../../LIVE-BACKLOG.md)) |
+| 15 | **Idiomatic sdqctl workflow integration** | P2 | Medium | Replace custom VERIFY patterns with `sdqctl verify` calls in .conv files |
+| 16 | **LSP verification setup research** | P2 | High | Document requirements for JS/TS LSP setup, Kotlin/Java LSP prerequisites, Swift limitations |
+| 17 | **Nightscout PR coherence review protocol** | P2 | Medium | Systematic review methodology for cgm-remote-monitor PRs against proposals/backlogs |
 
 ---
 
@@ -123,7 +126,141 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 ---
 
+## backlog-cycle-v3 Proposal Scope
+
+**Status**: Research Phase  
+**Source**: [LIVE-BACKLOG](../../../LIVE-BACKLOG.md)
+
+### Goals
+
+1. **Leverage ELIDE** - Use ELIDE directive more idiomatically for RUN output compression
+2. **Mixed tool patterns** - Combine python tools + sdqctl verify in single workflow
+3. **Cyclic prompt efficiency** - Reduce redundant context between iterations
+4. **Cross-backlog coordination** - Single workflow that can process items across domains
+
+### Design Questions
+
+| Question | Options | Notes |
+|----------|---------|-------|
+| Queue selection | Single backlog vs cross-domain | v2 uses Ready Queue centrally |
+| sdqctl verify integration | Pre-phase check vs phase 0 | Hygiene first? |
+| ELIDE granularity | Per-RUN vs per-phase | Performance vs readability |
+| Commit frequency | Per-cycle vs batch | Git hygiene vs efficiency |
+
+### Research Items
+
+- [ ] Analyze v2 cycle efficiency (tokens per task completion)
+- [ ] Document sdqctl verify patterns that replace custom python tools
+- [ ] Design cross-backlog task selection algorithm
+- [ ] Propose ELIDE placement strategy
+
+---
+
+## LSP Verification Setup Research
+
+**Status**: Research Phase  
+**Source**: [lsp-integration-proposal.md](../lsp-integration-proposal.md)
+
+### Phase 1: Line Validation (No LSP) - Ready for implementation
+
+Already partially implemented in `verify_refs.py`. Full implementation:
+- Validate `#L<N>` anchors against actual line counts
+- Validate `#L<start>-L<end>` ranges
+- Report line count mismatches
+
+**Effort**: 2 hours
+
+### Phase 2: JS/TS LSP Setup Requirements
+
+| Prerequisite | Command | Notes |
+|--------------|---------|-------|
+| Node.js 18+ | `node --version` | Already available |
+| typescript | `npm install -g typescript` | tsserver for JS/TS |
+| typescript-language-server | `npm install -g typescript-language-server` | LSP wrapper |
+| jsconfig.json in externals/ | Manual creation | Tells tsserver project roots |
+
+**Verification targets**:
+- `externals/cgm-remote-monitor/lib/` - ~500 JS files
+- `externals/oref0/lib/` - ~50 JS files
+
+**Implementation**:
+1. Create `tools/lsp_query.py` wrapper for tsserver
+2. Add `--lsp` flag to `verify_refs.py`
+3. Test with 10 cgm-remote-monitor refs
+
+**Effort**: 1 day
+
+### Phase 3: Kotlin/Java LSP Setup Requirements
+
+| Prerequisite | Command | Notes |
+|--------------|---------|-------|
+| JDK 11+ | `java --version` | Android projects need 11 |
+| Gradle wrapper | `./gradlew` in repo | AAPS has it |
+| kotlin-language-server | Download from GitHub | Kotlin IDE support |
+| eclipse.jdt.ls | Download from Eclipse | Java IDE support |
+
+**Verification targets**:
+- `externals/AndroidAPS/` - ~3000 Kotlin files
+- `externals/xDrip/` - ~500 Java files
+
+**Challenge**: Gradle sync required before LSP works (slow, ~2-5 min first time)
+
+**Effort**: 1-2 days
+
+### Phase 4: Swift LSP Limitations
+
+| Constraint | Impact |
+|------------|--------|
+| macOS only | No iOS frameworks on Linux |
+| Xcode required | sourcekit-lsp bundled with Xcode |
+| CI cost | macOS runners 10x expensive |
+
+**Recommendation**: Defer Swift LSP to CI-only verification on macOS runners. Use line-only validation locally.
+
+---
+
+## Nightscout PR Coherence Review Protocol
+
+**Status**: Proposed  
+**Scope**: cgm-remote-monitor, Trio, AAPS, LoopWorkspace
+
+### Purpose
+
+Ensure PR analysis aligns with:
+1. Existing gap documentation (GAP-* ids)
+2. Existing requirement documentation (REQ-* ids)  
+3. Active proposals in docs/sdqctl-proposals/
+4. Domain backlog items
+
+### Review Checklist
+
+| Step | Action | Tool |
+|------|--------|------|
+| 1 | Identify PR alignment impact | Manual from PR title/description |
+| 2 | Cross-ref with gaps.md | `grep GAP-XXX traceability/*-gaps.md` |
+| 3 | Cross-ref with requirements.md | `grep REQ-XXX traceability/*-requirements.md` |
+| 4 | Check for related proposals | `grep <keyword> docs/sdqctl-proposals/*.md` |
+| 5 | Update PR analysis doc | `docs/analysis/ecosystem-pr-analysis-*.md` |
+| 6 | Add backlog items if needed | Domain backlog files |
+
+### Priority PRs for Review
+
+From [ecosystem-pr-analysis-2026-01-29.md](../../analysis/ecosystem-pr-analysis-2026-01-29.md):
+
+| PR | Repo | Alignment Topic | Related Gaps |
+|----|------|-----------------|--------------|
+| #8422 | cgm-remote-monitor | API v3 limit fix | GAP-API-* |
+| #8421 | cgm-remote-monitor | MongoDB 5.x+ | Infrastructure |
+| #8405 | cgm-remote-monitor | Timezone display | GAP-TZ-* |
+| #4512 | AndroidAPS | Multi-insulin | REQ-MI-* |
+| #951 | Trio | FPU refactoring | GAP-ALG-* |
+| #935 | Trio | mmol/L delta | REQ-030, GAP-UNIT-* |
+
+---
+
 ## References
 
 - [.sdqctl/directives.yaml](../../../.sdqctl/directives.yaml) - Plugin manifest
 - [workflows/orchestration/](../../../workflows/orchestration/) - Backlog workflows
+- [lsp-integration-proposal.md](../lsp-integration-proposal.md) - Full LSP proposal
+- [ecosystem-pr-analysis-2026-01-29.md](../../analysis/ecosystem-pr-analysis-2026-01-29.md) - PR inventory

@@ -15,6 +15,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| backlog-cycle-v3 + LSP research + PR review queue | P2 | ✅ Queued to [tooling.md](docs/sdqctl-proposals/backlogs/tooling.md) + [nightscout-api.md](docs/sdqctl-proposals/backlogs/nightscout-api.md) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 18) | P0 | ✅ Complete (Ready Queue 2 items, tooling deprecation done) | 2026-01-30 |
 | Tooling deprecation evaluation (#11) | P3 | ✅ Complete (7 tools identified for deprecation) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 17) | P0 | ✅ Complete (Ready Queue 2 items, aid-algorithms medium items done) | 2026-01-30 |

@@ -203,6 +203,28 @@ Per OQ-010 extended research request (2026-01-30), focused analysis of Nocturne 
 
 ---
 
+## PR Coherence Review Queue
+
+Systematic review of cgm-remote-monitor PRs for alignment with proposals and backlogs.
+
+| # | Item | Priority | PR | Alignment Topic |
+|---|------|----------|-----|-----------------|
+| 14 | Review PR #8422 (API v3 limit) for OpenAPI compliance | P2 | #8422 | GAP-API-* |
+| 15 | Review PR #8405 (timezone) against GAP-TZ-* | P2 | #8405 | GAP-TZ-002/005/006/007 |
+| 16 | Review PR #8419 (Loop push tests) for coverage | P3 | #8419 | Loop integration |
+| 17 | Review PR #8421 (MongoDB 5x) against infrastructure gaps | P2 | #8421 | GAP-DB-001 |
+
+### Review Protocol
+
+1. **Fetch PR details** - Read PR description, changed files, comments
+2. **Cross-reference gaps** - Search `traceability/*-gaps.md` for related GAP-* IDs
+3. **Cross-reference requirements** - Search `traceability/*-requirements.md` for REQ-* IDs
+4. **Check proposals** - Search `docs/sdqctl-proposals/*.md` for related topics
+5. **Document findings** - Update gap status if PR addresses it
+6. **Update PR analysis** - Add to `docs/analysis/ecosystem-pr-analysis-*.md`
+
+---
+
 ## References
 
 - [docs/10-domain/cgm-remote-monitor-*-deep-dive.md](../../10-domain/) (6 audit files)
