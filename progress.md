@@ -8,6 +8,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nocturne eventType Handling Analysis (2026-01-30)
+
+OQ-010 Extended API Item #7: Compare eventType normalization behavior.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Analysis | `docs/10-domain/nocturne-eventtype-handling.md` | 280+ lines |
+
+**Key Findings**:
+- **High parity** - Both systems store as string, accept any value
+- **Case-sensitive** - Both use exact string matching
+- **28 vs ~25 types** - Nocturne enum has more types defined
+- **Minor gap** - Immutability not enforced in Nocturne
+
+**Gaps Identified**: GAP-TREAT-010 (immutability), GAP-TREAT-011 (missing TT type)
+
+**OQ-010 Extended**: API Item #7 of 4 complete (2/4)
+
+---
+
 ### Nocturne V3 API Parity Analysis (2026-01-30)
 
 OQ-010 Extended API Item #6: Comprehensive V3 API behavioral comparison.

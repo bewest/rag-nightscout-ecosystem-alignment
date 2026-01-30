@@ -687,6 +687,46 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 
 ---
 
+### GAP-TREAT-010: eventType Immutability Not Enforced in Nocturne
+
+**Scenario**: Treatment update behavior
+
+**Description**: cgm-remote-monitor enforces eventType immutability on update operations, preventing changes to eventType after creation. Nocturne does not enforce this constraint.
+
+**Evidence**:
+- cgm-remote-monitor: `lib/api3/generic/update/validate.js:21` - eventType in immutable list
+- Nocturne: No immutability check in TreatmentRepository update path
+
+**Impact**: Low - eventType changes are rare in practice. Could cause sync issues if eventType used for deduplication key changes.
+
+**Remediation**: Add eventType to immutable fields in Nocturne update validation.
+
+**Source**: [eventType Handling Analysis](../docs/10-domain/nocturne-eventtype-handling.md)
+
+**Status**: Open - Low Priority
+
+---
+
+### GAP-TREAT-011: Temporary Target Type Missing from Nocturne Enum
+
+**Scenario**: AAPS treatment compatibility
+
+**Description**: The `Temporary Target` eventType used by AAPS is not defined in Nocturne's TreatmentEventType enum, though unknown types are still accepted.
+
+**Evidence**:
+- AAPS: Uses `Temporary Target` for TT treatments
+- Nocturne: `TreatmentEventType.cs` - 28 types defined, no `TemporaryTarget`
+
+**Impact**: Low - unknown types accepted as strings, just not in typed enum for configuration.
+
+**Remediation**: Add `TemporaryTarget` to TreatmentEventType enum for completeness.
+
+**Source**: [eventType Handling Analysis](../docs/10-domain/nocturne-eventtype-handling.md)
+
+**Status**: Open - Low Priority
+
+---
+
 ## CGM Data Source Gaps
 
 ---

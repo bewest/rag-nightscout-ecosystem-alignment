@@ -50,13 +50,20 @@ Per OQ-010 extended research request (2026-01-30), focused analysis of Nocturne 
 **Repos:** nocturne, cgm-remote-monitor  
 **Focus:** Compare how treatment eventTypes are normalized/stored  
 **Questions:**
-- Are eventTypes case-sensitive in Nocturne vs cgm-remote-monitor?
-- Does Nocturne normalize whitespace/aliases?
-- Are unknown eventTypes accepted or rejected?
-- Treatment.EventType enum vs string handling?
+- ✅ Are eventTypes case-sensitive? → **YES** (both systems)
+- ✅ Does Nocturne normalize whitespace/aliases? → **NO** (stored as-is)
+- ✅ Are unknown eventTypes accepted or rejected? → **ACCEPTED** (both systems)
+- ✅ Treatment.EventType enum vs string handling? → **String storage, enum advisory**
 
-**Related Gap:** GAP-TREAT-001  
+**Related Gap:** GAP-TREAT-001, GAP-TREAT-010, GAP-TREAT-011
 **Deliverable:** `docs/10-domain/nocturne-eventtype-handling.md`
+**Status:** ✅ COMPLETE 2026-01-30
+
+**Key Findings:**
+- High parity - both store as string, accept any value
+- Case-sensitive matching in both systems
+- Nocturne has 28 enum types vs ~25 documented in cgm-remote-monitor
+- Minor gap: Immutability not enforced in Nocturne (GAP-TREAT-010)
 
 ### 8. [P2] Nocturne V2 DData endpoint completeness
 **Type:** Verification | **Effort:** Medium  
@@ -90,6 +97,7 @@ Per OQ-010 extended research request (2026-01-30), focused analysis of Nocturne 
 
 | Item | Date | Notes |
 |------|------|-------|
+| eventType normalization behavior | 2026-01-30 | Item #7; High parity, GAP-TREAT-010/011 (minor) |
 | V3 API behavioral parity testing | 2026-01-30 | Item #6; GAP-SYNC-041 (missing history), 40+ test scenarios |
 | Playwright E2E PR submission | 2026-01-29 | PR-SUBMISSION.md created, 18 tests ready |
 | Playwright adoption: Implementation | 2026-01-29 | 591 lines, 4 files, ready for PR |

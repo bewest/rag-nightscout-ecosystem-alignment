@@ -226,6 +226,25 @@ See: [`mapping/nightscout-roles-gateway/`](../nightscout-roles-gateway/)
 
 **Source**: `conformance/scenarios/nocturne-v3-parity/README.md`
 
+### Treatment eventType Handling
+
+| Aspect | cgm-remote-monitor | Nocturne | Parity |
+|--------|-------------------|----------|--------|
+| Storage type | String | String (varchar 255) | ✅ |
+| Case-sensitive | Yes | Yes | ✅ |
+| Validation | None | None (enum advisory) | ✅ |
+| Unknown types | Accepted | Accepted | ✅ |
+| Immutable on update | Yes | No | ⚠️ **GAP-TREAT-010** |
+| Defined types | ~25 | 28 (enum) | ✅ Similar |
+
+**Common eventTypes**: BG Check, Meal Bolus, Correction Bolus, Temp Basal, Profile Switch, Site Change, Sensor Start, Exercise, Note, Announcement
+
+**Nocturne-only types**: Suspend Pump, Resume Pump, Calibration, Pod Change, Transmitter Sensor Insert
+
+**Missing from Nocturne enum**: Temporary Target (but accepted as string)
+
+**Source**: `docs/10-domain/nocturne-eventtype-handling.md`
+
 ### Dexcom Share API (share2nightscout-bridge)
 
 | Endpoint | Purpose | Server |
