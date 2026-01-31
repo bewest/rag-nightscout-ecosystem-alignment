@@ -1299,11 +1299,13 @@ if (rVal) rVal.replace('ETC','Etc');
 - Time-range queries inefficient
 - Pump mode not queryable
 
-**Remediation**: Adopt StateSpan collection with V3 API endpoint (see proposal).
+**Remediation**: ~~Adopt StateSpan collection with V3 API endpoint (see proposal).~~ **Update 2026-01-31**: Nocturne author prefers StateSpan remain V4-only. For cgm-remote-monitor, clients must either:
+1. Use Nocturne with V4 API, or
+2. Compute time ranges client-side from treatments
 
 **Source**: [StateSpan Standardization Proposal](../docs/sdqctl-proposals/statespan-standardization-proposal.md)
 
-**Status**: Proposal drafted
+**Status**: ~~Proposal drafted~~ **V4-Only per author preference**
 
 ---
 

@@ -12,6 +12,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### StateSpan V4 Preference Update (2026-01-31)
+
+Processed human update regarding Nocturne author preference for StateSpan standardization.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Proposal Update | `docs/sdqctl-proposals/statespan-standardization-proposal.md` | V4-Only now preferred |
+| Gap Update | `traceability/sync-identity-gaps.md` | GAP-STATESPAN-001 status updated |
+
+**Key Update**: Nocturne author prefers StateSpans remain V4-only (not backported to V3).
+
+**Impact**:
+- Recommendation changed from "Option B: V3 Extension" to "Option A: V4-Only"
+- Clients wanting StateSpan must use Nocturne with V4 API
+- cgm-remote-monitor will not get StateSpan endpoints
+
+---
+
 ### Trusted Identity Providers Inventory (2026-01-31)
 
 Comprehensive inventory of identity providers and authentication mechanisms in the Nightscout ecosystem.

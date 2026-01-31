@@ -4,7 +4,6 @@
 > **Parent**: [ECOSYSTEM-BACKLOG.md](docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md)
 
 ---
-* **UPDATE**: Nocturne author states preference for StateSpans to stay a v4 proposal.
 
 ## Swift LSP Configuration
 
@@ -32,6 +31,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 58) | P0 | ✅ Complete (StateSpan V4 preference update, 5 files, +52 lines) | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 57) | P0 | ✅ Complete (IDP inventory research, 10 files, +192 lines, #23 complete) | 2026-01-31 |
 | Trusted Identity Providers Inventory | P2 | ✅ Complete - `docs/10-domain/trusted-identity-providers.md`, 3 gaps, 3 reqs | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 56) | P0 | ✅ Complete (Identity provider items queued #23-24, 4 files, +79 lines) | 2026-01-31 |

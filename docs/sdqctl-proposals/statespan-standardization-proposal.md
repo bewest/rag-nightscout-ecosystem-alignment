@@ -1,9 +1,22 @@
 # StateSpan Standardization Proposal
 
 > **Date**: 2026-01-30  
-> **Status**: Draft  
+> **Status**: Draft → **Updated 2026-01-31**  
 > **Related Items**: OQ-010 Extended #14  
 > **Related Gaps**: GAP-NOCTURNE-001, GAP-V4-001, GAP-V4-002
+
+---
+
+## ⚠️ Author Preference Update (2026-01-31)
+
+**Nocturne author states preference for StateSpans to remain a V4 proposal.**
+
+This means:
+- StateSpan should NOT be backported to V3
+- Ecosystem adoption requires clients to support V4 endpoints
+- cgm-remote-monitor V3 will not get StateSpan endpoints
+
+**Impact on Recommendation**: Option A (V4-Only) is now the preferred path per Nocturne author. Option B (V3 Extension) remains documented for reference but is not the recommended approach.
 
 ---
 
@@ -146,9 +159,22 @@ Extend treatment model with explicit time ranges instead of new collection.
 
 ---
 
-## Recommended: Option B - V3 Extension
+## Recommended: Option A - V4-Only (Per Author Preference)
 
-### Minimal Viable Subset
+> **Updated 2026-01-31**: Nocturne author prefers StateSpans remain V4-only.
+
+### Implication
+
+StateSpan will remain a Nocturne-specific V4 feature. Clients wanting StateSpan functionality must:
+1. Connect to Nocturne (not cgm-remote-monitor)
+2. Use V4 API endpoints
+3. Handle V4-specific response formats
+
+### Original V3 Extension Proposal (For Reference)
+
+The following V3 extension was originally proposed but is now **not recommended**:
+
+### Minimal Viable Subset (V3 - Deferred)
 
 For ecosystem adoption, start with **4 core categories**:
 
