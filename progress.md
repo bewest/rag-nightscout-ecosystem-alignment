@@ -12,6 +12,36 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Apple Watch Complications Survey (2026-01-31)
+
+Survey of watch apps and complications across the Nightscout iOS ecosystem.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Watch Complications Survey | `docs/10-domain/apple-watch-complications-survey.md` | 6 apps, 2 patterns, 4 gaps |
+
+**Key Findings**:
+- **Loop uses deprecated ClockKit** - needs migration to WidgetKit
+- **Trio complication is icon-only** - no glucose data displayed
+- **LoopCaregiver has no complications** - watch app only
+- **Two refresh patterns**: WCSession push (AID controllers) vs Direct API (Nightguard)
+- **Shared opportunity**: GlucoseComplicationKit, WatchSyncKit packages
+
+**Watch App Inventory**:
+| App | Watch | Complication | Data | Framework |
+|-----|-------|--------------|------|-----------|
+| Loop | ✅ | ✅ ClockKit | ✅ | WCSession |
+| Trio | ✅ | ✅ Icon only | ❌ | WCSession |
+| LoopCaregiver | ✅ | ❌ | N/A | WCSession |
+| Nightguard | ✅ | ✅ | ✅ | Direct API |
+| xDrip4iOS | ✅ | ✅ | ✅ | App Groups |
+
+**Gaps Identified**: GAP-WATCH-001/002/003/004
+
+**Requirements Added**: REQ-WATCH-001/002/003
+
+---
+
 ### Follower/Caregiver Feature Consolidation (2026-01-31)
 
 Comparison of LoopFollow vs LoopCaregiver with shared component proposals.

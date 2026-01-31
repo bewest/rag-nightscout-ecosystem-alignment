@@ -28,6 +28,8 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 64) | P0 | ✅ Complete (Watch complications survey, 6 apps, #7 complete) | 2026-01-31 |
+| Apple Watch Complications Survey | P3 | ✅ Complete - `docs/10-domain/apple-watch-complications-survey.md`, 4 gaps, 3 reqs | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 63) | P0 | ✅ Complete (Follower consolidation, 9 files, +267 lines, #5 complete) | 2026-01-31 |
 | Follower/Caregiver Feature Consolidation | P2 | ✅ Complete - `docs/10-domain/follower-caregiver-feature-consolidation.md`, 3 packages proposed, 4 gaps, 4 reqs | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 62) | P0 | ✅ Complete (Cross-platform testing design, 8 files, +173 lines, #4 complete) | 2026-01-31 |

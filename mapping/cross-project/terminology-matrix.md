@@ -4483,3 +4483,38 @@ TrioApp/             # Full iOS app
 **Gap References**: GAP-TEST-004 (no shared vectors), GAP-TEST-005 (no BLE mocks)
 
 **Source**: `docs/10-domain/cross-platform-testing-infrastructure-design.md`
+
+
+---
+
+### Apple Watch Complications Survey
+
+| Aspect | Loop | Trio | LoopCaregiver | Nightguard | xDrip4iOS |
+|--------|------|------|---------------|------------|-----------|
+| Watch App | ✅ Full | ✅ Full | ✅ Full | ✅ Full | ✅ Full |
+| Complication | ✅ ClockKit | ✅ WidgetKit | ❌ None | ✅ WidgetKit | ✅ WidgetKit |
+| Glucose Data | ✅ Yes | ❌ Icon only | N/A | ✅ Yes | ✅ Yes |
+| Data Refresh | WCSession | WCSession | WCSession | API poll | App Groups |
+| Sync Mechanism | Phone push | Phone push | Phone push | Direct NS | UserDefaults |
+
+**ClockKit vs WidgetKit**:
+| Aspect | ClockKit (Loop) | WidgetKit (Others) |
+|--------|-----------------|-------------------|
+| Status | ⚠️ Deprecated watchOS 9 | ✅ Current |
+| Provider | `CLKComplicationDataSource` | `TimelineProvider` |
+| Families | Legacy families | `.accessory*` |
+
+**Data Refresh Patterns**:
+| Pattern | Apps | Mechanism | Battery |
+|---------|------|-----------|---------|
+| WCSession Push | Loop, Trio, LoopCaregiver | Phone→Watch on update | Low |
+| Shared UserDefaults | xDrip4iOS | App Groups | Low |
+| Direct API | Nightguard | Watch fetches NS API | Higher |
+
+**Shared Component Opportunities**:
+- `GlucoseComplicationKit` - Unified views and entry models
+- `WatchSyncKit` - Standardized WCSession management
+
+**Gap References**: GAP-WATCH-001/002/003/004
+
+**Source**: `docs/10-domain/apple-watch-complications-survey.md`

@@ -1028,3 +1028,81 @@ See [requirements.md](requirements.md) for the index.
 **Source**: [cross-platform-testing-research.md](../docs/10-domain/cross-platform-testing-research.md)
 
 **Status**: ✅ Implemented (2026-01-31)
+
+
+---
+
+## Apple Watch Requirements
+
+### REQ-WATCH-001: Use WidgetKit for Watch Complications
+
+**Statement**: All iOS apps with watch complications MUST use WidgetKit TimelineProvider, not deprecated ClockKit.
+
+**Rationale**: ClockKit is deprecated in watchOS 9+. WidgetKit ensures future compatibility and access to new complication families.
+
+**Scenarios**:
+- Glucose display on accessoryCircular
+- Chart display on accessoryRectangular
+- Trend arrow on accessoryCorner
+
+**Verification**:
+- [ ] Loop migrated from ClockKit to WidgetKit
+- [x] Trio uses WidgetKit
+- [x] Nightguard uses WidgetKit
+- [x] xDrip4iOS uses WidgetKit
+
+**Gap Reference**: GAP-WATCH-001
+
+**Source**: [apple-watch-complications-survey.md](../docs/10-domain/apple-watch-complications-survey.md)
+
+**Status**: ⚠️ Partial (Loop needs migration)
+
+---
+
+### REQ-WATCH-002: Display Live Glucose on Complications
+
+**Statement**: Watch complications SHOULD display current glucose value, trend, and delta when sufficient display space is available.
+
+**Rationale**: Users rely on watch face for quick glucose checks. Icon-only complications require opening the app.
+
+**Scenarios**:
+- accessoryRectangular: glucose + trend + delta + timestamp
+- accessoryCircular: glucose value with trend arrow
+- accessoryCorner: glucose value
+
+**Verification**:
+- [x] Loop displays glucose data
+- [ ] Trio displays glucose (currently icon-only)
+- [ ] LoopCaregiver has complications
+- [x] Nightguard displays glucose
+- [x] xDrip4iOS displays glucose
+
+**Gap Reference**: GAP-WATCH-002, GAP-WATCH-003
+
+**Source**: [apple-watch-complications-survey.md](../docs/10-domain/apple-watch-complications-survey.md)
+
+**Status**: ⚠️ Partial (Trio and LoopCaregiver missing)
+
+---
+
+### REQ-WATCH-003: Shared Complication Components
+
+**Statement**: The ecosystem SHOULD provide shared SPM packages for watch complications (GlucoseComplicationKit) and phone-watch sync (WatchSyncKit).
+
+**Rationale**: Reduces code duplication across 5+ apps, ensures consistent UX, lowers maintenance burden.
+
+**Scenarios**:
+- Import GlucoseComplicationKit for views and entry models
+- Import WatchSyncKit for WCSession management
+- Apps customize appearance while sharing core logic
+
+**Verification**:
+- [ ] GlucoseComplicationKit package exists
+- [ ] WatchSyncKit package exists
+- [ ] At least 2 apps adopt shared packages
+
+**Gap Reference**: GAP-WATCH-004
+
+**Source**: [apple-watch-complications-survey.md](../docs/10-domain/apple-watch-complications-survey.md)
+
+**Status**: Open (packages not created)

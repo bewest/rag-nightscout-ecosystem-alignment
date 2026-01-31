@@ -991,3 +991,114 @@ osx_image: xcode12.4
 **Source**: `docs/10-domain/cross-platform-testing-research.md`
 
 **Status**: ✅ Addressed (2026-01-31) - `tools/accuracy_dashboard.py` implemented
+
+---
+
+## Apple Watch Gaps
+
+### GAP-WATCH-001: Loop Uses Deprecated ClockKit
+
+**Description**: Loop's `ComplicationController.swift` uses ClockKit which is deprecated in watchOS 9+.
+
+**Affected Systems**: Loop
+
+**Evidence**:
+- `WatchApp Extension/ComplicationController.swift` implements `CLKComplicationDataSource`
+- ClockKit deprecated in watchOS 9, replacement is WidgetKit
+- All other apps have migrated to WidgetKit
+
+**Impact**: 
+- Future watchOS versions may remove ClockKit support
+- New complication families only available in WidgetKit
+- Maintenance burden for deprecated API
+
+**Remediation**: 
+1. Migrate to WidgetKit `TimelineProvider` pattern
+2. Use `accessoryCircular`, `accessoryRectangular` families
+3. Match existing glucose chart functionality
+
+**Source**: `docs/10-domain/apple-watch-complications-survey.md`
+
+**Status**: Open
+
+---
+
+### GAP-WATCH-002: Trio Complication is Icon-Only
+
+**Description**: Trio's watch complication only shows the app icon, not glucose data.
+
+**Affected Systems**: Trio
+
+**Evidence**:
+- `Trio Watch Complication/TrioWatchComplication.swift` (106 lines)
+- Uses `StaticConfiguration` with `policy: .never`
+- Only displays "Trio" label and icon asset
+
+**Impact**: 
+- Users cannot see glucose on watch face
+- Must open watch app to see glucose
+- Inconsistent with Loop experience
+
+**Remediation**: 
+1. Add `GlucoseComplicationEntry` with real-time data
+2. Implement `TimelineProvider` with glucose refresh
+3. Use WCSession data already available
+
+**Source**: `docs/10-domain/apple-watch-complications-survey.md`
+
+**Status**: Open
+
+---
+
+### GAP-WATCH-003: LoopCaregiver Has No Complications
+
+**Description**: LoopCaregiver has watch app but no complications.
+
+**Affected Systems**: LoopCaregiver
+
+**Evidence**:
+- `LoopCaregiverWatchApp/` contains only watch app views
+- No WidgetKit target in project
+- `WatchConnectivityService.swift` already syncs glucose data
+
+**Impact**: 
+- Caregivers cannot see glucose on watch face
+- Must open watch app for glucose
+- Missing feature vs Nightguard
+
+**Remediation**: 
+1. Add WidgetKit target to LoopCaregiver
+2. Create `GlucoseComplicationProvider` using existing sync
+3. Support `accessoryRectangular` for multi-looper display
+
+**Source**: `docs/10-domain/apple-watch-complications-survey.md`
+
+**Status**: Open
+
+---
+
+### GAP-WATCH-004: No Shared Watch Components
+
+**Description**: Each app implements watch sync and complications independently.
+
+**Affected Systems**: Loop, Trio, LoopCaregiver, Nightguard, xDrip4iOS
+
+**Evidence**:
+- Loop: `WatchDataManager.swift` + `WatchContext.swift`
+- Trio: `WatchManager/` + `TrioWatchComplication.swift`
+- xDrip4iOS: `ComplicationSharedUserDefaultsModel.swift`
+- Different data models, sync patterns, view implementations
+
+**Impact**: 
+- Code duplication across 5+ apps
+- Inconsistent UX (different complication families)
+- Higher maintenance burden
+
+**Remediation**: 
+1. Create `GlucoseComplicationKit` SPM package
+2. Create `WatchSyncKit` SPM package
+3. Adopt in all apps for consistent experience
+
+**Source**: `docs/10-domain/apple-watch-complications-survey.md`
+
+**Status**: Open

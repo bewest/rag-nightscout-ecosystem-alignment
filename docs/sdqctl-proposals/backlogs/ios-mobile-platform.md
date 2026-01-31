@@ -286,17 +286,23 @@ Apps:
 - [ ] Propose shared GlucoseWidget component
 - [ ] Define widget data model matching Nightscout entries
 
-### #7: Apple Watch Complications Survey
+### #7: Apple Watch Complications Survey ✅
 
 **Priority**: P3  
-**Effort**: Low
+**Effort**: Low  
+**Status**: ✅ Complete (2026-01-31)
 
 **Description:** Document watch complication approaches across ecosystem.
 
 **Tasks:**
-- [ ] Inventory watch apps (Loop, Trio, Nightguard, xDrip4iOS)
-- [ ] Compare data refresh strategies
-- [ ] Identify shared complication opportunities
+- [x] Inventory watch apps (Loop, Trio, Nightguard, xDrip4iOS)
+- [x] Compare data refresh strategies
+- [x] Identify shared complication opportunities
+
+**Deliverables:**
+- `docs/10-domain/apple-watch-complications-survey.md`
+- GAP-WATCH-001/002/003/004
+- REQ-WATCH-001/002/003
 
 ### #8: HealthKit Integration Audit
 
