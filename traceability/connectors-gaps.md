@@ -853,3 +853,84 @@ osx_image: xcode12.4
 3. Accept line-only validation for Swift on Linux
 
 **Status**: Open (architectural limitation)
+
+---
+
+### GAP-VERIFY-002: No Cross-Language Algorithm Validation
+
+**Description**: Only JavaScript oref0 has a conformance runner. Kotlin AAPS and Swift Trio/Loop implementations lack automated parity testing.
+
+**Affected Systems**: AAPS (Kotlin), Trio (Swift), Loop (Swift)
+
+**Evidence**:
+- `conformance/runners/oref0-runner.js` exists (85 vectors, 31% pass)
+- No `aaps-runner.kt` or Swift runners exist
+- AAPS internal tests compare JS vs Kotlin but aren't integrated with workspace
+
+**Impact**:
+- Algorithm divergence between implementations goes undetected
+- Dosing differences between apps may affect patient safety
+- Documentation claims about "equivalent behavior" are unverified
+
+**Remediation**:
+1. Implement `aaps-runner.kt` using existing AAPS ReplayApsResultsTest infrastructure
+2. Add Swift runners for macOS CI (Trio, Loop)
+3. Cross-compare outputs for same test vectors
+
+**Source**: `docs/10-domain/cross-platform-testing-research.md`
+
+**Status**: Open
+
+---
+
+### GAP-VERIFY-003: Stale Conformance Test Vectors
+
+**Description**: Current 85 test vectors extracted from AAPS may not cover recent algorithm changes (Dynamic ISF, SMB scheduling, TDD weighting).
+
+**Affected Systems**: All algorithm implementations
+
+**Evidence**:
+- Vectors extracted 2026-01-29 from AAPS 3.x branch
+- oref0 shows 31% pass rate (69% divergent behavior)
+- No vectors for sigmoid ISF, SMB scheduling, or Trio-specific features
+
+**Impact**:
+- Tests pass but don't validate current algorithm behavior
+- New features untested
+- False confidence in conformance
+
+**Remediation**:
+1. Periodic vector refresh from live AAPS/Trio replay tests
+2. Add vectors specifically targeting Dynamic ISF, SMB, autotune
+3. Document expected divergence (intentional differences) vs bugs
+
+**Source**: `docs/10-domain/cross-platform-testing-research.md`
+
+**Status**: Open
+
+---
+
+### GAP-VERIFY-004: No Unified Accuracy Dashboard
+
+**Description**: No single-command way to see verification accuracy across all claim types (code refs, algorithm behavior, cross-language parity).
+
+**Affected Systems**: Verification tooling
+
+**Evidence**:
+- `make verify` runs multiple tools but doesn't aggregate accuracy
+- No tracking of accuracy trends over time
+- Different tools report in different formats
+
+**Impact**:
+- Cannot quickly assess documentation quality
+- Hard to prioritize verification improvements
+- No regression detection for claim accuracy
+
+**Remediation**:
+1. Create `tools/accuracy_dashboard.py` aggregating all verification outputs
+2. Add `make verify-accuracy` target
+3. Generate accuracy badge for README
+
+**Source**: `docs/10-domain/cross-platform-testing-research.md`
+
+**Status**: Open

@@ -1169,3 +1169,51 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Remediation**: Add VERSION file or commit hash to trio-oref/ directory; log version at algorithm startup.
 
 **Status**: Open
+
+---
+
+### GAP-TRIO-SWIFT-001: JS vs Swift Parity Validation
+
+**Description**: OpenAPSSwift is a parallel native Swift implementation of oref that requires ongoing validation against the JavaScript reference.
+
+**Affected Systems**: Trio-dev
+
+**Evidence**:
+- `externals/Trio-dev/Trio/Sources/APS/OpenAPSSwift/` - Complete Swift oref port
+- `OpenAPSSwift.swift` mirrors JS functions (makeProfile, determineBasal, iob, meal, autosense)
+- No automated cross-comparison test suite between JS and Swift outputs
+
+**Impact**: Algorithm drift between JS and Swift implementations could produce different dosing decisions for identical inputs.
+
+**Remediation**: 
+1. Implement automated regression testing comparing JS vs Swift outputs
+2. Add input capture (*Inputs structs already exist) for test replay
+3. Document expected differences vs bugs
+
+**Source**: `docs/10-domain/trio-comprehensive-analysis.md` Section 1B
+
+**Status**: Open
+
+---
+
+### GAP-TRIO-SWIFT-002: Sigmoid Formula Edge Cases
+
+**Description**: The DynamicISF.swift sigmoid implementation has a documented bug around divide-by-zero handling when `maxLimit == 1`.
+
+**Affected Systems**: Trio-dev
+
+**Evidence**:
+- `DynamicISF.swift:88-89` - Fudge factor: `if maxLimit == 1 { maxMinusOne = maxLimit + 0.01 - 1 }`
+- Code comment: "BUG: Note this fudge factor... produces unintuitive (and incorrect) results"
+- Unit tests document this edge case behavior
+
+**Impact**: Unintuitive/incorrect ISF calculations when autosensMax is set to 1.0 (edge configuration).
+
+**Remediation**: 
+1. Fix the mathematical formula to handle maxLimit == 1 correctly
+2. Or document safe configuration ranges (require maxLimit > 1.01)
+3. Add validation to prevent edge case configurations
+
+**Source**: `docs/10-domain/trio-comprehensive-analysis.md` Section 1B.3
+
+**Status**: Open

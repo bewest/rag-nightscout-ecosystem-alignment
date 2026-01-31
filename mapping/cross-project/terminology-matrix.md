@@ -3648,6 +3648,11 @@ Nocturne uses SignalR for real-time events. A TypeScript bridge translates to So
 | **Gap freshness** | Confirming documented gaps still exist |
 | **Mapping coverage** | % of source fields documented in mappings |
 | **Accuracy rate** | % of claims verified as correct |
+| **Static analysis** | Code verification without execution (LSP, tree-sitter) |
+| **Dynamic testing** | Code verification via execution (conformance runners) |
+| **Cross-language parity** | Same algorithm behavior across JS/Kotlin/Swift |
+| **Test vector** | Captured input/output pair for algorithm validation |
+| **Vector currency** | How recently test vectors were refreshed |
 
 **Verification Levels** (bottom-up):
 | Level | Focus | Method |

@@ -891,3 +891,99 @@ See [requirements.md](requirements.md) for the index.
 **Source**: [lsp-environment-check.md](../docs/10-domain/lsp-environment-check.md)
 
 **Status**: ⚠️ Partial (JS/TS ready, Swift/Kotlin limited)
+
+---
+
+### REQ-VERIFY-002: Cross-Language Algorithm Conformance
+
+**Statement**: Algorithm conformance runners MUST exist for at least 2 implementations to enable cross-language validation.
+
+**Rationale**: Different implementations (JS oref0, Kotlin AAPS, Swift Loop) should produce equivalent outputs for identical inputs; divergence may indicate bugs or undocumented changes.
+
+**Scenarios**:
+- Run 85 test vectors through oref0-runner.js and aaps-runner.kt
+- Compare outputs for numerical precision (0.01 tolerance)
+- Document intentional divergence vs bugs
+
+**Verification**:
+- `make conformance-algorithms` runs multiple runners
+- Cross-comparison report generated
+- >80% match rate for shared feature set
+
+**Gap Reference**: GAP-VERIFY-002
+
+**Source**: [cross-platform-testing-research.md](../docs/10-domain/cross-platform-testing-research.md)
+
+**Status**: ❌ Not implemented (only oref0 runner exists)
+
+---
+
+### REQ-VERIFY-003: Conformance Vector Currency
+
+**Statement**: Conformance test vectors SHOULD be refreshed quarterly to cover new algorithm features.
+
+**Rationale**: Algorithm implementations evolve; test vectors must keep pace with new features (Dynamic ISF, SMB scheduling, sigmoid formulas).
+
+**Scenarios**:
+- Extract new vectors from AAPS 3.x replay tests
+- Add vectors for Trio-specific features (SMB scheduling, override integration)
+- Validate coverage of all documented algorithm features
+
+**Verification**:
+- Vector extraction date tracked in `conformance/vectors/README.md`
+- Coverage report shows >90% of documented features have vectors
+- Quarterly review process documented
+
+**Gap Reference**: GAP-VERIFY-003
+
+**Source**: [cross-platform-testing-research.md](../docs/10-domain/cross-platform-testing-research.md)
+
+**Status**: ⚠️ Partial (vectors exist but dated 2026-01-29)
+
+---
+
+### REQ-VERIFY-004: CI Matrix Coverage
+
+**Statement**: The CI pipeline MUST run static analysis on all PRs and conformance tests on algorithm-related changes.
+
+**Rationale**: Automated verification prevents documentation drift and algorithm regression.
+
+**Scenarios**:
+- PR to `docs/` triggers static verification (refs, terminology)
+- PR to `conformance/` or algorithm docs triggers full conformance suite
+- macOS runner for Swift verification (10x cost but necessary)
+
+**Verification**:
+- GitHub Actions workflow with matrix (Linux + macOS)
+- CI blocks merges with failing verification
+- Badge in README shows verification status
+
+**Gap Reference**: GAP-VERIFY-002, GAP-VERIFY-004
+
+**Source**: [cross-platform-testing-research.md](../docs/10-domain/cross-platform-testing-research.md)
+
+**Status**: ⚠️ Partial (Linux CI exists, macOS not configured)
+
+---
+
+### REQ-VERIFY-005: Accuracy Reporting Dashboard
+
+**Statement**: The verification system SHOULD provide a unified accuracy dashboard showing claim verification status by category.
+
+**Rationale**: Single-command visibility into documentation quality enables prioritization and trend tracking.
+
+**Scenarios**:
+- Run `make verify-accuracy` to see breakdown
+- Categories: code refs, algorithm claims, cross-language parity
+- Historical tracking for regression detection
+
+**Verification**:
+- `tools/accuracy_dashboard.py` exists
+- Output shows accuracy percentage per claim type
+- CI generates accuracy badge
+
+**Gap Reference**: GAP-VERIFY-004
+
+**Source**: [cross-platform-testing-research.md](../docs/10-domain/cross-platform-testing-research.md)
+
+**Status**: ❌ Not implemented

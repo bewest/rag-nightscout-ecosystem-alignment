@@ -6,13 +6,13 @@ This document is an index of requirements organized by domain.
 
 - [Aid Algorithms](aid-algorithms-requirements.md) - 53 requirements
 - [Cgm Sources](cgm-sources-requirements.md) - 18 requirements
-- [Connectors](connectors-requirements.md) - 42 requirements
+- [Connectors](connectors-requirements.md) - 46 requirements
 - [Nightscout Api](nightscout-api-requirements.md) - 42 requirements
 - [Pumps](pumps-requirements.md) - 10 requirements
 - [Sync Identity](sync-identity-requirements.md) - 67 requirements
 - [Treatments](treatments-requirements.md) - 35 requirements
 
-Total: 267 requirements
+Total: 271 requirements
 
 ## Coverage Status
 

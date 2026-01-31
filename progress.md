@@ -12,6 +12,40 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Cross-Platform Testing Harness Research (2026-01-31)
+
+Research and requirements for cross-platform builds and testing harness vs static analysis.
+
+**Deliverable**: `docs/10-domain/cross-platform-testing-research.md` (13KB)
+
+| Approach | Best For | Accuracy |
+|----------|----------|----------|
+| Static Analysis (LSP/Tree-sitter) | Symbol resolution, API shape | 70-85% |
+| Unit Testing (Conformance runners) | Algorithm behavior, precision | 95-100% |
+| **Hybrid (Recommended)** | Full coverage | 90%+ |
+
+**Key Findings**:
+- Existing: oref0-runner.js (85 vectors, 31% pass)
+- Needed: aaps-runner.kt for cross-language validation
+- Swift runners require macOS CI (10x cost)
+- Tree-sitter works cross-platform without builds
+
+**Requirements Proposed**:
+- REQ-TEST-001: Static analysis baseline (tree-sitter)
+- REQ-TEST-002: LSP integration for JS/TS
+- REQ-TEST-003: Conformance runner parity (2+ languages)
+- REQ-TEST-004: CI matrix coverage
+- REQ-TEST-005: Accuracy reporting
+
+**Gaps Identified**:
+- GAP-TEST-001: No cross-language validation
+- GAP-TEST-002: No Swift validation on Linux
+- GAP-TEST-003: Stale test vectors
+
+**Roadmap**: 4 phases over 5 weeks (static analysis → AAPS runner → Swift runners → dashboard)
+
+---
+
 ### LSP Environment Suitability Check (2026-01-31)
 
 Comprehensive probe of LSP tooling availability for code verification.
@@ -40,11 +74,12 @@ Comprehensive probe of LSP tooling availability for code verification.
 
 Complete analysis of Trio's oref integration, Nightscout sync patterns, and APSManager architecture comparison with Loop.
 
-**Deliverable**: `docs/10-domain/trio-comprehensive-analysis.md` (15KB)
+**Deliverable**: `docs/10-domain/trio-comprehensive-analysis.md` (20KB)
 
 | Component | Key Findings |
 |-----------|--------------|
 | **oref Integration** | Embedded JavaScriptCore, trio-oref/lib/ bundles, SMB scheduling customizations |
+| **OpenAPSSwift Port** | Native Swift implementation with DynamicISF (log+sigmoid), dual validation architecture |
 | **Nightscout Sync** | 7 upload pipelines, 2-second throttle, API v1 only |
 | **APSManager vs Loop** | JS bridge vs native Swift, 4 vs 1 prediction curves, CoreData vs HealthKit |
 
@@ -53,6 +88,8 @@ Complete analysis of Trio's oref integration, Nightscout sync patterns, and APSM
 - GAP-TRIO-SYNC-002: Limited Deduplication
 - GAP-TRIO-SYNC-003: No Offline Queue
 - GAP-TRIO-OREF-001: oref Bundle Version Tracking
+- GAP-TRIO-SWIFT-001: JS vs Swift Parity Validation
+- GAP-TRIO-SWIFT-002: Sigmoid Formula Edge Cases
 
 **Requirements Added**:
 - REQ-TRIO-001: SMB Scheduling Support
@@ -61,18 +98,17 @@ Complete analysis of Trio's oref integration, Nightscout sync patterns, and APSM
 
 **5 Facets Updated**:
 1. ✅ Deep-dive: `trio-comprehensive-analysis.md`
-2. ✅ Gaps: 4 new gaps in sync-identity-gaps.md + aid-algorithms-gaps.md
+2. ✅ Gaps: 6 new gaps in sync-identity-gaps.md + aid-algorithms-gaps.md
 3. ✅ Requirements: 3 new REQ-TRIO-* in sync-identity-requirements.md
 4. ✅ Terminology: Upload pipeline terms + manager comparison
 5. ✅ Progress: This entry
 
-**Source Files Analyzed**:
-- `externals/Trio/Trio/Sources/APS/APSManager.swift`
-- `externals/Trio/Trio/Sources/APS/OpenAPS/OpenAPS.swift`
-- `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift`
-- `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift`
-- `externals/Trio/trio-oref/lib/` (iob, determine-basal)
-- `externals/LoopWorkspace/Loop/Loop/Managers/LoopDataManager.swift`
+**Source Files Analyzed (Trio-dev)**:
+- `externals/Trio-dev/Trio/Sources/APS/APSManager.swift` (~1345 lines)
+- `externals/Trio-dev/Trio/Sources/APS/OpenAPSSwift/` (OpenAPSSwift.swift, DynamicISF.swift, DetermineBasalGenerator.swift)
+- `externals/Trio-dev/Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift` (~1200 lines)
+- `externals/Trio-dev/trio-oref/lib/` (determine-basal.js, iob/, meal/, profile/)
+- `externals/LoopWorkspace/Loop/Loop/Managers/LoopDataManager.swift` (~2600 lines)
 
 ---
 

@@ -2,15 +2,17 @@
 
 > **Purpose**: Complete analysis of Trio's oref integration, Nightscout sync patterns, and APSManager architecture  
 > **Parent**: LIVE-BACKLOG.md - Trio analysis items  
-> **Last Updated**: 2026-01-31
+> **Last Updated**: 2026-01-31  
+> **Sources**: `externals/Trio-dev/` (primary), `externals/Trio/` (reference)
 
 ## Executive Summary
 
 Trio is an iOS AID (Automated Insulin Delivery) system that integrates the oref1 algorithm via embedded JavaScriptCore. This analysis covers three key areas:
 
 1. **trio-oref/lib/** - JavaScript algorithm bundles and their integration
-2. **NightscoutManager/NightscoutAPI** - Sync patterns with Nightscout
-3. **APSManager vs LoopDataManager** - Architectural comparison with Loop
+2. **OpenAPSSwift/** - Native Swift port of oref (NEW in Trio-dev)
+3. **NightscoutManager/NightscoutAPI** - Sync patterns with Nightscout
+4. **APSManager vs LoopDataManager** - Architectural comparison with Loop
 
 ---
 
@@ -111,6 +113,120 @@ function enable_smb(profile, microBolusAllowed, meal_data, bg, target_bg, high_b
 | Override Integration | Not present | `oref2_variables.overridePercentage` |
 | TDD Tracking | Basic | Enhanced 10-day weighted average |
 | Middleware | Not present | Custom JS injection point |
+
+---
+
+## 1B. OpenAPSSwift - Native Swift oref Port (Trio-dev)
+
+Trio-dev introduces a complete native Swift implementation of oref alongside the JavaScript version, enabling validation and potential performance improvements.
+
+### 1B.1 Directory Structure
+
+```
+Trio/Sources/APS/OpenAPSSwift/
+├── OpenAPSSwift.swift           # Entry point (makeProfile, determineBasal, iob, meal, autosense)
+├── JSONBridge.swift             # JSON ↔ Swift model mapping
+├── Profile/
+│   └── ProfileGenerator.swift   # Profile generation
+├── Iob/
+│   └── IobGenerator.swift       # IOB calculation
+├── Meal/
+│   └── MealGenerator.swift      # COB/meal calculation
+├── Autosens/
+│   └── AutosensGenerator.swift  # Sensitivity analysis (8h + 24h ratios)
+├── DetermineBasal/
+│   ├── DetermineBasalGenerator.swift  # Main algorithm entry
+│   ├── DynamicISF.swift              # Logarithmic + Sigmoid ISF
+│   ├── DosingEngine.swift            # Temp basal/SMB decisions
+│   ├── TempBasalFunctions.swift      # Rate calculations
+│   └── DeterminationError.swift      # Error types
+├── Forecasts/                    # Glucose prediction
+├── Models/                       # Data structures
+└── Utils/                        # Helpers
+```
+
+### 1B.2 Entry Points (OpenAPSSwift.swift)
+
+| Function | Purpose | Returns |
+|----------|---------|---------|
+| `makeProfile()` | Generate algorithm profile from settings | `(OrefFunctionResult, MakeProfileInputs?)` |
+| `determineBasal()` | Main dosing decision | `(OrefFunctionResult, DetermineBasalInputs?)` |
+| `iob()` | Calculate insulin on board | `(OrefFunctionResult, IobInputs?)` |
+| `meal()` | Calculate carb absorption | `(OrefFunctionResult, MealInputs?)` |
+| `autosense()` | Calculate sensitivity ratio | `(OrefFunctionResult, AutosensInputs?)` |
+
+Each function returns a tuple with:
+1. Result (success JSON or failure error)
+2. Input capture (for debugging/comparison)
+
+### 1B.3 Dynamic ISF Implementation (DynamicISF.swift)
+
+The Swift port implements both Dynamic ISF formulas:
+
+```swift
+// DynamicISF.swift:80-94
+if preferences.sigmoid {
+    // Sigmoid formula
+    let autosensInterval = maxLimit - minLimit
+    let bgDev = (bg - profileTarget) * 0.0555
+    let tddFactor = clampedTddRatio
+    let exponent = bgDev * preferences.adjustmentFactorSigmoid * tddFactor + fixOffset
+    newRatio = autosensInterval / (1 + Decimal.exp(-exponent)) + minLimit
+} else {
+    // Logarithmic formula (original)
+    newRatio = sensitivity * preferences.adjustmentFactor * tdd 
+             * (Decimal.log((bg / insulinFactor) + 1) / 1800)
+}
+```
+
+**Key Calculations**:
+- `insulinFactor` = 120 - insulin peak time (55 for ultra-rapid, 65 for rapid-acting)
+- `tdd24h_14d_Ratio` = weightedAverage / average_total_data (clamped by autosens limits)
+- Final ratio clamped between `autosensMin` and `autosensMax`
+
+### 1B.4 Autosense Dual Calculation
+
+```swift
+// OpenAPSSwift.swift:241-265
+let ratio8h = try AutosensGenerator.generate(
+    ...,
+    maxDeviations: 96,   // 8 hours × 12 readings/hour
+    ...
+)
+
+let ratio24h = try AutosensGenerator.generate(
+    ...,
+    maxDeviations: 288,  // 24 hours × 12 readings/hour
+    ...
+)
+
+// Take the more conservative ratio
+let lowestRatio = ratio8h.ratio < ratio24h.ratio ? ratio8h : ratio24h
+```
+
+### 1B.5 JS vs Swift Comparison Architecture
+
+The codebase supports running both implementations for validation:
+
+```
+APSManager.swift
+├── openAPS.determineBasal()       # JavaScript via JavaScriptWorker
+└── OpenAPSSwift.determineBasal()  # Native Swift
+    ↓
+    JSONCompare logging             # Track differences
+    ↓
+    useSwiftOref flag              # Choose which result to use
+```
+
+### 1B.6 Swift-Specific Improvements
+
+| Aspect | JavaScript | Swift |
+|--------|------------|-------|
+| Type Safety | Dynamic JSON | Strong Codable types |
+| Debugging | Console.error → log files | Native Xcode breakpoints |
+| Performance | JSContext allocation overhead | Native code |
+| Validation | Manual JSON parsing | Compile-time guarantees |
+| Input Capture | N/A | Returns `*Inputs` structs for replay |
 
 ---
 
@@ -376,6 +492,22 @@ doseStore.basalProfile = newValue.basalRateSchedule
 
 **Remediation**: Add version file or commit hash to trio-oref/ directory.
 
+### GAP-TRIO-SWIFT-001: JS vs Swift Parity Validation
+
+**Description**: OpenAPSSwift is a parallel implementation that requires ongoing validation against the JS reference.
+
+**Impact**: Algorithm drift between JS and Swift implementations could produce different dosing decisions.
+
+**Remediation**: Implement automated regression testing comparing JS vs Swift outputs for identical inputs.
+
+### GAP-TRIO-SWIFT-002: Sigmoid Formula Edge Cases
+
+**Description**: The DynamicISF.swift sigmoid implementation has a documented bug around divide-by-zero handling when `maxLimit == 1`.
+
+**Impact**: Unintuitive/incorrect ISF calculations in edge cases.
+
+**Remediation**: Fix the fudge factor logic or document safe configuration ranges.
+
 ---
 
 ## Requirements Extracted
@@ -410,13 +542,17 @@ doseStore.basalProfile = newValue.basalRateSchedule
 
 | File | Lines | Purpose |
 |------|-------|---------|
-| `externals/Trio/Trio/Sources/APS/APSManager.swift` | ~900 | Loop orchestration |
-| `externals/Trio/Trio/Sources/APS/OpenAPS/OpenAPS.swift` | ~908 | Algorithm bridge |
-| `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift` | ~600 | Sync orchestration |
-| `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift` | ~576 | HTTP client |
-| `externals/Trio/trio-oref/lib/iob/index.js` | ~85 | IOB calculation |
-| `externals/Trio/trio-oref/lib/determine-basal/determine-basal.js` | ~2000 | Main algorithm |
-| `externals/LoopWorkspace/Loop/Loop/Managers/LoopDataManager.swift` | ~1200 | Loop comparison |
+| `externals/Trio-dev/Trio/Sources/APS/APSManager.swift` | ~1345 | Loop orchestration |
+| `externals/Trio-dev/Trio/Sources/APS/OpenAPS/OpenAPS.swift` | ~100 | JavaScript bridge |
+| `externals/Trio-dev/Trio/Sources/APS/OpenAPSSwift/OpenAPSSwift.swift` | ~273 | Native Swift oref entry |
+| `externals/Trio-dev/Trio/Sources/APS/OpenAPSSwift/DetermineBasal/DetermineBasalGenerator.swift` | ~200 | Swift determine-basal |
+| `externals/Trio-dev/Trio/Sources/APS/OpenAPSSwift/DetermineBasal/DynamicISF.swift` | ~170 | Dynamic ISF (log+sigmoid) |
+| `externals/Trio-dev/Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift` | ~1200 | Sync orchestration |
+| `externals/Trio-dev/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift` | ~300 | HTTP client |
+| `externals/Trio-dev/trio-oref/lib/iob/` | ~200 | IOB calculation (JS) |
+| `externals/Trio-dev/trio-oref/lib/determine-basal/determine-basal.js` | ~2000 | Main algorithm (JS) |
+| `externals/Trio-dev/trio-oref/lib/profile/index.js` | ~150 | Profile generation (JS) |
+| `externals/LoopWorkspace/Loop/Loop/Managers/LoopDataManager.swift` | ~2600 | Loop comparison |
 
 ---
 
@@ -434,3 +570,4 @@ doseStore.basalProfile = newValue.basalRateSchedule
 | Date | Author | Changes |
 |------|--------|---------|
 | 2026-01-31 | Agent | Initial comprehensive analysis covering oref, Nightscout sync, and APSManager comparison |
+| 2026-01-31 | Agent | Added Section 1B: OpenAPSSwift native Swift oref port analysis from Trio-dev; updated source files to Trio-dev paths |

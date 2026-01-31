@@ -2,7 +2,7 @@
 
 > **Domain**: Nightscout collections, API v3, authentication  
 > **Parent**: [ECOSYSTEM-BACKLOG.md](../ECOSYSTEM-BACKLOG.md)  
-> **Last Updated**: 2026-01-30
+> **Last Updated**: 2026-01-31
 
 Covers: cgm-remote-monitor, Nocturne, entries, treatments, devicestatus, profile
 
@@ -12,13 +12,7 @@ Covers: cgm-remote-monitor, Nocturne, entries, treatments, devicestatus, profile
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | ~~API v3 pagination compliance~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/api-v3-pagination-compliance.md` |
-| 2 | ~~WebSocket event coverage~~ | ~~P3~~ | ~~Medium~~ | ✅ COMPLETE 2026-01-30 |
-| 3 | ~~Verify devicestatus/entries claims~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - [Accuracy backlog #12-14](documentation-accuracy.md) verified 2026-01-29 |
-| 4 | ~~Verify GAP-API-* freshness~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/gap-api-freshness-verification.md` |
-| 5 | ~~Audit REQ-API-* → OpenAPI alignment~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/req-api-openapi-alignment-audit.md` |
-| 18 | ~~**cgm-remote-monitor analysis depth matrix**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/cgm-remote-monitor-analysis-depth-matrix.md` |
-| 19 | ~~**PR recommendation packaging**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/nightscout-maintainer-recommendations.md` |
+| *(All P1/P2 items complete - see Completed section)* | | | |
 
 ---
 
@@ -211,9 +205,9 @@ Source: `externals/Trio-dev/` (LIVE-BACKLOG 2026-01-30)
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 20 | **Trio NightscoutManager.swift analysis** | P2 | Medium | Analyze upload/download sync logic, treatment handling |
-| 21 | **Trio NightscoutAPI.swift protocol mapping** | P2 | Low | Map API calls to Nightscout endpoints |
-| 22 | **Trio NightscoutTreatment.swift model comparison** | P2 | Low | Compare treatment model with OpenAPI spec |
+| 20 | ~~**Trio NightscoutManager.swift analysis**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/trio-comprehensive-analysis.md` (Section 2) |
+| 21 | ~~**Trio NightscoutAPI.swift protocol mapping**~~ | ~~P2~~ | ~~Low~~ | ✅ COMPLETE - `docs/10-domain/trio-comprehensive-analysis.md` (Section 2.3) |
+| 22 | ~~**Trio NightscoutTreatment.swift model comparison**~~ | ~~P2~~ | ~~Low~~ | ✅ COMPLETE - GAP-TRIO-SYNC-001 documents model differences |
 
 ---
 

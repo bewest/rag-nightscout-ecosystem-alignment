@@ -17,14 +17,14 @@ This document is an index of gaps organized by domain.
 | Domain | Gap Count | File | Last Verified |
 |--------|-----------|------|---------------|
 | nightscout-api | 64 | [nightscout-api-gaps.md](nightscout-api-gaps.md) | 2026-01-30 |
-| aid-algorithms | 61 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-01-31 (GAP-TRIO-OREF-001 added) |
+| aid-algorithms | 63 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-01-31 (GAP-TRIO-SWIFT-001/002 added) |
 | sync-identity | 60 | [sync-identity-gaps.md](sync-identity-gaps.md) | 2026-01-31 (GAP-TRIO-SYNC-* added) |
 | cgm-sources | 52 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-01-29 |
-| connectors | 40 | [connectors-gaps.md](connectors-gaps.md) | 2026-01-31 (GAP-VERIFY-001 added) |
+| connectors | 44 | [connectors-gaps.md](connectors-gaps.md) | 2026-01-31 (GAP-VERIFY-002/003/004 added) |
 | treatments | 25 | [treatments-gaps.md](treatments-gaps.md) | - |
 | pumps | 9 | [pumps-gaps.md](pumps-gaps.md) | - |
 
-Total: 311 gaps across 7 domains
+Total: 317 gaps across 7 domains
 
 ## Verification Status
 

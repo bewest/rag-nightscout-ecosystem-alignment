@@ -12,12 +12,14 @@
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| Cross-platform build/test harness research | P2 | Static analysis vs unit testing trade-offs |
+| *(empty - all items processed)* | | |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 39) | P0 | ✅ Complete (Trio-dev OpenAPSSwift + cross-platform research, 5 gaps, 4 reqs, 5 items queued) | 2026-01-31 |
+| Cross-platform build/test harness research | P2 | ✅ Complete (`docs/10-domain/cross-platform-testing-research.md`) | 2026-01-31 |
 | LSP environment check (Swift, tree-sitter, tsserver) | P2 | ✅ Complete (Swift 6.2.3 via swiftly, tsserver ready, 6 items queued) | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 38) | P0 | ✅ Complete (sdqctl integration, 3 Makefile targets) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 37) | P0 | ✅ Complete (Trio bridge analysis, 3 gaps, 5 facets) | 2026-01-30 |

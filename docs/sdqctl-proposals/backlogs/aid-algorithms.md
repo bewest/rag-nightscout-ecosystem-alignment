@@ -2,7 +2,7 @@
 
 > **Domain**: Closed-loop algorithms, dosing logic, predictions  
 > **Parent**: [ECOSYSTEM-BACKLOG.md](../ECOSYSTEM-BACKLOG.md)  
-> **Last Updated**: 2026-01-30
+> **Last Updated**: 2026-01-31
 
 Covers: Loop, AAPS, Trio, oref0/oref1, OpenAPS
 
@@ -13,13 +13,8 @@ Covers: Loop, AAPS, Trio, oref0/oref1, OpenAPS
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
 | 1 | Algorithm conformance: AAPS runner | P2 | High | Phase 3 - Kotlin runner for JS vs KT comparison |
-| 2 | Algorithm conformance: Loop runner | P3 | High | Swift runner for semantic validation |
-| 3 | ~~Verify algorithm comparison claims~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - [Accuracy backlog #11](documentation-accuracy.md) verified 100% accurate |
-| 4 | ~~Verify GAP-ALG-* freshness~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - [Accuracy backlog #19](documentation-accuracy.md) verified 100% accurate |
-| 5 | **Trio-dev oref integration mapping** | P2 | Medium | Map `trio-oref/lib/` JS files to oref0, document divergence |
-| 6 | **Trio Nightscout sync analysis** | P2 | Medium | Analyze `NightscoutManager.swift`, `NightscoutAPI.swift` for treatment/profile sync |
-| 7 | ~~**Trio OpenAPS.swift bridge analysis**~~ | ~~P2~~ | ~~Low~~ | ✅ COMPLETE - `docs/10-domain/trio-openaps-bridge-analysis.md` |
-| 8 | **Trio APSManager comparison** | P2 | Medium | Compare `APSManager.swift` (55KB) with Loop's LoopDataManager |
+| 2 | Algorithm conformance: Loop runner | P3 | High | Swift runner for semantic validation (macOS CI only) |
+| 9 | **OpenAPSSwift parity testing** | P2 | Medium | Validate Trio-dev JS vs Swift outputs ([GAP-TRIO-SWIFT-001](../../../traceability/aid-algorithms-gaps.md)) |
 
 ---
 
@@ -27,6 +22,12 @@ Covers: Loop, AAPS, Trio, oref0/oref1, OpenAPS
 
 | Item | Date | Notes |
 |------|------|-------|
+| **Trio-dev OpenAPSSwift analysis** | 2026-01-31 | Native Swift oref port, DynamicISF (log+sigmoid), GAP-TRIO-SWIFT-001/002 |
+| **Trio comprehensive analysis** | 2026-01-31 | 573 lines, oref integration, Nightscout sync, APSManager (6 gaps, 3 reqs) |
+| Trio-dev oref integration mapping | 2026-01-31 | trio-oref/lib/ JS bundles analyzed |
+| Trio Nightscout sync analysis | 2026-01-31 | 7 pipelines, 2s throttle, API v1 |
+| Trio OpenAPS.swift bridge analysis | 2026-01-31 | JavaScriptCore integration |
+| Trio APSManager comparison | 2026-01-31 | vs Loop LoopDataManager |
 | Semantic equivalence for Loop | 2026-01-29 | 400 lines, 4 gaps (ALG-013 to 016), direct comparison not feasible |
 | Document AAPS vs oref0 divergence | 2026-01-29 | 280 lines, 4 gaps (ALG-009 to 012), core oref0 94% pass |
 | Map algorithm terminology | 2026-01-29 | +95 lines, ISF/CR/DIA/UAM/SMB/Autosens |
