@@ -864,7 +864,7 @@ osx_image: xcode12.4
 
 **Evidence**:
 - `conformance/runners/oref0-runner.js` exists (85 vectors, 31% pass)
-- `conformance/runners/aaps-runner.kt` scaffolding complete (497 lines)
+- `conformance/runners/aaps-runner.kt` build ready (517 lines, `make aaps-runner`)
 - AAPS internal tests compare JS vs Kotlin but aren't integrated with workspace
 
 **Impact**:
@@ -874,13 +874,14 @@ osx_image: xcode12.4
 
 **Remediation**:
 1. ~~Implement `aaps-runner.kt` scaffolding~~ ✅ Done (2026-01-31)
-2. Complete aaps-runner.kt build integration and execution logic
-3. Add Swift runners for macOS CI (Trio, Loop)
-4. Cross-compare outputs for same test vectors
+2. ~~Build integration (`make aaps-runner`)~~ ✅ Done (2026-01-31)
+3. Integrate AAPS core algorithm dependencies for execution
+4. Add Swift runners for macOS CI (Trio, Loop)
+5. Cross-compare outputs for same test vectors
 
 **Source**: `docs/10-domain/cross-platform-testing-research.md`
 
-**Status**: In Progress - Kotlin scaffolding complete, build integration pending
+**Status**: In Progress - Kotlin build ready, algorithm execution pending (requires AAPS deps)
 
 ---
 

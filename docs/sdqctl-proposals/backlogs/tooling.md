@@ -12,13 +12,13 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt scaffolding ✅ (implementation pending) |
+| 1 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt ✅ (build ready, execution pending) |
 | 2 | sdqctl VERIFY .conv directive (Phase 2) | P3 | Medium | CLI complete, directive parsing pending |
 | 3 | ~~LSP-based claim verification (Phase 2+)~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `verify_refs.py --semantic` flag, symbol validation via lsp_query.py |
 | 24 | ~~**Create `tools/lsp_query.py` for tsserver**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - symbols/type/definition/references queries via tsserver |
 | 25 | ~~**Install tree-sitter-cli + parsers**~~ | ~~P2~~ | ~~Low~~ | ✅ COMPLETE - v0.26.3 via npm, 5 languages (JS/TS/Swift/Java + Kotlin manual) |
 | 26 | ~~**Create tree-sitter query library**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `tools/tree_sitter_queries.py` (functions/classes/imports extraction) |
-| 27 | **Implement aaps-runner.kt** | P2 | 1 day | Scaffolding ✅ COMPLETE - `conformance/runners/aaps-runner.kt` (408 lines). Build integration pending. |
+| 27 | ~~**Implement aaps-runner.kt**~~ | ~~P2~~ | ~~1 day~~ | ✅ COMPLETE - `make aaps-runner` builds 517-line runner, loads 85 vectors |
 | 28 | ~~**Create accuracy_dashboard.py**~~ | ~~P2~~ | ~~1 day~~ | ✅ COMPLETE - Unified accuracy reporting (refs/coverage/assertions) |
 | 4 | ~~**Mapping coverage tool**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `tools/verify_mapping_coverage.py` |
 | 5 | ~~**Gap freshness checker tool**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `tools/verify_gap_freshness.py` |

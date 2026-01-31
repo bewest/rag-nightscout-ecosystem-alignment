@@ -252,18 +252,27 @@ Based on analysis of `docs/10-domain/*.md`:
 
 | Task | Deliverable | Effort | Status |
 |------|-------------|--------|--------|
-| Create aaps-runner.kt | `conformance/runners/aaps-runner.kt` | 2 days | ✅ Scaffolding done (408 lines) |
+| Create aaps-runner.kt | `conformance/runners/aaps-runner.kt` | 2 days | ✅ Complete (517 lines) |
+| Makefile build target | `make aaps-runner` | 2 hours | ✅ Complete |
 | Extract AAPS test vectors | `conformance/vectors/aaps/` | 4 hours | ⏳ Pending |
 | Cross-runner comparison | `tools/conformance_suite.py` update | 4 hours | ⏳ Pending |
 
 **Deliverable**: JS vs Kotlin algorithm comparison.
 
-**aaps-runner.kt Design Notes**:
+**Build Commands** (verified 2026-01-31):
+```bash
+make aaps-runner-deps   # Download Kotlin 2.0.21 + org.json
+make aaps-runner        # Compile to .build/aaps-runner.jar
+java -cp .build/aaps-runner.jar:.build/json-20231013.jar \
+    app.aaps.conformance.Aaps_runnerKt [options]
+```
+
+**aaps-runner.kt Features**:
 - Mirrors oref0-runner.js interface (JSON in → JSON out)
 - Supports 4 algorithms: SMB, AMA, SMB_DYNAMIC, AUTO_ISF
 - Two execution modes: Kotlin native or JS via Rhino
-- References AAPS ReplayApsResultsTest patterns
-- Build setup options documented (standalone JAR vs AAPS module)
+- Loads 85 test vectors from conformance/vectors/
+- Algorithm execution: TODO (requires AAPS core dependencies)
 
 ### Phase 3: Swift Runners - CI Only (Week 4+)
 

@@ -818,30 +818,34 @@ node conformance/runners/oref0-runner.js --vectors DIR --output FILE --quiet
 
 **Output**: JSON results to `conformance/results/oref0-results.json`
 
-### aaps-runner.kt (🔄 Scaffolding)
+### aaps-runner.kt (✅ Build Ready)
 
 **Purpose**: Execute AAPS algorithms (SMB, AMA, Dynamic ISF, AutoISF) against conformance vectors.
 
-**Status**: Scaffolding complete (497 lines), build integration pending.
+**Status**: Build integration complete (517 lines), algorithm execution pending.
 
-**Planned Usage**:
+**Build & Run**:
 ```bash
-# Build (once Kotlin deps configured)
-kotlinc conformance/runners/aaps-runner.kt -include-runtime -d aaps-runner.jar
+# Build (one-time setup)
+make aaps-runner-deps   # Downloads Kotlin 2.0.21 + org.json to .build/
+make aaps-runner        # Compiles to .build/aaps-runner.jar
 
 # Run
-java -jar aaps-runner.jar --vectors DIR --output FILE --algorithm SMB
+java -cp .build/aaps-runner.jar:.build/json-20231013.jar \
+    app.aaps.conformance.Aaps_runnerKt [options]
 ```
 
-**Algorithms Supported**:
-- SMB (default)
-- AMA
-- SMB_DYNAMIC (Dynamic ISF)
-- AUTO_ISF
+**Options**:
+- `--vectors DIR`: Vector directory (default: conformance/vectors)
+- `--output FILE`: Output file (default: conformance/results/aaps-results.json)
+- `--algorithm TYPE`: SMB, AMA, SMB_DYNAMIC, AUTO_ISF
+- `--js`: Use Rhino JS engine instead of Kotlin native
+- `--help`: Show usage
 
-**Execution Modes**:
-- `--js`: Use Rhino JS engine (matches AAPS production)
-- Default: Kotlin native (faster)
+**Current Capabilities**:
+- ✅ Loads 85 test vectors from conformance/vectors/
+- ✅ Parses command-line arguments
+- ⏳ Algorithm execution pending (requires AAPS core dependencies)
 
 ### Related Documentation
 

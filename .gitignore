@@ -67,3 +67,4 @@ STOPAUTOMATION
 tmp/
 .tmp/
 attached_assets/
+.build/

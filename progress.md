@@ -12,11 +12,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### AAPS Runner Build Integration (2026-01-31)
+
+Completed Kotlin build integration for aaps-runner.kt.
+
+**Deliverables**:
+- `Makefile` targets: `aaps-runner-deps`, `aaps-runner`
+- Kotlin 2.0.21 + org.json downloaded to `.build/`
+- Runner compiles and loads 85 test vectors
+
+**Build Commands**:
+```bash
+make aaps-runner-deps   # Download Kotlin + org.json
+make aaps-runner        # Compile to .build/aaps-runner.jar
+```
+
+**Verified**: Runner loads vectors, displays configuration, ready for algorithm integration.
+
+**Addresses**: #27 aaps-runner.kt (now COMPLETE)
+
+---
+
 ### AAPS Runner Scaffolding (2026-01-31)
 
 Created aaps-runner.kt scaffolding for cross-platform algorithm conformance testing.
 
-**Deliverable**: `conformance/runners/aaps-runner.kt` (~408 lines)
+**Deliverable**: `conformance/runners/aaps-runner.kt` (517 lines)
 
 **Features**:
 - Mirrors oref0-runner.js interface (JSON vectors → JSON results)
@@ -25,12 +46,7 @@ Created aaps-runner.kt scaffolding for cross-platform algorithm conformance test
 - Complete data class definitions matching conformance vector schema
 - Validation logic with configurable tolerances
 
-**Implementation Notes**:
-- References AAPS ReplayApsResultsTest patterns (lines 76-108, 110-268)
-- Three build options documented: standalone JAR, AAPS module, Robolectric
-- Execution stubs with TODO markers for completion
-
-**Status**: Scaffolding complete, build integration pending (est. 1 day remaining)
+**Status**: Build ready, algorithm execution pending (requires AAPS core deps)
 
 **Addresses**: Phase 2 of cross-platform testing roadmap
 

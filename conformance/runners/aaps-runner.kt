@@ -4,19 +4,34 @@
  * Executes conformance test vectors against AAPS determine-basal algorithms.
  * Mirrors the interface of oref0-runner.js for cross-platform validation.
  *
- * STATUS: Design scaffolding - NOT YET FUNCTIONAL
- * TODO: Implement after Kotlin build environment setup
+ * STATUS: Compiles and loads vectors; algorithm execution pending
  *
- * Usage (planned):
- *   kotlinc aaps-runner.kt -include-runtime -d aaps-runner.jar
- *   java -jar aaps-runner.jar [--vectors DIR] [--output FILE] [--algorithm SMB|AMA]
+ * Build (verified 2026-01-31):
+ *   # Download dependencies
+ *   curl -sLO https://github.com/JetBrains/kotlin/releases/download/v2.0.21/kotlin-compiler-2.0.21.zip
+ *   unzip kotlin-compiler-2.0.21.zip
+ *   curl -sLO https://repo1.maven.org/maven2/org/json/json/20231013/json-20231013.jar
+ *
+ *   # Compile
+ *   kotlinc/bin/kotlinc conformance/runners/aaps-runner.kt \
+ *       -include-runtime -cp json-20231013.jar -d aaps-runner.jar
+ *
+ *   # Run
+ *   java -cp aaps-runner.jar:json-20231013.jar app.aaps.conformance.Aaps_runnerKt [options]
+ *
+ * Options:
+ *   --vectors DIR       Vector directory (default: conformance/vectors)
+ *   --output FILE       Output file (default: conformance/results/aaps-results.json)
+ *   --algorithm TYPE    SMB, AMA, SMB_DYNAMIC, AUTO_ISF
+ *   --js                Use JS engine instead of Kotlin native
+ *   --help              Show usage
  *
  * Architecture:
- *   1. Load conformance vectors (JSON files)
- *   2. Transform to AAPS input format
- *   3. Invoke algorithm (either Kotlin native or JS via Rhino)
- *   4. Validate output against expected values
- *   5. Generate JSON results
+ *   1. Load conformance vectors (JSON files) ✅ Implemented
+ *   2. Transform to AAPS input format - TODO
+ *   3. Invoke algorithm (either Kotlin native or JS via Rhino) - TODO
+ *   4. Validate output against expected values ✅ Implemented
+ *   5. Generate JSON results ✅ Implemented
  *
  * References:
  *   - AAPS ReplayApsResultsTest: externals/AndroidAPS/app/src/androidTest/kotlin/app/aaps/ReplayApsResultsTest.kt

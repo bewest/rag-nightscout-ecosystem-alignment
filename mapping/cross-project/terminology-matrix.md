@@ -4321,11 +4321,11 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 
 ### Algorithm Conformance Runners
 
-| Runner | Purpose | Language | Status |
-|--------|---------|----------|--------|
-| `oref0-runner.js` | Execute oref0 determine-basal | JavaScript | ✅ Implemented |
-| `aaps-runner.kt` | Execute AAPS algorithms (SMB/AMA) | Kotlin | 🔄 Scaffolding complete |
-| `trio-runner.swift` | Execute OpenAPSSwift | Swift | ⏳ Planned (macOS CI) |
-| `loop-runner.swift` | Execute LoopAlgorithm | Swift | ⏳ Planned (macOS CI) |
+| Runner | Purpose | Language | Build | Status |
+|--------|---------|----------|-------|--------|
+| `oref0-runner.js` | Execute oref0 determine-basal | JavaScript | `node` | ✅ Implemented |
+| `aaps-runner.kt` | Execute AAPS algorithms (SMB/AMA) | Kotlin | `make aaps-runner` | ✅ Build ready |
+| `trio-runner.swift` | Execute OpenAPSSwift | Swift | macOS CI | ⏳ Planned |
+| `loop-runner.swift` | Execute LoopAlgorithm | Swift | macOS CI | ⏳ Planned |
 
 **Source**: `docs/10-domain/lsp-environment-check.md`, `docs/10-domain/cross-platform-testing-research.md`

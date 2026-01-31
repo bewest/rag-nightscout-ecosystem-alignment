@@ -313,3 +313,33 @@ sdqctl-cycle:
 sdqctl-cycle-multi:
 	@echo "Running $(N) backlog cycles..."
 	@source activate-sdqctl.sh && sdqctl iterate workflows/orchestration/backlog-cycle-v2.conv -n $(N)
+
+
+# Algorithm conformance runners
+.PHONY: aaps-runner aaps-runner-deps
+
+KOTLIN_VERSION=2.0.21
+JSON_VERSION=20231013
+
+aaps-runner-deps:
+	@echo "Setting up Kotlin build dependencies..."
+	@mkdir -p .build
+	@if [ ! -d ".build/kotlinc" ]; then \
+		echo "Downloading Kotlin $(KOTLIN_VERSION)..."; \
+		curl -sL https://github.com/JetBrains/kotlin/releases/download/v$(KOTLIN_VERSION)/kotlin-compiler-$(KOTLIN_VERSION).zip -o .build/kotlin.zip; \
+		unzip -q .build/kotlin.zip -d .build; \
+		rm .build/kotlin.zip; \
+	fi
+	@if [ ! -f ".build/json-$(JSON_VERSION).jar" ]; then \
+		echo "Downloading org.json $(JSON_VERSION)..."; \
+		curl -sL https://repo1.maven.org/maven2/org/json/json/$(JSON_VERSION)/json-$(JSON_VERSION).jar -o .build/json-$(JSON_VERSION).jar; \
+	fi
+	@echo "Dependencies ready in .build/"
+
+aaps-runner: aaps-runner-deps
+	@echo "Compiling aaps-runner.kt..."
+	.build/kotlinc/bin/kotlinc conformance/runners/aaps-runner.kt \
+		-include-runtime -cp .build/json-$(JSON_VERSION).jar \
+		-d .build/aaps-runner.jar
+	@echo "Built: .build/aaps-runner.jar"
+	@echo "Run with: java -cp .build/aaps-runner.jar:.build/json-$(JSON_VERSION).jar app.aaps.conformance.Aaps_runnerKt"
