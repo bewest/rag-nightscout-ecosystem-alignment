@@ -848,11 +848,11 @@ osx_image: xcode12.4
 - Line-number validation works; semantic analysis does not
 
 **Remediation**:
-1. Use tree-sitter for syntax-level queries (function names, struct fields)
+1. ✅ **PARTIAL**: tree-sitter installed (v0.26.3) for syntax-level queries
 2. Defer semantic verification to macOS CI runners
 3. Accept line-only validation for Swift on Linux
 
-**Status**: Open (architectural limitation)
+**Status**: ⚠️ Partially mitigated (tree-sitter provides syntax parsing)
 
 ---
 

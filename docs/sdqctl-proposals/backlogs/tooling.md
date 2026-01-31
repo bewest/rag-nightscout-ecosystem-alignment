@@ -16,7 +16,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 2 | sdqctl VERIFY .conv directive (Phase 2) | P3 | Medium | CLI complete, directive parsing pending |
 | 3 | LSP-based claim verification (Phase 2+) | P3 | Medium | JS/TS LSP integration deferred |
 | 24 | **Create `tools/lsp_query.py` for tsserver** | P2 | Medium | JS/TS semantic queries ([research](../../10-domain/cross-platform-testing-research.md)) |
-| 25 | **Install tree-sitter-cli + parsers** | P2 | Low | `cargo install tree-sitter-cli` |
+| 25 | ~~**Install tree-sitter-cli + parsers**~~ | ~~P2~~ | ~~Low~~ | ✅ COMPLETE - v0.26.3 via npm, 5 languages (JS/TS/Swift/Java + Kotlin manual) |
 | 26 | **Create tree-sitter query library** | P2 | Medium | Patterns for function/struct extraction |
 | 27 | **Implement aaps-runner.kt** | P2 | 2 days | Cross-language validation ([REQ-VERIFY-002](../../../traceability/connectors-requirements.md)) |
 | 28 | **Create accuracy_dashboard.py** | P2 | 1 day | Unified accuracy reporting ([REQ-VERIFY-005](../../../traceability/connectors-requirements.md)) |

@@ -12,6 +12,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Tree-sitter Installation (2026-01-31)
+
+Installed tree-sitter-cli and language parsers for static syntax analysis.
+
+**Installation**: `npm install -g tree-sitter-cli` (v0.26.3)
+
+| Language | Status | File Types |
+|----------|--------|------------|
+| JavaScript | ✅ Auto | `.js`, `.mjs`, `.cjs`, `.jsx` |
+| TypeScript | ✅ Auto | `.ts`, `.tsx` |
+| Swift | ✅ Auto | `.swift` |
+| Java | ✅ Auto | `.java` |
+| Kotlin | ⚠️ Manual | `.kt` (requires `-l <path>/kotlin.so`) |
+
+**Parsers Location**: `/tmp/tree-sitter-grammars/node_modules/`
+
+**Usage**:
+```bash
+tree-sitter parse <file>                    # Auto-detect language
+tree-sitter parse -l kotlin.so <file.kt>    # Kotlin workaround
+tree-sitter dump-languages                  # List available parsers
+```
+
+**Unblocks**: tooling.md #26 (query library), #24 (lsp_query.py)
+
+---
+
 ### Cross-Platform Testing Harness Research (2026-01-31)
 
 Research and requirements for cross-platform builds and testing harness vs static analysis.
@@ -58,7 +85,7 @@ Comprehensive probe of LSP tooling availability for code verification.
 | Node.js/tsserver | ✅ Ready | v20.20.0, fully operational |
 | Java | ✅ OpenJDK 21 | kotlin-language-server not installed |
 | Python/pyright | ⚠️ Partial | Python 3.12, pyright not installed |
-| Tree-sitter | ❌ Not installed | cargo available for install |
+| Tree-sitter | ✅ Installed | v0.26.3 via npm, 5 languages working |
 
 **Key Findings**:
 - JS/TS verification ready immediately via tsserver

@@ -12,9 +12,9 @@
 | **Node.js/tsserver** | ✅ Ready | ✅ Fully operational |
 | **Java** | ✅ OpenJDK 21 | ⚠️ kotlin-language-server not installed |
 | **Python/pyright** | ⚠️ Python ready | ❌ pyright not installed |
-| **Tree-sitter** | ❌ Not installed | ✅ cargo available for install |
+| **Tree-sitter** | ✅ Installed (v0.26.3) | ✅ JS/TS/Swift/Java/Kotlin parsers |
 
-**Overall Assessment**: **JS/TS verification ready now**. Swift LSP installed but iOS projects require Xcode for full resolution. Tree-sitter is a viable alternative for syntax-level queries.
+**Overall Assessment**: **JS/TS verification ready now**. Swift LSP installed but iOS projects require Xcode for full resolution. **Tree-sitter now installed** as cross-platform alternative for syntax-level queries.
 
 ---
 

@@ -28,7 +28,7 @@ This document analyzes the trade-offs between static analysis and dynamic testin
 | `tools/verify_refs.py` | ✅ Implemented | Line anchor validation |
 | `tools/verify_assertions.py` | ✅ Implemented | Scenario → requirement tracing |
 | `tools/lsp_query.py` | ❌ Not implemented | LSP-based symbol lookup |
-| Tree-sitter queries | ❌ Not installed | Syntax pattern extraction |
+| Tree-sitter CLI | ✅ Installed | v0.26.3, JS/TS/Swift/Java/Kotlin parsers |
 
 ### 1.2 External Repo Build Systems
 

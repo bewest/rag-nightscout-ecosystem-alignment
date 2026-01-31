@@ -725,8 +725,35 @@ See [lsp-environment-check.md](10-domain/lsp-environment-check.md) for detailed 
 |------|--------|---------|
 | Swift/sourcekit-lsp | ✅ Installed | `source ~/.local/share/swiftly/env.sh && swift --version` |
 | Node.js/tsserver | ✅ Ready | `node --version && which tsserver` |
-| Tree-sitter | ❌ Not installed | `cargo install tree-sitter-cli` |
+| Tree-sitter | ✅ Installed | `tree-sitter --version` (v0.26.3) |
 | Pyright | ❌ Not installed | `pip install pyright` |
+
+### Tree-sitter Usage
+
+Installed via npm with parsers for JS, TS, Swift, Java, and Kotlin.
+
+```bash
+# Parse any file (auto-detects language)
+tree-sitter parse externals/oref0/lib/determine-basal/determine-basal.js
+
+# Parse Swift
+tree-sitter parse externals/Trio-dev/.../DynamicISF.swift
+
+# Parse Kotlin (requires explicit path to .so)
+tree-sitter parse -l /tmp/tree-sitter-grammars/node_modules/tree-sitter-kotlin/kotlin.so <file.kt>
+
+# List available languages
+tree-sitter dump-languages
+```
+
+**Supported Languages**:
+| Language | Status | File Types |
+|----------|--------|------------|
+| JavaScript | ✅ Auto | `.js`, `.mjs`, `.cjs`, `.jsx` |
+| TypeScript | ✅ Auto | `.ts`, `.tsx` |
+| Swift | ✅ Auto | `.swift` |
+| Java | ✅ Auto | `.java` |
+| Kotlin | ⚠️ Manual | `.kt` (requires `-l kotlin.so`) |
 
 ### Quick Start: Enable Swift
 
