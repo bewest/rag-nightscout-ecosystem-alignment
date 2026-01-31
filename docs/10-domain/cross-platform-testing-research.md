@@ -243,10 +243,10 @@ Based on analysis of `docs/10-domain/*.md`:
 |------|-------------|--------|--------|
 | Install tree-sitter-cli | `npm install -g tree-sitter-cli` | 1 hour | ✅ Done (v0.26.3) |
 | Create tree-sitter Swift/JS/Kotlin parsers | `tools/tree_sitter_queries.py` | 4 hours | ✅ Done (4 langs) |
-| Integrate into verify_refs.py | `--syntax` flag | 4 hours | ⏳ Pending |
+| Integrate into verify_refs.py | `--semantic` flag | 4 hours | ✅ Done (symbol validation) |
 | Create lsp_query.py for tsserver | `tools/lsp_query.py` | 4 hours | ✅ Done |
 
-**Deliverable**: Line + syntax validation for all refs.
+**Deliverable**: Line + semantic validation for all refs.
 
 ### Phase 2: AAPS Runner (Week 3)
 

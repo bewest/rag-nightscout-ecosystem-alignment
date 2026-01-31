@@ -12,6 +12,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### LSP Claim Verification (2026-01-31)
+
+Integrated semantic symbol validation into verify_refs.py using lsp_query.py.
+
+**Enhancement**: `tools/verify_refs.py --semantic` flag
+
+**Features**:
+- Validates symbol anchors (e.g., `#functionName`) in JS/TS files
+- Uses tsserver via lsp_query.py for semantic analysis
+- Reports symbol validation stats alongside line anchor stats
+
+**Usage**:
+```bash
+python3 tools/verify_refs.py --semantic           # Enable symbol validation
+python3 tools/verify_refs.py --semantic --json    # Machine-readable output
+```
+
+**Stats** (first run):
+- Symbol anchors found: 1
+- Symbol anchors valid: 1 (100%)
+
+**Completes**: Tooling backlog #3 (LSP-based claim verification)
+
+---
+
 ### LSP Query Tool (2026-01-31)
 
 TypeScript Server integration for semantic JS/TS code analysis.

@@ -5,6 +5,7 @@ Reference Validator - verifies code references in documents resolve to actual fi
 Scans documents for code reference patterns like:
 - `alias:path/to/file.ext`
 - `alias:path/to/file.ext#L10-L50`
+- `alias:path/to/file.ext#symbolName`
 
 Directories scanned:
 - mapping/**/*.md
@@ -17,11 +18,13 @@ Validates that:
 1. The alias matches a known repository in workspace.lock.json
 2. The referenced file exists in externals/<repo>/
 3. Line anchors (#L10, #L10-L50) are within file bounds
+4. Symbol anchors (#functionName) exist in JS/TS files (with --semantic)
 
 Usage:
     python tools/verify_refs.py              # Validate all references
     python tools/verify_refs.py --verbose    # Show all refs, not just broken
     python tools/verify_refs.py --json       # Output JSON report
+    python tools/verify_refs.py --semantic   # Enable LSP-based symbol validation
 
 Outputs:
     traceability/refs-validation.json  - Machine-readable validation report
@@ -32,6 +35,7 @@ import argparse
 import json
 import re
 import sys
+import subprocess
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -44,6 +48,10 @@ SPECS_DIR = WORKSPACE_ROOT / "specs"
 TRACEABILITY_DIR = WORKSPACE_ROOT / "traceability"
 CONFORMANCE_DIR = WORKSPACE_ROOT / "conformance"
 EXTERNALS_DIR = WORKSPACE_ROOT / "externals"
+LSP_QUERY_SCRIPT = WORKSPACE_ROOT / "tools" / "lsp_query.py"
+
+# File extensions that support semantic validation
+SEMANTIC_EXTENSIONS = {'.js', '.ts', '.jsx', '.tsx', '.mjs', '.cjs'}
 
 CODE_REF_PATTERN = re.compile(r'`([a-zA-Z0-9_-]+:[^`]+)`')
 X_AID_SOURCE_PATTERN = re.compile(r'x-aid-source:\s*["\']?([^"\'>\s]+)["\']?', re.IGNORECASE)
@@ -157,8 +165,8 @@ def extract_refs_from_file(filepath):
     return refs
 
 
-def validate_ref(ref, aliases):
-    """Validate a single reference including line anchors."""
+def validate_ref(ref, aliases, semantic=False):
+    """Validate a single reference including line and symbol anchors."""
     alias = ref["alias"]
     path = ref["path"]
     anchor = ref.get("anchor")
@@ -196,16 +204,26 @@ def validate_ref(ref, aliases):
             "searched_in": str(local_path.relative_to(WORKSPACE_ROOT))
         }
     
-    # File exists - now validate line anchor if present
+    # File exists - now validate anchor if present
     resolved_path = str(file_path.relative_to(WORKSPACE_ROOT))
     
     if anchor:
-        line_result = validate_line_anchor(file_path, anchor)
-        if line_result:
-            return {
-                **line_result,
-                "resolved_path": resolved_path
-            }
+        # Check if it's a line anchor (L10, L10-L50)
+        if anchor.startswith("L") and anchor[1:2].isdigit():
+            line_result = validate_line_anchor(file_path, anchor)
+            if line_result:
+                return {
+                    **line_result,
+                    "resolved_path": resolved_path
+                }
+        elif semantic:
+            # Symbol anchor - use LSP validation if enabled
+            symbol_result = validate_symbol_anchor(file_path, anchor)
+            if symbol_result:
+                return {
+                    **symbol_result,
+                    "resolved_path": resolved_path
+                }
     
     return {
         "status": "valid",
@@ -261,7 +279,74 @@ def validate_line_anchor(file_path, anchor):
     return None
 
 
-def scan_directory(directory, aliases, file_patterns=("*.md", "*.yaml", "*.yml")):
+def validate_symbol_anchor(file_path, symbol_name):
+    """
+    Validate a symbol anchor using lsp_query.py.
+    
+    Returns None if valid (symbol found), or a dict with status/message if invalid.
+    Only works for JS/TS files.
+    """
+    ext = file_path.suffix.lower()
+    if ext not in SEMANTIC_EXTENSIONS:
+        # Not a JS/TS file, skip semantic validation
+        return None
+    
+    if not LSP_QUERY_SCRIPT.exists():
+        return {
+            "status": "semantic_unavailable",
+            "message": "lsp_query.py not found"
+        }
+    
+    try:
+        result = subprocess.run(
+            ["python3", str(LSP_QUERY_SCRIPT), "symbols", str(file_path), "--json"],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        if result.returncode != 0:
+            return {
+                "status": "semantic_error",
+                "message": f"lsp_query failed: {result.stderr[:100]}"
+            }
+        
+        data = json.loads(result.stdout)
+        symbols = data.get("symbols", [])
+        symbol_names = {s.get("name", "") for s in symbols}
+        
+        if symbol_name in symbol_names:
+            return None  # Symbol found, valid
+        
+        # Try partial match for method patterns like "foo.bar()"
+        for name in symbol_names:
+            if symbol_name in name or name in symbol_name:
+                return None  # Partial match, consider valid
+        
+        return {
+            "status": "symbol_not_found",
+            "message": f"Symbol '{symbol_name}' not found in {len(symbols)} symbols",
+            "available_symbols": list(symbol_names)[:10]
+        }
+        
+    except subprocess.TimeoutExpired:
+        return {
+            "status": "semantic_timeout",
+            "message": "lsp_query timed out"
+        }
+    except json.JSONDecodeError:
+        return {
+            "status": "semantic_parse_error",
+            "message": "Could not parse lsp_query output"
+        }
+    except Exception as e:
+        return {
+            "status": "semantic_error",
+            "message": str(e)
+        }
+
+
+def scan_directory(directory, aliases, file_patterns=("*.md", "*.yaml", "*.yml"), semantic=False):
     """Scan a directory for files and extract/validate references."""
     results = []
     
@@ -272,7 +357,7 @@ def scan_directory(directory, aliases, file_patterns=("*.md", "*.yaml", "*.yml")
             
             refs = extract_refs_from_file(filepath)
             for ref in refs:
-                validation = validate_ref(ref, aliases)
+                validation = validate_ref(ref, aliases, semantic=semantic)
                 results.append({
                     **ref,
                     **validation
@@ -288,7 +373,10 @@ def generate_report(results, aliases):
     by_alias = defaultdict(list)
     
     # Track refs with line anchors for separate stats
-    refs_with_anchors = [r for r in results if r.get("anchor") and r.get("anchor").startswith("L")]
+    refs_with_line_anchors = [r for r in results if r.get("anchor") and r.get("anchor").startswith("L")]
+    
+    # Track refs with symbol anchors (non-line anchors)
+    refs_with_symbol_anchors = [r for r in results if r.get("anchor") and not r.get("anchor").startswith("L")]
     
     for r in results:
         by_status[r["status"]].append(r)
@@ -304,13 +392,19 @@ def generate_report(results, aliases):
             "repo_missing": len(by_status.get("repo_missing", [])),
             "file_not_found": len(by_status.get("file_not_found", [])),
             "path_not_found": len(by_status.get("path_not_found", [])),
-            # New line validation stats
+            # Line validation stats
             "line_out_of_range": len(by_status.get("line_out_of_range", [])),
             "invalid_line": len(by_status.get("invalid_line", [])),
             "invalid_range": len(by_status.get("invalid_range", [])),
             # Line anchor coverage
-            "refs_with_line_anchors": len(refs_with_anchors),
-            "line_anchors_valid": len([r for r in refs_with_anchors if r["status"] == "valid"])
+            "refs_with_line_anchors": len(refs_with_line_anchors),
+            "line_anchors_valid": len([r for r in refs_with_line_anchors if r["status"] == "valid"]),
+            # Semantic validation stats
+            "refs_with_symbol_anchors": len(refs_with_symbol_anchors),
+            "symbol_anchors_valid": len([r for r in refs_with_symbol_anchors if r["status"] == "valid"]),
+            "symbol_not_found": len(by_status.get("symbol_not_found", [])),
+            "semantic_error": len(by_status.get("semantic_error", [])),
+            "semantic_timeout": len(by_status.get("semantic_timeout", []))
         },
         "known_aliases": list(aliases.keys()),
         "by_status": {
@@ -365,6 +459,14 @@ def generate_markdown(report):
         f"| Refs with Line Anchors | {report['summary'].get('refs_with_line_anchors', 0)} |",
         f"| Line Anchors Valid | {report['summary'].get('line_anchors_valid', 0)} |",
         "",
+        "### Semantic Validation (--semantic)",
+        "",
+        f"| Metric | Count |",
+        f"|--------|-------|",
+        f"| Refs with Symbol Anchors | {report['summary'].get('refs_with_symbol_anchors', 0)} |",
+        f"| Symbol Anchors Valid | {report['summary'].get('symbol_anchors_valid', 0)} |",
+        f"| Symbol Not Found | {report['summary'].get('symbol_not_found', 0)} |",
+        "",
     ]
     
     broken_count = (
@@ -374,7 +476,8 @@ def generate_markdown(report):
         report['summary']['path_not_found'] +
         report['summary'].get('line_out_of_range', 0) +
         report['summary'].get('invalid_line', 0) +
-        report['summary'].get('invalid_range', 0)
+        report['summary'].get('invalid_range', 0) +
+        report['summary'].get('symbol_not_found', 0)
     )
     
     if broken_count == 0:
@@ -430,6 +533,8 @@ def main():
     parser.add_argument("--verbose", "-v", action="store_true", help="Show all references")
     parser.add_argument("--json", action="store_true", help="Output JSON only")
     parser.add_argument("--no-write", action="store_true", help="Don't write output files")
+    parser.add_argument("--semantic", "-s", action="store_true", 
+                        help="Enable LSP-based symbol validation for JS/TS files")
     args = parser.parse_args()
     
     aliases, externals_dir = load_lockfile()
@@ -438,29 +543,32 @@ def main():
         print("Error: No repositories configured in workspace.lock.json")
         return 1
     
-    print(f"Loaded {len(aliases)} repository aliases")
+    if args.semantic:
+        print(f"Loaded {len(aliases)} repository aliases (semantic validation enabled)")
+    else:
+        print(f"Loaded {len(aliases)} repository aliases")
     
     all_results = []
     
     if MAPPING_DIR.exists():
         print(f"Scanning {MAPPING_DIR}...")
-        all_results.extend(scan_directory(MAPPING_DIR, aliases))
+        all_results.extend(scan_directory(MAPPING_DIR, aliases, semantic=args.semantic))
     
     if DOCS_DIR.exists():
         print(f"Scanning {DOCS_DIR}...")
-        all_results.extend(scan_directory(DOCS_DIR, aliases))
+        all_results.extend(scan_directory(DOCS_DIR, aliases, semantic=args.semantic))
     
     if SPECS_DIR.exists():
         print(f"Scanning {SPECS_DIR}...")
-        all_results.extend(scan_directory(SPECS_DIR, aliases))
+        all_results.extend(scan_directory(SPECS_DIR, aliases, semantic=args.semantic))
     
     if TRACEABILITY_DIR.exists():
         print(f"Scanning {TRACEABILITY_DIR}...")
-        all_results.extend(scan_directory(TRACEABILITY_DIR, aliases))
+        all_results.extend(scan_directory(TRACEABILITY_DIR, aliases, semantic=args.semantic))
     
     if CONFORMANCE_DIR.exists():
         print(f"Scanning {CONFORMANCE_DIR}...")
-        all_results.extend(scan_directory(CONFORMANCE_DIR, aliases))
+        all_results.extend(scan_directory(CONFORMANCE_DIR, aliases, semantic=args.semantic))
     
     report = generate_report(all_results, aliases)
     
