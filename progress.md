@@ -12,6 +12,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### LSP Environment Suitability Check (2026-01-31)
+
+Comprehensive probe of LSP tooling availability for code verification.
+
+**Deliverable**: `docs/10-domain/lsp-environment-check.md` (7KB)
+
+| Tool | Status | Notes |
+|------|--------|-------|
+| Swift/sourcekit-lsp | ✅ Installed | swiftly 6.2.3, needs PATH source |
+| Node.js/tsserver | ✅ Ready | v20.20.0, fully operational |
+| Java | ✅ OpenJDK 21 | kotlin-language-server not installed |
+| Python/pyright | ⚠️ Partial | Python 3.12, pyright not installed |
+| Tree-sitter | ❌ Not installed | cargo available for install |
+
+**Key Findings**:
+- JS/TS verification ready immediately via tsserver
+- Swift 6.2.3 installed but iOS projects need Xcode for full resolution
+- Tree-sitter recommended as hybrid approach for syntax queries
+- 6 actionable items queued to tooling.md
+
+**Recommendation**: Hybrid LSP + tree-sitter approach
+
+---
+
 ### Trio Comprehensive Analysis (2026-01-31)
 
 Complete analysis of Trio's oref integration, Nightscout sync patterns, and APSManager architecture comparison with Loop.

@@ -5,12 +5,6 @@
 
 ---
 
-* We have installed swift using xtool and configured it with the sdks.  Add
-  items to queue to explore or develop a test for satisfactory criteria to use
-  different LSP techniques for validations, specification and requirement
-  traceability.  Should we use tree sitter, which LSP technology is needed.
-  Develop a quick check to test if this environment is suitable for any LSP
-  tools and provide hints on which dependencies to install.
 * Research and propose requirements for cross platform builds and testing
   harness vs static analysis and unit testing, verification and accuracy across the project.
 
@@ -18,12 +12,13 @@
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| (none) | - | Trio-dev items queued to aid-algorithms.md + nightscout-api.md |
+| Cross-platform build/test harness research | P2 | Static analysis vs unit testing trade-offs |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| LSP environment check (Swift, tree-sitter, tsserver) | P2 | ✅ Complete (Swift 6.2.3 via swiftly, tsserver ready, 6 items queued) | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 38) | P0 | ✅ Complete (sdqctl integration, 3 Makefile targets) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 37) | P0 | ✅ Complete (Trio bridge analysis, 3 gaps, 5 facets) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 36) | P0 | ✅ Complete (housekeeping + 4 items promoted) | 2026-01-30 |

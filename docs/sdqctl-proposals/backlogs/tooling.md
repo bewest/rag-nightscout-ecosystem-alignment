@@ -160,6 +160,19 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 - [ ] Design cross-backlog task selection algorithm
 - [ ] Propose ELIDE placement strategy
 
+### LSP Environment Items (from 2026-01-31 check)
+
+| Item | Priority | Effort | Status |
+|------|----------|--------|--------|
+| Create `tools/lsp_query.py` for tsserver | P2 | Medium | Ready (JS/TS available) |
+| Add swiftly env.sh to shell init | P3 | Low | Swift 6.2.3 installed |
+| Install pyright for tools/ | P3 | Low | `pip install pyright` |
+| Install tree-sitter-cli | P2 | Low | `cargo install tree-sitter-cli` |
+| Create tree-sitter query library | P2 | Medium | After CLI install |
+| Install kotlin-language-server | P3 | Medium | For AAPS verification |
+
+**Report**: [lsp-environment-check.md](../../10-domain/lsp-environment-check.md)
+
 ---
 
 ## LSP Verification Setup Research
