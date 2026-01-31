@@ -1420,3 +1420,75 @@ if (rVal) rVal.replace('ETC','Etc');
 ---
 
 **Source**: [Migration Field Fidelity Analysis](../mapping/nocturne/migration-field-fidelity.md)
+
+
+---
+
+## Trio Sync Gaps
+
+### GAP-TRIO-SYNC-001: API v1 Only
+
+**Description**: Trio uses only Nightscout API v1 endpoints, not the newer v3 API.
+
+**Affected Systems**: Trio
+
+**Evidence**:
+- `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift:13-18`
+  ```swift
+  static let entriesPath = "/api/v1/entries/sgv.json"
+  static let treatmentsPath = "/api/v1/treatments.json"
+  static let statusPath = "/api/v1/devicestatus.json"
+  ```
+
+**Impact**: Missing v3 features like `srvModified` tracking, PATCH updates, improved pagination.
+
+**Ontology**: Cross-category (API version affects all state types)
+
+**Remediation**: Add v3 support as optional backend with v1 fallback.
+
+**Status**: Open
+
+---
+
+### GAP-TRIO-SYNC-002: Limited Deduplication
+
+**Description**: Deduplication relies solely on `enteredBy` field matching.
+
+**Affected Systems**: Trio
+
+**Evidence**:
+- `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift:23-29`
+  ```swift
+  private let excludedEnteredBy: [String] = [
+      NightscoutTreatment.local,
+      "AndroidAPS", "openaps://AndroidAPS", "iAPS", "loop://iPhone"
+  ]
+  ```
+
+**Impact**: If `enteredBy` is modified or missing, duplicates can occur.
+
+**Ontology**: Observed (treatment sync deduplication)
+
+**Remediation**: Add secondary deduplication on `_id` or `identifier` fields.
+
+**Status**: Open
+
+---
+
+### GAP-TRIO-SYNC-003: No Offline Queue
+
+**Description**: Failed uploads are not queued for persistent retry.
+
+**Affected Systems**: Trio
+
+**Evidence**:
+- `NightscoutAPI.swift:330-335` - No retry queue, only immediate retry
+- `NightscoutManager.swift:91-103` - Upload pipelines run once, no persistence
+
+**Impact**: Data loss during network outages; treatments may not reach Nightscout.
+
+**Ontology**: Cross-category (affects all upload types)
+
+**Remediation**: Implement persistent upload queue with exponential backoff.
+
+**Status**: Open

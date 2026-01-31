@@ -1324,3 +1324,77 @@ See [requirements.md](requirements.md) for the index.
 **Source**: [Migration Field Fidelity Analysis](../mapping/nocturne/migration-field-fidelity.md)
 
 **Status**: Open (Nocturne computes from mills)
+
+---
+
+## Trio Sync Requirements
+
+### REQ-TRIO-001: SMB Scheduling Support
+
+**Statement**: The system MUST support time-based SMB enable/disable windows via override configuration.
+
+**Rationale**: Users may want SMBs disabled during sleep, exercise, or other activities where aggressive dosing is undesirable.
+
+**Scenarios**:
+- Set SMB disable window 22:00-06:00
+- Loop cycle runs at 23:00
+- SMB should be blocked despite other conditions being met
+
+**Verification**:
+- Configure override with SMB disabled schedule
+- Trigger algorithm at boundary times
+- Verify SMB decisions respect schedule windows
+
+**Gap Reference**: None (feature implemented in Trio)
+
+**Source**: [trio-comprehensive-analysis.md](../docs/10-domain/trio-comprehensive-analysis.md)
+
+**Status**: ✅ Implemented
+
+---
+
+### REQ-TRIO-002: Multi-AID Deduplication
+
+**Statement**: The system MUST filter out treatments from known AID systems during download to prevent double-counting.
+
+**Rationale**: In multi-controller environments (e.g., user switches between Trio and Loop), treatments must not be counted twice.
+
+**Scenarios**:
+- Trio downloads carbs from Nightscout
+- Carbs entry has `enteredBy: "loop://iPhone"`
+- Trio should skip this entry (already processed by Loop)
+
+**Verification**:
+- Upload treatments with various `enteredBy` values
+- Download from Trio
+- Verify known AID `enteredBy` values are filtered
+
+**Gap Reference**: GAP-TRIO-SYNC-002
+
+**Source**: [trio-comprehensive-analysis.md](../docs/10-domain/trio-comprehensive-analysis.md)
+
+**Status**: ✅ Implemented (excludedEnteredBy list)
+
+---
+
+### REQ-TRIO-003: Upload Throttling
+
+**Statement**: The system SHOULD throttle uploads to prevent server overload from rapid loop cycles.
+
+**Rationale**: Loop cycles can run frequently; each triggering multiple uploads could overwhelm Nightscout.
+
+**Scenarios**:
+- 3 loop cycles complete within 2 seconds
+- Each requests devicestatus upload
+- Only 1 actual HTTP POST should occur
+
+**Verification**:
+- Trigger multiple upload requests rapidly
+- Monitor network traffic
+- Verify throttling collapses requests
+
+**Gap Reference**: None (feature implemented in Trio)
+
+**Source**: [trio-comprehensive-analysis.md](../docs/10-domain/trio-comprehensive-analysis.md)
+
+**Status**: ✅ Implemented (2-second throttle windows)

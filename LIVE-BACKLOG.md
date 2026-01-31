@@ -5,6 +5,15 @@
 
 ---
 
+* We have installed swift using xtool and configured it with the sdks.  Add
+  items to queue to explore or develop a test for satisfactory criteria to use
+  different LSP techniques for validations, specification and requirement
+  traceability.  Should we use tree sitter, which LSP technology is needed.
+  Develop a quick check to test if this environment is suitable for any LSP
+  tools and provide hints on which dependencies to install.
+* Research and propose requirements for cross platform builds and testing
+  harness vs static analysis and unit testing, verification and accuracy across the project.
+
 ## Pending
 
 | Item | Priority | Notes |

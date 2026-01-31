@@ -4256,3 +4256,28 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | `status` | Session status | `sdqctl status` |
 
 **Source**: `docs/10-domain/sdqctl-workflow-integration.md`
+
+---
+
+## Trio Upload Pipeline Terms
+
+| Term | Meaning | Source |
+|------|---------|--------|
+| `uploadPipeline` | Throttled upload queue per data type | NightscoutManager.swift |
+| `NightscoutUploadPipeline` | Enum: carbs, pumpHistory, overrides, tempTargets, glucose, manualGlucose, deviceStatus | NightscoutUploadPipeline.swift |
+| `uploadPipelineInterval` | Throttle window (2 seconds) | NightscoutManager.swift:55 |
+| `requestUpload()` | Enqueue upload request (throttled) | NightscoutManager.swift:69 |
+| `runUploadPipeline()` | Execute actual HTTP upload | NightscoutManager.swift:91 |
+
+### Trio vs Loop Manager Comparison
+
+| Trio Term | Loop Equivalent | Purpose |
+|-----------|-----------------|---------|
+| `APSManager` | `LoopDataManager` | Main loop orchestration |
+| `OpenAPS` | `LoopAlgorithm` | Dosing algorithm |
+| `Determination` | `LoopAlgorithmOutput` | Algorithm result |
+| `DeviceDataManager` | `DeviceDataManager` | Pump/CGM management |
+| `NightscoutManager` | Remote data upload service | Cloud sync |
+| `JavaScriptWorker` | N/A (native Swift) | JS execution engine |
+
+**Source**: `docs/10-domain/trio-comprehensive-analysis.md`

@@ -1150,3 +1150,22 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Impact**: User-installed scripts could produce dangerous dosing decisions.
 
 **Remediation**: Trio requires explicit user action to enable middleware.
+
+
+---
+
+### GAP-TRIO-OREF-001: oref Bundle Version Tracking
+
+**Description**: No explicit version tracking of embedded oref JS bundles.
+
+**Affected Systems**: Trio
+
+**Evidence**:
+- `externals/Trio/trio-oref/` contains JS bundles without version file
+- `oref_source_file_info.txt` exists but may not track git commit
+
+**Impact**: Difficult to trace algorithm behavior to specific oref version; complicates debugging dosing issues.
+
+**Remediation**: Add VERSION file or commit hash to trio-oref/ directory; log version at algorithm startup.
+
+**Status**: Open

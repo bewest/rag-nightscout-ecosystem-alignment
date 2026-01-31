@@ -12,6 +12,46 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Trio Comprehensive Analysis (2026-01-31)
+
+Complete analysis of Trio's oref integration, Nightscout sync patterns, and APSManager architecture comparison with Loop.
+
+**Deliverable**: `docs/10-domain/trio-comprehensive-analysis.md` (15KB)
+
+| Component | Key Findings |
+|-----------|--------------|
+| **oref Integration** | Embedded JavaScriptCore, trio-oref/lib/ bundles, SMB scheduling customizations |
+| **Nightscout Sync** | 7 upload pipelines, 2-second throttle, API v1 only |
+| **APSManager vs Loop** | JS bridge vs native Swift, 4 vs 1 prediction curves, CoreData vs HealthKit |
+
+**Gaps Identified**:
+- GAP-TRIO-SYNC-001: API v1 Only
+- GAP-TRIO-SYNC-002: Limited Deduplication
+- GAP-TRIO-SYNC-003: No Offline Queue
+- GAP-TRIO-OREF-001: oref Bundle Version Tracking
+
+**Requirements Added**:
+- REQ-TRIO-001: SMB Scheduling Support
+- REQ-TRIO-002: Multi-AID Deduplication
+- REQ-TRIO-003: Upload Throttling
+
+**5 Facets Updated**:
+1. ✅ Deep-dive: `trio-comprehensive-analysis.md`
+2. ✅ Gaps: 4 new gaps in sync-identity-gaps.md + aid-algorithms-gaps.md
+3. ✅ Requirements: 3 new REQ-TRIO-* in sync-identity-requirements.md
+4. ✅ Terminology: Upload pipeline terms + manager comparison
+5. ✅ Progress: This entry
+
+**Source Files Analyzed**:
+- `externals/Trio/Trio/Sources/APS/APSManager.swift`
+- `externals/Trio/Trio/Sources/APS/OpenAPS/OpenAPS.swift`
+- `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift`
+- `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift`
+- `externals/Trio/trio-oref/lib/` (iob, determine-basal)
+- `externals/LoopWorkspace/Loop/Loop/Managers/LoopDataManager.swift`
+
+---
+
 ### sdqctl iterate Effectiveness Report #3 (2026-01-30)
 
 Comprehensive analysis of 20-cycle backlog-cycle-v2 session.
