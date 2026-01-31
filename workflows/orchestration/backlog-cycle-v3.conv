@@ -1,0 +1,158 @@
+# backlog-cycle-v3.conv - Optimized backlog cycle with reduced overhead
+#
+# Improvements over v2:
+# - ELIDE before ALL RUN commands for output compression
+# - Streamlined phase prompts (less redundant instruction)
+# - Cross-backlog task selection with priority routing
+# - Faster iteration with consolidated prompts
+# - Mixed tool patterns (python + standard CLI)
+# - Removed redundant queue_stats calls
+#
+# Key Changes:
+# - Phase 0: Lighter state check (git only, no tools)
+# - Phase 1: Direct backlog access with priority
+# - Phase 2-3: Combined into single execution phase
+# - Phase 4-5: Consolidated commit and groom
+# - Phase 6: Minimal summary
+#
+# Usage:
+#   sdqctl iterate workflows/orchestration/backlog-cycle-v3.conv
+#   sdqctl iterate workflows/orchestration/backlog-cycle-v3.conv -n 5
+#
+# I/O Contract:
+#   INPUT:  LIVE-BACKLOG.md, docs/sdqctl-proposals/backlogs/*.md
+#   OUTPUT: Updated facets, committed to git, backlogs updated
+#   ESCALATE: STOPAUTOMATION-*.json if blocked
+
+MODEL claude-sonnet-4-20250514
+ADAPTER copilot
+MODE analysis
+CONTEXT-LIMIT 65%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE git-status selected-task findings
+
+# === Automation Control ===
+# Create STOPAUTOMATION-{uuid}.json to halt automation
+# Include: {"reason": "...", "needs_review": true}
+
+# === RUN Settings (compact output) ===
+RUN-ON-ERROR continue
+RUN-OUTPUT always
+RUN-OUTPUT-LIMIT 10K
+RUN-TIMEOUT 30s
+
+# === Phase 0: State Check (Lightweight) ===
+PROMPT ## Phase 0: State Check
+
+ELIDE
+RUN git --no-pager status --short && git --no-pager log --oneline -3
+ELIDE
+
+PROMPT Review the status above:
+- If uncommitted changes exist, commit or note as WIP
+- Note current HEAD commit for cycle tracking
+
+# === Phase 1: Task Selection ===
+PROMPT ## Phase 1: Task Selection
+
+ELIDE
+RUN head -20 LIVE-BACKLOG.md
+ELIDE
+
+PROMPT Review LIVE-BACKLOG.md above for **unprocessed human requests**.
+
+**Priority Order:**
+1. LIVE-BACKLOG bullet points (not in Processed table)
+2. Domain backlogs: `docs/sdqctl-proposals/backlogs/*.md`
+
+**Task Selection Rules:**
+- P0/P1 items first
+- Prefer items with clear deliverables
+- Skip items needing unavailable resources (e.g., macOS for Swift)
+
+**Output:** Task name, source, and brief plan (3 steps max)
+
+COMPACT
+
+# === Phase 2: Execute Work ===
+PROMPT ## Phase 2: Execute Work
+
+Execute the selected task. Document findings as you work.
+
+**Reference Format:** `repo:path/file.ext:line`
+
+**Work until deliverable is complete, then proceed to Phase 3.**
+
+# === Phase 3: Update 5 Facets ===
+PROMPT ## Phase 3: Update 5 Facets
+
+ELIDE
+RUN git --no-pager status --short
+ELIDE
+
+PROMPT Update all relevant project facets based on your findings.
+
+| Facet | File | When to Update |
+|-------|------|----------------|
+| Terminology | `mapping/cross-project/terminology-matrix.md` | New terms discovered |
+| Gaps | `traceability/*-gaps.md` | Inconsistencies found |
+| Requirements | `traceability/*-requirements.md` | New requirements |
+| Deep Dive | `docs/10-domain/*.md` | Technical documentation |
+| Progress | `progress.md` | Always (deliverables table) |
+
+**Find next ID:** `python tools/doc_chunker.py --next-id GAP-{PREFIX}`
+
+# === Phase 4: Groom Backlogs ===
+PROMPT ## Phase 4: Groom Backlogs
+
+ELIDE
+RUN head -25 LIVE-BACKLOG.md
+ELIDE
+
+PROMPT **Step 1: Update LIVE-BACKLOG.md Processed Table**
+- Add completed task with ✅ status and date
+
+**Step 2: Update source backlog**
+- Mark item complete or strike through
+
+# === Phase 5: Commit Work ===
+PROMPT ## Phase 5: Commit Work
+
+ELIDE
+RUN git --no-pager diff --stat
+ELIDE
+
+PROMPT **MANDATORY: Commit all changes from this cycle.**
+
+```bash
+git add -A && git commit -m "Cycle N: [brief description]
+
+- Deliverable 1
+- Deliverable 2
+"
+```
+
+Verify with `git log --oneline -1`
+
+# === Phase 6: Cycle Summary ===
+PROMPT ## Phase 6: Cycle Summary
+
+ELIDE
+RUN git --no-pager log --oneline -1
+ELIDE
+
+PROMPT Summarize what was accomplished.
+
+**Format:**
+```
+Cycle N: [Task name]
+Commit: [hash]
+Deliverables: [count] files, [+/-] lines
+Next: [suggestion or "continue to next cycle"]
+```
+
+# === End of Cycle ===
+# Automation continues to next iteration unless:
+# - STOPAUTOMATION file exists
+# - Context limit reached
+# - Human intervention requested

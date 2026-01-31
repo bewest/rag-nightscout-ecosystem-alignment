@@ -12,6 +12,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### backlog-cycle-v3.conv (2026-01-31)
+
+Created optimized backlog cycle workflow with reduced overhead.
+
+**Deliverable**: `workflows/orchestration/backlog-cycle-v3.conv` (158 lines)
+
+**Improvements over v2**:
+| Aspect | v2 | v3 | Change |
+|--------|----|----|--------|
+| Lines | 308 | 158 | -49% |
+| RUN output limit | 20K | 10K | -50% |
+| ELIDE usage | Inconsistent | Before every RUN | Consistent |
+| Phase 0 | 3 tool calls | Git only | Lighter |
+
+**Key Features**:
+- ELIDE before ALL RUN commands
+- Streamlined phase prompts (tables)
+- Priority-based cross-backlog routing
+- Consolidated instructions
+
+**Addresses**: #14 backlog-cycle-v3.conv
+
+---
+
 ### AAPS Runner Build Integration (2026-01-31)
 
 Completed Kotlin build integration for aaps-runner.kt.

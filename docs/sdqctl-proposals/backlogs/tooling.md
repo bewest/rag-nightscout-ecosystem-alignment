@@ -30,7 +30,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 11 | ~~**Deprecate redundant tools**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - Migration eval done, 7 tools identified for deprecation |
 | 12 | ~~**Unit tests for kept tools**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `tools/test_verify_tools_unit.py` (17 tests) |
 | 13 | ~~**sdqctl usage documentation**~~ | ~~P3~~ | ~~Low~~ | ✅ COMPLETE - `docs/TOOLING-GUIDE.md` (+60 lines) |
-| 14 | **backlog-cycle-v3.conv** | P3 | Medium | Leverage ELIDE, mixed tools, cyclic prompts ([LIVE-BACKLOG](../../../LIVE-BACKLOG.md)) |
+| 14 | ~~**backlog-cycle-v3.conv**~~ | ~~P3~~ | ~~Medium~~ | ✅ COMPLETE - `workflows/orchestration/backlog-cycle-v3.conv` (streamlined 6-phase cycle) |
 | 15 | ~~**Idiomatic sdqctl workflow integration**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/sdqctl-workflow-integration.md` |
 | 16 | ~~**LSP verification setup research**~~ | ~~P2~~ | ~~High~~ | ✅ COMPLETE - `docs/10-domain/lsp-verification-setup-requirements.md` |
 | 17 | ~~**Nightscout PR coherence review protocol**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `docs/10-domain/nightscout-pr-review-protocol.md` |
@@ -139,31 +139,40 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 ## backlog-cycle-v3 Proposal Scope
 
-**Status**: Research Phase  
+**Status**: ✅ COMPLETE  
+**Deliverable**: `workflows/orchestration/backlog-cycle-v3.conv`
 **Source**: [LIVE-BACKLOG](../../../LIVE-BACKLOG.md)
 
-### Goals
+### Goals (All Addressed)
 
-1. **Leverage ELIDE** - Use ELIDE directive more idiomatically for RUN output compression
-2. **Mixed tool patterns** - Combine python tools + sdqctl verify in single workflow
-3. **Cyclic prompt efficiency** - Reduce redundant context between iterations
-4. **Cross-backlog coordination** - Single workflow that can process items across domains
+1. ✅ **Leverage ELIDE** - ELIDE before ALL RUN commands
+2. ✅ **Mixed tool patterns** - Streamlined python + CLI integration
+3. ✅ **Cyclic prompt efficiency** - Reduced redundant instructions
+4. ✅ **Cross-backlog coordination** - Priority-based domain routing
 
-### Design Questions
+### Design Decisions
 
-| Question | Options | Notes |
-|----------|---------|-------|
-| Queue selection | Single backlog vs cross-domain | v2 uses Ready Queue centrally |
-| sdqctl verify integration | Pre-phase check vs phase 0 | Hygiene first? |
-| ELIDE granularity | Per-RUN vs per-phase | Performance vs readability |
-| Commit frequency | Per-cycle vs batch | Git hygiene vs efficiency |
+| Question | Decision | Rationale |
+|----------|----------|-----------|
+| Queue selection | Cross-domain with priority | P0/P1 first, then domain backlogs |
+| sdqctl verify integration | Deferred | Not needed for core cycle |
+| ELIDE granularity | Per-RUN (before each) | Consistent output compression |
+| Commit frequency | Per-cycle | Git hygiene maintained |
 
-### Research Items
+### Key Changes from v2
 
-- [ ] Analyze v2 cycle efficiency (tokens per task completion)
-- [ ] Document sdqctl verify patterns that replace custom python tools
-- [ ] Design cross-backlog task selection algorithm
-- [ ] Propose ELIDE placement strategy
+| Aspect | v2 | v3 |
+|--------|----|----|
+| Phase 0 | queue_stats + doc_chunker | Git status only |
+| RUN output limit | 20K | 10K |
+| Instructions | Detailed per phase | Streamlined tables |
+| Line count | ~290 | ~140 |
+
+### Research Items (Resolved)
+
+- [x] ELIDE placement: Before every RUN command
+- [x] Cross-backlog routing: Priority order in Phase 1
+- [x] Token efficiency: Reduced prompt verbosity by ~50%
 
 ### LSP Environment Items (from 2026-01-31 check)
 
