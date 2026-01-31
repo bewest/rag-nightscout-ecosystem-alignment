@@ -1082,3 +1082,37 @@ Implemented Phase 1 (Documentation) of the V4 API Integration proposal.
 
 **Gap References:** GAP-V4-001, GAP-V4-002, GAP-SYNC-040, GAP-SYNC-041
 
+
+---
+
+### NS Community Identity Provider Proposal (2026-01-31)
+
+Created comprehensive proposal for community-operated identity provider.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| IdP Proposal | `docs/sdqctl-proposals/ns-community-idp-proposal.md` | Federated OIDC with Hosting Providers Council |
+| Gap Analysis | `traceability/nightscout-api-gaps.md` | 3 gaps (GAP-IDP-004/005/006) |
+| Requirements | `traceability/nightscout-api-requirements.md` | 4 requirements (REQ-IDP-004/005/006/007) |
+
+**Key Decisions:**
+- Recommend federated architecture over single IdP
+- Propose Nightscout Hosting Providers Council
+- Use Ory Kratos/Hydra (NRG-compatible)
+- OIDC standard for interoperability
+
+**Proposed Council Members:**
+- t1pal (US, 5,000+ users)
+- NS10BE (EU, 2,000+ users)
+- nightscout.sh (Global)
+- Tidepool (trusted partner)
+
+**Implementation Phases:**
+1. Foundation (1-3 months): Charter, recruit providers
+2. Technical Build (4-9 months): Deploy Ory, cgm-remote-monitor plugin
+3. Rollout (10-12 months): Beta, audit, GA
+
+**Challenge**: Primarily organizational (forming council) rather than technical.
+
+**Gaps Identified:** GAP-IDP-004, GAP-IDP-005, GAP-IDP-006
+

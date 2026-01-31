@@ -1038,3 +1038,63 @@ See [requirements.md](requirements.md) for the index.
 
 **Source**: `docs/10-domain/trusted-identity-providers.md`
 
+
+---
+
+## Community Identity Provider Requirements
+
+### REQ-IDP-004: OIDC Compliance
+
+**Statement**: Community IdP MUST be fully OIDC-compliant.
+
+**Rationale**: OIDC is the industry standard for identity federation. Non-standard auth creates integration burden.
+
+**Scenarios**: Provider selection, client integration, security audit.
+
+**Verification**: OIDC conformance test suite, discovery endpoint validation.
+
+**Source**: `docs/sdqctl-proposals/ns-community-idp-proposal.md`
+
+---
+
+### REQ-IDP-005: Multi-Provider Federation
+
+**Statement**: Federation MUST support multiple identity providers simultaneously.
+
+**Rationale**: Single IdP creates central point of failure and control. Federation preserves user choice.
+
+**Scenarios**: User selects provider, provider joins federation, provider leaves federation.
+
+**Verification**: Test login via multiple providers, verify claim normalization.
+
+**Source**: `docs/sdqctl-proposals/ns-community-idp-proposal.md`
+
+---
+
+### REQ-IDP-006: Data Sovereignty
+
+**Statement**: User data MUST remain with user's chosen provider.
+
+**Rationale**: GDPR compliance, user trust, regional data residency requirements.
+
+**Scenarios**: EU user chooses NS10BE, US user chooses t1pal.
+
+**Verification**: Verify no cross-provider data replication of PII.
+
+**Source**: `docs/sdqctl-proposals/ns-community-idp-proposal.md`
+
+---
+
+### REQ-IDP-007: Open Source Components
+
+**Statement**: All IdP components MUST be open source.
+
+**Rationale**: Transparency, community trust, auditability, sustainability.
+
+**Scenarios**: Component selection, security audit, community contribution.
+
+**Verification**: All repos public, OSI-approved licenses.
+
+**Source**: `docs/sdqctl-proposals/ns-community-idp-proposal.md`
+
+---

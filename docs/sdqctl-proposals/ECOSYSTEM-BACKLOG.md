@@ -121,6 +121,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **NS Community Identity Provider** | `ns-community-idp-proposal.md` (14.4KB) | Federated OIDC with Hosting Providers Council; 3 gaps, 4 reqs |
 | **V4 API Integration Phase 1** | OpenAPI spec + client guide (17.8KB) | V4 documented as Nocturne Extension; feature detection required |
 | **🎉 iOS Backlog 100% COMPLETE** | 10 documents, 23 gaps, 22 reqs | All 10 items complete; modular architecture recommended |
 | **BLE CGM Library Consolidation** | `docs/10-domain/ble-cgm-library-consolidation.md` | Full consolidation not practical; shared constants package recommended; 5 gaps, 4 reqs |

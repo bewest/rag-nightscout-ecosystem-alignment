@@ -1552,3 +1552,80 @@ _None yet._
 **Related:**
 - [Nocturne DData Analysis](../docs/10-domain/nocturne-ddata-analysis.md)
 - GAP-SYNC-040 (deletion semantics)
+
+---
+
+## Community Identity Provider Gaps
+
+### GAP-IDP-004: No NS-Native Identity Provider
+
+**Description**: Nightscout ecosystem has no community-operated identity provider for user authentication.
+
+**Affected Systems**: cgm-remote-monitor, Loop, AAPS, Trio, all clients
+
+**Evidence**:
+- Only Tidepool offers external IdP integration
+- cgm-remote-monitor uses self-contained API_SECRET/JWT
+- No cross-site identity possible
+
+**Impact**:
+- No care team identification
+- No delegation model for caregivers
+- No HIPAA-grade audit trails
+- Credential fatigue for users
+
+**Remediation**: Establish Nightscout Hosting Providers Council with federated OIDC.
+
+**Source**: `docs/sdqctl-proposals/ns-community-idp-proposal.md`
+
+**Status**: Open
+
+---
+
+### GAP-IDP-005: No Federation Standard
+
+**Description**: No standard for federating identity across NS hosting providers.
+
+**Affected Systems**: t1pal, NS10BE, self-hosted instances
+
+**Evidence**:
+- Each provider has own user accounts
+- No trust relationships defined
+- No common claim vocabulary
+
+**Impact**:
+- Users cannot authenticate across providers
+- Cannot share identity between sites
+- Caregivers need separate accounts per site
+
+**Remediation**: Define federation registry and trust framework.
+
+**Source**: `docs/sdqctl-proposals/ns-community-idp-proposal.md`
+
+**Status**: Open
+
+---
+
+### GAP-IDP-006: OIDC Plugin Not in cgm-remote-monitor
+
+**Description**: cgm-remote-monitor lacks built-in OIDC authentication plugin.
+
+**Affected Systems**: cgm-remote-monitor
+
+**Evidence**:
+- NRG has OIDC RFC (oidc-actor-identity-proposal.md)
+- Not implemented in production cgm-remote-monitor
+- Requires manual integration
+
+**Impact**:
+- Cannot use external IdP with standard NS
+- Each hosting provider implements own auth
+- Inconsistent authentication experience
+
+**Remediation**: Implement OIDC plugin as proposed in NRG RFC.
+
+**Source**: `docs/sdqctl-proposals/ns-community-idp-proposal.md`
+
+**Status**: Open
+
+---

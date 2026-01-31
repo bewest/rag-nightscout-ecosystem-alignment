@@ -21,13 +21,13 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| V4 API Integration Phase 2/3 | P2 | Nocturne alignment, NightscoutKit SDK |
-| NS Community Identity Provider Proposal | P3 | Queued - nightscout-api.md #24 |
+| V4 API Integration Phase 2/3 | P2 | Nocturne alignment, NightscoutKit SDK (blocked - external repos) |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| NS Community Identity Provider Proposal | P3 | ✅ Complete - `ns-community-idp-proposal.md`, 3 gaps, 4 reqs | 2026-01-31 |
 | V4 API Integration Phase 1 | P2 | ✅ Complete - OpenAPI spec + client guide (17.8KB) | 2026-01-31 |
 | **iOS backlog 100% COMPLETE** | P0 | 🎉 Milestone - All 10 items complete | 2026-01-31 |
 | BLE CGM Library Consolidation | P2 | ✅ Complete - `docs/10-domain/ble-cgm-library-consolidation.md`, 5 gaps, 4 reqs | 2026-01-31 |

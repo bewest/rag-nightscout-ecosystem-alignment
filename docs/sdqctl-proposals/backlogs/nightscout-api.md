@@ -76,21 +76,24 @@ Covers: cgm-remote-monitor, Nocturne, entries, treatments, devicestatus, profile
 **Gaps Added:** GAP-IDP-001, GAP-IDP-002, GAP-IDP-003
 **Requirements Added:** REQ-IDP-001, REQ-IDP-002, REQ-IDP-003
 
-### 24. [P3] NS Community Identity Provider Proposal
+### 24. [P3] NS Community Identity Provider Proposal ✅ COMPLETE
 **Type:** Proposal | **Effort:** High  
 **Repos:** (organizational)  
 **Focus:** Proposal for Nightscout community-hosted identity provider
+**Status:** ✅ Complete (2026-01-31)
 
-**Scope:**
-- Council of NS managed hosting providers (t1pal, NS10BE, etc.)
-- Extend organizational list beyond Tidepool
-- Support ease of use and stronger security
-- Organizational and technical requirements
-- Consideration of fragmented NS ecosystem
+**Deliverables:**
+- `docs/sdqctl-proposals/ns-community-idp-proposal.md` (14.4KB)
+- GAP-IDP-004/005/006
+- REQ-IDP-004/005/006/007
 
-**Prerequisites:** Item #23 (Identity Providers Inventory)
-**Deliverable:** `docs/sdqctl-proposals/ns-community-idp-proposal.md`
-**Status:** PROPOSED
+**Key Recommendations:**
+- Federated OIDC architecture with Hosting Providers Council
+- Ory Kratos/Hydra stack (NRG-compatible)
+- t1pal, NS10BE, Tidepool as founding members
+- 12-month phased implementation
+
+**Prerequisites:** Item #23 (Identity Providers Inventory) ✅
 
 **Related Topics:**
 - JWT authentication (cgm-remote-monitor supports OIDC-like flows)
