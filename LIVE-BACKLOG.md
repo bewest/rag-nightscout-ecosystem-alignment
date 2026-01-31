@@ -18,6 +18,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 41) | P0 | ✅ Complete (tree_sitter_queries.py, 4-language extraction, 4 docs updated) | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 40) | P0 | ✅ Complete (tree-sitter installed, GAP-VERIFY-001 mitigated, 6 docs updated) | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 39) | P0 | ✅ Complete (Trio-dev OpenAPSSwift + cross-platform research, 5 gaps, 4 reqs, 5 items queued) | 2026-01-31 |
 | Cross-platform build/test harness research | P2 | ✅ Complete (`docs/10-domain/cross-platform-testing-research.md`) | 2026-01-31 |

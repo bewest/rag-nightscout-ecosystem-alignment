@@ -27,6 +27,7 @@ This document analyzes the trade-offs between static analysis and dynamic testin
 | `conformance/runners/oref0-runner.js` | ✅ Implemented | JS algorithm validation (85 vectors) |
 | `tools/verify_refs.py` | ✅ Implemented | Line anchor validation |
 | `tools/verify_assertions.py` | ✅ Implemented | Scenario → requirement tracing |
+| `tools/tree_sitter_queries.py` | ✅ Implemented | Code structure extraction (functions/classes/imports) |
 | `tools/lsp_query.py` | ❌ Not implemented | LSP-based symbol lookup |
 | Tree-sitter CLI | ✅ Installed | v0.26.3, JS/TS/Swift/Java/Kotlin parsers |
 

@@ -746,6 +746,27 @@ tree-sitter parse -l /tmp/tree-sitter-grammars/node_modules/tree-sitter-kotlin/k
 tree-sitter dump-languages
 ```
 
+### Tree-sitter Query Library
+
+Python wrapper for extracting code structures from source files.
+
+```bash
+# Extract functions from any supported file
+python3 tools/tree_sitter_queries.py functions <file>
+
+# Extract classes/structs/enums
+python3 tools/tree_sitter_queries.py classes <file>
+
+# Extract imports
+python3 tools/tree_sitter_queries.py imports <file>
+
+# Extract all structures (JSON output for automation)
+python3 tools/tree_sitter_queries.py --json all <file>
+
+# List supported languages
+python3 tools/tree_sitter_queries.py languages
+```
+
 **Supported Languages**:
 | Language | Status | File Types |
 |----------|--------|------------|

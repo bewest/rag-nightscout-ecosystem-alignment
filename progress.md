@@ -12,6 +12,34 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Tree-sitter Query Library (2026-01-31)
+
+Created Python wrapper for tree-sitter code extraction across 4 languages.
+
+**Deliverable**: `tools/tree_sitter_queries.py` (~300 lines)
+
+| Command | Purpose | Languages |
+|---------|---------|-----------|
+| `functions` | Extract function/method declarations | JS, Swift, Kotlin, Java |
+| `classes` | Extract class/struct/enum definitions | All |
+| `imports` | Extract import statements | All |
+| `all` | Combined extraction | All |
+| `languages` | List supported extensions | - |
+
+**Usage**:
+```bash
+python3 tools/tree_sitter_queries.py functions <file>
+python3 tools/tree_sitter_queries.py --json all <file>
+```
+
+**Tested on**:
+- `externals/oref0/lib/determine-basal/determine-basal.js` (8 functions)
+- `externals/Trio-dev/.../DynamicISF.swift` (3 structs/enums)
+- `externals/AndroidAPS/.../DetermineBasalAMA.kt` (12 functions)
+- `externals/xDrip/.../CompareCgms.java` (23 methods)
+
+---
+
 ### Tree-sitter Installation (2026-01-31)
 
 Installed tree-sitter-cli and language parsers for static syntax analysis.
