@@ -185,7 +185,7 @@ Apps:
 
 **Gaps Added:** GAP-SPM-001, GAP-SPM-002
 
-### #2: NightscoutKit Swift SDK Design
+### #2: NightscoutKit Swift SDK Design ✅ COMPLETE
 
 **Priority**: P1  
 **Status**: ✅ Complete  
