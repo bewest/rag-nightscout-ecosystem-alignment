@@ -12,28 +12,35 @@ Covers: cgm-remote-monitor, Nocturne, entries, treatments, devicestatus, profile
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 23 | Trusted Identity Providers Inventory | P2 | Medium | Research - who are the trusted IDPs? |
+| ~~23~~ | ~~Trusted Identity Providers Inventory~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE |
 | 24 | NS Community Identity Provider Proposal | P3 | High | Architecture/Org - hosting provider council |
 
 ---
 
 ## Identity & Authentication Research
 
-### 23. [P2] Trusted Identity Providers Inventory
+### 23. [P2] Trusted Identity Providers Inventory ✅ COMPLETE
 **Type:** Research | **Effort:** Medium  
 **Repos:** cgm-remote-monitor, Loop, AAPS, xDrip  
 **Focus:** Inventory all trusted identity providers in the Nightscout ecosystem
+**Status:** ✅ COMPLETE 2026-01-31
 
-**Questions:**
-- Who are the current trusted identity providers? (Tidepool confirmed)
-- Do Medtronic/Dexcom/Glooko count as implicit identity providers?
-- What authentication flows exist for each provider?
-- What data exchange permissions are granted?
+**Questions Answered:**
+- ✅ Who are the current trusted identity providers? → **Tidepool only**
+- ✅ Do Medtronic/Dexcom/Glooko count as implicit identity providers? → **NO** (data sources, not IDPs)
+- ✅ What authentication flows exist for each provider? → Session, OAuth, SSO documented
+- ✅ What data exchange permissions are granted? → Per-connector analysis complete
 
 **Deliverable:** `docs/10-domain/trusted-identity-providers.md`
-**Status:** PROPOSED
 
-**Related Gaps:** GAP-AUTH-*
+**Key Findings:**
+- Tidepool is the **only external IdP** with OAuth 2.0 integration
+- Only AAPS, Trio, xDrip+ have Tidepool support (Loop, xDrip4iOS missing)
+- Dexcom/Medtronic/Glooko are **data sources**, not identity providers
+- NRG Gateway has partial OIDC implementation (Kratos, Hydra)
+
+**Gaps Added:** GAP-IDP-001, GAP-IDP-002, GAP-IDP-003
+**Requirements Added:** REQ-IDP-001, REQ-IDP-002, REQ-IDP-003
 
 ### 24. [P3] NS Community Identity Provider Proposal
 **Type:** Proposal | **Effort:** High  

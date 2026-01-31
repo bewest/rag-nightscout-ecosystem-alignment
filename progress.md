@@ -12,6 +12,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Trusted Identity Providers Inventory (2026-01-31)
+
+Comprehensive inventory of identity providers and authentication mechanisms in the Nightscout ecosystem.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| IDP Deep Dive | `docs/10-domain/trusted-identity-providers.md` | Only Tidepool is true IdP |
+| Terminology | `mapping/cross-project/terminology-matrix.md` | Identity Providers section |
+
+**Key Findings**:
+- **Tidepool** is the only external identity provider (OAuth 2.0)
+- Dexcom, Medtronic, Glooko are **data sources**, not identity providers
+- Only AAPS, Trio, xDrip+ have Tidepool integration (Loop, xDrip4iOS missing)
+- NRG Gateway has partial OIDC implementation (Kratos, Hydra)
+
+**Gaps Added**: GAP-IDP-001 (no ecosystem IdP), GAP-IDP-002 (limited Tidepool), GAP-IDP-003 (no care team)
+
+**Requirements Added**: REQ-IDP-001, REQ-IDP-002, REQ-IDP-003
+
+---
+
 ### Identity Provider Backlog Items (2026-01-31)
 
 Processed human request to queue identity provider research items.

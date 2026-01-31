@@ -1087,6 +1087,63 @@ _None yet._
 
 ---
 
+### GAP-IDP-001: No Ecosystem-Wide Identity Provider
+
+**Scenario**: Care team coordination, multi-caregiver access
+
+**Description**: The Nightscout ecosystem has no centralized identity provider. Each instance manages its own users via API_SECRET and access tokens. There is no way to verify "this is Mom" across different Nightscout instances or clients.
+
+**Affected Systems**: All Nightscout instances, caregivers, followers
+
+**Impact**:
+- Cannot coordinate care teams across instances
+- No way to delegate access to schools/clinics with audit trails
+- `enteredBy` field remains unverified and untrustworthy
+
+**Remediation**: Implement OIDC integration per `oidc-actor-identity-proposal.md`, establish community IdP.
+
+**Related**: GAP-AUTH-001, GAP-AUTH-002
+
+---
+
+### GAP-IDP-002: Limited Tidepool Integration
+
+**Scenario**: External identity provider adoption
+
+**Description**: Tidepool is the only external IdP integrated with Nightscout ecosystem clients, but only AAPS, Trio, and xDrip+ support it. Loop, xDrip4iOS, and cgm-remote-monitor lack Tidepool OAuth integration.
+
+**Affected Systems**: Loop, xDrip4iOS, cgm-remote-monitor
+
+**Impact**:
+- No unified identity across all clients
+- Users must manage credentials per-app
+- No single sign-on experience
+
+**Remediation**: Add Tidepool OAuth support to remaining clients, or adopt community IdP.
+
+**Related**: GAP-IDP-001
+
+---
+
+### GAP-IDP-003: No Care Team Management
+
+**Scenario**: Pediatric diabetes management, multi-caregiver households
+
+**Description**: Nightscout has no concept of "care team" - no way to define roles (parent, school nurse, grandparent) with different permissions and audit trails per actor.
+
+**Affected Systems**: All Nightscout instances serving pediatric patients
+
+**Impact**:
+- Cannot answer "who gave that bolus?"
+- No role-based access control for caregivers
+- No time-limited access for temporary caregivers
+
+**Remediation**: Implement actor claims from OIDC proposal, create care team UI.
+
+**Related**: GAP-AUTH-001, GAP-AUTH-002, GAP-IDP-001
+
+---
+
 ## API v3 Architecture Gaps
 
 ---

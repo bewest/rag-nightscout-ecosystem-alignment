@@ -121,6 +121,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Trusted Identity Providers Inventory** | `docs/10-domain/trusted-identity-providers.md` | Only Tidepool is true IdP; 3 gaps, 3 reqs added |
 | **Identity Provider Backlog** | `backlogs/nightscout-api.md` #23-24 | Queued IDP inventory + community proposal |
 | **iOS Mobile Platform Evaluation** | `backlogs/ios-mobile-platform.md` | 8 apps, submodule sharing, modular architecture recommended |
 | **NightscoutKit Swift SDK Design** | `nightscoutkit-swift-sdk-design.md` | v3-first, actor-based, builds on gestrich/NightscoutKit |

@@ -189,6 +189,29 @@ See: [`mapping/nightscout-roles-gateway/`](../nightscout-roles-gateway/)
 
 ---
 
+### Identity Providers
+
+Trusted external identity providers in the ecosystem. See [`docs/10-domain/trusted-identity-providers.md`](../../docs/10-domain/trusted-identity-providers.md).
+
+| Provider | Protocol | Type | Clients Using It |
+|----------|----------|------|------------------|
+| **Tidepool** | OAuth 2.0 | Identity Provider | AAPS, Trio, xDrip+ |
+| **Dexcom Share** | Session-based | Data Source | nightscout-connect |
+| **Medtronic CareLink** | SSO/Token | Data Source | nightscout-connect |
+| **Abbott LibreLink** | OAuth 2.0 | Data Source | Nocturne |
+| **Glooko** | OAuth 2.0 | Data Source | Nocturne |
+| **Tandem t:connect** | Email/Password | Data Source | Nocturne |
+
+**Key Distinction**:
+- **Identity Provider**: Can verify "who you are" to other systems (issues identity tokens)
+- **Data Source**: Can only verify "you have access to this data" (no identity delegation)
+
+**OIDC Future State**: See [OIDC Actor Identity Proposal](../../externals/cgm-remote-monitor/docs/proposals/oidc-actor-identity-proposal.md)
+
+**Related Gaps**: GAP-IDP-001, GAP-IDP-002, GAP-IDP-003
+
+---
+
 ### Statistics API Concepts
 
 | Concept | Definition | Formula/Source |

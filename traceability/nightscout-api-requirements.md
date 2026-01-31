@@ -970,3 +970,71 @@ See [requirements.md](requirements.md) for the index.
 **Gap**: GAP-API-003
 
 **Source**: `docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md`
+
+
+---
+
+## Identity Provider Requirements
+
+### REQ-IDP-001: OIDC Discovery Endpoint
+
+**Statement**: Nightscout instances MAY expose OIDC discovery metadata at `.well-known/openid-configuration`.
+
+**Rationale**: Standard OIDC discovery enables client auto-configuration and federation.
+
+**Scenarios**:
+- Client auto-configures from discovery document
+- Federation with external IdPs
+
+**Verification**:
+- GET `/.well-known/openid-configuration` returns valid OIDC metadata
+- Standard claims (issuer, authorization_endpoint, etc.) present
+
+**Gap**: GAP-IDP-001
+
+**Source**: `docs/10-domain/trusted-identity-providers.md`
+
+---
+
+### REQ-IDP-002: Actor Claims in JWT
+
+**Statement**: Identity tokens SHOULD include actor claims identifying the authenticated user.
+
+**Rationale**: Enables care team visibility and audit trails for all data modifications.
+
+**Scenarios**:
+- Parent boluses on behalf of child
+- School nurse acknowledges alarm
+- Automated agent (Loop) enacts temp basal
+
+**Verification**:
+- JWT includes `actor_type`, `actor_name`, `act` claims
+- Treatments tagged with actor reference
+
+**Gap**: GAP-IDP-001, GAP-AUTH-001
+
+**Source**: `docs/10-domain/trusted-identity-providers.md`, `externals/cgm-remote-monitor/docs/proposals/oidc-actor-identity-proposal.md`
+
+---
+
+### REQ-IDP-003: Care Team Role Support
+
+**Statement**: Nightscout SHOULD support defining care team roles with differentiated permissions.
+
+**Rationale**: Different caregivers need different access levels (parent vs school nurse vs grandparent).
+
+**Scenarios**:
+- Parent has full admin access
+- School nurse can view and acknowledge alarms
+- Grandparent has read-only access
+- Permissions can be time-limited
+
+**Verification**:
+- Role definitions in database or config
+- Permission check respects role assignments
+- Time-based access expiration works
+
+**Gap**: GAP-IDP-003, GAP-AUTH-002
+
+**Source**: `docs/10-domain/trusted-identity-providers.md`
+
