@@ -1217,3 +1217,79 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Source**: `docs/10-domain/trio-comprehensive-analysis.md` Section 1B.3
 
 **Status**: Open
+
+---
+
+## Trio oref Integration Gaps
+
+### GAP-OREF-001: trio_custom_variables Undocumented
+
+**Description**: Trio's `trio_custom_variables` parameter object is not formally documented.
+
+**Affected Systems**: Trio, developers integrating with Trio
+
+**Evidence**:
+- `trio-oref/lib/determine-basal/determine-basal.js:141` adds parameter
+- No schema or interface definition exists
+- ~20 fields used throughout code
+
+**Impact**:
+- Hard for developers to understand integration
+- Risk of breaking changes without notice
+- Difficult to test edge cases
+
+**Remediation**: Create TypeScript interface or JSON schema for trio_custom_variables.
+
+**Source**: `docs/10-domain/trio-oref-integration-mapping.md`
+
+**Status**: Open
+
+---
+
+### GAP-OREF-002: Dynamic ISF Not in Upstream oref0
+
+**Description**: Trio's dynamic ISF (logarithmic and sigmoid) formulas are not available in upstream oref0.
+
+**Affected Systems**: oref0, AAPS (if it wants these features)
+
+**Evidence**:
+- Trio lines 200-362: Dynamic ISF implementation
+- oref0: No equivalent code
+- Feature disparity between implementations
+
+**Impact**:
+- Users must choose Trio for dynamic ISF
+- AAPS has own autosens, not compatible with Trio's approach
+- Fragmented algorithm implementations
+
+**Remediation**: Consider upstreaming to oref0 or documenting as Trio-only.
+
+**Source**: `docs/10-domain/trio-oref-integration-mapping.md`
+
+**Status**: Open
+
+---
+
+### GAP-OREF-003: No Automated Trio↔oref0 Sync
+
+**Description**: No automated process to merge oref0 bug fixes into Trio.
+
+**Affected Systems**: Trio
+
+**Evidence**:
+- trio-oref is a manual fork
+- No GitHub Actions for upstream sync
+- Manual merge required for updates
+
+**Impact**:
+- oref0 bug fixes may be delayed in Trio
+- Risk of divergence over time
+- Maintenance burden
+
+**Remediation**: Add CI job to detect oref0 changes, create sync PRs.
+
+**Source**: `docs/10-domain/trio-oref-integration-mapping.md`
+
+**Status**: Open
+
+---

@@ -1116,3 +1116,40 @@ Created comprehensive proposal for community-operated identity provider.
 
 **Gaps Identified:** GAP-IDP-004, GAP-IDP-005, GAP-IDP-006
 
+
+---
+
+### Trio-dev oref Integration Mapping (2026-01-31)
+
+Analyzed Trio's oref fork to document divergence from upstream oref0.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Integration Mapping | `docs/10-domain/trio-oref-integration-mapping.md` | Trio is superset of oref0, +451 lines in determine-basal.js |
+| Gap Analysis | `traceability/aid-algorithms-gaps.md` | 3 gaps (GAP-OREF-001/002/003) |
+| Requirements | `traceability/aid-algorithms-requirements.md` | 3 requirements (REQ-OREF-001/002/003) |
+
+**Key Findings**:
+- File structure identical between Trio and oref0
+- determine-basal.js: +451 lines (+37.8%)
+- Trio adds 4 new parameters including `trio_custom_variables`
+- No oref0 functionality removed (backward compatible)
+
+**Trio-Specific Features**:
+- Dynamic ISF (logarithmic + sigmoid formulas)
+- Profile overrides with scheduling
+- SMB time-window scheduling
+- TDD-based basal/ISF adjustments
+- ISF lookup caching (performance)
+
+**Sync Considerations**:
+- Trio should periodically merge oref0 bug fixes
+- No automated sync process exists
+
+**Gaps Identified**: GAP-OREF-001, GAP-OREF-002, GAP-OREF-003
+
+**Source Files Analyzed**:
+- `externals/Trio/trio-oref/lib/determine-basal/*.js`
+- `externals/oref0/lib/determine-basal/*.js`
+- `externals/Trio/trio-oref/lib/iob/calculate.js`
+

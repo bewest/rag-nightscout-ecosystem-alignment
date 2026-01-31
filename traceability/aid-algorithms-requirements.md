@@ -963,3 +963,49 @@ See [requirements.md](requirements.md) for the index.
 **Rationale**: oref0 ties SMB enable and sensitivity ratio to temp targets; users may expect simple target changes.
 
 **Verification**: Documentation audit for temp target behavior.
+
+---
+
+## Trio oref Integration Requirements
+
+### REQ-OREF-001: Document trio_custom_variables Interface
+
+**Statement**: Trio SHOULD provide formal documentation for trio_custom_variables object.
+
+**Rationale**: Developers need to understand integration points. Undocumented interfaces cause bugs.
+
+**Scenarios**: New feature development, testing, external tool integration.
+
+**Verification**: TypeScript interface or JSON schema exists in Trio repo.
+
+**Source**: `docs/10-domain/trio-oref-integration-mapping.md`
+
+---
+
+### REQ-OREF-002: Track Upstream oref0 Version
+
+**Statement**: Trio SHOULD track which upstream oref0 commit it is based on.
+
+**Rationale**: Enables understanding of what bug fixes/features are included.
+
+**Scenarios**: Bug triage, feature comparison, sync decisions.
+
+**Verification**: README or file in trio-oref/ notes oref0 commit hash.
+
+**Source**: `docs/10-domain/trio-oref-integration-mapping.md`
+
+---
+
+### REQ-OREF-003: Evaluate Breaking oref0 Changes
+
+**Statement**: Breaking changes in upstream oref0 MUST be evaluated before merging into Trio.
+
+**Rationale**: Trio has additional features that could conflict with upstream changes.
+
+**Scenarios**: oref0 release, algorithm update, safety constraint change.
+
+**Verification**: PR review process for oref0 merges.
+
+**Source**: `docs/10-domain/trio-oref-integration-mapping.md`
+
+---

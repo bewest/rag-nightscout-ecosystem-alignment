@@ -36,12 +36,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 - Documented all sdqctl commands and patterns
 - Added help text for new targets
 
-### 2. [P2] Trio-dev oref integration mapping
+### 2. [P2] Trio-dev oref integration mapping ✅ COMPLETE
 **Type:** Analysis | **Effort:** Medium
 **Source:** aid-algorithms.md #5
 **Repos:** Trio
-**Focus:** Map `trio-oref/lib/` JS files to oref0, document divergence
-**Outcome:** Understand Trio's oref implementation vs upstream
+**Status:** ✅ Complete (2026-01-31)
+**Deliverable:** `docs/10-domain/trio-oref-integration-mapping.md`
+**Key Finding:** Trio is superset of oref0 (+451 lines in determine-basal.js); Dynamic ISF, overrides, SMB scheduling added
 
 ### 3. [P2] Trio Nightscout sync analysis
 **Type:** Analysis | **Effort:** Medium
