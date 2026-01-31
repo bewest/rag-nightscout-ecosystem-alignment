@@ -685,6 +685,37 @@ sdqctl run "Audit authentication module"
 sdqctl flow workflows/*.conv --parallel 4
 ```
 
+#### VERIFY Directives in .conv Files
+
+Workflows can include VERIFY directives for inline verification:
+
+```conv
+# Example workflow with verification
+MODEL claude-sonnet-4
+ADAPTER copilot
+MAX-CYCLES 1
+
+# Run reference verification before prompts
+VERIFY refs
+VERIFY-ON-ERROR warn
+VERIFY-OUTPUT on-error
+
+# Check specific trace links
+VERIFY-TRACE REQ-001 -> SC-001
+VERIFY-COVERAGE uca_to_sc >= 80
+
+PROMPT Analyze the verification results and fix any issues.
+```
+
+| Directive | Purpose | Values |
+|-----------|---------|--------|
+| `VERIFY <type>` | Run verification | `refs`, `links`, `all`, `terminology` |
+| `VERIFY-ON-ERROR` | Failure behavior | `fail`, `continue`, `warn` |
+| `VERIFY-OUTPUT` | Context injection | `on-error`, `always`, `never` |
+| `VERIFY-LIMIT` | Output size limit | `5K`, `10K`, `50K`, `none` |
+| `VERIFY-TRACE` | Check trace link | `FROM-ID -> TO-ID` |
+| `VERIFY-COVERAGE` | Coverage threshold | `metric >= threshold` |
+
 ### Pending: Change Detection (Phase 2)
 
 **Purpose**: Identify what changed in source repositories since last analysis.

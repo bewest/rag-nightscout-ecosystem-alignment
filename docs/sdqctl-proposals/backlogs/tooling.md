@@ -13,7 +13,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
 | 1 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt ✅ (build ready, execution pending) |
-| 2 | sdqctl VERIFY .conv directive (Phase 2) | P3 | Medium | CLI complete, directive parsing pending |
+| 2 | ~~sdqctl VERIFY .conv directive (Phase 2)~~ | ~~P3~~ | ~~Medium~~ | ✅ COMPLETE - VERIFY/VERIFY-TRACE/VERIFY-COVERAGE directives fully implemented in sdqctl |
 | 3 | ~~LSP-based claim verification (Phase 2+)~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `verify_refs.py --semantic` flag, symbol validation via lsp_query.py |
 | 24 | ~~**Create `tools/lsp_query.py` for tsserver**~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - symbols/type/definition/references queries via tsserver |
 | 25 | ~~**Install tree-sitter-cli + parsers**~~ | ~~P2~~ | ~~Low~~ | ✅ COMPLETE - v0.26.3 via npm, 5 languages (JS/TS/Swift/Java + Kotlin manual) |
