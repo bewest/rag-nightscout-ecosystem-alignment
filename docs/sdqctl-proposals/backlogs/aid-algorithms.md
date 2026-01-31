@@ -14,7 +14,7 @@ Covers: Loop, AAPS, Trio, oref0/oref1, OpenAPS
 |---|------|----------|--------|-------|
 | 1 | Algorithm conformance: AAPS runner | P2 | High | Phase 3 - Kotlin runner for JS vs KT comparison |
 | 2 | Algorithm conformance: Loop runner | P3 | High | Swift runner for semantic validation (macOS CI only) |
-| 9 | **OpenAPSSwift parity testing** | P2 | Medium | Validate Trio-dev JS vs Swift outputs ([GAP-TRIO-SWIFT-001](../../../traceability/aid-algorithms-gaps.md)) |
+| 9 | ~~**OpenAPSSwift parity testing**~~ | ~~P2~~ | ~~Medium~~ | ✅ DESIGN COMPLETE - Framework + sample vectors created |
 
 ---
 

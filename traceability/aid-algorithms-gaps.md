@@ -1192,7 +1192,7 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 **Source**: `docs/10-domain/trio-comprehensive-analysis.md` Section 1B
 
-**Status**: Open
+**Status**: In Progress - Test framework designed (`conformance/scenarios/openapsswift-parity/`), sample vectors created
 
 ---
 

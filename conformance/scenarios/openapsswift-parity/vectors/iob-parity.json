@@ -1,0 +1,119 @@
+{
+  "$schema": "../../../schemas/parity-vector-v1.schema.json",
+  "name": "IOB Calculation Parity",
+  "description": "Compare IOB calculation between JS and Swift implementations",
+  "function": "iob",
+  "vectors": [
+    {
+      "id": "iob-001",
+      "description": "Single recent bolus (5 units, 30 min ago)",
+      "inputs": {
+        "treatments": [
+          {
+            "eventType": "Bolus",
+            "insulin": 5.0,
+            "timestamp": "2026-01-31T11:30:00.000Z",
+            "created_at": "2026-01-31T11:30:00.000Z"
+          }
+        ],
+        "profile": {
+          "dia": 6,
+          "peak": 75,
+          "curve": "rapid-acting"
+        },
+        "clock": "2026-01-31T12:00:00.000Z"
+      },
+      "tolerances": {
+        "iob": 0.01,
+        "activity": 0.001,
+        "basaliob": 0.01,
+        "bolusiob": 0.01
+      }
+    },
+    {
+      "id": "iob-002",
+      "description": "Multiple boluses with temp basal",
+      "inputs": {
+        "treatments": [
+          {
+            "eventType": "Bolus",
+            "insulin": 3.0,
+            "timestamp": "2026-01-31T10:00:00.000Z"
+          },
+          {
+            "eventType": "Bolus",
+            "insulin": 2.0,
+            "timestamp": "2026-01-31T11:00:00.000Z"
+          },
+          {
+            "eventType": "Temp Basal",
+            "rate": 2.5,
+            "duration": 30,
+            "timestamp": "2026-01-31T11:30:00.000Z"
+          }
+        ],
+        "profile": {
+          "dia": 6,
+          "peak": 75,
+          "curve": "rapid-acting",
+          "basalprofile": [
+            {"time": "00:00", "value": 1.0},
+            {"time": "06:00", "value": 1.2},
+            {"time": "12:00", "value": 1.0},
+            {"time": "18:00", "value": 1.1}
+          ]
+        },
+        "clock": "2026-01-31T12:00:00.000Z"
+      },
+      "tolerances": {
+        "iob": 0.01,
+        "activity": 0.001,
+        "basaliob": 0.01,
+        "bolusiob": 0.01,
+        "netbasalinsulin": 0.01
+      }
+    },
+    {
+      "id": "iob-003",
+      "description": "Extended bolus (square wave)",
+      "inputs": {
+        "treatments": [
+          {
+            "eventType": "Combo Bolus",
+            "insulin": 2.0,
+            "enteredinsulin": 4.0,
+            "duration": 60,
+            "timestamp": "2026-01-31T11:00:00.000Z"
+          }
+        ],
+        "profile": {
+          "dia": 6,
+          "peak": 75,
+          "curve": "rapid-acting"
+        },
+        "clock": "2026-01-31T12:00:00.000Z"
+      },
+      "tolerances": {
+        "iob": 0.02,
+        "activity": 0.001
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "type": "numeric_match",
+      "field": "iob",
+      "description": "Total IOB should match within tolerance"
+    },
+    {
+      "type": "numeric_match",
+      "field": "activity",
+      "description": "Insulin activity should match within tolerance"
+    },
+    {
+      "type": "array_length_match",
+      "field": "iobWithZeroTemp",
+      "description": "Zero-temp projection arrays should have same length"
+    }
+  ]
+}

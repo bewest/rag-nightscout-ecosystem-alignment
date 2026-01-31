@@ -12,6 +12,23 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### OpenAPSSwift Parity Testing Framework (2026-01-31)
+
+Created test framework design for validating JS vs Swift oref implementations in Trio-dev.
+
+**Deliverables**:
+- `conformance/scenarios/openapsswift-parity/README.md` - Test design (~200 lines)
+- `conformance/scenarios/openapsswift-parity/vectors/iob-parity.json` - Sample vectors (3 tests)
+
+**Framework**:
+- Architecture: JS Runner + Swift Runner + Comparison Engine
+- Functions: iob, meal, autosense, makeProfile, determineBasal
+- Tolerances: ±0.01 U/hr rates, ±1 mg/dL BG, ±0.01 IOB/COB
+
+**Addresses**: [GAP-TRIO-SWIFT-001](traceability/aid-algorithms-gaps.md)
+
+---
+
 ### LSP Claim Verification (2026-01-31)
 
 Integrated semantic symbol validation into verify_refs.py using lsp_query.py.
