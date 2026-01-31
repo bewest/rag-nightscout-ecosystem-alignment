@@ -5,6 +5,10 @@
 
 ---
 
+* Add items to backlog queues as apporpriate for methodical analysis:
+  * list of trusted identity providers in the Nightscout ecosystem (seems to consist of list of Tidepool, just one, but are there more?) Medtronic/Dexcom/Glooko implicitly count?
+  * proposal for Nightscout ecosystem community members (perhaps a council of the NS managed hosting providers) to host Nightscout trusted identity provider.  Extend the organizational list beyond Tidepool, support ease of use and stronger security.  Organizational and technical requirements across the fragmented Nightscout ecosystem. 
+
 ## Pending
 
 | Item | Priority | Notes |
