@@ -712,3 +712,37 @@ When building tools for agent-based workflows:
 4. **Dry Run**: Support `--dry-run` to preview changes without side effects
 5. **Idempotency**: Running a tool multiple times should produce consistent results
 6. **Context Awareness**: Tools should work from any directory, not just workspace root
+
+---
+
+## LSP and Static Analysis Tools
+
+### Environment Status
+
+See [lsp-environment-check.md](10-domain/lsp-environment-check.md) for detailed environment probe results.
+
+| Tool | Status | Command |
+|------|--------|---------|
+| Swift/sourcekit-lsp | ✅ Installed | `source ~/.local/share/swiftly/env.sh && swift --version` |
+| Node.js/tsserver | ✅ Ready | `node --version && which tsserver` |
+| Tree-sitter | ❌ Not installed | `cargo install tree-sitter-cli` |
+| Pyright | ❌ Not installed | `pip install pyright` |
+
+### Quick Start: Enable Swift
+
+```bash
+# Add to ~/.bashrc or run before Swift work
+source ~/.local/share/swiftly/env.sh
+```
+
+### Recommended Approach
+
+**Hybrid LSP + Tree-sitter**:
+1. **tsserver** for JS/TS semantic queries (cgm-remote-monitor, oref0)
+2. **tree-sitter** for Swift/Kotlin syntax queries (no build required)
+3. **Defer iOS semantic analysis** to macOS CI runners
+
+### Related Documentation
+
+- [lsp-environment-check.md](10-domain/lsp-environment-check.md) - Full probe report
+- [lsp-verification-setup-requirements.md](10-domain/lsp-verification-setup-requirements.md) - 4-phase roadmap
