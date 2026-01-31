@@ -18,7 +18,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
-| Phase 4 backlog grooming (cycle 43) | P0 | ✅ Complete (lsp_query.py, tsserver integration, GAP-VERIFY-002 partial) | 2026-01-31 |
+| Phase 4 backlog grooming (cycle 43) | P0 | ✅ Complete (lsp_query.py, Phase 1 roadmap complete, #3 promoted P2) | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 42) | P0 | ✅ Complete (accuracy_dashboard.py, REQ-VERIFY-005 implemented, GAP-VERIFY-004 addressed) | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 41) | P0 | ✅ Complete (tree_sitter_queries.py, 4-language extraction, 4 docs updated) | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 40) | P0 | ✅ Complete (tree-sitter installed, GAP-VERIFY-001 mitigated, 6 docs updated) | 2026-01-31 |
