@@ -864,7 +864,7 @@ osx_image: xcode12.4
 
 **Evidence**:
 - `conformance/runners/oref0-runner.js` exists (85 vectors, 31% pass)
-- No `aaps-runner.kt` or Swift runners exist
+- `conformance/runners/aaps-runner.kt` scaffolding complete (497 lines)
 - AAPS internal tests compare JS vs Kotlin but aren't integrated with workspace
 
 **Impact**:
@@ -873,13 +873,14 @@ osx_image: xcode12.4
 - Documentation claims about "equivalent behavior" are unverified
 
 **Remediation**:
-1. Implement `aaps-runner.kt` using existing AAPS ReplayApsResultsTest infrastructure
-2. Add Swift runners for macOS CI (Trio, Loop)
-3. Cross-compare outputs for same test vectors
+1. ~~Implement `aaps-runner.kt` scaffolding~~ ✅ Done (2026-01-31)
+2. Complete aaps-runner.kt build integration and execution logic
+3. Add Swift runners for macOS CI (Trio, Loop)
+4. Cross-compare outputs for same test vectors
 
 **Source**: `docs/10-domain/cross-platform-testing-research.md`
 
-**Status**: Partially mitigated - `verify_refs.py --semantic` validates JS/TS symbol references; Kotlin/Swift runners still pending
+**Status**: In Progress - Kotlin scaffolding complete, build integration pending
 
 ---
 

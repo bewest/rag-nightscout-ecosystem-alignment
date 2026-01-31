@@ -4319,4 +4319,13 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | `verify_refs.py` | Line reference validation | All | ✅ Implemented |
 | `accuracy_dashboard.py` | Unified verification metrics | All | ✅ Implemented |
 
+### Algorithm Conformance Runners
+
+| Runner | Purpose | Language | Status |
+|--------|---------|----------|--------|
+| `oref0-runner.js` | Execute oref0 determine-basal | JavaScript | ✅ Implemented |
+| `aaps-runner.kt` | Execute AAPS algorithms (SMB/AMA) | Kotlin | 🔄 Scaffolding complete |
+| `trio-runner.swift` | Execute OpenAPSSwift | Swift | ⏳ Planned (macOS CI) |
+| `loop-runner.swift` | Execute LoopAlgorithm | Swift | ⏳ Planned (macOS CI) |
+
 **Source**: `docs/10-domain/lsp-environment-check.md`, `docs/10-domain/cross-platform-testing-research.md`

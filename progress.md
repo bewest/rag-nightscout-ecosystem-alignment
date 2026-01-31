@@ -12,6 +12,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### AAPS Runner Scaffolding (2026-01-31)
+
+Created aaps-runner.kt scaffolding for cross-platform algorithm conformance testing.
+
+**Deliverable**: `conformance/runners/aaps-runner.kt` (~408 lines)
+
+**Features**:
+- Mirrors oref0-runner.js interface (JSON vectors → JSON results)
+- Supports 4 algorithms: SMB, AMA, SMB_DYNAMIC, AUTO_ISF
+- Two execution modes: Kotlin native or JS via Rhino
+- Complete data class definitions matching conformance vector schema
+- Validation logic with configurable tolerances
+
+**Implementation Notes**:
+- References AAPS ReplayApsResultsTest patterns (lines 76-108, 110-268)
+- Three build options documented: standalone JAR, AAPS module, Robolectric
+- Execution stubs with TODO markers for completion
+
+**Status**: Scaffolding complete, build integration pending (est. 1 day remaining)
+
+**Addresses**: Phase 2 of cross-platform testing roadmap
+
+---
+
 ### OpenAPSSwift Parity Testing Framework (2026-01-31)
 
 Created test framework design for validating JS vs Swift oref implementations in Trio-dev.

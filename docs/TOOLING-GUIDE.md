@@ -797,3 +797,53 @@ source ~/.local/share/swiftly/env.sh
 
 - [lsp-environment-check.md](10-domain/lsp-environment-check.md) - Full probe report
 - [lsp-verification-setup-requirements.md](10-domain/lsp-verification-setup-requirements.md) - 4-phase roadmap
+
+---
+
+## Algorithm Conformance Runners
+
+Execute algorithm implementations against standardized test vectors.
+
+### oref0-runner.js (✅ Implemented)
+
+**Purpose**: Execute oref0 determine-basal algorithm against conformance vectors.
+
+```bash
+# Run all vectors
+node conformance/runners/oref0-runner.js
+
+# With options
+node conformance/runners/oref0-runner.js --vectors DIR --output FILE --quiet
+```
+
+**Output**: JSON results to `conformance/results/oref0-results.json`
+
+### aaps-runner.kt (🔄 Scaffolding)
+
+**Purpose**: Execute AAPS algorithms (SMB, AMA, Dynamic ISF, AutoISF) against conformance vectors.
+
+**Status**: Scaffolding complete (497 lines), build integration pending.
+
+**Planned Usage**:
+```bash
+# Build (once Kotlin deps configured)
+kotlinc conformance/runners/aaps-runner.kt -include-runtime -d aaps-runner.jar
+
+# Run
+java -jar aaps-runner.jar --vectors DIR --output FILE --algorithm SMB
+```
+
+**Algorithms Supported**:
+- SMB (default)
+- AMA
+- SMB_DYNAMIC (Dynamic ISF)
+- AUTO_ISF
+
+**Execution Modes**:
+- `--js`: Use Rhino JS engine (matches AAPS production)
+- Default: Kotlin native (faster)
+
+### Related Documentation
+
+- [cross-platform-testing-research.md](10-domain/cross-platform-testing-research.md) - Full roadmap
+- [openapsswift-parity/README.md](../conformance/scenarios/openapsswift-parity/README.md) - Parity test framework

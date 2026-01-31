@@ -248,15 +248,22 @@ Based on analysis of `docs/10-domain/*.md`:
 
 **Deliverable**: Line + semantic validation for all refs.
 
-### Phase 2: AAPS Runner (Week 3)
+### Phase 2: AAPS Runner (Week 3) 🔄 IN PROGRESS
 
-| Task | Deliverable | Effort |
-|------|-------------|--------|
-| Create aaps-runner.kt | `conformance/runners/aaps-runner.kt` | 2 days |
-| Extract AAPS test vectors | `conformance/vectors/aaps/` | 4 hours |
-| Cross-runner comparison | `tools/conformance_suite.py` update | 4 hours |
+| Task | Deliverable | Effort | Status |
+|------|-------------|--------|--------|
+| Create aaps-runner.kt | `conformance/runners/aaps-runner.kt` | 2 days | ✅ Scaffolding done (408 lines) |
+| Extract AAPS test vectors | `conformance/vectors/aaps/` | 4 hours | ⏳ Pending |
+| Cross-runner comparison | `tools/conformance_suite.py` update | 4 hours | ⏳ Pending |
 
 **Deliverable**: JS vs Kotlin algorithm comparison.
+
+**aaps-runner.kt Design Notes**:
+- Mirrors oref0-runner.js interface (JSON in → JSON out)
+- Supports 4 algorithms: SMB, AMA, SMB_DYNAMIC, AUTO_ISF
+- Two execution modes: Kotlin native or JS via Rhino
+- References AAPS ReplayApsResultsTest patterns
+- Build setup options documented (standalone JAR vs AAPS module)
 
 ### Phase 3: Swift Runners - CI Only (Week 4+)
 
