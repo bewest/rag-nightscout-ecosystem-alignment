@@ -248,7 +248,7 @@ Based on analysis of `docs/10-domain/*.md`:
 
 **Deliverable**: Line + semantic validation for all refs.
 
-### Phase 2: AAPS Runner (Week 3) 🔄 IN PROGRESS
+### Phase 2: AAPS Runner (Week 3) ⏸️ BLOCKED
 
 | Task | Deliverable | Effort | Status |
 |------|-------------|--------|--------|
@@ -256,6 +256,12 @@ Based on analysis of `docs/10-domain/*.md`:
 | Makefile build target | `make aaps-runner` | 2 hours | ✅ Complete |
 | Extract AAPS test vectors | `conformance/vectors/aaps/` | 4 hours | ⏳ Pending |
 | Cross-runner comparison | `tools/conformance_suite.py` update | 4 hours | ⏳ Pending |
+| AAPS algorithm execution | Native or JS mode | 1 week | ❌ Blocked |
+
+**Blocker Analysis** (2026-01-31):
+- AAPS JS modules use `require('../round-basal')` with internal deps not in assets
+- Kotlin native path requires AAPS core JARs from Gradle build
+- Options: (1) Build AAPS locally, (2) Extract deps from APK, (3) Use oref0 only
 
 **Deliverable**: JS vs Kotlin algorithm comparison.
 
@@ -272,7 +278,7 @@ java -cp .build/aaps-runner.jar:.build/json-20231013.jar \
 - Supports 4 algorithms: SMB, AMA, SMB_DYNAMIC, AUTO_ISF
 - Two execution modes: Kotlin native or JS via Rhino
 - Loads 85 test vectors from conformance/vectors/
-- Algorithm execution: TODO (requires AAPS core dependencies)
+- Algorithm execution: Blocked (requires AAPS core dependencies)
 
 ### Phase 3: Swift Runners - CI Only (Week 4+)
 
