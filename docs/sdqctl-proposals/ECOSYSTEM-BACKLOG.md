@@ -121,6 +121,8 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **🎉 iOS Backlog 100% COMPLETE** | 10 documents, 23 gaps, 22 reqs | All 10 items complete; modular architecture recommended |
+| **BLE CGM Library Consolidation** | `docs/10-domain/ble-cgm-library-consolidation.md` | Full consolidation not practical; shared constants package recommended; 5 gaps, 4 reqs |
 | **TestFlight Distribution Infrastructure** | `docs/10-domain/testflight-distribution-infrastructure.md` | 5/7 apps browser build; 3 gaps, 3 reqs |
 | **WidgetKit Standardization Survey** | `docs/10-domain/widgetkit-standardization-survey.md` | 6 apps surveyed; Loop/Trio missing widgets; 4 gaps, 3 reqs |
 | **HealthKit Integration Audit** | `docs/10-domain/healthkit-integration-audit.md` | 5 apps write glucose; high duplicate risk; 3 gaps, 3 reqs |

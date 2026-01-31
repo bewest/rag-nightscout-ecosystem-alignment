@@ -1337,3 +1337,64 @@ See [requirements.md](requirements.md) for the index.
 **Source**: [testflight-distribution-infrastructure.md](../docs/10-domain/testflight-distribution-infrastructure.md)
 
 **Status**: Open
+
+
+---
+
+## BLE CGM Requirements
+
+### REQ-BLE-001: Shared Packages License Compatible
+
+**Statement**: Shared BLE packages MUST use MIT or equivalent permissive license.
+
+**Rationale**: All ecosystem apps have different licenses. MIT is compatible with all. GPL would prevent adoption.
+
+**Scenarios**: Package creation, dependency adoption
+
+**Verification**: Check LICENSE file in shared package.
+
+**Source**: `docs/10-domain/ble-cgm-library-consolidation.md`
+
+---
+
+### REQ-BLE-002: Protocol Constants Match Specifications
+
+**Statement**: Shared BLE constants MUST exactly match manufacturer protocol specifications.
+
+**Rationale**: Incorrect UUIDs or opcodes will cause connection failures. Must be verified against device behavior.
+
+**Scenarios**: Adding new CGM protocol, updating for firmware changes
+
+**Verification**: Test against actual device, compare with manufacturer documentation.
+
+**Source**: `docs/10-domain/ble-cgm-library-consolidation.md`
+
+---
+
+### REQ-BLE-003: Glucose Model Support mg/dL and mmol/L
+
+**Statement**: Shared glucose data model MUST support both mg/dL and mmol/L units.
+
+**Rationale**: Different regions use different units. US uses mg/dL, EU uses mmol/L. Apps must interoperate.
+
+**Scenarios**: Data exchange, HealthKit writing, display
+
+**Verification**: Unit conversion tests, display tests in both unit modes.
+
+**Source**: `docs/10-domain/ble-cgm-library-consolidation.md`
+
+---
+
+### REQ-BLE-004: Backward Compatibility Required
+
+**Statement**: Shared packages MUST NOT break existing app functionality when adopted.
+
+**Rationale**: Apps have production users on TestFlight. Breaking changes could impact insulin delivery.
+
+**Scenarios**: Package updates, version migrations
+
+**Verification**: Integration tests in each adopting app, regression testing.
+
+**Source**: `docs/10-domain/ble-cgm-library-consolidation.md`
+
+---

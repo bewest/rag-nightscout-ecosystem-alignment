@@ -4620,3 +4620,31 @@ TrioApp/             # Full iOS app
 **Gap References**: GAP-DIST-001/002/003
 
 **Source**: `docs/10-domain/testflight-distribution-infrastructure.md`
+
+---
+
+## BLE CGM Library Terms
+
+| Term | CGMBLEKit | DiaBLE | xDrip4iOS | Definition |
+|------|-----------|--------|-----------|------------|
+| Transmitter | `Transmitter` class | `Transmitter: Device` | `CGMTransmitter` protocol | BLE device that sends glucose data |
+| Glucose Reading | `struct Glucose` | `struct Glucose` | `struct GlucoseData` | Single glucose measurement |
+| Manager | `TransmitterManager` | `BluetoothDelegate` | delegate pattern | Coordinates BLE operations |
+| Opcode | `Opcode` enum | `Opcode` enum | `OpCode` constants | Command byte in BLE message |
+| Authentication | AuthChallenge messages | authRequest opcode | AuthTxMessage | Dexcom pairing handshake |
+| Backfill | BackfillMessage | backfill UUID | BackfillRxMessage | Historical data retrieval |
+| J-PAKE | Not implemented | Documented in DexcomG7 | Implemented in G7 | G7 pairing protocol |
+| FRAM | Not used | `var fram: Data` | LibreDataParser | Libre flash memory data |
+| Bridge | Not used | Not used | MiaoMiao, Bubble, etc. | Third-party Libre reader |
+| Plugin | CGMBLEKitG5Plugin | Not used | Not used | LoopKit integration |
+
+### Protocol Comparison
+
+| Protocol | Authentication | Calibration | Backfill | Encryption |
+|----------|---------------|-------------|----------|------------|
+| Dexcom G5 | Challenge-response | Required | Yes | AES |
+| Dexcom G6 | Challenge-response | Optional | Yes | AES |
+| Dexcom G7 | J-PAKE | Factory only | Yes | AES-CCM |
+| Libre 2 | NFC unlock | Factory | BLE stream | AES |
+| Libre 3 | Proprietary | Factory | BLE stream | Unknown |
+

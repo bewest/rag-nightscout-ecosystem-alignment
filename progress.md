@@ -1008,3 +1008,43 @@ Created session checkpoint `005-session-complete-all-queues-empty.md`.
 - Backlog items: 7 complete, 1 deferred
 
 **Queue**: Empty - all objectives achieved.
+
+---
+
+### BLE CGM Library Consolidation (2026-01-31)
+
+Analyzed BLE CGM library implementations across Loop, DiaBLE, and xDrip4iOS to assess consolidation feasibility.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Library Analysis | `docs/10-domain/ble-cgm-library-consolidation.md` | Full consolidation not practical due to architecture differences |
+| Protocol Matrix | Same doc | Compared Dexcom G5/G6/G7 and Libre 2/3 across 4 codebases |
+| Shared Package Proposal | Same doc | CGMBLEConstants and GlucoseDataKit recommended |
+| Gap Analysis | `traceability/connectors-gaps.md` | 5 gaps (GAP-BLE-001 to GAP-BLE-005) |
+| Requirements | `traceability/connectors-requirements.md` | 4 requirements (REQ-BLE-001 to REQ-BLE-004) |
+
+**Key Findings**:
+- CGMBLEKit (Loop): G5/G6 only, no G7 J-PAKE support (major gap)
+- DiaBLE: Most comprehensive protocol documentation (G7, Libre 3)
+- xDrip4iOS: Widest device support (10+ bridges, G4-G7)
+- LibreTransmitter: Separate Loop plugin for Libre sensors
+
+**Consolidation Assessment**:
+- Full consolidation NOT practical (incompatible architectures)
+- Shared constants package feasible (UUIDs, opcodes)
+- Shared data model protocol feasible (GlucoseReading)
+- Protocol documentation valuable for all
+
+**Proposed Packages**:
+1. CGMBLEConstants - BLE UUIDs, opcodes, enums only
+2. GlucoseDataKit - Shared data model protocol
+
+**Gaps Identified**: GAP-BLE-001, GAP-BLE-002, GAP-BLE-003, GAP-BLE-004, GAP-BLE-005
+
+**Source Files Analyzed**:
+- `externals/LoopWorkspace/CGMBLEKit/` (G5/G6)
+- `externals/LoopWorkspace/LibreTransmitter/` (Libre bridges)
+- `externals/DiaBLE/DiaBLE/` (G6/G7/Libre all)
+- `externals/xdripswift/xdrip/BluetoothTransmitter/CGM/` (all protocols)
+- `externals/LoopWorkspace/LoopKit/LoopKit/DeviceManager/CGMManager.swift`
+

@@ -1385,3 +1385,137 @@ osx_image: xcode12.4
 **Source**: `docs/10-domain/testflight-distribution-infrastructure.md`
 
 **Status**: Open
+
+
+---
+
+## BLE CGM Gaps
+
+### GAP-BLE-001: No Shared BLE Constants Package
+
+**Description**: BLE service/characteristic UUIDs and opcodes are duplicated across CGMBLEKit, DiaBLE, xDrip4iOS, and LibreTransmitter.
+
+**Affected Systems**: Loop (CGMBLEKit), DiaBLE, xDrip4iOS, LibreTransmitter
+
+**Evidence**:
+- CGMBLEKit: `BluetoothServices.swift` defines Dexcom UUIDs
+- DiaBLE: `Dexcom.swift` defines same UUIDs as enums
+- xDrip4iOS: `CGMG5Transmitter.swift` defines same UUIDs inline
+- Each implementation slightly different format
+
+**Impact**: 
+- Code duplication across 4 codebases
+- Risk of inconsistency when protocols evolve
+- Harder to compare implementations
+
+**Remediation**: 
+Create `CGMBLEConstants` Swift Package with MIT license containing only UUIDs, opcodes, and enums.
+
+**Source**: `docs/10-domain/ble-cgm-library-consolidation.md`
+
+**Status**: Open
+
+---
+
+### GAP-BLE-002: No Standard Glucose Data Model
+
+**Description**: Each app uses different glucose data structures, preventing data exchange.
+
+**Affected Systems**: Loop, DiaBLE, xDrip4iOS, Trio
+
+**Evidence**:
+- CGMBLEKit: `struct Glucose` with HKQuantity
+- DiaBLE: `struct Glucose: Identifiable, Codable` with Int value
+- xDrip4iOS: `struct GlucoseData` with Double glucoseLevelRaw
+- Different fields, units, and naming conventions
+
+**Impact**: 
+- Cannot share glucose readings between apps
+- HealthKit used as intermediary (creates duplicates)
+- No direct inter-app communication possible
+
+**Remediation**: 
+Define `GlucoseReading` protocol with common fields (timestamp, value, trend, trendRate).
+
+**Source**: `docs/10-domain/ble-cgm-library-consolidation.md`
+
+**Status**: Open
+
+---
+
+### GAP-BLE-003: Loop/CGMBLEKit Missing G7 Support
+
+**Description**: CGMBLEKit does not implement Dexcom G7 J-PAKE authentication.
+
+**Affected Systems**: Loop
+
+**Evidence**:
+- CGMBLEKit has G5/G6 only (standard auth)
+- G7 requires J-PAKE pairing (crypto)
+- DiaBLE documents G7 J-PAKE in `DexcomG7.swift`
+- xDrip4iOS implements G7 in `CGMG7Transmitter`
+
+**Impact**: 
+- Loop users cannot use Dexcom G7 natively
+- Must use Dexcom app + HealthKit (indirect)
+- Major feature gap as G7 adoption grows
+
+**Remediation**: 
+Port J-PAKE implementation from DiaBLE or xDrip4iOS to CGMBLEKit.
+
+**Source**: `docs/10-domain/ble-cgm-library-consolidation.md`
+
+**Status**: Open
+
+---
+
+### GAP-BLE-004: Libre 3 Support Incomplete
+
+**Description**: No iOS app has fully working native Libre 3 BLE support.
+
+**Affected Systems**: DiaBLE, xDrip4iOS, LibreTransmitter
+
+**Evidence**:
+- DiaBLE: `Libre3.swift` documents protocol but marked incomplete
+- xDrip4iOS: Limited Libre 3 support
+- LibreTransmitter: No Libre 3 support
+- Libre 3 uses proprietary encryption
+
+**Impact**: 
+- Libre 3 users must use LibreLink app + HealthKit
+- Cannot build DIY CGM with Libre 3
+- Growing sensor market not accessible
+
+**Remediation**: 
+Community research project to complete Libre 3 protocol implementation.
+
+**Source**: `docs/10-domain/ble-cgm-library-consolidation.md`
+
+**Status**: Open
+
+---
+
+### GAP-BLE-005: Bridge Support Not in LoopKit Pattern
+
+**Description**: MiaoMiao, Bubble, and other Libre bridges are not standard LoopKit plugins.
+
+**Affected Systems**: Loop, Trio
+
+**Evidence**:
+- CGMBLEKit pattern: G5Plugin, G6Plugin as CGMManagerUIPlugin
+- LibreTransmitter integrates bridges but differently structured
+- xDrip4iOS has cleanest bridge abstraction
+
+**Impact**: 
+- Libre bridge users have inconsistent Loop experience
+- Bridge support harder to maintain
+- No standard way to add new bridges
+
+**Remediation**: 
+Refactor LibreTransmitter to match CGMBLEKit plugin pattern.
+
+**Source**: `docs/10-domain/ble-cgm-library-consolidation.md`
+
+**Status**: Open
+
+---
