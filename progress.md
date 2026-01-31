@@ -12,6 +12,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### TestFlight Distribution Infrastructure (2026-01-31)
+
+Survey of TestFlight and build automation across iOS ecosystem.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Distribution Survey | `docs/10-domain/testflight-distribution-infrastructure.md` | 7 apps, 3 models, 3 gaps |
+
+**Key Findings**:
+- **Browser Build dominates** - 5/7 apps support GitHub Actions → TestFlight
+- **Nightguard/DiaBLE App Store only** - no browser build automation
+- **No unified docs** - scattered across wikis, READMEs, separate sites
+- **Consistent secrets** - TEAMID, GH_PAT, FASTLANE_* pattern
+
+**Distribution Models**:
+| Model | Barrier | Apps |
+|-------|---------|------|
+| App Store | ⭐ Low | Nightguard, DiaBLE |
+| Browser Build | ⭐⭐ Medium | Loop, Trio, xDrip4iOS, LoopFollow, LoopCaregiver |
+| Self-Build | ⭐⭐⭐ High | All |
+
+**Gaps Identified**: GAP-DIST-001/002/003
+
+**Requirements Added**: REQ-DIST-001/002/003
+
+---
+
 ### WidgetKit Standardization Survey (2026-01-31)
 
 Survey of WidgetKit implementations across iOS ecosystem apps.

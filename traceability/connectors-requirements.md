@@ -1258,3 +1258,82 @@ See [requirements.md](requirements.md) for the index.
 **Source**: [widgetkit-standardization-survey.md](../docs/10-domain/widgetkit-standardization-survey.md)
 
 **Status**: Open
+
+
+---
+
+## Distribution Requirements
+
+### REQ-DIST-001: Browser Build Support
+
+**Statement**: All ecosystem iOS apps SHOULD support browser-based builds via GitHub Actions.
+
+**Rationale**: Eliminates need for Mac computer, lowers barrier to entry for non-technical users.
+
+**Scenarios**:
+- Fork repo, add secrets, run workflow
+- Automatic upload to personal TestFlight
+- Weekly rebuild to stay current
+
+**Verification**:
+- [x] Loop supports browser build
+- [x] Trio supports browser build
+- [x] xDrip4iOS supports browser build
+- [x] LoopFollow supports browser build
+- [x] LoopCaregiver supports browser build
+- [ ] Nightguard supports browser build
+- [ ] DiaBLE supports browser build
+
+**Gap Reference**: GAP-DIST-002
+
+**Source**: [testflight-distribution-infrastructure.md](../docs/10-domain/testflight-distribution-infrastructure.md)
+
+**Status**: ⚠️ Partial (5/7 apps)
+
+---
+
+### REQ-DIST-002: Standardized Build Configuration
+
+**Statement**: Apps SHOULD use consistent secret names, workflow structure, and Fastlane configuration.
+
+**Rationale**: Users building multiple apps should have consistent experience; maintainers benefit from shared patterns.
+
+**Scenarios**:
+- Same secret names across all apps
+- Similar workflow structure
+- Reusable Fastfile components
+
+**Verification**:
+- [ ] Shared workflow action exists
+- [ ] Secret naming documented
+- [ ] At least 3 apps use shared template
+
+**Gap Reference**: GAP-DIST-001
+
+**Source**: [testflight-distribution-infrastructure.md](../docs/10-domain/testflight-distribution-infrastructure.md)
+
+**Status**: Open
+
+---
+
+### REQ-DIST-003: Unified Build Documentation
+
+**Statement**: The ecosystem SHOULD provide a single unified build guide covering all iOS apps.
+
+**Rationale**: Reduces confusion for new users, eliminates duplicate documentation effort.
+
+**Scenarios**:
+- Single URL for iOS build instructions
+- App-specific sections within unified guide
+- Consistent terminology across apps
+
+**Verification**:
+- [ ] Unified guide exists
+- [ ] All app READMEs link to it
+- [ ] Covers at least 5 apps
+
+**Gap Reference**: GAP-DIST-003
+
+**Source**: [testflight-distribution-infrastructure.md](../docs/10-domain/testflight-distribution-infrastructure.md)
+
+**Status**: Open

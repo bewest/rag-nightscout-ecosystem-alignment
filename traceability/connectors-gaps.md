@@ -1300,3 +1300,88 @@ osx_image: xcode12.4
 **Source**: `docs/10-domain/widgetkit-standardization-survey.md`
 
 **Status**: Open
+
+
+---
+
+## Distribution Infrastructure Gaps
+
+### GAP-DIST-001: No Standardized Build Template
+
+**Description**: Each app has slightly different GitHub Actions workflow configuration for browser builds.
+
+**Affected Systems**: Loop, Trio, xDrip4iOS, LoopFollow, LoopCaregiver
+
+**Evidence**:
+- Different cron schedules across apps
+- Different secret naming conventions
+- Different Fastfile structures and lanes
+
+**Impact**: 
+- Harder to maintain multiple apps for developers
+- Inconsistent user experience across apps
+- Duplicate documentation effort
+
+**Remediation**: 
+1. Create shared `nightscout/ios-build-action` workflow
+2. Standardize secret names (TEAMID, GH_PAT, etc.)
+3. Provide reusable Fastfile template
+
+**Source**: `docs/10-domain/testflight-distribution-infrastructure.md`
+
+**Status**: Open
+
+---
+
+### GAP-DIST-002: DiaBLE/Nightguard No Browser Build
+
+**Description**: DiaBLE and Nightguard lack GitHub Actions build automation for browser builds.
+
+**Affected Systems**: DiaBLE, Nightguard
+
+**Evidence**:
+- No `.github/workflows/` build files in either repo
+- No Matchfile for certificate management
+- Relies on App Store or manual Xcode build
+
+**Impact**: 
+- Users must use App Store version (may lag behind)
+- Or self-build with Xcode (high barrier to entry)
+- Missing parity with other ecosystem apps
+
+**Remediation**: 
+1. Add browser build workflow to Nightguard (Fastlane already exists)
+2. Add Fastlane and workflow to DiaBLE
+3. Document browser build process
+
+**Source**: `docs/10-domain/testflight-distribution-infrastructure.md`
+
+**Status**: Open
+
+---
+
+### GAP-DIST-003: No Unified Build Documentation
+
+**Description**: Build documentation scattered across different app repos, wikis, and sites.
+
+**Affected Systems**: All iOS apps
+
+**Evidence**:
+- Loop: LoopDocs separate site
+- Trio: README + docs folder
+- xDrip4iOS: GitHub Wiki
+- Different terminology and step ordering
+
+**Impact**: 
+- Confusing for new users trying multiple apps
+- Hard to maintain across apps
+- Duplicate effort for documenters
+
+**Remediation**: 
+1. Create unified iOS build guide at docs.nightscout.org
+2. Link from all app READMEs
+3. Standardize terminology
+
+**Source**: `docs/10-domain/testflight-distribution-infrastructure.md`
+
+**Status**: Open

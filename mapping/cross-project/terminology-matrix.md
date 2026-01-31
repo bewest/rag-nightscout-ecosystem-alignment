@@ -4586,3 +4586,37 @@ TrioApp/             # Full iOS app
 **Gap References**: GAP-WIDGET-001/002/003/004
 
 **Source**: `docs/10-domain/widgetkit-standardization-survey.md`
+
+
+---
+
+### TestFlight Distribution Infrastructure
+
+| App | App Store | TestFlight | Browser Build | Fastlane |
+|-----|-----------|------------|---------------|----------|
+| Loop | ❌ | ✅ | ✅ GitHub Actions | ✅ |
+| Trio | ❌ | ✅ | ✅ GitHub Actions | ✅ |
+| xDrip4iOS | ❌ | ✅ | ✅ GitHub Actions | ✅ |
+| LoopFollow | ❌ | ✅ | ✅ GitHub Actions | ✅ |
+| LoopCaregiver | ❌ | ✅ | ✅ GitHub Actions | ✅ |
+| Nightguard | ✅ | ✅ | ❌ | ✅ |
+| DiaBLE | ✅ | ✅ | ❌ | ❌ |
+
+**Distribution Models**:
+| Model | Apps | Barrier |
+|-------|------|---------|
+| App Store | Nightguard, DiaBLE | ⭐ Low |
+| Browser Build | Loop, Trio, xDrip4iOS, LoopFollow, LoopCaregiver | ⭐⭐ Medium |
+| Self-Build Xcode | All | ⭐⭐⭐ High |
+
+**Required Secrets for Browser Build**:
+- TEAMID, GH_PAT, FASTLANE_KEY_ID, FASTLANE_ISSUER_ID, FASTLANE_KEY, MATCH_PASSWORD
+
+**Key Entitlements**:
+- HealthKit, Background Delivery, App Groups, Critical Alerts
+- NFC (xDrip4iOS, DiaBLE only)
+- Bluetooth Central (AID controllers)
+
+**Gap References**: GAP-DIST-001/002/003
+
+**Source**: `docs/10-domain/testflight-distribution-infrastructure.md`

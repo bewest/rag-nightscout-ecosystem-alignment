@@ -343,17 +343,23 @@ Apps:
 
 **Gap Refs:** GAP-CGM-002, GAP-G7-*
 
-### #10: TestFlight Distribution Infrastructure
+### #10: TestFlight Distribution Infrastructure ✅ COMPLETE
 
 **Priority**: P3  
-**Effort**: Medium
+**Effort**: Medium  
+**Status**: ✅ Complete (2026-01-31)
 
 **Description:** Document and standardize TestFlight distribution patterns.
 
 **Tasks:**
-- [ ] Survey current TestFlight groups and access patterns
-- [ ] Document build/sign requirements for each app
-- [ ] Propose streamlined distribution workflow
+- [x] Survey current TestFlight groups and access patterns
+- [x] Document build/sign requirements for each app
+- [x] Propose streamlined distribution workflow
+
+**Deliverables:**
+- `docs/10-domain/testflight-distribution-infrastructure.md`
+- GAP-DIST-001/002/003
+- REQ-DIST-001/002/003
 
 ---
 

@@ -28,6 +28,8 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 67) | P0 | ✅ Complete (TestFlight survey, 7 apps, #10 complete) | 2026-01-31 |
+| TestFlight Distribution Infrastructure | P3 | ✅ Complete - `docs/10-domain/testflight-distribution-infrastructure.md`, 3 gaps, 3 reqs | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 66) | P0 | ✅ Complete (WidgetKit survey, 6 apps, #6 complete) | 2026-01-31 |
 | WidgetKit Standardization Survey | P3 | ✅ Complete - `docs/10-domain/widgetkit-standardization-survey.md`, 4 gaps, 3 reqs | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 65) | P0 | ✅ Complete (HealthKit audit, 7 apps, #8 complete) | 2026-01-31 |

@@ -121,6 +121,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **TestFlight Distribution Infrastructure** | `docs/10-domain/testflight-distribution-infrastructure.md` | 5/7 apps browser build; 3 gaps, 3 reqs |
 | **WidgetKit Standardization Survey** | `docs/10-domain/widgetkit-standardization-survey.md` | 6 apps surveyed; Loop/Trio missing widgets; 4 gaps, 3 reqs |
 | **HealthKit Integration Audit** | `docs/10-domain/healthkit-integration-audit.md` | 5 apps write glucose; high duplicate risk; 3 gaps, 3 reqs |
 | **Apple Watch Complications Survey** | `docs/10-domain/apple-watch-complications-survey.md` | 6 apps inventoried; Loop ClockKit deprecated; 2 refresh patterns; 4 gaps, 3 reqs |

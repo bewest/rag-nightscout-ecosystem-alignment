@@ -12,7 +12,7 @@ This document is an index of requirements organized by domain.
 - [Sync Identity](sync-identity-requirements.md) - 74 requirements (+4 FOLLOW)
 - [Treatments](treatments-requirements.md) - 35 requirements
 
-Total: 296 requirements
+Total: 299 requirements
 
 ## Coverage Status
 
