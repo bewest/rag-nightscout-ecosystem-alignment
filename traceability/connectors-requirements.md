@@ -1106,3 +1106,78 @@ See [requirements.md](requirements.md) for the index.
 **Source**: [apple-watch-complications-survey.md](../docs/10-domain/apple-watch-complications-survey.md)
 
 **Status**: Open (packages not created)
+
+
+---
+
+## HealthKit Integration Requirements
+
+### REQ-HK-001: Single-Writer Principle
+
+**Statement**: When multiple iOS apps are installed, only ONE app SHOULD write glucose data to HealthKit; other apps SHOULD read from HealthKit instead.
+
+**Rationale**: Prevents duplicate glucose samples that corrupt daily averages and potentially confuse AID algorithms.
+
+**Scenarios**:
+- Loop + xDrip4iOS: xDrip4iOS writes, Loop reads via background delivery
+- Trio standalone: Trio writes all data types
+- Nightguard + Loop: Loop writes, Nightguard should not duplicate
+
+**Verification**:
+- [ ] Apps document recommended HK configuration
+- [ ] Settings warn about multi-app conflicts
+- [ ] Read-from-HK mode available for CGM apps
+
+**Gap Reference**: GAP-HK-001, GAP-HK-002
+
+**Source**: [healthkit-integration-audit.md](../docs/10-domain/healthkit-integration-audit.md)
+
+**Status**: Open
+
+---
+
+### REQ-HK-002: Cross-App Source Detection
+
+**Statement**: Apps SHOULD query HKSource at startup to detect other CGM/AID apps writing to HealthKit.
+
+**Rationale**: Enables warning users about potential duplicate data before it occurs.
+
+**Scenarios**:
+- Startup check for other glucose-writing apps
+- Settings view shows detected competing apps
+- Recommendation displayed based on detected configuration
+
+**Verification**:
+- [ ] HKSource query implemented in at least 2 apps
+- [ ] Warning UI displayed when conflicts detected
+- [ ] User guidance links provided
+
+**Gap Reference**: GAP-HK-002
+
+**Source**: [healthkit-integration-audit.md](../docs/10-domain/healthkit-integration-audit.md)
+
+**Status**: Open
+
+---
+
+### REQ-HK-003: Standardized Metadata Keys
+
+**Statement**: HealthKit samples SHOULD include standardized metadata keys for cross-app identification and Nightscout correlation.
+
+**Rationale**: Enables programmatic deduplication and source attribution across ecosystem apps.
+
+**Scenarios**:
+- All apps use `"app.nightscout.syncId"` format
+- Nightscout identifier included for correlation
+- Source app identifiable from metadata
+
+**Verification**:
+- [ ] Metadata key format documented
+- [ ] At least 2 apps implement standard format
+- [ ] Cross-app query can identify source
+
+**Gap Reference**: GAP-HK-003
+
+**Source**: [healthkit-integration-audit.md](../docs/10-domain/healthkit-integration-audit.md)
+
+**Status**: Open

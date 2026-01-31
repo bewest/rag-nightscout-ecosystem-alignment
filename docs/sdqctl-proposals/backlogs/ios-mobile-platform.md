@@ -304,18 +304,24 @@ Apps:
 - GAP-WATCH-001/002/003/004
 - REQ-WATCH-001/002/003
 
-### #8: HealthKit Integration Audit
+### #8: HealthKit Integration Audit ✅ COMPLETE
 
 **Priority**: P2  
-**Effort**: Medium
+**Effort**: Medium  
+**Status**: ✅ Complete (2026-01-31)
 
 **Description:** Audit HealthKit usage across apps for consistency.
 
 **Tasks:**
-- [ ] Document which apps write to HealthKit (Loop, Trio)
-- [ ] Document which apps read from HealthKit
-- [ ] Identify duplicate/conflicting writes
-- [ ] Propose coordination mechanism
+- [x] Document which apps write to HealthKit (Loop, Trio, xDrip4iOS, DiaBLE, Nightguard)
+- [x] Document which apps read from HealthKit
+- [x] Identify duplicate/conflicting writes
+- [x] Propose coordination mechanism
+
+**Deliverables:**
+- `docs/10-domain/healthkit-integration-audit.md`
+- GAP-HK-001/002/003
+- REQ-HK-001/002/003
 
 ### #9: BLE CGM Library Consolidation
 

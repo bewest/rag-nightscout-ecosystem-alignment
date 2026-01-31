@@ -4518,3 +4518,40 @@ TrioApp/             # Full iOS app
 **Gap References**: GAP-WATCH-001/002/003/004
 
 **Source**: `docs/10-domain/apple-watch-complications-survey.md`
+
+
+---
+
+### HealthKit Integration Audit
+
+| App | Writes | Reads | Data Types |
+|-----|--------|-------|------------|
+| Loop | ✅ | ✅ Background | Glucose, Carbs, Insulin |
+| Trio | ✅ | ✅ Background | Glucose, Carbs, Insulin, Fat, Protein |
+| xDrip4iOS | ✅ | ❌ | Glucose only |
+| DiaBLE | ✅ | ✅ | Glucose, Carbs, Insulin, BP |
+| Nightguard | ✅ | ❌ | Glucose only |
+| LoopCaregiver | ❌ | ✅ (units) | None (reads NS) |
+
+**HKQuantityTypeIdentifier Usage**:
+| Type | Loop | Trio | xDrip4iOS | DiaBLE | Nightguard |
+|------|------|------|-----------|--------|------------|
+| `.bloodGlucose` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `.insulinDelivery` | ✅ | ✅ | ❌ | ✅ | ❌ |
+| `.dietaryCarbohydrates` | ✅ | ✅ | ❌ | ✅ | ❌ |
+| `.dietaryFatTotal` | ❌ | ✅ | ❌ | ❌ | ❌ |
+| `.dietaryProtein` | ❌ | ✅ | ❌ | ❌ | ❌ |
+
+**Conflict Risks**:
+- ⚠️ **HIGH**: Multiple glucose writers create duplicates
+- ⚠️ **MEDIUM**: No cross-app metadata coordination
+- ⚠️ **LOW**: Insulin/carbs usually single source
+
+**Recommendations**:
+- Single-writer principle per data type
+- AID apps should READ glucose from HK, not duplicate writes
+- Standardize metadata key format
+
+**Gap References**: GAP-HK-001/002/003
+
+**Source**: `docs/10-domain/healthkit-integration-audit.md`

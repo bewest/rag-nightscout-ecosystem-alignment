@@ -121,6 +121,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **HealthKit Integration Audit** | `docs/10-domain/healthkit-integration-audit.md` | 5 apps write glucose; high duplicate risk; 3 gaps, 3 reqs |
 | **Apple Watch Complications Survey** | `docs/10-domain/apple-watch-complications-survey.md` | 6 apps inventoried; Loop ClockKit deprecated; 2 refresh patterns; 4 gaps, 3 reqs |
 | **Follower/Caregiver Feature Consolidation** | `docs/10-domain/follower-caregiver-feature-consolidation.md` | 14 features compared; 3 shared packages proposed; 4 gaps, 4 reqs added |
 | **Cross-Platform Testing Infrastructure** | `docs/10-domain/cross-platform-testing-infrastructure-design.md` | xtool for algorithms only; 3-tier CI; 90% cost reduction; protocol mocks |

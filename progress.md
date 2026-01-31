@@ -12,6 +12,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### HealthKit Integration Audit (2026-01-31)
+
+Audit of HealthKit usage across iOS ecosystem apps.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| HealthKit Audit | `docs/10-domain/healthkit-integration-audit.md` | 7 apps, 5 data types, 3 conflict scenarios |
+
+**Key Findings**:
+- **5 apps write glucose** - Loop, Trio, xDrip4iOS, DiaBLE, Nightguard
+- **Duplicate risk HIGH** - No cross-app deduplication
+- **Metadata inconsistent** - Each app uses different schemes
+- **Read-first pattern** - AID should read HK, not duplicate CGM writes
+
+**Apps by Data Type**:
+| Type | Writers |
+|------|---------|
+| Glucose | Loop, Trio, xDrip4iOS, DiaBLE, Nightguard |
+| Insulin | Loop, Trio, DiaBLE |
+| Carbs | Loop, Trio, DiaBLE |
+
+**Gaps Identified**: GAP-HK-001/002/003
+
+**Requirements Added**: REQ-HK-001/002/003
+
+---
+
 ### Apple Watch Complications Survey (2026-01-31)
 
 Survey of watch apps and complications across the Nightscout iOS ecosystem.

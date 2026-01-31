@@ -1102,3 +1102,88 @@ osx_image: xcode12.4
 **Source**: `docs/10-domain/apple-watch-complications-survey.md`
 
 **Status**: Open
+
+
+---
+
+## HealthKit Integration Gaps
+
+### GAP-HK-001: No Cross-App Deduplication
+
+**Description**: Each app writes glucose to HealthKit independently without checking for existing samples from other apps.
+
+**Affected Systems**: Loop, Trio, xDrip4iOS, DiaBLE, Nightguard
+
+**Evidence**:
+- Loop `GlucoseStore.swift` uses syncIdentifier but only checks own samples
+- xDrip4iOS `HealthKitManager.swift` writes without cross-app query
+- Nightguard `AppleHealthService.swift` tracks lastSyncDate per-app only
+
+**Impact**: 
+- Duplicate glucose readings when multiple apps enabled
+- Incorrect daily averages in Apple Health
+- Potential algorithm issues if AID reads duplicates
+
+**Remediation**: 
+1. Before writing, query existing samples at same timestamp
+2. Check sample source/metadata before writing
+3. Standardize syncIdentifier format across apps
+
+**Source**: `docs/10-domain/healthkit-integration-audit.md`
+
+**Status**: Open
+
+---
+
+### GAP-HK-002: No User Guidance on Multi-App Conflicts
+
+**Description**: None of the apps warn users about HealthKit conflicts when other apps are detected.
+
+**Affected Systems**: All iOS apps with HealthKit write capability
+
+**Evidence**:
+- No HKSource queries at app startup
+- Settings views dont check for competing apps
+- No documentation on recommended configuration
+
+**Impact**: 
+- Users unknowingly create duplicate data
+- Confusion when glucose appears twice in Health app
+- No guidance on which app should write
+
+**Remediation**: 
+1. Query HKSource at startup to detect other CGM/AID apps
+2. Show warning in settings if multiple apps write glucose
+3. Add wiki documentation on recommended setup
+
+**Source**: `docs/10-domain/healthkit-integration-audit.md`
+
+**Status**: Open
+
+---
+
+### GAP-HK-003: Inconsistent Metadata Keys
+
+**Description**: Each app uses different metadata schemes for HealthKit samples, preventing cross-app coordination.
+
+**Affected Systems**: Loop, Trio, DiaBLE
+
+**Evidence**:
+- Trio uses `"Trio Insulin Type"` key
+- Loop uses different syncIdentifier format via LoopKit
+- DiaBLE has no standardized metadata keys
+- xDrip4iOS writes no custom metadata
+
+**Impact**: 
+- Cannot identify sample source programmatically
+- No way to correlate samples with Nightscout entries
+- Cross-app dedup not possible
+
+**Remediation**: 
+1. Standardize metadata key format (e.g., `"app.nightscout.syncId"`)
+2. Include Nightscout identifier in HK samples
+3. Document standard in ecosystem docs
+
+**Source**: `docs/10-domain/healthkit-integration-audit.md`
+
+**Status**: Open
