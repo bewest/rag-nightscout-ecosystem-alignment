@@ -1,6 +1,6 @@
 # Ecosystem Alignment Backlog
 
-> **Last Updated**: 2026-01-30  
+> **Last Updated**: 2026-01-31  
 > **Purpose**: Track active work items across all domains  
 > **Archive**: Completed work → [`archive/`](archive/)
 
@@ -121,6 +121,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Identity Provider Backlog** | `backlogs/nightscout-api.md` #23-24 | Queued IDP inventory + community proposal |
 | **iOS Mobile Platform Evaluation** | `backlogs/ios-mobile-platform.md` | 8 apps, submodule sharing, modular architecture recommended |
 | **NightscoutKit Swift SDK Design** | `nightscoutkit-swift-sdk-design.md` | v3-first, actor-based, builds on gestrich/NightscoutKit |
 

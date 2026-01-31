@@ -12,7 +12,49 @@ Covers: cgm-remote-monitor, Nocturne, entries, treatments, devicestatus, profile
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| *(All P1/P2 items complete - see Completed section)* | | | |
+| 23 | Trusted Identity Providers Inventory | P2 | Medium | Research - who are the trusted IDPs? |
+| 24 | NS Community Identity Provider Proposal | P3 | High | Architecture/Org - hosting provider council |
+
+---
+
+## Identity & Authentication Research
+
+### 23. [P2] Trusted Identity Providers Inventory
+**Type:** Research | **Effort:** Medium  
+**Repos:** cgm-remote-monitor, Loop, AAPS, xDrip  
+**Focus:** Inventory all trusted identity providers in the Nightscout ecosystem
+
+**Questions:**
+- Who are the current trusted identity providers? (Tidepool confirmed)
+- Do Medtronic/Dexcom/Glooko count as implicit identity providers?
+- What authentication flows exist for each provider?
+- What data exchange permissions are granted?
+
+**Deliverable:** `docs/10-domain/trusted-identity-providers.md`
+**Status:** PROPOSED
+
+**Related Gaps:** GAP-AUTH-*
+
+### 24. [P3] NS Community Identity Provider Proposal
+**Type:** Proposal | **Effort:** High  
+**Repos:** (organizational)  
+**Focus:** Proposal for Nightscout community-hosted identity provider
+
+**Scope:**
+- Council of NS managed hosting providers (t1pal, NS10BE, etc.)
+- Extend organizational list beyond Tidepool
+- Support ease of use and stronger security
+- Organizational and technical requirements
+- Consideration of fragmented NS ecosystem
+
+**Prerequisites:** Item #23 (Identity Providers Inventory)
+**Deliverable:** `docs/sdqctl-proposals/ns-community-idp-proposal.md`
+**Status:** PROPOSED
+
+**Related Topics:**
+- JWT authentication (cgm-remote-monitor supports OIDC-like flows)
+- Nightscout share model (readable/admin tokens)
+- Data sovereignty considerations
 
 ---
 

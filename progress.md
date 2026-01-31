@@ -12,6 +12,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Identity Provider Backlog Items (2026-01-31)
+
+Processed human request to queue identity provider research items.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Backlog Item #23 | `docs/sdqctl-proposals/backlogs/nightscout-api.md` | Trusted IDP inventory |
+| Backlog Item #24 | `docs/sdqctl-proposals/backlogs/nightscout-api.md` | Community IDP proposal |
+
+**Scope Queued**:
+- Who are trusted identity providers? (Tidepool, Medtronic, Dexcom, Glooko?)
+- Proposal for NS community-hosted identity provider
+- Council of managed hosting providers (t1pal, NS10BE, etc.)
+- Organizational and technical requirements
+
+**Related Gaps**: GAP-AUTH-001 through GAP-AUTH-007 (existing)
+
+**Status**: Items queued - research pending
+
+---
+
 ### iOS Mobile Platform Evaluation (2026-01-31)
 
 Comprehensive analysis of iOS mobile development strategy across the Nightscout ecosystem.

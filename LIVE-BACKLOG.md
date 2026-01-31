@@ -5,14 +5,24 @@
 
 ---
 
-* Add items to backlog queues as apporpriate for methodical analysis:
-  * list of trusted identity providers in the Nightscout ecosystem (seems to consist of list of Tidepool, just one, but are there more?) Medtronic/Dexcom/Glooko implicitly count?
-  * proposal for Nightscout ecosystem community members (perhaps a council of the NS managed hosting providers) to host Nightscout trusted identity provider.  Extend the organizational list beyond Tidepool, support ease of use and stronger security.  Organizational and technical requirements across the fragmented Nightscout ecosystem. 
+## Swift LSP Configuration
+
+Swift toolchain available:
+```bash
+export SWIFTLY_TOOLCHAINS_DIR=/home/bewest/.local/share/swiftly/toolchains
+export SWIFTLY_BIN_DIR=/home/bewest/.local/share/swiftly/bin
+export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
+[[ :$PATH: == *":$SWIFTLY_BIN_DIR:"* ]] || PATH+=":$SWIFTLY_BIN_DIR"
+```
+
+---
 
 ## Pending
 
 | Item | Priority | Notes |
 |------|----------|-------|
+| Trusted Identity Providers Inventory | P2 | Queued - nightscout-api.md #23 |
+| NS Community Identity Provider Proposal | P3 | Queued - nightscout-api.md #24 |
 | Swift Package Ecosystem Assessment | P2 | Queued - assess SPM conversion feasibility |
 | App Store Pathway Analysis | P2 | Queued - decision matrix for store-viable features |
 | Cross-Platform Testing Infrastructure Design | P2 | Queued - xtool + CI for Swift on Linux |
@@ -22,6 +32,7 @@
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 56) | P0 | ✅ Complete (Identity provider items queued #23-24, 4 files, +79 lines) | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 55) | P0 | ✅ Complete (iOS mobile eval, NightscoutKit SDK design, 5 facets, 12 files) | 2026-01-31 |
 | iOS mobile backlog creation | P0 | ✅ Complete - `docs/sdqctl-proposals/backlogs/ios-mobile-platform.md` | 2026-01-31 |
 | NightscoutKit Swift SDK Design | P1 | ✅ Complete - `docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md` | 2026-01-31 |
