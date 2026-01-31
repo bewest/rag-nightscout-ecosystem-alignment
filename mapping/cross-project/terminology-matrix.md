@@ -4555,3 +4555,34 @@ TrioApp/             # Full iOS app
 **Gap References**: GAP-HK-001/002/003
 
 **Source**: `docs/10-domain/healthkit-integration-audit.md`
+
+
+---
+
+### WidgetKit Standardization Survey
+
+| App | Home Screen | Lock Screen | Live Activity | Dynamic Island |
+|-----|-------------|-------------|---------------|----------------|
+| xDrip4iOS | ✅ S/M/L | ✅ Circ/Rect | ✅ | ✅ |
+| Nightguard | ✅ Small | ✅ Circ/Rect | ❌ | ❌ |
+| LoopCaregiver | ✅ S/M/L | ✅ Circ/Rect/Inline | ❌ | ❌ |
+| Trio | ❌ | ❌ | ✅ | ✅ |
+| DiaBLE | ✅ placeholder | ❌ | ✅ | ❌ |
+| Loop | ❌ | ❌ | ❌ | ❌ |
+
+**Data Refresh Patterns**:
+| App | Provider Type | Refresh | Data Source |
+|-----|---------------|---------|-------------|
+| xDrip4iOS | StaticConfiguration | App Groups | Local CGM |
+| Nightguard | IntentConfiguration | 10-min API | Nightscout |
+| LoopCaregiver | IntentConfiguration | API | Nightscout |
+| Trio | ActivityConfiguration | Push | Local |
+
+**Shared Component Opportunity**:
+- `GlucoseWidgetKit` package with shared entry model and views
+- `GlucoseWidgetEntry` struct: glucose, trend, delta, iob, cob, colorScheme
+- Reusable views for all widget families
+
+**Gap References**: GAP-WIDGET-001/002/003/004
+
+**Source**: `docs/10-domain/widgetkit-standardization-survey.md`

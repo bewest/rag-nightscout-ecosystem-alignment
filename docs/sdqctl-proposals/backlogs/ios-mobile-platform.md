@@ -274,17 +274,23 @@ Apps:
 
 ## Backlog
 
-### #6: Widget Kit Standardization
+### #6: Widget Kit Standardization ✅ COMPLETE
 
 **Priority**: P3  
-**Effort**: Medium
+**Effort**: Medium  
+**Status**: ✅ Complete (2026-01-31)
 
 **Description:** Standardize glucose display widgets across apps.
 
 **Tasks:**
-- [ ] Audit existing widget implementations (Nightguard, DiaBLE, xDrip4iOS)
-- [ ] Propose shared GlucoseWidget component
-- [ ] Define widget data model matching Nightscout entries
+- [x] Audit existing widget implementations (Nightguard, DiaBLE, xDrip4iOS, LoopCaregiver, Trio)
+- [x] Propose shared GlucoseWidget component
+- [x] Define widget data model matching Nightscout entries
+
+**Deliverables:**
+- `docs/10-domain/widgetkit-standardization-survey.md`
+- GAP-WIDGET-001/002/003/004
+- REQ-WIDGET-001/002/003
 
 ### #7: Apple Watch Complications Survey ✅
 

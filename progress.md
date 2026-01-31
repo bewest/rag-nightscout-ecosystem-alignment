@@ -12,6 +12,34 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### WidgetKit Standardization Survey (2026-01-31)
+
+Survey of WidgetKit implementations across iOS ecosystem apps.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| WidgetKit Survey | `docs/10-domain/widgetkit-standardization-survey.md` | 6 apps, 3 patterns, 4 gaps |
+
+**Key Findings**:
+- **xDrip4iOS most complete** - All widget families + Live Activity + Dynamic Island
+- **Loop has no widgets** - Major feature gap
+- **Trio Live Activity only** - No home screen widgets
+- **Inconsistent colors** - Each app uses different scheme
+
+**Widget Family Coverage**:
+| Family | Apps Supporting |
+|--------|-----------------|
+| systemSmall | xDrip4iOS, Nightguard, LoopCaregiver |
+| accessoryRectangular | xDrip4iOS, Nightguard, LoopCaregiver |
+| Live Activity | Trio, xDrip4iOS, DiaBLE |
+| Dynamic Island | Trio, xDrip4iOS |
+
+**Gaps Identified**: GAP-WIDGET-001/002/003/004
+
+**Requirements Added**: REQ-WIDGET-001/002/003
+
+---
+
 ### HealthKit Integration Audit (2026-01-31)
 
 Audit of HealthKit usage across iOS ecosystem apps.

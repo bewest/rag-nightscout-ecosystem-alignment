@@ -1187,3 +1187,116 @@ osx_image: xcode12.4
 **Source**: `docs/10-domain/healthkit-integration-audit.md`
 
 **Status**: Open
+
+
+---
+
+## WidgetKit Standardization Gaps
+
+### GAP-WIDGET-001: No Shared Widget Components
+
+**Description**: Each app implements widgets independently with different data models and views.
+
+**Affected Systems**: xDrip4iOS, Nightguard, LoopCaregiver, Trio, DiaBLE
+
+**Evidence**:
+- xDrip4iOS: `WidgetState` struct with 15+ fields
+- Nightguard: `NightscoutDataEntry` with different structure
+- LoopCaregiver: Uses LoopKit `NewGlucoseSample`
+- Trio: `LiveActivityAttributes.ContentState`
+
+**Impact**: 
+- Code duplication across 5+ apps
+- Inconsistent UX (different layouts, colors)
+- Higher maintenance burden per app
+
+**Remediation**: 
+1. Create `GlucoseWidgetKit` SPM package
+2. Define shared `GlucoseWidgetEntry` model
+3. Provide reusable views for all families
+
+**Source**: `docs/10-domain/widgetkit-standardization-survey.md`
+
+**Status**: Open
+
+---
+
+### GAP-WIDGET-002: Loop Has No Home Screen Widgets
+
+**Description**: Loop app has no WidgetKit implementation for home screen or lock screen display.
+
+**Affected Systems**: Loop
+
+**Evidence**:
+- No Widget Extension target in Loop.xcodeproj
+- Watch app exists but no iOS widgets
+- Users must open app for quick glucose check
+
+**Impact**: 
+- Poor user experience for quick glucose checks
+- Users switch to other apps for widget support
+- Missing parity with xDrip4iOS/Nightguard
+
+**Remediation**: 
+1. Add WidgetKit extension target
+2. Create timeline provider using existing GlucoseStore
+3. Support systemSmall and accessory families minimum
+
+**Source**: `docs/10-domain/widgetkit-standardization-survey.md`
+
+**Status**: Open
+
+---
+
+### GAP-WIDGET-003: Trio Has No Home Screen Widgets
+
+**Description**: Trio only has Live Activity/Dynamic Island, no static home screen widgets.
+
+**Affected Systems**: Trio
+
+**Evidence**:
+- `LiveActivity/` only contains ActivityConfiguration
+- No `.systemSmall`, `.systemMedium` support
+- Requires iPhone 14+ for Dynamic Island
+
+**Impact**: 
+- Users with older iPhones have no widget options
+- Live Activity requires active session
+- Missing feature vs xDrip4iOS
+
+**Remediation**: 
+1. Add standard WidgetKit extension
+2. Support systemSmall/Medium/Large
+3. Reuse data from Live Activity
+
+**Source**: `docs/10-domain/widgetkit-standardization-survey.md`
+
+**Status**: Open
+
+---
+
+### GAP-WIDGET-004: Inconsistent Color Schemes
+
+**Description**: Each app uses different glucose range coloring logic for widgets.
+
+**Affected Systems**: All apps with widgets
+
+**Evidence**:
+- xDrip4iOS: 4 thresholds (urgentLow, low, high, urgentHigh)
+- Trio: Dynamic gradient colors
+- Nightguard: UIColor-based scheme
+- No standard color definitions
+
+**Impact**: 
+- Same glucose shows different colors in different apps
+- Confusing for users with multiple apps
+- No ecosystem consistency
+
+**Remediation**: 
+1. Define standard color scheme in shared package
+2. Agree on threshold defaults (55/70/180/250 mg/dL)
+3. Provide overridable color scheme protocol
+
+**Source**: `docs/10-domain/widgetkit-standardization-survey.md`
+
+**Status**: Open

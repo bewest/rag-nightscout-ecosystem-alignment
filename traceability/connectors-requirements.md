@@ -1181,3 +1181,80 @@ See [requirements.md](requirements.md) for the index.
 **Source**: [healthkit-integration-audit.md](../docs/10-domain/healthkit-integration-audit.md)
 
 **Status**: Open
+
+
+---
+
+## WidgetKit Requirements
+
+### REQ-WIDGET-001: Shared GlucoseWidgetKit Package
+
+**Statement**: The ecosystem SHOULD provide a shared SPM package for glucose widget implementation.
+
+**Rationale**: Reduces code duplication, ensures consistent UX, lowers maintenance burden across 5+ apps.
+
+**Scenarios**:
+- Shared `GlucoseWidgetEntry` model
+- Reusable views for all widget families
+- Common color scheme logic
+
+**Verification**:
+- [ ] GlucoseWidgetKit package exists
+- [ ] Shared entry model defined
+- [ ] At least 2 apps adopt package
+
+**Gap Reference**: GAP-WIDGET-001
+
+**Source**: [widgetkit-standardization-survey.md](../docs/10-domain/widgetkit-standardization-survey.md)
+
+**Status**: Open
+
+---
+
+### REQ-WIDGET-002: Minimum Widget Family Support
+
+**Statement**: All glucose display apps SHOULD support at minimum `.systemSmall` and `.accessoryRectangular` widget families.
+
+**Rationale**: Provides consistent experience across home screen and lock screen for all users.
+
+**Scenarios**:
+- Home screen quick glance (systemSmall)
+- Lock screen always-visible (accessoryRectangular)
+- Optional: larger sizes for detailed view
+
+**Verification**:
+- [ ] Loop adds widget support
+- [ ] Trio adds home screen widgets
+- [ ] All apps support accessory families
+
+**Gap Reference**: GAP-WIDGET-002, GAP-WIDGET-003
+
+**Source**: [widgetkit-standardization-survey.md](../docs/10-domain/widgetkit-standardization-survey.md)
+
+**Status**: ⚠️ Partial (xDrip4iOS, Nightguard, LoopCaregiver compliant)
+
+---
+
+### REQ-WIDGET-003: Standardized Color Scheme
+
+**Statement**: Widgets SHOULD use consistent color ranges for glucose values across all apps.
+
+**Rationale**: Users with multiple apps should see consistent color meaning for same glucose value.
+
+**Scenarios**:
+- Urgent Low: < 55 mg/dL (red)
+- Low: 55-70 mg/dL (yellow-red)
+- In Range: 70-180 mg/dL (green)
+- High: 180-250 mg/dL (yellow-orange)
+- Urgent High: > 250 mg/dL (orange-red)
+
+**Verification**:
+- [ ] Color ranges documented
+- [ ] Shared color scheme in package
+- [ ] At least 2 apps use same colors
+
+**Gap Reference**: GAP-WIDGET-004
+
+**Source**: [widgetkit-standardization-survey.md](../docs/10-domain/widgetkit-standardization-survey.md)
+
+**Status**: Open
