@@ -1474,3 +1474,98 @@ See [requirements.md](requirements.md) for the index.
 
 **Status**: ⏳ Pending - Needs Trio/LoopKit coordination
 
+
+---
+
+## Follower/Caregiver Requirements
+
+### REQ-FOLLOW-001: Shared Glucose Display Components
+
+**Statement**: Follower apps SHOULD use shared components for glucose display (timeline, graph, widgets).
+
+**Rationale**: LoopFollow and LoopCaregiver duplicate glucose display logic. Shared NightscoutFollowerKit would reduce maintenance and ensure consistency.
+
+**Scenarios**:
+- GlucoseTimelineEntry used by widgets
+- GlucoseGraphView used by main display
+- TreatmentOverlay used by both apps
+
+**Verification**:
+- Common package imported by both apps
+- Identical rendering for same data
+- Bug fixes apply to both apps
+
+**Gap Reference**: GAP-FOLLOW-001, GAP-FOLLOW-002
+
+**Source**: [follower-caregiver-feature-consolidation.md](../docs/10-domain/follower-caregiver-feature-consolidation.md)
+
+---
+
+### REQ-FOLLOW-002: Unified Remote Command Abstraction
+
+**Statement**: Remote command implementations SHOULD conform to a common RemoteCommandService protocol.
+
+**Rationale**: Three different protocols (Trio TRC, Loop APNS, Nightscout API) fragment the caregiver ecosystem. Unified abstraction enables cross-system support.
+
+**Protocol**:
+```swift
+protocol RemoteCommandService {
+    func sendBolus(units: Double, otp: String?) async throws -> CommandStatus
+    func sendCarbs(grams: Double, absorptionTime: TimeInterval?) async throws -> CommandStatus
+    func sendOverride(name: String, duration: TimeInterval?) async throws -> CommandStatus
+}
+```
+
+**Verification**:
+- Protocol defined in RemoteCommandKit
+- Implementations for TRC, APNS, NS API
+- Single UI can target multiple AID systems
+
+**Gap Reference**: GAP-REMOTE-009
+
+**Source**: [follower-caregiver-feature-consolidation.md](../docs/10-domain/follower-caregiver-feature-consolidation.md)
+
+---
+
+### REQ-FOLLOW-003: Portable Alarm Infrastructure
+
+**Statement**: Glucose alarm logic SHOULD be extractable to a reusable GlucoseAlarmKit package.
+
+**Rationale**: LoopFollow has comprehensive alarms (17+ types); LoopCaregiver has none. Portable package enables alarm support in any follower app.
+
+**Components**:
+- AlarmType enum
+- AlarmCondition evaluation
+- SnoozeManager
+- NotificationScheduler
+
+**Verification**:
+- GlucoseAlarmKit compiles independently
+- Imported by LoopCaregiver for alarm support
+- Same alarm behavior as LoopFollow
+
+**Gap Reference**: GAP-CAREGIVER-001
+
+**Source**: [follower-caregiver-feature-consolidation.md](../docs/10-domain/follower-caregiver-feature-consolidation.md)
+
+---
+
+### REQ-FOLLOW-004: Multi-Source Data Provider
+
+**Statement**: Follower apps SHOULD support multiple glucose data sources (Nightscout, Dexcom Share, LibreLinkUp).
+
+**Rationale**: LoopCaregiver requires Nightscout; LoopFollow supports Nightscout + Dexcom. Unified data provider lowers barrier to entry.
+
+**Sources**:
+- Nightscout (primary)
+- Dexcom Share (direct CGM cloud)
+- LibreLinkUp (Libre cloud)
+
+**Verification**:
+- DataSourceProvider protocol defined
+- Multiple implementations available
+- User can select preferred source
+
+**Gap Reference**: GAP-CAREGIVER-002
+
+**Source**: [follower-caregiver-feature-consolidation.md](../docs/10-domain/follower-caregiver-feature-consolidation.md)

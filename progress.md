@@ -12,6 +12,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Follower/Caregiver Feature Consolidation (2026-01-31)
+
+Comparison of LoopFollow vs LoopCaregiver with shared component proposals.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Feature Consolidation | `docs/10-domain/follower-caregiver-feature-consolidation.md` | 14 features compared, 3 packages proposed |
+
+**Key Findings**:
+- LoopFollow: 432 Swift files, comprehensive alarms (17+ types), no Watch/Widgets
+- LoopCaregiver: 138 Swift files, SPM package, Watch + Widgets, minimal alarms
+- Remote protocols: Trio TRC (AES-GCM), Loop APNS (JWT), Nightscout API (OTP)
+
+**Proposed Shared Packages**:
+| Package | Purpose | Source |
+|---------|---------|--------|
+| NightscoutFollowerKit | Glucose display, timeline | Both apps |
+| RemoteCommandKit | Unified command abstraction | LoopFollow TRC + LoopCaregiver |
+| GlucoseAlarmKit | Alarm infrastructure | LoopFollow Alarm/ |
+
+**Gaps Identified**: GAP-FOLLOW-001/002, GAP-CAREGIVER-001/002
+
+**Requirements Added**: REQ-FOLLOW-001/002/003/004
+
+---
+
 ### Cross-Platform Testing Infrastructure Design (2026-01-31)
 
 Design for testing Swift/iOS code on Linux with CI cost optimization.

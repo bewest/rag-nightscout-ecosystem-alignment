@@ -1618,3 +1618,116 @@ if (rVal) rVal.replace('ETC','Etc');
 **Related**:
 - [Swift Package Ecosystem Assessment](../docs/10-domain/swift-package-ecosystem-assessment.md)
 - GAP-SPM-001 (LoopKit incomplete)
+
+---
+
+## Follower/Caregiver Gaps
+
+### GAP-FOLLOW-001: No Apple Watch App in LoopFollow
+
+**Description**: LoopFollow (432 Swift files) lacks Apple Watch support despite being a primary caregiver monitoring app.
+
+**Affected Systems**: LoopFollow
+
+**Evidence**:
+- LoopCaregiver has `LoopCaregiverWatchApp/` directory
+- LoopFollow has no Watch target in Xcode project
+- grep for WatchKit/WatchOS returns only 2 unrelated files
+
+**Impact**: 
+- Caregivers cannot quickly check glucose from wrist
+- Forces use of LoopCaregiver or separate watch apps
+- Fragments caregiver app ecosystem
+
+**Remediation**: 
+1. Port LoopCaregiverWatchApp components to shared package
+2. Create WatchFollowerKit with glucose display views
+3. Add Watch target to LoopFollow
+
+**Status**: Documented
+
+**Related**:
+- [Follower/Caregiver Feature Consolidation](../docs/10-domain/follower-caregiver-feature-consolidation.md)
+
+---
+
+### GAP-FOLLOW-002: No WidgetKit Support in LoopFollow
+
+**Description**: LoopFollow lacks WidgetKit home screen widgets despite being display-focused.
+
+**Affected Systems**: LoopFollow
+
+**Evidence**:
+- LoopCaregiver has `LoopCaregiverWidgetExtension/` with square, inline, circular widgets
+- LoopFollow has no widget extension target
+
+**Impact**: 
+- No home screen glucose at-a-glance for LoopFollow users
+- Caregivers must open app to see current glucose
+- LoopCaregiver has better passive monitoring
+
+**Remediation**: 
+1. Extract LoopCaregiverKitUI widget views to shared package
+2. Create GlucoseWidgetKit with configurable widgets
+3. Add widget extension to LoopFollow
+
+**Status**: Documented
+
+**Related**:
+- [Follower/Caregiver Feature Consolidation](../docs/10-domain/follower-caregiver-feature-consolidation.md)
+
+---
+
+### GAP-CAREGIVER-001: Minimal Alarm System in LoopCaregiver
+
+**Description**: LoopCaregiver has no comprehensive alarm system despite being a caregiver safety app.
+
+**Affected Systems**: LoopCaregiver
+
+**Evidence**:
+- LoopFollow has `Alarm/` directory with 17+ alarm types, snooze, custom sounds
+- LoopCaregiver has no equivalent alarm infrastructure
+- AlarmManager.swift in LoopFollow is 7,733 lines
+
+**Impact**: 
+- Caregivers may miss critical glucose events
+- No configurable high/low/urgent/stale alarms
+- Reduced safety compared to LoopFollow
+
+**Remediation**: 
+1. Extract LoopFollow AlarmManager to GlucoseAlarmKit package
+2. Add alarm settings UI to LoopCaregiver
+3. Integrate notification scheduling
+
+**Status**: Documented
+
+**Related**:
+- [Follower/Caregiver Feature Consolidation](../docs/10-domain/follower-caregiver-feature-consolidation.md)
+
+---
+
+### GAP-CAREGIVER-002: No Dexcom Share Support in LoopCaregiver
+
+**Description**: LoopCaregiver only supports Nightscout as data source.
+
+**Affected Systems**: LoopCaregiver
+
+**Evidence**:
+- LoopFollow has `DexcomSettingsView.swift`, `DexcomSettingsViewModel.swift`
+- LoopCaregiver's NightscoutDataSource is the only data provider
+- Package.swift only depends on NightscoutKit, not Dexcom client
+
+**Impact**: 
+- Requires Nightscout setup for any LoopCaregiver monitoring
+- Cannot follow Dexcom Share directly
+- Higher barrier to entry for caregivers
+
+**Remediation**: 
+1. Add dexcom-share-client-swift dependency
+2. Create multi-source data provider abstraction
+3. Add Dexcom Share settings UI
+
+**Status**: Documented
+
+**Related**:
+- [Follower/Caregiver Feature Consolidation](../docs/10-domain/follower-caregiver-feature-consolidation.md)

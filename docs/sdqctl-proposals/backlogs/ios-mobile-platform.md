@@ -247,22 +247,28 @@ Apps:
 **Gaps Added**: GAP-TEST-004, GAP-TEST-005
 **Requirements Added**: REQ-TEST-004, REQ-TEST-005
 
-### #5: Follower/Caregiver Feature Consolidation
+### #5: Follower/Caregiver Feature Consolidation ✅ COMPLETE
 
 **Priority**: P2  
 **Effort**: Research (4-8 hours)
+**Status**: ✅ Complete 2026-01-31
+**Deliverable**: `docs/10-domain/follower-caregiver-feature-consolidation.md`
 
 **Tasks:**
-- [ ] Compare LoopFollow vs LoopCaregiver feature sets
-- [ ] Identify overlap and unique capabilities
-- [ ] Propose shared component extraction
-- [ ] Document remote command security requirements
+- [x] Compare LoopFollow vs LoopCaregiver feature sets
+- [x] Identify overlap and unique capabilities
+- [x] Propose shared component extraction
+- [x] Document remote command security requirements
 
-**Success Criteria:**
-- Feature comparison matrix
-- Architecture proposal for shared follower components
+**Key Findings:**
+- LoopFollow: 432 Swift, alarms ✅, Watch ❌, Widgets ❌
+- LoopCaregiver: 138 Swift, alarms ❌, Watch ✅, Widgets ✅
+- 3 protocols: Trio TRC (AES-GCM), Loop APNS (JWT), NS API (OTP)
 
-**Gap Refs:** GAP-REMOTE-001, GAP-REMOTE-004
+**Proposed Packages**: NightscoutFollowerKit, RemoteCommandKit, GlucoseAlarmKit
+
+**Gaps Added**: GAP-FOLLOW-001/002, GAP-CAREGIVER-001/002
+**Requirements Added**: REQ-FOLLOW-001/002/003/004
 
 ---
 

@@ -2655,16 +2655,24 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 
 | Feature | LoopCaregiver | LoopFollow | Nightguard | Trio Caregiver* |
 |---------|---------------|------------|------------|-----------------|
-| Remote Bolus | ✅ | ❌ | ❌ | ✅ |
-| Remote Carbs | ✅ | ❌ | ❌ | ✅ |
-| Remote Override | ✅ | ✅ | ❌ | ✅ |
-| Cancel Override | ✅ | ✅ | ❌ | ✅ |
+| Remote Bolus | ✅ | ✅ (TRC, APNS) | ❌ | ✅ |
+| Remote Carbs | ✅ | ✅ (TRC, APNS) | ❌ | ✅ |
+| Remote Override | ✅ | ✅ (TRC, APNS) | ❌ | ✅ |
+| Cancel Override | ✅ | ✅ (TRC, APNS) | ❌ | ✅ |
+| Temp Target | ❌ | ✅ (TRC only) | ❌ | ✅ |
 | Autobolus Toggle | ✅ | ❌ | ❌ | N/A |
 | Closed Loop Toggle | ✅ | ❌ | ❌ | N/A |
 | OTP Handling | Automatic | Manual | N/A | N/A (encrypted) |
 | Status Tracking | ✅ | ❌ | N/A | ✅ |
+| Apple Watch | ✅ | ❌ | ✅ | N/A |
+| WidgetKit Widgets | ✅ | ❌ | ❌ | N/A |
+| Alarm System | ❌ (basic) | ✅ (17+ types) | ✅ | N/A |
+| Dexcom Share | ❌ | ✅ | ✅ | N/A |
+| SPM Package | ✅ | ❌ (CocoaPods) | ❌ | N/A |
 
-*Trio uses encryption rather than OTP
+*Trio uses AES-256-GCM encryption rather than OTP
+
+**Deep Dive**: [Follower/Caregiver Feature Consolidation](../../docs/10-domain/follower-caregiver-feature-consolidation.md)
 
 **Source Files**:
 - `loopcaregiver:LoopCaregiverKit/Sources/LoopCaregiverKit/Nightscout/OTPManager.swift` - TOTP generation

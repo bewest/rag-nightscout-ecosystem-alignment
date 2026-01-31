@@ -22,13 +22,14 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 | Item | Priority | Notes |
 |------|----------|-------|
 | V4 API Integration Implementation | P2 | Queued - nightscout-api.md #25, proposal complete |
-| Follower/Caregiver Feature Consolidation | P2 | Queued - LoopFollow vs LoopCaregiver overlap |
 | NS Community Identity Provider Proposal | P3 | Queued - nightscout-api.md #24 |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 63) | P0 | ✅ Complete (Follower consolidation, 9 files, +267 lines, #5 complete) | 2026-01-31 |
+| Follower/Caregiver Feature Consolidation | P2 | ✅ Complete - `docs/10-domain/follower-caregiver-feature-consolidation.md`, 3 packages proposed, 4 gaps, 4 reqs | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 62) | P0 | ✅ Complete (Cross-platform testing design, 8 files, +173 lines, #4 complete) | 2026-01-31 |
 | Cross-Platform Testing Infrastructure | P2 | ✅ Complete - `docs/10-domain/cross-platform-testing-infrastructure-design.md`, 3-tier CI, 90% cost reduction | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 61) | P0 | ✅ Complete (App Store analysis, 5 files, +67 lines, #3 complete) | 2026-01-31 |

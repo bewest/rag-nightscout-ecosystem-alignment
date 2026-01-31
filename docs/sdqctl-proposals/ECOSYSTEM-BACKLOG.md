@@ -121,6 +121,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Follower/Caregiver Feature Consolidation** | `docs/10-domain/follower-caregiver-feature-consolidation.md` | 14 features compared; 3 shared packages proposed; 4 gaps, 4 reqs added |
 | **Cross-Platform Testing Infrastructure** | `docs/10-domain/cross-platform-testing-infrastructure-design.md` | xtool for algorithms only; 3-tier CI; 90% cost reduction; protocol mocks |
 | **App Store Pathway Analysis** | `docs/10-domain/app-store-pathway-analysis.md` | DiaBLE/Nightguard patterns; 14-feature decision matrix; 3 disclaimer types |
 | **Nightscout V4 Integration Proposal** | `nightscout-v4-integration-proposal.md` | P0-P3 recommendations; V4 = Nocturne Extension; sync gaps documented |
