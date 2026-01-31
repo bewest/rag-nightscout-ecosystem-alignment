@@ -828,3 +828,28 @@ osx_image: xcode12.4
 **Source**: `externals/nightscout-connect/package.json`
 
 **Status**: Open
+
+---
+
+## Verification Tooling Gaps
+
+### GAP-VERIFY-001: No iOS Framework Resolution on Linux
+
+**Description**: Swift LSP (sourcekit-lsp) on Linux cannot resolve iOS-specific frameworks (UIKit, HealthKit, LoopKit).
+
+**Affected Systems**: Trio, Loop, xDrip4iOS, DiaBLE verification
+
+**Evidence**:
+- `docs/10-domain/lsp-environment-check.md` - Swift 6.2.3 installed but iOS SDK unavailable
+- Xcode projects (`.xcodeproj`) not compatible with SPM-based sourcekit-lsp
+
+**Impact**:
+- Cannot verify Swift code references to iOS framework symbols on Linux
+- Line-number validation works; semantic analysis does not
+
+**Remediation**:
+1. Use tree-sitter for syntax-level queries (function names, struct fields)
+2. Defer semantic verification to macOS CI runners
+3. Accept line-only validation for Swift on Linux
+
+**Status**: Open (architectural limitation)

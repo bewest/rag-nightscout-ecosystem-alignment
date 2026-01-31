@@ -4281,3 +4281,28 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | `JavaScriptWorker` | N/A (native Swift) | JS execution engine |
 
 **Source**: `docs/10-domain/trio-comprehensive-analysis.md`
+
+---
+
+## LSP and Static Analysis Terms
+
+| Term | Definition | Context |
+|------|------------|---------|
+| **LSP** | Language Server Protocol - IDE-agnostic API for code intelligence | Verification tooling |
+| **sourcekit-lsp** | Apple's LSP implementation for Swift | Swift code analysis |
+| **tsserver** | TypeScript/JavaScript language server | JS/TS code analysis |
+| **tree-sitter** | Incremental parsing library for syntax queries | Cross-language parsing |
+| **swiftly** | Official Swift version manager for Linux/macOS | Swift installation |
+| **pyright** | Static type checker and LSP for Python | Python code analysis |
+
+### LSP Capabilities by Language
+
+| Language | LSP Server | Linux Support | Semantic Analysis |
+|----------|------------|---------------|-------------------|
+| Swift | sourcekit-lsp | ✅ (no iOS SDK) | ⚠️ Limited |
+| JS/TS | tsserver | ✅ Full | ✅ Full |
+| Kotlin | kotlin-language-server | ✅ (needs Gradle) | ✅ Full |
+| Java | eclipse.jdt.ls | ✅ | ✅ Full |
+| Python | pyright | ✅ Full | ✅ Full |
+
+**Source**: `docs/10-domain/lsp-environment-check.md`

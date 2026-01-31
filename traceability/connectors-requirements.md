@@ -865,3 +865,29 @@ See [requirements.md](requirements.md) for the index.
 **Gap Reference**: GAP-NODE-002, GAP-NODE-003
 
 **Source**: [Bridge Deprecation Plan](../docs/10-domain/bridge-deprecation-plan.md)
+
+---
+
+## Verification Tooling Requirements
+
+### REQ-VERIFY-001: Multi-Language Code Reference Validation
+
+**Statement**: The verification system SHOULD support validating code references across Swift, JavaScript, Kotlin, and Java source files.
+
+**Rationale**: The Nightscout ecosystem spans multiple languages; documentation references must be verifiable regardless of language.
+
+**Scenarios**:
+- Validate `externals/Trio/...swift:123` line anchor
+- Validate `externals/cgm-remote-monitor/...js:456` symbol reference
+- Report missing or moved code across languages
+
+**Verification**:
+- Run `verify_refs.py` on mixed-language references
+- Confirm line validation works for all languages
+- Confirm semantic validation works for JS/TS (tsserver available)
+
+**Gap Reference**: GAP-VERIFY-001
+
+**Source**: [lsp-environment-check.md](../docs/10-domain/lsp-environment-check.md)
+
+**Status**: ⚠️ Partial (JS/TS ready, Swift/Kotlin limited)
