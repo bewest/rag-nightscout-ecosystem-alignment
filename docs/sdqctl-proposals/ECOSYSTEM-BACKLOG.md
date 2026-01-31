@@ -121,6 +121,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Nightscout V4 Integration Proposal** | `nightscout-v4-integration-proposal.md` | P0-P3 recommendations; V4 = Nocturne Extension; sync gaps documented |
 | **Swift Package Ecosystem Assessment** | `docs/10-domain/swift-package-ecosystem-assessment.md` | Submodules not SPM; LoopKit Package.swift incomplete; GAP-SPM-001/002 added |
 | **StateSpan V4 Preference Update** | `statespan-standardization-proposal.md` | Nocturne author: V4-only, no V3 backport |
 | **Trusted Identity Providers Inventory** | `docs/10-domain/trusted-identity-providers.md` | Only Tidepool is true IdP; 3 gaps, 3 reqs added |

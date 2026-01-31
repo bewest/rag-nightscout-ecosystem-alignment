@@ -12,6 +12,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Nightscout V4 API Integration Proposal (2026-01-31)
+
+Consolidated V4 integration proposal addressing human request to integrate V4 endpoints coherently.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| V4 Integration Proposal | `docs/sdqctl-proposals/nightscout-v4-integration-proposal.md` | 6 V4 endpoints, 9 StateSpan categories |
+
+**Key Recommendations**:
+- P0: Document V4 as "Nocturne Extension" in ecosystem specs
+- P1: Add soft delete support to Nocturne (GAP-SYNC-040)
+- P1: Fix srvModified semantics alignment
+- P2: Add history endpoint to Nocturne (GAP-SYNC-041)
+- P3: StateSpan client adoption (V4-only per author preference)
+
+**Compatibility Assessment**:
+- Authentication: ✅ Full compatibility
+- API V1/V2/V3: ✅ Full parity
+- Sync semantics: ⚠️ Partial (delete/srvModified differences)
+
+**Implementation Roadmap**: 3 phases (documentation → Nocturne alignment → client SDK)
+
+---
+
 ### Swift Package Ecosystem Assessment (2026-01-31)
 
 Comprehensive assessment of Swift Package Manager usage and code sharing patterns across iOS ecosystem.

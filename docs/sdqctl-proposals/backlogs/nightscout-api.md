@@ -14,6 +14,37 @@ Covers: cgm-remote-monitor, Nocturne, entries, treatments, devicestatus, profile
 |---|------|----------|--------|-------|
 | ~~23~~ | ~~Trusted Identity Providers Inventory~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE |
 | 24 | NS Community Identity Provider Proposal | P3 | High | Architecture/Org - hosting provider council |
+| 25 | V4 API Integration Implementation | P2 | High | Track proposal implementation |
+
+---
+
+## V4 API Integration
+
+### 25. [P2] V4 API Integration Implementation
+**Type:** Implementation | **Effort:** High  
+**Repos:** cgm-remote-monitor, nocturne, NightscoutKit  
+**Focus:** Implement recommendations from V4 integration proposal
+**Deliverable:** PRs for Nocturne sync alignment
+
+**Status:** PROPOSED - Proposal complete, implementation pending
+
+**Proposal:** `docs/sdqctl-proposals/nightscout-v4-integration-proposal.md`
+
+**Implementation Phases:**
+1. **Phase 1 (Documentation)**: Create V4 extension spec, update mapping docs
+2. **Phase 2 (Nocturne Alignment)**: Add soft delete, fix srvModified, add history endpoint
+3. **Phase 3 (Client SDK)**: NightscoutKit V4 feature detection and StateSpan support
+
+**Priority Recommendations:**
+| Priority | Action | Target |
+|----------|--------|--------|
+| P0 | Document V4 as Nocturne Extension | Specs |
+| P1 | Add soft delete to Nocturne | Nocturne |
+| P1 | Fix srvModified semantics | Nocturne |
+| P2 | Add history endpoint to Nocturne | Nocturne |
+| P3 | StateSpan client adoption | NightscoutKit |
+
+**Gap References:** GAP-SYNC-040, GAP-SYNC-041, GAP-V4-001, GAP-V4-002
 
 ---
 
