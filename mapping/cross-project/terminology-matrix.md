@@ -4310,4 +4310,13 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | Java | eclipse.jdt.ls | ✅ | ✅ Full |
 | Python | pyright | ✅ Full | ✅ Full |
 
-**Source**: `docs/10-domain/lsp-environment-check.md`
+### Workspace Static Analysis Tools
+
+| Tool | Purpose | Languages | Status |
+|------|---------|-----------|--------|
+| `lsp_query.py` | Semantic queries via tsserver | JS/TS | ✅ Implemented |
+| `tree_sitter_queries.py` | Syntax extraction (functions/classes) | JS/TS/Swift/Java/Kotlin | ✅ Implemented |
+| `verify_refs.py` | Line reference validation | All | ✅ Implemented |
+| `accuracy_dashboard.py` | Unified verification metrics | All | ✅ Implemented |
+
+**Source**: `docs/10-domain/lsp-environment-check.md`, `docs/10-domain/cross-platform-testing-research.md`

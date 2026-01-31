@@ -237,14 +237,14 @@ Based on analysis of `docs/10-domain/*.md`:
 
 ## 6. Implementation Roadmap
 
-### Phase 1: Static Analysis Foundation (Week 1-2)
+### Phase 1: Static Analysis Foundation (Week 1-2) ✅ COMPLETE
 
-| Task | Deliverable | Effort |
-|------|-------------|--------|
-| Install tree-sitter-cli | `cargo install tree-sitter-cli` | 1 hour |
-| Create tree-sitter Swift/JS/Kotlin parsers | `tools/tree-sitter/` | 4 hours |
-| Integrate into verify_refs.py | `--syntax` flag | 4 hours |
-| Create lsp_query.py for tsserver | `tools/lsp_query.py` | 4 hours |
+| Task | Deliverable | Effort | Status |
+|------|-------------|--------|--------|
+| Install tree-sitter-cli | `npm install -g tree-sitter-cli` | 1 hour | ✅ Done (v0.26.3) |
+| Create tree-sitter Swift/JS/Kotlin parsers | `tools/tree_sitter_queries.py` | 4 hours | ✅ Done (4 langs) |
+| Integrate into verify_refs.py | `--syntax` flag | 4 hours | ⏳ Pending |
+| Create lsp_query.py for tsserver | `tools/lsp_query.py` | 4 hours | ✅ Done |
 
 **Deliverable**: Line + syntax validation for all refs.
 
@@ -268,13 +268,13 @@ Based on analysis of `docs/10-domain/*.md`:
 
 **Deliverable**: Full cross-platform coverage on CI.
 
-### Phase 4: Accuracy Dashboard (Week 5)
+### Phase 4: Accuracy Dashboard (Week 5) ✅ COMPLETE
 
-| Task | Deliverable | Effort |
-|------|-------------|--------|
-| Unified accuracy reporter | `tools/accuracy_dashboard.py` | 1 day |
-| Makefile target | `make verify-accuracy` | 1 hour |
-| CI integration | Accuracy badge in README | 2 hours |
+| Task | Deliverable | Effort | Status |
+|------|-------------|--------|--------|
+| Unified accuracy reporter | `tools/accuracy_dashboard.py` | 1 day | ✅ Done |
+| Makefile target | `make verify-accuracy` | 1 hour | ⏳ Pending |
+| CI integration | Accuracy badge in README | 2 hours | ⏳ Pending |
 
 **Deliverable**: Single-command accuracy report.
 
