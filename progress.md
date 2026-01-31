@@ -12,6 +12,29 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### LSP Query Tool (2026-01-31)
+
+TypeScript Server integration for semantic JS/TS code analysis.
+
+**Deliverable**: `tools/lsp_query.py` (~300 lines)
+
+**Commands**:
+- `symbols <file>` - List all symbols in file
+- `type <file> <line> <col>` - Get type info at position
+- `definition <file> <line> <col>` - Jump to definition
+- `references <file> <line> <col>` - Find all references
+
+**Usage**:
+```bash
+python3 tools/lsp_query.py symbols externals/oref0/lib/iob/index.js
+python3 tools/lsp_query.py type externals/oref0/lib/iob/index.js 8 10
+python3 tools/lsp_query.py definition externals/oref0/lib/iob/index.js 23 18 --json
+```
+
+**Addresses**: GAP-VERIFY-002 (Semantic understanding gap)
+
+---
+
 ### Accuracy Dashboard (2026-01-31)
 
 Unified verification metrics dashboard aggregating results from multiple tools.

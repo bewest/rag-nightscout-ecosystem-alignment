@@ -879,7 +879,7 @@ osx_image: xcode12.4
 
 **Source**: `docs/10-domain/cross-platform-testing-research.md`
 
-**Status**: Open
+**Status**: Partially mitigated - `tools/lsp_query.py` provides JS/TS semantic queries; Kotlin/Swift runners still pending
 
 ---
 

@@ -343,6 +343,7 @@ The `.replit` file configures the workspace for Replit Agent:
 | `workspace_cli.py` | Unified interface | Commands | Varied | Interactive/scripting |
 | `accuracy_dashboard.py` | Unified metrics | Verification tools | Dashboard/JSON | CI/CD, status checks |
 | `tree_sitter_queries.py` | Code extraction | Source files | Functions/classes | Static analysis |
+| `lsp_query.py` | Semantic queries | JS/TS files + position | Types/symbols/refs | Code verification |
 
 ## Output Formats
 
