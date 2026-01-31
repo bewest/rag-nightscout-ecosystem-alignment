@@ -4397,8 +4397,33 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | 4.2: Minimum Functionality | Must have native features | Pure web wrappers rejected |
 | 4.3: Spam | Similar apps rejected | Can't submit 5 identical apps |
 | 5.1: Safety | Medical claims scrutinized | AID apps must disclaim |
+| 2.5.1: Software Requirements | Must use public APIs | Reverse-engineered BLE risky |
 
-**Source**: `docs/sdqctl-proposals/backlogs/ios-mobile-platform.md`
+### App Store Feature Viability
+
+| Feature | Viable | Rationale |
+|---------|--------|-----------|
+| Nightscout display | ✅ Yes | HTTP API, display-only |
+| Widgets/Watch | ✅ Yes | Native value-add |
+| Libre NFC scan | ✅ Yes | Core NFC is public API |
+| Dexcom Share API | ✅ Yes | HTTP-based, documented |
+| LibreLinkUp API | ✅ Yes | HTTP-based, official |
+| Critical alerts | ✅ Yes | Requires entitlement request |
+| Dexcom G7 BLE | ⚠️ Partial | J-PAKE auth undocumented |
+| Remote bolus | ⚠️ Risky | Safety concerns (5.1) |
+| Automated dosing | ❌ No | FDA Class II/III |
+| Pump control | ❌ No | Medical device regulation |
+
+### App Store Success Patterns
+
+| App | Status | Success Factor |
+|-----|--------|----------------|
+| DiaBLE | ✅ App Store | NFC (public), "prototype" framing |
+| Nightguard | ✅ App Store | Display-only, explicit disclaimer |
+| Loop/Trio | ❌ Self-build | FDA-unapproved dosing |
+| xDrip4iOS | ❌ Self-build | Reverse-engineered BLE |
+
+**Source**: `docs/10-domain/app-store-pathway-analysis.md`
 
 ### Swift Package Manager Status
 

@@ -12,6 +12,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### App Store Pathway Analysis (2026-01-31)
+
+Analysis of App Store submission strategies for Nightscout ecosystem iOS apps.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| App Store Analysis | `docs/10-domain/app-store-pathway-analysis.md` | DiaBLE/Nightguard success patterns |
+
+**Key Findings**:
+- **DiaBLE succeeds**: NFC (public API), "prototype" framing, no dosing claims
+- **Nightguard succeeds**: Display-only, explicit disclaimer, Watch value-add
+- **Loop/Trio blocked**: FDA-unapproved automated dosing
+- **xDrip4iOS blocked**: Reverse-engineered BLE protocols
+
+**App Store Viability**:
+| Feature | Viable |
+|---------|--------|
+| Nightscout display, widgets, Watch | ✅ Yes |
+| Libre NFC, Dexcom Share API | ✅ Yes |
+| Remote bolus commands | ⚠️ Risky |
+| Automated dosing, pump control | ❌ No |
+
+**Disclaimer Patterns**: 3 patterns documented (README, explicit, first-launch)
+
+---
+
 ### Nightscout V4 API Integration Proposal (2026-01-31)
 
 Consolidated V4 integration proposal addressing human request to integrate V4 endpoints coherently.

@@ -22,15 +22,16 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 | Item | Priority | Notes |
 |------|----------|-------|
 | V4 API Integration Implementation | P2 | Queued - nightscout-api.md #25, proposal complete |
-| NS Community Identity Provider Proposal | P3 | Queued - nightscout-api.md #24 |
-| App Store Pathway Analysis | P2 | Queued - decision matrix for store-viable features |
 | Cross-Platform Testing Infrastructure Design | P2 | Queued - xtool + CI for Swift on Linux |
 | Follower/Caregiver Feature Consolidation | P2 | Queued - LoopFollow vs LoopCaregiver overlap |
+| NS Community Identity Provider Proposal | P3 | Queued - nightscout-api.md #24 |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 61) | P0 | ✅ Complete (App Store analysis, 5 files, +67 lines, #3 complete) | 2026-01-31 |
+| App Store Pathway Analysis | P2 | ✅ Complete - `docs/10-domain/app-store-pathway-analysis.md`, 14-feature matrix | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 60) | P0 | ✅ Complete (V4 integration proposal, 5 files, +56 lines, #25 queued) | 2026-01-31 |
 | Nightscout V4 Integration Proposal | P1 | ✅ Complete - `nightscout-v4-integration-proposal.md`, P0-P3 recommendations | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 59) | P0 | ✅ Complete (SPM assessment, 9 files, +211 lines, 2 gaps, 3 reqs) | 2026-01-31 |

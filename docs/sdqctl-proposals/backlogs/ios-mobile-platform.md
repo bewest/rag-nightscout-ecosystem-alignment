@@ -205,19 +205,25 @@ Apps:
 
 **Gap Refs:** GAP-API-003 (No v3 adoption path for iOS)
 
-### #3: App Store Pathway Analysis
+### #3: App Store Pathway Analysis ✅ COMPLETE
 
 **Priority**: P2  
 **Effort**: Research (4-8 hours)
+**Status**: ✅ Complete 2026-01-31
+**Deliverable**: `docs/10-domain/app-store-pathway-analysis.md`
 
 **Tasks:**
-- [ ] Document DiaBLE's successful App Store submission strategy
-- [ ] Analyze Nightguard's App Store presence
-- [ ] Research "Not Medical Advice" disclaimer patterns
-- [ ] Identify which features require self-build vs App Store viable
+- [x] Document DiaBLE's successful App Store submission strategy
+- [x] Analyze Nightguard's App Store presence
+- [x] Research "Not Medical Advice" disclaimer patterns
+- [x] Identify which features require self-build vs App Store viable
 
-**Success Criteria:**
-- Decision matrix: Feature → App Store viable? Y/N + rationale
+**Key Findings:**
+- App Store viable: NFC, HTTP APIs, display-only, disclaimers
+- Self-build required: AID dosing, pump control, reverse-engineered BLE
+- 3 disclaimer patterns: README, explicit rejection, first-launch acceptance
+
+**Decision Matrix Created**: 14 features evaluated for App Store viability
 
 ### #4: Cross-Platform Testing Infrastructure Design
 
