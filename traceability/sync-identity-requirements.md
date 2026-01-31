@@ -1398,3 +1398,79 @@ See [requirements.md](requirements.md) for the index.
 **Source**: [trio-comprehensive-analysis.md](../docs/10-domain/trio-comprehensive-analysis.md)
 
 **Status**: ✅ Implemented (2-second throttle windows)
+
+
+---
+
+## Swift Package Manager Requirements
+
+### REQ-SPM-001: SPM Adoption for Standalone Libraries
+
+**Statement**: Standalone Swift libraries with no LoopKit dependency SHOULD be converted to SPM packages.
+
+**Rationale**: Libraries like dexcom-share-client-swift and TrueTime.swift have no circular dependencies and can be safely converted to enable modern dependency management.
+
+**Scenarios**:
+- New iOS app wants to use Dexcom Share API
+- Add SPM dependency instead of git submodule
+- Semantic versioning enables reproducible builds
+
+**Verification**:
+- Add SPM Package.swift to library
+- Verify builds via `swift build`
+- Test integration in consuming app
+
+**Gap Reference**: GAP-SPM-001, GAP-SPM-002
+
+**Source**: [swift-package-ecosystem-assessment.md](../docs/10-domain/swift-package-ecosystem-assessment.md)
+
+**Status**: ⏳ Pending - Needs community coordination
+
+---
+
+### REQ-SPM-002: LoopKit Bundle Resource Resolution
+
+**Statement**: LoopKit Package.swift SHOULD be completed by resolving bundle resource handling issues.
+
+**Rationale**: LoopKit blocks SPM adoption for the entire AID ecosystem due to bundle resource issues. Resolution would enable 10+ dependent libraries to convert.
+
+**Scenarios**:
+- LoopKit Package.swift currently marked "do not use"
+- Bundle resources (storyboards, assets) need SPM-compatible loading
+- Resolution enables CGMBLEKit, G7SensorKit, OmniBLE conversions
+
+**Verification**:
+- Fix resource loading in Package.swift
+- Test LoopKit builds via `swift build`
+- Verify no resource loading failures at runtime
+
+**Gap Reference**: GAP-SPM-001
+
+**Source**: [swift-package-ecosystem-assessment.md](../docs/10-domain/swift-package-ecosystem-assessment.md)
+
+**Status**: ⏳ Pending - Requires upstream LoopKit work
+
+---
+
+### REQ-SPM-003: Fork Consolidation via SPM
+
+**Statement**: Trio fork libraries SHOULD merge upstream changes and use SPM versioning instead of `trio` branches.
+
+**Rationale**: Trio maintains 11 forked submodules with ~90% identical code to LoopKit originals. SPM with semantic versioning would reduce maintenance burden and enable shared bug fixes.
+
+**Scenarios**:
+- Trio fork CGMBLEKit has `trio` branch
+- Merge upstream LoopKit/CGMBLEKit changes
+- Publish as SPM package with version tags
+
+**Verification**:
+- Compare fork to upstream: `git diff LoopKit/CGMBLEKit..loopandlearn/CGMBLEKit`
+- Identify delta (typically <10% changes)
+- Verify changes can be upstreamed or conditionally compiled
+
+**Gap Reference**: GAP-SPM-002
+
+**Source**: [swift-package-ecosystem-assessment.md](../docs/10-domain/swift-package-ecosystem-assessment.md)
+
+**Status**: ⏳ Pending - Needs Trio/LoopKit coordination
+

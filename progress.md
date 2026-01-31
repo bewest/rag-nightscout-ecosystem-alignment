@@ -12,6 +12,36 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Swift Package Ecosystem Assessment (2026-01-31)
+
+Comprehensive assessment of Swift Package Manager usage and code sharing patterns across iOS ecosystem.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| SPM Assessment | `docs/10-domain/swift-package-ecosystem-assessment.md` | Submodules, not SPM |
+| Backlog Update | `docs/sdqctl-proposals/backlogs/ios-mobile-platform.md` | Item #1 complete |
+
+**Key Findings**:
+- iOS ecosystem uses **git submodules**, NOT Swift Package Manager
+- LoopWorkspace: 20 submodules from `github.com/LoopKit/`
+- Trio: 11 forks in `loopandlearn` org with `trio` branches
+- 10 libraries shared between Loop and Trio (LoopKit, CGMBLEKit, G7SensorKit, etc.)
+- LoopKit Package.swift is **explicitly incomplete** ("do not expect this to work")
+- Only LoopCaregiverKit uses SPM properly (gestrich/NightscoutKit works)
+- ~90% code duplication between Loop and Trio forks
+
+**SPM Conversion Phases**:
+| Phase | Risk | Targets |
+|-------|------|---------|
+| 1 | Low | Standalone libs (dexcom-share, TrueTime) |
+| 2 | Medium | Fix LoopKit bundle resources |
+| 3 | High | Device libraries (CGMBLEKit, pumps) |
+| 4 | Very High | App-level migration |
+
+**Gaps Added**: GAP-SPM-001 (LoopKit incomplete), GAP-SPM-002 (no conversion roadmap)
+
+---
+
 ### StateSpan V4 Preference Update (2026-01-31)
 
 Processed human update regarding Nocturne author preference for StateSpan standardization.

@@ -9,10 +9,10 @@ This document is an index of requirements organized by domain.
 - [Connectors](connectors-requirements.md) - 46 requirements
 - [Nightscout Api](nightscout-api-requirements.md) - 53 requirements (+3 IDP)
 - [Pumps](pumps-requirements.md) - 10 requirements
-- [Sync Identity](sync-identity-requirements.md) - 67 requirements
+- [Sync Identity](sync-identity-requirements.md) - 70 requirements (+3 SPM)
 - [Treatments](treatments-requirements.md) - 35 requirements
 
-Total: 278 requirements
+Total: 281 requirements
 
 ## Coverage Status
 

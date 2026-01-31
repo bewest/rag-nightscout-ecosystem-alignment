@@ -4,6 +4,7 @@
 > **Parent**: [ECOSYSTEM-BACKLOG.md](docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md)
 
 ---
+* Integrate proposal to add api v4 endpoints to Nightscout coherently.
 
 ## Swift LSP Configuration
 
@@ -22,7 +23,6 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 | Item | Priority | Notes |
 |------|----------|-------|
 | NS Community Identity Provider Proposal | P3 | Queued - nightscout-api.md #24 |
-| Swift Package Ecosystem Assessment | P2 | Queued - assess SPM conversion feasibility |
 | App Store Pathway Analysis | P2 | Queued - decision matrix for store-viable features |
 | Cross-Platform Testing Infrastructure Design | P2 | Queued - xtool + CI for Swift on Linux |
 | Follower/Caregiver Feature Consolidation | P2 | Queued - LoopFollow vs LoopCaregiver overlap |
@@ -31,6 +31,8 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 59) | P0 | ✅ Complete (SPM assessment, 9 files, +211 lines, 2 gaps, 3 reqs) | 2026-01-31 |
+| Swift Package Ecosystem Assessment | P2 | ✅ Complete - `docs/10-domain/swift-package-ecosystem-assessment.md` | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 58) | P0 | ✅ Complete (StateSpan V4 preference update, 5 files, +52 lines) | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 57) | P0 | ✅ Complete (IDP inventory research, 10 files, +192 lines, #23 complete) | 2026-01-31 |
 | Trusted Identity Providers Inventory | P2 | ✅ Complete - `docs/10-domain/trusted-identity-providers.md`, 3 gaps, 3 reqs | 2026-01-31 |

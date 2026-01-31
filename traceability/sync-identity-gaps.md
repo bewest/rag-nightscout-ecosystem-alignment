@@ -1557,3 +1557,64 @@ if (rVal) rVal.replace('ETC','Etc');
 **Related**:
 - [NightscoutKit SDK Design](../docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md)
 - GAP-API-003 (v3 adoption path)
+
+---
+
+### GAP-SPM-001: LoopKit Package.swift Incomplete
+
+**Description**: LoopKit's Package.swift file is explicitly marked as incomplete and non-functional, blocking Swift Package Manager adoption for the iOS ecosystem.
+
+**Affected Systems**: Loop, Trio, LoopCaregiver (LoopKit dependencies)
+
+**Evidence**:
+- `externals/LoopWorkspace/LoopKit/Package.swift:4-7`: "Not complete yet, do not expect this to work"
+- Comment cites bundle resource handling issues
+
+**Impact**: 
+- Entire iOS AID ecosystem forced to use git submodules
+- No semantic versioning for library dependencies
+- Trio maintains 11 forked repositories with `trio` branches
+- ~90% code duplication between Loop and Trio forks
+
+**Remediation**: 
+1. Fix bundle resource handling in LoopKit Package.swift
+2. Migrate one library at a time (start with standalone: dexcom-share-client-swift)
+3. Phased migration from submodules to SPM
+4. See `docs/10-domain/swift-package-ecosystem-assessment.md`
+
+**Status**: Documented - Requires upstream LoopKit work
+
+**Related**:
+- [Swift Package Ecosystem Assessment](../docs/10-domain/swift-package-ecosystem-assessment.md)
+- GAP-IOS-001 (submodule pattern)
+
+---
+
+### GAP-SPM-002: No SPM Conversion Roadmap
+
+**Description**: Despite LoopCaregiverKit demonstrating successful SPM adoption, there is no documented roadmap for migrating the broader iOS ecosystem from git submodules to Swift Package Manager.
+
+**Affected Systems**: LoopWorkspace (20 submodules), Trio (11 forked submodules)
+
+**Evidence**:
+- LoopCaregiverKit Package.swift successfully uses: LoopKit, NightscoutKit, OneTimePassword
+- gestrich/NightscoutKit works via SPM
+- Main ecosystem still uses .gitmodules exclusively
+
+**Impact**: 
+- New iOS apps cannot easily reuse ecosystem libraries via SPM
+- NightscoutKit SDK adoption blocked by dependency chain
+- Fork maintenance burden grows over time
+
+**Remediation**: 
+1. Define phased conversion starting with low-risk standalone libraries
+2. Phase 1: dexcom-share-client-swift, TrueTime.swift, LoopUI
+3. Phase 2: Fix LoopKit Package.swift bundle resources
+4. Phase 3: Device libraries (CGMBLEKit, G7SensorKit, OmniBLE)
+5. Phase 4: App-level migration
+
+**Status**: Documented - Needs community coordination
+
+**Related**:
+- [Swift Package Ecosystem Assessment](../docs/10-domain/swift-package-ecosystem-assessment.md)
+- GAP-SPM-001 (LoopKit incomplete)

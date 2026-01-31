@@ -4399,3 +4399,24 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | 5.1: Safety | Medical claims scrutinized | AID apps must disclaim |
 
 **Source**: `docs/sdqctl-proposals/backlogs/ios-mobile-platform.md`
+
+### Swift Package Manager Status
+
+| Library | SPM Ready | Blocker | Notes |
+|---------|-----------|---------|-------|
+| LoopKit | ❌ No | Bundle resources | Package.swift marked "do not use" |
+| CGMBLEKit | ❌ No | LoopKit dep | Blocked by LoopKit |
+| G7SensorKit | ❌ No | LoopKit dep | Blocked by LoopKit |
+| OmniBLE/OmniKit | ❌ No | LoopKit dep | Blocked by LoopKit |
+| MinimedKit | ❌ No | LoopKit dep | Blocked by LoopKit |
+| LibreTransmitter | ❌ No | LoopKit dep | Blocked by LoopKit |
+| dexcom-share-client-swift | ✅ Yes | None | Standalone, low risk |
+| TrueTime.swift | ✅ Yes | None | Standalone, low risk |
+| NightscoutKit (gestrich) | ✅ Yes | None | Used by LoopCaregiver |
+
+**LoopKit Package.swift** (lines 4-7):
+> "Not complete yet, do not expect this to work. The main issue being bundle-resource handling."
+
+**Gap References**: GAP-SPM-001 (LoopKit incomplete), GAP-SPM-002 (no conversion roadmap)
+
+**Source**: `docs/10-domain/swift-package-ecosystem-assessment.md`
