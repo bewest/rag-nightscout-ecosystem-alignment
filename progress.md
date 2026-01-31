@@ -12,6 +12,17 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### PR #8419 Loop Push Tests Review (2026-01-31)
+
+Reviewed PR #8419 for test coverage improvement.
+
+**Title**: Add tests for iOS loop push notifications and websockets
+**Author**: je-l
+**Coverage**: +1.6% statement (63.8% → 65.4%), +2% branch (51% → 53%)
+**Assessment**: Safe to merge - adds integration tests, improves coverage
+
+---
+
 ### PR #8421 MongoDB 5x Review (2026-01-31)
 
 Reviewed PR #8421 for alignment with infrastructure gaps.

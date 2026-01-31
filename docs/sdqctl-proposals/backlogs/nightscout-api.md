@@ -219,7 +219,7 @@ Systematic review of cgm-remote-monitor PRs for alignment with proposals and bac
 |---|------|----------|-----|-----------------|
 | ~~14~~ | ~~Review PR #8422 (API v3 limit) for OpenAPI compliance~~ | ~~P2~~ | #8422 | ✅ Reviewed - safe to merge, robustness fix |
 | ~~15~~ | ~~Review PR #8405 (timezone) against GAP-TZ-*~~ | ~~P2~~ | #8405 | ✅ Reviewed - GAP-TZ-001 addressed |
-| 16 | Review PR #8419 (Loop push tests) for coverage | P3 | #8419 | Loop integration |
+| ~~16~~ | ~~Review PR #8419 (Loop push tests) for coverage~~ | ~~P3~~ | #8419 | ✅ Reviewed - adds iOS Loop/websocket tests, +1.6% stmt coverage, safe to merge |
 | ~~17~~ | ~~Review PR #8421 (MongoDB 5x) against infrastructure gaps~~ | ~~P2~~ | #8421 | ✅ Reviewed - WIP, includes docs restructure + test infra; monitor for completion |
 
 ### Review Protocol
