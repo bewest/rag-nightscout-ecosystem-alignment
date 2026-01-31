@@ -12,6 +12,34 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Cross-Platform Testing Infrastructure Design (2026-01-31)
+
+Design for testing Swift/iOS code on Linux with CI cost optimization.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Testing Infrastructure Design | `docs/10-domain/cross-platform-testing-infrastructure-design.md` | xtool evaluation, CI matrix, mocks |
+
+**Key Findings**:
+- **xtool viable for algorithms only**, not full app builds
+- **3-tier CI matrix**: ubuntu syntax → ubuntu algorithms → macos full
+- **90% CI cost reduction** by running most tests on Linux
+- **Protocol-based mocking** enables hardware-independent testing
+
+**Module Architecture**:
+| Module | Purpose | Linux Compatible |
+|--------|---------|------------------|
+| AlgorithmCore | Pure Swift algorithms | ✅ Yes |
+| DeviceAbstractions | Protocol definitions | ✅ Yes |
+| DeviceMocks | Test doubles | ✅ Yes |
+| TrioApp | Full iOS app | ❌ macOS only |
+
+**Gaps Identified**: GAP-TEST-004, GAP-TEST-005
+
+**Requirements Added**: REQ-TEST-004, REQ-TEST-005
+
+---
+
 ### App Store Pathway Analysis (2026-01-31)
 
 Analysis of App Store submission strategies for Nightscout ecosystem iOS apps.

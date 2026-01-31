@@ -4445,3 +4445,33 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 **Gap References**: GAP-SPM-001 (LoopKit incomplete), GAP-SPM-002 (no conversion roadmap)
 
 **Source**: `docs/10-domain/swift-package-ecosystem-assessment.md`
+
+### Cross-Platform Testing Infrastructure
+
+| Component | Tool | Status | Notes |
+|-----------|------|--------|-------|
+| Swift on Linux | swiftly + Swift 6.2 | ✅ Available | sourcekit-lsp configured |
+| iOS SDK on Linux | xtool + Darwin SDK | ⚠️ Experimental | Algorithm-only viable |
+| Algorithm Testing | Shared test vectors | 📋 Designed | YAML format proposed |
+| BLE/CGM Mocking | Protocol abstractions | 📋 Designed | MockBluetoothManager |
+
+**CI Matrix Strategy**:
+| Tier | Runner | Purpose | Cost |
+|------|--------|---------|------|
+| 1 | ubuntu | Syntax validation | $0.008/min |
+| 2 | ubuntu | Algorithm tests | $0.008/min |
+| 3 | macos | Full app builds | $0.080/min |
+
+**Estimated Savings**: 90% CI cost reduction by running most tests on Linux.
+
+**Module Architecture for Testability**:
+```
+AlgorithmCore/       # Pure Swift, no iOS deps → Linux runnable
+DeviceAbstractions/  # Protocols only
+DeviceMocks/         # Test doubles
+TrioApp/             # Full iOS app
+```
+
+**Gap References**: GAP-TEST-004 (no shared vectors), GAP-TEST-005 (no BLE mocks)
+
+**Source**: `docs/10-domain/cross-platform-testing-infrastructure-design.md`

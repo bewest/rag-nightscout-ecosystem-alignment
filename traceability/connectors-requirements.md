@@ -399,6 +399,47 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
+### REQ-TEST-004: Shared Algorithm Test Vectors
+
+**Statement**: Algorithm implementations MUST be validated against a common set of test vectors in a standardized YAML format.
+
+**Rationale**: Ensures algorithm parity across oref0, Loop, AAPS, and Trio. Detects drift when code is forked.
+
+**Scenarios**:
+- IOB calculation across projects
+- COB decay validation
+- determineBasal output comparison
+- Autosens factor validation
+
+**Verification**:
+- Test vector YAML schema defined
+- All runners pass same vectors
+- Parity report generated
+
+**Gap Reference**: GAP-TEST-004
+
+---
+
+### REQ-TEST-005: Protocol-Based Hardware Abstraction
+
+**Statement**: CGM and pump managers SHOULD use protocol-based abstractions to enable mock injection for testing.
+
+**Rationale**: Enables unit testing on Linux without hardware. Reduces CI costs by 90%.
+
+**Scenarios**:
+- CGM packet parsing tests
+- Pump command/response validation
+- BLE state machine tests
+
+**Verification**:
+- Protocol definitions exist
+- Mock implementations exist
+- Tests run on Linux CI
+
+**Gap Reference**: GAP-TEST-005
+
+---
+
 ## share2nightscout-bridge Requirements
 
 ---

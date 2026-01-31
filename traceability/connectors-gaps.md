@@ -344,6 +344,61 @@ osx_image: xcode12.4
 **Related**:
 - [Cross-project Testing Plan](../docs/sdqctl-proposals/cross-project-testing-plan.md)
 
+---
+
+### GAP-TEST-004: No shared test vectors for algorithm validation
+
+**Scenario**: Cross-project algorithm parity verification
+
+**Description**: No standardized test vector format for validating IOB/COB/determineBasal calculations across oref0, Loop, AAPS, and Trio.
+
+**Current State**:
+- oref0 has 85 test vectors in `conformance/runners/oref0-runner.js`
+- No equivalent for Swift (Loop, Trio) or Kotlin (AAPS)
+- Each project tests in isolation
+
+**Impact**:
+- Cannot verify algorithm parity across projects
+- No regression detection when forking code
+- Algorithm drift goes undetected
+
+**Possible Solutions**:
+1. Create YAML-based shared vector format
+2. Implement language-specific runners (Swift, Kotlin)
+3. Add algorithm parity reports to CI
+
+**Status**: Design complete
+
+**Related**:
+- [Cross-Platform Testing Infrastructure Design](../docs/10-domain/cross-platform-testing-infrastructure-design.md)
+
+---
+
+### GAP-TEST-005: No BLE/CGM mock infrastructure
+
+**Scenario**: Hardware-independent testing
+
+**Description**: iOS apps (Loop, Trio, xDrip4iOS) have no protocol-based abstractions for BLE and CGM managers, making unit testing impossible without hardware.
+
+**Current State**:
+- All BLE code directly imports CoreBluetooth
+- No dependency injection for CGM/pump managers
+- Tests require iOS simulator at minimum
+
+**Impact**:
+- Cannot run CGM packet parsing tests on Linux
+- CI requires expensive macOS runners
+- BLE protocol bugs discovered late
+
+**Possible Solutions**:
+1. Define `BluetoothManagerProtocol` abstraction
+2. Create `MockBluetoothManager` for tests
+3. Extract packet parsing to pure Swift modules
+
+**Status**: Design complete
+
+**Related**:
+- [Cross-Platform Testing Infrastructure Design](../docs/10-domain/cross-platform-testing-infrastructure-design.md)
 
 ---
 
