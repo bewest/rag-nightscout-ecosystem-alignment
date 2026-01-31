@@ -1,0 +1,439 @@
+# Nocturne V4 Extension API Specification
+#
+# These endpoints are specific to Nocturne and NOT part of the standard
+# Nightscout API (cgm-remote-monitor). Clients should feature-detect
+# availability via the /api/v4/version endpoint.
+#
+# Reference: docs/sdqctl-proposals/nightscout-v4-integration-proposal.md
+
+openapi: 3.0.3
+info:
+  title: Nocturne V4 Extension API
+  version: "4.0.0"
+  description: |
+    Extension endpoints available only in Nocturne (C#/.NET implementation).
+    
+    **NOT available in cgm-remote-monitor (Node.js)**
+    
+    ## Feature Detection
+    
+    Clients MUST check for V4 availability before using these endpoints:
+    
+    ```http
+    GET /api/v4/version
+    ```
+    
+    Returns 200 if V4 is available, 404 if running cgm-remote-monitor.
+    
+    ## StateSpan Concept
+    
+    StateSpans represent time-ranged state tracking for various diabetes
+    management states (profiles, overrides, pump modes, etc.). Each span
+    has a start time, optional end time, and category-specific state data.
+    
+  contact:
+    name: Nightscout Ecosystem
+    url: https://nightscout.github.io/
+  license:
+    name: AGPL-3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+
+servers:
+  - url: https://{site}.nocturne.cloud/api/v4
+    description: Nocturne Cloud
+    variables:
+      site:
+        default: demo
+        description: Nocturne site identifier
+  - url: http://localhost:5000/api/v4
+    description: Local Nocturne development
+
+tags:
+  - name: StateSpans
+    description: Time-ranged state tracking
+  - name: ChartData
+    description: Pre-aggregated visualization data
+  - name: Processing
+    description: Data processing status
+
+paths:
+  /version:
+    get:
+      summary: V4 API Version
+      description: |
+        Returns V4 API version information. Use this endpoint to detect
+        whether the server supports V4 endpoints.
+      tags: [StateSpans]
+      operationId: getV4Version
+      responses:
+        '200':
+          description: V4 API is available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    example: "4.0.0"
+                  server:
+                    type: string
+                    example: "Nocturne"
+        '404':
+          description: V4 API not available (cgm-remote-monitor)
+
+  /state-spans:
+    get:
+      summary: Query StateSpans
+      description: |
+        Query time-ranged state spans across all categories or filtered
+        by specific category.
+      tags: [StateSpans]
+      operationId: queryStateSpans
+      parameters:
+        - name: category
+          in: query
+          description: Filter by category
+          schema:
+            $ref: '#/components/schemas/StateSpanCategory'
+        - name: from
+          in: query
+          description: Start of time range (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: End of time range (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            default: 100
+            maximum: 1000
+      responses:
+        '200':
+          description: List of state spans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StateSpan'
+
+  /state-spans/profiles:
+    get:
+      summary: Profile Activation History
+      description: |
+        Query profile activation spans. Each span represents a period
+        when a specific profile was active.
+        
+        **Use Case**: "What profile was active at time T?"
+      tags: [StateSpans]
+      operationId: queryProfileSpans
+      parameters:
+        - name: from
+          in: query
+          description: Start of time range (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: End of time range (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Profile activation spans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProfileSpan'
+
+  /state-spans/overrides:
+    get:
+      summary: Override History
+      description: |
+        Query override spans. Each span represents a period when an
+        override (temp target, sensitivity adjustment) was active.
+      tags: [StateSpans]
+      operationId: queryOverrideSpans
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Override spans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OverrideSpan'
+
+  /chart-data:
+    get:
+      summary: Pre-aggregated Chart Data
+      description: |
+        Returns pre-aggregated data optimized for chart visualization.
+        Includes glucose, IOB, COB, and other metrics at configurable
+        resolution.
+      tags: [ChartData]
+      operationId: getChartData
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: resolution
+          in: query
+          description: Data point resolution in minutes
+          schema:
+            type: integer
+            enum: [1, 5, 15, 60]
+            default: 5
+      responses:
+        '200':
+          description: Aggregated chart data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChartData'
+
+  /processing:
+    get:
+      summary: Processing Status
+      description: |
+        Returns current data processing status, including last update
+        times and any processing errors.
+      tags: [Processing]
+      operationId: getProcessingStatus
+      responses:
+        '200':
+          description: Processing status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessingStatus'
+
+components:
+  schemas:
+    StateSpanCategory:
+      type: string
+      enum:
+        - Profile
+        - Override
+        - TempBasal
+        - PumpMode
+        - PumpConnectivity
+        - Sleep
+        - Exercise
+        - Illness
+        - Travel
+      description: |
+        StateSpan category:
+        - **Profile**: Active profile periods
+        - **Override**: Temp target/sensitivity overrides
+        - **TempBasal**: Temporary basal rate periods
+        - **PumpMode**: Automatic/Manual/Suspended mode
+        - **PumpConnectivity**: Connected/Disconnected status
+        - **Sleep**: User-annotated sleep periods
+        - **Exercise**: User-annotated activity periods
+        - **Illness**: Sensitivity impact periods
+        - **Travel**: Timezone change periods
+
+    StateSpan:
+      type: object
+      required:
+        - id
+        - category
+        - startTime
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique span identifier
+        category:
+          $ref: '#/components/schemas/StateSpanCategory'
+        startTime:
+          type: string
+          format: date-time
+          description: Span start (inclusive)
+        endTime:
+          type: string
+          format: date-time
+          nullable: true
+          description: Span end (exclusive), null if ongoing
+        state:
+          type: object
+          description: Category-specific state data
+        source:
+          type: string
+          description: Data source (Loop, AAPS, Trio, etc.)
+        srvCreated:
+          type: string
+          format: date-time
+          description: Server creation timestamp
+        srvModified:
+          type: string
+          format: date-time
+          description: Server modification timestamp
+
+    ProfileSpan:
+      allOf:
+        - $ref: '#/components/schemas/StateSpan'
+        - type: object
+          properties:
+            state:
+              type: object
+              properties:
+                profileName:
+                  type: string
+                  description: Name of active profile
+                percentage:
+                  type: integer
+                  minimum: 1
+                  maximum: 200
+                  default: 100
+                  description: Profile percentage adjustment
+
+    OverrideSpan:
+      allOf:
+        - $ref: '#/components/schemas/StateSpan'
+        - type: object
+          properties:
+            state:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Override preset name
+                targetRange:
+                  type: object
+                  properties:
+                    low:
+                      type: number
+                      description: Low target (mg/dL)
+                    high:
+                      type: number
+                      description: High target (mg/dL)
+                sensitivityFactor:
+                  type: number
+                  description: Sensitivity multiplier (1.0 = no change)
+                basalFactor:
+                  type: number
+                  description: Basal rate multiplier
+
+    ChartData:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date-time
+        to:
+          type: string
+          format: date-time
+        resolution:
+          type: integer
+          description: Minutes per data point
+        points:
+          type: array
+          items:
+            type: object
+            properties:
+              time:
+                type: string
+                format: date-time
+              glucose:
+                type: number
+                nullable: true
+                description: Glucose value (mg/dL)
+              iob:
+                type: number
+                nullable: true
+                description: Insulin on Board (units)
+              cob:
+                type: number
+                nullable: true
+                description: Carbs on Board (grams)
+              basal:
+                type: number
+                nullable: true
+                description: Basal rate (U/hr)
+
+    ProcessingStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, error]
+        lastEntryTime:
+          type: string
+          format: date-time
+          description: Most recent entry timestamp
+        lastTreatmentTime:
+          type: string
+          format: date-time
+          description: Most recent treatment timestamp
+        lastProcessedTime:
+          type: string
+          format: date-time
+          description: Last processing run
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+
+  securitySchemes:
+    apiSecretHeader:
+      type: apiKey
+      in: header
+      name: api-secret
+      description: SHA1 hash of API_SECRET
+    bearerToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from /api/v2/authorization/request
+    accessToken:
+      type: apiKey
+      in: query
+      name: token
+      description: Access token in format {name}-{hash}
+
+security:
+  - apiSecretHeader: []
+  - bearerToken: []
+  - accessToken: []

@@ -187,3 +187,58 @@ Different controllers use different fields for deduplication:
 | Date | Author | Changes |
 |------|--------|---------|
 | 2026-01-16 | Agent | Initial mapping from schema documentation |
+
+---
+
+## V4 Extension (Nocturne Only)
+
+> **Note**: V4 endpoints are available only in Nocturne (C#/.NET), not in cgm-remote-monitor (Node.js).
+> See: `specs/openapi/nocturne-v4-extension.yaml`
+
+### Feature Detection
+
+Clients MUST check for V4 availability before using V4 endpoints:
+
+```http
+GET /api/v4/version
+```
+
+- **200**: V4 available (Nocturne)
+- **404**: V4 not available (cgm-remote-monitor)
+
+### StateSpan Collections
+
+| V4 Collection | Purpose | cgm-remote-monitor Equivalent |
+|---------------|---------|------------------------------|
+| `state-spans` | Time-ranged state tracking | None |
+| `state-spans/profiles` | Profile activation history | None (partial via treatments) |
+| `state-spans/overrides` | Override history | `treatments.eventType=Override` |
+
+### StateSpan Categories
+
+| Category | States | Use Case |
+|----------|--------|----------|
+| Profile | Active | "What profile was active at time T?" |
+| Override | None, Custom | Override duration visualization |
+| TempBasal | Active, Cancelled | Temp basal history |
+| PumpMode | Automatic, Manual, Suspended | Pump mode tracking |
+| PumpConnectivity | Connected, Disconnected | Connection status |
+| Sleep, Exercise, Illness, Travel | User-defined | User annotations |
+
+### API Version Matrix
+
+| Version | cgm-remote-monitor | Nocturne | Notes |
+|---------|-------------------|----------|-------|
+| V1 | ✅ | ✅ | Legacy, deprecated |
+| V2 | ✅ | ✅ | Authorization endpoints |
+| V3 | ✅ | ✅ | CRUD with identifier |
+| **V4** | ❌ | ✅ | StateSpan, ChartData |
+
+### Sync Compatibility Notes
+
+| Behavior | cgm-remote-monitor | Nocturne | Impact |
+|----------|-------------------|----------|--------|
+| Soft delete | ✅ Default | ❌ Hard delete | Sync detection issues |
+| srvModified | ✅ Server time | ⚠️ Alias for date | Limited sync impact |
+| History endpoint | ✅ `/history/{ts}` | ❌ Missing | Polling requires workaround |
+

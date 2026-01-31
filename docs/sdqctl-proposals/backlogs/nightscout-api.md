@@ -26,23 +26,26 @@ Covers: cgm-remote-monitor, Nocturne, entries, treatments, devicestatus, profile
 **Focus:** Implement recommendations from V4 integration proposal
 **Deliverable:** PRs for Nocturne sync alignment
 
-**Status:** PROPOSED - Proposal complete, implementation pending
+**Status:** IN PROGRESS - Phase 1 Complete (2026-01-31)
 
 **Proposal:** `docs/sdqctl-proposals/nightscout-v4-integration-proposal.md`
 
 **Implementation Phases:**
-1. **Phase 1 (Documentation)**: Create V4 extension spec, update mapping docs
+1. **Phase 1 (Documentation)**: ✅ COMPLETE
+   - `specs/openapi/nocturne-v4-extension.yaml` (12KB)
+   - `docs/10-domain/v4-api-client-implementation-guide.md` (5.8KB)
+   - `mapping/nightscout/data-collections.md` (V4 section added)
 2. **Phase 2 (Nocturne Alignment)**: Add soft delete, fix srvModified, add history endpoint
 3. **Phase 3 (Client SDK)**: NightscoutKit V4 feature detection and StateSpan support
 
 **Priority Recommendations:**
-| Priority | Action | Target |
-|----------|--------|--------|
-| P0 | Document V4 as Nocturne Extension | Specs |
-| P1 | Add soft delete to Nocturne | Nocturne |
-| P1 | Fix srvModified semantics | Nocturne |
-| P2 | Add history endpoint to Nocturne | Nocturne |
-| P3 | StateSpan client adoption | NightscoutKit |
+| Priority | Action | Target | Status |
+|----------|--------|--------|--------|
+| P0 | Document V4 as Nocturne Extension | Specs | ✅ Complete |
+| P1 | Add soft delete to Nocturne | Nocturne | Pending |
+| P1 | Fix srvModified semantics | Nocturne | Pending |
+| P2 | Add history endpoint to Nocturne | Nocturne | Pending |
+| P3 | StateSpan client adoption | NightscoutKit | Pending |
 
 **Gap References:** GAP-SYNC-040, GAP-SYNC-041, GAP-V4-001, GAP-V4-002
 

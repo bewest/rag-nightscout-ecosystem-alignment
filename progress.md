@@ -1048,3 +1048,37 @@ Analyzed BLE CGM library implementations across Loop, DiaBLE, and xDrip4iOS to a
 - `externals/xdripswift/xdrip/BluetoothTransmitter/CGM/` (all protocols)
 - `externals/LoopWorkspace/LoopKit/LoopKit/DeviceManager/CGMManager.swift`
 
+
+---
+
+### V4 API Integration - Phase 1 Documentation (2026-01-31)
+
+Implemented Phase 1 (Documentation) of the V4 API Integration proposal.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| V4 OpenAPI Spec | `specs/openapi/nocturne-v4-extension.yaml` | StateSpan, ChartData, Processing endpoints |
+| Client Implementation Guide | `docs/10-domain/v4-api-client-implementation-guide.md` | Feature detection, fallback patterns |
+| Mapping Update | `mapping/nightscout/data-collections.md` | V4 section added |
+
+**Key Decisions:**
+- V4 documented as "Nocturne Extension" (not standard Nightscout API)
+- Feature detection via `/api/v4/version` required
+- Clients MUST gracefully fallback to V3
+
+**StateSpan Categories Documented:**
+- Profile, Override, TempBasal, PumpMode, PumpConnectivity
+- Sleep, Exercise, Illness, Travel (user annotations)
+
+**Sync Compatibility Notes:**
+- Nocturne: hard delete, srvModified = date alias
+- cgm-remote-monitor: soft delete, srvModified = server time
+- History endpoint missing in Nocturne (GAP-SYNC-041)
+
+**Implementation Phases:**
+- ✅ Phase 1: Documentation (this cycle)
+- ⬜ Phase 2: Nocturne Alignment (soft delete, srvModified, history)
+- ⬜ Phase 3: Client SDK (NightscoutKit V4 support)
+
+**Gap References:** GAP-V4-001, GAP-V4-002, GAP-SYNC-040, GAP-SYNC-041
+

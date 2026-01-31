@@ -4648,3 +4648,19 @@ TrioApp/             # Full iOS app
 | Libre 2 | NFC unlock | Factory | BLE stream | AES |
 | Libre 3 | Proprietary | Factory | BLE stream | Unknown |
 
+
+---
+
+## V4 API Extension Terms
+
+| Term | cgm-remote-monitor | Nocturne | Definition |
+|------|-------------------|----------|------------|
+| StateSpan | N/A | `/api/v4/state-spans` | Time-ranged state tracking |
+| ChartData | N/A | `/api/v4/chart-data` | Pre-aggregated visualization data |
+| Profile Span | treatments.Profile Switch | state-spans/profiles | Profile activation period |
+| Override Span | treatments.Override | state-spans/overrides | Override duration |
+| Feature Detection | Check for 404 | `/api/v4/version` | Detect V4 availability |
+| Hard Delete | `isDeactivated: true` | Record removed | Delete behavior |
+| Soft Delete | Default behavior | Not supported | Keep record, mark deleted |
+| srvModified | Server timestamp | Alias for date | Modification tracking |
+
