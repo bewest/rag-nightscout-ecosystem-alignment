@@ -12,6 +12,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### iOS Mobile Platform Evaluation (2026-01-31)
+
+Comprehensive analysis of iOS mobile development strategy across the Nightscout ecosystem.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| iOS Backlog | `docs/sdqctl-proposals/backlogs/ios-mobile-platform.md` | 10 items, 5 in ready queue |
+| NightscoutKit SDK Design | `docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md` | v3-first, actor-based |
+
+**Key Findings**:
+- 8 iOS apps identified (2 in App Store, 6 self-build)
+- Code sharing via git submodules, not SPM (creates fork burden)
+- Trio maintains `loopandlearn` forks → 90% duplication
+- AID controllers must remain self-build (FDA/App Store constraints)
+
+**Architecture Recommendation**: Modular with Extensions
+- Shared `NightscoutCore.framework` (SPM package)
+- Separate apps reference shared packages
+- AID controllers remain independent (self-build)
+
+**Gaps Addressed**: GAP-API-003 (SDK design complete), GAP-IOS-001, GAP-IOS-002 (new)
+
+**Requirements Added**: REQ-SDK-001 through REQ-SDK-004
+
+---
+
 ### PR #8419 Loop Push Tests Review (2026-01-31)
 
 Reviewed PR #8419 for test coverage improvement.

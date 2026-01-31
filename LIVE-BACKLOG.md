@@ -5,19 +5,23 @@
 
 ---
 
-* Research and propose requirements for cross platform builds and testing
-  harness vs static analysis and unit testing, verification and accuracy across the project.
-
 ## Pending
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| *(empty - all items processed)* | | |
+| Swift Package Ecosystem Assessment | P2 | Queued - assess SPM conversion feasibility |
+| App Store Pathway Analysis | P2 | Queued - decision matrix for store-viable features |
+| Cross-Platform Testing Infrastructure Design | P2 | Queued - xtool + CI for Swift on Linux |
+| Follower/Caregiver Feature Consolidation | P2 | Queued - LoopFollow vs LoopCaregiver overlap |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Phase 4 backlog grooming (cycle 55) | P0 | ✅ Complete (iOS mobile eval, NightscoutKit SDK design, 5 facets, 12 files) | 2026-01-31 |
+| iOS mobile backlog creation | P0 | ✅ Complete - `docs/sdqctl-proposals/backlogs/ios-mobile-platform.md` | 2026-01-31 |
+| NightscoutKit Swift SDK Design | P1 | ✅ Complete - `docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md` | 2026-01-31 |
+| Cross-platform testing research | P2 | ✅ Complete - `docs/10-domain/cross-platform-testing-research.md` | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 54) | P0 | ✅ Complete (session checkpoint created, all queues empty) | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 53) | P0 | ✅ Complete (AAPS runner blocker analyzed, deferred to Phase 3) | 2026-01-31 |
 | Phase 4 backlog grooming (cycle 52) | P0 | ✅ Complete (sdqctl VERIFY directive verified complete, #2 DONE, docs updated) | 2026-01-31 |

@@ -1492,3 +1492,66 @@ if (rVal) rVal.replace('ETC','Etc');
 **Remediation**: Implement persistent upload queue with exponential backoff.
 
 **Status**: Open
+
+---
+
+## iOS Ecosystem Architecture Gaps (2026-01-31)
+
+---
+
+### GAP-IOS-001: Git Submodule Code Sharing Pattern
+
+**Description**: iOS apps share code via git submodules rather than Swift Package Manager, causing fork proliferation and merge burden.
+
+**Affected Systems**: Loop, Trio, LoopCaregiver, LoopFollow
+
+**Evidence**:
+- Trio uses `loopandlearn` forks with `trio` branches (11 submodules)
+- Each fork is 90%+ identical with minor customizations
+- No shared SPM packages across projects
+
+**Impact**: 
+- Merge conflicts when upstream changes
+- Feature divergence between forks
+- Maintenance burden multiplied per fork
+
+**Remediation**: 
+- Convert shared libraries to SPM packages (see `docs/sdqctl-proposals/spm-cross-platform-proposal.md`)
+- Publish canonical packages to Swift Package Index
+- Projects reference packages instead of forked repos
+
+**Status**: Open - Design in progress
+
+**Related**:
+- [iOS Mobile Platform Backlog](../docs/sdqctl-proposals/backlogs/ios-mobile-platform.md)
+- [SPM Cross-Platform Proposal](../docs/sdqctl-proposals/spm-cross-platform-proposal.md)
+
+---
+
+### GAP-IOS-002: No Shared NightscoutKit SDK
+
+**Description**: Each iOS app implements its own Nightscout client code, leading to inconsistent API usage and duplicated effort.
+
+**Affected Systems**: xDrip4iOS, Nightguard, DiaBLE, LoopCaregiver
+
+**Evidence**:
+- xDrip4iOS: Custom `NightscoutSyncManager.swift` (~1692 lines)
+- Nightguard: Custom `NightscoutService.swift`
+- DiaBLE: Custom `Nightscout.swift`
+- LoopCaregiver: Uses `gestrich/NightscoutKit` (feature branch)
+
+**Impact**: 
+- Inconsistent v3 API adoption (only LoopCaregiver has NightscoutKit)
+- Authentication patterns vary per app
+- Bug fixes not shared across ecosystem
+
+**Remediation**: 
+- Create unified `NightscoutKit` SPM package (design complete)
+- See `docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md`
+- Migrate apps to shared SDK
+
+**Status**: In Progress - SDK Design Complete
+
+**Related**:
+- [NightscoutKit SDK Design](../docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md)
+- GAP-API-003 (v3 adoption path)

@@ -13,6 +13,7 @@
 | Nightscout API | [backlogs/nightscout-api.md](backlogs/nightscout-api.md) | Collections, auth, API v3 |
 | Sync & Identity | [backlogs/sync-identity.md](backlogs/sync-identity.md) | Deduplication, timestamps, sync IDs |
 | Tooling | [backlogs/tooling.md](backlogs/tooling.md) | sdqctl enhancements, plugins, automation |
+| **iOS Mobile Platform** | [backlogs/ios-mobile-platform.md](backlogs/ios-mobile-platform.md) | iOS apps, NightscoutKit SDK, App Store |
 | **Documentation Accuracy** | [backlogs/documentation-accuracy.md](backlogs/documentation-accuracy.md) | Bottom-up claim verification |
 | Live requests | [../../LIVE-BACKLOG.md](../../LIVE-BACKLOG.md) | Midflight human requests |
 
@@ -113,6 +114,15 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm testing
 **Note:** Requires Swift on Linux - parked until visibility work complete
+
+---
+
+## Recently Completed (2026-01-31)
+
+| Item | Deliverable | Key Finding |
+|------|-------------|-------------|
+| **iOS Mobile Platform Evaluation** | `backlogs/ios-mobile-platform.md` | 8 apps, submodule sharing, modular architecture recommended |
+| **NightscoutKit Swift SDK Design** | `nightscoutkit-swift-sdk-design.md` | v3-first, actor-based, builds on gestrich/NightscoutKit |
 
 ---
 

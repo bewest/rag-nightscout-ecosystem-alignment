@@ -75,15 +75,22 @@ See [gaps.md](gaps.md) for the index.
 
 **Possible Solutions**:
 1. Document v3 benefits to encourage iOS client adoption
-2. Create Swift SDK for v3 API
+2. Create Swift SDK for v3 API ← **Design Complete** (see below)
 3. Accept ecosystem bifurcation and document interoperability patterns
 
-**Status**: Under discussion
+**Status**: In Progress - SDK Design Complete
+
+**Remediation**:
+- Design document: [`docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md`](../docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md)
+- Build on `gestrich/NightscoutKit` foundation (already used by LoopCaregiver)
+- v3-first with v1 fallback for compatibility
+- Actor-based `NightscoutClient` with async/await
 
 **Related**:
 - [Nightscout API Comparison](../docs/10-domain/nightscout-api-comparison.md)
 - [Loop Nightscout Sync](../mapping/loop/nightscout-sync.md)
 - [Trio Nightscout Sync](../mapping/trio/nightscout-sync.md)
+- [iOS Mobile Platform Backlog](../docs/sdqctl-proposals/backlogs/ios-mobile-platform.md)
 
 ---
 

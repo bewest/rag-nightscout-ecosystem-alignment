@@ -882,3 +882,91 @@ See [requirements.md](requirements.md) for the index.
 **Gap**: GAP-DS-004
 
 **Source**: `docs/10-domain/nightscout-devicestatus-schema-audit.md`
+
+---
+
+## iOS SDK Requirements (2026-01-31)
+
+---
+
+### REQ-SDK-001: v3 API Support
+
+**Statement**: NightscoutKit Swift SDK MUST support API v3 endpoints as primary interface.
+
+**Rationale**: v3 provides incremental sync, soft-delete detection, and granular permissions.
+
+**Scenarios**:
+- Client fetches entries via `/api/v3/entries`
+- Client uses `/api/v3/{collection}/history` for incremental sync
+- Deleted documents detected via `isValid: false`
+
+**Verification**:
+- SDK passes v3 conformance tests
+- History sync returns added, updated, and deleted documents
+
+**Gap**: GAP-API-003
+
+**Source**: `docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md`
+
+---
+
+### REQ-SDK-002: Multiple Authentication Methods
+
+**Statement**: NightscoutKit Swift SDK MUST support API_SECRET, JWT, and Token authentication.
+
+**Rationale**: Different deployment scenarios require different auth methods.
+
+**Scenarios**:
+- API_SECRET: Traditional SHA1 header for full access
+- JWT: Bearer token for granular permissions
+- Token: Query parameter for simple read access
+
+**Verification**:
+- All three auth methods authenticate successfully
+- JWT permissions respected (read-only token cannot write)
+
+**Gap**: GAP-API-003, GAP-API-004
+
+**Source**: `docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md`
+
+---
+
+### REQ-SDK-003: Incremental Sync
+
+**Statement**: NightscoutKit Swift SDK MUST provide SyncManager for incremental synchronization.
+
+**Rationale**: Full sync is expensive; incremental sync reduces bandwidth and latency.
+
+**Scenarios**:
+- First sync: fetch all documents in date range
+- Subsequent sync: fetch only changes since `Last-Modified`
+- Deleted documents: return identifiers for local cache eviction
+
+**Verification**:
+- SyncManager tracks last-modified per collection
+- Second sync returns only new/changed documents
+
+**Gap**: GAP-API-001, GAP-API-003
+
+**Source**: `docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md`
+
+---
+
+### REQ-SDK-004: Swift Concurrency
+
+**Statement**: NightscoutKit Swift SDK MUST use async/await for all network operations.
+
+**Rationale**: Modern Swift concurrency provides cleaner code and better error handling.
+
+**Scenarios**:
+- All fetch/create/update/delete operations are async
+- Actor-based client ensures thread safety
+- No callback-based APIs in public interface
+
+**Verification**:
+- All public methods are marked `async throws`
+- Client is declared as `actor`
+
+**Gap**: GAP-API-003
+
+**Source**: `docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md`

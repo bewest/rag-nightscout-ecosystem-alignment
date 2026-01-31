@@ -4329,3 +4329,50 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | `loop-runner.swift` | Execute LoopAlgorithm | Swift | macOS CI | ⏳ Planned |
 
 **Source**: `docs/10-domain/lsp-environment-check.md`, `docs/10-domain/cross-platform-testing-research.md`
+
+---
+
+## iOS Ecosystem Architecture
+
+### iOS Apps by Category
+
+| Category | App | Purpose | Maintainer | App Store |
+|----------|-----|---------|------------|-----------|
+| **AID Controller** | Loop | Closed-loop insulin delivery | LoopKit | Self-build |
+| **AID Controller** | Trio | oref1-based closed-loop | Nightscout | Self-build |
+| **CGM Display** | DiaBLE | Libre/G7 NFC/BLE reader | gui-dos | ✅ App Store |
+| **CGM Display** | xDrip4iOS | Multi-source CGM app | JohanDegraeve | Self-build |
+| **CGM Display** | Nightguard | Nightscout display + watch | nightscout | ✅ App Store |
+| **Follower** | LoopFollow | Monitor + alarms | loopandlearn | Self-build |
+| **Caregiver** | LoopCaregiver | Remote commands | loopandlearn | Self-build |
+
+### Code Sharing Patterns
+
+| Pattern | Description | Used By | Pros | Cons |
+|---------|-------------|---------|------|------|
+| **Git Submodules** | Clone repos as subdirectories | Loop, Trio | Version pinning | Fork burden |
+| **SPM (Swift Package Manager)** | Binary/source packages | LoopCaregiver | Clean deps | Adoption limited |
+| **Copy-paste** | Duplicate source files | Nightguard, DiaBLE | Independence | Divergence |
+
+### Shared Libraries (Git Submodules)
+
+| Library | Used By | Purpose |
+|---------|---------|---------|
+| LoopKit | Loop, Trio, LoopCaregiver | Core AID framework |
+| CGMBLEKit | Loop, Trio | Dexcom G5/G6 BLE |
+| G7SensorKit | Loop, Trio | Dexcom G7 |
+| OmniBLE/OmniKit | Loop, Trio | Omnipod pump |
+| MinimedKit | Loop, Trio | Medtronic pump |
+| LibreTransmitter | Loop, Trio | Libre CGM |
+| dexcom-share-client-swift | Loop, Trio, LoopFollow | Dexcom Share API |
+| NightscoutKit | LoopCaregiver | Nightscout API client |
+
+### Apple App Store Constraints
+
+| Guideline | Constraint | Impact |
+|-----------|------------|--------|
+| 4.2: Minimum Functionality | Must have native features | Pure web wrappers rejected |
+| 4.3: Spam | Similar apps rejected | Can't submit 5 identical apps |
+| 5.1: Safety | Medical claims scrutinized | AID apps must disclaim |
+
+**Source**: `docs/sdqctl-proposals/backlogs/ios-mobile-platform.md`
