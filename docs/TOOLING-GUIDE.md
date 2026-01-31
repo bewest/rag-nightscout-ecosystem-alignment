@@ -341,6 +341,8 @@ The `.replit` file configures the workspace for Replit Agent:
 | `gen_traceability.py` | Generate matrices | All workspace files | Markdown/JSON reports | Audit & coverage |
 | `run_workflow.py` | Orchestrate | Workflow name | Results summary | CI/CD automation |
 | `workspace_cli.py` | Unified interface | Commands | Varied | Interactive/scripting |
+| `accuracy_dashboard.py` | Unified metrics | Verification tools | Dashboard/JSON | CI/CD, status checks |
+| `tree_sitter_queries.py` | Code extraction | Source files | Functions/classes | Static analysis |
 
 ## Output Formats
 

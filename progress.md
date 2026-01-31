@@ -12,6 +12,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Accuracy Dashboard (2026-01-31)
+
+Unified verification metrics dashboard aggregating results from multiple tools.
+
+**Deliverable**: `tools/accuracy_dashboard.py` (~400 lines)
+
+| Metric | Current Value | Threshold | Status |
+|--------|---------------|-----------|--------|
+| Refs valid | 80.4% | 80% | ✅ |
+| Line anchors | 96.0% | 90% | ✅ |
+| Full coverage | 2.4% | 2% | ✅ |
+| Assertions | 10.6% | 10% | ✅ |
+
+**Usage**:
+```bash
+python3 tools/accuracy_dashboard.py           # Human-readable
+python3 tools/accuracy_dashboard.py --json    # Machine-readable
+python3 tools/accuracy_dashboard.py --ci      # CI mode (exit code)
+python3 tools/accuracy_dashboard.py --quick   # Skip slow tools
+```
+
+**Implements**: REQ-VERIFY-005 (Unified accuracy reporting)
+
+---
+
 ### Tree-sitter Query Library (2026-01-31)
 
 Created Python wrapper for tree-sitter code extraction across 4 languages.
