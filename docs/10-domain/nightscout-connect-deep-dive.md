@@ -25,6 +25,8 @@ nightscout-connect is a bridge application that fetches CGM/pump data from vendo
 
 ## Architecture Overview
 
+**Conformance Assertions**: [`conformance/assertions/bridge-connector.yaml`](../../conformance/assertions/bridge-connector.yaml) — 17 assertions covering REQ-BRIDGE-001-003, REQ-CONNECT-001-003
+
 ### Design Philosophy
 
 The project follows a modular design documented in `machines.md`:
