@@ -27,6 +27,8 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| AAPS Kotlin Runner Documentation | P2 | ✅ Complete - `conformance/README.md` setup guide, GAP-VERIFY-002 step 3 | 2026-02-01 |
+| Phase 4 backlog grooming (cycle 68) | P0 | ✅ Complete (Ready Queue 8→7, facets updated, 5 commits) | 2026-02-01 |
 | Trio-dev oref Integration Mapping | P2 | ✅ Complete - `trio-oref-integration-mapping.md`, 3 gaps, 3 reqs | 2026-01-31 |
 | NS Community Identity Provider Proposal | P3 | ✅ Complete - `ns-community-idp-proposal.md`, 3 gaps, 4 reqs | 2026-01-31 |
 | V4 API Integration Phase 1 | P2 | ✅ Complete - OpenAPI spec + client guide (17.8KB) | 2026-01-31 |
