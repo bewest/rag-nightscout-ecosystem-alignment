@@ -27,6 +27,8 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| cgm-remote-monitor V4 Adoption Proposal | P2 | ✅ Complete - `cgm-remote-monitor-v4-adoption-proposal.md`, 4 gaps, 7 features | 2026-02-01 |
+| Phase 4 backlog grooming (cycle 71) | P0 | ✅ Complete (Ready Queue 5→4, 4 new API gaps) | 2026-02-01 |
 | Tandem Integration Inventory | P3 | ✅ Complete - `tandem-integration-inventory.md`, 1 gap (GAP-TANDEM-001) | 2026-02-01 |
 | Phase 4 backlog grooming (cycle 70) | P0 | ✅ Complete (Ready Queue 6→5, cloud-bridge limitation documented) | 2026-02-01 |
 | Tidepool Integration Inventory | P3 | ✅ Complete - `tidepool-integration-inventory.md`, 4 gaps, 4 reqs | 2026-02-01 |
