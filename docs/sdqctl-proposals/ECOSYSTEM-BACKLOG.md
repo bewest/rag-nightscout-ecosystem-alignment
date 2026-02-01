@@ -58,19 +58,19 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** sync-identity.md #19
 **Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
 
-### 5. [P2] Treatments domain traceability matrix
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Create REQ↔GAP↔Assertion matrix for treatments domain
-**Source:** treatments-requirements.md (35 REQs)
-**Deliverable:** `traceability/domain-matrices/treatments-matrix.md`
-**Impact:** Identify assertion gaps in treatments domain
-
-### 6. [P2] AID algorithms traceability matrix
+### 5. [P2] AID algorithms traceability matrix
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Create REQ↔GAP↔Assertion matrix for AID algorithms domain
 **Source:** aid-algorithms-requirements.md (56 REQs)
 **Deliverable:** `traceability/domain-matrices/aid-algorithms-matrix.md`
 **Impact:** Identify assertion gaps in algorithm comparison domain
+
+### 6. [P2] Alarm requirements assertions
+**Type:** Conformance | **Effort:** Medium
+**Focus:** Create assertions for alarm requirements (REQ-ALARM-001-010)
+**Source:** treatments-matrix.md action items (0% coverage, safety-critical)
+**Deliverable:** `conformance/assertions/alarm-requirements.yaml`
+**Impact:** Address 0% alarm coverage gap
 
 ---
 
@@ -78,6 +78,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Treatments Domain Matrix** | `traceability/domain-matrices/treatments-matrix.md` | 35 REQs, 9 GAPs; 20% coverage; Alarm/Remote 0% |
 | **Sync-Identity REQ Assertions** | `conformance/assertions/sync-identity-reqs.yaml` | 19 assertions, 15 REQs covered, sync-identity 47%→94% |
 | **Bridge/Connector Assertions** | `conformance/assertions/bridge-connector.yaml` | 17 assertions, 6 REQs covered, CGM domain 100% complete |
 | **Libre Protocol Assertions** | `conformance/assertions/libre-protocol.yaml` | 16 assertions, 6 REQs covered, CGM coverage 33%→67% |

@@ -27,6 +27,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Treatments Domain Matrix (cycle 95) | P2 | ✅ Complete - 35 REQs, 9 GAPs, 20% assertion coverage | 2026-02-01 |
 | Sync-Identity REQ Assertions (cycle 94) | P2 | ✅ Complete - 19 assertions, 15 REQs covered, 47%→94% | 2026-02-01 |
 | Bridge/Connector Assertions (cycle 93) | P3 | ✅ Complete - 17 assertions, 6 REQs covered, 67%→100% | 2026-02-01 |
 | Libre Protocol Assertions (cycle 92) | P2 | ✅ Complete - 16 assertions, 6 REQs covered, 33%→67% | 2026-02-01 |

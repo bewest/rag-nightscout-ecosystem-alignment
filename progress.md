@@ -13,6 +13,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Treatments Domain Traceability Matrix (2026-02-01)
+
+Created REQ↔GAP↔Assertion cross-reference matrix for treatments domain.
+
+| Metric | Count |
+|--------|-------|
+| Requirements inventoried | 35 (10 Alarm, 11 Remote, 3 Interop, 4 Unit, 7 Treat) |
+| Gaps inventoried | 9 |
+| REQs with assertion coverage | 7 (20%) |
+| Uncovered REQs | 28 (80%) |
+
+**Deliverable**: `traceability/domain-matrices/treatments-matrix.md`
+
+**Key Findings**:
+- Treatment sync (REQ-TREAT-040-046) fully covered by treatment-sync.yaml
+- Alarm requirements (10) have 0% coverage - safety-critical gap
+- Remote command requirements (11) have 0% coverage - security-critical gap
+- Priority action items identified for assertion creation
+
+---
+
 ### Sync-Identity REQ Assertions (2026-02-01)
 
 Created conformance assertions for previously uncovered sync-identity requirements.
