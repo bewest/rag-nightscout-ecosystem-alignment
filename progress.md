@@ -13,6 +13,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Degraded Operation Assertions (2026-02-01)
+
+Created safety-critical conformance assertions for fallback behavior requirements.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 6 (REQ-DEGRADE-001-006) |
+| Assertions created | 24 |
+| Coverage improvement | Algorithm domain 0% → 11% |
+
+**Deliverable**: `conformance/assertions/degraded-operation.yaml`
+
+**Coverage by Topic**:
+- CGM loss handling: 4 assertions
+- Pump timeout: 4 assertions
+- Remote fallback: 3 assertions
+- Layer transition logging: 4 assertions
+- Safe state documentation: 4 assertions
+- Delegate agent fallback: 5 assertions
+
+**Impact**: First algorithm domain coverage; safety-critical requirements addressed
+
+---
+
 ### AID Algorithms Traceability Matrix (2026-02-01)
 
 Created domain traceability matrix for algorithm requirements coverage analysis.

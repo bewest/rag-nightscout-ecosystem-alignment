@@ -84,15 +84,17 @@ Total: 310 requirements
 
 | Total | Covered | Uncovered | % |
 |-------|---------|-----------|---|
-| 56 | 0 | 56 | 0% |
+| 56 | 6 | 50 | 11% |
 
-**None covered** - No conformance assertions exist for algorithm domain
+**Partially covered** - Degraded operation assertions complete
 
 **Traceability Matrix**: [`domain-matrices/aid-algorithms-matrix.md`](domain-matrices/aid-algorithms-matrix.md)
 
-**Key categories**:
+**Covered categories**:
+- Degraded Operation (REQ-DEGRADE-001-006): ✅ 100% via `degraded-operation.yaml`
+
+**Uncovered categories**:
 - Algorithm Core (REQ-ALG-001-004): Test vectors, semantic equivalence, safety
-- Degraded Operation (REQ-DEGRADE-001-006): CGM loss, pump timeout, fallback
 - Insulin Model (REQ-INS-001-005): Exponential formula, DIA, peak time
 - Profile Schema (REQ-PROF-001-007): Time format, safety limits, presets
 

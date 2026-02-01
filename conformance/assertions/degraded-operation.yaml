@@ -1,0 +1,332 @@
+# Assertions for Degraded Operation Requirements
+# Tests safety-critical fallback behavior (REQ-DEGRADE-001 through REQ-DEGRADE-006)
+# Safety-critical: 0% coverage → target 100% coverage
+
+scenario: degraded-operation
+version: 1
+
+# Link to requirements in traceability/aid-algorithms-requirements.md
+requirements:
+  - REQ-DEGRADE-001  # Automation Disable on CGM Loss
+  - REQ-DEGRADE-002  # Pump Communication Timeout Handling
+  - REQ-DEGRADE-003  # Remote Control Fallback
+  - REQ-DEGRADE-004  # Layer Transition Logging
+  - REQ-DEGRADE-005  # Safe State Documentation
+  - REQ-DEGRADE-006  # Delegate Agent Fallback
+
+related_gaps:
+  - GAP-ALG-011  # LGS Duration Differences
+  - GAP-ALG-014  # Loop Prediction Is Single Curve (affects degradation visibility)
+
+assertions:
+  # ============================================
+  # Automation Disable on CGM Loss (REQ-DEGRADE-001)
+  # ============================================
+
+  - id: cgm-staleness-detection
+    description: "System detects when CGM data becomes stale"
+    type: safety
+    requirement: REQ-DEGRADE-001
+    target: controller.cgmStalenessCheck
+    expected: staleness detected when no reading for configured threshold
+    verification:
+      - Configure staleness threshold (e.g., 15 minutes)
+      - Simulate CGM data gap exceeding threshold
+      - Verify system detects stale state
+      - Verify staleness flag is set in controller status
+
+  - id: automation-suspend-on-cgm-loss
+    description: "Closed-loop automation suspends when CGM data is stale"
+    type: safety
+    requirement: REQ-DEGRADE-001
+    target: controller.automationState
+    expected: automation transitions to suspended/open-loop state
+    verification:
+      - Start with active closed-loop automation
+      - Simulate CGM data gap exceeding staleness threshold
+      - Verify automation state changes to suspended
+      - Verify no temp basal adjustments during suspension
+
+  - id: basal-fallback-on-cgm-loss
+    description: "System falls back to scheduled basal when CGM lost"
+    type: safety
+    requirement: REQ-DEGRADE-001
+    target: pump.basalDelivery
+    expected: scheduled basal rate resumes
+    verification:
+      - Note current scheduled basal rate
+      - Trigger CGM staleness condition
+      - Verify pump receives scheduled basal command
+      - Verify no automated adjustments until CGM recovers
+
+  - id: user-notification-cgm-loss
+    description: "User receives clear notification about CGM loss fallback"
+    type: ui
+    requirement: REQ-DEGRADE-001
+    target: notification.cgmLoss
+    expected: notification explains current state and required action
+    verification:
+      - Trigger CGM staleness condition
+      - Verify notification appears
+      - Verify notification explains automation is suspended
+      - Verify notification provides guidance (check sensor, etc.)
+
+  # ============================================
+  # Pump Communication Timeout Handling (REQ-DEGRADE-002)
+  # ============================================
+
+  - id: pump-timeout-detection
+    description: "System detects pump communication timeout"
+    type: safety
+    requirement: REQ-DEGRADE-002
+    target: pump.communicationStatus
+    expected: timeout detected after configured threshold
+    verification:
+      - Configure pump timeout threshold
+      - Simulate pump communication failure
+      - Verify timeout is detected within threshold
+      - Verify pump status reflects communication failure
+
+  - id: fallback-state-on-pump-timeout
+    description: "System enters safe fallback state on pump timeout"
+    type: safety
+    requirement: REQ-DEGRADE-002
+    target: controller.fallbackState
+    expected: controller enters defined fallback state
+    verification:
+      - Simulate pump communication timeout
+      - Verify controller enters fallback state
+      - Verify no further pump commands attempted until recovery
+      - Verify fallback state is logged
+
+  - id: user-notification-pump-timeout
+    description: "User receives actionable notification on pump timeout"
+    type: ui
+    requirement: REQ-DEGRADE-002
+    target: notification.pumpTimeout
+    expected: notification includes actionable guidance
+    verification:
+      - Simulate pump communication timeout
+      - Verify notification appears promptly
+      - Verify notification explains therapy status uncertainty
+      - Verify notification provides troubleshooting steps
+
+  - id: pump-recovery-transition
+    description: "System properly recovers when pump communication restored"
+    type: behavior
+    requirement: REQ-DEGRADE-002
+    target: controller.recoveryBehavior
+    expected: graceful transition back to normal operation
+    verification:
+      - Start from pump timeout fallback state
+      - Restore pump communication
+      - Verify system detects recovery
+      - Verify automation can resume after user confirmation
+
+  # ============================================
+  # Remote Control Fallback (REQ-DEGRADE-003)
+  # ============================================
+
+  - id: following-continues-on-command-failure
+    description: "Remote monitoring continues when command channel fails"
+    type: behavior
+    requirement: REQ-DEGRADE-003
+    target: caregiver.followingCapability
+    expected: read-only following remains available
+    verification:
+      - Establish remote following connection
+      - Simulate command channel failure (API write failure)
+      - Verify glucose data continues to display
+      - Verify IOB/COB data continues to update
+
+  - id: command-channel-failure-indication
+    description: "Caregiver UI indicates command channel unavailable"
+    type: ui
+    requirement: REQ-DEGRADE-003
+    target: caregiver.commandChannelStatus
+    expected: clear indication that remote commands are unavailable
+    verification:
+      - Simulate Nightscout command channel failure
+      - Verify UI indicates command capability lost
+      - Verify remote bolus/carb buttons disabled or show warning
+      - Verify following data still displays
+
+  - id: alternative-communication-guidance
+    description: "UI provides out-of-band communication guidance"
+    type: ui
+    requirement: REQ-DEGRADE-003
+    target: caregiver.fallbackGuidance
+    expected: guidance for alternative communication methods
+    verification:
+      - Trigger remote command channel failure
+      - Verify UI suggests alternative contact methods
+      - Examples: "Call or text the looper directly"
+      - Verify guidance is contextually appropriate
+
+  # ============================================
+  # Layer Transition Logging (REQ-DEGRADE-004)
+  # ============================================
+
+  - id: layer-transition-logged
+    description: "Layer transitions are logged with timestamps"
+    type: audit
+    requirement: REQ-DEGRADE-004
+    target: log.layerTransitions
+    expected: each transition logged with ISO8601 timestamp
+    verification:
+      - Trigger layer transition (pause automation)
+      - Verify log entry created
+      - Verify timestamp is precise (milliseconds)
+      - Verify timestamp is in ISO8601 format
+
+  - id: transition-reason-code-logged
+    description: "Layer transition includes reason code"
+    type: audit
+    requirement: REQ-DEGRADE-004
+    target: log.transitionReason
+    expected: standardized reason code included
+    verification:
+      - Trigger various layer transitions
+      - Verify each log entry includes reason code
+      - Examples: CGM_STALE, PUMP_TIMEOUT, USER_PAUSE, SAFETY_LIMIT
+      - Verify reason codes are documented
+
+  - id: transition-before-after-state
+    description: "Log includes before and after states"
+    type: audit
+    requirement: REQ-DEGRADE-004
+    target: log.stateTransition
+    expected: fromState and toState captured
+    verification:
+      - Trigger layer transition
+      - Verify log includes previous state (e.g., closed-loop)
+      - Verify log includes new state (e.g., open-loop)
+      - Verify state names match documented layer ontology
+
+  - id: transition-logs-queryable
+    description: "Layer transition logs are queryable for retrospective analysis"
+    type: audit
+    requirement: REQ-DEGRADE-004
+    target: log.queryCapability
+    expected: logs accessible via API or export
+    verification:
+      - Generate several layer transitions
+      - Query logs via available interface
+      - Verify transitions can be filtered by date range
+      - Verify transitions can be filtered by reason code
+
+  # ============================================
+  # Safe State Documentation (REQ-DEGRADE-005)
+  # ============================================
+
+  - id: safe-states-documented
+    description: "System documentation defines all safe states"
+    type: documentation
+    requirement: REQ-DEGRADE-005
+    target: docs.safeStates
+    expected: comprehensive safe state definitions
+    verification:
+      - Review system documentation
+      - Verify each safe state is named and described
+      - Verify safe state behavior is specified
+      - Examples: LGS, Open Loop, Basal Only, Disconnected
+
+  - id: transition-triggers-documented
+    description: "Conditions triggering safe state transitions are documented"
+    type: documentation
+    requirement: REQ-DEGRADE-005
+    target: docs.transitionTriggers
+    expected: clear trigger conditions for each safe state
+    verification:
+      - Review documentation for each safe state
+      - Verify trigger conditions are specified
+      - Verify thresholds are quantified where applicable
+      - Verify recovery conditions are documented
+
+  - id: safe-states-discoverable-in-ui
+    description: "Safe states are visible and discoverable in UI"
+    type: ui
+    requirement: REQ-DEGRADE-005
+    target: ui.safeStateVisibility
+    expected: current safe state clearly indicated
+    verification:
+      - Trigger entry into each safe state
+      - Verify UI clearly indicates current state
+      - Verify state indicator is prominent (not hidden)
+      - Verify state indicator uses consistent terminology
+
+  - id: safe-state-behavior-matches-docs
+    description: "Actual safe state behavior matches documentation"
+    type: behavior
+    requirement: REQ-DEGRADE-005
+    target: behavior.safeStateAccuracy
+    expected: observed behavior matches documented behavior
+    verification:
+      - Identify documented safe state behaviors
+      - Trigger each safe state
+      - Verify actual behavior matches documentation
+      - Document any discrepancies for correction
+
+  # ============================================
+  # Delegate Agent Fallback (REQ-DEGRADE-006)
+  # ============================================
+
+  - id: agent-confidence-threshold
+    description: "Agent has defined confidence threshold for autonomous action"
+    type: config
+    requirement: REQ-DEGRADE-006
+    target: agent.confidenceThreshold
+    expected: configurable confidence threshold
+    verification:
+      - Review agent configuration
+      - Verify confidence threshold is defined
+      - Verify threshold is documented
+      - Verify threshold can be adjusted per deployment
+
+  - id: agent-fallback-on-low-confidence
+    description: "Agent falls back to propose-only when confidence is low"
+    type: behavior
+    requirement: REQ-DEGRADE-006
+    target: agent.lowConfidenceBehavior
+    expected: propose-only mode when confidence < threshold
+    verification:
+      - Simulate decision with low confidence score
+      - Verify agent does not execute autonomously
+      - Verify agent generates proposal instead
+      - Verify proposal includes confidence score
+
+  - id: agent-fallback-on-stale-context
+    description: "Agent falls back when context signals are stale"
+    type: behavior
+    requirement: REQ-DEGRADE-006
+    target: agent.staleContextHandling
+    expected: fallback to human confirmation mode
+    verification:
+      - Simulate stale out-of-band data (e.g., old activity data)
+      - Verify agent detects staleness
+      - Verify agent reverts to propose-only mode
+      - Verify agent requests human confirmation
+
+  - id: agent-human-confirmation-request
+    description: "Agent clearly requests human confirmation when needed"
+    type: ui
+    requirement: REQ-DEGRADE-006
+    target: agent.confirmationRequest
+    expected: clear confirmation request with decision context
+    verification:
+      - Trigger agent fallback to confirmation mode
+      - Verify confirmation request is clear
+      - Verify request includes decision rationale
+      - Verify human can approve, modify, or reject
+
+  - id: agent-missing-signal-detection
+    description: "Agent detects when required context signals are unavailable"
+    type: behavior
+    requirement: REQ-DEGRADE-006
+    target: agent.signalAvailabilityCheck
+    expected: detection of missing required signals
+    verification:
+      - Define required context signals for agent
+      - Simulate loss of required signal
+      - Verify agent detects unavailability
+      - Verify agent enters degraded mode appropriately

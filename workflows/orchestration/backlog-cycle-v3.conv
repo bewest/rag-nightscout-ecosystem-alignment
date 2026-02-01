@@ -47,6 +47,8 @@ PROMPT ## Phase 0: State Check
 ELIDE
 RUN git --no-pager status --short && git --no-pager log --oneline -3
 ELIDE
+RUN python tools/doc_chunker.py --check 2>/dev/null | grep -E "⚠️|OVER" || echo "✓ Files OK"
+ELIDE
 
 PROMPT Review the status above:
 - If uncommitted changes exist, commit or note as WIP
@@ -101,6 +103,24 @@ PROMPT Update all relevant project facets based on your findings.
 | Progress | `progress.md` | Always (deliverables table) |
 
 **Find next ID:** `python tools/doc_chunker.py --next-id GAP-{PREFIX}`
+
+# === Phase 3b: Verify Accuracy ===
+PROMPT ## Phase 3b: Verify Accuracy
+
+ELIDE
+RUN python tools/verify_refs.py 2>/dev/null | grep -E "Broken|Invalid|✗|broken:" | head -10 || echo "✓ Refs: all valid"
+ELIDE
+RUN python tools/verify_assertions.py 2>/dev/null | tail -3
+ELIDE
+
+PROMPT Review verification results above:
+
+**References**: Fix any broken `repo:path/file.ext` references in updated files.
+**Coverage**: Note uncovered requirements—consider adding assertions in future cycles.
+
+If issues found:
+- Fix broken refs before proceeding (accuracy)
+- Log coverage gaps to backlog (improvement opportunity)
 
 # === Phase 4: Groom Backlogs ===
 PROMPT ## Phase 4: Groom Backlogs

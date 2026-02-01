@@ -12,11 +12,11 @@
 |--------|-------|
 | Requirements | 56 |
 | Gaps | 66 |
-| REQs with assertion coverage | 0 (0%) |
-| Uncovered REQs | 56 (100%) |
-| Uncovered GAPs | 66 (100%) |
+| REQs with assertion coverage | 6 (11%) |
+| Uncovered REQs | 50 (89%) |
+| Uncovered GAPs | 64 (97%) |
 
-**Status**: ❌ **NEEDS WORK** - No conformance assertions exist for algorithm domain
+**Status**: 🔄 **IN PROGRESS** - Degraded operation assertions complete (6 REQs)
 
 ---
 
@@ -42,16 +42,16 @@
 | REQ-CARB-005 | Per-Entry Absorption Time | - | ❌ None |
 | REQ-CARB-006 | COB Maximum Limits | GAP-CARB-005 | ❌ None |
 
-### Degraded Operation (6)
+### Degraded Operation (6) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-DEGRADE-001 | Automation Disable on CGM Loss | - | ❌ None |
-| REQ-DEGRADE-002 | Pump Communication Timeout Handling | - | ❌ None |
-| REQ-DEGRADE-003 | Remote Control Fallback | - | ❌ None |
-| REQ-DEGRADE-004 | Layer Transition Logging | - | ❌ None |
-| REQ-DEGRADE-005 | Safe State Documentation | - | ❌ None |
-| REQ-DEGRADE-006 | Delegate Agent Fallback | - | ❌ None |
+| REQ-DEGRADE-001 | Automation Disable on CGM Loss | GAP-ALG-011 | ✅ degraded-operation.yaml |
+| REQ-DEGRADE-002 | Pump Communication Timeout Handling | - | ✅ degraded-operation.yaml |
+| REQ-DEGRADE-003 | Remote Control Fallback | - | ✅ degraded-operation.yaml |
+| REQ-DEGRADE-004 | Layer Transition Logging | - | ✅ degraded-operation.yaml |
+| REQ-DEGRADE-005 | Safe State Documentation | - | ✅ degraded-operation.yaml |
+| REQ-DEGRADE-006 | Delegate Agent Fallback | - | ✅ degraded-operation.yaml |
 
 ### Insulin Model (5)
 
@@ -230,7 +230,7 @@
 |----------|------|---------|----------|
 | Algorithm Core | 4 | 0 | 0% |
 | Carb Absorption | 6 | 0 | 0% |
-| Degraded Operation | 6 | 0 | 0% |
+| Degraded Operation | 6 | 6 | 100% ✅ |
 | Insulin Model | 5 | 0 | 0% |
 | Proposed API | 4 | 0 | 0% |
 | Profile Schema | 7 | 0 | 0% |
@@ -240,7 +240,7 @@
 | Dosing Mechanism | 3 | 0 | 0% |
 | Target Range | 3 | 0 | 0% |
 | Trio oref | 3 | 0 | 0% |
-| **Total** | **56** | **0** | **0%** |
+| **Total** | **56** | **6** | **11%** |
 
 ### Data Quality Issues
 
@@ -254,10 +254,8 @@
 
 ### High Priority (Safety-Critical)
 
-1. **Create degradation assertions** (REQ-DEGRADE-001-006)
-   - CGM loss handling
-   - Pump timeout behavior
-   - Layer transition logging
+1. ~~**Create degradation assertions** (REQ-DEGRADE-001-006)~~ ✅ cycle 100
+   - 25 assertions covering CGM loss, pump timeout, remote fallback, logging, docs, agent fallback
    - Deliverable: `conformance/assertions/degraded-operation.yaml`
 
 2. **Create safety limit assertions** (REQ-ALG-003, REQ-INS-002)
@@ -302,8 +300,8 @@
 
 | File | REQs Covered | Gaps Covered |
 |------|--------------|--------------|
-| (none yet) | 0 | 0 |
-| **Total** | **0** | **0** |
+| `degraded-operation.yaml` | 6 (REQ-DEGRADE-001-006) | 2 (GAP-ALG-011, GAP-ALG-014) |
+| **Total** | **6** | **2** |
 
 ---
 
