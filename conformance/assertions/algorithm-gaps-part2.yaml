@@ -1,0 +1,247 @@
+# Algorithm GAP Coverage Part 2
+# Covers remaining uncovered GAPs to achieve 100% GAP coverage
+# Created: 2026-02-01 (cycle 116)
+
+scenario: algorithm-gap-coverage-part2
+version: "1.0"
+requirements:
+  - REQ-CARB-001
+  - REQ-CARB-002
+  - REQ-CARB-006
+  - REQ-INS-002
+  - REQ-PROF-001
+  - REQ-PROF-002
+  - REQ-PROF-003
+  - REQ-PROF-004
+  - REQ-PROF-005
+  - REQ-PROF-006
+  - REQ-PR-002
+
+related_gaps:
+  - GAP-ALG-012   # DIA Minimum Enforcement Differences
+  - GAP-CARB-001  # Incompatible COB Semantics
+  - GAP-CARB-002  # No Standard Carb Absorption Data Format
+  - GAP-CARB-003  # UAM Detection Variance
+  - GAP-CARB-004  # min_5m_carbimpact Variance
+  - GAP-CARB-005  # COB Maximum Limits Differ
+  - GAP-INS-002   # No Standardized Multi-Insulin Representation
+  - GAP-INS-004   # xDrip+ Linear Trapezoid Incompatible
+  - GAP-INSULIN-001  # Multi-Insulin API Not Standardized
+  - GAP-PROF-003  # Override Presets Missing
+  - GAP-PROF-005  # Insulin Model Mapping Missing
+  - GAP-PROF-006  # Basal Time Format Needs Conversion
+  - GAP-PROF-008  # Basal Rate Precision Loss
+  - GAP-OREF-001  # No oref0 Package Published to npm
+  - GAP-OREF-002  # openaps Python Package Unmaintained
+  - GAP-OREF-003  # oref0 vs oref1 Distinction Unclear
+
+assertions:
+
+  # GAP-ALG-012: DIA Minimum Enforcement Differences
+  - id: ALG-GAP2-001
+    description: Document DIA minimum enforcement differences across controllers
+    type: documentation
+    requirement: REQ-INS-002
+    gap: GAP-ALG-012
+    target: docs/10-domain/aid-algorithms-deep-dive.md
+    expected: DIA minimum values documented (Loop 5h, AAPS 5h, Trio 5h, oref0 3h)
+    verification: grep -q "DIA.*minimum" docs/10-domain/aid-algorithms-deep-dive.md
+    status: proposed
+
+  - id: ALG-GAP2-002
+    description: Validate DIA minimum enforcement in each controller
+    type: config
+    requirement: REQ-INS-002
+    gap: GAP-ALG-012
+    target: Controller DIA validation logic
+    expected: Controllers enforce minimum DIA appropriate to insulin model
+    verification: Review controller source for DIA validation
+    status: proposed
+
+  # GAP-CARB-001: Incompatible COB Semantics
+  - id: ALG-GAP2-003
+    description: Document COB semantic differences between controllers
+    type: documentation
+    requirement: REQ-CARB-001
+    gap: GAP-CARB-001
+    target: mapping/cross-project/terminology-matrix.md
+    expected: COB definition differences documented (Loop dynamic vs oref linear)
+    verification: grep -q "COB.*semantic" mapping/cross-project/terminology-matrix.md
+    status: proposed
+
+  - id: ALG-GAP2-004
+    description: Define standard COB representation for interoperability
+    type: schema
+    requirement: REQ-CARB-001
+    gap: GAP-CARB-001
+    target: specs/openapi/aid-devicestatus-2025.yaml
+    expected: COB field includes absorption model metadata
+    verification: Check x-aid-controller annotations in spec
+    status: proposed
+
+  # GAP-CARB-002: No Standard Carb Absorption Data Format
+  - id: ALG-GAP2-005
+    description: Define carb absorption curve data format
+    type: schema
+    gap: GAP-CARB-002
+    target: specs/openapi/aid-devicestatus-2025.yaml
+    expected: carbAbsorption array schema defined with timestamp+rate pairs
+    verification: Check openapi spec for carbAbsorption definition
+    status: proposed
+
+  # GAP-CARB-003: UAM Detection Variance
+  - id: ALG-GAP2-006
+    description: Document UAM detection algorithm differences
+    type: documentation
+    requirement: REQ-CARB-002
+    gap: GAP-CARB-003
+    target: docs/10-domain/aid-algorithms-deep-dive.md
+    expected: UAM detection variance between oref1 and AAPS documented
+    verification: grep -q "UAM.*detection" docs/10-domain/aid-algorithms-deep-dive.md
+    status: proposed
+
+  # GAP-CARB-004: min_5m_carbimpact Variance
+  - id: ALG-GAP2-007
+    description: Document min_5m_carbimpact default differences
+    type: documentation
+    requirement: REQ-CARB-002
+    gap: GAP-CARB-004
+    target: docs/10-domain/aid-algorithms-deep-dive.md
+    expected: min_5m_carbimpact defaults documented (oref0 8, AAPS 3-8)
+    verification: grep -q "min_5m_carbimpact" docs/10-domain/aid-algorithms-deep-dive.md
+    status: proposed
+
+  # GAP-CARB-005: COB Maximum Limits Differ
+  - id: ALG-GAP2-008
+    description: Document COB maximum limit differences
+    type: documentation
+    requirement: REQ-CARB-006
+    gap: GAP-CARB-005
+    target: docs/10-domain/aid-algorithms-deep-dive.md
+    expected: COB max limits documented per controller
+    verification: grep -q "COB.*max\|maximum.*carb" docs/10-domain/aid-algorithms-deep-dive.md
+    status: proposed
+
+  # GAP-INS-002: No Standardized Multi-Insulin Representation
+  - id: ALG-GAP2-009
+    description: Define multi-insulin representation schema
+    type: schema
+    gap: GAP-INS-002
+    target: specs/openapi/aid-profile-2025.yaml
+    expected: insulinTypes array with model parameters per insulin
+    verification: Check profile spec for multi-insulin support
+    status: proposed
+
+  # GAP-INS-004: xDrip+ Linear Trapezoid Incompatible
+  - id: ALG-GAP2-010
+    description: Document xDrip+ linear trapezoid IOB model differences
+    type: documentation
+    gap: GAP-INS-004
+    target: docs/10-domain/aid-algorithms-deep-dive.md
+    expected: xDrip+ trapezoid model incompatibility with exponential models documented
+    verification: grep -q "trapezoid\|xDrip.*IOB" docs/10-domain/aid-algorithms-deep-dive.md
+    status: proposed
+
+  # GAP-INSULIN-001: Multi-Insulin API Not Standardized
+  - id: ALG-GAP2-011
+    description: Define multi-insulin API endpoints
+    type: schema
+    requirement: REQ-PR-002
+    gap: GAP-INSULIN-001
+    target: specs/openapi/aid-profile-2025.yaml
+    expected: API supports multiple concurrent insulin types
+    verification: Check x-aid-gap annotations for multi-insulin
+    status: proposed
+
+  # GAP-PROF-003: Override Presets Missing
+  - id: ALG-GAP2-012
+    description: Define override preset schema in profile spec
+    type: schema
+    requirement: REQ-PROF-003
+    gap: GAP-PROF-003
+    target: specs/openapi/aid-profile-2025.yaml
+    expected: overridePresets array with name, targets, duration, insulinNeedsScaleFactor
+    verification: grep -q "overridePresets" specs/openapi/aid-profile-2025.yaml
+    status: proposed
+
+  # GAP-PROF-005: Insulin Model Mapping Missing
+  - id: ALG-GAP2-013
+    description: Define insulin model mapping between controllers
+    type: documentation
+    requirement: REQ-PROF-004
+    gap: GAP-PROF-005
+    target: mapping/cross-project/terminology-matrix.md
+    expected: Insulin model name mapping (Loop ExponentialRapid → oref0 rapid-acting)
+    verification: grep -q "insulin.*model.*map" mapping/cross-project/terminology-matrix.md
+    status: proposed
+
+  # GAP-PROF-006: Basal Time Format Needs Conversion
+  - id: ALG-GAP2-014
+    description: Document basal schedule time format differences
+    type: documentation
+    requirement: REQ-PROF-005
+    gap: GAP-PROF-006
+    target: docs/10-domain/aid-algorithms-deep-dive.md
+    expected: Time format differences documented (Loop minutes, Nightscout HH:MM:SS)
+    verification: grep -q "basal.*time.*format" docs/10-domain/aid-algorithms-deep-dive.md
+    status: proposed
+
+  - id: ALG-GAP2-015
+    description: Provide basal time format conversion functions
+    type: behavior
+    requirement: REQ-PROF-005
+    gap: GAP-PROF-006
+    target: SDK implementations
+    expected: Helper functions convert between time formats
+    verification: Check SDK code for time conversion utilities
+    status: proposed
+
+  # GAP-PROF-008: Basal Rate Precision Loss
+  - id: ALG-GAP2-016
+    description: Document basal rate precision requirements
+    type: documentation
+    requirement: REQ-PROF-006
+    gap: GAP-PROF-008
+    target: docs/10-domain/aid-algorithms-deep-dive.md
+    expected: Precision loss risks documented (3 vs 4 decimal places)
+    verification: grep -q "basal.*precision" docs/10-domain/aid-algorithms-deep-dive.md
+    status: proposed
+
+  # GAP-OREF-001: No oref0 Package Published to npm
+  - id: ALG-GAP2-017
+    description: Document oref0 npm package availability gap
+    type: documentation
+    gap: GAP-OREF-001
+    target: docs/10-domain/aid-algorithms-deep-dive.md
+    expected: npm package gap documented with workaround (git submodule)
+    verification: grep -q "npm.*oref\|package.*oref" docs/10-domain/aid-algorithms-deep-dive.md
+    status: proposed
+
+  # GAP-OREF-002: openaps Python Package Unmaintained
+  - id: ALG-GAP2-018
+    description: Document openaps Python package maintenance status
+    type: documentation
+    gap: GAP-OREF-002
+    target: docs/10-domain/aid-algorithms-deep-dive.md
+    expected: openaps package status documented (last update, alternatives)
+    verification: grep -q "openaps.*python\|openaps.*maintain" docs/10-domain/aid-algorithms-deep-dive.md
+    status: proposed
+
+  # GAP-OREF-003: oref0 vs oref1 Distinction Unclear
+  - id: ALG-GAP2-019
+    description: Document oref0 vs oref1 algorithm distinctions
+    type: documentation
+    gap: GAP-OREF-003
+    target: docs/10-domain/aid-algorithms-deep-dive.md
+    expected: Clear distinction between oref0 and oref1 features (SMB, UAM)
+    verification: grep -q "oref0.*oref1\|oref1.*feature" docs/10-domain/aid-algorithms-deep-dive.md
+    status: proposed
+
+  - id: ALG-GAP2-020
+    description: Define oref version identifier in devicestatus
+    type: schema
+    gap: GAP-OREF-003
+    target: specs/openapi/aid-devicestatus-2025.yaml
+    expected: orefVersion field distinguishes oref0 from oref1
+    verification: Check devicestatus spec for oref version field
+    status: proposed
