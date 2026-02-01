@@ -27,6 +27,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Cross-Controller Dedup Assertions (cycle 103) | P2 | ✅ Complete - 16 assertions, GAP-SYNC-029/030 covered | 2026-02-01 |
 | Insulin Model Assertions (cycle 102) | P2 | ✅ Complete - 18 assertions, 3 REQs covered, algorithm 16%→21% | 2026-02-01 |
 | Safety Limit Assertions (cycle 101) | P2 | ✅ Complete - 20 assertions, 3 REQs covered, algorithm 11%→16% | 2026-02-01 |
 | Degraded Operation Assertions (cycle 100) | P2 | ✅ Complete - 24 assertions, 6 REQs covered, algorithm 0%→11% | 2026-02-01 |

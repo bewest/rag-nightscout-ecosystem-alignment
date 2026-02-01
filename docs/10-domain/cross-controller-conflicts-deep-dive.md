@@ -271,9 +271,22 @@ then: No duplicate treatments
 
 ---
 
+## Conformance Assertions
+
+See [`conformance/assertions/cross-controller-dedup.yaml`](../../conformance/assertions/cross-controller-dedup.yaml) for 16 test assertions covering:
+
+| Category | Assertions | Gaps Addressed |
+|----------|------------|----------------|
+| Treatment deduplication | 6 | GAP-SYNC-029 |
+| Controller conflict detection | 7 | GAP-SYNC-030 |
+| Current behavior documentation | 3 | Baseline |
+
+---
+
 ## Cross-References
 
 - [Sync & Identity Gaps](../../traceability/sync-identity-gaps.md)
 - [Treatment Sync Scenarios](../../conformance/scenarios/treatment-sync.yaml)
+- [Cross-Controller Dedup Assertions](../../conformance/assertions/cross-controller-dedup.yaml)
 - [DeviceStatus Deep Dive](devicestatus-deep-dive.md)
 - [Gaps Index](../../traceability/gaps.md)

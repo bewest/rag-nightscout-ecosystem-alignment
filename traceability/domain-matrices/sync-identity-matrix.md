@@ -13,11 +13,11 @@
 |--------|-------|
 | Requirements (REQ-SYNC-*) | 32 |
 | Gaps (GAP-SYNC-*) | 25 |
-| Assertions with coverage | 30 REQs (94%), 9 GAPs |
+| Assertions with coverage | 30 REQs (94%), 11 GAPs |
 | Uncovered REQs | 2 |
-| Uncovered GAPs | 16 |
+| Uncovered GAPs | 14 |
 
-**Status**: Sync-identity domain at 94% REQ coverage. 2 remaining REQs are documentation-only.
+**Status**: Sync-identity domain at 94% REQ coverage. GAP-SYNC-029/030 now have dedicated assertions.
 
 ## Requirements Coverage Matrix
 
@@ -37,7 +37,7 @@
 | REQ-SYNC-045 | History Endpoint Modified-After Filter | sync-deduplication.yaml | history-returns-modified-after |
 | REQ-SYNC-046 | History Endpoint Includes Deleted | sync-deduplication.yaml | history-includes-soft-deleted |
 | REQ-SYNC-047 | Query by Client Identifier | sync-deduplication.yaml | query-by-identifier |
-| REQ-SYNC-048 | Cross-Controller Coexistence | sync-deduplication.yaml | cross-controller-coexistence |
+| REQ-SYNC-048 | Cross-Controller Coexistence | sync-deduplication.yaml, cross-controller-dedup.yaml | cross-controller-coexistence + 16 assertions |
 | REQ-SYNC-049 | srvModified Updated on Change | sync-deduplication.yaml | srvmodified-updated-on-change |
 | REQ-SYNC-050 | srvCreated Set on Creation | sync-deduplication.yaml | srvcreated-set-on-create |
 
@@ -90,8 +90,8 @@
 | GAP-SYNC-006 | Loop uses Nightscout v1 API only | High | Major migration |
 | GAP-SYNC-007 | syncIdentifier format not standardized | High | Cross-project |
 | GAP-SYNC-010 | No Sync Status Feedback | Medium | API enhancement |
-| GAP-SYNC-029 | No Cross-Controller Deduplication | High | Core interop |
-| GAP-SYNC-030 | No Controller Conflict Warning | Medium | UX enhancement |
+| GAP-SYNC-029 | No Cross-Controller Deduplication | High | ✅ cross-controller-dedup.yaml |
+| GAP-SYNC-030 | No Controller Conflict Warning | Medium | ✅ cross-controller-dedup.yaml |
 | GAP-SYNC-031 | Profile Sync Ambiguity | Medium | - |
 | GAP-SYNC-032 | Loop/Trio Missing identifier Field | High | V3 migration |
 | GAP-SYNC-033 | xDrip+ UUID Not Sent as identifier | Medium | - |
@@ -131,9 +131,9 @@
    - Need: Loop/Trio V3 API integration testing
    - Prerequisite: Ready Queue #1 (Loop Swift runner)
 
-3. **GAP-SYNC-029**: Cross-controller deduplication
-   - Need: Multi-controller conflict scenario assertions
-   - Related: GAP-SYNC-030 (conflict warning)
+3. ~~**GAP-SYNC-029**: Cross-controller deduplication~~ ✅ cycle 103
+   - Deliverable: `conformance/assertions/cross-controller-dedup.yaml` (16 assertions)
+   - Covers: GAP-SYNC-029 (dedup), GAP-SYNC-030 (conflict warning)
 
 ### Medium Priority (Nocturne Alignment)
 

@@ -1,0 +1,277 @@
+# Cross-Controller Deduplication Assertions
+# Tests multi-controller conflict scenarios and deduplication behavior
+# Addresses GAP-SYNC-029 (no cross-controller dedup) and GAP-SYNC-030 (no conflict warning)
+
+scenario: cross-controller-dedup
+version: 1
+
+requirements:
+  - REQ-SYNC-048  # Cross-Controller Coexistence
+
+related_gaps:
+  - GAP-SYNC-029  # No cross-controller deduplication
+  - GAP-SYNC-030  # No controller conflict warning
+
+assertions:
+  # ============================================
+  # Treatment Deduplication (GAP-SYNC-029)
+  # ============================================
+
+  - id: duplicate-treatment-detection
+    description: "Server SHOULD detect identical treatments from different controllers"
+    type: behavior
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-029
+    target: treatments
+    precondition: |
+      Treatment A: 5U bolus at 12:00 from Loop (enteredBy: "Loop")
+      Treatment B: 5U bolus at 12:00 from Trio (enteredBy: "Trio")
+    expected: "Server detects potential duplicate based on amount, type, and timestamp"
+    verification:
+      - POST treatment A from Loop
+      - POST treatment B from Trio (same amount, same time ±2 min)
+      - Server returns warning or dedup hint
+    status: proposed  # Current behavior: both stored without warning
+
+  - id: fuzzy-time-window-dedup
+    description: "Treatments within 2-minute window considered potential duplicates"
+    type: behavior
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-029
+    target: treatments.created
+    precondition: |
+      Treatment A: 10g carbs at 12:00:00 from AAPS
+      Treatment B: 10g carbs at 12:01:30 from Loop
+    expected: "Treatments flagged as potential duplicates (within 2-min window)"
+    verification:
+      - POST carb entry from AAPS at T
+      - POST identical carb entry from Loop at T+90s
+      - Query treatments, expect duplicate warning or merge suggestion
+    status: proposed
+
+  - id: amount-tolerance-matching
+    description: "Treatments with ±5% amount difference considered potential duplicates"
+    type: behavior
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-029
+    target: treatments.insulin
+    precondition: |
+      Treatment A: 5.0U bolus from Loop
+      Treatment B: 5.1U bolus from Trio (2% difference, within tolerance)
+    expected: "Treatments flagged as potential duplicates (amount within tolerance)"
+    verification:
+      - POST 5.0U bolus from Loop at T
+      - POST 5.1U bolus from Trio at T (2% diff)
+      - Server detects as potential duplicate
+    status: proposed
+
+  - id: source-controller-field
+    description: "Treatment SHOULD include sourceController field for provenance"
+    type: schema
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-029
+    target: treatment.sourceController
+    expected: |
+      {
+        "sourceController": "string",
+        "description": "Identifier of the AID controller that created this treatment"
+      }
+    verification:
+      - POST treatment with sourceController: "com.loopkit.Loop"
+      - GET treatment, verify sourceController preserved
+    status: proposed
+
+  - id: distinct-identifier-preserved
+    description: "Distinct treatments from different controllers both stored"
+    type: behavior
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-029
+    target: treatments
+    precondition: |
+      Treatment A: 3U bolus at 12:00 from Loop
+      Treatment B: 5U bolus at 12:00 from Trio (different amount)
+    expected: "Both treatments stored - different amounts means distinct events"
+    verification:
+      - POST 3U bolus from Loop at T
+      - POST 5U bolus from Trio at T
+      - Query treatments, expect count = 2 (distinct events)
+    status: expected
+
+  - id: enteredby-distinguishes-controllers
+    description: "enteredBy field used to distinguish controller sources"
+    type: behavior
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-029
+    target: treatment.enteredBy
+    expected: |
+      Loop: "Loop", "Loop://com.loopkit.Loop"
+      Trio: "Trio", "Trio://Trio"
+      AAPS: "AAPS", "AndroidAPS"
+    verification:
+      - Query treatments, group by enteredBy
+      - Verify controller-specific prefixes present
+    status: expected
+
+  # ============================================
+  # Controller Conflict Warning (GAP-SYNC-030)
+  # ============================================
+
+  - id: multi-controller-detection
+    description: "Server SHOULD detect multiple active controllers uploading deviceStatus"
+    type: behavior
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-030
+    target: devicestatus
+    precondition: |
+      DeviceStatus A: from Loop at 12:00
+      DeviceStatus B: from AAPS at 12:02
+    expected: "Server detects two active controllers within 5-minute window"
+    verification:
+      - POST deviceStatus with loop plugin data at T
+      - POST deviceStatus with openaps plugin data at T+2min
+      - Server sets multi-controller warning flag
+    status: proposed
+
+  - id: controller-conflict-warning-response
+    description: "API response SHOULD include warning when multiple controllers detected"
+    type: behavior
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-030
+    target: api.response.warnings
+    expected: |
+      {
+        "warnings": [{
+          "code": "MULTI_CONTROLLER_ACTIVE",
+          "message": "Multiple AID controllers detected: Loop, AAPS",
+          "controllers": ["Loop", "AAPS"],
+          "lastSeen": {"Loop": "2026-01-01T12:00:00Z", "AAPS": "2026-01-01T12:02:00Z"}
+        }]
+      }
+    verification:
+      - GET /api/v1/devicestatus?count=2
+      - Response includes multi-controller warning
+    status: proposed
+
+  - id: active-controller-identification
+    description: "Most recent controller identified as active/primary"
+    type: behavior
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-030
+    target: devicestatus.activeController
+    expected: "Controller with most recent deviceStatus upload identified as active"
+    verification:
+      - POST deviceStatus from Loop at T
+      - POST deviceStatus from AAPS at T+1min
+      - Query active controller, expect AAPS (most recent)
+    status: proposed
+
+  - id: controller-inactivity-timeout
+    description: "Controller considered inactive after 15 minutes without deviceStatus"
+    type: behavior
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-030
+    target: devicestatus.controllerTimeout
+    expected: "Controller marked inactive after 15 min without upload"
+    verification:
+      - POST deviceStatus from Loop at T
+      - Wait 16 minutes (simulated)
+      - Query active controllers, expect empty or stale flag
+    status: proposed
+
+  - id: x-controller-header
+    description: "API requests SHOULD include x-controller-id header for identification"
+    type: schema
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-030
+    target: api.headers
+    expected: |
+      x-controller-id: "com.loopkit.Loop/3.4.1"
+      Format: "{bundle-id}/{version}"
+    verification:
+      - POST treatment with header x-controller-id
+      - Server logs/stores controller identification
+    status: proposed
+
+  - id: ui-active-controller-pill
+    description: "Nightscout UI SHOULD display active controller in pill bar"
+    type: ui
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-030
+    target: nightscout.pills
+    expected: "Pill shows active controller: 'Loop' or 'AAPS' or 'Trio'"
+    verification:
+      - Observe pill bar after deviceStatus upload
+      - Verify controller name displayed
+    status: proposed
+
+  - id: simultaneous-loop-warning
+    description: "Warning when Loop and Trio both active (dangerous scenario)"
+    type: safety
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-030
+    target: devicestatus
+    precondition: "Loop and Trio both uploading within 5-minute window"
+    expected: "CRITICAL warning: Two iOS closed-loop systems detected"
+    verification:
+      - POST deviceStatus with loop plugin from Loop
+      - POST deviceStatus with loop plugin from Trio
+      - Server issues critical safety warning
+    status: proposed
+
+  # ============================================
+  # Existing Behavior Verification
+  # ============================================
+
+  - id: current-behavior-no-dedup
+    description: "Current: identical treatments from different controllers both stored"
+    type: behavior
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-029
+    target: treatments
+    expected: "Both treatments stored (current behavior, no dedup)"
+    verification:
+      - POST 5U bolus from Loop at T
+      - POST 5U bolus from Trio at T
+      - Query treatments, expect count = 2 (both stored)
+    status: documented  # This is the current behavior
+
+  - id: current-behavior-no-warning
+    description: "Current: no warning when multiple controllers active"
+    type: behavior
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-030
+    target: devicestatus
+    expected: "No warning issued (current behavior)"
+    verification:
+      - POST deviceStatus from Loop
+      - POST deviceStatus from AAPS within 5 min
+      - Verify no warning in response
+    status: documented  # This is the current behavior
+
+  - id: identifier-based-dedup-only
+    description: "Current: deduplication only on identifier/NSCLIENT_ID match"
+    type: behavior
+    requirement: REQ-SYNC-048
+    gap: GAP-SYNC-029
+    target: treatments.identifier
+    expected: "Duplicate detected only if identifier field matches exactly"
+    verification:
+      - POST treatment with identifier: "abc123" from Loop
+      - POST treatment with identifier: "abc123" from AAPS
+      - Expect upsert (update, not insert)
+    status: expected
+
+# ============================================
+# Metadata
+# ============================================
+
+metadata:
+  created: 2026-02-01
+  source: sync-identity-matrix.md action item #3
+  impact: Multi-controller coexistence safety
+  status: |
+    18 assertions covering:
+    - Treatment deduplication scenarios (6)
+    - Controller conflict detection (7)
+    - Current behavior documentation (3)
+    - Proposed improvements (12)

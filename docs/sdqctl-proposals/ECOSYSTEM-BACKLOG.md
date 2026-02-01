@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 102) | **Open Items**: 5  
+> **Last Groomed**: 2026-02-01 (cycle 103) | **Open Items**: 4  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -58,19 +58,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** sync-identity.md #19
 **Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
 
-### 5. [P2] Cross-controller deduplication assertions
-**Type:** Conformance | **Effort:** Medium
-**Focus:** Multi-controller conflict scenario assertions
-**Source:** sync-identity-matrix.md action items (GAP-SYNC-029, GAP-SYNC-030)
-**Deliverable:** `conformance/assertions/cross-controller-dedup.yaml`
-**Impact:** Address multi-controller coexistence gaps
-
 ---
 
 ## Recently Completed (2026-02-01)
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Cross-Controller Dedup Assertions** | `conformance/assertions/cross-controller-dedup.yaml` | 16 assertions, GAP-SYNC-029/030 covered |
 | **🎉 Insulin Model Assertions** | `conformance/assertions/insulin-model.yaml` | 18 assertions, 3 REQs, Insulin Model 100% COMPLETE |
 | **Safety Limit Assertions** | `conformance/assertions/safety-limits.yaml` | 20 assertions, 3 REQs, max IOB/DIA/peak covered |
 | **Degraded Operation Assertions** | `conformance/assertions/degraded-operation.yaml` | 24 assertions, 6 REQs, safety-critical fallback covered |

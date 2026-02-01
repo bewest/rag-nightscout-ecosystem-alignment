@@ -13,6 +13,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Cross-Controller Deduplication Assertions (2026-02-01)
+
+Created conformance assertions for multi-controller conflict scenarios.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 1 (REQ-SYNC-048) |
+| Gaps addressed | 2 (GAP-SYNC-029, GAP-SYNC-030) |
+| Assertions created | 16 |
+
+**Deliverable**: `conformance/assertions/cross-controller-dedup.yaml`
+
+**Coverage by Topic**:
+- Treatment deduplication scenarios: 6 assertions
+- Controller conflict detection: 7 assertions
+- Current behavior documentation: 3 assertions
+
+**Impact**: Addresses multi-controller coexistence safety concerns
+
+---
+
 ### Insulin Model Assertions (2026-02-01)
 
 Created conformance assertions for insulin model consistency across AID systems.
