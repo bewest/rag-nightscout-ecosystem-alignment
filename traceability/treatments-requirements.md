@@ -3,6 +3,8 @@
 Domain-specific requirements extracted from requirements.md.
 See [requirements.md](requirements.md) for the index.
 
+> **Traceability Matrix**: [`domain-matrices/treatments-matrix.md`](domain-matrices/treatments-matrix.md) - REQ↔GAP↔Assertion coverage (20% assertion coverage)
+
 ---
 
 ### REQ-ALARM-001: Configurable Glucose Thresholds

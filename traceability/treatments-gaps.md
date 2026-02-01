@@ -3,6 +3,8 @@
 Domain-specific gaps extracted from gaps.md.
 See [gaps.md](gaps.md) for the index.
 
+> **Traceability Matrix**: [`domain-matrices/treatments-matrix.md`](domain-matrices/treatments-matrix.md) - REQ↔GAP↔Assertion coverage
+
 ---
 
 ### GAP-OVERRIDE-001: No unified override/profile-switch model

@@ -2,6 +2,8 @@
 
 This document provides comprehensive field-by-field mapping of treatment events across AID systems (Loop, AAPS, Trio) and data uploaders (xDrip+) to the Nightscout `treatments` collection.
 
+**Traceability Matrix**: [`traceability/domain-matrices/treatments-matrix.md`](../../traceability/domain-matrices/treatments-matrix.md) — 35 REQs, 9 GAPs, 20% assertion coverage
+
 ---
 
 ## Overview
