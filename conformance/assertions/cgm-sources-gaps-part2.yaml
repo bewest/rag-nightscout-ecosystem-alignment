@@ -1,0 +1,290 @@
+# CGM Sources GAP Coverage Part 2
+# Covers remaining Node.js, Loop Follow, Session, and xDrip GAPs
+# Created: 2026-02-01 (cycle 120)
+
+scenario: cgm-sources-gap-coverage-part2
+version: "1.0"
+requirements:
+  - REQ-BLE-004
+  - REQ-BRIDGE-001
+
+related_gaps:
+  - GAP-CGM-NODE-001  # Node.js 16+ EOL
+  - GAP-CGM-NODE-002  # Deprecated request npm
+  - GAP-CGM-NODE-003  # No CI/CD pipeline
+  - GAP-CGM-034       # Libre Trend Arrow Granularity
+  - GAP-LF-001        # Alarm Configuration Not Synced
+  - GAP-LF-002        # No Alarm History
+  - GAP-LF-003        # Prediction Data Unavailable for Trio
+  - GAP-LF-004        # No Multi-Caregiver Alarm Ack
+  - GAP-LF-005        # No Command Status Tracking
+  - GAP-LF-006        # No Command History
+  - GAP-LF-007        # TRC Return Notification
+  - GAP-LF-008        # Nightscout Remote Lacks OTP
+  - GAP-LF-009        # No Unified Command Abstraction
+  - GAP-SESSION-001   # Session Events Not Standardized
+  - GAP-SESSION-002   # Calibration State Not Exposed
+  - GAP-SESSION-003   # Pluggable Calibration Algorithms
+  - GAP-SESSION-004   # No Standard Sensor Session Schema
+  - GAP-SESSION-005   # Warm-up Period Not Uploaded
+  - GAP-SESSION-006   # DiaBLE No Session Upload
+  - GAP-SESSION-007   # Calibration State Not Synchronized
+  - GAP-XDRIP-001     # No Nightscout v3 API
+  - GAP-XDRIP-002     # Activity Data Schema
+  - GAP-XDRIP-003     # Device String Format
+  - GAP-XDRIPJS-001   # No G7 Support
+  - GAP-XDRIPJS-002   # Deprecated BLE Library
+
+assertions:
+
+  # GAP-CGM-NODE-001: Node.js 16+ EOL blocks upgrades
+  - id: CGM-GAP2-001
+    description: Document Node.js version upgrade path
+    type: documentation
+    gap: GAP-CGM-NODE-001
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: Node.js 16 EOL documented, upgrade to Node 20+ recommended
+    verification: grep -q "Node.js.*EOL\|Node.*20" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-CGM-NODE-002: Deprecated request npm package
+  - id: CGM-GAP2-002
+    description: Document request package deprecation
+    type: documentation
+    gap: GAP-CGM-NODE-002
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: request package deprecated, migration to fetch/axios documented
+    verification: grep -q "request.*deprecat\|axios\|fetch" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-CGM-NODE-003: No CI/CD pipeline
+  - id: CGM-GAP2-003
+    description: Document CI/CD pipeline gap
+    type: documentation
+    gap: GAP-CGM-NODE-003
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: Missing CI/CD documented as blocker for automated testing
+    verification: grep -q "CI/CD\|continuous integration" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-CGM-034: Libre Trend Arrow Granularity
+  - id: CGM-GAP2-004
+    description: Document Libre trend arrow granularity differences
+    type: documentation
+    requirement: REQ-BLE-004
+    gap: GAP-CGM-034
+    target: docs/10-domain/libre-protocol-deep-dive.md
+    expected: Libre trend arrows less granular than Dexcom (5 vs 7 levels)
+    verification: grep -q "trend.*arrow\|granularity" docs/10-domain/libre-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-LF-001: Alarm Configuration Not Synced
+  - id: CGM-GAP2-005
+    description: Document alarm configuration sync gap
+    type: documentation
+    gap: GAP-LF-001
+    target: docs/10-domain/follower-caregiver-feature-consolidation.md
+    expected: Alarm thresholds configured locally, not synced via Nightscout
+    verification: grep -q "alarm.*config\|threshold.*sync" docs/10-domain/follower-caregiver-feature-consolidation.md
+    status: proposed
+
+  # GAP-LF-002: No Alarm History
+  - id: CGM-GAP2-006
+    description: Document alarm history gap
+    type: documentation
+    gap: GAP-LF-002
+    target: docs/10-domain/follower-caregiver-feature-consolidation.md
+    expected: No alarm history or audit log in follower apps
+    verification: grep -q "alarm.*history\|audit" docs/10-domain/follower-caregiver-feature-consolidation.md
+    status: proposed
+
+  # GAP-LF-003: Prediction Data Unavailable for Trio
+  - id: CGM-GAP2-007
+    description: Document Trio prediction data gap in followers
+    type: documentation
+    gap: GAP-LF-003
+    target: docs/10-domain/follower-caregiver-feature-consolidation.md
+    expected: Trio prediction curves not exposed to follower apps
+    verification: grep -q "Trio.*predict\|prediction.*follow" docs/10-domain/follower-caregiver-feature-consolidation.md
+    status: proposed
+
+  # GAP-LF-004: No Multi-Caregiver Alarm Acknowledgment
+  - id: CGM-GAP2-008
+    description: Document multi-caregiver alarm ack gap
+    type: documentation
+    gap: GAP-LF-004
+    target: docs/10-domain/follower-caregiver-feature-consolidation.md
+    expected: No way for multiple caregivers to see who acknowledged alarm
+    verification: grep -q "multi.*caregiver\|acknowledge" docs/10-domain/follower-caregiver-feature-consolidation.md
+    status: proposed
+
+  # GAP-LF-005: No Command Status Tracking
+  - id: CGM-GAP2-009
+    description: Document command status tracking gap
+    type: documentation
+    gap: GAP-LF-005
+    target: docs/10-domain/follower-caregiver-feature-consolidation.md
+    expected: Remote commands lack status tracking (pending/executed/failed)
+    verification: grep -q "command.*status\|status.*track" docs/10-domain/follower-caregiver-feature-consolidation.md
+    status: proposed
+
+  # GAP-LF-006: No Command History
+  - id: CGM-GAP2-010
+    description: Document command history gap
+    type: documentation
+    gap: GAP-LF-006
+    target: docs/10-domain/follower-caregiver-feature-consolidation.md
+    expected: No remote command history or audit trail
+    verification: grep -q "command.*history" docs/10-domain/follower-caregiver-feature-consolidation.md
+    status: proposed
+
+  # GAP-LF-007: TRC Return Notification
+  - id: CGM-GAP2-011
+    description: Document TRC return notification gap
+    type: documentation
+    gap: GAP-LF-007
+    target: docs/10-domain/follower-caregiver-feature-consolidation.md
+    expected: Temporary Rate Change return notification not fully implemented
+    verification: grep -q "TRC\|temporary.*rate" docs/10-domain/follower-caregiver-feature-consolidation.md
+    status: proposed
+
+  # GAP-LF-008: Nightscout Remote Lacks OTP
+  - id: CGM-GAP2-012
+    description: Document OTP security gap
+    type: documentation
+    gap: GAP-LF-008
+    target: docs/10-domain/follower-caregiver-feature-consolidation.md
+    expected: Nightscout remote commands lack OTP/2FA security
+    verification: grep -q "OTP\|2FA\|two-factor" docs/10-domain/follower-caregiver-feature-consolidation.md
+    status: proposed
+
+  # GAP-LF-009: No Unified Command Abstraction
+  - id: CGM-GAP2-013
+    description: Document unified command abstraction gap
+    type: documentation
+    gap: GAP-LF-009
+    target: docs/10-domain/follower-caregiver-feature-consolidation.md
+    expected: Each controller has different remote command formats
+    verification: grep -q "unified.*command\|command.*abstraction" docs/10-domain/follower-caregiver-feature-consolidation.md
+    status: proposed
+
+  # GAP-SESSION-001: Session Events Not Standardized
+  - id: CGM-GAP2-014
+    description: Document session event standardization gap
+    type: documentation
+    gap: GAP-SESSION-001
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: Sensor session events (start, stop, expire) not standardized
+    verification: grep -q "session.*event\|session.*standard" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-SESSION-002: Calibration State Not Exposed
+  - id: CGM-GAP2-015
+    description: Document calibration state exposure gap
+    type: documentation
+    gap: GAP-SESSION-002
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: Calibration state not exposed in Nightscout entries
+    verification: grep -q "calibration.*state\|calibration.*expos" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-SESSION-003: Pluggable Calibration Algorithms
+  - id: CGM-GAP2-016
+    description: Document pluggable calibration gap
+    type: documentation
+    gap: GAP-SESSION-003
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: Only xDrip+ supports pluggable calibration algorithms
+    verification: grep -q "pluggable.*calibration\|calibration.*algorithm" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-SESSION-004: No Standard Sensor Session Schema
+  - id: CGM-GAP2-017
+    description: Document sensor session schema gap
+    type: schema
+    gap: GAP-SESSION-004
+    target: specs/openapi/aid-entries-2025.yaml
+    expected: No standard schema for sensor session lifecycle events
+    verification: Check entries spec for session event schema
+    status: proposed
+
+  # GAP-SESSION-005: Warm-up Period Not Uploaded
+  - id: CGM-GAP2-018
+    description: Document warm-up period upload gap
+    type: documentation
+    gap: GAP-SESSION-005
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: Sensor warm-up period not tracked in Nightscout
+    verification: grep -q "warm-up\|warmup" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-SESSION-006: DiaBLE No Session Upload
+  - id: CGM-GAP2-019
+    description: Document DiaBLE session upload gap
+    type: documentation
+    gap: GAP-SESSION-006
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: DiaBLE doesn't upload session lifecycle events
+    verification: grep -q "DiaBLE.*session" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-SESSION-007: Calibration State Not Synchronized
+  - id: CGM-GAP2-020
+    description: Document calibration state sync gap
+    type: documentation
+    gap: GAP-SESSION-007
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: Calibration state not synchronized across devices
+    verification: grep -q "calibration.*sync" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-XDRIP-001: No Nightscout v3 API Support
+  - id: CGM-GAP2-021
+    description: Document xDrip+ v3 API gap
+    type: documentation
+    requirement: REQ-BRIDGE-001
+    gap: GAP-XDRIP-001
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: xDrip+ uses v1 API only, no v3 support
+    verification: grep -q "xDrip.*v3\|v3.*API" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-XDRIP-002: Activity Data Schema
+  - id: CGM-GAP2-022
+    description: Document activity data schema gap
+    type: documentation
+    gap: GAP-XDRIP-002
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: xDrip+ activity data (steps, heart rate) not standardized
+    verification: grep -q "activity.*data\|steps\|heart rate" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-XDRIP-003: Device String Format
+  - id: CGM-GAP2-023
+    description: Document device string format gap
+    type: documentation
+    gap: GAP-XDRIP-003
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: xDrip+ device strings not machine-parseable
+    verification: grep -q "device.*string\|device.*format" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-XDRIPJS-001: No G7 Support
+  - id: CGM-GAP2-024
+    description: Document xdrip-js G7 support gap
+    type: documentation
+    gap: GAP-XDRIPJS-001
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: xdrip-js lacks Dexcom G7 support
+    verification: grep -q "xdrip-js.*G7" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-XDRIPJS-002: Deprecated BLE Library
+  - id: CGM-GAP2-025
+    description: Document noble library deprecation
+    type: documentation
+    gap: GAP-XDRIPJS-002
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: xdrip-js uses deprecated noble BLE library
+    verification: grep -q "noble.*deprecat\|BLE.*library" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
