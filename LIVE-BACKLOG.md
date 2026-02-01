@@ -27,6 +27,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Node.js 22 Upgrade Sequencing (cycle 78) | P3 | ✅ Complete - 9-step merge order, #8421 critical blocker | 2026-02-01 |
 | Requirements Coverage Analysis (cycle 77) | P3 | ✅ Complete - 289 REQs, 99 uncovered, 16 orphaned gaps | 2026-02-01 |
 | Gap Consolidation Audit (cycle 76) | P3 | ✅ Complete - 366 gaps, 10 duplicates found, counts updated | 2026-02-01 |
 | Domain Backlog Archival (cycle 75) | P2 | ✅ Complete - 115 items archived, Queue 5→7, 96% completion | 2026-02-01 |

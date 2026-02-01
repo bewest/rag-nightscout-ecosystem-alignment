@@ -12,6 +12,21 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Node.js 22 Upgrade Sequencing (2026-02-01)
+
+Consolidated PR merge order for Node.js 22 upgrade.
+
+| Milestone | Target |
+|-----------|--------|
+| Critical blocker | #8421 MongoDB 5x |
+| Bridge deprecations | 2 (share2nightscout, minimed) |
+| Merge order | 9 steps documented |
+| Deadline | Node 20 EOL 2026-04-30 |
+
+**Updated**: `docs/10-domain/pr-adoption-sequencing-proposal.md`
+
+---
+
 ### Requirements Coverage Analysis (2026-02-01)
 
 Analysis of REQ and GAP coverage across mappings, specs, and assertions.

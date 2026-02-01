@@ -318,5 +318,52 @@ Legend: ✅ Primary beneficiary | ⚪ Benefits | - No impact
 
 - [Priority PR Deep-Dives](priority-pr-deep-dives.md)
 - [Node.js LTS Upgrade Analysis](node-lts-upgrade-analysis.md)
+- [Bridge Deprecation Plan](bridge-deprecation-plan.md)
+
+---
+
+## Node.js 22 Upgrade Checklist (2026-02-01)
+
+### Critical Path Summary
+
+```
+#8421 MongoDB 5x (BLOCKER)
+    ↓
+#8360 Remove Lodash + #8348 Remove Moment
+    ↓
+Update engines field: "node": ">=20"
+    ↓
+Node 22 CI testing
+    ↓
+v15.1.0 Release (Target: March 2026)
+```
+
+### Per-Project Upgrade Status
+
+| Project | Current | Target | Status | Blocker |
+|---------|---------|--------|--------|---------|
+| cgm-remote-monitor | Node 16 | Node 22 | ⏳ Pending | #8421 MongoDB 5x |
+| nightscout-connect | Unknown | Node 22 | ⏳ Ready | None (engines field only) |
+| share2nightscout-bridge | Node 16 | N/A | 🗄️ Deprecate | nightscout-connect replacement |
+| minimed-connect | Unknown | N/A | 🗄️ Deprecate | nightscout-connect replacement |
+| nightscout-librelink-up | Unknown | Node 22 | ⏳ Testing | None |
+
+### Merge Order for Node.js 22
+
+| Order | PR/Action | Status | Target Date |
+|-------|-----------|--------|-------------|
+| 1 | #8419 Push Tests | Ready to merge | Feb 2026 |
+| 2 | #8083 Heart Rate | Ready to merge | Feb 2026 |
+| 3 | #8261 Multi-Insulin | Ready to merge | Feb 2026 |
+| 4 | **#8421 MongoDB 5x** | **CRITICAL** | Mar 2026 |
+| 5 | #8360 Remove Lodash | After #8421 | Mar 2026 |
+| 6 | #8348 Remove Moment | After #8421 | Mar 2026 |
+| 7 | Update engines field | Bundle with above | Mar 2026 |
+| 8 | Deprecate share2nightscout-bridge | Archive | Mar 2026 |
+| 9 | Deprecate minimed-connect | Archive | Mar 2026 |
+
+### Key Deadline
+
+**Node 20 EOL: 2026-04-30** - All upgrades must target Node 22 before this date.
 - [cgm-remote-monitor PR Analysis](cgm-remote-monitor-pr-analysis.md)
 - [Connector Gaps](../../traceability/connectors-gaps.md)

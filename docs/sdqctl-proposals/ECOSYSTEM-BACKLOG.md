@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 | **Open Items**: 4  
+> **Last Groomed**: 2026-02-01 | **Open Items**: 3  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -47,12 +47,6 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Prerequisites:** Phase 2 complete ✅ (no Write Result Translator needed)
 **Source:** mongodb-update-readiness-report.md Phase 3
 **Deliverable:** PR to cgm-remote-monitor with driver upgrade
-
-### 4. [P3] PR adoption: Node.js LTS upgrade sequencing
-**Type:** Analysis | **Effort:** Medium
-**Focus:** Sequence cgm-remote-monitor PRs for Node.js 22 upgrade
-**Source:** pr-adoption-sequencing-proposal.md, node-lts-upgrade-analysis.md
-**Deliverable:** Updated PR merge order recommendations
 
 ---
 
