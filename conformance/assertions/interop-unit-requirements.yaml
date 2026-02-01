@@ -1,0 +1,279 @@
+# Assertions for Interoperability and Unit Handling Requirements
+# Tests REQ-INTEROP-001-003 and REQ-UNIT-001-004
+# Completes treatments domain to 100% assertion coverage
+
+scenario: interop-unit-requirements
+version: 1
+
+# Link to requirements in traceability/treatments-requirements.md
+requirements:
+  - REQ-INTEROP-001  # Standard Timestamp Format
+  - REQ-INTEROP-002  # Standard eventType Values
+  - REQ-INTEROP-003  # Device Identifier Inclusion
+  - REQ-UNIT-001     # Duration Unit Documentation
+  - REQ-UNIT-002     # Duration Validation
+  - REQ-UNIT-003     # utcOffset Validation
+  - REQ-UNIT-004     # Preserve High-Precision Fields
+
+related_gaps:
+  - GAP-SYNC-009   # Timestamp format inconsistency
+  - GAP-TREAT-001  # Non-standard eventTypes
+  - GAP-TREAT-002  # Duration unit confusion
+  - GAP-SYNC-008   # Missing device identifiers
+  - GAP-TZ-004     # utcOffset unit confusion
+
+assertions:
+  # ============================================
+  # Standard Timestamp Format (REQ-INTEROP-001)
+  # ============================================
+
+  - id: string-timestamp-iso8601
+    description: "String timestamps use ISO 8601 format"
+    type: format
+    requirement: REQ-INTEROP-001
+    target: document.dateString
+    expected: "ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ)"
+    verification:
+      - Query treatment with string timestamp
+      - Verify dateString matches ISO 8601 pattern
+      - Timezone suffix present (Z or ±HH:mm)
+
+  - id: numeric-timestamp-unix-ms
+    description: "Numeric timestamps use Unix milliseconds"
+    type: format
+    requirement: REQ-INTEROP-001
+    target: document.date
+    expected: "Unix epoch milliseconds (13 digits circa 2020s)"
+    verification:
+      - Query treatment with numeric timestamp
+      - Verify date field is 13-digit number
+      - Value corresponds to valid date (not seconds)
+
+  - id: timestamp-consistency
+    description: "String and numeric timestamps are consistent"
+    type: transform
+    requirement: REQ-INTEROP-001
+    target: document.date and document.dateString
+    expected: "Both represent same instant"
+    verification:
+      - Query document with both fields
+      - Parse dateString as ISO 8601
+      - Compare to date field
+      - Difference < 1000ms (rounding tolerance)
+
+  # ============================================
+  # Standard eventType Values (REQ-INTEROP-002)
+  # ============================================
+
+  - id: eventtype-from-catalog
+    description: "eventType values match specification catalog"
+    type: validation
+    requirement: REQ-INTEROP-002
+    target: treatment.eventType
+    expected: "Value from standard eventType list"
+    verification:
+      - Query treatments collection
+      - Verify eventType in specification catalog
+      - Flag non-standard values
+
+  - id: unknown-eventtype-handled
+    description: "Unknown eventTypes are handled gracefully"
+    type: behavior
+    requirement: REQ-INTEROP-002
+    target: treatment.eventType.unknown
+    expected: "Accepted but flagged or logged"
+    verification:
+      - Upload treatment with non-standard eventType
+      - Verify upload succeeds (not rejected)
+      - Verify eventType preserved in storage
+      - Check for warning/log entry
+
+  - id: eventtype-case-sensitivity
+    description: "eventType matching is case-sensitive"
+    type: behavior
+    requirement: REQ-INTEROP-002
+    target: treatment.eventType.case
+    expected: "Exact case match required"
+    verification:
+      - Upload "Bolus" vs "bolus"
+      - Verify treated as distinct values
+      - Query by exact eventType works
+
+  # ============================================
+  # Device Identifier Inclusion (REQ-INTEROP-003)
+  # ============================================
+
+  - id: entries-have-device-field
+    description: "Entries include device identifier"
+    type: state
+    requirement: REQ-INTEROP-003
+    target: entry.device
+    expected: "device field present and non-empty"
+    verification:
+      - Query entries collection
+      - Verify device field present
+      - Field contains meaningful identifier
+
+  - id: devicestatus-has-device-field
+    description: "DeviceStatus includes device identifier"
+    type: state
+    requirement: REQ-INTEROP-003
+    target: devicestatus.device
+    expected: "device field present and non-empty"
+    verification:
+      - Query devicestatus collection
+      - Verify device field present
+      - Field identifies source system
+
+  - id: treatments-have-enteredby
+    description: "Treatments include enteredBy field"
+    type: state
+    requirement: REQ-INTEROP-003
+    target: treatment.enteredBy
+    expected: "enteredBy field present"
+    verification:
+      - Query treatments collection
+      - Verify enteredBy field present
+      - Field indicates creation source
+
+  # ============================================
+  # Duration Unit Documentation (REQ-UNIT-001)
+  # ============================================
+
+  - id: duration-unit-in-spec
+    description: "OpenAPI spec documents duration field units"
+    type: documentation
+    requirement: REQ-UNIT-001
+    target: spec.treatment.duration
+    expected: "Unit explicitly stated in description"
+    verification:
+      - Check OpenAPI spec for duration field
+      - Description includes unit (minutes)
+      - x-unit annotation present if available
+
+  - id: all-duration-fields-documented
+    description: "All duration-like fields have unit documentation"
+    type: documentation
+    requirement: REQ-UNIT-001
+    target: spec.*.duration
+    expected: "Every duration field has unit"
+    verification:
+      - Scan OpenAPI specs for *duration* fields
+      - Each has unit in description
+      - No ambiguous duration fields
+
+  # ============================================
+  # Duration Validation (REQ-UNIT-002)
+  # ============================================
+
+  - id: duration-max-validated
+    description: "Duration exceeding 1440 minutes is rejected or warned"
+    type: validation
+    requirement: REQ-UNIT-002
+    target: treatment.duration.max
+    expected: "Reject or warn for duration > 1440"
+    verification:
+      - Upload treatment with duration = 30000
+      - Verify rejection or warning response
+      - Error indicates invalid duration range
+
+  - id: duration-min-validated
+    description: "Zero or negative duration is rejected"
+    type: validation
+    requirement: REQ-UNIT-002
+    target: treatment.duration.min
+    expected: "Reject duration <= 0"
+    verification:
+      - Upload treatment with duration = 0
+      - Verify rejection
+      - Upload treatment with duration = -5
+      - Verify rejection
+
+  - id: valid-duration-accepted
+    description: "Valid duration values are accepted"
+    type: validation
+    requirement: REQ-UNIT-002
+    target: treatment.duration.valid
+    expected: "Accept 0 < duration <= 1440"
+    verification:
+      - Upload treatment with duration = 30
+      - Verify success
+      - Upload treatment with duration = 1440
+      - Verify success
+
+  # ============================================
+  # utcOffset Validation (REQ-UNIT-003)
+  # ============================================
+
+  - id: utcoffset-max-validated
+    description: "utcOffset exceeding ±840 minutes is rejected"
+    type: validation
+    requirement: REQ-UNIT-003
+    target: treatment.utcOffset.max
+    expected: "Reject |utcOffset| > 840"
+    verification:
+      - Upload treatment with utcOffset = 60000 (ms confusion)
+      - Verify rejection
+      - Error indicates invalid offset range
+
+  - id: utcoffset-valid-range-accepted
+    description: "Valid utcOffset values are accepted"
+    type: validation
+    requirement: REQ-UNIT-003
+    target: treatment.utcOffset.valid
+    expected: "Accept -840 <= utcOffset <= 840"
+    verification:
+      - Upload treatment with utcOffset = -480 (PST)
+      - Verify success
+      - Upload treatment with utcOffset = 330 (IST)
+      - Verify success
+      - Upload treatment with utcOffset = 0 (UTC)
+      - Verify success
+
+  - id: unusual-offset-logged
+    description: "Unusual but valid offsets are logged"
+    type: behavior
+    requirement: REQ-UNIT-003
+    target: treatment.utcOffset.warning
+    expected: "Log warning for offsets > 720"
+    verification:
+      - Upload treatment with utcOffset = 780 (UTC+13)
+      - Verify acceptance
+      - Check for warning log entry
+
+  # ============================================
+  # Preserve High-Precision Fields (REQ-UNIT-004)
+  # ============================================
+
+  - id: duration-in-ms-preserved
+    description: "durationInMilliseconds field preserved on round-trip"
+    type: roundtrip
+    requirement: REQ-UNIT-004
+    target: treatment.durationInMilliseconds
+    expected: "Field preserved unchanged"
+    verification:
+      - Upload treatment with durationInMilliseconds = 1800000
+      - Query treatment back
+      - Verify durationInMilliseconds = 1800000 exactly
+
+  - id: aaps-precision-fields-stored
+    description: "AAPS high-precision fields are stored"
+    type: state
+    requirement: REQ-UNIT-004
+    target: treatment.aaps.*
+    expected: "Custom AAPS fields preserved"
+    verification:
+      - Upload AAPS treatment with extra precision fields
+      - Query treatment
+      - All original fields present
+
+  - id: precision-not-truncated
+    description: "Numeric precision is not truncated"
+    type: roundtrip
+    requirement: REQ-UNIT-004
+    target: treatment.numeric.precision
+    expected: "Full precision maintained"
+    verification:
+      - Upload insulin = 0.025
+      - Query treatment
+      - Verify insulin = 0.025 (not 0.02 or 0.03)

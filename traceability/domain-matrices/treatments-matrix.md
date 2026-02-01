@@ -12,11 +12,15 @@
 |--------|-------|
 | Requirements | 35 |
 | Gaps | 9 |
-| REQs with assertion coverage | 28 (80%) |
-| Uncovered REQs | 7 (20%) |
+| REQs with assertion coverage | 35 (100%) |
+| Uncovered REQs | 0 (0%) |
 | Uncovered GAPs | 2 (22%) |
 
-**Status**: Treatment sync requirements (REQ-TREAT-040-046) covered by treatment-sync.yaml. Alarm requirements (REQ-ALARM-001-010) covered by alarm-requirements.yaml. Remote command requirements (REQ-REMOTE-001-011) covered by remote-command-requirements.yaml. Interop and Unit requirements need assertion coverage.
+**Status**: ✅ **COMPLETE** - All 35 requirements have assertion coverage:
+- Treatment sync (REQ-TREAT-040-046): treatment-sync.yaml
+- Alarm (REQ-ALARM-001-010): alarm-requirements.yaml
+- Remote command (REQ-REMOTE-001-011): remote-command-requirements.yaml
+- Interop/Unit (REQ-INTEROP-001-003, REQ-UNIT-001-004): interop-unit-requirements.yaml
 
 ---
 
@@ -53,22 +57,22 @@
 | REQ-REMOTE-010 | Credential Validation Before Storage | - | ✅ remote-command-requirements.yaml |
 | REQ-REMOTE-011 | Post-Bolus Recommendation Rejection | - | ✅ remote-command-requirements.yaml |
 
-### Interop Requirements (3)
+### Interop Requirements (3) - COVERED
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-INTEROP-001 | Standard Timestamp Format | - | ❌ None |
-| REQ-INTEROP-002 | Standard eventType Values | GAP-TREAT-003 | ❌ None |
-| REQ-INTEROP-003 | Device Identifier Inclusion | - | ❌ None |
+| REQ-INTEROP-001 | Standard Timestamp Format | GAP-SYNC-009 | ✅ interop-unit-requirements.yaml |
+| REQ-INTEROP-002 | Standard eventType Values | GAP-TREAT-001 | ✅ interop-unit-requirements.yaml |
+| REQ-INTEROP-003 | Device Identifier Inclusion | GAP-SYNC-008 | ✅ interop-unit-requirements.yaml |
 
-### Unit Requirements (4)
+### Unit Requirements (4) - COVERED
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-UNIT-001 | Duration Unit Documentation | GAP-TREAT-002 | ❌ None |
-| REQ-UNIT-002 | Duration Validation | GAP-TREAT-002 | ❌ None |
-| REQ-UNIT-003 | utcOffset Validation | - | ❌ None |
-| REQ-UNIT-004 | Preserve High-Precision Fields | - | ❌ None |
+| REQ-UNIT-001 | Duration Unit Documentation | GAP-TREAT-002 | ✅ interop-unit-requirements.yaml |
+| REQ-UNIT-002 | Duration Validation | GAP-TREAT-002 | ✅ interop-unit-requirements.yaml |
+| REQ-UNIT-003 | utcOffset Validation | GAP-TZ-004 | ✅ interop-unit-requirements.yaml |
+| REQ-UNIT-004 | Preserve High-Precision Fields | - | ✅ interop-unit-requirements.yaml |
 
 ### Treatment Sync Requirements (7) - COVERED
 

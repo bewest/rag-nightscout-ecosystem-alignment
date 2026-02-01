@@ -13,6 +13,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Interop/Unit Assertions (2026-02-01)
+
+Created conformance assertions for interoperability and unit handling requirements.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 7 (REQ-INTEROP-001-003, REQ-UNIT-001-004) |
+| Assertions created | 22 |
+| Coverage improvement | Treatments domain 80% → 100% ✅ |
+
+**Deliverable**: `conformance/assertions/interop-unit-requirements.yaml`
+
+**Coverage by Category**:
+- Timestamp format: 3 assertions
+- eventType handling: 3 assertions
+- Device identifiers: 3 assertions
+- Duration documentation: 2 assertions
+- Duration validation: 3 assertions
+- utcOffset validation: 3 assertions
+- High-precision fields: 3 assertions
+
+**Impact**: 🎉 Treatments domain 100% complete
+
+---
+
 ### Remote Command Assertions (2026-02-01)
 
 Created conformance assertions for remote command security requirements (security-critical).
