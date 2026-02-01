@@ -13,6 +13,23 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Stale Refs Cleanup (2026-02-01)
+
+Added disclaimers to 6 archive files documenting that code references use abbreviated paths for readability.
+
+| Archive File | Update |
+|--------------|--------|
+| progress-archive-2026-01-17-to-23.md | Added disclaimer note |
+| progress-archive-2026-01-30-batch1.md | Added header + disclaimer |
+| progress-archive-2026-01-30-batch2.md | Added header + disclaimer |
+| progress-archive-2026-01-30-batch3.md | Added disclaimer note |
+| progress-archive-2026-01-30-batch4.md | Added disclaimer note |
+| progress-archive-2026-02-01.md | Added disclaimer note |
+
+**Result**: 29 archive refs documented as historical; no removal needed
+
+---
+
 ### Sync-Identity Traceability Matrix (2026-02-01)
 
 Created comprehensive REQ↔GAP↔Assertion cross-reference matrix for sync-identity domain.

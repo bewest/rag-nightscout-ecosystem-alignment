@@ -3,6 +3,8 @@
 > **Archived**: 2026-01-29  
 > **Source**: `progress.md`  
 > **Current Progress**: [progress.md](../../progress.md)
+>
+> **Note**: Code references in archive files may use abbreviated paths (e.g., `.../`) for readability. These are historical snapshots and are not validated by `verify_refs.py`.
 
 ---
 

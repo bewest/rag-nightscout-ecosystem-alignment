@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 88) | **Open Items**: 6  
+> **Last Groomed**: 2026-02-01 (cycle 89) | **Open Items**: 5  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -65,18 +65,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** sync-identity.md #19
 **Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
 
-### 6. [P3] Archive or remove stale refs
-**Type:** Housekeeping | **Effort:** Low
-**Focus:** Clean up 29 broken refs in archive files
-**Source:** documentation-accuracy.md #35
-**Deliverable:** Fixed or removed stale references
-
 ---
 
 ## Recently Completed (2026-02-01)
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Stale Refs Cleanup** | 6 archive files updated | Added disclaimers for abbreviated paths; refs are historical |
 | **Sync-Identity Traceability Matrix** | `domain-matrices/sync-identity-matrix.md` | 32 REQs, 25 GAPs; 47% REQ coverage; 22 uncovered gaps identified |
 | **GAP-REQ Bidirectional Trace Links** | 3 gap files updated | 6 reverse links added for Tier 1 interoperability REQs |
 | **Orphan Artifact Priority Analysis** | `orphan-artifact-priorities.md` | 88 REQs analyzed, 6 tiers, action items for alarm/pump assertions |

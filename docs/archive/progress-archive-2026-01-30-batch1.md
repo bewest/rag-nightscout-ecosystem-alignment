@@ -1,3 +1,7 @@
+# Progress Archive - 2026-01-30 Batch 1
+
+> **Note**: Code references in archive files may use abbreviated paths for readability. These are historical snapshots.
+
 ### Libre 3 Protocol Gap Analysis (2026-01-29)
 
 Analyzed "eavesdrop only" limitations for Libre 3 vs Libre 1/2.

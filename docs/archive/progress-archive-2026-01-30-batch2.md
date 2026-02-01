@@ -1,3 +1,7 @@
+# Progress Archive - 2026-01-30 Batch 2
+
+> **Note**: Code references in archive files may use abbreviated paths for readability. These are historical snapshots.
+
 ### Aid-Algorithms Cross-Reference Completion (2026-01-30)
 
 aid-algorithms #3, #4: Cross-references to existing verification in documentation-accuracy.md.

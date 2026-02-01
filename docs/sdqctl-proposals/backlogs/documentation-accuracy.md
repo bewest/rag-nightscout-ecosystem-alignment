@@ -374,7 +374,7 @@ Systematic fixes for verification failures. Source: `sdqctl verify all` output.
 |---|------|----------|-------|--------|
 | 33 | Triage broken refs by category | P2 | All | ✅ Done (29 archive, 3 examples) |
 | 34 | Fix active docs broken refs | P1 | docs/, mapping/ | ✅ Done (5 fixed, 360/392 valid) |
-| 35 | Archive or remove stale refs | P3 | Archive files | 📤 **Ready Queue #8** |
+| 35 | Archive or remove stale refs | P3 | Archive files | ✅ Done (disclaimers added to 6 archives) |
 
 ### Broken Links (52 broken)
 

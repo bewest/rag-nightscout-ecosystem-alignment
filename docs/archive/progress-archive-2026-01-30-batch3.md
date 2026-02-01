@@ -1,6 +1,8 @@
 # Progress Archive - 2026-01-30 Batch 3
 
 > Archived from `progress.md` during Cycle 32 housekeeping.
+>
+> **Note**: Code references in archive files may use abbreviated paths for readability.
 
 ---
 

@@ -3,6 +3,8 @@
 > **Archived**: 2026-02-01 (cycle 82)  
 > **Entries**: 14 completed work items  
 > **Parent**: [progress.md](../../progress.md)
+>
+> **Note**: Code references in archive files may use abbreviated paths for readability.
 
 ---
 
