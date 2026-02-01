@@ -1853,6 +1853,7 @@ oref0's core innovation is deviation analysis:
 > **See Also**: 
 > - [Remote Commands Cross-System Comparison](../../docs/10-domain/remote-commands-comparison.md) - Architecture and source analysis
 > - [Remote Bolus Comparison](../../docs/10-domain/remote-bolus-comparison.md) - Safety validation deep dive
+> - **Traceability**: [`conformance/assertions/remote-command-requirements.yaml`](../../conformance/assertions/remote-command-requirements.yaml) - Assertions for REQ-REMOTE-001 through REQ-REMOTE-011
 
 ### Transport and Authentication
 
