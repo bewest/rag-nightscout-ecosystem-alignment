@@ -12,6 +12,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Tidepool Integration Inventory (2026-02-01)
+
+Research document covering Tidepool integration status across ecosystem apps.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Integration Inventory | `docs/10-domain/tidepool-integration-inventory.md` | 5/7 apps integrated, 4 gaps |
+
+**Key Findings**:
+- **AAPS**: Full plugin (~1,855 lines), 7 data types, legacy auth
+- **Loop/Trio**: Shared TidepoolService submodule (~7,006 lines), OAuth2, TidepoolKit SDK
+- **xDrip+**: Direct HTTP integration (~1,767 lines), 5 data types
+- **Nocturne**: Only app that READS from Tidepool (not just uploads)
+- **xDrip4iOS/DiaBLE**: No Tidepool integration
+
+**Gaps Identified**: GAP-TIDEPOOL-001/002/003/004
+
+---
+
 ### AAPS Kotlin Runner Documentation (2026-02-01)
 
 Documentation for AAPS conformance runner setup requirements.

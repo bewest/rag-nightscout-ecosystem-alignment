@@ -1398,3 +1398,97 @@ See [requirements.md](requirements.md) for the index.
 **Source**: `docs/10-domain/ble-cgm-library-consolidation.md`
 
 ---
+
+---
+
+### REQ-TIDEPOOL-001: iOS CGM App Tidepool Integration
+
+**Statement**: iOS CGM display apps (xDrip4iOS, DiaBLE) SHOULD provide optional Tidepool upload capability.
+
+**Rationale**: Users of CGM-only apps should not need to run an AID controller just for data aggregation.
+
+**Scenarios**:
+- User configures Tidepool credentials in xDrip4iOS
+- CGM readings automatically upload to Tidepool
+- Upload works independently of Nightscout sync
+
+**Verification**:
+- Tidepool account shows CGM data from xDrip4iOS
+- No duplicate uploads when also using Loop
+
+**Gap Reference**: GAP-TIDEPOOL-001
+
+**Source**: `docs/10-domain/tidepool-integration-inventory.md`
+
+**Status**: ❌ Not implemented
+
+---
+
+### REQ-TIDEPOOL-002: OAuth2 Authentication for Android
+
+**Statement**: Android apps (AAPS, xDrip+) SHOULD migrate to OAuth2 for Tidepool authentication.
+
+**Rationale**: OAuth2 is more secure than email/password and aligns with iOS implementations.
+
+**Scenarios**:
+- User authenticates via Tidepool OAuth2 flow
+- Refresh tokens stored securely
+- No password stored on device
+
+**Verification**:
+- OAuth2 flow completes successfully
+- Session refresh works without user interaction
+- Legacy auth code path removed
+
+**Gap Reference**: GAP-TIDEPOOL-002
+
+**Source**: `docs/10-domain/tidepool-integration-inventory.md`
+
+**Status**: ❌ Not implemented
+
+---
+
+### REQ-TIDEPOOL-003: Nightscout Tidepool Connector
+
+**Statement**: nightscout-connect SHOULD support Tidepool as a data source.
+
+**Rationale**: Enables bidirectional sync between Nightscout and Tidepool ecosystems.
+
+**Scenarios**:
+- nightscout-connect polls Tidepool API
+- CGM/treatment data normalized to Nightscout format
+- Historical import supported
+
+**Verification**:
+- Tidepool data appears in Nightscout
+- No duplicates with direct app uploads
+- Rate limiting respected
+
+**Gap Reference**: GAP-TIDEPOOL-003
+
+**Source**: `docs/10-domain/tidepool-integration-inventory.md`
+
+**Status**: ❌ Not implemented (Nocturne has connector, cgm-remote-monitor does not)
+
+---
+
+### REQ-TIDEPOOL-004: Dosing Decision Parity
+
+**Statement**: All AID apps with Tidepool integration SHOULD upload dosing decision data.
+
+**Rationale**: Complete algorithm data enables better analysis and comparison across platforms.
+
+**Scenarios**:
+- AAPS uploads dosingDecision equivalent
+- Decision data includes predicted values, constraints, enacted actions
+- Format compatible with Tidepool dosingDecision schema
+
+**Verification**:
+- Tidepool shows decision data from AAPS
+- Data comparable to Loop dosingDecision uploads
+
+**Gap Reference**: GAP-TIDEPOOL-004
+
+**Source**: `docs/10-domain/tidepool-integration-inventory.md`
+
+**Status**: ❌ Not implemented

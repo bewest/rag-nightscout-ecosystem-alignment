@@ -1520,3 +1520,103 @@ Refactor LibreTransmitter to match CGMBLEKit plugin pattern.
 **Status**: Open
 
 ---
+
+
+---
+
+### GAP-TIDEPOOL-001: No iOS-Only Tidepool Path
+
+**Description**: xDrip4iOS and DiaBLE users have no direct Tidepool integration.
+
+**Affected Systems**: xDrip4iOS, DiaBLE
+
+**Evidence**:
+- No Tidepool code in xDrip4iOS or DiaBLE codebases
+- Users must run Loop/Trio in parallel for Tidepool sync
+
+**Impact**: 
+- iOS CGM-only users cannot upload to Tidepool
+- Requires running AID app just for data sync
+- Fragmented user experience
+
+**Remediation**: 
+Consider shared TidepoolKit integration package for iOS CGM apps.
+
+**Source**: `docs/10-domain/tidepool-integration-inventory.md`
+
+**Status**: Open
+
+---
+
+### GAP-TIDEPOOL-002: Legacy Auth in Android Apps
+
+**Description**: AAPS and xDrip+ use deprecated email/password auth instead of OAuth2.
+
+**Affected Systems**: AAPS, xDrip+
+
+**Evidence**:
+- AAPS: `TidepoolUploader.kt` uses email/password
+- xDrip+: `TidepoolUploader.java` uses email/password
+- Loop/Trio use OAuth2 via TidepoolKit
+
+**Impact**: 
+- Less secure credential storage
+- May break if Tidepool deprecates legacy auth
+- Inconsistent user experience across platforms
+
+**Remediation**: 
+Migrate Android apps to OAuth2 flow (requires Android auth library).
+
+**Source**: `docs/10-domain/tidepool-integration-inventory.md`
+
+**Status**: Open
+
+---
+
+### GAP-TIDEPOOL-003: No Nightscout ↔ Tidepool Bidirectional Sync
+
+**Description**: cgm-remote-monitor has no Tidepool connector. Only Nocturne reads from Tidepool.
+
+**Affected Systems**: cgm-remote-monitor, nightscout-connect
+
+**Evidence**:
+- No Tidepool code in cgm-remote-monitor
+- Nocturne.Connectors.Tidepool is read-only connector
+- No path to import Tidepool data into Nightscout
+
+**Impact**: 
+- Nightscout users can't import historical Tidepool data
+- Data silos between platforms
+- Users must choose one or the other
+
+**Remediation**: 
+Port Nocturne Tidepool connector to nightscout-connect or create plugin.
+
+**Source**: `docs/10-domain/tidepool-integration-inventory.md`
+
+**Status**: Open
+
+---
+
+### GAP-TIDEPOOL-004: Dosing Decision Upload Inconsistency
+
+**Description**: Only Loop/Trio upload `dosingDecision` data type. AAPS/xDrip+ don't.
+
+**Affected Systems**: AAPS, xDrip+
+
+**Evidence**:
+- Loop: `StoredDosingDecision` extension uploads algorithm decisions
+- AAPS: No equivalent element class
+- xDrip+: No dosing decision upload (CGM-only app)
+
+**Impact**: 
+- Incomplete algorithm analysis for AAPS users in Tidepool
+- Different data completeness across platforms
+- Harder to compare AID performance
+
+**Remediation**: 
+Add dosingDecision element to AAPS TidepoolPlugin.
+
+**Source**: `docs/10-domain/tidepool-integration-inventory.md`
+
+**Status**: Open
