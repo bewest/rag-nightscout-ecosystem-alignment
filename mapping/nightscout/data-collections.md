@@ -208,11 +208,11 @@ GET /api/v4/version
 
 ### StateSpan Collections
 
-| V4 Collection | Purpose | cgm-remote-monitor Equivalent |
-|---------------|---------|------------------------------|
-| `state-spans` | Time-ranged state tracking | None |
-| `state-spans/profiles` | Profile activation history | None (partial via treatments) |
-| `state-spans/overrides` | Override history | `treatments.eventType=Override` |
+| V4 Collection | Purpose | cgm-remote-monitor Equivalent | Spec |
+|---------------|---------|------------------------------|------|
+| `state-spans` | Time-ranged state tracking | None | [`aid-statespan-2025.yaml`](../../specs/openapi/aid-statespan-2025.yaml) (V3 ref) |
+| `state-spans/profiles` | Profile activation history | None (partial via treatments) | [`nocturne-v4-extension.yaml`](../../specs/openapi/nocturne-v4-extension.yaml) |
+| `state-spans/overrides` | Override history | `treatments.eventType=Override` | [`nocturne-v4-extension.yaml`](../../specs/openapi/nocturne-v4-extension.yaml) |
 
 ### StateSpan Categories
 

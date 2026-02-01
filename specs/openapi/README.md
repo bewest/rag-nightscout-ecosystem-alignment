@@ -36,7 +36,9 @@ This directory contains OpenAPI 3.0 specifications documenting the de facto data
 | [`aid-treatments-2025.yaml`](./aid-treatments-2025.yaml) | treatments | ✅ Complete | ✅ Covered | GAP-TREAT-001 through GAP-TREAT-007, GAP-003 |
 | [`aid-devicestatus-2025.yaml`](./aid-devicestatus-2025.yaml) | devicestatus | ✅ Complete | ✅ Covered | GAP-DS-001 through GAP-DS-004, GAP-SYNC-002, GAP-SYNC-005 |
 | [`aid-profile-2025.yaml`](./aid-profile-2025.yaml) | profile | ✅ Complete | ✅ Covered | GAP-002, GAP-INS-001 through GAP-INS-004 |
+| [`aid-statespan-2025.yaml`](./aid-statespan-2025.yaml) | state-spans | ✅ Complete | Reference only | GAP-V4-001, GAP-V4-002, GAP-SYNC-037 |
 | [`aid-alignment-extensions.yaml`](./aid-alignment-extensions.yaml) | All | N/A | ✅ Complete | All gaps mapped to extensions |
+| [`nocturne-v4-extension.yaml`](./nocturne-v4-extension.yaml) | V4 | ✅ Complete | N/A (Nocturne-specific) | GAP-V4-001, GAP-NOCTURNE-001 |
 
 ### Gap Coverage Summary
 
@@ -105,6 +107,19 @@ Specs are validated against:
 ---
 
 ## Progress Log
+
+### 2026-02-01: StateSpan V3 Extension Spec
+
+**Completed:**
+- Created `aid-statespan-2025.yaml` - V3 extension for time-ranged state tracking
+- 6 endpoints: status, query, active, get, update, delete
+- 4 categories: Profile, Override, TempBasal, PumpMode
+- Reference spec only (per Nocturne author preference for V4-only)
+
+**Key Decisions:**
+- Documented as hypothetical V3 extension for reference
+- Links to GAP-V4-001, GAP-V4-002 for standardization gaps
+- Includes feature detection endpoint for client compatibility
 
 ### 2026-01-17: Initial OpenAPI Spec Development
 
