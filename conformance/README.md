@@ -72,10 +72,55 @@ Validates algorithm implementations against shared test vectors.
 | Runner | Status | Vectors | Description |
 |--------|--------|---------|-------------|
 | oref0 | ✅ Available | 85 | JavaScript oref0 determine-basal |
-| aaps | ❌ Not implemented | - | Kotlin AAPS algorithm |
+| aaps | 🔧 Scaffolding | - | Kotlin AAPS algorithm (compiles, execution pending) |
 | loop | ❌ Not implemented | - | Swift Loop algorithm |
 
 **Location**: `conformance/runners/`, `conformance/vectors/`
+
+### AAPS Runner Setup
+
+The AAPS runner is written in Kotlin and requires JVM 11+ to run.
+
+**Prerequisites**:
+- Java 11+ (tested with OpenJDK 21)
+- ~100MB disk space for Kotlin compiler
+
+**Quick Setup** (automated):
+```bash
+# Downloads Kotlin 2.0.21 + org.json, compiles runner
+make aaps-runner
+```
+
+**Manual Setup**:
+```bash
+# 1. Download Kotlin compiler (if not using make)
+curl -sLO https://github.com/JetBrains/kotlin/releases/download/v2.0.21/kotlin-compiler-2.0.21.zip
+unzip kotlin-compiler-2.0.21.zip -d .build/
+
+# 2. Download JSON dependency
+curl -sLO https://repo1.maven.org/maven2/org/json/json/20231013/json-20231013.jar
+mv json-20231013.jar .build/
+
+# 3. Compile
+.build/kotlinc/bin/kotlinc conformance/runners/aaps-runner.kt \
+    -include-runtime -cp .build/json-20231013.jar -d .build/aaps-runner.jar
+```
+
+**Run**:
+```bash
+java -cp .build/aaps-runner.jar:.build/json-20231013.jar \
+    app.aaps.conformance.Aaps_runnerKt --help
+```
+
+**Options**:
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--vectors DIR` | `conformance/vectors` | Vector directory |
+| `--output FILE` | `conformance/results/aaps-results.json` | Output file |
+| `--algorithm TYPE` | `SMB` | `SMB`, `AMA`, `SMB_DYNAMIC`, `AUTO_ISF` |
+| `--js` | (off) | Use JS engine (Rhino) instead of Kotlin native |
+
+**Current Status**: The runner compiles and loads test vectors. Algorithm execution is pending integration with AAPS determine-basal logic. See `GAP-VERIFY-002` for progress.
 
 ## CI Integration
 

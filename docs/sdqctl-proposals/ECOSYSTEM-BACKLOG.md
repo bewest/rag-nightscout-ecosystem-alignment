@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 | **Open Items**: 8
+> **Last Groomed**: 2026-02-01 | **Open Items**: 7
 
 ### 1. [P2] cgm-remote-monitor V4 adoption proposal
 **Type:** Proposal | **Effort:** Medium
@@ -39,11 +39,8 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Deliverable:** `conformance/runners/loop-runner.swift`
 **Source:** aid-algorithms.md #2
 
-### 3. [P2] Document AAPS Kotlin runner setup requirements
-**Type:** Documentation | **Effort:** Low
-**Focus:** Document JVM/Gradle setup needed to run aaps-runner.kt
-**Outcome:** Unblock future AAPS conformance work
-**Source:** Chunked from aid-algorithms.md #1
+### 3. ~~[P2] Document AAPS Kotlin runner setup requirements~~ ✅ COMPLETE
+**Status:** Done (2026-02-01) - Added to `conformance/README.md`
 
 ### 4. [P2] V4 API Integration Phase 2: Nocturne soft delete
 **Type:** Implementation | **Effort:** Medium

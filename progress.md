@@ -12,6 +12,23 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### AAPS Kotlin Runner Documentation (2026-02-01)
+
+Documentation for AAPS conformance runner setup requirements.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Runner Setup Docs | `conformance/README.md` | JVM 11+, Kotlin 2.0.21, make target |
+
+**Key Findings**:
+- Runner already built and functional (`.build/aaps-runner.jar`)
+- `make aaps-runner` automates all dependencies
+- Status: Scaffolding complete, algorithm execution pending
+
+**Ready Queue Item**: #3 complete
+
+---
+
 ### TestFlight Distribution Infrastructure (2026-01-31)
 
 Survey of TestFlight and build automation across iOS ecosystem.
