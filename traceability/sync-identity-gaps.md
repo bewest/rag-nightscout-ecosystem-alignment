@@ -881,6 +881,8 @@ if (rVal) rVal.replace('ETC','Etc');
 - `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/NightscoutService.swift:367` - uploads to profile collection only
 - `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift:411` - uploads to profile collection only
 
+**Assertions**: `conformance/assertions/sync-identity-reqs.yaml` (profile-change-creates-treatment)
+
 **Impact:** Cannot retrospectively analyze when profiles changed; different timeline visibility vs AAPS users.
 
 **Remediation:** Controllers could optionally create `Profile Switch` treatment events when uploading new profiles.
@@ -894,6 +896,8 @@ if (rVal) rVal.replace('ETC','Etc');
 **Source:**
 - `externals/AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/localmodel/treatment/NSProfileSwitch.kt:24` - `profileJson: JSONObject?`
 
+**Assertions**: `conformance/assertions/sync-identity-reqs.yaml` (profilejson-embedded-in-switch)
+
 **Impact:** Large treatment documents; data duplication between `profile` and `treatments` collections.
 
 **Remediation:** Consider storing profile reference ID instead of embedded JSON.
@@ -906,6 +910,8 @@ if (rVal) rVal.replace('ETC','Etc');
 
 **Source:**
 - `externals/AndroidAPS/database/impl/src/main/kotlin/app/aaps/database/entities/ProfileSwitch.kt:49-50` - `timeshift: Long`, `percentage: Int`
+
+**Assertions**: `conformance/assertions/sync-identity-reqs.yaml` (percentage-scaling-applied, percentage-applied-to-basal, timeshift-applied-to-schedule)
 
 **Impact:** Multi-controller households may see confusing profile data; percentage adjustments not applied by Loop/Trio.
 

@@ -4,6 +4,8 @@
 **Status:** Complete  
 **Type:** Cross-project verification
 
+**Conformance Assertions**: [`conformance/assertions/sync-identity-reqs.yaml`](../../conformance/assertions/sync-identity-reqs.yaml) — 19 assertions, [`sync-deduplication.yaml`](../../conformance/assertions/sync-deduplication.yaml) — 15 assertions
+
 ## Overview
 
 This document audits how each system in the Nightscout ecosystem identifies and tracks records for synchronization. Consistent identity management is critical for avoiding duplicates and ensuring reliable data sync.

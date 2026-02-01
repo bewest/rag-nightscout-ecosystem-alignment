@@ -3,6 +3,8 @@
 Domain-specific requirements extracted from requirements.md.
 See [requirements.md](requirements.md) for the index.
 
+> **Traceability Matrix**: [`domain-matrices/sync-identity-matrix.md`](domain-matrices/sync-identity-matrix.md) - REQ↔GAP↔Assertion coverage (94% assertion coverage)
+
 ---
 
 ### REQ-BATCH-001: Response Order Must Match Request Order
