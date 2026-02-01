@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 | **Open Items**: 4
+> **Last Groomed**: 2026-02-01 | **Open Items**: 3
 
 ### 1. [P2] Loop Swift algorithm runner
 **Type:** Implementation | **Effort:** High
@@ -40,13 +40,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** nightscout-api.md #25, Phase 2 item
 **Gap Reference:** GAP-SYNC-040
 
-### 3. [P2] MongoDB Phase 2: Storage layer analysis
-**Type:** Analysis | **Effort:** Medium
-**Focus:** Analyze storage layer for MongoDB 5.x/6.x compatibility
-**Source:** mongodb-update-readiness-report.md Phase 2
-**Deliverable:** Storage layer compatibility assessment
-
-### 4. [P3] StateSpan V3 extension specification
+### 3. [P3] StateSpan V3 extension specification
 **Type:** Specification | **Effort:** Medium
 **Focus:** Define V3 API extension for StateSpan standardization
 **Source:** statespan-standardization-proposal.md
@@ -58,6 +52,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **MongoDB Phase 2: Storage Layer** | `mongodb-storage-layer-analysis.md` | No insertMany, all patterns 5.x/6.x compatible, ready for Phase 3 |
 | **cgm-remote-monitor V4 Adoption** | `cgm-remote-monitor-v4-adoption-proposal.md` | 7 adoptable features, 4-phase roadmap, no breaking changes |
 | **Tandem Integration Inventory** | `docs/10-domain/tandem-integration-inventory.md` | Cloud-bridge only; no open-source AID control; GAP-TANDEM-001 |
 | **Tidepool Integration Inventory** | `docs/10-domain/tidepool-integration-inventory.md` | 5/7 apps integrated; 4 gaps, 4 reqs |

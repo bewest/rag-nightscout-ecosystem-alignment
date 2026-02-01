@@ -27,6 +27,8 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| MongoDB Phase 2: Storage Layer Analysis | P2 | ✅ Complete - `mongodb-storage-layer-analysis.md`, HIGH compatibility, ready for Phase 3 | 2026-02-01 |
+| Phase 4 backlog grooming (cycle 72) | P0 | ✅ Complete (Ready Queue 4→3, no new gaps needed) | 2026-02-01 |
 | cgm-remote-monitor V4 Adoption Proposal | P2 | ✅ Complete - `cgm-remote-monitor-v4-adoption-proposal.md`, 4 gaps, 7 features | 2026-02-01 |
 | Phase 4 backlog grooming (cycle 71) | P0 | ✅ Complete (Ready Queue 5→4, 4 new API gaps) | 2026-02-01 |
 | Tandem Integration Inventory | P3 | ✅ Complete - `tandem-integration-inventory.md`, 1 gap (GAP-TANDEM-001) | 2026-02-01 |
