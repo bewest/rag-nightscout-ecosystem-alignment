@@ -1629,3 +1629,80 @@ _None yet._
 **Status**: Open
 
 ---
+
+
+---
+
+### GAP-API-017: No Server-Side Chart Aggregation
+
+**Description**: cgm-remote-monitor has no endpoint for pre-aggregated chart data. Clients must fetch raw entries and perform aggregation locally.
+
+**Affected Systems**: All Nightscout clients (Loop, AAPS, xDrip+, web UI)
+
+**Impact**:
+- Mobile apps waste CPU/battery on aggregation
+- Large data transfers for long-range charts
+- Inconsistent aggregation logic across clients
+
+**Remediation**: Add `/api/v3/chart-data` endpoint (see cgm-remote-monitor-v4-adoption-proposal.md)
+
+**Source**: Nocturne `ChartDataController.cs` (15.7KB)
+
+**Status**: Proposed
+
+---
+
+### GAP-API-018: Processing Pipeline Status Opaque
+
+**Description**: No API endpoint exposes data processing pipeline status (connectors, queue, last run).
+
+**Affected Systems**: cgm-remote-monitor, all clients debugging data flow
+
+**Impact**:
+- "Where's my data?" hard to debug
+- No visibility into connector health
+- Hosting providers can't monitor status
+
+**Remediation**: Add `/api/v3/processing/status` endpoint
+
+**Source**: Nocturne `ProcessingController.cs` (9.7KB)
+
+**Status**: Proposed
+
+---
+
+### GAP-API-019: Device Health Fragmented Across Collections
+
+**Description**: Device health data (battery, sensor age, transmitter status) is scattered across devicestatus records with no unified view.
+
+**Affected Systems**: cgm-remote-monitor, monitoring dashboards
+
+**Impact**:
+- Complex queries to aggregate device health
+- No proactive sensor/transmitter expiry warnings
+- Battery trending requires client-side logic
+
+**Remediation**: Add `/api/v3/device-health` aggregation endpoint
+
+**Source**: Nocturne `DeviceHealthController.cs` (9.9KB)
+
+**Status**: Proposed
+
+---
+
+### GAP-API-020: Deduplication Conflicts Not Exposed
+
+**Description**: Sync deduplication logic is internal-only. No API to view or resolve duplicate conflicts.
+
+**Affected Systems**: cgm-remote-monitor, sync clients
+
+**Impact**:
+- Duplicate treatments can accumulate
+- No audit trail for data quality
+- Manual cleanup requires database access
+
+**Remediation**: Add `/api/v3/dedupe/*` endpoints for conflict visibility
+
+**Source**: Nocturne `DeduplicationController.cs` (10.7KB)
+
+**Status**: Proposed

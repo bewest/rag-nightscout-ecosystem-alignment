@@ -12,6 +12,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### cgm-remote-monitor V4 Adoption Proposal (2026-02-01)
+
+Proposal for cgm-remote-monitor to adopt V4 features from Nocturne.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Adoption Proposal | `docs/sdqctl-proposals/cgm-remote-monitor-v4-adoption-proposal.md` | 7 adoptable features, 4-phase roadmap |
+
+**Key Findings**:
+- **Chart Data Endpoint**: Server-side aggregation for mobile optimization
+- **Processing Status**: Debug data flow visibility
+- **Device Health**: Unified battery/sensor tracking
+- **Deduplication API**: Expose sync conflict resolution
+
+**Features NOT to adopt**: StateSpan (V4-only per author), TrackerController (too coupled)
+
+**Gaps Addressed**: GAP-API-017 (chart aggregation), GAP-API-018 (processing opacity), GAP-API-019 (device health), GAP-API-020 (dedup conflicts)
+
+---
+
 ### Tandem Integration Inventory (2026-02-01)
 
 Research document covering Tandem/Control-IQ integration status across ecosystem.

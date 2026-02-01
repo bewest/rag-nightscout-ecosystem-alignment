@@ -16,7 +16,7 @@ This document is an index of gaps organized by domain.
 
 | Domain | Gap Count | File | Last Verified |
 |--------|-----------|------|---------------|
-| nightscout-api | 70 | [nightscout-api-gaps.md](nightscout-api-gaps.md) | 2026-01-31 (GAP-IDP-004/005/006 added) |
+| nightscout-api | 74 | [nightscout-api-gaps.md](nightscout-api-gaps.md) | 2026-02-01 (GAP-API-017/018/019/020 added) |
 | sync-identity | 68 | [sync-identity-gaps.md](sync-identity-gaps.md) | 2026-01-31 (GAP-FOLLOW-001/002, GAP-CAREGIVER-001/002 added) |
 | aid-algorithms | 66 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-01-31 (GAP-OREF-001/002/003 added) |
 | cgm-sources | 52 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-01-29 |
@@ -24,7 +24,7 @@ This document is an index of gaps organized by domain.
 | treatments | 25 | [treatments-gaps.md](treatments-gaps.md) | - |
 | pumps | 10 | [pumps-gaps.md](pumps-gaps.md) | 2026-02-01 (GAP-TANDEM-001 added) |
 
-Total: 360 gaps across 7 domains
+Total: 364 gaps across 7 domains
 
 ## Verification Status
 
