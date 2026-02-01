@@ -124,7 +124,7 @@ This workspace documents **91+ gaps** across the Nightscout/AID ecosystem. Diffe
 | Priority | Status | Evidence |
 |----------|--------|----------|
 | Tidepool integration | ✅ Inventoried - GAP-TIDEPOOL-003 | `docs/10-domain/tidepool-integration-inventory.md` |
-| Tandem integration | TODO - Not implemented | Inventory |
+| Tandem integration | ✅ Inventoried - GAP-TANDEM-001, GAP-TCONNECT-* | `docs/10-domain/tandem-integration-inventory.md` |
 | Data ingestion reliability | Primary purpose | Inventory |
 
 **What Blocks Them**:

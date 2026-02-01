@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 | **Open Items**: 6
+> **Last Groomed**: 2026-02-01 | **Open Items**: 5
 
 ### 1. [P2] cgm-remote-monitor V4 adoption proposal
 **Type:** Proposal | **Effort:** Medium
@@ -58,18 +58,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** statespan-standardization-proposal.md
 **Note:** Author preference: V4-only, but V3 extension still valuable for cgm-remote-monitor
 
-### 6. [P3] Tandem integration inventory
-**Type:** Research | **Effort:** Low
-**Focus:** Document Tandem/Control-IQ integration status and gaps
-**Source:** stakeholder-priority-analysis.md (marked TODO)
-**Outcome:** Gap analysis for tconnectsync and potential improvements
-
 ---
 
 ## Recently Completed (2026-02-01)
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Tandem Integration Inventory** | `docs/10-domain/tandem-integration-inventory.md` | Cloud-bridge only; no open-source AID control; GAP-TANDEM-001 |
 | **Tidepool Integration Inventory** | `docs/10-domain/tidepool-integration-inventory.md` | 5/7 apps integrated; 4 gaps, 4 reqs |
 | **AAPS Kotlin Runner Documentation** | `conformance/README.md` | JVM 11+, `make aaps-runner`, scaffolding ready |
 

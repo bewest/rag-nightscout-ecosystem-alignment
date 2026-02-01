@@ -12,6 +12,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Tandem Integration Inventory (2026-02-01)
+
+Research document covering Tandem/Control-IQ integration status across ecosystem.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Integration Inventory | `docs/10-domain/tandem-integration-inventory.md` | Cloud-bridge only, no open-source control, 4 gaps |
+
+**Key Findings**:
+- **tconnectsync**: Primary bridge (~9,045 lines), cloud-to-cloud, batch sync
+- **Nocturne**: Connector wrapper (~150 lines)
+- **AAPS/Loop/Trio**: No pump driver (type enum only for data display)
+- **No open-source AID**: Tandem users must use Control-IQ
+
+**Gaps Identified**: GAP-TANDEM-001/002/003/004
+
+---
+
 ### Tidepool Integration Inventory (2026-02-01)
 
 Research document covering Tidepool integration status across ecosystem apps.

@@ -27,6 +27,8 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Tandem Integration Inventory | P3 | ✅ Complete - `tandem-integration-inventory.md`, 1 gap (GAP-TANDEM-001) | 2026-02-01 |
+| Phase 4 backlog grooming (cycle 70) | P0 | ✅ Complete (Ready Queue 6→5, cloud-bridge limitation documented) | 2026-02-01 |
 | Tidepool Integration Inventory | P3 | ✅ Complete - `tidepool-integration-inventory.md`, 4 gaps, 4 reqs | 2026-02-01 |
 | Phase 4 backlog grooming (cycle 69) | P0 | ✅ Complete (Ready Queue 7→6, stakeholder analysis updated) | 2026-02-01 |
 | AAPS Kotlin Runner Documentation | P2 | ✅ Complete - `conformance/README.md` setup guide, GAP-VERIFY-002 step 3 | 2026-02-01 |
