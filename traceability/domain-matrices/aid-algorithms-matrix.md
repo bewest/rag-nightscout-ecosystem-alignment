@@ -186,9 +186,9 @@
 
 | Gap | Description | Related REQs | Assertions |
 |-----|-------------|--------------|------------|
-| GAP-INS-001 | Insulin Model Metadata Not Synced | REQ-INS-005 | ❌ None |
+| GAP-INS-001 | Insulin Model Metadata Not Synced | REQ-INS-005 | ✅ insulin-model.yaml |
 | GAP-INS-002 | No Standardized Multi-Insulin Representation | - | ❌ None |
-| GAP-INS-003 | Peak Time Customization Not Captured | REQ-INS-003 | ❌ None |
+| GAP-INS-003 | Peak Time Customization Not Captured | REQ-INS-003 | ✅ safety-limits.yaml |
 | GAP-INS-004 | xDrip+ Linear Trapezoid Incompatible | - | ❌ None |
 | GAP-INSULIN-001 | Multi-Insulin API Not Standardized | REQ-PR-002 | ❌ None |
 

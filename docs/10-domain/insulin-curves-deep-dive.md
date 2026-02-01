@@ -497,6 +497,18 @@ See [GAP-INS-001](#related-gaps) for details.
 
 ---
 
+## Conformance Assertions
+
+See [`conformance/assertions/insulin-model.yaml`](../../conformance/assertions/insulin-model.yaml) for 18 test assertions covering:
+
+| Requirement | Description | Assertions |
+|-------------|-------------|------------|
+| REQ-INS-001 | Exponential formula consistency | 6 |
+| REQ-INS-004 | Activity calculation for BGI | 6 |
+| REQ-INS-005 | Insulin model metadata sync | 6 |
+
+---
+
 ## Source File References
 
 | System | Key Files |
@@ -513,4 +525,5 @@ See [GAP-INS-001](#related-gaps) for details.
 
 | Date | Author | Changes |
 |------|--------|---------|
+| 2026-02-01 | Agent | Added conformance assertions section (18 assertions) |
 | 2026-01-17 | Agent | Initial insulin curves deep dive from source analysis |
