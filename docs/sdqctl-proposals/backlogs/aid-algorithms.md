@@ -12,7 +12,7 @@ Covers: Loop, AAPS, Trio, oref0/oref1, OpenAPS
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
-| 1 | Algorithm conformance: AAPS runner | P2 | High | Phase 3 - Kotlin runner for JS vs KT comparison |
+| 1 | Algorithm conformance: AAPS runner | P2 | High | Phase 3 - Kotlin runner execution (scaffolding + docs ✅) |
 | 2 | Algorithm conformance: Loop runner | P3 | High | Swift runner for semantic validation (macOS CI only) |
 | 9 | ~~**OpenAPSSwift parity testing**~~ | ~~P2~~ | ~~Medium~~ | ✅ DESIGN COMPLETE - Framework + sample vectors created |
 
@@ -22,6 +22,7 @@ Covers: Loop, AAPS, Trio, oref0/oref1, OpenAPS
 
 | Item | Date | Notes |
 |------|------|-------|
+| **AAPS runner setup documentation** | 2026-02-01 | `conformance/README.md` setup guide, `make aaps-runner` verified |
 | **Trio-dev OpenAPSSwift analysis** | 2026-01-31 | Native Swift oref port, DynamicISF (log+sigmoid), GAP-TRIO-SWIFT-001/002 |
 | **Trio comprehensive analysis** | 2026-01-31 | 573 lines, oref integration, Nightscout sync, APSManager (6 gaps, 3 reqs) |
 | Trio-dev oref integration mapping | 2026-01-31 | trio-oref/lib/ JS bundles analyzed |

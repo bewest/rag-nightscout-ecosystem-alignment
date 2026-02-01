@@ -955,7 +955,7 @@ See [requirements.md](requirements.md) for the index.
 
 **Source**: [cross-platform-testing-research.md](../docs/10-domain/cross-platform-testing-research.md)
 
-**Status**: ❌ Not implemented (only oref0 runner exists)
+**Status**: 🔄 In progress (oref0 runner complete, AAPS scaffolding ready)
 
 ---
 

@@ -3572,7 +3572,7 @@ Nocturne uses SignalR for real-time events. A TypeScript bridge translates to So
 | Runner | Target Algorithm | Location | Status |
 |--------|-----------------|----------|--------|
 | **oref0-runner** | oref0 determine-basal | `conformance/runners/oref0-runner.js` | ✅ Complete |
-| **aaps-runner** | AAPS Kotlin algorithm | `conformance/runners/aaps/` | 🔄 Planned |
+| **aaps-runner** | AAPS Kotlin algorithm | `conformance/runners/aaps-runner.kt` | 🔧 Scaffolding (build ready, execution pending) |
 | **loop-runner** | Loop algorithm | `conformance/runners/loop/` | 🔄 Planned |
 
 ### oref0 Runner Results (2026-01-29)
@@ -4355,7 +4355,7 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | Runner | Purpose | Language | Build | Status |
 |--------|---------|----------|-------|--------|
 | `oref0-runner.js` | Execute oref0 determine-basal | JavaScript | `node` | ✅ Implemented |
-| `aaps-runner.kt` | Execute AAPS algorithms (SMB/AMA) | Kotlin | `make aaps-runner` | ✅ Build ready |
+| `aaps-runner.kt` | Execute AAPS algorithms (SMB/AMA) | Kotlin | `make aaps-runner` | 🔧 Scaffolding (docs: `conformance/README.md`) |
 | `trio-runner.swift` | Execute OpenAPSSwift | Swift | macOS CI | ⏳ Planned |
 | `loop-runner.swift` | Execute LoopAlgorithm | Swift | macOS CI | ⏳ Planned |
 
