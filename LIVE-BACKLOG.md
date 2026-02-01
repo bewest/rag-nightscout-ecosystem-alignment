@@ -27,6 +27,8 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Tidepool Integration Inventory | P3 | ✅ Complete - `tidepool-integration-inventory.md`, 4 gaps, 4 reqs | 2026-02-01 |
+| Phase 4 backlog grooming (cycle 69) | P0 | ✅ Complete (Ready Queue 7→6, stakeholder analysis updated) | 2026-02-01 |
 | AAPS Kotlin Runner Documentation | P2 | ✅ Complete - `conformance/README.md` setup guide, GAP-VERIFY-002 step 3 | 2026-02-01 |
 | Phase 4 backlog grooming (cycle 68) | P0 | ✅ Complete (Ready Queue 8→7, facets updated, 5 commits) | 2026-02-01 |
 | Trio-dev oref Integration Mapping | P2 | ✅ Complete - `trio-oref-integration-mapping.md`, 3 gaps, 3 reqs | 2026-01-31 |
