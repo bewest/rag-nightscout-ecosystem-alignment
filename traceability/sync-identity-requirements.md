@@ -1569,3 +1569,70 @@ protocol RemoteCommandService {
 **Gap Reference**: GAP-CAREGIVER-002
 
 **Source**: [follower-caregiver-feature-consolidation.md](../docs/10-domain/follower-caregiver-feature-consolidation.md)
+
+---
+
+### REQ-SYNC-010: Sync Identity Mapping
+
+**Statement**: AID apps MUST maintain mapping between local sync identifiers and Nightscout objectIds.
+
+**Rationale**: Required for reliable update and delete operations. Without objectId tracking, clients cannot reliably modify or remove records they created.
+
+**Implementation**:
+- Store `localId → nightscoutObjectId` mapping after successful POST
+- Use cached objectId for PUT/DELETE operations
+- Purge stale mappings after configurable TTL (e.g., 24 hours)
+
+**Verification**:
+- Create treatment, verify objectId stored
+- Update treatment using cached objectId
+- Delete treatment using cached objectId
+- Confirm all operations succeed
+
+**Gap Reference**: GAP-SYNC-042
+
+**Source**: [trio-nightscout-sync-analysis.md](../docs/10-domain/trio-nightscout-sync-analysis.md)
+
+---
+
+### REQ-SYNC-011: Delete Operation Validation
+
+**Statement**: Delete operations MUST verify success by checking response or re-querying.
+
+**Rationale**: Silent delete failures lead to duplicate records and sync divergence. Network errors during delete are common; apps must detect and retry.
+
+**Implementation**:
+- Check HTTP response status (2xx = success)
+- On failure, queue for retry with exponential backoff
+- Optionally verify deletion via GET query
+
+**Verification**:
+- Test delete with network interruption
+- Confirm retry or error reporting occurs
+- Verify no orphaned local records
+
+**Gap Reference**: GAP-SYNC-043
+
+**Source**: [trio-nightscout-sync-analysis.md](../docs/10-domain/trio-nightscout-sync-analysis.md)
+
+---
+
+### REQ-SYNC-012: Sensitive Credential Separation
+
+**Statement**: Push notification credentials (APNS tokens, FCM tokens) MUST NOT be stored in publicly readable collections.
+
+**Rationale**: APNS tokens combined with API access could enable unauthorized remote commands. Profile collection is readable with minimal authentication.
+
+**Implementation**:
+- Use separate `/api/v1/pushregistration` endpoint
+- Require write-level authentication
+- Encrypt tokens if stored in profile
+
+**Verification**:
+- Audit profile endpoint for credential exposure
+- Confirm credentials not included or are encrypted
+- Test push functionality still works
+
+**Gap Reference**: GAP-SYNC-044
+
+**Source**: [trio-nightscout-sync-analysis.md](../docs/10-domain/trio-nightscout-sync-analysis.md)

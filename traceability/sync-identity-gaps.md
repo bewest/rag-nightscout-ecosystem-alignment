@@ -1731,3 +1731,85 @@ if (rVal) rVal.replace('ETC','Etc');
 
 **Related**:
 - [Follower/Caregiver Feature Consolidation](../docs/10-domain/follower-caregiver-feature-consolidation.md)
+
+
+---
+
+### GAP-SYNC-042: Trio Missing objectId Cache
+
+**Description**: Trio does not maintain mapping between local `id` and Nightscout `_id` (objectId), unlike Loop which uses `ObjectIdCache`.
+
+**Affected Systems**: Trio → Nightscout
+
+**Evidence**:
+- `Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift`: No objectId storage
+- `Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift:169-171`: Delete uses `find[id][$eq]` query
+- Loop comparison: `LoopWorkspace/NightscoutService/NightscoutServiceKit/ObjectIdCache.swift` maps syncIdentifier to nightscoutObjectId
+
+**Impact**: 
+- Delete operations rely on `find[id][$eq]` query which may fail if `id` field isn't indexed
+- No reliable way to update existing Nightscout records
+- May cause orphaned records on delete failures
+
+**Remediation**: Implement objectId cache similar to Loop's `ObjectIdCache`
+
+**Status**: Documented
+
+**Related**:
+- [Trio Nightscout Sync Analysis](../docs/10-domain/trio-nightscout-sync-analysis.md)
+
+---
+
+### GAP-SYNC-043: Trio No Update Operation Support
+
+**Description**: Trio only supports create and delete operations, not update (PUT/PATCH) for treatments.
+
+**Affected Systems**: Trio treatments, overrides
+
+**Evidence**:
+- `NightscoutAPI.swift`: Only POST and DELETE methods
+- No `updateTreatment` or `PUT` implementation
+- Override changes require delete-then-reupload pattern (lines 1057-1063)
+
+**Impact**: 
+- Treatment modifications require delete + re-create
+- May cause temporary gaps in data visibility
+- More network overhead for simple edits
+
+**Remediation**: Add PUT/PATCH support with objectId tracking
+
+**Status**: Documented
+
+**Related**:
+- [Trio Nightscout Sync Analysis](../docs/10-domain/trio-nightscout-sync-analysis.md)
+
+---
+
+### GAP-SYNC-044: Trio Profile Contains APNS Push Credentials
+
+**Description**: Trio uploads APNS device token, Team ID, and bundle identifier to Nightscout profile collection.
+
+**Affected Systems**: Trio profile sync, Nightscout security
+
+**Evidence**:
+```swift
+// NightscoutManager.swift:743-756
+let profileStore = NightscoutProfileStore(
+    bundleIdentifier: bundleIdentifier,    // iOS app identifier
+    deviceToken: deviceToken,               // APNS push token
+    isAPNSProduction: isAPNSProduction,    // APNS environment
+    teamID: teamID,                         // Apple Team ID
+)
+```
+
+**Impact**: 
+- Anyone with read access to profile endpoint can see push notification credentials
+- Combined with Nightscout credentials, could enable unauthorized remote commands
+- Security exposure of app signing identity
+
+**Remediation**: Encrypt sensitive fields or use separate authenticated endpoint
+
+**Status**: Documented
+
+**Related**:
+- [Trio Nightscout Sync Analysis](../docs/10-domain/trio-nightscout-sync-analysis.md)
