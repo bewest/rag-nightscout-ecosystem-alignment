@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 101) | **Open Items**: 6  
+> **Last Groomed**: 2026-02-01 (cycle 102) | **Open Items**: 5  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -58,14 +58,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** sync-identity.md #19
 **Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
 
-### 5. [P2] Insulin model assertions
-**Type:** Conformance | **Effort:** Medium
-**Focus:** Exponential formula consistency, activity calculation, model metadata
-**Source:** aid-algorithms-matrix.md action item #3 (REQ-INS-001, REQ-INS-004, REQ-INS-005)
-**Deliverable:** `conformance/assertions/insulin-model.yaml`
-**Impact:** Complete insulin model category (40%→100%)
-
-### 6. [P2] Cross-controller deduplication assertions
+### 5. [P2] Cross-controller deduplication assertions
 **Type:** Conformance | **Effort:** Medium
 **Focus:** Multi-controller conflict scenario assertions
 **Source:** sync-identity-matrix.md action items (GAP-SYNC-029, GAP-SYNC-030)
@@ -78,6 +71,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **🎉 Insulin Model Assertions** | `conformance/assertions/insulin-model.yaml` | 18 assertions, 3 REQs, Insulin Model 100% COMPLETE |
 | **Safety Limit Assertions** | `conformance/assertions/safety-limits.yaml` | 20 assertions, 3 REQs, max IOB/DIA/peak covered |
 | **Degraded Operation Assertions** | `conformance/assertions/degraded-operation.yaml` | 24 assertions, 6 REQs, safety-critical fallback covered |
 | **AID Algorithms Matrix** | `traceability/domain-matrices/aid-algorithms-matrix.md` | 56 REQs, 66 GAPs, 0% coverage, duplicate REQ IDs found |

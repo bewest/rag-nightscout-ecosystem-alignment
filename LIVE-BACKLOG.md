@@ -27,6 +27,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Insulin Model Assertions (cycle 102) | P2 | ✅ Complete - 18 assertions, 3 REQs covered, algorithm 16%→21% | 2026-02-01 |
 | Safety Limit Assertions (cycle 101) | P2 | ✅ Complete - 20 assertions, 3 REQs covered, algorithm 11%→16% | 2026-02-01 |
 | Degraded Operation Assertions (cycle 100) | P2 | ✅ Complete - 24 assertions, 6 REQs covered, algorithm 0%→11% | 2026-02-01 |
 | AID Algorithms Matrix (cycle 99) | P2 | ✅ Complete - 56 REQs, 66 GAPs, 0% coverage, 7 action items | 2026-02-01 |
