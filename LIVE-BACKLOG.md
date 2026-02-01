@@ -27,6 +27,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Remote Command Assertions (cycle 97) | P2 | ✅ Complete - 35 assertions, 11 REQs covered, 49%→80% | 2026-02-01 |
 | Backlog Grooming (cycle 96) | P0 | ✅ Complete - Queue 5→6 items, remote command assertions added | 2026-02-01 |
 | Alarm Requirements Assertions (cycle 96) | P2 | ✅ Complete - 28 assertions, 10 REQs covered, 20%→49% | 2026-02-01 |
 | Treatments Domain Matrix (cycle 95) | P2 | ✅ Complete - 35 REQs, 9 GAPs, 20% assertion coverage | 2026-02-01 |

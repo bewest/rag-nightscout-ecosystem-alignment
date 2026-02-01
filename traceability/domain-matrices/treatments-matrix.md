@@ -12,11 +12,11 @@
 |--------|-------|
 | Requirements | 35 |
 | Gaps | 9 |
-| REQs with assertion coverage | 17 (49%) |
-| Uncovered REQs | 18 (51%) |
+| REQs with assertion coverage | 28 (80%) |
+| Uncovered REQs | 7 (20%) |
 | Uncovered GAPs | 2 (22%) |
 
-**Status**: Treatment sync requirements (REQ-TREAT-040-046) covered by treatment-sync.yaml. Alarm requirements (REQ-ALARM-001-010) covered by alarm-requirements.yaml. Remote, Interop, and Unit requirements need assertion coverage.
+**Status**: Treatment sync requirements (REQ-TREAT-040-046) covered by treatment-sync.yaml. Alarm requirements (REQ-ALARM-001-010) covered by alarm-requirements.yaml. Remote command requirements (REQ-REMOTE-001-011) covered by remote-command-requirements.yaml. Interop and Unit requirements need assertion coverage.
 
 ---
 
@@ -41,17 +41,17 @@
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-REMOTE-001 | Remote Command Authentication | - | ❌ None |
-| REQ-REMOTE-002 | Remote Command Replay Protection | - | ❌ None |
-| REQ-REMOTE-003 | Remote Bolus Safety Limits | - | ❌ None |
-| REQ-REMOTE-004 | Remote Command Audit Trail | - | ❌ None |
-| REQ-REMOTE-005 | Remote Command Source Tracking | - | ❌ None |
-| REQ-REMOTE-006 | Remote Command Toggle | - | ❌ None |
-| REQ-REMOTE-007 | Command Status Display | - | ❌ None |
-| REQ-REMOTE-008 | Recommended Bolus Expiry | - | ❌ None |
-| REQ-REMOTE-009 | Command Creation Timestamp | - | ❌ None |
-| REQ-REMOTE-010 | Credential Validation Before Storage | - | ❌ None |
-| REQ-REMOTE-011 | Post-Bolus Recommendation Rejection | - | ❌ None |
+| REQ-REMOTE-001 | Remote Command Authentication | GAP-REMOTE-001 | ✅ remote-command-requirements.yaml |
+| REQ-REMOTE-002 | Remote Command Replay Protection | - | ✅ remote-command-requirements.yaml |
+| REQ-REMOTE-003 | Remote Bolus Safety Limits | - | ✅ remote-command-requirements.yaml |
+| REQ-REMOTE-004 | Remote Command Audit Trail | - | ✅ remote-command-requirements.yaml |
+| REQ-REMOTE-005 | Remote Command Source Tracking | - | ✅ remote-command-requirements.yaml |
+| REQ-REMOTE-006 | Remote Command Toggle | - | ✅ remote-command-requirements.yaml |
+| REQ-REMOTE-007 | Command Status Display | - | ✅ remote-command-requirements.yaml |
+| REQ-REMOTE-008 | Recommended Bolus Expiry | - | ✅ remote-command-requirements.yaml |
+| REQ-REMOTE-009 | Command Creation Timestamp | - | ✅ remote-command-requirements.yaml |
+| REQ-REMOTE-010 | Credential Validation Before Storage | - | ✅ remote-command-requirements.yaml |
+| REQ-REMOTE-011 | Post-Bolus Recommendation Rejection | - | ✅ remote-command-requirements.yaml |
 
 ### Interop Requirements (3)
 

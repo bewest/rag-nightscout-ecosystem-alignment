@@ -13,6 +13,35 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Remote Command Assertions (2026-02-01)
+
+Created conformance assertions for remote command security requirements (security-critical).
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 11 (REQ-REMOTE-001-011) |
+| Assertions created | 35 |
+| Coverage improvement | Treatments domain 49% → 80% |
+
+**Deliverable**: `conformance/assertions/remote-command-requirements.yaml`
+
+**Coverage by Category**:
+- Authentication: 3 assertions
+- Replay protection: 3 assertions
+- Safety limits: 3 assertions
+- Audit trail: 3 assertions
+- Source tracking: 2 assertions
+- Toggle: 3 assertions
+- Status display: 3 assertions
+- Bolus expiry: 3 assertions
+- Timestamps: 2 assertions
+- Credential validation: 3 assertions
+- Post-bolus rejection: 3 assertions
+
+**Impact**: Security-critical remote command gap closed (0% → 100% remote coverage)
+
+---
+
 ### Alarm Requirements Assertions (2026-02-01)
 
 Created conformance assertions for caregiver alarm requirements (safety-critical).

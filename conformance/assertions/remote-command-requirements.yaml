@@ -1,0 +1,417 @@
+# Assertions for Remote Command Requirements
+# Tests remote command security and safety requirements (REQ-REMOTE-001 through REQ-REMOTE-011)
+# Security-critical: 0% coverage → target 100% coverage
+
+scenario: remote-command-requirements
+version: 1
+
+# Link to requirements in traceability/treatments-requirements.md
+requirements:
+  - REQ-REMOTE-001  # Remote Command Authentication
+  - REQ-REMOTE-002  # Remote Command Replay Protection
+  - REQ-REMOTE-003  # Remote Bolus Safety Limits
+  - REQ-REMOTE-004  # Remote Command Audit Trail
+  - REQ-REMOTE-005  # Remote Command Source Tracking
+  - REQ-REMOTE-006  # Remote Command Toggle
+  - REQ-REMOTE-007  # Command Status Display
+  - REQ-REMOTE-008  # Recommended Bolus Expiry
+  - REQ-REMOTE-009  # Command Creation Timestamp
+  - REQ-REMOTE-010  # Credential Validation Before Storage
+  - REQ-REMOTE-011  # Post-Bolus Recommendation Rejection
+
+related_gaps:
+  - GAP-REMOTE-001  # Loop overrides not authenticated
+  - GAP-REMOTE-002  # Inconsistent remote command formats
+
+assertions:
+  # ============================================
+  # Remote Command Authentication (REQ-REMOTE-001)
+  # ============================================
+
+  - id: unauthenticated-bolus-rejected
+    description: "Remote bolus without valid authentication is rejected"
+    type: security
+    requirement: REQ-REMOTE-001
+    target: remote.command.authentication
+    expected: command rejected with auth error
+    verification:
+      - Send bolus command without OTP/encryption
+      - Verify command rejected
+      - Verify rejection reason indicates auth failure
+
+  - id: authenticated-bolus-accepted
+    description: "Remote bolus with valid authentication is accepted"
+    type: security
+    requirement: REQ-REMOTE-001
+    target: remote.command.authentication
+    expected: command accepted and processed
+    verification:
+      - Send bolus command with valid OTP/encryption
+      - Verify command accepted
+      - Verify bolus enacted
+
+  - id: auth-failure-logged
+    description: "Authentication failures are logged"
+    type: audit
+    requirement: REQ-REMOTE-001
+    target: remote.command.logging
+    expected: failed auth attempt in audit log
+    verification:
+      - Send command with invalid auth
+      - Query audit log
+      - Verify entry with timestamp, source, failure reason
+
+  # ============================================
+  # Remote Command Replay Protection (REQ-REMOTE-002)
+  # ============================================
+
+  - id: replayed-command-rejected
+    description: "Previously executed command cannot be replayed"
+    type: security
+    requirement: REQ-REMOTE-002
+    target: remote.command.replay
+    expected: replay attempt rejected
+    verification:
+      - Capture valid authenticated command
+      - Execute command successfully
+      - Replay same command
+      - Verify replay rejected
+
+  - id: expired-command-rejected
+    description: "Command with expired timestamp is rejected"
+    type: security
+    requirement: REQ-REMOTE-002
+    target: remote.command.expiry
+    expected: stale command rejected
+    verification:
+      - Create command with timestamp > 10 minutes old
+      - Submit command
+      - Verify rejection with expiry reason
+
+  - id: replay-attempt-logged
+    description: "Replay attempts are logged for security audit"
+    type: audit
+    requirement: REQ-REMOTE-002
+    target: remote.command.logging
+    expected: replay attempt in audit log
+    verification:
+      - Attempt command replay
+      - Query audit log
+      - Verify replay attempt recorded
+
+  # ============================================
+  # Remote Bolus Safety Limits (REQ-REMOTE-003)
+  # ============================================
+
+  - id: max-bolus-limit-enforced
+    description: "Remote bolus exceeding max bolus is rejected"
+    type: safety
+    requirement: REQ-REMOTE-003
+    target: remote.bolus.maxLimit
+    expected: over-limit bolus rejected with reason
+    verification:
+      - Configure max bolus = 5U
+      - Send remote bolus of 6U
+      - Verify rejection with max bolus reason
+
+  - id: max-iob-limit-enforced
+    description: "Remote bolus that would exceed max IOB is rejected"
+    type: safety
+    requirement: REQ-REMOTE-003
+    target: remote.bolus.maxIOB
+    expected: IOB-exceeding bolus rejected
+    verification:
+      - Configure max IOB = 10U
+      - Current IOB = 8U
+      - Send remote bolus of 4U
+      - Verify rejection with max IOB reason
+
+  - id: safety-rejection-includes-reason
+    description: "Safety rejections include specific reason"
+    type: behavior
+    requirement: REQ-REMOTE-003
+    target: remote.bolus.rejection
+    expected: rejection message indicates which limit exceeded
+    verification:
+      - Trigger max bolus rejection
+      - Verify message includes limit value
+      - Verify message includes requested amount
+
+  # ============================================
+  # Remote Command Audit Trail (REQ-REMOTE-004)
+  # ============================================
+
+  - id: successful-command-logged
+    description: "Successful remote commands are logged"
+    type: audit
+    requirement: REQ-REMOTE-004
+    target: remote.command.audit
+    expected: success entry in audit log
+    verification:
+      - Send successful remote command
+      - Query audit log
+      - Verify entry with timestamp, source, command type, success
+
+  - id: failed-command-logged
+    description: "Failed remote commands are logged with reason"
+    type: audit
+    requirement: REQ-REMOTE-004
+    target: remote.command.audit
+    expected: failure entry with reason in audit log
+    verification:
+      - Send command that will fail (e.g., over limit)
+      - Query audit log
+      - Verify entry includes failure reason
+
+  - id: audit-includes-source-identifier
+    description: "Audit entries include source identifier"
+    type: audit
+    requirement: REQ-REMOTE-004
+    target: remote.command.audit.source
+    expected: remote address or phone number in log
+    verification:
+      - Send remote command
+      - Query audit log
+      - Verify source identifier present (IP, phone, device ID)
+
+  # ============================================
+  # Remote Command Source Tracking (REQ-REMOTE-005)
+  # ============================================
+
+  - id: remote-treatment-indicates-origin
+    description: "Treatments from remote commands indicate remote origin"
+    type: behavior
+    requirement: REQ-REMOTE-005
+    target: treatment.enteredBy
+    expected: enteredBy indicates remote source
+    verification:
+      - Send remote bolus command
+      - Query resulting treatment
+      - Verify enteredBy contains "remote" or equivalent
+
+  - id: remote-vs-local-distinguishable
+    description: "Remote and local treatments are distinguishable"
+    type: behavior
+    requirement: REQ-REMOTE-005
+    target: treatment.source
+    expected: different enteredBy values
+    verification:
+      - Create local bolus
+      - Create remote bolus
+      - Query both treatments
+      - Verify distinct source identification
+
+  # ============================================
+  # Remote Command Toggle (REQ-REMOTE-006)
+  # ============================================
+
+  - id: remote-disabled-by-default
+    description: "Remote commands are disabled by default"
+    type: config
+    requirement: REQ-REMOTE-006
+    target: remote.enabled
+    expected: default = false
+    verification:
+      - Fresh installation
+      - Check remote command setting
+      - Verify disabled
+
+  - id: remote-requires-explicit-enable
+    description: "Remote commands require explicit user action to enable"
+    type: config
+    requirement: REQ-REMOTE-006
+    target: remote.enable.action
+    expected: user must take deliberate action
+    verification:
+      - Navigate to remote settings
+      - Enable remote commands
+      - Verify confirmation required
+
+  - id: disabled-remote-rejects-commands
+    description: "Commands rejected when remote is disabled"
+    type: behavior
+    requirement: REQ-REMOTE-006
+    target: remote.disabled.behavior
+    expected: all remote commands rejected
+    verification:
+      - Disable remote commands
+      - Send remote bolus
+      - Verify rejection with "remote disabled" reason
+
+  # ============================================
+  # Command Status Display (REQ-REMOTE-007)
+  # ============================================
+
+  - id: pending-command-status-displayed
+    description: "Pending command status is visible in UI"
+    type: ui
+    requirement: REQ-REMOTE-007
+    target: remote.command.status
+    expected: pending state displayed
+    verification:
+      - Send remote command
+      - Check UI immediately
+      - Verify pending/in-progress indicator
+
+  - id: success-status-displayed
+    description: "Successful command completion is visible"
+    type: ui
+    requirement: REQ-REMOTE-007
+    target: remote.command.status
+    expected: success state displayed
+    verification:
+      - Send remote command
+      - Wait for completion
+      - Verify success indicator in UI
+
+  - id: error-status-displayed
+    description: "Command errors are visible with reason"
+    type: ui
+    requirement: REQ-REMOTE-007
+    target: remote.command.status
+    expected: error state with message displayed
+    verification:
+      - Send command that will fail
+      - Verify error indicator
+      - Verify error reason displayed
+
+  # ============================================
+  # Recommended Bolus Expiry (REQ-REMOTE-008)
+  # ============================================
+
+  - id: recommendation-expires-after-threshold
+    description: "Bolus recommendation expires after configured threshold"
+    type: behavior
+    requirement: REQ-REMOTE-008
+    target: remote.recommendation.expiry
+    expected: recommendation hidden/invalidated after 7 minutes
+    verification:
+      - View bolus recommendation
+      - Wait 7+ minutes without refresh
+      - Verify recommendation no longer actionable
+
+  - id: expiry-threshold-configurable
+    description: "Recommendation expiry threshold is configurable"
+    type: config
+    requirement: REQ-REMOTE-008
+    target: remote.recommendation.expiryThreshold
+    expected: user can adjust expiry time
+    verification:
+      - Configure expiry to 5 minutes
+      - Verify recommendation expires at 5 minutes
+
+  - id: expired-recommendation-not-executable
+    description: "Expired recommendations cannot be executed"
+    type: safety
+    requirement: REQ-REMOTE-008
+    target: remote.recommendation.execution
+    expected: execution blocked after expiry
+    verification:
+      - View recommendation
+      - Wait for expiry
+      - Attempt to execute
+      - Verify execution blocked with expiry reason
+
+  # ============================================
+  # Command Creation Timestamp (REQ-REMOTE-009)
+  # ============================================
+
+  - id: command-includes-creation-timestamp
+    description: "Remote commands include createdDate field"
+    type: state
+    requirement: REQ-REMOTE-009
+    target: remote.command.createdDate
+    expected: ISO 8601 timestamp present
+    verification:
+      - Create remote command
+      - Inspect command payload
+      - Verify createdDate field present and valid
+
+  - id: commands-processed-in-timestamp-order
+    description: "Commands are processed in timestamp order"
+    type: behavior
+    requirement: REQ-REMOTE-009
+    target: remote.command.ordering
+    expected: earlier timestamps processed first
+    verification:
+      - Create command A at T1
+      - Create command B at T2 (T2 > T1)
+      - Submit B then A
+      - Verify A processed before B
+
+  # ============================================
+  # Credential Validation Before Storage (REQ-REMOTE-010)
+  # ============================================
+
+  - id: invalid-credentials-not-stored
+    description: "Invalid credentials are not stored"
+    type: security
+    requirement: REQ-REMOTE-010
+    target: remote.credentials.validation
+    expected: validation before storage
+    verification:
+      - Enter invalid Nightscout URL/API secret
+      - Attempt to save looper profile
+      - Verify validation error
+      - Verify profile not saved
+
+  - id: valid-credentials-validated-and-stored
+    description: "Valid credentials are validated then stored"
+    type: security
+    requirement: REQ-REMOTE-010
+    target: remote.credentials.storage
+    expected: validation success then storage
+    verification:
+      - Enter valid Nightscout credentials
+      - Verify server connectivity test
+      - Confirm profile saved after validation
+
+  - id: validation-error-displayed
+    description: "Credential validation errors are displayed to user"
+    type: ui
+    requirement: REQ-REMOTE-010
+    target: remote.credentials.error
+    expected: clear error message
+    verification:
+      - Enter invalid credentials
+      - Verify error message displayed
+      - Message indicates connection or auth failure
+
+  # ============================================
+  # Post-Bolus Recommendation Rejection (REQ-REMOTE-011)
+  # ============================================
+
+  - id: recommendation-invalidated-after-bolus
+    description: "Recommendation invalidated when bolus delivered after timestamp"
+    type: safety
+    requirement: REQ-REMOTE-011
+    target: remote.recommendation.invalidation
+    expected: recommendation rejected if bolus since timestamp
+    verification:
+      - View recommendation based on devicestatus at T1
+      - Bolus delivered at T2 (T2 > T1)
+      - Attempt to use recommendation
+      - Verify rejection with stale reason
+
+  - id: fresh-recommendation-after-bolus
+    description: "New recommendation available after refresh post-bolus"
+    type: behavior
+    requirement: REQ-REMOTE-011
+    target: remote.recommendation.refresh
+    expected: new recommendation after devicestatus refresh
+    verification:
+      - Bolus invalidates recommendation
+      - Wait for new devicestatus
+      - Verify new recommendation available
+
+  - id: concurrent-bolus-detection
+    description: "System detects bolus from another source"
+    type: behavior
+    requirement: REQ-REMOTE-011
+    target: remote.bolus.concurrency
+    expected: detects external bolus delivery
+    verification:
+      - View recommendation
+      - Bolus delivered from pump or main app
+      - Caregiver app detects via treatments/devicestatus
+      - Recommendation invalidated
