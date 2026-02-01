@@ -12,11 +12,11 @@
 |--------|-------|
 | Requirements | 35 |
 | Gaps | 9 |
-| REQs with assertion coverage | 7 (20%) |
-| Uncovered REQs | 28 (80%) |
+| REQs with assertion coverage | 17 (49%) |
+| Uncovered REQs | 18 (51%) |
 | Uncovered GAPs | 2 (22%) |
 
-**Status**: Treatment sync requirements (REQ-TREAT-040-046) covered by treatment-sync.yaml. Alarm, Remote, Interop, and Unit requirements need assertion coverage.
+**Status**: Treatment sync requirements (REQ-TREAT-040-046) covered by treatment-sync.yaml. Alarm requirements (REQ-ALARM-001-010) covered by alarm-requirements.yaml. Remote, Interop, and Unit requirements need assertion coverage.
 
 ---
 
@@ -26,16 +26,16 @@
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-ALARM-001 | Configurable Glucose Thresholds | - | ❌ None |
-| REQ-ALARM-002 | Configurable Snooze Duration | - | ❌ None |
-| REQ-ALARM-003 | Day/Night Schedule Support | - | ❌ None |
-| REQ-ALARM-004 | Predictive Low Glucose Alarms | - | ❌ None |
-| REQ-ALARM-005 | Persistent Threshold Requirement | - | ❌ None |
-| REQ-ALARM-006 | Rate-of-Change Alarms | - | ❌ None |
-| REQ-ALARM-007 | Missed Reading Detection | - | ❌ None |
-| REQ-ALARM-008 | Loop Status Alerting | - | ❌ None |
-| REQ-ALARM-009 | Alarm Priority Ordering | - | ❌ None |
-| REQ-ALARM-010 | Global Snooze/Mute Capability | - | ❌ None |
+| REQ-ALARM-001 | Configurable Glucose Thresholds | - | ✅ alarm-requirements.yaml |
+| REQ-ALARM-002 | Configurable Snooze Duration | - | ✅ alarm-requirements.yaml |
+| REQ-ALARM-003 | Day/Night Schedule Support | - | ✅ alarm-requirements.yaml |
+| REQ-ALARM-004 | Predictive Low Glucose Alarms | - | ✅ alarm-requirements.yaml |
+| REQ-ALARM-005 | Persistent Threshold Requirement | - | ✅ alarm-requirements.yaml |
+| REQ-ALARM-006 | Rate-of-Change Alarms | - | ✅ alarm-requirements.yaml |
+| REQ-ALARM-007 | Missed Reading Detection | - | ✅ alarm-requirements.yaml |
+| REQ-ALARM-008 | Loop Status Alerting | - | ✅ alarm-requirements.yaml |
+| REQ-ALARM-009 | Alarm Priority Ordering | - | ✅ alarm-requirements.yaml |
+| REQ-ALARM-010 | Global Snooze/Mute Capability | - | ✅ alarm-requirements.yaml |
 
 ### Remote Command Requirements (11)
 

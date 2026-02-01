@@ -1,0 +1,397 @@
+# Assertions for Alarm Requirements
+# Tests caregiver alarm functionality requirements (REQ-ALARM-001 through REQ-ALARM-010)
+# Safety-critical: 0% coverage → target 100% coverage
+
+scenario: alarm-requirements
+version: 1
+
+# Link to requirements in traceability/treatments-requirements.md
+requirements:
+  - REQ-ALARM-001  # Configurable Glucose Thresholds
+  - REQ-ALARM-002  # Configurable Snooze Duration
+  - REQ-ALARM-003  # Day/Night Schedule Support
+  - REQ-ALARM-004  # Predictive Low Glucose Alarms
+  - REQ-ALARM-005  # Persistent Threshold Requirement
+  - REQ-ALARM-006  # Rate-of-Change Alarms
+  - REQ-ALARM-007  # Missed Reading Detection
+  - REQ-ALARM-008  # Loop Status Alerting
+  - REQ-ALARM-009  # Alarm Priority Ordering
+  - REQ-ALARM-010  # Global Snooze/Mute Capability
+
+related_gaps:
+  - GAP-ALARM-001  # Cross-app alarm configuration sync not standardized
+  - GAP-ALARM-002  # Predictive alarm horizon varies by app
+
+assertions:
+  # ============================================
+  # Configurable Glucose Thresholds (REQ-ALARM-001)
+  # ============================================
+
+  - id: low-threshold-configurable
+    description: "Low glucose alarm threshold is configurable"
+    type: config
+    requirement: REQ-ALARM-001
+    target: alarm.lowThreshold
+    expected: user-configurable value in mg/dL or mmol/L
+    verification:
+      - Configure low threshold to 65 mg/dL
+      - Save configuration
+      - Verify threshold persists across app restart
+      - Verify alarm fires when glucose <= threshold
+
+  - id: high-threshold-configurable
+    description: "High glucose alarm threshold is configurable"
+    type: config
+    requirement: REQ-ALARM-001
+    target: alarm.highThreshold
+    expected: user-configurable value in mg/dL or mmol/L
+    verification:
+      - Configure high threshold to 200 mg/dL
+      - Save configuration
+      - Verify threshold persists across app restart
+      - Verify alarm fires when glucose >= threshold
+
+  - id: threshold-range-validation
+    description: "Threshold values are validated for reasonable ranges"
+    type: validation
+    requirement: REQ-ALARM-001
+    target: alarm.thresholdValidation
+    expected: reject invalid values
+    verification:
+      - Attempt to set low threshold < 40 mg/dL (should reject or warn)
+      - Attempt to set high threshold > 400 mg/dL (should reject or warn)
+      - Attempt to set low > high (should reject)
+
+  # ============================================
+  # Configurable Snooze Duration (REQ-ALARM-002)
+  # ============================================
+
+  - id: per-alarm-snooze-duration
+    description: "Snooze duration is configurable per alarm type"
+    type: config
+    requirement: REQ-ALARM-002
+    target: alarm.snooze.perType
+    expected: independent snooze settings per alarm type
+    verification:
+      - Configure 5-minute snooze for low alarm
+      - Configure 30-minute snooze for high alarm
+      - Verify each type uses its own snooze duration
+
+  - id: snooze-respects-duration
+    description: "Snoozed alarm re-fires after configured duration"
+    type: behavior
+    requirement: REQ-ALARM-002
+    target: alarm.snooze.behavior
+    expected: alarm re-fires after snooze period if condition persists
+    verification:
+      - Trigger low alarm
+      - Snooze for configured duration
+      - Verify no re-fire during snooze period
+      - Verify re-fire at snooze expiration if condition persists
+
+  # ============================================
+  # Day/Night Schedule Support (REQ-ALARM-003)
+  # ============================================
+
+  - id: day-night-schedule-configurable
+    description: "Day and night time ranges are configurable"
+    type: config
+    requirement: REQ-ALARM-003
+    target: alarm.schedule.dayNight
+    expected: configurable day start/end times
+    verification:
+      - Configure night start (e.g., 22:00)
+      - Configure day start (e.g., 07:00)
+      - Verify schedule applies correctly at boundary times
+
+  - id: different-thresholds-day-night
+    description: "Alarm thresholds can differ for day vs night"
+    type: config
+    requirement: REQ-ALARM-003
+    target: alarm.schedule.thresholds
+    expected: separate day and night threshold settings
+    verification:
+      - Configure night high threshold 220 mg/dL (less sensitive)
+      - Configure day high threshold 180 mg/dL (more sensitive)
+      - Verify correct threshold applies based on time
+
+  - id: different-sounds-day-night
+    description: "Alarm sounds can differ for day vs night"
+    type: config
+    requirement: REQ-ALARM-003
+    target: alarm.schedule.sounds
+    expected: separate day and night sound settings
+    verification:
+      - Configure night mode to vibrate only
+      - Configure day mode to sound + vibrate
+      - Verify correct notification type by time of day
+
+  # ============================================
+  # Predictive Low Glucose Alarms (REQ-ALARM-004)
+  # ============================================
+
+  - id: predictive-low-configurable
+    description: "Predictive low alarm is configurable"
+    type: config
+    requirement: REQ-ALARM-004
+    target: alarm.predictive.low
+    expected: configurable prediction horizon (minutes)
+    verification:
+      - Enable predictive low alarm
+      - Configure 20-minute look-ahead window
+      - Verify configuration persists
+
+  - id: predictive-low-fires-before-threshold
+    description: "Predictive alarm fires before glucose crosses threshold"
+    type: behavior
+    requirement: REQ-ALARM-004
+    target: alarm.predictive.trigger
+    expected: alarm fires when prediction shows low within horizon
+    verification:
+      - Current glucose 100 mg/dL
+      - Predicted glucose 55 mg/dL in 15 minutes
+      - Horizon set to 20 minutes
+      - Verify predictive alarm fires
+
+  - id: predictive-low-uses-prediction-data
+    description: "Predictive alarm uses devicestatus prediction data"
+    type: behavior
+    requirement: REQ-ALARM-004
+    target: alarm.predictive.dataSource
+    expected: reads from loop.predicted.values or openaps.predicted.glucoseValues
+    verification:
+      - Verify app reads prediction data from Nightscout
+      - Verify alarm logic uses controller predictions
+      - Falls back to trend extrapolation if predictions unavailable
+
+  # ============================================
+  # Persistent Threshold Requirement (REQ-ALARM-005)
+  # ============================================
+
+  - id: persistence-duration-configurable
+    description: "Persistence duration before alarm is configurable"
+    type: config
+    requirement: REQ-ALARM-005
+    target: alarm.persistence.duration
+    expected: configurable duration (minutes) before alarm fires
+    verification:
+      - Configure 15-minute persistence requirement
+      - Verify setting persists
+
+  - id: persistence-filters-brief-excursions
+    description: "Brief threshold crossings do not trigger alarm"
+    type: behavior
+    requirement: REQ-ALARM-005
+    target: alarm.persistence.filter
+    expected: no alarm for excursions shorter than persistence duration
+    verification:
+      - Glucose crosses high threshold for 5 minutes
+      - Returns to range before 15-minute persistence threshold
+      - Verify no alarm fires
+
+  - id: persistence-alarm-fires-after-duration
+    description: "Alarm fires when threshold exceeded for persistence duration"
+    type: behavior
+    requirement: REQ-ALARM-005
+    target: alarm.persistence.trigger
+    expected: alarm fires after configured persistence period
+    verification:
+      - Glucose crosses high threshold
+      - Remains high for 15 minutes (persistence threshold)
+      - Verify alarm fires at 15-minute mark
+
+  # ============================================
+  # Rate-of-Change Alarms (REQ-ALARM-006)
+  # ============================================
+
+  - id: fast-drop-threshold-configurable
+    description: "Fast drop rate threshold is configurable"
+    type: config
+    requirement: REQ-ALARM-006
+    target: alarm.rateOfChange.drop
+    expected: configurable mg/dL/min or mmol/L/min threshold
+    verification:
+      - Configure drop rate threshold to 3 mg/dL/min
+      - Verify setting persists
+
+  - id: fast-rise-threshold-configurable
+    description: "Fast rise rate threshold is configurable"
+    type: config
+    requirement: REQ-ALARM-006
+    target: alarm.rateOfChange.rise
+    expected: configurable mg/dL/min or mmol/L/min threshold
+    verification:
+      - Configure rise rate threshold to 3 mg/dL/min
+      - Verify setting persists
+
+  - id: rate-alarm-fires-on-rapid-change
+    description: "Rate alarm fires when glucose changes rapidly"
+    type: behavior
+    requirement: REQ-ALARM-006
+    target: alarm.rateOfChange.trigger
+    expected: alarm when rate exceeds threshold
+    verification:
+      - Glucose dropping at 4 mg/dL/min
+      - Drop threshold set to 3 mg/dL/min
+      - Verify fast drop alarm fires
+
+  # ============================================
+  # Missed Reading Detection (REQ-ALARM-007)
+  # ============================================
+
+  - id: missed-reading-threshold-configurable
+    description: "Missed reading alarm threshold is configurable"
+    type: config
+    requirement: REQ-ALARM-007
+    target: alarm.missedReading.threshold
+    expected: configurable duration (minutes) of missing data
+    verification:
+      - Configure 15-minute missed reading threshold
+      - Verify setting persists
+
+  - id: missed-reading-alarm-fires
+    description: "Alarm fires when no readings received for configured period"
+    type: behavior
+    requirement: REQ-ALARM-007
+    target: alarm.missedReading.trigger
+    expected: alarm fires after data gap exceeds threshold
+    verification:
+      - Last reading at T=0
+      - No new readings for 15 minutes
+      - Threshold set to 15 minutes
+      - Verify missed reading alarm fires
+
+  - id: missed-reading-clears-on-data
+    description: "Missed reading alarm clears when data resumes"
+    type: behavior
+    requirement: REQ-ALARM-007
+    target: alarm.missedReading.clear
+    expected: alarm auto-clears when readings resume
+    verification:
+      - Missed reading alarm is active
+      - New reading received
+      - Verify alarm clears automatically
+
+  # ============================================
+  # Loop Status Alerting (REQ-ALARM-008)
+  # ============================================
+
+  - id: not-looping-threshold-configurable
+    description: "Not-looping alarm threshold is configurable"
+    type: config
+    requirement: REQ-ALARM-008
+    target: alarm.loopStatus.threshold
+    expected: configurable duration (minutes) of loop inactivity
+    verification:
+      - Configure 30-minute not-looping threshold
+      - Verify setting persists
+
+  - id: not-looping-alarm-fires
+    description: "Alarm fires when loop has not run for configured period"
+    type: behavior
+    requirement: REQ-ALARM-008
+    target: alarm.loopStatus.trigger
+    expected: alarm fires when lastLoopEnacted exceeds threshold
+    verification:
+      - Last loop enaction at T=0
+      - No loop activity for 30 minutes
+      - Threshold set to 30 minutes
+      - Verify not-looping alarm fires
+
+  - id: loop-status-from-devicestatus
+    description: "Loop status is determined from devicestatus collection"
+    type: behavior
+    requirement: REQ-ALARM-008
+    target: alarm.loopStatus.dataSource
+    expected: reads from loop.enacted.timestamp or openaps.enacted.timestamp
+    verification:
+      - App queries devicestatus for loop.enacted or openaps.enacted
+      - Compares timestamp to current time
+      - Uses most recent enaction for loop status
+
+  # ============================================
+  # Alarm Priority Ordering (REQ-ALARM-009)
+  # ============================================
+
+  - id: low-higher-priority-than-high
+    description: "Low glucose alarm has higher priority than high glucose alarm"
+    type: behavior
+    requirement: REQ-ALARM-009
+    target: alarm.priority.order
+    expected: low > high in priority
+    verification:
+      - Both low and high conditions active simultaneously
+      - Low alarm presented first
+      - High alarm queued until low addressed
+
+  - id: multiple-alarms-ordered-by-priority
+    description: "Multiple concurrent alarms presented in priority order"
+    type: behavior
+    requirement: REQ-ALARM-009
+    target: alarm.priority.presentation
+    expected: highest priority alarm shown first
+    verification:
+      - Define priority order (e.g., low > not-looping > high > missed reading)
+      - Trigger multiple conditions simultaneously
+      - Verify alarms presented in priority order
+
+  - id: priority-queue-on-snooze
+    description: "Snoozing high-priority alarm reveals next in queue"
+    type: behavior
+    requirement: REQ-ALARM-009
+    target: alarm.priority.queue
+    expected: next-priority alarm shown after snoozing current
+    verification:
+      - Low and high alarms both active
+      - Snooze low alarm
+      - Verify high alarm now displayed
+
+  # ============================================
+  # Global Snooze/Mute Capability (REQ-ALARM-010)
+  # ============================================
+
+  - id: global-snooze-available
+    description: "Global snooze function is available"
+    type: config
+    requirement: REQ-ALARM-010
+    target: alarm.globalSnooze.available
+    expected: UI option to snooze all alarms
+    verification:
+      - Global snooze option visible in UI
+      - Duration is configurable
+
+  - id: global-snooze-suppresses-all
+    description: "Global snooze suppresses all alarm types"
+    type: behavior
+    requirement: REQ-ALARM-010
+    target: alarm.globalSnooze.behavior
+    expected: all alarms suppressed during global snooze
+    verification:
+      - Enable global snooze for 30 minutes
+      - Trigger low alarm condition
+      - Trigger missed reading condition
+      - Verify no alarms fire during snooze period
+
+  - id: global-snooze-auto-expires
+    description: "Global snooze expires after configured duration"
+    type: behavior
+    requirement: REQ-ALARM-010
+    target: alarm.globalSnooze.expiration
+    expected: alarms resume after snooze period
+    verification:
+      - Enable global snooze for N minutes
+      - Wait for snooze period to expire
+      - Verify alarms resume normal behavior
+      - Any active conditions now trigger alarms
+
+  - id: global-mute-vs-snooze
+    description: "Global mute maintains visual alerts while silencing audio"
+    type: behavior
+    requirement: REQ-ALARM-010
+    target: alarm.globalMute.behavior
+    expected: visual alerts shown, audio/vibration suppressed
+    verification:
+      - Enable global mute (if supported separately from snooze)
+      - Trigger alarm condition
+      - Verify visual notification appears
+      - Verify no sound or vibration

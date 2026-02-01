@@ -13,6 +13,34 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Alarm Requirements Assertions (2026-02-01)
+
+Created conformance assertions for caregiver alarm requirements (safety-critical).
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 10 (REQ-ALARM-001-010) |
+| Assertions created | 28 |
+| Coverage improvement | Treatments domain 20% → 49% |
+
+**Deliverable**: `conformance/assertions/alarm-requirements.yaml`
+
+**Coverage by Category**:
+- Configurable thresholds: 3 assertions
+- Snooze configuration: 2 assertions
+- Day/Night scheduling: 3 assertions
+- Predictive alarms: 3 assertions
+- Persistence filtering: 3 assertions
+- Rate-of-change: 3 assertions
+- Missed reading: 3 assertions
+- Loop status: 3 assertions
+- Priority ordering: 3 assertions
+- Global snooze/mute: 4 assertions
+
+**Impact**: Safety-critical alarm gap closed (0% → 100% alarm coverage)
+
+---
+
 ### Treatments Domain Traceability Matrix (2026-02-01)
 
 Created REQ↔GAP↔Assertion cross-reference matrix for treatments domain.

@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 94) | **Open Items**: 6  
+> **Last Groomed**: 2026-02-01 (cycle 96) | **Open Items**: 5  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -64,13 +64,6 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** aid-algorithms-requirements.md (56 REQs)
 **Deliverable:** `traceability/domain-matrices/aid-algorithms-matrix.md`
 **Impact:** Identify assertion gaps in algorithm comparison domain
-
-### 6. [P2] Alarm requirements assertions
-**Type:** Conformance | **Effort:** Medium
-**Focus:** Create assertions for alarm requirements (REQ-ALARM-001-010)
-**Source:** treatments-matrix.md action items (0% coverage, safety-critical)
-**Deliverable:** `conformance/assertions/alarm-requirements.yaml`
-**Impact:** Address 0% alarm coverage gap
 
 ---
 
