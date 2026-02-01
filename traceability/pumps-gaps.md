@@ -313,3 +313,35 @@ rT.predBGs = {
 ## Treatment Sync Gaps
 
 ---
+
+
+### GAP-TANDEM-001: No Open-Source AID Control for Tandem Pumps
+
+**Description**: Unlike Omnipod/Medtronic/Dana, Tandem t:slim X2 pumps cannot be controlled by open-source AID algorithms (AAPS, Loop, Trio).
+
+**Affected Systems**: All open-source AID systems
+
+**Evidence**:
+- AAPS: Has `PumpType.TANDEM_T_SLIM_X2` enum but no pump driver plugin
+- Loop: No TandemKit or similar driver
+- Trio: No Tandem support
+- Tandem uses proprietary, encrypted BLE protocol
+- Control-IQ is FDA-cleared closed-source algorithm
+
+**Impact**:
+- Tandem users cannot use open-source AID
+- Locked into Control-IQ algorithm settings
+- Cannot customize dosing beyond Tandem's parameters
+- Data access only via cloud (tconnectsync), not real-time
+
+**Remediation**: 
+Requires Tandem to open BLE protocol or provide control API. Unlikely due to:
+- Proprietary IP in Control-IQ
+- FDA regulatory concerns
+- No community reverse-engineering effort
+
+**Related**: 
+- GAP-TCONNECT-001/002/003/004 (data sync gaps)
+- `docs/10-domain/tandem-integration-inventory.md`
+
+**Status**: Platform limitation (not remediable by community)

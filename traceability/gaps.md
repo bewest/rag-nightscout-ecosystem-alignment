@@ -22,9 +22,9 @@ This document is an index of gaps organized by domain.
 | cgm-sources | 52 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-01-29 |
 | connectors | 69 | [connectors-gaps.md](connectors-gaps.md) | 2026-02-01 (GAP-TIDEPOOL-001/002/003/004 added) |
 | treatments | 25 | [treatments-gaps.md](treatments-gaps.md) | - |
-| pumps | 9 | [pumps-gaps.md](pumps-gaps.md) | - |
+| pumps | 10 | [pumps-gaps.md](pumps-gaps.md) | 2026-02-01 (GAP-TANDEM-001 added) |
 
-Total: 359 gaps across 7 domains
+Total: 360 gaps across 7 domains
 
 ## Verification Status
 
