@@ -12,11 +12,11 @@
 |--------|-------|
 | Requirements | 56 |
 | Gaps | 66 |
-| REQs with assertion coverage | 43 (77%) |
-| Uncovered REQs | 13 (23%) |
-| Uncovered GAPs | 39 (59%) |
+| REQs with assertion coverage | 47 (84%) |
+| Uncovered REQs | 9 (16%) |
+| Uncovered GAPs | 35 (53%) |
 
-**Status**: 🔄 **IN PROGRESS** - 11/12 categories complete (43 REQs)
+**Status**: 🔄 **IN PROGRESS** - 12/12 categories complete (47 REQs), Algorithm Core at 25%
 
 ---
 
@@ -65,14 +65,14 @@
 | REQ-INS-004 | Activity Calculation for BGI | - | ✅ insulin-model.yaml |
 | REQ-INS-005 | Insulin Model Metadata in Treatments | GAP-INS-001 | ✅ insulin-model.yaml |
 
-### Proposed API (4)
+### Proposed API (4) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-PR-001 | Heart Rate Collection Support | GAP-API-HR | ❌ None |
-| REQ-PR-002 | Multi-Insulin API Standardization | GAP-INSULIN-001 | ❌ None |
-| REQ-PR-003 | Remote Command Queue | GAP-REMOTE-CMD | ❌ None |
-| REQ-PR-004 | Consistent Timezone Display | GAP-TZ-001 | ❌ None |
+| REQ-PR-001 | Heart Rate Collection Support | GAP-API-HR | ✅ proposed-api.yaml |
+| REQ-PR-002 | Multi-Insulin API Standardization | GAP-INSULIN-001 | ✅ proposed-api.yaml |
+| REQ-PR-003 | Remote Command Queue | GAP-REMOTE-CMD | ✅ proposed-api.yaml |
+| REQ-PR-004 | Consistent Timezone Display | GAP-TZ-001 | ✅ proposed-api.yaml |
 
 ### Profile Schema (7) - COVERED ✅
 
@@ -234,7 +234,7 @@
 | Carb Absorption | 6 | 6 | 100% ✅ |
 | Degraded Operation | 6 | 6 | 100% ✅ |
 | Insulin Model | 5 | 5 | 100% ✅ |
-| Proposed API | 4 | 0 | 0% |
+| Proposed API | 4 | 4 | 100% ✅ |
 | Profile Schema | 7 | 7 | 100% ✅ |
 | Bolus Wizard | 3 | 3 | 100% ✅ |
 | Sensitivity | 3 | 3 | 100% ✅ |
@@ -242,7 +242,7 @@
 | Dosing Mechanism | 3 | 3 | 100% ✅ |
 | Target Range | 3 | 3 | 100% ✅ |
 | Trio oref | 3 | 3 | 100% ✅ |
-| **Total** | **56** | **43** | **77%** |
+| **Total** | **56** | **47** | **84%** |
 
 ### Data Quality Issues
 
@@ -302,7 +302,8 @@
 | `algorithm-docs.yaml` | 12 (REQ-BOLUS-001-003, SENS-001-003, DOSE-001-003, TGT-001-003) | 4 (GAP-BOLUS-001, 002, SENS-001, 002) |
 | `carb-absorption.yaml` | 6 (REQ-CARB-001-006) | 5 (GAP-CARB-001, 002, 003, 004, 005) |
 | `trio-oref.yaml` | 3 (REQ-OREF-001-003) | 4 (GAP-TRIO-001, GAP-OREF-001, 002, 003) |
-| **Total** | **43** | **26** |
+| `proposed-api.yaml` | 4 (REQ-PR-001-004) | 4 (GAP-API-HR, GAP-INSULIN-001, GAP-REMOTE-CMD, GAP-TZ-001) |
+| **Total** | **47** | **30** |
 
 ---
 

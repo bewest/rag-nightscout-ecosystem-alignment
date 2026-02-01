@@ -27,6 +27,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Proposed API Assertions (cycle 109) | P2 | ✅ Complete - 23 assertions, 4 REQs covered, algorithm 77%→84% | 2026-02-01 |
 | Trio oref Assertions (cycle 108) | P2 | ✅ Complete - 22 assertions, 3 REQs covered, algorithm 71%→77% | 2026-02-01 |
 | Carb Absorption Assertions (cycle 107) | P2 | ✅ Complete - 34 assertions, 6 REQs covered, algorithm 61%→71% | 2026-02-01 |
 | Algorithm Docs Assertions (cycle 106) | P2 | ✅ Complete - 32 assertions, 12 REQs covered, algorithm 39%→61% | 2026-02-01 |

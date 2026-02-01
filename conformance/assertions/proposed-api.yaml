@@ -1,0 +1,318 @@
+# Proposed API Conformance Assertions
+# Covers REQ-PR-001 through REQ-PR-004
+#
+# These assertions verify proposed Nightscout API extensions for
+# heart rate, multi-insulin, remote commands, and timezone handling.
+
+scenario: proposed-api-extensions
+version: "1.0"
+requirements:
+  - REQ-PR-001
+  - REQ-PR-002
+  - REQ-PR-003
+  - REQ-PR-004
+
+related_gaps:
+  - GAP-API-HR     # Heart rate collection not standard
+  - GAP-INSULIN-001  # Multi-insulin API not standardized
+  - GAP-REMOTE-CMD   # Remote command queue needed
+  - GAP-TZ-001       # Timezone display inconsistency
+
+assertions:
+  # ========================================
+  # Heart Rate Collection (REQ-PR-001)
+  # ========================================
+
+  - id: hr-api-001
+    description: Nightscout APIv3 has heartrate collection endpoint
+    type: schema
+    requirement: REQ-PR-001
+    gap: GAP-API-HR
+    target: Nightscout API v3
+    expected:
+      endpoint: "/api/v3/heartrate"
+      methods: ["GET", "POST", "PUT", "DELETE"]
+    verification: API endpoint availability check
+    status: draft
+
+  - id: hr-api-002
+    description: Heart rate collection schema includes required fields
+    type: schema
+    requirement: REQ-PR-001
+    gap: GAP-API-HR
+    target: specs/openapi/
+    expected:
+      fields:
+        - date
+        - bpm
+        - device
+        - identifier
+    verification: OpenAPI schema review
+    status: draft
+
+  - id: hr-api-003
+    description: AAPS can upload heart rate data to Nightscout
+    type: behavior
+    requirement: REQ-PR-001
+    gap: GAP-API-HR
+    target: AAPS → Nightscout sync
+    expected:
+      upload_succeeds: true
+      data_preserved: true
+    verification: Integration test with AAPS HR upload
+    status: draft
+
+  - id: hr-api-004
+    description: Heart rate correlates with glucose in reports
+    type: ui
+    requirement: REQ-PR-001
+    target: Nightscout reports
+    expected:
+      chart: "HR + glucose overlay"
+      analysis: "correlation available"
+    verification: Report generation with HR data
+    status: draft
+
+  - id: hr-api-005
+    description: Heart rate documentation exists
+    type: documentation
+    requirement: REQ-PR-001
+    target: Nightscout API docs
+    expected:
+      documents: "heartrate collection"
+      includes: "schema and usage examples"
+    verification: Documentation review
+    status: draft
+
+  # ========================================
+  # Multi-Insulin API (REQ-PR-002)
+  # ========================================
+
+  - id: insulin-api-001
+    description: Nightscout has insulin entity collection
+    type: schema
+    requirement: REQ-PR-002
+    gap: GAP-INSULIN-001
+    target: Nightscout API
+    expected:
+      endpoint: "/api/v3/insulin"
+      or: "insulin profiles in settings"
+    verification: API endpoint check
+    status: draft
+
+  - id: insulin-api-002
+    description: Insulin profile schema includes curve parameters
+    type: schema
+    requirement: REQ-PR-002
+    gap: GAP-INSULIN-001
+    target: specs/openapi/
+    expected:
+      fields:
+        - name
+        - dia
+        - peak
+        - curve_type
+        - color
+    verification: Schema definition review
+    status: draft
+
+  - id: insulin-api-003
+    description: xDrip+ can sync insulin definitions to Nightscout
+    type: behavior
+    requirement: REQ-PR-002
+    gap: GAP-INSULIN-001
+    target: xDrip+ → Nightscout
+    expected:
+      sync_supported: true
+      definitions_preserved: true
+    verification: xDrip+ insulin sync test
+    status: draft
+
+  - id: insulin-api-004
+    description: nightscout-reporter reads insulin profiles
+    type: behavior
+    requirement: REQ-PR-002
+    gap: GAP-INSULIN-001
+    target: nightscout-reporter
+    expected:
+      reads: "insulin definitions"
+      uses: "for IOB calculations"
+    verification: Reporter insulin profile test
+    status: draft
+
+  - id: insulin-api-005
+    description: Treatments can reference insulin type
+    type: schema
+    requirement: REQ-PR-002
+    gap: GAP-INSULIN-001
+    target: Nightscout treatments
+    expected:
+      field: "insulin" or "insulinType"
+      references: "insulin entity"
+    verification: Treatment schema review
+    status: draft
+
+  - id: insulin-api-006
+    description: UI color-codes treatments by insulin type
+    type: ui
+    requirement: REQ-PR-002
+    target: Nightscout web UI
+    expected:
+      bolus_display: "color-coded by insulin"
+    verification: UI visual inspection
+    status: draft
+
+  # ========================================
+  # Remote Command Queue (REQ-PR-003)
+  # ========================================
+
+  - id: remote-cmd-001
+    description: Command queue endpoint exists
+    type: schema
+    requirement: REQ-PR-003
+    gap: GAP-REMOTE-CMD
+    target: Nightscout API
+    expected:
+      endpoint: "/api/v3/commands" or "/api/v3/commandqueue"
+    verification: API endpoint check
+    status: draft
+
+  - id: remote-cmd-002
+    description: Command schema includes delivery status
+    type: schema
+    requirement: REQ-PR-003
+    gap: GAP-REMOTE-CMD
+    target: specs/openapi/
+    expected:
+      fields:
+        - commandType
+        - payload
+        - status
+        - createdAt
+        - deliveredAt
+        - expiresAt
+    verification: Command schema review
+    status: draft
+
+  - id: remote-cmd-003
+    description: Commands have expiration handling
+    type: behavior
+    requirement: REQ-PR-003
+    gap: GAP-REMOTE-CMD
+    target: Nightscout command processing
+    expected:
+      expired_commands: "marked as expired"
+      cleanup: "automatic or scheduled"
+    verification: Test command expiration flow
+    status: draft
+
+  - id: remote-cmd-004
+    description: Loop can receive remote commands
+    type: behavior
+    requirement: REQ-PR-003
+    gap: GAP-REMOTE-CMD
+    target: Loop remote control
+    expected:
+      receives: "commands from queue"
+      confirms: "delivery status"
+    verification: Loop remote command test
+    status: draft
+
+  - id: remote-cmd-005
+    description: Command delivery confirmation sent
+    type: behavior
+    requirement: REQ-PR-003
+    gap: GAP-REMOTE-CMD
+    target: AID controller
+    expected:
+      updates: "command status to delivered/failed"
+      timestamp: "deliveredAt populated"
+    verification: Delivery confirmation test
+    status: draft
+
+  - id: remote-cmd-006
+    description: Caregivers can view command history
+    type: ui
+    requirement: REQ-PR-003
+    target: Nightscout UI
+    expected:
+      display: "command queue with status"
+      history: "past commands visible"
+    verification: UI command history review
+    status: draft
+
+  # ========================================
+  # Timezone Display (REQ-PR-004)
+  # ========================================
+
+  - id: tz-display-001
+    description: Profile includes device timezone
+    type: schema
+    requirement: REQ-PR-004
+    gap: GAP-TZ-001
+    target: Nightscout profile
+    expected:
+      field: "timezone"
+      format: "IANA timezone string"
+    verification: Profile schema review
+    status: draft
+
+  - id: tz-display-002
+    description: Clock displays device timezone option
+    type: ui
+    requirement: REQ-PR-004
+    gap: GAP-TZ-001
+    target: Nightscout web UI
+    expected:
+      setting: "Display device timezone"
+      clock: "shows profile timezone"
+    verification: UI settings and clock inspection
+    status: draft
+
+  - id: tz-display-003
+    description: Dual timezone display when different
+    type: ui
+    requirement: REQ-PR-004
+    gap: GAP-TZ-001
+    target: Nightscout web UI
+    expected:
+      when: "browser TZ != device TZ"
+      shows: "both timezones"
+    verification: Cross-timezone UI test
+    status: draft
+
+  - id: tz-display-004
+    description: Historical data respects device timezone
+    type: behavior
+    requirement: REQ-PR-004
+    gap: GAP-TZ-001
+    target: Nightscout reports
+    expected:
+      timestamps: "in device timezone"
+      or: "with timezone indicator"
+    verification: Historical report timezone check
+    status: draft
+
+  - id: tz-display-005
+    description: Careportal entries use device timezone
+    type: behavior
+    requirement: REQ-PR-004
+    gap: GAP-TZ-001
+    target: Nightscout Careportal
+    expected:
+      time_entry: "defaults to device timezone"
+      or: "shows timezone selector"
+    verification: Careportal entry creation test
+    status: draft
+
+  - id: tz-display-006
+    description: Timezone documentation exists
+    type: documentation
+    requirement: REQ-PR-004
+    gap: GAP-TZ-001
+    target: Nightscout docs
+    expected:
+      documents: "timezone handling"
+      explains: "caregiver cross-timezone use"
+    verification: Documentation review
+    status: draft

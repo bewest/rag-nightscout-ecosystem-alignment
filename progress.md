@@ -13,6 +13,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Proposed API Assertions (2026-02-01)
+
+Created conformance assertions for proposed Nightscout API extensions.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 4 (REQ-PR-001-004) |
+| Gaps addressed | 4 (GAP-API-HR, GAP-INSULIN-001, GAP-REMOTE-CMD, GAP-TZ-001) |
+| Assertions created | 23 |
+
+**Deliverable**: `conformance/assertions/proposed-api.yaml`
+
+**Coverage by Topic**:
+- Heart Rate Collection: 5 assertions
+- Multi-Insulin API: 6 assertions
+- Remote Command Queue: 6 assertions
+- Timezone Display: 6 assertions
+
+**Impact**: Proposed API category 100% complete; algorithm domain 77%→84%
+
+---
+
 ### Trio oref Integration Assertions (2026-02-01)
 
 Created conformance assertions for Trio oref integration requirements.

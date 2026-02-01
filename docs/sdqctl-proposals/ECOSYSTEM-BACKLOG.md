@@ -64,6 +64,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **🎉 Proposed API Assertions** | `conformance/assertions/proposed-api.yaml` | 23 assertions, 4 REQs, Proposed API 100% COMPLETE |
 | **🎉 Trio oref Assertions** | `conformance/assertions/trio-oref.yaml` | 22 assertions, 3 REQs, Trio oref 100% COMPLETE |
 | **🎉 Carb Absorption Assertions** | `conformance/assertions/carb-absorption.yaml` | 34 assertions, 6 REQs, Carb Absorption 100% COMPLETE |
 | **🎉 Algorithm Docs Assertions** | `conformance/assertions/algorithm-docs.yaml` | 32 assertions, 12 REQs, 4 categories 100% COMPLETE |
