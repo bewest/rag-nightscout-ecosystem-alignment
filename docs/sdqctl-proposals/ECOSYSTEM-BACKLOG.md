@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 | **Open Items**: 2
+> **Last Groomed**: 2026-02-01 | **Open Items**: 5
 
 ### 1. [P2] Loop Swift algorithm runner
 **Type:** Implementation | **Effort:** High
@@ -39,6 +39,24 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Add soft delete support to align with cgm-remote-monitor behavior
 **Source:** nightscout-api.md #25, Phase 2 item
 **Gap Reference:** GAP-SYNC-040
+
+### 3. [P2] MongoDB Phase 3: Driver upgrade execution
+**Type:** Implementation | **Effort:** Medium
+**Focus:** Execute MongoDB driver upgrade from mongodb-legacy to mongodb@6.x
+**Prerequisites:** Phase 2 complete ✅ (no Write Result Translator needed)
+**Source:** mongodb-update-readiness-report.md Phase 3
+**Deliverable:** PR to cgm-remote-monitor with driver upgrade
+
+### 4. [P2] Domain backlog archival and refresh
+**Type:** Housekeeping | **Effort:** Low
+**Focus:** Archive completed items, identify new research candidates
+**Deliverable:** Updated domain backlogs with fresh items
+
+### 5. [P3] PR adoption: Node.js LTS upgrade sequencing
+**Type:** Analysis | **Effort:** Medium
+**Focus:** Sequence cgm-remote-monitor PRs for Node.js 22 upgrade
+**Source:** pr-adoption-sequencing-proposal.md, node-lts-upgrade-analysis.md
+**Deliverable:** Updated PR merge order recommendations
 
 ---
 
