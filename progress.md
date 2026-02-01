@@ -13,6 +13,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### 🎉 Algorithm Core Assertions (2026-02-01)
+
+Created conformance assertions for algorithm testing infrastructure - **ALL 12 CATEGORIES NOW 100%!**
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 3 (REQ-ALG-001, REQ-ALG-002, REQ-ALG-004) |
+| Gaps addressed | 3 (GAP-ALG-001, GAP-ALG-002, GAP-ALG-003) |
+| Assertions created | 19 |
+
+**Deliverable**: `conformance/assertions/algorithm-core.yaml`
+
+**Coverage by Topic**:
+- Cross-project test vectors: 6 assertions
+- Semantic equivalence: 7 assertions
+- Baseline regression: 6 assertions
+
+**Impact**: Algorithm Core 100% complete; algorithm domain 84%→89%; **ALL 12 CATEGORIES AT 100%**
+
+---
+
 ### Proposed API Assertions (2026-02-01)
 
 Created conformance assertions for proposed Nightscout API extensions.

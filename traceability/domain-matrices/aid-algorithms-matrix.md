@@ -12,26 +12,24 @@
 |--------|-------|
 | Requirements | 56 |
 | Gaps | 66 |
-| REQs with assertion coverage | 47 (84%) |
-| Uncovered REQs | 9 (16%) |
-| Uncovered GAPs | 35 (53%) |
+| REQs with assertion coverage | 50 (89%) |
+| Uncovered REQs | 6 (11%) |
+| Uncovered GAPs | 32 (48%) |
 
-**Status**: 🔄 **IN PROGRESS** - 12/12 categories complete (47 REQs), Algorithm Core at 25%
+**Status**: ✅ **NEAR COMPLETE** - 12/12 categories covered (50 REQs), remaining 6 are duplicate IDs
 
 ---
 
 ## Requirements Inventory
 
-### Algorithm Core (4)
+### Algorithm Core (4) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-ALG-001 | Cross-Project Test Vector Format | GAP-ALG-001 | ❌ None |
-| REQ-ALG-002 | Semantic Equivalence Assertions | GAP-ALG-003 | ❌ None |
+| REQ-ALG-001 | Cross-Project Test Vector Format | GAP-ALG-001 | ✅ algorithm-core.yaml |
+| REQ-ALG-002 | Semantic Equivalence Assertions | GAP-ALG-003 | ✅ algorithm-core.yaml |
 | REQ-ALG-003 | Safety Limit Validation | GAP-ALG-001 | ✅ safety-limits.yaml |
-| REQ-ALG-004 | Baseline Regression Detection | GAP-ALG-002 | ❌ None |
-
-### Carb Absorption (6)
+| REQ-ALG-004 | Baseline Regression Detection | GAP-ALG-002 | ✅ algorithm-core.yaml |
 
 ### Carb Absorption (6) - COVERED ✅
 
@@ -230,7 +228,7 @@
 
 | Category | REQs | Covered | Coverage |
 |----------|------|---------|----------|
-| Algorithm Core | 4 | 1 | 25% |
+| Algorithm Core | 4 | 4 | 100% ✅ |
 | Carb Absorption | 6 | 6 | 100% ✅ |
 | Degraded Operation | 6 | 6 | 100% ✅ |
 | Insulin Model | 5 | 5 | 100% ✅ |
@@ -242,7 +240,7 @@
 | Dosing Mechanism | 3 | 3 | 100% ✅ |
 | Target Range | 3 | 3 | 100% ✅ |
 | Trio oref | 3 | 3 | 100% ✅ |
-| **Total** | **56** | **47** | **84%** |
+| **Total** | **56** | **50** | **89%** |
 
 ### Data Quality Issues
 
@@ -303,7 +301,8 @@
 | `carb-absorption.yaml` | 6 (REQ-CARB-001-006) | 5 (GAP-CARB-001, 002, 003, 004, 005) |
 | `trio-oref.yaml` | 3 (REQ-OREF-001-003) | 4 (GAP-TRIO-001, GAP-OREF-001, 002, 003) |
 | `proposed-api.yaml` | 4 (REQ-PR-001-004) | 4 (GAP-API-HR, GAP-INSULIN-001, GAP-REMOTE-CMD, GAP-TZ-001) |
-| **Total** | **47** | **30** |
+| `algorithm-core.yaml` | 3 (REQ-ALG-001, 002, 004) | 3 (GAP-ALG-001, 002, 003) |
+| **Total** | **50** | **33** |
 
 ---
 

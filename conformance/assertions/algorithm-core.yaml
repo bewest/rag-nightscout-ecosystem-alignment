@@ -1,0 +1,269 @@
+# Algorithm Core Conformance Assertions
+# Covers REQ-ALG-001, REQ-ALG-002, REQ-ALG-004
+#
+# These assertions verify cross-project algorithm testing infrastructure,
+# semantic equivalence assertions, and baseline regression detection.
+
+scenario: algorithm-core-infrastructure
+version: "1.0"
+requirements:
+  - REQ-ALG-001
+  - REQ-ALG-002
+  - REQ-ALG-004
+
+related_gaps:
+  - GAP-ALG-001  # No cross-project test vectors
+  - GAP-ALG-002  # oref0 vs AAPS behavioral drift
+  - GAP-ALG-003  # Loop algorithm incomparable to oref
+
+assertions:
+  # ========================================
+  # Cross-Project Test Vector Format (REQ-ALG-001)
+  # ========================================
+
+  - id: vector-format-001
+    description: Unified test vector JSON schema exists
+    type: schema
+    requirement: REQ-ALG-001
+    gap: GAP-ALG-001
+    target: specs/schemas/
+    expected:
+      file: "algorithm-test-vector.schema.json"
+      validates: "all extracted test vectors"
+    verification: Schema validation against vector collection
+    status: draft
+
+  - id: vector-format-002
+    description: Test vectors cover all algorithm categories
+    type: validation
+    requirement: REQ-ALG-001
+    gap: GAP-ALG-001
+    target: conformance/vectors/
+    expected:
+      minimum_count: 50
+      categories:
+        - smb_dosing
+        - temp_basal
+        - cob_handling
+        - iob_calculation
+        - safety_limits
+    verification: Vector count and category audit
+    status: draft
+
+  - id: vector-format-003
+    description: oref0-runner.js executes test vectors
+    type: behavior
+    requirement: REQ-ALG-001
+    gap: GAP-ALG-001
+    target: conformance/runners/oref0-runner.js
+    expected:
+      executes: "algorithm test vectors"
+      outputs: "pass/fail results"
+    verification: Run oref0-runner against vector set
+    status: draft
+
+  - id: vector-format-004
+    description: AAPS runner exists or is scaffolded
+    type: behavior
+    requirement: REQ-ALG-001
+    gap: GAP-ALG-001
+    target: conformance/runners/
+    expected:
+      file: "aaps-runner.kt or scaffolding docs"
+      status: "implemented or documented"
+    verification: Runner file or documentation check
+    status: draft
+
+  - id: vector-format-005
+    description: Loop runner exists or is scaffolded
+    type: behavior
+    requirement: REQ-ALG-001
+    gap: GAP-ALG-001
+    target: conformance/runners/
+    expected:
+      file: "loop-runner.swift or scaffolding docs"
+      status: "implemented or documented"
+    verification: Runner file or documentation check
+    status: draft
+
+  - id: vector-format-006
+    description: Vector format includes input/output/metadata
+    type: schema
+    requirement: REQ-ALG-001
+    gap: GAP-ALG-001
+    target: specs/schemas/algorithm-test-vector.schema.json
+    expected:
+      required_fields:
+        - id
+        - input
+        - expected_output
+        - source
+        - category
+    verification: Schema field validation
+    status: draft
+
+  # ========================================
+  # Semantic Equivalence Assertions (REQ-ALG-002)
+  # ========================================
+
+  - id: semantic-001
+    description: rate_increased assertion type supported
+    type: behavior
+    requirement: REQ-ALG-002
+    gap: GAP-ALG-003
+    target: conformance/runners/
+    expected:
+      assertion_type: "rate_increased"
+      compares: "output rate > baseline rate"
+    verification: Runner assertion type support check
+    status: draft
+
+  - id: semantic-002
+    description: rate_decreased assertion type supported
+    type: behavior
+    requirement: REQ-ALG-002
+    gap: GAP-ALG-003
+    target: conformance/runners/
+    expected:
+      assertion_type: "rate_decreased"
+      compares: "output rate < baseline rate"
+    verification: Runner assertion type support check
+    status: draft
+
+  - id: semantic-003
+    description: no_smb assertion type supported
+    type: behavior
+    requirement: REQ-ALG-002
+    gap: GAP-ALG-003
+    target: conformance/runners/
+    expected:
+      assertion_type: "no_smb"
+      validates: "SMB not recommended"
+    verification: Runner assertion type support check
+    status: draft
+
+  - id: semantic-004
+    description: eventual_in_range assertion type supported
+    type: behavior
+    requirement: REQ-ALG-002
+    gap: GAP-ALG-003
+    target: conformance/runners/
+    expected:
+      assertion_type: "eventual_in_range"
+      validates: "eventualBG within target range"
+    verification: Runner assertion type support check
+    status: draft
+
+  - id: semantic-005
+    description: Baseline field enables relative assertions
+    type: schema
+    requirement: REQ-ALG-002
+    gap: GAP-ALG-003
+    target: specs/schemas/algorithm-test-vector.schema.json
+    expected:
+      field: "baseline"
+      type: "object"
+      enables: "relative comparisons"
+    verification: Schema baseline field check
+    status: draft
+
+  - id: semantic-006
+    description: oref0-runner validates semantic assertions
+    type: behavior
+    requirement: REQ-ALG-002
+    target: conformance/runners/oref0-runner.js
+    expected:
+      validates:
+        - rate_increased
+        - rate_decreased
+        - no_smb
+        - eventual_in_range
+    verification: Run semantic assertion tests
+    status: draft
+
+  - id: semantic-007
+    description: Loop vs oref semantic mapping documented
+    type: documentation
+    requirement: REQ-ALG-002
+    gap: GAP-ALG-003
+    target: docs/10-domain/
+    expected:
+      file: "algorithm-comparison-deep-dive.md"
+      maps: "equivalent clinical decisions"
+    verification: Documentation review
+    status: draft
+
+  # ========================================
+  # Baseline Regression Detection (REQ-ALG-004)
+  # ========================================
+
+  - id: baseline-001
+    description: Baseline results stored per implementation
+    type: behavior
+    requirement: REQ-ALG-004
+    gap: GAP-ALG-002
+    target: conformance/baselines/
+    expected:
+      files:
+        - "oref0-baseline.json"
+        - "aaps-baseline.json"
+    verification: Baseline file existence check
+    status: draft
+
+  - id: baseline-002
+    description: CI detects changes from baseline
+    type: behavior
+    requirement: REQ-ALG-004
+    gap: GAP-ALG-002
+    target: .github/workflows/ or Makefile
+    expected:
+      command: "make test-algorithms or similar"
+      detects: "baseline drift"
+    verification: CI configuration review
+    status: draft
+
+  - id: baseline-003
+    description: Drift report generated with affected vectors
+    type: behavior
+    requirement: REQ-ALG-004
+    gap: GAP-ALG-002
+    target: conformance/runners/
+    expected:
+      output: "drift report"
+      includes: "affected vector IDs"
+    verification: Run regression test and check output
+    status: draft
+
+  - id: baseline-004
+    description: oref0 vs AAPS drift documented
+    type: documentation
+    requirement: REQ-ALG-004
+    gap: GAP-ALG-002
+    target: docs/10-domain/
+    expected:
+      documents: "31% pass rate AAPS vs oref0"
+      lists: "key behavioral differences"
+    verification: Documentation review
+    status: draft
+
+  - id: baseline-005
+    description: Version-tagged baselines for upstream tracking
+    type: behavior
+    requirement: REQ-ALG-004
+    target: conformance/baselines/
+    expected:
+      metadata: "oref0 version or commit"
+      enables: "version-specific regression"
+    verification: Baseline metadata check
+    status: draft
+
+  - id: baseline-006
+    description: Baseline update process documented
+    type: documentation
+    requirement: REQ-ALG-004
+    target: conformance/README.md
+    expected:
+      documents: "how to update baseline"
+      explains: "when to accept drift"
+    verification: Documentation review
+    status: draft
