@@ -738,3 +738,68 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 ## CGM Data Source Gaps
 
 ---
+
+
+## Alarm Gaps
+
+---
+
+### GAP-ALARM-001: Cross-App Alarm Configuration Sync Not Standardized
+
+**Scenario**: Multi-app alarm management
+
+**Description**: When a user uses multiple caregiver apps (Nightguard, LoopFollow, xDrip+), alarm configurations must be set independently in each app. No standardized mechanism exists to sync alarm preferences across apps.
+
+**Evidence**:
+- Nightguard: Local alarm config in UserDefaults
+- LoopFollow: Local alarm config in UserDefaults  
+- xDrip+: Local alarm config in SQLite database
+- No Nightscout collection for alarm preferences
+
+**Impact**:
+- Users must configure alarms separately in each app
+- Configuration drift between apps leads to alarm fatigue or missed alerts
+- No single source of truth for alarm preferences
+
+**Possible Solutions**:
+1. Define Nightscout `alarmconfig` collection for portable preferences
+2. Document recommended alarm settings in profile collection
+3. Accept as device-local preference (current state)
+
+**Related Requirements**: REQ-ALARM-001 through REQ-ALARM-010
+
+**Status**: Open - Feature Request
+
+---
+
+### GAP-ALARM-002: Predictive Alarm Horizon Varies by App
+
+**Scenario**: Predictive low glucose alerting
+
+**Description**: Each caregiver app implements predictive low alarms differently:
+- LoopFollow: Uses Loop's predicted glucose array (up to 6 hours)
+- xDrip+: Uses linear extrapolation from recent readings
+- Nightguard: No predictive alarms
+
+The prediction horizon and algorithm vary significantly.
+
+**Evidence**:
+- LoopFollow: Reads `loop.predicted.values` from devicestatus
+- xDrip+: `PredictionServiceComponent.kt` uses linear regression
+- Nightguard: Threshold-based only
+
+**Impact**:
+- Same glucose pattern may trigger alert in one app but not another
+- Users cannot reliably configure predictive alarms across apps
+- Inconsistent urgency for intervention timing
+
+**Possible Solutions**:
+1. Document recommended prediction horizon (15-30 min) in conformance spec
+2. Standardize on AID controller predictions when available
+3. Accept as implementation variation
+
+**Related Requirements**: REQ-ALARM-004
+
+**Status**: Open - Documentation Gap
+
+---

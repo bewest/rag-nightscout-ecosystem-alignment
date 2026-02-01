@@ -2688,6 +2688,8 @@ otpauth://totp/{label}?algorithm=SHA1&digits=6&issuer=Loop&period=30&secret={bas
 
 ## LoopFollow Alarm Models
 
+> **Traceability**: See [`conformance/assertions/alarm-requirements.yaml`](../../conformance/assertions/alarm-requirements.yaml) for assertions testing REQ-ALARM-001 through REQ-ALARM-010.
+
 ### Alarm Types
 
 | Alarm Type | Category | Trigger | Default Threshold |

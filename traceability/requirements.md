@@ -40,7 +40,17 @@ Total: 310 requirements
 
 **All covered** via `treatment-sync.yaml`: REQ-TREAT-040 to REQ-TREAT-046
 
-**Related gaps**: REQ-REMOTE-* (0%), REQ-ALARM-* (0%), REQ-UNIT-* (0%)
+**Related gaps**: REQ-REMOTE-* (0%), REQ-UNIT-* (0%)
+
+### REQ-ALARM-* Coverage (Level 5 #28)
+
+| Total | Covered | Uncovered | % |
+|-------|---------|-----------|---|
+| 10 | 10 | 0 | 100% |
+
+**All covered** via `alarm-requirements.yaml`: REQ-ALARM-001 to REQ-ALARM-010
+
+**Related gaps**: GAP-ALARM-001 (alarm config sync), GAP-ALARM-002 (predictive horizon)
 
 ### REQ-CONNECT-* Completeness (Level 5 #26)
 
