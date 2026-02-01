@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 | **Open Items**: 3  
+> **Last Groomed**: 2026-02-01 | **Open Items**: 8  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -47,6 +47,35 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Prerequisites:** Phase 2 complete ✅ (no Write Result Translator needed)
 **Source:** mongodb-update-readiness-report.md Phase 3
 **Deliverable:** PR to cgm-remote-monitor with driver upgrade
+
+### 4. [P3] Gap ID duplicate renumbering
+**Type:** Housekeeping | **Effort:** Low
+**Focus:** Renumber 10 duplicate GAP IDs found in cycle 76 audit
+**Targets:** GAP-BLE-001..005, GAP-BRIDGE-001/002, GAP-OREF-001/002/003
+**Deliverable:** Updated gap files with unique IDs
+
+### 5. [P3] Orphaned gap cleanup
+**Type:** Housekeeping | **Effort:** Low
+**Focus:** Review and link 16 orphaned gaps identified in cycle 77
+**Source:** traceability/coverage-analysis.md
+**Deliverable:** Gaps linked to REQs or marked deprecated
+
+### 6. [P3] OpenAPI x-aid-req annotations
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Add x-aid-req cross-references to OpenAPI specs
+**Source:** REQ-API alignment audit (67% coverage)
+**Deliverable:** Updated OpenAPI specs with REQ annotations
+
+### 7. [P3] Conformance scenario expansion
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Add scenarios for uncovered REQs
+**Source:** 99 uncovered REQs from coverage analysis
+**Deliverable:** New YAML scenarios in conformance/
+
+### 8. [P3] Progress archive rotation
+**Type:** Housekeeping | **Effort:** Low
+**Focus:** Archive completed entries from progress.md
+**Deliverable:** progress-archive-2026-02-01.md
 
 ---
 
