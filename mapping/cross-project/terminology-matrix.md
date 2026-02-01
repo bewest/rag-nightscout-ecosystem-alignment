@@ -518,6 +518,8 @@ Trusted external identity providers in the ecosystem. See [`docs/10-domain/trust
 
 #### Treatment Sync Identity
 
+> **Traceability Matrix**: [`traceability/domain-matrices/sync-identity-matrix.md`](../../traceability/domain-matrices/sync-identity-matrix.md) - REQ↔GAP↔Assertion coverage
+
 | System | Primary ID | Secondary ID | Upload Method |
 |--------|-----------|--------------|---------------|
 | Loop | `syncIdentifier` (UUID) | N/A | POST (v1 API) |

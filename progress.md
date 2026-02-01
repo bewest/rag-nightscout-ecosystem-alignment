@@ -13,6 +13,32 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Sync-Identity Traceability Matrix (2026-02-01)
+
+Created comprehensive REQ↔GAP↔Assertion cross-reference matrix for sync-identity domain.
+
+| Metric | Count |
+|--------|-------|
+| Requirements (REQ-SYNC-*) | 32 |
+| Gaps (GAP-SYNC-*) | 25 |
+| REQs with assertion coverage | 15 (47%) |
+| GAPs with assertion coverage | 3 (12%) |
+| Uncovered REQs | 17 |
+| Uncovered GAPs | 22 |
+
+**Deliverable**: `traceability/domain-matrices/sync-identity-matrix.md`
+
+**Key Findings**:
+- `sync-deduplication.yaml` covers 15 REQs (field preservation, immutability, queries)
+- High-priority gaps: GAP-SYNC-006 (V1 API only), GAP-SYNC-029 (cross-controller dedup)
+- Profile-related REQs (051-061) may warrant separate profile-matrix.md
+
+**Action Items**:
+- Create sync identity assertions for REQ-SYNC-002/010
+- Profile matrix as follow-on work
+
+---
+
 ### GAP-REQ Bidirectional Trace Links (2026-02-01)
 
 Added reverse trace links from GAPs back to related REQs for Tier 1 high-priority items.

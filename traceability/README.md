@@ -9,7 +9,17 @@ This directory contains both **authored documentation** and **generated verifica
 | `gaps.md` | Documented semantic and technical gaps across the AID ecosystem |
 | `requirements.md` | Derived requirements from gap analysis |
 | `*-inventory.md` | Manual documentation inventories |
+| `orphan-artifact-priorities.md` | Priority tiers for uncovered requirements |
 | `stpa/` | STPA hazard analysis artifacts |
+| `domain-matrices/` | REQ↔GAP↔Assertion traceability matrices |
+
+## Domain Matrices
+
+Cross-reference matrices linking requirements, gaps, and conformance assertions by domain.
+
+| File | Domain | REQs | GAPs | Coverage |
+|------|--------|------|------|----------|
+| [`domain-matrices/sync-identity-matrix.md`](domain-matrices/sync-identity-matrix.md) | Sync & Identity | 32 | 25 | 47% REQ |
 
 ## STPA Subdirectory
 
