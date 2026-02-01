@@ -13,6 +13,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Insulin Model Assertions (2026-02-01)
+
+Created conformance assertions for insulin model consistency across AID systems.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 3 (REQ-INS-001, REQ-INS-004, REQ-INS-005) |
+| Assertions created | 18 |
+| Coverage improvement | Algorithm domain 16% → 21% |
+
+**Deliverable**: `conformance/assertions/insulin-model.yaml`
+
+**Coverage by Topic**:
+- Exponential model formula: 6 assertions
+- Activity/BGI calculation: 6 assertions
+- Model metadata in treatments: 6 assertions
+
+**Impact**: Insulin Model category 100% covered; ensures consistent IOB/activity calculations
+
+---
+
 ### Safety Limit Assertions (2026-02-01)
 
 Created safety-critical conformance assertions for algorithm limit requirements.

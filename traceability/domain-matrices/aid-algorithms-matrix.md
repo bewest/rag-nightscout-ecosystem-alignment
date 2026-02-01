@@ -12,11 +12,11 @@
 |--------|-------|
 | Requirements | 56 |
 | Gaps | 66 |
-| REQs with assertion coverage | 9 (16%) |
-| Uncovered REQs | 47 (84%) |
-| Uncovered GAPs | 62 (94%) |
+| REQs with assertion coverage | 12 (21%) |
+| Uncovered REQs | 44 (79%) |
+| Uncovered GAPs | 60 (91%) |
 
-**Status**: 🔄 **IN PROGRESS** - Degraded operation + safety limits complete (9 REQs)
+**Status**: 🔄 **IN PROGRESS** - Degraded operation, safety limits, insulin model complete (12 REQs)
 
 ---
 
@@ -53,15 +53,15 @@
 | REQ-DEGRADE-005 | Safe State Documentation | - | ✅ degraded-operation.yaml |
 | REQ-DEGRADE-006 | Delegate Agent Fallback | - | ✅ degraded-operation.yaml |
 
-### Insulin Model (5)
+### Insulin Model (5) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-INS-001 | Consistent Exponential Model | - | ❌ None |
+| REQ-INS-001 | Consistent Exponential Model | - | ✅ insulin-model.yaml |
 | REQ-INS-002 | DIA Minimum Enforcement | GAP-ALG-012 | ✅ safety-limits.yaml |
 | REQ-INS-003 | Peak Time Configuration Bounds | GAP-INS-003 | ✅ safety-limits.yaml |
-| REQ-INS-004 | Activity Calculation for BGI | - | ❌ None |
-| REQ-INS-005 | Insulin Model Metadata in Treatments | GAP-INS-001 | ❌ None |
+| REQ-INS-004 | Activity Calculation for BGI | - | ✅ insulin-model.yaml |
+| REQ-INS-005 | Insulin Model Metadata in Treatments | GAP-INS-001 | ✅ insulin-model.yaml |
 
 ### Proposed API (4)
 
@@ -231,7 +231,7 @@
 | Algorithm Core | 4 | 1 | 25% |
 | Carb Absorption | 6 | 0 | 0% |
 | Degraded Operation | 6 | 6 | 100% ✅ |
-| Insulin Model | 5 | 2 | 40% |
+| Insulin Model | 5 | 5 | 100% ✅ |
 | Proposed API | 4 | 0 | 0% |
 | Profile Schema | 7 | 0 | 0% |
 | Bolus Wizard | 3 | 0 | 0% |
@@ -240,7 +240,7 @@
 | Dosing Mechanism | 3 | 0 | 0% |
 | Target Range | 3 | 0 | 0% |
 | Trio oref | 3 | 0 | 0% |
-| **Total** | **56** | **9** | **16%** |
+| **Total** | **56** | **12** | **21%** |
 
 ### Data Quality Issues
 
@@ -264,9 +264,8 @@
 
 ### Medium Priority (Interoperability)
 
-3. **Create insulin model assertions** (REQ-INS-001, REQ-INS-004, REQ-INS-005)
-   - Exponential formula verification
-   - Model metadata sync
+3. ~~**Create insulin model assertions** (REQ-INS-001, REQ-INS-004, REQ-INS-005)~~ ✅ cycle 102
+   - 18 assertions covering exponential formula, activity calculation, model metadata
    - Deliverable: `conformance/assertions/insulin-model.yaml`
 
 4. **Create profile schema assertions** (REQ-PROF-001-007)
@@ -300,7 +299,8 @@
 |------|--------------|--------------|
 | `degraded-operation.yaml` | 6 (REQ-DEGRADE-001-006) | 2 (GAP-ALG-011, GAP-ALG-014) |
 | `safety-limits.yaml` | 3 (REQ-ALG-003, REQ-INS-002, REQ-INS-003) | 2 (GAP-ALG-001, GAP-ALG-012) |
-| **Total** | **9** | **4** |
+| `insulin-model.yaml` | 3 (REQ-INS-001, REQ-INS-004, REQ-INS-005) | 1 (GAP-INS-001) |
+| **Total** | **12** | **5** |
 
 ---
 

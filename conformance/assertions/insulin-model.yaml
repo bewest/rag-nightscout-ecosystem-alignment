@@ -1,0 +1,244 @@
+# Assertions for Insulin Model Requirements
+# Tests insulin curve consistency and metadata (REQ-INS-001, REQ-INS-004, REQ-INS-005)
+# Completes Insulin Model category (40%→100%)
+
+scenario: insulin-model
+version: 1
+
+# Link to requirements in traceability/aid-algorithms-requirements.md
+requirements:
+  - REQ-INS-001  # Consistent Exponential Model Across Systems
+  - REQ-INS-004  # Activity Calculation for BGI
+  - REQ-INS-005  # Insulin Model Metadata in Treatments
+
+related_gaps:
+  - GAP-INS-001  # Insulin Model Metadata Not Synced to Nightscout
+  - GAP-INS-002  # No Standardized Multi-Insulin Representation
+
+assertions:
+  # ============================================
+  # Consistent Exponential Model (REQ-INS-001)
+  # ============================================
+
+  - id: exponential-formula-documented
+    description: "Exponential insulin formula is documented with parameters"
+    type: documentation
+    requirement: REQ-INS-001
+    target: docs.insulinFormula
+    expected: formula documentation with tau, a, S parameters
+    verification:
+      - Review insulin model documentation
+      - Verify exponential formula is specified
+      - Verify parameters (tau, a, S) are defined
+      - Verify Loop issue #388 cited as source
+
+  - id: iob-calculation-precision
+    description: "IOB calculations match across systems within 0.01U"
+    type: behavior
+    requirement: REQ-INS-001
+    target: calculation.iob
+    expected: IOB values match within 0.01U precision
+    verification:
+      - Create identical bolus history (e.g., 5U at t=0)
+      - Set identical DIA (e.g., 6 hours)
+      - Calculate IOB at t=3h using each system
+      - Verify Loop, oref0, AAPS, Trio values within 0.01U
+
+  - id: exponential-curve-shape
+    description: "Exponential curve shows correct decay shape"
+    type: behavior
+    requirement: REQ-INS-001
+    target: calculation.curveShape
+    expected: smooth exponential decay approaching zero at DIA
+    verification:
+      - Deliver 1U bolus
+      - Sample IOB at 0, 1, 2, 3, 4, 5, 6 hours
+      - Verify monotonic decrease
+      - Verify approaches zero at DIA
+
+  - id: formula-source-attribution
+    description: "oref0 credits Loop as formula source"
+    type: documentation
+    requirement: REQ-INS-001
+    target: code.attribution
+    expected: explicit credit to Loop in oref0 source
+    verification:
+      - Review oref0/lib/iob/calculate.js
+      - Verify comment references Loop as formula source
+      - Verify formula matches Loop implementation
+
+  - id: cross-system-iob-test-vector
+    description: "Test vector exists for cross-system IOB comparison"
+    type: behavior
+    requirement: REQ-INS-001
+    target: conformance.iobVector
+    expected: shared test vector for IOB validation
+    verification:
+      - Test vector specifies bolus history
+      - Test vector specifies DIA and peak
+      - Expected IOB values at key time points
+      - All implementations pass vector
+
+  # ============================================
+  # Activity Calculation for BGI (REQ-INS-004)
+  # ============================================
+
+  - id: activity-calculated-with-iob
+    description: "Activity is calculated alongside IOB"
+    type: behavior
+    requirement: REQ-INS-004
+    target: calculation.activity
+    expected: activity value returned with IOB calculation
+    verification:
+      - Call IOB calculation function
+      - Verify activity/activityContrib field returned
+      - Verify activity is non-zero during insulin action
+      - Verify activity approaches zero at DIA
+
+  - id: activity-is-iob-derivative
+    description: "Activity represents rate of IOB decay"
+    type: behavior
+    requirement: REQ-INS-004
+    target: calculation.activityDerivative
+    expected: activity = -d(IOB)/dt
+    verification:
+      - Calculate IOB at t and t+5min
+      - Calculate activity at t
+      - Verify activity ≈ (IOB(t) - IOB(t+5)) / 5
+      - Allow small numerical error
+
+  - id: bgi-formula-correct
+    description: "BGI calculated as -activity × ISF × 5"
+    type: behavior
+    requirement: REQ-INS-004
+    target: calculation.bgi
+    expected: BGI = -activity × ISF × 5
+    verification:
+      - Obtain activity value
+      - Set ISF (e.g., 50 mg/dL/U)
+      - Calculate BGI = -activity × ISF × 5
+      - Verify matches system BGI output
+
+  - id: activity-peaks-before-iob
+    description: "Activity peaks before IOB peak effect"
+    type: behavior
+    requirement: REQ-INS-004
+    target: calculation.activityPeak
+    expected: activity peak occurs at configured peak time
+    verification:
+      - Deliver 1U bolus
+      - Sample activity over time
+      - Verify peak activity near insulin peak time
+      - Verify activity decline after peak
+
+  - id: activity-exposed-in-devicestatus
+    description: "Activity value available in devicestatus"
+    type: behavior
+    requirement: REQ-INS-004
+    target: devicestatus.activity
+    expected: activity included in loop/openaps status
+    verification:
+      - Query recent devicestatus
+      - Verify iob object includes activity field
+      - Verify activity value is numeric
+      - Verify activity updates with loop cycle
+
+  - id: bgi-used-in-predictions
+    description: "BGI contributes to glucose predictions"
+    type: behavior
+    requirement: REQ-INS-004
+    target: prediction.bgiContribution
+    expected: predictions include insulin effect via BGI
+    verification:
+      - Review prediction calculation
+      - Verify IOB effect applied to predictions
+      - Verify effect magnitude matches BGI
+      - Verify effect direction is glucose-lowering
+
+  # ============================================
+  # Insulin Model Metadata in Treatments (REQ-INS-005)
+  # ============================================
+
+  - id: treatment-includes-insulin-model
+    description: "Bolus treatments include insulin model type"
+    type: behavior
+    requirement: REQ-INS-005
+    target: treatment.insulinModel
+    expected: insulinModel field in treatment upload
+    verification:
+      - Upload bolus treatment
+      - Verify insulinModel field present
+      - Values: "exponential", "bilinear", etc.
+      - Field preserved on download
+
+  - id: treatment-includes-insulin-dia
+    description: "Bolus treatments include DIA value"
+    type: behavior
+    requirement: REQ-INS-005
+    target: treatment.insulinDIA
+    expected: insulinDIA field in treatment upload
+    verification:
+      - Upload bolus treatment
+      - Verify insulinDIA field present
+      - Value in hours (e.g., 6.0)
+      - Field preserved on download
+
+  - id: treatment-includes-insulin-peak
+    description: "Bolus treatments include peak time"
+    type: behavior
+    requirement: REQ-INS-005
+    target: treatment.insulinPeak
+    expected: insulinPeak field in treatment upload
+    verification:
+      - Upload bolus treatment
+      - Verify insulinPeak field present
+      - Value in minutes (e.g., 75)
+      - Field preserved on download
+
+  - id: metadata-enables-iob-reconstruction
+    description: "Historical IOB can be reconstructed from metadata"
+    type: behavior
+    requirement: REQ-INS-005
+    target: analysis.iobReconstruction
+    expected: IOB calculable from treatment + metadata
+    verification:
+      - Fetch historical treatment with metadata
+      - Apply insulin curve using stored parameters
+      - Calculate IOB at any historical time
+      - Verify matches original system calculation
+
+  - id: metadata-optional-backward-compatible
+    description: "Metadata fields are optional for compatibility"
+    type: behavior
+    requirement: REQ-INS-005
+    target: schema.optionalFields
+    expected: missing metadata doesn't break treatment processing
+    verification:
+      - Upload treatment without insulin metadata
+      - Verify treatment accepted
+      - Verify basic fields (insulin, created_at) preserved
+      - System uses default model if metadata missing
+
+  - id: aaps-insulin-configuration-exposed
+    description: "AAPS exposes insulin configuration in uploads"
+    type: behavior
+    requirement: REQ-INS-005
+    target: aaps.insulinConfiguration
+    expected: insulinConfiguration included in treatment sync
+    verification:
+      - Configure AAPS with specific insulin type
+      - Create bolus treatment
+      - Verify Nightscout treatment includes config
+      - Compare with local database entry
+
+  - id: metadata-schema-documented
+    description: "Insulin metadata fields are documented in schema"
+    type: documentation
+    requirement: REQ-INS-005
+    target: schema.insulinMetadata
+    expected: OpenAPI/JSON Schema defines insulin fields
+    verification:
+      - Review aid-treatments-2025.yaml
+      - Verify insulinModel field documented
+      - Verify insulinDIA field documented
+      - Verify insulinPeak field documented
