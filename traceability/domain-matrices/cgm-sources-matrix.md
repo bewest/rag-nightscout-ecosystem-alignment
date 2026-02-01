@@ -15,9 +15,10 @@
 | Gaps | 52 |
 | REQs with assertion coverage | 18 (100%) |
 | Uncovered REQs | 0 (0%) |
-| Uncovered GAPs | 42 (81%) |
+| GAPs with assertion coverage | **30 (58%)** |
+| Uncovered GAPs | 22 (42%) |
 
-**Status**: All requirements have assertion coverage. Gap coverage focuses on protocol documentation.
+**Status**: All requirements have assertion coverage. GAP coverage expanded with G7, Libre, and CGM General gaps (cycle 119).
 
 ---
 

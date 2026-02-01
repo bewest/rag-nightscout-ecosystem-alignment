@@ -21,11 +21,26 @@ This document tracks completed documentation cycles and candidates for future wo
 | Algorithm | 56/56 | 100% ✅ |
 | **Total** | **141/141** | **100%** |
 
-**Session Stats (Cycles 102-118)**: 317 assertions, 50 REQs covered, 93 GAPs covered, 15 commits
+**Session Stats (Cycles 102-119)**: 338 assertions, 50 REQs covered, 113 GAPs covered, 16 commits
 
 ---
 
 ## Completed Work
+
+### CGM Sources GAP Coverage Part 1 (2026-02-01)
+
+Created 21 assertions covering G7, Libre, and CGM General GAPs.
+
+| Metric | Count |
+|--------|-------|
+| Gaps addressed | 20 |
+| Assertions created | 21 |
+
+**Deliverable**: `conformance/assertions/cgm-sources-gaps.yaml`
+
+**GAPs Covered**: GAP-G7-001-005, GAP-CGM-001-006, GAP-LIBRE-001-006, GAP-CGM-030-032
+
+---
 
 ### Treatments GAP Coverage (2026-02-01)
 

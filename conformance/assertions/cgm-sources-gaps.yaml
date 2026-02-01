@@ -1,0 +1,252 @@
+# CGM Sources GAP Coverage Part 1
+# Covers G7, Libre, and CGM General GAPs
+# Created: 2026-02-01 (cycle 119)
+
+scenario: cgm-sources-gap-coverage-part1
+version: "1.0"
+requirements:
+  - REQ-BLE-001
+  - REQ-BLE-002
+  - REQ-LIBRE-003
+  - REQ-LIBRE-004
+  - REQ-LIBRE-005
+
+related_gaps:
+  - GAP-G7-001    # J-PAKE Specification Incomplete
+  - GAP-G7-002    # Certificate Chain Undocumented
+  - GAP-G7-003    # Service B Purpose Unknown
+  - GAP-G7-004    # Anubis Extended Commands
+  - GAP-G7-005    # Encryption Info Format Unknown
+  - GAP-CGM-001   # DiaBLE lacks treatment support
+  - GAP-CGM-002   # xdrip-js limited to G5/G6
+  - GAP-CGM-003   # Libre 3 encryption not documented
+  - GAP-CGM-004   # No standardized Dexcom BLE spec
+  - GAP-CGM-005   # Raw Values Not Uploaded by iOS
+  - GAP-CGM-006   # Follower Source Not Distinguished
+  - GAP-LIBRE-001 # Libre 3 Cloud Decryption Dependency
+  - GAP-LIBRE-002 # Libre 2 Gen2 Session Auth
+  - GAP-LIBRE-003 # Transmitter Bridge Firmware Variance
+  - GAP-LIBRE-004 # Calibration Algorithm Not Synced
+  - GAP-LIBRE-005 # Sensor Serial Not in Entries
+  - GAP-LIBRE-006 # NFC vs BLE Data Latency
+  - GAP-CGM-030   # Libre 3 Direct BLE Blocked
+  - GAP-CGM-031   # Libre 3 NFC Limited to Activation
+  - GAP-CGM-032   # LibreLinkUp API Dependency
+
+assertions:
+
+  # GAP-G7-001: J-PAKE Full Specification Incomplete
+  - id: CGM-GAP-001
+    description: Document J-PAKE implementation gaps
+    type: documentation
+    requirement: REQ-BLE-001
+    gap: GAP-G7-001
+    target: docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    expected: J-PAKE parameter derivation and key confirmation documented
+    verification: grep -q "J-PAKE" docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    status: proposed
+
+  - id: CGM-GAP-002
+    description: Reference xDrip libkeks J-PAKE implementation
+    type: documentation
+    requirement: REQ-BLE-001
+    gap: GAP-G7-001
+    target: docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    expected: libkeks source referenced as implementation example
+    verification: grep -q "libkeks" docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-G7-002: Certificate Chain Undocumented
+  - id: CGM-GAP-003
+    description: Document G7 certificate chain structure
+    type: documentation
+    requirement: REQ-BLE-002
+    gap: GAP-G7-002
+    target: docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    expected: Certificate chain format and validation process documented
+    verification: grep -q "certificate.*chain" docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-G7-003: Service B Purpose Unknown
+  - id: CGM-GAP-004
+    description: Document Service B discovery status
+    type: documentation
+    gap: GAP-G7-003
+    target: docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    expected: Service B (0xFEBB) purpose unknown, documented as research gap
+    verification: grep -q "Service B\|0xFEBB" docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-G7-004: Anubis Extended Commands
+  - id: CGM-GAP-005
+    description: Document Anubis transmitter extended command set
+    type: documentation
+    gap: GAP-G7-004
+    target: docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    expected: Anubis-specific opcodes documented where known
+    verification: grep -q "Anubis" docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-G7-005: Encryption Info Format Unknown
+  - id: CGM-GAP-006
+    description: Document encryption info format research status
+    type: documentation
+    gap: GAP-G7-005
+    target: docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    expected: Encryption info blob format documented as research gap
+    verification: grep -q "encryption.*info" docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-CGM-001: DiaBLE lacks treatment support
+  - id: CGM-GAP-007
+    description: Document DiaBLE treatment support gap
+    type: documentation
+    gap: GAP-CGM-001
+    target: mapping/cross-project/terminology-matrix.md
+    expected: DiaBLE is CGM-only, no treatment sync capability
+    verification: grep -q "DiaBLE.*treatment" mapping/cross-project/terminology-matrix.md
+    status: proposed
+
+  # GAP-CGM-002: xdrip-js limited to G5/G6
+  - id: CGM-GAP-008
+    description: Document xdrip-js sensor support limitations
+    type: documentation
+    gap: GAP-CGM-002
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: xdrip-js supports G5/G6 only, no G7 or Libre support
+    verification: grep -q "xdrip-js" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-CGM-003: Libre 3 encryption not documented
+  - id: CGM-GAP-009
+    description: Document Libre 3 encryption research status
+    type: documentation
+    requirement: REQ-LIBRE-005
+    gap: GAP-CGM-003
+    target: docs/10-domain/libre-protocol-deep-dive.md
+    expected: Libre 3 encryption not publicly documented
+    verification: grep -q "Libre 3.*encrypt" docs/10-domain/libre-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-CGM-004: No standardized Dexcom BLE spec
+  - id: CGM-GAP-010
+    description: Document Dexcom BLE spec standardization gap
+    type: documentation
+    gap: GAP-CGM-004
+    target: docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    expected: No official Dexcom BLE specification, reverse-engineered only
+    verification: grep -q "reverse.*engineer\|unofficial" docs/10-domain/dexcom-g7-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-CGM-005: Raw Values Not Uploaded by iOS
+  - id: CGM-GAP-011
+    description: Document iOS raw value upload gap
+    type: documentation
+    gap: GAP-CGM-005
+    target: docs/10-domain/cgm-sources-deep-dive.md
+    expected: iOS apps (Loop, xDrip4iOS) don't upload raw/unfiltered values
+    verification: grep -q "raw.*value\|unfiltered" docs/10-domain/cgm-sources-deep-dive.md
+    status: proposed
+
+  # GAP-CGM-006: Follower Source Not Distinguished
+  - id: CGM-GAP-012
+    description: Document follower source identification gap
+    type: documentation
+    gap: GAP-CGM-006
+    target: specs/openapi/aid-entries-2025.yaml
+    expected: Entries from follower apps not distinguished from direct CGM
+    verification: Check entries spec for source field documentation
+    status: proposed
+
+  # GAP-LIBRE-001: Libre 3 Cloud Decryption Dependency
+  - id: CGM-GAP-013
+    description: Document Libre 3 cloud decryption dependency
+    type: documentation
+    requirement: REQ-LIBRE-005
+    gap: GAP-LIBRE-001
+    target: docs/10-domain/libre-protocol-deep-dive.md
+    expected: Libre 3 requires cloud API for glucose decryption
+    verification: grep -q "Libre 3.*cloud\|cloud.*decrypt" docs/10-domain/libre-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-LIBRE-002: Libre 2 Gen2 Session Auth
+  - id: CGM-GAP-014
+    description: Document Libre 2 Gen2 authentication differences
+    type: documentation
+    requirement: REQ-LIBRE-003
+    gap: GAP-LIBRE-002
+    target: docs/10-domain/libre-protocol-deep-dive.md
+    expected: Libre 2 Gen2 session-based auth differs from Gen1
+    verification: grep -q "Gen2.*auth\|session.*auth" docs/10-domain/libre-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-LIBRE-003: Transmitter Bridge Firmware Variance
+  - id: CGM-GAP-015
+    description: Document transmitter bridge firmware compatibility
+    type: documentation
+    gap: GAP-LIBRE-003
+    target: docs/10-domain/libre-protocol-deep-dive.md
+    expected: MiaoMiao, Bubble firmware versions affect compatibility
+    verification: grep -q "MiaoMiao\|Bubble\|firmware" docs/10-domain/libre-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-LIBRE-004: Calibration Algorithm Not Synced
+  - id: CGM-GAP-016
+    description: Document calibration sync gap
+    type: documentation
+    gap: GAP-LIBRE-004
+    target: docs/10-domain/libre-protocol-deep-dive.md
+    expected: Calibration parameters not synced to Nightscout
+    verification: grep -q "calibration.*sync" docs/10-domain/libre-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-LIBRE-005: Sensor Serial Not in Entries
+  - id: CGM-GAP-017
+    description: Document sensor serial tracking gap
+    type: documentation
+    gap: GAP-LIBRE-005
+    target: specs/openapi/aid-entries-2025.yaml
+    expected: Sensor serial number not included in entry records
+    verification: Check entries spec for sensor serial field
+    status: proposed
+
+  # GAP-LIBRE-006: NFC vs BLE Data Latency
+  - id: CGM-GAP-018
+    description: Document NFC vs BLE latency differences
+    type: documentation
+    gap: GAP-LIBRE-006
+    target: docs/10-domain/libre-protocol-deep-dive.md
+    expected: NFC scan provides historical data, BLE provides real-time
+    verification: grep -q "NFC.*latency\|BLE.*real-time" docs/10-domain/libre-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-CGM-030: Libre 3 Direct BLE Blocked
+  - id: CGM-GAP-019
+    description: Document Libre 3 direct BLE access limitation
+    type: documentation
+    requirement: REQ-LIBRE-005
+    gap: GAP-CGM-030
+    target: docs/10-domain/libre-protocol-deep-dive.md
+    expected: Libre 3 BLE access blocked by Abbott app pairing
+    verification: grep -q "Libre 3.*BLE.*block\|pairing.*block" docs/10-domain/libre-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-CGM-031: Libre 3 NFC Limited to Activation
+  - id: CGM-GAP-020
+    description: Document Libre 3 NFC activation-only limitation
+    type: documentation
+    gap: GAP-CGM-031
+    target: docs/10-domain/libre-protocol-deep-dive.md
+    expected: Libre 3 NFC only used for sensor activation, not data read
+    verification: grep -q "Libre 3.*NFC.*activ" docs/10-domain/libre-protocol-deep-dive.md
+    status: proposed
+
+  # GAP-CGM-032: LibreLinkUp API Dependency
+  - id: CGM-GAP-021
+    description: Document LibreLinkUp API dependency
+    type: documentation
+    gap: GAP-CGM-032
+    target: docs/10-domain/libre-protocol-deep-dive.md
+    expected: LibreLinkUp cloud API required for Libre 3 data access
+    verification: grep -q "LibreLinkUp" docs/10-domain/libre-protocol-deep-dive.md
+    status: proposed
