@@ -21,7 +21,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| V4 API Integration Phase 2/3 | P2 | Nocturne alignment, NightscoutKit SDK (blocked - external repos) |
+| (Queue empty - all items promoted to Ready Queue) | - | - |
 
 ## Processed
 

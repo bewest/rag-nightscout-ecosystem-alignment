@@ -23,98 +23,58 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-### 1. [P2] Idiomatic sdqctl workflow integration ✅ COMPLETE
-**Type:** Implementation | **Effort:** Medium
-**Source:** tooling.md #15
-**Focus:** Replace custom VERIFY patterns with `sdqctl verify` calls in .conv files
-**Deliverable:** `docs/10-domain/sdqctl-workflow-integration.md`
-**Status:** ✅ COMPLETE 2026-01-30
+> **Last Groomed**: 2026-02-01 | **Open Items**: 8
 
-**Key Outcomes:**
-- Created comprehensive integration guide (5KB)
-- Added 3 Makefile targets: sdqctl-cycle, sdqctl-cycle-multi, sdqctl-verify-parallel
-- Documented all sdqctl commands and patterns
-- Added help text for new targets
+### 1. [P2] cgm-remote-monitor V4 adoption proposal
+**Type:** Proposal | **Effort:** Medium
+**Focus:** Create proposal for cgm-remote-monitor to adopt V4 API features from Nocturne
+**Outcome:** Actionable proposal for Nightscout maintainers with migration path
+**Source:** Reframed from LIVE-BACKLOG "V4 API Phase 2/3"
 
-### 2. [P2] Trio-dev oref integration mapping ✅ COMPLETE
-**Type:** Analysis | **Effort:** Medium
-**Source:** aid-algorithms.md #5
-**Repos:** Trio
-**Status:** ✅ Complete (2026-01-31)
-**Deliverable:** `docs/10-domain/trio-oref-integration-mapping.md`
-**Key Finding:** Trio is superset of oref0 (+451 lines in determine-basal.js); Dynamic ISF, overrides, SMB scheduling added
-
-### 3. [P2] Trio Nightscout sync analysis
-**Type:** Analysis | **Effort:** Medium
-**Source:** aid-algorithms.md #6
-**Repos:** Trio
-**Focus:** Analyze `NightscoutManager.swift`, `NightscoutAPI.swift` for treatment/profile sync
-**Outcome:** Document sync patterns and gaps
-
-### 4. [P2] Trio OpenAPS.swift bridge analysis ✅ COMPLETE
-**Type:** Analysis | **Effort:** Low
-**Source:** aid-algorithms.md #7
-**Repos:** Trio
-**Focus:** Analyze Swift↔JS bridge in `OpenAPS.swift` (908 lines)
-**Deliverable:** `docs/10-domain/trio-openaps-bridge-analysis.md`
-**Status:** ✅ COMPLETE 2026-01-30
-
-**Key Findings:**
-- JavaScriptCore embedded engine with 5-context pool
-- 6 bridge functions: iob, meal, autosens, determineBasal, makeProfile, exportDefaults
-- Middleware support for algorithm customization
-- 3 gaps identified: type safety, sync execution, middleware security
-
-### 5. [P3] backlog-cycle-v3.conv
-**Type:** Documentation | **Effort:** Medium
-**Source:** tooling.md #14
-**Focus:** Leverage ELIDE, mixed tools, cyclic prompts
-**Outcome:** Improved cycle efficiency
-
-### 6. [P2] LSP verification setup research ✅ COMPLETE
-**Type:** Research | **Effort:** High
-**Source:** tooling.md #16
-**Focus:** Document requirements for JS/TS LSP, Kotlin/Java LSP, Swift limitations
-**Deliverable:** `docs/10-domain/lsp-verification-setup-requirements.md`
-**Status:** ✅ COMPLETE 2026-01-30
-
-**Key Findings:**
-- JS/TS: Ready (tsserver, low effort)
-- Kotlin/Java: Feasible (JDK + Gradle sync required)
-- Swift: Limited on Linux (no iOS frameworks)
-- Phased approach: JS/TS → Kotlin/Java → Python → Swift (macOS only)
-
-### 3. [P2] Nightscout PR coherence review protocol ✅ COMPLETE
-**Type:** Documentation | **Effort:** Medium
-**Source:** tooling.md #17
-**Focus:** Systematic review methodology for cgm-remote-monitor PRs against proposals/backlogs
-**Deliverable:** `docs/10-domain/nightscout-pr-review-protocol.md`
-**Status:** ✅ COMPLETE 2026-01-30
-
-**Key Features:**
-- 6-step review process (ID → Gaps → Reqs → Proposals → Impact → Recommendation)
-- Reusable checklist template
-- PR output template with examples
-- Integration with workspace tools
-
-### 4. [P2] Known vs unknown dashboard ✅ COMPLETE
-**Type:** Implementation | **Effort:** Low
-**Source:** tooling.md #20
-**Focus:** Summary view: repos analyzed, gaps identified, coverage %, confidence levels
-**Deliverable:** `tools/known_unknown_dashboard.py`
-**Status:** ✅ COMPLETE 2026-01-30
-
-### 5. [P2] Algorithm conformance: AAPS Kotlin runner (PARKED)
-**Type:** Implementation | **Effort:** High
-**Repos:** AndroidAPS
-**Focus:** Phase 3 of conformance suite - Kotlin runner for AAPS
-**Note:** Requires JVM setup - parked until visibility work complete
-
-### 6. [P3] Algorithm conformance: Loop Swift runner (PARKED)
+### 2. [P2] Loop Swift algorithm runner
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
-**Focus:** Swift-based runner for Loop algorithm testing
-**Note:** Requires Swift on Linux - parked until visibility work complete
+**Focus:** Swift-based runner for Loop algorithm conformance testing
+**Prerequisites:** Swift 6.2.3 available ✅
+**Deliverable:** `conformance/runners/loop-runner.swift`
+**Source:** aid-algorithms.md #2
+
+### 3. [P2] Document AAPS Kotlin runner setup requirements
+**Type:** Documentation | **Effort:** Low
+**Focus:** Document JVM/Gradle setup needed to run aaps-runner.kt
+**Outcome:** Unblock future AAPS conformance work
+**Source:** Chunked from aid-algorithms.md #1
+
+### 4. [P2] V4 API Integration Phase 2: Nocturne soft delete
+**Type:** Implementation | **Effort:** Medium
+**Repos:** nocturne
+**Focus:** Add soft delete support to align with cgm-remote-monitor behavior
+**Source:** nightscout-api.md #25, Phase 2 item
+**Gap Reference:** GAP-SYNC-040
+
+### 5. [P2] MongoDB Phase 2: Storage layer analysis
+**Type:** Analysis | **Effort:** Medium
+**Focus:** Analyze storage layer for MongoDB 5.x/6.x compatibility
+**Source:** mongodb-update-readiness-report.md Phase 2
+**Deliverable:** Storage layer compatibility assessment
+
+### 6. [P3] StateSpan V3 extension specification
+**Type:** Specification | **Effort:** Medium
+**Focus:** Define V3 API extension for StateSpan standardization
+**Source:** statespan-standardization-proposal.md
+**Note:** Author preference: V4-only, but V3 extension still valuable for cgm-remote-monitor
+
+### 7. [P3] Tidepool integration inventory
+**Type:** Research | **Effort:** Low
+**Focus:** Document current Tidepool integration status across all apps
+**Source:** stakeholder-priority-analysis.md (marked TODO)
+**Outcome:** Integration status matrix for AAPS, Trio, xDrip+, Loop
+
+### 8. [P3] Tandem integration inventory
+**Type:** Research | **Effort:** Low
+**Focus:** Document Tandem/Control-IQ integration status and gaps
+**Source:** stakeholder-priority-analysis.md (marked TODO)
+**Outcome:** Gap analysis for tconnectsync and potential improvements
 
 ---
 
