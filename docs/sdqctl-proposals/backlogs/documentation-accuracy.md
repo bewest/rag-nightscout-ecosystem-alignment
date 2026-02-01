@@ -388,8 +388,8 @@ Systematic fixes for verification failures. Source: `sdqctl verify all` output.
 | # | Item | Priority | Scope | Status |
 |---|------|----------|-------|--------|
 | 38 | Identify high-value orphan artifacts | P2 | traceability/ | ✅ Complete - 6 tiers, 88 REQs analyzed |
-| 39 | Add trace links to key GAPs/REQs | P2 | gaps.md, requirements.md | 📤 **Ready Queue #5** |
-| 40 | Create traceability matrix for priority domains | P2 | sync-identity, cgm | 📤 **Ready Queue #6** |
+| 39 | Add trace links to key GAPs/REQs | P2 | gaps.md, requirements.md | ✅ Complete - 6 GAPs linked to REQs |
+| 40 | Create traceability matrix for priority domains | P2 | sync-identity, cgm | 📤 **Ready Queue #5** |
 
 ### Terminology Consistency (5 deprecated, 734 capitalization)
 

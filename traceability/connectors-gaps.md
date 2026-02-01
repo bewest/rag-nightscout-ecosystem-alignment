@@ -116,6 +116,8 @@ See [gaps.md](gaps.md) for the index.
 
 **Status**: Under discussion
 
+**Related Requirements**: REQ-NOCTURNE-002
+
 ---
 
 ---
@@ -452,6 +454,8 @@ osx_image: xcode12.4
 - Promises mixed with utilities in impl objects
 
 **Remediation**: Define formal VendorDriver interface contract with validation.
+
+**Related Requirements**: REQ-CONNECT-006
 
 **Source**: `machines.md:163-169`
 

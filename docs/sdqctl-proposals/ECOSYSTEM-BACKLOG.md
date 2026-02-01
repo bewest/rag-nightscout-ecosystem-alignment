@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 | **Open Items**: 7  
+> **Last Groomed**: 2026-02-01 | **Open Items**: 6  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -51,26 +51,20 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Deliverable:** PR to cgm-remote-monitor with driver upgrade
 **Blocker:** Requires changes to external cgm-remote-monitor repo
 
-### 4. [P2] Add trace links to key GAPs/REQs
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Add cross-references between related GAPs and REQs
-**Source:** documentation-accuracy.md #39
-**Deliverable:** Updated gaps.md and requirements.md with trace links
-
-### 5. [P2] Create traceability matrix for priority domains
+### 4. [P2] Create traceability matrix for priority domains
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Build REQ↔GAP↔Assertion matrix for sync-identity and cgm domains
 **Source:** documentation-accuracy.md #40
 **Deliverable:** `traceability/domain-matrices/sync-identity-matrix.md`
 
-### 6. [P2] StateSpan V3 extension specification
+### 5. [P2] StateSpan V3 extension specification
 **Type:** Proposal | **Effort:** High
 **Focus:** Draft V3 API extension for StateSpan endpoints
 **Prerequisites:** StateSpan standardization proposal ✅
 **Source:** sync-identity.md #19
 **Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
 
-### 7. [P3] Archive or remove stale refs
+### 6. [P3] Archive or remove stale refs
 **Type:** Housekeeping | **Effort:** Low
 **Focus:** Clean up 29 broken refs in archive files
 **Source:** documentation-accuracy.md #35
@@ -82,6 +76,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **GAP-REQ Bidirectional Trace Links** | 3 gap files updated | 6 reverse links added for Tier 1 interoperability REQs |
 | **Orphan Artifact Priority Analysis** | `orphan-artifact-priorities.md` | 88 REQs analyzed, 6 tiers, action items for alarm/pump assertions |
 | **Conformance Scenario Expansion** | 3 assertion YAMLs | 11 REQs covered (99→88 uncovered), devicestatus/profile/API assertions |
 | **StateSpan V3 Extension Spec** | `specs/openapi/statespan-v3-extension.md` | 4 categories, backward compat, reference only (author prefers V4) |

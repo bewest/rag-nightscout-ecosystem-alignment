@@ -866,6 +866,8 @@ These are used exclusively for Loop remote commands via APNS but are undocumente
 
 **Status**: Under discussion
 
+**Related Requirements**: REQ-SPEC-004
+
 **Related**:
 - GAP-TREAT-006, GAP-API-001
 
@@ -899,6 +901,8 @@ The server calculates the identifier in such a way that duplicate records are au
 3. Specify which fields form the composite key
 
 **Status**: Under discussion
+
+**Related Requirements**: REQ-SPEC-003
 
 **Related**:
 - GAP-003, GAP-BATCH-001, GAP-BATCH-002

@@ -31,6 +31,8 @@ See [gaps.md](gaps.md) for the index.
 
 **Status**: Substantially addressed - oref0 runner reveals 69% divergence from AAPS
 
+**Related Requirements**: REQ-ALG-003, REQ-PLUGIN-003
+
 **Related**:
 - [Algorithm Conformance Suite Proposal](../docs/sdqctl-proposals/algorithm-conformance-suite.md)
 - `conformance/schemas/conformance-vector-v1.json`
@@ -96,6 +98,8 @@ See [gaps.md](gaps.md) for the index.
 3. Document expected behavioral differences for users
 
 **Status**: Proposal created
+
+**Related Requirements**: REQ-ALG-002
 
 **Related**:
 - [Algorithm Conformance Suite Proposal](../docs/sdqctl-proposals/algorithm-conformance-suite.md)
