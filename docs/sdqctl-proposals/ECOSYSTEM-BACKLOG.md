@@ -44,13 +44,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** tooling.md #30
 **Unblocked:** Yes - internal tooling change
 
-### 3. [P2] REFCAT caching implementation ✅
-**Type:** Implementation | **Effort:** Medium
-**Focus:** Pre-compute file indexes to avoid re-scanning on each cycle
-**Rationale:** 20-40% token reduction per proposal
-**Deliverable:** Implement `refcat-caching-proposal.md`
+### 3. [P2] REFCAT directive adoption ✅
+**Type:** Workflow Update | **Effort:** Low
+**Focus:** Replace `RUN head file.md` + `ELIDE` patterns with sdqctl REFCAT directive
+**Rationale:** REFCAT provides file attribution + small snippets with proper source tracking
+**Deliverable:** Update workflows to use `REFCAT path/to/file.md:1-50` for context injection
 **Source:** tooling.md #31
-**Unblocked:** Yes - internal tooling change
+**Unblocked:** Yes - sdqctl feature already available
 
 ### 4. [P2] Loop Swift algorithm runner 🚫
 **Type:** Implementation | **Effort:** High
