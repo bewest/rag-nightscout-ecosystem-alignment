@@ -13,6 +13,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Carb Absorption Assertions (2026-02-01)
+
+Created conformance assertions for carb absorption model requirements.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 6 (REQ-CARB-001-006) |
+| Gaps addressed | 5 (GAP-CARB-001-005) |
+| Assertions created | 34 |
+
+**Deliverable**: `conformance/assertions/carb-absorption.yaml`
+
+**Coverage by Topic**:
+- COB model annotation: 4 assertions
+- min_5m_carbimpact documentation: 4 assertions
+- Absorption model selection: 4 assertions
+- CSF calculation: 4 assertions
+- Per-entry absorption time: 5 assertions
+- COB maximum limits: 6 assertions
+- Cross-system validation: 7 assertions
+
+**Impact**: Carb Absorption category 100% complete; algorithm domain 61%→71%
+
+---
+
 ### Algorithm Documentation Assertions (2026-02-01)
 
 Created conformance assertions for algorithm documentation requirements.

@@ -12,11 +12,11 @@
 |--------|-------|
 | Requirements | 56 |
 | Gaps | 66 |
-| REQs with assertion coverage | 34 (61%) |
-| Uncovered REQs | 22 (39%) |
-| Uncovered GAPs | 48 (73%) |
+| REQs with assertion coverage | 40 (71%) |
+| Uncovered REQs | 16 (29%) |
+| Uncovered GAPs | 43 (65%) |
 
-**Status**: 🔄 **IN PROGRESS** - Degraded op, insulin, profile, prediction, bolus, sensitivity, dosing, target complete (34 REQs)
+**Status**: 🔄 **IN PROGRESS** - 10/12 categories complete (40 REQs)
 
 ---
 
@@ -33,14 +33,16 @@
 
 ### Carb Absorption (6)
 
+### Carb Absorption (6) - COVERED ✅
+
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-CARB-001 | COB Model Type Annotation | GAP-CARB-001 | ❌ None |
-| REQ-CARB-002 | Minimum Carb Impact Documentation | GAP-CARB-003, GAP-CARB-004 | ❌ None |
-| REQ-CARB-003 | Absorption Model Selection | - | ❌ None |
-| REQ-CARB-004 | Carb Sensitivity Factor Calculation | - | ❌ None |
-| REQ-CARB-005 | Per-Entry Absorption Time | - | ❌ None |
-| REQ-CARB-006 | COB Maximum Limits | GAP-CARB-005 | ❌ None |
+| REQ-CARB-001 | COB Model Type Annotation | GAP-CARB-001 | ✅ carb-absorption.yaml |
+| REQ-CARB-002 | Minimum Carb Impact Documentation | GAP-CARB-003, GAP-CARB-004 | ✅ carb-absorption.yaml |
+| REQ-CARB-003 | Absorption Model Selection | - | ✅ carb-absorption.yaml |
+| REQ-CARB-004 | Carb Sensitivity Factor Calculation | - | ✅ carb-absorption.yaml |
+| REQ-CARB-005 | Per-Entry Absorption Time | GAP-CARB-002 | ✅ carb-absorption.yaml |
+| REQ-CARB-006 | COB Maximum Limits | GAP-CARB-005 | ✅ carb-absorption.yaml |
 
 ### Degraded Operation (6) - COVERED ✅
 
@@ -229,7 +231,7 @@
 | Category | REQs | Covered | Coverage |
 |----------|------|---------|----------|
 | Algorithm Core | 4 | 1 | 25% |
-| Carb Absorption | 6 | 0 | 0% |
+| Carb Absorption | 6 | 6 | 100% ✅ |
 | Degraded Operation | 6 | 6 | 100% ✅ |
 | Insulin Model | 5 | 5 | 100% ✅ |
 | Proposed API | 4 | 0 | 0% |
@@ -240,7 +242,7 @@
 | Dosing Mechanism | 3 | 3 | 100% ✅ |
 | Target Range | 3 | 3 | 100% ✅ |
 | Trio oref | 3 | 0 | 0% |
-| **Total** | **56** | **34** | **61%** |
+| **Total** | **56** | **40** | **71%** |
 
 ### Data Quality Issues
 
@@ -298,7 +300,8 @@
 | `profile-structure.yaml` | 7 (REQ-PROF-001-007) | 5 (GAP-PROF-001, 002, 005, 006, 008) |
 | `prediction-requirements.yaml` | 3 (REQ-PRED-001-003) | 3 (GAP-PRED-001, 002, 003) |
 | `algorithm-docs.yaml` | 12 (REQ-BOLUS-001-003, SENS-001-003, DOSE-001-003, TGT-001-003) | 4 (GAP-BOLUS-001, 002, SENS-001, 002) |
-| **Total** | **34** | **17** |
+| `carb-absorption.yaml` | 6 (REQ-CARB-001-006) | 5 (GAP-CARB-001, 002, 003, 004, 005) |
+| **Total** | **40** | **22** |
 
 ---
 

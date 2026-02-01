@@ -1,0 +1,374 @@
+# Carb Absorption Conformance Assertions
+# Covers REQ-CARB-001 through REQ-CARB-006
+#
+# These assertions verify carb absorption model documentation,
+# configuration, and cross-system compatibility.
+
+scenario: carb-absorption
+version: "1.0"
+requirements:
+  - REQ-CARB-001
+  - REQ-CARB-002
+  - REQ-CARB-003
+  - REQ-CARB-004
+  - REQ-CARB-005
+  - REQ-CARB-006
+
+related_gaps:
+  - GAP-CARB-001  # Incompatible COB semantics
+  - GAP-CARB-002  # No standard carb absorption format
+  - GAP-CARB-003  # UAM detection variance
+  - GAP-CARB-004  # min_5m_carbimpact variance
+  - GAP-CARB-005  # COB maximum limits differ
+
+assertions:
+  # ========================================
+  # COB Model Type Annotation (REQ-CARB-001)
+  # ========================================
+
+  - id: carb-model-001
+    description: AAPS devicestatus includes COB model type annotation
+    type: schema
+    requirement: REQ-CARB-001
+    gap: GAP-CARB-001
+    target: Nightscout devicestatus collection
+    expected:
+      field_path: "openaps.iob.source"
+      indicates: "COB calculation source"
+    verification: Query devicestatus for source field presence
+    status: draft
+
+  - id: carb-model-002
+    description: Loop devicestatus indicates predictive COB model
+    type: schema
+    requirement: REQ-CARB-001
+    gap: GAP-CARB-001
+    target: Nightscout devicestatus collection
+    expected:
+      controller: "loop"
+      cob_semantics: "predictive curve-based"
+    verification: Verify Loop COB is labeled as predictive
+    status: draft
+
+  - id: carb-model-003
+    description: Trio devicestatus indicates oref COB model
+    type: schema
+    requirement: REQ-CARB-001
+    gap: GAP-CARB-001
+    target: Nightscout devicestatus collection
+    expected:
+      controller: "openaps"
+      cob_semantics: "deviation-inferred"
+    verification: Verify Trio COB is labeled as oref-based
+    status: draft
+
+  - id: carb-model-004
+    description: Nightscout UI displays COB model type when available
+    type: ui
+    requirement: REQ-CARB-001
+    gap: GAP-CARB-001
+    target: Nightscout web interface
+    expected:
+      shows: "COB calculation method indicator"
+    verification: UI audit for COB source display
+    status: draft
+
+  # ========================================
+  # Minimum Carb Impact Documentation (REQ-CARB-002)
+  # ========================================
+
+  - id: carb-impact-001
+    description: AAPS documents min_5m_carbimpact default values
+    type: documentation
+    requirement: REQ-CARB-002
+    gap: GAP-CARB-004
+    target: externals/AndroidAPS/
+    expected:
+      documents: "min_5m_carbimpact"
+      values:
+        - "3 mg/dL/5m for AMA"
+        - "8 mg/dL/5m for SMB"
+    verification: Documentation audit for min_5m_carbimpact
+    status: draft
+
+  - id: carb-impact-002
+    description: oref0 documents min_5m_carbimpact effect on COB decay
+    type: documentation
+    requirement: REQ-CARB-002
+    gap: GAP-CARB-004
+    target: externals/oref0/
+    expected:
+      explains: "COB decay floor behavior"
+      describes: "When absorption not detected"
+    verification: Documentation review for COB decay explanation
+    status: draft
+
+  - id: carb-impact-003
+    description: Trio exposes min_5m_carbimpact in settings
+    type: config
+    requirement: REQ-CARB-002
+    gap: GAP-CARB-004
+    target: Trio Settings UI
+    expected:
+      setting_visible: true
+      configurable: true
+    verification: Settings audit for min_5m_carbimpact
+    status: draft
+
+  - id: carb-impact-004
+    description: Loop documents dynamic absorption approach
+    type: documentation
+    requirement: REQ-CARB-002
+    target: externals/LoopWorkspace/
+    expected:
+      documents: "dynamic carb absorption"
+      explains: "No min_5m_carbimpact equivalent"
+    verification: Documentation search for absorption floor
+    status: draft
+
+  # ========================================
+  # Absorption Model Selection (REQ-CARB-003)
+  # ========================================
+
+  - id: carb-select-001
+    description: Loop supports multiple absorption models
+    type: config
+    requirement: REQ-CARB-003
+    target: externals/LoopWorkspace/LoopKit/LoopAlgorithm/
+    expected:
+      models:
+        - Linear
+        - Parabolic
+        - PiecewiseLinear
+    verification: Code review for CarbMath.swift model support
+    status: draft
+
+  - id: carb-select-002
+    description: Loop documents absorption model differences
+    type: documentation
+    requirement: REQ-CARB-003
+    target: externals/LoopWorkspace/
+    expected:
+      documents: "absorption model selection"
+      explains: "When to use each model"
+    verification: Documentation audit for model guidance
+    status: draft
+
+  - id: carb-select-003
+    description: AAPS uses oref absorption model
+    type: documentation
+    requirement: REQ-CARB-003
+    target: externals/AndroidAPS/
+    expected:
+      documents: "oref absorption model"
+      explains: "deviation-based approach"
+    verification: Documentation review for absorption model
+    status: draft
+
+  - id: carb-select-004
+    description: Trio documents oref1 absorption behavior
+    type: documentation
+    requirement: REQ-CARB-003
+    target: externals/Trio/
+    expected:
+      documents: "oref1 carb absorption"
+      references: "UAM backup mechanism"
+    verification: Documentation search for absorption model
+    status: draft
+
+  # ========================================
+  # Carb Sensitivity Factor (REQ-CARB-004)
+  # ========================================
+
+  - id: csf-calc-001
+    description: CSF formula is ISF / CR across all systems
+    type: behavior
+    requirement: REQ-CARB-004
+    target: All AID systems
+    expected:
+      formula: "CSF = ISF / CR"
+      units: "mg/dL per gram"
+    verification: Calculate CSF in multiple systems with same inputs
+    status: draft
+
+  - id: csf-calc-002
+    description: Loop CSF calculation matches formula
+    type: validation
+    requirement: REQ-CARB-004
+    target: externals/LoopWorkspace/
+    expected:
+      input:
+        isf: 50  # mg/dL per unit
+        cr: 10   # grams per unit
+      output:
+        csf: 5   # mg/dL per gram
+    verification: Code trace for CSF calculation
+    status: draft
+
+  - id: csf-calc-003
+    description: oref0 CSF calculation matches formula
+    type: validation
+    requirement: REQ-CARB-004
+    target: externals/oref0/
+    expected:
+      input:
+        isf: 50
+        cr: 10
+      output:
+        csf: 5
+    verification: Test vector with known ISF/CR
+    status: draft
+
+  - id: csf-calc-004
+    description: AAPS CSF calculation matches formula
+    type: validation
+    requirement: REQ-CARB-004
+    target: externals/AndroidAPS/
+    expected:
+      input:
+        isf: 50
+        cr: 10
+      output:
+        csf: 5
+    verification: Unit test or manual calculation check
+    status: draft
+
+  # ========================================
+  # Per-Entry Absorption Time (REQ-CARB-005)
+  # ========================================
+
+  - id: abs-time-001
+    description: Loop supports per-entry absorptionTime
+    type: schema
+    requirement: REQ-CARB-005
+    target: Loop carb entry
+    expected:
+      field: "absorptionTime"
+      type: "TimeInterval"
+      per_entry: true
+    verification: Code review for absorptionTime support
+    status: draft
+
+  - id: abs-time-002
+    description: Trio supports per-entry absorptionTime
+    type: schema
+    requirement: REQ-CARB-005
+    target: Trio carb entry
+    expected:
+      field: "absorptionTime"
+      type: "TimeInterval"
+      per_entry: true
+    verification: Code review for absorptionTime support
+    status: draft
+
+  - id: abs-time-003
+    description: Nightscout preserves absorptionTime field
+    type: schema
+    requirement: REQ-CARB-005
+    target: Nightscout treatments collection
+    expected:
+      field: "absorptionTime"
+      preserved: true
+    verification: Create treatment with absorptionTime, verify storage
+    status: draft
+
+  - id: abs-time-004
+    description: AAPS documents profile-based absorption (no per-entry)
+    type: documentation
+    requirement: REQ-CARB-005
+    gap: GAP-CARB-002
+    target: externals/AndroidAPS/
+    expected:
+      documents: "profile-based absorption"
+      explains: "per-entry absorptionTime not used"
+    verification: Documentation audit for absorption time handling
+    status: draft
+
+  - id: abs-time-005
+    description: oref0 documents profile-based absorption
+    type: documentation
+    requirement: REQ-CARB-005
+    gap: GAP-CARB-002
+    target: externals/oref0/
+    expected:
+      documents: "carb_absorption_rate from profile"
+      explains: "no per-entry override"
+    verification: Documentation review for absorption behavior
+    status: draft
+
+  # ========================================
+  # COB Maximum Limits (REQ-CARB-006)
+  # ========================================
+
+  - id: cob-max-001
+    description: oref0 documents maxCOB default of 120g
+    type: documentation
+    requirement: REQ-CARB-006
+    gap: GAP-CARB-005
+    target: externals/oref0/
+    expected:
+      documents: "maxCOB"
+      default: 120
+      unit: "grams"
+    verification: Documentation search for maxCOB
+    status: draft
+
+  - id: cob-max-002
+    description: AAPS exposes maxCOB as configurable setting
+    type: config
+    requirement: REQ-CARB-006
+    gap: GAP-CARB-005
+    target: AAPS Settings
+    expected:
+      setting: "maxCOB"
+      configurable: true
+      default: 120
+    verification: Settings audit for maxCOB
+    status: draft
+
+  - id: cob-max-003
+    description: Loop documents no maxCOB limit
+    type: documentation
+    requirement: REQ-CARB-006
+    gap: GAP-CARB-005
+    target: externals/LoopWorkspace/
+    expected:
+      documents: "no hard COB cap"
+      behavior: "COB reflects actual entered carbs"
+    verification: Documentation search for COB limits
+    status: draft
+
+  - id: cob-max-004
+    description: Trio documents inherited oref maxCOB behavior
+    type: documentation
+    requirement: REQ-CARB-006
+    gap: GAP-CARB-005
+    target: externals/Trio/
+    expected:
+      documents: "maxCOB inherited from oref"
+      configurable: true
+    verification: Documentation audit for COB limits
+    status: draft
+
+  - id: cob-max-005
+    description: UI alerts when COB exceeds maxCOB limit
+    type: ui
+    requirement: REQ-CARB-006
+    gap: GAP-CARB-005
+    target: AAPS/Trio UI
+    expected:
+      alert: "COB capped at maxCOB"
+      visible: true
+    verification: Enter carbs exceeding maxCOB, check for notification
+    status: draft
+
+  - id: cob-max-006
+    description: Nightscout reports show maxCOB behavior differences
+    type: documentation
+    requirement: REQ-CARB-006
+    gap: GAP-CARB-005
+    target: Nightscout documentation
+    expected:
+      documents: "COB limit variance across controllers"
+    verification: Documentation review for multi-controller COB handling
+    status: draft

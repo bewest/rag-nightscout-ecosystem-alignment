@@ -526,3 +526,23 @@ For cross-system interoperability, the key challenges are:
 - eCarbs not portable to iOS systems
 - Dynamic absorption state not exported
 - Varying COB cap configurations
+
+---
+
+## 14. Conformance Assertions
+
+The following conformance assertions cover carb absorption requirements:
+
+| Assertion File | Requirements | Assertions |
+|----------------|--------------|------------|
+| `conformance/assertions/carb-absorption.yaml` | REQ-CARB-001 through REQ-CARB-006 | 34 |
+
+**Key Assertions**:
+- `carb-model-001-004`: COB model type annotation in devicestatus
+- `carb-impact-001-004`: min_5m_carbimpact documentation
+- `carb-select-001-004`: Absorption model selection
+- `csf-calc-001-004`: CSF formula consistency
+- `abs-time-001-005`: Per-entry absorption time support
+- `cob-max-001-006`: COB maximum limits documentation
+
+See `traceability/domain-matrices/aid-algorithms-matrix.md` for full coverage matrix.

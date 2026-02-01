@@ -64,6 +64,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **🎉 Carb Absorption Assertions** | `conformance/assertions/carb-absorption.yaml` | 34 assertions, 6 REQs, Carb Absorption 100% COMPLETE |
 | **🎉 Algorithm Docs Assertions** | `conformance/assertions/algorithm-docs.yaml` | 32 assertions, 12 REQs, 4 categories 100% COMPLETE |
 | **🎉 Prediction Assertions** | `conformance/assertions/prediction-requirements.yaml` | 19 assertions, 3 REQs, Prediction 100% COMPLETE |
 | **🎉 Profile Schema Assertions** | `conformance/assertions/profile-structure.yaml` | 34 assertions, 7 REQs, Profile Schema 100% COMPLETE |
