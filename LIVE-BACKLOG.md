@@ -27,6 +27,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| OpenAPI x-aid-req Annotations (cycle 83) | P3 | ✅ Complete - 21 annotations across 5 specs | 2026-02-01 |
 | Progress Archive Rotation (cycle 82) | P3 | ✅ Complete - 14 entries archived, 1400→1156 lines | 2026-02-01 |
 | Orphaned Gap Cleanup (cycle 81) | P3 | ✅ Complete - 16 gaps linked to REQs, 0 orphaned | 2026-02-01 |
 | Gap ID Duplicate Renumbering (cycle 80) | P3 | ✅ Complete - 10 duplicates → 0, 340 unique GAP IDs | 2026-02-01 |

@@ -123,15 +123,19 @@ components:
         # API v3 metadata
         utcOffset:
           type: integer
+          x-aid-req: [REQ-SYNC-039, REQ-TZ-002]
         srvCreated:
           type: integer
           format: int64
+          x-aid-req: [REQ-SYNC-050]
         srvModified:
           type: integer
           format: int64
+          x-aid-req: [REQ-SYNC-049]
         isValid:
           type: boolean
           default: true
+          x-aid-req: [REQ-SYNC-040]
 
     # =========================================================================
     # LOOP STATUS (Flat Structure)

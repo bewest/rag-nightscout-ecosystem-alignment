@@ -86,15 +86,19 @@ components:
         # API v3 metadata
         utcOffset:
           type: integer
+          x-aid-req: [REQ-SYNC-039]
         srvCreated:
           type: integer
           format: int64
+          x-aid-req: [REQ-SYNC-050]
         srvModified:
           type: integer
           format: int64
+          x-aid-req: [REQ-SYNC-049, REQ-SYNC-060]
         isValid:
           type: boolean
           default: true
+          x-aid-req: [REQ-SYNC-040, REQ-SYNC-061]
 
     Profile:
       type: object
@@ -126,6 +130,7 @@ components:
           items:
             $ref: '#/components/schemas/TimedValue'
           description: Scheduled basal rates (U/hr) by time of day
+          x-aid-req: [REQ-PROF-005, REQ-PROF-006]
           x-aid-gap: GAP-PROF-006
           x-aid-gap-note: Time format differs - Nightscout uses "HH:MM" string, controllers use numeric offsets
           x-aid-controllers:

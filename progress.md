@@ -13,6 +13,22 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### OpenAPI x-aid-req Annotations (2026-02-01)
+
+Added requirement cross-references to OpenAPI specs for improved traceability.
+
+| Spec | Annotations | Key REQs |
+|------|-------------|----------|
+| aid-treatments-2025.yaml | 7 | REQ-SYNC-036/037, REQ-TREAT-040-046 |
+| aid-profile-2025.yaml | 5 | REQ-SYNC-*, REQ-PROF-005/006 |
+| aid-devicestatus-2025.yaml | 4 | REQ-SYNC-039/040/049/050 |
+| aid-entries-2025.yaml | 3 | REQ-INTEROP-001/003 |
+| aid-commands-2025.yaml | 2 | REQ-REMOTE-001/002 |
+
+**Result**: 21 x-aid-req annotations across 5 specs
+
+---
+
 ### TestFlight Distribution Infrastructure (2026-01-31)
 
 Survey of TestFlight and build automation across iOS ecosystem.

@@ -28,6 +28,8 @@ info:
     
     ## Requirements
     - REQ-PR-004: Remote Command Support
+    - REQ-REMOTE-001: Remote Command Authentication
+    - REQ-REMOTE-002: Remote Command Replay Protection
     
     ## Cross-Project Support
     

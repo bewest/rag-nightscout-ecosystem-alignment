@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 | **Open Items**: 5  
+> **Last Groomed**: 2026-02-01 | **Open Items**: 4  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -48,13 +48,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** mongodb-update-readiness-report.md Phase 3
 **Deliverable:** PR to cgm-remote-monitor with driver upgrade
 
-### 4. [P3] OpenAPI x-aid-req annotations
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Add x-aid-req cross-references to OpenAPI specs
-**Source:** REQ-API alignment audit (67% coverage)
-**Deliverable:** Updated OpenAPI specs with REQ annotations
-
-### 5. [P3] Conformance scenario expansion
+### 4. [P3] Conformance scenario expansion
 **Type:** Documentation | **Effort:** Medium
 **Focus:** Add scenarios for uncovered REQs
 **Source:** 99 uncovered REQs from coverage analysis

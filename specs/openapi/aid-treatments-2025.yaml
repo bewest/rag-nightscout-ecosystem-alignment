@@ -140,6 +140,7 @@ components:
           description: |
             API v3 primary key. Server-assigned.
             AAPS uses this for sync identity.
+          x-aid-req: [REQ-SYNC-037]
           x-aid-controllers:
             AAPS: Primary sync field (interfaceIDs.nightscoutId)
             Loop: Not used (uses syncIdentifier)
@@ -151,6 +152,7 @@ components:
             Loop and Trio primary sync mechanism.
           x-aid-gap: GAP-003
           x-aid-gap-note: No unified sync identity field across controllers
+          x-aid-req: [REQ-SYNC-036, REQ-TREAT-045]
           x-aid-controllers:
             Loop: Primary sync field (UUID string)
             Trio: Primary sync field (inherited from LoopKit)
@@ -175,6 +177,7 @@ components:
           type: number
           minimum: 0
           description: Insulin amount in Units
+          x-aid-req: [REQ-TREAT-040]
           x-aid-controllers:
             Loop: deliveredUnits (preferred) or programmedUnits
             AAPS: amount
@@ -192,6 +195,7 @@ components:
           description: |
             Whether insulin was automatically delivered.
             true = auto-bolus/SMB, false = manual bolus
+          x-aid-req: [REQ-TREAT-043]
           x-aid-controllers:
             Loop: automatic field
             AAPS: Inferred from Bolus.Type (SMB = automatic)
@@ -230,6 +234,7 @@ components:
           type: number
           minimum: 0
           description: Carbohydrates in grams
+          x-aid-req: [REQ-TREAT-041]
           x-aid-controllers:
             Loop: quantity (HKQuantity grams)
             AAPS: amount
@@ -241,6 +246,7 @@ components:
             WARNING: Loop/Trio use SECONDS internally.
           x-aid-gap: GAP-TREAT-001
           x-aid-gap-note: Unit mismatch - Loop/Trio use seconds, Nightscout uses minutes
+          x-aid-req: [REQ-TREAT-046]
           x-aid-controllers:
             Loop: absorptionTime / 60 (seconds to minutes)
             AAPS: Not stored (uses profile default)
@@ -263,6 +269,7 @@ components:
             WARNING: Loop enacted uses SECONDS.
           x-aid-gap: GAP-TREAT-003
           x-aid-gap-note: Duration unit inconsistency
+          x-aid-req: [REQ-TREAT-044]
           x-aid-controllers:
             Loop: Uses seconds in devicestatus.enacted
             AAPS: Uses minutes

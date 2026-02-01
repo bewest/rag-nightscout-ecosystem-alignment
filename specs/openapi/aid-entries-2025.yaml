@@ -155,6 +155,7 @@ components:
           description: |
             API v3 primary key. Server-assigned, immutable after creation.
             Used for document addressing in v3 endpoints.
+          x-aid-req: [REQ-SYNC-037]
           x-aid-source: externals/cgm-remote-monitor/lib/api3/generic/update/validate.js
           x-aid-controllers:
             AAPS: Uses identifier field
@@ -183,6 +184,7 @@ components:
           type: integer
           format: int64
           description: Epoch milliseconds timestamp
+          x-aid-req: [REQ-TREAT-042, REQ-INTEROP-001]
           x-aid-controllers:
             Loop: startDate (converted)
             AAPS: timestamp
@@ -196,6 +198,7 @@ components:
           type: string
           description: |
             Source device identifier. Format varies by uploader.
+          x-aid-req: [REQ-INTEROP-003]
           examples:
             - xDrip-DexcomG6
             - share2
