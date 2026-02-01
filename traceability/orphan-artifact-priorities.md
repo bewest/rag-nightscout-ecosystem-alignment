@@ -76,22 +76,24 @@ These requirements are platform/implementation-specific or have limited ecosyste
 
 ---
 
-### Tier 4: Alarm Domain (Cluster)
+### Tier 4: Alarm Domain (Cluster) - ✅ COMPLETE
 
-8 alarm-related requirements form a coherent cluster for future alarm standardization effort.
+All 10 alarm-related requirements now covered by `conformance/assertions/alarm-requirements.yaml`.
 
-| REQ ID | Title | Priority |
-|--------|-------|----------|
-| REQ-ALARM-002 | Configurable Snooze Duration | Medium |
-| REQ-ALARM-003 | Day/Night Schedule Support | Medium |
-| REQ-ALARM-004 | Predictive Low Glucose Alarms | High |
-| REQ-ALARM-005 | Persistent Threshold Requirement | Medium |
-| REQ-ALARM-006 | Rate-of-Change Alarms | Medium |
-| REQ-ALARM-007 | Missed Reading Detection | High |
-| REQ-ALARM-008 | Loop Status Alerting | Medium |
-| REQ-ALARM-009 | Alarm Priority Ordering | Low |
+| REQ ID | Title | Status |
+|--------|-------|--------|
+| REQ-ALARM-001 | Configurable Glucose Thresholds | ✅ Covered |
+| REQ-ALARM-002 | Configurable Snooze Duration | ✅ Covered |
+| REQ-ALARM-003 | Day/Night Schedule Support | ✅ Covered |
+| REQ-ALARM-004 | Predictive Low Glucose Alarms | ✅ Covered |
+| REQ-ALARM-005 | Persistent Threshold Requirement | ✅ Covered |
+| REQ-ALARM-006 | Rate-of-Change Alarms | ✅ Covered |
+| REQ-ALARM-007 | Missed Reading Detection | ✅ Covered |
+| REQ-ALARM-008 | Loop Status Alerting | ✅ Covered |
+| REQ-ALARM-009 | Alarm Priority Ordering | ✅ Covered |
+| REQ-ALARM-010 | Global Snooze/Mute Capability | ✅ Covered |
 
-**Recommended Action**: Create dedicated alarm conformance scenario file
+**Completed**: 2026-02-01 (cycle 96)
 
 ---
 
@@ -138,7 +140,7 @@ External service integrations that depend on third-party APIs.
 
 ### Immediate (Next 3 Cycles)
 
-1. **Create alarm-assertions.yaml** - Cover 8 REQ-ALARM-* requirements
+1. ~~**Create alarm-assertions.yaml** - Cover 8 REQ-ALARM-* requirements~~ ✅ Complete (cycle 96)
 2. **Create pump-assertions.yaml** - Cover 6 REQ-PUMP-* requirements
 3. **Link REQ-SPEC-003/004** to existing deduplication documentation
 
