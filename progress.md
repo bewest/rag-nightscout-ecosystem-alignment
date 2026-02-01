@@ -13,6 +13,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Algorithm Documentation Assertions (2026-02-01)
+
+Created conformance assertions for algorithm documentation requirements.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 12 (REQ-BOLUS-001-003, REQ-SENS-001-003, REQ-DOSE-001-003, REQ-TGT-001-003) |
+| Gaps addressed | 4 (GAP-BOLUS-001, GAP-BOLUS-002, GAP-SENS-001, GAP-SENS-002) |
+| Assertions created | 32 |
+
+**Deliverable**: `conformance/assertions/algorithm-docs.yaml`
+
+**Coverage by Category**:
+- Bolus Wizard: 7 assertions
+- Sensitivity: 7 assertions
+- Dosing Mechanism: 7 assertions
+- Target Range: 11 assertions
+
+**Impact**: 4 categories now 100% covered; algorithm domain 39%→61%
+
+---
+
 ### Prediction Assertions (2026-02-01)
 
 Created conformance assertions for prediction curve display and documentation.

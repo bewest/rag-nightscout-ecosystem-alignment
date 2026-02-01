@@ -346,3 +346,21 @@ Loop sends bolus treatments but not detailed wizard inputs to Nightscout.
 - `docs/10-domain/profile-schema-alignment.md` - ISF, ICR, targets
 - `docs/10-domain/algorithm-comparison-deep-dive.md` - Algorithm differences
 - `mapping/cross-project/terminology-matrix.md` - Term mappings
+
+---
+
+## Conformance Assertions
+
+The following conformance assertions cover bolus wizard documentation requirements:
+
+| Assertion File | Requirements | Assertions |
+|----------------|--------------|------------|
+| `conformance/assertions/algorithm-docs.yaml` | REQ-BOLUS-001, REQ-BOLUS-002, REQ-BOLUS-003 | 7 |
+
+**Key Assertions**:
+- `doc-bolus-001`: Loop prediction-based calculation documentation
+- `doc-bolus-002`: AAPS arithmetic calculation documentation
+- `doc-bolus-004`: AAPS IOB breakdown UI
+- `doc-bolus-006`: AAPS BolusCalculatorResult sync to Nightscout
+
+See `traceability/domain-matrices/aid-algorithms-matrix.md` for full coverage matrix.

@@ -334,3 +334,21 @@ AAPS syncs via profile:
 - [Loop Correction Range Documentation](https://loopkit.github.io/loopdocs/operation/features/correction-range/)
 - [OpenAPS Target BG Documentation](https://openaps.readthedocs.io/en/latest/docs/Customize-Iterate/autotune.html)
 - [AAPS Profile Documentation](https://androidaps.readthedocs.io/en/latest/Configuration/Config-Builder.html#profile)
+
+---
+
+## Conformance Assertions
+
+The following conformance assertions cover target range documentation requirements:
+
+| Assertion File | Requirements | Assertions |
+|----------------|--------------|------------|
+| `conformance/assertions/algorithm-docs.yaml` | REQ-TGT-001, REQ-TGT-002, REQ-TGT-003 | 11 |
+
+**Key Assertions**:
+- `doc-tgt-001`: Loop ClosedRange target format documentation
+- `doc-tgt-002`: AAPS/oref0 min_bg/max_bg format documentation
+- `doc-tgt-004`: Loop dynamic target behavior documentation
+- `doc-tgt-006`: AAPS temp target SMB enable side effects
+
+See `traceability/domain-matrices/aid-algorithms-matrix.md` for full coverage matrix.

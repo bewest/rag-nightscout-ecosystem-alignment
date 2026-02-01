@@ -301,3 +301,21 @@ Total effect may be in `loop.predicted` but not itemized.
 - `docs/10-domain/algorithm-comparison-deep-dive.md` - Algorithm overview
 - `docs/10-domain/bolus-wizard-formula-comparison.md` - ISF usage in bolus
 - `docs/10-domain/profile-schema-alignment.md` - ISF schedule storage
+
+---
+
+## Conformance Assertions
+
+The following conformance assertions cover sensitivity adjustment documentation requirements:
+
+| Assertion File | Requirements | Assertions |
+|----------------|--------------|------------|
+| `conformance/assertions/algorithm-docs.yaml` | REQ-SENS-001, REQ-SENS-002, REQ-SENS-003 | 7 |
+
+**Key Assertions**:
+- `doc-sens-001`: AAPS autosens ratio multiplier documentation
+- `doc-sens-002`: Loop RC prediction effect documentation
+- `doc-sens-004`: AAPS devicestatus sensitivityRatio field
+- `doc-sens-006`: AAPS 8-24 hour detection window documentation
+
+See `traceability/domain-matrices/aid-algorithms-matrix.md` for full coverage matrix.

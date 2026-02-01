@@ -323,3 +323,21 @@ rT.duration = durationReq;
 - [OpenAPS SMB Documentation](https://openaps.readthedocs.io/en/latest/docs/Customize-Iterate/oref1.html)
 - [LoopDocs Automatic Bolus](https://loopkit.github.io/loopdocs/operation/features/dosing/)
 - [AndroidAPS SMB Overview](https://androidaps.readthedocs.io/en/latest/Usage/SMBs.html)
+
+---
+
+## Conformance Assertions
+
+The following conformance assertions cover dosing mechanism documentation requirements:
+
+| Assertion File | Requirements | Assertions |
+|----------------|--------------|------------|
+| `conformance/assertions/algorithm-docs.yaml` | REQ-DOSE-001, REQ-DOSE-002, REQ-DOSE-003 | 7 |
+
+**Key Assertions**:
+- `doc-dose-001`: Loop temp basal dosing documentation
+- `doc-dose-002`: AAPS SMB dosing documentation
+- `doc-dose-004`: Loop zero temp basal safety net
+- `doc-dose-005`: AAPS SMB IOB limit documentation
+
+See `traceability/domain-matrices/aid-algorithms-matrix.md` for full coverage matrix.

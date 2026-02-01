@@ -1,0 +1,378 @@
+# Algorithm Documentation Assertions
+# Covers REQ-BOLUS-001-003, REQ-SENS-001-003, REQ-DOSE-001-003, REQ-TGT-001-003
+#
+# These assertions verify that algorithm documentation requirements are met
+# across Loop, AAPS, and Trio controllers.
+
+scenario: algorithm-documentation
+version: "1.0"
+requirements:
+  - REQ-BOLUS-001
+  - REQ-BOLUS-002
+  - REQ-BOLUS-003
+  - REQ-SENS-001
+  - REQ-SENS-002
+  - REQ-SENS-003
+  - REQ-DOSE-001
+  - REQ-DOSE-002
+  - REQ-DOSE-003
+  - REQ-TGT-001
+  - REQ-TGT-002
+  - REQ-TGT-003
+
+related_gaps:
+  - GAP-BOLUS-001  # Formula documentation gap
+  - GAP-BOLUS-002  # IOB subtraction transparency
+  - GAP-SENS-001   # Sensitivity visibility
+  - GAP-SENS-002   # Detection window documentation
+
+assertions:
+  # ========================================
+  # Bolus Wizard Documentation (REQ-BOLUS-*)
+  # ========================================
+
+  - id: doc-bolus-001
+    description: Loop documentation describes prediction-based bolus calculation
+    type: documentation
+    requirement: REQ-BOLUS-001
+    gap: GAP-BOLUS-001
+    target: externals/LoopWorkspace/
+    expected:
+      content_exists: true
+      describes: "prediction-based calculation"
+    verification: Documentation file search for bolus calculation explanation
+    status: draft
+
+  - id: doc-bolus-002
+    description: AAPS documentation describes arithmetic bolus calculation
+    type: documentation
+    requirement: REQ-BOLUS-001
+    gap: GAP-BOLUS-001
+    target: externals/AndroidAPS/
+    expected:
+      content_exists: true
+      describes: "correction + carbs formula"
+    verification: Documentation audit for BolusWizard explanation
+    status: draft
+
+  - id: doc-bolus-003
+    description: Trio documentation describes oref bolus approach
+    type: documentation
+    requirement: REQ-BOLUS-001
+    gap: GAP-BOLUS-001
+    target: externals/Trio/
+    expected:
+      content_exists: true
+      describes: "oref-based calculation"
+    verification: Documentation review for bolus logic explanation
+    status: draft
+
+  - id: doc-bolus-004
+    description: AAPS UI shows IOB breakdown (basal/bolus toggle)
+    type: ui
+    requirement: REQ-BOLUS-002
+    gap: GAP-BOLUS-002
+    target: AAPS BolusWizard screen
+    expected:
+      basal_iob_toggle: true
+      bolus_iob_toggle: true
+    verification: UI screenshot review
+    status: draft
+
+  - id: doc-bolus-005
+    description: Loop documentation explains combined IOB handling
+    type: documentation
+    requirement: REQ-BOLUS-002
+    gap: GAP-BOLUS-002
+    target: externals/LoopWorkspace/
+    expected:
+      explains: "combined basal+bolus IOB"
+    verification: Documentation search for IOB handling explanation
+    status: draft
+
+  - id: doc-bolus-006
+    description: AAPS syncs BolusCalculatorResult to Nightscout
+    type: behavior
+    requirement: REQ-BOLUS-003
+    target: Nightscout treatments collection
+    expected:
+      treatment_type: "Bolus Wizard"
+      fields_present:
+        - carbs
+        - ic
+        - isf
+        - glucoseValue
+        - wasUsed
+    verification: Query Nightscout API for BCR treatments
+    status: draft
+
+  - id: doc-bolus-007
+    description: Loop syncs bolus wizard context to Nightscout
+    type: behavior
+    requirement: REQ-BOLUS-003
+    target: Nightscout treatments collection
+    expected:
+      includes: "bolus context data"
+    verification: Query Loop-synced treatments for wizard inputs
+    status: draft
+
+  # ========================================
+  # Sensitivity Documentation (REQ-SENS-*)
+  # ========================================
+
+  - id: doc-sens-001
+    description: AAPS autosens documentation describes ratio multiplier method
+    type: documentation
+    requirement: REQ-SENS-001
+    gap: GAP-SENS-001
+    target: externals/AndroidAPS/
+    expected:
+      describes: "autosens ratio multiplier"
+      references: "8-24 hour window"
+    verification: Documentation audit for autosens explanation
+    status: draft
+
+  - id: doc-sens-002
+    description: Loop RC documentation describes prediction effect method
+    type: documentation
+    requirement: REQ-SENS-001
+    gap: GAP-SENS-001
+    target: externals/LoopWorkspace/
+    expected:
+      describes: "retrospective correction"
+      explains: "prediction vs actual glucose"
+    verification: Documentation search for RC explanation
+    status: draft
+
+  - id: doc-sens-003
+    description: Trio Dynamic ISF documentation describes glucose-based adjustment
+    type: documentation
+    requirement: REQ-SENS-001
+    gap: GAP-SENS-001
+    target: externals/Trio/
+    expected:
+      describes: "dynamic ISF"
+      references: "logarithmic formula"
+    verification: Documentation review for Dynamic ISF
+    status: draft
+
+  - id: doc-sens-004
+    description: AAPS devicestatus includes sensitivityRatio field
+    type: schema
+    requirement: REQ-SENS-002
+    gap: GAP-SENS-001
+    target: Nightscout devicestatus collection
+    expected:
+      field_path: "openaps.iob.sensitivityRatio"
+      type: number
+    verification: Query devicestatus for sensitivityRatio presence
+    status: draft
+
+  - id: doc-sens-005
+    description: Loop devicestatus should report sensitivity adjustments
+    type: schema
+    requirement: REQ-SENS-002
+    gap: GAP-SENS-001
+    target: Nightscout devicestatus collection
+    expected:
+      field_path: "loop.predicted.*.momentumEffect"
+      type: array
+    verification: Query Loop devicestatus for effect data
+    status: draft
+
+  - id: doc-sens-006
+    description: AAPS documents 8-24 hour autosens detection window
+    type: documentation
+    requirement: REQ-SENS-003
+    gap: GAP-SENS-002
+    target: externals/AndroidAPS/
+    expected:
+      states: "autosens window"
+      value: "8-24 hours configurable"
+    verification: Documentation review for window duration
+    status: draft
+
+  - id: doc-sens-007
+    description: Loop documents 30-180 minute RC window
+    type: documentation
+    requirement: REQ-SENS-003
+    gap: GAP-SENS-002
+    target: externals/LoopWorkspace/
+    expected:
+      states: "retrospective correction window"
+      value: "30-180 minutes"
+    verification: Documentation search for RC time window
+    status: draft
+
+  # ========================================
+  # Dosing Mechanism Documentation (REQ-DOSE-*)
+  # ========================================
+
+  - id: doc-dose-001
+    description: Loop documents temp basal as primary dosing mechanism
+    type: documentation
+    requirement: REQ-DOSE-001
+    target: externals/LoopWorkspace/
+    expected:
+      documents: "temp basal dosing"
+      clarifies: "automatic adjustment limits"
+    verification: Documentation audit for dosing mechanism
+    status: draft
+
+  - id: doc-dose-002
+    description: AAPS documents SMB as optional dosing mechanism
+    type: documentation
+    requirement: REQ-DOSE-001
+    target: externals/AndroidAPS/
+    expected:
+      documents: "SMB dosing"
+      lists: "enable conditions"
+    verification: Documentation review for SMB explanation
+    status: draft
+
+  - id: doc-dose-003
+    description: Trio documents auto bolus option
+    type: documentation
+    requirement: REQ-DOSE-001
+    target: externals/Trio/
+    expected:
+      documents: "auto bolus feature"
+      explains: "oref1 SMB integration"
+    verification: Documentation search for auto bolus
+    status: draft
+
+  - id: doc-dose-004
+    description: Loop documents zero temp basal safety net
+    type: documentation
+    requirement: REQ-DOSE-002
+    target: externals/LoopWorkspace/
+    expected:
+      documents: "zero temp basal fallback"
+      explains: "pump disconnect handling"
+    verification: Safety documentation audit
+    status: draft
+
+  - id: doc-dose-005
+    description: AAPS documents SMB IOB limit safety
+    type: documentation
+    requirement: REQ-DOSE-002
+    target: externals/AndroidAPS/
+    expected:
+      documents: "maxIOB limit"
+      explains: "SMB cap behavior"
+    verification: Documentation review for IOB limits
+    status: draft
+
+  - id: doc-dose-006
+    description: Trio documents SMB enable conditions in UI
+    type: ui
+    requirement: REQ-DOSE-003
+    target: Trio Settings screen
+    expected:
+      shows: "SMB enable conditions"
+      lists: "active triggers"
+    verification: UI audit for condition display
+    status: draft
+
+  - id: doc-dose-007
+    description: AAPS displays SMB enable state clearly
+    type: ui
+    requirement: REQ-DOSE-003
+    target: AAPS Overview screen
+    expected:
+      indicator: "SMB enabled/disabled state"
+    verification: UI screenshot review
+    status: draft
+
+  # ========================================
+  # Target Range Documentation (REQ-TGT-*)
+  # ========================================
+
+  - id: doc-tgt-001
+    description: Loop documents ClosedRange target format
+    type: documentation
+    requirement: REQ-TGT-001
+    target: externals/LoopWorkspace/
+    expected:
+      documents: "ClosedRange<HKQuantity> format"
+      explains: "min/max range"
+    verification: Documentation and schema review
+    status: draft
+
+  - id: doc-tgt-002
+    description: AAPS/oref0 documents min_bg/max_bg target format
+    type: documentation
+    requirement: REQ-TGT-001
+    target: externals/AndroidAPS/
+    expected:
+      documents: "min_bg/max_bg format"
+      explains: "target_bg midpoint calculation"
+    verification: Documentation and profile schema review
+    status: draft
+
+  - id: doc-tgt-003
+    description: Profile sync preserves target range format
+    type: schema
+    requirement: REQ-TGT-001
+    target: Nightscout profile collection
+    expected:
+      fields:
+        - targetLow
+        - targetHigh
+    verification: Profile API schema validation
+    status: draft
+
+  - id: doc-tgt-004
+    description: Loop documents dynamic target behavior
+    type: documentation
+    requirement: REQ-TGT-002
+    target: externals/LoopWorkspace/
+    expected:
+      documents: "dynamic targeting"
+      explains: "suspend threshold integration"
+    verification: Documentation search for target behavior
+    status: draft
+
+  - id: doc-tgt-005
+    description: oref0 documents target_bg midpoint calculation
+    type: documentation
+    requirement: REQ-TGT-002
+    target: externals/oref0/
+    expected:
+      documents: "(min_bg + max_bg) / 2"
+      explains: "static target approach"
+    verification: Code comment and documentation review
+    status: draft
+
+  - id: doc-tgt-006
+    description: AAPS documents temp target SMB enable side effect
+    type: documentation
+    requirement: REQ-TGT-003
+    target: externals/AndroidAPS/
+    expected:
+      documents: "temp target enables SMB"
+      explains: "sensitivity ratio adjustment"
+    verification: Documentation audit for temp target effects
+    status: draft
+
+  - id: doc-tgt-007
+    description: oref0 documents high temp target exercise mode
+    type: documentation
+    requirement: REQ-TGT-003
+    target: externals/oref0/
+    expected:
+      documents: "exercise mode"
+      explains: "higher target reduces sensitivity"
+    verification: Documentation search for exercise mode
+    status: draft
+
+  - id: doc-tgt-008
+    description: Loop documents workout mode behavior
+    type: documentation
+    requirement: REQ-TGT-003
+    target: externals/LoopWorkspace/
+    expected:
+      documents: "workout mode override"
+      explains: "target and sensitivity changes"
+    verification: Override documentation review
+    status: draft

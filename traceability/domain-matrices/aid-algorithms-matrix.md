@@ -12,11 +12,11 @@
 |--------|-------|
 | Requirements | 56 |
 | Gaps | 66 |
-| REQs with assertion coverage | 22 (39%) |
-| Uncovered REQs | 34 (61%) |
-| Uncovered GAPs | 52 (79%) |
+| REQs with assertion coverage | 34 (61%) |
+| Uncovered REQs | 22 (39%) |
+| Uncovered GAPs | 48 (73%) |
 
-**Status**: 🔄 **IN PROGRESS** - Degraded operation, safety limits, insulin model, profile schema, prediction complete (22 REQs)
+**Status**: 🔄 **IN PROGRESS** - Degraded op, insulin, profile, prediction, bolus, sensitivity, dosing, target complete (34 REQs)
 
 ---
 
@@ -84,21 +84,21 @@
 | REQ-PROF-006 | Basal Rate Precision | GAP-PROF-008 | ✅ profile-structure.yaml |
 | REQ-PROF-007 | Total Daily Basal Validation | - | ✅ profile-structure.yaml |
 
-### Bolus Wizard (3)
+### Bolus Wizard (3) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-BOLUS-001 | Document Calculation Approach | GAP-BOLUS-001 | ❌ None |
-| REQ-BOLUS-002 | IOB Subtraction Transparency | GAP-BOLUS-002 | ❌ None |
-| REQ-BOLUS-003 | Nightscout Wizard Sync | - | ❌ None |
+| REQ-BOLUS-001 | Document Calculation Approach | GAP-BOLUS-001 | ✅ algorithm-docs.yaml |
+| REQ-BOLUS-002 | IOB Subtraction Transparency | GAP-BOLUS-002 | ✅ algorithm-docs.yaml |
+| REQ-BOLUS-003 | Nightscout Wizard Sync | - | ✅ algorithm-docs.yaml |
 
-### Sensitivity (3)
+### Sensitivity (3) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-SENS-001 | Document Sensitivity Method | GAP-SENS-001 | ❌ None |
-| REQ-SENS-002 | Sensitivity Visibility in Nightscout | GAP-SENS-001 | ❌ None |
-| REQ-SENS-003 | Document Detection Windows | GAP-SENS-002 | ❌ None |
+| REQ-SENS-001 | Document Sensitivity Method | GAP-SENS-001 | ✅ algorithm-docs.yaml |
+| REQ-SENS-002 | Sensitivity Visibility in Nightscout | GAP-SENS-001 | ✅ algorithm-docs.yaml |
+| REQ-SENS-003 | Document Detection Windows | GAP-SENS-002 | ✅ algorithm-docs.yaml |
 
 ### Carb Display (3) - Overlaps with Carb Absorption
 
@@ -118,13 +118,13 @@
 | REQ-PRED-002 | Prediction Curve Labeling | GAP-PRED-002 | ✅ prediction-requirements.yaml |
 | REQ-PRED-003 | Multi-Curve Display Option | GAP-PRED-002 | ✅ prediction-requirements.yaml |
 
-### Dosing Mechanism (3)
+### Dosing Mechanism (3) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-DOSE-001 | Dosing Mechanism Documentation | - | ❌ None |
-| REQ-DOSE-002 | Safety Net Documentation | - | ❌ None |
-| REQ-DOSE-003 | Enable Condition Transparency | - | ❌ None |
+| REQ-DOSE-001 | Dosing Mechanism Documentation | - | ✅ algorithm-docs.yaml |
+| REQ-DOSE-002 | Safety Net Documentation | - | ✅ algorithm-docs.yaml |
+| REQ-DOSE-003 | Enable Condition Transparency | - | ✅ algorithm-docs.yaml |
 
 ### Insulin Model (3) - Overlaps with earlier section
 
@@ -136,13 +136,13 @@
 
 *Note: Duplicate REQ-INS IDs exist in source file - need deduplication*
 
-### Target Range (3)
+### Target Range (3) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-TGT-001 | Target Range Format Documentation | - | ❌ None |
-| REQ-TGT-002 | Target Calculation Transparency | - | ❌ None |
-| REQ-TGT-003 | Temp Target Side Effects Documentation | - | ❌ None |
+| REQ-TGT-001 | Target Range Format Documentation | - | ✅ algorithm-docs.yaml |
+| REQ-TGT-002 | Target Calculation Transparency | - | ✅ algorithm-docs.yaml |
+| REQ-TGT-003 | Temp Target Side Effects Documentation | - | ✅ algorithm-docs.yaml |
 
 ### Trio oref Integration (3)
 
@@ -234,13 +234,13 @@
 | Insulin Model | 5 | 5 | 100% ✅ |
 | Proposed API | 4 | 0 | 0% |
 | Profile Schema | 7 | 7 | 100% ✅ |
-| Bolus Wizard | 3 | 0 | 0% |
-| Sensitivity | 3 | 0 | 0% |
+| Bolus Wizard | 3 | 3 | 100% ✅ |
+| Sensitivity | 3 | 3 | 100% ✅ |
 | Prediction | 3 | 3 | 100% ✅ |
-| Dosing Mechanism | 3 | 0 | 0% |
-| Target Range | 3 | 0 | 0% |
+| Dosing Mechanism | 3 | 3 | 100% ✅ |
+| Target Range | 3 | 3 | 100% ✅ |
 | Trio oref | 3 | 0 | 0% |
-| **Total** | **56** | **22** | **39%** |
+| **Total** | **56** | **34** | **61%** |
 
 ### Data Quality Issues
 
@@ -278,10 +278,8 @@
 
 ### Low Priority (Documentation)
 
-6. **Create documentation assertions** (REQ-BOLUS, REQ-SENS, REQ-DOSE, REQ-TGT)
-   - Calculation approach docs
-   - Sensitivity method docs
-   - Dosing mechanism docs
+6. ~~**Create documentation assertions** (REQ-BOLUS, REQ-SENS, REQ-DOSE, REQ-TGT)~~ ✅ cycle 106
+   - 32 assertions covering 12 REQs across 4 categories
    - Deliverable: `conformance/assertions/algorithm-docs.yaml`
 
 7. **Fix duplicate REQ IDs** in `aid-algorithms-requirements.md`
@@ -299,7 +297,8 @@
 | `insulin-model.yaml` | 3 (REQ-INS-001, REQ-INS-004, REQ-INS-005) | 1 (GAP-INS-001) |
 | `profile-structure.yaml` | 7 (REQ-PROF-001-007) | 5 (GAP-PROF-001, 002, 005, 006, 008) |
 | `prediction-requirements.yaml` | 3 (REQ-PRED-001-003) | 3 (GAP-PRED-001, 002, 003) |
-| **Total** | **22** | **13** |
+| `algorithm-docs.yaml` | 12 (REQ-BOLUS-001-003, SENS-001-003, DOSE-001-003, TGT-001-003) | 4 (GAP-BOLUS-001, 002, SENS-001, 002) |
+| **Total** | **34** | **17** |
 
 ---
 
