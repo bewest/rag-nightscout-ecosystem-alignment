@@ -13,6 +13,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Profile Schema Assertions (2026-02-01)
+
+Expanded profile structure assertions to cover all 7 REQ-PROF-* requirements.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 7 (REQ-PROF-001-007) |
+| Gaps addressed | 5 (GAP-PROF-001, 002, 005, 006, 008) |
+| Assertions total | 34 (was 17) |
+
+**Deliverable**: `conformance/assertions/profile-structure.yaml` (v2)
+
+**New Coverage**:
+- Standard time format (REQ-PROF-001): 3 assertions
+- Basal time format conversion (REQ-PROF-005): 4 assertions
+- Total daily basal validation (REQ-PROF-007): 4 assertions
+
+**Impact**: Profile Schema category 100% covered; algorithm domain 21%→34%
+
+---
+
 ### Cross-Controller Deduplication Assertions (2026-02-01)
 
 Created conformance assertions for multi-controller conflict scenarios.

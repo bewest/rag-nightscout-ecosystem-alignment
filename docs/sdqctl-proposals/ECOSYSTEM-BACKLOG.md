@@ -64,6 +64,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **🎉 Profile Schema Assertions** | `conformance/assertions/profile-structure.yaml` | 34 assertions, 7 REQs, Profile Schema 100% COMPLETE |
 | **Cross-Controller Dedup Assertions** | `conformance/assertions/cross-controller-dedup.yaml` | 16 assertions, GAP-SYNC-029/030 covered |
 | **🎉 Insulin Model Assertions** | `conformance/assertions/insulin-model.yaml` | 18 assertions, 3 REQs, Insulin Model 100% COMPLETE |
 | **Safety Limit Assertions** | `conformance/assertions/safety-limits.yaml` | 20 assertions, 3 REQs, max IOB/DIA/peak covered |

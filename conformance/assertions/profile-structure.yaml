@@ -3,21 +3,67 @@
 # Uses assertion types from conformance/assertions/_template.yaml
 
 scenario: profile-structure
-version: 1
+version: 2
 
 # Link to requirements in traceability/
 requirements:
+  - REQ-PROF-001  # Standard Time Format
   - REQ-PROF-002  # Safety Limits in Profile
   - REQ-PROF-003  # Override Presets Sync
   - REQ-PROF-004  # Insulin Model Mapping
+  - REQ-PROF-005  # Basal Time Format Conversion
   - REQ-PROF-006  # Basal Rate Precision
+  - REQ-PROF-007  # Total Daily Basal Validation
 
 related_gaps:
-  - GAP-PROF-001  # Insulin model naming inconsistency
+  - GAP-PROF-001  # Time format incompatibility
   - GAP-PROF-002  # Override preset sync gap
   - GAP-PROF-003  # Basal precision varies by pump
+  - GAP-PROF-005  # Insulin model mapping missing
+  - GAP-PROF-006  # Basal time format needs conversion
+  - GAP-PROF-008  # Basal rate precision loss
 
 assertions:
+  # ============================================
+  # Standard Time Format (REQ-PROF-001)
+  # ============================================
+
+  - id: time-format-seconds-from-midnight
+    description: "Profile times SHOULD use seconds from midnight for consistency"
+    type: schema
+    requirement: REQ-PROF-001
+    gap: GAP-PROF-001
+    target: profile.basal[*].timeAsSeconds
+    expected: "integer 0-86399"
+    verification:
+      - Parse Nightscout "HH:MM" to seconds
+      - Verify 00:00 = 0, 12:00 = 43200, 23:59 = 86340
+    status: proposed
+
+  - id: time-format-hhmm-backward-compat
+    description: "Nightscout continues to accept HH:MM string format"
+    type: behavior
+    requirement: REQ-PROF-001
+    gap: GAP-PROF-001
+    target: profile.basal[*].time
+    expected: "^[0-2][0-9]:[0-5][0-9]$"
+    verification:
+      - POST profile with time: "08:30"
+      - GET profile, verify time preserved
+    status: expected
+
+  - id: midnight-boundary-correct
+    description: "Time conversion handles midnight boundary correctly"
+    type: behavior
+    requirement: REQ-PROF-001
+    gap: GAP-PROF-001
+    target: profile.basal[0].time
+    expected: "00:00 = 0 seconds, not 86400"
+    verification:
+      - Profile with entry at 00:00
+      - Verify parsed as 0, not 86400
+    status: expected
+
   # ============================================
   # Safety Limits in Profile (REQ-PROF-002)
   # ============================================
@@ -25,6 +71,7 @@ assertions:
   - id: max-iob-present
     description: "Maximum IOB safety limit defined in profile"
     type: state
+    requirement: REQ-PROF-002
     target: profile.maxIOB
     expected: ">= 0"
     alternatives:
@@ -33,6 +80,7 @@ assertions:
   - id: max-basal-present
     description: "Maximum basal rate limit defined"
     type: state
+    requirement: REQ-PROF-002
     target: profile.max_basal
     expected: "> 0"
     alternatives:
@@ -41,12 +89,14 @@ assertions:
   - id: max-bolus-present
     description: "Maximum bolus limit defined"
     type: state
+    requirement: REQ-PROF-002
     target: profile.maxBolus
     expected: "> 0"
 
   - id: target-range-present
     description: "Target glucose range defined"
     type: state
+    requirement: REQ-PROF-002
     target: profile.target_low
     expected: "> 0"
 
@@ -57,6 +107,7 @@ assertions:
   - id: override-presets-array
     description: "Override presets available as array"
     type: state
+    requirement: REQ-PROF-003
     target: profile.overridePresets
     expected: array
     when: controller_supports_overrides
@@ -64,6 +115,7 @@ assertions:
   - id: override-preset-structure
     description: "Override preset has required fields"
     type: schema
+    requirement: REQ-PROF-003
     target: profile.overridePresets[*]
     expected_fields:
       - name
@@ -75,6 +127,7 @@ assertions:
   - id: override-sync-identifier
     description: "Override preset has sync identifier"
     type: state
+    requirement: REQ-PROF-003
     target: profile.overridePresets[*].id
     expected: uuid
     when: override_presets_present
@@ -86,6 +139,8 @@ assertions:
   - id: insulin-model-present
     description: "Insulin model specified in profile"
     type: state
+    requirement: REQ-PROF-004
+    gap: GAP-PROF-005
     target: profile.insulinModel
     expected: string
     alternatives:
@@ -95,29 +150,104 @@ assertions:
   - id: dia-duration-present
     description: "Duration of insulin action available"
     type: state
+    requirement: REQ-PROF-004
+    gap: GAP-PROF-005
     target: profile.dia
     expected: "> 0"
 
   - id: insulin-peak-available
     description: "Insulin peak time available for non-exponential models"
     type: state
+    requirement: REQ-PROF-004
+    gap: GAP-PROF-005
     target: profile.insulinPeakTime
     expected: "> 0"
     when: insulin_model_requires_peak
 
+  - id: insulin-model-mapping-documented
+    description: "Mapping between model names and DIA equivalents documented"
+    type: documentation
+    requirement: REQ-PROF-004
+    gap: GAP-PROF-005
+    target: docs
+    expected: |
+      Rapid-Acting: DIA 4-5h, peak 75min
+      Ultra-Rapid: DIA 4h, peak 55min
+      Child: DIA 5h, peak 65min
+    verification:
+      - Check insulin-curves-deep-dive.md for mapping table
+    status: expected
+
+  # ============================================
+  # Basal Time Format Conversion (REQ-PROF-005)
+  # ============================================
+
+  - id: basal-time-string-to-seconds
+    description: "Controllers convert HH:MM to seconds from midnight"
+    type: behavior
+    requirement: REQ-PROF-005
+    gap: GAP-PROF-006
+    target: profile.basal[*].time
+    expected: "HH:MM parsed to seconds using profile timezone"
+    verification:
+      - Parse "08:30" → 30600 seconds
+      - Parse "00:00" → 0 seconds
+      - Parse "23:59" → 86340 seconds
+    status: expected
+
+  - id: basal-time-timezone-aware
+    description: "Time conversion uses profile timezone, not device timezone"
+    type: behavior
+    requirement: REQ-PROF-005
+    gap: GAP-PROF-006
+    target: profile.timezone
+    expected: "IANA timezone string (e.g., 'America/New_York')"
+    verification:
+      - Profile with timezone: 'Europe/London'
+      - Parse time using profile timezone, not local
+    status: expected
+
+  - id: basal-time-roundtrip
+    description: "Time format round-trips without precision loss"
+    type: behavior
+    requirement: REQ-PROF-005
+    gap: GAP-PROF-006
+    target: profile.basal[*].time
+    expected: "Upload HH:MM → Download → same HH:MM"
+    verification:
+      - Upload profile with basal at 08:30
+      - Download profile
+      - Verify time is still 08:30, not 08:29 or 08:31
+    status: expected
+
+  - id: basal-time-dst-transition
+    description: "DST transitions handled correctly"
+    type: behavior
+    requirement: REQ-PROF-005
+    gap: GAP-PROF-006
+    target: profile.basal
+    expected: "Schedule remains valid during DST changes"
+    verification:
+      - Profile in timezone with DST
+      - Verify schedule applies correctly on DST transition day
+    status: proposed
+
   # ============================================
   # Basal Rate Precision (REQ-PROF-006)
   # ============================================
-  
+
   - id: basal-profile-array
     description: "Basal profile defined as time-value array"
     type: state
+    requirement: REQ-PROF-006
     target: profile.basal
     expected: array
 
   - id: basal-rate-precision
     description: "Basal rates support pump-specific precision"
     type: precision
+    requirement: REQ-PROF-006
+    gap: GAP-PROF-008
     target: profile.basal[*].value
     min_precision: 0.01
     max_precision: 0.05
@@ -126,14 +256,79 @@ assertions:
   - id: basal-time-format
     description: "Basal schedule times in consistent format"
     type: pattern
+    requirement: REQ-PROF-006
     target: profile.basal[*].time
     pattern: "^[0-2][0-9]:[0-5][0-9]$"
 
   - id: basal-24h-coverage
     description: "Basal schedule covers full 24 hours"
     type: coverage
+    requirement: REQ-PROF-006
     target: profile.basal
     expected: "00:00-24:00"
+
+  - id: basal-rate-roundtrip
+    description: "Basal rate precision preserved through sync"
+    type: behavior
+    requirement: REQ-PROF-006
+    gap: GAP-PROF-008
+    target: profile.basal[*].value
+    expected: "Upload 0.85 U/hr → Download 0.85 U/hr (not 0.8 or 0.9)"
+    verification:
+      - Upload profile with rate 0.85
+      - Download profile
+      - Verify rate is exactly 0.85
+    status: expected
+
+  # ============================================
+  # Total Daily Basal Validation (REQ-PROF-007)
+  # ============================================
+
+  - id: basal-tdd-calculation
+    description: "Total daily basal equals sum of (duration × rate)"
+    type: behavior
+    requirement: REQ-PROF-007
+    target: profile.basal
+    expected: "Sum of all segment TDD = reported total"
+    verification:
+      - For each segment: hours × rate
+      - Sum all segments
+      - Compare to 24h total
+    status: expected
+
+  - id: basal-complete-24h
+    description: "Basal schedule has no gaps in 24h coverage"
+    type: validation
+    requirement: REQ-PROF-007
+    target: profile.basal
+    expected: "Every minute of day covered by exactly one rate"
+    verification:
+      - First segment starts at 00:00
+      - Each segment ends where next begins
+      - Last segment ends at 00:00 (next day)
+    status: expected
+
+  - id: basal-no-overlap
+    description: "Basal schedule has no overlapping segments"
+    type: validation
+    requirement: REQ-PROF-007
+    target: profile.basal
+    expected: "No two segments cover same time"
+    verification:
+      - Sort segments by start time
+      - Verify end time <= next start time
+    status: expected
+
+  - id: basal-reasonable-tdd
+    description: "Total daily basal within reasonable range"
+    type: safety
+    requirement: REQ-PROF-007
+    target: profile.basal
+    expected: "TDD between 0.1 and 100 U/day"
+    verification:
+      - Calculate 24h total
+      - Warn if < 0.1 or > 100 U/day
+    status: proposed
 
 # ============================================
 # Query Assertions
@@ -142,18 +337,28 @@ assertions:
   - id: profile-history-query
     description: "Profile history accessible via API"
     type: query
+    target: api
     query: "profile?count=10"
     expected_count: ">= 1"
 
   - id: active-profile-query
     description: "Active profile retrievable"
     type: query
+    target: api
     query: "profile/current"
     expected_count: 1
 
 # ============================================
 # Metadata and Cross-References
 # ============================================
+
+metadata:
+  created: 2026-01-30
+  updated: 2026-02-01
+  version: 2
+  changes: |
+    v2: Added REQ-PROF-001, REQ-PROF-005, REQ-PROF-007 assertions (cycle 104)
+    v1: Initial assertions for REQ-PROF-002, 003, 004, 006
 
 cross_references:
   - document: specs/openapi/aid-profile-2025.yaml
@@ -162,17 +367,25 @@ cross_references:
     description: "Profile field mapping per controller"
   - document: docs/10-domain/trio-algorithm-deep-dive.md
     description: "Trio profile structure analysis"
+  - document: docs/10-domain/basal-schedule-comparison.md
+    description: "Basal schedule format comparison"
 
 gaps_addressed:
   - id: GAP-PROF-001
-    description: "Insulin model naming inconsistency"
-    assertions: [insulin-model-present, dia-duration-present]
+    description: "Time format incompatibility"
+    assertions: [time-format-seconds-from-midnight, midnight-boundary-correct]
   - id: GAP-PROF-002
     description: "Override preset sync not standardized"
     assertions: [override-presets-array, override-sync-identifier]
-  - id: GAP-PROF-003
+  - id: GAP-PROF-005
+    description: "Insulin model mapping missing"
+    assertions: [insulin-model-present, insulin-model-mapping-documented]
+  - id: GAP-PROF-006
+    description: "Basal time format needs conversion"
+    assertions: [basal-time-string-to-seconds, basal-time-timezone-aware, basal-time-roundtrip]
+  - id: GAP-PROF-008
     description: "Basal precision varies by pump"
-    assertions: [basal-rate-precision]
+    assertions: [basal-rate-precision, basal-rate-roundtrip]
 
 sources:
   loop:

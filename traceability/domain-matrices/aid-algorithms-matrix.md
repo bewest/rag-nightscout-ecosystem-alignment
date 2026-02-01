@@ -12,11 +12,11 @@
 |--------|-------|
 | Requirements | 56 |
 | Gaps | 66 |
-| REQs with assertion coverage | 12 (21%) |
-| Uncovered REQs | 44 (79%) |
-| Uncovered GAPs | 60 (91%) |
+| REQs with assertion coverage | 19 (34%) |
+| Uncovered REQs | 37 (66%) |
+| Uncovered GAPs | 55 (83%) |
 
-**Status**: 🔄 **IN PROGRESS** - Degraded operation, safety limits, insulin model complete (12 REQs)
+**Status**: 🔄 **IN PROGRESS** - Degraded operation, safety limits, insulin model, profile schema complete (19 REQs)
 
 ---
 
@@ -72,17 +72,17 @@
 | REQ-PR-003 | Remote Command Queue | GAP-REMOTE-CMD | ❌ None |
 | REQ-PR-004 | Consistent Timezone Display | GAP-TZ-001 | ❌ None |
 
-### Profile Schema (7)
+### Profile Schema (7) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-PROF-001 | Standard Time Format | GAP-PROF-001 | ❌ None |
-| REQ-PROF-002 | Safety Limits in Profile | GAP-PROF-002 | ❌ None |
-| REQ-PROF-003 | Override Presets Sync | GAP-PROF-003 | ❌ None |
-| REQ-PROF-004 | Insulin Model Mapping | GAP-PROF-005 | ❌ None |
-| REQ-PROF-005 | Basal Time Format Conversion | GAP-PROF-006 | ❌ None |
-| REQ-PROF-006 | Basal Rate Precision | GAP-PROF-008 | ❌ None |
-| REQ-PROF-007 | Total Daily Basal Validation | - | ❌ None |
+| REQ-PROF-001 | Standard Time Format | GAP-PROF-001 | ✅ profile-structure.yaml |
+| REQ-PROF-002 | Safety Limits in Profile | GAP-PROF-002 | ✅ profile-structure.yaml |
+| REQ-PROF-003 | Override Presets Sync | GAP-PROF-003 | ✅ profile-structure.yaml |
+| REQ-PROF-004 | Insulin Model Mapping | GAP-PROF-005 | ✅ profile-structure.yaml |
+| REQ-PROF-005 | Basal Time Format Conversion | GAP-PROF-006 | ✅ profile-structure.yaml |
+| REQ-PROF-006 | Basal Rate Precision | GAP-PROF-008 | ✅ profile-structure.yaml |
+| REQ-PROF-007 | Total Daily Basal Validation | - | ✅ profile-structure.yaml |
 
 ### Bolus Wizard (3)
 
@@ -233,14 +233,14 @@
 | Degraded Operation | 6 | 6 | 100% ✅ |
 | Insulin Model | 5 | 5 | 100% ✅ |
 | Proposed API | 4 | 0 | 0% |
-| Profile Schema | 7 | 0 | 0% |
+| Profile Schema | 7 | 7 | 100% ✅ |
 | Bolus Wizard | 3 | 0 | 0% |
 | Sensitivity | 3 | 0 | 0% |
 | Prediction | 3 | 0 | 0% |
 | Dosing Mechanism | 3 | 0 | 0% |
 | Target Range | 3 | 0 | 0% |
 | Trio oref | 3 | 0 | 0% |
-| **Total** | **56** | **12** | **21%** |
+| **Total** | **56** | **19** | **34%** |
 
 ### Data Quality Issues
 
@@ -268,11 +268,9 @@
    - 18 assertions covering exponential formula, activity calculation, model metadata
    - Deliverable: `conformance/assertions/insulin-model.yaml`
 
-4. **Create profile schema assertions** (REQ-PROF-001-007)
-   - Time format conversion
-   - Safety limits presence
-   - Override presets structure
-   - Deliverable: `conformance/assertions/profile-requirements.yaml`
+4. ~~**Create profile schema assertions** (REQ-PROF-001-007)~~ ✅ cycle 104
+   - 34 assertions covering time format, safety limits, overrides, insulin model, basal precision, TDD validation
+   - Deliverable: `conformance/assertions/profile-structure.yaml`
 
 5. **Create prediction assertions** (REQ-PRED-001-003)
    - Curve structure documentation
@@ -300,7 +298,8 @@
 | `degraded-operation.yaml` | 6 (REQ-DEGRADE-001-006) | 2 (GAP-ALG-011, GAP-ALG-014) |
 | `safety-limits.yaml` | 3 (REQ-ALG-003, REQ-INS-002, REQ-INS-003) | 2 (GAP-ALG-001, GAP-ALG-012) |
 | `insulin-model.yaml` | 3 (REQ-INS-001, REQ-INS-004, REQ-INS-005) | 1 (GAP-INS-001) |
-| **Total** | **12** | **5** |
+| `profile-structure.yaml` | 7 (REQ-PROF-001-007) | 5 (GAP-PROF-001, 002, 005, 006, 008) |
+| **Total** | **19** | **10** |
 
 ---
 
