@@ -1222,7 +1222,7 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ## Trio oref Integration Gaps
 
-### GAP-OREF-001: trio_custom_variables Undocumented
+### GAP-TRIO-001: trio_custom_variables Undocumented
 
 **Description**: Trio's `trio_custom_variables` parameter object is not formally documented.
 
@@ -1246,7 +1246,7 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ---
 
-### GAP-OREF-002: Dynamic ISF Not in Upstream oref0
+### GAP-TRIO-002: Dynamic ISF Not in Upstream oref0
 
 **Description**: Trio's dynamic ISF (logarithmic and sigmoid) formulas are not available in upstream oref0.
 
@@ -1270,7 +1270,7 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 ---
 
-### GAP-OREF-003: No Automated Trio↔oref0 Sync
+### GAP-TRIO-003: No Automated Trio↔oref0 Sync
 
 **Description**: No automated process to merge oref0 bug fixes into Trio.
 

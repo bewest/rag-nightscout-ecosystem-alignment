@@ -5,7 +5,7 @@ See [gaps.md](gaps.md) for the index.
 
 ---
 
-### GAP-BLE-001: G7 J-PAKE Full Specification Incomplete
+### GAP-G7-001: G7 J-PAKE Full Specification Incomplete
 
 **Scenario**: G7 Initial Pairing
 
@@ -29,7 +29,7 @@ See [gaps.md](gaps.md) for the index.
 
 ---
 
-### GAP-BLE-002: G7 Certificate Chain Undocumented
+### GAP-G7-002: G7 Certificate Chain Undocumented
 
 **Scenario**: G7 Initial Pairing
 
@@ -53,7 +53,7 @@ See [gaps.md](gaps.md) for the index.
 
 ---
 
-### GAP-BLE-003: Service B Purpose Unknown
+### GAP-G7-003: Service B Purpose Unknown
 
 **Scenario**: BLE Protocol Completeness
 
@@ -76,7 +76,7 @@ See [gaps.md](gaps.md) for the index.
 
 ---
 
-### GAP-BLE-004: Anubis Transmitter Extended Commands
+### GAP-G7-004: Anubis Transmitter Extended Commands
 
 **Scenario**: G6 Extended Transmitters
 
@@ -98,7 +98,7 @@ See [gaps.md](gaps.md) for the index.
 
 ---
 
-### GAP-BLE-005: G7 Encryption Info Format Unknown
+### GAP-G7-005: G7 Encryption Info Format Unknown
 
 **Scenario**: G7 Advanced Features
 
@@ -122,7 +122,7 @@ See [gaps.md](gaps.md) for the index.
 
 ---
 
-### GAP-BRIDGE-001: Node.js 16+ EOL blocks upgrades
+### GAP-CGM-NODE-001: Node.js 16+ EOL blocks upgrades
 
 **Scenario**: share2nightscout-bridge Node compatibility
 
@@ -155,7 +155,7 @@ See [gaps.md](gaps.md) for the index.
 
 ---
 
-### GAP-BRIDGE-002: Deprecated `request` npm package
+### GAP-CGM-NODE-002: Deprecated `request` npm package
 
 **Scenario**: share2nightscout-bridge dependency modernization
 
@@ -187,7 +187,7 @@ See [gaps.md](gaps.md) for the index.
 
 ---
 
-### GAP-BRIDGE-003: No CI/CD pipeline
+### GAP-CGM-NODE-003: No CI/CD pipeline
 
 **Scenario**: share2nightscout-bridge automated testing
 

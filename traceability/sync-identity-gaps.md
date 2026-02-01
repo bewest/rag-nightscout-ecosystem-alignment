@@ -1220,7 +1220,7 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ## Rust oref Profile Integration Gaps
 
-### GAP-OREF-001: PredictionService Bypasses ProfileService
+### GAP-NOCTURNE-010: PredictionService Bypasses ProfileService
 
 **Description**: Nocturne's `PredictionService` reads profiles directly from the database via `_postgresService.GetProfilesAsync()`, bypassing `ProfileService` which applies percentage/timeshift from active ProfileSwitch treatments.
 
@@ -1241,7 +1241,7 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ---
 
-### GAP-OREF-002: OrefProfile Lacks Full Schedule Support
+### GAP-NOCTURNE-011: OrefProfile Lacks Full Schedule Support
 
 **Description**: The C# `OrefProfile` model only passes single current values (`CurrentBasal`, `Sens`, `CarbRatio`) to Rust oref, not the full time-varying schedules that Rust oref supports.
 
@@ -1262,7 +1262,7 @@ if (rVal) rVal.replace('ETC','Etc');
 
 ---
 
-### GAP-OREF-003: No Timeshift Propagation to Rust
+### GAP-NOCTURNE-012: No Timeshift Propagation to Rust
 
 **Description**: Even if percentage is applied, timeshift rotation is not propagated to Rust oref for schedule lookups.
 

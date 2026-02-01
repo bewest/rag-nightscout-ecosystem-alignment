@@ -24,26 +24,20 @@ This document is an index of gaps organized by domain.
 | treatments | 25 | [treatments-gaps.md](treatments-gaps.md) | 2026-02-01 |
 | pumps | 10 | [pumps-gaps.md](pumps-gaps.md) | 2026-02-01 |
 
-Total: 366 gaps across 7 domains (335 unique IDs, 10 duplicate ID groups requiring renumbering)
+Total: 340 unique GAP IDs across 7 domains
 
-## Duplicate IDs (2026-02-01 Audit)
+## Duplicate Resolution (2026-02-01)
 
-10 GAP IDs are used in multiple files with different meanings. These require renumbering:
+All 10 duplicate GAP IDs have been renumbered:
 
-| Duplicate ID | Locations | Resolution Needed |
-|--------------|-----------|-------------------|
-| GAP-BLE-001 | connectors-gaps.md, cgm-sources-gaps.md | Renumber one |
-| GAP-BLE-002 | connectors-gaps.md, cgm-sources-gaps.md | Renumber one |
-| GAP-BLE-003 | connectors-gaps.md, cgm-sources-gaps.md | Renumber one |
-| GAP-BLE-004 | connectors-gaps.md, cgm-sources-gaps.md | Renumber one |
-| GAP-BLE-005 | connectors-gaps.md, cgm-sources-gaps.md | Renumber one |
-| GAP-BRIDGE-001 | connectors-gaps.md, cgm-sources-gaps.md | Renumber one |
-| GAP-BRIDGE-002 | connectors-gaps.md, cgm-sources-gaps.md | Renumber one |
-| GAP-OREF-001 | aid-algorithms-gaps.md (×2), sync-identity-gaps.md | Consolidate or renumber |
-| GAP-OREF-002 | aid-algorithms-gaps.md (×2), sync-identity-gaps.md | Consolidate or renumber |
-| GAP-OREF-003 | aid-algorithms-gaps.md (×2), sync-identity-gaps.md | Consolidate or renumber |
+| Original ID | New ID | File | Reason |
+|-------------|--------|------|--------|
+| GAP-BLE-001..005 | GAP-G7-001..005 | cgm-sources-gaps.md | G7 protocol specific |
+| GAP-BRIDGE-001..003 | GAP-CGM-NODE-001..003 | cgm-sources-gaps.md | CGM bridge Node.js issues |
+| GAP-OREF-001..003 (Trio) | GAP-TRIO-001..003 | aid-algorithms-gaps.md | Trio-specific gaps |
+| GAP-OREF-001..003 (Nocturne) | GAP-NOCTURNE-010..012 | sync-identity-gaps.md | Nocturne-specific gaps |
 
-**Recommendation**: cgm-sources GAP-BLE-* and GAP-BRIDGE-* should be renumbered to GAP-CGM-BLE-* and GAP-CGM-BRIDGE-* to avoid collision with connectors domain.
+**Verification**: `python tools/find_gap_duplicates.py` → 0 duplicates
 
 ## Verification Status
 
