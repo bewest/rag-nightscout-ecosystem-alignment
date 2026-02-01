@@ -13,6 +13,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Prediction Assertions (2026-02-01)
+
+Created conformance assertions for prediction curve display and documentation.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 3 (REQ-PRED-001, REQ-PRED-002, REQ-PRED-003) |
+| Gaps addressed | 3 (GAP-PRED-001, GAP-PRED-002, GAP-PRED-003) |
+| Assertions created | 19 |
+
+**Deliverable**: `conformance/assertions/prediction-requirements.yaml`
+
+**Coverage by Topic**:
+- Structure documentation: 5 assertions
+- Curve labeling: 5 assertions
+- Multi-curve display: 5 assertions
+- Data validation: 4 assertions
+
+**Impact**: Prediction category 100% covered; algorithm domain 34%→39%
+
+---
+
 ### Profile Schema Assertions (2026-02-01)
 
 Expanded profile structure assertions to cover all 7 REQ-PROF-* requirements.

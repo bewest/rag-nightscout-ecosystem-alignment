@@ -84,9 +84,9 @@ Total: 310 requirements
 
 | Total | Covered | Uncovered | % |
 |-------|---------|-----------|---|
-| 56 | 19 | 37 | 34% |
+| 56 | 22 | 34 | 39% |
 
-**Partially covered** - Degraded operation, safety limits, insulin model, profile schema complete
+**Partially covered** - Degraded operation, safety limits, insulin model, profile schema, prediction complete
 
 **Traceability Matrix**: [`domain-matrices/aid-algorithms-matrix.md`](domain-matrices/aid-algorithms-matrix.md)
 
@@ -95,10 +95,11 @@ Total: 310 requirements
 - Algorithm Core (REQ-ALG-003): ✅ 25% via `safety-limits.yaml`
 - Insulin Model (REQ-INS-001-005): ✅ 100% via `safety-limits.yaml` + `insulin-model.yaml`
 - Profile Schema (REQ-PROF-001-007): ✅ 100% via `profile-structure.yaml`
+- Prediction (REQ-PRED-001-003): ✅ 100% via `prediction-requirements.yaml`
 
 **Uncovered categories**:
 - Carb Absorption (REQ-CARB-001-006): 0%
-- Prediction/Sensitivity/Dosing: 0%
+- Sensitivity/Dosing/Target: 0%
 
 **Data quality issue**: Duplicate REQ IDs (REQ-CARB-001-003, REQ-INS-001-003)
 

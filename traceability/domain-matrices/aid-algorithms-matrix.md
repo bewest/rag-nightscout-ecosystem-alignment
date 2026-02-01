@@ -12,11 +12,11 @@
 |--------|-------|
 | Requirements | 56 |
 | Gaps | 66 |
-| REQs with assertion coverage | 19 (34%) |
-| Uncovered REQs | 37 (66%) |
-| Uncovered GAPs | 55 (83%) |
+| REQs with assertion coverage | 22 (39%) |
+| Uncovered REQs | 34 (61%) |
+| Uncovered GAPs | 52 (79%) |
 
-**Status**: 🔄 **IN PROGRESS** - Degraded operation, safety limits, insulin model, profile schema complete (19 REQs)
+**Status**: 🔄 **IN PROGRESS** - Degraded operation, safety limits, insulin model, profile schema, prediction complete (22 REQs)
 
 ---
 
@@ -110,13 +110,13 @@
 
 *Note: Duplicate REQ-CARB IDs exist in source file - need deduplication*
 
-### Prediction (3)
+### Prediction (3) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-PRED-001 | Prediction Structure Documentation | GAP-PRED-001 | ❌ None |
-| REQ-PRED-002 | Prediction Curve Labeling | GAP-PRED-002 | ❌ None |
-| REQ-PRED-003 | Multi-Curve Display Option | GAP-PRED-002 | ❌ None |
+| REQ-PRED-001 | Prediction Structure Documentation | GAP-PRED-001 | ✅ prediction-requirements.yaml |
+| REQ-PRED-002 | Prediction Curve Labeling | GAP-PRED-002 | ✅ prediction-requirements.yaml |
+| REQ-PRED-003 | Multi-Curve Display Option | GAP-PRED-002 | ✅ prediction-requirements.yaml |
 
 ### Dosing Mechanism (3)
 
@@ -236,11 +236,11 @@
 | Profile Schema | 7 | 7 | 100% ✅ |
 | Bolus Wizard | 3 | 0 | 0% |
 | Sensitivity | 3 | 0 | 0% |
-| Prediction | 3 | 0 | 0% |
+| Prediction | 3 | 3 | 100% ✅ |
 | Dosing Mechanism | 3 | 0 | 0% |
 | Target Range | 3 | 0 | 0% |
 | Trio oref | 3 | 0 | 0% |
-| **Total** | **56** | **19** | **34%** |
+| **Total** | **56** | **22** | **39%** |
 
 ### Data Quality Issues
 
@@ -272,9 +272,8 @@
    - 34 assertions covering time format, safety limits, overrides, insulin model, basal precision, TDD validation
    - Deliverable: `conformance/assertions/profile-structure.yaml`
 
-5. **Create prediction assertions** (REQ-PRED-001-003)
-   - Curve structure documentation
-   - Multi-curve display
+5. ~~**Create prediction assertions** (REQ-PRED-001-003)~~ ✅ cycle 105
+   - 19 assertions covering structure, labeling, multi-curve display
    - Deliverable: `conformance/assertions/prediction-requirements.yaml`
 
 ### Low Priority (Documentation)
@@ -299,7 +298,8 @@
 | `safety-limits.yaml` | 3 (REQ-ALG-003, REQ-INS-002, REQ-INS-003) | 2 (GAP-ALG-001, GAP-ALG-012) |
 | `insulin-model.yaml` | 3 (REQ-INS-001, REQ-INS-004, REQ-INS-005) | 1 (GAP-INS-001) |
 | `profile-structure.yaml` | 7 (REQ-PROF-001-007) | 5 (GAP-PROF-001, 002, 005, 006, 008) |
-| **Total** | **19** | **10** |
+| `prediction-requirements.yaml` | 3 (REQ-PRED-001-003) | 3 (GAP-PRED-001, 002, 003) |
+| **Total** | **22** | **13** |
 
 ---
 

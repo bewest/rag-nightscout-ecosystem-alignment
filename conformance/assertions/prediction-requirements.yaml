@@ -1,0 +1,328 @@
+# Prediction Requirements Assertions
+# Tests prediction curve display and documentation across AID controllers
+# Addresses REQ-PRED-001, REQ-PRED-002, REQ-PRED-003
+
+scenario: prediction-requirements
+version: 1
+
+requirements:
+  - REQ-PRED-001  # Prediction Structure Documentation
+  - REQ-PRED-002  # Prediction Curve Labeling
+  - REQ-PRED-003  # Multi-Curve Display Option
+
+related_gaps:
+  - GAP-PRED-001  # Prediction array truncation undocumented
+  - GAP-PRED-002  # Loop single prediction incompatible with multi-curve
+  - GAP-PRED-003  # Prediction interval not standardized
+
+assertions:
+  # ============================================
+  # Prediction Structure Documentation (REQ-PRED-001)
+  # ============================================
+
+  - id: prediction-structure-documented
+    description: "AID system documents prediction curve structure"
+    type: documentation
+    requirement: REQ-PRED-001
+    target: docs
+    expected: |
+      Documentation explains:
+      - Single vs multi-curve prediction approach
+      - Prediction array format and interval
+      - How prediction is calculated
+    verification:
+      - Review Loop docs for prediction explanation
+      - Review AAPS/Trio docs for multi-curve explanation
+    status: expected
+
+  - id: prediction-array-format
+    description: "Prediction arrays follow documented format"
+    type: schema
+    requirement: REQ-PRED-001
+    gap: GAP-PRED-001
+    target: devicestatus.loop.predicted.values
+    expected: |
+      Array of glucose values in mg/dL or mmol/L
+      - Loop: single array in loop.predicted.values
+      - oref0: multiple arrays in openaps.suggested.predBGs.*
+    verification:
+      - Parse devicestatus from Loop
+      - Parse devicestatus from AAPS/Trio
+      - Verify array structure matches docs
+    status: expected
+
+  - id: prediction-interval-documented
+    description: "Prediction time interval is documented"
+    type: documentation
+    requirement: REQ-PRED-001
+    gap: GAP-PRED-003
+    target: docs
+    expected: |
+      oref0/AAPS/Trio: Fixed 5-minute intervals
+      Loop: Variable intervals based on glucose data
+    verification:
+      - Check interval between prediction values
+      - Verify matches documented behavior
+    status: expected
+
+  - id: prediction-horizon-documented
+    description: "Prediction time horizon is documented"
+    type: documentation
+    requirement: REQ-PRED-001
+    target: docs
+    expected: |
+      Typical horizon: 4-6 hours (DIA-based)
+      Array length varies by system
+    verification:
+      - Check prediction array length
+      - Calculate implied horizon
+    status: expected
+
+  - id: truncation-behavior-documented
+    description: "Server truncation behavior SHOULD be documented"
+    type: documentation
+    requirement: REQ-PRED-001
+    gap: GAP-PRED-001
+    target: api.docs
+    expected: |
+      PREDICTIONS_MAX_SIZE environment variable documented
+      - Default behavior specified
+      - Truncation indication mechanism
+    verification:
+      - Review Nightscout API documentation
+      - Check for truncation notes
+    status: proposed
+
+  # ============================================
+  # Prediction Curve Labeling (REQ-PRED-002)
+  # ============================================
+
+  - id: loop-prediction-labeled
+    description: "Loop predictions labeled as combined/Loop curve"
+    type: ui
+    requirement: REQ-PRED-002
+    gap: GAP-PRED-002
+    target: nightscout.ui.predictions
+    expected: "Loop predictions labeled as 'Loop' or 'Predicted'"
+    verification:
+      - View Nightscout with Loop devicestatus
+      - Verify prediction line has label
+    status: expected
+
+  - id: oref-curves-labeled
+    description: "oref0 prediction curves individually labeled"
+    type: ui
+    requirement: REQ-PRED-002
+    target: nightscout.ui.predictions
+    expected: |
+      Four curves with labels:
+      - IOB: Insulin only prediction
+      - COB: Carbs + insulin prediction
+      - UAM: Unannounced meal prediction
+      - ZT: Zero-temp (safety) prediction
+    verification:
+      - View Nightscout with AAPS/Trio devicestatus
+      - Verify all four curves labeled
+    status: expected
+
+  - id: prediction-legend-present
+    description: "Prediction chart includes legend or tooltip"
+    type: ui
+    requirement: REQ-PRED-002
+    target: nightscout.ui.chart
+    expected: "Legend or hover tooltip explains each curve"
+    verification:
+      - Hover over prediction lines
+      - Verify curve type displayed
+    status: expected
+
+  - id: curve-color-differentiated
+    description: "Prediction curves use distinct colors"
+    type: ui
+    requirement: REQ-PRED-002
+    target: nightscout.ui.chart.colors
+    expected: |
+      Each curve type has unique color:
+      - IOB: typically orange
+      - COB: typically yellow
+      - UAM: typically purple
+      - ZT: typically blue
+    verification:
+      - Visual inspection of multi-curve display
+      - Verify colors are distinguishable
+    status: expected
+
+  - id: loop-vs-oref-display-difference
+    description: "Display difference between Loop and oref documented"
+    type: documentation
+    requirement: REQ-PRED-002
+    gap: GAP-PRED-002
+    target: docs
+    expected: |
+      Documentation explains:
+      - Loop shows single combined curve
+      - AAPS/Trio show four separate curves
+      - This is expected design difference
+    verification:
+      - Review Nightscout documentation
+      - Verify design difference explained
+    status: expected
+
+  # ============================================
+  # Multi-Curve Display Option (REQ-PRED-003)
+  # ============================================
+
+  - id: multi-curve-toggle-available
+    description: "Nightscout provides toggle for individual prediction curves"
+    type: ui
+    requirement: REQ-PRED-003
+    target: nightscout.ui.settings
+    expected: "Toggle buttons for IOB/COB/UAM/ZT curves"
+    verification:
+      - Open Nightscout settings
+      - Look for prediction curve toggles
+    status: expected
+
+  - id: zt-curve-displayable
+    description: "Zero-temp (ZT) prediction curve can be displayed"
+    type: ui
+    requirement: REQ-PRED-003
+    gap: GAP-PRED-002
+    target: nightscout.ui.predictions.zt
+    expected: "ZT curve toggle enables display of safety prediction"
+    verification:
+      - Enable ZT curve toggle
+      - Verify ZT line appears on chart
+    status: expected
+
+  - id: default-curves-reasonable
+    description: "Default prediction display shows reasonable subset"
+    type: config
+    requirement: REQ-PRED-003
+    target: nightscout.defaults.predictions
+    expected: "Default: IOB and COB enabled; UAM and ZT optional"
+    verification:
+      - Check default Nightscout settings
+      - Verify default curve visibility
+    status: expected
+
+  - id: curve-toggle-persisted
+    description: "Curve visibility preferences are saved"
+    type: behavior
+    requirement: REQ-PRED-003
+    target: nightscout.settings.persistence
+    expected: "User curve preferences persist across sessions"
+    verification:
+      - Toggle curve visibility
+      - Reload page
+      - Verify settings preserved
+    status: expected
+
+  - id: loop-multi-curve-not-applicable
+    description: "Loop users see single curve (multi-toggle not applicable)"
+    type: behavior
+    requirement: REQ-PRED-003
+    gap: GAP-PRED-002
+    target: nightscout.ui.predictions
+    expected: |
+      When Loop is data source:
+      - Single prediction line displayed
+      - Multi-curve toggles may be hidden or disabled
+    verification:
+      - View Nightscout with Loop-only data
+      - Verify appropriate UI state
+    status: expected
+
+  # ============================================
+  # Prediction Data Assertions
+  # ============================================
+
+  - id: prediction-in-devicestatus
+    description: "Predictions included in devicestatus uploads"
+    type: schema
+    requirement: REQ-PRED-001
+    target: devicestatus
+    expected: |
+      Loop: loop.predicted.values array
+      oref0: openaps.suggested.predBGs object with IOB/COB/UAM/ZT arrays
+    verification:
+      - GET /api/v1/devicestatus
+      - Verify prediction data present
+    status: expected
+
+  - id: prediction-values-reasonable
+    description: "Prediction values within physiological range"
+    type: validation
+    requirement: REQ-PRED-001
+    target: devicestatus.*.predicted
+    expected: "All prediction values between 39-401 mg/dL (2.2-22.2 mmol/L)"
+    verification:
+      - Parse prediction arrays
+      - Validate all values in range
+    status: expected
+
+  - id: prediction-starts-near-current
+    description: "First prediction value near current glucose"
+    type: validation
+    requirement: REQ-PRED-001
+    target: devicestatus.*.predicted[0]
+    expected: "First prediction within 20 mg/dL of current glucose"
+    verification:
+      - Compare prediction[0] to current SGV
+      - Verify reasonable continuity
+    status: expected
+
+  - id: truncation-header-proposed
+    description: "Server SHOULD indicate when predictions truncated"
+    type: behavior
+    requirement: REQ-PRED-001
+    gap: GAP-PRED-001
+    target: api.response.headers
+    expected: |
+      Header: X-Predictions-Truncated: true
+      Or: truncated flag in response body
+    verification:
+      - POST large prediction array
+      - Check response for truncation indication
+    status: proposed
+
+# ============================================
+# Metadata
+# ============================================
+
+metadata:
+  created: 2026-02-01
+  source: aid-algorithms-matrix.md action item #5
+  impact: Prediction display clarity and documentation
+  status: |
+    20 assertions covering:
+    - Structure documentation (5)
+    - Curve labeling (5)
+    - Multi-curve display (5)
+    - Data validation (5)
+
+cross_references:
+  - document: traceability/aid-algorithms-gaps.md
+    section: GAP-PRED-001, GAP-PRED-002, GAP-PRED-003
+  - document: docs/10-domain/prediction-curves-comparison.md
+    description: Cross-system prediction analysis (if exists)
+  - document: mapping/cross-project/terminology-matrix.md
+    section: Prediction concepts
+
+sources:
+  loop:
+    - file: "LoopKit/LoopAlgorithm/GlucosePredictionAlgorithm.swift"
+      description: "Loop prediction calculation"
+    - file: "NightscoutServiceKit/Extensions/StoredDosingDecision.swift"
+      description: "Loop prediction upload format"
+  oref0:
+    - file: "lib/determine-basal/determine-basal.js"
+      description: "oref0 prediction calculation"
+  aaps:
+    - file: "app.aaps.core.interfaces.aps.Predictions"
+      description: "AAPS prediction interface"
+  nightscout:
+    - file: "lib/plugins/openaps.js"
+      description: "OpenAPS plugin prediction display"
+    - file: "tests/api.partial-failures.test.js:402-550"
+      description: "Prediction truncation tests"
