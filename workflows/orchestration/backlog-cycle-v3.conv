@@ -123,14 +123,11 @@ RUN git --no-pager diff --stat
 ELIDE
 
 PROMPT **MANDATORY: Commit all changes from this cycle.**
-
-```bash
-git add -A && git commit -m "Cycle N: [brief description]
-
-- Deliverable 1
-- Deliverable 2
-"
-```
+In addition to summarizing what changed, be clear why the changes are made.
+If there are any traceable reasons to justify the impacts of our changes is
+best practice to mention in the commit as appropraite.
+It is acceptable to group batches of atomic changes as appropriate in good
+reviewable pull requests.
 
 Verify with `git log --oneline -1`
 
