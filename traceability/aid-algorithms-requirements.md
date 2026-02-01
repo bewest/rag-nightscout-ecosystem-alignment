@@ -605,6 +605,8 @@ See [requirements.md](requirements.md) for the index.
 - Profile includes optional safety limit fields
 - Controllers can read/write these values
 
+**Conformance**: `conformance/assertions/profile-structure.yaml` (max-iob-present, max-basal-present, max-bolus-present)
+
 **Gap**: GAP-PROF-002
 
 **Source**: `docs/10-domain/profile-schema-alignment.md`
@@ -625,6 +627,8 @@ See [requirements.md](requirements.md) for the index.
 - Profile includes override presets array
 - Presets include name, target range, duration
 
+**Conformance**: `conformance/assertions/profile-structure.yaml` (override-presets-array, override-preset-structure)
+
 **Gap**: GAP-PROF-003
 
 **Source**: `docs/10-domain/profile-schema-alignment.md`
@@ -644,6 +648,8 @@ See [requirements.md](requirements.md) for the index.
 **Verification**:
 - Documented mapping table exists
 - Round-trip conversion preserves behavior
+
+**Conformance**: `conformance/assertions/profile-structure.yaml` (insulin-model-present, dia-duration-present)
 
 **Gap**: GAP-PROF-005
 
@@ -683,6 +689,8 @@ See [requirements.md](requirements.md) for the index.
 **Verification**:
 - Round-trip test: export → import → compare rates
 - Precision check against pump basalStep
+
+**Conformance**: `conformance/assertions/profile-structure.yaml` (basal-rate-precision, basal-24h-coverage)
 
 **Gap**: GAP-PROF-008
 

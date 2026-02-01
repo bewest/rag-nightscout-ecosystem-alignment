@@ -169,6 +169,8 @@ See [requirements.md](requirements.md) for the index.
 - Download and verify utcOffset preserved
 - Compare with dateString-derived offset
 
+**Conformance**: `conformance/assertions/api-behavior.yaml` (utcoffset-preserved-on-create, utcoffset-not-overwritten)
+
 **Gap Reference**: GAP-TZ-003
 
 ---
@@ -1275,6 +1277,8 @@ See [requirements.md](requirements.md) for the index.
 - Query via API
 - Verify `custom_field` in response
 
+**Conformance**: `conformance/assertions/api-behavior.yaml` (unknown-field-preserved, controller-specific-fields)
+
 **Source**: [Migration Field Fidelity Analysis](../mapping/nocturne/migration-field-fidelity.md)
 
 **Status**: ✅ Verified in Nocturne
@@ -1296,6 +1300,8 @@ See [requirements.md](requirements.md) for the index.
 - Upload deviceStatus with `loop.predicted.IOB` array
 - Query via API
 - Verify nested structure intact
+
+**Conformance**: `conformance/assertions/api-behavior.yaml` (nested-object-preserved, array-in-nested-preserved, deep-nesting-supported)
 
 **Source**: [Migration Field Fidelity Analysis](../mapping/nocturne/migration-field-fidelity.md)
 

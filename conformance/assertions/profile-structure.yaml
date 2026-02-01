@@ -1,0 +1,189 @@
+# Assertions for Profile Structure Scenarios
+# Tests profile/therapy settings across AID controllers
+# Uses assertion types from conformance/assertions/_template.yaml
+
+scenario: profile-structure
+version: 1
+
+# Link to requirements in traceability/
+requirements:
+  - REQ-PROF-002  # Safety Limits in Profile
+  - REQ-PROF-003  # Override Presets Sync
+  - REQ-PROF-004  # Insulin Model Mapping
+  - REQ-PROF-006  # Basal Rate Precision
+
+related_gaps:
+  - GAP-PROF-001  # Insulin model naming inconsistency
+  - GAP-PROF-002  # Override preset sync gap
+  - GAP-PROF-003  # Basal precision varies by pump
+
+assertions:
+  # ============================================
+  # Safety Limits in Profile (REQ-PROF-002)
+  # ============================================
+  
+  - id: max-iob-present
+    description: "Maximum IOB safety limit defined in profile"
+    type: state
+    target: profile.maxIOB
+    expected: ">= 0"
+    alternatives:
+      - profile.max_iob
+
+  - id: max-basal-present
+    description: "Maximum basal rate limit defined"
+    type: state
+    target: profile.max_basal
+    expected: "> 0"
+    alternatives:
+      - profile.maxBasal
+
+  - id: max-bolus-present
+    description: "Maximum bolus limit defined"
+    type: state
+    target: profile.maxBolus
+    expected: "> 0"
+
+  - id: target-range-present
+    description: "Target glucose range defined"
+    type: state
+    target: profile.target_low
+    expected: "> 0"
+
+  # ============================================
+  # Override Presets Sync (REQ-PROF-003)
+  # ============================================
+  
+  - id: override-presets-array
+    description: "Override presets available as array"
+    type: state
+    target: profile.overridePresets
+    expected: array
+    when: controller_supports_overrides
+
+  - id: override-preset-structure
+    description: "Override preset has required fields"
+    type: schema
+    target: profile.overridePresets[*]
+    expected_fields:
+      - name
+      - duration
+      - targetRange
+      - insulinNeedsScaleFactor
+    when: override_presets_present
+
+  - id: override-sync-identifier
+    description: "Override preset has sync identifier"
+    type: state
+    target: profile.overridePresets[*].id
+    expected: uuid
+    when: override_presets_present
+
+  # ============================================
+  # Insulin Model Mapping (REQ-PROF-004)
+  # ============================================
+  
+  - id: insulin-model-present
+    description: "Insulin model specified in profile"
+    type: state
+    target: profile.insulinModel
+    expected: string
+    alternatives:
+      - profile.curve
+      - profile.dia
+
+  - id: dia-duration-present
+    description: "Duration of insulin action available"
+    type: state
+    target: profile.dia
+    expected: "> 0"
+
+  - id: insulin-peak-available
+    description: "Insulin peak time available for non-exponential models"
+    type: state
+    target: profile.insulinPeakTime
+    expected: "> 0"
+    when: insulin_model_requires_peak
+
+  # ============================================
+  # Basal Rate Precision (REQ-PROF-006)
+  # ============================================
+  
+  - id: basal-profile-array
+    description: "Basal profile defined as time-value array"
+    type: state
+    target: profile.basal
+    expected: array
+
+  - id: basal-rate-precision
+    description: "Basal rates support pump-specific precision"
+    type: precision
+    target: profile.basal[*].value
+    min_precision: 0.01
+    max_precision: 0.05
+    notes: "Omnipod=0.05, Medtronic=0.025, Dana=0.01"
+
+  - id: basal-time-format
+    description: "Basal schedule times in consistent format"
+    type: pattern
+    target: profile.basal[*].time
+    pattern: "^[0-2][0-9]:[0-5][0-9]$"
+
+  - id: basal-24h-coverage
+    description: "Basal schedule covers full 24 hours"
+    type: coverage
+    target: profile.basal
+    expected: "00:00-24:00"
+
+# ============================================
+# Query Assertions
+# ============================================
+
+  - id: profile-history-query
+    description: "Profile history accessible via API"
+    type: query
+    query: "profile?count=10"
+    expected_count: ">= 1"
+
+  - id: active-profile-query
+    description: "Active profile retrievable"
+    type: query
+    query: "profile/current"
+    expected_count: 1
+
+# ============================================
+# Metadata and Cross-References
+# ============================================
+
+cross_references:
+  - document: specs/openapi/aid-profile-2025.yaml
+    description: "Profile OpenAPI specification"
+  - document: mapping/nightscout/data-collections.md
+    description: "Profile field mapping per controller"
+  - document: docs/10-domain/trio-algorithm-deep-dive.md
+    description: "Trio profile structure analysis"
+
+gaps_addressed:
+  - id: GAP-PROF-001
+    description: "Insulin model naming inconsistency"
+    assertions: [insulin-model-present, dia-duration-present]
+  - id: GAP-PROF-002
+    description: "Override preset sync not standardized"
+    assertions: [override-presets-array, override-sync-identifier]
+  - id: GAP-PROF-003
+    description: "Basal precision varies by pump"
+    assertions: [basal-rate-precision]
+
+sources:
+  loop:
+    - file: "loop:LoopKit/LoopKit/InsulinKit/InsulinModel.swift"
+      description: "Loop insulin model definitions"
+  trio:
+    - file: "trio:Trio/Sources/Models/FreeAPSSettings.swift"
+      description: "Trio profile settings"
+  aaps:
+    - file: "aaps:core/interfaces/src/main/kotlin/app/aaps/core/interfaces/profile/"
+      description: "AAPS profile interface"
+  nightscout:
+    - file: "crm:lib/api3/swagger.yaml"
+      description: "Profile API definition"

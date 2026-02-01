@@ -13,6 +13,20 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Conformance Scenario Expansion (2026-02-01)
+
+Added conformance assertions for 11 previously uncovered requirements.
+
+| Assertion File | REQs Covered | Focus Area |
+|----------------|--------------|------------|
+| devicestatus-fields.yaml | REQ-DS-002/003/004, REQ-INTEROP-003 | IOB breakdown, overrides, predictions |
+| profile-structure.yaml | REQ-PROF-002/003/004/006 | Safety limits, presets, insulin model, basal precision |
+| api-behavior.yaml | REQ-NS-025, REQ-TZ-002, REQ-MIGRATION-002/003 | Batch writes, timezone, field preservation |
+
+**Result**: 3 new assertion files, 11 REQs now covered (99→88 uncovered)
+
+---
+
 ### OpenAPI x-aid-req Annotations (2026-02-01)
 
 Added requirement cross-references to OpenAPI specs for improved traceability.

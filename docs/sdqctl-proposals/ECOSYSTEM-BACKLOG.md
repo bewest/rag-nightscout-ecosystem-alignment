@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 | **Open Items**: 4  
+> **Last Groomed**: 2026-02-01 | **Open Items**: 3  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -48,18 +48,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** mongodb-update-readiness-report.md Phase 3
 **Deliverable:** PR to cgm-remote-monitor with driver upgrade
 
-### 4. [P3] Conformance scenario expansion
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Add scenarios for uncovered REQs
-**Source:** 99 uncovered REQs from coverage analysis
-**Deliverable:** New YAML scenarios in conformance/
-
 ---
 
 ## Recently Completed (2026-02-01)
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Conformance Scenario Expansion** | 3 assertion YAMLs | 11 REQs covered (99→88 uncovered), devicestatus/profile/API assertions |
 | **StateSpan V3 Extension Spec** | `specs/openapi/statespan-v3-extension.md` | 4 categories, backward compat, reference only (author prefers V4) |
 | **MongoDB Phase 2: Storage Layer** | `mongodb-storage-layer-analysis.md` | No insertMany, all patterns 5.x/6.x compatible, ready for Phase 3 |
 | **cgm-remote-monitor V4 Adoption** | `cgm-remote-monitor-v4-adoption-proposal.md` | 7 adoptable features, 4-phase roadmap, no breaking changes |

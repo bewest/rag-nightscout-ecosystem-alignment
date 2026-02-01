@@ -737,6 +737,8 @@ See [requirements.md](requirements.md) for the index.
 - Use `bulkWrite({ordered: true})` or equivalent
 - Test: upload batch, verify order matches input
 
+**Conformance**: `conformance/assertions/api-behavior.yaml` (batch-order-preserved, batch-partial-failure)
+
 **Gap**: GAP-DB-001
 
 **Source**: `docs/10-domain/cgm-remote-monitor-design-review.md`
@@ -839,6 +841,8 @@ See [requirements.md](requirements.md) for the index.
 - devicestatus includes `iob.basaliob` and `iob.bolusiob`
 - Reports can chart IOB components separately
 
+**Conformance**: `conformance/assertions/devicestatus-fields.yaml` (iob-total-present, iob-basal-component)
+
 **Gap**: GAP-DS-002
 
 **Source**: `docs/10-domain/nightscout-devicestatus-schema-audit.md`
@@ -859,6 +863,8 @@ See [requirements.md](requirements.md) for the index.
 - devicestatus includes override field for all controllers
 - Profile switch events linked to devicestatus
 
+**Conformance**: `conformance/assertions/devicestatus-fields.yaml` (override-active-indicator, override-name-present)
+
 **Gap**: GAP-DS-003
 
 **Source**: `docs/10-domain/nightscout-devicestatus-schema-audit.md`
@@ -878,6 +884,8 @@ See [requirements.md](requirements.md) for the index.
 **Verification**:
 - devicestatus includes `eventualBG` field
 - Value represents prediction endpoint (2-6 hours out)
+
+**Conformance**: `conformance/assertions/devicestatus-fields.yaml` (eventualbg-present, prediction-array-present)
 
 **Gap**: GAP-DS-004
 

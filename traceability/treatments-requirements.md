@@ -261,6 +261,8 @@ See [requirements.md](requirements.md) for the index.
 - `device` field present on devicestatus
 - `enteredBy` field present on treatments
 
+**Conformance**: `conformance/assertions/devicestatus-fields.yaml` (device-identifier-present, device-identifier-format)
+
 **Gap Reference**: GAP-SYNC-008
 
 ---

@@ -1,0 +1,204 @@
+# Assertions for API Behavior Scenarios
+# Tests Nightscout API behavioral requirements
+# Uses assertion types from conformance/assertions/_template.yaml
+
+scenario: api-behavior
+version: 1
+
+# Link to requirements in traceability/
+requirements:
+  - REQ-NS-025  # Ordered Batch Write Guarantee
+  - REQ-TZ-002  # Preserve Client utcOffset
+  - REQ-MIGRATION-002  # Arbitrary Field Preservation
+  - REQ-MIGRATION-003  # Nested Object JSONB Storage
+
+related_gaps:
+  - GAP-API-001  # Batch order not guaranteed in v1
+  - GAP-API-002  # utcOffset handling inconsistent
+  - GAP-MIGRATION-001  # Field preservation varies
+
+assertions:
+  # ============================================
+  # Ordered Batch Write Guarantee (REQ-NS-025)
+  # ============================================
+  
+  - id: batch-order-preserved
+    description: "Batch POST preserves document order"
+    type: sequence
+    operation: POST /api/v3/treatments
+    input:
+      - { created_at: "2024-01-01T10:00:00Z", eventType: "Carbs", carbs: 10 }
+      - { created_at: "2024-01-01T10:05:00Z", eventType: "Carbs", carbs: 20 }
+      - { created_at: "2024-01-01T10:10:00Z", eventType: "Carbs", carbs: 30 }
+    expected: ordered_by_input_sequence
+
+  - id: batch-partial-failure
+    description: "Batch returns partial success status"
+    type: response
+    operation: POST /api/v3/treatments
+    input:
+      - { eventType: "Carbs", carbs: 10 }
+      - { eventType: "Invalid" }
+    expected_status: 207
+    expected_body:
+      - status: 201
+      - status: 400
+
+  - id: batch-atomicity-documented
+    description: "Batch atomicity behavior documented"
+    type: documentation
+    target: specs/openapi/aid-treatments-2025.yaml
+    expected_content: "batch"
+
+  # ============================================
+  # Preserve Client utcOffset (REQ-TZ-002)
+  # ============================================
+  
+  - id: utcoffset-preserved-on-create
+    description: "Client utcOffset preserved through create cycle"
+    type: state
+    operation: POST -> GET
+    input:
+      utcOffset: -300
+    target: treatment.utcOffset
+    expected: -300
+
+  - id: utcoffset-not-overwritten
+    description: "Server does not overwrite client utcOffset"
+    type: immutable
+    fields:
+      - utcOffset
+    when: client_provides_utcOffset
+
+  - id: utcoffset-optional
+    description: "utcOffset is optional field"
+    type: schema
+    operation: POST /api/v3/treatments
+    input:
+      eventType: "Carbs"
+      carbs: 10
+    expected_status: 201
+    notes: "Document created without utcOffset"
+
+  # ============================================
+  # Arbitrary Field Preservation (REQ-MIGRATION-002)
+  # ============================================
+  
+  - id: unknown-field-preserved
+    description: "Unknown fields preserved for extensibility"
+    type: state
+    operation: POST -> GET
+    input:
+      eventType: "Note"
+      customField: "custom_value"
+      _privateField: "private"
+    target: treatment.customField
+    expected: "custom_value"
+
+  - id: controller-specific-fields
+    description: "Controller-specific fields preserved"
+    type: state
+    operation: POST -> GET
+    input:
+      eventType: "Meal Bolus"
+      loopData:
+        recommendedBolus: 2.5
+        carbRatio: 10
+    target: treatment.loopData
+    expected:
+      recommendedBolus: 2.5
+      carbRatio: 10
+
+  # ============================================
+  # Nested Object JSONB Storage (REQ-MIGRATION-003)
+  # ============================================
+  
+  - id: nested-object-preserved
+    description: "Nested objects stored and retrieved correctly"
+    type: state
+    operation: POST -> GET
+    input:
+      eventType: "Temp Basal"
+      pumpSettings:
+        basalProgram: "Pattern A"
+        maxBasal: 2.0
+        profile:
+          name: "default"
+          basal:
+            - time: "00:00"
+              value: 1.0
+    target: treatment.pumpSettings.profile.basal[0].value
+    expected: 1.0
+
+  - id: array-in-nested-preserved
+    description: "Arrays within nested objects preserved"
+    type: state
+    operation: POST -> GET
+    input:
+      predictions:
+        values: [100, 105, 110, 115]
+        timestamps: ["10:00", "10:05", "10:10", "10:15"]
+    target: treatment.predictions.values
+    expected: [100, 105, 110, 115]
+
+  - id: deep-nesting-supported
+    description: "Deep nesting (3+ levels) supported"
+    type: state
+    operation: POST -> GET
+    input:
+      level1:
+        level2:
+          level3:
+            value: "deep"
+    target: treatment.level1.level2.level3.value
+    expected: "deep"
+
+# ============================================
+# Error Handling Assertions
+# ============================================
+
+  - id: invalid-json-rejected
+    description: "Invalid JSON rejected with 400"
+    type: response
+    operation: POST /api/v3/treatments
+    input: "{ invalid json }"
+    expected_status: 400
+
+  - id: missing-required-field-error
+    description: "Missing required field returns informative error"
+    type: response
+    operation: POST /api/v3/treatments
+    input:
+      notes: "Missing eventType"
+    expected_status: 400
+    expected_body:
+      error: "eventType required"
+
+# ============================================
+# Metadata and Cross-References
+# ============================================
+
+cross_references:
+  - document: specs/openapi/aid-treatments-2025.yaml
+    description: "Treatments OpenAPI specification"
+  - document: mapping/nightscout/api-v1-v3-comparison.md
+    description: "V1 vs V3 API differences"
+  - document: traceability/sync-identity-requirements.md
+    description: "Sync identity requirements"
+
+gaps_addressed:
+  - id: GAP-API-001
+    description: "Batch order guarantee varies by version"
+    assertions: [batch-order-preserved, batch-partial-failure]
+  - id: GAP-MIGRATION-001
+    description: "Field preservation behavior undocumented"
+    assertions: [unknown-field-preserved, nested-object-preserved]
+
+sources:
+  nightscout:
+    - file: "crm:lib/api3/generic/create/operation.js"
+      description: "V3 create operation"
+    - file: "crm:lib/api3/generic/read/operation.js"
+      description: "V3 read operation"
+    - file: "crm:lib/api/treatments/index.js"
+      description: "V1 treatments endpoint"

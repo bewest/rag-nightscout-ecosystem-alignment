@@ -1,0 +1,159 @@
+# Assertions for DeviceStatus Field Scenarios
+# Tests devicestatus structure across AID controllers (Trio, Loop, AAPS)
+# Uses assertion types from conformance/assertions/_template.yaml
+
+scenario: devicestatus-fields
+version: 1
+
+# Link to requirements in traceability/
+requirements:
+  - REQ-DS-002  # IOB Component Breakdown
+  - REQ-DS-003  # Override Status Reporting
+  - REQ-DS-004  # Eventual BG Prediction
+  - REQ-INTEROP-003  # Device Identifier Inclusion
+
+related_gaps:
+  - GAP-DS-001  # Loop vs oref structure mismatch
+  - GAP-DS-002  # eventualBG vs predictions mismatch
+  - GAP-DS-003  # Loop override vs AAPS profile mismatch
+
+assertions:
+  # ============================================
+  # IOB Component Breakdown (REQ-DS-002)
+  # ============================================
+  
+  - id: iob-total-present
+    description: "IOB total value present in devicestatus"
+    type: state
+    target: devicestatus.loop.iob.iob
+    expected: ">= 0"
+    alternatives:
+      - devicestatus.openaps.iob.iob
+      - devicestatus.pump.iob.bolusiob
+
+  - id: iob-basal-component
+    description: "Basal IOB component available for analysis"
+    type: state
+    target: devicestatus.openaps.iob.basaliob
+    expected: number
+    when: controller_is_oref_based
+
+  - id: iob-activity-component
+    description: "Insulin activity (BGI effect) available"
+    type: state
+    target: devicestatus.openaps.iob.activity
+    expected: number
+    when: controller_is_oref_based
+
+  # ============================================
+  # Override Status Reporting (REQ-DS-003)
+  # ============================================
+  
+  - id: override-active-indicator
+    description: "Override active status reported in devicestatus"
+    type: state
+    target: devicestatus.loop.override.active
+    expected: boolean
+    alternatives:
+      - devicestatus.openaps.profile_active
+
+  - id: override-multiplier-present
+    description: "Override sensitivity/target multipliers available"
+    type: state
+    target: devicestatus.loop.override.multiplier
+    expected: number
+    when: override_is_active
+
+  - id: override-name-present
+    description: "Override preset name available when active"
+    type: state
+    target: devicestatus.loop.override.name
+    expected: string
+    when: override_is_active
+
+  # ============================================
+  # Eventual BG Prediction (REQ-DS-004)
+  # ============================================
+  
+  - id: eventualbg-present
+    description: "Eventual BG prediction available"
+    type: state
+    target: devicestatus.openaps.suggested.eventualBG
+    expected: number
+    alternatives:
+      - devicestatus.loop.predicted.values[-1]
+
+  - id: prediction-array-present
+    description: "Prediction curve array available for visualization"
+    type: state
+    target: devicestatus.loop.predicted.values
+    expected: array
+    alternatives:
+      - devicestatus.openaps.suggested.predBGs
+
+  - id: prediction-timestamps-present
+    description: "Prediction timestamps available for plotting"
+    type: state
+    target: devicestatus.loop.predicted.startDate
+    expected: iso8601
+    when: predictions_present
+
+  # ============================================
+  # Device Identifier Inclusion (REQ-INTEROP-003)
+  # ============================================
+  
+  - id: device-identifier-present
+    description: "Device identifier field present for source attribution"
+    type: state
+    target: devicestatus.device
+    expected: string
+
+  - id: device-identifier-format
+    description: "Device identifier follows expected format"
+    type: pattern
+    target: devicestatus.device
+    pattern: "^(loop|openaps|trio|AndroidAPS)://.*"
+    
+  - id: uploaderid-present
+    description: "UploaderID present for multi-device scenarios"
+    type: state
+    target: devicestatus.uploaderBattery
+    expected: number
+    when: mobile_uploader
+
+# ============================================
+# Metadata and Cross-References
+# ============================================
+
+cross_references:
+  - document: specs/openapi/aid-devicestatus-2025.yaml
+    description: "DeviceStatus OpenAPI specification"
+  - document: mapping/nightscout/data-collections.md
+    description: "DeviceStatus field mapping per controller"
+  - document: docs/10-domain/loop-algorithm-deep-dive.md
+    description: "Loop prediction structure analysis"
+
+gaps_addressed:
+  - id: GAP-DS-001
+    description: "Loop vs oref structure mismatch - tests both patterns"
+    assertions: [iob-total-present, eventualbg-present]
+  - id: GAP-DS-002
+    description: "eventualBG location varies by controller"
+    assertions: [eventualbg-present, prediction-array-present]
+  - id: GAP-DS-003
+    description: "Override reporting varies by controller"
+    assertions: [override-active-indicator, override-name-present]
+
+sources:
+  loop:
+    - file: "loop:LoopCore/LoopCoreUI/DeviceStatusDetail.swift"
+      description: "Loop devicestatus structure"
+  trio:
+    - file: "trio:Trio/Sources/Services/Network/NightscoutAPI.swift"
+      description: "Trio devicestatus upload"
+  aaps:
+    - file: "aaps:plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclient/"
+      description: "AAPS devicestatus upload"
+  nightscout:
+    - file: "crm:lib/api3/swagger.yaml"
+      description: "DeviceStatus API definition"
