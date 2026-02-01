@@ -1,0 +1,72 @@
+# Treatments GAP Coverage
+# Covers remaining uncovered GAPs to achieve 100% GAP coverage
+# Created: 2026-02-01 (cycle 118)
+
+scenario: treatments-gap-coverage
+version: "1.0"
+requirements:
+  - REQ-INTEROP-002
+
+related_gaps:
+  - GAP-TREAT-003  # No Explicit SMB Event Type
+  - GAP-TREAT-004  # Split/Extended Bolus Representation Mismatch
+
+assertions:
+
+  # GAP-TREAT-003: No Explicit SMB Event Type
+  - id: TREAT-GAP-001
+    description: Document SMB event type identification gap
+    type: documentation
+    requirement: REQ-INTEROP-002
+    gap: GAP-TREAT-003
+    target: docs/10-domain/treatments-deep-dive.md
+    expected: SMB boluses not distinguishable from manual boluses in Nightscout
+    verification: grep -q "SMB.*event\|SMB.*type" docs/10-domain/treatments-deep-dive.md
+    status: proposed
+
+  - id: TREAT-GAP-002
+    description: Define SMB identification schema extension
+    type: schema
+    requirement: REQ-INTEROP-002
+    gap: GAP-TREAT-003
+    target: specs/openapi/aid-treatments-2025.yaml
+    expected: isSMB boolean or eventType="SMB Bolus" to identify SMB deliveries
+    verification: Check x-aid-gap annotation for SMB identification
+    status: proposed
+
+  - id: TREAT-GAP-003
+    description: Document SMB vs manual bolus analytics impact
+    type: documentation
+    gap: GAP-TREAT-003
+    target: docs/10-domain/treatments-deep-dive.md
+    expected: Analytics cannot distinguish algorithm-driven vs user-initiated boluses
+    verification: grep -q "analytics.*SMB\|SMB.*analytics" docs/10-domain/treatments-deep-dive.md
+    status: proposed
+
+  # GAP-TREAT-004: Split/Extended Bolus Representation Mismatch
+  - id: TREAT-GAP-004
+    description: Document extended bolus representation differences
+    type: documentation
+    gap: GAP-TREAT-004
+    target: docs/10-domain/treatments-deep-dive.md
+    expected: Extended bolus formats differ (AAPS duration+rate vs Loop temp basal)
+    verification: grep -q "extended.*bolus\|split.*bolus" docs/10-domain/treatments-deep-dive.md
+    status: proposed
+
+  - id: TREAT-GAP-005
+    description: Define extended bolus schema in treatments spec
+    type: schema
+    gap: GAP-TREAT-004
+    target: specs/openapi/aid-treatments-2025.yaml
+    expected: Extended bolus fields (duration, enteredBy, splitNow, splitExt) documented
+    verification: Check treatments spec for extended bolus fields
+    status: proposed
+
+  - id: TREAT-GAP-006
+    description: Document extended bolus round-trip compatibility
+    type: documentation
+    gap: GAP-TREAT-004
+    target: mapping/cross-project/terminology-matrix.md
+    expected: Extended bolus representation mapping across controllers
+    verification: grep -q "extended.*bolus" mapping/cross-project/terminology-matrix.md
+    status: proposed

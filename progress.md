@@ -21,11 +21,26 @@ This document tracks completed documentation cycles and candidates for future wo
 | Algorithm | 56/56 | 100% ✅ |
 | **Total** | **141/141** | **100%** |
 
-**Session Stats (Cycles 102-117)**: 311 assertions, 50 REQs covered, 91 GAPs covered, 14 commits
+**Session Stats (Cycles 102-118)**: 317 assertions, 50 REQs covered, 93 GAPs covered, 15 commits
 
 ---
 
 ## Completed Work
+
+### Treatments GAP Coverage (2026-02-01)
+
+Created 6 assertions to achieve 100% GAP coverage in Treatments domain.
+
+| Metric | Count |
+|--------|-------|
+| Gaps addressed | 2 |
+| Assertions created | 6 |
+
+**Deliverable**: `conformance/assertions/treatments-gaps.yaml`
+
+**GAPs Covered**: GAP-TREAT-003 (SMB event type), GAP-TREAT-004 (extended bolus)
+
+---
 
 ### Sync-Identity GAP Coverage (2026-02-01)
 

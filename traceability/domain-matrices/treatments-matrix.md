@@ -14,9 +14,10 @@
 | Gaps | 9 |
 | REQs with assertion coverage | 35 (100%) |
 | Uncovered REQs | 0 (0%) |
-| Uncovered GAPs | 2 (22%) |
+| GAPs with assertion coverage | **9 (100%)** |
+| Uncovered GAPs | **0** |
 
-**Status**: ✅ **COMPLETE** - All 35 requirements have assertion coverage:
+**Status**: 🎉 **TREATMENTS DOMAIN 100% COMPLETE** - All 35 REQs + 9 GAPs have assertion coverage (cycle 118)
 - Treatment sync (REQ-TREAT-040-046): treatment-sync.yaml
 - Alarm (REQ-ALARM-001-010): alarm-requirements.yaml
 - Remote command (REQ-REMOTE-001-011): remote-command-requirements.yaml
