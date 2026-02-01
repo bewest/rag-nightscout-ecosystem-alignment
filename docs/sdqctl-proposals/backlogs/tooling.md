@@ -17,6 +17,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 | 31 | **REFCAT directive adoption** | P2 | Low | Use sdqctl REFCAT for file attribution + snippets instead of RUN head/ELIDE pattern |
 | 32 | **Selective repo loading implementation** | P2 | Medium | Implement proposal from selective-repo-loading-proposal.md (40-60% token reduction) |
 | 33 | **Auto-replenish Ready Queue** | P3 | Low | Tool to scan domain backlogs and promote unblocked P1/P2 items to Ready Queue |
+| 34 | **AID controller conflict detection spec** | P1 | Low | Proposal for detecting colocated CGM/AID apps. See `aid-controller-conflict-detection-proposal.md` |
 | 1 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt ✅ (build ready, execution blocked - needs AAPS deps, deferred Phase 3) |
 | 2 | ~~sdqctl VERIFY .conv directive (Phase 2)~~ | ~~P3~~ | ~~Medium~~ | ✅ COMPLETE - VERIFY/VERIFY-TRACE/VERIFY-COVERAGE directives fully implemented in sdqctl |
 | 3 | ~~LSP-based claim verification (Phase 2+)~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `verify_refs.py --semantic` flag, symbol validation via lsp_query.py |
