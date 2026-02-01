@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 | **Open Items**: 3  
+> **Last Groomed**: 2026-02-01 | **Open Items**: 8  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -33,6 +33,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Prerequisites:** Swift 6.2.3 available ✅
 **Deliverable:** `conformance/runners/loop-runner.swift`
 **Source:** aid-algorithms.md #2
+**Blocker:** Requires macOS for iOS framework resolution
 
 ### 2. [P2] V4 API Integration Phase 2: Nocturne soft delete
 **Type:** Implementation | **Effort:** Medium
@@ -40,6 +41,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Add soft delete support to align with cgm-remote-monitor behavior
 **Source:** nightscout-api.md #25, Phase 2 item
 **Gap Reference:** GAP-SYNC-040
+**Blocker:** Requires changes to external nocturne repo
 
 ### 3. [P2] MongoDB Phase 3: Driver upgrade execution
 **Type:** Implementation | **Effort:** Medium
@@ -47,6 +49,38 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Prerequisites:** Phase 2 complete ✅ (no Write Result Translator needed)
 **Source:** mongodb-update-readiness-report.md Phase 3
 **Deliverable:** PR to cgm-remote-monitor with driver upgrade
+**Blocker:** Requires changes to external cgm-remote-monitor repo
+
+### 4. [P2] Identify high-value orphan artifacts
+**Type:** Analysis | **Effort:** Medium
+**Focus:** Review 369 orphaned traceability artifacts, identify high-value ones for linking
+**Source:** documentation-accuracy.md #38
+**Deliverable:** Prioritized list of orphans to link or archive
+
+### 5. [P2] Add trace links to key GAPs/REQs
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Add cross-references between related GAPs and REQs
+**Source:** documentation-accuracy.md #39
+**Deliverable:** Updated gaps.md and requirements.md with trace links
+
+### 6. [P2] Create traceability matrix for priority domains
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Build REQ↔GAP↔Assertion matrix for sync-identity and cgm domains
+**Source:** documentation-accuracy.md #40
+**Deliverable:** `traceability/domain-matrices/sync-identity-matrix.md`
+
+### 7. [P2] StateSpan V3 extension specification
+**Type:** Proposal | **Effort:** High
+**Focus:** Draft V3 API extension for StateSpan endpoints
+**Prerequisites:** StateSpan standardization proposal ✅
+**Source:** sync-identity.md #19
+**Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
+
+### 8. [P3] Archive or remove stale refs
+**Type:** Housekeeping | **Effort:** Low
+**Focus:** Clean up 29 broken refs in archive files
+**Source:** documentation-accuracy.md #35
+**Deliverable:** Fixed or removed stale references
 
 ---
 

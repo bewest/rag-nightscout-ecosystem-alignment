@@ -329,6 +329,7 @@ Per user request (2026-01-30): Research integrating StateSpan as a solution for 
 **Repos:** cgm-remote-monitor, nocturne  
 **Focus:** Draft V3 API extension for StateSpan endpoints  
 **Prerequisites:** Item #14 (StateSpan standardization proposal) ✅
+**Status:** 📤 **Ready Queue #7**
 
 **Deliverables:**
 - OpenAPI spec: `specs/openapi/aid-statespan-2025.yaml`
@@ -340,7 +341,6 @@ Per user request (2026-01-30): Research integrating StateSpan as a solution for 
 - What index strategy for MongoDB StateSpan queries?
 
 **Gap Coverage:** GAP-STATESPAN-001, GAP-STATESPAN-002
-**Status:** PROPOSED
 
 ### 20. [P2] StateSpan gap remediation mapping
 **Type:** Analysis | **Effort:** Medium  

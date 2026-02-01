@@ -374,7 +374,7 @@ Systematic fixes for verification failures. Source: `sdqctl verify all` output.
 |---|------|----------|-------|--------|
 | 33 | Triage broken refs by category | P2 | All | ✅ Done (29 archive, 3 examples) |
 | 34 | Fix active docs broken refs | P1 | docs/, mapping/ | ✅ Done (5 fixed, 360/392 valid) |
-| 35 | Archive or remove stale refs | P3 | Archive files | ⬜ Pending |
+| 35 | Archive or remove stale refs | P3 | Archive files | 📤 **Ready Queue #8** |
 
 ### Broken Links (52 broken)
 
@@ -387,9 +387,9 @@ Systematic fixes for verification failures. Source: `sdqctl verify all` output.
 
 | # | Item | Priority | Scope | Status |
 |---|------|----------|-------|--------|
-| 38 | Identify high-value orphan artifacts | P2 | traceability/ | ⬜ Pending |
-| 39 | Add trace links to key GAPs/REQs | P2 | gaps.md, requirements.md | ⬜ Pending |
-| 40 | Create traceability matrix for priority domains | P2 | sync-identity, cgm | ⬜ Pending |
+| 38 | Identify high-value orphan artifacts | P2 | traceability/ | 📤 **Ready Queue #4** |
+| 39 | Add trace links to key GAPs/REQs | P2 | gaps.md, requirements.md | 📤 **Ready Queue #5** |
+| 40 | Create traceability matrix for priority domains | P2 | sync-identity, cgm | 📤 **Ready Queue #6** |
 
 ### Terminology Consistency (5 deprecated, 734 capitalization)
 
