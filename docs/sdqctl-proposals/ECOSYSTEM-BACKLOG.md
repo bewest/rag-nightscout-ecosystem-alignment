@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 | **Open Items**: 6  
+> **Last Groomed**: 2026-02-01 | **Open Items**: 5  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -59,11 +59,6 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Add scenarios for uncovered REQs
 **Source:** 99 uncovered REQs from coverage analysis
 **Deliverable:** New YAML scenarios in conformance/
-
-### 6. [P3] Progress archive rotation
-**Type:** Housekeeping | **Effort:** Low
-**Focus:** Archive completed entries from progress.md
-**Deliverable:** progress-archive-2026-02-01.md
 
 ---
 
