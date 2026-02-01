@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 98) | **Open Items**: 5  
+> **Last Groomed**: 2026-02-01 (cycle 98) | **Open Items**: 6  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -64,6 +64,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** aid-algorithms-requirements.md (56 REQs)
 **Deliverable:** `traceability/domain-matrices/aid-algorithms-matrix.md`
 **Impact:** Identify assertion gaps in algorithm comparison domain
+
+### 6. [P2] Cross-controller deduplication assertions
+**Type:** Conformance | **Effort:** Medium
+**Focus:** Multi-controller conflict scenario assertions
+**Source:** sync-identity-matrix.md action items (GAP-SYNC-029, GAP-SYNC-030)
+**Deliverable:** `conformance/assertions/cross-controller-dedup.yaml`
+**Impact:** Address multi-controller coexistence gaps
 
 ---
 

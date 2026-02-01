@@ -27,6 +27,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Backlog Grooming (cycle 98) | P0 | ✅ Complete - Queue 5→6 items, cross-controller dedup added | 2026-02-01 |
 | Interop/Unit Assertions (cycle 98) | P3 | ✅ Complete - 22 assertions, 7 REQs covered, 80%→100% 🎉 | 2026-02-01 |
 | Backlog Grooming (cycle 97) | P0 | ✅ Complete - Queue 5→6 items, interop/unit assertions added | 2026-02-01 |
 | Remote Command Assertions (cycle 97) | P2 | ✅ Complete - 35 assertions, 11 REQs covered, 49%→80% | 2026-02-01 |
