@@ -27,6 +27,23 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### StateSpan V3 Extension OpenAPI Spec (2026-02-01)
+
+Created OpenAPI 3.0 specification for hypothetical StateSpan V3 extension.
+
+| Metric | Count |
+|--------|-------|
+| Endpoints | 6 |
+| Categories | 4 (Profile, Override, TempBasal, PumpMode) |
+| Schemas | 15 |
+| Gap references | 3 (GAP-V4-001, GAP-V4-002, GAP-SYNC-037) |
+
+**Deliverable**: `specs/openapi/aid-statespan-2025.yaml`
+
+**Note**: This is a reference specification only. Per Nocturne author preference, StateSpan should remain V4-only.
+
+---
+
 ### CGM Sources GAP Coverage Part 2 (2026-02-01)
 
 🎉 **FINAL MILESTONE: ALL 4 DOMAINS 100% GAP COVERAGE!**

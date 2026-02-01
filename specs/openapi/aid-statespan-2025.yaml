@@ -1,0 +1,568 @@
+# AID StateSpan V3 Extension API Specification
+#
+# This is a REFERENCE specification for a hypothetical V3 extension.
+# Per Nocturne author preference, StateSpan is V4-only in practice.
+#
+# See: specs/openapi/statespan-v3-extension.md for full context
+# See: specs/openapi/nocturne-v4-extension.yaml for V4 native spec
+
+openapi: 3.0.3
+info:
+  title: AID StateSpan V3 Extension
+  version: "2025.1.0"
+  description: |
+    OpenAPI specification for StateSpan as a V3 API extension.
+    
+    ## ⚠️ Important Context
+    
+    **Nocturne author preference**: StateSpan should remain V4-only.
+    
+    This specification documents a **hypothetical V3 extension** for:
+    1. cgm-remote-monitor maintainers evaluating future additions
+    2. AID app developers planning client implementations
+    3. API designers considering time-range state patterns
+    
+    **This is NOT an official recommendation or approved roadmap.**
+    
+    ## Concept
+    
+    StateSpans represent time-ranged system states (profiles, overrides,
+    temp basals, pump modes) with explicit start/end times, replacing the
+    implicit duration calculation required with treatments.
+    
+    ## Feature Detection
+    
+    Clients MUST check for StateSpan V3 support before use:
+    
+    ```http
+    GET /api/v3/state-spans/status
+    ```
+    
+    Returns 200 if available, 404 if not supported.
+    
+    ## Categories (V3 Subset)
+    
+    V3 extension supports 4 core categories:
+    - **Profile**: Active profile periods
+    - **Override**: Temp target/sensitivity overrides
+    - **TempBasal**: Temporary basal rate periods
+    - **PumpMode**: Automatic/Manual/Suspended mode
+    
+    V4 (Nocturne) adds: Sleep, Exercise, Illness, Travel, PumpConnectivity
+    
+    ## Related Specifications
+    
+    - V4 Native: `nocturne-v4-extension.yaml`
+    - Treatments: `aid-treatments-2025.yaml`
+    - Proposal: `statespan-v3-extension.md`
+    
+  contact:
+    name: AID Alignment Workspace
+  license:
+    name: AGPL-3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+
+servers:
+  - url: /api/v3
+    description: cgm-remote-monitor V3 API (hypothetical extension)
+
+tags:
+  - name: StateSpans
+    description: Time-ranged state tracking
+  - name: Status
+    description: Feature detection and health
+
+paths:
+  /state-spans/status:
+    get:
+      summary: StateSpan V3 Feature Detection
+      description: |
+        Check if the StateSpan V3 extension is available on this server.
+        
+        Clients MUST call this endpoint before using other state-span
+        endpoints to ensure backward compatibility with servers that
+        do not support the extension.
+      tags: [Status]
+      operationId: getStateSpanStatus
+      responses:
+        '200':
+          description: StateSpan V3 extension is available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateSpanStatus'
+              example:
+                supported: true
+                version: "3.1.0"
+                categories:
+                  - Profile
+                  - Override
+                  - TempBasal
+                  - PumpMode
+        '404':
+          description: StateSpan V3 extension not available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 404
+                  result:
+                    type: string
+                    example: "StateSpan extension not enabled"
+
+  /state-spans:
+    get:
+      summary: Query StateSpans
+      description: |
+        Query time-ranged state spans with optional filtering by category
+        and time range.
+        
+        **x-aid-gap**: GAP-V4-001 (StateSpan API not standardized)
+      tags: [StateSpans]
+      operationId: queryStateSpans
+      x-aid-gap: GAP-V4-001
+      x-aid-controllers:
+        - name: cgm-remote-monitor
+          support: hypothetical
+          notes: V3 extension not implemented
+        - name: Nocturne
+          support: native
+          notes: Use V4 endpoints instead
+      parameters:
+        - $ref: '#/components/parameters/categoryFilter'
+        - $ref: '#/components/parameters/fromMills'
+        - $ref: '#/components/parameters/toMills'
+        - $ref: '#/components/parameters/activeFilter'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: List of state spans
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateSpanResponse'
+
+    post:
+      summary: Create StateSpan
+      description: |
+        Create a new state span. The server will automatically end
+        any active span in the same category if appropriate.
+      tags: [StateSpans]
+      operationId: createStateSpan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StateSpanCreate'
+      responses:
+        '201':
+          description: StateSpan created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateSpanCreateResponse'
+        '409':
+          description: Conflict (duplicate identifier)
+
+  /state-spans/active:
+    get:
+      summary: Get Currently Active Spans
+      description: |
+        Query state spans that are currently active (endMills is null
+        or in the future).
+        
+        **x-aid-gap**: GAP-V4-002 (Profile history not queryable)
+      tags: [StateSpans]
+      operationId: getActiveStateSpans
+      x-aid-gap: GAP-V4-002
+      parameters:
+        - $ref: '#/components/parameters/categoryFilter'
+      responses:
+        '200':
+          description: List of active state spans
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateSpanResponse'
+
+  /state-spans/{identifier}:
+    get:
+      summary: Get StateSpan by ID
+      description: Retrieve a single state span by its identifier.
+      tags: [StateSpans]
+      operationId: getStateSpan
+      parameters:
+        - $ref: '#/components/parameters/identifier'
+      responses:
+        '200':
+          description: StateSpan details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateSpanSingleResponse'
+        '404':
+          description: StateSpan not found
+
+    put:
+      summary: Update StateSpan
+      description: |
+        Update an existing state span. Primarily used for ending
+        active spans by setting endMills.
+      tags: [StateSpans]
+      operationId: updateStateSpan
+      parameters:
+        - $ref: '#/components/parameters/identifier'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StateSpanUpdate'
+      responses:
+        '200':
+          description: StateSpan updated
+        '404':
+          description: StateSpan not found
+
+    delete:
+      summary: Delete StateSpan
+      description: |
+        Delete a state span. Uses soft delete by default (sets
+        isValid=false) to maintain audit trail.
+      tags: [StateSpans]
+      operationId: deleteStateSpan
+      parameters:
+        - $ref: '#/components/parameters/identifier'
+        - name: permanent
+          in: query
+          description: Permanently delete instead of soft delete
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '204':
+          description: StateSpan deleted
+        '404':
+          description: StateSpan not found
+
+components:
+  parameters:
+    identifier:
+      name: identifier
+      in: path
+      required: true
+      description: StateSpan unique identifier (UUID)
+      schema:
+        type: string
+        format: uuid
+
+    categoryFilter:
+      name: category
+      in: query
+      description: Filter by category
+      schema:
+        $ref: '#/components/schemas/StateSpanCategory'
+
+    fromMills:
+      name: from
+      in: query
+      description: Start of time range (epoch milliseconds)
+      schema:
+        type: integer
+        format: int64
+
+    toMills:
+      name: to
+      in: query
+      description: End of time range (epoch milliseconds)
+      schema:
+        type: integer
+        format: int64
+
+    activeFilter:
+      name: active
+      in: query
+      description: Only return currently active spans
+      schema:
+        type: boolean
+
+    limit:
+      name: limit
+      in: query
+      description: Maximum number of results
+      schema:
+        type: integer
+        default: 100
+        maximum: 1000
+
+  schemas:
+    StateSpanStatus:
+      type: object
+      properties:
+        supported:
+          type: boolean
+          description: Whether StateSpan V3 extension is available
+        version:
+          type: string
+          description: Extension version
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/StateSpanCategory'
+          description: Supported categories
+
+    StateSpanCategory:
+      type: string
+      enum:
+        - Profile
+        - Override
+        - TempBasal
+        - PumpMode
+      description: |
+        StateSpan category (V3 subset):
+        - **Profile**: Active profile periods
+        - **Override**: Temp target/sensitivity overrides
+        - **TempBasal**: Temporary basal rate periods
+        - **PumpMode**: Automatic/Manual/Suspended mode
+        
+        Note: V4 (Nocturne) includes additional categories:
+        Sleep, Exercise, Illness, Travel, PumpConnectivity
+
+    StateSpan:
+      type: object
+      required:
+        - category
+        - state
+        - startMills
+        - source
+      properties:
+        identifier:
+          type: string
+          format: uuid
+          description: Server-assigned unique identifier
+          x-aid-req: REQ-SYNC-001
+        category:
+          $ref: '#/components/schemas/StateSpanCategory'
+        state:
+          type: string
+          description: |
+            State value within category. Category-specific:
+            - Profile: Profile name (e.g., "Weekday")
+            - Override: Override preset name or "Custom"
+            - TempBasal: "Active" or rate description
+            - PumpMode: "Automatic", "Manual", "Suspended"
+        startMills:
+          type: integer
+          format: int64
+          description: Span start time (epoch milliseconds, inclusive)
+          x-aid-req: REQ-SYNC-010
+        endMills:
+          type: integer
+          format: int64
+          nullable: true
+          description: |
+            Span end time (epoch milliseconds, exclusive).
+            Null indicates span is currently active.
+        source:
+          type: string
+          description: Data source identifier (Loop, AAPS, Trio, xDrip+)
+          x-aid-req: REQ-SYNC-002
+        metadata:
+          type: object
+          additionalProperties: true
+          description: |
+            Category-specific metadata. See category schemas for details.
+        syncIdentifier:
+          type: string
+          description: Client-provided deduplication identifier
+          x-aid-req: REQ-SYNC-020
+        srvCreated:
+          type: integer
+          format: int64
+          description: Server creation timestamp (epoch ms)
+        srvModified:
+          type: integer
+          format: int64
+          description: Server modification timestamp (epoch ms)
+        isValid:
+          type: boolean
+          default: true
+          description: Soft delete flag
+
+    ProfileMetadata:
+      type: object
+      description: Metadata for Profile category spans
+      properties:
+        profileName:
+          type: string
+          description: Name of the active profile
+        percentage:
+          type: integer
+          minimum: 1
+          maximum: 200
+          default: 100
+          description: Profile percentage adjustment (AAPS)
+          x-aid-gap: GAP-SYNC-037
+        timeshift:
+          type: integer
+          description: Profile timeshift in hours (AAPS)
+          x-aid-gap: GAP-NOCTURNE-005
+        originalTreatmentId:
+          type: string
+          description: Reference to source Profile Switch treatment
+
+    OverrideMetadata:
+      type: object
+      description: Metadata for Override category spans
+      properties:
+        insulinNeedsScaleFactor:
+          type: number
+          minimum: 0.1
+          maximum: 2.0
+          description: Sensitivity/basal multiplier (1.0 = no change)
+          x-aid-req: REQ-OVERRIDE-003
+        targetTop:
+          type: number
+          description: High end of target range (mg/dL)
+        targetBottom:
+          type: number
+          description: Low end of target range (mg/dL)
+        reason:
+          type: string
+          description: User-provided reason (Exercise, Pre-Meal, etc.)
+        originalTreatmentId:
+          type: string
+          description: Reference to source Temporary Override treatment
+
+    TempBasalMetadata:
+      type: object
+      description: Metadata for TempBasal category spans
+      properties:
+        rate:
+          type: number
+          description: Absolute basal rate (U/hr)
+        percent:
+          type: integer
+          description: Percentage of scheduled basal
+        durationMins:
+          type: integer
+          description: Scheduled duration in minutes
+        isAbsolute:
+          type: boolean
+          description: Whether rate is absolute or percentage-based
+
+    PumpModeMetadata:
+      type: object
+      description: Metadata for PumpMode category spans
+      properties:
+        mode:
+          type: string
+          enum:
+            - Automatic
+            - Manual
+            - Suspended
+            - OpenLoop
+          description: Pump operating mode
+        controller:
+          type: string
+          description: AID controller name (Loop, AAPS, Trio)
+        reason:
+          type: string
+          description: Reason for mode change
+
+    StateSpanCreate:
+      type: object
+      required:
+        - category
+        - state
+        - startMills
+        - source
+      properties:
+        category:
+          $ref: '#/components/schemas/StateSpanCategory'
+        state:
+          type: string
+        startMills:
+          type: integer
+          format: int64
+        endMills:
+          type: integer
+          format: int64
+          nullable: true
+        source:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+        syncIdentifier:
+          type: string
+          description: Client-provided deduplication key
+
+    StateSpanUpdate:
+      type: object
+      properties:
+        endMills:
+          type: integer
+          format: int64
+          description: Set end time to close an active span
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Update metadata fields
+
+    StateSpanResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/StateSpan'
+
+    StateSpanSingleResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        result:
+          $ref: '#/components/schemas/StateSpan'
+
+    StateSpanCreateResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        result:
+          type: object
+          properties:
+            identifier:
+              type: string
+              format: uuid
+            isDeduplication:
+              type: boolean
+              description: True if matched existing record
+
+    # Treatment Translation Reference
+    TreatmentTranslation:
+      type: object
+      description: |
+        Reference: How treatment eventTypes map to StateSpan categories.
+        This is for documentation only, not an API schema.
+        
+        | Treatment eventType | StateSpan Category | Notes |
+        |---------------------|-------------------|-------|
+        | Profile Switch | Profile | Create span, end previous |
+        | Temporary Override | Override | Create span with duration |
+        | Temporary Override Cancel | Override | End active override span |
+        | Temp Basal | TempBasal | Create span with duration |
+        | Temporary Target | Override | AAPS pattern |
+        | OpenAPS Offline | PumpMode | Create span, state=Manual |
+      x-aid-gap: GAP-V4-001

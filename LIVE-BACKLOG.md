@@ -27,6 +27,8 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| StateSpan V3 OpenAPI Spec (cycle 123) | P2 | ✅ Complete - 6 endpoints, 4 categories, reference spec | 2026-02-01 |
+| GAP Milestone Checkpoint (cycle 122) | P2 | ✅ Complete - checkpoint 006 created, session documented | 2026-02-01 |
 | Push to Origin (cycle 121) | P1 | ✅ Complete - 15 commits synced, 181 objects, 61.55 KiB | 2026-02-01 |
 | 🎉🎉🎉 CGM Sources GAP Part 2 (cycle 120) | P0 | ✅ Complete - 25 assertions, 25 GAPs, **ALL 4 DOMAINS 100% REQ + GAP** | 2026-02-01 |
 | CGM Sources GAP Coverage Part 1 (cycle 119) | P3 | ✅ Complete - 21 assertions, 20 GAPs, CGM GAP 19%→58% | 2026-02-01 |

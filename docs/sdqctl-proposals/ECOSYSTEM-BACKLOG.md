@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 114) | **Open Items**: 4 (1 unblocked: StateSpan V3)  
+> **Last Groomed**: 2026-02-01 (cycle 123) | **Open Items**: 3 (all blocked)  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -51,12 +51,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Deliverable:** PR to cgm-remote-monitor with driver upgrade
 **Blocker:** Requires changes to external cgm-remote-monitor repo
 
-### 4. [P2] StateSpan V3 extension specification
+### 4. ~~[P2] StateSpan V3 extension specification~~ ✅ COMPLETE
 **Type:** Proposal | **Effort:** High
 **Focus:** Draft V3 API extension for StateSpan endpoints
 **Prerequisites:** StateSpan standardization proposal ✅
 **Source:** sync-identity.md #19
 **Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
+**Status:** ✅ COMPLETE 2026-02-01 (cycle 123)
 
 ---
 
@@ -64,6 +65,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **StateSpan V3 OpenAPI Spec** | `specs/openapi/aid-statespan-2025.yaml` | 6 endpoints, 4 categories, V3 extension (reference only per author preference) |
 | **Algorithm GAP Coverage** | `conformance/assertions/algorithm-gaps.yaml` | 19 assertions, 16 GAPs covered, GAP coverage 59%→83% |
 | **🎉🎉🎉 Algorithm Display Assertions** | `conformance/assertions/algorithm-display.yaml` | 20 assertions, 6 REQs, **ALGORITHM DOMAIN 100% COMPLETE** |
 | **Duplicate REQ ID Fix** | `aid-algorithms-requirements.md` | 6 duplicates → unique IDs (REQ-CARB-007/008/009, REQ-INS-006/007/008) |
