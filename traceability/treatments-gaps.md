@@ -188,6 +188,8 @@ enum EventType: String, JSON {
 - [Override Comparison](../docs/10-domain/override-profile-switch-comparison.md)
 - GAP-001, GAP-002
 
+**Related Requirements**: REQ-OVRD-001, REQ-OVRD-004, REQ-DS-003
+
 ---
 
 ---
@@ -227,6 +229,8 @@ return NightscoutExercise(
 **Related**:
 - [Override Comparison](../docs/10-domain/override-profile-switch-comparison.md)
 - GAP-OVERRIDE-004
+
+**Related Requirements**: REQ-OVRD-002, REQ-PROF-003
 
 ---
 
@@ -491,6 +495,8 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 **Related**:
 - [Remote Bolus Comparison](../docs/10-domain/remote-bolus-comparison.md)
 - GAP-REMOTE-004
+
+**Related Requirements**: REQ-FOLLOW-002, REQ-REMOTE-001, REQ-LOOPCAREGIVER-003
 
 ---
 

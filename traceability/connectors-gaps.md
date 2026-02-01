@@ -909,6 +909,8 @@ osx_image: xcode12.4
 
 **Status**: ⚠️ Partially mitigated (tree-sitter provides syntax parsing)
 
+**Related Requirements**: REQ-VERIFY-001, REQ-TEST-002
+
 ---
 
 ### GAP-VERIFY-002: No Cross-Language Algorithm Validation
@@ -966,6 +968,8 @@ osx_image: xcode12.4
 
 **Status**: Open
 
+**Related Requirements**: REQ-VERIFY-003, REQ-ALG-002
+
 ---
 
 ### GAP-VERIFY-004: No Unified Accuracy Dashboard
@@ -992,6 +996,8 @@ osx_image: xcode12.4
 **Source**: `docs/10-domain/cross-platform-testing-research.md`
 
 **Status**: ✅ Addressed (2026-01-31) - `tools/accuracy_dashboard.py` implemented
+
+**Related Requirements**: REQ-VERIFY-004, REQ-VERIFY-005
 
 ---
 

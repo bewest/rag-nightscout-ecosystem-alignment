@@ -655,6 +655,8 @@ wercker.yml  # Defunct service
 
 **Status**: Under discussion
 
+**Related Requirements**: REQ-LIBRE-004
+
 ---
 
 ---
@@ -682,6 +684,8 @@ wercker.yml  # Defunct service
 
 **Status**: Documentation needed
 
+**Related Requirements**: REQ-LIBRE-001
+
 ---
 
 ---
@@ -706,6 +710,8 @@ wercker.yml  # Defunct service
 
 **Status**: Under discussion
 
+**Related Requirements**: REQ-LIBRE-002, REQ-LIBRE-006
+
 ---
 
 ---
@@ -727,6 +733,8 @@ wercker.yml  # Defunct service
 3. Track in separate sensor metadata collection
 
 **Status**: Under discussion
+
+**Related Requirements**: REQ-INTEROP-003
 
 ---
 
@@ -931,6 +939,8 @@ wercker.yml  # Defunct service
 
 **Source**: `docs/10-domain/cgm-session-handling-deep-dive.md`
 
+**Related Requirements**: REQ-SPEC-002, REQ-PLUGIN-001
+
 ---
 
 ### GAP-SESSION-006: DiaBLE Has No Session Upload Capability
@@ -948,6 +958,8 @@ wercker.yml  # Defunct service
 
 **Source**: `docs/10-domain/cgm-session-handling-deep-dive.md`
 
+**Related Requirements**: REQ-SYNC-001, REQ-BRIDGE-003
+
 ---
 
 ### GAP-SESSION-007: Calibration State Not Synchronized
@@ -964,6 +976,8 @@ wercker.yml  # Defunct service
 **Remediation**: Add calibration state to devicestatus or create dedicated calibration event type with state details.
 
 **Source**: `docs/10-domain/cgm-session-handling-deep-dive.md`
+
+**Related Requirements**: REQ-ERR-002, REQ-PLUGIN-001
 
 ---
 

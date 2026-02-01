@@ -1502,6 +1502,8 @@ _None yet._
 
 **Remediation:** Loop could add optional `basaliob`/`bolusiob` fields.
 
+**Related Requirements**: REQ-DS-002
+
 ### GAP-DS-007: No Override Status in oref0
 
 **Description:** Loop has `status.override` for temporary target overrides, but oref0 uses different mechanism (profile switches).
@@ -1512,6 +1514,8 @@ _None yet._
 
 **Remediation:** AAPS could add equivalent override reporting to devicestatus.
 
+**Related Requirements**: REQ-DS-003
+
 ### GAP-DS-008: Missing eventualBG in Loop
 
 **Description:** oref0 explicitly reports `eventualBG` prediction endpoint, Loop does not include this field.
@@ -1521,6 +1525,8 @@ _None yet._
 **Impact:** Loop users don't see eventual BG prediction in Nightscout displays.
 
 **Remediation:** Loop could add `eventualBG` field to match oref0 format.
+
+**Related Requirements**: REQ-DS-004
 
 ---
 
