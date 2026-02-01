@@ -12,6 +12,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Gap Consolidation Audit (2026-02-01)
+
+Housekeeping audit of gap files for duplicates and accuracy.
+
+| Metric | Value |
+|--------|-------|
+| Total gaps | 366 |
+| Unique IDs | 335 |
+| Duplicate ID groups | 10 |
+| Freshness: Likely open | 3 |
+| Freshness: Needs review | 2 |
+
+**Duplicates found**: GAP-BLE-001..005, GAP-BRIDGE-001/002, GAP-OREF-001/002/003
+
+**Recommendation**: Renumber cgm-sources BLE/BRIDGE gaps to GAP-CGM-BLE-* to avoid collision
+
+---
+
 ### Domain Backlog Archival (2026-02-01)
 
 Housekeeping cycle to archive completed domain backlog items.
