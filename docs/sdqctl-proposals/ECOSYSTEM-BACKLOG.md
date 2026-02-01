@@ -64,6 +64,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Algorithm GAP Coverage** | `conformance/assertions/algorithm-gaps.yaml` | 19 assertions, 16 GAPs covered, GAP coverage 59%→83% |
 | **🎉🎉🎉 Algorithm Display Assertions** | `conformance/assertions/algorithm-display.yaml` | 20 assertions, 6 REQs, **ALGORITHM DOMAIN 100% COMPLETE** |
 | **Duplicate REQ ID Fix** | `aid-algorithms-requirements.md` | 6 duplicates → unique IDs (REQ-CARB-007/008/009, REQ-INS-006/007/008) |
 | **🎉🎉 WebSocket Documentation Assertions** | `conformance/assertions/websocket-docs.yaml` | 14 assertions, 2 REQs, **SYNC-IDENTITY DOMAIN 100% COMPLETE** |

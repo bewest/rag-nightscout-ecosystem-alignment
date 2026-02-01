@@ -1,0 +1,313 @@
+# Algorithm Gap Coverage Assertions
+# Covers uncovered GAPs in the algorithm domain to improve traceability
+# Focus on cross-system compatibility and documentation gaps
+
+scenario: algorithm-gap-coverage
+version: 1
+
+requirements:
+  - REQ-ALG-001  # Cross-Project Test Vector Format
+  - REQ-ALG-002  # Semantic Equivalence Assertions
+  - REQ-ALG-003  # Safety Limit Validation
+  - REQ-ALG-004  # Baseline Regression Detection
+  - REQ-PRED-001 # Prediction Structure Documentation
+  - REQ-PRED-002 # Prediction Curve Labeling
+  - REQ-PRED-003 # Multi-Curve Display Option
+  - REQ-PROF-001 # Profile Time Format
+  - REQ-PROF-002 # Safety Limits in Profile
+
+related_gaps:
+  - GAP-ALG-001   # No cross-project test vectors
+  - GAP-ALG-002   # oref0 vs AAPS behavioral drift
+  - GAP-ALG-003   # Loop algorithm incomparable
+  - GAP-ALG-009   # DynamicISF not in oref0
+  - GAP-ALG-010   # AutoISF not in oref0
+  - GAP-ALG-011   # LGS duration differences
+  - GAP-ALG-013   # Loop has no autosens
+  - GAP-ALG-014   # Loop prediction is single curve
+  - GAP-ALG-015   # Loop does not expose UAM
+  - GAP-ALG-016   # Different IOB/COB timing
+  - GAP-PRED-001  # Prediction truncation undocumented
+  - GAP-PRED-002  # Loop single prediction incompatible
+  - GAP-PRED-003  # Prediction interval not standardized
+  - GAP-PRED-004  # No prediction confidence
+  - GAP-PROF-001  # Time format incompatibility
+  - GAP-PROF-002  # Missing safety limits
+
+assertions:
+  # ============================================
+  # GAP-ALG-001: No Cross-Project Test Vectors
+  # ============================================
+  
+  - id: test-vector-format-defined
+    description: "Cross-project test vector format is defined"
+    type: schema
+    requirement: REQ-ALG-001
+    gap: GAP-ALG-001
+    target: conformance.test_vectors.format
+    expected:
+      format: "JSON with standardized input/output schema"
+      inputs: "glucose history, insulin history, carb history, profile"
+      outputs: "IOB, COB, predictions, dosing recommendation"
+    verification:
+      - Test vector schema defined
+      - Sample vectors for each system
+    status: gap_identified
+    remediation: "Create conformance/test-vectors/ directory with standard format"
+
+  - id: test-vector-baseline-exists
+    description: "Baseline test vectors exist for regression detection"
+    type: behavior
+    requirement: REQ-ALG-004
+    gap: GAP-ALG-001
+    target: conformance.test_vectors.baseline
+    expected:
+      baseline: "Known-good outputs for standard scenarios"
+    verification:
+      - Baseline vectors captured from each system
+      - Version-tagged for regression comparison
+    status: gap_identified
+
+  # ============================================
+  # GAP-ALG-002: oref0 vs AAPS Behavioral Drift
+  # ============================================
+  
+  - id: oref0-aaps-iob-match
+    description: "AAPS IOB calculation matches oref0 reference"
+    type: behavior
+    requirement: REQ-ALG-004
+    gap: GAP-ALG-002
+    target: aaps.iob.calculation
+    expected:
+      match: "Within 0.01U of oref0 for same inputs"
+    verification:
+      - Compare AAPS and oref0 IOB for identical scenarios
+      - Document any divergence
+    status: needs_verification
+
+  - id: oref0-aaps-smb-match
+    description: "AAPS SMB calculation matches oref0 reference"
+    type: behavior
+    gap: GAP-ALG-002
+    target: aaps.smb.calculation
+    expected:
+      match: "Same SMB decision for same inputs"
+    verification:
+      - Compare AAPS and oref0 SMB decisions
+      - Test edge cases (high IOB, UAM detection)
+    status: needs_verification
+
+  # ============================================
+  # GAP-ALG-003: Loop Algorithm Incomparable
+  # ============================================
+  
+  - id: loop-oref-iob-semantics
+    description: "Loop vs oref0 IOB semantic differences documented"
+    type: documentation
+    requirement: REQ-ALG-002
+    gap: GAP-ALG-003
+    target: docs.algorithm_comparison.iob
+    expected:
+      documented: "IOB calculation differences explained"
+    verification:
+      - Loop uses different insulin activity curves
+      - Different DIA handling
+    status: gap_identified
+    remediation: "Document in algorithm comparison deep dive"
+
+  - id: loop-oref-prediction-semantics
+    description: "Loop vs oref0 prediction semantic differences documented"
+    type: documentation
+    gap: GAP-ALG-003
+    target: docs.algorithm_comparison.predictions
+    expected:
+      loop: "Single combined prediction curve"
+      oref: "4 separate curves (IOB, COB, UAM, ZT)"
+    verification:
+      - Check prediction structure documentation
+    status: verified
+
+  # ============================================
+  # GAP-ALG-009/010: DynamicISF/AutoISF Not in oref0
+  # ============================================
+  
+  - id: dynamicisf-aaps-only
+    description: "DynamicISF is AAPS-specific, not in base oref0"
+    type: documentation
+    gap: GAP-ALG-009
+    target: docs.sensitivity.dynamicisf
+    expected:
+      availability: "AAPS only (not oref0 or Trio)"
+    verification:
+      - Document DynamicISF as AAPS extension
+      - Note not portable to other systems
+    status: verified
+
+  - id: autoisf-aaps-only
+    description: "AutoISF is AAPS-specific, not in base oref0"
+    type: documentation
+    gap: GAP-ALG-010
+    target: docs.sensitivity.autoisf
+    expected:
+      availability: "AAPS only (fork feature)"
+    verification:
+      - Document AutoISF as AAPS extension
+    status: verified
+
+  # ============================================
+  # GAP-ALG-011: LGS Duration Differences
+  # ============================================
+  
+  - id: lgs-duration-loop
+    description: "Loop LGS duration behavior documented"
+    type: documentation
+    gap: GAP-ALG-011
+    target: loop.degraded.lgs_duration
+    expected:
+      behavior: "Loop suspends until glucose rises"
+    verification:
+      - Check Loop suspend threshold behavior
+    status: needs_verification
+
+  - id: lgs-duration-oref
+    description: "oref0 LGS duration behavior documented"
+    type: documentation
+    gap: GAP-ALG-011
+    target: oref0.degraded.lgs_duration
+    expected:
+      behavior: "oref0 uses suspend/resume with configurable duration"
+    verification:
+      - Check oref0 suspend settings
+    status: needs_verification
+
+  # ============================================
+  # GAP-ALG-013: Loop Has No Autosens
+  # ============================================
+  
+  - id: loop-no-autosens
+    description: "Loop does not implement autosens"
+    type: documentation
+    gap: GAP-ALG-013
+    target: loop.sensitivity.autosens
+    expected:
+      availability: "Not available in Loop"
+      alternative: "Retrospective Correction provides similar function"
+    verification:
+      - Confirm Loop uses Retrospective Correction instead
+    status: verified
+
+  # ============================================
+  # GAP-ALG-014/015: Loop Single Curve Predictions
+  # ============================================
+  
+  - id: loop-single-prediction-curve
+    description: "Loop uses single combined prediction curve"
+    type: documentation
+    gap: GAP-ALG-014
+    target: loop.predictions.structure
+    expected:
+      curves: 1
+      type: "Combined prediction"
+    verification:
+      - Check Loop prediction output structure
+    status: verified
+
+  - id: loop-no-uam-curve
+    description: "Loop does not expose separate UAM curve"
+    type: documentation
+    gap: GAP-ALG-015
+    target: loop.predictions.uam
+    expected:
+      availability: "Not available as separate curve"
+    verification:
+      - UAM is not a concept in Loop algorithm
+    status: verified
+
+  # ============================================
+  # GAP-ALG-016: Different IOB/COB Timing
+  # ============================================
+  
+  - id: iob-cob-timing-differences
+    description: "IOB/COB calculation timing differences documented"
+    type: documentation
+    gap: GAP-ALG-016
+    target: docs.algorithm_comparison.timing
+    expected:
+      loop: "Calculates at dose delivery time"
+      oref: "Calculates at 5-minute intervals"
+    verification:
+      - Document timing differences
+    status: gap_identified
+
+  # ============================================
+  # GAP-PRED-001/002/003/004: Prediction Gaps
+  # ============================================
+  
+  - id: prediction-truncation-documented
+    description: "Prediction array truncation rules documented"
+    type: documentation
+    requirement: REQ-PRED-001
+    gap: GAP-PRED-001
+    target: nightscout.devicestatus.predictions
+    expected:
+      truncation: "Documented max length and interval"
+    verification:
+      - Check if prediction array limits documented
+    status: gap_identified
+
+  - id: prediction-interval-standard
+    description: "Prediction interval standardized across systems"
+    type: schema
+    gap: GAP-PRED-003
+    target: predictions.interval
+    expected:
+      interval: "5 minutes (standard)"
+    verification:
+      - Loop, oref0, AAPS all use 5-minute intervals
+    status: verified
+
+  - id: prediction-confidence-missing
+    description: "No prediction confidence/uncertainty in current schema"
+    type: documentation
+    gap: GAP-PRED-004
+    target: predictions.confidence
+    expected:
+      availability: "Not available in any system"
+    verification:
+      - Confirm no system provides prediction confidence
+    status: verified
+
+  # ============================================
+  # GAP-PROF-001/002: Profile Format Gaps
+  # ============================================
+  
+  - id: profile-time-format-incompatible
+    description: "Profile time format incompatibility documented"
+    type: documentation
+    requirement: REQ-PROF-001
+    gap: GAP-PROF-001
+    target: profile.time_format
+    expected:
+      nightscout: "HH:MM format (string)"
+      loop: "Seconds from midnight (integer)"
+      conversion: "Required for interop"
+    verification:
+      - Document format differences
+      - Provide conversion guidance
+    status: gap_identified
+
+  - id: safety-limits-missing-nightscout
+    description: "Safety limits not in Nightscout profile schema"
+    type: schema
+    requirement: REQ-PROF-002
+    gap: GAP-PROF-002
+    target: nightscout.profile.safety_limits
+    expected:
+      missing:
+        - maxIOB
+        - maxBasal
+        - maxBolus
+    verification:
+      - Check Nightscout profile schema for limits
+    status: gap_identified
+    remediation: "Add safety limits to profile spec extension"

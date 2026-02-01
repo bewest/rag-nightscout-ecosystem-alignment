@@ -27,6 +27,22 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Algorithm GAP Coverage Expansion (2026-02-01)
+
+Created assertions for 16 uncovered algorithm GAPs to improve traceability.
+
+| Metric | Count |
+|--------|-------|
+| Gaps addressed | 16 |
+| Assertions created | 19 |
+
+**Deliverable**: `conformance/assertions/algorithm-gaps.yaml`
+
+**GAPs Covered**:
+- GAP-ALG-001-003, 009-016 (algorithm core)
+- GAP-PRED-001, 003, 004 (predictions)
+- GAP-PROF-001, 002 (profiles)
+
 ### 🎉 Algorithm Display Assertions (2026-02-01)
 
 Created conformance assertions for display/config requirements - **ALGORITHM DOMAIN NOW 100%!**

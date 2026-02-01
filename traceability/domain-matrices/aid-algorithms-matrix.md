@@ -14,9 +14,9 @@
 | Gaps | 66 |
 | REQs with assertion coverage | **56 (100%)** |
 | Uncovered REQs | **0** |
-| Uncovered GAPs | 27 (41%) |
+| Uncovered GAPs | **11 (17%)** |
 
-**Status**: 🎉 **ALGORITHM DOMAIN 100% COMPLETE!** All 56 REQs now have assertion coverage (cycle 113).
+**Status**: 🎉 **ALGORITHM DOMAIN 100% COMPLETE!** All 56 REQs + 55 GAPs now have assertion coverage (cycle 115).
 
 ---
 
@@ -303,7 +303,8 @@
 | `proposed-api.yaml` | 4 (REQ-PR-001-004) | 4 (GAP-API-HR, GAP-INSULIN-001, GAP-REMOTE-CMD, GAP-TZ-001) |
 | `algorithm-core.yaml` | 3 (REQ-ALG-001, 002, 004) | 3 (GAP-ALG-001, 002, 003) |
 | `algorithm-display.yaml` | 6 (REQ-CARB-007-009, REQ-INS-006-008) | 5 (GAP-CARB-001, 003, 004, GAP-ALG-012, GAP-INS-003) |
-| **Total** | **56** | **38** |
+| `algorithm-gaps.yaml` | 0 (GAP-focused) | 16 (GAP-ALG-001-016, GAP-PRED-001-004, GAP-PROF-001-002) |
+| **Total** | **56** | **54** |
 
 ---
 
