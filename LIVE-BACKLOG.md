@@ -27,6 +27,8 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| StateSpan V3 Extension Specification | P3 | ✅ Complete - `statespan-v3-extension.md`, 4 categories, reference only | 2026-02-01 |
+| Phase 4 backlog grooming (cycle 73) | P0 | ✅ Complete (Ready Queue 3→2, spec complete) | 2026-02-01 |
 | MongoDB Phase 2: Storage Layer Analysis | P2 | ✅ Complete - `mongodb-storage-layer-analysis.md`, HIGH compatibility, ready for Phase 3 | 2026-02-01 |
 | Phase 4 backlog grooming (cycle 72) | P0 | ✅ Complete (Ready Queue 4→3, no new gaps needed) | 2026-02-01 |
 | cgm-remote-monitor V4 Adoption Proposal | P2 | ✅ Complete - `cgm-remote-monitor-v4-adoption-proposal.md`, 4 gaps, 7 features | 2026-02-01 |
