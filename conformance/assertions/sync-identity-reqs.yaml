@@ -1,0 +1,285 @@
+# Assertions for Sync-Identity Uncovered Requirements
+# Tests sync-identity requirements not covered by sync-deduplication.yaml
+# Targets 47%→70%+ coverage for sync-identity domain
+
+scenario: sync-identity-uncovered
+version: 1
+
+# Link to requirements in traceability/sync-identity-requirements.md
+requirements:
+  - REQ-SYNC-001  # Document WebSocket API
+  - REQ-SYNC-002  # Consistent Sync Identity Across API Versions
+  - REQ-SYNC-003  # Sync Status Response
+  - REQ-SYNC-010  # Sync Identity Mapping
+  - REQ-SYNC-051  # Profile Change Visibility
+  - REQ-SYNC-052  # Percentage Handling
+  - REQ-SYNC-053  # Profile Deduplication
+  - REQ-SYNC-054  # ProfileSwitch Percentage Application
+  - REQ-SYNC-055  # ProfileSwitch Timeshift Application
+  - REQ-SYNC-056  # ProfileJson Embedding Storage
+  - REQ-SYNC-057  # Profile Effective Values API
+  - REQ-SYNC-058  # ProfileSwitch Metadata in Profile Response
+  - REQ-SYNC-059  # Profile Deduplication Consistency
+  - REQ-SYNC-060  # Profile srvModified Support
+  - REQ-SYNC-061  # Profile Soft Delete
+
+related_gaps:
+  - GAP-SYNC-009  # V1 API lacks identifier field
+  - GAP-SYNC-035  # Profile switch visibility
+  - GAP-SYNC-036  # Profile deduplication
+  - GAP-SYNC-037  # Percentage handling
+  - GAP-SYNC-042  # Sync identity mapping
+  - GAP-API-006   # WebSocket documentation
+
+assertions:
+  # ============================================
+  # WebSocket API Documentation (REQ-SYNC-001)
+  # ============================================
+  
+  - id: websocket-events-documented
+    description: "All Socket.IO events are documented with payload schemas"
+    type: state
+    requirement: REQ-SYNC-001
+    target: spec.websocket.events
+    expected: complete event catalog
+    verification:
+      - dataUpdate event documented with payload
+      - authorize event documented
+      - Error events documented
+
+  - id: websocket-auth-flow-documented
+    description: "WebSocket authentication flow is documented"
+    type: state
+    requirement: REQ-SYNC-001
+    target: spec.websocket.authentication
+    expected: step-by-step auth flow
+    verification:
+      - Token-based auth documented
+      - Role requirements specified
+      - Error handling documented
+
+  # ============================================
+  # Consistent Sync Identity (REQ-SYNC-002)
+  # ============================================
+
+  - id: v1-v3-identifier-consistency
+    description: "V1 and V3 APIs generate consistent identifier fields"
+    type: behavior
+    requirement: REQ-SYNC-002
+    target: document.identifier
+    expected: same value across API versions
+    verification:
+      - Upload via V1 API
+      - Query via V3 API
+      - Verify identifier matches
+
+  - id: identifier-algorithm-consistent
+    description: "Identifier generation algorithm is consistent across versions"
+    type: transform
+    requirement: REQ-SYNC-002
+    input: { date: "2026-01-01T12:00:00Z", type: "sgv", device: "xDrip" }
+    expected: same identifier on V1 and V3
+    verification:
+      - Compute identifier using documented algorithm
+      - Verify matches server-generated identifier
+
+  # ============================================
+  # Sync Status Response (REQ-SYNC-003)
+  # ============================================
+
+  - id: upload-response-includes-counts
+    description: "Upload response includes insert/update counts"
+    type: state
+    requirement: REQ-SYNC-003
+    target: response.body
+    expected: "{ inserted: N, updated: M }"
+    verification:
+      - POST batch to collection
+      - Response includes count metadata
+      - Counts match actual changes
+
+  - id: upload-response-includes-identifiers
+    description: "Upload response includes document identifiers"
+    type: state
+    requirement: REQ-SYNC-003
+    target: response.body.identifiers
+    expected: array of document identifiers
+    verification:
+      - POST batch to collection
+      - Response includes identifier array
+      - Each document has identifier
+
+  # ============================================
+  # Sync Identity Mapping (REQ-SYNC-010)
+  # ============================================
+
+  - id: local-to-nightscout-mapping-stored
+    description: "Local ID to Nightscout objectId mapping is stored after POST"
+    type: behavior
+    requirement: REQ-SYNC-010
+    target: client.syncMapping
+    expected: "{ localId: nightscoutObjectId }"
+    verification:
+      - Create treatment locally
+      - POST to Nightscout
+      - Verify mapping stored
+
+  - id: mapping-used-for-updates
+    description: "Cached objectId is used for PUT operations"
+    type: behavior
+    requirement: REQ-SYNC-010
+    target: request.url
+    expected: "/api/v3/treatments/{objectId}"
+    verification:
+      - Update existing treatment
+      - Request uses cached objectId
+      - Update succeeds
+
+  # ============================================
+  # Profile Change Visibility (REQ-SYNC-051)
+  # ============================================
+
+  - id: profile-change-creates-treatment
+    description: "Profile change creates Profile Switch treatment event"
+    type: behavior
+    requirement: REQ-SYNC-051
+    target: treatments.collection
+    expected: new Profile Switch event
+    verification:
+      - Change active profile
+      - Query treatments eventType=Profile Switch
+      - Verify new event exists
+
+  # ============================================
+  # Percentage Handling (REQ-SYNC-052)
+  # ============================================
+
+  - id: percentage-scaling-applied
+    description: "Non-100% percentage triggers scaling or warning"
+    type: behavior
+    requirement: REQ-SYNC-052
+    target: controller.response
+    expected: scaling applied or warning displayed
+    verification:
+      - Create Profile Switch with percentage=150
+      - Fetch in non-AAPS controller
+      - Verify appropriate handling
+
+  # ============================================
+  # Profile Deduplication (REQ-SYNC-053)
+  # ============================================
+
+  - id: profile-upload-deduplicates
+    description: "Duplicate profile uploads create single document"
+    type: behavior
+    requirement: REQ-SYNC-053
+    target: profile.collection.count
+    expected: 1 document per unique profile
+    verification:
+      - Upload profile "Default"
+      - Upload profile "Default" again
+      - Count documents with name "Default" = 1
+
+  # ============================================
+  # ProfileSwitch Application (REQ-SYNC-054, 055)
+  # ============================================
+
+  - id: percentage-applied-to-basal
+    description: "ProfileSwitch percentage is applied to basal rates"
+    type: transform
+    requirement: REQ-SYNC-054
+    input: { basalRate: 1.0, percentage: 150 }
+    expected: effectiveBasal = 1.5
+    verification:
+      - Fetch ProfileSwitch with percentage
+      - Calculate effective basal
+      - Verify scaling correct
+
+  - id: timeshift-applied-to-schedule
+    description: "ProfileSwitch timeshift is applied to schedule times"
+    type: transform
+    requirement: REQ-SYNC-055
+    input: { scheduleTime: "08:00", timeshift: -2 }
+    expected: effectiveTime = "06:00"
+    verification:
+      - Fetch ProfileSwitch with timeshift
+      - Calculate effective schedule
+      - Verify shift correct
+
+  # ============================================
+  # ProfileJson Storage (REQ-SYNC-056)
+  # ============================================
+
+  - id: profilejson-embedded-in-switch
+    description: "ProfileSwitch stores embedded profileJson for snapshot"
+    type: state
+    requirement: REQ-SYNC-056
+    target: profileSwitch.profileJson
+    expected: complete profile object
+    verification:
+      - Create ProfileSwitch
+      - Verify profileJson field populated
+      - Contains all schedule data
+
+  # ============================================
+  # Profile API (REQ-SYNC-057, 058)
+  # ============================================
+
+  - id: effective-values-api-available
+    description: "API provides effective profile values endpoint"
+    type: state
+    requirement: REQ-SYNC-057
+    target: api.endpoints
+    expected: "/api/v3/profile/effective"
+    verification:
+      - GET effective profile endpoint
+      - Response includes calculated values
+      - Percentage/timeshift applied
+
+  - id: profile-response-includes-switch-metadata
+    description: "Profile response includes active ProfileSwitch metadata"
+    type: state
+    requirement: REQ-SYNC-058
+    target: profile.response.activeSwitch
+    expected: ProfileSwitch reference
+    verification:
+      - Activate ProfileSwitch
+      - GET profile
+      - Response includes switch info
+
+  # ============================================
+  # Profile Consistency (REQ-SYNC-059, 060, 061)
+  # ============================================
+
+  - id: profile-dedup-algorithm-consistent
+    description: "Profile deduplication algorithm is consistent"
+    type: behavior
+    requirement: REQ-SYNC-059
+    target: profile.identifier
+    expected: deterministic across uploads
+    verification:
+      - Upload same profile twice
+      - Verify identifier matches
+      - Single document in collection
+
+  - id: profile-srvmodified-updated
+    description: "Profile srvModified updated on change"
+    type: behavior
+    requirement: REQ-SYNC-060
+    target: profile.srvModified
+    expected: updated timestamp on change
+    verification:
+      - Update profile
+      - Verify srvModified > previous
+      - Enables history queries
+
+  - id: profile-soft-delete-supported
+    description: "Profile supports soft delete (isValid=false)"
+    type: behavior
+    requirement: REQ-SYNC-061
+    target: profile.isValid
+    expected: false on delete
+    verification:
+      - Delete profile
+      - Query with deleted=true
+      - Verify profile has isValid=false

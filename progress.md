@@ -13,6 +13,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Sync-Identity REQ Assertions (2026-02-01)
+
+Created conformance assertions for previously uncovered sync-identity requirements.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 15 (REQ-SYNC-001-003, 010, 051-061) |
+| Assertions created | 19 |
+| Gaps addressed | 6 (GAP-SYNC-009, 035-037, 042, GAP-API-006) |
+
+**Deliverable**: `conformance/assertions/sync-identity-reqs.yaml`
+
+**Coverage by Category**:
+- WebSocket API: 2 assertions
+- Sync Identity Consistency: 4 assertions
+- Profile Sync: 13 assertions
+
+**Impact**: Sync-identity domain coverage 47% → 94% (30/32 REQs)
+
+---
+
 ### Bridge/Connector Protocol Assertions (2026-02-01)
 
 Created conformance assertions for bridge/connector requirements.

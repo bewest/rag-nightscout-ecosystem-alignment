@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 93) | **Open Items**: 5  
+> **Last Groomed**: 2026-02-01 (cycle 94) | **Open Items**: 4  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -58,19 +58,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** sync-identity.md #19
 **Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
 
-### 5. [P2] Sync-identity uncovered REQ assertions
-**Type:** Conformance | **Effort:** Medium
-**Focus:** Create assertions for 17 uncovered sync-identity REQs
-**Source:** sync-identity-matrix.md (47% coverage - target 70%+)
-**Deliverable:** `conformance/assertions/sync-identity-reqs.yaml`
-**Impact:** Increase sync-identity coverage from 47% to 70%+
-
 ---
 
 ## Recently Completed (2026-02-01)
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Sync-Identity REQ Assertions** | `conformance/assertions/sync-identity-reqs.yaml` | 19 assertions, 15 REQs covered, sync-identity 47%→94% |
 | **Bridge/Connector Assertions** | `conformance/assertions/bridge-connector.yaml` | 17 assertions, 6 REQs covered, CGM domain 100% complete |
 | **Libre Protocol Assertions** | `conformance/assertions/libre-protocol.yaml` | 16 assertions, 6 REQs covered, CGM coverage 33%→67% |
 | **CGM BLE Protocol Assertions** | `conformance/assertions/ble-protocol.yaml` | 13 assertions, 6 REQs covered, CGM coverage 0%→33% |
