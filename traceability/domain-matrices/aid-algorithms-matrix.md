@@ -12,11 +12,11 @@
 |--------|-------|
 | Requirements | 56 |
 | Gaps | 66 |
-| REQs with assertion coverage | 50 (89%) |
-| Uncovered REQs | 6 (11%) - now with unique IDs |
-| Uncovered GAPs | 32 (48%) |
+| REQs with assertion coverage | **56 (100%)** |
+| Uncovered REQs | **0** |
+| Uncovered GAPs | 27 (41%) |
 
-**Status**: ✅ 12/12 categories covered. Duplicate REQ IDs fixed (cycle 112): REQ-CARB-007/008/009 and REQ-INS-006/007/008 are new unique IDs.
+**Status**: 🎉 **ALGORITHM DOMAIN 100% COMPLETE!** All 56 REQs now have assertion coverage (cycle 113).
 
 ---
 
@@ -100,15 +100,15 @@
 | REQ-SENS-002 | Sensitivity Visibility in Nightscout | GAP-SENS-001 | ✅ algorithm-docs.yaml |
 | REQ-SENS-003 | Document Detection Windows | GAP-SENS-002 | ✅ algorithm-docs.yaml |
 
-### Carb Display (3) - NEW UNIQUE IDs
+### Carb Display (3) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-CARB-007 | COB Display Source Attribution | GAP-CARB-001 | ❌ None |
-| REQ-CARB-008 | min_5m_carbimpact Configuration Exposure | GAP-CARB-004 | ❌ None |
-| REQ-CARB-009 | Absorption Model Type Documentation | GAP-CARB-003 | ❌ None |
+| REQ-CARB-007 | COB Display Source Attribution | GAP-CARB-001 | ✅ algorithm-display.yaml |
+| REQ-CARB-008 | min_5m_carbimpact Configuration Exposure | GAP-CARB-004 | ✅ algorithm-display.yaml |
+| REQ-CARB-009 | Absorption Model Type Documentation | GAP-CARB-003 | ✅ algorithm-display.yaml |
 
-*Note: Renamed from duplicate REQ-CARB-001-003 to unique IDs*
+*Note: Renamed from duplicate REQ-CARB-001-003 to unique IDs (cycle 112)*
 
 ### Prediction (3) - COVERED ✅
 
@@ -126,15 +126,15 @@
 | REQ-DOSE-002 | Safety Net Documentation | - | ✅ algorithm-docs.yaml |
 | REQ-DOSE-003 | Enable Condition Transparency | - | ✅ algorithm-docs.yaml |
 
-### Insulin Model Display (3) - NEW UNIQUE IDs
+### Insulin Model Display (3) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-INS-006 | Exponential Formula Consistency Verification | - | ❌ None |
-| REQ-INS-007 | DIA Range Validation UI | GAP-ALG-012 | ❌ None |
-| REQ-INS-008 | Peak Time Preset Documentation | GAP-INS-003 | ❌ None |
+| REQ-INS-006 | Exponential Formula Consistency Verification | - | ✅ algorithm-display.yaml |
+| REQ-INS-007 | DIA Range Validation UI | GAP-ALG-012 | ✅ algorithm-display.yaml |
+| REQ-INS-008 | Peak Time Preset Documentation | GAP-INS-003 | ✅ algorithm-display.yaml |
 
-*Note: Renamed from duplicate REQ-INS-001-003 to unique IDs*
+*Note: Renamed from duplicate REQ-INS-001-003 to unique IDs (cycle 112)*
 
 ### Target Range (3) - COVERED ✅
 
@@ -302,7 +302,8 @@
 | `trio-oref.yaml` | 3 (REQ-OREF-001-003) | 4 (GAP-TRIO-001, GAP-OREF-001, 002, 003) |
 | `proposed-api.yaml` | 4 (REQ-PR-001-004) | 4 (GAP-API-HR, GAP-INSULIN-001, GAP-REMOTE-CMD, GAP-TZ-001) |
 | `algorithm-core.yaml` | 3 (REQ-ALG-001, 002, 004) | 3 (GAP-ALG-001, 002, 003) |
-| **Total** | **50** | **33** |
+| `algorithm-display.yaml` | 6 (REQ-CARB-007-009, REQ-INS-006-008) | 5 (GAP-CARB-001, 003, 004, GAP-ALG-012, GAP-INS-003) |
+| **Total** | **56** | **38** |
 
 ---
 

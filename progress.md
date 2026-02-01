@@ -13,6 +13,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### 🎉 Algorithm Display Assertions (2026-02-01)
+
+Created conformance assertions for display/config requirements - **ALGORITHM DOMAIN NOW 100%!**
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 6 (REQ-CARB-007/008/009, REQ-INS-006/007/008) |
+| Gaps addressed | 5 (GAP-CARB-001/003/004, GAP-ALG-012, GAP-INS-003) |
+| Assertions created | 20 |
+
+**Deliverable**: `conformance/assertions/algorithm-display.yaml`
+
+**Coverage by Topic**:
+- COB display source attribution: 4 assertions
+- min_5m_carbimpact configuration: 3 assertions
+- Absorption model documentation: 3 assertions
+- Exponential formula consistency: 3 assertions
+- DIA range validation: 4 assertions
+- Peak time documentation: 3 assertions
+
 ### Duplicate REQ ID Fix (2026-02-01)
 
 Fixed 6 duplicate requirement IDs in algorithm domain for data quality.

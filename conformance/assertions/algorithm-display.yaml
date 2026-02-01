@@ -1,0 +1,322 @@
+# Algorithm Display Requirements Assertions
+# Covers newly-renamed REQs for COB/insulin display and configuration
+# Completes algorithm domain coverage for display-related requirements
+
+scenario: algorithm-display-requirements
+version: 1
+
+requirements:
+  - REQ-CARB-007  # COB Display Source Attribution
+  - REQ-CARB-008  # min_5m_carbimpact Configuration Exposure
+  - REQ-CARB-009  # Absorption Model Type Documentation
+  - REQ-INS-006   # Exponential Formula Consistency Verification
+  - REQ-INS-007   # DIA Range Validation UI
+  - REQ-INS-008   # Peak Time Preset Documentation
+
+related_gaps:
+  - GAP-CARB-001  # COB model annotation missing
+  - GAP-CARB-003  # Absorption model undocumented
+  - GAP-CARB-004  # min_5m_carbimpact not exposed
+  - GAP-ALG-012   # DIA minimum enforcement differences
+  - GAP-INS-003   # Peak time documentation gaps
+
+assertions:
+  # ============================================
+  # REQ-CARB-007: COB Display Source Attribution
+  # ============================================
+  
+  - id: cob-source-indicator-loop
+    description: "Loop COB display indicates algorithm source"
+    type: ui
+    requirement: REQ-CARB-007
+    gap: GAP-CARB-001
+    target: loop.ui.cob_display
+    expected:
+      indicator: "Loop algorithm identified in COB context"
+    verification:
+      - Check Loop status view for COB source
+      - Verify not confused with oref0 COB values
+    status: needs_verification
+
+  - id: cob-source-indicator-aaps
+    description: "AAPS COB display indicates algorithm source"
+    type: ui
+    requirement: REQ-CARB-007
+    gap: GAP-CARB-001
+    target: aaps.ui.cob_display
+    expected:
+      indicator: "oref algorithm identified (AMA/SMB mode)"
+    verification:
+      - Check AAPS overview for COB source indication
+      - Mode (AMA vs SMB) affects COB calculation
+    status: needs_verification
+
+  - id: cob-source-indicator-trio
+    description: "Trio COB display indicates algorithm source"
+    type: ui
+    requirement: REQ-CARB-007
+    gap: GAP-CARB-001
+    target: trio.ui.cob_display
+    expected:
+      indicator: "oref1 algorithm identified"
+    verification:
+      - Check Trio main screen for COB context
+    status: needs_verification
+
+  - id: cob-nightscout-model-field
+    description: "Nightscout devicestatus includes COB model annotation"
+    type: schema
+    requirement: REQ-CARB-007
+    gap: GAP-CARB-001
+    target: nightscout.devicestatus.cob
+    expected:
+      field: "model or algorithm source field"
+    verification:
+      - Query devicestatus for cob.model field
+      - Check if algorithm type is recorded
+    status: gap_identified
+    remediation: "Add cob.model field to devicestatus schema"
+
+  # ============================================
+  # REQ-CARB-008: min_5m_carbimpact Configuration
+  # ============================================
+  
+  - id: min5m-carbimpact-aaps-exposed
+    description: "AAPS exposes min_5m_carbimpact in settings"
+    type: config
+    requirement: REQ-CARB-008
+    gap: GAP-CARB-004
+    target: aaps.settings.absorption
+    expected:
+      setting: "min_5m_carbimpact configurable"
+      default_ama: 3
+      default_smb: 8
+      units: "mg/dL per 5 minutes"
+    verification:
+      - Navigate to Absorption Settings in AAPS
+      - Verify min_5m_carbimpact is visible and editable
+    source: "externals/AndroidAPS/app/src/main/kotlin/app/aaps/plugins/aps/openAPS*/OpenAPSPlugin.kt"
+    status: needs_verification
+
+  - id: min5m-carbimpact-trio-exposed
+    description: "Trio exposes min_5m_carbimpact in settings"
+    type: config
+    requirement: REQ-CARB-008
+    gap: GAP-CARB-004
+    target: trio.settings.absorption
+    expected:
+      setting: "min_5m_carbimpact configurable"
+    verification:
+      - Check Trio FreeAPS settings for absorption parameters
+    source: "externals/Trio/FreeAPS/Sources/APS/OpenAPS/"
+    status: needs_verification
+
+  - id: min5m-carbimpact-loop-absent
+    description: "Loop does not use min_5m_carbimpact (different model)"
+    type: documentation
+    requirement: REQ-CARB-008
+    target: loop.carb_model
+    expected:
+      behavior: "Loop uses different absorption model without min_5m_carbimpact"
+    verification:
+      - Confirm Loop CarbMath does not have this parameter
+      - Document difference for user understanding
+    status: verified
+
+  # ============================================
+  # REQ-CARB-009: Absorption Model Documentation
+  # ============================================
+  
+  - id: absorption-model-loop-documented
+    description: "Loop absorption model is documented"
+    type: documentation
+    requirement: REQ-CARB-009
+    gap: GAP-CARB-003
+    target: loop.docs.carb_absorption
+    expected:
+      models:
+        - Linear
+        - Parabolic
+        - PiecewiseLinear
+    verification:
+      - Check Loop documentation for absorption model descriptions
+      - Verify model selection guidance exists
+    source: "externals/LoopWorkspace/LoopAlgorithm/Sources/LoopAlgorithm/Carbs/"
+    status: needs_verification
+
+  - id: absorption-model-oref-documented
+    description: "oref0 absorption model is documented"
+    type: documentation
+    requirement: REQ-CARB-009
+    gap: GAP-CARB-003
+    target: oref0.docs.carb_absorption
+    expected:
+      model: "Dynamic carb absorption with min_5m_carbimpact floor"
+    verification:
+      - Check oref0 docs for COB calculation explanation
+      - Verify min_5m_carbimpact role explained
+    source: "externals/oref0/lib/meal/total.js"
+    status: needs_verification
+
+  - id: absorption-model-comparison-available
+    description: "Cross-system absorption model comparison exists"
+    type: documentation
+    requirement: REQ-CARB-009
+    target: docs.carb_absorption_comparison
+    expected:
+      comparison: "Loop vs oref0 absorption models compared"
+    verification:
+      - Check docs/10-domain/carb-absorption-deep-dive.md
+    source: "docs/10-domain/carb-absorption-deep-dive.md"
+    status: verified
+
+  # ============================================
+  # REQ-INS-006: Exponential Formula Consistency
+  # ============================================
+  
+  - id: exponential-formula-loop-oref-match
+    description: "Loop and oref0 use same exponential insulin formula"
+    type: behavior
+    requirement: REQ-INS-006
+    target: insulin.exponential_model
+    expected:
+      formula: "tau/a/S parameters from Loop issue #388"
+      source: "Loop original, credited in oref0"
+    verification:
+      - Compare iob calculation in oref0 calculate.js
+      - Verify comment crediting Loop as source
+    source: "externals/oref0/lib/iob/calculate.js:125"
+    status: verified
+
+  - id: exponential-formula-aaps-match
+    description: "AAPS exponential model matches oref0"
+    type: behavior
+    requirement: REQ-INS-006
+    target: aaps.insulin.exponential
+    expected:
+      behavior: "AAPS ports oref0 formula"
+    verification:
+      - Compare AAPS insulin model to oref0
+      - Verify IOB output matches for same inputs
+    source: "externals/AndroidAPS/core/interfaces/src/main/kotlin/app/aaps/core/interfaces/iob/"
+    status: needs_verification
+
+  - id: exponential-formula-trio-match
+    description: "Trio exponential model matches oref0"
+    type: behavior
+    requirement: REQ-INS-006
+    target: trio.insulin.exponential
+    expected:
+      behavior: "Trio uses oref0 JavaScript directly"
+    verification:
+      - Confirm Trio bundles oref0 lib
+    source: "externals/Trio/FreeAPS/Sources/APS/OpenAPS/"
+    status: verified
+
+  # ============================================
+  # REQ-INS-007: DIA Range Validation UI
+  # ============================================
+  
+  - id: dia-validation-loop
+    description: "Loop validates DIA within safe bounds"
+    type: validation
+    requirement: REQ-INS-007
+    gap: GAP-ALG-012
+    target: loop.profile.dia
+    expected:
+      min: 5.0
+      max: 8.0
+      behavior: "Fixed per insulin model preset"
+    verification:
+      - Check Loop insulin model presets
+      - Verify DIA not user-configurable outside bounds
+    status: needs_verification
+
+  - id: dia-validation-aaps
+    description: "AAPS validates DIA within safe bounds"
+    type: validation
+    requirement: REQ-INS-007
+    gap: GAP-ALG-012
+    target: aaps.profile.dia
+    expected:
+      min: 5.0
+      behavior: "hardLimits.minDia() enforces minimum"
+    verification:
+      - Test setting DIA < 5 in AAPS
+      - Verify rejection or auto-correction
+    source: "externals/AndroidAPS/core/validators/src/main/kotlin/app/aaps/core/validators/HardLimits.kt"
+    status: needs_verification
+
+  - id: dia-validation-trio
+    description: "Trio validates DIA within safe bounds"
+    type: validation
+    requirement: REQ-INS-007
+    gap: GAP-ALG-012
+    target: trio.profile.dia
+    expected:
+      min: 5.0
+      behavior: "Via oref0 requireLongDia enforcement"
+    verification:
+      - Confirm Trio inherits oref0 DIA validation
+    status: needs_verification
+
+  - id: dia-validation-user-feedback
+    description: "Systems provide feedback when DIA is adjusted"
+    type: ui
+    requirement: REQ-INS-007
+    gap: GAP-ALG-012
+    target: aid.settings.dia_feedback
+    expected:
+      notification: "User informed when DIA auto-corrected"
+    verification:
+      - Test entering invalid DIA value
+      - Verify user notification shown
+    status: needs_verification
+
+  # ============================================
+  # REQ-INS-008: Peak Time Preset Documentation
+  # ============================================
+  
+  - id: peak-time-loop-documented
+    description: "Loop documents peak time for each insulin preset"
+    type: documentation
+    requirement: REQ-INS-008
+    gap: GAP-INS-003
+    target: loop.docs.insulin_presets
+    expected:
+      presets:
+        - name: "Rapid Acting (Humalog, Novolog)"
+          peak: "75 minutes"
+        - name: "Ultra Rapid (Fiasp, Lyumjev)"
+          peak: "55 minutes"
+    verification:
+      - Check Loop documentation for insulin preset peaks
+      - Verify each preset has documented timing
+    status: needs_verification
+
+  - id: peak-time-aaps-documented
+    description: "AAPS documents peak time for each insulin preset"
+    type: documentation
+    requirement: REQ-INS-008
+    gap: GAP-INS-003
+    target: aaps.docs.insulin_presets
+    expected:
+      presets:
+        - Oref Rapid Acting
+        - Oref Ultra Rapid
+        - Oref Free Peak (custom)
+    verification:
+      - Check AAPS wiki for insulin model documentation
+    status: needs_verification
+
+  - id: peak-time-comparison-available
+    description: "Cross-system insulin peak time comparison exists"
+    type: documentation
+    requirement: REQ-INS-008
+    gap: GAP-INS-003
+    target: docs.insulin_model_comparison
+    expected:
+      comparison: "Peak times compared across Loop, oref0, AAPS, Trio"
+    verification:
+      - Check docs/10-domain/ for insulin model deep dive
+    status: needs_verification
