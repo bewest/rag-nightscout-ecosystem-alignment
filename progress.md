@@ -13,6 +13,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Libre Protocol Assertions (2026-02-01)
+
+Created conformance assertions for Libre CGM protocol requirements.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 6 (REQ-LIBRE-001 through REQ-LIBRE-006) |
+| Assertions created | 16 |
+| Gaps addressed | 4 (GAP-LIBRE-001, GAP-LIBRE-002, GAP-CGM-003, GAP-CGM-030) |
+
+**Deliverable**: `conformance/assertions/libre-protocol.yaml`
+
+**Coverage by Requirement**:
+- REQ-LIBRE-001 (Sensor Type Detection): 2 assertions
+- REQ-LIBRE-002 (FRAM CRC): 4 assertions
+- REQ-LIBRE-003 (FRAM Decryption): 2 assertions
+- REQ-LIBRE-004 (BLE Streaming Auth): 2 assertions
+- REQ-LIBRE-005 (Libre 3 Security): 3 assertions
+- REQ-LIBRE-006 (Quality Flags): 3 assertions
+
+**Impact**: CGM domain coverage increases from 33% to 67% (12/18 REQs)
+
+---
+
 ### CGM BLE Protocol Assertions (2026-02-01)
 
 Created conformance assertions for BLE CGM protocol requirements.

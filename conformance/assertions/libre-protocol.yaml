@@ -1,0 +1,268 @@
+# Assertions for Libre CGM Protocol
+# Tests Libre protocol requirements for Abbott FreeStyle Libre sensors
+# Uses assertion types from conformance/assertions/_template.yaml
+
+scenario: libre-cgm-protocol
+version: 1
+
+# Link to requirements in traceability/cgm-sources-requirements.md
+requirements:
+  - REQ-LIBRE-001  # Sensor type detection from PatchInfo
+  - REQ-LIBRE-002  # FRAM CRC validation
+  - REQ-LIBRE-003  # Libre 2 FRAM decryption
+  - REQ-LIBRE-004  # BLE streaming authentication
+  - REQ-LIBRE-005  # Libre 3 security protocol
+  - REQ-LIBRE-006  # Glucose data quality flags
+
+related_gaps:
+  - GAP-LIBRE-001  # Libre 3 cloud decryption dependency
+  - GAP-LIBRE-002  # Libre 2 Gen2 session-based auth
+  - GAP-CGM-003    # Libre 3 encryption not fully documented
+  - GAP-CGM-030    # Libre 3 direct BLE access blocked
+
+assertions:
+  # ============================================
+  # Sensor Type Detection (REQ-LIBRE-001)
+  # ============================================
+  
+  - id: sensor-type-from-patchinfo-byte0
+    description: "Sensor type correctly identified from patchInfo first byte"
+    type: transform
+    requirement: REQ-LIBRE-001
+    input: patchInfo_byte0
+    expected: sensor_type
+    examples:
+      - input: 0xDF
+        expected: "libre1"
+      - input: 0xA2
+        expected: "libre1"
+      - input: 0x9D
+        expected: "libreUS14day"
+      - input: 0xC5
+        expected: "libre2EU"
+      - input: 0xC6
+        expected: "libre2PlusEU"
+      - input: 0x2C
+        expected: "libre2Gen2US"
+
+  - id: sensor-type-determines-encryption
+    description: "Detected sensor type correctly indicates encryption requirement"
+    type: state
+    requirement: REQ-LIBRE-001
+    target: sensor.requiresDecryption
+    examples:
+      - sensor_type: "libre1"
+        expected: false
+      - sensor_type: "libre2EU"
+        expected: true
+      - sensor_type: "libre3"
+        expected: true
+
+  # ============================================
+  # FRAM CRC Validation (REQ-LIBRE-002)
+  # ============================================
+  
+  - id: fram-header-crc-validation
+    description: "FRAM header CRC (bytes 0-1) validated before parsing"
+    type: state
+    requirement: REQ-LIBRE-002
+    target: fram.headerCrcValid
+    expected: true
+    when: given_valid_fram_data
+    verification:
+      - Read FRAM bytes 0-23 (header region)
+      - Compute CRC-16 of bytes 2-23
+      - Compare with bytes 0-1 (little-endian)
+
+  - id: fram-body-crc-validation
+    description: "FRAM body CRC (bytes 24-25) validated"
+    type: state
+    requirement: REQ-LIBRE-002
+    target: fram.bodyCrcValid
+    expected: true
+    when: given_valid_fram_data
+    verification:
+      - Read FRAM bytes 24-319 (body region)
+      - Compute CRC-16 of bytes 26-319
+      - Compare with bytes 24-25 (little-endian)
+
+  - id: fram-footer-crc-validation
+    description: "FRAM footer CRC (bytes 320-321) validated"
+    type: state
+    requirement: REQ-LIBRE-002
+    target: fram.footerCrcValid
+    expected: true
+    when: given_valid_fram_data
+    verification:
+      - Read FRAM bytes 320-343 (footer region)
+      - Compute CRC-16 of bytes 322-343
+      - Compare with bytes 320-321 (little-endian)
+
+  - id: fram-invalid-crc-rejected
+    description: "FRAM with invalid CRC rejected for parsing"
+    type: behavior
+    requirement: REQ-LIBRE-002
+    action: parse_fram_with_invalid_crc
+    expected: rejection_or_error
+    verification:
+      - Modify one byte in valid FRAM
+      - Attempt to parse
+      - Verify CRC check fails and data rejected
+
+  # ============================================
+  # Libre 2 FRAM Decryption (REQ-LIBRE-003)
+  # ============================================
+  
+  - id: libre2-fram-decryption-with-uid
+    description: "Libre 2 FRAM decrypted using sensor UID and patchInfo"
+    type: transform
+    requirement: REQ-LIBRE-003
+    input: encrypted_fram_uid_patchinfo
+    expected: decrypted_fram
+    verification:
+      - Use XOR cipher with sensor UID (8 bytes)
+      - Use patchInfo for key derivation
+      - Verify CRC passes after decryption
+
+  - id: libre2-decryption-produces-valid-glucose
+    description: "Decrypted Libre 2 FRAM produces valid glucose values"
+    type: state
+    requirement: REQ-LIBRE-003
+    target: glucose.isValid
+    expected: true
+    when: after_decryption
+    verification:
+      - Decrypt FRAM from known Libre 2 sensor
+      - Parse glucose history
+      - Verify values in physiological range (40-500 mg/dL)
+
+  # ============================================
+  # BLE Streaming Authentication (REQ-LIBRE-004)
+  # ============================================
+  
+  - id: ble-streaming-nfc-enable-command
+    description: "Enable streaming NFC command (0xA1 0x1E) sent with unlock payload"
+    type: behavior
+    requirement: REQ-LIBRE-004
+    action: enable_ble_streaming
+    expected: mac_address_response
+    verification:
+      - Send NFC command 0xA1 with subcommand 0x1E
+      - Include computed unlock payload
+      - Receive 6-byte MAC address in response
+
+  - id: ble-streaming-connection-success
+    description: "BLE connection succeeds after NFC enable command"
+    type: state
+    requirement: REQ-LIBRE-004
+    target: ble.connectionState
+    expected: "connected"
+    when: after_nfc_enable_and_ble_scan
+    verification:
+      - Execute NFC enable streaming
+      - Scan for BLE device with returned MAC
+      - Verify connection established
+
+  # ============================================
+  # Libre 3 Security Protocol (REQ-LIBRE-005)
+  # ============================================
+  
+  - id: libre3-security-handshake-initiate
+    description: "Libre 3 security handshake initiated with readChallenge command"
+    type: behavior
+    requirement: REQ-LIBRE-005
+    action: write_0x11_to_2198
+    expected: challenge_load_done_response
+    verification:
+      - Write 0x11 (readChallenge) to characteristic 2198
+      - Receive 0x08 0x17 (challengeLoadDone + status)
+      - Security handshake begins
+
+  - id: libre3-challenge-exchange
+    description: "Challenge data exchanged on characteristic 22CE"
+    type: behavior
+    requirement: REQ-LIBRE-005
+    action: exchange_challenge_data
+    expected: challenge_accepted
+    verification:
+      - Read challenge from 22CE
+      - Compute ECDH response
+      - Write response to 22CE
+      - Write 0x08 (challengeLoadDone) to 2198
+
+  - id: libre3-glucose-after-handshake
+    description: "Glucose data received on 177A after security handshake"
+    type: state
+    requirement: REQ-LIBRE-005
+    target: characteristic_177A.hasData
+    expected: true
+    when: after_security_handshake_complete
+    verification:
+      - Complete security handshake sequence
+      - Subscribe to characteristic 177A
+      - Verify glucose notifications received
+
+  # ============================================
+  # Glucose Data Quality Flags (REQ-LIBRE-006)
+  # ============================================
+  
+  - id: glucose-error-flag-filtered
+    description: "Readings with hasError=true are filtered from output"
+    type: state
+    requirement: REQ-LIBRE-006
+    target: reading.isIncluded
+    expected: false
+    when: reading_has_error_true
+    verification:
+      - Parse glucose reading with error flag set
+      - Verify reading excluded from valid set
+
+  - id: glucose-quality-code-interpreted
+    description: "Quality code in reading correctly indicates reliability"
+    type: transform
+    requirement: REQ-LIBRE-006
+    input: quality_code_byte
+    expected: quality_assessment
+    examples:
+      - input: 0x00
+        expected: "good"
+      - input: 0x01
+        expected: "calibration_needed"
+      - input: 0x02
+        expected: "signal_disturbance"
+      - input: 0x04
+        expected: "sensor_error"
+
+  - id: glucose-invalid-quality-flagged
+    description: "Readings with invalid quality codes are flagged for user"
+    type: state
+    requirement: REQ-LIBRE-006
+    target: reading.showWarning
+    expected: true
+    when: quality_code_indicates_issue
+    verification:
+      - Parse reading with non-zero quality code
+      - Verify UI warning flag is set
+
+# ============================================
+# Cross-References
+# ============================================
+
+cross_references:
+  - document: docs/10-domain/libre-protocol-deep-dive.md
+    description: "Libre protocol specification"
+  - document: docs/10-domain/libre3-protocol-gap-analysis.md
+    description: "Libre 3 gap analysis"
+
+sources:
+  diable:
+    - file: "diable:DiaBLE/Libre.swift"
+      description: "Libre FRAM parsing and decryption"
+    - file: "diable:DiaBLE/Libre3.swift"
+      description: "Libre 3 BLE protocol"
+  xdripswift:
+    - file: "xdripswift:xdrip/BluetoothTransmitter/CGM/Libre/"
+      description: "Libre transmitter implementations"
+  xdrip:
+    - file: "xdrip:app/src/main/java/com/eveningoutpost/dexdrip/cgm/libre/"
+      description: "Android Libre support"

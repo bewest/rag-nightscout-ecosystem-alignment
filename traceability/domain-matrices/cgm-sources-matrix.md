@@ -1,7 +1,7 @@
 # CGM Sources Domain Traceability Matrix
 
 > **Generated**: 2026-02-01  
-> **Updated**: 2026-02-01 (cycle 91 - BLE assertions added)  
+> **Updated**: 2026-02-01 (cycle 92 - Libre assertions added)  
 > **Domain**: CGM Sources  
 > **Purpose**: REQ↔GAP↔Assertion cross-reference matrix
 
@@ -13,11 +13,11 @@
 |--------|-------|
 | Requirements | 18 |
 | Gaps | 52 |
-| REQs with assertion coverage | 6 (33%) |
-| Uncovered REQs | 12 (67%) |
-| Uncovered GAPs | 49 (94%) |
+| REQs with assertion coverage | 12 (67%) |
+| Uncovered REQs | 6 (33%) |
+| Uncovered GAPs | 45 (87%) |
 
-**Status**: BLE protocol assertions added (cycle 91). Libre protocol assertions pending.
+**Status**: BLE and Libre protocol assertions complete. Bridge/Connector assertions pending.
 
 ---
 
@@ -49,12 +49,12 @@
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-LIBRE-001 | Sensor Type Detection from PatchInfo | - | ❌ None |
-| REQ-LIBRE-002 | FRAM CRC Validation | - | ❌ None |
-| REQ-LIBRE-003 | Libre 2 FRAM Decryption | GAP-LIBRE-002 | ❌ None |
-| REQ-LIBRE-004 | BLE Streaming Authentication | GAP-LIBRE-002 | ❌ None |
-| REQ-LIBRE-005 | Libre 3 Security Protocol | GAP-LIBRE-001, GAP-CGM-030 | ❌ None |
-| REQ-LIBRE-006 | Glucose Data Quality Flags | - | ❌ None |
+| REQ-LIBRE-001 | Sensor Type Detection from PatchInfo | - | ✅ libre-protocol.yaml (2) |
+| REQ-LIBRE-002 | FRAM CRC Validation | - | ✅ libre-protocol.yaml (4) |
+| REQ-LIBRE-003 | Libre 2 FRAM Decryption | GAP-LIBRE-002 | ✅ libre-protocol.yaml (2) |
+| REQ-LIBRE-004 | BLE Streaming Authentication | GAP-LIBRE-002 | ✅ libre-protocol.yaml (2) |
+| REQ-LIBRE-005 | Libre 3 Security Protocol | GAP-LIBRE-001, GAP-CGM-030 | ✅ libre-protocol.yaml (3) |
+| REQ-LIBRE-006 | Glucose Data Quality Flags | - | ✅ libre-protocol.yaml (3) |
 
 ---
 

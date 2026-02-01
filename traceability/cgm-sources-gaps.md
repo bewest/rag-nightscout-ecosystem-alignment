@@ -635,6 +635,8 @@ wercker.yml  # Defunct service
 2. Document cloud API for OOP decryption
 3. Wait for community security research
 
+**Assertions**: `conformance/assertions/libre-protocol.yaml` (libre3-security-*)
+
 **Status**: Under discussion
 
 ---
@@ -658,6 +660,8 @@ wercker.yml  # Defunct service
 1. Port xDrip+ Gen2 implementation to Swift
 2. Document session protocol completely
 3. Use bridge transmitters (MiaoMiao, Bubble) for Gen2
+
+**Assertions**: `conformance/assertions/libre-protocol.yaml` (libre2-auth-*)
 
 **Status**: Under discussion
 

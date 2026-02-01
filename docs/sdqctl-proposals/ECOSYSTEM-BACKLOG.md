@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 91) | **Open Items**: 5  
+> **Last Groomed**: 2026-02-01 (cycle 92) | **Open Items**: 4  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -58,18 +58,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** sync-identity.md #19
 **Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
 
-### 5. [P3] Libre protocol assertions
-**Type:** Conformance | **Effort:** Medium
-**Focus:** Create assertions for Libre requirements (REQ-LIBRE-001-006)
-**Source:** cgm-sources-matrix.md action items
-**Deliverable:** `conformance/assertions/libre-protocol.yaml`
-
 ---
 
 ## Recently Completed (2026-02-01)
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Libre Protocol Assertions** | `conformance/assertions/libre-protocol.yaml` | 16 assertions, 6 REQs covered, CGM coverage 33%→67% |
 | **CGM BLE Protocol Assertions** | `conformance/assertions/ble-protocol.yaml` | 13 assertions, 6 REQs covered, CGM coverage 0%→33% |
 | **CGM Sources Traceability Matrix** | `domain-matrices/cgm-sources-matrix.md` | 18 REQs, 52 GAPs; 0% assertion coverage; BLE/Libre assertions needed |
 | **Stale Refs Cleanup** | 6 archive files updated | Added disclaimers for abbreviated paths; refs are historical |
