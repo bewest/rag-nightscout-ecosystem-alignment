@@ -40,8 +40,6 @@ Total: 310 requirements
 
 **All covered** via `treatment-sync.yaml`: REQ-TREAT-040 to REQ-TREAT-046
 
-**Related gaps**: REQ-UNIT-* (0%)
-
 ### REQ-ALARM-* Coverage (Level 5 #28)
 
 | Total | Covered | Uncovered | % |
@@ -61,6 +59,26 @@ Total: 310 requirements
 **All covered** via `remote-command-requirements.yaml`: REQ-REMOTE-001 to REQ-REMOTE-011
 
 **Related gaps**: GAP-REMOTE-001 (override auth), GAP-REMOTE-002 (command signing), GAP-REMOTE-003 (key rotation)
+
+### REQ-INTEROP-* Coverage (Level 5 #30)
+
+| Total | Covered | Uncovered | % |
+|-------|---------|-----------|---|
+| 3 | 3 | 0 | 100% |
+
+**All covered** via `interop-unit-requirements.yaml`: REQ-INTEROP-001 to REQ-INTEROP-003
+
+**Related gaps**: GAP-SYNC-009 (timestamp format), GAP-TREAT-001 (eventType), GAP-SYNC-008 (device ID)
+
+### REQ-UNIT-* Coverage (Level 5 #31)
+
+| Total | Covered | Uncovered | % |
+|-------|---------|-----------|---|
+| 4 | 4 | 0 | 100% |
+
+**All covered** via `interop-unit-requirements.yaml`: REQ-UNIT-001 to REQ-UNIT-004
+
+**Related gaps**: GAP-TREAT-002 (duration units), GAP-TZ-004 (utcOffset units)
 
 ### REQ-CONNECT-* Completeness (Level 5 #26)
 

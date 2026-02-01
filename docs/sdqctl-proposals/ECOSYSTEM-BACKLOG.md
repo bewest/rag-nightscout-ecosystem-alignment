@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 97) | **Open Items**: 6  
+> **Last Groomed**: 2026-02-01 (cycle 98) | **Open Items**: 5  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -65,19 +65,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Deliverable:** `traceability/domain-matrices/aid-algorithms-matrix.md`
 **Impact:** Identify assertion gaps in algorithm comparison domain
 
-### 6. [P3] Interop/Unit assertions
-**Type:** Conformance | **Effort:** Low
-**Focus:** Create assertions for REQ-INTEROP-001-003 and REQ-UNIT-001-004
-**Source:** treatments-matrix.md (remaining 7 REQs at 80% coverage)
-**Deliverable:** `conformance/assertions/interop-unit-requirements.yaml`
-**Impact:** Complete treatments domain to 100% assertion coverage
-
 ---
 
 ## Recently Completed (2026-02-01)
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **🎉 Interop/Unit Assertions** | `conformance/assertions/interop-unit-requirements.yaml` | 22 assertions, 7 REQs covered, treatments 100% COMPLETE |
 | **Remote Command Assertions** | `conformance/assertions/remote-command-requirements.yaml` | 35 assertions, 11 REQs covered, treatments 49%→80% |
 | **Alarm Requirements Assertions** | `conformance/assertions/alarm-requirements.yaml` | 28 assertions, 10 REQs covered, treatments 20%→49% |
 | **Treatments Domain Matrix** | `traceability/domain-matrices/treatments-matrix.md` | 35 REQs, 9 GAPs; 20% coverage; Alarm/Remote 0% |
