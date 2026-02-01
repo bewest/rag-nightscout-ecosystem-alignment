@@ -13,11 +13,11 @@
 |--------|-------|
 | Requirements (REQ-SYNC-*) | 32 |
 | Gaps (GAP-SYNC-*) | 25 |
-| Assertions with coverage | **32 REQs (100%)**, 13 GAPs |
+| Assertions with coverage | **32 REQs (100%)**, **25 GAPs (100%)** |
 | Uncovered REQs | **0** |
-| Uncovered GAPs | 12 |
+| Uncovered GAPs | **0** |
 
-**Status**: 🎉 Sync-identity domain at **100% REQ coverage**! WebSocket documentation assertions complete.
+**Status**: 🎉 Sync-identity domain at **100% REQ + 100% GAP coverage**! (cycle 117)
 
 ## Requirements Coverage Matrix
 

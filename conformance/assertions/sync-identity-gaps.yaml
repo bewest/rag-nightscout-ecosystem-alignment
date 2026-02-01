@@ -1,0 +1,239 @@
+# Sync-Identity GAP Coverage
+# Covers uncovered GAPs to achieve 100% GAP coverage
+# Created: 2026-02-01 (cycle 117)
+
+scenario: sync-identity-gap-coverage
+version: "1.0"
+requirements:
+  - REQ-SYNC-036
+  - REQ-SYNC-037
+  - REQ-SYNC-038
+
+related_gaps:
+  - GAP-SYNC-002  # Effect timelines not uploaded
+  - GAP-SYNC-004  # Override supersession not tracked
+  - GAP-SYNC-005  # Loop ObjectIdCache not persistent
+  - GAP-SYNC-006  # Loop uses v1 API only
+  - GAP-SYNC-007  # syncIdentifier format not standardized
+  - GAP-SYNC-010  # No Sync Status Feedback
+  - GAP-SYNC-031  # Profile Sync Ambiguity
+  - GAP-SYNC-032  # Loop/Trio Missing identifier Field
+  - GAP-SYNC-033  # xDrip+ UUID Not Sent as identifier
+  - GAP-SYNC-034  # No Cross-Controller Identity Standard
+  - GAP-SYNC-035  # No Profile Switch Events from Loop/Trio
+  - GAP-SYNC-036  # ProfileSwitch Embedded JSON Size
+  - GAP-SYNC-037  # Percentage/Timeshift Not Portable
+  - GAP-SYNC-038  # Profile Deduplication Fallback Missing
+  - GAP-SYNC-039  # Profile srvModified Field Missing
+  - GAP-SYNC-040  # Delete Semantics Differ
+  - GAP-SYNC-041  # Missing V3 History Endpoint
+
+assertions:
+
+  # GAP-SYNC-002: Effect timelines not uploaded to Nightscout
+  - id: SYNC-GAP-001
+    description: Document effect timeline upload gap
+    type: documentation
+    gap: GAP-SYNC-002
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: Effect timeline (ISF, CR curves) not uploaded documented as design decision
+    verification: grep -q "effect.*timeline" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  # GAP-SYNC-004: Override supersession not tracked in sync
+  - id: SYNC-GAP-002
+    description: Document override supersession tracking gap
+    type: documentation
+    gap: GAP-SYNC-004
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: Override supersession (when one override replaces another) not synced
+    verification: grep -q "supersession" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  # GAP-SYNC-005: Loop ObjectIdCache not persistent
+  - id: SYNC-GAP-003
+    description: Document Loop ObjectIdCache persistence gap
+    type: documentation
+    gap: GAP-SYNC-005
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: Loop's ObjectIdCache is in-memory, lost on app restart
+    verification: grep -q "ObjectIdCache" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  - id: SYNC-GAP-004
+    description: Recommend persistent ObjectIdCache storage
+    type: behavior
+    gap: GAP-SYNC-005
+    target: Loop NightscoutService
+    expected: ObjectIdCache persisted to UserDefaults or Core Data
+    verification: Review Loop source for cache persistence
+    status: proposed
+
+  # GAP-SYNC-006: Loop uses Nightscout v1 API only
+  - id: SYNC-GAP-005
+    description: Document Loop v1 API limitation
+    type: documentation
+    gap: GAP-SYNC-006
+    target: mapping/cross-project/terminology-matrix.md
+    expected: Loop uses v1 API only, lacks v3 features (identifier, srvModified)
+    verification: grep -q "Loop.*v1.*API" mapping/cross-project/terminology-matrix.md
+    status: proposed
+
+  - id: SYNC-GAP-006
+    description: Define v1 to v3 migration path for Loop
+    type: documentation
+    gap: GAP-SYNC-006
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: Migration path documented with required NightscoutService changes
+    verification: grep -q "v3.*migration" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  # GAP-SYNC-007: syncIdentifier format not standardized
+  - id: SYNC-GAP-007
+    description: Define syncIdentifier format standard
+    type: schema
+    requirement: REQ-SYNC-036
+    gap: GAP-SYNC-007
+    target: specs/openapi/aid-treatments-2025.yaml
+    expected: syncIdentifier format documented (UUID, controller-prefixed, or legacy)
+    verification: Check x-aid-gap annotation in spec
+    status: proposed
+
+  # GAP-SYNC-010: No Sync Status Feedback
+  - id: SYNC-GAP-008
+    description: Document sync status feedback gap
+    type: documentation
+    gap: GAP-SYNC-010
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: No API to query sync status (pending, failed, retrying)
+    verification: grep -q "sync.*status.*feedback" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  # GAP-SYNC-031: Profile Sync Ambiguity
+  - id: SYNC-GAP-009
+    description: Document profile sync ambiguity
+    type: documentation
+    gap: GAP-SYNC-031
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: Profile sync uses different endpoints across controllers
+    verification: grep -q "profile.*sync.*ambigu" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  # GAP-SYNC-032: Loop/Trio Missing identifier Field
+  - id: SYNC-GAP-010
+    description: Document Loop/Trio identifier field gap
+    type: documentation
+    requirement: REQ-SYNC-037
+    gap: GAP-SYNC-032
+    target: mapping/cross-project/terminology-matrix.md
+    expected: Loop/Trio don't send identifier field (v3 API feature)
+    verification: grep -q "identifier.*Loop\|Loop.*identifier" mapping/cross-project/terminology-matrix.md
+    status: proposed
+
+  # GAP-SYNC-033: xDrip+ UUID Not Sent as identifier
+  - id: SYNC-GAP-011
+    description: Document xDrip+ UUID-identifier gap
+    type: documentation
+    gap: GAP-SYNC-033
+    target: mapping/cross-project/terminology-matrix.md
+    expected: xDrip+ generates UUID but doesn't map to Nightscout identifier
+    verification: grep -q "xDrip.*UUID\|UUID.*identifier" mapping/cross-project/terminology-matrix.md
+    status: proposed
+
+  # GAP-SYNC-034: No Cross-Controller Identity Standard
+  - id: SYNC-GAP-012
+    description: Document cross-controller identity standard gap
+    type: documentation
+    gap: GAP-SYNC-034
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: No RFC for cross-controller identity (each uses different scheme)
+    verification: grep -q "cross-controller.*identity" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  - id: SYNC-GAP-013
+    description: Propose identity RFC structure
+    type: documentation
+    gap: GAP-SYNC-034
+    target: docs/sdqctl-proposals/
+    expected: RFC proposal for standardized sync identity across controllers
+    verification: Check for identity RFC proposal file
+    status: proposed
+
+  # GAP-SYNC-035: No Profile Switch Events from Loop/Trio
+  - id: SYNC-GAP-014
+    description: Document profile switch event gap
+    type: documentation
+    gap: GAP-SYNC-035
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: Loop/Trio don't emit profileswitch events like AAPS
+    verification: grep -q "profileswitch.*Loop\|Loop.*profileswitch" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  # GAP-SYNC-036: ProfileSwitch Embedded JSON Size
+  - id: SYNC-GAP-015
+    description: Document embedded profile JSON size issue
+    type: documentation
+    gap: GAP-SYNC-036
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: AAPS embeds full profile in profileswitch (large payload)
+    verification: grep -q "embedded.*JSON\|profileswitch.*size" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  # GAP-SYNC-037: Percentage/Timeshift Not Portable
+  - id: SYNC-GAP-016
+    description: Document percentage/timeshift portability gap
+    type: documentation
+    gap: GAP-SYNC-037
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: AAPS percentage/timeshift profile adjustments not portable to Loop
+    verification: grep -q "percentage.*timeshift\|timeshift.*portable" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  # GAP-SYNC-038: Profile Deduplication Fallback Missing in Nocturne
+  - id: SYNC-GAP-017
+    description: Document Nocturne profile deduplication gap
+    type: documentation
+    gap: GAP-SYNC-038
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: Nocturne lacks profile deduplication fallback logic
+    verification: grep -q "Nocturne.*deduplication" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  # GAP-SYNC-039: Profile srvModified Field Missing in Nocturne
+  - id: SYNC-GAP-018
+    description: Document Nocturne srvModified gap
+    type: documentation
+    gap: GAP-SYNC-039
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: Nocturne doesn't set srvModified on profile updates
+    verification: grep -q "srvModified.*Nocturne" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  # GAP-SYNC-040: Delete Semantics Differ (Hard vs Soft Delete)
+  - id: SYNC-GAP-019
+    description: Document hard vs soft delete semantics gap
+    type: documentation
+    gap: GAP-SYNC-040
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: cgm-remote-monitor uses soft delete, Nocturne uses hard delete
+    verification: grep -q "soft.*delete\|hard.*delete" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
+
+  - id: SYNC-GAP-020
+    description: Define delete semantics alignment requirement
+    type: behavior
+    gap: GAP-SYNC-040
+    target: specs/openapi/aid-treatments-2025.yaml
+    expected: isValid=false soft delete documented as required behavior
+    verification: Check delete semantics in OpenAPI spec
+    status: proposed
+
+  # GAP-SYNC-041: Missing V3 History Endpoint in Nocturne
+  - id: SYNC-GAP-021
+    description: Document Nocturne history endpoint gap
+    type: documentation
+    gap: GAP-SYNC-041
+    target: docs/10-domain/sync-identity-deep-dive.md
+    expected: Nocturne lacks /api/v3/*/history endpoint for sync recovery
+    verification: grep -q "history.*endpoint\|Nocturne.*history" docs/10-domain/sync-identity-deep-dive.md
+    status: proposed
