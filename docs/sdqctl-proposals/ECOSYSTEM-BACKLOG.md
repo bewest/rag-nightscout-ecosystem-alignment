@@ -25,8 +25,10 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 > **Last Groomed**: 2026-02-01 (cycle 123) | **Open Items**: 3 (all blocked)  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
+>
+> **Note**: All domain backlogs are 95%+ complete. Remaining items require external repo changes or macOS.
 
-### 1. [P2] Loop Swift algorithm runner
+### 1. [P2] Loop Swift algorithm runner 🚫
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm conformance testing
@@ -35,7 +37,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** aid-algorithms.md #2
 **Blocker:** Requires macOS for iOS framework resolution
 
-### 2. [P2] V4 API Integration Phase 2: Nocturne soft delete
+### 2. [P2] V4 API Integration Phase 2: Nocturne soft delete 🚫
 **Type:** Implementation | **Effort:** Medium
 **Repos:** nocturne
 **Focus:** Add soft delete support to align with cgm-remote-monitor behavior
@@ -43,21 +45,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Gap Reference:** GAP-SYNC-040
 **Blocker:** Requires changes to external nocturne repo
 
-### 3. [P2] MongoDB Phase 3: Driver upgrade execution
+### 3. [P2] MongoDB Phase 3: Driver upgrade execution 🚫
 **Type:** Implementation | **Effort:** Medium
 **Focus:** Execute MongoDB driver upgrade from mongodb-legacy to mongodb@6.x
 **Prerequisites:** Phase 2 complete ✅ (no Write Result Translator needed)
 **Source:** mongodb-update-readiness-report.md Phase 3
 **Deliverable:** PR to cgm-remote-monitor with driver upgrade
 **Blocker:** Requires changes to external cgm-remote-monitor repo
-
-### 4. ~~[P2] StateSpan V3 extension specification~~ ✅ COMPLETE
-**Type:** Proposal | **Effort:** High
-**Focus:** Draft V3 API extension for StateSpan endpoints
-**Prerequisites:** StateSpan standardization proposal ✅
-**Source:** sync-identity.md #19
-**Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
-**Status:** ✅ COMPLETE 2026-02-01 (cycle 123)
 
 ---
 
