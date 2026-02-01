@@ -14,6 +14,7 @@ The following OpenAPI 3.0 specifications provide formal schema definitions align
 | [`aid-treatments-2025.yaml`](../../specs/openapi/aid-treatments-2025.yaml) | `treatments` | Bolus, carbs, temp basal, overrides with eventType catalog |
 | [`aid-devicestatus-2025.yaml`](../../specs/openapi/aid-devicestatus-2025.yaml) | `devicestatus` | Loop vs oref0 structure variants, predictions |
 | [`aid-profile-2025.yaml`](../../specs/openapi/aid-profile-2025.yaml) | `profile` | Therapy settings with time-varying schedules |
+| [`aid-statespan-2025.yaml`](../../specs/openapi/aid-statespan-2025.yaml) | `state-spans` | Time-ranged state tracking (V3 extension, reference only) |
 | [`aid-alignment-extensions.yaml`](../../specs/openapi/aid-alignment-extensions.yaml) | All | 2026 extensions addressing documented gaps |
 
 **Origin Schema Extractions**:
@@ -4257,6 +4258,10 @@ Both Loop and oref0 use identical exponential formula from Loop issue #388:
 | `Exercise` | (user-defined) | ❌ |
 
 **Related Gaps**: GAP-V4-001, GAP-V4-002, GAP-STATESPAN-001
+
+**Specifications**:
+- V3 Extension: [`aid-statespan-2025.yaml`](../../specs/openapi/aid-statespan-2025.yaml) (reference only)
+- V4 Native: [`nocturne-v4-extension.yaml`](../../specs/openapi/nocturne-v4-extension.yaml)
 
 **Source**: [StateSpan Standardization Proposal](../../docs/sdqctl-proposals/statespan-standardization-proposal.md)
 

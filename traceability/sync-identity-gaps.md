@@ -1197,6 +1197,10 @@ if (rVal) rVal.replace('ETC','Etc');
 
 **Remediation**: Propose StateSpan as RFC for Nightscout v4 API standard.
 
+**Specifications**:
+- V3 Extension (reference): [`specs/openapi/aid-statespan-2025.yaml`](../specs/openapi/aid-statespan-2025.yaml)
+- V4 Native: [`specs/openapi/nocturne-v4-extension.yaml`](../specs/openapi/nocturne-v4-extension.yaml)
+
 **Source**: [Nocturne V4 ProfileSwitch Extensions](../docs/10-domain/nocturne-v4-profile-extensions.md)
 
 **Status**: Open
@@ -1217,6 +1221,10 @@ if (rVal) rVal.replace('ETC','Etc');
 **Impact**: Cannot build profile timeline or retrospectively analyze which profile was active at any point without using V4 StateSpan API (Nocturne-specific).
 
 **Remediation**: Add profile activation events to V3 treatments collection or migrate to V4 with StateSpan.
+
+**Specifications**:
+- V3 Extension (reference): [`specs/openapi/aid-statespan-2025.yaml`](../specs/openapi/aid-statespan-2025.yaml) - `/state-spans/active` endpoint
+- V4 Native: [`specs/openapi/nocturne-v4-extension.yaml`](../specs/openapi/nocturne-v4-extension.yaml)
 
 **Source**: [Nocturne V4 ProfileSwitch Extensions](../docs/10-domain/nocturne-v4-profile-extensions.md)
 
