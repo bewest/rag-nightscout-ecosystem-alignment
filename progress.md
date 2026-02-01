@@ -12,6 +12,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### StateSpan V3 Extension Specification (2026-02-01)
+
+Reference specification for hypothetical StateSpan V3 extension.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| V3 Extension Spec | `specs/openapi/statespan-v3-extension.md` | 4 categories, backward compat, 4-phase migration |
+
+**Key Points**:
+- **Author preference**: V4-only (this spec is for reference only)
+- **4 core categories**: Profile, Override, TempBasal, PumpMode
+- **Backward compatible**: Dual-write with treatments, auto-translation
+- **Client examples**: Swift and Kotlin implementations included
+
+**Gaps Addressed**: GAP-V4-001, GAP-V4-002, GAP-NOCTURNE-001
+
+---
+
 ### MongoDB Phase 2: Storage Layer Analysis (2026-02-01)
 
 Complete audit of cgm-remote-monitor MongoDB usage patterns.
