@@ -27,6 +27,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| AID Algorithms Matrix (cycle 99) | P2 | ✅ Complete - 56 REQs, 66 GAPs, 0% coverage, 7 action items | 2026-02-01 |
 | Backlog Grooming (cycle 98) | P0 | ✅ Complete - Queue 5→6 items, cross-controller dedup added | 2026-02-01 |
 | Interop/Unit Assertions (cycle 98) | P3 | ✅ Complete - 22 assertions, 7 REQs covered, 80%→100% 🎉 | 2026-02-01 |
 | Backlog Grooming (cycle 97) | P0 | ✅ Complete - Queue 5→6 items, interop/unit assertions added | 2026-02-01 |

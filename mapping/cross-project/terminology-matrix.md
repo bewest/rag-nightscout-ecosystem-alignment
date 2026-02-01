@@ -1316,6 +1316,7 @@ xDrip+ uniquely supports multiple insulin types per treatment:
 ## Algorithm Core Terminology
 
 > **See Also**: [Algorithm Comparison Deep Dive](../../docs/10-domain/algorithm-comparison-deep-dive.md)
+> **Traceability Matrix**: [`traceability/domain-matrices/aid-algorithms-matrix.md`](../../traceability/domain-matrices/aid-algorithms-matrix.md) - REQ↔GAP↔Assertion coverage (0% - needs assertions)
 
 ### Insulin Sensitivity Factor (ISF)
 

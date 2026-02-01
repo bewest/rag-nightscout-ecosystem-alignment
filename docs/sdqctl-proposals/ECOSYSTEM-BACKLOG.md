@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 98) | **Open Items**: 6  
+> **Last Groomed**: 2026-02-01 (cycle 99) | **Open Items**: 6  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -58,12 +58,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** sync-identity.md #19
 **Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
 
-### 5. [P2] AID algorithms traceability matrix
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Create REQ↔GAP↔Assertion matrix for AID algorithms domain
-**Source:** aid-algorithms-requirements.md (56 REQs)
-**Deliverable:** `traceability/domain-matrices/aid-algorithms-matrix.md`
-**Impact:** Identify assertion gaps in algorithm comparison domain
+### 5. [P2] Degraded operation assertions
+**Type:** Conformance | **Effort:** Medium
+**Focus:** Safety-critical assertions for CGM loss, pump timeout, fallback behavior
+**Source:** aid-algorithms-matrix.md action item #1 (REQ-DEGRADE-001-006)
+**Deliverable:** `conformance/assertions/degraded-operation.yaml`
+**Impact:** Cover 6 safety-critical requirements at 0% coverage
 
 ### 6. [P2] Cross-controller deduplication assertions
 **Type:** Conformance | **Effort:** Medium
@@ -78,6 +78,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **AID Algorithms Matrix** | `traceability/domain-matrices/aid-algorithms-matrix.md` | 56 REQs, 66 GAPs, 0% coverage, duplicate REQ IDs found |
 | **🎉 Interop/Unit Assertions** | `conformance/assertions/interop-unit-requirements.yaml` | 22 assertions, 7 REQs covered, treatments 100% COMPLETE |
 | **Remote Command Assertions** | `conformance/assertions/remote-command-requirements.yaml` | 35 assertions, 11 REQs covered, treatments 49%→80% |
 | **Alarm Requirements Assertions** | `conformance/assertions/alarm-requirements.yaml` | 28 assertions, 10 REQs covered, treatments 20%→49% |

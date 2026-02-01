@@ -80,6 +80,24 @@ Total: 310 requirements
 
 **Related gaps**: GAP-TREAT-002 (duration units), GAP-TZ-004 (utcOffset units)
 
+### REQ-ALG-* Coverage (Level 5 #32)
+
+| Total | Covered | Uncovered | % |
+|-------|---------|-----------|---|
+| 56 | 0 | 56 | 0% |
+
+**None covered** - No conformance assertions exist for algorithm domain
+
+**Traceability Matrix**: [`domain-matrices/aid-algorithms-matrix.md`](domain-matrices/aid-algorithms-matrix.md)
+
+**Key categories**:
+- Algorithm Core (REQ-ALG-001-004): Test vectors, semantic equivalence, safety
+- Degraded Operation (REQ-DEGRADE-001-006): CGM loss, pump timeout, fallback
+- Insulin Model (REQ-INS-001-005): Exponential formula, DIA, peak time
+- Profile Schema (REQ-PROF-001-007): Time format, safety limits, presets
+
+**Data quality issue**: Duplicate REQ IDs (REQ-CARB-001-003, REQ-INS-001-003)
+
 ### REQ-CONNECT-* Completeness (Level 5 #26)
 
 | Total GAPs | GAPs with REQs | Orphaned | % |

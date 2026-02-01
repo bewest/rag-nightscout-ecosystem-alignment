@@ -13,6 +13,29 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### AID Algorithms Traceability Matrix (2026-02-01)
+
+Created domain traceability matrix for algorithm requirements coverage analysis.
+
+| Metric | Count |
+|--------|-------|
+| Requirements analyzed | 56 |
+| Gaps catalogued | 66 |
+| Current assertion coverage | 0% |
+| Action items identified | 7 |
+
+**Deliverable**: `traceability/domain-matrices/aid-algorithms-matrix.md`
+
+**Key Findings**:
+- No conformance assertions exist for algorithm domain
+- 56 requirements across 12 categories (ALG, CARB, DEGRADE, INS, PROF, etc.)
+- Duplicate REQ IDs detected: REQ-CARB-001-003, REQ-INS-001-003 appear twice
+- Priority action: Create degradation and safety limit assertions (safety-critical)
+
+**Impact**: Foundation for systematic algorithm conformance coverage
+
+---
+
 ### Interop/Unit Assertions (2026-02-01)
 
 Created conformance assertions for interoperability and unit handling requirements.
