@@ -20,7 +20,7 @@ This document is an index of gaps organized by domain.
 | sync-identity | 68 | [sync-identity-gaps.md](sync-identity-gaps.md) | 2026-01-31 (GAP-FOLLOW-001/002, GAP-CAREGIVER-001/002 added) |
 | aid-algorithms | 66 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-01-31 (GAP-OREF-001/002/003 added) |
 | cgm-sources | 52 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-01-29 |
-| connectors | 65 | [connectors-gaps.md](connectors-gaps.md) | 2026-01-31 (GAP-BLE-001/002/003/004/005 added) |
+| connectors | 65 | [connectors-gaps.md](connectors-gaps.md) | 2026-02-01 (GAP-VERIFY-002 remediation step 3) |
 | treatments | 25 | [treatments-gaps.md](treatments-gaps.md) | - |
 | pumps | 9 | [pumps-gaps.md](pumps-gaps.md) | - |
 

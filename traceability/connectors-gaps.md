@@ -930,9 +930,10 @@ osx_image: xcode12.4
 **Remediation**:
 1. ~~Implement `aaps-runner.kt` scaffolding~~ ✅ Done (2026-01-31)
 2. ~~Build integration (`make aaps-runner`)~~ ✅ Done (2026-01-31)
-3. Integrate AAPS core algorithm dependencies for execution
-4. Add Swift runners for macOS CI (Trio, Loop)
-5. Cross-compare outputs for same test vectors
+3. ~~Document setup requirements~~ ✅ Done (2026-02-01, `conformance/README.md`)
+4. Integrate AAPS core algorithm dependencies for execution
+5. Add Swift runners for macOS CI (Trio, Loop)
+6. Cross-compare outputs for same test vectors
 
 **Source**: `docs/10-domain/cross-platform-testing-research.md`
 
