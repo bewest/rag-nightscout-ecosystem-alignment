@@ -1,7 +1,7 @@
 # Sync-Identity Domain Traceability Matrix
 
 > **Generated**: 2026-02-01  
-> **Updated**: 2026-02-01 (cycle 94 - sync-identity-reqs.yaml added)  
+> **Updated**: 2026-02-01 (cycle 111 - websocket-docs.yaml added)  
 > **Domain**: Sync & Identity  
 > **Purpose**: REQ↔GAP↔Assertion cross-reference matrix
 
@@ -13,11 +13,11 @@
 |--------|-------|
 | Requirements (REQ-SYNC-*) | 32 |
 | Gaps (GAP-SYNC-*) | 25 |
-| Assertions with coverage | 30 REQs (94%), 11 GAPs |
-| Uncovered REQs | 2 |
-| Uncovered GAPs | 14 |
+| Assertions with coverage | **32 REQs (100%)**, 13 GAPs |
+| Uncovered REQs | **0** |
+| Uncovered GAPs | 12 |
 
-**Status**: Sync-identity domain at 94% REQ coverage. GAP-SYNC-029/030 now have dedicated assertions.
+**Status**: 🎉 Sync-identity domain at **100% REQ coverage**! WebSocket documentation assertions complete.
 
 ## Requirements Coverage Matrix
 
@@ -61,12 +61,16 @@
 | REQ-SYNC-060 | Profile srvModified Support | ✅ 1 assertion |
 | REQ-SYNC-061 | Profile Soft Delete | ✅ 1 assertion |
 
-### Remaining Uncovered (2)
+### WebSocket Documentation (2) - websocket-docs.yaml
 
-| Requirement | Description | Priority | Notes |
-|-------------|-------------|----------|-------|
-| REQ-SYNC-004 | WebSocket Event Payload Schemas | Low | Documentation deliverable |
-| REQ-SYNC-005 | WebSocket Error Handling | Low | Documentation deliverable |
+| Requirement | Description | Assertions |
+|-------------|-------------|------------|
+| REQ-SYNC-004 | WebSocket Event Payload Schemas | ✅ 8 assertions |
+| REQ-SYNC-005 | WebSocket Error Handling | ✅ 6 assertions |
+
+### Remaining Uncovered (0)
+
+All sync-identity requirements now have assertion coverage! 🎉
 
 ---
 
@@ -76,7 +80,7 @@
 
 | Gap | Description | Assertion File | Assertion IDs |
 |-----|-------------|----------------|---------------|
-| GAP-SYNC-001 | Loop Uses POST-only, No Idempotent Upsert | sync-deduplication.yaml | identifier-preserved, syncidentifier-preserved |
+| GAP-SYNC-001 | Loop Uses POST-only, No Idempotent Upsert | sync-deduplication.yaml, websocket-docs.yaml | identifier-preserved, syncidentifier-preserved, storage-apiv1-exclusion-documented |
 | GAP-SYNC-008 | No Cross-Client Sync Conflict Resolution | sync-deduplication.yaml | cross-controller-coexistence |
 | GAP-SYNC-009 | V1 API Lacks Identifier Field | sync-deduplication.yaml | query-by-identifier |
 
@@ -114,36 +118,38 @@
 | File | REQs Covered | GAPs Addressed |
 |------|--------------|----------------|
 | `conformance/assertions/sync-deduplication.yaml` | 15 | 3 |
+| `conformance/assertions/sync-identity-reqs.yaml` | 15 | 5 |
+| `conformance/assertions/websocket-docs.yaml` | 2 | 2 |
 | `conformance/assertions/treatment-sync.yaml` | 7 (REQ-TREAT-*) | 7 (GAP-TREAT-*) |
-| `conformance/assertions/override-supersede.yaml` | - | GAP-SYNC-004 (indirect) |
+| `conformance/assertions/cross-controller-dedup.yaml` | 1 | 2 |
 
 ---
 
 ## Priority Action Items
 
+### Completed ✅
+
+1. **REQ-SYNC-002 / REQ-SYNC-010**: ✅ Sync identity assertions created (sync-identity-reqs.yaml)
+2. **REQ-SYNC-004 / REQ-SYNC-005**: ✅ WebSocket documentation assertions created (websocket-docs.yaml)
+
 ### High Priority (Core Interoperability)
 
-1. **REQ-SYNC-002 / REQ-SYNC-010**: Create sync identity assertions
-   - Need: Assertion file for cross-API version identity
-   - Blocks: GAP-SYNC-007, GAP-SYNC-034
-
-2. **GAP-SYNC-006 / GAP-SYNC-032**: V3 API migration
+1. **GAP-SYNC-006 / GAP-SYNC-032**: V3 API migration
    - Need: Loop/Trio V3 API integration testing
    - Prerequisite: Ready Queue #1 (Loop Swift runner)
 
-3. ~~**GAP-SYNC-029**: Cross-controller deduplication~~ ✅ cycle 103
+2. ~~**GAP-SYNC-029**: Cross-controller deduplication~~ ✅ cycle 103
    - Deliverable: `conformance/assertions/cross-controller-dedup.yaml` (16 assertions)
    - Covers: GAP-SYNC-029 (dedup), GAP-SYNC-030 (conflict warning)
 
 ### Medium Priority (Nocturne Alignment)
 
-4. **GAP-SYNC-038-041**: Nocturne parity gaps
+3. **GAP-SYNC-038-041**: Nocturne parity gaps
    - Need: Nocturne-specific assertion file
    - Related: Ready Queue #2 (Nocturne soft delete)
 
-5. **REQ-SYNC-051-061**: Profile sync requirements
-   - Need: Profile-specific assertion file
-   - Consider: Move to separate profile-matrix.md
+4. ~~**REQ-SYNC-051-061**: Profile sync requirements~~ ✅ cycle 94
+   - Covered by: `conformance/assertions/sync-identity-reqs.yaml`
 
 ---
 

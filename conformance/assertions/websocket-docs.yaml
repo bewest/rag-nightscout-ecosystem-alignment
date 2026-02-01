@@ -1,0 +1,247 @@
+# WebSocket Documentation Assertions
+# Completes Sync-Identity domain to 100% (REQ-SYNC-004, REQ-SYNC-005)
+# Based on externals/cgm-remote-monitor/lib/api3/doc/socket.md and alarmsockets.md
+
+scenario: websocket-documentation
+version: 1
+
+requirements:
+  - REQ-SYNC-004  # WebSocket Event Payload Schemas
+  - REQ-SYNC-005  # WebSocket Error Handling
+
+related_gaps:
+  - GAP-API-006   # WebSocket documentation gaps
+  - GAP-SYNC-001  # Loop POST-only, no idempotent upsert
+
+assertions:
+  # ============================================
+  # REQ-SYNC-004: WebSocket Event Payload Schemas
+  # ============================================
+  
+  - id: storage-create-event-schema
+    description: "Storage 'create' event payload schema is documented"
+    type: documentation
+    requirement: REQ-SYNC-004
+    target: doc.websocket.storage.create
+    expected:
+      fields:
+        - colName: "name of affected collection"
+        - doc: "inserted document object"
+    verification:
+      - socket.md documents create event with colName and doc fields
+      - Example code shows data.colName and data.doc access
+    source: "externals/cgm-remote-monitor/lib/api3/doc/socket.md:103-114"
+    status: verified
+
+  - id: storage-update-event-schema
+    description: "Storage 'update' event payload schema is documented"
+    type: documentation
+    requirement: REQ-SYNC-004
+    target: doc.websocket.storage.update
+    expected:
+      fields:
+        - colName: "name of affected collection"
+        - doc: "modified document (new version)"
+    verification:
+      - socket.md documents update event with colName and doc fields
+      - Clarifies update fires for CREATE, UPDATE, or PATCH operations
+    source: "externals/cgm-remote-monitor/lib/api3/doc/socket.md:117-128"
+    status: verified
+
+  - id: storage-delete-event-schema
+    description: "Storage 'delete' event payload schema is documented"
+    type: documentation
+    requirement: REQ-SYNC-004
+    target: doc.websocket.storage.delete
+    expected:
+      fields:
+        - colName: "name of affected collection"
+        - identifier: "identifier of deleted document"
+    verification:
+      - socket.md documents delete event with colName and identifier fields
+      - Clarifies applies to soft and permanent deletes
+    source: "externals/cgm-remote-monitor/lib/api3/doc/socket.md:131-142"
+    status: verified
+
+  - id: storage-subscribe-response-schema
+    description: "Storage subscribe response payload schema is documented"
+    type: documentation
+    requirement: REQ-SYNC-004
+    target: doc.websocket.storage.subscribe_response
+    expected:
+      success_response:
+        - success: true
+        - collections: "array of subscribed collections"
+      error_response:
+        - success: false
+        - message: "error message string"
+    verification:
+      - socket.md documents subscribe callback response
+      - Shows conditional handling for success/failure
+    source: "externals/cgm-remote-monitor/lib/api3/doc/socket.md:84-97"
+    status: verified
+
+  - id: alarm-announcement-event-schema
+    description: "Alarm 'announcement' event payload schema is documented"
+    type: documentation
+    requirement: REQ-SYNC-004
+    target: doc.websocket.alarm.announcement
+    expected:
+      fields:
+        - level: "alarm level (0 for announcement)"
+        - title: "announcement title"
+        - message: "announcement text"
+        - plugin: "source plugin object"
+        - group: "alarm group"
+        - isAnnouncement: "boolean flag"
+        - key: "unique alarm key"
+    verification:
+      - alarmsockets.md shows full announcement JSON example
+    source: "externals/cgm-remote-monitor/lib/api3/doc/alarmsockets.md:104-118"
+    status: verified
+
+  - id: alarm-urgent-event-schema
+    description: "Alarm 'alarm' and 'urgent_alarm' event payload schema is documented"
+    type: documentation
+    requirement: REQ-SYNC-004
+    target: doc.websocket.alarm.alarm
+    expected:
+      fields:
+        - level: "alarm severity level"
+        - title: "alarm title (e.g., 'Warning HIGH')"
+        - message: "formatted BG status message"
+        - eventName: "event type (e.g., 'high', 'low')"
+        - plugin: "source plugin object"
+        - pushoverSound: "notification sound"
+        - debug: "threshold and SGV debug info"
+        - group: "alarm group"
+        - key: "unique alarm key"
+    verification:
+      - alarmsockets.md shows full alarm JSON example with all fields
+    source: "externals/cgm-remote-monitor/lib/api3/doc/alarmsockets.md:121-137"
+    status: verified
+
+  - id: alarm-clear-event-schema
+    description: "Alarm 'clear_alarm' event payload schema is documented"
+    type: documentation
+    requirement: REQ-SYNC-004
+    target: doc.websocket.alarm.clear_alarm
+    expected:
+      fields:
+        - clear: "boolean true"
+        - title: "clearance title (e.g., 'All Clear')"
+        - message: "clearance reason"
+        - group: "alarm group being cleared"
+    verification:
+      - alarmsockets.md shows clear_alarm JSON example
+    source: "externals/cgm-remote-monitor/lib/api3/doc/alarmsockets.md:140-150"
+    status: verified
+
+  - id: alarm-ack-request-schema
+    description: "Alarm 'ack' emit request schema is documented"
+    type: documentation
+    requirement: REQ-SYNC-004
+    target: doc.websocket.alarm.ack
+    expected:
+      parameters:
+        - level: "alarm level to acknowledge"
+        - group: "alarm group to acknowledge"
+        - silenceTimeInMilliseconds: "silence duration"
+    verification:
+      - alarmsockets.md documents ack emit with 3 parameters
+    source: "externals/cgm-remote-monitor/lib/api3/doc/alarmsockets.md:91-98"
+    status: verified
+
+  # ============================================
+  # REQ-SYNC-005: WebSocket Error Handling
+  # ============================================
+
+  - id: storage-subscribe-auth-error
+    description: "Storage subscribe authentication error handling is documented"
+    type: documentation
+    requirement: REQ-SYNC-005
+    target: doc.websocket.storage.auth_error
+    expected:
+      response:
+        success: false
+        message: "error message describing auth failure"
+    verification:
+      - socket.md shows error handling in subscribe callback
+      - Documents that invalid accessToken returns success=false
+    source: "externals/cgm-remote-monitor/lib/api3/doc/socket.md:79-97"
+    status: verified
+
+  - id: storage-subscribe-permission-error
+    description: "Storage subscribe permission error handling is documented"
+    type: documentation
+    requirement: REQ-SYNC-005
+    target: doc.websocket.storage.permission_error
+    expected:
+      behavior: "Subject must have read access to collections"
+      settings_exception: "settings requires api:settings:admin permission"
+      partial_success: "Can subscribe to subset of requested collections"
+    verification:
+      - socket.md documents permission requirements
+      - Clarifies settings collection exception
+      - Explains partial subscription on partial permissions
+    source: "externals/cgm-remote-monitor/lib/api3/doc/socket.md:79-84"
+    status: verified
+
+  - id: alarm-subscribe-auth-error
+    description: "Alarm subscribe authentication error handling is documented"
+    type: documentation
+    requirement: REQ-SYNC-005
+    target: doc.websocket.alarm.auth_error
+    expected:
+      response:
+        success: false
+        message: "error message describing auth failure"
+    verification:
+      - alarmsockets.md shows error handling in subscribe callback
+      - Documents that invalid accessToken returns success=false
+    source: "externals/cgm-remote-monitor/lib/api3/doc/alarmsockets.md:76-88"
+    status: verified
+
+  - id: storage-apiv1-exclusion-documented
+    description: "Limitation that APIv1 changes are not broadcast is documented"
+    type: documentation
+    requirement: REQ-SYNC-005
+    gap: GAP-SYNC-001
+    target: doc.websocket.storage.limitations
+    expected:
+      limitation: "Only APIv3 changes are broadcast"
+      excluded: "Direct database and APIv1 modifications"
+    verification:
+      - socket.md includes important notice about APIv3-only broadcasting
+    source: "externals/cgm-remote-monitor/lib/api3/doc/socket.md:57"
+    status: verified
+
+  - id: socket-namespace-documented
+    description: "Socket.IO namespace configuration is documented"
+    type: documentation
+    requirement: REQ-SYNC-005
+    target: doc.websocket.namespaces
+    expected:
+      storage: "/storage namespace for CRUD events"
+      alarm: "/alarm namespace for alarm events"
+    verification:
+      - socket.md documents /storage namespace
+      - alarmsockets.md documents /alarm namespace
+      - Both clarify base URL without /api/v3
+    source: "externals/cgm-remote-monitor/lib/api3/doc/socket.md:60-63"
+    status: verified
+
+  - id: socket-reconnection-not-documented
+    description: "Socket.IO reconnection behavior needs documentation"
+    type: documentation
+    requirement: REQ-SYNC-005
+    gap: GAP-API-006
+    target: doc.websocket.reconnection
+    expected:
+      reconnection_strategy: "undocumented"
+      resubscription_required: "undocumented"
+    verification:
+      - Neither socket.md nor alarmsockets.md document reconnection handling
+      - Client must handle reconnect and re-emit subscribe
+    status: gap_identified
+    remediation: "Add reconnection guidance to WebSocket documentation"

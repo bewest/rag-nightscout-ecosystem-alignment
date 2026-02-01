@@ -64,6 +64,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **🎉🎉 WebSocket Documentation Assertions** | `conformance/assertions/websocket-docs.yaml` | 14 assertions, 2 REQs, **SYNC-IDENTITY DOMAIN 100% COMPLETE** |
 | **🎉🎉 Algorithm Core Assertions** | `conformance/assertions/algorithm-core.yaml` | 19 assertions, 3 REQs, **ALL 12 CATEGORIES 100% COMPLETE** |
 | **🎉 Proposed API Assertions** | `conformance/assertions/proposed-api.yaml` | 23 assertions, 4 REQs, Proposed API 100% COMPLETE |
 | **🎉 Trio oref Assertions** | `conformance/assertions/trio-oref.yaml` | 22 assertions, 3 REQs, Trio oref 100% COMPLETE |
