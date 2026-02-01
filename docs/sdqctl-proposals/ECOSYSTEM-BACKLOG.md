@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 97) | **Open Items**: 5  
+> **Last Groomed**: 2026-02-01 (cycle 97) | **Open Items**: 6  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -64,6 +64,13 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** aid-algorithms-requirements.md (56 REQs)
 **Deliverable:** `traceability/domain-matrices/aid-algorithms-matrix.md`
 **Impact:** Identify assertion gaps in algorithm comparison domain
+
+### 6. [P3] Interop/Unit assertions
+**Type:** Conformance | **Effort:** Low
+**Focus:** Create assertions for REQ-INTEROP-001-003 and REQ-UNIT-001-004
+**Source:** treatments-matrix.md (remaining 7 REQs at 80% coverage)
+**Deliverable:** `conformance/assertions/interop-unit-requirements.yaml`
+**Impact:** Complete treatments domain to 100% assertion coverage
 
 ---
 
