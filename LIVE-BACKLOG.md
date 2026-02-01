@@ -27,6 +27,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Safety Limit Assertions (cycle 101) | P2 | ✅ Complete - 20 assertions, 3 REQs covered, algorithm 11%→16% | 2026-02-01 |
 | Degraded Operation Assertions (cycle 100) | P2 | ✅ Complete - 24 assertions, 6 REQs covered, algorithm 0%→11% | 2026-02-01 |
 | AID Algorithms Matrix (cycle 99) | P2 | ✅ Complete - 56 REQs, 66 GAPs, 0% coverage, 7 action items | 2026-02-01 |
 | Backlog Grooming (cycle 98) | P0 | ✅ Complete - Queue 5→6 items, cross-controller dedup added | 2026-02-01 |

@@ -12,11 +12,11 @@
 |--------|-------|
 | Requirements | 56 |
 | Gaps | 66 |
-| REQs with assertion coverage | 6 (11%) |
-| Uncovered REQs | 50 (89%) |
-| Uncovered GAPs | 64 (97%) |
+| REQs with assertion coverage | 9 (16%) |
+| Uncovered REQs | 47 (84%) |
+| Uncovered GAPs | 62 (94%) |
 
-**Status**: 🔄 **IN PROGRESS** - Degraded operation assertions complete (6 REQs)
+**Status**: 🔄 **IN PROGRESS** - Degraded operation + safety limits complete (9 REQs)
 
 ---
 
@@ -28,7 +28,7 @@
 |-------------|-------------|-----------|------------|
 | REQ-ALG-001 | Cross-Project Test Vector Format | GAP-ALG-001 | ❌ None |
 | REQ-ALG-002 | Semantic Equivalence Assertions | GAP-ALG-003 | ❌ None |
-| REQ-ALG-003 | Safety Limit Validation | GAP-ALG-001 | ❌ None |
+| REQ-ALG-003 | Safety Limit Validation | GAP-ALG-001 | ✅ safety-limits.yaml |
 | REQ-ALG-004 | Baseline Regression Detection | GAP-ALG-002 | ❌ None |
 
 ### Carb Absorption (6)
@@ -58,8 +58,8 @@
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
 | REQ-INS-001 | Consistent Exponential Model | - | ❌ None |
-| REQ-INS-002 | DIA Minimum Enforcement | GAP-ALG-012 | ❌ None |
-| REQ-INS-003 | Peak Time Configuration Bounds | GAP-INS-003 | ❌ None |
+| REQ-INS-002 | DIA Minimum Enforcement | GAP-ALG-012 | ✅ safety-limits.yaml |
+| REQ-INS-003 | Peak Time Configuration Bounds | GAP-INS-003 | ✅ safety-limits.yaml |
 | REQ-INS-004 | Activity Calculation for BGI | - | ❌ None |
 | REQ-INS-005 | Insulin Model Metadata in Treatments | GAP-INS-001 | ❌ None |
 
@@ -228,10 +228,10 @@
 
 | Category | REQs | Covered | Coverage |
 |----------|------|---------|----------|
-| Algorithm Core | 4 | 0 | 0% |
+| Algorithm Core | 4 | 1 | 25% |
 | Carb Absorption | 6 | 0 | 0% |
 | Degraded Operation | 6 | 6 | 100% ✅ |
-| Insulin Model | 5 | 0 | 0% |
+| Insulin Model | 5 | 2 | 40% |
 | Proposed API | 4 | 0 | 0% |
 | Profile Schema | 7 | 0 | 0% |
 | Bolus Wizard | 3 | 0 | 0% |
@@ -240,7 +240,7 @@
 | Dosing Mechanism | 3 | 0 | 0% |
 | Target Range | 3 | 0 | 0% |
 | Trio oref | 3 | 0 | 0% |
-| **Total** | **56** | **6** | **11%** |
+| **Total** | **56** | **9** | **16%** |
 
 ### Data Quality Issues
 
@@ -255,18 +255,16 @@
 ### High Priority (Safety-Critical)
 
 1. ~~**Create degradation assertions** (REQ-DEGRADE-001-006)~~ ✅ cycle 100
-   - 25 assertions covering CGM loss, pump timeout, remote fallback, logging, docs, agent fallback
+   - 24 assertions covering CGM loss, pump timeout, remote fallback, logging, docs, agent fallback
    - Deliverable: `conformance/assertions/degraded-operation.yaml`
 
-2. **Create safety limit assertions** (REQ-ALG-003, REQ-INS-002)
-   - Max IOB/basal enforcement
-   - DIA minimum validation
-   - Peak time bounds
+2. ~~**Create safety limit assertions** (REQ-ALG-003, REQ-INS-002, REQ-INS-003)~~ ✅ cycle 101
+   - 20 assertions covering max IOB/basal, DIA minimum, peak time bounds
    - Deliverable: `conformance/assertions/safety-limits.yaml`
 
 ### Medium Priority (Interoperability)
 
-3. **Create insulin model assertions** (REQ-INS-001-005)
+3. **Create insulin model assertions** (REQ-INS-001, REQ-INS-004, REQ-INS-005)
    - Exponential formula verification
    - Model metadata sync
    - Deliverable: `conformance/assertions/insulin-model.yaml`
@@ -301,7 +299,8 @@
 | File | REQs Covered | Gaps Covered |
 |------|--------------|--------------|
 | `degraded-operation.yaml` | 6 (REQ-DEGRADE-001-006) | 2 (GAP-ALG-011, GAP-ALG-014) |
-| **Total** | **6** | **2** |
+| `safety-limits.yaml` | 3 (REQ-ALG-003, REQ-INS-002, REQ-INS-003) | 2 (GAP-ALG-001, GAP-ALG-012) |
+| **Total** | **9** | **4** |
 
 ---
 

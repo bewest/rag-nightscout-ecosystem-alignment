@@ -1,0 +1,270 @@
+# Assertions for Safety Limit Requirements
+# Tests safety-critical algorithm limits (REQ-ALG-003, REQ-INS-002, REQ-INS-003)
+# Safety-critical: Prevents overdosing and dangerous insulin curves
+
+scenario: safety-limits
+version: 1
+
+# Link to requirements in traceability/aid-algorithms-requirements.md
+requirements:
+  - REQ-ALG-003  # Safety Limit Validation
+  - REQ-INS-002  # DIA Minimum Enforcement
+  - REQ-INS-003  # Peak Time Configuration Bounds
+
+related_gaps:
+  - GAP-ALG-001  # No cross-project algorithm test vectors
+  - GAP-ALG-012  # DIA Minimum Enforcement Differences
+
+assertions:
+  # ============================================
+  # Safety Limit Validation (REQ-ALG-003)
+  # ============================================
+
+  - id: max-iob-enforced
+    description: "Maximum IOB limit is enforced by algorithm"
+    type: safety
+    requirement: REQ-ALG-003
+    target: algorithm.maxIOB
+    expected: algorithm respects configured maxIOB limit
+    verification:
+      - Configure maxIOB limit (e.g., 5 units)
+      - Create scenario where algorithm would recommend exceeding limit
+      - Verify algorithm caps recommendation at maxIOB
+      - Verify no additional insulin delivered beyond limit
+
+  - id: max-iob-configurable
+    description: "Maximum IOB limit is user-configurable"
+    type: config
+    requirement: REQ-ALG-003
+    target: settings.maxIOB
+    expected: user can configure maxIOB within safe bounds
+    verification:
+      - Access safety settings
+      - Configure maxIOB to allowed value
+      - Verify setting persists across restart
+      - Verify algorithm uses configured value
+
+  - id: max-basal-enforced
+    description: "Maximum basal rate limit is enforced"
+    type: safety
+    requirement: REQ-ALG-003
+    target: algorithm.maxBasal
+    expected: temp basal never exceeds maxBasal limit
+    verification:
+      - Configure maxBasal limit (e.g., 2 U/hr)
+      - Create high glucose scenario
+      - Verify temp basal recommendation capped at maxBasal
+      - Verify pump command respects limit
+
+  - id: max-basal-configurable
+    description: "Maximum basal rate is user-configurable"
+    type: config
+    requirement: REQ-ALG-003
+    target: settings.maxBasal
+    expected: user can configure maxBasal within safe bounds
+    verification:
+      - Access safety settings
+      - Configure maxBasal to allowed value
+      - Verify setting persists
+      - Verify algorithm uses configured value
+
+  - id: low-glucose-suspend-triggered
+    description: "Low glucose suspend activates at threshold"
+    type: safety
+    requirement: REQ-ALG-003
+    target: algorithm.lowGlucoseSuspend
+    expected: basal suspended when glucose at or below threshold
+    verification:
+      - Configure LGS threshold (e.g., 70 mg/dL)
+      - Simulate glucose at threshold
+      - Verify basal delivery suspended
+      - Verify clear indication to user
+
+  - id: low-glucose-suspend-configurable
+    description: "Low glucose suspend threshold is configurable"
+    type: config
+    requirement: REQ-ALG-003
+    target: settings.suspendThreshold
+    expected: user can configure suspend threshold
+    verification:
+      - Access safety settings
+      - Configure suspend threshold
+      - Verify setting persists
+      - Verify LGS activates at configured threshold
+
+  - id: safety-limit-failure-critical
+    description: "Safety limit violations are treated as critical errors"
+    type: safety
+    requirement: REQ-ALG-003
+    target: error.safetyViolation
+    expected: safety violations logged as critical
+    verification:
+      - Simulate condition that would violate safety limit
+      - Verify violation prevented
+      - Verify critical error logged
+      - Verify user notification generated
+
+  - id: max-smb-enforced
+    description: "Maximum SMB bolus size is enforced"
+    type: safety
+    requirement: REQ-ALG-003
+    target: algorithm.maxSMB
+    expected: SMB bolus never exceeds configured maximum
+    verification:
+      - Configure maxSMB limit (e.g., 0.5 units)
+      - Create scenario where larger SMB would be recommended
+      - Verify SMB capped at configured limit
+      - Verify multiple smaller SMBs do not circumvent limit
+
+  # ============================================
+  # DIA Minimum Enforcement (REQ-INS-002)
+  # ============================================
+
+  - id: dia-minimum-enforced
+    description: "DIA below 5 hours is rejected or auto-corrected"
+    type: safety
+    requirement: REQ-INS-002
+    target: settings.dia
+    expected: DIA clamped to minimum 5 hours for exponential model
+    verification:
+      - Attempt to set DIA = 3 hours
+      - Verify setting rejected or auto-corrected to 5 hours
+      - Verify user notification about adjustment
+      - Verify IOB calculations use corrected value
+
+  - id: dia-minimum-validation-message
+    description: "User notified when DIA is below minimum"
+    type: ui
+    requirement: REQ-INS-002
+    target: validation.diaMinimum
+    expected: clear message explaining DIA minimum requirement
+    verification:
+      - Attempt to enter DIA below 5 hours
+      - Verify validation message appears
+      - Verify message explains safety rationale
+      - Verify message indicates corrected value
+
+  - id: dia-minimum-exponential-only
+    description: "DIA minimum applies to exponential insulin models"
+    type: config
+    requirement: REQ-INS-002
+    target: settings.insulinModel
+    expected: minimum enforced for exponential models
+    verification:
+      - Select exponential insulin model (Rapid-Acting, Fiasp)
+      - Verify DIA minimum of 5 hours enforced
+      - Document behavior for other model types if available
+
+  - id: dia-range-documented
+    description: "Valid DIA range is documented for each insulin model"
+    type: documentation
+    requirement: REQ-INS-002
+    target: docs.diaRange
+    expected: documentation specifies valid DIA range
+    verification:
+      - Review insulin model documentation
+      - Verify minimum DIA is stated (5 hours for exponential)
+      - Verify maximum DIA is stated if applicable
+      - Verify rationale is explained
+
+  - id: dia-affects-iob-calculation
+    description: "DIA value correctly affects IOB decay curve"
+    type: behavior
+    requirement: REQ-INS-002
+    target: calculation.iobDecay
+    expected: IOB decay matches DIA setting
+    verification:
+      - Set DIA to 5 hours
+      - Deliver 1 unit bolus
+      - Verify IOB approaches 0 after 5 hours
+      - Verify IOB curve shape matches exponential model
+
+  # ============================================
+  # Peak Time Configuration Bounds (REQ-INS-003)
+  # ============================================
+
+  - id: peak-time-rapid-acting-bounds
+    description: "Rapid-acting peak time clamped to 50-120 minutes"
+    type: safety
+    requirement: REQ-INS-003
+    target: settings.peakTime.rapidActing
+    expected: peak time within 50-120 min for rapid-acting
+    verification:
+      - Select rapid-acting insulin model with custom peak
+      - Attempt to set peak = 30 min (below minimum)
+      - Verify clamped to 50 min minimum
+      - Attempt to set peak = 150 min (above maximum)
+      - Verify clamped to 120 min maximum
+
+  - id: peak-time-ultra-rapid-bounds
+    description: "Ultra-rapid peak time clamped to 35-100 minutes"
+    type: safety
+    requirement: REQ-INS-003
+    target: settings.peakTime.ultraRapid
+    expected: peak time within 35-100 min for ultra-rapid
+    verification:
+      - Select ultra-rapid insulin model (Fiasp, Lyumjev)
+      - Attempt to set peak = 20 min (below minimum)
+      - Verify clamped to 35 min minimum
+      - Attempt to set peak = 130 min (above maximum)
+      - Verify clamped to 100 min maximum
+
+  - id: peak-time-adjustment-notification
+    description: "User notified when peak time is adjusted"
+    type: ui
+    requirement: REQ-INS-003
+    target: validation.peakTime
+    expected: notification when peak time clamped to bounds
+    verification:
+      - Attempt to set peak time outside valid range
+      - Verify notification appears
+      - Verify notification explains adjustment
+      - Verify notification shows accepted value
+
+  - id: peak-time-fixed-presets
+    description: "Fixed presets use documented peak times"
+    type: config
+    requirement: REQ-INS-003
+    target: settings.insulinPresets
+    expected: preset peak times match documentation
+    verification:
+      - Select each insulin preset (Humalog, Novolog, Fiasp, etc.)
+      - Verify peak time matches documented value
+      - Verify user cannot modify preset peak times
+      - Verify peak times are physiologically realistic
+
+  - id: peak-time-affects-activity
+    description: "Peak time correctly affects insulin activity curve"
+    type: behavior
+    requirement: REQ-INS-003
+    target: calculation.insulinActivity
+    expected: activity curve peaks at configured time
+    verification:
+      - Set peak time to 75 minutes
+      - Deliver 1 unit bolus
+      - Calculate insulin activity over time
+      - Verify maximum activity occurs near 75 minutes
+
+  - id: peak-time-range-documented
+    description: "Valid peak time ranges documented per insulin type"
+    type: documentation
+    requirement: REQ-INS-003
+    target: docs.peakTimeRange
+    expected: documentation specifies valid peak time ranges
+    verification:
+      - Review insulin model documentation
+      - Verify rapid-acting range stated (50-120 min)
+      - Verify ultra-rapid range stated (35-100 min)
+      - Verify rationale for bounds explained
+
+  - id: peak-time-curve-visualization
+    description: "Insulin activity curve is visualizable with peak"
+    type: ui
+    requirement: REQ-INS-003
+    target: ui.insulinCurve
+    expected: curve visualization shows peak time
+    verification:
+      - Access insulin model settings
+      - Verify activity curve is displayed
+      - Verify peak time is visually indicated
+      - Verify curve updates when peak changed

@@ -13,6 +13,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Safety Limit Assertions (2026-02-01)
+
+Created safety-critical conformance assertions for algorithm limit requirements.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 3 (REQ-ALG-003, REQ-INS-002, REQ-INS-003) |
+| Assertions created | 20 |
+| Coverage improvement | Algorithm domain 11% → 16% |
+
+**Deliverable**: `conformance/assertions/safety-limits.yaml`
+
+**Coverage by Topic**:
+- Max IOB/basal enforcement: 8 assertions
+- DIA minimum validation: 5 assertions
+- Peak time configuration bounds: 7 assertions
+
+**Impact**: Safety-critical algorithm limits covered; prevents overdosing
+
+---
+
 ### Degraded Operation Assertions (2026-02-01)
 
 Created safety-critical conformance assertions for fallback behavior requirements.
