@@ -1,0 +1,233 @@
+# Assertions for Bridge and Connector Protocol
+# Tests bridge/connector requirements for Nightscout data upload applications
+# Uses assertion types from conformance/assertions/_template.yaml
+
+scenario: bridge-connector-protocol
+version: 1
+
+# Link to requirements in traceability/cgm-sources-requirements.md
+requirements:
+  - REQ-BRIDGE-001  # v3 API support for bridge applications
+  - REQ-BRIDGE-002  # Client-side sync identity generation
+  - REQ-BRIDGE-003  # Complete collection coverage
+  - REQ-CONNECT-001 # XState machine testability
+  - REQ-CONNECT-002 # Source transform standardization
+  - REQ-CONNECT-003 # Exponential backoff on failure
+
+related_gaps:
+  - GAP-CONNECT-001  # Bridge v3 API adoption incomplete
+  - GAP-CONNECT-002  # Inconsistent output formats
+  - GAP-CONNECT-003  # UUID generation not standardized
+
+assertions:
+  # ============================================
+  # v3 API Support (REQ-BRIDGE-001)
+  # ============================================
+  
+  - id: bridge-uses-v3-endpoint
+    description: "Bridge application uses v3 API endpoints for uploads"
+    type: behavior
+    requirement: REQ-BRIDGE-001
+    target: request.url
+    expected: "/api/v3/{collection}"
+    verification:
+      - Upload request targets v3 endpoint
+      - UPSERT semantics available
+      - identifier-based deduplication enabled
+
+  - id: bridge-includes-identifier
+    description: "Uploaded records include identifier field"
+    type: state
+    requirement: REQ-BRIDGE-001
+    target: record.identifier
+    expected: non-null UUID string
+    verification:
+      - Each record has identifier field
+      - Identifier is valid UUID format
+      - Enables server-side deduplication
+
+  - id: bridge-rerun-no-duplicates
+    description: "Re-running bridge does not create duplicate records"
+    type: behavior
+    requirement: REQ-BRIDGE-001
+    target: collection.count
+    expected: unchanged on re-run
+    verification:
+      - Upload same records twice
+      - Server updates existing records
+      - No new records created
+
+  # ============================================
+  # Sync Identity Generation (REQ-BRIDGE-002)
+  # ============================================
+
+  - id: uuid-deterministic-generation
+    description: "UUID generated deterministically from source data"
+    type: transform
+    requirement: REQ-BRIDGE-002
+    input: { source: "dexcom", date: "2026-01-01T12:00:00Z", type: "sgv" }
+    expected: "same UUID on repeated calls"
+    verification:
+      - UUID v5 from namespace + source|date|type
+      - Consistent across restarts
+      - No random components
+
+  - id: uuid-matches-nightscout-format
+    description: "Generated UUID matches Nightscout identifier format"
+    type: state
+    requirement: REQ-BRIDGE-002
+    target: identifier.format
+    expected: "UUID v5 string (36 chars with hyphens)"
+    verification:
+      - Format: xxxxxxxx-xxxx-5xxx-yxxx-xxxxxxxxxxxx
+      - Version nibble is 5 (name-based SHA-1)
+      - Variant bits correct
+
+  # ============================================
+  # Collection Coverage (REQ-BRIDGE-003)
+  # ============================================
+
+  - id: transform-outputs-all-collections
+    description: "Transform outputs all 3 primary collection arrays"
+    type: state
+    requirement: REQ-BRIDGE-003
+    target: output.keys
+    expected: ["entries", "treatments", "devicestatus"]
+    verification:
+      - All three arrays present in output
+      - Arrays may be empty but not omitted
+      - Consistent structure regardless of input
+
+  - id: empty-array-not-omitted
+    description: "Empty collections use empty arrays, not null/undefined"
+    type: state
+    requirement: REQ-BRIDGE-003
+    target: output.entries
+    expected: "[] (empty array) when no data"
+    verification:
+      - Unavailable data returns []
+      - Never null or undefined
+      - Never omitted from output
+
+  - id: device-field-populated
+    description: "Device field populated for source attribution"
+    type: state
+    requirement: REQ-BRIDGE-003
+    target: record.device
+    expected: non-empty string
+    verification:
+      - Each record has device field
+      - Identifies data source (e.g., "nightscout-connect/dexcom")
+      - Enables filtering by source
+
+  # ============================================
+  # XState Machine Testability (REQ-CONNECT-001)
+  # ============================================
+
+  - id: machine-definitions-exportable
+    description: "State machine definitions are exportable for testing"
+    type: state
+    requirement: REQ-CONNECT-001
+    target: module.exports.machine
+    expected: XState machine definition object
+    verification:
+      - Machine definition is public export
+      - Can be imported in test files
+      - Contains states, events, services
+
+  - id: services-injectable
+    description: "Machine services are injectable at runtime"
+    type: behavior
+    requirement: REQ-CONNECT-001
+    target: machine.withConfig
+    expected: accepts service overrides
+    verification:
+      - withConfig({ services: {...} }) works
+      - Mock services can replace real ones
+      - Enables isolated unit testing
+
+  - id: state-snapshots-capturable
+    description: "State snapshots can be captured for assertions"
+    type: state
+    requirement: REQ-CONNECT-001
+    target: service.getSnapshot()
+    expected: serializable state object
+    verification:
+      - Current state accessible
+      - Context values inspectable
+      - Can serialize for comparison
+
+  # ============================================
+  # Transform Standardization (REQ-CONNECT-002)
+  # ============================================
+
+  - id: transform-returns-standard-batch
+    description: "Transform returns standardized batch structure"
+    type: transform
+    requirement: REQ-CONNECT-002
+    input: source-specific data
+    expected: "{ entries: [], treatments: [], devicestatus: [], profile: [] }"
+    verification:
+      - All four array fields present
+      - Types match collection specifications
+      - Consistent across all source transforms
+
+  - id: entries-have-required-fields
+    description: "Entries have required fields per collection spec"
+    type: state
+    requirement: REQ-CONNECT-002
+    target: entry
+    expected: "{ sgv, date, dateString, type, device }"
+    verification:
+      - sgv is number (mg/dL)
+      - date is epoch milliseconds
+      - dateString is ISO 8601
+      - type is 'sgv'
+
+  - id: treatments-have-required-fields
+    description: "Treatments have required fields per collection spec"
+    type: state
+    requirement: REQ-CONNECT-002
+    target: treatment
+    expected: "{ eventType, created_at, device }"
+    verification:
+      - eventType from allowed set
+      - created_at is ISO 8601
+      - Additional fields per eventType
+
+  # ============================================
+  # Exponential Backoff (REQ-CONNECT-003)
+  # ============================================
+
+  - id: backoff-delay-increases
+    description: "Delay increases with consecutive failures"
+    type: behavior
+    requirement: REQ-CONNECT-003
+    target: retryDelay
+    expected: "delay[n+1] > delay[n]"
+    verification:
+      - First retry after base delay (e.g., 5s)
+      - Second retry after 2x delay
+      - Exponential growth up to max
+
+  - id: backoff-max-retries-enforced
+    description: "Maximum retry count is enforced"
+    type: behavior
+    requirement: REQ-CONNECT-003
+    target: retryCount
+    expected: "<= maxRetries (e.g., 5)"
+    verification:
+      - Counter tracks consecutive failures
+      - Stops retrying after max reached
+      - Enters error/idle state
+
+  - id: backoff-resets-on-success
+    description: "Successful fetch resets backoff state"
+    type: behavior
+    requirement: REQ-CONNECT-003
+    target: retryCount
+    expected: "0 after success"
+    verification:
+      - Successful fetch clears retry counter
+      - Delay returns to base value
+      - Next failure starts fresh backoff

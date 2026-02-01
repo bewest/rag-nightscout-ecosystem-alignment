@@ -13,6 +13,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Bridge/Connector Protocol Assertions (2026-02-01)
+
+Created conformance assertions for bridge/connector requirements.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 6 (REQ-BRIDGE-001-003, REQ-CONNECT-001-003) |
+| Assertions created | 17 |
+| Gaps addressed | 3 (GAP-CONNECT-001, GAP-CONNECT-002, GAP-CONNECT-003) |
+
+**Deliverable**: `conformance/assertions/bridge-connector.yaml`
+
+**Coverage by Requirement**:
+- REQ-BRIDGE-001 (v3 API Support): 3 assertions
+- REQ-BRIDGE-002 (Sync Identity Gen): 2 assertions
+- REQ-BRIDGE-003 (Collection Coverage): 3 assertions
+- REQ-CONNECT-001 (XState Testability): 3 assertions
+- REQ-CONNECT-002 (Transform Standardization): 3 assertions
+- REQ-CONNECT-003 (Exponential Backoff): 3 assertions
+
+**Impact**: CGM domain coverage complete at 100% (18/18 REQs)
+
+---
+
 ### Libre Protocol Assertions (2026-02-01)
 
 Created conformance assertions for Libre CGM protocol requirements.

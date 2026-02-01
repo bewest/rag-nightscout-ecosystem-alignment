@@ -18,6 +18,8 @@ See [gaps.md](gaps.md) for the index.
 
 **Source Code**: `lib/outputs/nightscout.js:35,48`
 
+**Assertions**: `conformance/assertions/bridge-connector.yaml` (bridge-uses-v3-endpoint, bridge-includes-identifier, bridge-rerun-no-duplicates)
+
 **Remediation**: Add v3 output driver using `/api/v3/entries` with identifier field.
 
 ---
@@ -41,6 +43,8 @@ See [gaps.md](gaps.md) for the index.
 
 **Impact**: Incomplete data for most cloud platform sources.
 
+**Assertions**: `conformance/assertions/bridge-connector.yaml` (transform-outputs-all-collections, transform-returns-standard-batch)
+
 **Remediation**: Extend sources to fetch all available collection types from vendor APIs.
 
 ---
@@ -59,6 +63,8 @@ See [gaps.md](gaps.md) for the index.
 - Server-side dedup varies by API version
 
 **Source Code**: `lib/outputs/nightscout.js:77-79`
+
+**Assertions**: `conformance/assertions/bridge-connector.yaml` (uuid-deterministic-generation, uuid-matches-nightscout-format)
 
 **Remediation**: Generate UUID v5 identifiers client-side matching Nightscout sync identity spec, use v3 UPSERT.
 

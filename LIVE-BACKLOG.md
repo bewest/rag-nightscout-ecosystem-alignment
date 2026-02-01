@@ -27,6 +27,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| Bridge/Connector Assertions (cycle 93) | P3 | ✅ Complete - 17 assertions, 6 REQs covered, 67%→100% | 2026-02-01 |
 | Libre Protocol Assertions (cycle 92) | P2 | ✅ Complete - 16 assertions, 6 REQs covered, 33%→67% | 2026-02-01 |
 | CGM BLE Protocol Assertions (cycle 91) | P2 | ✅ Complete - 13 assertions, 6 REQs covered, 0%→33% | 2026-02-01 |
 | CGM Sources Traceability Matrix (cycle 90) | P2 | ✅ Complete - 18 REQs, 52 GAPs, 0% assertion coverage | 2026-02-01 |

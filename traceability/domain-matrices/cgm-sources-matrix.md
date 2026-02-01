@@ -1,7 +1,7 @@
 # CGM Sources Domain Traceability Matrix
 
 > **Generated**: 2026-02-01  
-> **Updated**: 2026-02-01 (cycle 92 - Libre assertions added)  
+> **Updated**: 2026-02-01 (cycle 93 - Bridge/Connector assertions added)  
 > **Domain**: CGM Sources  
 > **Purpose**: REQ↔GAP↔Assertion cross-reference matrix
 
@@ -13,11 +13,11 @@
 |--------|-------|
 | Requirements | 18 |
 | Gaps | 52 |
-| REQs with assertion coverage | 12 (67%) |
-| Uncovered REQs | 6 (33%) |
-| Uncovered GAPs | 45 (87%) |
+| REQs with assertion coverage | 18 (100%) |
+| Uncovered REQs | 0 (0%) |
+| Uncovered GAPs | 42 (81%) |
 
-**Status**: BLE and Libre protocol assertions complete. Bridge/Connector assertions pending.
+**Status**: All requirements have assertion coverage. Gap coverage focuses on protocol documentation.
 
 ---
 
@@ -38,12 +38,12 @@
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-BRIDGE-001 | v3 API Support for Bridge Applications | GAP-XDRIP-001, GAP-DIABLE-003 | ❌ None |
-| REQ-BRIDGE-002 | Client-Side Sync Identity Generation | - | ❌ None |
-| REQ-BRIDGE-003 | Complete Collection Coverage | - | ❌ None |
-| REQ-CONNECT-001 | XState Machine Testability | - | ❌ None |
-| REQ-CONNECT-002 | Source Transform Standardization | GAP-XDRIPJS-004 | ❌ None |
-| REQ-CONNECT-003 | Exponential Backoff on Failure | - | ❌ None |
+| REQ-BRIDGE-001 | v3 API Support for Bridge Applications | GAP-XDRIP-001, GAP-DIABLE-003 | ✅ bridge-connector.yaml (3) |
+| REQ-BRIDGE-002 | Client-Side Sync Identity Generation | - | ✅ bridge-connector.yaml (2) |
+| REQ-BRIDGE-003 | Complete Collection Coverage | - | ✅ bridge-connector.yaml (3) |
+| REQ-CONNECT-001 | XState Machine Testability | - | ✅ bridge-connector.yaml (3) |
+| REQ-CONNECT-002 | Source Transform Standardization | GAP-XDRIPJS-004 | ✅ bridge-connector.yaml (3) |
+| REQ-CONNECT-003 | Exponential Backoff on Failure | - | ✅ bridge-connector.yaml (3) |
 
 ### Libre Protocol Requirements (6)
 

@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 92) | **Open Items**: 6  
+> **Last Groomed**: 2026-02-01 (cycle 93) | **Open Items**: 5  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -58,19 +58,12 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** sync-identity.md #19
 **Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
 
-### 5. [P3] Bridge/Connector protocol assertions
-**Type:** Conformance | **Effort:** Medium
-**Focus:** Create assertions for bridge/connector requirements (REQ-BRIDGE-001-003, REQ-CONNECT-001-003)
-**Source:** cgm-sources-matrix.md action items
-**Deliverable:** `conformance/assertions/bridge-connector.yaml`
-**Impact:** Complete CGM domain coverage 67%→100%
-
-### 6. [P2] Sync-identity uncovered REQ assertions
+### 5. [P2] Sync-identity uncovered REQ assertions
 **Type:** Conformance | **Effort:** Medium
 **Focus:** Create assertions for 17 uncovered sync-identity REQs
-**Source:** sync-identity-matrix.md (47% coverage → target 70%+)
+**Source:** sync-identity-matrix.md (47% coverage - target 70%+)
 **Deliverable:** `conformance/assertions/sync-identity-reqs.yaml`
-**Impact:** Increase sync-identity coverage from 47% to ~70%
+**Impact:** Increase sync-identity coverage from 47% to 70%+
 
 ---
 
@@ -78,6 +71,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **Bridge/Connector Assertions** | `conformance/assertions/bridge-connector.yaml` | 17 assertions, 6 REQs covered, CGM domain 100% complete |
 | **Libre Protocol Assertions** | `conformance/assertions/libre-protocol.yaml` | 16 assertions, 6 REQs covered, CGM coverage 33%→67% |
 | **CGM BLE Protocol Assertions** | `conformance/assertions/ble-protocol.yaml` | 13 assertions, 6 REQs covered, CGM coverage 0%→33% |
 | **CGM Sources Traceability Matrix** | `domain-matrices/cgm-sources-matrix.md` | 18 REQs, 52 GAPs; 0% assertion coverage; BLE/Libre assertions needed |
