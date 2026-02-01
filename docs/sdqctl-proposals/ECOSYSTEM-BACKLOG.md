@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 94) | **Open Items**: 4  
+> **Last Groomed**: 2026-02-01 (cycle 94) | **Open Items**: 6  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -57,6 +57,20 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Prerequisites:** StateSpan standardization proposal ✅
 **Source:** sync-identity.md #19
 **Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
+
+### 5. [P2] Treatments domain traceability matrix
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Create REQ↔GAP↔Assertion matrix for treatments domain
+**Source:** treatments-requirements.md (35 REQs)
+**Deliverable:** `traceability/domain-matrices/treatments-matrix.md`
+**Impact:** Identify assertion gaps in treatments domain
+
+### 6. [P2] AID algorithms traceability matrix
+**Type:** Documentation | **Effort:** Medium
+**Focus:** Create REQ↔GAP↔Assertion matrix for AID algorithms domain
+**Source:** aid-algorithms-requirements.md (56 REQs)
+**Deliverable:** `traceability/domain-matrices/aid-algorithms-matrix.md`
+**Impact:** Identify assertion gaps in algorithm comparison domain
 
 ---
 
