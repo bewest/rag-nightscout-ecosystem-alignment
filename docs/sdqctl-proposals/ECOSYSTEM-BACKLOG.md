@@ -39,41 +39,44 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Deliverable:** `conformance/runners/loop-runner.swift`
 **Source:** aid-algorithms.md #2
 
-### 3. ~~[P2] Document AAPS Kotlin runner setup requirements~~ ✅ COMPLETE
-**Status:** Done (2026-02-01) - Added to `conformance/README.md`
-
-### 4. [P2] V4 API Integration Phase 2: Nocturne soft delete
+### 3. [P2] V4 API Integration Phase 2: Nocturne soft delete
 **Type:** Implementation | **Effort:** Medium
 **Repos:** nocturne
 **Focus:** Add soft delete support to align with cgm-remote-monitor behavior
 **Source:** nightscout-api.md #25, Phase 2 item
 **Gap Reference:** GAP-SYNC-040
 
-### 5. [P2] MongoDB Phase 2: Storage layer analysis
+### 4. [P2] MongoDB Phase 2: Storage layer analysis
 **Type:** Analysis | **Effort:** Medium
 **Focus:** Analyze storage layer for MongoDB 5.x/6.x compatibility
 **Source:** mongodb-update-readiness-report.md Phase 2
 **Deliverable:** Storage layer compatibility assessment
 
-### 6. [P3] StateSpan V3 extension specification
+### 5. [P3] StateSpan V3 extension specification
 **Type:** Specification | **Effort:** Medium
 **Focus:** Define V3 API extension for StateSpan standardization
 **Source:** statespan-standardization-proposal.md
 **Note:** Author preference: V4-only, but V3 extension still valuable for cgm-remote-monitor
 
-### 7. [P3] Tidepool integration inventory
+### 6. [P3] Tidepool integration inventory
 **Type:** Research | **Effort:** Low
 **Focus:** Document current Tidepool integration status across all apps
 **Source:** stakeholder-priority-analysis.md (marked TODO)
 **Outcome:** Integration status matrix for AAPS, Trio, xDrip+, Loop
 
-### 8. [P3] Tandem integration inventory
+### 7. [P3] Tandem integration inventory
 **Type:** Research | **Effort:** Low
 **Focus:** Document Tandem/Control-IQ integration status and gaps
 **Source:** stakeholder-priority-analysis.md (marked TODO)
 **Outcome:** Gap analysis for tconnectsync and potential improvements
 
 ---
+
+## Recently Completed (2026-02-01)
+
+| Item | Deliverable | Key Finding |
+|------|-------------|-------------|
+| **AAPS Kotlin Runner Documentation** | `conformance/README.md` | JVM 11+, `make aaps-runner`, scaffolding ready |
 
 ## Recently Completed (2026-01-31)
 
