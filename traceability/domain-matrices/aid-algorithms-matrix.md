@@ -13,10 +13,10 @@
 | Requirements | 56 |
 | Gaps | 66 |
 | REQs with assertion coverage | 50 (89%) |
-| Uncovered REQs | 6 (11%) |
+| Uncovered REQs | 6 (11%) - now with unique IDs |
 | Uncovered GAPs | 32 (48%) |
 
-**Status**: ✅ **NEAR COMPLETE** - 12/12 categories covered (50 REQs), remaining 6 are duplicate IDs
+**Status**: ✅ 12/12 categories covered. Duplicate REQ IDs fixed (cycle 112): REQ-CARB-007/008/009 and REQ-INS-006/007/008 are new unique IDs.
 
 ---
 
@@ -100,15 +100,15 @@
 | REQ-SENS-002 | Sensitivity Visibility in Nightscout | GAP-SENS-001 | ✅ algorithm-docs.yaml |
 | REQ-SENS-003 | Document Detection Windows | GAP-SENS-002 | ✅ algorithm-docs.yaml |
 
-### Carb Display (3) - Overlaps with Carb Absorption
+### Carb Display (3) - NEW UNIQUE IDs
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-CARB-001* | COB Display Source Attribution | GAP-CARB-001 | ❌ None |
-| REQ-CARB-002* | min_5m_carbimpact Configuration | GAP-CARB-004 | ❌ None |
-| REQ-CARB-003* | Absorption Model Documentation | GAP-CARB-003 | ❌ None |
+| REQ-CARB-007 | COB Display Source Attribution | GAP-CARB-001 | ❌ None |
+| REQ-CARB-008 | min_5m_carbimpact Configuration Exposure | GAP-CARB-004 | ❌ None |
+| REQ-CARB-009 | Absorption Model Type Documentation | GAP-CARB-003 | ❌ None |
 
-*Note: Duplicate REQ-CARB IDs exist in source file - need deduplication*
+*Note: Renamed from duplicate REQ-CARB-001-003 to unique IDs*
 
 ### Prediction (3) - COVERED ✅
 
@@ -126,15 +126,15 @@
 | REQ-DOSE-002 | Safety Net Documentation | - | ✅ algorithm-docs.yaml |
 | REQ-DOSE-003 | Enable Condition Transparency | - | ✅ algorithm-docs.yaml |
 
-### Insulin Model (3) - Overlaps with earlier section
+### Insulin Model Display (3) - NEW UNIQUE IDs
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-INS-001* | Exponential Formula Consistency | - | ❌ None |
-| REQ-INS-002* | DIA Range Validation | GAP-ALG-012 | ❌ None |
-| REQ-INS-003* | Peak Time Documentation | GAP-INS-003 | ❌ None |
+| REQ-INS-006 | Exponential Formula Consistency Verification | - | ❌ None |
+| REQ-INS-007 | DIA Range Validation UI | GAP-ALG-012 | ❌ None |
+| REQ-INS-008 | Peak Time Preset Documentation | GAP-INS-003 | ❌ None |
 
-*Note: Duplicate REQ-INS IDs exist in source file - need deduplication*
+*Note: Renamed from duplicate REQ-INS-001-003 to unique IDs*
 
 ### Target Range (3) - COVERED ✅
 
@@ -282,9 +282,9 @@
    - 32 assertions covering 12 REQs across 4 categories
    - Deliverable: `conformance/assertions/algorithm-docs.yaml`
 
-7. **Fix duplicate REQ IDs** in `aid-algorithms-requirements.md`
-   - REQ-CARB-001-003 appears twice
-   - REQ-INS-001-003 appears twice
+7. ~~**Fix duplicate REQ IDs**~~ ✅ Completed cycle 112
+   - REQ-CARB-001-003 → REQ-CARB-007/008/009
+   - REQ-INS-001-003 → REQ-INS-006/007/008
 
 ---
 

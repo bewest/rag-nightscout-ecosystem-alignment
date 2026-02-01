@@ -838,9 +838,9 @@ See [requirements.md](requirements.md) for the index.
 
 **Source**: `docs/10-domain/autosens-dynamic-isf-comparison.md`
 
-## Carb Absorption Requirements
+## Carb Absorption Display Requirements
 
-### REQ-CARB-001: COB Display Source Attribution
+### REQ-CARB-007: COB Display Source Attribution
 
 **Statement**: Systems displaying COB MUST indicate which algorithm calculated it.
 
@@ -848,7 +848,7 @@ See [requirements.md](requirements.md) for the index.
 
 **Verification**: Check UI for source indicator.
 
-### REQ-CARB-002: min_5m_carbimpact Configuration
+### REQ-CARB-008: min_5m_carbimpact Configuration Exposure
 
 **Statement**: oref0-based systems SHOULD expose min_5m_carbimpact as a configurable setting.
 
@@ -856,7 +856,7 @@ See [requirements.md](requirements.md) for the index.
 
 **Verification**: Settings UI audit.
 
-### REQ-CARB-003: Absorption Model Documentation
+### REQ-CARB-009: Absorption Model Type Documentation
 
 **Statement**: AID systems MUST document their carb absorption model type and key parameters.
 
@@ -918,9 +918,9 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
-## Insulin Model Requirements
+## Insulin Model Display Requirements
 
-### REQ-INS-001: Exponential Formula Consistency
+### REQ-INS-006: Exponential Formula Consistency Verification
 
 **Statement**: Systems using exponential insulin model MUST use compatible formula (tau/a/S parameters from Loop issue #388).
 
@@ -928,7 +928,7 @@ See [requirements.md](requirements.md) for the index.
 
 **Verification**: Compare IOB output for same insulin dose and time inputs.
 
-### REQ-INS-002: DIA Range Validation
+### REQ-INS-007: DIA Range Validation UI
 
 **Statement**: Systems MUST validate DIA is within safe bounds (typically 3-8 hours).
 
@@ -936,7 +936,7 @@ See [requirements.md](requirements.md) for the index.
 
 **Verification**: Test boundary values in profile settings.
 
-### REQ-INS-003: Peak Time Documentation
+### REQ-INS-008: Peak Time Preset Documentation
 
 **Statement**: Systems SHOULD document peak time values for each insulin preset (Humalog, Fiasp, etc.).
 
