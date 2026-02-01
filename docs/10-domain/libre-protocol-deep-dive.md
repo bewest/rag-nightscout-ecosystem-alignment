@@ -35,6 +35,8 @@ This specification is derived from the following open-source implementations:
 | xDrip4iOS | Swift | `externals/xdripswift/` | Multi-transmitter bridge support |
 | Trio LibreTransmitter | Swift | `externals/Trio/LibreTransmitter/` | Trio integration |
 
+**Conformance Assertions**: [`conformance/assertions/libre-protocol.yaml`](../../conformance/assertions/libre-protocol.yaml) — 16 assertions covering REQ-LIBRE-001 through REQ-LIBRE-006
+
 ---
 
 ## Sensor Type Detection
