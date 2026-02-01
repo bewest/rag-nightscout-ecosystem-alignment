@@ -12,6 +12,11 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 | # | Item | Priority | Effort | Notes |
 |---|------|----------|--------|-------|
+| 29 | **Line-based progress archival** | P1 | Low | Chunk by line count (500 threshold), not days. Session hash + cycle range naming. |
+| 30 | **YAML↔Markdown sync validator** | P2 | Medium | Compare traceability/*.md claims against conformance/**/*.yaml assertions for drift detection |
+| 31 | **REFCAT caching implementation** | P2 | Medium | Implement proposal from refcat-caching-proposal.md (20-40% token reduction) |
+| 32 | **Selective repo loading implementation** | P2 | Medium | Implement proposal from selective-repo-loading-proposal.md (40-60% token reduction) |
+| 33 | **Auto-replenish Ready Queue** | P3 | Low | Tool to scan domain backlogs and promote unblocked P1/P2 items to Ready Queue |
 | 1 | Algorithm conformance runners | P2 | High | oref0-runner.js ✅, aaps-runner.kt ✅ (build ready, execution blocked - needs AAPS deps, deferred Phase 3) |
 | 2 | ~~sdqctl VERIFY .conv directive (Phase 2)~~ | ~~P3~~ | ~~Medium~~ | ✅ COMPLETE - VERIFY/VERIFY-TRACE/VERIFY-COVERAGE directives fully implemented in sdqctl |
 | 3 | ~~LSP-based claim verification (Phase 2+)~~ | ~~P2~~ | ~~Medium~~ | ✅ COMPLETE - `verify_refs.py --semantic` flag, symbol validation via lsp_query.py |

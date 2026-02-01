@@ -315,8 +315,26 @@ python tools/doc_chunker.py --archive-progress --keep-days 30
 
 **For progress.md**:
 1. Parse all `### Title (YYYY-MM-DD)` entries
-2. Keep entries from last 30 days in progress.md
-3. Move older entries to `progress-archive/YYYY-MM.md`
+2. **Chunk by line count threshold** (not days) - keep newest entries until ~500 lines
+3. Archive files named by session hash + cycle range: `progress-archive-{session_hash}-c{start}-c{end}.md`
+
+**Why line-based, not time-based**:
+- High-velocity workflows: 100+ cycles/day possible
+- Time-based archival (30 days) fails when days contain hundreds of entries
+- Line threshold ensures consistent context window usage
+
+**Session hash strategy**:
+- Short hash derived from session start timestamp or workspace lock
+- Example: `progress-archive-a1b2c3-c100-c150.md`
+- Preserves cycle ordering for historical traceability
+
+**Chunking trigger**:
+```
+if progress.md > 500 lines:
+  1. Parse cycle numbers from "## Processed" table or "cycle NNN" mentions
+  2. Keep newest ~300 lines (active work + recent context)
+  3. Archive remainder with session_hash + cycle range in filename
+```
 
 ### Output (--plan)
 ```json
@@ -415,21 +433,143 @@ PROMPT Verify:
 
 ## Implementation Plan
 
-### Phase 1: Core Tools (P0)
-- [ ] Create `tools/queue_stats.py` - one-line status
-- [ ] Add to backlog-cycle-v2.conv Phase 0
+### Phase 1: Core Tools (P0) ✅ COMPLETE
+- [x] Create `tools/queue_stats.py` - one-line status
+- [x] Add to backlog-cycle-v2.conv Phase 0
 
-### Phase 2: Validation (P1)
-- [ ] Create `tools/backlog_hygiene.py` - queue validation
-- [ ] Create `tools/doc_chunker.py --check` - size checking
+### Phase 2: Validation (P1) ✅ COMPLETE
+- [x] Create `tools/backlog_hygiene.py` - queue validation
+- [x] Create `tools/doc_chunker.py --check` - size checking
 
-### Phase 3: Automation (P1)
-- [ ] Add chunking logic to `doc_chunker.py`
-- [ ] Add archive logic to `backlog_hygiene.py`
+### Phase 3: Line-Based Archival (P1) 🔄 IN PROGRESS
+- [ ] Update `doc_chunker.py` to use line count threshold (500) instead of days
+- [ ] Implement session hash + cycle range naming for archives
+- [ ] Add `--archive-progress --keep-lines 300` flag
 
-### Phase 4: Integration (P2)
-- [ ] Add HYGIENE directives to `.sdqctl/directives.yaml`
-- [ ] Create `backlog-cycle-v3.conv` with full hygiene integration
+### Phase 4: Cross-Format Sync Validation (P2)
+- [ ] Create `tools/verify_sync.py` - compare MD claims vs YAML assertions
+- [ ] Detect REQ/GAP references that exist in one format but not the other
+- [ ] Report drift without requiring LLM intervention
+
+### Phase 5: Token Reduction (P2)
+- [ ] Implement REFCAT caching (pre-compute file indexes)
+- [ ] Implement selective repo loading (load only needed externals/)
+- [ ] Target: 40-60% token reduction per cycle
+
+### Phase 6: Integration (P2)
+- [x] Add HYGIENE directives to `.sdqctl/directives.yaml`
+- [x] Create `backlog-cycle-v3.conv` with full hygiene integration
+
+---
+
+## Session-Based Archival Specification
+
+### Problem
+Time-based archival (e.g., "keep last 30 days") fails when:
+- 100+ cycles occur per day
+- A single day generates 1000+ lines of progress entries
+- Context window fills with stale entries from same day
+
+### Solution: Line-Based + Session Hash
+
+**Archive naming**: `progress-archive-{session_hash}-c{start}-c{end}.md`
+
+**Session hash derivation**:
+```python
+import hashlib
+from datetime import datetime
+
+def get_session_hash():
+    """Generate 6-char hash from session start or workspace lock."""
+    # Option 1: Use workspace.lock.json mtime
+    lock_mtime = Path("workspace.lock.json").stat().st_mtime
+    # Option 2: Use first cycle timestamp of the day
+    # Option 3: Use environment variable SDQCTL_SESSION_ID
+    
+    hash_input = str(lock_mtime).encode()
+    return hashlib.sha256(hash_input).hexdigest()[:6]
+```
+
+**Cycle range extraction**:
+```python
+def extract_cycle_range(content: str) -> tuple[int, int]:
+    """Extract min/max cycle numbers from content."""
+    cycles = re.findall(r'cycle (\d+)', content, re.IGNORECASE)
+    if cycles:
+        nums = [int(c) for c in cycles]
+        return min(nums), max(nums)
+    return 0, 0
+```
+
+**Archive trigger logic**:
+```python
+def should_archive(path: str, threshold: int = 500, keep_lines: int = 300) -> bool:
+    lines = count_lines(path)
+    return lines > threshold
+
+def archive_progress(keep_lines: int = 300):
+    content = Path("progress.md").read_text()
+    lines = content.split('\n')
+    
+    if len(lines) <= 500:
+        return  # No action needed
+    
+    # Keep header + newest entries
+    keep = lines[:keep_lines]
+    archive = lines[keep_lines:]
+    
+    # Generate archive filename
+    session_hash = get_session_hash()
+    start_cycle, end_cycle = extract_cycle_range('\n'.join(archive))
+    archive_name = f"progress-archive-{session_hash}-c{start_cycle}-c{end_cycle}.md"
+    
+    # Write files
+    Path(f"docs/archive/{archive_name}").write_text('\n'.join(archive))
+    Path("progress.md").write_text('\n'.join(keep))
+```
+
+---
+
+## YAML↔Markdown Sync Validation Specification
+
+### Purpose
+Detect drift between human-readable documentation and machine-readable assertions without LLM.
+
+### Cross-Reference Matrix
+
+| Source | Target | Validation |
+|--------|--------|------------|
+| `traceability/requirements.md` | `conformance/**/*.yaml` | Every REQ-* should have assertion |
+| `traceability/*-gaps.md` | `conformance/**/*.yaml` | Every GAP-* should have assertion |
+| `conformance/**/*.yaml` | `traceability/*.md` | Every assertion REQ/GAP should exist in MD |
+
+### Tool Interface
+```bash
+# Check for drift
+python tools/verify_sync.py
+
+# JSON output for CI
+python tools/verify_sync.py --json
+
+# Show only missing items
+python tools/verify_sync.py --missing-only
+```
+
+### Output Format
+```json
+{
+  "sync_status": "drift_detected",
+  "missing_in_yaml": ["REQ-123", "GAP-SYNC-045"],
+  "missing_in_markdown": ["REQ-NEW-001"],
+  "orphaned_assertions": ["assertion-for-deleted-req"],
+  "summary": {
+    "reqs_in_md": 295,
+    "reqs_in_yaml": 290,
+    "gaps_in_md": 342,
+    "gaps_in_yaml": 338
+  }
+}
+```
 
 ---
 

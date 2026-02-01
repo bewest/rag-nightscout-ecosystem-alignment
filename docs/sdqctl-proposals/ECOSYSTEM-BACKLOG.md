@@ -23,12 +23,36 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 123) | **Open Items**: 3 (all blocked)  
+> **Last Groomed**: 2026-02-01 (cycle 123) | **Open Items**: 6 (3 unblocked)  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 >
-> **Note**: All domain backlogs are 95%+ complete. Remaining items require external repo changes or macOS.
+> **Note**: 3 blocked items require external repo changes or macOS. 3 new tooling items unblocked.
 
-### 1. [P2] Loop Swift algorithm runner 🚫
+### 1. [P1] Line-based progress archival ✅
+**Type:** Implementation | **Effort:** Low
+**Focus:** Chunk progress.md by line count (500 threshold), not days
+**Rationale:** High-velocity workflows (100+ cycles/day) make time-based archival ineffective
+**Deliverable:** Update `tools/doc_chunker.py --archive-progress` with session hash + cycle range naming
+**Source:** tooling.md #29, hygiene-tooling-design.md
+**Unblocked:** Yes - internal tooling change
+
+### 2. [P2] YAML↔Markdown sync validator ✅
+**Type:** Implementation | **Effort:** Medium
+**Focus:** Detect drift between traceability/*.md claims and conformance/**/*.yaml assertions
+**Rationale:** Enable LLM-free verification of documentation accuracy
+**Deliverable:** `tools/verify_sync.py` - compare REQ/GAP references across formats
+**Source:** tooling.md #30
+**Unblocked:** Yes - internal tooling change
+
+### 3. [P2] REFCAT caching implementation ✅
+**Type:** Implementation | **Effort:** Medium
+**Focus:** Pre-compute file indexes to avoid re-scanning on each cycle
+**Rationale:** 20-40% token reduction per proposal
+**Deliverable:** Implement `refcat-caching-proposal.md`
+**Source:** tooling.md #31
+**Unblocked:** Yes - internal tooling change
+
+### 4. [P2] Loop Swift algorithm runner 🚫
 **Type:** Implementation | **Effort:** High
 **Repos:** LoopWorkspace
 **Focus:** Swift-based runner for Loop algorithm conformance testing
@@ -37,7 +61,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Source:** aid-algorithms.md #2
 **Blocker:** Requires macOS for iOS framework resolution
 
-### 2. [P2] V4 API Integration Phase 2: Nocturne soft delete 🚫
+### 5. [P2] V4 API Integration Phase 2: Nocturne soft delete 🚫
 **Type:** Implementation | **Effort:** Medium
 **Repos:** nocturne
 **Focus:** Add soft delete support to align with cgm-remote-monitor behavior
@@ -45,7 +69,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Gap Reference:** GAP-SYNC-040
 **Blocker:** Requires changes to external nocturne repo
 
-### 3. [P2] MongoDB Phase 3: Driver upgrade execution 🚫
+### 6. [P2] MongoDB Phase 3: Driver upgrade execution 🚫
 **Type:** Implementation | **Effort:** Medium
 **Focus:** Execute MongoDB driver upgrade from mongodb-legacy to mongodb@6.x
 **Prerequisites:** Phase 2 complete ✅ (no Write Result Translator needed)
