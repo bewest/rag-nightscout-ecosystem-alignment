@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 | **Open Items**: 5  
+> **Last Groomed**: 2026-02-01 | **Open Items**: 4  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -53,12 +53,6 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Focus:** Sequence cgm-remote-monitor PRs for Node.js 22 upgrade
 **Source:** pr-adoption-sequencing-proposal.md, node-lts-upgrade-analysis.md
 **Deliverable:** Updated PR merge order recommendations
-
-### 5. [P3] Requirements coverage gap analysis
-**Type:** Analysis | **Effort:** Medium
-**Focus:** Identify REQs without conformance scenarios or gap links
-**Tools:** `tools/verify_coverage.py`
-**Deliverable:** REQ → GAP → Scenario traceability matrix
 
 ---
 

@@ -12,6 +12,29 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Requirements Coverage Analysis (2026-02-01)
+
+Analysis of REQ and GAP coverage across mappings, specs, and assertions.
+
+| Requirements | Count | % |
+|--------------|-------|---|
+| Total | 289 | 100% |
+| Full coverage | 6 | 2% |
+| Partial | 46 | 16% |
+| Documented only | 138 | 48% |
+| No coverage | 99 | 34% |
+
+| Gaps | Count |
+|------|-------|
+| Total | 335 |
+| Addressed in spec | 32 |
+| With assertions | 19 |
+| Orphaned | 16 |
+
+**Report**: `traceability/coverage-analysis.md`
+
+---
+
 ### Gap Consolidation Audit (2026-02-01)
 
 Housekeeping audit of gap files for duplicates and accuracy.
