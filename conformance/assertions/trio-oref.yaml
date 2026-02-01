@@ -1,0 +1,279 @@
+# Trio oref Integration Conformance Assertions
+# Covers REQ-OREF-001 through REQ-OREF-003
+#
+# These assertions verify Trio's integration with the oref0/oref1 algorithm,
+# including documentation, version tracking, and change evaluation.
+
+scenario: trio-oref-integration
+version: "1.0"
+requirements:
+  - REQ-OREF-001
+  - REQ-OREF-002
+  - REQ-OREF-003
+
+related_gaps:
+  - GAP-TRIO-001  # trio_custom_variables undocumented
+  - GAP-OREF-001  # No npm package
+  - GAP-OREF-002  # openaps unmaintained
+  - GAP-OREF-003  # oref0 vs oref1 distinction unclear
+
+assertions:
+  # ========================================
+  # trio_custom_variables Documentation (REQ-OREF-001)
+  # ========================================
+
+  - id: trio-doc-001
+    description: trio_custom_variables interface has TypeScript definition
+    type: schema
+    requirement: REQ-OREF-001
+    gap: GAP-TRIO-001
+    target: externals/Trio/
+    expected:
+      file_exists: "FreeAPS/Sources/APS/OpenAPS/TrioCustomVariables.swift"
+      or: "trio-oref/types/trio_custom_variables.d.ts"
+    verification: Search for interface/type definition file
+    status: draft
+
+  - id: trio-doc-002
+    description: trio_custom_variables fields are documented
+    type: documentation
+    requirement: REQ-OREF-001
+    gap: GAP-TRIO-001
+    target: externals/Trio/
+    expected:
+      documents:
+        - enableSMB_high_bg_target
+        - high_temptarget_raises_sensitivity
+        - low_temptarget_lowers_sensitivity
+        - sensitivity_raises_target
+        - resistance_lowers_target
+    verification: Documentation audit for all custom fields
+    status: draft
+
+  - id: trio-doc-003
+    description: trio-oref-integration-mapping.md documents the interface
+    type: documentation
+    requirement: REQ-OREF-001
+    gap: GAP-TRIO-001
+    target: docs/10-domain/trio-oref-integration-mapping.md
+    expected:
+      documents: "trio_custom_variables structure"
+      includes: "field descriptions"
+    verification: Deep-dive doc review
+    status: draft
+
+  - id: trio-doc-004
+    description: Trio README references custom oref extensions
+    type: documentation
+    requirement: REQ-OREF-001
+    target: externals/Trio/README.md
+    expected:
+      mentions: "oref1 integration"
+      or: "OpenAPS algorithm"
+    verification: README review for algorithm documentation
+    status: draft
+
+  - id: trio-doc-005
+    description: JSON schema exists for trio_custom_variables
+    type: schema
+    requirement: REQ-OREF-001
+    gap: GAP-TRIO-001
+    target: specs/schemas/
+    expected:
+      file: "trio-custom-variables.schema.json"
+      or: "defined in trio-oref-integration-mapping.md"
+    verification: Schema file search or doc extraction
+    status: draft
+
+  - id: trio-doc-006
+    description: Developer guide explains how to extend trio_custom_variables
+    type: documentation
+    requirement: REQ-OREF-001
+    target: externals/Trio/
+    expected:
+      guide: "developer documentation"
+      explains: "adding new custom variables"
+    verification: Developer doc search
+    status: draft
+
+  # ========================================
+  # Upstream oref0 Version Tracking (REQ-OREF-002)
+  # ========================================
+
+  - id: trio-version-001
+    description: Trio tracks upstream oref0 commit hash
+    type: documentation
+    requirement: REQ-OREF-002
+    target: externals/Trio/trio-oref/
+    expected:
+      file: "README.md or VERSION file"
+      contains: "oref0 commit hash"
+    verification: Check for version tracking file
+    status: draft
+
+  - id: trio-version-002
+    description: trio-oref directory includes oref0 attribution
+    type: documentation
+    requirement: REQ-OREF-002
+    target: externals/Trio/trio-oref/
+    expected:
+      attribution: "OpenAPS oref0 project"
+      license: "AGPL or compatible"
+    verification: License and attribution check
+    status: draft
+
+  - id: trio-version-003
+    description: Changelog documents oref0 sync points
+    type: documentation
+    requirement: REQ-OREF-002
+    target: externals/Trio/
+    expected:
+      file: "CHANGELOG.md or similar"
+      entries: "oref0 sync or merge references"
+    verification: Changelog review for oref0 mentions
+    status: draft
+
+  - id: trio-version-004
+    description: Git history preserves oref0 merge commits
+    type: behavior
+    requirement: REQ-OREF-002
+    target: externals/Trio/
+    expected:
+      git_log: "contains oref0 merge or sync commits"
+    verification: Git history analysis
+    status: draft
+
+  - id: trio-version-005
+    description: trio-oref-integration-mapping.md tracks version alignment
+    type: documentation
+    requirement: REQ-OREF-002
+    target: docs/10-domain/trio-oref-integration-mapping.md
+    expected:
+      section: "Version Tracking"
+      lists: "known alignment state"
+    verification: Deep-dive doc review
+    status: draft
+
+  # ========================================
+  # Breaking Change Evaluation (REQ-OREF-003)
+  # ========================================
+
+  - id: trio-breaking-001
+    description: PR review process exists for oref0 merges
+    type: documentation
+    requirement: REQ-OREF-003
+    target: externals/Trio/
+    expected:
+      file: "CONTRIBUTING.md or PR template"
+      mentions: "oref0 merge review"
+    verification: Contributing guide review
+    status: draft
+
+  - id: trio-breaking-002
+    description: Breaking changes are evaluated against Trio extensions
+    type: documentation
+    requirement: REQ-OREF-003
+    target: Trio development process
+    expected:
+      checklist:
+        - "SMB behavior compatibility"
+        - "Dynamic ISF compatibility"
+        - "trio_custom_variables compatibility"
+    verification: PR review process audit
+    status: draft
+
+  - id: trio-breaking-003
+    description: Algorithm safety tests exist for oref changes
+    type: behavior
+    requirement: REQ-OREF-003
+    target: externals/Trio/
+    expected:
+      tests: "algorithm test suite"
+      covers: "determine-basal outputs"
+    verification: Test file search
+    status: draft
+
+  - id: trio-breaking-004
+    description: oref0 feature flags documented for Trio compatibility
+    type: documentation
+    requirement: REQ-OREF-003
+    gap: GAP-OREF-003
+    target: docs/10-domain/trio-oref-integration-mapping.md
+    expected:
+      documents: "oref0 vs oref1 features"
+      explains: "which features Trio uses"
+    verification: Feature flag documentation review
+    status: draft
+
+  - id: trio-breaking-005
+    description: Known breaking changes have migration notes
+    type: documentation
+    requirement: REQ-OREF-003
+    target: externals/Trio/
+    expected:
+      file: "CHANGELOG.md or migration guide"
+      documents: "breaking algorithm changes"
+    verification: Changelog review for breaking changes
+    status: draft
+
+  - id: trio-breaking-006
+    description: trio-oref deviation log exists
+    type: documentation
+    requirement: REQ-OREF-003
+    target: docs/10-domain/trio-oref-integration-mapping.md
+    expected:
+      section: "Deviations from oref0"
+      lists: "intentional differences"
+    verification: Deep-dive doc review
+    status: draft
+
+  # ========================================
+  # Cross-Cutting Integration Assertions
+  # ========================================
+
+  - id: trio-int-001
+    description: trio-oref JavaScript executes via JavaScriptCore
+    type: behavior
+    requirement: REQ-OREF-001
+    target: externals/Trio/
+    expected:
+      runtime: "JavaScriptCore"
+      execution: "determine-basal.js"
+    verification: Code review for JS execution
+    status: draft
+
+  - id: trio-int-002
+    description: Trio passes profile data to oref correctly
+    type: validation
+    requirement: REQ-OREF-001
+    target: externals/Trio/
+    expected:
+      profile_fields:
+        - current_basal
+        - isf
+        - target_bg
+        - max_iob
+    verification: Profile mapping code review
+    status: draft
+
+  - id: trio-int-003
+    description: oref0 test vectors pass in Trio context
+    type: behavior
+    requirement: REQ-OREF-003
+    target: conformance/runners/
+    expected:
+      runner: "oref0-runner.js or trio-runner"
+      vectors: "pass with Trio customizations"
+    verification: Run test vectors against Trio oref
+    status: draft
+
+  - id: trio-int-004
+    description: devicestatus uploads identify as Trio/openaps
+    type: schema
+    requirement: REQ-OREF-002
+    target: Nightscout devicestatus
+    expected:
+      field: "device"
+      contains: "openaps" or "Trio"
+    verification: Query Nightscout for Trio devicestatus
+    status: draft

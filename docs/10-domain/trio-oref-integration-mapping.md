@@ -318,3 +318,21 @@ Trio's `trio-oref` is a **well-maintained superset** of oref0 with significant e
 5. **Full backward compatibility** with oref0
 
 The primary challenge is **keeping Trio synced with upstream oref0** bug fixes while maintaining Trio-specific features.
+
+---
+
+## Conformance Assertions
+
+The following conformance assertions cover Trio oref integration requirements:
+
+| Assertion File | Requirements | Assertions |
+|----------------|--------------|------------|
+| `conformance/assertions/trio-oref.yaml` | REQ-OREF-001, REQ-OREF-002, REQ-OREF-003 | 22 |
+
+**Key Assertions**:
+- `trio-doc-001-006`: trio_custom_variables documentation
+- `trio-version-001-005`: Upstream oref0 version tracking
+- `trio-breaking-001-006`: Breaking change evaluation process
+- `trio-int-001-004`: Cross-cutting integration validation
+
+See `traceability/domain-matrices/aid-algorithms-matrix.md` for full coverage matrix.

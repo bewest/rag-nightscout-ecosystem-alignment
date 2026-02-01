@@ -12,11 +12,11 @@
 |--------|-------|
 | Requirements | 56 |
 | Gaps | 66 |
-| REQs with assertion coverage | 40 (71%) |
-| Uncovered REQs | 16 (29%) |
-| Uncovered GAPs | 43 (65%) |
+| REQs with assertion coverage | 43 (77%) |
+| Uncovered REQs | 13 (23%) |
+| Uncovered GAPs | 39 (59%) |
 
-**Status**: 🔄 **IN PROGRESS** - 10/12 categories complete (40 REQs)
+**Status**: 🔄 **IN PROGRESS** - 11/12 categories complete (43 REQs)
 
 ---
 
@@ -146,13 +146,13 @@
 | REQ-TGT-002 | Target Calculation Transparency | - | ✅ algorithm-docs.yaml |
 | REQ-TGT-003 | Temp Target Side Effects Documentation | - | ✅ algorithm-docs.yaml |
 
-### Trio oref Integration (3)
+### Trio oref Integration (3) - COVERED ✅
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-OREF-001 | Document trio_custom_variables Interface | - | ❌ None |
-| REQ-OREF-002 | Track Upstream oref0 Version | - | ❌ None |
-| REQ-OREF-003 | Evaluate Breaking oref0 Changes | - | ❌ None |
+| REQ-OREF-001 | Document trio_custom_variables Interface | GAP-TRIO-001 | ✅ trio-oref.yaml |
+| REQ-OREF-002 | Track Upstream oref0 Version | - | ✅ trio-oref.yaml |
+| REQ-OREF-003 | Evaluate Breaking oref0 Changes | GAP-OREF-003 | ✅ trio-oref.yaml |
 
 ---
 
@@ -241,8 +241,8 @@
 | Prediction | 3 | 3 | 100% ✅ |
 | Dosing Mechanism | 3 | 3 | 100% ✅ |
 | Target Range | 3 | 3 | 100% ✅ |
-| Trio oref | 3 | 0 | 0% |
-| **Total** | **56** | **40** | **71%** |
+| Trio oref | 3 | 3 | 100% ✅ |
+| **Total** | **56** | **43** | **77%** |
 
 ### Data Quality Issues
 
@@ -301,7 +301,8 @@
 | `prediction-requirements.yaml` | 3 (REQ-PRED-001-003) | 3 (GAP-PRED-001, 002, 003) |
 | `algorithm-docs.yaml` | 12 (REQ-BOLUS-001-003, SENS-001-003, DOSE-001-003, TGT-001-003) | 4 (GAP-BOLUS-001, 002, SENS-001, 002) |
 | `carb-absorption.yaml` | 6 (REQ-CARB-001-006) | 5 (GAP-CARB-001, 002, 003, 004, 005) |
-| **Total** | **40** | **22** |
+| `trio-oref.yaml` | 3 (REQ-OREF-001-003) | 4 (GAP-TRIO-001, GAP-OREF-001, 002, 003) |
+| **Total** | **43** | **26** |
 
 ---
 

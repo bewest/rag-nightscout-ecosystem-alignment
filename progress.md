@@ -13,6 +13,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Trio oref Integration Assertions (2026-02-01)
+
+Created conformance assertions for Trio oref integration requirements.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 3 (REQ-OREF-001-003) |
+| Gaps addressed | 4 (GAP-TRIO-001, GAP-OREF-001, 002, 003) |
+| Assertions created | 22 |
+
+**Deliverable**: `conformance/assertions/trio-oref.yaml`
+
+**Coverage by Topic**:
+- trio_custom_variables documentation: 6 assertions
+- Upstream oref0 version tracking: 5 assertions
+- Breaking change evaluation: 6 assertions
+- Cross-cutting integration: 5 assertions
+
+**Impact**: Trio oref category 100% complete; algorithm domain 71%→77%
+
+---
+
 ### Carb Absorption Assertions (2026-02-01)
 
 Created conformance assertions for carb absorption model requirements.
