@@ -23,7 +23,7 @@
 
 Items ready for immediate work. Keep 5-10 visible for horizontal work across domains.
 
-> **Last Groomed**: 2026-02-01 (cycle 89) | **Open Items**: 5  
+> **Last Groomed**: 2026-02-01 (cycle 90) | **Open Items**: 6  
 > **Domain Archive**: [domain-backlog-archive-2026-02-01.md](../archive/domain-backlog-archive-2026-02-01.md) (115 items archived)
 
 ### 1. [P2] Loop Swift algorithm runner
@@ -51,19 +51,25 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 **Deliverable:** PR to cgm-remote-monitor with driver upgrade
 **Blocker:** Requires changes to external cgm-remote-monitor repo
 
-### 4. [P2] Create traceability matrix for CGM domain
-**Type:** Documentation | **Effort:** Medium
-**Focus:** Build REQ↔GAP↔Assertion matrix for cgm-sources domain
-**Source:** documentation-accuracy.md #40 (phase 2)
-**Deliverable:** `traceability/domain-matrices/cgm-sources-matrix.md`
-**Note:** Sync-identity matrix complete ✅ (cycle 88)
-
-### 5. [P2] StateSpan V3 extension specification
+### 4. [P2] StateSpan V3 extension specification
 **Type:** Proposal | **Effort:** High
 **Focus:** Draft V3 API extension for StateSpan endpoints
 **Prerequisites:** StateSpan standardization proposal ✅
 **Source:** sync-identity.md #19
 **Deliverable:** `specs/openapi/aid-statespan-2025.yaml`
+
+### 5. [P2] CGM BLE protocol assertions
+**Type:** Conformance | **Effort:** Medium
+**Focus:** Create assertions for BLE protocol requirements (REQ-BLE-001-006)
+**Source:** cgm-sources-matrix.md action items
+**Deliverable:** `conformance/assertions/ble-protocol.yaml`
+**Note:** CGM domain has 0% assertion coverage (cycle 90 finding)
+
+### 6. [P3] Libre protocol assertions
+**Type:** Conformance | **Effort:** Medium
+**Focus:** Create assertions for Libre requirements (REQ-LIBRE-001-006)
+**Source:** cgm-sources-matrix.md action items
+**Deliverable:** `conformance/assertions/libre-protocol.yaml`
 
 ---
 
@@ -71,6 +77,7 @@ Items ready for immediate work. Keep 5-10 visible for horizontal work across dom
 
 | Item | Deliverable | Key Finding |
 |------|-------------|-------------|
+| **CGM Sources Traceability Matrix** | `domain-matrices/cgm-sources-matrix.md` | 18 REQs, 52 GAPs; 0% assertion coverage; BLE/Libre assertions needed |
 | **Stale Refs Cleanup** | 6 archive files updated | Added disclaimers for abbreviated paths; refs are historical |
 | **Sync-Identity Traceability Matrix** | `domain-matrices/sync-identity-matrix.md` | 32 REQs, 25 GAPs; 47% REQ coverage; 22 uncovered gaps identified |
 | **GAP-REQ Bidirectional Trace Links** | 3 gap files updated | 6 reverse links added for Tier 1 interoperability REQs |

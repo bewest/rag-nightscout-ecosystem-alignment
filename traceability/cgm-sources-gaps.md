@@ -3,6 +3,8 @@
 Domain-specific gaps extracted from gaps.md.
 See [gaps.md](gaps.md) for the index.
 
+> **Traceability Matrix**: [`domain-matrices/cgm-sources-matrix.md`](domain-matrices/cgm-sources-matrix.md) - REQ↔GAP↔Assertion coverage (0% assertion coverage)
+
 ---
 
 ### GAP-G7-001: G7 J-PAKE Full Specification Incomplete

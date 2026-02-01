@@ -20,6 +20,7 @@ Cross-reference matrices linking requirements, gaps, and conformance assertions 
 | File | Domain | REQs | GAPs | Coverage |
 |------|--------|------|------|----------|
 | [`domain-matrices/sync-identity-matrix.md`](domain-matrices/sync-identity-matrix.md) | Sync & Identity | 32 | 25 | 47% REQ |
+| [`domain-matrices/cgm-sources-matrix.md`](domain-matrices/cgm-sources-matrix.md) | CGM Sources | 18 | 52 | 0% REQ |
 
 ## STPA Subdirectory
 

@@ -13,6 +13,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### CGM Sources Traceability Matrix (2026-02-01)
+
+Created comprehensive REQ↔GAP↔Assertion cross-reference matrix for CGM sources domain.
+
+| Metric | Count |
+|--------|-------|
+| Requirements | 18 (REQ-BLE-*, REQ-LIBRE-*, REQ-BRIDGE-*, REQ-CONNECT-*) |
+| Gaps | 52 (GAP-G7-*, GAP-CGM-*, GAP-LIBRE-*, etc.) |
+| Assertion coverage | 0% (no assertions exist) |
+
+**Deliverable**: `traceability/domain-matrices/cgm-sources-matrix.md`
+
+**Key Findings**:
+- CGM domain has zero assertion coverage - major testing gap
+- 11 of 52 gaps have REQ links established
+- High priority: BLE protocol assertions, Libre protocol assertions
+- Libre 3 cloud dependency (GAP-LIBRE-001) blocks direct access
+
+**Action Items**:
+- Create `conformance/assertions/ble-protocol.yaml`
+- Create `conformance/assertions/libre-protocol.yaml`
+
+---
+
 ### Stale Refs Cleanup (2026-02-01)
 
 Added disclaimers to 6 archive files documenting that code references use abbreviated paths for readability.

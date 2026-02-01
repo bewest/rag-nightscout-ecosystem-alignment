@@ -3,6 +3,8 @@
 Domain-specific requirements extracted from requirements.md.
 See [requirements.md](requirements.md) for the index.
 
+> **Traceability Matrix**: [`domain-matrices/cgm-sources-matrix.md`](domain-matrices/cgm-sources-matrix.md) - REQ↔GAP↔Assertion coverage (0% assertion coverage)
+
 ---
 
 ### REQ-BLE-001: Message CRC Validation
