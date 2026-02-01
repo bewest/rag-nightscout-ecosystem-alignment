@@ -27,6 +27,8 @@ See [gaps.md](gaps.md) for the index.
 
 **Status**: Documentation effort
 
+**Assertions**: [`ble-protocol.yaml`](../conformance/assertions/ble-protocol.yaml) - auth-required-before-glucose, auth-handshake-enables-glucose
+
 ---
 
 ---
@@ -50,6 +52,8 @@ See [gaps.md](gaps.md) for the index.
 3. Documentation of signature verification
 
 **Status**: Needs investigation
+
+**Assertions**: [`ble-protocol.yaml`](../conformance/assertions/ble-protocol.yaml) - auth-required-before-glucose
 
 ---
 

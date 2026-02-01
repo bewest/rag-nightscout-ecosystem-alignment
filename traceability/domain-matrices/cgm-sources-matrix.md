@@ -1,6 +1,7 @@
 # CGM Sources Domain Traceability Matrix
 
 > **Generated**: 2026-02-01  
+> **Updated**: 2026-02-01 (cycle 91 - BLE assertions added)  
 > **Domain**: CGM Sources  
 > **Purpose**: REQ↔GAP↔Assertion cross-reference matrix
 
@@ -12,11 +13,11 @@
 |--------|-------|
 | Requirements | 18 |
 | Gaps | 52 |
-| Assertions with coverage | 0 |
-| Uncovered REQs | 18 (100%) |
-| Uncovered GAPs | 52 (100%) |
+| REQs with assertion coverage | 6 (33%) |
+| Uncovered REQs | 12 (67%) |
+| Uncovered GAPs | 49 (94%) |
 
-**Finding**: CGM domain has no assertion coverage. This is a priority gap for conformance testing.
+**Status**: BLE protocol assertions added (cycle 91). Libre protocol assertions pending.
 
 ---
 
@@ -26,12 +27,12 @@
 
 | Requirement | Description | Gap Links | Assertions |
 |-------------|-------------|-----------|------------|
-| REQ-BLE-001 | Message CRC Validation | GAP-G7-001 | ❌ None |
-| REQ-BLE-002 | Authentication Before Data Access | GAP-G7-002 | ❌ None |
-| REQ-BLE-003 | Glucose Value Extraction | - | ❌ None |
-| REQ-BLE-004 | Trend Rate Conversion | GAP-CGM-034 | ❌ None |
-| REQ-BLE-005 | Timestamp Calculation | - | ❌ None |
-| REQ-BLE-006 | Algorithm State Interpretation | - | ❌ None |
+| REQ-BLE-001 | Message CRC Validation | GAP-G7-001 | ✅ ble-protocol.yaml (2) |
+| REQ-BLE-002 | Authentication Before Data Access | GAP-G7-002 | ✅ ble-protocol.yaml (2) |
+| REQ-BLE-003 | Glucose Value Extraction | - | ✅ ble-protocol.yaml (2) |
+| REQ-BLE-004 | Trend Rate Conversion | GAP-CGM-034 | ✅ ble-protocol.yaml (2) |
+| REQ-BLE-005 | Timestamp Calculation | - | ✅ ble-protocol.yaml (2) |
+| REQ-BLE-006 | Algorithm State Interpretation | - | ✅ ble-protocol.yaml (3) |
 
 ### Bridge/Connector Requirements (6)
 

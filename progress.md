@@ -13,6 +13,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### CGM BLE Protocol Assertions (2026-02-01)
+
+Created conformance assertions for BLE CGM protocol requirements.
+
+| Metric | Count |
+|--------|-------|
+| Requirements covered | 6 (REQ-BLE-001 through REQ-BLE-006) |
+| Assertions created | 13 |
+| Gaps addressed | 3 (GAP-G7-001, GAP-G7-002, GAP-CGM-004) |
+
+**Deliverable**: `conformance/assertions/ble-protocol.yaml`
+
+**Coverage by Requirement**:
+- REQ-BLE-001 (CRC Validation): 2 assertions
+- REQ-BLE-002 (Authentication): 2 assertions
+- REQ-BLE-003 (Glucose Extraction): 2 assertions
+- REQ-BLE-004 (Trend Rate): 2 assertions
+- REQ-BLE-005 (Timestamp): 2 assertions
+- REQ-BLE-006 (Algorithm State): 3 assertions
+
+**Impact**: CGM domain coverage increases from 0% to 33% (6/18 REQs)
+
+---
+
 ### CGM Sources Traceability Matrix (2026-02-01)
 
 Created comprehensive REQ↔GAP↔Assertion cross-reference matrix for CGM sources domain.

@@ -1,0 +1,241 @@
+# Assertions for BLE CGM Protocol
+# Tests BLE protocol requirements for Dexcom G6/G7 transmitter communication
+# Uses assertion types from conformance/assertions/_template.yaml
+
+scenario: ble-cgm-protocol
+version: 1
+
+# Link to requirements in traceability/cgm-sources-requirements.md
+requirements:
+  - REQ-BLE-001  # Message CRC validation
+  - REQ-BLE-002  # Authentication before data access
+  - REQ-BLE-003  # Glucose value extraction
+  - REQ-BLE-004  # Trend rate conversion
+  - REQ-BLE-005  # Timestamp calculation
+  - REQ-BLE-006  # Algorithm state interpretation
+
+related_gaps:
+  - GAP-G7-001   # J-PAKE specification incomplete
+  - GAP-G7-002   # Certificate chain undocumented
+  - GAP-CGM-004  # No standardized Dexcom BLE protocol spec
+
+assertions:
+  # ============================================
+  # Message Integrity (REQ-BLE-001)
+  # ============================================
+  
+  - id: crc16-valid-message-accepted
+    description: "Valid CRC-16 message is accepted for processing"
+    type: state
+    requirement: REQ-BLE-001
+    target: message.isValid
+    expected: true
+    when: given_valid_crc16_message
+    verification:
+      - Compute CRC-16 CCITT of payload (excluding last 2 bytes)
+      - Compare with appended CRC (little-endian)
+      - Message passes validation
+
+  - id: crc16-invalid-message-rejected
+    description: "Invalid CRC-16 message is rejected"
+    type: state
+    requirement: REQ-BLE-001
+    target: message.isValid
+    expected: false
+    when: given_corrupted_crc_message
+    verification:
+      - Modify one byte in payload
+      - Recompute CRC check
+      - Message fails validation
+
+  # ============================================
+  # Authentication (REQ-BLE-002)
+  # ============================================
+  
+  - id: auth-required-before-glucose
+    description: "Glucose request fails without prior authentication"
+    type: behavior
+    requirement: REQ-BLE-002
+    action: request_glucose_without_auth
+    expected: rejection_or_no_response
+    verification:
+      - Connect to transmitter BLE
+      - Skip authentication handshake
+      - Send glucose data request
+      - Verify request fails or returns no data
+
+  - id: auth-handshake-enables-glucose
+    description: "Authentication handshake enables glucose data access"
+    type: behavior
+    requirement: REQ-BLE-002
+    action: authenticate_then_request_glucose
+    expected: glucose_data_returned
+    verification:
+      - Connect to transmitter BLE
+      - Complete G6 auth challenge-response OR G7 J-PAKE
+      - Send glucose data request
+      - Verify glucose data returned
+
+  # ============================================
+  # Glucose Extraction (REQ-BLE-003)
+  # ============================================
+  
+  - id: glucose-lower-12-bits-extraction
+    description: "Glucose value extracted from lower 12 bits"
+    type: transform
+    requirement: REQ-BLE-003
+    input: raw_glucose_bytes
+    expected: glucose_mgdl
+    transform: "(glucoseBytes & 0x0FFF)"
+    examples:
+      - input: 0x0064  # 100 in lower 12 bits
+        expected: 100
+      - input: 0x1096  # 150 with display flag
+        expected: 150
+      - input: 0x00C8  # 200
+        expected: 200
+
+  - id: glucose-display-only-flag-extracted
+    description: "Display-only flag extracted from upper bits"
+    type: transform
+    requirement: REQ-BLE-003
+    input: raw_glucose_bytes
+    expected: display_only_flag
+    transform: "G6: (glucoseBytes >> 12), G7: separate flag byte"
+    verification:
+      - Parse glucose field
+      - Extract flag bits
+      - Flag indicates display-only vs full precision
+
+  # ============================================
+  # Trend Rate (REQ-BLE-004)
+  # ============================================
+  
+  - id: trend-rate-signed-conversion
+    description: "Trend rate converted from signed Int8 to mg/dL/min"
+    type: transform
+    requirement: REQ-BLE-004
+    input: raw_trend_byte
+    expected: trend_mgdl_per_min
+    transform: "(Int8(trendByte)) / 10.0"
+    examples:
+      - input: 0x14   # +20 as signed
+        expected: 2.0
+      - input: 0xEC   # -20 as signed (-12 as Int8)
+        expected: -2.0
+      - input: 0x00
+        expected: 0.0
+
+  - id: trend-rate-unavailable-handling
+    description: "Trend rate 0x7F indicates unavailable"
+    type: state
+    requirement: REQ-BLE-004
+    target: trend.isAvailable
+    expected: false
+    when: trend_byte_is_0x7F
+    verification:
+      - Parse trend byte = 0x7F (127)
+      - Return nil/unavailable
+      - Do not display trend arrow
+
+  # ============================================
+  # Timestamp Calculation (REQ-BLE-005)
+  # ============================================
+  
+  - id: activation-date-calculation
+    description: "Activation date calculated from current time minus transmitter time"
+    type: transform
+    requirement: REQ-BLE-005
+    input: current_time_and_transmitter_time
+    expected: activation_date
+    transform: "Date.now() - (transmitterTimeSeconds * 1000)"
+    verification:
+      - Request TransmitterTime message
+      - Get current device time
+      - Calculate activation = now - (transmitterTime * 1000ms)
+      - Store as session activation date
+
+  - id: glucose-timestamp-from-activation
+    description: "Glucose timestamp calculated as activation + glucose time"
+    type: transform
+    requirement: REQ-BLE-005
+    input: activation_date_and_glucose_time
+    expected: glucose_timestamp
+    transform: "activationDate + (glucoseTimeSeconds * 1000)"
+    verification:
+      - Use stored activation date
+      - Parse glucose message time field (seconds)
+      - Calculate timestamp = activation + (glucoseTime * 1000ms)
+
+  # ============================================
+  # Algorithm State (REQ-BLE-006)
+  # ============================================
+  
+  - id: algorithm-state-reliable-glucose
+    description: "Specific algorithm states indicate reliable glucose"
+    type: state
+    requirement: REQ-BLE-006
+    target: hasReliableGlucose
+    expected: true
+    when: algorithm_state_in_reliable_set
+    examples:
+      - state: 6  # G6 "OK"
+        reliable: true
+      - state: 0x81  # G7 reliable
+        reliable: true
+
+  - id: algorithm-state-unreliable
+    description: "Warmup and error states indicate unreliable glucose"
+    type: state
+    requirement: REQ-BLE-006
+    target: hasReliableGlucose
+    expected: false
+    when: algorithm_state_in_unreliable_set
+    examples:
+      - state: 1  # Stopped
+        reliable: false
+      - state: 2  # Warmup
+        reliable: false
+      - state: 5  # Calibration needed
+        reliable: false
+
+  - id: algorithm-state-to-enum-mapping
+    description: "Algorithm state byte maps to known state enum"
+    type: transform
+    requirement: REQ-BLE-006
+    input: algorithm_state_byte
+    expected: state_enum
+    examples:
+      - input: 0x01
+        expected: "stopped"
+      - input: 0x02
+        expected: "warmup"
+      - input: 0x05
+        expected: "needsCalibration"
+      - input: 0x06
+        expected: "ok"
+      - input: 0x09
+        expected: "sensorFailed"
+
+# ============================================
+# Cross-References
+# ============================================
+
+cross_references:
+  - document: docs/10-domain/dexcom-ble-protocol-deep-dive.md
+    description: "Dexcom BLE protocol specification"
+  - document: docs/10-domain/g7-protocol-specification.md
+    description: "G7-specific protocol details"
+
+sources:
+  cgmblekit:
+    - file: "loop:CGMBLEKit/CGMBLEKit/Messages/GlucoseMessage.swift"
+      description: "Glucose parsing with CRC validation"
+    - file: "loop:CGMBLEKit/CGMBLEKit/TransmitterManager.swift"
+      description: "Authentication state machine"
+  xdrip_js:
+    - file: "xdrip-js:lib/Transmitter.js"
+      description: "Transmitter communication"
+  diable:
+    - file: "diable:DiaBLE/Dexcom.swift"
+      description: "Dexcom message parsing"
