@@ -4675,3 +4675,170 @@ TrioApp/             # Full iOS app
 | Soft Delete | Default behavior | Not supported | Keep record, mark deleted |
 | srvModified | Server timestamp | Alias for date | Modification tracking |
 
+---
+
+## Device Capability Architecture (2026-02-03)
+
+> **Deep Dive**: [`docs/10-domain/device-capability-architecture-deep-dive.md`](../../docs/10-domain/device-capability-architecture-deep-dive.md)
+
+This section establishes terminology for CGM and pump device categories, addressing the architectural anti-pattern of conflating different device types into a single state model.
+
+### Device Category Terms
+
+| Term | Definition | Safety Criticality |
+|------|------------|-------------------|
+| **CGM Device** | Read-only sensor for glucose acquisition | LOW (display) |
+| **Pump Device** | Bidirectional insulin delivery system | HIGH (delivery) |
+| **Gateway Device** | RF relay (RileyLink, OrangeLink) | N/A (pass-through) |
+| **Proxy Transmitter** | BLE-to-NFC relay (MiaoMiao, Bubble) | N/A (pass-through) |
+
+### CGM State Model Terms
+
+| Term | Loop | AAPS | xDrip+ | Definition |
+|------|------|------|--------|------------|
+| **Sensor State** | `SensorState` | `SensorState` | `SensorState` | Lifecycle (warmup/ready/expired/failed) |
+| **Auth State** | `AuthState` | N/A | `AuthState` | Authentication status (pending/authenticated) |
+| **Transmitter ID** | `transmitterID` | `transmitterId` | `transmitterId` | Unique device identifier |
+| **Sensor Age** | `sensorAge` | `sensorAge` | `sensorStartTime` | Time since sensor insertion |
+| **Warmup Period** | 2h (G6), 30m (G7), 1h (Libre) | Same | Same | Initial calibration period |
+| **Signal Quality** | `signalStrength` | `rssi` | `rssi` | BLE signal strength (dBm) |
+| **Calibration State** | `CalibrationState` | `calibrationData` | `calibration` | Factory/user calibration status |
+
+### Pump State Model Terms
+
+| Term | Loop | AAPS | Definition |
+|------|------|------|------------|
+| **Setup Progress** | `SetupProgress` (8 steps) | `PodActivationProgress` | Pod/pump activation lifecycle |
+| **Delivery State** | `DeliveryState` | `PumpState` | Current insulin delivery mode |
+| **Delivery Uncertainty** | `deliveryIsUncertain` | `PumpEnactResult.success` | Command verification status |
+| **Reservoir Level** | `reservoirLevel` | `reservoirUnits` | Insulin remaining (units) |
+| **Pod Lot** | `podLot` | `lotNo` | Manufacturing batch ID |
+| **Pod Sequence** | `podSeq` | `lotSeq` | Within-lot sequence number |
+| **Temp Basal** | `TempBasal` | `TemporaryBasal` | Time-limited basal adjustment |
+| **Unfinalized Dose** | `UnfinalizedDose` | N/A | Dose pending acknowledgment |
+| **Nonce State** | `NonceState` | N/A | RF security sequencing (Eros) |
+| **LTK** | `ltk` (Long-Term Key) | `ltk` | BLE encryption key (DASH) |
+
+### Authentication Method Terms
+
+| Term | Used By | Definition |
+|------|---------|------------|
+| **AES-128 Auth** | Dexcom G5/G6 | ECB mode challenge-response with transmitter-derived key |
+| **J-PAKE** | Dexcom G7 | Password Authenticated Key Exchange by Juggling |
+| **EAP-AKA** | Omnipod DASH | 3GPP Milenage-based session establishment |
+| **XOR Cipher** | Libre 2 | FRAM encryption using sensor UID-derived key |
+| **ECDH** | Libre 3 | Elliptic Curve Diffie-Hellman key exchange |
+| **Nonce Sequencing** | Omnipod Eros | Lot/tid-derived nonce for RF security |
+| **Passkey Auth** | Dana RS/i | BLE passkey + time-based encryption |
+
+### Communication Protocol Terms
+
+| Term | Used By | Definition |
+|------|---------|------------|
+| **BLE Direct** | G6, G7, DASH, Dana, Libre 3 | Direct Bluetooth LE connection |
+| **RF 433 MHz** | Omnipod Eros | Sub-GHz radio via RileyLink |
+| **RF 916 MHz** | Medtronic NA | Sub-GHz radio via RileyLink |
+| **NFC Pairing** | Libre 2 | Near Field Communication for initial unlock |
+| **Nordic UART** | MiaoMiao, Bubble | BLE Serial over 6E400001 service |
+
+### Vendor-Specific Capability Flags
+
+| Capability | G6 | G7 | Libre2 | Libre3 | DASH | Eros | Dana |
+|------------|----|----|--------|--------|------|------|------|
+| Factory Calibration | ✅ | ✅ | ✅ | ✅ | N/A | N/A | N/A |
+| User Calibration | Optional | ❌ | ❌ | ❌ | N/A | N/A | N/A |
+| Backfill | ✅ | ✅ | ✅ | ✅ | N/A | N/A | N/A |
+| Extended Bolus | N/A | N/A | N/A | N/A | ❌ | ❌ | ✅ |
+| Temp Basal | N/A | N/A | N/A | N/A | ✅ | ✅ | ✅ |
+| History Read | N/A | N/A | N/A | N/A | ❌ | ❌ | ✅ |
+| Gateway Required | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
+
+### Gap References
+
+- **GAP-ARCH-001**: No standardized device capability taxonomy
+- **GAP-ARCH-002**: CGM/Pump state models conflated in implementations
+- **GAP-ARCH-003**: Vendor capability variations undocumented
+- **GAP-PUMP-001**: No standardized pump capability exchange format
+
+### Requirement References
+
+- **REQ-ARCH-001**: Device state separation requirement
+- **REQ-ARCH-002**: Capability enumeration requirement
+- **REQ-ARCH-003**: Vendor-specific state extension requirement
+
+
+---
+
+## Effect Bundle Terms
+
+> **Reference**: [`docs/10-domain/effect-bundle-architecture-deep-dive.md`](../../docs/10-domain/effect-bundle-architecture-deep-dive.md)
+
+### Core Effect Types
+
+| Alignment Term | Loop | AAPS | Trio | Nightscout | Definition |
+|----------------|------|------|------|------------|------------|
+| **EffectBundle** | N/A | N/A | N/A | (proposed) | Timestamped collection of algorithm adjustments |
+| **GlucoseEffect** | `GlucoseEffect` struct | `bg_predictions` | Prediction generator | (proposed) | Predicted BG curve modification |
+| **SensitivityEffect** | `InsulinSensitivitySchedule` mod | `sens_ratio` | `SensitivityRatio` | (proposed) | ISF/CR multiplier |
+| **AbsorptionEffect** | `CarbAbsorptionTime` mod | `carb_absorption_rate` | `CarbAbsorptionModel` | (proposed) | Carb absorption rate change |
+
+### Override/Preset Mapping
+
+| Alignment Term | Loop | AAPS | Trio | xDrip+ |
+|----------------|------|------|------|--------|
+| **Override** | `OverridePreset` | `TempTarget` | `OverridePresets` | N/A |
+| **Duration** | `duration` | `durationMinutes` | `duration` | N/A |
+| **Target** | `targetRange` | `low`/`high` | `targetBottom`/`targetTop` | N/A |
+| **Sensitivity Adjust** | `insulinNeedsScaleFactor` | N/A | `smbIsOff`/`smbIsAlwaysOff` | N/A |
+| **Reason** | `context` | `reason` | N/A | N/A |
+
+### Privacy Tier Terms
+
+| Term | Definition | Sync Behavior |
+|------|------------|---------------|
+| **transparent** | All data syncs to Nightscout | Full bundle uploaded |
+| **privacyPreserving** | Effects sync, context stays local | No reason/trigger fields |
+| **configurable** | User chooses what syncs | Per-field settings |
+| **onDeviceOnly** | Nothing syncs ever | No network I/O |
+
+### Data Classification Terms
+
+| Term | Definition | Examples |
+|------|------------|----------|
+| **PersonalContext** | Never-sync sensitive data | Cycle phase, stress, heart rate |
+| **EffectMetrics** | Sync-by-default algorithm data | Predictions, confidence scores |
+| **ReasonField** | User-controlled explanatory data | "Morning exercise", "Large meal" |
+
+### Agent Terms
+
+| Term | Definition |
+|------|------------|
+| **Agent** | Software component producing EffectBundles |
+| **AgentName** | Unique identifier for agent (e.g., "BreakfastBoost") |
+| **Confidence** | 0.0-1.0 score indicating effect reliability |
+| **ValidityWindow** | Time range during which effect applies |
+
+### Safety Bound Terms
+
+| Term | Range | Rationale |
+|------|-------|-----------|
+| **SensitivityBounds** | 0.2-2.0 | Prevents extreme ISF changes |
+| **GlucoseBounds** | ±50 mg/dL | Caps prediction adjustments |
+| **AbsorptionBounds** | 0.2-3.0 | Limits carb rate changes |
+| **ExternalInfluenceCap** | 50% | Limits agent weight in reconciliation |
+
+### Gap References
+
+- **GAP-EFFECT-001**: No standard effect format across AID systems
+- **GAP-EFFECT-002**: Privacy tier not defined in existing APIs
+- **GAP-EFFECT-003**: No agent registration mechanism
+- **GAP-EFFECT-004**: Reconciliation undefined for multiple agents
+- **GAP-EFFECT-005**: No Nightscout collection for effects
+
+### Requirement References
+
+- **REQ-EFFECT-001**: Effect bundles must include validity window
+- **REQ-EFFECT-002**: Privacy tiers must prevent personal context sync
+- **REQ-EFFECT-003**: Effects must be bounded by safety limits
+- **REQ-EFFECT-004**: Agents should declare privacy tier
+- **REQ-EFFECT-005**: Reconciliation must cap external influence at 50%

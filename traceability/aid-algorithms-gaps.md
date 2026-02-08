@@ -1297,3 +1297,149 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Status**: Open
 
 ---
+
+---
+
+### GAP-EFFECT-001: No Standard Effect Format Across AID Systems
+
+**Scenario**: External agent influence on algorithm behavior
+
+**Description**: Each AID system (Loop, AAPS, Trio) implements proprietary override/preset mechanisms with incompatible formats. No standard exists for expressing algorithm adjustments from external agents.
+
+**Evidence**:
+- Loop: `OverridePreset` in LoopKit with sensitivity target/delta
+- AAPS: `TempTarget` with different field names
+- Trio: `OverridePresets` array in preferences
+- xDrip+: No override mechanism
+
+**Affected Systems**: Loop, AAPS, Trio, xDrip+, Nightscout
+
+**Impact**:
+- External agents must implement per-platform integrations
+- No interoperability between systems for contextual adjustments
+- Cloud-based agents cannot influence multiple platforms
+
+**Remediation**: Implement EffectBundle schema as standard format.
+
+**Source**: `docs/10-domain/effect-bundle-architecture-deep-dive.md`
+
+**Status**: Open - Proposal created
+
+**Related**: REQ-EFFECT-001, REQ-EFFECT-002
+
+---
+
+### GAP-EFFECT-002: Privacy Tier Not Defined in Existing APIs
+
+**Scenario**: Personal context leaking through algorithm data
+
+**Description**: Existing APIs (Nightscout v1/v3, Loop, AAPS) do not define privacy tiers for algorithm-related data. Personal context like menstrual cycle phase or stress indicators could leak through override reason fields.
+
+**Evidence**:
+- Nightscout `treatments.notes` synced without filtering
+- Loop `OverrideContext` includes reason string
+- AAPS `TempTarget` reason synced to Nightscout
+- No mechanism to mark data as "on-device only"
+
+**Affected Systems**: Nightscout, Loop, AAPS, Trio
+
+**Impact**:
+- Sensitive personal data may sync to cloud
+- Users cannot use context-aware agents without privacy risk
+- GDPR/HIPAA compliance concerns
+
+**Remediation**: Implement four privacy tiers: transparent, privacyPreserving, configurable, onDeviceOnly
+
+**Source**: `docs/10-domain/effect-bundle-architecture-deep-dive.md`
+
+**Status**: Open - Architecture defined
+
+**Related**: REQ-EFFECT-002
+
+---
+
+### GAP-EFFECT-003: No Agent Registration Mechanism
+
+**Scenario**: Validating effect sources
+
+**Description**: No standard mechanism exists for registering agents that produce algorithm effects. Any entity could submit effects with arbitrary agent names.
+
+**Evidence**:
+- Nightscout treatments accept any `enteredBy` value
+- Loop has no external agent concept
+- AAPS NSClient accepts any source
+- No signature/verification for effects
+
+**Affected Systems**: Nightscout, all AID systems
+
+**Impact**:
+- Rogue effects could influence algorithm behavior
+- No audit trail for effect provenance
+- Difficult to debug algorithm behavior
+
+**Remediation**: Implement agent registration with capability declaration and optional signing.
+
+**Source**: `docs/10-domain/effect-bundle-architecture-deep-dive.md`
+
+**Status**: Open
+
+**Related**: REQ-EFFECT-004
+
+---
+
+### GAP-EFFECT-004: Reconciliation Undefined for Multiple Agents
+
+**Scenario**: Conflicting effects from multiple agents
+
+**Description**: When multiple agents produce overlapping effects (e.g., both ActivityMode and BreakfastBoost active), no standard reconciliation strategy exists.
+
+**Evidence**:
+- Loop: Overrides are mutually exclusive
+- AAPS: Only one temp target at a time
+- Trio: Single override active
+- No multi-agent reconciliation in any system
+
+**Affected Systems**: All AID systems
+
+**Impact**:
+- Agents may conflict without resolution
+- User must manually coordinate agents
+- Complex scenarios (exercise + meal) poorly handled
+
+**Remediation**: Implement confidence-weighted averaging with 50% cap on external influence.
+
+**Source**: `docs/10-domain/effect-bundle-architecture-deep-dive.md`
+
+**Status**: Open - Strategy defined
+
+**Related**: REQ-EFFECT-005
+
+---
+
+### GAP-EFFECT-005: No Nightscout Collection for Effects
+
+**Scenario**: Cloud sync of algorithm effects
+
+**Description**: Nightscout has no native collection for algorithm effects. Effects must be embedded in other collections (treatments, devicestatus) with no schema validation.
+
+**Evidence**:
+- Nightscout v1: entries, treatments, devicestatus, profile
+- Nightscout v3: Same collections + food, settings
+- No `effects` or `effectbundles` collection
+- Effects stored in `treatments` notes field or devicestatus blob
+
+**Affected Systems**: Nightscout
+
+**Impact**:
+- No schema validation for effects
+- No query API for active effects
+- Difficult to expire/revoke effects
+- No deduplication for effects
+
+**Remediation**: Add `/api/v3/effectbundles` collection with dedicated schema.
+
+**Source**: `docs/10-domain/effect-bundle-architecture-deep-dive.md`
+
+**Status**: Open - Proposal created
+
+**Related**: GAP-API-*, proposals/effect-bundle-crd.yaml

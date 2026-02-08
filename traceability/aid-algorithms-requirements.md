@@ -1017,3 +1017,113 @@ See [requirements.md](requirements.md) for the index.
 **Source**: `docs/10-domain/trio-oref-integration-mapping.md`
 
 ---
+
+---
+
+### REQ-EFFECT-001: Effect Bundles Must Include Validity Window
+
+**Statement**: Effect bundles MUST include `validFrom` and `validUntil` timestamps with maximum duration of 24 hours.
+
+**Rationale**: Effects are time-bounded algorithm adjustments. Without validity windows, stale effects could persist indefinitely.
+
+**Scenarios**: 
+- Exercise effect expires after activity ends
+- Meal absorption effect limited to digestion period
+- Agent crash leaves orphaned effect
+
+**Verification**: 
+- Schema validation rejects missing timestamps
+- Effects past `validUntil` ignored by algorithm
+- Maximum 24h duration enforced
+
+**Source**: `docs/10-domain/effect-bundle-architecture-deep-dive.md`
+
+**Related**: GAP-EFFECT-001
+
+---
+
+### REQ-EFFECT-002: Privacy Tiers Must Prevent Personal Context Sync
+
+**Statement**: Personal context data (cycle phase, heart rate, stress) MUST NOT sync to Nightscout regardless of user settings.
+
+**Rationale**: Certain personal health data is too sensitive for cloud storage. Privacy tiers must enforce on-device-only storage for this category.
+
+**Scenarios**:
+- MenstrualCycle agent stores phase locally only
+- Stress indicator never appears in Nightscout
+- Heart rate used for effect calculation but not synced
+
+**Verification**:
+- `onDeviceOnly` tier has no sync code path
+- Personal context fields have no API mapping
+- Privacy audit confirms no leakage
+
+**Source**: `docs/10-domain/effect-bundle-architecture-deep-dive.md`
+
+**Related**: GAP-EFFECT-002
+
+---
+
+### REQ-EFFECT-003: Effects Must Be Bounded by Safety Limits
+
+**Statement**: All effect values MUST be constrained to safety bounds: sensitivity 0.2-2.0, glucose ±50 mg/dL, absorption 0.2-3.0.
+
+**Rationale**: Unconstrained effects could cause dangerous dosing. Safety bounds prevent extreme algorithm modifications.
+
+**Scenarios**:
+- Malformed effect with sensitivity 10x rejected
+- Glucose prediction delta capped at ±50
+- Absorption multiplier 0.1 rejected as too aggressive
+
+**Verification**:
+- Schema validation enforces min/max
+- Runtime validation in algorithm
+- Test vectors for boundary conditions
+
+**Source**: `docs/10-domain/effect-bundle-architecture-deep-dive.md`
+
+**Related**: GAP-EFFECT-001
+
+---
+
+### REQ-EFFECT-004: Agents Should Declare Privacy Tier
+
+**Statement**: Agents SHOULD declare their privacy tier at registration time.
+
+**Rationale**: Users need to understand what data each agent will sync before enabling it.
+
+**Scenarios**:
+- BreakfastBoost declares `transparent`
+- ActivityMode declares `privacyPreserving`
+- MenstrualCycle declares `onDeviceOnly`
+
+**Verification**:
+- Agent registration requires tier declaration
+- UI displays tier in agent settings
+- Tier affects sync behavior
+
+**Source**: `docs/10-domain/effect-bundle-architecture-deep-dive.md`
+
+**Related**: GAP-EFFECT-003
+
+---
+
+### REQ-EFFECT-005: Reconciliation Must Cap External Influence
+
+**Statement**: When reconciling algorithm-computed effects with external effects, external influence MUST be capped at 50% weight.
+
+**Rationale**: Algorithm remains authoritative source of dosing decisions. External agents provide hints, not commands.
+
+**Scenarios**:
+- Agent suggests 30% sensitivity reduction → algorithm applies max 15%
+- Multiple agents suggest changes → confidence-weighted average capped
+- Algorithm safety checks override any external suggestion
+
+**Verification**:
+- Blending formula uses min(confidence, 0.5)
+- Test vectors verify cap behavior
+- No code path bypasses cap
+
+**Source**: `docs/10-domain/effect-bundle-architecture-deep-dive.md`
+
+**Related**: GAP-EFFECT-004

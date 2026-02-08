@@ -27,6 +27,72 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Effect Bundle Architecture Analysis (2026-02-08)
+
+Comprehensive analysis of Effect Bundle architecture for cross-project algorithm influence, imported from T1Pal Mobile Workspace documentation.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep Dive | `docs/10-domain/effect-bundle-architecture-deep-dive.md` | Full architecture with 3 effect types, 4 privacy tiers |
+| Terminology | `mapping/cross-project/terminology-matrix.md` | 25+ Effect Bundle terms added |
+| Gaps | `traceability/aid-algorithms-gaps.md` | GAP-EFFECT-001 through GAP-EFFECT-005 |
+| Requirements | `traceability/aid-algorithms-requirements.md` | REQ-EFFECT-001 through REQ-EFFECT-005 |
+
+**Key Findings**:
+- No standard effect format exists across Loop, AAPS, Trio, xDrip+
+- Privacy tiers needed: transparent, privacyPreserving, configurable, onDeviceOnly
+- Reconciliation strategy: confidence-weighted averaging with 50% external cap
+- Safety bounds: sensitivity 0.2-2.0, glucose ±50 mg/dL, absorption 0.2-3.0
+- Nightscout lacks native `effectbundles` collection
+
+**Gaps Identified**: GAP-EFFECT-001 (no standard format), GAP-EFFECT-002 (no privacy tiers), GAP-EFFECT-003 (no agent registration), GAP-EFFECT-004 (no reconciliation), GAP-EFFECT-005 (no Nightscout collection)
+
+**Requirements Added**: REQ-EFFECT-001 (validity window), REQ-EFFECT-002 (privacy enforcement), REQ-EFFECT-003 (safety bounds), REQ-EFFECT-004 (tier declaration), REQ-EFFECT-005 (influence cap)
+
+**Source Documentation** (T1Pal Mobile Workspace):
+- `docs/architecture/EFFECT-BUNDLE-NIGHTSCOUT-SPEC.md` - Community specification
+- `docs/architecture/LOOP-EFFECT-INTEGRATION.md` - Loop pathway
+- `docs/architecture/AAPS-EFFECT-INTEGRATION.md` - AAPS/OpenAPS pathway
+- `docs/architecture/TRIO-EFFECT-INTEGRATION.md` - Trio pathway
+- `docs/architecture/EFFECT-BUNDLE-PRIVACY-MODEL.md` - Privacy model
+- `docs/proposals/effect-bundle-crd.yaml` - CRD definition
+
+**Cross-Reference**: [EFFECT-BUNDLE-NIGHTSCOUT-SPEC.md](../t1pal-mobile-workspace/docs/architecture/EFFECT-BUNDLE-NIGHTSCOUT-SPEC.md)
+
+---
+
+### Device Capability Architecture Analysis (2026-02-03)
+
+Comprehensive analysis of CGM vs Pump device architecture, addressing the "ConnectionPreviewState Overloaded" anti-pattern identified in T1Pal code review.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep Dive | `docs/10-domain/device-capability-architecture-deep-dive.md` | Full device taxonomy with 6 CGM types, 4 pump types |
+| Terminology | `mapping/cross-project/terminology-matrix.md` | Device capability terms added (70+ new terms) |
+| Gaps | `traceability/pumps-gaps.md` | GAP-ARCH-001, GAP-ARCH-002, GAP-ARCH-003 |
+| Requirements | `traceability/pumps-requirements.md` | REQ-ARCH-001, REQ-ARCH-002, REQ-ARCH-003 |
+
+**Key Findings**:
+- CGM and pump devices have fundamentally different capability sets, safety profiles, and lifecycle models
+- Generic "connection state" types lose type safety and device semantics
+- Vendor-specific extensions needed for protocol-specific fields (J-PAKE, EAP-AKA, ECDH, etc.)
+- 7 CGM variants and 4 pump types documented with authentication, encryption, and communication protocols
+
+**Gaps Identified**: GAP-ARCH-001 (no capability taxonomy), GAP-ARCH-002 (state models conflated), GAP-ARCH-003 (vendor variations undocumented)
+
+**Requirements Added**: REQ-ARCH-001 (state separation), REQ-ARCH-002 (capability enumeration), REQ-ARCH-003 (vendor extensions)
+
+**Source Files Analyzed**:
+- `externals/OmniBLE/` - Omnipod DASH BLE protocol
+- `externals/OmniKit/` - Omnipod Eros RF protocol
+- `externals/MinimedKit/` - Medtronic pump protocol
+- `externals/LibreTransmitter/` - Libre sensor protocols
+- Loop/AAPS/xDrip+ source code (via explore agents)
+
+**Cross-Reference**: [STATE-ARCHITECTURE-AUDIT.md](../t1pal-mobile-workspace/docs/architecture/STATE-ARCHITECTURE-AUDIT.md)
+
+---
+
 ### StateSpan V3 Extension OpenAPI Spec (2026-02-01)
 
 Created OpenAPI 3.0 specification for hypothetical StateSpan V3 extension.
