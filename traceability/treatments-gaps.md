@@ -760,6 +760,19 @@ Loop uploads Temporary Override treatments with UUID `_id`:
 - v1 DELETE/PUT attempts ObjectId coercion, fails for UUID strings
 - Issue: [nightscout/cgm-remote-monitor#8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450)
 
+**Source Code Analysis** (2026-03-10):
+
+| File | Line | Code | Behavior |
+|------|------|------|----------|
+| `OverrideTreament.swift` | 59 | `id: override.syncIdentifier.uuidString` | UUID put directly in `id` param |
+| `NightscoutTreatment.swift` | 111 | `rval["_id"] = id` | `id` param becomes `_id` in JSON |
+| `NightscoutService.swift` | 165 | `deleted.map { $0.syncIdentifier.uuidString }` | Delete uses UUID as `_id` |
+| `SyncCarbObject.swift` | 25 | `syncIdentifier: syncIdentifier` | Carbs send SEPARATE `syncIdentifier` |
+| `DoseEntry.swift` | 31 | `syncIdentifier: syncIdentifier` | Doses send SEPARATE `syncIdentifier` |
+| `ObjectIdCache.swift` | 56-58 | `add(syncIdentifier, objectId)` | Carbs/doses cache server `_id` |
+
+**Why Override is Different**: Override calls `OverrideTreatment.init(id: syncIdentifier.uuidString)` which puts the UUID directly into the `_id` field via the base class. Carbs and doses instead pass `id: objectId` (from ObjectIdCache, or nil) and `syncIdentifier: syncIdentifier` as separate parameters.
+
 **Impact**: Critical
 - Override sync gets stuck after indefinite override
 - Later override banners stop appearing on graph
@@ -783,18 +796,26 @@ Loop uploads Temporary Override treatments with UUID `_id`:
 - `lib/server/treatments.js` - treatment storage layer
 - PR: [#8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447) - Fix implementation
 
-**Sync Identity Field Mapping**:
+**Sync Identity Field Mapping** (verified 2026-03-10):
 
 | System | Treatment Type | Field Sent | Used as `_id`? | Code Reference |
 |--------|---------------|------------|----------------|----------------|
-| **Loop** | Carbs | `syncIdentifier` | No (ObjectIdCache) | `SyncCarbObject.swift:68` |
-| **Loop** | Doses (bolus/temp) | `syncIdentifier` | No (ObjectIdCache) | `DoseEntry.swift:119` |
+| **Loop** | Carbs | `syncIdentifier` | No (ObjectIdCache) | `SyncCarbObject.swift:25` |
+| **Loop** | Doses (bolus/temp) | `syncIdentifier` | No (commented out) | `DoseEntry.swift:30-31` |
 | **Loop** | **Overrides** | `_id = syncIdentifier.uuidString` | **YES** ← Problem | `OverrideTreament.swift:59` |
 | **AAPS** | All (v3 SDK) | `identifier` | No (server assigns) | `NSClientV3Plugin.kt` |
 | **AAPS** | Pump events | `pumpId` + `pumpSerial` | No | `IDs.kt:19-22` |
 | **xDrip+** | Treatments | `uuid` | Sometimes | `Treatments.java` |
 
 **Key Finding**: Loop's **override** treatment is the exception - it puts `syncIdentifier` directly into `_id`, while all other Loop treatments send `syncIdentifier` as a separate field and use ObjectIdCache to track server-assigned `_id`.
+
+**DoseEntry Code Comment** (line 30-31):
+```swift
+/* id: objectId, */ /// Specifying _id only works when doing a put (modify);
+                    /// all dose uploads are currently posting so they can be either create or update
+syncIdentifier: syncIdentifier,
+```
+This explains why doses intentionally DON'T send `_id` - they let the server handle deduplication via `syncIdentifier`.
 
 **Fix Options Analysis**:
 
