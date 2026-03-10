@@ -2,6 +2,22 @@
 
 Active work streams for the Nightscout ecosystem alignment project.
 
+## 🎯 Start Here: Integration Test Harness
+
+**[integration-test-harness.md](integration-test-harness.md)** - Central document for running cgm-remote-monitor locally and testing with Swift, Kotlin, and JavaScript clients.
+
+```
+Swift (Loop) ──┐
+               │
+Kotlin (AAPS) ─┼──▶ cgm-pr-8447 (localhost:1337) ──▶ MongoDB
+               │
+JavaScript ────┘
+```
+
+**Proposals Under Test**: [REQ-SYNC-070](../../traceability/sync-identity-requirements.md#req-sync-070) (Identifier-First), [REQ-SYNC-071](../../traceability/sync-identity-requirements.md#req-sync-071) (Server-Controlled ID)
+
+---
+
 ## Active Backlogs
 
 ### AID Client Testing
