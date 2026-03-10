@@ -248,6 +248,103 @@ fun TT.toNSTemporaryTarget(): NSTemporaryTarget =
 
 ---
 
+## DeviceStatusExtension.kt Analysis (AAPS-SRC-015) ✅
+
+**File**: `plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/DeviceStatusExtension.kt`
+
+### JSON Mapping
+
+```kotlin
+fun DS.toNSDeviceStatus(): NSDeviceStatus =
+    NSDeviceStatus(
+        date = timestamp,
+        device = device,                          // "openaps://samsung SM-G970F"
+        pump = pump,                              // Pump object with battery, reservoir
+        openaps = NSDeviceStatus.OpenAps(
+            suggested = suggested?.let { JSONObject(it) },
+            enacted = enacted?.let { JSONObject(it) },
+            iob = iob?.let { JSONObject(it) }
+        ),
+        uploaderBattery = uploaderBattery,
+        isCharging = isCharging,
+        configuration = configuration
+    )
+```
+
+### NSDeviceStatus Structure
+
+```kotlin
+data class NSDeviceStatus(
+    val identifier: String?,      // Server-assigned (not client-generated)
+    val date: Long?,              // Timestamp in milliseconds
+    val device: String?,          // "openaps://phone-name"
+    val uploaderBattery: Int?,    // Phone battery %
+    val isCharging: Boolean?,
+    val pump: Pump?,              // Pump status object
+    val openaps: OpenAps?,        // Algorithm data
+    val uploader: Uploader?,
+    val configuration: Configuration?
+)
+```
+
+### OpenAps Object (oref0/oref1 format)
+
+```json
+{
+  "openaps": {
+    "suggested": {
+      "bg": 173,
+      "temp": "absolute",
+      "predBGs": {
+        "IOB": [173, 178, 183, ...],
+        "COB": [...],
+        "UAM": [...],
+        "ZT": [...]
+      },
+      "reason": "COB: 0, Dev: 46, BGI: -1.92...",
+      "eventualBG": 194,
+      "IOB": 0.309,
+      "COB": 0
+    },
+    "enacted": {
+      "rate": 2.25,
+      "duration": 30,
+      "timestamp": "2016-06-24T09:19:06.000Z",
+      "received": true
+    },
+    "iob": [{
+      "iob": 0.309,
+      "basaliob": 0.078,
+      "bolussnooze": 0,
+      "activity": 0.0048,
+      "time": "2016-06-24T09:26:16.000Z"
+    }]
+  }
+}
+```
+
+### Loop vs AAPS DeviceStatus Comparison
+
+| Field | Loop | AAPS (oref0) |
+|-------|------|--------------|
+| **Namespace** | `loop` | `openaps` |
+| **Prediction** | Single `predicted.values[]` | 4 curves: `IOB`, `COB`, `UAM`, `ZT` |
+| **IOB format** | `{iob: 2.5, timestamp: ...}` | Array with activity, basaliob |
+| **Enacted** | `{rate, duration, received, bolusVolume}` | `{rate, duration, timestamp, received}` |
+| **Reason** | Not included | Detailed string with Dev, BGI, ISF |
+
+### Key Insight: 4 Prediction Curves (oref0)
+
+AAPS/oref0 sends 4 separate prediction arrays in `predBGs`:
+- **IOB**: Insulin-only prediction
+- **COB**: Carb absorption prediction  
+- **UAM**: Unannounced meal detection
+- **ZT**: Zero-temp (safety) prediction
+
+Loop sends a single combined curve.
+
+---
+
 ## Test Infrastructure (AAPS-RUN-TESTS)
 
 ### Test Inventory
@@ -408,7 +505,7 @@ AAPS is **different from Loop** in several key ways:
 | AAPS-SRC-012 | `extensions/TemporaryBasalExtension.kt` | Temp Basal → JSON | ⬜ |
 | AAPS-SRC-013 | `extensions/TemporaryTargetExtension.kt` | Temp Target → JSON | ✅ |
 | AAPS-SRC-014 | `extensions/ProfileSwitchExtension.kt` | Profile Switch → JSON | ⬜ |
-| AAPS-SRC-015 | `extensions/DeviceStatusExtension.kt` | DeviceStatus → JSON | ⬜ |
+| AAPS-SRC-015 | `extensions/DeviceStatusExtension.kt` | DeviceStatus → JSON | ✅ |
 | AAPS-SRC-016 | `extensions/GlucoseValueExtension.kt` | SGV → Entry JSON | ⬜ |
 | AAPS-SRC-017 | `extensions/TherapyEventExtension.kt` | Events → JSON | ⬜ |
 
@@ -659,11 +756,11 @@ cd externals/AndroidAPS
 
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
-| 1. Source Analysis | 17 | 8 | 0 |
+| 1. Source Analysis | 17 | 9 | 0 |
 | 2. Difference Doc | 1 | 1 | 0 |
 | 3. Test Development | 18 | 0 | 0 |
 | 4. Test Harness | 3 | 0 | 0 |
-| **Total** | **39** | **9** | **0** |
+| **Total** | **39** | **10** | **0** |
 
 ---
 
@@ -676,9 +773,10 @@ cd externals/AndroidAPS
 5. [x] Analyze `TemporaryTargetExtension.kt` - AAPS override equivalent ✅
 6. [x] Analyze `NSAndroidClient.kt` - SDK interface ✅
 7. [x] Analyze `NSAndroidClientImpl.kt` - identity flow ✅
-8. [ ] Document v1 vs v3 API differences
-9. [ ] Analyze remaining extensions (TempBasal, ProfileSwitch, DeviceStatus)
-10. [ ] Create test fixtures from AAPS payloads
+8. [x] Analyze `DeviceStatusExtension.kt` - oref0 deviceStatus format ✅
+9. [ ] Document v1 vs v3 API differences
+10. [ ] Analyze remaining extensions (TempBasal, ProfileSwitch, GlucoseValue)
+11. [ ] Create test fixtures from AAPS payloads
 
 ---
 
