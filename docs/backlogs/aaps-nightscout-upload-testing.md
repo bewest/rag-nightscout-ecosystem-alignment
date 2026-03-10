@@ -1312,7 +1312,7 @@ when {
 
 | Test ID | Scenario | HTTP | Payload Key Fields | Status |
 |---------|----------|------|-------------------|--------|
-| TEST-AAPS-BOLUS-001 | SMB bolus (v3) | POST | `identifier`, `insulin`, `type: SMB` | ⬜ |
+| TEST-AAPS-BOLUS-001 | SMB bolus (v3) | POST | `identifier`, `insulin`, `type: SMB` | ✅ `testSmbBolusUpload` |
 | TEST-AAPS-BOLUS-002 | Meal bolus (v3) | POST | `identifier`, `insulin`, `type: NORMAL` | ✅ `testPostBolusWithIdentifier` |
 | TEST-AAPS-BOLUS-003 | Bolus with pump IDs | POST | `pumpId`, `pumpType`, `pumpSerial` | ✅ `testBolusWithPumpCorrelation` |
 | TEST-AAPS-BOLUS-004 | Update bolus (v3) | PUT | `identifier`, updated fields | ✅ `testReuploadBolusDeduplicates` |

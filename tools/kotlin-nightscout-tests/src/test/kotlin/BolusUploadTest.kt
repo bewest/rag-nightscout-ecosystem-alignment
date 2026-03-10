@@ -67,6 +67,39 @@ class BolusUploadTest {
     }
     
     /**
+     * Test: SMB bolus upload (TEST-AAPS-BOLUS-001)
+     * 
+     * AAPS uses type: SMB for Super Micro Bolus
+     * From NSBolus.kt: enum class BolusType { NORMAL, SMB, PRIMING }
+     */
+    @Test
+    fun testSmbBolusUpload() {
+        val identifier = UUID.randomUUID().toString()
+        
+        val smb = mapOf(
+            "identifier" to identifier,
+            "eventType" to "Bolus",
+            "insulin" to 0.3,  // SMBs are typically small
+            "type" to "SMB",
+            "isSMB" to true,
+            "created_at" to Instant.now().toString()
+        )
+        
+        val response = client.postTreatment(smb)
+        
+        assertEquals(identifier, response["identifier"])
+        assertEquals("SMB", response["type"])
+        assertEquals(true, response["isSMB"])
+        assertEquals(0.3, response["insulin"])
+        
+        val objectId = response["_id"] as String
+        assertEquals(24, objectId.length)
+        
+        // Cleanup
+        client.deleteTreatment(objectId)
+    }
+    
+    /**
      * Test: Re-upload same bolus deduplicates
      * 
      * Simulates: AAPS retries after network failure
