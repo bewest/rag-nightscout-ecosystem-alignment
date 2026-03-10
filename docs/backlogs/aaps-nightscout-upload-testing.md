@@ -917,7 +917,106 @@ suspend fun deleteTreatment(@Path("identifier") identifier: String)
 | AAPS-ID-002 | When is `nightscoutId` populated? | Extensions, Sync workers | ✅ |
 | AAPS-ID-003 | How is `identifier` used in v3? | `nssdk/localmodel/` | ✅ |
 | AAPS-ID-004 | How do `pumpId`/`pumpSerial` correlate? | Extensions | ✅ |
-| AAPS-ID-005 | Difference between v1 and v3 sync? | `nsclient/` vs `nsclientV3/` | ⬜ |
+| AAPS-ID-005 | Difference between v1 and v3 sync? | `nsclient/` vs `nsclientV3/` | ✅ |
+
+---
+
+## AAPS-ID-005: v1 vs v3 Sync Differences ✅
+
+### Architecture Comparison
+
+| Aspect | v1 (NSClientPlugin) | v3 (NSClientV3Plugin) |
+|--------|---------------------|----------------------|
+| **Transport** | Socket.IO (WebSocket) | REST API (Retrofit) |
+| **Authentication** | API secret hash | JWT Bearer token |
+| **Endpoints** | `/api/v1/treatments` | `/api/v3/treatments/{identifier}` |
+| **ID field** | `_id` (ObjectId) | `identifier` (string) |
+| **Push mechanism** | `socket.emit("dbUpdate")` | Direct HTTP POST/PATCH |
+| **Acknowledgment** | Socket.IO `Ack` callback | HTTP response body |
+
+### v1: Socket.IO Based
+
+```kotlin
+// NSClientService.kt:118,281-286
+private var socket: Socket? = null
+
+socket = IO.socket(nsURL, opt).also { socket ->
+    socket.on(Socket.EVENT_CONNECT, onConnect)
+    socket.on(Socket.EVENT_DISCONNECT, onDisconnect)
+    socket.connect()
+    socket.on("dataUpdate", onDataUpdate)
+}
+```
+
+**v1 Upload Flow:**
+```
+┌─────────────────────────────────────────────────────────────┐
+│  AAPS  →  socket.emit("dbAdd", json, Ack)  →  Nightscout    │
+│                         ↓                                    │
+│                    NSAddAck receives                         │
+│                    { _id: "507f1f..." }                      │
+│                         ↓                                    │
+│              ids.nightscoutId = ack.id                       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### v3: REST API Based
+
+```kotlin
+// NSAndroidClient interface (nssdk)
+interface NSAndroidClient {
+    suspend fun createTreatment(nsTreatment: NSTreatment): CreateUpdateResponse
+    suspend fun updateTreatment(nsTreatment: NSTreatment): CreateUpdateResponse
+}
+
+// NightscoutRemoteService.kt:66-69 (Retrofit)
+@POST("v3/treatments")
+suspend fun createTreatment(@Body remoteTreatment: RemoteTreatment): Response<RemoteCreateUpdateResponse>
+
+@PUT("v3/treatments/{identifier}")
+suspend fun updateTreatment(@Body remoteTreatment: RemoteTreatment, @Path("identifier") identifier: String)
+```
+
+**v3 Upload Flow:**
+```
+┌─────────────────────────────────────────────────────────────┐
+│  AAPS  →  POST /v3/treatments  →  Nightscout                │
+│                         ↓                                    │
+│           Response: { identifier: "..." }                    │
+│                         ↓                                    │
+│          ids.nightscoutId = result.identifier                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Key Code Locations
+
+| Component | v1 | v3 |
+|-----------|----|----|
+| Plugin | `nsclient/NSClientPlugin.kt` | `nsclientV3/NSClientV3Plugin.kt` |
+| Sync Selector | `nsclient/DataSyncSelectorV1.kt` | `nsclientV3/DataSyncSelectorV3.kt` |
+| Service | `nsclient/services/NSClientService.kt` | `nsclientV3/services/NSClientV3Service.kt` |
+| Acks | `nsclient/acks/NSAddAck.kt` | (inline in plugin) |
+| Extensions | `nsclient/extensions/` | `nsclientV3/extensions/` |
+
+### Identity Field Handling
+
+| Aspect | v1 | v3 |
+|--------|----|----|
+| Server assigns | `_id` (ObjectId) | `identifier` (string) |
+| Stored locally as | `ids.nightscoutId` | `ids.nightscoutId` |
+| Used in URL path | No (query params) | Yes (`/v3/treatments/{identifier}`) |
+| On CREATE | `_id` not sent | `identifier` null |
+| On UPDATE | Uses `_id` in query | Uses `identifier` in URL |
+
+### Why Both Exist
+
+- **v1**: Legacy, still used by older NS servers, supports real-time push via WebSocket
+- **v3**: Modern REST API, better for mobile (battery), explicit identifier handling
+
+### Migration Note
+
+AAPS can use either v1 or v3 depending on user preference and server capabilities.
+Both store server ID in `ids.nightscoutId` for consistent local handling.
 
 ---
 
