@@ -330,7 +330,7 @@ cd tools/kotlin-nightscout-tests && ./gradlew test
 | ID | Task | Status |
 |----|------|--------|
 | `harness-server-setup` | Document server startup with my.test.env | ✅ This doc |
-| `harness-swift-pkg` | Create tools/swift-nightscout-tests Package.swift | ⬜ |
+| `harness-swift-pkg` | Create tools/swift-nightscout-tests Package.swift | ✅ |
 | `harness-kotlin-pkg` | Create tools/kotlin-nightscout-tests | ⬜ |
 | `harness-ci-script` | Script to run all three test suites | ⬜ |
 
@@ -340,8 +340,8 @@ cd tools/kotlin-nightscout-tests && ./gradlew test
 |----|----------|----------|--------|
 | `test-js-uuid` | JavaScript | UUID _id CRUD | ✅ Exists |
 | `test-js-identifier` | JavaScript | identifier field | ⬜ |
-| `test-swift-override` | Swift | Loop override flow | ⬜ |
-| `test-swift-cache` | Swift | ObjectIdCache workflow | ⬜ |
+| `test-swift-override` | Swift | Loop override flow | ✅ |
+| `test-swift-cache` | Swift | ObjectIdCache workflow | ✅ |
 | `test-kotlin-bolus` | Kotlin | AAPS bolus flow | ⬜ |
 | `test-kotlin-identifier` | Kotlin | v3 identifier CRUD | ⬜ |
 
