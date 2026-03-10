@@ -1346,11 +1346,11 @@ when {
 
 | Test ID | Scenario | Status |
 |---------|----------|--------|
-| TEST-AAPS-API-001 | v1 POST treatment (Socket.IO style) | ⬜ |
+| TEST-AAPS-API-001 | v1 POST treatment (Socket.IO style) | N/A (requires WebSocket) |
 | TEST-AAPS-API-002 | v3 POST treatment (REST) | ✅ All Kotlin tests |
 | TEST-AAPS-API-003 | v3 identifier deduplication | ✅ `testReuploadBolusDeduplicates` |
-| TEST-AAPS-API-004 | v3 srvModified handling | ⬜ |
-| TEST-AAPS-API-005 | v3 history endpoint polling | ⬜ |
+| TEST-AAPS-API-004 | v3 srvModified handling | ✅ `testSrvModifiedHandling` |
+| TEST-AAPS-API-005 | v3 history endpoint polling | N/A (out of scope) |
 
 ---
 

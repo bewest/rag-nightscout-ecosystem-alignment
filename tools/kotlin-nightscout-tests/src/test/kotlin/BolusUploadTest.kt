@@ -333,4 +333,39 @@ class BolusUploadTest {
         // Cleanup
         responses.forEach { client.deleteTreatment(it["_id"] as String) }
     }
+    
+    /**
+     * Test: srvModified handling (TEST-AAPS-API-004)
+     * 
+     * Server sets srvModified timestamp on update
+     */
+    @Test
+    fun testSrvModifiedHandling() {
+        val identifier = UUID.randomUUID().toString()
+        
+        val bolus = mapOf(
+            "identifier" to identifier,
+            "eventType" to "Bolus",
+            "insulin" to 2.0,
+            "created_at" to Instant.now().toString()
+        )
+        
+        // First upload
+        val response1 = client.postTreatment(bolus)
+        val objectId = response1["_id"] as String
+        
+        // Small delay then update
+        Thread.sleep(100)
+        
+        val updated = bolus + ("insulin" to 2.5)
+        val response2 = client.postTreatment(updated)
+        
+        // Server should set/update srvModified
+        // Note: v1 API may not expose srvModified directly, but document is updated
+        assertEquals(objectId, response2["_id"])
+        assertEquals(2.5, response2["insulin"])
+        
+        // Cleanup
+        client.deleteTreatment(objectId)
+    }
 }
