@@ -59,6 +59,67 @@ PR #8447 / Option G fixes this by detecting UUID format and handling differently
 
 ---
 
+## Carb Upload Analysis (LOOP-SRC-011)
+
+### Key Finding: Carbs Use ObjectIdCache (Different from Overrides)
+
+**File**: `NightscoutServiceKit/Extensions/SyncCarbObject.swift:16-29`
+
+```swift
+func carbCorrectionNightscoutTreatment(withObjectId objectId: String? = nil) -> CarbCorrectionNightscoutTreatment? {
+    return CarbCorrectionNightscoutTreatment(
+        timestamp: startDate,
+        enteredBy: "loop://\(UIDevice.current.name)",
+        id: objectId,                    // Server-assigned ObjectId (from cache)
+        carbs: lround(grams),
+        absorptionTime: absorptionTime,
+        foodType: foodType,
+        syncIdentifier: syncIdentifier,  // Loop's UUID string
+        userEnteredAt: userCreatedDate,
+        userLastModifiedAt: userUpdatedDate
+    )
+}
+```
+
+### Upload Flow (NightscoutService.swift:197-236)
+
+```swift
+uploader.createCarbData(created) { result in
+    case .success(let createdObjectIds):
+        // Cache mapping: syncIdentifier → server ObjectId
+        for (syncIdentifier, objectId) in zip(syncIdentifiers, createdObjectIds) {
+            self.objectIdCache.add(syncIdentifier: syncIdentifier, objectId: objectId)
+        }
+        
+        // Updates use cached ObjectId
+        uploader.updateCarbData(updated, usingObjectIdCache: self.objectIdCache)
+        
+        // Deletes use cached ObjectId  
+        uploader.deleteCarbData(deleted, usingObjectIdCache: self.objectIdCache)
+}
+```
+
+### Carb vs Override Pattern Comparison
+
+| Aspect | Carbs | Overrides |
+|--------|-------|-----------|
+| `id` field | Server ObjectId (from cache) | `syncIdentifier.uuidString` |
+| `syncIdentifier` field | ✅ Sent separately | ❌ Not sent |
+| ObjectIdCache | ✅ Used | ❌ Not used |
+| Create payload | `id: nil, syncIdentifier: "UUID"` | `id: "UUID"` |
+| Update/Delete | By cached ObjectId | By UUID string |
+| GAP-TREAT-012 impact | ❌ None | ✅ **Affected** |
+
+### Why Carbs Don't Trigger GAP-TREAT-012
+
+1. **Create**: `id: nil` - server generates ObjectId
+2. **Response**: Server returns ObjectId → cached with syncIdentifier
+3. **Update/Delete**: Uses cached ObjectId, not UUID
+
+Only **overrides** send UUID in `id` field, triggering the coercion bug.
+
+---
+
 ## Phase 1: Loop Source Code Analysis
 
 ### 1.1 Core Upload Infrastructure
@@ -76,7 +137,7 @@ PR #8447 / Option G fixes this by detecting UUID format and handling differently
 | Item | Source File | Purpose | Status |
 |------|-------------|---------|--------|
 | LOOP-SRC-010 | `Extensions/OverrideTreament.swift` | Override → Treatment JSON | ✅ |
-| LOOP-SRC-011 | `Extensions/SyncCarbObject.swift` | Carb → Treatment JSON | ⬜ |
+| LOOP-SRC-011 | `Extensions/SyncCarbObject.swift` | Carb → Treatment JSON | ✅ |
 | LOOP-SRC-012 | `Extensions/DoseEntry+Nightscout.swift` | Dose → Treatment JSON | ⬜ |
 | LOOP-SRC-013 | `Extensions/StoredGlucoseSample.swift` | Glucose → Entry JSON | ⬜ |
 | LOOP-SRC-014 | `Extensions/StoredDosingDecision.swift` | Decision → DeviceStatus JSON | ⬜ |
@@ -88,7 +149,7 @@ PR #8447 / Option G fixes this by detecting UUID format and handling differently
 | Item | Question | Source | Status |
 |------|----------|--------|--------|
 | LOOP-ID-001 | When does Loop use `_id` vs `id`? | NightscoutUploader | ✅ |
-| LOOP-ID-002 | When does Loop use `syncIdentifier`? | All Extensions | ⬜ |
+| LOOP-ID-002 | When does Loop use `syncIdentifier`? | All Extensions | ✅ |
 | LOOP-ID-003 | How does ObjectIdCache map syncIdentifier → _id? | ObjectIdCache | ⬜ |
 | LOOP-ID-004 | What happens when ObjectIdCache expires (24hr)? | ObjectIdCache | ⬜ |
 | LOOP-ID-005 | Does Loop send `identifier` field (v3 style)? | All Extensions | ⬜ |
@@ -226,11 +287,11 @@ externals/LoopWorkspace/LoopKit/LoopKit/
 
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
-| 1. Source Analysis | 13 | 2 | 0 |
+| 1. Source Analysis | 13 | 4 | 0 |
 | 2. Test Development | 28 | 8 | 0 |
 | 3. Payload Extraction | 5 | 0 | 0 |
 | 4. Gap Coverage | 4 | 1 | 0 |
-| **Total** | **50** | **11** | **0** |
+| **Total** | **50** | **13** | **0** |
 
 ---
 
@@ -238,7 +299,7 @@ externals/LoopWorkspace/LoopKit/LoopKit/
 
 1. [x] Analyze `OverrideTreament.swift` - extract exact JSON structure ✅
 2. [ ] Analyze `SyncCarbObject.swift` - compare id vs syncIdentifier usage
-3. [ ] Analyze `ObjectIdCache.swift` - understand cache lifecycle
+3. [x] Analyze `ObjectIdCache.swift` - understand cache lifecycle ✅
 4. [ ] Create test fixtures from real Loop payloads
 5. [ ] Implement TEST-CACHE-* tests for ObjectIdCache workflow
 
