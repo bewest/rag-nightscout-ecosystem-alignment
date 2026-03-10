@@ -232,21 +232,23 @@ This matrix defines how Nightscout should handle identity fields from different 
 
 | Test ID | Client | Field Pattern | Expected Behavior | Status |
 |---------|--------|---------------|-------------------|--------|
-| TEST-ID-001 | Loop Override | `id: "UUID-STRING"` | Accept as-is OR generate new ObjectId | ⬜ |
-| TEST-ID-002 | Loop Override | `identifier: "UUID-STRING"` | Store in `identifier`, generate `_id` | ⬜ |
-| TEST-ID-003 | Loop Carb | `syncIdentifier: "UUID"`, no `id` | Generate ObjectId `_id` | ⬜ |
-| TEST-ID-004 | AAPS | `identifier: null` | Generate ObjectId `_id` and return | ⬜ |
-| TEST-ID-005 | AAPS | `identifier: "ObjectId"` | Use provided, update existing | ⬜ |
-| TEST-ID-006 | xDrip+ | `uuid: "UUID"`, `_id: "ObjectId"` | Both fields preserved | ⬜ |
+| TEST-ID-001 | Loop Override | `id: "UUID-STRING"` | Accept as-is OR generate new ObjectId | ✅ |
+| TEST-ID-002 | Loop Override | `identifier: "UUID-STRING"` | Store in `identifier`, generate `_id` | ✅ |
+| TEST-ID-003 | Loop Carb | `syncIdentifier: "UUID"`, no `id` | Generate ObjectId `_id` | ✅ |
+| TEST-ID-004 | AAPS | `identifier: null` | Generate ObjectId `_id` and return | ✅ |
+| TEST-ID-005 | AAPS | `identifier: "ObjectId"` | Use provided, update existing | ✅ |
+| TEST-ID-006 | xDrip+ | `uuid: "UUID"`, `_id: "ObjectId"` | Both fields preserved | ✅ |
 
 #### v1 API Identity Behavior
 
 | Test ID | Scenario | Input | Expected `_id` | Expected `identifier` | Status |
 |---------|----------|-------|----------------|----------------------|--------|
-| TEST-V1-ID-001 | No id field | `{eventType, created_at}` | Generated ObjectId | null | ⬜ |
-| TEST-V1-ID-002 | Valid ObjectId | `{_id: "507f1f77..."}` | Use provided | null | ⬜ |
-| TEST-V1-ID-003 | UUID string (GAP) | `{_id: "A1B2C3D4-..."}` | **FAIL** or promote | Copy to `identifier` | ⬜ |
-| TEST-V1-ID-004 | syncIdentifier | `{syncIdentifier: "UUID"}` | Generated ObjectId | null | ⬜ |
+| TEST-V1-ID-001 | No id field | `{eventType, created_at}` | Generated ObjectId | null | ✅ |
+| TEST-V1-ID-002 | Valid ObjectId | `{_id: "507f1f77..."}` | Use provided | null | ✅ |
+| TEST-V1-ID-003 | UUID string (GAP) | `{_id: "A1B2C3D4-..."}` | **FAIL** or promote | Copy to `identifier` | ✅ |
+| TEST-V1-ID-004 | syncIdentifier | `{syncIdentifier: "UUID"}` | Generated ObjectId | null | ✅ |
+
+**Test Implementation:** `cgm-pr-8447/tests/identity-matrix.test.js` (12 tests, all passing)
 
 #### v3 API Identity Behavior
 
@@ -346,8 +348,8 @@ externals/LoopWorkspace/LoopKit/LoopKit/
 | 2. Test Development | 28 | 17 | 0 |
 | 3. Payload Extraction | 5 | 0 | 0 |
 | 4. Gap Coverage | 4 | 4 | 0 |
-| 5. Identity Matrix | 22 | 1 | 0 |
-| **Total** | **72** | **28** | **0** |
+| 5. Identity Matrix | 22 | 12 | 0 |
+| **Total** | **72** | **39** | **0** |
 
 ---
 
