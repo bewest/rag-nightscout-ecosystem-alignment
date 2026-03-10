@@ -135,7 +135,7 @@ In progress - see [aaps-nightscout-upload-testing.md](aaps-nightscout-upload-tes
 
 | ID | Task | Deliverable |
 |----|------|-------------|
-| `swift-pkg-setup` | Create Swift test package | ✅ `tools/swift-nightscout-tests/` |
+| `swift-pkg-setup` | Create Swift test package | ✅ 5 tests passing |
 | `kotlin-pkg-setup` | Create Kotlin test package | ✅ `tools/kotlin-nightscout-tests/` |
 
 ### 🟢 P3: Infrastructure
