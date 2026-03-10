@@ -22,5 +22,5 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)  // Match system Java 21
 }

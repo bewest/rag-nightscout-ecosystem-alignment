@@ -419,6 +419,88 @@ AAPS uploads SGV to `/api/v3/entries` with:
 
 ---
 
+## TemporaryBasalExtension.kt Analysis (AAPS-SRC-012) ✅
+
+**File**: `plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/TemporaryBasalExtension.kt`
+
+### JSON Mapping
+
+```kotlin
+fun TB.toNSTemporaryBasal(profile: Profile): NSTemporaryBasal =
+    NSTemporaryBasal(
+        eventType = EventType.TEMPORARY_BASAL,
+        isValid = isValid,
+        date = timestamp,
+        type = type.toType(),                    // NORMAL, PUMP_SUSPEND, etc.
+        rate = convertedToAbsolute(timestamp, profile),
+        isAbsolute = isAbsolute,
+        absolute = if (isAbsolute) rate else null,
+        percent = if (!isAbsolute) rate - 100 else null,
+        duration = duration,
+        identifier = ids.nightscoutId,
+        pumpId = ids.pumpId,
+        pumpType = ids.pumpType?.name,
+        pumpSerial = ids.pumpSerial
+    )
+```
+
+### NSTemporaryBasal Structure
+
+```kotlin
+data class NSTemporaryBasal(
+    val eventType: EventType,     // TEMPORARY_BASAL
+    val duration: Long,           // Duration in milliseconds
+    val rate: Double,             // Absolute rate (U/hr)
+    val isAbsolute: Boolean,      // true = absolute, false = percent
+    val type: Type,               // NORMAL, PUMP_SUSPEND, SUPERBOLUS
+    val percent: Double?,         // Percent change (if !isAbsolute)
+    val absolute: Double?,        // Absolute rate (if isAbsolute)
+    val identifier: String?,      // Server-assigned ObjectId
+    ...pump IDs...
+)
+```
+
+### Type Enum Values
+
+| Type | Description |
+|------|-------------|
+| `NORMAL` | Standard temp basal |
+| `PUMP_SUSPEND` | Pump suspension |
+| `EMULATED_PUMP_SUSPEND` | Emulated via 0% temp |
+| `SUPERBOLUS` | Superbolus temp (oref0) |
+| `FAKE_EXTENDED` | Memory-only, not synced |
+
+### Actual JSON Payload
+
+```json
+{
+  "eventType": "Temp Basal",
+  "isValid": true,
+  "date": 1708135216000,
+  "duration": 1800000,
+  "rate": 1.5,
+  "isAbsolute": true,
+  "absolute": 1.5,
+  "percent": null,
+  "type": "NORMAL",
+  "identifier": "507f1f77bcf86cd799439011",
+  "pumpId": 11000,
+  "pumpType": "OMNIPOD_DASH",
+  "pumpSerial": "abc123"
+}
+```
+
+### Key Insight: Absolute vs Percent
+
+AAPS sends BOTH representations:
+- `rate`: Always absolute (after profile conversion)
+- `absolute`: Set if `isAbsolute = true`
+- `percent`: Set if `isAbsolute = false` (rate - 100)
+
+Loop sends similar via `TempBasalNightscoutTreatment` with `rate` and `temp: "absolute"`.
+
+---
+
 ## Test Infrastructure (AAPS-RUN-TESTS)
 
 ### Test Inventory
@@ -576,7 +658,7 @@ AAPS is **different from Loop** in several key ways:
 |------|-------------|---------|--------|
 | AAPS-SRC-010 | `extensions/BolusExtension.kt` | Bolus → NSBolus JSON | ✅ |
 | AAPS-SRC-011 | `extensions/CarbsExtension.kt` | Carbs → NSCarbs JSON | ✅ |
-| AAPS-SRC-012 | `extensions/TemporaryBasalExtension.kt` | Temp Basal → JSON | ⬜ |
+| AAPS-SRC-012 | `extensions/TemporaryBasalExtension.kt` | Temp Basal → JSON | ✅ |
 | AAPS-SRC-013 | `extensions/TemporaryTargetExtension.kt` | Temp Target → JSON | ✅ |
 | AAPS-SRC-014 | `extensions/ProfileSwitchExtension.kt` | Profile Switch → JSON | ⬜ |
 | AAPS-SRC-015 | `extensions/DeviceStatusExtension.kt` | DeviceStatus → JSON | ✅ |
@@ -830,11 +912,11 @@ cd externals/AndroidAPS
 
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
-| 1. Source Analysis | 17 | 10 | 0 |
+| 1. Source Analysis | 17 | 11 | 0 |
 | 2. Difference Doc | 1 | 1 | 0 |
 | 3. Test Development | 18 | 0 | 0 |
 | 4. Test Harness | 3 | 0 | 0 |
-| **Total** | **39** | **11** | **0** |
+| **Total** | **39** | **12** | **0** |
 
 ---
 
@@ -849,9 +931,10 @@ cd externals/AndroidAPS
 7. [x] Analyze `NSAndroidClientImpl.kt` - identity flow ✅
 8. [x] Analyze `DeviceStatusExtension.kt` - oref0 deviceStatus format ✅
 9. [x] Analyze `GlucoseValueExtension.kt` - SGV entry format ✅
-10. [ ] Document v1 vs v3 API differences
-11. [ ] Analyze remaining extensions (TempBasal, ProfileSwitch, TherapyEvent)
-12. [ ] Create test fixtures from AAPS payloads
+10. [x] Analyze `TemporaryBasalExtension.kt` - temp basal format ✅
+11. [ ] Document v1 vs v3 API differences
+12. [ ] Analyze remaining extensions (ProfileSwitch, TherapyEvent)
+13. [ ] Create test fixtures from AAPS payloads
 
 ---
 
