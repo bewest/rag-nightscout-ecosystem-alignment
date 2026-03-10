@@ -2,6 +2,20 @@
 
 Active work streams for the Nightscout ecosystem alignment project.
 
+## 🔴 P0: Fix Issue #8450 (Loop Override Sync)
+
+**Critical**: Loop Temporary Override sync is broken. [GitHub Issue #8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450)
+
+| Task | Status | Location |
+|------|--------|----------|
+| **Implement REQ-SYNC-072 (Option G)** | 🔴 Ready to implement | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` |
+| Specification | ✅ Complete | [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072) |
+| Strategy comparison | ✅ Complete | [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012) |
+
+**Implementation**: Modify `lib/server/treatments.js` per REQ-SYNC-072 algorithm.
+
+---
+
 ## ⚠️ Nightscout Server Available
 
 **A cgm-remote-monitor server is ready for testing:**
@@ -51,9 +65,14 @@ JavaScript ────┘
 
 ## Quick Reference: Ready Work Items
 
-Work items with no blockers that can be started immediately:
+### 🔴 P0: Implement Option G Fix
 
-### Loop Source Analysis (Priority: HIGH)
+| ID | Task | Priority |
+|----|------|----------|
+| `impl-option-g` | Implement REQ-SYNC-072 in treatments.js | **P0** |
+| `test-option-g` | Verify with existing tests | **P0** |
+
+### 🟠 P1: Loop Source Analysis
 
 These must complete before test development:
 
@@ -64,7 +83,7 @@ These must complete before test development:
 | `loop-src-cache` | Analyze ObjectIdCache.swift | `NightscoutServiceKit/ObjectIdCache.swift` |
 | `loop-src-uploader` | Analyze NightscoutUploader.swift | `NightscoutServiceKit/Extensions/NightscoutUploader.swift` |
 
-### AAPS Source Analysis (Priority: HIGH)
+### 🟠 P1: AAPS Source Analysis
 
 Can run in parallel with Loop analysis:
 
@@ -75,15 +94,14 @@ Can run in parallel with Loop analysis:
 | `aaps-src-sdk` | Analyze NSAndroidClient | `core/nssdk/interfaces/NSAndroidClient.kt` |
 | `aaps-run-tests` | Run existing AAPS tests | `./gradlew :plugins:sync:test` |
 
-### Swift Test Setup (Priority: MEDIUM)
-
-Can be done in parallel with source analysis:
+### 🟡 P2: Swift/Kotlin Test Setup
 
 | ID | Task | Deliverable |
 |----|------|-------------|
-| `swift-pkg-setup` | Create Swift test package | `tools/swift-nightscout-tests/Package.swift` |
+| `swift-pkg-setup` | Create Swift test package | ✅ `tools/swift-nightscout-tests/` |
+| `kotlin-pkg-setup` | Create Kotlin test package | ✅ `tools/kotlin-nightscout-tests/` |
 
-### Infrastructure (Priority: LOW)
+### 🟢 P3: Infrastructure
 
 | ID | Task |
 |----|------|
