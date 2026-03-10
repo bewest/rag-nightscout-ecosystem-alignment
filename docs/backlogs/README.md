@@ -93,12 +93,12 @@ JavaScript ────┘
 
 ## Quick Reference: Ready Work Items
 
-### 🔴 P0: Implement Option G Fix
+### ✅ P0: Implement Option G Fix
 
-| ID | Task | Priority |
-|----|------|----------|
-| `impl-option-g` | Implement REQ-SYNC-072 in treatments.js | **P0** |
-| `test-option-g` | Verify with existing tests | **P0** |
+| ID | Task | Status |
+|----|------|--------|
+| `impl-option-g` | Implement REQ-SYNC-072 in treatments.js | ✅ Complete |
+| `test-option-g` | Verify with existing tests | ✅ 16 tests passing |
 
 ### 🟠 P1: Loop Source Analysis ✅ COMPLETE
 
