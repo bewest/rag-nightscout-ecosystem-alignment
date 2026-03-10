@@ -2,17 +2,25 @@
 
 Active work streams for the Nightscout ecosystem alignment project.
 
-## 🔴 P0: Fix Issue #8450 (Loop Override Sync)
+## ✅ P0: Fix Issue #8450 (Loop Override Sync)
 
-**Critical**: Loop Temporary Override sync is broken. [GitHub Issue #8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450)
+**Status**: PR #8447 ready for review - all 657 tests pass.
+
+[GitHub Issue #8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450) | [PR #8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447)
 
 | Task | Status | Location |
 |------|--------|----------|
-| **Implement REQ-SYNC-072 (Option G)** | 🔴 Ready to implement | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` |
+| **UUID `_id` handling** | ✅ Implemented | `lib/server/treatments.js` |
+| **Tests** | ✅ 657 passing | `tests/api.treatments.test.js` |
 | Specification | ✅ Complete | [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072) |
 | Strategy comparison | ✅ Complete | [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012) |
 
-**Implementation**: Modify `lib/server/treatments.js` per REQ-SYNC-072 algorithm.
+**What PR #8447 does**:
+- `normalizeTreatmentId()`: Only converts 24-hex to ObjectId, leaves UUIDs as strings
+- `upsertQueryFor()`: Uses `_id` when provided (including UUID), falls back to `created_at + eventType`
+- POST/PUT/DELETE all work with Loop's UUID `_id` values
+
+**Follow-up (Optional)**: REQ-SYNC-072 (Option G) promotes UUID to `identifier` field for cleaner long-term design.
 
 ---
 

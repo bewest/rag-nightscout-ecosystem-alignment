@@ -51,6 +51,24 @@ Complete source code analysis of Loop's NightscoutKit upload patterns to support
 
 ---
 
+### PR #8447 Verification (2026-03-10)
+
+Verified PR #8447 implementation fixes issue #8450 - all 657 tests pass.
+
+| Deliverable | Location | Status |
+|-------------|----------|--------|
+| UUID Test | `tests/api.treatments.test.js` | ✅ POST/PUT/DELETE with UUID `_id` |
+| `normalizeTreatmentId()` | `lib/server/treatments.js:240-248` | ✅ Leaves UUID strings as-is |
+| `upsertQueryFor()` | `lib/server/treatments.js:229-238` | ✅ Uses `_id` when provided |
+| Backlog Update | `docs/backlogs/README.md` | ✅ P0 marked complete |
+
+**Implementation Summary**:
+- PR uses minimal fix approach (UUID stays in `_id` as string)
+- Alternative: REQ-SYNC-072 (Option G) would promote UUID to `identifier` field
+- Both approaches fix #8450; PR is simpler, Option G is cleaner long-term
+
+---
+
 ### Effect Bundle Architecture Analysis (2026-02-08)
 
 Comprehensive analysis of Effect Bundle architecture for cross-project algorithm influence, imported from T1Pal Mobile Workspace documentation.
