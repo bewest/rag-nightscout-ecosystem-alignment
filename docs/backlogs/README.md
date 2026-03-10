@@ -2,6 +2,18 @@
 
 Active work streams for the Nightscout ecosystem alignment project.
 
+## ⚠️ Nightscout Server Available
+
+**A cgm-remote-monitor server is ready for testing:**
+
+| | |
+|---|---|
+| **Location** | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` |
+| **URL** | `http://localhost:1337` |
+| **Start** | `cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447 && source my.test.env && npm start` |
+
+---
+
 ## 🎯 Start Here: Integration Test Harness
 
 **[integration-test-harness.md](integration-test-harness.md)** - Central document for running cgm-remote-monitor locally and testing with Swift, Kotlin, and JavaScript clients.

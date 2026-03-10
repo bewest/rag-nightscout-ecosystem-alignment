@@ -2,6 +2,25 @@
 
 Simulate AAPS's upload behavior against a local cgm-remote-monitor instance.
 
+## ⚠️ IMPORTANT: Nightscout Server Available
+
+**A Nightscout server is already set up and ready to use:**
+
+```
+Location: /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+```
+
+**To start the server:**
+```bash
+cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+source my.test.env   # Sets MONGODB_URI, API_SECRET, etc.
+npm start            # Starts on localhost:1337
+```
+
+See [Integration Test Harness](../../docs/backlogs/integration-test-harness.md) for full setup details.
+
+---
+
 ## Purpose
 
 Test REQ-SYNC-072 (Server-Controlled ID) by faithfully reproducing how AAPS uploads:
