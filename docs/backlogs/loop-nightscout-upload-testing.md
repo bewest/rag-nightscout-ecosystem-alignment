@@ -126,8 +126,8 @@ Only **overrides** send UUID in `id` field, triggering the coercion bug.
 
 | Item | Source File | Status |
 |------|-------------|--------|
-| LOOP-SRC-001 | `NightscoutService/NightscoutServiceKit/NightscoutService.swift` | ⬜ |
-| LOOP-SRC-002 | `NightscoutService/NightscoutServiceKit/Extensions/NightscoutUploader.swift` | ⬜ |
+| LOOP-SRC-001 | `NightscoutService/NightscoutServiceKit/NightscoutService.swift` | ✅ |
+| LOOP-SRC-002 | `NightscoutService/NightscoutServiceKit/Extensions/NightscoutUploader.swift` | ✅ |
 | LOOP-SRC-003 | `NightscoutService/NightscoutServiceKit/ObjectIdCache.swift` | ✅ |
 
 **Deliverable**: Document upload methods, HTTP verbs, endpoints, and payload structure.
@@ -275,6 +275,124 @@ With Option G (REQ-SYNC-072):
 ---
 
 **Deliverable**: Identity field mapping table per treatment type.
+
+---
+
+## Core Service Analysis (LOOP-SRC-001) ✅
+
+### Key Finding: NightscoutService.swift is the Upload Orchestrator
+
+**File**: `NightscoutServiceKit/NightscoutService.swift` (495 lines)
+
+The `NightscoutService` class coordinates all uploads to Nightscout, managing:
+- ObjectIdCache for syncIdentifier → ObjectId mapping
+- RemoteDataService protocol implementation
+- Upload limits and batching
+
+### Upload Methods Summary
+
+| Method | Data Type | Collection | Uses Cache |
+|--------|-----------|------------|------------|
+| `uploadTemporaryOverrideData` | Override | treatments | ❌ No - deletes by UUID |
+| `uploadCarbData` | Carbs | treatments | ✅ Yes |
+| `uploadDoseData` | Bolus/TempBasal | treatments | ✅ Yes |
+| `uploadGlucoseData` | SGV | entries | ❌ No |
+| `uploadDosingDecisionData` | DeviceStatus | devicestatus | ❌ No |
+| `uploadPumpEventData` | PumpEvents | treatments | ❌ No |
+
+### ObjectIdCache Flow (lines 197-236)
+
+```swift
+uploader.createCarbData(created) { result in
+    case .success(let createdObjectIds):
+        // Cache syncIdentifier → objectId mapping
+        for (syncIdentifier, objectId) in zip(syncIdentifiers, createdObjectIds) {
+            self.objectIdCache.add(syncIdentifier: syncIdentifier, objectId: objectId)
+        }
+        // Use cache for updates and deletes
+        uploader.updateCarbData(updated, usingObjectIdCache: self.objectIdCache)
+        uploader.deleteCarbData(deleted, usingObjectIdCache: self.objectIdCache)
+}
+```
+
+### Override Upload Pattern (GAP-TREAT-012 Root Cause)
+
+```swift
+// Line 163-165: Overrides DON'T use ObjectIdCache
+let updates = updated.map { OverrideTreatment(override: $0) }
+let deletions = deleted.map { $0.syncIdentifier.uuidString }  // UUID directly!
+uploader.deleteTreatmentsById(deletions, ...)
+```
+
+**This is why overrides trigger GAP-TREAT-012** - they send UUID as `_id` directly.
+
+### Upload Limits
+
+| Data Type | Limit |
+|-----------|-------|
+| Carbs | 1000 |
+| Doses | 1000 |
+| Glucose | 1000 |
+| DosingDecisions | 50 (each ~20KB) |
+| PumpEvents | 1000 |
+
+---
+
+## NightscoutUploader Analysis (LOOP-SRC-002) ✅
+
+### Key Finding: Extension Methods for NightscoutClient
+
+**File**: `NightscoutServiceKit/Extensions/NightscoutUploader.swift` (173 lines)
+
+This file extends `NightscoutClient` with Loop-specific upload helpers.
+
+### Carb Upload Methods (lines 14-73)
+
+| Method | HTTP | Uses ObjectIdCache |
+|--------|------|-------------------|
+| `createCarbData` | POST | No (returns ObjectIds) |
+| `updateCarbData` | PUT | ✅ Yes (lookup by syncIdentifier) |
+| `deleteCarbData` | DELETE | ✅ Yes (lookup by syncIdentifier) |
+
+```swift
+func updateCarbData(_ data: [SyncCarbObject], usingObjectIdCache objectIdCache: ObjectIdCache, ...) {
+    let treatments = data.compactMap { (carbEntry) -> CarbCorrectionNightscoutTreatment? in
+        if let syncIdentifier = carbEntry.syncIdentifier,
+           let objectId = objectIdCache.findObjectIdBySyncIdentifier(syncIdentifier) {
+            return carbEntry.carbCorrectionNightscoutTreatment(withObjectId: objectId)
+        }
+        return nil
+    }
+    modifyTreatments(treatments)
+}
+```
+
+### Dose Upload Methods (lines 118-171)
+
+| Method | HTTP | Uses ObjectIdCache |
+|--------|------|-------------------|
+| `createDoses` | POST | ✅ For re-uploads |
+| `deleteDoses` | DELETE | ✅ Yes |
+
+### Glucose Upload (lines 79-93)
+
+```swift
+func uploadGlucoseSamples(_ samples: [StoredGlucoseSample], ...) {
+    uploadEntries(samples.compactMap { $0.glucoseEntry })
+}
+```
+- No ObjectIdCache - entries don't need sync mapping
+- Uses `uploadEntries` (entries collection, not treatments)
+
+### Key Insight: Why Carbs/Doses Work, Overrides Don't
+
+| Upload Type | Method | ObjectIdCache | GAP-TREAT-012 |
+|-------------|--------|---------------|---------------|
+| Carbs | `createCarbData` → `updateCarbData` | ✅ Used | ❌ No issue |
+| Doses | `createDoses` → `deleteDoses` | ✅ Used | ❌ No issue |
+| Overrides | `upload` → `deleteTreatmentsById` | ❌ Not used | ✅ **Affected** |
+
+Overrides bypass ObjectIdCache and send UUID directly as `_id`.
 
 ---
 
