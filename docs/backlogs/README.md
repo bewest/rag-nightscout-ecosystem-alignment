@@ -4,11 +4,20 @@ Active work streams for the Nightscout ecosystem alignment project.
 
 ## Active Backlogs
 
-| Backlog | Focus | Work Items | Status |
-|---------|-------|------------|--------|
-| [Loop Upload Testing](loop-nightscout-upload-testing.md) | Test cgm-remote-monitor with faithful Loop simulation | 50 | 🟡 In Progress |
-| [Loop Source Analysis](loop-source-analysis.md) | Understand Loop's upload code | 7 | ⬜ Ready |
-| [Swift Integration Testing](swift-integration-testing-proposal.md) | Use real Swift code for tests | Proposal | 📋 Planning |
+### AID Client Testing
+
+| Backlog | Client | Language | Work Items | Status |
+|---------|--------|----------|------------|--------|
+| [Loop Upload Testing](loop-nightscout-upload-testing.md) | Loop (iOS) | Swift | 50 | 🟡 In Progress |
+| [Loop Source Analysis](loop-source-analysis.md) | Loop | Swift | 7 | ⬜ Ready |
+| [AAPS Upload Testing](aaps-nightscout-upload-testing.md) | AAPS (Android) | Kotlin | 39 | ⬜ Ready |
+
+### Integration Testing Proposals
+
+| Proposal | Approach | Tooling | Status |
+|----------|----------|---------|--------|
+| [Swift Integration](swift-integration-testing-proposal.md) | Use Loop's Swift code | Swift 6.2 + SPM | 📋 Planning |
+| [Kotlin Integration](aaps-nightscout-upload-testing.md#phase-4-kotlinandroid-testing-options) | Use AAPS's Kotlin code | Gradle + JVM | 📋 Planning |
 
 ---
 
@@ -26,6 +35,17 @@ These must complete before test development:
 | `loop-src-carb` | Analyze SyncCarbObject.swift | `NightscoutServiceKit/Extensions/SyncCarbObject.swift` |
 | `loop-src-cache` | Analyze ObjectIdCache.swift | `NightscoutServiceKit/ObjectIdCache.swift` |
 | `loop-src-uploader` | Analyze NightscoutUploader.swift | `NightscoutServiceKit/Extensions/NightscoutUploader.swift` |
+
+### AAPS Source Analysis (Priority: HIGH)
+
+Can run in parallel with Loop analysis:
+
+| ID | Task | File |
+|----|------|------|
+| `aaps-src-ids` | Analyze IDs.kt | `core/data/model/IDs.kt` |
+| `aaps-src-bolus` | Analyze BolusExtension.kt | `nsclientV3/extensions/BolusExtension.kt` |
+| `aaps-src-sdk` | Analyze NSAndroidClient | `core/nssdk/interfaces/NSAndroidClient.kt` |
+| `aaps-run-tests` | Run existing AAPS tests | `./gradlew :plugins:sync:test` |
 
 ### Swift Test Setup (Priority: MEDIUM)
 
