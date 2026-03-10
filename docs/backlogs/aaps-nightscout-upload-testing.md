@@ -67,6 +67,60 @@ AAPS never sends client-generated UUID as `_id`.
 
 ---
 
+## BolusExtension.kt Analysis (AAPS-SRC-010)
+
+### Bolus JSON Mapping
+
+**File**: `plugins/sync/.../nsclientV3/extensions/BolusExtension.kt`
+
+```kotlin
+fun BS.toNSBolus(): NSBolus =
+    NSBolus(
+        eventType = if (type == BS.Type.SMB) EventType.CORRECTION_BOLUS 
+                    else EventType.MEAL_BOLUS,
+        isValid = isValid,
+        date = timestamp,
+        insulin = amount,
+        type = type.toBolusType(),          // NORMAL, SMB, PRIMING
+        notes = notes,
+        isBasalInsulin = isBasalInsulin,
+        identifier = ids.nightscoutId,      // Server ObjectId (from previous response)
+        pumpId = ids.pumpId,                // Pump sequence number
+        pumpType = ids.pumpType?.name,      // "DANA_I", "OMNIPOD_DASH", etc.
+        pumpSerial = ids.pumpSerial,        // Unique pump serial
+        endId = ids.endId                   // Extended bolus end marker
+    )
+```
+
+### Existing Test Coverage (BolusExtensionKtTest.kt)
+
+```kotlin
+bolus = BS(
+    timestamp = 10000,
+    amount = 1.0,
+    type = BS.Type.SMB,
+    ids = IDs(
+        nightscoutId = "nightscoutId",    // Server-assigned ObjectId
+        pumpId = 11000,                    // Pump event number
+        pumpType = PumpType.DANA_I,
+        pumpSerial = "bbbb"
+    )
+)
+// Round-trip test: toNSBolus() → convertToRemoteAndBack() → toBolus()
+assertThat(bolus.contentEqualsTo(bolus2)).isTrue()
+```
+
+### Deduplication: pumpId + pumpType + pumpSerial
+
+AAPS uses pump event correlation for dedup:
+- **pumpId**: Sequential event number from pump history
+- **pumpType**: Pump model enum (DANA_I, OMNIPOD_DASH, etc.)
+- **pumpSerial**: Unique pump serial number
+
+This triple uniquely identifies a pump event across reinstalls/resets.
+
+---
+
 ## Overview
 
 AAPS (AndroidAPS) uses a sophisticated sync architecture with two API versions:
@@ -98,7 +152,7 @@ AAPS is **different from Loop** in several key ways:
 
 | Item | Source File | Purpose | Status |
 |------|-------------|---------|--------|
-| AAPS-SRC-010 | `extensions/BolusExtension.kt` | Bolus → NSBolus JSON | ⬜ |
+| AAPS-SRC-010 | `extensions/BolusExtension.kt` | Bolus → NSBolus JSON | ✅ |
 | AAPS-SRC-011 | `extensions/CarbsExtension.kt` | Carbs → NSCarbs JSON | ⬜ |
 | AAPS-SRC-012 | `extensions/TemporaryBasalExtension.kt` | Temp Basal → JSON | ⬜ |
 | AAPS-SRC-013 | `extensions/TemporaryTargetExtension.kt` | Temp Target → JSON | ⬜ |
@@ -354,11 +408,11 @@ cd externals/AndroidAPS
 
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
-| 1. Source Analysis | 17 | 2 | 0 |
+| 1. Source Analysis | 17 | 3 | 0 |
 | 2. Difference Doc | 1 | 0 | 0 |
 | 3. Test Development | 18 | 0 | 0 |
 | 4. Test Harness | 3 | 0 | 0 |
-| **Total** | **39** | **2** | **0** |
+| **Total** | **39** | **3** | **0** |
 
 ---
 
@@ -366,7 +420,7 @@ cd externals/AndroidAPS
 
 1. [x] Run existing AAPS tests: `./gradlew :plugins:sync:test`
 2. [x] Analyze `IDs.kt` - understand identity field structure ✅
-3. [ ] Compare `BolusExtension.kt` vs Loop's `SyncCarbObject.swift`
+3. [x] Compare `BolusExtension.kt` vs Loop's `SyncCarbObject.swift` ✅
 4. [ ] Document v1 vs v3 API differences
 5. [ ] Create test fixtures from AAPS payloads
 
