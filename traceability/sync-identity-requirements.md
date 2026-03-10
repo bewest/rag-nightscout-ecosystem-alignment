@@ -1743,3 +1743,151 @@ function normalizeDoc (doc) {
 - [GAP-TREAT-012](treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid)
 
 **Status**: Proposal - Long-term architecture direction
+
+---
+
+### REQ-SYNC-071: Server-Controlled ID with Client Identity Preservation
+
+**Statement**: Nightscout API SHOULD adopt a server-controlled `_id` strategy where clients NEVER set `_id`, but client-provided sync identifiers are preserved in a dedicated `identifier` field for deduplication.
+
+**Rationale**: 
+
+This approach cleanly separates concerns:
+- **Server responsibility**: Generate and manage `_id` (database primary key)
+- **Client responsibility**: Provide `identifier` (sync/dedup key)
+
+This mirrors Nocturne's successful pattern:
+```csharp
+// Nocturne: Client can't set Id, but OriginalId preserves client value
+public string? Id { get; set; }           // Server-generated UUID v7
+public string? OriginalId { get; set; }   // Preserved client/migration value
+```
+
+**Architecture**:
+
+```
+┌─────────────────┐       ┌─────────────────────────────┐       ┌─────────────────┐
+│     Client      │       │       Nightscout API        │       │     MongoDB     │
+│                 │       │                             │       │                 │
+│ identifier: UUID├──────▶│ 1. Extract identifier       │       │                 │
+│ (_id ignored)   │       │ 2. Check dedup by identifier│       │                 │
+│                 │       │ 3. Generate _id (ObjectId)  │──────▶│ _id: ObjectId   │
+│                 │       │ 4. Store identifier         │       │ identifier: UUID│
+│                 │◀──────│ 5. Return both              │◀──────│                 │
+│ receives:       │       │                             │       │                 │
+│   _id + identifier      │                             │       │                 │
+└─────────────────┘       └─────────────────────────────┘       └─────────────────┘
+```
+
+**Field Semantics**:
+
+| Field | Controller | Purpose | Format |
+|-------|------------|---------|--------|
+| `_id` | **Server only** | Database primary key | ObjectId (24-hex) |
+| `identifier` | **Client** | Sync identity, deduplication | UUID string |
+| `created_at` | Client | Event timestamp | ISO-8601 |
+| `srvCreated` | Server | Server receipt time | Unix ms |
+| `srvModified` | Server | Last modification time | Unix ms |
+
+**Deduplication Logic**:
+
+```javascript
+// Pseudocode for POST /api/v1/treatments
+function createTreatment(input) {
+  // 1. NEVER use client _id
+  delete input._id;
+  
+  // 2. Extract or generate identifier
+  const identifier = input.identifier 
+    || input.syncIdentifier  // Loop compatibility
+    || input.uuid            // xDrip+ compatibility
+    || generateUUID();       // Fallback
+  
+  // 3. Check for existing by identifier
+  const existing = await db.treatments.findOne({ identifier });
+  
+  if (existing) {
+    // 4a. Upsert - update existing, return existing _id
+    await db.treatments.updateOne({ identifier }, { $set: input });
+    return { ...existing, ...input };
+  } else {
+    // 4b. Insert - server generates _id
+    const doc = { ...input, identifier, _id: new ObjectId() };
+    await db.treatments.insertOne(doc);
+    return doc;
+  }
+}
+```
+
+**Client Field Mapping**:
+
+| System | Client Sends | Maps To | Notes |
+|--------|--------------|---------|-------|
+| Loop (carbs/doses) | `syncIdentifier` | `identifier` | Already sends separate field |
+| Loop (overrides) | `_id` (UUID) | `identifier` | **Migration**: Move UUID from `_id` to `identifier` |
+| AAPS | `identifier` | `identifier` | Already aligned |
+| AAPS | `pumpId`+`pumpSerial` | `pumpIdentity` | Composite field |
+| xDrip+ | `uuid` | `identifier` | Rename on ingest |
+
+**Migration Path**:
+
+| Phase | Action | Backward Compat |
+|-------|--------|-----------------|
+| 1 | Accept `identifier` field, use for dedup | ✅ Old clients work |
+| 2 | If client sends `_id` that's not ObjectId, move to `identifier` | ✅ Loop UUIDs preserved |
+| 3 | Generate new ObjectId for `_id` | ✅ All clients get valid `_id` |
+| 4 | Return both `_id` and `identifier` in response | ✅ Both old/new clients work |
+| 5 | Log deprecation warning when client sends non-ObjectId `_id` | ⚠️ Inform client devs |
+| 6 | Create unique index on `identifier` | ✅ Enforces dedup |
+
+**Loop Override Fix**:
+
+Current (broken):
+```json
+POST: { "_id": "69F15FD2-8075-4DEB-AEA3-4352F455840D", "eventType": "Temporary Override" }
+```
+
+After migration:
+```json
+Stored: { 
+  "_id": ObjectId("507f1f77bcf86cd799439011"),  // Server-generated
+  "identifier": "69F15FD2-8075-4DEB-AEA3-4352F455840D",  // Preserved from client _id
+  "eventType": "Temporary Override"
+}
+```
+
+**Benefits Over REQ-SYNC-070**:
+
+| Aspect | REQ-SYNC-070 (Identifier-First) | REQ-SYNC-071 (Server-Controlled) |
+|--------|--------------------------------|----------------------------------|
+| `_id` format | Any (mixed) | Always ObjectId |
+| Client can set `_id` | Yes (deprecated) | No (stripped) |
+| MongoDB optimization | Degraded (string _id) | Optimal (ObjectId _id) |
+| Nocturne alignment | Partial | Full |
+| Breaking change | Low | Low (transparent migration) |
+
+**Comparison to Nocturne**:
+
+| Aspect | Nocturne | This Proposal |
+|--------|----------|---------------|
+| Primary key | `Id` (UUID v7) | `_id` (ObjectId) |
+| Client identity | `OriginalId` | `identifier` |
+| Database | PostgreSQL | MongoDB |
+| Generation | UUID v7 (sortable) | ObjectId (sortable, has timestamp) |
+
+**Verification**:
+
+1. POST with `_id` (UUID) → `_id` becomes `identifier`, new ObjectId assigned
+2. POST with `identifier` → `identifier` preserved, new ObjectId assigned
+3. POST duplicate `identifier` → Upsert, same `_id` returned
+4. DELETE by `identifier` → Works
+5. Legacy POST (no `identifier`, no `_id`) → UUID generated for `identifier`
+6. Response always includes both `_id` and `identifier`
+
+**Gap Reference**: GAP-TREAT-012, GAP-SYNC-009
+
+**Source**: 
+- Nocturne pattern: `externals/nocturne/src/Core/Nocturne.Core.Models/Treatment.cs`
+- [GAP-TREAT-012](treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid)
+
+**Status**: Proposal - Recommended long-term architecture
