@@ -267,10 +267,13 @@ This matrix defines how Nightscout should handle identity fields from different 
 
 | Test ID | Scenario | Current Behavior | Expected (Option G) | Status |
 |---------|----------|-----------------|---------------------|--------|
-| TEST-GAP-001 | Loop override POST | UUID coerced to invalid ObjectId | Accept UUID in `identifier` | ⬜ |
-| TEST-GAP-002 | Loop override DELETE | 404 (can't find by UUID) | Find by `identifier` | ⬜ |
-| TEST-GAP-003 | Loop override UPDATE | 404 (can't find by UUID) | Find by `identifier` | ⬜ |
-| TEST-GAP-004 | Loop override re-POST | Duplicate created | Upsert by `identifier` | ⬜ |
+| TEST-GAP-001 | Loop override POST | UUID coerced to invalid ObjectId | Accept UUID in `identifier` | ✅ |
+| TEST-GAP-002 | Loop override DELETE | 404 (can't find by UUID) | Find by `identifier` | ✅ |
+| TEST-GAP-003 | Loop override UPDATE | 404 (can't find by UUID) | Find by `identifier` | ✅ |
+| TEST-GAP-004 | Loop override re-POST | Duplicate created | Upsert by `identifier` | ✅ |
+
+**Test Implementation:** `cgm-pr-8447/tests/gap-treat-012.test.js` (12 tests, all passing)
+**Fixtures:** `cgm-pr-8447/tests/fixtures/loop-override.js`
 
 ---
 
@@ -338,11 +341,11 @@ externals/LoopWorkspace/LoopKit/LoopKit/
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
 | 1. Source Analysis | 13 | 6 | 0 |
-| 2. Test Development | 28 | 8 | 0 |
+| 2. Test Development | 28 | 12 | 0 |
 | 3. Payload Extraction | 5 | 0 | 0 |
-| 4. Gap Coverage | 4 | 1 | 0 |
+| 4. Gap Coverage | 4 | 4 | 0 |
 | 5. Identity Matrix | 22 | 1 | 0 |
-| **Total** | **72** | **16** | **0** |
+| **Total** | **72** | **23** | **0** |
 
 ---
 
