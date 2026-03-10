@@ -1000,11 +1000,11 @@ cd externals/AndroidAPS
 
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
-| 1. Source Analysis | 17 | 11 | 0 |
+| 1. Source Analysis | 17 | 12 | 0 |
 | 2. Difference Doc | 1 | 1 | 0 |
 | 3. Test Development | 18 | 0 | 0 |
 | 4. Test Harness | 3 | 0 | 0 |
-| **Total** | **39** | **12** | **0** |
+| **Total** | **39** | **13** | **0** |
 
 ---
 
@@ -1020,9 +1020,10 @@ cd externals/AndroidAPS
 8. [x] Analyze `DeviceStatusExtension.kt` - oref0 deviceStatus format ✅
 9. [x] Analyze `GlucoseValueExtension.kt` - SGV entry format ✅
 10. [x] Analyze `TemporaryBasalExtension.kt` - temp basal format ✅
-11. [ ] Document v1 vs v3 API differences
-12. [ ] Analyze remaining extensions (ProfileSwitch, TherapyEvent)
-13. [ ] Create test fixtures from AAPS payloads
+11. [x] Analyze `TherapyEventExtension.kt` - careportal events ✅
+12. [ ] Analyze `ProfileSwitchExtension.kt` - profile handling
+13. [ ] Document v1 vs v3 API differences
+14. [ ] Create test fixtures from AAPS payloads
 
 ---
 
