@@ -601,9 +601,9 @@ This matrix defines how Nightscout should handle identity fields from different 
 
 | Test ID | Scenario | Input | Expected `_id` | Expected `identifier` | Status |
 |---------|----------|-------|----------------|----------------------|--------|
-| TEST-V3-ID-001 | Null identifier | `{identifier: null}` | Generated ObjectId | Copy of `_id` | ⬜ |
-| TEST-V3-ID-002 | ObjectId identifier | `{identifier: "507f..."}` | Match identifier | Use provided | ⬜ |
-| TEST-V3-ID-003 | UUID identifier | `{identifier: "UUID"}` | Generated ObjectId | Use provided | ⬜ |
+| TEST-V3-ID-001 | Null identifier | `{identifier: null}` | Generated ObjectId | Copy of `_id` | ✅ |
+| TEST-V3-ID-002 | ObjectId identifier | `{identifier: "507f..."}` | Match identifier | Use provided | ✅ |
+| TEST-V3-ID-003 | UUID identifier | `{identifier: "UUID"}` | Generated ObjectId | Use provided | ✅ |
 
 #### Round-Trip Tests (Create → Read → Update → Delete)
 
