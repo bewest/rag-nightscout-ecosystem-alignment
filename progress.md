@@ -48,6 +48,18 @@ Complete source code analysis of Loop's NightscoutKit upload patterns to support
 - `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/Extensions/SyncCarbObject.swift`
 - `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/Extensions/DoseEntry.swift`
 - `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/ObjectIdCache.swift`
+- `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/Extensions/StoredGlucoseSample.swift` ← NEW
+- `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/Extensions/StoredDosingDecision.swift` ← NEW
+
+**Glucose Entry Findings** (LOOP-SRC-013):
+- No `_id`, `identifier`, or `syncIdentifier` sent
+- Server deduplicates by `date + device`
+- SGV vs MBG determined by `wasUserEntered`
+
+**DeviceStatus Findings** (LOOP-SRC-014):
+- Single prediction curve (vs oref0's 4 curves)
+- Active override included in `override` object
+- `loop.enacted` shows actual dose, `recommendedBolus` shows suggestion
 
 ---
 

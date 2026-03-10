@@ -235,33 +235,181 @@ return BolusNightscoutTreatment(
 
 ---
 
-## LOOP-SRC-013: Glucose Entry Upload
+## LOOP-SRC-013: Glucose Entry Upload ✅
 
 **Files**:
-- `NightscoutServiceKit/Extensions/StoredGlucoseSample.swift`
+- `NightscoutServiceKit/Extensions/StoredGlucoseSample.swift` - Loop's extension
+- `NightscoutKit/Sources/NightscoutKit/Models/GlucoseEntry.swift` - JSON serialization
 
-### Questions to Answer
+### Questions Answered
 
-- [ ] What fields are sent for SGV entries?
-- [ ] Is `identifier` or `syncIdentifier` used?
-- [ ] What deduplication fields are set?
+- [x] What fields are sent for SGV entries? → See JSON payload below
+- [x] Is `identifier` or `syncIdentifier` used? → **Neither** - uses `_id` (optional, usually nil on create)
+- [x] What deduplication fields are set? → `date` + `device` (implicit server-side dedup)
 
-### Status: ⬜ Not Started
+### Actual JSON Payload
+
+From `GlucoseEntry.dictionaryRepresentation`:
+
+```json
+{
+  "date": 1708135216000,
+  "dateString": "2026-02-17T02:00:16.000Z",
+  "device": "Dexcom G6 14:AB:CD:EF",
+  "type": "sgv",
+  "sgv": 125,
+  "trend": 4,
+  "direction": "Flat",
+  "trendRate": 0.5,
+  "isCalibration": false
+}
+```
+
+For meter readings (wasUserEntered=true):
+```json
+{
+  "date": 1708135216000,
+  "dateString": "2026-02-17T02:00:16.000Z",
+  "device": "loop://iPhone",
+  "type": "mbg",
+  "mbg": 120
+}
+```
+
+### Code References
+
+| Line | File | Code |
+|------|------|------|
+| 34-42 | `StoredGlucoseSample.swift` | `GlucoseEntry(glucose:, date:, device:, glucoseType:, trend:, changeRate:, isCalibration:)` |
+| 38 | `StoredGlucoseSample.swift` | `glucoseType: wasUserEntered ? .meter : .sensor` |
+| 85 | `NightscoutUploader.swift` | `uploadEntries(samples.compactMap { $0.glucoseEntry })` |
+| 92-113 | `GlucoseEntry.swift` | `dictionaryRepresentation` - JSON output |
+
+### Key Findings
+
+1. **No explicit identity field**: Glucose entries don't send `_id`, `identifier`, or `syncIdentifier` on create
+2. **Server assigns `_id`**: Loop relies on Nightscout's implicit deduplication by `date` + `device`
+3. **Trend handling**: Both numeric `trend` (1-9) and string `direction` ("Flat", "DoubleUp", etc.) are sent
+4. **SGV vs MBG**: `wasUserEntered` determines if entry is `sgv` (CGM) or `mbg` (fingerstick)
+5. **Condition field**: `belowRange`/`aboveRange` for out-of-range readings (G6 LOW/HIGH)
+
+### No GAP-TREAT-012 Impact
+
+Glucose entries are **not affected** by GAP-TREAT-012 (UUID _id coercion) because:
+- Loop doesn't set `_id` on glucose entries
+- Server generates ObjectId naturally
+- No client-side UUID involved
+
+### Status: ✅ Complete (2026-03-10)
 
 ---
 
-## LOOP-SRC-014: DeviceStatus Upload
+## LOOP-SRC-014: DeviceStatus Upload ✅
 
 **Files**:
-- `NightscoutServiceKit/Extensions/StoredDosingDecision.swift`
+- `NightscoutServiceKit/Extensions/StoredDosingDecision.swift` - Loop's extension
+- `NightscoutKit/Sources/NightscoutKit/Models/DeviceStatus.swift` - JSON serialization
 
-### Questions to Answer
+### Questions Answered
 
-- [ ] What is the `loop` object structure?
-- [ ] Are overrides included in deviceStatus?
-- [ ] What IOB/COB/predicted structure?
+- [x] What is the `loop` object structure? → See JSON payload below
+- [x] Are overrides included in deviceStatus? → **YES** - separate `override` object
+- [x] What IOB/COB/predicted structure? → `loop.iob`, `loop.cob`, `loop.predicted`
 
-### Status: ⬜ Not Started
+### Actual JSON Payload
+
+From `DeviceStatus.dictionaryRepresentation`:
+
+```json
+{
+  "device": "loop://Ben's iPhone",
+  "created_at": "2026-02-17T02:00:16.000Z",
+  "pump": {
+    "clock": "2026-02-17T02:00:16.000Z",
+    "pumpID": "12345678",
+    "manufacturer": "Omnipod",
+    "model": "Dash",
+    "battery": { "percent": 85 },
+    "suspended": false,
+    "bolusing": false,
+    "reservoir": 125.5
+  },
+  "uploader": {
+    "name": "Ben's iPhone",
+    "timestamp": "2026-02-17T02:00:16.000Z",
+    "battery": 72
+  },
+  "loop": {
+    "name": "Loop",
+    "version": "3.4.1",
+    "timestamp": "2026-02-17T02:00:16.000Z",
+    "iob": { "timestamp": "2026-02-17T02:00:00.000Z", "iob": 2.5 },
+    "cob": { "timestamp": "2026-02-17T02:00:00.000Z", "cob": 15 },
+    "predicted": {
+      "startDate": "2026-02-17T02:00:00.000Z",
+      "values": [125, 130, 135, 140, 138, 132, 125, 120, 115]
+    },
+    "automaticDoseRecommendation": {
+      "timestamp": "2026-02-17T02:00:16.000Z",
+      "tempBasalAdjustment": { "rate": 1.2, "duration": 1800 },
+      "bolusVolume": 0.1
+    },
+    "recommendedBolus": 0,
+    "enacted": {
+      "rate": 1.2,
+      "duration": 1800,
+      "timestamp": "2026-02-17T02:00:16.000Z",
+      "received": true,
+      "bolusVolume": 0.1
+    }
+  },
+  "override": {
+    "name": "Pre-Meal",
+    "timestamp": "2026-02-17T02:00:16.000Z",
+    "active": true,
+    "currentCorrectionRange": { "minValue": 90, "maxValue": 110 },
+    "duration": 3600,
+    "multiplier": 1.2
+  }
+}
+```
+
+### Code References
+
+| Line | File | Code |
+|------|------|------|
+| 145-161 | `StoredDosingDecision.swift` | `deviceStatus(automaticDoseDecision:)` - main entry |
+| 16-21 | `StoredDosingDecision.swift` | `loopStatusIOB` - IOB conversion |
+| 23-28 | `StoredDosingDecision.swift` | `loopStatusCOB` - COB conversion |
+| 30-35 | `StoredDosingDecision.swift` | `loopStatusPredicted` - BG prediction |
+| 118-137 | `StoredDosingDecision.swift` | `overrideStatus` - active override |
+| 35-62 | `DeviceStatus.swift` | `dictionaryRepresentation` - JSON output |
+
+### Key Findings
+
+1. **Single prediction curve**: Loop sends one combined `predicted.values` array (unlike oref0's 4 curves)
+2. **Override in deviceStatus**: Active override included as separate `override` object with target range
+3. **No `_id` field**: DeviceStatus entries use server-assigned IDs
+4. **identifier field**: Optional `identifier` field for client tracking (not used by Loop currently)
+5. **Enacted vs recommended**: Both `enacted` (what was done) and `recommendedBolus` (what was suggested) included
+
+### DeviceStatus vs Treatment Override
+
+| Aspect | DeviceStatus `override` | Treatment `Temporary Override` |
+|--------|-------------------------|--------------------------------|
+| Purpose | Current state snapshot | Historical event record |
+| `_id` handling | Server assigns | Loop sends UUID → **GAP-TREAT-012** |
+| Frequency | Every 5 minutes | On start/stop/modify |
+| Data | Active range, multiplier | Full duration, reason |
+
+### No GAP-TREAT-012 Impact
+
+DeviceStatus uploads are **not affected** by GAP-TREAT-012 because:
+- Loop doesn't set `_id` on deviceStatus entries
+- Server generates ObjectId naturally
+- Override info is embedded, not a separate treatment
+
+### Status: ✅ Complete (2026-03-10)
 
 ---
 
@@ -303,11 +451,13 @@ For each source file, document:
 ## Completion Criteria
 
 Phase 1 is complete when:
-- [x] All 7 source files analyzed (4 core files done, 2 optional remaining)
+- [x] All 7 source files analyzed (**6 complete, 0 remaining**)
 - [x] JSON payloads extracted for each treatment type
 - [x] Identity field usage documented in table
 - [x] Differences between override and carbs/doses documented
 - [x] ObjectIdCache lifecycle fully understood
+- [x] Glucose entry upload documented
+- [x] DeviceStatus upload documented
 
 ---
 
@@ -315,11 +465,13 @@ Phase 1 is complete when:
 
 ### Identity Field Comparison
 
-| Treatment Type | `_id` | `syncIdentifier` | ObjectIdCache | Dedup Strategy |
-|----------------|-------|------------------|---------------|----------------|
+| Data Type | `_id` | `syncIdentifier` | ObjectIdCache | Dedup Strategy |
+|-----------|-------|------------------|---------------|----------------|
 | **Override** | UUID string | ❌ Not sent | ❌ Not used | Server matches by `_id` |
 | **Carbs** | ObjectId (or null) | ✅ Sent | ✅ Used | Server matches by `syncIdentifier` |
 | **Doses** | ❌ Not sent | ✅ Sent | ✅ Used | Server matches by `syncIdentifier` |
+| **Glucose** | ❌ Not sent | ❌ Not sent | ❌ Not used | Server dedup by `date + device` |
+| **DeviceStatus** | ❌ Not sent | ❌ Not sent | ❌ Not used | Server assigns |
 
 ### Root Cause of #8450
 
