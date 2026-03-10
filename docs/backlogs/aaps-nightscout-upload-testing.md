@@ -300,6 +300,78 @@ This verifies JSON serialization matches Nightscout API expectations.
 
 ---
 
+## NSAndroidClient SDK Analysis (AAPS-SRC-001) ✅
+
+**File**: `core/nssdk/src/main/kotlin/app/aaps/core/nssdk/interfaces/NSAndroidClient.kt`
+
+### Interface Methods
+
+| Method | HTTP | Purpose |
+|--------|------|---------|
+| `createTreatment(nsTreatment)` | POST | Create new treatment |
+| `updateTreatment(nsTreatment)` | PUT/DELETE | Update or soft-delete |
+| `getTreatmentsNewerThan(createdAt, limit)` | GET | Fetch recent treatments |
+| `getTreatmentsModifiedSince(from, limit)` | GET | Incremental sync |
+| `createSgv(nsSgvV3)` | POST | Create SGV entry |
+| `createDeviceStatus(nsDeviceStatus)` | POST | Upload device status |
+
+### CreateUpdateResponse Structure
+
+```kotlin
+class CreateUpdateResponse(
+    val response: Int,              // HTTP status code (200, 201)
+    val identifier: String?,        // Server-assigned ObjectId
+    val isDeduplication: Boolean?,  // Server found duplicate
+    val deduplicatedIdentifier: String?, // Existing record's ID
+    val lastModified: Long?,        // srvModified timestamp
+    val errorResponse: String?      // Error message if failed
+)
+```
+
+### Identity Flow (from NSAndroidClientImpl.kt)
+
+**Create treatment (lines 293-328)**:
+```kotlin
+override suspend fun createTreatment(nsTreatment: NSTreatment): CreateUpdateResponse {
+    val remoteTreatment = nsTreatment.toRemoteTreatment()
+    remoteTreatment.app = "AAPS"
+    val response = api.createTreatment(remoteTreatment)
+    
+    if (response.code() == 200 || response.code() == 201) {
+        return CreateUpdateResponse(
+            response = response.code(),
+            identifier = response.body()?.identifier,  // ← Server ObjectId
+            isDeduplication = response.body()?.isDeduplication,
+            deduplicatedIdentifier = response.body()?.deduplicatedIdentifier
+        )
+    }
+}
+```
+
+**Update treatment (lines 330-350)**:
+```kotlin
+override suspend fun updateTreatment(nsTreatment: NSTreatment): CreateUpdateResponse {
+    val identifier = remoteTreatment.identifier  // ← Required for update
+        ?: throw InvalidFormatNightscoutException("Invalid format")
+    
+    val response = if (nsTreatment.isValid) 
+        api.updateTreatment(remoteTreatment, identifier)  // PUT
+    else 
+        api.deleteTreatment(identifier)                    // DELETE (soft)
+}
+```
+
+### Key Insight: Server-Controlled Identity
+
+1. **Create**: `identifier: null` → server generates ObjectId
+2. **Response**: AAPS extracts `response.body()?.identifier` (server ObjectId)
+3. **Store**: AAPS saves as `nightscoutId` in Room database
+4. **Update/Delete**: AAPS sends `identifier` (the stored ObjectId)
+
+This is the **opposite of Loop** which sends client UUID as `_id`.
+
+---
+
 ## Overview
 
 AAPS (AndroidAPS) uses a sophisticated sync architecture with two API versions:
@@ -320,8 +392,8 @@ AAPS is **different from Loop** in several key ways:
 
 | Item | Source File | Status |
 |------|-------------|--------|
-| AAPS-SRC-001 | `core/nssdk/interfaces/NSAndroidClient.kt` | ⬜ |
-| AAPS-SRC-002 | `core/nssdk/NSAndroidClientImpl.kt` | ⬜ |
+| AAPS-SRC-001 | `core/nssdk/interfaces/NSAndroidClient.kt` | ✅ |
+| AAPS-SRC-002 | `core/nssdk/NSAndroidClientImpl.kt` | ✅ |
 | AAPS-SRC-003 | `core/nssdk/networking/` | ⬜ |
 | AAPS-SRC-004 | `core/data/model/IDs.kt` | ✅ |
 
@@ -587,11 +659,11 @@ cd externals/AndroidAPS
 
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
-| 1. Source Analysis | 17 | 6 | 0 |
+| 1. Source Analysis | 17 | 8 | 0 |
 | 2. Difference Doc | 1 | 1 | 0 |
 | 3. Test Development | 18 | 0 | 0 |
 | 4. Test Harness | 3 | 0 | 0 |
-| **Total** | **39** | **7** | **0** |
+| **Total** | **39** | **9** | **0** |
 
 ---
 
@@ -602,9 +674,11 @@ cd externals/AndroidAPS
 3. [x] Compare `BolusExtension.kt` vs Loop's `SyncCarbObject.swift` ✅
 4. [x] Analyze `CarbsExtension.kt` - carbs JSON mapping ✅
 5. [x] Analyze `TemporaryTargetExtension.kt` - AAPS override equivalent ✅
-6. [ ] Document v1 vs v3 API differences
-7. [ ] Analyze remaining extensions (TempBasal, ProfileSwitch, DeviceStatus)
-8. [ ] Create test fixtures from AAPS payloads
+6. [x] Analyze `NSAndroidClient.kt` - SDK interface ✅
+7. [x] Analyze `NSAndroidClientImpl.kt` - identity flow ✅
+8. [ ] Document v1 vs v3 API differences
+9. [ ] Analyze remaining extensions (TempBasal, ProfileSwitch, DeviceStatus)
+10. [ ] Create test fixtures from AAPS payloads
 
 ---
 
