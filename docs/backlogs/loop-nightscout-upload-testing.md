@@ -222,6 +222,56 @@ Only **overrides** send UUID in `id` field, triggering the coercion bug.
 | TEST-CACHE-004 | App restart (cache empty) → POST existing syncIdentifier | ⬜ |
 | TEST-CACHE-005 | Batch POST → verify response order → cache mapping | ⬜ |
 
+### 2.7 Identity Field Test Matrix (CRITICAL for GAP-TREAT-012)
+
+This matrix defines how Nightscout should handle identity fields from different clients.
+
+#### Test Cases by Client Pattern
+
+| Test ID | Client | Field Pattern | Expected Behavior | Status |
+|---------|--------|---------------|-------------------|--------|
+| TEST-ID-001 | Loop Override | `id: "UUID-STRING"` | Accept as-is OR generate new ObjectId | ⬜ |
+| TEST-ID-002 | Loop Override | `identifier: "UUID-STRING"` | Store in `identifier`, generate `_id` | ⬜ |
+| TEST-ID-003 | Loop Carb | `syncIdentifier: "UUID"`, no `id` | Generate ObjectId `_id` | ⬜ |
+| TEST-ID-004 | AAPS | `identifier: null` | Generate ObjectId `_id` and return | ⬜ |
+| TEST-ID-005 | AAPS | `identifier: "ObjectId"` | Use provided, update existing | ⬜ |
+| TEST-ID-006 | xDrip+ | `uuid: "UUID"`, `_id: "ObjectId"` | Both fields preserved | ⬜ |
+
+#### v1 API Identity Behavior
+
+| Test ID | Scenario | Input | Expected `_id` | Expected `identifier` | Status |
+|---------|----------|-------|----------------|----------------------|--------|
+| TEST-V1-ID-001 | No id field | `{eventType, created_at}` | Generated ObjectId | null | ⬜ |
+| TEST-V1-ID-002 | Valid ObjectId | `{_id: "507f1f77..."}` | Use provided | null | ⬜ |
+| TEST-V1-ID-003 | UUID string (GAP) | `{_id: "A1B2C3D4-..."}` | **FAIL** or promote | Copy to `identifier` | ⬜ |
+| TEST-V1-ID-004 | syncIdentifier | `{syncIdentifier: "UUID"}` | Generated ObjectId | null | ⬜ |
+
+#### v3 API Identity Behavior
+
+| Test ID | Scenario | Input | Expected `_id` | Expected `identifier` | Status |
+|---------|----------|-------|----------------|----------------------|--------|
+| TEST-V3-ID-001 | Null identifier | `{identifier: null}` | Generated ObjectId | Copy of `_id` | ⬜ |
+| TEST-V3-ID-002 | ObjectId identifier | `{identifier: "507f..."}` | Match identifier | Use provided | ⬜ |
+| TEST-V3-ID-003 | UUID identifier | `{identifier: "UUID"}` | Generated ObjectId | Use provided | ⬜ |
+
+#### Round-Trip Tests (Create → Read → Update → Delete)
+
+| Test ID | Client Pattern | Create | Read | Update | Delete | Status |
+|---------|---------------|--------|------|--------|--------|--------|
+| TEST-RT-001 | Loop Override | POST with UUID `id` | GET by ??? | PUT by ??? | DELETE by ??? | ⬜ |
+| TEST-RT-002 | Loop Carb | POST no `id` | GET returns ObjectId | PUT by ObjectId | DELETE by ObjectId | ⬜ |
+| TEST-RT-003 | AAPS TempTarget | POST `identifier: null` | GET returns ObjectId | PUT by ObjectId | DELETE by ObjectId | ⬜ |
+| TEST-RT-004 | AAPS ProfileSwitch | POST with profile JSON | GET full profile | PUT update percentage | DELETE | ⬜ |
+
+#### GAP-TREAT-012 Specific Tests
+
+| Test ID | Scenario | Current Behavior | Expected (Option G) | Status |
+|---------|----------|-----------------|---------------------|--------|
+| TEST-GAP-001 | Loop override POST | UUID coerced to invalid ObjectId | Accept UUID in `identifier` | ⬜ |
+| TEST-GAP-002 | Loop override DELETE | 404 (can't find by UUID) | Find by `identifier` | ⬜ |
+| TEST-GAP-003 | Loop override UPDATE | 404 (can't find by UUID) | Find by `identifier` | ⬜ |
+| TEST-GAP-004 | Loop override re-POST | Duplicate created | Upsert by `identifier` | ⬜ |
+
 ---
 
 ## Phase 3: Payload Extraction
@@ -287,21 +337,24 @@ externals/LoopWorkspace/LoopKit/LoopKit/
 
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
-| 1. Source Analysis | 13 | 4 | 0 |
+| 1. Source Analysis | 13 | 6 | 0 |
 | 2. Test Development | 28 | 8 | 0 |
 | 3. Payload Extraction | 5 | 0 | 0 |
 | 4. Gap Coverage | 4 | 1 | 0 |
-| **Total** | **50** | **13** | **0** |
+| 5. Identity Matrix | 22 | 1 | 0 |
+| **Total** | **72** | **16** | **0** |
 
 ---
 
 ## Next Actions
 
 1. [x] Analyze `OverrideTreament.swift` - extract exact JSON structure ✅
-2. [ ] Analyze `SyncCarbObject.swift` - compare id vs syncIdentifier usage
+2. [x] Analyze `SyncCarbObject.swift` - compare id vs syncIdentifier usage ✅
 3. [x] Analyze `ObjectIdCache.swift` - understand cache lifecycle ✅
-4. [ ] Create test fixtures from real Loop payloads
-5. [ ] Implement TEST-CACHE-* tests for ObjectIdCache workflow
+4. [x] Create identity field test matrix ✅
+5. [ ] Create test fixtures from real Loop payloads
+6. [ ] Implement TEST-ID-* tests for identity field handling
+7. [ ] Implement TEST-GAP-* tests for GAP-TREAT-012 fix validation
 
 ---
 
