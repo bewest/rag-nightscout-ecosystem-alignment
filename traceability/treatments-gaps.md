@@ -905,6 +905,86 @@ Phase 2 (v15.1):   Encourage all clients to send identifier instead of _id
 Phase 3 (v16.0):   Strip all client _id, always server-generate
 ```
 
+### Comprehensive Strategy Comparison
+
+#### Maintainability
+
+| Aspect | Option A (Accept UUID) | Option G (Transparent Promotion) |
+|--------|------------------------|----------------------------------|
+| **Code complexity** | ~5 lines changed | ~20 lines changed |
+| **Index requirements** | None new | `identifier` index (sparse, unique) |
+| **Future migration** | Required (UUID→identifier) | None (already clean) |
+| **Debt accumulation** | Grows with time | None |
+| **Rollback risk** | Low | Low |
+
+#### Database Consistency
+
+| Aspect | Option A | Option G |
+|--------|----------|----------|
+| **`_id` format** | Mixed (ObjectId + UUID strings) | Always ObjectId |
+| **MongoDB optimization** | Degraded (string comparison for UUID) | Optimal (native ObjectId) |
+| **Sharding compatibility** | Problematic (mixed key types) | Full |
+| **Query predictability** | Must handle both formats | Single format |
+| **Index efficiency** | Lower (string vs ObjectId) | Optimal |
+| **Existing UUID `_id` docs** | Unchanged (work as-is) | Unchanged (need separate migration) |
+
+#### User Expectations
+
+| Stakeholder | Option A Impact | Option G Impact |
+|-------------|-----------------|-----------------|
+| **Loop users (short-term)** | ✅ Overrides work | ✅ Overrides work |
+| **Loop users (long-term)** | ✅ Continues working | ✅ Continues working |
+| **AAPS users** | ✅ No change | ✅ No change, `identifier` aligns |
+| **xDrip+ users** | ✅ No change | ✅ No change |
+| **API consumers** | ⚠️ Must handle mixed `_id` | ✅ Consistent ObjectId `_id` |
+| **Report authors** | ⚠️ UUID strings in queries | ✅ ObjectId everywhere |
+| **DB admins** | ⚠️ Mixed formats complicate ops | ✅ Clean, predictable |
+
+#### Long-term Strategic Alignment
+
+| Aspect | Option A | Option G |
+|--------|----------|----------|
+| **v3 API alignment** | ❌ Still mixed | ✅ `identifier` ready |
+| **Nocturne pattern** | ❌ Divergent | ✅ Aligned (Id/OriginalId) |
+| **Mobile-first identity** | ❌ Server as client | ✅ Server controls ID |
+| **Future client updates** | Required (to send identifier) | Optional (already works) |
+
+#### Risk Assessment
+
+| Risk | Option A | Option G |
+|------|----------|----------|
+| **Loop breakage** | None | None |
+| **AAPS breakage** | None | None |
+| **Data loss** | None | None |
+| **Performance degradation** | Minor (string _id) | None |
+| **Migration complexity later** | Moderate (UUID→identifier) | None |
+| **Code review burden** | Low | Low-Medium |
+
+### Test Implementation Note
+
+**Tests should faithfully represent client behavior** - they are independent of fix choice:
+
+```javascript
+// This test is IDENTICAL for Option A and Option G:
+it('should handle Loop override with UUID _id', async () => {
+  const override = {
+    _id: '69F15FD2-8075-4DEB-AEA3-4352F455840D',  // What Loop actually sends
+    eventType: 'Temporary Override',
+    duration: 60,
+    reason: 'Pre-Meal'
+  };
+  
+  const response = await POST('/api/v1/treatments', override);
+  
+  // Assertions differ by option:
+  // Option A: expect(response._id).toBe('69F15FD2-...');
+  // Option G: expect(response.identifier).toBe('69F15FD2-...');
+  //           expect(response._id).toMatch(/^[0-9a-f]{24}$/);  // ObjectId
+});
+```
+
+**Test harness structure is the same** - only assertions change based on which behavior we're validating.
+
 **Related**:
 - [GAP-TREAT-005](#gap-treat-005-loop-post-only-creates-duplicates)
 - [GAP-SYNC-005](sync-identity-gaps.md#gap-sync-005-loop-objectidcache-not-persistent)
