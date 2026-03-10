@@ -783,11 +783,41 @@ Loop uploads Temporary Override treatments with UUID `_id`:
 - `lib/server/treatments.js` - treatment storage layer
 - PR: [#8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447) - Fix implementation
 
+**Sync Identity Field Mapping**:
+
+| System | Treatment Type | Field Sent | Used as `_id`? | Code Reference |
+|--------|---------------|------------|----------------|----------------|
+| **Loop** | Carbs | `syncIdentifier` | No (ObjectIdCache) | `SyncCarbObject.swift:68` |
+| **Loop** | Doses (bolus/temp) | `syncIdentifier` | No (ObjectIdCache) | `DoseEntry.swift:119` |
+| **Loop** | **Overrides** | `_id = syncIdentifier.uuidString` | **YES** ← Problem | `OverrideTreament.swift:59` |
+| **AAPS** | All (v3 SDK) | `identifier` | No (server assigns) | `NSClientV3Plugin.kt` |
+| **AAPS** | Pump events | `pumpId` + `pumpSerial` | No | `IDs.kt:19-22` |
+| **xDrip+** | Treatments | `uuid` | Sometimes | `Treatments.java` |
+
+**Key Finding**: Loop's **override** treatment is the exception - it puts `syncIdentifier` directly into `_id`, while all other Loop treatments send `syncIdentifier` as a separate field and use ObjectIdCache to track server-assigned `_id`.
+
+**Fix Options Analysis**:
+
+| Option | Description | Pros | Cons |
+|--------|-------------|------|------|
+| A. Accept UUID `_id` | Current PR #8447 | Minimal change, backward compatible | Mixed `_id` formats in DB |
+| B. Server dedup by `syncIdentifier` | Match on `syncIdentifier` instead of `_id` | Clean separation | Overrides don't send separate `syncIdentifier` |
+| C. Loop sends `syncIdentifier` field | Change override to match carbs/doses pattern | Consistent client behavior | Requires Loop release, breaking change |
+| D. Strip non-ObjectId `_id` | Only accept 24-hex ObjectIds | DB consistency | **BREAKS Loop sync** - no dedup key after cache loss |
+
+**Recommendation**: Option A (accept UUID `_id`) is the correct fix because:
+1. Loop overrides have been sending UUID `_id` for years
+2. Existing data in user databases has UUID `_id` values  
+3. Breaking change would require Loop app update + user database migration
+4. PR #8447 is minimal, targeted fix
+
 **Related**:
 - [GAP-TREAT-005](#gap-treat-005-loop-post-only-creates-duplicates)
 - [GAP-SYNC-005](sync-identity-gaps.md#gap-sync-005-loop-objectidcache-not-persistent)
 - [GAP-SYNC-009](sync-identity-gaps.md#gap-sync-009-v1-api-lacks-identifier-field)
 - [Loop Overrides](../mapping/loop/overrides.md)
+- [Loop Sync Identity Fields](../mapping/loop/sync-identity-fields.md)
+- [AAPS Nightscout Sync](../mapping/aaps/nightscout-sync.md)
 
 **Status**: Open - Fix in PR #8447
 
