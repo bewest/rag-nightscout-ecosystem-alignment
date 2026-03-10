@@ -914,10 +914,106 @@ suspend fun deleteTreatment(@Path("identifier") identifier: String)
 | Item | Question | Source | Status |
 |------|----------|--------|--------|
 | AAPS-ID-001 | How does IDs.kt structure work? | `core/data/model/IDs.kt` | ✅ |
-| AAPS-ID-002 | When is `nightscoutId` populated? | Extensions, Sync workers | ⬜ |
+| AAPS-ID-002 | When is `nightscoutId` populated? | Extensions, Sync workers | ✅ |
 | AAPS-ID-003 | How is `identifier` used in v3? | `nssdk/localmodel/` | ⬜ |
 | AAPS-ID-004 | How do `pumpId`/`pumpSerial` correlate? | Extensions | ⬜ |
 | AAPS-ID-005 | Difference between v1 and v3 sync? | `nsclient/` vs `nsclientV3/` | ⬜ |
+
+---
+
+## AAPS-ID-002: nightscoutId Population Flow ✅
+
+### When is nightscoutId Set?
+
+**After successful server response** in both v1 and v3 sync:
+
+**v3 API (NSClientV3Plugin.kt)**:
+```kotlin
+// Line 541-543 - After createSgv/updateSvg response
+result.identifier?.let {
+    dataPair.value.ids.nightscoutId = it      // Server-assigned identifier
+    storeDataForDb.addToNsIdGlucoseValues(dataPair.value)
+}
+```
+
+**v1 API (NSClientAddAckWorker.kt)**:
+```kotlin
+// Line 58-62 - In acknowledgment callback
+val pair = ack.originalObject
+pair.value.ids.nightscoutId = ack.id          // Server-assigned _id
+pair.confirmed = true
+storeDataForDb.addToNsIdTemporaryTargets(pair.value)
+```
+
+### Complete Flow
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      AAPS nightscoutId Population Flow                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. CREATE RECORD (nightscoutId = null)                                     │
+│     ┌──────────────────────────────────────────────────────────────────┐   │
+│     │ Bolus { ids: { nightscoutId: null, pumpId: 123, ... } }          │   │
+│     └────────────────────────────────────────┬─────────────────────────┘   │
+│                                              │                              │
+│  2. UPLOAD TO NIGHTSCOUT                     ▼                              │
+│     ┌──────────────────────────────────────────────────────────────────┐   │
+│     │ POST /v3/treatments                                              │   │
+│     │ Body: { eventType: "Bolus", insulin: 2.5, pumpId: 123, ... }     │   │
+│     │ Note: identifier is NULL on first upload                         │   │
+│     └────────────────────────────────────────┬─────────────────────────┘   │
+│                                              │                              │
+│  3. SERVER RESPONSE                          ▼                              │
+│     ┌──────────────────────────────────────────────────────────────────┐   │
+│     │ { response: 201, identifier: "65a1b2c3d4e5f6789012345a" }        │   │
+│     └────────────────────────────────────────┬─────────────────────────┘   │
+│                                              │                              │
+│  4. STORE IN LOCAL DB                        ▼                              │
+│     ┌──────────────────────────────────────────────────────────────────┐   │
+│     │ result.identifier?.let {                                          │   │
+│     │     dataPair.value.ids.nightscoutId = it  // "65a1b2c3..."        │   │
+│     │     storeDataForDb.addToNsIdBoluses(dataPair.value)               │   │
+│     │ }                                                                 │   │
+│     └────────────────────────────────────────┬─────────────────────────┘   │
+│                                              │                              │
+│  5. SUBSEQUENT UPDATE                        ▼                              │
+│     ┌──────────────────────────────────────────────────────────────────┐   │
+│     │ PATCH /v3/treatments/65a1b2c3d4e5f6789012345a                    │   │
+│     │ Body: { identifier: "65a1b2c3...", insulin: 3.0, ... }           │   │
+│     └──────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Key Code Locations
+
+| File | Purpose |
+|------|---------|
+| `NSClientV3Plugin.kt:495` | DeviceStatus identifier storage |
+| `NSClientV3Plugin.kt:542` | SGV/Entry identifier storage |
+| `NSClientV3Plugin.kt:588` | Treatment identifier storage |
+| `NSClientAddAckWorker.kt:58` | v1 ack handler for all types |
+| `DataSyncSelectorV3.kt:165` | Check if nightscoutId exists |
+
+### Decision Logic in DataSyncSelectorV3
+
+```kotlin
+// Line 165-177 - Bolus sync decision
+when {
+    // Same local ID and has nightscoutId → skip (already synced)
+    bolus.first.id == bolus.second.id && bolus.first.ids.nightscoutId != null -> 
+        cont = true
+    
+    // No nightscoutId → CREATE (new record)
+    bolus.first.ids.nightscoutId == null ->
+        toUpload = Operation.CREATE
+    
+    // Has nightscoutId but modified → UPDATE
+    bolus.first.ids.nightscoutId != null && bolus.first.id != bolus.second.id ->
+        toUpload = Operation.UPDATE
+}
+```
 
 ---
 
