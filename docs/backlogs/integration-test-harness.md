@@ -63,18 +63,25 @@ npm start &
 
 ### Test Environment Variables (my.test.env)
 
-```bash
-# Required
-export MONGODB_URI="mongodb://localhost:27017/nightscout_test"
-export API_SECRET="test-api-secret-12345"
-export DISPLAY_UNITS="mg/dl"
+The actual `my.test.env` file in cgm-pr-8447:
 
-# Optional
-export PORT=1337
-export HOSTNAME=localhost
-export INSECURE_USE_HTTP=true
-export DEBUG_MINIFY=false
+```bash
+# Required - must match your local MongoDB
+API_SECRET=test_api_secret_12_chars
+MONGO_CONNECTION=mongodb://localhost:27017/nightscout_test
+
+# Required for HTTP testing (no SSL)
+INSECURE_USE_HTTP=true
+
+# Server binding
+HOSTNAME=localhost
+PORT=1337
+
+# Optional - faster test failures
+AUTH_FAIL_DELAY=50
 ```
+
+**⚠️ INSECURE_USE_HTTP=true is required** - without it, the server redirects to HTTPS which breaks localhost testing.
 
 ### Verify Server Running
 

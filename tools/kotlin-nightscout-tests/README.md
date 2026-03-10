@@ -13,9 +13,16 @@ Location: /home/bewest/src/worktrees/nightscout/cgm-pr-8447
 **To start the server:**
 ```bash
 cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
-source my.test.env   # Sets MONGODB_URI, API_SECRET, etc.
+source my.test.env   # Sets INSECURE_USE_HTTP=true, API_SECRET, MONGO_CONNECTION
 npm start            # Starts on localhost:1337
 ```
+
+**Verify it's running:**
+```bash
+curl http://localhost:1337/api/v1/status.json
+```
+
+> ⚠️ **`INSECURE_USE_HTTP=true` is required** - without it, the server redirects to HTTPS which breaks localhost testing.
 
 See [Integration Test Harness](../../docs/backlogs/integration-test-harness.md) for full setup details.
 
