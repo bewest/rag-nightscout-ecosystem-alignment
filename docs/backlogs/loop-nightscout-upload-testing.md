@@ -175,10 +175,10 @@ Only **overrides** send UUID in `id` field, triggering the coercion bug.
 
 | Test ID | Scenario | HTTP | Payload Key Fields | Status |
 |---------|----------|------|-------------------|--------|
-| TEST-CARB-001 | Create carb entry | POST | `syncIdentifier`, `carbs`, `absorptionTime` | ⬜ |
-| TEST-CARB-002 | Create carb with `id` (from cache) | POST | `id`, `syncIdentifier` | ⬜ |
-| TEST-CARB-003 | Update carb via cached `id` | PUT | `id`, updated `carbs` | ⬜ |
-| TEST-CARB-004 | Delete carb via cached `id` | DELETE | URL param: `id` | ⬜ |
+| TEST-CARB-001 | Create carb entry | POST | `syncIdentifier`, `carbs`, `absorptionTime` | ✅ |
+| TEST-CARB-002 | Create carb with `id` (from cache) | POST | `id`, `syncIdentifier` | ✅ |
+| TEST-CARB-003 | Update carb via cached `id` | PUT | `id`, updated `carbs` | ✅ |
+| TEST-CARB-004 | Delete carb via cached `id` | DELETE | URL param: `id` | ✅ |
 | TEST-CARB-005 | Carb batch upload | POST | Array of carbs | ✅ Exists |
 | TEST-CARB-006 | Duplicate syncIdentifier handling | POST | Same `syncIdentifier` twice | ✅ Exists |
 
@@ -186,11 +186,13 @@ Only **overrides** send UUID in `id` field, triggering the coercion bug.
 
 | Test ID | Scenario | HTTP | Payload Key Fields | Status |
 |---------|----------|------|-------------------|--------|
-| TEST-DOSE-001 | Bolus with syncIdentifier | POST | `syncIdentifier`, `insulin`, `eventType` | ⬜ |
-| TEST-DOSE-002 | Temp basal with syncIdentifier | POST | `syncIdentifier`, `rate`, `duration` | ⬜ |
-| TEST-DOSE-003 | Update dose via cached id | PUT | `id` (from cache) | ⬜ |
+| TEST-DOSE-001 | Bolus with syncIdentifier | POST | `syncIdentifier`, `insulin`, `eventType` | ✅ |
+| TEST-DOSE-002 | Temp basal with syncIdentifier | POST | `syncIdentifier`, `rate`, `duration` | ✅ |
+| TEST-DOSE-003 | Update dose via cached id | PUT | `id` (from cache) | ✅ |
 | TEST-DOSE-004 | Dose batch upload | POST | Array of doses | ✅ Exists |
-| TEST-DOSE-005 | Dose hex string syncIdentifier | POST | `syncIdentifier` = hex(pumpRaw) | ⬜ |
+| TEST-DOSE-005 | Dose hex string syncIdentifier | POST | `syncIdentifier` = hex(pumpRaw) | ✅ |
+
+**Test Implementation:** `cgm-pr-8447/tests/carb-dose-upload.test.js` (13 tests, all passing)
 
 ### 2.4 Glucose Entry Upload Tests
 
@@ -345,11 +347,11 @@ externals/LoopWorkspace/LoopKit/LoopKit/
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
 | 1. Source Analysis | 13 | 6 | 0 |
-| 2. Test Development | 28 | 17 | 0 |
+| 2. Test Development | 28 | 25 | 0 |
 | 3. Payload Extraction | 5 | 0 | 0 |
 | 4. Gap Coverage | 4 | 4 | 0 |
 | 5. Identity Matrix | 22 | 12 | 0 |
-| **Total** | **72** | **39** | **0** |
+| **Total** | **72** | **47** | **0** |
 
 ---
 
