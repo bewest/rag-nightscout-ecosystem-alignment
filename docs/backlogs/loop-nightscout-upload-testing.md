@@ -128,7 +128,7 @@ Only **overrides** send UUID in `id` field, triggering the coercion bug.
 |------|-------------|--------|
 | LOOP-SRC-001 | `NightscoutService/NightscoutServiceKit/NightscoutService.swift` | ⬜ |
 | LOOP-SRC-002 | `NightscoutService/NightscoutServiceKit/Extensions/NightscoutUploader.swift` | ⬜ |
-| LOOP-SRC-003 | `NightscoutService/NightscoutServiceKit/ObjectIdCache.swift` | ⬜ |
+| LOOP-SRC-003 | `NightscoutService/NightscoutServiceKit/ObjectIdCache.swift` | ✅ |
 
 **Deliverable**: Document upload methods, HTTP verbs, endpoints, and payload structure.
 
@@ -150,9 +150,92 @@ Only **overrides** send UUID in `id` field, triggering the coercion bug.
 |------|----------|--------|--------|
 | LOOP-ID-001 | When does Loop use `_id` vs `id`? | NightscoutUploader | ✅ |
 | LOOP-ID-002 | When does Loop use `syncIdentifier`? | All Extensions | ✅ |
-| LOOP-ID-003 | How does ObjectIdCache map syncIdentifier → _id? | ObjectIdCache | ⬜ |
-| LOOP-ID-004 | What happens when ObjectIdCache expires (24hr)? | ObjectIdCache | ⬜ |
+| LOOP-ID-003 | How does ObjectIdCache map syncIdentifier → _id? | ObjectIdCache | ✅ |
+| LOOP-ID-004 | What happens when ObjectIdCache expires (24hr)? | ObjectIdCache | ✅ |
 | LOOP-ID-005 | Does Loop send `identifier` field (v3 style)? | All Extensions | ⬜ |
+
+---
+
+## LOOP-ID-003/004: ObjectIdCache Analysis ✅
+
+### Purpose
+
+`ObjectIdCache` maps Loop's `syncIdentifier` to Nightscout's `_id` (ObjectId) for:
+- Deduplication on re-upload
+- UPDATE/DELETE operations after initial POST
+
+### Data Structure
+
+```swift
+// ObjectIdCache.swift:11-45
+public struct ObjectIDMapping {
+    var loopSyncIdentifier: String     // Loop's UUID
+    var nightscoutObjectId: String     // Nightscout's ObjectId (_id)
+    var createdAt: Date                // When mapping was created
+}
+
+public struct ObjectIdCache {
+    var storageBySyncIdentifier: [String: ObjectIDMapping]
+}
+```
+
+### Key Methods
+
+| Method | Purpose |
+|--------|---------|
+| `add(syncIdentifier:, objectId:)` | Store mapping after successful POST |
+| `findObjectIdBySyncIdentifier(_:)` | Lookup ObjectId for UPDATE/DELETE |
+| `purge(before:)` | Remove old entries |
+
+### Cache Expiration (LOOP-ID-004)
+
+```swift
+// ObjectIdCache.swift:61-63
+mutating func purge(before date: Date) {
+    storageBySyncIdentifier = storageBySyncIdentifier.filter { $0.value.createdAt >= date }
+}
+```
+
+**Behavior when expired:**
+- Entries older than purge date are removed
+- Next upload creates NEW document (no ObjectId to reference)
+- Can cause duplicates if same treatment re-uploaded after cache purge
+
+### Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    ObjectIdCache Flow                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  1. POST Override (first time)                                  │
+│     Loop: { _id: "UUID-123", ... }                              │
+│     Server: Returns { _id: "507f1f77..." }  (ObjectId)          │
+│                                                                 │
+│  2. Cache stores mapping                                        │
+│     cache.add(syncIdentifier: "UUID-123",                       │
+│               objectId: "507f1f77...")                          │
+│                                                                 │
+│  3. Later: UPDATE/DELETE needed                                 │
+│     objectId = cache.findObjectIdBySyncIdentifier("UUID-123")   │
+│     → Returns "507f1f77..."                                     │
+│     DELETE /api/v1/treatments/507f1f77...                       │
+│                                                                 │
+│  4. Cache purge (e.g., 24hr)                                    │
+│     cache.purge(before: Date() - 24h)                           │
+│     → Old mappings removed                                      │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Why PR #8447 Helps
+
+With Option G (REQ-SYNC-072):
+- Server promotes UUID `_id` to `identifier` field
+- Future queries can use `identifier` instead of ObjectId
+- Reduces dependence on volatile ObjectIdCache
+
+---
 
 **Deliverable**: Identity field mapping table per treatment type.
 
