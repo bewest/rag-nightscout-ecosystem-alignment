@@ -152,7 +152,44 @@ Only **overrides** send UUID in `id` field, triggering the coercion bug.
 | LOOP-ID-002 | When does Loop use `syncIdentifier`? | All Extensions | ✅ |
 | LOOP-ID-003 | How does ObjectIdCache map syncIdentifier → _id? | ObjectIdCache | ✅ |
 | LOOP-ID-004 | What happens when ObjectIdCache expires (24hr)? | ObjectIdCache | ✅ |
-| LOOP-ID-005 | Does Loop send `identifier` field (v3 style)? | All Extensions | ⬜ |
+| LOOP-ID-005 | Does Loop send `identifier` field (v3 style)? | All Extensions | ✅ |
+
+---
+
+## LOOP-ID-005: identifier Field Usage ✅
+
+### Does Loop Send `identifier`?
+
+**No.** Loop uses `id` field (which maps to `_id` in JSON), not `identifier`.
+
+```swift
+// OverrideTreament.swift:59
+self.init(..., id: override.syncIdentifier.uuidString)
+```
+
+### Field Mapping Summary
+
+| Loop Internal | JSON Field | Notes |
+|---------------|------------|-------|
+| `syncIdentifier` | `_id` | UUID string sent as `_id` |
+| N/A | `identifier` | **Not used by Loop** |
+
+### Implication for PR #8447
+
+Loop sends:
+```json
+{ "_id": "550e8400-e29b-41d4-a716-446655440000", ... }
+```
+
+PR #8447/Option G (REQ-SYNC-072) promotes this to:
+```json
+{ 
+  "_id": "507f1f77bcf86cd799439011",  // Server-assigned ObjectId
+  "identifier": "550e8400-e29b-41d4-a716-446655440000"  // Loop's UUID preserved
+}
+```
+
+This gives Loop a stable `identifier` field without code changes.
 
 ---
 
