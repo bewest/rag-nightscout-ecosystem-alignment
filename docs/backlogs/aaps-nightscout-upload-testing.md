@@ -501,6 +501,94 @@ Loop sends similar via `TempBasalNightscoutTreatment` with `rate` and `temp: "ab
 
 ---
 
+## TherapyEventExtension.kt Analysis (AAPS-SRC-017) ✅
+
+**File**: `plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/TherapyEventExtension.kt`
+
+### JSON Mapping
+
+```kotlin
+fun TE.toNSTherapyEvent(): NSTherapyEvent =
+    NSTherapyEvent(
+        eventType = type.toType(),          // Maps TE.Type → EventType
+        isValid = isValid,
+        date = timestamp,
+        units = glucoseUnit.toUnits(),
+        notes = note,
+        enteredBy = enteredBy,
+        glucose = glucose,                  // Optional BG value
+        glucoseType = glucoseType,          // Finger, Sensor, Manual
+        duration = duration,
+        location = location?.text,          // Body location for sites
+        arrow = arrow?.text,                // Trend arrow
+        identifier = ids.nightscoutId,
+        pumpId = ids.pumpId,
+        pumpType = ids.pumpType?.name,
+        pumpSerial = ids.pumpSerial
+    )
+```
+
+### NSTherapyEvent Structure
+
+```kotlin
+data class NSTherapyEvent(
+    val eventType: EventType,       // Note, Site Change, Sensor Start, etc.
+    val duration: Long,             // Duration in milliseconds
+    val notes: String?,             // User notes
+    val enteredBy: String?,         // Source app
+    val glucose: Double?,           // BG value at event time
+    val glucoseType: MeterType?,    // Finger, Sensor, Manual
+    val location: String?,          // Body site location
+    val arrow: String?,             // Trend direction
+    val identifier: String?,        // Server-assigned ObjectId
+    ...pump IDs...
+)
+```
+
+### Common EventType Values
+
+| EventType | Description |
+|-----------|-------------|
+| `NOTE` | General note |
+| `SITE_CHANGE` | Infusion site change |
+| `SENSOR_START` | CGM sensor inserted |
+| `SENSOR_CHANGE` | CGM sensor replaced |
+| `INSULIN_CHANGE` | Reservoir/cartridge change |
+| `PUMP_BATTERY_CHANGE` | Pump battery replaced |
+| `EXERCISE` | Physical activity |
+| `ANNOUNCEMENT` | User announcement |
+| `QUESTION` | User question |
+
+### Actual JSON Payload
+
+```json
+{
+  "eventType": "Site Change",
+  "isValid": true,
+  "date": 1708135216000,
+  "duration": 0,
+  "notes": "Left abdomen",
+  "enteredBy": "AAPS",
+  "glucose": 125,
+  "glucoseType": "Sensor",
+  "location": "abdomen",
+  "identifier": "507f1f77bcf86cd799439011",
+  "pumpId": 11000,
+  "pumpType": "OMNIPOD_DASH",
+  "pumpSerial": "abc123"
+}
+```
+
+### Key Insight: Flexible Event Container
+
+TherapyEvent is a flexible container for non-treatment events:
+- Site changes, sensor events, notes
+- Optional glucose reading at time of event
+- Location field for body site tracking
+- Maps to Nightscout's "careportal" entries
+
+---
+
 ## Test Infrastructure (AAPS-RUN-TESTS)
 
 ### Test Inventory
@@ -663,7 +751,7 @@ AAPS is **different from Loop** in several key ways:
 | AAPS-SRC-014 | `extensions/ProfileSwitchExtension.kt` | Profile Switch → JSON | ⬜ |
 | AAPS-SRC-015 | `extensions/DeviceStatusExtension.kt` | DeviceStatus → JSON | ✅ |
 | AAPS-SRC-016 | `extensions/GlucoseValueExtension.kt` | SGV → Entry JSON | ✅ |
-| AAPS-SRC-017 | `extensions/TherapyEventExtension.kt` | Events → JSON | ⬜ |
+| AAPS-SRC-017 | `extensions/TherapyEventExtension.kt` | Events → JSON | ✅ |
 
 ### 1.3 Identity Field Usage (CRITICAL)
 
