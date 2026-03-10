@@ -125,6 +125,10 @@ In progress - see [aaps-nightscout-upload-testing.md](aaps-nightscout-upload-tes
 | `aaps-src-tt` | TemporaryTargetExtension.kt | ✅ AAPS-SRC-013 |
 | `aaps-src-sdk` | NSAndroidClient | ✅ AAPS-SRC-001/002 |
 | `aaps-src-devicestatus` | DeviceStatusExtension.kt | ✅ AAPS-SRC-015 |
+| `aaps-src-glucose` | GlucoseValueExtension.kt | ✅ AAPS-SRC-016 |
+| `aaps-src-tempbasal` | TemporaryBasalExtension.kt | ✅ AAPS-SRC-012 |
+| `aaps-src-therapy` | TherapyEventExtension.kt | ✅ AAPS-SRC-017 |
+| `aaps-src-profile` | ProfileSwitchExtension.kt | ⬜ AAPS-SRC-014 |
 | `aaps-run-tests` | Run AAPS tests | ⚠️ Requires Android SDK |
 
 ### 🟡 P2: Swift/Kotlin Test Setup
