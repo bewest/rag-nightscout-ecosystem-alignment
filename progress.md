@@ -27,6 +27,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Loop Source Analysis for GAP-TREAT-012 (2026-03-10)
+
+Complete source code analysis of Loop's NightscoutKit upload patterns to support issue #8450 fix.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Source Analysis | `docs/backlogs/loop-source-analysis.md` | 4 core files analyzed with line refs |
+| GAP Evidence | `traceability/treatments-gaps.md` | GAP-TREAT-012 updated with code refs |
+| Swift Tests | `tools/swift-nightscout-tests/` | Skip-enabled integration stubs |
+
+**Key Findings**:
+- Override: `OverrideTreament.swift:59` puts UUID directly in `_id` field
+- Carbs/Doses: Send `syncIdentifier` as separate field, use ObjectIdCache
+- Override deletion bypasses ObjectIdCache entirely (`NightscoutService.swift:165`)
+- Confirms Option G (REQ-SYNC-072) is correct fix - no Loop code change needed
+
+**Source Files Analyzed**:
+- `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/Extensions/OverrideTreament.swift`
+- `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/Extensions/SyncCarbObject.swift`
+- `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/Extensions/DoseEntry.swift`
+- `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/ObjectIdCache.swift`
+
+---
+
 ### Effect Bundle Architecture Analysis (2026-02-08)
 
 Comprehensive analysis of Effect Bundle architecture for cross-project algorithm influence, imported from T1Pal Mobile Workspace documentation.
