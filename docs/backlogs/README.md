@@ -80,27 +80,31 @@ JavaScript ────┘
 | `impl-option-g` | Implement REQ-SYNC-072 in treatments.js | **P0** |
 | `test-option-g` | Verify with existing tests | **P0** |
 
-### 🟠 P1: Loop Source Analysis
+### 🟠 P1: Loop Source Analysis ✅ COMPLETE
 
-These must complete before test development:
+All Loop source files analyzed - see [loop-source-analysis.md](loop-source-analysis.md).
 
-| ID | Task | File |
-|----|------|------|
-| `loop-src-override` | Analyze OverrideTreament.swift | `NightscoutServiceKit/Extensions/OverrideTreament.swift` |
-| `loop-src-carb` | Analyze SyncCarbObject.swift | `NightscoutServiceKit/Extensions/SyncCarbObject.swift` |
-| `loop-src-cache` | Analyze ObjectIdCache.swift | `NightscoutServiceKit/ObjectIdCache.swift` |
-| `loop-src-uploader` | Analyze NightscoutUploader.swift | `NightscoutServiceKit/Extensions/NightscoutUploader.swift` |
+| ID | Task | Status |
+|----|------|--------|
+| `loop-src-override` | OverrideTreament.swift | ✅ LOOP-SRC-010 |
+| `loop-src-carb` | SyncCarbObject.swift | ✅ LOOP-SRC-011 |
+| `loop-src-cache` | ObjectIdCache.swift | ✅ LOOP-SRC-003 |
+| `loop-src-uploader` | NightscoutUploader.swift | ✅ LOOP-SRC-002 |
+| `loop-src-glucose` | StoredGlucoseSample.swift | ✅ LOOP-SRC-013 |
+| `loop-src-devicestatus` | StoredDosingDecision.swift | ✅ LOOP-SRC-014 |
 
 ### 🟠 P1: AAPS Source Analysis
 
-Can run in parallel with Loop analysis:
+In progress - see [aaps-nightscout-upload-testing.md](aaps-nightscout-upload-testing.md).
 
-| ID | Task | File |
-|----|------|------|
-| `aaps-src-ids` | Analyze IDs.kt | `core/data/model/IDs.kt` |
-| `aaps-src-bolus` | Analyze BolusExtension.kt | `nsclientV3/extensions/BolusExtension.kt` |
-| `aaps-src-sdk` | Analyze NSAndroidClient | `core/nssdk/interfaces/NSAndroidClient.kt` |
-| `aaps-run-tests` | Run existing AAPS tests | `./gradlew :plugins:sync:test` |
+| ID | Task | Status |
+|----|------|--------|
+| `aaps-src-ids` | IDs.kt | ✅ AAPS-SRC-004 |
+| `aaps-src-bolus` | BolusExtension.kt | ✅ AAPS-SRC-010 |
+| `aaps-src-carbs` | CarbsExtension.kt | ✅ AAPS-SRC-011 |
+| `aaps-src-tt` | TemporaryTargetExtension.kt | ✅ AAPS-SRC-013 |
+| `aaps-src-sdk` | NSAndroidClient | ⬜ AAPS-SRC-001 |
+| `aaps-run-tests` | Run AAPS tests | ⚠️ Requires Android SDK |
 
 ### 🟡 P2: Swift/Kotlin Test Setup
 
