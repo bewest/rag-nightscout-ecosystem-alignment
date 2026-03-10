@@ -204,6 +204,104 @@ class BolusUploadTest {
     }
     
     /**
+     * Test: Carb entry upload (TEST-AAPS-CARB-001)
+     * 
+     * AAPS carb entries from NSCarbs.kt
+     */
+    @Test
+    fun testCarbEntryUpload() {
+        val identifier = UUID.randomUUID().toString()
+        
+        val carbs = mapOf(
+            "identifier" to identifier,
+            "eventType" to "Carb Correction",
+            "carbs" to 45,
+            "duration" to 0,
+            "created_at" to Instant.now().toString()
+        )
+        
+        val response = client.postTreatment(carbs)
+        
+        assertEquals(identifier, response["identifier"])
+        assertEquals("Carb Correction", response["eventType"])
+        assertEquals(45.0, response["carbs"])
+        
+        val objectId = response["_id"] as String
+        assertEquals(24, objectId.length)
+        
+        // Cleanup
+        client.deleteTreatment(objectId)
+    }
+    
+    /**
+     * Test: Carb update (TEST-AAPS-CARB-002)
+     * 
+     * Update carbs via re-upload with same identifier
+     */
+    @Test
+    fun testCarbUpdate() {
+        val identifier = UUID.randomUUID().toString()
+        
+        val carbs = mapOf(
+            "identifier" to identifier,
+            "eventType" to "Carb Correction",
+            "carbs" to 30,
+            "created_at" to Instant.now().toString()
+        )
+        
+        // First upload
+        val response1 = client.postTreatment(carbs)
+        val objectId = response1["_id"] as String
+        
+        // Update with same identifier
+        val updated = carbs + ("carbs" to 45)
+        val response2 = client.postTreatment(updated)
+        
+        // Same ObjectId (upserted)
+        assertEquals(objectId, response2["_id"])
+        assertEquals(45.0, response2["carbs"])
+        
+        // Cleanup
+        client.deleteTreatment(objectId)
+    }
+    
+    /**
+     * Test: Cancel temp target (TEST-AAPS-TT-002)
+     * 
+     * AAPS cancels by setting isValid: false
+     */
+    @Test
+    fun testCancelTempTarget() {
+        val identifier = UUID.randomUUID().toString()
+        
+        // Create active temp target
+        val tempTarget = mapOf(
+            "identifier" to identifier,
+            "eventType" to "Temporary Target",
+            "reason" to "Eating Soon",
+            "targetTop" to 80,
+            "targetBottom" to 80,
+            "duration" to 60,
+            "isValid" to true,
+            "created_at" to Instant.now().toString()
+        )
+        
+        val response1 = client.postTreatment(tempTarget)
+        val objectId = response1["_id"] as String
+        assertEquals(true, response1["isValid"])
+        
+        // Cancel by setting isValid: false
+        val cancelled = tempTarget + ("isValid" to false)
+        val response2 = client.postTreatment(cancelled)
+        
+        assertEquals(objectId, response2["_id"])
+        assertEquals(false, response2["isValid"])
+        
+        // Cleanup
+        client.deleteTreatment(objectId)
+    }
+    
+    /**
      * Test: Batch upload with identifiers
      * 
      * Simulates: AAPS uploads multiple treatments at once

@@ -1322,8 +1322,8 @@ when {
 
 | Test ID | Scenario | HTTP | Payload Key Fields | Status |
 |---------|----------|------|-------------------|--------|
-| TEST-AAPS-CARB-001 | Carb entry (v3) | POST | `identifier`, `carbs`, `duration` | ⬜ |
-| TEST-AAPS-CARB-002 | Carb update (v3) | PUT | `identifier`, modified `carbs` | ⬜ |
+| TEST-AAPS-CARB-001 | Carb entry (v3) | POST | `identifier`, `carbs`, `duration` | ✅ `testCarbEntryUpload` |
+| TEST-AAPS-CARB-002 | Carb update (v3) | PUT | `identifier`, modified `carbs` | ✅ `testCarbUpdate` |
 | TEST-AAPS-CARB-003 | Carb batch | POST | Array with identifiers | ✅ `testBatchUploadWithIdentifiers` |
 
 ### 3.3 Temporary Target Tests (AAPS "Override")
@@ -1331,7 +1331,7 @@ when {
 | Test ID | Scenario | HTTP | Payload Key Fields | Status |
 |---------|----------|------|-------------------|--------|
 | TEST-AAPS-TT-001 | Create temp target | POST | `identifier`, `targetTop`, `targetBottom` | ✅ `testTempTargetWithIdentifier` |
-| TEST-AAPS-TT-002 | Cancel temp target | PUT | `isValid: false` | ⬜ |
+| TEST-AAPS-TT-002 | Cancel temp target | PUT | `isValid: false` | ✅ `testCancelTempTarget` |
 | TEST-AAPS-TT-003 | Activity mode | POST | `reason: "Activity"` | ✅ `testTempTargetWithIdentifier` |
 
 ### 3.4 DeviceStatus Tests
