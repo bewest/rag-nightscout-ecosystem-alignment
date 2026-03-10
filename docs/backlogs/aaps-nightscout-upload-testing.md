@@ -589,6 +589,116 @@ TherapyEvent is a flexible container for non-treatment events:
 
 ---
 
+## AAPS-SRC-014: ProfileSwitchExtension.kt Analysis
+
+**File:** `plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/ProfileSwitchExtension.kt`
+
+### NSProfileSwitch Model
+
+```kotlin
+data class NSProfileSwitch(
+    override val identifier: String?,      // Server-assigned ObjectId
+    override var date: Long?,              // Timestamp ms
+    override var utcOffset: Long?,         // UTC offset minutes
+    override val eventType: EventType,     // PROFILE_SWITCH
+    override val isValid: Boolean,
+    override val pumpId: Long?,
+    override val pumpType: String?,
+    override val pumpSerial: String?,
+    override val endId: Long?,
+    // Profile-specific fields:
+    val profileJson: JSONObject?,          // Full profile definition
+    val profile: String,                   // Customized profile name
+    val originalProfileName: String?,      // Base profile name
+    val timeShift: Long?,                  // Time shift in minutes
+    val percentage: Int?,                  // Profile percentage (default 100)
+    val duration: Long?,                   // Duration in milliseconds
+    val originalDuration: Long?
+) : NSTreatment
+```
+
+### Conversion: PS → NSProfileSwitch
+
+```kotlin
+fun PS.toNSProfileSwitch(dateUtil, decimalFormatter): NSProfileSwitch {
+    val unmodifiedCustomizedName = getCustomizedName(decimalFormatter)
+    // Reset customizations to get pure profile JSON
+    val notCustomized = this.copy()
+    notCustomized.timeshift = 0
+    notCustomized.percentage = 100
+
+    return NSProfileSwitch(
+        eventType = EventType.PROFILE_SWITCH,
+        isValid = isValid,
+        date = timestamp,
+        utcOffset = T.msecs(utcOffset).mins(),
+        timeShift = timeshift,
+        percentage = percentage,
+        duration = duration,
+        profile = unmodifiedCustomizedName,        // "Default 90%"
+        originalProfileName = profileName,          // "Default"
+        originalDuration = duration,
+        profileJson = ProfileSealed.PS(...).toPureNsJson(dateUtil),  // Full blocks
+        identifier = ids.nightscoutId,              // Server-assigned
+        pumpId = ids.pumpId,
+        pumpType = ids.pumpType?.name,
+        pumpSerial = ids.pumpSerial,
+        endId = ids.endId
+    )
+}
+```
+
+### Example Nightscout JSON
+
+```json
+{
+  "eventType": "Profile Switch",
+  "date": 1710120000000,
+  "utcOffset": -300,
+  "profile": "Workout 80%",
+  "originalProfileName": "Default",
+  "timeShift": 0,
+  "percentage": 80,
+  "duration": 7200000,
+  "profileJson": {
+    "dia": 5,
+    "carbratio": [{"time": "00:00", "value": 10}],
+    "sens": [{"time": "00:00", "value": 50}],
+    "basal": [{"time": "00:00", "value": 1.0}],
+    "target_low": [{"time": "00:00", "value": 100}],
+    "target_high": [{"time": "00:00", "value": 120}],
+    "units": "mg/dl"
+  },
+  "identifier": null,
+  "pumpId": 12345,
+  "pumpType": "OMNIPOD_DASH",
+  "pumpSerial": "ABC123"
+}
+```
+
+### Key Insight: Profile Storage vs Switch
+
+| Field | Purpose |
+|-------|---------|
+| `profileJson` | Full profile definition (blocks for basal, ISF, CR, targets) |
+| `profile` | Customized name with percentage ("Default 80%") |
+| `originalProfileName` | Base profile name without modifications |
+| `percentage` | Scaling factor (100 = no change) |
+| `timeShift` | Shift schedule by N minutes |
+| `duration` | 0 = permanent, >0 = temporary switch |
+
+### Loop vs AAPS Profile Comparison
+
+| Aspect | Loop | AAPS |
+|--------|------|------|
+| Storage | Profile stored in settings | Profile stored in NS + local |
+| Switch | Override with `correctionRange` | ProfileSwitch with `percentage` |
+| Scaling | `insulinNeedsScaleFactor` | `percentage` field |
+| Time Shift | Not supported | `timeShift` field |
+| Profile JSON | Not sent in switch | Full profile in `profileJson` |
+
+---
+
 ## Test Infrastructure (AAPS-RUN-TESTS)
 
 ### Test Inventory
@@ -748,7 +858,7 @@ AAPS is **different from Loop** in several key ways:
 | AAPS-SRC-011 | `extensions/CarbsExtension.kt` | Carbs → NSCarbs JSON | ✅ |
 | AAPS-SRC-012 | `extensions/TemporaryBasalExtension.kt` | Temp Basal → JSON | ✅ |
 | AAPS-SRC-013 | `extensions/TemporaryTargetExtension.kt` | Temp Target → JSON | ✅ |
-| AAPS-SRC-014 | `extensions/ProfileSwitchExtension.kt` | Profile Switch → JSON | ⬜ |
+| AAPS-SRC-014 | `extensions/ProfileSwitchExtension.kt` | Profile Switch → JSON | ✅ |
 | AAPS-SRC-015 | `extensions/DeviceStatusExtension.kt` | DeviceStatus → JSON | ✅ |
 | AAPS-SRC-016 | `extensions/GlucoseValueExtension.kt` | SGV → Entry JSON | ✅ |
 | AAPS-SRC-017 | `extensions/TherapyEventExtension.kt` | Events → JSON | ✅ |
@@ -1000,11 +1110,11 @@ cd externals/AndroidAPS
 
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
-| 1. Source Analysis | 17 | 12 | 0 |
+| 1. Source Analysis | 17 | 13 | 0 |
 | 2. Difference Doc | 1 | 1 | 0 |
 | 3. Test Development | 18 | 0 | 0 |
 | 4. Test Harness | 3 | 0 | 0 |
-| **Total** | **39** | **13** | **0** |
+| **Total** | **39** | **14** | **0** |
 
 ---
 
@@ -1021,9 +1131,10 @@ cd externals/AndroidAPS
 9. [x] Analyze `GlucoseValueExtension.kt` - SGV entry format ✅
 10. [x] Analyze `TemporaryBasalExtension.kt` - temp basal format ✅
 11. [x] Analyze `TherapyEventExtension.kt` - careportal events ✅
-12. [ ] Analyze `ProfileSwitchExtension.kt` - profile handling
+12. [x] Analyze `ProfileSwitchExtension.kt` - profile handling ✅
 13. [ ] Document v1 vs v3 API differences
 14. [ ] Create test fixtures from AAPS payloads
+15. [ ] Begin test development phase
 
 ---
 
