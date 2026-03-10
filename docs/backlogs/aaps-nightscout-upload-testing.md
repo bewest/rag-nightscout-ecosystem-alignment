@@ -845,10 +845,56 @@ AAPS is **different from Loop** in several key ways:
 |------|-------------|--------|
 | AAPS-SRC-001 | `core/nssdk/interfaces/NSAndroidClient.kt` | ✅ |
 | AAPS-SRC-002 | `core/nssdk/NSAndroidClientImpl.kt` | ✅ |
-| AAPS-SRC-003 | `core/nssdk/networking/` | ⬜ |
+| AAPS-SRC-003 | `core/nssdk/networking/` | ✅ |
 | AAPS-SRC-004 | `core/data/model/IDs.kt` | ✅ |
 
 **Deliverable**: Document SDK methods, HTTP calls, and identity handling.
+
+---
+
+## AAPS-SRC-003: Networking Layer Analysis ✅
+
+**Location**: `core/nssdk/src/main/kotlin/app/aaps/core/nssdk/networking/`
+
+### Files Analyzed
+
+| File | Purpose |
+|------|---------|
+| `NightscoutRemoteService.kt` | Retrofit interface - all v3 API endpoints |
+| `NSAuthInterceptor.kt` | JWT bearer token refresh interceptor |
+| `NetworkStackBuilder.kt` | OkHttp/Retrofit configuration |
+
+### Key Endpoints (NightscoutRemoteService.kt)
+
+**Treatments CRUD** - uses `identifier` in URL path:
+```kotlin
+@POST("v3/treatments")
+suspend fun createTreatment(@Body remoteTreatment: RemoteTreatment)
+
+@PATCH("v3/treatments/{identifier}")
+suspend fun updateTreatment(@Body remoteTreatment: RemoteTreatment, @Path("identifier") identifier: String)
+
+@DELETE("v3/treatments/{identifier}")
+suspend fun deleteTreatment(@Path("identifier") identifier: String)
+```
+
+**Auth** - JWT Bearer with auto-refresh:
+```kotlin
+// NSAuthInterceptor.kt
+.addHeader("Authorization", "Bearer $jwtToken")
+// Auto-refresh on 401/403
+```
+
+### AAPS vs Loop Networking
+
+| Aspect | AAPS (v3) | Loop (v1) |
+|--------|-----------|-----------|
+| API | v3 REST | v1 REST |
+| ID in URL | `/{identifier}` | `/{_id}` (UUID or ObjectId) |
+| Auth | JWT Bearer | api-secret SHA1 |
+| Create | Server assigns ID | Client can send UUID |
+
+---
 
 ### 1.2 Treatment Extensions (JSON Serialization)
 
