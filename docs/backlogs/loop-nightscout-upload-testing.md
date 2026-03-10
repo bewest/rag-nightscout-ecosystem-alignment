@@ -198,21 +198,23 @@ Only **overrides** send UUID in `id` field, triggering the coercion bug.
 
 | Test ID | Scenario | HTTP | Payload Key Fields | Status |
 |---------|----------|------|-------------------|--------|
-| TEST-SGV-001 | Single SGV entry | POST | `sgv`, `date`, `direction` | ⬜ |
+| TEST-SGV-001 | Single SGV entry | POST | `sgv`, `date`, `direction` | ✅ |
 | TEST-SGV-002 | SGV batch (typical) | POST | 3-12 entries | ✅ Exists |
 | TEST-SGV-003 | SGV batch (max 1000) | POST | 1000 entries | ✅ Exists |
-| TEST-SGV-004 | SGV with device field | POST | `device: "loop://iPhone"` | ⬜ |
-| TEST-SGV-005 | SGV deduplication | POST | Same `date` + `device` | ⬜ |
+| TEST-SGV-004 | SGV with device field | POST | `device: "loop://iPhone"` | ✅ |
+| TEST-SGV-005 | SGV deduplication | POST | Same `date` + `device` | ✅ |
 
 ### 2.5 DeviceStatus Upload Tests
 
 | Test ID | Scenario | HTTP | Payload Key Fields | Status |
 |---------|----------|------|-------------------|--------|
-| TEST-DS-001 | Loop status with IOB/COB | POST | `loop.iob`, `loop.cob` | ⬜ |
-| TEST-DS-002 | Loop status with predicted | POST | `loop.predicted.values` | ⬜ |
-| TEST-DS-003 | Loop status with enacted | POST | `loop.enacted.rate`, `duration` | ⬜ |
-| TEST-DS-004 | Pump status | POST | `pump.reservoir`, `pump.battery` | ⬜ |
-| TEST-DS-005 | Override in deviceStatus | POST | `loop.override.*` | ⬜ |
+| TEST-DS-001 | Loop status with IOB/COB | POST | `loop.iob`, `loop.cob` | ✅ |
+| TEST-DS-002 | Loop status with predicted | POST | `loop.predicted.values` | ✅ |
+| TEST-DS-003 | Loop status with enacted | POST | `loop.enacted.rate`, `duration` | ✅ |
+| TEST-DS-004 | Pump status | POST | `pump.reservoir`, `pump.battery` | ✅ |
+| TEST-DS-005 | Override in deviceStatus | POST | `loop.override.*` | ✅ |
+
+**Test Implementation:** `cgm-pr-8447/tests/sgv-devicestatus.test.js` (17 tests, all passing)
 
 ### 2.6 ObjectIdCache Workflow Tests (CRITICAL)
 
@@ -347,11 +349,11 @@ externals/LoopWorkspace/LoopKit/LoopKit/
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
 | 1. Source Analysis | 13 | 6 | 0 |
-| 2. Test Development | 28 | 25 | 0 |
+| 2. Test Development | 28 | 28 | 0 |
 | 3. Payload Extraction | 5 | 0 | 0 |
 | 4. Gap Coverage | 4 | 4 | 0 |
 | 5. Identity Matrix | 22 | 12 | 0 |
-| **Total** | **72** | **47** | **0** |
+| **Total** | **72** | **50** | **0** |
 
 ---
 
