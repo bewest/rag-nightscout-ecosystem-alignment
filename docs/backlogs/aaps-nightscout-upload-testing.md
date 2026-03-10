@@ -345,6 +345,80 @@ Loop sends a single combined curve.
 
 ---
 
+## GlucoseValueExtension.kt Analysis (AAPS-SRC-016) ✅
+
+**File**: `plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/GlucoseValueExtension.kt`
+
+### JSON Mapping
+
+```kotlin
+fun GV.toNSSvgV3(): NSSgvV3 =
+    NSSgvV3(
+        isValid = isValid,
+        date = timestamp,
+        utcOffset = T.msecs(utcOffset).mins(),
+        filtered = raw,
+        unfiltered = 0.0,
+        sgv = value,
+        units = NsUnits.MG_DL,
+        direction = Direction.fromString(trendArrow.text),
+        noise = noise,
+        device = sourceSensor.text,
+        identifier = ids.nightscoutId    // Server-assigned
+    )
+```
+
+### NSSgvV3 Structure (entries collection)
+
+```kotlin
+data class NSSgvV3(
+    val date: Long?,              // Timestamp in milliseconds
+    val device: String?,          // Source sensor name
+    val identifier: String?,      // Server-assigned ObjectId
+    val sgv: Double,              // Sensor glucose value (mg/dL)
+    val units: NsUnits,           // MG_DL or MMOL_L
+    val direction: Direction?,    // Trend arrow
+    val noise: Double?,           // Signal noise level
+    val filtered: Double?,        // Filtered raw value
+    val unfiltered: Double?       // Unfiltered raw value
+)
+```
+
+### Actual JSON Payload
+
+```json
+{
+  "date": 1708135216000,
+  "dateString": "2026-02-17T02:00:16.000Z",
+  "device": "Dexcom G6",
+  "sgv": 125,
+  "units": "mg/dl",
+  "direction": "Flat",
+  "noise": 1,
+  "filtered": 125000,
+  "unfiltered": 0,
+  "identifier": "507f1f77bcf86cd799439011"
+}
+```
+
+### Loop vs AAPS SGV Comparison
+
+| Field | Loop | AAPS |
+|-------|------|------|
+| **Identity** | None (server dedup) | `identifier` (server ObjectId) |
+| **Trend** | `trend` (1-9) + `direction` | `direction` only |
+| **Type field** | `type: "sgv"` or `"mbg"` | Separate collections |
+| **Raw values** | `trendRate` | `filtered`, `unfiltered`, `noise` |
+
+### Key Insight: AAPS Uses API v3 for Entries
+
+AAPS uploads SGV to `/api/v3/entries` with:
+- `identifier`: Server-assigned ObjectId (not client UUID)
+- `device`: Source sensor text (e.g., "Dexcom G6", "Libre 2")
+- No `type` field needed (v3 uses separate endpoints)
+
+---
+
 ## Test Infrastructure (AAPS-RUN-TESTS)
 
 ### Test Inventory
@@ -506,7 +580,7 @@ AAPS is **different from Loop** in several key ways:
 | AAPS-SRC-013 | `extensions/TemporaryTargetExtension.kt` | Temp Target → JSON | ✅ |
 | AAPS-SRC-014 | `extensions/ProfileSwitchExtension.kt` | Profile Switch → JSON | ⬜ |
 | AAPS-SRC-015 | `extensions/DeviceStatusExtension.kt` | DeviceStatus → JSON | ✅ |
-| AAPS-SRC-016 | `extensions/GlucoseValueExtension.kt` | SGV → Entry JSON | ⬜ |
+| AAPS-SRC-016 | `extensions/GlucoseValueExtension.kt` | SGV → Entry JSON | ✅ |
 | AAPS-SRC-017 | `extensions/TherapyEventExtension.kt` | Events → JSON | ⬜ |
 
 ### 1.3 Identity Field Usage (CRITICAL)
@@ -756,11 +830,11 @@ cd externals/AndroidAPS
 
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
-| 1. Source Analysis | 17 | 9 | 0 |
+| 1. Source Analysis | 17 | 10 | 0 |
 | 2. Difference Doc | 1 | 1 | 0 |
 | 3. Test Development | 18 | 0 | 0 |
 | 4. Test Harness | 3 | 0 | 0 |
-| **Total** | **39** | **10** | **0** |
+| **Total** | **39** | **11** | **0** |
 
 ---
 
@@ -774,9 +848,10 @@ cd externals/AndroidAPS
 6. [x] Analyze `NSAndroidClient.kt` - SDK interface ✅
 7. [x] Analyze `NSAndroidClientImpl.kt` - identity flow ✅
 8. [x] Analyze `DeviceStatusExtension.kt` - oref0 deviceStatus format ✅
-9. [ ] Document v1 vs v3 API differences
-10. [ ] Analyze remaining extensions (TempBasal, ProfileSwitch, GlucoseValue)
-11. [ ] Create test fixtures from AAPS payloads
+9. [x] Analyze `GlucoseValueExtension.kt` - SGV entry format ✅
+10. [ ] Document v1 vs v3 API differences
+11. [ ] Analyze remaining extensions (TempBasal, ProfileSwitch, TherapyEvent)
+12. [ ] Create test fixtures from AAPS payloads
 
 ---
 
