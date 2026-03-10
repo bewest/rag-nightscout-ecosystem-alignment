@@ -138,9 +138,9 @@ Only **overrides** send UUID in `id` field, triggering the coercion bug.
 |------|-------------|---------|--------|
 | LOOP-SRC-010 | `Extensions/OverrideTreament.swift` | Override → Treatment JSON | ✅ |
 | LOOP-SRC-011 | `Extensions/SyncCarbObject.swift` | Carb → Treatment JSON | ✅ |
-| LOOP-SRC-012 | `Extensions/DoseEntry+Nightscout.swift` | Dose → Treatment JSON | ⬜ |
-| LOOP-SRC-013 | `Extensions/StoredGlucoseSample.swift` | Glucose → Entry JSON | ⬜ |
-| LOOP-SRC-014 | `Extensions/StoredDosingDecision.swift` | Decision → DeviceStatus JSON | ⬜ |
+| LOOP-SRC-012 | `Extensions/DoseEntry.swift` | Dose → Treatment JSON | ✅ |
+| LOOP-SRC-013 | `Extensions/StoredGlucoseSample.swift` | Glucose → Entry JSON | ✅ |
+| LOOP-SRC-014 | `Extensions/StoredDosingDecision.swift` | Decision → DeviceStatus JSON | ✅ |
 
 **Deliverable**: Extract exact JSON payloads for each treatment type.
 
@@ -275,6 +275,229 @@ With Option G (REQ-SYNC-072):
 ---
 
 **Deliverable**: Identity field mapping table per treatment type.
+
+---
+
+## Dose Upload Analysis (LOOP-SRC-012) ✅
+
+### Key Finding: Doses Use ObjectIdCache + syncIdentifier (Like Carbs)
+
+**File**: `NightscoutServiceKit/Extensions/DoseEntry.swift:12-66`
+
+```swift
+func treatment(enteredBy source: String, withObjectId objectId: String?) -> NightscoutTreatment? {
+    switch type {
+    case .bolus:
+        return BolusNightscoutTreatment(
+            timestamp: startDate,
+            enteredBy: source,
+            bolusType: duration >= 30min ? .Square : .Normal,
+            amount: deliveredUnits ?? programmedUnits,
+            programmed: programmedUnits,
+            automatic: automatic ?? false,
+            /* id: objectId, */  // COMMENTED OUT - see note below
+            syncIdentifier: syncIdentifier,
+            insulinType: insulinType?.brandName
+        )
+    case .tempBasal:
+        return TempBasalNightscoutTreatment(
+            timestamp: startDate,
+            enteredBy: source,
+            temp: .Absolute,
+            rate: unitsPerHour,
+            duration: endDate.timeIntervalSince(startDate),
+            automatic: automatic ?? true,
+            /* id: objectId, */  // COMMENTED OUT
+            syncIdentifier: syncIdentifier,
+            insulinType: insulinType?.brandName
+        )
+    case .suspend:
+        // Recorded as TempBasal with rate=0, reason="suspend"
+        return TempBasalNightscoutTreatment(..., reason: "suspend")
+    case .basal, .resume:
+        return nil  // Not uploaded
+    }
+}
+```
+
+### Critical Code Comment
+
+```swift
+/* id: objectId, */ /// Specifying _id only works when doing a put (modify); 
+                    /// all dose uploads are currently posting so they can be 
+                    /// either create or update
+```
+
+**Implication**: Loop doses rely on `syncIdentifier` for deduplication, NOT `_id`. This is safer for GAP-TREAT-012 because it doesn't send UUID as `_id`.
+
+### JSON Payload Structure
+
+| Field | Bolus Value | Temp Basal Value | Source |
+|-------|-------------|------------------|--------|
+| `eventType` | `"Bolus"` | `"Temp Basal"` | NightscoutKit |
+| `timestamp` | ISO8601 | ISO8601 | `startDate` |
+| `enteredBy` | `"Loop"` | `"Loop"` | source param |
+| `syncIdentifier` | UUID string | UUID string | Loop internal |
+| `bolusType` | `"Normal"` / `"Square"` | N/A | duration check |
+| `insulin` | delivered units | N/A | `deliveredUnits` |
+| `temp` | N/A | `"absolute"` | always |
+| `rate` | N/A | U/hr | `unitsPerHour` |
+| `duration` | minutes (square) | minutes | `endDate - startDate` |
+| `automatic` | true/false | true | `automatic` flag |
+| `insulinType` | brand name | brand name | optional |
+
+### Why Doses Don't Trigger GAP-TREAT-012
+
+- Loop sends `syncIdentifier` (not `_id`) as the sync key
+- Server deduplicates via `syncIdentifier` field
+- No UUID → ObjectId conversion needed
+
+---
+
+## Glucose Entry Analysis (LOOP-SRC-013) ✅
+
+### Key Finding: Entries Collection (Not Treatments)
+
+**File**: `NightscoutServiceKit/Extensions/StoredGlucoseSample.swift:12-44`
+
+```swift
+var glucoseEntry: GlucoseEntry {
+    let deviceString: String
+    if let device = device, let manufacturer = device.manufacturer, 
+       let model = device.model, let name = device.name {
+        deviceString = "\(manufacturer) \(model) \(name)"
+    } else if let name = device?.name {
+        deviceString = "\(name)"
+    } else if !provenanceIdentifier.contains("loopkit.Loop") {
+        deviceString = provenanceIdentifier
+    } else {
+        deviceString = "loop://\(UIDevice.current.name)"  // Default
+    }
+
+    return GlucoseEntry(
+        glucose: quantity.doubleValue(for: .milligramsPerDeciliter),
+        date: startDate,
+        device: deviceString,
+        glucoseType: wasUserEntered ? .meter : .sensor,
+        trend: glucoseTrend,
+        changeRate: trendRate?.doubleValue(for: .milligramsPerDeciliterPerMinute),
+        isCalibration: isDisplayOnly
+    )
+}
+```
+
+### JSON Payload Structure (entries collection)
+
+| Field | Value | Source |
+|-------|-------|--------|
+| `sgv` | mg/dL value | `quantity` |
+| `date` | epoch ms | `startDate` |
+| `dateString` | ISO8601 | `startDate` |
+| `device` | `"loop://iPhone"` or CGM string | device logic above |
+| `type` | `"sgv"` or `"mbg"` | `wasUserEntered` |
+| `direction` | `"Flat"`, `"SingleUp"`, etc. | `trend` |
+| `delta` | mg/dL/min | `trendRate` |
+| `isCalibration` | boolean | `isDisplayOnly` |
+
+### Identity / Deduplication
+
+- **No `_id` or `identifier`** sent by Loop for entries
+- Server generates `_id` (ObjectId)
+- Dedup by: `date` + `device` combination
+- No GAP-TREAT-012 impact (no UUID → ObjectId issue)
+
+---
+
+## DeviceStatus Analysis (LOOP-SRC-014) ✅
+
+### Key Finding: Rich Loop Status with Predictions
+
+**File**: `NightscoutServiceKit/Extensions/StoredDosingDecision.swift:145-161`
+
+```swift
+func deviceStatus(automaticDoseDecision: StoredDosingDecision?) -> DeviceStatus {
+    return DeviceStatus(
+        device: "loop://\(UIDevice.current.name)",
+        timestamp: date,
+        pumpStatus: pumpStatus,
+        uploaderStatus: uploaderStatus,
+        loopStatus: LoopStatus(
+            name: Bundle.main.bundleDisplayName,
+            version: Bundle.main.fullVersionString,
+            timestamp: date,
+            iob: loopStatusIOB,
+            cob: loopStatusCOB,
+            predicted: loopStatusPredicted,
+            automaticDoseRecommendation: loopStatusAutomaticDoseRecommendation,
+            recommendedBolus: loopStatusRecommendedBolus,
+            enacted: automaticDoseDecision?.loopStatusEnacted,
+            failureReason: automaticDoseDecision?.loopStatusFailureReason
+        ),
+        overrideStatus: overrideStatus
+    )
+}
+```
+
+### DeviceStatus Sub-Objects
+
+#### Loop Status (loopStatus)
+
+| Field | Type | Source |
+|-------|------|--------|
+| `name` | `"Loop"` | Bundle name |
+| `version` | `"3.4.1"` | Bundle version |
+| `iob.iob` | Double | `insulinOnBoard.value` |
+| `iob.timestamp` | ISO8601 | `insulinOnBoard.startDate` |
+| `cob.cob` | Double (grams) | `carbsOnBoard.quantity` |
+| `cob.timestamp` | ISO8601 | `carbsOnBoard.startDate` |
+| `predicted.startDate` | ISO8601 | first prediction point |
+| `predicted.values` | [Double] | BG predictions (mg/dL) |
+| `recommendedBolus` | Double | manual recommendation |
+| `enacted.rate` | Double | temp basal rate |
+| `enacted.duration` | seconds | temp basal duration |
+| `enacted.bolusVolume` | Double | auto bolus if any |
+| `failureReason` | String? | error description |
+
+#### Pump Status (pumpStatus)
+
+| Field | Type | Source |
+|-------|------|--------|
+| `clock` | ISO8601 | `date` |
+| `pumpID` | String | `device.localIdentifier` |
+| `manufacturer` | String | `device.manufacturer` |
+| `model` | String | `device.model` |
+| `battery.percent` | Int | `pumpBatteryChargeRemaining * 100` |
+| `suspended` | Boolean | `basalDeliveryState.isSuspended` |
+| `bolusing` | Boolean | `bolusState == .inProgress` |
+| `reservoir` | Double | `lastReservoirValue.unitVolume` |
+
+#### Override Status (overrideStatus)
+
+| Field | Type | Source |
+|-------|------|--------|
+| `active` | Boolean | `scheduleOverride.isActive()` |
+| `name` | String | override preset name |
+| `timestamp` | ISO8601 | `date` |
+| `currentCorrectionRange` | [min, max] | `glucoseTargetRange` |
+| `duration` | seconds | remaining time |
+| `multiplier` | Double | `insulinNeedsScaleFactor` |
+
+### Loop vs AAPS DeviceStatus Comparison
+
+| Aspect | Loop | AAPS |
+|--------|------|------|
+| Prediction | Single `predicted.values` array | 4 curves: `IOB`, `COB`, `UAM`, `ZT` |
+| Algorithm | LoopAlgorithm (proprietary) | oref0/oref1 (OpenAPS) |
+| Namespace | `loop.*` | `openaps.*` |
+| SMB | Not supported | `openaps.suggested.smb` |
+| Autosens | Not present | `openaps.autosens.*` |
+
+### Identity / Deduplication
+
+- **No `_id` or `identifier`** sent by Loop for deviceStatus
+- Server generates `_id` (ObjectId)
+- Implicit dedup by `device` + `timestamp`
+- No GAP-TREAT-012 impact
 
 ---
 
