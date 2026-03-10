@@ -804,12 +804,19 @@ Loop uploads Temporary Override treatments with UUID `_id`:
 | B. Server dedup by `syncIdentifier` | Match on `syncIdentifier` instead of `_id` | Clean separation | Overrides don't send separate `syncIdentifier` |
 | C. Loop sends `syncIdentifier` field | Change override to match carbs/doses pattern | Consistent client behavior | Requires Loop release, breaking change |
 | D. Strip non-ObjectId `_id` | Only accept 24-hex ObjectIds | DB consistency | **BREAKS Loop sync** - no dedup key after cache loss |
+| **E. Identifier-First Architecture** | Use `identifier` as primary key, `_id` internal only | Clean, offline-first, v3-aligned | Migration needed, AAPS impact |
 
-**Recommendation**: Option A (accept UUID `_id`) is the correct fix because:
+**Short-term Recommendation**: Option A (accept UUID `_id`) for immediate fix because:
 1. Loop overrides have been sending UUID `_id` for years
 2. Existing data in user databases has UUID `_id` values  
 3. Breaking change would require Loop app update + user database migration
 4. PR #8447 is minimal, targeted fix
+
+**Long-term Recommendation**: Option E (Identifier-First Architecture) as strategic direction:
+- v3 API already implements this pattern (`lib/api3/storage/mongoCollection/utils.js`)
+- Enables offline-first sync with client-generated UUIDs
+- Separates client identity (`identifier`) from database internals (`_id`)
+- See [REQ-SYNC-070](sync-identity-requirements.md#req-sync-070-identifier-first-architecture) for full proposal
 
 **Related**:
 - [GAP-TREAT-005](#gap-treat-005-loop-post-only-creates-duplicates)

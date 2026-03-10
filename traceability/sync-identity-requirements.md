@@ -1644,3 +1644,102 @@ protocol RemoteCommandService {
 **Gap Reference**: GAP-SYNC-044
 
 **Source**: [trio-nightscout-sync-analysis.md](../docs/10-domain/trio-nightscout-sync-analysis.md)
+
+---
+
+### REQ-SYNC-070: Identifier-First Architecture
+
+**Statement**: Nightscout API SHOULD adopt `identifier` as the primary document key for all collections, with MongoDB `_id` (ObjectId) used only as an internal database key.
+
+**Rationale**: 
+
+The current architecture exposes MongoDB's `_id` field directly to clients, leading to:
+1. Clients attempting to use `_id` for deduplication (Loop overrides send UUID as `_id`)
+2. ObjectId coercion failures when `_id` is not 24-hex format (GAP-TREAT-012)
+3. Dependency on server-assigned IDs breaking offline-first sync
+4. Fragmented identity fields across systems (`syncIdentifier`, `identifier`, `uuid`, `_id`)
+
+The v3 API already implements identifier-first internally:
+```javascript
+// lib/api3/storage/mongoCollection/utils.js:13-18
+function normalizeDoc (doc) {
+  if (!doc.identifier) {
+    doc.identifier = doc._id.toString();
+  }
+  delete doc._id;  // Hide _id from clients
+}
+```
+
+**Architecture**:
+
+```
+┌─────────────┐         ┌─────────────────────────┐         ┌───────────────┐
+│   Client    │         │     Nightscout API      │         │   MongoDB     │
+│             │         │                         │         │               │
+│ identifier ─┼────────▶│ identifier (unique idx) │────────▶│ identifier    │
+│   (UUID)    │         │                         │         │ _id (ObjectId)│
+│             │◀────────┼─ identifier             │◀────────│               │
+└─────────────┘         └─────────────────────────┘         └───────────────┘
+                              ▲
+                              │ _id hidden from clients
+                              │ or exposed as _object_id
+```
+
+**Field Mapping**:
+
+| System | Current Field | Maps To |
+|--------|---------------|---------|
+| Loop | `syncIdentifier` | `identifier` |
+| Loop (override) | `_id` (UUID) | `identifier` |
+| AAPS | `identifier` | `identifier` |
+| AAPS | `pumpId` + `pumpSerial` | `pumpIdentity` (composite) |
+| xDrip+ | `uuid` | `identifier` |
+| Nightscout | `_id` (ObjectId) | Internal only |
+
+**Benefits**:
+
+1. **Offline-first sync**: Clients generate UUIDs before network available
+2. **Idempotent uploads**: POST with same `identifier` = upsert, not duplicate
+3. **No coercion errors**: Server never interprets client strings as ObjectId
+4. **Consistent API**: Same pattern across v1, v3, all collections
+5. **Proven pattern**: v3 already does this successfully
+
+**Migration Path**:
+
+| Phase | v1 API Behavior | v3 API Behavior |
+|-------|-----------------|-----------------|
+| 1. Accept | Accept `identifier` OR `_id` on input | Already implemented |
+| 2. Generate | If `identifier` missing, generate UUID | Already implemented |
+| 3. Return | Return both `identifier` and `_id` | Returns `identifier` only |
+| 4. Index | Create unique index on `identifier` | Already has index |
+| 5. Deprecate | Log warning when client sends `_id` | N/A |
+| 6. Remove | Reject client-supplied `_id` | N/A |
+
+**v1 API Changes Required**:
+
+1. **POST/PUT**: Accept `identifier` field, use for deduplication
+2. **Response**: Include `identifier` in all responses
+3. **GET/DELETE**: Accept `identifier` as path parameter (alongside `_id`)
+4. **Batch**: Use `identifier` for response ordering, not `_id`
+
+**Backward Compatibility**:
+
+- Existing documents without `identifier`: Generate from `_id.toString()`
+- Clients sending `_id`: Accept but prefer `identifier` for dedup
+- Clients expecting `_id` in response: Continue returning both
+
+**Verification**:
+
+1. POST with `identifier` returns same `identifier`
+2. POST duplicate `identifier` upserts (no duplicate created)
+3. GET by `identifier` returns correct document
+4. DELETE by `identifier` removes correct document
+5. Legacy clients without `identifier` still work
+
+**Gap Reference**: GAP-TREAT-012, GAP-SYNC-009
+
+**Source**: 
+- `externals/cgm-remote-monitor/lib/api3/storage/mongoCollection/utils.js:13-18`
+- [GAP-TREAT-012](treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid)
+
+**Status**: Proposal - Long-term architecture direction
