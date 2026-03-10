@@ -121,6 +121,58 @@ This triple uniquely identifies a pump event across reinstalls/resets.
 
 ---
 
+## Test Infrastructure (AAPS-RUN-TESTS)
+
+### Test Inventory
+
+| Category | Files | @Test Count |
+|----------|-------|-------------|
+| **sync plugin total** | 45 | ~100+ |
+| **nsclientV3 tests** | 24 | ~50+ |
+| **Extension tests** | 13 | 13 |
+
+### Key Test Files
+
+```
+plugins/sync/src/test/kotlin/app/aaps/plugins/sync/nsclientV3/
+├── extensions/
+│   ├── BolusExtensionKtTest.kt          # Round-trip JSON test
+│   ├── CarbsExtensionKtTest.kt
+│   ├── TemporaryTargetExtensionKtTest.kt
+│   ├── TemporaryBasalExtensionKtTest.kt
+│   └── ... (13 extension tests)
+├── workers/
+│   ├── DataSyncWorkerTest.kt
+│   ├── LoadTreatmentsWorkerTest.kt
+│   └── ... (8 worker tests)
+├── DataSyncSelectorV3Test.kt
+└── NSClientV3PluginTest.kt
+```
+
+### Running Tests
+
+**Requires**: Android SDK (`ANDROID_HOME` environment variable)
+
+```bash
+# Full test suite
+./gradlew :plugins:sync:testFullDebugUnitTest
+
+# Or use Android Studio
+# Open externals/AndroidAPS, run tests from IDE
+```
+
+### Test Pattern: Round-Trip Serialization
+
+All extension tests use `convertToRemoteAndBack()` pattern:
+```kotlin
+val bolus2 = (bolus.toNSBolus().convertToRemoteAndBack() as NSBolus).toBolus()
+assertThat(bolus.contentEqualsTo(bolus2)).isTrue()
+```
+
+This verifies JSON serialization matches Nightscout API expectations.
+
+---
+
 ## Overview
 
 AAPS (AndroidAPS) uses a sophisticated sync architecture with two API versions:
@@ -408,17 +460,17 @@ cd externals/AndroidAPS
 
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
-| 1. Source Analysis | 17 | 3 | 0 |
+| 1. Source Analysis | 17 | 4 | 0 |
 | 2. Difference Doc | 1 | 0 | 0 |
 | 3. Test Development | 18 | 0 | 0 |
 | 4. Test Harness | 3 | 0 | 0 |
-| **Total** | **39** | **3** | **0** |
+| **Total** | **39** | **4** | **0** |
 
 ---
 
 ## Next Actions
 
-1. [x] Run existing AAPS tests: `./gradlew :plugins:sync:test`
+1. [x] Run existing AAPS tests: `./gradlew :plugins:sync:test` ⚠️ Requires Android SDK
 2. [x] Analyze `IDs.kt` - understand identity field structure ✅
 3. [x] Compare `BolusExtension.kt` vs Loop's `SyncCarbObject.swift` ✅
 4. [ ] Document v1 vs v3 API differences
