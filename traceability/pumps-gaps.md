@@ -345,3 +345,101 @@ Requires Tandem to open BLE protocol or provide control API. Unlikely due to:
 - `docs/10-domain/tandem-integration-inventory.md`
 
 **Status**: Platform limitation (not remediable by community)
+
+---
+
+## Device Architecture Gaps (2026-02-03)
+
+### GAP-ARCH-001: No Standardized Device Capability Taxonomy
+
+**Scenario**: Cross-system device compatibility, feature development
+
+**Description**: The AID ecosystem lacks a standardized taxonomy for device capabilities. Each project defines its own `PumpDescription`, `CGMType`, or protocol-specific structures with no interoperability format.
+
+**Evidence**:
+- Loop: `PumpManager.supportedMaximumBasalRatePerHour` property
+- AAPS: `PumpDescription` class with 30+ properties
+- Nightscout: No device capability schema in devicestatus
+
+**Impact**:
+- Cannot compare device capabilities programmatically across systems
+- No standard way to communicate device limits to Nightscout
+- Feature flags must be maintained manually per device
+- New device support requires ad-hoc updates in each system
+
+**Possible Solutions**:
+1. Define JSON Schema for device capabilities (CGM and pump)
+2. Add capability objects to Nightscout devicestatus
+3. Create device registry with standardized attributes
+4. OpenAPI specification for device capabilities
+
+**Status**: Documentation complete, implementation pending
+
+**Related**:
+- [Device Capability Architecture Deep Dive](../docs/10-domain/device-capability-architecture-deep-dive.md)
+- GAP-PUMP-001
+- REQ-ARCH-001, REQ-ARCH-002
+
+---
+
+### GAP-ARCH-002: CGM/Pump State Models Conflated
+
+**Scenario**: Device pairing UI, state management
+
+**Description**: Some implementations use a single state type for both CGM and pump pairing despite fundamentally different requirements. This "ConnectionPreviewState Overloaded" anti-pattern loses type safety and device semantics.
+
+**Evidence**:
+- T1Pal `ConnectionPreviewState` used for both cgm-pairing and pump-pairing screens
+- Generic fields like `connectionStatus: String` used instead of device-specific enums
+- Same state editor configuration applied to different device types
+
+**Impact**:
+- Loss of type safety (compiler cannot enforce device-specific fields)
+- Incorrect UI for device-specific states (no J-PAKE progress for G7, no prime progress for pods)
+- Cannot validate state transitions properly
+- Code maintainability issues as device support expands
+
+**Possible Solutions**:
+1. Create separate `CGMPairingState` and `PumpPairingState` protocols
+2. Vendor-specific implementations (DexcomG7PairingState, OmnipodDashPairingState)
+3. Protocol-oriented design with shared base for common fields
+4. State machine validation per device type
+
+**Status**: Documented in [STATE-ARCHITECTURE-AUDIT.md](../../t1pal-mobile-workspace/docs/architecture/STATE-ARCHITECTURE-AUDIT.md)
+
+**Related**:
+- [Device Capability Architecture Deep Dive](../docs/10-domain/device-capability-architecture-deep-dive.md)
+- REQ-ARCH-001
+
+---
+
+### GAP-ARCH-003: Vendor Capability Variations Undocumented
+
+**Scenario**: Feature planning, user documentation
+
+**Description**: While protocol details are documented in deep dives, there's no unified capability matrix showing which features each vendor/model supports. Users and developers lack a quick reference for device-specific behavior.
+
+**Evidence**:
+- Dexcom G6 supports optional user calibration; G7 does not
+- Omnipod supports temp basal but not extended bolus; Dana supports both
+- Libre 2 requires NFC pairing; Libre 3 does not
+- These differences scattered across multiple documents
+
+**Impact**:
+- Difficult to plan feature development across vendors
+- Users don't know what features their device supports
+- No programmatic way to enable/disable features by device
+- QA testing matrix unclear
+
+**Possible Solutions**:
+1. Create capability matrix in terminology-matrix.md (done)
+2. Add capability flags to device configuration types
+3. Generate documentation from capability definitions
+4. Add capability discovery to device pairing flows
+
+**Status**: Documented
+
+**Related**:
+- [Device Capability Architecture Deep Dive](../docs/10-domain/device-capability-architecture-deep-dive.md)
+- [Terminology Matrix - Device Capability Section](../mapping/cross-project/terminology-matrix.md#device-capability-architecture-2026-02-03)
+- REQ-ARCH-003

@@ -800,32 +800,109 @@ Loop uploads Temporary Override treatments with UUID `_id`:
 
 | Option | Description | Pros | Cons |
 |--------|-------------|------|------|
-| A. Accept UUID `_id` | Current PR #8447 | Minimal change, backward compatible | Mixed `_id` formats in DB |
+| A. Accept UUID `_id` | Current PR #8447 | Minimal change, backward compatible | Mixed `_id` formats in DB (permanent) |
 | B. Server dedup by `syncIdentifier` | Match on `syncIdentifier` instead of `_id` | Clean separation | Overrides don't send separate `syncIdentifier` |
 | C. Loop sends `syncIdentifier` field | Change override to match carbs/doses pattern | Consistent client behavior | Requires Loop release, breaking change |
 | D. Strip non-ObjectId `_id` | Only accept 24-hex ObjectIds | DB consistency | **BREAKS Loop sync** - no dedup key after cache loss |
 | E. Identifier-First Architecture | Use `identifier` as primary key, `_id` internal only | Clean, offline-first, v3-aligned | Migration needed, mixed `_id` formats |
-| **F. Server-Controlled ID** | Server generates `_id`, client UUID → `identifier` | Clean, Nocturne-aligned, optimal MongoDB | Transparent migration |
+| F. Server-Controlled ID | Server generates `_id`, client UUID → `identifier` | Clean, Nocturne-aligned, optimal MongoDB | Requires phased migration |
+| **G. Immediate Transparent Promotion** | UUID `_id` → `identifier` + server ObjectId, immediate | **No breakage, no DB poisoning, clean from day 1** | Slightly larger change |
 
-**Short-term Recommendation**: Option A (accept UUID `_id`) for immediate fix because:
-1. Loop overrides have been sending UUID `_id` for years
-2. Existing data in user databases has UUID `_id` values  
-3. Breaking change would require Loop app update + user database migration
-4. PR #8447 is minimal, targeted fix
+### Option G: Immediate Transparent Promotion (RECOMMENDED)
 
-**Long-term Recommendation**: **Option F (Server-Controlled ID)** as strategic direction:
-- Aligns with Nocturne's proven `Id`/`OriginalId` pattern
-- Server always generates ObjectId `_id` (optimal for MongoDB)
-- Client UUID moved from `_id` to `identifier` (transparent migration)
-- No mixed `_id` formats - all documents have proper ObjectId
-- See [REQ-SYNC-071](sync-identity-requirements.md#req-sync-071-server-controlled-id-with-client-identity-preservation) for full proposal
+**Concept**: On POST, if client sends non-ObjectId `_id`, immediately:
+1. Move it to `identifier` field (preserve for client)
+2. Generate server ObjectId for `_id` (clean DB)
+3. Return both in response (client can use either)
 
-**Migration Strategy** (Option A → Option F):
+**On PUT/DELETE**: Accept lookup by `_id` OR `identifier`
+
+**Implementation in `lib/server/treatments.js`**:
+
+```javascript
+function normalizeTreatmentId (obj) {
+  if (!Object.prototype.hasOwnProperty.call(obj, '_id') || obj._id === null || obj._id === '') {
+    return;
+  }
+
+  // Standard ObjectId string → convert to ObjectId
+  if (typeof obj._id === 'string' && OBJECT_ID_HEX_RE.test(obj._id)) {
+    obj._id = new ObjectID(obj._id);
+    return;
+  }
+
+  // Non-ObjectId (UUID from Loop override, etc):
+  // Promote to identifier, generate server ObjectId
+  if (typeof obj._id === 'string') {
+    // Preserve client's sync identifier
+    if (!obj.identifier) {
+      obj.identifier = obj._id;
+    }
+    // Server generates proper ObjectId
+    obj._id = new ObjectID();
+  }
+}
+
+function upsertQueryFor (obj, results) {
+  // Lookup by identifier first (handles Loop override re-upload)
+  if (obj.identifier) {
+    return { identifier: obj.identifier };
+  }
+  // Then by _id if present
+  if (Object.prototype.hasOwnProperty.call(obj, '_id') && obj._id !== null && obj._id !== '') {
+    return { _id: obj._id };
+  }
+  // Fallback to time+type
+  return {
+    created_at: results.created_at,
+    eventType: obj.eventType
+  };
+}
 ```
-Phase 1 (Now):     Accept UUID _id (PR #8447)
-Phase 2 (v15.1):   Add identifier field, populate from _id if UUID
-Phase 3 (v16.0):   Dedup by identifier, generate ObjectId for _id
-Phase 4 (v17.0):   Strip client _id, require identifier
+
+**Why This Achieves All 4 Goals**:
+
+| Goal | How Option G Achieves It |
+|------|--------------------------|
+| 1. No breakage | Loop override still syncs; client receives `identifier` matching what it sent |
+| 2. Special handling | UUID detection triggers promotion; ObjectId clients unaffected |
+| 3. No DB poisoning | `_id` is always ObjectId; client value preserved in `identifier` |
+| 4. Clean future | `identifier` field ready for v3 API, no migration debt |
+
+**Loop Override Workflow After Option G**:
+
+```
+Loop sends:       { "_id": "69F15FD2-...", "eventType": "Temporary Override", ... }
+Server stores:    { "_id": ObjectId("..."), "identifier": "69F15FD2-...", ... }
+Server returns:   { "_id": "67d...", "identifier": "69F15FD2-...", ... }
+Loop re-uploads:  { "_id": "69F15FD2-...", ... }  (cache lost)
+Server matches:   { identifier: "69F15FD2-..." }  ← No duplicate!
+```
+
+**Index Required**:
+```javascript
+api.indexedFields.push('identifier');  // Add to existing indexes
+```
+
+**Backward Compatibility**:
+- Clients sending ObjectId `_id`: No change in behavior
+- Clients sending UUID `_id` (Loop overrides): Now works correctly with clean DB
+- Clients reading `_id`: Still works (now always ObjectId)
+- v3 API: `identifier` field already aligned
+
+**Short-term Recommendation**: **Option G (Immediate Transparent Promotion)** because:
+1. No breakage for any client
+2. No "DB poisoning" - all `_id` values are proper ObjectIds
+3. Clean from day 1 - no migration debt to pay later
+4. Same code change complexity as Option A, much cleaner outcome
+
+**Long-term**: Option G naturally evolves to Option F (full server-controlled ID) - the `identifier` field is already in place, just extend to all documents.
+
+**Migration Strategy** (Option G → Full Server-Controlled):
+```
+Phase 1 (Now):     Option G - Transparent UUID promotion to identifier
+Phase 2 (v15.1):   Encourage all clients to send identifier instead of _id
+Phase 3 (v16.0):   Strip all client _id, always server-generate
 ```
 
 **Related**:

@@ -236,4 +236,154 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
+## Device Architecture Requirements (2026-02-03)
+
+---
+
+### REQ-ARCH-001: Device State Separation
+
+**Statement**: AID implementations MUST use separate state types for CGM devices and pump devices. A single "connection state" type MUST NOT be used for both device categories.
+
+**Rationale**: CGM and pump devices have fundamentally different:
+- Capability sets (read-only glucose vs bidirectional insulin commands)
+- Safety profiles (display-only vs delivery-critical)
+- Lifecycle models (sensor warmup vs pod activation with priming)
+- Error handling (retry with backoff vs delivery uncertainty tracking)
+
+**Scenarios**:
+- CGM Pairing (Dexcom G6/G7, Libre 2/3)
+- Pump Pairing (Omnipod DASH/Eros, Medtronic, Dana)
+
+**Verification**:
+- `CGMPairingState` and `PumpPairingState` are distinct types with no shared base class
+- No casting between CGM and pump state types
+- State machine transitions specific to device category
+- UI components bound to correct state type
+
+**Cross-System Status**:
+- Loop: ✅ Separate `CGMManager` and `PumpManager` protocols
+- AAPS: ✅ Separate `BgSource` and `Pump` plugin interfaces
+- Trio: ✅ Inherits Loop's separation
+- T1Pal: ❌ `ConnectionPreviewState` overloaded (documented in STATE-ARCHITECTURE-AUDIT.md)
+
+**Gap Reference**: GAP-ARCH-002
+
+---
+
+---
+
+### REQ-ARCH-002: Capability Enumeration
+
+**Statement**: Device state types MUST enumerate device-specific capabilities using typed fields rather than generic strings.
+
+**Rationale**: 
+- Generic fields like `connectionStatus: String` lose type safety
+- Cannot validate allowed values at compile time
+- No IDE assistance for device-specific states
+- String comparison is error-prone
+
+**Example (Anti-pattern)**:
+```swift
+struct ConnectionPreviewState {
+    var connectionStatus: String  // "connected", "pairing", etc.
+    var deviceName: String
+}
+```
+
+**Example (Correct pattern)**:
+```swift
+struct CGMPairingState {
+    var sensorState: SensorState   // .warmingUp, .ready, .expired
+    var authState: AuthState       // .pending, .authenticated
+    var transmitterId: String
+}
+
+struct PumpPairingState {
+    var setupProgress: SetupProgress  // 8-step enum
+    var primeProgress: Double
+    var podLot: UInt32
+}
+```
+
+**Scenarios**:
+- CGM Pairing State (auth state, sensor state, warmup)
+- Pump Pairing State (setup progress, prime progress, reservoir)
+
+**Verification**:
+- State types use enums for status fields
+- No `String` or `Int` for values with known domain
+- Swift/Kotlin exhaustive switch coverage
+
+**Cross-System Status**:
+- Loop: ✅ `SetupProgress` enum with 8 cases
+- AAPS: ✅ `PodActivationProgress` enum
+- Trio: ✅ Inherits Loop's enums
+- xDrip+: ✅ `SensorState` enum
+
+**Gap Reference**: GAP-ARCH-001
+
+---
+
+---
+
+### REQ-ARCH-003: Vendor-Specific State Extensions
+
+**Statement**: Device state types SHOULD support vendor-specific extensions without breaking the base interface.
+
+**Rationale**: Different vendors have unique capabilities:
+- Dexcom G7 has J-PAKE authentication state; G6 has AES auth state
+- Omnipod has pod lot/sequence; Medtronic has pump history pages
+- Dana has encryption mode selection; Omnipod DASH has LTK
+- Extensions must be type-safe and not require downcasting
+
+**Pattern (Protocol-based)**:
+```swift
+protocol CGMPairingState {
+    var transmitterId: String { get }
+    var authState: AuthState { get }
+    var signalStrength: Int { get }
+}
+
+struct DexcomG7PairingState: CGMPairingState {
+    // Base properties
+    var transmitterId: String
+    var authState: AuthState
+    var signalStrength: Int
+    
+    // G7-specific extensions
+    var jpakeRound: Int
+    var sensorCode: String
+    var certVerified: Bool
+}
+
+struct Libre3PairingState: CGMPairingState {
+    // Base properties
+    var transmitterId: String
+    var authState: AuthState
+    var signalStrength: Int
+    
+    // Libre 3-specific extensions
+    var securityHandshakeState: SecurityState
+    var publicKey: Data?
+}
+```
+
+**Scenarios**:
+- Dexcom G7 pairing (J-PAKE rounds, certificate exchange)
+- Libre 3 pairing (ECDH key exchange, security handshake)
+- Omnipod Eros pairing (RileyLink state, nonce synchronization)
+
+**Verification**:
+- Vendor-specific state types conform to base protocol
+- Extensions accessible without type casting
+- Base UI works with any conforming type
+- Vendor-specific UI components available for extensions
+
+**Cross-System Status**:
+- Loop: ✅ `CGMManager` protocol with vendor implementations
+- AAPS: ✅ `Pump` interface with vendor plugins
+- Trio: ✅ Inherits Loop's protocol pattern
+
+**Gap Reference**: GAP-ARCH-003
+
 ---

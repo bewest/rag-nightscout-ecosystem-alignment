@@ -1891,3 +1891,119 @@ Stored: {
 - [GAP-TREAT-012](treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid)
 
 **Status**: Proposal - Recommended long-term architecture
+
+---
+
+### REQ-SYNC-072: Transparent UUID Promotion (Option G)
+
+**Statement**: When the v1 API receives a document with a non-ObjectId `_id` (e.g., UUID string), the server MUST:
+1. Move the client's `_id` value to the `identifier` field (preserving client sync identity)
+2. Generate a new ObjectId for `_id` (ensuring MongoDB consistency)
+3. Use `identifier` as the primary deduplication key when present
+4. Return both `_id` and `identifier` in the response
+
+**Rationale**: This achieves immediate clean behavior without breaking changes:
+- Loop overrides continue to sync (UUID preserved in `identifier`)
+- Database stays clean (all `_id` values are ObjectId)
+- No migration debt (correct from day 1)
+- Forward compatible (aligns with v3 API `identifier` pattern)
+
+**Algorithm**:
+
+```javascript
+function normalizeTreatmentId(obj) {
+  if (!obj._id || obj._id === '') return;
+
+  // Standard ObjectId string → convert to ObjectId object
+  if (typeof obj._id === 'string' && /^[0-9a-fA-F]{24}$/.test(obj._id)) {
+    obj._id = new ObjectID(obj._id);
+    return;
+  }
+
+  // Non-ObjectId (UUID, etc): promote to identifier
+  if (typeof obj._id === 'string') {
+    if (!obj.identifier) {
+      obj.identifier = obj._id;  // Preserve client sync identity
+    }
+    obj._id = new ObjectID();    // Server generates clean _id
+  }
+}
+
+function upsertQueryFor(obj, results) {
+  // 1. Prefer identifier for dedup (handles re-uploads)
+  if (obj.identifier) {
+    return { identifier: obj.identifier };
+  }
+  // 2. Fall back to _id if present and valid
+  if (obj._id) {
+    return { _id: obj._id };
+  }
+  // 3. Last resort: time + eventType
+  return { created_at: results.created_at, eventType: obj.eventType };
+}
+```
+
+**Required Index**:
+```javascript
+db.treatments.createIndex({ identifier: 1 }, { unique: true, sparse: true });
+```
+
+**Example Workflow** (Loop Override):
+
+```
+1. Loop POST:  { "_id": "69F15FD2-...", "eventType": "Temporary Override" }
+   Server:     { "_id": ObjectId("67d..."), "identifier": "69F15FD2-..." }
+   Response:   { "_id": "67d...", "identifier": "69F15FD2-...", ... }
+
+2. Loop re-uploads (cache lost):
+   POST:       { "_id": "69F15FD2-...", "eventType": "Temporary Override" }
+   Lookup:     { identifier: "69F15FD2-..." }  ← Finds existing!
+   Action:     Upsert (update in place)
+   Response:   Same document, no duplicate
+
+3. Loop PUT/DELETE (using identifier):
+   PUT:        /api/v1/treatments?find[identifier]=69F15FD2-...
+   Works:      identifier lookup finds document
+```
+
+**Backward Compatibility**:
+
+| Client | Sends | Result |
+|--------|-------|--------|
+| Loop (carbs/doses) | `syncIdentifier` | Maps to `identifier` |
+| Loop (overrides) | `_id` (UUID) | UUID → `identifier`, ObjectId generated |
+| AAPS | `identifier` | Used directly |
+| Legacy (ObjectId) | `_id` (24-hex) | Converted to ObjectId, works as before |
+| Legacy (no _id) | — | ObjectId + UUID `identifier` generated |
+
+**Why Option G vs Option A**:
+
+| Aspect | Option A (Accept UUID) | Option G (Promote UUID) |
+|--------|------------------------|-------------------------|
+| DB consistency | Mixed `_id` formats | Always ObjectId |
+| Migration debt | Future cleanup needed | Clean from day 1 |
+| Code complexity | Similar | Similar |
+| Breaking changes | None | None |
+| MongoDB perf | Degraded | Optimal |
+
+**Scenarios**:
+- Loop Override Upload (UUID _id)
+- Loop Override Re-upload After Cache Clear
+- AAPS Upload (identifier field)
+- Legacy Client Upload (ObjectId _id)
+- Batch Upload with Mixed Formats
+
+**Verification**:
+1. POST with UUID `_id` → stored `_id` is ObjectId, `identifier` contains UUID
+2. POST with same UUID `_id` again → upsert (no duplicate)
+3. POST with ObjectId `_id` → works as before
+4. GET returns both `_id` and `identifier`
+5. PUT/DELETE by `identifier` works
+6. Unique index prevents duplicate `identifier`
+
+**Gap Reference**: GAP-TREAT-012
+
+**Source**:
+- [GAP-TREAT-012 Option G](treatments-gaps.md#option-g-immediate-transparent-promotion-recommended)
+
+**Status**: Proposal - **Recommended for immediate implementation**
