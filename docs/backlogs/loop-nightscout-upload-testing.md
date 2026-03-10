@@ -216,11 +216,13 @@ Only **overrides** send UUID in `id` field, triggering the coercion bug.
 
 | Test ID | Scenario | Status |
 |---------|----------|--------|
-| TEST-CACHE-001 | POST carb → cache syncIdentifier → PUT with id | ⬜ |
-| TEST-CACHE-002 | POST dose → cache syncIdentifier → DELETE with id | ⬜ |
-| TEST-CACHE-003 | Cache miss (24hr expiry) → POST same syncIdentifier | ⬜ |
-| TEST-CACHE-004 | App restart (cache empty) → POST existing syncIdentifier | ⬜ |
-| TEST-CACHE-005 | Batch POST → verify response order → cache mapping | ⬜ |
+| TEST-CACHE-001 | POST carb → cache syncIdentifier → PUT with id | ✅ |
+| TEST-CACHE-002 | POST dose → cache syncIdentifier → DELETE with id | ✅ |
+| TEST-CACHE-003 | Cache miss (24hr expiry) → POST same syncIdentifier | ✅ |
+| TEST-CACHE-004 | App restart (cache empty) → POST existing syncIdentifier | ✅ |
+| TEST-CACHE-005 | Batch POST → verify response order → cache mapping | ✅ |
+
+**Test Implementation:** `cgm-pr-8447/tests/objectid-cache.test.js` (7 tests, all passing)
 
 ### 2.7 Identity Field Test Matrix (CRITICAL for GAP-TREAT-012)
 
@@ -341,11 +343,11 @@ externals/LoopWorkspace/LoopKit/LoopKit/
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
 | 1. Source Analysis | 13 | 6 | 0 |
-| 2. Test Development | 28 | 12 | 0 |
+| 2. Test Development | 28 | 17 | 0 |
 | 3. Payload Extraction | 5 | 0 | 0 |
 | 4. Gap Coverage | 4 | 4 | 0 |
 | 5. Identity Matrix | 22 | 1 | 0 |
-| **Total** | **72** | **23** | **0** |
+| **Total** | **72** | **28** | **0** |
 
 ---
 
