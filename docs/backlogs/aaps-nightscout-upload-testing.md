@@ -4,6 +4,69 @@
 > **Test Location**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/tests/`
 > **Created**: 2026-03-10
 
+## IDs.kt Analysis (AAPS-SRC-004, AAPS-ID-001)
+
+### Key Finding: AAPS Uses Server-Assigned IDs (Opposite of Loop)
+
+**File**: `core/data/model/IDs.kt`
+
+```kotlin
+data class IDs(
+    var nightscoutSystemId: String? = null,  // System-level ID
+    var nightscoutId: String? = null,        // Server-assigned _id (stored after upload)
+    var pumpType: PumpType? = null,          // Pump model enum
+    var pumpSerial: String? = null,          // Pump serial number
+    var temporaryId: Long? = null,           // Temp ID before sync
+    var pumpId: Long? = null,                // Pump event sequence number
+    var startId: Long? = null,               // Extended bolus start
+    var endId: Long? = null                  // Extended bolus end
+)
+```
+
+### Identity Field Flow
+
+```
+AAPS Local          →  Nightscout API v3    →  AAPS Response Handler
+─────────────────────────────────────────────────────────────────────
+pumpId + pumpSerial    identifier (optional)    nightscoutId = response._id
+                       pumpId, pumpType,
+                       pumpSerial (sent)
+```
+
+### BolusExtension.kt Mapping (line 26-41)
+
+```kotlin
+fun BS.toNSBolus(): NSBolus =
+    NSBolus(
+        identifier = ids.nightscoutId,      // Previously assigned server ID
+        pumpId = ids.pumpId,                // Pump event number
+        pumpType = ids.pumpType?.name,      // "OMNIPOD_DASH", "DANA_I", etc.
+        pumpSerial = ids.pumpSerial,        // Unique pump serial
+        ...
+    )
+```
+
+### AAPS vs Loop Identity Pattern Comparison
+
+| Aspect | AAPS | Loop |
+|--------|------|------|
+| **Who assigns `_id`** | Server | Client (UUID) |
+| **Local storage** | `nightscoutId` in Room DB | `ObjectIdCache` (24hr memory) |
+| **Dedup key** | `pumpId + pumpType + pumpSerial` | `syncIdentifier` |
+| **API version** | v3 (REST with `identifier`) | v1 (POST only) |
+| **GAP-TREAT-012 impact** | ❌ Not affected | ✅ Overrides affected |
+
+### Why AAPS Doesn't Trigger GAP-TREAT-012
+
+1. **Create**: `identifier: null` - server generates ObjectId `_id`
+2. **Response**: AAPS stores `_id` as `nightscoutId` in Room DB
+3. **Update**: Sends `identifier: nightscoutId` (valid ObjectId)
+4. **Delete**: Uses `identifier` (valid ObjectId)
+
+AAPS never sends client-generated UUID as `_id`.
+
+---
+
 ## Overview
 
 AAPS (AndroidAPS) uses a sophisticated sync architecture with two API versions:
@@ -27,7 +90,7 @@ AAPS is **different from Loop** in several key ways:
 | AAPS-SRC-001 | `core/nssdk/interfaces/NSAndroidClient.kt` | ⬜ |
 | AAPS-SRC-002 | `core/nssdk/NSAndroidClientImpl.kt` | ⬜ |
 | AAPS-SRC-003 | `core/nssdk/networking/` | ⬜ |
-| AAPS-SRC-004 | `core/data/model/IDs.kt` | ⬜ |
+| AAPS-SRC-004 | `core/data/model/IDs.kt` | ✅ |
 
 **Deliverable**: Document SDK methods, HTTP calls, and identity handling.
 
@@ -48,7 +111,7 @@ AAPS is **different from Loop** in several key ways:
 
 | Item | Question | Source | Status |
 |------|----------|--------|--------|
-| AAPS-ID-001 | How does IDs.kt structure work? | `core/data/model/IDs.kt` | ⬜ |
+| AAPS-ID-001 | How does IDs.kt structure work? | `core/data/model/IDs.kt` | ✅ |
 | AAPS-ID-002 | When is `nightscoutId` populated? | Extensions, Sync workers | ⬜ |
 | AAPS-ID-003 | How is `identifier` used in v3? | `nssdk/localmodel/` | ⬜ |
 | AAPS-ID-004 | How do `pumpId`/`pumpSerial` correlate? | Extensions | ⬜ |
@@ -291,18 +354,18 @@ cd externals/AndroidAPS
 
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
-| 1. Source Analysis | 17 | 0 | 0 |
+| 1. Source Analysis | 17 | 2 | 0 |
 | 2. Difference Doc | 1 | 0 | 0 |
 | 3. Test Development | 18 | 0 | 0 |
 | 4. Test Harness | 3 | 0 | 0 |
-| **Total** | **39** | **0** | **0** |
+| **Total** | **39** | **2** | **0** |
 
 ---
 
 ## Next Actions
 
-1. [ ] Run existing AAPS tests: `./gradlew :plugins:sync:test`
-2. [ ] Analyze `IDs.kt` - understand identity field structure
+1. [x] Run existing AAPS tests: `./gradlew :plugins:sync:test`
+2. [x] Analyze `IDs.kt` - understand identity field structure ✅
 3. [ ] Compare `BolusExtension.kt` vs Loop's `SyncCarbObject.swift`
 4. [ ] Document v1 vs v3 API differences
 5. [ ] Create test fixtures from AAPS payloads
