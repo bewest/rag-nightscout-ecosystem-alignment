@@ -915,9 +915,93 @@ suspend fun deleteTreatment(@Path("identifier") identifier: String)
 |------|----------|--------|--------|
 | AAPS-ID-001 | How does IDs.kt structure work? | `core/data/model/IDs.kt` | ✅ |
 | AAPS-ID-002 | When is `nightscoutId` populated? | Extensions, Sync workers | ✅ |
-| AAPS-ID-003 | How is `identifier` used in v3? | `nssdk/localmodel/` | ⬜ |
+| AAPS-ID-003 | How is `identifier` used in v3? | `nssdk/localmodel/` | ✅ |
 | AAPS-ID-004 | How do `pumpId`/`pumpSerial` correlate? | Extensions | ⬜ |
 | AAPS-ID-005 | Difference between v1 and v3 sync? | `nsclient/` vs `nsclientV3/` | ⬜ |
+
+---
+
+## AAPS-ID-003: identifier in v3 localmodel ✅
+
+### v3 Model Architecture
+
+All v3 treatment models implement `NSTreatment` interface which defines `identifier`:
+
+```kotlin
+// core/nssdk/localmodel/treatment/NSTreatment.kt:8
+interface NSTreatment {
+    val identifier: String?    // Server-assigned, nullable on CREATE
+    val pumpId: Long?
+    val pumpSerial: String?
+    // ... other fields
+}
+```
+
+### identifier Assignment Flow
+
+**Extension converts local model → v3 model:**
+```kotlin
+// BolusExtension.kt:36
+fun Bolus.toNSBolus(): NSBolus =
+    NSBolus(
+        identifier = ids.nightscoutId,    // Local nightscoutId → v3 identifier
+        pumpId = ids.pumpId,
+        pumpSerial = ids.pumpSerial,
+        // ...
+    )
+```
+
+**Key insight:** `identifier` in v3 JSON == `ids.nightscoutId` in local DB
+
+### Server Response Handling
+
+```kotlin
+// CreateUpdateResponse.kt
+class CreateUpdateResponse(
+    val response: Int,           // HTTP status
+    val identifier: String?,     // Server-assigned ID
+    val isDeduplication: Boolean? = false,
+    val deduplicatedIdentifier: String? = null,  // If deduplicated
+    val lastModified: Long? = null,
+    val errorResponse: String? = null
+)
+```
+
+### v3 Model Files
+
+| Model | File | Has identifier |
+|-------|------|----------------|
+| NSTreatment | `localmodel/treatment/NSTreatment.kt` | ✅ (interface) |
+| NSBolus | `localmodel/treatment/NSBolus.kt` | ✅ |
+| NSCarbs | `localmodel/treatment/NSCarbs.kt` | ✅ |
+| NSTemporaryTarget | `localmodel/treatment/NSTemporaryTarget.kt` | ✅ |
+| NSTemporaryBasal | `localmodel/treatment/NSTemporaryBasal.kt` | ✅ |
+| NSProfileSwitch | `localmodel/treatment/NSProfileSwitch.kt` | ✅ |
+| NSTherapyEvent | `localmodel/treatment/NSTherapyEvent.kt` | ✅ |
+| NSExtendedBolus | `localmodel/treatment/NSExtendedBolus.kt` | ✅ |
+| NSOfflineEvent | `localmodel/treatment/NSOfflineEvent.kt` | ✅ |
+| NSSgvV3 | `localmodel/entry/NSSgvV3.kt` | ✅ |
+| NSDeviceStatus | `localmodel/devicestatus/NSDeviceStatus.kt` | ✅ |
+
+### Mapping Summary
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    AAPS identifier Mapping                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  LOCAL DB (Room)           EXTENSION           V3 API (JSON)    │
+│  ────────────────         ──────────         ────────────────   │
+│                                                                 │
+│  Bolus.ids.nightscoutId  →  toNSBolus()  →  identifier: "..."   │
+│  Bolus.ids.pumpId        →  toNSBolus()  →  pumpId: 123         │
+│  Bolus.ids.pumpSerial    →  toNSBolus()  →  pumpSerial: "..."   │
+│                                                                 │
+│  On CREATE: identifier = null (not set in JSON)                 │
+│  On UPDATE: identifier = ids.nightscoutId (from prior CREATE)   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
