@@ -10,7 +10,7 @@ This document is an index of gaps organized by domain.
 - [Nightscout Api](nightscout-api-gaps.md) - 74 gaps
 - [Pumps](pumps-gaps.md) - 10 gaps
 - [Sync Identity](sync-identity-gaps.md) - 71 gaps
-- [Treatments](treatments-gaps.md) - 25 gaps
+- [Treatments](treatments-gaps.md) - 26 gaps
 
 ## Quick Reference
 
@@ -21,7 +21,7 @@ This document is an index of gaps organized by domain.
 | aid-algorithms | 71 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-02-08 |
 | connectors | 68 | [connectors-gaps.md](connectors-gaps.md) | 2026-02-01 |
 | cgm-sources | 52 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-02-01 |
-| treatments | 25 | [treatments-gaps.md](treatments-gaps.md) | 2026-02-01 |
+| treatments | 26 | [treatments-gaps.md](treatments-gaps.md) | 2026-03-10 |
 | pumps | 13 | [pumps-gaps.md](pumps-gaps.md) | 2026-02-03 |
 
 Total: 348 unique GAP IDs across 7 domains (5 GAP-EFFECT-* added 2026-02-08)

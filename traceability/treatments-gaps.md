@@ -735,6 +735,64 @@ let action = NSRemoteAction.override(name: overrideName, durationTime: durationT
 
 ---
 
+### GAP-TREAT-012: v1 API Incorrectly Coerces UUID _id to ObjectId
+
+**Scenario**: Loop Temporary Override sync via v1 API
+
+**Description**: Nightscout v1 API accepts client-supplied string `_id` values on POST (create), but later treats those same `_id` values as if they must be MongoDB ObjectIds. This breaks UPDATE and DELETE operations for treatments with UUID-style `_id` values.
+
+Loop uploads Temporary Override treatments with UUID `_id`:
+```json
+{
+  "_id": "69F15FD2-8075-4DEB-AEA3-4352F455840D",
+  "eventType": "Temporary Override",
+  "created_at": "2026-02-17T02:00:16.000Z",
+  "durationType": "indefinite",
+  "correctionRange": [90, 110],
+  "insulinNeedsScaleFactor": 1.2,
+  "reason": "Override Name"
+}
+```
+
+**Evidence**:
+- Loop: `LoopKit/NightscoutKit` uses `syncIdentifier.uuidString` as `_id`
+- v1 POST accepts UUID string and stores it
+- v1 DELETE/PUT attempts ObjectId coercion, fails for UUID strings
+- Issue: [nightscout/cgm-remote-monitor#8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450)
+
+**Impact**: Critical
+- Override sync gets stuck after indefinite override
+- Later override banners stop appearing on graph
+- Loop retry loop blocks newer override treatments
+- Graph overlay persists incorrectly (driven by treatments, not devicestatus)
+
+**Root Cause**:
+1. `_id` coercion too aggressive - assumes all `_id` must be 24-hex ObjectId
+2. Upsert matching ignores client `_id` - matches by `created_at + eventType` instead
+3. UUID strings like `69F15FD2-8075-4DEB-AEA3-4352F455840D` are not valid ObjectIds
+
+**Remediation**:
+1. Only convert `_id` to ObjectId when it is 24-character hex string
+2. Leave UUID/string `_id` values as strings
+3. Prefer `_id` as upsert key when client supplied one
+4. Ensure PUT/DELETE work for both string and ObjectId ids
+5. Fall back to `created_at + eventType` only for legacy callers without `_id`
+
+**Source**:
+- `lib/api/treatments/index.js` - v1 treatment API
+- `lib/server/treatments.js` - treatment storage layer
+- PR: [#8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447) - Fix implementation
+
+**Related**:
+- [GAP-TREAT-005](#gap-treat-005-loop-post-only-creates-duplicates)
+- [GAP-SYNC-005](sync-identity-gaps.md#gap-sync-005-loop-objectidcache-not-persistent)
+- [GAP-SYNC-009](sync-identity-gaps.md#gap-sync-009-v1-api-lacks-identifier-field)
+- [Loop Overrides](../mapping/loop/overrides.md)
+
+**Status**: Open - Fix in PR #8447
+
+---
+
 ## CGM Data Source Gaps
 
 ---
