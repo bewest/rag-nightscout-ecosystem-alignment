@@ -32,7 +32,27 @@ Active work streams for the Nightscout ecosystem alignment project.
 |---|---|
 | **Location** | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` |
 | **URL** | `http://localhost:1337` |
-| **Start** | `cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447 && source my.test.env && npm start` |
+| **Start** | See commands below |
+
+**Start the server:**
+```bash
+cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+source my.test.env   # Sets INSECURE_USE_HTTP, API_SECRET, MONGO_CONNECTION
+npm start
+```
+
+**Required environment** (`my.test.env` contents):
+```
+API_SECRET=test_api_secret_12_chars
+MONGO_CONNECTION=mongodb://localhost:27017/nightscout_test
+INSECURE_USE_HTTP=true   # Required for localhost testing without SSL
+PORT=1337
+```
+
+**Verify running:**
+```bash
+curl http://localhost:1337/api/v1/status.json
+```
 
 ---
 
