@@ -152,7 +152,7 @@ These require prior work to complete:
 
 | ID | Blocked By | Unblocks |
 |----|------------|----------|
-| `loop-test-identity-matrix` | loop-src-override, loop-src-carb, loop-src-cache | Test development |
+| ~~`loop-test-identity-matrix`~~ | ~~loop-src-override, loop-src-carb, loop-src-cache~~ | ✅ Test development |
 | `loop-test-cache-workflow` | loop-src-cache, loop-src-carb | JS tests in cgm-pr-8447 |
 | `swift-extract-cache` | swift-pkg-setup | swift-first-test |
 | `swift-http-client` | swift-pkg-setup | swift-first-test |
