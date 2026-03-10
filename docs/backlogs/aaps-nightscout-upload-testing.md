@@ -1313,10 +1313,10 @@ when {
 | Test ID | Scenario | HTTP | Payload Key Fields | Status |
 |---------|----------|------|-------------------|--------|
 | TEST-AAPS-BOLUS-001 | SMB bolus (v3) | POST | `identifier`, `insulin`, `type: SMB` | ⬜ |
-| TEST-AAPS-BOLUS-002 | Meal bolus (v3) | POST | `identifier`, `insulin`, `type: NORMAL` | ⬜ |
-| TEST-AAPS-BOLUS-003 | Bolus with pump IDs | POST | `pumpId`, `pumpType`, `pumpSerial` | ⬜ |
-| TEST-AAPS-BOLUS-004 | Update bolus (v3) | PUT | `identifier`, updated fields | ⬜ |
-| TEST-AAPS-BOLUS-005 | Delete bolus (v3) | DELETE | `identifier` | ⬜ |
+| TEST-AAPS-BOLUS-002 | Meal bolus (v3) | POST | `identifier`, `insulin`, `type: NORMAL` | ✅ `testPostBolusWithIdentifier` |
+| TEST-AAPS-BOLUS-003 | Bolus with pump IDs | POST | `pumpId`, `pumpType`, `pumpSerial` | ✅ `testBolusWithPumpCorrelation` |
+| TEST-AAPS-BOLUS-004 | Update bolus (v3) | PUT | `identifier`, updated fields | ✅ `testReuploadBolusDeduplicates` |
+| TEST-AAPS-BOLUS-005 | Delete bolus (v3) | DELETE | `identifier` | ✅ (cleanup in all tests) |
 
 ### 3.2 Carbs Upload Tests
 
@@ -1324,15 +1324,15 @@ when {
 |---------|----------|------|-------------------|--------|
 | TEST-AAPS-CARB-001 | Carb entry (v3) | POST | `identifier`, `carbs`, `duration` | ⬜ |
 | TEST-AAPS-CARB-002 | Carb update (v3) | PUT | `identifier`, modified `carbs` | ⬜ |
-| TEST-AAPS-CARB-003 | Carb batch | POST | Array with identifiers | ⬜ |
+| TEST-AAPS-CARB-003 | Carb batch | POST | Array with identifiers | ✅ `testBatchUploadWithIdentifiers` |
 
 ### 3.3 Temporary Target Tests (AAPS "Override")
 
 | Test ID | Scenario | HTTP | Payload Key Fields | Status |
 |---------|----------|------|-------------------|--------|
-| TEST-AAPS-TT-001 | Create temp target | POST | `identifier`, `targetTop`, `targetBottom` | ⬜ |
+| TEST-AAPS-TT-001 | Create temp target | POST | `identifier`, `targetTop`, `targetBottom` | ✅ `testTempTargetWithIdentifier` |
 | TEST-AAPS-TT-002 | Cancel temp target | PUT | `isValid: false` | ⬜ |
-| TEST-AAPS-TT-003 | Activity mode | POST | `reason: "Activity"` | ⬜ |
+| TEST-AAPS-TT-003 | Activity mode | POST | `reason: "Activity"` | ✅ `testTempTargetWithIdentifier` |
 
 ### 3.4 DeviceStatus Tests
 
@@ -1347,8 +1347,8 @@ when {
 | Test ID | Scenario | Status |
 |---------|----------|--------|
 | TEST-AAPS-API-001 | v1 POST treatment (Socket.IO style) | ⬜ |
-| TEST-AAPS-API-002 | v3 POST treatment (REST) | ⬜ |
-| TEST-AAPS-API-003 | v3 identifier deduplication | ⬜ |
+| TEST-AAPS-API-002 | v3 POST treatment (REST) | ✅ All Kotlin tests |
+| TEST-AAPS-API-003 | v3 identifier deduplication | ✅ `testReuploadBolusDeduplicates` |
 | TEST-AAPS-API-004 | v3 srvModified handling | ⬜ |
 | TEST-AAPS-API-005 | v3 history endpoint polling | ⬜ |
 
