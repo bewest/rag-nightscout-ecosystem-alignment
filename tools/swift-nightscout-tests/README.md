@@ -47,16 +47,20 @@ swift --version  # Should show 6.x
 swift build
 
 # Test (requires cgm-remote-monitor running on localhost:1337)
+export NIGHTSCOUT_TEST_ENABLED=1  # Enable integration tests
+export NIGHTSCOUT_URL="http://localhost:1337"
+export API_SECRET="test_api_secret_12_chars"
 swift test
 ```
 
 ## Configuration
 
-Set environment variables or edit `Tests/TestConfig.swift`:
+Environment variables for testing:
 
 ```bash
+export NIGHTSCOUT_TEST_ENABLED=1           # Required to run tests
 export NIGHTSCOUT_URL="http://localhost:1337"
-export API_SECRET="test-api-secret-12345"
+export API_SECRET="test_api_secret_12_chars"  # Match my.test.env
 ```
 
 ## Key Tests to Implement

@@ -123,7 +123,8 @@ In progress - see [aaps-nightscout-upload-testing.md](aaps-nightscout-upload-tes
 | `aaps-src-bolus` | BolusExtension.kt | ✅ AAPS-SRC-010 |
 | `aaps-src-carbs` | CarbsExtension.kt | ✅ AAPS-SRC-011 |
 | `aaps-src-tt` | TemporaryTargetExtension.kt | ✅ AAPS-SRC-013 |
-| `aaps-src-sdk` | NSAndroidClient | ⬜ AAPS-SRC-001 |
+| `aaps-src-sdk` | NSAndroidClient | ✅ AAPS-SRC-001/002 |
+| `aaps-src-devicestatus` | DeviceStatusExtension.kt | ✅ AAPS-SRC-015 |
 | `aaps-run-tests` | Run AAPS tests | ⚠️ Requires Android SDK |
 
 ### 🟡 P2: Swift/Kotlin Test Setup
