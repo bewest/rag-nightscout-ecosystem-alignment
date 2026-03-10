@@ -4,9 +4,58 @@
 > **Test Location**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/tests/`
 > **Created**: 2026-03-10
 
-## Overview
+## Override Upload Analysis (LOOP-SRC-010)
 
-Loop uses multiple upload patterns to sync data with Nightscout. Before implementing fixes for issues like GAP-TREAT-012 (UUID _id coercion), we must first understand exactly what Loop sends and develop tests that accurately simulate each pattern.
+### Key Finding: Overrides Use UUID as `_id` Directly
+
+**File**: `NightscoutServiceKit/Extensions/OverrideTreament.swift:59`
+
+```swift
+self.init(..., id: override.syncIdentifier.uuidString)
+```
+
+Unlike carbs/doses which use `ObjectIdCache`, overrides:
+1. Set `id` field directly to `syncIdentifier.uuidString`
+2. **Do NOT use ObjectIdCache** for mapping
+3. Delete by `syncIdentifier.uuidString` directly
+
+### Upload Flow
+
+**File**: `NightscoutService.swift:157-186`
+
+```swift
+public func uploadTemporaryOverrideData(updated: [...], deleted: [...], ...) {
+    let updates = updated.map { OverrideTreatment(override: $0) }
+    let deletions = deleted.map { $0.syncIdentifier.uuidString }
+    
+    uploader.deleteTreatmentsById(deletions, ...)  // Delete by UUID string
+    uploader.upload(updates) { ... }                // POST with id=UUID
+}
+```
+
+### JSON Payload Structure
+
+| Field | Value | Source |
+|-------|-------|--------|
+| `id` | `"A1B2C3D4-..."` (UUID string) | `override.syncIdentifier.uuidString` |
+| `eventType` | `"Temporary Override"` | NightscoutKit |
+| `created_at` | ISO8601 date | `override.startDate` |
+| `enteredBy` | `"Loop"` or `"Loop (via remote command)"` | trigger type |
+| `reason` | `"Custom Override"`, `"Workout"`, preset name | `override.context` |
+| `duration` | minutes or -1 (indefinite) | `override.duration` |
+| `correctionRange` | `[low, high]` mg/dL | `override.settings.targetRange` |
+| `insulinNeedsScaleFactor` | 0.5 - 2.0 | override settings |
+
+### Why This Causes GAP-TREAT-012
+
+Nightscout's `lib/server/treatments.js:normalizeTreatmentId()` tries to convert the `id` field to MongoDB ObjectId:
+
+```javascript
+// Current behavior (broken):
+_id: new ObjectId(id)  // FAILS for UUID strings like "A1B2C3D4-..."
+```
+
+PR #8447 / Option G fixes this by detecting UUID format and handling differently.
 
 ---
 
@@ -26,7 +75,7 @@ Loop uses multiple upload patterns to sync data with Nightscout. Before implemen
 
 | Item | Source File | Purpose | Status |
 |------|-------------|---------|--------|
-| LOOP-SRC-010 | `Extensions/OverrideTreament.swift` | Override → Treatment JSON | ⬜ |
+| LOOP-SRC-010 | `Extensions/OverrideTreament.swift` | Override → Treatment JSON | ✅ |
 | LOOP-SRC-011 | `Extensions/SyncCarbObject.swift` | Carb → Treatment JSON | ⬜ |
 | LOOP-SRC-012 | `Extensions/DoseEntry+Nightscout.swift` | Dose → Treatment JSON | ⬜ |
 | LOOP-SRC-013 | `Extensions/StoredGlucoseSample.swift` | Glucose → Entry JSON | ⬜ |
@@ -38,7 +87,7 @@ Loop uses multiple upload patterns to sync data with Nightscout. Before implemen
 
 | Item | Question | Source | Status |
 |------|----------|--------|--------|
-| LOOP-ID-001 | When does Loop use `_id` vs `id`? | NightscoutUploader | ⬜ |
+| LOOP-ID-001 | When does Loop use `_id` vs `id`? | NightscoutUploader | ✅ |
 | LOOP-ID-002 | When does Loop use `syncIdentifier`? | All Extensions | ⬜ |
 | LOOP-ID-003 | How does ObjectIdCache map syncIdentifier → _id? | ObjectIdCache | ⬜ |
 | LOOP-ID-004 | What happens when ObjectIdCache expires (24hr)? | ObjectIdCache | ⬜ |
@@ -177,17 +226,17 @@ externals/LoopWorkspace/LoopKit/LoopKit/
 
 | Phase | Items | Completed | Blocked |
 |-------|-------|-----------|---------|
-| 1. Source Analysis | 13 | 0 | 0 |
+| 1. Source Analysis | 13 | 2 | 0 |
 | 2. Test Development | 28 | 8 | 0 |
 | 3. Payload Extraction | 5 | 0 | 0 |
 | 4. Gap Coverage | 4 | 1 | 0 |
-| **Total** | **50** | **9** | **0** |
+| **Total** | **50** | **11** | **0** |
 
 ---
 
 ## Next Actions
 
-1. [ ] Analyze `OverrideTreament.swift` - extract exact JSON structure
+1. [x] Analyze `OverrideTreament.swift` - extract exact JSON structure ✅
 2. [ ] Analyze `SyncCarbObject.swift` - compare id vs syncIdentifier usage
 3. [ ] Analyze `ObjectIdCache.swift` - understand cache lifecycle
 4. [ ] Create test fixtures from real Loop payloads
