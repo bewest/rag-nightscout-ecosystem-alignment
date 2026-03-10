@@ -144,4 +144,46 @@ class NightscoutClient(
             }
         }
     }
+    
+    /**
+     * POST devicestatus to Nightscout v1 API
+     * Simulates AAPS's openaps/pump status uploads
+     */
+    fun postDeviceStatus(deviceStatus: Map<String, Any?>): Map<String, Any?> {
+        val body = gson.toJson(deviceStatus).toRequestBody(JSON)
+        
+        val request = Request.Builder()
+            .url("$baseUrl/api/v1/devicestatus")
+            .header("api-secret", TestConfig.apiSecretHash)
+            .header("Content-Type", "application/json")
+            .post(body)
+            .build()
+        
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw RuntimeException("HTTP ${response.code}: ${response.body?.string()}")
+            }
+            
+            val responseBody = response.body?.string() ?: "[]"
+            // v1 API returns array even for single POST
+            val type = object : TypeToken<List<Map<String, Any?>>>() {}.type
+            val results: List<Map<String, Any?>> = gson.fromJson(responseBody, type)
+            return results.firstOrNull() ?: emptyMap()
+        }
+    }
+    
+    /**
+     * DELETE devicestatus by _id
+     */
+    fun deleteDeviceStatus(id: String) {
+        val request = Request.Builder()
+            .url("$baseUrl/api/v1/devicestatus/$id")
+            .header("api-secret", TestConfig.apiSecretHash)
+            .delete()
+            .build()
+        
+        client.newCall(request).execute().use { response ->
+            // Ignore errors on cleanup
+        }
+    }
 }

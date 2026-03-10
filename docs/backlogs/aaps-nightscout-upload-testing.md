@@ -1338,9 +1338,9 @@ when {
 
 | Test ID | Scenario | HTTP | Payload Key Fields | Status |
 |---------|----------|------|-------------------|--------|
-| TEST-AAPS-DS-001 | AAPS status | POST | `openaps.*`, `pump.*` | ⬜ |
-| TEST-AAPS-DS-002 | SMB prediction | POST | `openaps.suggested.*` | ⬜ |
-| TEST-AAPS-DS-003 | Pump reservoir | POST | `pump.reservoir`, `pump.battery` | ⬜ |
+| TEST-AAPS-DS-001 | AAPS status | POST | `openaps.*`, `pump.*` | ✅ `testAapsDeviceStatus` |
+| TEST-AAPS-DS-002 | SMB prediction | POST | `openaps.suggested.*` | ✅ `testSmbPrediction` |
+| TEST-AAPS-DS-003 | Pump reservoir | POST | `pump.reservoir`, `pump.battery` | ✅ `testPumpStatus` |
 
 ### 3.5 v1 vs v3 API Tests
 
