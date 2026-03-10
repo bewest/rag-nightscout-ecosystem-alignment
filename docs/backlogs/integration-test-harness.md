@@ -339,7 +339,7 @@ cd tools/kotlin-nightscout-tests && ./gradlew test
 | ID | Language | Coverage | Status |
 |----|----------|----------|--------|
 | `test-js-uuid` | JavaScript | UUID _id CRUD | ✅ Exists |
-| `test-js-identifier` | JavaScript | identifier field | ⬜ |
+| `test-js-identifier` | JavaScript | identifier field | ✅ |
 | `test-swift-override` | Swift | Loop override flow | ✅ |
 | `test-swift-cache` | Swift | ObjectIdCache workflow | ✅ |
 | `test-kotlin-bolus` | Kotlin | AAPS bolus flow | ✅ |
