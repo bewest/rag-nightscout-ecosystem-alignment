@@ -609,10 +609,10 @@ This matrix defines how Nightscout should handle identity fields from different 
 
 | Test ID | Client Pattern | Create | Read | Update | Delete | Status |
 |---------|---------------|--------|------|--------|--------|--------|
-| TEST-RT-001 | Loop Override | POST with UUID `id` | GET by ??? | PUT by ??? | DELETE by ??? | ⬜ |
-| TEST-RT-002 | Loop Carb | POST no `id` | GET returns ObjectId | PUT by ObjectId | DELETE by ObjectId | ⬜ |
-| TEST-RT-003 | AAPS TempTarget | POST `identifier: null` | GET returns ObjectId | PUT by ObjectId | DELETE by ObjectId | ⬜ |
-| TEST-RT-004 | AAPS ProfileSwitch | POST with profile JSON | GET full profile | PUT update percentage | DELETE | ⬜ |
+| TEST-RT-001 | Loop Override | POST with UUID `id` | GET by identifier | PUT by identifier | DELETE by ObjectId | ✅ `api.treatments.test.js:250` |
+| TEST-RT-002 | Loop Carb | POST no `id` | GET returns ObjectId | PUT by ObjectId | DELETE by ObjectId | ✅ `api.treatments.test.js:193` |
+| TEST-RT-003 | AAPS TempTarget | POST `identifier: null` | GET returns ObjectId | PUT by ObjectId | DELETE by ObjectId | ✅ `api.treatments.test.js:374` |
+| TEST-RT-004 | AAPS ProfileSwitch | POST with profile JSON | GET full profile | PUT update percentage | DELETE | N/A (profile collection) |
 
 #### GAP-TREAT-012 Specific Tests
 
@@ -634,11 +634,11 @@ This matrix defines how Nightscout should handle identity fields from different 
 
 | Payload ID | Source | Method | Status |
 |------------|--------|--------|--------|
-| PAYLOAD-001 | OverrideTreament.swift | `asNightscoutTreatment()` | ⬜ |
-| PAYLOAD-002 | SyncCarbObject.swift | `asNightscoutTreatment()` | ⬜ |
-| PAYLOAD-003 | DoseEntry+Nightscout.swift | `asNightscoutTreatment()` | ⬜ |
-| PAYLOAD-004 | StoredGlucoseSample.swift | `asNightscoutEntry()` | ⬜ |
-| PAYLOAD-005 | StoredDosingDecision.swift | `asDeviceStatus()` | ⬜ |
+| PAYLOAD-001 | OverrideTreament.swift | `asNightscoutTreatment()` | ✅ See LOOP-SRC-010 |
+| PAYLOAD-002 | SyncCarbObject.swift | `asNightscoutTreatment()` | ✅ See LOOP-SRC-011 |
+| PAYLOAD-003 | DoseEntry.swift | `treatment()` | ✅ See LOOP-SRC-012 |
+| PAYLOAD-004 | StoredGlucoseSample.swift | `glucoseEntry` | ✅ See LOOP-SRC-013 |
+| PAYLOAD-005 | StoredDosingDecision.swift | `deviceStatus()` | ✅ See LOOP-SRC-014 |
 
 **Method**: Extract from Swift code or capture from real Loop device.
 
