@@ -10,13 +10,14 @@ let package = Package(
         .library(name: "NightscoutTestKit", targets: ["NightscoutTestKit"]),
     ],
     dependencies: [
-        // TODO: Add LoopKit dependency for ObjectIdCache extraction
-        // .package(url: "https://github.com/LoopKit/LoopKit.git", from: "3.0.0"),
+        .package(url: "https://github.com/apple/swift-crypto.git", from: "3.0.0"),
     ],
     targets: [
         .target(
             name: "NightscoutTestKit",
-            dependencies: [],
+            dependencies: [
+                .product(name: "Crypto", package: "swift-crypto"),
+            ],
             path: "Sources"
         ),
         .testTarget(
