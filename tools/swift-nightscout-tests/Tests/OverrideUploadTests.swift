@@ -206,4 +206,57 @@ final class OverrideUploadTests: XCTestCase {
         // Cleanup
         try await client.deleteTreatment(id: objectId)
     }
+    
+    /// TEST-OVR-005: Override without syncIdentifier shows UUID in _id only
+    func testOverrideWithoutSyncIdentifierField() async throws {
+        let uuid = UUID().uuidString
+        
+        // Loop sends UUID as _id, not as separate syncIdentifier field
+        let override: [String: Any] = [
+            "_id": uuid,
+            "eventType": "Temporary Override",
+            "reason": "Exercise",
+            "duration": 60,
+            "created_at": ISO8601DateFormatter().string(from: Date())
+        ]
+        
+        let response = try await client.postTreatment(override)
+        
+        // PR #8447 promotes UUID _id to identifier
+        XCTAssertEqual(response["identifier"] as? String, uuid)
+        
+        // Original _id is NOT a syncIdentifier field
+        XCTAssertNil(response["syncIdentifier"], "No separate syncIdentifier field")
+        
+        // Cleanup
+        let objectId = response["_id"] as! String
+        try await client.deleteTreatment(id: objectId)
+    }
+    
+    /// TEST-OVR-006: Cancel indefinite override
+    func testCancelIndefiniteOverride() async throws {
+        let uuid = UUID().uuidString
+        
+        // Create indefinite override
+        let override: [String: Any] = [
+            "_id": uuid,
+            "eventType": "Temporary Override",
+            "reason": "Sick Day",
+            "durationType": "indefinite",
+            "created_at": ISO8601DateFormatter().string(from: Date())
+        ]
+        
+        let response = try await client.postTreatment(override)
+        let objectId = response["_id"] as! String
+        
+        // Verify created
+        XCTAssertEqual(response["durationType"] as? String, "indefinite")
+        
+        // Delete to cancel
+        try await client.deleteTreatment(id: objectId)
+        
+        // Verify deleted
+        let results = try await client.getTreatments(query: ["find[identifier]": uuid])
+        XCTAssertTrue(results.isEmpty, "Override should be deleted")
+    }
 }

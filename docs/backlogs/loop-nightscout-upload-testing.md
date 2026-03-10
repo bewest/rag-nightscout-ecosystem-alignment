@@ -288,8 +288,8 @@ With Option G (REQ-SYNC-072):
 | TEST-OVR-002 | Update override (UUID _id) | PUT | `_id`, `duration`, `created_at` | ✅ Exists |
 | TEST-OVR-003 | Delete override (UUID _id) | DELETE | URL param: `_id` | ✅ Exists |
 | TEST-OVR-004 | Repost override (upsert) | POST | Same `_id`, different `created_at` | ✅ Exists |
-| TEST-OVR-005 | Override without `syncIdentifier` field | POST | Verify no separate sync field | ⬜ |
-| TEST-OVR-006 | Cancel indefinite override | DELETE | `durationType: indefinite` first | ⬜ |
+| TEST-OVR-005 | Override without `syncIdentifier` field | POST | Verify no separate sync field | ✅ `testOverrideWithoutSyncIdentifierField` |
+| TEST-OVR-006 | Cancel indefinite override | DELETE | `durationType: indefinite` first | ✅ `testCancelIndefiniteOverride` |
 
 ### 2.2 Carb Upload Tests
 
