@@ -1894,51 +1894,48 @@ Stored: {
 
 ---
 
-### REQ-SYNC-072: Transparent UUID Promotion (Option G)
+### REQ-SYNC-072: Server-Controlled ID with Transparent Promotion (Option G)
 
-**Statement**: When the v1 API receives a document with a non-ObjectId `_id` (e.g., UUID string), the server MUST:
-1. Move the client's `_id` value to the `identifier` field (preserving client sync identity)
-2. Generate a new ObjectId for `_id` (ensuring MongoDB consistency)
-3. Use `identifier` as the primary deduplication key when present
-4. Return both `_id` and `identifier` in the response
+**Statement**: The v1 API MUST implement server-controlled document IDs:
+1. Server always generates ObjectId for `_id` (or accepts ObjectId from client for backward compat)
+2. Client sync identity extracted from `identifier`, `syncIdentifier`, `uuid`, or non-ObjectId `_id`
+3. Client sync identity stored in `identifier` field
+4. Deduplication uses `identifier` as primary key
+5. Response includes both `_id` (server ObjectId) and `identifier` (client sync key)
 
-**Rationale**: This achieves immediate clean behavior without breaking changes:
-- Loop overrides continue to sync (UUID preserved in `identifier`)
-- Database stays clean (all `_id` values are ObjectId)
-- No migration debt (correct from day 1)
-- Forward compatible (aligns with v3 API `identifier` pattern)
+**Rationale**: 
+- No phasing required - analysis shows no client depends on preserving their `_id`
+- Loop (carbs/doses): Already caches server's `_id`
+- Loop (overrides): UUID promoted to `identifier`, works immediately
+- AAPS: Already uses server-assigned `_id`
+- Clean from day 1, no migration debt
 
-**Algorithm**:
+**Algorithm** (full implementation, no phases):
 
 ```javascript
 function normalizeTreatmentId(obj) {
-  if (!obj._id || obj._id === '') return;
-
-  // Standard ObjectId string → convert to ObjectId object
-  if (typeof obj._id === 'string' && /^[0-9a-fA-F]{24}$/.test(obj._id)) {
-    obj._id = new ObjectID(obj._id);
-    return;
+  // 1. Extract client sync identity from ANY source
+  const clientIdentifier = obj.identifier 
+    || obj.syncIdentifier                    // Loop carbs/doses
+    || obj.uuid                              // xDrip+
+    || (typeof obj._id === 'string' && !/^[0-9a-fA-F]{24}$/.test(obj._id) ? obj._id : null);
+  
+  if (clientIdentifier && !obj.identifier) {
+    obj.identifier = clientIdentifier;
   }
-
-  // Non-ObjectId (UUID, etc): promote to identifier
-  if (typeof obj._id === 'string') {
-    if (!obj.identifier) {
-      obj.identifier = obj._id;  // Preserve client sync identity
-    }
-    obj._id = new ObjectID();    // Server generates clean _id
+  
+  // 2. Server controls _id
+  if (typeof obj._id === 'string' && /^[0-9a-fA-F]{24}$/.test(obj._id)) {
+    obj._id = new ObjectID(obj._id);  // Accept ObjectId for backward compat
+  } else {
+    obj._id = new ObjectID();         // Generate fresh ObjectId
   }
 }
 
 function upsertQueryFor(obj, results) {
-  // 1. Prefer identifier for dedup (handles re-uploads)
-  if (obj.identifier) {
-    return { identifier: obj.identifier };
-  }
-  // 2. Fall back to _id if present and valid
-  if (obj._id) {
-    return { _id: obj._id };
-  }
-  // 3. Last resort: time + eventType
+  // Priority: identifier > _id > time+type
+  if (obj.identifier) return { identifier: obj.identifier };
+  if (obj._id) return { _id: obj._id };
   return { created_at: results.created_at, eventType: obj.eventType };
 }
 ```

@@ -890,19 +890,46 @@ api.indexedFields.push('identifier');  // Add to existing indexes
 - Clients reading `_id`: Still works (now always ObjectId)
 - v3 API: `identifier` field already aligned
 
-**Short-term Recommendation**: **Option G (Immediate Transparent Promotion)** because:
+**Recommendation**: **Option G (Server-Controlled ID with Transparent Promotion)** because:
 1. No breakage for any client
 2. No "DB poisoning" - all `_id` values are proper ObjectIds
-3. Clean from day 1 - no migration debt to pay later
-4. Same code change complexity as Option A, much cleaner outcome
+3. Clean from day 1 - no migration debt
+4. Full server-controlled ID implemented immediately
 
-**Long-term**: Option G naturally evolves to Option F (full server-controlled ID) - the `identifier` field is already in place, just extend to all documents.
+**No Phasing Required**: Analysis shows no major client depends on preserving their `_id`:
+- Loop (carbs/doses): Caches server's `_id` → No dependency
+- Loop (overrides): UUID → promoted to `identifier` → Fixed
+- AAPS: Already uses server-assigned `_id` → No dependency  
+- xDrip+: Sends `uuid` field, not `_id` → No dependency
 
-**Migration Strategy** (Option G → Full Server-Controlled):
-```
-Phase 1 (Now):     Option G - Transparent UUID promotion to identifier
-Phase 2 (v15.1):   Encourage all clients to send identifier instead of _id
-Phase 3 (v16.0):   Strip all client _id, always server-generate
+**Implementation** (all at once):
+
+```javascript
+function normalizeTreatmentId(obj) {
+  // 1. Extract client sync identity from any source
+  const clientIdentifier = obj.identifier 
+    || obj.syncIdentifier                    // Loop carbs/doses
+    || obj.uuid                              // xDrip+
+    || (typeof obj._id === 'string' && !OBJECT_ID_HEX_RE.test(obj._id) ? obj._id : null);
+  
+  if (clientIdentifier && !obj.identifier) {
+    obj.identifier = clientIdentifier;
+  }
+  
+  // 2. Server controls _id
+  if (typeof obj._id === 'string' && OBJECT_ID_HEX_RE.test(obj._id)) {
+    obj._id = new ObjectID(obj._id);  // Accept ObjectId for backward compat
+  } else {
+    obj._id = new ObjectID();         // Generate fresh ObjectId
+  }
+}
+
+function upsertQueryFor(obj, results) {
+  // Priority: identifier > _id > time+type
+  if (obj.identifier) return { identifier: obj.identifier };
+  if (obj._id) return { _id: obj._id };
+  return { created_at: results.created_at, eventType: obj.eventType };
+}
 ```
 
 ### Comprehensive Strategy Comparison
