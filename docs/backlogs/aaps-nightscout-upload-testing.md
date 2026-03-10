@@ -916,8 +916,101 @@ suspend fun deleteTreatment(@Path("identifier") identifier: String)
 | AAPS-ID-001 | How does IDs.kt structure work? | `core/data/model/IDs.kt` | ✅ |
 | AAPS-ID-002 | When is `nightscoutId` populated? | Extensions, Sync workers | ✅ |
 | AAPS-ID-003 | How is `identifier` used in v3? | `nssdk/localmodel/` | ✅ |
-| AAPS-ID-004 | How do `pumpId`/`pumpSerial` correlate? | Extensions | ⬜ |
+| AAPS-ID-004 | How do `pumpId`/`pumpSerial` correlate? | Extensions | ✅ |
 | AAPS-ID-005 | Difference between v1 and v3 sync? | `nsclient/` vs `nsclientV3/` | ⬜ |
+
+---
+
+## AAPS-ID-004: pumpId/pumpSerial Correlation ✅
+
+### IDs.kt Structure
+
+```kotlin
+// core/data/model/IDs.kt
+data class IDs(
+    var nightscoutId: String? = null,     // Server-assigned identifier
+    var pumpType: PumpType? = null,       // Enum: MEDTRONIC_*, OMNIPOD_*, etc.
+    var pumpSerial: String? = null,       // Pump serial number
+    var pumpId: Long? = null,             // Pump history record ID
+    var temporaryId: Long? = null,        // Temp ID when pumpId unavailable
+    var endId: Long? = null               // For ranged records
+) {
+    fun isPumpHistory() = pumpSerial != null && pumpId != null
+}
+```
+
+### Where pumpId/pumpSerial Originate
+
+**Pump drivers set these when syncing pump history:**
+
+```kotlin
+// MedtronicHistoryData.kt:648-654
+val result = pumpSync.syncBolusWithPumpId(
+    timestamp = tryToGetByLocalTime(bolus.atechDateTime),
+    amount = deliveredAmount,
+    pumpId = bolus.pumpId,           // From pump history record
+    pumpType = medtronicPumpStatus.pumpType,
+    pumpSerial = medtronicPumpStatus.serialNumber  // From pump status
+)
+```
+
+### Flow: Pump → Local DB → Nightscout
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     pumpId/pumpSerial Flow                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  PUMP DRIVER                LOCAL DB (Room)              NIGHTSCOUT JSON    │
+│  ───────────────           ─────────────────            ────────────────    │
+│                                                                             │
+│  Medtronic history  →  pumpSync.syncBolusWithPumpId()                       │
+│  - bolus.pumpId        └→ Bolus {                                           │
+│  - serialNumber            ids.pumpId = 12345                               │
+│                            ids.pumpSerial = "123456"  →  "pumpId": 12345    │
+│                            ids.pumpType = MEDTRONIC      "pumpSerial": "..."│
+│                        }                                                     │
+│                                                                             │
+│  Omnipod history    →  pumpSync.syncBolusWithPumpId()                       │
+│  - podId sequence      └→ same flow                                          │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Purpose of pumpId/pumpSerial
+
+| Field | Purpose | Example |
+|-------|---------|---------|
+| `pumpId` | Pump's internal record ID | `12345` (history log index) |
+| `pumpSerial` | Pump hardware serial | `"123456"`, `"XXXXXX"` |
+| `pumpType` | Pump model enum | `MEDTRONIC_554_754_VEO` |
+
+**Key use case:** Deduplication across AAPS reinstalls or device changes.
+If same `pumpId + pumpSerial` already exists → don't create duplicate.
+
+### Extensions Map to v3 JSON
+
+All extensions follow same pattern:
+```kotlin
+// BolusExtension.kt:37-39
+pumpId = ids.pumpId,
+pumpType = ids.pumpType?.name,
+pumpSerial = ids.pumpSerial,
+```
+
+### Affected Treatment Types
+
+| Extension | Has pumpId/pumpSerial |
+|-----------|----------------------|
+| BolusExtension | ✅ |
+| CarbsExtension | ✅ |
+| TemporaryBasalExtension | ✅ |
+| TemporaryTargetExtension | ✅ |
+| ExtendedBolusExtension | ✅ |
+| ProfileSwitchExtension | ✅ |
+| TherapyEventExtension | ✅ |
+| EffectiveProfileSwitchExtension | ✅ |
+| RunningModeExtension | ✅ |
 
 ---
 
