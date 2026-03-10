@@ -312,7 +312,9 @@ cd externals/AndroidAPS
 ## Related Documents
 
 - [Loop Upload Testing](loop-nightscout-upload-testing.md) - Loop equivalent
+- [Integration Test Harness](integration-test-harness.md) - How to run tests
 - [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012) - UUID _id issue (Loop-specific)
 - [AAPS Nightscout Sync](../../mapping/aaps/nightscout-sync.md) - Existing analysis
 - [AAPS NSClient Schema](../../mapping/aaps/nsclient-schema.md) - Field mapping
-- [REQ-SYNC-071](../../traceability/sync-identity-requirements.md#req-sync-071) - Server-controlled ID proposal
+- [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-transparent-uuid-promotion-option-g) - **Option G (Recommended)**: Transparent UUID promotion
+- [REQ-SYNC-071](../../traceability/sync-identity-requirements.md#req-sync-071) - Long-term: Server-controlled ID proposal

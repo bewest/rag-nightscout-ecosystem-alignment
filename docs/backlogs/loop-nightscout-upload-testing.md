@@ -197,7 +197,9 @@ externals/LoopWorkspace/LoopKit/LoopKit/
 
 ## Related Documents
 
-- [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid)
-- [REQ-SYNC-071](../../traceability/sync-identity-requirements.md#req-sync-071-server-controlled-id-with-client-identity-preservation)
+- [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid) - Issue analysis and fix options
+- [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-transparent-uuid-promotion-option-g) - **Option G (Recommended)**: Transparent UUID promotion
+- [REQ-SYNC-071](../../traceability/sync-identity-requirements.md#req-sync-071-server-controlled-id-with-client-identity-preservation) - Long-term: Server-Controlled ID
 - [Loop Sync Identity Fields](../../mapping/loop/sync-identity-fields.md)
+- [Integration Test Harness](integration-test-harness.md) - How to run tests
 - [cgm-remote-monitor issue #8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450)

@@ -89,11 +89,28 @@ curl http://localhost:1337/api/v1/status.json
 
 The integration tests validate these proposed fixes:
 
-| Proposal | ID | Description | Primary Test |
-|----------|-----|-------------|--------------|
-| **Accept UUID _id** | PR #8447 | Allow non-ObjectId _id values | Loop override CRUD |
-| **Identifier-First** | REQ-SYNC-070 | Use `identifier` as primary key | All clients |
-| **Server-Controlled ID** | REQ-SYNC-071 | Server generates `_id`, client provides `identifier` | All clients |
+| Proposal | ID | Description | Primary Test | Status |
+|----------|-----|-------------|--------------|--------|
+| **Option G: Transparent Promotion** | REQ-SYNC-072 | UUID `_id` → `identifier` + server ObjectId | Loop override CRUD | ⭐ **Recommended** |
+| Accept UUID _id | PR #8447 | Allow non-ObjectId _id values (as-is) | Loop override CRUD | Superseded by G |
+| Identifier-First | REQ-SYNC-070 | Use `identifier` as primary key | All clients | Long-term |
+| Server-Controlled ID | REQ-SYNC-071 | Server generates `_id`, client provides `identifier` | All clients | Long-term |
+
+### Option G Summary
+
+**Key insight**: Same code complexity as PR #8447, but keeps DB clean:
+
+```
+PR #8447 (Option A):    { "_id": "UUID-..." }        ← Mixed _id formats (permanent)
+Option G:               { "_id": ObjectId, "identifier": "UUID-..." }  ← Clean!
+```
+
+**Implementation**:
+1. On POST: If `_id` is non-ObjectId, move to `identifier` + generate ObjectId
+2. On lookup: Check `identifier` first, then `_id`
+3. On response: Return both fields
+
+See [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072-transparent-uuid-promotion-option-g) for full specification.
 
 ### Testing Matrix
 
@@ -219,23 +236,41 @@ object TestConfig {
 ### 1. Baseline (Current Behavior)
 
 ```bash
-# Start server with current code
+# Start server with current code (before any fix)
 cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
-git checkout pr-8447
+git stash  # or checkout clean state
 source my.test.env && npm test
 
-# Document failures
+# Document failures with UUID _id
 ```
 
-### 2. Test Proposed Fix (PR #8447)
+### 2. Test Option G (Recommended)
 
 ```bash
-# Already on pr-8447 branch
+# Create experimental branch for Option G
+git checkout -b experiment/option-g
+
+# Apply Option G changes (see REQ-SYNC-072):
+# - normalizeTreatmentId: UUID → identifier + ObjectId
+# - upsertQueryFor: check identifier first
+# - indexedFields: add 'identifier'
+
+# Run tests
 npm test -- --grep "UUID"
-# Should pass: UUID _id CRUD works
+# Expected: UUID _id CRUD works, _id is ObjectId in DB
 ```
 
-### 3. Test Alternative Proposals
+### 3. Verify Option G Semantics
+
+```bash
+# Key verification points:
+# 1. POST with UUID _id → stored _id is ObjectId, identifier = UUID
+# 2. Re-POST same UUID → upsert (no duplicate)
+# 3. Response includes both _id and identifier
+# 4. DB inspection: db.treatments.find({identifier: /UUID/})
+```
+
+### 4. Test Alternative Proposals (if needed)
 
 ```bash
 # Create experimental branch
