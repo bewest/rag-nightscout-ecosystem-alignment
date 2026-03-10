@@ -79,7 +79,7 @@ JavaScript ────┘
 | Backlog | Client | Language | Work Items | Status |
 |---------|--------|----------|------------|--------|
 | [Loop Upload Testing](loop-nightscout-upload-testing.md) | Loop (iOS) | Swift | 50 | ✅ Complete |
-| [Loop Source Analysis](loop-source-analysis.md) | Loop | Swift | 7 | ⬜ Ready |
+| [Loop Source Analysis](loop-source-analysis.md) | Loop | Swift | 7 | ✅ Complete |
 | [AAPS Upload Testing](aaps-nightscout-upload-testing.md) | AAPS (Android) | Kotlin | 39 | ⬜ Ready |
 
 ### Integration Testing Proposals
