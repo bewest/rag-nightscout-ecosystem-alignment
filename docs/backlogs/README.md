@@ -107,6 +107,9 @@ Trio uploads CGM entries with UUID `_id` values. Same fix needed as treatments.j
 
 | ID | Task | Status |
 |----|------|--------|
+| `test-entry-dedup-001` | Baseline: sysTime+type dedup test | ❌ **PREREQUISITE** |
+| `test-entry-dedup-002` | Baseline: different type at same time | ❌ |
+| `test-entry-dedup-003` | Baseline: different time same type | ❌ |
 | `impl-entry-normalize` | Implement `normalizeEntryId()` in entries.js | ❌ Not started |
 | `test-entry-uuid-001` | POST entry with UUID _id | ❌ Not started |
 | `test-entry-uuid-002` | Re-POST deduplication | ❌ Not started |
@@ -116,6 +119,7 @@ Trio uploads CGM entries with UUID `_id` values. Same fix needed as treatments.j
 | `test-entry-uuid-006` | Identifier field preserved | ❌ Not started |
 
 **Details**: [trio-entries-upload-testing.md](trio-entries-upload-testing.md)  
+**API Comparison**: [api-version-uuid-comparison.md](api-version-uuid-comparison.md) ← v1 vs v3 analysis  
 **Gap**: [GAP-SYNC-045](../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id)  
 **Deep Dive**: [client-id-handling-deep-dive.md](../10-domain/client-id-handling-deep-dive.md)
 
@@ -131,6 +135,21 @@ All Loop source files analyzed - see [loop-source-analysis.md](loop-source-analy
 | `loop-src-uploader` | NightscoutUploader.swift | ✅ LOOP-SRC-002 |
 | `loop-src-glucose` | StoredGlucoseSample.swift | ✅ LOOP-SRC-013 |
 | `loop-src-devicestatus` | StoredDosingDecision.swift | ✅ LOOP-SRC-014 |
+
+### ✅ v3 API: No Changes Needed
+
+**Status**: v3 API already handles client identifiers correctly.
+
+| Aspect | Status | Evidence |
+|--------|--------|----------|
+| Client `_id` handling | ✅ Ignored | `resolveIdentifier()` computes fresh |
+| Dedup by identifier | ✅ Works | `identifyingFilter()` with fallback |
+| Entries fallback | ✅ `['date', 'type']` | Matches v1's `sysTime + type` |
+| Test coverage | ✅ Tested | `api3.create.test.js`, `api3.aaps-patterns.test.js` |
+
+**Details**: [api-version-uuid-comparison.md](api-version-uuid-comparison.md)
+
+**Note**: Trio currently uses v1 API (`/api/v1/entries.json`). If Trio switched to v3, no server fix would be needed. However, the v1 fix is simpler than client changes.
 
 ### 🟠 P1: AAPS Source Analysis
 
