@@ -81,7 +81,7 @@ JavaScript ────┘
 | [Loop Upload Testing](loop-nightscout-upload-testing.md) | Loop (iOS) | Swift | 50 | ✅ Complete |
 | [Loop Source Analysis](loop-source-analysis.md) | Loop | Swift | 7 | ✅ Complete |
 | [AAPS Upload Testing](aaps-nightscout-upload-testing.md) | AAPS (Android) | Kotlin | 39 | ✅ Complete |
-| [Trio Entries Testing](trio-entries-upload-testing.md) | Trio (iOS) | Swift | 6 | 🔴 **NEW** |
+| [Trio Entries Testing](trio-entries-upload-testing.md) | Trio (iOS) | Swift | 10 | ✅ Complete |
 
 ### Integration Testing Proposals
 
@@ -216,7 +216,7 @@ These require prior work to complete:
 ### Gap Documentation
 
 - [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid) - UUID _id coercion issue (treatments) ✅ Fixed
-- [GAP-SYNC-045](../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id) - UUID _id coercion issue (entries) 🔴 **Open**
+- [GAP-SYNC-045](../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id) - UUID _id coercion issue (entries) ✅ Fixed
 - [GAP-SYNC-005](../../traceability/sync-identity-gaps.md#gap-sync-005-loop-objectidcache-not-persistent) - ObjectIdCache not persistent
 - [Client ID Handling Deep Dive](../10-domain/client-id-handling-deep-dive.md) - Comprehensive analysis
 
