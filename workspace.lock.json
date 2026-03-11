@@ -201,6 +201,15 @@
       "description": "LibreLink Up to Nightscout bridge (TypeScript)",
       "frozen_at": "2026-01-29T00:01:00.000000",
       "frozen_from": "main"
+    },
+    {
+      "alias": "minimed-connect",
+      "name": "minimed-connect-to-nightscout",
+      "url": "https://github.com/nightscout/minimed-connect-to-nightscout.git",
+      "ref": "57bb042c4342834129ae49bded42cb354ca3bf45",
+      "description": "Medtronic CareLink to Nightscout bridge (JavaScript)",
+      "frozen_at": "2026-03-11T21:39:00.000000",
+      "frozen_from": "master"
     }
   ]
 }
