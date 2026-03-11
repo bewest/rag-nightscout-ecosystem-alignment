@@ -27,7 +27,374 @@ POST /api/v1/entries.json
 
 ---
 
-## Test Cases Needed
+## ⚠️ CRITICAL DIFFERENCES FROM TREATMENTS FIX
+
+Before implementing, understand these key differences between `entries.js` and `treatments.js`:
+
+### 1. Different Upsert Key Strategy
+
+| File | Upsert Key | Code |
+|------|------------|------|
+| `treatments.js` | `identifier` > `_id` > `created_at + eventType` | `upsertQueryFor()` |
+| `entries.js` | `sysTime + type` only | Line 111: `{ sysTime: doc.sysTime, type: doc.type }` |
+
+**Impact**: entries.js ignores client `_id` entirely for dedup - it uses timestamp + type. This means:
+- ✅ Duplicate entries at same timestamp already prevented
+- ❌ Client `_id` is silently discarded (server assigns new ObjectId)
+- ❌ No way to update/delete by client `_id`
+
+### 2. GET/DELETE Route Uses ObjectId Only
+
+```javascript
+// lib/api/entries/index.js - isId() only matches 24-hex
+const ID_PATTERN = /^[a-f\d]{24}$/;
+function isId (value) { return ID_PATTERN.test(value); }
+
+// lib/server/entries.js:149 - getEntry() calls new ObjectId(id)
+api().findOne({ "_id": new ObjectId(id) }, ...)
+```
+
+**Impact**: `GET /entries/UUID` and `DELETE /entries/UUID` will:
+- `isId()` returns false (UUID doesn't match 24-hex pattern)
+- Falls through to `req.params.model` path (treats as type filter)
+- Returns wrong results or 404
+
+### 3. No `identifier` Field in Entry Schema
+
+Unlike treatments (which have `syncIdentifier`), entries have no standard identity field:
+
+| Field | treatments.js | entries.js |
+|-------|--------------|------------|
+| `syncIdentifier` | ✅ Loop carbs/doses | ❌ Not used |
+| `identifier` | ✅ Added by Option G | ❌ Doesn't exist |
+| `uuid` | ✅ xDrip+ | ❌ Not used |
+
+**Impact**: Need to add `identifier` to entries schema and indexes.
+
+---
+
+## ⚠️ EDGE CASES TO TEST
+
+### Edge Case 1: UUID _id vs sysTime+type Collision
+
+**Scenario**: Two entries with same timestamp but different `_id`
+
+```javascript
+// Entry 1
+{ _id: "UUID-A", sysTime: "2026-03-11T20:00:00Z", type: "sgv", sgv: 120 }
+// Entry 2 (5 seconds later, same sysTime due to rounding)
+{ _id: "UUID-B", sysTime: "2026-03-11T20:00:00Z", type: "sgv", sgv: 125 }
+```
+
+**Current behavior**: Entry 2 overwrites Entry 1 (same sysTime+type)
+**Expected behavior**: Both preserved, `identifier` used for dedup
+
+### Edge Case 2: Re-upload After App Reinstall
+
+**Scenario**: Trio reinstalled, uploads same glucose with new UUID
+
+```javascript
+// Original upload
+{ _id: "UUID-OLD", sysTime: "2026-03-11T20:00:00Z", type: "sgv", sgv: 120 }
+// Re-upload (same glucose, new UUID)  
+{ _id: "UUID-NEW", sysTime: "2026-03-11T20:00:00Z", type: "sgv", sgv: 120 }
+```
+
+**Current behavior**: Upsert by sysTime+type = single entry (correct!)
+**Question**: Should we store `identifier: UUID-NEW` or keep original?
+
+### Edge Case 3: Mixed Batch Upload
+
+**Scenario**: Batch contains ObjectId, UUID, and no `_id`
+
+```javascript
+[
+  { _id: "507f1f77bcf86cd799439011", type: "sgv", sgv: 120, ... }, // ObjectId
+  { _id: "A1B2C3D4-E5F6-7890-ABCD", type: "sgv", sgv: 125, ... }, // UUID
+  { type: "sgv", sgv: 130, ... } // No _id
+]
+```
+
+**Test**: All three should create successfully.
+
+### Edge Case 4: GET by UUID When Entry Exists
+
+**Scenario**: Entry created with UUID `_id`, then GET requested
+
+```javascript
+// Created via POST
+{ _id: "A1B2C3D4-E5F6-7890-ABCD", type: "sgv", sgv: 120, ... }
+
+// Server stores as
+{ _id: ObjectId("..."), identifier: "A1B2C3D4-E5F6-7890-ABCD", ... }
+
+// Client requests
+GET /entries/A1B2C3D4-E5F6-7890-ABCD
+```
+
+**Current behavior**: `isId()` returns false, falls through to type filter, returns all SGV
+**Required fix**: Check `identifier` field when `isId()` fails
+
+### Edge Case 5: DELETE by UUID
+
+**Scenario**: Delete entry using original UUID
+
+```
+DELETE /entries/A1B2C3D4-E5F6-7890-ABCD
+```
+
+**Current behavior**: `isId()` fails, may not delete anything
+**Required fix**: Query by `identifier` when not ObjectId
+
+### Edge Case 6: CalibrationDue vs SGV Type Collision
+
+**Scenario**: Different entry types at same timestamp
+
+```javascript
+{ _id: "UUID-1", sysTime: "T", type: "sgv", sgv: 120 }
+{ _id: "UUID-2", sysTime: "T", type: "mbg", mbg: 115 }
+```
+
+**Expected**: Both preserved (different types)
+**Test**: Verify `type` is part of dedup key
+
+---
+
+## Implementation Plan (Detailed)
+
+### Phase 1: Tests First (Iterations 1-3)
+
+#### Iteration 1: Test Skeleton
+- Create `tests/api.entries.uuid.test.js`
+- Copy structure from `api.entries.test.js`
+- Add 6 test skeletons with `it.skip()`
+
+#### Iteration 2: Implement Tests 001-003
+```javascript
+describe('UUID _id handling', function() {
+  it('TEST-ENTRY-UUID-001: accepts UUID _id on POST');
+  it('TEST-ENTRY-UUID-002: deduplicates by sysTime+type');
+  it('TEST-ENTRY-UUID-003: GET by UUID returns entry');
+});
+```
+
+#### Iteration 3: Implement Tests 004-006
+```javascript
+describe('UUID _id handling', function() {
+  it('TEST-ENTRY-UUID-004: DELETE by UUID removes entry');
+  it('TEST-ENTRY-UUID-005: batch with mixed IDs');
+  it('TEST-ENTRY-UUID-006: identifier field indexed');
+});
+```
+
+### Phase 2: Implementation (Iterations 4-6)
+
+#### Iteration 4: entries.js Core Changes
+
+```javascript
+// Add at top of file
+var OBJECT_ID_HEX_RE = /^[0-9a-fA-F]{24}$/;
+
+// Add new function
+function normalizeEntryId(doc) {
+  // Extract client identifier from _id if UUID
+  var clientIdentifier = doc.identifier
+    || (typeof doc._id === 'string' && !OBJECT_ID_HEX_RE.test(doc._id) ? doc._id : null);
+  
+  if (clientIdentifier && !doc.identifier) {
+    doc.identifier = clientIdentifier;
+  }
+  
+  // Convert valid ObjectId strings
+  if (doc._id && typeof doc._id === 'string' && OBJECT_ID_HEX_RE.test(doc._id)) {
+    doc._id = new ObjectId(doc._id);
+  } else if (doc._id && typeof doc._id === 'string') {
+    // UUID _id - remove it, let server assign
+    delete doc._id;
+  }
+}
+
+// Modify create() - add before line 99
+var bulkOps = docs.map(function(doc) {
+  normalizeEntryId(doc);  // ← ADD THIS
+  // ... rest of function
+```
+
+#### Iteration 5: entries.js Query Changes
+
+```javascript
+// Modify upsert query (line 111)
+var query;
+if (doc.identifier) {
+  query = { identifier: doc.identifier };
+} else if (doc.sysTime && doc.type) {
+  query = { sysTime: doc.sysTime, type: doc.type };
+} else {
+  query = doc;
+}
+
+// Modify getEntry() (line 148-156)
+function getEntry(id, fn) {
+  var query;
+  if (OBJECT_ID_HEX_RE.test(id)) {
+    query = { _id: new ObjectId(id) };
+  } else {
+    query = { identifier: id };
+  }
+  api().findOne(query, function(err, entry) {
+    // ...
+  });
+}
+```
+
+#### Iteration 6: API Route Changes
+
+```javascript
+// lib/api/entries/index.js
+// Modify isId() or add isIdentifier()
+function isIdOrIdentifier(value) {
+  return ID_PATTERN.test(value) || value.length === 36; // UUID length
+}
+
+// Update route handler to use new function
+```
+
+### Phase 3: Index & Validation (Iterations 7-8)
+
+#### Iteration 7: Add identifier Index
+
+```javascript
+// entries.js line 178
+api.indexedFields = [
+  'date',
+  'type',
+  'sgv',
+  'mbg',
+  'sysTime',
+  'dateString',
+  'identifier',  // ← ADD THIS
+  { 'type': 1, 'date': -1, 'dateString': 1 }
+];
+```
+
+#### Iteration 8: Run Full Test Suite
+```bash
+cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+npm test  # All 722+ tests must pass
+```
+
+### Phase 4: Documentation (Iterations 9-10)
+
+#### Iteration 9: Update Backlog Statuses
+- Mark all TEST-ENTRY-UUID-* as ✅
+- Update GAP-SYNC-045 status to "Fixed"
+
+#### Iteration 10: Final Commit
+- Commit with proper trace refs
+- Update deep dive document
+
+---
+
+## ⚠️ RISK WARNINGS FOR IMPLEMENTATION
+
+### Risk 1: Breaking sysTime+type Dedup (HIGH RISK)
+
+**Current behavior protects against CGM duplicate data**. The `sysTime + type` upsert ensures only one SGV per timestamp regardless of upload source.
+
+**Risk**: If we change upsert to use `identifier` instead, two different devices uploading the same glucose could create duplicates.
+
+**Mitigation**: Make `identifier` upsert OPTIONAL. Keep `sysTime + type` as fallback:
+
+```javascript
+// Priority: identifier > sysTime+type > date+type
+function upsertQueryFor(doc) {
+  if (doc.identifier) {
+    return { identifier: doc.identifier };
+  }
+  if (doc.sysTime && doc.type) {
+    return { sysTime: doc.sysTime, type: doc.type };
+  }
+  return { date: doc.date, type: doc.type };
+}
+```
+
+### Risk 2: Index Missing on Production (MEDIUM RISK)
+
+Adding `identifier` to `indexedFields` doesn't automatically create the index on existing databases.
+
+**Risk**: First Trio upload after fix will do collection scan on `identifier` field.
+
+**Mitigation**: 
+1. Document manual index creation step
+2. OR add migration that checks/creates index on server startup
+
+```javascript
+// Startup check (suggested)
+entries().createIndex({ identifier: 1 }, { sparse: true, background: true });
+```
+
+### Risk 3: v3 API Not Fixed (MEDIUM RISK)
+
+This backlog focuses on v1 API (`/api/v1/entries`). Nightscout also has v3 API in `lib/api3/`.
+
+**Risk**: Trio may also use v3 API, which has different code path.
+
+**Mitigation**: Check Trio's `NightscoutAPI.swift` for v3 usage:
+```swift
+// Look for "/api/v3/" in upload paths
+```
+
+### Risk 4: Rollback Scenario (LOW RISK)
+
+If fix is deployed then reverted, entries created with `identifier` may behave unexpectedly.
+
+**Risk**: Entries with `identifier` field but no UUID `_id` handling code.
+
+**Mitigation**: 
+- `identifier` is purely additive (no schema change)
+- Old code ignores `identifier` field
+- ObjectId `_id` still present for normal ops
+
+### Risk 5: CGM Calibration Entries (LOW RISK)
+
+Trio may also upload `mbg` (calibration) entries with UUID `_id`.
+
+**Risk**: Only testing `sgv` type, `mbg` might have different code path.
+
+**Mitigation**: Add TEST-ENTRY-UUID-007 for `mbg` type entries:
+```javascript
+it('TEST-ENTRY-UUID-007: handles UUID _id for mbg entries', function() {
+  // POST mbg with UUID _id
+});
+```
+
+---
+
+## Iteration Estimate
+
+Based on complexity analysis:
+
+| Phase | Iterations | Rationale |
+|-------|-----------|-----------|
+| Phase 1: Tests | 3 | Test structure + 6 test cases |
+| Phase 2: Implementation | 3 | entries.js + API routes |
+| Phase 3: Validation | 2 | Index + test suite |
+| Phase 4: Documentation | 2 | Backlog + deep dive |
+| **Total** | **10** | `-n 10` recommended |
+
+### Potential Blockers Requiring Extra Iterations
+
+| Blocker | Impact | Likelihood |
+|---------|--------|------------|
+| Existing tests fail after change | +2-3 iterations | Medium |
+| v3 API also needs fix | +3-4 iterations | Low |
+| Index performance issues | +1-2 iterations | Low |
+
+**Recommendation**: Start with `-n 10`, be prepared to extend to `-n 15` if blockers occur.
+
+---
+
+## Test Cases (Original Specification)
 
 ### TEST-ENTRY-UUID-001: POST Entry with UUID _id
 
@@ -140,57 +507,7 @@ POST /api/v1/entries.json
 
 ---
 
-## Implementation Plan
-
-### Phase 1: Add Tests (Document Current Behavior)
-
-1. Create `tests/api.entries.uuid.test.js`
-2. Add test cases above
-3. Run to document current (failing) behavior
-
-### Phase 2: Implement Fix in entries.js
-
-Apply same pattern as treatments.js:
-
-```javascript
-// lib/server/entries.js
-
-var OBJECT_ID_HEX_RE = /^[0-9a-fA-F]{24}$/;
-
-function normalizeEntryId (obj) {
-  var clientIdentifier = obj.identifier 
-    || (typeof obj._id === 'string' && !OBJECT_ID_HEX_RE.test(obj._id) ? obj._id : null);
-  
-  if (clientIdentifier && !obj.identifier) {
-    obj.identifier = clientIdentifier;
-  }
-  
-  if (obj._id && typeof obj._id === 'string' && OBJECT_ID_HEX_RE.test(obj._id)) {
-    obj._id = new ObjectID(obj._id);
-  }
-}
-
-function upsertQueryFor (obj) {
-  if (obj.identifier) {
-    delete obj._id;
-    return { identifier: obj.identifier };
-  }
-  if (obj._id) {
-    return { _id: obj._id };
-  }
-  return { date: obj.date, type: obj.type };
-}
-```
-
-### Phase 3: Validate
-
-1. Run all entry tests
-2. Verify Trio upload simulation works
-3. Update GAP-SYNC-045 status to "Fixed"
-
----
-
-## Trio Upload Simulation
+## Trio Upload Simulation Helpers
 
 ### Simulate DeviceDataManager Path
 
