@@ -21,13 +21,13 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| Entries UUID _id Fix (GAP-SYNC-045) | P1 | Trio CGM entries use UUID `_id`, needs `entries.js` fix like treatments.js |
-| Entries UUID Tests | P2 | 6 test cases in `docs/backlogs/trio-entries-upload-testing.md` |
+| (none) | - | All P0/P1 tasks complete |
 
 ## Processed
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| 🎉 Entries UUID _id Fix (GAP-SYNC-045) | P1 | ✅ Complete - `normalizeEntryId()` + 9 tests, 731 passing | 2026-03-11 |
 | 🎉 All Backlogs Complete (cycle 133) | P1 | ✅ Loop 100%, AAPS 100%, Harness done, 722 tests passing | 2026-03-10 |
 | Loop Core Service Analysis (cycle 132) | P2 | ✅ Complete - LOOP-SRC-001/002, **Loop backlog 100%** | 2026-03-10 |
 | Round-trip & Payload Review (cycle 131) | P2 | ✅ Complete - TEST-RT-001-003, PAYLOAD-001-005 verified | 2026-03-10 |
