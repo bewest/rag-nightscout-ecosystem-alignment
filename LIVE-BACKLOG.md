@@ -21,7 +21,8 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| (Queue empty - all items promoted to Ready Queue) | - | - |
+| Entries UUID _id Fix (GAP-SYNC-045) | P1 | Trio CGM entries use UUID `_id`, needs `entries.js` fix like treatments.js |
+| Entries UUID Tests | P2 | 6 test cases in `docs/backlogs/trio-entries-upload-testing.md` |
 
 ## Processed
 

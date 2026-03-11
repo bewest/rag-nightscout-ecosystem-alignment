@@ -334,10 +334,13 @@ function normalizeEntryId (obj) {
 ## References
 
 - **Issue**: [nightscout/cgm-remote-monitor#8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450)
-- **Fix PR**: [nightscout/cgm-remote-monitor#8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447)
+- **Fix PR**: [nightscout/cgm-remote-monitor#8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447) (treatments only)
 - **Requirement**: [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072)
-- **Gap**: [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012)
+- **Gaps**:
+  - [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012) - Treatments (fixed)
+  - [GAP-SYNC-045](../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id) - Entries (open)
 - **Test Report**: [option-g-test-validation-report.md](../reports/option-g-test-validation-report.md)
+- **Testing Backlog**: [trio-entries-upload-testing.md](../backlogs/trio-entries-upload-testing.md)
 
 ---
 

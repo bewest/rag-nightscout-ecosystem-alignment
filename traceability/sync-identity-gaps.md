@@ -1827,3 +1827,51 @@ let profileStore = NightscoutProfileStore(
 
 **Related**:
 - [Trio Nightscout Sync Analysis](../docs/10-domain/trio-nightscout-sync-analysis.md)
+
+---
+
+### GAP-SYNC-045: Trio Entries Upload Uses UUID as _id
+
+**Description**: Trio uploads CGM entries to Nightscout with UUID strings in the `_id` field. The Nightscout v1 entries API (`/api/v1/entries.json`) does not handle non-ObjectId `_id` values, causing potential coercion failures on subsequent operations.
+
+**Affected Systems**: Trio → Nightscout entries collection
+
+**Evidence**:
+```swift
+// Trio/Sources/APS/DeviceDataManager.swift:332-346
+let results = glucose.enumerated().map { index, sample -> BloodGlucose in
+    return BloodGlucose(
+        _id: sample.syncIdentifier,  // ← UUID as _id
+        sgv: value,
+        ...
+    )
+}
+
+// Trio/Sources/APS/Storage/GlucoseStorage.swift:413-426
+return fetchedResults.map { result in
+    BloodGlucose(
+        _id: result.id?.uuidString ?? UUID().uuidString,  // ← UUID as _id
+        ...
+    )
+}
+```
+
+**Upload Path**:
+- `NightscoutAPI.swift:340-374` → POST to `/api/v1/entries.json`
+
+**Impact**: 
+- Unlike treatments (fixed in PR #8447), entries.js has no `identifier` promotion
+- UUID `_id` values may cause issues with entry updates/deletes
+- Same class of bug as GAP-TREAT-012 but for entries collection
+
+**Remediation**: 
+1. Server-side: Apply same `normalizeEntryId()` pattern to `lib/server/entries.js`
+2. Client-side (optional): Use `identifier` field instead of `_id`
+
+**Status**: Open - Server fix not yet implemented
+
+**Related**:
+- [GAP-TREAT-012](treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid) - Same issue for treatments (fixed)
+- [Client ID Handling Deep Dive](../docs/10-domain/client-id-handling-deep-dive.md)
+- [REQ-SYNC-072](sync-identity-requirements.md#req-sync-072) - Server-controlled ID requirement
+- [PR #8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447) - Treatments fix (does not include entries)
