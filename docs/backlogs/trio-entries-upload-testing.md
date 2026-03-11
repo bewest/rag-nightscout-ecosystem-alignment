@@ -201,23 +201,54 @@ describe('Baseline: sysTime+type dedup behavior', function() {
 #### Iteration 1: Test Skeleton
 - Create `tests/api.entries.uuid.test.js`
 - Copy structure from `api.entries.test.js`
-- Add 6 test skeletons with `it.skip()`
+- Add test skeletons with `it.skip()`
 
 #### Iteration 2: Implement Tests 001-003
 ```javascript
 describe('UUID _id handling', function() {
   it('TEST-ENTRY-UUID-001: accepts UUID _id on POST');
-  it('TEST-ENTRY-UUID-002: deduplicates by sysTime+type');
-  it('TEST-ENTRY-UUID-003: GET by UUID returns entry');
+  it('TEST-ENTRY-UUID-002: re-POST same UUID deduplicates by sysTime+type');
+  it('TEST-ENTRY-UUID-003: re-POST different UUID same timestamp deduplicates');
 });
 ```
 
 #### Iteration 3: Implement Tests 004-006
 ```javascript
 describe('UUID _id handling', function() {
-  it('TEST-ENTRY-UUID-004: DELETE by UUID removes entry');
-  it('TEST-ENTRY-UUID-005: batch with mixed IDs');
-  it('TEST-ENTRY-UUID-006: identifier field indexed');
+  it('TEST-ENTRY-UUID-004: batch with mixed IDs (UUID, ObjectId, none)');
+  it('TEST-ENTRY-UUID-005: existing UUID _id entry updated without duplicate');
+  it('TEST-ENTRY-UUID-006: existing UUID _id preserved after update');
+});
+```
+
+#### Iteration 4: Migration Test (CRITICAL)
+```javascript
+describe('Migration: existing UUID _id entries', function() {
+  
+  it('TEST-ENTRY-MIGRATE-001: re-upload to existing UUID entry preserves _id', async function() {
+    // 1. Directly insert entry with UUID _id (simulates pre-fix data)
+    const uuid = '550e8400-e29b-41d4-a716-446655440000';
+    const timestamp = Date.now();
+    await db.collection('entries').insertOne({
+      _id: uuid,
+      type: 'sgv',
+      sgv: 120,
+      date: timestamp,
+      sysTime: new Date(timestamp).toISOString()
+    });
+    
+    // 2. POST same entry via API (simulates Trio re-upload after upgrade)
+    const res = await request(app)
+      .post('/entries/')
+      .send({ _id: uuid, type: 'sgv', sgv: 125, date: timestamp });
+    
+    // 3. Verify: single entry, UUID _id preserved, sgv updated
+    const entries = await db.collection('entries').find({ date: timestamp }).toArray();
+    entries.length.should.equal(1);
+    entries[0]._id.should.equal(uuid);  // UUID preserved!
+    entries[0].sgv.should.equal(125);   // Value updated
+  });
+  
 });
 ```
 
@@ -477,35 +508,28 @@ Based on complexity analysis:
 
 ---
 
-### TEST-ENTRY-UUID-003: GET Entry by UUID _id
+### TEST-ENTRY-UUID-003: Re-POST Different UUID Same Timestamp
 
-**Description**: Verify entry can be retrieved using original UUID.
+**Description**: Verify that re-uploading with a different UUID but same timestamp still deduplicates (uses sysTime+type, not _id).
 
-**Input**: `GET /api/v1/entries/550e8400-e29b-41d4-a716-446655440000`
+**Input**:
+```javascript
+// First POST
+{ _id: "UUID-AAA", type: "sgv", sgv: 120, date: T }
+// Second POST (different UUID, same timestamp)
+{ _id: "UUID-BBB", type: "sgv", sgv: 125, date: T }
+```
 
 **Expected**:
-- Entry returned
-- No ObjectId coercion error
+- Single entry in database
+- `sgv` updated to 125
+- No MongoDB error about _id conflict
 
 **Status**: ❌ Not implemented
 
 ---
 
-### TEST-ENTRY-UUID-004: DELETE Entry by UUID _id  
-
-**Description**: Verify entry can be deleted using original UUID.
-
-**Input**: `DELETE /api/v1/entries/550e8400-e29b-41d4-a716-446655440000`
-
-**Expected**:
-- Entry deleted successfully
-- No ObjectId coercion error
-
-**Status**: ❌ Not implemented
-
----
-
-### TEST-ENTRY-UUID-005: Batch Upload with Mixed IDs
+### TEST-ENTRY-UUID-004: Batch Upload with Mixed IDs
 
 **Description**: Verify batch upload handles mix of UUID and ObjectId `_id` values.
 
@@ -519,34 +543,65 @@ Based on complexity analysis:
 ```
 
 **Expected**:
-- All three entries created
-- UUID → identifier promotion OR stored as-is
-- ObjectId string → converted to ObjectId
-- No `_id` → server generates ObjectId
+- All three entries created (different timestamps)
+- All get server-assigned ObjectId `_id`
+- No errors
 
 **Status**: ❌ Not implemented
 
 ---
 
-### TEST-ENTRY-UUID-006: Identifier Field Preserved
+### TEST-ENTRY-UUID-005: Existing UUID _id Entry Updated Without Duplicate
 
-**Description**: If entry has `identifier` field, it should be preserved and used for dedup.
+**Description**: After upgrade, re-uploading to an entry that has UUID `_id` should update it, not create duplicate.
 
-**Input**:
-```json
-{
-  "identifier": "trio-sync-12345",
-  "type": "sgv",
-  "sgv": 120,
-  ...
-}
+**Setup**: Directly insert entry with UUID `_id` (simulates pre-fix data)
+```javascript
+db.entries.insertOne({ _id: "UUID-123", type: "sgv", sgv: 120, sysTime: "T" })
+```
+
+**Input**: POST via API with same timestamp
+```javascript
+{ _id: "UUID-123", type: "sgv", sgv: 125, date: T }
 ```
 
 **Expected**:
-- `identifier` preserved
-- Used for upsert matching on re-upload
+- Single entry (no duplicate)
+- `sgv` updated to 125
 
 **Status**: ❌ Not implemented
+
+---
+
+### TEST-ENTRY-MIGRATE-001: Existing UUID _id Preserved After Update (CRITICAL)
+
+**Description**: After upgrade, updating an existing UUID `_id` entry should preserve the original `_id`, not replace it with ObjectId.
+
+**Setup**: Directly insert entry with UUID `_id`
+```javascript
+db.entries.insertOne({ _id: "UUID-123", type: "sgv", sgv: 120, sysTime: "T" })
+```
+
+**Input**: POST via API with same timestamp
+```javascript
+{ _id: "UUID-123", type: "sgv", sgv: 125, date: T }
+```
+
+**Expected**:
+- Entry `_id` is still `"UUID-123"` (not replaced with ObjectId)
+- This ensures existing references/bookmarks continue to work
+
+**Status**: ❌ Not implemented
+
+---
+
+## ~~Removed Test Cases~~
+
+The following were removed as they're out of scope (GET/DELETE by UUID isn't a real use case for CGM entries):
+
+- ~~TEST-ENTRY-UUID-003 (old): GET Entry by UUID _id~~
+- ~~TEST-ENTRY-UUID-004 (old): DELETE Entry by UUID _id~~
+- ~~TEST-ENTRY-UUID-006 (old): Identifier Field Preserved~~
 
 ---
 
