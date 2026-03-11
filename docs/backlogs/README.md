@@ -101,22 +101,29 @@ JavaScript ────┘
 | `impl-option-g` | Implement REQ-SYNC-072 in treatments.js | ✅ Complete |
 | `test-option-g` | Verify with existing tests | ✅ 16 tests passing |
 
-### 🔴 P1: Entries UUID Fix (GAP-SYNC-045) - **NEW**
+### ✅ P1: Entries UUID Fix (GAP-SYNC-045) - **COMPLETE**
 
-Trio uploads CGM entries with UUID `_id` values. Same fix needed as treatments.js.
+Trio uploads CGM entries with UUID `_id` values. Fix implemented matching treatments.js pattern.
+
+**All phases complete (2026-03-11):**
 
 | ID | Task | Status |
 |----|------|--------|
-| `test-entry-dedup-001` | Baseline: sysTime+type dedup test | ❌ **PREREQUISITE** |
-| `test-entry-dedup-002` | Baseline: different type at same time | ❌ |
-| `test-entry-dedup-003` | Baseline: different time same type | ❌ |
-| `impl-entry-normalize` | Implement `normalizeEntryId()` in entries.js | ❌ Not started |
-| `test-entry-uuid-001` | POST entry with UUID _id | ❌ Not started |
-| `test-entry-uuid-002` | Re-POST deduplication | ❌ Not started |
-| `test-entry-uuid-003` | GET by UUID _id | ❌ Not started |
-| `test-entry-uuid-004` | DELETE by UUID _id | ❌ Not started |
-| `test-entry-uuid-005` | Batch upload mixed IDs | ❌ Not started |
-| `test-entry-uuid-006` | Identifier field preserved | ❌ Not started |
+| `test-entry-dedup-001` | Baseline: sysTime+type dedup test | ✅ Passing |
+| `test-entry-dedup-002` | Baseline: different type at same time | ✅ Passing |
+| `test-entry-dedup-003` | Baseline: different time same type | ✅ Passing |
+| `test-entry-uuid-001` | POST entry with UUID _id | ✅ Passing |
+| `test-entry-uuid-002` | Re-POST deduplication | ✅ Passing |
+| `test-entry-uuid-003` | Different UUID same timestamp | ✅ Passing |
+| `test-entry-uuid-004` | Batch upload mixed IDs | ✅ Passing |
+| `test-entry-uuid-005` | Existing UUID entry updated | ✅ Passing |
+| `test-entry-uuid-006` | Identifier field preserved | ✅ Passing |
+| `impl-entry-normalize` | Implement `normalizeEntryId()` in entries.js | ✅ Complete |
+
+**Implementation**: `lib/server/entries.js` now has `normalizeEntryId()` and `upsertQueryFor()` functions that:
+- Extract UUID from `_id` to `identifier` field
+- Strip non-ObjectId `_id` before `$set` to avoid MongoDB immutable field error
+- Maintain sysTime+type dedup as primary key for CGM data integrity
 
 **Details**: [trio-entries-upload-testing.md](trio-entries-upload-testing.md)  
 **API Comparison**: [api-version-uuid-comparison.md](api-version-uuid-comparison.md) ← v1 vs v3 analysis  

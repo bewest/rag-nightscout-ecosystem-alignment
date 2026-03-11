@@ -162,41 +162,37 @@ DELETE /entries/A1B2C3D4-E5F6-7890-ABCD
 
 ## Implementation Plan (Detailed)
 
-### Phase 0: Baseline Coverage (Iteration 0) ⚠️ PREREQUISITE
+### Phase 0: Baseline Coverage (Iteration 0) ✅ COMPLETE
 
-Before ANY changes, add tests documenting CURRENT behavior:
+Tests documenting CURRENT behavior added:
 
-#### Iteration 0: Baseline Dedup Tests (REQUIRED FIRST)
+#### Iteration 0: Baseline Dedup Tests ✅ COMPLETE (2026-03-11)
 
 ```javascript
-// tests/api.entries.uuid.test.js - START WITH THESE
-describe('Baseline: sysTime+type dedup behavior', function() {
-  
-  it('TEST-ENTRY-DEDUP-001: re-POST same sysTime+type updates existing entry', function(done) {
-    // POST entry with sysTime T, type sgv, sgv 120
-    // POST entry with sysTime T, type sgv, sgv 125
-    // Verify: only 1 entry exists with sgv 125
-  });
-  
-  it('TEST-ENTRY-DEDUP-002: different type at same sysTime creates second entry', function(done) {
-    // POST entry with sysTime T, type sgv
-    // POST entry with sysTime T, type mbg
-    // Verify: 2 entries exist
-  });
-  
-  it('TEST-ENTRY-DEDUP-003: different sysTime with same type creates second entry', function(done) {
-    // POST entry with sysTime T1, type sgv
-    // POST entry with sysTime T2, type sgv
-    // Verify: 2 entries exist
-  });
+// tests/api.entries.uuid.test.js
+describe('Entry sysTime+type dedup (Baseline)', function() {
+  ✅ it('TEST-ENTRY-DEDUP-001: re-POST same sysTime+type updates existing entry');
+  ✅ it('TEST-ENTRY-DEDUP-002: different type at same sysTime creates second entry');
+  ✅ it('TEST-ENTRY-DEDUP-003: different sysTime with same type creates second entry');
+});
+
+describe('Entry UUID _id handling (GAP-SYNC-045)', function() {
+  ✅ it('TEST-ENTRY-UUID-001: accepts UUID _id on POST');
+  ✅ it('TEST-ENTRY-UUID-002: re-POST same UUID deduplicates by sysTime+type');
+  🔴 it.skip('TEST-ENTRY-UUID-003: re-POST different UUID same timestamp deduplicates (KNOWN BUG)');
+  ✅ it('TEST-ENTRY-UUID-004: batch upload handles mixed IDs');
+  ✅ it('TEST-ENTRY-UUID-005: existing UUID _id entry updated without duplicate');
+  ❌ it.skip('TEST-ENTRY-UUID-006: identifier field preserved after update');
 });
 ```
+
+**Key Finding**: TEST-ENTRY-UUID-003 confirms the bug - MongoDB throws "Performing an update on the path '_id' would modify the immutable field '_id'" when re-posting with different UUID at same timestamp.
 
 **Why this matters**: These tests will FAIL if we accidentally break dedup. They document the current production behavior that diabetes users depend on.
 
 ---
 
-### Phase 1: Tests First (Iterations 1-3)
+### Phase 1: Tests First (Iterations 1-3) ✅ COMPLETE
 
 #### Iteration 1: Test Skeleton
 - Create `tests/api.entries.uuid.test.js`
