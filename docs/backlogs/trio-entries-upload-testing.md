@@ -162,6 +162,40 @@ DELETE /entries/A1B2C3D4-E5F6-7890-ABCD
 
 ## Implementation Plan (Detailed)
 
+### Phase 0: Baseline Coverage (Iteration 0) ⚠️ PREREQUISITE
+
+Before ANY changes, add tests documenting CURRENT behavior:
+
+#### Iteration 0: Baseline Dedup Tests (REQUIRED FIRST)
+
+```javascript
+// tests/api.entries.uuid.test.js - START WITH THESE
+describe('Baseline: sysTime+type dedup behavior', function() {
+  
+  it('TEST-ENTRY-DEDUP-001: re-POST same sysTime+type updates existing entry', function(done) {
+    // POST entry with sysTime T, type sgv, sgv 120
+    // POST entry with sysTime T, type sgv, sgv 125
+    // Verify: only 1 entry exists with sgv 125
+  });
+  
+  it('TEST-ENTRY-DEDUP-002: different type at same sysTime creates second entry', function(done) {
+    // POST entry with sysTime T, type sgv
+    // POST entry with sysTime T, type mbg
+    // Verify: 2 entries exist
+  });
+  
+  it('TEST-ENTRY-DEDUP-003: different sysTime with same type creates second entry', function(done) {
+    // POST entry with sysTime T1, type sgv
+    // POST entry with sysTime T2, type sgv
+    // Verify: 2 entries exist
+  });
+});
+```
+
+**Why this matters**: These tests will FAIL if we accidentally break dedup. They document the current production behavior that diabetes users depend on.
+
+---
+
 ### Phase 1: Tests First (Iterations 1-3)
 
 #### Iteration 1: Test Skeleton
@@ -297,13 +331,22 @@ npm test  # All 722+ tests must pass
 
 ## ⚠️ RISK WARNINGS FOR IMPLEMENTATION
 
-### Risk 1: Breaking sysTime+type Dedup (HIGH RISK)
+### Risk 1: Breaking sysTime+type Dedup (HIGH RISK) ⚠️ NO TEST COVERAGE
 
 **Current behavior protects against CGM duplicate data**. The `sysTime + type` upsert ensures only one SGV per timestamp regardless of upload source.
 
+**CRITICAL FINDING**: The existing v1 `api.entries.test.js` has **19 tests but NONE test the sysTime+type dedup behavior**. This behavior is untested:
+
+```javascript
+// lib/server/entries.js:111 - UNTESTED CRITICAL BEHAVIOR
+var query = (doc.sysTime && doc.type) ? { sysTime: doc.sysTime, type: doc.type } : doc;
+```
+
 **Risk**: If we change upsert to use `identifier` instead, two different devices uploading the same glucose could create duplicates.
 
-**Mitigation**: Make `identifier` upsert OPTIONAL. Keep `sysTime + type` as fallback:
+**Mitigation**: 
+1. **FIRST** add a test that documents current dedup behavior (TEST-ENTRY-DEDUP-001)
+2. Make `identifier` upsert OPTIONAL. Keep `sysTime + type` as fallback:
 
 ```javascript
 // Priority: identifier > sysTime+type > date+type
