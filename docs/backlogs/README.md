@@ -81,6 +81,7 @@ JavaScript ────┘
 | [Loop Upload Testing](loop-nightscout-upload-testing.md) | Loop (iOS) | Swift | 50 | ✅ Complete |
 | [Loop Source Analysis](loop-source-analysis.md) | Loop | Swift | 7 | ✅ Complete |
 | [AAPS Upload Testing](aaps-nightscout-upload-testing.md) | AAPS (Android) | Kotlin | 39 | ✅ Complete |
+| [Trio Entries Testing](trio-entries-upload-testing.md) | Trio (iOS) | Swift | 6 | 🔴 **NEW** |
 
 ### Integration Testing Proposals
 
@@ -99,6 +100,24 @@ JavaScript ────┘
 |----|------|--------|
 | `impl-option-g` | Implement REQ-SYNC-072 in treatments.js | ✅ Complete |
 | `test-option-g` | Verify with existing tests | ✅ 16 tests passing |
+
+### 🔴 P1: Entries UUID Fix (GAP-SYNC-045) - **NEW**
+
+Trio uploads CGM entries with UUID `_id` values. Same fix needed as treatments.js.
+
+| ID | Task | Status |
+|----|------|--------|
+| `impl-entry-normalize` | Implement `normalizeEntryId()` in entries.js | ❌ Not started |
+| `test-entry-uuid-001` | POST entry with UUID _id | ❌ Not started |
+| `test-entry-uuid-002` | Re-POST deduplication | ❌ Not started |
+| `test-entry-uuid-003` | GET by UUID _id | ❌ Not started |
+| `test-entry-uuid-004` | DELETE by UUID _id | ❌ Not started |
+| `test-entry-uuid-005` | Batch upload mixed IDs | ❌ Not started |
+| `test-entry-uuid-006` | Identifier field preserved | ❌ Not started |
+
+**Details**: [trio-entries-upload-testing.md](trio-entries-upload-testing.md)  
+**Gap**: [GAP-SYNC-045](../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id)  
+**Deep Dive**: [client-id-handling-deep-dive.md](../10-domain/client-id-handling-deep-dive.md)
 
 ### 🟠 P1: Loop Source Analysis ✅ COMPLETE
 
@@ -166,12 +185,14 @@ These require prior work to complete:
 ### Issue Being Addressed
 
 - **GitHub Issue**: [nightscout/cgm-remote-monitor#8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450)
-- **Fix PR**: [#8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447)
+- **Fix PR**: [#8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447) (treatments only)
 
 ### Gap Documentation
 
-- [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid) - UUID _id coercion issue
+- [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid) - UUID _id coercion issue (treatments) ✅ Fixed
+- [GAP-SYNC-045](../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id) - UUID _id coercion issue (entries) 🔴 **Open**
 - [GAP-SYNC-005](../../traceability/sync-identity-gaps.md#gap-sync-005-loop-objectidcache-not-persistent) - ObjectIdCache not persistent
+- [Client ID Handling Deep Dive](../10-domain/client-id-handling-deep-dive.md) - Comprehensive analysis
 
 ### Proposals
 
@@ -211,4 +232,4 @@ Test environment at `/home/bewest/src/worktrees/nightscout/`:
 
 ## Last Updated
 
-2026-03-10
+2026-03-11

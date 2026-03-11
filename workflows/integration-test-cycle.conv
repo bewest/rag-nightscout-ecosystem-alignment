@@ -8,7 +8,7 @@ version: 1.0.0
 #
 # Server: /home/bewest/src/worktrees/nightscout/cgm-pr-8447 (localhost:1337)
 # Tools:  tools/swift-nightscout-tests/, tools/kotlin-nightscout-tests/
-# Focus:  REQ-SYNC-072 (Option G), GAP-TREAT-012
+# Focus:  REQ-SYNC-072 (Option G), GAP-TREAT-012 (treatments), GAP-SYNC-045 (entries)
 
 MODEL claude-sonnet-4-20250514
 ADAPTER copilot
@@ -31,10 +31,11 @@ PROMPT Check git status and server. If server down, see `docs/backlogs/README.md
 
 # === Phase 1: Select Task ===
 ELIDE
-RUN grep -E "^## P[01]|^\s*- \[ \]" docs/backlogs/README.md | head -25
+RUN grep -E "^### .* P[01]|^\| \`" docs/backlogs/README.md | head -30
 ELIDE
 
 PROMPT Pick relevant work and tasks. Read the relevant backlog file for details:
+- `docs/backlogs/trio-entries-upload-testing.md` - **NEW: Entries UUID fix**
 - `docs/backlogs/loop-nightscout-upload-testing.md`
 - `docs/backlogs/aaps-nightscout-upload-testing.md`
 - `docs/backlogs/integration-test-harness.md`
