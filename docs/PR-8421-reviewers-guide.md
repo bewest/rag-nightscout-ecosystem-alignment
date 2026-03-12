@@ -228,16 +228,36 @@ after(function (done) {
 });
 ```
 
+**Production Environment Analysis**:
+
+| Deployment | NODE_ENV | Database Name | Safe? |
+|------------|----------|---------------|-------|
+| docker-compose.yml | `production` | `nightscout` | ✅ No "test" |
+| Heroku (app.json) | Not set | User-provided | ⚠️ Depends |
+| CI (ci.test.env) | `production` | `testdb` | ⚠️ Name has "test" |
+| Local dev (my.test.env) | Not set | `nightscout_test` | ⚠️ Name has "test" |
+
+**Key Finding**: CI runs with `NODE_ENV=production`, so we **cannot** use `NODE_ENV=test` as a guard. Instead, we should validate the database name.
+
 **Risk scenarios**:
 1. Developer runs `npm test` with production `.env` file loaded
 2. CI/CD misconfiguration points to production database
 3. Copy-paste of production connection string into test environment
 
 **Recommended safeguards** (future work):
-- [ ] Validate database name contains "test" or "_test" before destructive operations
-- [ ] Add `NODE_ENV=test` check before `deleteMany({})`
-- [ ] Log warning if database name doesn't look like a test database
-- [ ] Consider test-specific collection prefix
+
+| Option | Approach | Pros | Cons |
+|--------|----------|------|------|
+| **A: DB name check** | Require "test" in database name | Simple, catches most cases | Could miss edge cases |
+| **B: Explicit flag** | Require `ALLOW_DESTRUCTIVE_TESTS=true` | Explicit consent | Requires CI/dev env changes |
+| **A+B combined** | Both checks | Defense in depth | More complexity |
+
+**Backlog items needed**:
+- [ ] Create `guardDestructiveOperation()` helper in test-helpers.js
+- [ ] Validate database name contains "test" substring
+- [ ] Add opt-in `ALLOW_DESTRUCTIVE_TESTS=true` for edge cases
+- [ ] Update CI workflow if needed
+- [ ] Document in README or CONTRIBUTING.md
 
 **Look for in this PR**:
 - [ ] Any new destructive operations introduced?

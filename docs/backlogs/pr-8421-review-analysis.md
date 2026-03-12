@@ -152,6 +152,23 @@ Given the PR size (~40k LOC) and our working context (~1,200 LOC), we need **~30
 
 ---
 
+### Phase 5: Follow-up Work Items (Post-PR)
+
+These items are related to PR #8421 findings but should be tracked as separate work:
+
+| ID | Task | Priority | Notes |
+|----|------|----------|-------|
+| SAFETY-001 | Create `guardDestructiveOperation()` in test-helpers.js | P1 | Validate DB name contains "test" |
+| SAFETY-002 | Add opt-in `ALLOW_DESTRUCTIVE_TESTS=true` flag | P2 | For edge cases |
+| SAFETY-003 | Update CI workflow if needed | P2 | May need env var |
+| SAFETY-004 | Document test database setup | P3 | README or CONTRIBUTING.md |
+
+**Context**: See [GAP-SYNC-046](../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards)
+
+**Key Finding**: CI runs with `NODE_ENV=production`, so we cannot guard on `NODE_ENV=test`. Must validate database name instead.
+
+---
+
 ## Iteration Plan
 
 ### Iteration Template
