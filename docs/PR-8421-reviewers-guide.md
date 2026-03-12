@@ -117,7 +117,7 @@ During the upgrade, analysis of popular AID apps revealed several issues:
 | Re-upload same UUID | Deduped correctly | TEST-ENTRY-UUID-002 |
 
 **Look for**:
-- [ ] No `dropIndex` or schema migration
+- [x] No `dropIndex` or schema migration ✅ **VERIFIED 2026-03-12** - No drop operations, existing indexes preserved
 - [x] Upsert matches by content (sysTime+type), not `_id` ✅ **VERIFIED 2026-03-12** - `entries.js:212-214` returns `{ sysTime, type }` query
 - [ ] Rollback is safe (revert code, data still works)
 
