@@ -206,13 +206,17 @@ git diff official/master -- lib/ | grep -E "^\+" | grep -v "identifier\|UUID\|no
 | `lib/api/entries/index.js` | **Error handling** | `format_post_response()` returns proper JSON error on `entries_err` | ✅ Discovered |
 | `lib/api3/storage/mongoCollection/modify.js` | **Driver compat** | `result.modifiedCount` replaces deprecated `result.nModified` | ✅ Discovered |
 | `lib/api3/storage/mongoCollection/modify.js` | **Driver compat** | `result.deletedCount` replaces deprecated `result.n` | ✅ Discovered |
+| `lib/server/*.js` | **Query syntax** | `.insert()` → `.insertOne()` across entries, treatments, devicestatus, food, activity | ✅ Discovered |
+| `lib/server/*.js` | **Query syntax** | `.update()` → `.updateOne()` in treatments.js, websocket.js | ✅ Discovered |
+| `lib/server/devicestatus.js` | **Query syntax** | Added `.insertMany()` for batch device status | ✅ Discovered |
+| `lib/server/*.js` | **Query syntax** | Added `.deleteOne()`, `.deleteMany()` replacing deprecated patterns | ✅ Discovered |
 
 **Look for**:
 - [x] Precision/rounding changes identified ✅ **VERIFIED 2026-03-12**
   - `toSafeInt()` in `find.js:10-17` ensures limit/skip are always integers
   - Fixes bug where env strings passed to `.limit()/.skip()` caused MongoDB errors
 - [x] Error handling improvements identified ✅ **VERIFIED 2026-03-12** - `format_post_response()` JSON error handling
-- [ ] Query syntax updates identified
+- [x] Query syntax updates identified ✅ **VERIFIED 2026-03-12** - `.insert()`→`.insertOne()`, `.update()`→`.updateOne()`, etc.
 - [ ] All changes documented or triaged
 
 ---
