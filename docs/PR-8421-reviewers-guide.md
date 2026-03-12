@@ -156,10 +156,10 @@ During the upgrade, analysis of popular AID apps revealed several issues:
 | `identity-matrix.test.js` | 12 | REQ-SYNC-072 |
 
 **Look for**:
-- [ ] Tests POST with UUID, verify storage
-- [ ] Tests re-POST same data, verify dedup
-- [ ] Tests batch with mixed IDs
-- [ ] Tests GET/DELETE still work
+- [x] Tests POST with UUID, verify storage ✅ **VERIFIED 2026-03-12** - `TEST-ENTRY-UUID-001` and `TEST-ENTRY-UUID-006`
+- [x] Tests re-POST same data, verify dedup ✅ **VERIFIED 2026-03-12** - `TEST-ENTRY-UUID-002`, `TEST-ENTRY-UUID-003`
+- [x] Tests batch with mixed IDs ✅ **VERIFIED 2026-03-12** - `TEST-ENTRY-UUID-004` at line 431
+- [x] Tests GET/DELETE still work ✅ **VERIFIED 2026-03-12** - `api.entries.test.js` existing coverage
 
 ---
 
