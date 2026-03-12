@@ -133,8 +133,8 @@ During the upgrade, analysis of popular AID apps revealed several issues:
 3. No deprecated MongoDB driver methods
 
 **Look for**:
-- [ ] `new ObjectId(id)` only for 24-hex strings
-- [ ] `isId()` function validates before conversion
+- [x] `new ObjectId(id)` only for 24-hex strings ✅ **VERIFIED 2026-03-12** - `OBJECT_ID_HEX_RE.test()` guards all conversions
+- [x] `isId()` function validates before conversion ✅ **VERIFIED 2026-03-12** - `lib/api/entries/index.js:15-18` uses `/^[a-f\d]{24}$/`
 - [x] No `$set: { _id: ... }` in upsert operations ✅ **VERIFIED 2026-03-12** - `entries.js:208` and `treatments.js:309` delete non-ObjectId `_id` before `$set`/`replaceOne`
 
 ---
