@@ -271,7 +271,7 @@ after(function (done) {
 
 **Look for in this PR**:
 - [x] Any new destructive operations introduced? ✅ **VERIFIED 2026-03-12** - No new DB deletions; `truncatePredictions()` only trims incoming data
-- [ ] Any existing safeguards modified?
+- [x] Any existing safeguards modified? ✅ **VERIFIED 2026-03-12** - Safeguards enhanced (ObjectId validation, toSafeInt), not weakened
 - [ ] Any documentation about test database setup?
 
 **Follow-up work**: See [Phase 5 backlog](./backlogs/pr-8421-review-analysis.md#phase-5-test-database-safety-p0p1-)
