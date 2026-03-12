@@ -294,12 +294,28 @@ This workflow is closest to our needs because it:
 - Already references backlog files for task selection
 - Includes ALLOW-SHELL for file exploration
 
-**To use for PR review analysis:**
+### Dedicated Workflow: `pr-review-analysis-v2.conv`
+
+**Created specifically for this work:**
 ```bash
-sdqctl iterate ./workflows/integration-test-cycle.conv -n 5
+sdqctl iterate ./workflows/pr-review-analysis-v2.conv -n 5
 ```
 
-The existing prompts already point to `docs/backlogs/README.md` for task selection. Since we added the P0 section for PR #8421, teammates will find the work there.
+**Phases:**
+1. **Verify Environment** - Check worktree branch, run tests
+2. **Select Work Item** - Pick from backlog (LIB/TEST/DOC priority)
+3. **Analyze File** - Read from worktree, use template
+4. **Update Guide** - Add findings to reviewer's guide
+5. **Mark Complete** - Update backlog ❌ → ✅
+6. **Verify** - Run `verify_refs` + `backlog_hygiene`
+7. **Commit** - With trace refs
+
+**Built-in verification:**
+```bash
+# Phase 5 runs automatically:
+python tools/verify_refs.py | grep -E "BROKEN|ERROR"
+python tools/backlog_hygiene.py --check
+```
 
 ### Suggested Conv Modifications (for future version)
 
