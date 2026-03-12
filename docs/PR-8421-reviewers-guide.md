@@ -118,7 +118,7 @@ During the upgrade, analysis of popular AID apps revealed several issues:
 
 **Look for**:
 - [ ] No `dropIndex` or schema migration
-- [ ] Upsert matches by content (sysTime+type), not `_id`
+- [x] Upsert matches by content (sysTime+type), not `_id` ✅ **VERIFIED 2026-03-12** - `entries.js:212-214` returns `{ sysTime, type }` query
 - [ ] Rollback is safe (revert code, data still works)
 
 ---
