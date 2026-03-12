@@ -210,6 +210,18 @@ git diff official/master -- lib/ | grep -E "^\+" | grep -v "identifier\|UUID\|no
 | `lib/server/*.js` | **Query syntax** | `.update()` → `.updateOne()` in treatments.js, websocket.js | ✅ Discovered |
 | `lib/server/devicestatus.js` | **Query syntax** | Added `.insertMany()` for batch device status | ✅ Discovered |
 | `lib/server/*.js` | **Query syntax** | Added `.deleteOne()`, `.deleteMany()` replacing deprecated patterns | ✅ Discovered |
+| `lib/storage/mongo-storage.js` | **Pool config** | New configurable pool options (see table below) | ✅ Discovered |
+
+**MongoDB Pool Configuration** (new in this PR):
+
+| Env Variable | Default | Description |
+|--------------|---------|-------------|
+| `MONGO_POOL_SIZE` | `5` | Max connections (legacy was 100) |
+| `MONGO_MIN_POOL_SIZE` | `0` | Min idle connections to maintain |
+| `MONGO_MAX_IDLE_TIME_MS` | `30000` | Close idle connections after this time |
+| `MONGO_POOL_DEBUG` | unset | Enable pool event logging |
+
+**Why this matters**: Default pool reduced from 100→5 for better resource usage. Use `MONGO_POOL_SIZE=100` to restore legacy behavior if needed.
 
 **Look for**:
 - [x] Precision/rounding changes identified ✅ **VERIFIED 2026-03-12**
@@ -217,6 +229,7 @@ git diff official/master -- lib/ | grep -E "^\+" | grep -v "identifier\|UUID\|no
   - Fixes bug where env strings passed to `.limit()/.skip()` caused MongoDB errors
 - [x] Error handling improvements identified ✅ **VERIFIED 2026-03-12** - `format_post_response()` JSON error handling
 - [x] Query syntax updates identified ✅ **VERIFIED 2026-03-12** - `.insert()`→`.insertOne()`, `.update()`→`.updateOne()`, etc.
+- [x] Pool configuration documented ✅ **VERIFIED 2026-03-12** - `MONGO_POOL_SIZE`, `MONGO_MIN_POOL_SIZE`, `MONGO_MAX_IDLE_TIME_MS`
 - [x] All changes documented or triaged ✅ **VERIFIED 2026-03-12** - Major changes in Theme 6 table; remaining are additive/cleanup
 
 ---
