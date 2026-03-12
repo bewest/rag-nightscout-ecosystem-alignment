@@ -1,105 +1,91 @@
 ---
 name: pr-review-analysis-v2
-description: Systematic analysis of PR #8421 for reviewer's guide
+description: Verify claims in PR #8421 reviewer's guide
 version: 2.0.0
 ---
 
-# PR #8421 Review Analysis - Methodical library/test/doc analysis
+# PR #8421 Review Analysis - Verify claims and complete narrative
 #
 # PR: https://github.com/nightscout/cgm-remote-monitor/pull/8421
 # Worktree: /home/bewest/src/worktrees/nightscout/cgm-pr-8447
-# Output: docs/PR-8421-reviewers-guide.md
-# Backlog: docs/backlogs/pr-8421-review-analysis.md
+# Guide: docs/PR-8421-reviewers-guide.md
+#
+# PURPOSE: Each iteration verifies one CLAIM from the guide against actual code.
+# The guide has 5 themes with specific claims. Verify each claim is accurate.
 
 MODEL claude-sonnet-4-20250514
 ADAPTER copilot
 MODE analysis
 CONTEXT-LIMIT 50%
 ON-CONTEXT-LIMIT compact
-COMPACT-PRESERVE selected-task analysis-findings
+COMPACT-PRESERVE claim-verification findings
 
 RUN-ON-ERROR continue
 RUN-OUTPUT-LIMIT 5K
 RUN-TIMEOUT 60s
 ALLOW-SHELL true
 
-# === Phase 0: Verify Environment ===
+# === Phase 0: Show Current State ===
 ELIDE
-RUN cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447 && git log --oneline -1 && echo "Tests:" && npm test 2>&1 | grep -E "passing|failing" | tail -1
-ELIDE
-
-PROMPT Verify worktree is on correct branch and tests pass. If issues, stop and report.
-
-# === Phase 1: Select Work Item ===
-ELIDE
-RUN grep -E "^\| (LIB|TEST|DOC|FIX|CI)-[0-9]+" docs/backlogs/pr-8421-review-analysis.md | grep "❌" | head -10
+RUN grep -E "^- \[ \]|^- \[x\]" docs/PR-8421-reviewers-guide.md | head -15
 ELIDE
 
-PROMPT Pick ONE work item from the list above. Priority order: LIB → TEST → DOC → CI.
+PROMPT The guide has claims to verify. Pick ONE unchecked claim `[ ]` to verify.
 
-State: `Selected: [ID] - [filename] - [purpose]`
+Themes in the guide:
+1. UUID Handling - Does the fix extract UUID to identifier?
+2. Backwards Compatibility - Does existing data still work?
+3. MongoDB 5.x Compat - No $set on immutable _id?
+4. Test Coverage - Do tests cover the scenarios?
+5. Documentation - Do docs match code?
 
-Read the backlog for context: `docs/backlogs/pr-8421-review-analysis.md`
+State: `Verifying: [Theme N] - [specific claim]`
 
-# === Phase 2: Analyze File ===
-PROMPT Read the selected file from worktree:
-  `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/[path]`
+# === Phase 1: Find Evidence ===
+PROMPT Find evidence in the worktree to verify or refute the claim.
 
-Use the analysis template:
-```markdown
-### [ID]: [filename]
+Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/`
 
-**Purpose**: What this file does
+Key files by theme:
+- Theme 1: `lib/server/treatments.js`, `lib/server/entries.js`
+- Theme 2: Same files + `tests/*.test.js`
+- Theme 3: Search for `$set` patterns
+- Theme 4: `tests/api.entries.uuid.test.js`, `tests/gap-treat-012.test.js`
+- Theme 5: `docs/` files in worktree
 
-**Changes Summary**:
-- Change 1
-- Change 2
+Use `grep`, `view`, or `git show` to find evidence.
 
-**Key Review Points**:
-1. Point 1
-2. Point 2
+# === Phase 2: Document Finding ===
+PROMPT Based on evidence, is the claim:
+- ✅ **VERIFIED** - Code matches claim
+- ⚠️ **PARTIAL** - Mostly true, with caveats
+- ❌ **INCORRECT** - Claim does not match code
 
-**Breaking Changes**: None / Description
+If INCORRECT, update the guide to fix the claim.
 
-**Test Coverage**: Reference test file
+# === Phase 3: Update Checklist ===
+PROMPT In `docs/PR-8421-reviewers-guide.md`, change the verified claim from `[ ]` to `[x]`.
 
-**Gap/Req References**: GAP-XXX, REQ-XXX (if applicable)
-```
+Add a one-line note if the claim needed correction.
 
-# === Phase 3: Update Guide ===
-PROMPT Add analysis to `docs/PR-8421-reviewers-guide.md` in the appropriate section:
-  - Library files → Section 1.1, 1.2, or 1.3
-  - Test files → Section 2.1 or 2.2
-  - Documentation → Section 3.x
-
-Replace the `> TODO` placeholder with actual findings.
-
-# === Phase 4: Mark Complete ===
-PROMPT Update `docs/backlogs/pr-8421-review-analysis.md`:
-  Change `❌` to `✅` for the completed work item.
-
-# === Phase 5: Verify ===
+# === Phase 4: Verify Refs ===
 ELIDE
-RUN python tools/verify_refs.py 2>&1 | grep -E "BROKEN|ERROR|Total:" | tail -5
-ELIDE
-RUN python tools/backlog_hygiene.py --check 2>&1 | grep -E "ERROR|WARNING|OK" | tail -3
+RUN python tools/verify_refs.py 2>&1 | grep -E "BROKEN|Total:" | tail -3
 ELIDE
 
-PROMPT Check verification output. Fix any BROKEN refs before committing.
+PROMPT Check verification. Fix any broken refs.
 
-# === Phase 6: Commit ===
+# === Phase 5: Commit ===
+ELIDE  
+RUN git diff --stat docs/PR-8421-reviewers-guide.md
 ELIDE
-RUN git status -s
-ELIDE
 
-PROMPT If changes are ready, commit with message format:
-  `docs(pr-review): analyze [ID] [filename]`
-
-Include trace refs (GAP-XXX, REQ-XXX) if applicable.
+PROMPT If checklist updated, commit:
+  `docs(pr-review): verify [theme] - [claim summary]`
 
 # === Done ===
 PROMPT Summary:
-  - Work item completed: [ID]
-  - Guide section updated: [section]
-  - Verification: [pass/fail]
-  - Remaining items: `grep "❌" docs/backlogs/pr-8421-review-analysis.md | wc -l`
+  - Claim verified: [description]
+  - Result: [VERIFIED/PARTIAL/INCORRECT]
+  - Evidence: [file:line or test name]
+  - Remaining unchecked: `grep "\[ \]" docs/PR-8421-reviewers-guide.md | wc -l`
