@@ -272,7 +272,7 @@ after(function (done) {
 **Look for in this PR**:
 - [x] Any new destructive operations introduced? ✅ **VERIFIED 2026-03-12** - No new DB deletions; `truncatePredictions()` only trims incoming data
 - [x] Any existing safeguards modified? ✅ **VERIFIED 2026-03-12** - Safeguards enhanced (ObjectId validation, toSafeInt), not weakened
-- [ ] Any documentation about test database setup?
+- [x] Any documentation about test database setup? ⚠️ **PARTIAL 2026-03-12** - Docs exist but no DB safety instructions; tests use env's MONGODB_URI
 
 **Follow-up work**: See [Phase 5 backlog](./backlogs/pr-8421-review-analysis.md#phase-5-test-database-safety-p0p1-)
 
