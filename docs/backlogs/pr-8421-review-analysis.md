@@ -284,6 +284,83 @@ Given the PR size (~40k LOC) and our working context (~1,200 LOC), we need **~30
 
 ---
 
+## Recommended Workflow
+
+### Best Existing Conv File: `integration-test-cycle.conv`
+
+This workflow is closest to our needs because it:
+- Uses minimal context with explore-as-needed pattern
+- Has phased structure (Select → Execute → Verify → Commit)
+- Already references backlog files for task selection
+- Includes ALLOW-SHELL for file exploration
+
+**To use for PR review analysis:**
+```bash
+sdqctl iterate ./workflows/integration-test-cycle.conv -n 5
+```
+
+The existing prompts already point to `docs/backlogs/README.md` for task selection. Since we added the P0 section for PR #8421, teammates will find the work there.
+
+### Suggested Conv Modifications (for future version)
+
+If creating a dedicated `pr-review-analysis.conv`, consider:
+
+```yaml
+# Changes from integration-test-cycle.conv:
+CONTEXT @docs/backlogs/pr-8421-review-analysis.md    # Add backlog
+CONTEXT @docs/PR-8421-reviewers-guide.md             # Add output target
+
+# Phase 1: Task Selection - modify prompt to point here:
+PROMPT Pick task from `docs/backlogs/pr-8421-review-analysis.md`:
+  - Phase 1: LIB-001 to LIB-026 (library code)
+  - Phase 2: TEST-001 to TEST-010 (test code)
+  - Phase 3: DOC-001 to DOC-006 (documentation audit)
+
+# Phase 2: Analysis - use worktree path:
+PROMPT Analyze files in `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/`
+
+# Phase 4: Update guide - add this:
+PROMPT Update `docs/PR-8421-reviewers-guide.md` with findings.
+```
+
+### Verification Tools to Run
+
+After each analysis iteration, run these checks:
+
+| Tool | Command | Purpose |
+|------|---------|---------|
+| **verify_refs** | `python tools/verify_refs.py` | Ensure code references resolve |
+| **verify_coverage** | `python tools/verify_coverage.py` | Check gap/req coverage |
+| **backlog_hygiene** | `python tools/backlog_hygiene.py --check` | Validate backlog structure |
+
+**Suggested verification sequence:**
+```bash
+# After updating reviewer's guide
+python tools/verify_refs.py --verbose | grep -E "BROKEN|ERROR" || echo "All refs valid"
+
+# After marking items complete
+python tools/backlog_hygiene.py --check
+
+# Periodically check coverage
+python tools/verify_coverage.py --json | jq '.summary'
+```
+
+### Quick Start for Teammates
+
+```bash
+# 1. Check what's pending
+grep -E "^\| (LIB|TEST|DOC)-" docs/backlogs/pr-8421-review-analysis.md | grep "❌"
+
+# 2. Run integration cycle (will find P0 work in README.md)
+sdqctl iterate ./workflows/integration-test-cycle.conv -n 3
+
+# 3. Verify changes
+python tools/verify_refs.py
+git status
+```
+
+---
+
 ## References
 
 - [PR #8421](https://github.com/nightscout/cgm-remote-monitor/pull/8421)

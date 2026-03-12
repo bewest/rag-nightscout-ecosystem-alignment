@@ -261,6 +261,23 @@ Given the size, we recommend **5-6 focused review sessions**:
 
 ---
 
+## Verification Commands
+
+Run these after each analysis session to ensure accuracy:
+
+```bash
+# Verify all code references resolve
+python tools/verify_refs.py --verbose | grep -E "BROKEN|ERROR" || echo "✅ All refs valid"
+
+# Check gap/requirement coverage
+python tools/verify_coverage.py --json | jq '.summary'
+
+# Validate backlog structure
+python tools/backlog_hygiene.py --check
+```
+
+---
+
 ## References
 
 - [PR #8421](https://github.com/nightscout/cgm-remote-monitor/pull/8421)
