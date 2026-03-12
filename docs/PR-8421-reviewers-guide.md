@@ -91,7 +91,7 @@ During the upgrade, analysis of popular AID apps revealed several issues:
   - `entries.js:209`: `delete doc._id;` in `upsertQueryFor()` strips non-ObjectId `_id`
   - `treatments.js:309`: `delete obj._id;` when using identifier-based query
   - Comment at entries.js:202 explicitly documents this as "immutable field '_id'" fix
-- [ ] Is `identifier` field indexed?
+- [x] Is `identifier` field indexed? ✅ **VERIFIED 2026-03-12** - `lib/api3/storage/mongoCollection/index.js:21` calls `ensureIndexes()` with `identifier`
 - [ ] Does batch upload handle mixed ObjectId/UUID correctly?
 
 **Test coverage**: `tests/api.entries.uuid.test.js`, `tests/gap-treat-012.test.js`
@@ -135,7 +135,7 @@ During the upgrade, analysis of popular AID apps revealed several issues:
 **Look for**:
 - [ ] `new ObjectId(id)` only for 24-hex strings
 - [ ] `isId()` function validates before conversion
-- [ ] No `$set: { _id: ... }` in upsert operations
+- [x] No `$set: { _id: ... }` in upsert operations ✅ **VERIFIED 2026-03-12** - `entries.js:208` and `treatments.js:309` delete non-ObjectId `_id` before `$set`/`replaceOne`
 
 ---
 
