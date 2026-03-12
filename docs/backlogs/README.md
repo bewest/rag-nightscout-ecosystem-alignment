@@ -2,6 +2,26 @@
 
 Active work streams for the Nightscout ecosystem alignment project.
 
+## 🚧 P0: PR #8421 Reviewer's Guide (In Progress)
+
+**Status**: Stub created, systematic analysis needed.
+
+[PR #8421](https://github.com/nightscout/cgm-remote-monitor/pull/8421) | [Reviewer's Guide](../PR-8421-reviewers-guide.md) | [Analysis Backlog](./pr-8421-review-analysis.md)
+
+| Aspect | Value |
+|--------|-------|
+| **Size** | 146 files, +36,222 / -4,654 lines |
+| **Work Items** | 26 library + 10 test + 6 doc audit |
+| **Iterations Est.** | ~20 (30 min each) |
+
+**Work Tracking**: See [pr-8421-review-analysis.md](./pr-8421-review-analysis.md) for detailed work items organized by phase:
+- Phase 1: Library Code (LIB-001 to LIB-026)
+- Phase 2: Test Code (TEST-001 to TEST-010)  
+- Phase 3: Documentation Audit (DOC-001 to DOC-006)
+- Phase 4: CI/Config (CI-001 to CI-003)
+
+---
+
 ## ✅ P0: Fix Issue #8450 (Loop Override Sync)
 
 **Status**: PR #8447 ready for review - all 657 tests pass.

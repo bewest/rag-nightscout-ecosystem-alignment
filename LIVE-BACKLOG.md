@@ -21,7 +21,7 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| (none) | - | All P0/P1 tasks complete |
+| PR #8421 Reviewer's Guide | P1 | [Analysis Backlog](docs/backlogs/pr-8421-review-analysis.md) - 26 lib + 10 test + 6 doc items |
 
 ## Processed
 

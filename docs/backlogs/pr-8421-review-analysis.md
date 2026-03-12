@@ -200,6 +200,68 @@ Given the PR size (~40k LOC) and our working context (~1,200 LOC), we need **~30
 
 ---
 
+## How to Work on This Backlog
+
+### Finding Work Items
+
+1. **Check SQL todos** for ready items (no pending dependencies):
+   ```sql
+   SELECT t.* FROM todos t
+   WHERE t.status = 'pending'
+   AND NOT EXISTS (
+       SELECT 1 FROM todo_deps td
+       JOIN todos dep ON td.depends_on = dep.id
+       WHERE td.todo_id = t.id AND dep.status != 'done'
+   );
+   ```
+
+2. **Read the backlog tables** above to understand file scope for each work item
+
+3. **Check the reviewer's guide** to see what's already documented:
+   - [docs/PR-8421-reviewers-guide.md](../PR-8421-reviewers-guide.md)
+
+### Workflow Per Iteration
+
+1. **Pick a work item** from the tables above (start with P0)
+2. **Read relevant files** from worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+3. **Document findings** using the analysis template below
+4. **Update the reviewer's guide** with key review points
+5. **Mark complete** in this backlog and SQL todos
+6. **Commit progress** to alignment repo
+
+### Analysis Template
+
+```markdown
+### LIB-XXX: filename.js
+
+**Purpose**: What this file does
+
+**Changes Summary**:
+- Bullet 1
+- Bullet 2
+
+**Key Review Points**:
+1. Specific thing to verify
+2. Another thing to check
+
+**Breaking Changes**: None / Description
+
+**Test Coverage**: `tests/relevant.test.js` (lines X-Y)
+
+**Security Considerations**: None / Description
+
+**Gap/Req References**: GAP-XXX-NNN, REQ-XXX
+```
+
+### Constraints
+
+- Analyze ~1,200 LOC per iteration maximum
+- Focus on substance, not style changes
+- Cross-reference with gap/requirement IDs
+- Note breaking changes prominently
+
+---
+
 ## Completion Criteria
 
 ### For Each Work Item
@@ -222,23 +284,11 @@ Given the PR size (~40k LOC) and our working context (~1,200 LOC), we need **~30
 
 ---
 
-## Workflow Command
-
-```bash
-# Run analysis iterations
-time sdqctl iterate ./workflows/pr-8421-review-analysis.conv -n 20
-
-# Or step by step
-time sdqctl iterate ./workflows/pr-8421-review-analysis.conv -n 5  # Library core
-time sdqctl iterate ./workflows/pr-8421-review-analysis.conv -n 5  # Library API + tests
-time sdqctl iterate ./workflows/pr-8421-review-analysis.conv -n 5  # More tests + fixtures
-time sdqctl iterate ./workflows/pr-8421-review-analysis.conv -n 5  # Docs + polish
-```
-
----
-
 ## References
 
 - [PR #8421](https://github.com/nightscout/cgm-remote-monitor/pull/8421)
-- [Reviewer's Guide (stub)](./PR-8421-reviewers-guide.md)
+- [Reviewer's Guide](../PR-8421-reviewers-guide.md)
+- [LIVE-BACKLOG.md](../../LIVE-BACKLOG.md) - Session tracking
 - [Worktree](file:///home/bewest/src/worktrees/nightscout/cgm-pr-8447)
+- [GAP-SYNC-045 Test Report](../test-reports/GAP-SYNC-045-entries-uuid-fix.md)
+- [Client ID Deep Dive](../10-domain/client-id-handling-deep-dive.md)
