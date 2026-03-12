@@ -235,10 +235,10 @@ These require prior work to complete:
 | ID | Blocked By | Unblocks |
 |----|------------|----------|
 | ~~`loop-test-identity-matrix`~~ | ~~loop-src-override, loop-src-carb, loop-src-cache~~ | ✅ Test development |
-| ~~`loop-test-cache-workflow`~~ | ~~loop-src-cache, loop-src-carb~~ | ✅ Unblocked (source analysis complete) |
-| ~~`swift-extract-cache`~~ | ~~swift-pkg-setup~~ | ✅ Unblocked (7 Swift tests passing) |
-| ~~`swift-http-client`~~ | ~~swift-pkg-setup~~ | ✅ Unblocked (7 Swift tests passing) |
-| `swift-first-test` | swift-extract-cache, swift-http-client | Full Swift test suite |
+| ~~`loop-test-cache-workflow`~~ | ~~loop-src-cache, loop-src-carb~~ | ✅ Complete (source analysis done) |
+| ~~`swift-extract-cache`~~ | ~~swift-pkg-setup~~ | ✅ Complete (`ObjectIdCache` in tests) |
+| ~~`swift-http-client`~~ | ~~swift-pkg-setup~~ | ✅ Complete (`NightscoutClient` class) |
+| ~~`swift-first-test`~~ | ~~swift-extract-cache, swift-http-client~~ | ✅ Complete (7 tests passing) |
 | `coordinate-merge` | review-pr8357 | v15.0.7 release |
 
 ---
