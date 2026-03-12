@@ -12,14 +12,38 @@
 
 ## Why This PR Exists
 
-**Problem**: Loop and Trio iOS apps send UUID strings as `_id` values. The v1 API incorrectly tries to convert these to MongoDB ObjectIds, causing:
-- Data corruption (silent truncation)
-- Duplicate entries (dedup fails)
-- Sync failures (upsert errors on MongoDB 5.x+)
+### Origin: MongoDB Driver Upgrade
 
-**Solution**: Fix the v1 API to handle client-supplied identifiers correctly while maintaining backwards compatibility with existing data and clients.
+This PR started as an upgrade of the MongoDB driver library. Nightscout uses MongoDB directly (no ORM/ODM like Mongoose), so driver changes touch the storage layer throughout the codebase.
 
-**Related Issues**: [#8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450) (Loop overrides), GAP-TREAT-012 (treatments), GAP-SYNC-045 (entries)
+### What Grew From That
+
+During the upgrade, analysis of popular AID apps revealed several issues:
+
+1. **UUID `_id` handling** - Loop and Trio send UUID strings as `_id`, which the v1 API mishandled
+2. **Deduplication edge cases** - Some apps re-upload data with slightly different fields
+3. **Precision issues** - Floating point values need consistent handling
+4. **Test coverage gaps** - Many behaviors were untested
+
+### Categories of Changes
+
+| Category | Description | Documentation Status |
+|----------|-------------|---------------------|
+| MongoDB driver upgrade | Update to 5.x compatible driver | ✅ Documented |
+| UUID `_id` fix | Handle client UUIDs correctly | ✅ Documented (GAP-TREAT-012, GAP-SYNC-045) |
+| Test additions | Coverage for Loop, AAPS, Trio patterns | ✅ Documented |
+| Behavior fixes | Precision, edge cases | ⚠️ **Needs verification** |
+| Library tweaks | Better control flow | ⚠️ **Needs verification** |
+
+**Note**: Some fixes/tweaks discovered during development may not be fully documented. This review pipeline will verify and document them.
+
+---
+
+## Related Issues
+
+- [#8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450) - Loop overrides not syncing
+- GAP-TREAT-012 - Treatment UUID fix
+- GAP-SYNC-045 - Entry UUID fix
 
 ---
 
@@ -43,6 +67,7 @@
 | [3. MongoDB 5.x Compat](#theme-3-mongodb-5x-compatibility) | Do queries work on new MongoDB? | storage layer | 15 min |
 | [4. Test Coverage](#theme-4-test-coverage) | Are edge cases tested? | test files | 30 min |
 | [5. Documentation](#theme-5-documentation) | Is it accurate? | docs/ | 10 min |
+| [6. Undocumented Changes](#theme-6-undocumented-changes) | What else changed? | lib/*.js diff | 20 min |
 
 ---
 
@@ -149,6 +174,35 @@
 
 ---
 
+## Theme 6: Undocumented Changes
+
+**Claim**: Some behavior fixes and precision improvements may not be fully documented yet.
+
+**Discovery process**:
+```bash
+# Find all lib changes not related to UUID handling
+cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+git diff official/master -- lib/ | grep -E "^\+" | grep -v "identifier\|UUID\|normalize" | head -50
+```
+
+**What to look for**:
+1. **Precision handling** - `toFixed()`, rounding, floating point comparisons
+2. **Error handling** - New try/catch, validation checks
+3. **Query changes** - MongoDB query syntax updates
+4. **Control flow** - Early returns, guard clauses
+
+**Found changes to document**:
+
+| File | Change Type | Description | Status |
+|------|-------------|-------------|--------|
+| TBD | TBD | Discovered during review | ⬜ |
+
+**Look for**:
+- [ ] Precision/rounding changes identified
+- [ ] Error handling improvements identified
+- [ ] Query syntax updates identified
+- [ ] All changes documented or triaged
+
 ## Size Breakdown
 
 Despite 36k lines, most is documentation or package-lock:
@@ -174,6 +228,7 @@ Despite 36k lines, most is documentation or package-lock:
 - [ ] **Theme 3**: No `$set: { _id: ... }` in upsert operations
 - [ ] **Theme 4**: Tests cover POST UUID, re-POST dedup, batch mixed
 - [ ] **Theme 5**: Spot-check one doc matches actual code
+- [ ] **Theme 6**: Undocumented changes identified and triaged
 
 ### Known Safe to Skip:
 

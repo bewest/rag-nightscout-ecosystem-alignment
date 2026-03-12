@@ -4,14 +4,20 @@ description: Verify claims in PR #8421 reviewer's guide
 version: 2.0.0
 ---
 
-# PR #8421 Review Analysis - Verify claims and complete narrative
+# PR #8421 Review Analysis - Verify claims and discover undocumented changes
 #
 # PR: https://github.com/nightscout/cgm-remote-monitor/pull/8421
 # Worktree: /home/bewest/src/worktrees/nightscout/cgm-pr-8447
 # Guide: docs/PR-8421-reviewers-guide.md
 #
-# PURPOSE: Each iteration verifies one CLAIM from the guide against actual code.
-# The guide has 5 themes with specific claims. Verify each claim is accurate.
+# PURPOSE: 
+# 1. Verify claims in the guide against actual code
+# 2. Discover and document undocumented changes (precision, behavior fixes)
+#
+# The PR started as MongoDB driver upgrade, grew to include:
+# - UUID _id handling fixes
+# - Test additions for Loop/AAPS/Trio patterns  
+# - Behavior fixes and precision improvements (some undocumented)
 
 MODEL claude-sonnet-4-20250514
 ADAPTER copilot
@@ -27,7 +33,7 @@ ALLOW-SHELL true
 
 # === Phase 0: Show Current State ===
 ELIDE
-RUN grep -E "^- \[ \]|^- \[x\]" docs/PR-8421-reviewers-guide.md | head -15
+RUN grep -E "^- \[ \]|^- \[x\]" docs/PR-8421-reviewers-guide.md | head -20
 ELIDE
 
 PROMPT The guide has claims to verify. Pick ONE unchecked claim `[ ]` to verify.
@@ -38,6 +44,9 @@ Themes in the guide:
 3. MongoDB 5.x Compat - No $set on immutable _id?
 4. Test Coverage - Do tests cover the scenarios?
 5. Documentation - Do docs match code?
+6. Undocumented Changes - Precision, behavior fixes to discover
+
+For Theme 6, use discovery commands to find changes not yet documented.
 
 State: `Verifying: [Theme N] - [specific claim]`
 
@@ -47,26 +56,30 @@ PROMPT Find evidence in the worktree to verify or refute the claim.
 Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/`
 
 Key files by theme:
-- Theme 1: `lib/server/treatments.js`, `lib/server/entries.js`
-- Theme 2: Same files + `tests/*.test.js`
+- Theme 1-2: `lib/server/treatments.js`, `lib/server/entries.js`
 - Theme 3: Search for `$set` patterns
 - Theme 4: `tests/api.entries.uuid.test.js`, `tests/gap-treat-012.test.js`
 - Theme 5: `docs/` files in worktree
-
-Use `grep`, `view`, or `git show` to find evidence.
+- Theme 6: Use diff to discover changes:
+  ```bash
+  cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+  git diff official/master -- lib/ | grep -E "^\+[^+]" | grep -v "identifier\|UUID\|normalize" | head -30
+  ```
 
 # === Phase 2: Document Finding ===
 PROMPT Based on evidence, is the claim:
 - ✅ **VERIFIED** - Code matches claim
 - ⚠️ **PARTIAL** - Mostly true, with caveats
 - ❌ **INCORRECT** - Claim does not match code
+- 🔍 **DISCOVERED** - New undocumented change found (Theme 6)
 
 If INCORRECT, update the guide to fix the claim.
+If DISCOVERED, add to Theme 6 table in the guide.
 
 # === Phase 3: Update Checklist ===
-PROMPT In `docs/PR-8421-reviewers-guide.md`, change the verified claim from `[ ]` to `[x]`.
-
-Add a one-line note if the claim needed correction.
+PROMPT In `docs/PR-8421-reviewers-guide.md`:
+- Change verified claim from `[ ]` to `[x]`
+- For Theme 6 discoveries, add row to the "Found changes to document" table
 
 # === Phase 4: Verify Refs ===
 ELIDE
@@ -83,9 +96,12 @@ ELIDE
 PROMPT If checklist updated, commit:
   `docs(pr-review): verify [theme] - [claim summary]`
 
+For discoveries:
+  `docs(pr-review): discover [change type] in [file]`
+
 # === Done ===
 PROMPT Summary:
   - Claim verified: [description]
-  - Result: [VERIFIED/PARTIAL/INCORRECT]
+  - Result: [VERIFIED/PARTIAL/INCORRECT/DISCOVERED]
   - Evidence: [file:line or test name]
   - Remaining unchecked: `grep "\[ \]" docs/PR-8421-reviewers-guide.md | wc -l`
