@@ -213,12 +213,12 @@ All source files analyzed - see [aaps-nightscout-upload-testing.md](aaps-nightsc
 | `aaps-src-sdk` | NSAndroidClient | ✅ AAPS-SRC-001/002 |
 | `aaps-run-tests` | Run AAPS tests | ⚠️ Requires Android SDK |
 
-### 🟡 P2: Swift/Kotlin Test Setup
+### ✅ P2: Swift/Kotlin Test Setup - COMPLETE
 
 | ID | Task | Deliverable |
 |----|------|-------------|
-| `swift-pkg-setup` | Create Swift test package | ✅ 5 tests passing |
-| `kotlin-pkg-setup` | Create Kotlin test package | ✅ 5 tests passing |
+| `swift-pkg-setup` | Create Swift test package | ✅ 7 tests passing |
+| `kotlin-pkg-setup` | Create Kotlin test package | ✅ BUILD SUCCESSFUL |
 
 ### 🟢 P3: Infrastructure
 
