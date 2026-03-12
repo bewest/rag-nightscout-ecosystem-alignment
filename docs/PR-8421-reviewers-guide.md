@@ -270,7 +270,7 @@ after(function (done) {
 **All three layers should be implemented** for comprehensive protection.
 
 **Look for in this PR**:
-- [ ] Any new destructive operations introduced?
+- [x] Any new destructive operations introduced? ✅ **VERIFIED 2026-03-12** - No new DB deletions; `truncatePredictions()` only trims incoming data
 - [ ] Any existing safeguards modified?
 - [ ] Any documentation about test database setup?
 
