@@ -152,20 +152,55 @@ Given the PR size (~40k LOC) and our working context (~1,200 LOC), we need **~30
 
 ---
 
-### Phase 5: Follow-up Work Items (Post-PR)
+### Phase 5: Test Database Safety (P0/P1) 🔴
 
-These items are related to PR #8421 findings but should be tracked as separate work:
+**CRITICAL**: Tests have no safeguards against running on production databases.
 
-| ID | Task | Priority | Notes |
-|----|------|----------|-------|
-| SAFETY-001 | Create `guardDestructiveOperation()` in test-helpers.js | P1 | Validate DB name contains "test" |
-| SAFETY-002 | Add opt-in `ALLOW_DESTRUCTIVE_TESTS=true` flag | P2 | For edge cases |
-| SAFETY-003 | Update CI workflow if needed | P2 | May need env var |
-| SAFETY-004 | Document test database setup | P3 | README or CONTRIBUTING.md |
+See [GAP-SYNC-046](../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards) and [Theme 7](../PR-8421-reviewers-guide.md#️-theme-7-test-database-safety)
 
-**Context**: See [GAP-SYNC-046](../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards)
+**Analysis**: CI currently uses `NODE_ENV=production` which is **non-standard**. Node.js convention is `NODE_ENV=test` for test environments. We should mandate this AND add database name validation for defense in depth.
 
-**Key Finding**: CI runs with `NODE_ENV=production`, so we cannot guard on `NODE_ENV=test`. Must validate database name instead.
+| ID | Task | Priority | Rationale |
+|----|------|----------|-----------|
+| SAFETY-001 | Mandate `NODE_ENV=test` for test runs | 🔴 **P0** | Standard Node.js practice, simple guard |
+| SAFETY-002 | Update `ci.test.env` to use `NODE_ENV=test` | 🔴 **P0** | CI should follow conventions |
+| SAFETY-003 | Create `guardDestructiveOperation()` helper | 🟠 **P1** | Defense in depth - validate DB name |
+| SAFETY-004 | Add guard to all `deleteMany({})` calls | 🟠 **P1** | Apply helper to existing tests |
+| SAFETY-005 | Add opt-in `ALLOW_DESTRUCTIVE_TESTS=true` | 🟡 **P2** | Escape hatch for edge cases |
+| SAFETY-006 | Document test database setup in README | 🟢 **P3** | Developer guidance |
+
+**Implementation approach (all layers)**:
+
+```javascript
+// tests/lib/test-helpers.js - guardDestructiveOperation()
+function guardDestructiveOperation(ctx, operationName) {
+  // Layer 1: NODE_ENV must be 'test'
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error(`SAFETY: ${operationName} blocked - NODE_ENV must be 'test', got '${process.env.NODE_ENV}'`);
+  }
+  
+  // Layer 2: Database name must contain 'test'
+  const dbName = ctx.env?.storageURI?.match(/\/([^/?]+)(\?|$)/)?.[1] || '';
+  if (!dbName.toLowerCase().includes('test')) {
+    if (process.env.ALLOW_DESTRUCTIVE_TESTS !== 'true') {
+      throw new Error(`SAFETY: ${operationName} blocked - database '${dbName}' doesn't contain 'test'. Set ALLOW_DESTRUCTIVE_TESTS=true to override.`);
+    }
+    console.warn(`WARNING: Running destructive tests on database '${dbName}'`);
+  }
+}
+```
+
+**CI changes needed**:
+```diff
+# tests/ci.test.env
+-NODE_ENV=production
++NODE_ENV=test
+```
+
+**Why all layers?**
+1. `NODE_ENV=test` - Catches obvious mistakes (running with prod .env)
+2. DB name validation - Catches misconfigurations even when NODE_ENV is correct
+3. Opt-in flag - Allows intentional override with explicit acknowledgment
 
 ---
 

@@ -234,35 +234,32 @@ after(function (done) {
 |------------|----------|---------------|-------|
 | docker-compose.yml | `production` | `nightscout` | ✅ No "test" |
 | Heroku (app.json) | Not set | User-provided | ⚠️ Depends |
-| CI (ci.test.env) | `production` | `testdb` | ⚠️ Name has "test" |
-| Local dev (my.test.env) | Not set | `nightscout_test` | ⚠️ Name has "test" |
+| CI (ci.test.env) | `production` ⚠️ | `testdb` | ❌ **Should be `test`** |
+| Local dev (my.test.env) | Not set | `nightscout_test` | ⚠️ Should set `test` |
 
-**Key Finding**: CI runs with `NODE_ENV=production`, so we **cannot** use `NODE_ENV=test` as a guard. Instead, we should validate the database name.
+**Key Finding**: CI uses `NODE_ENV=production` which is **non-standard**. Node.js convention is `NODE_ENV=test` for test environments. This should be fixed.
 
 **Risk scenarios**:
 1. Developer runs `npm test` with production `.env` file loaded
 2. CI/CD misconfiguration points to production database
 3. Copy-paste of production connection string into test environment
 
-**Recommended safeguards** (future work):
+**Recommended safeguards (defense in depth)**:
 
-| Option | Approach | Pros | Cons |
-|--------|----------|------|------|
-| **A: DB name check** | Require "test" in database name | Simple, catches most cases | Could miss edge cases |
-| **B: Explicit flag** | Require `ALLOW_DESTRUCTIVE_TESTS=true` | Explicit consent | Requires CI/dev env changes |
-| **A+B combined** | Both checks | Defense in depth | More complexity |
+| Layer | Guard | Priority | Rationale |
+|-------|-------|----------|-----------|
+| 1 | Mandate `NODE_ENV=test` | 🔴 **P0** | Standard practice, simple check |
+| 2 | Validate DB name contains "test" | 🟠 **P1** | Defense in depth |
+| 3 | Opt-in `ALLOW_DESTRUCTIVE_TESTS=true` | 🟡 P2 | Escape hatch |
 
-**Backlog items needed**:
-- [ ] Create `guardDestructiveOperation()` helper in test-helpers.js
-- [ ] Validate database name contains "test" substring
-- [ ] Add opt-in `ALLOW_DESTRUCTIVE_TESTS=true` for edge cases
-- [ ] Update CI workflow if needed
-- [ ] Document in README or CONTRIBUTING.md
+**All three layers should be implemented** for comprehensive protection.
 
 **Look for in this PR**:
 - [ ] Any new destructive operations introduced?
 - [ ] Any existing safeguards modified?
 - [ ] Any documentation about test database setup?
+
+**Follow-up work**: See [Phase 5 backlog](./backlogs/pr-8421-review-analysis.md#phase-5-test-database-safety-p0p1-)
 
 ---
 

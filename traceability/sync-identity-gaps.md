@@ -1931,3 +1931,13 @@ MONGO_CONNECTION=mongodb://localhost:27017/nightscout_test
 
 **Related**:
 - [PR #8421 Reviewer's Guide - Theme 7](../docs/PR-8421-reviewers-guide.md#️-theme-7-test-database-safety)
+
+**Update (2026-03-12)**: 
+
+Re-analysis shows CI uses `NODE_ENV=production` which is **non-standard**. The correct approach is:
+
+1. **P0**: Mandate `NODE_ENV=test` for all test runs (update ci.test.env)
+2. **P1**: Add `guardDestructiveOperation()` validating DB name contains "test"
+3. **P2**: Add `ALLOW_DESTRUCTIVE_TESTS=true` opt-in for edge cases
+
+All three layers provide defense in depth. See [Phase 5 backlog](../docs/backlogs/pr-8421-review-analysis.md#phase-5-test-database-safety-p0p1-).
