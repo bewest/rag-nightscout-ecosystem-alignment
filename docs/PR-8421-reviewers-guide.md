@@ -217,7 +217,7 @@ git diff official/master -- lib/ | grep -E "^\+" | grep -v "identifier\|UUID\|no
   - Fixes bug where env strings passed to `.limit()/.skip()` caused MongoDB errors
 - [x] Error handling improvements identified ✅ **VERIFIED 2026-03-12** - `format_post_response()` JSON error handling
 - [x] Query syntax updates identified ✅ **VERIFIED 2026-03-12** - `.insert()`→`.insertOne()`, `.update()`→`.updateOne()`, etc.
-- [ ] All changes documented or triaged
+- [x] All changes documented or triaged ✅ **VERIFIED 2026-03-12** - Major changes in Theme 6 table; remaining are additive/cleanup
 
 ---
 
