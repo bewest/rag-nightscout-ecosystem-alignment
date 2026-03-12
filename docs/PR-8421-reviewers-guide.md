@@ -68,6 +68,7 @@ During the upgrade, analysis of popular AID apps revealed several issues:
 | [4. Test Coverage](#theme-4-test-coverage) | Are edge cases tested? | test files | 30 min |
 | [5. Documentation](#theme-5-documentation) | Is it accurate? | docs/ | 10 min |
 | [6. Undocumented Changes](#theme-6-undocumented-changes) | What else changed? | lib/*.js diff | 20 min |
+| [7. Test Database Safety](#️-theme-7-test-database-safety) | Could tests destroy production data? | tests/*.js | 15 min |
 
 ---
 
@@ -203,6 +204,48 @@ git diff official/master -- lib/ | grep -E "^\+" | grep -v "identifier\|UUID\|no
 - [ ] Query syntax updates identified
 - [ ] All changes documented or triaged
 
+---
+
+## ⚠️ Theme 7: Test Database Safety
+
+**CRITICAL CONCERN**: The test suite has NO safeguards against running on a production database.
+
+**Current state (before AND after this PR)**:
+- Tests use `MONGO_CONNECTION` environment variable
+- No validation that database name contains "test" or is non-production
+- `deleteMany({})` called in `beforeEach`/`afterEach` hooks
+- Tests WILL delete all data in whatever database is configured
+
+**Evidence**:
+```javascript
+// tests/api.entries.test.js - lines 58-64
+afterEach(function (done) {
+  self.archive( ).deleteMany({ }, done);  // Deletes ALL entries
+});
+
+after(function (done) {
+  self.archive( ).deleteMany({ }, done);  // Deletes ALL entries
+});
+```
+
+**Risk scenarios**:
+1. Developer runs `npm test` with production `.env` file loaded
+2. CI/CD misconfiguration points to production database
+3. Copy-paste of production connection string into test environment
+
+**Recommended safeguards** (future work):
+- [ ] Validate database name contains "test" or "_test" before destructive operations
+- [ ] Add `NODE_ENV=test` check before `deleteMany({})`
+- [ ] Log warning if database name doesn't look like a test database
+- [ ] Consider test-specific collection prefix
+
+**Look for in this PR**:
+- [ ] Any new destructive operations introduced?
+- [ ] Any existing safeguards modified?
+- [ ] Any documentation about test database setup?
+
+---
+
 ## Size Breakdown
 
 Despite 36k lines, most is documentation or package-lock:
@@ -229,6 +272,7 @@ Despite 36k lines, most is documentation or package-lock:
 - [ ] **Theme 4**: Tests cover POST UUID, re-POST dedup, batch mixed
 - [ ] **Theme 5**: Spot-check one doc matches actual code
 - [ ] **Theme 6**: Undocumented changes identified and triaged
+- [ ] **Theme 7**: No new destructive operations without safeguards
 
 ### Known Safe to Skip:
 

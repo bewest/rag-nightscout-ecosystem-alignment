@@ -1875,3 +1875,59 @@ return fetchedResults.map { result in
 - [Client ID Handling Deep Dive](../docs/10-domain/client-id-handling-deep-dive.md)
 - [REQ-SYNC-072](sync-identity-requirements.md#req-sync-072) - Server-controlled ID requirement
 - [PR #8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447) - Treatments fix (does not include entries)
+
+---
+
+### GAP-SYNC-046: Test Suite Lacks Production Database Safeguards
+
+**Severity**: 🔴 Critical (data loss risk)
+
+**Description**: 
+The cgm-remote-monitor test suite has no safeguards to prevent accidental execution against a production database. Tests use `deleteMany({})` in setup/teardown hooks, which will delete ALL data in whatever database is configured.
+
+**Evidence**:
+```javascript
+// tests/api.entries.test.js - lines 58-64
+afterEach(function (done) {
+  self.archive( ).deleteMany({ }, done);  // Deletes ALL entries
+});
+```
+
+**Current Configuration**:
+```makefile
+# Makefile
+MONGO_CONNECTION?=mongodb://localhost:27017/test_db
+
+# my.test.env
+MONGO_CONNECTION=mongodb://localhost:27017/nightscout_test
+```
+
+**Risk Scenarios**:
+1. Developer runs `npm test` with production `.env` loaded
+2. CI/CD misconfiguration points to production
+3. Copy-paste of production connection string
+
+**Missing Safeguards**:
+- No validation that database name contains "test"
+- No `NODE_ENV=test` check before destructive ops
+- No warning if database looks like production
+- No confirmation prompt for non-test databases
+
+**Affected Tests**:
+- `tests/api.entries.test.js`
+- `tests/api.treatments.test.js`
+- `tests/api.aaps-client.test.js`
+- (and others using `deleteMany({})`)
+
+**Remediation Options**:
+1. Add database name validation in test setup
+2. Add environment variable `ALLOW_DESTRUCTIVE_TESTS=true` requirement
+3. Use test-specific collection prefix
+4. Log warning if database name doesn't contain "test"
+
+**Status**: Open - Pre-existing issue, not introduced by PR #8421
+
+**Impact**: This is a pre-existing architectural gap, not introduced by PR #8421. However, as test coverage expands (245 new tests), the risk surface increases.
+
+**Related**:
+- [PR #8421 Reviewer's Guide - Theme 7](../docs/PR-8421-reviewers-guide.md#️-theme-7-test-database-safety)
