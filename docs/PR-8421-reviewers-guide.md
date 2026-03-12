@@ -87,7 +87,10 @@ During the upgrade, analysis of popular AID apps revealed several issues:
 - `lib/server/entries.js` lines ~99-120: `normalizeEntryId()`, `upsertQueryFor()`
 
 **Look for**:
-- [ ] Is `_id` deleted from `$set` before write?
+- [x] Is `_id` deleted from `$set` before write? ✅ **VERIFIED 2026-03-12**
+  - `entries.js:209`: `delete doc._id;` in `upsertQueryFor()` strips non-ObjectId `_id`
+  - `treatments.js:309`: `delete obj._id;` when using identifier-based query
+  - Comment at entries.js:202 explicitly documents this as "immutable field '_id'" fix
 - [ ] Is `identifier` field indexed?
 - [ ] Does batch upload handle mixed ObjectId/UUID correctly?
 
@@ -196,10 +199,15 @@ git diff official/master -- lib/ | grep -E "^\+" | grep -v "identifier\|UUID\|no
 
 | File | Change Type | Description | Status |
 |------|-------------|-------------|--------|
-| TBD | TBD | Discovered during review | ⬜ |
+| `lib/api3/storage/mongoCollection/find.js` | **Type safety** | Added `toSafeInt()` - ensures limit/skip are integers, fixes env string bug | ✅ Discovered |
+| `lib/api3/doc/history/query.js` | **parseInt radix** | Changed `parseInt(req.query.limit)` → `parseInt(..., 10)` | ✅ Discovered |
+| `lib/api3/doc/history/query.js` | **parseInt radix** | Changed `parseInt(req.query.skip)` → `parseInt(..., 10)` | ✅ Discovered |
+| `lib/api/entries/index.js` | **Response format** | Added `format_post_response()` - cleaner POST response handling | ✅ Discovered |
 
 **Look for**:
-- [ ] Precision/rounding changes identified
+- [x] Precision/rounding changes identified ✅ **VERIFIED 2026-03-12**
+  - `toSafeInt()` in `find.js:10-17` ensures limit/skip are always integers
+  - Fixes bug where env strings passed to `.limit()/.skip()` caused MongoDB errors
 - [ ] Error handling improvements identified
 - [ ] Query syntax updates identified
 - [ ] All changes documented or triaged
