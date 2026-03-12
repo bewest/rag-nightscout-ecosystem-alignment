@@ -345,8 +345,10 @@ Despite 36k lines, most is documentation or package-lock:
 **Commits**:
 - `61501cac` - feat(tests): add NODE_ENV=test safety check (warn + guard module)
 - `e12cf3d2` - fix(tests): make NODE_ENV=test check a hard failure
+- `ee3e6af7` - ci: temporarily allow Node 20 for branch protection (tests [20, 22, 24])
+- `b76fb3e1` - test: remove completed MongoDB 5.x array investigation tests
 
-**Tests**: 731 passing, 1 pending, 0 failing
+**Tests**: 729 passing, 1 pending, 0 failing
 
 ### Known Safe to Skip:
 

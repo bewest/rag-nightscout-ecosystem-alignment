@@ -27,9 +27,9 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
-| 🎉 Test Database Safety (GAP-SYNC-046) | 🔴 P0 | ✅ Complete - hard fail + guard module, 731 tests passing | 2026-03-12 |
+| 🎉 Test Database Safety (GAP-SYNC-046) | 🔴 P0 | ✅ Complete - hard fail + guard module, 729 tests passing | 2026-03-12 |
 | 🎉 PR #8421 Reviewer's Guide | P0 | ✅ Complete - all claims verified, safety implemented | 2026-03-12 |
-| 🎉 Entries UUID _id Fix (GAP-SYNC-045) | P1 | ✅ Complete - `normalizeEntryId()` + 9 tests, 731 passing | 2026-03-11 |
+| 🎉 Entries UUID _id Fix (GAP-SYNC-045) | P1 | ✅ Complete - `normalizeEntryId()` + 9 tests, 729 passing | 2026-03-11 |
 | 🎉 All Backlogs Complete (cycle 133) | P1 | ✅ Loop 100%, AAPS 100%, Harness done, 722 tests passing | 2026-03-10 |
 | Loop Core Service Analysis (cycle 132) | P2 | ✅ Complete - LOOP-SRC-001/002, **Loop backlog 100%** | 2026-03-10 |
 | Round-trip & Payload Review (cycle 131) | P2 | ✅ Complete - TEST-RT-001-003, PAYLOAD-001-005 verified | 2026-03-10 |
