@@ -298,13 +298,13 @@ Despite 36k lines, most is documentation or package-lock:
 
 ### Before Approving, Verify:
 
-- [ ] **Theme 1**: UUID handling extracts to `identifier`, strips from `$set`
-- [ ] **Theme 2**: GET/DELETE by ObjectId still works (check tests)
-- [ ] **Theme 3**: No `$set: { _id: ... }` in upsert operations
-- [ ] **Theme 4**: Tests cover POST UUID, re-POST dedup, batch mixed
-- [ ] **Theme 5**: Spot-check one doc matches actual code
-- [ ] **Theme 6**: Undocumented changes identified and triaged
-- [ ] **Theme 7**: No new destructive operations without safeguards
+- [x] **Theme 1**: UUID handling extracts to `identifier`, strips from `$set` ✅
+- [x] **Theme 2**: GET/DELETE by ObjectId still works (check tests) ✅
+- [x] **Theme 3**: No `$set: { _id: ... }` in upsert operations ✅
+- [x] **Theme 4**: Tests cover POST UUID, re-POST dedup, batch mixed ✅
+- [x] **Theme 5**: Spot-check one doc matches actual code ✅
+- [x] **Theme 6**: Undocumented changes identified and triaged ✅
+- [x] **Theme 7**: No new destructive operations without safeguards ✅
 
 ### Known Safe to Skip:
 
