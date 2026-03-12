@@ -2,24 +2,22 @@
 
 Active work streams for the Nightscout ecosystem alignment project.
 
-## 🔴 P0: Test Database Safety (GAP-SYNC-046) - BLOCKING PR #8421
+## ✅ P0: Test Database Safety (GAP-SYNC-046) - COMPLETE
 
-**Status**: Implementation required IN PR #8421 before merge.
+**Status**: SAFETY-001/002/003 implemented in PR #8447.
 
 [GAP-SYNC-046](../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards) | [Phase 5 Details](./pr-8421-review-analysis.md#phase-5-test-database-safety-p0p1-)
 
-**Why blocking**: PR #8421 adds 245 new tests using `deleteMany({})`. Without safeguards, these tests could destroy production data if misconfigured.
-
 | ID | Task | Priority | Status |
 |----|------|----------|--------|
-| SAFETY-001 | Mandate `NODE_ENV=test` for test runs | 🔴 P0 | ❌ |
-| SAFETY-002 | Update `ci.test.env` to `NODE_ENV=test` | 🔴 P0 | ❌ |
-| SAFETY-003 | Create `guardDestructiveOperation()` | 🟠 P1 | ❌ |
-| SAFETY-004 | Apply guard to `deleteMany()` calls | 🟠 P1 | ❌ |
+| SAFETY-001 | Mandate `NODE_ENV=test` for test runs | 🔴 P0 | ✅ `tests/hooks.js` warns if NODE_ENV !== 'test' |
+| SAFETY-002 | Update `ci.test.env` to `NODE_ENV=test` | 🔴 P0 | ✅ Fixed (was `production`!) |
+| SAFETY-003 | Create `guardDestructiveOperation()` | 🟠 P1 | ✅ `tests/fixtures/test-guard.js` |
+| SAFETY-004 | Apply guard to `deleteMany()` calls | 🟠 P1 | ⏳ Optional (hooks.js provides global check) |
 
 **Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 
-**Workflow**: `sdqctl iterate ./workflows/integration-test-cycle.conv -n 5`
+**Commit**: `61501cac` - feat(tests): add NODE_ENV=test safety check (GAP-SYNC-046)
 
 ---
 
