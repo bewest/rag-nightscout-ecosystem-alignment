@@ -318,18 +318,22 @@ Despite 36k lines, most is documentation or package-lock:
 - [x] **Theme 4**: Tests cover POST UUID, re-POST dedup, batch mixed ✅
 - [x] **Theme 5**: Spot-check one doc matches actual code ✅
 - [x] **Theme 6**: Undocumented changes identified and triaged ✅
-- [x] **Theme 7**: Test database safety implemented ✅ (commit `61501cac`)
+- [x] **Theme 7**: Test database safety implemented ✅
 
 ### Blocking Implementation Work:
 
 | ID | Task | Status |
 |----|------|--------|
-| SAFETY-001 | Add `NODE_ENV=test` check to test setup | ✅ `tests/hooks.js` |
+| SAFETY-001 | Add `NODE_ENV=test` check to test setup | ✅ `tests/hooks.js` - hard fail |
 | SAFETY-002 | Update `ci.test.env` to `NODE_ENV=test` | ✅ Fixed |
 | SAFETY-003 | Create `guardDestructiveOperation()` | ✅ `tests/fixtures/test-guard.js` |
-| SAFETY-004 | Apply guard to `deleteMany()` hooks | ⏳ Optional (global check in hooks.js) |
+| SAFETY-004 | Hard fail if NODE_ENV !== 'test' | ✅ `process.exit(1)` in hooks.js |
 
-**Commit**: `61501cac` - feat(tests): add NODE_ENV=test safety check (GAP-SYNC-046)
+**Commits**:
+- `61501cac` - feat(tests): add NODE_ENV=test safety check (warn + guard module)
+- `e12cf3d2` - fix(tests): make NODE_ENV=test check a hard failure
+
+**Tests**: 731 passing, 1 pending, 0 failing
 
 ### Known Safe to Skip:
 

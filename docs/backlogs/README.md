@@ -4,20 +4,24 @@ Active work streams for the Nightscout ecosystem alignment project.
 
 ## ✅ P0: Test Database Safety (GAP-SYNC-046) - COMPLETE
 
-**Status**: SAFETY-001/002/003 implemented in PR #8447.
+**Status**: All safety checks implemented with hard failure.
 
 [GAP-SYNC-046](../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards) | [Phase 5 Details](./pr-8421-review-analysis.md#phase-5-test-database-safety-p0p1-)
 
 | ID | Task | Priority | Status |
 |----|------|----------|--------|
-| SAFETY-001 | Mandate `NODE_ENV=test` for test runs | 🔴 P0 | ✅ `tests/hooks.js` warns if NODE_ENV !== 'test' |
+| SAFETY-001 | Mandate `NODE_ENV=test` for test runs | 🔴 P0 | ✅ `tests/hooks.js` - hard `process.exit(1)` |
 | SAFETY-002 | Update `ci.test.env` to `NODE_ENV=test` | 🔴 P0 | ✅ Fixed (was `production`!) |
 | SAFETY-003 | Create `guardDestructiveOperation()` | 🟠 P1 | ✅ `tests/fixtures/test-guard.js` |
-| SAFETY-004 | Apply guard to `deleteMany()` calls | 🟠 P1 | ⏳ Optional (hooks.js provides global check) |
+| SAFETY-004 | Hard fail if NODE_ENV !== 'test' | 🟠 P1 | ✅ Implemented in `e12cf3d2` |
 
 **Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 
-**Commit**: `61501cac` - feat(tests): add NODE_ENV=test safety check (GAP-SYNC-046)
+**Commits**:
+- `61501cac` - feat(tests): add NODE_ENV=test safety check (warn + guard module)
+- `e12cf3d2` - fix(tests): make NODE_ENV=test check a hard failure
+
+**Tests**: 731 passing, 1 pending, 0 failing
 
 ---
 

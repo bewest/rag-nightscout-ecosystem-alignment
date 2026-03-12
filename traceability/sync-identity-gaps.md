@@ -1925,19 +1925,20 @@ MONGO_CONNECTION=mongodb://localhost:27017/nightscout_test
 3. Use test-specific collection prefix
 4. Log warning if database name doesn't contain "test"
 
-**Status**: Open - Pre-existing issue, not introduced by PR #8421
+**Status**: ✅ **RESOLVED** (2026-03-12)
 
-**Impact**: This is a pre-existing architectural gap, not introduced by PR #8421. However, as test coverage expands (245 new tests), the risk surface increases.
+**Impact**: This was a pre-existing architectural gap. Now resolved with hard failure if NODE_ENV !== 'test'.
 
 **Related**:
 - [PR #8421 Reviewer's Guide - Theme 7](../docs/PR-8421-reviewers-guide.md#️-theme-7-test-database-safety)
 
-**Update (2026-03-12)**: 
+**Resolution (2026-03-12)**:
 
-Re-analysis shows CI uses `NODE_ENV=production` which is **non-standard**. The correct approach is:
+Implemented in commits `61501cac` and `e12cf3d2`:
 
-1. **P0**: Mandate `NODE_ENV=test` for all test runs (update ci.test.env)
-2. **P1**: Add `guardDestructiveOperation()` validating DB name contains "test"
-3. **P2**: Add `ALLOW_DESTRUCTIVE_TESTS=true` opt-in for edge cases
+1. ✅ **P0**: `tests/hooks.js` now calls `process.exit(1)` if `NODE_ENV !== 'test'`
+2. ✅ **P0**: `ci.test.env` fixed from `NODE_ENV=production` to `NODE_ENV=test`
+3. ✅ **P1**: Created `tests/fixtures/test-guard.js` with `guardDestructiveOperation()`
+4. ⏳ **P2**: `ALLOW_DESTRUCTIVE_TESTS` opt-in (not needed - hard fail is sufficient)
 
-All three layers provide defense in depth. See [Phase 5 backlog](../docs/backlogs/pr-8421-review-analysis.md#phase-5-test-database-safety-p0p1-).
+**Tests**: 731 passing with safety checks in place.

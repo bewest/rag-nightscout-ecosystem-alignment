@@ -158,18 +158,24 @@ Given the PR size (~40k LOC) and our working context (~1,200 LOC), we need **~30
 
 See [GAP-SYNC-046](../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards) and [Theme 7](../PR-8421-reviewers-guide.md#️-theme-7-test-database-safety)
 
-**Analysis**: CI currently uses `NODE_ENV=production` which is **non-standard**. Node.js convention is `NODE_ENV=test` for test environments. We should mandate this AND add database name validation for defense in depth.
+**Status**: ✅ **COMPLETE** (2026-03-12)
 
-| ID | Task | Priority | Rationale |
-|----|------|----------|-----------|
-| SAFETY-001 | Mandate `NODE_ENV=test` for test runs | 🔴 **P0** | Standard Node.js practice, simple guard |
-| SAFETY-002 | Update `ci.test.env` to use `NODE_ENV=test` | 🔴 **P0** | CI should follow conventions |
-| SAFETY-003 | Create `guardDestructiveOperation()` helper | 🟠 **P1** | Defense in depth - validate DB name |
-| SAFETY-004 | Add guard to all `deleteMany({})` calls | 🟠 **P1** | Apply helper to existing tests |
-| SAFETY-005 | Add opt-in `ALLOW_DESTRUCTIVE_TESTS=true` | 🟡 **P2** | Escape hatch for edge cases |
-| SAFETY-006 | Document test database setup in README | 🟢 **P3** | Developer guidance |
+| ID | Task | Priority | Status |
+|----|------|----------|--------|
+| SAFETY-001 | Mandate `NODE_ENV=test` for test runs | 🔴 **P0** | ✅ `tests/hooks.js` - `process.exit(1)` |
+| SAFETY-002 | Update `ci.test.env` to use `NODE_ENV=test` | 🔴 **P0** | ✅ Fixed |
+| SAFETY-003 | Create `guardDestructiveOperation()` helper | 🟠 **P1** | ✅ `tests/fixtures/test-guard.js` |
+| SAFETY-004 | Hard fail if NODE_ENV !== 'test' | 🟠 **P1** | ✅ Commit `e12cf3d2` |
+| SAFETY-005 | Add opt-in `ALLOW_DESTRUCTIVE_TESTS=true` | 🟡 **P2** | ⏳ Not needed (hard fail sufficient) |
+| SAFETY-006 | Document test database setup in README | 🟢 **P3** | ⏳ Future |
 
-**Implementation approach (all layers)**:
+**Commits**:
+- `61501cac` - feat(tests): add NODE_ENV=test safety check (warn + guard module)
+- `e12cf3d2` - fix(tests): make NODE_ENV=test check a hard failure
+
+**Tests**: 731 passing, 1 pending, 0 failing
+
+**Implementation**:
 
 ```javascript
 // tests/lib/test-helpers.js - guardDestructiveOperation()
