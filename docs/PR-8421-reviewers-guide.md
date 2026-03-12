@@ -267,14 +267,28 @@ after(function (done) {
 | 2 | Validate DB name contains "test" | 🟠 **P1** | Defense in depth |
 | 3 | Opt-in `ALLOW_DESTRUCTIVE_TESTS=true` | 🟡 P2 | Escape hatch |
 
-**All three layers should be implemented** for comprehensive protection.
+**⚠️ BLOCKING: All three layers should be implemented IN THIS PR** before merge to prevent accidental data loss from new tests.
 
 **Look for in this PR**:
-- [x] Any new destructive operations introduced? ✅ **VERIFIED 2026-03-12** - No new DB deletions; `truncatePredictions()` only trims incoming data
+- [x] Any new destructive operations introduced? ✅ **VERIFIED 2026-03-12** - Yes, 245+ new tests using `deleteMany({})`
 - [x] Any existing safeguards modified? ✅ **VERIFIED 2026-03-12** - Safeguards enhanced (ObjectId validation, toSafeInt), not weakened
-- [x] Any documentation about test database setup? ⚠️ **PARTIAL 2026-03-12** - Docs exist but no DB safety instructions; tests use env's MONGODB_URI
+- [ ] **Safety implementation required** - See [Phase 5 backlog](./backlogs/pr-8421-review-analysis.md#phase-5-test-database-safety-p0p1-)
 
-**Follow-up work**: See [Phase 5 backlog](./backlogs/pr-8421-review-analysis.md#phase-5-test-database-safety-p0p1-)
+**Implementation work (SAFETY-001 to SAFETY-004)**:
+```javascript
+// lib/test-safety.js - create guard function
+function guardDestructiveOperation(env) {
+  if (env.NODE_ENV !== 'test') {
+    throw new Error('Destructive test operations require NODE_ENV=test');
+  }
+  const dbName = env.MONGODB_URI?.split('/').pop()?.split('?')[0] || '';
+  if (!dbName.includes('test')) {
+    throw new Error(`Database name "${dbName}" must contain "test"`);
+  }
+}
+```
+
+**Merge status**: ❌ **BLOCKED** until SAFETY-001 through SAFETY-004 implemented
 
 ---
 
@@ -304,7 +318,16 @@ Despite 36k lines, most is documentation or package-lock:
 - [x] **Theme 4**: Tests cover POST UUID, re-POST dedup, batch mixed ✅
 - [x] **Theme 5**: Spot-check one doc matches actual code ✅
 - [x] **Theme 6**: Undocumented changes identified and triaged ✅
-- [x] **Theme 7**: No new destructive operations without safeguards ✅
+- [ ] **Theme 7**: Test database safety implemented (BLOCKING) ❌
+
+### Blocking Implementation Work:
+
+| ID | Task | Status |
+|----|------|--------|
+| SAFETY-001 | Add `NODE_ENV=test` check to test setup | ❌ |
+| SAFETY-002 | Update `ci.test.env` to `NODE_ENV=test` | ❌ |
+| SAFETY-003 | Create `guardDestructiveOperation()` | ❌ |
+| SAFETY-004 | Apply guard to `deleteMany()` hooks | ❌ |
 
 ### Known Safe to Skip:
 

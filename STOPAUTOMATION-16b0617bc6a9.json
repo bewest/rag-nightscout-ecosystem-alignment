@@ -1,0 +1,9 @@
+{
+  "reason": "All 27 claims verified - no unchecked items remain",
+  "needs_review": false,
+  "status": "complete",
+  "verified": 26,
+  "partial": 1,
+  "discovered": 11,
+  "commits": 15
+}

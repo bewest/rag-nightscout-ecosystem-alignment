@@ -2,23 +2,42 @@
 
 Active work streams for the Nightscout ecosystem alignment project.
 
-## 🚧 P0: PR #8421 Reviewer's Guide (In Progress)
+## 🔴 P0: Test Database Safety (GAP-SYNC-046) - BLOCKING PR #8421
 
-**Status**: Stub created, systematic analysis needed.
+**Status**: Implementation required IN PR #8421 before merge.
+
+[GAP-SYNC-046](../../traceability/sync-identity-gaps.md#gap-sync-046-test-suite-lacks-production-database-safeguards) | [Phase 5 Details](./pr-8421-review-analysis.md#phase-5-test-database-safety-p0p1-)
+
+**Why blocking**: PR #8421 adds 245 new tests using `deleteMany({})`. Without safeguards, these tests could destroy production data if misconfigured.
+
+| ID | Task | Priority | Status |
+|----|------|----------|--------|
+| SAFETY-001 | Mandate `NODE_ENV=test` for test runs | 🔴 P0 | ❌ |
+| SAFETY-002 | Update `ci.test.env` to `NODE_ENV=test` | 🔴 P0 | ❌ |
+| SAFETY-003 | Create `guardDestructiveOperation()` | 🟠 P1 | ❌ |
+| SAFETY-004 | Apply guard to `deleteMany()` calls | 🟠 P1 | ❌ |
+
+**Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+
+**Workflow**: `sdqctl iterate ./workflows/integration-test-cycle.conv -n 5`
+
+---
+
+## ✅ P0: PR #8421 Reviewer's Guide - COMPLETE
+
+**Status**: All 27 claims verified, 11 undocumented changes discovered.
 
 [PR #8421](https://github.com/nightscout/cgm-remote-monitor/pull/8421) | [Reviewer's Guide](../PR-8421-reviewers-guide.md) | [Analysis Backlog](./pr-8421-review-analysis.md)
 
-| Aspect | Value |
-|--------|-------|
-| **Size** | 146 files, +36,222 / -4,654 lines |
-| **Work Items** | 26 library + 10 test + 6 doc audit |
-| **Iterations Est.** | ~20 (30 min each) |
-
-**Work Tracking**: See [pr-8421-review-analysis.md](./pr-8421-review-analysis.md) for detailed work items organized by phase:
-- Phase 1: Library Code (LIB-001 to LIB-026)
-- Phase 2: Test Code (TEST-001 to TEST-010)  
-- Phase 3: Documentation Audit (DOC-001 to DOC-006)
-- Phase 4: CI/Config (CI-001 to CI-003)
+| Theme | Status |
+|-------|--------|
+| 1. UUID Handling | ✅ 3/3 verified |
+| 2. Backwards Compat | ✅ 3/3 verified |
+| 3. MongoDB 5.x | ✅ 3/3 verified |
+| 4. Test Coverage | ✅ 4/4 verified |
+| 5. Documentation | ✅ 1/1 verified |
+| 6. Undocumented Changes | ✅ 11 discovered |
+| 7. Test DB Safety | ✅ Pre-existing (GAP-SYNC-046) |
 
 ---
 
