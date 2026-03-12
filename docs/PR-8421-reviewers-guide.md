@@ -203,12 +203,15 @@ git diff official/master -- lib/ | grep -E "^\+" | grep -v "identifier\|UUID\|no
 | `lib/api3/doc/history/query.js` | **parseInt radix** | Changed `parseInt(req.query.limit)` → `parseInt(..., 10)` | ✅ Discovered |
 | `lib/api3/doc/history/query.js` | **parseInt radix** | Changed `parseInt(req.query.skip)` → `parseInt(..., 10)` | ✅ Discovered |
 | `lib/api/entries/index.js` | **Response format** | Added `format_post_response()` - cleaner POST response handling | ✅ Discovered |
+| `lib/api/entries/index.js` | **Error handling** | `format_post_response()` returns proper JSON error on `entries_err` | ✅ Discovered |
+| `lib/api3/storage/mongoCollection/modify.js` | **Driver compat** | `result.modifiedCount` replaces deprecated `result.nModified` | ✅ Discovered |
+| `lib/api3/storage/mongoCollection/modify.js` | **Driver compat** | `result.deletedCount` replaces deprecated `result.n` | ✅ Discovered |
 
 **Look for**:
 - [x] Precision/rounding changes identified ✅ **VERIFIED 2026-03-12**
   - `toSafeInt()` in `find.js:10-17` ensures limit/skip are always integers
   - Fixes bug where env strings passed to `.limit()/.skip()` caused MongoDB errors
-- [ ] Error handling improvements identified
+- [x] Error handling improvements identified ✅ **VERIFIED 2026-03-12** - `format_post_response()` JSON error handling
 - [ ] Query syntax updates identified
 - [ ] All changes documented or triaged
 
