@@ -220,11 +220,11 @@ All source files analyzed - see [aaps-nightscout-upload-testing.md](aaps-nightsc
 | `swift-pkg-setup` | Create Swift test package | ✅ 7 tests passing |
 | `kotlin-pkg-setup` | Create Kotlin test package | ✅ BUILD SUCCESSFUL |
 
-### 🟢 P3: Infrastructure
+### ✅ P3: Infrastructure - COMPLETE
 
-| ID | Task |
-|----|------|
-| `lock-update` | Update workspace.lock.json with minimed-connect-to-nightscout |
+| ID | Task | Status |
+|----|------|--------|
+| `lock-update` | Update workspace.lock.json with minimed-connect-to-nightscout | ✅ Already present |
 
 ---
 
@@ -235,9 +235,9 @@ These require prior work to complete:
 | ID | Blocked By | Unblocks |
 |----|------------|----------|
 | ~~`loop-test-identity-matrix`~~ | ~~loop-src-override, loop-src-carb, loop-src-cache~~ | ✅ Test development |
-| `loop-test-cache-workflow` | loop-src-cache, loop-src-carb | JS tests in cgm-pr-8447 |
-| `swift-extract-cache` | swift-pkg-setup | swift-first-test |
-| `swift-http-client` | swift-pkg-setup | swift-first-test |
+| ~~`loop-test-cache-workflow`~~ | ~~loop-src-cache, loop-src-carb~~ | ✅ Unblocked (source analysis complete) |
+| ~~`swift-extract-cache`~~ | ~~swift-pkg-setup~~ | ✅ Unblocked (7 Swift tests passing) |
+| ~~`swift-http-client`~~ | ~~swift-pkg-setup~~ | ✅ Unblocked (7 Swift tests passing) |
 | `swift-first-test` | swift-extract-cache, swift-http-client | Full Swift test suite |
 | `coordinate-merge` | review-pr8357 | v15.0.7 release |
 
