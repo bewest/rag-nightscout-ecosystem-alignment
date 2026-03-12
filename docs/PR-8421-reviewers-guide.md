@@ -92,7 +92,7 @@ During the upgrade, analysis of popular AID apps revealed several issues:
   - `treatments.js:309`: `delete obj._id;` when using identifier-based query
   - Comment at entries.js:202 explicitly documents this as "immutable field '_id'" fix
 - [x] Is `identifier` field indexed? ✅ **VERIFIED 2026-03-12** - `lib/api3/storage/mongoCollection/index.js:21` calls `ensureIndexes()` with `identifier`
-- [ ] Does batch upload handle mixed ObjectId/UUID correctly?
+- [x] Does batch upload handle mixed ObjectId/UUID correctly? ✅ **VERIFIED 2026-03-12** - `normalizeEntryId()` handles all 3 cases, tested by `TEST-ENTRY-UUID-004`
 
 **Test coverage**: `tests/api.entries.uuid.test.js`, `tests/gap-treat-012.test.js`
 
