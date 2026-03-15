@@ -507,6 +507,178 @@ var sessionInProgress: Bool {
 }
 ```
 
+---
+
+## Implementation Guide for Authors
+
+> **For Loop, Trio, and CGMBLEKit maintainers**: This section provides copy-paste-ready fixes.
+
+### Quick Reference
+
+| Project | Fix Location | Priority | Complexity |
+|---------|--------------|----------|------------|
+| **CGMBLEKit** | `Glucose.swift:52` | 🔴 Critical | Low - 5 lines |
+| **Trio** | `PluginSource.swift:221,226` | 🟡 Defense | Low - 6 lines |
+| **Trio** | `GlucoseStorage.swift:230` | 🟢 Safety net | Low - 4 lines |
+| **Loop** | Uses CGMBLEKit | Fix CGMBLEKit | - |
+
+---
+
+### Fix A: CGMBLEKit (Root Cause Fix)
+
+**File**: `CGMBLEKit/CGMBLEKit/Glucose.swift`
+
+**Current code** (line 52):
+```swift
+sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
+```
+
+**Problem**: When `sessionStartTime = 0xFFFFFFFF` (no active session), this adds 136 years.
+
+**Option A1: Simple sentinel check (minimal change)**
+```swift
+// Replace line 52 with:
+if timeMessage.sessionStartTime == UInt32.max {
+    // 0xFFFFFFFF = no active session, use activationDate as fallback
+    sessionStartDate = activationDate
+} else {
+    sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
+}
+```
+
+**Option A2: Following xDrip+ pattern (more robust)**
+```swift
+// Add constant at top of struct:
+private static let INVALID_TIME: UInt32 = 0xFFFFFFFF
+
+// Replace line 52 with:
+if timeMessage.sessionStartTime != Self.INVALID_TIME &&
+   timeMessage.sessionStartTime != timeMessage.currentTime {
+    sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
+} else {
+    sessionStartDate = activationDate
+}
+
+// Add computed property:
+public var sessionInProgress: Bool {
+    timeMessage.sessionStartTime != Self.INVALID_TIME &&
+    timeMessage.currentTime != timeMessage.sessionStartTime
+}
+```
+
+**Tests to add** (`CGMBLEKitTests/GlucoseTests.swift`):
+```swift
+func testInvalidSessionStartTime() {
+    // Create a timeMessage with sessionStartTime = 0xFFFFFFFF
+    let timeData = Data(hexadecimalString: "2500e8f87100ffffffff010000000a70")!
+    let timeMessage = TransmitterTimeRxMessage(data: timeData)!
+    
+    XCTAssertEqual(timeMessage.sessionStartTime, UInt32.max)
+    
+    // Glucose should NOT add 136 years
+    let glucose = Glucose(...)  // with this timeMessage
+    let maxAllowedFuture = Date().addingTimeInterval(86400)
+    XCTAssertLessThanOrEqual(glucose.sessionStartDate, maxAllowedFuture)
+}
+```
+
+---
+
+### Fix B: Trio PluginSource (Defense in Depth)
+
+**File**: `Trio/Sources/APS/CGM/PluginSource.swift`
+
+**Current code** (lines 221, 226):
+```swift
+sensorStartDate = latestReading?.sessionStartDate
+```
+
+**Replace with**:
+```swift
+// For G5CGMManager (line 221) and G6CGMManager (line 226):
+if let sessionStart = latestReading?.sessionStartDate,
+   sessionStart > Date().addingTimeInterval(-86400 * 365),  // Not > 1 year in past
+   sessionStart <= Date().addingTimeInterval(86400) {       // Not > 1 day in future
+    sensorStartDate = sessionStart
+} else {
+    sensorStartDate = latestReading?.activationDate  // Fallback to activationDate
+    if latestReading?.sessionStartDate != nil {
+        log.error("Invalid sessionStartDate detected: %{public}@", 
+                  String(describing: latestReading?.sessionStartDate))
+    }
+}
+```
+
+---
+
+### Fix C: Trio GlucoseStorage (Final Safety Net)
+
+**File**: `Trio/Sources/APS/Storage/GlucoseStorage.swift`
+
+**Current code** (line 230):
+```swift
+guard let sessionStartDate = x.sessionStartDate else { continue }
+```
+
+**Replace with**:
+```swift
+guard let sessionStartDate = x.sessionStartDate,
+      sessionStartDate > Date().addingTimeInterval(-86400 * 365),
+      sessionStartDate <= Date().addingTimeInterval(86400) else {
+    if x.sessionStartDate != nil {
+        debug(.deviceManager, "Skipping CGM state with invalid sessionStartDate: \(String(describing: x.sessionStartDate))")
+    }
+    continue
+}
+```
+
+---
+
+### PR Template
+
+```markdown
+## Summary
+
+Fix future-dated sensor entries caused by G6 transmitter returning `sessionStartTime = 0xFFFFFFFF` 
+when no sensor session is active.
+
+## Root Cause
+
+When a G6 transmitter has no active session, it returns `sessionStartTime = 0xFFFFFFFF` (4,294,967,295).
+The current code adds this value as seconds to `activationDate`, resulting in dates 136 years in the future.
+
+## Fix
+
+[Describe which option you implemented]
+
+## Testing
+
+- [ ] Added test case for `sessionStartTime = 0xFFFFFFFF`
+- [ ] Verified existing tests still pass
+- [ ] Tested with simulator/test data showing future dates are rejected
+
+## References
+
+- Issue: https://github.com/LoopKit/Loop/issues/2087
+- Issue: https://github.com/nightscout/cgm-remote-monitor/issues/8453
+- xDrip+ reference: `TransmitterTimeRxMessage.java` handles this with `sessionInProgress()` check
+- CGMBLEKit PR #191 added partial fix (filters events but not `Glucose.sessionStartDate`)
+```
+
+---
+
+### Testing Checklist
+
+After implementing any fix:
+
+1. **Unit test**: Verify `0xFFFFFFFF` sentinel produces valid date
+2. **Unit test**: Verify normal sessionStartTime values still work
+3. **Integration test**: Verify sensor start events upload correctly
+4. **Regression test**: Existing tests still pass
+5. **Manual test** (if possible): Connect to G6 transmitter without active sensor
+
+---
+
 ### Existing iOS Logging Analysis
 
 **Current logging IS available but NOT sufficient for diagnosis:**
@@ -714,9 +886,17 @@ The cgm-remote-monitor issue raised a valid concern:
 
 **This is why server-side rejection must be paired with client-side validation.**
 
-## Recommended Fix Strategy
+## ~~Recommended Fix Strategy~~ OUTDATED - See Implementation Guide Above
 
-### Phase 1: G7SensorKit Stopgap (Highest Priority)
+> ⚠️ **NOTE**: The sections below were written before root cause was confirmed.
+> The issue is **G6/CGMBLEKit**, not G7. See "Implementation Guide for Authors" above for current recommendations.
+
+<details>
+<summary>Click to expand outdated analysis (kept for historical reference)</summary>
+
+### ~~Phase 1: G7SensorKit Stopgap~~ (NOT THE ISSUE)
+
+**UPDATE**: The sensor ID "89N9W6" is G6 format, not G7. This section is kept for reference but the primary fix should be in CGMBLEKit/Glucose.swift.
 
 **File**: `G7SensorKit/G7SensorKit/G7CGMManager/G7CGMManager.swift`
 **Location**: Around line 305-320, in `sensor(_:didDiscoverNewSensor:activatedAt:)`
