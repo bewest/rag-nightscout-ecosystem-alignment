@@ -551,6 +551,67 @@ if (new Date().getTime() + 15 * 60000 < startTime) {
 
 xDrip+ allows max **15 minutes** future time for sensor start.
 
+### Cross-Codebase Parsing Comparison (G7 EGV 0x4E)
+
+**All codebases agree on byte layout:**
+```
+ 0  1  2 3 4 5  6 7  8  9 10 11 12 13 14 15 16 17 18
+       TTTTTTTT SQSQ       AGAG  BGBG  SS TR PRPR  C
+4e 00 d5070000 0900 00 01 0500  6100  06 01 ffff 0e
+```
+
+| Field | Bytes | G7SensorKit | DiaBLE | xDrip+ | xDrip4iOS |
+|-------|-------|-------------|--------|--------|-----------|
+| opcode | 0 | ✅ 0x4E | ✅ 0x4E | ✅ 0x4E | ✅ 0x4E |
+| status | 1 | ✅ check=0 | ✅ check | ✅ read | ✅ check=0 |
+| **messageTimestamp** | 2-5 | ✅ UInt32 | ✅ UInt32 | ✅ getUnsignedInt | ✅ UInt32 |
+| sequence | 6-7 | ✅ UInt16 | ✅ UInt16 | ✅ getUnsignedShort | ✅ UInt16 |
+| reserved | 8-9 | skip | skip | ✅ "bogus" | skip |
+| **age** | 10-11 | ✅ UInt16 | ✅ UInt16 | ✅ getUnsignedShort | ⚠️ **data[10] only!** |
+| glucose | 12-13 | ✅ mask 0xfff | ✅ mask 0xfff | ✅ mask 0xfff | ✅ mask 0xfff |
+| state | 14 | ✅ byte | ✅ byte | ✅ byte | ✅ byte |
+| trend | 15 | ✅ signed/10 | ✅ signed/10 | ✅ signed/10 | ✅ signed/10 |
+| predicted | 16-17 | ✅ mask 0xfff | ✅ mask 0xfff | ✅ mask 0x3ff | ✅ mask 0xfff |
+| calibration | 18 | ✅ displayOnly | ✅ displayOnly | read | ✅ displayOnly |
+
+### ⚠️ Parsing Discrepancy Found!
+
+**xDrip4iOS reads `age` as 1 byte instead of 2!**
+
+| Codebase | Age Parsing | Result |
+|----------|-------------|--------|
+| G7SensorKit | `data[10..<12].to(UInt16.self)` | **2 bytes (correct)** |
+| DiaBLE | `UInt16(data[10..<12])` | **2 bytes (correct)** |
+| xDrip+ (Android) | `getUnsignedShort(data)` | **2 bytes (correct)** |
+| **xDrip4iOS** | `data[10]` | **1 byte (WRONG!)** |
+
+**Impact**: If `age` field uses byte 11 (high byte of UInt16), xDrip4iOS would misparse the age value.
+
+**File**: `externals/xdripswift/xdrip/BluetoothTransmitter/CGM/Dexcom/Generic/DexcomG7GlucoseDataRxMessage.swift:59`
+```swift
+// xDrip4iOS (POTENTIALLY WRONG)
+let messageAge = data[10]  // Only reads 1 byte!
+
+// Should be:
+let messageAge = data[10..<12].to(UInt16.self)  // 2 bytes like others
+```
+
+### How Dates are Calculated
+
+| Codebase | Activation Date Calculation | Glucose Timestamp |
+|----------|----------------------------|-------------------|
+| **G7SensorKit** | Not calculated in message | `messageTimestamp - age` → `glucoseTimestamp` |
+| **DiaBLE** | `Date.now - TimeInterval(txTime)` | `activationDate + TimeInterval(timestamp)` |
+| **xDrip+** | Uses DexTimeKeeper | `JoH.tsl() - (age * SECOND_IN_MS)` |
+| **xDrip4iOS** | Not calculated | `Date() - TimeInterval(messageAge)` |
+
+**Key Insight**: The date calculation approaches differ:
+
+1. **G7SensorKit** (Loop/Trio): Calculates `activationDate` from `messageTimestamp`, then uses it for events
+2. **DiaBLE**: Same approach, calculates activation date fresh each message
+3. **xDrip+**: Uses stored `DexTimeKeeper.fromDexTime()` with validation
+4. **xDrip4iOS**: **Simpler - just uses `now - age`** (avoids activation date issues)
+
 ### Well-Documented Messages
 
 | Opcode | Name | File | Test Coverage |
