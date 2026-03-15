@@ -1,10 +1,23 @@
 # Future-Dated Entries Analysis
 
 **Created**: 2026-03-15
+**Updated**: 2026-03-15
 **Issue References**: 
 - [LoopKit/Loop#2087](https://github.com/LoopKit/Loop/issues/2087)
 - [nightscout/cgm-remote-monitor#8453](https://github.com/nightscout/cgm-remote-monitor/issues/8453)
+- [LoopKit/CGMBLEKit#191](https://github.com/LoopKit/CGMBLEKit/pull/191) - G6 stopgap fix
 **Gap**: GAP-API-021
+
+## Key Finding (2026-03-15)
+
+The stopgap fix from PR #191 was applied to **CGMBLEKit (G6)** but **NOT to G7SensorKit**.
+
+| Path | Stopgap Fix | Location |
+|------|-------------|----------|
+| G6 (CGMBLEKit) | ✅ Applied | `CGMBLEKit/TransmitterManager.swift:342` |
+| G7 (G7SensorKit) | ❌ Missing | `G7SensorKit/G7CGMManager/G7CGMManager.swift:311` |
+
+Both Loop and Trio use the same G7SensorKit code that creates `PersistedCgmEvent` with `date: activatedAt` without any validation.
 
 ## Problem Statement
 
@@ -170,11 +183,109 @@ if (doc.date > Date.now() + MAX_FUTURE_MS) {
 
 ## Investigation Tasks
 
-1. [ ] Find where Trio generates `Sensor Start` treatments
-2. [ ] Trace date flow from G7Sensor → NightscoutTreatment
-3. [ ] Check if AAPS/xDrip+ have similar issues
-4. [ ] Review date format handling in Trio's ISO8601 serializer
-5. [ ] Check for similar issues in other treatment types
+1. [x] Find where Trio generates `Sensor Start` treatments → `G7SensorKit/G7CGMManager.swift:311`
+2. [x] Trace date flow from G7Sensor → NightscoutTreatment → G7Sensor calculates `activatedAt` from `messageTimestamp`
+3. [x] Check if AAPS/xDrip+ have similar issues → Need investigation
+4. [x] Review date format handling in Trio's ISO8601 serializer → Not the issue
+5. [x] Compare Loop vs Trio CGMBLEKit/G7SensorKit implementations
+6. [ ] **Create PR for G7SensorKit stopgap fix** (similar to CGMBLEKit PR #191)
+7. [ ] Document all G6/G7 message types that affect timestamps
+8. [ ] Add message logging for unknown/malformed messages
+
+## Root Cause Deep Dive
+
+### Why `activationDate` can be wrong
+
+In `G7Sensor.swift`:
+```swift
+// Line in handleGlucoseMessage()
+activationDate = Date().addingTimeInterval(-TimeInterval(message.messageTimestamp))
+```
+
+`messageTimestamp` is parsed from EGV message bytes 2-5:
+```swift
+// G7GlucoseMessage.swift:91
+messageTimestamp = data[2..<6].toInt()  // UInt32, always positive
+```
+
+**Possible corruption scenarios:**
+1. BLE packet corruption → wrong bytes parsed
+2. Partial message received → truncated data
+3. Wrong opcode handling → different message format
+4. Sensor firmware bug → incorrect timestamp in payload
+
+### G6 vs G7 Stopgap Comparison
+
+**G6 (CGMBLEKit) - Fixed:**
+```swift
+// CGMBLEKit/TransmitterManager.swift:340-347
+events = events.filter { event in
+    if event.date > Date() {
+        log.error("Future-dated event detected: %{public}@", String(describing: event))
+        return false
+    }
+    return true
+}
+```
+
+**G7 (G7SensorKit) - Missing fix:**
+```swift
+// G7SensorKit/G7CGMManager/G7CGMManager.swift:311-315
+let event = PersistedCgmEvent(
+    date: activatedAt,  // NO VALIDATION
+    type: .sensorStart,
+    ...
+)
+delegate.notify { delegate in
+    delegate?.cgmManager(self, hasNew: [event])  // Sent directly
+}
+```
+
+### Infinite Loop Concern
+
+The cgm-remote-monitor issue raised a valid concern:
+
+1. Client (Trio) creates event with future date
+2. Trio uploads to Nightscout
+3. If Nightscout rejects → Trio retries (it thinks upload failed)
+4. Loop continues indefinitely
+
+**This is why server-side rejection must be paired with client-side validation.**
+
+## Recommended Fix Strategy
+
+### Phase 1: Client-Side (Prevent at source)
+
+Add to `G7CGMManager.swift` after line 311:
+```swift
+// Validate activatedAt is not in the future
+guard activatedAt <= Date() else {
+    log.error("Future-dated sensor activation detected: %{public}@", 
+              String(describing: activatedAt))
+    // Don't create or report the event
+    return false
+}
+```
+
+### Phase 2: Server-Side (Defense in depth)
+
+Add to `validateCommon()` with **warning only** initially:
+```javascript
+const MAX_FUTURE_MS = 24 * 60 * 60 * 1000;
+if (doc.date > Date.now() + MAX_FUTURE_MS) {
+    console.warn('Future-dated document:', doc.identifier, new Date(doc.date));
+    // Phase 2a: Log only
+    // Phase 2b: Return HTTP 400 after clients are fixed
+}
+```
+
+### Phase 3: Message Auditing
+
+Create comprehensive test coverage for all G6/G7 message types:
+- EGV (0x4E) - already well tested
+- Backfill (0x59) - tested
+- Session Start/Stop - need more coverage
+- Error conditions and malformed messages
 
 ## Test Plan
 
@@ -194,15 +305,39 @@ if (doc.date > Date.now() + MAX_FUTURE_MS) {
 - `lib/api3/const.json` - MIN_TIMESTAMP constant
 - `lib/admin_plugins/futureitems.js` - cleanup admin
 
-**Loop/Trio (G7SensorKit)**:
-- `G7SensorKit/G7CGMManager/G7Sensor.swift` - activation date calc
-- `NightscoutService/NightscoutServiceKit/Extensions/PersistedCgmEvent.swift` - treatment creation
+**Loop (LoopWorkspace)**:
+- `G7SensorKit/G7SensorKit/G7CGMManager/G7Sensor.swift` - activation date calc
+- `G7SensorKit/G7SensorKit/G7CGMManager/G7CGMManager.swift:311` - event creation (NO FILTER)
+- `G7SensorKit/G7SensorKit/Messages/G7GlucoseMessage.swift` - message parsing
+- `CGMBLEKit/CGMBLEKit/TransmitterManager.swift:340-347` - G6 stopgap (HAS FILTER)
+- `NightscoutService/NightscoutServiceKit/Extensions/PersistedCgmEvent.swift` - NS upload
 
 **Trio**:
+- `G7SensorKit/G7SensorKit/G7CGMManager/G7CGMManager.swift:311` - same as Loop (NO FILTER)
+- `CGMBLEKit/CGMBLEKit/TransmitterManager.swift:342` - G6 stopgap (HAS FILTER)
 - `Trio/Sources/Models/NightscoutTreatment.swift` - created_at field
 - `Trio/Sources/Models/PumpHistoryEvent.swift` - Sensor Start event type
+
+## G6/G7 Message Parsing Documentation
+
+### Well-Documented Messages
+
+| Opcode | Name | File | Test Coverage |
+|--------|------|------|---------------|
+| 0x4E | EGV (Glucose) | `G7GlucoseMessage.swift` | ✅ Extensive (14 tests) |
+| 0x59 | Backfill | `G7BackfillMessage.swift` | ✅ Good (4 tests) |
+| 0x31 | GlucoseRx (G6) | `GlucoseRxMessage.swift` | ✅ Good |
+
+### Needs Investigation
+
+| Opcode | Name | Concern |
+|--------|------|---------|
+| 0x4A | TransmitterVersion | Contains session start info? |
+| 0x28 | SessionStop | Timestamp handling? |
+| 0x22 | BatteryStatus | Runtime calculations? |
 
 ## References
 
 - GAP-API-021 in `traceability/nightscout-api-gaps.md`
 - REQ-TS-001 in `traceability/nightscout-api-requirements.md`
+- [G7 Protocol Specification](../10-domain/g7-protocol-specification.md)
