@@ -226,6 +226,94 @@ Possible causes:
 3. **Network layer** sign extension issue when converting to 64-bit
 4. **Nightscout API** or MongoDB driver issue with timestamp handling
 
+### Diagnostic Investigation Matrix
+
+| Location | What to Check | How to Verify | Status |
+|----------|---------------|---------------|--------|
+| G7Sensor.activationDate calculation | `Date() - TimeInterval(messageTimestamp)` | notes field shows CORRECT | ✅ Ruled Out |
+| G7CGMManager.state.activatedAt | Stored in `[String: Any]` dict | Add logging at state save/load | ⬜ Unknown |
+| PluginSource.sensorStartDate | Copied from `cgmTransmitterManager.sensorActivatedAt` | Add logging | ⬜ Unknown |
+| BloodGlucose.sessionStartDate | JSON-encoded via `Codable` | Check ISO8601 output | ⬜ Unknown |
+| GlucoseStorage.createCGMStateTreatment | Uses `sessionStartDate` as `createdAt` | Add logging | ⬜ Unknown |
+| NightscoutTreatment JSON encoding | `JSONEncoder.dateEncodingStrategy = .customISO8601` | Print encoded JSON | 🔍 **Primary Suspect** |
+| Nightscout API parseDate | Uses `moment.parseZone()` for ISO8601 | Server logs | ⬜ Unknown |
+| MongoDB driver | Stores `Date` as BSON Date | Check DB directly | ⬜ Unknown |
+
+### Diagnostic Tests to Add
+
+**Test 1: Log the exact ISO8601 string being sent**
+
+Add to `Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift`:
+```swift
+private func uploadNonCoreDataTreatments(_ treatments: [NightscoutTreatment]) async {
+    // DEBUG: Log exact JSON being sent
+    for treatment in treatments {
+        if treatment.eventType == .nsSensorChange {
+            let json = treatment.rawJSON
+            print("DEBUG_FUTURE_DATE: Sensor change treatment JSON: \(json)")
+            print("DEBUG_FUTURE_DATE: createdAt Date object: \(String(describing: treatment.createdAt))")
+        }
+    }
+    // ... rest of function
+}
+```
+
+**Test 2: Verify ISO8601DateFormatter output**
+
+```swift
+let testDate = Date()
+let formatter = ISO8601DateFormatter()
+formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+let encoded = formatter.string(from: testDate)
+let decoded = formatter.date(from: encoded)
+print("Original: \(testDate.timeIntervalSince1970)")
+print("Encoded: \(encoded)")
+print("Decoded: \(decoded?.timeIntervalSince1970 ?? -1)")
+// These should match exactly
+```
+
+**Test 3: Check state persistence round-trip**
+
+Add to G7CGMManager:
+```swift
+func debugStateRoundTrip() {
+    let original = state.activatedAt
+    let rawValue = state.rawValue
+    let restored = G7CGMManagerState(rawValue: rawValue)
+    print("DEBUG_STATE: Original activatedAt: \(String(describing: original))")
+    print("DEBUG_STATE: RawValue activatedAt: \(rawValue["activatedAt"] ?? "nil")")
+    print("DEBUG_STATE: Restored activatedAt: \(String(describing: restored.activatedAt))")
+}
+```
+
+### Data Collection Request
+
+To diagnose this issue, we need users experiencing the bug to provide:
+
+1. **Exact error case**: The full JSON of the bad treatment
+2. **Device info**: iOS version, device model
+3. **Timing**: When the sensor was actually started vs when the bug occurred
+4. **Console logs**: Any DEBUG output from the diagnostic tests above
+5. **Multiple samples**: Is the +2^32 offset consistent?
+
+### Narrowed Suspicion List
+
+Based on code analysis:
+
+1. **Most Likely: JSON Encoding Path**
+   - `NightscoutTreatment.rawJSON` uses `JSONCoding.encoder.encode()`
+   - Encoder uses `.customISO8601` date strategy
+   - The ISO8601 string itself might be generated incorrectly
+
+2. **Possible: State Persistence Issue**
+   - `G7CGMManagerState` stores `activatedAt` as `Date` in `[String: Any]`
+   - When restored, `rawValue["activatedAt"] as? Date` might fail unexpectedly
+   - Could default to wrong value
+
+3. **Less Likely: Server-Side**
+   - Server uses standard `moment.js` ISO8601 parsing
+   - MIN_TIMESTAMP check exists but no MAX check
+
 ### Investigation Steps
 
 ```swift
