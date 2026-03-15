@@ -185,12 +185,15 @@ if (doc.date > Date.now() + MAX_FUTURE_MS) {
 
 1. [x] Find where Trio generates `Sensor Start` treatments → `G7SensorKit/G7CGMManager.swift:311`
 2. [x] Trace date flow from G7Sensor → NightscoutTreatment → G7Sensor calculates `activatedAt` from `messageTimestamp`
-3. [x] Check if AAPS/xDrip+ have similar issues → Need investigation
+3. [x] Check if AAPS/xDrip+ have similar issues → xDrip+ has validation, iOS ports lack it
 4. [x] Review date format handling in Trio's ISO8601 serializer → Not the issue
 5. [x] Compare Loop vs Trio CGMBLEKit/G7SensorKit implementations
 6. [ ] **Create PR for G7SensorKit stopgap fix** (similar to CGMBLEKit PR #191)
-7. [ ] Document all G6/G7 message types that affect timestamps
+7. [x] Document all G6/G7 message types that affect timestamps → See xDrip formats below
 8. [ ] Add message logging for unknown/malformed messages
+9. [ ] **NEW: Implement message inventory logging** to detect firmware format changes
+10. [ ] **NEW: Add firmware version registry** (similar to xDrip+ FirmwareCapability.java)
+11. [ ] **NEW: Collect raw BLE samples** from users experiencing future-dated events
 
 ## Root Cause Deep Dive
 
@@ -335,22 +338,104 @@ if (doc.date > Date.now() + MAX_FUTURE_MS) {
 
 **Warning**: Do NOT reject until client fixes are deployed - causes infinite retry loops.
 
-### Phase 4: Enhanced Logging for R&D
+### Phase 4: Enhanced Logging for R&D (Message Inventory)
+
+The future-dated timestamps may indicate **message format changes between CGM firmware versions**. Rather than parsing incorrect byte fields, we need comprehensive logging to build an inventory of actual message formats seen in the wild.
+
+#### Hypothesis: Format Drift
+
+| Possibility | Evidence | Implication |
+|-------------|----------|-------------|
+| Firmware version changed field layout | G7 has multiple firmware releases | Parsing offset wrong for new versions |
+| Different transmitter models send different formats | G7 ONE vs G7 Pro variants | Need model-specific parsing |
+| Sensor vs transmitter messages confused | Both emit on same characteristic | Opcode disambiguation needed |
+
+#### Proposed Logging Strategy
+
+**Step 1: Log ALL messages with opcode inventory**
 
 Add to G7Sensor.swift around line 129:
 ```swift
 activationDate = Date().addingTimeInterval(-TimeInterval(message.messageTimestamp))
 
-// Debug logging for future date investigation
+// R&D: Log raw message for format inventory
+let rawHex = message.data.hexadecimalString
+let parsedTimestamp = message.messageTimestamp
+let calculatedDate = activationDate
+
+log.default("G7_MSG_INVENTORY: opcode=0x%02X len=%d raw=%@ parsed_ts=%u calc_date=%@",
+            message.opcode, message.data.count, rawHex, parsedTimestamp, 
+            String(describing: calculatedDate))
+
+// Alert on anomaly for investigation
 if let activationDate = activationDate, activationDate > Date() {
-    log.error("FUTURE_DATE_DEBUG: messageTimestamp=%u, raw=%@, calculated=%@",
-              message.messageTimestamp,
-              message.data.hexadecimalString,
-              String(describing: activationDate))
+    log.error("FUTURE_DATE_ANOMALY: messageTimestamp=%u raw=%@ calculated=%@",
+              parsedTimestamp, rawHex, String(describing: activationDate))
 }
 ```
 
-This captures the raw BLE hex when corruption occurs, enabling root cause analysis.
+**Step 2: Log transmitter identification**
+
+```swift
+// On connection, log transmitter firmware version for correlation
+log.default("G7_TRANSMITTER_ID: serial=%@ firmware=%@ hardware=%@",
+            transmitterID, firmwareVersion ?? "unknown", hardwareVersion ?? "unknown")
+```
+
+**Step 3: Create server-side message collection**
+
+Add to Nightscout `devicestatus` uploads:
+```javascript
+{
+  "device": "G7SensorKit",
+  "pump": { /* existing */ },
+  "cgm": {
+    "messageInventory": [
+      { "opcode": "0x4E", "len": 19, "raw": "4e00d5070000...", "parsedTs": 2005 }
+    ]
+  }
+}
+```
+
+This enables:
+1. Cross-device comparison of message formats
+2. Correlation of anomalies with specific firmware versions
+3. Detection of format changes over time
+
+#### xDrip+ Reference: Firmware Version Registry
+
+xDrip+ maintains a **known firmware registry** in `FirmwareCapability.java`:
+
+```java
+// Known firmware versions with different capabilities
+private static final ImmutableSet<String> KNOWN_G5_FIRMWARES = 
+    ImmutableSet.of("1.0.0.13", "1.0.0.17", "1.0.4.10", "1.0.4.12");
+private static final ImmutableSet<String> KNOWN_G6_FIRMWARES = 
+    ImmutableSet.of("1.6.5.23", "1.6.5.25", "1.6.5.27");
+private static final ImmutableSet<String> KNOWN_G6_REV2_FIRMWARES = 
+    ImmutableSet.of("2.18.2.67", "2.18.2.88", "2.27.2.98", "2.27.2.103");
+private static final ImmutableSet<String> KNOWN_ONE_FIRMWARES = 
+    ImmutableSet.of("30.192.103.34");
+private static final ImmutableSet<String> KNOWN_ALT_FIRMWARES = 
+    ImmutableSet.of("29.192.104.59", "32.192.104.82", "44.192.105.72");
+```
+
+This allows xDrip+ to:
+- Detect firmware version changes
+- Apply version-specific parsing rules
+- Log unknown firmware versions for investigation
+
+**iOS ports should consider similar versioning** to handle format drift gracefully.
+
+#### Expected Outcomes
+
+After collecting sufficient inventory data:
+1. Identify which firmware versions produce future-dated events
+2. Discover if byte layout changed (offset drift)
+3. Create firmware-version-specific parsers if needed
+4. Document confirmed message formats by version
+
+This captures the raw BLE hex when anomalies occur, enabling root cause analysis of potential format drift.
 
 ## Test Plan
 
