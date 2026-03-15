@@ -1106,3 +1106,45 @@ See [requirements.md](requirements.md) for the index.
 **Source**: `docs/sdqctl-proposals/ns-community-idp-proposal.md`
 
 ---
+
+## Timestamp Validation Requirements
+
+---
+
+### REQ-TS-001: Reject Future-Dated Entries
+
+**Statement**: The server SHOULD reject entries with `date` or `created_at` more than 24 hours in the future.
+
+**Rationale**: Future-dated entries break SAGE/CAGE pills, corrupt time-range queries, and indicate corrupt data from client-side bugs.
+
+**Scenarios**:
+- CGM sensor activation with corrupted timestamp
+- Device clock skew combined with relative time math
+- Date serialization roundtrip bugs
+
+**Verification**:
+- POST treatment with `created_at` = now + 48h
+- Verify HTTP 400 response with descriptive error
+- Verify `futureitems.js` admin plugin still works for cleanup
+
+**Gap Reference**: GAP-API-021
+
+**Source**: [LoopKit/Loop#2087](https://github.com/LoopKit/Loop/issues/2087), [nightscout/cgm-remote-monitor#8453](https://github.com/nightscout/cgm-remote-monitor/issues/8453)
+
+---
+
+### REQ-TS-002: Minimum Timestamp Validation
+
+**Statement**: The server MUST reject entries with `date` before 2000-01-01 (epoch 946684800000).
+
+**Rationale**: Timestamps before Y2K are almost certainly corrupt. This validation already exists in v3 API.
+
+**Verification**:
+- Verify `MIN_TIMESTAMP` constant enforced in `validateCommon()`
+- POST entry with `date` = 0 → HTTP 400
+
+**Status**: Implemented (v3 API only)
+
+**Source**: `lib/api3/const.json:MIN_TIMESTAMP`
+
+---

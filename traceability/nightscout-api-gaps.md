@@ -1716,3 +1716,47 @@ _None yet._
 **Source**: Nocturne `DeduplicationController.cs` (10.7KB)
 
 **Status**: Proposed
+
+---
+
+### GAP-API-021: No Rejection of Future-Dated Entries
+
+**Description**: Nightscout API accepts entries with `created_at` or `date` timestamps far in the future (e.g., year 2161). The API v3 validates `date > MIN_TIMESTAMP` (2000-01-01) but has no maximum/future date check.
+
+**Affected Systems**: cgm-remote-monitor, Loop, Trio, all uploading clients
+
+**Evidence**:
+- Loop issue [LoopKit/Loop#2087](https://github.com/LoopKit/Loop/issues/2087) - Sensor Start with future date
+- NS issue [nightscout/cgm-remote-monitor#8453](https://github.com/nightscout/cgm-remote-monitor/issues/8453) - Treatment dated `2161-07-12`
+- Source: `lib/api3/shared/operationTools.js:validateCommon()` - only checks `date > MIN_TIMESTAMP`
+- Source: `lib/api3/const.json` - defines `MIN_TIMESTAMP: 946684800000` (2000-01-01)
+
+**Root Cause Analysis**:
+- CGM sensor activation dates calculated as `Date().addingTimeInterval(-messageTimestamp)`
+- Corrupt/overflow `messageTimestamp` values produce future dates
+- Date serialization bugs (e.g., Swift Date → String → Date roundtrip)
+- Device clock skew combined with relative timestamp math
+
+**Impact**:
+- SAGE/CAGE pills show incorrect sensor age
+- Future treatments affect IOB/COB calculations
+- Time-range queries return unexpected results
+- Manual cleanup required via admin plugin (`futureitems.js`)
+
+**Possible Solutions**:
+1. **Server-side validation (recommended)**: Reject uploads with `date > Date.now() + 24h`
+2. **Warning mode first**: Log warning for future dates, add rejection later
+3. **Client hardening**: Validate dates before upload in Loop/Trio/AAPS
+4. **Admin improvements**: Auto-detect and quarantine future items
+
+**Remediation Priority**: Medium - workaround exists (`futureitems.js` admin plugin)
+
+**Related Gaps**:
+- GAP-SYNC-009 (timestamp format inconsistency)
+- GAP-API-008 (timestamp field naming)
+
+**Status**: Open (2026-03-15)
+
+**External References**:
+- LoopKit/Loop#2087
+- nightscout/cgm-remote-monitor#8453

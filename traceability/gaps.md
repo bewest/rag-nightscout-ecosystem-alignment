@@ -16,7 +16,7 @@ This document is an index of gaps organized by domain.
 
 | Domain | Gap Count | File | Last Verified |
 |--------|-----------|------|---------------|
-| nightscout-api | 74 | [nightscout-api-gaps.md](nightscout-api-gaps.md) | 2026-02-01 |
+| nightscout-api | 75 | [nightscout-api-gaps.md](nightscout-api-gaps.md) | 2026-03-15 |
 | sync-identity | 71 | [sync-identity-gaps.md](sync-identity-gaps.md) | 2026-02-01 |
 | aid-algorithms | 71 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-02-08 |
 | connectors | 68 | [connectors-gaps.md](connectors-gaps.md) | 2026-02-01 |
