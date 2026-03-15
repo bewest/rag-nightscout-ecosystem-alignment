@@ -254,40 +254,160 @@ The cgm-remote-monitor issue raised a valid concern:
 
 ## Recommended Fix Strategy
 
-### Phase 1: Client-Side (Prevent at source)
+### Phase 1: G7SensorKit Stopgap (Highest Priority)
 
-Add to `G7CGMManager.swift` after line 311:
+**File**: `G7SensorKit/G7SensorKit/G7CGMManager/G7CGMManager.swift`
+**Location**: Around line 305-320, in `sensor(_:didDiscoverNewSensor:activatedAt:)`
+
+**Current Code** (lines 305-320):
 ```swift
-// Validate activatedAt is not in the future
-guard activatedAt <= Date() else {
-    log.error("Future-dated sensor activation detected: %{public}@", 
-              String(describing: activatedAt))
-    // Don't create or report the event
-    return false
+if shouldSwitchToNewSensor {
+    mutateState { state in
+        state.sensorID = name
+        state.activatedAt = activatedAt
+    }
+    let event = PersistedCgmEvent(
+        date: activatedAt,
+        type: .sensorStart,
+        deviceIdentifier: name,
+        expectedLifetime: lifetime + G7Sensor.gracePeriod,
+        warmupPeriod: warmupDuration
+    )
+    delegate.notify { delegate in
+        delegate?.cgmManager(self, hasNew: [event])
+    }
 }
 ```
 
-### Phase 2: Server-Side (Defense in depth)
+**Proposed Fix** (add validation before creating event):
+```swift
+if shouldSwitchToNewSensor {
+    // Stopgap: Reject future-dated sensor activations
+    // See: https://github.com/LoopKit/Loop/issues/2087
+    // See: https://github.com/nightscout/cgm-remote-monitor/issues/8453
+    guard activatedAt <= Date() else {
+        log.error("Future-dated sensor activation detected, not uploading: %{public}@", 
+                  String(describing: activatedAt))
+        return false
+    }
+    
+    mutateState { state in
+        state.sensorID = name
+        state.activatedAt = activatedAt
+    }
+    // ... rest unchanged
+}
+```
 
-Add to `validateCommon()` with **warning only** initially:
+**Reference**: This mirrors the fix in CGMBLEKit PR #191:
+- `CGMBLEKit/CGMBLEKit/TransmitterManager.swift` lines 340-347
+
+### Phase 2: LibreTransmitter Audit (Medium Priority)
+
+**File**: `LibreTransmitter/LibreTransmitter/LibreTransmitterManager+Transmitters.swift`
+**Concern**: Same pattern - `Date() - TimeInterval(minutes: minutesSinceStart)`
+
+```swift
+// Current code
+verifySensorChange(for: sensorData.uuid, 
+    activatedAt: Date() - TimeInterval(minutes: Double(sensorData.minutesSinceStart)))
+```
+
+If `minutesSinceStart` is negative (corrupt), this produces a future date.
+
+**Proposed**: Add validation in `verifySensorChange()` or before calling it.
+
+### Phase 3: Server-Side Warning (Defense in Depth)
+
+**File**: `cgm-remote-monitor/lib/api3/shared/operationTools.js`
+**Function**: `validateCommon()`
+
+Add after MIN_TIMESTAMP check:
 ```javascript
-const MAX_FUTURE_MS = 24 * 60 * 60 * 1000;
+const MAX_FUTURE_MS = 24 * 60 * 60 * 1000; // 24 hours
 if (doc.date > Date.now() + MAX_FUTURE_MS) {
-    console.warn('Future-dated document:', doc.identifier, new Date(doc.date));
-    // Phase 2a: Log only
-    // Phase 2b: Return HTTP 400 after clients are fixed
+    console.warn('Future-dated document detected:', 
+        doc.identifier, new Date(doc.date), doc.app);
+    // Phase 3a: Log only (don't reject yet - causes infinite retry)
+    // Phase 3b: After client fixes deployed, add rejection
 }
 ```
 
-### Phase 3: Message Auditing
+**Warning**: Do NOT reject until client fixes are deployed - causes infinite retry loops.
 
-Create comprehensive test coverage for all G6/G7 message types:
-- EGV (0x4E) - already well tested
-- Backfill (0x59) - tested
-- Session Start/Stop - need more coverage
-- Error conditions and malformed messages
+### Phase 4: Enhanced Logging for R&D
+
+Add to G7Sensor.swift around line 129:
+```swift
+activationDate = Date().addingTimeInterval(-TimeInterval(message.messageTimestamp))
+
+// Debug logging for future date investigation
+if let activationDate = activationDate, activationDate > Date() {
+    log.error("FUTURE_DATE_DEBUG: messageTimestamp=%u, raw=%@, calculated=%@",
+              message.messageTimestamp,
+              message.data.hexadecimalString,
+              String(describing: activationDate))
+}
+```
+
+This captures the raw BLE hex when corruption occurs, enabling root cause analysis.
 
 ## Test Plan
+
+### Unit Tests (Swift - requires Xcode)
+
+Add to `G7SensorKitTests/G7GlucoseMessageTests.swift`:
+
+```swift
+func testFutureDateDetection() {
+    // Construct a message with messageTimestamp that would produce future date
+    // messageTimestamp = UInt32.max would mean activationDate = Date() - 136 years = far past
+    // So future dates must come from somewhere else...
+    
+    // Test: Normal 10-day sensor (864000 seconds)
+    let normalData = Data(hexadecimalString: "4e0000320d00...")!  // 864000 = 0x000D3200
+    let normalMsg = G7GlucoseMessage(data: normalData)!
+    XCTAssertEqual(864000, normalMsg.messageTimestamp)
+    
+    // Test: Edge case - messageTimestamp = 0 (brand new sensor)
+    // activationDate = Date() - 0 = now (valid)
+    
+    // Test: Large messageTimestamp (sensor expired)
+    // activationDate = Date() - large = past (valid)
+}
+
+func testBackfillTimestampEdgeCases() {
+    // Test 24-bit timestamp overflow scenarios
+    // Max 24-bit = 16,777,215 seconds = ~194 days (within sensor lifetime)
+}
+```
+
+### Integration Tests (requires actual sensor or mock)
+
+1. Simulate BLE packet with corrupted timestamp bytes
+2. Verify G7CGMManager rejects future-dated events
+3. Verify logging captures raw hex for analysis
+
+### Nightscout API Tests (can run on Linux)
+
+Add to `tests/api.treatments.test.js`:
+```javascript
+it('should warn on future-dated treatments', async () => {
+    const futureDate = new Date(Date.now() + 48 * 60 * 60 * 1000); // +48h
+    const treatment = {
+        eventType: 'Sensor Start',
+        created_at: futureDate.toISOString(),
+        enteredBy: 'test'
+    };
+    
+    // For now: should succeed but log warning
+    // After client fixes: should reject with HTTP 400
+    const res = await request.post('/api/v1/treatments')
+        .send(treatment);
+    
+    // Check server logs for warning
+});
+```
 
 1. Create test treatments with:
    - `created_at` = now + 1 day (should pass?)

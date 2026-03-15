@@ -1731,11 +1731,17 @@ _None yet._
 - Source: `lib/api3/shared/operationTools.js:validateCommon()` - only checks `date > MIN_TIMESTAMP`
 - Source: `lib/api3/const.json` - defines `MIN_TIMESTAMP: 946684800000` (2000-01-01)
 
-**Root Cause Analysis**:
-- CGM sensor activation dates calculated as `Date().addingTimeInterval(-messageTimestamp)`
-- Corrupt/overflow `messageTimestamp` values produce future dates
-- Date serialization bugs (e.g., Swift Date → String → Date roundtrip)
-- Device clock skew combined with relative timestamp math
+**Root Cause Analysis** (2026-03-15):
+
+The bug originates in client-side CGM parsing, not server validation:
+
+| Path | File | Issue |
+|------|------|-------|
+| G7 (G7SensorKit) | `G7Sensor.swift:129` | `Date() - messageTimestamp` with corrupt timestamp |
+| G6 (CGMBLEKit) | `TransmitterManager.swift:340-347` | **Fixed** via PR #191 stopgap |
+| Libre (LibreTransmitter) | `LibreTransmitterManager+Transmitters.swift` | `Date() - minutesSinceStart` if negative |
+
+**Key Finding**: G7SensorKit lacks the stopgap filter that CGMBLEKit PR #191 added for G6.
 
 **Impact**:
 - SAGE/CAGE pills show incorrect sensor age
@@ -1743,20 +1749,28 @@ _None yet._
 - Time-range queries return unexpected results
 - Manual cleanup required via admin plugin (`futureitems.js`)
 
-**Possible Solutions**:
-1. **Server-side validation (recommended)**: Reject uploads with `date > Date.now() + 24h`
-2. **Warning mode first**: Log warning for future dates, add rejection later
-3. **Client hardening**: Validate dates before upload in Loop/Trio/AAPS
-4. **Admin improvements**: Auto-detect and quarantine future items
+**Remediation Strategy** (phased - see detailed analysis):
 
-**Remediation Priority**: Medium - workaround exists (`futureitems.js` admin plugin)
+| Phase | Action | Location | Notes |
+|-------|--------|----------|-------|
+| 1 | Add G7 stopgap filter | `G7CGMManager.swift:305-320` | Like CGMBLEKit PR #191 |
+| 2 | Audit LibreTransmitter | `LibreTransmitterManager+Transmitters.swift` | Similar pattern |
+| 3 | Server-side warning | `operationTools.js:validateCommon()` | Log only, don't reject |
+| 4 | Enhanced logging | `G7Sensor.swift:129` | Capture raw hex on future date |
+
+**Warning**: Server-side rejection MUST NOT be implemented until client fixes are deployed. Rejection causes infinite retry loops (client sees "failed upload" → retries forever).
+
+**Detailed Analysis**: [`docs/backlogs/future-dated-entries-analysis.md`](../docs/backlogs/future-dated-entries-analysis.md)
+
+**Remediation Priority**: High - affects sensor tracking for G7 users
 
 **Related Gaps**:
 - GAP-SYNC-009 (timestamp format inconsistency)
 - GAP-API-008 (timestamp field naming)
 
-**Status**: Open (2026-03-15)
+**Status**: Open (2026-03-15) - Client fix needed first
 
 **External References**:
 - LoopKit/Loop#2087
 - nightscout/cgm-remote-monitor#8453
+- LoopKit/CGMBLEKit#191 (G6 stopgap, merged)
