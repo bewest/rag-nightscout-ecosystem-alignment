@@ -400,6 +400,113 @@ guard let sessionStartDate = x.sessionStartDate,
 }
 ```
 
+## xDrip+ vs CGMBLEKit: Why xDrip+ Handles This Correctly
+
+xDrip+ implements **multiple layers of defense** that CGMBLEKit lacks:
+
+### Layer 1: Named Sentinel Constant
+
+```java
+// xDrip+ TransmitterMessage.java:16
+static final int INVALID_TIME = 0xFFFFFFFF;
+```
+
+CGMBLEKit has no such constant - the value is unnamed and unchecked.
+
+### Layer 2: Explicit Sentinel Check in `isOkay()`
+
+```java
+// xDrip+ SessionStartRxMessage.java:41
+boolean isOkay() {
+    return isValid() && status == 0x00 && ... && sessionStartTime != INVALID_TIME;
+}
+```
+
+CGMBLEKit never checks for this sentinel value.
+
+### Layer 3: Conditional Value Access
+
+```java
+// xDrip+ SessionStartRxMessage.java:49-54
+long getSessionStart() {
+    if (isOkay() && sessionStartTime > 0) {  // Only return if valid!
+        return DexTimeKeeper.fromDexTime(transmitterId, sessionStartTime);
+    } else {
+        return 0;  // Return 0 (invalid) instead of corrupt date
+    }
+}
+```
+
+CGMBLEKit unconditionally calculates and stores the date:
+```swift
+// CGMBLEKit Glucose.swift:52 - NO CHECK!
+sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
+```
+
+### Layer 4: `sessionInProgress()` Check
+
+```java
+// xDrip+ TransmitterTimeRxMessage.java:35-37
+public boolean sessionInProgress() {
+    return sessionStartTime != -1 && currentTime != sessionStartTime;
+}
+
+public long getRealSessionStartTime() {
+    if (sessionInProgress()) {     // Only calculate if valid session!
+        return getRealSessionStartTime(JoH.tsl());
+    } else {
+        return -1;  // Return invalid marker
+    }
+}
+```
+
+### Layer 5: DexTimeKeeper Validation
+
+```java
+// xDrip+ DexTimeKeeper.java:49-53
+if (activation_time > JoH.tsl()) {
+    UserError.Log.wtf(TAG, "Transmitter activation time is in the future. Not possible to update: " + dexTimeStamp);
+    return;  // REJECT future dates entirely!
+}
+```
+
+### Comparison Table
+
+| Defense | xDrip+ | CGMBLEKit |
+|---------|--------|-----------|
+| Named `INVALID_TIME` constant | ✅ `0xFFFFFFFF` | ❌ None |
+| Check before using sessionStartTime | ✅ `isOkay()` | ❌ None |
+| `sessionInProgress()` guard | ✅ Yes | ❌ None |
+| Return invalid marker instead of bad date | ✅ Returns 0 or -1 | ❌ Returns corrupt date |
+| Future date rejection | ✅ `activation_time > now` | ❌ None (PR #191 only filters events) |
+| Validation in time conversion | ✅ DexTimeKeeper | ❌ Direct arithmetic |
+
+### The Key Insight
+
+xDrip+ treats `0xFFFFFFFF` as a **semantic value** meaning "no session" rather than a **numeric value** to calculate with. This is the fundamental design difference that prevents the bug.
+
+### Recommended CGMBLEKit Fix (Following xDrip+ Pattern)
+
+```swift
+// CGMBLEKit/Glucose.swift - Add sentinel handling like xDrip+
+static let INVALID_TIME: UInt32 = 0xFFFFFFFF
+
+init(...) {
+    // Check for invalid sentinel BEFORE calculation
+    if timeMessage.sessionStartTime != Self.INVALID_TIME {
+        sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
+    } else {
+        sessionStartDate = activationDate  // Use activationDate as fallback
+    }
+}
+
+// Or add a sessionInProgress check like xDrip+
+var sessionInProgress: Bool {
+    return timeMessage.sessionStartTime != Self.INVALID_TIME && 
+           timeMessage.currentTime != timeMessage.sessionStartTime
+}
+```
+
 ### Existing iOS Logging Analysis
 
 **Current logging IS available but NOT sufficient for diagnosis:**
