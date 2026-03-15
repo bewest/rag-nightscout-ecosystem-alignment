@@ -648,41 +648,47 @@ guard let sessionStartDate = x.sessionStartDate,
 
 ### Required Code Changes
 
+> ⚠️ **See Implementation Guide below for complete, consistent fixes.**
+> The key principle: **No session = No sensor start record** (set to nil, not a fallback date).
+
 **Fix 1: CGMBLEKit/Glucose.swift (Best - fix at source)**
 
 ```swift
 // Line 52 - current bug:
 sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
 
-// Fixed version:
-if timeMessage.sessionStartTime == UInt32.max {
-    // 0xFFFFFFFF means no active session - use activationDate as fallback
-    sessionStartDate = activationDate
-} else {
+// Fixed version (set to nil, not a fallback):
+private static let INVALID_TIME: UInt32 = 0xFFFFFFFF
+
+if timeMessage.sessionStartTime != Self.INVALID_TIME {
     sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
+} else {
+    // No active session = nil (don't create sensor start record)
+    sessionStartDate = nil
 }
 ```
 
 **Fix 2: Trio/PluginSource.swift (Defense in depth)**
 
 ```swift
-// Lines 221, 226 - add validation:
+// Lines 221, 226 - skip setting sensorStartDate if invalid:
 if let sessionStart = latestReading?.sessionStartDate,
-   sessionStart > Date().addingTimeInterval(-86400 * 365),  // Not > 1 year past
-   sessionStart <= Date().addingTimeInterval(86400) {       // Not > 1 day future
+   sessionStart > Date().addingTimeInterval(-112 * 24 * 60 * 60),  // Within G6 transmitter life
+   sessionStart <= Date().addingTimeInterval(60 * 60) {            // Not > 1 hour future
     sensorStartDate = sessionStart
 } else {
-    sensorStartDate = latestReading?.activationDate  // Fallback to correct date
+    // Invalid or no session - don't set sensorStartDate (no record created)
+    sensorStartDate = nil
 }
 ```
 
 **Fix 3: GlucoseStorage.swift (Final safety net)**
 
 ```swift
-// Line 230 - add guard:
+// Line 230 - guard already skips nil, add validation for corrupt dates:
 guard let sessionStartDate = x.sessionStartDate,
-      sessionStartDate <= Date().addingTimeInterval(86400) else {
-    debug(.deviceManager, "Skipping CGM state with invalid sessionStartDate: \(String(describing: x.sessionStartDate))")
+      sessionStartDate <= Date().addingTimeInterval(60 * 60) else {
+    // Skip creating sensor start treatment for invalid dates
     continue
 }
 ```
@@ -800,9 +806,41 @@ var sessionInProgress: Bool {
 
 > **For Loop, Trio, and CGMBLEKit maintainers**: This section provides copy-paste-ready fixes.
 
+### ⚠️ Critical Design Principle
+
+**No active session = No sensor start record should be created**
+
+This is how xDrip+ correctly handles it:
+```java
+// Ob1G5StateMachine.java:953-962
+if (txtime.sessionInProgress()) {
+    DexSessionKeeper.setStart(txtime.getRealSessionStartTime());  // Create record
+} else {
+    DexSessionKeeper.clearStart();  // NO RECORD - correct behavior!
+}
+```
+
+PR #191 also follows this principle - it **filters out** invalid events rather than substituting a different date.
+
+**WRONG approach** (produces misleading data):
+```swift
+// DON'T DO THIS - creates fake sensor start record!
+if sessionStartTime == INVALID_TIME {
+    sessionStartDate = activationDate  // ❌ Wrong: creates record with wrong date
+}
+```
+
+**CORRECT approach** (no record when no session):
+```swift
+// DO THIS - set to nil, let downstream skip record creation
+if sessionStartTime == INVALID_TIME {
+    sessionStartDate = nil  // ✅ Correct: no session = no sessionStartDate
+}
+```
+
 ### Validation Bounds Rationale
 
-When validating sensor activation/session start times, use bounds based on **transmitter lifecycle**, not arbitrary limits:
+When validating **existing** session start times (not creating them), use bounds based on transmitter lifecycle:
 
 | Device | Transmitter/Sensor Lifespan | Past Limit | Future Limit |
 |--------|----------------------------|------------|--------------|
@@ -811,23 +849,14 @@ When validating sensor activation/session start times, use bounds based on **tra
 | G7 | ~10 days sensor | 10 days | 1 hour (clock drift) |
 | Libre 2/3 | 14 days sensor | 14 days | 1 hour (clock drift) |
 
-**Why accept old dates?**
-- A transmitter may have been worn once, then stored
-- When scanned again, the last session start date is still valid
-- Rejecting valid historical data would break legitimate use cases
-
-**Why limit future dates?**
-- Sensor start CAN'T be in the future (it's measured from first pairing)
-- Allow small tolerance (1 hour) for device clock drift
-
 ### Quick Reference
 
-| Project | Fix Location | Priority | Complexity |
-|---------|--------------|----------|------------|
-| **CGMBLEKit** | `Glucose.swift:52` | 🔴 Critical | Low - 5 lines |
-| **Trio** | `PluginSource.swift:221,226` | 🟡 Defense | Low - 6 lines |
-| **Trio** | `GlucoseStorage.swift:230` | 🟢 Safety net | Low - 4 lines |
-| **Loop** | Uses CGMBLEKit | Fix CGMBLEKit | - |
+| Project | Fix Location | Priority | Complexity | Result |
+|---------|--------------|----------|------------|--------|
+| **CGMBLEKit** | `Glucose.swift:52` | 🔴 Critical | Low | `sessionStartDate = nil` |
+| **Trio** | `PluginSource.swift:221,226` | 🟡 Defense | Low | Skip setting `sensorStartDate` |
+| **Trio** | `GlucoseStorage.swift:230` | 🟢 Safety net | Low | `continue` (skip record) |
+| **Loop** | Uses CGMBLEKit | Fix CGMBLEKit | - | - |
 
 ---
 
@@ -842,50 +871,57 @@ sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.se
 
 **Problem**: When `sessionStartTime = 0xFFFFFFFF` (no active session), this adds 136 years.
 
-**Option A1: Simple sentinel check (minimal change)**
+**Option A1: Simple sentinel check - set to nil (RECOMMENDED)**
 ```swift
 // Replace line 52 with:
-if timeMessage.sessionStartTime == UInt32.max {
-    // 0xFFFFFFFF = no active session, use activationDate as fallback
-    sessionStartDate = activationDate
-} else {
+private static let INVALID_TIME: UInt32 = 0xFFFFFFFF
+
+if timeMessage.sessionStartTime != Self.INVALID_TIME {
     sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
+} else {
+    // No active session = no sessionStartDate (let downstream handle gracefully)
+    sessionStartDate = nil
 }
 ```
 
-**Option A2: Following xDrip+ pattern (more robust)**
+**Option A2: Following xDrip+ pattern with sessionInProgress property**
 ```swift
 // Add constant at top of struct:
 private static let INVALID_TIME: UInt32 = 0xFFFFFFFF
-
-// Replace line 52 with:
-if timeMessage.sessionStartTime != Self.INVALID_TIME &&
-   timeMessage.sessionStartTime != timeMessage.currentTime {
-    sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
-} else {
-    sessionStartDate = activationDate
-}
 
 // Add computed property:
 public var sessionInProgress: Bool {
     timeMessage.sessionStartTime != Self.INVALID_TIME &&
     timeMessage.currentTime != timeMessage.sessionStartTime
 }
+
+// Replace line 52 with:
+if sessionInProgress {
+    sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
+} else {
+    sessionStartDate = nil  // No session in progress
+}
 ```
+
+**Note**: If `sessionStartDate` is currently non-optional (`Date`), it should be changed to `Date?` to properly represent "no session". This is the correct semantic fix.
 
 **Tests to add** (`CGMBLEKitTests/GlucoseTests.swift`):
 ```swift
-func testInvalidSessionStartTime() {
+func testInvalidSessionStartTimeReturnsNil() {
     // Create a timeMessage with sessionStartTime = 0xFFFFFFFF
     let timeData = Data(hexadecimalString: "2500e8f87100ffffffff010000000a70")!
     let timeMessage = TransmitterTimeRxMessage(data: timeData)!
     
     XCTAssertEqual(timeMessage.sessionStartTime, UInt32.max)
     
-    // Glucose should NOT add 136 years
+    // Glucose should return nil sessionStartDate, not a future date
     let glucose = Glucose(...)  // with this timeMessage
-    let maxAllowedFuture = Date().addingTimeInterval(86400)
-    XCTAssertLessThanOrEqual(glucose.sessionStartDate, maxAllowedFuture)
+    XCTAssertNil(glucose.sessionStartDate, "No session should mean nil sessionStartDate")
+}
+
+func testSessionInProgressFalseWhenInvalidTime() {
+    let glucose = Glucose(...)  // with sessionStartTime = 0xFFFFFFFF
+    XCTAssertFalse(glucose.sessionInProgress)
 }
 ```
 
@@ -900,9 +936,7 @@ func testInvalidSessionStartTime() {
 sensorStartDate = latestReading?.sessionStartDate
 ```
 
-**Validation bounds rationale**:
-- **Past limit**: G6 transmitter lifespan is ~112 days, so accept any date within transmitter lifecycle
-- **Future limit**: Sensor start can't be in the future, allow small tolerance for clock drift
+**Correct fix**: If sessionStartDate is invalid, **don't set sensorStartDate at all** (or set to nil).
 
 ```swift
 // Transmitter lifecycle constants
@@ -913,14 +947,17 @@ private static let CLOCK_DRIFT_TOLERANCE: TimeInterval = 60 * 60  // 1 hour
 **Replace with**:
 ```swift
 // For G5CGMManager (line 221) and G6CGMManager (line 226):
+// Only set sensorStartDate if we have a VALID session
 if let sessionStart = latestReading?.sessionStartDate,
-   sessionStart > Date().addingTimeInterval(-Self.G6_TRANSMITTER_LIFESPAN),  // Within transmitter life
-   sessionStart <= Date().addingTimeInterval(Self.CLOCK_DRIFT_TOLERANCE) {   // Allow small future drift
+   sessionStart > Date().addingTimeInterval(-Self.G6_TRANSMITTER_LIFESPAN),
+   sessionStart <= Date().addingTimeInterval(Self.CLOCK_DRIFT_TOLERANCE) {
     sensorStartDate = sessionStart
 } else {
-    sensorStartDate = latestReading?.activationDate  // Fallback to activationDate
+    // Invalid or no session - DON'T create sensor start record
+    // Leave sensorStartDate as nil
+    sensorStartDate = nil
     if latestReading?.sessionStartDate != nil {
-        log.error("Invalid sessionStartDate detected: %{public}@", 
+        log.error("Invalid sessionStartDate detected (skipping): %{public}@", 
                   String(describing: latestReading?.sessionStartDate))
     }
 }
@@ -937,22 +974,43 @@ if let sessionStart = latestReading?.sessionStartDate,
 guard let sessionStartDate = x.sessionStartDate else { continue }
 ```
 
-**Replace with**:
+This is already correct! It skips creating records when `sessionStartDate` is nil.
+
+**Add validation for corrupt non-nil dates**:
 ```swift
 // G6 transmitter lifespan: ~112 days
-// Accept any session start within transmitter lifecycle
 let transmitterLifespan: TimeInterval = 112 * 24 * 60 * 60
 let clockDriftTolerance: TimeInterval = 60 * 60  // 1 hour for clock drift
 
 guard let sessionStartDate = x.sessionStartDate,
       sessionStartDate > Date().addingTimeInterval(-transmitterLifespan),
       sessionStartDate <= Date().addingTimeInterval(clockDriftTolerance) else {
+    // Invalid date OR no session - skip creating sensor start treatment
     if x.sessionStartDate != nil {
         debug(.deviceManager, "Skipping CGM state with invalid sessionStartDate: \(String(describing: x.sessionStartDate))")
     }
-    continue
+    continue  // ✅ Correct: no record created
 }
 ```
+
+---
+
+### Consistency with PR #191 and xDrip+
+
+| Approach | What It Does | Correct? |
+|----------|--------------|----------|
+| **PR #191** | Filters out future-dated events | ✅ Yes - no record |
+| **xDrip+** | `DexSessionKeeper.clearStart()` | ✅ Yes - no record |
+| **Our Fix A** | `sessionStartDate = nil` | ✅ Yes - no record |
+| **Our Fix B/C** | `continue` / skip | ✅ Yes - no record |
+| ~~Fallback to activationDate~~ | Creates record with wrong date | ❌ **NO** - misleading |
+
+### Why NOT Use activationDate as Fallback?
+
+1. **Semantic incorrectness**: `activationDate` is when the transmitter was first paired, NOT when a sensor session started
+2. **Misleading SAGE**: Would show incorrect sensor age (transmitter age instead of sensor age)
+3. **Violates user expectation**: If there's no sensor, there shouldn't be a "Sensor Start" record
+4. **xDrip+ doesn't do this**: xDrip+ returns 0 or -1, not a substitute date
 
 ---
 
@@ -971,13 +1029,15 @@ The current code adds this value as seconds to `activationDate`, resulting in da
 
 ## Fix
 
-[Describe which option you implemented]
+Set `sessionStartDate = nil` when `sessionStartTime == 0xFFFFFFFF`, following xDrip+ pattern where
+no active session means no sensor start record is created.
 
 ## Testing
 
-- [ ] Added test case for `sessionStartTime = 0xFFFFFFFF`
+- [ ] Added test case for `sessionStartTime = 0xFFFFFFFF` returns nil
+- [ ] Added test case for `sessionInProgress` returns false when no session
 - [ ] Verified existing tests still pass
-- [ ] Tested with simulator/test data showing future dates are rejected
+- [ ] Tested with simulator/test data showing no sensor start record is created when no session
 
 ## References
 
