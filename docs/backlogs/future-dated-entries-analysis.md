@@ -5,19 +5,75 @@
 **Issue References**: 
 - [LoopKit/Loop#2087](https://github.com/LoopKit/Loop/issues/2087)
 - [nightscout/cgm-remote-monitor#8453](https://github.com/nightscout/cgm-remote-monitor/issues/8453)
-- [LoopKit/CGMBLEKit#191](https://github.com/LoopKit/CGMBLEKit/pull/191) - G6 stopgap fix
+- [LoopKit/CGMBLEKit#191](https://github.com/LoopKit/CGMBLEKit/pull/191) - G6 partial stopgap fix
 **Gap**: GAP-API-021
 
-## Key Finding (2026-03-15)
+## ⚠️ ROOT CAUSE CONFIRMED (2026-03-15)
 
-The stopgap fix from PR #191 was applied to **CGMBLEKit (G6)** but **NOT to G7SensorKit**.
+**The bug is in G6 (CGMBLEKit), NOT G7!** Sensor ID "89N9W6" is a G6 transmitter ID format.
 
-| Path | Stopgap Fix | Location |
-|------|-------------|----------|
-| G6 (CGMBLEKit) | ✅ Applied | `CGMBLEKit/TransmitterManager.swift:342` |
-| G7 (G7SensorKit) | ❌ Missing | `G7SensorKit/G7CGMManager/G7CGMManager.swift:311` |
+### The Exact Bug Path
 
-Both Loop and Trio use the same G7SensorKit code that creates `PersistedCgmEvent` with `date: activatedAt` without any validation.
+```
+1. G6 transmitter returns sessionStartTime = 0xFFFFFFFF (no active session sentinel)
+   └── TransmitterTimeRxMessage.sessionStartTime = 4,294,967,295
+
+2. Glucose.swift:52 calculates corrupt sessionStartDate:
+   └── sessionStartDate = activationDate + 4,294,967,295 seconds = 136 YEARS FUTURE
+
+3. CGMBLEKit PR #191 stopgap ONLY filters PersistedCgmEvent objects
+   └── Does NOT fix Glucose.sessionStartDate property!
+
+4. PluginSource.swift:226 reads corrupt date (NO VALIDATION):
+   └── sensorStartDate = latestReading?.sessionStartDate  // Still corrupt!
+
+5. BloodGlucose stores corrupt sessionStartDate
+   └── sessionStartDate: sensorStartDate
+
+6. GlucoseStorage creates NightscoutTreatment with corrupt date:
+   └── createdAt: sessionStartDate  // 2161-07-12!
+
+7. Uploaded to Nightscout → SAGE/CAGE broken
+```
+
+### Math Verification
+
+```python
+notes (activationDate):     "2025-06-04 19:56:03"
+created_at (sessionStartDate): "2161-07-12T02:24:18"
+
+Difference = 4,294,967,295 seconds = 0xFFFFFFFF EXACTLY!
+```
+
+### Why the Existing Stopgap Doesn't Work
+
+The PR #191 fix filters `PersistedCgmEvent` objects AFTER they're created:
+
+```swift
+// TransmitterManager.swift:338-346 - THIS ONLY FILTERS EVENTS
+events = events.filter { event in
+    if event.date > Date() {
+        log.error("Future-dated event detected: %{public}@", String(describing: event))
+        return false
+    }
+    return true
+}
+```
+
+But `Glucose.sessionStartDate` is a PUBLIC PROPERTY that other code reads directly:
+
+```swift
+// PluginSource.swift:226 - READS CORRUPT VALUE DIRECTLY
+sensorStartDate = latestReading?.sessionStartDate  // No validation!
+```
+
+### Required Fix Locations
+
+| Location | Current State | Required Fix |
+|----------|---------------|--------------|
+| `CGMBLEKit/Glucose.swift:52` | Blindly adds sessionStartTime | Check for `0xFFFFFFFF` sentinel |
+| `PluginSource.swift:221,226` | Reads sessionStartDate without validation | Add future date check |
+| `GlucoseStorage.swift:241` | Uses sessionStartDate directly | Add validation before creating treatment |
 
 ## Problem Statement
 
@@ -188,56 +244,161 @@ if (doc.date > Date.now() + MAX_FUTURE_MS) {
 3. [x] Check if AAPS/xDrip+ have similar issues → xDrip+ has validation, iOS ports lack it
 4. [x] Review date format handling in Trio's ISO8601 serializer → Not the issue
 5. [x] Compare Loop vs Trio CGMBLEKit/G7SensorKit implementations
-6. [ ] **Create PR for G7SensorKit stopgap fix** (similar to CGMBLEKit PR #191)
+6. [x] ~~Create PR for G7SensorKit stopgap fix~~ → **WRONG TARGET - issue is G6/CGMBLEKit**
 7. [x] Document all G6/G7 message types that affect timestamps → See xDrip formats below
-8. [ ] Add message logging for unknown/malformed messages
-9. [ ] **NEW: Implement message inventory logging** to detect firmware format changes
-10. [ ] **NEW: Add firmware version registry** (similar to xDrip+ FirmwareCapability.java)
-11. [ ] **NEW: Collect raw BLE samples** from users experiencing future-dated events
-12. [x] **NEW: Analyze 2^32 overflow pattern** - CRITICAL FINDING!
+8. [ ] Fix PluginSource.swift to validate sessionStartDate before use
+9. [ ] Fix Glucose.swift to detect 0xFFFFFFFF sentinel and use nil instead
+10. [x] **CRITICAL: Analyze 2^32 overflow pattern** - ROOT CAUSE CONFIRMED!
 
 ## Root Cause Deep Dive
 
-### ⚠️ CRITICAL FINDING: 2^32 Overflow Pattern
+### ✅ ROOT CAUSE CONFIRMED: G6 sessionStartTime = 0xFFFFFFFF Sentinel
+
+**The bug is in CGMBLEKit (G6), NOT G7SensorKit!**
+
+Sensor ID "89N9W6" is a G6 transmitter ID format (6 alphanumeric characters). G7 uses 4-digit pairing codes.
 
 Analyzing the actual bad data from Issue #8453:
 ```
-notes: "89N9W6 activated on 2025-06-04 19:56:03 +0000"  (CORRECT)
-created_at: "2161-07-12T02:24:18.577Z"                   (WRONG)
+notes: "89N9W6 activated on 2025-06-04 19:56:03 +0000"  (CORRECT - activationDate)
+created_at: "2161-07-12T02:24:18.577Z"                   (WRONG - sessionStartDate)
 ```
 
-The difference between wrong and correct dates is **EXACTLY 2^32 seconds**:
+The difference is **EXACTLY 0xFFFFFFFF seconds** (4,294,967,295):
 
 ```python
-correct_epoch = 1749092163  # 2025-06-04 19:56:03
-wrong_epoch   = 6044059459  # 2161-07-12 02:24:19
-difference    = 4294967296  # = 2^32 EXACTLY!
+correct_epoch = 1749092163  # 2025-06-04 19:56:03 (activationDate)
+wrong_epoch   = 6044059458  # 2161-07-12 02:24:18 (sessionStartDate)
+difference    = 4294967295  # = 0xFFFFFFFF EXACTLY!
 ```
 
-**This proves the bug is NOT in BLE message parsing!**
+### The Bug Mechanism
 
-The `activationDate` is calculated correctly (as shown in the `notes` field), but somewhere in the serialization/upload chain, **2^32 seconds is being added to the epoch timestamp**.
+When a G6 transmitter has **no active sensor session**, it returns `sessionStartTime = 0xFFFFFFFF` as a sentinel value:
 
-### Hypothesis: Integer Type Confusion
+```swift
+// TransmitterTimeRxMessage.swift - test shows sentinel
+XCTAssertEqual(0xffffffff, message.sessionStartTime)  // No session active
+```
 
-Possible causes:
-1. **iOS Date → TimeInterval → Int conversion** treats a signed 32-bit as unsigned
-2. **JSON encoding** of epoch timestamp with incorrect type handling
-3. **Network layer** sign extension issue when converting to 64-bit
-4. **Nightscout API** or MongoDB driver issue with timestamp handling
+This value flows directly into `Glucose.sessionStartDate`:
 
-### Diagnostic Investigation Matrix
+```swift
+// CGMBLEKit/Glucose.swift:52 - THE BUG
+sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
+// When sessionStartTime = 0xFFFFFFFF:
+// sessionStartDate = 2025-06-04 + 4,294,967,295 seconds = 2161-07-12 !!!
+```
 
-| Location | What to Check | How to Verify | Status |
-|----------|---------------|---------------|--------|
-| G7Sensor.activationDate calculation | `Date() - TimeInterval(messageTimestamp)` | notes field shows CORRECT | ✅ Ruled Out |
-| G7CGMManager.state.activatedAt | Stored in `[String: Any]` dict | Add logging at state save/load | ⬜ Unknown |
-| PluginSource.sensorStartDate | Copied from `cgmTransmitterManager.sensorActivatedAt` | Add logging | ⬜ Unknown |
-| BloodGlucose.sessionStartDate | JSON-encoded via `Codable` | Check ISO8601 output | ⬜ Unknown |
-| GlucoseStorage.createCGMStateTreatment | Uses `sessionStartDate` as `createdAt` | Add logging | ⬜ Unknown |
-| NightscoutTreatment JSON encoding | `JSONEncoder.dateEncodingStrategy = .customISO8601` | Print encoded JSON | 🔍 **Primary Suspect** |
-| Nightscout API parseDate | Uses `moment.parseZone()` for ISO8601 | Server logs | ⬜ Unknown |
-| MongoDB driver | Stores `Date` as BSON Date | Check DB directly | ⬜ Unknown |
+### Why the PR #191 Stopgap Doesn't Fix This
+
+PR #191 added filtering for `PersistedCgmEvent` objects:
+
+```swift
+// TransmitterManager.swift:340-345 - Only filters EVENTS
+events = events.filter { event in
+    if event.date > Date() { return false }
+    return true
+}
+```
+
+But `Glucose.sessionStartDate` is a **public property** that other code reads directly:
+
+```swift
+// PluginSource.swift:226 - BYPASSES THE FILTER
+sensorStartDate = latestReading?.sessionStartDate  // Still corrupt!
+```
+
+### Correct Fix Required
+
+**Option A: Fix at source (Glucose.swift)**
+```swift
+// Check for sentinel value before calculation
+if timeMessage.sessionStartTime == UInt32.max {
+    sessionStartDate = activationDate  // Use activationDate as fallback
+} else {
+    sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
+}
+```
+
+**Option B: Fix at consumer (PluginSource.swift)**
+```swift
+// Validate sessionStartDate before use
+if let sessionStart = latestReading?.sessionStartDate,
+   sessionStart <= Date().addingTimeInterval(86400) {  // Max 24h future
+    sensorStartDate = sessionStart
+} else {
+    sensorStartDate = latestReading?.activationDate  // Fallback
+}
+```
+
+**Option C: Fix at storage (GlucoseStorage.swift)**
+```swift
+// In storeCGMState()
+guard let sessionStartDate = x.sessionStartDate,
+      sessionStartDate <= Date().addingTimeInterval(86400) else { continue }
+```
+
+### Previous Wrong Hypotheses (Ruled Out)
+
+| Candidate | Why Ruled Out |
+|-----------|---------------|
+| G7SensorKit issue | Sensor ID "89N9W6" is G6 format, not G7 |
+| BLE message parsing | `notes` (activationDate) is CORRECT |
+| State persistence corruption | The corruption is deterministic (0xFFFFFFFF sentinel) |
+| JSON encoding issue | Corruption happens before encoding |
+| Server-side MongoDB | Data arrives corrupt from client |
+
+
+### Diagnostic Investigation Matrix (UPDATED)
+
+| Priority | Location | What to Check | Status |
+|----------|----------|---------------|--------|
+| ✅ | CGMBLEKit/Glucose.swift:52 | `sessionStartTime = 0xFFFFFFFF` sentinel | **ROOT CAUSE CONFIRMED** |
+| ✅ | PluginSource.swift:226 | Reads corrupt `sessionStartDate` without validation | **BYPASS IDENTIFIED** |
+| ✅ | GlucoseStorage.swift:241 | Uses corrupt `sessionStartDate` as `createdAt` | **FLOW CONFIRMED** |
+| - | G7SensorKit | Not applicable - this is a G6 issue | ~~Ruled Out~~ |
+
+### Required Code Changes
+
+**Fix 1: CGMBLEKit/Glucose.swift (Best - fix at source)**
+
+```swift
+// Line 52 - current bug:
+sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
+
+// Fixed version:
+if timeMessage.sessionStartTime == UInt32.max {
+    // 0xFFFFFFFF means no active session - use activationDate as fallback
+    sessionStartDate = activationDate
+} else {
+    sessionStartDate = activationDate.addingTimeInterval(TimeInterval(timeMessage.sessionStartTime))
+}
+```
+
+**Fix 2: Trio/PluginSource.swift (Defense in depth)**
+
+```swift
+// Lines 221, 226 - add validation:
+if let sessionStart = latestReading?.sessionStartDate,
+   sessionStart > Date().addingTimeInterval(-86400 * 365),  // Not > 1 year past
+   sessionStart <= Date().addingTimeInterval(86400) {       // Not > 1 day future
+    sensorStartDate = sessionStart
+} else {
+    sensorStartDate = latestReading?.activationDate  // Fallback to correct date
+}
+```
+
+**Fix 3: GlucoseStorage.swift (Final safety net)**
+
+```swift
+// Line 230 - add guard:
+guard let sessionStartDate = x.sessionStartDate,
+      sessionStartDate <= Date().addingTimeInterval(86400) else {
+    debug(.deviceManager, "Skipping CGM state with invalid sessionStartDate: \(String(describing: x.sessionStartDate))")
+    continue
+}
+```
 
 ### Existing iOS Logging Analysis
 
@@ -245,10 +406,10 @@ Possible causes:
 
 | Code Path | Existing Logging | What's Logged | What's Missing |
 |-----------|------------------|---------------|----------------|
-| G7CGMManager.sensor(:didDiscoverNewSensor:) | ✅ `logDeviceCommunication()` | `"activated at \(activatedAt)"` | Just prints Date, not epoch |
-| GlucoseStorage.storeCGMState() | ✅ `debug(.deviceManager, ...)` | `"CGM sensor change \(treatment)"` | Treatment description, not raw JSON |
-| NightscoutManager.uploadNonCoreDataTreatments() | ✅ `debug(.nightscout, ...)` | `"Treatments uploaded"` | **No treatment content logged!** |
-| NightscoutTreatment JSON encoding | ❌ None | - | **Critical gap: encoded JSON not logged** |
+| CGMBLEKit TransmitterManager | ✅ `log.error()` | Future events filtered | Only logs filtered events, not the corrupt sessionStartDate |
+| PluginSource | ❌ None | - | No logging when reading sessionStartDate |
+| GlucoseStorage.storeCGMState() | ✅ `debug(.deviceManager, ...)` | `"CGM sensor change \(treatment)"` | Treatment description, not dates |
+| NightscoutManager | ✅ `debug(.nightscout, ...)` | `"Treatments uploaded"` | **No treatment content logged!** |
 
 **Key Logging Gaps:**
 
