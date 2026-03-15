@@ -172,6 +172,184 @@ G6 Transmitter (sessionStartTime = 0xFFFFFFFF)
     └──► AAPS ──► Nightscout ──► SAGE/CAGE correct
 ```
 
+---
+
+## G6 Transmitter Lifecycle: When Does 0xFFFFFFFF Occur?
+
+### Transmitter & Sensor Lifecycle Overview
+
+```
+TRANSMITTER LIFECYCLE (~112 days)
+├── First pairing → activationDate set
+├── Sensor 1 (10 days)
+│   ├── Warmup (2 hours)
+│   ├── Active (9.9 days)
+│   └── Expired/Stopped
+├── Gap (no sensor) ← sessionStartTime = 0xFFFFFFFF
+├── Sensor 2 (10 days)
+│   └── ...
+├── ... up to ~11 sensors per transmitter
+└── Transmitter expires (hard stop at ~112 days)
+```
+
+### Session States (from xDrip+ CalibrationState.java)
+
+| State Code | Name | sessionStartTime | Bug Triggered? |
+|------------|------|------------------|----------------|
+| `0x01` | Stopped | `0xFFFFFFFF` | ✅ **YES** |
+| `0x02` | WarmingUp | Valid time | ❌ No |
+| `0x06` | Ok (Active) | Valid time | ❌ No |
+| `0x0B` | SensorFailed | `0xFFFFFFFF` | ✅ **YES** |
+| `0x18` | SensorExpired | `0xFFFFFFFF` | ✅ **YES** |
+| `0xC2` | SensorStopped | `0xFFFFFFFF` | ✅ **YES** |
+
+### Detailed Failure Conditions
+
+#### 1. **New Transmitter, No Sensor Yet**
+```
+Condition: Transmitter paired but no sensor inserted/started
+sessionStartTime: 0xFFFFFFFF (no session ever started)
+Bug: ✅ TRIGGERED if app queries session time before sensor start
+Frequency: Every new transmitter first pairing
+```
+
+#### 2. **Sensor in Warmup (First 2 Hours)**
+```
+Condition: Sensor inserted, warmup period active
+sessionStartTime: Usually VALID (warmup start time)
+Bug: ❌ Usually NOT triggered
+Exception: Some edge cases during early warmup may return sentinel
+Note: xDrip+ checks warmUpTimeValid() before using
+```
+
+#### 3. **Active Sensor Session (Days 1-10)**
+```
+Condition: Normal sensor operation
+sessionStartTime: VALID (sensor start time)
+Bug: ❌ NOT triggered
+This is the happy path - most of the time
+```
+
+#### 4. **Sensor Session Expired (After 10 Days)**
+```
+Condition: 10-day session complete, transmitter marks session ended
+sessionStartTime: 0xFFFFFFFF (session no longer valid)
+Bug: ✅ TRIGGERED
+Frequency: Every 10 days per sensor
+User action: Must start new sensor
+```
+
+#### 5. **User Stopped Sensor Early**
+```
+Condition: User manually ended session before 10 days
+sessionStartTime: 0xFFFFFFFF (session explicitly stopped)
+Bug: ✅ TRIGGERED
+Frequency: Whenever user swaps sensors early
+```
+
+#### 6. **Sensor Failed**
+```
+Condition: Transmitter can't get valid glucose (adhesion, ??? failure)
+sessionStartTime: 0xFFFFFFFF (session invalid)
+Bug: ✅ TRIGGERED
+Frequency: Occasional - depends on sensor quality
+CalibrationState: SensorFailed, SensorFailed2, SensorFailed3, etc.
+```
+
+#### 7. **Between Sensors (Gap Period)**
+```
+Condition: Old sensor removed, new sensor not yet started
+sessionStartTime: 0xFFFFFFFF (no active session)
+Bug: ✅ TRIGGERED
+Frequency: Every sensor change (11+ times per transmitter life)
+Duration: Minutes to days depending on user
+```
+
+#### 8. **Old Transmitter Scanned After Long Storage**
+```
+Condition: Transmitter used, stored, scanned again months later
+sessionStartTime: 0xFFFFFFFF (old session long expired)
+Bug: ✅ TRIGGERED
+Note: activationDate is still valid (transmitter first pairing)
+```
+
+#### 9. **Transmitter Battery Low / End of Life**
+```
+Condition: Transmitter approaching 112-day hard limit
+sessionStartTime: May be 0xFFFFFFFF as transmitter shuts down
+Bug: ✅ Possibly triggered
+Frequency: End of every transmitter's life
+```
+
+### xDrip+ Session Validation (Why It Never Fails)
+
+```java
+// SessionStartRxMessage.java:40-42
+boolean isOkay() {
+    return isValid() 
+        && status == 0x00 
+        && (info == 0x01 || info == 0x05 || info == 0x06)  // G5/G6 OK codes
+        && sessionStartTime != INVALID_TIME;  // EXPLICIT CHECK!
+}
+
+// TransmitterTimeRxMessage.java:35-37
+public boolean sessionInProgress() {
+    return sessionStartTime != -1 && currentTime != sessionStartTime;
+}
+
+// Ob1G5StateMachine.java:953-962
+if (txtime.sessionInProgress()) {
+    DexSessionKeeper.setStart(txtime.getRealSessionStartTime());
+} else {
+    UserError.Log.e(TAG, "Session start time reports: No session in progress");
+    DexSessionKeeper.clearStart();  // DON'T CREATE BAD DATA!
+}
+```
+
+### CGMBLEKit Gap (Why It Fails)
+
+```swift
+// Glucose.swift:52 - NO VALIDATION!
+sessionStartDate = activationDate.addingTimeInterval(
+    TimeInterval(timeMessage.sessionStartTime)  // Just adds 0xFFFFFFFF blindly
+)
+
+// Never checks:
+// - Is sessionStartTime == INVALID_TIME?
+// - Is sessionInProgress?
+// - Is resulting date reasonable?
+```
+
+### Timeline: When Bug Gets Triggered
+
+```
+Day 0:   New transmitter paired           [Bug risk: if no sensor]
+Hour 0-2: Sensor warmup                   [Usually safe]
+Day 1-10: Active session                  [SAFE - normal operation]
+Day 10:  Session expires                  [BUG TRIGGERED]
+Day 10+: Between sensors                  [BUG TRIGGERED]
+Day 10+: New sensor starts                [Safe again]
+... repeat every 10 days ...
+Day 112: Transmitter expires              [Bug risk]
+```
+
+### Summary: Bug Trigger Probability
+
+| Lifecycle Phase | Duration | Bug Triggered | Probability |
+|-----------------|----------|---------------|-------------|
+| New transmitter, no sensor | Minutes-hours | ✅ Yes | Low (brief period) |
+| Sensor warmup | 2 hours | ⚠️ Sometimes | Low |
+| Active sensor | ~10 days | ❌ No | N/A (safe) |
+| Sensor expired | Until new start | ✅ Yes | **HIGH** |
+| Between sensors | Variable | ✅ Yes | **HIGH** |
+| Sensor failed | Until restart | ✅ Yes | Medium |
+| Manual sensor stop | Until new start | ✅ Yes | **HIGH** |
+| Transmitter end of life | Hours-days | ⚠️ Sometimes | Low |
+
+**Most common trigger**: Sensor expiration and between-sensor gaps (~every 10 days).
+
+---
+
 ### User Impact Summary
 
 | Impact | Severity | Who Is Affected |
