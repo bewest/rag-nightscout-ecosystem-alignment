@@ -82,6 +82,115 @@ Users are experiencing future-dated entries appearing in Nightscout, causing:
 - Incorrect time-in-range calculations
 - Confusing treatment displays
 
+---
+
+## Impact Analysis: Which Apps Are Affected?
+
+### Impact Matrix
+
+| App/System | CGM Source | Uploads Correct Dates | Bug Trigger Condition |
+|------------|------------|----------------------|----------------------|
+| **xDrip+** | G5/G6/G7 via BLE | ✅ Always | N/A - Has 5 defense layers |
+| **xDrip+** | Any via Share/NS | ✅ Always | N/A - Reads from upstream |
+| **AAPS** | Via xDrip+ | ✅ Always | N/A - Uses xDrip+ dates |
+| **AAPS** | Via Dexcom app | ✅ Always | Dexcom app handles sentinel |
+| **Loop** | G5/G6 via CGMBLEKit | ⚠️ Sometimes | `sessionStartTime = 0xFFFFFFFF` |
+| **Trio** | G5/G6 via CGMBLEKit | ⚠️ Sometimes | `sessionStartTime = 0xFFFFFFFF` |
+| **Loop** | G7 via G7SensorKit | ✅ Always | Different code path, not affected |
+| **Trio** | G7 via G7SensorKit | ✅ Always | Different code path, not affected |
+| **Loop** | Dexcom Share | ✅ Always | Share API provides clean dates |
+| **Trio** | Libre via LibreTransmitter | ⚠️ Unknown | Needs investigation |
+
+### When Does the Bug Trigger?
+
+The bug occurs **specifically** when:
+
+1. **Direct G5/G6 BLE connection** (not via Dexcom app or Share)
+2. **AND** the transmitter reports `sessionStartTime = 0xFFFFFFFF`
+
+This happens when:
+- **Sensor session ended** (worn for 10 days, session expired)
+- **No active sensor** on transmitter
+- **Transmitter powered on without a sensor** (rare but possible)
+- **Sensor warmup period** (first 2 hours - sometimes returns sentinel)
+- **Sensor failure** (transmitter can't get glucose, marks session invalid)
+
+### Frequency of Bug Occurrence
+
+| Scenario | Frequency | Bug Triggered? |
+|----------|-----------|----------------|
+| Normal sensor operation (days 1-10) | Most of the time | ❌ No |
+| Sensor warmup (first 2 hours) | Every sensor start | ⚠️ Sometimes |
+| Sensor session expired | Every 10 days | ⚠️ Sometimes |
+| Between sensor insertions | Variable | ✅ Yes |
+| Transmitter without sensor | Rare | ✅ Yes |
+| Sensor failure/early termination | Occasional | ⚠️ Sometimes |
+
+### Why xDrip+ Never Has This Bug
+
+xDrip+ implements **5 layers of defense** (see detailed comparison below):
+1. Named `INVALID_TIME = 0xFFFFFFFF` constant
+2. `isOkay()` check excludes invalid times
+3. `sessionInProgress()` guard before calculations
+4. Returns 0 or -1 instead of corrupt date
+5. DexTimeKeeper rejects future activation times
+
+### Why Loop/Trio Sometimes Have This Bug
+
+CGMBLEKit lacks **all 5 defenses**:
+- No sentinel constant
+- No validity check before calculation
+- No session-in-progress guard
+- Unconditionally calculates corrupt date
+- No validation of resulting date
+
+### Affected Data Flow
+
+```
+G6 Transmitter (sessionStartTime = 0xFFFFFFFF)
+    │
+    ▼
+┌─────────────────────────────────────────────────────┐
+│  CGMBLEKit (BUG HERE)                               │
+│  Glucose.swift:52 adds 0xFFFFFFFF = 136 years       │
+└─────────────────────────────────────────────────────┘
+    │
+    ├──► Loop ──► Nightscout ──► SAGE/CAGE broken
+    │
+    └──► Trio ──► Nightscout ──► SAGE/CAGE broken
+```
+
+```
+G6 Transmitter (sessionStartTime = 0xFFFFFFFF)
+    │
+    ▼
+┌─────────────────────────────────────────────────────┐
+│  xDrip+ (CORRECT)                                   │
+│  Returns 0 or -1, skips creating sensor start event │
+└─────────────────────────────────────────────────────┘
+    │
+    └──► AAPS ──► Nightscout ──► SAGE/CAGE correct
+```
+
+### User Impact Summary
+
+| Impact | Severity | Who Is Affected |
+|--------|----------|-----------------|
+| SAGE shows "136 years" age | 🔴 High | Loop/Trio users with direct G6 BLE |
+| CAGE shows incorrect age | 🔴 High | Same users |
+| Time-in-range calculations skewed | 🟡 Medium | Same users |
+| Confusing treatment timeline | 🟡 Medium | Same users |
+| False alerts for "sensor expired" | 🟢 Low | Depends on Nightscout plugins |
+
+### Mitigation Until Fixed
+
+Users can:
+1. **Delete the corrupt treatment** in Nightscout (Admin Tools → Treatments)
+2. **Use Dexcom Share** instead of direct BLE (avoids CGMBLEKit)
+3. **Use xDrip+ as CGM source** (if on Android)
+
+---
+
 Example from NS #8453:
 ```json
 {
