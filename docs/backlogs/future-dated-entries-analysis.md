@@ -513,6 +513,26 @@ var sessionInProgress: Bool {
 
 > **For Loop, Trio, and CGMBLEKit maintainers**: This section provides copy-paste-ready fixes.
 
+### Validation Bounds Rationale
+
+When validating sensor activation/session start times, use bounds based on **transmitter lifecycle**, not arbitrary limits:
+
+| Device | Transmitter/Sensor Lifespan | Past Limit | Future Limit |
+|--------|----------------------------|------------|--------------|
+| G5 | ~90 days transmitter | 90 days | 1 hour (clock drift) |
+| G6 | ~112 days transmitter | 112 days | 1 hour (clock drift) |
+| G7 | ~10 days sensor | 10 days | 1 hour (clock drift) |
+| Libre 2/3 | 14 days sensor | 14 days | 1 hour (clock drift) |
+
+**Why accept old dates?**
+- A transmitter may have been worn once, then stored
+- When scanned again, the last session start date is still valid
+- Rejecting valid historical data would break legitimate use cases
+
+**Why limit future dates?**
+- Sensor start CAN'T be in the future (it's measured from first pairing)
+- Allow small tolerance (1 hour) for device clock drift
+
 ### Quick Reference
 
 | Project | Fix Location | Priority | Complexity |
@@ -593,12 +613,22 @@ func testInvalidSessionStartTime() {
 sensorStartDate = latestReading?.sessionStartDate
 ```
 
+**Validation bounds rationale**:
+- **Past limit**: G6 transmitter lifespan is ~112 days, so accept any date within transmitter lifecycle
+- **Future limit**: Sensor start can't be in the future, allow small tolerance for clock drift
+
+```swift
+// Transmitter lifecycle constants
+private static let G6_TRANSMITTER_LIFESPAN: TimeInterval = 112 * 24 * 60 * 60  // 112 days
+private static let CLOCK_DRIFT_TOLERANCE: TimeInterval = 60 * 60  // 1 hour
+```
+
 **Replace with**:
 ```swift
 // For G5CGMManager (line 221) and G6CGMManager (line 226):
 if let sessionStart = latestReading?.sessionStartDate,
-   sessionStart > Date().addingTimeInterval(-86400 * 365),  // Not > 1 year in past
-   sessionStart <= Date().addingTimeInterval(86400) {       // Not > 1 day in future
+   sessionStart > Date().addingTimeInterval(-Self.G6_TRANSMITTER_LIFESPAN),  // Within transmitter life
+   sessionStart <= Date().addingTimeInterval(Self.CLOCK_DRIFT_TOLERANCE) {   // Allow small future drift
     sensorStartDate = sessionStart
 } else {
     sensorStartDate = latestReading?.activationDate  // Fallback to activationDate
@@ -622,9 +652,14 @@ guard let sessionStartDate = x.sessionStartDate else { continue }
 
 **Replace with**:
 ```swift
+// G6 transmitter lifespan: ~112 days
+// Accept any session start within transmitter lifecycle
+let transmitterLifespan: TimeInterval = 112 * 24 * 60 * 60
+let clockDriftTolerance: TimeInterval = 60 * 60  // 1 hour for clock drift
+
 guard let sessionStartDate = x.sessionStartDate,
-      sessionStartDate > Date().addingTimeInterval(-86400 * 365),
-      sessionStartDate <= Date().addingTimeInterval(86400) else {
+      sessionStartDate > Date().addingTimeInterval(-transmitterLifespan),
+      sessionStartDate <= Date().addingTimeInterval(clockDriftTolerance) else {
     if x.sessionStartDate != nil {
         debug(.deviceManager, "Skipping CGM state with invalid sessionStartDate: \(String(describing: x.sessionStartDate))")
     }
