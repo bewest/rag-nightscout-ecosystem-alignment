@@ -194,10 +194,51 @@ if (doc.date > Date.now() + MAX_FUTURE_MS) {
 9. [ ] **NEW: Implement message inventory logging** to detect firmware format changes
 10. [ ] **NEW: Add firmware version registry** (similar to xDrip+ FirmwareCapability.java)
 11. [ ] **NEW: Collect raw BLE samples** from users experiencing future-dated events
+12. [x] **NEW: Analyze 2^32 overflow pattern** - CRITICAL FINDING!
 
 ## Root Cause Deep Dive
 
-### Why `activationDate` can be wrong
+### ⚠️ CRITICAL FINDING: 2^32 Overflow Pattern
+
+Analyzing the actual bad data from Issue #8453:
+```
+notes: "89N9W6 activated on 2025-06-04 19:56:03 +0000"  (CORRECT)
+created_at: "2161-07-12T02:24:18.577Z"                   (WRONG)
+```
+
+The difference between wrong and correct dates is **EXACTLY 2^32 seconds**:
+
+```python
+correct_epoch = 1749092163  # 2025-06-04 19:56:03
+wrong_epoch   = 6044059459  # 2161-07-12 02:24:19
+difference    = 4294967296  # = 2^32 EXACTLY!
+```
+
+**This proves the bug is NOT in BLE message parsing!**
+
+The `activationDate` is calculated correctly (as shown in the `notes` field), but somewhere in the serialization/upload chain, **2^32 seconds is being added to the epoch timestamp**.
+
+### Hypothesis: Integer Type Confusion
+
+Possible causes:
+1. **iOS Date → TimeInterval → Int conversion** treats a signed 32-bit as unsigned
+2. **JSON encoding** of epoch timestamp with incorrect type handling
+3. **Network layer** sign extension issue when converting to 64-bit
+4. **Nightscout API** or MongoDB driver issue with timestamp handling
+
+### Investigation Steps
+
+```swift
+// Where does the bug actually occur?
+// 1. PersistedCgmEvent.date is set correctly (activatedAt)
+// 2. During serialization to NightscoutTreatment...
+// 3. Or during JSON encoding of created_at...
+// 4. Or during upload to Nightscout API...
+
+// Key: Find where epoch seconds are converted between 32-bit and 64-bit
+```
+
+### Why `activationDate` calculation is NOT the bug
 
 In `G7Sensor.swift`:
 ```swift
