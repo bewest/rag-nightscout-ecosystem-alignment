@@ -440,6 +440,32 @@ it('should warn on future-dated treatments', async () => {
 
 ## G6/G7 Message Parsing Documentation
 
+### xDrip+ as Reference Implementation
+
+xDrip+ (Android) has the most complete G6/G7 message parsing with **built-in future-date protection**.
+
+**Location**: `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/g5model/`
+
+#### Key Time Validation in xDrip+
+
+**File**: `DexTimeKeeper.java:49-53`
+```java
+if (activation_time > JoH.tsl()) {
+    UserError.Log.wtf(TAG, "Transmitter activation time is in the future. Not possible to update: " + dexTimeStamp);
+    return;
+}
+```
+
+**File**: `StartNewSensor.java:224-226`
+```java
+if (new Date().getTime() + 15 * 60000 < startTime) {
+    Toast.makeText(this, gs(R.string.error_sensor_start_time_in_future), Toast.LENGTH_LONG).show();
+    return;
+}
+```
+
+xDrip+ allows max **15 minutes** future time for sensor start.
+
 ### Well-Documented Messages
 
 | Opcode | Name | File | Test Coverage |
@@ -447,6 +473,67 @@ it('should warn on future-dated treatments', async () => {
 | 0x4E | EGV (Glucose) | `G7GlucoseMessage.swift` | ✅ Extensive (14 tests) |
 | 0x59 | Backfill | `G7BackfillMessage.swift` | ✅ Good (4 tests) |
 | 0x31 | GlucoseRx (G6) | `GlucoseRxMessage.swift` | ✅ Good |
+
+### xDrip G6 Message Formats (Reference)
+
+**EGlucoseRxMessage.java (opcode 0x4F - G6)**
+```java
+// Offset  Size  Field
+// 0       1     opcode (0x4F)
+// 1       1     status
+// 2-5     4     sequence (UInt32)
+// 6-9     4     timestamp (UInt32 - seconds since transmitter start)
+// 10-11   2     glucose (bits 0-11 = glucose, bit 12+ = displayOnly)
+// 12      1     state (calibration state)
+// 13      1     trend (signed, ÷10 for mg/dL/min)
+// 14-15   2     predicted_glucose (masked)
+```
+
+**EGlucoseRxMessage.java (opcode 0x4E - G7)**
+```java
+// Offset  Size  Field
+// 0       1     opcode (0x4E)
+// 1       1     status_raw
+// 2-5     4     clock (UInt32 - seconds since sensor start)
+// 6-7     2     sequence
+// 8-9     2     bogus (padding?)
+// 10-11   2     age (seconds since reading was taken)
+// 12-13   2     glucose (bits 0-11 = glucose, bit 12+ = displayOnly)
+// 14      1     state
+// 15      1     trend
+// 16-17   2     predicted_glucose
+```
+
+**Key Difference**: G7 uses `age` field to compute `timestamp = now - age`.
+
+**SessionStartRxMessage.java (opcode 0x27)**
+```java
+// Offset  Size  Field
+// 0       1     opcode (0x27)
+// 1       1     status
+// 2       1     info (session state: 0x01=OK, 0x02=AlreadyStarted, 0x04=ClockNotSynced)
+// 3-6     4     requestedStartTime (DexTime - seconds since transmitter activation)
+// 7-10    4     sessionStartTime (DexTime)
+// 11-14   4     transmitterTime (DexTime - current clock)
+// 15-16   2     CRC
+// Length: 17 bytes
+
+// Session start is computed as: DexTimeKeeper.fromDexTime(transmitterId, sessionStartTime)
+// DexTimeKeeper stores transmitter activation time, then adds sessionStartTime seconds
+```
+
+**TransmitterTimeRxMessage.java (opcode 0x25)**
+```java
+// Offset  Size  Field
+// 0       1     opcode (0x25)
+// 1       1     status (battery level)
+// 2-5     4     currentTime (DexTime - seconds since transmitter activation)
+// 6-9     4     sessionStartTime (DexTime - when current session started, -1 if none)
+// Length: 10+ bytes (may have more)
+
+// Real session start computed as: now - ((currentTime - sessionStartTime) * 1000L)
+// If currentTime == sessionStartTime, no session in progress
+```
 
 ### Needs Investigation
 
