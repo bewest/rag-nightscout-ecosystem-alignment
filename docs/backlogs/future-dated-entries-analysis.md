@@ -239,6 +239,68 @@ Possible causes:
 | Nightscout API parseDate | Uses `moment.parseZone()` for ISO8601 | Server logs | ⬜ Unknown |
 | MongoDB driver | Stores `Date` as BSON Date | Check DB directly | ⬜ Unknown |
 
+### Existing iOS Logging Analysis
+
+**Current logging IS available but NOT sufficient for diagnosis:**
+
+| Code Path | Existing Logging | What's Logged | What's Missing |
+|-----------|------------------|---------------|----------------|
+| G7CGMManager.sensor(:didDiscoverNewSensor:) | ✅ `logDeviceCommunication()` | `"activated at \(activatedAt)"` | Just prints Date, not epoch |
+| GlucoseStorage.storeCGMState() | ✅ `debug(.deviceManager, ...)` | `"CGM sensor change \(treatment)"` | Treatment description, not raw JSON |
+| NightscoutManager.uploadNonCoreDataTreatments() | ✅ `debug(.nightscout, ...)` | `"Treatments uploaded"` | **No treatment content logged!** |
+| NightscoutTreatment JSON encoding | ❌ None | - | **Critical gap: encoded JSON not logged** |
+
+**Key Logging Gaps:**
+
+1. **No logging of actual JSON payload** being sent to Nightscout
+2. **No logging of `created_at` ISO8601 string** after encoding
+3. **No comparison of Date object vs encoded string**
+
+### Enhanced Logging Proposal
+
+To diagnose the 2^32 issue, add these logs to `NightscoutManager.swift`:
+
+```swift
+private func uploadNonCoreDataTreatments(_ treatments: [NightscoutTreatment]) async {
+    guard !treatments.isEmpty, let nightscout = nightscoutAPI, isUploadEnabled else {
+        return
+    }
+    
+    // DIAGNOSTIC: Log Sensor Start treatments specifically
+    for treatment in treatments {
+        if treatment.eventType == .nsSensorChange {
+            let dateObj = treatment.createdAt
+            let json = treatment.rawJSON
+            debug(.nightscout, "SENSOR_CHANGE_DEBUG: Date object = \(String(describing: dateObj))")
+            debug(.nightscout, "SENSOR_CHANGE_DEBUG: timeIntervalSince1970 = \(dateObj?.timeIntervalSince1970 ?? -1)")
+            debug(.nightscout, "SENSOR_CHANGE_DEBUG: rawJSON = \(json)")
+            
+            // Check for future date
+            if let date = dateObj, date > Date().addingTimeInterval(86400) {
+                warning(.nightscout, "FUTURE_DATE_DETECTED: \(json)")
+            }
+        }
+    }
+    // ... existing code
+}
+```
+
+**Add to GlucoseStorage.swift:**
+
+```swift
+private func createCGMStateTreatment(sessionStartDate: Date, notes: String) -> NightscoutTreatment {
+    // DIAGNOSTIC: Log raw date values
+    debug(.deviceManager, "CGM_TREATMENT_DEBUG: sessionStartDate = \(sessionStartDate)")
+    debug(.deviceManager, "CGM_TREATMENT_DEBUG: epoch = \(sessionStartDate.timeIntervalSince1970)")
+    
+    return NightscoutTreatment(
+        // ...
+        createdAt: sessionStartDate,
+        // ...
+    )
+}
+```
+
 ### Diagnostic Tests to Add
 
 **Test 1: Log the exact ISO8601 string being sent**
