@@ -307,6 +307,28 @@ else:
     trend = (signed int8)trend_byte / 10.0  # mg/dL per minute
 ```
 
+**⚠️ Timestamp Validation Required:**
+
+The `messageTimestamp` field represents seconds since sensor activation. When computing real timestamps:
+
+```swift
+// Common implementation (VULNERABLE)
+activationDate = Date() - TimeInterval(messageTimestamp)
+```
+
+If BLE corruption produces a large or negative-looking value, this can result in **future-dated events**.
+
+**xDrip+ Validation Pattern (Reference):**
+```java
+// DexTimeKeeper.java - Always validate before storing
+if (activation_time > JoH.tsl()) {
+    UserError.Log.wtf(TAG, "Transmitter activation time is in the future");
+    return;  // Reject
+}
+```
+
+See: [`docs/backlogs/future-dated-entries-analysis.md`](../backlogs/future-dated-entries-analysis.md) for full analysis.
+
 ### Backfill Message - Opcode 0x59
 
 **Request (9 bytes):**
