@@ -31,14 +31,12 @@ PROMPT Check git status and server. If server down, see `docs/backlogs/README.md
 
 # === Phase 1: Select Task ===
 ELIDE
-RUN grep -E "^### .* P[01]|^\| \`" docs/backlogs/README.md | head -30
+RUN grep -E "^## 🔴|^\| \`uuid-fix" docs/backlogs/README.md | head -15
 ELIDE
 
-PROMPT Pick relevant work and tasks. Read the relevant backlog file for details:
-- `docs/backlogs/trio-entries-upload-testing.md` - **NEW: Entries UUID fix**
-- `docs/backlogs/loop-nightscout-upload-testing.md`
-- `docs/backlogs/aaps-nightscout-upload-testing.md`
-- `docs/backlogs/integration-test-harness.md`
+PROMPT Pick a ready work item (📋 Ready). The active work is UUID_HANDLING scope correction:
+- `docs/backlogs/uuid-identifier-lookup.md` - Full spec and work items
+- `docs/backlogs/README.md` - Quick reference
 
 State: `Selected: [ID] - [description]`
 
