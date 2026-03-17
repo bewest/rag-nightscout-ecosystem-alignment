@@ -131,7 +131,28 @@ The dev branch contains significant changes to test infrastructure, database saf
 
 ---
 
-## 5. Work Items
+## 5. Code Work Items (Pre-Release)
+
+| ID | Task | Priority | Status |
+|----|------|----------|--------|
+| uuid-feature-flag | Add `TREATMENTS_ALLOW_UUID_LOOKUP` env var | 🟠 P1 | 📋 Ready |
+| uuid-get-delete | Support GET/DELETE by identifier/UUID | 🟠 P1 | 📋 Blocked by flag |
+| uuid-get-delete-test | Add tests for GET/DELETE by UUID | 🟠 P1 | 📋 Blocked by impl |
+
+### Why GET/DELETE by UUID Matters
+
+Loop's ObjectIdCache workflow:
+1. POST treatment with `syncIdentifier` → server returns `_id`
+2. Cache `_id` ↔ `syncIdentifier` mapping
+3. Later: DELETE/PUT using cached `_id`
+
+**Problem**: If cache is lost (app restart, 24hr expiry), Loop cannot update/delete its own treatments.
+
+**Fix**: Allow `DELETE /api/v1/treatments/{uuid}` to search by `identifier` field when `_id` looks like a UUID.
+
+---
+
+## 6. Documentation Work Items
 
 | ID | Task | Priority | Status | Assignee |
 |----|------|----------|--------|----------|
