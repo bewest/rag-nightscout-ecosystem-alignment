@@ -1,10 +1,11 @@
 # UUID Identifier Handling Feature
 
-**Status**: ✅ Core Complete (tests added `885f9133`)  
+**Status**: ⚠️ Needs Correction  
 **Priority**: 🟠 P1  
 **Feature Flag**: `UUID_HANDLING`  
 **Default**: `true` (enables AID client compatibility)  
-**Affects**: Treatments AND Entries (both collections)
+**Affects**: Treatments AND Entries (both collections)  
+**Scope**: ONLY the `_id` field when value is a valid UUID
 
 **Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 
@@ -12,42 +13,59 @@
 
 ## Summary
 
-Provide unified UUID handling for **both treatments and entries** with a single feature flag controlling write (POST/PUT) and read (GET/DELETE) paths. When enabled, UUID `_id` values are normalized to the `identifier` field, and lookups by UUID search by `identifier`.
+Handle the specific case where a client incorrectly sends a UUID value to the `_id` field. The `UUID_HANDLING` flag controls **both** write and read paths:
+
+- **When `true` (default)**: UUID in `_id` → move to `identifier`, server assigns ObjectId; GET/DELETE by UUID → query by `identifier`
+- **When `false`**: UUID in `_id` → HTTP 400 error; GET/DELETE by UUID → return empty
+
+**Important**: This feature ONLY affects the `_id` field. It does NOT touch `syncIdentifier`, `uuid`, or any other fields.
 
 ---
 
 ## Problem Statement
 
-### Current State (Asymmetric, Both Collections)
+### Affected Apps
 
-**Treatments** (commit `e78a5bc6`) and **Entries** (commit `b8815505`) both added UUID handling for POST/PUT **without a feature flag**:
+Only a few apps incorrectly send UUIDs to the `_id` field:
 
-| Collection | Write Path (POST/PUT) | Read Path (GET/DELETE) |
-|------------|----------------------|------------------------|
-| Treatments | ✅ UUID→identifier (always on) | ❌ Fails on UUID |
-| Entries | ✅ UUID→identifier (always on) | ❌ Fails on UUID |
+| App | Collection | Pattern |
+|-----|------------|---------|
+| **Loop overrides** | treatments | `_id: syncIdentifier.uuidString` |
+| **Trio CGM** | entries | `_id: UUID` |
 
-Both use the same pattern:
-1. Extract UUID from `_id` field → store in `identifier`
-2. Generate proper ObjectId for `_id`
-3. Deduplicate by `identifier` (treatments) or `sysTime+type` (entries)
+### NOT Affected
 
-But GET/DELETE operations still fail for BOTH:
+These apps use separate fields (not `_id`) and should NOT be touched:
+
+| App | Field Used | Correct Behavior |
+|-----|------------|-----------------|
+| **Loop** (carbs/doses) | `syncIdentifier` | Leave as-is |
+| **AAPS** | `identifier` | Leave as-is |
+| **xDrip+** | `uuid` | Leave as-is |
+
+### Current Bug
+
+The current implementation incorrectly copies `syncIdentifier` and `uuid` fields to `identifier`:
+
 ```javascript
-// lib/server/query.js:92-95 - shared by treatments AND entries
-function updateIdQuery (query) {
-  if (query._id && query._id.length) {
-    query._id = ObjectID(query._id);  // ← Throws on UUID!
-  }
-}
+// CURRENT (WRONG) - lib/server/treatments.js:349-352
+var clientIdentifier = obj.identifier 
+  || obj.syncIdentifier    // ← WRONG: Should not touch this
+  || obj.uuid              // ← WRONG: Should not touch this
+  || (typeof obj._id === 'string' && !OBJECT_ID_HEX_RE.test(obj._id) ? obj._id : null);
 ```
 
-### Issues with Asymmetric Design
+### Required Fix
 
-1. **Inconsistent behavior** — Write works, read fails (both collections)
-2. **No rollback option** — Write normalization always active
-3. **Silent behavior change** — No operator control over new feature
-4. **Affects all AID clients** — Loop, Trio, xDrip+ all use UUIDs
+Only handle UUID values in the `_id` field:
+
+```javascript
+// CORRECT - only handle _id field
+if (env.uuidHandling && typeof obj._id === 'string' && UUID_RE.test(obj._id)) {
+  obj.identifier = obj._id;
+  delete obj._id;  // Let server generate ObjectId
+}
+```
 
 ### Impact
 
@@ -120,8 +138,10 @@ UUID_HANDLING=true
 
 | `UUID_HANDLING` | POST with UUID _id | GET/DELETE by UUID |
 |-----------------|--------------------|--------------------|
-| `false` (default) | **Reject with error** | Returns empty (safe) |
-| `true` | Normalize → identifier | Search by identifier |
+| `true` (default) | Move to identifier, assign ObjectId | Search by identifier |
+| `false` | **Reject with 400 error** | Returns empty (safe) |
+
+**Scope**: Only affects `_id` field. Does NOT touch `syncIdentifier`, `uuid`, or other fields.
 
 **Note**: Same behavior applies to `/api/v1/treatments` AND `/api/v1/entries`.
 
@@ -329,21 +349,50 @@ UUID_HANDLING=true curl \
 
 ## Work Items
 
+### Correction Work (Current Code Bug)
+
 | ID | Task | Priority | Status | Depends On |
 |----|------|----------|--------|------------|
-| uuid-feature-flag | Add `UUID_HANDLING` to env.js | 🟠 P1 | ✅ Complete (`bf6cfb77`) | - |
-| uuid-guard-write-treatments | Guard `normalizeTreatmentId()` with flag check | 🟠 P1 | 📋 Deferred | uuid-feature-flag |
-| uuid-guard-write-entries | Guard `normalizeEntryId()` with flag check | 🟠 P1 | 📋 Deferred | uuid-feature-flag |
-| uuid-query-impl | Modify `updateIdQuery()` in query.js | 🟠 P1 | ✅ Complete (`bf6cfb77`) | uuid-feature-flag |
-| uuid-treatments-opts | Pass flag to treatments.js queryOpts | 🟠 P1 | ✅ Complete (`bf6cfb77`) | uuid-query-impl |
-| uuid-entries-opts | Pass flag to entries.js queryOpts | 🟠 P1 | ✅ Complete (`bf6cfb77`) | uuid-query-impl |
-| uuid-test-flag-off | Tests UUID-OFF-001, UUID-OFF-002 | 🟠 P1 | ✅ Complete (`f91837f8`) | uuid-query-impl |
-| uuid-test-flag-on | Tests UUID-ON-001 through UUID-ON-004 | 🟠 P1 | ✅ Complete (`f91837f8`) | uuid-query-impl |
-| uuid-test-edge | Tests UUID-EDGE-001 through UUID-EDGE-007 | 🟠 P1 | ✅ Complete (`f37f44e8`) | uuid-query-impl |
-| uuid-test-entries | Tests ENTRY-UUID-001 through ENTRY-UUID-006 | 🟠 P1 | 🚫 Deferred (module cache issues) | uuid-entries-opts |
-| uuid-doc-env | Document env var in example-template.env | 🟢 P2 | ✅ Complete (`d987e55c`) | uuid-feature-flag |
+| uuid-fix-scope | Remove syncIdentifier/uuid copying from normalizeTreatmentId() | 🔴 P0 | 📋 Ready | - |
+| uuid-fix-write-guard | Guard UUID _id write with flag check | 🔴 P0 | 📋 Ready | uuid-fix-scope |
+| uuid-fix-entries | Apply same fix to entries.js | 🔴 P0 | 📋 Ready | uuid-fix-scope |
+| uuid-fix-tests | Update tests for corrected scope | 🟠 P1 | 📋 Ready | uuid-fix-write-guard |
+| uuid-fix-docs | Update docs for corrected scope | 🟠 P1 | 📋 Ready | uuid-fix-scope |
 
-**Note**: Write path guards (`uuid-guard-write-*`) deferred as current behavior (always normalize) works and adding rejection would be a breaking change.
+### Corrected Behavior
+
+The fix should change `normalizeTreatmentId()` from:
+
+```javascript
+// WRONG - current code touches syncIdentifier and uuid
+var clientIdentifier = obj.identifier 
+  || obj.syncIdentifier    // ← REMOVE
+  || obj.uuid              // ← REMOVE
+  || (typeof obj._id === 'string' && !OBJECT_ID_HEX_RE.test(obj._id) ? obj._id : null);
+```
+
+To:
+
+```javascript
+// CORRECT - only handle UUID in _id field, controlled by flag
+if (typeof obj._id === 'string' && UUID_RE.test(obj._id)) {
+  if (env.uuidHandling) {
+    obj.identifier = obj._id;
+    delete obj._id;  // Server assigns ObjectId
+  } else {
+    // Return error - caller should send 400 response
+    return { error: true, status: 400, message: 'UUID _id requires UUID_HANDLING=true' };
+  }
+}
+```
+
+### Previously Completed (Read Path)
+
+| ID | Task | Priority | Status | Notes |
+|----|------|----------|--------|-------|
+| uuid-feature-flag | Add `UUID_HANDLING` to env.js | 🟠 P1 | ✅ Complete | `bf6cfb77` |
+| uuid-query-impl | Modify `updateIdQuery()` in query.js | 🟠 P1 | ✅ Complete | `bf6cfb77` |
+| uuid-doc-env | Document env var | 🟢 P2 | ✅ Complete | `d987e55c` |
 
 ---
 
