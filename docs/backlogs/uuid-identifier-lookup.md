@@ -340,7 +340,7 @@ UUID_HANDLING=true curl \
 | uuid-entries-opts | Pass flag to entries.js queryOpts | 🟠 P1 | ✅ Complete (`bf6cfb77`) | uuid-query-impl |
 | uuid-test-flag-off | Tests UUID-OFF-001, UUID-OFF-002 | 🟠 P1 | ✅ Complete (`f91837f8`) | uuid-query-impl |
 | uuid-test-flag-on | Tests UUID-ON-001 through UUID-ON-004 | 🟠 P1 | ✅ Complete (`f91837f8`) | uuid-query-impl |
-| uuid-test-edge | Tests UUID-EDGE-001 through UUID-EDGE-007 | 🟠 P1 | 📋 Ready | uuid-query-impl |
+| uuid-test-edge | Tests UUID-EDGE-001 through UUID-EDGE-007 | 🟠 P1 | ✅ Complete (`f37f44e8`) | uuid-query-impl |
 | uuid-test-entries | Tests ENTRY-UUID-001 through ENTRY-UUID-006 | 🟠 P1 | 🚫 Deferred (module cache issues) | uuid-entries-opts |
 | uuid-doc-env | Document env var in example-template.env | 🟢 P2 | ✅ Complete (`d987e55c`) | uuid-feature-flag |
 
