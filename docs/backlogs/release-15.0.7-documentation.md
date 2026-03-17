@@ -29,18 +29,21 @@ The dev branch contains significant changes to test infrastructure, database saf
 
 | Variable | Purpose | Default | Where Documented? | Action |
 |----------|---------|---------|-------------------|--------|
-| `UUID_HANDLING` | Enable UUID _id handling for treatments/entries | `false` | ❌ | ⚠️ Add to docs/example-template.env |
+| `UUID_HANDLING` | Enable UUID _id handling for treatments/entries | `true` | ❌ | ⚠️ Add to docs/example-template.env |
 
 **Details**: See [uuid-identifier-lookup.md](./uuid-identifier-lookup.md) for full specification.
 
-When `UUID_HANDLING=true`:
+When `UUID_HANDLING=true` (default):
 - POST/PUT: UUID in `_id` → extracted to `identifier`, server generates ObjectId
 - GET/DELETE by UUID: searches by `identifier` field
+- **Enables Loop, Trio, AAPS sync** without configuration
 
-When `UUID_HANDLING=false` (default):
+When `UUID_HANDLING=false` (strict mode):
 - POST/PUT with UUID `_id`: Returns 400 error with instructions
 - GET/DELETE by UUID: Returns empty results (no crash)
-- **ObjectID users unaffected** — only triggers on UUID format
+- Use for debugging or preparing for future client migration
+
+**Note**: ObjectID users are **unaffected** regardless of setting — quirk only triggers on UUID format.
 
 ### 1.3 New npm Scripts
 

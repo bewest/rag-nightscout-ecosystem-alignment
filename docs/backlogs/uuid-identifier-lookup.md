@@ -3,7 +3,7 @@
 **Status**: ✅ Core Complete (tests added `885f9133`)  
 **Priority**: 🟠 P1  
 **Feature Flag**: `UUID_HANDLING`  
-**Default**: `false` (maximum compatibility)  
+**Default**: `true` (enables AID client compatibility)  
 **Affects**: Treatments AND Entries (both collections)
 
 **Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
@@ -229,19 +229,18 @@ function updateIdQuery (query, opts) {
 UUID_HANDLING=true
 ```
 
-### Default Value: `false`
+### Default Value: `true`
 
-**Rationale for `false` default:**
-1. **Maximum compatibility** — Existing deployments unchanged
-2. **Explicit opt-in** — Operators consciously enable new behavior
-3. **Clear error on misconfiguration** — POST with UUID _id tells you what to do
-4. **Safe failure mode** — GET/DELETE returns empty, doesn't crash
+**Rationale for `true` default:**
+1. **Fix AID client issues by default** — Loop, Trio, AAPS work out of the box
+2. **Match user expectations** — Before MongoDB 5.x, UUID _id didn't crash (just didn't work for CRUD)
+3. **ObjectID users unaffected** — Feature only triggers on UUID format
+4. **Temporary quirk** — When controllers migrate to ObjectId, this can be removed
 
-**When to set `true`:**
-- Using Loop, Trio, or other AID apps with UUID sync patterns
-- Want resilience against ObjectIdCache loss
-- New deployments with modern AID ecosystem
-- Migrating from systems that used UUID _id values
+**When to set `false` (strict mode):**
+- Want strict validation of _id format
+- Debugging client behavior
+- Preparing for future migration away from UUID _id
 
 ---
 
@@ -350,11 +349,11 @@ UUID_HANDLING=true curl \
 
 ## Rollout Plan
 
-1. **Phase 1: Implementation** — Add code with flag defaulting to `false`
-2. **Phase 2: Testing** — Full test matrix in CI
-3. **Phase 3: Documentation** — Update README, CHANGELOG
-4. **Phase 4: Opt-in** — Announce feature, users enable as needed
-5. **Phase 5: Evaluate** — Consider changing default to `true` in future release
+1. **Phase 1: Implementation** — Add code with flag defaulting to `true`
+2. **Phase 2: Testing** — Full test matrix in CI (both flag states)
+3. **Phase 3: Documentation** — Update README, CHANGELOG, note strict mode option
+4. **Phase 4: Release** — Ship with quirk enabled by default
+5. **Phase 5: Future** — When AID clients migrate to ObjectId, deprecate and remove quirk
 
 ---
 
