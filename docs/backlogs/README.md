@@ -138,7 +138,7 @@ JavaScript ────┘
 | Backlog | Issue | Priority | Status |
 |---------|-------|----------|--------|
 | [Insulin Rounding Epsilon](insulin-rounding-epsilon-analysis.md) | `+epsilon` for floor() FP artifacts | 🟢 P2 | ✅ Complete (correct) |
-| [BWP Test Timing](bwp-test-timing-determinism.md) | `Date.now()` causes flaky test | 🟠 P1 | 📋 Ready |
+| [BWP Test Timing](bwp-test-timing-determinism.md) | `Date.now()` causes flaky test | 🟠 P1 | ✅ Complete (`358941bb`) |
 
 ### Release Preparation
 
