@@ -359,6 +359,17 @@ UUID_HANDLING=true curl \
 | uuid-fix-tests | Update tests for corrected scope | 🟠 P1 | 📋 Ready | uuid-fix-write-guard |
 | uuid-fix-docs | Update docs for corrected scope | 🟠 P1 | 📋 Ready | uuid-fix-scope |
 
+### Test Updates Required
+
+Existing tests may verify the **incorrect** behavior (copying `syncIdentifier`/`uuid` to `identifier`). The scope fix will require:
+
+1. **Remove/update tests** that expect `syncIdentifier` → `identifier` promotion
+2. **Remove/update tests** that expect `uuid` → `identifier` promotion  
+3. **Add tests** verifying these fields are **not touched**
+4. **Verify** only UUID values in `_id` trigger the normalization
+
+Check `tests/api.treatments.test.js` and `tests/api3.*.test.js` for tests that may need updating.
+
 ### Corrected Behavior
 
 The fix should change `normalizeTreatmentId()` from:
