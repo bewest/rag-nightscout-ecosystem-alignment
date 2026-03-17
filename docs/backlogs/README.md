@@ -144,7 +144,7 @@ JavaScript ────┘
 
 | Backlog | Issue | Priority | Status |
 |---------|-------|----------|--------|
-| [Release 15.0.7 Docs](release-15.0.7-documentation.md) | Document env vars, API changes, Node requirements | 🔴 P0 | 📋 In Progress |
+| [Release 15.0.7 Docs](release-15.0.7-documentation.md) | Document env vars, API changes, Node requirements | 🔴 P0 | ✅ Complete |
 | [UUID Identifier Lookup](uuid-identifier-lookup.md) | Enable GET/DELETE by UUID via `identifier` field | 🟠 P1 | 📋 Ready |
 
 ---
@@ -157,6 +157,18 @@ JavaScript ────┘
 |----|------|--------|
 | `impl-option-g` | Implement REQ-SYNC-072 in treatments.js | ✅ Complete |
 | `test-option-g` | Verify with existing tests | ✅ 16 tests passing |
+
+### ✅ P0: Release 15.0.7 Documentation - **COMPLETE**
+
+All P0 documentation tasks completed (2026-03-17):
+
+| ID | Task | Commit | Status |
+|----|------|--------|--------|
+| `DOC-NODE-001` | Update Node.js requirements in README.md | `81393a4c` | ✅ Complete |
+| `DOC-ENV-001` | Document NODE_ENV=test in CONTRIBUTING.md | `81393a4c` | ✅ Complete |
+| `DOC-SCRIPT-001` | Document npm test scripts | `81393a4c` | ✅ Complete |
+| `DOC-API-001` | Document `identifier` field behavior | `4e79654d` | ✅ Complete |
+| `DOC-CHANGELOG` | Create CHANGELOG.md for 15.0.7 | `4e79654d` | ✅ Complete |
 
 ### ✅ P1: Entries UUID Fix (GAP-SYNC-045) - **COMPLETE**
 
