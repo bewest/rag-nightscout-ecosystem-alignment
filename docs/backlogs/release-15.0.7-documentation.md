@@ -25,7 +25,24 @@ The dev branch contains significant changes to test infrastructure, database saf
 | `MONGO_MIN_POOL_SIZE` | Minimum pool connections | 1 | `ci.test.env` only | ⚠️ Document for test tuning |
 | `MONGO_MAX_IDLE_TIME_MS` | Max idle time before closing | 10000 | `ci.test.env` only | ⚠️ Document for test tuning |
 
-### 1.2 New npm Scripts
+### 1.2 API Feature Flags
+
+| Variable | Purpose | Default | Where Documented? | Action |
+|----------|---------|---------|-------------------|--------|
+| `UUID_HANDLING` | Enable UUID _id handling for treatments/entries | `false` | ❌ | ⚠️ Add to docs/example-template.env |
+
+**Details**: See [uuid-identifier-lookup.md](./uuid-identifier-lookup.md) for full specification.
+
+When `UUID_HANDLING=true`:
+- POST/PUT: UUID in `_id` → extracted to `identifier`, server generates ObjectId
+- GET/DELETE by UUID: searches by `identifier` field
+
+When `UUID_HANDLING=false` (default):
+- POST/PUT with UUID `_id`: Returns 400 error with instructions
+- GET/DELETE by UUID: Returns empty results (no crash)
+- **ObjectID users unaffected** — only triggers on UUID format
+
+### 1.3 New npm Scripts
 
 | Script | Purpose | Documented? | Action |
 |--------|---------|-------------|--------|
