@@ -177,7 +177,7 @@ Loop's ObjectIdCache workflow:
 | DOC-ENV-002 | Document test environment variables (pool size, etc.) | 🟠 P1 | ✅ Complete (`551f6dfa`) | - |
 | DOC-SCRIPT-001 | Document new npm test scripts | 🟠 P1 | ✅ Complete | - |
 | DOC-API-001 | Document `identifier` field behavior for treatments | 🔴 P0 | ✅ Complete | - |
-| DOC-API-002 | Document UUID _id handling for entries | 🟠 P1 | 📋 Ready | - |
+| DOC-API-002 | Document UUID _id handling for entries | 🟠 P1 | ✅ Complete (`113d27cc`) | - |
 | DOC-NODE-001 | Update Node.js version requirements | 🔴 P0 | ✅ Complete | - |
 | DOC-CHANGELOG | Create CHANGELOG entry for 15.0.7 | 🔴 P0 | ✅ Complete | - |
 
