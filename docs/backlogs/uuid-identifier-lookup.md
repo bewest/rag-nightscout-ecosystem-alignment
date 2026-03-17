@@ -59,6 +59,46 @@ function updateIdQuery (query) {
 
 ---
 
+## Design Principles
+
+### 1. ObjectID Users Unaffected
+
+Clients posting valid 24-character hex ObjectIDs to `_id` see **no change in behavior**:
+
+| Client sends | Detection | Result |
+|--------------|-----------|--------|
+| `{"_id": "507f1f77bcf86cd799439011"}` | Valid ObjectID | Works as before |
+| `{"_id": "507f1f77bcf86cd799439011"}` GET/DELETE | Valid ObjectID | Works as before |
+| No `_id` field | Server generates | Works as before |
+
+The feature flag ONLY affects UUID-format `_id` values (36-char with hyphens).
+
+### 2. Never Crash
+
+All invalid inputs result in proper HTTP error responses or empty results — **never an uncaught exception**:
+
+| Input Type | Write (POST/PUT) | Read (GET/DELETE) |
+|------------|------------------|-------------------|
+| Valid ObjectID | ✅ Works | ✅ Works |
+| Valid UUID, flag ON | ✅ Normalizes | ✅ Searches identifier |
+| Valid UUID, flag OFF | ⚠️ 400 with message | ⚠️ Returns empty |
+| Invalid format | ⚠️ 400 or ignored | ⚠️ Returns empty |
+| Empty/null | ✅ Server generates | ⚠️ Returns empty |
+
+### 3. Clear Error Messages
+
+When rejecting UUID `_id` (flag OFF), return actionable JSON:
+
+```json
+{
+  "status": 400,
+  "message": "UUID _id values require UUID_HANDLING=true. Either enable the flag or omit _id to let server generate ObjectId.",
+  "received": "A3B4C5D6-E7F8-9012-3456-789ABCDEF012"
+}
+```
+
+---
+
 ## Implementation Design
 
 ### Unified Feature Flag
@@ -109,19 +149,26 @@ function normalizeTreatmentId (obj, env) {
   
   if (isUuidId) {
     if (!env.settings.uuidHandling) {
-      // Flag OFF: Reject with clear error
-      throw new Error(
-        'UUID _id not supported. Set UUID_HANDLING=true to enable. ' +
-        'Received: ' + obj._id
-      );
+      // Flag OFF: Return error object (caller handles HTTP 400 response)
+      return {
+        error: true,
+        status: 400,
+        message: 'UUID _id values require UUID_HANDLING=true. ' +
+                 'Either enable the flag or omit _id to let server generate ObjectId.',
+        received: obj._id
+      };
     }
     // Flag ON: Extract to identifier, let server generate ObjectId
     obj.identifier = obj._id;
     delete obj._id;
   }
   
-  // Continue with existing normalization...
+  // ObjectId _id values pass through unchanged
+  return null;  // No error
 }
+```
+
+**Key principle**: Never crash. Invalid requests get proper HTTP 400 JSON responses.
 ```
 
 ### Read Path (GET/DELETE) Changes
