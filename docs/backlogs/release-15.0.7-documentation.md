@@ -176,10 +176,10 @@ Loop's ObjectIdCache workflow:
 | DOC-ENV-001 | Document NODE_ENV=test requirement in CONTRIBUTING.md | 🔴 P0 | ✅ Complete | - |
 | DOC-ENV-002 | Document test environment variables (pool size, etc.) | 🟠 P1 | 📋 Ready | - |
 | DOC-SCRIPT-001 | Document new npm test scripts | 🟠 P1 | ✅ Complete | - |
-| DOC-API-001 | Document `identifier` field behavior for treatments | 🔴 P0 | 📋 Ready | - |
+| DOC-API-001 | Document `identifier` field behavior for treatments | 🔴 P0 | ✅ Complete | - |
 | DOC-API-002 | Document UUID _id handling for entries | 🟠 P1 | 📋 Ready | - |
 | DOC-NODE-001 | Update Node.js version requirements | 🔴 P0 | ✅ Complete | - |
-| DOC-CHANGELOG | Create CHANGELOG entry for 15.0.7 | 🔴 P0 | 📋 Ready | - |
+| DOC-CHANGELOG | Create CHANGELOG entry for 15.0.7 | 🔴 P0 | ✅ Complete | - |
 
 ---
 
@@ -192,7 +192,8 @@ Loop's ObjectIdCache workflow:
 | `README.md` | ✅ Node.js version requirements updated |
 | `CONTRIBUTING.md` | ✅ Test running instructions, NODE_ENV requirement, new scripts added |
 | `docs/example-template.env` | Any new env vars (mostly OK) |
-| `CHANGELOG.md` or release notes | All behavioral changes |
+| `CHANGELOG.md` or release notes | ✅ Created with 15.0.7 changes |
+| `docs/data-schemas/treatments-schema.md` | ✅ Identifier normalization documented |
 
 ### In this workspace:
 
