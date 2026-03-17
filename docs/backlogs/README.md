@@ -133,6 +133,13 @@ JavaScript ────┘
 | [Swift Integration](swift-integration-testing-proposal.md) | Use Loop's Swift code | Swift 6.2 + SPM | 📋 Planning |
 | [Kotlin Integration](aaps-nightscout-upload-testing.md#phase-4-kotlinandroid-testing-options) | Use AAPS's Kotlin code | Gradle + JVM | 📋 Planning |
 
+### Test Reliability
+
+| Backlog | Issue | Priority | Status |
+|---------|-------|----------|--------|
+| [Insulin Rounding Epsilon](insulin-rounding-epsilon-analysis.md) | `+epsilon` for floor() FP artifacts | 🟢 P2 | ✅ Complete (correct) |
+| [BWP Test Timing](bwp-test-timing-determinism.md) | `Date.now()` causes flaky test | 🟠 P1 | 📋 Ready |
+
 ---
 
 ## Quick Reference: Ready Work Items
@@ -301,4 +308,4 @@ Test environment at `/home/bewest/src/worktrees/nightscout/`:
 
 ## Last Updated
 
-2026-03-11
+2026-03-17
