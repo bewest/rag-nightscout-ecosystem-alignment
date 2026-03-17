@@ -162,7 +162,7 @@ describe('boluswizardpreview', function () {
 |----|------|----------|--------|
 | BWP-TIME-001 | Implement fixed timestamp in test | 🟠 P1 | ✅ Complete (`358941bb`) |
 | BWP-TIME-002 | Verify test passes with stress testing | 🟠 P1 | ✅ Verified (729 tests pass) |
-| BWP-TIME-003 | Document pattern for other timing-sensitive tests | 🟢 P2 | 📋 Ready |
+| BWP-TIME-003 | Document pattern for other timing-sensitive tests | 🟢 P2 | ✅ Complete |
 
 ---
 
@@ -192,6 +192,48 @@ setTimeout(function() {
 - **Flaky test eliminated**: No more random CI failures
 - **No production code change**: Fix is test-only
 - **Pattern established**: Can apply to other timing-sensitive tests
+
+---
+
+## Pattern for Timing-Deterministic Tests
+
+When writing tests that involve time-sensitive calculations (IOB decay, COB absorption, prediction windows), follow this pattern:
+
+### ❌ Anti-Pattern: Mixed Live Time
+
+```javascript
+var now = Date.now();
+var before = now - (5 * 60 * 1000);
+
+var data = { treatments: [{mills: before, insulin: '1.5'}] };
+var sbx = sandbox.clientInit(ctx, Date.now(), data);  // ← WRONG: uses live time
+```
+
+### ✅ Correct Pattern: Frozen Time
+
+```javascript
+var now = Date.now();  // Capture once
+var before = now - (5 * 60 * 1000);
+
+var data = { treatments: [{mills: before, insulin: '1.5'}] };
+var sbx = sandbox.clientInit(ctx, now, data);  // ← CORRECT: same 'now'
+```
+
+### When to Apply
+
+Apply frozen time when tests involve:
+- IOB calculations (insulin decay over time)
+- COB calculations (carb absorption)
+- Prediction curves (AR2, loop predictions)
+- Timeago displays
+- Any plugin using `sbx.time` for calculations
+
+### Identifying Flaky Timing Tests
+
+Look for this pattern in test failures:
+- Test passes locally, fails in CI
+- Failures mention small numeric differences (0.01, 0.001)
+- Plugin calculates values based on "minutes ago"
 
 ---
 
