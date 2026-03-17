@@ -145,7 +145,7 @@ JavaScript ────┘
 | Backlog | Issue | Priority | Status |
 |---------|-------|----------|--------|
 | [Release 15.0.7 Docs](release-15.0.7-documentation.md) | Document env vars, API changes, Node requirements | 🔴 P0 | ✅ Complete |
-| [UUID Identifier Lookup](uuid-identifier-lookup.md) | Enable GET/DELETE by UUID via `identifier` field | 🟠 P1 | 📋 Ready |
+| [UUID Identifier Lookup](uuid-identifier-lookup.md) | Enable GET/DELETE by UUID via `identifier` field | 🟠 P1 | ✅ Core Complete |
 
 ---
 
