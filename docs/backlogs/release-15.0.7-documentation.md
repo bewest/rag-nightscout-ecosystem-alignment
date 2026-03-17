@@ -152,9 +152,9 @@ When `UUID_HANDLING=false` (default):
 
 | ID | Task | Priority | Status |
 |----|------|----------|--------|
-| uuid-feature-flag | Add `TREATMENTS_ALLOW_UUID_LOOKUP` env var | 🟠 P1 | 📋 Ready |
-| uuid-get-delete | Support GET/DELETE by identifier/UUID | 🟠 P1 | 📋 Blocked by flag |
-| uuid-get-delete-test | Add tests for GET/DELETE by UUID | 🟠 P1 | 📋 Blocked by impl |
+| uuid-feature-flag | Add `UUID_HANDLING` env var | 🟠 P1 | ✅ Complete (`bf6cfb77`) |
+| uuid-get-delete | Support GET/DELETE by identifier/UUID | 🟠 P1 | ✅ Complete (`bf6cfb77`) |
+| uuid-get-delete-test | Add tests for GET/DELETE by UUID | 🟠 P1 | ✅ Complete (`f37f44e8`) |
 
 ### Why GET/DELETE by UUID Matters
 
@@ -174,7 +174,7 @@ Loop's ObjectIdCache workflow:
 | ID | Task | Priority | Status | Assignee |
 |----|------|----------|--------|----------|
 | DOC-ENV-001 | Document NODE_ENV=test requirement in CONTRIBUTING.md | 🔴 P0 | ✅ Complete | - |
-| DOC-ENV-002 | Document test environment variables (pool size, etc.) | 🟠 P1 | 📋 Ready | - |
+| DOC-ENV-002 | Document test environment variables (pool size, etc.) | 🟠 P1 | ✅ Complete (`551f6dfa`) | - |
 | DOC-SCRIPT-001 | Document new npm test scripts | 🟠 P1 | ✅ Complete | - |
 | DOC-API-001 | Document `identifier` field behavior for treatments | 🔴 P0 | ✅ Complete | - |
 | DOC-API-002 | Document UUID _id handling for entries | 🟠 P1 | 📋 Ready | - |
