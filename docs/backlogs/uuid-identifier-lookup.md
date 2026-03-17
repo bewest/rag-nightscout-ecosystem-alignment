@@ -1,13 +1,14 @@
 # UUID Identifier Handling Feature
 
-**Status**: ⚠️ Needs Correction  
-**Priority**: 🟠 P1  
+**Status**: ✅ Complete  
+**Priority**: 🔴 P0  
 **Feature Flag**: `UUID_HANDLING`  
 **Default**: `true` (enables AID client compatibility)  
 **Affects**: Treatments AND Entries (both collections)  
 **Scope**: ONLY the `_id` field when value is a valid UUID
 
-**Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+**Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`  
+**Commit**: `8fc155aa`
 
 ---
 
@@ -349,26 +350,21 @@ UUID_HANDLING=true curl \
 
 ## Work Items
 
-### Correction Work (Current Code Bug)
+### ✅ Scope Correction Complete
 
-| ID | Task | Priority | Status | Depends On |
-|----|------|----------|--------|------------|
-| uuid-fix-scope | Remove syncIdentifier/uuid copying from normalizeTreatmentId() | 🔴 P0 | 📋 Ready | - |
-| uuid-fix-write-guard | Guard UUID _id write with flag check | 🔴 P0 | 📋 Ready | uuid-fix-scope |
-| uuid-fix-entries | Apply same fix to entries.js | 🔴 P0 | 📋 Ready | uuid-fix-scope |
-| uuid-fix-tests | Update tests for corrected scope | 🟠 P1 | 📋 Ready | uuid-fix-write-guard |
-| uuid-fix-docs | Update docs for corrected scope | 🟠 P1 | 📋 Ready | uuid-fix-scope |
+| ID | Task | Commit | Status |
+|----|------|--------|--------|
+| uuid-fix-scope | Remove syncIdentifier/uuid copying from normalizeTreatmentId() | `8fc155aa` | ✅ Complete |
+| uuid-fix-entries | Apply same fix to entries.js | `8fc155aa` | ✅ Complete |
+| uuid-fix-tests | Update tests for corrected scope | `8fc155aa` | ✅ Complete |
 
-### Test Updates Required
+### Implementation Summary
 
-Existing tests may verify the **incorrect** behavior (copying `syncIdentifier`/`uuid` to `identifier`). The scope fix will require:
-
-1. **Remove/update tests** that expect `syncIdentifier` → `identifier` promotion
-2. **Remove/update tests** that expect `uuid` → `identifier` promotion  
-3. **Add tests** verifying these fields are **not touched**
-4. **Verify** only UUID values in `_id` trigger the normalization
-
-Check `tests/api.treatments.test.js` and `tests/api3.*.test.js` for tests that may need updating.
+The scope fix (commit `8fc155aa`):
+1. `normalizeTreatmentId()` and `normalizeEntryId()` now ONLY handle UUID values in `_id` field
+2. `syncIdentifier` and `uuid` fields are preserved as-is (not copied to `identifier`)
+3. `upsertQueryFor()` uses `syncIdentifier` and `uuid` for dedup (without copying to `identifier`)
+4. Tests updated: `TEST-ID-003` and `TEST-V1-ID-004` now verify identifier is NOT copied
 
 ### Corrected Behavior
 

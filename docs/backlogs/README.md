@@ -6,26 +6,21 @@ Active work streams for the Nightscout ecosystem alignment project.
 
 ---
 
-## 🔴 P0: UUID_HANDLING Scope Correction - **ACTIVE**
+## ✅ P0: UUID_HANDLING Scope Correction - **COMPLETE**
 
-**Problem**: Current code incorrectly copies `syncIdentifier` and `uuid` fields to `identifier`.
+**Problem**: Code incorrectly copied `syncIdentifier` and `uuid` fields to `identifier`.
 Should ONLY handle UUID values sent to `_id` field.
 
 **Backlog**: [uuid-identifier-lookup.md](uuid-identifier-lookup.md)  
 **Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 
-| ID | Task | Priority | Status |
-|----|------|----------|--------|
-| `uuid-fix-scope` | Remove syncIdentifier/uuid copying from `normalizeTreatmentId()` | 🔴 P0 | 📋 Ready |
-| `uuid-fix-write-guard` | Guard UUID _id write with flag check | 🔴 P0 | 📋 Ready |
-| `uuid-fix-entries` | Apply same fix to `normalizeEntryId()` in entries.js | 🔴 P0 | 📋 Ready |
-| `uuid-fix-tests` | Update tests for corrected scope | 🟠 P1 | 📋 Ready |
-| `uuid-fix-docs` | Update docs for corrected scope | 🟠 P1 | 📋 Ready |
+| ID | Task | Commit | Status |
+|----|------|--------|--------|
+| `uuid-fix-scope` | Remove syncIdentifier/uuid copying from `normalizeTreatmentId()` | `8fc155aa` | ✅ Complete |
+| `uuid-fix-entries` | Apply same fix to `normalizeEntryId()` in entries.js | `8fc155aa` | ✅ Complete |
+| `uuid-fix-tests` | Update tests for corrected scope | `8fc155aa` | ✅ Complete |
 
-**Key files**:
-- `lib/server/treatments.js:349-352` - remove syncIdentifier/uuid lines
-- `lib/server/entries.js` - similar fix
-- `tests/api.treatments.test.js` - update tests verifying wrong behavior
+**Dedup preserved**: `syncIdentifier` and `uuid` still used in `upsertQueryFor()`, but NOT copied to `identifier`.
 
 ---
 
