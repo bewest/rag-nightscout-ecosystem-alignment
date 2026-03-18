@@ -1,0 +1,570 @@
+# Client Upload Behavior Matrix
+# Documents how each AID client uploads to Nightscout APIs
+# Used for interoperability testing and API design decisions
+
+scenario: client-upload-behaviors
+version: 1
+
+requirements:
+  - REQ-NS-025  # Ordered Batch Write Guarantee
+  - REQ-API-001 # Array handling for POST endpoints
+
+related_gaps:
+  - GAP-API-003  # Profile API rejects arrays (MongoDB driver regression)
+  - GAP-API-004  # Inconsistent array handling across APIs
+
+# ============================================
+# Client Behavior Summary
+# ============================================
+#
+# | Client       | Profile      | DeviceStatus    | Treatments       | Entries         |
+# |--------------|--------------|-----------------|------------------|-----------------|
+# | NightscoutKit| Array        | Array (queued)  | Array            | Array           |
+# | Trio         | Single       | Single          | Array (batch 100)| Array (batch 100)|
+# | AAPS         | Single (v3)  | Single (v3)     | Single (v3)      | Single (v3)     |
+# | xDrip+       | N/A          | Single          | Single (queued)  | Array           |
+
+clients:
+  # ============================================
+  # NightscoutKit (Loop iOS)
+  # ============================================
+  nightscoutkit:
+    name: "NightscoutKit"
+    platform: "iOS"
+    apps: ["Loop"]
+    api_version: "v1"
+    source: "externals/NightscoutKit/"
+    
+    profile:
+      format: "array"
+      batch_support: true
+      notes: "Always wraps in array: [profileSet.dictionaryRepresentation]"
+      references:
+        - file: "NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift"
+          line: 404
+          code: "postToNS([profileSet.dictionaryRepresentation], url: url, completion: completion)"
+        - file: "NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift"
+          line: 408
+          code: "postToNS(profileSets.map { $0.dictionaryRepresentation }, endpoint: .profile, completion: completion)"
+      fields:
+        - defaultProfile
+        - startDate
+        - mills
+        - units
+        - enteredBy
+        - loopSettings
+        - store  # nested profile schedules
+        
+    devicestatus:
+      format: "array"
+      batch_support: true
+      notes: "Queues individually, flushes as array"
+      references:
+        - file: "NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift"
+          line: 160
+          code: "deviceStatuses.append(status.dictionaryRepresentation)"
+        - file: "NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift"
+          line: 634
+          code: "postToNS(inFlight as [Any], url: url)"
+      fields:
+        - device
+        - created_at
+        - pump
+        - uploader
+        - loop
+        - radioAdapter
+        - override
+        - identifier
+        
+    treatments:
+      format: "array"
+      batch_support: true
+      sync_identifier: true
+      notes: "Uses syncIdentifier for client-side tracking"
+      references:
+        - file: "NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift"
+          line: 67
+          code: "postToNS(treatments.map { $0.dictionaryRepresentation }, url: url, completion: completionHandler)"
+        - file: "NightscoutKit/Sources/NightscoutKit/NightscoutTreatment.swift"
+          line: 117
+          code: 'rval["syncIdentifier"] = syncIdentifier'
+      event_types:
+        - "Correction Bolus"
+        - "Meal Bolus"
+        - "Carb Correction"
+        - "Temp Basal"
+        - "Temporary Override"
+        - "BG Check"
+        - "Note"
+        - "Sensor Start"
+        - "Site Change"
+      fields:
+        - created_at
+        - timestamp
+        - enteredBy
+        - eventType
+        - syncIdentifier  # custom field for tracking
+        - insulin
+        - carbs
+        - duration
+        - rate
+        - automatic
+        
+    entries:
+      format: "array"
+      batch_support: true
+      notes: "Queues entries, flushes as array"
+      references:
+        - file: "NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift"
+          line: 670
+          code: "postToNS(entries.map { $0.dictionaryRepresentation }, endpoint: .entries, completion: completion)"
+      fields:
+        - date  # milliseconds since epoch
+        - dateString
+        - device
+        - type  # sgv or mbg
+        - sgv
+        - mbg
+        - trend
+        - direction
+        - condition
+        - trendRate
+        - isCalibration
+
+  # ============================================
+  # Trio (iOS, oref1 fork)
+  # ============================================
+  trio:
+    name: "Trio"
+    platform: "iOS"
+    apps: ["Trio"]
+    api_version: "v1"
+    source: "externals/Trio/"
+    
+    profile:
+      format: "single"
+      batch_support: false
+      notes: "Single object POST, not wrapped in array"
+      references:
+        - file: "Trio/FreeAPS/Sources/Services/Network/NightscoutAPI.swift"
+          line: 411
+          code: "POST /api/v1/profile.json with NightscoutProfileStore"
+        - file: "Trio/FreeAPS/Sources/Services/Network/NightscoutManager.swift"
+          line: 766
+          code: "try await nightscout.uploadProfile(profileStore)"
+      fields:
+        - defaultProfile
+        - store
+        - startDate
+        - mills
+        - enteredBy
+        - bundleIdentifier
+        - deviceToken
+        
+    devicestatus:
+      format: "single"
+      batch_support: false
+      throttle_minutes: 2
+      notes: "Single object per upload, 2-minute throttle"
+      references:
+        - file: "Trio/FreeAPS/Sources/Services/Network/NightscoutAPI.swift"
+          line: 376
+          code: "POST /api/v1/devicestatus.json"
+        - file: "Trio/FreeAPS/Sources/Services/Network/NightscoutManager.swift"
+          line: 408
+          code: "155-line deviceStatus upload function"
+      fields:
+        - device
+        - openaps  # suggested, enacted, iob
+        - pump
+        - uploader
+        
+    treatments:
+      format: "array"
+      batch_support: true
+      batch_size: 100
+      sync_identifier: false
+      notes: "Batches of 100, uses internal id field not syncIdentifier"
+      references:
+        - file: "Trio/FreeAPS/Sources/Services/Network/NightscoutAPI.swift"
+          line: 299
+          code: "[NightscoutTreatment] array"
+        - file: "Trio/FreeAPS/Sources/Services/Network/NightscoutManager.swift"
+          line: 1003
+          code: "Carbs upload in batches of 100"
+      event_types:
+        - "Carb Correction"
+        - "Temp Basal"
+        - "Bolus"
+        - "Temporary Target"
+        - "Profile Switch"
+        - "Exercise"
+      fields:
+        - eventType
+        - createdAt  # JSON: created_at
+        - insulin
+        - carbs
+        - fat
+        - protein
+        - duration
+        - rate
+        - absolute
+        - id
+        - fpuID
+        
+    entries:
+      format: "array"
+      batch_support: true
+      batch_size: 100
+      throttle_minutes: 2
+      notes: "Batches of 100, 2-minute throttle"
+      references:
+        - file: "Trio/FreeAPS/Sources/Services/Network/NightscoutAPI.swift"
+          line: 340
+          code: "[BloodGlucose] array"
+        - file: "Trio/FreeAPS/Sources/Services/Network/NightscoutManager.swift"
+          line: 864
+          code: "CGM glucose batch upload in batches of 100"
+      fields:
+        - _id
+        - sgv
+        - direction
+        - date
+        - dateString
+        - unfiltered
+        - filtered
+        - noise
+        - glucose
+        - type
+
+  # ============================================
+  # AAPS (Android APS)
+  # ============================================
+  aaps:
+    name: "AndroidAPS"
+    platform: "Android"
+    apps: ["AAPS"]
+    api_version: "v3"
+    source: "externals/AndroidAPS/"
+    
+    profile:
+      format: "single"
+      batch_support: false
+      notes: "API v3, single JSONObject"
+      references:
+        - file: "AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/services/NightscoutRemoteService.kt"
+          line: 102
+          code: "POST /api/v3/profile"
+        - file: "AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/NSAndroidClientImpl.kt"
+          line: 436
+          code: "createProfileStore(remoteProfileStore: JSONObject)"
+      fields:
+        - app
+        - defaultProfile
+        - store
+        - date
+        - startDate
+        
+    devicestatus:
+      format: "single"
+      batch_support: false
+      notes: "API v3, single RemoteDeviceStatus"
+      references:
+        - file: "AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/services/NightscoutRemoteService.kt"
+          line: 74
+          code: "POST /api/v3/devicestatus"
+        - file: "AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/NSAndroidClientImpl.kt"
+          line: 272
+          code: "createDeviceStatus(nsDeviceStatus: NSDeviceStatus)"
+      fields:
+        - app
+        - identifier
+        - date
+        - uploaderBattery
+        - isCharging
+        - device
+        - pump
+        - openaps
+        - configuration
+        
+    treatments:
+      format: "single"
+      batch_support: false
+      sync_identifier: false
+      notes: "API v3, single RemoteTreatment. Uses server-assigned identifier. Retries with utcOffset=0 if rejected."
+      references:
+        - file: "AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/services/NightscoutRemoteService.kt"
+          line: 65
+          code: "POST /api/v3/treatments"
+        - file: "AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/NSAndroidClientImpl.kt"
+          line: 293
+          code: "createTreatment(nsTreatment: NSTreatment)"
+        - file: "AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/NSAndroidClientImpl.kt"
+          line: 307
+          code: "Retry with utcOffset=0 if rejected"
+      event_types:
+        - "MEAL_BOLUS"
+        - "CORRECTION_BOLUS"
+        - "COMBO_BOLUS"
+        - "SNACK_BOLUS"
+        - "TEMPORARY_BASAL"
+        - "TEMPORARY_BASAL_START"
+        - "TEMPORARY_BASAL_END"
+        - "CARBS_CORRECTION"
+        - "TEMPORARY_TARGET"
+        - "PROFILE_SWITCH"
+        - "SENSOR_CHANGE"
+        - "CANNULA_CHANGE"
+        - "INSULIN_CHANGE"
+        - "PUMP_BATTERY_CHANGE"
+        - "EXERCISE"
+        - "ANNOUNCEMENT"
+        - "NOTE"
+      fields:
+        - identifier
+        - date
+        - utcOffset  # mandatory, retries with 0
+        - app
+        - device
+        - eventType
+        - isValid
+        - isReadOnly
+        - notes
+        - insulin
+        - carbs
+        - duration
+        - absolute
+        - percent
+        - rate
+        - pumpId
+        - pumpType
+        - pumpSerial
+        - bolusCalculatorResult
+        
+    entries:
+      format: "single"
+      batch_support: false
+      notes: "API v3, single RemoteEntry. Retries with utcOffset=0 if rejected."
+      references:
+        - file: "AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/services/NightscoutRemoteService.kt"
+          line: 50
+          code: "POST /api/v3/entries"
+        - file: "AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/NSAndroidClientImpl.kt"
+          line: 164
+          code: "createSgv(nsSgvV3: NSSgvV3)"
+      fields:
+        - type
+        - sgv
+        - direction
+        - filtered
+        - unfiltered
+        - noise
+        - date
+        - identifier
+        - utcOffset
+        - app
+        - device
+        - isValid
+        - isReadOnly
+
+  # ============================================
+  # xDrip+ (Android CGM)
+  # ============================================
+  xdrip:
+    name: "xDrip+"
+    platform: "Android"
+    apps: ["xDrip+"]
+    api_version: "v1"
+    source: "externals/xDrip/"
+    
+    profile:
+      format: "none"
+      batch_support: false
+      notes: "xDrip+ does NOT upload profiles to Nightscout. Reads profiles locally only."
+      references:
+        - file: "xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java"
+          line: 127
+          code: "No POST profile endpoint defined"
+      fields: []
+        
+    devicestatus:
+      format: "single"
+      batch_support: false
+      notes: "Single object per device, includes phone/bridge/transmitter batteries"
+      references:
+        - file: "xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java"
+          line: 1117
+          code: "postDeviceStatus() method"
+        - file: "xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java"
+          line: 134
+          code: "API interface definition"
+      fields:
+        - device
+        - uploader.battery
+        - uploader.batteryVoltage
+        - uploader.temperature
+        
+    treatments:
+      format: "single"
+      batch_support: false
+      sync_identifier: false
+      uuid_field: true
+      notes: "Individual objects via queue. Uses uuid field converted to _id for upsert."
+      references:
+        - file: "xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java"
+          line: 771
+          code: "populateV1APITreatmentEntry() - field mapping"
+        - file: "xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java"
+          line: 793
+          code: "postTreatments() - upload logic"
+        - file: "xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java"
+          line: 882
+          code: "uuid_to_id() conversion for PUT"
+      event_types:
+        - "Sensor Start"
+        - "Sensor Stop"
+        - "<none>"
+      fields:
+        - timestamp
+        - eventType
+        - enteredBy
+        - notes
+        - uuid  # used for upsert, converted to _id
+        - carbs
+        - insulin
+        - insulinInjections
+        - created_at
+        - sysTime
+        
+    entries:
+      format: "array"
+      batch_support: true
+      notes: "Batch array containing SGV, MBG, and calibration entries"
+      references:
+        - file: "xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java"
+          line: 555
+          code: "Batch array construction"
+        - file: "xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java"
+          line: 660
+          code: "populateV1APIBGEntry() - SGV format"
+        - file: "xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java"
+          line: 725
+          code: "MBG format"
+        - file: "xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java"
+          line: 743
+          code: "Calibration format"
+      fields:
+        - device
+        - date
+        - dateString
+        - sgv
+        - delta
+        - direction
+        - type  # sgv, mbg, or cal
+        - filtered
+        - unfiltered
+        - rssi
+        - noise
+        - sysTime
+
+# ============================================
+# Test Assertions
+# ============================================
+assertions:
+  # Profile array handling
+  - id: profile-array-accepted
+    description: "Profile API accepts array format for NightscoutKit compatibility"
+    type: api
+    operation: POST /api/v1/profile
+    input_format: "[{...profile...}]"
+    expected_status: 200
+    clients_affected: [nightscoutkit]
+    gap: GAP-API-003
+    
+  - id: profile-single-accepted
+    description: "Profile API accepts single object format"
+    type: api
+    operation: POST /api/v1/profile
+    input_format: "{...profile...}"
+    expected_status: 200
+    clients_affected: [trio, aaps]
+    
+  # Treatments sync identity
+  - id: treatments-syncidentifier-preserved
+    description: "syncIdentifier field preserved through create-read cycle"
+    type: state
+    operation: POST -> GET
+    clients_affected: [nightscoutkit]
+    input:
+      syncIdentifier: "test-uuid-1234"
+    target: treatment.syncIdentifier
+    expected: "test-uuid-1234"
+    
+  - id: treatments-uuid-preserved
+    description: "uuid field preserved for xDrip+ upsert"
+    type: state
+    operation: POST -> GET
+    clients_affected: [xdrip]
+    input:
+      uuid: "550e8400-e29b-41d4-a716-446655440000"
+    target: treatment.uuid
+    expected: "550e8400-e29b-41d4-a716-446655440000"
+    
+  # API version compatibility
+  - id: v1-array-treatments-accepted
+    description: "API v1 treatments accepts array"
+    type: api
+    operation: POST /api/v1/treatments
+    input_format: "[{...}, {...}]"
+    expected_status: 200
+    clients_affected: [nightscoutkit, trio]
+    
+  - id: v3-single-treatments-accepted
+    description: "API v3 treatments accepts single object"
+    type: api
+    operation: POST /api/v3/treatments
+    input_format: "{...}"
+    expected_status: 200
+    clients_affected: [aaps]
+    
+  # Entries batch support
+  - id: entries-batch-accepted
+    description: "Entries API accepts array for batch upload"
+    type: api
+    operation: POST /api/v1/entries
+    input_format: "[{...sgv...}, {...sgv...}]"
+    expected_status: 200
+    clients_affected: [nightscoutkit, trio, xdrip]
+
+# ============================================
+# Cross-References
+# ============================================
+cross_references:
+  - document: conformance/assertions/api-behavior.yaml
+    description: "API behavior assertions"
+  - document: docs/backlogs/profile-api-array-regression.md
+    description: "Profile API array regression backlog"
+  - document: mapping/cross-project/terminology-matrix.md
+    description: "Cross-project terminology"
+  - document: traceability/sync-identity-requirements.md
+    description: "Sync identity requirements"
+
+sources:
+  nightscoutkit:
+    - file: "externals/NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift"
+      description: "Main client implementation"
+    - file: "externals/NightscoutKit/Sources/NightscoutKit/NightscoutTreatment.swift"
+      description: "Treatment model"
+  trio:
+    - file: "externals/Trio/FreeAPS/Sources/Services/Network/NightscoutAPI.swift"
+      description: "API implementation"
+    - file: "externals/Trio/FreeAPS/Sources/Services/Network/NightscoutManager.swift"
+      description: "Upload manager"
+  aaps:
+    - file: "externals/AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/NSAndroidClientImpl.kt"
+      description: "NSClient v3 implementation"
+    - file: "externals/AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/services/NightscoutRemoteService.kt"
+      description: "Remote service interface"
+  xdrip:
+    - file: "externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java"
+      description: "Nightscout uploader"

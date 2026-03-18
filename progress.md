@@ -27,6 +27,36 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Client Upload Behavior Matrix (2026-03-18)
+
+Comprehensive analysis of how each AID client uploads to Nightscout APIs.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Conformance Assertions | `conformance/assertions/client-upload-behaviors.yaml` | 4 clients × 4 APIs documented |
+
+**Key Findings**:
+
+| Client | Profile | DeviceStatus | Treatments | Entries |
+|--------|---------|--------------|------------|---------|
+| **NightscoutKit** | Array | Array (queued) | Array + syncIdentifier | Array |
+| **Trio** | Single | Single | Array (batch 100) | Array (batch 100) |
+| **AAPS** | Single (v3) | Single (v3) | Single (v3) | Single (v3) |
+| **xDrip+** | N/A | Single | Single + uuid | Array |
+
+- **NightscoutKit** always wraps in arrays, uses `syncIdentifier` custom field
+- **AAPS** uses API v3 exclusively, single objects, server-assigned identifiers
+- **Trio** batches in groups of 100, uses `_id` for tracking
+- **xDrip+** doesn't upload profiles, uses `uuid` field for treatment upsert
+
+**Source Files Analyzed**:
+- `externals/NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift`
+- `externals/Trio/FreeAPS/Sources/Services/Network/NightscoutAPI.swift`
+- `externals/AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/NSAndroidClientImpl.kt`
+- `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java`
+
+---
+
 ### Loop Source Analysis for GAP-TREAT-012 (2026-03-10)
 
 Complete source code analysis of Loop's NightscoutKit upload patterns to support issue #8450 fix.
