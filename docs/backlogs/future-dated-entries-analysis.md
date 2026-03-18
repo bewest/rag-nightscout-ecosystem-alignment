@@ -533,8 +533,8 @@ if (doc.date > Date.now() + MAX_FUTURE_MS) {
 5. [x] Compare Loop vs Trio CGMBLEKit/G7SensorKit implementations
 6. [x] ~~Create PR for G7SensorKit stopgap fix~~ → **WRONG TARGET - issue is G6/CGMBLEKit**
 7. [x] Document all G6/G7 message types that affect timestamps → See xDrip formats below
-8. [ ] Fix PluginSource.swift to validate sessionStartDate before use
-9. [ ] Fix Glucose.swift to detect 0xFFFFFFFF sentinel and use nil instead
+8. [x] Fix PluginSource.swift to validate sessionStartDate before use → Already handles optional
+9. [x] Fix Glucose.swift to detect 0xFFFFFFFF sentinel and use nil instead → **FIXED in `528886f`**
 10. [x] **CRITICAL: Analyze 2^32 overflow pattern** - ROOT CAUSE CONFIRMED!
 
 ## Root Cause Deep Dive

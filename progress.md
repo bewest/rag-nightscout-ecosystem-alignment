@@ -27,6 +27,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### CGMBLEKit Future-Dated Entries Fix (2026-03-18)
+
+Fixed root cause of 136-year-future dates in Loop/Trio sensor start records.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Root Cause Fix | `Trio/CGMBLEKit@528886f` | Detect `0xFFFFFFFF` sentinel, return `nil` |
+| Tests | `CGMBLEKitTests/GlucoseTests.swift` | New `testInvalidSessionTime()` test |
+
+**Problem**: G6 transmitters return `sessionStartTime = 0xFFFFFFFF` when no sensor session is active. CGMBLEKit blindly added this to `activationDate`, producing dates in year 2161.
+
+**Fix Applied**:
+- `Glucose.swift`: Made `sessionStartDate` and `sessionExpDate` optional (`Date?`)
+- `Glucose.swift`: Added sentinel check - returns `nil` instead of corrupt date
+- `TransmitterManager.swift`: Skip sensor start event when sessionStartDate is nil
+- Downstream Trio code already handled optional via guards
+
+**Gap**: GAP-API-021  
+**Issues**: LoopKit/Loop#2087, nightscout/cgm-remote-monitor#8453
+
+---
+
 ### Client Upload Behavior Matrix (2026-03-18)
 
 Comprehensive analysis of how each AID client uploads to Nightscout APIs.
