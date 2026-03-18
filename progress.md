@@ -27,6 +27,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Profile Client Patterns Analysis (2026-03-18)
+
+Comprehensive analysis of how Loop, AAPS, Trio, and xDrip+ handle profile uploads to Nightscout.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deep Dive | `docs/10-domain/profile-client-patterns.md` | 4 clients analyzed, comparison matrix |
+
+**Key Findings**:
+- **Loop is the only client that sends arrays** (even single profiles wrapped in `[profile]`)
+- All clients expect server-generated `_id` - none send their own
+- xDrip+ does NOT upload profiles (local only)
+- AAPS uses API v3 (`/v3/profile`), others use v1 (`/api/v1/profile`)
+
+**Backlog Completed**: `profile-c1` through `profile-c5` (Track 4: Client Analysis)
+
+---
+
 ### CGMBLEKit Future-Dated Entries Fix (2026-03-18)
 
 Fixed root cause of 136-year-future dates in Loop/Trio sensor start records.

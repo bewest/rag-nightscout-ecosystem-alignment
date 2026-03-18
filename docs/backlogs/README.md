@@ -100,15 +100,17 @@ if (!Array.isArray(data)) { data = [data]; }
 | `activity-storage-fix` | Optimize activity storage with `bulkWrite` | ✅ Complete (`67d20993`) |
 | `food-storage-fix` | Optimize food storage with `bulkWrite` | ✅ Complete (`67d20993`) |
 
-## 📋 Optional: Future Work
+## ✅ Optional: Client Analysis - **COMPLETE**
 
-Low-priority items (not crash fixes):
+| ID | Task | Status |
+|----|------|--------|
+| `profile-c1` | Analyze Loop profile upload | ✅ Complete |
+| `profile-c2` | Analyze AAPS profile upload | ✅ Complete |
+| `profile-c3` | Analyze Trio profile upload | ✅ Complete |
+| `profile-c4` | Analyze xDrip+ profile upload | ✅ Complete (local only) |
+| `profile-c5` | Create client comparison matrix | ✅ Complete |
 
-| ID | Task | Description |
-|----|------|-------------|
-| `profile-c1` through `profile-c5` | Client analysis | Document Loop, AAPS, Trio, xDrip+ patterns |
-
-**Backlog**: [profile-api-array-regression.md](profile-api-array-regression.md#track-4-client-analysis-optional)
+**Deep Dive**: [profile-client-patterns.md](../10-domain/profile-client-patterns.md)
 
 ---
 
