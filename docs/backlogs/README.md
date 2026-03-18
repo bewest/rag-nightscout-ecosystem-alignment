@@ -33,6 +33,48 @@ for (let i = 0; i < data.length; i++) { ctx.purifier.purifyObject(data[i]); }
 ctx.collection.createMany(data, callback);
 ```
 
+## ✅ P1: _id Validation - All Endpoints - **COMPLETE**
+
+**Problem**: MongoDB driver migration exposed _id validation issues across multiple endpoints.
+
+**Backlog**: [profile-api-array-regression.md](profile-api-array-regression.md#full-endpoint-audit)
+
+| ID | Task | Status |
+|----|------|--------|
+| `activity-id-validation` | Add _id validation to activity API (400 on invalid) | ✅ Complete (`808b923e`) |
+| `food-id-validation` | Add _id validation to food API (400 on invalid) | ✅ Complete (`808b923e`) |
+| `api3-id-validation` | Verify API3 queries have _id validation | ✅ Already Safe (`filterForOne()` validates format) |
+| `websocket-id-validation` | Verify websocket handlers have _id validation | ✅ Already Safe (`safeObjectID()` validates format) |
+| `id-validation-tests` | Create _id validation test suite | ✅ Complete (`808b923e`) |
+
+**Pattern Used**:
+- REST APIs (profile, devicestatus, activity, food): Validate at API layer, return 400
+- API3: `checkForHexRegExp` validates before `new ObjectID()` 
+- Websocket: `safeObjectID()` validates and falls back to string
+
+**Endpoint Audit**:
+| Endpoint | Current Behavior | Fix Needed |
+|----------|------------------|------------|
+| activity | 500 crash | Return 400 |
+| food | Silent replace (new _id) | Return 400 |
+| API3 queries | 500 crash | Return 400 |
+| websocket | Depends on collection | Return error |
+
+---
+
+## ✅ P1: _id Validation (profile/devicestatus) - **COMPLETE**
+
+**Problem**: Invalid `_id` values cause 500 errors (profile) or silent data loss (devicestatus). Should return 400.
+
+**Backlog**: [profile-api-array-regression.md](profile-api-array-regression.md#_id-validation-issue)
+
+| ID | Task | Status |
+|----|------|--------|
+| `profile-id-validation` | Add _id validation to profile API (400 on invalid) | ✅ Complete (`32b1d700`) |
+| `devicestatus-id-validation` | Add _id validation to devicestatus API (400 on invalid) | ✅ Complete (`2c15a323`) |
+
+**Fix**: Validate `_id` before storage. Accept `undefined`/`null`/valid 24-hex, reject others with 400.
+
 ---
 
 ## ✅ P1: UUID_HANDLING Scope Correction - **COMPLETE**

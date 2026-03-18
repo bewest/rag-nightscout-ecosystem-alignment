@@ -269,10 +269,22 @@ grep -A50 "dictionaryRepresentation" externals/NightscoutKit/Sources/NightscoutK
 
 ### Track 1: Fix Regressions (Priority)
 
-| ID | Title | Description |
-|----|-------|-------------|
-| `profile-array-fix` | Fix profile API array handling | Add array normalization + `insertMany()` |
-| `devicestatus-purifier-fix` | Fix devicestatus API purifier | Add array loop for purification |
+| ID | Title | Description | Status |
+|----|-------|-------------|--------|
+| `profile-array-fix` | Fix profile API array handling | Add array normalization + `insertMany()` | ✅ Complete |
+| `devicestatus-purifier-fix` | Fix devicestatus API purifier | Add array loop for purification | ✅ Complete |
+| `profile-id-validation` | Add _id validation to profile API | Return 400 on invalid _id instead of 500 crash | ✅ Complete (`32b1d700`) |
+| `devicestatus-id-validation` | Add _id validation to devicestatus API | Reject invalid _id with 400 instead of silent ignore | ✅ Complete (`2c15a323`) |
+
+### Track 1b: _id Validation - Remaining Endpoints
+
+| ID | Title | Description | Status |
+|----|-------|-------------|--------|
+| `activity-id-validation` | Add _id validation to activity API | Return 400 on invalid _id instead of 500 crash | 📋 Ready |
+| `food-id-validation` | Add _id validation to food API | Return 400 on invalid _id instead of silent replace | 📋 Ready |
+| `api3-id-validation` | Add _id validation to API3 queries | Return 400 on invalid identifier in URL params | 📋 Ready |
+| `websocket-id-validation` | Add _id validation to websocket handlers | Return error on invalid _id in socket data | 📋 Ready |
+| `id-validation-tests` | Create _id validation test suite | Test invalid _id handling across all endpoints | 📋 Ready |
 
 ### Track 2: Extract Fixtures from NightscoutKit
 
@@ -304,3 +316,137 @@ grep -A50 "dictionaryRepresentation" externals/NightscoutKit/Sources/NightscoutK
 - Deep dive: `docs/10-domain/profile-client-patterns.md` (to be created)
 - NightscoutKit source: `externals/NightscoutKit/`
 - Breaking commit: `d46c5b41a81a8c0804444ebdfb2dddbb207eab47`
+
+## _id Protocol and Client Behavior Matrix
+
+### The Protocol Rule
+
+**MongoDB `_id` must be a valid 24-character hex ObjectId.** Non-ObjectId values sent to `_id` are a **protocol error**.
+
+However, this protocol error "silently worked" in various ways historically, creating mixed client expectations.
+
+### Historical Behavior (Why It "Worked")
+
+| Era | MongoDB `insert()` behavior | Result |
+|-----|----------------------------|--------|
+| **Pre-v15** | Legacy `insert()` accepted anything | Non-ObjectId stored directly, queries worked |
+| **v15+** | `insertOne()` validates stricter | Non-ObjectId causes type mismatch errors |
+
+### Client Expectations Matrix
+
+| Client | Collection | What They Send to `_id` | Expected Behavior | Actual Pre-v15 | Planned v15+ |
+|--------|------------|-------------------------|-------------------|----------------|--------------|
+| **Loop overrides** | treatments | UUID (`syncIdentifier.uuidString`) | Insert + retrieve by same ID | ✅ Worked | ✅ `UUID_HANDLING` quirk |
+| **Trio CGM** | entries | UUID | Insert + retrieve by same ID | ✅ Worked | ✅ `UUID_HANDLING` quirk |
+| **Loop carbs/doses** | treatments | `syncIdentifier` field (not `_id`) | N/A - correct usage | ✅ Works | ✅ Works |
+| **AAPS** | treatments | `identifier` field (not `_id`) | N/A - correct usage | ✅ Works | ✅ Works |
+| **xDrip+** | treatments | `uuid` field (not `_id`) | N/A - correct usage | ✅ Works | ✅ Works |
+| **Portal Editor** | profile | Omits `_id` (correct) | Server generates | ✅ Works | ✅ Works |
+| **NightscoutKit** | profile | Omits `_id` (correct) | Server generates | ✅ Works | ✅ Works |
+
+### Server-Side Strategy
+
+| Endpoint | UUID_HANDLING Quirk? | Non-ObjectId Handling | Rationale |
+|----------|---------------------|----------------------|-----------|
+| **entries** | ✅ Yes | UUID → `identifier`, strip `_id` | Trio sends UUID to `_id` |
+| **treatments** | ✅ Yes | UUID → `identifier`, strip `_id` | Loop overrides send UUID |
+| **profile** | ❌ No | Return **400** | No client sends UUID to `_id` |
+| **devicestatus** | ❌ No | Return **400** | No client sends UUID to `_id` |
+| **activity** | ❌ No | Return **400** | No client sends UUID to `_id` |
+| **food** | ❌ No | Return **400** | No client sends UUID to `_id` |
+
+### Why Different Treatment?
+
+| Collection | Has UUID_HANDLING | Reason |
+|------------|-------------------|--------|
+| **entries/treatments** | ✅ Yes | Historical client data exists with UUID in `_id` |
+| **profile/devicestatus/etc** | ❌ No | No evidence of clients sending UUID to `_id` |
+
+**Principle**: Apply the quirk **only where clients actually used it**, enforce 400 everywhere else.
+
+### Evidence from NightscoutKit Source Code
+
+| Collection | `dictionaryRepresentation` sends `_id`? | Verified |
+|------------|----------------------------------------|----------|
+| **ProfileSet** | ❌ No - omits `_id`, only reads from response | `externals/NightscoutKit/.../ProfileSet.swift:141-159` |
+| **DeviceStatus** | ❌ No - sends `identifier` field instead | `externals/NightscoutKit/.../DeviceStatus.swift:60-62` |
+| **TreatmentEntry** | ⚠️ Some send `syncIdentifier` to `_id` | Loop overrides only |
+
+### Summary: Is This Accurate?
+
+| Statement | Accuracy | Evidence |
+|-----------|----------|----------|
+| "Non-ObjectId to `_id` is protocol error" | ✅ **True** | MongoDB spec requires ObjectId or server-generated |
+| "It silently worked historically" | ✅ **True** | Legacy `insert()` accepted any value |
+| "Mixed client expectations" | ⚠️ **Partially** | Only Loop overrides + Trio CGM actually used it |
+| "UUID_HANDLING is a quirk for Loop/Trio" | ✅ **True** | Preserves compatibility for historical data |
+| "Stricter behavior elsewhere" | ✅ **True** | 400 for profile/devicestatus/activity/food |
+| "NightscoutKit omits _id for profile/devicestatus" | ✅ **Verified** | Source code inspection confirms |
+
+---
+
+## _id Validation Issue
+
+### Full Endpoint Audit
+
+| Endpoint | Storage File | ObjectID Handling | Invalid _id Behavior |
+|----------|--------------|-------------------|---------------------|
+| **profile** | `lib/server/profile.js:39` | `new ObjectID(obj._id)` | **500 crash** |
+| **activity** | `lib/server/activity.js:31` | `new ObjectID(obj._id)` | **500 crash** |
+| **food** | `lib/server/food.js:20` | try/catch → `new ObjectID()` | **Silent replace** (generates new _id) |
+| **devicestatus** | `lib/server/devicestatus.js` | No conversion | **Silent ignore** (client _id lost) |
+| **entries** | `lib/server/entries.js` | UUID_HANDLING extracts to `identifier` | ✅ **Correct** (400 or strips) |
+| **treatments** | Via API3 | Via mongoCollection storage | Via API3 validation |
+| **API3 queries** | `lib/api3/storage/mongoCollection/utils.js:115` | `new ObjectID(identifier)` | **500 crash** on lookup |
+| **websocket** | `lib/server/websocket.js:455` | Direct `insertOne(data.data)` | Depends on collection |
+
+### Current Behavior Summary
+
+| Behavior | Endpoints | Problem |
+|----------|-----------|---------|
+| **500 crash** | profile, activity, API3 queries | Server error exposed to client |
+| **Silent ignore** | devicestatus | Client's _id silently discarded |
+| **Silent replace** | food | Generates new _id, may cause duplicates |
+| **Correct (400/extract)** | entries | Only endpoint with proper handling |
+
+### Desired Behavior
+
+All should return **400 Bad Request** with clear error message:
+
+```json
+{
+  "status": 400,
+  "message": "Invalid _id format. Must be 24-character hex string or omit for auto-generation."
+}
+```
+
+### Fix Pattern
+
+```javascript
+// Validate _id if provided
+function validateObjectId(id) {
+  if (id === undefined || id === null) return true;  // Will auto-generate
+  if (typeof id !== 'string') return false;
+  return /^[a-fA-F0-9]{24}$/.test(id);
+}
+
+// In API handler, before storage:
+if (doc._id && !validateObjectId(doc._id)) {
+  return res.status(400).json({
+    status: 400,
+    message: 'Invalid _id format. Must be 24-character hex string or omit for auto-generation.'
+  });
+}
+```
+
+### Test Cases for _id Validation
+
+| Input _id | Expected | Test |
+|-----------|----------|------|
+| `undefined` | 200 + auto-gen | ✅ Allow |
+| `null` | 200 + auto-gen | ✅ Allow |
+| `"507f1f77bcf86cd799439011"` | 200 + use provided | ✅ Valid hex |
+| `"my-uuid-12345"` | **400** | ❌ Not 24 hex chars |
+| `"abc"` | **400** | ❌ Too short |
+| `12345` | **400** | ❌ Not string |
+| `{}` | **400** | ❌ Object |
