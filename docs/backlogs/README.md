@@ -52,28 +52,7 @@ ctx.collection.createMany(data, callback);
 - API3: `checkForHexRegExp` validates before `new ObjectID()` 
 - Websocket: `safeObjectID()` validates and falls back to string
 
-**Endpoint Audit**:
-| Endpoint | Current Behavior | Fix Needed |
-|----------|------------------|------------|
-| activity | 500 crash | Return 400 |
-| food | Silent replace (new _id) | Return 400 |
-| API3 queries | 500 crash | Return 400 |
-| websocket | Depends on collection | Return error |
-
----
-
-## ✅ P1: _id Validation (profile/devicestatus) - **COMPLETE**
-
-**Problem**: Invalid `_id` values cause 500 errors (profile) or silent data loss (devicestatus). Should return 400.
-
-**Backlog**: [profile-api-array-regression.md](profile-api-array-regression.md#_id-validation-issue)
-
-| ID | Task | Status |
-|----|------|--------|
-| `profile-id-validation` | Add _id validation to profile API (400 on invalid) | ✅ Complete (`32b1d700`) |
-| `devicestatus-id-validation` | Add _id validation to devicestatus API (400 on invalid) | ✅ Complete (`2c15a323`) |
-
-**Fix**: Validate `_id` before storage. Accept `undefined`/`null`/valid 24-hex, reject others with 400.
+**All endpoints now return 400 on invalid _id.**
 
 ---
 
@@ -92,6 +71,38 @@ Should ONLY handle UUID values sent to `_id` field.
 | `uuid-fix-tests` | Update tests for corrected scope | `8fc155aa` | ✅ Complete |
 
 **Dedup preserved**: `syncIdentifier` and `uuid` still used in `upsertQueryFor()`, but NOT copied to `identifier`.
+
+---
+
+## ✅ P1: Food API Array Handling - **COMPLETE**
+
+**Problem**: Food API would crash if client sends array input (like other APIs support).
+
+**Backlog**: [profile-api-array-regression.md](profile-api-array-regression.md#track-1c-array-handling---remaining-endpoints)
+
+| ID | Task | Status |
+|----|------|--------|
+| `food-array-fix` | Add array normalization to food API | ✅ Complete (`ef7bff3d`) |
+
+**Fixed Pattern** (same as activity):
+```javascript
+// API layer: normalize to array
+if (!Array.isArray(data)) { data = [data]; }
+// Storage layer: replaceOne loop with upsert
+```
+
+---
+
+## 📋 Optional: Future Optimization
+
+Low-priority items for consistency (not crash fixes):
+
+| ID | Task | Description |
+|----|------|-------------|
+| `activity-storage-fix` | Optimize activity storage | Replace `replaceOne` loop with `insertMany` |
+| `profile-c1` through `profile-c5` | Client analysis | Document Loop, AAPS, Trio, xDrip+ patterns |
+
+**Backlog**: [profile-api-array-regression.md](profile-api-array-regression.md#track-4-client-analysis-optional)
 
 ---
 

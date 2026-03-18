@@ -1,6 +1,6 @@
 # Profile API Array Handling Regression
 
-**Status**: In Progress  
+**Status**: ✅ Complete  
 **Priority**: High  
 **Affected Version**: v15.0.0+ (after MongoDB driver migration)  
 **Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
@@ -9,14 +9,46 @@
 
 The Profile API POST endpoint broke array handling when migrated from legacy MongoDB driver's `insert()` to `insertOne()`. This affects Loop iOS users via NightscoutKit.
 
+**Fixed in commits:**
+- `cbb6d061` - Profile array handling
+- `2e81ce07` - DeviceStatus purifier fix  
+- `32b1d700`, `8d44a043`, `808b923e` - _id validation across all endpoints
+- `9fd53e32`, `269170b9`, `83248e7f` - NightscoutKit fixtures
+- `5f5bf224` - Test matrix
+
 ## API Comparison: Array Handling Patterns
 
-| API | API Layer | Storage Layer | NightscoutKit Sends | Status |
-|-----|-----------|---------------|---------------------|--------|
-| **Treatments** | ✅ `if (!_isArray(treatments)) { treatments = [treatments]; }` | Uses array | Array | ✅ Works |
-| **Entries** | ✅ `if (req.body.length) { incoming.concat(req.body); }` | Uses stream | Array | ✅ Works |
-| **DeviceStatus** | ⚠️ Passes single `obj` to purifier | ✅ `if (!Array.isArray(statuses)) { statuses = [statuses]; }` | Array | ⚠️ Partial |
-| **Profile** | ❌ Passes `req.body` directly | ❌ Uses `insertOne()` | Array | ❌ Broken |
+| API | API Layer | Storage Layer | Client Sends | Status |
+|-----|-----------|---------------|--------------|--------|
+| **Treatments** | ✅ Normalizes to array | ✅ `insertMany` | Array | ✅ Works |
+| **Entries** | ✅ Handles both | ✅ Stream-based | Array | ✅ Works |
+| **DeviceStatus** | ✅ Purifies each item | ✅ `insertMany` | Array | ✅ Fixed (`2e81ce07`) |
+| **Profile** | ✅ Normalizes to array | ✅ `insertMany` | Array | ✅ Fixed (`cbb6d061`) |
+| **Activity** | ✅ Normalizes to array | ✅ `replaceOne` loop | Single/Array | ✅ Works |
+| **Food** | ✅ Normalizes to array | ✅ `replaceOne` loop | Single/Array | ✅ Fixed (`ef7bff3d`) |
+
+### Activity API Analysis
+
+- **API Layer**: ✅ Already normalizes `if (!_isArray(activity)) { activity = [activity]; }`
+- **API Layer**: ✅ Has _id validation with `findInvalidId()`
+- **Storage `create()`**: ✅ Uses `replaceOne` loop with upsert (works, handles arrays)
+- **Status**: ✅ **Works for both single and array input**
+
+### Food API Analysis
+
+- **API Layer**: ✅ Normalizes to array (fixed in `ef7bff3d`)
+- **API Layer**: ✅ Has _id validation for POST/PUT/DELETE
+- **Storage `create()`**: ✅ Uses `replaceOne` loop with upsert (same as activity)
+- **Status**: ✅ **Fixed - supports both single and array input**
+
+### Array Support Priority
+
+| API | Array Support | Crash Risk | Priority |
+|-----|---------------|------------|----------|
+| **Food** | ✅ Fixed | ❌ No crash | ✅ Done (`ef7bff3d`) |
+| **Activity** | ✅ Works | ❌ No crash | ✅ Done |
+
+**All APIs now support array input.**
 
 ### Correct Pattern (from Treatments)
 
@@ -276,30 +308,42 @@ grep -A50 "dictionaryRepresentation" externals/NightscoutKit/Sources/NightscoutK
 | `profile-id-validation` | Add _id validation to profile API | Return 400 on invalid _id instead of 500 crash | ✅ Complete (`32b1d700`) |
 | `devicestatus-id-validation` | Add _id validation to devicestatus API | Reject invalid _id with 400 instead of silent ignore | ✅ Complete (`2c15a323`) |
 
-### Track 1b: _id Validation - Remaining Endpoints
+### Track 1b: _id Validation - All Endpoints ✅ COMPLETE
 
 | ID | Title | Description | Status |
 |----|-------|-------------|--------|
-| `activity-id-validation` | Add _id validation to activity API | Return 400 on invalid _id instead of 500 crash | 📋 Ready |
-| `food-id-validation` | Add _id validation to food API | Return 400 on invalid _id instead of silent replace | 📋 Ready |
-| `api3-id-validation` | Add _id validation to API3 queries | Return 400 on invalid identifier in URL params | 📋 Ready |
-| `websocket-id-validation` | Add _id validation to websocket handlers | Return error on invalid _id in socket data | 📋 Ready |
-| `id-validation-tests` | Create _id validation test suite | Test invalid _id handling across all endpoints | 📋 Ready |
+| `activity-id-validation` | Add _id validation to activity API | API validates before storage | ✅ Complete (`808b923e`) |
+| `food-id-validation` | Add _id validation to food API | API validates before storage | ✅ Complete (`808b923e`) |
+| `api3-id-validation` | API3 query validation | `checkForHexRegExp` validates before `new ObjectID()` | ✅ Already Safe |
+| `websocket-id-validation` | Websocket validation | `safeObjectID()` validates and preserves strings | ✅ Already Safe |
+| `id-validation-tests` | Create _id validation test suite | Tests for activity, food, profile, devicestatus | ✅ Complete (`808b923e`) |
 
-### Track 2: Extract Fixtures from NightscoutKit
+### Track 1c: Array Handling - All Endpoints ✅ COMPLETE
 
-| ID | Title | Description |
-|----|-------|-------------|
-| `fixture-nightscoutkit-profile` | Extract profile fixtures | Single array, batch array, response format |
-| `fixture-nightscoutkit-devicestatus` | Extract devicestatus fixtures | LoopStatus, PumpStatus nested structures |
-| `fixture-nightscoutkit-treatments` | Extract treatment fixtures | Carb, Bolus, TempBasal with syncIdentifier |
+| ID | Title | Description | Status |
+|----|-------|-------------|--------|
+| `food-array-fix` | Add array support to food API | ✅ Fixed - supports single and array input | ✅ Complete (`ef7bff3d`) |
+| `activity-storage-fix` | Optimize activity storage | Works but uses `replaceOne` loop - optional | 📋 Optional |
 
-### Track 3: Test Matrices
+**Food API Fix Applied (`ef7bff3d`):**
+- API layer: Added array normalization with `findInvalidId()` validation
+- Storage layer: Changed `insertOne()` to `replaceOne` loop with upsert
+- Now matches activity pattern exactly
 
-| ID | Title | Description |
-|----|-------|-------------|
-| `test-matrix-api-array` | API array handling test matrix | Test single/array/batch/empty across all APIs |
-| `test-matrix-client-behaviors` | Client behavior test matrix | Document Loop, Trio, AAPS, xDrip+ expectations |
+### Track 2: Extract Fixtures from NightscoutKit ✅ COMPLETE
+
+| ID | Title | Description | Status |
+|----|-------|-------------|--------|
+| `fixture-nightscoutkit-profile` | Extract profile fixtures | Single array, batch array, response format | ✅ Complete (`9fd53e32`) |
+| `fixture-nightscoutkit-devicestatus` | Extract devicestatus fixtures | LoopStatus, PumpStatus nested structures | ✅ Complete (`269170b9`) |
+| `fixture-nightscoutkit-treatments` | Extract treatment fixtures | Carb, Bolus, TempBasal with syncIdentifier | ✅ Complete (`83248e7f`) |
+
+### Track 3: Test Matrices ✅ COMPLETE
+
+| ID | Title | Description | Status |
+|----|-------|-------------|--------|
+| `test-matrix-api-array` | API array handling test matrix | Test single/array/batch/empty across all APIs | ✅ Complete (`5f5bf224`) |
+| `test-matrix-client-behaviors` | Client behavior test matrix | Document Loop, Trio, AAPS, xDrip+ expectations | ✅ Complete (`73b901a`) |
 
 ### Track 4: Client Analysis (Optional)
 
