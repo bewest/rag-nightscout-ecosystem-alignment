@@ -6,7 +6,7 @@ Active work streams for the Nightscout ecosystem alignment project.
 
 ---
 
-## 🔴 P0: Profile API Array Handling Regression - **IN PROGRESS**
+## ✅ P0: Profile API Array Handling Regression - **COMPLETE**
 
 **Problem**: MongoDB driver migration broke array handling for Profile API. NightscoutKit (Loop) sends `[profile]` arrays but `insertOne()` rejects them.
 
@@ -22,7 +22,7 @@ Active work streams for the Nightscout ecosystem alignment project.
 | `fixture-nightscoutkit-devicestatus` | Extract NightscoutKit devicestatus fixtures | ✅ Complete (`269170b9`) |
 | `fixture-nightscoutkit-treatments` | Extract NightscoutKit treatment fixtures | ✅ Complete (`83248e7f`) |
 | `test-matrix-api-array` | Create API array handling test matrix | ✅ Complete (`5f5bf224`) |
-| `test-matrix-client-behaviors` | Create client behavior test matrix | ✅ Complete |
+| `test-matrix-client-behaviors` | Create client behavior test matrix | ✅ Complete (`73b901a`) |
 
 **Root Cause**: Commit `d46c5b41` changed `insert()` → `insertOne()`, breaking array support.
 
