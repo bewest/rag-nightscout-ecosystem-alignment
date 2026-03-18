@@ -1,14 +1,12 @@
 ---
 name: integration-test-cycle
-description: Develop Swift/Kotlin/JS tests for Nightscout treatments API
+description: Develop tests for Nightscout API
 version: 1.0.0
 ---
 
-# Integration Test Cycle - Minimal context, explore as needed
-#
-# Server: /home/bewest/src/worktrees/nightscout/cgm-pr-8447 (localhost:1337)
-# Tools:  tools/swift-nightscout-tests/, tools/kotlin-nightscout-tests/
-# Focus:  REQ-SYNC-072 (Option G), GAP-TREAT-012 (treatments), GAP-SYNC-045 (entries)
+# Integration Test Cycle
+# Docs: docs/backlogs/README.md (active work), docs/backlogs/*.md (details)
+# Server: /home/bewest/src/worktrees/nightscout/cgm-pr-8447
 
 MODEL claude-sonnet-4-20250514
 ADAPTER copilot
@@ -22,47 +20,36 @@ RUN-OUTPUT-LIMIT 5K
 RUN-TIMEOUT 120s
 ALLOW-SHELL true
 
-# === Phase 0: Quick Check ===
+# === Phase 0: Status ===
 ELIDE
 RUN git status -s && curl -s localhost:1337/api/v1/status.json | head -1 || echo "Server not running"
 ELIDE
 
-PROMPT Check git status and server. If server down, see `docs/backlogs/README.md` for start instructions.
+PROMPT Check status. See `docs/backlogs/README.md` for context.
 
 # === Phase 1: Select Task ===
 ELIDE
-RUN grep -E "^## 🔴|^\| \`uuid-fix" docs/backlogs/README.md | head -15
+RUN grep -E "^## 🔴|📋 Ready" docs/backlogs/README.md | head -15
 ELIDE
 
-PROMPT Pick a ready work item (📋 Ready). The active work is UUID_HANDLING scope correction:
-- `docs/backlogs/uuid-identifier-lookup.md` - Full spec and work items
-- `docs/backlogs/README.md` - Quick reference
-
-State: `Selected: [ID] - [description]`
+PROMPT Pick a ready task. Backlog docs have full specs.
 
 # === Phase 2: Execute ===
-PROMPT Execute task. Explore source code as needed:
-- Loop: `externals/LoopWorkspace/`
-- AAPS: `externals/AndroidAPS/`
-- NS API: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/`
-
-Build tools: `swift build` or `./gradlew build` in tools/ dirs.
+PROMPT Execute task. Explore `externals/` and backlog docs as needed.
 
 # === Phase 3: Verify ===
 ELIDE
-RUN cd tools/swift-nightscout-tests && swift build 2>&1 | tail -5 || true
-ELIDE
-RUN cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447 && npm test -- --grep "UUID" 2>&1 | grep -E "passing|failing" || true
+RUN cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447 && npm test 2>&1 | tail -5
 ELIDE
 
-PROMPT Verify builds pass. Fix errors before proceeding.
+PROMPT Verify tests pass.
 
-# === Phase 4: Update & Commit ===
-PROMPT Update backlog task status. Commit with trace refs.
+# === Phase 4: Commit ===
+PROMPT Update backlog status, commit changes.
 
 ELIDE
 RUN git status -s
 ELIDE
 
 # === Done ===
-PROMPT Summary: Task, commit hash, test results. Check `docs/backlogs/README.md` for next task.
+PROMPT Summary: Task completed, next steps.
