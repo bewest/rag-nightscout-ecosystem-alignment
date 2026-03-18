@@ -21,8 +21,8 @@ Active work streams for the Nightscout ecosystem alignment project.
 | `fixture-nightscoutkit-profile` | Extract NightscoutKit profile fixtures | ✅ Complete (`9fd53e32`) |
 | `fixture-nightscoutkit-devicestatus` | Extract NightscoutKit devicestatus fixtures | ✅ Complete (`269170b9`) |
 | `fixture-nightscoutkit-treatments` | Extract NightscoutKit treatment fixtures | ✅ Complete (`83248e7f`) |
-| `test-matrix-api-array` | Create API array handling test matrix | 📋 Ready |
-| `test-matrix-client-behaviors` | Create client behavior test matrix | ⏳ Blocked (needs analysis) |
+| `test-matrix-api-array` | Create API array handling test matrix | ✅ Complete (`5f5bf224`) |
+| `test-matrix-client-behaviors` | Create client behavior test matrix | 📋 Ready |
 
 **Root Cause**: Commit `d46c5b41` changed `insert()` → `insertOne()`, breaking array support.
 
