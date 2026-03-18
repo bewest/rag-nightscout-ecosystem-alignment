@@ -330,6 +330,25 @@ grep -A50 "dictionaryRepresentation" externals/NightscoutKit/Sources/NightscoutK
 - Storage layer: Changed `insertOne()` to `replaceOne` loop with upsert
 - Now matches activity pattern exactly
 
+### Track 1d: Array Input Test Coverage
+
+| ID | Title | Description | Status |
+|----|-------|-------------|--------|
+| `test-food-array-input` | Add array input tests for food API | Single, array, batch, empty array | 📋 Ready |
+| `test-activity-single-input` | Add single object test for activity API | Current tests only cover array | 📋 Ready |
+| `test-entries-single-input` | Add single object test for entries API | Current tests only cover array | 📋 Ready |
+
+**Test Coverage Audit:**
+
+| API | Single Object | Array [1] | Batch [n] | Empty [] | Gap |
+|-----|---------------|-----------|-----------|----------|-----|
+| Treatments | ✅ | ✅ | ✅ | ❌ | - |
+| DeviceStatus | ✅ | ✅ | ✅ | ❌ | - |
+| Entries | ❌ | ✅ | ✅ | ❌ | Single |
+| Profile | ✅ | ✅ | ❌ | ✅ | Batch |
+| Food | ✅ | ❌ | ❌ | ❌ | Array |
+| Activity | ❌ | ✅ | ❌ | ❌ | Single |
+
 ### Track 2: Extract Fixtures from NightscoutKit ✅ COMPLETE
 
 | ID | Title | Description | Status |

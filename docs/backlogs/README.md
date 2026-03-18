@@ -93,6 +93,27 @@ if (!Array.isArray(data)) { data = [data]; }
 
 ---
 
+## ✅ P2: Array Input Test Coverage - **COMPLETE**
+
+**Problem**: Test coverage gaps for single vs array input shapes.
+
+**Backlog**: [profile-api-array-regression.md](profile-api-array-regression.md#track-1d-array-input-test-coverage)
+
+| ID | Task | Status |
+|----|------|--------|
+| `test-food-array-input` | Add array input tests for food API | ✅ Complete (`c6c60af9`) |
+| `test-activity-single-input` | Add single object test for activity API | ✅ Complete (`eacb6fca`) |
+| `test-entries-single-input` | Add single object test for entries API | ✅ Complete (`729a6f52`) |
+
+**Coverage Audit:**
+| API | Single | Array | Batch | Empty | Gap |
+|-----|--------|-------|-------|-------|-----|
+| Food | ✅ | ✅ | ❌ | ✅ | - |
+| Activity | ✅ | ✅ | ❌ | ✅ | - |
+| Entries | ✅ | ✅ | ✅ | ✅ | - |
+
+---
+
 ## ✅ Optional: Storage Optimization - **COMPLETE**
 
 | ID | Task | Status |
