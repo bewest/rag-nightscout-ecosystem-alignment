@@ -6,7 +6,36 @@ Active work streams for the Nightscout ecosystem alignment project.
 
 ---
 
-## ✅ P0: UUID_HANDLING Scope Correction - **COMPLETE**
+## 🔴 P0: Profile API Array Handling Regression - **IN PROGRESS**
+
+**Problem**: MongoDB driver migration broke array handling for Profile API. NightscoutKit (Loop) sends `[profile]` arrays but `insertOne()` rejects them.
+
+**Backlog**: [profile-api-array-regression.md](profile-api-array-regression.md)  
+**Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`  
+**NightscoutKit**: `externals/NightscoutKit/`
+
+| ID | Task | Status |
+|----|------|--------|
+| `profile-array-fix` | Fix profile API array handling (add `insertMany`) | ✅ Complete (`cbb6d061`) |
+| `devicestatus-purifier-fix` | Fix devicestatus API purifier for arrays | ✅ Complete (`2e81ce07`) |
+| `fixture-nightscoutkit-profile` | Extract NightscoutKit profile fixtures | 📋 Ready |
+| `fixture-nightscoutkit-devicestatus` | Extract NightscoutKit devicestatus fixtures | 📋 Ready |
+| `fixture-nightscoutkit-treatments` | Extract NightscoutKit treatment fixtures | 📋 Ready |
+| `test-matrix-api-array` | Create API array handling test matrix | ⏳ Blocked (needs fixtures) |
+| `test-matrix-client-behaviors` | Create client behavior test matrix | ⏳ Blocked (needs analysis) |
+
+**Root Cause**: Commit `d46c5b41` changed `insert()` → `insertOne()`, breaking array support.
+
+**Correct Pattern** (from treatments):
+```javascript
+if (!Array.isArray(data)) { data = [data]; }
+for (let i = 0; i < data.length; i++) { ctx.purifier.purifyObject(data[i]); }
+ctx.collection.createMany(data, callback);
+```
+
+---
+
+## ✅ P1: UUID_HANDLING Scope Correction - **COMPLETE**
 
 **Problem**: Code incorrectly copied `syncIdentifier` and `uuid` fields to `identifier`.
 Should ONLY handle UUID values sent to `_id` field.
@@ -76,8 +105,16 @@ JavaScript ────┘
 
 ### Key Documents
 
+- [Profile API Array Regression](profile-api-array-regression.md) - Active work: array handling fix
 - [Client ID Handling Deep Dive](../10-domain/client-id-handling-deep-dive.md) - Which apps send UUID to _id
-- [uuid-identifier-lookup.md](uuid-identifier-lookup.md) - Full implementation spec
+- [uuid-identifier-lookup.md](uuid-identifier-lookup.md) - UUID_HANDLING implementation spec (complete)
+
+### External Sources
+
+- `externals/NightscoutKit/` - Loop's Nightscout client library (fixture extraction source)
+- `externals/LoopWorkspace/` - Loop iOS app
+- `externals/Trio-dev/` - Trio iOS app
+- `externals/AndroidAPS/` - AAPS Android app
 
 ### Worktree
 
@@ -93,4 +130,4 @@ Completed analysis and testing work: [archive/](archive/)
 
 ## Last Updated
 
-2026-03-17
+2026-03-18
