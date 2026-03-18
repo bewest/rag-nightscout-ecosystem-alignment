@@ -44,37 +44,27 @@ These apps use separate fields (not `_id`) and should NOT be touched:
 | **AAPS** | `identifier` | Leave as-is |
 | **xDrip+** | `uuid` | Leave as-is |
 
-### Current Bug
+### ~~Current Bug~~ Fixed (095c9d04)
 
-The current implementation incorrectly copies `syncIdentifier` and `uuid` fields to `identifier`:
-
-```javascript
-// CURRENT (WRONG) - lib/server/treatments.js:349-352
-var clientIdentifier = obj.identifier 
-  || obj.syncIdentifier    // ← WRONG: Should not touch this
-  || obj.uuid              // ← WRONG: Should not touch this
-  || (typeof obj._id === 'string' && !OBJECT_ID_HEX_RE.test(obj._id) ? obj._id : null);
-```
-
-### Required Fix
-
-Only handle UUID values in the `_id` field:
+The implementation was corrected to ONLY handle UUID values in the `_id` field:
 
 ```javascript
-// CORRECT - only handle _id field
-if (env.uuidHandling && typeof obj._id === 'string' && UUID_RE.test(obj._id)) {
-  obj.identifier = obj._id;
-  delete obj._id;  // Let server generate ObjectId
+// CORRECT - lib/server/treatments.js (095c9d04)
+function normalizeTreatmentId (obj) {
+  if (typeof obj._id === 'string' && !OBJECT_ID_HEX_RE.test(obj._id)) {
+    if (env.uuidHandling && !obj.identifier) {
+      obj.identifier = obj._id;
+    }
+    delete obj._id;  // Let server generate ObjectId
+  }
 }
 ```
 
-### Impact
+**Scope**: ONLY the `_id` field. `syncIdentifier`, `uuid`, and other fields are preserved.
 
-**Loop ObjectIdCache workflow breaks on cache loss:**
-1. POST treatment with `syncIdentifier` → server returns `_id`
-2. Cache `_id` ↔ `syncIdentifier` mapping (24hr TTL)
-3. App restart or cache expiry → mapping lost
-4. Loop only knows `syncIdentifier`, cannot DELETE/PUT its own treatments
+### Impact Note
+
+**Loop ObjectIdCache workflow**: When cache is lost, re-posting with `syncIdentifier` creates duplicates. This is by design - server does NOT dedupe by `syncIdentifier`. See [server-side-dedup-considerations.md](../10-domain/server-side-dedup-considerations.md) for analysis.
 
 ---
 

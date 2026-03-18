@@ -305,36 +305,36 @@ Both paths POST to `/api/v1/entries.json`, which does not yet have the identifie
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Treatments fix (PR #8447) | ✅ Ready to merge | Option G implemented, tests pass |
-| Entries fix | ❌ Not started | Same pattern needed in `lib/server/entries.js` for Trio CGM |
-| v3 API alignment | ❌ Not started | v3 API may need similar promotion |
+| Treatments fix (PR #8447) | ✅ Complete | Option G implemented, UUID _id → identifier |
+| Entries fix | ✅ Complete | Same pattern in `lib/server/entries.js` for Trio CGM |
+| v3 API alignment | ✅ Not needed | v3 already handles identifiers correctly |
 | Trio client fix | Optional | Could change upload to use `identifier` field instead of `_id` |
+| Server-side syncIdentifier dedup | ❌ Not recommended | See [server-side-dedup-considerations.md](server-side-dedup-considerations.md) |
 
-### Entries Fix Details
+### Implementation Details
 
-The `lib/server/entries.js` file needs the same `normalizeEntryId()` function pattern:
+The `normalizeEntryId()` and `normalizeTreatmentId()` functions now only handle UUID in `_id`:
 
 ```javascript
-function normalizeEntryId (obj) {
-  var clientIdentifier = obj.identifier 
-    || (typeof obj._id === 'string' && !OBJECT_ID_HEX_RE.test(obj._id) ? obj._id : null);
-  
-  if (clientIdentifier && !obj.identifier) {
-    obj.identifier = clientIdentifier;
-  }
-  
-  if (obj._id && typeof obj._id === 'string' && OBJECT_ID_HEX_RE.test(obj._id)) {
-    obj._id = new ObjectID(obj._id);
+function normalizeTreatmentId (obj) {
+  // Only handle UUID values in _id field
+  if (typeof obj._id === 'string' && !OBJECT_ID_HEX_RE.test(obj._id)) {
+    if (env.uuidHandling && !obj.identifier) {
+      obj.identifier = obj._id;
+    }
+    delete obj._id;  // Server generates ObjectId
   }
 }
 ```
+
+**Scope**: Does NOT touch `syncIdentifier`, `uuid`, or other client fields.
 
 ---
 
 ## References
 
 - **Issue**: [nightscout/cgm-remote-monitor#8450](https://github.com/nightscout/cgm-remote-monitor/issues/8450)
-- **Fix PR**: [nightscout/cgm-remote-monitor#8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447) (treatments only)
+- **Fix PR**: [nightscout/cgm-remote-monitor#8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447)
 - **Requirement**: [REQ-SYNC-072](../../traceability/sync-identity-requirements.md#req-sync-072)
 - **Gaps**:
   - [GAP-TREAT-012](../../traceability/treatments-gaps.md#gap-treat-012) - Treatments (fixed)
