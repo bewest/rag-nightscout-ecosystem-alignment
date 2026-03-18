@@ -19,7 +19,7 @@ Active work streams for the Nightscout ecosystem alignment project.
 | `profile-array-fix` | Fix profile API array handling (add `insertMany`) | ✅ Complete (`cbb6d061`) |
 | `devicestatus-purifier-fix` | Fix devicestatus API purifier for arrays | ✅ Complete (`2e81ce07`) |
 | `fixture-nightscoutkit-profile` | Extract NightscoutKit profile fixtures | ✅ Complete (`9fd53e32`) |
-| `fixture-nightscoutkit-devicestatus` | Extract NightscoutKit devicestatus fixtures | 📋 Ready |
+| `fixture-nightscoutkit-devicestatus` | Extract NightscoutKit devicestatus fixtures | ✅ Complete (`269170b9`) |
 | `fixture-nightscoutkit-treatments` | Extract NightscoutKit treatment fixtures | 📋 Ready |
 | `test-matrix-api-array` | Create API array handling test matrix | ⏳ Blocked (needs fixtures) |
 | `test-matrix-client-behaviors` | Create client behavior test matrix | ⏳ Blocked (needs analysis) |
