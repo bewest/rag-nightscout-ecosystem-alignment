@@ -183,11 +183,36 @@ JavaScript ────┘
 
 ---
 
+## 📋 Research: MongoDB 5.x Upgrade Compatibility Report
+
+**Status**: Research in progress  
+**Priority**: P1  
+**Workflow**: `sdqctl iterate ./workflows/mongodb-upgrade-research.conv -n 5`
+
+**Backlog**: [mongodb-upgrade-report.md](mongodb-upgrade-report.md)
+
+Three research tracks to document behavioral changes:
+
+| Track | Focus | Work Items |
+|-------|-------|------------|
+| **A** | _id handling per client (Loop, AAPS, Trio, xDrip+) | 5 ready |
+| **B** | MongoDB driver lib changes (`bulkWrite`, etc.) | 7 ready |
+| **C** | Data shape consistency (single vs array, v3 envelope) | 8 ready |
+
+**Ready work items for teammates:**
+
+```bash
+grep -E "📋 Ready" docs/backlogs/mongodb-upgrade-report.md
+```
+
+---
+
 ## Reference
 
 ### Key Documents
 
-- [Profile API Array Regression](profile-api-array-regression.md) - Active work: array handling fix
+- [MongoDB Upgrade Report](mongodb-upgrade-report.md) - **Active**: Research backlog for upgrade compatibility
+- [Profile API Array Regression](profile-api-array-regression.md) - Complete work: array handling fix
 - [Client ID Handling Deep Dive](../10-domain/client-id-handling-deep-dive.md) - Which apps send UUID to _id
 - [uuid-identifier-lookup.md](uuid-identifier-lookup.md) - UUID_HANDLING implementation spec (complete)
 

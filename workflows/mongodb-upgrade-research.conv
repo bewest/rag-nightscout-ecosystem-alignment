@@ -1,0 +1,47 @@
+# mongodb-upgrade-research.conv - Research MongoDB 5.x upgrade compatibility
+# Run: sdqctl iterate workflows/mongodb-upgrade-research.conv -n 5
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE reporter
+VALIDATION-MODE lenient
+
+
+CONTEXT-LIMIT 60%
+
+ELIDE
+PROMPT We are writing a report researching MongoDB 5.x upgrade compatibility
+for Nightscout cgm-remote-monitor.
+ELIDE
+PROMPT Discovery:
+  docs/backlogs/README.md
+  docs/backlogs/mongodb-upgrade-report.md
+  1. Read docs/backlogs/mongodb-upgrade-report.md for work items
+  2. Find items marked "📋 Ready"
+  3. For this iteration, select a small to moderate related work items and plan
+  what research and development will be needed.  Choose tightly scoped enough
+  that we can be confident in the accuracy after teammates iteratively go
+  through the whole list; just enough for this iteration.
+
+
+PROMPT Research process:
+  As appropriate for the selected work item, research to verify the accuracy in the report:
+  - Track A (report-a*): Analyze client source in externals/
+  - Track B (report-b*): Compare worktree vs baseline commits
+  - Track C (report-c*): Test shape handling or document v3 behavior
+  Update the report as appropriate based on the research we can accomplish.
+
+
+PROMPT Source locations:
+  - Worktree: /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+  - Baseline: externals/cgm-remote-monitor-official (tags: 14.2.5, 15.0.4)
+  - Clients: externals/NightscoutKit, externals/AndroidAPS, externals/Trio-dev, externals/xDrip
+ELIDE
+PROMPT Deliverable per iteration:
+  Update the report as appropriate based on the research.
+  1. Fill in row of the relevant matrix in mongodb-upgrade-report.md
+  2. Add code citations (file:line)
+  3. Update work item status: 📋 Ready → ✅ Complete
+  Ensure that the report is accurate and all claims we are adding can be verified.
+
+OUTPUT-FORMAT markdown
