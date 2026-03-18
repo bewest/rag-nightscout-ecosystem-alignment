@@ -93,13 +93,19 @@ if (!Array.isArray(data)) { data = [data]; }
 
 ---
 
-## 📋 Optional: Future Optimization
+## ✅ Optional: Storage Optimization - **COMPLETE**
 
-Low-priority items for consistency (not crash fixes):
+| ID | Task | Status |
+|----|------|--------|
+| `activity-storage-fix` | Optimize activity storage with `bulkWrite` | ✅ Complete (`67d20993`) |
+| `food-storage-fix` | Optimize food storage with `bulkWrite` | ✅ Complete (`67d20993`) |
+
+## 📋 Optional: Future Work
+
+Low-priority items (not crash fixes):
 
 | ID | Task | Description |
 |----|------|-------------|
-| `activity-storage-fix` | Optimize activity storage | Replace `replaceOne` loop with `insertMany` |
 | `profile-c1` through `profile-c5` | Client analysis | Document Loop, AAPS, Trio, xDrip+ patterns |
 
 **Backlog**: [profile-api-array-regression.md](profile-api-array-regression.md#track-4-client-analysis-optional)
