@@ -91,8 +91,8 @@ Document how each client app handles `_id`, `identifier`, and `syncIdentifier` f
 | `verify-loop-devicestatus` | Loop | DeviceStatus.swift _id handling | ✅ Done |
 | `verify-trio-treatments` | Trio | CodingKeys: `id` vs `_id` | ✅ Done |
 | `verify-trio-entries` | Trio | Entry sync _id handling | ✅ Done |
-| `verify-aaps-treatments` | AAPS | interfaceIDs.nightscoutId pattern | 📋 Ready |
-| `verify-aaps-devicestatus` | AAPS | devicestatus upload _id | 📋 Ready |
+| `verify-aaps-treatments` | AAPS | interfaceIDs.nightscoutId pattern | ✅ Complete |
+| `verify-aaps-devicestatus` | AAPS | devicestatus upload _id | ✅ Complete |
 | `verify-xdrip-treatments` | xDrip+ | cloud sync _id field | 📋 Ready |
 | `verify-xdrip-entries` | xDrip+ | cloud sync entries _id | 📋 Ready |
 
@@ -112,8 +112,8 @@ Fill verified findings into matrix below with file:line citations.
 | **Loop** | devicestatus | omits `_id` | ✅ reads `_id` as identifier | ❌ | 🟢 Not affected | ✅ Verified |
 | **Trio** | treatments | `id` (NOT `_id`) | ❌ | ❌ | 🟢 Not affected | ✅ Verified |
 | **Trio** | entries | `_id` field | ❌ | ❌ | 🟡 Uses _id | ✅ Verified |
-| **AAPS** | treatments | `interfaceIDs.nightscoutId` | ❌ | ❌ | 🟡 ObjectId-aware | 📋 Pending |
-| **AAPS** | devicestatus | `interfaceIDs.nightscoutId` | ❌ | ❌ | 🟡 ObjectId-aware | 📋 Pending |
+| **AAPS** | treatments | `interfaceIDs.nightscoutId` | ❌ | ❌ | 🟡 ObjectId-aware | ✅ Verified |
+| **AAPS** | devicestatus | `interfaceIDs.nightscoutId` | ❌ | ❌ | 🟡 ObjectId-aware | ✅ Verified |
 | **xDrip+** | treatments | `uuid_to_id()` conversion | ❌ | ❌ | 🟡 UUID conversion | 📋 Pending |
 | **xDrip+** | entries | `uuid_to_id()` conversion | ❌ | ❌ | 🟡 UUID conversion | 📋 Pending |
 
@@ -135,6 +135,27 @@ Trio's `BloodGlucose` model has `case _id` in CodingKeys, meaning entries DO inc
 This is different from treatments which use `id` (not `_id`).
 
 **Evidence**: `Trio/Sources/Models/BloodGlucose.swift` - CodingKeys enum includes `_id`
+
+### Key Finding: AAPS interfaceIDs.nightscoutId Pattern
+
+AAPS uses a sophisticated **`interfaceIDs.nightscoutId`** system for tracking Nightscout sync identifiers.
+
+**Treatment Sync Pattern**:
+- AAPS stores Nightscout document `_id` values in `interfaceIDs.nightscoutId` field
+- Transactions query existing records by `interfaceIDs.nightscoutId` for updates
+- Pattern: `existing.interfaceIDs.nightscoutId = therapyEvent.interfaceIDs.nightscoutId`
+
+**DeviceStatus Sync Pattern**:
+- Same `interfaceIDs.nightscoutId` pattern used for devicestatus uploads  
+- Updates track server-assigned `_id` values for subsequent sync operations
+- Pattern: `current.interfaceIDs.nightscoutId = deviceStatus.interfaceIDs.nightscoutId`
+
+**Evidence**:
+- `externals/AndroidAPS/database/impl/src/main/kotlin/app/aaps/database/transactions/SyncNsTherapyEventTransaction.kt:16,48` - Treatment sync logic
+- `externals/AndroidAPS/database/impl/src/main/kotlin/app/aaps/database/transactions/UpdateNsIdDeviceStatusTransaction.kt:11-12` - DeviceStatus _id updates
+- `externals/AndroidAPS/database/impl/src/main/kotlin/app/aaps/database/entities/embedments/InterfaceIDs.kt:7` - nightscoutId field definition
+
+**Impact**: 🟡 **MEDIUM** risk - AAPS is ObjectId-aware and handles `interfaceIDs.nightscoutId` properly, but UUID_HANDLING affects how `_id` values are processed during sync operations.
 
 ### Source Locations
 
@@ -256,14 +277,64 @@ Track C uses code analysis - verification is inherent to the research process.
 | activity | ✅ | ✅ | ✅ | ✅ | ✅ Verified |
 | food | ✅ | ✅ | ✅ | ✅ | ✅ Verified |
 
-### Matrix: API v3 Envelope Behavior (Output)
+### Matrix: API v3 Behavior (Output)
 
-| Endpoint | Single Object | Batch `[n]` | Response Format | Pipeline |
-|----------|---------------|-------------|-----------------|----------|
-| `/api/v3/treatments` | | | | 📋 Pending |
-| `/api/v3/entries` | | | | 📋 Pending |
-| `/api/v3/devicestatus` | | | | 📋 Pending |
-| `/api/v3/profile` | | | | 📋 Pending |
+> API v3 is fundamentally different from API v1 - single document operations only.
+
+| Aspect | API v1 | API v3 |
+|--------|--------|--------|
+| **Input Format** | Single OR Array | **Single only** |
+| **Batch Support** | ✅ Yes (array input) | ❌ No batch endpoint |
+| **_id in Response** | Returns MongoDB `_id` | **Always strips `_id`, returns `identifier`** |
+| **Deduplication** | Manual via `syncIdentifier` | Automatic via `identifier` field |
+
+### API v3 Design Summary
+
+**Key Differences from API v1:**
+
+1. **Single Document Only**: API v3 CREATE takes one document, not arrays
+   ```javascript
+   // lib/api3/generic/create/operation.js
+   const doc = req.body;  // Single document, not array
+   ```
+
+2. **Always Strips `_id`**: Response NEVER includes MongoDB `_id`
+   ```javascript
+   // lib/api3/storage/mongoCollection/utils.js:12-18
+   function normalizeDoc (doc) {
+     if (!doc.identifier) {
+       doc.identifier = doc._id.toString();
+     }
+     delete doc._id;  // ALWAYS deleted
+   }
+   ```
+
+3. **Response Format**: Returns metadata envelope
+   ```javascript
+   // lib/api3/generic/create/insert.js:37-41
+   const fields = {
+     identifier: identifier,
+     lastModified: now.getTime()
+   };
+   opTools.sendJSON({ res, status: apiConst.HTTP.CREATED, fields: fields });
+   ```
+
+4. **Automatic Deduplication**: Uses `identifier` field for matching
+   - If document with same `identifier` exists → UPDATE instead of INSERT
+   - Fallback deduplication via collection-specific rules (e.g., `created_at` + `eventType`)
+
+### API v3 _id Handling (Verified)
+
+| Stage | Behavior | Code Location |
+|-------|----------|---------------|
+| **Input** | `_id` ignored if present | `resolveIdentifier()` |
+| **Storage** | MongoDB generates ObjectId | `insertOne()` |
+| **Output** | `_id` deleted, `identifier` returned | `normalizeDoc()` |
+
+**UUID_HANDLING Impact on API v3**: 🟢 **NOT AFFECTED**
+- API v3 doesn't use `_id` from client input
+- Clients should use `identifier` field instead
+- No UUID→ObjectId conversion needed
 
 ### Evidence Citations (API v1)
 
@@ -276,26 +347,27 @@ Track C uses code analysis - verification is inherent to the research process.
 | activity | `api/activity/index.js:96-98` |
 | food | `api/food/index.js:101-103` |
 
-### API v3 Envelope Structure
-
-API v3 uses a consistent message envelope:
+### API v3 Request/Response Example
 
 ```javascript
-// Request: single document (not array)
+// Request: Single document (arrays NOT supported)
 POST /api/v3/treatments
+Authorization: Bearer <jwt-token>
 {
   "eventType": "Carbs",
   "carbs": 30,
-  "device": "Loop",
-  "date": 1234567890000
+  "created_at": "2026-03-19T00:00:00.000Z"
 }
 
-// Response: single object with metadata
+// Response: Metadata envelope (201 Created)
 {
   "status": 201,
-  "identifier": "abc123...",
+  "identifier": "abc123...",   // Server-assigned or from input
   "lastModified": 1234567890000
 }
+
+// Note: _id is NEVER returned by API v3
+// Note: Deduplication happens automatically if identifier matches
 ```
 | `report-c5` | Test API v1 activity shape handling | Single, array, batch, empty | ✅ Complete 2026-03-19 (Code Analysis) |
 | `report-c6` | Test API v1 food shape handling | Single, array, batch, empty | ✅ Complete 2026-03-19 (Code Analysis) |
@@ -411,7 +483,42 @@ POST /api/v3/treatments
 
 ---
 
-## Research Completion Summary (2026-03-19)
+## Research Completion Summary - Iteration #3 (2026-03-19)
+
+**Iteration Status**: ✅ **COMPLETE** - AAPS verification work items completed
+
+### Work Items Completed This Iteration
+
+| ID | Task | Status | Key Findings |
+|----|------|--------|--------------|
+| `verify-aaps-treatments` | Verify AAPS treatments _id handling | ✅ Complete | Uses `interfaceIDs.nightscoutId` pattern for sync tracking |
+| `verify-aaps-devicestatus` | Verify AAPS devicestatus _id handling | ✅ Complete | Same `interfaceIDs.nightscoutId` pattern, ObjectId-aware |
+
+### Accuracy Verification Results
+
+**✅ ALL CLAIMS VERIFIED**: Cross-referenced all research claims against actual AAPS source code
+
+**File:Line References Validated**:
+- AAPS treatment sync: `SyncNsTherapyEventTransaction.kt:16,48` ✅
+- AAPS devicestatus sync: `UpdateNsIdDeviceStatusTransaction.kt:11-12` ✅  
+- InterfaceIDs structure: `InterfaceIDs.kt:7` ✅
+- DeviceStatus entity: `DeviceStatus.kt:24-25,39-50` ✅
+
+**Client Behavior Matrix**: AAPS rows now complete with verified evidence
+
+### Key Research Discoveries
+
+1. **AAPS interfaceIDs Pattern**: Uses sophisticated `interfaceIDs.nightscoutId` field to track server-assigned `_id` values across sync operations. Risk level: 🟡 **MEDIUM** - ObjectId-aware but still affected by UUID_HANDLING
+
+2. **AAPS Sync Architecture**: Both treatments and devicestatus use identical sync patterns with proper `nightscoutId` tracking for updates and deduplication.
+
+3. **InterfaceIDs Design**: AAPS has a comprehensive interface mapping system with fields for different sync sources (Nightscout, pump, temporary IDs, etc.)
+
+---
+
+## Previous Iterations
+
+### Research Completion Summary - Iteration #2 (2026-03-19)
 
 **Iteration Status**: ✅ **COMPLETE** - All selected work items verified
 
@@ -641,8 +748,8 @@ externals/xDrip/             # xDrip+ Android
 
 ## Completion Checklist
 
-- [x] Track A: 6/10 client rows verified ✅ 2026-03-19 (Loop all, Trio all)
-- [ ] Track A: 4 remaining rows (AAPS, xDrip+)
+- [x] Track A: 8/10 client rows verified ✅ 2026-03-19 (Loop all, Trio all, AAPS all)
+- [ ] Track A: 2 remaining rows (xDrip+)
 - [x] Track B: All 7 work items complete ✅ 2026-03-18
 - [x] Track B: Storage method matrix filled ✅ 2026-03-18
 - [x] Track C: 7/8 work items complete ✅ 2026-03-18 (all API v1 endpoints)
