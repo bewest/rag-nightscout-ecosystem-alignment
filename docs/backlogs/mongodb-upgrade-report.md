@@ -57,6 +57,33 @@ Each `sdqctl iterate` should:
 
 ---
 
+## Supplemental Research Materials
+
+> Detailed analysis documents available for reference during report writing.
+
+### Client _id Handling Deep Dives
+
+| Client | Document | Key Findings |
+|--------|----------|--------------|
+| **AAPS** | [`docs/10-domain/client-id-analysis/AAPS_ID_HANDLING_ANALYSIS.md`](../10-domain/client-id-analysis/AAPS_ID_HANDLING_ANALYSIS.md) | InterfaceIDs pattern, nightscoutId storage |
+| **AAPS** | [`docs/10-domain/client-id-analysis/AAPS_ID_TECHNICAL_DEEP_DIVE.md`](../10-domain/client-id-analysis/AAPS_ID_TECHNICAL_DEEP_DIVE.md) | NSClientPlugin code paths |
+| **AAPS** | [`docs/10-domain/client-id-analysis/AAPS_ID_QUICK_REFERENCE.md`](../10-domain/client-id-analysis/AAPS_ID_QUICK_REFERENCE.md) | Quick lookup table |
+| **Trio** | [`docs/10-domain/client-id-analysis/TRIO_ID_ANALYSIS.md`](../10-domain/client-id-analysis/TRIO_ID_ANALYSIS.md) | Uses `id` for treatments, `_id` for entries |
+| **Trio** | [`docs/10-domain/client-id-analysis/TRIO_ID_TECHNICAL_DEEP_DIVE.md`](../10-domain/client-id-analysis/TRIO_ID_TECHNICAL_DEEP_DIVE.md) | CodingKeys patterns, sync behavior |
+| **Trio** | [`docs/10-domain/client-id-analysis/TRIO_ID_QUICK_REFERENCE.md`](../10-domain/client-id-analysis/TRIO_ID_QUICK_REFERENCE.md) | Quick lookup table |
+| **Loop** | [`docs/10-domain/client-id-handling-deep-dive.md`](../10-domain/client-id-handling-deep-dive.md) | ObjectIdCache, syncIdentifier patterns |
+
+### Related Domain Documentation
+
+| Topic | Document |
+|-------|----------|
+| MongoDB Storage Layer | [`docs/10-domain/mongodb-storage-layer-analysis.md`](../10-domain/mongodb-storage-layer-analysis.md) |
+| Nightscout API v3 | [`docs/10-domain/nightscout-apiv3-deep-dive.md`](../10-domain/nightscout-apiv3-deep-dive.md) |
+| Sync Identity Fields | [`docs/10-domain/sync-identity-field-audit.md`](../10-domain/sync-identity-field-audit.md) |
+| Trio Nightscout Sync | [`docs/10-domain/trio-nightscout-sync-analysis.md`](../10-domain/trio-nightscout-sync-analysis.md) |
+
+---
+
 ## Track A: _id Handling and Sync Behavior
 
 ### Goal
@@ -93,8 +120,8 @@ Document how each client app handles `_id`, `identifier`, and `syncIdentifier` f
 | `verify-trio-entries` | Trio | Entry sync _id handling | ✅ Done |
 | `verify-aaps-treatments` | AAPS | interfaceIDs.nightscoutId pattern | ✅ Complete |
 | `verify-aaps-devicestatus` | AAPS | devicestatus upload _id | ✅ Complete |
-| `verify-xdrip-treatments` | xDrip+ | cloud sync _id field | 📋 Ready |
-| `verify-xdrip-entries` | xDrip+ | cloud sync entries _id | 📋 Ready |
+| `verify-xdrip-treatments` | xDrip+ | cloud sync _id field | ✅ Complete |
+| `verify-xdrip-entries` | xDrip+ | cloud sync entries _id | ✅ Complete |
 
 #### Stage 3: Report (Matrix Row)
 
@@ -114,8 +141,8 @@ Fill verified findings into matrix below with file:line citations.
 | **Trio** | entries | `_id` field | ❌ | ❌ | 🟡 Uses _id | ✅ Verified |
 | **AAPS** | treatments | `interfaceIDs.nightscoutId` | ❌ | ❌ | 🟡 ObjectId-aware | ✅ Verified |
 | **AAPS** | devicestatus | `interfaceIDs.nightscoutId` | ❌ | ❌ | 🟡 ObjectId-aware | ✅ Verified |
-| **xDrip+** | treatments | `uuid_to_id()` conversion | ❌ | ❌ | 🟡 UUID conversion | 📋 Pending |
-| **xDrip+** | entries | `uuid_to_id()` conversion | ❌ | ❌ | 🟡 UUID conversion | 📋 Pending |
+| **xDrip+** | treatments | `uuid_to_id()` conversion | ❌ | ❌ | 🟡 UUID conversion | ✅ Verified |
+| **xDrip+** | entries | Server-generated `_id` | ❌ | ❌ | 🟢 Not affected | ✅ Verified |
 
 ### Key Finding: Loop Profile/DeviceStatus Behavior
 
@@ -156,6 +183,32 @@ AAPS uses a sophisticated **`interfaceIDs.nightscoutId`** system for tracking Ni
 - `externals/AndroidAPS/database/impl/src/main/kotlin/app/aaps/database/entities/embedments/InterfaceIDs.kt:7` - nightscoutId field definition
 
 **Impact**: 🟡 **MEDIUM** risk - AAPS is ObjectId-aware and handles `interfaceIDs.nightscoutId` properly, but UUID_HANDLING affects how `_id` values are processed during sync operations.
+
+### Key Finding: xDrip+ Dual Pattern Behavior
+
+xDrip+ uses **different _id handling patterns** for treatments vs entries, creating distinct compatibility profiles.
+
+**Treatment Sync Pattern**:
+- xDrip+ explicitly sets `_id` field using `uuid_to_id()` conversion during upsert operations
+- Converts UUID strings to 24-character compatible format for MongoDB ObjectId compatibility
+- Pattern: `item.put("_id", uuid_to_id(match_uuid));` during treatment uploads
+- Uses both `uuid` field (internal) and `_id` field (server compatibility)
+
+**Entry Sync Pattern**:  
+- xDrip+ **omits `_id` field entirely** when uploading glucose entries (SGV data)
+- Relies on server-side ObjectId generation for entries collection
+- No `uuid_to_id()` conversion applied to entries - server assigns `_id` naturally
+- Pattern: Entry uploads contain `sgv`, `timestamp`, `direction` but no `_id`
+
+**Evidence**:
+- Treatment _id conversion: `NightscoutUploader.java:882` - `item.put("_id", uuid_to_id(match_uuid));`
+- Treatment uuid_to_id function: `NightscoutUploader.java:243-254` - Converts UUIDs to 24-char format
+- Treatment response parsing: `NightscoutTreatments.java:40-41` - Handles `_id` vs `uuid` priority
+- Entry upload method: `NightscoutUploader.java:660-695` - No `_id` or `uuid` fields sent
+
+**Impact**: 
+- **Treatments**: 🟡 **MEDIUM** risk - Uses UUID-to-ObjectId conversion, affected by UUID_HANDLING
+- **Entries**: 🟢 **LOW** risk - Server-generated ObjectIds, not affected by UUID_HANDLING
 
 ### Source Locations
 
