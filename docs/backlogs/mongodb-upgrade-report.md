@@ -230,10 +230,10 @@ xDrip+ uses **different _id handling patterns** for treatments vs entries, creat
 
 | Client | Key Files |
 |--------|-----------|
-| NightscoutKit | `externals/NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift` |
+| NightscoutKit | `externals/NightscoutKit/Sources/NightscoutKit/Models/` |
 | AAPS | `externals/AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclient/` |
 | Trio | `externals/Trio/Trio/Sources/Models/NightscoutTreatment.swift` |
-| xDrip+ | `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/cloud/` |
+| xDrip+ | `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java` |
 
 ---
 
