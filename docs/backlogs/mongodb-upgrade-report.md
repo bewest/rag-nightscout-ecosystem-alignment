@@ -34,7 +34,7 @@ This report documents behavioral changes and compatibility considerations for th
 
 | Track | Research | Verification | Report Complete |
 |-------|----------|--------------|-----------------|
-| **A: Client _id** | 0/5 ready | 3/10 done | 3/10 rows |
+| **A: Client _id** | 0/5 ready | 6/10 done | 6/10 rows ✅ |
 | **B: Storage** | 7/7 done | N/A (inherent) | 6/6 rows ✅ |
 | **C: Data Shape** | 7/8 done | N/A (inherent) | 6/6 API v1 ✅, 0/4 API v3 |
 
@@ -87,10 +87,10 @@ Document how each client app handles `_id`, `identifier`, and `syncIdentifier` f
 |----|-------|-------|--------|
 | `verify-loop-treatments` | Loop | NightscoutTreatment.swift field sent to _id | ✅ Done |
 | `verify-loop-entries` | Loop | GlucoseEntry.swift _id handling | ✅ Done |
-| `verify-loop-profile` | Loop | ProfileSet.swift _id handling | 📋 Ready |
-| `verify-loop-devicestatus` | Loop | DeviceStatus.swift _id handling | 📋 Ready |
+| `verify-loop-profile` | Loop | ProfileSet.swift _id handling | ✅ Done |
+| `verify-loop-devicestatus` | Loop | DeviceStatus.swift _id handling | ✅ Done |
 | `verify-trio-treatments` | Trio | CodingKeys: `id` vs `_id` | ✅ Done |
-| `verify-trio-entries` | Trio | Entry sync _id handling | 📋 Ready |
+| `verify-trio-entries` | Trio | Entry sync _id handling | ✅ Done |
 | `verify-aaps-treatments` | AAPS | interfaceIDs.nightscoutId pattern | 📋 Ready |
 | `verify-aaps-devicestatus` | AAPS | devicestatus upload _id | 📋 Ready |
 | `verify-xdrip-treatments` | xDrip+ | cloud sync _id field | 📋 Ready |
@@ -106,16 +106,35 @@ Fill verified findings into matrix below with file:line citations.
 
 | Client | Collection | Field Sent | Uses identifier? | Uses syncIdentifier? | UUID_HANDLING Impact | Pipeline |
 |--------|------------|------------|-----------------|---------------------|---------------------|----------|
-| **Loop** | treatments | `_id` (string) | ❌ | ✅ | 🟡 Historical data | ✅ Verified |
-| **Loop** | entries | `_id` (string) | ❌ | ❌ | 🟡 Historical data | ✅ Verified |
-| **Loop** | profile | | | | | 📋 Pending |
-| **Loop** | devicestatus | | | | | 📋 Pending |
+| **Loop** | treatments | `_id` (string) | ❌ | ✅ | 🟡 Historical data only | ✅ Verified |
+| **Loop** | entries | `_id` (string) | ❌ | ❌ | 🟡 Historical data only | ✅ Verified |
+| **Loop** | profile | omits `_id` | ✅ reads `_id` as syncId | ✅ | 🟢 Not affected | ✅ Verified |
+| **Loop** | devicestatus | omits `_id` | ✅ reads `_id` as identifier | ❌ | 🟢 Not affected | ✅ Verified |
 | **Trio** | treatments | `id` (NOT `_id`) | ❌ | ❌ | 🟢 Not affected | ✅ Verified |
-| **Trio** | entries | | | | | 📋 Pending |
-| **AAPS** | treatments | | | | | 📋 Pending |
-| **AAPS** | devicestatus | | | | | 📋 Pending |
-| **xDrip+** | treatments | | | | | 📋 Pending |
-| **xDrip+** | entries | | | | | 📋 Pending |
+| **Trio** | entries | `_id` field | ❌ | ❌ | 🟡 Uses _id | ✅ Verified |
+| **AAPS** | treatments | `interfaceIDs.nightscoutId` | ❌ | ❌ | 🟡 ObjectId-aware | 📋 Pending |
+| **AAPS** | devicestatus | `interfaceIDs.nightscoutId` | ❌ | ❌ | 🟡 ObjectId-aware | 📋 Pending |
+| **xDrip+** | treatments | `uuid_to_id()` conversion | ❌ | ❌ | 🟡 UUID conversion | 📋 Pending |
+| **xDrip+** | entries | `uuid_to_id()` conversion | ❌ | ❌ | 🟡 UUID conversion | 📋 Pending |
+
+### Key Finding: Loop Profile/DeviceStatus Behavior
+
+Loop **does NOT send `_id`** when uploading profiles or devicestatus:
+- `ProfileSet.dictionaryRepresentation` omits `_id`
+- `DeviceStatus.dictionaryRepresentation` sends `identifier` field, not `_id`
+
+But Loop **reads `_id` from server responses**:
+- `ProfileSet.init(rawValue:)`: `syncIdentifier = rawValue["_id"] as? String`
+- `DeviceStatus.init(rawValue:)`: `identifier = rawValue["_id"] as? String`
+
+**Impact**: Profile and DeviceStatus are NOT affected by UUID_HANDLING because Loop never sends UUID to `_id` for these collections. The server generates ObjectId normally.
+
+### Key Finding: Trio Entry Behavior
+
+Trio's `BloodGlucose` model has `case _id` in CodingKeys, meaning entries DO include `_id`.
+This is different from treatments which use `id` (not `_id`).
+
+**Evidence**: `Trio/Sources/Models/BloodGlucose.swift` - CodingKeys enum includes `_id`
 
 ### Source Locations
 
@@ -622,14 +641,14 @@ externals/xDrip/             # xDrip+ Android
 
 ## Completion Checklist
 
-- [x] Track A: 3 of 5 work items complete ✅ 2026-03-18 (Loop, AAPS, Trio)
-- [x] Track A: Client _id matrix filled with evidence ✅ 2026-03-18 (3 clients)
+- [x] Track A: 6/10 client rows verified ✅ 2026-03-19 (Loop all, Trio all)
+- [ ] Track A: 4 remaining rows (AAPS, xDrip+)
 - [x] Track B: All 7 work items complete ✅ 2026-03-18
 - [x] Track B: Storage method matrix filled ✅ 2026-03-18
-- [x] Track C: 3 of 8 work items complete ✅ 2026-03-18 (treatments, entries, profile)
-- [x] Track C: Shape handling matrix partially filled ✅ 2026-03-18 (3 endpoints)
-- [ ] Track C: Remaining 5 work items complete (devicestatus, activity, food, API v3, final matrix)
-- [ ] Final report assembled with citations
+- [x] Track C: 7/8 work items complete ✅ 2026-03-18 (all API v1 endpoints)
+- [x] Track C: API v1 shape handling matrix complete ✅ 2026-03-18
+- [ ] Track C: API v3 envelope behavior (report-c7)
+- [ ] Final report assembled with all citations
 
 ---
 
