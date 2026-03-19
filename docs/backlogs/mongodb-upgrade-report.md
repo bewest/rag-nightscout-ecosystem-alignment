@@ -60,7 +60,7 @@ This report documents behavioral changes and compatibility considerations for th
 | ID | Title | Description | Status |
 |----|-------|-------------|--------|
 | `report-a1` | Document Loop/NightscoutKit _id patterns | Analyze `externals/NightscoutKit/` for _id usage | ✅ Complete 2026-03-19 |
-| `report-a2` | Document AAPS _id patterns | Analyze `externals/AndroidAPS/` NSClient code | 📋 Ready |
+| `report-a2` | Document AAPS _id patterns | Analyze `externals/AndroidAPS/` NSClient code | ✅ Complete 2026-03-19 |
 | `report-a3` | Document Trio _id patterns | Analyze `externals/Trio/` Nightscout sync | 📋 Ready |
 | `report-a4` | Document xDrip+ _id patterns | Analyze `externals/xDrip/` NSClient code | ✅ Complete 2026-03-19 |
 | `report-a5` | Compile _id behavior matrix | Fill in matrix above with evidence | ✅ Complete 2026-03-19 |
@@ -342,73 +342,79 @@ POST /api/v3/treatments
 
 ### Critical Findings: Loop/NightscoutKit Analysis
 
-**🔴 CRITICAL RISK CONFIRMED**: Loop has the highest UUID_HANDLING dependency of all analyzed clients.
+> **⚠️ CORRECTION (2026-03-19)**: Original claim "Loop will completely fail" was overstated.
+> Actual behavior is more nuanced - see verified analysis below.
 
-#### Code Evidence Summary
+#### Verified Loop Behavior
 
-| File | Line | Code Pattern | Impact |
-|------|------|--------------|--------|
-| `NightscoutTreatment.swift` | 85 | `let identifier = entry["_id"] as? String,` | 🔴 **CRITICAL**: Response parsing fails if ObjectId |
-| `GlucoseEntry.swift` | 137 | `let id = rawValue["_id"] as? String,` | 🔴 **CRITICAL**: Same pattern for entries |
-| `NightscoutClient.swift` | 494-495 | `if let id = entry["_id"] as? String { return id }` | 🔴 **CRITICAL**: Upload response processing |
+**Upload Flow (WORKS FINE):**
+1. Loop sends `_id` with UUID string + `syncIdentifier` field
+2. Server (with UUID_HANDLING): moves UUID to `identifier`, generates ObjectId
+3. Server returns `_id` as ObjectId hex string (JSON serialization)
+4. Loop caches mapping via `ObjectIdCache`: `syncIdentifier` → `nightscoutObjectId`
+5. Loop uses cached ObjectId for updates/deletes
 
-#### Risk Assessment Comparison
+**Key Evidence**: `LoopWorkspace/NightscoutService/NightscoutServiceKit/ObjectIdCache.swift`
+- Maintains `storageBySyncIdentifier` dictionary
+- `add(syncIdentifier:, objectId:)` stores the mapping
 
-| Client | UUID_HANDLING Risk | Pattern | Rationale |
-|--------|------------------|---------|-----------|
-| **Loop** | 🔴 **CRITICAL** | Expects string `_id` in responses | Will fail to parse ObjectId format responses |
-| **xDrip+** | 🟡 **MEDIUM** | Uses `uuid_to_id()` conversion | May have issues generating UUIDs from ObjectId bytes |
-| **Trio** | 🟢 **LOW** | Uses optional string `id` field | Flexible, likely ObjectId-compatible |
-| **AAPS** | 🟡 **MEDIUM** | Uses `interfaceIDs.nightscoutId` | ObjectId-aware system design |
+**Fetch Flow (NEEDS CLARIFICATION):**
+```swift
+// NightscoutTreatment.swift:83-93
+required public init?(_ entry: [String: Any]) {
+    guard
+        let identifier = entry["_id"] as? String,  // Guard requires string
+        ...
+    else {
+        return nil  // Returns nil if not string
+    }
+}
+```
 
-### Matrix Completion Status
+**BUT**: MongoDB returns `_id` as hex string via JSON serialization (e.g., `"507f1f77bcf86cd799439011"`).
+This **IS** a string, so parsing succeeds.
 
-**Client Behavior Matrix**: ✅ Complete for Loop + xDrip+ (verified against source code)
+**The parsing would only fail if:**
+- Server returns `_id` as nested object `{"$oid": "..."}`  (Extended JSON format)
+- Database contains non-string `_id` values (corrupted data)
 
-**Remaining Work**: AAPS and Trio patterns still need analysis for complete ecosystem coverage.
+#### Corrected Risk Assessment
 
-### Technical Documentation Added
+| Scenario | Status | Impact |
+|----------|--------|--------|
+| **Upload new treatments** | ✅ Works | ObjectIdCache caches the ObjectId |
+| **Update/delete treatments** | ✅ Works | Uses cached ObjectId |
+| **Fetch treatments** | ✅ Works | JSON serializes ObjectId to hex string |
+| **Fetch EXISTING records with UUID in _id** | ⚠️ Affected | Pre-migration records may fail |
 
-- Comprehensive Loop `_id` handling patterns with file:line evidence
-- Verification of critical server response parsing requirements  
-- Risk level justification based on actual Swift code analysis
-- Comparison framework for evaluating other clients
+**The "critical" risk applies to EXISTING historical data**, not new operations.
 
-**Next Iteration Recommendation**: Continue with AAPS or Trio analysis to complete the client compatibility matrix, or focus on API v3 envelope behavior analysis.
+#### Temporary Overrides Specifically
 
-> ⚠️ **DRAFT - REQUIRES VERIFICATION**: Claims below need validation via Track A-V items.
+Overrides use the same `NightscoutTreatment` parsing. The concern is:
+- Pre-migration override records may have UUID strings stored directly in `_id`
+- These would fail to match `OBJECT_ID_HEX_RE` pattern
+- With UUID_HANDLING, the `identifier` field provides a fallback lookup
 
-### Preliminary Observations (Needs Verification)
+**This is why UUID_HANDLING matters for Loop**: It enables looking up existing records
+by their original UUID via the `identifier` field.
 
-| Client | Initial Finding | Verified |
-|--------|----------------|----------|
-| **Loop/NightscoutKit** | Sends `_id` field with String value (NightscoutTreatment.swift:111) | ❌ Verify via `verify-loop-*` |
-| **Trio** | Sends `id` field NOT `_id` (CodingKeys uses `case id`) | ❌ Verify via `verify-trio-*` |
-| **AAPS** | Uses `interfaceIDs.nightscoutId` system | ❌ Verify via `verify-aaps-*` |
-| **xDrip+** | Not yet analyzed | ❌ Verify via `verify-xdrip-*` |
+### Corrected Risk Assessment Matrix
 
-### Known Discrepancy Found
+| Client | Risk Level | Pattern | When UUID_HANDLING Matters |
+|--------|------------|---------|---------------------------|
+| **Loop** | 🟡 **MEDIUM** | Caches ObjectId, parses hex string | Historical data with UUID in _id |
+| **xDrip+** | 🟡 **MEDIUM** | `uuid_to_id()` conversion | UUID generation from ObjectId bytes |
+| **Trio** | 🟢 **LOW** | Uses `id` field (NOT `_id`) | Not affected - doesn't send _id |
+| **AAPS** | 🟡 **MEDIUM** | `interfaceIDs.nightscoutId` | ObjectId-aware, likely compatible |
+
+### Known Client Differences
 
 **Trio vs Loop/NightscoutKit**:
-- Loop sends: `{ "_id": "value", "syncIdentifier": "uuid" }`
-- Trio sends: `{ "id": "value" }` (no `_id` field!)
+- Loop sends: `{ "_id": "uuid-string", "syncIdentifier": "uuid" }`
+- Trio sends: `{ "id": "uuid-string" }` (no `_id` field!)
 
-This means UUID_HANDLING quirk may only affect Loop, not Trio.
-
-### Evidence Needed
-
-Before any claims can be trusted:
-1. Run `verify-*` items to confirm field names
-2. Check if clients read `_id` from responses
-3. Verify ObjectId vs String expectations
-
-| Client | Risk Level | Rationale | Required Testing |
-|--------|------------|-----------|------------------|
-| **Loop** | 🔴 **HIGH** | Expects `_id` as string in server responses | Test Loop parsing ObjectId responses |
-| **AAPS** | 🟡 **MEDIUM** | Uses `nightscoutId` system (ObjectId-aware?) | Test AAPS with UUID_HANDLING disabled |
-| **Trio** | 🟢 **LOW** | Uses optional string `id` field | Basic compatibility testing |
-| **xDrip+** | 🟡 **MEDIUM** | Uses `uuid_to_id()` conversion, expects UUID from `_id` bytes | Test UUID generation from ObjectId format |
-| **xDrip+** | 🟡 **MEDIUM** | Uses `uuid_to_id()` conversion, expects UUID from `_id` bytes | Test UUID generation from ObjectId format |
+This means UUID_HANDLING quirk primarily affects **Loop**, not Trio.
 
 ### New Findings: activity.js and food.js Migration (2026-03-18)
 
