@@ -43,5 +43,7 @@ PROMPT Deliverable per iteration:
   2. Add code citations (file:line)
   3. Update work item status: 📋 Ready → ✅ Complete
   Ensure that the report is accurate and all claims we are adding can be verified.
-
+RUN git status | head
+ELIDE
+PROMPT Let's ensure we record our progress appropriately in git.
 OUTPUT-FORMAT markdown
