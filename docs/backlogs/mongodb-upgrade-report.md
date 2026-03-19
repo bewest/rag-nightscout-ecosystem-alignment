@@ -102,11 +102,11 @@ Document how each client app handles `_id`, `identifier`, and `syncIdentifier` f
 
 | ID | Client | Goal | Status |
 |----|--------|------|--------|
-| `report-a1` | Loop/NightscoutKit | Document _id patterns in `externals/NightscoutKit/` | 📋 Ready |
-| `report-a2` | AAPS | Document _id patterns in `externals/AndroidAPS/` | 📋 Ready |
-| `report-a3` | Trio | Document _id patterns in `externals/Trio/` | 📋 Ready |
-| `report-a4` | xDrip+ | Document _id patterns in `externals/xDrip/` | 📋 Ready |
-| `report-a5` | All | Compile findings into matrix | 📋 Ready (depends on a1-a4) |
+| `report-a1` | Loop/NightscoutKit | Document _id patterns in `externals/NightscoutKit/` | ✅ Complete (verified via verification stage) |
+| `report-a2` | AAPS | Document _id patterns in `externals/AndroidAPS/` | ✅ Complete (verified via verification stage) |
+| `report-a3` | Trio | Document _id patterns in `externals/Trio/` | ✅ Complete (verified via verification stage) |
+| `report-a4` | xDrip+ | Document _id patterns in `externals/xDrip/` | ✅ Complete (verified via verification stage) |
+| `report-a5` | All | Compile findings into matrix | ✅ Complete (matrix 10/10 rows verified) |
 
 #### Stage 2: Verify (verify-*)
 
@@ -424,7 +424,7 @@ Authorization: Bearer <jwt-token>
 ```
 | `report-c5` | Test API v1 activity shape handling | Single, array, batch, empty | ✅ Complete 2026-03-19 (Code Analysis) |
 | `report-c6` | Test API v1 food shape handling | Single, array, batch, empty | ✅ Complete 2026-03-19 (Code Analysis) |
-| `report-c7` | Document API v3 envelope behavior | Compare to v1, verify consistency | 📋 Ready |
+| `report-c7` | Document API v3 envelope behavior | Compare to v1, verify consistency | ✅ Complete 2026-03-19 (Code Analysis) |
 | `report-c8` | Compile shape handling matrix | Fill in matrix above | ✅ Complete 2026-03-18 |
 
 ### New Findings: API v1 Input Shape Analysis (2026-03-18)
@@ -536,6 +536,49 @@ Authorization: Bearer <jwt-token>
 
 ---
 
+## New Findings: API v3 Envelope Behavior Analysis (2026-03-19)
+
+**Critical Discovery**: API v3 uses **consistent structured envelope** pattern across all operations, contrasting with API v1's direct response approach.
+
+### API v3 vs API v1 Envelope Comparison
+
+**Key Architectural Difference**: API v3 wraps all responses in a structured envelope, while API v1 returns data directly.
+
+| Aspect | API v1 | API v3 |
+|--------|--------|--------|
+| **Response Format** | Direct data return | Structured envelope |
+| **Search/Read** | `res.json(data)` | `{ status: 200, result: data }` |
+| **Create** | `res.json(created)` | `{ status: 201, identifier: "...", lastModified: 123... }` |
+| **Error Handling** | `res.sendJSONStatus(...)` | `{ status: 4xx/5xx, message: "...", description: "..." }` |
+| **Content Wrapper** | None | Always present |
+| **Status Field** | HTTP status only | HTTP + JSON status field |
+
+#### API v3 Envelope Evidence
+
+**Pattern**: All operations use consistent `{ status, result/fields }` envelope structure
+
+| Operation | File | Line | Code Evidence | Envelope Structure |
+|-----------|------|------|---------------|-------------------|
+| **Read/Search** | `renderer.js` | 71-74 | `res.send({ status: apiConst.HTTP.OK, result: data });` | ✅ `{ status, result }` |
+| **Create** | `operationTools.js` | 10-26 | `json = { status: status \|\| apiConst.HTTP.OK, result: result };` | ✅ `{ status, result }` + fields |
+| **Create Success** | `insert.js` | 45 | `opTools.sendJSON({ res, status: apiConst.HTTP.CREATED, fields });` | ✅ `{ status: 201, identifier, lastModified }` |
+| **Error Response** | `operationTools.js` | 29-44 | `res.status(status).json({ status, message, description });` | ✅ `{ status, message, description }` |
+
+### MongoDB 5.x Compatibility Impact
+
+**✅ CONSISTENT ENVELOPE**: API v3's structured envelope approach is **unchanged by MongoDB 5.x migration**. The envelope wrapping happens at the response layer, independent of database driver changes.
+
+### API Version Behavior Summary
+
+| Version | Input Handling | Output Envelope | MongoDB 5.x Risk |
+|---------|---------------|-----------------|-------------------|
+| **API v1** | Mixed patterns, endpoint-specific | Direct data return | 🟡 **MEDIUM** - Input array handling improved |
+| **API v3** | Consistent generic operations | Structured envelope | 🟢 **LOW** - Response format unchanged |
+
+**Compatibility Impact**: 🟢 **LOW RISK** - API v3 envelope behavior is completely independent of MongoDB driver changes. The structured response format provides consistent client experience across all operations.
+
+---
+
 ## Research Completion Summary - Iteration #3 (2026-03-19)
 
 **Iteration Status**: ✅ **COMPLETE** - AAPS verification work items completed
@@ -608,6 +651,56 @@ Authorization: Bearer <jwt-token>
 3. **Risk Distribution**: 4 clients analyzed with varied UUID_HANDLING impacts - Loop 🟡, AAPS 🟡, xDrip+ 🟡/🟢, Trio 🟢
 
 **Next Priority**: Track C completion (`report-c7` - API v3 envelope behavior documentation)
+
+---
+
+## Research Completion Summary - Iteration #5 (2026-03-19)
+
+**Iteration Status**: ✅ **COMPLETE** - ALL TRACKS 100% COMPLETE 🎉
+
+### Work Items Completed This Iteration
+
+| ID | Task | Status | Key Findings |
+|----|------|--------|--------------|
+| `report-c7` | Document API v3 envelope behavior | ✅ Complete | API v3 uses structured envelope pattern vs API v1 direct response |
+
+### MILESTONE: 100% Research Complete
+
+**✅ ALL TRACKS FINISHED**: Complete MongoDB 5.x upgrade compatibility research achieved
+
+| Track | Status | Coverage | Key Achievement |
+|-------|--------|----------|-----------------|
+| **Track A** | ✅ **COMPLETE** | 10/10 client rows | Client _id compatibility across Loop, Trio, AAPS, xDrip+ |
+| **Track B** | ✅ **COMPLETE** | 7/7 storage methods | Storage layer MongoDB 5.x compatibility |
+| **Track C** | ✅ **COMPLETE** | 8/8 API behaviors | Complete API v1 + v3 analysis |
+
+### Key Research Discovery: API Architecture Difference
+
+**API v3 Structured Envelope Pattern**:
+- **Consistent Format**: `{ status: 200, result: data }` for all responses
+- **Enhanced Error Handling**: `{ status: 4xx, message: "...", description: "..." }` structure
+- **MongoDB Independence**: Envelope behavior unaffected by MongoDB 5.x migration
+- **Client Compatibility**: 🟢 **LOW RISK** - Response format unchanged by driver upgrade
+
+### Accuracy Verification Results
+
+**✅ ALL CLAIMS VERIFIED**: Cross-referenced all API v3 findings against actual cgm-remote-monitor source code
+
+**File:Line References Validated**:
+- API v3 envelope response: `shared/renderer.js:71-74` ✅
+- Structured JSON format: `shared/operationTools.js:10-26` ✅
+- Create response format: `create/insert.js:45` ✅
+- Error envelope format: `shared/operationTools.js:29-44` ✅
+
+### Research Foundation Complete
+
+**✅ COMPREHENSIVE MONGODB 5.X UPGRADE ANALYSIS**:
+- **Client Compatibility**: All major Nightscout clients analyzed
+- **Storage Layer**: All MongoDB operations verified  
+- **API Behavior**: Complete v1 + v3 envelope analysis
+- **Risk Assessment**: Detailed compatibility impact per component
+
+**Next Phase**: Final report assembly and MongoDB 5.x upgrade recommendations
 
 ---
 
@@ -847,9 +940,9 @@ externals/xDrip/             # xDrip+ Android
 - [x] Track A: All client _id behavior patterns documented ✅ 2026-03-19
 - [x] Track B: All 7 work items complete ✅ 2026-03-18
 - [x] Track B: Storage method matrix filled ✅ 2026-03-18
-- [x] Track C: 7/8 work items complete ✅ 2026-03-18 (all API v1 endpoints)
+- [x] Track C: 8/8 work items complete ✅ 2026-03-19 (ALL API endpoints analyzed)
 - [x] Track C: API v1 shape handling matrix complete ✅ 2026-03-18
-- [ ] Track C: API v3 envelope behavior (report-c7)
+- [x] Track C: API v3 envelope behavior documented ✅ 2026-03-19
 - [ ] Final report assembled with all citations
 
 ---
