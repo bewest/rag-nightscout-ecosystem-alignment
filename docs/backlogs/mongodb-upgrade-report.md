@@ -13,7 +13,55 @@ This report documents behavioral changes and compatibility considerations for th
 
 ---
 
+## Research Pipeline
+
+> Work items follow a structured pipeline: **Research → Verify → Report**
+
+### Pipeline Stages
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  1. RESEARCH    │───▶│  2. VERIFY      │───▶│  3. REPORT      │
+│  (report-*)     │    │  (verify-*)     │    │  (matrix row)   │
+│                 │    │                 │    │                 │
+│  Document       │    │  Cross-check    │    │  Fill matrix    │
+│  initial        │    │  against        │    │  with verified  │
+│  findings       │    │  source code    │    │  citations      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### Pipeline Status Summary
+
+| Track | Research | Verification | Report Complete |
+|-------|----------|--------------|-----------------|
+| **A: Client _id** | 0/5 ready | 3/10 done | 3/10 rows |
+| **B: Storage** | 7/7 done | N/A (inherent) | 6/6 rows ✅ |
+| **C: Data Shape** | 7/8 done | N/A (inherent) | 6/6 API v1 ✅, 0/4 API v3 |
+
+### Work Item Naming Convention
+
+| Prefix | Stage | Description |
+|--------|-------|-------------|
+| `report-a*` | Research | Track A initial documentation |
+| `report-b*` | Research | Track B initial documentation |
+| `report-c*` | Research | Track C initial documentation |
+| `verify-*` | Verify | Cross-check claims against source |
+| Matrix row | Report | Final verified entry with citations |
+
+### Per-Iteration Scope
+
+Each `sdqctl iterate` should:
+1. Pick 1-3 related work items from ONE track
+2. Complete Research → Verify → Report for those items
+3. Commit progress with citations
+
+---
+
 ## Track A: _id Handling and Sync Behavior
+
+### Goal
+
+Document how each client app handles `_id`, `identifier`, and `syncIdentifier` fields, and assess UUID_HANDLING quirk impact.
 
 ### Research Questions
 
@@ -21,49 +69,53 @@ This report documents behavioral changes and compatibility considerations for th
 2. What is the impact of `UUID_HANDLING` quirk on each client?
 3. Are `ObjectId()` validation changes breaking for any client?
 
-### Matrix: Client _id Behavior
+### Pipeline: Track A Work Items
 
-> ⚠️ **ACCURACY WARNING**: Matrix entries require verification against source code. Use Track A-V items below.
+#### Stage 1: Research (report-a*)
 
-| Client | Collection | Field Sent to `_id` | Uses `identifier`? | Uses `syncIdentifier`? | UUID_HANDLING Impact | Verified |
-|--------|------------|---------------------|-------------------|----------------------|---------------------|----------|
-| **Loop (NightscoutKit)** | treatments | String `id` field or `nil` | ❌ No | ✅ Yes (stored separate) | 🔴 **CRITICAL**: Reads `_id` from server response | ✅ Complete 2026-03-19 |
-| **Loop (NightscoutKit)** | entries | String `id` field or `nil` | ❌ No | ❌ No | 🔴 **CRITICAL**: Same pattern | ✅ Complete 2026-03-19 |
-| **Loop (NightscoutKit)** | profile | | | | | ❌ |
-| **Loop (NightscoutKit)** | devicestatus | | | | | ❌ |
-| **Trio** | treatments | `id` field (NOT `_id`) | ❌ No | ❌ No | Needs verification | ❌ |
-| **Trio** | entries | | | | | ❌ |
-| **AAPS** | treatments | | | | | ❌ |
-| **AAPS** | devicestatus | | | | | ❌ |
-| **xDrip+** | treatments | | | | | ❌ |
-| **xDrip+** | entries | | | | | ❌ |
+| ID | Client | Goal | Status |
+|----|--------|------|--------|
+| `report-a1` | Loop/NightscoutKit | Document _id patterns in `externals/NightscoutKit/` | 📋 Ready |
+| `report-a2` | AAPS | Document _id patterns in `externals/AndroidAPS/` | 📋 Ready |
+| `report-a3` | Trio | Document _id patterns in `externals/Trio/` | 📋 Ready |
+| `report-a4` | xDrip+ | Document _id patterns in `externals/xDrip/` | 📋 Ready |
+| `report-a5` | All | Compile findings into matrix | 📋 Ready (depends on a1-a4) |
 
-### Track A-V: Accuracy Verification (Per-Client)
+#### Stage 2: Verify (verify-*)
 
-> Each item verifies ONE client's behavior with code citations.
+| ID | Scope | Check | Status |
+|----|-------|-------|--------|
+| `verify-loop-treatments` | Loop | NightscoutTreatment.swift field sent to _id | ✅ Done |
+| `verify-loop-entries` | Loop | GlucoseEntry.swift _id handling | ✅ Done |
+| `verify-loop-profile` | Loop | ProfileSet.swift _id handling | 📋 Ready |
+| `verify-loop-devicestatus` | Loop | DeviceStatus.swift _id handling | 📋 Ready |
+| `verify-trio-treatments` | Trio | CodingKeys: `id` vs `_id` | ✅ Done |
+| `verify-trio-entries` | Trio | Entry sync _id handling | 📋 Ready |
+| `verify-aaps-treatments` | AAPS | interfaceIDs.nightscoutId pattern | 📋 Ready |
+| `verify-aaps-devicestatus` | AAPS | devicestatus upload _id | 📋 Ready |
+| `verify-xdrip-treatments` | xDrip+ | cloud sync _id field | 📋 Ready |
+| `verify-xdrip-entries` | xDrip+ | cloud sync entries _id | 📋 Ready |
 
-| ID | Title | Description | Status |
-|----|-------|-------------|--------|
-| `verify-loop-treatments` | Verify Loop treatment _id handling | Check NightscoutKit/NightscoutTreatment.swift for field sent to _id | ✅ Complete 2026-03-19 |
-| `verify-loop-entries` | Verify Loop entry _id handling | Check NightscoutKit/GlucoseEntry.swift for _id field | ✅ Complete 2026-03-19 |
-| `verify-loop-profile` | Verify Loop profile _id handling | Check NightscoutKit/ProfileSet.swift for _id field | 📋 Ready |
-| `verify-loop-devicestatus` | Verify Loop devicestatus _id handling | Check NightscoutKit/DeviceStatus.swift for _id field | 📋 Ready |
-| `verify-trio-treatments` | Verify Trio treatment id vs _id | Check Trio/Models/NightscoutTreatment.swift CodingKeys | 📋 Ready |
-| `verify-trio-entries` | Verify Trio entry id handling | Check Trio Nightscout sync for entries | 📋 Ready |
-| `verify-aaps-treatments` | Verify AAPS treatment interfaceIDs | Check NSClientPlugin.kt for _id handling | 📋 Ready |
-| `verify-aaps-devicestatus` | Verify AAPS devicestatus _id | Check devicestatus upload code | 📋 Ready |
-| `verify-xdrip-treatments` | Verify xDrip+ treatment _id | Check cloud sync code for _id field | 📋 Ready |
-| `verify-xdrip-entries` | Verify xDrip+ entry _id | Check cloud sync code for entries | 📋 Ready |
+#### Stage 3: Report (Matrix Row)
 
-### Work Items
+Fill verified findings into matrix below with file:line citations.
 
-| ID | Title | Description | Status |
-|----|-------|-------------|--------|
-| `report-a1` | Document Loop/NightscoutKit _id patterns | Analyze `externals/NightscoutKit/` for _id usage | ✅ Complete 2026-03-19 |
-| `report-a2` | Document AAPS _id patterns | Analyze `externals/AndroidAPS/` NSClient code | ✅ Complete 2026-03-19 |
-| `report-a3` | Document Trio _id patterns | Analyze `externals/Trio/` Nightscout sync | 📋 Ready |
-| `report-a4` | Document xDrip+ _id patterns | Analyze `externals/xDrip/` NSClient code | ✅ Complete 2026-03-19 |
-| `report-a5` | Compile _id behavior matrix | Fill in matrix above with evidence | ✅ Complete 2026-03-19 |
+### Matrix: Client _id Behavior (Output)
+
+> Rows marked ✅ have been through full Research → Verify → Report pipeline.
+
+| Client | Collection | Field Sent | Uses identifier? | Uses syncIdentifier? | UUID_HANDLING Impact | Pipeline |
+|--------|------------|------------|-----------------|---------------------|---------------------|----------|
+| **Loop** | treatments | `_id` (string) | ❌ | ✅ | 🟡 Historical data | ✅ Verified |
+| **Loop** | entries | `_id` (string) | ❌ | ❌ | 🟡 Historical data | ✅ Verified |
+| **Loop** | profile | | | | | 📋 Pending |
+| **Loop** | devicestatus | | | | | 📋 Pending |
+| **Trio** | treatments | `id` (NOT `_id`) | ❌ | ❌ | 🟢 Not affected | ✅ Verified |
+| **Trio** | entries | | | | | 📋 Pending |
+| **AAPS** | treatments | | | | | 📋 Pending |
+| **AAPS** | devicestatus | | | | | 📋 Pending |
+| **xDrip+** | treatments | | | | | 📋 Pending |
+| **xDrip+** | entries | | | | | 📋 Pending |
 
 ### Source Locations
 
@@ -71,12 +123,16 @@ This report documents behavioral changes and compatibility considerations for th
 |--------|-----------|
 | NightscoutKit | `externals/NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift` |
 | AAPS | `externals/AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclient/` |
-| Trio | `externals/Trio-dev/FreeAPS/Sources/Services/Network/NightscoutAPI.swift` |
+| Trio | `externals/Trio/Trio/Sources/Models/NightscoutTreatment.swift` |
 | xDrip+ | `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/cloud/` |
 
 ---
 
 ## Track B: MongoDB Driver Migration
+
+### Goal
+
+Document storage method changes from legacy MongoDB driver to v5.x compatible patterns.
 
 ### Research Questions
 
@@ -84,28 +140,47 @@ This report documents behavioral changes and compatibility considerations for th
 2. Which operations now use `bulkWrite()` for batch operations?
 3. Are there `ObjectID()` vs `new ObjectId()` compatibility issues?
 
-### Matrix: Storage Method Changes
+### Pipeline: Track B Work Items
 
-| File | Old Method (v14.2.5) | New Method (Current) | Batch Support | Code Citations | Verified |
-|------|----------------------|---------------------|---------------|----------------|----------|
-| `lib/server/treatments.js` | `api().update(query, obj, {upsert: true})` | `api().bulkWrite([{replaceOne}])` | ✅ Array batch via bulkWrite | **Old:** `externals/cgm-remote-monitor-official@1ad48672:lib/server/treatments.js:49,73`<br>**New:** `cgm-pr-8447/lib/server/treatments.js:64` | ✅ 2026-03-18 |
-| `lib/server/entries.js` | `api().update(query, doc, {upsert: true})` | `api().bulkWrite([{replaceOne}])` | ✅ Array batch via bulkWrite | **Old:** `externals/cgm-remote-monitor-official@1ad48672:lib/server/entries.js:110`<br>**New:** `cgm-pr-8447/lib/server/entries.js:130` | ✅ 2026-03-18 |
-| `lib/server/profile.js` | `api().insert(obj)` (single only) | `api().insertMany([docs])` + `insertOne(obj)` | ✅ Array→insertMany, Single→insertOne | **Old:** `externals/cgm-remote-monitor-official@1ad48672:lib/server/profile.js:11`<br>**New:** `cgm-pr-8447/lib/server/profile.js:26,43` | ✅ 2026-03-18 |
-| `lib/server/devicestatus.js` | `api().insertOne(obj)` (already v5 compatible) | `api().insertMany([docs])` (enhanced) | ✅ Array batch via insertMany | **Old:** `externals/cgm-remote-monitor-official@1ad48672:lib/server/devicestatus.js:26`<br>**New:** `cgm-pr-8447/lib/server/devicestatus.js:56` | ✅ 2026-03-18 |
-| `lib/server/activity.js` | `api().insert(obj)` (single only) | `api().bulkWrite([{replaceOne}])` | ✅ Array batch via bulkWrite | **Old:** `externals/cgm-remote-monitor-official@1ad48672:lib/server/activity.js:11`<br>**New:** `cgm-pr-8447/lib/server/activity.js:29` | ✅ 2026-03-18 |
-| `lib/server/food.js` | `api().insert(obj)` + `api().save(obj)` (single only) | `api().bulkWrite([{replaceOne}])` | ✅ Array batch via bulkWrite | **Old:** `externals/cgm-remote-monitor-official@1ad48672:lib/server/food.js:8,26`<br>**New:** `cgm-pr-8447/lib/server/food.js:29,78` | ✅ 2026-03-18 |
+#### Stage 1: Research (report-b*)
 
-### Work Items
+| ID | File | Goal | Status |
+|----|------|------|--------|
+| `report-b1` | treatments.js | Compare worktree vs v14.2.5 | ✅ Done |
+| `report-b2` | entries.js | Compare worktree vs v14.2.5 | ✅ Done |
+| `report-b3` | profile.js | Compare worktree vs v14.2.5 | ✅ Done |
+| `report-b4` | devicestatus.js | Compare worktree vs v14.2.5 | ✅ Done |
+| `report-b5` | activity.js | Compare worktree vs v14.2.5 | ✅ Done |
+| `report-b6` | food.js | Compare worktree vs v14.2.5 | ✅ Done |
+| `report-b7` | All | Compile storage method matrix | ✅ Done |
 
-| ID | Title | Description | Status |
-|----|-------|-------------|--------|
-| `report-b1` | Audit treatments.js storage changes | Compare worktree vs v14.2.5 | ✅ Complete 2026-03-18 |
-| `report-b2` | Audit entries.js storage changes | Compare worktree vs v14.2.5 | ✅ Complete 2026-03-18 |
-| `report-b3` | Audit profile.js storage changes | Compare worktree vs v14.2.5 | ✅ Complete 2026-03-18 |
-| `report-b4` | Audit devicestatus.js storage changes | Compare worktree vs v14.2.5 | ✅ Complete 2026-03-18 |
-| `report-b5` | Audit activity.js storage changes | Compare worktree vs v14.2.5 | ✅ Complete 2026-03-18 |
-| `report-b6` | Audit food.js storage changes | Compare worktree vs v14.2.5 | ✅ Complete 2026-03-18 |
-| `report-b7` | Compile storage method matrix | Fill in matrix above | ✅ Complete 2026-03-18 |
+#### Stage 2: Verify
+
+Track B uses file diff comparison - verification is inherent to the research process.
+
+#### Stage 3: Report (Matrix)
+
+### Matrix: Storage Method Changes (Output)
+
+| File | Old Method | New Method | Batch | Pipeline |
+|------|------------|------------|-------|----------|
+| treatments.js | `update()` | `bulkWrite()` | ✅ | ✅ Verified |
+| entries.js | `update()` | `bulkWrite()` | ✅ | ✅ Verified |
+| profile.js | `insert()` | `insertMany()` + `insertOne()` | ✅ | ✅ Verified |
+| devicestatus.js | `insertOne()` | `insertMany()` | ✅ | ✅ Verified |
+| activity.js | `insert()` | `bulkWrite()` | ✅ | ✅ Verified |
+| food.js | `insert()` + `save()` | `bulkWrite()` | ✅ | ✅ Verified |
+
+### Evidence Citations
+
+| File | Old Location | New Location |
+|------|--------------|--------------|
+| treatments.js | `official@1ad48672:lib/server/treatments.js:49,73` | `cgm-pr-8447/lib/server/treatments.js:64` |
+| entries.js | `official@1ad48672:lib/server/entries.js:110` | `cgm-pr-8447/lib/server/entries.js:130` |
+| profile.js | `official@1ad48672:lib/server/profile.js:11` | `cgm-pr-8447/lib/server/profile.js:26,43` |
+| devicestatus.js | `official@1ad48672:lib/server/devicestatus.js:26` | `cgm-pr-8447/lib/server/devicestatus.js:56` |
+| activity.js | `official@1ad48672:lib/server/activity.js:11` | `cgm-pr-8447/lib/server/activity.js:29` |
+| food.js | `official@1ad48672:lib/server/food.js:8,26` | `cgm-pr-8447/lib/server/food.js:29,78` |
 
 ### Comparison Commands
 
@@ -120,28 +195,67 @@ diff /tmp/old.js /home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/tr
 
 ## Track C: Data Shape Consistency
 
+### Goal
+
+Verify all API endpoints handle single object AND array input consistently.
+
 ### Research Questions
 
 1. Does each endpoint handle single object AND array input?
 2. Does each endpoint return consistent response format (array)?
 3. How does API v3 envelope differ from API v1?
 
-### Matrix: Input Shape Handling
+### Pipeline: Track C Work Items
 
-| Endpoint | Single Object | Array `[1]` | Batch `[n]` | Empty `[]` | Response Format | Code Evidence |
-|----------|---------------|-------------|-------------|------------|-----------------|---------------|
-| **API v1** | | | | | | |
-| `/api/v1/treatments` | ✅ Normalized to array | ✅ Direct array handling | ✅ Bulk operations via `bulkWrite` | ✅ Empty array handling | JSON array | `api/treatments/index.js:107-109` |
-| `/api/v1/entries` | ✅ Single object detection | ✅ Array concat pattern | ✅ Bulk operations via `bulkWrite` | ✅ Empty array handling | JSON array | `api/entries/index.js:284-292` |
-| `/api/profile` | ✅ Normalized to array | ✅ Direct array handling | ✅ Bulk operations via `bulkWrite` | ✅ Empty array handling | JSON array | `api/profile/index.js:95-96` |
-| `/api/devicestatus` | ✅ Normalized to array | ✅ Direct array handling | ✅ Bulk operations via `insertMany` | ✅ Empty array handling | JSON array | `api/devicestatus/index.js:100-102` |
-| `/api/activity` | ✅ Normalized to array | ✅ Direct array handling | ✅ Bulk operations via `bulkWrite` | ✅ Empty array handling | JSON array | `api/activity/index.js:96-98` |
-| `/api/food` | ✅ Normalized to array | ✅ Direct array handling | ✅ Bulk operations via `bulkWrite` | ✅ Empty array handling | JSON array | `api/food/index.js:101-103` |
-| **API v3** | | | | | | |
-| `/api/v3/treatments` | 📋 Ready | 📋 Ready | 📋 Ready | 📋 Ready | | |
-| `/api/v3/entries` | 📋 Ready | 📋 Ready | 📋 Ready | 📋 Ready | | |
-| `/api/v3/devicestatus` | 📋 Ready | 📋 Ready | 📋 Ready | 📋 Ready | | |
-| `/api/v3/profile` | 📋 Ready | 📋 Ready | 📋 Ready | 📋 Ready | | |
+#### Stage 1: Research (report-c*)
+
+| ID | Endpoint | Goal | Status |
+|----|----------|------|--------|
+| `report-c1` | treatments | Test single, array, batch, empty | ✅ Done |
+| `report-c2` | entries | Test single, array, batch, empty | ✅ Done |
+| `report-c3` | profile | Test single, array, batch, empty | ✅ Done |
+| `report-c4` | devicestatus | Test single, array, batch, empty | ✅ Done |
+| `report-c5` | activity | Test single, array, batch, empty | ✅ Done |
+| `report-c6` | food | Test single, array, batch, empty | ✅ Done |
+| `report-c7` | API v3 | Document envelope behavior | 📋 Ready |
+| `report-c8` | All | Compile shape handling matrix | ✅ Done (API v1) |
+
+#### Stage 2: Verify
+
+Track C uses code analysis - verification is inherent to the research process.
+
+#### Stage 3: Report (Matrix)
+
+### Matrix: API v1 Input Shape Handling (Output)
+
+| Endpoint | Single | Array | Batch | Empty | Pipeline |
+|----------|--------|-------|-------|-------|----------|
+| treatments | ✅ | ✅ | ✅ | ✅ | ✅ Verified |
+| entries | ✅ | ✅ | ✅ | ✅ | ✅ Verified |
+| profile | ✅ | ✅ | ✅ | ✅ | ✅ Verified |
+| devicestatus | ✅ | ✅ | ✅ | ✅ | ✅ Verified |
+| activity | ✅ | ✅ | ✅ | ✅ | ✅ Verified |
+| food | ✅ | ✅ | ✅ | ✅ | ✅ Verified |
+
+### Matrix: API v3 Envelope Behavior (Output)
+
+| Endpoint | Single Object | Batch `[n]` | Response Format | Pipeline |
+|----------|---------------|-------------|-----------------|----------|
+| `/api/v3/treatments` | | | | 📋 Pending |
+| `/api/v3/entries` | | | | 📋 Pending |
+| `/api/v3/devicestatus` | | | | 📋 Pending |
+| `/api/v3/profile` | | | | 📋 Pending |
+
+### Evidence Citations (API v1)
+
+| Endpoint | Normalization Code |
+|----------|-------------------|
+| treatments | `api/treatments/index.js:107-109` |
+| entries | `api/entries/index.js:284-292` |
+| profile | `api/profile/index.js:95-96` |
+| devicestatus | `api/devicestatus/index.js:100-102` |
+| activity | `api/activity/index.js:96-98` |
+| food | `api/food/index.js:101-103` |
 
 ### API v3 Envelope Structure
 
@@ -164,15 +278,6 @@ POST /api/v3/treatments
   "lastModified": 1234567890000
 }
 ```
-
-### Work Items
-
-| ID | Title | Description | Status |
-|----|-------|-------------|--------|
-| `report-c1` | Test API v1 treatments shape handling | Single, array, batch, empty | ✅ Complete 2026-03-18 (Code Analysis) |
-| `report-c2` | Test API v1 entries shape handling | Single, array, batch, empty | ✅ Complete 2026-03-18 (Code Analysis) |
-| `report-c3` | Test API v1 profile shape handling | Single, array, batch, empty | ✅ Complete 2026-03-18 (Code Analysis) |
-| `report-c4` | Test API v1 devicestatus shape handling | Single, array, batch, empty | ✅ Complete 2026-03-19 (Code Analysis) |
 | `report-c5` | Test API v1 activity shape handling | Single, array, batch, empty | ✅ Complete 2026-03-19 (Code Analysis) |
 | `report-c6` | Test API v1 food shape handling | Single, array, batch, empty | ✅ Complete 2026-03-19 (Code Analysis) |
 | `report-c7` | Document API v3 envelope behavior | Compare to v1, verify consistency | 📋 Ready |
