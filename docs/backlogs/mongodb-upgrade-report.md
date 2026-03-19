@@ -257,7 +257,7 @@ Verify all API endpoints handle single object AND array input consistently.
 | `report-c4` | devicestatus | Test single, array, batch, empty | ✅ Done |
 | `report-c5` | activity | Test single, array, batch, empty | ✅ Done |
 | `report-c6` | food | Test single, array, batch, empty | ✅ Done |
-| `report-c7` | API v3 | Document envelope behavior | 📋 Ready |
+| `report-c7` | API v3 | Document envelope behavior | ✅ Done |
 | `report-c8` | All | Compile shape handling matrix | ✅ Done (API v1) |
 
 #### Stage 2: Verify

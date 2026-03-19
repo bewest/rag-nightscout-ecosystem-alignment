@@ -68,3 +68,4 @@ tmp/
 .tmp/
 attached_assets/
 .build/
+.copilot-session.db
