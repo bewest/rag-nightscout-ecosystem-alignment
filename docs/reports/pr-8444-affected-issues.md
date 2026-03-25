@@ -273,6 +273,14 @@ documents (UUID in `_id`), allowing DELETE and PUT to work on both.
 
 | `tests/issue-6923-legacy-uuid.test.js` | 3 | Legacy UUID data: DELETE/PUT/GET all fail (expected) |
 
+| `tests/cache-objectid-compat.test.js` | 7 | ObjectId isEmpty regression, cache filterForAge |
+
 **Known gap:** Legacy UUID documents (§4) — the 3 regression tests confirm all
 operations silently fail. These tests document the bug and will pass once the
 `$or` fallback query is implemented.
+
+**Known gap:** `_.isEmpty(ObjectId)` returns `true` on MongoDB driver 5.x —
+`cache.js:filterForAge()` silently rejects documents with ObjectId `_id`.
+Mitigated in V1 paths by `processRawDataForRuntime()` string conversion,
+but unmitigated in API V3 `mongoCachedCollection` path. See
+[aaps-backfill-display-bug.md](aaps-backfill-display-bug.md) for full analysis.
