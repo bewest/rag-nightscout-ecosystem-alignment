@@ -213,11 +213,11 @@ AAPS upload → POST /api/v3/entries →
 
 | Finding | Severity | Status | Fix |
 |---------|----------|--------|-----|
-| `_.isEmpty(ObjectId)` returns `true` on driver 5.x | **High** | Confirmed, tested | Replace with `_id != null && _id !== ''` |
-| mongoCachedCollection bypasses processRawDataForRuntime | Medium | Confirmed | Add processRawDataForRuntime call or fix filterForAge |
-| Debounce removal causes concurrent dataloader runs | Medium | Confirmed | Re-add debounce or add concurrency guard |
+| `_.isEmpty(ObjectId)` returns `true` on driver 5.x | **High** | ✅ Fixed (`f4e686c1`) | Replace with `_id != null && _id !== ''` |
+| mongoCachedCollection bypasses processRawDataForRuntime | Medium | ✅ Mitigated | filterForAge fix accepts ObjectId directly |
+| Debounce removal causes concurrent dataloader runs | Medium | ✅ Fixed (`98ee2bcb`) | Leading-edge debounce + concurrency guard |
 | bulkWrite doesn't populate `_id` for matched entries | Low | Confirmed | Query MongoDB for matched entry _ids, or accept |
-| Treatment delta sends 'remove' for transiently missing items | Low | Hypothesis | Needs investigation |
+| Treatment delta sends 'remove' for transiently missing items | Low | ✅ Mitigated | Debounce prevents concurrent delta races |
 
 ## 7. Actions Taken
 
@@ -242,18 +242,35 @@ Both V1 (WebSocket) and V3 (REST API) paths now correctly accept ObjectId
 
 ### Remaining Recommendations
 
-1. **Re-add debounce to `updateData`** — A 2–5 second debounce prevents
-   concurrent dataloader runs and reduces MongoDB query load during bulk
-   uploads. The original 5s debounce in v15.0.6 was battle-tested.
-   This is a **performance issue**, not a correctness bug.
-
-2. **Add `processRawDataForRuntime` to `mongoCachedCollection`** — Ensure
+1. **Add `processRawDataForRuntime` to `mongoCachedCollection`** — Ensure
    API V3 `data-update` events have string `_id` for cache compatibility.
    After the filterForAge fix, ObjectId `_id` works, but converting to
    string is still good practice for consistency.
 
-3. **Ask the reporting user** which AAPS sync plugin they use (NSClient V1
+2. **Ask the reporting user** which AAPS sync plugin they use (NSClient V1
    vs NSClientV3) to narrow down whether the API V3 cache path is involved.
+
+### ✅ 7.2 Fix Applied: Debounce with concurrency guard
+
+Commit `98ee2bcb` in `wip/test-improvements` branch.
+
+**Strategy C in `lib/server/bootevent.js`:**
+- Leading-edge debounce (1s window): first event fires immediately, no delay
+- Concurrency guard: `dataloadRunning` flag prevents overlapping `dataloader.update()` calls
+- Pending re-run: `dataloadPending` flag ensures one final run captures latest state
+- `maxWait: 5000`: guarantees data appears within 5s under sustained load
+
+**Why this matters:** Both V1 (WebSocket `dbAdd`) and V3 (REST API POST)
+emit `data-received` per-operation. AAPS uploads entries one at a time.
+Without debounce: N uploads → N×9 concurrent MongoDB queries racing on
+shared `ddata` object. With Strategy C: N uploads → 2–3 sequential runs.
+
+**Test coverage (9 tests, all pass):**
+- 2 leading-edge tests (immediate fire, zero delay)
+- 2 coalescing tests (50 events → 2 runs)
+- 2 concurrency guard tests (no overlap, pending re-run)
+- 2 trailing edge tests (final state captured, spaced events independent)
+- 1 maxWait test (sustained events → forced run within 5s)
 
 ## 8. Files Analyzed
 
@@ -262,7 +279,7 @@ Both V1 (WebSocket) and V3 (REST API) paths now correctly accept ObjectId
 | `lib/server/cache.js` | Server-side data cache | **No** (unchanged — latent bug) |
 | `lib/data/ddata.js` | Data processing, processRawDataForRuntime | Yes (endmills, identifier merge) |
 | `lib/data/dataloader.js` | Periodic data loading from MongoDB | **No** (unchanged) |
-| `lib/server/bootevent.js` | Event wiring, debounce | **Yes** (debounce removed) |
+| `lib/server/bootevent.js` | Event wiring, debounce | **Yes** (debounce restored with Strategy C) |
 | `lib/server/entries.js` | Entries CRUD | **Yes** (bulkWrite, normalizeEntryId) |
 | `lib/server/websocket.js` | WebSocket dbAdd handler | **Yes** (insertOne, safeObjectID) |
 | `lib/api3/storage/mongoCachedCollection/` | API V3 cached storage | **No** (unchanged — latent bug) |
