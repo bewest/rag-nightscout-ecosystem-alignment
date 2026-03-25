@@ -219,20 +219,40 @@ AAPS upload → POST /api/v3/entries →
 | bulkWrite doesn't populate `_id` for matched entries | Low | Confirmed | Query MongoDB for matched entry _ids, or accept |
 | Treatment delta sends 'remove' for transiently missing items | Low | Hypothesis | Needs investigation |
 
-## 7. Recommended Actions
+## 7. Actions Taken
 
-1. **Fix `filterForAge` hasId check** — Replace `!_.isEmpty(object._id)`
-   with `object._id != null && object._id !== ''`. This is a one-line fix
-   that resolves the ObjectId compatibility issue throughout the cache.
+### ✅ 7.1 Fix Applied: `filterForAge` hasId check
 
-2. **Re-add debounce to `updateData`** — A 2–5 second debounce prevents
+Commit `f4e686c1` in `wip/test-improvements` branch.
+
+**One-line fix in `lib/server/cache.js:54`:**
+```diff
+- const hasId = !_.isEmpty(object._id);
++ const hasId = object._id != null && object._id !== '';
+```
+
+This resolves the ObjectId compatibility issue throughout the cache layer.
+Both V1 (WebSocket) and V3 (REST API) paths now correctly accept ObjectId
+`_id` values.
+
+**Test coverage (16 tests, all pass):**
+- 3 root-cause tests confirming `_.isEmpty(ObjectId)` regression
+- 7 filterForAge logic tests (old broken vs fixed behavior)
+- 6 integration tests exercising actual `cache.js` with `data-update` events
+
+### Remaining Recommendations
+
+1. **Re-add debounce to `updateData`** — A 2–5 second debounce prevents
    concurrent dataloader runs and reduces MongoDB query load during bulk
    uploads. The original 5s debounce in v15.0.6 was battle-tested.
+   This is a **performance issue**, not a correctness bug.
 
-3. **Add `processRawDataForRuntime` to `mongoCachedCollection`** — Ensure
+2. **Add `processRawDataForRuntime` to `mongoCachedCollection`** — Ensure
    API V3 `data-update` events have string `_id` for cache compatibility.
+   After the filterForAge fix, ObjectId `_id` works, but converting to
+   string is still good practice for consistency.
 
-4. **Ask the reporting user** which AAPS sync plugin they use (NSClient V1
+3. **Ask the reporting user** which AAPS sync plugin they use (NSClient V1
    vs NSClientV3) to narrow down whether the API V3 cache path is involved.
 
 ## 8. Files Analyzed
