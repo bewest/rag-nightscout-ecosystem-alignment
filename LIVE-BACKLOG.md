@@ -21,7 +21,12 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| *(None - ready for new work)* | - | - |
+| cgmsim-lib 5-facet analysis | P2 | TypeScript CGM simulator by lsandini — model physiology modules (bolus, carbs, liver, activity), map terminology to ecosystem, identify GAPs vs Nightscout data model |
+| LoopAlgorithm standalone evaluation | P2 | Swift package extracted from LoopKit — compare vs embedded LoopWorkspace/LoopKit version, document prediction pipeline (ICE, retrospective correction, momentum), map JSON fixture format |
+| GluPredKit model inventory & metrics audit | P1 | Python ML framework with 15 models (LSTM, TCN, Loop, UVA/Padova) + 17 clinical metrics (Clarke/Parkes grids) — evaluate as scoring harness for algorithm comparison |
+| autoresearch pattern feasibility study | P2 | Karpathy's autonomous research loop — assess adaptation for fixed-time algorithm scoring (cgmsim scenarios → predict → score cycle) |
+| Algorithm scoring pipeline design | P1 | Design: cgmsim-lib generates synthetic scenarios → feed to LoopAlgorithm + GluPredKit models → score via GluPredKit metrics → iterate via autoresearch pattern |
+| Cross-algorithm deep integration tests | P3 | Build conformance test suite: same CGM trace scored by Loop, oref0/AAPS, Trio, GluPredKit models — compare predictions, dose recommendations, safety envelopes |
 
 ## Processed
 

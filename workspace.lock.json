@@ -163,9 +163,9 @@
     {
       "name": "Trio-dev",
       "url": "git@github.com:nightscout/Trio-dev.git",
-      "ref": "dev",
+      "ref": "8857db4e80bab5eb643c60d6e11a1b477c204eeb",
       "description": "Trio development branch",
-      "frozen_at": "2026-01-28T15:03:43.697393",
+      "frozen_at": "2026-03-28T11:45:36.526431",
       "frozen_from": "dev"
     },
     {
@@ -210,6 +210,38 @@
       "description": "Medtronic CareLink to Nightscout bridge (JavaScript)",
       "frozen_at": "2026-03-11T21:39:00.000000",
       "frozen_from": "master"
+    },
+    {
+      "name": "cgmsim-lib",
+      "url": "https://github.com/lsandini/cgmsim-lib.git",
+      "ref": "d25eaed52c167d295061c8a65ca325d14d323ec4",
+      "description": "",
+      "frozen_at": "2026-03-28T11:45:36.565520",
+      "frozen_from": "main"
+    },
+    {
+      "name": "LoopAlgorithm",
+      "url": "https://github.com/LoopKit/LoopAlgorithm.git",
+      "ref": "9d2405464d16a3bd2953e114f046b20bf2cabb48",
+      "description": "Standalone LoopAlgorithm Swift package for glucose prediction and dosing",
+      "frozen_at": "2026-03-28T11:46:00.061514",
+      "frozen_from": "main"
+    },
+    {
+      "name": "GluPredKit",
+      "url": "https://github.com/replicahealth/GluPredKit.git",
+      "ref": "e5bd6357a6d86fb97ab8a13d02dc73823241e860",
+      "description": "Glucose prediction toolkit - ML-based BG forecasting framework",
+      "frozen_at": "2026-03-28T11:46:00.080430",
+      "frozen_from": "main"
+    },
+    {
+      "name": "autoresearch",
+      "url": "https://github.com/karpathy/autoresearch.git",
+      "ref": "228791fb499afffb54b46200aca536f79142f117",
+      "description": "Karpathy automated research loop - reference for algorithm scoring pipeline",
+      "frozen_at": "2026-03-28T11:46:00.087606",
+      "frozen_from": "main"
     }
   ]
 }
