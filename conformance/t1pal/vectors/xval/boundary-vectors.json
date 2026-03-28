@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "Boundary condition test vectors for algorithm cross-validation",
+  "created": "2026-02-16",
+  "track": "ALG-XVAL-012",
+  "testCases": [
+    {
+      "id": "BOUND-001",
+      "scenario": "Hypoglycemia - urgent low",
+      "category": "glucose_boundary",
+      "input": {
+        "glucose": 54,
+        "delta": -10,
+        "iob": 2.0,
+        "cob": 0,
+        "currentBasal": 1.0
+      },
+      "expected": {
+        "action": "suspend",
+        "rate": 0,
+        "reason": "urgent_low"
+      },
+      "safety_critical": true
+    },
+    {
+      "id": "BOUND-002",
+      "scenario": "Hypoglycemia - low with IOB",
+      "category": "glucose_boundary",
+      "input": {
+        "glucose": 65,
+        "delta": -5,
+        "iob": 1.5,
+        "cob": 0,
+        "currentBasal": 1.0
+      },
+      "expected": {
+        "action": "suspend",
+        "rate": 0,
+        "reason": "low_predicted"
+      },
+      "safety_critical": true
+    },
+    {
+      "id": "BOUND-003",
+      "scenario": "Hypoglycemia - low but rising fast",
+      "category": "glucose_boundary",
+      "input": {
+        "glucose": 70,
+        "delta": 15,
+        "iob": 0,
+        "cob": 30,
+        "currentBasal": 1.0
+      },
+      "expected": {
+        "action": "resume_normal",
+        "reason": "rising_fast_with_cob"
+      },
+      "safety_critical": true
+    },
+    {
+      "id": "BOUND-004",
+      "scenario": "Hyperglycemia - very high",
+      "category": "glucose_boundary",
+      "input": {
+        "glucose": 300,
+        "delta": 5,
+        "iob": 0.5,
+        "cob": 0,
+        "currentBasal": 1.0,
+        "maxBasal": 4.0
+      },
+      "expected": {
+        "action": "max_temp_basal",
+        "rate_max": 4.0,
+        "reason": "high_glucose"
+      }
+    },
+    {
+      "id": "BOUND-005",
+      "scenario": "Hyperglycemia - high with significant IOB",
+      "category": "glucose_boundary",
+      "input": {
+        "glucose": 250,
+        "delta": 0,
+        "iob": 5.0,
+        "cob": 0,
+        "currentBasal": 1.0,
+        "maxIOB": 5.0
+      },
+      "expected": {
+        "action": "moderate_temp",
+        "reason": "iob_covers_high"
+      }
+    },
+    {
+      "id": "BOUND-006",
+      "scenario": "IOB at maximum limit",
+      "category": "iob_boundary",
+      "input": {
+        "glucose": 180,
+        "delta": 3,
+        "iob": 5.0,
+        "cob": 0,
+        "currentBasal": 1.0,
+        "maxIOB": 5.0
+      },
+      "expected": {
+        "action": "constrain_by_iob",
+        "smb_allowed": false,
+        "reason": "max_iob_reached"
+      }
+    },
+    {
+      "id": "BOUND-007",
+      "scenario": "IOB zero - room to dose",
+      "category": "iob_boundary",
+      "input": {
+        "glucose": 180,
+        "delta": 3,
+        "iob": 0,
+        "cob": 0,
+        "currentBasal": 1.0,
+        "maxIOB": 5.0
+      },
+      "expected": {
+        "action": "high_temp_allowed",
+        "smb_allowed": true,
+        "reason": "no_iob_headroom"
+      }
+    },
+    {
+      "id": "BOUND-008",
+      "scenario": "Negative IOB (pump suspended recently)",
+      "category": "iob_boundary",
+      "input": {
+        "glucose": 120,
+        "delta": 5,
+        "iob": -1.0,
+        "cob": 0,
+        "currentBasal": 1.0
+      },
+      "expected": {
+        "action": "high_temp",
+        "reason": "negative_iob_correction"
+      }
+    },
+    {
+      "id": "BOUND-009",
+      "scenario": "Target at lower bound",
+      "category": "target_boundary",
+      "input": {
+        "glucose": 80,
+        "delta": 0,
+        "iob": 0,
+        "cob": 0,
+        "targetLow": 80,
+        "targetHigh": 120
+      },
+      "expected": {
+        "action": "no_adjustment",
+        "reason": "at_target"
+      }
+    },
+    {
+      "id": "BOUND-010",
+      "scenario": "Target at upper bound",
+      "category": "target_boundary",
+      "input": {
+        "glucose": 120,
+        "delta": 0,
+        "iob": 0,
+        "cob": 0,
+        "targetLow": 80,
+        "targetHigh": 120
+      },
+      "expected": {
+        "action": "no_adjustment",
+        "reason": "at_target"
+      }
+    },
+    {
+      "id": "BOUND-011",
+      "scenario": "CGM reading too old",
+      "category": "data_boundary",
+      "input": {
+        "glucose": 120,
+        "glucoseAge_minutes": 16,
+        "maxGlucoseAge_minutes": 15
+      },
+      "expected": {
+        "action": "stale_data_suspend",
+        "reason": "cgm_too_old"
+      },
+      "safety_critical": true
+    },
+    {
+      "id": "BOUND-012",
+      "scenario": "Zero basal rate scheduled",
+      "category": "basal_boundary",
+      "input": {
+        "glucose": 100,
+        "delta": 0,
+        "iob": 0,
+        "scheduledBasal": 0
+      },
+      "expected": {
+        "action": "respect_zero_basal",
+        "rate": 0,
+        "reason": "scheduled_zero"
+      }
+    }
+  ],
+  "safetyThresholds": {
+    "urgent_low_mg_dl": 55,
+    "low_mg_dl": 70,
+    "target_default": {"low": 100, "high": 120},
+    "max_glucose_age_minutes": 15,
+    "max_iob_headroom_factor": 0.8
+  }
+}

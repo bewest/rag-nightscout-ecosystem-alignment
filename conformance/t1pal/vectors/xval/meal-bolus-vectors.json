@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "Meal bolus scenario test vectors for algorithm cross-validation",
+  "created": "2026-02-16",
+  "track": "ALG-XVAL-013",
+  "testCases": [
+    {
+      "id": "MEAL-001",
+      "scenario": "Standard meal with full bolus",
+      "category": "meal_bolus",
+      "input": {
+        "glucose": 110,
+        "delta": 0,
+        "iob": 0,
+        "cob": 50,
+        "carbsEntered": 50,
+        "absorptionTime_hours": 3.0,
+        "icr": 10,
+        "isf": 40,
+        "recentBolus": {"units": 5.0, "minutesAgo": 5}
+      },
+      "expected": {
+        "action": "low_temp_or_suspend",
+        "reason": "bolus_covers_carbs",
+        "minPredBG_min": 70
+      }
+    },
+    {
+      "id": "MEAL-002",
+      "scenario": "Meal with partial bolus (extended)",
+      "category": "meal_bolus",
+      "input": {
+        "glucose": 110,
+        "delta": 0,
+        "iob": 2.5,
+        "cob": 50,
+        "carbsEntered": 50,
+        "absorptionTime_hours": 3.0,
+        "icr": 10,
+        "isf": 40,
+        "recentBolus": {"units": 2.5, "minutesAgo": 5}
+      },
+      "expected": {
+        "action": "high_temp",
+        "reason": "partial_coverage",
+        "additionalInsulinNeeded_min": 1.0
+      }
+    },
+    {
+      "id": "MEAL-003",
+      "scenario": "Meal with no bolus",
+      "category": "meal_bolus",
+      "input": {
+        "glucose": 110,
+        "delta": 5,
+        "iob": 0,
+        "cob": 50,
+        "carbsEntered": 50,
+        "absorptionTime_hours": 3.0,
+        "icr": 10,
+        "isf": 40,
+        "recentBolus": null
+      },
+      "expected": {
+        "action": "max_temp_with_smb",
+        "reason": "unbolused_carbs",
+        "smb_allowed": true
+      }
+    },
+    {
+      "id": "MEAL-004",
+      "scenario": "Fast carbs - juice for hypo treatment",
+      "category": "hypo_treatment",
+      "input": {
+        "glucose": 65,
+        "delta": -3,
+        "iob": 1.0,
+        "cob": 15,
+        "carbsEntered": 15,
+        "absorptionTime_hours": 0.5,
+        "icr": 10,
+        "isf": 40
+      },
+      "expected": {
+        "action": "suspend",
+        "reason": "hypo_with_treatment",
+        "rate": 0
+      },
+      "safety_critical": true
+    },
+    {
+      "id": "MEAL-005",
+      "scenario": "Slow carbs - pizza",
+      "category": "meal_bolus",
+      "input": {
+        "glucose": 120,
+        "delta": 0,
+        "iob": 5.0,
+        "cob": 80,
+        "carbsEntered": 80,
+        "absorptionTime_hours": 5.0,
+        "icr": 10,
+        "isf": 40,
+        "recentBolus": {"units": 5.0, "minutesAgo": 30}
+      },
+      "expected": {
+        "action": "moderate_temp",
+        "reason": "slow_absorption_expected",
+        "notes": "May need more insulin later as fat delays absorption"
+      }
+    },
+    {
+      "id": "MEAL-006",
+      "scenario": "Pre-bolus scenario (bolus before meal)",
+      "category": "pre_bolus",
+      "input": {
+        "glucose": 140,
+        "delta": -5,
+        "iob": 5.0,
+        "cob": 0,
+        "carbsEntered": 0,
+        "icr": 10,
+        "isf": 40,
+        "recentBolus": {"units": 5.0, "minutesAgo": 15}
+      },
+      "expected": {
+        "action": "reduce_temp_or_suspend",
+        "reason": "iob_exceeds_cob",
+        "eventualBG_predicts_low": true
+      }
+    },
+    {
+      "id": "MEAL-007",
+      "scenario": "Rescue carbs after over-bolus",
+      "category": "hypo_treatment",
+      "input": {
+        "glucose": 75,
+        "delta": -8,
+        "iob": 3.0,
+        "cob": 30,
+        "carbsEntered": 30,
+        "absorptionTime_hours": 1.0,
+        "icr": 10,
+        "isf": 40
+      },
+      "expected": {
+        "action": "suspend",
+        "rate": 0,
+        "reason": "rescue_carbs_with_iob"
+      },
+      "safety_critical": true
+    },
+    {
+      "id": "MEAL-008",
+      "scenario": "Second meal of day with existing COB",
+      "category": "stacked_meals",
+      "input": {
+        "glucose": 130,
+        "delta": 3,
+        "iob": 2.0,
+        "cob": 70,
+        "carbEntries": [
+          {"grams": 40, "minutesAgo": 90, "absorptionTime": 3.0},
+          {"grams": 30, "minutesAgo": 5, "absorptionTime": 3.0}
+        ],
+        "icr": 10,
+        "isf": 40
+      },
+      "expected": {
+        "action": "moderate_high_temp",
+        "reason": "stacked_cob"
+      }
+    }
+  ],
+  "mealCategories": {
+    "fast_carbs": {
+      "examples": ["juice", "glucose_tabs", "candy"],
+      "typical_absorption_hours": 0.5,
+      "use_case": "hypo_treatment"
+    },
+    "medium_carbs": {
+      "examples": ["bread", "pasta", "rice"],
+      "typical_absorption_hours": 3.0,
+      "use_case": "normal_meals"
+    },
+    "slow_carbs": {
+      "examples": ["pizza", "high_fat_meals", "protein_heavy"],
+      "typical_absorption_hours": 5.0,
+      "use_case": "extended_bolus_consideration"
+    }
+  }
+}

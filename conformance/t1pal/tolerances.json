@@ -1,0 +1,15 @@
+{
+  "_description": "Default comparison tolerances from T1PalAlgorithm ComparisonConfig.swift",
+  "_source": "packages/T1PalAlgorithm/Sources/T1PalAlgorithm/Replay/ComparisonConfig.swift",
+  "iob_tolerance_units": 0.01,
+  "prediction_mae_tolerance_mgdl": 2.0,
+  "eventual_glucose_tolerance_mgdl": 10.0,
+  "temp_basal_tolerance_u_hr": 0.01,
+  "bolus_tolerance_units": 0.001,
+  "gap_tolerance_seconds": 360,
+  "significance_thresholds": {
+    "minor_mae_mgdl": 3.0,
+    "moderate_mae_mgdl": 5.0,
+    "major_mae_mgdl": 10.0
+  }
+}

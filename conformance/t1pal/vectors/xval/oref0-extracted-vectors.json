@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "Test vectors extracted from oref0 determine-basal.test.js",
+  "source": "externals/oref0/tests/determine-basal.test.js",
+  "created": "2026-02-16",
+  "track": "ALG-XVAL-011",
+  "baselineProfile": {
+    "max_iob": 2.5,
+    "dia": 3,
+    "type": "current",
+    "current_basal": 0.9,
+    "max_daily_basal": 1.3,
+    "max_basal": 3.5,
+    "max_bg": 120,
+    "min_bg": 110,
+    "sens": 40,
+    "carb_ratio": 10
+  },
+  "baselineMealData": {
+    "carbs": 50,
+    "nsCarbs": 50,
+    "bwCarbs": 0,
+    "journalCarbs": 0,
+    "mealCOB": 0,
+    "currentDeviation": 0,
+    "maxDeviation": 0,
+    "minDeviation": 0,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 0,
+    "allDeviations": [0, 0, 0, 0, 0],
+    "bwFound": false
+  },
+  "testCases": [
+    {
+      "id": "OREF0-001",
+      "scenario": "Cancel high temp when in range without IOB",
+      "source_line": 68,
+      "input": {
+        "glucose_status": {"delta": 0, "glucose": 115, "long_avgdelta": 1.1, "short_avgdelta": 0},
+        "currenttemp": {"duration": 30, "rate": 1.5, "temp": "absolute"},
+        "iob_data": {"iob": 0, "activity": 0, "bolussnooze": 0},
+        "autosens": {"ratio": 1.0}
+      },
+      "expected": {
+        "rate": 0.9,
+        "duration": 30,
+        "action": "set_current_basal"
+      }
+    },
+    {
+      "id": "OREF0-002",
+      "scenario": "Temp to 0 when low without IOB",
+      "source_line": 89,
+      "input": {
+        "glucose_status": {"delta": -5, "glucose": 75, "long_avgdelta": -5, "short_avgdelta": -5},
+        "currenttemp": {"duration": 0, "rate": 0, "temp": "absolute"},
+        "iob_data": {"iob": 0, "activity": 0, "bolussnooze": 0},
+        "autosens": {"ratio": 1.0}
+      },
+      "expected": {
+        "rate": 0,
+        "duration_min": 29,
+        "action": "low_suspend"
+      }
+    },
+    {
+      "id": "OREF0-003",
+      "scenario": "Set current basal when low and rising without IOB",
+      "source_line": 106,
+      "input": {
+        "glucose_status": {"delta": 6, "glucose": 75, "long_avgdelta": 6, "short_avgdelta": 6},
+        "currenttemp": {"duration": 0, "rate": 0, "temp": "absolute"},
+        "iob_data": {"iob": 0, "activity": 0, "bolussnooze": 0},
+        "autosens": {"ratio": 1.0}
+      },
+      "expected": {
+        "rate": 0.9,
+        "duration": 30,
+        "action": "set_current_basal"
+      }
+    },
+    {
+      "id": "OREF0-004",
+      "scenario": "Temp to zero when rising slower than BGI",
+      "source_line": 134,
+      "input": {
+        "glucose_status": {"delta": 1, "glucose": 75, "long_avgdelta": 1, "short_avgdelta": 1},
+        "currenttemp": {"duration": 0, "rate": 0, "temp": "absolute"},
+        "iob_data": {"iob": -0.5, "activity": -0.01, "bolussnooze": 0},
+        "autosens": {"ratio": 1.0}
+      },
+      "expected": {
+        "rate": 0,
+        "duration": 30,
+        "action": "low_suspend"
+      }
+    },
+    {
+      "id": "OREF0-005",
+      "scenario": "Temp to 0 when low and falling regardless of BGI",
+      "source_line": 144,
+      "input": {
+        "glucose_status": {"delta": -1, "glucose": 75, "long_avgdelta": -1, "short_avgdelta": -1},
+        "currenttemp": {"duration": 0, "rate": 0, "temp": "absolute"},
+        "iob_data": {"iob": 1, "activity": 0.01, "bolussnooze": 0.5},
+        "autosens": {"ratio": 1.0}
+      },
+      "expected": {
+        "rate": 0,
+        "duration_min": 29,
+        "action": "low_suspend"
+      }
+    },
+    {
+      "id": "OREF0-006",
+      "scenario": "High temp when > 80 and rising with negative IOB",
+      "source_line": 176,
+      "input": {
+        "glucose_status": {"delta": 5, "glucose": 85, "long_avgdelta": 5, "short_avgdelta": 5},
+        "currenttemp": {"duration": 0, "rate": 0, "temp": "absolute"},
+        "iob_data": {"iob": -1, "activity": -0.01, "bolussnooze": 0},
+        "autosens": {"ratio": 1.0}
+      },
+      "expected": {
+        "rate_min": 1.0,
+        "duration": 30,
+        "action": "high_temp"
+      }
+    },
+    {
+      "id": "OREF0-007",
+      "scenario": "High temp capped at maxSafeBasal when very high",
+      "source_line": 185,
+      "input": {
+        "glucose_status": {"delta": 5, "glucose": 185, "long_avgdelta": 5, "short_avgdelta": 5},
+        "currenttemp": {"duration": 0, "rate": 0, "temp": "absolute"},
+        "iob_data": {"iob": 0, "activity": -0.01, "bolussnooze": 0},
+        "autosens": {"ratio": 1.0}
+      },
+      "expected": {
+        "rate_max": 3.5,
+        "action": "high_temp_capped"
+      }
+    },
+    {
+      "id": "OREF0-008",
+      "scenario": "Reduce high temp when scheduled above max",
+      "source_line": 192,
+      "input": {
+        "glucose_status": {"delta": 5, "glucose": 145, "long_avgdelta": 5, "short_avgdelta": 5},
+        "currenttemp": {"duration": 160, "rate": 1.9, "temp": "absolute"},
+        "iob_data": {"iob": 0, "activity": -0.01, "bolussnooze": 0},
+        "autosens": {"ratio": 1.0}
+      },
+      "expected": {
+        "duration": 30,
+        "action": "reduce_high_temp"
+      }
+    }
+  ],
+  "roundingRules": {
+    "model_522": {
+      "rates_below_1U": 0.05,
+      "rates_1_to_10U": 0.05,
+      "rates_above_10U": 0.1
+    },
+    "model_554": {
+      "rates_below_1U": 0.025,
+      "rates_1_to_10U": 0.025,
+      "rates_above_10U": 0.05
+    }
+  }
+}

@@ -1,0 +1,267 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "SMB (Super Micro Bolus) decision test vectors for algorithm cross-validation",
+  "created": "2026-02-16",
+  "track": "ALG-XVAL-015",
+  "testCases": [
+    {
+      "id": "SMB-001",
+      "scenario": "SMB allowed - high glucose, low IOB",
+      "category": "smb_enabled",
+      "input": {
+        "glucose": 180,
+        "delta": 5,
+        "iob": 0.5,
+        "cob": 0,
+        "maxIOB": 5.0,
+        "maxSMB": 0.5,
+        "smbEnabled": true,
+        "enableSMB_with_high_temptarget": false,
+        "enableSMB_always": false,
+        "enableSMB_after_carbs": false,
+        "enableSMB_with_COB": true
+      },
+      "expected": {
+        "smb_allowed": false,
+        "reason": "no_cob_and_smb_with_cob_only"
+      }
+    },
+    {
+      "id": "SMB-002",
+      "scenario": "SMB allowed - high glucose with COB",
+      "category": "smb_enabled",
+      "input": {
+        "glucose": 160,
+        "delta": 8,
+        "iob": 1.0,
+        "cob": 30,
+        "maxIOB": 5.0,
+        "maxSMB": 0.5,
+        "smbEnabled": true,
+        "enableSMB_with_COB": true
+      },
+      "expected": {
+        "smb_allowed": true,
+        "smb_units_max": 0.5,
+        "reason": "cob_present_rising_glucose"
+      }
+    },
+    {
+      "id": "SMB-003",
+      "scenario": "SMB blocked - IOB at max",
+      "category": "smb_blocked",
+      "input": {
+        "glucose": 200,
+        "delta": 10,
+        "iob": 5.0,
+        "cob": 40,
+        "maxIOB": 5.0,
+        "maxSMB": 0.5,
+        "smbEnabled": true,
+        "enableSMB_with_COB": true
+      },
+      "expected": {
+        "smb_allowed": false,
+        "reason": "max_iob_reached"
+      },
+      "safety_critical": true
+    },
+    {
+      "id": "SMB-004",
+      "scenario": "SMB blocked - glucose too low",
+      "category": "smb_blocked",
+      "input": {
+        "glucose": 90,
+        "delta": -2,
+        "iob": 0.5,
+        "cob": 20,
+        "maxIOB": 5.0,
+        "maxSMB": 0.5,
+        "smbEnabled": true,
+        "enableSMB_with_COB": true
+      },
+      "expected": {
+        "smb_allowed": false,
+        "reason": "glucose_below_threshold"
+      },
+      "safety_critical": true
+    },
+    {
+      "id": "SMB-005",
+      "scenario": "SMB blocked - glucose falling",
+      "category": "smb_blocked",
+      "input": {
+        "glucose": 150,
+        "delta": -8,
+        "iob": 1.5,
+        "cob": 20,
+        "maxIOB": 5.0,
+        "maxSMB": 0.5,
+        "smbEnabled": true,
+        "enableSMB_with_COB": true
+      },
+      "expected": {
+        "smb_allowed": false,
+        "reason": "glucose_falling_rapidly"
+      }
+    },
+    {
+      "id": "SMB-006",
+      "scenario": "SMB amount - partial IOB headroom",
+      "category": "smb_sizing",
+      "input": {
+        "glucose": 180,
+        "delta": 5,
+        "iob": 4.5,
+        "cob": 30,
+        "maxIOB": 5.0,
+        "maxSMB": 0.5,
+        "smbEnabled": true,
+        "enableSMB_with_COB": true
+      },
+      "expected": {
+        "smb_allowed": true,
+        "smb_units_max": 0.5,
+        "smb_units_constrained": true,
+        "reason": "limited_by_iob_headroom"
+      }
+    },
+    {
+      "id": "SMB-007",
+      "scenario": "SMB with UAM (Unannounced Meal)",
+      "category": "uam",
+      "input": {
+        "glucose": 150,
+        "delta": 12,
+        "short_avgdelta": 10,
+        "iob": 0.5,
+        "cob": 0,
+        "maxIOB": 5.0,
+        "maxSMB": 0.5,
+        "smbEnabled": true,
+        "enableUAM": true,
+        "enableSMB_with_COB": false
+      },
+      "expected": {
+        "smb_allowed": true,
+        "reason": "uam_detected_rising_fast"
+      }
+    },
+    {
+      "id": "SMB-008",
+      "scenario": "SMB blocked - temp target active",
+      "category": "smb_blocked",
+      "input": {
+        "glucose": 160,
+        "delta": 5,
+        "iob": 1.0,
+        "cob": 30,
+        "maxIOB": 5.0,
+        "maxSMB": 0.5,
+        "smbEnabled": true,
+        "enableSMB_with_COB": true,
+        "enableSMB_with_high_temptarget": false,
+        "currentTarget": {"low": 140, "high": 160, "is_temp": true}
+      },
+      "expected": {
+        "smb_allowed": false,
+        "reason": "temp_target_active_smb_disabled"
+      }
+    },
+    {
+      "id": "SMB-009",
+      "scenario": "SMB after carbs - bolus snooze",
+      "category": "bolus_snooze",
+      "input": {
+        "glucose": 140,
+        "delta": 10,
+        "iob": 3.0,
+        "cob": 40,
+        "maxIOB": 5.0,
+        "maxSMB": 0.5,
+        "smbEnabled": true,
+        "enableSMB_after_carbs": true,
+        "recentBolus": {"units": 4.0, "minutesAgo": 10}
+      },
+      "expected": {
+        "smb_allowed": false,
+        "reason": "bolus_snooze_active"
+      }
+    },
+    {
+      "id": "SMB-010",
+      "scenario": "SMB sizing - based on insulinReq",
+      "category": "smb_sizing",
+      "input": {
+        "glucose": 200,
+        "delta": 8,
+        "iob": 1.0,
+        "cob": 50,
+        "maxIOB": 5.0,
+        "maxSMB": 1.0,
+        "smbEnabled": true,
+        "enableSMB_with_COB": true,
+        "isf": 40,
+        "targetBG": 110,
+        "insulinReq": 2.25
+      },
+      "expected": {
+        "smb_allowed": true,
+        "smb_units": 0.5,
+        "calculation": "min(maxSMB, insulinReq/2, iobHeadroom)"
+      }
+    },
+    {
+      "id": "SMB-011",
+      "scenario": "SMB disabled globally",
+      "category": "smb_disabled",
+      "input": {
+        "glucose": 200,
+        "delta": 10,
+        "iob": 0,
+        "cob": 50,
+        "maxIOB": 5.0,
+        "smbEnabled": false
+      },
+      "expected": {
+        "smb_allowed": false,
+        "reason": "smb_disabled_in_settings"
+      }
+    },
+    {
+      "id": "SMB-012",
+      "scenario": "SMB with carb absorption stalling",
+      "category": "carb_absorption",
+      "input": {
+        "glucose": 130,
+        "delta": 0,
+        "iob": 2.0,
+        "cob": 40,
+        "maxIOB": 5.0,
+        "maxSMB": 0.5,
+        "smbEnabled": true,
+        "enableSMB_with_COB": true,
+        "carbAbsorptionRate": 0,
+        "expectedAbsorptionRate": 12
+      },
+      "expected": {
+        "smb_allowed": false,
+        "reason": "carb_absorption_stalled"
+      }
+    }
+  ],
+  "smbSettings": {
+    "maxSMB_default": 0.5,
+    "bolus_snooze_minutes": 30,
+    "smb_interval_minutes": 3,
+    "smb_max_minutes": 30
+  },
+  "smbEnableConditions": [
+    "enableSMB_with_COB",
+    "enableSMB_with_temptarget",
+    "enableSMB_after_carbs",
+    "enableSMB_always",
+    "enableUAM"
+  ]
+}

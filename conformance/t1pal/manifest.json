@@ -1,0 +1,243 @@
+{
+  "export_version": "1.0.0",
+  "source_repo": "t1pal-mobile-workspace",
+  "exported_at": "2026-03-28T19:18:45.255498+00:00",
+  "description": "Conformance test vectors, replay scenarios, and reference data from the T1Pal AID algorithm workspace. Designed for consumption by autonomous algorithm evaluation loops (autoresearch-style) and cross-platform conformance testing.",
+  "tolerances": {
+    "_description": "Default comparison tolerances from T1PalAlgorithm ComparisonConfig.swift",
+    "_source": "packages/T1PalAlgorithm/Sources/T1PalAlgorithm/Replay/ComparisonConfig.swift",
+    "iob_tolerance_units": 0.01,
+    "prediction_mae_tolerance_mgdl": 2.0,
+    "eventual_glucose_tolerance_mgdl": 10.0,
+    "temp_basal_tolerance_u_hr": 0.01,
+    "bolus_tolerance_units": 0.001,
+    "gap_tolerance_seconds": 360,
+    "significance_thresholds": {
+      "minor_mae_mgdl": 3.0,
+      "moderate_mae_mgdl": 5.0,
+      "major_mae_mgdl": 10.0
+    }
+  },
+  "categories": {
+    "xval": "Cross-validation vectors (boundary, oref0, Loop, temp basal, SMB, meal bolus)",
+    "iob": "Insulin-on-board decay curve vectors",
+    "cob": "Carbs-on-board absorption vectors",
+    "reference": "Reference implementation data (oref0/openaps curves)",
+    "scenario": "Full replay scenarios with deviceStatus history (6+ hours each)",
+    "schema": "JSON Schema definitions",
+    "docs": "Results documentation and analysis"
+  },
+  "files": [
+    {
+      "path": "vectors/xval/boundary-vectors.json",
+      "source": "conformance/algorithm/xval/boundary-vectors.json",
+      "description": "12 safety boundary condition test cases (hypo, hyper, zero basal, etc.)",
+      "category": "xval",
+      "size_bytes": 5088,
+      "sha256": "d6ccf79ba0612866a09ce892745b5c3fc01f2e0e4b87d32dba1e06516a93843e"
+    },
+    {
+      "path": "vectors/xval/oref0-extracted-vectors.json",
+      "source": "conformance/algorithm/xval/oref0-extracted-vectors.json",
+      "description": "8 vectors extracted from oref0 determine-basal.test.js",
+      "category": "xval",
+      "size_bytes": 5357,
+      "sha256": "9c8632cf8fa86043c6bcfa9727da271e94744e5a9cd91c847efe530a70869dc4"
+    },
+    {
+      "path": "vectors/xval/loop-extracted-vectors.json",
+      "source": "conformance/algorithm/xval/loop-extracted-vectors.json",
+      "description": "Vectors extracted from Loop algorithm test suite",
+      "category": "xval",
+      "size_bytes": 3325,
+      "sha256": "1f7baf08b295c802a76619ffa96b92817a104dcbdf9f7726e48f5b3115077528"
+    },
+    {
+      "path": "vectors/xval/temp-basal-vectors.json",
+      "source": "conformance/algorithm/xval/temp-basal-vectors.json",
+      "description": "12 temp basal edge case vectors (zero rate, max rate, rounding, etc.)",
+      "category": "xval",
+      "size_bytes": 5537,
+      "sha256": "9dc17b4949249fb9018342feecf92fae0f5178f25a292add6e95a24d88ccbbba"
+    },
+    {
+      "path": "vectors/xval/smb-decision-vectors.json",
+      "source": "conformance/algorithm/xval/smb-decision-vectors.json",
+      "description": "12 SMB decision logic vectors",
+      "category": "xval",
+      "size_bytes": 6505,
+      "sha256": "f919d577b471440d23eb483bd75e51326916c8eb4b1f7efc68c80b44ab4c8e2c"
+    },
+    {
+      "path": "vectors/xval/meal-bolus-vectors.json",
+      "source": "conformance/algorithm/xval/meal-bolus-vectors.json",
+      "description": "Meal bolus calculation vectors",
+      "category": "xval",
+      "size_bytes": 4866,
+      "sha256": "91ae915b4cb9f80d3059c0439dfacc91b2b902e9962a79c9a56df765b5fb8321"
+    },
+    {
+      "path": "vectors/iob/iob-decay-vectors.json",
+      "source": "conformance/algorithm/iob/iob-decay-vectors.json",
+      "description": "IOB decay curves for rapid-acting, Fiasp, Lyumjev, Afrezza insulin models",
+      "category": "iob",
+      "size_bytes": 5404,
+      "sha256": "268a264465440db1f444452884cf99f8ea07cf327368e6b75a0369d372e529a8"
+    },
+    {
+      "path": "vectors/cob/cob-absorption-vectors.json",
+      "source": "conformance/algorithm/cob/cob-absorption-vectors.json",
+      "description": "COB absorption test vectors (fast, medium, slow, mixed meals)",
+      "category": "cob",
+      "size_bytes": 7682,
+      "sha256": "0e71d1eab55ed9f361f45b02f5801f0ad15db70d233e81f3e8f75696dd272f0d"
+    },
+    {
+      "path": "reference/openaps/walsh_insulin_effect.json",
+      "source": "conformance/algorithm/openaps-example/walsh_insulin_effect.json",
+      "description": "Walsh insulin effect curve (5-min intervals over DIA)",
+      "category": "reference",
+      "size_bytes": 16539,
+      "sha256": "083e967295afb438cb656413e4328e57e2bca7f95420faea3e9a93c9309f8fcc"
+    },
+    {
+      "path": "reference/openaps/scheiner-carb-effect.json",
+      "source": "conformance/algorithm/openaps-example/scheiner-carb-effect.json",
+      "description": "Scheiner carb absorption effect curve",
+      "category": "reference",
+      "size_bytes": 13065,
+      "sha256": "1f35fad3a2347eae2db0ee2f6670836379e778be791cd28a0a11ab7801cc31ac"
+    },
+    {
+      "path": "reference/openaps/glucose-momentum-effect.json",
+      "source": "conformance/algorithm/openaps-example/glucose-momentum-effect.json",
+      "description": "Glucose momentum effect from oref0",
+      "category": "reference",
+      "size_bytes": 5943,
+      "sha256": "0e3122713ae10878a2083f575ab5a5fd6adeae866696d7ab7017a38e93ad090b"
+    },
+    {
+      "path": "reference/openaps/cleaned-history.json",
+      "source": "conformance/algorithm/openaps-example/cleaned-history.json",
+      "description": "Cleaned treatment history example from oref0",
+      "category": "reference",
+      "size_bytes": 5031,
+      "sha256": "d2756c6c14f74d4646b58b7ffa664bd5a5f4d6832804b5752044e6b30dd6357f"
+    },
+    {
+      "path": "scenarios/scenario-stable.json",
+      "source": "fixtures/algorithm-replays/scenario-stable.json",
+      "description": "Stable glucose, normal IOB \u2014 baseline scenario",
+      "category": "scenario",
+      "size_bytes": 135316,
+      "sha256": "eec91d1d2e10bf53cabd94771fb7618cddabc9044c18839f4e10fd8e033f4efb"
+    },
+    {
+      "path": "scenarios/scenario-rising-glucose.json",
+      "source": "fixtures/algorithm-replays/scenario-rising-glucose.json",
+      "description": "Rising glucose requiring increased delivery",
+      "category": "scenario",
+      "size_bytes": 131169,
+      "sha256": "58100c00065d28d36ea1dd303357b5c4b370c05bc1e796158769512b74bc9730"
+    },
+    {
+      "path": "scenarios/scenario-falling-risk.json",
+      "source": "fixtures/algorithm-replays/scenario-falling-risk.json",
+      "description": "Falling glucose requiring reduced delivery",
+      "category": "scenario",
+      "size_bytes": 148345,
+      "sha256": "0559e0d01e6d1f8cf762ea7f822ed349c31f3f0b782a25b4a83ac3d6ba92f8c7"
+    },
+    {
+      "path": "scenarios/scenario-high-glucose.json",
+      "source": "fixtures/algorithm-replays/scenario-high-glucose.json",
+      "description": "High glucose correction scenario",
+      "category": "scenario",
+      "size_bytes": 149308,
+      "sha256": "ee7d3c4340b13c5d2bc130fdbfbe59f97a239731a6cc1e56717cef701a25237f"
+    },
+    {
+      "path": "scenarios/scenario-low-glucose.json",
+      "source": "fixtures/algorithm-replays/scenario-low-glucose.json",
+      "description": "Low glucose suspension scenario",
+      "category": "scenario",
+      "size_bytes": 374637,
+      "sha256": "efbdbc67d0718122c021c9bb8a3d427639c47ace97e53e395f25a1c2e508fa6b"
+    },
+    {
+      "path": "scenarios/scenario-meal-active.json",
+      "source": "fixtures/algorithm-replays/scenario-meal-active.json",
+      "description": "Active meal absorption scenario",
+      "category": "scenario",
+      "size_bytes": 118691,
+      "sha256": "5ff0a76b3690d9a73df947795e2186366ff85424eb298d091f574ab9d8e04554"
+    },
+    {
+      "path": "scenarios/scenario-high-iob.json",
+      "source": "fixtures/algorithm-replays/scenario-high-iob.json",
+      "description": "High IOB with moderate glucose",
+      "category": "scenario",
+      "size_bytes": 144812,
+      "sha256": "a59008e10a2467a61bb9e0bc5f51cc04b2f328d77ce0ccd7967fe5ee6f414eeb"
+    },
+    {
+      "path": "scenarios/scenario-negative-iob.json",
+      "source": "fixtures/algorithm-replays/scenario-negative-iob.json",
+      "description": "Negative IOB (net basal deficit) scenario",
+      "category": "scenario",
+      "size_bytes": 205432,
+      "sha256": "02053970fa37eb9ebc7c8ab00ee5756cf33056841b8b286cf9490acabaa54e6f"
+    },
+    {
+      "path": "schemas/protocol-fixture-v2.schema.json",
+      "source": "conformance/schemas/protocol-fixture-v2.schema.json",
+      "description": "JSON Schema for protocol conformance fixtures",
+      "category": "schema",
+      "size_bytes": 8230,
+      "sha256": "b40903ab75f11a3b451ea8b2c5e49d037309e9280fb13873f526c62a7c0356a9"
+    },
+    {
+      "path": "docs/XVAL-RESULTS.md",
+      "source": "conformance/algorithm/xval/results/XVAL-RESULTS.md",
+      "description": "Cross-validation results: 37/44 passing with failure analysis",
+      "category": "docs",
+      "size_bytes": 3579,
+      "sha256": "c9d72401913c5210afd0e2d18b391a895a060e8bb3f9e7261b200557fc6b7b55"
+    }
+  ],
+  "summary": {
+    "total_files": 22,
+    "total_bytes": 1503861,
+    "categories": {
+      "xval": {
+        "count": 6,
+        "bytes": 30678
+      },
+      "iob": {
+        "count": 1,
+        "bytes": 5404
+      },
+      "cob": {
+        "count": 1,
+        "bytes": 7682
+      },
+      "reference": {
+        "count": 4,
+        "bytes": 40578
+      },
+      "scenario": {
+        "count": 8,
+        "bytes": 1407710
+      },
+      "schema": {
+        "count": 1,
+        "bytes": 8230
+      },
+      "docs": {
+        "count": 1,
+        "bytes": 3579
+      }
+    },
+    "missing": []
+  }
+}

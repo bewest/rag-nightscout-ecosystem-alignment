@@ -1,0 +1,5873 @@
+{
+  "metadata": {
+    "scenario": "high-iob",
+    "created": "2026-02-23T20:21:53Z",
+    "start": "2026-02-23T04:42:00.000Z",
+    "end": "2026-02-23T15:15:44.000Z",
+    "deviceStatus_count": 20,
+    "source": "ns-historical extraction"
+  },
+  "deviceStatus": [
+    {
+      "_id": "699c6f20eea0a04821269d0f",
+      "created_at": "2026-02-23T15:15:44.000Z",
+      "device": "loop://iPhone",
+      "pump": {
+        "secondsFromGMT": -28800,
+        "suspended": false,
+        "battery": {
+          "percent": 3
+        },
+        "bolusing": false,
+        "manufacturer": "Medtronic",
+        "clock": "2026-02-23T15:15:44Z",
+        "reservoir": 122.7,
+        "model": "515",
+        "pumpID": "208850"
+      },
+      "loop": {
+        "version": "3.8.1.2026010900",
+        "automaticDoseRecommendation": {
+          "tempBasalAdjustment": {
+            "rate": 2.55,
+            "duration": 30
+          },
+          "bolusVolume": 0,
+          "timestamp": "2026-02-23T15:15:44Z"
+        },
+        "name": "T1Pal Loop",
+        "recommendedBolus": 0,
+        "timestamp": "2026-02-23T15:15:44Z",
+        "cob": {
+          "timestamp": "2026-02-23T15:15:15Z",
+          "cob": 0
+        },
+        "iob": {
+          "timestamp": "2026-02-23T15:20:00Z",
+          "iob": 2.232541274819467
+        },
+        "predicted": {
+          "values": [
+            172,
+            171.95,
+            171,
+            170.89,
+            171.29,
+            171.81,
+            171.81,
+            171.29,
+            170.24,
+            168.65,
+            166.54,
+            163.93,
+            160.83,
+            157.73,
+            154.63,
+            151.55,
+            148.51,
+            145.51,
+            142.57,
+            139.68,
+            136.87,
+            134.12,
+            131.45,
+            128.86,
+            126.35,
+            123.93,
+            121.59,
+            119.34,
+            117.17,
+            115.1,
+            113.11,
+            111.2,
+            109.39,
+            107.66,
+            106.01,
+            104.44,
+            102.96,
+            101.56,
+            100.23,
+            98.98,
+            97.8,
+            96.7,
+            95.66,
+            94.7,
+            93.79,
+            92.94,
+            92.14,
+            91.4,
+            90.71,
+            90.06,
+            89.46,
+            88.9,
+            88.39,
+            87.91,
+            87.47,
+            87.07,
+            86.71,
+            86.37,
+            86.06,
+            85.79,
+            85.54,
+            85.31,
+            85.1,
+            84.91,
+            84.75,
+            84.6,
+            84.47,
+            84.36,
+            84.27,
+            84.19,
+            84.12,
+            84.07,
+            84.02,
+            83.99,
+            83.96,
+            83.95,
+            83.94,
+            83.93,
+            83.92,
+            83.92,
+            83.92,
+            83.92,
+            83.92
+          ],
+          "startDate": "2026-02-23T15:14:43Z"
+        },
+        "enacted": {
+          "bolusVolume": 0,
+          "received": true,
+          "rate": 3.3,
+          "timestamp": "2026-02-23T15:15:41Z",
+          "duration": 30
+        }
+      },
+      "override": {
+        "timestamp": "2026-02-23T15:15:44Z",
+        "active": false
+      },
+      "uploader": {
+        "battery": 55,
+        "name": "iPhone",
+        "timestamp": "2026-02-23T15:15:44Z"
+      },
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c6dd4eea0a02386269d0e",
+      "loop": {
+        "predicted": {
+          "values": [
+            173,
+            173.29,
+            178.72,
+            182.74,
+            185.09,
+            185.57,
+            185.6,
+            185.13,
+            184.15,
+            182.62,
+            180.57,
+            178.01,
+            174.98,
+            171.91,
+            168.81,
+            165.72,
+            162.63,
+            159.57,
+            156.54,
+            153.57,
+            150.65,
+            147.79,
+            144.99,
+            142.28,
+            139.63,
+            137.07,
+            134.59,
+            132.19,
+            129.88,
+            127.65,
+            125.52,
+            123.47,
+            121.51,
+            119.63,
+            117.84,
+            116.14,
+            114.52,
+            112.98,
+            111.52,
+            110.14,
+            108.84,
+            107.61,
+            106.46,
+            105.38,
+            104.36,
+            103.41,
+            102.52,
+            101.68,
+            100.9,
+            100.17,
+            99.49,
+            98.85,
+            98.26,
+            97.72,
+            97.21,
+            96.74,
+            96.32,
+            95.92,
+            95.56,
+            95.24,
+            94.94,
+            94.66,
+            94.42,
+            94.19,
+            93.99,
+            93.8,
+            93.64,
+            93.5,
+            93.38,
+            93.27,
+            93.18,
+            93.1,
+            93.04,
+            92.98,
+            92.94,
+            92.91,
+            92.9,
+            92.88,
+            92.88,
+            92.87,
+            92.87,
+            92.87
+          ],
+          "startDate": "2026-02-23T15:09:44Z"
+        },
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T15:09:58Z"
+        },
+        "automaticDoseRecommendation": {
+          "bolusVolume": 0,
+          "timestamp": "2026-02-23T15:10:12Z",
+          "tempBasalAdjustment": {
+            "rate": 4.3,
+            "duration": 30
+          }
+        },
+        "version": "3.8.1.2026010900",
+        "failureReason": "pumpManagerError[\"error\": \"arguments(MinimedKit.PumpOpsError.deviceError(RileyLinkBLEKit.RileyLinkDeviceError.responseTimeout))\", \"detail\": \"communication\"]",
+        "iob": {
+          "timestamp": "2026-02-23T15:15:00Z",
+          "iob": 2.1665249875796926
+        },
+        "timestamp": "2026-02-23T15:10:12Z",
+        "recommendedBolus": 0,
+        "name": "T1Pal Loop"
+      },
+      "created_at": "2026-02-23T15:10:12.000Z",
+      "uploader": {
+        "battery": 45,
+        "timestamp": "2026-02-23T15:10:12Z",
+        "name": "iPhone"
+      },
+      "pump": {
+        "suspended": false,
+        "model": "515",
+        "manufacturer": "Medtronic",
+        "battery": {
+          "percent": 3
+        },
+        "reservoir": 123.3,
+        "clock": "2026-02-23T15:10:12Z",
+        "secondsFromGMT": -28800,
+        "reservoir_display_override": "Signal Loss",
+        "reservoir_level_override": 2,
+        "pumpID": "208850",
+        "bolusing": false
+      },
+      "device": "loop://iPhone",
+      "override": {
+        "active": false,
+        "timestamp": "2026-02-23T15:10:12Z"
+      },
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c6810eea0a0efa5269d05",
+      "loop": {
+        "recommendedBolus": 0,
+        "failureReason": "pumpManagerError[\"detail\": \"communication\", \"error\": \"arguments(MinimedKit.PumpOpsError.deviceError(RileyLinkBLEKit.RileyLinkDeviceError.responseTimeout))\"]",
+        "iob": {
+          "timestamp": "2026-02-23T14:50:00Z",
+          "iob": 2.085321276792062
+        },
+        "cob": {
+          "timestamp": "2026-02-23T14:45:35Z",
+          "cob": 0
+        },
+        "version": "3.8.1.2026010900",
+        "name": "T1Pal Loop",
+        "timestamp": "2026-02-23T14:45:35Z",
+        "predicted": {
+          "startDate": "2026-02-23T14:44:44Z",
+          "values": [
+            154,
+            153.74,
+            148.81,
+            145.04,
+            142.35,
+            140.59,
+            138.67,
+            136.57,
+            134.29,
+            131.86,
+            129.28,
+            126.58,
+            123.77,
+            120.98,
+            118.22,
+            115.51,
+            112.84,
+            110.24,
+            107.7,
+            105.22,
+            102.82,
+            100.5,
+            98.25,
+            96.08,
+            94,
+            91.99,
+            90.07,
+            88.23,
+            86.47,
+            84.79,
+            83.18,
+            81.65,
+            80.19,
+            78.81,
+            77.5,
+            76.26,
+            75.09,
+            73.98,
+            72.94,
+            71.95,
+            71.03,
+            70.17,
+            69.36,
+            68.6,
+            67.9,
+            67.25,
+            66.65,
+            66.1,
+            65.59,
+            65.12,
+            64.69,
+            64.29,
+            63.93,
+            63.59,
+            63.28,
+            63,
+            62.74,
+            62.51,
+            62.3,
+            62.11,
+            61.94,
+            61.79,
+            61.65,
+            61.53,
+            61.43,
+            61.34,
+            61.26,
+            61.19,
+            61.13,
+            61.07,
+            61.03,
+            60.99,
+            60.96,
+            60.94,
+            60.93,
+            60.92,
+            60.91,
+            60.91,
+            60.91,
+            60.91,
+            60.91
+          ]
+        },
+        "automaticDoseRecommendation": {
+          "bolusVolume": 0,
+          "timestamp": "2026-02-23T14:45:35Z",
+          "tempBasalAdjustment": {
+            "rate": 1.5,
+            "duration": 30
+          }
+        }
+      },
+      "pump": {
+        "suspended": false,
+        "model": "515",
+        "manufacturer": "Medtronic",
+        "battery": {
+          "percent": 7
+        },
+        "reservoir": 124.5,
+        "clock": "2026-02-23T14:45:35Z",
+        "secondsFromGMT": -28800,
+        "pumpID": "208850",
+        "bolusing": false
+      },
+      "created_at": "2026-02-23T14:45:35.000Z",
+      "uploader": {
+        "name": "iPhone",
+        "battery": 30,
+        "timestamp": "2026-02-23T14:45:35Z"
+      },
+      "override": {
+        "active": false,
+        "timestamp": "2026-02-23T14:45:35Z"
+      },
+      "device": "loop://iPhone",
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c5b2beea0a04195269cfe",
+      "uploader": {
+        "name": "iPhone",
+        "timestamp": "2026-02-23T13:50:35Z",
+        "battery": 35
+      },
+      "created_at": "2026-02-23T13:50:35.000Z",
+      "loop": {
+        "version": "3.8.1.2026010900",
+        "iob": {
+          "iob": 2.205981661805705,
+          "timestamp": "2026-02-23T13:55:00Z"
+        },
+        "failureReason": "pumpManagerError[\"error\": \"arguments(MinimedKit.PumpOpsError.deviceError(RileyLinkBLEKit.RileyLinkDeviceError.responseTimeout))\", \"detail\": \"communication\"]",
+        "timestamp": "2026-02-23T13:50:35Z",
+        "predicted": {
+          "values": [
+            167,
+            166.95,
+            165.97,
+            165.28,
+            164.67,
+            163.94,
+            162.9,
+            161.54,
+            159.87,
+            157.9,
+            155.66,
+            153.15,
+            150.38,
+            147.64,
+            144.94,
+            142.29,
+            139.69,
+            137.15,
+            134.67,
+            132.26,
+            129.92,
+            127.65,
+            125.45,
+            123.33,
+            121.29,
+            119.33,
+            117.45,
+            115.65,
+            113.92,
+            112.28,
+            110.71,
+            109.22,
+            107.8,
+            106.46,
+            105.19,
+            103.99,
+            102.86,
+            101.79,
+            100.79,
+            99.84,
+            98.96,
+            98.12,
+            97.34,
+            96.62,
+            95.94,
+            95.3,
+            94.71,
+            94.17,
+            93.66,
+            93.19,
+            92.76,
+            92.37,
+            92,
+            91.67,
+            91.37,
+            91.1,
+            90.86,
+            90.64,
+            90.45,
+            90.29,
+            90.14,
+            90.02,
+            89.9,
+            89.81,
+            89.72,
+            89.65,
+            89.58,
+            89.52,
+            89.48,
+            89.44,
+            89.4,
+            89.38,
+            89.36,
+            89.35,
+            89.34,
+            89.33,
+            89.33,
+            89.33,
+            89.33,
+            89.33
+          ],
+          "startDate": "2026-02-23T13:49:44Z"
+        },
+        "name": "T1Pal Loop",
+        "recommendedBolus": 0,
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T13:50:35Z"
+        },
+        "automaticDoseRecommendation": {
+          "tempBasalAdjustment": {
+            "rate": 2.55,
+            "duration": 30
+          },
+          "bolusVolume": 0,
+          "timestamp": "2026-02-23T13:50:35Z"
+        }
+      },
+      "pump": {
+        "bolusing": false,
+        "model": "515",
+        "pumpID": "208850",
+        "battery": {
+          "percent": 3
+        },
+        "manufacturer": "Medtronic",
+        "secondsFromGMT": -28800,
+        "clock": "2026-02-23T13:50:35Z",
+        "reservoir": 126.7,
+        "reservoir_display_override": "Signal Loss",
+        "reservoir_level_override": 2,
+        "suspended": false
+      },
+      "device": "loop://iPhone",
+      "override": {
+        "timestamp": "2026-02-23T13:50:35Z",
+        "active": false
+      },
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c5a09eea0a0f3fe269cfd",
+      "pump": {
+        "model": "515",
+        "bolusing": false,
+        "reservoir": 126.7,
+        "secondsFromGMT": -28800,
+        "suspended": false,
+        "pumpID": "208850",
+        "battery": {
+          "percent": 3
+        },
+        "clock": "2026-02-23T13:45:44Z",
+        "manufacturer": "Medtronic"
+      },
+      "loop": {
+        "recommendedBolus": 0,
+        "timestamp": "2026-02-23T13:45:44Z",
+        "failureReason": "pumpManagerError[\"error\": \"arguments(MinimedKit.PumpOpsError.deviceError(RileyLinkBLEKit.RileyLinkDeviceError.responseTimeout))\", \"detail\": \"communication\"]",
+        "version": "3.8.1.2026010900",
+        "automaticDoseRecommendation": {
+          "tempBasalAdjustment": {
+            "rate": 2.5,
+            "duration": 30
+          },
+          "bolusVolume": 0,
+          "timestamp": "2026-02-23T13:45:44Z"
+        },
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T13:44:58Z"
+        },
+        "name": "T1Pal Loop",
+        "predicted": {
+          "startDate": "2026-02-23T13:44:44Z",
+          "values": [
+            169,
+            168.9,
+            166.94,
+            165.74,
+            165.08,
+            164.69,
+            163.95,
+            162.85,
+            161.39,
+            159.58,
+            157.42,
+            154.95,
+            152.16,
+            149.4,
+            146.66,
+            143.96,
+            141.31,
+            138.71,
+            136.17,
+            133.69,
+            131.28,
+            128.93,
+            126.66,
+            124.47,
+            122.35,
+            120.31,
+            118.35,
+            116.47,
+            114.66,
+            112.94,
+            111.29,
+            109.73,
+            108.23,
+            106.82,
+            105.48,
+            104.2,
+            103,
+            101.87,
+            100.81,
+            99.8,
+            98.86,
+            97.97,
+            97.14,
+            96.36,
+            95.63,
+            94.95,
+            94.32,
+            93.73,
+            93.19,
+            92.68,
+            92.21,
+            91.78,
+            91.38,
+            91.02,
+            90.69,
+            90.39,
+            90.12,
+            89.87,
+            89.66,
+            89.47,
+            89.3,
+            89.16,
+            89.03,
+            88.92,
+            88.82,
+            88.74,
+            88.66,
+            88.6,
+            88.54,
+            88.49,
+            88.45,
+            88.42,
+            88.4,
+            88.38,
+            88.36,
+            88.36,
+            88.35,
+            88.35,
+            88.35,
+            88.35,
+            88.35
+          ]
+        },
+        "iob": {
+          "timestamp": "2026-02-23T13:50:00Z",
+          "iob": 2.1456399773058124
+        }
+      },
+      "device": "loop://iPhone",
+      "override": {
+        "timestamp": "2026-02-23T13:45:44Z",
+        "active": false
+      },
+      "created_at": "2026-02-23T13:45:44.000Z",
+      "uploader": {
+        "timestamp": "2026-02-23T13:45:44Z",
+        "name": "iPhone",
+        "battery": 35
+      },
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c58bbeea0a02940269cfc",
+      "loop": {
+        "recommendedBolus": 0,
+        "timestamp": "2026-02-23T13:40:11Z",
+        "failureReason": "pumpManagerError[\"detail\": \"communication\", \"error\": \"arguments(MinimedKit.PumpOpsError.deviceError(RileyLinkBLEKit.RileyLinkDeviceError.responseTimeout))\"]",
+        "version": "3.8.1.2026010900",
+        "automaticDoseRecommendation": {
+          "timestamp": "2026-02-23T13:40:11Z",
+          "tempBasalAdjustment": {
+            "duration": 30,
+            "rate": 2.55
+          },
+          "bolusVolume": 0
+        },
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T13:39:58Z"
+        },
+        "name": "T1Pal Loop",
+        "predicted": {
+          "values": [
+            169,
+            169,
+            169.01,
+            169.05,
+            168.93,
+            168.44,
+            167.62,
+            166.48,
+            164.99,
+            163.16,
+            160.99,
+            158.5,
+            155.71,
+            152.92,
+            150.15,
+            147.42,
+            144.72,
+            142.07,
+            139.47,
+            136.93,
+            134.45,
+            132.03,
+            129.69,
+            127.42,
+            125.23,
+            123.11,
+            121.07,
+            119.1,
+            117.22,
+            115.42,
+            113.7,
+            112.05,
+            110.48,
+            108.99,
+            107.57,
+            106.23,
+            104.96,
+            103.76,
+            102.63,
+            101.56,
+            100.56,
+            99.62,
+            98.73,
+            97.9,
+            97.12,
+            96.39,
+            95.71,
+            95.08,
+            94.49,
+            93.94,
+            93.44,
+            92.97,
+            92.54,
+            92.14,
+            91.78,
+            91.45,
+            91.14,
+            90.87,
+            90.63,
+            90.42,
+            90.23,
+            90.06,
+            89.92,
+            89.79,
+            89.68,
+            89.58,
+            89.5,
+            89.42,
+            89.35,
+            89.3,
+            89.25,
+            89.21,
+            89.18,
+            89.15,
+            89.13,
+            89.12,
+            89.11,
+            89.11,
+            89.1,
+            89.1,
+            89.1,
+            89.1
+          ],
+          "startDate": "2026-02-23T13:39:43Z"
+        },
+        "iob": {
+          "timestamp": "2026-02-23T13:45:00Z",
+          "iob": 2.0853643524619923
+        }
+      },
+      "device": "loop://iPhone",
+      "override": {
+        "active": false,
+        "timestamp": "2026-02-23T13:40:11Z"
+      },
+      "created_at": "2026-02-23T13:40:11.000Z",
+      "pump": {
+        "reservoir": 126.7,
+        "suspended": false,
+        "clock": "2026-02-23T13:40:11Z",
+        "secondsFromGMT": -28800,
+        "model": "515",
+        "bolusing": false,
+        "battery": {
+          "percent": 3
+        },
+        "pumpID": "208850",
+        "manufacturer": "Medtronic"
+      },
+      "uploader": {
+        "name": "iPhone",
+        "timestamp": "2026-02-23T13:40:11Z",
+        "battery": 35
+      },
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c585aeea0a03232269cfb",
+      "uploader": {
+        "timestamp": "2026-02-23T13:38:34Z",
+        "battery": 35,
+        "name": "iPhone"
+      },
+      "created_at": "2026-02-23T13:38:34.000Z",
+      "loop": {
+        "iob": {
+          "timestamp": "2026-02-23T13:40:00Z",
+          "iob": 2.025399783564506
+        },
+        "recommendedBolus": 0,
+        "version": "3.8.1.2026010900",
+        "enacted": {
+          "received": true,
+          "bolusVolume": 0,
+          "duration": 30,
+          "timestamp": "2026-02-23T13:38:32Z",
+          "rate": 3.2
+        },
+        "predicted": {
+          "startDate": "2026-02-23T13:34:44Z",
+          "values": [
+            173,
+            173.23,
+            177.66,
+            180.65,
+            182,
+            181.59,
+            180.86,
+            179.8,
+            178.4,
+            176.65,
+            174.53,
+            172.08,
+            169.29,
+            166.49,
+            163.71,
+            160.94,
+            158.2,
+            155.51,
+            152.85,
+            150.25,
+            147.71,
+            145.23,
+            142.82,
+            140.48,
+            138.21,
+            136.01,
+            133.89,
+            131.85,
+            129.89,
+            128.01,
+            126.21,
+            124.48,
+            122.84,
+            121.27,
+            119.78,
+            118.36,
+            117.02,
+            115.75,
+            114.55,
+            113.42,
+            112.35,
+            111.35,
+            110.4,
+            109.52,
+            108.68,
+            107.91,
+            107.18,
+            106.5,
+            105.86,
+            105.28,
+            104.73,
+            104.22,
+            103.75,
+            103.32,
+            102.93,
+            102.56,
+            102.23,
+            101.93,
+            101.66,
+            101.42,
+            101.2,
+            101.01,
+            100.85,
+            100.7,
+            100.58,
+            100.47,
+            100.37,
+            100.28,
+            100.21,
+            100.14,
+            100.09,
+            100.04,
+            100,
+            99.97,
+            99.94,
+            99.92,
+            99.91,
+            99.9,
+            99.89,
+            99.89,
+            99.89,
+            99.89,
+            99.89
+          ]
+        },
+        "timestamp": "2026-02-23T13:38:34Z",
+        "automaticDoseRecommendation": {
+          "timestamp": "2026-02-23T13:38:34Z",
+          "bolusVolume": 0,
+          "tempBasalAdjustment": {
+            "rate": 3.25,
+            "duration": 30
+          }
+        },
+        "cob": {
+          "timestamp": "2026-02-23T13:38:05Z",
+          "cob": 0
+        },
+        "name": "T1Pal Loop"
+      },
+      "pump": {
+        "manufacturer": "Medtronic",
+        "model": "515",
+        "pumpID": "208850",
+        "bolusing": false,
+        "secondsFromGMT": -28800,
+        "clock": "2026-02-23T13:38:34Z",
+        "suspended": false,
+        "reservoir": 126.7,
+        "battery": {
+          "percent": 3
+        }
+      },
+      "device": "loop://iPhone",
+      "override": {
+        "timestamp": "2026-02-23T13:38:34Z",
+        "active": false
+      },
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c4f77eea0a06675269cf3",
+      "pump": {
+        "model": "515",
+        "bolusing": false,
+        "reservoir": 128,
+        "secondsFromGMT": -28800,
+        "pumpID": "208850",
+        "suspended": false,
+        "battery": {
+          "percent": 3
+        },
+        "clock": "2026-02-23T13:00:38Z",
+        "manufacturer": "Medtronic"
+      },
+      "loop": {
+        "iob": {
+          "timestamp": "2026-02-23T13:05:00Z",
+          "iob": 2.4468901322057666
+        },
+        "recommendedBolus": 0,
+        "version": "3.8.1.2026010900",
+        "enacted": {
+          "duration": 30,
+          "timestamp": "2026-02-23T13:00:19Z",
+          "received": true,
+          "rate": 2.45,
+          "bolusVolume": 0
+        },
+        "timestamp": "2026-02-23T13:00:38Z",
+        "predicted": {
+          "startDate": "2026-02-23T12:59:44Z",
+          "values": [
+            170,
+            170.05,
+            171.07,
+            172.17,
+            173.04,
+            173.34,
+            173.16,
+            172.48,
+            171.31,
+            169.65,
+            167.54,
+            164.99,
+            162.02,
+            159.06,
+            156.12,
+            153.2,
+            150.32,
+            147.49,
+            144.71,
+            141.99,
+            139.33,
+            136.74,
+            134.22,
+            131.77,
+            129.4,
+            127.11,
+            124.9,
+            122.77,
+            120.71,
+            118.74,
+            116.85,
+            115.03,
+            113.3,
+            111.64,
+            110.07,
+            108.56,
+            107.14,
+            105.79,
+            104.5,
+            103.29,
+            102.15,
+            101.07,
+            100.06,
+            99.11,
+            98.22,
+            97.39,
+            96.62,
+            95.9,
+            95.23,
+            94.6,
+            94.02,
+            93.48,
+            92.99,
+            92.53,
+            92.1,
+            91.71,
+            91.36,
+            91.03,
+            90.74,
+            90.47,
+            90.22,
+            90,
+            89.81,
+            89.63,
+            89.48,
+            89.35,
+            89.23,
+            89.14,
+            89.07,
+            89.01,
+            88.96,
+            88.92,
+            88.9,
+            88.87,
+            88.86,
+            88.85,
+            88.84,
+            88.84,
+            88.84,
+            88.84,
+            88.84,
+            88.84
+          ]
+        },
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T13:00:16Z"
+        },
+        "name": "T1Pal Loop"
+      },
+      "override": {
+        "timestamp": "2026-02-23T13:00:38Z",
+        "active": false
+      },
+      "device": "loop://iPhone",
+      "uploader": {
+        "timestamp": "2026-02-23T13:00:38Z",
+        "battery": 35,
+        "name": "iPhone"
+      },
+      "created_at": "2026-02-23T13:00:38.000Z",
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c4e51eea0a08135269cf2",
+      "loop": {
+        "name": "T1Pal Loop",
+        "cob": {
+          "timestamp": "2026-02-23T12:55:15Z",
+          "cob": 0
+        },
+        "iob": {
+          "iob": 2.225383468719252,
+          "timestamp": "2026-02-23T13:00:00Z"
+        },
+        "enacted": {
+          "duration": 30,
+          "timestamp": "2026-02-23T12:55:42Z",
+          "bolusVolume": 0,
+          "received": true,
+          "rate": 3.15
+        },
+        "version": "3.8.1.2026010900",
+        "automaticDoseRecommendation": {
+          "bolusVolume": 0,
+          "tempBasalAdjustment": {
+            "rate": 3.2,
+            "duration": 30
+          },
+          "timestamp": "2026-02-23T12:55:45Z"
+        },
+        "recommendedBolus": 0,
+        "predicted": {
+          "startDate": "2026-02-23T12:54:44Z",
+          "values": [
+            174,
+            173.95,
+            173.06,
+            173.96,
+            176.09,
+            178.88,
+            180.87,
+            182.1,
+            182.58,
+            182.32,
+            181.33,
+            179.63,
+            177.22,
+            174.86,
+            172.55,
+            170.3,
+            168.12,
+            165.99,
+            163.93,
+            161.93,
+            160,
+            158.14,
+            156.34,
+            154.61,
+            152.94,
+            151.35,
+            149.82,
+            148.35,
+            146.95,
+            145.61,
+            144.33,
+            143.11,
+            141.95,
+            140.85,
+            139.81,
+            138.82,
+            137.88,
+            137,
+            136.17,
+            135.39,
+            134.66,
+            133.98,
+            133.34,
+            132.74,
+            132.18,
+            131.67,
+            131.19,
+            130.75,
+            130.35,
+            129.98,
+            129.63,
+            129.32,
+            129.02,
+            128.76,
+            128.51,
+            128.29,
+            128.09,
+            127.91,
+            127.74,
+            127.6,
+            127.46,
+            127.34,
+            127.24,
+            127.15,
+            127.07,
+            127,
+            126.94,
+            126.9,
+            126.86,
+            126.84,
+            126.82,
+            126.82,
+            126.81,
+            126.81,
+            126.81,
+            126.81,
+            126.81
+          ]
+        },
+        "timestamp": "2026-02-23T12:55:45Z"
+      },
+      "device": "loop://iPhone",
+      "pump": {
+        "reservoir": 128.2,
+        "suspended": false,
+        "clock": "2026-02-23T12:55:45Z",
+        "secondsFromGMT": -28800,
+        "model": "515",
+        "bolusing": false,
+        "battery": {
+          "percent": 7
+        },
+        "pumpID": "208850",
+        "manufacturer": "Medtronic"
+      },
+      "override": {
+        "timestamp": "2026-02-23T12:55:45Z",
+        "active": false
+      },
+      "uploader": {
+        "name": "iPhone",
+        "battery": 35,
+        "timestamp": "2026-02-23T12:55:45Z"
+      },
+      "created_at": "2026-02-23T12:55:45.000Z",
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c4d26eea0a060ba269cf1",
+      "created_at": "2026-02-23T12:50:46.000Z",
+      "override": {
+        "timestamp": "2026-02-23T12:50:46Z",
+        "active": false
+      },
+      "pump": {
+        "model": "515",
+        "suspended": false,
+        "manufacturer": "Medtronic",
+        "battery": {
+          "percent": 7
+        },
+        "reservoir": 128.5,
+        "clock": "2026-02-23T12:50:46Z",
+        "secondsFromGMT": -28800,
+        "pumpID": "208850",
+        "bolusing": false
+      },
+      "device": "loop://iPhone",
+      "uploader": {
+        "battery": 35,
+        "timestamp": "2026-02-23T12:50:46Z",
+        "name": "iPhone"
+      },
+      "loop": {
+        "recommendedBolus": 0,
+        "enacted": {
+          "timestamp": "2026-02-23T12:50:43Z",
+          "bolusVolume": 0,
+          "received": true,
+          "duration": 30,
+          "rate": 3.05
+        },
+        "iob": {
+          "iob": 2.1563443187937423,
+          "timestamp": "2026-02-23T12:55:00Z"
+        },
+        "timestamp": "2026-02-23T12:50:46Z",
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T12:50:17Z"
+        },
+        "name": "T1Pal Loop",
+        "version": "3.8.1.2026010900",
+        "predicted": {
+          "values": [
+            168,
+            167.79,
+            163.99,
+            163.71,
+            166.23,
+            170.72,
+            174.19,
+            176.66,
+            178.14,
+            178.64,
+            178.18,
+            176.77,
+            174.41,
+            172.11,
+            169.85,
+            167.66,
+            165.52,
+            163.45,
+            161.44,
+            159.49,
+            157.61,
+            155.79,
+            154.04,
+            152.35,
+            150.73,
+            149.17,
+            147.67,
+            146.24,
+            144.88,
+            143.57,
+            142.32,
+            141.13,
+            140,
+            138.92,
+            137.9,
+            136.93,
+            136.02,
+            135.16,
+            134.34,
+            133.58,
+            132.86,
+            132.18,
+            131.55,
+            130.96,
+            130.42,
+            129.91,
+            129.44,
+            129,
+            128.6,
+            128.23,
+            127.9,
+            127.58,
+            127.3,
+            127.03,
+            126.79,
+            126.57,
+            126.37,
+            126.19,
+            126.03,
+            125.88,
+            125.75,
+            125.63,
+            125.52,
+            125.43,
+            125.35,
+            125.28,
+            125.22,
+            125.17,
+            125.13,
+            125.1,
+            125.08,
+            125.07,
+            125.06,
+            125.06,
+            125.06,
+            125.06,
+            125.06
+          ],
+          "startDate": "2026-02-23T12:49:44Z"
+        },
+        "automaticDoseRecommendation": {
+          "tempBasalAdjustment": {
+            "rate": 3.1,
+            "duration": 30
+          },
+          "bolusVolume": 0,
+          "timestamp": "2026-02-23T12:50:46Z"
+        }
+      },
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c4bf8eea0a0d2a4269cf0",
+      "loop": {
+        "recommendedBolus": 0,
+        "enacted": {
+          "timestamp": "2026-02-23T12:45:42Z",
+          "bolusVolume": 0,
+          "received": true,
+          "duration": 30,
+          "rate": 4.4
+        },
+        "iob": {
+          "timestamp": "2026-02-23T12:50:00Z",
+          "iob": 2.336505439903939
+        },
+        "timestamp": "2026-02-23T12:45:44Z",
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T12:45:16Z"
+        },
+        "name": "T1Pal Loop",
+        "version": "3.8.1.2026010900",
+        "predicted": {
+          "startDate": "2026-02-23T12:44:44Z",
+          "values": [
+            176,
+            176.08,
+            177.7,
+            181.18,
+            185.79,
+            190.76,
+            194.67,
+            197.53,
+            199.36,
+            200.17,
+            199.96,
+            198.76,
+            196.56,
+            194.41,
+            192.32,
+            190.29,
+            188.31,
+            186.4,
+            184.56,
+            182.77,
+            181.05,
+            179.4,
+            177.8,
+            176.27,
+            174.8,
+            173.38,
+            172.03,
+            170.74,
+            169.5,
+            168.32,
+            167.2,
+            166.13,
+            165.11,
+            164.14,
+            163.23,
+            162.36,
+            161.54,
+            160.76,
+            160.03,
+            159.34,
+            158.7,
+            158.09,
+            157.53,
+            157,
+            156.51,
+            156.06,
+            155.63,
+            155.25,
+            154.89,
+            154.56,
+            154.26,
+            153.98,
+            153.73,
+            153.5,
+            153.29,
+            153.09,
+            152.92,
+            152.76,
+            152.61,
+            152.48,
+            152.37,
+            152.26,
+            152.17,
+            152.09,
+            152.01,
+            151.95,
+            151.89,
+            151.85,
+            151.81,
+            151.78,
+            151.76,
+            151.74,
+            151.74,
+            151.73,
+            151.73,
+            151.73,
+            151.73
+          ]
+        },
+        "automaticDoseRecommendation": {
+          "timestamp": "2026-02-23T12:45:44Z",
+          "tempBasalAdjustment": {
+            "duration": 30,
+            "rate": 4.45
+          },
+          "bolusVolume": 0
+        }
+      },
+      "created_at": "2026-02-23T12:45:44.000Z",
+      "pump": {
+        "clock": "2026-02-23T12:45:44Z",
+        "model": "515",
+        "reservoir": 128.8,
+        "battery": {
+          "percent": 7
+        },
+        "suspended": false,
+        "bolusing": false,
+        "secondsFromGMT": -28800,
+        "pumpID": "208850",
+        "manufacturer": "Medtronic"
+      },
+      "uploader": {
+        "name": "iPhone",
+        "timestamp": "2026-02-23T12:45:44Z",
+        "battery": 40
+      },
+      "override": {
+        "active": false,
+        "timestamp": "2026-02-23T12:45:44Z"
+      },
+      "device": "loop://iPhone",
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c4ab7eea0a07625269cef",
+      "uploader": {
+        "battery": 40,
+        "name": "iPhone",
+        "timestamp": "2026-02-23T12:40:22Z"
+      },
+      "created_at": "2026-02-23T12:40:22.000Z",
+      "loop": {
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T12:40:00Z"
+        },
+        "predicted": {
+          "startDate": "2026-02-23T12:39:44Z",
+          "values": [
+            176,
+            176.24,
+            180.74,
+            185.07,
+            188.75,
+            191.32,
+            193.18,
+            194.37,
+            194.87,
+            194.71,
+            193.89,
+            192.43,
+            190.33,
+            188.27,
+            186.28,
+            184.34,
+            182.46,
+            180.64,
+            178.89,
+            177.2,
+            175.58,
+            174.02,
+            172.51,
+            171.07,
+            169.69,
+            168.36,
+            167.09,
+            165.88,
+            164.72,
+            163.62,
+            162.57,
+            161.57,
+            160.62,
+            159.72,
+            158.86,
+            158.05,
+            157.28,
+            156.55,
+            155.87,
+            155.23,
+            154.63,
+            154.06,
+            153.53,
+            153.04,
+            152.58,
+            152.16,
+            151.76,
+            151.4,
+            151.06,
+            150.76,
+            150.48,
+            150.22,
+            149.99,
+            149.77,
+            149.58,
+            149.4,
+            149.23,
+            149.09,
+            148.95,
+            148.83,
+            148.72,
+            148.63,
+            148.54,
+            148.46,
+            148.39,
+            148.33,
+            148.28,
+            148.23,
+            148.19,
+            148.16,
+            148.14,
+            148.12,
+            148.11,
+            148.11,
+            148.1,
+            148.1,
+            148.1
+          ]
+        },
+        "recommendedBolus": 0.3,
+        "name": "T1Pal Loop",
+        "automaticDoseRecommendation": {
+          "timestamp": "2026-02-23T12:40:22Z",
+          "tempBasalAdjustment": {
+            "rate": 4.25,
+            "duration": 30
+          },
+          "bolusVolume": 0
+        },
+        "version": "3.8.1.2026010900",
+        "iob": {
+          "timestamp": "2026-02-23T12:45:00Z",
+          "iob": 2.0253331577413176
+        },
+        "timestamp": "2026-02-23T12:40:22Z"
+      },
+      "pump": {
+        "suspended": false,
+        "clock": "2026-02-23T12:40:22Z",
+        "bolusing": false,
+        "battery": {
+          "percent": 7
+        },
+        "reservoir": 129.2,
+        "model": "515",
+        "pumpID": "208850",
+        "manufacturer": "Medtronic",
+        "secondsFromGMT": -28800
+      },
+      "device": "loop://iPhone",
+      "override": {
+        "active": false,
+        "timestamp": "2026-02-23T12:40:22Z"
+      },
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c4986eea0a06ded269cee",
+      "loop": {
+        "failureReason": "pumpManagerError[\"error\": \"arguments(MinimedKit.PumpOpsError.deviceError(RileyLinkBLEKit.RileyLinkDeviceError.responseTimeout))\", \"detail\": \"communication\"]",
+        "automaticDoseRecommendation": {
+          "timestamp": "2026-02-23T12:35:17Z",
+          "bolusVolume": 0,
+          "tempBasalAdjustment": {
+            "duration": 30,
+            "rate": 5.3
+          }
+        },
+        "version": "3.8.1.2026010900",
+        "timestamp": "2026-02-23T12:35:17Z",
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T12:35:00Z"
+        },
+        "name": "T1Pal Loop",
+        "recommendedBolus": 0,
+        "predicted": {
+          "values": [
+            173,
+            173.39,
+            180.82,
+            186.84,
+            190.98,
+            192.82,
+            193.84,
+            194,
+            193.3,
+            191.8,
+            189.52,
+            186.52,
+            182.81,
+            179.03,
+            175.22,
+            171.38,
+            167.55,
+            163.74,
+            159.97,
+            156.24,
+            152.58,
+            148.98,
+            145.46,
+            142.01,
+            138.66,
+            135.39,
+            132.22,
+            129.15,
+            126.18,
+            123.31,
+            120.55,
+            117.89,
+            115.33,
+            112.87,
+            110.52,
+            108.27,
+            106.12,
+            104.07,
+            102.12,
+            100.26,
+            98.5,
+            96.83,
+            95.25,
+            93.76,
+            92.35,
+            91.03,
+            89.78,
+            88.62,
+            87.53,
+            86.51,
+            85.56,
+            84.67,
+            83.86,
+            83.1,
+            82.39,
+            81.74,
+            81.14,
+            80.59,
+            80.08,
+            79.62,
+            79.2,
+            78.81,
+            78.46,
+            78.15,
+            77.87,
+            77.62,
+            77.4,
+            77.2,
+            77.03,
+            76.89,
+            76.77,
+            76.67,
+            76.6,
+            76.54,
+            76.5,
+            76.48,
+            76.47,
+            76.46,
+            76.46,
+            76.46,
+            76.46
+          ],
+          "startDate": "2026-02-23T12:34:44Z"
+        },
+        "iob": {
+          "timestamp": "2026-02-23T12:40:00Z",
+          "iob": 3.0502843452337554
+        }
+      },
+      "pump": {
+        "clock": "2026-02-23T12:35:17Z",
+        "model": "515",
+        "reservoir": 130.6,
+        "battery": {
+          "percent": 7
+        },
+        "suspended": false,
+        "bolusing": false,
+        "secondsFromGMT": -28800,
+        "reservoir_display_override": "Signal Loss",
+        "reservoir_level_override": 2,
+        "pumpID": "208850",
+        "manufacturer": "Medtronic"
+      },
+      "created_at": "2026-02-23T12:35:17.000Z",
+      "uploader": {
+        "name": "iPhone",
+        "timestamp": "2026-02-23T12:35:17Z",
+        "battery": 40
+      },
+      "override": {
+        "timestamp": "2026-02-23T12:35:17Z",
+        "active": false
+      },
+      "device": "loop://iPhone",
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c485eeea0a05efe269ced",
+      "loop": {
+        "failureReason": "pumpManagerError[\"error\": \"arguments(MinimedKit.PumpOpsError.deviceError(RileyLinkBLEKit.RileyLinkDeviceError.responseTimeout))\", \"detail\": \"communication\"]",
+        "automaticDoseRecommendation": {
+          "tempBasalAdjustment": {
+            "duration": 30,
+            "rate": 5.3
+          },
+          "timestamp": "2026-02-23T12:30:22Z",
+          "bolusVolume": 0
+        },
+        "version": "3.8.1.2026010900",
+        "timestamp": "2026-02-23T12:30:22Z",
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T12:29:58Z"
+        },
+        "name": "T1Pal Loop",
+        "recommendedBolus": 0,
+        "predicted": {
+          "values": [
+            167,
+            167.72,
+            181.03,
+            190.54,
+            195.95,
+            197.06,
+            197.54,
+            197.33,
+            196.39,
+            194.71,
+            192.36,
+            189.35,
+            185.75,
+            182.04,
+            178.26,
+            174.45,
+            170.61,
+            166.78,
+            162.97,
+            159.2,
+            155.47,
+            151.81,
+            148.21,
+            144.69,
+            141.24,
+            137.89,
+            134.62,
+            131.45,
+            128.38,
+            125.41,
+            122.54,
+            119.78,
+            117.11,
+            114.56,
+            112.1,
+            109.75,
+            107.5,
+            105.35,
+            103.3,
+            101.35,
+            99.49,
+            97.73,
+            96.06,
+            94.48,
+            92.99,
+            91.58,
+            90.26,
+            89.01,
+            87.85,
+            86.75,
+            85.74,
+            84.79,
+            83.9,
+            83.08,
+            82.32,
+            81.62,
+            80.97,
+            80.37,
+            79.82,
+            79.31,
+            78.85,
+            78.43,
+            78.04,
+            77.69,
+            77.38,
+            77.1,
+            76.85,
+            76.63,
+            76.43,
+            76.26,
+            76.12,
+            76,
+            75.9,
+            75.82,
+            75.77,
+            75.73,
+            75.71,
+            75.7,
+            75.69,
+            75.69,
+            75.69,
+            75.69
+          ],
+          "startDate": "2026-02-23T12:29:43Z"
+        },
+        "iob": {
+          "timestamp": "2026-02-23T12:35:00Z",
+          "iob": 2.628197448914287
+        }
+      },
+      "pump": {
+        "suspended": false,
+        "clock": "2026-02-23T12:30:22Z",
+        "bolusing": false,
+        "battery": {
+          "percent": 7
+        },
+        "reservoir": 130.6,
+        "model": "515",
+        "pumpID": "208850",
+        "manufacturer": "Medtronic",
+        "secondsFromGMT": -28800
+      },
+      "created_at": "2026-02-23T12:30:22.000Z",
+      "uploader": {
+        "timestamp": "2026-02-23T12:30:22Z",
+        "name": "iPhone",
+        "battery": 40
+      },
+      "override": {
+        "active": false,
+        "timestamp": "2026-02-23T12:30:22Z"
+      },
+      "device": "loop://iPhone",
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c474feea0a084b1269cec",
+      "pump": {
+        "model": "515",
+        "suspended": false,
+        "manufacturer": "Medtronic",
+        "battery": {
+          "percent": 7
+        },
+        "reservoir": 130.6,
+        "clock": "2026-02-23T12:25:51Z",
+        "secondsFromGMT": -28800,
+        "pumpID": "208850",
+        "bolusing": false
+      },
+      "device": "loop://iPhone",
+      "loop": {
+        "timestamp": "2026-02-23T12:25:51Z",
+        "version": "3.8.1.2026010900",
+        "iob": {
+          "iob": 2.208109200605593,
+          "timestamp": "2026-02-23T12:30:00Z"
+        },
+        "recommendedBolus": 1.3,
+        "name": "T1Pal Loop",
+        "enacted": {
+          "duration": 30,
+          "timestamp": "2026-02-23T12:25:33Z",
+          "received": true,
+          "rate": 5.85,
+          "bolusVolume": 0
+        },
+        "predicted": {
+          "values": [
+            158,
+            159.02,
+            178.18,
+            191.06,
+            197.51,
+            197.71,
+            197.64,
+            197.28,
+            196.62,
+            195.64,
+            194.36,
+            192.78,
+            190.92,
+            189.09,
+            187.31,
+            185.57,
+            183.88,
+            182.24,
+            180.67,
+            179.15,
+            177.69,
+            176.29,
+            174.95,
+            173.66,
+            172.43,
+            171.25,
+            170.12,
+            169.04,
+            168.01,
+            167.03,
+            166.09,
+            165.2,
+            164.35,
+            163.55,
+            162.78,
+            162.05,
+            161.36,
+            160.71,
+            160.1,
+            159.51,
+            158.96,
+            158.45,
+            157.96,
+            157.51,
+            157.09,
+            156.69,
+            156.32,
+            155.98,
+            155.67,
+            155.37,
+            155.11,
+            154.86,
+            154.64,
+            154.43,
+            154.25,
+            154.08,
+            153.93,
+            153.78,
+            153.66,
+            153.54,
+            153.43,
+            153.34,
+            153.25,
+            153.17,
+            153.1,
+            153.03,
+            152.97,
+            152.92,
+            152.87,
+            152.83,
+            152.79,
+            152.76,
+            152.74,
+            152.71,
+            152.7,
+            152.68,
+            152.68,
+            152.67,
+            152.67,
+            152.67,
+            152.67,
+            152.67
+          ],
+          "startDate": "2026-02-23T12:24:44Z"
+        },
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T12:25:14Z"
+        }
+      },
+      "created_at": "2026-02-23T12:25:51.000Z",
+      "uploader": {
+        "battery": 40,
+        "name": "iPhone",
+        "timestamp": "2026-02-23T12:25:51Z"
+      },
+      "override": {
+        "active": false,
+        "timestamp": "2026-02-23T12:25:51Z"
+      },
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c3347eea0a00da2269cde",
+      "loop": {
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T10:59:59Z"
+        },
+        "timestamp": "2026-02-23T11:00:22Z",
+        "name": "T1Pal Loop",
+        "recommendedBolus": 0,
+        "automaticDoseRecommendation": {
+          "bolusVolume": 0,
+          "tempBasalAdjustment": {
+            "rate": 0.65,
+            "duration": 30
+          },
+          "timestamp": "2026-02-23T11:00:22Z"
+        },
+        "failureReason": "pumpManagerError[\"error\": \"arguments(MinimedKit.PumpOpsError.deviceError(RileyLinkBLEKit.RileyLinkDeviceError.responseTimeout))\", \"detail\": \"communication\"]",
+        "version": "3.8.1.2026010900",
+        "iob": {
+          "timestamp": "2026-02-23T11:05:00Z",
+          "iob": 2.440343142577465
+        },
+        "predicted": {
+          "values": [
+            159,
+            158.41,
+            147.62,
+            140.56,
+            136.97,
+            136.39,
+            135.4,
+            133.99,
+            132.16,
+            129.93,
+            127.31,
+            124.33,
+            121,
+            117.7,
+            114.46,
+            111.28,
+            108.16,
+            105.12,
+            102.16,
+            99.28,
+            96.5,
+            93.8,
+            91.2,
+            88.69,
+            86.27,
+            83.96,
+            81.73,
+            79.61,
+            77.58,
+            75.64,
+            73.81,
+            72.06,
+            70.41,
+            68.84,
+            67.37,
+            65.99,
+            64.69,
+            63.48,
+            62.34,
+            61.27,
+            60.27,
+            59.34,
+            58.46,
+            57.65,
+            56.88,
+            56.17,
+            55.5,
+            54.88,
+            54.3,
+            53.76,
+            53.26,
+            52.8,
+            52.37,
+            51.97,
+            51.6,
+            51.26,
+            50.94,
+            50.65,
+            50.39,
+            50.15,
+            49.93,
+            49.74,
+            49.56,
+            49.4,
+            49.26,
+            49.14,
+            49.04,
+            48.95,
+            48.87,
+            48.81,
+            48.76,
+            48.72,
+            48.69,
+            48.67,
+            48.66,
+            48.65,
+            48.64,
+            48.64,
+            48.64,
+            48.64,
+            48.64,
+            48.64
+          ],
+          "startDate": "2026-02-23T10:59:43Z"
+        }
+      },
+      "created_at": "2026-02-23T11:00:22.000Z",
+      "pump": {
+        "model": "515",
+        "battery": {
+          "percent": 7
+        },
+        "pumpID": "208850",
+        "secondsFromGMT": -28800,
+        "manufacturer": "Medtronic",
+        "bolusing": false,
+        "clock": "2026-02-23T11:00:22Z",
+        "reservoir": 133.4,
+        "suspended": false
+      },
+      "uploader": {
+        "name": "iPhone",
+        "timestamp": "2026-02-23T11:00:22Z",
+        "battery": 45
+      },
+      "override": {
+        "timestamp": "2026-02-23T11:00:22Z",
+        "active": false
+      },
+      "device": "loop://iPhone",
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c3230eea0a0d47f269cdd",
+      "loop": {
+        "automaticDoseRecommendation": {
+          "tempBasalAdjustment": {
+            "rate": 2.3,
+            "duration": 30
+          },
+          "bolusVolume": 0,
+          "timestamp": "2026-02-23T10:55:44Z"
+        },
+        "enacted": {
+          "duration": 30,
+          "timestamp": "2026-02-23T10:55:26Z",
+          "received": true,
+          "rate": 2.25,
+          "bolusVolume": 0
+        },
+        "version": "3.8.1.2026010900",
+        "timestamp": "2026-02-23T10:55:44Z",
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T10:55:16Z"
+        },
+        "name": "T1Pal Loop",
+        "recommendedBolus": 0,
+        "predicted": {
+          "startDate": "2026-02-23T10:54:44Z",
+          "values": [
+            173,
+            172.77,
+            168.38,
+            165.9,
+            165,
+            165.26,
+            165,
+            164.22,
+            162.89,
+            161.04,
+            158.66,
+            155.78,
+            152.42,
+            149.09,
+            145.8,
+            142.55,
+            139.37,
+            136.25,
+            133.21,
+            130.25,
+            127.38,
+            124.59,
+            121.89,
+            119.29,
+            116.78,
+            114.37,
+            112.05,
+            109.83,
+            107.7,
+            105.67,
+            103.74,
+            101.9,
+            100.15,
+            98.5,
+            96.94,
+            95.47,
+            94.08,
+            92.79,
+            91.57,
+            90.43,
+            89.36,
+            88.37,
+            87.43,
+            86.56,
+            85.74,
+            84.98,
+            84.26,
+            83.6,
+            82.97,
+            82.4,
+            81.86,
+            81.36,
+            80.89,
+            80.46,
+            80.06,
+            79.69,
+            79.35,
+            79.04,
+            78.75,
+            78.48,
+            78.24,
+            78.03,
+            77.83,
+            77.65,
+            77.5,
+            77.36,
+            77.24,
+            77.13,
+            77.04,
+            76.97,
+            76.9,
+            76.85,
+            76.82,
+            76.79,
+            76.77,
+            76.75,
+            76.74,
+            76.74,
+            76.73,
+            76.73,
+            76.73,
+            76.73,
+            76.73
+          ]
+        },
+        "iob": {
+          "timestamp": "2026-02-23T11:00:00Z",
+          "iob": 2.3699828371772997
+        }
+      },
+      "override": {
+        "timestamp": "2026-02-23T10:55:44Z",
+        "active": false
+      },
+      "pump": {
+        "clock": "2026-02-23T10:55:44Z",
+        "model": "515",
+        "reservoir": 133.4,
+        "battery": {
+          "percent": 7
+        },
+        "suspended": false,
+        "bolusing": false,
+        "secondsFromGMT": -28800,
+        "pumpID": "208850",
+        "manufacturer": "Medtronic"
+      },
+      "device": "loop://iPhone",
+      "uploader": {
+        "battery": 45,
+        "name": "iPhone",
+        "timestamp": "2026-02-23T10:55:44Z"
+      },
+      "created_at": "2026-02-23T10:55:44.000Z",
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c3104eea0a0fb55269cdc",
+      "device": "loop://iPhone",
+      "uploader": {
+        "name": "iPhone",
+        "timestamp": "2026-02-23T10:50:44Z",
+        "battery": 45
+      },
+      "loop": {
+        "iob": {
+          "timestamp": "2026-02-23T10:55:00Z",
+          "iob": 2.216587979888739
+        },
+        "recommendedBolus": 0.2,
+        "version": "3.8.1.2026010900",
+        "enacted": {
+          "duration": 30,
+          "rate": 3.05,
+          "timestamp": "2026-02-23T10:50:41Z",
+          "bolusVolume": 0,
+          "received": true
+        },
+        "timestamp": "2026-02-23T10:50:44Z",
+        "predicted": {
+          "startDate": "2026-02-23T10:49:43Z",
+          "values": [
+            181,
+            181.16,
+            184.16,
+            186.92,
+            189.03,
+            190.17,
+            190.73,
+            190.73,
+            190.18,
+            189.09,
+            187.46,
+            185.31,
+            182.62,
+            180.02,
+            177.52,
+            175.11,
+            172.79,
+            170.56,
+            168.43,
+            166.39,
+            164.45,
+            162.59,
+            160.82,
+            159.14,
+            157.55,
+            156.04,
+            154.61,
+            153.25,
+            151.97,
+            150.77,
+            149.64,
+            148.58,
+            147.59,
+            146.67,
+            145.81,
+            145.01,
+            144.28,
+            143.6,
+            142.98,
+            142.42,
+            141.9,
+            141.43,
+            141,
+            140.61,
+            140.25,
+            139.92,
+            139.62,
+            139.34,
+            139.09,
+            138.86,
+            138.65,
+            138.45,
+            138.28,
+            138.12,
+            137.97,
+            137.83,
+            137.71,
+            137.6,
+            137.49,
+            137.4,
+            137.32,
+            137.24,
+            137.17,
+            137.11,
+            137.06,
+            137.02,
+            136.98,
+            136.95,
+            136.92,
+            136.9,
+            136.88,
+            136.87,
+            136.87,
+            136.87,
+            136.86,
+            136.86,
+            136.86
+          ]
+        },
+        "automaticDoseRecommendation": {
+          "bolusVolume": 0,
+          "tempBasalAdjustment": {
+            "rate": 3.7,
+            "duration": 30
+          },
+          "timestamp": "2026-02-23T10:50:44Z"
+        },
+        "cob": {
+          "cob": 0,
+          "timestamp": "2026-02-23T10:50:14Z"
+        },
+        "name": "T1Pal Loop"
+      },
+      "pump": {
+        "model": "515",
+        "bolusing": false,
+        "reservoir": 133.6,
+        "secondsFromGMT": -28800,
+        "suspended": false,
+        "pumpID": "208850",
+        "battery": {
+          "percent": 7
+        },
+        "clock": "2026-02-23T10:50:44Z",
+        "manufacturer": "Medtronic"
+      },
+      "override": {
+        "timestamp": "2026-02-23T10:50:44Z",
+        "active": false
+      },
+      "created_at": "2026-02-23T10:50:44.000Z",
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c2fc5eea0a02cf0269cdb",
+      "device": "loop://iPhone",
+      "override": {
+        "timestamp": "2026-02-23T10:45:24Z",
+        "active": false
+      },
+      "loop": {
+        "failureReason": "pumpManagerError[\"detail\": \"communication\", \"error\": \"command(MinimedKit.PumpOpsError.deviceError(RileyLinkBLEKit.RileyLinkDeviceError.responseTimeout))\"]",
+        "name": "T1Pal Loop",
+        "cob": {
+          "timestamp": "2026-02-23T10:45:02Z",
+          "cob": 0
+        },
+        "iob": {
+          "timestamp": "2026-02-23T10:50:00Z",
+          "iob": 3.1714501543081792
+        },
+        "version": "3.8.1.2026010900",
+        "automaticDoseRecommendation": {
+          "timestamp": "2026-02-23T10:45:24Z",
+          "tempBasalAdjustment": {
+            "rate": 3.8,
+            "duration": 30
+          },
+          "bolusVolume": 0
+        },
+        "recommendedBolus": 0,
+        "predicted": {
+          "startDate": "2026-02-23T10:44:43Z",
+          "values": [
+            182,
+            182.19,
+            185.68,
+            188.79,
+            191.08,
+            192.13,
+            192.42,
+            191.92,
+            190.62,
+            188.52,
+            185.66,
+            182.08,
+            177.81,
+            173.5,
+            169.18,
+            164.86,
+            160.58,
+            156.34,
+            152.16,
+            148.05,
+            144.02,
+            140.09,
+            136.26,
+            132.53,
+            128.91,
+            125.41,
+            122.02,
+            118.75,
+            115.61,
+            112.58,
+            109.68,
+            106.9,
+            104.25,
+            101.72,
+            99.31,
+            97.02,
+            94.85,
+            92.79,
+            90.85,
+            89.03,
+            87.31,
+            85.69,
+            84.17,
+            82.75,
+            81.41,
+            80.15,
+            78.97,
+            77.87,
+            76.84,
+            75.88,
+            74.98,
+            74.14,
+            73.36,
+            72.63,
+            71.96,
+            71.34,
+            70.76,
+            70.23,
+            69.74,
+            69.29,
+            68.88,
+            68.5,
+            68.16,
+            67.85,
+            67.58,
+            67.33,
+            67.12,
+            66.92,
+            66.76,
+            66.62,
+            66.5,
+            66.4,
+            66.32,
+            66.26,
+            66.22,
+            66.19,
+            66.18,
+            66.17,
+            66.16,
+            66.16,
+            66.16,
+            66.16
+          ]
+        },
+        "timestamp": "2026-02-23T10:45:24Z"
+      },
+      "created_at": "2026-02-23T10:45:24.000Z",
+      "pump": {
+        "model": "515",
+        "bolusing": false,
+        "reservoir": 134.2,
+        "secondsFromGMT": -28800,
+        "pumpID": "208850",
+        "suspended": false,
+        "battery": {
+          "percent": 7
+        },
+        "clock": "2026-02-23T10:45:24Z",
+        "manufacturer": "Medtronic"
+      },
+      "uploader": {
+        "name": "iPhone",
+        "timestamp": "2026-02-23T10:45:24Z",
+        "battery": 45
+      },
+      "utcOffset": 0
+    },
+    {
+      "_id": "699c2ef8eea0a098e0269cda",
+      "device": "loop://iPhone",
+      "uploader": {
+        "battery": 45,
+        "name": "iPhone",
+        "timestamp": "2026-02-23T10:42:00Z"
+      },
+      "loop": {
+        "name": "T1Pal Loop",
+        "cob": {
+          "timestamp": "2026-02-23T10:41:54Z",
+          "cob": 0
+        },
+        "iob": {
+          "timestamp": "2026-02-23T10:45:00Z",
+          "iob": 2.86174151821705
+        },
+        "enacted": {
+          "rate": 3.65,
+          "timestamp": "2026-02-23T10:41:57Z",
+          "received": true,
+          "duration": 30,
+          "bolusVolume": 0
+        },
+        "version": "3.8.1.2026010900",
+        "recommendedBolus": 0,
+        "predicted": {
+          "startDate": "2026-02-23T10:39:43Z",
+          "values": [
+            175,
+            175.19,
+            178.66,
+            181.51,
+            183.38,
+            183.99,
+            184.03,
+            183.48,
+            182.33,
+            180.56,
+            178.2,
+            175.27,
+            171.8,
+            168.33,
+            164.9,
+            161.51,
+            158.17,
+            154.9,
+            151.7,
+            148.58,
+            145.54,
+            142.59,
+            139.74,
+            136.97,
+            134.31,
+            131.75,
+            129.28,
+            126.91,
+            124.64,
+            122.46,
+            120.39,
+            118.41,
+            116.53,
+            114.74,
+            113.05,
+            111.44,
+            109.93,
+            108.51,
+            107.17,
+            105.92,
+            104.75,
+            103.66,
+            102.64,
+            101.69,
+            100.81,
+            99.98,
+            99.21,
+            98.5,
+            97.83,
+            97.21,
+            96.63,
+            96.1,
+            95.6,
+            95.14,
+            94.72,
+            94.32,
+            93.96,
+            93.62,
+            93.31,
+            93.03,
+            92.77,
+            92.53,
+            92.31,
+            92.11,
+            91.94,
+            91.78,
+            91.64,
+            91.52,
+            91.41,
+            91.32,
+            91.24,
+            91.17,
+            91.12,
+            91.08,
+            91.05,
+            91.03,
+            91.02,
+            91.01,
+            91.01,
+            91.01,
+            91.01,
+            91.01
+          ]
+        },
+        "timestamp": "2026-02-23T10:42:00Z"
+      },
+      "pump": {
+        "model": "515",
+        "bolusing": false,
+        "reservoir": 134.2,
+        "secondsFromGMT": -28800,
+        "suspended": false,
+        "pumpID": "208850",
+        "battery": {
+          "percent": 7
+        },
+        "clock": "2026-02-23T10:42:00Z",
+        "manufacturer": "Medtronic"
+      },
+      "override": {
+        "active": false,
+        "timestamp": "2026-02-23T10:42:00Z"
+      },
+      "created_at": "2026-02-23T10:42:00.000Z",
+      "utcOffset": 0
+    }
+  ],
+  "treatments": [
+    {
+      "_id": "699c6f209b496fca854e2da7",
+      "temp": "absolute",
+      "rate": 3.3,
+      "duration": 5.029564867417018,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "amount": 0.3,
+      "timestamp": "2026-02-23T15:15:44Z",
+      "absolute": 3.3,
+      "enteredBy": "loop://iPhone",
+      "created_at": "2026-02-23T15:15:44.000Z",
+      "syncIdentifier": "e203e9f32c804fb2bf6e328a4c369f4b",
+      "insulinType": "Humalog",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c6f1e9b496fca854e250f",
+      "amount": 0.6,
+      "created_at": "2026-02-23T15:08:29.000Z",
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "syncIdentifier": "ee532c75f5f347bf860f343e67135671",
+      "eventType": "Temp Basal",
+      "timestamp": "2026-02-23T15:08:29Z",
+      "automatic": true,
+      "temp": "absolute",
+      "absolute": 5,
+      "duration": 7.251390782992045,
+      "rate": 5,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c6f1e9b496fca854e24f4",
+      "timestamp": "2026-02-23T15:02:55Z",
+      "enteredBy": "loop://iPhone",
+      "rate": 3.7,
+      "syncIdentifier": "c605b6ef3ea6451a974a7c2fad30e4bb",
+      "eventType": "Temp Basal",
+      "absolute": 3.7,
+      "created_at": "2026-02-23T15:02:55.000Z",
+      "duration": 5.562947183847427,
+      "insulinType": "Humalog",
+      "automatic": true,
+      "temp": "absolute",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c6f1e9b496fca854e2524",
+      "timestamp": "2026-02-23T14:50:02Z",
+      "enteredBy": "loop://iPhone",
+      "rate": 1.4,
+      "syncIdentifier": "a555d602ea3f453badfcc9bc07daceca",
+      "eventType": "Temp Basal",
+      "absolute": 1.4,
+      "created_at": "2026-02-23T14:50:02.000Z",
+      "duration": 12.88539705077807,
+      "amount": 0.3,
+      "insulinType": "Humalog",
+      "automatic": true,
+      "temp": "absolute",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c68ff9b496fca8532adf9",
+      "eventType": "Temp Basal",
+      "syncIdentifier": "3cd724a698944cc3b3f5a4554e1eaa86",
+      "created_at": "2026-02-23T14:49:34.000Z",
+      "enteredBy": "loop://iPhone",
+      "timestamp": "2026-02-23T14:49:34Z",
+      "temp": "absolute",
+      "absolute": 0.8,
+      "duration": 0.45446268320083616,
+      "insulinType": "Humalog",
+      "rate": 0.8,
+      "amount": 0,
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c65c09b496fca8523fd00",
+      "timestamp": "2026-02-23T14:35:44Z",
+      "enteredBy": "loop://iPhone",
+      "rate": 3.65,
+      "syncIdentifier": "e6bacc6f571447d087174108a7371b70",
+      "eventType": "Temp Basal",
+      "absolute": 3.65,
+      "created_at": "2026-02-23T14:35:44.000Z",
+      "duration": 13.844091949860255,
+      "amount": 0.85,
+      "insulinType": "Humalog",
+      "automatic": true,
+      "temp": "absolute",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c64939b496fca851e77d4",
+      "duration": 5.01926419933637,
+      "insulinType": "Humalog",
+      "absolute": 3.1,
+      "created_at": "2026-02-23T14:30:43.000Z",
+      "eventType": "Temp Basal",
+      "syncIdentifier": "6b78df3ac04c4ff4aa24d0414ff88cdf",
+      "temp": "absolute",
+      "amount": 0.25,
+      "timestamp": "2026-02-23T14:30:43Z",
+      "rate": 3.1,
+      "enteredBy": "loop://iPhone",
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c63529b496fca85191097",
+      "duration": 5.339844850699107,
+      "insulinType": "Humalog",
+      "absolute": 0.2,
+      "eventType": "Temp Basal",
+      "created_at": "2026-02-23T14:25:22.000Z",
+      "syncIdentifier": "78cdb293f27a4c2d8f3e6c9b0c9b731c",
+      "temp": "absolute",
+      "amount": 0,
+      "timestamp": "2026-02-23T14:25:22Z",
+      "rate": 0.2,
+      "enteredBy": "loop://iPhone",
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c63509b496fca851903dc",
+      "duration": 5.336144216855367,
+      "insulinType": "Humalog",
+      "absolute": 0.25,
+      "created_at": "2026-02-23T14:20:02.000Z",
+      "eventType": "Temp Basal",
+      "syncIdentifier": "d41e575dfe4449bf8d49630b80ae37f4",
+      "temp": "absolute",
+      "amount": 0,
+      "timestamp": "2026-02-23T14:20:02Z",
+      "rate": 0.25,
+      "enteredBy": "loop://iPhone",
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c61eb9b496fca8512dffa",
+      "duration": 0.6512168327967326,
+      "insulinType": "Humalog",
+      "absolute": 0.8,
+      "created_at": "2026-02-23T14:19:23.000Z",
+      "eventType": "Temp Basal",
+      "syncIdentifier": "fe47077c1ab74d24855a7c67db7a03f4",
+      "temp": "absolute",
+      "amount": 0,
+      "timestamp": "2026-02-23T14:19:23Z",
+      "rate": 0.8,
+      "enteredBy": "loop://iPhone",
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c585a9b496fca85e7759e",
+      "temp": "absolute",
+      "enteredBy": "loop://iPhone",
+      "syncIdentifier": "d585cbc90e904a12980b0669be0ad437",
+      "timestamp": "2026-02-23T13:38:34Z",
+      "amount": 1.6,
+      "eventType": "Temp Basal",
+      "created_at": "2026-02-23T13:38:34.000Z",
+      "insulinType": "Humalog",
+      "absolute": 3.2,
+      "duration": 30,
+      "rate": 3.2,
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c56879b496fca85df31d9",
+      "enteredBy": "loop://iPhone",
+      "absolute": 2.45,
+      "rate": 2.45,
+      "insulinType": "Humalog",
+      "syncIdentifier": "d87504c9de9a4686ae23595b8937f89f",
+      "timestamp": "2026-02-23T13:30:47Z",
+      "temp": "absolute",
+      "created_at": "2026-02-23T13:30:47.000Z",
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "duration": 7.788844966888428,
+      "amount": 0.3,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c542d9b496fca85d463ba",
+      "enteredBy": "loop://iPhone",
+      "absolute": 2.6,
+      "rate": 2.6,
+      "insulinType": "Humalog",
+      "syncIdentifier": "5e7a957007b34adc926786de0e958665",
+      "timestamp": "2026-02-23T13:20:44Z",
+      "temp": "absolute",
+      "created_at": "2026-02-23T13:20:44.000Z",
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "duration": 4.995101366440455,
+      "amount": 0.2,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c53009b496fca85ceed2f",
+      "syncIdentifier": "e0119910459c4d16b48f43e9da375121",
+      "duration": 5.016871716578802,
+      "timestamp": "2026-02-23T13:15:43Z",
+      "eventType": "Temp Basal",
+      "automatic": true,
+      "created_at": "2026-02-23T13:15:43.000Z",
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "temp": "absolute",
+      "absolute": 2.1,
+      "amount": 0.2,
+      "rate": 2.1,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c51d59b496fca85c9968b",
+      "syncIdentifier": "6b7e2a00a20e48ed9bed60d4d65d584d",
+      "duration": 4.981502133607864,
+      "timestamp": "2026-02-23T13:10:45Z",
+      "eventType": "Temp Basal",
+      "automatic": true,
+      "created_at": "2026-02-23T13:10:45.000Z",
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "temp": "absolute",
+      "absolute": 1.65,
+      "amount": 0.15,
+      "rate": 1.65,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c50a99b496fca85c40e72",
+      "syncIdentifier": "7704105050ea4a1aba0509e775afe672",
+      "duration": 5.00345699985822,
+      "timestamp": "2026-02-23T13:05:44Z",
+      "eventType": "Temp Basal",
+      "automatic": true,
+      "created_at": "2026-02-23T13:05:44.000Z",
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "temp": "absolute",
+      "absolute": 1.3,
+      "amount": 0.1,
+      "rate": 1.3,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c50a69b496fca85c3fb77",
+      "syncIdentifier": "f48e14b853a94474976678bb7441f0b4",
+      "duration": 5.101076932748159,
+      "timestamp": "2026-02-23T13:00:38Z",
+      "eventType": "Temp Basal",
+      "automatic": true,
+      "created_at": "2026-02-23T13:00:38.000Z",
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "temp": "absolute",
+      "absolute": 2.45,
+      "amount": 0.2,
+      "rate": 2.45,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c4e519b496fca85b95941",
+      "syncIdentifier": "97185bc4f2514ac6bf68ac1aee492204",
+      "created_at": "2026-02-23T12:55:45.000Z",
+      "timestamp": "2026-02-23T12:55:45Z",
+      "temp": "absolute",
+      "absolute": 3.15,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "insulinType": "Humalog",
+      "amount": 0.25,
+      "rate": 3.15,
+      "enteredBy": "loop://iPhone",
+      "duration": 4.889683183034261,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c4d269b496fca85b3f553",
+      "temp": "absolute",
+      "amount": 0.25,
+      "timestamp": "2026-02-23T12:50:45Z",
+      "automatic": true,
+      "insulinType": "Humalog",
+      "syncIdentifier": "55614a4f80ec49e387a02860ac5bc71d",
+      "duration": 4.990602384010951,
+      "rate": 3.05,
+      "absolute": 3.05,
+      "created_at": "2026-02-23T12:50:45.000Z",
+      "eventType": "Temp Basal",
+      "enteredBy": "loop://iPhone",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c4bf89b496fca85ae9f87",
+      "eventType": "Temp Basal",
+      "created_at": "2026-02-23T12:45:44.000Z",
+      "enteredBy": "loop://iPhone",
+      "timestamp": "2026-02-23T12:45:44Z",
+      "syncIdentifier": "17772522eb49440ca8649f0311e5283c",
+      "temp": "absolute",
+      "absolute": 4.4,
+      "duration": 5.025122167666753,
+      "insulinType": "Humalog",
+      "rate": 4.4,
+      "amount": 0.35,
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c4ab69b496fca85a8d81e",
+      "timestamp": "2026-02-23T12:40:22Z",
+      "enteredBy": "loop://iPhone",
+      "rate": 3.5,
+      "syncIdentifier": "7b0456d8a05a42f0a4cb6ff9a74d9a6a",
+      "eventType": "Temp Basal",
+      "absolute": 3.5,
+      "created_at": "2026-02-23T12:40:22.000Z",
+      "duration": 5.3662357985973355,
+      "amount": 0.3,
+      "insulinType": "Humalog",
+      "automatic": true,
+      "temp": "absolute",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c4ab49b496fca85a8cfbb",
+      "insulinType": "Humalog",
+      "temp": "absolute",
+      "eventType": "Temp Basal",
+      "syncIdentifier": "d01e1a90135b478fa2ff467f2de033d2",
+      "created_at": "2026-02-23T12:25:51.000Z",
+      "rate": 5.85,
+      "duration": 14.521484849850337,
+      "amount": 1.4,
+      "absolute": 5.85,
+      "automatic": true,
+      "enteredBy": "loop://iPhone",
+      "timestamp": "2026-02-23T12:25:51Z",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c461b9b496fca8593abf1",
+      "insulinType": "Humalog",
+      "temp": "absolute",
+      "eventType": "Temp Basal",
+      "syncIdentifier": "11da9fbe002e41079de7342a561accac",
+      "created_at": "2026-02-23T12:20:43.000Z",
+      "rate": 3.4,
+      "duration": 5.133690716822942,
+      "amount": 0.3,
+      "absolute": 3.4,
+      "automatic": true,
+      "enteredBy": "loop://iPhone",
+      "timestamp": "2026-02-23T12:20:43Z",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c43c59b496fca8589095d",
+      "enteredBy": "loop://iPhone",
+      "temp": "absolute",
+      "timestamp": "2026-02-23T12:10:44Z",
+      "rate": 0,
+      "absolute": 0,
+      "duration": 9.970429583390553,
+      "amount": 0,
+      "automatic": true,
+      "syncIdentifier": "d99cd73242994e47915e9649eb648571",
+      "eventType": "Temp Basal",
+      "created_at": "2026-02-23T12:10:44.000Z",
+      "insulinType": "Humalog",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c42469b496fca85824894",
+      "timestamp": "2026-02-23T12:04:22Z",
+      "enteredBy": "loop://iPhone",
+      "rate": 1.35,
+      "syncIdentifier": "d2858fd4386d452ca056650d0b0703fe",
+      "eventType": "Temp Basal",
+      "absolute": 1.35,
+      "created_at": "2026-02-23T12:04:22.000Z",
+      "duration": 0.6428466002146404,
+      "amount": 0,
+      "insulinType": "Humalog",
+      "automatic": true,
+      "temp": "absolute",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c42449b496fca85824143",
+      "amount": 0.35,
+      "automatic": true,
+      "temp": "absolute",
+      "eventType": "Temp Basal",
+      "duration": 14.121819849809011,
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "rate": 1.55,
+      "created_at": "2026-02-23T11:50:15.000Z",
+      "syncIdentifier": "a3c5b16c234c4a9f8e4e682eaf08e54c",
+      "timestamp": "2026-02-23T11:50:15Z",
+      "absolute": 1.55,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c3e4a9b496fca856fed41",
+      "amount": 0.1,
+      "automatic": true,
+      "temp": "absolute",
+      "eventType": "Temp Basal",
+      "duration": 2.881394749879837,
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "rate": 2.55,
+      "created_at": "2026-02-23T11:47:22.000Z",
+      "timestamp": "2026-02-23T11:47:22Z",
+      "syncIdentifier": "962ca176046b437085e910192077306a",
+      "absolute": 2.55,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c3e489b496fca856fe19c",
+      "temp": "absolute",
+      "rate": 2.7,
+      "duration": 30,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "amount": 1.35,
+      "timestamp": "2026-02-23T11:05:15Z",
+      "absolute": 2.7,
+      "enteredBy": "loop://iPhone",
+      "created_at": "2026-02-23T11:05:15.000Z",
+      "syncIdentifier": "d05160adce454a749402be98d39b7058",
+      "insulinType": "Humalog",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c33cd9b496fca85403c6f",
+      "amount": 0,
+      "created_at": "2026-02-23T11:02:37.000Z",
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "syncIdentifier": "a6b4139f14a7478a9e6eed426f2f5b2f",
+      "eventType": "Temp Basal",
+      "timestamp": "2026-02-23T11:02:37Z",
+      "automatic": true,
+      "temp": "absolute",
+      "absolute": 0.4,
+      "duration": 2.6266840994358063,
+      "rate": 0.4,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c33cb9b496fca85403018",
+      "amount": 0.25,
+      "created_at": "2026-02-23T10:55:44.000Z",
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "syncIdentifier": "fa44f7c8381643a6847898bc23805954",
+      "eventType": "Temp Basal",
+      "timestamp": "2026-02-23T10:55:44Z",
+      "automatic": true,
+      "temp": "absolute",
+      "absolute": 2.25,
+      "duration": 6.8905919333299,
+      "rate": 2.25,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c31049b496fca8533bb90",
+      "amount": 0.25,
+      "automatic": true,
+      "temp": "absolute",
+      "eventType": "Temp Basal",
+      "duration": 5.003346383571625,
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "rate": 3.05,
+      "created_at": "2026-02-23T10:50:43.000Z",
+      "timestamp": "2026-02-23T10:50:43Z",
+      "syncIdentifier": "ec5678dc7eb74bdc91e0e8ec13012427",
+      "absolute": 3.05,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c31019b496fca8533b39f",
+      "absolute": 3.65,
+      "eventType": "Temp Basal",
+      "rate": 3.65,
+      "amount": 0.55,
+      "syncIdentifier": "323d6aea03d74cf4a1c9383dec26307f",
+      "temp": "absolute",
+      "duration": 8.726557832956313,
+      "created_at": "2026-02-23T10:42:00.000Z",
+      "insulinType": "Humalog",
+      "enteredBy": "loop://iPhone",
+      "automatic": true,
+      "timestamp": "2026-02-23T10:42:00Z",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c2d819b496fca8523b95f",
+      "absolute": 4.6,
+      "eventType": "Temp Basal",
+      "rate": 4.6,
+      "amount": 0.5,
+      "syncIdentifier": "c17daad5edeb4fb6bbb685e7c37c59be",
+      "temp": "absolute",
+      "duration": 6.246969918409984,
+      "created_at": "2026-02-23T10:35:45.000Z",
+      "insulinType": "Humalog",
+      "enteredBy": "loop://iPhone",
+      "automatic": true,
+      "timestamp": "2026-02-23T10:35:45Z",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c2d7f9b496fca8523b1db",
+      "created_at": "2026-02-23T10:30:59.000Z",
+      "amount": 0.25,
+      "rate": 3.35,
+      "duration": 4.772926398118337,
+      "eventType": "Temp Basal",
+      "timestamp": "2026-02-23T10:30:59Z",
+      "enteredBy": "loop://iPhone",
+      "syncIdentifier": "60b594661e564ce3bfcc240d46efc1c3",
+      "temp": "absolute",
+      "absolute": 3.35,
+      "insulinType": "Humalog",
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c2b1b9b496fca851900ed",
+      "absolute": 1.6,
+      "eventType": "Temp Basal",
+      "rate": 1.6,
+      "amount": 0.15,
+      "syncIdentifier": "7be5a089f2bb44498747e886b2b507c9",
+      "temp": "absolute",
+      "duration": 5.470150166749955,
+      "created_at": "2026-02-23T10:25:30.000Z",
+      "insulinType": "Humalog",
+      "enteredBy": "loop://iPhone",
+      "automatic": true,
+      "timestamp": "2026-02-23T10:25:30Z",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c2b189b496fca8518f8f9",
+      "syncIdentifier": "7c273dbe66df440fa3cf96e9f828ce3c",
+      "created_at": "2026-02-23T10:23:31.000Z",
+      "timestamp": "2026-02-23T10:23:31Z",
+      "temp": "absolute",
+      "absolute": 2.2,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "insulinType": "Humalog",
+      "amount": 0.05,
+      "rate": 2.2,
+      "enteredBy": "loop://iPhone",
+      "duration": 1.9969018002351124,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c128b9b496fca85a9d82f",
+      "created_at": "2026-02-23T08:40:43.000Z",
+      "amount": 1.725,
+      "rate": 3.45,
+      "duration": 30,
+      "eventType": "Temp Basal",
+      "timestamp": "2026-02-23T08:40:43Z",
+      "enteredBy": "loop://iPhone",
+      "syncIdentifier": "d9205b35c76c48718758a10f3f46dd72",
+      "temp": "absolute",
+      "absolute": 3.45,
+      "insulinType": "Humalog",
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c11619b496fca85a4a888",
+      "timestamp": "2026-02-23T08:35:45Z",
+      "enteredBy": "loop://iPhone",
+      "temp": "absolute",
+      "rate": 3.3,
+      "absolute": 3.3,
+      "duration": 4.970170366764068,
+      "insulinType": "Humalog",
+      "syncIdentifier": "850e48656abf418fa8f9d183104b78a9",
+      "created_at": "2026-02-23T08:35:45.000Z",
+      "amount": 0.25,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c10339b496fca859f6d28",
+      "enteredBy": "loop://iPhone",
+      "absolute": 3.15,
+      "rate": 3.15,
+      "insulinType": "Humalog",
+      "syncIdentifier": "082ca8f6501b4098b6182d0aaba9d38f",
+      "timestamp": "2026-02-23T08:30:43Z",
+      "temp": "absolute",
+      "created_at": "2026-02-23T08:30:43.000Z",
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "duration": 5.024507600069046,
+      "amount": 0.25,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c0cce9b496fca858ff448",
+      "enteredBy": "loop://iPhone",
+      "absolute": 4.35,
+      "rate": 4.35,
+      "timestamp": "2026-02-23T08:16:13Z",
+      "syncIdentifier": "4cf4f9cf6d844298b8d2b396e1cc60e3",
+      "insulinType": "Humalog",
+      "temp": "absolute",
+      "created_at": "2026-02-23T08:16:13.000Z",
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "duration": 14.497372583548229,
+      "amount": 1.05,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c059b9b496fca856fda78",
+      "rate": 6,
+      "absolute": 6,
+      "automatic": true,
+      "amount": 3,
+      "temp": "absolute",
+      "eventType": "Temp Basal",
+      "duration": 30,
+      "syncIdentifier": "44d5b46ef8bc404c898feae6b91423cd",
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "created_at": "2026-02-23T07:45:31.000Z",
+      "timestamp": "2026-02-23T07:45:31Z",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c046f9b496fca856a76cc",
+      "insulinType": "Humalog",
+      "temp": "absolute",
+      "eventType": "Temp Basal",
+      "syncIdentifier": "be90ff7df970489db68ab6da10dd934a",
+      "created_at": "2026-02-23T07:40:31.000Z",
+      "rate": 4.45,
+      "duration": 5.003905200958252,
+      "amount": 0.35,
+      "absolute": 4.45,
+      "automatic": true,
+      "enteredBy": "loop://iPhone",
+      "timestamp": "2026-02-23T07:40:31Z",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c03439b496fca85654954",
+      "rate": 1.45,
+      "absolute": 1.45,
+      "automatic": true,
+      "amount": 0.1,
+      "temp": "absolute",
+      "eventType": "Temp Basal",
+      "duration": 5.000712949037552,
+      "syncIdentifier": "019221611aa94f189f0553050ce50392",
+      "timestamp": "2026-02-23T07:35:31Z",
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "created_at": "2026-02-23T07:35:31.000Z",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699c02149b496fca856004a4",
+      "timestamp": "2026-02-23T07:22:21Z",
+      "enteredBy": "loop://iPhone",
+      "rate": 0,
+      "syncIdentifier": "d1dff5a03a514331b3be5e262c83bd8a",
+      "eventType": "Temp Basal",
+      "absolute": 0,
+      "created_at": "2026-02-23T07:22:21.000Z",
+      "duration": 13.167629583676655,
+      "amount": 0,
+      "insulinType": "Humalog",
+      "automatic": true,
+      "temp": "absolute",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bfe939b496fca85503582",
+      "enteredBy": "loop://iPhone",
+      "temp": "absolute",
+      "timestamp": "2026-02-23T07:15:31Z",
+      "rate": 0.4,
+      "absolute": 0.4,
+      "duration": 6.83167921702067,
+      "amount": 0.05,
+      "automatic": true,
+      "syncIdentifier": "a5ee04fec7034db9915bf06d5cefc06c",
+      "eventType": "Temp Basal",
+      "created_at": "2026-02-23T07:15:31.000Z",
+      "insulinType": "Humalog",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bfd679b496fca854afbc5",
+      "amount": 0.15,
+      "created_at": "2026-02-23T07:10:31.000Z",
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "syncIdentifier": "58b170e3db4046c5ad8ad479fc50eb34",
+      "eventType": "Temp Basal",
+      "timestamp": "2026-02-23T07:10:31Z",
+      "automatic": true,
+      "temp": "absolute",
+      "absolute": 1.5,
+      "duration": 5.000400932629903,
+      "rate": 1.5,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bfc3c9b496fca8545bd82",
+      "enteredBy": "loop://iPhone",
+      "temp": "absolute",
+      "timestamp": "2026-02-23T07:05:32Z",
+      "rate": 1.3,
+      "absolute": 1.3,
+      "duration": 4.987097316980362,
+      "automatic": true,
+      "syncIdentifier": "f5d4f80c5c334c5bb590d91be5401926",
+      "created_at": "2026-02-23T07:05:32.000Z",
+      "eventType": "Temp Basal",
+      "insulinType": "Humalog",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bfb0f9b496fca85407dc0",
+      "timestamp": "2026-02-23T07:00:31Z",
+      "temp": "absolute",
+      "eventType": "Temp Basal",
+      "syncIdentifier": "d2f774496766478e937a7a0afed0bd6e",
+      "created_at": "2026-02-23T07:00:31.000Z",
+      "rate": 0.75,
+      "duration": 5.016789299249649,
+      "amount": 0.05,
+      "absolute": 0.75,
+      "automatic": true,
+      "enteredBy": "loop://iPhone",
+      "insulinType": "Humalog",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bfb0c9b496fca85407481",
+      "absolute": 1.25,
+      "eventType": "Temp Basal",
+      "rate": 1.25,
+      "amount": 0.1,
+      "syncIdentifier": "3b86f802233a4212ae7a3453e6d1762f",
+      "temp": "absolute",
+      "duration": 4.4629467010498045,
+      "created_at": "2026-02-23T06:56:03.000Z",
+      "insulinType": "Humalog",
+      "enteredBy": "loop://iPhone",
+      "automatic": true,
+      "timestamp": "2026-02-23T06:56:03Z",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bf8b99b496fca8535ebe0",
+      "timestamp": "2026-02-23T06:50:33Z",
+      "enteredBy": "loop://iPhone",
+      "temp": "absolute",
+      "rate": 1.55,
+      "absolute": 1.55,
+      "duration": 5.499021216233571,
+      "insulinType": "Humalog",
+      "syncIdentifier": "347d7e5fc63b48dbaf8e6cd10d10dfb2",
+      "created_at": "2026-02-23T06:50:33.000Z",
+      "amount": 0.15,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bf8b79b496fca8535e498",
+      "syncIdentifier": "80b0e460da974c5e8d76e406db4e3a85",
+      "created_at": "2026-02-23T06:45:38.000Z",
+      "timestamp": "2026-02-23T06:45:38Z",
+      "temp": "absolute",
+      "absolute": 2.4,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "insulinType": "Humalog",
+      "amount": 0.2,
+      "rate": 2.4,
+      "enteredBy": "loop://iPhone",
+      "duration": 4.920943850278855,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bf6659b496fca852b4af4",
+      "enteredBy": "loop://iPhone",
+      "absolute": 1.45,
+      "rate": 1.45,
+      "insulinType": "Humalog",
+      "syncIdentifier": "61831b7458f049f49670908b3c485a14",
+      "timestamp": "2026-02-23T06:40:37Z",
+      "temp": "absolute",
+      "created_at": "2026-02-23T06:40:37.000Z",
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "duration": 5.006987082958221,
+      "amount": 0.1,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bf6639b496fca852b3fe3",
+      "enteredBy": "loop://iPhone",
+      "absolute": 3.35,
+      "rate": 3.35,
+      "timestamp": "2026-02-23T06:35:37Z",
+      "syncIdentifier": "7a870fefedc947c4a905e2383dd65f3c",
+      "insulinType": "Humalog",
+      "temp": "absolute",
+      "created_at": "2026-02-23T06:35:37.000Z",
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "duration": 4.997906883557637,
+      "amount": 0.3,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bf40c9b496fca852085e9",
+      "created_at": "2026-02-23T06:30:36.000Z",
+      "amount": 0.4,
+      "rate": 4.6,
+      "duration": 5.0174974501132965,
+      "eventType": "Temp Basal",
+      "timestamp": "2026-02-23T06:30:36Z",
+      "enteredBy": "loop://iPhone",
+      "syncIdentifier": "5006506abcd64067aa89c370d07a66c8",
+      "temp": "absolute",
+      "absolute": 4.6,
+      "insulinType": "Humalog",
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bf2dc9b496fca851b2255",
+      "enteredBy": "loop://iPhone",
+      "absolute": 4.25,
+      "rate": 4.25,
+      "insulinType": "Humalog",
+      "syncIdentifier": "fc0b85d57f214b3c821f604338c8e09b",
+      "timestamp": "2026-02-23T06:25:32Z",
+      "temp": "absolute",
+      "created_at": "2026-02-23T06:25:32.000Z",
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "duration": 5.073165800174078,
+      "amount": 0.35,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bf1b09b496fca8515c2ae",
+      "enteredBy": "loop://iPhone",
+      "absolute": 3.5,
+      "rate": 3.5,
+      "timestamp": "2026-02-23T06:20:32Z",
+      "insulinType": "Humalog",
+      "syncIdentifier": "f58712dfd2874ed2b9d80117661dd759",
+      "temp": "absolute",
+      "created_at": "2026-02-23T06:20:32.000Z",
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "duration": 4.999680399894714,
+      "amount": 0.3,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bf0899b496fca85108ccf",
+      "enteredBy": "loop://iPhone",
+      "absolute": 3.2,
+      "rate": 3.2,
+      "timestamp": "2026-02-23T06:15:37Z",
+      "syncIdentifier": "c6e93184ebfd42f385d89e24a61912cd",
+      "insulinType": "Humalog",
+      "temp": "absolute",
+      "created_at": "2026-02-23T06:15:37.000Z",
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "duration": 4.917140483856201,
+      "amount": 0.25,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bf0869b496fca85107f2b",
+      "timestamp": "2026-02-23T06:14:54Z",
+      "eventType": "Site Change",
+      "notes": "Set Change (fixed prime)",
+      "created_at": "2026-02-23T06:14:54.000Z",
+      "enteredBy": "loop://iPhone",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bf0869b496fca85107f33",
+      "temp": "absolute",
+      "timestamp": "2026-02-23T06:14:29Z",
+      "enteredBy": "loop://iPhone",
+      "syncIdentifier": "03000000751d8e36161a",
+      "amount": 0.05,
+      "eventType": "Temp Basal",
+      "created_at": "2026-02-23T06:14:29.000Z",
+      "insulinType": "Humalog",
+      "absolute": 3.25,
+      "duration": 1.1389184991518657,
+      "rate": 3.25,
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bf0869b496fca85107f3d",
+      "temp": "absolute",
+      "enteredBy": "loop://iPhone",
+      "syncIdentifier": "2100288c16161a",
+      "timestamp": "2026-02-23T06:12:40Z",
+      "eventType": "Temp Basal",
+      "created_at": "2026-02-23T06:12:40.000Z",
+      "absolute": 0,
+      "duration": 1.8166666666666667,
+      "automatic": true,
+      "rate": 0,
+      "reason": "suspend",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bef579b496fca850b1321",
+      "enteredBy": "loop://iPhone",
+      "absolute": 3.25,
+      "rate": 3.25,
+      "insulinType": "Humalog",
+      "timestamp": "2026-02-23T06:10:31Z",
+      "syncIdentifier": "0e1406fb18814428b6a94a01cfbfad62",
+      "temp": "absolute",
+      "created_at": "2026-02-23T06:10:31.000Z",
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "duration": 2.1388574659824373,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bee2a9b496fca8505beae",
+      "temp": "absolute",
+      "timestamp": "2026-02-23T06:05:30Z",
+      "syncIdentifier": "b735b931157543a1a5fd82716831bffd",
+      "enteredBy": "loop://iPhone",
+      "amount": 0.25,
+      "eventType": "Temp Basal",
+      "created_at": "2026-02-23T06:05:30.000Z",
+      "insulinType": "Humalog",
+      "absolute": 3.05,
+      "duration": 5.018600251277288,
+      "rate": 3.05,
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699becfe9b496fca85005f24",
+      "temp": "absolute",
+      "enteredBy": "loop://iPhone",
+      "timestamp": "2026-02-23T06:00:30Z",
+      "syncIdentifier": "38a6b742368a44ad8c0d075d7c715f7e",
+      "amount": 0.3,
+      "eventType": "Temp Basal",
+      "created_at": "2026-02-23T06:00:30.000Z",
+      "insulinType": "Humalog",
+      "absolute": 3.55,
+      "duration": 5.008788516124089,
+      "rate": 3.55,
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bebd49b496fca85fb0f62",
+      "temp": "absolute",
+      "timestamp": "2026-02-23T05:55:32Z",
+      "enteredBy": "loop://iPhone",
+      "syncIdentifier": "71d4e47c9b1148848687768f43001027",
+      "amount": 0.3,
+      "eventType": "Temp Basal",
+      "created_at": "2026-02-23T05:55:32.000Z",
+      "insulinType": "Humalog",
+      "absolute": 3.6,
+      "duration": 4.965891098976135,
+      "rate": 3.6,
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699beaa79b496fca85f5c987",
+      "temp": "absolute",
+      "enteredBy": "loop://iPhone",
+      "syncIdentifier": "c7154ac0fec04ca8baff371cd5f5ccc3",
+      "timestamp": "2026-02-23T05:50:30Z",
+      "amount": 0.25,
+      "eventType": "Temp Basal",
+      "created_at": "2026-02-23T05:50:30.000Z",
+      "insulinType": "Humalog",
+      "absolute": 3.2,
+      "duration": 5.020173950990041,
+      "rate": 3.2,
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699be97c9b496fca85f081c5",
+      "timestamp": "2026-02-23T05:45:31Z",
+      "enteredBy": "loop://iPhone",
+      "temp": "absolute",
+      "rate": 2.5,
+      "absolute": 2.5,
+      "duration": 4.983708449204763,
+      "insulinType": "Humalog",
+      "syncIdentifier": "e5d6b6e2c9dd49a8a494de8f168ecb57",
+      "created_at": "2026-02-23T05:45:31.000Z",
+      "amount": 0.2,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699be8509b496fca85eb371a",
+      "timestamp": "2026-02-23T05:40:32Z",
+      "enteredBy": "loop://iPhone",
+      "temp": "absolute",
+      "rate": 2,
+      "absolute": 2,
+      "duration": 4.992572734753291,
+      "insulinType": "Humalog",
+      "syncIdentifier": "d040ca1f24c8402cafa3856c16b383d4",
+      "created_at": "2026-02-23T05:40:32.000Z",
+      "amount": 0.15,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699be7249b496fca85e5d79b",
+      "timestamp": "2026-02-23T05:35:32Z",
+      "enteredBy": "loop://iPhone",
+      "temp": "absolute",
+      "rate": 1.1,
+      "absolute": 1.1,
+      "duration": 5.000796616077423,
+      "insulinType": "Humalog",
+      "syncIdentifier": "2a2e00002d9541df9d9d7ff0bd17e5ea",
+      "created_at": "2026-02-23T05:35:32.000Z",
+      "amount": 0.1,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699be5fa9b496fca85e08e8c",
+      "timestamp": "2026-02-23T05:30:34Z",
+      "enteredBy": "loop://iPhone",
+      "temp": "absolute",
+      "rate": 1.2,
+      "absolute": 1.2,
+      "duration": 4.970227799812952,
+      "insulinType": "Humalog",
+      "syncIdentifier": "c9e2e22896f840b4a36dd9c9c7f857a4",
+      "created_at": "2026-02-23T05:30:34.000Z",
+      "amount": 0.1,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699be4ca9b496fca85db3195",
+      "timestamp": "2026-02-23T05:20:30Z",
+      "enteredBy": "loop://iPhone",
+      "temp": "absolute",
+      "rate": 1.9,
+      "absolute": 1.9,
+      "duration": 5.0317668159802755,
+      "insulinType": "Humalog",
+      "syncIdentifier": "6d232ad7b8f94239a87fa29ad3d68a27",
+      "created_at": "2026-02-23T05:20:30.000Z",
+      "amount": 0.15,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bdeed9b496fca85c08269",
+      "temp": "absolute",
+      "enteredBy": "loop://iPhone",
+      "syncIdentifier": "56d7e1496d474088828c4f53cf426b8a",
+      "timestamp": "2026-02-23T05:00:28Z",
+      "amount": 0.35,
+      "eventType": "Temp Basal",
+      "created_at": "2026-02-23T05:00:28.000Z",
+      "insulinType": "Humalog",
+      "absolute": 1.95,
+      "duration": 10.069757451613745,
+      "rate": 1.95,
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bddc19b496fca85bb409a",
+      "timestamp": "2026-02-23T04:55:29Z",
+      "enteredBy": "loop://iPhone",
+      "temp": "absolute",
+      "rate": 2.5,
+      "absolute": 2.5,
+      "duration": 4.993150315682093,
+      "insulinType": "Humalog",
+      "syncIdentifier": "32b0edd9fe724836b2ac603538c3a818",
+      "created_at": "2026-02-23T04:55:29.000Z",
+      "amount": 0.2,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bdc989b496fca85b5f7eb",
+      "timestamp": "2026-02-23T04:50:31Z",
+      "enteredBy": "loop://iPhone",
+      "temp": "absolute",
+      "rate": 2.75,
+      "absolute": 2.75,
+      "duration": 4.959265800317128,
+      "insulinType": "Humalog",
+      "syncIdentifier": "75415852df8e4c4f9e734570fcb90a97",
+      "created_at": "2026-02-23T04:50:31.000Z",
+      "amount": 0.25,
+      "automatic": true,
+      "eventType": "Temp Basal",
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    },
+    {
+      "_id": "699bdb6c9b496fca85b0c4b3",
+      "created_at": "2026-02-23T04:45:32.000Z",
+      "amount": 0.25,
+      "rate": 3.05,
+      "duration": 4.992821699380874,
+      "eventType": "Temp Basal",
+      "timestamp": "2026-02-23T04:45:32Z",
+      "enteredBy": "loop://iPhone",
+      "syncIdentifier": "0075019d484a4ff085750d8e4bb7502d",
+      "temp": "absolute",
+      "absolute": 3.05,
+      "insulinType": "Humalog",
+      "automatic": true,
+      "utcOffset": 0,
+      "carbs": null,
+      "insulin": null
+    }
+  ],
+  "entries": [
+    {
+      "_id": "699c6f20eea0a04821269d0f",
+      "sgv": 172,
+      "dateString": "2026-02-23T15:14:43Z",
+      "date": 1771859683000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c6dd4eea0a02386269d0e",
+      "sgv": 173,
+      "dateString": "2026-02-23T15:09:44Z",
+      "date": 1771859384000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c6810eea0a0efa5269d05",
+      "sgv": 154,
+      "dateString": "2026-02-23T14:44:44Z",
+      "date": 1771857884000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c5b2beea0a04195269cfe",
+      "sgv": 167,
+      "dateString": "2026-02-23T13:49:44Z",
+      "date": 1771854584000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c5a09eea0a0f3fe269cfd",
+      "sgv": 169,
+      "dateString": "2026-02-23T13:44:44Z",
+      "date": 1771854284000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c58bbeea0a02940269cfc",
+      "sgv": 169,
+      "dateString": "2026-02-23T13:39:43Z",
+      "date": 1771853983000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c585aeea0a03232269cfb",
+      "sgv": 173,
+      "dateString": "2026-02-23T13:34:44Z",
+      "date": 1771853684000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c4f77eea0a06675269cf3",
+      "sgv": 170,
+      "dateString": "2026-02-23T12:59:44Z",
+      "date": 1771851584000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c4e51eea0a08135269cf2",
+      "sgv": 174,
+      "dateString": "2026-02-23T12:54:44Z",
+      "date": 1771851284000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c4d26eea0a060ba269cf1",
+      "sgv": 168,
+      "dateString": "2026-02-23T12:49:44Z",
+      "date": 1771850984000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c4bf8eea0a0d2a4269cf0",
+      "sgv": 176,
+      "dateString": "2026-02-23T12:44:44Z",
+      "date": 1771850684000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c4ab7eea0a07625269cef",
+      "sgv": 176,
+      "dateString": "2026-02-23T12:39:44Z",
+      "date": 1771850384000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c4986eea0a06ded269cee",
+      "sgv": 173,
+      "dateString": "2026-02-23T12:34:44Z",
+      "date": 1771850084000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c485eeea0a05efe269ced",
+      "sgv": 167,
+      "dateString": "2026-02-23T12:29:43Z",
+      "date": 1771849783000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c474feea0a084b1269cec",
+      "sgv": 158,
+      "dateString": "2026-02-23T12:24:44Z",
+      "date": 1771849484000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c3347eea0a00da2269cde",
+      "sgv": 159,
+      "dateString": "2026-02-23T10:59:43Z",
+      "date": 1771844383000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c3230eea0a0d47f269cdd",
+      "sgv": 173,
+      "dateString": "2026-02-23T10:54:44Z",
+      "date": 1771844084000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c3104eea0a0fb55269cdc",
+      "sgv": 181,
+      "dateString": "2026-02-23T10:49:43Z",
+      "date": 1771843783000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c2fc5eea0a02cf0269cdb",
+      "sgv": 182,
+      "dateString": "2026-02-23T10:44:43Z",
+      "date": 1771843483000,
+      "direction": "Flat"
+    },
+    {
+      "_id": "699c2ef8eea0a098e0269cda",
+      "sgv": 175,
+      "dateString": "2026-02-23T10:39:43Z",
+      "date": 1771843183000,
+      "direction": "Flat"
+    }
+  ],
+  "profile": [
+    {
+      "_id": "69984b8feea0a026b3269976",
+      "enteredBy": "Loop",
+      "store": {
+        "Default": {
+          "carbratio": [
+            {
+              "time": "00:00",
+              "value": 10,
+              "timeAsSeconds": 0
+            }
+          ],
+          "target_high": [
+            {
+              "value": 102,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            }
+          ],
+          "basal": [
+            {
+              "value": 1.8,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            },
+            {
+              "time": "05:30",
+              "value": 1.7,
+              "timeAsSeconds": 19800
+            },
+            {
+              "value": 1.8,
+              "timeAsSeconds": 81000,
+              "time": "22:30"
+            }
+          ],
+          "carbs_hr": "0",
+          "units": "mg/dL",
+          "timezone": "ETC/GMT+8",
+          "sens": [
+            {
+              "time": "00:00",
+              "value": 40,
+              "timeAsSeconds": 0
+            }
+          ],
+          "delay": "0",
+          "target_low": [
+            {
+              "timeAsSeconds": 0,
+              "value": 97,
+              "time": "00:00"
+            }
+          ],
+          "dia": 6
+        }
+      },
+      "mills": "1771588438625",
+      "defaultProfile": "Default",
+      "units": "mg/dL",
+      "loopSettings": {
+        "bundleIdentifier": "com.medicaldatanetworks.loop-denim.Loop",
+        "dosingStrategy": "tempBasalOnly",
+        "maximumBolus": 9.9,
+        "overridePresets": [
+          {
+            "targetRange": [
+              120,
+              125
+            ],
+            "duration": 3600,
+            "insulinNeedsScaleFactor": 0.5,
+            "name": "sleepin",
+            "symbol": "🤸‍♀️"
+          },
+          {
+            "targetRange": [
+              135,
+              136
+            ],
+            "symbol": "🚵‍♂️",
+            "insulinNeedsScaleFactor": 1.5,
+            "name": "horse",
+            "duration": 10800
+          },
+          {
+            "targetRange": [
+              165,
+              180
+            ],
+            "insulinNeedsScaleFactor": 0.7,
+            "symbol": "⛹️‍♂️",
+            "name": "basketball",
+            "duration": 5400
+          },
+          {
+            "targetRange": [
+              155,
+              170
+            ],
+            "symbol": "⚽️",
+            "duration": 8100,
+            "name": "soccer",
+            "insulinNeedsScaleFactor": 0.8
+          },
+          {
+            "targetRange": [
+              160,
+              165
+            ],
+            "name": "tennis",
+            "symbol": "🎾",
+            "duration": 7200
+          },
+          {
+            "insulinNeedsScaleFactor": 1.2,
+            "name": "medicine",
+            "targetRange": [
+              110,
+              115
+            ],
+            "duration": 0,
+            "symbol": "🏹"
+          },
+          {
+            "targetRange": [
+              150,
+              180
+            ],
+            "duration": 6300,
+            "symbol": "🏊‍♂️🏊‍♂️",
+            "name": "swim",
+            "insulinNeedsScaleFactor": 0.8
+          },
+          {
+            "symbol": "💃",
+            "name": "extra",
+            "duration": 10800,
+            "insulinNeedsScaleFactor": 2
+          },
+          {
+            "insulinNeedsScaleFactor": 0.9,
+            "name": "less",
+            "targetRange": [
+              108,
+              112
+            ],
+            "duration": 7200,
+            "symbol": "➖"
+          }
+        ],
+        "deviceToken": "24087ffec20913af4cc449001a199ccdee7c0ddd2dd33673237f9fbe01d68ca2",
+        "maximumBasalRatePerHour": 6,
+        "preMealTargetRange": [
+          69,
+          69
+        ],
+        "minimumBGGuard": 69,
+        "dosingEnabled": true
+      },
+      "startDate": "2026-02-20T11:53:58Z"
+    },
+    {
+      "_id": "6996352eeea0a080c62697c1",
+      "startDate": "2026-02-18T21:54:53Z",
+      "mills": "1771451693693",
+      "enteredBy": "Loop",
+      "store": {
+        "Default": {
+          "carbratio": [
+            {
+              "timeAsSeconds": 0,
+              "value": 10,
+              "time": "00:00"
+            }
+          ],
+          "basal": [
+            {
+              "timeAsSeconds": 0,
+              "value": 1.8,
+              "time": "00:00"
+            },
+            {
+              "timeAsSeconds": 19800,
+              "value": 1.7,
+              "time": "05:30"
+            },
+            {
+              "time": "22:30",
+              "value": 1.8,
+              "timeAsSeconds": 81000
+            }
+          ],
+          "delay": "0",
+          "timezone": "ETC/GMT+8",
+          "dia": 6,
+          "target_high": [
+            {
+              "time": "00:00",
+              "value": 102,
+              "timeAsSeconds": 0
+            }
+          ],
+          "units": "mg/dL",
+          "carbs_hr": "0",
+          "target_low": [
+            {
+              "value": 97,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            }
+          ],
+          "sens": [
+            {
+              "time": "00:00",
+              "value": 40,
+              "timeAsSeconds": 0
+            }
+          ]
+        }
+      },
+      "units": "mg/dL",
+      "defaultProfile": "Default",
+      "loopSettings": {
+        "dosingStrategy": "tempBasalOnly",
+        "maximumBasalRatePerHour": 6,
+        "bundleIdentifier": "com.medicaldatanetworks.loop-denim.Loop",
+        "deviceToken": "24087ffec20913af4cc449001a199ccdee7c0ddd2dd33673237f9fbe01d68ca2",
+        "dosingEnabled": true,
+        "preMealTargetRange": [
+          69,
+          69
+        ],
+        "maximumBolus": 9.9,
+        "minimumBGGuard": 69,
+        "overridePresets": [
+          {
+            "name": "sleepin",
+            "targetRange": [
+              120,
+              125
+            ],
+            "insulinNeedsScaleFactor": 0.5,
+            "duration": 3600,
+            "symbol": "🤸‍♀️"
+          },
+          {
+            "duration": 10800,
+            "name": "horse",
+            "targetRange": [
+              135,
+              136
+            ],
+            "symbol": "🚵‍♂️",
+            "insulinNeedsScaleFactor": 1.5
+          },
+          {
+            "targetRange": [
+              165,
+              180
+            ],
+            "name": "basketball",
+            "symbol": "⛹️‍♂️",
+            "duration": 5400,
+            "insulinNeedsScaleFactor": 0.7
+          },
+          {
+            "name": "soccer",
+            "targetRange": [
+              155,
+              170
+            ],
+            "symbol": "⚽️",
+            "duration": 8100,
+            "insulinNeedsScaleFactor": 0.8
+          },
+          {
+            "symbol": "🎾",
+            "duration": 7200,
+            "targetRange": [
+              160,
+              165
+            ],
+            "name": "tennis"
+          },
+          {
+            "insulinNeedsScaleFactor": 1.2,
+            "name": "medicine",
+            "duration": 0,
+            "targetRange": [
+              110,
+              115
+            ],
+            "symbol": "🏹"
+          },
+          {
+            "symbol": "🏊‍♂️🏊‍♂️",
+            "insulinNeedsScaleFactor": 0.8,
+            "targetRange": [
+              150,
+              180
+            ],
+            "duration": 6300,
+            "name": "swim"
+          },
+          {
+            "symbol": "💃",
+            "duration": 10800,
+            "name": "extra",
+            "insulinNeedsScaleFactor": 2
+          },
+          {
+            "insulinNeedsScaleFactor": 0.9,
+            "duration": 7200,
+            "name": "less",
+            "symbol": "➖",
+            "targetRange": [
+              108,
+              112
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "_id": "699634f2eea0a06f8f2697bf",
+      "loopSettings": {
+        "minimumBGGuard": 69,
+        "maximumBolus": 9.9,
+        "overridePresets": [
+          {
+            "targetRange": [
+              120,
+              125
+            ],
+            "insulinNeedsScaleFactor": 0.5,
+            "name": "sleepin",
+            "symbol": "🤸‍♀️",
+            "duration": 3600
+          },
+          {
+            "insulinNeedsScaleFactor": 1.5,
+            "name": "horse",
+            "duration": 10800,
+            "symbol": "🚵‍♂️",
+            "targetRange": [
+              135,
+              136
+            ]
+          },
+          {
+            "name": "basketball",
+            "targetRange": [
+              165,
+              180
+            ],
+            "duration": 5400,
+            "insulinNeedsScaleFactor": 0.7,
+            "symbol": "⛹️‍♂️"
+          },
+          {
+            "symbol": "⚽️",
+            "targetRange": [
+              155,
+              170
+            ],
+            "insulinNeedsScaleFactor": 0.8,
+            "name": "soccer",
+            "duration": 8100
+          },
+          {
+            "symbol": "🎾",
+            "targetRange": [
+              160,
+              165
+            ],
+            "duration": 7200,
+            "name": "tennis"
+          },
+          {
+            "insulinNeedsScaleFactor": 1.2,
+            "symbol": "🏹",
+            "duration": 0,
+            "targetRange": [
+              110,
+              115
+            ],
+            "name": "medicine"
+          },
+          {
+            "insulinNeedsScaleFactor": 0.8,
+            "duration": 6300,
+            "targetRange": [
+              150,
+              180
+            ],
+            "name": "swim",
+            "symbol": "🏊‍♂️🏊‍♂️"
+          },
+          {
+            "duration": 10800,
+            "name": "extra",
+            "symbol": "💃",
+            "insulinNeedsScaleFactor": 2
+          },
+          {
+            "duration": 7200,
+            "name": "less",
+            "insulinNeedsScaleFactor": 0.9,
+            "symbol": "➖",
+            "targetRange": [
+              108,
+              112
+            ]
+          }
+        ],
+        "bundleIdentifier": "com.medicaldatanetworks.loop-denim.Loop",
+        "dosingEnabled": true,
+        "deviceToken": "24087ffec20913af4cc449001a199ccdee7c0ddd2dd33673237f9fbe01d68ca2",
+        "maximumBasalRatePerHour": 6,
+        "dosingStrategy": "tempBasalOnly",
+        "preMealTargetRange": [
+          69,
+          69
+        ]
+      },
+      "mills": "1771451633483",
+      "enteredBy": "Loop",
+      "store": {
+        "Default": {
+          "target_high": [
+            {
+              "timeAsSeconds": 0,
+              "value": 102,
+              "time": "00:00"
+            }
+          ],
+          "timezone": "ETC/GMT+8",
+          "target_low": [
+            {
+              "value": 97,
+              "time": "00:00",
+              "timeAsSeconds": 0
+            }
+          ],
+          "carbs_hr": "0",
+          "basal": [
+            {
+              "value": 1.8,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            },
+            {
+              "time": "05:30",
+              "value": 1.7,
+              "timeAsSeconds": 19800
+            },
+            {
+              "time": "22:30",
+              "value": 1.8,
+              "timeAsSeconds": 81000
+            }
+          ],
+          "dia": 6,
+          "sens": [
+            {
+              "value": 40,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            }
+          ],
+          "delay": "0",
+          "carbratio": [
+            {
+              "value": 10,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            }
+          ],
+          "units": "mg/dL"
+        }
+      },
+      "startDate": "2026-02-18T21:53:53Z",
+      "units": "mg/dL",
+      "defaultProfile": "Default"
+    },
+    {
+      "_id": "6991de59eea0a0302a269490",
+      "defaultProfile": "Default",
+      "startDate": "2026-02-15T14:54:56Z",
+      "enteredBy": "Loop",
+      "loopSettings": {
+        "minimumBGGuard": 69,
+        "dosingEnabled": true,
+        "bundleIdentifier": "com.medicaldatanetworks.loop-denim.Loop",
+        "deviceToken": "24087ffec20913af4cc449001a199ccdee7c0ddd2dd33673237f9fbe01d68ca2",
+        "overridePresets": [
+          {
+            "targetRange": [
+              120,
+              125
+            ],
+            "symbol": "🤸‍♀️",
+            "duration": 3600,
+            "insulinNeedsScaleFactor": 0.5,
+            "name": "sleepin"
+          },
+          {
+            "insulinNeedsScaleFactor": 1.5,
+            "name": "horse",
+            "duration": 10800,
+            "targetRange": [
+              135,
+              136
+            ],
+            "symbol": "🚵‍♂️"
+          },
+          {
+            "duration": 5400,
+            "name": "basketball",
+            "symbol": "⛹️‍♂️",
+            "insulinNeedsScaleFactor": 0.7,
+            "targetRange": [
+              165,
+              180
+            ]
+          },
+          {
+            "insulinNeedsScaleFactor": 0.8,
+            "targetRange": [
+              155,
+              170
+            ],
+            "symbol": "⚽️",
+            "duration": 8100,
+            "name": "soccer"
+          },
+          {
+            "name": "tennis",
+            "targetRange": [
+              160,
+              165
+            ],
+            "symbol": "🎾",
+            "duration": 7200
+          },
+          {
+            "duration": 0,
+            "name": "medicine",
+            "symbol": "🏹",
+            "insulinNeedsScaleFactor": 1.2,
+            "targetRange": [
+              110,
+              115
+            ]
+          },
+          {
+            "name": "swim",
+            "symbol": "🏊‍♂️🏊‍♂️",
+            "duration": 6300,
+            "insulinNeedsScaleFactor": 0.8,
+            "targetRange": [
+              150,
+              180
+            ]
+          },
+          {
+            "insulinNeedsScaleFactor": 2,
+            "duration": 10800,
+            "symbol": "💃",
+            "name": "extra"
+          },
+          {
+            "insulinNeedsScaleFactor": 0.9,
+            "name": "less",
+            "symbol": "➖",
+            "targetRange": [
+              108,
+              112
+            ],
+            "duration": 7200
+          }
+        ],
+        "maximumBolus": 9.9,
+        "dosingStrategy": "tempBasalOnly",
+        "preMealTargetRange": [
+          69,
+          69
+        ],
+        "maximumBasalRatePerHour": 6
+      },
+      "units": "mg/dL",
+      "store": {
+        "Default": {
+          "units": "mg/dL",
+          "target_low": [
+            {
+              "time": "00:00",
+              "value": 97,
+              "timeAsSeconds": 0
+            }
+          ],
+          "dia": 6,
+          "target_high": [
+            {
+              "timeAsSeconds": 0,
+              "value": 102,
+              "time": "00:00"
+            }
+          ],
+          "basal": [
+            {
+              "timeAsSeconds": 0,
+              "time": "00:00",
+              "value": 1.8
+            },
+            {
+              "value": 1.7,
+              "time": "05:30",
+              "timeAsSeconds": 19800
+            },
+            {
+              "value": 1.8,
+              "timeAsSeconds": 81000,
+              "time": "22:30"
+            }
+          ],
+          "carbs_hr": "0",
+          "delay": "0",
+          "timezone": "ETC/GMT+8",
+          "carbratio": [
+            {
+              "time": "00:00",
+              "timeAsSeconds": 0,
+              "value": 10
+            }
+          ],
+          "sens": [
+            {
+              "time": "00:00",
+              "value": 40,
+              "timeAsSeconds": 0
+            }
+          ]
+        }
+      },
+      "mills": "1771167296761"
+    },
+    {
+      "_id": "698cf431eea0a01114269037",
+      "units": "mg/dL",
+      "store": {
+        "Default": {
+          "timezone": "ETC/GMT+8",
+          "basal": [
+            {
+              "time": "00:00",
+              "value": 1.8,
+              "timeAsSeconds": 0
+            },
+            {
+              "timeAsSeconds": 19800,
+              "time": "05:30",
+              "value": 1.7
+            },
+            {
+              "timeAsSeconds": 81000,
+              "time": "22:30",
+              "value": 1.8
+            }
+          ],
+          "target_low": [
+            {
+              "time": "00:00",
+              "timeAsSeconds": 0,
+              "value": 97
+            }
+          ],
+          "carbs_hr": "0",
+          "delay": "0",
+          "target_high": [
+            {
+              "value": 102,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            }
+          ],
+          "dia": 6,
+          "carbratio": [
+            {
+              "value": 10,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            }
+          ],
+          "sens": [
+            {
+              "value": 40,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            }
+          ],
+          "units": "mg/dL"
+        }
+      },
+      "loopSettings": {
+        "dosingStrategy": "tempBasalOnly",
+        "dosingEnabled": true,
+        "bundleIdentifier": "com.medicaldatanetworks.loop-denim.Loop",
+        "maximumBasalRatePerHour": 6,
+        "overridePresets": [
+          {
+            "targetRange": [
+              120,
+              125
+            ],
+            "duration": 3600,
+            "insulinNeedsScaleFactor": 0.5,
+            "symbol": "🤸‍♀️",
+            "name": "sleepin"
+          },
+          {
+            "insulinNeedsScaleFactor": 1.5,
+            "name": "horse",
+            "symbol": "🚵‍♂️",
+            "duration": 10800,
+            "targetRange": [
+              135,
+              136
+            ]
+          },
+          {
+            "name": "basketball",
+            "symbol": "⛹️‍♂️",
+            "duration": 5400,
+            "targetRange": [
+              165,
+              180
+            ],
+            "insulinNeedsScaleFactor": 0.7
+          },
+          {
+            "targetRange": [
+              155,
+              170
+            ],
+            "symbol": "⚽️",
+            "insulinNeedsScaleFactor": 0.8,
+            "duration": 8100,
+            "name": "soccer"
+          },
+          {
+            "targetRange": [
+              160,
+              165
+            ],
+            "duration": 7200,
+            "name": "tennis",
+            "symbol": "🎾"
+          },
+          {
+            "insulinNeedsScaleFactor": 1.2,
+            "name": "medicine",
+            "duration": 0,
+            "symbol": "🏹",
+            "targetRange": [
+              110,
+              115
+            ]
+          },
+          {
+            "insulinNeedsScaleFactor": 0.8,
+            "targetRange": [
+              150,
+              180
+            ],
+            "duration": 6300,
+            "name": "swim",
+            "symbol": "🏊‍♂️🏊‍♂️"
+          },
+          {
+            "duration": 10800,
+            "insulinNeedsScaleFactor": 2,
+            "name": "extra",
+            "symbol": "💃"
+          },
+          {
+            "targetRange": [
+              108,
+              112
+            ],
+            "insulinNeedsScaleFactor": 0.9,
+            "symbol": "➖",
+            "duration": 7200,
+            "name": "less"
+          }
+        ],
+        "deviceToken": "24087ffec20913af4cc449001a199ccdee7c0ddd2dd33673237f9fbe01d68ca2",
+        "preMealTargetRange": [
+          69,
+          69
+        ],
+        "maximumBolus": 9.9,
+        "minimumBGGuard": 69
+      },
+      "enteredBy": "Loop",
+      "defaultProfile": "Default",
+      "mills": "1770845232855",
+      "startDate": "2026-02-11T21:27:12Z"
+    },
+    {
+      "_id": "698cf326eea0a067e4269036",
+      "enteredBy": "Loop",
+      "units": "mg/dL",
+      "defaultProfile": "Default",
+      "startDate": "2026-02-11T21:22:45Z",
+      "mills": "1770844965865",
+      "store": {
+        "Default": {
+          "timezone": "ETC/GMT+8",
+          "dia": 6,
+          "delay": "0",
+          "target_high": [
+            {
+              "timeAsSeconds": 0,
+              "time": "00:00",
+              "value": 102
+            }
+          ],
+          "sens": [
+            {
+              "timeAsSeconds": 0,
+              "time": "00:00",
+              "value": 40
+            }
+          ],
+          "carbs_hr": "0",
+          "units": "mg/dL",
+          "basal": [
+            {
+              "time": "00:00",
+              "value": 1.8,
+              "timeAsSeconds": 0
+            },
+            {
+              "timeAsSeconds": 19800,
+              "time": "05:30",
+              "value": 1.7
+            },
+            {
+              "timeAsSeconds": 81000,
+              "value": 1.8,
+              "time": "22:30"
+            }
+          ],
+          "target_low": [
+            {
+              "time": "00:00",
+              "timeAsSeconds": 0,
+              "value": 97
+            }
+          ],
+          "carbratio": [
+            {
+              "time": "00:00",
+              "value": 10,
+              "timeAsSeconds": 0
+            }
+          ]
+        }
+      },
+      "loopSettings": {
+        "preMealTargetRange": [
+          69,
+          69
+        ],
+        "deviceToken": "24087ffec20913af4cc449001a199ccdee7c0ddd2dd33673237f9fbe01d68ca2",
+        "bundleIdentifier": "com.medicaldatanetworks.loop-denim.Loop",
+        "minimumBGGuard": 69,
+        "maximumBasalRatePerHour": 6,
+        "dosingStrategy": "tempBasalOnly",
+        "maximumBolus": 9.9,
+        "overridePresets": [
+          {
+            "duration": 3600,
+            "symbol": "🤸‍♀️",
+            "name": "sleepin",
+            "targetRange": [
+              120,
+              125
+            ],
+            "insulinNeedsScaleFactor": 0.5
+          },
+          {
+            "targetRange": [
+              135,
+              136
+            ],
+            "insulinNeedsScaleFactor": 1.5,
+            "duration": 10800,
+            "name": "horse",
+            "symbol": "🚵‍♂️"
+          },
+          {
+            "targetRange": [
+              165,
+              180
+            ],
+            "duration": 5400,
+            "insulinNeedsScaleFactor": 0.7,
+            "symbol": "⛹️‍♂️",
+            "name": "basketball"
+          },
+          {
+            "targetRange": [
+              155,
+              170
+            ],
+            "insulinNeedsScaleFactor": 0.8,
+            "symbol": "⚽️",
+            "name": "soccer",
+            "duration": 8100
+          },
+          {
+            "symbol": "🎾",
+            "targetRange": [
+              160,
+              165
+            ],
+            "name": "tennis",
+            "duration": 7200
+          },
+          {
+            "duration": 0,
+            "targetRange": [
+              110,
+              115
+            ],
+            "name": "medicine",
+            "symbol": "🏹",
+            "insulinNeedsScaleFactor": 1.2
+          },
+          {
+            "name": "swim",
+            "duration": 6300,
+            "targetRange": [
+              150,
+              180
+            ],
+            "symbol": "🏊‍♂️🏊‍♂️",
+            "insulinNeedsScaleFactor": 0.8
+          },
+          {
+            "name": "extra",
+            "symbol": "💃",
+            "duration": 10800,
+            "insulinNeedsScaleFactor": 2
+          },
+          {
+            "symbol": "➖",
+            "targetRange": [
+              108,
+              112
+            ],
+            "name": "less",
+            "duration": 7200,
+            "insulinNeedsScaleFactor": 0.9
+          }
+        ],
+        "dosingEnabled": true
+      }
+    },
+    {
+      "_id": "698cbff2eea0a0a00e269008",
+      "defaultProfile": "Default",
+      "loopSettings": {
+        "preMealTargetRange": [
+          69,
+          69
+        ],
+        "bundleIdentifier": "com.medicaldatanetworks.loop-denim.Loop",
+        "minimumBGGuard": 69,
+        "deviceToken": "24087ffec20913af4cc449001a199ccdee7c0ddd2dd33673237f9fbe01d68ca2",
+        "dosingStrategy": "tempBasalOnly",
+        "dosingEnabled": true,
+        "maximumBasalRatePerHour": 6,
+        "overridePresets": [
+          {
+            "name": "sleepin",
+            "symbol": "🤸‍♀️",
+            "targetRange": [
+              120,
+              125
+            ],
+            "duration": 3600,
+            "insulinNeedsScaleFactor": 0.5
+          },
+          {
+            "insulinNeedsScaleFactor": 1.5,
+            "symbol": "🚵‍♂️",
+            "targetRange": [
+              135,
+              136
+            ],
+            "duration": 10800,
+            "name": "horse"
+          },
+          {
+            "insulinNeedsScaleFactor": 0.7,
+            "symbol": "⛹️‍♂️",
+            "targetRange": [
+              165,
+              180
+            ],
+            "name": "basketball",
+            "duration": 5400
+          },
+          {
+            "insulinNeedsScaleFactor": 0.8,
+            "targetRange": [
+              155,
+              170
+            ],
+            "name": "soccer",
+            "symbol": "⚽️",
+            "duration": 8100
+          },
+          {
+            "symbol": "🎾",
+            "duration": 7200,
+            "name": "tennis",
+            "targetRange": [
+              160,
+              165
+            ]
+          },
+          {
+            "insulinNeedsScaleFactor": 1.2,
+            "symbol": "🏹",
+            "duration": 0,
+            "targetRange": [
+              110,
+              115
+            ],
+            "name": "medicine"
+          },
+          {
+            "symbol": "🏊‍♂️🏊‍♂️",
+            "insulinNeedsScaleFactor": 0.8,
+            "targetRange": [
+              150,
+              180
+            ],
+            "duration": 6300,
+            "name": "swim"
+          },
+          {
+            "name": "extra",
+            "symbol": "💃",
+            "duration": 10800,
+            "insulinNeedsScaleFactor": 2
+          },
+          {
+            "duration": 7200,
+            "insulinNeedsScaleFactor": 0.9,
+            "symbol": "➖",
+            "targetRange": [
+              108,
+              112
+            ],
+            "name": "less"
+          }
+        ],
+        "maximumBolus": 9.9
+      },
+      "units": "mg/dL",
+      "store": {
+        "Default": {
+          "basal": [
+            {
+              "timeAsSeconds": 0,
+              "time": "00:00",
+              "value": 1.8
+            },
+            {
+              "value": 1.7,
+              "time": "05:30",
+              "timeAsSeconds": 19800
+            },
+            {
+              "value": 1.8,
+              "time": "22:30",
+              "timeAsSeconds": 81000
+            }
+          ],
+          "sens": [
+            {
+              "time": "00:00",
+              "timeAsSeconds": 0,
+              "value": 40
+            }
+          ],
+          "dia": 6,
+          "carbs_hr": "0",
+          "carbratio": [
+            {
+              "timeAsSeconds": 0,
+              "time": "00:00",
+              "value": 10
+            }
+          ],
+          "delay": "0",
+          "timezone": "ETC/GMT+8",
+          "target_low": [
+            {
+              "value": 97,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            }
+          ],
+          "target_high": [
+            {
+              "value": 102,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            }
+          ],
+          "units": "mg/dL"
+        }
+      },
+      "enteredBy": "Loop",
+      "startDate": "2026-02-11T17:44:17Z",
+      "mills": "1770831857607"
+    },
+    {
+      "_id": "698c1237eea0a0f777268fba",
+      "defaultProfile": "Default",
+      "units": "mg/dL",
+      "enteredBy": "Loop",
+      "startDate": "2026-02-11T05:23:03Z",
+      "store": {
+        "Default": {
+          "dia": 6,
+          "timezone": "ETC/GMT+8",
+          "units": "mg/dL",
+          "target_high": [
+            {
+              "value": 102,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            }
+          ],
+          "sens": [
+            {
+              "timeAsSeconds": 0,
+              "time": "00:00",
+              "value": 40
+            }
+          ],
+          "basal": [
+            {
+              "timeAsSeconds": 0,
+              "value": 1.8,
+              "time": "00:00"
+            },
+            {
+              "timeAsSeconds": 19800,
+              "time": "05:30",
+              "value": 1.7
+            },
+            {
+              "value": 1.8,
+              "timeAsSeconds": 81000,
+              "time": "22:30"
+            }
+          ],
+          "carbs_hr": "0",
+          "delay": "0",
+          "target_low": [
+            {
+              "timeAsSeconds": 0,
+              "value": 97,
+              "time": "00:00"
+            }
+          ],
+          "carbratio": [
+            {
+              "timeAsSeconds": 0,
+              "time": "00:00",
+              "value": 10
+            }
+          ]
+        }
+      },
+      "mills": "1770787383623",
+      "loopSettings": {
+        "overridePresets": [
+          {
+            "targetRange": [
+              120,
+              125
+            ],
+            "symbol": "🤸‍♀️",
+            "name": "sleepin",
+            "duration": 3600,
+            "insulinNeedsScaleFactor": 0.5
+          },
+          {
+            "targetRange": [
+              135,
+              136
+            ],
+            "duration": 10800,
+            "symbol": "🚵‍♂️",
+            "name": "horse",
+            "insulinNeedsScaleFactor": 1.5
+          },
+          {
+            "targetRange": [
+              165,
+              180
+            ],
+            "symbol": "⛹️‍♂️",
+            "duration": 5400,
+            "insulinNeedsScaleFactor": 0.7,
+            "name": "basketball"
+          },
+          {
+            "insulinNeedsScaleFactor": 0.8,
+            "duration": 8100,
+            "name": "soccer",
+            "symbol": "⚽️",
+            "targetRange": [
+              155,
+              170
+            ]
+          },
+          {
+            "symbol": "🎾",
+            "duration": 7200,
+            "targetRange": [
+              160,
+              165
+            ],
+            "name": "tennis"
+          },
+          {
+            "symbol": "🏹",
+            "insulinNeedsScaleFactor": 1.2,
+            "duration": 0,
+            "name": "medicine",
+            "targetRange": [
+              110,
+              115
+            ]
+          },
+          {
+            "targetRange": [
+              150,
+              180
+            ],
+            "name": "swim",
+            "duration": 6300,
+            "symbol": "🏊‍♂️🏊‍♂️",
+            "insulinNeedsScaleFactor": 0.8
+          },
+          {
+            "symbol": "💃",
+            "duration": 10800,
+            "name": "extra",
+            "insulinNeedsScaleFactor": 2
+          },
+          {
+            "symbol": "➖",
+            "insulinNeedsScaleFactor": 0.9,
+            "targetRange": [
+              108,
+              112
+            ],
+            "duration": 7200,
+            "name": "less"
+          }
+        ],
+        "bundleIdentifier": "com.medicaldatanetworks.loop-denim.Loop",
+        "dosingStrategy": "tempBasalOnly",
+        "preMealTargetRange": [
+          69,
+          69
+        ],
+        "dosingEnabled": true,
+        "maximumBasalRatePerHour": 6,
+        "minimumBGGuard": 69,
+        "deviceToken": "24087ffec20913af4cc449001a199ccdee7c0ddd2dd33673237f9fbe01d68ca2",
+        "maximumBolus": 9.9
+      }
+    },
+    {
+      "_id": "698c060aeea0a0f6a0268fb0",
+      "startDate": "2026-02-11T04:31:06Z",
+      "defaultProfile": "Default",
+      "enteredBy": "Loop",
+      "mills": "1770784266036",
+      "units": "mg/dL",
+      "loopSettings": {
+        "preMealTargetRange": [
+          69,
+          69
+        ],
+        "overridePresets": [
+          {
+            "name": "sleepin",
+            "symbol": "🤸‍♀️",
+            "duration": 3600,
+            "targetRange": [
+              120,
+              125
+            ],
+            "insulinNeedsScaleFactor": 0.5
+          },
+          {
+            "targetRange": [
+              135,
+              136
+            ],
+            "insulinNeedsScaleFactor": 1.5,
+            "name": "horse",
+            "duration": 10800,
+            "symbol": "🚵‍♂️"
+          },
+          {
+            "duration": 5400,
+            "symbol": "⛹️‍♂️",
+            "targetRange": [
+              165,
+              180
+            ],
+            "insulinNeedsScaleFactor": 0.7,
+            "name": "basketball"
+          },
+          {
+            "symbol": "⚽️",
+            "insulinNeedsScaleFactor": 0.8,
+            "name": "soccer",
+            "targetRange": [
+              155,
+              170
+            ],
+            "duration": 8100
+          },
+          {
+            "targetRange": [
+              160,
+              165
+            ],
+            "duration": 7200,
+            "name": "tennis",
+            "symbol": "🎾"
+          },
+          {
+            "targetRange": [
+              110,
+              115
+            ],
+            "duration": 0,
+            "insulinNeedsScaleFactor": 1.2,
+            "symbol": "🏹",
+            "name": "medicine"
+          },
+          {
+            "name": "swim",
+            "targetRange": [
+              150,
+              180
+            ],
+            "duration": 6300,
+            "insulinNeedsScaleFactor": 0.8,
+            "symbol": "🏊‍♂️🏊‍♂️"
+          },
+          {
+            "insulinNeedsScaleFactor": 2,
+            "symbol": "💃",
+            "duration": 10800,
+            "name": "extra"
+          },
+          {
+            "targetRange": [
+              108,
+              112
+            ],
+            "duration": 7200,
+            "name": "less",
+            "symbol": "➖",
+            "insulinNeedsScaleFactor": 0.9
+          }
+        ],
+        "minimumBGGuard": 69,
+        "deviceToken": "24087ffec20913af4cc449001a199ccdee7c0ddd2dd33673237f9fbe01d68ca2",
+        "maximumBolus": 9.9,
+        "bundleIdentifier": "com.medicaldatanetworks.loop-denim.Loop",
+        "dosingStrategy": "tempBasalOnly",
+        "maximumBasalRatePerHour": 6,
+        "dosingEnabled": false
+      },
+      "store": {
+        "Default": {
+          "carbratio": [
+            {
+              "value": 10,
+              "time": "00:00",
+              "timeAsSeconds": 0
+            }
+          ],
+          "sens": [
+            {
+              "value": 40,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            }
+          ],
+          "carbs_hr": "0",
+          "target_low": [
+            {
+              "time": "00:00",
+              "value": 97,
+              "timeAsSeconds": 0
+            }
+          ],
+          "target_high": [
+            {
+              "timeAsSeconds": 0,
+              "time": "00:00",
+              "value": 102
+            }
+          ],
+          "timezone": "ETC/GMT+8",
+          "delay": "0",
+          "units": "mg/dL",
+          "dia": 6,
+          "basal": [
+            {
+              "value": 1.8,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            },
+            {
+              "time": "05:30",
+              "value": 1.7,
+              "timeAsSeconds": 19800
+            },
+            {
+              "timeAsSeconds": 81000,
+              "value": 1.8,
+              "time": "22:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "_id": "698c0473eea0a0478e268faf",
+      "enteredBy": "Loop",
+      "defaultProfile": "Default",
+      "loopSettings": {
+        "preMealTargetRange": [
+          69,
+          69
+        ],
+        "dosingEnabled": false,
+        "minimumBGGuard": 69,
+        "deviceToken": "24087ffec20913af4cc449001a199ccdee7c0ddd2dd33673237f9fbe01d68ca2",
+        "maximumBolus": 9.9,
+        "bundleIdentifier": "com.medicaldatanetworks.loop-denim.Loop",
+        "dosingStrategy": "tempBasalOnly",
+        "maximumBasalRatePerHour": 6,
+        "overridePresets": [
+          {
+            "duration": 3600,
+            "symbol": "🤸‍♀️",
+            "name": "sleepin",
+            "insulinNeedsScaleFactor": 0.5,
+            "targetRange": [
+              120,
+              125
+            ]
+          },
+          {
+            "insulinNeedsScaleFactor": 1.5,
+            "name": "horse",
+            "duration": 10800,
+            "targetRange": [
+              135,
+              136
+            ],
+            "symbol": "🚵‍♂️"
+          },
+          {
+            "duration": 5400,
+            "insulinNeedsScaleFactor": 0.7,
+            "name": "basketball",
+            "targetRange": [
+              165,
+              180
+            ],
+            "symbol": "⛹️‍♂️"
+          },
+          {
+            "name": "soccer",
+            "duration": 8100,
+            "insulinNeedsScaleFactor": 0.8,
+            "symbol": "⚽️",
+            "targetRange": [
+              155,
+              170
+            ]
+          },
+          {
+            "symbol": "🎾",
+            "name": "tennis",
+            "duration": 7200,
+            "targetRange": [
+              160,
+              165
+            ]
+          },
+          {
+            "duration": 0,
+            "targetRange": [
+              110,
+              115
+            ],
+            "symbol": "🏹",
+            "name": "medicine",
+            "insulinNeedsScaleFactor": 1.2
+          },
+          {
+            "insulinNeedsScaleFactor": 0.8,
+            "symbol": "🏊‍♂️🏊‍♂️",
+            "duration": 6300,
+            "targetRange": [
+              150,
+              180
+            ],
+            "name": "swim"
+          },
+          {
+            "insulinNeedsScaleFactor": 2,
+            "symbol": "💃",
+            "duration": 10800,
+            "name": "extra"
+          },
+          {
+            "duration": 7200,
+            "symbol": "➖",
+            "targetRange": [
+              108,
+              112
+            ],
+            "name": "less",
+            "insulinNeedsScaleFactor": 0.9
+          }
+        ]
+      },
+      "store": {
+        "Default": {
+          "sens": [
+            {
+              "time": "00:00",
+              "timeAsSeconds": 0,
+              "value": 40
+            }
+          ],
+          "timezone": "ETC/GMT+8",
+          "target_low": [
+            {
+              "time": "00:00",
+              "timeAsSeconds": 0,
+              "value": 97
+            }
+          ],
+          "carbs_hr": "0",
+          "dia": 6,
+          "units": "mg/dL",
+          "carbratio": [
+            {
+              "timeAsSeconds": 0,
+              "value": 10,
+              "time": "00:00"
+            }
+          ],
+          "basal": [
+            {
+              "timeAsSeconds": 0,
+              "time": "00:00",
+              "value": 1.8
+            },
+            {
+              "value": 1.7,
+              "time": "05:30",
+              "timeAsSeconds": 19800
+            },
+            {
+              "time": "22:30",
+              "timeAsSeconds": 81000,
+              "value": 1.8
+            }
+          ],
+          "target_high": [
+            {
+              "value": 102,
+              "timeAsSeconds": 0,
+              "time": "00:00"
+            }
+          ],
+          "delay": "0"
+        }
+      },
+      "startDate": "2026-02-11T04:24:19Z",
+      "mills": "1770783859061",
+      "units": "mg/dL"
+    }
+  ]
+}

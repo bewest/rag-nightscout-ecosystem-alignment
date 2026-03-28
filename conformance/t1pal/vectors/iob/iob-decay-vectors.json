@@ -1,0 +1,174 @@
+{
+  "schema_version": "1.0.0",
+  "generated": "2026-02-16T22:30:00Z",
+  "track": "ALG-IOB",
+  "description": "IOB decay test vectors for cross-validation",
+  "test_cases": [
+    {
+      "id": "IOB-TC-001",
+      "description": "1U bolus, rapid-acting adult, DIA=6hr, Peak=75min",
+      "inputs": {
+        "dose_units": 1.0,
+        "insulin_type": "rapid-acting",
+        "dia_hours": 6.0,
+        "peak_minutes": 75,
+        "model": "exponential"
+      },
+      "expected_iob": [
+        { "time_hours": 0.0, "iob": 1.000 },
+        { "time_hours": 0.5, "iob": 0.982 },
+        { "time_hours": 1.0, "iob": 0.921 },
+        { "time_hours": 1.5, "iob": 0.826 },
+        { "time_hours": 2.0, "iob": 0.709 },
+        { "time_hours": 2.5, "iob": 0.585 },
+        { "time_hours": 3.0, "iob": 0.465 },
+        { "time_hours": 4.0, "iob": 0.256 },
+        { "time_hours": 5.0, "iob": 0.115 },
+        { "time_hours": 6.0, "iob": 0.000 }
+      ],
+      "tolerance": 0.020
+    },
+    {
+      "id": "IOB-TC-002",
+      "description": "1U bolus, ultra-rapid (Fiasp), DIA=5hr, Peak=55min",
+      "inputs": {
+        "dose_units": 1.0,
+        "insulin_type": "ultra-rapid",
+        "dia_hours": 5.0,
+        "peak_minutes": 55,
+        "model": "exponential"
+      },
+      "expected_iob": [
+        { "time_hours": 0.0, "iob": 1.000 },
+        { "time_hours": 0.5, "iob": 0.969 },
+        { "time_hours": 1.0, "iob": 0.871 },
+        { "time_hours": 1.5, "iob": 0.738 },
+        { "time_hours": 2.0, "iob": 0.597 },
+        { "time_hours": 2.5, "iob": 0.461 },
+        { "time_hours": 3.0, "iob": 0.339 },
+        { "time_hours": 4.0, "iob": 0.147 },
+        { "time_hours": 5.0, "iob": 0.000 }
+      ],
+      "tolerance": 0.020
+    },
+    {
+      "id": "IOB-TC-003",
+      "description": "1U bolus, Afrezza inhaled, DIA=3hr, Peak=20min",
+      "inputs": {
+        "dose_units": 1.0,
+        "insulin_type": "afrezza",
+        "dia_hours": 3.0,
+        "peak_minutes": 20,
+        "model": "exponential"
+      },
+      "expected_iob": [
+        { "time_hours": 0.0, "iob": 1.000 },
+        { "time_hours": 0.25, "iob": 0.955 },
+        { "time_hours": 0.5, "iob": 0.862 },
+        { "time_hours": 1.0, "iob": 0.623 },
+        { "time_hours": 1.5, "iob": 0.395 },
+        { "time_hours": 2.0, "iob": 0.213 },
+        { "time_hours": 2.5, "iob": 0.085 },
+        { "time_hours": 3.0, "iob": 0.000 }
+      ],
+      "tolerance": 0.025
+    },
+    {
+      "id": "IOB-TC-004",
+      "description": "1U bolus, conservative DIA=8hr, Peak=90min",
+      "inputs": {
+        "dose_units": 1.0,
+        "insulin_type": "conservative",
+        "dia_hours": 8.0,
+        "peak_minutes": 90,
+        "model": "exponential"
+      },
+      "expected_iob": [
+        { "time_hours": 0.0, "iob": 1.000 },
+        { "time_hours": 1.0, "iob": 0.947 },
+        { "time_hours": 2.0, "iob": 0.791 },
+        { "time_hours": 3.0, "iob": 0.608 },
+        { "time_hours": 4.0, "iob": 0.440 },
+        { "time_hours": 5.0, "iob": 0.301 },
+        { "time_hours": 6.0, "iob": 0.189 },
+        { "time_hours": 7.0, "iob": 0.095 },
+        { "time_hours": 8.0, "iob": 0.000 }
+      ],
+      "tolerance": 0.020
+    },
+    {
+      "id": "IOB-TC-005",
+      "description": "Multiple doses: 2U at t=-2hr, 1U at t=-1hr",
+      "inputs": {
+        "doses": [
+          { "units": 2.0, "time_hours_ago": 2.0 },
+          { "units": 1.0, "time_hours_ago": 1.0 }
+        ],
+        "insulin_type": "rapid-acting",
+        "dia_hours": 6.0,
+        "peak_minutes": 75,
+        "model": "exponential"
+      },
+      "expected_total_iob": 2.339,
+      "expected_breakdown": {
+        "dose_1_iob": 1.418,
+        "dose_2_iob": 0.921
+      },
+      "tolerance": 0.030
+    },
+    {
+      "id": "IOB-TC-006",
+      "description": "Edge case: t=0 (just bolused)",
+      "inputs": {
+        "dose_units": 1.0,
+        "insulin_type": "rapid-acting",
+        "dia_hours": 6.0,
+        "peak_minutes": 75,
+        "model": "exponential",
+        "time_hours": 0.0
+      },
+      "expected_iob": 1.000,
+      "tolerance": 0.001
+    },
+    {
+      "id": "IOB-TC-007",
+      "description": "Edge case: t > DIA (insulin fully absorbed)",
+      "inputs": {
+        "dose_units": 1.0,
+        "insulin_type": "rapid-acting",
+        "dia_hours": 6.0,
+        "peak_minutes": 75,
+        "model": "exponential",
+        "time_hours": 7.0
+      },
+      "expected_iob": 0.000,
+      "tolerance": 0.001
+    },
+    {
+      "id": "IOB-TC-008",
+      "description": "Walsh bilinear model comparison, DIA=6hr",
+      "inputs": {
+        "dose_units": 1.0,
+        "insulin_type": "walsh",
+        "dia_hours": 6.0,
+        "model": "bilinear"
+      },
+      "expected_iob": [
+        { "time_hours": 0.0, "iob": 1.000 },
+        { "time_hours": 1.0, "iob": 0.900 },
+        { "time_hours": 2.0, "iob": 0.700 },
+        { "time_hours": 3.0, "iob": 0.450 },
+        { "time_hours": 4.0, "iob": 0.300 },
+        { "time_hours": 5.0, "iob": 0.150 },
+        { "time_hours": 6.0, "iob": 0.000 }
+      ],
+      "tolerance": 0.020,
+      "notes": "Walsh uses piecewise-linear segments, differs from exponential"
+    }
+  ],
+  "references": {
+    "loop_formula": "https://github.com/LoopKit/Loop/issues/388#issuecomment-317938473",
+    "oref0_source": "externals/oref0/lib/iob/calculate.js",
+    "t1pal_source": "packages/T1PalAlgorithm/Sources/T1PalAlgorithm/InsulinModel.swift"
+  }
+}

@@ -1,0 +1,270 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "COB absorption test vectors for algorithm cross-validation",
+  "created": "2026-02-16",
+  "track": "ALG-COB-003",
+  "testCases": [
+    {
+      "id": "COB-001",
+      "scenario": "Fast carbs (juice/candy)",
+      "carbEntry": {
+        "grams": 15,
+        "absorptionTimeHours": 1.5,
+        "absorptionType": "fast",
+        "timestamp": "2026-01-15T12:00:00Z"
+      },
+      "profile": {
+        "icr": 10,
+        "isf": 40,
+        "min_5m_carbimpact": 8
+      },
+      "expected": {
+        "cob_at_30min": {
+          "loop_linear": 10.0,
+          "loop_piecewise": 12.2,
+          "oref0_min5m": 10.0,
+          "tolerance": 0.5
+        },
+        "cob_at_60min": {
+          "loop_linear": 5.0,
+          "loop_piecewise": 6.1,
+          "oref0_min5m": 5.0,
+          "tolerance": 0.5
+        },
+        "cob_at_90min": {
+          "loop_linear": 0.0,
+          "loop_piecewise": 0.0,
+          "oref0_min5m": 0.0,
+          "tolerance": 0.1
+        },
+        "total_absorption_time_hours": 1.5
+      },
+      "notes": "Rapid absorption for simple sugars. oref0 min_5m with CSF=4 gives 2g/5min."
+    },
+    {
+      "id": "COB-002",
+      "scenario": "Medium carbs (typical meal)",
+      "carbEntry": {
+        "grams": 50,
+        "absorptionTimeHours": 3.0,
+        "absorptionType": "medium",
+        "timestamp": "2026-01-15T12:00:00Z"
+      },
+      "profile": {
+        "icr": 10,
+        "isf": 40,
+        "min_5m_carbimpact": 8
+      },
+      "expected": {
+        "cob_at_60min": {
+          "loop_linear": 33.33,
+          "loop_piecewise": 38.67,
+          "oref0_min5m": 26.0,
+          "tolerance": 1.0
+        },
+        "cob_at_120min": {
+          "loop_linear": 16.67,
+          "loop_piecewise": 17.50,
+          "oref0_min5m": 2.0,
+          "tolerance": 1.0
+        },
+        "cob_at_180min": {
+          "loop_linear": 0.0,
+          "loop_piecewise": 0.0,
+          "oref0_min5m": 0.0,
+          "tolerance": 0.1
+        },
+        "total_absorption_time_hours": 3.0
+      },
+      "notes": "Standard meal scenario. oref0 min_5m floor at CSF=4: 24g/hr = 24g in first hour."
+    },
+    {
+      "id": "COB-003",
+      "scenario": "Slow carbs (pizza/high-fat)",
+      "carbEntry": {
+        "grams": 80,
+        "absorptionTimeHours": 5.0,
+        "absorptionType": "slow",
+        "timestamp": "2026-01-15T12:00:00Z"
+      },
+      "profile": {
+        "icr": 10,
+        "isf": 40,
+        "min_5m_carbimpact": 8
+      },
+      "expected": {
+        "cob_at_60min": {
+          "loop_linear": 64.0,
+          "loop_piecewise": 70.8,
+          "oref0_min5m": 56.0,
+          "tolerance": 2.0
+        },
+        "cob_at_180min": {
+          "loop_linear": 32.0,
+          "loop_piecewise": 33.3,
+          "oref0_min5m": 8.0,
+          "tolerance": 2.0
+        },
+        "cob_at_300min": {
+          "loop_linear": 0.0,
+          "loop_piecewise": 0.0,
+          "oref0_min5m": 0.0,
+          "tolerance": 0.1
+        },
+        "total_absorption_time_hours": 5.0
+      },
+      "notes": "Extended absorption for high-fat meals. Fat delays gastric emptying."
+    },
+    {
+      "id": "COB-004",
+      "scenario": "Multi-entry (staggered meals)",
+      "carbEntries": [
+        {
+          "grams": 30,
+          "absorptionTimeHours": 3.0,
+          "absorptionType": "medium",
+          "timestamp": "2026-01-15T12:00:00Z"
+        },
+        {
+          "grams": 20,
+          "absorptionTimeHours": 3.0,
+          "absorptionType": "medium",
+          "timestamp": "2026-01-15T12:30:00Z"
+        }
+      ],
+      "profile": {
+        "icr": 10,
+        "isf": 40,
+        "min_5m_carbimpact": 8
+      },
+      "expected": {
+        "cob_at_60min_from_first": {
+          "loop_linear": 36.67,
+          "description": "30*(1-1/3) + 20*(1-0.5/3) = 20 + 16.67 = 36.67",
+          "tolerance": 1.0
+        },
+        "cob_at_120min_from_first": {
+          "loop_linear": 20.0,
+          "description": "30*(1-2/3) + 20*(1-1.5/3) = 10 + 10 = 20",
+          "tolerance": 1.0
+        },
+        "cob_at_210min_from_first": {
+          "loop_linear": 0.0,
+          "description": "Both entries fully absorbed by 3.5h",
+          "tolerance": 0.5
+        }
+      },
+      "notes": "Tests summation of multiple overlapping carb entries."
+    },
+    {
+      "id": "COB-005",
+      "scenario": "High ICR (insulin resistant to carbs)",
+      "carbEntry": {
+        "grams": 50,
+        "absorptionTimeHours": 3.0,
+        "absorptionType": "medium",
+        "timestamp": "2026-01-15T12:00:00Z"
+      },
+      "profile": {
+        "icr": 15,
+        "isf": 40,
+        "min_5m_carbimpact": 8
+      },
+      "expected": {
+        "csf": 2.67,
+        "absorption_rate_g_per_5m": 3.0,
+        "absorption_rate_g_per_hr": 36.0,
+        "cob_at_60min_oref0": 14.0,
+        "notes": "Higher ICR = faster oref0 decay (more carbs absorbed per deviation unit)"
+      },
+      "notes": "High ICR means each mg/dL deviation represents more carbs absorbed."
+    },
+    {
+      "id": "COB-006",
+      "scenario": "Low ICR (insulin sensitive to carbs)",
+      "carbEntry": {
+        "grams": 50,
+        "absorptionTimeHours": 3.0,
+        "absorptionType": "medium",
+        "timestamp": "2026-01-15T12:00:00Z"
+      },
+      "profile": {
+        "icr": 8,
+        "isf": 40,
+        "min_5m_carbimpact": 8
+      },
+      "expected": {
+        "csf": 5.0,
+        "absorption_rate_g_per_5m": 1.6,
+        "absorption_rate_g_per_hr": 19.2,
+        "cob_at_60min_oref0": 30.8,
+        "notes": "Lower ICR = slower oref0 decay (less carbs per deviation unit)"
+      },
+      "notes": "Low ICR means each mg/dL deviation represents fewer carbs absorbed."
+    },
+    {
+      "id": "COB-007",
+      "scenario": "Zero BG deviation (min_5m_carbimpact only)",
+      "carbEntry": {
+        "grams": 50,
+        "absorptionTimeHours": 3.0,
+        "absorptionType": "medium",
+        "timestamp": "2026-01-15T12:00:00Z"
+      },
+      "profile": {
+        "icr": 10,
+        "isf": 40,
+        "min_5m_carbimpact": 8
+      },
+      "bgDeviations": {
+        "deviation_mg_dl_per_5m": 0,
+        "description": "BG exactly following expected insulin effect"
+      },
+      "expected": {
+        "effective_ci": 8,
+        "absorption_rate_g_per_5m": 2.0,
+        "absorption_rate_g_per_hr": 24.0,
+        "time_to_full_absorption_hr": 2.08,
+        "cob_at_60min": 26.0,
+        "cob_at_120min": 2.0
+      },
+      "notes": "When no deviation observed, oref0 uses min_5m_carbimpact floor."
+    },
+    {
+      "id": "COB-008",
+      "scenario": "Positive BG deviation (faster absorption)",
+      "carbEntry": {
+        "grams": 50,
+        "absorptionTimeHours": 3.0,
+        "absorptionType": "medium",
+        "timestamp": "2026-01-15T12:00:00Z"
+      },
+      "profile": {
+        "icr": 10,
+        "isf": 40,
+        "min_5m_carbimpact": 8
+      },
+      "bgDeviations": {
+        "deviation_mg_dl_per_5m": 15,
+        "description": "BG rising 15 mg/dL faster than insulin effect per 5 min"
+      },
+      "expected": {
+        "effective_ci": 15,
+        "absorption_rate_g_per_5m": 3.75,
+        "absorption_rate_g_per_hr": 45.0,
+        "time_to_full_absorption_hr": 1.11,
+        "cob_at_60min": 5.0,
+        "notes": "High deviation indicates rapid carb absorption"
+      },
+      "notes": "Positive deviation means carbs absorbing faster than expected."
+    }
+  ],
+  "validationRules": {
+    "tolerance_default_grams": 1.0,
+    "tolerance_near_zero_grams": 0.5,
+    "cob_must_be_non_negative": true,
+    "cob_must_decrease_over_time": true,
+    "max_cob_cap": 120
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://t1pal.io/schemas/protocol-fixture-v2.json",
+  "title": "Protocol Fixture Schema v2",
+  "description": "Schema for protocol conformance fixtures with hardware validation, cross-references, and timing semantics",
+  "type": "object",
+  "required": ["schema_version", "fixture_id", "device_type", "steps"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^2\\.\\d+\\.\\d+$",
+      "description": "Must be 2.x.x for this schema"
+    },
+    "fixture_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9]+-[A-Z]+-\\d{3}$",
+      "description": "Unique identifier, e.g., G6-AUTH-001, MDT-WAKEUP-001"
+    },
+    "fixture_name": {
+      "type": "string",
+      "description": "Human-readable name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "device_type": {
+      "type": "string",
+      "enum": ["Dexcom G6", "Dexcom G7", "Omnipod DASH", "Omnipod Eros", "Medtronic", "Dana", "Libre", "Tandem X2"]
+    },
+    "hardware_validated": {
+      "type": "boolean",
+      "description": "True if bytes captured from real hardware"
+    },
+    "capture_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of hardware capture (YYYY-MM-DD)"
+    },
+    "source": {
+      "type": "string",
+      "description": "Primary source file path (must reference externals/)"
+    },
+    "cross_reference": {
+      "type": "object",
+      "description": "Multi-source verification",
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "verified"],
+            "properties": {
+              "name": { "type": "string" },
+              "file": { "type": "string" },
+              "line": { "type": "integer" },
+              "url": { "type": "string", "format": "uri" },
+              "verified": { "type": "boolean" },
+              "date": { "type": "string", "format": "date" }
+            }
+          }
+        },
+        "discrepancies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "item": { "type": "string" },
+              "source1_value": { "type": "string" },
+              "source2_value": { "type": "string" },
+              "resolution": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "source_references": {
+      "type": "object",
+      "description": "Detailed code references with line assertions",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "file": { "type": "string" },
+          "assertions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "line": { "type": "integer" },
+                "code": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "transport": {
+      "type": "object",
+      "description": "BLE/RF transport layer semantics",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["BLE", "RF", "NFC", "USB"]
+        },
+        "service_uuid": { "type": "string" },
+        "characteristics": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "uuid": { "type": "string" },
+              "properties": {
+                "type": "array",
+                "items": { 
+                  "type": "string",
+                  "enum": ["read", "write", "write_without_response", "notify", "indicate"]
+                }
+              },
+              "response_pattern": {
+                "type": "string",
+                "enum": ["indication", "notification", "read", "none"]
+              },
+              "subscription_required_before_write": { "type": "boolean" },
+              "crc_required": { "type": "boolean" },
+              "crc_algorithm": { "type": "string" }
+            }
+          }
+        },
+        "frequency_mhz": { "type": "number" },
+        "encoding": { 
+          "type": "string",
+          "description": "RF encoding scheme",
+          "enum": ["4b6b", "manchester", "none"]
+        }
+      }
+    },
+    "framing": {
+      "type": "object",
+      "description": "Packet framing layer",
+      "properties": {
+        "header": {
+          "type": "string",
+          "description": "Start bytes in hex, e.g., 'A5 A5'"
+        },
+        "footer": {
+          "type": "string",
+          "description": "End bytes in hex, e.g., '5A 5A'"
+        },
+        "crc_algorithm": {
+          "type": "string",
+          "description": "CRC algorithm name",
+          "examples": ["CRC-16-CCITT-XModem", "CRC-8-MAXIM", "CRC-16-CCITT-FALSE"]
+        },
+        "crc_polynomial": { "type": "string" },
+        "crc_init": { "type": "string" },
+        "crc_position": {
+          "type": "string",
+          "enum": ["append", "prepend"]
+        },
+        "messages_requiring_crc": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "state_machine": {
+      "type": "object",
+      "description": "Protocol state machine",
+      "properties": {
+        "initial": { "type": "string" },
+        "final": { "type": "string" },
+        "transitions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to", "trigger"],
+            "properties": {
+              "from": { "type": "string" },
+              "to": { "type": "string" },
+              "trigger": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "description": "Protocol step sequence",
+      "items": {
+        "type": "object",
+        "required": ["step", "operation"],
+        "properties": {
+          "step": { "type": "integer" },
+          "state": { "type": "string" },
+          "operation": { "type": "string" },
+          "characteristic": { "type": "string" },
+          "tx": {
+            "type": "object",
+            "properties": {
+              "raw_hex": { "type": "string" },
+              "opcode": { "type": "string" },
+              "fields": { "type": "object" }
+            }
+          },
+          "rx": {
+            "type": "object",
+            "properties": {
+              "raw_hex": { "type": "string" },
+              "status": { "type": "string" },
+              "fields": { "type": "object" }
+            }
+          },
+          "timing": {
+            "type": "object",
+            "description": "Timing constraints for this step",
+            "properties": {
+              "must_complete_within_ms": { "type": "integer" },
+              "max_latency_ms": { "type": "integer" },
+              "triggers_window": { "type": "boolean" },
+              "window_duration_s": { "type": "integer" },
+              "window_description": { "type": "string" },
+              "must_follow": { "type": "string" },
+              "max_delay_ms": { "type": "integer" },
+              "intent": { "type": "string" }
+            }
+          },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "description": "Global timing constraints",
+      "properties": {
+        "auth_window_s": { "type": "integer" },
+        "keepalive_interval_s": { "type": "integer" },
+        "command_timeout_ms": { "type": "integer" },
+        "connection_timeout_s": { "type": "integer" }
+      }
+    },
+    "result": {
+      "type": "object",
+      "description": "Expected result of the fixture",
+      "properties": {
+        "success": { "type": "boolean" },
+        "final_state": { "type": "string" },
+        "error_code": { "type": "string" },
+        "error_description": { "type": "string" }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "description": "Validation metadata",
+      "properties": {
+        "total_steps": { "type": "integer" },
+        "all_rx_success": { "type": "boolean" },
+        "state_sequence": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

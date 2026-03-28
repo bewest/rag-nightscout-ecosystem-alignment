@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "Test vectors extracted from T1PalAlgorithm test suite",
+  "source": "packages/T1PalAlgorithm/Tests/T1PalAlgorithmTests/AlgorithmTests.swift",
+  "created": "2026-02-16",
+  "track": "ALG-XVAL-010",
+  "testCases": [
+    {
+      "id": "LOOP-001",
+      "scenario": "Insulin type DIA values",
+      "category": "insulin_model",
+      "input": {
+        "insulinType": "fiasp"
+      },
+      "expected": {
+        "dia": 5.0,
+        "peakTime": 0.5
+      }
+    },
+    {
+      "id": "LOOP-002",
+      "scenario": "Humalog DIA and peak",
+      "category": "insulin_model",
+      "input": {
+        "insulinType": "humalog"
+      },
+      "expected": {
+        "dia": 6.0,
+        "peakTime": 1.0
+      }
+    },
+    {
+      "id": "LOOP-003",
+      "scenario": "Afrezza ultra-rapid DIA",
+      "category": "insulin_model",
+      "input": {
+        "insulinType": "afrezza"
+      },
+      "expected": {
+        "dia": 3.0,
+        "peakTime": 0.25
+      }
+    },
+    {
+      "id": "LOOP-004",
+      "scenario": "IOB at t=0 is near 1.0",
+      "category": "iob_curve",
+      "input": {
+        "insulinType": "humalog",
+        "bolusUnits": 1.0,
+        "hoursAgo": 0
+      },
+      "expected": {
+        "iob_min": 0.9,
+        "iob_max": 1.0
+      }
+    },
+    {
+      "id": "LOOP-005",
+      "scenario": "IOB after DIA is near 0",
+      "category": "iob_curve",
+      "input": {
+        "insulinType": "humalog",
+        "bolusUnits": 1.0,
+        "hoursAgo": 6.0
+      },
+      "expected": {
+        "iob_max": 0.05
+      }
+    },
+    {
+      "id": "LOOP-006",
+      "scenario": "IOB decreases monotonically",
+      "category": "iob_curve",
+      "input": {
+        "insulinType": "humalog",
+        "bolusUnits": 1.0
+      },
+      "expected": {
+        "assertion": "iob(1h) > iob(2h) > iob(3h)"
+      }
+    },
+    {
+      "id": "LOOP-007",
+      "scenario": "Activity at t=0 is zero",
+      "category": "activity_curve",
+      "input": {
+        "insulinType": "humalog",
+        "bolusUnits": 1.0,
+        "hoursAgo": 0
+      },
+      "expected": {
+        "activity": 0,
+        "tolerance": 0.01
+      }
+    },
+    {
+      "id": "LOOP-008",
+      "scenario": "Activity at peak is positive",
+      "category": "activity_curve",
+      "input": {
+        "insulinType": "humalog",
+        "bolusUnits": 1.0,
+        "hoursAgo": 1.0
+      },
+      "expected": {
+        "activity_min": 0.01
+      }
+    },
+    {
+      "id": "LOOP-009",
+      "scenario": "Activity after DIA is zero",
+      "category": "activity_curve",
+      "input": {
+        "insulinType": "humalog",
+        "bolusUnits": 1.0,
+        "hoursAgo": 7.0
+      },
+      "expected": {
+        "activity": 0
+      }
+    },
+    {
+      "id": "LOOP-010",
+      "scenario": "Custom DIA override",
+      "category": "insulin_model",
+      "input": {
+        "insulinType": "humalog",
+        "customDIA": 5.0
+      },
+      "expected": {
+        "dia": 5.0
+      }
+    }
+  ],
+  "insulinTypes": {
+    "fiasp": {"defaultDIA": 5.0, "peakTime": 0.5},
+    "humalog": {"defaultDIA": 6.0, "peakTime": 1.0},
+    "novolog": {"defaultDIA": 6.0, "peakTime": 1.0},
+    "lyumjev": {"defaultDIA": 5.0, "peakTime": 0.5},
+    "afrezza": {"defaultDIA": 3.0, "peakTime": 0.25}
+  }
+}

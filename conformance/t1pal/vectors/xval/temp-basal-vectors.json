@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "Temp basal edge case test vectors for algorithm cross-validation",
+  "created": "2026-02-16",
+  "track": "ALG-XVAL-014",
+  "testCases": [
+    {
+      "id": "TEMP-001",
+      "scenario": "Zero basal - scheduled zero rate",
+      "category": "zero_basal",
+      "input": {
+        "glucose": 100,
+        "delta": 0,
+        "iob": 0,
+        "cob": 0,
+        "scheduledBasal": 0,
+        "currentTemp": null
+      },
+      "expected": {
+        "action": "no_temp",
+        "rate": 0,
+        "reason": "scheduled_zero_rate"
+      }
+    },
+    {
+      "id": "TEMP-002",
+      "scenario": "Max basal limit - high glucose",
+      "category": "max_basal",
+      "input": {
+        "glucose": 250,
+        "delta": 10,
+        "iob": 0,
+        "cob": 0,
+        "scheduledBasal": 1.0,
+        "maxBasal": 4.0,
+        "maxDailyBasal": 2.0
+      },
+      "expected": {
+        "rate_max": 4.0,
+        "reason": "capped_at_max_basal"
+      }
+    },
+    {
+      "id": "TEMP-003",
+      "scenario": "Max daily basal multiplier constraint",
+      "category": "safety_limits",
+      "input": {
+        "glucose": 200,
+        "delta": 5,
+        "iob": 0,
+        "cob": 0,
+        "scheduledBasal": 1.0,
+        "maxBasal": 10.0,
+        "maxDailyBasal": 1.5,
+        "maxDailyBasalMultiplier": 3.0
+      },
+      "expected": {
+        "rate_max": 4.5,
+        "reason": "capped_at_max_daily_multiplier"
+      }
+    },
+    {
+      "id": "TEMP-004",
+      "scenario": "Extend existing appropriate temp",
+      "category": "temp_management",
+      "input": {
+        "glucose": 180,
+        "delta": 2,
+        "iob": 1.0,
+        "cob": 0,
+        "scheduledBasal": 1.0,
+        "currentTemp": {"rate": 2.0, "remaining_minutes": 25}
+      },
+      "expected": {
+        "action": "let_run_or_extend",
+        "reason": "existing_temp_appropriate"
+      }
+    },
+    {
+      "id": "TEMP-005",
+      "scenario": "Cancel inappropriate high temp - glucose dropping",
+      "category": "temp_management",
+      "input": {
+        "glucose": 150,
+        "delta": -15,
+        "iob": 3.0,
+        "cob": 0,
+        "scheduledBasal": 1.0,
+        "currentTemp": {"rate": 3.0, "remaining_minutes": 20}
+      },
+      "expected": {
+        "action": "cancel_temp",
+        "reason": "glucose_dropping_with_iob"
+      }
+    },
+    {
+      "id": "TEMP-006",
+      "scenario": "Suspend during exercise",
+      "category": "activity",
+      "input": {
+        "glucose": 120,
+        "delta": -8,
+        "iob": 0.5,
+        "cob": 0,
+        "scheduledBasal": 1.0,
+        "exerciseMode": true,
+        "exerciseIntensity": "high"
+      },
+      "expected": {
+        "action": "suspend_or_reduce",
+        "rate_max": 0.3,
+        "reason": "exercise_mode_active"
+      }
+    },
+    {
+      "id": "TEMP-007",
+      "scenario": "High temp after suspend period",
+      "category": "recovery",
+      "input": {
+        "glucose": 85,
+        "delta": 8,
+        "iob": -1.5,
+        "cob": 20,
+        "scheduledBasal": 1.0,
+        "recentSuspend": {"duration_minutes": 45, "ended_minutes_ago": 10}
+      },
+      "expected": {
+        "action": "high_temp",
+        "reason": "recovering_from_suspend_negative_iob"
+      }
+    },
+    {
+      "id": "TEMP-008",
+      "scenario": "Micro-adjustment - in range",
+      "category": "fine_tuning",
+      "input": {
+        "glucose": 115,
+        "delta": 1,
+        "iob": 0.2,
+        "cob": 0,
+        "scheduledBasal": 1.0,
+        "targetLow": 100,
+        "targetHigh": 120
+      },
+      "expected": {
+        "action": "slight_reduction_or_none",
+        "rate_range": [0.8, 1.0],
+        "reason": "in_target_slight_drift"
+      }
+    },
+    {
+      "id": "TEMP-009",
+      "scenario": "Temp basal precision - 0.05U steps",
+      "category": "rounding",
+      "input": {
+        "glucose": 140,
+        "delta": 2,
+        "iob": 0,
+        "calculatedRate": 1.127,
+        "pumpModel": "522"
+      },
+      "expected": {
+        "rate": 1.15,
+        "reason": "rounded_to_0.05_steps"
+      }
+    },
+    {
+      "id": "TEMP-010",
+      "scenario": "Temp basal precision - 0.025U steps",
+      "category": "rounding",
+      "input": {
+        "glucose": 140,
+        "delta": 2,
+        "iob": 0,
+        "calculatedRate": 1.127,
+        "pumpModel": "554"
+      },
+      "expected": {
+        "rate": 1.125,
+        "reason": "rounded_to_0.025_steps"
+      }
+    },
+    {
+      "id": "TEMP-011",
+      "scenario": "Very small temp basal",
+      "category": "rounding",
+      "input": {
+        "glucose": 100,
+        "delta": 0,
+        "iob": 0.5,
+        "calculatedRate": 0.03,
+        "pumpModel": "522"
+      },
+      "expected": {
+        "rate": 0.05,
+        "reason": "minimum_delivery_0.05U"
+      }
+    },
+    {
+      "id": "TEMP-012",
+      "scenario": "Temp transition - low to high",
+      "category": "state_change",
+      "input": {
+        "glucose": 90,
+        "delta": 15,
+        "iob": -0.5,
+        "cob": 40,
+        "scheduledBasal": 1.0,
+        "currentTemp": {"rate": 0, "remaining_minutes": 15}
+      },
+      "expected": {
+        "action": "cancel_and_increase",
+        "reason": "carbs_absorbing_rapidly"
+      }
+    }
+  ],
+  "roundingRules": {
+    "medtronic_old": {"step": 0.05, "models": ["522", "523", "722", "723"]},
+    "medtronic_new": {"step": 0.025, "models": ["554", "554G", "754", "754G"]},
+    "omnipod": {"step": 0.05},
+    "dana": {"step": 0.01}
+  }
+}
