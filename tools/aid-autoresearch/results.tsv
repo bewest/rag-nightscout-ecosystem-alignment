@@ -4,3 +4,6 @@ HEAD	0.323042	true	0.26	0.9561	keep	oref0 e2e: 12/12 boundary, 26/100 TV vectors
 2026-03-28T20:25:45Z	8464104	0.5390	PASS	0.26	14.6	0.777	active	v2 scoring with captured predBGs trajectories
 2026-03-28T20:56:15Z	b73f491	0.5903	PASS	0.26	4.5	0.782	active	v2 scoring with captured predBGs trajectories
 2026-03-28T13:58:12.457526	HEAD	0.5903	PASS	0.26	4.5	0.782	keep	IOB reconstruction fix: separate tau for iobWithZeroTemp, exclude 21 parametric variants
+2026-03-28T21:01:10Z	99c4797	0.5903	PASS	0.26	4.5	0.782	active	v2 scoring with captured predBGs trajectories
+2026-03-28T21:02:19Z	99c4797	0.5903	PASS	0.26	4.5	0.782	active	v2 scoring with captured predBGs trajectories
+2026-03-28T21:12:18Z	99c4797	0.7353	PASS	0.41	4.5	0.782	active	v2 scoring with captured predBGs trajectories

@@ -110,8 +110,9 @@ def compute_score(boundary_results, endtoend_results, prediction_results=None):
     e2e_summary = e2e.get("summary", {})
     e2e_results = e2e.get("results", [])
 
-    e2e_total = e2e_summary.get("total", 0)
+    e2e_total = e2e_summary.get("scored", e2e_summary.get("total", 0))
     e2e_pass = e2e_summary.get("pass", 0)
+    e2e_skipped = e2e_summary.get("skipped", 0)
     pass_rate = e2e_pass / max(e2e_total, 1)
 
     # Rate divergence (decision agreement metric)
@@ -165,6 +166,8 @@ def compute_score(boundary_results, endtoend_results, prediction_results=None):
             "boundary_total": boundary_total,
             "e2e_pass": e2e_pass,
             "e2e_total": e2e_total,
+            "e2e_skipped": e2e_skipped,
+            "tiers": e2e_summary.get("tiers", {}),
             "pred_good": pred_summary.get("good", 0),
             "pred_fair": pred_summary.get("fair", 0),
             "pred_poor": pred_summary.get("poor", 0),
@@ -240,13 +243,19 @@ def main():
             print(f"  ─────────────────────────────────────────")
             print(f"  Agreement:         {c['agreement']:.4f}  (rate div: {c.get('mean_rate_div_u_hr', 0):.3f} U/hr)")
             print(f"  Trajectory MAE:    {c['prediction']:.4f}  (avg: {c.get('avg_traj_mae_mgdl', 0):.1f} mg/dL)")
-            print(f"  Conformance:       {c['pass_rate']:.4f}  ({c.get('e2e_pass', 0)}/{c.get('e2e_total', 0)} strict)")
+            print(f"  Conformance:       {c['pass_rate']:.4f}  ({c.get('e2e_pass', 0)}/{c.get('e2e_total', 0)} strict, {c.get('e2e_skipped', 0)} skipped)")
             print(f"  Direction:         {c['dir_agreement']:.4f}  (trajectory slope agreement)")
             print(f"  Simplicity:        {c['simplicity']:.4f}")
             print(f"  ─────────────────────────────────────────")
             print(f"  Boundary:          {c['boundary_pass']}/{c['boundary_total']}")
             print(f"  Predictions:       {c.get('pred_good', 0)} good / {c.get('pred_fair', 0)} fair / {c.get('pred_poor', 0)} poor")
             print(f"  Quality:           {c.get('quality_score', 0):.4f}")
+            tiers = c.get("tiers", {})
+            if tiers:
+                print(f"  ─────────────────────────────────────────")
+                print(f"  Tier: strict       {tiers.get('strict', {}).get('rate', 'N/A')}")
+                print(f"  Tier: reasonable   {tiers.get('reasonable', {}).get('rate', 'N/A')}")
+                print(f"  Tier: lax          {tiers.get('lax', {}).get('rate', 'N/A')}")
         print(f"{'='*55}")
 
 

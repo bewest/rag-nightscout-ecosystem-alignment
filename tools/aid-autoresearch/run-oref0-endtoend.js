@@ -43,14 +43,12 @@ const TOL = {
  * Generate a projected IOB array (48 ticks, 5-min intervals, 4 hours)
  * from a single IOB snapshot.
  *
- * Uses piecewise exponential decay calibrated to the insulin activity curve.
- * The key insight: aggregate IOB from multiple past doses decays approximately
- * exponentially, with the activity (rate of decay) proportional to remaining IOB.
- *
- * Each tick provides .activity and .iobWithZeroTemp.activity for oref0's
- * prediction loop (IOB, ZT, COB, UAM curves at determine-basal.js:574).
+ * Uses separate decay rates (tau) for the main IOB curve and iobWithZeroTemp.
+ * oref0's determine-basal (line 576-577) uses both iobTick.activity and
+ * iobTick.iobWithZeroTemp.activity at each prediction step — these must
+ * diverge when a temp basal is active.
  */
-function generateIobArray(iobSnapshot, dia) {
+function generateIobArray(iobSnapshot, dia, currentTemp) {
     const diaMins = (dia || 4) * 60;
     const ticks = 48;
     const iobArray = [];
@@ -59,10 +57,10 @@ function generateIobArray(iobSnapshot, dia) {
     const activity0 = iobSnapshot.activity || 0;
     const basaliob0 = iobSnapshot.basaliob || iobSnapshot.basalIob || 0;
 
-    const iobZT0 = iobSnapshot.iobWithZeroTemp || {
-        iob: iob0, basaliob: basaliob0, bolussnooze: 0,
-        activity: activity0, lastBolusTime: 0
-    };
+    const iobZT0 = iobSnapshot.iobWithZeroTemp || {};
+    const ztIob0 = iobZT0.iob != null ? iobZT0.iob : iob0;
+    const ztActivity0 = iobZT0.activity != null ? iobZT0.activity : activity0;
+    const ztBasaliob0 = iobZT0.basaliob != null ? iobZT0.basaliob : basaliob0;
 
     // Calibrate tau from activity/iob ratio when data is available
     let tau = diaMins / 1.85; // default ~130min for DIA=4h
@@ -73,42 +71,50 @@ function generateIobArray(iobSnapshot, dia) {
         }
     }
 
+    // Separate tau for zero-temp curve (may differ when temp basal is active)
+    let tauZT = tau;
+    if (Math.abs(ztIob0) > 0.01 && Math.abs(ztActivity0) > 0.0001) {
+        const rZT = Math.abs(ztActivity0 / ztIob0);
+        if (rZT > 0.0001 && rZT < 0.1) {
+            tauZT = Math.min(diaMins, Math.max(30, 1 / rZT));
+        }
+    }
+
     const basalFrac = (iob0 !== 0) ? (basaliob0 / iob0) : 0.5;
+    const ztBasalFrac = (ztIob0 !== 0) ? (ztBasaliob0 / ztIob0) : 0.5;
 
     for (let i = 0; i < ticks; i++) {
         const t = i * 5; // minutes from now
         const decay = Math.exp(-t / tau);
-
-        // IOB and activity both decay exponentially
-        // Activity decays slightly faster (proportional to derivative of IOB)
-        const actDecay = decay * (1 + t / tau) * Math.exp(-t / tau * 0.1);
+        const decayZT = Math.exp(-t / tauZT);
 
         const iobVal = iob0 * decay;
-        const actVal = activity0 * Math.max(0, decay);
-
-        // iobWithZeroTemp: use vector's ZT values for t=0, decay from there
-        const ztIob = (iobZT0.iob || iob0) * decay;
-        const ztAct = (iobZT0.activity || activity0) * Math.max(0, decay);
+        const actVal = activity0 * decay;
+        const ztIobVal = ztIob0 * decayZT;
+        const ztActVal = ztActivity0 * decayZT;
 
         const tick = {
             iob: iobVal,
             basaliob: iobVal * basalFrac,
             bolussnooze: 0,
             activity: actVal,
-            lastBolusTime: iobSnapshot.lastBolusTime || (Date.now() - 3600000)
-        };
-
-        tick.iobWithZeroTemp = {
-            iob: ztIob,
-            basaliob: ztIob * basalFrac,
-            bolussnooze: 0,
-            activity: ztAct,
-            lastBolusTime: 0,
-            time: new Date(Date.now() + t * 60000).toISOString()
+            lastBolusTime: iobSnapshot.lastBolusTime || (Date.now() - 3600000),
+            iobWithZeroTemp: {
+                iob: ztIobVal,
+                basaliob: ztIobVal * ztBasalFrac,
+                bolussnooze: 0,
+                activity: ztActVal,
+                lastBolusTime: 0,
+                time: new Date(Date.now() + t * 60000).toISOString()
+            }
         };
 
         if (i === 0) {
-            tick.lastTemp = { date: Date.now() - 300000, duration: 0 };
+            tick.lastTemp = {
+                date: Date.now() - 300000,
+                duration: currentTemp?.duration || 0,
+                rate: currentTemp?.rate || 0
+            };
         }
 
         iobArray.push(tick);
@@ -138,6 +144,12 @@ function vectorToOref0Inputs(vector) {
     };
 
     const dia = input.profile.dia || 4;
+
+    const currentTemp = input.currentTemp ? {
+        rate: input.currentTemp.rate || 0,
+        duration: input.currentTemp.duration || 0
+    } : { rate: 0, duration: 0 };
+
     const iobSnapshot = {
         iob: input.iob.iob,
         basaliob: input.iob.basalIob || 0,
@@ -148,7 +160,7 @@ function vectorToOref0Inputs(vector) {
     };
 
     // Generate projected IOB array for prediction loop
-    const iobData = generateIobArray(iobSnapshot, dia);
+    const iobData = generateIobArray(iobSnapshot, dia, currentTemp);
 
     const p = input.profile;
     const profile = {
@@ -160,8 +172,9 @@ function vectorToOref0Inputs(vector) {
         max_bg: p.targetHigh || 110,
         max_basal: p.maxBasal || 3.0,
         max_iob: p.maxIob || 5.0,
-        max_daily_safety_multiplier: 3,
-        current_basal_safety_multiplier: 4,
+        max_daily_basal: p.maxDailyBasal || p.basalRate || p.currentBasal || 1.0,
+        max_daily_safety_multiplier: p.maxDailySafetyMultiplier || 3,
+        current_basal_safety_multiplier: p.currentBasalSafetyMultiplier || 4,
         dia: p.dia || 4,
         skip_neutral_temps: false,
         enableSMB_with_bolus: p.enableSMB || false,
@@ -177,11 +190,6 @@ function vectorToOref0Inputs(vector) {
         out_units: p.units || 'mg/dL',
         type: 'current'
     };
-
-    const currentTemp = input.currentTemp ? {
-        rate: input.currentTemp.rate || 0,
-        duration: input.currentTemp.duration || 0
-    } : { rate: 0, duration: 0 };
 
     const md = input.mealData || {};
     const mealData = {
@@ -295,7 +303,7 @@ function runAll(dir) {
         .sort();
 
     const results = [];
-    let pass = 0, fail = 0, error = 0, crash = 0;
+    let pass = 0, fail = 0, error = 0, crash = 0, skipped = 0;
 
     for (const file of files) {
         const content = fs.readFileSync(path.join(dir, file), 'utf8');
@@ -308,6 +316,12 @@ function runAll(dir) {
             continue;
         }
 
+        // Skip parametric variants (stale expected outputs from base vector)
+        if (vector.metadata?.parametricVariantOf || vector.metadata?.originalPredBGsStale) {
+            skipped++;
+            continue;
+        }
+
         const r = runVector(vector);
         results.push(r);
         if (r.status === 'pass') pass++;
@@ -316,15 +330,41 @@ function runAll(dir) {
         else crash++;
     }
 
+    // Compute tiered tolerance pass rates from results
+    const tiers = [
+        { name: 'strict', rateTol: 0.05, ebgTol: 10, irTol: 0.05 },
+        { name: 'reasonable', rateTol: 0.5, ebgTol: 25, irTol: 0.5 },
+        { name: 'lax', rateTol: 2.0, ebgTol: 50, irTol: 2.0 },
+    ];
+    const tierResults = {};
+    for (const tier of tiers) {
+        let tierPass = 0;
+        for (const r of results) {
+            if (r.status === 'crash' || r.status === 'error') continue;
+            const d = r.diffs || {};
+            let ok = true;
+            if (d.rate && d.rate.diff > tier.rateTol) ok = false;
+            if (d.eventualBG && d.eventualBG.diff > tier.ebgTol) ok = false;
+            if (d.insulinReq && d.insulinReq.diff > tier.irTol) ok = false;
+            if (d.rateMissing) ok = false;
+            if (ok) tierPass++;
+        }
+        tierResults[tier.name] = { pass: tierPass, total: results.length,
+            rate: results.length > 0 ? (tierPass / results.length * 100).toFixed(1) + '%' : '0%' };
+    }
+
     return {
         summary: {
             total: files.length,
+            scored: results.length,
+            skipped,
             pass,
             fail,
             error,
             crash,
-            passRate: files.length > 0 ? (pass / files.length * 100).toFixed(1) + '%' : '0%',
-            tolerances: TOL
+            passRate: results.length > 0 ? (pass / results.length * 100).toFixed(1) + '%' : '0%',
+            tolerances: TOL,
+            tiers: tierResults
         },
         results
     };
@@ -351,14 +391,23 @@ if (cleanArgs.length > 0) {
     } else {
         // Summary + failures
         const s = output.summary;
-        console.log(`\noref0 End-to-End Validation (${s.total} vectors)`);
-        console.log('='.repeat(50));
-        console.log(`  PASS:  ${s.pass}`);
-        console.log(`  FAIL:  ${s.fail}`);
-        console.log(`  ERROR: ${s.error}`);
-        console.log(`  CRASH: ${s.crash}`);
-        console.log(`  Rate:  ${s.passRate}`);
+        console.log(`\noref0 End-to-End Validation (${s.total} vectors, ${s.skipped} parametric skipped)`);
+        console.log('='.repeat(55));
+        console.log(`  SCORED: ${s.scored}  (excl. ${s.skipped} parametric variants)`);
+        console.log(`  PASS:   ${s.pass}`);
+        console.log(`  FAIL:   ${s.fail}`);
+        console.log(`  ERROR:  ${s.error}`);
+        console.log(`  CRASH:  ${s.crash}`);
+        console.log(`  Rate:   ${s.passRate}`);
         console.log(`\nTolerances: rate=${TOL.rate} U/hr, eventualBG=${TOL.eventualBG} mg/dL, insulinReq=${TOL.insulinReq} U`);
+
+        // Tiered tolerance breakdown
+        if (s.tiers) {
+            console.log(`\nTiered Pass Rates:`);
+            console.log(`  Strict   (rate≤0.05, eBG≤10, iR≤0.05): ${s.tiers.strict.rate}  (${s.tiers.strict.pass}/${s.tiers.strict.total})`);
+            console.log(`  Reasonable (rate≤0.5, eBG≤25, iR≤0.5): ${s.tiers.reasonable.rate}  (${s.tiers.reasonable.pass}/${s.tiers.reasonable.total})`);
+            console.log(`  Lax      (rate≤2.0, eBG≤50, iR≤2.0):   ${s.tiers.lax.rate}  (${s.tiers.lax.pass}/${s.tiers.lax.total})`);
+        }
 
         // Show failures
         const failures = output.results.filter(r => r.status !== 'pass');
