@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-03-28T22:00:45.493916+00:00",
+  "timestamp": "2026-03-28T22:00:45.775341+00:00",
   "mutation": {
     "sens_factor": 0.7,
-    "cr_factor": 0.85,
-    "basal_factor": 0.95,
-    "max_basal": 1,
-    "target_shift": -5,
+    "cr_factor": 1.2,
+    "basal_factor": 0.85,
+    "max_basal": 3.5,
+    "target_shift": -10,
     "max_iob": 6,
-    "dia": 4.5,
+    "dia": 4,
     "enable_smb": 0,
     "enable_uam": 0,
     "smb_minutes": 30
@@ -16,7 +16,7 @@
     "strategy": "walk",
     "iterations": 50,
     "baseline_score": 0.6898,
-    "best_score": 0.8649,
+    "best_score": 0.7737,
     "diffs": {
       "sens_factor": {
         "default": 1,
@@ -25,33 +25,28 @@
       },
       "cr_factor": {
         "default": 1,
-        "best": 0.85,
+        "best": 1.2,
         "desc": "Carb ratio multiplier"
       },
       "basal_factor": {
         "default": 1,
-        "best": 0.95,
+        "best": 0.85,
         "desc": "Basal rate multiplier"
       },
       "max_basal": {
         "default": 3,
-        "best": 1,
+        "best": 3.5,
         "desc": "Max temp basal U/hr"
       },
       "target_shift": {
         "default": 0,
-        "best": -5,
+        "best": -10,
         "desc": "Target BG shift mg/dL"
       },
       "max_iob": {
         "default": 5,
         "best": 6,
         "desc": "Max IOB limit"
-      },
-      "dia": {
-        "default": 4,
-        "best": 4.5,
-        "desc": "Duration of insulin action"
       }
     }
   }
