@@ -1,0 +1,150 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "id": "TV-073",
+    "name": "AAPS replay 2024-01-05_110747",
+    "category": "basal-adjustment",
+    "source": "aaps/replay/2024-01-05_110747",
+    "description": "Extracted from AAPS ReplayApsResultsTest fixture",
+    "algorithm": "OpenAPSSMBAutoISFPlugin"
+  },
+  "input": {
+    "glucoseStatus": {
+      "glucose": 105,
+      "glucoseUnit": "mg/dL",
+      "delta": -19.39,
+      "shortAvgDelta": -19.39,
+      "longAvgDelta": -13.34,
+      "timestamp": "2024-01-05T10:05:00Z",
+      "noise": 0
+    },
+    "iob": {
+      "iob": 0.372,
+      "basalIob": 0.372,
+      "bolusIob": 0,
+      "activity": 0.0048,
+      "iobWithZeroTemp": {
+        "iob": 0.372,
+        "basaliob": 0.372,
+        "bolussnooze": 0,
+        "activity": 0.0048,
+        "lastBolusTime": 0,
+        "time": "2024-01-05T10:07:44.190Z"
+      }
+    },
+    "profile": {
+      "basalRate": 0.37,
+      "sensitivity": 118,
+      "carbRatio": 17.3,
+      "targetLow": 91,
+      "targetHigh": 91,
+      "maxIob": 8,
+      "maxBasal": 2.96,
+      "dia": 5,
+      "maxDailyBasal": 0.45
+    },
+    "mealData": {
+      "carbs": 0,
+      "cob": 0,
+      "lastCarbTime": 0,
+      "slopeFromMaxDeviation": -2.9733636363636364,
+      "slopeFromMinDeviation": 0
+    },
+    "currentTemp": {
+      "rate": 0,
+      "duration": 70
+    },
+    "autosensData": {
+      "ratio": 1
+    },
+    "microBolusAllowed": true,
+    "flatBGsDetected": false
+  },
+  "expected": {
+    "rate": 0,
+    "duration": 90,
+    "eventualBG": -43,
+    "insulinReq": 0,
+    "cob": 0,
+    "iob": 0.372
+  },
+  "assertions": [
+    {
+      "type": "rate_zero"
+    },
+    {
+      "type": "safety_limit",
+      "field": "rate",
+      "max": 2.96
+    },
+    {
+      "type": "no_smb"
+    }
+  ],
+  "originalOutput": {
+    "temp": "absolute",
+    "bg": 105,
+    "tick": -19,
+    "eventualBG": -43,
+    "targetBG": 91,
+    "insulinReq": 0,
+    "deliverAt": "2024-01-05T10:07:47.242Z",
+    "sensitivityRatio": 1,
+    "variable_sens": 295,
+    "predBGs": {
+      "IOB": [
+        105,
+        87,
+        70,
+        54,
+        40,
+        39,
+        39,
+        39,
+        39,
+        39,
+        39,
+        39,
+        39
+      ],
+      "ZT": [
+        105,
+        98,
+        91,
+        85,
+        79,
+        73,
+        69,
+        64,
+        60,
+        57,
+        54,
+        53,
+        51,
+        50,
+        50,
+        50,
+        51,
+        52,
+        54,
+        56,
+        59,
+        62,
+        65,
+        69,
+        73,
+        78,
+        83,
+        88
+      ]
+    },
+    "COB": 0,
+    "IOB": 0.372,
+    "reason": "COB: 0, Dev: -38, BGI: -7, ISF: 295, CR: 17.3, Target: 91, minPredBG 45, minGuardBG -75, IOBpredBG 39; 7 add'l carbs req w/in 15m; minGuardBG -75<66",
+    "carbsReq": 7,
+    "carbsReqWithin": 15,
+    "duration": 90,
+    "rate": 0,
+    "timestamp": "2024-01-05T10:07:47.264Z"
+  }
+}

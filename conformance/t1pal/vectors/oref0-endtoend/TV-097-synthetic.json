@@ -1,0 +1,154 @@
+{
+  "assertions" : [
+    {
+      "baseline" : 0.85,
+      "type" : "rate_increased"
+    },
+    {
+      "field" : "rate",
+      "max" : 1,
+      "type" : "safety_limit"
+    }
+  ],
+  "expected" : {
+    "cob" : 0,
+    "duration" : 30,
+    "eventualBG" : 154,
+    "insulinReq" : 0.47,
+    "iob" : -0.53,
+    "rate" : 1.7424999999999997
+  },
+  "input" : {
+    "autosensData" : {
+      "ratio" : 1
+    },
+    "currentTemp" : {
+      "duration" : 85,
+      "rate" : 0
+    },
+    "flatBGsDetected" : false,
+    "glucoseStatus" : {
+      "delta" : 6.95,
+      "glucose" : 200,
+      "glucoseUnit" : "mg\/dL",
+      "longAvgDelta" : -4.91,
+      "noise" : 0,
+      "shortAvgDelta" : 4.73,
+      "timestamp" : "2023-10-28T11:30:00Z"
+    },
+    "iob" : {
+      "activity" : -0.0041,
+      "basalIob" : 0.2,
+      "bolusIob" : 0,
+      "iob" : 0.2,
+      "iobWithZeroTemp" : {
+        "activity" : -0.0041,
+        "basaliob" : -0.53,
+        "bolussnooze" : 0,
+        "iob" : -0.53,
+        "lastBolusTime" : 0,
+        "time" : "2023-10-28T11:30:10.652Z"
+      }
+    },
+    "mealData" : {
+      "carbs" : 0,
+      "cob" : 10,
+      "lastCarbTime" : 0,
+      "mealCOB" : 10,
+      "slopeFromMaxDeviation" : 0,
+      "slopeFromMinDeviation" : 6.04125
+    },
+    "microBolusAllowed" : false,
+    "profile" : {
+      "basalRate" : 0.85,
+      "carbRatio" : 2.3529411764705883,
+      "dia" : 5,
+      "maxBasal" : 1,
+      "maxDailyBasal" : 0.85,
+      "maxIob" : 3,
+      "sensitivity" : 84.70588235294117,
+      "targetHigh" : 99,
+      "targetLow" : 99
+    }
+  },
+  "metadata" : {
+    "algorithm" : "OpenAPSSMBPlugin",
+    "category" : "synthetic",
+    "description" : "Generated test vector: hyper with some IOB and COB",
+    "id" : "TV-097",
+    "name" : "Synthetic hyper with some IOB and COB",
+    "source" : "aaps\/replay\/2023-10-28_133013"
+  },
+  "originalOutput" : {
+    "bg" : 90.8,
+    "COB" : 0,
+    "deliverAt" : "2023-10-28T11:30:12.865Z",
+    "duration" : 30,
+    "eventualBG" : 154,
+    "insulinReq" : 0.47,
+    "IOB" : -0.53,
+    "predBGs" : {
+      "IOB" : [
+        91,
+        95,
+        100,
+        104,
+        108,
+        112,
+        115,
+        119,
+        122,
+        124,
+        127,
+        129,
+        131,
+        132,
+        134,
+        135,
+        137,
+        138,
+        139,
+        140,
+        142,
+        143,
+        143,
+        144,
+        145,
+        146,
+        146,
+        147,
+        148,
+        148,
+        149,
+        149,
+        149,
+        150,
+        150,
+        150,
+        151,
+        151,
+        151,
+        151,
+        151,
+        152
+      ],
+      "ZT" : [
+        91,
+        93,
+        94,
+        97,
+        99,
+        101,
+        104
+      ]
+    },
+    "rate" : 1,
+    "reason" : "COB: 0, Dev: 1.0, BGI: 0.1, ISF: 4.7, CR: 2.35, Target: 5.5, minPredBG 7.7, minGuardBG 5.3, IOBpredBG 8.4; Eventual BG 8.6 >= 5.5, adj. req. rate: 1.79 to maxSafeBasal: 1, temp 0.00 < 1U\/hr. ",
+    "sensitivityRatio" : 1,
+    "targetBG" : 99,
+    "temp" : "absolute",
+    "tick" : "+7",
+    "timestamp" : "2023-10-28T11:30:12.954Z"
+  },
+  "version" : "1.0.0"
+}

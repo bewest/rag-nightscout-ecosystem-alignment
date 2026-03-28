@@ -1,0 +1,167 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "id": "TV-068",
+    "name": "AAPS replay 2023-12-23_032036",
+    "category": "basal-adjustment",
+    "source": "aaps/replay/2023-12-23_032036",
+    "description": "Extracted from AAPS ReplayApsResultsTest fixture",
+    "algorithm": "OpenAPSSMBAutoISFPlugin"
+  },
+  "input": {
+    "glucoseStatus": {
+      "glucose": 90,
+      "glucoseUnit": "mg/dL",
+      "delta": -6.39,
+      "shortAvgDelta": -6.39,
+      "longAvgDelta": -10.74,
+      "timestamp": "2023-12-23T02:20:00Z",
+      "noise": 0
+    },
+    "iob": {
+      "iob": 0.336,
+      "basalIob": 0.336,
+      "bolusIob": 0,
+      "activity": 0.0044,
+      "iobWithZeroTemp": {
+        "iob": 0.336,
+        "basaliob": 0.336,
+        "bolussnooze": 0,
+        "activity": 0.0044,
+        "lastBolusTime": 0,
+        "time": "2023-12-23T02:20:34.728Z"
+      }
+    },
+    "profile": {
+      "basalRate": 0.25,
+      "sensitivity": 150,
+      "carbRatio": 18.5,
+      "targetLow": 91,
+      "targetHigh": 91,
+      "maxIob": 8,
+      "maxBasal": 2,
+      "dia": 5,
+      "maxDailyBasal": 0.45
+    },
+    "mealData": {
+      "carbs": 0,
+      "cob": 0,
+      "lastCarbTime": 0,
+      "slopeFromMaxDeviation": -1.5617,
+      "slopeFromMinDeviation": 2.3415
+    },
+    "currentTemp": {
+      "rate": 0,
+      "duration": 90
+    },
+    "autosensData": {
+      "ratio": 1
+    },
+    "microBolusAllowed": true,
+    "flatBGsDetected": false
+  },
+  "expected": {
+    "rate": 0,
+    "duration": 120,
+    "eventualBG": -3,
+    "insulinReq": 0,
+    "cob": 0,
+    "iob": 0.336
+  },
+  "assertions": [
+    {
+      "type": "rate_zero"
+    },
+    {
+      "type": "safety_limit",
+      "field": "rate",
+      "max": 2
+    },
+    {
+      "type": "no_smb"
+    }
+  ],
+  "originalOutput": {
+    "temp": "absolute",
+    "bg": 90,
+    "tick": -6,
+    "eventualBG": -3,
+    "targetBG": 91,
+    "insulinReq": 0,
+    "deliverAt": "2023-12-23T02:20:35.878Z",
+    "sensitivityRatio": 1,
+    "predBGs": {
+      "IOB": [
+        90,
+        84,
+        78,
+        73,
+        68,
+        64,
+        60,
+        56,
+        53,
+        50,
+        47,
+        45,
+        43,
+        42,
+        40,
+        39
+      ],
+      "ZT": [
+        90,
+        87,
+        84,
+        81,
+        78,
+        76,
+        74,
+        72,
+        70,
+        68,
+        67,
+        66,
+        65,
+        64,
+        64,
+        63,
+        63,
+        63,
+        63,
+        63,
+        63,
+        64,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        75,
+        76,
+        77,
+        79,
+        80,
+        82,
+        84,
+        85,
+        87,
+        89,
+        90
+      ]
+    },
+    "COB": 0,
+    "IOB": 0.336,
+    "reason": "COB: 0, Dev: -45, BGI: -3, ISF: 144, CR: 18.5, Target: 91, minPredBG 51, minGuardBG 23, IOBpredBG 39; 1 add'l carbs req w/in 25m; minGuardBG 23<66",
+    "carbsReq": 1,
+    "carbsReqWithin": 25,
+    "duration": 120,
+    "rate": 0,
+    "timestamp": "2023-12-23T02:20:35.885Z"
+  }
+}

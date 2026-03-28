@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "id": "TV-086",
+    "name": "OpenAPS Example 2016-07-10",
+    "category": "basal-adjustment",
+    "source": "externals/openaps-example",
+    "description": "Real data from bewest/openaps-example repository - historical OpenAPS loop data",
+    "algorithm": "oref0",
+    "date": "2016-07-10T13:01:09-07:00"
+  },
+  "input": {
+    "glucoseStatus": {
+      "glucose": 218,
+      "glucoseUnit": "mg/dL",
+      "delta": -9,
+      "shortAvgDelta": -3,
+      "longAvgDelta": -4,
+      "timestamp": "2016-07-10T13:01:09-07:00",
+      "noise": 1,
+      "direction": "FortyFiveDown"
+    },
+    "iob": {
+      "iob": 2.996,
+      "basalIob": 0.944,
+      "bolusIob": 2.052,
+      "activity": 0.0273,
+      "bolusSnooze": 0.672,
+      "netBasalInsulin": 1.5,
+      "highTempInsulin": 1.5
+    },
+    "profile": {
+      "basalRate": 1.1,
+      "sensitivity": 45,
+      "carbRatio": 10,
+      "targetLow": 106,
+      "targetHigh": 125,
+      "maxIob": 5,
+      "maxBasal": 5,
+      "maxDailyBasal": 1.1,
+      "dia": 4,
+      "units": "mg/dL"
+    },
+    "glucose": [
+      {"glucose": 218, "timestamp": "2016-07-10T13:01:09-07:00", "direction": "FortyFiveDown"},
+      {"glucose": 227, "timestamp": "2016-07-10T12:56:09-07:00", "direction": "Flat"},
+      {"glucose": 230, "timestamp": "2016-07-10T12:51:09-07:00", "direction": "Flat"},
+      {"glucose": 232, "timestamp": "2016-07-10T12:46:09-07:00", "direction": "FortyFiveDown"},
+      {"glucose": 234, "timestamp": "2016-07-10T12:41:09-07:00", "direction": "FortyFiveDown"}
+    ]
+  },
+  "expected": {
+    "temp": "absolute",
+    "bg": 218,
+    "tick": "-9",
+    "eventualBG": 92,
+    "snoozeBG": 137,
+    "reason": "Eventual BG 92 < 106, bolus snooze: eventual BG range 92-137, temp 1.1 ~ req 1.1U/hr",
+    "rate": 1.1,
+    "duration": 30
+  },
+  "notes": {
+    "scenario": "High BG (218) but falling fast with significant IOB (2.996U). Algorithm suggests maintaining current basal.",
+    "keyInsight": "Despite high BG, eventualBG (92) is below target due to active IOB - no increase needed"
+  }
+}

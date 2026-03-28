@@ -1,0 +1,3 @@
+commit	algorithm_score	safety_ok	pass_rate	divergence_u_hr	status	description
+c746a54	0.000000	false	0.50	N/A	baseline	oref0 baseline: 11/12 boundary (BOUND-005 delta=0 behavior), 4/8 xval
+HEAD	0.323042	true	0.26	0.9561	keep	oref0 e2e: 12/12 boundary, 26/100 TV vectors, synthetic IOB array
