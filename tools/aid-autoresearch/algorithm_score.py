@@ -7,13 +7,20 @@ against t1pal conformance vectors. Adapted from t1pal AUTORESEARCH-AID-RECOMMEND
 
 Safety boundary violations are a hard gate → score = 0.0.
 
-Supports two data sources:
-  1. xval vectors (simplified boundary + unit tests) via validate_oref0.py
+Supports three data sources:
+  1. xval vectors (safety boundary + unit tests) via validate_oref0.py
   2. End-to-end TV-* vectors (100 real captures) via run-oref0-endtoend.js
+  3. Prediction trajectory comparison (captured vs reconstructed) via compare-predictions.js
+
+The prediction comparison uses originalOutput.predBGs from TV-* vectors as
+ground truth — these are the actual glucose trajectories the phone algorithm
+produced, not our synthetic IOB reconstruction.
 
 Usage:
     python3 tools/aid-autoresearch/algorithm_score.py --runner oref0
     python3 tools/aid-autoresearch/algorithm_score.py --runner oref0 --json
+
+Trace: ALG-SCORE-001, REQ-060
 """
 
 import argparse
@@ -59,10 +66,30 @@ def run_endtoend_vectors():
         return None
 
 
-def compute_score(boundary_results, endtoend_results):
+def run_prediction_comparison():
+    """Run trajectory comparison: captured predBGs vs reconstructed."""
+    runner_path = os.path.join(REPO_ROOT, "tools", "aid-autoresearch", "compare-predictions.js")
+    result = subprocess.run(
+        ["node", runner_path, "--json"],
+        capture_output=True, text=True, timeout=300
+    )
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return None
+
+
+def compute_score(boundary_results, endtoend_results, prediction_results=None):
     """
     Compute composite AID algorithm score (0.0 to 1.0, higher is better).
     Returns 0.0 immediately if any safety boundary is violated.
+
+    Updated scoring (v2) incorporates prediction trajectory quality:
+      25% decision agreement (rate divergence)
+      25% prediction trajectory MAE (captured vs reconstructed predBGs)
+      25% strict conformance pass rate
+      15% trajectory direction agreement
+      10% simplicity bonus
     """
     # --- Safety gate from boundary vectors ---
     b_summary = boundary_results.get("summary", {}) if boundary_results else {}
@@ -87,33 +114,39 @@ def compute_score(boundary_results, endtoend_results):
     e2e_pass = e2e_summary.get("pass", 0)
     pass_rate = e2e_pass / max(e2e_total, 1)
 
-    # Rate divergence (agreement metric)
+    # Rate divergence (decision agreement metric)
     rate_diffs = []
-    ebg_diffs = []
     for r in e2e_results:
         diffs = r.get("diffs", {})
         if "rate" in diffs and diffs["rate"].get("diff") is not None:
             rate_diffs.append(diffs["rate"]["diff"])
-        if "eventualBG" in diffs and diffs["eventualBG"].get("diff") is not None:
-            ebg_diffs.append(diffs["eventualBG"]["diff"])
 
     mean_rate_div = sum(rate_diffs) / max(len(rate_diffs), 1) if rate_diffs else 1.0
-    mean_ebg_mae = sum(ebg_diffs) / max(len(ebg_diffs), 1) if ebg_diffs else 50.0
-
-    MAX_DIVERGENCE = 2.0  # U/hr (scaled for synthetic IOB array limitation)
-    MAX_MAE = 50.0        # mg/dL (eventualBG prediction)
-
+    MAX_DIVERGENCE = 2.0  # U/hr
     agreement = max(0, 1 - mean_rate_div / MAX_DIVERGENCE)
-    prediction = max(0, 1 - mean_ebg_mae / MAX_MAE)
 
-    # Simplicity bonus — baseline (1.0 = maximum simplicity)
+    # --- Prediction trajectory scoring (NEW: from captured predBGs) ---
+    pred = prediction_results or {}
+    pred_summary = pred.get("summary", {})
+
+    # Use trajectory MAE from compare-predictions.js
+    avg_traj_mae = pred_summary.get("avgMae", 50.0) or 50.0
+    avg_dir_agreement = pred_summary.get("avgDirAgreement", 0.5) or 0.5
+    quality_score = pred_summary.get("qualityScore", 0.0) or 0.0
+
+    MAX_TRAJ_MAE = 50.0  # mg/dL (trajectory prediction)
+    prediction = max(0, 1 - avg_traj_mae / MAX_TRAJ_MAE)
+
+    # Simplicity bonus — baseline oref0 (deterministic, interpretable)
     simplicity = 0.5
 
+    # Composite with trajectory-aware weights
     score = (
-        0.30 * agreement +      # Agreement with reference rate decisions
-        0.30 * prediction +      # eventualBG prediction accuracy
-        0.30 * pass_rate +       # Strict conformance pass rate
-        0.10 * simplicity        # Simplicity bonus
+        0.25 * agreement +          # Decision agreement (rate divergence)
+        0.25 * prediction +          # Trajectory MAE (captured vs reconstructed)
+        0.25 * pass_rate +           # Strict conformance pass rate
+        0.15 * avg_dir_agreement +   # Trajectory direction agreement
+        0.10 * simplicity            # Simplicity bonus
     )
 
     return {
@@ -123,15 +156,49 @@ def compute_score(boundary_results, endtoend_results):
             "agreement": round(agreement, 4),
             "prediction": round(prediction, 4),
             "pass_rate": round(pass_rate, 4),
+            "dir_agreement": round(avg_dir_agreement, 4),
             "simplicity": round(simplicity, 4),
             "mean_rate_div_u_hr": round(mean_rate_div, 4),
-            "mean_ebg_mae_mgdl": round(mean_ebg_mae, 4),
+            "avg_traj_mae_mgdl": round(avg_traj_mae, 1),
+            "quality_score": round(quality_score, 4),
             "boundary_pass": boundary_pass,
             "boundary_total": boundary_total,
             "e2e_pass": e2e_pass,
             "e2e_total": e2e_total,
+            "pred_good": pred_summary.get("good", 0),
+            "pred_fair": pred_summary.get("fair", 0),
+            "pred_poor": pred_summary.get("poor", 0),
         }
     }
+
+
+def append_results_tsv(score_result):
+    """Append score to results.tsv tracking file."""
+    tsv_path = os.path.join(REPO_ROOT, "tools", "aid-autoresearch", "results.tsv")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # Get current git commit
+    try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=REPO_ROOT, text=True
+        ).strip()
+    except Exception:
+        commit = "unknown"
+
+    s = score_result
+    c = s.get("components", {})
+    line = (
+        f"{now}\t{commit}\t{s['score']:.4f}\t"
+        f"{'PASS' if s['safety_ok'] else 'FAIL'}\t"
+        f"{c.get('pass_rate', 0):.2f}\t"
+        f"{c.get('avg_traj_mae_mgdl', 0):.1f}\t"
+        f"{c.get('dir_agreement', 0):.3f}\t"
+        f"active\tv2 scoring with captured predBGs trajectories"
+    )
+
+    with open(tsv_path, "a") as f:
+        f.write(line + "\n")
 
 
 def main():
@@ -139,38 +206,48 @@ def main():
     parser.add_argument("--runner", default="oref0", help="Algorithm runner name (oref0)")
     parser.add_argument("--vectors", default="conformance/t1pal", help="Path to conformance vectors")
     parser.add_argument("--json", action="store_true", help="Output full JSON")
+    parser.add_argument("--no-record", action="store_true", help="Skip appending to results.tsv")
     args = parser.parse_args()
 
-    print(f"Scoring {args.runner}...", file=sys.stderr)
+    print(f"Scoring {args.runner} (v2 with trajectory comparison)...", file=sys.stderr)
 
-    # Run both vector suites
+    # Run all three vector suites
     boundary_results = run_boundary_vectors(args.vectors)
     endtoend_results = run_endtoend_vectors()
+    prediction_results = run_prediction_comparison()
 
     if boundary_results is None and endtoend_results is None:
         print("ERROR: Both runners produced no results", file=sys.stderr)
         sys.exit(1)
 
-    score_result = compute_score(boundary_results, endtoend_results)
+    score_result = compute_score(boundary_results, endtoend_results, prediction_results)
+
+    if not args.no_record:
+        append_results_tsv(score_result)
 
     if args.json:
         print(json.dumps(score_result, indent=2))
     else:
         s = score_result
         safety = "✅ PASS" if s["safety_ok"] else "❌ FAIL"
-        print(f"\n{'='*50}")
-        print(f"Algorithm Score: {s['score']:.4f} / 1.0000")
-        print(f"Safety: {safety}")
+        print(f"\n{'='*55}")
+        print(f"  Algorithm Score:   {s['score']:.4f} / 1.0000")
+        print(f"  Safety:            {safety}")
         if s.get("reason"):
-            print(f"  Reason: {s['reason']}")
+            print(f"  Reason:            {s['reason']}")
         if s.get("components"):
             c = s["components"]
-            print(f"  Agreement:     {c['agreement']:.4f} (rate div: {c.get('mean_rate_div_u_hr', 0):.4f} U/hr)")
-            print(f"  Prediction:    {c['prediction']:.4f} (eBG MAE: {c.get('mean_ebg_mae_mgdl', 0):.1f} mg/dL)")
-            print(f"  Conformance:   {c['pass_rate']:.4f} ({c.get('e2e_pass', 0)}/{c.get('e2e_total', 0)} vectors)")
-            print(f"  Simplicity:    {c['simplicity']:.4f}")
-            print(f"  Boundary:      {c['boundary_pass']}/{c['boundary_total']}")
-        print(f"{'='*50}")
+            print(f"  ─────────────────────────────────────────")
+            print(f"  Agreement:         {c['agreement']:.4f}  (rate div: {c.get('mean_rate_div_u_hr', 0):.3f} U/hr)")
+            print(f"  Trajectory MAE:    {c['prediction']:.4f}  (avg: {c.get('avg_traj_mae_mgdl', 0):.1f} mg/dL)")
+            print(f"  Conformance:       {c['pass_rate']:.4f}  ({c.get('e2e_pass', 0)}/{c.get('e2e_total', 0)} strict)")
+            print(f"  Direction:         {c['dir_agreement']:.4f}  (trajectory slope agreement)")
+            print(f"  Simplicity:        {c['simplicity']:.4f}")
+            print(f"  ─────────────────────────────────────────")
+            print(f"  Boundary:          {c['boundary_pass']}/{c['boundary_total']}")
+            print(f"  Predictions:       {c.get('pred_good', 0)} good / {c.get('pred_fair', 0)} fair / {c.get('pred_poor', 0)} poor")
+            print(f"  Quality:           {c.get('quality_score', 0):.4f}")
+        print(f"{'='*55}")
 
 
 if __name__ == "__main__":

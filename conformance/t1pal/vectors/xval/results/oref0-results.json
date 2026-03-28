@@ -1,0 +1,950 @@
+{
+  "timestamp": "2026-02-16T23:03:09.261Z",
+  "files": [
+    {
+      "source": "oref0-extracted-vectors",
+      "version": "1.0.0",
+      "track": "ALG-XVAL-011",
+      "timestamp": "2026-02-16T23:03:09.261Z",
+      "summary": {
+        "total": 8,
+        "passed": 3,
+        "failed": 5,
+        "errors": 0
+      },
+      "testResults": [
+        {
+          "id": "OREF0-001",
+          "scenario": "Cancel high temp when in range without IOB",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "rate": 0.9,
+            "duration": 30,
+            "action": "set_current_basal"
+          },
+          "comparison": {
+            "match": false,
+            "issues": [
+              "rate: expected 0.9, got undefined",
+              "duration: expected 30, got undefined"
+            ],
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "OREF0-002",
+          "scenario": "Temp to 0 when low without IOB",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "rate": 0,
+            "duration_min": 29,
+            "action": "low_suspend"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "OREF0-003",
+          "scenario": "Set current basal when low and rising without IOB",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "rate": 0.9,
+            "duration": 30,
+            "action": "set_current_basal"
+          },
+          "comparison": {
+            "match": false,
+            "issues": [
+              "rate: expected 0.9, got undefined",
+              "duration: expected 30, got undefined"
+            ],
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "OREF0-004",
+          "scenario": "Temp to zero when rising slower than BGI",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "rate": 0,
+            "duration": 30,
+            "action": "low_suspend"
+          },
+          "comparison": {
+            "match": false,
+            "issues": [
+              "duration: expected 30, got undefined"
+            ],
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "OREF0-005",
+          "scenario": "Temp to 0 when low and falling regardless of BGI",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "rate": 0,
+            "duration_min": 29,
+            "action": "low_suspend"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "OREF0-006",
+          "scenario": "High temp when > 80 and rising with negative IOB",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "rate_min": 1,
+            "duration": 30,
+            "action": "high_temp"
+          },
+          "comparison": {
+            "match": false,
+            "issues": [
+              "rate too low: expected >= 1, got undefined",
+              "duration: expected 30, got undefined"
+            ],
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "OREF0-007",
+          "scenario": "High temp capped at maxSafeBasal when very high",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "rate_max": 3.5,
+            "action": "high_temp_capped"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "OREF0-008",
+          "scenario": "Reduce high temp when scheduled above max",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "duration": 30,
+            "action": "reduce_high_temp"
+          },
+          "comparison": {
+            "match": false,
+            "issues": [
+              "duration: expected 30, got undefined"
+            ],
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        }
+      ]
+    },
+    {
+      "source": "boundary-vectors",
+      "version": "1.0.0",
+      "track": "ALG-XVAL-012",
+      "timestamp": "2026-02-16T23:03:09.263Z",
+      "summary": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0,
+        "errors": 0
+      },
+      "testResults": [
+        {
+          "id": "BOUND-001",
+          "scenario": "Hypoglycemia - urgent low",
+          "success": true,
+          "oref0_output": {
+            "rate": 0,
+            "duration": 30,
+            "reason": "COB: 0, Dev: -60, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 54; minGuardBG 999<70",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.263Z"
+          },
+          "expected": {
+            "action": "suspend",
+            "rate": 0,
+            "reason": "urgent_low"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: -60, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 54; minGuardBG 999<70"
+          }
+        },
+        {
+          "id": "BOUND-002",
+          "scenario": "Hypoglycemia - low with IOB",
+          "success": true,
+          "oref0_output": {
+            "rate": 0,
+            "duration": 30,
+            "reason": "COB: 0, Dev: -30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 65; minGuardBG 999<70",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.265Z"
+          },
+          "expected": {
+            "action": "suspend",
+            "rate": 0,
+            "reason": "low_predicted"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: -30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 65; minGuardBG 999<70"
+          }
+        },
+        {
+          "id": "BOUND-003",
+          "scenario": "Hypoglycemia - low but rising fast",
+          "success": true,
+          "oref0_output": {
+            "rate": 3,
+            "duration": 30,
+            "reason": "COB: 30, Dev: 90, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 70, COBpredBG 70; maxDelta 15 > 20% of BG 70: SMB disabled; Eventual BG 160 >= 120, no temp, setting 3U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.266Z"
+          },
+          "expected": {
+            "action": "resume_normal",
+            "reason": "rising_fast_with_cob"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 30, Dev: 90, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 70, COBpredBG 70; maxDelta 15 > 20% of BG 70: SMB disabled; Eventual BG 160 >= 120, no temp, setting 3U/hr. "
+          }
+        },
+        {
+          "id": "BOUND-004",
+          "scenario": "Hyperglycemia - very high",
+          "success": true,
+          "oref0_output": {
+            "rate": 4,
+            "duration": 30,
+            "reason": "COB: 0, Dev: 30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 300; Eventual BG 305 >= 120, max_iob 3.5, adj. req. rate: 7 to maxSafeBasal: 4, no temp, setting 4U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.267Z"
+          },
+          "expected": {
+            "action": "max_temp_basal",
+            "rate_max": 4,
+            "reason": "high_glucose"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: 30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 300; Eventual BG 305 >= 120, max_iob 3.5, adj. req. rate: 7 to maxSafeBasal: 4, no temp, setting 4U/hr. "
+          }
+        },
+        {
+          "id": "BOUND-005",
+          "scenario": "Hyperglycemia - high with significant IOB",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (250+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "action": "moderate_temp",
+            "reason": "iob_covers_high"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "CGM data is unchanged (250+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "BOUND-006",
+          "scenario": "IOB at maximum limit",
+          "success": true,
+          "oref0_output": {
+            "rate": 0,
+            "duration": 120,
+            "reason": "COB: 0, Dev: 18, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 180; Eventual BG -52 < 100, setting 120m zero temp. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.268Z"
+          },
+          "expected": {
+            "action": "constrain_by_iob",
+            "smb_allowed": false,
+            "reason": "max_iob_reached"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: 18, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 180; Eventual BG -52 < 100, setting 120m zero temp. "
+          }
+        },
+        {
+          "id": "BOUND-007",
+          "scenario": "IOB zero - room to dose",
+          "success": true,
+          "oref0_output": {
+            "rate": 3.5,
+            "duration": 30,
+            "reason": "COB: 0, Dev: 18, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 180; Eventual BG 198 >= 120, adj. req. rate: 4.5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.268Z"
+          },
+          "expected": {
+            "action": "high_temp_allowed",
+            "smb_allowed": true,
+            "reason": "no_iob_headroom"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: 18, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 180; Eventual BG 198 >= 120, adj. req. rate: 4.5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. "
+          }
+        },
+        {
+          "id": "BOUND-008",
+          "scenario": "Negative IOB (pump suspended recently)",
+          "success": true,
+          "oref0_output": {
+            "rate": 3.5,
+            "duration": 30,
+            "reason": "COB: 0, Dev: 30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 120; Eventual BG 200 >= 120, adj. req. rate: 4.6 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.269Z"
+          },
+          "expected": {
+            "action": "high_temp",
+            "reason": "negative_iob_correction"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: 30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 120; Eventual BG 200 >= 120, adj. req. rate: 4.6 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. "
+          }
+        },
+        {
+          "id": "BOUND-009",
+          "scenario": "Target at lower bound",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (80+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "action": "no_adjustment",
+            "reason": "at_target"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "CGM data is unchanged (80+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "BOUND-010",
+          "scenario": "Target at upper bound",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (120+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "action": "no_adjustment",
+            "reason": "at_target"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "CGM data is unchanged (120+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "BOUND-011",
+          "scenario": "CGM reading too old",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (120+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "action": "stale_data_suspend",
+            "reason": "cgm_too_old"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "CGM data is unchanged (120+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "BOUND-012",
+          "scenario": "Zero basal rate scheduled",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "action": "respect_zero_basal",
+            "rate": 0,
+            "reason": "scheduled_zero"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        }
+      ]
+    },
+    {
+      "source": "temp-basal-vectors",
+      "version": "1.0.0",
+      "track": "ALG-XVAL-014",
+      "timestamp": "2026-02-16T23:03:09.270Z",
+      "summary": {
+        "total": 12,
+        "passed": 10,
+        "failed": 2,
+        "errors": 0
+      },
+      "testResults": [
+        {
+          "id": "TEMP-001",
+          "scenario": "Zero basal - scheduled zero rate",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "action": "no_temp",
+            "rate": 0,
+            "reason": "scheduled_zero_rate"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "TEMP-002",
+          "scenario": "Max basal limit - high glucose",
+          "success": true,
+          "oref0_output": {
+            "rate": 4,
+            "duration": 30,
+            "reason": "COB: 0, Dev: 60, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 250; Eventual BG 310 >= 120, max_iob 3.5, adj. req. rate: 8 to maxSafeBasal: 4, no temp, setting 4U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.270Z"
+          },
+          "expected": {
+            "rate_max": 4,
+            "reason": "capped_at_max_basal"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: 60, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 250; Eventual BG 310 >= 120, max_iob 3.5, adj. req. rate: 8 to maxSafeBasal: 4, no temp, setting 4U/hr. "
+          }
+        },
+        {
+          "id": "TEMP-003",
+          "scenario": "Max daily basal multiplier constraint",
+          "success": true,
+          "oref0_output": {
+            "rate": 4,
+            "duration": 30,
+            "reason": "COB: 0, Dev: 30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 200; Eventual BG 230 >= 120, adj. req. rate: 5.8 to maxSafeBasal: 4, no temp, setting 4U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.271Z"
+          },
+          "expected": {
+            "rate_max": 4.5,
+            "reason": "capped_at_max_daily_multiplier"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: 30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 200; Eventual BG 230 >= 120, adj. req. rate: 5.8 to maxSafeBasal: 4, no temp, setting 4U/hr. "
+          }
+        },
+        {
+          "id": "TEMP-004",
+          "scenario": "Extend existing appropriate temp",
+          "success": true,
+          "oref0_output": {
+            "reason": "COB: 0, Dev: 12, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 180; Eventual BG 142 >= 120, temp 2<2.3U/hr.  25m left and 2 ~ req 2.3U/hr: no temp required",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.272Z"
+          },
+          "expected": {
+            "action": "let_run_or_extend",
+            "reason": "existing_temp_appropriate"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: 12, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 180; Eventual BG 142 >= 120, temp 2<2.3U/hr.  25m left and 2 ~ req 2.3U/hr: no temp required"
+          }
+        },
+        {
+          "id": "TEMP-005",
+          "scenario": "Cancel inappropriate high temp - glucose dropping",
+          "success": true,
+          "oref0_output": {
+            "rate": 0,
+            "duration": 120,
+            "reason": "COB: 0, Dev: -90, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 150; Eventual BG -90 < 100, setting 120m zero temp. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.272Z"
+          },
+          "expected": {
+            "action": "cancel_temp",
+            "reason": "glucose_dropping_with_iob"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: -90, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 150; Eventual BG -90 < 100, setting 120m zero temp. "
+          }
+        },
+        {
+          "id": "TEMP-006",
+          "scenario": "Suspend during exercise",
+          "success": true,
+          "oref0_output": {
+            "rate": 0,
+            "duration": 30,
+            "reason": "COB: 0, Dev: -48, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 120; Eventual BG 47 < 100, setting 30m zero temp. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.273Z"
+          },
+          "expected": {
+            "action": "suspend_or_reduce",
+            "rate_max": 0.3,
+            "reason": "exercise_mode_active"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: -48, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 120; Eventual BG 47 < 100, setting 30m zero temp. "
+          }
+        },
+        {
+          "id": "TEMP-007",
+          "scenario": "High temp after suspend period",
+          "success": true,
+          "oref0_output": {
+            "rate": 3.5,
+            "duration": 30,
+            "reason": "COB: 20, Dev: 48, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 85, COBpredBG 85; Eventual BG 208 >= 120, adj. req. rate: 4.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.274Z"
+          },
+          "expected": {
+            "action": "high_temp",
+            "reason": "recovering_from_suspend_negative_iob"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 20, Dev: 48, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 85, COBpredBG 85; Eventual BG 208 >= 120, adj. req. rate: 4.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. "
+          }
+        },
+        {
+          "id": "TEMP-008",
+          "scenario": "Micro-adjustment - in range",
+          "success": true,
+          "oref0_output": {
+            "reason": "COB: 0, Dev: 6, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 115; 111-999 in range: no temp required; setting current basal of 1 as temp. . Suggested rate is same as profile rate, no temp basal is active, doing nothing",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.274Z"
+          },
+          "expected": {
+            "action": "slight_reduction_or_none",
+            "rate_range": [
+              0.8,
+              1
+            ],
+            "reason": "in_target_slight_drift"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: 6, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 115; 111-999 in range: no temp required; setting current basal of 1 as temp. . Suggested rate is same as profile rate, no temp basal is active, doing nothing"
+          }
+        },
+        {
+          "id": "TEMP-009",
+          "scenario": "Temp basal precision - 0.05U steps",
+          "success": true,
+          "oref0_output": {
+            "rate": 2.7,
+            "duration": 30,
+            "reason": "COB: 0, Dev: 12, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 140; Eventual BG 152 >= 120, no temp, setting 2.7U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.275Z"
+          },
+          "expected": {
+            "rate": 1.15,
+            "reason": "rounded_to_0.05_steps"
+          },
+          "comparison": {
+            "match": false,
+            "issues": [
+              "rate: expected 1.15, got 2.7"
+            ],
+            "reason": "COB: 0, Dev: 12, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 140; Eventual BG 152 >= 120, no temp, setting 2.7U/hr. "
+          }
+        },
+        {
+          "id": "TEMP-010",
+          "scenario": "Temp basal precision - 0.025U steps",
+          "success": true,
+          "oref0_output": {
+            "rate": 2.7,
+            "duration": 30,
+            "reason": "COB: 0, Dev: 12, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 140; Eventual BG 152 >= 120, no temp, setting 2.7U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.276Z"
+          },
+          "expected": {
+            "rate": 1.125,
+            "reason": "rounded_to_0.025_steps"
+          },
+          "comparison": {
+            "match": false,
+            "issues": [
+              "rate: expected 1.125, got 2.7"
+            ],
+            "reason": "COB: 0, Dev: 12, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 140; Eventual BG 152 >= 120, no temp, setting 2.7U/hr. "
+          }
+        },
+        {
+          "id": "TEMP-011",
+          "scenario": "Very small temp basal",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "rate": 0.05,
+            "reason": "minimum_delivery_0.05U"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "CGM data is unchanged (100+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        },
+        {
+          "id": "TEMP-012",
+          "scenario": "Temp transition - low to high",
+          "success": true,
+          "oref0_output": {
+            "rate": 3.5,
+            "duration": 30,
+            "reason": "COB: 40, Dev: 90, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 90, COBpredBG 90; Eventual BG 205 >= 120, adj. req. rate: 4.8 to maxSafeBasal: 3.5, temp 0<3.5U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.277Z"
+          },
+          "expected": {
+            "action": "cancel_and_increase",
+            "reason": "carbs_absorbing_rapidly"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 40, Dev: 90, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 90, COBpredBG 90; Eventual BG 205 >= 120, adj. req. rate: 4.8 to maxSafeBasal: 3.5, temp 0<3.5U/hr. "
+          }
+        }
+      ]
+    },
+    {
+      "source": "smb-decision-vectors",
+      "version": "1.0.0",
+      "track": "ALG-XVAL-015",
+      "timestamp": "2026-02-16T23:03:09.278Z",
+      "summary": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0,
+        "errors": 0
+      },
+      "testResults": [
+        {
+          "id": "SMB-001",
+          "scenario": "SMB allowed - high glucose, low IOB",
+          "success": true,
+          "oref0_output": {
+            "rate": 3.5,
+            "duration": 30,
+            "reason": "COB: 0, Dev: 30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 180; Eventual BG 185 >= 120, adj. req. rate: 4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.278Z"
+          },
+          "expected": {
+            "smb_allowed": false,
+            "reason": "no_cob_and_smb_with_cob_only"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: 30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 180; Eventual BG 185 >= 120, adj. req. rate: 4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. "
+          }
+        },
+        {
+          "id": "SMB-002",
+          "scenario": "SMB allowed - high glucose with COB",
+          "success": true,
+          "oref0_output": {
+            "rate": 3,
+            "duration": 30,
+            "reason": "COB: 30, Dev: 48, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 160, COBpredBG 160; Eventual BG 160 >= 120, no temp, setting 3U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.279Z"
+          },
+          "expected": {
+            "smb_allowed": true,
+            "smb_units_max": 0.5,
+            "reason": "cob_present_rising_glucose"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 30, Dev: 48, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 160, COBpredBG 160; Eventual BG 160 >= 120, no temp, setting 3U/hr. "
+          }
+        },
+        {
+          "id": "SMB-003",
+          "scenario": "SMB blocked - IOB at max",
+          "success": true,
+          "oref0_output": {
+            "reason": "COB: 40, Dev: 60, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 200, COBpredBG 200; Eventual BG 200 >= 120, max_iob 5, 0m@0.00 > 2 * insulinReq. Setting temp basal of 1U/hr. . Suggested rate is same as profile rate, no temp basal is active, doing nothing",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.279Z"
+          },
+          "expected": {
+            "smb_allowed": false,
+            "reason": "max_iob_reached"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 40, Dev: 60, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 200, COBpredBG 200; Eventual BG 200 >= 120, max_iob 5, 0m@0.00 > 2 * insulinReq. Setting temp basal of 1U/hr. . Suggested rate is same as profile rate, no temp basal is active, doing nothing"
+          }
+        },
+        {
+          "id": "SMB-004",
+          "scenario": "SMB blocked - glucose too low",
+          "success": true,
+          "oref0_output": {
+            "rate": 0,
+            "duration": 60,
+            "reason": "COB: 20, Dev: -12, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 90, COBpredBG 90; Eventual BG 90 < 100, setting 60m zero temp. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.280Z"
+          },
+          "expected": {
+            "smb_allowed": false,
+            "reason": "glucose_below_threshold"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 20, Dev: -12, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 90, COBpredBG 90; Eventual BG 90 < 100, setting 60m zero temp. "
+          }
+        },
+        {
+          "id": "SMB-005",
+          "scenario": "SMB blocked - glucose falling",
+          "success": true,
+          "oref0_output": {
+            "reason": "COB: 20, Dev: -48, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 150, COBpredBG 150; Eventual BG 150 > 100 but Min. Delta -8.00 < Exp. Delta 4; setting current basal of 1 as temp. . Suggested rate is same as profile rate, no temp basal is active, doing nothing",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.281Z"
+          },
+          "expected": {
+            "smb_allowed": false,
+            "reason": "glucose_falling_rapidly"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 20, Dev: -48, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 150, COBpredBG 150; Eventual BG 150 > 100 but Min. Delta -8.00 < Exp. Delta 4; setting current basal of 1 as temp. . Suggested rate is same as profile rate, no temp basal is active, doing nothing"
+          }
+        },
+        {
+          "id": "SMB-006",
+          "scenario": "SMB amount - partial IOB headroom",
+          "success": true,
+          "oref0_output": {
+            "reason": "COB: 30, Dev: 30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 180, COBpredBG 180; Eventual BG 180 > 100 but Min. Delta 5.00 < Exp. Delta 5; setting current basal of 1 as temp. . Suggested rate is same as profile rate, no temp basal is active, doing nothing",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.282Z"
+          },
+          "expected": {
+            "smb_allowed": true,
+            "smb_units_max": 0.5,
+            "smb_units_constrained": true,
+            "reason": "limited_by_iob_headroom"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 30, Dev: 30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 180, COBpredBG 180; Eventual BG 180 > 100 but Min. Delta 5.00 < Exp. Delta 5; setting current basal of 1 as temp. . Suggested rate is same as profile rate, no temp basal is active, doing nothing"
+          }
+        },
+        {
+          "id": "SMB-007",
+          "scenario": "SMB with UAM (Unannounced Meal)",
+          "success": true,
+          "oref0_output": {
+            "rate": 3.5,
+            "duration": 30,
+            "reason": "COB: 0, Dev: 72, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 150, UAMpredBG 150; Eventual BG 197 >= 120, adj. req. rate: 4.5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.283Z"
+          },
+          "expected": {
+            "smb_allowed": true,
+            "reason": "uam_detected_rising_fast"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 0, Dev: 72, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 150, UAMpredBG 150; Eventual BG 197 >= 120, adj. req. rate: 4.5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. "
+          }
+        },
+        {
+          "id": "SMB-008",
+          "scenario": "SMB blocked - temp target active",
+          "success": true,
+          "oref0_output": {
+            "rate": 3,
+            "duration": 30,
+            "reason": "COB: 30, Dev: 30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 160, COBpredBG 160; Eventual BG 160 >= 120, no temp, setting 3U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.283Z"
+          },
+          "expected": {
+            "smb_allowed": false,
+            "reason": "temp_target_active_smb_disabled"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 30, Dev: 30, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 160, COBpredBG 160; Eventual BG 160 >= 120, no temp, setting 3U/hr. "
+          }
+        },
+        {
+          "id": "SMB-009",
+          "scenario": "SMB after carbs - bolus snooze",
+          "success": true,
+          "oref0_output": {
+            "rate": 2.2,
+            "duration": 30,
+            "reason": "COB: 40, Dev: 60, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 140, COBpredBG 140; Eventual BG 140 >= 120, no temp, setting 2.2U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.284Z"
+          },
+          "expected": {
+            "smb_allowed": false,
+            "reason": "bolus_snooze_active"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 40, Dev: 60, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 140, COBpredBG 140; Eventual BG 140 >= 120, no temp, setting 2.2U/hr. "
+          }
+        },
+        {
+          "id": "SMB-010",
+          "scenario": "SMB sizing - based on insulinReq",
+          "success": true,
+          "oref0_output": {
+            "rate": 3.5,
+            "duration": 30,
+            "reason": "COB: 50, Dev: 48, BGI: 0, ISF: 40, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 200, COBpredBG 200; Eventual BG 208 >= 120, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.285Z"
+          },
+          "expected": {
+            "smb_allowed": true,
+            "smb_units": 0.5,
+            "calculation": "min(maxSMB, insulinReq/2, iobHeadroom)"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 50, Dev: 48, BGI: 0, ISF: 40, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 200, COBpredBG 200; Eventual BG 208 >= 120, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. "
+          }
+        },
+        {
+          "id": "SMB-011",
+          "scenario": "SMB disabled globally",
+          "success": true,
+          "oref0_output": {
+            "rate": 3.5,
+            "duration": 30,
+            "reason": "COB: 50, Dev: 60, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 200, COBpredBG 200; Eventual BG 260 >= 120, adj. req. rate: 7 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+            "temp": "absolute",
+            "deliverAt": "2026-02-16T23:03:09.286Z"
+          },
+          "expected": {
+            "smb_allowed": false,
+            "reason": "smb_disabled_in_settings"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "COB: 50, Dev: 60, BGI: 0, ISF: 50, CR: 10, minPredBG 999, minGuardBG 999, IOBpredBG 200, COBpredBG 200; Eventual BG 260 >= 120, adj. req. rate: 7 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. "
+          }
+        },
+        {
+          "id": "SMB-012",
+          "scenario": "SMB with carb absorption stalling",
+          "success": true,
+          "oref0_output": {
+            "reason": "CGM data is unchanged (130+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          },
+          "expected": {
+            "smb_allowed": false,
+            "reason": "carb_absorption_stalled"
+          },
+          "comparison": {
+            "match": true,
+            "issues": [],
+            "reason": "CGM data is unchanged (130+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 1U/hr; doing nothing. "
+          }
+        }
+      ]
+    }
+  ]
+}
