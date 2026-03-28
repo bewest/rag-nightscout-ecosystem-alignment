@@ -14,3 +14,4 @@ HEAD	0.323042	true	0.26	0.9561	keep	oref0 e2e: 12/12 boundary, 26/100 TV vectors
 2026-03-28T22:00:31Z	270fb8b	0.6735	PASS	0.41	4.5	0.782	iter-1	mutation: sens_factor=0.8, cr_factor=0.9, basal_factor=0.85, max_iob=6.5, dia=4.5
 2026-03-28T22:00:32Z	aa637a2	0.6735	PASS	0.41	4.5	0.782	iter-2	mutation: sens_factor=0.7, cr_factor=1.1, basal_factor=0.85, max_basal=4.5, target_shift=5, max_iob=7, dia=5.5
 2026-03-28T22:00:32Z	38cda6c	0.6735	PASS	0.41	4.5	0.782	iter-3	mutation: sens_factor=0.7, cr_factor=0.9, basal_factor=0.85, max_iob=4, dia=4.5
+2026-03-28T22:00:44Z	f5d9d22	0.6735	PASS	0.41	4.5	0.782	iter-1	mutation: sens_factor=0.7, cr_factor=1.2, basal_factor=0.85, max_basal=3.5, target_shift=-10, dia=3.5
