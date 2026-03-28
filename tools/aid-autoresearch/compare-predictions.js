@@ -30,43 +30,101 @@ const tempBasalFunctions = require(path.join(REPO_ROOT, 'externals/oref0/lib/bas
 const VECTORS_DIR = path.join(REPO_ROOT, 'conformance/t1pal/vectors/oref0-endtoend');
 
 // Re-use IOB array generation from run-oref0-endtoend.js
-function generateIobArray(iobSnapshot, dia) {
+/**
+ * Generate 48-tick IOB projection array from a single IOB snapshot.
+ *
+ * Bug fix: The main IOB curve and iobWithZeroTemp curve must diverge correctly.
+ * oref0's real IOB generator (lib/iob/index.js) calls sum() for every treatment
+ * at each future time point. The iobWithZeroTemp variant removes the current
+ * temp basal contribution, so the two curves diverge when a temp basal is active.
+ *
+ * Our reconstruction uses the initial values of both curves and decays them
+ * with insulin-model-appropriate tau values. The key insight from determine-basal
+ * line 576-577 is that it uses iobTick.activity * sens * 5 for each prediction
+ * step, so getting the activity decay right is critical.
+ */
+function generateIobArray(iobSnapshot, dia, currentTemp) {
     const diaMins = (dia || 4) * 60;
     const ticks = 48;
     const iobArray = [];
+
+    // Main IOB curve values
     const iob0 = iobSnapshot.iob || 0;
     const activity0 = iobSnapshot.activity || 0;
     const basaliob0 = iobSnapshot.basaliob || iobSnapshot.basalIob || 0;
-    const iobZT0 = iobSnapshot.iobWithZeroTemp || {
-        iob: iob0, basaliob: basaliob0, bolussnooze: 0,
-        activity: activity0, lastBolusTime: 0
-    };
+
+    // Zero-temp IOB curve values (IOB if current temp were cancelled)
+    const iobZT0 = iobSnapshot.iobWithZeroTemp || {};
+    const ztIob0 = iobZT0.iob != null ? iobZT0.iob : iob0;
+    const ztActivity0 = iobZT0.activity != null ? iobZT0.activity : activity0;
+    const ztBasaliob0 = iobZT0.basaliob != null ? iobZT0.basaliob : basaliob0;
+
+    // Compute tau from DIA using oref0's exponential insulin model
+    // Walsh model: tau ≈ DIA / 1.85 (peak at ~75 min for DIA=4h)
     let tau = diaMins / 1.85;
+
+    // Refine tau from activity/IOB ratio if available
+    // activity = dIOB/dt, so activity/iob gives the instantaneous decay rate
     if (Math.abs(iob0) > 0.01 && Math.abs(activity0) > 0.0001) {
         const r = Math.abs(activity0 / iob0);
-        if (r > 0.0001 && r < 0.1) tau = Math.min(diaMins, Math.max(30, 1 / r));
+        if (r > 0.0001 && r < 0.1) {
+            tau = Math.min(diaMins, Math.max(30, 1 / r));
+        }
     }
+
+    // Separate tau for zero-temp curve (may differ if temp basal is active)
+    let tauZT = tau;
+    if (Math.abs(ztIob0) > 0.01 && Math.abs(ztActivity0) > 0.0001) {
+        const rZT = Math.abs(ztActivity0 / ztIob0);
+        if (rZT > 0.0001 && rZT < 0.1) {
+            tauZT = Math.min(diaMins, Math.max(30, 1 / rZT));
+        }
+    }
+
     const basalFrac = (iob0 !== 0) ? (basaliob0 / iob0) : 0.5;
+    const ztBasalFrac = (ztIob0 !== 0) ? (ztBasaliob0 / ztIob0) : 0.5;
+
+    // When a temp basal is active, it contributes ongoing IOB that the zero-temp
+    // variant doesn't include. Model this divergence explicitly.
+    const tempRate = currentTemp?.rate || 0;
+    const hasTempBasal = currentTemp && currentTemp.duration > 0;
 
     for (let i = 0; i < ticks; i++) {
-        const t = i * 5;
+        const t = i * 5; // minutes from now
+
+        // Main IOB curve: includes current temp basal contribution
         const decay = Math.exp(-t / tau);
         const iobVal = iob0 * decay;
-        const actVal = activity0 * Math.max(0, decay);
-        const ztIob = (iobZT0.iob || iob0) * decay;
-        const ztAct = (iobZT0.activity || activity0) * Math.max(0, decay);
+        const actVal = activity0 * decay;
+
+        // Zero-temp IOB curve: what IOB would be if temp were cancelled NOW
+        // This diverges from main curve because ongoing temp basal adds IOB
+        const decayZT = Math.exp(-t / tauZT);
+        const ztIobVal = ztIob0 * decayZT;
+        const ztActVal = ztActivity0 * decayZT;
 
         const tick = {
-            iob: iobVal, basaliob: iobVal * basalFrac,
-            bolussnooze: 0, activity: actVal,
+            iob: iobVal,
+            basaliob: iobVal * basalFrac,
+            bolussnooze: 0,
+            activity: actVal,
             lastBolusTime: iobSnapshot.lastBolusTime || (Date.now() - 3600000),
             iobWithZeroTemp: {
-                iob: ztIob, basaliob: ztIob * basalFrac,
-                bolussnooze: 0, activity: ztAct,
-                lastBolusTime: 0, time: new Date(Date.now() + t * 60000).toISOString()
+                iob: ztIobVal,
+                basaliob: ztIobVal * ztBasalFrac,
+                bolussnooze: 0,
+                activity: ztActVal,
+                lastBolusTime: iobZT0.lastBolusTime || 0,
+                time: new Date(Date.now() + t * 60000).toISOString()
             }
         };
-        if (i === 0) tick.lastTemp = { date: Date.now() - 300000, duration: 0 };
+        if (i === 0) {
+            tick.lastTemp = {
+                date: Date.now() - 300000,
+                duration: currentTemp?.duration || 0,
+                rate: tempRate
+            };
+        }
         iobArray.push(tick);
     }
     return iobArray;
@@ -84,6 +142,9 @@ function vectorToOref0Inputs(vector) {
         date: Date.now()
     };
     const dia = input.profile.dia || 4;
+    const currentTemp = input.currentTemp ? {
+        rate: input.currentTemp.rate || 0, duration: input.currentTemp.duration || 0
+    } : { rate: 0, duration: 0 };
     const iobSnapshot = {
         iob: input.iob.iob, basaliob: input.iob.basalIob || 0,
         bolussnooze: input.iob.bolusSnooze || 0,
@@ -91,7 +152,7 @@ function vectorToOref0Inputs(vector) {
         lastBolusTime: Date.now() - 60 * 60 * 1000,
         iobWithZeroTemp: input.iob.iobWithZeroTemp || undefined
     };
-    const iobData = generateIobArray(iobSnapshot, dia);
+    const iobData = generateIobArray(iobSnapshot, dia, currentTemp);
     const p = input.profile;
     const profile = {
         current_basal: p.basalRate || p.currentBasal || 1.0,
@@ -111,9 +172,6 @@ function vectorToOref0Inputs(vector) {
         SMBInterval: p.smbInterval || 3, bolus_increment: 0.05,
         out_units: 'mg/dL', type: 'current'
     };
-    const currentTemp = input.currentTemp ? {
-        rate: input.currentTemp.rate || 0, duration: input.currentTemp.duration || 0
-    } : { rate: 0, duration: 0 };
     const md = input.mealData || {};
     const mealData = {
         carbs: md.carbs || 0, mealCOB: md.mealCOB || md.cob || 0,
@@ -134,6 +192,12 @@ function compareVector(vector) {
 
     if (!captured || captured.length === 0) {
         return { id, status: 'skip', reason: 'no captured predBGs.IOB' };
+    }
+
+    // Skip parametric variants — their predBGs belong to the base vector,
+    // not to the modified inputs (BG/IOB were changed without re-running oref0)
+    if (vector.metadata?.parametricVariantOf || vector.metadata?.originalPredBGsStale) {
+        return { id, status: 'skip', reason: 'parametric variant (stale predBGs)' };
     }
 
     // Run oref0 with synthetic IOB array

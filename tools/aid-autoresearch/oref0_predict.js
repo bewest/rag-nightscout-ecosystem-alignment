@@ -124,6 +124,10 @@ function generateIobArray(iobState, diaHours, scheduledBasal) {
     const iob0 = iobState.iob;
     const activity0 = iobState.activity;
     const basaliob0 = iobState.basaliob;
+    const iobZT0 = iobState.iobWithZeroTemp || {};
+    const ztIob0 = iobZT0.iob != null ? iobZT0.iob : iob0;
+    const ztActivity0 = iobZT0.activity != null ? iobZT0.activity : activity0;
+    const ztBasaliob0 = iobZT0.basaliob != null ? iobZT0.basaliob : basaliob0;
 
     let tau = diaMins / 1.85;
     if (Math.abs(iob0) > 0.01 && Math.abs(activity0) > 0.0001) {
@@ -132,32 +136,36 @@ function generateIobArray(iobState, diaHours, scheduledBasal) {
             tau = Math.min(diaMins, Math.max(30, 1 / ratePerMin));
         }
     }
+    let tauZT = tau;
+    if (Math.abs(ztIob0) > 0.01 && Math.abs(ztActivity0) > 0.0001) {
+        const rZT = Math.abs(ztActivity0 / ztIob0);
+        if (rZT > 0.0001 && rZT < 0.1) tauZT = Math.min(diaMins, Math.max(30, 1 / rZT));
+    }
 
     const basalFrac = (iob0 !== 0) ? (basaliob0 / iob0) : 0.5;
+    const ztBasalFrac = (ztIob0 !== 0) ? (ztBasaliob0 / ztIob0) : 0.5;
 
     for (let i = 0; i < ticks; i++) {
         const t = i * 5;
         const decay = Math.exp(-t / tau);
+        const decayZT = Math.exp(-t / tauZT);
 
         const iobVal = iob0 * decay;
-        const actVal = activity0 * Math.max(0, decay);
-
-        // Zero-temp projection: subtract future scheduled basal from IOB
-        const basalContrib = scheduledBasal * (t / 60); // U delivered if scheduled continues
-        const ztIob = Math.max(0, iobVal - basalContrib * 0.5);
-        const ztAct = actVal * (ztIob / Math.max(0.01, iobVal));
+        const actVal = activity0 * decay;
+        const ztIobVal = ztIob0 * decayZT;
+        const ztActVal = ztActivity0 * decayZT;
 
         const tick = {
             iob: iobVal,
             basaliob: iobVal * basalFrac,
             bolussnooze: 0,
             activity: actVal,
-            lastBolusTime: Date.now() - 3600000,
+            lastBolusTime: iobState.lastBolusTime || (Date.now() - 3600000),
             iobWithZeroTemp: {
-                iob: ztIob,
-                basaliob: ztIob * basalFrac,
+                iob: ztIobVal,
+                basaliob: ztIobVal * ztBasalFrac,
                 bolussnooze: 0,
-                activity: ztAct,
+                activity: ztActVal,
                 lastBolusTime: 0,
                 time: new Date(Date.now() + t * 60000).toISOString()
             }
