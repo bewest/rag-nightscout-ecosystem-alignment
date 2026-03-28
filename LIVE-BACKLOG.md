@@ -21,12 +21,14 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| cgmsim-lib 5-facet analysis | P2 | TypeScript CGM simulator by lsandini — model physiology modules (bolus, carbs, liver, activity), map terminology to ecosystem, identify GAPs vs Nightscout data model |
-| LoopAlgorithm standalone evaluation | P2 | Swift package extracted from LoopKit — compare vs embedded LoopWorkspace/LoopKit version, document prediction pipeline (ICE, retrospective correction, momentum), map JSON fixture format |
-| GluPredKit model inventory & metrics audit | P1 | Python ML framework with 15 models (LSTM, TCN, Loop, UVA/Padova) + 17 clinical metrics (Clarke/Parkes grids) — evaluate as scoring harness for algorithm comparison |
-| autoresearch pattern feasibility study | P2 | Karpathy's autonomous research loop — assess adaptation for fixed-time algorithm scoring (cgmsim scenarios → predict → score cycle) |
-| Algorithm scoring pipeline design | P1 | Design: cgmsim-lib generates synthetic scenarios → feed to LoopAlgorithm + GluPredKit models → score via GluPredKit metrics → iterate via autoresearch pattern |
-| Cross-algorithm deep integration tests | P3 | Build conformance test suite: same CGM trace scored by Loop, oref0/AAPS, Trio, GluPredKit models — compare predictions, dose recommendations, safety envelopes |
+| Import t1pal conformance vectors | P1 | `make export-vectors` → copy 22 files (44+ xval cases, 8 replay scenarios, IOB/COB curves, tolerances.json) to `conformance/t1pal/` |
+| Validate oref0 CLI baseline | P1 | Run `oref0-determine-basal.js` against boundary vectors (12/12) + xval vectors (3/8 baseline). Use oref0 CLI directly, not Trio's embedded copy |
+| Scaffold autoresearch-AID harness | P1 | Create `tools/aid-autoresearch/`: algorithm_score.py (composite 0.0-1.0), program.md (agent constraints), runners/ (oref0, Loop, GluPredKit), results.tsv |
+| oref0 GluPredKit model wrapper | P2 | Wrap `node bin/oref0-determine-basal.js` as GluPredKit BaseModel. JSON I/O: iob+glucose+profile → predBGs → 5-min trajectories |
+| LoopAlgorithm GluPredKit wrapper | P2 | Wrap Swift CLI LoopAlgorithmRunner as GluPredKit BaseModel. JSON fixtures → predictions |
+| cgmsim-lib 5-facet analysis | P2 | TypeScript CGM simulator — map physiology modules, terminology, GAPs vs Nightscout data model |
+| LoopAlgorithm standalone evaluation | P2 | Compare standalone vs LoopWorkspace/LoopKit embedded, document JSON fixture format |
+| Cross-algorithm deep integration tests | P3 | ShadowRunner: same inputs → oref0 + Loop + GluPredKit models → diff outputs → comparison matrix |
 
 ## Processed
 
