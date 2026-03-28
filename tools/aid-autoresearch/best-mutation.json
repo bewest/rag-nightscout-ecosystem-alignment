@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-03-28T21:59:04.705741+00:00",
+  "mutation": {
+    "sens_factor": 0.7,
+    "cr_factor": 1.1,
+    "basal_factor": 0.85,
+    "max_basal": 3.5,
+    "target_shift": 0,
+    "max_iob": 6,
+    "dia": 4,
+    "enable_smb": 0,
+    "enable_uam": 0,
+    "smb_minutes": 15
+  },
+  "search": {
+    "strategy": "walk",
+    "iterations": 80,
+    "baseline_score": 0.6898,
+    "best_score": 0.7679,
+    "diffs": {
+      "sens_factor": {
+        "default": 1,
+        "best": 0.7,
+        "desc": "ISF multiplier"
+      },
+      "cr_factor": {
+        "default": 1,
+        "best": 1.1,
+        "desc": "Carb ratio multiplier"
+      },
+      "basal_factor": {
+        "default": 1,
+        "best": 0.85,
+        "desc": "Basal rate multiplier"
+      },
+      "max_basal": {
+        "default": 3,
+        "best": 3.5,
+        "desc": "Max temp basal U/hr"
+      },
+      "max_iob": {
+        "default": 5,
+        "best": 6,
+        "desc": "Max IOB limit"
+      },
+      "smb_minutes": {
+        "default": 30,
+        "best": 15,
+        "desc": "Max SMB basal minutes"
+      }
+    }
+  }
+}
