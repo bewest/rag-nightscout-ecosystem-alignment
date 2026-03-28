@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://nightscout.github.io/schemas/adapter-output.schema.json",
+  "title": "Algorithm Adapter Output",
+  "description": "Normalized output contract for AID algorithm adapters. All adapters MUST translate their native output to this shape.",
+  "type": "object",
+  "required": ["algorithm", "decision", "state"],
+  "properties": {
+    "algorithm": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string", "description": "Algorithm identifier (e.g., 'oref0-js', 't1pal-oref0-swift')" },
+        "version": { "type": "string", "description": "Semantic version of the algorithm implementation" }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "required": ["reason"],
+      "properties": {
+        "rate": {
+          "type": ["number", "null"],
+          "description": "Suggested temp basal rate (U/hr). null = no change."
+        },
+        "duration": {
+          "type": ["number", "null"],
+          "description": "Temp basal duration (minutes). null = no change."
+        },
+        "smb": {
+          "type": ["number", "null"],
+          "description": "Super micro bolus amount (U). null = none."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Human-readable decision rationale"
+        }
+      }
+    },
+    "predictions": {
+      "type": "object",
+      "description": "Predicted glucose trajectories (5-min intervals, mg/dL)",
+      "properties": {
+        "eventualBG": {
+          "type": ["number", "null"],
+          "description": "Predicted BG at end of DIA (mg/dL)"
+        },
+        "minPredBG": {
+          "type": ["number", "null"],
+          "description": "Minimum predicted BG across all trajectories (mg/dL)"
+        },
+        "iob": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "Predicted BG trajectory considering IOB"
+        },
+        "zt": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "Predicted BG trajectory with zero temp"
+        },
+        "cob": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "Predicted BG trajectory considering COB"
+        },
+        "uam": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "Predicted BG trajectory with UAM detection"
+        }
+      }
+    },
+    "state": {
+      "type": "object",
+      "description": "Current algorithm state snapshot",
+      "properties": {
+        "iob": { "type": "number", "description": "Insulin on board (U)" },
+        "cob": { "type": "number", "description": "Carbs on board (g)" },
+        "bg": { "type": "number", "description": "Current glucose (mg/dL)" },
+        "tick": { "type": "string", "description": "Trend indicator" },
+        "insulinReq": {
+          "type": ["number", "null"],
+          "description": "Additional insulin required to reach target (U)"
+        },
+        "sensitivityRatio": { "type": "number", "description": "Autosens ratio" }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "executionTimeMs": { "type": "number", "description": "Wall-clock execution time (ms)" },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Non-fatal issues encountered during execution"
+        },
+        "nativeInput": {
+          "description": "The exact input passed to the native algorithm (for input assembly validation). Only present in validate-input mode."
+        },
+        "nativeOutput": {
+          "description": "The raw native algorithm output before normalization. Only present in verbose mode."
+        }
+      }
+    }
+  }
+}

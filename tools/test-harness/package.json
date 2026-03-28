@@ -1,0 +1,21 @@
+{
+  "name": "@nightscout/test-harness",
+  "version": "0.1.0",
+  "description": "Cross-language algorithm testing harness for the Nightscout AID ecosystem",
+  "main": "harness.js",
+  "scripts": {
+    "validate": "node harness.js --layer validate",
+    "equivalence": "node harness.js --layer equivalence",
+    "benchmark": "node harness.js --layer benchmark",
+    "research": "node harness.js --layer research",
+    "test": "node harness.js --layer validate --vectors ../../conformance/t1pal/vectors/oref0-endtoend"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "ajv-formats": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "private": true
+}

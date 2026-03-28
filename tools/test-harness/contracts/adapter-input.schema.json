@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://nightscout.github.io/schemas/adapter-input.schema.json",
+  "title": "Algorithm Adapter Input",
+  "description": "Language-agnostic input contract for AID algorithm adapters. Superset of conformance-vector-v1 input format with extension fields for algorithms that need richer context (e.g., Loop dose history).",
+  "type": "object",
+  "required": ["clock", "glucoseStatus", "iob", "profile"],
+  "properties": {
+    "clock": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Reference timestamp for this algorithm execution (ISO-8601)"
+    },
+    "glucoseStatus": {
+      "type": "object",
+      "required": ["glucose"],
+      "properties": {
+        "glucose": { "type": "number", "description": "Current glucose reading (mg/dL)" },
+        "delta": { "type": "number", "description": "5-min glucose change (mg/dL)", "default": 0 },
+        "shortAvgDelta": { "type": "number", "description": "15-min average delta (mg/dL)" },
+        "longAvgDelta": { "type": "number", "description": "45-min average delta (mg/dL)" },
+        "timestamp": { "type": ["string", "null"], "format": "date-time" },
+        "noise": { "type": "number", "minimum": 0, "maximum": 4, "default": 0 },
+        "glucoseUnit": { "type": "string", "enum": ["mg/dL", "mmol/L"], "default": "mg/dL" }
+      }
+    },
+    "iob": {
+      "type": "object",
+      "required": ["iob"],
+      "properties": {
+        "iob": { "type": "number", "description": "Total insulin on board (U)" },
+        "basalIob": { "type": "number", "description": "IOB from basal adjustments (U)" },
+        "bolusIob": { "type": "number", "description": "IOB from boluses (U)" },
+        "activity": { "type": "number", "description": "Current insulin activity (U/min)" },
+        "iobWithZeroTemp": {
+          "type": "object",
+          "description": "IOB projection if temp basal were zeroed now",
+          "properties": {
+            "iob": { "type": "number" },
+            "basaliob": { "type": "number" },
+            "bolussnooze": { "type": "number" },
+            "activity": { "type": "number" },
+            "lastBolusTime": { "type": "number" },
+            "time": { "type": "string" }
+          }
+        }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "required": ["basalRate", "sensitivity", "carbRatio", "targetLow", "targetHigh"],
+      "properties": {
+        "basalRate": { "type": "number", "description": "Current scheduled basal rate (U/hr)" },
+        "sensitivity": { "type": "number", "description": "Insulin sensitivity factor (mg/dL per U)" },
+        "carbRatio": { "type": "number", "description": "Carb ratio (g per U)" },
+        "targetLow": { "type": "number", "description": "Target BG range low (mg/dL)" },
+        "targetHigh": { "type": "number", "description": "Target BG range high (mg/dL)" },
+        "maxIob": { "type": "number", "description": "Maximum IOB safety limit (U)" },
+        "maxBasal": { "type": "number", "description": "Maximum basal rate (U/hr)" },
+        "dia": { "type": "number", "description": "Duration of insulin action (hours)", "default": 5 },
+        "maxDailyBasal": { "type": "number", "description": "Max scheduled daily basal (U/hr)" },
+        "units": { "type": "string", "enum": ["mg/dL", "mmol/L"], "default": "mg/dL" },
+        "enableSMB": { "type": "boolean", "default": false },
+        "enableUAM": { "type": "boolean", "default": false },
+        "maxSMBBasalMinutes": { "type": "number", "default": 30 },
+        "maxUAMSMBBasalMinutes": { "type": "number", "default": 30 },
+        "smbInterval": { "type": "number", "default": 3 }
+      }
+    },
+    "mealData": {
+      "type": "object",
+      "properties": {
+        "carbs": { "type": ["number", "null"], "default": 0 },
+        "cob": { "type": ["number", "null"], "default": 0, "description": "Carbs on board (g)" },
+        "lastCarbTime": { "type": ["number", "null"], "description": "Epoch ms of last carb entry" },
+        "slopeFromMaxDeviation": { "type": ["number", "null"] },
+        "slopeFromMinDeviation": { "type": ["number", "null"] }
+      }
+    },
+    "currentTemp": {
+      "type": "object",
+      "properties": {
+        "rate": { "type": "number", "description": "Current temp basal rate (U/hr)" },
+        "duration": { "type": "number", "description": "Remaining duration (minutes)" }
+      }
+    },
+    "autosensData": {
+      "type": "object",
+      "properties": {
+        "ratio": { "type": "number", "default": 1.0 }
+      }
+    },
+    "microBolusAllowed": { "type": "boolean", "default": false },
+    "flatBGsDetected": { "type": "boolean", "default": false },
+
+    "glucoseHistory": {
+      "type": "array",
+      "description": "Extended glucose history (for Loop/T1Pal algorithms)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "glucose": { "type": "number" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "doseHistory": {
+      "type": "array",
+      "description": "Insulin dose history (for Loop IOB recalculation)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "enum": ["bolus", "basal", "tempBasal"] },
+          "units": { "type": "number" },
+          "rate": { "type": "number" },
+          "startTime": { "type": "string", "format": "date-time" },
+          "duration": { "type": "number" }
+        }
+      }
+    },
+    "carbHistory": {
+      "type": "array",
+      "description": "Carb entry history (for Loop COB recalculation)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "carbs": { "type": "number" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "absorptionTime": { "type": "number" }
+        }
+      }
+    },
+    "effectModifiers": {
+      "type": "array",
+      "description": "Agent-produced effect modifiers (Layer 3 R&D)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": { "type": "string", "description": "Agent that produced this modifier" },
+          "isfMultiplier": { "type": "number", "minimum": 0.5, "maximum": 2.0 },
+          "crMultiplier": { "type": "number", "minimum": 0.7, "maximum": 1.5 },
+          "basalMultiplier": { "type": "number", "minimum": 0.5, "maximum": 2.0 },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "reason": { "type": "string" },
+          "validUntil": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

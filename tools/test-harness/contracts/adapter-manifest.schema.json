@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://nightscout.github.io/schemas/adapter-manifest.schema.json",
+  "title": "Algorithm Adapter Manifest",
+  "description": "Metadata for an algorithm adapter, describing its capabilities and invocation method.",
+  "type": "object",
+  "required": ["name", "algorithm", "language", "invoke"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique adapter identifier (e.g., 'oref0-js', 't1pal-oref0-swift')"
+    },
+    "algorithm": {
+      "type": "string",
+      "description": "Algorithm family this adapter implements (e.g., 'oref0', 'loop', 'glucos')"
+    },
+    "version": {
+      "type": "string",
+      "description": "Adapter version"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["javascript", "swift", "kotlin", "python"],
+      "description": "Implementation language"
+    },
+    "invoke": {
+      "type": "object",
+      "required": ["command"],
+      "properties": {
+        "command": {
+          "type": "string",
+          "description": "Shell command to start the adapter process (receives JSON on stdin, writes JSON on stdout)"
+        },
+        "cwd": {
+          "type": "string",
+          "description": "Working directory for the command (relative to adapter dir)"
+        },
+        "env": {
+          "type": "object",
+          "description": "Additional environment variables",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "predictions": { "type": "boolean", "description": "Produces prediction trajectories", "default": false },
+        "smb": { "type": "boolean", "description": "Supports super micro bolus", "default": false },
+        "effectModifiers": { "type": "boolean", "description": "Supports agent effect modifiers", "default": false },
+        "inputValidation": { "type": "boolean", "description": "Supports validate-input mode", "default": false }
+      }
+    },
+    "modes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["execute", "validate-input", "describe", "batch"]
+      },
+      "description": "Supported adapter modes",
+      "default": ["execute"]
+    },
+    "tolerances": {
+      "type": "object",
+      "description": "Override default tolerances for this adapter",
+      "properties": {
+        "rate": { "type": "number" },
+        "eventualBG": { "type": "number" },
+        "insulinReq": { "type": "number" },
+        "iob": { "type": "number" },
+        "cob": { "type": "number" },
+        "predictionMAE": { "type": "number" }
+      }
+    }
+  }
+}

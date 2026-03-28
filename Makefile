@@ -343,3 +343,33 @@ aaps-runner: aaps-runner-deps
 		-d .build/aaps-runner.jar
 	@echo "Built: .build/aaps-runner.jar"
 	@echo "Run with: java -cp .build/aaps-runner.jar:.build/json-$(JSON_VERSION).jar app.aaps.conformance.Aaps_runnerKt"
+
+
+# ── Test Harness ─────────────────────────────────────────────────────
+
+HARNESS_DIR := tools/test-harness
+HARNESS := cd $(HARNESS_DIR) && node harness.js
+
+harness-deps:
+	@cd $(HARNESS_DIR) && npm install --quiet 2>/dev/null
+
+harness-validate: harness-deps ## Layer 0: Validate vectors, adapters, input assembly
+	$(HARNESS) --layer validate
+
+harness-equivalence: harness-deps ## Layer 1: Algorithm equivalence testing
+	$(HARNESS) --layer equivalence
+
+harness-benchmark: harness-deps ## Layer 2: Cross-algorithm benchmarking
+	$(HARNESS) --layer benchmark
+
+harness-research: harness-deps ## Layer 3: R&D with agent effects
+	$(HARNESS) --layer research --agents exercise
+
+harness-quick: harness-deps ## Quick: L0 validate + L1 equivalence (10 vectors)
+	$(HARNESS) --layer validate
+	$(HARNESS) --layer equivalence --limit 10
+
+harness-ci: harness-deps ## Full harness CI pipeline
+	$(HARNESS) --layer validate
+	$(HARNESS) --layer equivalence --json > $(HARNESS_DIR)/results/equivalence.json || true
+	@echo "Results: $(HARNESS_DIR)/results/equivalence.json"

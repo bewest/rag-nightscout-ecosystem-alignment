@@ -1,0 +1,28 @@
+{
+  "name": "t1pal-oref0-swift",
+  "algorithm": "oref0",
+  "version": "0.1.0",
+  "language": "swift",
+  "invoke": {
+    "command": "swift run T1PalAdapterCLI",
+    "cwd": "../../../..",
+    "env": {
+      "T1PAL_WORKSPACE": "../../../../t1pal-mobile-workspace"
+    }
+  },
+  "capabilities": {
+    "predictions": true,
+    "smb": true,
+    "effectModifiers": true,
+    "inputValidation": true
+  },
+  "modes": ["execute", "validate-input", "describe"],
+  "tolerances": {
+    "rate": 0.05,
+    "eventualBG": 10.0,
+    "insulinReq": 0.05,
+    "predictionMAE": 2.0
+  },
+  "_status": "scaffold",
+  "_notes": "Requires building T1PalAdapterCLI in t1pal-mobile-workspace. See README for integration steps."
+}

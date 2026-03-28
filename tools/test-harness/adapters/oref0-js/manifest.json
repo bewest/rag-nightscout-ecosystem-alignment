@@ -1,0 +1,19 @@
+{
+  "name": "oref0-js",
+  "algorithm": "oref0",
+  "version": "0.1.0",
+  "language": "javascript",
+  "invoke": {
+    "command": "node index.js",
+    "env": {
+      "OREF0_PATH": "../../../../externals/oref0"
+    }
+  },
+  "capabilities": {
+    "predictions": true,
+    "smb": true,
+    "effectModifiers": false,
+    "inputValidation": true
+  },
+  "modes": ["execute", "validate-input", "describe"]
+}
