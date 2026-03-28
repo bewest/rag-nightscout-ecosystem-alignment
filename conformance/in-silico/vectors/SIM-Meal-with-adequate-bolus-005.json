@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "id": "SIM-Meal-with-adequate-bolus-005",
+    "category": "Meal with adequate bolus",
+    "source": "cgmsim-lib in-silico",
+    "mode": "oref0-loop",
+    "patient": "standard"
+  },
+  "input": {
+    "glucoseStatus": {
+      "glucose": 99,
+      "delta": 0.1,
+      "shortAvgDelta": 0,
+      "longAvgDelta": 0
+    },
+    "iob": {
+      "iob": 2.01,
+      "basalIob": 2.01,
+      "bolusIob": 0,
+      "activity": 0
+    },
+    "profile": {
+      "basalRate": 1,
+      "sensitivity": 40,
+      "carbRatio": 10,
+      "dia": 6,
+      "targetLow": 100,
+      "targetHigh": 110,
+      "maxBasal": 4,
+      "maxIob": 5
+    },
+    "mealData": {
+      "cob": 0,
+      "carbs": 0
+    },
+    "currentTemp": {
+      "rate": 0,
+      "duration": 30
+    }
+  },
+  "originalOutput": {
+    "predBGs": {
+      "IOB": [
+        99,
+        99,
+        99,
+        99,
+        99,
+        99,
+        89,
+        89,
+        89,
+        89,
+        89,
+        89
+      ]
+    },
+    "eventualBG": 89
+  },
+  "expected": {
+    "rate": 0,
+    "eventualBG": 19
+  }
+}

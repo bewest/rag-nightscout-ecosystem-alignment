@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "id": "SIM-Dawn-phenomenon-(rising-BG)-025",
+    "category": "Dawn phenomenon (rising BG)",
+    "source": "cgmsim-lib in-silico",
+    "mode": "oref0-loop",
+    "patient": "resistant"
+  },
+  "input": {
+    "glucoseStatus": {
+      "glucose": 90,
+      "delta": 0,
+      "shortAvgDelta": 0,
+      "longAvgDelta": 0
+    },
+    "iob": {
+      "iob": 2.08,
+      "basalIob": 2.08,
+      "bolusIob": 0,
+      "activity": 0.2984
+    },
+    "profile": {
+      "basalRate": 1,
+      "sensitivity": 20,
+      "carbRatio": 6,
+      "dia": 7,
+      "targetLow": 100,
+      "targetHigh": 110,
+      "maxBasal": 4,
+      "maxIob": 5
+    },
+    "mealData": {
+      "cob": 0,
+      "carbs": 0
+    },
+    "currentTemp": {
+      "rate": 0,
+      "duration": 30
+    }
+  },
+  "originalOutput": {
+    "predBGs": {
+      "IOB": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ]
+    },
+    "eventualBG": 90
+  },
+  "expected": {
+    "rate": 0,
+    "eventualBG": 227
+  }
+}

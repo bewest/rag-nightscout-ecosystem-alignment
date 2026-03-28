@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "id": "SIM-Post-meal-exercise-015",
+    "category": "Post-meal exercise",
+    "source": "cgmsim-lib in-silico",
+    "mode": "oref0-loop",
+    "patient": "standard"
+  },
+  "input": {
+    "glucoseStatus": {
+      "glucose": 88,
+      "delta": 0.1,
+      "shortAvgDelta": 0,
+      "longAvgDelta": -0.5
+    },
+    "iob": {
+      "iob": 5.13,
+      "basalIob": 2.01,
+      "bolusIob": 3.12,
+      "activity": 1.554
+    },
+    "profile": {
+      "basalRate": 1,
+      "sensitivity": 40,
+      "carbRatio": 10,
+      "dia": 6,
+      "targetLow": 100,
+      "targetHigh": 110,
+      "maxBasal": 4,
+      "maxIob": 5
+    },
+    "mealData": {
+      "cob": 3.2,
+      "carbs": 0
+    },
+    "currentTemp": {
+      "rate": 0,
+      "duration": 30
+    }
+  },
+  "originalOutput": {
+    "predBGs": {
+      "IOB": [
+        88,
+        88,
+        88,
+        88,
+        89,
+        89,
+        89,
+        88,
+        88,
+        88,
+        89,
+        89
+      ]
+    },
+    "eventualBG": 89
+  },
+  "expected": {
+    "rate": 0,
+    "eventualBG": 1745
+  }
+}
