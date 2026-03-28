@@ -7,3 +7,4 @@ HEAD	0.323042	true	0.26	0.9561	keep	oref0 e2e: 12/12 boundary, 26/100 TV vectors
 2026-03-28T21:01:10Z	99c4797	0.5903	PASS	0.26	4.5	0.782	active	v2 scoring with captured predBGs trajectories
 2026-03-28T21:02:19Z	99c4797	0.5903	PASS	0.26	4.5	0.782	active	v2 scoring with captured predBGs trajectories
 2026-03-28T21:12:18Z	99c4797	0.7353	PASS	0.41	4.5	0.782	active	v2 scoring with captured predBGs trajectories
+2026-03-28T21:53:02Z	4deef9e	0.6735	PASS	0.41	4.5	0.782	active	v3 scoring with xval + in-silico robustness

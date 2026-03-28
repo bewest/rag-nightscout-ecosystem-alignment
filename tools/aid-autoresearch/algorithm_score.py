@@ -79,17 +79,51 @@ def run_prediction_comparison():
         return None
 
 
-def compute_score(boundary_results, endtoend_results, prediction_results=None):
+def run_insilico_scoring():
+    """Run in-silico scoring: algorithms vs cgmsim-lib synthetic vectors."""
+    runner_path = os.path.join(REPO_ROOT, "tools", "aid-autoresearch", "score-in-silico.js")
+    if not os.path.exists(runner_path):
+        return None
+    result = subprocess.run(
+        ["node", runner_path, "--json"],
+        capture_output=True, text=True, timeout=300
+    )
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return None
+
+
+def run_xval_vectors():
+    """Run xval vector suites (oref0-extracted, temp-basal, smb-decision)."""
+    runner_path = os.path.join(REPO_ROOT, "tools", "aid-autoresearch", "run-xval-vectors.js")
+    if not os.path.exists(runner_path):
+        return None
+    result = subprocess.run(
+        ["node", runner_path, "--json"],
+        capture_output=True, text=True, timeout=300
+    )
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return None
+
+
+def compute_score(boundary_results, endtoend_results, prediction_results=None,
+                  insilico_results=None, xval_results=None):
     """
     Compute composite AID algorithm score (0.0 to 1.0, higher is better).
     Returns 0.0 immediately if any safety boundary is violated.
 
-    Updated scoring (v2) incorporates prediction trajectory quality:
-      25% decision agreement (rate divergence)
-      25% prediction trajectory MAE (captured vs reconstructed predBGs)
-      25% strict conformance pass rate
+    Scoring (v3) — 6 components:
+      20% decision agreement (rate divergence from e2e vectors)
+      20% prediction trajectory MAE (captured vs reconstructed predBGs)
+      20% strict conformance pass rate (e2e vectors)
       15% trajectory direction agreement
-      10% simplicity bonus
+      10% xval + in-silico robustness (unit tests + synthetic scenarios)
+       5% simplicity bonus
+
+    Promotes from 5 → 6 components; adds xval/in-silico robustness.
     """
     # --- Safety gate from boundary vectors ---
     b_summary = boundary_results.get("summary", {}) if boundary_results else {}
@@ -126,11 +160,10 @@ def compute_score(boundary_results, endtoend_results, prediction_results=None):
     MAX_DIVERGENCE = 2.0  # U/hr
     agreement = max(0, 1 - mean_rate_div / MAX_DIVERGENCE)
 
-    # --- Prediction trajectory scoring (NEW: from captured predBGs) ---
+    # --- Prediction trajectory scoring (from captured predBGs) ---
     pred = prediction_results or {}
     pred_summary = pred.get("summary", {})
 
-    # Use trajectory MAE from compare-predictions.js
     avg_traj_mae = pred_summary.get("avgMae", 50.0) or 50.0
     avg_dir_agreement = pred_summary.get("avgDirAgreement", 0.5) or 0.5
     quality_score = pred_summary.get("qualityScore", 0.0) or 0.0
@@ -138,16 +171,35 @@ def compute_score(boundary_results, endtoend_results, prediction_results=None):
     MAX_TRAJ_MAE = 50.0  # mg/dL (trajectory prediction)
     prediction = max(0, 1 - avg_traj_mae / MAX_TRAJ_MAE)
 
+    # --- Xval + in-silico robustness ---
+    # xval: unit-level tests (oref0-extracted, temp-basal, smb-decision)
+    xval = xval_results or {}
+    xval_summary = xval.get("summary", {})
+    xval_total = xval_summary.get("total", 0)
+    xval_pass = xval_summary.get("pass", 0)
+    xval_pass_rate = xval_pass / max(xval_total, 1)
+
+    # in-silico: algorithm performance on synthetic cgmsim-lib scenarios
+    insil = insilico_results or {}
+    insil_oref0 = insil.get("oref0", {})
+    insil_mae = insil_oref0.get("avgMae", 50.0) if insil_oref0 else 50.0
+    MAX_INSIL_MAE = 50.0
+    insil_score = max(0, 1 - insil_mae / MAX_INSIL_MAE)
+
+    # Blend xval and in-silico (xval weighted more — it tests real decision logic)
+    robustness = 0.7 * xval_pass_rate + 0.3 * insil_score if xval_total > 0 else insil_score
+
     # Simplicity bonus — baseline oref0 (deterministic, interpretable)
     simplicity = 0.5
 
-    # Composite with trajectory-aware weights
+    # Composite (v3): 6 components
     score = (
-        0.25 * agreement +          # Decision agreement (rate divergence)
-        0.25 * prediction +          # Trajectory MAE (captured vs reconstructed)
-        0.25 * pass_rate +           # Strict conformance pass rate
+        0.20 * agreement +          # Decision agreement (rate divergence)
+        0.20 * prediction +          # Trajectory MAE (captured vs reconstructed)
+        0.20 * pass_rate +           # Strict conformance pass rate
         0.15 * avg_dir_agreement +   # Trajectory direction agreement
-        0.10 * simplicity            # Simplicity bonus
+        0.10 * robustness +          # Xval unit tests + in-silico robustness
+        0.05 * simplicity            # Simplicity bonus
     )
 
     return {
@@ -158,6 +210,7 @@ def compute_score(boundary_results, endtoend_results, prediction_results=None):
             "prediction": round(prediction, 4),
             "pass_rate": round(pass_rate, 4),
             "dir_agreement": round(avg_dir_agreement, 4),
+            "robustness": round(robustness, 4),
             "simplicity": round(simplicity, 4),
             "mean_rate_div_u_hr": round(mean_rate_div, 4),
             "avg_traj_mae_mgdl": round(avg_traj_mae, 1),
@@ -171,6 +224,10 @@ def compute_score(boundary_results, endtoend_results, prediction_results=None):
             "pred_good": pred_summary.get("good", 0),
             "pred_fair": pred_summary.get("fair", 0),
             "pred_poor": pred_summary.get("poor", 0),
+            "xval_pass": xval_pass,
+            "xval_total": xval_total,
+            "insil_mae": round(insil_mae, 1),
+            "insil_score": round(insil_score, 4),
         }
     }
 
@@ -197,7 +254,7 @@ def append_results_tsv(score_result):
         f"{c.get('pass_rate', 0):.2f}\t"
         f"{c.get('avg_traj_mae_mgdl', 0):.1f}\t"
         f"{c.get('dir_agreement', 0):.3f}\t"
-        f"active\tv2 scoring with captured predBGs trajectories"
+        f"active\tv3 scoring with xval + in-silico robustness"
     )
 
     with open(tsv_path, "a") as f:
@@ -212,18 +269,23 @@ def main():
     parser.add_argument("--no-record", action="store_true", help="Skip appending to results.tsv")
     args = parser.parse_args()
 
-    print(f"Scoring {args.runner} (v2 with trajectory comparison)...", file=sys.stderr)
+    print(f"Scoring {args.runner} (v3 with xval + in-silico)...", file=sys.stderr)
 
-    # Run all three vector suites
+    # Run all five vector suites
     boundary_results = run_boundary_vectors(args.vectors)
     endtoend_results = run_endtoend_vectors()
     prediction_results = run_prediction_comparison()
+    insilico_results = run_insilico_scoring()
+    xval_results = run_xval_vectors()
 
     if boundary_results is None and endtoend_results is None:
         print("ERROR: Both runners produced no results", file=sys.stderr)
         sys.exit(1)
 
-    score_result = compute_score(boundary_results, endtoend_results, prediction_results)
+    score_result = compute_score(
+        boundary_results, endtoend_results, prediction_results,
+        insilico_results, xval_results
+    )
 
     if not args.no_record:
         append_results_tsv(score_result)
@@ -245,6 +307,7 @@ def main():
             print(f"  Trajectory MAE:    {c['prediction']:.4f}  (avg: {c.get('avg_traj_mae_mgdl', 0):.1f} mg/dL)")
             print(f"  Conformance:       {c['pass_rate']:.4f}  ({c.get('e2e_pass', 0)}/{c.get('e2e_total', 0)} strict, {c.get('e2e_skipped', 0)} skipped)")
             print(f"  Direction:         {c['dir_agreement']:.4f}  (trajectory slope agreement)")
+            print(f"  Robustness:        {c['robustness']:.4f}  (xval: {c.get('xval_pass', 0)}/{c.get('xval_total', 0)}, insil MAE: {c.get('insil_mae', 0):.1f})")
             print(f"  Simplicity:        {c['simplicity']:.4f}")
             print(f"  ─────────────────────────────────────────")
             print(f"  Boundary:          {c['boundary_pass']}/{c['boundary_total']}")
