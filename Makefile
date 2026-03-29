@@ -373,3 +373,44 @@ harness-ci: harness-deps ## Full harness CI pipeline
 	$(HARNESS) --layer validate
 	$(HARNESS) --layer equivalence --json > $(HARNESS_DIR)/results/equivalence.json || true
 	@echo "Results: $(HARNESS_DIR)/results/equivalence.json"
+
+# ── Cross-Validation Targets ─────────────────────────────────────────
+XVAL_ADAPTERS := adapters/oref0-js,adapters/t1pal-oref0-swift
+XVAL_VECTORS  := ../../conformance/t1pal/vectors/oref0-endtoend
+
+xval-iob: harness-deps ## IOB curve isolation: compare IOB calculations across implementations
+	@cd $(HARNESS_DIR) && node iob-isolation.js \
+		--adapters $(XVAL_ADAPTERS) --vectors $(XVAL_VECTORS) --limit 10
+
+xval-predictions: harness-deps ## Prediction trajectory alignment across implementations
+	@cd $(HARNESS_DIR) && node prediction-alignment.js \
+		--adapters $(XVAL_ADAPTERS) --vectors $(XVAL_VECTORS) --limit 10
+
+xval-ground-truth: harness-deps ## Compare adapter output against captured ground-truth predBGs
+	@cd $(HARNESS_DIR) && node prediction-alignment.js \
+		--adapters adapters/oref0-js --vectors $(XVAL_VECTORS) --ground-truth --limit 10
+
+xval-converge: harness-deps ## Autonomous convergence loop (run until stable)
+	@cd $(HARNESS_DIR) && node convergence-loop.js \
+		--adapters $(XVAL_ADAPTERS) --vectors $(XVAL_VECTORS) \
+		--max-iterations 5 --target-convergence 0.95
+
+xval-quick: harness-deps ## Quick cross-validation: IOB + predictions (10 vectors)
+	@cd $(HARNESS_DIR) && node iob-isolation.js \
+		--adapters $(XVAL_ADAPTERS) --vectors $(XVAL_VECTORS) --limit 10
+	@cd $(HARNESS_DIR) && node prediction-alignment.js \
+		--adapters $(XVAL_ADAPTERS) --vectors $(XVAL_VECTORS) --limit 10
+
+xval-full: harness-deps ## Full cross-validation: all vectors, all comparisons, JSON reports
+	@mkdir -p $(HARNESS_DIR)/results
+	@cd $(HARNESS_DIR) && node iob-isolation.js \
+		--adapters $(XVAL_ADAPTERS) --vectors $(XVAL_VECTORS) --json \
+		> results/iob-isolation.json || true
+	@cd $(HARNESS_DIR) && node prediction-alignment.js \
+		--adapters $(XVAL_ADAPTERS) --vectors $(XVAL_VECTORS) --json \
+		> results/prediction-alignment.json || true
+	@cd $(HARNESS_DIR) && node convergence-loop.js \
+		--adapters $(XVAL_ADAPTERS) --vectors $(XVAL_VECTORS) \
+		--json --report-dir results/convergence \
+		> results/convergence-summary.json || true
+	@echo "Results in $(HARNESS_DIR)/results/"
