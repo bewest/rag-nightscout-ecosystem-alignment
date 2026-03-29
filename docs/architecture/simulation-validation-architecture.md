@@ -1344,350 +1344,213 @@ Simulation expands coverage; it doesn't replace ground truth. The goal of the
 mismatch layer is to bridge the gap so simulation results are *directionally correct*
 — not to eliminate the need for real data.
 
+### The UVA/Padova Integration Gap (Critical Known Issue)
+
+**`in-silico-bridge.js` uses the CGMSIM engine, NOT UVA/Padova.** This is a primary
+source of the narrow BG range problem (89–140 mg/dL synthetic vs 40–350+ real).
+
+| Factor | CGMSIM (what we use) | UVA/Padova (what we should use) |
+|--------|---------------------|--------------------------------|
+| BG calculation | Algebraic: `lastBG + Σeffects` | 18 coupled ODEs integrated per minute |
+| Insulin model | Single exponential decay per type | Two-compartment SC absorption (Isc1→Isc2→plasma) |
+| Meal model | Dual-phase (fast/slow) fixed split | Variable gastric emptying (nonlinear tanh function of stomach load) |
+| Liver model | Hill equation, max 65% suppression | Full EGP with glucagon counter-regulation |
+| CGM noise | None (clean signal) | Vettoretti2019/Breton2008 sensor models built in |
+| State | Stateless (recomputes from history) | Stateful (carries 18 ODE state variables forward) |
+| Realistic range | 89–140 mg/dL typical | 40–400+ mg/dL with noise |
+
+**Why we're not using it yet** (from §4.2):
+1. UVA/Padova requires persistent state between ticks (`lastState` carry-forward)
+2. Needs ODE solver initialization with steady-state finder
+3. Treatment format conversion to UVA input schema
+4. `in-silico-bridge.js` was built for CGMSIM's simpler API
+
+**Impact**: Until UVA/Padova integration happens, calibration efforts (§5) are
+fighting against a fundamentally limited generator. The CGMSIM engine cannot produce
+realistic variability because its algebraic model lacks the nonlinear dynamics
+(variable gastric emptying, glucagon counter-regulation, sensor noise) that create
+real-world BG spread. This should be the **first infrastructure priority** before
+attempting fingerprint calibration.
+
+### CGM Trace Generation: Methodology Comparison
+
+The ecosystem currently has **two methodology families** for generating CGM traces.
+A third family — trained generative models — is absent but worth evaluating.
+
+#### Methodology 1: Physics-Based Simulation (What We Have)
+
+```
+Treatment inputs (insulin, carbs, timestamps)
+        │
+        ▼
+  Pharmacokinetic equations
+  (ODE or algebraic)
+        │
+        ▼
+  Deterministic BG trajectory + optional sensor noise
+```
+
+**Available in ecosystem**:
+- cgmsim-lib CGMSIM engine (algebraic, fast, simplified)
+- cgmsim-lib UVA/Padova engine (18-ODE, realistic, not yet integrated)
+- GluPredKit `uva_padova.py` model (ReplayBG-based, particle filter)
+- GluPredKit `loop.py` / `loop_v2.py` (rule-based + parameter fitting)
+
+**Strengths**:
+- Causally correct: change bolus timing → physically plausible BG change
+- Interpretable: every BG movement has an assignable cause
+- Counterfactual-capable: can answer "what if" by changing one input
+- Parameters map to physiology (ISF, CR, DIA have clinical meaning)
+
+**Weaknesses**:
+- Only as realistic as the equations — missing physiology = missing dynamics
+- Hard to model behavioral/psychosocial effects (forgotten boluses, alarm fatigue)
+- Parameter identification requires solving inverse problems
+- Single-trajectory: doesn't naturally express uncertainty
+
+#### Methodology 2: Supervised ML Prediction (What We Have)
+
+```
+Historical CGM + insulin + carbs (last N windows)
+        │
+        ▼
+  Trained model (LSTM, TCN, Random Forest, etc.)
+        │
+        ▼
+  Predicted BG at t+5, t+10, ... t+60 minutes
+```
+
+**Available in ecosystem** (GluPredKit `glupredkit/models/`):
+- Neural: LSTM, Double LSTM, TCN, MTL (Conv1D+LSTM), STL, Stacked PLSR
+- Ensemble: Random Forest (300 trees)
+- Linear: Ridge, Weighted Ridge, SVR
+- Baselines: Zero-order hold, Naive linear regressor
+
+**Strengths**:
+- Learns patterns that physics models miss (behavioral, device-specific)
+- No equations needed — patterns emerge from data
+- Multi-point output (predicts full trajectory, not just next value)
+- Can implicitly capture confounders present in training data
+
+**Weaknesses**:
+- Cannot generate NOVEL scenarios not in training data
+- Not causally valid for counterfactuals (changing input treatment doesn't
+  produce physically meaningful output — the model learned correlations, not causes)
+- Requires large training datasets per prediction horizon
+- Extrapolation outside training distribution is unreliable
+- Output is a single trajectory, not a distribution
+
+#### Methodology 3: Generative Models (What We Don't Have)
+
+```
+Latent noise vector z + conditioning variables (patient type, scenario, treatments)
+        │
+        ▼
+  Generative model (GAN, VAE, Diffusion, Neural ODE)
+        │
+        ▼
+  Synthetic CGM stream (multi-hour, stochastic, distribution-aware)
+```
+
+**Not present in ecosystem.** But several architectures are relevant:
+
+| Approach | How It Works | Strengths | Weaknesses | Relevant For Us? |
+|----------|-------------|-----------|------------|-----------------|
+| **TimeGAN** | GAN trained on time-series: generator learns temporal dynamics, discriminator validates realism | Generates diverse realistic traces; captures temporal correlations automatically | Mode collapse risk; no causal validity; needs large training set (>10K traces) | ✅ High — could generate unlimited training data |
+| **Conditional VAE** | Encoder compresses real traces → latent space; decoder generates from latent + condition | Smooth latent space; can interpolate between patient types; uncertainty quantification via sampling | Blurrier outputs than GAN; reconstruction loss can miss sharp events | ✅ High — natural patient-type conditioning |
+| **Diffusion Models** | Iterative denoising from Gaussian noise → realistic trace | Highest quality generation; stable training; no mode collapse | Slow generation; computationally expensive; newer, less tooling | ⚠️ Medium — quality is best but compute cost high |
+| **Neural ODE** | Learned continuous-time dynamics: dBG/dt = f_θ(BG, insulin, carbs, t) | Combines physics structure with learned dynamics; handles irregular time steps; causally interpretable | Complex training; limited tooling; needs physics-informed loss | ✅ Very high — best of physics + ML |
+| **Copula Models** | Statistical: model marginals + dependency structure separately | Fast; well-understood theory; easy to calibrate from population fingerprints | No temporal dynamics; only generates distributions, not trajectories | ⚠️ Low — useful only for Tier 1 validation |
+
+#### Methodology 4: Hybrid Physics-ML (What We Should Consider)
+
+The most promising approach for this ecosystem combines physics and ML:
+
+```
+Treatment inputs + patient parameters
+        │
+        ├──→ Physics model (UVA/Padova) produces "expected" trajectory
+        │
+        ├──→ ML residual model (LSTM or Neural ODE) learns the GAP
+        │    between physics prediction and real observed BG
+        │    (this gap captures: behavioral noise, confounders,
+        │     device artifacts, model misspecification)
+        │
+        ▼
+  Final BG = physics_prediction + learned_residual + sensor_noise
+```
+
+**Why this is compelling for our use case:**
+
+1. **Physics provides causal backbone** — changing bolus timing produces
+   physically correct directional change in the base trajectory
+2. **ML residual captures what physics misses** — trained on the GAP between
+   UVA/Padova predictions and real data, the residual model learns behavioral
+   patterns, device artifacts, and confounder effects
+3. **Residual is small and learnable** — instead of learning the full BG dynamics
+   (hard), the ML model only learns the correction term (easier, less data needed)
+4. **Counterfactuals remain meaningful** — the physics base changes correctly when
+   treatments change; the residual provides realistic noise around it
+5. **Calibration pipeline (§5) applies naturally** — the fingerprint distance metric
+   optimizes the physics parameters; the ML residual absorbs remaining distribution
+   mismatch automatically
+
+**Data requirement**: This hybrid approach needs per-subject paired data:
+(real_BG_trajectory, UVA_predicted_trajectory, treatments, scenario_label) to train
+the residual model. The GluPredKit per-subject pipeline (§9 of therapy optimization
+doc) already produces this pairing.
+
+### Recommended Generation Strategy
+
+Given current ecosystem capabilities and the calibration architecture:
+
+```
+PRIORITY ORDER:
+
+1. IMMEDIATE: Integrate UVA/Padova into in-silico-bridge.js
+   - Biggest single improvement to realism
+   - Enables sensor noise, nonlinear meal absorption, glucagon
+   - Unblocks meaningful calibration (§5)
+   - Physics-only, no ML training needed
+
+2. SHORT-TERM: Calibrate UVA/Padova via fingerprint distance (§5.5)
+   - Use Wasserstein/DTW/ACF matching against real dataset fingerprints
+   - Produce validated SIM-* vectors that match real distributions
+   - Still physics-only but with empirically-tuned parameters
+
+3. MEDIUM-TERM: Add mismatch layer (§4.3) to calibrated UVA/Padova
+   - Separate algorithm-profile from true-physiology
+   - Enable compound confounder scenarios
+   - Dramatic expansion of scenario diversity
+
+4. LONGER-TERM: Evaluate hybrid physics-ML residual approach
+   - Train residual model on gap between UVA/Padova and real data
+   - Absorbs behavioral noise, device artifacts, unmodeled confounders
+   - Requires per-subject paired trajectories (GluPredKit provides)
+
+5. RESEARCH: Evaluate pure generative models (TimeGAN, Neural ODE)
+   - For unlimited scenario generation beyond calibrated physics
+   - Would need >10K real CGM traces for training
+   - Most relevant for edge case synthesis and data augmentation
+```
+
+Each level builds on the previous. Level 1 (UVA/Padova integration) is the
+critical unblock — all subsequent calibration work is undermined by using the
+simplified CGMSIM engine.
+
 ---
 
 ## 9. Feature Pipeline: From Fingerprinting to Therapy Optimization
 
-### 9.1 The Core Insight
-
-The data ingestion and statistical fingerprinting pipeline (§3, §5) does not merely
-calibrate simulators. **The same analysis that fingerprints a data stream also
-identifies therapy optimization opportunities.** This creates a fourth deliverable
-from the same infrastructure:
-
-```
-                     Data Ingestion Pipeline
-                            │
-          ┌─────────────────┼─────────────────┐
-          │                 │                 │
-          ▼                 ▼                 ▼
-  (A) Statistical    (B) Scenario       (C) Edge Case
-      Fingerprints       Library            Catalog
-      ───────────        ───────            ───────
-      Calibrate          Test               Test
-      simulator          common life        safety
-          │                 │                 │
-          └────────┬────────┘                 │
-                   │                          │
-                   ▼                          │
-          (D) Therapy Assessment              │
-              ─────────────────               │
-              Identify individual             │
-              optimization                    │
-              opportunities                   │
-                   │                          │
-                   └────────────┬─────────────┘
-                                ▼
-                   algorithm_score.py + individual reports
-```
-
-**Deliverable D emerges naturally** because the fingerprint engine computes exactly
-the signals that autotune uses to detect therapy mismatches — just organized
-differently:
-
-| Fingerprint Computation | Autotune Equivalent | What It Reveals |
-|------------------------|--------------------|--------------------|
-| Overnight BG mean deviation from target | Basal period deviations | Basal rate too high/low |
-| Post-meal BG peak amplitude vs carbs entered | CR data category | Carb ratio mismatch |
-| Post-correction BG trajectory slope | ISF data category | ISF wrong for corrections |
-| BG coefficient of variation by time-of-day | Hourly deviation sums | Circadian pattern mismatch |
-| TIR% in 70-180 range | Aggregate deviation score | Overall settings quality |
-| Spectral power at 24h cycle | Dawn phenomenon signature | Basal schedule missing circadian shape |
-| Post-meal duration to return to baseline | DIA/absorption timing | DIA or carb absorption model wrong |
-
-### 9.2 How Data Ingestion Creates All Four Deliverables
-
-When a new data stream enters the pipeline (from any source — Nightscout, Tidepool,
-GluPredKit parser, CSV upload), the ingestion process runs the following stages:
-
-```
-Raw Data Stream (CGM + insulin + carbs, any source)
-        │
-        ▼
-┌────────────────────────────┐
-│ Stage 1: NORMALIZE         │   GluPredKit parser → 5-min DataFrame
-│                            │   [date, id, CGM, insulin, carbs, basal, bolus]
-│ Any of 12 parsers:         │
-│ nightscout.py, tidepool.py │
-│ ohio_t1dm.py, IOBP2.py... │
-└────────────┬───────────────┘
-             │
-             ▼
-┌────────────────────────────┐
-│ Stage 2: CATEGORIZE        │   Autotune-prep logic: classify each reading
-│                            │
-│ For each 5-min window:     │   → Basal period (fasting, overnight, no IOB)
-│   - Compute IOB, COB       │   → Meal period (carbs entered, COB > 0)
-│   - Check for carb entry   │   → Correction period (IOB >> basal rate)
-│   - Detect unannounced     │   → UAM period (unexplained rise)
-│     meal (UAM)             │   → Exercise (HR up, BG dropping, low IOB)
-│                            │   → Confounder flag (cyclic, illness, etc.)
-└────────────┬───────────────┘
-             │
-             ▼
-┌────────────────────────────┐
-│ Stage 3: COMPUTE           │
-│                            │
-│ Per-subject, per-window:   │   (A) Fingerprint: distribution, temporal, treatment,
-│                            │       event-dynamic statistics (Tiers 1-4, §3.2)
-│   Aggregate across all     │
-│   categorized windows      │   (B) Scenario labels: meal-rise, hypo-recovery,
-│                            │       dawn-phenomenon, exercise, missed-bolus,
-│                            │       stacking, etc. with severity + frequency
-│                            │
-│                            │   (C) Edge case flags: BG < 40, BG > 400,
-│                            │       >2h CGM gap, impossible deltas, etc.
-│                            │
-│                            │   (D) Therapy signals: per-hour basal deviation,
-│                            │       per-meal CR effectiveness, correction ISF
-│                            │       effectiveness, DIA fit quality
-└────────────┬───────────────┘
-             │
-             ▼
-┌────────────────────────────┐
-│ Stage 4: ASSESS            │
-│                            │
-│ Compare individual         │   Population comparison:
-│ fingerprint against        │   - "Your overnight CV is 2× population median"
-│ population norms           │   - "Your post-meal peak is 95th percentile"
-│                            │
-│ Compute therapy            │   Mismatch detection:
-│ mismatch estimates         │   - "Basal appears 25% low between 3-7 AM"
-│                            │   - "CR appears 30% wrong for dinner meals"
-│                            │   - "ISF corrections overshoot by 20%"
-│                            │
-│ Identify active            │   Confounder detection:
-│ confounders                │   - "~7 day ISF cycle detected (hormonal?)"
-│                            │   - "Consistent 4-8 AM drift (dawn phenomenon)"
-│                            │   - "Absorption degrades on days 3-4 of site"
-└────────────┬───────────────┘
-             │
-             ▼
-        Four Outputs:
-        (A) fingerprint.json     → calibrate simulator
-        (B) scenario_library/    → test algorithm prediction
-        (C) edge_cases/          → test safety boundaries
-        (D) therapy_report.json  → actionable optimization recommendations
-```
-
-### 9.3 Reverse Mismatch Detection: The Mathematical Foundation
-
-Autotune (oref0, AAPS, Trio) and the fingerprint engine perform the same fundamental
-computation — **measuring the gap between what therapy settings predicted and what
-actually happened** — but from different starting points:
-
-**Forward (Simulation Mismatch, §4.3):**
-```
-Known mismatch parameters → Simulate BG trajectory → Measure glycemic variability
-```
-
-**Reverse (Data Ingestion → Therapy Assessment):**
-```
-Observed BG trajectory → Measure deviations from expected → Infer mismatch parameters
-```
-
-The key equations (from oref0 autotune, `externals/oref0/lib/autotune/index.js`):
-
-```
-Basal mismatch:
-  deviation_per_hour = Σ(actual_BG - target_BG) during basal periods
-  basal_adjustment = 0.2 × deviation_per_hour / ISF
-  → Positive deviation = BG rising = basal too low
-  → Negative deviation = BG falling = basal too high
-
-CR mismatch:
-  CR_measured = carbs_entered / (insulin_used + correction_needed)
-  CR_error = CR_measured / CR_configured
-  → Ratio > 1.0: patient needs MORE insulin per carb (CR too high)
-  → Ratio < 1.0: patient needs LESS insulin per carb (CR too low)
-
-ISF mismatch:
-  ISF_measured = BG_change / correction_insulin_dose
-  ISF_error = ISF_measured / ISF_configured
-  → Ratio > 1.0: corrections overshoot (ISF too low = patient more sensitive)
-  → Ratio < 1.0: corrections undershoot (ISF too high = patient more resistant)
-```
-
-The fingerprint engine adds population-level context that autotune lacks:
-
-| Signal | Autotune (Individual) | Fingerprint + Assessment |
-|--------|----------------------|--------------------------|
-| Basal drift | Adjusts basal ±20% | Compares to population overnight CV; flags if 2× median |
-| CR error | Adjusts CR ±20% | Identifies meal-type-specific CR patterns (pizza vs fruit) |
-| ISF error | Adjusts ISF ±20% | Detects circadian ISF variation, cyclic hormonal patterns |
-| DIA fit | Tests ±2h candidates | Compares IOB decay curve against empirical absorption data |
-| Sensitivity ratio | 24h autosens multiplier | Detects multi-day trends (illness, cycle, weight change) |
-| TDD trend | 24h vs 7–14d ratio | Correlates with confounder catalog (what's CAUSING the shift) |
-
-### 9.4 What This Enables: Therapy Assessment Without Algorithm Adoption
-
-The critical architectural insight: **a person does not need to use our dosing
-algorithm to benefit from the fingerprint pipeline.** They only need data:
-
-| Data Source | What They Need | What They Get |
-|-------------|---------------|---------------|
-| Nightscout instance | CGM + treatments (any pump/algorithm) | Full therapy assessment report |
-| Tidepool export | CSV with CGM + insulin + carbs | Settings mismatch analysis |
-| GluPredKit-compatible dataset | Any of 12 supported formats | Population-contextualized fingerprint |
-| Raw CGM + manual insulin log | 5-min CGM + bolus/basal timestamps | Basal + ISF + CR mismatch estimates |
-
-The output is a **therapy assessment report**, not an algorithm change:
-
-```json
-{
-  "subject_id": "patient-123",
-  "data_window": { "start": "2026-03-01", "end": "2026-03-15", "days": 14 },
-  "fingerprint": {
-    "tier1_glucose": { "mean": 162, "sd": 58, "cv": 35.8, "tir_70_180": 61.2 },
-    "tier2_temporal": { "overnight_cv": 28.3, "daytime_cv": 41.2, "dawn_rise": 32 },
-    "tier3_treatment": { "tdi": 42.5, "basal_bolus_ratio": 0.55, "meals_per_day": 3.2 },
-    "population_percentiles": {
-      "cv": "p72 (higher variability than 72% of T1D population)",
-      "tir": "p38 (lower TIR than 62% of population)",
-      "overnight_cv": "p85 (significantly worse overnight control)"
-    }
-  },
-  "therapy_signals": {
-    "basal_assessment": {
-      "overall": "Basal appears 22% low between 3-7 AM (dawn phenomenon)",
-      "hourly_adjustments": [
-        { "hour": 3, "current": 0.8, "suggested_direction": "increase", "magnitude": "+18%" },
-        { "hour": 4, "current": 0.8, "suggested_direction": "increase", "magnitude": "+25%" },
-        { "hour": 5, "current": 0.8, "suggested_direction": "increase", "magnitude": "+22%" },
-        { "hour": 6, "current": 1.0, "suggested_direction": "increase", "magnitude": "+15%" }
-      ],
-      "confidence": "high (14 overnight periods analyzed, consistent pattern)"
-    },
-    "cr_assessment": {
-      "overall": "CR appears approximately correct on average, but varies by meal",
-      "by_meal_window": [
-        { "window": "breakfast (6-10 AM)", "effective_cr": 8.2, "configured_cr": 10, "error": "-18%" },
-        { "window": "lunch (11-14)", "effective_cr": 10.5, "configured_cr": 10, "error": "+5%" },
-        { "window": "dinner (17-21)", "effective_cr": 7.1, "configured_cr": 10, "error": "-29%" }
-      ],
-      "confidence": "moderate (42 meals analyzed, dinner pattern strongest)"
-    },
-    "isf_assessment": {
-      "overall": "ISF appears correct for daytime, but 30% too high overnight",
-      "daytime_effective_isf": 42,
-      "overnight_effective_isf": 28,
-      "configured_isf": 40,
-      "confidence": "moderate (18 correction events analyzed)"
-    },
-    "confounders_detected": [
-      {
-        "type": "dawn_phenomenon",
-        "confidence": "high",
-        "pattern": "BG rises 25-40 mg/dL between 3-7 AM on 12 of 14 nights",
-        "recommendation": "Increase basal 3-7 AM or enable autotune/dynamic basal"
-      },
-      {
-        "type": "possible_hormonal_cycle",
-        "confidence": "low",
-        "pattern": "ISF dropped ~25% for days 8-12 of data window then recovered",
-        "recommendation": "Monitor over 2-3 months to confirm cyclic pattern"
-      },
-      {
-        "type": "site_degradation",
-        "confidence": "moderate",
-        "pattern": "Post-meal peaks 20% higher on day 3-4 after site change events",
-        "recommendation": "Consider changing sites every 2-3 days instead of 3-4"
-      }
-    ]
-  },
-  "scenarios_observed": {
-    "total_hours_analyzed": 336,
-    "scenario_distribution": {
-      "stable_basal": { "hours": 142, "pct": 42 },
-      "meal_response": { "count": 45, "avg_peak": 62, "median_duration_min": 135 },
-      "hypo_event": { "count": 8, "avg_nadir": 58, "avg_duration_min": 22 },
-      "dawn_phenomenon": { "count": 12, "avg_rise": 33 },
-      "missed_bolus": { "count": 3 },
-      "exercise_related": { "count": 0, "note": "no HR/exercise data available" }
-    }
-  }
-}
-```
-
-### 9.5 Data Requirements for Therapy Assessment
-
-The same minimum data windows from §3.2.3 (fingerprint extraction) apply, but with
-practical guidance for individual assessment:
-
-| Assessment Level | Data Needed | What You Get | Confidence |
-|-----------------|-------------|-------------|------------|
-| **Quick screen** | 3 days CGM + insulin | Basal drift direction, gross CR/ISF error | Low — may catch transient confounder |
-| **Standard assessment** | 7–14 days CGM + insulin + carbs | Hourly basal profile, meal-window CR, ISF, DIA fit | Moderate — captures weekly pattern |
-| **Full assessment** | 28–60 days | Above + cyclic confounders (hormonal), seasonal drift, population percentiles | High — captures monthly variation |
-| **Longitudinal tracking** | 90+ days rolling | Trend analysis: are settings improving? New confounders appearing? | Very high — detects slow drift |
-
-**Minimum viable data per assessment:**
-- CGM readings: 5-minute interval, ≥80% coverage (per FDA/NICE guidance)
-- Insulin: basal rates + bolus timestamps + amounts (from pump or manual log)
-- Carbs: meal entries with gram estimates (even rough — ±30% is useful)
-- Profile: current ISF, CR, basal schedule, DIA (what the person's pump thinks)
-
-**Enriching optional data:**
-- Heart rate / steps → exercise detection
-- Site change timestamps → absorption degradation analysis
-- Temp targets / overrides → intentional behavioral signals
-- Self-reported: illness, menstrual cycle, alcohol, stress → confounder correlation
-
-### 9.6 Population Context: Why Fingerprinting Matters Beyond Individual Tuning
-
-Autotune running on a single patient's data tells that patient how to adjust their
-settings. The fingerprint engine, running across 1,000+ subjects from research datasets,
-adds something autotune cannot: **population context**.
-
-```
-Individual autotune:     "Your basal should be 1.2 U/hr at 4 AM"
-Fingerprint + autotune:  "Your basal should be 1.2 U/hr at 4 AM.
-                          Your overnight variability is in the 85th percentile.
-                          68% of patients with similar TDI and dawn phenomenon
-                          use 1.1–1.4 U/hr in this window. Your adjustment
-                          is consistent with population norms."
-```
-
-This population context provides:
-
-1. **Sanity checking** — if autotune suggests ISF=200 but population p99 is 120,
-   something is wrong with the data, not the patient
-2. **Confidence calibration** — how much of this patient's variance is explained by
-   known factors vs unexplained?
-3. **Confounder hypothesis generation** — "patients with similar fingerprints and
-   unexplained overnight CV this high tend to have undiagnosed dawn phenomenon or
-   hormonal cycling"
-4. **Therapy benchmark** — "your TIR is p38; patients with similar TDI and management
-   complexity who run autotune/dynamic ISF achieve p55-p65 TIR"
-
-### 9.7 Relationship to Algorithm Validation (Closing the Loop)
-
-Deliverable D feeds back into algorithm validation:
-
-```
-Therapy Assessment (D)
-        │
-        ├──→ Parameterize two-layer mismatch model (§4.3)
-        │    "We now know the DISTRIBUTION of real mismatches"
-        │    "We can simulate realistic therapy-settings-vs-reality gaps"
-        │
-        ├──→ Calibrate confounder models
-        │    "We know 68% of patients have dawn phenomenon with this magnitude"
-        │    "We know hormonal cycling affects ~50% with this ISF shift range"
-        │
-        ├──→ Weight scenario library by real prevalence
-        │    "Missed bolus: 3×/month. Site degradation: noticeable on 30% of days"
-        │
-        └──→ Define safety boundaries from population data
-             "No real patient ever had ISF > 150 — flag as data error"
-             "Population p99 for post-meal peak is 280 mg/dL — edge case above this"
-```
-
-This creates a **virtuous cycle**: more data ingested → better therapy assessments →
-more accurate mismatch parameterization → more realistic simulation → better algorithm
-validation → better dosing → better outcomes → more data.
-
----
+> **Extracted to standalone document**: See
+> [`therapy-optimization-feature-pipeline.md`](therapy-optimization-feature-pipeline.md)
+> for the full architecture of how the fingerprinting pipeline produces therapy
+> assessment reports as a fourth deliverable — enabling therapy optimization for
+> any person with CGM + insulin + carb data, without requiring algorithm adoption.
+>
+> Key sections: reverse mismatch detection mathematics, 4-stage ingestion pipeline,
+> example therapy assessment JSON output, population context, and the virtuous cycle
+> back to simulation calibration.
 
 ## 10. Source File Reference
 
@@ -1745,3 +1608,7 @@ validation → better dosing → better outcomes → more data.
 | GAP-ALG-022 | *Proposed*: No individual therapy assessment report generator (§9.4) |
 | GAP-ALG-023 | *Proposed*: Autotune deviation categories lack population-context sanity checking (§9.6) |
 | GAP-ALG-024 | *Proposed*: No replay validation wrapper — cannot feed real patient history into cgmsim-lib and compare |
+| GAP-ALG-025 | *Proposed*: in-silico-bridge.js uses CGMSIM engine, not UVA/Padova — primary source of narrow BG range (§8) |
+| GAP-ALG-026 | *Proposed*: No generative models (GAN, VAE, diffusion) for synthetic CGM trace generation (§8) |
+| GAP-ALG-027 | *Proposed*: No hybrid physics-ML residual model to capture what equations miss (§8) |
+| GAP-ALG-028 | *Proposed*: GluPredKit ML models (LSTM, TCN, etc.) cannot produce causally valid counterfactuals (§8) |
