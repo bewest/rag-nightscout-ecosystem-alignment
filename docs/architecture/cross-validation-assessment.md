@@ -362,3 +362,77 @@ slightly more aggressive rate suggestions.
 - `1e3b006` (t1pal-mobile-apex): Wire PredictionEngine with 4 prediction curves
 - `739980e` (this repo): Implement null-rate semantics in adapter
 - `5d5ed78` (this repo): Map autosensData.ratio to EffectModifier
+
+---
+
+## Update: Phase 2 Guard System Results (2025-03-29, Session 3)
+
+After porting the JS guard system and extracting diagnostic state:
+
+### Changes Applied
+
+| Item | Description | Impact |
+|------|-------------|--------|
+| validate-test-vectors (A1) | Audited 100 vectors: 78 natural + 22 synthetic with stale fields | Category filters for clean measurement |
+| port-guard-system (A2) | Full JS guard system: threshold, expectedDelta, minGuardBG blending, 7-branch dosing cascade | **Bias nearly eliminated** |
+| extract-diagnostic-state (B1) | AlgorithmDiagnostics value types, LoopAlgorithm cleanup, GlucOS→struct | Architecture improvement |
+
+### Guard System Details
+
+New `GuardSystem` struct in Predictions.swift matches JS determine-basal.js:
+- `threshold = minBG - 0.5*(minBG-40)` replacing hardcoded 70 mg/dL (JS:329)
+- `expectedDelta = bgi + (targetDelta/24)` for expected BG change (JS:31-35)
+- Per-curve guard tracking (minIOBGuardBG, minCOBGuardBG, minUAMGuardBG, minZTGuardBG) from tick 0
+- Per-curve predBG tracking with insulin peak wait (18/12 ticks)
+- minGuardBG blending based on COB/UAM state (JS:729-740)
+- minPredBG selection matching JS:762-790
+- 7-branch dosing cascade: LGS exception → predictive LGS → eventualBG<minBG → falling faster → in range → IOB>maxIOB → above target
+
+### Improvement Progression (78 natural vectors only, excluding synthetic)
+
+| Metric | Phase 1 | Phase 2 (guards) | Change |
+|--------|---------|-------------------|--------|
+| EventualBG bias | +60.6 mg/dL | **-9.7 mg/dL** | 84% reduction |
+| EventualBG median |Δ| | 43.5 mg/dL | **11.7 mg/dL** | 73% reduction |
+| EventualBG ±10 | 31% | **37%** | +6pp |
+| EventualBG ±20 | — | **58%** | New baseline |
+| IOB MAE | 13.6 mg/dL | **12.3 mg/dL** | 10% reduction |
+| Decision convergence | — | **56.4%** | New baseline (natural only) |
+
+### Key Insight: Bias Elimination
+
+The most significant result is the **systematic bias reduction from +60.6
+to -9.7 mg/dL**. Phase 1 showed Swift consistently predicting higher BG
+than JS. The guard system corrected the dosing logic to use proper
+threshold-based decisions instead of simplified comparisons, bringing the
+two implementations into near-agreement on average. The remaining -9.7
+mg/dL bias is structural (activity estimation model difference).
+
+### Remaining Divergence Sources
+
+1. **Activity estimation** (LARGEST remaining): Swift uses `IOB/tau`
+   approximation; JS uses per-dose `activityContrib = insulin * (S/tau²)
+   * t * (1-t/end) * exp(-t/tau)` from iob/calculate.js. This causes the
+   12.3 mg/dL IOB MAE and cascades into dosing decisions.
+
+2. **COB deviation model**: JS uses `ci = minDelta - bgi` with dual
+   absorption (linear observed + bilinear remaining). Swift uses fixed
+   CarbModel.absorbed(). Missing: CI capping at 30 g/h, remainingCIpeak.
+
+3. **ZT prediction**: ZT curve MAE ~140 mg/dL — the zero-temp prediction
+   model in Swift diverges significantly from JS. This affects minPredBG
+   selection in carb-absent scenarios.
+
+### Architecture Improvements (B1)
+
+- Created `AlgorithmDiagnostics` with per-algorithm sub-types (Loop, Oref1, GlucOS)
+- Removed 8 mutable `_last*` diagnostic vars from LoopAlgorithm
+- Converted GlucOSAlgorithm from `final class @unchecked Sendable` to `struct Sendable`
+- Added optional `diagnostics` field to `AlgorithmDecision` (backward-compatible)
+
+### Commits
+
+- `4d55d52` (t1pal-mobile-apex): Port JS guard system with cross-validation results
+- `e853c4a` (t1pal-mobile-apex): Extract mutable diagnostic state from algorithm classes
+- `d5193b9` (this repo): Add test vector manifest with audit findings
+- `9dafff1` (this repo): Add --category/--exclude-category filters to xval tools
