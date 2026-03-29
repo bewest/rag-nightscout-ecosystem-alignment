@@ -727,9 +727,398 @@ Missing scenarios — organized by the dimension they exercise:
 
 ---
 
-## 5. Calibration Pipeline Architecture
+## 5. Calibration Pipeline Architecture: How Distribution Distance Drives Generation
 
-### 5.1 Fingerprint Extraction
+### 5.1 The Fundamental Question
+
+How does measuring "my synthetic BG distribution is X distance from real" actually
+lead to generating **new**, realistic CGM streams? And when we replay a real scenario
+with different treatments, how do we know the counterfactual response is accurate?
+
+The answer has three layers:
+
+1. **The causal model generates trajectories** — cgmsim-lib's pharmacokinetic
+   equations (§5.2) are the generator, not the distance metric
+2. **The distance metric is a loss function** — it tells us how wrong the causal
+   model's parameters are, not what the next BG value should be
+3. **Multi-tier matching validates the mechanism** — distribution matching alone
+   is insufficient; you need temporal structure, event dynamics, and treatment
+   response shapes to confirm the causal model is right for the right reasons
+
+### 5.2 The Causal Model: What Actually Generates Each BG Value
+
+cgmsim-lib is a **physics-based pharmacokinetic simulator**, not a statistical
+generator. Each 5-minute BG value is computed causally:
+
+```
+BG(t+5) = BG(t)
+         - insulinActivity(t) × ISF          ← insulin lowers BG
+         + carbAbsorptionRate(t) × ISF/CR     ← carbs raise BG
+         + liverOutput(t) × insulinSuppression(t) × circadian(t)
+         ± sensorNoise(t)                     ← CGM measurement error
+
+Where:
+  insulinActivity(t) = Σ over all boluses/basals:
+    units × (norm/τ²) × age × (1 - age/duration) × e^(-age/τ)
+    (exponential decay with insulin-type-specific peak and duration)
+
+  carbAbsorptionRate(t) = Σ over all meals:
+    dual-phase: fast portion (~60min absorption) + slow portion (~240min)
+    rate follows trapezoidal ramp-up then linear decay
+
+  liverOutput(t) = baseRate × weight × insulinSuppression × circadianSine
+    (Hill equation suppression: max 65% reduction by insulin)
+```
+
+The UVA/Padova engine uses 18 coupled ODEs for higher fidelity, including
+two-compartment insulin absorption, variable gastric emptying (nonlinear tanh),
+and glucagon counter-regulation.
+
+**Key point**: Given a treatment sequence (insulin doses + carb entries + timestamps),
+the simulator produces a DETERMINISTIC BG trajectory (plus optional stochastic noise).
+The causal model IS the generator.
+
+### 5.3 What the Distance Metric Actually Does
+
+The distribution distance is **not a generator** — it's the **objective function**
+for a parameter optimization loop. Here's the precise mechanism:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│            CALIBRATION AS PARAMETER OPTIMIZATION                │
+│                                                                 │
+│  GIVEN: Real data fingerprint F_real (from OhioT1DM, etc.)     │
+│  FIND:  Simulator params θ that minimize distance(F_sim, F_real)│
+│                                                                 │
+│  θ = { ISF_mean, ISF_sd,          ← patient physiology knobs   │
+│         CR_mean, CR_sd,                                         │
+│         basal_mean, basal_sd,                                   │
+│         carb_estimation_error_sd,  ← behavioral noise knobs    │
+│         meal_timing_jitter_sd,                                  │
+│         CGM_noise_amplitude,       ← sensor noise knobs        │
+│         liver_circadian_amplitude,                              │
+│         insulin_absorption_cv,     ← pharmacokinetic noise     │
+│         missed_bolus_probability,  ← event frequency knobs     │
+│         exercise_frequency,                                     │
+│         ... }                                                   │
+│                                                                 │
+│  LOOP:                                                          │
+│    1. Sample patient profiles from θ distributions              │
+│    2. Sample scenarios (meals, exercise, etc.) at θ frequencies │
+│    3. Run cgmsim-lib forward simulation for each                │
+│    4. Collect ensemble of synthetic BG trajectories             │
+│    5. Extract fingerprint F_sim from ensemble                   │
+│    6. Compute distance = d(F_sim, F_real)                       │
+│    7. Adjust θ to reduce distance                               │
+│    8. Repeat until distance < threshold                         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+The "knobs" θ are not individual BG values — they are **the parameters of the
+distributions from which patient profiles and scenarios are sampled**. Turning
+these knobs changes what kind of patients and situations the simulator generates.
+
+### 5.4 Which Knobs Control Which Distribution Features
+
+This is the critical mapping: each tier of the fingerprint is sensitive to
+different simulator parameters. When a specific tier's distance is high, you
+know which knobs to turn:
+
+```
+TIER 1 (BG Distribution: mean, SD, CV, percentiles, TIR)
+│
+├── BG mean too low?
+│   → ISF_mean too low (insulin too effective)
+│   → basal_mean too high (too much background insulin)
+│   → CR_mean too high (carbs overcompensated)
+│
+├── BG SD too narrow? (THE KNOWN PROBLEM: 89-140 vs real 40-350)
+│   → ISF_sd too low (all patients have same sensitivity)
+│   → CGM_noise_amplitude too low (clean signal)
+│   → carb_estimation_error_sd too low (perfect carb counting)
+│   → missed_bolus_probability too low (no unbolused meals)
+│   → meal_timing_jitter_sd too low (perfect timing)
+│   → mismatch_layer absent (§4.3 — settings always match)
+│
+├── TIR too high? (more time in range than real patients)
+│   → Same causes as narrow SD — simulator is "too good"
+│   → No physiological confounders (illness, hormones, etc.)
+│
+TIER 2 (Temporal Dynamics: autocorrelation, spectral power, overnight vs day)
+│
+├── Autocorrelation decays too fast?
+│   → insulin_absorption_cv too high (effects too variable)
+│   → CGM_noise too high relative to signal (noise dominates)
+│
+├── No 24h spectral peak?
+│   → liver_circadian_amplitude too low
+│   → No dawn phenomenon scenarios
+│
+├── Overnight SD matches but daytime doesn't?
+│   → Meal scenarios under-represented
+│   → Exercise effects missing
+│
+TIER 3 (Treatment Patterns: TDI, basal:bolus ratio, meals/day)
+│
+├── TDI too low?
+│   → Patient profiles have lower insulin needs than population
+│   → Missing correction bolus scenarios
+│
+├── Basal:bolus ratio wrong?
+│   → Basal rates don't match population pump settings
+│   → Bolus scenarios too few/many
+│
+TIER 4 (Event Dynamics: meal response shape, hypo recovery arc)
+│
+├── Post-meal peak too sharp/too blunt?
+│   → carb_absorption_time wrong (CGMSIM default: 360 min)
+│   → fast/slow carb split ratio wrong
+│   → CR mismatch not modeled (§4.3)
+│
+├── Hypo recovery too fast?
+│   → Liver model over-compensating
+│   → Carb correction absorption too fast
+│
+├── No extended meal tails (4-6 hr)?
+│   → High-fat meal absorption not modeled
+│   → Only dual-phase fast/slow, no extended release
+```
+
+### 5.5 The Optimization Algorithm
+
+The calibration controller uses these tier→knob mappings to search parameter space:
+
+```
+Algorithm: Multi-Tier Hierarchical Calibration
+
+Input:
+  F_real = population fingerprint from real datasets
+  θ_0 = initial parameters (current in-silico-bridge defaults)
+
+Phase 1 — Coarse calibration (Tier 1 distribution matching):
+  Objective: minimize Wasserstein_1(BG_hist_sim, BG_hist_real)
+
+  This is a 1D optimal transport problem:
+    W_1 = ∫|CDF_sim(x) - CDF_real(x)| dx
+
+  Intuition: Wasserstein measures the "earth moving" cost — how much
+  probability mass must shift and how far to transform the simulated
+  BG histogram into the real one.
+
+  Knobs adjusted: ISF_mean, ISF_sd, CR_mean, basal_mean,
+                   CGM_noise_amplitude, missed_bolus_probability
+  Method: Bayesian optimization (Gaussian process surrogate) or
+          Nelder-Mead simplex (derivative-free, ~6D)
+  Convergence: W_1 < 5 mg/dL (distributions nearly overlap)
+
+  Why Wasserstein, not KL divergence?
+  - KL divergence is undefined when sim has zero probability at a BG
+    value that real data contains (KL → ∞). This happens constantly
+    because CGMSIM's 89-140 range has zero mass above 200.
+  - Wasserstein is always finite and measures geometric distance between
+    distributions. "Your sim never goes above 200, real goes to 350"
+    gives a large but meaningful W_1 value.
+
+Phase 2 — Temporal calibration (Tier 2 dynamics matching):
+  Objective: minimize RMSE(ACF_sim[0:72], ACF_real[0:72])
+             + |spectral_24h_sim - spectral_24h_real|
+
+  ACF = autocorrelation function at lags 1-72 (5min each = 6 hours)
+
+  Intuition: Real CGM data has strong autocorrelation (BG changes slowly)
+  with a 24-hour circadian component. If the simulator's temporal dynamics
+  don't match, individual trajectories will "feel wrong" even if the
+  histogram matches.
+
+  Knobs adjusted: liver_circadian_amplitude, insulin_absorption_cv,
+                   CGM_noise_correlation_time, dawn_phenomenon_amplitude
+  Method: Grid search over 3-4 key parameters (~5 levels = 625 combos)
+  Convergence: ACF RMSE < 0.05, spectral ratio within 20%
+
+Phase 3 — Event-shape calibration (Tier 4 dynamics matching):
+  Objective: minimize DTW(meal_shape_sim, meal_shape_real)
+             + DTW(hypo_shape_sim, hypo_shape_real)
+
+  DTW = Dynamic Time Warping distance — allows time-axis stretching
+
+  This compares the SHAPE of typical events:
+  - Average post-meal BG trajectory (0-4 hours after carb entry)
+  - Average hypo-recovery arc (from nadir to 100 mg/dL)
+  - Average dawn phenomenon rise (3-7 AM)
+
+  Intuition: Even with correct distribution and autocorrelation, if meal
+  responses peak at wrong time or wrong height, the simulator will
+  mislead algorithm validation.
+
+  Knobs adjusted: carb_absorption_time, fast_slow_carb_ratio,
+                   CR_sd, meal_timing_jitter_sd
+  Method: Nelder-Mead on 4D parameter space
+  Convergence: DTW < 15 mg/dL·min (shapes nearly overlap)
+
+Phase 4 — Mismatch layer calibration (§4.3 validation):
+  Objective: minimize |prediction_residual_distribution_sim - _real|
+
+  This is unique: we compare the ERRORS the algorithm makes, not the BG.
+
+  In real data: run oref0 on actual patient data, record how far off
+  its predictions were from what actually happened.
+  In sim data: same algorithm on simulated data with mismatch layer.
+
+  If the mismatch layer is correctly calibrated, the algorithm should
+  be EQUALLY WRONG on synthetic data as on real data.
+
+  Knobs adjusted: ISF_ratio distribution, CR_ratio distribution,
+                   basal_ratio distribution, phantom_IOB frequency
+  Method: Moment matching (match mean and SD of residual distributions)
+  Convergence: residual mean within 5 mg/dL, residual SD within 10%
+```
+
+### 5.6 From Calibrated Parameters to New Realistic Streams
+
+Once θ is calibrated, generating new realistic CGM streams is straightforward:
+
+```
+GENERATION (unlimited new scenarios):
+
+  1. Sample a virtual patient from calibrated distributions:
+     patient = {
+       ISF: lognormal(θ.ISF_mean, θ.ISF_sd),
+       CR:  lognormal(θ.CR_mean, θ.CR_sd),
+       basal: normal(θ.basal_mean, θ.basal_sd),
+       ...
+     }
+
+  2. Sample a mismatch profile (§4.3):
+     mismatch = {
+       ISF_ratio:  lognormal(1.0, θ.ISF_mismatch_sd),
+       CR_ratio:   lognormal(1.0, θ.CR_mismatch_sd),
+       basal_ratio: normal(1.0, θ.basal_mismatch_sd),
+       phantom_IOB: poisson(θ.phantom_IOB_rate),
+     }
+
+  3. Sample a scenario template:
+     scenario = weighted_random_choice({
+       "meal-rise": 0.35,
+       "fasting": 0.20,
+       "missed-bolus": 0.12,     ← frequency from real data
+       "dawn-phenomenon": 0.10,
+       "exercise": 0.08,
+       "illness": 0.03,
+       ...
+     })
+
+  4. Add noise to scenario:
+     meal.carbs += normal(0, θ.carb_estimation_error_sd)
+     meal.time  += normal(0, θ.meal_timing_jitter_sd)
+     insulin.absorption *= uniform(θ.absorption_degradation_range)
+
+  5. Run cgmsim-lib with:
+     - TRUE physiology: patient parameters × mismatch ratios
+     - ALGORITHM sees: patient parameters (without mismatch)
+     - Treatments: scenario template + noise
+     - CGM output: true BG + sensor noise model
+
+  6. Output: one SIM-* vector with realistic BG trajectory,
+     plus metadata about scenario, mismatch, and confounders
+```
+
+Each generated stream is different because Steps 1-4 all involve stochastic
+sampling from calibrated distributions. The ENSEMBLE of generated streams
+matches real population statistics (because θ was calibrated to minimize
+distribution distance), while each INDIVIDUAL stream follows the causal
+pharmacokinetic model (because cgmsim-lib's equations compute each BG value
+from insulin + carbs + liver effects).
+
+### 5.7 Counterfactual Treatment Scenarios (Replay with Different Treatments)
+
+Given a real or simulated scenario, what happens if we change the treatment?
+
+```
+REPLAY WITH COUNTERFACTUAL:
+
+  Original scenario:
+    Patient eats 60g carbs at 12:00
+    Boluses 6U at 12:00 (CR=10, so 60/10=6U)
+    BG trajectory: 120 → 165 → 185 → 170 → 145 → 125 (2.5 hours)
+
+  Counterfactual question: What if they bolused 15 minutes early?
+
+  Method:
+    1. Keep IDENTICAL patient parameters (ISF, CR, absorption, liver)
+    2. Keep identical meal (60g at 12:00)
+    3. Change ONLY the bolus: 6U at 11:45 (instead of 12:00)
+    4. Re-run cgmsim-lib forward simulation
+    5. New trajectory: 120 → 148 → 160 → 150 → 135 → 118
+
+  The causal model handles this because:
+  - Insulin activity curve shifts 15 minutes earlier
+  - Carb absorption curve stays the same
+  - The OVERLAP changes: more insulin active during carb rise
+  - Result: lower peak, faster return to baseline
+```
+
+**How do we know the counterfactual is ACCURATE?**
+
+The calibration pipeline's multi-tier validation handles this:
+
+```
+COUNTERFACTUAL VALIDATION STRATEGY:
+
+  1. Find matched pairs in REAL data:
+     - Patient A bolused at meal time → recorded BG trajectory
+     - Patient A bolused 15 min early another day → recorded trajectory
+     (Same patient, similar meal, different bolus timing)
+
+  2. Run simulator on both scenarios with Patient A's calibrated params
+
+  3. Compare:
+     a) Does the simulator match the ACTUAL trajectory in both cases?
+     b) Does the DIRECTION of difference match?
+        (Earlier bolus → lower peak in both real and simulated?)
+     c) Does the MAGNITUDE of difference match?
+        (Real: peak dropped 25 mg/dL; Sim: peak dropped 22 mg/dL?)
+
+  4. The Tier 4 fingerprint (event dynamics) captures this:
+     - DTW on meal response shapes: "pre-bolused" vs "at-meal-bolused"
+     - If shapes match across both conditions, counterfactuals reliable
+
+  5. Population-level validation:
+     - Across 1000+ subjects in IOBP2/T1DEXI, compute the statistical
+       effect of pre-bolusing on peak BG
+     - Compare against simulated effect across 1000 virtual patients
+     - If effect size and variance match → counterfactual mechanism
+       is validated at population level
+```
+
+### 5.8 The Three Levels of Confidence
+
+Not all generated streams are equally trustworthy:
+
+| Confidence Level | What's Generated | Validation | Trust |
+|-----------------|-----------------|------------|-------|
+| **High** — Interpolation | Patient within calibrated range, common scenario (meal, fasting, dawn) | Fingerprint distance < threshold all 4 tiers; counterfactual validated against matched pairs | Full weight in algorithm scoring |
+| **Medium** — Extrapolation | Mismatch layer active (settings wrong 30%+), compound confounders, uncommon scenario | Tier 1-2 validated; Tier 4 extrapolated from single-confounder calibration | Reduced weight in scoring |
+| **Low** — Adversarial | Extreme parameters, impossible scenarios (BG 400→40 in 15 min) | Not fingerprint-validated; only safety invariants checked | Safety boundary testing only (hard gate) |
+
+### 5.9 What Exists vs What's Needed
+
+| Component | Status | Code Location |
+|-----------|--------|---------------|
+| Causal model (CGMSIM) | ✅ Working | `externals/cgmsim-lib/src/CGMSIMsimulator.ts` |
+| Causal model (UVA/Padova) | ✅ Working | `externals/cgmsim-lib/src/lt1/core/models/UvaPadova_T1DMS.ts` |
+| Trajectory metrics (MAE, RMSE) | ✅ Working | `tools/aid-autoresearch/score-in-silico.js` |
+| Per-subject ISF×CR grid search | ✅ Working | `tools/aid-autoresearch/glupredkit_oref0_model.py:102-137` |
+| Algorithm param mutation engine | ✅ Working | `tools/aid-autoresearch/param-mutation-engine.js` |
+| ReplayBG parameter identification | ✅ Working | `externals/GluPredKit/glupredkit/models/uva_padova.py` |
+| Sensor noise models | ✅ In cgmsim-lib | `externals/cgmsim-lib/src/lt1/core/sensors/` |
+| **Fingerprint extractor** | ❌ Not built | Described: §5.10 |
+| **Distribution distance metrics** | ❌ Not built | Described: §5.5 (Wasserstein, DTW, ACF RMSE) |
+| **Calibration controller** | ❌ Not built | Described: §5.5 (4-phase hierarchical) |
+| **Mismatch layer in simulator** | ❌ Not built | Described: §4.3.4 |
+| **Scenario frequency sampler** | ❌ Not built | Described: §5.6 Step 3 |
+| **Counterfactual validation** | ❌ Not built | Described: §5.7 (matched-pair comparison) |
+
+### 5.10 Fingerprint Extraction
 
 ```
 Real Dataset (OhioT1DM, Nightscout, Tidepool)
@@ -751,40 +1140,7 @@ Real Dataset (OhioT1DM, Nightscout, Tidepool)
 └──────────────────────┘    }
 ```
 
-### 5.2 Simulation Calibration Loop
-
-```
-fingerprint.json (target)
-       │
-       ▼
-┌──────────────────────────────────────────────────────┐
-│ Calibration Controller                                │
-│                                                       │
-│ 1. Generate N hours of synthetic data                 │
-│    (in-silico-bridge.js with current patient params)  │
-│                                                       │
-│ 2. Extract synthetic fingerprint                      │
-│                                                       │
-│ 3. Compute distance metrics:                          │
-│    • Wasserstein distance on BG distribution           │
-│    • Absolute error on TIR buckets                    │
-│    • DTW on meal response shape template              │
-│    • KL divergence on glycemic variability            │
-│                                                       │
-│ 4. If distance > threshold:                           │
-│    • Adjust patient profiles (ISF, CR, noise params)  │
-│    • Enable/tune CGM noise model                      │
-│    • Add meal timing jitter, carb estimation error    │
-│    • Re-run from step 1                               │
-│                                                       │
-│ 5. If distance < threshold:                           │
-│    • Lock calibrated patient profiles                 │
-│    • Generate conformance vectors                     │
-│    • Proceed to algorithm scoring                     │
-└──────────────────────────────────────────────────────┘
-```
-
-### 5.3 Integration with Autoresearch Loop
+### 5.11 Integration with Autoresearch Loop
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -829,7 +1185,6 @@ fingerprint.json (target)
 └─────────────────────────────────────────────────────────────┘
 ```
 
----
 
 ## 6. R&D Phases
 
