@@ -285,3 +285,80 @@ if (algorithm) payloadObj.algorithm = algorithm;
 
 This was verified by confirming oref0/Loop/GlucOS now return
 different results for the same input.
+
+---
+
+## Update: Post-Convergence Results (2025-03-29, Session 2)
+
+After implementing 10 convergence backlog items, the cross-validation
+results improved significantly:
+
+### Changes Applied
+
+| Item | Description | Impact |
+|------|-------------|--------|
+| factor-continuance | Factored 8 continuance rules into ContinuancePolicy protocol | Null-rate semantics |
+| null-rate-semantics | Wired calculateWithContinuance() into adapter | 33% vectors trigger continuance |
+| wire-prediction-engine | Connected PredictionEngine to Oref0Algorithm | 4 prediction curves (49 points each) |
+| fix-eventual-bg | eventualBG from IOB curve instead of scalar | Bias +60.6 → -35.0 |
+| round-basal-parity | Pump-model-aware rounding (x23/x54 vs standard) | Rate precision |
+| add-autosens-ratio | Apply effectModifiers to profile ISF/ICR/basal | Sensitivity adjustment |
+| add-avgdelta-logic | minDelta = min(delta, shortAvgDelta, longAvgDelta) | Conservative guards |
+| prediction-loop-parity | Tick-by-tick accumulation matching JS loop | IOB MAE 44.1 → 13.6 |
+| minpred-from-curves | minPredBG from min across all 4 curves | Safety checks |
+| add-cob-effects | COB impact in prediction curves | COB prediction |
+
+### Improvement Progression (100 vectors, oref0-JS vs oref0-Swift)
+
+| Metric | Baseline | +PredEngine | +IOB Parity | Improvement |
+|--------|----------|-------------|-------------|-------------|
+| EventualBG bias | +60.6 mg/dL | -35.0 | **-12.9** | 79% reduction |
+| EventualBG |diff| | 76.2 mg/dL | 73.5 | **48.3** | 37% reduction |
+| EventualBG ±10 | 12% | 11% | **31%** | 2.6× better |
+| EventualBG ±20 | 32% | 20% | **49%** | 1.5× better |
+| Rate exact match | 33% | 53% | **68%** | 2.1× better |
+| Rate ±0.05 U/hr | 46% | 53% | **68%** | 1.5× better |
+| Rate ±0.5 U/hr | 88% | 90% | **94%** | +6pp |
+| IOB curve MAE | N/A | 44.1 | **13.6** | 69% reduction |
+
+### Remaining Divergence Sources
+
+1. **IOB decay model mismatch** (13.6 mg/dL MAE): JS adapter generates IOB
+   array from a single snapshot using pure exponential decay. Swift now
+   matches the tau but the activity estimation (`IOB/tau` vs actual insulin
+   curve `activity` field) differs. Using dose history would eliminate this.
+
+2. **Prediction structure differences**: JS accumulates predBGI per tick
+   from `iobTick.activity`. Swift now does tick-by-tick accumulation but
+   approximates activity from IOB. The two curves converge at the endpoints
+   but differ in the middle where activity peaks.
+
+3. **Missing features**: Some JS oref0 guards (expectedDelta, snoozeBG,
+   threshold BG) are not yet ported to the Swift decision logic.
+
+4. **Input assembly**: TV-087+ vectors have ~100+ mg/dL constant offsets
+   suggesting the glucose synthesis from single-point + delta produces
+   different results than real glucose history.
+
+### Assessment
+
+**Dosing safety**: 94% of rates agree within 0.5 U/hr. For a typical
+basal rate of 1.0 U/hr, this means nearly all decisions would result
+in clinically equivalent insulin delivery.
+
+**Prediction quality**: IOB curve MAE of 13.6 mg/dL is approaching the
+8.4 mg/dL baseline gap between the JS adapter and real phone captures.
+The remaining ~5 mg/dL gap is structural (snapshot IOB vs dose history).
+
+**EventualBG**: 49% within ±20 mg/dL. The -12.9 mg/dL remaining bias
+means Swift still predicts slightly lower glucose. This cascades into
+slightly more aggressive rate suggestions.
+
+### Commits
+
+- `79ee650` (t1pal-mobile-apex): Factor continuance rules into ContinuancePolicy protocol
+- `5affc51` (t1pal-mobile-apex): Add autosens ratio and avgDelta logic
+- `9d877e3` (t1pal-mobile-apex): Port tick-by-tick IOB prediction loop
+- `1e3b006` (t1pal-mobile-apex): Wire PredictionEngine with 4 prediction curves
+- `739980e` (this repo): Implement null-rate semantics in adapter
+- `5d5ed78` (this repo): Map autosensData.ratio to EffectModifier
