@@ -35,6 +35,8 @@ function parseArgs() {
     json: false,
     verbose: false,
     reportDir: null,
+    category: null,
+    exclude: null,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -47,6 +49,8 @@ function parseArgs() {
       case '--json': opts.json = true; break;
       case '--verbose': opts.verbose = true; break;
       case '--report-dir': opts.reportDir = args[++i]; break;
+      case '--category': opts.category = args[++i]; break;
+      case '--exclude-category': opts.exclude = args[++i]; break;
     }
   }
 
@@ -283,7 +287,10 @@ async function main() {
   const opts = parseArgs();
 
   const adapters = opts.adapters.map(a => loadAdapter(path.resolve(__dirname, a)));
-  const vectors = loadVectors(opts.vectorDir, { limit: opts.limit });
+  let vectors = loadVectors(opts.vectorDir, { limit: opts.limit, category: opts.category });
+  if (opts.exclude) {
+    vectors = vectors.filter(v => v.metadata?.category !== opts.exclude);
+  }
 
   if (!opts.json) {
     console.log(`Autonomous Convergence Loop`);

@@ -26,6 +26,8 @@ function parseArgs() {
     adapters: [], vectorDir: null, limit: 0,
     json: false, csv: false, verbose: false,
     includeGround: false, // compare against ground-truth from vector
+    category: null, // filter vectors by category (e.g. 'basal-adjustment', 'synthetic')
+    exclude: null,  // exclude vectors by category
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -37,6 +39,8 @@ function parseArgs() {
       case '--csv': opts.csv = true; break;
       case '--verbose': opts.verbose = true; break;
       case '--ground-truth': opts.includeGround = true; break;
+      case '--category': opts.category = args[++i]; break;
+      case '--exclude-category': opts.exclude = args[++i]; break;
     }
   }
 
@@ -248,18 +252,21 @@ async function main() {
   const opts = parseArgs();
 
   const adapters = opts.adapters.map(a => loadAdapter(path.resolve(__dirname, a)));
-  const vectors = loadVectors(opts.vectorDir, { limit: opts.limit });
+  const vectors = loadVectors(opts.vectorDir, { limit: opts.limit, category: opts.category });
+  const filtered = opts.exclude
+    ? vectors.filter(v => v.metadata?.category !== opts.exclude)
+    : vectors;
 
   if (!opts.json && !opts.csv) {
     console.log(`Prediction Trajectory Alignment`);
     console.log(`Adapters: ${adapters.map(a => a.manifest.name).join(', ')}${opts.includeGround ? ' + ground-truth' : ''}`);
-    console.log(`Vectors: ${vectors.length}\n`);
+    console.log(`Vectors: ${filtered.length}${opts.category ? ` (category: ${opts.category})` : ''}${opts.exclude ? ` (excluding: ${opts.exclude})` : ''}\n`);
   }
 
   const allComparisons = [];
   let passed = 0, failed = 0, errors = 0;
 
-  for (const vector of vectors) {
+  for (const vector of filtered) {
     const comps = await compareVectorPredictions(vector, adapters, opts);
     allComparisons.push(...comps);
 
@@ -323,7 +330,7 @@ async function main() {
   const summary = {
     adapters: adapters.map(a => a.manifest.name),
     includesGroundTruth: opts.includeGround,
-    vectors: vectors.length,
+    vectors: filtered.length,
     comparisons: total,
     passed, failed, errors,
     convergence: total > 0 ? round(passed / total, 4) : 0,

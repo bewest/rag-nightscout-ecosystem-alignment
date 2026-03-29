@@ -23,7 +23,7 @@ const PREDICTION_MAE_TOLERANCE = 2.0; // mg/dL — per-trajectory tolerance
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const opts = { adapters: [], vectorDir: null, limit: 0, json: false, verbose: false };
+  const opts = { adapters: [], vectorDir: null, limit: 0, json: false, verbose: false, category: null, exclude: null };
 
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
@@ -41,6 +41,12 @@ function parseArgs() {
         break;
       case '--verbose':
         opts.verbose = true;
+        break;
+      case '--category':
+        opts.category = args[++i];
+        break;
+      case '--exclude-category':
+        opts.exclude = args[++i];
         break;
     }
   }
@@ -258,7 +264,10 @@ async function main() {
   }
 
   // Load vectors
-  const vectors = loadVectors(opts.vectorDir, { limit: opts.limit });
+  let vectors = loadVectors(opts.vectorDir, { limit: opts.limit, category: opts.category });
+  if (opts.exclude) {
+    vectors = vectors.filter(v => v.metadata?.category !== opts.exclude);
+  }
   if (!opts.json) {
     console.log(`Vectors loaded: ${vectors.length}\n`);
   }
