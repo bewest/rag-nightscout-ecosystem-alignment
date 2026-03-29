@@ -311,6 +311,23 @@ of different scenarios in typical T1D daily experience:
 | Double/accidental bolus | 1–3× /year | Nightscout treatment logs |
 | DKA event | 0–1× /year | Extremely rare in datasets |
 
+**Always Present (background conditions, not discrete events):**
+
+These are not scenarios in the traditional sense — they are **persistent background
+states** that modulate how every scenario plays out. See §4.3 for the full two-layer
+patient model.
+
+| Background Condition | Prevalence | Typical Mismatch | Data Source |
+|---------------------|-----------|-----------------|-------------|
+| Suboptimal basal rates | ~70% of patients | ±15–30% from true need | Autotune/autosens logs in OpenAPS Data Commons |
+| ISF wrong for time of day | ~80% (single ISF configured, physiology varies) | ±20–40% at night vs day | Retrospective correction analysis |
+| CR wrong for meal type | ~60% (single CR, varied meals) | ±30% (pizza vs fruit) | Post-meal BG residuals in any dataset |
+| Pump site >3 days old | ~30% of any given day | −10–25% absorption | Nightscout site-change events |
+| Menstrual cycle (luteal phase) | ~15% of days (50% of T1D population) | ISF −20–40% | T1DEXI (gender + BG patterns), REPLACE-BG |
+| Dawn phenomenon (active) | ~60% of patients, ~20% of hours | Basal need +30–60% at 3–8 AM | All overnight datasets |
+| Stale settings (>30 days unchanged) | ~50% of patients | Drift of ±10–20% from optimal | Nightscout profile history |
+| Untracked insulin (pen + pump) | ~5–15% of patients | 0–6 U phantom IOB | OpenAPS Data Commons self-reports |
+
 ### 3.4 Deliverable C: Rare/Impossible Edge Case Catalog
 
 These are scenarios that may **never appear** in any real dataset but represent
@@ -505,7 +522,154 @@ output, but integration requires:
 2. ODE solver initialization with steady-state finder
 3. Treatment format conversion to UVA's input schema
 
-### 4.3 Scenario Coverage Gaps
+### 4.3 The Therapy Settings Mismatch Problem (Critical)
+
+**This is the single most important gap in the current simulation framework.**
+
+The simulator defines a patient with `ISF: 40, CR: 10, basalRate: 1.0` and the
+algorithm is configured with the *same* values. This means the simulation only tests
+the algorithm in the **ideal case where therapy settings are correct**.
+
+In reality, **most patients most of the time are running with suboptimal settings**:
+
+#### 4.3.1 Profile-vs-Reality Mismatch
+
+In real T1D management, the algorithm's configured therapy settings (the "profile")
+almost never perfectly match the patient's true physiological parameters at any given
+moment. This mismatch is the **dominant source of glycemic variability** — far more
+significant than CGM noise or meal timing jitter.
+
+| Mismatch Type | Real-World Prevalence | Impact |
+|---------------|----------------------|--------|
+| **Basal rate too high/low** | Extremely common — most patients | Persistent drift up or down, especially overnight |
+| **ISF wrong by ±30–50%** | Nearly universal — ISF varies by time of day, activity level, hormonal state | Corrections overshoot or undershoot consistently |
+| **CR wrong by ±20–40%** | Very common — CR varies by meal type and time of day | Systematic post-meal highs or lows |
+| **DIA shorter than actual** | Common — many users set 3–4h when reality is 5–6h | IOB underestimated → insulin stacking |
+| **Settings stale for months** | Extremely common — weight change, season, life change | Gradual performance degradation |
+
+#### 4.3.2 Physiological Confounders That Shift True Parameters
+
+Even if settings were perfect yesterday, the patient's *true* ISF/CR/basal needs
+shift constantly due to factors the algorithm cannot directly observe:
+
+**Hormonal / Metabolic:**
+
+| Factor | Effect on Physiology | Duration | Frequency |
+|--------|---------------------|----------|-----------|
+| Menstrual cycle (luteal phase) | ISF drops 15–40%, basal needs rise 20–30% | 5–7 days/month | Monthly in ~50% of patients |
+| Pregnancy (progressive) | ISF drops dramatically over trimesters | Months | — |
+| Dawn phenomenon (cortisol) | ISF drops 20–50% between 3–8 AM | Daily, 3–6 hours | Daily in ~60% of patients |
+| Illness / infection | ISF drops 30–70%, hepatic glucose rises | Days to weeks | Several times/year |
+| Stress / adrenaline | Hepatic glucose dump, ISF drops acutely | Minutes to hours | Frequent |
+| Growth hormone (children) | Basal needs increase, ISF shifts | Ongoing, episodic | Puberty / growth spurts |
+| Thyroid changes | Global metabolic rate shift | Weeks to months | As condition evolves |
+
+**Behavioral / Situational:**
+
+| Factor | Effect on Physiology | Duration | Frequency |
+|--------|---------------------|----------|-----------|
+| Fasting / extended fast | ISF increases 20–40%, liver output changes | Hours to days | Variable |
+| Weight change (±5 kg) | TDI shifts ~5–10%, ISF/CR shift | Weeks to months | Common over time |
+| Travel / jet lag | Circadian basal pattern misaligned to local time | 2–5 days | Several times/year |
+| Dehydration | Insulin absorption impaired, BG reads high | Hours | Common in heat/illness |
+| Alcohol | Liver glucose production suppressed → delayed hypo risk 6–24h | Hours to next day | Variable |
+| High-fat/protein meals | Extended carb absorption 4–8 hours; initial BG stable then rises | 4–8 hours | Frequent |
+| Exhaustion / sleep deprivation | ISF changes unpredictably, cortisol elevated | Hours to days | Common |
+| Altitude change | Insulin sensitivity shifts | Days | Travel/recreation |
+
+**Insulin Delivery Complications:**
+
+| Factor | Effect on Physiology | Duration | Frequency |
+|--------|---------------------|----------|-----------|
+| Pump site age (>3 days) | Absorption degrades 10–30% | Gradual over 24–72h | Every site change |
+| Lipohypertrophy (scar tissue) | Absorption erratic, ±50% variability | Permanent at site | Builds over years |
+| Mixing pump + MDI | IOB tracking breaks (MDI not in pump history) | Per injection | Some patients routinely |
+| Site location (abdomen vs arm vs leg) | Absorption rate varies 20–40% | Per site | Every rotation |
+| Temperature (hot day, sauna) | Absorption accelerates 20–50% | Hours | Seasonal / activity |
+| Injection into muscle vs subQ | Absorption 2–3× faster | 1–2 hours | Accidental |
+
+#### 4.3.3 What Current Simulation Misses
+
+The current `in-silico-bridge.js` patient profiles are:
+
+```javascript
+standard:  { ISF: 40, CR: 10, basalRate: 1.0 }  // "correct" settings
+sensitive: { ISF: 60, CR: 15, basalRate: 0.7 }  // "correct" for sensitive patient
+resistant: { ISF: 20, CR: 6,  basalRate: 1.5 }  // "correct" for resistant patient
+```
+
+In all three cases, the **algorithm's profile matches the patient's true physiology**.
+This means we never test:
+
+1. Algorithm configured with ISF=40 running on a patient whose true ISF is 25 today
+   (illness, luteal phase, new pump site in scar tissue)
+2. Algorithm configured with CR=10 while patient eats a high-fat pizza where effective
+   CR is 6 for the first 2 hours and 15 for the next 4 hours
+3. Algorithm configured with basal=1.0 while patient's dawn phenomenon needs 1.6
+   between 4–7 AM
+4. Patient who took 4U via pen injection that the pump doesn't know about
+5. Algorithm running with week-old settings after the patient gained 3 kg on vacation
+
+**This is why autosens, dynamic ISF, and autotune exist in oref0** — they attempt to
+detect and compensate for these mismatches in real time. But our simulation never
+exercises these mechanisms because the patient always matches the profile.
+
+#### 4.3.4 Required Simulation Architecture: Two-Layer Patient Model
+
+To capture this reality, simulation needs to separate:
+
+```
+┌─────────────────────────────────────┐
+│  ALGORITHM PROFILE                  │
+│  (what the algorithm believes)      │
+│                                     │
+│  ISF: 40  CR: 10  basal: 1.0       │
+│  DIA: 6   targets: 100-110         │
+│                                     │
+│  → This is the input to             │
+│    determine-basal / Loop           │
+└─────────────────┬───────────────────┘
+                  │
+       ╔══════════╧══════════╗
+       ║  MISMATCH LAYER     ║
+       ║  (the gap between   ║
+       ║   belief and reality)║
+       ╚══════════╤══════════╝
+                  │
+┌─────────────────▼───────────────────┐
+│  TRUE PATIENT PHYSIOLOGY            │
+│  (what cgmsim-lib simulates)        │
+│                                     │
+│  ISF: 28 (today — luteal phase)     │
+│  CR: 7 (this meal — high fat)       │
+│  basal need: 1.4 (dawn phenomenon)  │
+│  DIA: 5.5 (warm day, fast absorb)   │
+│  + untracked 3U MDI pen injection   │
+│  + site is 4 days old (−15% absorb) │
+│                                     │
+│  → This drives the BG simulation    │
+└─────────────────────────────────────┘
+```
+
+The **mismatch layer** is parameterized per scenario:
+
+| Mismatch Parameter | Range | Distribution |
+|-------------------|-------|-------------|
+| ISF ratio (true / profile) | 0.4–2.5 | Log-normal, mean ~1.0, SD ~0.3 |
+| CR ratio (true / profile) | 0.5–2.0 | Log-normal, mean ~1.0, SD ~0.25 |
+| Basal ratio (true need / set rate) | 0.5–2.0 | Normal, time-of-day dependent |
+| DIA offset (true − configured) | −1.5 to +1.5 hours | Normal, mean ~0 |
+| Phantom IOB (untracked insulin) | 0–8 U | Poisson-like (most days zero) |
+| Absorption degradation | 0.7–1.0 | Uniform, decreasing with site age |
+
+These can be **calibrated from real data** by observing the gap between what the
+algorithm predicted and what actually happened:
+
+- Post-meal BG consistently 40 mg/dL higher than predicted → CR mismatch
+- Overnight BG drifts up 2 mg/dL/hr → basal mismatch
+- Corrections take 50% longer than expected → ISF or DIA mismatch
+
+### 4.4 Scenario Coverage Gaps
 
 Current 7 scenarios in `in-silico-bridge.js`:
 
@@ -519,21 +683,46 @@ Current 7 scenarios in `in-silico-bridge.js`:
 ✅ multi-meal         (breakfast + lunch + snack)
 ```
 
-Missing scenarios needed for realistic coverage:
+Missing scenarios — organized by the dimension they exercise:
+
+**Settings Mismatch Scenarios (§4.3):**
+
+```
+❌ basal-too-low      (basal set 30% below actual need — persistent rise)
+❌ basal-too-high     (basal set 30% above need — persistent drift to hypo)
+❌ isf-overestimate   (ISF configured 50% too high — corrections undershoot)
+❌ cr-stale           (CR wrong by 30% — systematic post-meal highs)
+❌ dia-too-short      (DIA=3h configured, true=5.5h — insulin stacking)
+❌ pump-plus-mdi      (patient took pen injection not tracked by pump)
+❌ site-degradation   (day 4 of infusion set — 20% absorption loss)
+```
+
+**Physiological Confounder Scenarios:**
+
+```
+❌ illness            (ISF drops 50%, elevated BG for hours/days)
+❌ hormone-cycle      (ISF drops 30% for 5 days, then normalizes)
+❌ fasting-extended   (16+ hour fast, ISF rises, liver compensates)
+❌ high-fat-meal      (extended carb absorption, 4-6 hr BG tail)
+❌ alcohol-evening    (liver suppressed → delayed hypo risk next morning)
+❌ dehydration        (absorption impaired, BG reads artificially high)
+❌ adrenaline-spike   (stress → hepatic glucose dump, transient 50+ mg/dL rise)
+❌ growth-spurt       (pediatric — basal needs jump 30% over weeks)
+```
+
+**Behavioral / Device Scenarios:**
 
 ```
 ❌ missed-bolus       (meal with no bolus — extremely common)
 ❌ double-bolus       (accidental re-dose)
-❌ site-change        (insulin absorption disruption)
+❌ site-change-day    (old site removed, new site warming up — gap in absorption)
 ❌ sensor-warmup      (2-hour CGM gap after new sensor)
-❌ compression-low    (false low during sleep)
-❌ illness            (rising ISF, elevated BG for hours)
-❌ alcohol-evening    (delayed hypo risk next morning)
-❌ high-fat-meal      (extended carb absorption, 4-6 hr tail)
+❌ compression-low    (false low during sleep — CGM artifact)
 ❌ stacking           (multiple corrections → hypo)
 ❌ rebound-high       (overtreatment of low → spike)
 ❌ exercise-delayed   (hypo 6-12 hrs after exercise)
-❌ adrenaline-spike   (stress/competition → transient high)
+❌ travel-timezone    (basal schedule misaligned to local time)
+❌ exhaustion         (sleep-deprived, ISF unpredictable)
 ```
 
 ---
@@ -686,6 +875,28 @@ Wire the fingerprint → simulator → compare → adjust cycle.
 - Validated SIM-* vectors with fingerprint conformance certificates
 - Before/after comparison showing BG distribution widening
 
+### Phase 3b: Two-Layer Mismatch Model
+
+Implement the therapy-settings-vs-true-physiology separation (§4.3.4).
+
+**Inputs**: Calibrated patient profiles from Phase 3, autosens/autotune logs from
+OpenAPS Data Commons (142 subjects), retrospective BG prediction residuals.
+
+**Outputs**:
+- Parameterized mismatch layer (ISF ratio, CR ratio, basal ratio distributions)
+- Mismatch scenario library (27+ scenarios from §4.4) with realistic parameter ranges
+- Physiological confounder models (hormonal cycle ISF shift curve, illness ISF decay,
+  site degradation absorption curve, etc.)
+- "Compound confounder" generator: randomly composites 1–3 concurrent confounders
+  weighted by real-world co-occurrence frequency
+- Validation: compare simulated prediction-error distributions against real prediction
+  errors from OpenAPS Data Commons (the real data already contains these mismatches)
+
+**Key insight**: We can calibrate the mismatch layer indirectly. In real data, the
+gap between what the algorithm predicted and what happened IS the mismatch signal.
+By measuring the distribution of prediction residuals in real OpenAPS/Nightscout data,
+we can parameterize how much mismatch to inject into simulation.
+
 ### Phase 4: Scoring Integration
 
 Update `algorithm_score.py` with calibrated synthetic data and clinical metrics.
@@ -758,15 +969,25 @@ on higher-fidelity simulation).
 
 ### Why Real Data Is Irreplaceable
 
-Simulation cannot capture:
+Even with the two-layer mismatch model (§4.3), simulation cannot fully capture:
 
-- **Behavioral patterns** — real people forget boluses in predictable ways
-- **Device-specific artifacts** — Dexcom G7 vs Libre 3 noise profiles differ
-- **Multi-day dynamics** — illness progression, hormonal cycles, travel
-- **Psychosocial factors** — alarm fatigue, diabetes distress, override decisions
+- **Behavioral patterns** — real people forget boluses in predictable ways, overtrust
+  or ignore alerts, have alarm fatigue, and make emotional override decisions
+- **Device-specific artifacts** — Dexcom G7 vs Libre 3 noise profiles differ;
+  pump occlusion alarms, Bluetooth dropouts, and app crashes create real-world gaps
+- **Multi-day dynamics** — illness progression follows patient-specific arcs,
+  hormonal cycles shift ISF over 5–7 days, travel jet-lag misaligns circadian basal
+- **Compound confounders** — real patients rarely have just ONE confounder active.
+  A real day might be: luteal phase + bad pump site + pizza dinner + forgot to bolus
+  for snack + late night alcohol. The combination space is effectively infinite
+- **Psychosocial factors** — diabetes distress, "rage bolusing" after extended highs,
+  carb restriction then binge, deliberate insulin omission — these show up in real
+  data as patterns an algorithm must handle safely
 
 Real TV-* vectors from phone captures must always carry the highest scoring weight.
-Simulation expands coverage; it doesn't replace ground truth.
+Simulation expands coverage; it doesn't replace ground truth. The goal of the
+mismatch layer is to bridge the gap so simulation results are *directionally correct*
+— not to eliminate the need for real data.
 
 ---
 
@@ -810,3 +1031,8 @@ Simulation expands coverage; it doesn't replace ground truth.
 | GAP-ALG-013 | *Proposed*: No statistical calibration pipeline (real → synthetic fingerprint matching) |
 | GAP-ALG-014 | *Proposed*: Clinical metrics (Clarke/Parkes) not integrated into algorithm_score.py |
 | GAP-ALG-015 | *Proposed*: Missing 12+ common real-world scenarios (missed bolus, site change, etc.) |
+| GAP-ALG-016 | *Proposed*: No therapy settings mismatch modeling — simulator assumes perfect profile match (§4.3) |
+| GAP-ALG-017 | *Proposed*: No physiological confounder models (hormones, illness, site degradation) (§4.3.2) |
+| GAP-ALG-018 | *Proposed*: No compound confounder composition — real patients have 2–3 concurrent confounders |
+| GAP-ALG-019 | *Proposed*: Mixed pump+MDI not representable — phantom IOB invisible to algorithm |
+| GAP-ALG-020 | *Proposed*: Autosens/dynamic-ISF never exercised in simulation because settings always match |
