@@ -436,3 +436,56 @@ mg/dL bias is structural (activity estimation model difference).
 - `e853c4a` (t1pal-mobile-apex): Extract mutable diagnostic state from algorithm classes
 - `d5193b9` (this repo): Add test vector manifest with audit findings
 - `9dafff1` (this repo): Add --category/--exclude-category filters to xval tools
+
+## Update: Phase 2 A3 — Activity, AvgDelta & EventualBG Convergence (Session 4)
+
+After fixing activity passthrough, avgDelta passthrough, eventualBG formula,
+reason string extraction, minAvgDelta formula, and sens rounding:
+
+### Changes Applied (A3: per-dose-activity and related fixes)
+
+| Fix | Root Cause | Impact |
+|-----|-----------|--------|
+| Activity passthrough | Swift approximated `activity=IOB/tau` (~20% under); JS uses captured `iob.activity` | Correct BGI calculation |
+| AvgDelta passthrough | Swift recomputed deltas from 6 synthetic glucose points; JS uses glucoseStatus directly | Correct deviation cascade |
+| EventualBG formula | Ported JS formula: `naive = round(bg - iob*sens)`, 3-step deviation cascade | Correct BG projection |
+| Reason string eventualBG | Guard trigger omitted eventualBG from reason; adapter fell back to IOB curve floor (39) | Correct adapter extraction |
+| **minAvgDelta formula** | Swift had `min(minDelta, longAvgDelta)`; JS has `min(short_avgdelta, long_avgdelta)` (line 165) | **Fixed last 3 outliers** |
+| **Sens rounding** | JS rounds `sens = round(profile.sens/ratio, 1)` to 1 decimal (line 340); Swift used raw value | Float parity |
+
+### Improvement Progression (78 natural vectors)
+
+| Metric | Phase 1 | +Guards (A2) | +A3 Final | Change from P1 |
+|--------|---------|-------------|-----------|----------------|
+| EventualBG bias | +60.6 | -9.7 | **0.0** | **Eliminated** |
+| EventualBG median |Δ| | 43.5 | 11.7 | **0.0** | **Perfect** |
+| EventualBG exact match | ~5% | ~20% | **100%** | +95pp |
+| EventualBG ±10 | 31% | 37% | **100%** | +69pp |
+| IOB MAE | 13.6 | 12.3 | **8.4** | 38% reduction |
+| ZT MAE | 140.0 | 140.0 | **1.1** | 99% reduction |
+| Rate exact | 68% | 68% | **67%** | -1pp |
+| Rate ±0.5 | 94% | 94% | **93%** | -1pp |
+
+### Key Achievement: 100% EventualBG Parity
+
+All 78 natural vectors now produce **identical** eventualBG values between
+JS oref0 and Swift oref0. The minAvgDelta fix was the final piece — JS uses
+`min(short_avgdelta, long_avgdelta)` at line 165, NOT `min(minDelta, long_avgdelta)`.
+This subtle difference causes the deviation cascade step 2 to use a less
+conservative value in JS, leading to different eventualBG in vectors where
+short_avgdelta and delta diverge significantly.
+
+### Remaining Rate Divergence
+
+Rate exact match is 67% (30 vectors with both rates; 48 have null JS rate
+due to continuance). The 10 disagreeing vectors stem from:
+1. **Continuance rules** — JS returns no rate for 48/78 vectors (continue
+   current temp). Swift always returns a rate. Need ContinuancePolicy.
+2. **Dosing cascade differences** — with identical eventualBG, remaining
+   rate differences come from minPredBG selection, insulinReq rounding,
+   and guard threshold edge cases.
+
+### Commits
+
+- `c029c0d` (t1pal-mobile-apex): Fix minAvgDelta formula and add sens rounding
+- `850dd02` (this repo): Pass avgDelta and activity fields through Swift adapter
