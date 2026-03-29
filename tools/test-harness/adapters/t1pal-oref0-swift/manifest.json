@@ -1,14 +1,11 @@
 {
-  "name": "t1pal-oref0-swift",
-  "algorithm": "oref0",
-  "version": "0.1.0",
+  "name": "t1pal-swift",
+  "algorithm": "multi",
+  "version": "1.0.0",
   "language": "swift",
   "invoke": {
-    "command": "swift run T1PalAdapterCLI",
-    "cwd": "../../../..",
-    "env": {
-      "T1PAL_WORKSPACE": "../../../../t1pal-mobile-workspace"
-    }
+    "command": "../../../t1pal-adapter-cli/.build/debug/T1PalAdapterCLI",
+    "cwd": "."
   },
   "capabilities": {
     "predictions": true,
@@ -23,6 +20,5 @@
     "insulinReq": 0.05,
     "predictionMAE": 2.0
   },
-  "_status": "scaffold",
-  "_notes": "Requires building T1PalAdapterCLI in t1pal-mobile-workspace. See README for integration steps."
+  "_notes": "Multi-algorithm adapter: supports oref0, Loop, Loop-Tidepool, GlucOS, SimpleProportional. Select via 'algorithm' field in request. Built from tools/t1pal-adapter-cli/ using T1PalAlgorithm from t1pal-mobile-apex."
 }
