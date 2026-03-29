@@ -395,7 +395,13 @@ func translateInput(_ input: AdapterInput) -> (AlgorithmInputs, [String]) {
         currentTime: clock,
         doseHistory: doses,
         carbHistory: carbs,
-        effectModifiers: modifiers
+        effectModifiers: modifiers,
+        insulinActivity: input.iob.activity,
+        iobWithZeroTemp: input.iob.iobWithZeroTemp?.iob,
+        iobWithZeroTempActivity: input.iob.iobWithZeroTemp?.activity,
+        glucoseDelta: input.glucoseStatus.delta,
+        shortAvgDelta: input.glucoseStatus.shortAvgDelta,
+        longAvgDelta: input.glucoseStatus.longAvgDelta
     )
 
     return (inputs, warnings)
@@ -436,13 +442,15 @@ func translateOutput(
     var computedEventualBG: Double? = preds?.eventualBG
     var computedInsulinReq: Double? = nil
 
-    // Parse "eventualBG NNN" and "insulinReq N.NN" from reason string
+    // Parse "eventualBG NNN" and "insulinReq N.NN" from reason string.
+    // The algorithm's eventualBG (from reason) uses the JS-matching formula
+    // (naive + deviation), which is more accurate than the IOB curve endpoint.
     let reason = decision.reason
-    if computedEventualBG == nil {
-        if let range = reason.range(of: #"eventualBG\s+([\d.]+)"#, options: .regularExpression) {
-            let match = reason[range]
-            let numStr = match.split(separator: " ").last ?? ""
-            computedEventualBG = Double(numStr)
+    if let range = reason.range(of: #"eventualBG\s+([\d.-]+)"#, options: .regularExpression) {
+        let match = reason[range]
+        let numStr = match.split(separator: " ").last ?? ""
+        if let parsed = Double(numStr) {
+            computedEventualBG = parsed
         }
     }
     if let range = reason.range(of: #"insulinReq\s+([\d.-]+)"#, options: .regularExpression) {
@@ -456,10 +464,18 @@ func translateOutput(
         computedInsulinReq = (ebg - target) / sensitivity
     }
 
-    // Build predictions with parsed eventualBG
+    // Build predictions with algorithm's eventualBG (from reason string) preferred
+    // over IOB curve endpoint, since JS eventualBG = naive + deviation (not curve endpoint)
     let finalPreds: PredictionsOutput?
-    if preds != nil {
-        finalPreds = preds
+    if var p = preds {
+        if let ebg = computedEventualBG {
+            p = PredictionsOutput(
+                eventualBG: ebg,
+                minPredBG: p.minPredBG,
+                iob: p.iob, zt: p.zt, cob: p.cob, uam: p.uam
+            )
+        }
+        finalPreds = p
     } else if let ebg = computedEventualBG {
         finalPreds = PredictionsOutput(
             eventualBG: ebg,
