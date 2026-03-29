@@ -360,8 +360,8 @@ func translateInput(_ input: AdapterInput) -> (AlgorithmInputs, [String]) {
         )
     }
 
-    // Build effect modifiers if available
-    let modifiers: [EffectModifier]? = input.effectModifiers?.map { m in
+    // Build effect modifiers — include autosens ratio if provided
+    var modifiersList: [EffectModifier] = input.effectModifiers?.map { m in
         EffectModifier(
             isfMultiplier: m.isfMultiplier ?? 1.0,
             crMultiplier: m.crMultiplier ?? 1.0,
@@ -371,7 +371,21 @@ func translateInput(_ input: AdapterInput) -> (AlgorithmInputs, [String]) {
             validUntil: m.validUntil.map { parseDate($0) },
             reason: m.reason
         )
+    } ?? []
+
+    // Map autosensData.ratio → effectModifier (oref0 applies ratio to ISF and basal)
+    if let ratio = input.autosensData?.ratio, ratio != 1.0 {
+        modifiersList.append(EffectModifier(
+            isfMultiplier: 1.0 / ratio,   // autosens ratio>1 means MORE sensitive → lower ISF
+            crMultiplier: 1.0,
+            basalMultiplier: ratio,         // ratio>1 → higher basal
+            source: "autosens",
+            confidence: 1.0,
+            validUntil: nil,
+            reason: "autosens ratio \(String(format: "%.2f", ratio))"
+        ))
     }
+    let modifiers: [EffectModifier]? = modifiersList.isEmpty ? nil : modifiersList
 
     let inputs = AlgorithmInputs(
         glucose: glucoseReadings,
