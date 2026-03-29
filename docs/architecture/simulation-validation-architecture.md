@@ -64,72 +64,363 @@ variability (SD 50–65 mg/dL, range frequently 40–350+). This causes:
 
 ---
 
-## 3. Validation Methodology
+## 3. Validation Methodology: Detailed R&D Plan
 
-### 3.1 Three-Layer Validation
+### 3.1 Overview: What Data Ingestion Produces
+
+Ingesting real-world T1D datasets produces **three distinct deliverables**, each serving
+a different purpose in the validation and testing pipeline:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  LAYER 1: Statistical Distribution Matching                 │
-│  "Does the simulator produce data that looks like real T1D?"│
-│                                                             │
-│  Compare population-level statistics:                       │
-│  • BG mean, SD, CV, MAGE                                   │
-│  • Time-in-range buckets (< 54, 54-70, 70-180, > 180, >250)│
-│  • Meal response amplitude and shape                        │
-│  • Overnight stability patterns                             │
-│  • Insulin delivery patterns (TDI, basal:bolus ratio)       │
-│                                                             │
-│  Acceptance: KL divergence < threshold per metric           │
-└────────────────────────────┬────────────────────────────────┘
-                             │
-┌────────────────────────────▼────────────────────────────────┐
-│  LAYER 2: Scenario Realism Calibration                      │
-│  "Do individual scenarios match real-world patterns?"       │
-│                                                             │
-│  Compare specific dynamics:                                 │
-│  • Post-meal peak timing (real: 45-90 min)                  │
-│  • Post-meal peak amplitude (real: 40-120 mg/dL rise)       │
-│  • Hypo nadir and recovery trajectory                       │
-│  • Dawn phenomenon ramp rate                                │
-│  • Exercise-induced BG changes                              │
-│                                                             │
-│  Acceptance: DTW distance < threshold per scenario type     │
-└────────────────────────────┬────────────────────────────────┘
-                             │
-┌────────────────────────────▼────────────────────────────────┐
-│  LAYER 3: Edge Case / Adversarial Scenarios                 │
-│  "Can we stress-test beyond normal human experience?"       │
-│                                                             │
-│  Not validated against real data — intentionally extreme:   │
-│  • Stuck sensor, compression lows, sensor gaps              │
-│  • Pump site failure (phantom IOB)                          │
-│  • Extreme carb loads, double bolus                         │
-│  • Rapid glucose crash (> 5 mg/dL/min)                      │
-│  • Stale data (no readings for 30+ min)                     │
-│                                                             │
-│  Acceptance: Algorithm safety invariants hold               │
-└─────────────────────────────────────────────────────────────┘
+Real-World T1D Data (OhioT1DM, IOBP2, Tidepool, Nightscout, etc.)
+       │
+       ├─── (A) STATISTICAL FINGERPRINTS
+       │         Per-population distribution parameters that calibrate
+       │         the simulator to produce realistic output.
+       │         "Make the simulator behave like these real humans."
+       │
+       ├─── (B) COMMON SCENARIO LIBRARY
+       │         Classified, labeled segments extracted from real data
+       │         representing the wide variety of actual human experiences.
+       │         Weighted by frequency of occurrence.
+       │         "These things happen to real people — the simulator must
+       │          reproduce them, and algorithms must handle them."
+       │
+       └─── (C) RARE/IMPOSSIBLE EDGE CASE CATALOG
+                 Scenarios that are never or rarely observed in real data
+                 but represent safety-critical situations that algorithms
+                 MUST handle correctly. Some are extracted from tail events
+                 in real data; others are synthetically constructed.
+                 "These things almost never happen — but when they do,
+                  the algorithm must not kill the patient."
 ```
 
-### 3.2 Reference Datasets for Calibration
+### 3.2 Deliverable A: Statistical Fingerprinting
 
-GluPredKit already has parsers for all of these:
+#### 3.2.1 What Is a Statistical Fingerprint?
 
-| Dataset | Parser | Subjects | Duration | Strengths |
-|---------|--------|----------|----------|-----------|
-| **OhioT1DM** (2018/2020) | `parsers/ohio_t1dm.py` | 12 | 8 weeks each | CGM + insulin + meals + exercise + self-reported life events |
-| **Tidepool-JDRF** | `parsers/tidepool_dataset.py` | Large | Months | Real pump data at scale |
-| **Shanghai T1DM** | `parsers/shanghai_t1dm.py` | ~100 | Variable | Different demographic, MDI + pump mix |
-| **BRIST1D** | `parsers/brist1d.py` | — | — | UK cohort |
-| **T1DEXI** | `parsers/t1dexi.py` | — | — | Exercise-focused study |
-| **Nightscout** | `parsers/nightscout.py` | 1+ | Unlimited | Your own data, Loop/AAPS/Trio device data |
-| **Tidepool API** | `parsers/tidepool.py` | 1+ | Unlimited | Live data via Tidepool platform |
-| **Apple Health** | `parsers/apple_health.py` | 1 | Unlimited | iPhone health export |
+A fingerprint is a vector of ~30 distributional parameters extracted from a real T1D
+data stream. It characterizes *what glucose data from this population looks like* without
+containing any individual patient data. The fingerprint is the calibration target for the
+simulator.
 
-### 3.3 Statistical Fingerprint Targets
+#### 3.2.2 Fingerprint Components
 
-Based on published T1D population data (ADA Standards of Care, ATTD consensus):
+**Tier 1 — Glucose Distribution (minimum viable fingerprint)**
+
+| Parameter | How Computed | Why It Matters |
+|-----------|-------------|----------------|
+| BG mean | `mean(CGM)` | Central tendency — primary A1C correlate |
+| BG SD | `std(CGM)` | Overall variability — *this is what cgmsim-lib gets wrong* |
+| BG CV | `100 × std/mean` | Normalized variability — ADA/ATTD consensus metric |
+| BG P5, P25, P50, P75, P95 | Percentiles | Full shape of glucose distribution |
+| TIR 70–180 | `%` of readings in range | Primary clinical outcome metric |
+| TBR < 70 | `%` of readings below 70 | Hypoglycemia frequency |
+| TBR < 54 | `%` of readings below 54 | Severe hypoglycemia frequency |
+| TAR > 180 | `%` of readings above 180 | Hyperglycemia frequency |
+| TAR > 250 | `%` of readings above 250 | Severe hyperglycemia frequency |
+| MAGE | Mean Amplitude of Glycemic Excursions | Swing magnitude — captures post-meal dynamics |
+
+**Tier 2 — Temporal Dynamics**
+
+| Parameter | How Computed | Why It Matters |
+|-----------|-------------|----------------|
+| Mean |delta| per 5 min | `mean(\|CGM[t] - CGM[t-1]\|)` | Rate of change distribution |
+| Delta SD | `std(CGM[t] - CGM[t-1])` | How "noisy" are transitions |
+| Autocorrelation at lag 1–12 | Standard ACF | Smoothness / momentum |
+| Spectral power 0–6 hr cycles | FFT | Circadian and meal periodicity |
+| Overnight (00–06) mean | Nighttime CGM mean | Dawn phenomenon / basal adequacy |
+| Daytime (06–22) mean | Daytime CGM mean | Meal/insulin interaction |
+| Overnight vs daytime SD ratio | SD ratio | Nocturnal stability |
+
+**Tier 3 — Treatment Patterns**
+
+| Parameter | How Computed | Why It Matters |
+|-----------|-------------|----------------|
+| Total Daily Insulin (TDI) | `sum(insulin) per 24h` | Overall insulin need |
+| Basal:Bolus ratio | `sum(basal) / sum(bolus)` per day | Treatment strategy |
+| Boluses per day | Count of nonzero bolus events | Meal/correction frequency |
+| Carbs per day | `sum(carbs)` per day | Dietary pattern |
+| Mean carbs per meal event | Carbs when carbs > 0 | Meal size distribution |
+| Bolus-to-meal timing (if available) | Lag between carbs and bolus events | Pre-bolus behavior |
+
+**Tier 4 — Event Dynamics (Scenario Shapes)**
+
+| Parameter | How Computed | Why It Matters |
+|-----------|-------------|----------------|
+| Post-meal peak amplitude | Max BG rise within 2h of carbs | Meal response magnitude |
+| Post-meal peak timing | Minutes from carbs to BG peak | Absorption + bolus timing |
+| Post-meal return-to-baseline time | Minutes to ±10% of pre-meal BG | Full meal cycle |
+| Hypo nadir depth | Min BG during hypo episodes | Severity of lows |
+| Hypo recovery time | Minutes from nadir to >70 mg/dL | How fast do lows resolve |
+| Hypo frequency | Episodes per day below 70 | |
+
+#### 3.2.3 How Many Samples Are Needed?
+
+**For a single-patient fingerprint (e.g., Nightscout personal data):**
+
+| Fingerprint Tier | Minimum Data | Recommended | Rationale |
+|------------------|-------------|-------------|-----------|
+| Tier 1 (distribution) | 3 days (864 readings) | 14 days (4,032 readings) | BG distribution stabilizes after ~2 weeks of continuous wear |
+| Tier 2 (temporal) | 7 days | 28 days | Need full week for circadian patterns; 4 weeks for variability of variability |
+| Tier 3 (treatment) | 14 days | 30 days | Need enough meal/bolus events to characterize patterns (~3 meals/day × 14 = 42 events minimum) |
+| Tier 4 (event dynamics) | 14 days | 60+ days | Need ≥10 instances of each event type (post-meal, hypo, exercise) for shape extraction |
+
+**For a population fingerprint (calibrating simulator for general use):**
+
+| Tier | Subjects Needed | Days per Subject | Total Readings | Rationale |
+|------|----------------|------------------|----------------|-----------|
+| Tier 1 | ≥ 30 | 14 each | ~120K | Standard statistical sampling for distribution estimation; CLT confidence |
+| Tier 2 | ≥ 30 | 28 each | ~240K | Need inter-subject variability in temporal patterns |
+| Tier 3 | ≥ 50 | 14 each | ~200K | Treatment patterns vary enormously by AID vs MDI vs SAP |
+| Tier 4 | ≥ 50 | 60 each | ~860K | Meal response shapes vary by individual insulin sensitivity |
+
+**Key insight**: We don't need all tiers from a single dataset. Different datasets can
+contribute to different tiers based on their strengths.
+
+#### 3.2.4 The Matching Algorithm
+
+Statistical matching uses **distributional distance metrics** to quantify how close
+simulated data is to the fingerprint target:
+
+```
+For each fingerprint parameter P:
+
+  1. Extract P_real from reference dataset
+  2. Generate N hours of synthetic data from simulator
+  3. Extract P_sim from synthetic data
+  4. Compute distance d(P_real, P_sim)
+  5. If d > threshold_P → adjust simulator parameters and repeat
+
+Distance metrics by parameter type:
+  • Single scalars (mean, SD, CV, TIR):
+      d = |P_real - P_sim| / P_real    (relative error)
+      Threshold: 10% for Tier 1, 20% for Tier 2–4
+
+  • Distributions (BG histogram, delta histogram):
+      d = Wasserstein_1(P_real, P_sim)  (Earth Mover's Distance)
+      or KL(P_real || P_sim)            (KL divergence)
+      Threshold: Wasserstein < 10 mg/dL or KL < 0.1
+
+  • Time-series shapes (meal response, hypo recovery):
+      d = DTW(shape_real, shape_sim)     (Dynamic Time Warping)
+      Threshold: DTW < 15 mg/dL·min (normalized)
+
+  • Autocorrelation / spectral:
+      d = RMSE(ACF_real, ACF_sim)       over lags 1–72 (6 hours)
+      Threshold: RMSE < 0.05
+```
+
+**Calibration knobs** (what gets adjusted to reduce distance):
+
+| Simulator Parameter | Affects Fingerprint |
+|---------------------|---------------------|
+| Patient ISF range | BG SD, CV, MAGE |
+| Patient CR range | Post-meal peak amplitude |
+| CGM noise model (Breton2008 σ) | BG SD, delta SD |
+| Meal timing jitter (σ minutes) | Post-meal peak timing variance |
+| Carb estimation error (σ %) | Post-meal amplitude variance |
+| Liver glucose production rate | Overnight mean, dawn phenomenon |
+| Basal rate range | TIR, overnight stability |
+| Missed bolus probability | TAR > 180, meal response amplitude |
+| Insulin absorption variability (σ %) | IOB prediction error, hypo frequency |
+
+### 3.3 Deliverable B: Common Scenario Library
+
+#### 3.3.1 What Is a Classified Scenario?
+
+A scenario is a labeled, time-bounded segment extracted from real data representing
+a recognizable human experience. Scenarios are classified by **type**, **frequency**,
+and **difficulty** for the dosing algorithm.
+
+#### 3.3.2 Scenario Detection and Extraction
+
+Scenarios are extracted from real CGM+treatment data using event detection rules:
+
+```
+For each 5-minute-resolution data stream:
+
+  1. MEAL EVENT: carbs > 0 within any 15-min window
+     → Extract 30 min before through 4 hours after
+     → Classify: adequate bolus / underbolus / overbolus / missed bolus
+     → Record: pre-meal BG, carbs, bolus, peak BG, peak time, TIR during segment
+
+  2. HYPO EVENT: CGM < 70 for ≥ 15 min (3 consecutive readings)
+     → Extract 1 hour before through 2 hours after
+     → Classify: fasting hypo / post-exercise / post-bolus / nocturnal
+     → Record: nadir, duration < 70, recovery time, treatment (carbs if any)
+
+  3. EXERCISE EVENT: heartrate > resting+30 OR workout_label not null
+     → Extract 30 min before through 6 hours after (delayed effects)
+     → Classify: aerobic / anaerobic / mixed
+     → Record: duration, intensity, BG drop, delayed hypo (yes/no)
+
+  4. OVERNIGHT SEGMENT: 22:00–07:00 daily
+     → Classify: stable / dawn phenomenon / nocturnal hypo / post-dinner tail
+     → Record: mean, SD, min, max, slope after 03:00
+
+  5. HIGH VARIABILITY SEGMENT: CV > 50% over any 4-hour window
+     → These represent "hard days" — the algorithm's biggest challenges
+     → Classify by cause: missed bolus + correction stacking, illness, site change
+```
+
+#### 3.3.3 Frequency-Weighted Scenario Categories
+
+Based on published literature and real-data analysis, these are approximate frequencies
+of different scenarios in typical T1D daily experience:
+
+**Common (daily occurrence, >80% of days):**
+
+| Scenario | Frequency | Data Source for Calibration |
+|----------|-----------|---------------------------|
+| Meal with adequate pre-bolus | 2–3× daily | All datasets with carbs + bolus |
+| Overnight stable (±30 mg/dL) | Most nights | OhioT1DM, IOBP2, Tidepool |
+| Mild post-meal spike (180–250) | 1–2× daily | All datasets |
+| BG within range for 4+ hours | Most days | All datasets |
+| Basal-only period (fasting) | 6–10 hr/day | All datasets |
+
+**Frequent (weekly occurrence, 30–80% of weeks):**
+
+| Scenario | Frequency | Data Source |
+|----------|-----------|-------------|
+| Mild hypo (55–70, <30 min) | 2–5× /week | OhioT1DM, IOBP2 |
+| Late/missed pre-bolus | 3–5× /week | Nightscout, Tidepool |
+| Post-meal exercise | 2–3× /week | T1DEXI, OhioT1DM |
+| Dawn phenomenon (>20 mg/dL rise 3–7am) | 3–5× /week | OhioT1DM, IOBP2 |
+| Correction bolus stacking | 1–2× /week | Nightscout, Tidepool |
+| Extended high (>250 for 2+ hrs) | 1–2× /week | All datasets |
+
+**Uncommon (monthly, 10–30% of months):**
+
+| Scenario | Frequency | Data Source |
+|----------|-----------|-------------|
+| Severe hypo (<54 for >15 min) | 1–4× /month | IOBP2, OhioT1DM |
+| Missed bolus entirely | 2–4× /month | Nightscout (logged manually) |
+| High-fat/protein extended meal | 2–4× /month | Nightscout (annotated) |
+| Alcohol-related delayed hypo | 1–2× /month | OhioT1DM (self-report) |
+| Intense exercise (>1 hr) | 2–4× /month | T1DEXI |
+| Site/sensor change day | 1–2× /month | Tidepool, Nightscout |
+
+**Rare (yearly, <5% probability per month):**
+
+| Scenario | Frequency | Data Source |
+|----------|-----------|-------------|
+| Pump site failure (no insulin delivery) | 1–4× /year | Nightscout (elevated BG + no IOB response) |
+| Sensor failure (multi-hour gap) | 2–6× /year | All datasets (CGM NaN gaps) |
+| Illness (elevated BG for days) | 2–6× /year | Longitudinal Nightscout data |
+| Double/accidental bolus | 1–3× /year | Nightscout treatment logs |
+| DKA event | 0–1× /year | Extremely rare in datasets |
+
+### 3.4 Deliverable C: Rare/Impossible Edge Case Catalog
+
+These are scenarios that may **never appear** in any real dataset but represent
+conditions the algorithm must handle safely. They are generated synthetically
+based on known failure modes.
+
+#### 3.4.1 Impossible But Required
+
+| Edge Case | Real Probability | Why Test It | How to Generate |
+|-----------|-----------------|-------------|-----------------|
+| BG drops from 200→40 in 15 min | Essentially 0 | Sensor malfunction; algorithm must not crash | Synthetic: inject step function |
+| 200g carbs, no bolus | Very rare | Toddler gets into candy; algorithm must respond | Synthetic: massive carbs event |
+| Basal rate 0 for 12 hours | Rare (site failure) | Must detect and alert | Synthetic: zero all basal |
+| Two 10U boluses 5 min apart | Very rare (double tap) | Must detect overdose risk | Synthetic: duplicate bolus |
+| CGM reads 400 for 6 hours | Rare (sensor error or DKA) | Must not over-correct indefinitely | Synthetic: flat high line |
+| Negative CGM delta of -80 mg/dL in one reading | Compression low artifact | Must recognize as artifact | Synthetic: single-point drop |
+| No CGM data for 2 hours then resumes | Sensor warmup / dropout | Must safely resume | Synthetic: NaN gap |
+| Profile reports ISF=500 (data entry error) | Config error | Must sanity-check inputs | Synthetic: extreme profile |
+
+#### 3.4.2 Relationship Between Deliverables
+
+```
+                    Calibrated Simulator
+                          │
+           ┌──────────────┼──────────────┐
+           │              │              │
+           ▼              ▼              ▼
+   (A) Fingerprints   (B) Scenario    (C) Edge Cases
+   calibrate the      Library tests   test safety
+   simulator           prediction     invariants
+   realism             quality         and robustness
+           │              │              │
+           │              │              │
+           ▼              ▼              ▼
+   "Sim output       "Algorithm      "Algorithm
+    matches real       handles         doesn't
+    distributions"     common life"    kill anyone"
+           │              │              │
+           └──────────────┼──────────────┘
+                          ▼
+                  algorithm_score.py
+                  (composite metric)
+```
+
+### 3.5 Reference Datasets: Complete Catalog
+
+GluPredKit has working parsers for 12 real-world T1D datasets. All normalize to the same
+5-minute resolution DataFrame schema: `[date, id, CGM (mg/dL), insulin (U), carbs (g),
+basal (U), bolus (U), is_test]` plus optional columns (heartrate, exercise, demographics).
+
+#### 3.5.1 Large-Scale Datasets (Fingerprint Calibration)
+
+| Dataset | Parser | Subjects | Data Points | Insulin Modality | Exercise | Demographics | Access |
+|---------|--------|----------|-------------|-----------------|----------|-------------|--------|
+| **IOBP2** | `IOBP2.py` | 332 | 9.7M | AID (iLet Bionic Pancreas) | — | Age, gender, weight, height, ethnicity | Pipe-delimited files |
+| **T1DEXI** | `t1dexi.py` | 414 pump | >2M est | SAP (various pumps) | ✓ HR, steps, calories, workout labels | Age, gender, height, weight | SAS .xpt files |
+| **Tidepool-JDRF** | `tidepool_dataset.py` | 300+ | Large | Mixed (HCL, SAP) | ✓ workout labels | Age, gender | CSV train/test |
+| **OpenAPS Data Commons** | `open_aps.py` | 142 | Large | AID (OpenAPS/AndroidAPS) | — | — | ZIP archives |
+
+**These four datasets together provide >10M data points across >1,000 subjects
+spanning AID, SAP, and MDI modalities.** This is more than sufficient for
+population-level fingerprinting (Tiers 1–3).
+
+#### 3.5.2 Rich-Feature Datasets (Scenario Extraction)
+
+| Dataset | Parser | Subjects | Special Features | Best For |
+|---------|--------|----------|------------------|----------|
+| **OhioT1DM** | `ohio_t1dm.py` | 12 | HR, skin temp, galvanic skin response, acceleration, exercise, air temp | Scenario shape extraction — richest per-subject feature set |
+| **BrisT1D** | `brist1d.py` | 22 | HR, steps, calories, activity labels, multiple AID systems (780G, Omnipod 5, Control-IQ) | Multi-device comparison; UK demographics |
+| **T1D-UOM** | `t1d_uom.py` | 14 | Steps, calories, walking/running labels, MDI + pump mix | Exercise scenario extraction |
+| **HUPA-UCM** | `hupa_ucm.py` | 26 | HR, steps, calories, activity; includes MDI subjects | SAP vs MDI comparison |
+
+**These datasets are smaller but contain the physiological signals (heart rate,
+activity, skin temperature) needed for Tier 4 event dynamics extraction.**
+
+#### 3.5.3 Specialized Datasets
+
+| Dataset | Parser | Subjects | Focus |
+|---------|--------|----------|-------|
+| **AZT1D** | `azt1d.py` | 23 | Older adults (age 27–80), Control-IQ, sleep/exercise device modes |
+| **CTR3** | `ctr3.py` | Multi | Control-to-Range trial, Roche/JAEB AID |
+| **Shanghai T1DM** | `shanghai_t1dm.py` | Multi | East Asian demographics, CSII + MDI, different dietary patterns |
+| **DiaTrend** | `diatrend.py` | Multi | European cohort |
+
+#### 3.5.4 Live/Personal Data Sources
+
+| Source | Parser | Subjects | Notes |
+|--------|--------|----------|-------|
+| **Nightscout API** | `nightscout.py` | 1+ per instance | Loop/AAPS/Trio device data; profile switches; temp basals; overrides |
+| **Tidepool API** | `tidepool.py` | 1+ per login | Live data pull with OAuth; handles timezone |
+| **Apple Health** | `apple_health.py` | 1 | iPhone export; HR, HRV, resting HR, workouts, steps |
+
+#### 3.5.5 Data Source Quality Attributes
+
+Not all datasets are equally useful for all purposes. Key quality attributes:
+
+| Attribute | Why It Matters | Best Sources |
+|-----------|---------------|-------------|
+| **CGM continuity** | Gaps break temporal analysis | IOBP2, Tidepool (pump-connected CGM has fewer gaps) |
+| **Insulin granularity** | Need basal + bolus separated, not just total | OhioT1DM, AZT1D, CTR3, Nightscout (all separate basal/bolus) |
+| **Carb logging completeness** | Missed meals bias fingerprints | OhioT1DM (study protocol enforced logging), T1DEXI |
+| **Activity signals** | Exercise scenario extraction | T1DEXI (gold standard), OhioT1DM, BrisT1D |
+| **AID algorithm variety** | Compare Loop vs AAPS vs 780G | BrisT1D (780G, Omnipod 5), OpenAPS, Nightscout |
+| **Demographic diversity** | Avoid overfitting to one population | Shanghai (East Asian), IOBP2 (multi-ethnic), AZT1D (older adults) |
+| **Longitudinal duration** | Seasonal, illness, hormonal effects | Nightscout (months/years), Tidepool API |
+
+### 3.6 Statistical Fingerprint Targets
+
+Based on published T1D population data (ADA Standards of Care 2024, ATTD consensus 2019,
+IOBP2 trial results, OhioT1DM characterization papers):
 
 | Metric | Well-Controlled T1D | Average T1D | Poorly Controlled |
 |--------|---------------------|-------------|-------------------|
@@ -141,9 +432,49 @@ Based on published T1D population data (ADA Standards of Care, ATTD consensus):
 | TBR < 54 | < 1% | 1–3% | variable |
 | TAR > 180 | < 25% | 25–45% | > 50% |
 | MAGE (mg/dL) | 60–80 | 80–120 | 120–160 |
+| Mean \|delta\| per 5 min | 2–4 mg/dL | 4–7 mg/dL | 6–10 mg/dL |
+| TDI (U/day) | 25–50 | 30–60 | variable |
+| Boluses per day | 4–8 | 3–6 | 2–4 |
+
+**The simulator must produce virtual patients spanning ALL THREE COLUMNS.** An algorithm
+that only works on well-controlled patients is useless for the majority of T1D experience.
 
 The current cgmsim-lib CGMSIM engine produces data resembling the "well-controlled" column
 at best — it lacks the variability to represent average or poorly-controlled T1D.
+
+### 3.7 Clinical Evaluation Metrics
+
+GluPredKit provides 15 clinical metrics that should be used to evaluate both simulation
+realism and algorithm performance. These map directly to regulatory standards:
+
+#### 3.7.1 FDA/Regulatory-Grade Metrics
+
+| Metric | Module | What It Measures | Regulatory Use |
+|--------|--------|-----------------|----------------|
+| **Clarke Error Grid** | `metrics/clarke_error_grid.py` | Zone A–E classification of prediction accuracy | ISO 15197, FDA glucose monitor clearance |
+| **Parkes Error Grid** | `metrics/parkes_error_grid.py` | Refined zone classification (stricter than Clarke) | International standard, replacing Clarke |
+| **MAE** | `metrics/mae.py` | Mean absolute prediction error | FDA primary accuracy metric |
+| **RMSE** | `metrics/rmse.py` | Root mean square error | FDA primary accuracy metric |
+| **ME (Bias)** | `metrics/me.py` | Systematic over/under prediction | Required for regulatory assessment |
+
+#### 3.7.2 Safety-Critical Metrics
+
+| Metric | Module | What It Measures | Clinical Significance |
+|--------|--------|-----------------|----------------------|
+| **MCC Hypo** | `metrics/mcc_hypo.py` | Matthews correlation for <70 mg/dL detection | Balanced hypo sensitivity/specificity |
+| **MCC Hyper** | `metrics/mcc_hyper.py` | Matthews correlation for >180 mg/dL detection | Balanced hyper sensitivity/specificity |
+| **Glycemia Detection** | `metrics/glycemia_detection.py` | 3×3 confusion matrix (hypo/target/hyper) | Shows misclassification patterns |
+| **gRMSE** | `metrics/grmse.py` | RMSE with severity weighting (penalizes hypo errors 1.5×) | Clinically-weighted accuracy |
+
+#### 3.7.3 Prediction Quality Metrics
+
+| Metric | Module | What It Measures |
+|--------|--------|-----------------|
+| **Temporal Gain** | `metrics/temporal_gain.py` | Minutes of predictive lead time via cross-correlation |
+| **G-Mean** | `metrics/g_mean.py` | Geometric mean of per-class recall (hypo/target/hyper) |
+| **Parkes Exp Cost** | `metrics/parkes_error_grid_exp.py` | Exponentially-weighted zone accuracy (zone A maximized) |
+| **PCC** | `metrics/pcc.py` | Pearson correlation (trend tracking quality) |
+| **MARE / MRE** | `metrics/mare.py`, `mre.py` | Relative error metrics (% of true value) |
 
 ---
 
@@ -311,24 +642,72 @@ fingerprint.json (target)
 
 ---
 
-## 6. Clinical Evaluation Metrics
+## 6. R&D Phases
 
-GluPredKit provides standard clinical metrics that should be integrated into scoring:
+### Phase 1: Fingerprint Extraction (Foundation)
 
-| Metric | Module | Use |
-|--------|--------|-----|
-| **Clarke Error Grid** | `metrics/clarke_error_grid.py` | % in zones A+B (clinical accuracy) |
-| **Parkes Error Grid** | `metrics/parkes_error_grid.py` | Modern replacement for Clarke |
-| **Glycemia Detection** | `metrics/glycemia_detection.py` | Sensitivity/specificity for hypo/hyper events |
-| **MCC Hypo** | `metrics/mcc_hypo.py` | Matthews correlation for hypoglycemia detection |
-| **MCC Hyper** | `metrics/mcc_hyper.py` | Matthews correlation for hyperglycemia detection |
-| **gRMSE** | `metrics/grmse.py` | Glucose-specific RMSE (penalizes hypo errors more) |
-| **Temporal Gain** | `metrics/temporal_gain.py` | How much earlier does prediction detect events? |
-| **MAE / RMSE / ME** | `metrics/mae.py`, etc. | Standard prediction error metrics |
+Build the statistical fingerprint extractor and run it against available datasets.
 
-These are the metrics regulators (FDA, NICE) use for evaluating CGM and prediction accuracy.
-Incorporating them into `algorithm_score.py` would strengthen the clinical validity of the
-autonomous improvement loop.
+**Inputs**: OhioT1DM (12 subjects, immediate access), IOBP2 (332 subjects, largest),
+Nightscout personal data (unlimited, live).
+
+**Outputs**:
+- `fingerprint.json` schema definition
+- Per-dataset fingerprint files
+- Population-level aggregate fingerprint with confidence intervals
+- Visualization: real vs simulated BG distributions
+
+**Key decision**: Which datasets to prioritize for initial calibration.
+OhioT1DM is small but richly featured. IOBP2 is huge but lacks exercise data.
+Recommend starting with OhioT1DM for Tier 1–4 extraction, then validating scale
+with IOBP2 for Tier 1–2.
+
+### Phase 2: Scenario Extractor and Classifier
+
+Build the event detection pipeline that segments real data into classified scenarios.
+
+**Inputs**: Fingerprinted datasets from Phase 1.
+
+**Outputs**:
+- Scenario library (labeled segments with metadata)
+- Frequency distribution table (how often each scenario type occurs)
+- Template shapes (average meal response, average hypo trajectory, etc.)
+- Scenario difficulty rating (based on algorithm prediction error)
+
+### Phase 3: Simulator Calibration Loop
+
+Wire the fingerprint → simulator → compare → adjust cycle.
+
+**Inputs**: Population fingerprint, cgmsim-lib UVA/Padova engine + sensor noise models.
+
+**Outputs**:
+- Calibrated patient profiles (replacing current standard/sensitive/resistant)
+- Noise/jitter parameter settings
+- Validated SIM-* vectors with fingerprint conformance certificates
+- Before/after comparison showing BG distribution widening
+
+### Phase 4: Scoring Integration
+
+Update `algorithm_score.py` with calibrated synthetic data and clinical metrics.
+
+**Inputs**: Calibrated SIM-* vectors, GluPredKit clinical metrics.
+
+**Outputs**:
+- Updated scoring weights (promoting calibrated synthetic, adding clinical metrics)
+- Clarke/Parkes error grid integration
+- MCC hypo/hyper as safety sub-scores
+- Composite score validated against known algorithm rankings on real data
+
+### Phase 5: Autonomous Loop with Validated Simulation
+
+Full autoresearch cycle using calibrated simulation for unlimited scenario generation.
+
+**Inputs**: All of the above.
+
+**Outputs**:
+- Algorithm mutations scored against realistic synthetic + real + edge case data
+- Confidence that score improvements transfer to real-world performance
+- Regression test suite that catches ranking-reversal problems
 
 ---
 
