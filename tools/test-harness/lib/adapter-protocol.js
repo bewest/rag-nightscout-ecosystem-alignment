@@ -86,13 +86,16 @@ function invokeAdapter(adapterDir, manifest, input, opts = {}) {
   const mode = opts.mode || 'execute';
   const verbose = opts.verbose || false;
   const timeout = opts.timeout || 30000;
+  const algorithm = opts.algorithm || undefined;
 
-  const payload = JSON.stringify({
+  const payloadObj = {
     mode,
     verbose,
     input: Array.isArray(input) ? undefined : input,
     vectors: Array.isArray(input) ? input : undefined,
-  });
+  };
+  if (algorithm) payloadObj.algorithm = algorithm;
+  const payload = JSON.stringify(payloadObj);
 
   // Validate input against schema (skip for describe mode)
   if (mode !== 'describe' && !Array.isArray(input)) {
