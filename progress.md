@@ -27,6 +27,48 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Cross-Implementation Algorithm Convergence — Phase 1 (2026-03-29)
+
+Built cross-validation harness and drove oref0-JS vs oref0-Swift convergence
+through a 13-item backlog. Factored continuance rules into a testable protocol,
+wired PredictionEngine with 4 prediction curves, ported tick-by-tick IOB
+prediction loop, and added autosens/avgDelta support.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Harness Architecture | `docs/architecture/cross-validation-harness.md` | 3-layer adapter protocol |
+| Assessment Results | `docs/architecture/cross-validation-assessment.md` | Baseline → final metrics |
+| Convergence Backlog | `docs/architecture/algorithm-convergence-backlog.md` | 13 items, 3 phases |
+| IOB Isolation Tool | `tools/test-harness/iob-isolation.js` | IOB curve comparison |
+| Prediction Alignment | `tools/test-harness/prediction-alignment.js` | Trajectory comparison |
+| Convergence Loop | `tools/test-harness/convergence-loop.js` | Autonomous regression detection |
+| ContinuancePolicy | `t1pal-mobile-apex/.../ContinuancePolicy.swift` | 8 rules, protocol + tests |
+| PredictionEngine Wiring | `t1pal-mobile-apex/.../DetermineBasal.swift` | 4 prediction curves |
+| Tick-by-tick IOB | `t1pal-mobile-apex/.../Predictions.swift` | Matching JS tau model |
+
+**Metrics Progression** (100 test vectors):
+
+| Metric | Baseline | Final | Target |
+|--------|----------|-------|--------|
+| Rate exact match | 33% | 68% | >80% |
+| Rate ±0.5 U/hr | 88% | 94% | >95% |
+| EventualBG ±10 mg/dL | 12% | 31% | >80% |
+| EventualBG bias | +60.6 mg/dL | −12.9 | <±5 |
+| IOB curve MAE | N/A | 13.6 mg/dL | <5 |
+
+**Commits (rag-nightscout-ecosystem-alignment)**: `8f33c12`, `ff9f08c`, `90d54da`, `739980e`, `5d5ed78`, `6b788aa`
+**Commits (t1pal-mobile-apex)**: `79ee650`, `1e3b006`, `5affc51`, `9d877e3`, `b1da1ff`
+
+**Remaining Divergence Sources** (Phase 2):
+1. Activity estimation: `IOB/tau` approximation vs actual per-dose insulin curves
+2. Missing JS guards: expectedDelta, snoozeBG, threshold, minGuardBG system
+3. COB deviation: deviation-based carb impact vs fixed absorption model
+4. TV-087+ vectors: synthetic scenarios testing boundary conditions
+
+**Gaps Identified**: GAP-ALG-067 through GAP-ALG-070 (pending formal registration)
+
+---
+
 ### Profile Client Patterns Analysis (2026-03-18)
 
 Comprehensive analysis of how Loop, AAPS, Trio, and xDrip+ handle profile uploads to Nightscout.
