@@ -151,6 +151,14 @@ struct DecisionOutput: Codable {
     let duration: Double?
     let smb: Double?
     let reason: String
+    let continuance: ContinuanceOutput?
+}
+
+struct ContinuanceOutput: Codable {
+    let action: String          // "continue", "change", "cancel"
+    let reason: String
+    let rawRate: Double?        // what the algorithm actually computed (before filtering)
+    let rawDuration: Double?
 }
 
 struct PredictionsOutput: Codable {
@@ -386,7 +394,8 @@ func translateOutput(
     input: AdapterInput,
     warnings: [String],
     executionMs: Double,
-    verbose: Bool
+    verbose: Bool,
+    continuanceInfo: (raw: AlgorithmDecision, continuance: ContinuanceDecision)? = nil
 ) -> AdapterOutput {
     let preds: PredictionsOutput?
     if let p = decision.predictions {
@@ -456,13 +465,31 @@ func translateOutput(
         sensitivityRatio: input.autosensData?.ratio ?? 1.0
     )
 
+    // Build continuance output if available
+    let continuanceOutput: ContinuanceOutput?
+    if let ci = continuanceInfo {
+        let rawRate = ci.raw.suggestedTempBasal?.rate
+        let rawDuration = ci.raw.suggestedTempBasal.map { $0.duration / 60.0 }
+        switch ci.continuance {
+        case .continue(let reason):
+            continuanceOutput = ContinuanceOutput(action: "continue", reason: reason, rawRate: rawRate, rawDuration: rawDuration)
+        case .change(_, _, let reason):
+            continuanceOutput = ContinuanceOutput(action: "change", reason: reason, rawRate: rawRate, rawDuration: rawDuration)
+        case .cancel(let reason):
+            continuanceOutput = ContinuanceOutput(action: "cancel", reason: reason, rawRate: rawRate, rawDuration: rawDuration)
+        }
+    } else {
+        continuanceOutput = nil
+    }
+
     return AdapterOutput(
         algorithm: AlgorithmInfo(name: engine.name, version: engine.version),
         decision: DecisionOutput(
             rate: decision.suggestedTempBasal?.rate,
             duration: decision.suggestedTempBasal.map { $0.duration / 60.0 },
             smb: decision.suggestedBolus,
-            reason: decision.reason
+            reason: decision.reason,
+            continuance: continuanceOutput
         ),
         predictions: finalPreds,
         state: state,
@@ -605,11 +632,25 @@ func handleExecute(input: AdapterInput, algorithmName: String?, verbose: Bool) -
         allWarnings.append(ve.localizedDescription)
     }
 
-    // Execute with timing
+    // Execute with timing — use calculateWithContinuance for Oref0Algorithm
     let start = DispatchTime.now()
     let decision: AlgorithmDecision
+    var continuanceInfo: (raw: AlgorithmDecision, continuance: ContinuanceDecision)? = nil
     do {
-        decision = try engine.calculate(nativeInput)
+        if let oref0 = engine as? Oref0Algorithm {
+            // Build current temp state from adapter input
+            let currentTemp: CurrentTempState
+            if let ct = input.currentTemp, let rate = ct.rate, let dur = ct.duration, dur > 0 {
+                currentTemp = CurrentTempState(rate: rate, remainingMinutes: dur)
+            } else {
+                currentTemp = .none
+            }
+            let result = try oref0.calculateWithContinuance(nativeInput, currentTemp: currentTemp)
+            decision = result.decision
+            continuanceInfo = (raw: try oref0.calculate(nativeInput), continuance: result.continuance)
+        } else {
+            decision = try engine.calculate(nativeInput)
+        }
     } catch {
         let err = ErrorResponse(
             error: "Algorithm execution failed: \(error.localizedDescription)",
@@ -628,7 +669,8 @@ func handleExecute(input: AdapterInput, algorithmName: String?, verbose: Bool) -
         input: input,
         warnings: allWarnings,
         executionMs: elapsedMs,
-        verbose: verbose
+        verbose: verbose,
+        continuanceInfo: continuanceInfo
     )
 
     return try! JSONEncoder.harness.encode(output)
