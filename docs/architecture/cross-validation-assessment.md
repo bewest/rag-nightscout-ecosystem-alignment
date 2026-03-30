@@ -835,3 +835,122 @@ This effort is parallel to ours and could benefit from:
 
 - `244cbe4` (this repo): Loop cross-validation script and Makefile targets
 - `eea1ea4` (this repo): 3-way comparison script
+
+---
+
+## A10: Trio oref-swift Deep Analysis (2025-03-30)
+
+### Context
+
+Trio is actively porting the entire oref0 algorithm from JavaScript to native
+Swift on the `oref-swift` branch of `nightscout/Trio-dev`. This represents a
+**third independent Swift oref0 implementation** alongside:
+
+1. **t1pal-mobile-apex** (our port) — cross-platform, adapter-protocol based
+2. **Trio OpenAPSSwift** — iOS-native, embedded in Trio app
+3. **oref0 JS** (canonical) — reference implementation
+
+### Architecture Comparison
+
+| Aspect | t1pal-mobile-apex | Trio OpenAPSSwift |
+|--------|-------------------|-------------------|
+| **Scope** | DetermineBasal + predictions | Full pipeline: Profile→IOB→Meal→Autosens→DetermineBasal |
+| **Lines** | ~800 (DetermineBasal.swift) | ~4000+ across 52 Swift files |
+| **Test vectors** | 100 static JSON (TV-* format) | 200k+ production replays via HTTP |
+| **Validation** | JSON-over-stdio adapter CLI | In-app shadow mode + GCS logging |
+| **JS reference** | External (via Node.js adapter) | Bundled (15 .js files in test target) |
+| **Test strategy** | Cross-validation harness | Unit tests + JSON regression + replay |
+| **Packaging** | SPM package (AlgorithmRegistry) | Embedded in Trio app (SPM planned) |
+| **Float type** | Double | Decimal (risk: Decimal ≠ Double) |
+
+### Trio's Port Notes — Key Risks They Identified
+
+From `DeveloperDocs/OrefSwift/oref_swift_port_notes.md`:
+
+1. **JS pass-by-reference vs Swift pass-by-value**: JS mutates input objects;
+   Swift uses value types. Careful navigation of visible mutations required.
+
+2. **JS dynamic properties**: Properties added on-the-fly in JS need static
+   types in Swift. Source of potential inconsistencies.
+
+3. **JS type switching**: `Profile.target_bg` uses `false` (boolean) as proxy
+   for Optional none. Handled in serialization, not in algorithm logic.
+
+4. **`var now = new Date()`**: JS gets current time in multiple places, creating
+   boundary-sensitivity. Both implementations share this risk.
+
+5. **Double vs Decimal**: Trio uses `Decimal` for floating-point; JS uses
+   `Double` (IEEE 754). This can cause subtle differences. Our t1pal port
+   uses `Double`, avoiding this divergence source.
+
+6. **Trio-specific inputs**: `BasalProfileEntry` missing `i` property, making
+   JS sorting function a no-op.
+
+### Trio's Testing Infrastructure
+
+```
+Testing Layers:
+├── Unit Tests (34 Swift test files)
+│   ├── DetermineBasal*Tests (9 files) — early exits, SMB, dosing
+│   ├── Iob*Tests (6 files) — calculate, consecutive, total, history
+│   ├── Meal*Tests (4 files) — COB, bucketing, history
+│   ├── Profile*Tests (6 files) — basal, carbs, ISF, targets, JS compare
+│   ├── Autosens*Tests (2 files)
+│   ├── DynamicISFTests, SetTempBasalTests
+│   └── JSONCompareTests
+├── JSON Regression Tests
+│   ├── DetermineBasalJsonTests — Swift vs JS comparison via HTTP vectors
+│   ├── IobJsonTests, MealJsonTests, AutosensJsonTests, ProfileJsonTests
+│   └── 15 bundled JS reference implementations
+├── Replay Tests (production data)
+│   ├── HttpFiles.swift — localhost:8123 server, paginated file listing
+│   ├── ReplayTests.swift — env/config controlled, timezone filtering
+│   └── 200k+ AlgorithmComparison records from real users
+└── Shadow Mode (live validation)
+    ├── JsSwiftOrefComparisonLogger — uploads to GCS bucket
+    ├── JSONCompare.createComparison() — ValueDifference tracking
+    └── AlgorithmComparison struct — captures both JS & Swift outputs
+```
+
+### Trio's Roadmap Status
+
+| Phase | Description | Exit Criteria | Status |
+|-------|-------------|---------------|--------|
+| **Small-scale testing** | Shadow mode on oref-swift branch | No inconsistencies on 200k+ inputs | In progress |
+| **Beta shadow mode** | Move to main Trio dev branch | 1 week clean shadow mode | Not started |
+| **Beta live** | Swift for dosing, JS for checking | 1 month clean operation | Not started |
+| **Release** | Remove JS, productionize | All functions native | Not started |
+
+### Convergence Findings — What We Can Share
+
+Our Phase 2 convergence work discovered issues that likely affect Trio's port:
+
+| Our Finding | Trio Risk | Impact |
+|-------------|-----------|--------|
+| **minAvgDelta ≠ minDelta** (JS line 165) | High — Trio uses Decimal which may mask this | eventualBG errors |
+| **ci passthrough** (minDelta-based, not glucoseDelta) | High — separate concern from ForecastGenerator | IOB prediction MAE |
+| **avgPredBG guard** (curve eventual values) | Medium — their early-exit strategy may skip this | Rate calculation |
+| **Sens rounding** (`round(sens/ratio, 1)` even when ratio=1) | Medium — Decimal rounding differs from Double | bgi→deviation cascade |
+| **Continuance asymmetry** (7 inline JS rules) | Low — they're aware, handling in shadow mode | Comparison noise |
+
+### Collaboration Opportunities
+
+1. **Shared test vectors**: Our 100 TV-* vectors could validate their port.
+   Their 200k+ production replays could stress-test ours.
+
+2. **Convergence findings**: Our 7 iterations of divergence isolation
+   (minAvgDelta, ci passthrough, avgPredBG guard, etc.) are directly
+   applicable to their port. Could save them weeks of debugging.
+
+3. **Three-way Swift comparison**: Run t1pal-DetermineBasal.swift vs
+   Trio-DetermineBasalGenerator.swift vs canonical JS on same vectors.
+   Would require extracting Trio's port as standalone (they plan SPM).
+
+4. **Double vs Decimal**: Trio chose Decimal, we chose Double. Cross-validation
+   between the two Swift ports would reveal where Decimal diverges from
+   JS's Double arithmetic — potentially identifying false positives in
+   their JS↔Swift comparison.
+
+### Gap Entry
+
+See `GAP-ALG-021` in `traceability/aid-algorithms-gaps.md`.

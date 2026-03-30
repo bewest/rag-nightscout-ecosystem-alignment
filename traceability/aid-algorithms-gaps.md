@@ -1544,3 +1544,48 @@ execution path differs.
 **Affected Systems**: AAPS
 
 **Status**: Documented — structural difference only
+
+---
+
+### GAP-ALG-021: Three Independent Swift oref0 Ports — No Shared Validation Infrastructure
+
+**Category**: Algorithm Comparison / Implementation Parity
+
+**Description**: Three independent Swift implementations of oref0 now exist:
+
+1. **t1pal-mobile-apex** — Our port using Double arithmetic, adapter-protocol based,
+   100 static test vectors, cross-platform SPM package
+2. **Trio OpenAPSSwift** — Trio's port using Decimal arithmetic, embedded in iOS app,
+   200k+ production replay vectors via HTTP, shadow mode + GCS logging
+3. **AAPS (JS variant)** — Modified JS determine-basal run by Kotlin host, round_basal
+   is identity, flatBGsDetected passed as parameter
+
+Each implementation has its own test infrastructure with no shared vectors,
+no common comparison format, and no cross-port validation.
+
+**Key Divergence Risks**:
+- **Double vs Decimal**: t1pal uses Double (matches JS), Trio uses Decimal (may diverge
+  from JS in subtle floating-point cases). Cross-validation would identify false positives.
+- **Scope**: Trio ports the full pipeline (Profile→IOB→Meal→Autosens→DetermineBasal),
+  t1pal focuses on DetermineBasal with pre-computed inputs. Different failure surfaces.
+- **Convergence findings not shared**: Our 7 iterations of divergence isolation
+  (minAvgDelta, ci passthrough, avgPredBG guard, sens rounding) are not yet
+  communicated to Trio's team despite being directly applicable.
+
+**Source**:
+- `externals/Trio-dev` branch `origin/oref-swift`: 52 Swift files in `Trio/Sources/APS/OpenAPSSwift/`
+- `../t1pal-mobile-apex/packages/T1PalAlgorithm/Sources/T1PalAlgorithm/DetermineBasal.swift`
+- `externals/AndroidAPS/app/src/androidTest/assets/OpenAPSSMB/determine-basal.js`
+
+**Remediation**:
+1. Share TV-* vector format and our 100 vectors with Trio team
+2. Run three-way Swift comparison when Trio publishes as SPM
+3. Document Double vs Decimal divergence patterns
+4. Communicate Phase 2 convergence findings (minAvgDelta, ci passthrough, etc.)
+
+**Impact**: High — Patient safety depends on algorithm equivalence across
+implementations. Without shared validation, each port may silently diverge.
+
+**Affected Systems**: t1pal, Trio, (potentially) AAPS
+
+**Status**: Open — collaboration opportunity identified
