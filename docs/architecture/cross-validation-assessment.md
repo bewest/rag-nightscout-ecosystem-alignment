@@ -598,3 +598,49 @@ Rate improvement requires: (1) continuance rules (54 null-rate vectors),
 ### Commits
 
 - `a3e4e74` (t1pal-mobile-apex): Fix IOB prediction ci passthrough
+
+## Update: Phase 2 A6 — avgPredBG Guard Fix (Session 6 continued)
+
+### Problem
+
+8 of 16 rate mismatches were caused by Swift early-exiting with "in range: no
+temp required" when JS continued through the dosing cascade. Root cause:
+GuardSystem capped minPredBG at `ztGuard` as a proxy for `avgPredBG`, but JS
+computes `avgPredBG` from the LAST (eventual) values of prediction curves,
+floored at `minZTGuardBG`. Using `ztGuard` directly pulled minPredBG too low.
+
+Example: TV-001 had ztGuard=91 but IOBpredBG=151. JS avgPredBG=max(151,91)=151,
+so minPredBG=min(132,151)=132. Swift was capping at 91, making 91<maxBG=true →
+"in range" branch fired incorrectly.
+
+### Fix
+
+Added proper `avgPredBG` computation to GuardSystem:
+1. Blend eventual values based on COB/UAM state (matching JS lines 711-726)
+2. Floor at `minZTGuardBG` (matching JS line 724)
+3. Cap minPredBG at `avgPredBG` instead of `ztGuard` (matching JS line 786)
+
+### Metrics After avgPredBG Fix (100 vectors)
+
+| Metric | Before (A5) | After avgPredBG (A6) | Change |
+|--------|-------------|----------------------|--------|
+| EventualBG exact | 90/100 | **90/100** | — |
+| **Rate exact** | **30/46** | **38/49** | **+27%** ✅ |
+| **Rate ±0.5** | **44/46** | **49/49** | **100%** ✅ |
+| Max rate delta | 1.0 | **0.15** | -85% |
+| IOB MAE | 0.888 | **0.888** | — |
+| ZT MAE | 1.076 | **1.076** | — |
+| COB MAE | 0.419 | **0.419** | — |
+
+### Remaining Rate Mismatches (11 vectors)
+
+**Tier 2 synthetic (5 vectors, Δ=0.15):** TV-094, TV-099, TV-101, TV-102,
+TV-104 — fundamental eventualBG divergence (JS=401, Swift=88-95) due to
+COB handling differences in synthetic vectors.
+
+**Natural vectors (6, Δ≤0.10):** TV-017, TV-021, TV-025, TV-036, TV-082,
+TV-084 — `round_basal` precision differences (0.05 increments).
+
+### Commits
+
+- `e920922` (t1pal-mobile-apex): Fix minPredBG capping with avgPredBG
