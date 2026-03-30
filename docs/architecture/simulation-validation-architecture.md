@@ -111,7 +111,7 @@ simulator.
 | Parameter | How Computed | Why It Matters |
 |-----------|-------------|----------------|
 | BG mean | `mean(CGM)` | Central tendency — primary A1C correlate |
-| BG SD | `std(CGM)` | Overall variability — *this is what cgmsim-lib gets wrong* |
+| BG SD | `std(CGM)` | Overall variability — *this is what cgmsim-lib simplifies* |
 | BG CV | `100 × std/mean` | Normalized variability — ADA/ATTD consensus metric |
 | BG P5, P25, P50, P75, P95 | Percentiles | Full shape of glucose distribution |
 | TIR 70–180 | `%` of readings in range | Primary clinical outcome metric |
@@ -1344,33 +1344,49 @@ Simulation expands coverage; it doesn't replace ground truth. The goal of the
 mismatch layer is to bridge the gap so simulation results are *directionally correct*
 — not to eliminate the need for real data.
 
-### The UVA/Padova Integration Gap (Critical Known Issue)
+### UVA/Padova Engine Integration (✅ Resolved — 2025-03-30)
 
-**`in-silico-bridge.js` uses the CGMSIM engine, NOT UVA/Padova.** This is a primary
-source of the narrow BG range problem (89–140 mg/dL synthetic vs 40–350+ real).
+**`in-silico-bridge.js` now supports both engines** via the `--engine` flag:
 
-| Factor | CGMSIM (what we use) | UVA/Padova (what we should use) |
-|--------|---------------------|--------------------------------|
+```bash
+# CGMSIM (default, backward compatible)
+node tools/aid-autoresearch/in-silico-bridge.js --scenario all --vectors
+
+# UVA/Padova 18-ODE engine
+node tools/aid-autoresearch/in-silico-bridge.js --engine uva-padova --scenario all --vectors
+
+# UVA/Padova with Facchinetti2014 sensor noise
+node tools/aid-autoresearch/in-silico-bridge.js --engine uva-padova --sensor facchinetti --scenario all --vectors
+```
+
+| Factor | CGMSIM (algebraic) | UVA/Padova (integrated) |
+|--------|---------------------|------------------------|
 | BG calculation | Algebraic: `lastBG + Σeffects` | 18 coupled ODEs integrated per minute |
 | Insulin model | Single exponential decay per type | Two-compartment SC absorption (Isc1→Isc2→plasma) |
 | Meal model | Dual-phase (fast/slow) fixed split | Variable gastric emptying (nonlinear tanh function of stomach load) |
 | Liver model | Hill equation, max 65% suppression | Full EGP with glucagon counter-regulation |
-| CGM noise | None (clean signal) | Vettoretti2019/Breton2008 sensor models built in |
+| CGM noise | None (clean signal) | Facchinetti2014 or Vettoretti2019 sensor models (via `--sensor`) |
 | State | Stateless (recomputes from history) | Stateful (carries 18 ODE state variables forward) |
-| Realistic range | 89–140 mg/dL typical | 40–400+ mg/dL with noise |
+| Realistic range | 89–140 mg/dL typical | 40–210+ mg/dL with sensor noise |
 
-**Why we're not using it yet** (from §4.2):
-1. UVA/Padova requires persistent state between ticks (`lastState` carry-forward)
-2. Needs ODE solver initialization with steady-state finder
-3. Treatment format conversion to UVA input schema
-4. `in-silico-bridge.js` was built for CGMSIM's simpler API
+**Observed BG range improvement** (commit `9c857e9`):
 
-**Impact**: Until UVA/Padova integration happens, calibration efforts (§5) are
-fighting against a fundamentally limited generator. The CGMSIM engine cannot produce
-realistic variability because its algebraic model lacks the nonlinear dynamics
-(variable gastric emptying, glucagon counter-regulation, sensor noise) that create
-real-world BG spread. This should be the **first infrastructure priority** before
-attempting fingerprint calibration.
+| Scenario | CGMSIM Range | UVA/Padova | UVA+Facchinetti |
+|---|---|---|---|
+| Meal adequate bolus | 89–100 | 100–164 | 70–186 |
+| Underbolus | 89–105 | 105–189 | 76–210 |
+| Fasting | 89–110 | 40–136 | 40–154 |
+| Multi-meal | 89–94 | 95–181 | 65–198 |
+
+**Implementation notes**:
+- Uses low-level Patient API (`UvaPadovaModel.default`), not the `simulatorUVA` wrapper (which is hardcoded to `Date.now()`)
+- ODE state persisted across steps; solver uses RK1/2 integration at 1-minute resolution
+- Sensor models require minute-aligned timestamps (startTime rounded to whole minute)
+- Engine metadata included in output vectors: `metadata.engine`, `metadata.sensor`
+
+**Remaining work**: CGMSIM is still the default engine. UVA/Padova calibration
+against real patient data (§5) has not yet begun — that remains the next priority
+for improving simulation realism beyond the structural model improvement.
 
 ### CGM Trace Generation: Methodology Comparison
 
@@ -1397,7 +1413,7 @@ Treatment inputs (insulin, carbs, timestamps)
 
 **Available in ecosystem**:
 - cgmsim-lib CGMSIM engine (algebraic, fast, simplified)
-- cgmsim-lib UVA/Padova engine (18-ODE, realistic, not yet integrated)
+- cgmsim-lib UVA/Padova engine (18-ODE, realistic, ✅ integrated via `--engine uva-padova`)
 - GluPredKit `uva_padova.py` model (ReplayBG-based, particle filter)
 - GluPredKit `loop.py` / `loop_v2.py` (rule-based + parameter fitting)
 
@@ -1610,8 +1626,8 @@ simplified CGMSIM engine.
 | ALG-VERIFY-007 | In-silico bridge generates synthetic scenarios |
 | ALG-VERIFY-008 | In-silico scoring against synthetic ground truth |
 | ALG-SCORE-001 | Composite algorithm scoring pipeline |
-| GAP-ALG-010 | *Proposed*: cgmsim-lib CGMSIM engine produces unrealistically narrow BG range |
-| GAP-ALG-011 | *Proposed*: No CGM sensor noise in CGMSIM-engine-generated vectors |
+| GAP-ALG-010 | *Mitigated*: CGMSIM narrow BG range — UVA/Padova engine available as alternative; CGMSIM still default |
+| GAP-ALG-011 | *Mitigated*: Sensor noise available via `--sensor facchinetti` or `--sensor vettoretti` with UVA/Padova engine |
 | GAP-ALG-012 | *Proposed*: No meal timing/estimation error in synthetic scenarios |
 | GAP-ALG-013 | *Proposed*: No statistical calibration pipeline (real → synthetic fingerprint matching) |
 | GAP-ALG-014 | *Proposed*: Clinical metrics (Clarke/Parkes) not integrated into algorithm_score.py |
@@ -1625,7 +1641,7 @@ simplified CGMSIM engine.
 | GAP-ALG-022 | *Proposed*: No individual therapy assessment report generator (§9.4) |
 | GAP-ALG-023 | *Proposed*: Autotune deviation categories lack population-context sanity checking (§9.6) |
 | GAP-ALG-024 | *Proposed*: No replay validation wrapper — cannot feed real patient history into cgmsim-lib and compare |
-| GAP-ALG-025 | *Proposed*: in-silico-bridge.js uses CGMSIM engine, not UVA/Padova — primary source of narrow BG range (§8) |
+| GAP-ALG-025 | *Resolved* (2025-03-30): UVA/Padova engine integrated via `--engine uva-padova` flag. BG range improved from 89–140 to 40–210+ mg/dL. Calibration against real data still pending (§8) |
 | GAP-ALG-026 | *Proposed*: No generative models (GAN, VAE, diffusion) for synthetic CGM trace generation (§8) |
 | GAP-ALG-027 | *Proposed*: No hybrid physics-ML residual model to capture what equations miss (§8) |
 | GAP-ALG-028 | *Proposed*: GluPredKit ML models (LSTM, TCN, etc.) cannot produce causally valid counterfactuals (§8) |

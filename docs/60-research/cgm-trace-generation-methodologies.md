@@ -91,7 +91,7 @@ Where:
 - No exercise effects
 - 3 patient profiles, all with "correct" therapy settings
 
-### 2.2 UVA/Padova Engine (Full Physics, NOT Integrated)
+### 2.2 UVA/Padova Engine (Full Physics, ✅ Integrated)
 
 **Location**: `externals/cgmsim-lib/src/lt1/core/models/UvaPadova_T1DMS.ts` (817 lines)
 
@@ -103,8 +103,11 @@ Where:
 - Peripheral glucose utilization
 - Renal clearance
 
-**Status**: Exists in code but `in-silico-bridge.js` does NOT use it. Requires ODE
-state persistence and initialization that our bridge doesn't support.
+**Status**: ✅ Integrated into `in-silico-bridge.js` via `--engine uva-padova` flag
+(commit `9c857e9`, 2025-03-30). Uses low-level Patient API with RK1/2 ODE solver
+at 1-minute resolution. Optional sensor noise via `--sensor facchinetti` or
+`--sensor vettoretti`. BG range improved from 89–140 (CGMSIM) to 40–210+ mg/dL.
+CGMSIM remains the default engine for backward compatibility.
 
 ### 2.3 GluPredKit ML Models (Prediction Only)
 

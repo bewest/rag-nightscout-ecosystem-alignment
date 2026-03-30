@@ -374,6 +374,40 @@ harness-ci: harness-deps ## Full harness CI pipeline
 	$(HARNESS) --layer equivalence --json > $(HARNESS_DIR)/results/equivalence.json || true
 	@echo "Results: $(HARNESS_DIR)/results/equivalence.json"
 
+# ── In-Silico Simulation Targets ─────────────────────────────────────
+INSIL_DIR  := tools/aid-autoresearch
+INSIL_VECS := conformance/in-silico/vectors
+
+in-silico-cgmsim: ## Generate SIM-* vectors using CGMSIM engine (default)
+	@echo "Generating CGMSIM vectors..."
+	@node $(INSIL_DIR)/in-silico-bridge.js --scenario all --mode both --vectors
+	@echo "Vectors written to $(INSIL_VECS)/"
+
+in-silico-uva: ## Generate SIM-* vectors using UVA/Padova engine
+	@echo "Generating UVA/Padova vectors..."
+	@node $(INSIL_DIR)/in-silico-bridge.js --engine uva-padova --scenario all --mode both --vectors
+	@echo "Vectors written to $(INSIL_VECS)/"
+
+in-silico-uva-noisy: ## Generate UVA/Padova vectors with Facchinetti sensor noise
+	@echo "Generating UVA/Padova + Facchinetti sensor noise vectors..."
+	@node $(INSIL_DIR)/in-silico-bridge.js --engine uva-padova --sensor facchinetti --scenario all --mode both --vectors
+	@echo "Vectors written to $(INSIL_VECS)/"
+
+score-in-silico: ## Score algorithms against SIM-* vectors
+	@echo "Scoring algorithms against in-silico vectors..."
+	@node $(INSIL_DIR)/score-in-silico.js
+	@echo ""
+
+in-silico-smoke: ## Quick smoke test: 1 scenario per engine, verify BG ranges
+	@echo "=== CGMSIM smoke test ==="
+	@node $(INSIL_DIR)/in-silico-bridge.js --scenario meal-rise --mode open-loop 2>&1 | tail -8
+	@echo ""
+	@echo "=== UVA/Padova smoke test ==="
+	@node $(INSIL_DIR)/in-silico-bridge.js --engine uva-padova --scenario meal-rise --mode open-loop 2>&1 | tail -8
+	@echo ""
+	@echo "=== UVA/Padova + Facchinetti smoke test ==="
+	@node $(INSIL_DIR)/in-silico-bridge.js --engine uva-padova --sensor facchinetti --scenario meal-rise --mode open-loop 2>&1 | tail -8
+
 # ── Cross-Validation Targets ─────────────────────────────────────────
 XVAL_ADAPTERS := adapters/oref0-js,adapters/t1pal-oref0-swift
 XVAL_VECTORS  := ../../conformance/t1pal/vectors/oref0-endtoend

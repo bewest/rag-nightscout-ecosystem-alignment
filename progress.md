@@ -27,6 +27,62 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### UVA/Padova 18-ODE Engine Integration (2025-03-30)
+
+Integrated the UVA/Padova physiological simulation model into `in-silico-bridge.js`
+as an alternative to the CGMSIM algebraic engine. This addresses GAP-ALG-025 (narrow
+BG range) and GAP-ALG-010/011 (no sensor noise). The engine uses the low-level Patient
+API with RK1/2 ODE solver at 1-minute resolution and optional Facchinetti2014 or
+Vettoretti2019 sensor noise models.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| UVA/Padova engine | `tools/aid-autoresearch/in-silico-bridge.js` | `--engine uva-padova` flag, low-level Patient API |
+| Sensor noise | `tools/aid-autoresearch/in-silico-bridge.js` | `--sensor facchinetti\|vettoretti` flag |
+| Architecture doc | `docs/architecture/simulation-validation-architecture.md` | Updated §8 to reflect integration |
+| Research doc | `docs/60-research/cgm-trace-generation-methodologies.md` | §2.2 updated to Integrated |
+| Makefile targets | `Makefile` | `make in-silico-uva`, `in-silico-smoke`, `score-in-silico` |
+
+**BG Range Improvement** (the core motivation):
+
+| Scenario | CGMSIM Range | UVA/Padova | UVA+Facchinetti |
+|---|---|---|---|
+| Meal adequate bolus | 89–100 | 100–164 | 70–186 |
+| Underbolus | 89–105 | 105–189 | 76–210 |
+| Fasting | 89–110 | 40–136 | 40–154 |
+| Multi-meal | 89–94 | 95–181 | 65–198 |
+
+**Key Findings**:
+- `simulatorUVA` high-level wrapper is hardcoded to `Date.now()` — must use Patient API
+- Sensor noise models require minute-aligned timestamps (ms offsets cause `update()` to return undefined)
+- Warning "computation of equilibrium basal rate failed" on resistant patients is non-critical
+- CGMSIM remains default for backward compatibility
+
+**Gaps Resolved**: GAP-ALG-025 (resolved), GAP-ALG-010 (mitigated), GAP-ALG-011 (mitigated)
+
+**Source Files Analyzed**:
+- `externals/cgmsim-lib/src/lt1/core/models/UvaPadova_T1DMS.ts`
+- `externals/cgmsim-lib/src/lt1/core/sensors/Facchinetti2014.ts`
+- `externals/cgmsim-lib/src/lt1/core/sensors/Vettoretti2019.ts`
+
+---
+
+### Simulation Validation Architecture (2025-03-29)
+
+Developed comprehensive architecture documentation covering simulation validation
+methodology, statistical fingerprinting, calibration pipelines, therapy settings
+mismatch modeling, and CGM trace generation methodologies research.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Architecture doc | `docs/architecture/simulation-validation-architecture.md` | 1,620+ lines, 11 sections |
+| Therapy optimization | `docs/architecture/therapy-optimization-feature-pipeline.md` | Fingerprinting as therapy assessment |
+| Generation methodologies | `docs/60-research/cgm-trace-generation-methodologies.md` | 5 methodologies, UVA/Padova validation |
+
+**Gaps Identified**: GAP-ALG-010 through GAP-ALG-028 (19 gaps proposed)
+
+---
+
 ### Cross-Implementation Algorithm Convergence — Phase 1 (2026-03-29)
 
 Built cross-validation harness and drove oref0-JS vs oref0-Swift convergence

@@ -21,6 +21,11 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Notes |
 |------|----------|-------|
+| Regenerate SIM-* vectors with UVA/Padova | P1 | `make in-silico-uva` — replace CGMSIM-only vectors with UVA/Padova set for realistic algorithm scoring |
+| Engine-aware score-in-silico.js | P1 | Add `--engine` filter to `score-in-silico.js` — support multi-engine vector sets, report engine in output |
+| Calibrate UVA/Padova against real data | P2 | Use OhioT1DM/IOBP2 datasets + distribution distance metrics (§5 in arch doc) to optimize patient parameters |
+| Add in-silico to CI workflow | P2 | Smoke test in `ci.yml`: `make in-silico-smoke` should fail if BG range narrows below expected thresholds |
+| compare-engines.js tool | P2 | Side-by-side divergence: same scenario on CGMSIM vs UVA/Padova, report per-scenario delta summary |
 | Import t1pal conformance vectors | P1 | `make export-vectors` → copy 22 files (44+ xval cases, 8 replay scenarios, IOB/COB curves, tolerances.json) to `conformance/t1pal/` |
 | Validate oref0 CLI baseline | P1 | Run `oref0-determine-basal.js` against boundary vectors (12/12) + xval vectors (3/8 baseline). Use oref0 CLI directly, not Trio's embedded copy |
 | Scaffold autoresearch-AID harness | P1 | Create `tools/aid-autoresearch/`: algorithm_score.py (composite 0.0-1.0), program.md (agent constraints), runners/ (oref0, Loop, GluPredKit), results.tsv |
