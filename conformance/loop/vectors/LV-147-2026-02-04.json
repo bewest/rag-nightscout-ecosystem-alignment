@@ -1,0 +1,860 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "id": "LV-147",
+    "name": "Loop replay 2026-02-04 09:54:30",
+    "category": "very-high,high-iob",
+    "source": "nightscout/90-day-history",
+    "description": "Real Loop decision point. BG 255, IOB 4.34, COB 0",
+    "algorithm": "Loop",
+    "loopVersion": "3.8.1.2026010900",
+    "device": "loop://iPhone"
+  },
+  "input": {
+    "clock": "2026-02-04T09:54:30.000Z",
+    "glucoseStatus": {
+      "glucose": 255,
+      "glucoseUnit": "mg/dL",
+      "delta": 0,
+      "shortAvgDelta": 0.67,
+      "longAvgDelta": 0.33,
+      "timestamp": "2026-02-04T09:53:46.000Z",
+      "noise": 0,
+      "direction": "NONE"
+    },
+    "iob": {
+      "iob": 4.338,
+      "basalIob": 4.338,
+      "bolusIob": 0,
+      "activity": 0,
+      "iobWithZeroTemp": {
+        "iob": 4.338,
+        "basaliob": 4.338,
+        "bolussnooze": 0,
+        "activity": 0,
+        "lastBolusTime": 0,
+        "time": "2026-02-04T09:54:30.000Z"
+      }
+    },
+    "profile": {
+      "basalRate": 1.8,
+      "sensitivity": 40,
+      "carbRatio": 10,
+      "targetLow": 97,
+      "targetHigh": 102,
+      "maxIob": 20,
+      "maxBasal": 6,
+      "dia": 6,
+      "maxDailyBasal": 1.8,
+      "units": "mg/dL",
+      "dosingStrategy": "tempBasalOnly",
+      "suspendThreshold": 69,
+      "basalSchedule": [
+        {
+          "startTime": 0,
+          "rate": 1.8
+        },
+        {
+          "startTime": 19800,
+          "rate": 1.7
+        },
+        {
+          "startTime": 81000,
+          "rate": 1.8
+        }
+      ]
+    },
+    "mealData": {
+      "carbs": 0,
+      "cob": 0
+    },
+    "currentTemp": {
+      "rate": 3.25,
+      "duration": 30
+    },
+    "glucoseHistory": [
+      {
+        "glucose": 255,
+        "timestamp": "2026-02-04T09:53:46.000Z"
+      },
+      {
+        "glucose": 255,
+        "timestamp": "2026-02-04T09:48:46.000Z"
+      },
+      {
+        "glucose": 254,
+        "timestamp": "2026-02-04T09:43:46.000Z"
+      },
+      {
+        "glucose": 253,
+        "timestamp": "2026-02-04T09:38:46.000Z"
+      },
+      {
+        "glucose": 250,
+        "timestamp": "2026-02-04T09:33:46.000Z"
+      },
+      {
+        "glucose": 246,
+        "timestamp": "2026-02-04T09:28:46.000Z"
+      },
+      {
+        "glucose": 254,
+        "timestamp": "2026-02-04T09:23:46.000Z"
+      },
+      {
+        "glucose": 255,
+        "timestamp": "2026-02-04T09:18:46.000Z"
+      },
+      {
+        "glucose": 252,
+        "timestamp": "2026-02-04T09:13:46.000Z"
+      },
+      {
+        "glucose": 250,
+        "timestamp": "2026-02-04T09:08:46.000Z"
+      },
+      {
+        "glucose": 245,
+        "timestamp": "2026-02-04T09:03:46.000Z"
+      },
+      {
+        "glucose": 239,
+        "timestamp": "2026-02-04T08:58:46.000Z"
+      },
+      {
+        "glucose": 234,
+        "timestamp": "2026-02-04T08:53:46.000Z"
+      },
+      {
+        "glucose": 231,
+        "timestamp": "2026-02-04T08:48:46.000Z"
+      },
+      {
+        "glucose": 228,
+        "timestamp": "2026-02-04T08:43:46.000Z"
+      },
+      {
+        "glucose": 227,
+        "timestamp": "2026-02-04T08:38:46.000Z"
+      },
+      {
+        "glucose": 222,
+        "timestamp": "2026-02-04T08:33:46.000Z"
+      },
+      {
+        "glucose": 215,
+        "timestamp": "2026-02-04T08:28:46.000Z"
+      },
+      {
+        "glucose": 209,
+        "timestamp": "2026-02-04T08:23:46.000Z"
+      },
+      {
+        "glucose": 201,
+        "timestamp": "2026-02-04T08:18:46.000Z"
+      },
+      {
+        "glucose": 195,
+        "timestamp": "2026-02-04T08:13:46.000Z"
+      },
+      {
+        "glucose": 189,
+        "timestamp": "2026-02-04T08:08:46.000Z"
+      },
+      {
+        "glucose": 189,
+        "timestamp": "2026-02-04T08:08:45.000Z"
+      },
+      {
+        "glucose": 182,
+        "timestamp": "2026-02-04T08:03:46.000Z"
+      },
+      {
+        "glucose": 178,
+        "timestamp": "2026-02-04T07:58:46.000Z"
+      },
+      {
+        "glucose": 175,
+        "timestamp": "2026-02-04T07:53:46.000Z"
+      },
+      {
+        "glucose": 170,
+        "timestamp": "2026-02-04T07:48:46.000Z"
+      },
+      {
+        "glucose": 165,
+        "timestamp": "2026-02-04T07:43:46.000Z"
+      },
+      {
+        "glucose": 163,
+        "timestamp": "2026-02-04T07:38:46.000Z"
+      },
+      {
+        "glucose": 159,
+        "timestamp": "2026-02-04T07:33:46.000Z"
+      },
+      {
+        "glucose": 159,
+        "timestamp": "2026-02-04T07:33:45.000Z"
+      },
+      {
+        "glucose": 154,
+        "timestamp": "2026-02-04T07:28:46.000Z"
+      },
+      {
+        "glucose": 141,
+        "timestamp": "2026-02-04T07:23:46.000Z"
+      },
+      {
+        "glucose": 151,
+        "timestamp": "2026-02-04T07:18:45.000Z"
+      },
+      {
+        "glucose": 153,
+        "timestamp": "2026-02-04T07:13:46.000Z"
+      },
+      {
+        "glucose": 157,
+        "timestamp": "2026-02-04T07:08:45.000Z"
+      },
+      {
+        "glucose": 165,
+        "timestamp": "2026-02-04T07:03:46.000Z"
+      },
+      {
+        "glucose": 170,
+        "timestamp": "2026-02-04T06:58:45.000Z"
+      },
+      {
+        "glucose": 166,
+        "timestamp": "2026-02-04T06:53:46.000Z"
+      },
+      {
+        "glucose": 155,
+        "timestamp": "2026-02-04T06:48:46.000Z"
+      },
+      {
+        "glucose": 144,
+        "timestamp": "2026-02-04T06:43:46.000Z"
+      },
+      {
+        "glucose": 135,
+        "timestamp": "2026-02-04T06:38:46.000Z"
+      },
+      {
+        "glucose": 128,
+        "timestamp": "2026-02-04T06:33:45.000Z"
+      },
+      {
+        "glucose": 123,
+        "timestamp": "2026-02-04T06:28:45.000Z"
+      },
+      {
+        "glucose": 116,
+        "timestamp": "2026-02-04T06:23:46.000Z"
+      },
+      {
+        "glucose": 108,
+        "timestamp": "2026-02-04T06:18:46.000Z"
+      },
+      {
+        "glucose": 96,
+        "timestamp": "2026-02-04T06:13:45.000Z"
+      },
+      {
+        "glucose": 86,
+        "timestamp": "2026-02-04T06:08:46.000Z"
+      },
+      {
+        "glucose": 77,
+        "timestamp": "2026-02-04T06:03:46.000Z"
+      },
+      {
+        "glucose": 69,
+        "timestamp": "2026-02-04T05:58:46.000Z"
+      },
+      {
+        "glucose": 63,
+        "timestamp": "2026-02-04T05:53:45.000Z"
+      },
+      {
+        "glucose": 58,
+        "timestamp": "2026-02-04T05:48:45.000Z"
+      },
+      {
+        "glucose": 55,
+        "timestamp": "2026-02-04T05:43:46.000Z"
+      },
+      {
+        "glucose": 55,
+        "timestamp": "2026-02-04T05:38:46.000Z"
+      },
+      {
+        "glucose": 57,
+        "timestamp": "2026-02-04T05:33:46.000Z"
+      },
+      {
+        "glucose": 61,
+        "timestamp": "2026-02-04T05:28:46.000Z"
+      },
+      {
+        "glucose": 65,
+        "timestamp": "2026-02-04T05:23:46.000Z"
+      },
+      {
+        "glucose": 70,
+        "timestamp": "2026-02-04T05:18:46.000Z"
+      },
+      {
+        "glucose": 75,
+        "timestamp": "2026-02-04T05:13:45.000Z"
+      },
+      {
+        "glucose": 79,
+        "timestamp": "2026-02-04T05:08:46.000Z"
+      },
+      {
+        "glucose": 84,
+        "timestamp": "2026-02-04T05:03:45.000Z"
+      },
+      {
+        "glucose": 88,
+        "timestamp": "2026-02-04T04:58:45.000Z"
+      },
+      {
+        "glucose": 91,
+        "timestamp": "2026-02-04T04:53:45.000Z"
+      },
+      {
+        "glucose": 98,
+        "timestamp": "2026-02-04T04:48:45.000Z"
+      },
+      {
+        "glucose": 109,
+        "timestamp": "2026-02-04T04:43:45.000Z"
+      },
+      {
+        "glucose": 122,
+        "timestamp": "2026-02-04T04:38:45.000Z"
+      },
+      {
+        "glucose": 133,
+        "timestamp": "2026-02-04T04:33:46.000Z"
+      },
+      {
+        "glucose": 141,
+        "timestamp": "2026-02-04T04:28:45.000Z"
+      },
+      {
+        "glucose": 147,
+        "timestamp": "2026-02-04T04:23:46.000Z"
+      },
+      {
+        "glucose": 154,
+        "timestamp": "2026-02-04T04:18:46.000Z"
+      },
+      {
+        "glucose": 161,
+        "timestamp": "2026-02-04T04:13:45.000Z"
+      },
+      {
+        "glucose": 167,
+        "timestamp": "2026-02-04T04:08:45.000Z"
+      },
+      {
+        "glucose": 173,
+        "timestamp": "2026-02-04T04:03:45.000Z"
+      },
+      {
+        "glucose": 178,
+        "timestamp": "2026-02-04T03:58:45.000Z"
+      }
+    ],
+    "doseHistory": [
+      {
+        "type": "tempBasal",
+        "rate": 3.25,
+        "duration": 5.0149943669637045,
+        "startTime": "2026-02-04T09:54:30Z",
+        "units": 0.271645528210534,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 3.55,
+        "duration": 4.952074398597081,
+        "startTime": "2026-02-04T09:49:33Z",
+        "units": 0.2929977352503273,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 3.4,
+        "duration": 5.04695528348287,
+        "startTime": "2026-02-04T09:44:30Z",
+        "units": 0.28599413273069596,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 3.55,
+        "duration": 5.004204116264979,
+        "startTime": "2026-02-04T09:39:30Z",
+        "units": 0.2960820768790112,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 2.95,
+        "duration": 4.9433628181616465,
+        "startTime": "2026-02-04T09:34:33Z",
+        "units": 0.24304867189294763,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 2.3,
+        "duration": 4.962631833553314,
+        "startTime": "2026-02-04T09:29:35Z",
+        "units": 0.19023422028621037,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 3.55,
+        "duration": 5.096005966265996,
+        "startTime": "2026-02-04T09:24:29Z",
+        "units": 0.3015136863374047,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4.15,
+        "duration": 9.91597716609637,
+        "startTime": "2026-02-04T09:14:35Z",
+        "units": 0.6858550873216657,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4.3,
+        "duration": 5.085408449172974,
+        "startTime": "2026-02-04T09:09:29Z",
+        "units": 0.3644542721907298,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4.45,
+        "duration": 4.965997167428335,
+        "startTime": "2026-02-04T09:04:31Z",
+        "units": 0.3683114565842682,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4.05,
+        "duration": 4.939675382773081,
+        "startTime": "2026-02-04T08:59:35Z",
+        "units": 0.3334280883371829,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 3.65,
+        "duration": 5.075020666917165,
+        "startTime": "2026-02-04T08:54:31Z",
+        "units": 0.3087304239041275,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 3.85,
+        "duration": 4.974641249577204,
+        "startTime": "2026-02-04T08:49:32Z",
+        "units": 0.3192061468478706,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4,
+        "duration": 5.005285584926606,
+        "startTime": "2026-02-04T08:44:32Z",
+        "units": 0.3336857056617737,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4.8,
+        "duration": 9.939765266577403,
+        "startTime": "2026-02-04T08:34:35Z",
+        "units": 0.7951812213261923,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4.7,
+        "duration": 5.281100515524546,
+        "startTime": "2026-02-04T08:29:19Z",
+        "units": 0.4136862070494228,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4.85,
+        "duration": 4.765675151348114,
+        "startTime": "2026-02-04T08:24:33Z",
+        "units": 0.38522540806730593,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4.3,
+        "duration": 5.0443435152371725,
+        "startTime": "2026-02-04T08:19:30Z",
+        "units": 0.361511285258664,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4.4,
+        "duration": 4.9994382679462435,
+        "startTime": "2026-02-04T08:14:30Z",
+        "units": 0.3666254729827246,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4.15,
+        "duration": 4.916322282950083,
+        "startTime": "2026-02-04T08:09:35Z",
+        "units": 0.34004562457071413,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 3.6,
+        "duration": 5.036239733298619,
+        "startTime": "2026-02-04T08:04:33Z",
+        "units": 0.30217438399791713,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4.2,
+        "duration": 5.015010215838751,
+        "startTime": "2026-02-04T07:59:32Z",
+        "units": 0.35105071510871255,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 3.95,
+        "duration": 4.9783555666605634,
+        "startTime": "2026-02-04T07:54:33Z",
+        "units": 0.32774174147182045,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 3.6,
+        "duration": 5.039350932836532,
+        "startTime": "2026-02-04T07:49:31Z",
+        "units": 0.30236105597019197,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 3.05,
+        "duration": 4.997825767596563,
+        "startTime": "2026-02-04T07:44:31Z",
+        "units": 0.2540561431861586,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 2.7,
+        "duration": 4.967779399951299,
+        "startTime": "2026-02-04T07:39:33Z",
+        "units": 0.22355007299780846,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 2.95,
+        "duration": 5.060307482878367,
+        "startTime": "2026-02-04T07:34:29Z",
+        "units": 0.24879845124151972,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 0,
+        "duration": 4.599743117888768,
+        "startTime": "2026-02-04T07:24:43Z",
+        "units": 0,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 0.9,
+        "duration": 10.001932682593663,
+        "startTime": "2026-02-04T07:14:43Z",
+        "units": 0.15002899023890495,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 1.15,
+        "duration": 5.163091766834259,
+        "startTime": "2026-02-04T07:09:33Z",
+        "units": 0.09895925886432329,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 3,
+        "duration": 4.998422549168269,
+        "startTime": "2026-02-04T07:04:33Z",
+        "units": 0.24992112745841347,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 4.6,
+        "duration": 5.059198967615763,
+        "startTime": "2026-02-04T06:59:29Z",
+        "units": 0.38787192085054184,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 5.55,
+        "duration": 4.895605083306631,
+        "startTime": "2026-02-04T06:54:36Z",
+        "units": 0.4528434702058633,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 5.65,
+        "duration": 10.08476281762123,
+        "startTime": "2026-02-04T06:44:31Z",
+        "units": 0.9496484986593327,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 5.8,
+        "duration": 5.014273182551066,
+        "startTime": "2026-02-04T06:39:30Z",
+        "units": 0.4847130743132697,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 6,
+        "duration": 19.980386465787888,
+        "startTime": "2026-02-04T06:19:31Z",
+        "units": 1.9980386465787887,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 0,
+        "duration": 19.97262035012245,
+        "startTime": "2026-02-04T05:39:32Z",
+        "units": 0,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 0,
+        "duration": 19.962871166070304,
+        "startTime": "2026-02-04T05:19:34Z",
+        "units": 0,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 0,
+        "duration": 20.02629888455073,
+        "startTime": "2026-02-04T04:59:32Z",
+        "units": 0,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 0,
+        "duration": 19.83611693183581,
+        "startTime": "2026-02-04T04:39:42Z",
+        "units": 0,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 0.15,
+        "duration": 5.17809953490893,
+        "startTime": "2026-02-04T04:34:31Z",
+        "units": 0.012945248837272326,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 0.35,
+        "duration": 4.992197781801224,
+        "startTime": "2026-02-04T04:29:32Z",
+        "units": 0.0291211537271738,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 0.6,
+        "duration": 5.006872234741847,
+        "startTime": "2026-02-04T04:24:31Z",
+        "units": 0.050068722347418465,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 0.7,
+        "duration": 5.016415899991989,
+        "startTime": "2026-02-04T04:19:30Z",
+        "units": 0.0585248521665732,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 1,
+        "duration": 5.019377432266871,
+        "startTime": "2026-02-04T04:14:29Z",
+        "units": 0.08365629053778117,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 1.15,
+        "duration": 4.996607700983684,
+        "startTime": "2026-02-04T04:09:30Z",
+        "units": 0.09576831426885393,
+        "insulinType": "Novolog"
+      },
+      {
+        "type": "tempBasal",
+        "rate": 1.95,
+        "duration": 5.047365532318751,
+        "startTime": "2026-02-04T03:54:31Z",
+        "units": 0.1640393798003594,
+        "insulinType": "Novolog"
+      }
+    ],
+    "carbHistory": []
+  },
+  "expected": {
+    "rate": 3.25,
+    "duration": 30,
+    "recommendedBolus": 0,
+    "iob": 4.34,
+    "cob": 0
+  },
+  "groundTruth": {
+    "source": "loop-devicestatus",
+    "predictions": [
+      255,
+      255.12,
+      255.56,
+      255.51,
+      254.56,
+      252.51,
+      249.89,
+      246.68,
+      242.91,
+      238.57,
+      233.7,
+      228.32,
+      222.46,
+      216.66,
+      210.95,
+      205.34,
+      199.85,
+      194.49,
+      189.28,
+      184.21,
+      179.3,
+      174.56,
+      169.98,
+      165.57,
+      161.34,
+      157.28,
+      153.4,
+      149.7,
+      146.17,
+      142.81,
+      139.62,
+      136.6,
+      133.74,
+      131.04,
+      128.5,
+      126.09,
+      123.83,
+      121.71,
+      119.71,
+      117.83,
+      116.07,
+      114.42,
+      112.88,
+      111.44,
+      110.09,
+      108.85,
+      107.69,
+      106.63,
+      105.65,
+      104.75,
+      103.93,
+      103.18,
+      102.5,
+      101.88,
+      101.33,
+      100.83,
+      100.38,
+      99.97,
+      99.62,
+      99.3,
+      99.02,
+      98.77,
+      98.56,
+      98.37,
+      98.21,
+      98.07,
+      97.95,
+      97.85,
+      97.77,
+      97.7,
+      97.64,
+      97.59,
+      97.56,
+      97.53,
+      97.51,
+      97.49,
+      97.48,
+      97.48,
+      97.48,
+      97.47,
+      97.47,
+      97.47
+    ],
+    "predictionStart": "2026-02-04T09:53:46Z",
+    "loopVersion": "3.8.1.2026010900",
+    "enacted": {
+      "rate": 3.25,
+      "duration": 30,
+      "received": true,
+      "timestamp": "2026-02-04T09:54:28Z",
+      "bolusVolume": 0
+    },
+    "override": {
+      "active": false,
+      "timestamp": "2026-02-04T09:54:30Z"
+    }
+  }
+}
