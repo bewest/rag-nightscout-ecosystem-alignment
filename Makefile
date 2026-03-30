@@ -414,3 +414,30 @@ xval-full: harness-deps ## Full cross-validation: all vectors, all comparisons, 
 		--json --report-dir results/convergence \
 		> results/convergence-summary.json || true
 	@echo "Results in $(HARNESS_DIR)/results/"
+
+# ── Focused Swift Algorithm Validation ──────────────────────────
+# Build adapter + run cross-validation without full swift test suite
+
+ADAPTER_CLI := tools/t1pal-adapter-cli
+
+xval-build: ## Rebuild Swift adapter CLI (incremental, ~2s)
+	@echo "Building Swift adapter..."
+	@cd $(ADAPTER_CLI) && swift build 2>&1 | tail -3
+
+xval-validate: xval-build ## Build adapter + run full cross-validation (100 vectors)
+	@echo ""
+	@echo "Running cross-validation (100 vectors)..."
+	@cd $(HARNESS_DIR) && node prediction-alignment.js \
+		--adapters $(XVAL_ADAPTERS) --vectors $(XVAL_VECTORS) || true
+	@echo ""
+	@echo "Decision metrics:"
+	@cd $(HARNESS_DIR) && node prediction-alignment.js \
+		--adapters $(XVAL_ADAPTERS) --vectors $(XVAL_VECTORS) --json \
+		> /tmp/xval-results.json 2>/dev/null; \
+	node summarize-xval.js /tmp/xval-results.json || true
+
+xval-smoke: xval-build ## Build adapter + quick 10-vector smoke test
+	@echo ""
+	@echo "Smoke test (10 vectors)..."
+	@cd $(HARNESS_DIR) && node prediction-alignment.js \
+		--adapters $(XVAL_ADAPTERS) --vectors $(XVAL_VECTORS) --limit 10 || true
