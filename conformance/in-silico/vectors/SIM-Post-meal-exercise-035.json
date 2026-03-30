@@ -2,22 +2,23 @@
   "metadata": {
     "id": "SIM-Post-meal-exercise-035",
     "category": "Post-meal exercise",
-    "source": "cgmsim-lib in-silico",
+    "source": "cgmsim-lib in-silico (uva-padova)",
     "mode": "oref0-loop",
-    "patient": "standard"
+    "patient": "standard",
+    "engine": "uva-padova"
   },
   "input": {
     "glucoseStatus": {
-      "glucose": 88,
-      "delta": -0.1,
-      "shortAvgDelta": 0,
-      "longAvgDelta": -0.5
+      "glucose": 114.6,
+      "delta": -1.1,
+      "shortAvgDelta": -1.1000000000000085,
+      "longAvgDelta": -1.1000000000000014
     },
     "iob": {
-      "iob": 5.13,
-      "basalIob": 2.01,
-      "bolusIob": 3.12,
-      "activity": 1.554
+      "iob": 0.49,
+      "basalIob": 0,
+      "bolusIob": 0.49,
+      "activity": 0.0014
     },
     "profile": {
       "basalRate": 1,
@@ -30,35 +31,34 @@
       "maxIob": 5
     },
     "mealData": {
-      "cob": 4.3,
+      "cob": 14,
       "carbs": 0
     },
     "currentTemp": {
-      "rate": 0,
+      "rate": 1,
       "duration": 30
     }
   },
   "originalOutput": {
     "predBGs": {
       "IOB": [
-        88,
-        88,
-        89,
-        88,
-        88,
-        88,
-        89,
-        89,
-        88,
-        88,
-        89,
-        89
+        115,
+        114,
+        113,
+        111,
+        110,
+        109,
+        108,
+        107,
+        106,
+        105,
+        103,
+        102
       ]
     },
-    "eventualBG": 89
+    "eventualBG": 102
   },
   "expected": {
-    "rate": 0,
-    "eventualBG": 1745
+    "eventualBG": 157
   }
 }

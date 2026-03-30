@@ -2,25 +2,26 @@
   "metadata": {
     "id": "SIM-Multi-meal-day-(breakfast-+-lunch-+-snack)-035",
     "category": "Multi-meal day (breakfast + lunch + snack)",
-    "source": "cgmsim-lib in-silico",
+    "source": "cgmsim-lib in-silico (uva-padova)",
     "mode": "oref0-loop",
-    "patient": "standard"
+    "patient": "standard",
+    "engine": "uva-padova"
   },
   "input": {
     "glucoseStatus": {
-      "glucose": 89,
-      "delta": 0,
-      "shortAvgDelta": 0,
-      "longAvgDelta": 0
+      "glucose": 139.1,
+      "delta": 1,
+      "shortAvgDelta": 1,
+      "longAvgDelta": 0.75
     },
     "iob": {
-      "iob": 2.01,
-      "basalIob": 2.01,
-      "bolusIob": 0,
-      "activity": 0.662
+      "iob": 1.25,
+      "basalIob": 0,
+      "bolusIob": 1.25,
+      "activity": 0.0035
     },
     "profile": {
-      "basalRate": 1,
+      "basalRate": 1.65,
       "sensitivity": 40,
       "carbRatio": 10,
       "dia": 6,
@@ -30,35 +31,34 @@
       "maxIob": 5
     },
     "mealData": {
-      "cob": 0,
+      "cob": 22.3,
       "carbs": 0
     },
     "currentTemp": {
-      "rate": 0,
+      "rate": 1.65,
       "duration": 30
     }
   },
   "originalOutput": {
     "predBGs": {
       "IOB": [
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89
+        139,
+        140,
+        141,
+        142,
+        142,
+        142,
+        141,
+        141,
+        139,
+        138,
+        136,
+        134
       ]
     },
-    "eventualBG": 89
+    "eventualBG": 134
   },
   "expected": {
-    "rate": 0,
-    "eventualBG": 802
+    "eventualBG": 204
   }
 }

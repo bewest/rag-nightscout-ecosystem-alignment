@@ -2,22 +2,23 @@
   "metadata": {
     "id": "SIM-Meal-with-adequate-bolus-005",
     "category": "Meal with adequate bolus",
-    "source": "cgmsim-lib in-silico",
+    "source": "cgmsim-lib in-silico (uva-padova)",
     "mode": "oref0-loop",
-    "patient": "standard"
+    "patient": "standard",
+    "engine": "uva-padova"
   },
   "input": {
     "glucoseStatus": {
-      "glucose": 99,
-      "delta": 0.1,
-      "shortAvgDelta": 0,
-      "longAvgDelta": 0
+      "glucose": 106.1,
+      "delta": 4.9,
+      "shortAvgDelta": 4.8999999999999915,
+      "longAvgDelta": 3
     },
     "iob": {
-      "iob": 2.01,
-      "basalIob": 2.01,
-      "bolusIob": 0,
-      "activity": 0
+      "iob": 4.62,
+      "basalIob": 0,
+      "bolusIob": 4.62,
+      "activity": 0.0128
     },
     "profile": {
       "basalRate": 1,
@@ -30,35 +31,34 @@
       "maxIob": 5
     },
     "mealData": {
-      "cob": 0,
+      "cob": 48,
       "carbs": 0
     },
     "currentTemp": {
-      "rate": 0,
+      "rate": 1,
       "duration": 30
     }
   },
   "originalOutput": {
     "predBGs": {
       "IOB": [
-        99,
-        99,
-        99,
-        99,
-        99,
-        99,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89
+        106,
+        115,
+        125,
+        135,
+        143,
+        149,
+        154,
+        158,
+        160,
+        162,
+        163,
+        164
       ]
     },
-    "eventualBG": 89
+    "eventualBG": 164
   },
   "expected": {
-    "rate": 0,
-    "eventualBG": 19
+    "eventualBG": 206
   }
 }

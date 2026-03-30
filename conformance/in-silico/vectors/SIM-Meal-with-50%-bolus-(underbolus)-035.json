@@ -2,25 +2,26 @@
   "metadata": {
     "id": "SIM-Meal-with-50%-bolus-(underbolus)-035",
     "category": "Meal with 50% bolus (underbolus)",
-    "source": "cgmsim-lib in-silico",
+    "source": "cgmsim-lib in-silico (uva-padova)",
     "mode": "oref0-loop",
-    "patient": "standard"
+    "patient": "standard",
+    "engine": "uva-padova"
   },
   "input": {
     "glucoseStatus": {
-      "glucose": 89,
-      "delta": -0.1,
-      "shortAvgDelta": 0,
-      "longAvgDelta": 0
+      "glucose": 168.6,
+      "delta": 1,
+      "shortAvgDelta": 1,
+      "longAvgDelta": 0.8999999999999915
     },
     "iob": {
-      "iob": 2.01,
-      "basalIob": 2.01,
-      "bolusIob": 0,
-      "activity": 0.662
+      "iob": 0.74,
+      "basalIob": 0,
+      "bolusIob": 0.74,
+      "activity": 0.0021
     },
     "profile": {
-      "basalRate": 1,
+      "basalRate": 3.65,
       "sensitivity": 40,
       "carbRatio": 10,
       "dia": 6,
@@ -30,35 +31,34 @@
       "maxIob": 5
     },
     "mealData": {
-      "cob": 0,
+      "cob": 27.2,
       "carbs": 0
     },
     "currentTemp": {
-      "rate": 0,
+      "rate": 3.65,
       "duration": 30
     }
   },
   "originalOutput": {
     "predBGs": {
       "IOB": [
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89
+        169,
+        169,
+        170,
+        169,
+        169,
+        167,
+        165,
+        163,
+        160,
+        157,
+        154,
+        150
       ]
     },
-    "eventualBG": 89
+    "eventualBG": 150
   },
   "expected": {
-    "rate": 0,
-    "eventualBG": 802
+    "eventualBG": 263
   }
 }

@@ -2,22 +2,23 @@
   "metadata": {
     "id": "SIM-Hypoglycemia-recovery-015",
     "category": "Hypoglycemia recovery",
-    "source": "cgmsim-lib in-silico",
+    "source": "cgmsim-lib in-silico (uva-padova)",
     "mode": "oref0-loop",
-    "patient": "standard"
+    "patient": "standard",
+    "engine": "uva-padova"
   },
   "input": {
     "glucoseStatus": {
-      "glucose": 89,
-      "delta": 0,
-      "shortAvgDelta": 0,
-      "longAvgDelta": 0
+      "glucose": 97.3,
+      "delta": 1.6,
+      "shortAvgDelta": 1.5999999999999943,
+      "longAvgDelta": 1.6499999999999986
     },
     "iob": {
-      "iob": 1.61,
-      "basalIob": 1.61,
+      "iob": 0,
+      "basalIob": 0,
       "bolusIob": 0,
-      "activity": 0.5296
+      "activity": 0
     },
     "profile": {
       "basalRate": 1,
@@ -30,35 +31,34 @@
       "maxIob": 5
     },
     "mealData": {
-      "cob": 0,
+      "cob": 12.1,
       "carbs": 0
     },
     "currentTemp": {
-      "rate": 0,
+      "rate": 1,
       "duration": 30
     }
   },
   "originalOutput": {
     "predBGs": {
       "IOB": [
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89
+        97,
+        99,
+        100,
+        102,
+        104,
+        106,
+        108,
+        111,
+        113,
+        114,
+        115,
+        116
       ]
     },
-    "eventualBG": 89
+    "eventualBG": 116
   },
   "expected": {
-    "rate": 0,
-    "eventualBG": 660
+    "eventualBG": 145
   }
 }

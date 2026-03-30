@@ -2,22 +2,23 @@
   "metadata": {
     "id": "SIM-Post-meal-exercise-005",
     "category": "Post-meal exercise",
-    "source": "cgmsim-lib in-silico",
+    "source": "cgmsim-lib in-silico (uva-padova)",
     "mode": "oref0-loop",
-    "patient": "standard"
+    "patient": "standard",
+    "engine": "uva-padova"
   },
   "input": {
     "glucoseStatus": {
-      "glucose": 140,
+      "glucose": 139.9,
       "delta": 0.1,
       "shortAvgDelta": 0,
-      "longAvgDelta": 0
+      "longAvgDelta": -0.04999999999999716
     },
     "iob": {
-      "iob": 5.13,
-      "basalIob": 2.01,
-      "bolusIob": 3.12,
-      "activity": 0
+      "iob": 2.35,
+      "basalIob": 0,
+      "bolusIob": 2.35,
+      "activity": 0.0065
     },
     "profile": {
       "basalRate": 1,
@@ -30,7 +31,7 @@
       "maxIob": 5
     },
     "mealData": {
-      "cob": 6.9,
+      "cob": 30.7,
       "carbs": 0
     },
     "currentTemp": {
@@ -44,20 +45,20 @@
         140,
         140,
         140,
-        140,
-        140,
-        140,
-        88,
-        88,
-        89,
-        88,
-        88,
-        88
+        139,
+        139,
+        139,
+        138,
+        138,
+        137,
+        137,
+        136,
+        135
       ]
     },
-    "eventualBG": 88
+    "eventualBG": 135
   },
   "expected": {
-    "eventualBG": 167
+    "eventualBG": 216
   }
 }

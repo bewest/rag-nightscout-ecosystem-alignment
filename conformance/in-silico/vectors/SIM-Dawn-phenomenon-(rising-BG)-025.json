@@ -2,22 +2,23 @@
   "metadata": {
     "id": "SIM-Dawn-phenomenon-(rising-BG)-025",
     "category": "Dawn phenomenon (rising BG)",
-    "source": "cgmsim-lib in-silico",
+    "source": "cgmsim-lib in-silico (uva-padova)",
     "mode": "oref0-loop",
-    "patient": "resistant"
+    "patient": "resistant",
+    "engine": "uva-padova"
   },
   "input": {
     "glucoseStatus": {
-      "glucose": 90,
-      "delta": 0,
-      "shortAvgDelta": 0,
-      "longAvgDelta": 0
+      "glucose": 112.6,
+      "delta": -0.6,
+      "shortAvgDelta": -0.6000000000000085,
+      "longAvgDelta": -0.5500000000000043
     },
     "iob": {
-      "iob": 2.08,
-      "basalIob": 2.08,
+      "iob": 0,
+      "basalIob": 0,
       "bolusIob": 0,
-      "activity": 0.2984
+      "activity": 0
     },
     "profile": {
       "basalRate": 1,
@@ -34,31 +35,30 @@
       "carbs": 0
     },
     "currentTemp": {
-      "rate": 0,
+      "rate": 1,
       "duration": 30
     }
   },
   "originalOutput": {
     "predBGs": {
       "IOB": [
-        90,
-        90,
-        90,
-        90,
-        90,
-        90,
-        90,
-        90,
-        90,
-        90,
-        90,
-        90
+        113,
+        112,
+        112,
+        111,
+        110,
+        110,
+        109,
+        109,
+        108,
+        107,
+        107,
+        106
       ]
     },
-    "eventualBG": 90
+    "eventualBG": 106
   },
   "expected": {
-    "rate": 0,
-    "eventualBG": 227
+    "eventualBG": 110
   }
 }

@@ -2,22 +2,23 @@
   "metadata": {
     "id": "SIM-Fasting-with-stable-basal-055",
     "category": "Fasting with stable basal",
-    "source": "cgmsim-lib in-silico",
+    "source": "cgmsim-lib in-silico (uva-padova)",
     "mode": "oref0-loop",
-    "patient": "standard"
+    "patient": "standard",
+    "engine": "uva-padova"
   },
   "input": {
     "glucoseStatus": {
-      "glucose": 89,
-      "delta": 0.1,
-      "shortAvgDelta": 0,
-      "longAvgDelta": 0
+      "glucose": 57.3,
+      "delta": -4.7,
+      "shortAvgDelta": -4.700000000000003,
+      "longAvgDelta": -4.550000000000004
     },
     "iob": {
-      "iob": 2.01,
-      "basalIob": 2.01,
+      "iob": 0,
+      "basalIob": 0,
       "bolusIob": 0,
-      "activity": 0.662
+      "activity": 0
     },
     "profile": {
       "basalRate": 1,
@@ -41,24 +42,24 @@
   "originalOutput": {
     "predBGs": {
       "IOB": [
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89,
-        89
+        57,
+        53,
+        48,
+        45,
+        41,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40
       ]
     },
-    "eventualBG": 89
+    "eventualBG": 40
   },
   "expected": {
     "rate": 0,
-    "eventualBG": 803
+    "eventualBG": 31
   }
 }
