@@ -2,8 +2,8 @@
 
 **Date**: 2025-03-30 (updated)  
 **Scope**: oref0 (JS vs Swift vs AAPS-JS), Loop (Swift), GlucOS (Swift)  
-**Test vectors**: 100 vectors from `conformance/t1pal/vectors/oref0-endtoend/`  
-**Ground truth**: Captured prediction trajectories from real phone runs
+**Test vectors**: 100 oref0 vectors + 200 Loop vectors (300 total)  
+**Ground truth**: Captured prediction trajectories from real phone runs + NS devicestatus
 
 ---
 
@@ -16,7 +16,9 @@ on 100 test vectors shows **full parity** after iterative convergence work:
 |------|------------|------------|-----------|---------|
 | oref0-JS ↔ AAPS-JS | **100/100** | 61/72 (85%) | **72/72 (100%)** | 0.012 |
 | oref0-JS ↔ t1pal-Swift | **100/100** | **71/72 (99%)** | **72/72 (100%)** | **0.005** |
+| oref0-JS ↔ t1pal-Swift (Loop data) | **161/161** | 136/155 (88%) | 139/155 (90%) | **0.000** |
 | Loop-C ↔ Loop-T | **100/100** | **100/100** | **100/100** | 0.000 |
+| oref0 vs Loop (cross-algo) | — | — | — | 5.5 (pred) |
 
 The Swift oref0 port achieves **100% eventualBG exact match**, **99% rate exact
 match**, and prediction curves with **0.005 mg/dL IOB MAE** — exceeding even
@@ -1083,3 +1085,78 @@ accumulation noise (max IOB MAE on any single vector: 0.154 mg/dL).
 The single rate mismatch (1/72) is at a threshold boundary where minPredBG
 differs by 1 mg/dL, producing a 0.05 U/hr rate difference — an irreducible
 floating-point boundary effect.
+
+---
+
+## Assessment A13: Loop Vector Generation & Cross-Domain Validation
+
+**Date**: 2025-03-30  
+**Scope**: 200 vectors from 85-day real Loop v3.8.1 Nightscout fixture  
+**Data source**: `../t1pal-mobile-workspace/externals/logs/ns-fixtures/90-day-history/`
+
+### What Was Done
+
+Created `tools/ns-fixture-to-vectors.js` to convert Nightscout fixture dumps
+(entries, treatments, devicestatus, profile) into adapter-compatible test vectors
+with Loop ground truth predictions.
+
+**Input data**: 36,611 CGM entries, 13,505 treatments, 24,621 Loop devicestatus,
+10 profiles. Dexcom G6 sensor, Novolog insulin, DIA=6, Loop v3.8.1.
+
+**Generated**: 200 vectors (`conformance/loop/vectors/LV-001 through LV-200`)
+- 130 in-range, 58 high, 12 low (BG range 57-257 mg/dL)
+- Average 45 dose history entries per vector (temp basals + boluses)
+- Ground truth: Loop `predicted.values` arrays (60-85 points, 5-min intervals)
+- Each vector includes glucoseHistory (78 readings), doseHistory, carbHistory
+
+### Results: oref0-JS vs oref0-Swift on Loop Data
+
+| Metric | Value | Note |
+|--------|-------|------|
+| EventualBG exact | **161/161 (100%)** | Same as oref0-native vectors |
+| IOB prediction MAE | **0.000** | Perfect curve alignment |
+| Rate exact | 136/155 (88%) | Lower due to activity=0 |
+| Rate ±0.5 | 139/155 (90%) | 16 mismatches from BGI=0 |
+| JS null-rate | 45/200 | Continuance (as expected) |
+| Swift null-rate | 45/200 | Matches JS continuance count |
+
+The **100% eventualBG match** and **0.000 IOB MAE** confirm that oref0 JS↔Swift
+parity holds on completely new, out-of-distribution data. The rate divergence
+(88% vs 99% on oref0-native vectors) is entirely caused by `activity: 0` —
+Loop's Nightscout devicestatus does not include the insulin activity field that
+oref0 needs for BGI calculation.
+
+### Results: oref0 vs Loop Ground Truth (Cross-Algorithm)
+
+| Metric | Value |
+|--------|-------|
+| Prediction MAE (avg) | **5.5 mg/dL** |
+| Prediction MAE (median) | **4.2 mg/dL** |
+| Predictions within 20 mg/dL | **190/195 (97%)** |
+| EventualBG within 10 mg/dL | 59/161 (37%) |
+| EventualBG within 20 mg/dL | 111/161 (69%) |
+
+Early prediction agreement (MAE 4.2 median) with eventual divergence (avg 16.9
+mg/dL) is expected: both algorithms use the same initial CGM trend but diverge
+as their distinct prediction models take effect (oref0: 4 separate curves with
+BGI-based decay; Loop: single combined curve with dynamic carb absorption and
+retrospective correction).
+
+### Key Discovery: Activity Gap (GAP-DS-010)
+
+Loop's Nightscout devicestatus provides `loop.iob` (scalar) but NOT `activity`.
+When oref0 receives `activity: 0`:
+- BGI = 0 (no insulin effect computed)
+- Prediction curves flatten (no insulin decay modeled)
+- minPredBG is higher than it should be → less aggressive dosing
+- 16/155 rate mismatches (>0.5 U/hr) are all BGI=0 artifacts
+
+**Remediation options**:
+1. Compute activity from dose history using exponential model (IOBArrayGenerator)
+2. Approximate from IOB delta: activity ≈ -(IOB[t] - IOB[t-5min]) / 5
+3. Require Loop to report activity in devicestatus (upstream change)
+
+### Files
+
+- `tools/ns-fixture-to-vectors.js` — NS fixture → test vector converter
+- `conformance/loop/vectors/` — 200 Loop test vectors (LV-001 to LV-200)
