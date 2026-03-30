@@ -5,6 +5,10 @@
  * Generates synthetic glucose scenarios using cgmsim-lib's pharmacokinetic
  * model, optionally closed-loop with oref0 determine-basal as the controller.
  *
+ * Engines (--engine):
+ *   cgmsim      — algebraic pharmacokinetic model (fast, simplified)
+ *   uva-padova  — 18-ODE physiological model (realistic, full dynamics)
+ *
  * Modes:
  *   open-loop   — no controller, just basal + meals + patient dynamics
  *   oref0-loop  — oref0 determine-basal adjusts temp basal every 5 min
@@ -27,6 +31,8 @@
  *   node in-silico-bridge.js --scenario meal-rise --mode oref0-loop --csv
  *   node in-silico-bridge.js --scenario all --mode open-loop --json
  *   node in-silico-bridge.js --scenario meal-rise --hours 4 --vectors
+ *   node in-silico-bridge.js --engine uva-padova --scenario all --vectors
+ *   node in-silico-bridge.js --engine uva-padova --sensor facchinetti --scenario meal-rise
  *
  * Trace: ALG-VERIFY-007, REQ-060
  */
@@ -54,6 +60,17 @@ try {
   tempBasalFunctions = require(path.join(REPO_ROOT, 'externals/oref0/lib/basal-set-temp'));
 } catch (e) {
   // oref0 not available — open-loop only
+}
+
+// Load UVA/Padova low-level modules (for --engine uva-padova)
+let UvaPadovaModel, SolverRK, Facchinetti2014Sensor, Vettoretti2019Sensor;
+try {
+  UvaPadovaModel = require(path.join(CGMSIM_PATH, 'dist/lt1/core/models/UvaPadova_T1DMS'));
+  SolverRK = require(path.join(CGMSIM_PATH, 'dist/lt1/core/solvers/SolverRK1_2'));
+  Facchinetti2014Sensor = require(path.join(CGMSIM_PATH, 'dist/lt1/core/sensors/Facchinetti2014'));
+  Vettoretti2019Sensor = require(path.join(CGMSIM_PATH, 'dist/lt1/core/sensors/Vettoretti2019'));
+} catch (e) {
+  // UVA/Padova modules not available — cgmsim engine only
 }
 
 // ─── Patient Profiles ───
@@ -346,6 +363,225 @@ function runSimulation(scenario, mode) {
     scenario: scenario.name,
     mode,
     patient: patientKey,
+    engine: 'cgmsim',
+    hours,
+    steps: totalSteps,
+    startBG,
+    trace,
+    summary: computeSummary(trace)
+  };
+}
+
+// ─── UVA/Padova Simulation Engine ───
+
+function runSimulationUVA(scenario, mode, sensorType) {
+  if (!UvaPadovaModel || !SolverRK) {
+    throw new Error('UVA/Padova modules not available. Ensure cgmsim-lib is built.');
+  }
+
+  const patientKey = scenario.patient || 'standard';
+  const patientProfile = { ...PATIENTS[patientKey] };
+  const startBG = scenario.startBG || 110;
+  const hours = scenario.hours || 4;
+  const totalSteps = Math.floor(hours * 60 / 5);
+  const basalRate = scenario.basalRate || 1.0;
+
+  // Align start time to whole minute for sensor sampling compatibility
+  const startTime = Math.floor(Date.now() / 60000) * 60000;
+
+  // Create UVA/Padova patient with equilibrium at startBG
+  const patient = new UvaPadovaModel.default({ Gpeq: startBG, BW: patientProfile.WEIGHT });
+  const solver = new SolverRK.default();
+
+  // Optionally add sensor noise
+  let sensor = null;
+  if (sensorType === 'facchinetti' && Facchinetti2014Sensor) {
+    sensor = new Facchinetti2014Sensor.default({ samplingTime: 1 });
+  } else if (sensorType === 'vettoretti' && Vettoretti2019Sensor) {
+    sensor = new Vettoretti2019Sensor.default({ samplingTime: 1 });
+  }
+
+  // Initialize patient at steady state (aligned to whole minute)
+  const t0 = new Date(startTime);
+  patient.reset(t0, 42, solver);
+  if (sensor) sensor.reset(t0, 42, solver);
+
+  // Parse all treatments with absolute timestamps
+  const treatments = (scenario.treatments || []).map(t => ({
+    ...t,
+    absTime: new Date(t.created_at).getTime()
+  }));
+
+  // Build treatment lookup: for each minute, what's the input?
+  // Treatments are point events; we spread carbs over 15 minutes
+  function getInputAtMinute(minuteTime) {
+    let iir = basalRate;  // U/hr basal rate
+    let bolus = 0;        // U instant bolus (converted to U/hr for the minute)
+    let carbs = 0;        // g/min carb intake
+    let meal = 0;         // g total meal (at meal start)
+
+    for (const t of treatments) {
+      const tMinStart = t.absTime;
+      const minutesSinceTreatment = (minuteTime - tMinStart) / 60000;
+
+      // Bolus: deliver in the minute it was given
+      if (t.insulin && minutesSinceTreatment >= 0 && minutesSinceTreatment < 1) {
+        bolus += t.insulin;
+      }
+
+      // Carbs: spread over 15 minutes starting at treatment time
+      if (t.carbs && minutesSinceTreatment >= 0 && minutesSinceTreatment < 15) {
+        carbs += t.carbs / 15;  // g/min
+        if (minutesSinceTreatment < 1) {
+          meal += t.carbs;  // signal total meal size at start
+        }
+      }
+
+      // Temp basal: override iir during duration
+      if (t.eventType === 'Temp Basal' && t.rate !== undefined) {
+        const durationMs = (t.durationInMilliseconds || (t.duration || 30) * 60000);
+        if (minutesSinceTreatment >= 0 && minutesSinceTreatment < durationMs / 60000) {
+          iir = t.rate;
+        }
+      }
+    }
+
+    // Convert bolus to equivalent U/hr for the 1-minute step
+    iir += bolus * 60;
+
+    return { iir, carbs, meal, exercise: 0 };
+  }
+
+  // Seed glucose history for oref0 controller compatibility
+  const entries = [];
+  for (let i = 4; i >= 0; i--) {
+    entries.push({
+      mills: startTime - i * 5 * 60000,
+      sgv: startBG + (Math.random() - 0.5) * 2
+    });
+  }
+
+  const profiles = [{
+    startDate: new Date(startTime - 86400000).toISOString(),
+    defaultProfile: 'default',
+    store: { default: { basal: basalRate } }
+  }];
+
+  const trace = [];
+  let currentTempRate = basalRate;
+  let accumulatedInsulin = 0;  // Track insulin delivered for IOB approximation
+
+  for (let step = 0; step < totalSteps; step++) {
+    const stepTime = startTime + step * 5 * 60000;
+
+    // Step patient forward 5 minutes (5 × 1-minute ODE integration)
+    let lastSensorReading = null;
+    for (let m = 0; m < 5; m++) {
+      const minuteTime = stepTime + m * 60000;
+      const tDate = new Date(minuteTime);
+      const input = getInputAtMinute(minuteTime);
+      patient.update(tDate, () => input);
+      if (sensor) {
+        const sensorResult = sensor.update(tDate, patient.getOutput());
+        if (sensorResult && sensorResult.CGM !== undefined) {
+          lastSensorReading = sensorResult.CGM;
+        }
+      }
+    }
+
+    // Get glucose reading
+    const output = patient.getOutput();
+    let bg;
+    if (sensor && lastSensorReading !== null && !isNaN(lastSensorReading)) {
+      bg = lastSensorReading;
+    } else {
+      bg = output.Gp;
+    }
+    bg = Math.max(40, Math.min(400, Math.round(bg * 10) / 10));
+
+    // Compute deltas from glucose history
+    const prev1 = entries.length > 0 ? entries[0].sgv : bg;
+    const prev2 = entries.length > 1 ? entries[1].sgv : prev1;
+    const prev3 = entries.length > 2 ? entries[2].sgv : prev2;
+    const rawDelta = bg - prev1;
+    const delta = rawDelta === 0 ? (Math.random() - 0.5) * 0.2 : rawDelta;
+    const shortDelta = (bg - prev2) / 2 || delta;
+    const longDelta = (bg - prev3) / 3 || delta;
+
+    // Approximate IOB/COB from treatment history (simplified exponential decay)
+    const dia = patientProfile.DIA || 6;
+    const diaMins = dia * 60;
+    const now = stepTime;
+    let bolusIOB = 0, basalIOB = 0, cob = 0;
+
+    for (const t of treatments) {
+      const elapsed = (now - t.absTime) / 60000; // minutes since treatment
+      if (elapsed < 0 || elapsed > diaMins) continue;
+      const frac = 1 - elapsed / diaMins;
+      if (t.insulin) bolusIOB += t.insulin * frac * frac; // quadratic decay
+      if (t.carbs) {
+        const carbsAbsTime = patientProfile.CARBS_ABS_TIME || 360;
+        if (elapsed < carbsAbsTime) cob += t.carbs * (1 - elapsed / carbsAbsTime);
+      }
+    }
+
+    // Approximate insulin activity from IOB derivative
+    const insulinActivity = bolusIOB > 0 ? bolusIOB / diaMins : 0;
+
+    // Run oref0 controller if in closed-loop mode
+    let decision = null;
+    if (mode === 'oref0-loop' && determineBasal) {
+      // Build simResult-compatible object for oref0 controller
+      const simResultCompat = {
+        sgv: bg, cob, bolusIOB, basalIOB, pumpBasalIOB: basalIOB,
+        bolusActivity: insulinActivity, basalActivity: 0,
+        carbsActivity: 0, liverActivity: 0
+      };
+      decision = runOref0Controller(
+        bg, delta, shortDelta, longDelta,
+        simResultCompat, patientProfile, currentTempRate, dia
+      );
+      if (decision && decision.rate !== undefined && decision.rate !== null) {
+        currentTempRate = decision.rate;
+        treatments.push({
+          eventType: 'Temp Basal',
+          rate: decision.rate,
+          duration: 30,
+          durationInMilliseconds: 30 * 60000,
+          created_at: new Date(stepTime).toISOString(),
+          absTime: stepTime
+        });
+      }
+    }
+
+    // Record trace
+    trace.push({
+      step,
+      timeMin: step * 5,
+      timeISO: new Date(stepTime).toISOString(),
+      bg,
+      delta: Math.round(delta * 10) / 10,
+      cob: Math.round(cob * 10) / 10,
+      bolusIOB: Math.round(bolusIOB * 100) / 100,
+      basalIOB: Math.round(basalIOB * 100) / 100,
+      carbsActivity: 0,
+      insulinActivity: Math.round(insulinActivity * 10000) / 10000,
+      tempBasalRate: mode === 'oref0-loop' ? currentTempRate : basalRate,
+      controllerRate: decision ? decision.rate : null,
+      controllerEventualBG: decision ? decision.eventualBG : null,
+      controllerReason: decision ? (decision.reason || '').substring(0, 80) : null,
+    });
+
+    // Update glucose history
+    entries.unshift({ mills: stepTime, sgv: bg });
+    if (entries.length > 20) entries.pop();
+  }
+
+  return {
+    scenario: scenario.name,
+    mode,
+    patient: patientKey,
+    engine: 'uva-padova' + (sensorType && sensorType !== 'none' ? `+${sensorType}` : ''),
     hours,
     steps: totalSteps,
     startBG,
@@ -411,9 +647,10 @@ function toVectors(results) {
         metadata: {
           id: `SIM-${r.scenario.replace(/\s+/g, '-')}-${String(i).padStart(3, '0')}`,
           category: r.scenario,
-          source: 'cgmsim-lib in-silico',
+          source: `cgmsim-lib in-silico (${r.engine || 'cgmsim'})`,
           mode: r.mode,
           patient: r.patient,
+          engine: r.engine || 'cgmsim',
         },
         input: {
           glucoseStatus: {
@@ -455,8 +692,9 @@ function toVectors(results) {
 }
 
 function printSummaryTable(results) {
+  const engine = results.length > 0 ? results[0].engine || 'cgmsim' : 'cgmsim';
   console.log('\n╔═══════════════════════════════════════════════════════════════════════════╗');
-  console.log('║                   In-Silico Simulation Results (cgmsim-lib)              ║');
+  console.log(`║              In-Silico Simulation Results (${engine.padEnd(27)})║`);
   console.log('╠═══════════════════════════════════════════════════════════════════════════╣');
   console.log('║ Scenario                 │ Mode      │ AvgBG │ Min │ Max │ TIR%  │ TBR% ║');
   console.log('╟──────────────────────────┼───────────┼───────┼─────┼─────┼───────┼──────╢');
@@ -481,10 +719,25 @@ function printSummaryTable(results) {
 const args = process.argv.slice(2);
 const scenarioArg = args.find((_, i) => args[i-1] === '--scenario') || 'meal-rise';
 const modeArg = args.find((_, i) => args[i-1] === '--mode') || 'open-loop';
+const engineArg = args.find((_, i) => args[i-1] === '--engine') || 'cgmsim';
+const sensorArg = args.find((_, i) => args[i-1] === '--sensor') || 'none';
 const hoursArg = parseFloat(args.find((_, i) => args[i-1] === '--hours') || '0');
 const csvFlag = args.includes('--csv');
 const jsonFlag = args.includes('--json');
 const vectorsFlag = args.includes('--vectors');
+
+if (!['cgmsim', 'uva-padova'].includes(engineArg)) {
+  console.error(`Unknown engine: ${engineArg}. Available: cgmsim, uva-padova`);
+  process.exit(1);
+}
+if (engineArg === 'uva-padova' && !UvaPadovaModel) {
+  console.error('UVA/Padova modules not available. Run: cd externals/cgmsim-lib && npm install && npm run build');
+  process.exit(1);
+}
+if (!['none', 'facchinetti', 'vettoretti'].includes(sensorArg)) {
+  console.error(`Unknown sensor: ${sensorArg}. Available: none, facchinetti, vettoretti`);
+  process.exit(1);
+}
 
 const SCENARIO_NAMES = ['meal-rise', 'meal-underbolus', 'fasting-flat', 'hypo-recovery', 'dawn-phenomenon', 'exercise', 'multi-meal'];
 const scenarios = scenarioArg === 'all' ? SCENARIO_NAMES : [scenarioArg];
@@ -502,7 +755,9 @@ for (const scenarioName of scenarios) {
     }
     const scenario = makeScenario(scenarioName);
     if (hoursArg > 0) scenario.hours = hoursArg;
-    const result = runSimulation(scenario, mode);
+    const result = engineArg === 'uva-padova'
+      ? runSimulationUVA(scenario, mode, sensorArg)
+      : runSimulation(scenario, mode);
     results.push(result);
   }
 }
