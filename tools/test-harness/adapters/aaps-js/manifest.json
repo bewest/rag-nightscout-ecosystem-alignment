@@ -1,0 +1,21 @@
+{
+  "name": "aaps-js",
+  "algorithm": "oref0-aaps",
+  "version": "0.1.0",
+  "language": "javascript",
+  "invoke": {
+    "command": "node index.js",
+    "env": {
+      "AAPS_PATH": "../../../../externals/AndroidAPS"
+    }
+  },
+  "capabilities": {
+    "predictions": true,
+    "smb": true,
+    "acob": true,
+    "effectModifiers": false,
+    "inputValidation": true
+  },
+  "modes": ["execute", "validate-input", "describe"],
+  "notes": "AAPS's modified oref0 JS via Node.js (not Rhino). Key differences from upstream: round_basal is no-op, flatBGsDetected parameter, aCOB predictions, removed high_bg SMB."
+}
