@@ -1374,6 +1374,11 @@ attempting fingerprint calibration.
 
 ### CGM Trace Generation: Methodology Comparison
 
+> **Detailed research exploration**: See `docs/60-research/cgm-trace-generation-methodologies.md`
+> for in-depth analysis of 5 generation methodologies, UVA/Padova validation history,
+> corruption-based augmentation (advisor's "corrupt historical data" approach),
+> and a phased exploration roadmap.
+
 The ecosystem currently has **two methodology families** for generating CGM traces.
 A third family — trained generative models — is absent but worth evaluating.
 
@@ -1513,6 +1518,12 @@ PRIORITY ORDER:
    - Unblocks meaningful calibration (§5)
    - Physics-only, no ML training needed
 
+1b. IMMEDIATE: Extract sensor noise models as standalone corruption tools
+   - Facchinetti2014, Vettoretti2019, Breton2008 already exist in code
+   - Apply retrospectively to real CGM traces for data augmentation
+   - Implements advisor's "corrupt historical data" recommendation
+   - See docs/60-research/cgm-trace-generation-methodologies.md §7
+
 2. SHORT-TERM: Calibrate UVA/Padova via fingerprint distance (§5.5)
    - Use Wasserstein/DTW/ACF matching against real dataset fingerprints
    - Produce validated SIM-* vectors that match real distributions
@@ -1523,15 +1534,21 @@ PRIORITY ORDER:
    - Enable compound confounder scenarios
    - Dramatic expansion of scenario diversity
 
+3b. MEDIUM-TERM: Treatment perturbation + physics counterfactuals
+   - Corrupt real treatment streams (dose ±%, timing jitter)
+   - Use calibrated physics model to compute counterfactual BG
+   - Grounded augmentation: real data structure + controlled variation
+
 4. LONGER-TERM: Evaluate hybrid physics-ML residual approach
    - Train residual model on gap between UVA/Padova and real data
    - Absorbs behavioral noise, device artifacts, unmodeled confounders
    - Requires per-subject paired trajectories (GluPredKit provides)
 
-5. RESEARCH: Evaluate pure generative models (TimeGAN, Neural ODE)
+5. RESEARCH: Evaluate pure generative models (TimeGAN, Diffusion, Neural ODE)
    - For unlimited scenario generation beyond calibrated physics
    - Would need >10K real CGM traces for training
    - Most relevant for edge case synthesis and data augmentation
+   - Diffusion models are formal version of "corrupt and reconstruct"
 ```
 
 Each level builds on the previous. Level 1 (UVA/Padova integration) is the
