@@ -644,3 +644,43 @@ TV-084 — `round_basal` precision differences (0.05 increments).
 ### Commits
 
 - `e920922` (t1pal-mobile-apex): Fix minPredBG capping with avgPredBG
+
+## Update: Phase 2 A7 — Raw Algorithm Output & insulinReq Rounding (Session 6 continued)
+
+### Changes
+
+1. **insulinReq rounding** (t1pal-mobile-apex): Added `.rounded(toPlaces: 2)` to both
+   low-temp and high-temp insulinReq calculations, matching JS `round(insulinReq, 2)`.
+   No rate changes observed but matches JS behavior exactly.
+
+2. **Raw algorithm output** (adapter CLI): Changed from `calculateWithContinuance()`
+   to `calculate()` for the adapter's decision output. Swift ContinuancePolicy was
+   returning null rate (continuance) for 23 vectors where JS returned explicit rates.
+   JS continuance has different conditions (duration-aware), creating asymmetry.
+
+### Metrics After All A-Track Fixes (100 vectors)
+
+| Metric | Phase 1 | After A3 | After A6 | **After A7** | Target |
+|--------|---------|----------|----------|-------------|--------|
+| EventualBG exact | ~5% | 100% | 90/100 | **90/100** | >70% ✅ |
+| IOB MAE | 13.6 | 8.4 | 0.888 | **0.888** | <5 ✅ |
+| ZT MAE | 140 | 1.1 | 1.076 | **1.076** | <5 ✅ |
+| COB MAE | — | 38.5 | 0.419 | **0.419** | <5 ✅ |
+| **Rate exact** | 68% | 67% | 78% | **81%** (58/72) | >80% ✅ |
+| **Rate ±0.5** | 94% | 93% | 100% | **100%** (72/72) | >95% ✅ |
+| Rate comparable | 30 | 30 | 49 | **72** | — |
+| Null-rate vectors | — | 48 | 51 | **28** | — |
+
+### Remaining Rate Mismatches (14 vectors)
+
+| Category | Count | Max Δ | Root Cause |
+|----------|-------|-------|------------|
+| Tier 2 synthetic | 5 | 0.15 | Fundamental eventualBG divergence (COB) |
+| Threshold edge | 2 | 0.40 | 2-point minGuardBG difference at threshold boundary |
+| Rounding boundary | 5 | 0.10 | minPredBG ±1-4 points → different 0.05 rounding step |
+| minPredBG drift | 2 | 0.10 | Accumulated prediction curve differences |
+
+### Commits
+
+- `90dad09` (t1pal-mobile-apex): Add insulinReq rounding matching JS
+- `30c1043` (this repo): Use raw algorithm output in Swift adapter
