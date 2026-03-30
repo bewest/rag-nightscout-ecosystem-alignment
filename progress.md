@@ -2266,3 +2266,47 @@ Analyzed Trio's oref fork to document divergence from upstream oref0.
 - `externals/oref0/lib/determine-basal/*.js`
 - `externals/Trio/trio-oref/lib/iob/calculate.js`
 
+
+### Phase 3: Multi-Implementation Cross-Validation (2025-03-30)
+
+Expanded from 2-way (oref0-JS ↔ Swift) to comprehensive multi-implementation coverage.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| AAPS-JS Adapter | `tools/test-harness/adapters/aaps-js/` | 100% eventualBG, round_basal is identity |
+| 3-Way Comparison | `tools/test-harness/three-way-xval.js` | JS↔AAPS: 100% eBG, JS↔Swift: 90% eBG |
+| Loop Cross-Val | `tools/test-harness/loop-xval.js` | Loop-C ≡ Loop-T: bit-identical |
+| Trio Analysis | `docs/architecture/cross-validation-assessment.md` (A10) | 52 Swift files, Decimal arith, 200k+ replays |
+| Architecture ADRs | `docs/90-decisions/adr-005,006,007-*.md` | Adapter protocol, continuance bypass, guard system |
+| Testing Strategy | `docs/architecture/testing-strategy.md` | 4-layer pyramid, make targets, convergence loop |
+| GAP-ALG-017→021 | `traceability/aid-algorithms-gaps.md` | AAPS divergences + Trio 3-port gap |
+
+**Cross-Validation Results Summary**:
+
+| Pair | EventualBG | Rate ±0.5 | IOB MAE |
+|------|------------|-----------|---------|
+| oref0-JS ↔ AAPS-JS | 100/100 | 100/100 | 0.012 |
+| oref0-JS ↔ t1pal-Swift | 90/100 | 72/72 | 0.888 |
+| AAPS-JS ↔ t1pal-Swift | 90/100 | 73/73 | 0.886 |
+| Loop-C ↔ Loop-T | 100/100 | 100/100 | 0.000 |
+| Loop ↔ oref0 | 0/100 (exp.) | 94/100 | N/A |
+
+**Key Findings**:
+- AAPS's round_basal is identity (delegates to pump driver) — all 19 rate deltas ≤0.02 U/hr
+- AAPS JS modifications are structural, not algorithmic (flatBGsDetected, aCOBpredBGs)
+- Loop-Community and Loop-Tidepool are functionally identical on oref0 vectors
+- Trio has a THIRD independent Swift oref0 port (oref-swift branch) with 200k+ production replays
+- Three Swift oref0 implementations exist with no shared validation infrastructure (GAP-ALG-021)
+
+**Trio oref-swift Discovery**:
+- Complete JS→Swift port: Profile→IOB→Meal→Autosens→DetermineBasal
+- Uses Decimal arithmetic (our port uses Double — matches JS better)
+- Shadow mode + GCS logging for live comparison
+- Plans to release as SPM — future collaboration opportunity
+
+**Gaps Identified**: GAP-ALG-017 through GAP-ALG-021
+
+**Source Files Analyzed**:
+- `externals/AndroidAPS/app/src/androidTest/assets/OpenAPSSMB/determine-basal.js`
+- `externals/Trio-dev` (oref-swift branch): 52 Swift files in `Trio/Sources/APS/OpenAPSSwift/`
+- `externals/LoopAlgorithm/` (HealthKit dependency — can't build on Linux)
