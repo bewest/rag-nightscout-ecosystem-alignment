@@ -32,6 +32,11 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 | cgmsim-lib 5-facet analysis | P2 | TypeScript CGM simulator — map physiology modules, terminology, GAPs vs Nightscout data model |
 | LoopAlgorithm standalone evaluation | P2 | Compare standalone vs LoopWorkspace/LoopKit embedded, document JSON fixture format |
 | Cross-algorithm deep integration tests | P3 | ShadowRunner: same inputs → oref0 + Loop + GluPredKit models → diff outputs → comparison matrix |
+| Wire SIM-* → cgmencode format adapter | P1 | GAP-ML-001: Convert in-silico-bridge UVA/Padova output → cgmencode FixtureEncoder JSON format for sim-to-real transfer training |
+| Override event label extraction | P2 | GAP-ML-003: Extract override-like events from Nightscout treatment logs (Eating Soon, Exercise, custom overrides) as training labels |
+| Event classifier baseline (XGBoost) | P2 | GAP-ML-005: Train gradient-boosted trees on tabular features (BG trend, IOB, time-of-day) to detect meal/exercise/sleep onset |
+| Bayesian ISF/CR drift tracker | P3 | GAP-ML-006: Online Kalman filter over daily ISF/CR estimates; compare to autosens baseline |
+| Conditioned Transformer validation vs UVA/Padova | P2 | Trust-building: run same scenarios through physics engine and learned model, compare glucose trajectories |
 
 ## Processed
 

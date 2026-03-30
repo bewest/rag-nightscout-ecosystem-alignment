@@ -2310,3 +2310,29 @@ Expanded from 2-way (oref0-JS ↔ Swift) to comprehensive multi-implementation c
 - `externals/AndroidAPS/app/src/androidTest/assets/OpenAPSSMB/determine-basal.js`
 - `externals/Trio-dev` (oref-swift branch): 52 Swift files in `Trio/Sources/APS/OpenAPSSwift/`
 - `externals/LoopAlgorithm/` (HealthKit dependency — can't build on Linux)
+
+### ML Composition Architecture & Disambiguation (2026-03-30)
+
+Created synthesis document disambiguating two complementary ML toolkits (cgmencode in t1pal-mobile-workspace vs aid-autoresearch in this workspace) and incorporating advisor recommendations for anticipatory diabetes management.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| ML Composition Architecture | `docs/architecture/ml-composition-architecture.md` | 4-layer stack: Physics → Calibration → Learned Dynamics → Decision/Policy |
+| LIVE-BACKLOG updates | `LIVE-BACKLOG.md` | 5 new ML integration items (GAP-ML-001 through GAP-ML-006) |
+
+**Key Findings**:
+- cgmencode (Layer 3: learned dynamics) and aid-autoresearch (Layer 1: physics) are complementary, not competing
+- cgmencode has 5 ML architectures (Transformer AE, VAE, Conditioned Transformer, Diffusion, Contrastive) all at prototype stage
+- Critical missing capability: Layer 4 decision modeling — no model predicts *when* an override should occur
+- Advisor recommends starting with gradient-boosted trees (XGBoost) on tabular features before deep models
+- Sim-to-real transfer: pre-train cgmencode on UVA/Padova synthetic data, fine-tune on real patient data
+- Three time horizons: immediate (minutes), daily (hours), longitudinal (days-weeks) each need different techniques
+- 12 GAP-ML-* entries identified spanning both workspaces
+
+**Gaps Identified**: GAP-ML-001 through GAP-ML-012
+
+**Source Files Analyzed**:
+- `t1pal-mobile-workspace/tools/cgmencode/` (encoder.py, model.py, toolbox.py, inference.py, viz.py)
+- `tools/aid-autoresearch/in-silico-bridge.js`
+- `docs/architecture/simulation-validation-architecture.md`
+- `docs/60-research/cgm-trace-generation-methodologies.md`
