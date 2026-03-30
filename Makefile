@@ -490,3 +490,14 @@ three-way-smoke: xval-build ## Quick 3-way smoke test (10 vectors)
 	@echo ""
 	@echo "3-way smoke test (10 vectors)..."
 	@cd $(HARNESS_DIR) && node three-way-xval.js --count 10
+
+.PHONY: loop-xval loop-smoke
+loop-xval: xval-build ## Run Loop cross-validation: Loop-Community vs Loop-Tidepool vs oref0 (100 vectors)
+	@echo ""
+	@echo "Loop cross-validation (100 vectors)..."
+	@cd $(HARNESS_DIR) && node loop-xval.js
+
+loop-smoke: xval-build ## Quick Loop smoke test (10 vectors)
+	@echo ""
+	@echo "Loop smoke test (10 vectors)..."
+	@cd $(HARNESS_DIR) && node loop-xval.js --count 10
