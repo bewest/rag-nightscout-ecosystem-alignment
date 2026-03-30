@@ -479,3 +479,14 @@ aaps-smoke: ## Quick AAPS-JS vs oref0-JS smoke test (10 vectors)
 	@echo ""
 	@echo "AAPS smoke test (10 vectors)..."
 	@cd $(HARNESS_DIR) && node aaps-xval.js --count 10
+
+.PHONY: three-way-xval three-way-smoke
+three-way-xval: xval-build ## Run 3-way cross-validation: oref0-JS vs AAPS-JS vs Swift (100 vectors)
+	@echo ""
+	@echo "3-way cross-validation (100 vectors)..."
+	@cd $(HARNESS_DIR) && node three-way-xval.js
+
+three-way-smoke: xval-build ## Quick 3-way smoke test (10 vectors)
+	@echo ""
+	@echo "3-way smoke test (10 vectors)..."
+	@cd $(HARNESS_DIR) && node three-way-xval.js --count 10
