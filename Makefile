@@ -398,15 +398,8 @@ score-in-silico: ## Score algorithms against SIM-* vectors
 	@node $(INSIL_DIR)/score-in-silico.js
 	@echo ""
 
-in-silico-smoke: ## Quick smoke test: 1 scenario per engine, verify BG ranges
-	@echo "=== CGMSIM smoke test ==="
-	@node $(INSIL_DIR)/in-silico-bridge.js --scenario meal-rise --mode open-loop 2>&1 | tail -8
-	@echo ""
-	@echo "=== UVA/Padova smoke test ==="
-	@node $(INSIL_DIR)/in-silico-bridge.js --engine uva-padova --scenario meal-rise --mode open-loop 2>&1 | tail -8
-	@echo ""
-	@echo "=== UVA/Padova + Facchinetti smoke test ==="
-	@node $(INSIL_DIR)/in-silico-bridge.js --engine uva-padova --sensor facchinetti --scenario meal-rise --mode open-loop 2>&1 | tail -8
+in-silico-smoke: ## Quick smoke test: assert BG ranges across all engines
+	@node $(INSIL_DIR)/smoke-test-engines.js
 
 # ── Cross-Validation Targets ─────────────────────────────────────────
 XVAL_ADAPTERS := adapters/oref0-js,adapters/t1pal-oref0-swift
