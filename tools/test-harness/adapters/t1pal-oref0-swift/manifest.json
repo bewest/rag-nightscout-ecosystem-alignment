@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "language": "swift",
   "invoke": {
-    "command": "../../../t1pal-adapter-cli/.build/debug/T1PalAdapterCLI",
+    "command": "../../../t1pal-adapter-cli/.build/release/T1PalAdapterCLI",
     "cwd": "."
   },
   "capabilities": {
