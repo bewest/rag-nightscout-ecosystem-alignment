@@ -401,7 +401,13 @@ func translateInput(_ input: AdapterInput) -> (AlgorithmInputs, [String]) {
         iobWithZeroTempActivity: input.iob.iobWithZeroTemp?.activity,
         glucoseDelta: input.glucoseStatus.delta,
         shortAvgDelta: input.glucoseStatus.shortAvgDelta,
-        longAvgDelta: input.glucoseStatus.longAvgDelta
+        longAvgDelta: input.glucoseStatus.longAvgDelta,
+        mealCarbs: input.mealData?.carbs,
+        lastCarbTime: input.mealData?.lastCarbTime.flatMap { ts in
+            ts > 0 ? Date(timeIntervalSince1970: ts / 1000.0) : nil
+        },
+        slopeFromMaxDeviation: input.mealData?.slopeFromMaxDeviation,
+        slopeFromMinDeviation: input.mealData?.slopeFromMinDeviation
     )
 
     return (inputs, warnings)
