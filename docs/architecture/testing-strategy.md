@@ -84,6 +84,8 @@ Exploratory testing with input mutation:
 | `make xval-validate` | ~3min | 100 vectors, JS↔Swift |
 | `make aaps-xval` | ~10s | 100 vectors, JS↔AAPS |
 | `make three-way-xval` | ~3min | 100 vectors, JS↔AAPS↔Swift |
+| `make loop-xval` | ~5min | 100 vectors, Loop-C↔Loop-T↔oref0 |
+| `make loop-smoke` | ~30s | 10 vectors, Loop-C↔Loop-T↔oref0 |
 | `make harness-quick` | ~1min | L0 + L1 (10 vectors) |
 | `make harness-ci` | ~10min | Full pipeline |
 
@@ -105,6 +107,8 @@ Exploratory testing with input mutation:
 | oref0-JS ↔ AAPS-JS | 100/100 | 100/100 | 0.012 |
 | oref0-JS ↔ t1pal-Swift | 90/100 | 72/72 | 0.888 |
 | AAPS-JS ↔ t1pal-Swift | 90/100 | 73/73 | 0.886 |
+| Loop-Community ↔ Loop-Tidepool | 100/100 | 100/100 | 0.000 |
+| Loop ↔ oref0 | 0/100 | 94/100 | N/A (different algo) |
 
 ## Adding a New Adapter
 

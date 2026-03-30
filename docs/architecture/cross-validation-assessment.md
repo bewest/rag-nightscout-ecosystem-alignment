@@ -772,3 +772,66 @@ boundaries at dosing thresholds).
 ### Commits
 
 - `4713e0a` (this repo): AAPS-JS adapter and cross-validation
+
+---
+
+## Phase 3: Loop Cross-Validation (Assessment A9)
+
+### Approach
+
+The t1pal-adapter-cli already supports 5 algorithms including two Loop variants:
+**Loop-Community** (LoopKit-compatible) and **Loop-Tidepool** (FDA-cleared).
+Both are pure Swift reimplementations — no HealthKit/iOS dependencies.
+
+We ran all 100 oref0 test vectors through both Loop variants and oref0 via
+the same adapter CLI, comparing rates, eventualBG, and predictions.
+
+### Results: Loop-Community vs Loop-Tidepool vs oref0 (100 vectors)
+
+| Metric | LC↔LT | LC↔oref0 | LT↔oref0 | Notes |
+|--------|-------|----------|----------|-------|
+| **EventualBG exact** | **100/100** | 0/100 | 0/100 | Loop always differs from oref0 |
+| **Rate exact** | **100/100** | 62/100 | 62/100 | Loop often agrees at maxBasal |
+| **Rate ±0.5** | **100/100** | 94/100 | 94/100 | Different algorithms, close results |
+| Avg eBG Δ | 0 | +15 mg/dL | +15 mg/dL | Loop more conservative on avg |
+
+### Key Findings
+
+1. **Loop-Community ≡ Loop-Tidepool**: Bit-identical on all 100 vectors — both
+   rate and eventualBG match exactly. The two configurations produce identical
+   behavior on standard oref0 test vectors (differences may emerge with
+   Loop-specific inputs like dose history and carb absorption scenarios).
+
+2. **Loop vs oref0 — Expected Divergence**: These are fundamentally different
+   algorithms (single combined prediction vs 4-curve model, dynamic carb
+   absorption vs pre-computed COB, retrospective correction vs autosens).
+   62% rate agreement and 94% ±0.5 agreement is reasonable.
+
+3. **Loop on oref0 vectors**: Loop receives pre-computed IOB (not dose history)
+   which limits its full algorithm. With proper dose history input, Loop's
+   predictions may differ more significantly.
+
+### Trio's OpenAPSSwift Port (Discovery)
+
+The `externals/Trio-dev` repository has an active `oref-swift` branch with
+**93 Swift source files** porting oref0 to native Swift (OpenAPSSwift module).
+This is a third independent oref0 Swift implementation.
+
+Key features:
+- `DetermineBasalGenerator.swift` — 737-line Swift port of determine-basal
+- `ForecastGenerator.swift` — Prediction curves
+- `IobGenerator.swift` — IOB calculations from pump history
+- `DetermineBasalJsonTests.swift` — **Compares Swift vs JS output** using
+  `JSONCompare.createComparison()` utility
+- `ReplayTests` — Downloads production data for replay testing
+- Extensive test suites: early exits, SMB, dosing, dynamic ISF, etc.
+
+This effort is parallel to ours and could benefit from:
+- Shared test vectors (our TV-* format ↔ Trio's replay format)
+- Shared convergence findings (minAvgDelta, ci passthrough, avgPredBG guard)
+- Cross-validation between three Swift ports (t1pal, Trio-dev, LoopAlgorithm)
+
+### Commits
+
+- `244cbe4` (this repo): Loop cross-validation script and Makefile targets
+- `eea1ea4` (this repo): 3-way comparison script
