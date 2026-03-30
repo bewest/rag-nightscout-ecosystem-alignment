@@ -327,7 +327,8 @@ func translateInput(_ input: AdapterInput) -> (AlgorithmInputs, [String]) {
         maxIOB: input.profile.maxIob ?? 10.0,
         maxBolus: 5.0,
         maxBasalRate: input.profile.maxBasal,
-        insulinModel: nil
+        insulinModel: nil,
+        dia: input.profile.dia ?? 5.0
     )
 
     // Build dose history if available
