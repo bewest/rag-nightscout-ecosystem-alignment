@@ -27,6 +27,40 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Phase 3: AAPS Cross-Validation & Architecture Documentation (2025-03-30)
+
+Expanded cross-validation from 2-way (oref0-JS↔Swift) to 3-way comparison
+including AAPS's modified oref0 JavaScript. Created architecture documentation
+including ADRs, testing strategy, and gap entries for AAPS divergences.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| AAPS-JS adapter | `tools/test-harness/adapters/aaps-js/` | round_basal mock, console.log redirect, flatBGsDetected param |
+| AAPS cross-validation | `tools/test-harness/aaps-xval.js` | 100% eventualBG, 100% rate ±0.5 on 100 vectors |
+| 3-way comparison | `tools/test-harness/three-way-xval.js` | JS↔AAPS↔Swift on same vectors |
+| ADR-005 | `docs/90-decisions/adr-005-adapter-protocol.md` | JSON-over-stdio adapter protocol |
+| ADR-006 | `docs/90-decisions/adr-006-continuance-bypass.md` | Continuance bypass strategy |
+| ADR-007 | `docs/90-decisions/adr-007-guard-system.md` | Guard system architecture |
+| Testing strategy | `docs/architecture/testing-strategy.md` | 4-layer pyramid, make targets |
+| Assessment A8 | `docs/architecture/cross-validation-assessment.md` | AAPS results + 3-way table |
+| AAPS gaps | `traceability/aid-algorithms-gaps.md` | GAP-ALG-017 through GAP-ALG-020 |
+
+**3-Way Results (100 vectors)**:
+
+| Pair | EventualBG | Rate ±0.5 | IOB MAE |
+|------|------------|-----------|---------|
+| oref0-JS ↔ AAPS-JS | 100/100 | 100/100 | 0.012 |
+| oref0-JS ↔ t1pal-Swift | 90/100 | 72/72 | 0.888 |
+| AAPS-JS ↔ t1pal-Swift | 90/100 | 73/73 | 0.886 |
+
+**Key Finding**: AAPS's JS modifications are structural, not algorithmic. The
+only divergence is `round_basal` (identity in AAPS, rounds to 0.05 in oref0).
+All 19 rate mismatches are ≤0.02 U/hr.
+
+**Gaps Identified**: GAP-ALG-017, GAP-ALG-018, GAP-ALG-019, GAP-ALG-020
+
+---
+
 ### UVA/Padova 18-ODE Engine Integration (2025-03-30)
 
 Integrated the UVA/Padova physiological simulation model into `in-silico-bridge.js`
