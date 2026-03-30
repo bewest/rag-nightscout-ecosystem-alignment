@@ -468,3 +468,14 @@ xval-smoke: xval-build ## Build adapter + quick 10-vector smoke test
 	@echo "Smoke test (10 vectors)..."
 	@cd $(HARNESS_DIR) && node prediction-alignment.js \
 		--adapters $(XVAL_ADAPTERS) --vectors $(XVAL_VECTORS) --limit 10 || true
+
+.PHONY: aaps-xval aaps-smoke
+aaps-xval: ## Run AAPS-JS vs oref0-JS cross-validation (100 vectors)
+	@echo ""
+	@echo "AAPS cross-validation (100 vectors)..."
+	@cd $(HARNESS_DIR) && node aaps-xval.js
+
+aaps-smoke: ## Quick AAPS-JS vs oref0-JS smoke test (10 vectors)
+	@echo ""
+	@echo "AAPS smoke test (10 vectors)..."
+	@cd $(HARNESS_DIR) && node aaps-xval.js --count 10
