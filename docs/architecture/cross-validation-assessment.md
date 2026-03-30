@@ -489,3 +489,49 @@ due to continuance). The 10 disagreeing vectors stem from:
 
 - `c029c0d` (t1pal-mobile-apex): Fix minAvgDelta formula and add sens rounding
 - `850dd02` (this repo): Pass avgDelta and activity fields through Swift adapter
+
+## Update: Phase 2 A4 — COB Deviation-Based Prediction Port (Session 5)
+
+### Problem
+
+COB prediction curve had 38.5 mg/dL MAE because the Swift implementation
+lacked the deviation-based carb impact (`ci = minDelta - bgi`) that JS oref0
+uses. With no carbs (our test vectors), COB simplifies to
+`prev + predBGI + min(0, predDev)` — the negative deviation clamp was missing.
+
+### Fix
+
+Ported the complete COB prediction chain from JS determine-basal.js:
+
+1. **COBPredictionParams** struct: ci, cid, remainingCIpeak, remainingCATime
+2. **predictCOBOref0()** method matching JS formula exactly (lines 580-605)
+3. **Full parameter chain**: ci→csf→maxCI→remainingCATime→totalCI→totalCA→
+   remainingCarbs→remainingCIpeak→cid→fractionCarbsLeft
+4. **Meal data passthrough**: mealCarbs, lastCarbTime, slopeFromMax/MinDeviation
+5. **Guard system updates**: hasCOB uses cid/remainingCIpeak, dynamic fractionCarbsLeft
+
+### Metrics After COB Port (100 vectors: 78 natural + 22 synthetic)
+
+| Metric | Before (A3) | After COB (A4) | Change |
+|--------|-------------|----------------|--------|
+| EventualBG exact | 90/100 | **90/100** | — |
+| IOB MAE | 8.4 | **8.4** | — |
+| ZT MAE | 1.1 | **1.1** | — |
+| **COB MAE** | **38.5** | **0.42** | **-99%** ✅ |
+| COB max MAE | 74.3 | 1.0 | -99% |
+| COB correlation | 0.95 | **1.0** | Perfect |
+| Rate exact | ~31/47 | **31/47** | — |
+| Rate ±0.5 | ~45/47 | **45/47** | — |
+
+### Validation Tooling
+
+Added focused test runner to avoid 15+ minute `swift test` compilation:
+- `make xval-build` — Rebuild adapter (~2s incremental)
+- `make xval-validate` — Full 100-vector cross-validation with metrics summary
+- `make xval-smoke` — Quick 10-vector smoke test
+
+### Commits
+
+- `138864c` (t1pal-mobile-apex): Port COB deviation-based prediction from JS oref0
+- `221eb97` (this repo): Pass meal data through Swift adapter for COB prediction
+- `6f5758e` (this repo): Add focused xval-validate/xval-smoke Makefile targets
