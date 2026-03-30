@@ -535,3 +535,66 @@ Added focused test runner to avoid 15+ minute `swift test` compilation:
 - `138864c` (t1pal-mobile-apex): Port COB deviation-based prediction from JS oref0
 - `221eb97` (this repo): Pass meal data through Swift adapter for COB prediction
 - `6f5758e` (this repo): Add focused xval-validate/xval-smoke Makefile targets
+
+## Update: Phase 2 A5 — IOB Prediction CI Passthrough Fix (Session 6)
+
+### Problem
+
+IOB prediction curve had 8.37 mg/dL MAE (max 47.1 on TV-017). Root cause:
+`predictIOB()` in Predictions.swift was recomputing `ci = glucoseDelta - bgi0`
+from **raw** `glucoseDelta` (delta), but JS oref0 uses
+`ci = round(minDelta - bgi, 1)` where `minDelta = min(delta, short_avgdelta)`.
+
+When delta and shortAvgDelta differ significantly (e.g., TV-017: delta=12.4 vs
+shortAvgDelta=2.91), the deviation term was inflated by 5x, causing the IOB
+curve to diverge sharply.
+
+### Root Cause Detail
+
+DetermineBasal.swift already computed `ci` correctly at line 388:
+```swift
+ci = (minDelta - bgi).rounded(toPlaces: 1)
+if ci > maxCI { ci = maxCI }
+```
+
+But this value was NOT passed to the prediction engine. Instead, `predict()`
+received raw `glucoseDelta` and `predictIOB()` recomputed ci incorrectly.
+
+### Fix
+
+1. Added `ci: Double?` parameter to `predict()` method signature
+2. Changed `predictIOB()` to accept `ci: Double?` instead of `glucoseDelta: Double`
+3. Uses `resolvedCI = ci ?? 0` instead of buggy local `ci = glucoseDelta - bgi0`
+4. Added `.rounded(toPlaces: 2)` to `predBGI` matching JS rounding
+5. DetermineBasal.swift now passes `ci: ci` to the predict() call
+
+### Metrics After IOB Fix (100 vectors: 78 natural + 22 synthetic)
+
+| Metric | Before (A4) | After IOB Fix (A5) | Change |
+|--------|-------------|---------------------|--------|
+| EventualBG exact | 90/100 | **90/100** | — |
+| **IOB MAE** | **8.37** | **0.888** | **-89%** ✅ |
+| IOB max MAE | 47.1 | 11.6 | -75% |
+| IOB correlation | 0.987 | **0.999** | Near-perfect |
+| ZT MAE | 1.08 | **1.08** | — |
+| COB MAE | 0.42 | **0.42** | — |
+| Rate exact | 30/46 | **30/46** | — |
+| Rate ±0.5 | 44/46 | **44/46** | — |
+
+### Remaining IOB Outlier
+
+TV-086 (MAE=11.6) is a Tier 2 synthetic vector from 2016 with undefined
+`iobWithZeroTemp`. Small per-tick rounding differences compound over 48
+prediction ticks. All natural vectors are <2.5 MAE.
+
+### Key Insight
+
+Rate parity did NOT improve with better IOB predictions — rates are determined
+by the dosing decision logic (minPredBG selection, guard thresholds, rate
+capping) which operates on the same eventualBG (already at 100% parity).
+Rate improvement requires: (1) continuance rules (54 null-rate vectors),
+(2) minPredBG-specific investigation for remaining 16 rate mismatches.
+
+### Commits
+
+- `a3e4e74` (t1pal-mobile-apex): Fix IOB prediction ci passthrough
