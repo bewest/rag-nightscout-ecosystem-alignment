@@ -30,8 +30,8 @@ This document tracks completed documentation cycles and candidates for future wo
 ### UVA/Padova 18-ODE Engine Integration (2025-03-30)
 
 Integrated the UVA/Padova physiological simulation model into `in-silico-bridge.js`
-as an alternative to the CGMSIM algebraic engine. This addresses GAP-ALG-025 (narrow
-BG range) and GAP-ALG-010/011 (no sensor noise). The engine uses the low-level Patient
+as an alternative to the CGMSIM algebraic engine. This addresses GAP-SIM-016 (narrow
+BG range) and GAP-SIM-001/002 (no sensor noise). The engine uses the low-level Patient
 API with RK1/2 ODE solver at 1-minute resolution and optional Facchinetti2014 or
 Vettoretti2019 sensor noise models.
 
@@ -58,7 +58,7 @@ Vettoretti2019 sensor noise models.
 - Warning "computation of equilibrium basal rate failed" on resistant patients is non-critical
 - CGMSIM remains default for backward compatibility
 
-**Gaps Resolved**: GAP-ALG-025 (resolved), GAP-ALG-010 (mitigated), GAP-ALG-011 (mitigated)
+**Gaps Resolved**: GAP-SIM-016 (resolved), GAP-SIM-001 (mitigated), GAP-SIM-002 (mitigated)
 
 **Source Files Analyzed**:
 - `externals/cgmsim-lib/src/lt1/core/models/UvaPadova_T1DMS.ts`
@@ -79,7 +79,7 @@ mismatch modeling, and CGM trace generation methodologies research.
 | Therapy optimization | `docs/architecture/therapy-optimization-feature-pipeline.md` | Fingerprinting as therapy assessment |
 | Generation methodologies | `docs/60-research/cgm-trace-generation-methodologies.md` | 5 methodologies, UVA/Padova validation |
 
-**Gaps Identified**: GAP-ALG-010 through GAP-ALG-028 (19 gaps proposed)
+**Gaps Identified**: GAP-SIM-001 through GAP-SIM-019 (19 simulation gaps proposed)
 
 ---
 

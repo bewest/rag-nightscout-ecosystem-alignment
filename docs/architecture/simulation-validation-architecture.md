@@ -1626,22 +1626,22 @@ simplified CGMSIM engine.
 | ALG-VERIFY-007 | In-silico bridge generates synthetic scenarios |
 | ALG-VERIFY-008 | In-silico scoring against synthetic ground truth |
 | ALG-SCORE-001 | Composite algorithm scoring pipeline |
-| GAP-ALG-010 | *Mitigated*: CGMSIM narrow BG range — UVA/Padova engine available as alternative; CGMSIM still default |
-| GAP-ALG-011 | *Mitigated*: Sensor noise available via `--sensor facchinetti` or `--sensor vettoretti` with UVA/Padova engine |
-| GAP-ALG-012 | *Proposed*: No meal timing/estimation error in synthetic scenarios |
-| GAP-ALG-013 | *Proposed*: No statistical calibration pipeline (real → synthetic fingerprint matching) |
-| GAP-ALG-014 | *Proposed*: Clinical metrics (Clarke/Parkes) not integrated into algorithm_score.py |
-| GAP-ALG-015 | *Proposed*: Missing 12+ common real-world scenarios (missed bolus, site change, etc.) |
-| GAP-ALG-016 | *Proposed*: No therapy settings mismatch modeling — simulator assumes perfect profile match (§4.3) |
-| GAP-ALG-017 | *Proposed*: No physiological confounder models (hormones, illness, site degradation) (§4.3.2) |
-| GAP-ALG-018 | *Proposed*: No compound confounder composition — real patients have 2–3 concurrent confounders |
-| GAP-ALG-019 | *Proposed*: Mixed pump+MDI not representable — phantom IOB invisible to algorithm |
-| GAP-ALG-020 | *Proposed*: Autosens/dynamic-ISF never exercised in simulation because settings always match |
-| GAP-ALG-021 | *Proposed*: No automated fingerprint extractor module (Tiers 1–4 from raw data) (§9.2) |
-| GAP-ALG-022 | *Proposed*: No individual therapy assessment report generator (§9.4) |
-| GAP-ALG-023 | *Proposed*: Autotune deviation categories lack population-context sanity checking (§9.6) |
-| GAP-ALG-024 | *Proposed*: No replay validation wrapper — cannot feed real patient history into cgmsim-lib and compare |
-| GAP-ALG-025 | *Resolved* (2025-03-30): UVA/Padova engine integrated via `--engine uva-padova` flag. BG range improved from 89–140 to 40–210+ mg/dL. Calibration against real data still pending (§8) |
-| GAP-ALG-026 | *Proposed*: No generative models (GAN, VAE, diffusion) for synthetic CGM trace generation (§8) |
-| GAP-ALG-027 | *Proposed*: No hybrid physics-ML residual model to capture what equations miss (§8) |
-| GAP-ALG-028 | *Proposed*: GluPredKit ML models (LSTM, TCN, etc.) cannot produce causally valid counterfactuals (§8) |
+| GAP-SIM-001 | *Mitigated*: CGMSIM narrow BG range — UVA/Padova engine available as alternative; CGMSIM still default |
+| GAP-SIM-002 | *Mitigated*: Sensor noise available via `--sensor facchinetti` or `--sensor vettoretti` with UVA/Padova engine |
+| GAP-SIM-003 | *Proposed*: No meal timing/estimation error in synthetic scenarios |
+| GAP-SIM-004 | *Proposed*: No statistical calibration pipeline (real → synthetic fingerprint matching) |
+| GAP-SIM-005 | *Proposed*: Clinical metrics (Clarke/Parkes) not integrated into algorithm_score.py |
+| GAP-SIM-006 | *Proposed*: Missing 12+ common real-world scenarios (missed bolus, site change, etc.) |
+| GAP-SIM-007 | *Proposed*: No therapy settings mismatch modeling — simulator assumes perfect profile match (§4.3) |
+| GAP-SIM-008 | *Proposed*: No physiological confounder models (hormones, illness, site degradation) (§4.3.2) |
+| GAP-SIM-009 | *Proposed*: No compound confounder composition — real patients have 2–3 concurrent confounders |
+| GAP-SIM-010 | *Proposed*: Mixed pump+MDI not representable — phantom IOB invisible to algorithm |
+| GAP-SIM-011 | *Proposed*: Autosens/dynamic-ISF never exercised in simulation because settings always match |
+| GAP-SIM-012 | *Proposed*: No automated fingerprint extractor module (Tiers 1–4 from raw data) (§9.2) |
+| GAP-SIM-013 | *Proposed*: No individual therapy assessment report generator (§9.4) |
+| GAP-SIM-014 | *Proposed*: Autotune deviation categories lack population-context sanity checking (§9.6) |
+| GAP-SIM-015 | *Proposed*: No replay validation wrapper — cannot feed real patient history into cgmsim-lib and compare |
+| GAP-SIM-016 | *Resolved* (2025-03-30): UVA/Padova engine integrated via `--engine uva-padova` flag. BG range improved from 89–140 to 40–210+ mg/dL. Calibration against real data still pending (§8) |
+| GAP-SIM-017 | *Proposed*: No generative models (GAN, VAE, diffusion) for synthetic CGM trace generation (§8) |
+| GAP-SIM-018 | *Proposed*: No hybrid physics-ML residual model to capture what equations miss (§8) |
+| GAP-SIM-019 | *Proposed*: GluPredKit ML models (LSTM, TCN, etc.) cannot produce causally valid counterfactuals (§8) |

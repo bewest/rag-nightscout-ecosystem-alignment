@@ -21,8 +21,6 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| Regenerate SIM-* vectors with UVA/Padova | P1 | `make in-silico-uva` — replace CGMSIM-only vectors with UVA/Padova set for realistic algorithm scoring |
-| Engine-aware score-in-silico.js | P1 | Add `--engine` filter to `score-in-silico.js` — support multi-engine vector sets, report engine in output |
 | Calibrate UVA/Padova against real data | P2 | Use OhioT1DM/IOBP2 datasets + distribution distance metrics (§5 in arch doc) to optimize patient parameters |
 | Add in-silico to CI workflow | P2 | Smoke test in `ci.yml`: `make in-silico-smoke` should fail if BG range narrows below expected thresholds |
 | compare-engines.js tool | P2 | Side-by-side divergence: same scenario on CGMSIM vs UVA/Padova, report per-scenario delta summary |
@@ -39,6 +37,10 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 
 | Item | Priority | Status | Date |
 |------|----------|--------|------|
+| 🎉 UVA/Padova Engine Integration | P1 | ✅ Complete - `--engine uva-padova`, BG 40-210+ mg/dL, smoke test, Makefile targets | 2026-03-30 |
+| 🎉 SIM-* Vector Regeneration | P1 | ✅ Complete - 35 vectors with UVA/Padova, gitignored (regeneratable) | 2026-03-30 |
+| 🎉 Engine-aware score-in-silico.js | P1 | ✅ Complete - `--engine` filter, engine metadata in banner/JSON | 2026-03-30 |
+| 🎉 Simulation Validation Architecture | P1 | ✅ Complete - 1,620+ lines, 11 sections, 19 GAP-SIM-* gaps | 2026-03-29 |
 | 🎉 Storage Optimization | P3 | ✅ Complete - activity/food `bulkWrite`, 783 tests passing | 2026-03-18 |
 | 🎉 Test Database Safety (GAP-SYNC-046) | 🔴 P0 | ✅ Complete - hard fail + guard module, 729 tests passing | 2026-03-12 |
 | 🎉 PR #8421 Reviewer's Guide | P0 | ✅ Complete - all claims verified, safety implemented | 2026-03-12 |
