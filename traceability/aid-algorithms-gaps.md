@@ -1443,3 +1443,104 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 **Status**: Open - Proposal created
 
 **Related**: GAP-API-*, proposals/effect-bundle-crd.yaml
+
+---
+
+## Cross-Implementation Divergence Gaps (AAPS vs oref0)
+
+### GAP-ALG-017: AAPS round_basal Is Identity Function
+
+**Scenario**: AAPS temp basal rate differs from upstream oref0 by ≤0.02 U/hr
+
+**Description**: AAPS mocks `round_basal` as an identity function in both its
+Rhino JS execution path (`DetermineBasalAdapterSMBJS.kt:117`) and Kotlin native
+path (`DetermineBasalSMB.kt:37`). Upstream oref0 rounds to pump precision (0.05
+U/hr, or 0.025 for x23/x54 pumps at <1 U/hr). This means AAPS delegates
+rounding to the pump driver layer rather than the algorithm.
+
+**Source**:
+- `externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/openAPSSMB/DetermineBasalAdapterSMBJS.kt:117`
+- `externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/openAPSSMB/DetermineBasalSMB.kt:37`
+- `externals/oref0/lib/round-basal.js`
+
+**Impact**:
+- 19/100 vectors show rate differences ≤0.02 U/hr (all within ±0.5)
+- AAPS may deliver slightly different rates than upstream oref0 would suggest
+- Rate differences are clinically insignificant (<0.03 U/hr max)
+
+**Affected Systems**: AAPS
+
+**Status**: Documented — by design (AAPS rounds at pump driver)
+
+---
+
+### GAP-ALG-018: AAPS Adds aCOBpredBGs Prediction Curve
+
+**Scenario**: AAPS predictions include an accelerated COB curve not in upstream oref0
+
+**Description**: AAPS's modified `determine-basal.js` adds `aCOBpredBGs`, an
+accelerated carb-on-board prediction curve that projects faster carb absorption.
+This curve does not exist in upstream oref0. It is used in AAPS's
+`minGuardBG` calculation but does not change the core algorithm behavior for
+standard oref0 scenarios (only relevant with active carbs).
+
+**Source**:
+- `externals/AndroidAPS/app/src/androidTest/assets/OpenAPSSMB/determine-basal.js`
+
+**Impact**:
+- Additional safety guard in AAPS for meal scenarios
+- May produce different rates during active carb absorption
+- Not triggered in current 100-vector test suite (no high-carb vectors)
+
+**Affected Systems**: AAPS
+
+**Status**: Documented — AAPS extension
+
+---
+
+### GAP-ALG-019: AAPS Removes high_bg SMB Feature
+
+**Scenario**: AAPS does not enable SMB based on high BG alone
+
+**Description**: Upstream oref0 has a feature where SMB (Super Micro Bolus) can
+be enabled when BG is above the high target, even without explicit SMB
+enablement in the profile. AAPS removes this feature entirely from its modified
+determine-basal.js.
+
+**Source**:
+- `externals/oref0/lib/determine-basal/determine-basal.js` (high_bg feature)
+- `externals/AndroidAPS/app/src/androidTest/assets/OpenAPSSMB/determine-basal.js` (removed)
+
+**Impact**:
+- AAPS requires explicit SMB enablement for all SMB delivery
+- Users switching from oref0 to AAPS may lose implicit high-BG SMB behavior
+- Not triggered in current test vectors (SMB not widely enabled)
+
+**Affected Systems**: AAPS
+
+**Status**: Documented — intentional AAPS design choice
+
+---
+
+### GAP-ALG-020: AAPS flatBGsDetected Externalized Parameter
+
+**Scenario**: AAPS computes flat BG detection in Kotlin, not in JS
+
+**Description**: Upstream oref0 computes `tooflat` inline in determine-basal.js
+by checking if recent BG deltas are all near-zero. AAPS instead computes
+`flatBGsDetected` in Kotlin (`DetermineBasalAdapterSMBJS.kt`) and passes it
+as an 11th parameter to the JS function. The logic is equivalent but the
+execution path differs.
+
+**Source**:
+- `externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/openAPSSMB/DetermineBasalAdapterSMBJS.kt`
+- `externals/oref0/lib/determine-basal/determine-basal.js` (inline tooflat)
+
+**Impact**:
+- Equivalent behavior — no algorithmic difference
+- Different code path may diverge if flat BG detection logic changes
+- Cross-validation must pass `flatBGsDetected` explicitly to AAPS adapter
+
+**Affected Systems**: AAPS
+
+**Status**: Documented — structural difference only
