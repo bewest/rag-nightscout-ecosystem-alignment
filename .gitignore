@@ -57,6 +57,7 @@ traceability/inventory.md
 
 # Conformance test results (regeneratable)
 conformance/results/
+conformance/in-silico/vectors/
 
 # Workflow control files
 STOPAUTOMATION
