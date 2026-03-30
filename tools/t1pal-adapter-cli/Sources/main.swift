@@ -668,7 +668,9 @@ func handleExecute(input: AdapterInput, algorithmName: String?, verbose: Bool) -
         allWarnings.append(ve.localizedDescription)
     }
 
-    // Execute with timing — use calculateWithContinuance for Oref0Algorithm
+    // Execute with timing — use calculate (not calculateWithContinuance) for
+    // cross-validation. Continuance is an operational optimization that differs
+    // between JS and Swift; raw algorithm output is what we compare.
     let start = DispatchTime.now()
     let decision: AlgorithmDecision
     var continuanceInfo: (raw: AlgorithmDecision, continuance: ContinuanceDecision)? = nil
@@ -681,9 +683,11 @@ func handleExecute(input: AdapterInput, algorithmName: String?, verbose: Bool) -
             } else {
                 currentTemp = .none
             }
+            // Raw algorithm output (no continuance filtering)
+            decision = try oref0.calculate(nativeInput)
+            // Also compute continuance for metadata
             let result = try oref0.calculateWithContinuance(nativeInput, currentTemp: currentTemp)
-            decision = result.decision
-            continuanceInfo = (raw: try oref0.calculate(nativeInput), continuance: result.continuance)
+            continuanceInfo = (raw: decision, continuance: result.continuance)
         } else {
             decision = try engine.calculate(nativeInput)
         }
