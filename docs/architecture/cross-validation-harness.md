@@ -30,22 +30,22 @@ We need to verify:
 │  ┌─────────────┐   ┌──────────────┐   ┌───────────────────────┐ │
 │  │ Vector Store │   │  Harness.js  │   │   Output Comparator   │ │
 │  │ conformance/ │──▶│  4 layers    │──▶│  5-level divergence   │ │
-│  │ 185 vectors  │   │  orchestrate │   │  IOB/pred/dose split  │ │
+│  │ 300 vectors  │   │  orchestrate │   │  IOB/pred/dose split  │ │
 │  └─────────────┘   └──────┬───────┘   └───────────────────────┘ │
 │                           │                                      │
 │              ┌────────────┼────────────┐                         │
 │              ▼            ▼            ▼                          │
 │     ┌──────────────┐ ┌────────────┐ ┌──────────────┐            │
-│     │  oref0-js    │ │ t1pal-swift│ │ aaps-kotlin  │            │
-│     │  Adapter     │ │ Adapter    │ │ Adapter      │            │
-│     │  (working)   │ │ (built)    │ │ (planned)    │            │
+│     │  oref0-js    │ │ t1pal-swift│ │ aaps-js      │            │
+│     │  Adapter ✅  │ │ Adapter ✅ │ │ Adapter ✅   │            │
+│     │  (working)   │ │ (working)  │ │ (working)    │            │
 │     └──────┬───────┘ └─────┬──────┘ └──────┬───────┘            │
 │            │               │               │                     │
 │     JSON-over-stdio  JSON-over-stdio  JSON-over-stdio            │
 │            │               │               │                     │
 │     ┌──────▼───────┐ ┌────▼───────┐ ┌─────▼────────┐            │
-│     │ oref0 JS lib │ │T1PalAlgo   │ │ AAPS Kotlin  │            │
-│     │ externals/   │ │5 algorithms│ │ DetermineB.  │            │
+│     │ oref0 JS lib │ │T1PalAlgo   │ │ AAPS oref0   │            │
+│     │ externals/   │ │5 algorithms│ │ (via JS)     │            │
 │     └──────────────┘ └────────────┘ └──────────────┘            │
 └──────────────────────────────────────────────────────────────────┘
 ```

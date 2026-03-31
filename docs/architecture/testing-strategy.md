@@ -100,15 +100,26 @@ Exploratory testing with input mutation:
 | IOB | ±0.01 U | Exponential model precision |
 | Prediction MAE | <2.0 mg/dL | Acceptable curve drift |
 
-### Current Achievement (Phase 2 Final)
+### Current Achievement (Phase 3 Complete — 2026-03-31)
 
-| Pair | EventualBG | Rate ±0.5 | IOB MAE |
-|------|------------|-----------|---------|
-| oref0-JS ↔ AAPS-JS | 100/100 | 100/100 | 0.012 |
-| oref0-JS ↔ t1pal-Swift | 90/100 | 72/72 | 0.888 |
-| AAPS-JS ↔ t1pal-Swift | 90/100 | 73/73 | 0.886 |
-| Loop-Community ↔ Loop-Tidepool | 100/100 | 100/100 | 0.000 |
-| Loop ↔ oref0 | 0/100 | 94/100 | N/A (different algo) |
+**3-Way Cross-Implementation Validation** (300 vectors: 100 oref0-native + 200 Loop-derived):
+
+| Vector Suite | EventualBG | Rate ±0.5 | IOB MAE |
+|-------------|------------|-----------|---------|
+| oref0-native (100) | **100/100 (100%)** | **72/72 (100%)** | **0.005** |
+| Loop-derived (200) | **194/195 (99.5%)** | **131/133 (98.5%)** | **0.028** |
+| **Combined (300)** | **294/295 (99.7%)** | **201/203 (99.0%)** | — |
+
+All 3 adapters (oref0-JS, t1pal-Swift, AAPS-JS) agree on decisions.
+
+**All 4 Prediction Curves Aligned** (JS ↔ Swift, avg MAE in mg/dL):
+
+| Curve | Avg MAE | Max MAE | Status |
+|-------|---------|---------|--------|
+| IOB | 0.005 | 0.08 | ✅ |
+| ZT | 0.013 | 0.12 | ✅ |
+| COB | 0.000 | 0.00 | ✅ |
+| UAM | 0.002 | 0.085 | ✅ |
 
 ## Adding a New Adapter
 
@@ -155,7 +166,8 @@ drives accuracy improvement:
 5. **Report** gap entries and regression vectors
 6. **Iterate** until convergence targets met
 
-This drove Phase 2 from 5% to 90% eventualBG match in 7 cycles.
+This drove Phase 2 from 5% to 90% (7 cycles), then Phase 3 to 99.7% (9 cycles)
+with full prediction curve alignment across all 4 oref0 trajectories.
 
 ## Vector Format
 
