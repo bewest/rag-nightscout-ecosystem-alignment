@@ -258,7 +258,7 @@ function runOref0Controller(bg, delta, shortDelta, longDelta, simResult, patient
 
 function runSimulation(scenario, mode) {
   const patientKey = scenario.patient || 'standard';
-  const patient = { ...PATIENTS[patientKey] };
+  const patient = { ...PATIENTS[patientKey], ...(scenario._paramOverrides || {}) };
   patient._basalRate = scenario.basalRate || 1.0;
   const startBG = scenario.startBG || 110;
   const hours = scenario.hours || 4;
@@ -368,7 +368,8 @@ function runSimulation(scenario, mode) {
     steps: totalSteps,
     startBG,
     trace,
-    summary: computeSummary(trace)
+    summary: computeSummary(trace),
+    _paramOverrides: scenario._paramOverrides,
   };
 }
 
@@ -380,7 +381,7 @@ function runSimulationUVA(scenario, mode, sensorType) {
   }
 
   const patientKey = scenario.patient || 'standard';
-  const patientProfile = { ...PATIENTS[patientKey] };
+  const patientProfile = { ...PATIENTS[patientKey], ...(scenario._paramOverrides || {}) };
   const startBG = scenario.startBG || 110;
   const hours = scenario.hours || 4;
   const totalSteps = Math.floor(hours * 60 / 5);
@@ -586,7 +587,8 @@ function runSimulationUVA(scenario, mode, sensorType) {
     steps: totalSteps,
     startBG,
     trace,
-    summary: computeSummary(trace)
+    summary: computeSummary(trace),
+    _paramOverrides: scenario._paramOverrides,
   };
 }
 
@@ -635,17 +637,20 @@ function toCSV(results) {
   return header + '\n' + rows.join('\n');
 }
 
-function toVectors(results) {
+function toVectors(results, idPrefix) {
   // Generate TV-*–style vectors at key decision points
   const vectors = [];
+  const prefix = idPrefix ? `${idPrefix}-` : '';
   for (const r of results) {
+    // Resolve actual patient profile (including CLI overrides)
+    const actualProfile = { ...PATIENTS[r.patient], ...(r._paramOverrides || {}) };
     for (let i = 5; i < r.trace.length - 12; i += 10) {
       const t = r.trace[i];
       const futureSteps = r.trace.slice(i, i + 12).map(s => Math.round(s.bg));
 
       vectors.push({
         metadata: {
-          id: `SIM-${r.scenario.replace(/\s+/g, '-')}-${String(i).padStart(3, '0')}`,
+          id: `SIM-${prefix}${r.scenario.replace(/\s+/g, '-')}-${String(i).padStart(3, '0')}`,
           category: r.scenario,
           source: `cgmsim-lib in-silico (${r.engine || 'cgmsim'})`,
           mode: r.mode,
@@ -667,9 +672,9 @@ function toVectors(results) {
           },
           profile: {
             basalRate: t.tempBasalRate || 1.0,
-            sensitivity: PATIENTS[r.patient].ISF,
-            carbRatio: PATIENTS[r.patient].CR,
-            dia: PATIENTS[r.patient].DIA,
+            sensitivity: actualProfile.ISF,
+            carbRatio: actualProfile.CR,
+            dia: actualProfile.DIA,
             targetLow: 100, targetHigh: 110,
             maxBasal: 4.0, maxIob: 5.0,
           },
@@ -726,6 +731,15 @@ const csvFlag = args.includes('--csv');
 const jsonFlag = args.includes('--json');
 const vectorsFlag = args.includes('--vectors');
 
+// Patient parameter overrides (0 = use profile default)
+const isfArg = parseFloat(args.find((_, i) => args[i-1] === '--isf') || '0');
+const crArg = parseFloat(args.find((_, i) => args[i-1] === '--cr') || '0');
+const basalRateArg = parseFloat(args.find((_, i) => args[i-1] === '--basal-rate') || '0');
+const weightArg = parseFloat(args.find((_, i) => args[i-1] === '--weight') || '0');
+const diaArg = parseFloat(args.find((_, i) => args[i-1] === '--dia') || '0');
+const patientArg = args.find((_, i) => args[i-1] === '--patient') || '';
+const idPrefixArg = args.find((_, i) => args[i-1] === '--id-prefix') || '';
+
 if (!['cgmsim', 'uva-padova'].includes(engineArg)) {
   console.error(`Unknown engine: ${engineArg}. Available: cgmsim, uva-padova`);
   process.exit(1);
@@ -745,6 +759,13 @@ const modes = modeArg === 'both'
   ? ['open-loop', 'oref0-loop']
   : [modeArg];
 
+// Build patient parameter overrides from CLI flags
+const paramOverrides = {};
+if (isfArg > 0) paramOverrides.ISF = isfArg;
+if (crArg > 0) paramOverrides.CR = crArg;
+if (weightArg > 0) paramOverrides.WEIGHT = weightArg;
+if (diaArg > 0) paramOverrides.DIA = diaArg;
+
 const results = [];
 
 for (const scenarioName of scenarios) {
@@ -755,6 +776,11 @@ for (const scenarioName of scenarios) {
     }
     const scenario = makeScenario(scenarioName);
     if (hoursArg > 0) scenario.hours = hoursArg;
+    if (basalRateArg > 0) scenario.basalRate = basalRateArg;
+    if (patientArg && PATIENTS[patientArg]) scenario.patient = patientArg;
+    // Attach param overrides for runSimulation/runSimulationUVA to apply
+    scenario._paramOverrides = paramOverrides;
+    if (idPrefixArg) scenario._idPrefix = idPrefixArg;
     const result = engineArg === 'uva-padova'
       ? runSimulationUVA(scenario, mode, sensorArg)
       : runSimulation(scenario, mode);
@@ -770,7 +796,7 @@ if (csvFlag) {
 } else if (jsonFlag) {
   console.log(JSON.stringify(results, null, 2));
 } else if (vectorsFlag) {
-  const vectors = toVectors(results);
+  const vectors = toVectors(results, idPrefixArg);
   const vectorDir = path.join(REPO_ROOT, 'conformance/in-silico/vectors');
   fs.mkdirSync(vectorDir, { recursive: true });
   for (const v of vectors) {
