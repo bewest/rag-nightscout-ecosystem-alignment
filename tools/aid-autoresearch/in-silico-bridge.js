@@ -739,6 +739,7 @@ const weightArg = parseFloat(args.find((_, i) => args[i-1] === '--weight') || '0
 const diaArg = parseFloat(args.find((_, i) => args[i-1] === '--dia') || '0');
 const patientArg = args.find((_, i) => args[i-1] === '--patient') || '';
 const idPrefixArg = args.find((_, i) => args[i-1] === '--id-prefix') || '';
+const outputDirArg = args.find((_, i) => args[i-1] === '--output-dir') || '';
 
 if (!['cgmsim', 'uva-padova'].includes(engineArg)) {
   console.error(`Unknown engine: ${engineArg}. Available: cgmsim, uva-padova`);
@@ -797,7 +798,7 @@ if (csvFlag) {
   console.log(JSON.stringify(results, null, 2));
 } else if (vectorsFlag) {
   const vectors = toVectors(results, idPrefixArg);
-  const vectorDir = path.join(REPO_ROOT, 'conformance/in-silico/vectors');
+  const vectorDir = outputDirArg || path.join(REPO_ROOT, 'conformance/in-silico/vectors');
   fs.mkdirSync(vectorDir, { recursive: true });
   for (const v of vectors) {
     const fp = path.join(vectorDir, `${v.metadata.id}.json`);

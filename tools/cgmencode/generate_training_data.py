@@ -60,7 +60,8 @@ def latin_hypercube_sample(n: int, ranges: dict, seed: int = 42) -> list:
 
 
 def run_bridge(params: dict, patient_id: str, engine: str, scenarios: str = 'all',
-               modes: str = 'both', bridge_path: str = None, dry_run: bool = False) -> int:
+               modes: str = 'both', bridge_path: str = None, output_dir: str = None,
+               dry_run: bool = False) -> int:
     """Run in-silico-bridge.js with the given patient parameters. Returns vector count."""
     if bridge_path is None:
         bridge_path = os.path.join(os.path.dirname(__file__), '..', 'aid-autoresearch', 'in-silico-bridge.js')
@@ -78,6 +79,8 @@ def run_bridge(params: dict, patient_id: str, engine: str, scenarios: str = 'all
         '--id-prefix', patient_id,
         '--vectors',
     ]
+    if output_dir:
+        cmd.extend(['--output-dir', output_dir])
 
     if dry_run:
         print(f"  [DRY RUN] {' '.join(cmd)}")
@@ -106,6 +109,8 @@ def main():
     parser.add_argument('--modes', default='both', choices=['open-loop', 'oref0-loop', 'both'],
                         help='Controller mode(s)')
     parser.add_argument('--seed', type=int, default=42, help='Random seed for reproducibility')
+    parser.add_argument('--output-dir', default=None,
+                        help='Output directory for vectors (default: conformance/in-silico/vectors)')
     parser.add_argument('--dry-run', action='store_true', help='Print commands without executing')
     parser.add_argument('--json', action='store_true', help='Output parameter table as JSON')
     args = parser.parse_args()
@@ -139,6 +144,7 @@ def main():
         n_vectors = run_bridge(
             params, patient_id, args.engine,
             scenarios=args.scenarios, modes=args.modes,
+            output_dir=args.output_dir,
             dry_run=args.dry_run,
         )
         total_vectors += n_vectors
