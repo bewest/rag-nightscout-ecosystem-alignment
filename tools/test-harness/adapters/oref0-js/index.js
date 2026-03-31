@@ -84,6 +84,60 @@ function generateIobArray(iobSnapshot, dia, currentTemp) {
 }
 
 /**
+ * Per-dose IOB/activity contribution using the oref0 exponential model.
+ * Direct port of oref0/lib/iob/calculate.js `iobCalcExponential`.
+ */
+function exponentialContrib(insulin, minsAgo, end, tau, a, S) {
+  if (minsAgo < 0 || minsAgo >= end) return { iob: 0, activity: 0 };
+  const activity = insulin * (S / (tau * tau)) * minsAgo * (1 - minsAgo / end) * Math.exp(-minsAgo / tau);
+  const iob = insulin * (1 - S * (1 - a) * ((minsAgo * minsAgo / (tau * end * (1 - a)) - minsAgo / tau - 1) * Math.exp(-minsAgo / tau) + 1));
+  return { iob, activity };
+}
+
+/**
+ * Compute insulin activity at current time from dose history.
+ * Used when dose history is available but the loop system didn't report activity.
+ * Returns the activity value to use in the snapshot-based IOB array.
+ */
+function computeActivityFromDoses(doses, clockTime, dia, basalRate, peak) {
+  const DIA_MINUTES = (dia || 5) * 60;
+  peak = peak || 75;
+
+  const tau = peak * (1 - peak / DIA_MINUTES) / (1 - 2 * peak / DIA_MINUTES);
+  const a = 2 * tau / DIA_MINUTES;
+  const S = 1 / (1 - a + (1 + a) * Math.exp(-DIA_MINUTES / tau));
+
+  const clockMs = new Date(clockTime).getTime();
+  let totalActivity = 0;
+
+  for (const dose of doses) {
+    if (dose.type === 'tempBasal' && dose.rate != null) {
+      const startMs = new Date(dose.startTime).getTime();
+      const durMin = dose.duration || 30;
+      const TICK_MINUTES = 5;
+      const segments = Math.ceil(durMin / TICK_MINUTES);
+      for (let s = 0; s < segments; s++) {
+        const segStart = startMs + s * TICK_MINUTES * 60000;
+        const segEnd = Math.min(segStart + TICK_MINUTES * 60000, startMs + durMin * 60000);
+        const segDurHours = (segEnd - segStart) / 3600000;
+        const netUnits = (dose.rate - basalRate) * segDurHours;
+        const minsAgo = (clockMs - segStart) / 60000;
+        if (minsAgo >= 0 && minsAgo < DIA_MINUTES) {
+          totalActivity += exponentialContrib(netUnits, minsAgo, DIA_MINUTES, tau, a, S).activity;
+        }
+      }
+    } else if (dose.type === 'bolus' && dose.units) {
+      const minsAgo = (clockMs - new Date(dose.startTime).getTime()) / 60000;
+      if (minsAgo >= 0 && minsAgo < DIA_MINUTES) {
+        totalActivity += exponentialContrib(dose.units, minsAgo, DIA_MINUTES, tau, a, S).activity;
+      }
+    }
+  }
+
+  return totalActivity;
+}
+
+/**
  * Translate adapter protocol input → oref0 native input.
  * This is the critical translation layer that must be independently testable.
  */
@@ -111,6 +165,20 @@ function translateInput(adapterInput) {
     duration: temp.duration || 0,
     temp: 'absolute',
   };
+
+  // When activity is zero/missing but IOB > 0, derive activity from IOB
+  // using the exponential model relationship: activity = IOB / tau
+  // This matches DetermineBasal.swift fallback: insulinOnBoard / (DIA * 60 / 1.85)
+  if (!(iob.activity) && iob.iob && iob.iob !== 0) {
+    const dia = prof.dia || 5;
+    const tau = dia * 60 / 1.85;
+    const computedActivity = iob.iob / tau;
+    iob.activity = computedActivity;
+    if (iob.iobWithZeroTemp && !(iob.iobWithZeroTemp.activity)) {
+      const ztIob = iob.iobWithZeroTemp.iob ?? iob.iob;
+      iob.iobWithZeroTemp.activity = ztIob / tau;
+    }
+  }
 
   const iobData = generateIobArray(iob, prof.dia, temp);
 

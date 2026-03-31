@@ -332,15 +332,32 @@ func translateInput(_ input: AdapterInput) -> (AlgorithmInputs, [String]) {
     )
 
     // Build dose history if available
+        let basalRate = input.profile.basalRate ?? 1.0
     let doses: [InsulinDose]? = input.doseHistory?.compactMap { entry in
-        let units = entry.units ?? (entry.rate ?? 0) * (entry.duration ?? 30) / 60.0
-        guard units > 0 else { return nil }
-        return InsulinDose(
-            units: units,
-            timestamp: parseDate(entry.startTime),
-            type: .novolog,
-            source: "harness"
-        )
+        if entry.type == "tempBasal" || entry.type == "Temp Basal" {
+            // Net insulin: (temp rate - scheduled basal) × duration in hours
+            let rate = entry.rate ?? 0
+            let durationMin = entry.duration ?? 30
+            let durationHours = durationMin / 60.0
+            let netUnits = (rate - basalRate) * durationHours
+            // Allow negative net units (below-scheduled temps reduce IOB)
+            return InsulinDose(
+                units: netUnits,
+                timestamp: parseDate(entry.startTime),
+                type: .novolog,
+                source: "harness"
+            )
+        } else {
+            // Bolus: use absolute units
+            let units = entry.units ?? 0
+            guard units > 0 else { return nil }
+            return InsulinDose(
+                units: units,
+                timestamp: parseDate(entry.startTime),
+                type: .novolog,
+                source: "harness"
+            )
+        }
     }
 
     // Build carb history if available
@@ -388,6 +405,26 @@ func translateInput(_ input: AdapterInput) -> (AlgorithmInputs, [String]) {
     }
     let modifiers: [EffectModifier]? = modifiersList.isEmpty ? nil : modifiersList
 
+    // When activity is zero/missing but IOB > 0, derive activity from IOB
+    // using the exponential model: activity = IOB / tau, where tau = DIA * 60 / 1.85
+    // This matches DetermineBasal.swift's fallback formula.
+    var insulinActivity = input.iob.activity ?? 0
+    if insulinActivity == 0 && input.iob.iob != 0 {
+        let dia = input.profile.dia ?? 5.0
+        let tau = dia * 60.0 / 1.85
+        insulinActivity = input.iob.iob / tau
+    }
+
+    var ztActivity = input.iob.iobWithZeroTemp?.activity ?? 0
+    if ztActivity == 0 {
+        let ztIob = input.iob.iobWithZeroTemp?.iob ?? input.iob.iob
+        if ztIob != 0 {
+            let dia = input.profile.dia ?? 5.0
+            let tau = dia * 60.0 / 1.85
+            ztActivity = ztIob / tau
+        }
+    }
+
     let inputs = AlgorithmInputs(
         glucose: glucoseReadings,
         insulinOnBoard: input.iob.iob,
@@ -397,9 +434,9 @@ func translateInput(_ input: AdapterInput) -> (AlgorithmInputs, [String]) {
         doseHistory: doses,
         carbHistory: carbs,
         effectModifiers: modifiers,
-        insulinActivity: input.iob.activity,
+        insulinActivity: insulinActivity,
         iobWithZeroTemp: input.iob.iobWithZeroTemp?.iob,
-        iobWithZeroTempActivity: input.iob.iobWithZeroTemp?.activity,
+        iobWithZeroTempActivity: ztActivity,
         glucoseDelta: input.glucoseStatus.delta,
         shortAvgDelta: input.glucoseStatus.shortAvgDelta,
         longAvgDelta: input.glucoseStatus.longAvgDelta,
