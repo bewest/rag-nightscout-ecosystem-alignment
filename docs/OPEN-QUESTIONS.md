@@ -320,6 +320,67 @@ Questions explicitly listed in existing ADRs.
 
 ---
 
+## ML Pipeline & Anticipatory Management
+
+### OQ-032: Override event label source
+
+**Question**: Where do we get labeled override events for training the decision classifier (Layer 4)?
+
+**Context**: No model can predict *when* an override should occur without labeled training data. Possible sources include Nightscout `treatments` with override-like `eventType` values, Loop's `overrideStatus`, or manual annotation.
+
+**Options**:
+1. Extract from Nightscout treatment logs (`eventType` containing Eating Soon, Exercise, custom notes)
+2. Mine Loop `overrideStatus` field from devicestatus collection
+3. Manual annotation of CGM traces
+4. Combination — noisy automatic extraction refined by manual review
+
+**Blocks**: GAP-ML-003, GAP-ML-005, all Layer 4 decision modeling
+
+**Related**: `traceability/ml-gaps.md` GAP-ML-003
+
+### OQ-033: Population vs personalized ML models
+
+**Question**: Should we build population models first and then personalize, or start with strong single-patient models?
+
+**Context**: cgmencode now trains across 50 diverse patient profiles simultaneously. The Transformer AE generalizes well (2.12 MAE). But real deployment needs per-patient personalization. Trade-off: population models have more data but blur individual physiology.
+
+**Options**:
+1. Population pre-train → per-patient fine-tune (standard transfer learning)
+2. Meta-learning (MAML) for few-shot adaptation
+3. Patient embedding vector as conditioning input
+
+**Related**: Architecture doc sim-to-real principle
+
+### OQ-034: Available context signals beyond glucose-insulin-carbs
+
+**Question**: What contextual signals are actually available from the Nightscout ecosystem today for pattern learning?
+
+**Context**: Advisors recommend calendar, travel, and activity signals. Need to know what's realistically accessible.
+
+**Options**:
+1. HealthKit steps/activity (via Loop/Trio)
+2. Google Fit data (via AAPS)
+3. Manual Nightscout notes
+4. Phone location/timezone changes (travel detection)
+5. Calendar API integration
+
+**Blocks**: GAP-ML-007
+
+### OQ-035: Workspace boundary for decision modeling (Layer 4)
+
+**Question**: Should decision modeling (override classifiers, policy layer) live in this ecosystem-alignment workspace or in a future mobile-focused workspace?
+
+**Context**: Ecosystem-alignment has the physics engines and validation infrastructure. A mobile workspace would be closer to the inference deployment path. Current R&D benefits from co-location.
+
+**Options**:
+1. Keep in ecosystem-alignment during R&D, spin out when stabilized (recommended)
+2. Create separate `t1pal-ml` repository now
+3. Put in t1pal-mobile-workspace alongside existing app code
+
+**Related**: cgmencode provenance note in `tools/cgmencode/README.md`
+
+---
+
 ## How to Use This Document
 
 ### Adding Questions

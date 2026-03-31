@@ -32,11 +32,15 @@ export SWIFTLY_HOME_DIR=/home/bewest/.local/share/swiftly
 | cgmsim-lib 5-facet analysis | P2 | TypeScript CGM simulator — map physiology modules, terminology, GAPs vs Nightscout data model |
 | LoopAlgorithm standalone evaluation | P2 | Compare standalone vs LoopWorkspace/LoopKit embedded, document JSON fixture format |
 | Cross-algorithm deep integration tests | P3 | ShadowRunner: same inputs → oref0 + Loop + GluPredKit models → diff outputs → comparison matrix |
-| Wire SIM-* → cgmencode format adapter | P1 | GAP-ML-001: Convert in-silico-bridge UVA/Padova output → cgmencode FixtureEncoder JSON format for sim-to-real transfer training |
-| Override event label extraction | P2 | GAP-ML-003: Extract override-like events from Nightscout treatment logs (Eating Soon, Exercise, custom overrides) as training labels |
-| Event classifier baseline (XGBoost) | P2 | GAP-ML-005: Train gradient-boosted trees on tabular features (BG trend, IOB, time-of-day) to detect meal/exercise/sleep onset |
+| Wire SIM-* → cgmencode format adapter | P1 | ✅ Complete — `sim_adapter.py` bridges SIM-*/TV-* → 8-feature tensors | GAP-ML-001 |
+| Scale cgmencode training data | P1 | ✅ Complete — LHS sweep, 50 patients, 5,900 vectors across 2 engines | GAP-ML-002 |
+| Conditioned Transformer validation vs UVA/Padova | P2 | ✅ Complete — 3.47 MAE mg/dL, beats persistence | |
+| Override event label extraction | P2 | GAP-ML-003: Extract override-like events from Nightscout treatment logs (Eating Soon, Exercise, custom overrides) as training labels. See OQ-032. |
+| Event classifier baseline (XGBoost) | P2 | GAP-ML-005: Train gradient-boosted trees on tabular features (BG trend, IOB, time-of-day) to detect meal/exercise/sleep onset. Depends on GAP-ML-003. |
+| Real data training (OhioT1DM) | P2 | `real_data_adapter.py` built; blocked on PhysioNet credentialed access. Enables residual training (architecture §2). |
+| Fix VAE architecture | P3 | 32D latent bottleneck broken (42.78 MAE). Redesign as Conditional VAE with per-timestep conditioning. GAP-ML-012 related. |
+| Fix Diffusion model | P3 | Toy forward process (`x + noise`). Implement proper DDPM β-schedule. GAP-ML-012. |
 | Bayesian ISF/CR drift tracker | P3 | GAP-ML-006: Online Kalman filter over daily ISF/CR estimates; compare to autosens baseline |
-| Conditioned Transformer validation vs UVA/Padova | P2 | Trust-building: run same scenarios through physics engine and learned model, compare glucose trajectories |
 
 ## Processed
 
