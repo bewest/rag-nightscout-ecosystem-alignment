@@ -33,9 +33,13 @@ from torch.utils.data import DataLoader
 from .model import CGMTransformerAE, train_one_epoch, eval_loss
 from .toolbox import ConditionedTransformer
 from .sim_adapter import load_conformance_to_dataset
-from .real_data_adapter import load_nightscout_to_dataset
+from .real_data_adapter import load_nightscout_to_dataset, load_nightscout_grid_timestamps
 from .evaluate import evaluate_model, persistence_baseline
-from .physics_model import compute_residual_windows, residual_to_glucose, RESIDUAL_SCALE
+from .physics_model import (
+    compute_residual_windows, compute_residual_windows_uva,
+    residual_to_glucose, load_uva_predictions, align_uva_to_grid,
+    RESIDUAL_SCALE,
+)
 
 DEFAULT_SYNTH_DIRS = [
     'conformance/in-silico/vectors',
@@ -680,12 +684,163 @@ def run_residual(args):
     return results
 
 
+def run_physics_comparison(args):
+    """EXP-007: Physics Level Comparison — simple vs enhanced vs UVA/Padova.
+
+    Trains residual AE with three physics backends, same architecture.
+    Tests whether more sophisticated physics → better residuals → better ML.
+    """
+    print('=' * 60)
+    print('EXP-007: Physics Level Comparison')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-007', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    # Load profile
+    profile_path = os.path.join(args.real_data, 'profile.json')
+    isf, cr = 40.0, 10.0
+    if os.path.exists(profile_path):
+        with open(profile_path) as f:
+            profiles = json.load(f)
+        if profiles:
+            store = profiles[0].get('store', {})
+            default = store.get('Default', {})
+            sens = default.get('sens', [{}])
+            carbratio = default.get('carbratio', [{}])
+            if sens and 'value' in sens[0]:
+                isf = float(sens[0]['value'])
+            if carbratio and 'value' in carbratio[0]:
+                cr = float(carbratio[0]['value'])
+    print(f'\n  Patient: ISF={isf}, CR={cr}')
+    results['patient'] = {'isf': isf, 'cr': cr}
+
+    # Step 1: Load data
+    print('\n--- Step 1: Load real data ---')
+    from .real_data_adapter import load_nightscout_to_dataset as _load_ns
+    real_t, real_v = _load_ns(args.real_data, task='forecast', window_size=args.window)
+    train_np = real_t.vectors.numpy()
+    val_np = real_v.vectors.numpy()
+    results['samples'] = {'train': len(train_np), 'val': len(val_np)}
+
+    # Step 2: Compute residuals with each physics level
+    levels = {}
+
+    # 2a. Simple (ΔIOB×ISF only)
+    print('\n--- Step 2a: Simple physics residuals ---')
+    s_tr, s_tp, s_ts = compute_residual_windows(train_np, isf=isf, cr=cr, level='simple')
+    s_vr, s_vp, s_vs = compute_residual_windows(val_np, isf=isf, cr=cr, level='simple')
+    levels['simple'] = {'train_res': s_tr, 'train_phys': s_tp, 'val_res': s_vr, 'val_phys': s_vp}
+    print(f'  Residual std: {s_ts["std"]:.1f} mg/dL')
+    results['simple_stats'] = s_vs
+
+    # 2b. Enhanced (+ liver + circadian)
+    print('\n--- Step 2b: Enhanced physics residuals ---')
+    e_tr, e_tp, e_ts = compute_residual_windows(train_np, isf=isf, cr=cr, level='enhanced')
+    e_vr, e_vp, e_vs = compute_residual_windows(val_np, isf=isf, cr=cr, level='enhanced')
+    levels['enhanced'] = {'train_res': e_tr, 'train_phys': e_tp, 'val_res': e_vr, 'val_phys': e_vp}
+    print(f'  Residual std: {e_ts["std"]:.1f} mg/dL')
+    results['enhanced_stats'] = e_vs
+
+    # 2c. UVA/Padova (from pre-computed replay)
+    uva_path = getattr(args, 'uva_predictions', None)
+    if uva_path is None:
+        uva_path = str(out / 'uva_predictions.json')
+    has_uva = os.path.exists(uva_path)
+
+    if has_uva:
+        print(f'\n--- Step 2c: UVA/Padova residuals ({uva_path}) ---')
+        uva_bg_dict, uva_meta = load_uva_predictions(uva_path)
+        grid_ts = load_nightscout_grid_timestamps(args.real_data)
+        uva_grid = align_uva_to_grid(uva_bg_dict, grid_ts)
+        print(f'  UVA grid: {len(uva_grid)} points, '
+              f'{np.sum(~np.isnan(uva_grid))}/{len(uva_grid)} matched')
+
+        # Compute per-window differential residuals (train + val same grid)
+        all_np = np.concatenate([train_np, val_np], axis=0)
+        u_ar, u_ap, u_as = compute_residual_windows_uva(all_np, uva_grid)
+        n_train = len(train_np)
+        u_tr = u_ar[:n_train]
+        u_tp = u_ap[:n_train]
+        u_vr = u_ar[n_train:]
+        u_vp = u_ap[n_train:]
+        # Recompute val-only stats
+        val_glucose = val_np[:, :, 0] * 400.0
+        u_val_residuals = val_glucose - u_vp
+        u_vs = {
+            'mean': float(np.mean(u_val_residuals)),
+            'std': float(np.std(u_val_residuals)),
+            'level': 'uva',
+        }
+        levels['uva'] = {'train_res': u_tr, 'train_phys': u_tp, 'val_res': u_vr, 'val_phys': u_vp}
+        print(f'  UVA differential residual std: {u_vs["std"]:.1f} mg/dL')
+        results['uva_stats'] = u_vs
+    else:
+        print(f'\n  No UVA predictions at {uva_path} — skipping UVA level')
+
+    # Step 3: Physics-only baselines
+    print('\n--- Step 3: Physics-only baselines ---')
+    for name, data in levels.items():
+        metrics = _evaluate_physics_only(data['val_phys'], val_np)
+        results[f'{name}_physics_only'] = metrics
+        print(f'  {name:10s}: MAE={metrics["mae_mgdl"]:.2f}  RMSE={metrics["rmse_mgdl"]:.2f}')
+
+    # Step 4: Train residual AE for each level
+    from .encoder import CGMDataset
+    for name, data in levels.items():
+        print(f'\n--- Step 4: Train residual AE ({name}) ---')
+        tr_ds = CGMDataset(data['train_res'], task='reconstruct', window_size=args.window)
+        vr_ds = CGMDataset(data['val_res'], task='reconstruct', window_size=args.window)
+        tr_ld = DataLoader(tr_ds, batch_size=args.batch, shuffle=True)
+        vr_ld = DataLoader(vr_ds, batch_size=args.batch)
+
+        model = CGMTransformerAE(input_dim=8, d_model=64, nhead=4, num_layers=2)
+        ckpt = str(out / f'ae_residual_{name}.pth')
+        train_loop(model, tr_ld, vr_ld,
+                   lr=1e-3, epochs=args.epochs, patience=args.patience,
+                   save_path=ckpt, label=f'residual-{name}')
+
+        # Evaluate
+        load_best(model, ckpt)
+        metrics = _evaluate_residual_model(model, data['val_res'], data['val_phys'], val_np)
+        results[f'{name}_residual_ae'] = metrics
+        print(f'  {name} Residual AE: MAE={metrics["mae_mgdl"]:.2f}  '
+              f'RMSE={metrics["rmse_mgdl"]:.2f}')
+
+    # Step 5: Persistence baseline
+    print('\n--- Step 5: Persistence baseline ---')
+    _, rv_2x = _load_ns(args.real_data, task='forecast', window_size=args.window * 2)
+    p_mae, p_rmse = persistence_baseline(rv_2x, args.window)
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)}
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    # Summary
+    print('\n' + '=' * 60)
+    print('SUMMARY — Physics Level Comparison')
+    print('=' * 60)
+    print(f'  {"Approach":<30s}  {"MAE mg/dL":>10s}  {"RMSE mg/dL":>10s}')
+    print(f'  {"-"*30}  {"-"*10}  {"-"*10}')
+    print(f'  {"Persistence":<30s}  {p_mae:>10.2f}  {p_rmse:>10.2f}')
+    for name in levels:
+        po = results[f'{name}_physics_only']
+        ra = results[f'{name}_residual_ae']
+        print(f'  {name + " physics-only":<30s}  {po["mae_mgdl"]:>10.2f}  {po["rmse_mgdl"]:>10.2f}')
+        print(f'  {name + " residual AE":<30s}  {ra["mae_mgdl"]:>10.2f}  {ra["rmse_mgdl"]:>10.2f}')
+    print(f'\n  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp007_physics_comparison.json'))
+    return results
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Run cgmencode experiments',
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('experiment',
-                        choices=['transfer', 'conditioned', 'cond-transfer', 'residual', 'all'],
+                        choices=['transfer', 'conditioned', 'cond-transfer',
+                                 'residual', 'physics-compare', 'all'],
                         help='Which experiment to run')
     parser.add_argument('--real-data', required=True,
                         help='Path to Nightscout JSON directory')
@@ -693,6 +848,8 @@ def main():
                         help='Synthetic data directories')
     parser.add_argument('--output-dir', default='externals/experiments',
                         help='Directory for checkpoints and results')
+    parser.add_argument('--uva-predictions', default=None,
+                        help='Path to UVA/Padova predictions JSON (from uva_replay.js)')
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--batch', type=int, default=32)
     parser.add_argument('--window', type=int, default=12,
@@ -711,6 +868,8 @@ def main():
         run_conditioned_transfer(args)
     if args.experiment in ('residual', 'all'):
         run_residual(args)
+    if args.experiment in ('physics-compare', 'all'):
+        run_physics_comparison(args)
 
 
 if __name__ == '__main__':

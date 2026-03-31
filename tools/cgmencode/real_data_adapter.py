@@ -195,6 +195,32 @@ def split_into_windows(features: np.ndarray, window_size: int = 24,
     return windows
 
 
+def load_nightscout_grid_timestamps(data_path: str) -> np.ndarray:
+    """Return the 5-min grid timestamps (epoch ms) for Nightscout data.
+
+    Matches the grid used by load_nightscout_to_dataset, so array index i
+    corresponds to feature matrix row i.
+    """
+    data_dir = Path(data_path)
+    with open(data_dir / 'entries.json') as f:
+        entries = json.load(f)
+    times = []
+    for e in entries:
+        if e.get('type') != 'sgv' or 'sgv' not in e:
+            continue
+        if 'date' in e:
+            times.append(pd.Timestamp(e['date'], unit='ms', tz='UTC'))
+        elif 'dateString' in e:
+            times.append(pd.Timestamp(e['dateString']))
+    if not times:
+        return np.array([], dtype=np.int64)
+    times.sort()
+    grid_start = min(times).floor('5min')
+    grid_end = max(times).ceil('5min')
+    grid = pd.date_range(grid_start, grid_end, freq='5min')
+    return np.array([int(t.timestamp() * 1000) for t in grid], dtype=np.int64)
+
+
 def load_nightscout_to_dataset(data_path: str,
                                 task: str = 'forecast',
                                 window_size: int = 24,

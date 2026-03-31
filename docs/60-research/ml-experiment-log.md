@@ -15,7 +15,8 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 
 | Data Source | Model | MAE mg/dL | RMSE mg/dL | vs Persistence | Date |
 |-------------|-------|-----------|------------|----------------|------|
-| **Real (physics + residual AE)** | **Physics→AE** | **0.28** | **0.34** | **↓98.5%** | 2026-03-31 |
+| **Real (enhanced physics + residual AE)** | **Physics→AE** | **0.20** | **0.25** | **↓98.9%** | 2026-03-31 |
+| Real (simple physics + residual AE) | Physics→AE | 0.31 | 0.38 | ↓98.4% | 2026-03-31 |
 | Real (transfer: synth→real) | Transformer AE | 0.74 | 0.99 | ↓96.1% | 2026-03-31 |
 | Real (from scratch) | Transformer AE | 2.00 | 2.60 | ↓89.5% | 2026-03-31 |
 | Real (physics-only, no ML) | IOB/COB dynamics | 13.89 | 23.42 | ↓26.9% | 2026-03-31 |
@@ -26,12 +27,12 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 
 ### Key Findings
 
-1. **Physics-ML residual composition is the breakthrough** — residual AE (0.28 MAE) is 8.2× better than raw AE (2.31 MAE) and 50× better than physics-only (13.89 MAE). Validates the core L1+L3 architecture thesis.
-2. **Simple physics model already useful** — IOB/COB forward integration alone (13.89 MAE) beats persistence (19.01) by 27%. No ML needed for this.
-3. **Transfer learning validates sim-to-real pipeline** — synthetic pre-training + real fine-tuning (0.74 MAE) beats from-scratch (2.00 MAE) by 63%
-4. **Transformer AE is the clear architecture** — simple, small (68K params), trains fast, generalizes well
-5. **Conditioned Transformer is a dead end on single-patient data** — EXP-004/006 both fail. Root cause: narrow action diversity from Loop-controlled patient.
-6. **Residual learning converges faster** — residual AE reaches 4.69 MAE in 3 epochs vs raw AE 18.31 MAE
+1. **Enhanced physics + residual AE is best** — 0.20 MAE (↓98.9% vs persistence). Adding liver production + circadian rhythm to the physics model makes residuals more learnable for the AE.
+2. **Physics-ML residual composition validated** — all 3 physics levels produce dramatically better results than raw AE training. Core L1+L3 thesis confirmed.
+3. **More complex physics ≠ better physics-only predictions, but = better residuals** — UVA/Padova physics-only is worse (15.89 vs 13.89 MAE), but its residual AE matches enhanced (0.20 MAE).
+4. **Transfer learning validates sim-to-real pipeline** — synthetic pre-training + real fine-tuning (0.74 MAE) beats from-scratch (2.00 MAE) by 63%
+5. **Transformer AE is the clear architecture** — simple, small (68K params), trains in 30s, generalizes well
+6. **Conditioned Transformer is a dead end on single-patient data** — EXP-004/006 both fail. Root cause: narrow action diversity from Loop-controlled patient.
 
 ---
 
@@ -168,17 +169,49 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 
 ## Planned Experiments
 
-### EXP-007: Multi-Patient Conditioned Training (planned)
+### EXP-008: Multi-Patient Conditioned Training (planned)
 
 **Hypothesis**: Conditioned model needs action diversity from multiple patients. Can test with ns-fixture-capture on additional Nightscout instances.
 
-### EXP-008: Physics-ML Residual + Transfer Learning (planned)
+### EXP-009: Physics-ML Residual + Transfer Learning (planned)
 
 **Hypothesis**: Combining EXP-003 (synthetic pre-training) with EXP-005 (residual training) may yield further gains. Pre-train AE on synthetic residuals, fine-tune on real residuals.
 
-### EXP-009: Longer Forecast Horizons (planned)
+### EXP-010: Longer Forecast Horizons (planned)
 
 **Hypothesis**: Test residual AE at 2hr (24 steps) and 3hr (36 steps) windows. Physics model may drift more, but ML residual correction should compensate.
+
+---
+
+### EXP-007: Physics Level Comparison (2026-03-31)
+
+**Hypothesis**: More sophisticated physics → smaller residuals → better ML. Compare three physics levels for residual AE training: (1) Simple ΔIOB×ISF, (2) Enhanced + liver production + circadian rhythm, (3) UVA/Padova 14-state ODE (differential per-window).
+
+**Setup**:
+- Same 85-day Nightscout data (3,085 train / 772 val windows, 12 steps each)
+- Same AE architecture: 68K params, d_model=64, 4 heads, 2 layers
+- 50 epochs, patience 15, lr 1e-3
+- UVA/Padova uses differential approach: anchor to actual BG at window start, predict CHANGE
+
+**Results**:
+
+| Physics Level | Physics-only MAE | Physics-only RMSE | Residual AE MAE | Residual AE RMSE |
+|---|---|---|---|---|
+| Persistence | 19.01 | 26.76 | — | — |
+| Simple (ΔIOB×ISF) | 13.89 | 23.42 | 0.31 | 0.38 |
+| Enhanced (+liver+circadian) | 15.34 | 24.87 | **0.20** | **0.26** |
+| UVA/Padova (differential) | 15.89 | 23.36 | **0.20** | **0.25** |
+
+**Key Findings**:
+1. **Enhanced and UVA physics-only are WORSE** than simple (15.3-15.9 vs 13.9 MAE) — liver production adds systematic offset without accurate insulin delivery context
+2. **But their residual AEs are BETTER** (0.20 vs 0.31 MAE) — the richer physics creates more structured residuals that are easier for the AE to learn
+3. **Enhanced ≈ UVA for residual AE** — the 14-state ODE provides no advantage over the simple liver + circadian enhancement, probably because the UVA model also lacks Loop's insulin delivery state
+4. **All three levels train in ~30s each** — total experiment time 102s. Physics level does NOT impact training practicality.
+5. **UVA differential per-window approach works** — avoids 133 MAE absolute drift by anchoring each window to actual glucose
+
+**Interpretation**: The best physics model for residual learning isn't the most accurate per-window predictor — it's the one that creates the most LEARNABLE residual structure. The enhanced model (simple + liver + circadian) achieves this with 30 lines of Python vs the full 14-state ODE. Occam's razor applies.
+
+**Runtime**: 102 seconds total (3 AE trainings × ~30s each + data loading)
 
 ---
 
