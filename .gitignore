@@ -70,3 +70,4 @@ tmp/
 attached_assets/
 .build/
 .copilot-session.db
+checkpoints/
