@@ -48,7 +48,7 @@ Shift diabetes management from reactive, moment-to-moment intervention into **an
 |-------|--------|----------|
 | **L1 Physics** | ✅ Working | UVA/Padova + cgmsim engines, sensor noise, 50-patient sweep |
 | **L2 Calibration** | ❌ Not built | Fingerprinting designed, not coded. §2.2 residual approach bypasses it. |
-| **L3 Dynamics** | ✅ Working | AE: 6.11 MAE real data, 2.12 synthetic. Conditioned overfits. VAE/Diffusion broken. |
+| **L3 Dynamics** | ✅ Working | See `docs/60-research/ml-experiment-log.md` for benchmarks |
 | **L4 Decision** | ❌ Not started | Needs override event labels (OQ-032) |
 
 ---

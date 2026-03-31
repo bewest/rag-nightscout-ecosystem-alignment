@@ -121,23 +121,41 @@ def main():
     parser.add_argument('--model', choices=list(MODEL_REGISTRY.keys()),
                         help='Architecture to evaluate')
     parser.add_argument('--checkpoint', help='Path to model checkpoint')
-    parser.add_argument('--data', nargs='+', help='Data directories')
+    parser.add_argument('--data', nargs='+', help='Conformance data directories')
+    parser.add_argument('--source', choices=['conformance', 'nightscout', 'csv'],
+                        default='conformance', help='Data source type')
+    parser.add_argument('--data-path', help='Path to data directory (nightscout/csv)')
     parser.add_argument('--window', type=int, default=12)
     parser.add_argument('--batch', type=int, default=32)
     parser.add_argument('--baseline', action='store_true', help='Only compute persistence baseline')
+    parser.add_argument('--save', help='Save results JSON to this path')
     args = parser.parse_args()
 
-    data_dirs = args.data if args.data else DEFAULT_DATA_DIRS
-
     print("=== cgmencode Evaluation ===")
-    print(f"Data: {data_dirs}")
+    print(f"Source: {args.source}")
+
+    def _load_val(task='forecast', conditioned=False, force_window=None):
+        """Load validation data. force_window overrides the actual window size used."""
+        ws = force_window if force_window else args.window
+        if args.source == 'nightscout':
+            from .real_data_adapter import load_nightscout_to_dataset
+            if not args.data_path:
+                print("ERROR: --data-path required for Nightscout source")
+                sys.exit(1)
+            _, val_ds = load_nightscout_to_dataset(
+                args.data_path, task=task, window_size=ws, conditioned=conditioned)
+            return val_ds
+        else:
+            data_dirs = args.data if args.data else DEFAULT_DATA_DIRS
+            _, val_ds = load_conformance_to_dataset(
+                data_dirs, task=task, window_size=ws, conditioned=conditioned)
+            return val_ds
 
     results = {}
 
-    # Always compute persistence baseline
+    # Persistence baseline needs windows of 2*window_size (history + future)
     print("\n--- Persistence Baseline (glucose stays flat) ---")
-    base_train, base_val = load_conformance_to_dataset(
-        data_dirs, task='forecast', window_size=args.window)
+    base_val = _load_val(task='forecast', conditioned=False, force_window=args.window * 2)
     if base_val:
         base_mae, base_rmse = persistence_baseline(base_val, args.window)
         results['persistence'] = {'mae_mgdl': round(base_mae, 2), 'rmse_mgdl': round(base_rmse, 2)}
@@ -147,6 +165,8 @@ def main():
         print("  No validation data found.")
 
     if args.baseline:
+        if args.save:
+            _save_results(results, args.save)
         return
 
     # Evaluate trained model
@@ -155,8 +175,7 @@ def main():
         return
 
     reg = MODEL_REGISTRY[args.model]
-    _, val_ds = load_conformance_to_dataset(
-        data_dirs, task=reg['task'], window_size=args.window, conditioned=reg['conditioned'])
+    val_ds = _load_val(task=reg['task'], conditioned=reg['conditioned'])
 
     if not val_ds:
         print("ERROR: No validation data.")
@@ -166,9 +185,13 @@ def main():
 
     # Load model
     model = reg['class'](**reg['kwargs'])
-    checkpoint = torch.load(args.checkpoint, map_location='cpu')
-    model.load_state_dict(checkpoint['model_state'])
-    print(f"\n--- {args.model.upper()} (epoch {checkpoint.get('epoch', '?')}) ---")
+    checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=True)
+    if 'model_state' in checkpoint:
+        model.load_state_dict(checkpoint['model_state'])
+        print(f"\n--- {args.model.upper()} (epoch {checkpoint.get('epoch', '?')}) ---")
+    else:
+        model.load_state_dict(checkpoint)
+        print(f"\n--- {args.model.upper()} ---")
 
     metrics = evaluate_model(model, val_loader, args.model, args.window)
     results[args.model] = metrics
@@ -178,9 +201,21 @@ def main():
     # Comparison
     if 'persistence' in results:
         improvement = results['persistence']['mae_mgdl'] - metrics['mae_mgdl']
-        print(f"\n  vs baseline: {'↓' if improvement > 0 else '↑'} {abs(improvement):.2f} mg/dL MAE")
+        pct = (improvement / results['persistence']['mae_mgdl']) * 100 if results['persistence']['mae_mgdl'] > 0 else 0
+        print(f"\n  vs baseline: {'↓' if improvement > 0 else '↑'} {abs(improvement):.2f} mg/dL MAE ({abs(pct):.1f}%)")
 
     print(f"\n{json.dumps(results, indent=2)}")
+
+    if args.save:
+        _save_results(results, args.save)
+
+
+def _save_results(results, path):
+    """Save results dict to JSON file."""
+    os.makedirs(os.path.dirname(path) if os.path.dirname(path) else '.', exist_ok=True)
+    with open(path, 'w') as f:
+        json.dump(results, f, indent=2)
+    print(f"\nResults saved to {path}")
 
 
 if __name__ == '__main__':

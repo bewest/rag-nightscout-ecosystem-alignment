@@ -3,9 +3,18 @@
 train.py — Unified training CLI for all cgmencode architectures.
 
 Usage:
-    python3 -m tools.cgmencode.train --model ae --epochs 30 --data conformance/in-silico/vectors
-    python3 -m tools.cgmencode.train --model vae --epochs 50 --data conformance/in-silico/vectors conformance/t1pal/vectors/oref0-endtoend
-    python3 -m tools.cgmencode.train --model conditioned --epochs 30
+    # Train on conformance vectors (default):
+    python3 -m tools.cgmencode.train --model ae --epochs 30
+
+    # Train on Nightscout real data:
+    python3 -m tools.cgmencode.train --model ae --epochs 50 --source nightscout \
+        --data-path ../t1pal-mobile-workspace/externals/logs/ns-fixtures/90-day-history
+
+    # Transfer learning: pre-train on synthetic, fine-tune on real:
+    python3 -m tools.cgmencode.train --model ae --epochs 50 --source nightscout \
+        --data-path /path/to/ns-data --pretrained checkpoints/ae_best.pth
+
+    # All models: ae, vae, conditioned, diffusion
 """
 
 import argparse
@@ -87,22 +96,49 @@ def train_step(model, batch, optimizer, model_name, criterion, kl_beta=0.01):
     return loss.item()
 
 
+def load_data(args, reg):
+    """Load training data from the specified source."""
+    if args.source == 'nightscout':
+        from .real_data_adapter import load_nightscout_to_dataset
+        if not args.data_path:
+            print("ERROR: --data-path required for Nightscout source")
+            sys.exit(1)
+        return load_nightscout_to_dataset(
+            args.data_path,
+            task=reg['task'],
+            window_size=args.window,
+            conditioned=reg['conditioned'],
+        )
+    elif args.source == 'csv':
+        from .real_data_adapter import load_csv_to_dataset
+        if not args.data_path:
+            print("ERROR: --data-path required for CSV source")
+            sys.exit(1)
+        return load_csv_to_dataset(
+            args.data_path,
+            task=reg['task'],
+            window_size=args.window,
+            conditioned=reg['conditioned'],
+        )
+    else:  # conformance (default)
+        data_dirs = args.data if args.data else DEFAULT_DATA_DIRS
+        return load_conformance_to_dataset(
+            data_dirs,
+            task=reg['task'],
+            window_size=args.window,
+            conditioned=reg['conditioned'],
+        )
+
+
 def run_training(args):
     print(f"=== cgmencode training: {args.model} ===")
+    print(f"Source: {args.source}")
 
-    # Load data
-    data_dirs = args.data if args.data else DEFAULT_DATA_DIRS
     reg = MODEL_REGISTRY[args.model]
-
-    train_ds, val_ds = load_conformance_to_dataset(
-        data_dirs,
-        task=reg['task'],
-        window_size=args.window,
-        conditioned=reg['conditioned'],
-    )
+    train_ds, val_ds = load_data(args, reg)
 
     if not train_ds:
-        print("ERROR: No training data found. Run generate_training_data.py first.")
+        print("ERROR: No training data found.")
         sys.exit(1)
 
     print(f"Data: {len(train_ds)} train, {len(val_ds)} val samples")
@@ -116,17 +152,42 @@ def run_training(args):
     param_count = sum(p.numel() for p in model.parameters())
     print(f"Model: {args.model} ({param_count:,} parameters)")
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-5)
+    # Transfer learning: load pretrained weights
+    if args.pretrained:
+        print(f"Loading pretrained weights from {args.pretrained}")
+        checkpoint = torch.load(args.pretrained, map_location='cpu', weights_only=True)
+        if 'model_state' in checkpoint:
+            model.load_state_dict(checkpoint['model_state'])
+        else:
+            model.load_state_dict(checkpoint)
+        print(f"  Loaded (epoch {checkpoint.get('epoch', '?')}, val_loss {checkpoint.get('val_loss', '?')})")
+
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     criterion = nn.MSELoss()
 
+    # LR scheduling
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode='min', factor=0.5, patience=args.lr_patience
+    )
+
     # Training loop
-    history = {'train_loss': [], 'val_loss': [], 'epoch_time': []}
+    history = {
+        'train_loss': [], 'val_loss': [], 'epoch_time': [], 'lr': [],
+        'config': {
+            'model': args.model, 'source': args.source,
+            'epochs': args.epochs, 'batch': args.batch, 'lr': args.lr,
+            'window': args.window, 'weight_decay': args.weight_decay,
+            'pretrained': args.pretrained, 'patience': args.patience,
+            'train_samples': len(train_ds), 'val_samples': len(val_ds),
+        },
+    }
     best_val = float('inf')
+    patience_counter = 0
 
     for epoch in range(args.epochs):
         t0 = time.time()
 
-        # KL annealing for VAE: ramp beta from 0 → target over first 30% of training
+        # KL annealing for VAE
         kl_beta = 0.01
         if args.model == 'vae':
             warmup_epochs = max(1, int(args.epochs * 0.3))
@@ -163,13 +224,19 @@ def run_training(args):
         val_loss /= len(val_loader)
 
         elapsed = time.time() - t0
+        current_lr = optimizer.param_groups[0]['lr']
         history['train_loss'].append(train_loss)
         history['val_loss'].append(val_loss)
         history['epoch_time'].append(elapsed)
+        history['lr'].append(current_lr)
+
+        # LR scheduling
+        scheduler.step(val_loss)
 
         # Save best
         if val_loss < best_val:
             best_val = val_loss
+            patience_counter = 0
             checkpoint_path = args.output or f"checkpoints/{args.model}_best.pth"
             os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
             torch.save({
@@ -179,21 +246,29 @@ def run_training(args):
                 'val_loss': val_loss,
                 'config': reg['kwargs'],
             }, checkpoint_path)
+        else:
+            patience_counter += 1
 
         if epoch % max(1, args.epochs // 20) == 0 or epoch == args.epochs - 1:
             marker = ' *' if val_loss <= best_val else ''
+            lr_str = f' lr={current_lr:.1e}' if current_lr != args.lr else ''
             print(f"  Epoch {epoch:3d}/{args.epochs} | "
-                  f"train={train_loss:.6f} val={val_loss:.6f} "
-                  f"({elapsed:.1f}s){marker}")
+                  f"train={train_loss:.6f} val={val_loss:.6f}"
+                  f"{lr_str} ({elapsed:.1f}s){marker}")
+
+        # Early stopping
+        if args.patience > 0 and patience_counter >= args.patience:
+            print(f"\n  Early stopping at epoch {epoch} (no improvement for {args.patience} epochs)")
+            break
 
     # Summary
     print(f"\nTraining complete.")
     print(f"  Best val loss: {best_val:.6f}")
     print(f"  Final train:   {history['train_loss'][-1]:.6f}")
     print(f"  Total time:    {sum(history['epoch_time']):.1f}s")
-    if args.output or True:
-        cp = args.output or f"checkpoints/{args.model}_best.pth"
-        print(f"  Checkpoint:    {cp}")
+    print(f"  Epochs run:    {len(history['train_loss'])}/{args.epochs}")
+    cp = args.output or f"checkpoints/{args.model}_best.pth"
+    print(f"  Checkpoint:    {cp}")
 
     # Save training history
     hist_path = f"checkpoints/{args.model}_history.json"
@@ -213,10 +288,25 @@ def main():
     parser.add_argument('--batch', type=int, default=32)
     parser.add_argument('--lr', type=float, default=1e-3)
     parser.add_argument('--window', type=int, default=12, help='Window size in 5-min steps')
-    parser.add_argument('--data', nargs='+', help='Data directories (default: conformance dirs)')
     parser.add_argument('--output', help='Checkpoint save path')
-    args = parser.parse_args()
 
+    # Data source
+    parser.add_argument('--source', choices=['conformance', 'nightscout', 'csv'],
+                        default='conformance', help='Data source type')
+    parser.add_argument('--data-path', help='Path to data directory (for nightscout/csv sources)')
+    parser.add_argument('--data', nargs='+', help='Conformance data directories')
+
+    # Transfer learning
+    parser.add_argument('--pretrained', help='Path to pretrained checkpoint for fine-tuning')
+
+    # Regularization & scheduling
+    parser.add_argument('--weight-decay', type=float, default=1e-5, help='AdamW weight decay')
+    parser.add_argument('--patience', type=int, default=0,
+                        help='Early stopping patience (0=disabled)')
+    parser.add_argument('--lr-patience', type=int, default=5,
+                        help='ReduceLROnPlateau patience')
+
+    args = parser.parse_args()
     run_training(args)
 
 
