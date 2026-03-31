@@ -57,14 +57,14 @@ MODEL_REGISTRY = {
 }
 
 
-def train_step(model, batch, optimizer, model_name, criterion):
+def train_step(model, batch, optimizer, model_name, criterion, kl_beta=0.01):
     """Single training step, dispatched by model type."""
     optimizer.zero_grad()
 
     if model_name == 'vae':
         x, _ = batch
         recon, mu, logvar = model(x)
-        loss = vae_loss_function(recon, x, mu, logvar)
+        loss = vae_loss_function(recon, x, mu, logvar, beta=kl_beta)
     elif model_name == 'conditioned':
         (hist, actions), target = batch
         pred = model(hist, actions)
@@ -126,11 +126,17 @@ def run_training(args):
     for epoch in range(args.epochs):
         t0 = time.time()
 
+        # KL annealing for VAE: ramp beta from 0 → target over first 30% of training
+        kl_beta = 0.01
+        if args.model == 'vae':
+            warmup_epochs = max(1, int(args.epochs * 0.3))
+            kl_beta = min(1.0, epoch / warmup_epochs) * 0.01
+
         # Train
         model.train()
         epoch_loss = 0
         for batch in train_loader:
-            epoch_loss += train_step(model, batch, optimizer, args.model, criterion)
+            epoch_loss += train_step(model, batch, optimizer, args.model, criterion, kl_beta=kl_beta)
         train_loss = epoch_loss / len(train_loader)
 
         # Validate
@@ -141,7 +147,7 @@ def run_training(args):
                 if args.model == 'vae':
                     x, _ = batch
                     recon, mu, logvar = model(x)
-                    val_loss += vae_loss_function(recon, x, mu, logvar).item()
+                    val_loss += vae_loss_function(recon, x, mu, logvar, beta=kl_beta).item()
                 elif args.model == 'conditioned':
                     (hist, actions), target = batch
                     pred = model(hist, actions)
