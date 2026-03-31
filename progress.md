@@ -27,6 +27,56 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## Completed Work
 
+### Phase 3 Completion: 3-Way Cross-Validation & All Prediction Curves Aligned (2026-03-31)
+
+Achieved full cross-implementation parity across JS, Swift, and AAPS-JS oref0
+implementations on 300 test vectors (100 oref0-native + 200 Loop). All 4
+testable prediction curves (IOB, ZT, COB, UAM) now have <0.02 mg/dL avg MAE.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| IOB/tau activity derivation | `adapters/oref0-js/index.js`, `main.swift` | `activity = IOB / (DIA*60/1.85)` when activity=0; fixes Loop vectors |
+| 3-way parity (JS/Swift/AAPS) | `adapters/aaps-js/index.js` | Same IOB/tau fallback; all 3 agree on 294/295 eventualBG |
+| ZT activity fallback | `main.swift` | When iobWithZeroTemp absent, fall back to regular activity |
+| UAM formula port | `Predictions.swift` | 3 fixes: uci vs ci separation, dual decay model, predDev term |
+| Assessment A14–A16 | `docs/architecture/cross-validation-assessment.md` | Full metrics history |
+| Loop vectors | `conformance/loop/vectors/` | 200 vectors from 90-day NS fixture |
+
+**Final 3-Way Results (300 vectors)**:
+
+| Vector Suite | EventualBG | Rate ±0.5 |
+|-------------|------------|-----------|
+| oref0-native (100) | **100/100 (100%)** | **72/72 (100%)** |
+| Loop (200) | **194/195 (99.5%)** | **129/131 (98.5%)** |
+| **Combined (300)** | **294/295 (99.7%)** | **201/203 (99.0%)** |
+
+**All 4 Prediction Curves Aligned (JS ↔ Swift)**:
+
+| Curve | Avg MAE | Before | Fix |
+|-------|---------|--------|-----|
+| IOB | 0.005 | 0.888 | A12: IOB array architecture |
+| ZT | 0.013 | 13.4 (1 outlier) | ZT activity fallback |
+| COB | 0.000 | 38.5 | A4: deviation-based COB |
+| UAM | 0.002 | 71.7 | A16: UCI/ci separation, dual decay, predDev |
+
+**Key Technical Discoveries (A14–A16)**:
+- **IOB/tau derivation**: When NS devicestatus has `activity=0` but `IOB>0` (common
+  in Loop data), derive: `activity = IOB / tau` where `tau = DIA * 60 / 1.85`
+- **UCI vs CI**: JS maintains two variables — `uci` (uncapped) for UAM decay,
+  `ci` (capped at maxCI) for predDev. Must preserve this separation.
+- **UAM dual decay**: `predUCI = min(slope_decay, linear_decay)`, NOT `exp(-t/90)`
+- **ZT absent vs zero**: When `iobWithZeroTemp` is nil (not just activity=0),
+  fall back to regular activity rather than computing separate IOB/tau value
+
+**Commits**:
+- `130ff11`, `c8d80ce` (A14): IOB/tau derivation + assessment
+- `7af6428`, `a05c6c0` (A15): AAPS-JS adapter + 3-way assessment
+- `9054aa6`: ZT activity fallback fix
+- `447b97d` (A16): UAM assessment
+- `7a7fee5` (apex): UAM formula port to Swift
+
+---
+
 ### Phase 3: AAPS Cross-Validation & Architecture Documentation (2025-03-30)
 
 Expanded cross-validation from 2-way (oref0-JS↔Swift) to 3-way comparison

@@ -116,6 +116,31 @@ This workspace is designed to work well with coding agents (Replit, GitHub Copil
 4. **Easy reset**: Delete `externals/` and re-run `make bootstrap`
 5. **Enhanced tooling**: Query, trace, and validate with JSON output
 
+## Cross-Algorithm Validation Framework
+
+This workspace includes a cross-implementation validation harness that verifies
+AID dosing algorithm implementations produce equivalent outputs given identical
+inputs. Validated across 300 test vectors (100 oref0-native + 200 Loop):
+
+| Metric | Result |
+|--------|--------|
+| EventualBG agreement (3-way) | **294/295 (99.7%)** |
+| Rate ±0.5 U/hr agreement | **201/203 (99.0%)** |
+| IOB prediction MAE | **0.005 mg/dL** |
+| All 4 prediction curves | **<0.02 mg/dL avg MAE** |
+
+**Adapters**: oref0-JS, oref0-Swift (t1pal-mobile-apex), AAPS-JS (Trio fork)
+
+Key tools:
+- `tools/test-harness/` — 4-layer validation framework with JSON-over-stdio adapter protocol
+- `tools/t1pal-adapter-cli/` — Swift adapter CLI bridging T1PalAlgorithm to harness
+- `conformance/t1pal/vectors/` — 100 oref0 vectors from real phone runs
+- `conformance/loop/vectors/` — 200 Loop vectors from 90-day NS fixture
+- `make xval-validate` — Run full cross-validation (100 oref0 vectors)
+- `make xval-smoke` — Quick smoke test (10 vectors)
+
+See `docs/architecture/cross-validation-assessment.md` for full metrics and methodology.
+
 ### Tooling for Agents
 
 **Quick Start**:

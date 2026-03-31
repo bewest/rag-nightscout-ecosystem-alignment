@@ -1,6 +1,6 @@
 # Cross-Implementation Algorithm Validation: Assessment Report
 
-**Date**: 2025-03-30 (updated)  
+**Date**: 2026-03-31 (updated through A16)  
 **Scope**: oref0 (JS vs Swift vs AAPS-JS), Loop (Swift), GlucOS (Swift)  
 **Test vectors**: 100 oref0 vectors + 200 Loop vectors (300 total)  
 **Ground truth**: Captured prediction trajectories from real phone runs + NS devicestatus
@@ -9,25 +9,46 @@
 
 ## Executive Summary
 
-Cross-implementation validation of oref0 (JS, Swift, AAPS-JS) and Loop (Swift×2)
-on 100 test vectors shows **full parity** after iterative convergence work:
+3-way cross-implementation validation of oref0 (JS, Swift, AAPS-JS) on 300
+test vectors shows **full parity** with **all 4 prediction curves aligned**:
+
+### Decision Parity (A14–A15)
+
+| Vector Suite | Adapters | EventualBG | Rate ±0.5 |
+|-------------|----------|------------|-----------|
+| oref0-native (100) | All 3 (JS/Swift/AAPS) | **100/100 (100%)** | **72/72 (100%)** |
+| Loop (200) | All 3 (JS/Swift/AAPS) | **194/195 (99.5%)** | **129/131 (98.5%)** |
+| **Combined (300)** | **All 3** | **294/295 (99.7%)** | **201/203 (99.0%)** |
+
+### Prediction Curve Alignment (A16 — all curves aligned)
+
+| Curve | Avg MAE (mg/dL) | Max MAE | Status |
+|-------|-----------------|---------|--------|
+| IOB | 0.005 | 0.154 | ✅ Phase 2 |
+| ZT | 0.013 | 0.106 | ✅ ZT fix |
+| COB | 0.000 | 0.000 | ✅ Phase 2 |
+| UAM | 0.002 | 0.085 | ✅ A16 (was 71.7) |
+
+### Legacy Pair Results
 
 | Pair | EventualBG | Rate exact | Rate ±0.5 | IOB MAE |
 |------|------------|------------|-----------|---------|
 | oref0-JS ↔ AAPS-JS | **100/100** | 61/72 (85%) | **72/72 (100%)** | 0.012 |
 | oref0-JS ↔ t1pal-Swift | **100/100** | **71/72 (99%)** | **72/72 (100%)** | **0.005** |
-| oref0-JS ↔ t1pal-Swift (Loop data) | **161/161** | 136/155 (88%) | 139/155 (90%) | **0.000** |
+| oref0-JS ↔ t1pal-Swift (Loop data) | **194/195** | — | **131/133 (98.5%)** | **0.028** |
 | Loop-C ↔ Loop-T | **100/100** | **100/100** | **100/100** | 0.000 |
 | oref0 vs Loop (cross-algo) | — | — | — | 5.5 (pred) |
 
-The Swift oref0 port achieves **100% eventualBG exact match**, **99% rate exact
-match**, and prediction curves with **0.005 mg/dL IOB MAE** — exceeding even
-the JS↔AAPS parity (0.012). Clinical dosing decisions are equivalent across
-all implementations.
+The Swift oref0 port achieves **100% eventualBG exact match** on oref0-native
+vectors, **99.7% across all 300 vectors**, and all 4 prediction curves with
+**<0.02 mg/dL avg MAE**. Clinical dosing decisions are equivalent across all
+three implementations (JS, Swift, AAPS-JS).
 
-AAPS-JS is algorithmically identical to canonical oref0 (19 rate differences
-all from round_basal no-op, max Δ0.02 U/hr). Loop-Community and Loop-Tidepool
-are bit-identical on oref0 test vectors.
+Key milestones (most recent first):
+- **A16**: UAM prediction formula alignment — MAE 71.7 → 0.002
+- **A15**: 3-way cross-validation parity (JS/Swift/AAPS all agree)
+- **A14**: IOB/tau activity derivation for Loop vectors — rate parity 90% → 98.5%
+- **A12**: Prediction MAE breakthrough — IOB MAE 0.888 → 0.005
 
 ---
 
