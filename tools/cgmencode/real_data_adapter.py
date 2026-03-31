@@ -36,17 +36,11 @@ from pathlib import Path
 from typing import Optional, Tuple, Dict, List
 
 from .encoder import CGMDataset, ConditionedDataset
+from .schema import NORMALIZATION_SCALES, GLUCOSE_CLIP_MIN, GLUCOSE_CLIP_MAX
 
 
-# Normalization constants matching encoder.py / sim_adapter.py
-SCALE = {
-    'glucose': 400.0,    # mg/dL
-    'iob': 20.0,         # units
-    'cob': 100.0,        # grams
-    'net_basal': 5.0,    # U/hr
-    'bolus': 10.0,       # units
-    'carbs': 100.0,      # grams
-}
+# Normalization constants from canonical schema
+SCALE = NORMALIZATION_SCALES
 
 # Default DIA for IOB approximation (hours)
 DEFAULT_DIA = 5.0

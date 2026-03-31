@@ -1,8 +1,16 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import math
-from typing import Tuple, Optional
+from typing import Optional
+
+
+def generate_causal_mask(seq_len: int, device: torch.device) -> torch.Tensor:
+    """Generate upper-triangular causal attention mask."""
+    return torch.triu(
+        torch.ones(seq_len, seq_len, device=device) * float('-inf'),
+        diagonal=1,
+    )
+
 
 class PositionalEncoding(nn.Module):
     """Classic Sinusoidal Positional Encoding for time-series."""
@@ -62,17 +70,24 @@ class CGMTransformerAE(nn.Module):
         self.output_projection.weight.data.uniform_(-initrange, initrange)
         self.output_projection.bias.data.zero_()
 
-    def forward(self, x, mask=None):
+    def forward(self, x, mask=None, causal=False):
         """
         Args:
             x: (Batch, SeqLen, Features=8)
-            mask: Optional attention mask (Batch, SeqLen, SeqLen)
+            mask: Optional attention mask (SeqLen, SeqLen)
+            causal: If True, apply causal (autoregressive) attention mask.
+                    Use for forecast tasks where the model should not attend
+                    to future positions.
         """
         # Project to latent space
         z = self.input_projection(x)
         
         # Add temporal context
         z = self.pos_encoder(z)
+        
+        # Build attention mask
+        if causal and mask is None:
+            mask = generate_causal_mask(x.size(1), x.device)
         
         # Attention across time and features
         encoded = self.transformer_encoder(z, mask=mask)
@@ -82,77 +97,82 @@ class CGMTransformerAE(nn.Module):
         
         return reconstructed
 
-def train_one_epoch(model, loader, optimizer, criterion, clip_grad: float = 1.0):
-    """Generic training step for a single epoch."""
-    model.train()
-    total_loss = 0
-    for x_batch, y_batch in loader:
-        optimizer.zero_grad()
-        output = model(x_batch)
-        loss = criterion(output, y_batch)
-        loss.backward()
-        
-        # PRO-TIP: Gradient clipping for stability
-        torch.nn.utils.clip_grad_norm_(model.parameters(), clip_grad)
-        
-        optimizer.step()
-        total_loss += loss.item()
-    return total_loss / len(loader)
 
-def evaluate(model, loader, criterion):
-    """Evaluation on validation set."""
-    model.eval()
-    total_loss = 0
-    with torch.no_grad():
-        for x_batch, y_batch in loader:
-            output = model(x_batch)
-            loss = criterion(output, y_batch)
-            total_loss += loss.item()
-    return total_loss / len(loader)
+class CGMGroupedEncoder(nn.Module):
+    """
+    Feature-grouped Masked Sequence Encoder for CGM/Insulin time-series.
 
-def experiment_decreasing_loss(epochs=10):
-    """Verifies that loss decreases over a short training run with validation."""
-    from .encoder import load_fixtures_to_dataset
-    from torch.utils.data import DataLoader
-    
-    WINDOW = 12
-    train_ds, val_ds = load_fixtures_to_dataset(
-        ['fixtures/algorithm-replays', 'fixtures/scenarios'], 
-        task='forecast', window_size=WINDOW
-    )
-    
-    if not train_ds:
-        print("Dataset creation failed.")
-        return
+    Encodes domain structure by projecting State (glucose/IOB/COB),
+    Action (basal/bolus/carbs), and Temporal (sin/cos) feature groups
+    through separate linear layers before concatenation. This provides
+    an inductive bias about which features are physiological state vs.
+    control inputs vs. temporal context.
 
-    train_loader = DataLoader(train_ds, batch_size=16, shuffle=True)
-    val_loader = DataLoader(val_ds, batch_size=16)
+    Architecture:
+      state_proj(3 → d_model//2) | action_proj(3 → d_model//4) | time_proj(2 → d_model//4)
+      → concatenate → d_model → PositionalEncoding → TransformerEncoder → output heads
 
-    # Updated input_dim=8 (6 original + 2 cyclical time)
-    model = CGMTransformerAE(input_dim=8, d_model=32, nhead=2, num_layers=1)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
-    criterion = nn.MSELoss()
-    
-    print(f"Starting experiment: {len(train_ds)} train, {len(val_ds)} val samples...")
-    train_losses = []
-    val_losses = []
-    for epoch in range(epochs):
-        t_loss = train_one_epoch(model, train_loader, optimizer, criterion)
-        v_loss = evaluate(model, val_loader, criterion)
-        train_losses.append(t_loss)
-        val_losses.append(v_loss)
-        
-        if epoch % 2 == 0 or epoch == epochs - 1:
-            print(f"Epoch {epoch:02d} | Train Loss: {t_loss:.6f} | Val Loss: {v_loss:.6f}")
-            
-    if train_losses[-1] < train_losses[0]:
-        print(f"SUCCESS: Train loss decreased from {train_losses[0]:.6f} to {train_losses[-1]:.6f}")
-        # SAVE MODEL
-        torch.save(model.state_dict(), "transformer_model.pth")
-        print("Model weights saved to 'transformer_model.pth'")
-    else:
-        print(f"FAILURE: Train loss did not decrease.")
+    Maintains the same external interface as CGMTransformerAE (input_dim=8, output_dim=8)
+    so it's a drop-in replacement in MODEL_REGISTRY.
+    """
+    def __init__(self, input_dim: int = 8, d_model: int = 64, nhead: int = 4,
+                 num_layers: int = 2, dim_feedforward: int = 128, dropout: float = 0.1):
+        super().__init__()
+        assert d_model % 4 == 0, "d_model must be divisible by 4 for feature grouping"
+
+        # Feature-grouped projections
+        d_state = d_model // 2    # 50% capacity for physiological state
+        d_action = d_model // 4   # 25% capacity for control inputs
+        d_time = d_model - d_state - d_action  # remaining for temporal
+
+        self.state_proj = nn.Linear(3, d_state)    # glucose, IOB, COB
+        self.action_proj = nn.Linear(3, d_action)   # net_basal, bolus, carbs
+        self.time_proj = nn.Linear(2, d_time)       # time_sin, time_cos
+
+        self.pos_encoder = PositionalEncoding(d_model)
+
+        encoder_layer = nn.TransformerEncoderLayer(
+            d_model=d_model,
+            nhead=nhead,
+            dim_feedforward=dim_feedforward,
+            dropout=dropout,
+            batch_first=True,
+            norm_first=True,
+        )
+        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
+
+        # Reconstruction head (back to all 8 features)
+        self.output_projection = nn.Linear(d_model, input_dim)
+
+    def forward(self, x, mask=None, causal=False):
+        """
+        Args:
+            x: (Batch, SeqLen, 8) — standard 8-feature cgmencode vector
+            mask: Optional attention mask (SeqLen, SeqLen)
+            causal: If True, apply causal attention mask for autoregressive tasks.
+        """
+        # Split by semantic group and project
+        state = self.state_proj(x[..., :3])      # glucose, IOB, COB
+        action = self.action_proj(x[..., 3:6])    # net_basal, bolus, carbs
+        time = self.time_proj(x[..., 6:8])        # time_sin, time_cos
+
+        z = torch.cat([state, action, time], dim=-1)
+        z = self.pos_encoder(z)
+
+        if causal and mask is None:
+            mask = generate_causal_mask(x.size(1), x.device)
+
+        encoded = self.transformer_encoder(z, mask=mask)
+        return self.output_projection(encoded)
+
 
 if __name__ == "__main__":
-    # Run the verification experiment
-    experiment_decreasing_loss(epochs=10)
+    # Quick smoke test: verify model can forward-pass
+    model = CGMTransformerAE(input_dim=8, d_model=32, nhead=2, num_layers=1)
+    x = torch.randn(2, 12, 8)
+    y = model(x)
+    print(f"Input: {x.shape} → Output: {y.shape}")
+    y_causal = model(x, causal=True)
+    print(f"Causal: {x.shape} → Output: {y_causal.shape}")
+    params = sum(p.numel() for p in model.parameters())
+    print(f"Parameters: {params:,}")

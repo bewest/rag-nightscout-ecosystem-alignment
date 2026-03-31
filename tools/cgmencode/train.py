@@ -28,7 +28,7 @@ import numpy as np
 from pathlib import Path
 from torch.utils.data import DataLoader
 
-from .model import CGMTransformerAE, train_one_epoch, evaluate
+from .model import CGMTransformerAE, CGMGroupedEncoder
 from .toolbox import CGMTransformerVAE, ConditionedTransformer, CGMDenoisingDiffusion, vae_loss_function
 from .sim_adapter import load_conformance_to_dataset
 
@@ -45,9 +45,15 @@ MODEL_REGISTRY = {
         'task': 'forecast',
         'conditioned': False,
     },
+    'grouped': {
+        'class': CGMGroupedEncoder,
+        'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2},
+        'task': 'forecast',
+        'conditioned': False,
+    },
     'vae': {
         'class': CGMTransformerVAE,
-        'kwargs': {'input_dim': 8, 'd_model': 64, 'latent_dim': 32},
+        'kwargs': {'input_dim': 8, 'd_model': 64, 'latent_dim': 64},
         'task': 'reconstruct',
         'conditioned': False,
     },
@@ -80,9 +86,9 @@ def train_step(model, batch, optimizer, model_name, criterion, kl_beta=0.01):
         loss = criterion(pred, target)
     elif model_name == 'diffusion':
         x, _ = batch
-        t = torch.randint(0, 1000, (x.size(0),))
+        t = torch.randint(0, model.timesteps, (x.size(0),))
         noise = torch.randn_like(x)
-        x_t = x + noise
+        x_t = model.q_sample(x, t, noise=noise)
         predicted_noise = model(x_t, t)
         loss = criterion(predicted_noise, noise)
     else:  # ae
@@ -187,11 +193,11 @@ def run_training(args):
     for epoch in range(args.epochs):
         t0 = time.time()
 
-        # KL annealing for VAE
+        # KL annealing for VAE: ramp β from 0 to target over warmup period
         kl_beta = 0.01
         if args.model == 'vae':
             warmup_epochs = max(1, int(args.epochs * 0.3))
-            kl_beta = min(1.0, epoch / warmup_epochs) * 0.01
+            kl_beta = min(1.0, epoch / warmup_epochs) * 0.1  # target β=0.1
 
         # Train
         model.train()
@@ -215,9 +221,10 @@ def run_training(args):
                     val_loss += criterion(pred, target).item()
                 elif args.model == 'diffusion':
                     x, _ = batch
-                    t = torch.randint(0, 1000, (x.size(0),))
+                    t = torch.randint(0, model.timesteps, (x.size(0),))
                     noise = torch.randn_like(x)
-                    val_loss += criterion(model(x + noise, t), noise).item()
+                    x_t = model.q_sample(x, t, noise=noise)
+                    val_loss += criterion(model(x_t, t), noise).item()
                 else:
                     x, y = batch
                     val_loss += criterion(model(x), y).item()

@@ -6,6 +6,11 @@ from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Optional, Tuple
 
+from .schema import (
+    NORMALIZATION_SCALES, GLUCOSE_CLIP_MIN, GLUCOSE_CLIP_MAX,
+    STATE_IDX, ACTION_IDX, ALL_VALS_IDX, NUM_FEATURES,
+)
+
 # SILENCE PANDAS WARNINGS
 pd.set_option('future.no_silent_downcasting', True)
 
@@ -146,13 +151,16 @@ def generate_training_vectors(df: pd.DataFrame, window_size: int = 72, lead_time
     """Creates fixed-length vectors for NN training. Also applies simple scaling."""
     data = df.values.copy().astype(np.float64)
     
-    # SIMPLE SCALING (Pro-tip: keeps magnitudes comparable)
-    data[:, 0] /= 400.0   # Glucose 0-400 -> 0-1
-    data[:, 1] /= 20.0    # IOB 0-20 -> 0-1
-    data[:, 2] /= 100.0   # COB 0-100 -> 0-1
-    data[:, 3] /= 5.0     # Basal -5..5 -> -1..1
-    data[:, 4] /= 10.0    # Bolus 0-10 -> 0-1
-    data[:, 5] /= 100.0   # Carbs 0-100 -> 0-1
+    # Clip glucose to valid sensor range before normalization
+    data[:, 0] = np.clip(data[:, 0], GLUCOSE_CLIP_MIN, GLUCOSE_CLIP_MAX)
+    
+    # Normalize using canonical scales from schema.py
+    data[:, 0] /= NORMALIZATION_SCALES['glucose']
+    data[:, 1] /= NORMALIZATION_SCALES['iob']
+    data[:, 2] /= NORMALIZATION_SCALES['cob']
+    data[:, 3] /= NORMALIZATION_SCALES['net_basal']
+    data[:, 4] /= NORMALIZATION_SCALES['bolus']
+    data[:, 5] /= NORMALIZATION_SCALES['carbs']
     # time_sin/cos are already -1..1
     
     total_len = window_size + lead_time + result_window
@@ -177,11 +185,6 @@ class CGMDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         x = self.vectors[idx].clone()
         y = self.vectors[idx].clone()
-        
-        # FEATURE INDICES (Excluding time features from masking targets usually)
-        STATE_IDX = [0, 1, 2]
-        ACTION_IDX = [3, 4, 5]
-        ALL_VALS_IDX = [0, 1, 2, 3, 4, 5]
 
         if self.task == 'fill_actions':
             x[:self.window_size, ACTION_IDX] = 0.0

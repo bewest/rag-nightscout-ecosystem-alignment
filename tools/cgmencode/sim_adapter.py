@@ -21,6 +21,10 @@ import torch
 from pathlib import Path
 from typing import List, Tuple, Optional
 
+from .schema import (
+    NORMALIZATION_SCALES, GLUCOSE_CLIP_MIN, GLUCOSE_CLIP_MAX,
+)
+
 # Reuse the Dataset classes from encoder.py
 from .encoder import CGMDataset, ConditionedDataset
 
@@ -121,12 +125,14 @@ def vector_to_features(vec: dict, curve_key: str = 'IOB') -> Optional[np.ndarray
 def normalize_features(data: np.ndarray) -> np.ndarray:
     """Apply the same scaling as FixtureEncoder.generate_training_vectors."""
     scaled = data.copy()
-    scaled[:, 0] /= 400.0   # Glucose 0-400 → 0-1
-    scaled[:, 1] /= 20.0    # IOB 0-20 → 0-1
-    scaled[:, 2] /= 100.0   # COB 0-100 → 0-1
-    scaled[:, 3] /= 5.0     # Net basal -5..5 → -1..1
-    scaled[:, 4] /= 10.0    # Bolus 0-10 → 0-1
-    scaled[:, 5] /= 100.0   # Carbs 0-100 → 0-1
+    # Clip glucose to valid sensor range
+    scaled[:, 0] = np.clip(scaled[:, 0], GLUCOSE_CLIP_MIN, GLUCOSE_CLIP_MAX)
+    scaled[:, 0] /= NORMALIZATION_SCALES['glucose']
+    scaled[:, 1] /= NORMALIZATION_SCALES['iob']
+    scaled[:, 2] /= NORMALIZATION_SCALES['cob']
+    scaled[:, 3] /= NORMALIZATION_SCALES['net_basal']
+    scaled[:, 4] /= NORMALIZATION_SCALES['bolus']
+    scaled[:, 5] /= NORMALIZATION_SCALES['carbs']
     # time_sin/cos already -1..1
     return scaled
 

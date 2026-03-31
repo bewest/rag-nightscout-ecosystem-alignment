@@ -16,21 +16,15 @@ import torch.nn as nn
 import numpy as np
 from torch.utils.data import DataLoader
 
-from .model import CGMTransformerAE
+from .schema import NORMALIZATION_SCALES
+from .model import CGMTransformerAE, CGMGroupedEncoder
 from .toolbox import CGMTransformerVAE, ConditionedTransformer, CGMDenoisingDiffusion
 from .sim_adapter import load_conformance_to_dataset
 from .train import MODEL_REGISTRY, DEFAULT_DATA_DIRS
 
 
-# Denormalization constants (must match encoder.py scaling)
-SCALE = {
-    'glucose': 400.0,
-    'iob': 20.0,
-    'cob': 100.0,
-    'net_basal': 5.0,
-    'bolus': 10.0,
-    'carbs': 100.0,
-}
+# Denormalization uses canonical scales from schema.py
+SCALE = NORMALIZATION_SCALES
 
 
 def denormalize_glucose(tensor_or_array):
@@ -116,6 +110,57 @@ def evaluate_model(model, val_loader, model_name, window_size=12):
     }
 
 
+def per_horizon_mae(model, val_loader, model_name, window_size=12, interval_min=5):
+    """
+    Compute MAE at each future timestep (per-horizon analysis).
+
+    Returns dict mapping horizon label (e.g., '15min') to MAE in mg/dL.
+    Essential for clinical validation — accuracy degrades with forecast horizon.
+    """
+    model.eval()
+    # Collect per-timestep errors: {timestep_idx: [abs_errors]}
+    horizon_errors = {}
+
+    with torch.no_grad():
+        for batch in val_loader:
+            if model_name == 'conditioned':
+                (hist, actions), target = batch
+                pred = model(hist, actions)
+                pred_g = denormalize_glucose(pred)
+                tgt_g = denormalize_glucose(target)
+                # pred_g: (B, future_steps)
+                for t in range(pred_g.size(-1)):
+                    errs = torch.abs(pred_g[:, t] - tgt_g[:, t])
+                    horizon_errors.setdefault(t, []).extend(errs.tolist())
+            else:
+                x, y = batch
+                if model_name == 'vae':
+                    output, _, _ = model(x)
+                elif model_name == 'diffusion':
+                    t_idx = torch.zeros(x.size(0), dtype=torch.long)
+                    output = model(x, t_idx)
+                else:
+                    output = model(x)
+
+                # Only measure future timesteps (after window_size)
+                pred_g = denormalize_glucose(output[:, window_size:, 0])
+                tgt_g = denormalize_glucose(y[:, window_size:, 0])
+                for t in range(pred_g.size(-1)):
+                    errs = torch.abs(pred_g[:, t] - tgt_g[:, t])
+                    valid = ~torch.isnan(errs)
+                    if valid.any():
+                        horizon_errors.setdefault(t, []).extend(errs[valid].tolist())
+
+    results = {}
+    for t_idx in sorted(horizon_errors.keys()):
+        minutes = (t_idx + 1) * interval_min
+        label = f"{minutes}min"
+        mae = float(np.mean(horizon_errors[t_idx]))
+        results[label] = round(mae, 2)
+
+    return results
+
+
 def main():
     parser = argparse.ArgumentParser(description='Evaluate cgmencode models')
     parser.add_argument('--model', choices=list(MODEL_REGISTRY.keys()),
@@ -197,6 +242,14 @@ def main():
     results[args.model] = metrics
     print(f"  MAE:  {metrics['mae_mgdl']:.2f} mg/dL")
     print(f"  RMSE: {metrics['rmse_mgdl']:.2f} mg/dL")
+
+    # Per-horizon breakdown
+    horizon = per_horizon_mae(model, val_loader, args.model, args.window)
+    if horizon:
+        results[f'{args.model}_per_horizon'] = horizon
+        print(f"\n  Per-horizon MAE (mg/dL):")
+        for label, mae in horizon.items():
+            print(f"    {label:>6s}: {mae:.2f}")
 
     # Comparison
     if 'persistence' in results:
