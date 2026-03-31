@@ -1109,6 +1109,319 @@ def run_longer_horizons(args):
     return results
 
 
+def _build_feature_grid(data_path):
+    """Build the full 5-min feature grid from Nightscout data, returning
+    both the normalized features array and the grid DatetimeIndex.
+
+    This duplicates the grid-building logic from load_nightscout_to_dataset
+    but returns the raw grid (no windowing) for flexible splitting.
+    """
+    import pandas as pd
+    from .schema import NORMALIZATION_SCALES
+    SCALE = NORMALIZATION_SCALES
+    data_dir = Path(data_path)
+
+    # 1. CGM entries → 5-min grid
+    with open(data_dir / 'entries.json') as f:
+        entries = json.load(f)
+    cgm_times, cgm_values = [], []
+    for e in entries:
+        if e.get('type') != 'sgv' or 'sgv' not in e:
+            continue
+        if 'date' in e:
+            ts = pd.Timestamp(e['date'], unit='ms', tz='UTC')
+        elif 'dateString' in e:
+            ts = pd.Timestamp(e['dateString'])
+        else:
+            continue
+        cgm_times.append(ts)
+        cgm_values.append(float(e['sgv']))
+
+    cgm_df = pd.DataFrame({'glucose': cgm_values}, index=pd.DatetimeIndex(cgm_times))
+    cgm_df = cgm_df.sort_index()
+    cgm_df = cgm_df[~cgm_df.index.duplicated(keep='first')]
+    grid_start = cgm_df.index.min().floor('5min')
+    grid_end = cgm_df.index.max().ceil('5min')
+    grid = pd.date_range(grid_start, grid_end, freq='5min')
+    df = pd.DataFrame(index=grid)
+    cgm_df.index = cgm_df.index.round('5min')
+    cgm_grouped = cgm_df.groupby(level=0).mean()
+    df['glucose'] = cgm_grouped['glucose']
+    df['glucose'] = df['glucose'].interpolate(limit=6)
+
+    # 2. DeviceStatus → IOB/COB
+    with open(data_dir / 'devicestatus.json') as f:
+        devicestatus = json.load(f)
+    ds_times, ds_iob, ds_cob = [], [], []
+    for ds in devicestatus:
+        loop = ds.get('loop', {})
+        iob_data = loop.get('iob', {})
+        if not iob_data or 'iob' not in iob_data:
+            continue
+        ts = pd.Timestamp(ds.get('created_at'))
+        ds_times.append(ts)
+        ds_iob.append(float(iob_data['iob']))
+        ds_cob.append(float(loop.get('cob', {}).get('cob', 0)))
+    ds_df = pd.DataFrame({'iob': ds_iob, 'cob': ds_cob},
+                          index=pd.DatetimeIndex(ds_times))
+    ds_df = ds_df.sort_index()
+    ds_df = ds_df[~ds_df.index.duplicated(keep='first')]
+    ds_df.index = ds_df.index.round('5min')
+    ds_grouped = ds_df.groupby(level=0).mean()
+    df['iob'] = ds_grouped['iob']
+    df['cob'] = ds_grouped['cob']
+    df['iob'] = df['iob'].interpolate(limit=6).fillna(0)
+    df['cob'] = df['cob'].interpolate(limit=6).fillna(0)
+
+    # 3. Treatments → bolus, carbs, temp basal
+    with open(data_dir / 'treatments.json') as f:
+        treatments = json.load(f)
+    df['bolus'] = 0.0
+    df['carbs'] = 0.0
+    df['temp_rate'] = np.nan
+    for t in treatments:
+        if 'created_at' not in t:
+            continue
+        ts = pd.Timestamp(t['created_at']).round('5min')
+        if ts not in df.index:
+            continue
+        etype = t.get('eventType', '')
+        if etype == 'Bolus' or 'Bolus' in etype:
+            df.at[ts, 'bolus'] += float(t.get('insulin', 0) or 0)
+        if float(t.get('carbs', 0) or 0) > 0:
+            df.at[ts, 'carbs'] += float(t['carbs'])
+        if etype in ('Temp Basal', 'TempBasal'):
+            df.at[ts, 'temp_rate'] = float(t.get('rate', 0) or 0)
+
+    # 4. Profile → scheduled basal
+    with open(data_dir / 'profile.json') as f:
+        profiles = json.load(f)
+    basal_schedule = []
+    if profiles:
+        store = profiles[0].get('store', {})
+        default = store.get('Default', {})
+        basal_schedule = default.get('basal', [])
+    scheduled = np.zeros(len(df))
+    for i, ts in enumerate(df.index):
+        secs = ts.hour * 3600 + ts.minute * 60 + ts.second
+        rate = basal_schedule[0]['value'] if basal_schedule else 0
+        for seg in basal_schedule:
+            if seg.get('timeAsSeconds', 0) <= secs:
+                rate = seg['value']
+        scheduled[i] = rate
+    df['temp_rate'] = df['temp_rate'].ffill()
+    df['temp_rate'] = df['temp_rate'].fillna(pd.Series(scheduled, index=df.index))
+    df['net_basal'] = df['temp_rate'].values - scheduled
+
+    # 5. Build feature array
+    hours = df.index.hour + df.index.minute / 60.0
+    time_sin = np.sin(2 * np.pi * hours / 24.0)
+    time_cos = np.cos(2 * np.pi * hours / 24.0)
+    features = np.column_stack([
+        df['glucose'].values / SCALE['glucose'],
+        df['iob'].values / SCALE['iob'],
+        df['cob'].values / SCALE['cob'],
+        df['net_basal'].values / SCALE['net_basal'],
+        df['bolus'].values / SCALE['bolus'],
+        df['carbs'].values / SCALE['carbs'],
+        time_sin,
+        time_cos,
+    ]).astype(np.float32)
+
+    return features, df.index
+
+
+def run_walkforward(args):
+    """EXP-011: Walk-Forward Temporal Validation.
+
+    Strict temporal split with NO window overlap between train and test:
+    - Train: days 1-60 (first ~70% of data)
+    - Test: days 61-85 (last ~30%)
+    - Gap: optionally skip 1 day between train/test to prevent leakage
+
+    This gives an honest estimate of how well the model predicts on
+    truly unseen future data, unlike the overlapping window split.
+    """
+    print('=' * 60)
+    print('EXP-011: Walk-Forward Temporal Validation')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-011', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    # Load profile
+    profile_path = os.path.join(args.real_data, 'profile.json')
+    isf, cr = 40.0, 10.0
+    if os.path.exists(profile_path):
+        with open(profile_path) as f:
+            profiles = json.load(f)
+        if profiles:
+            store = profiles[0].get('store', {})
+            default = store.get('Default', {})
+            sens = default.get('sens', [{}])
+            carbratio = default.get('carbratio', [{}])
+            if sens and 'value' in sens[0]:
+                isf = float(sens[0]['value'])
+            if carbratio and 'value' in carbratio[0]:
+                cr = float(carbratio[0]['value'])
+    print(f'  Patient: ISF={isf}, CR={cr}')
+
+    # Step 1: Build full feature grid
+    print('\n--- Step 1: Build feature grid ---')
+    features, grid_index = _build_feature_grid(args.real_data)
+    total_days = (grid_index[-1] - grid_index[0]).days
+    print(f'  Grid: {len(features)} points, {total_days} days '
+          f'({grid_index[0].strftime("%Y-%m-%d")} to {grid_index[-1].strftime("%Y-%m-%d")})')
+
+    from .real_data_adapter import split_into_windows
+    from .encoder import CGMDataset
+    window = args.window
+
+    # Define temporal splits
+    splits = [
+        {'name': 'walkforward_70_30', 'train_frac': 0.70, 'gap_days': 0},
+        {'name': 'walkforward_70_30_gap1d', 'train_frac': 0.70, 'gap_days': 1},
+        {'name': 'walkforward_80_20', 'train_frac': 0.80, 'gap_days': 0},
+    ]
+
+    # Also run the original overlapping split for comparison
+    print('\n--- Step 2: Original overlapping split (reference) ---')
+    real_t, real_v = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=window)
+    train_np_orig = real_t.vectors.numpy()
+    val_np_orig = real_v.vectors.numpy()
+    tr_res, tr_phys, _ = compute_residual_windows(train_np_orig, isf=isf, cr=cr, level='enhanced')
+    vr_res, vr_phys, _ = compute_residual_windows(val_np_orig, isf=isf, cr=cr, level='enhanced')
+
+    # Train on original split
+    res_train_ds = CGMDataset(tr_res, task='reconstruct', window_size=window)
+    res_val_ds = CGMDataset(vr_res, task='reconstruct', window_size=window)
+    model_orig = CGMTransformerAE(input_dim=8, d_model=64, nhead=4, num_layers=2)
+    train_loop(model_orig,
+               DataLoader(res_train_ds, batch_size=args.batch, shuffle=True),
+               DataLoader(res_val_ds, batch_size=args.batch),
+               lr=1e-3, epochs=args.epochs, patience=args.patience,
+               save_path=str(out / 'ae_wf_original.pth'), label='original-split')
+    load_best(model_orig, str(out / 'ae_wf_original.pth'))
+    orig_metrics = _evaluate_residual_model(model_orig, vr_res, vr_phys, val_np_orig)
+    orig_physics = _evaluate_physics_only(vr_phys, val_np_orig)
+    results['original_split'] = {
+        'train_windows': len(train_np_orig),
+        'val_windows': len(val_np_orig),
+        'residual_ae': orig_metrics,
+        'physics_only': orig_physics,
+    }
+    print(f'  Original: {len(train_np_orig)} train, {len(val_np_orig)} val → '
+          f'AE MAE={orig_metrics["mae_mgdl"]:.2f}')
+
+    # Step 3: Walk-forward splits
+    for split_cfg in splits:
+        name = split_cfg['name']
+        train_frac = split_cfg['train_frac']
+        gap_days = split_cfg['gap_days']
+
+        print(f'\n--- Step 3: {name} (train={train_frac*100:.0f}%, gap={gap_days}d) ---')
+
+        # Hard temporal split on the grid
+        split_point = int(len(features) * train_frac)
+        gap_points = gap_days * 288  # 288 = 24*60/5 points per day
+
+        train_grid = features[:split_point]
+        test_grid = features[split_point + gap_points:]
+
+        split_date = grid_index[split_point].strftime('%Y-%m-%d')
+        train_days = (grid_index[split_point] - grid_index[0]).days
+        test_days = (grid_index[-1] - grid_index[min(split_point + gap_points, len(grid_index)-1)]).days
+        print(f'  Split at {split_date}: {train_days}d train, {test_days}d test'
+              f'{f", {gap_days}d gap" if gap_days else ""}')
+
+        # Window each side independently
+        train_wins = split_into_windows(train_grid, window_size=window)
+        test_wins = split_into_windows(test_grid, window_size=window)
+
+        if not train_wins or not test_wins:
+            print(f'  Skipping {name}: insufficient windows')
+            continue
+
+        train_np = np.array(train_wins)
+        test_np = np.array(test_wins)
+        print(f'  Windows: {len(train_np)} train, {len(test_np)} test')
+
+        # Compute enhanced residuals
+        tr_res, tr_phys, tr_stats = compute_residual_windows(
+            train_np, isf=isf, cr=cr, level='enhanced')
+        te_res, te_phys, te_stats = compute_residual_windows(
+            test_np, isf=isf, cr=cr, level='enhanced')
+        print(f'  Train residual std: {tr_stats["std"]:.1f}, Test: {te_stats["std"]:.1f} mg/dL')
+
+        # Train AE on walk-forward train set
+        tr_ds = CGMDataset(tr_res, task='reconstruct', window_size=window)
+        te_ds = CGMDataset(te_res, task='reconstruct', window_size=window)
+        tr_ld = DataLoader(tr_ds, batch_size=args.batch, shuffle=True)
+        te_ld = DataLoader(te_ds, batch_size=args.batch)
+
+        model = CGMTransformerAE(input_dim=8, d_model=64, nhead=4, num_layers=2)
+        ckpt = str(out / f'ae_wf_{name}.pth')
+        train_loop(model, tr_ld, te_ld,
+                   lr=1e-3, epochs=args.epochs, patience=args.patience,
+                   save_path=ckpt, label=name)
+
+        load_best(model, ckpt)
+        ae_metrics = _evaluate_residual_model(model, te_res, te_phys, test_np)
+        physics_metrics = _evaluate_physics_only(te_phys, test_np)
+
+        # Persistence on test set (need 2x windows for persistence)
+        test_wins_2x = split_into_windows(test_grid, window_size=window * 2)
+        if test_wins_2x:
+            test_tensor_2x = torch.tensor(np.array(test_wins_2x), dtype=torch.float32)
+            from .evaluate import persistence_baseline as _pb
+            te_ds_2x = CGMDataset(test_tensor_2x, task='forecast', window_size=window * 2)
+            p_mae, p_rmse = _pb(te_ds_2x, window)
+        else:
+            p_mae, p_rmse = float('nan'), float('nan')
+
+        results[name] = {
+            'train_windows': len(train_np),
+            'test_windows': len(test_np),
+            'train_days': train_days,
+            'test_days': test_days,
+            'gap_days': gap_days,
+            'residual_ae': ae_metrics,
+            'physics_only': physics_metrics,
+            'persistence': {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)},
+            'residual_stats': {'train_std': tr_stats['std'], 'test_std': te_stats['std']},
+        }
+        print(f'  Physics-only: MAE={physics_metrics["mae_mgdl"]:.2f}')
+        print(f'  Residual AE:  MAE={ae_metrics["mae_mgdl"]:.2f}  RMSE={ae_metrics["rmse_mgdl"]:.2f}')
+        print(f'  Persistence:  MAE={p_mae:.2f}')
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    # Summary
+    print('\n' + '=' * 60)
+    print('SUMMARY — Walk-Forward Temporal Validation')
+    print('=' * 60)
+    print(f'  {"Split":<30s}  {"Persist":>8s}  {"Physics":>8s}  {"Res AE":>8s}')
+    print(f'  {"-"*30}  {"-"*8}  {"-"*8}  {"-"*8}')
+    print(f'  {"original (overlapping)":<30s}  '
+          f'{"—":>8s}  '
+          f'{orig_physics["mae_mgdl"]:>8.2f}  '
+          f'{orig_metrics["mae_mgdl"]:>8.2f}')
+    for split_cfg in splits:
+        name = split_cfg['name']
+        if name in results:
+            r = results[name]
+            print(f'  {name:<30s}  '
+                  f'{r["persistence"]["mae_mgdl"]:>8.2f}  '
+                  f'{r["physics_only"]["mae_mgdl"]:>8.2f}  '
+                  f'{r["residual_ae"]["mae_mgdl"]:>8.2f}')
+    print(f'\n  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp011_walkforward.json'))
+    return results
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Run cgmencode experiments',
@@ -1116,7 +1429,8 @@ def main():
     parser.add_argument('experiment',
                         choices=['transfer', 'conditioned', 'cond-transfer',
                                  'residual', 'physics-compare',
-                                 'residual-transfer', 'longer-horizons', 'all'],
+                                 'residual-transfer', 'longer-horizons',
+                                 'walkforward', 'all'],
                         help='Which experiment to run')
     parser.add_argument('--real-data', required=True,
                         help='Path to Nightscout JSON directory')
@@ -1150,6 +1464,8 @@ def main():
         run_residual_transfer(args)
     if args.experiment in ('longer-horizons', 'all'):
         run_longer_horizons(args)
+    if args.experiment in ('walkforward', 'all'):
+        run_walkforward(args)
 
 
 if __name__ == '__main__':
