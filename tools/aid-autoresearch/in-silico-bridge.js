@@ -644,9 +644,9 @@ function toVectors(results, idPrefix) {
   for (const r of results) {
     // Resolve actual patient profile (including CLI overrides)
     const actualProfile = { ...PATIENTS[r.patient], ...(r._paramOverrides || {}) };
-    for (let i = 5; i < r.trace.length - 12; i += 10) {
+    for (let i = 5; i < r.trace.length - 24; i += 10) {
       const t = r.trace[i];
-      const futureSteps = r.trace.slice(i, i + 12).map(s => Math.round(s.bg));
+      const futureSteps = r.trace.slice(i, i + 24).map(s => Math.round(s.bg));
 
       vectors.push({
         metadata: {

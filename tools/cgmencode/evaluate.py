@@ -57,23 +57,24 @@ def persistence_baseline(dataset, window_size=12):
     Persistence forecast: predict that glucose stays at last observed value.
     Returns MAE and RMSE in mg/dL.
     """
-    errors = []
+    all_abs_errors = []
     for i in range(len(dataset)):
         x, y = dataset[i]
         # Last glucose in history window
         last_glucose = x[window_size - 1, 0]
-        # Future glucose values
+        # Future glucose values (second half of the window)
         future_glucose = y[window_size:, 0]
-        if len(future_glucose) == 0:
+        if len(future_glucose) == 0 or torch.isnan(last_glucose):
             continue
-        err = denormalize_glucose(torch.abs(future_glucose - last_glucose))
-        errors.append(err.mean().item())
+        abs_err = denormalize_glucose(torch.abs(future_glucose - last_glucose))
+        valid = ~torch.isnan(abs_err)
+        if valid.any():
+            all_abs_errors.extend(abs_err[valid].tolist())
 
-    if not errors:
+    if not all_abs_errors:
         return float('inf'), float('inf')
-    mae = np.mean(errors)
-    rmse = np.sqrt(np.mean(np.array(errors) ** 2))
-    return mae, rmse
+    arr = np.array(all_abs_errors)
+    return float(np.mean(arr)), float(np.sqrt(np.mean(arr ** 2)))
 
 
 def evaluate_model(model, val_loader, model_name, window_size=12):
