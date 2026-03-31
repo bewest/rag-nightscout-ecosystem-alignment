@@ -205,7 +205,7 @@ function translateInput(adapterInput) {
     mealData,
     microBolusAllowed,
     reservoirData: null,
-    currentTime: new Date(adapterInput.clock || Date.now()).getTime(),
+    currentTime: new Date(adapterInput.clock || gs.timestamp || Date.now()).getTime(),
     flatBGsDetected,
   };
 }

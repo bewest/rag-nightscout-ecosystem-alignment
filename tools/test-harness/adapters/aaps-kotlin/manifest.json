@@ -1,0 +1,24 @@
+{
+  "name": "aaps-kotlin",
+  "algorithm": "oref0-aaps",
+  "version": "0.1.0",
+  "language": "kotlin",
+  "invoke": {
+    "command": "java -jar build/libs/aaps-kotlin-adapter.jar"
+  },
+  "capabilities": {
+    "predictions": true,
+    "smb": true,
+    "acob": true,
+    "effectModifiers": false,
+    "inputValidation": true
+  },
+  "modes": ["execute", "validate-input", "describe"],
+  "tolerances": {
+    "rate": 0.05,
+    "eventualBG": 10.0,
+    "insulinReq": 0.05,
+    "predictionMAE": 2.0
+  },
+  "notes": "AAPS's actual Kotlin DetermineBasalSMB.kt, extracted standalone. Key differences from oref0-js: round_basal is no-op, flatBGsDetected parameter, aCOB predictions, removed high_bg SMB."
+}
