@@ -1,20 +1,25 @@
 """
 real_data_adapter.py — Bridge from real CGM datasets to cgmencode training pipeline.
 
-Converts tabular CGM data (OhioT1DM, Nightscout, Tidepool, etc.) into the
+Converts tabular CGM data (Nightscout, OhioT1DM, Tidepool, etc.) into the
 8-feature (glucose, iob, cob, net_basal, bolus, carbs, time_sin, time_cos)
 tensor format used by cgmencode models.
 
-Supports two input modes:
-  1. GluPredKit parser output (DataFrame with CGM, bolus, basal, carbs columns)
-  2. Raw CSV/DataFrame with configurable column mapping
+Supports three input modes:
+  1. Nightscout JSON directory (entries.json + treatments.json + devicestatus.json + profile.json)
+  2. GluPredKit parser output (DataFrame with CGM, bolus, basal, carbs columns)
+  3. Raw CSV/DataFrame with configurable column mapping
 
 Usage:
+    # From Nightscout JSON directory (preferred — has pre-computed IOB/COB):
+    python3 -m tools.cgmencode.real_data_adapter --source nightscout \
+        --data-path /path/to/ns-fixtures/90-day-history
+
     # From OhioT1DM via GluPredKit parser:
     python3 -m tools.cgmencode.real_data_adapter --source ohio --data-path /path/to/OhioT1DM --subject 559 --year 2020
 
     # From any CSV with glucose, insulin, carbs columns:
-    python3 -m tools.cgmencode.real_data_adapter --csv /path/to/data.csv --glucose-col CGM --bolus-col bolus --basal-col basal --carbs-col carbs
+    python3 -m tools.cgmencode.real_data_adapter --csv /path/to/data.csv
 
     # Verify adapter with synthetic test data:
     python3 -m tools.cgmencode.real_data_adapter --test
@@ -196,6 +201,230 @@ def split_into_windows(features: np.ndarray, window_size: int = 24,
     return windows
 
 
+def load_nightscout_to_dataset(data_path: str,
+                                task: str = 'forecast',
+                                window_size: int = 24,
+                                val_fraction: float = 0.2,
+                                conditioned: bool = False,
+                                ) -> Tuple[Optional[object], Optional[object]]:
+    """
+    Load Nightscout JSON directory → cgmencode datasets.
+
+    Expects a directory with:
+      - entries.json: CGM readings (sgv field, ms timestamp)
+      - treatments.json: Bolus, carbs, temp basal events
+      - devicestatus.json: Loop IOB/COB (pre-computed by controller)
+      - profile.json: Scheduled basal rates
+
+    The key advantage over OhioT1DM: devicestatus has Loop's pre-computed IOB/COB,
+    so we use actual controller state rather than exponential decay approximations.
+
+    Returns:
+        (train_dataset, val_dataset)
+    """
+    data_dir = Path(data_path)
+    required = ['entries.json', 'treatments.json', 'devicestatus.json', 'profile.json']
+    for f in required:
+        if not (data_dir / f).exists():
+            print(f"ERROR: Missing {f} in {data_path}")
+            return None, None
+
+    print(f"=== Loading Nightscout data from {data_path} ===")
+
+    # --- 1. Build 5-min grid from entries (CGM readings) ---
+    with open(data_dir / 'entries.json') as f:
+        entries = json.load(f)
+
+    # Parse timestamps and glucose
+    cgm_times = []
+    cgm_values = []
+    for e in entries:
+        if e.get('type') != 'sgv' or 'sgv' not in e:
+            continue
+        # Nightscout entries use ms epoch in 'date' or ISO in 'dateString'
+        if 'date' in e:
+            ts = pd.Timestamp(e['date'], unit='ms', tz='UTC')
+        elif 'dateString' in e:
+            ts = pd.Timestamp(e['dateString'])
+        else:
+            continue
+        cgm_times.append(ts)
+        cgm_values.append(float(e['sgv']))
+
+    cgm_df = pd.DataFrame({'glucose': cgm_values}, index=pd.DatetimeIndex(cgm_times))
+    cgm_df = cgm_df.sort_index()
+    # Remove duplicates (keep first)
+    cgm_df = cgm_df[~cgm_df.index.duplicated(keep='first')]
+
+    # Resample to 5-min grid
+    grid_start = cgm_df.index.min().floor('5min')
+    grid_end = cgm_df.index.max().ceil('5min')
+    grid = pd.date_range(grid_start, grid_end, freq='5min')
+    df = pd.DataFrame(index=grid)
+
+    # Map CGM to nearest 5-min slot
+    cgm_df.index = cgm_df.index.round('5min')
+    cgm_grouped = cgm_df.groupby(level=0).mean()  # average if multiple per slot
+    df['glucose'] = cgm_grouped['glucose']
+    df['glucose'] = df['glucose'].interpolate(limit=6)  # fill gaps up to 30min
+
+    print(f"  CGM: {len(entries)} raw → {df['glucose'].notna().sum()}/{len(df)} grid points "
+          f"({grid_start.strftime('%Y-%m-%d')} to {grid_end.strftime('%Y-%m-%d')})")
+
+    # --- 2. Extract IOB/COB from devicestatus (Loop pre-computed) ---
+    with open(data_dir / 'devicestatus.json') as f:
+        devicestatus = json.load(f)
+
+    ds_times = []
+    ds_iob = []
+    ds_cob = []
+    for ds in devicestatus:
+        loop = ds.get('loop', {})
+        iob_data = loop.get('iob', {})
+        cob_data = loop.get('cob', {})
+        if not iob_data or 'iob' not in iob_data:
+            continue
+        ts = pd.Timestamp(ds.get('created_at'))
+        ds_times.append(ts)
+        ds_iob.append(float(iob_data['iob']))
+        ds_cob.append(float(cob_data.get('cob', 0)))
+
+    ds_df = pd.DataFrame({'iob': ds_iob, 'cob': ds_cob},
+                          index=pd.DatetimeIndex(ds_times))
+    ds_df = ds_df.sort_index()
+    ds_df = ds_df[~ds_df.index.duplicated(keep='first')]
+    ds_df.index = ds_df.index.round('5min')
+    ds_grouped = ds_df.groupby(level=0).mean()
+    df['iob'] = ds_grouped['iob']
+    df['cob'] = ds_grouped['cob']
+    df['iob'] = df['iob'].interpolate(limit=6).fillna(0)
+    df['cob'] = df['cob'].interpolate(limit=6).fillna(0)
+
+    print(f"  DeviceStatus: {len(devicestatus)} raw → {ds_df.shape[0]} with IOB/COB")
+
+    # --- 3. Parse treatments → bolus, carbs, temp basal ---
+    with open(data_dir / 'treatments.json') as f:
+        treatments = json.load(f)
+
+    df['bolus'] = 0.0
+    df['carbs'] = 0.0
+    df['temp_rate'] = np.nan  # will be forward-filled
+
+    bolus_count = 0
+    carb_count = 0
+    temp_count = 0
+    for tx in treatments:
+        et = tx.get('eventType', '')
+        ts_str = tx.get('created_at') or tx.get('timestamp')
+        if not ts_str:
+            continue
+        ts = pd.Timestamp(ts_str).round('5min')
+        if ts not in df.index:
+            continue
+
+        if 'Bolus' in et and (tx.get('insulin') or 0) > 0:
+            df.loc[ts, 'bolus'] += float(tx['insulin'])
+            bolus_count += 1
+        if (tx.get('carbs') or 0) > 0:
+            df.loc[ts, 'carbs'] += float(tx['carbs'])
+            carb_count += 1
+        if et == 'Temp Basal' and 'rate' in tx:
+            rate = float(tx['rate'])
+            dur_min = float(tx.get('duration', 5))
+            # Fill temp rate for duration
+            n_slots = max(1, int(dur_min / 5))
+            slot_idx = df.index.get_loc(ts)
+            if isinstance(slot_idx, int):
+                end_idx = min(slot_idx + n_slots, len(df))
+                df.iloc[slot_idx:end_idx, df.columns.get_loc('temp_rate')] = rate
+            temp_count += 1
+
+    print(f"  Treatments: {bolus_count} bolus, {carb_count} carbs, {temp_count} temp basals")
+
+    # --- 4. Compute net_basal from profile + temp basals ---
+    with open(data_dir / 'profile.json') as f:
+        profiles = json.load(f)
+
+    # Get default profile basal schedule
+    if isinstance(profiles, list) and profiles:
+        store = profiles[0].get('store', {})
+    else:
+        store = profiles.get('store', {})
+    default_profile = store.get('Default', store.get(list(store.keys())[0], {})) if store else {}
+    basal_schedule = default_profile.get('basal', [])
+
+    # Build scheduled basal for each 5-min slot
+    scheduled = np.zeros(len(df))
+    for i, ts in enumerate(df.index):
+        sec_of_day = ts.hour * 3600 + ts.minute * 60 + ts.second
+        # Find applicable basal rate
+        rate = basal_schedule[0]['value'] if basal_schedule else 0
+        for entry in basal_schedule:
+            if entry.get('timeAsSeconds', 0) <= sec_of_day:
+                rate = entry['value']
+        scheduled[i] = rate
+
+    # Forward-fill temp_rate, then compute net
+    df['temp_rate'] = df['temp_rate'].ffill()
+    # Where no temp basal was set, use scheduled rate
+    df['temp_rate'] = df['temp_rate'].fillna(pd.Series(scheduled, index=df.index))
+    df['net_basal'] = df['temp_rate'].values - scheduled
+
+    print(f"  Profile: {len(basal_schedule)} basal segments, "
+          f"scheduled range [{min(e['value'] for e in basal_schedule):.1f}, "
+          f"{max(e['value'] for e in basal_schedule):.1f}] U/hr")
+
+    # --- 5. Build 8-feature array ---
+    hours = df.index.hour + df.index.minute / 60.0
+    time_sin = np.sin(2 * np.pi * hours / 24.0)
+    time_cos = np.cos(2 * np.pi * hours / 24.0)
+
+    features = np.column_stack([
+        df['glucose'].values / SCALE['glucose'],
+        df['iob'].values / SCALE['iob'],
+        df['cob'].values / SCALE['cob'],
+        df['net_basal'].values / SCALE['net_basal'],
+        df['bolus'].values / SCALE['bolus'],
+        df['carbs'].values / SCALE['carbs'],
+        time_sin,
+        time_cos,
+    ]).astype(np.float32)
+
+    print(f"  Feature matrix: {features.shape}")
+    print(f"  Glucose: [{df['glucose'].min():.0f}, {df['glucose'].max():.0f}] mg/dL")
+    print(f"  IOB: [{df['iob'].min():.2f}, {df['iob'].max():.2f}] U")
+    print(f"  COB: [{df['cob'].min():.0f}, {df['cob'].max():.0f}] g")
+    print(f"  Net basal: [{df['net_basal'].min():.2f}, {df['net_basal'].max():.2f}] U/hr")
+
+    # --- 6. Window and split ---
+    # For conditioned model: windows must be 2x window_size (history + future)
+    actual_window = window_size * 2 if conditioned else window_size
+    windows = split_into_windows(features, window_size=actual_window)
+    if not windows:
+        print("  WARNING: No valid windows extracted.")
+        return None, None
+
+    # Train/val split (chronological)
+    split_idx = int(len(windows) * (1 - val_fraction))
+    train_windows = windows[:split_idx]
+    val_windows = windows[split_idx:]
+
+    train_tensor = torch.tensor(np.array(train_windows), dtype=torch.float32)
+    val_tensor = torch.tensor(np.array(val_windows), dtype=torch.float32)
+
+    if conditioned:
+        # ConditionedDataset splits at window_size: [:window_size] = history, [window_size:] = future
+        train_ds = ConditionedDataset(train_tensor, window_size=window_size)
+        val_ds = ConditionedDataset(val_tensor, window_size=window_size)
+    else:
+        train_ds = CGMDataset(train_tensor, task=task, window_size=window_size)
+        val_ds = CGMDataset(val_tensor, task=task, window_size=window_size)
+
+    print(f"  Windows: {len(windows)} total → {len(train_windows)} train, {len(val_windows)} val")
+
+    return train_ds, val_ds
+
+
 def load_ohio_to_dataset(data_path: str, subject_id: str, year: str = '2020',
                           task: str = 'forecast', window_size: int = 24,
                           val_fraction: float = 0.2,
@@ -372,13 +601,14 @@ def generate_synthetic_test_data(n_hours: int = 48, interval_min: int = 5) -> pd
 
 def main():
     parser = argparse.ArgumentParser(description='Convert real CGM data to cgmencode format')
-    parser.add_argument('--source', choices=['ohio', 'csv', 'test'], default='test',
+    parser.add_argument('--source', choices=['nightscout', 'ohio', 'csv', 'test'], default='test',
                         help='Data source type')
-    parser.add_argument('--data-path', help='Path to dataset root (OhioT1DM parent dir)')
+    parser.add_argument('--data-path', help='Path to dataset directory')
     parser.add_argument('--subject', default='559', help='Subject ID for OhioT1DM')
     parser.add_argument('--year', default='2020', help='Dataset year')
     parser.add_argument('--csv', help='Path to CSV file')
     parser.add_argument('--window', type=int, default=24, help='Window size (5-min steps)')
+    parser.add_argument('--conditioned', action='store_true', help='Build ConditionedDataset')
     parser.add_argument('--test', action='store_true', help='Run with synthetic test data')
     args = parser.parse_args()
 
@@ -406,7 +636,18 @@ def main():
         print("\n✓ Adapter works correctly.")
         return
 
-    if args.source == 'ohio':
+    if args.source == 'nightscout':
+        if not args.data_path:
+            print("ERROR: --data-path required for Nightscout source")
+            sys.exit(1)
+        train_ds, val_ds = load_nightscout_to_dataset(
+            args.data_path, window_size=args.window, conditioned=args.conditioned)
+        if train_ds:
+            print(f"\nDatasets: {len(train_ds)} train, {len(val_ds)} val")
+            x, y = train_ds[0]
+            print(f"Sample x: {x.shape}, y: {y.shape}")
+
+    elif args.source == 'ohio':
         if not args.data_path:
             print("ERROR: --data-path required for OhioT1DM")
             sys.exit(1)

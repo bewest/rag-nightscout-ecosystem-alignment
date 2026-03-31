@@ -48,7 +48,7 @@ Shift diabetes management from reactive, moment-to-moment intervention into **an
 |-------|--------|----------|
 | **L1 Physics** | ✅ Working | UVA/Padova + cgmsim engines, sensor noise, 50-patient sweep |
 | **L2 Calibration** | ❌ Not built | Fingerprinting designed, not coded. §2.2 residual approach bypasses it. |
-| **L3 Dynamics** | ✅ Partially working | AE: 2.12 MAE, Conditioned: 3.47 MAE. VAE/Diffusion broken. |
+| **L3 Dynamics** | ✅ Working | AE: 6.11 MAE real data, 2.12 synthetic. Conditioned overfits. VAE/Diffusion broken. |
 | **L4 Decision** | ❌ Not started | Needs override event labels (OQ-032) |
 
 ---
@@ -66,7 +66,7 @@ BG_predicted = UVA_Padova(insulin, carbs, θ_patient) + ML_residual(context, his
 
 **Implication**: cgmencode models should be trained to predict the *residual* (actual − physics), not raw glucose. This dramatically reduces what the neural network must learn.
 
-**Current status**: Not yet implemented. Models currently train on raw physics output. Residual training requires real patient data. The pipeline (`real_data_adapter.py`) is ready; blocked on OhioT1DM dataset access. Current results (2.12 MAE on synthetic data) demonstrate models can learn physics dynamics from raw trajectories as a valid first step.
+**Current status**: Not yet implemented. Models currently train on raw glucose. Residual training requires pairing real patient data with physics sim on the same inputs. The Nightscout adapter now provides real data (6.11 MAE on 85-day dataset). Next step: run UVA/Padova on same time windows → compute residuals → train on difference.
 
 ### 2.2 Sim-to-real transfer
 
@@ -74,7 +74,7 @@ Pre-train on unlimited UVA/Padova synthetic data → fine-tune on real patient d
 
 **Implication**: cgmencode training always starts with synthetic data. Real data is a fine-tuning step, not a prerequisite for development. This unblocks all Layer 3 work.
 
-**Current status**: Step 1 (synthetic pre-training) validated. Step 2 (real data fine-tune) blocked on dataset access.
+**Current status**: Step 1 (synthetic pre-training) validated. Step 2 (real data training from scratch) validated — AE achieves 6.11 MAE on 85-day Nightscout data. Step 3 (sim→real transfer learning comparison) not yet run.
 
 ### 2.3 Start with trees, not transformers (for decisions)
 
