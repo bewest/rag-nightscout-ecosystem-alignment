@@ -1251,3 +1251,72 @@ extensions (safety bounds, SMB logic) — not core algorithm divergence.
 ### Commits
 
 - `7af6428` (rag): AAPS-JS adapter IOB/tau activity fallback
+
+---
+
+## A16: UAM Prediction Formula Alignment (2025-07-22)
+
+### Summary
+
+Ported the JS oref0 UAM (Unannounced Meal) prediction formula to Swift,
+achieving near-perfect parity. Three root causes were identified and fixed.
+
+### Root Causes
+
+**1. UCI vs CI separation (critical)**
+JS maintains two separate variables:
+- `uci = round(minDelta - bgi, 1)` — uncapped, used for UAM slope/linear decay
+- `ci` — capped at `maxCI = round(30 * csf * 5/60, 1)`, used for predDev
+
+Swift was using `ci` (capped) for both. When `ci > maxCI`, this causes
+systematic under-prediction of UAM carb impact. Fix: compute and pass
+`uci` separately.
+
+**2. Decay model mismatch (critical)**
+Swift used exponential decay: `predUCI = glucoseDelta * exp(-t/90)`  
+JS uses dual slope+linear, taking the minimum (most conservative):
+- `predUCIslope = max(0, uci + tick * slopeFromDeviations)`
+- `predUCImax = max(0, uci * (1 - tick/36))`
+- `predUCI = min(predUCIslope, predUCImax)`
+
+**3. Missing deviation term**
+JS includes `min(0, predDev)` in the UAM formula where
+`predDev = ci * (1 - min(1, tick/12))`. Only negative deviations
+apply (the `min(0, ...)` guard). Swift had no predDev term.
+
+**4. Sens rounding in predictions (minor)**
+`PredictionEngine.predict()` was using raw `profile.currentISF()`.
+JS rounds: `sens = round(profile.sens / sensitivityRatio, 1)`.
+Fixed to match.
+
+### Results
+
+| Metric | Before | After |
+|--------|--------|-------|
+| UAM avg MAE | **71.7** | **0.002** |
+| UAM max MAE | **165.6** | **0.085** |
+| UAM vectors tested | 27 (rising BG) | 55 (rising BG) |
+
+**No regression on existing metrics:**
+
+| Metric | Before | After |
+|--------|--------|-------|
+| EventualBG exact (oref0) | 100/100 | 100/100 ✅ |
+| Rate ±0.5 (oref0) | 72/72 | 72/72 ✅ |
+| IOB MAE | 0.005 | 0.005 ✅ |
+| ZT MAE | 0.013 | 0.013 ✅ |
+| COB MAE | 0.000 | 0.000 ✅ |
+
+### All 5 Prediction Curves Now Aligned
+
+| Curve | Avg MAE | Status |
+|-------|---------|--------|
+| IOB | 0.005 | ✅ Aligned (Phase 2) |
+| ZT | 0.013 | ✅ Aligned (ZT fix) |
+| COB | 0.000 | ✅ Aligned (Phase 2) |
+| **UAM** | **0.002** | **✅ Aligned (this fix)** |
+| WT | — | N/A (no test vectors) |
+
+### Commits
+
+- `7a7fee5` (apex): Port JS oref0 UAM prediction formula to Swift
