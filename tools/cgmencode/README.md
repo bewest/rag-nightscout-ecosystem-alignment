@@ -1,8 +1,8 @@
 # 📊 CGMENCODE: CGM/Insulin Representation Learning Pipeline
 
-**The Bridge from JSON Fixtures to Artificial Intelligence.**
+**The Bridge from Physics Simulation to Artificial Intelligence.**
 
-This package turns raw Nightscout-style data (JSON) into "Neural Network Training Vectors." It is the foundation for building a **Physiological Digital Twin** that can predict glucose outcomes and evaluate dosing safety.
+This package turns physics-simulated and real-world glucose-insulin data into neural network training vectors. It is the foundation for building a **Physiological Digital Twin** that can predict glucose outcomes and evaluate dosing safety.
 
 > **Provenance**: Imported from `t1pal-mobile-workspace/tools/cgmencode/` (2026-03-31).
 > This is R&D-phase code brought into the ecosystem alignment workspace to compose with
@@ -12,9 +12,7 @@ This package turns raw Nightscout-style data (JSON) into "Neural Network Trainin
 
 ---
 
-## 🛠 For the Software Team: How to Run
-
-If you can maintain Nightscout, you can run this. No ML knowledge required for setup.
+## 🛠 Quick Start
 
 ### 1. Environment Setup
 ```bash
@@ -24,22 +22,70 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Run the Verification Tests
-These scripts load our local test fixtures, process them, and prove the AI is learning.
+### 2. Generate Training Data (Physics → Vectors)
 ```bash
-# From the repo root:
+# Generate 50-patient Latin Hypercube sweep using cgmsim engine
+python3 -m tools.cgmencode.generate_training_data \
+  --patients 50 --engine cgmsim --output-dir externals/sweep-data
 
-# Get data stats (How much training data do we have?)
-python3 -m tools.cgmencode.toolbox stats
-
-# Test the basic Pattern Recognizer (Transformer) for 10 epochs
-python3 -m tools.cgmencode.model
-
-# Test the Experimental Toolbox (VAE, Conditioned, or Diffusion)
-python3 -m tools.cgmencode.toolbox vae 5
-python3 -m tools.cgmencode.toolbox conditioned 5
-python3 -m tools.cgmencode.toolbox diffusion 5
+# Or use UVA/Padova physiological engine
+python3 -m tools.cgmencode.generate_training_data \
+  --patients 50 --engine uva-padova --output-dir externals/sweep-uva
 ```
+
+### 3. Train a Model
+```bash
+# Train the Transformer AE (recommended starting point)
+python3 -m tools.cgmencode.train --model ae --epochs 50 \
+  --data externals/sweep-uva
+
+# Train the Conditioned Transformer (dosing "what-if")
+python3 -m tools.cgmencode.train --model conditioned --epochs 50 \
+  --data externals/sweep-uva
+```
+
+### 4. Evaluate
+```bash
+# Evaluate against persistence baseline
+python3 -m tools.cgmencode.evaluate --model ae \
+  --checkpoint checkpoints/ae_best.pt --data externals/sweep-uva
+
+# Test the real-data adapter (self-test with synthetic trace)
+python3 -m tools.cgmencode.real_data_adapter --test
+```
+
+### 5. Legacy Commands (from original fixtures)
+```bash
+# These require Nightscout algorithm-replay fixtures in fixtures/ — 
+# use the sim_adapter or generate_training_data workflows above instead.
+python3 -m tools.cgmencode.model          # Basic AE on fixture data
+python3 -m tools.cgmencode.toolbox vae 5  # Experimental architectures
+```
+
+---
+
+## 📈 Benchmark Results (2026-04)
+
+### UVA/Padova Engine (18-ODE physiological model, 50 patients)
+| Model | Params | MAE mg/dL | RMSE mg/dL | vs Persistence |
+|-------|--------|-----------|------------|----------------|
+| Persistence (baseline) | — | 4.74 | 7.68 | — |
+| **Transformer AE** | 68K | **2.12** | **3.94** | **↓55%** |
+| Conditioned Transformer | 844K | 3.47 | 5.49 | ↓27% |
+| VAE (32D latent) | 1.1M | 42.78 | 57.57 | ❌ broken |
+
+### cgmsim Engine (simplified pharmacokinetic, 50 patients)
+| Model | Params | MAE mg/dL | RMSE mg/dL | vs Persistence |
+|-------|--------|-----------|------------|----------------|
+| Persistence (baseline) | — | 39–43 | 58–61 | — |
+| Transformer AE | 68K | 4.64 | 6.89 | ↓88% |
+| Conditioned Transformer | 844K | 4.67 | 7.83 | ↓87% |
+
+### Key Takeaways
+- **AE achieves sub-4 mg/dL MAE** on realistic UVA/Padova physiology
+- Models generalize across 50 diverse patient profiles (ISF 15–80, CR 5–20)
+- **VAE architecture is mismatched** — 32D bottleneck loses too much sequence info for trajectory forecasting; needs Conditional VAE redesign
+- **Diffusion model is a toy** — simplified forward process (`x + noise`), not proper DDPM β-schedule
 
 ---
 
@@ -54,6 +100,7 @@ To an ML researcher, this is "Self-Supervised Representation Learning." To a T1D
 ### 2. The Scenario Generator (VAE)
 *   **T1D Analogy**: A tool that can "imagine" 1,000 different ways a Friday night pizza might go, based on real historical data.
 *   **Goal**: It turns our small set of test fixtures into an infinite library of "Synthetic Scenarios" to train other models.
+*   **⚠️ Current status**: Architectural mismatch — 32D bottleneck too narrow for trajectory forecasting. Needs redesign as Conditional VAE.
 
 ### 3. The Digital Twin / Dosing Counselor (Conditioned Transformer)
 *   **T1D Analogy**: A "What-if" simulator. You tell it: *"I'm at 150 mg/dL, I have 1U on board, and I want to eat 40g of carbs. What happens if I bolus 3U vs 5U?"*
@@ -62,6 +109,7 @@ To an ML researcher, this is "Self-Supervised Representation Learning." To a T1D
 ### 4. The Stochastic Risk Predictor (Diffusion)
 *   **T1D Analogy**: Instead of showing one "perfect" line for the future, it shows a **cloud of possibilities**. It captures the reality that sometimes a 5U bolus works perfectly, and sometimes (due to stress or exercise) it causes a crash.
 *   **Goal**: It models the **uncertainty and risk** of T1D, not just the average outcome.
+*   **⚠️ Current status**: Toy implementation — needs proper DDPM β-schedule.
 
 ---
 
@@ -92,30 +140,44 @@ This toolbox treats T1D management as a sequence-to-sequence problem across four
 
 ---
 
-## 📐 The Data Pipeline (The "Magic" in `encoder.py`)
+## 📐 The Data Pipeline
 
-Raw Nightscout data is messy. To make it "AI-Ready," we perform three critical steps:
+Raw data → AI-ready vectors via three critical steps:
 
-1.  **The 5-Minute Grid**: We align every sensor reading, bolus, and carb entry onto a perfectly synchronized timeline.
-2.  **Circadian Awareness**: We map the "Time of Day" to a circle (Sin/Cos). This tells the AI that 11:55 PM and 12:05 AM are close together, helping it learn dawn phenomena and nighttime sensitivity.
-3.  **Feature Scaling**: We "squash" all numbers (Glucose 40-400, Insulin 0-10) into a range of 0 to 1. This ensures the AI doesn't ignore the tiny (but vital) insulin doses just because the glucose numbers are bigger.
+1.  **The 5-Minute Grid**: Align every sensor reading, bolus, and carb entry onto a synchronized timeline.
+2.  **Circadian Awareness**: Map "Time of Day" to a circle (Sin/Cos). Tells the AI that 11:55 PM and 12:05 AM are close together.
+3.  **Feature Scaling**: Normalize all 8 features to [0,1] or [−1,1] range (see `SCHEMA.md` for exact scales).
+
+### 8-Feature Vector (per 5-min timestep)
+| Index | Feature | Type |
+|-------|---------|------|
+| 0 | glucose | State |
+| 1 | iob | State |
+| 2 | cob | State |
+| 3 | net_basal | Action |
+| 4 | bolus | Action |
+| 5 | carbs | Action |
+| 6 | time_sin | Temporal |
+| 7 | time_cos | Temporal |
 
 ## 📂 File Map
-- `SCHEMA.md`: The technical definition of the data vectors.
-- `encoder.py`: The logic that cleans and transforms JSON into AI vectors.
-- `model.py`: Our primary Transformer Neural Network.
-- `toolbox.py`: Experimental advanced models (VAE, Diffusion, etc.).
-- `inference.py`: Helper for loading models and making real predictions.
-- `viz.py`: Plotting tools to show the "Cloud of Possibilities."
 
----
+### Core Pipeline
+- `encoder.py` — FixtureEncoder: JSON → 5-min grid → 8-feature normalized vectors
+- `model.py` — CGMTransformerAE: primary representation learning backbone
+- `toolbox.py` — Experimental models: VAE, Conditioned Transformer, Diffusion, Contrastive
+- `SCHEMA.md` — Formal 8-feature vector schema with normalization scales
 
-## 📈 Visualizing the Digital Twin
+### Training & Evaluation
+- `sim_adapter.py` — Bridge: SIM-*/TV-* conformance vectors → training tensors
+- `generate_training_data.py` — Latin Hypercube parameter sweep via in-silico-bridge
+- `train.py` — Unified training CLI (all 4 architectures, KL annealing for VAE)
+- `evaluate.py` — Evaluation metrics: MAE/RMSE in mg/dL, persistence baseline
 
-Once you have trained a model, you can use our visualization tools to see what the AI is thinking. 
+### Data Adapters
+- `real_data_adapter.py` — Bridge: GluPredKit/OhioT1DM/CSV → 8-feature format
 
-### Generating a Forecast Cloud (Diffusion)
-The Diffusion model doesn't just give one answer; it generates a **probability cloud**. The `viz.py` tool shows this as a shaded region, allowing you to see the "Value at Risk" (the chance of going low).
-
-### Dosing "What-If" Analysis
-You can compare multiple doses side-by-side. For example, comparing a 2U bolus vs. a 5U bolus will show two different predicted glucose curves on the same graph, helping you identify the safest path.
+### Utilities
+- `inference.py` — T1PalPredictor wrapper for loading trained models
+- `viz.py` — Stochastic forecast cloud + dose comparison plots
+- `requirements.txt` — Dependencies: pandas, numpy, torch, matplotlib, scipy

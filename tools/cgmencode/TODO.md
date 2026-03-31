@@ -1,46 +1,64 @@
 # 📋 CGMENCODE: Engineering & Research Roadmap
 
-This document outlines the next steps for moving from a "Toolbox" to a production-grade physiological modeling system.
+This document outlines the roadmap for moving from a prototype toolbox to a production-grade physiological modeling system.
+
+**Last Updated**: 2026-04 (after physics→ML bridge, sweep training, and UVA/Padova validation)
 
 ---
 
-## Phase 1: Data Acquisition (Scaling the Dataset)
-*Goal: Move from ~1,000 vectors to 100,000+ vectors.*
+## Phase 1: Data Acquisition (Scaling the Dataset) — ✅ DONE
 
-- [ ] **Automate Nightscout History Ingestion**: Use `scripts/capture-ns-history.sh` to pull multi-year datasets from consented research accounts.
-- [ ] **Clean Window Extraction**: Refine `tools/iob-clean-windows/extract_fixtures.py` to identify "high-quality" segments where data is continuous and site changes are documented.
-- [ ] **Data Augmentation**: Implement "physiological jitter" (randomly shifting carb absorption times or insulin onset in the simulator) to help the model generalize beyond the limited fixture set.
-- [ ] **Metadata Labeling**: Add labels for "Exercise," "Stress," or "Illness" if available in the NS `treatments` notes to allow for conditioned phenotyping in the VAE.
+*Goal: Move from ~1,000 vectors to 10,000+ vectors.*
 
----
-
-## Phase 2: Systematic Model Evaluation
-*Goal: Benchmark the performance of each architecture in the Toolbox.*
-
-- [ ] **Metric Standardization**:
-    - **MAE/MSE**: For the Pattern Recognizer and Digital Twin.
-    - **KL Divergence**: For the VAE latent space distribution.
-    - **CRPS (Continuous Ranked Probability Score)**: Specifically for the **Diffusion** model to evaluate the quality of its "probability clouds."
-- [ ] **Cross-Validation**: Implement K-fold validation across different "Patient IDs" to ensure the model isn't just learning one person's physiology.
-- [ ] **Baseline Comparison**: Compare model accuracy against the canonical **Loop Algorithm** (Oref0/Oref1) predictions found in the `loopPredicted` fields of our fixtures.
+- [x] **SIM-* → cgmencode bridge** (`sim_adapter.py`): Converts physics simulation output to 8-feature training vectors. Handles both SIM-* and TV-* conformance formats.
+- [x] **Latin Hypercube parameter sweep** (`generate_training_data.py`): Generates diverse patient profiles (ISF 15–80, CR 5–20, basal 0.3–3.0, weight 45–110, DIA 4–8) via LHS sampling.
+- [x] **Patient parameter CLI** (`in-silico-bridge.js`): Added `--isf`, `--cr`, `--basal-rate`, `--weight`, `--dia`, `--patient`, `--id-prefix`, `--output-dir` flags.
+- [x] **Multi-engine support**: Both cgmsim and UVA/Padova engines produce training data via `--engine` flag.
+- [x] **Scaled to 50 patients**: 3,500 cgmsim vectors + 2,400 UVA/Padova vectors generated.
+- [ ] **Real patient data**: `real_data_adapter.py` built and tested with synthetic trace. **Blocked on OhioT1DM dataset download from PhysioNet** (credentialed access required).
+- [ ] ~~Automate Nightscout History Ingestion~~: Deferred — physics sweep provides sufficient volume for current R&D.
 
 ---
 
-## Phase 3: Actionable Dosing & Integration
-*Goal: Use the models to evaluate or suggest real-world insulin doses.*
+## Phase 2: Systematic Model Evaluation — ✅ DONE
 
-- [ ] **The "Counselor" Loop**:
-    1. Receive a proposed dose from an external algorithm (e.g., T1PalAID or Loop).
-    2. Feed the current history + the proposed dose into the **Action-Conditioned Predictor**.
-    3. Run the **Diffusion** model 50 times to generate a "Cloud of Futures."
-- [ ] **Safety Scorecard**:
-    - Develop a "Safety Evaluator" that flags a proposal if >5% of the Diffusion cloud enters the hypoglycemic range (<70 mg/dL).
-- [ ] **Proposal Optimization**:
-    - Use the **Digital Twin** to "sweep" a range of doses (e.g., 0.0U to 5.0U) and identify the dose that maximizes time-in-range (TIR) according to the model.
-- [ ] **Swift Integration**: Explore using `CoreML` or a Python microservice to allow the T1Pal Mobile app to query the "Digital Twin" for real-time safety checks.
+*Goal: Benchmark the performance of each architecture.*
+
+- [x] **Unified training CLI** (`train.py`): Supports all 4 architectures with `--model {ae,vae,conditioned,diffusion}`.
+- [x] **Evaluation metrics** (`evaluate.py`): MAE/RMSE in mg/dL (denormalized), persistence baseline comparison.
+- [x] **KL annealing for VAE**: Ramps β from 0→0.01 over 30% warmup. Prevents collapse but doesn't fix architectural mismatch.
+- [x] **Cross-engine comparison**: Trained on both cgmsim (simplified) and UVA/Padova (realistic) — results show models learn genuine physiology.
+- [ ] **CRPS**: Not yet implemented for Diffusion model (diffusion itself is a toy — CRPS would be meaningless on current implementation).
+- [ ] **K-fold cross-validation**: Not yet implemented. Current evaluation uses 80/20 train/val split.
 
 ---
 
-## Phase 4: Human-in-the-Loop
-- [ ] **Visual Debugger**: Build a small dashboard (using Matplotlib or Streamlit) that shows the Nightscout maintainers the "Cloud of Possibilities" the AI sees for a given fixture.
-- [ ] **Failure Analysis**: Specifically evaluate where the models fail (e.g., during unannounced meals) and use those failures to drive "Hard Case" data collection.
+## Phase 3: Conditioned Transformer & Dosing — 🔜 NEXT
+
+*Goal: Prove the "digital twin" can learn physics, then beat it.*
+
+- [x] **Basic Conditioned Transformer training**: Works, achieves 3.47 MAE on UVA/Padova.
+- [ ] **Dose comparison visualization**: Compare predicted trajectories for 2U vs 5U bolus on same history.
+- [ ] **Hyperparameter tuning**: Val loss oscillates — needs learning rate schedule or gradient clipping.
+- [ ] **Scale to 200+ patients**: Current 50-patient sweep may under-represent action space diversity.
+- [ ] **Residual training (§8.2)**: Train on `actual − UVA_predicted` instead of raw glucose. Requires real data.
+
+---
+
+## Phase 4: Safety & Integration — 🔮 FUTURE
+
+- [ ] **Safety scorecard**: Flag proposals if >5% of probability cloud enters hypo range (<70 mg/dL).
+- [ ] **Conditional VAE redesign**: Current VAE's 32D bottleneck is fundamentally mismatched for trajectory forecasting. Needs per-timestep conditioning or hierarchical latent structure.
+- [ ] **Fix Diffusion model**: Current forward process is `x + noise`, not proper DDPM β-schedule. Uncertainty estimates are meaningless.
+- [ ] **Swift/CoreML integration**: Export trained models for mobile inference.
+
+---
+
+## Known Issues
+
+| Issue | Status | Notes |
+|-------|--------|-------|
+| VAE 42.78 MAE (worse than persistence) | Known | 32D latent bottleneck too narrow. Needs architectural redesign. |
+| Diffusion is toy implementation | Known | Forward process not proper DDPM. Uncertainty meaningless. |
+| cgmsim sweep hangs on extreme params | Workaround | Some ISF/CR combos cause edge cases. Use UVA/Padova for production training. |
+| `encoder.py` fixture paths hardcoded | Known | Legacy paths (`fixtures/algorithm-replays`). Use `sim_adapter.py` or `generate_training_data.py` instead. |

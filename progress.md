@@ -2386,3 +2386,48 @@ Created synthesis document disambiguating two complementary ML toolkits (cgmenco
 - `tools/aid-autoresearch/in-silico-bridge.js`
 - `docs/architecture/simulation-validation-architecture.md`
 - `docs/60-research/cgm-trace-generation-methodologies.md`
+
+### cgmencode ML Pipeline: Physics→ML Bridge & Training Validation (2026-04)
+
+Imported cgmencode ML toolkit, built physics-to-ML data bridge, scaled synthetic training via parameter sweeps, and validated all model architectures on two physics engines.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| cgmencode import | `tools/cgmencode/` (10 files) | Imported from t1pal-mobile-workspace for co-development |
+| SIM-* → ML bridge | `tools/cgmencode/sim_adapter.py` | Resolves GAP-ML-001: converts conformance vectors → 8-feature tensors |
+| Patient param CLI | `tools/aid-autoresearch/in-silico-bridge.js` | 7 new flags: --isf, --cr, --basal-rate, --weight, --dia, --patient, --id-prefix |
+| LHS sweep generator | `tools/cgmencode/generate_training_data.py` | Latin Hypercube sampling across patient parameter space |
+| Unified training CLI | `tools/cgmencode/train.py` | All 4 architectures, KL annealing for VAE |
+| Evaluation harness | `tools/cgmencode/evaluate.py` | MAE/RMSE in mg/dL, persistence baseline comparison |
+| Real data adapter | `tools/cgmencode/real_data_adapter.py` | GluPredKit/OhioT1DM/CSV → 8-feature format |
+| Documentation audit | All cgmencode docs | SCHEMA.md, README.md, TODO.md, ml-composition-architecture.md updated |
+
+**Benchmark Results (50 diverse patient profiles)**:
+
+| Engine | Model | MAE mg/dL | RMSE mg/dL | vs Persistence |
+|--------|-------|-----------|------------|----------------|
+| UVA/Padova | Persistence | 4.74 | 7.68 | — |
+| UVA/Padova | **Transformer AE (68K)** | **2.12** | **3.94** | **↓55%** |
+| UVA/Padova | Conditioned (844K) | 3.47 | 5.49 | ↓27% |
+| cgmsim | Persistence | 39–43 | 58–61 | — |
+| cgmsim | Transformer AE (68K) | 4.64 | 6.89 | ↓88% |
+| cgmsim | Conditioned (844K) | 4.67 | 7.83 | ↓87% |
+| Any | VAE (1.1M) | 42.78 | 57.57 | ❌ broken |
+
+**Key Findings**:
+- Transformer AE achieves 2.12 mg/dL MAE on UVA/Padova — sub-4 mg/dL on realistic physiology
+- Models generalize across 50 diverse patient profiles (ISF 15–80, CR 5–20, basal 0.3–3.0, weight 45–110)
+- UVA/Padova baseline is much tighter (4.74 vs 40+ MAE) — more realistic dynamics
+- VAE architecture is fundamentally mismatched: 32D latent bottleneck loses sequence info for trajectory forecasting
+- Diffusion model is a toy: simplified forward process, not proper DDPM β-schedule
+- §8.2 residual training (actual − physics) not yet implemented — requires real data
+
+**Gaps Resolved**: GAP-ML-001 (SIM-* → cgmencode bridge), GAP-ML-002 (data scaling)
+
+**Gaps Identified**: VAE architectural mismatch, Diffusion toy implementation, real data blocked on PhysioNet
+
+**Source Files Analyzed**:
+- `tools/cgmencode/` (all 15 files)
+- `tools/aid-autoresearch/in-silico-bridge.js`
+- `externals/cgmsim-lib/` (UVA/Padova engine)
+- `externals/GluPredKit/` (OhioT1DM parser)

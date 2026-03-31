@@ -28,20 +28,26 @@ This document disambiguates two complementary ML toolkits (`cgmencode` and `aid-
 
 **Core question answered**: "Does the algorithm compute the correct rate for this glucose-insulin state?"
 
-### 1.2 cgmencode (t1pal-mobile-workspace)
+### 1.2 cgmencode (this workspace — tools/cgmencode/)
 
 **Primary objective**: Learn data-driven representations of glucose-insulin dynamics for personalized dosing guidance.
+
+> **Note**: cgmencode was imported from `t1pal-mobile-workspace/tools/cgmencode/` into this workspace (2026-03-31) to co-develop with the physics simulation infrastructure.
 
 | Capability | Status | Technique |
 |-----------|--------|-----------|
 | Nightscout fixture → 8-feature vectors | ✅ Done | FixtureEncoder pipeline |
 | Self-supervised representation (6 pretext tasks) | ✅ Done | Masked Transformer AE |
-| Scenario generation | ✅ Prototype | VAE (32D latent) |
-| Counterfactual dosing simulation | ✅ Prototype | Conditioned Transformer |
-| Uncertainty quantification | ✅ Prototype | 1D DDPM Diffusion |
-| Noise-invariant features | ✅ Prototype | SimCLR contrastive |
-| Multi-patient training | ❌ Blocked | Need 100K+ vectors |
-| CoreML mobile deployment | ❌ Phase 3 | Swift integration |
+| SIM-*/TV-* conformance → training data | ✅ Done | sim_adapter.py bridge (GAP-ML-001 resolved) |
+| Multi-patient parameter sweep | ✅ Done | Latin Hypercube 50 patients, 2 engines |
+| Unified training + evaluation CLI | ✅ Done | train.py + evaluate.py |
+| Transformer AE: 2.12 MAE on UVA/Padova | ✅ **Verified** | 68K params, sub-4 mg/dL accuracy |
+| Conditioned Transformer: 3.47 MAE | ✅ **Verified** | 844K params, dosing what-if |
+| Real data adapter (OhioT1DM/CSV) | ✅ Built | real_data_adapter.py (blocked on dataset) |
+| Scenario generation (VAE) | ❌ Broken | 32D latent bottleneck — 42.78 MAE, architectural mismatch |
+| Uncertainty quantification (Diffusion) | ❌ Toy | Simplified forward process, not proper DDPM |
+| Noise-invariant features (Contrastive) | ✅ Prototype | SimCLR contrastive |
+| CoreML mobile deployment | ❌ Phase 4 | Swift integration |
 
 **Core question answered**: "Given this patient's history, what happens if we dose X units?"
 
@@ -355,14 +361,14 @@ z_{t+1} = f_θ(z_t) + process_noise   # State evolution (learned)
 
 ## 6. Recommended Sequencing
 
-### Phase A: Foundation Strengthening (current focus)
+### Phase A: Foundation Strengthening — ✅ COMPLETE (2026-04)
 
 **Goal**: Make existing toolkits robust before adding decision layer.
 
-1. **Wire SIM-* → cgmencode** (GAP-ML-001): Write format adapter so UVA/Padova output can train cgmencode models. Enables unlimited synthetic data.
-2. **Scale cgmencode training data** (GAP-ML-002): Ingest historical Nightscout data via `iob-clean-windows` pipeline. Target: 10K vectors from 5+ patients.
-3. **Implement fingerprinting extractor** (GAP-ML-008): Build the 4-tier fingerprint computation from simulation-validation-architecture.md §3.
-4. **Validate Conditioned Transformer against UVA/Padova** (trust building): Run same scenarios through both, compare glucose trajectories. Establishes whether ML learns the physics.
+1. ~~**Wire SIM-* → cgmencode** (GAP-ML-001)~~: ✅ `sim_adapter.py` bridges SIM-*/TV-* conformance vectors → 8-feature training tensors. Supports both cgmsim and UVA/Padova output.
+2. ~~**Scale cgmencode training data** (GAP-ML-002)~~: ✅ Latin Hypercube sweep generates 50+ diverse patient profiles. 3,500 cgmsim + 2,400 UVA/Padova vectors. `generate_training_data.py` + extended `in-silico-bridge.js` patient param CLI.
+3. **Implement fingerprinting extractor** (GAP-ML-008): ❌ Not started. Build the 4-tier fingerprint computation from simulation-validation-architecture.md §3. Lower priority — §8.2 residual approach bypasses explicit calibration.
+4. ~~**Validate Conditioned Transformer against UVA/Padova**~~: ✅ Trained on UVA/Padova data, achieves 3.47 MAE mg/dL. Transformer AE achieves 2.12 MAE. Both beat persistence baseline.
 
 ### Phase B: Decision Modeling (new capability)
 
@@ -400,11 +406,11 @@ This table maps every ML technique (existing, planned, or recommended) to the sp
 | Corruption-based augmentation | 1-Physics | Edge case generation from real traces | ❌ Designed | aid-autoresearch |
 | Wasserstein/DTW/ACF distance | 2-Calibration | Measure physics-reality gap | ❌ Designed | aid-autoresearch |
 | Nelder-Mead/Bayesian optimization | 2-Calibration | Optimize UVA/Padova patient params | ❌ Designed | aid-autoresearch |
-| Masked Transformer AE | 3-Dynamics | Representation learning backbone | ✅ Prototype | cgmencode |
+| Masked Transformer AE | 3-Dynamics | Representation learning backbone | ✅ **2.12 MAE** | cgmencode |
 | SimCLR contrastive | 3-Dynamics | Noise-invariant features | ✅ Prototype | cgmencode |
-| VAE (32D) | 3-Dynamics | Scenario generation + phenotyping | ✅ Prototype | cgmencode |
-| Conditioned Transformer | 3-Dynamics | Counterfactual dosing (what-if) | ✅ Prototype | cgmencode |
-| 1D DDPM Diffusion | 3-Dynamics | Uncertainty quantification | ✅ Prototype | cgmencode |
+| VAE (32D) | 3-Dynamics | Scenario generation + phenotyping | ❌ **Broken** (42.78 MAE) | cgmencode |
+| Conditioned Transformer | 3-Dynamics | Counterfactual dosing (what-if) | ✅ **3.47 MAE** | cgmencode |
+| 1D DDPM Diffusion | 3-Dynamics | Uncertainty quantification | ❌ Toy impl. | cgmencode |
 | LSTM residual | 2→3 Bridge | Learn physics model blind spots | ❌ Research | Shared |
 | XGBoost/LightGBM event classifier | 4-Decision | Detect meals, exercise, sleep onset | ❌ NEW | TBD |
 | TCN/Transformer sequence classifier | 4-Decision | Predict event type + timing + duration | ❌ NEW | TBD |
@@ -438,6 +444,8 @@ BG_predicted = UVA_Padova(insulin, carbs, θ_patient)  +  ML_residual(context, h
 
 This means cgmencode's Conditioned Transformer should be trained to predict the *residual* (actual − physics), not the raw glucose. This dramatically reduces what the neural network must learn.
 
+> **Status (2026-04)**: Not yet implemented. Current models train on raw physics output, not residuals. Residual training requires real patient data (actual glucose) paired with physics predictions. The `real_data_adapter.py` is built and ready; blocked on OhioT1DM dataset access. However, current results (2.12 MAE on UVA/Padova synthetic data) demonstrate the models can already learn physics dynamics from raw trajectories.
+
 ### 8.3 "Safety floor, not safety ceiling"
 
 The policy layer must guarantee a minimum safety level (never worse than "do nothing") but need not be optimal. This is the **constrained** in constrained offline RL. Practically:
@@ -450,6 +458,8 @@ The policy layer must guarantee a minimum safety level (never worse than "do not
 
 cgmencode should be pre-trained on unlimited UVA/Padova synthetic data, then fine-tuned on real patient data. This is the standard sim-to-real transfer pattern from robotics. The physics engine provides the curriculum; the real data provides the calibration.
 
+> **Status (2026-04)**: Step 1 (pre-train on synthetic) is complete and validated — models achieve sub-4 mg/dL MAE on UVA/Padova data. Step 2 (fine-tune on real data) requires real patient datasets. `real_data_adapter.py` provides the GluPredKit/OhioT1DM/CSV bridge. Blocked on credentialed OhioT1DM access from PhysioNet.
+
 ---
 
 ## 9. Relationship to Existing Documentation
@@ -460,7 +470,7 @@ cgmencode should be pre-trained on unlimited UVA/Padova synthetic data, then fin
 | `cgm-trace-generation-methodologies.md` | §2-7 detail 5 generation approaches. This doc places them in the composition framework. |
 | `therapy-optimization-feature-pipeline.md` | Describes fingerprinting as therapy assessment. This doc shows how fingerprinting feeds calibration (Layer 2). |
 | `cross-validation-assessment.md` | Tracks algorithm correctness validation. This doc shows how algorithm scores feed decision model training. |
-| cgmencode `README.md` / `TODO.md` | Describes cgmencode internals and roadmap. This doc positions cgmencode as Layer 3 in the stack. |
+| cgmencode `README.md` / `TODO.md` | Describes cgmencode internals and roadmap. This doc positions cgmencode as Layer 3 in the stack. cgmencode now lives at `tools/cgmencode/` in this workspace. |
 
 ---
 
@@ -500,19 +510,27 @@ cgmencode should be pre-trained on unlimited UVA/Padova synthetic data, then fin
 
 ### Model Architectures
 
-| Model | Parameters | Input | Output | Loss |
-|-------|-----------|-------|--------|------|
-| Transformer AE | ~50K | [B, 96, 8] | [B, 96, 8] | MSE |
-| VAE | ~80K | [B, 96, 8] | [B, 96, 8] + z_μ, z_σ | MSE + β·KL |
-| Conditioned | ~60K | [B, 72, 8] + [B, 12, 3] | [B, 12] glucose | MSE |
-| Diffusion | ~50K | [B, 96, 8] + t_embed | [B, 96, 8] noise | MSE(ε) |
-| Contrastive | N/A | z_i, z_j pairs | scalar sim | SimCLR CE |
+| Model | Parameters | Input | Output | Loss | MAE (UVA) |
+|-------|-----------|-------|--------|------|-----------|
+| Transformer AE | ~68K | [B, 24, 8] | [B, 24, 8] | MSE | **2.12** |
+| VAE | ~1.1M | [B, 24, 8] | [B, 24, 8] + z_μ, z_σ | MSE + β·KL | 42.78 ❌ |
+| Conditioned | ~844K | [B, 12, 8] + [B, 12, 3] | [B, 12] glucose | MSE | **3.47** |
+| Diffusion | ~50K | [B, 24, 8] + t_embed | [B, 24, 8] noise | MSE(ε) | N/A (toy) |
+| Contrastive | N/A | z_i, z_j pairs | scalar sim | SimCLR CE | N/A |
 
 ### Training Data Pipeline
 ```
+                    Physics Path (primary):
+in-silico-bridge.js → SIM-*.json → sim_adapter.py → normalize → window → DataLoader
+  (cgmsim or UVA/Padova)                                                    ↓
+                                                                  (Batch, 24, 8)
+                    Real Data Path (planned):
+GluPredKit/CSV → real_data_adapter.py → normalize → window → DataLoader
+  (OhioT1DM, Nightscout)                                        ↓
+                                                       (Batch, 24, 8)
+
+                    Legacy Path (from original cgmencode):
 Nightscout JSON → FixtureEncoder → 5-min grid → normalize → window → DataLoader
-                                                                        ↓
-                                                              (Batch, 96, 8)
 ```
 
 ## Appendix B: Glossary of Techniques

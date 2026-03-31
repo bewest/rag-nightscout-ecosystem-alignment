@@ -14,6 +14,21 @@ The `encoder` produces a 3D NumPy array of shape `(Samples, TimeSteps, Features)
 | **3** | `net_basal` | Action | Temp Basal Rate relative to scheduled basal (U/hr). |
 | **4** | `bolus` | Action | Discrete insulin doses, including SMBs (Units). |
 | **5** | `carbs` | Action | Discrete carbohydrate entries (Grams). |
+| **6** | `time_sin` | Temporal | sin(2π · hour/24). Encodes circadian position on unit circle. |
+| **7** | `time_cos` | Temporal | cos(2π · hour/24). Paired with `time_sin` so 23:55 ≈ 00:05. |
+
+## Normalization Scales
+
+| Feature | Raw Range | Normalized Range | Scale Factor |
+|---------|-----------|-----------------|--------------|
+| glucose | 40–400 mg/dL | [0, 1] | ÷ 400 |
+| iob | 0–20 U | [0, 1] | ÷ 20 |
+| cob | 0–100 g | [0, 1] | ÷ 100 |
+| net_basal | −5 to +5 U/hr | [−1, 1] | ÷ 5 |
+| bolus | 0–10 U | [0, 1] | ÷ 10 |
+| carbs | 0–100 g | [0, 1] | ÷ 100 |
+| time_sin | −1 to +1 | [−1, 1] | native |
+| time_cos | −1 to +1 | [−1, 1] | native |
 
 ## Advanced Training Tasks
 
