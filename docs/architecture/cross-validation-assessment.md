@@ -1160,3 +1160,64 @@ When oref0 receives `activity: 0`:
 
 - `tools/ns-fixture-to-vectors.js` — NS fixture → test vector converter
 - `conformance/loop/vectors/` — 200 Loop test vectors (LV-001 to LV-200)
+
+---
+
+## A14: IOB/tau Activity Derivation — Loop Vector Rate Parity (2025-07-22)
+
+### Summary
+
+Resolved GAP-DS-010 (activity=0 in Loop NS devicestatus) by deriving insulin
+activity from the exponential model: `activity = IOB / tau`, where
+`tau = DIA * 60 / 1.85`.
+
+### Approach
+
+Three approaches were evaluated for computing activity from dose history:
+
+1. **Full dose-history IOB replacement** — Compute entire IOB array from NS doses.
+   Rejected: NS treatments are incomplete (net IOB 0.467 vs reported 1.533).
+
+2. **Hybrid scaling** — Compute IOB shape from doses, scale to match reported IOB.
+   Rejected: scaling amplifies activity disproportionately → unrealistic BGI.
+
+3. **IOB/tau derivation** (ADOPTED) — Use the mathematical relationship between
+   IOB and activity in the exponential decay model. Simple, exact, consistent.
+
+Both JS and Swift adapters apply the same formula when `activity == 0 && IOB != 0`,
+ensuring identical IOB curves and BGI computation.
+
+### Results (200 Loop vectors)
+
+| Metric | Before (activity=0) | After (IOB/tau) | Target |
+|--------|---------------------|-----------------|--------|
+| EventualBG exact | 161/161 (100%) | **194/195 (99.5%)** | >70% |
+| IOB prediction MAE | 0.000 | **0.028** | <5 |
+| ZT prediction MAE | — | **0.011** | <5 |
+| IOB correlation | — | **0.9999** | — |
+| Rate exact | 136/155 (88%) | **122/133 (92%)** | >80% |
+| Rate ±0.5 | 139/155 (90%) | **131/133 (98.5%)** | >95% ✅ |
+
+### Remaining Gaps
+
+1. **Continuance asymmetry** (67 vectors): JS inline continuance returns null rate;
+   Swift always sets a rate. Architectural difference, not calculation divergence.
+
+2. **1 eventualBG mismatch**: LV-130 differs by 1 mg/dL (floating-point boundary).
+
+3. **2 rate mismatches > 0.5 U/hr**: LV-011 (threshold boundary), LV-084 (continuance variant).
+
+### Regression Check (100 oref0-native vectors)
+
+| Metric | Before | After |
+|--------|--------|-------|
+| EventualBG exact | 100/100 | **100/100** ✅ |
+| Rate exact | 71/72 | **71/72** ✅ |
+
+No regression — oref0-native vectors have non-zero activity, so the fallback
+doesn't trigger.
+
+### Commits
+
+- `130ff11` (rag): JS + Swift adapter IOB/tau activity derivation
+- `f2fe009` (apex): Revert DetermineBasal to always use fromSnapshot
