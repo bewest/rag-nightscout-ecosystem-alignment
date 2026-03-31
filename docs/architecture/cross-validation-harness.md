@@ -183,12 +183,18 @@ cd tools/t1pal-adapter-cli && swift build
 echo '{"mode":"describe","algorithm":"oref0"}' | .build/debug/T1PalAdapterCLI
 ```
 
-### 3. aaps-kotlin (Planned)
+### 3. aaps-kotlin ✅
 
-**Location**: `tools/test-harness/adapters/aaps-kotlin/` (to be created)
+**Location**: `tools/test-harness/adapters/aaps-kotlin/`
 
-Would wrap `externals/AndroidAPS` DetermineBasalSMB.kt.
-Challenge: Kotlin requires JVM + gradle build.
+Extracts `DetermineBasalSMB.kt` (1,155 lines) from AndroidAPS as standalone
+Kotlin/JVM adapter. Only 2 dependencies mocked (display formatting + logging).
+Builds via Gradle wrapper; produces fat JAR.
+
+**Build**: `cd tools/test-harness/adapters/aaps-kotlin && ./gradlew jar --no-daemon`
+**Run**: `java -jar build/libs/aaps-kotlin-adapter.jar`
+
+**Results**: 300/300 eventualBG (100%), 300/300 rate ±0.5 (100%) vs aaps-js.
 
 ## Test Vectors
 

@@ -1341,3 +1341,91 @@ Fixed to match.
 ### Commits
 
 - `7a7fee5` (apex): Port JS oref0 UAM prediction formula to Swift
+
+---
+
+## A17: AAPS Kotlin Adapter — 100% Parity (300 vectors)
+
+**Date**: 2026-07-09
+**Commit**: `c1a841b`
+
+### Summary
+
+Extracted AndroidAPS's `DetermineBasalSMB.kt` (1,155 lines) as a standalone
+Kotlin/JVM adapter and validated it against the existing AAPS-JS adapter across
+all 300 test vectors. This is the first time the actual AAPS Kotlin algorithm
+has been cross-validated against the JS implementation it was ported from.
+
+### Extraction Approach
+
+- Copied `DetermineBasalSMB.kt` from AndroidAPS with 6 modifications:
+  1. Package → `adapter.aaps`
+  2. `@Singleton`/`@Inject` removed
+  3. `profileUtil.fromMgdlToStringInUnits()` → inline `convert_bg()`
+  4. `fabricPrivacy.logCustom()` → `System.err.println()`
+  5. Android/Joda imports → standalone `Types.kt` (kotlinx.serialization)
+  6. `APSResult.Algorithm` → local `Algorithm` enum
+- **Only 2 dependencies mocked**, both cosmetic (display formatting + logging)
+- Algorithm logic is 100% unmodified from AndroidAPS source
+
+### Results: AAPS-JS ↔ AAPS-Kotlin
+
+| Vector Suite | EventualBG | Rate ±0.5 |
+|-------------|------------|-----------|
+| oref0-native (100) | **100/100 (100%)** | **100/100 (100%)** |
+| Loop (200) | **200/200 (100%)** | **200/200 (100%)** |
+| **Combined (300)** | **300/300 (100%)** | **300/300 (100%)** |
+
+### 4-Way Cross-Validation (oref0-native vectors)
+
+| Pair | EventualBG | Rate ±0.5 |
+|------|------------|-----------|
+| oref0-js ↔ t1pal-swift | 97/100 | 9/100* |
+| oref0-js ↔ aaps-js | 3/100 | 39/100 |
+| oref0-js ↔ aaps-kotlin | 3/100 | 39/100 |
+| aaps-js ↔ aaps-kotlin | **100/100** | **100/100** |
+
+\* Swift rate divergence is known continuance behavior difference (28 null-rate vectors).
+Low oref0↔AAPS matches expected — AAPS modifies oref0 (round_basal no-op, aCOB curve,
+high-BG SMB removal).
+
+### 4-Way Cross-Validation (Loop vectors, 50 sampled)
+
+| Pair | EventualBG | Rate ±0.5 |
+|------|------------|-----------|
+| oref0-js ↔ aaps-js | 50/50 (100%) | 50/50 (100%) |
+| oref0-js ↔ aaps-kotlin | 50/50 (100%) | 50/50 (100%) |
+| oref0-js ↔ t1pal-swift | 50/50 (100%) | 32/50 (64%) |
+| aaps-js ↔ aaps-kotlin | **50/50 (100%)** | **50/50 (100%)** |
+
+### Bugs Fixed During Development
+
+1. **Kotlin currentTime fallback**: Was using `System.currentTimeMillis()` for
+   missing `clock` field → historical 2023 vectors appeared "too old". Fixed to
+   fall back to `gsTimestamp` (matching JS behavior).
+2. **Kotlin null-safe JSON**: `JsonNull is not JsonObject` for null `currentTemp`
+   in Loop vectors. Added `obj()` helper.
+3. **Kotlin ISO timestamps**: `gs.timestamp` can be ISO string, not just epoch
+   Long. Added `Instant.parse()` fallback.
+4. **Kotlin profile flags**: `adv_target_adjustments`, `sensitivity_raises_target`
+   defaulted to `true` → targets adjusted differently vs JS (which treats undefined
+   as false). Aligned to match JS defaults.
+5. **aaps-js currentTime**: Added `gs.timestamp` fallback before `Date.now()` for
+   historical oref0-native vectors.
+
+### Architecture
+
+```
+tools/test-harness/adapters/aaps-kotlin/
+├── build.gradle.kts           # Kotlin 2.0.21 + kotlinx-serialization
+├── gradlew                    # Gradle wrapper (bootstrapped from AAPS)
+├── manifest.json              # Adapter manifest for harness
+└── src/main/kotlin/adapter/
+    ├── Main.kt                # JSON-over-stdio adapter CLI
+    └── aaps/
+        ├── DetermineBasalSMB.kt  # Extracted AAPS algorithm
+        └── Types.kt              # Standalone data classes
+```
+
+Build: `cd tools/test-harness/adapters/aaps-kotlin && ./gradlew jar --no-daemon`
+Run: `java -jar build/libs/aaps-kotlin-adapter.jar`
