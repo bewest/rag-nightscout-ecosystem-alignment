@@ -100,26 +100,25 @@ Exploratory testing with input mutation:
 | IOB | ±0.01 U | Exponential model precision |
 | Prediction MAE | <2.0 mg/dL | Acceptable curve drift |
 
-### Current Achievement (Phase 3 Complete — 2026-03-31)
+### Current Achievement
 
-**3-Way Cross-Implementation Validation** (300 vectors: 100 oref0-native + 200 Loop-derived):
+**4-Way Cross-Implementation Validation** (300 vectors: 100 oref0-native + 200 Loop-derived):
 
-| Vector Suite | EventualBG | Rate ±0.5 | IOB MAE |
-|-------------|------------|-----------|---------|
-| oref0-native (100) | **100/100 (100%)** | **72/72 (100%)** | **0.005** |
-| Loop-derived (200) | **194/195 (99.5%)** | **131/133 (98.5%)** | **0.028** |
-| **Combined (300)** | **294/295 (99.7%)** | **201/203 (99.0%)** | — |
-
-All 3 adapters (oref0-JS, t1pal-Swift, AAPS-JS) agree on decisions.
+| Pair | EventualBG | Rate ±0.5 |
+|------|------------|-----------|
+| oref0-JS ↔ t1pal-Swift ↔ AAPS-JS (3-way) | **294/295 (99.7%)** | **201/203 (99.0%)** |
+| AAPS-JS ↔ AAPS-Kotlin | **300/300 (100%)** | **300/300 (100%)** |
 
 **All 4 Prediction Curves Aligned** (JS ↔ Swift, avg MAE in mg/dL):
 
-| Curve | Avg MAE | Max MAE | Status |
-|-------|---------|---------|--------|
-| IOB | 0.005 | 0.08 | ✅ |
-| ZT | 0.013 | 0.12 | ✅ |
-| COB | 0.000 | 0.00 | ✅ |
-| UAM | 0.002 | 0.085 | ✅ |
+| Curve | Avg MAE | Max MAE |
+|-------|---------|---------|
+| IOB | 0.005 | 0.08 |
+| ZT | 0.013 | 0.12 |
+| COB | 0.000 | 0.00 |
+| UAM | 0.002 | 0.085 |
+
+For detailed assessment history see [`traceability/cross-validation-log.md`](../../traceability/cross-validation-log.md).
 
 ## Adding a New Adapter
 
