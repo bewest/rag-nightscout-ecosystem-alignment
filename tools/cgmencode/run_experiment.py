@@ -24,6 +24,7 @@ import json
 import os
 import sys
 import time
+import numpy as np
 import torch
 import torch.nn as nn
 from pathlib import Path
@@ -34,6 +35,7 @@ from .toolbox import ConditionedTransformer
 from .sim_adapter import load_conformance_to_dataset
 from .real_data_adapter import load_nightscout_to_dataset
 from .evaluate import evaluate_model, persistence_baseline
+from .physics_model import compute_residual_windows, residual_to_glucose, RESIDUAL_SCALE
 
 DEFAULT_SYNTH_DIRS = [
     'conformance/in-silico/vectors',
@@ -478,11 +480,212 @@ def _train_conditioned(model, train_ds, val_ds, lr, epochs, patience,
     return best, ep + 1
 
 
+def _evaluate_residual_model(model, val_windows_residual, physics_pred_val, val_windows_orig):
+    """Evaluate AE on residual data and convert back to glucose MAE.
+
+    The AE reconstructs residual windows. We add physics prediction back
+    to get final glucose, then compare to actual glucose.
+    """
+    from .schema import IDX_GLUCOSE, NORMALIZATION_SCALES
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+
+    model.eval()
+    all_pred_glucose = []
+    all_actual_glucose = []
+
+    ds = torch.utils.data.TensorDataset(
+        torch.FloatTensor(val_windows_residual),
+        torch.FloatTensor(val_windows_residual))
+    loader = DataLoader(ds, batch_size=64)
+
+    idx = 0
+    with torch.no_grad():
+        for batch_in, _ in loader:
+            recon = model(batch_in)  # (B, T, 8)
+            B = recon.shape[0]
+
+            # Extract reconstructed residual (channel 0)
+            residual_recon = recon[:, :, 0].numpy()  # (B, T) normalized
+
+            for b in range(B):
+                i = idx + b
+                if i >= len(physics_pred_val):
+                    break
+                # Convert: physics_pred (mg/dL) + residual * RESIDUAL_SCALE
+                pred_glucose = residual_to_glucose(residual_recon[b], physics_pred_val[i])
+                actual_glucose = val_windows_orig[i, :, IDX_GLUCOSE] * glucose_scale
+                all_pred_glucose.append(pred_glucose)
+                all_actual_glucose.append(actual_glucose)
+            idx += B
+
+    all_pred = np.concatenate(all_pred_glucose)
+    all_actual = np.concatenate(all_actual_glucose)
+    mae = float(np.mean(np.abs(all_pred - all_actual)))
+    rmse = float(np.sqrt(np.mean((all_pred - all_actual) ** 2)))
+    return {'mae_mgdl': round(mae, 2), 'rmse_mgdl': round(rmse, 2)}
+
+
+def _evaluate_physics_only(physics_pred_raw, val_windows_orig):
+    """Evaluate physics-only prediction (no ML) against actual glucose."""
+    from .schema import IDX_GLUCOSE, NORMALIZATION_SCALES
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+
+    all_pred = []
+    all_actual = []
+    for i in range(len(physics_pred_raw)):
+        actual = val_windows_orig[i, :, IDX_GLUCOSE] * glucose_scale
+        all_pred.append(physics_pred_raw[i])
+        all_actual.append(actual)
+
+    all_pred = np.concatenate(all_pred)
+    all_actual = np.concatenate(all_actual)
+    mae = float(np.mean(np.abs(all_pred - all_actual)))
+    rmse = float(np.sqrt(np.mean((all_pred - all_actual) ** 2)))
+    return {'mae_mgdl': round(mae, 2), 'rmse_mgdl': round(rmse, 2)}
+
+
+def run_residual(args):
+    """EXP-005: Physics-ML Residual Training.
+
+    Train AE on residual = actual_glucose - physics_predicted.
+    Compare: physics-only, raw AE, residual AE (physics + ML).
+    """
+    print('=' * 60)
+    print('EXP-005: Physics-ML Residual Training')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-005', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    # Load Nightscout profile for therapy settings
+    profile_path = os.path.join(args.real_data, 'profile.json')
+    isf, cr = 40.0, 10.0  # defaults
+    if os.path.exists(profile_path):
+        import json as jlib
+        with open(profile_path) as f:
+            profiles = jlib.load(f)
+        if profiles:
+            store = profiles[0].get('store', {})
+            default = store.get('Default', {})
+            sens = default.get('sens', [{}])
+            carbratio = default.get('carbratio', [{}])
+            if sens and 'value' in sens[0]:
+                isf = float(sens[0]['value'])
+            if carbratio and 'value' in carbratio[0]:
+                cr = float(carbratio[0]['value'])
+    print(f'\n  Patient params: ISF={isf} mg/dL/U, CR={cr} g/U')
+    results['patient'] = {'isf': isf, 'cr': cr}
+
+    # Step 1: Load raw data and get normalized windows
+    print('\n--- Step 1: Load real data ---')
+    from .real_data_adapter import load_nightscout_to_dataset, split_into_windows
+    real_t, real_v = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window)
+
+    # Get the raw numpy windows for physics computation
+    train_windows = real_t.vectors.numpy()  # (N_train, T, 8)
+    val_windows = real_v.vectors.numpy()    # (N_val, T, 8)
+    results['samples'] = {'train': len(train_windows), 'val': len(val_windows)}
+
+    # Step 2: Compute physics predictions and residuals
+    print('\n--- Step 2: Compute physics predictions ---')
+    train_residual, train_physics, train_stats = compute_residual_windows(
+        train_windows, isf=isf, cr=cr)
+    val_residual, val_physics, val_stats = compute_residual_windows(
+        val_windows, isf=isf, cr=cr)
+
+    print(f'  Residual stats (train): mean={train_stats["mean"]:.1f}, '
+          f'std={train_stats["std"]:.1f}, range=[{train_stats["min"]:.0f}, '
+          f'{train_stats["max"]:.0f}] mg/dL')
+    print(f'  Residual stats (val):   mean={val_stats["mean"]:.1f}, '
+          f'std={val_stats["std"]:.1f}, range=[{val_stats["min"]:.0f}, '
+          f'{val_stats["max"]:.0f}] mg/dL')
+    results['residual_stats'] = {'train': train_stats, 'val': val_stats}
+
+    # Step 3: Physics-only baseline
+    print('\n--- Step 3: Physics-only baseline ---')
+    physics_metrics = _evaluate_physics_only(val_physics, val_windows)
+    results['physics_only'] = physics_metrics
+    print(f'  Physics-only: MAE={physics_metrics["mae_mgdl"]:.2f} '
+          f'RMSE={physics_metrics["rmse_mgdl"]:.2f} mg/dL')
+
+    # Step 4: Train AE on residual data
+    print('\n--- Step 4: Train AE on residuals ---')
+    from .encoder import CGMDataset
+    residual_train_ds = CGMDataset(train_residual, task='reconstruct',
+                                    window_size=args.window)
+    residual_val_ds = CGMDataset(val_residual, task='reconstruct',
+                                  window_size=args.window)
+    residual_train_ld = DataLoader(residual_train_ds, batch_size=args.batch, shuffle=True)
+    residual_val_ld = DataLoader(residual_val_ds, batch_size=args.batch)
+
+    model_residual = CGMTransformerAE(input_dim=8, d_model=64, nhead=4, num_layers=2)
+    train_loop(model_residual, residual_train_ld, residual_val_ld,
+               lr=1e-3, epochs=args.epochs, patience=args.patience,
+               save_path=str(out / 'ae_residual.pth'), label='residual')
+
+    # Step 5: Train AE on raw data (baseline, same setup as EXP-003 scratch)
+    print('\n--- Step 5: Train AE on raw data (baseline) ---')
+    raw_train_ld = DataLoader(real_t, batch_size=args.batch, shuffle=True)
+    raw_val_ld = DataLoader(real_v, batch_size=args.batch)
+
+    model_raw = CGMTransformerAE(input_dim=8, d_model=64, nhead=4, num_layers=2)
+    train_loop(model_raw, raw_train_ld, raw_val_ld,
+               lr=1e-3, epochs=args.epochs, patience=args.patience,
+               save_path=str(out / 'ae_raw.pth'), label='raw')
+
+    # Step 6: Evaluate all approaches
+    print('\n--- Step 6: Final evaluation ---')
+
+    # Load best checkpoints
+    load_best(model_residual, str(out / 'ae_residual.pth'))
+    load_best(model_raw, str(out / 'ae_raw.pth'))
+
+    # Residual AE: reconstruct residuals → add physics → glucose
+    residual_metrics = _evaluate_residual_model(
+        model_residual, val_residual, val_physics, val_windows)
+    results['residual_ae'] = residual_metrics
+
+    # Raw AE: evaluate normally
+    results['raw_ae'] = evaluate_model(model_raw, raw_val_ld, 'ae', args.window)
+
+    # Persistence baseline
+    _, rv_2x = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window * 2)
+    p_mae, p_rmse = persistence_baseline(rv_2x, args.window)
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)}
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    # Print summary
+    print(f'\n  Persistence:     MAE={p_mae:.2f}  RMSE={p_rmse:.2f} mg/dL')
+    print(f'  Physics-only:    MAE={physics_metrics["mae_mgdl"]:.2f}  '
+          f'RMSE={physics_metrics["rmse_mgdl"]:.2f} mg/dL')
+    print(f'  Raw AE:          MAE={results["raw_ae"]["mae_mgdl"]:.2f}  '
+          f'RMSE={results["raw_ae"]["rmse_mgdl"]:.2f} mg/dL')
+    print(f'  Residual AE:     MAE={residual_metrics["mae_mgdl"]:.2f}  '
+          f'RMSE={residual_metrics["rmse_mgdl"]:.2f} mg/dL')
+
+    # Which is best?
+    best_name = min(
+        [('Physics-only', physics_metrics['mae_mgdl']),
+         ('Raw AE', results['raw_ae']['mae_mgdl']),
+         ('Residual AE', residual_metrics['mae_mgdl'])],
+        key=lambda x: x[1])
+    print(f'\n  Best: {best_name[0]} ({best_name[1]:.2f} mg/dL MAE)')
+    print(f'  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp005_residual_results.json'))
+    return results
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Run cgmencode experiments',
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('experiment', choices=['transfer', 'conditioned', 'cond-transfer', 'all'],
+    parser.add_argument('experiment',
+                        choices=['transfer', 'conditioned', 'cond-transfer', 'residual', 'all'],
                         help='Which experiment to run')
     parser.add_argument('--real-data', required=True,
                         help='Path to Nightscout JSON directory')
@@ -506,6 +709,8 @@ def main():
         run_conditioned(args)
     if args.experiment in ('cond-transfer', 'all'):
         run_conditioned_transfer(args)
+    if args.experiment in ('residual', 'all'):
+        run_residual(args)
 
 
 if __name__ == '__main__':

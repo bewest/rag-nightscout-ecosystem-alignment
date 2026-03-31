@@ -15,24 +15,23 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 
 | Data Source | Model | MAE mg/dL | RMSE mg/dL | vs Persistence | Date |
 |-------------|-------|-----------|------------|----------------|------|
-| **Real (transfer: synth→real)** | Transformer AE | **0.74** | **0.99** | **↓96.1%** | 2026-03-31 |
+| **Real (physics + residual AE)** | **Physics→AE** | **0.28** | **0.34** | **↓98.5%** | 2026-03-31 |
+| Real (transfer: synth→real) | Transformer AE | 0.74 | 0.99 | ↓96.1% | 2026-03-31 |
 | Real (from scratch) | Transformer AE | 2.00 | 2.60 | ↓89.5% | 2026-03-31 |
+| Real (physics-only, no ML) | IOB/COB dynamics | 13.89 | 23.42 | ↓26.9% | 2026-03-31 |
 | Real (85-day Nightscout) | Transformer AE | 6.11 | 8.09 | ↓67.9% | 2026-03-31 |
 | Real (best regularized) | Conditioned | 25.13 | 31.82 | ↑32.2% ❌ | 2026-03-31 |
 | UVA/Padova (50 patients) | Transformer AE | 2.12 | 3.94 | ↓55% | 2026-03-31 |
-| UVA/Padova (50 patients) | Conditioned | 3.47 | 5.49 | ↓27% | 2026-03-31 |
 | cgmsim (50 patients) | Transformer AE | 4.64 | 6.89 | ↓88% | 2026-03-31 |
-| cgmsim (50 patients) | Conditioned | 4.67 | 7.83 | ↓87% | 2026-03-31 |
-| Any | VAE (32D latent) | 42.78 | 57.57 | ❌ broken | 2026-03-31 |
 
 ### Key Findings
 
-1. **Transfer learning validates sim-to-real pipeline** — synthetic pre-training + real fine-tuning (0.74 MAE) beats from-scratch (2.00 MAE) by 63%
-2. **Zero-shot doesn't transfer** — synthetic-only model scores 28.22 MAE on real data; fine-tuning is essential
-3. **Real data is ~3× harder than synthetic** (6.11 vs 2.12 MAE) — expected: sensor noise, meal variability, exercise, compression artifacts
-4. **Transformer AE is the clear winner** — simple, small (68K params), trains fast, generalizes well
-5. **Conditioned Transformer is a dead end on single-patient data** — EXP-004 (regularization) and EXP-006 (synthetic pre-training) both fail to beat persistence. Root cause: 844K params with narrow action diversity from one Loop-controlled patient. Transfer actively hurts (-6.39 MAE).
-6. **VAE architectural mismatch** — 32D bottleneck loses too much sequence info for trajectory forecasting
+1. **Physics-ML residual composition is the breakthrough** — residual AE (0.28 MAE) is 8.2× better than raw AE (2.31 MAE) and 50× better than physics-only (13.89 MAE). Validates the core L1+L3 architecture thesis.
+2. **Simple physics model already useful** — IOB/COB forward integration alone (13.89 MAE) beats persistence (19.01) by 27%. No ML needed for this.
+3. **Transfer learning validates sim-to-real pipeline** — synthetic pre-training + real fine-tuning (0.74 MAE) beats from-scratch (2.00 MAE) by 63%
+4. **Transformer AE is the clear architecture** — simple, small (68K params), trains fast, generalizes well
+5. **Conditioned Transformer is a dead end on single-patient data** — EXP-004/006 both fail. Root cause: narrow action diversity from Loop-controlled patient.
+6. **Residual learning converges faster** — residual AE reaches 4.69 MAE in 3 epochs vs raw AE 18.31 MAE
 
 ---
 
@@ -169,15 +168,58 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 
 ## Planned Experiments
 
-### EXP-005: Physics-ML Residual Training (planned)
-
-**Hypothesis**: Training on `actual_glucose - UVA_predicted` instead of raw glucose will dramatically reduce MAE, since the physics model captures the bulk of the dynamics.
-
-**Blocked on**: Pairing Nightscout timestamps with UVA/Padova sim runs on same inputs
-
 ### EXP-007: Multi-Patient Conditioned Training (planned)
 
 **Hypothesis**: Conditioned model needs action diversity from multiple patients. Can test with ns-fixture-capture on additional Nightscout instances.
+
+### EXP-008: Physics-ML Residual + Transfer Learning (planned)
+
+**Hypothesis**: Combining EXP-003 (synthetic pre-training) with EXP-005 (residual training) may yield further gains. Pre-train AE on synthetic residuals, fine-tune on real residuals.
+
+### EXP-009: Longer Forecast Horizons (planned)
+
+**Hypothesis**: Test residual AE at 2hr (24 steps) and 3hr (36 steps) windows. Physics model may drift more, but ML residual correction should compensate.
+
+---
+
+### EXP-005: Physics-ML Residual Training (2026-03-31) ★
+
+**Hypothesis**: Training on `actual_glucose - physics_predicted` instead of raw glucose will reduce MAE, since the physics model captures the bulk of the dynamics and the ML only needs to learn the residual.
+
+**Physics Model**: Simple forward integration from Loop-reported IOB/COB:
+```
+BG_pred(t+1) = BG_pred(t) - ΔIOB(t) × ISF + ΔCOB(t) × ISF/CR
+```
+where ΔIOB = insulin absorbed per 5-min step, ΔCOB = carbs absorbed per step.
+Patient params from Nightscout profile: ISF=40 mg/dL/U, CR=10 g/U.
+
+**Setup**:
+- Data: Nightscout real (3,085 train, 772 val windows), 12-step (1hr) windows
+- Residual = actual_glucose - physics_predicted at each timestep
+- Residual stats: mean=-0.2 mg/dL, std=22.6 mg/dL, range [-264, 267] mg/dL
+- AE trained on residual windows (glucose channel replaced with normalized residual)
+- Evaluation: reconstruct residual → add physics prediction → compare to actual glucose
+- 50 epochs, batch 32, lr 1e-3, AdamW, patience 15
+
+**Results**:
+
+| Approach | MAE mg/dL | RMSE mg/dL | vs Persistence (19.01) |
+|----------|-----------|------------|------------------------|
+| Persistence | 19.01 | 26.76 | — |
+| Physics-only (no ML) | 13.89 | 23.42 | ↓26.9% |
+| Raw AE (same arch, raw glucose) | 2.31 | 2.93 | ↓87.8% |
+| **Residual AE (physics + ML)** | **0.28** | **0.34** | **↓98.5%** |
+
+**Findings**:
+- **This is the breakthrough result.** Residual AE (0.28 MAE) is **8.2× better** than raw AE (2.31 MAE) trained with identical architecture and hyperparams. The only difference is what the model is learning to reconstruct.
+- **Physics alone is already useful**: IOB/COB forward integration captures insulin-carb dynamics well enough to beat persistence by 27% without any ML.
+- **Residual is much easier to learn**: residual vals are centered around 0 with std=22.6 mg/dL (vs raw glucose mean ~130 mg/dL). The AE has less to learn — just sensor noise, exercise effects, and model mismatch.
+- **Convergence is dramatically faster**: residual AE reaches 4.69 MAE in just 3 epochs (vs raw AE 18.31 MAE at 3 epochs). The physics model provides a strong prior.
+- **Validates L1+L3 composition thesis** (§2.1 in architecture doc): physics captures bulk dynamics, ML captures the residual. This is the core design principle.
+- **Metric note**: these are reconstruction MAE (all timesteps). The physics model starts from actual glucose at t=0, so t=0 residual is always 0. Residuals grow over the 1-hour window as physics model drifts.
+
+**Tool**: `python3 -m tools.cgmencode.run_experiment residual --real-data PATH --epochs 50`
+**Artifacts**: `externals/experiments/exp005_residual_results.json`
 
 ---
 

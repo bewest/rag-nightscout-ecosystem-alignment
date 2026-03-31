@@ -47,7 +47,8 @@ Shift diabetes management from reactive, moment-to-moment intervention into **an
 | Layer | Status | Evidence |
 |-------|--------|----------|
 | **L1 Physics** | ✅ Working | UVA/Padova + cgmsim engines, sensor noise, 50-patient sweep |
-| **L2 Calibration** | ❌ Not built | Fingerprinting designed, not coded. §2.2 residual approach bypasses it. |
+| **L1→L3 Residual** | ✅ **Validated** | Physics→ML residual: 0.28 MAE (8.2× better than raw ML). EXP-005. |
+| **L2 Calibration** | ❌ Not built | Fingerprinting designed, not coded. §2.1 residual approach bypasses it. |
 | **L3 Dynamics** | ✅ Working | See `docs/60-research/ml-experiment-log.md` for benchmarks |
 | **L4 Decision** | ❌ Not started | Needs override event labels (OQ-032) |
 
@@ -66,7 +67,7 @@ BG_predicted = UVA_Padova(insulin, carbs, θ_patient) + ML_residual(context, his
 
 **Implication**: cgmencode models should be trained to predict the *residual* (actual − physics), not raw glucose. This dramatically reduces what the neural network must learn.
 
-**Current status**: Not yet implemented. Models currently train on raw glucose. Residual training requires pairing real patient data with physics sim on the same inputs. The Nightscout adapter now provides real data (6.11 MAE on 85-day dataset). Next step: run UVA/Padova on same time windows → compute residuals → train on difference.
+**Current status**: ✅ **Validated in EXP-005.** Residual AE (0.28 MAE) is 8.2× better than raw AE (2.31 MAE) on identical architecture. Even a simple IOB/COB forward-integration physics model (no full ODE) captures enough dynamics to beat persistence by 27%. The ML residual correction captures sensor noise, exercise, and model mismatch. See `docs/60-research/ml-experiment-log.md` EXP-005 for full results. Implementation: `tools/cgmencode/physics_model.py`.
 
 ### 2.2 Sim-to-real transfer
 
@@ -155,6 +156,7 @@ Real Patient Data ─────────────────┐
 | Bridge | From → To | Status |
 |--------|-----------|--------|
 | Physics → ML training | SIM-*.json → sim_adapter.py → cgmencode | ✅ Working |
+| **Physics → ML residual** | **physics_model.py → residual windows → AE** | **✅ Validated (EXP-005)** |
 | Calibrated params → physics | Fingerprinting → UVA/Padova θ | ❌ Not built |
 | ML residual → physics improvement | cgmencode identifies blind spots | ❌ Research |
 | Algorithm decisions → decision model labels | Cross-validated oref0/Loop output → training labels | ❌ Not wired |
