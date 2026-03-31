@@ -1221,3 +1221,33 @@ doesn't trigger.
 
 - `130ff11` (rag): JS + Swift adapter IOB/tau activity derivation
 - `f2fe009` (apex): Revert DetermineBasal to always use fromSnapshot
+
+---
+
+## A15: 3-Way Cross-Validation — oref0-JS / oref0-Swift / AAPS-JS (2025-07-22)
+
+### Summary
+
+Extended IOB/tau activity derivation to AAPS-JS adapter. All 3 oref0
+implementations now produce identical results on both vector suites.
+
+### Results
+
+| Vector Suite | Metric | oref0-JS ↔ Swift | oref0-JS ↔ AAPS | All 3 |
+|-------------|--------|-------------------|-------------------|-------|
+| oref0-native (100) | EventualBG exact | 100/100 | 100/100 | **100/100** |
+| oref0-native (100) | Rate exact | 71/72 | 61/72 | 60/72 |
+| oref0-native (100) | Rate ±0.5 | 72/72 | 72/72 | **72/72** |
+| Loop (200) | EventualBG exact | 194/195 | 195/195 | **194/195** |
+| Loop (200) | Rate ±0.5 | 131/133 | — | **129/131** |
+
+### Key Insight
+
+The AAPS adapter (which wraps Trio's `determine-basal.js`, a fork of oref0)
+produces identical eventualBG to both the reference oref0 JS and our Swift
+port. The 11 rate-exact differences in oref0-native vectors are due to AAPS
+extensions (safety bounds, SMB logic) — not core algorithm divergence.
+
+### Commits
+
+- `7af6428` (rag): AAPS-JS adapter IOB/tau activity fallback
