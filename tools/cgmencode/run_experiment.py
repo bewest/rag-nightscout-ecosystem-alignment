@@ -834,13 +834,289 @@ def run_physics_comparison(args):
     return results
 
 
+def run_residual_transfer(args):
+    """EXP-009: Residual Transfer Learning — synth pretrain + real finetune on residuals.
+
+    Combines the two best techniques: physics-ML residual (EXP-005/007) and
+    sim-to-real transfer (EXP-003). Uses enhanced physics for both stages.
+    """
+    print('=' * 60)
+    print('EXP-009: Residual Transfer Learning')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-009', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    # Load patient profile for physics model
+    profile_path = os.path.join(args.real_data, 'profile.json')
+    isf, cr = 40.0, 10.0
+    if os.path.exists(profile_path):
+        with open(profile_path) as f:
+            profiles = json.load(f)
+        if profiles:
+            store = profiles[0].get('store', {})
+            default = store.get('Default', {})
+            sens = default.get('sens', [{}])
+            carbratio = default.get('carbratio', [{}])
+            if sens and 'value' in sens[0]:
+                isf = float(sens[0]['value'])
+            if carbratio and 'value' in carbratio[0]:
+                cr = float(carbratio[0]['value'])
+    print(f'  Patient: ISF={isf}, CR={cr}')
+    results['patient'] = {'isf': isf, 'cr': cr}
+
+    # Step 1: Load synthetic data and compute enhanced residuals
+    print('\n--- Step 1: Synthetic → enhanced residuals ---')
+    syn_t, syn_v = load_conformance_to_dataset(
+        args.synth_dirs, task='forecast', window_size=args.window)
+
+    has_synthetic = syn_t is not None and len(syn_t) > 0
+    results['has_synthetic'] = has_synthetic
+
+    if has_synthetic:
+        syn_train_np = syn_t.vectors.numpy()
+        syn_val_np = syn_v.vectors.numpy()
+        print(f'  Synthetic: {len(syn_train_np)} train, {len(syn_val_np)} val')
+
+        # For synthetic vectors, use their profile ISF/CR if available
+        # (different patients have different params — use mean or per-window)
+        # Simple: use real patient's ISF/CR as approximation
+        syn_tr_res, syn_tr_phys, syn_stats = compute_residual_windows(
+            syn_train_np, isf=isf, cr=cr, level='enhanced')
+        syn_vr_res, syn_vr_phys, _ = compute_residual_windows(
+            syn_val_np, isf=isf, cr=cr, level='enhanced')
+        print(f'  Synthetic residual std: {syn_stats["std"]:.1f} mg/dL')
+        results['synthetic_residual_stats'] = syn_stats
+
+        # Pre-train AE on synthetic residuals
+        print('\n--- Step 2: Pre-train on synthetic residuals ---')
+        from .encoder import CGMDataset
+        syn_res_train_ds = CGMDataset(syn_tr_res, task='reconstruct', window_size=args.window)
+        syn_res_val_ds = CGMDataset(syn_vr_res, task='reconstruct', window_size=args.window)
+        model_synth = CGMTransformerAE(input_dim=8, d_model=64, nhead=4, num_layers=2)
+        train_loop(model_synth,
+                   DataLoader(syn_res_train_ds, batch_size=args.batch, shuffle=True),
+                   DataLoader(syn_res_val_ds, batch_size=args.batch),
+                   lr=1e-3, epochs=args.epochs, patience=args.patience,
+                   save_path=str(out / 'ae_residual_synth.pth'), label='synth-residual')
+    else:
+        print('  WARNING: No synthetic vectors found.')
+
+    # Step 3: Load real data → enhanced residuals
+    print('\n--- Step 3: Real data → enhanced residuals ---')
+    real_t, real_v = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window)
+    train_np = real_t.vectors.numpy()
+    val_np = real_v.vectors.numpy()
+    results['real_samples'] = {'train': len(train_np), 'val': len(val_np)}
+
+    real_tr_res, real_tr_phys, real_stats = compute_residual_windows(
+        train_np, isf=isf, cr=cr, level='enhanced')
+    real_vr_res, real_vr_phys, _ = compute_residual_windows(
+        val_np, isf=isf, cr=cr, level='enhanced')
+    print(f'  Real residual std: {real_stats["std"]:.1f} mg/dL')
+    results['real_residual_stats'] = real_stats
+
+    from .encoder import CGMDataset
+    real_res_train_ds = CGMDataset(real_tr_res, task='reconstruct', window_size=args.window)
+    real_res_val_ds = CGMDataset(real_vr_res, task='reconstruct', window_size=args.window)
+    real_res_train_ld = DataLoader(real_res_train_ds, batch_size=args.batch, shuffle=True)
+    real_res_val_ld = DataLoader(real_res_val_ds, batch_size=args.batch)
+
+    # Step 4: Zero-shot (synthetic residual model → real residuals)
+    if has_synthetic:
+        print('\n--- Step 4: Zero-shot evaluation ---')
+        model_zs = CGMTransformerAE(input_dim=8, d_model=64, nhead=4, num_layers=2)
+        load_best(model_zs, str(out / 'ae_residual_synth.pth'))
+        zs_metrics = _evaluate_residual_model(model_zs, real_vr_res, real_vr_phys, val_np)
+        results['zero_shot'] = zs_metrics
+        print(f'  Zero-shot: MAE={zs_metrics["mae_mgdl"]:.2f}  RMSE={zs_metrics["rmse_mgdl"]:.2f}')
+
+    # Step 5: Fine-tune (synth pretrained → real residuals)
+    print('\n--- Step 5: Fine-tune on real residuals ---')
+    model_ft = CGMTransformerAE(input_dim=8, d_model=64, nhead=4, num_layers=2)
+    if has_synthetic:
+        load_best(model_ft, str(out / 'ae_residual_synth.pth'))
+    train_loop(model_ft, real_res_train_ld, real_res_val_ld,
+               lr=5e-4, epochs=args.epochs, patience=args.patience,
+               save_path=str(out / 'ae_residual_transfer.pth'), label='residual-transfer')
+
+    # Step 6: From-scratch on real residuals (baseline = EXP-007 enhanced)
+    print('\n--- Step 6: From-scratch on real residuals ---')
+    model_sc = CGMTransformerAE(input_dim=8, d_model=64, nhead=4, num_layers=2)
+    train_loop(model_sc, real_res_train_ld, real_res_val_ld,
+               lr=1e-3, epochs=args.epochs, patience=args.patience,
+               save_path=str(out / 'ae_residual_scratch.pth'), label='residual-scratch')
+
+    # Step 7: Evaluate all
+    print('\n--- Step 7: Final evaluation ---')
+    load_best(model_ft, str(out / 'ae_residual_transfer.pth'))
+    load_best(model_sc, str(out / 'ae_residual_scratch.pth'))
+
+    transfer_metrics = _evaluate_residual_model(model_ft, real_vr_res, real_vr_phys, val_np)
+    scratch_metrics = _evaluate_residual_model(model_sc, real_vr_res, real_vr_phys, val_np)
+    physics_metrics = _evaluate_physics_only(real_vr_phys, val_np)
+
+    results['transfer'] = transfer_metrics
+    results['scratch'] = scratch_metrics
+    results['physics_only'] = physics_metrics
+
+    # Persistence
+    _, rv_2x = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window * 2)
+    p_mae, p_rmse = persistence_baseline(rv_2x, args.window)
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)}
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    # Summary
+    print('\n' + '=' * 60)
+    print('SUMMARY — Residual Transfer Learning')
+    print('=' * 60)
+    print(f'  Persistence:           MAE={p_mae:.2f}  RMSE={p_rmse:.2f}')
+    print(f'  Physics-only:          MAE={physics_metrics["mae_mgdl"]:.2f}  '
+          f'RMSE={physics_metrics["rmse_mgdl"]:.2f}')
+    if has_synthetic:
+        print(f'  Zero-shot (synth→real): MAE={zs_metrics["mae_mgdl"]:.2f}  '
+              f'RMSE={zs_metrics["rmse_mgdl"]:.2f}')
+    print(f'  Transfer (synth→real): MAE={transfer_metrics["mae_mgdl"]:.2f}  '
+          f'RMSE={transfer_metrics["rmse_mgdl"]:.2f}')
+    print(f'  Scratch:               MAE={scratch_metrics["mae_mgdl"]:.2f}  '
+          f'RMSE={scratch_metrics["rmse_mgdl"]:.2f}')
+
+    improvement = (scratch_metrics['mae_mgdl'] - transfer_metrics['mae_mgdl']) / scratch_metrics['mae_mgdl'] * 100
+    print(f'\n  Transfer vs scratch: {"↓" if improvement > 0 else "↑"}{abs(improvement):.1f}%')
+    print(f'  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp009_residual_transfer.json'))
+    return results
+
+
+def run_longer_horizons(args):
+    """EXP-010: Longer Forecast Horizons — 1hr, 2hr, 3hr windows.
+
+    Tests whether enhanced residual AE degrades at longer forecast horizons.
+    Physics model may drift more, but ML correction should compensate.
+    """
+    print('=' * 60)
+    print('EXP-010: Longer Forecast Horizons')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-010', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    # Load profile
+    profile_path = os.path.join(args.real_data, 'profile.json')
+    isf, cr = 40.0, 10.0
+    if os.path.exists(profile_path):
+        with open(profile_path) as f:
+            profiles = json.load(f)
+        if profiles:
+            store = profiles[0].get('store', {})
+            default = store.get('Default', {})
+            sens = default.get('sens', [{}])
+            carbratio = default.get('carbratio', [{}])
+            if sens and 'value' in sens[0]:
+                isf = float(sens[0]['value'])
+            if carbratio and 'value' in carbratio[0]:
+                cr = float(carbratio[0]['value'])
+    print(f'  Patient: ISF={isf}, CR={cr}')
+    results['patient'] = {'isf': isf, 'cr': cr}
+
+    horizons = [12, 24, 36]  # 1hr, 2hr, 3hr
+    horizon_results = {}
+
+    from .encoder import CGMDataset
+
+    for window in horizons:
+        label = f'{window * 5}min ({window} steps)'
+        print(f'\n{"─" * 50}')
+        print(f'  Horizon: {label}')
+        print(f'{"─" * 50}')
+
+        # Load data at this window size
+        real_t, real_v = load_nightscout_to_dataset(
+            args.real_data, task='forecast', window_size=window)
+        if real_t is None or len(real_t) == 0:
+            print(f'  No data for window={window}, skipping')
+            continue
+
+        train_np = real_t.vectors.numpy()
+        val_np = real_v.vectors.numpy()
+        print(f'  Windows: {len(train_np)} train, {len(val_np)} val')
+
+        # Enhanced residuals
+        tr_res, tr_phys, tr_stats = compute_residual_windows(
+            train_np, isf=isf, cr=cr, level='enhanced')
+        vr_res, vr_phys, vr_stats = compute_residual_windows(
+            val_np, isf=isf, cr=cr, level='enhanced')
+        print(f'  Residual std: {vr_stats["std"]:.1f} mg/dL')
+
+        # Physics-only baseline
+        physics_metrics = _evaluate_physics_only(vr_phys, val_np)
+        print(f'  Physics-only: MAE={physics_metrics["mae_mgdl"]:.2f}')
+
+        # Train residual AE (adapt d_model for longer sequences)
+        res_train_ds = CGMDataset(tr_res, task='reconstruct', window_size=window)
+        res_val_ds = CGMDataset(vr_res, task='reconstruct', window_size=window)
+        res_train_ld = DataLoader(res_train_ds, batch_size=args.batch, shuffle=True)
+        res_val_ld = DataLoader(res_val_ds, batch_size=args.batch)
+
+        model = CGMTransformerAE(input_dim=8, d_model=64, nhead=4, num_layers=2)
+        ckpt = str(out / f'ae_residual_w{window}.pth')
+        train_loop(model, res_train_ld, res_val_ld,
+                   lr=1e-3, epochs=args.epochs, patience=args.patience,
+                   save_path=ckpt, label=f'residual-w{window}')
+
+        load_best(model, ckpt)
+        ae_metrics = _evaluate_residual_model(model, vr_res, vr_phys, val_np)
+
+        # Persistence
+        _, rv_2x = load_nightscout_to_dataset(
+            args.real_data, task='forecast', window_size=window * 2)
+        p_mae, p_rmse = persistence_baseline(rv_2x, window)
+
+        horizon_results[window] = {
+            'window_steps': window,
+            'window_minutes': window * 5,
+            'samples': {'train': len(train_np), 'val': len(val_np)},
+            'residual_stats': vr_stats,
+            'physics_only': physics_metrics,
+            'residual_ae': ae_metrics,
+            'persistence': {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)},
+        }
+        print(f'  Residual AE: MAE={ae_metrics["mae_mgdl"]:.2f}  RMSE={ae_metrics["rmse_mgdl"]:.2f}')
+
+    results['horizons'] = horizon_results
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    # Summary
+    print('\n' + '=' * 60)
+    print('SUMMARY — Longer Forecast Horizons')
+    print('=' * 60)
+    print(f'  {"Window":<15s}  {"Persist MAE":>12s}  {"Physics MAE":>12s}  {"Residual AE":>12s}')
+    print(f'  {"-"*15}  {"-"*12}  {"-"*12}  {"-"*12}')
+    for w, hr in sorted(horizon_results.items()):
+        wlabel = f'{w*5}min ({w} steps)'
+        print(f'  {wlabel:<15s}  {hr["persistence"]["mae_mgdl"]:>12.2f}  '
+              f'{hr["physics_only"]["mae_mgdl"]:>12.2f}  '
+              f'{hr["residual_ae"]["mae_mgdl"]:>12.2f}')
+    print(f'\n  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp010_longer_horizons.json'))
+    return results
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Run cgmencode experiments',
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('experiment',
                         choices=['transfer', 'conditioned', 'cond-transfer',
-                                 'residual', 'physics-compare', 'all'],
+                                 'residual', 'physics-compare',
+                                 'residual-transfer', 'longer-horizons', 'all'],
                         help='Which experiment to run')
     parser.add_argument('--real-data', required=True,
                         help='Path to Nightscout JSON directory')
@@ -870,6 +1146,10 @@ def main():
         run_residual(args)
     if args.experiment in ('physics-compare', 'all'):
         run_physics_comparison(args)
+    if args.experiment in ('residual-transfer', 'all'):
+        run_residual_transfer(args)
+    if args.experiment in ('longer-horizons', 'all'):
+        run_longer_horizons(args)
 
 
 if __name__ == '__main__':
