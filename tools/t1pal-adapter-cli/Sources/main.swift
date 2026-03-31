@@ -415,13 +415,21 @@ func translateInput(_ input: AdapterInput) -> (AlgorithmInputs, [String]) {
         insulinActivity = input.iob.iob / tau
     }
 
+    // When iobWithZeroTemp is absent, fall back to regular IOB values
+    // (matches JS: ztIob0 = ztIob.iob ?? iob0, ztActivity0 = ztIob.activity ?? activity0)
     var ztActivity = input.iob.iobWithZeroTemp?.activity ?? 0
     if ztActivity == 0 {
-        let ztIob = input.iob.iobWithZeroTemp?.iob ?? input.iob.iob
-        if ztIob != 0 {
-            let dia = input.profile.dia ?? 5.0
-            let tau = dia * 60.0 / 1.85
-            ztActivity = ztIob / tau
+        if input.iob.iobWithZeroTemp != nil {
+            // iobWithZeroTemp exists but activity is 0 → derive from IOB/tau
+            let ztIob = input.iob.iobWithZeroTemp?.iob ?? input.iob.iob
+            if ztIob != 0 {
+                let dia = input.profile.dia ?? 5.0
+                let tau = dia * 60.0 / 1.85
+                ztActivity = ztIob / tau
+            }
+        } else {
+            // iobWithZeroTemp absent entirely → fall back to regular activity
+            ztActivity = insulinActivity
         }
     }
 
