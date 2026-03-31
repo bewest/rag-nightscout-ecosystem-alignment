@@ -324,11 +324,165 @@ def run_conditioned(args):
     return results
 
 
+def run_conditioned_transfer(args):
+    """EXP-006: Conditioned Transformer with synthetic pre-training + real fine-tuning."""
+    print('=' * 60)
+    print('EXP-006: Conditioned Transformer — Synthetic Pre-train → Real Fine-tune')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-006', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    # Step 1: Pre-train on synthetic (conditioned mode — diverse actions from 50 patients)
+    print('\n--- Step 1: Pre-train on synthetic (conditioned) ---')
+    syn_t, syn_v = load_conformance_to_dataset(
+        args.synth_dirs, window_size=args.window, conditioned=True)
+
+    if syn_t and len(syn_t) > 0:
+        print(f'  Synthetic: {len(syn_t)} train, {len(syn_v)} val')
+        model_syn = ConditionedTransformer(history_dim=8, action_dim=3, d_model=64)
+        _train_conditioned(model_syn, syn_t, syn_v, lr=1e-3, epochs=args.epochs,
+                           patience=args.patience, save_path=str(out / 'cond_synthetic.pth'),
+                           label='synthetic', batch=args.batch)
+        results['has_synthetic'] = True
+        results['synthetic_samples'] = {'train': len(syn_t), 'val': len(syn_v)}
+    else:
+        print('  WARNING: No synthetic vectors found.')
+        results['has_synthetic'] = False
+
+    # Step 2: Load real data (conditioned)
+    print('\n--- Step 2: Load real data (conditioned) ---')
+    real_t, real_v = load_nightscout_to_dataset(
+        args.real_data, window_size=args.window, conditioned=True)
+    results['real_samples'] = {'train': len(real_t), 'val': len(real_v)}
+
+    # Step 3: Zero-shot evaluation (synthetic model → real data)
+    if results.get('has_synthetic'):
+        print('\n--- Step 3: Zero-shot (synthetic → real) ---')
+        model_zs = ConditionedTransformer(history_dim=8, action_dim=3, d_model=64)
+        load_best(model_zs, str(out / 'cond_synthetic.pth'))
+        real_vl = DataLoader(real_v, batch_size=args.batch)
+        results['zero_shot'] = evaluate_model(model_zs, real_vl, 'conditioned', args.window)
+        print(f'  Zero-shot: MAE={results["zero_shot"]["mae_mgdl"]:.2f} '
+              f'RMSE={results["zero_shot"]["rmse_mgdl"]:.2f} mg/dL')
+
+    # Step 4: Fine-tune on real data (transfer)
+    print('\n--- Step 4: Fine-tune on real data (transfer) ---')
+    model_ft = ConditionedTransformer(history_dim=8, action_dim=3, d_model=64)
+    if results.get('has_synthetic'):
+        load_best(model_ft, str(out / 'cond_synthetic.pth'))
+    _train_conditioned(model_ft, real_t, real_v, lr=5e-4, epochs=args.epochs,
+                       patience=args.patience, save_path=str(out / 'cond_transfer.pth'),
+                       label='transfer', batch=args.batch, weight_decay=1e-4)
+
+    # Step 5: From scratch with best regularization (wd=1e-4, from EXP-004)
+    print('\n--- Step 5: From scratch with wd=1e-4 (EXP-004 best) ---')
+    model_sc = ConditionedTransformer(history_dim=8, action_dim=3, d_model=64)
+    _train_conditioned(model_sc, real_t, real_v, lr=5e-4, epochs=args.epochs,
+                       patience=args.patience, save_path=str(out / 'cond_scratch.pth'),
+                       label='scratch', batch=args.batch, weight_decay=1e-4)
+
+    # Step 6: Final comparison
+    print('\n--- Results ---')
+    real_vl = DataLoader(real_v, batch_size=args.batch)
+
+    load_best(model_ft, str(out / 'cond_transfer.pth'))
+    results['transfer'] = evaluate_model(model_ft, real_vl, 'conditioned', args.window)
+
+    load_best(model_sc, str(out / 'cond_scratch.pth'))
+    results['scratch'] = evaluate_model(model_sc, real_vl, 'conditioned', args.window)
+
+    # Persistence baseline
+    _, rv_2x = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window * 2)
+    p_mae, p_rmse = persistence_baseline(rv_2x, args.window)
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)}
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    print(f'\n  Persistence:   MAE={p_mae:.2f}  RMSE={p_rmse:.2f} mg/dL')
+    if 'zero_shot' in results:
+        zs = results['zero_shot']
+        print(f'  Zero-shot:     MAE={zs["mae_mgdl"]:.2f}  RMSE={zs["rmse_mgdl"]:.2f} mg/dL')
+    ft = results['transfer']
+    sc = results['scratch']
+    print(f'  Transfer:      MAE={ft["mae_mgdl"]:.2f}  RMSE={ft["rmse_mgdl"]:.2f} mg/dL')
+    print(f'  From scratch:  MAE={sc["mae_mgdl"]:.2f}  RMSE={sc["rmse_mgdl"]:.2f} mg/dL')
+
+    delta = sc['mae_mgdl'] - ft['mae_mgdl']
+    if delta > 0:
+        print(f'\n  Transfer wins by {delta:.2f} mg/dL MAE')
+    else:
+        print(f'\n  Scratch wins by {-delta:.2f} mg/dL MAE')
+    print(f'  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp006_cond_transfer_results.json'))
+    return results
+
+
+def _train_conditioned(model, train_ds, val_ds, lr, epochs, patience,
+                       save_path, label, batch=32, weight_decay=1e-5):
+    """Train a ConditionedTransformer with standard loop. Returns (best_val, epochs_run)."""
+    train_ld = DataLoader(train_ds, batch_size=batch, shuffle=True)
+    val_ld = DataLoader(val_ds, batch_size=batch)
+    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
+    crit = nn.MSELoss()
+    best = float('inf')
+    stale = 0
+
+    for ep in range(epochs):
+        model.train()
+        total = 0; n = 0
+        for batch_data in train_ld:
+            (h, a), t = batch_data
+            opt.zero_grad()
+            pred = model(h, a)
+            loss = crit(pred, t)
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            opt.step()
+            total += loss.item() * h.size(0); n += h.size(0)
+        tl = total / n
+
+        model.eval()
+        total_v = 0; nv = 0
+        with torch.no_grad():
+            for batch_data in val_ld:
+                (h, a), t = batch_data
+                pred = model(h, a)
+                total_v += crit(pred, t).item() * h.size(0); nv += h.size(0)
+        vl = total_v / nv
+        sched.step(vl)
+
+        if vl < best:
+            best = vl; stale = 0
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            torch.save({'epoch': ep, 'model_state': model.state_dict(),
+                        'val_loss': vl, 'label': label}, save_path)
+        else:
+            stale += 1
+
+        if (ep + 1) % 10 == 0 or ep == epochs - 1:
+            lr_now = opt.param_groups[0]['lr']
+            mark = ' *' if stale == 0 else ''
+            print(f'  [{label}] Epoch {ep+1:3d}/{epochs} '
+                  f'train={tl:.6f} val={vl:.6f} best={best:.6f} '
+                  f'lr={lr_now:.1e}{mark}')
+
+        if patience > 0 and stale >= patience:
+            print(f'  [{label}] Early stop at epoch {ep+1}')
+            break
+
+    return best, ep + 1
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Run cgmencode experiments',
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('experiment', choices=['transfer', 'conditioned', 'all'],
+    parser.add_argument('experiment', choices=['transfer', 'conditioned', 'cond-transfer', 'all'],
                         help='Which experiment to run')
     parser.add_argument('--real-data', required=True,
                         help='Path to Nightscout JSON directory')
@@ -350,6 +504,8 @@ def main():
         run_transfer(args)
     if args.experiment in ('conditioned', 'all'):
         run_conditioned(args)
+    if args.experiment in ('cond-transfer', 'all'):
+        run_conditioned_transfer(args)
 
 
 if __name__ == '__main__':

@@ -199,15 +199,15 @@ def load_conformance_to_dataset(
 
     # Pad or truncate to uniform length for batching
     # Use the trajectories directly as training windows
+    # For conditioned mode, windows must be 2*window_size (history + future)
+    actual_window = window_size * 2 if conditioned else window_size + 6
     all_vectors = []
     for traj in trajectories:
-        # For short trajectories, use them as-is (single window)
-        if len(traj) >= window_size + 6:
-            # Sliding window to get more samples
-            total_len = window_size + 6  # window + small lead/result
-            for i in range(len(traj) - total_len + 1):
-                all_vectors.append(traj[i:i + total_len])
-        elif len(traj) >= window_size:
+        if len(traj) >= actual_window:
+            step = max(1, window_size // 2)
+            for i in range(0, len(traj) - actual_window + 1, step):
+                all_vectors.append(traj[i:i + actual_window])
+        elif not conditioned and len(traj) >= window_size:
             all_vectors.append(traj[:window_size + min(6, len(traj) - window_size)])
 
     if not all_vectors:

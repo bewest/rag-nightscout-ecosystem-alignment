@@ -31,7 +31,7 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 2. **Zero-shot doesn't transfer** — synthetic-only model scores 28.22 MAE on real data; fine-tuning is essential
 3. **Real data is ~3× harder than synthetic** (6.11 vs 2.12 MAE) — expected: sensor noise, meal variability, exercise, compression artifacts
 4. **Transformer AE is the clear winner** — simple, small (68K params), trains fast, generalizes well
-5. **Conditioned Transformer fails on single-patient real data** — lacks action diversity; best regularized config (25.13 MAE) still 32% worse than persistence. Needs multi-patient data or synthetic pre-training
+5. **Conditioned Transformer is a dead end on single-patient data** — EXP-004 (regularization) and EXP-006 (synthetic pre-training) both fail to beat persistence. Root cause: 844K params with narrow action diversity from one Loop-controlled patient. Transfer actively hurts (-6.39 MAE).
 6. **VAE architectural mismatch** — 32D bottleneck loses too much sequence info for trajectory forecasting
 
 ---
@@ -175,13 +175,42 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 
 **Blocked on**: Pairing Nightscout timestamps with UVA/Padova sim runs on same inputs
 
-### EXP-006: Conditioned Transformer with Synthetic Pre-training (planned)
-
-**Hypothesis**: Pre-training Conditioned Transformer on diverse synthetic action trajectories (50 patients × 7 scenarios) then fine-tuning on real data may solve the action diversity problem identified in EXP-004.
-
 ### EXP-007: Multi-Patient Conditioned Training (planned)
 
 **Hypothesis**: Conditioned model needs action diversity from multiple patients. Can test with ns-fixture-capture on additional Nightscout instances.
+
+---
+
+## Completed Experiments (Conditioned Transformer — Closed)
+
+### EXP-006: Conditioned Transformer with Synthetic Pre-training (2026-03-31) ❌
+
+**Hypothesis**: Pre-training Conditioned Transformer on diverse synthetic action trajectories then fine-tuning on real data may solve the action diversity problem identified in EXP-004.
+
+**Setup**:
+- Pre-train: conformance vectors in conditioned format (267 train, 67 val), 50 epochs
+- Fine-tune: Nightscout real (1,538 train, 385 val), 50 epochs, wd=1e-4
+- Baseline: from scratch on real with wd=1e-4 (EXP-004 best config)
+
+**Results**:
+
+| Condition | MAE mg/dL | RMSE mg/dL | vs Persistence (19.01) |
+|-----------|-----------|------------|------------------------|
+| Persistence | 19.01 | 26.76 | — |
+| Zero-shot (synthetic only) | 73.40 | 84.17 | ↑286% ❌ |
+| Transfer (synth→real) | 31.49 | 38.66 | ↑65.7% ❌ |
+| From scratch (real, wd=1e-4) | 25.10 | 32.17 | ↑32.1% ❌ |
+
+**Findings**:
+- **Transfer HURTS** — synthetic pre-training worsens by 6.39 MAE vs from-scratch. The synthetic action-response mapping (bolus/carb diversity across 50 patients) actively conflicts with real Loop-controlled patterns (tiny temp basal adjustments).
+- **Zero-shot is catastrophic** (73.40 MAE) — confirming synthetic→real domain gap is even larger for action-conditioned prediction than for reconstruction.
+- **Only 267 synthetic conditioned samples** — too sparse for meaningful pre-training. The AE had 1,931 synthetic samples (7× more) because reconstruction windows don't need 2x length.
+- **Contrast with AE transfer (EXP-003)**: AE transfer helps (0.74 vs 2.00) because reconstruction is domain-agnostic — the model learns general temporal patterns that apply everywhere. Conditioned prediction is domain-specific — the action→outcome mapping is patient-specific and therapy-specific.
+
+**Conclusion**: Conditioned Transformer on single-patient data is a **dead end** with current architecture. The 844K-param model is overparameterized (vs 1,538 samples) and the action space is too narrow. Future work should focus on (a) Transformer AE for representation learning, (b) physics-ML residual approach (EXP-005), or (c) multi-patient pooling if/when more data is available.
+
+**Tool**: `python3 -m tools.cgmencode.run_experiment cond-transfer --real-data PATH --epochs 50`
+**Artifacts**: `externals/experiments/exp006_cond_transfer_results.json`
 
 ---
 
