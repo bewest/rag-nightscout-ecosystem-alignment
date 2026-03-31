@@ -131,6 +131,18 @@ function translateInput(adapterInput) {
     temp: 'absolute',
   };
 
+  // When activity is zero/missing but IOB > 0, derive activity from IOB
+  // using the exponential model: activity = IOB / tau, where tau = DIA * 60 / 1.85
+  if (!(iob.activity) && iob.iob && iob.iob !== 0) {
+    const dia = prof.dia || 5;
+    const tau = dia * 60 / 1.85;
+    iob.activity = iob.iob / tau;
+    if (iob.iobWithZeroTemp && !(iob.iobWithZeroTemp.activity)) {
+      const ztIob = iob.iobWithZeroTemp.iob ?? iob.iob;
+      iob.iobWithZeroTemp.activity = ztIob / tau;
+    }
+  }
+
   const iobData = generateIobArray(iob, prof.dia, temp);
 
   const profile = {
