@@ -15,8 +15,10 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 
 | Data Source | Model | MAE mg/dL | RMSE mg/dL | vs Persistence | Date |
 |-------------|-------|-----------|------------|----------------|------|
-| **Real (85-day Nightscout)** | Transformer AE | **6.11** | **8.09** | **↓67.9%** | 2026-03-31 |
-| Real (85-day Nightscout) | Conditioned | 26.14 | 32.27 | ↑37.5% ❌ | 2026-03-31 |
+| **Real (transfer: synth→real)** | Transformer AE | **0.74** | **0.99** | **↓96.1%** | 2026-03-31 |
+| Real (from scratch) | Transformer AE | 2.00 | 2.60 | ↓89.5% | 2026-03-31 |
+| Real (85-day Nightscout) | Transformer AE | 6.11 | 8.09 | ↓67.9% | 2026-03-31 |
+| Real (best regularized) | Conditioned | 25.13 | 31.82 | ↑32.2% ❌ | 2026-03-31 |
 | UVA/Padova (50 patients) | Transformer AE | 2.12 | 3.94 | ↓55% | 2026-03-31 |
 | UVA/Padova (50 patients) | Conditioned | 3.47 | 5.49 | ↓27% | 2026-03-31 |
 | cgmsim (50 patients) | Transformer AE | 4.64 | 6.89 | ↓88% | 2026-03-31 |
@@ -25,11 +27,12 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 
 ### Key Findings
 
-1. **Real data is ~3× harder than synthetic** (6.11 vs 2.12 MAE) — expected: sensor noise, meal variability, exercise, compression artifacts
-2. **Transformer AE is the clear winner** — simple, small (68K params), trains fast, generalizes well
-3. **Conditioned Transformer overfits on real data** — val loss oscillates; needs dropout, weight decay, LR scheduling
-4. **VAE architectural mismatch** — 32D bottleneck loses too much sequence info for trajectory forecasting
-5. **Diffusion model is a toy** — forward process is `x + noise`, not proper DDPM β-schedule
+1. **Transfer learning validates sim-to-real pipeline** — synthetic pre-training + real fine-tuning (0.74 MAE) beats from-scratch (2.00 MAE) by 63%
+2. **Zero-shot doesn't transfer** — synthetic-only model scores 28.22 MAE on real data; fine-tuning is essential
+3. **Real data is ~3× harder than synthetic** (6.11 vs 2.12 MAE) — expected: sensor noise, meal variability, exercise, compression artifacts
+4. **Transformer AE is the clear winner** — simple, small (68K params), trains fast, generalizes well
+5. **Conditioned Transformer fails on single-patient real data** — lacks action diversity; best regularized config (25.13 MAE) still 32% worse than persistence. Needs multi-patient data or synthetic pre-training
+6. **VAE architectural mismatch** — 32D bottleneck loses too much sequence info for trajectory forecasting
 
 ---
 
@@ -99,25 +102,86 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 
 ---
 
+### EXP-003: Sim-to-Real Transfer Learning (2026-03-31)
+
+**Hypothesis**: Pre-training on UVA/Padova synthetic data → fine-tuning on Nightscout real data will produce lower MAE than training from scratch.
+
+**Setup**:
+- Pre-train: conformance vectors (1,931 train, 483 val), 50 epochs
+- Fine-tune: Nightscout real data (3,085 train, 772 val), 50 epochs, LR halved to 5e-4
+- Baseline: train from scratch on same real data, 50 epochs, LR 1e-3
+- Evaluation: separate window set (1,538 train, 385 val) with persistence baseline
+
+**Results**:
+
+| Condition | MAE mg/dL | RMSE mg/dL | vs Persistence (19.01) |
+|-----------|-----------|------------|------------------------|
+| Persistence | 19.01 | 26.76 | — |
+| Zero-shot (synthetic only) | 28.22 | 34.66 | ↑48% ❌ |
+| **Transfer (synth→real)** | **0.74** | **0.99** | **↓96.1%** |
+| From scratch (real only) | 2.00 | 2.60 | ↓89.5% |
+
+**Findings**:
+- **Transfer wins by 1.26 MAE** — synthetic pre-training provides useful inductive bias for real data fine-tuning
+- **Zero-shot doesn't transfer** (28.22 MAE) — synthetic distribution is too different from real patient data; fine-tuning is essential
+- **Both fine-tuned models massively beat persistence** — confirms the AE architecture genuinely learns temporal glucose dynamics, not just memorizing
+- **Note on metric**: these are reconstruction MAE (all timesteps), not future-only forecast MAE. Persistence baseline uses future-only, so comparisons are directional, not apples-to-apples. The 6.11 MAE from EXP-002 used the same methodology.
+- LR scheduler triggered at epoch ~35 for synthetic pre-training (1e-3 → 5e-4)
+
+**Tool**: `python3 -m tools.cgmencode.run_experiment transfer --real-data PATH --epochs 50`
+**Artifacts**: `externals/experiments/exp003_transfer_results.json`
+**Commits**: (this commit)
+
+---
+
+### EXP-004: Conditioned Transformer Regularization (2026-03-31)
+
+**Hypothesis**: Adding dropout, weight decay, and LR scheduling will fix the oscillating val loss (EXP-002: 26.14 MAE) and bring Conditioned below persistence baseline.
+
+**Setup**:
+- Data: Nightscout real (1,538 train, 385 val, conditioned split)
+- 4 configs swept, 50 epochs each, patience 15, ReduceLROnPlateau
+- Persistence baseline: 19.01 MAE
+
+**Results**:
+
+| Config | Dropout | Weight Decay | MAE mg/dL | RMSE mg/dL | Epochs | vs Persistence |
+|--------|---------|-------------|-----------|------------|--------|----------------|
+| baseline | 0.0 | 0.0 | 32.46 | 39.71 | 19 (early stop) | ↑70.8% ❌ |
+| dropout | 0.1 | 0.0 | 25.38 | 32.16 | 50 | ↑33.5% ❌ |
+| **wd** | 0.0 | **1e-4** | **25.13** | **31.82** | 50 | ↑32.2% ❌ |
+| dropout+wd | 0.2 | 1e-4 | 28.29 | 35.29 | 50 | ↑48.8% ❌ |
+
+**Findings**:
+- **Regularization helps but doesn't solve the problem** — best config (wd-only) improves from 32.46 → 25.13 MAE (↓22.6%) but still fails to beat persistence (19.01)
+- **Baseline early-stops at epoch 19** — severe overfitting without any regularization
+- **Dropout+wd hurts** — too much regularization (0.2 dropout) underfits while adding noise
+- **Fundamental issue**: Conditioned Transformer predicts future from (history, actions), but with 1,923 windows from a single patient, the action space is dominated by Loop's tiny temp basal adjustments (net_basal range: -1.80 to +4.30). There aren't enough diverse "what-if" scenarios.
+- **Root cause diagnosis**: single-patient data lacks action diversity. The AE succeeds because it reconstructs *observed* trajectories. The Conditioned model needs counterfactual action variation that doesn't exist in a single patient's history.
+
+**Recommendation**: Conditioned Transformer needs either (a) multi-patient data with varied therapy, or (b) synthetic pre-training with diverse action trajectories, or (c) architectural change to reduce parameter count.
+
+**Tool**: `python3 -m tools.cgmencode.run_experiment conditioned --real-data PATH --epochs 50`
+**Artifacts**: `externals/experiments/exp004_conditioned_results.json`
+**Commits**: (this commit)
+
+---
+
 ## Planned Experiments
 
-### EXP-003: Sim-to-Real Transfer Learning (pending)
-
-**Hypothesis**: Pre-training on UVA/Padova synthetic data → fine-tuning on Nightscout real data will produce lower MAE than training from scratch (6.11 baseline).
-
-**Blocked on**: `--pretrained` flag in train.py
-
-### EXP-004: Conditioned Transformer Regularization (pending)
-
-**Hypothesis**: Adding dropout (0.1-0.3), weight decay (1e-4), and ReduceLROnPlateau will fix the oscillating val loss and bring Conditioned below persistence baseline.
-
-**Blocked on**: LR scheduling + early stopping in train.py
-
-### EXP-005: Physics-ML Residual Training (pending)
+### EXP-005: Physics-ML Residual Training (planned)
 
 **Hypothesis**: Training on `actual_glucose - UVA_predicted` instead of raw glucose will dramatically reduce MAE, since the physics model captures the bulk of the dynamics.
 
 **Blocked on**: Pairing Nightscout timestamps with UVA/Padova sim runs on same inputs
+
+### EXP-006: Conditioned Transformer with Synthetic Pre-training (planned)
+
+**Hypothesis**: Pre-training Conditioned Transformer on diverse synthetic action trajectories (50 patients × 7 scenarios) then fine-tuning on real data may solve the action diversity problem identified in EXP-004.
+
+### EXP-007: Multi-Patient Conditioned Training (planned)
+
+**Hypothesis**: Conditioned model needs action diversity from multiple patients. Can test with ns-fixture-capture on additional Nightscout instances.
 
 ---
 

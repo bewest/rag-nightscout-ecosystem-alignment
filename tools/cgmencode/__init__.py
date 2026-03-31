@@ -5,7 +5,7 @@ from .schema import (
 )
 from .encoder import FixtureEncoder, CGMDataset, load_fixtures_to_dataset, generate_training_vectors
 from .sim_adapter import load_conformance_to_dataset, load_conformance_vectors
-from .model import CGMTransformerAE, CGMGroupedEncoder
+from .model import CGMTransformerAE, CGMGroupedEncoder, train_one_epoch, eval_loss
 from .toolbox import CGMTransformerVAE, ConditionedTransformer, CGMDenoisingDiffusion, ContrastiveLoss
 
 __all__ = [
@@ -23,6 +23,8 @@ __all__ = [
     # Model architectures
     'CGMTransformerAE',
     'CGMGroupedEncoder',
+    'train_one_epoch',
+    'eval_loss',
     'CGMTransformerVAE',
     'ConditionedTransformer',
     'CGMDenoisingDiffusion',

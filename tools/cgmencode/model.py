@@ -166,6 +166,37 @@ class CGMGroupedEncoder(nn.Module):
         return self.output_projection(encoded)
 
 
+# ── Training helpers ─────────────────────────────────────────────
+# Minimal functions for use in scripts and experiments.
+
+def train_one_epoch(model, loader, optimizer, criterion):
+    """Train for one epoch, return average loss."""
+    model.train()
+    total = 0.0
+    n = 0
+    for x, y in loader:
+        optimizer.zero_grad()
+        loss = criterion(model(x), y)
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        optimizer.step()
+        total += loss.item() * x.size(0)
+        n += x.size(0)
+    return total / n if n > 0 else float('inf')
+
+
+def eval_loss(model, loader, criterion):
+    """Evaluate model on a DataLoader, return average loss."""
+    model.eval()
+    total = 0.0
+    n = 0
+    with torch.no_grad():
+        for x, y in loader:
+            total += criterion(model(x), y).item() * x.size(0)
+            n += x.size(0)
+    return total / n if n > 0 else float('inf')
+
+
 if __name__ == "__main__":
     # Quick smoke test: verify model can forward-pass
     model = CGMTransformerAE(input_dim=8, d_model=32, nhead=2, num_layers=1)
