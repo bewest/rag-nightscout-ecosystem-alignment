@@ -1,0 +1,154 @@
+# ml-experiment-loop.conv — Autonomous ML R&D cycle for cgmencode
+#
+# Run: sdqctl iterate workflows/ml-experiment-loop.conv -n 500
+#
+# Each iteration: read state → propose → execute → evaluate → record → commit
+# State lives in the experiment log + TODO.md (self-improving documents).
+# Lightweight: no heavy CONTEXT globs, just pointers to key files.
+
+MODEL claude-sonnet-4
+ADAPTER copilot
+MODE development
+VALIDATION-MODE lenient
+
+CONTEXT-LIMIT 60%
+ON-CONTEXT-LIMIT compact
+COMPACT-PRESERVE experiment-id results hypothesis findings
+
+RUN-ON-ERROR continue
+RUN-OUTPUT-LIMIT 10K
+RUN-TIMEOUT 300s
+ALLOW-SHELL true
+
+# === Phase 0: Read current state ===
+ELIDE
+RUN head -80 docs/60-research/ml-experiment-log.md
+ELIDE
+ELIDE
+RUN cat tools/cgmencode/TODO.md
+ELIDE
+
+PROMPT Read the experiment log and TODO to understand:
+  1. What experiments have been run (EXP-NNN) and their results
+  2. What's planned but not done (unchecked items in TODO.md)
+  3. What the current best results are (Latest Benchmark Summary table)
+  4. What Known Issues exist that might now be solvable
+
+  Key files (read more as needed):
+  - Full experiment log: `docs/60-research/ml-experiment-log.md`
+  - TODO/roadmap: `tools/cgmencode/TODO.md`
+  - Technique catalog: `docs/60-research/ml-technique-catalog.md`
+  - Architecture: `docs/architecture/ml-composition-architecture.md`
+  - Schema: `tools/cgmencode/schema.py` (normalization, features)
+  - Models: `tools/cgmencode/model.py` + `tools/cgmencode/toolbox.py`
+  - Training: `tools/cgmencode/train.py`
+  - Orchestrator: `tools/cgmencode/run_experiment.py`
+  - Tests: `tools/cgmencode/test_cgmencode.py` (66 tests, run with make cgmencode-tests)
+
+  Pick ONE small, feasible experiment for this iteration. Prefer:
+  - Experiments that build on proven results
+  - Testing recently fixed architectures
+  - Hyperparameter variations of known-good configs
+  - New evaluation methods
+  - Updating stale docs
+
+  State: `Proposing: EXP-NNN — [brief title]`
+
+# === Phase 1: Design experiment ===
+PROMPT Design the experiment:
+  - **EXP-ID**: Next sequential number (check log for last used)
+  - **Hypothesis**: One sentence, testable
+  - **Method**: Specific commands to run (use existing CLI tools)
+  - **Success criteria**: Quantitative threshold (e.g., "MAE < X" or "loss decreases")
+  - **Estimated runtime**: Should be <5 min for a single iteration
+
+  Available CLI tools:
+  ```
+  # Train any of 5 architectures
+  python3 -m tools.cgmencode.train --model {ae,grouped,vae,conditioned,diffusion} \
+    --data conformance/in-silico/vectors conformance/t1pal/vectors/oref0-endtoend \
+    --epochs 50 --batch 32 --lr 1e-3 --output externals/experiments/CHECKPOINT.pth
+
+  # Evaluate against baseline
+  python3 -m tools.cgmencode.evaluate --model {ae,grouped,...} \
+    --checkpoint externals/experiments/CHECKPOINT.pth \
+    --data conformance/in-silico/vectors conformance/t1pal/vectors/oref0-endtoend \
+    --baseline
+
+  # Multi-step experiments (transfer, residual, walkforward, etc.)
+  python3 -m tools.cgmencode.run_experiment {transfer,residual,grouped-benchmark,...} \
+    --real-data ../t1pal-mobile-workspace/externals/logs/ns-fixtures/90-day-history \
+    --output-dir externals/experiments --epochs 50
+
+  # Smoke-test all models (66 tests, <5s)
+  make cgmencode-tests
+  ```
+
+  Available data:
+  - Conformance vectors: conformance/in-silico/vectors/ (35), conformance/t1pal/vectors/oref0-endtoend/ (101)
+  - Synthetic sweep: externals/sweep-data/ (1008 cgmsim), externals/sweep-uva/ (1200 UVA/Padova)
+  - Real patient: ../t1pal-mobile-workspace/externals/logs/ns-fixtures/90-day-history/
+
+  If the experiment needs code changes (new hyperparams, new evaluation, architecture tweaks),
+  make them now. Keep changes surgical and run `make cgmencode-tests` after any code edits.
+
+# === Phase 2: Execute experiment ===
+PROMPT Execute the experiment. Run the commands from Phase 1.
+  Capture all numerical output (MAE, RMSE, loss curves, per-horizon).
+  If a command fails, diagnose and fix — do not skip.
+
+# === Phase 3: Evaluate results ===
+PROMPT Evaluate:
+  1. Did the experiment meet its success criteria?
+  2. How do results compare to the current best in the benchmark table?
+  3. Any surprising findings?
+
+  Classification:
+  - ✅ **SUCCESS** — Met criteria, improves state of the art or adds new capability
+  - ⚠️ **INFORMATIVE** — Didn't beat SOTA but reveals useful insight (negative result worth recording)
+  - ❌ **FAILED** — Error in execution, inconclusive, or no useful signal
+
+  For ✅ SUCCESS: proceed to record results
+  For ⚠️ INFORMATIVE: record the finding briefly (negative results prevent re-running)
+  For ❌ FAILED: note the failure mode, skip recording, move to commit
+
+# === Phase 4: Record results ===
+PROMPT Update documentation based on results:
+
+  For ✅ SUCCESS or ⚠️ INFORMATIVE:
+  1. **Experiment log** (`docs/60-research/ml-experiment-log.md`):
+     - Add EXP-NNN entry with hypothesis, setup, results table, findings
+     - Update Latest Benchmark Summary table if new SOTA achieved
+  2. **TODO.md** (`tools/cgmencode/TODO.md`):
+     - Check off completed items
+     - Update Known Issues if resolved
+     - Add new findings/next steps
+  3. **Technique catalog** (`docs/60-research/ml-technique-catalog.md`):
+     - Update status of any technique that changed (e.g., "Broken" → "Verified")
+
+  For ❌ FAILED:
+  - Add a brief note to experiment log (1-2 lines) to prevent re-attempting
+
+  Ensure all claims have evidence (MAE numbers, loss values, command output).
+
+# === Phase 5: Validate and commit ===
+ELIDE
+RUN make cgmencode-tests 2>&1 | tail -5
+ELIDE
+
+PROMPT If tests pass, commit changes:
+  - For SUCCESS: `cgmencode: EXP-NNN [title] — [key result]`
+  - For INFORMATIVE: `cgmencode: EXP-NNN [title] (negative result)`
+  - For FAILED: `cgmencode: EXP-NNN [title] (failed — [reason])`
+
+  Include `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>`
+
+ELIDE
+RUN git status -s
+ELIDE
+
+PROMPT Summary for this iteration:
+  - Experiment: EXP-NNN — [title]
+  - Result: [SUCCESS/INFORMATIVE/FAILED]
+  - Key metric: [number vs baseline]
+  - Next suggested: [what the next iteration should try]
