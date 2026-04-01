@@ -446,7 +446,8 @@ def run_anomaly_scan(model: torch.nn.Module, features: np.ndarray,
         mae = np.mean(np.abs(recon_glucose - actual_g))
 
         # Also compute per-channel errors for context
-        recon_iob = recon[:, 1] * SCALE['iob']
+        recon_full = output[0].numpy()
+        recon_iob = recon_full[:, 1] * SCALE['iob']
         actual_iob = df['iob'].values[start:start + total_len]
         iob_mae = np.mean(np.abs(recon_iob - actual_iob))
 
