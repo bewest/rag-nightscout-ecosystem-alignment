@@ -50,7 +50,10 @@ def set_seed(seed):
 from .model import CGMTransformerAE, CGMGroupedEncoder, train_one_epoch, eval_loss
 from .toolbox import ConditionedTransformer
 from .sim_adapter import load_conformance_to_dataset
-from .real_data_adapter import load_nightscout_to_dataset, load_nightscout_grid_timestamps
+from .real_data_adapter import (
+    load_nightscout_to_dataset, load_nightscout_grid_timestamps,
+    load_multipatient_nightscout,
+)
 from .evaluate import evaluate_model, persistence_baseline
 from .physics_model import (
     compute_residual_windows, compute_residual_windows_uva,
@@ -243,8 +246,9 @@ def run_conditioned(args):
     print('\n--- Load real data (conditioned) ---')
     real_t, real_v = load_nightscout_to_dataset(
         args.real_data, window_size=args.window, conditioned=True)
-    real_tl = DataLoader(real_t, batch_size=args.batch, shuffle=True)
-    real_vl = DataLoader(real_v, batch_size=args.batch)
+    use_pin = _DEFAULT_DEVICE.type == 'cuda'
+    real_tl = DataLoader(real_t, batch_size=args.batch, shuffle=True, pin_memory=use_pin)
+    real_vl = DataLoader(real_v, batch_size=args.batch, pin_memory=use_pin)
 
     # Sweep: try different regularization configs
     configs = [
@@ -278,6 +282,8 @@ def run_conditioned(args):
             model.action_proj = nn.Sequential(
                 nn.Linear(3, 64), nn.Dropout(cfg['dropout']))
 
+        model.to(_DEFAULT_DEVICE)
+
         opt = torch.optim.AdamW(model.parameters(), lr=cfg['lr'],
                                 weight_decay=cfg['weight_decay'])
         sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
@@ -291,6 +297,7 @@ def run_conditioned(args):
             model.train()
             total = 0; n = 0
             for batch in real_tl:
+                batch = batch_to_device(batch, _DEFAULT_DEVICE)
                 (h, a), t = batch
                 opt.zero_grad()
                 pred = model(h, a)
@@ -306,6 +313,7 @@ def run_conditioned(args):
             total_v = 0; nv = 0
             with torch.no_grad():
                 for batch in real_vl:
+                    batch = batch_to_device(batch, _DEFAULT_DEVICE)
                     (h, a), t = batch
                     pred = model(h, a)
                     total_v += crit(pred, t).item() * h.size(0); nv += h.size(0)
@@ -332,8 +340,9 @@ def run_conditioned(args):
                 break
 
         # Evaluate best
-        ckpt = torch.load(save_path, map_location='cpu', weights_only=True)
+        ckpt = torch.load(save_path, map_location=_DEFAULT_DEVICE, weights_only=True)
         model.load_state_dict(ckpt['model_state'])
+        model.to(_DEFAULT_DEVICE)
         metrics = evaluate_model(model, real_vl, 'conditioned', args.window)
         results['configs'][label] = {
             **cfg, **metrics,
@@ -2962,8 +2971,9 @@ def run_diffusion_benchmark(args):
     from .encoder import CGMDataset
     res_train_ds = CGMDataset(tr_res, task='reconstruct', window_size=args.window)
     res_val_ds = CGMDataset(vr_res, task='reconstruct', window_size=args.window)
-    train_ld = DataLoader(res_train_ds, batch_size=args.batch, shuffle=True)
-    val_ld = DataLoader(res_val_ds, batch_size=args.batch)
+    use_pin = _DEFAULT_DEVICE.type == 'cuda'
+    train_ld = DataLoader(res_train_ds, batch_size=args.batch, shuffle=True, pin_memory=use_pin)
+    val_ld = DataLoader(res_val_ds, batch_size=args.batch, pin_memory=use_pin)
 
     # --- Step 2: Train Diffusion model ---
     print('\n--- Step 2: Train DDPM ---')
@@ -2973,6 +2983,7 @@ def run_diffusion_benchmark(args):
     diffusion_timesteps = 200
     model = CGMDenoisingDiffusion(
         input_dim=8, d_model=64, nhead=4, timesteps=diffusion_timesteps)
+    model.to(_DEFAULT_DEVICE)
     n_params = sum(p.numel() for p in model.parameters())
     print(f'  DDPM params: {n_params:,} (timesteps={diffusion_timesteps})')
     results['ddpm_params'] = n_params
@@ -3010,8 +3021,9 @@ def run_diffusion_benchmark(args):
             break
 
     # Load best
-    ckpt = torch.load(ckpt_path, map_location='cpu', weights_only=True)
+    ckpt = torch.load(ckpt_path, map_location=_DEFAULT_DEVICE, weights_only=True)
     model.load_state_dict(ckpt['model_state'])
+    model.to(_DEFAULT_DEVICE)
     results['ddpm_training'] = {
         'best_val_loss': round(best_val, 6),
         'best_epoch': ckpt['epoch'],
@@ -3546,6 +3558,391 @@ def run_transfer_longer_horizons(args):
     return results
 
 
+# ─── EXP-019+: Multi-patient scale experiments ─────────────────────────
+
+
+def _resolve_multipatient_paths(args):
+    """Resolve patient training directories from --patients-dir or --real-data."""
+    if hasattr(args, 'patients_dir') and args.patients_dir:
+        base = args.patients_dir
+        paths = sorted([
+            os.path.join(base, p, 'training')
+            for p in os.listdir(base)
+            if os.path.isdir(os.path.join(base, p, 'training'))
+        ])
+        return paths
+    return [args.real_data]
+
+
+def _load_multipatient_profiles(patient_paths):
+    """Load ISF/CR from each patient and return averages."""
+    isfs, crs = [], []
+    for p in patient_paths:
+        parent = os.path.dirname(p)  # training/ → patient dir
+        isf, cr = _load_patient_profile(parent)
+        if isf == 40.0 and cr == 10.0:
+            isf, cr = _load_patient_profile(p)
+        isfs.append(isf)
+        crs.append(cr)
+    avg_isf = float(np.mean(isfs))
+    avg_cr = float(np.mean(crs))
+    return avg_isf, avg_cr, list(zip(isfs, crs))
+
+
+def run_multipatient_cond_transfer(args):
+    """EXP-019: Multi-Patient Conditioned Transfer — Revisiting EXP-006 at Scale.
+
+    EXP-006 was a dead end: only 267 synthetic + 1,538 real conditioned windows.
+    Now we have sweep-uva-250 (8K+ synthetic) and 10 patients (25K+ real).
+
+    Steps:
+      1. Pre-train Conditioned Transformer on sweep-uva-250 synthetic data
+      2. Fine-tune on 10-patient real data (multi-patient conditioned windows)
+      3. Train from scratch on same real data
+      4. Compare transfer vs scratch vs persistence baselines
+    """
+    print('=' * 60)
+    print('EXP-019: Multi-Patient Conditioned Transfer (Revisiting EXP-006 at Scale)')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    set_seed(42)
+
+    results = {
+        'experiment': 'EXP-019',
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+        'hypothesis': ('EXP-006 failed with 267 synth + 1538 real conditioned windows. '
+                        'Now testing with sweep-uva-250 (8K+) + 10 patients (25K+). '
+                        'Does 30x more synthetic + 17x more real fix conditioned transfer?'),
+    }
+
+    patient_paths = _resolve_multipatient_paths(args)
+    n_patients = len(patient_paths)
+    print(f'  Patients: {n_patients} training directories')
+    results['n_patients'] = n_patients
+
+    # --- Step 1: Pre-train on synthetic ---
+    print('\n--- Step 1: Pre-train on synthetic (conditioned) ---')
+    syn_t, syn_v = load_conformance_to_dataset(
+        args.synth_dirs, window_size=args.window, conditioned=True)
+
+    has_synth = syn_t is not None and len(syn_t) > 0
+    results['has_synthetic'] = has_synth
+    if has_synth:
+        results['synthetic_samples'] = {'train': len(syn_t), 'val': len(syn_v)}
+        print(f'  Synthetic: {len(syn_t)} train, {len(syn_v)} val')
+
+        model_syn = ConditionedTransformer(history_dim=8, action_dim=3, d_model=64)
+        n_params = sum(p.numel() for p in model_syn.parameters())
+        results['model_params'] = n_params
+        print(f'  Model params: {n_params:,}')
+
+        _train_conditioned(model_syn, syn_t, syn_v, lr=1e-3, epochs=args.epochs,
+                           patience=args.patience,
+                           save_path=str(out / 'exp019_cond_synth.pth'),
+                           label='synthetic_pretrain', batch=args.batch)
+    else:
+        print('  WARNING: No synthetic conditioned vectors found.')
+
+    # --- Step 2: Load multi-patient real data (conditioned) ---
+    print('\n--- Step 2: Load multi-patient real data (conditioned) ---')
+    if n_patients > 1:
+        real_t, real_v = load_multipatient_nightscout(
+            patient_paths, window_size=args.window, conditioned=True)
+    else:
+        real_t, real_v = load_nightscout_to_dataset(
+            patient_paths[0], window_size=args.window, conditioned=True)
+    results['real_samples'] = {'train': len(real_t), 'val': len(real_v)}
+    print(f'  Real: {len(real_t)} train, {len(real_v)} val')
+
+    # Persistence baseline (use first patient's data for consistency)
+    _, rv_2x = load_nightscout_to_dataset(
+        patient_paths[0], task='forecast', window_size=args.window * 2)
+    p_mae, p_rmse = persistence_baseline(rv_2x, args.window)
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)}
+    print(f'  Persistence baseline: MAE={p_mae:.2f}')
+
+    real_vl = DataLoader(real_v, batch_size=args.batch)
+
+    # --- Step 3: Zero-shot evaluation ---
+    if has_synth:
+        print('\n--- Step 3: Zero-shot (synthetic → real) ---')
+        model_zs = ConditionedTransformer(history_dim=8, action_dim=3, d_model=64)
+        load_best(model_zs, str(out / 'exp019_cond_synth.pth'))
+        results['zero_shot'] = evaluate_model(model_zs, real_vl, 'conditioned', args.window)
+        print(f'  Zero-shot: MAE={results["zero_shot"]["mae_mgdl"]:.2f} mg/dL')
+
+    # --- Step 4: Fine-tune (transfer) ---
+    print('\n--- Step 4: Fine-tune on multi-patient real (transfer) ---')
+    model_ft = ConditionedTransformer(history_dim=8, action_dim=3, d_model=64)
+    if has_synth:
+        load_best(model_ft, str(out / 'exp019_cond_synth.pth'))
+    _train_conditioned(model_ft, real_t, real_v, lr=5e-4, epochs=args.epochs,
+                       patience=args.patience,
+                       save_path=str(out / 'exp019_cond_transfer.pth'),
+                       label='transfer', batch=args.batch, weight_decay=1e-4)
+
+    # --- Step 5: From scratch with best regularization ---
+    print('\n--- Step 5: From scratch with wd=1e-4 ---')
+    model_sc = ConditionedTransformer(history_dim=8, action_dim=3, d_model=64)
+    _train_conditioned(model_sc, real_t, real_v, lr=5e-4, epochs=args.epochs,
+                       patience=args.patience,
+                       save_path=str(out / 'exp019_cond_scratch.pth'),
+                       label='scratch', batch=args.batch, weight_decay=1e-4)
+
+    # --- Step 6: Final comparison ---
+    print('\n--- Results ---')
+    load_best(model_ft, str(out / 'exp019_cond_transfer.pth'))
+    results['transfer'] = evaluate_model(model_ft, real_vl, 'conditioned', args.window)
+
+    load_best(model_sc, str(out / 'exp019_cond_scratch.pth'))
+    results['scratch'] = evaluate_model(model_sc, real_vl, 'conditioned', args.window)
+
+    # EXP-006 comparison context
+    results['exp006_reference'] = {
+        'note': 'EXP-006 had 267 synth + 1538 real → transfer 31.49, scratch 25.10, persist 19.01',
+        'transfer_mae': 31.49,
+        'scratch_mae': 25.10,
+        'persistence_mae': 19.01,
+    }
+
+    # Print summary
+    print(f'\n  {"Method":<20} {"MAE":>8} {"RMSE":>8}  vs Persistence')
+    print(f'  {"-"*55}')
+    persist_mae = results['persistence']['mae_mgdl']
+    for label in ['transfer', 'scratch']:
+        m = results[label]
+        pct = (m['mae_mgdl'] - persist_mae) / persist_mae * 100
+        mark = '✓' if pct < 0 else '✗'
+        print(f'  {label:<20} {m["mae_mgdl"]:>8.2f} {m["rmse_mgdl"]:>8.2f}  '
+              f'{pct:+.1f}% {mark}')
+    if has_synth:
+        m = results['zero_shot']
+        pct = (m['mae_mgdl'] - persist_mae) / persist_mae * 100
+        mark = '✓' if pct < 0 else '✗'
+        print(f'  {"zero_shot":<20} {m["mae_mgdl"]:>8.2f} {m["rmse_mgdl"]:>8.2f}  '
+              f'{pct:+.1f}% {mark}')
+    print(f'  {"persistence":<20} {persist_mae:>8.2f}')
+
+    # Comparison to EXP-006
+    print(f'\n  --- vs EXP-006 (267 synth, 1538 real) ---')
+    t_now = results['transfer']['mae_mgdl']
+    s_now = results['scratch']['mae_mgdl']
+    print(f'  Transfer: {31.49:.2f} → {t_now:.2f} '
+          f'({"improved" if t_now < 31.49 else "worse"})')
+    print(f'  Scratch:  {25.10:.2f} → {s_now:.2f} '
+          f'({"improved" if s_now < 25.10 else "worse"})')
+    if has_synth and t_now < s_now:
+        print(f'  ✓ Transfer now HELPS (was harmful in EXP-006)')
+    elif has_synth:
+        print(f'  ✗ Transfer still hurts (but gap may have narrowed)')
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+    print(f'\n  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp019_multipatient_cond_transfer.json'))
+    return results
+
+
+def run_multipatient_diffusion(args):
+    """EXP-020: Diffusion at Multi-Patient Scale — Revisiting EXP-016.
+
+    EXP-016 was a dead end: 857K params vs 3K windows, toy forward process.
+    Now we have 10 patients (32K+ windows) and GPU for faster iteration.
+    Tests whether 10× more data and proper training fix DDPM.
+    """
+    print('=' * 60)
+    print('EXP-020: Multi-Patient Diffusion Benchmark (Revisiting EXP-016 at Scale)')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    set_seed(42)
+
+    results = {
+        'experiment': 'EXP-020',
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+        'hypothesis': ('EXP-016 DDPM failed at 3K windows (28.66 MAE, worse than persistence). '
+                        'Testing with 10-patient multi-patient data (32K+ windows). '
+                        'Does 10x more data rescue diffusion?'),
+    }
+
+    patient_paths = _resolve_multipatient_paths(args)
+    n_patients = len(patient_paths)
+    print(f'  Patients: {n_patients} training directories')
+    results['n_patients'] = n_patients
+
+    # Load multi-patient data (forecast mode for residual computation)
+    print('\n--- Step 1: Load multi-patient data + residuals ---')
+    if n_patients > 1:
+        real_t, real_v = load_multipatient_nightscout(
+            patient_paths, window_size=args.window)
+    else:
+        real_t, real_v = load_nightscout_to_dataset(
+            patient_paths[0], task='forecast', window_size=args.window)
+
+    train_np = real_t.vectors.numpy()
+    val_np = real_v.vectors.numpy()
+    results['samples'] = {'train': len(train_np), 'val': len(val_np)}
+    print(f'  Windows: {len(train_np)} train, {len(val_np)} val')
+
+    # Use average profile for physics (multi-patient approximation)
+    avg_isf, avg_cr, patient_profiles = _load_multipatient_profiles(patient_paths)
+    results['avg_profile'] = {'isf': avg_isf, 'cr': avg_cr}
+    print(f'  Avg profile: ISF={avg_isf:.1f}, CR={avg_cr:.1f}')
+
+    tr_res, tr_phys, tr_stats = compute_residual_windows(
+        train_np, isf=avg_isf, cr=avg_cr, level='enhanced')
+    vr_res, vr_phys, _ = compute_residual_windows(
+        val_np, isf=avg_isf, cr=avg_cr, level='enhanced')
+    print(f'  Residual std: {tr_stats["std"]:.1f} mg/dL')
+
+    physics_metrics = _evaluate_physics_only(vr_phys, val_np)
+    results['physics_only'] = physics_metrics
+    print(f'  Physics-only: MAE={physics_metrics["mae_mgdl"]:.2f}')
+
+    # Persistence baseline
+    _, rv_2x = load_nightscout_to_dataset(
+        patient_paths[0], task='forecast', window_size=args.window * 2)
+    p_mae, p_rmse = persistence_baseline(rv_2x, args.window)
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)}
+    print(f'  Persistence: MAE={p_mae:.2f}')
+
+    from .encoder import CGMDataset
+    res_train_ds = CGMDataset(tr_res, task='reconstruct', window_size=args.window)
+    res_val_ds = CGMDataset(vr_res, task='reconstruct', window_size=args.window)
+    use_pin = _DEFAULT_DEVICE.type == 'cuda'
+    train_ld = DataLoader(res_train_ds, batch_size=args.batch, shuffle=True, pin_memory=use_pin)
+    val_ld = DataLoader(res_val_ds, batch_size=args.batch, pin_memory=use_pin)
+
+    # --- Train DDPM ---
+    print('\n--- Step 2: Train DDPM ---')
+    from .toolbox import CGMDenoisingDiffusion
+
+    diffusion_timesteps = 200
+    model = CGMDenoisingDiffusion(
+        input_dim=8, d_model=64, nhead=4, timesteps=diffusion_timesteps)
+    n_params = sum(p.numel() for p in model.parameters())
+    print(f'  DDPM params: {n_params:,} (timesteps={diffusion_timesteps})')
+    results['ddpm_params'] = n_params
+    results['diffusion_timesteps'] = diffusion_timesteps
+
+    device = _DEFAULT_DEVICE
+    model.to(device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, factor=0.5)
+    best_val = float('inf')
+    stale = 0
+    ckpt_path = str(out / 'exp020_ddpm.pth')
+
+    for ep in range(args.epochs):
+        tl = _train_diffusion_epoch(model, train_ld, optimizer)
+        vl = _eval_diffusion(model, val_ld)
+        sched.step(vl)
+
+        if vl < best_val:
+            best_val = vl
+            stale = 0
+            os.makedirs(os.path.dirname(ckpt_path), exist_ok=True)
+            torch.save({'epoch': ep, 'model_state': model.state_dict(),
+                        'val_loss': vl}, ckpt_path)
+        else:
+            stale += 1
+
+        if (ep + 1) % 10 == 0 or ep == args.epochs - 1:
+            lr_now = optimizer.param_groups[0]['lr']
+            mark = ' *' if stale == 0 else ''
+            print(f'  [DDPM] Epoch {ep+1:3d}/{args.epochs} '
+                  f'train={tl:.6f} val={vl:.6f} best={best_val:.6f} '
+                  f'lr={lr_now:.1e}{mark}')
+
+        if args.patience > 0 and stale >= args.patience:
+            print(f'  [DDPM] Early stop at epoch {ep+1}')
+            break
+
+    results['ddpm_training'] = {'best_val_loss': round(best_val, 6),
+                                'best_epoch': ep}
+
+    # --- Evaluate DDPM forecast ---
+    print('\n--- Step 3: Evaluate DDPM forecast ---')
+    ckpt = torch.load(ckpt_path, map_location=device, weights_only=True)
+    model.load_state_dict(ckpt['model_state'])
+
+    ddpm_forecast = _evaluate_diffusion_forecast(
+        model, vr_res, vr_phys, val_np,
+        history_steps=args.window // 2, n_samples=20)
+    results['ddpm_forecast'] = ddpm_forecast
+    ddpm_mae = ddpm_forecast['mae_mgdl']
+    ddpm_rmse = ddpm_forecast.get('rmse_mgdl', 0)
+    print(f'  DDPM: MAE={ddpm_mae:.2f}, RMSE={ddpm_rmse:.2f}')
+
+    # --- Train baselines (AE + Grouped) for comparison ---
+    print('\n--- Step 4: Train AE + Grouped baselines ---')
+    for arch_name, arch_cls in [('ae', CGMTransformerAE), ('grouped', CGMGroupedEncoder)]:
+        model_b = arch_cls(input_dim=8, d_model=64, nhead=4)
+        _train_residual_model(
+            model_b, res_train_ds, res_val_ds, arch_name, args,
+            save_path=str(out / f'exp020_{arch_name}.pth'))
+        load_best(model_b, str(out / f'exp020_{arch_name}.pth'))
+        baseline_vl = DataLoader(res_val_ds, batch_size=args.batch)
+        results[arch_name] = evaluate_model(model_b, baseline_vl, arch_name, args.window)
+        print(f'  {arch_name}: MAE={results[arch_name]["mae_mgdl"]:.2f}')
+
+    # --- Summary ---
+    print(f'\n  === EXP-020 Summary (Multi-Patient Diffusion) ===')
+    persist_mae = results['persistence']['mae_mgdl']
+    print(f'  {"Method":<20} {"MAE":>8}  vs Persistence  vs EXP-016')
+    print(f'  {"-"*60}')
+    ddpm_016 = 28.66
+    print(f'  {"DDPM (multi)":<20} {ddpm_mae:>8.2f}  '
+          f'{(ddpm_mae - persist_mae)/persist_mae*100:+.1f}%         '
+          f'{ddpm_mae - ddpm_016:+.2f}')
+    print(f'  {"DDPM (EXP-016)":<20} {ddpm_016:>8.2f}  (reference)')
+    print(f'  {"Persistence":<20} {persist_mae:>8.2f}')
+
+    results['exp016_reference'] = {
+        'ddpm_mae': 28.66,
+        'persistence_mae': 19.01,
+        'samples_train': 3085,
+    }
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+    print(f'\n  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp020_multipatient_diffusion.json'))
+    return results
+
+
+def _train_residual_model(model, train_ds, val_ds, arch_name, args, save_path):
+    """Train an AE/Grouped model on residual data (shared helper)."""
+    device = _DEFAULT_DEVICE
+    model.to(device)
+    use_pin = device.type == 'cuda'
+    train_ld = DataLoader(train_ds, batch_size=args.batch, shuffle=True, pin_memory=use_pin)
+    val_ld = DataLoader(val_ds, batch_size=args.batch, pin_memory=use_pin)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, factor=0.5)
+    criterion = nn.MSELoss()
+    best_val = float('inf')
+    stale = 0
+
+    for ep in range(args.epochs):
+        tl = train_one_epoch(model, train_ld, optimizer, criterion)
+        vl = eval_loss(model, val_ld, criterion)
+        sched.step(vl)
+        if vl < best_val:
+            best_val = vl
+            stale = 0
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            torch.save({'epoch': ep, 'model_state': model.state_dict(),
+                        'val_loss': vl}, save_path)
+        else:
+            stale += 1
+        if args.patience > 0 and stale >= args.patience:
+            break
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Run cgmencode experiments',
@@ -3559,10 +3956,14 @@ def main():
                                  'multiseed', 'walkforward-transfer',
                                  'multiseed-transfer', 'diffusion-benchmark',
                                  'seed-ensemble', 'transfer-horizons',
+                                 'multipatient-cond-transfer',
+                                 'multipatient-diffusion',
                                  'all'],
                         help='Which experiment to run')
     parser.add_argument('--real-data', required=True,
                         help='Path to Nightscout JSON directory')
+    parser.add_argument('--patients-dir', default=None,
+                        help='Auto-expand patient training dirs (e.g. externals/ns-data/patients)')
     parser.add_argument('--synth-dirs', nargs='+', default=DEFAULT_SYNTH_DIRS,
                         help='Synthetic data directories')
     parser.add_argument('--output-dir', default='externals/experiments',
@@ -3619,6 +4020,10 @@ def main():
         run_seed_ensemble(args)
     if args.experiment in ('transfer-horizons', 'all'):
         run_transfer_longer_horizons(args)
+    if args.experiment == 'multipatient-cond-transfer':
+        run_multipatient_cond_transfer(args)
+    if args.experiment == 'multipatient-diffusion':
+        run_multipatient_diffusion(args)
 
 
 if __name__ == '__main__':
