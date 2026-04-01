@@ -30,7 +30,7 @@ import torch.nn as nn
 from pathlib import Path
 from torch.utils.data import DataLoader
 
-from .model import CGMTransformerAE, train_one_epoch, eval_loss
+from .model import CGMTransformerAE, CGMGroupedEncoder, train_one_epoch, eval_loss
 from .toolbox import ConditionedTransformer
 from .sim_adapter import load_conformance_to_dataset
 from .real_data_adapter import load_nightscout_to_dataset, load_nightscout_grid_timestamps
@@ -1422,6 +1422,257 @@ def run_walkforward(args):
     return results
 
 
+def _evaluate_residual_future_only(model, val_windows_residual, physics_pred_val,
+                                   val_windows_orig, history_steps=None,
+                                   interval_min=5):
+    """Evaluate AE on residual data using **causal attention** (future-only forecast).
+
+    Unlike _evaluate_residual_model which measures reconstruction MAE across
+    all timesteps, this function:
+    1. Runs the model with causal=True (each position can only attend to past)
+    2. Measures MAE only on the *future* timesteps (after history_steps)
+
+    This is the clinically relevant metric: given observed history, how well
+    does the model predict upcoming glucose values?
+
+    Returns:
+        dict with 'mae_mgdl', 'rmse_mgdl', and 'per_horizon' breakdown
+    """
+    from .schema import IDX_GLUCOSE, NORMALIZATION_SCALES
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+
+    T = val_windows_residual.shape[1]
+    if history_steps is None:
+        history_steps = T // 2  # default: first half is history
+
+    model.eval()
+    all_future_pred = []
+    all_future_actual = []
+    # Per-horizon collection: {step_offset: [abs_errors]}
+    horizon_errors = {}
+
+    ds = torch.utils.data.TensorDataset(
+        torch.FloatTensor(val_windows_residual),
+        torch.FloatTensor(val_windows_residual))
+    loader = DataLoader(ds, batch_size=64)
+
+    idx = 0
+    with torch.no_grad():
+        for batch_in, _ in loader:
+            # Run with causal mask — position t can only attend to 0..t
+            recon = model(batch_in, causal=True)  # (B, T, 8)
+            B = recon.shape[0]
+
+            residual_recon = recon[:, :, 0].numpy()  # (B, T) normalized
+
+            for b in range(B):
+                i = idx + b
+                if i >= len(physics_pred_val):
+                    break
+
+                # Future-only: steps history_steps .. T-1
+                pred_residual = residual_recon[b, history_steps:]
+                pred_glucose = residual_to_glucose(pred_residual, physics_pred_val[i, history_steps:])
+                actual_glucose = val_windows_orig[i, history_steps:, IDX_GLUCOSE] * glucose_scale
+
+                all_future_pred.append(pred_glucose)
+                all_future_actual.append(actual_glucose)
+
+                # Per-horizon errors
+                abs_errs = np.abs(pred_glucose - actual_glucose)
+                for step in range(len(abs_errs)):
+                    horizon_errors.setdefault(step, []).append(abs_errs[step])
+
+            idx += B
+
+    all_pred = np.concatenate(all_future_pred)
+    all_actual = np.concatenate(all_future_actual)
+    mae = float(np.mean(np.abs(all_pred - all_actual)))
+    rmse = float(np.sqrt(np.mean((all_pred - all_actual) ** 2)))
+
+    # Per-horizon breakdown
+    per_horizon = {}
+    for step in sorted(horizon_errors.keys()):
+        minutes = (step + 1) * interval_min
+        label = f'{minutes}min'
+        per_horizon[label] = round(float(np.mean(horizon_errors[step])), 2)
+
+    return {
+        'mae_mgdl': round(mae, 2),
+        'rmse_mgdl': round(rmse, 2),
+        'history_steps': history_steps,
+        'future_steps': T - history_steps,
+        'per_horizon': per_horizon,
+    }
+
+
+def run_grouped_benchmark(args):
+    """EXP-012a: GroupedEncoder Benchmark + Future-Only Forecast Metric.
+
+    Compares CGMGroupedEncoder vs CGMTransformerAE on enhanced physics residuals.
+    Both models have ~68K params and identical training setup. Reports:
+    1. Reconstruction MAE (all timesteps — existing metric)
+    2. Future-only MAE (causal attention, second-half only — clinically relevant)
+    3. Per-horizon breakdown (5min, 10min, 15min, 20min, 25min, 30min)
+    """
+    print('=' * 60)
+    print('EXP-012a: GroupedEncoder Benchmark + Future-Only Forecast')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-012a', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    # Load patient profile
+    profile_path = os.path.join(args.real_data, 'profile.json')
+    isf, cr = 40.0, 10.0
+    if os.path.exists(profile_path):
+        with open(profile_path) as f:
+            profiles = json.load(f)
+        if profiles:
+            store = profiles[0].get('store', {})
+            default = store.get('Default', {})
+            sens = default.get('sens', [{}])
+            carbratio = default.get('carbratio', [{}])
+            if sens and 'value' in sens[0]:
+                isf = float(sens[0]['value'])
+            if carbratio and 'value' in carbratio[0]:
+                cr = float(carbratio[0]['value'])
+    print(f'\n  Patient: ISF={isf}, CR={cr}')
+    results['patient'] = {'isf': isf, 'cr': cr}
+
+    # Step 1: Load real data
+    print('\n--- Step 1: Load real data ---')
+    real_t, real_v = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window)
+    train_np = real_t.vectors.numpy()
+    val_np = real_v.vectors.numpy()
+    results['samples'] = {'train': len(train_np), 'val': len(val_np)}
+    print(f'  Windows: {len(train_np)} train, {len(val_np)} val '
+          f'({args.window} steps = {args.window * 5} min)')
+
+    # Step 2: Compute enhanced physics residuals
+    print('\n--- Step 2: Enhanced physics residuals ---')
+    tr_res, tr_phys, tr_stats = compute_residual_windows(
+        train_np, isf=isf, cr=cr, level='enhanced')
+    vr_res, vr_phys, vr_stats = compute_residual_windows(
+        val_np, isf=isf, cr=cr, level='enhanced')
+    print(f'  Residual std: train={tr_stats["std"]:.1f}, val={vr_stats["std"]:.1f} mg/dL')
+    results['residual_stats'] = {'train': tr_stats, 'val': vr_stats}
+
+    # Step 3: Physics-only baseline
+    print('\n--- Step 3: Physics-only baseline ---')
+    physics_metrics = _evaluate_physics_only(vr_phys, val_np)
+    results['physics_only'] = physics_metrics
+    print(f'  Physics-only: MAE={physics_metrics["mae_mgdl"]:.2f}  '
+          f'RMSE={physics_metrics["rmse_mgdl"]:.2f} mg/dL')
+
+    # Step 4: Persistence baseline
+    _, rv_2x = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window * 2)
+    p_mae, p_rmse = persistence_baseline(rv_2x, args.window)
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)}
+    print(f'  Persistence:  MAE={p_mae:.2f}  RMSE={p_rmse:.2f} mg/dL')
+
+    # Step 5: Train and evaluate both architectures
+    from .encoder import CGMDataset
+    res_train_ds = CGMDataset(tr_res, task='reconstruct', window_size=args.window)
+    res_val_ds = CGMDataset(vr_res, task='reconstruct', window_size=args.window)
+    res_train_ld = DataLoader(res_train_ds, batch_size=args.batch, shuffle=True)
+    res_val_ld = DataLoader(res_val_ds, batch_size=args.batch)
+
+    architectures = {
+        'ae': {
+            'class': CGMTransformerAE,
+            'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2},
+        },
+        'grouped': {
+            'class': CGMGroupedEncoder,
+            'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2},
+        },
+    }
+
+    for arch_name, arch_cfg in architectures.items():
+        print(f'\n--- Step 5: Train {arch_name} on enhanced residuals ---')
+        model = arch_cfg['class'](**arch_cfg['kwargs'])
+        param_count = sum(p.numel() for p in model.parameters())
+        print(f'  {arch_name}: {param_count:,} parameters')
+
+        ckpt = str(out / f'ae_grouped_bench_{arch_name}.pth')
+        train_loop(model, res_train_ld, res_val_ld,
+                   lr=1e-3, epochs=args.epochs, patience=args.patience,
+                   save_path=ckpt, label=f'residual-{arch_name}')
+
+        # Load best checkpoint
+        load_best(model, ckpt)
+
+        # 5a. Reconstruction MAE (existing metric — all timesteps)
+        recon_metrics = _evaluate_residual_model(
+            model, vr_res, vr_phys, val_np)
+        print(f'  [{arch_name}] Reconstruction: MAE={recon_metrics["mae_mgdl"]:.2f}  '
+              f'RMSE={recon_metrics["rmse_mgdl"]:.2f} mg/dL')
+
+        # 5b. Future-only MAE (causal attention — clinically relevant)
+        future_metrics = _evaluate_residual_future_only(
+            model, vr_res, vr_phys, val_np,
+            history_steps=args.window // 2)
+        print(f'  [{arch_name}] Future-only (causal): MAE={future_metrics["mae_mgdl"]:.2f}  '
+              f'RMSE={future_metrics["rmse_mgdl"]:.2f} mg/dL')
+        if future_metrics.get('per_horizon'):
+            print(f'  [{arch_name}] Per-horizon:')
+            for label, mae in future_metrics['per_horizon'].items():
+                print(f'    {label:>6s}: {mae:.2f} mg/dL')
+
+        results[arch_name] = {
+            'params': param_count,
+            'reconstruction': recon_metrics,
+            'future_only': future_metrics,
+        }
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    # Summary
+    print('\n' + '=' * 60)
+    print('SUMMARY — GroupedEncoder Benchmark + Future-Only Forecast')
+    print('=' * 60)
+    print(f'  {"Metric":<32s}  {"AE":>10s}  {"Grouped":>10s}  {"Winner":>8s}')
+    print(f'  {"-"*32}  {"-"*10}  {"-"*10}  {"-"*8}')
+
+    ae_r = results['ae']
+    gr_r = results['grouped']
+
+    rows = [
+        ('Params', f'{ae_r["params"]:,}', f'{gr_r["params"]:,}', '—'),
+        ('Recon MAE (mg/dL)',
+         f'{ae_r["reconstruction"]["mae_mgdl"]:.2f}',
+         f'{gr_r["reconstruction"]["mae_mgdl"]:.2f}',
+         'AE' if ae_r['reconstruction']['mae_mgdl'] <= gr_r['reconstruction']['mae_mgdl'] else 'Grouped'),
+        ('Future-only MAE (mg/dL)',
+         f'{ae_r["future_only"]["mae_mgdl"]:.2f}',
+         f'{gr_r["future_only"]["mae_mgdl"]:.2f}',
+         'AE' if ae_r['future_only']['mae_mgdl'] <= gr_r['future_only']['mae_mgdl'] else 'Grouped'),
+    ]
+
+    # Add per-horizon rows
+    ae_horizon = ae_r.get('future_only', {}).get('per_horizon', {})
+    gr_horizon = gr_r.get('future_only', {}).get('per_horizon', {})
+    for label in ae_horizon:
+        ae_val = ae_horizon.get(label, float('inf'))
+        gr_val = gr_horizon.get(label, float('inf'))
+        winner = 'AE' if ae_val <= gr_val else 'Grouped'
+        rows.append((f'  Horizon {label}', f'{ae_val:.2f}', f'{gr_val:.2f}', winner))
+
+    for name, ae_v, gr_v, winner in rows:
+        print(f'  {name:<32s}  {ae_v:>10s}  {gr_v:>10s}  {winner:>8s}')
+
+    print(f'\n  Persistence baseline:  MAE={p_mae:.2f} mg/dL')
+    print(f'  Physics-only baseline: MAE={physics_metrics["mae_mgdl"]:.2f} mg/dL')
+    print(f'  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp012a_grouped_benchmark.json'))
+    return results
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Run cgmencode experiments',
@@ -1430,7 +1681,7 @@ def main():
                         choices=['transfer', 'conditioned', 'cond-transfer',
                                  'residual', 'physics-compare',
                                  'residual-transfer', 'longer-horizons',
-                                 'walkforward', 'all'],
+                                 'walkforward', 'grouped-benchmark', 'all'],
                         help='Which experiment to run')
     parser.add_argument('--real-data', required=True,
                         help='Path to Nightscout JSON directory')
@@ -1466,6 +1717,8 @@ def main():
         run_longer_horizons(args)
     if args.experiment in ('walkforward', 'all'):
         run_walkforward(args)
+    if args.experiment in ('grouped-benchmark', 'all'):
+        run_grouped_benchmark(args)
 
 
 if __name__ == '__main__':

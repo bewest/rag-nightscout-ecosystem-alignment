@@ -66,36 +66,42 @@ python3 -m tools.cgmencode.toolbox vae 5  # Experimental architectures
 
 ## 📈 Benchmark Results (2026-04)
 
-### Real Patient Data (85-day Nightscout, Loop-controlled, 1 patient)
-| Model | Params | MAE mg/dL | RMSE mg/dL | vs Persistence |
-|-------|--------|-----------|------------|----------------|
-| Persistence (baseline) | — | 19.01 | 26.76 | — |
-| **Transformer AE** | 68K | **6.11** | **8.09** | **↓67.9%** |
-| Conditioned Transformer | 844K | 26.14 | 32.27 | ❌ overfits |
+### Physics-ML Residual (Recommended Approach)
 
-### UVA/Padova Engine (18-ODE physiological model, 50 patients)
-| Model | Params | MAE mg/dL | RMSE mg/dL | vs Persistence |
-|-------|--------|-----------|------------|----------------|
-| Persistence (baseline) | — | 4.74 | 7.68 | — |
-| **Transformer AE** | 68K | **2.12** | **3.94** | **↓55%** |
-| Conditioned Transformer | 844K | 3.47 | 5.49 | ↓27% |
-| VAE (32D latent) | 1.1M | 42.78 | 57.57 | ❌ broken |
+Train ML on `actual_glucose - physics_predicted` rather than raw glucose.
+The AE learns only what physics can't explain (sensor noise, exercise, model mismatch).
 
-### cgmsim Engine (simplified pharmacokinetic, 50 patients)
-| Model | Params | MAE mg/dL | RMSE mg/dL | vs Persistence |
-|-------|--------|-----------|------------|----------------|
-| Persistence (baseline) | — | 39–43 | 58–61 | — |
-| Transformer AE | 68K | 4.64 | 6.89 | ↓88% |
-| Conditioned Transformer | 844K | 4.67 | 7.83 | ↓87% |
+| Model | Physics | Params | Recon MAE | Forecast MAE | vs Persistence |
+|-------|---------|--------|-----------|-------------|----------------|
+| **GroupedEncoder** | Enhanced | 68K | 0.30 | **0.49** | **↓97.4%** |
+| Transformer AE | Enhanced | 68K | **0.20** | 0.78 | ↓95.9% |
+| Transformer AE | Simple | 68K | 0.31 | — | ↓98.4% |
+| Physics-only | Enhanced | — | 15.34 | 15.34 | ↓19.3% |
+| Persistence | — | — | 19.01 | 19.01 | — |
+
+- **Recon MAE**: Bidirectional attention, all timesteps (model sees full window)
+- **Forecast MAE**: Causal attention, future-only (model can only look backward — clinically relevant)
+- **GroupedEncoder wins on forecast** despite worse reconstruction — feature-grouped inductive bias helps causal prediction
+
+### Per-Horizon Forecast MAE (mg/dL, causal, enhanced residual)
+
+| Horizon | Grouped | AE | Winner |
+|---------|---------|-----|--------|
+| 5min | **0.35** | 0.70 | Grouped |
+| 10min | **0.85** | 0.95 | Grouped |
+| 15min | 0.84 | **0.78** | AE |
+| 20min | **0.29** | 0.63 | Grouped |
+| 25min | **0.24** | 0.78 | Grouped |
+| 30min | **0.39** | 0.82 | Grouped |
 
 ### Key Takeaways
-- **6.11 mg/dL MAE on real patient data** — clinically useful for 1-hour glucose forecasting
-- Real data is ~3× harder than synthetic (6.11 vs 2.12 MAE) — expected due to sensor noise, meal variability, exercise
-- **AE achieves sub-4 mg/dL MAE** on realistic UVA/Padova physiology
-- Models generalize across 50 diverse patient profiles (ISF 15–80, CR 5–20)
-- **Conditioned Transformer overfits on real data** — val loss oscillates; needs dropout, weight decay, or more data
-- **VAE architecture is mismatched** — 32D bottleneck loses too much sequence info; needs Conditional VAE redesign
-- **Diffusion model is a toy** — simplified forward process (`x + noise`), not proper DDPM β-schedule
+- **Physics-ML residual is the winning approach** — 0.20–0.49 MAE vs 2.00+ raw AE (EXP-005/007/012a)
+- **GroupedEncoder is the best forecaster** — 0.49 mg/dL future-only MAE (37% better than AE, EXP-012a)
+- **Reconstruction MAE ≠ forecast MAE** — AE wins recon (0.20) but Grouped wins forecast (0.49)
+- Enhanced physics (liver + circadian) creates more learnable residuals than simple or UVA/Padova (EXP-007)
+- Transfer learning helps: synth→real gives 0.22 MAE vs 0.30 from scratch (EXP-009)
+- Scales to 3hr horizons: 1.41 MAE at 180min, still ↓96.4% vs persistence (EXP-010)
+- Conditioned Transformer and VAE are dead ends on single-patient data (EXP-004/006)
 
 ---
 

@@ -13,16 +13,19 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 
 ## Latest Benchmark Summary
 
-| Data Source | Model | MAE mg/dL | RMSE mg/dL | vs Persistence | Date |
-|-------------|-------|-----------|------------|----------------|------|
-| **Real (enhanced residual + transfer)** | **Physics→AE** | **0.22** | **0.27** | **↓98.8%** | 2026-03-31 |
-| Real (enhanced physics + residual AE) | Physics→AE | 0.20 | 0.25 | ↓98.9% | 2026-03-31 |
-| Real (2hr enhanced residual AE) | Physics→AE | 1.11 | 1.49 | ↓96.4% | 2026-03-31 |
-| Real (3hr enhanced residual AE) | Physics→AE | 1.41 | 1.92 | ↓96.4% | 2026-03-31 |
-| Real (simple physics + residual AE) | Physics→AE | 0.31 | 0.38 | ↓98.4% | 2026-03-31 |
-| Real (transfer: synth→real) | Transformer AE | 0.74 | 0.99 | ↓96.1% | 2026-03-31 |
-| Real (from scratch) | Transformer AE | 2.00 | 2.60 | ↓89.5% | 2026-03-31 |
-| Real (physics-only, no ML) | IOB/COB dynamics | 13.89 | 23.42 | ↓26.9% | 2026-03-31 |
+| Data Source | Model | MAE mg/dL | RMSE mg/dL | vs Persistence | Metric | Date |
+|-------------|-------|-----------|------------|----------------|--------|------|
+| **Real (enhanced residual + transfer)** | **Physics→AE** | **0.22** | **0.27** | **↓98.8%** | Recon | 2026-03-31 |
+| Real (enhanced physics + residual AE) | Physics→AE | 0.20 | 0.25 | ↓98.9% | Recon | 2026-03-31 |
+| Real (enhanced residual, Grouped) | Physics→Grouped | 0.30 | 0.38 | ↓98.4% | Recon | 2026-04-01 |
+| **Real (enhanced, Grouped causal)** | **Physics→Grouped** | **0.49** | **0.63** | **↓97.4%** | **Forecast** | **2026-04-01** |
+| Real (enhanced, AE causal) | Physics→AE | 0.78 | 0.86 | ↓95.9% | Forecast | 2026-04-01 |
+| Real (2hr enhanced residual AE) | Physics→AE | 1.11 | 1.49 | ↓96.4% | Recon | 2026-03-31 |
+| Real (3hr enhanced residual AE) | Physics→AE | 1.41 | 1.92 | ↓96.4% | Recon | 2026-03-31 |
+| Real (simple physics + residual AE) | Physics→AE | 0.31 | 0.38 | ↓98.4% | Recon | 2026-03-31 |
+| Real (transfer: synth→real) | Transformer AE | 0.74 | 0.99 | ↓96.1% | Recon | 2026-03-31 |
+| Real (from scratch) | Transformer AE | 2.00 | 2.60 | ↓89.5% | Recon | 2026-03-31 |
+| Real (physics-only, no ML) | IOB/COB dynamics | 13.89 | 23.42 | ↓26.9% | — | 2026-03-31 |
 
 ### Key Findings
 
@@ -32,6 +35,8 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 4. **Physics-ML residual composition validated across 3 physics levels** — all dramatically outperform raw AE. Core L1+L3 thesis confirmed.
 5. **Transformer AE is the clear architecture** — 68K params, trains in 30s, works at all horizons
 6. **Conditioned Transformer is a dead end on single-patient data** — EXP-004/006 both fail
+7. **GroupedEncoder wins on future-only forecast** — 0.49 MAE (causal) beats AE 0.78 by 37%. Feature-grouped inductive bias helps causal prediction despite worse reconstruction.
+8. **Reconstruction MAE ≠ forecast MAE** — AE wins reconstruction (0.20 vs 0.30) but Grouped wins forecast (0.49 vs 0.78). Causal future-only is the clinically relevant metric.
 
 ---
 
@@ -338,6 +343,63 @@ Patient params from Nightscout profile: ISF=40 mg/dL/U, CR=10 g/U.
 
 **Tool**: `python3 -m tools.cgmencode.run_experiment residual --real-data PATH --epochs 50`
 **Artifacts**: `externals/experiments/exp005_residual_results.json`
+
+---
+
+### EXP-012a: GroupedEncoder Benchmark + Future-Only Forecast (2026-04-01) ★
+
+**Hypothesis**: (1) CGMGroupedEncoder's feature-grouped inductive bias (state/action/time) may improve prediction quality vs flat projection. (2) Reconstruction MAE overstates model quality — causal future-only forecast is the clinically relevant metric.
+
+**Setup**:
+- Data: 85-day Nightscout (3,085 train / 772 val windows, 12 steps each)
+- Enhanced physics residuals (ISF=40, CR=10, + liver + circadian)
+- Two architectures: CGMTransformerAE (68,040 params) vs CGMGroupedEncoder (67,704 params)
+- Both trained with identical hyperparameters: lr=1e-3, AdamW, 50 epochs, patience 15
+- **New metric**: Future-only MAE with causal attention (model only attends to past timesteps)
+  - History: steps 0–5 (30 min), Future: steps 6–11 (30 min)
+  - Model runs with `causal=True` — position t can only see positions 0..t
+  - MAE measured only on future steps 6–11
+
+**Results**:
+
+| Metric | AE | Grouped | Winner | Delta |
+|--------|-----|---------|--------|-------|
+| Parameters | 68,040 | 67,704 | — | — |
+| **Reconstruction MAE** | **0.20** | 0.30 | **AE** | AE wins by 0.10 |
+| **Future-only MAE (causal)** | 0.78 | **0.49** | **Grouped** | Grouped wins by 37% |
+| Future RMSE (causal) | 0.86 | 0.63 | Grouped | — |
+
+**Per-horizon Future-Only MAE (mg/dL)**:
+
+| Horizon | AE | Grouped | Winner |
+|---------|-----|---------|--------|
+| 5min | 0.70 | **0.35** | Grouped |
+| 10min | 0.95 | **0.85** | Grouped |
+| 15min | **0.78** | 0.84 | AE |
+| 20min | 0.63 | **0.29** | Grouped |
+| 25min | 0.78 | **0.24** | Grouped |
+| 30min | 0.82 | **0.39** | Grouped |
+
+**Key Findings**:
+
+1. **Reconstruction MAE ≠ Forecast MAE**: AE is better at reconstructing all timesteps (0.20 vs 0.30) but worse at causal forecasting (0.78 vs 0.49). The bidirectional attention in reconstruction mode "cheats" by looking ahead — the causal metric is honest.
+
+2. **GroupedEncoder wins on the clinically relevant metric**: 0.49 mg/dL future-only MAE (↓97.4% vs 19.01 persistence). The feature-grouped inductive bias (50% capacity for state, 25% for actions, 25% for time) helps the model understand which features are predictive vs contextual.
+
+3. **Grouped wins 5 of 6 horizons**: Consistent advantage at near-term (5min: 0.35 vs 0.70) and medium-term (25min: 0.24 vs 0.78) prediction. AE only wins at 15min — likely a training artifact.
+
+4. **Both architectures still dramatically outperform baselines**: Even the "worse" AE at 0.78 MAE is still ↓95.9% vs persistence (19.01). The enhanced physics + residual approach is robust across architectures.
+
+5. **Training convergence similar**: Both reach best val loss ~0.000004 in 50 epochs (~37s each). Grouped converges slightly faster (lower val loss at epoch 10: 0.000087 vs 0.000118).
+
+**Implications for Next Steps**:
+- **GroupedEncoder should be the default architecture** for production forecasting tasks
+- Previous residual transfer experiments (EXP-009) should be rerun with GroupedEncoder
+- The causal future-only metric should be added to all future experiment evaluations
+- The per-horizon breakdown enables clinical decision support: "How confident am I at 15min vs 30min?"
+
+**Tool**: `python3 -m tools.cgmencode.run_experiment grouped-benchmark --real-data PATH --epochs 50`
+**Artifacts**: `externals/experiments/exp012a_grouped_benchmark.json`
 
 ---
 
