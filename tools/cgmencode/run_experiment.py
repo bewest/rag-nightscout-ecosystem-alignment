@@ -2455,6 +2455,624 @@ def run_walkforward_grouped_transfer(args):
     return results
 
 
+def run_multiseed_transfer(args):
+    """EXP-015: Multi-Seed Robustness WITH Transfer Learning.
+
+    EXP-013 showed AE is more reliable than Grouped from scratch (0.74±0.23
+    vs 1.01±0.64). But EXP-014 showed transfer stabilizes Grouped. This
+    experiment answers: does transfer actually reduce Grouped's seed variance?
+
+    Protocol:
+    1. Pre-train ONCE per architecture on synthetic data (seed=42, shared)
+    2. Fine-tune from pre-trained weights 5× with different seeds
+    3. Report mean ± std across fine-tuning seeds
+    """
+    print('=' * 60)
+    print('EXP-015: Multi-Seed Robustness WITH Transfer')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-015', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    seeds = [42, 123, 456, 789, 1024]
+    results['seeds'] = seeds
+
+    isf, cr = _load_patient_profile(args.real_data)
+    print(f'  Patient: ISF={isf}, CR={cr}')
+    results['patient'] = {'isf': isf, 'cr': cr}
+
+    # --- Step 1: Load synthetic data for pre-training ---
+    print('\n--- Step 1: Synthetic pre-training data ---')
+    syn_t, syn_v = load_conformance_to_dataset(
+        args.synth_dirs, task='forecast', window_size=args.window)
+    has_synthetic = syn_t is not None and len(syn_t) > 0
+    results['has_synthetic'] = has_synthetic
+
+    if not has_synthetic:
+        print('  ERROR: Need synthetic data for transfer learning')
+        return results
+
+    syn_train_np = syn_t.vectors.numpy()
+    syn_val_np = syn_v.vectors.numpy()
+    print(f'  Synthetic: {len(syn_train_np)} train, {len(syn_val_np)} val')
+
+    syn_tr_res, _, syn_stats = compute_residual_windows(
+        syn_train_np, isf=isf, cr=cr, level='enhanced')
+    syn_vr_res, _, _ = compute_residual_windows(
+        syn_val_np, isf=isf, cr=cr, level='enhanced')
+    print(f'  Synthetic residual std: {syn_stats["std"]:.1f} mg/dL')
+
+    from .encoder import CGMDataset
+    syn_res_train_ds = CGMDataset(syn_tr_res, task='reconstruct', window_size=args.window)
+    syn_res_val_ds = CGMDataset(syn_vr_res, task='reconstruct', window_size=args.window)
+
+    # --- Step 2: Load real data ---
+    print('\n--- Step 2: Real data ---')
+    real_t, real_v = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window)
+    train_np = real_t.vectors.numpy()
+    val_np = real_v.vectors.numpy()
+    results['samples'] = {'train': len(train_np), 'val': len(val_np)}
+    print(f'  Real: {len(train_np)} train, {len(val_np)} val')
+
+    tr_res, tr_phys, tr_stats = compute_residual_windows(
+        train_np, isf=isf, cr=cr, level='enhanced')
+    vr_res, vr_phys, _ = compute_residual_windows(
+        val_np, isf=isf, cr=cr, level='enhanced')
+    print(f'  Real residual std: {tr_stats["std"]:.1f} mg/dL')
+
+    real_res_train_ds = CGMDataset(tr_res, task='reconstruct', window_size=args.window)
+    real_res_val_ds = CGMDataset(vr_res, task='reconstruct', window_size=args.window)
+
+    # Baselines (deterministic)
+    physics_metrics = _evaluate_physics_only(vr_phys, val_np)
+    results['physics_only'] = physics_metrics
+    print(f'  Physics-only: MAE={physics_metrics["mae_mgdl"]:.2f}')
+
+    _, rv_2x = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window * 2)
+    p_mae, p_rmse = persistence_baseline(rv_2x, args.window)
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)}
+    print(f'  Persistence: MAE={p_mae:.2f}')
+
+    architectures = {
+        'ae': {'class': CGMTransformerAE,
+               'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2}},
+        'grouped': {'class': CGMGroupedEncoder,
+                    'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2}},
+    }
+
+    # --- Step 3: Pre-train ONCE per architecture (deterministic seed=42) ---
+    print('\n--- Step 3: Pre-train on synthetic (shared, seed=42) ---')
+    pretrained_weights = {}
+    for arch_name, arch_cfg in architectures.items():
+        set_seed(42)
+        model = arch_cfg['class'](**arch_cfg['kwargs'])
+        syn_train_ld = DataLoader(syn_res_train_ds, batch_size=args.batch, shuffle=True)
+        syn_val_ld = DataLoader(syn_res_val_ds, batch_size=args.batch)
+        ckpt_path = str(out / f'exp015_pretrain_{arch_name}.pth')
+
+        train_loop(model, syn_train_ld, syn_val_ld,
+                   lr=1e-3, epochs=args.epochs, patience=args.patience,
+                   save_path=ckpt_path, label=f'pretrain-{arch_name}')
+
+        load_best(model, ckpt_path)
+        pretrained_weights[arch_name] = model.state_dict()
+        print(f'  [{arch_name}] Pre-trained checkpoint saved')
+
+    # --- Step 4: Fine-tune 5× per architecture with different seeds ---
+    print('\n--- Step 4: Multi-seed fine-tuning ---')
+    seed_results = {arch: [] for arch in architectures}
+
+    for seed in seeds:
+        print(f'\n{"─" * 60}')
+        print(f'  Seed: {seed}')
+        print(f'{"─" * 60}')
+
+        for arch_name, arch_cfg in architectures.items():
+            set_seed(seed)
+
+            # Start from pre-trained weights
+            model = arch_cfg['class'](**arch_cfg['kwargs'])
+            model.load_state_dict(pretrained_weights[arch_name])
+
+            ckpt = str(out / f'exp015_ft_{arch_name}_s{seed}.pth')
+
+            # Fresh loaders (shuffle order depends on seed)
+            train_ld = DataLoader(real_res_train_ds, batch_size=args.batch, shuffle=True)
+            val_ld = DataLoader(real_res_val_ds, batch_size=args.batch)
+
+            train_loop(model, train_ld, val_ld,
+                       lr=3e-4, epochs=args.epochs, patience=args.patience,
+                       save_path=ckpt, label=f'{arch_name}-s{seed}')
+
+            load_best(model, ckpt)
+            recon = _evaluate_residual_model(model, vr_res, vr_phys, val_np)
+            forecast = _evaluate_residual_future_only(
+                model, vr_res, vr_phys, val_np,
+                history_steps=args.window // 2)
+
+            seed_results[arch_name].append({
+                'seed': seed,
+                'reconstruction': recon,
+                'future_only': forecast,
+            })
+            print(f'  [{arch_name} s{seed}] recon={recon["mae_mgdl"]:.2f}  '
+                  f'forecast={forecast["mae_mgdl"]:.2f}')
+
+            # Cleanup
+            if os.path.exists(ckpt):
+                os.remove(ckpt)
+
+    # Cleanup pre-trained checkpoints
+    for arch_name in architectures:
+        p = str(out / f'exp015_pretrain_{arch_name}.pth')
+        if os.path.exists(p):
+            os.remove(p)
+
+    # --- Compute statistics ---
+    for arch_name in architectures:
+        recon_vals = [r['reconstruction']['mae_mgdl'] for r in seed_results[arch_name]]
+        fcast_vals = [r['future_only']['mae_mgdl'] for r in seed_results[arch_name]]
+        results[arch_name] = {
+            'runs': seed_results[arch_name],
+            'reconstruction': {
+                'mean': round(float(np.mean(recon_vals)), 2),
+                'std': round(float(np.std(recon_vals)), 2),
+                'min': round(float(np.min(recon_vals)), 2),
+                'max': round(float(np.max(recon_vals)), 2),
+                'all': [round(v, 2) for v in recon_vals],
+            },
+            'future_only': {
+                'mean': round(float(np.mean(fcast_vals)), 2),
+                'std': round(float(np.std(fcast_vals)), 2),
+                'min': round(float(np.min(fcast_vals)), 2),
+                'max': round(float(np.max(fcast_vals)), 2),
+                'all': [round(v, 2) for v in fcast_vals],
+            },
+        }
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    # --- Compare with EXP-013 (from-scratch) ---
+    print('\n' + '=' * 60)
+    print('SUMMARY — Multi-Seed WITH Transfer (5 seeds)')
+    print('=' * 60)
+    print(f'  {"Metric":<24s}  {"AE (mean±std)":>18s}  {"Grouped (mean±std)":>18s}  {"Winner":>8s}')
+    print(f'  {"-"*24}  {"-"*18}  {"-"*18}  {"-"*8}')
+
+    ae_s = results['ae']
+    gr_s = results['grouped']
+
+    for metric_key, metric_label in [('reconstruction', 'Recon MAE'),
+                                     ('future_only', 'Forecast MAE (causal)')]:
+        ae_m = ae_s[metric_key]
+        gr_m = gr_s[metric_key]
+        ae_str = f'{ae_m["mean"]:.2f}±{ae_m["std"]:.2f}'
+        gr_str = f'{gr_m["mean"]:.2f}±{gr_m["std"]:.2f}'
+        winner = 'AE' if ae_m['mean'] < gr_m['mean'] else 'Grouped'
+        print(f'  {metric_label:<24s}  {ae_str:>18s}  {gr_str:>18s}  {winner:>8s}')
+
+    print(f'\n  Individual forecast MAEs:')
+    print(f'  {"Seed":>6s}  {"AE":>8s}  {"Grouped":>8s}  {"Winner":>8s}')
+    for i, seed in enumerate(seeds):
+        ae_v = ae_s['future_only']['all'][i]
+        gr_v = gr_s['future_only']['all'][i]
+        w = 'AE' if ae_v < gr_v else 'Grouped'
+        print(f'  {seed:>6d}  {ae_v:>8.2f}  {gr_v:>8.2f}  {w:>8s}')
+
+    ae_wins = sum(1 for i in range(len(seeds))
+                  if ae_s['future_only']['all'][i] < gr_s['future_only']['all'][i])
+    gr_wins = len(seeds) - ae_wins
+    print(f'\n  Score: AE {ae_wins}/{len(seeds)}, Grouped {gr_wins}/{len(seeds)}')
+
+    # Compare variance with EXP-013
+    print(f'\n  Variance comparison with EXP-013 (from-scratch):')
+    print(f'    EXP-013 AE std:      0.23  →  EXP-015: {ae_s["future_only"]["std"]:.2f}')
+    print(f'    EXP-013 Grouped std: 0.64  →  EXP-015: {gr_s["future_only"]["std"]:.2f}')
+
+    variance_reduced = gr_s['future_only']['std'] < 0.64
+    print(f'    Transfer reduces Grouped variance: {"YES ✓" if variance_reduced else "NO ✗"}')
+
+    print(f'\n  Persistence baseline: {p_mae:.2f} mg/dL')
+    print(f'  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp015_multiseed_transfer.json'))
+    return results
+
+
+def _ddpm_sample(model, shape, num_steps=50):
+    """Generate samples from trained diffusion model using DDPM reverse process.
+
+    Uses a stride through the original 1000-step schedule for efficiency.
+    Returns denoised sample in data space.
+    """
+    device = next(model.parameters()).device
+    T_full = model.timesteps
+
+    # Subsample timesteps for fast generation
+    stride = max(1, T_full // num_steps)
+    timesteps = list(range(T_full - 1, -1, -stride))
+
+    # Precompute alpha schedule from registered buffers
+    alphas_cumprod = model.sqrt_alphas_cumprod ** 2  # recover αbar from sqrt
+    betas = 1.0 - alphas_cumprod / torch.cat([torch.ones(1, device=device), alphas_cumprod[:-1]])
+
+    x_t = torch.randn(shape, device=device)
+
+    with torch.no_grad():
+        for i, t in enumerate(timesteps):
+            t_batch = torch.full((shape[0],), t, device=device, dtype=torch.long)
+            predicted_noise = model(x_t, t_batch)
+
+            alpha_bar_t = alphas_cumprod[t]
+            beta_t = betas[t]
+            alpha_t = 1.0 - beta_t
+
+            # DDPM reverse step: x_{t-1} = (1/sqrt(α_t)) * (x_t - β_t/sqrt(1-αbar_t) * ε_θ)
+            coeff = beta_t / (torch.sqrt(1.0 - alpha_bar_t) + 1e-8)
+            x_mean = (1.0 / torch.sqrt(alpha_t)) * (x_t - coeff * predicted_noise)
+
+            if t > 0:
+                noise = torch.randn_like(x_t)
+                sigma = torch.sqrt(beta_t)
+                x_t = x_mean + sigma * noise
+            else:
+                x_t = x_mean
+
+    return x_t
+
+
+def _train_diffusion_epoch(model, loader, optimizer):
+    """One epoch of DDPM noise prediction training."""
+    model.train()
+    total_loss = 0
+    n = 0
+    for batch_in, _ in loader:
+        optimizer.zero_grad()
+        B = batch_in.size(0)
+        t = torch.randint(0, model.timesteps, (B,))
+        noise = torch.randn_like(batch_in)
+        x_t = model.q_sample(batch_in, t, noise=noise)
+        predicted_noise = model(x_t, t)
+        loss = torch.nn.functional.mse_loss(predicted_noise, noise)
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        optimizer.step()
+        total_loss += loss.item() * B
+        n += B
+    return total_loss / n if n > 0 else float('inf')
+
+
+def _eval_diffusion(model, loader):
+    """Evaluate diffusion model noise prediction loss."""
+    model.eval()
+    total_loss = 0
+    n = 0
+    with torch.no_grad():
+        for batch_in, _ in loader:
+            B = batch_in.size(0)
+            t = torch.randint(0, model.timesteps, (B,))
+            noise = torch.randn_like(batch_in)
+            x_t = model.q_sample(batch_in, t, noise=noise)
+            predicted_noise = model(x_t, t)
+            loss = torch.nn.functional.mse_loss(predicted_noise, noise)
+            total_loss += loss.item() * B
+            n += B
+    return total_loss / n if n > 0 else float('inf')
+
+
+def _evaluate_diffusion_forecast(model, val_windows_residual, physics_pred_val,
+                                 val_windows_orig, history_steps=None,
+                                 interval_min=5, n_samples=20):
+    """Evaluate diffusion model on forecast task.
+
+    Strategy: condition on observed history by:
+    1. Starting from noise
+    2. Running reverse diffusion
+    3. Replacing history portion with actual observed values at each step
+    4. The future portion gets denoised while staying coherent with history
+
+    Average across n_samples stochastic runs for a mean prediction.
+    """
+    from .schema import IDX_GLUCOSE, NORMALIZATION_SCALES
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+
+    T = val_windows_residual.shape[1]
+    if history_steps is None:
+        history_steps = T // 2
+
+    model.eval()
+    device = next(model.parameters()).device
+    T_full = model.timesteps
+
+    # Fast sampling schedule
+    num_steps = 50
+    stride = max(1, T_full // num_steps)
+    timesteps = list(range(T_full - 1, -1, -stride))
+
+    alphas_cumprod = model.sqrt_alphas_cumprod ** 2
+    betas = 1.0 - alphas_cumprod / torch.cat([torch.ones(1, device=device), alphas_cumprod[:-1]])
+
+    all_future_pred = []
+    all_future_actual = []
+    horizon_errors = {}
+
+    # Process in mini-batches for memory efficiency
+    batch_size = 64
+    residual_tensor = torch.FloatTensor(val_windows_residual).to(device)
+
+    for start in range(0, len(val_windows_residual), batch_size):
+        end = min(start + batch_size, len(val_windows_residual))
+        batch_obs = residual_tensor[start:end]  # (B, T, 8)
+        B = batch_obs.shape[0]
+
+        # Average n_samples stochastic predictions
+        sample_preds = []
+        for _ in range(n_samples):
+            x_t = torch.randn_like(batch_obs)
+            # Inpaint history at each reverse step
+            with torch.no_grad():
+                for step_t in timesteps:
+                    t_batch = torch.full((B,), step_t, device=device, dtype=torch.long)
+                    predicted_noise = model(x_t, t_batch)
+
+                    alpha_bar_t = alphas_cumprod[step_t]
+                    beta_t = betas[step_t]
+                    alpha_t = 1.0 - beta_t
+
+                    coeff = beta_t / (torch.sqrt(1.0 - alpha_bar_t) + 1e-8)
+                    x_mean = (1.0 / torch.sqrt(alpha_t)) * (x_t - coeff * predicted_noise)
+
+                    if step_t > 0:
+                        noise = torch.randn_like(x_t)
+                        sigma = torch.sqrt(beta_t)
+                        x_t = x_mean + sigma * noise
+                    else:
+                        x_t = x_mean
+
+                    # Inpaint: replace history portion with noised observation
+                    if step_t > 0:
+                        obs_noise = torch.randn_like(batch_obs)
+                        sqrt_ab = model.sqrt_alphas_cumprod[step_t]
+                        sqrt_1_ab = model.sqrt_one_minus_alphas_cumprod[step_t]
+                        noised_obs = sqrt_ab * batch_obs + sqrt_1_ab * obs_noise
+                        x_t[:, :history_steps, :] = noised_obs[:, :history_steps, :]
+                    else:
+                        x_t[:, :history_steps, :] = batch_obs[:, :history_steps, :]
+
+            sample_preds.append(x_t[:, :, 0].cpu().numpy())  # glucose channel
+
+        # Average across samples
+        mean_pred = np.mean(sample_preds, axis=0)  # (B, T)
+
+        for b in range(B):
+            i = start + b
+            if i >= len(physics_pred_val):
+                break
+
+            pred_residual = mean_pred[b, history_steps:]
+            pred_glucose = residual_to_glucose(pred_residual, physics_pred_val[i, history_steps:])
+            actual_glucose = val_windows_orig[i, history_steps:, IDX_GLUCOSE] * glucose_scale
+
+            all_future_pred.append(pred_glucose)
+            all_future_actual.append(actual_glucose)
+
+            abs_errs = np.abs(pred_glucose - actual_glucose)
+            for step in range(len(abs_errs)):
+                horizon_errors.setdefault(step, []).append(abs_errs[step])
+
+    all_pred = np.concatenate(all_future_pred)
+    all_actual = np.concatenate(all_future_actual)
+    mae = float(np.mean(np.abs(all_pred - all_actual)))
+    rmse = float(np.sqrt(np.mean((all_pred - all_actual) ** 2)))
+
+    per_horizon = {}
+    for step in sorted(horizon_errors.keys()):
+        minutes = (step + 1) * interval_min
+        per_horizon[f'{minutes}min'] = round(float(np.mean(horizon_errors[step])), 2)
+
+    # Compute spread across samples (uncertainty metric)
+    return {
+        'mae_mgdl': round(mae, 2),
+        'rmse_mgdl': round(rmse, 2),
+        'history_steps': history_steps,
+        'future_steps': T - history_steps,
+        'n_samples': n_samples,
+        'per_horizon': per_horizon,
+    }
+
+
+def run_diffusion_benchmark(args):
+    """EXP-016: Diffusion Model Benchmark.
+
+    First test of CGMDenoisingDiffusion on the residual forecast task.
+    Compares DDPM against AE and GroupedEncoder baselines.
+
+    Key question: does stochastic generation beat deterministic reconstruction?
+    Bonus: DDPM gives uncertainty quantification for free via sample spread.
+    """
+    print('=' * 60)
+    print('EXP-016: Diffusion Model Benchmark')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-016', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    set_seed(42)
+
+    isf, cr = _load_patient_profile(args.real_data)
+    print(f'  Patient: ISF={isf}, CR={cr}')
+    results['patient'] = {'isf': isf, 'cr': cr}
+
+    # --- Load data ---
+    print('\n--- Step 1: Load data + residuals ---')
+    real_t, real_v = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window)
+    train_np = real_t.vectors.numpy()
+    val_np = real_v.vectors.numpy()
+    results['samples'] = {'train': len(train_np), 'val': len(val_np)}
+    print(f'  Windows: {len(train_np)} train, {len(val_np)} val')
+
+    tr_res, tr_phys, tr_stats = compute_residual_windows(
+        train_np, isf=isf, cr=cr, level='enhanced')
+    vr_res, vr_phys, _ = compute_residual_windows(
+        val_np, isf=isf, cr=cr, level='enhanced')
+    print(f'  Residual std: {tr_stats["std"]:.1f} mg/dL')
+
+    physics_metrics = _evaluate_physics_only(vr_phys, val_np)
+    results['physics_only'] = physics_metrics
+    print(f'  Physics-only: MAE={physics_metrics["mae_mgdl"]:.2f}')
+
+    _, rv_2x = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window * 2)
+    p_mae, p_rmse = persistence_baseline(rv_2x, args.window)
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)}
+    print(f'  Persistence: MAE={p_mae:.2f}')
+
+    from .encoder import CGMDataset
+    res_train_ds = CGMDataset(tr_res, task='reconstruct', window_size=args.window)
+    res_val_ds = CGMDataset(vr_res, task='reconstruct', window_size=args.window)
+    train_ld = DataLoader(res_train_ds, batch_size=args.batch, shuffle=True)
+    val_ld = DataLoader(res_val_ds, batch_size=args.batch)
+
+    # --- Step 2: Train Diffusion model ---
+    print('\n--- Step 2: Train DDPM ---')
+    from .toolbox import CGMDenoisingDiffusion
+
+    # Use fewer timesteps for training efficiency on small data
+    diffusion_timesteps = 200
+    model = CGMDenoisingDiffusion(
+        input_dim=8, d_model=64, nhead=4, timesteps=diffusion_timesteps)
+    n_params = sum(p.numel() for p in model.parameters())
+    print(f'  DDPM params: {n_params:,} (timesteps={diffusion_timesteps})')
+    results['ddpm_params'] = n_params
+    results['diffusion_timesteps'] = diffusion_timesteps
+
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, factor=0.5)
+    best_val = float('inf')
+    stale = 0
+    ckpt_path = str(out / 'exp016_ddpm.pth')
+
+    for ep in range(args.epochs):
+        tl = _train_diffusion_epoch(model, train_ld, optimizer)
+        vl = _eval_diffusion(model, val_ld)
+        sched.step(vl)
+
+        if vl < best_val:
+            best_val = vl
+            stale = 0
+            os.makedirs(os.path.dirname(ckpt_path), exist_ok=True)
+            torch.save({'epoch': ep, 'model_state': model.state_dict(),
+                        'val_loss': vl}, ckpt_path)
+        else:
+            stale += 1
+
+        if (ep + 1) % 10 == 0 or ep == args.epochs - 1:
+            lr_now = optimizer.param_groups[0]['lr']
+            mark = ' *' if stale == 0 else ''
+            print(f'  [DDPM] Epoch {ep+1:3d}/{args.epochs} '
+                  f'train={tl:.6f} val={vl:.6f} best={best_val:.6f} '
+                  f'lr={lr_now:.1e}{mark}')
+
+        if args.patience > 0 and stale >= args.patience:
+            print(f'  [DDPM] Early stop at epoch {ep+1}')
+            break
+
+    # Load best
+    ckpt = torch.load(ckpt_path, map_location='cpu', weights_only=True)
+    model.load_state_dict(ckpt['model_state'])
+    results['ddpm_training'] = {
+        'best_val_loss': round(best_val, 6),
+        'best_epoch': ckpt['epoch'],
+    }
+    print(f'  Best DDPM val loss: {best_val:.6f} (epoch {ckpt["epoch"]})')
+
+    # --- Step 3: Evaluate DDPM forecast ---
+    print('\n--- Step 3: DDPM forecast evaluation (20 samples) ---')
+    ddpm_forecast = _evaluate_diffusion_forecast(
+        model, vr_res, vr_phys, val_np,
+        history_steps=args.window // 2, n_samples=20)
+    results['ddpm_forecast'] = ddpm_forecast
+    print(f'  DDPM forecast MAE: {ddpm_forecast["mae_mgdl"]:.2f}')
+
+    # --- Step 4: AE and Grouped baselines for comparison ---
+    print('\n--- Step 4: AE + Grouped baselines ---')
+    baselines = {
+        'ae': CGMTransformerAE(input_dim=8, d_model=64, nhead=4, num_layers=2),
+        'grouped': CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=2),
+    }
+
+    for name, bmodel in baselines.items():
+        set_seed(42)
+        bmodel = baselines[name].__class__(input_dim=8, d_model=64, nhead=4, num_layers=2)
+        b_train_ld = DataLoader(res_train_ds, batch_size=args.batch, shuffle=True)
+        b_val_ld = DataLoader(res_val_ds, batch_size=args.batch)
+        b_ckpt = str(out / f'exp016_{name}.pth')
+
+        train_loop(bmodel, b_train_ld, b_val_ld,
+                   lr=1e-3, epochs=args.epochs, patience=args.patience,
+                   save_path=b_ckpt, label=name)
+
+        load_best(bmodel, b_ckpt)
+        recon = _evaluate_residual_model(bmodel, vr_res, vr_phys, val_np)
+        forecast = _evaluate_residual_future_only(
+            bmodel, vr_res, vr_phys, val_np,
+            history_steps=args.window // 2)
+
+        results[name] = {
+            'reconstruction': recon,
+            'future_only': forecast,
+        }
+        print(f'  [{name}] recon={recon["mae_mgdl"]:.2f}  forecast={forecast["mae_mgdl"]:.2f}')
+
+        if os.path.exists(b_ckpt):
+            os.remove(b_ckpt)
+
+    # Cleanup DDPM checkpoint
+    if os.path.exists(ckpt_path):
+        os.remove(ckpt_path)
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    # --- Summary ---
+    print('\n' + '=' * 60)
+    print('SUMMARY — Diffusion Benchmark')
+    print('=' * 60)
+
+    ae_f = results['ae']['future_only']['mae_mgdl']
+    gr_f = results['grouped']['future_only']['mae_mgdl']
+    dd_f = ddpm_forecast['mae_mgdl']
+
+    print(f'  {"Model":<20s}  {"Forecast MAE":>12s}  {"vs Persistence":>14s}')
+    print(f'  {"-"*20}  {"-"*12}  {"-"*14}')
+    print(f'  {"Persistence":<20s}  {p_mae:>12.2f}  {"baseline":>14s}')
+    print(f'  {"Physics-only":<20s}  {physics_metrics["mae_mgdl"]:>12.2f}  '
+          f'{(1-physics_metrics["mae_mgdl"]/p_mae)*100:>13.1f}%')
+    print(f'  {"AE (scratch)":<20s}  {ae_f:>12.2f}  {(1-ae_f/p_mae)*100:>13.1f}%')
+    print(f'  {"Grouped (scratch)":<20s}  {gr_f:>12.2f}  {(1-gr_f/p_mae)*100:>13.1f}%')
+    print(f'  {"DDPM (20 samples)":<20s}  {dd_f:>12.2f}  {(1-dd_f/p_mae)*100:>13.1f}%')
+
+    # Per-horizon comparison
+    if ddpm_forecast.get('per_horizon') and results['ae']['future_only'].get('per_horizon'):
+        print(f'\n  Per-horizon forecast MAE:')
+        ae_ph = results['ae']['future_only']['per_horizon']
+        dd_ph = ddpm_forecast['per_horizon']
+        print(f'  {"Horizon":<10s}  {"AE":>8s}  {"DDPM":>8s}  {"Winner":>8s}')
+        for h in sorted(dd_ph.keys(), key=lambda x: int(x.replace('min', ''))):
+            if h in ae_ph:
+                w = 'AE' if ae_ph[h] < dd_ph[h] else 'DDPM'
+                print(f'  {h:<10s}  {ae_ph[h]:>8.2f}  {dd_ph[h]:>8.2f}  {w:>8s}')
+
+    print(f'\n  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp016_diffusion_benchmark.json'))
+    return results
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Run cgmencode experiments',
@@ -2466,6 +3084,7 @@ def main():
                                  'walkforward', 'grouped-benchmark',
                                  'grouped-transfer', 'causal-longer-horizons',
                                  'multiseed', 'walkforward-transfer',
+                                 'multiseed-transfer', 'diffusion-benchmark',
                                  'all'],
                         help='Which experiment to run')
     parser.add_argument('--real-data', required=True,
@@ -2512,6 +3131,10 @@ def main():
         run_multiseed_robustness(args)
     if args.experiment in ('walkforward-transfer', 'all'):
         run_walkforward_grouped_transfer(args)
+    if args.experiment in ('multiseed-transfer', 'all'):
+        run_multiseed_transfer(args)
+    if args.experiment in ('diffusion-benchmark', 'all'):
+        run_diffusion_benchmark(args)
 
 
 if __name__ == '__main__':
