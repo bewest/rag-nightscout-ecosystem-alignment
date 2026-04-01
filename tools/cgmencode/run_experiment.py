@@ -3073,6 +3073,450 @@ def run_diffusion_benchmark(args):
     return results
 
 
+def run_seed_ensemble(args):
+    """EXP-017: Seed Ensemble for Grouped+Transfer.
+
+    Trains 5 Grouped+transfer models with different seeds (same as EXP-015)
+    and averages their predictions at inference time. Tests whether
+    ensemble averaging beats the single best model.
+
+    Also tests AE ensemble for fair comparison.
+    """
+    print('=' * 60)
+    print('EXP-017: Seed Ensemble (5-model averaging)')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-017', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    seeds = [42, 123, 456, 789, 1024]
+    results['seeds'] = seeds
+
+    isf, cr = _load_patient_profile(args.real_data)
+    print(f'  Patient: ISF={isf}, CR={cr}')
+    results['patient'] = {'isf': isf, 'cr': cr}
+
+    # Load synthetic + real data (same as EXP-015)
+    print('\n--- Step 1: Data loading ---')
+    syn_t, syn_v = load_conformance_to_dataset(
+        args.synth_dirs, task='forecast', window_size=args.window)
+    has_synthetic = syn_t is not None and len(syn_t) > 0
+    if not has_synthetic:
+        print('  ERROR: Need synthetic data for transfer')
+        return results
+
+    syn_train_np = syn_t.vectors.numpy()
+    syn_val_np = syn_v.vectors.numpy()
+    syn_tr_res, _, syn_stats = compute_residual_windows(
+        syn_train_np, isf=isf, cr=cr, level='enhanced')
+    syn_vr_res, _, _ = compute_residual_windows(
+        syn_val_np, isf=isf, cr=cr, level='enhanced')
+
+    from .encoder import CGMDataset
+    syn_res_train_ds = CGMDataset(syn_tr_res, task='reconstruct', window_size=args.window)
+    syn_res_val_ds = CGMDataset(syn_vr_res, task='reconstruct', window_size=args.window)
+
+    real_t, real_v = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window)
+    train_np = real_t.vectors.numpy()
+    val_np = real_v.vectors.numpy()
+    results['samples'] = {'train': len(train_np), 'val': len(val_np)}
+    print(f'  Real: {len(train_np)} train, {len(val_np)} val')
+
+    tr_res, tr_phys, _ = compute_residual_windows(
+        train_np, isf=isf, cr=cr, level='enhanced')
+    vr_res, vr_phys, _ = compute_residual_windows(
+        val_np, isf=isf, cr=cr, level='enhanced')
+
+    real_res_train_ds = CGMDataset(tr_res, task='reconstruct', window_size=args.window)
+    real_res_val_ds = CGMDataset(vr_res, task='reconstruct', window_size=args.window)
+
+    # Baselines
+    physics_metrics = _evaluate_physics_only(vr_phys, val_np)
+    results['physics_only'] = physics_metrics
+
+    _, rv_2x = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window * 2)
+    p_mae, p_rmse = persistence_baseline(rv_2x, args.window)
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2)}
+
+    architectures = {
+        'ae': {'class': CGMTransformerAE,
+               'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2}},
+        'grouped': {'class': CGMGroupedEncoder,
+                    'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2}},
+    }
+
+    # --- Step 2: Pre-train once per architecture ---
+    print('\n--- Step 2: Pre-train on synthetic (seed=42) ---')
+    pretrained_weights = {}
+    for arch_name, arch_cfg in architectures.items():
+        set_seed(42)
+        model = arch_cfg['class'](**arch_cfg['kwargs'])
+        syn_train_ld = DataLoader(syn_res_train_ds, batch_size=args.batch, shuffle=True)
+        syn_val_ld = DataLoader(syn_res_val_ds, batch_size=args.batch)
+        ckpt_path = str(out / f'exp017_pretrain_{arch_name}.pth')
+        train_loop(model, syn_train_ld, syn_val_ld,
+                   lr=1e-3, epochs=args.epochs, patience=args.patience,
+                   save_path=ckpt_path, label=f'pretrain-{arch_name}')
+        load_best(model, ckpt_path)
+        pretrained_weights[arch_name] = model.state_dict()
+        print(f'  [{arch_name}] Pre-trained')
+
+    # --- Step 3: Train 5 models per architecture, collect predictions ---
+    print('\n--- Step 3: Train 5 models per architecture ---')
+    from .schema import IDX_GLUCOSE, NORMALIZATION_SCALES
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+
+    T = vr_res.shape[1]
+    history_steps = T // 2
+
+    for arch_name, arch_cfg in architectures.items():
+        individual_forecasts = []  # per-seed forecast arrays
+        individual_maes = []
+
+        for seed in seeds:
+            set_seed(seed)
+            model = arch_cfg['class'](**arch_cfg['kwargs'])
+            model.load_state_dict(pretrained_weights[arch_name])
+
+            ckpt = str(out / f'exp017_{arch_name}_s{seed}.pth')
+            train_ld = DataLoader(real_res_train_ds, batch_size=args.batch, shuffle=True)
+            val_ld = DataLoader(real_res_val_ds, batch_size=args.batch)
+
+            train_loop(model, train_ld, val_ld,
+                       lr=3e-4, epochs=args.epochs, patience=args.patience,
+                       save_path=ckpt, label=f'{arch_name}-s{seed}')
+            load_best(model, ckpt)
+
+            # Get per-window glucose predictions for ensemble averaging
+            model.eval()
+            ds = torch.utils.data.TensorDataset(
+                torch.FloatTensor(vr_res), torch.FloatTensor(vr_res))
+            loader = DataLoader(ds, batch_size=64)
+
+            all_pred_glucose = []
+            idx = 0
+            with torch.no_grad():
+                for batch_in, _ in loader:
+                    recon = model(batch_in, causal=True)
+                    B = recon.shape[0]
+                    residual_recon = recon[:, :, 0].numpy()
+                    for b in range(B):
+                        i = idx + b
+                        if i >= len(vr_phys):
+                            break
+                        pred_residual = residual_recon[b, history_steps:]
+                        pred_glucose = residual_to_glucose(
+                            pred_residual, vr_phys[i, history_steps:])
+                        all_pred_glucose.append(pred_glucose)
+                    idx += B
+
+            pred_array = np.array(all_pred_glucose)  # (N, future_steps)
+            individual_forecasts.append(pred_array)
+
+            # Individual MAE
+            actual_glucose = val_np[:len(pred_array), history_steps:, IDX_GLUCOSE] * glucose_scale
+            mae = float(np.mean(np.abs(pred_array - actual_glucose)))
+            individual_maes.append(round(mae, 2))
+            print(f'  [{arch_name} s{seed}] forecast MAE={mae:.2f}')
+
+            if os.path.exists(ckpt):
+                os.remove(ckpt)
+
+        # --- Ensemble: average predictions ---
+        ensemble_pred = np.mean(individual_forecasts, axis=0)  # (N, future_steps)
+        actual_glucose = val_np[:len(ensemble_pred), history_steps:, IDX_GLUCOSE] * glucose_scale
+        ensemble_mae = float(np.mean(np.abs(ensemble_pred - actual_glucose)))
+        ensemble_rmse = float(np.sqrt(np.mean((ensemble_pred - actual_glucose) ** 2)))
+
+        # Per-horizon ensemble errors
+        per_horizon = {}
+        for step in range(ensemble_pred.shape[1]):
+            minutes = (step + 1) * 5
+            step_errors = np.abs(ensemble_pred[:, step] - actual_glucose[:, step])
+            per_horizon[f'{minutes}min'] = round(float(np.mean(step_errors)), 2)
+
+        # Prediction spread (uncertainty proxy)
+        pred_std = np.std(individual_forecasts, axis=0)  # (N, future_steps)
+        mean_spread = float(np.mean(pred_std)) * glucose_scale
+        per_horizon_spread = {}
+        for step in range(pred_std.shape[1]):
+            minutes = (step + 1) * 5
+            per_horizon_spread[f'{minutes}min'] = round(
+                float(np.mean(pred_std[:, step])) * glucose_scale, 2)
+
+        results[arch_name] = {
+            'individual_maes': individual_maes,
+            'individual_mean': round(float(np.mean(individual_maes)), 2),
+            'individual_std': round(float(np.std(individual_maes)), 2),
+            'ensemble_mae': round(ensemble_mae, 2),
+            'ensemble_rmse': round(ensemble_rmse, 2),
+            'ensemble_per_horizon': per_horizon,
+            'mean_prediction_spread_mgdl': round(mean_spread, 2),
+            'per_horizon_spread': per_horizon_spread,
+        }
+
+    # Cleanup pre-trained checkpoints
+    for arch_name in architectures:
+        p = str(out / f'exp017_pretrain_{arch_name}.pth')
+        if os.path.exists(p):
+            os.remove(p)
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    # --- Summary ---
+    print('\n' + '=' * 60)
+    print('SUMMARY — Seed Ensemble (5 models)')
+    print('=' * 60)
+
+    for arch_name in ['ae', 'grouped']:
+        ar = results[arch_name]
+        print(f'\n  {arch_name.upper()}:')
+        print(f'    Individual MAEs: {ar["individual_maes"]}')
+        print(f'    Individual mean: {ar["individual_mean"]} ± {ar["individual_std"]}')
+        print(f'    Ensemble MAE:    {ar["ensemble_mae"]}')
+        improvement = (ar['individual_mean'] - ar['ensemble_mae']) / ar['individual_mean'] * 100
+        print(f'    Ensemble vs mean: {improvement:+.1f}%')
+        best_individual = min(ar['individual_maes'])
+        vs_best = (best_individual - ar['ensemble_mae']) / best_individual * 100
+        print(f'    Ensemble vs best single: {vs_best:+.1f}%')
+        print(f'    Mean prediction spread: {ar["mean_prediction_spread_mgdl"]:.2f} mg/dL')
+
+    ae_ens = results['ae']['ensemble_mae']
+    gr_ens = results['grouped']['ensemble_mae']
+    winner = 'Grouped' if gr_ens < ae_ens else 'AE'
+    pct = abs(ae_ens - gr_ens) / max(ae_ens, gr_ens) * 100
+    print(f'\n  Ensemble winner: {winner} ({pct:.1f}% better)')
+    print(f'  Persistence: {p_mae:.2f}')
+    print(f'  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp017_seed_ensemble.json'))
+    return results
+
+
+def run_transfer_longer_horizons(args):
+    """EXP-018: Grouped+Transfer at Longer Horizons (2hr, 3hr).
+
+    EXP-010b showed from scratch: AE wins at 1hr/2hr, Grouped wins at 3hr.
+    EXP-015 showed transfer flips the 1hr result (Grouped wins with transfer).
+    Does transfer help Grouped at all horizons?
+
+    Tests both AE+transfer and Grouped+transfer at 1hr, 2hr, 3hr.
+    """
+    print('=' * 60)
+    print('EXP-018: Transfer at Longer Horizons')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-018', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    set_seed(42)
+
+    isf, cr = _load_patient_profile(args.real_data)
+    print(f'  Patient: ISF={isf}, CR={cr}')
+    results['patient'] = {'isf': isf, 'cr': cr}
+
+    horizons = [12, 24, 36]  # 1hr, 2hr, 3hr
+    results['horizons'] = [w * 5 for w in horizons]
+
+    from .encoder import CGMDataset
+
+    architectures = {
+        'ae': {'class': CGMTransformerAE,
+               'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2}},
+        'grouped': {'class': CGMGroupedEncoder,
+                    'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2}},
+    }
+
+    horizon_results = {}
+
+    for window in horizons:
+        label = f'{window * 5}min'
+        print(f'\n{"=" * 60}')
+        print(f'  Horizon: {label} ({window} steps)')
+        print(f'{"=" * 60}')
+
+        # Load synthetic data at this horizon
+        print(f'\n  --- Synthetic data at {label} ---')
+        syn_t, syn_v = load_conformance_to_dataset(
+            args.synth_dirs, task='forecast', window_size=window)
+        has_synthetic = syn_t is not None and len(syn_t) > 0
+
+        syn_res_train_ds = syn_res_val_ds = None
+        if has_synthetic:
+            syn_train_np = syn_t.vectors.numpy()
+            syn_val_np = syn_v.vectors.numpy()
+            syn_tr_res, _, _ = compute_residual_windows(
+                syn_train_np, isf=isf, cr=cr, level='enhanced')
+            syn_vr_res, _, _ = compute_residual_windows(
+                syn_val_np, isf=isf, cr=cr, level='enhanced')
+            syn_res_train_ds = CGMDataset(syn_tr_res, task='reconstruct', window_size=window)
+            syn_res_val_ds = CGMDataset(syn_vr_res, task='reconstruct', window_size=window)
+            print(f'  Synthetic: {len(syn_train_np)} train, {len(syn_val_np)} val')
+        else:
+            print(f'  WARNING: No synthetic data at {label}')
+
+        # Load real data at this horizon
+        print(f'\n  --- Real data at {label} ---')
+        real_t, real_v = load_nightscout_to_dataset(
+            args.real_data, task='forecast', window_size=window)
+        if real_t is None or len(real_t) == 0:
+            print(f'  No data for window={window}, skipping')
+            continue
+
+        train_np = real_t.vectors.numpy()
+        val_np = real_v.vectors.numpy()
+        print(f'  Real: {len(train_np)} train, {len(val_np)} val')
+
+        tr_res, tr_phys, _ = compute_residual_windows(
+            train_np, isf=isf, cr=cr, level='enhanced')
+        vr_res, vr_phys, vr_stats = compute_residual_windows(
+            val_np, isf=isf, cr=cr, level='enhanced')
+
+        physics_metrics = _evaluate_physics_only(vr_phys, val_np)
+
+        _, rv_2x = load_nightscout_to_dataset(
+            args.real_data, task='forecast', window_size=window * 2)
+        p_mae, p_rmse = persistence_baseline(rv_2x, window)
+
+        real_res_train_ds = CGMDataset(tr_res, task='reconstruct', window_size=window)
+        real_res_val_ds = CGMDataset(vr_res, task='reconstruct', window_size=window)
+
+        horizon_entry = {
+            'window_steps': window,
+            'window_minutes': window * 5,
+            'samples': {'train': len(train_np), 'val': len(val_np)},
+            'physics_only': physics_metrics,
+            'persistence': {'mae_mgdl': round(p_mae, 2)},
+        }
+
+        for arch_name, arch_cfg in architectures.items():
+            arch_results = {}
+
+            # --- Transfer: pre-train on synthetic, fine-tune on real ---
+            if has_synthetic:
+                set_seed(42)
+                model = arch_cfg['class'](**arch_cfg['kwargs'])
+                syn_train_ld = DataLoader(syn_res_train_ds, batch_size=args.batch, shuffle=True)
+                syn_val_ld = DataLoader(syn_res_val_ds, batch_size=args.batch)
+                pre_ckpt = str(out / f'exp018_pre_{arch_name}_{window}.pth')
+
+                print(f'\n  --- Pre-train {arch_name} at {label} ---')
+                train_loop(model, syn_train_ld, syn_val_ld,
+                           lr=1e-3, epochs=args.epochs, patience=args.patience,
+                           save_path=pre_ckpt, label=f'pre-{arch_name}-{label}')
+                load_best(model, pre_ckpt)
+
+                # Fine-tune
+                print(f'  --- Fine-tune {arch_name} at {label} ---')
+                ft_ckpt = str(out / f'exp018_ft_{arch_name}_{window}.pth')
+                real_train_ld = DataLoader(real_res_train_ds, batch_size=args.batch, shuffle=True)
+                real_val_ld = DataLoader(real_res_val_ds, batch_size=args.batch)
+
+                train_loop(model, real_train_ld, real_val_ld,
+                           lr=3e-4, epochs=args.epochs, patience=args.patience,
+                           save_path=ft_ckpt, label=f'ft-{arch_name}-{label}')
+                load_best(model, ft_ckpt)
+
+                recon = _evaluate_residual_model(model, vr_res, vr_phys, val_np)
+                forecast = _evaluate_residual_future_only(
+                    model, vr_res, vr_phys, val_np,
+                    history_steps=window // 2)
+                arch_results['transfer'] = {
+                    'reconstruction': recon,
+                    'future_only': forecast,
+                }
+                print(f'  [{arch_name} transfer {label}] recon={recon["mae_mgdl"]:.2f}  '
+                      f'forecast={forecast["mae_mgdl"]:.2f}')
+
+                # Cleanup
+                for p in [pre_ckpt, ft_ckpt]:
+                    if os.path.exists(p):
+                        os.remove(p)
+
+            # --- Scratch baseline ---
+            set_seed(42)
+            model = arch_cfg['class'](**arch_cfg['kwargs'])
+            scratch_ckpt = str(out / f'exp018_scratch_{arch_name}_{window}.pth')
+            real_train_ld = DataLoader(real_res_train_ds, batch_size=args.batch, shuffle=True)
+            real_val_ld = DataLoader(real_res_val_ds, batch_size=args.batch)
+
+            print(f'  --- Scratch {arch_name} at {label} ---')
+            train_loop(model, real_train_ld, real_val_ld,
+                       lr=1e-3, epochs=args.epochs, patience=args.patience,
+                       save_path=scratch_ckpt, label=f'scratch-{arch_name}-{label}')
+            load_best(model, scratch_ckpt)
+
+            recon = _evaluate_residual_model(model, vr_res, vr_phys, val_np)
+            forecast = _evaluate_residual_future_only(
+                model, vr_res, vr_phys, val_np,
+                history_steps=window // 2)
+            arch_results['scratch'] = {
+                'reconstruction': recon,
+                'future_only': forecast,
+            }
+            print(f'  [{arch_name} scratch {label}] recon={recon["mae_mgdl"]:.2f}  '
+                  f'forecast={forecast["mae_mgdl"]:.2f}')
+
+            if os.path.exists(scratch_ckpt):
+                os.remove(scratch_ckpt)
+
+            horizon_entry[arch_name] = arch_results
+
+        horizon_results[label] = horizon_entry
+
+    results['horizons_detail'] = horizon_results
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    # --- Summary ---
+    print('\n' + '=' * 60)
+    print('SUMMARY — Transfer at Longer Horizons')
+    print('=' * 60)
+
+    print(f'\n  {"Horizon":<10s}  {"AE scratch":>12s}  {"AE transfer":>12s}  '
+          f'{"Gr scratch":>12s}  {"Gr transfer":>12s}  {"Winner":>14s}')
+    print(f'  {"-"*10}  {"-"*12}  {"-"*12}  {"-"*12}  {"-"*12}  {"-"*14}')
+
+    for window in horizons:
+        label = f'{window * 5}min'
+        if label not in horizon_results:
+            continue
+        hr = horizon_results[label]
+        ae_s = hr.get('ae', {}).get('scratch', {}).get('future_only', {}).get('mae_mgdl', 0)
+        ae_t = hr.get('ae', {}).get('transfer', {}).get('future_only', {}).get('mae_mgdl', 0)
+        gr_s = hr.get('grouped', {}).get('scratch', {}).get('future_only', {}).get('mae_mgdl', 0)
+        gr_t = hr.get('grouped', {}).get('transfer', {}).get('future_only', {}).get('mae_mgdl', 0)
+
+        vals = {'AE scratch': ae_s, 'AE transfer': ae_t,
+                'Gr scratch': gr_s, 'Gr transfer': gr_t}
+        winner = min(vals, key=vals.get) if any(v > 0 for v in vals.values()) else '?'
+        print(f'  {label:<10s}  {ae_s:>12.2f}  {ae_t:>12.2f}  '
+              f'{gr_s:>12.2f}  {gr_t:>12.2f}  {winner:>14s}')
+
+    # Transfer improvement analysis
+    print(f'\n  Transfer improvement (scratch → transfer):')
+    for window in horizons:
+        label = f'{window * 5}min'
+        if label not in horizon_results:
+            continue
+        hr = horizon_results[label]
+        for arch in ['ae', 'grouped']:
+            s = hr.get(arch, {}).get('scratch', {}).get('future_only', {}).get('mae_mgdl', 0)
+            t = hr.get(arch, {}).get('transfer', {}).get('future_only', {}).get('mae_mgdl', 0)
+            if s > 0 and t > 0:
+                pct = (s - t) / s * 100
+                print(f'    {arch} {label}: {s:.2f} → {t:.2f} ({pct:+.1f}%)')
+
+    print(f'\n  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp018_transfer_horizons.json'))
+    return results
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Run cgmencode experiments',
@@ -3085,6 +3529,7 @@ def main():
                                  'grouped-transfer', 'causal-longer-horizons',
                                  'multiseed', 'walkforward-transfer',
                                  'multiseed-transfer', 'diffusion-benchmark',
+                                 'seed-ensemble', 'transfer-horizons',
                                  'all'],
                         help='Which experiment to run')
     parser.add_argument('--real-data', required=True,
@@ -3135,6 +3580,10 @@ def main():
         run_multiseed_transfer(args)
     if args.experiment in ('diffusion-benchmark', 'all'):
         run_diffusion_benchmark(args)
+    if args.experiment in ('seed-ensemble', 'all'):
+        run_seed_ensemble(args)
+    if args.experiment in ('transfer-horizons', 'all'):
+        run_transfer_longer_horizons(args)
 
 
 if __name__ == '__main__':

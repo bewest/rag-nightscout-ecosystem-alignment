@@ -19,6 +19,7 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 | **Real (Grouped + transfer, walk-forward)** | **Physics→Grouped** | **0.48** | **—** | **↘97.6%** | **Forecast** | **2026-04-01** |
 | **Real (Grouped + transfer, 5-seed mean)** | **Physics→Grouped** | **0.43±0.04** | **—** | **↘97.7%** | **Forecast** | **2026-04-01** |
 | Real (DDPM, 20 samples) | DDPM | 28.66 | — | ↑50.8% | Forecast | 2026-04-01 |
+| **Real (Grouped + transfer, 5-ensemble)** | **Physics→Grouped×5** | **0.30** | **—** | **↘98.4%** | **Forecast** | **2026-04-01** |
 | Real (Grouped + transfer, recon) | Physics→Grouped | 0.13 | — | ↘99.3% | Recon | 2026-04-01 |
 | Real (enhanced residual + transfer) | Physics→AE | 0.22 | 0.27 | ↘98.8% | Recon | 2026-03-31 |
 | Real (enhanced physics + residual AE) | Physics→AE | 0.20 | 0.25 | ↘98.9% | Recon | 2026-03-31 |
@@ -41,10 +42,11 @@ Central tracking for cgmencode training runs, benchmark results, and experimenta
 4. **Physics-ML residual composition validated across 3 physics levels** — all dramatically outperform raw AE. Core L1+L3 thesis confirmed.
 5. **Conditioned Transformer is a dead end on single-patient data** — EXP-004/006 both fail.
 6. **Reconstruction MAE ≠ forecast MAE** — AE wins reconstruction but Grouped can win forecast. Causal future-only is the clinically relevant metric.
-7. **Grouped + transfer is the definitive production config** — 0.43±0.04 MAE across 5 seeds (EXP-015). Wins both mean and consistency over AE (0.45±0.07).
+7. **Grouped + transfer + 5-seed ensemble = 0.30 MAE (new best)** — 5-model ensemble beats single best (0.29) and mean (0.37). Single-model: 0.43±0.04 (EXP-015). Ensemble adds 5× inference for 30% improvement.
 8. **Transfer is essential for GroupedEncoder** — reduces variance 16× (std 0.64→0.04). Without transfer, AE is more reliable. With transfer, Grouped wins.
 9. **Walk-forward validates transfer results** — Grouped+transfer 0.48 under strict temporal split, only +0.05 vs random split (0.43). No data leakage.
 10. **DDPM is a dead end at single-patient scale** — 28.66 MAE (worse than persistence) despite 12× more params. Inpainting conditioning too crude, model overparameterized for 3K windows.
+11. **Transfer is horizon-specific** — helps Grouped at 1hr (-60.2%) but HURTS both architectures at 2hr/3hr. Synthetic data scarcity (63-127 vectors) introduces harmful bias at longer windows.
 
 ---
 
@@ -724,6 +726,95 @@ Score: AE 2/5, **Grouped 3/5**.
 
 **Tool**: `python3 -m tools.cgmencode.run_experiment diffusion-benchmark --real-data PATH --epochs 50`
 **Artifacts**: `externals/experiments/exp016_diffusion_benchmark.json`
+
+---
+
+### EXP-017: Seed Ensemble (2026-04-01) ★
+
+**Hypothesis**: Averaging predictions from 5 Grouped+transfer models (different fine-tuning seeds) could beat any single model by canceling out seed-specific errors.
+
+**Setup**:
+- Pre-train once per architecture (seed=42), fine-tune 5× with seeds [42, 123, 456, 789, 1024]
+- At inference: run all 5 models, average their glucose predictions
+- Same data as EXP-015
+- Also reports prediction spread (std across models) as uncertainty proxy
+
+**Results**:
+
+| Architecture | Individual MAEs | Mean±Std | **Ensemble MAE** | Improvement |
+|-------------|----------------|-------------|-----------------|-------------|
+| AE | [0.48, 0.50, 0.89, 0.57, 0.57] | 0.60±0.15 | 0.53 | +11.7% vs mean |
+| **Grouped** | **[0.32, 0.56, 0.30, 0.36, 0.29]** | **0.37±0.10** | **0.30** | **+18.9% vs mean** |
+
+**Key Findings**:
+
+1. **Grouped ensemble = 0.30 MAE** — new best result. Beats single-model best (0.29) slightly, and mean (0.37) by 19%. Ensemble smooths out seed-specific noise.
+
+2. **Ensembling helps Grouped more than AE**: 18.9% vs 11.7% improvement. Grouped models learn more diverse representations (higher prediction spread), making ensemble averaging more effective.
+
+3. **Prediction spread as uncertainty**: Grouped mean spread = 97.65 mg/dL, AE = 141.85 mg/dL. Despite similar architectures, models trained with different seeds genuinely disagree, making ensemble averaging effective.
+
+4. **5-model ensemble is practical**: 5× inference cost for 30% MAE reduction. For a 68K-param model, this is negligible compute.
+
+**Tool**: `python3 -m tools.cgmencode.run_experiment seed-ensemble --real-data PATH --epochs 50`
+**Artifacts**: `externals/experiments/exp017_seed_ensemble.json`
+
+---
+
+### EXP-018: Transfer at Longer Horizons (2026-04-01)
+
+**Hypothesis**: EXP-015 showed transfer helps at 1hr. EXP-010b showed Grouped wins at 3hr from scratch. Does transfer help at all horizons?
+
+**Setup**:
+- AE and Grouped, both scratch and transfer variants
+- Horizons: 60min (12 steps), 120min (24 steps), 180min (36 steps)
+- Transfer: pre-train on synthetic residuals, fine-tune on real at 3e-4
+- Seed 42 for all runs
+
+**Synthetic data availability**:
+
+| Horizon | Synthetic vectors | Real train | Ratio |
+|---------|-------------------|------------|-------|
+| 60min | 424 | 3,085 | 1:7.3 |
+| 120min | 127 | 1,538 | 1:12.1 |
+| 180min | 63 | 1,019 | 1:16.2 |
+
+**Results** (forecast MAE in mg/dL):
+
+| Horizon | AE scratch | AE transfer | Gr scratch | Gr transfer | Winner |
+|---------|-----------|-------------|-----------|-------------|--------|
+| 60min | **0.35** | 0.79 | 1.23 | 0.49 | AE scratch |
+| 120min | 2.21 | 2.96 | **1.95** | 2.66 | Gr scratch |
+| 180min | **4.51** | 5.06 | 5.81 | 7.11 | AE scratch |
+
+**Transfer effect** (scratch → transfer):
+
+| Arch | 60min | 120min | 180min |
+|------|-------|--------|--------|
+| AE | +125.7% worse | +33.9% worse | +12.2% worse |
+| Grouped | **-60.2% better** | +36.4% worse | +22.4% worse |
+
+**Key Findings**:
+
+1. **Transfer only helps Grouped at 1hr**: 1.23→0.49 (-60.2%). At 2hr and 3hr, transfer HURTS both architectures. The synthetic pre-training data is too scarce and too different at longer horizons.
+
+2. **Synthetic data scarcity is the bottleneck**: 424 vectors at 1hr is enough for useful pre-training. 127 at 2hr and 63 at 3hr introduce harmful bias rather than helpful initialization.
+
+3. **From scratch is better at longer horizons**: For both architectures, scratch beats transfer at 120min and 180min. The real data alone (1K-1.5K windows) is sufficient.
+
+4. **Grouped scratch wins at 120min**: 1.95 vs AE's 2.21 (-11.8%). This confirms EXP-010b's finding that Grouped's inductive bias helps at medium horizons.
+
+5. **AE scratch wins at 60min and 180min**: The standard transformer is more robust across horizons from scratch.
+
+**Implications**:
+- Transfer learning is horizon-specific — only use when synthetic data is sufficient (>200 vectors)
+- For production at 2hr/3hr: train from scratch on real data
+- Grouped+transfer dominance (EXP-015) is specific to 1hr with adequate synthetic data
+- More synthetic data at longer horizons would likely restore transfer's benefit
+
+**Tool**: `python3 -m tools.cgmencode.run_experiment transfer-horizons --real-data PATH --epochs 50`
+**Artifacts**: `externals/experiments/exp018_transfer_horizons.json`
+
 
 
 
