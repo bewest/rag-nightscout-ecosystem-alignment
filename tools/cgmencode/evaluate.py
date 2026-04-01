@@ -21,6 +21,7 @@ from .model import CGMTransformerAE, CGMGroupedEncoder
 from .toolbox import CGMTransformerVAE, ConditionedTransformer, CGMDenoisingDiffusion
 from .sim_adapter import load_conformance_to_dataset
 from .train import MODEL_REGISTRY, DEFAULT_DATA_DIRS
+from .device import resolve_device, add_device_arg, batch_to_device
 
 
 # Denormalization uses canonical scales from schema.py
@@ -74,11 +75,13 @@ def persistence_baseline(dataset, window_size=12):
 def evaluate_model(model, val_loader, model_name, window_size=12):
     """Evaluate a trained model, returning metrics dict."""
     model.eval()
+    device = next(model.parameters()).device
     all_mae = []
     all_rmse = []
 
     with torch.no_grad():
         for batch in val_loader:
+            batch = batch_to_device(batch, device)
             if model_name == 'conditioned':
                 (hist, actions), target = batch
                 pred = model(hist, actions)
@@ -94,7 +97,7 @@ def evaluate_model(model, val_loader, model_name, window_size=12):
                 all_rmse.append(rmse_mgdl(recon, y))
             elif model_name == 'diffusion':
                 x, y = batch
-                t = torch.zeros(x.size(0), dtype=torch.long)
+                t = torch.zeros(x.size(0), dtype=torch.long, device=device)
                 output = model(x, t)
                 all_mae.append(mae_mgdl(output, y))
                 all_rmse.append(rmse_mgdl(output, y))
@@ -118,11 +121,13 @@ def per_horizon_mae(model, val_loader, model_name, window_size=12, interval_min=
     Essential for clinical validation — accuracy degrades with forecast horizon.
     """
     model.eval()
+    device = next(model.parameters()).device
     # Collect per-timestep errors: {timestep_idx: [abs_errors]}
     horizon_errors = {}
 
     with torch.no_grad():
         for batch in val_loader:
+            batch = batch_to_device(batch, device)
             if model_name == 'conditioned':
                 (hist, actions), target = batch
                 pred = model(hist, actions)
@@ -131,13 +136,13 @@ def per_horizon_mae(model, val_loader, model_name, window_size=12, interval_min=
                 # pred_g: (B, future_steps)
                 for t in range(pred_g.size(-1)):
                     errs = torch.abs(pred_g[:, t] - tgt_g[:, t])
-                    horizon_errors.setdefault(t, []).extend(errs.tolist())
+                    horizon_errors.setdefault(t, []).extend(errs.cpu().tolist())
             else:
                 x, y = batch
                 if model_name == 'vae':
                     output, _, _ = model(x)
                 elif model_name == 'diffusion':
-                    t_idx = torch.zeros(x.size(0), dtype=torch.long)
+                    t_idx = torch.zeros(x.size(0), dtype=torch.long, device=device)
                     output = model(x, t_idx)
                 else:
                     output = model(x)
@@ -149,7 +154,7 @@ def per_horizon_mae(model, val_loader, model_name, window_size=12, interval_min=
                     errs = torch.abs(pred_g[:, t] - tgt_g[:, t])
                     valid = ~torch.isnan(errs)
                     if valid.any():
-                        horizon_errors.setdefault(t, []).extend(errs[valid].tolist())
+                        horizon_errors.setdefault(t, []).extend(errs[valid].cpu().tolist())
 
     results = {}
     for t_idx in sorted(horizon_errors.keys()):
@@ -174,10 +179,13 @@ def main():
     parser.add_argument('--batch', type=int, default=32)
     parser.add_argument('--baseline', action='store_true', help='Only compute persistence baseline')
     parser.add_argument('--save', help='Save results JSON to this path')
+    add_device_arg(parser)
     args = parser.parse_args()
 
+    device = resolve_device(args.device)
     print("=== cgmencode Evaluation ===")
     print(f"Source: {args.source}")
+    print(f"Device: {device}")
 
     def _load_val(task='forecast', conditioned=False, force_window=None):
         """Load validation data. force_window overrides the actual window size used."""
@@ -226,17 +234,19 @@ def main():
         print("ERROR: No validation data.")
         sys.exit(1)
 
-    val_loader = DataLoader(val_ds, batch_size=args.batch)
+    use_pin = device.type == 'cuda'
+    val_loader = DataLoader(val_ds, batch_size=args.batch, pin_memory=use_pin)
 
     # Load model
     model = reg['class'](**reg['kwargs'])
-    checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=True)
+    checkpoint = torch.load(args.checkpoint, map_location=device, weights_only=True)
     if 'model_state' in checkpoint:
         model.load_state_dict(checkpoint['model_state'])
         print(f"\n--- {args.model.upper()} (epoch {checkpoint.get('epoch', '?')}) ---")
     else:
         model.load_state_dict(checkpoint)
         print(f"\n--- {args.model.upper()} ---")
+    model.to(device)
 
     metrics = evaluate_model(model, val_loader, args.model, args.window)
     results[args.model] = metrics

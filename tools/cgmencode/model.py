@@ -172,9 +172,11 @@ class CGMGroupedEncoder(nn.Module):
 def train_one_epoch(model, loader, optimizer, criterion):
     """Train for one epoch, return average loss."""
     model.train()
+    device = next(model.parameters()).device
     total = 0.0
     n = 0
     for x, y in loader:
+        x, y = x.to(device, non_blocking=True), y.to(device, non_blocking=True)
         optimizer.zero_grad()
         loss = criterion(model(x), y)
         loss.backward()
@@ -188,10 +190,12 @@ def train_one_epoch(model, loader, optimizer, criterion):
 def eval_loss(model, loader, criterion):
     """Evaluate model on a DataLoader, return average loss."""
     model.eval()
+    device = next(model.parameters()).device
     total = 0.0
     n = 0
     with torch.no_grad():
         for x, y in loader:
+            x, y = x.to(device, non_blocking=True), y.to(device, non_blocking=True)
             total += criterion(model(x), y).item() * x.size(0)
             n += x.size(0)
     return total / n if n > 0 else float('inf')

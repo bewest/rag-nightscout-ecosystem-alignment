@@ -31,6 +31,7 @@ from torch.utils.data import DataLoader
 from .model import CGMTransformerAE, CGMGroupedEncoder
 from .toolbox import CGMTransformerVAE, ConditionedTransformer, CGMDenoisingDiffusion, vae_loss_function
 from .sim_adapter import load_conformance_to_dataset
+from .device import resolve_device, add_device_arg, batch_to_device
 
 
 DEFAULT_DATA_DIRS = [
@@ -75,6 +76,8 @@ MODEL_REGISTRY = {
 def train_step(model, batch, optimizer, model_name, criterion, kl_beta=0.01):
     """Single training step, dispatched by model type."""
     optimizer.zero_grad()
+    device = next(model.parameters()).device
+    batch = batch_to_device(batch, device)
 
     if model_name == 'vae':
         x, _ = batch
@@ -86,7 +89,7 @@ def train_step(model, batch, optimizer, model_name, criterion, kl_beta=0.01):
         loss = criterion(pred, target)
     elif model_name == 'diffusion':
         x, _ = batch
-        t = torch.randint(0, model.timesteps, (x.size(0),))
+        t = torch.randint(0, model.timesteps, (x.size(0),), device=device)
         noise = torch.randn_like(x)
         x_t = model.q_sample(x, t, noise=noise)
         predicted_noise = model(x_t, t)
@@ -152,6 +155,9 @@ def run_training(args):
     print(f"=== cgmencode training: {args.model} ===")
     print(f"Source: {args.source}")
 
+    device = resolve_device(args.device)
+    print(f"Device: {device}")
+
     reg = MODEL_REGISTRY[args.model]
     train_ds, val_ds = load_data(args, reg)
 
@@ -162,18 +168,20 @@ def run_training(args):
     print(f"Data: {len(train_ds)} train, {len(val_ds)} val samples")
     print(f"Window: {args.window} steps ({args.window * 5} min)")
 
-    train_loader = DataLoader(train_ds, batch_size=args.batch, shuffle=True)
-    val_loader = DataLoader(val_ds, batch_size=args.batch)
+    use_pin = device.type == 'cuda'
+    train_loader = DataLoader(train_ds, batch_size=args.batch, shuffle=True, pin_memory=use_pin)
+    val_loader = DataLoader(val_ds, batch_size=args.batch, pin_memory=use_pin)
 
     # Build model
     model = reg['class'](**reg['kwargs'])
+    model.to(device)
     param_count = sum(p.numel() for p in model.parameters())
     print(f"Model: {args.model} ({param_count:,} parameters)")
 
     # Transfer learning: load pretrained weights
     if args.pretrained:
         print(f"Loading pretrained weights from {args.pretrained}")
-        checkpoint = torch.load(args.pretrained, map_location='cpu', weights_only=True)
+        checkpoint = torch.load(args.pretrained, map_location=device, weights_only=True)
         if 'model_state' in checkpoint:
             model.load_state_dict(checkpoint['model_state'])
         else:
@@ -223,6 +231,7 @@ def run_training(args):
         val_loss = 0
         with torch.no_grad():
             for batch in val_loader:
+                batch = batch_to_device(batch, device)
                 if args.model == 'vae':
                     x, _ = batch
                     recon, mu, logvar = model(x)
@@ -233,7 +242,7 @@ def run_training(args):
                     val_loss += criterion(pred, target).item()
                 elif args.model == 'diffusion':
                     x, _ = batch
-                    t = torch.randint(0, model.timesteps, (x.size(0),))
+                    t = torch.randint(0, model.timesteps, (x.size(0),), device=device)
                     noise = torch.randn_like(x)
                     x_t = model.q_sample(x, t, noise=noise)
                     val_loss += criterion(model(x_t, t), noise).item()
@@ -308,6 +317,7 @@ def main():
     parser.add_argument('--lr', type=float, default=1e-3)
     parser.add_argument('--window', type=int, default=12, help='Window size in 5-min steps')
     parser.add_argument('--output', help='Checkpoint save path')
+    add_device_arg(parser)
 
     # Data source
     parser.add_argument('--source', choices=['conformance', 'nightscout', 'csv'],

@@ -31,6 +31,8 @@ import torch.nn as nn
 from pathlib import Path
 from torch.utils.data import DataLoader
 
+from .device import resolve_device, add_device_arg, batch_to_device
+
 
 def set_seed(seed):
     """Set all random seeds for reproducible training.
@@ -61,6 +63,16 @@ DEFAULT_SYNTH_DIRS = [
     'conformance/t1pal/vectors/oref0-endtoend',
 ]
 
+# Module-level default device, set by main() so all experiment functions
+# use GPU automatically without changing every train_loop/load_best call.
+_DEFAULT_DEVICE = torch.device('cpu')
+
+
+def set_default_device(device: torch.device):
+    """Set the module-level default compute device."""
+    global _DEFAULT_DEVICE
+    _DEFAULT_DEVICE = device
+
 
 def save_results(results, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -70,9 +82,11 @@ def save_results(results, path):
 
 
 def train_loop(model, train_ld, val_ld, lr, epochs, save_path, label,
-               weight_decay=1e-5, patience=15, lr_patience=5):
+               weight_decay=1e-5, patience=15, lr_patience=5, device=None):
     """Standard training loop with LR scheduling and early stopping.
     Returns (best_val_loss, epochs_run)."""
+    device = device if device is not None else _DEFAULT_DEVICE
+    model.to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=lr_patience, factor=0.5)
     crit = nn.MSELoss()
@@ -111,10 +125,12 @@ def train_loop(model, train_ld, val_ld, lr, epochs, save_path, label,
     return best, epochs_run
 
 
-def load_best(model, path):
+def load_best(model, path, device=None):
     """Load best checkpoint into model."""
-    ckpt = torch.load(path, map_location='cpu', weights_only=True)
+    device = device if device is not None else _DEFAULT_DEVICE
+    ckpt = torch.load(path, map_location=device, weights_only=True)
     model.load_state_dict(ckpt['model_state'])
+    model.to(device)
     return ckpt
 
 
@@ -443,10 +459,13 @@ def run_conditioned_transfer(args):
 
 
 def _train_conditioned(model, train_ds, val_ds, lr, epochs, patience,
-                       save_path, label, batch=32, weight_decay=1e-5):
+                       save_path, label, batch=32, weight_decay=1e-5, device=None):
     """Train a ConditionedTransformer with standard loop. Returns (best_val, epochs_run)."""
-    train_ld = DataLoader(train_ds, batch_size=batch, shuffle=True)
-    val_ld = DataLoader(val_ds, batch_size=batch)
+    device = device if device is not None else _DEFAULT_DEVICE
+    model.to(device)
+    use_pin = device.type == 'cuda'
+    train_ld = DataLoader(train_ds, batch_size=batch, shuffle=True, pin_memory=use_pin)
+    val_ld = DataLoader(val_ds, batch_size=batch, pin_memory=use_pin)
     opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
     crit = nn.MSELoss()
@@ -457,6 +476,7 @@ def _train_conditioned(model, train_ds, val_ds, lr, epochs, patience,
         model.train()
         total = 0; n = 0
         for batch_data in train_ld:
+            batch_data = batch_to_device(batch_data, device)
             (h, a), t = batch_data
             opt.zero_grad()
             pred = model(h, a)
@@ -471,6 +491,7 @@ def _train_conditioned(model, train_ds, val_ds, lr, epochs, patience,
         total_v = 0; nv = 0
         with torch.no_grad():
             for batch_data in val_ld:
+                batch_data = batch_to_device(batch_data, device)
                 (h, a), t = batch_data
                 pred = model(h, a)
                 total_v += crit(pred, t).item() * h.size(0); nv += h.size(0)
@@ -509,6 +530,7 @@ def _evaluate_residual_model(model, val_windows_residual, physics_pred_val, val_
     glucose_scale = NORMALIZATION_SCALES['glucose']
 
     model.eval()
+    device = next(model.parameters()).device
     all_pred_glucose = []
     all_actual_glucose = []
 
@@ -520,11 +542,12 @@ def _evaluate_residual_model(model, val_windows_residual, physics_pred_val, val_
     idx = 0
     with torch.no_grad():
         for batch_in, _ in loader:
+            batch_in = batch_in.to(device, non_blocking=True)
             recon = model(batch_in)  # (B, T, 8)
             B = recon.shape[0]
 
             # Extract reconstructed residual (channel 0)
-            residual_recon = recon[:, :, 0].numpy()  # (B, T) normalized
+            residual_recon = recon[:, :, 0].cpu().numpy()  # (B, T) normalized
 
             for b in range(B):
                 i = idx + b
@@ -1475,10 +1498,11 @@ def _evaluate_residual_future_only(model, val_windows_residual, physics_pred_val
     with torch.no_grad():
         for batch_in, _ in loader:
             # Run with causal mask — position t can only attend to 0..t
+            batch_in = batch_in.to(_DEFAULT_DEVICE, non_blocking=True)
             recon = model(batch_in, causal=True)  # (B, T, 8)
             B = recon.shape[0]
 
-            residual_recon = recon[:, :, 0].numpy()  # (B, T) normalized
+            residual_recon = recon[:, :, 0].cpu().numpy()  # (B, T) normalized
 
             for b in range(B):
                 i = idx + b
@@ -2727,12 +2751,14 @@ def _ddpm_sample(model, shape, num_steps=50):
 def _train_diffusion_epoch(model, loader, optimizer):
     """One epoch of DDPM noise prediction training."""
     model.train()
+    device = next(model.parameters()).device
     total_loss = 0
     n = 0
     for batch_in, _ in loader:
+        batch_in = batch_in.to(device, non_blocking=True)
         optimizer.zero_grad()
         B = batch_in.size(0)
-        t = torch.randint(0, model.timesteps, (B,))
+        t = torch.randint(0, model.timesteps, (B,), device=device)
         noise = torch.randn_like(batch_in)
         x_t = model.q_sample(batch_in, t, noise=noise)
         predicted_noise = model(x_t, t)
@@ -2748,12 +2774,14 @@ def _train_diffusion_epoch(model, loader, optimizer):
 def _eval_diffusion(model, loader):
     """Evaluate diffusion model noise prediction loss."""
     model.eval()
+    device = next(model.parameters()).device
     total_loss = 0
     n = 0
     with torch.no_grad():
         for batch_in, _ in loader:
+            batch_in = batch_in.to(device, non_blocking=True)
             B = batch_in.size(0)
-            t = torch.randint(0, model.timesteps, (B,))
+            t = torch.randint(0, model.timesteps, (B,), device=device)
             noise = torch.randn_like(batch_in)
             x_t = model.q_sample(batch_in, t, noise=noise)
             predicted_noise = model(x_t, t)
@@ -3199,9 +3227,10 @@ def run_seed_ensemble(args):
             idx = 0
             with torch.no_grad():
                 for batch_in, _ in loader:
+                    batch_in = batch_in.to(_DEFAULT_DEVICE, non_blocking=True)
                     recon = model(batch_in, causal=True)
                     B = recon.shape[0]
-                    residual_recon = recon[:, :, 0].numpy()
+                    residual_recon = recon[:, :, 0].cpu().numpy()
                     for b in range(B):
                         i = idx + b
                         if i >= len(vr_phys):
@@ -3546,7 +3575,13 @@ def main():
                         help='History window in 5-min steps (default: 12 = 1 hour)')
     parser.add_argument('--patience', type=int, default=15,
                         help='Early stopping patience (0=disabled)')
+    add_device_arg(parser)
     args = parser.parse_args()
+
+    # Resolve compute device and store for all experiment functions
+    args.resolved_device = resolve_device(args.device)
+    set_default_device(args.resolved_device)
+    print(f'Device: {args.resolved_device}')
 
     os.makedirs(args.output_dir, exist_ok=True)
 

@@ -84,6 +84,7 @@ from .physics_model import (
     enhanced_predict_window, physics_predict_window,
     residual_to_glucose, RESIDUAL_SCALE,
 )
+from .device import resolve_device, add_device_arg
 
 SCALE = NORMALIZATION_SCALES
 
@@ -102,6 +103,17 @@ HINDCAST_MODELS = {
         'kwargs': {'history_dim': 8, 'action_dim': 3, 'd_model': 64, 'dropout': 0.2},
     },
 }
+
+
+def _model_tensor(array, model: torch.nn.Module) -> torch.Tensor:
+    """Create a float32 batch tensor on the model's device.
+
+    Shorthand for the common hindcast pattern of building an input tensor
+    from a numpy array and running inference on whatever device the model
+    lives on (CPU or CUDA).
+    """
+    device = next(model.parameters()).device
+    return torch.tensor(array, dtype=torch.float32, device=device).unsqueeze(0)
 
 
 def load_profile(data_path: str) -> Dict:
@@ -185,9 +197,18 @@ def make_residual_input(window_norm: np.ndarray,
     return residual_window
 
 
-def load_model(checkpoint_path: str, model_type: str = 'ae') -> torch.nn.Module:
-    """Load a trained model from checkpoint."""
-    ckpt = torch.load(checkpoint_path, map_location='cpu', weights_only=True)
+def load_model(checkpoint_path: str, model_type: str = 'ae',
+               device: torch.device = None) -> torch.nn.Module:
+    """Load a trained model from checkpoint.
+
+    Args:
+        checkpoint_path: Path to .pth checkpoint file.
+        model_type: Architecture key ('ae', 'grouped', 'conditioned').
+        device: Target device. If None, defaults to CPU.
+    """
+    if device is None:
+        device = torch.device('cpu')
+    ckpt = torch.load(checkpoint_path, map_location=device, weights_only=True)
 
     # Handle both raw state_dict and wrapped checkpoint formats
     if isinstance(ckpt, dict) and 'model_state' in ckpt:
@@ -216,6 +237,7 @@ def load_model(checkpoint_path: str, model_type: str = 'ae') -> torch.nn.Module:
     kwargs = reg['kwargs']
     model = reg['class'](**kwargs)
     model.load_state_dict(state_dict)
+    model.to(device)
     model.eval()
 
     param_count = sum(p.numel() for p in model.parameters())
@@ -377,11 +399,11 @@ def run_hindcast(model: torch.nn.Module, features: np.ndarray,
         if mode == 'forecast':
             window[history:, :6] = 0.0
 
-        x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
+        x = _model_tensor(window, model)
         with torch.no_grad():
             output = model(x)
 
-        out = output[0].numpy()
+        out = output[0].cpu().numpy()
         pred_glucose = out[history:, IDX_GLUCOSE] * SCALE['glucose']
         recon_history = out[:history, IDX_GLUCOSE] * SCALE['glucose']
         return pred_glucose, recon_history, None
@@ -390,7 +412,7 @@ def run_hindcast(model: torch.nn.Module, features: np.ndarray,
     physics_pred = compute_physics_baseline(window, isf, cr, physics_level)
     residual_input = make_residual_input(window, physics_pred)
 
-    x = torch.tensor(residual_input, dtype=torch.float32).unsqueeze(0)
+    x = _model_tensor(residual_input, model)
     with torch.no_grad():
         if mode == 'forecast':
             # Causal attention: position t only sees 0..t (no peeking at future)
@@ -398,7 +420,7 @@ def run_hindcast(model: torch.nn.Module, features: np.ndarray,
         else:
             output = model(x)
 
-    residual_out = output[0, :, IDX_GLUCOSE].numpy()
+    residual_out = output[0, :, IDX_GLUCOSE].cpu().numpy()
     final_glucose = residual_to_glucose(residual_out, physics_pred)
 
     pred_glucose = final_glucose[history:]
@@ -424,7 +446,7 @@ def extract_embeddings(model: torch.nn.Module, x: torch.Tensor) -> np.ndarray:
             z = model.input_projection(x)
         z = model.pos_encoder(z)
         encoded = model.transformer_encoder(z)
-    return encoded[0].numpy()  # drop batch dim
+    return encoded[0].cpu().numpy()  # drop batch dim
 
 
 def run_anomaly_scan(model: torch.nn.Module, features: np.ndarray,
@@ -451,22 +473,22 @@ def run_anomaly_scan(model: torch.nn.Module, features: np.ndarray,
         if residual:
             physics_pred = compute_physics_baseline(window, isf, cr, physics_level)
             residual_input = make_residual_input(window, physics_pred)
-            x = torch.tensor(residual_input, dtype=torch.float32).unsqueeze(0)
+            x = _model_tensor(residual_input, model)
             with torch.no_grad():
                 output = model(x)
-            residual_out = output[0, :, IDX_GLUCOSE].numpy()
+            residual_out = output[0, :, IDX_GLUCOSE].cpu().numpy()
             recon_glucose = residual_to_glucose(residual_out, physics_pred)
         else:
-            x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
+            x = _model_tensor(window, model)
             with torch.no_grad():
                 output = model(x)
-            recon = output[0].numpy()
+            recon = output[0].cpu().numpy()
             recon_glucose = recon[:, IDX_GLUCOSE] * SCALE['glucose']
 
         mae = np.mean(np.abs(recon_glucose - actual_g))
 
         # Also compute per-channel errors for context
-        recon_full = output[0].numpy()
+        recon_full = output[0].cpu().numpy()
         recon_iob = recon_full[:, 1] * SCALE['iob']
         actual_iob = df['iob'].values[start:start + total_len]
         iob_mae = np.mean(np.abs(recon_iob - actual_iob))
@@ -506,16 +528,16 @@ def run_counterfactual(model: torch.nn.Module, features: np.ndarray,
         if residual:
             physics_pred = compute_physics_baseline(window, isf, cr, physics_level)
             residual_input = make_residual_input(window, physics_pred)
-            x = torch.tensor(residual_input, dtype=torch.float32).unsqueeze(0)
+            x = _model_tensor(residual_input, model)
             with torch.no_grad():
                 output = model(x)
-            residual_out = output[0, :, IDX_GLUCOSE].numpy()
+            residual_out = output[0, :, IDX_GLUCOSE].cpu().numpy()
             return residual_to_glucose(residual_out, physics_pred)
         else:
-            x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
+            x = _model_tensor(window, model)
             with torch.no_grad():
                 output = model(x)
-            return output[0].numpy()[:, IDX_GLUCOSE] * SCALE['glucose']
+            return output[0].cpu().numpy()[:, IDX_GLUCOSE] * SCALE['glucose']
 
     # Normal reconstruction (with actions)
     recon_real = _run_window(features[start:end].copy())
@@ -564,17 +586,17 @@ def run_imputation(model: torch.nn.Module, features: np.ndarray,
         residual_input = make_residual_input(window, physics_pred)
         # Mask the residual channel at selected positions
         residual_input[mask_bool, IDX_GLUCOSE] = 0.0
-        x = torch.tensor(residual_input, dtype=torch.float32).unsqueeze(0)
+        x = _model_tensor(residual_input, model)
         with torch.no_grad():
             output = model(x)
-        residual_out = output[0, :, IDX_GLUCOSE].numpy()
+        residual_out = output[0, :, IDX_GLUCOSE].cpu().numpy()
         predicted = residual_to_glucose(residual_out, physics_pred)
     else:
         window[mask_bool, IDX_GLUCOSE] = 0.0
-        x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
+        x = _model_tensor(window, model)
         with torch.no_grad():
             output = model(x)
-        predicted = output[0].numpy()[:, IDX_GLUCOSE] * SCALE['glucose']
+        predicted = output[0].cpu().numpy()[:, IDX_GLUCOSE] * SCALE['glucose']
 
     return actual_glucose, predicted, mask_bool
 
@@ -601,12 +623,12 @@ def run_similarity(model: torch.nn.Module, features: np.ndarray,
         if residual:
             physics_pred = compute_physics_baseline(window, isf, cr, physics_level)
             res_input = make_residual_input(window, physics_pred)
-            x = torch.tensor(res_input, dtype=torch.float32).unsqueeze(0)
+            x = _model_tensor(res_input, model)
         else:
-            x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
+            x = _model_tensor(window, model)
         with torch.no_grad():
             out = model(x)
-        return (x[0] - out[0]).numpy().flatten()
+        return (x[0] - out[0]).cpu().numpy().flatten()
 
     ref_window = features[start:end]
     ref_residual = _get_model_residual(ref_window)
@@ -666,13 +688,13 @@ def run_conditioned_hindcast(model: torch.nn.Module, features: np.ndarray,
     # Extract action channels for future: [net_basal, bolus, carbs]
     future_actions = future_window[:, ACTION_IDX]  # (horizon, 3)
 
-    hist_t = torch.tensor(hist_window, dtype=torch.float32).unsqueeze(0)
-    act_t = torch.tensor(future_actions, dtype=torch.float32).unsqueeze(0)
+    hist_t = _model_tensor(hist_window, model)
+    act_t = _model_tensor(future_actions, model)
 
     with torch.no_grad():
         pred = model(hist_t, act_t)  # (1, horizon)
 
-    pred_glucose = pred[0].numpy() * SCALE['glucose']
+    pred_glucose = pred[0].cpu().numpy() * SCALE['glucose']
     actual_glucose = future_window[:, IDX_GLUCOSE] * SCALE['glucose']
 
     return pred_glucose, actual_glucose
@@ -704,7 +726,7 @@ def run_conditioned_dose_sweep(model: torch.nn.Module, features: np.ndarray,
     actual_glucose = future_window[:, IDX_GLUCOSE] * SCALE['glucose']
     actual_bolus = base_actions[:, 1].sum() * SCALE['bolus']  # denormalize
 
-    hist_t = torch.tensor(hist_window, dtype=torch.float32).unsqueeze(0)
+    hist_t = _model_tensor(hist_window, model)
 
     results = {
         'doses': [],
@@ -721,11 +743,11 @@ def run_conditioned_dose_sweep(model: torch.nn.Module, features: np.ndarray,
         actions[:, 1] = 0.0  # clear all bolus
         actions[0, 1] = dose / SCALE['bolus']  # normalized bolus at t=0
 
-        act_t = torch.tensor(actions, dtype=torch.float32).unsqueeze(0)
+        act_t = _model_tensor(actions, model)
         with torch.no_grad():
             pred = model(hist_t, act_t)  # (1, horizon)
 
-        pred_glucose = (pred[0].numpy() * SCALE['glucose']).tolist()
+        pred_glucose = (pred[0].cpu().numpy() * SCALE['glucose']).tolist()
         results['doses'].append(dose)
         results['predictions'].append(pred_glucose)
 
@@ -754,17 +776,17 @@ def run_conditioned_counterfactual(model: torch.nn.Module, features: np.ndarray,
     zero_actions = np.zeros_like(actual_actions)
 
     actual_glucose = future_window[:, IDX_GLUCOSE] * SCALE['glucose']
-    hist_t = torch.tensor(hist_window, dtype=torch.float32).unsqueeze(0)
+    hist_t = _model_tensor(hist_window, model)
 
     with torch.no_grad():
         pred_with = model(hist_t,
-                          torch.tensor(actual_actions, dtype=torch.float32).unsqueeze(0))
+                          _model_tensor(actual_actions, model))
         pred_without = model(hist_t,
-                             torch.tensor(zero_actions, dtype=torch.float32).unsqueeze(0))
+                             _model_tensor(zero_actions, model))
 
     return (actual_glucose,
-            pred_with[0].numpy() * SCALE['glucose'],
-            pred_without[0].numpy() * SCALE['glucose'])
+            pred_with[0].cpu().numpy() * SCALE['glucose'],
+            pred_without[0].cpu().numpy() * SCALE['glucose'])
 
 
 def display_conditioned_hindcast(df: pd.DataFrame, features: np.ndarray,
@@ -1590,8 +1612,10 @@ Inference Frames:
 
     parser.add_argument('--json', action='store_true', help='Output results as JSON')
     parser.add_argument('--quiet', action='store_true', help='Suppress data loading output')
+    add_device_arg(parser)
 
     args = parser.parse_args()
+    device = resolve_device(args.device)
 
     # --- Load data ---
     df, features = build_nightscout_grid(args.data, verbose=not args.quiet)
@@ -1621,17 +1645,18 @@ Inference Frames:
             print(f'  ⚠ Profile has time-varying schedule; using midnight values')
 
     # --- Load model ---
-    model, param_count, ckpt_meta = load_model(args.checkpoint, args.model)
+    model, param_count, ckpt_meta = load_model(args.checkpoint, args.model, device=device)
     ckpt_name = Path(args.checkpoint).name
     if not args.quiet:
         epoch = ckpt_meta.get('epoch', '?')
         val_loss = ckpt_meta.get('val_loss', '?')
         print(f'\n  Model: {args.model} ({param_count:,} params, epoch={epoch}, val_loss={val_loss})')
+        print(f'  Device: {device}')
 
     # Optional second model
     model2 = None
     if args.checkpoint2:
-        model2, p2_count, _ = load_model(args.checkpoint2, args.model2)
+        model2, p2_count, _ = load_model(args.checkpoint2, args.model2, device=device)
         if not args.quiet:
             print(f'  Model2: {args.model2} ({p2_count:,} params)')
 
