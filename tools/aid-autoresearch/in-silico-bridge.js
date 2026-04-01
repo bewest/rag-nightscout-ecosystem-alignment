@@ -19,13 +19,17 @@
  *   --vectors   — TV-* style conformance vectors for algorithm scoring
  *
  * Scenarios (--scenario):
- *   meal-rise       — 50g meal, adequate bolus, BG 100→peak→return
- *   meal-underbolus — 50g meal, half bolus, sustained high
- *   fasting-flat    — no meals, stable basal, BG ~110
- *   hypo-recovery   — BG starts at 65, liver rescue + suspend
- *   dawn-phenomenon — 3am cortisol rise, increasing BG
- *   exercise        — post-meal exercise, insulin sensitivity boost
- *   multi-meal      — breakfast + lunch + snack over 8 hours
+ *   meal-rise                — 50g meal, adequate bolus, BG 100→peak→return
+ *   meal-underbolus          — 50g meal, half bolus, sustained high
+ *   fasting-flat             — no meals, stable basal, BG ~110
+ *   hypo-recovery            — BG starts at 65, liver rescue + suspend
+ *   dawn-phenomenon          — 3am cortisol rise, increasing BG
+ *   exercise                 — post-meal exercise, insulin sensitivity boost
+ *   multi-meal               — breakfast + lunch + snack over 8 hours
+ *   high-carb-no-bolus       — 80g carbs, no bolus → severe hyperglycemia
+ *   severe-hypo              — BG starts at 45, delayed rescue carbs
+ *   hyperglycemia-correction — BG starts at 300, correction bolus → swing down
+ *   large-meal-overbolus     — 100g carbs + 150% bolus → hypo risk
  *
  * Usage:
  *   node in-silico-bridge.js --scenario meal-rise --mode oref0-loop --csv
@@ -154,8 +158,37 @@ function makeScenario(name) {
           { eventType: 'Meal Bolus', insulin: 1.5, carbs: 15, created_at: m(360) },  // snack
         ]};
 
+    // Extended scenarios for wider BG range coverage
+    case 'high-carb-no-bolus':
+      return { ...base, name: 'High-carb meal with no bolus',
+        hours: 6, startBG: 120,
+        treatments: [
+          { eventType: 'Carb Correction', carbs: 80, created_at: m(10) }
+        ]};
+
+    case 'severe-hypo':
+      return { ...base, name: 'Severe hypoglycemia (BG 45)',
+        hours: 4, startBG: 45, basalRate: 0.5,
+        treatments: [
+          { eventType: 'Carb Correction', carbs: 30, created_at: m(15) }
+        ]};
+
+    case 'hyperglycemia-correction':
+      return { ...base, name: 'Hyperglycemia correction from 300',
+        hours: 6, startBG: 300,
+        treatments: [
+          { eventType: 'Correction Bolus', insulin: 6, created_at: m(5) }
+        ]};
+
+    case 'large-meal-overbolus':
+      return { ...base, name: 'Large meal with overbolus (150%)',
+        hours: 5, startBG: 110,
+        treatments: [
+          { eventType: 'Meal Bolus', insulin: 15, carbs: 100, created_at: m(10) }
+        ]};
+
     default:
-      throw new Error(`Unknown scenario: ${name}. Available: meal-rise, meal-underbolus, fasting-flat, hypo-recovery, dawn-phenomenon, exercise, multi-meal`);
+      throw new Error(`Unknown scenario: ${name}. Available: meal-rise, meal-underbolus, fasting-flat, hypo-recovery, dawn-phenomenon, exercise, multi-meal, high-carb-no-bolus, severe-hypo, hyperglycemia-correction, large-meal-overbolus`);
   }
 }
 
@@ -754,7 +787,7 @@ if (!['none', 'facchinetti', 'vettoretti'].includes(sensorArg)) {
   process.exit(1);
 }
 
-const SCENARIO_NAMES = ['meal-rise', 'meal-underbolus', 'fasting-flat', 'hypo-recovery', 'dawn-phenomenon', 'exercise', 'multi-meal'];
+const SCENARIO_NAMES = ['meal-rise', 'meal-underbolus', 'fasting-flat', 'hypo-recovery', 'dawn-phenomenon', 'exercise', 'multi-meal', 'high-carb-no-bolus', 'severe-hypo', 'hyperglycemia-correction', 'large-meal-overbolus'];
 const scenarios = scenarioArg === 'all' ? SCENARIO_NAMES : [scenarioArg];
 const modes = modeArg === 'both'
   ? ['open-loop', 'oref0-loop']

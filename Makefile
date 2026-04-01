@@ -400,6 +400,14 @@ in-silico-uva-noisy: ## Generate UVA/Padova vectors with Facchinetti sensor nois
 	@node $(INSIL_DIR)/in-silico-bridge.js --engine uva-padova --sensor facchinetti --scenario all --mode both --vectors
 	@echo "Vectors written to $(INSIL_VECS)/"
 
+sweep-uva-250: ## Generate 250 virtual patients with wide parameter ranges (UVA/Padova)
+	@echo "Generating 250 virtual patients (UVA/Padova, wide parameter sweep)..."
+	@mkdir -p externals/sweep-uva-250
+	python3 -m tools.cgmencode.generate_training_data \
+		--n-patients 250 --engine uva-padova --scenarios all --modes both \
+		--output-dir externals/sweep-uva-250
+	@echo "Sweep data written to externals/sweep-uva-250/"
+
 score-in-silico: ## Score algorithms against SIM-* vectors
 	@echo "Scoring algorithms against in-silico vectors..."
 	@node $(INSIL_DIR)/score-in-silico.js

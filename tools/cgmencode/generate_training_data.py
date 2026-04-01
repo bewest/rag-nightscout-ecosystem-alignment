@@ -6,10 +6,10 @@ Calls in-silico-bridge.js with systematically varied patient parameters to
 produce diverse training data for cgmencode models.
 
 Usage:
-    python3 -m tools.cgmencode.generate_training_data [--n-patients 50] [--engine uva-padova] [--dry-run]
+    python3 -m tools.cgmencode.generate_training_data [--n-patients 250] [--engine uva-padova] [--dry-run]
 
 Patient parameters are sampled via Latin Hypercube to cover the physiological
-space: ISF 15-80, CR 5-20, basal 0.3-3.0, weight 45-110, DIA 4-8.
+space: ISF 10-120, CR 3-30, basal 0.1-5.0, weight 30-150, DIA 3-10.
 """
 
 import subprocess
@@ -21,13 +21,14 @@ import numpy as np
 from pathlib import Path
 
 
-# Physiological parameter ranges (clinically realistic)
+# Physiological parameter ranges — widened to cover extreme phenotypes
+# (very insulin-sensitive pediatric through very insulin-resistant adult)
 PARAM_RANGES = {
-    'isf':        (15, 80),    # mg/dL per unit insulin
-    'cr':         (5, 20),     # grams carbs per unit insulin
-    'basal_rate': (0.3, 3.0),  # units/hour
-    'weight':     (45, 110),   # kg
-    'dia':        (4, 8),      # hours
+    'isf':        (10, 120),   # mg/dL per unit insulin (wider: was 15-80)
+    'cr':         (3, 30),     # grams carbs per unit insulin (wider: was 5-20)
+    'basal_rate': (0.1, 5.0),  # units/hour (wider: was 0.3-3.0)
+    'weight':     (30, 150),   # kg (wider: was 45-110)
+    'dia':        (3, 10),     # hours (wider: was 4-8)
 }
 
 
@@ -102,7 +103,7 @@ def run_bridge(params: dict, patient_id: str, engine: str, scenarios: str = 'all
 
 def main():
     parser = argparse.ArgumentParser(description='Generate diverse synthetic training data')
-    parser.add_argument('--n-patients', type=int, default=50, help='Number of synthetic patients')
+    parser.add_argument('--n-patients', type=int, default=250, help='Number of synthetic patients')
     parser.add_argument('--engine', default='cgmsim', choices=['cgmsim', 'uva-padova'],
                         help='Simulation engine')
     parser.add_argument('--scenarios', default='all', help='Scenario(s) to run')
