@@ -221,47 +221,44 @@ def load_nightscout_grid_timestamps(data_path: str) -> np.ndarray:
     return np.array([int(t.timestamp() * 1000) for t in grid], dtype=np.int64)
 
 
-def load_nightscout_to_dataset(data_path: str,
-                                task: str = 'forecast',
-                                window_size: int = 24,
-                                val_fraction: float = 0.2,
-                                conditioned: bool = False,
-                                ) -> Tuple[Optional[object], Optional[object]]:
+def build_nightscout_grid(data_path: str,
+                          verbose: bool = True,
+                          ) -> Tuple[Optional[pd.DataFrame], Optional[np.ndarray]]:
     """
-    Load Nightscout JSON directory → cgmencode datasets.
+    Build 5-min feature grid from Nightscout JSON directory.
 
-    Expects a directory with:
-      - entries.json: CGM readings (sgv field, ms timestamp)
-      - treatments.json: Bolus, carbs, temp basal events
-      - devicestatus.json: Loop IOB/COB (pre-computed by controller)
-      - profile.json: Scheduled basal rates
+    Returns the intermediate grid before windowing — useful for hindcast
+    and other tools that need random access to the time series.
 
-    The key advantage over OhioT1DM: devicestatus has Loop's pre-computed IOB/COB,
-    so we use actual controller state rather than exponential decay approximations.
+    Expects: entries.json, treatments.json, devicestatus.json, profile.json
 
     Returns:
-        (train_dataset, val_dataset)
+        (df, features) where:
+        - df: DataFrame with DateTimeIndex (5-min grid) and columns:
+              glucose, iob, cob, bolus, carbs, net_basal (raw units)
+        - features: (N, 8) normalized float32 array matching cgmencode schema
+        Returns (None, None) on error.
     """
     data_dir = Path(data_path)
     required = ['entries.json', 'treatments.json', 'devicestatus.json', 'profile.json']
     for f in required:
         if not (data_dir / f).exists():
-            print(f"ERROR: Missing {f} in {data_path}")
+            if verbose:
+                print(f"ERROR: Missing {f} in {data_path}")
             return None, None
 
-    print(f"=== Loading Nightscout data from {data_path} ===")
+    if verbose:
+        print(f"=== Loading Nightscout data from {data_path} ===")
 
     # --- 1. Build 5-min grid from entries (CGM readings) ---
     with open(data_dir / 'entries.json') as f:
         entries = json.load(f)
 
-    # Parse timestamps and glucose
     cgm_times = []
     cgm_values = []
     for e in entries:
         if e.get('type') != 'sgv' or 'sgv' not in e:
             continue
-        # Nightscout entries use ms epoch in 'date' or ISO in 'dateString'
         if 'date' in e:
             ts = pd.Timestamp(e['date'], unit='ms', tz='UTC')
         elif 'dateString' in e:
@@ -273,25 +270,23 @@ def load_nightscout_to_dataset(data_path: str,
 
     cgm_df = pd.DataFrame({'glucose': cgm_values}, index=pd.DatetimeIndex(cgm_times))
     cgm_df = cgm_df.sort_index()
-    # Remove duplicates (keep first)
     cgm_df = cgm_df[~cgm_df.index.duplicated(keep='first')]
 
-    # Resample to 5-min grid
     grid_start = cgm_df.index.min().floor('5min')
     grid_end = cgm_df.index.max().ceil('5min')
     grid = pd.date_range(grid_start, grid_end, freq='5min')
     df = pd.DataFrame(index=grid)
 
-    # Map CGM to nearest 5-min slot
     cgm_df.index = cgm_df.index.round('5min')
-    cgm_grouped = cgm_df.groupby(level=0).mean()  # average if multiple per slot
+    cgm_grouped = cgm_df.groupby(level=0).mean()
     df['glucose'] = cgm_grouped['glucose']
-    df['glucose'] = df['glucose'].interpolate(limit=6)  # fill gaps up to 30min
+    df['glucose'] = df['glucose'].interpolate(limit=6)
 
-    print(f"  CGM: {len(entries)} raw → {df['glucose'].notna().sum()}/{len(df)} grid points "
-          f"({grid_start.strftime('%Y-%m-%d')} to {grid_end.strftime('%Y-%m-%d')})")
+    if verbose:
+        print(f"  CGM: {len(entries)} raw → {df['glucose'].notna().sum()}/{len(df)} grid points "
+              f"({grid_start.strftime('%Y-%m-%d')} to {grid_end.strftime('%Y-%m-%d')})")
 
-    # --- 2. Extract IOB/COB from devicestatus (Loop pre-computed) ---
+    # --- 2. Extract IOB/COB from devicestatus ---
     with open(data_dir / 'devicestatus.json') as f:
         devicestatus = json.load(f)
 
@@ -320,7 +315,8 @@ def load_nightscout_to_dataset(data_path: str,
     df['iob'] = df['iob'].interpolate(limit=6).fillna(0)
     df['cob'] = df['cob'].interpolate(limit=6).fillna(0)
 
-    print(f"  DeviceStatus: {len(devicestatus)} raw → {ds_df.shape[0]} with IOB/COB")
+    if verbose:
+        print(f"  DeviceStatus: {len(devicestatus)} raw → {ds_df.shape[0]} with IOB/COB")
 
     # --- 3. Parse treatments → bolus, carbs, temp basal ---
     with open(data_dir / 'treatments.json') as f:
@@ -328,7 +324,7 @@ def load_nightscout_to_dataset(data_path: str,
 
     df['bolus'] = 0.0
     df['carbs'] = 0.0
-    df['temp_rate'] = np.nan  # will be forward-filled
+    df['temp_rate'] = np.nan
 
     bolus_count = 0
     carb_count = 0
@@ -351,7 +347,6 @@ def load_nightscout_to_dataset(data_path: str,
         if et == 'Temp Basal' and 'rate' in tx:
             rate = float(tx['rate'])
             dur_min = float(tx.get('duration', 5))
-            # Fill temp rate for duration
             n_slots = max(1, int(dur_min / 5))
             slot_idx = df.index.get_loc(ts)
             if isinstance(slot_idx, int):
@@ -359,13 +354,13 @@ def load_nightscout_to_dataset(data_path: str,
                 df.iloc[slot_idx:end_idx, df.columns.get_loc('temp_rate')] = rate
             temp_count += 1
 
-    print(f"  Treatments: {bolus_count} bolus, {carb_count} carbs, {temp_count} temp basals")
+    if verbose:
+        print(f"  Treatments: {bolus_count} bolus, {carb_count} carbs, {temp_count} temp basals")
 
-    # --- 4. Compute net_basal from profile + temp basals ---
+    # --- 4. Compute net_basal ---
     with open(data_dir / 'profile.json') as f:
         profiles = json.load(f)
 
-    # Get default profile basal schedule
     if isinstance(profiles, list) and profiles:
         store = profiles[0].get('store', {})
     else:
@@ -373,26 +368,23 @@ def load_nightscout_to_dataset(data_path: str,
     default_profile = store.get('Default', store.get(list(store.keys())[0], {})) if store else {}
     basal_schedule = default_profile.get('basal', [])
 
-    # Build scheduled basal for each 5-min slot
     scheduled = np.zeros(len(df))
     for i, ts in enumerate(df.index):
         sec_of_day = ts.hour * 3600 + ts.minute * 60 + ts.second
-        # Find applicable basal rate
         rate = basal_schedule[0]['value'] if basal_schedule else 0
         for entry in basal_schedule:
             if entry.get('timeAsSeconds', 0) <= sec_of_day:
                 rate = entry['value']
         scheduled[i] = rate
 
-    # Forward-fill temp_rate, then compute net
     df['temp_rate'] = df['temp_rate'].ffill()
-    # Where no temp basal was set, use scheduled rate
     df['temp_rate'] = df['temp_rate'].fillna(pd.Series(scheduled, index=df.index))
     df['net_basal'] = df['temp_rate'].values - scheduled
 
-    print(f"  Profile: {len(basal_schedule)} basal segments, "
-          f"scheduled range [{min(e['value'] for e in basal_schedule):.1f}, "
-          f"{max(e['value'] for e in basal_schedule):.1f}] U/hr")
+    if verbose and basal_schedule:
+        print(f"  Profile: {len(basal_schedule)} basal segments, "
+              f"scheduled range [{min(e['value'] for e in basal_schedule):.1f}, "
+              f"{max(e['value'] for e in basal_schedule):.1f}] U/hr")
 
     # --- 5. Build 8-feature array ---
     hours = df.index.hour + df.index.minute / 60.0
@@ -410,13 +402,40 @@ def load_nightscout_to_dataset(data_path: str,
         time_cos,
     ]).astype(np.float32)
 
-    print(f"  Feature matrix: {features.shape}")
-    print(f"  Glucose: [{df['glucose'].min():.0f}, {df['glucose'].max():.0f}] mg/dL")
-    print(f"  IOB: [{df['iob'].min():.2f}, {df['iob'].max():.2f}] U")
-    print(f"  COB: [{df['cob'].min():.0f}, {df['cob'].max():.0f}] g")
-    print(f"  Net basal: [{df['net_basal'].min():.2f}, {df['net_basal'].max():.2f}] U/hr")
+    if verbose:
+        print(f"  Feature matrix: {features.shape}")
+        print(f"  Glucose: [{df['glucose'].min():.0f}, {df['glucose'].max():.0f}] mg/dL")
+        print(f"  IOB: [{df['iob'].min():.2f}, {df['iob'].max():.2f}] U")
 
-    # --- 6. Window and split ---
+    return df, features
+
+
+def load_nightscout_to_dataset(data_path: str,
+                                task: str = 'forecast',
+                                window_size: int = 24,
+                                val_fraction: float = 0.2,
+                                conditioned: bool = False,
+                                ) -> Tuple[Optional[object], Optional[object]]:
+    """
+    Load Nightscout JSON directory → cgmencode datasets.
+
+    Expects a directory with:
+      - entries.json: CGM readings (sgv field, ms timestamp)
+      - treatments.json: Bolus, carbs, temp basal events
+      - devicestatus.json: Loop IOB/COB (pre-computed by controller)
+      - profile.json: Scheduled basal rates
+
+    The key advantage over OhioT1DM: devicestatus has Loop's pre-computed IOB/COB,
+    so we use actual controller state rather than exponential decay approximations.
+
+    Returns:
+        (train_dataset, val_dataset)
+    """
+    df, features = build_nightscout_grid(data_path, verbose=True)
+    if df is None:
+        return None, None
+
+    # --- Window and split ---
     # For conditioned model: windows must be 2x window_size (history + future)
     actual_window = window_size * 2 if conditioned else window_size
     windows = split_into_windows(features, window_size=actual_window)
