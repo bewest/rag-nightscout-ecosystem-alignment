@@ -73,11 +73,16 @@ from typing import Optional, Tuple, List, Dict
 
 from .schema import (
     NORMALIZATION_SCALES, NUM_FEATURES, FEATURE_NAMES,
-    IDX_GLUCOSE, ALL_VALS_IDX, IDX_TIME_SIN, IDX_TIME_COS,
+    IDX_GLUCOSE, IDX_IOB, IDX_COB, ALL_VALS_IDX,
+    IDX_TIME_SIN, IDX_TIME_COS,
     STATE_IDX, ACTION_IDX, TIME_IDX,
 )
 from .model import CGMTransformerAE, CGMGroupedEncoder
 from .real_data_adapter import build_nightscout_grid
+from .physics_model import (
+    enhanced_predict_window, physics_predict_window,
+    residual_to_glucose, RESIDUAL_SCALE,
+)
 
 SCALE = NORMALIZATION_SCALES
 
@@ -92,6 +97,87 @@ HINDCAST_MODELS = {
         'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2},
     },
 }
+
+
+def load_profile(data_path: str) -> Dict:
+    """Load patient therapy profile (ISF, CR, DIA) from Nightscout profile.json.
+
+    Returns dict with 'isf', 'cr', 'dia' — falls back to safe defaults.
+    Supports time-of-day schedules (uses first entry = midnight value).
+    """
+    profile_path = Path(data_path) / 'profile.json'
+    result = {'isf': 40.0, 'cr': 10.0, 'dia': 6.0, 'source': 'default'}
+
+    if not profile_path.exists():
+        return result
+
+    try:
+        with open(profile_path) as f:
+            profiles = json.load(f)
+        if not profiles:
+            return result
+
+        store = profiles[0].get('store', {})
+        default = store.get('Default', store.get(list(store.keys())[0], {})) if store else {}
+
+        sens = default.get('sens', [])
+        carbratio = default.get('carbratio', [])
+        dia = default.get('dia')
+
+        if sens and 'value' in sens[0]:
+            result['isf'] = float(sens[0]['value'])
+        if carbratio and 'value' in carbratio[0]:
+            result['cr'] = float(carbratio[0]['value'])
+        if dia is not None:
+            result['dia'] = float(dia)
+        result['source'] = 'profile.json'
+
+        # Note if schedules have multiple entries
+        if len(sens) > 1 or len(carbratio) > 1:
+            result['time_varying'] = True
+    except (json.JSONDecodeError, KeyError, IndexError):
+        pass
+
+    return result
+
+
+def compute_physics_baseline(window_norm: np.ndarray, isf: float = 40.0,
+                              cr: float = 10.0,
+                              level: str = 'enhanced') -> np.ndarray:
+    """Compute physics glucose prediction for a single window.
+
+    Args:
+        window_norm: (T, 8) normalized feature window
+        isf: Insulin Sensitivity Factor (mg/dL per unit)
+        cr: Carb Ratio (grams per unit)
+        level: 'simple' or 'enhanced' (+ liver + circadian)
+
+    Returns:
+        physics_pred: (T,) physics-predicted glucose in mg/dL
+    """
+    glucose_raw = window_norm[:, IDX_GLUCOSE] * SCALE['glucose']
+    iob_raw = window_norm[:, IDX_IOB] * SCALE['iob']
+    cob_raw = window_norm[:, IDX_COB] * SCALE['cob']
+
+    if level == 'enhanced':
+        return enhanced_predict_window(
+            glucose_raw, iob_raw, cob_raw,
+            window_norm[:, IDX_TIME_SIN], window_norm[:, IDX_TIME_COS],
+            isf, cr)
+    else:
+        return physics_predict_window(glucose_raw, iob_raw, cob_raw, isf, cr)
+
+
+def make_residual_input(window_norm: np.ndarray,
+                         physics_pred_raw: np.ndarray) -> np.ndarray:
+    """Replace glucose channel with normalized residual for residual model input.
+
+    residual = (actual_glucose_raw - physics_pred_raw) / RESIDUAL_SCALE
+    """
+    residual_window = window_norm.copy()
+    actual_glucose_raw = window_norm[:, IDX_GLUCOSE] * SCALE['glucose']
+    residual_window[:, IDX_GLUCOSE] = (actual_glucose_raw - physics_pred_raw) / RESIDUAL_SCALE
+    return residual_window
 
 
 def load_model(checkpoint_path: str, model_type: str = 'ae') -> torch.nn.Module:
@@ -239,8 +325,10 @@ def find_interesting_windows(df: pd.DataFrame, features: np.ndarray,
 
 def run_hindcast(model: torch.nn.Module, features: np.ndarray,
                   center_idx: int, history: int = 12, horizon: int = 12,
-                  mode: str = 'forecast'
-                  ) -> Tuple[np.ndarray, np.ndarray]:
+                  mode: str = 'forecast',
+                  residual: bool = False, isf: float = 40.0,
+                  cr: float = 10.0, physics_level: str = 'enhanced'
+                  ) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
     """Run model inference on a hindcast window.
 
     Modes:
@@ -249,28 +337,53 @@ def run_hindcast(model: torch.nn.Module, features: np.ndarray,
         'reconstruct':  Full window has real data. Model reconstructs it.
                         Tests: how well does the model represent this pattern?
 
-    Returns (pred_glucose, recon_history) in mg/dL.
+    When residual=True, the model outputs physics residuals. We compute:
+        final_glucose = physics_baseline(features) + model_residual * RESIDUAL_SCALE
+
+    For residual forecast, uses causal attention (model can only attend backward)
+    with full input data — matching the training/eval protocol.
+
+    Returns (pred_glucose, recon_history, physics_pred) in mg/dL.
         pred_glucose: horizon-length array of predicted future glucose
         recon_history: history-length array of reconstructed history glucose
+        physics_pred: (T,) physics baseline or None if not residual
     """
     start = center_idx - history
     end = center_idx + horizon
     window = features[start:end].copy()
 
-    if mode == 'forecast':
-        # Zero out future state/action, keep time features
-        window[history:, :6] = 0.0
-    # else: reconstruct mode — full window has real data
+    if not residual:
+        # Original non-residual path
+        if mode == 'forecast':
+            window[history:, :6] = 0.0
 
-    x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
+        x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
+        with torch.no_grad():
+            output = model(x)
 
+        out = output[0].numpy()
+        pred_glucose = out[history:, IDX_GLUCOSE] * SCALE['glucose']
+        recon_history = out[:history, IDX_GLUCOSE] * SCALE['glucose']
+        return pred_glucose, recon_history, None
+
+    # Residual path: physics baseline + ML residual
+    physics_pred = compute_physics_baseline(window, isf, cr, physics_level)
+    residual_input = make_residual_input(window, physics_pred)
+
+    x = torch.tensor(residual_input, dtype=torch.float32).unsqueeze(0)
     with torch.no_grad():
-        output = model(x)
+        if mode == 'forecast':
+            # Causal attention: position t only sees 0..t (no peeking at future)
+            output = model(x, causal=True)
+        else:
+            output = model(x)
 
-    out = output[0].numpy()
-    pred_glucose = out[history:, IDX_GLUCOSE] * SCALE['glucose']
-    recon_history = out[:history, IDX_GLUCOSE] * SCALE['glucose']
-    return pred_glucose, recon_history
+    residual_out = output[0, :, IDX_GLUCOSE].numpy()
+    final_glucose = residual_to_glucose(residual_out, physics_pred)
+
+    pred_glucose = final_glucose[history:]
+    recon_history = final_glucose[:history]
+    return pred_glucose, recon_history, physics_pred
 
 
 def extract_embeddings(model: torch.nn.Module, x: torch.Tensor) -> np.ndarray:
@@ -296,7 +409,9 @@ def extract_embeddings(model: torch.nn.Module, x: torch.Tensor) -> np.ndarray:
 
 def run_anomaly_scan(model: torch.nn.Module, features: np.ndarray,
                      df: pd.DataFrame, history: int = 12, horizon: int = 12,
-                     top_n: int = 10, stride: int = 6
+                     top_n: int = 10, stride: int = 6,
+                     residual: bool = False, isf: float = 40.0,
+                     cr: float = 10.0, physics_level: str = 'enhanced'
                      ) -> List[Dict]:
     """Scan all windows, rank by reconstruction error (anomaly score).
 
@@ -313,13 +428,21 @@ def run_anomaly_scan(model: torch.nn.Module, features: np.ndarray,
         if np.any(np.isnan(actual_g)):
             continue
 
-        x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
-        with torch.no_grad():
-            output = model(x)
-        recon = output[0].numpy()
+        if residual:
+            physics_pred = compute_physics_baseline(window, isf, cr, physics_level)
+            residual_input = make_residual_input(window, physics_pred)
+            x = torch.tensor(residual_input, dtype=torch.float32).unsqueeze(0)
+            with torch.no_grad():
+                output = model(x)
+            residual_out = output[0, :, IDX_GLUCOSE].numpy()
+            recon_glucose = residual_to_glucose(residual_out, physics_pred)
+        else:
+            x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
+            with torch.no_grad():
+                output = model(x)
+            recon = output[0].numpy()
+            recon_glucose = recon[:, IDX_GLUCOSE] * SCALE['glucose']
 
-        # Per-channel reconstruction error
-        recon_glucose = recon[:, IDX_GLUCOSE] * SCALE['glucose']
         mae = np.mean(np.abs(recon_glucose - actual_g))
 
         # Also compute per-channel errors for context
@@ -343,7 +466,9 @@ def run_anomaly_scan(model: torch.nn.Module, features: np.ndarray,
 
 
 def run_counterfactual(model: torch.nn.Module, features: np.ndarray,
-                       center_idx: int, history: int = 12, horizon: int = 12
+                       center_idx: int, history: int = 12, horizon: int = 12,
+                       residual: bool = False, isf: float = 40.0,
+                       cr: float = 10.0, physics_level: str = 'enhanced'
                        ) -> Tuple[np.ndarray, np.ndarray]:
     """Run counterfactual: what would glucose look like WITHOUT treatment?
 
@@ -356,33 +481,45 @@ def run_counterfactual(model: torch.nn.Module, features: np.ndarray,
     start = center_idx - history
     end = center_idx + horizon
 
+    def _run_window(window):
+        if residual:
+            physics_pred = compute_physics_baseline(window, isf, cr, physics_level)
+            residual_input = make_residual_input(window, physics_pred)
+            x = torch.tensor(residual_input, dtype=torch.float32).unsqueeze(0)
+            with torch.no_grad():
+                output = model(x)
+            residual_out = output[0, :, IDX_GLUCOSE].numpy()
+            return residual_to_glucose(residual_out, physics_pred)
+        else:
+            x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
+            with torch.no_grad():
+                output = model(x)
+            return output[0].numpy()[:, IDX_GLUCOSE] * SCALE['glucose']
+
     # Normal reconstruction (with actions)
-    window_real = features[start:end].copy()
-    x_real = torch.tensor(window_real, dtype=torch.float32).unsqueeze(0)
-    with torch.no_grad():
-        out_real = model(x_real)
-    recon_real = out_real[0].numpy()[:, IDX_GLUCOSE] * SCALE['glucose']
+    recon_real = _run_window(features[start:end].copy())
 
     # Counterfactual: zero out action channels
     window_cf = features[start:end].copy()
     window_cf[:, ACTION_IDX] = 0.0
-    x_cf = torch.tensor(window_cf, dtype=torch.float32).unsqueeze(0)
-    with torch.no_grad():
-        out_cf = model(x_cf)
-    recon_cf = out_cf[0].numpy()[:, IDX_GLUCOSE] * SCALE['glucose']
+    recon_cf = _run_window(window_cf)
 
     return recon_real, recon_cf
 
 
 def run_imputation(model: torch.nn.Module, features: np.ndarray,
                    center_idx: int, history: int = 12, horizon: int = 12,
-                   mask_fraction: float = 0.5
+                   mask_fraction: float = 0.5,
+                   residual: bool = False, isf: float = 40.0,
+                   cr: float = 10.0, physics_level: str = 'enhanced'
                    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Test model's ability to fill in missing glucose values.
 
     Masks a fraction of glucose values (sets to 0), keeps all other
     channels intact, and asks the model to reconstruct. Compares
     predicted glucose at masked positions vs ground truth.
+
+    For residual models, masks the residual channel (not raw glucose).
 
     Returns (actual_glucose, predicted_glucose, mask_bool) all full-window length.
     """
@@ -399,14 +536,24 @@ def run_imputation(model: torch.nn.Module, features: np.ndarray,
     mask_bool = np.zeros(total_len, dtype=bool)
     mask_bool[mask_positions] = True
 
-    # Zero out masked glucose positions
     window = features[start:end].copy()
-    window[mask_bool, IDX_GLUCOSE] = 0.0
 
-    x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
-    with torch.no_grad():
-        output = model(x)
-    predicted = output[0].numpy()[:, IDX_GLUCOSE] * SCALE['glucose']
+    if residual:
+        physics_pred = compute_physics_baseline(window, isf, cr, physics_level)
+        residual_input = make_residual_input(window, physics_pred)
+        # Mask the residual channel at selected positions
+        residual_input[mask_bool, IDX_GLUCOSE] = 0.0
+        x = torch.tensor(residual_input, dtype=torch.float32).unsqueeze(0)
+        with torch.no_grad():
+            output = model(x)
+        residual_out = output[0, :, IDX_GLUCOSE].numpy()
+        predicted = residual_to_glucose(residual_out, physics_pred)
+    else:
+        window[mask_bool, IDX_GLUCOSE] = 0.0
+        x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
+        with torch.no_grad():
+            output = model(x)
+        predicted = output[0].numpy()[:, IDX_GLUCOSE] * SCALE['glucose']
 
     return actual_glucose, predicted, mask_bool
 
@@ -414,7 +561,9 @@ def run_imputation(model: torch.nn.Module, features: np.ndarray,
 def run_similarity(model: torch.nn.Module, features: np.ndarray,
                    df: pd.DataFrame, center_idx: int,
                    history: int = 12, horizon: int = 12,
-                   top_n: int = 5, stride: int = 6
+                   top_n: int = 5, stride: int = 6,
+                   residual: bool = False, isf: float = 40.0,
+                   cr: float = 10.0, physics_level: str = 'enhanced'
                    ) -> List[Dict]:
     """Find windows most similar to reference in model representation space.
 
@@ -426,11 +575,20 @@ def run_similarity(model: torch.nn.Module, features: np.ndarray,
     start = center_idx - history
     end = center_idx + horizon
 
+    def _get_model_residual(window):
+        """Get input-output residual for a window (for similarity L2)."""
+        if residual:
+            physics_pred = compute_physics_baseline(window, isf, cr, physics_level)
+            res_input = make_residual_input(window, physics_pred)
+            x = torch.tensor(res_input, dtype=torch.float32).unsqueeze(0)
+        else:
+            x = torch.tensor(window, dtype=torch.float32).unsqueeze(0)
+        with torch.no_grad():
+            out = model(x)
+        return (x[0] - out[0]).numpy().flatten()
+
     ref_window = features[start:end]
-    x_ref = torch.tensor(ref_window, dtype=torch.float32).unsqueeze(0)
-    with torch.no_grad():
-        out_ref = model(x_ref)
-    ref_residual = (x_ref[0] - out_ref[0]).numpy().flatten()
+    ref_residual = _get_model_residual(ref_window)
     ref_features = ref_window.flatten()
 
     results = []
@@ -442,14 +600,11 @@ def run_similarity(model: torch.nn.Module, features: np.ndarray,
         if np.any(np.isnan(w_glucose)):
             continue
 
-        x = torch.tensor(features[s:s + total_len], dtype=torch.float32).unsqueeze(0)
-        with torch.no_grad():
-            out = model(x)
-        residual = (x[0] - out[0]).numpy().flatten()
+        w_residual = _get_model_residual(features[s:s + total_len])
         w_features = features[s:s + total_len].flatten()
 
         # L2 distance in residual space (model-aware similarity)
-        resid_dist = float(np.linalg.norm(ref_residual - residual))
+        resid_dist = float(np.linalg.norm(ref_residual - w_residual))
         # L2 distance in raw feature space (model-agnostic similarity)
         raw_dist = float(np.linalg.norm(ref_features - w_features))
 
@@ -510,7 +665,9 @@ def display_hindcast(df: pd.DataFrame, features: np.ndarray,
                       loop_pred: Optional[Dict] = None,
                       model2_pred: Optional[np.ndarray] = None,
                       model2_name: Optional[str] = None,
-                      recon2_history: Optional[np.ndarray] = None):
+                      recon2_history: Optional[np.ndarray] = None,
+                      physics_pred: Optional[np.ndarray] = None,
+                      profile: Optional[Dict] = None):
     """Display hindcast comparison as ASCII table."""
     start = center_idx - history
     end = center_idx + horizon
@@ -521,12 +678,15 @@ def display_hindcast(df: pd.DataFrame, features: np.ndarray,
     center_time = df.index[center_idx]
 
     # Header
-    print(f'\n{"═" * 72}')
+    print(f'\n{"═" * 78}')
     print(f'  cgmencode Hindcast')
-    print(f'{"═" * 72}')
+    print(f'{"═" * 78}')
     print(f'  Prediction time: {center_time.strftime("%Y-%m-%d %H:%M UTC")}')
     print(f'  Model:           {model_name} ({checkpoint_name})')
     print(f'  Mode:            {mode}')
+    if physics_pred is not None and profile:
+        print(f'  Physics:         residual (ISF={profile["isf"]}, '
+              f'CR={profile["cr"]}, DIA={profile["dia"]})')
     print(f'  History:         {history} steps ({history * 5} min)')
     print(f'  Horizon:         {horizon} steps ({horizon * 5} min)')
 
@@ -582,25 +742,41 @@ def display_hindcast(df: pd.DataFrame, features: np.ndarray,
             r_mae = np.mean(recon_errors)
             print(f'  Recon MAE:{r_mae:5.1f} mg/dL (how well model represents history)')
 
-            # Warn if model outputs look like residuals (near-zero)
-            pred_range = np.max(model_pred) - np.min(model_pred)
-            pred_mean = np.mean(np.abs(model_pred))
-            glucose_mean = np.nanmean(actual_glucose)
-            if pred_mean < 50 and glucose_mean > 80:
-                print(f'  ⚠ WARNING: Model output range ({pred_mean:.0f} avg) << actual glucose '
-                      f'({glucose_mean:.0f} avg)')
-                print(f'             This checkpoint may be a residual model (trained on '
-                      f'physics-corrected data)')
-                print(f'             Try: --mode reconstruct, or use a non-residual checkpoint')
+            # Warn if model outputs look like residuals (near-zero) — only for non-residual
+            if physics_pred is None:
+                pred_range = np.max(model_pred) - np.min(model_pred)
+                pred_mean = np.mean(np.abs(model_pred))
+                glucose_mean = np.nanmean(actual_glucose)
+                if pred_mean < 50 and glucose_mean > 80:
+                    print(f'  ⚠ WARNING: Model output range ({pred_mean:.0f} avg) << actual glucose '
+                          f'({glucose_mean:.0f} avg)')
+                    print(f'             This checkpoint may be a residual model (trained on '
+                          f'physics-corrected data)')
+                    print(f'             Try: --residual, or use a non-residual checkpoint')
+
+    # Physics baseline quality for history (only for residual mode)
+    if physics_pred is not None:
+        physics_hist = physics_pred[:history]
+        phys_errors = []
+        for i in range(history):
+            if not np.isnan(hist_glucose[i]):
+                phys_errors.append(abs(physics_hist[i] - hist_glucose[i]))
+        if phys_errors:
+            ph_mae = np.mean(phys_errors)
+            print(f'  Physics:  {ph_mae:5.1f} mg/dL (physics-only baseline MAE)')
 
     # Prediction table
-    print(f'\n{"─" * 72}')
+    print(f'\n{"─" * 78}')
     has_loop = loop_glucose is not None
     has_model2 = model2_pred is not None
+    has_physics = physics_pred is not None
 
     # Build header
     hdr = f'  {"Time":<8s} {"Actual":>7s} {"Model":>7s}'
     sep = f'  {"────────"} {"───────"} {"───────"}'
+    if has_physics:
+        hdr += f' {"Physic":>7s}'
+        sep += f' {"───────"}'
     if has_model2:
         hdr += f' {model2_name[:7]:>7s}'
         sep += f' {"───────"}'
@@ -609,12 +785,15 @@ def display_hindcast(df: pd.DataFrame, features: np.ndarray,
         sep += f' {"───────"}'
     hdr += f' {"ML Err":>7s}'
     sep += f' {"───────"}'
+    if has_physics:
+        hdr += f' {"Ph Err":>7s}'
+        sep += f' {"───────"}'
     if has_loop:
         hdr += f' {"LP Err":>7s}'
         sep += f' {"───────"}'
 
     print(f'  Predictions ({timestamps[history].strftime("%H:%M")}–{timestamps[-1].strftime("%H:%M")})')
-    print(f'{"─" * 72}')
+    print(f'{"─" * 78}')
     print(hdr)
     print(sep)
 
@@ -622,6 +801,7 @@ def display_hindcast(df: pd.DataFrame, features: np.ndarray,
     loop_errors = []
     model2_errors = []
     persist_errors = []
+    physics_errors = []
     persist_val = actual_glucose[history - 1]
 
     for h in range(horizon):
@@ -632,6 +812,12 @@ def display_hindcast(df: pd.DataFrame, features: np.ndarray,
         ml_err = pred - actual if not np.isnan(actual) else np.nan
 
         row = f'  {ts_str:<8s} {format_glucose(actual)} {format_glucose(pred)}'
+
+        if has_physics:
+            ph = physics_pred[history + h]
+            row += f' {format_glucose(ph)}'
+            if not np.isnan(actual):
+                physics_errors.append(abs(ph - actual))
 
         if has_model2:
             p2 = model2_pred[h]
@@ -645,11 +831,20 @@ def display_hindcast(df: pd.DataFrame, features: np.ndarray,
             if not np.isnan(actual) and not np.isnan(lp):
                 lp_err = lp - actual
                 loop_errors.append(abs(lp_err))
-                row += f' {ml_err:+6.0f} {lp_err:+6.0f}'
+
+        # Error columns
+        row += f' {ml_err:+6.0f}' if not np.isnan(ml_err) else f'    N/A'
+        if has_physics and not np.isnan(actual):
+            ph_err = physics_pred[history + h] - actual
+            row += f' {ph_err:+6.0f}'
+        elif has_physics:
+            row += f'    N/A'
+        if has_loop:
+            if not np.isnan(actual) and loop_glucose is not None and not np.isnan(loop_glucose[h]):
+                lp_err = loop_glucose[h] - actual
+                row += f' {lp_err:+6.0f}'
             else:
-                row += f' {ml_err:+6.0f}     N/A'
-        else:
-            row += f' {ml_err:+6.0f}'
+                row += f'    N/A'
 
         if not np.isnan(actual):
             model_errors.append(abs(ml_err))
@@ -658,14 +853,20 @@ def display_hindcast(df: pd.DataFrame, features: np.ndarray,
         print(row)
 
     # Metrics summary
-    print(f'\n{"─" * 72}')
+    print(f'\n{"─" * 78}')
     print(f'  Metrics (horizon = {horizon * 5} min)')
-    print(f'{"─" * 72}')
+    print(f'{"─" * 78}')
 
     if model_errors:
         ml_mae = np.mean(model_errors)
         ml_rmse = np.sqrt(np.mean(np.array(model_errors) ** 2))
-        print(f'  {model_name:<12s}  MAE={ml_mae:5.1f} mg/dL   RMSE={ml_rmse:5.1f} mg/dL')
+        label = f'{model_name}+phys' if has_physics else model_name
+        print(f'  {label:<12s}  MAE={ml_mae:5.1f} mg/dL   RMSE={ml_rmse:5.1f} mg/dL')
+
+    if physics_errors:
+        ph_mae = np.mean(physics_errors)
+        ph_rmse = np.sqrt(np.mean(np.array(physics_errors) ** 2))
+        print(f'  {"Physics":<12s}  MAE={ph_mae:5.1f} mg/dL   RMSE={ph_rmse:5.1f} mg/dL')
 
     if model2_errors:
         m2_mae = np.mean(model2_errors)
@@ -682,12 +883,13 @@ def display_hindcast(df: pd.DataFrame, features: np.ndarray,
         p_rmse = np.sqrt(np.mean(np.array(persist_errors) ** 2))
         print(f'  {"Persistence":<12s}  MAE={p_mae:5.1f} mg/dL   RMSE={p_rmse:5.1f} mg/dL')
 
-    print(f'{"═" * 72}')
+    print(f'{"═" * 78}')
 
     return {
         'time': str(center_time),
         'bg_at_t': float(bg_at_t) if not np.isnan(bg_at_t) else None,
         'model_mae': float(np.mean(model_errors)) if model_errors else None,
+        'physics_mae': float(np.mean(physics_errors)) if physics_errors else None,
         'loop_mae': float(np.mean(loop_errors)) if loop_errors else None,
         'persist_mae': float(np.mean(persist_errors)) if persist_errors else None,
     }
@@ -923,6 +1125,14 @@ Examples:
   # Scan interesting windows (forecast/reconstruct modes)
   %(prog)s --data path/to/ns-data --checkpoint ae_best.pth --scan 10
 
+  # Residual model: physics baseline + ML correction (best accuracy)
+  %(prog)s --data path/to/ns-data --checkpoint ae_residual_enhanced.pth \\
+      --residual --mode reconstruct
+
+  # Residual forecast with causal attention
+  %(prog)s --data path/to/ns-data --checkpoint ae_014_grouped_transfer.pth \\
+      --model grouped --residual --mode forecast --scan 5
+
 Inference Frames:
   forecast       Predict future glucose from history context (tests extrapolation)
   reconstruct    Full window reconstruction (tests representation quality)
@@ -952,6 +1162,16 @@ Inference Frames:
                         choices=['forecast', 'reconstruct', 'anomaly',
                                  'counterfactual', 'impute', 'similarity'],
                         help='Inference frame (default: forecast). See help for descriptions.')
+
+    # Physics-residual model options
+    parser.add_argument('--residual', action='store_true',
+                        help='Model outputs physics residuals (adds physics baseline back)')
+    parser.add_argument('--isf', type=float, default=None,
+                        help='Insulin Sensitivity Factor override (mg/dL per unit; default: from profile.json)')
+    parser.add_argument('--cr', type=float, default=None,
+                        help='Carb Ratio override (grams per unit; default: from profile.json)')
+    parser.add_argument('--physics-level', default='enhanced', choices=['simple', 'enhanced'],
+                        help='Physics model level (default: enhanced = IOB/COB + liver + circadian)')
 
     # Mode-specific options
     parser.add_argument('--top', type=int, default=10,
@@ -983,6 +1203,21 @@ Inference Frames:
         print(f'  Data range: {data_start.strftime("%Y-%m-%d")} to {data_end.strftime("%Y-%m-%d")} '
               f'({len(df)} steps, {len(df) * 5 / 60 / 24:.0f} days)')
 
+    # --- Load patient profile (ISF, CR, DIA) ---
+    profile = load_profile(args.data)
+    if args.isf is not None:
+        profile['isf'] = args.isf
+        profile['source'] = 'CLI override'
+    if args.cr is not None:
+        profile['cr'] = args.cr
+        profile['source'] = 'CLI override'
+
+    if args.residual and not args.quiet:
+        print(f'  Profile:   ISF={profile["isf"]} mg/dL/U, CR={profile["cr"]} g/U, '
+              f'DIA={profile["dia"]}h (from {profile["source"]})')
+        if profile.get('time_varying'):
+            print(f'  ⚠ Profile has time-varying schedule; using midnight values')
+
     # --- Load model ---
     model, param_count, ckpt_meta = load_model(args.checkpoint, args.model)
     ckpt_name = Path(args.checkpoint).name
@@ -998,6 +1233,10 @@ Inference Frames:
         if not args.quiet:
             print(f'  Model2: {args.model2} ({p2_count:,} params)')
 
+    # Residual params dict for convenience
+    res_kw = dict(residual=args.residual, isf=profile['isf'],
+                  cr=profile['cr'], physics_level=args.physics_level)
+
     # --- Determine time point(s) ---
     total_needed = args.history + args.horizon
 
@@ -1005,7 +1244,8 @@ Inference Frames:
     if args.mode == 'anomaly':
         results = run_anomaly_scan(model, features, df,
                                    history=args.history, horizon=args.horizon,
-                                   top_n=args.top, stride=args.stride)
+                                   top_n=args.top, stride=args.stride,
+                                   **res_kw)
         display_anomaly_scan(results, args.model, ckpt_name)
         if args.json:
             json.dump(results, sys.stdout, indent=2, default=str)
@@ -1017,7 +1257,7 @@ Inference Frames:
     # === COUNTERFACTUAL MODE ===
     if args.mode == 'counterfactual':
         recon_real, recon_cf = run_counterfactual(
-            model, features, center_idx, args.history, args.horizon)
+            model, features, center_idx, args.history, args.horizon, **res_kw)
         display_counterfactual(df, center_idx, args.history, args.horizon,
                                recon_real, recon_cf, args.model, ckpt_name)
         return
@@ -1026,7 +1266,7 @@ Inference Frames:
     if args.mode == 'impute':
         actual_g, pred_g, mask = run_imputation(
             model, features, center_idx, args.history, args.horizon,
-            mask_fraction=args.mask_fraction)
+            mask_fraction=args.mask_fraction, **res_kw)
         display_imputation(df, center_idx, args.history, args.horizon,
                             actual_g, pred_g, mask,
                             args.model, ckpt_name, args.mask_fraction)
@@ -1036,12 +1276,13 @@ Inference Frames:
     if args.mode == 'similarity':
         similar = run_similarity(model, features, df, center_idx,
                                   args.history, args.horizon,
-                                  top_n=args.top, stride=args.stride)
+                                  top_n=args.top, stride=args.stride,
+                                  **res_kw)
         display_similarity(df, features, center_idx, args.history, args.horizon,
                             similar, args.model, ckpt_name)
         return
 
-    # === FORECAST / RECONSTRUCT MODES (original behavior) ===
+    # === FORECAST / RECONSTRUCT MODES ===
     if args.scan:
         indices = find_interesting_windows(df, features, n=args.scan,
                                            history=args.history, horizon=args.horizon)
@@ -1051,54 +1292,66 @@ Inference Frames:
 
         all_results = []
         for idx in indices:
-            pred, recon = run_hindcast(model, features, idx, args.history, args.horizon, args.mode)
+            pred, recon, phys = run_hindcast(
+                model, features, idx, args.history, args.horizon, args.mode, **res_kw)
             loop = find_loop_prediction(args.data, df.index[idx])
 
             pred2, recon2 = None, None
             if model2:
-                pred2, recon2 = run_hindcast(model2, features, idx, args.history, args.horizon, args.mode)
+                p2, r2, _ = run_hindcast(
+                    model2, features, idx, args.history, args.horizon, args.mode, **res_kw)
+                pred2, recon2 = p2, r2
 
             result = display_hindcast(
                 df, features, idx, args.history, args.horizon,
                 pred, args.model, ckpt_name, mode=args.mode,
                 recon_history=recon, loop_pred=loop,
                 model2_pred=pred2, model2_name=args.model2 if model2 else None,
-                recon2_history=recon2)
+                recon2_history=recon2,
+                physics_pred=phys, profile=profile if args.residual else None)
             all_results.append(result)
 
         # Summary across all scanned windows
-        print(f'\n{"═" * 72}')
+        print(f'\n{"═" * 78}')
         print(f'  SCAN SUMMARY ({len(all_results)} windows)')
-        print(f'{"═" * 72}')
+        print(f'{"═" * 78}')
         ml_maes = [r['model_mae'] for r in all_results if r['model_mae'] is not None]
+        ph_maes = [r.get('physics_mae') for r in all_results if r.get('physics_mae') is not None]
         lp_maes = [r['loop_mae'] for r in all_results if r['loop_mae'] is not None]
         p_maes = [r['persist_mae'] for r in all_results if r['persist_mae'] is not None]
         if ml_maes:
-            print(f'  Model avg MAE:       {np.mean(ml_maes):5.1f} mg/dL  (across {len(ml_maes)} windows)')
+            label = 'Model+Phys' if args.residual else 'Model'
+            print(f'  {label} avg MAE:    {np.mean(ml_maes):5.1f} mg/dL  (across {len(ml_maes)} windows)')
+        if ph_maes:
+            print(f'  Physics avg MAE:     {np.mean(ph_maes):5.1f} mg/dL  (across {len(ph_maes)} windows)')
         if lp_maes:
             print(f'  Loop avg MAE:        {np.mean(lp_maes):5.1f} mg/dL  (across {len(lp_maes)} windows)')
         if p_maes:
             print(f'  Persistence avg MAE: {np.mean(p_maes):5.1f} mg/dL  (across {len(p_maes)} windows)')
-        print(f'{"═" * 72}')
+        print(f'{"═" * 78}')
 
         if args.json:
             json.dump(all_results, sys.stdout, indent=2, default=str)
 
     else:
         # Single window forecast/reconstruct
-        pred, recon = run_hindcast(model, features, center_idx, args.history, args.horizon, args.mode)
+        pred, recon, phys = run_hindcast(
+            model, features, center_idx, args.history, args.horizon, args.mode, **res_kw)
         loop = find_loop_prediction(args.data, df.index[center_idx])
 
         pred2, recon2 = None, None
         if model2:
-            pred2, recon2 = run_hindcast(model2, features, center_idx, args.history, args.horizon, args.mode)
+            p2, r2, _ = run_hindcast(
+                model2, features, center_idx, args.history, args.horizon, args.mode, **res_kw)
+            pred2, recon2 = p2, r2
 
         result = display_hindcast(
             df, features, center_idx, args.history, args.horizon,
             pred, args.model, ckpt_name, mode=args.mode,
             recon_history=recon, loop_pred=loop,
             model2_pred=pred2, model2_name=args.model2 if model2 else None,
-            recon2_history=recon2)
+            recon2_history=recon2,
+            physics_pred=phys, profile=profile if args.residual else None)
 
         if args.json:
             json.dump(result, sys.stdout, indent=2, default=str)
