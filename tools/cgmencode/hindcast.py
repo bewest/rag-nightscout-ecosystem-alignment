@@ -78,6 +78,7 @@ from .schema import (
     STATE_IDX, ACTION_IDX, TIME_IDX,
 )
 from .model import CGMTransformerAE, CGMGroupedEncoder
+from .toolbox import ConditionedTransformer
 from .real_data_adapter import build_nightscout_grid
 from .physics_model import (
     enhanced_predict_window, physics_predict_window,
@@ -95,6 +96,10 @@ HINDCAST_MODELS = {
     'grouped': {
         'class': CGMGroupedEncoder,
         'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2},
+    },
+    'conditioned': {
+        'class': ConditionedTransformer,
+        'kwargs': {'history_dim': 8, 'action_dim': 3, 'd_model': 64, 'dropout': 0.2},
     },
 }
 
@@ -193,7 +198,22 @@ def load_model(checkpoint_path: str, model_type: str = 'ae') -> torch.nn.Module:
         config = {}
 
     reg = HINDCAST_MODELS[model_type]
-    kwargs = config if config else reg['kwargs']
+
+    # ConditionedTransformer checkpoints have Sequential-wrapped projections
+    # (history_proj.0.weight) but current code uses bare nn.Linear
+    # (history_proj.weight). Remap keys if needed.
+    if model_type == 'conditioned':
+        remapped = {}
+        for k, v in state_dict.items():
+            new_k = k
+            for prefix in ('history_proj', 'action_proj'):
+                if k.startswith(f'{prefix}.0.'):
+                    new_k = k.replace(f'{prefix}.0.', f'{prefix}.')
+                    break
+            remapped[new_k] = v
+        state_dict = remapped
+
+    kwargs = reg['kwargs']
     model = reg['class'](**kwargs)
     model.load_state_dict(state_dict)
     model.eval()
@@ -623,6 +643,375 @@ def run_similarity(model: torch.nn.Module, features: np.ndarray,
 
     results.sort(key=lambda r: r['resid_distance'])
     return results[:top_n]
+
+
+# ── ConditionedTransformer-specific inference ────────────────────────────
+
+def run_conditioned_hindcast(model: torch.nn.Module, features: np.ndarray,
+                              center_idx: int, history: int = 12, horizon: int = 12
+                              ) -> Tuple[np.ndarray, np.ndarray]:
+    """Run ConditionedTransformer inference: (history, future_actions) → glucose.
+
+    The model takes full 8-feature history and 3-feature future actions
+    (net_basal, bolus, carbs), and predicts future glucose (normalized).
+
+    Returns (pred_glucose_mgdl, actual_glucose_mgdl) for the horizon portion.
+    """
+    start = center_idx - history
+    end = center_idx + horizon
+
+    hist_window = features[start:center_idx]  # (history, 8)
+    future_window = features[center_idx:end]  # (horizon, 8)
+
+    # Extract action channels for future: [net_basal, bolus, carbs]
+    future_actions = future_window[:, ACTION_IDX]  # (horizon, 3)
+
+    hist_t = torch.tensor(hist_window, dtype=torch.float32).unsqueeze(0)
+    act_t = torch.tensor(future_actions, dtype=torch.float32).unsqueeze(0)
+
+    with torch.no_grad():
+        pred = model(hist_t, act_t)  # (1, horizon)
+
+    pred_glucose = pred[0].numpy() * SCALE['glucose']
+    actual_glucose = future_window[:, IDX_GLUCOSE] * SCALE['glucose']
+
+    return pred_glucose, actual_glucose
+
+
+def run_conditioned_dose_sweep(model: torch.nn.Module, features: np.ndarray,
+                                center_idx: int, history: int = 12,
+                                horizon: int = 12,
+                                dose_range: Optional[List[float]] = None
+                                ) -> Dict:
+    """Sweep bolus doses and predict glucose outcomes for each.
+
+    For a given history window, runs the model with different bolus amounts
+    at the first future step (keeping all other actions the same).
+    Answers: "What would happen if I had bolused X units instead?"
+
+    Returns dict with dose amounts, predicted curves, and actual outcome.
+    """
+    if dose_range is None:
+        dose_range = [0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 10.0]
+
+    start = center_idx - history
+    end = center_idx + horizon
+
+    hist_window = features[start:center_idx]  # (history, 8)
+    future_window = features[center_idx:end]  # (horizon, 8)
+    base_actions = future_window[:, ACTION_IDX].copy()  # (horizon, 3)
+
+    actual_glucose = future_window[:, IDX_GLUCOSE] * SCALE['glucose']
+    actual_bolus = base_actions[:, 1].sum() * SCALE['bolus']  # denormalize
+
+    hist_t = torch.tensor(hist_window, dtype=torch.float32).unsqueeze(0)
+
+    results = {
+        'doses': [],
+        'predictions': [],
+        'actual_glucose': actual_glucose.tolist(),
+        'actual_bolus': float(actual_bolus),
+        'bg_at_t': float(hist_window[-1, IDX_GLUCOSE] * SCALE['glucose']),
+        'iob_at_t': float(hist_window[-1, 1] * SCALE['iob']),
+    }
+
+    for dose in dose_range:
+        actions = base_actions.copy()
+        # Zero existing bolus and set our sweep dose at step 0
+        actions[:, 1] = 0.0  # clear all bolus
+        actions[0, 1] = dose / SCALE['bolus']  # normalized bolus at t=0
+
+        act_t = torch.tensor(actions, dtype=torch.float32).unsqueeze(0)
+        with torch.no_grad():
+            pred = model(hist_t, act_t)  # (1, horizon)
+
+        pred_glucose = (pred[0].numpy() * SCALE['glucose']).tolist()
+        results['doses'].append(dose)
+        results['predictions'].append(pred_glucose)
+
+    return results
+
+
+def run_conditioned_counterfactual(model: torch.nn.Module, features: np.ndarray,
+                                    center_idx: int, history: int = 12,
+                                    horizon: int = 12
+                                    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Run counterfactual: actual actions vs zero actions.
+
+    Unlike the AE counterfactual which modifies an existing reconstruction,
+    the ConditionedTransformer directly takes actions as input — zeroing them
+    is a first-class operation.
+
+    Returns (actual_glucose, pred_with_actions, pred_without_actions) in mg/dL.
+    """
+    start = center_idx - history
+    end = center_idx + horizon
+
+    hist_window = features[start:center_idx]
+    future_window = features[center_idx:end]
+
+    actual_actions = future_window[:, ACTION_IDX].copy()
+    zero_actions = np.zeros_like(actual_actions)
+
+    actual_glucose = future_window[:, IDX_GLUCOSE] * SCALE['glucose']
+    hist_t = torch.tensor(hist_window, dtype=torch.float32).unsqueeze(0)
+
+    with torch.no_grad():
+        pred_with = model(hist_t,
+                          torch.tensor(actual_actions, dtype=torch.float32).unsqueeze(0))
+        pred_without = model(hist_t,
+                             torch.tensor(zero_actions, dtype=torch.float32).unsqueeze(0))
+
+    return (actual_glucose,
+            pred_with[0].numpy() * SCALE['glucose'],
+            pred_without[0].numpy() * SCALE['glucose'])
+
+
+def display_conditioned_hindcast(df: pd.DataFrame, features: np.ndarray,
+                                  center_idx: int, history: int, horizon: int,
+                                  pred_glucose: np.ndarray, actual_glucose: np.ndarray,
+                                  checkpoint_name: str,
+                                  loop_pred: Optional[Dict] = None,
+                                  profile: Optional[Dict] = None):
+    """Display ConditionedTransformer forecast results."""
+    start = center_idx - history
+    end = center_idx + horizon
+    timestamps = df.index[start:end]
+    hist_glucose = df['glucose'].values[start:center_idx]
+    actual_iob = df['iob'].values[start:end]
+
+    center_time = df.index[center_idx]
+
+    print(f'\n{"═" * 78}')
+    print(f'  cgmencode Conditioned Forecast (Digital Twin)')
+    print(f'{"═" * 78}')
+    print(f'  Prediction time: {center_time.strftime("%Y-%m-%d %H:%M UTC")}')
+    print(f'  Model:           conditioned ({checkpoint_name})')
+    print(f'  Mode:            forecast — history + actual actions → glucose')
+    print(f'  History:         {history} steps ({history * 5} min)')
+    print(f'  Horizon:         {horizon} steps ({horizon * 5} min)')
+
+    bg_at_t = hist_glucose[-1]
+    iob_at_t = actual_iob[history - 1]
+    recent_carbs = df['carbs'].values[start:center_idx].sum()
+    recent_bolus = df['bolus'].values[start:center_idx].sum()
+    future_carbs = df['carbs'].values[center_idx:end].sum()
+    future_bolus = df['bolus'].values[center_idx:end].sum()
+    print(f'  BG at T:         {bg_at_t:.0f} mg/dL')
+    print(f'  IOB at T:        {iob_at_t:.2f} U')
+    if recent_carbs > 0:
+        print(f'  Recent carbs:    {recent_carbs:.0f}g (history)')
+    if recent_bolus > 0:
+        print(f'  Recent bolus:    {recent_bolus:.2f}U (history)')
+    print(f'  Future actions:  {future_bolus:.2f}U bolus, {future_carbs:.0f}g carbs')
+
+    # Align Loop predictions
+    loop_glucose = None
+    if loop_pred:
+        lp_start = loop_pred['start']
+        if lp_start.tz is None:
+            lp_start = lp_start.tz_localize('UTC')
+        loop_glucose = np.full(horizon, np.nan)
+        for h in range(horizon):
+            target_time = timestamps[history + h]
+            minutes_from_start = (target_time - lp_start).total_seconds() / 60
+            loop_idx = int(round(minutes_from_start / 5))
+            if 0 <= loop_idx < len(loop_pred['values']):
+                loop_glucose[h] = loop_pred['values'][loop_idx]
+
+    # History sparkline
+    print(f'\n{"─" * 72}')
+    print(f'  History ({timestamps[0].strftime("%H:%M")}–{timestamps[history-1].strftime("%H:%M")})')
+    print(f'{"─" * 72}')
+    print(f'  BG trend: {sparkline(hist_glucose.tolist(), width=history)}')
+    print(f'  Range:    {np.nanmin(hist_glucose):.0f}–{np.nanmax(hist_glucose):.0f} mg/dL')
+
+    # Prediction table
+    has_loop = loop_glucose is not None
+    print(f'\n{"─" * 78}')
+    print(f'  Predictions ({timestamps[history].strftime("%H:%M")}–{timestamps[-1].strftime("%H:%M")})')
+    print(f'{"─" * 78}')
+
+    hdr = f'  {"Time":<8s} {"Actual":>7s} {"Cond":>7s}'
+    sep = f'  {"────────"} {"───────"} {"───────"}'
+    if has_loop:
+        hdr += f' {"Loop":>7s}'
+        sep += f' {"───────"}'
+    hdr += f' {"Err":>7s} {"Bolus":>6s} {"Carbs":>6s}'
+    sep += f' {"───────"} {"──────"} {"──────"}'
+    print(hdr)
+    print(sep)
+
+    model_errors = []
+    loop_errors = []
+
+    for h in range(horizon):
+        idx = history + h
+        ts_str = timestamps[idx].strftime('%H:%M')
+        actual = actual_glucose[h]
+        pred = pred_glucose[h]
+        err = pred - actual if not np.isnan(actual) else np.nan
+        bolus = df['bolus'].values[center_idx + h]
+        carbs = df['carbs'].values[center_idx + h]
+
+        bolus_str = f'{bolus:.1f}' if bolus > 0 else '  ·'
+        carbs_str = f'{carbs:.0f}' if carbs > 0 else '  ·'
+
+        row = f'  {ts_str:<8s} {format_glucose(actual)} {format_glucose(pred)}'
+        if has_loop:
+            row += f' {format_glucose(loop_glucose[h])}'
+        row += f' {err:+6.0f}' if not np.isnan(err) else f'    N/A'
+        row += f' {bolus_str:>6s} {carbs_str:>6s}'
+        print(row)
+
+        if not np.isnan(actual):
+            model_errors.append(abs(err))
+        if has_loop and not np.isnan(actual) and not np.isnan(loop_glucose[h]):
+            loop_errors.append(abs(loop_glucose[h] - actual))
+
+    print(f'\n{"─" * 78}')
+    if model_errors:
+        mae = np.mean(model_errors)
+        rmse = np.sqrt(np.mean(np.array(model_errors) ** 2))
+        print(f'  {"Conditioned":<12s}  MAE={mae:5.1f} mg/dL   RMSE={rmse:5.1f} mg/dL')
+    if loop_errors:
+        lp_mae = np.mean(loop_errors)
+        lp_rmse = np.sqrt(np.mean(np.array(loop_errors) ** 2))
+        print(f'  {"Loop":<12s}  MAE={lp_mae:5.1f} mg/dL   RMSE={lp_rmse:5.1f} mg/dL')
+    print(f'{"═" * 78}')
+
+    return {
+        'time': str(center_time),
+        'bg_at_t': float(bg_at_t) if not np.isnan(bg_at_t) else None,
+        'model_mae': float(np.mean(model_errors)) if model_errors else None,
+        'loop_mae': float(np.mean(loop_errors)) if loop_errors else None,
+    }
+
+
+def display_dose_sweep(df: pd.DataFrame, center_idx: int,
+                        history: int, horizon: int,
+                        sweep: Dict, checkpoint_name: str):
+    """Display dose sweep: predicted glucose curves for different bolus amounts."""
+    start = center_idx - history
+    end = center_idx + horizon
+    timestamps = df.index[start:end]
+    center_time = df.index[center_idx]
+
+    print(f'\n{"═" * 78}')
+    print(f'  cgmencode Dose Sweep (What-If Analysis)')
+    print(f'{"═" * 78}')
+    print(f'  Window:    {timestamps[0].strftime("%Y-%m-%d %H:%M")} – '
+          f'{timestamps[-1].strftime("%H:%M")} UTC')
+    print(f'  Model:     conditioned ({checkpoint_name})')
+    print(f'  Frame:     "What if I had bolused X units at this time?"')
+    print(f'  BG at T:   {sweep["bg_at_t"]:.0f} mg/dL')
+    print(f'  IOB at T:  {sweep["iob_at_t"]:.2f} U')
+    print(f'  Actual:    {sweep["actual_bolus"]:.1f}U bolus was given')
+
+    actual = sweep['actual_glucose']
+
+    # Build header with all doses
+    doses = sweep['doses']
+    hdr = f'  {"Time":<8s} {"Actual":>7s}'
+    sep = f'  {"────────"} {"───────"}'
+    for d in doses:
+        label = f'{d:.0f}U' if d == int(d) else f'{d:.1f}U'
+        hdr += f' {label:>7s}'
+        sep += f' {"───────"}'
+    print(f'\n{hdr}')
+    print(sep)
+
+    for h in range(horizon):
+        ts_str = timestamps[history + h].strftime('%H:%M')
+        row = f'  {ts_str:<8s} {format_glucose(actual[h])}'
+        for i, d in enumerate(doses):
+            pred = sweep['predictions'][i][h]
+            row += f' {format_glucose(pred)}'
+        print(row)
+
+    # Summary: predicted end BG and nadir for each dose
+    print(f'\n{"─" * 78}')
+    print(f'  {"Dose":>8s} {"End BG":>8s} {"Min BG":>8s} {"Max BG":>8s} '
+          f'{"vs Actual":>10s} {"Hypo Risk":>10s}')
+    print(f'  {"────────"} {"────────"} {"────────"} {"────────"} '
+          f'{"──────────"} {"──────────"}')
+
+    actual_end = actual[-1]
+    for i, d in enumerate(doses):
+        preds = sweep['predictions'][i]
+        end_bg = preds[-1]
+        min_bg = min(preds)
+        max_bg = max(preds)
+        vs_actual = end_bg - actual_end
+        hypo = '⚠ LOW' if min_bg < 70 else '  OK'
+
+        label = f'{d:.0f}U' if d == int(d) else f'{d:.1f}U'
+        print(f'  {label:>8s} {end_bg:>7.0f}  {min_bg:>7.0f}  {max_bg:>7.0f}  '
+              f'{vs_actual:>+9.0f}  {hypo:>10s}')
+
+    print(f'\n  Interpretation:')
+    print(f'    Columns show predicted BG at each time for each hypothetical bolus.')
+    print(f'    "vs Actual" = predicted end BG minus actual end BG.')
+    print(f'    The model was trained on synthetic data — magnitudes may be imprecise.')
+    print(f'{"═" * 78}')
+
+
+def display_conditioned_counterfactual(df: pd.DataFrame, center_idx: int,
+                                        history: int, horizon: int,
+                                        actual_glucose: np.ndarray,
+                                        pred_with: np.ndarray,
+                                        pred_without: np.ndarray,
+                                        checkpoint_name: str):
+    """Display ConditionedTransformer counterfactual: with vs without actions."""
+    start = center_idx - history
+    end = center_idx + horizon
+    timestamps = df.index[start:end]
+    center_time = df.index[center_idx]
+    total_bolus = df['bolus'].values[center_idx:end].sum()
+    total_carbs = df['carbs'].values[center_idx:end].sum()
+
+    print(f'\n{"═" * 72}')
+    print(f'  cgmencode Conditioned Counterfactual')
+    print(f'{"═" * 72}')
+    print(f'  Window:  {timestamps[0].strftime("%Y-%m-%d %H:%M")} – '
+          f'{timestamps[-1].strftime("%H:%M")} UTC')
+    print(f'  Model:   conditioned ({checkpoint_name})')
+    print(f'  Frame:   "What if no bolus/carbs had been given?"')
+    print(f'           Model receives zero future actions vs actual actions')
+
+    print(f'\n  Actions in future window:')
+    print(f'    Total bolus: {total_bolus:.2f} U')
+    print(f'    Total carbs: {total_carbs:.0f} g')
+
+    print(f'\n  {"Time":<8s} {"Actual":>7s} {"w/Acts":>8s} {"No Acts":>8s} '
+          f'{"Δ Effect":>9s}')
+    print(f'  {"────────"} {"───────"} {"────────"} {"────────"} '
+          f'{"─────────"}')
+
+    for h in range(horizon):
+        ts_str = timestamps[history + h].strftime('%H:%M')
+        actual = actual_glucose[h]
+        w = pred_with[h]
+        wo = pred_without[h]
+        effect = w - wo
+
+        print(f'  {ts_str:<8s} {format_glucose(actual)} {format_glucose(w)} '
+              f'{format_glucose(wo)}  {effect:+8.1f}')
+
+    effect = pred_with - pred_without
+    print(f'\n  Treatment effect (Conditioned model view):')
+    print(f'    Mean Δ:  {np.mean(effect):+.1f} mg/dL')
+    print(f'    Max Δ:   {np.max(effect):+.1f} mg/dL')
+    print(f'    Min Δ:   {np.min(effect):+.1f} mg/dL')
+    print(f'    End Δ:   {effect[-1]:+.1f} mg/dL')
+
+    if total_bolus > 0.1 and np.mean(effect) < -5:
+        print(f'  ✓ Treatment appears to LOWER BG (expected for insulin-dominant window)')
+    elif total_carbs > 0 and np.mean(effect) > 5:
+        print(f'  ✓ Treatment appears to RAISE BG (expected for carb-dominant window)')
+    elif abs(np.mean(effect)) < 2:
+        print(f'  ⚠ Near-zero treatment effect — model may not distinguish action from no-action')
+    print(f'{"═" * 72}')
 
 
 def format_glucose(val: float) -> str:
@@ -1134,13 +1523,22 @@ Examples:
   %(prog)s --data path/to/ns-data --checkpoint ae_014_grouped_transfer.pth \\
       --model grouped --residual --mode forecast --scan 5
 
+  # ConditionedTransformer: forecast with action-conditioned model
+  %(prog)s --data path/to/ns-data --checkpoint conditioned_dropout+wd.pth \\
+      --model conditioned --mode forecast --scan 5
+
+  # Dose sweep: what if I had bolused X units?
+  %(prog)s --data path/to/ns-data --checkpoint conditioned_dropout+wd.pth \\
+      --model conditioned --mode dosesweep --pick interesting
+
 Inference Frames:
   forecast       Predict future glucose from history context (tests extrapolation)
   reconstruct    Full window reconstruction (tests representation quality)
   anomaly        Rank all windows by reconstruction error (unusual = high error)
-  counterfactual Zero out treatment actions, compare with/without (needs GroupedEncoder)
+  counterfactual Zero out treatment actions, compare with/without
   impute         Mask glucose values, predict from IOB/actions alone (tests understanding)
   similarity     Find past windows with similar metabolic embeddings
+  dosesweep      [conditioned only] Sweep bolus doses and compare outcomes
         ''')
 
     parser.add_argument('--data', required=True,
@@ -1161,7 +1559,8 @@ Inference Frames:
                         help='Prediction horizon in 5-min steps (default: 12 = 60 min)')
     parser.add_argument('--mode', default='forecast',
                         choices=['forecast', 'reconstruct', 'anomaly',
-                                 'counterfactual', 'impute', 'similarity'],
+                                 'counterfactual', 'impute', 'similarity',
+                                 'dosesweep'],
                         help='Inference frame (default: forecast). See help for descriptions.')
 
     # Physics-residual model options
@@ -1181,6 +1580,8 @@ Inference Frames:
                         help='Fraction of glucose to mask in impute mode (default: 0.5)')
     parser.add_argument('--stride', type=int, default=6,
                         help='Step stride for scanning modes (default: 6 = 30 min)')
+    parser.add_argument('--doses', type=str, default=None,
+                        help='Comma-separated bolus doses for dosesweep (default: 0,0.5,1,2,3,5,8,10)')
 
     # Second model for comparison
     parser.add_argument('--checkpoint2', help='Second model checkpoint for side-by-side comparison')
@@ -1243,6 +1644,10 @@ Inference Frames:
 
     # === ANOMALY MODE: scan all windows, rank by reconstruction error ===
     if args.mode == 'anomaly':
+        if args.model == 'conditioned':
+            print('ERROR: anomaly mode not supported for conditioned model')
+            print('       (ConditionedTransformer outputs glucose-only, not full reconstruction)')
+            sys.exit(1)
         results = run_anomaly_scan(model, features, df,
                                    history=args.history, horizon=args.horizon,
                                    top_n=args.top, stride=args.stride,
@@ -1255,7 +1660,90 @@ Inference Frames:
     # === Modes that need a center_idx: resolve time target ===
     center_idx = _resolve_center_idx(args, df, features)
 
-    # === COUNTERFACTUAL MODE ===
+    # === CONDITIONED MODEL DISPATCH ===
+    # ConditionedTransformer has a different forward() signature and supports
+    # its own set of modes: forecast, counterfactual, dosesweep.
+    if args.model == 'conditioned':
+        if args.mode == 'dosesweep':
+            dose_range = None
+            if args.doses:
+                dose_range = [float(d) for d in args.doses.split(',')]
+            if args.scan:
+                indices = find_interesting_windows(df, features, n=args.scan,
+                                                   history=args.history, horizon=args.horizon)
+                for idx in indices:
+                    sweep = run_conditioned_dose_sweep(
+                        model, features, idx, args.history, args.horizon, dose_range)
+                    display_dose_sweep(df, idx, args.history, args.horizon,
+                                       sweep, ckpt_name)
+                    if args.json:
+                        json.dump(sweep, sys.stdout, indent=2, default=str)
+            else:
+                sweep = run_conditioned_dose_sweep(
+                    model, features, center_idx, args.history, args.horizon, dose_range)
+                display_dose_sweep(df, center_idx, args.history, args.horizon,
+                                   sweep, ckpt_name)
+                if args.json:
+                    json.dump(sweep, sys.stdout, indent=2, default=str)
+            return
+
+        if args.mode == 'counterfactual':
+            actual_g, pred_w, pred_wo = run_conditioned_counterfactual(
+                model, features, center_idx, args.history, args.horizon)
+            display_conditioned_counterfactual(
+                df, center_idx, args.history, args.horizon,
+                actual_g, pred_w, pred_wo, ckpt_name)
+            return
+
+        if args.mode in ('forecast', 'reconstruct'):
+            if args.scan:
+                indices = find_interesting_windows(df, features, n=args.scan,
+                                                   history=args.history, horizon=args.horizon)
+                if not indices:
+                    print('ERROR: No valid windows found in data')
+                    sys.exit(1)
+                all_results = []
+                for idx in indices:
+                    pred_g, actual_g = run_conditioned_hindcast(
+                        model, features, idx, args.history, args.horizon)
+                    loop = find_loop_prediction(args.data, df.index[idx])
+                    result = display_conditioned_hindcast(
+                        df, features, idx, args.history, args.horizon,
+                        pred_g, actual_g, ckpt_name, loop_pred=loop, profile=profile)
+                    all_results.append(result)
+
+                # Scan summary
+                print(f'\n{"═" * 78}')
+                print(f'  SCAN SUMMARY ({len(all_results)} windows)')
+                print(f'{"═" * 78}')
+                ml_maes = [r['model_mae'] for r in all_results if r.get('model_mae') is not None]
+                lp_maes = [r['loop_mae'] for r in all_results if r.get('loop_mae') is not None]
+                if ml_maes:
+                    print(f'  Conditioned avg MAE: {np.mean(ml_maes):5.1f} mg/dL  '
+                          f'(across {len(ml_maes)} windows)')
+                if lp_maes:
+                    print(f'  Loop avg MAE:        {np.mean(lp_maes):5.1f} mg/dL  '
+                          f'(across {len(lp_maes)} windows)')
+                print(f'{"═" * 78}')
+                if args.json:
+                    json.dump(all_results, sys.stdout, indent=2, default=str)
+            else:
+                pred_g, actual_g = run_conditioned_hindcast(
+                    model, features, center_idx, args.history, args.horizon)
+                loop = find_loop_prediction(args.data, df.index[center_idx])
+                result = display_conditioned_hindcast(
+                    df, features, center_idx, args.history, args.horizon,
+                    pred_g, actual_g, ckpt_name, loop_pred=loop, profile=profile)
+                if args.json:
+                    json.dump(result, sys.stdout, indent=2, default=str)
+            return
+
+        # Unsupported conditioned modes
+        print(f'ERROR: mode "{args.mode}" not supported for conditioned model')
+        print(f'       Supported modes: forecast, counterfactual, dosesweep')
+        sys.exit(1)
+
+    # === COUNTERFACTUAL MODE (AE/Grouped models) ===
     if args.mode == 'counterfactual':
         recon_real, recon_cf = run_counterfactual(
             model, features, center_idx, args.history, args.horizon, **res_kw)
