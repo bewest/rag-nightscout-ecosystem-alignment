@@ -440,6 +440,154 @@ that can be tracked over time.
 
 ---
 
+## Untested Architectures: Capabilities Beyond Reconstruction
+
+The 5 model configurations evaluated above all use either **CGMTransformerAE** or
+**CGMGroupedEncoder** — architectures trained for sequence-to-sequence
+reconstruction/forecasting. Three additional architectures exist in
+`tools/cgmencode/toolbox.py` with fundamentally different training objectives
+and inference capabilities.
+
+### ConditionedTransformer — Causal "What-If" Dosing
+
+**Training objective**: Given `(history, proposed_actions)`, predict future glucose.
+
+**How it differs**: This is the only architecture that explicitly separates
+history from proposed actions in its `forward()` signature:
+```
+forward(history: [B, T_hist, 8], actions: [B, T_future, 3]) → glucose: [B, T_future, 1]
+```
+
+Unlike AE/Grouped models that process a single fused input, the
+ConditionedTransformer has separate projection pathways for history and
+actions, concatenates them, and runs a Transformer encoder over the combined
+context. The output head produces **glucose-only predictions** (not full
+8-feature reconstruction).
+
+**Available checkpoints** (3):
+| Checkpoint | Training | Notes |
+|-----------|---------|-------|
+| `conditioned_baseline.pth` | Synthetic | No regularization |
+| `conditioned_dropout.pth` | Synthetic | Dropout only |
+| `conditioned_dropout+wd.pth` | Synthetic | Dropout + weight decay |
+
+**Unique inference capabilities**:
+
+| Task | Description | Example Query |
+|------|------------|---------------|
+| **Dosing simulation** | Input a proposed bolus → predict glucose outcome | "If I take 3U now at BG 180, where will I be in 60 min?" |
+| **Dose comparison** | Run multiple action plans, compare outcomes | "Is 2U or 4U better for this meal?" |
+| **Optimal timing** | Sweep bolus timing across a window | "Should I pre-bolus 15 min before eating?" |
+| **Safety check** | Predict minimum BG for a proposed dose | "Will 5U cause a low given my current IOB?" |
+
+**Why it matters for the causality gap**: The tested models showed near-zero
+counterfactual effects (§Frame 4) because they ignore action channels.
+The ConditionedTransformer was *designed* for action-conditioned prediction —
+it is the most likely candidate to demonstrate genuine causal sensitivity.
+
+**Integration status**: Skipped in current evaluation. Needs a dedicated
+hindcast adapter due to the different `forward()` signature. The existing
+`inference.py` has an `evaluate_dose()` function that wraps this model.
+
+**Reasonable inference tasks**:
+1. Replay historical meal+bolus windows: did the model predict the actual
+   outcome given the actual actions taken?
+2. Counterfactual dosing: replay the same window with modified bolus amounts —
+   does the predicted glucose change in the right direction and magnitude?
+3. Optimal pre-bolus timing: for each meal window, sweep bolus timing from
+   -30 to +15 min and find the timing that minimizes predicted peak BG.
+
+### CGMTransformerVAE — Uncertainty Quantification
+
+**Training objective**: Reconstruct input while regularizing latent space
+to N(0,1) via KL divergence. Loss = MSE + β·KL (β annealed from 0 to 0.1).
+
+**How it differs**: Returns a tuple `(reconstruction, μ, log_variance)` instead
+of a single output. Each forward pass samples from the learned latent
+distribution, producing *stochastic* outputs.
+
+**Unique inference capabilities**:
+
+| Task | Description | Clinical Value |
+|------|------------|---------------|
+| **Uncertainty bands** | Run N forward passes → envelope of plausible futures | "My BG will be 120–180 in 60 min (90% CI)" |
+| **Scenario sampling** | Sample z ~ N(0,1), decode → synthetic trajectories | Generate realistic training data |
+| **Latent interpolation** | z_interp = α·z_a + (1-α)·z_b → smooth transitions | Visualize "what's between a meal and a correction?" |
+| **Anomaly via likelihood** | Low reconstruction probability = unusual event | Different signal than MAE-based anomaly |
+
+**Integration status**: Not integrated. Needs handler for 3-tuple output.
+Deterministic mode (use μ directly, skip sampling) would enable reconstruction
+comparison with AE models.
+
+**Reasonable inference tasks**:
+1. Forecast with confidence intervals: for a given window, sample 50
+   futures and report the 10th/90th percentile envelope.
+2. Anomaly detection via reconstruction probability: windows where the VAE
+   assigns low likelihood (high KL + high MSE) may be metabolically unusual
+   in a way that pure MAE misses.
+3. Latent space clustering: encode many windows, project μ vectors with
+   t-SNE/UMAP, color by event type — do metabolic events cluster?
+
+### CGMDenoisingDiffusion — Probabilistic Generation
+
+**Training objective**: Predict the noise added at each of 1000 diffusion steps.
+Loss = MSE(predicted_noise, actual_noise). Uses linear β schedule (1e-4 to 0.02).
+
+**How it differs**: Inference requires iterative reverse diffusion (start from
+pure noise, denoise 1000 steps). Each sample is unique. This is *not* a
+single forward pass model.
+
+**Unique inference capabilities**:
+
+| Task | Description | Clinical Value |
+|------|------------|---------------|
+| **Diverse sampling** | Each reverse pass generates a different trajectory | Richer uncertainty than VAE |
+| **Conditional generation** | Can be extended to condition on history context | Theoretically strongest generative model |
+| **Rare event simulation** | Sample many trajectories, filter for extreme events | "How likely is a hypo in the next 2 hours?" |
+
+**Integration status**: Not integrated. Requires full reverse diffusion loop
+implementation. Extremely slow for scan/batch evaluation (~1000× slower than
+AE models per sample).
+
+**Reasonable inference tasks**:
+1. Generate 100 plausible futures from a single starting state, compare
+   variance to VAE sampling.
+2. Rare-event probability: what fraction of sampled futures drop below
+   70 mg/dL? (Monte Carlo hypo risk estimation).
+
+**Assessment**: Low priority for hindcast integration due to computational cost.
+The VAE provides similar uncertainty quantification at ~1000× lower cost.
+Diffusion's advantage (multimodal futures) is theoretically elegant but
+unlikely to matter with the current training data size.
+
+### ContrastiveLoss — Training Objective Only
+
+`ContrastiveLoss` (`toolbox.py` lines 127–146) is a **loss function**, not
+a model architecture. It computes InfoNCE-style loss between embedding pairs.
+There is no standalone contrastive model to evaluate.
+
+A contrastive *training regime* (applying this loss to an AE or Grouped
+encoder's embeddings) could improve similarity search (Frame 6) by
+learning to group semantically similar windows. This is a training
+modification, not a new inference capability.
+
+### Summary: Tested vs. Untested Capability Matrix
+
+| Capability | AE/Grouped (tested) | Conditioned (untested) | VAE (untested) | Diffusion (untested) |
+|-----------|:-------------------:|:---------------------:|:--------------:|:-------------------:|
+| Deterministic forecast | ✅ 12.2 MAE | ✅ designed for this | ⚠️ via μ | ❌ too slow |
+| Reconstruction | ✅ 13.0 MAE | ❌ glucose-only output | ✅ stochastic | ❌ too slow |
+| Anomaly detection | ✅ MAE-based | ⚠️ indirect | ✅ likelihood-based | ❌ too slow |
+| Counterfactual | ❌ near-zero effect | ✅ **primary capability** | ❌ no action input | ❌ no action input |
+| Uncertainty bands | ❌ deterministic | ❌ deterministic | ✅ **primary capability** | ✅ diverse samples |
+| Dosing simulation | ❌ ignores actions | ✅ **primary capability** | ❌ | ❌ |
+| Imputation | ⚠️ ratio 1–19× | ❌ needs glucose history | ⚠️ via prior | ❌ |
+| Similarity search | ✅ residual L2 | ❌ no shared embedding | ✅ latent space | ❌ |
+
+**Priority for integration**: ConditionedTransformer >> VAE >> Diffusion
+
+---
+
 ## Recommendations
 
 ### Immediately Implementable (Heuristic)
@@ -454,33 +602,38 @@ that can be tracked over time.
    predict dawn rise onset. Preemptive basal increase 30 min before predicted
    onset.
 
-### Architecture Changes Needed for Causal Reasoning
+### Next Priority: Integrate Untested Architectures
 
-4. **Conditional generation**: Train models where glucose at time t is generated
-   from actions[0:t] + glucose[0:t-1] (autoregressive), not from glucose[0:T]
-   (bidirectional). This would enable true "what if I bolused X?" reasoning.
+4. **ConditionedTransformer hindcast adapter** (highest priority): Build
+   `run_hindcast_conditioned()` that splits windows into history + actions,
+   calls `model(history, actions)`, and compares glucose-only output to actual.
+   Test with 3 existing checkpoints. This directly addresses the causality gap.
 
-5. **Action-gated attention**: Modify GroupedEncoder to route action→state
+5. **VAE uncertainty mode**: Add `--ensemble N` flag to hindcast that runs
+   N stochastic forward passes and reports percentile bands. Enables
+   "BG will be 120–180 (90% CI)" predictions.
+
+6. **Conditioned dose sweep**: New hindcast mode that replays a meal window
+   with bolus amounts from 0 to 2× actual, plotting predicted BG curves.
+   Answers "was this the right dose?" directly.
+
+### Architecture Changes for Causal Reasoning
+
+7. **Action-gated attention**: Modify GroupedEncoder to route action→state
    cross-attention explicitly (currently actions are processed independently
    with 25% capacity, then concatenated—no causal mechanism).
 
-6. **Contrastive training on treatment pairs**: Generate paired scenarios
+8. **Contrastive training on treatment pairs**: Generate paired scenarios
    (same patient, same starting BG, different bolus amounts) from UVA/Padova
-   simulator. Train a model to predict the *difference* in outcomes. This
-   directly targets counterfactual reasoning.
+   simulator. Train a model to predict the *difference* in outcomes.
 
-### Future Evaluation
+### Broader Evaluation
 
-7. **ConditionedTransformer integration**: Adapt hindcast for the different
-   `forward()` signature. This model was designed for conditional generation
-   and may show better counterfactual behavior.
-
-8. **Multi-patient evaluation**: Current results are from one patient's data.
+9. **Multi-patient evaluation**: Current results are from one patient's data.
    Evaluate whether findings generalize across different ISF/CR profiles.
 
-9. **Prospective testing**: Run inference in real-time against live Nightscout
-   data stream to measure forecast accuracy on unseen data (not reconstruction
-   of historical data the model may have been trained on).
+10. **Prospective testing**: Run inference in real-time against live Nightscout
+    data stream to measure forecast accuracy on unseen data.
 
 ---
 
