@@ -1,35 +1,39 @@
 # cgmencode Model Capabilities Report
 
-**Date**: 2026-07-24
+**Date**: 2026-07-24 (updated 2026-07-25)
 **Tool**: `tools/cgmencode/event_eval.py`, `tools/cgmencode/hindcast.py`
 **Data**: 90-day Nightscout history (Nov 2025 – Feb 2026, 24,748 5-min steps)
 **Patient Profile**: ISF=40 mg/dL/U, CR=10 g/U, DIA=6h (from profile.json)
 
 ## Executive Summary
 
-We systematically evaluated 5 model configurations across 6 inference frames
+We systematically evaluated 8 model configurations across 7 inference frames
 using real Nightscout data with metabolic event classification heuristics.
-Each model reveals different strengths depending on its training regime and
-whether physics-residual composition is used.
+Each model reveals different strengths depending on its training regime,
+architecture, and whether physics-residual composition is used.
 
 ### Key Findings at a Glance
 
 | Capability | Best Model | Result | Clinical Significance |
 |-----------|-----------|--------|----------------------|
 | **Glucose forecasting** | Grouped+Physics | 12.2 MAE | 4.7× better than Loop (58.0) |
+| **Conditioned forecast** | Cond Transfer | 35.6 MAE | Beats Loop (68.5) with action awareness |
 | **Reconstruction** | Grouped+Physics | 13.0 MAE | Accurate curve-fitting |
 | **UAM detection** | AE Transfer+Physics | 16.9 MAE on UAM | Captures rises without carb entries |
 | **Dawn phenomenon** | AE Transfer+Physics | 11.6 MAE on dawn | Best at early-morning rises |
-| **Counterfactual reasoning** | AE Conformance | 23.9 mg/dL effect | Only model with treatment sensitivity |
+| **Counterfactual reasoning** | Cond Transfer | +29.3 mg/dL effect | First-class action-conditioned counterfactual |
 | **Causal understanding** | AE Conformance | 0.72–1.35 impute ratio | Approaches but doesn't achieve causality |
+| **Dose-response** | Cond Transfer | ~5 mg/dL / 10U | Paradoxical direction — not clinically useful |
 | **Anomaly diversity** | AE Residual Enhanced | 5 event types in top 10 | Physics normalizes time-of-day bias |
 | **Similarity clustering** | Grouped+Physics | 0.075 avg distance | Tightest grouping, but by dynamics not cause |
 
 **Bottom line**: Physics-residual models (Grouped+Physics, AE Transfer+Physics)
-dominate on accuracy. AE Conformance is the only model showing causal-like
-reasoning (counterfactuals, imputation) thanks to synthetic training with
-diverse treatment scenarios. No model yet demonstrates true causal insulin→glucose
-understanding—this remains the key architectural gap.
+dominate on accuracy. The ConditionedTransformer shows promising action-conditioned
+counterfactual reasoning (+29 mg/dL effect from removing a 4.2U bolus) and beats
+Loop on forecasting (35.6 vs 68.5 MAE), but its dose-response sensitivity is
+paradoxical (more insulin → slightly higher BG, ~5 mg/dL over 10U range).
+No model yet demonstrates quantitatively correct causal insulin→glucose
+dose-response—this remains the key gap.
 
 ---
 
@@ -43,8 +47,12 @@ understanding—this remains the key architectural gap.
 | **D** | `ae_014_grouped_transfer.pth` + physics | CGMGroupedEncoder | Synthetic→Real, physics | Yes | 67,704 |
 | **E** | `ae_residual_enhanced.pth` + physics | CGMTransformerAE | Enhanced physics residual | Yes | 68,040 |
 
-**Conditioned Transformer** (`conditioned_dropout+wd.pth`) was excluded—its different
-`forward()` signature requires a dedicated hindcast adapter (future work).
+| **F** | `cond_transfer.pth` | ConditionedTransformer | Synthetic→Real fine-tuned | No | 846,401 |
+| **G** | `conditioned_dropout.pth` | ConditionedTransformer | Synthetic only + dropout | No | 846,401 |
+| **H** | `conditioned_dropout+wd.pth` | ConditionedTransformer | Synthetic + dropout + WD | No | 846,401 |
+
+Note: ConditionedTransformer uses a different `forward(history, future_actions)` signature
+and supports forecast, counterfactual, and dose sweep modes (not reconstruction/anomaly/impute).
 
 ---
 
@@ -440,62 +448,105 @@ that can be tracked over time.
 
 ---
 
-## Untested Architectures: Capabilities Beyond Reconstruction
+## ConditionedTransformer: Action-Conditioned Prediction (Now Tested)
 
-The 5 model configurations evaluated above all use either **CGMTransformerAE** or
-**CGMGroupedEncoder** — architectures trained for sequence-to-sequence
-reconstruction/forecasting. Three additional architectures exist in
-`tools/cgmencode/toolbox.py` with fundamentally different training objectives
-and inference capabilities.
+The ConditionedTransformer was the final architecture to integrate into hindcast.
+Unlike AE/Grouped models that process a single fused input, it separates history
+from proposed actions in its `forward()` signature:
 
-### ConditionedTransformer — Causal "What-If" Dosing
-
-**Training objective**: Given `(history, proposed_actions)`, predict future glucose.
-
-**How it differs**: This is the only architecture that explicitly separates
-history from proposed actions in its `forward()` signature:
 ```
-forward(history: [B, T_hist, 8], actions: [B, T_future, 3]) → glucose: [B, T_future, 1]
+forward(history: [B, T_hist, 8], actions: [B, T_future, 3]) → glucose: [B, T_future]
 ```
 
-Unlike AE/Grouped models that process a single fused input, the
-ConditionedTransformer has separate projection pathways for history and
-actions, concatenates them, and runs a Transformer encoder over the combined
-context. The output head produces **glucose-only predictions** (not full
-8-feature reconstruction).
+### Architecture Details
 
-**Available checkpoints** (3):
-| Checkpoint | Training | Notes |
-|-----------|---------|-------|
-| `conditioned_baseline.pth` | Synthetic | No regularization |
-| `conditioned_dropout.pth` | Synthetic | Dropout only |
-| `conditioned_dropout+wd.pth` | Synthetic | Dropout + weight decay |
+- **846,401 parameters** (12.4× larger than AE/Grouped ~68K)
+- 3 Transformer layers (vs 2 for AE/Grouped)
+- Separate projection pathways: `history_proj(8→64)`, `action_proj(3→64)`
+- Concatenated history+actions → Transformer encoder → future portion → dense head → glucose
+- Output is **glucose-only** (not full 8-feature reconstruction)
 
-**Unique inference capabilities**:
+### Checkpoint Comparison (Forecast, 3-window scan)
 
-| Task | Description | Example Query |
-|------|------------|---------------|
-| **Dosing simulation** | Input a proposed bolus → predict glucose outcome | "If I take 3U now at BG 180, where will I be in 60 min?" |
-| **Dose comparison** | Run multiple action plans, compare outcomes | "Is 2U or 4U better for this meal?" |
-| **Optimal timing** | Sweep bolus timing across a window | "Should I pre-bolus 15 min before eating?" |
-| **Safety check** | Predict minimum BG for a proposed dose | "Will 5U cause a low given my current IOB?" |
+| Checkpoint | Training | MAE (mg/dL) | vs Loop |
+|-----------|---------|:-----------:|:-------:|
+| `cond_transfer.pth` | Synthetic→Real fine-tuned | **35.6** | 1.9× better |
+| `conditioned_dropout.pth` | Synthetic + dropout | 37.1 | 1.8× better |
+| `cond_scratch.pth` | Real data only | 36.2 | 1.9× better |
+| `conditioned_dropout+wd.pth` | Synthetic + dropout + WD | 39.2 | 1.7× better |
+| `conditioned_baseline.pth` | Synthetic, no regularization | 47.6 | 1.4× better |
+| `cond_synthetic.pth` | Synthetic only | 69.5 | = Loop |
+| Loop predictions | — | 68.5 | baseline |
 
-**Why it matters for the causality gap**: The tested models showed near-zero
-counterfactual effects (§Frame 4) because they ignore action channels.
-The ConditionedTransformer was *designed* for action-conditioned prediction —
-it is the most likely candidate to demonstrate genuine causal sensitivity.
+**Key finding**: Transfer learning helps most. Synthetic-only (`cond_synthetic`) matches
+Loop but doesn't beat it. The best checkpoint `cond_transfer.pth` achieves 35.6 MAE
+(1.9× better than Loop), but still 2.9× worse than Grouped+Physics (12.2).
 
-**Integration status**: Skipped in current evaluation. Needs a dedicated
-hindcast adapter due to the different `forward()` signature. The existing
-`inference.py` has an `evaluate_dose()` function that wraps this model.
+### Counterfactual Analysis: Action Removal
 
-**Reasonable inference tasks**:
-1. Replay historical meal+bolus windows: did the model predict the actual
-   outcome given the actual actions taken?
-2. Counterfactual dosing: replay the same window with modified bolus amounts —
-   does the predicted glucose change in the right direction and magnitude?
-3. Optimal pre-bolus timing: for each meal window, sweep bolus timing from
-   -30 to +15 min and find the timing that minimizes predicted peak BG.
+Using the `counterfactual` mode, which passes zero future actions vs actual actions:
+
+**Window**: 2025-11-15 21:25 UTC (BG=255, IOB=3.58U, 4.2U bolus in horizon)
+
+| Metric | cond_transfer | conditioned_dropout |
+|--------|:------------:|:-------------------:|
+| Mean Δ (no actions − with actions) | **+29.3 mg/dL** | +27.6 mg/dL |
+| End Δ | +43.0 mg/dL | +40.6 mg/dL |
+| Direction | ✅ Correct | ✅ Correct |
+
+**Interpretation**: Removing the 4.2U bolus raises predicted BG by ~29–43 mg/dL. This
+is directionally correct and the largest counterfactual effect of any model tested.
+For comparison, AE Conformance showed +23.9 mg/dL using indirect feature masking.
+
+The ConditionedTransformer achieves this as a **first-class operation** — it was
+*designed* to answer "what happens if I change the actions?" The AE Conformance
+approach (zeroing action features in the input) is a workaround that happens to
+partially work.
+
+### Dose Sweep: Paradoxical Sensitivity
+
+Using `dosesweep` mode, sweeping bolus from 0U to 10U at time T:
+
+**Window**: 2025-11-15 20:25–22:20 UTC (BG=255, actual 4.2U bolus given)
+
+| Dose | End BG (pred) | vs 0U | Expected (ISF=40) |
+|:----:|:------------:|:-----:|:-----------------:|
+| 0U | 219 | — | — |
+| 1U | 219 | 0 | −40 |
+| 2U | 220 | **+1** | −80 |
+| 4U | 221 | **+2** | −160 |
+| 10U | 224 | **+5** | −400 |
+
+**Critical finding**: The model shows **paradoxical dose-response** — more insulin
+predicts *slightly higher* BG (+5 mg/dL for 10U, when real ISF=40 would predict
+−400 mg/dL). The effect magnitude is also negligible (5 mg/dL over 0→10U range).
+
+**Root cause analysis**:
+1. **Training data distribution**: Synthetic UVA/Padova data may not expose
+   sufficient bolus variation — most scenarios have "correct" dosing
+2. **History dominance**: The model learns that history patterns predict future BG
+   better than action modifications, making action inputs decorative
+3. **Architecture issue**: The separate action pathway has weak influence on the
+   final output — the dense head may have learned to weight history context
+   far more heavily than action context
+
+### Supported Inference Modes
+
+| Mode | Supported | Description |
+|------|:---------:|------------|
+| `forecast` | ✅ | History + actual future actions → predict glucose |
+| `counterfactual` | ✅ | Zero actions vs actual actions, measure Δ |
+| `dosesweep` | ✅ | Sweep bolus doses, compare predicted curves |
+| `reconstruct` | ❌ | Glucose-only output — can't reconstruct 8 features |
+| `anomaly` | ❌ | No reconstruction error to rank by |
+| `impute` | ❌ | Needs glucose history in output |
+| `similarity` | ❌ | No shared embedding space |
+
+---
+
+## Still Untested Architectures
+
+Two architectures remain unintegrated into hindcast.
 
 ### CGMTransformerVAE — Uncertainty Quantification
 
@@ -571,20 +622,21 @@ encoder's embeddings) could improve similarity search (Frame 6) by
 learning to group semantically similar windows. This is a training
 modification, not a new inference capability.
 
-### Summary: Tested vs. Untested Capability Matrix
+### Summary: Tested vs. Remaining Capability Matrix
 
-| Capability | AE/Grouped (tested) | Conditioned (untested) | VAE (untested) | Diffusion (untested) |
+| Capability | AE/Grouped (tested) | Conditioned (tested) | VAE (untested) | Diffusion (untested) |
 |-----------|:-------------------:|:---------------------:|:--------------:|:-------------------:|
-| Deterministic forecast | ✅ 12.2 MAE | ✅ designed for this | ⚠️ via μ | ❌ too slow |
+| Deterministic forecast | ✅ 12.2 MAE | ✅ 35.6 MAE | ⚠️ via μ | ❌ too slow |
 | Reconstruction | ✅ 13.0 MAE | ❌ glucose-only output | ✅ stochastic | ❌ too slow |
-| Anomaly detection | ✅ MAE-based | ⚠️ indirect | ✅ likelihood-based | ❌ too slow |
-| Counterfactual | ❌ near-zero effect | ✅ **primary capability** | ❌ no action input | ❌ no action input |
+| Anomaly detection | ✅ MAE-based | ❌ no reconstruction | ✅ likelihood-based | ❌ too slow |
+| Counterfactual | ⚠️ 23.9 (indirect) | ✅ **+29.3 (first-class)** | ❌ no action input | ❌ no action input |
+| Dose-response | ❌ ignores actions | ❌ paradoxical (5 mg/dL / 10U) | ❌ | ❌ |
 | Uncertainty bands | ❌ deterministic | ❌ deterministic | ✅ **primary capability** | ✅ diverse samples |
-| Dosing simulation | ❌ ignores actions | ✅ **primary capability** | ❌ | ❌ |
+| Dosing simulation | ❌ ignores actions | ⚠️ directional only | ❌ | ❌ |
 | Imputation | ⚠️ ratio 1–19× | ❌ needs glucose history | ⚠️ via prior | ❌ |
 | Similarity search | ✅ residual L2 | ❌ no shared embedding | ✅ latent space | ❌ |
 
-**Priority for integration**: ConditionedTransformer >> VAE >> Diffusion
+**Priority for remaining integration**: VAE >> Diffusion
 
 ---
 
@@ -602,20 +654,25 @@ modification, not a new inference capability.
    predict dawn rise onset. Preemptive basal increase 30 min before predicted
    onset.
 
-### Next Priority: Integrate Untested Architectures
+### Next Priority: Improve Causal Reasoning
 
-4. **ConditionedTransformer hindcast adapter** (highest priority): Build
-   `run_hindcast_conditioned()` that splits windows into history + actions,
-   calls `model(history, actions)`, and compares glucose-only output to actual.
-   Test with 3 existing checkpoints. This directly addresses the causality gap.
+4. **Fix ConditionedTransformer dose-response**: The model shows correct directional
+   counterfactual but paradoxical dose-response. Approaches:
+   - **Training data augmentation**: Generate synthetic scenarios with extreme dosing
+     variation (0U to 20U for same meal) so the model sees dose→glucose correlation
+   - **Action pathway strengthening**: Increase action projection dimension (3→128)
+     or add a gated cross-attention from actions to history
+   - **Physics-conditioned hybrid**: Use physics model for dose-response magnitude,
+     ConditionedTransformer for trajectory shape
 
 5. **VAE uncertainty mode**: Add `--ensemble N` flag to hindcast that runs
    N stochastic forward passes and reports percentile bands. Enables
    "BG will be 120–180 (90% CI)" predictions.
 
-6. **Conditioned dose sweep**: New hindcast mode that replays a meal window
-   with bolus amounts from 0 to 2× actual, plotting predicted BG curves.
-   Answers "was this the right dose?" directly.
+6. **Conditioned + physics residual**: Apply physics-residual composition to
+   ConditionedTransformer. If it reduces the 35.6 MAE to ~15 (as it did for
+   AE models), this would combine the best forecast accuracy with
+   action-conditioned counterfactual capability.
 
 ### Architecture Changes for Causal Reasoning
 
@@ -675,7 +732,9 @@ modification, not a new inference capability.
 - Final prediction: `physics_forward + ML_output × RESIDUAL_SCALE`
 
 ### Tools
-- `tools/cgmencode/hindcast.py` — 6 inference frames, physics-residual, Loop comparison
+- `tools/cgmencode/hindcast.py` — 7 inference modes (forecast, reconstruct, anomaly,
+  counterfactual, impute, similarity, dosesweep), physics-residual, Loop comparison,
+  full ConditionedTransformer support
 - `tools/cgmencode/event_eval.py` — Systematic multi-model evaluation with event classification
 - `tools/cgmencode/physics_model.py` — Forward integration with circadian/liver model
 
@@ -706,6 +765,25 @@ python3 -m tools.cgmencode.hindcast anomaly \
     --data ../t1pal-mobile-workspace/externals/logs/ns-fixtures/90-day-history \
     --checkpoint externals/experiments/ae_014_grouped_transfer.pth \
     --residual --top 20
+
+# Conditioned forecast scan
+python3 -m tools.cgmencode.hindcast forecast \
+    --data ../t1pal-mobile-workspace/externals/logs/ns-fixtures/90-day-history \
+    --checkpoint externals/experiments/cond_transfer.pth \
+    --model conditioned --scan 5
+
+# Conditioned dose sweep
+python3 -m tools.cgmencode.hindcast dosesweep \
+    --data ../t1pal-mobile-workspace/externals/logs/ns-fixtures/90-day-history \
+    --checkpoint externals/experiments/cond_transfer.pth \
+    --model conditioned --at "2025-11-15T21:25:00Z" \
+    --doses "0,1,2,4,6,10"
+
+# Conditioned counterfactual
+python3 -m tools.cgmencode.hindcast counterfactual \
+    --data ../t1pal-mobile-workspace/externals/logs/ns-fixtures/90-day-history \
+    --checkpoint externals/experiments/cond_transfer.pth \
+    --model conditioned --pick interesting
 
 # UAM event detection
 python3 -m tools.cgmencode.hindcast anomaly \
