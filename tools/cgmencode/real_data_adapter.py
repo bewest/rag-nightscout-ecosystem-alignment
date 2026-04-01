@@ -464,6 +464,75 @@ def load_nightscout_to_dataset(data_path: str,
     return train_ds, val_ds
 
 
+def load_multipatient_nightscout(data_paths: List[str],
+                                  task: str = 'forecast',
+                                  window_size: int = 24,
+                                  val_fraction: float = 0.2,
+                                  conditioned: bool = False,
+                                  ) -> Tuple[Optional[object], Optional[object]]:
+    """
+    Load multiple patient Nightscout directories → single combined dataset.
+
+    Each path should point to a patient's training/ directory containing
+    entries.json, treatments.json, devicestatus.json, profile.json.
+
+    Windows from each patient are extracted independently, then concatenated
+    and shuffled. The val split is random (not chronological) since windows
+    come from different patients with different time ranges.
+
+    Returns:
+        (train_dataset, val_dataset)
+    """
+    all_windows = []
+    actual_window = window_size * 2 if conditioned else window_size
+
+    for i, data_path in enumerate(data_paths):
+        patient_id = Path(data_path).parent.name  # e.g. 'a', 'b', ...
+        print(f"  Patient {patient_id} ({i+1}/{len(data_paths)}): {data_path}")
+
+        df, features = build_nightscout_grid(data_path, verbose=False)
+        if df is None:
+            print(f"    SKIP: no valid data")
+            continue
+
+        windows = split_into_windows(features, window_size=actual_window)
+        if not windows:
+            print(f"    SKIP: no valid windows")
+            continue
+
+        print(f"    {len(df)} rows → {len(windows)} windows "
+              f"({df['glucose'].min():.0f}-{df['glucose'].max():.0f} mg/dL)")
+        all_windows.extend(windows)
+
+    if not all_windows:
+        print("  ERROR: no valid windows from any patient")
+        return None, None
+
+    # Shuffle to mix patients (prevents batch-level patient bias)
+    rng = np.random.RandomState(42)
+    rng.shuffle(all_windows)
+
+    split_idx = int(len(all_windows) * (1 - val_fraction))
+    train_windows = all_windows[:split_idx]
+    val_windows = all_windows[split_idx:]
+
+    train_tensor = torch.tensor(np.array(train_windows), dtype=torch.float32)
+    val_tensor = torch.tensor(np.array(val_windows), dtype=torch.float32)
+
+    if conditioned:
+        train_ds = ConditionedDataset(train_tensor, window_size=window_size)
+        val_ds = ConditionedDataset(val_tensor, window_size=window_size)
+    else:
+        train_ds = CGMDataset(train_tensor, task=task, window_size=window_size)
+        val_ds = CGMDataset(val_tensor, task=task, window_size=window_size)
+
+    print(f"  Multi-patient total: {len(all_windows)} windows from "
+          f"{len(data_paths)} patients → {len(train_windows)} train, "
+          f"{len(val_windows)} val")
+
+    return train_ds, val_ds
+
+
 def load_ohio_to_dataset(data_path: str, subject_id: str, year: str = '2020',
                           task: str = 'forecast', window_size: int = 24,
                           val_fraction: float = 0.2,

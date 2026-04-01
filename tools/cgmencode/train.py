@@ -105,23 +105,35 @@ def train_step(model, batch, optimizer, model_name, criterion, kl_beta=0.01):
 def load_data(args, reg):
     """Load training data from the specified source."""
     if args.source == 'nightscout':
-        from .real_data_adapter import load_nightscout_to_dataset
         if not args.data_path:
             print("ERROR: --data-path required for Nightscout source")
             sys.exit(1)
-        return load_nightscout_to_dataset(
-            args.data_path,
-            task=reg['task'],
-            window_size=args.window,
-            conditioned=reg['conditioned'],
-        )
+        # Multi-patient: if multiple paths provided, use combined loader
+        paths = args.data_path if isinstance(args.data_path, list) else [args.data_path]
+        if len(paths) > 1:
+            from .real_data_adapter import load_multipatient_nightscout
+            return load_multipatient_nightscout(
+                paths,
+                task=reg['task'],
+                window_size=args.window,
+                conditioned=reg['conditioned'],
+            )
+        else:
+            from .real_data_adapter import load_nightscout_to_dataset
+            return load_nightscout_to_dataset(
+                paths[0],
+                task=reg['task'],
+                window_size=args.window,
+                conditioned=reg['conditioned'],
+            )
     elif args.source == 'csv':
         from .real_data_adapter import load_csv_to_dataset
         if not args.data_path:
             print("ERROR: --data-path required for CSV source")
             sys.exit(1)
+        csv_path = args.data_path[0] if isinstance(args.data_path, list) else args.data_path
         return load_csv_to_dataset(
-            args.data_path,
+            csv_path,
             task=reg['task'],
             window_size=args.window,
             conditioned=reg['conditioned'],
@@ -300,7 +312,12 @@ def main():
     # Data source
     parser.add_argument('--source', choices=['conformance', 'nightscout', 'csv'],
                         default='conformance', help='Data source type')
-    parser.add_argument('--data-path', help='Path to data directory (for nightscout/csv sources)')
+    parser.add_argument('--data-path', nargs='+',
+                        help='Path(s) to data directory (for nightscout/csv sources). '
+                             'Multiple paths for multi-patient training.')
+    parser.add_argument('--patients-dir',
+                        help='Auto-expand patient training dirs under this base '
+                             '(e.g. externals/ns-data/patients). Uses */training/')
     parser.add_argument('--data', nargs='+', help='Conformance data directories')
 
     # Transfer learning
@@ -314,6 +331,23 @@ def main():
                         help='ReduceLROnPlateau patience')
 
     args = parser.parse_args()
+
+    # Expand --patients-dir into --data-path list
+    if args.patients_dir:
+        from pathlib import Path
+        base = Path(args.patients_dir)
+        patient_paths = sorted([
+            str(p / 'training')
+            for p in base.iterdir()
+            if p.is_dir() and (p / 'training' / 'entries.json').exists()
+        ])
+        if not patient_paths:
+            print(f"ERROR: No patient training dirs found under {args.patients_dir}")
+            sys.exit(1)
+        args.data_path = patient_paths
+        args.source = 'nightscout'
+        print(f"Auto-detected {len(patient_paths)} patients from {args.patients_dir}")
+
     run_training(args)
 
 
