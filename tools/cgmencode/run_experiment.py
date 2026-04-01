@@ -22,6 +22,7 @@ Usage:
 import argparse
 import json
 import os
+import random
 import sys
 import time
 import numpy as np
@@ -29,6 +30,20 @@ import torch
 import torch.nn as nn
 from pathlib import Path
 from torch.utils.data import DataLoader
+
+
+def set_seed(seed):
+    """Set all random seeds for reproducible training.
+
+    Controls: Python random, NumPy, PyTorch CPU/CUDA.
+    Does NOT affect data loading (real data is deterministic),
+    only model initialization, batch shuffling, and synthetic splits.
+    """
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
 from .model import CGMTransformerAE, CGMGroupedEncoder, train_one_epoch, eval_loss
 from .toolbox import ConditionedTransformer
@@ -2054,6 +2069,392 @@ def run_causal_longer_horizons(args):
     return results
 
 
+def run_multiseed_robustness(args):
+    """EXP-013: Multi-Seed Robustness at 1hr.
+
+    Resolves conflicting results between EXP-012a (Grouped wins at 1hr)
+    and EXP-010b (AE wins at 1hr) by running both architectures across
+    multiple seeds and reporting mean +/- std.
+
+    Seeds control: model initialization, batch shuffling.
+    Data and physics are deterministic — identical every run.
+    """
+    print('=' * 60)
+    print('EXP-013: Multi-Seed Robustness (AE vs Grouped, 1hr)')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-013', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    seeds = [42, 123, 456, 789, 1024]
+    results['seeds'] = seeds
+
+    isf, cr = _load_patient_profile(args.real_data)
+    print(f'  Patient: ISF={isf}, CR={cr}')
+    results['patient'] = {'isf': isf, 'cr': cr}
+
+    # Load data ONCE (deterministic — same every seed)
+    print('\n--- Loading data (shared across all seeds) ---')
+    real_t, real_v = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window)
+    train_np = real_t.vectors.numpy()
+    val_np = real_v.vectors.numpy()
+    results['samples'] = {'train': len(train_np), 'val': len(val_np)}
+    print(f'  Windows: {len(train_np)} train, {len(val_np)} val')
+
+    tr_res, tr_phys, tr_stats = compute_residual_windows(
+        train_np, isf=isf, cr=cr, level='enhanced')
+    vr_res, vr_phys, vr_stats = compute_residual_windows(
+        val_np, isf=isf, cr=cr, level='enhanced')
+    print(f'  Residual std: {vr_stats["std"]:.1f} mg/dL')
+
+    # Physics-only and persistence baselines (deterministic, compute once)
+    physics_metrics = _evaluate_physics_only(vr_phys, val_np)
+    results['physics_only'] = physics_metrics
+    print(f'  Physics-only: MAE={physics_metrics["mae_mgdl"]:.2f}')
+
+    _, rv_2x = load_nightscout_to_dataset(
+        args.real_data, task='forecast', window_size=args.window * 2)
+    p_mae, p_rmse = persistence_baseline(rv_2x, args.window)
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)}
+    print(f'  Persistence: MAE={p_mae:.2f}')
+
+    from .encoder import CGMDataset
+    res_train_ds = CGMDataset(tr_res, task='reconstruct', window_size=args.window)
+    res_val_ds = CGMDataset(vr_res, task='reconstruct', window_size=args.window)
+
+    architectures = {
+        'ae': {'class': CGMTransformerAE,
+               'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2}},
+        'grouped': {'class': CGMGroupedEncoder,
+                    'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2}},
+    }
+
+    # Collect per-seed results
+    seed_results = {arch: [] for arch in architectures}
+
+    for seed in seeds:
+        print(f'\n{"─" * 60}')
+        print(f'  Seed: {seed}')
+        print(f'{"─" * 60}')
+
+        for arch_name, arch_cfg in architectures.items():
+            set_seed(seed)
+
+            model = arch_cfg['class'](**arch_cfg['kwargs'])
+            ckpt = str(out / f'ae_013_{arch_name}_s{seed}.pth')
+
+            # Fresh DataLoaders each seed (shuffle order depends on seed)
+            train_ld = DataLoader(res_train_ds, batch_size=args.batch, shuffle=True)
+            val_ld = DataLoader(res_val_ds, batch_size=args.batch)
+
+            train_loop(model, train_ld, val_ld,
+                       lr=1e-3, epochs=args.epochs, patience=args.patience,
+                       save_path=ckpt, label=f'{arch_name}-s{seed}')
+
+            load_best(model, ckpt)
+            recon = _evaluate_residual_model(model, vr_res, vr_phys, val_np)
+            forecast = _evaluate_residual_future_only(
+                model, vr_res, vr_phys, val_np,
+                history_steps=args.window // 2)
+
+            seed_results[arch_name].append({
+                'seed': seed,
+                'reconstruction': recon,
+                'future_only': forecast,
+            })
+            print(f'  [{arch_name} s{seed}] recon={recon["mae_mgdl"]:.2f}  '
+                  f'forecast={forecast["mae_mgdl"]:.2f}')
+
+            # Clean up checkpoint to save disk
+            if os.path.exists(ckpt):
+                os.remove(ckpt)
+
+    # Compute statistics
+    for arch_name in architectures:
+        recon_vals = [r['reconstruction']['mae_mgdl'] for r in seed_results[arch_name]]
+        fcast_vals = [r['future_only']['mae_mgdl'] for r in seed_results[arch_name]]
+        results[arch_name] = {
+            'runs': seed_results[arch_name],
+            'reconstruction': {
+                'mean': round(float(np.mean(recon_vals)), 2),
+                'std': round(float(np.std(recon_vals)), 2),
+                'min': round(float(np.min(recon_vals)), 2),
+                'max': round(float(np.max(recon_vals)), 2),
+                'all': [round(v, 2) for v in recon_vals],
+            },
+            'future_only': {
+                'mean': round(float(np.mean(fcast_vals)), 2),
+                'std': round(float(np.std(fcast_vals)), 2),
+                'min': round(float(np.min(fcast_vals)), 2),
+                'max': round(float(np.max(fcast_vals)), 2),
+                'all': [round(v, 2) for v in fcast_vals],
+            },
+        }
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    # Summary
+    print('\n' + '=' * 60)
+    print('SUMMARY — Multi-Seed Robustness (5 seeds)')
+    print('=' * 60)
+    print(f'  {"Metric":<24s}  {"AE (mean\u00b1std)":>18s}  {"Grouped (mean\u00b1std)":>18s}  {"Winner":>8s}')
+    print(f'  {"-"*24}  {"-"*18}  {"-"*18}  {"-"*8}')
+
+    ae_s = results['ae']
+    gr_s = results['grouped']
+
+    for metric_key, metric_label in [('reconstruction', 'Recon MAE'),
+                                     ('future_only', 'Forecast MAE (causal)')]:
+        ae_m = ae_s[metric_key]
+        gr_m = gr_s[metric_key]
+        ae_str = f'{ae_m["mean"]:.2f}\u00b1{ae_m["std"]:.2f}'
+        gr_str = f'{gr_m["mean"]:.2f}\u00b1{gr_m["std"]:.2f}'
+        winner = 'AE' if ae_m['mean'] < gr_m['mean'] else 'Grouped'
+        print(f'  {metric_label:<24s}  {ae_str:>18s}  {gr_str:>18s}  {winner:>8s}')
+
+    # Individual runs
+    print(f'\n  Individual forecast MAEs:')
+    print(f'  {"Seed":>6s}  {"AE":>8s}  {"Grouped":>8s}  {"Winner":>8s}')
+    for i, seed in enumerate(seeds):
+        ae_v = ae_s['future_only']['all'][i]
+        gr_v = gr_s['future_only']['all'][i]
+        w = 'AE' if ae_v < gr_v else 'Grouped'
+        print(f'  {seed:>6d}  {ae_v:>8.2f}  {gr_v:>8.2f}  {w:>8s}')
+
+    ae_wins = sum(1 for i in range(len(seeds))
+                  if ae_s['future_only']['all'][i] < gr_s['future_only']['all'][i])
+    gr_wins = len(seeds) - ae_wins
+    print(f'\n  Score: AE {ae_wins}/{len(seeds)}, Grouped {gr_wins}/{len(seeds)}')
+    print(f'  Persistence baseline: {p_mae:.2f} mg/dL')
+    print(f'  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp013_multiseed.json'))
+    return results
+
+
+def run_walkforward_grouped_transfer(args):
+    """EXP-014: Walk-Forward Temporal Validation with Grouped + Transfer.
+
+    Verifies that the Grouped+transfer best result (0.43 MAE from EXP-012b)
+    holds under strict temporal validation:
+    - Hard chronological split (no overlapping windows between train/test)
+    - Optional 1-day gap to prevent boundary leakage
+    - Tests both AE and GroupedEncoder with transfer learning
+    - Reports reconstruction AND causal future-only forecast metrics
+
+    Key question: does 0.43 survive honest temporal evaluation?
+    """
+    print('=' * 60)
+    print('EXP-014: Walk-Forward with Grouped + Transfer')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+    results = {'experiment': 'EXP-014', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+    set_seed(42)  # reproducible
+
+    isf, cr = _load_patient_profile(args.real_data)
+    print(f'  Patient: ISF={isf}, CR={cr}')
+    results['patient'] = {'isf': isf, 'cr': cr}
+
+    # Load synthetic data for pre-training
+    print('\n--- Step 1: Synthetic data for pre-training ---')
+    syn_t, syn_v = load_conformance_to_dataset(
+        args.synth_dirs, task='forecast', window_size=args.window)
+    has_synthetic = syn_t is not None and len(syn_t) > 0
+    results['has_synthetic'] = has_synthetic
+
+    syn_res_train_ds = syn_res_val_ds = None
+    if has_synthetic:
+        syn_train_np = syn_t.vectors.numpy()
+        syn_val_np = syn_v.vectors.numpy()
+        print(f'  Synthetic: {len(syn_train_np)} train, {len(syn_val_np)} val')
+
+        syn_tr_res, _, syn_stats = compute_residual_windows(
+            syn_train_np, isf=isf, cr=cr, level='enhanced')
+        syn_vr_res, _, _ = compute_residual_windows(
+            syn_val_np, isf=isf, cr=cr, level='enhanced')
+        print(f'  Synthetic residual std: {syn_stats["std"]:.1f} mg/dL')
+        results['synthetic_residual_stats'] = syn_stats
+
+        from .encoder import CGMDataset
+        syn_res_train_ds = CGMDataset(syn_tr_res, task='reconstruct', window_size=args.window)
+        syn_res_val_ds = CGMDataset(syn_vr_res, task='reconstruct', window_size=args.window)
+    else:
+        print('  WARNING: No synthetic vectors — transfer will skip pre-training.')
+
+    # Build full feature grid for walk-forward splitting
+    print('\n--- Step 2: Build feature grid ---')
+    features, grid_index = _build_feature_grid(args.real_data)
+    total_days = (grid_index[-1] - grid_index[0]).days
+    print(f'  Grid: {len(features)} points, {total_days} days')
+
+    from .real_data_adapter import split_into_windows
+    from .encoder import CGMDataset
+    window = args.window
+
+    architectures = {
+        'ae': {'class': CGMTransformerAE,
+               'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2}},
+        'grouped': {'class': CGMGroupedEncoder,
+                    'kwargs': {'input_dim': 8, 'd_model': 64, 'nhead': 4, 'num_layers': 2}},
+    }
+
+    # Walk-forward split: 70/30 with 1-day gap (strictest from EXP-011)
+    split_cfg = {'name': 'wf_70_30_gap1d', 'train_frac': 0.70, 'gap_days': 1}
+    train_frac = split_cfg['train_frac']
+    gap_days = split_cfg['gap_days']
+
+    split_point = int(len(features) * train_frac)
+    gap_points = gap_days * 288
+
+    train_grid = features[:split_point]
+    test_grid = features[split_point + gap_points:]
+
+    split_date = grid_index[split_point].strftime('%Y-%m-%d')
+    train_days = (grid_index[split_point] - grid_index[0]).days
+    test_days = (grid_index[-1] - grid_index[min(split_point + gap_points, len(grid_index)-1)]).days
+    print(f'\n  Walk-forward split at {split_date}: {train_days}d train, '
+          f'{test_days}d test, {gap_days}d gap')
+
+    train_wins = split_into_windows(train_grid, window_size=window)
+    test_wins = split_into_windows(test_grid, window_size=window)
+    train_np = np.array(train_wins)
+    test_np = np.array(test_wins)
+    print(f'  Windows: {len(train_np)} train, {len(test_np)} test')
+    results['walk_forward'] = {
+        'split_date': split_date, 'train_days': train_days,
+        'test_days': test_days, 'gap_days': gap_days,
+        'train_windows': len(train_np), 'test_windows': len(test_np),
+    }
+
+    # Compute enhanced residuals for real train/test
+    tr_res, tr_phys, tr_stats = compute_residual_windows(
+        train_np, isf=isf, cr=cr, level='enhanced')
+    te_res, te_phys, te_stats = compute_residual_windows(
+        test_np, isf=isf, cr=cr, level='enhanced')
+    print(f'  Residual std: train={tr_stats["std"]:.1f}, test={te_stats["std"]:.1f} mg/dL')
+
+    real_tr_ds = CGMDataset(tr_res, task='reconstruct', window_size=window)
+    real_te_ds = CGMDataset(te_res, task='reconstruct', window_size=window)
+    real_tr_ld = DataLoader(real_tr_ds, batch_size=args.batch, shuffle=True)
+    real_te_ld = DataLoader(real_te_ds, batch_size=args.batch)
+
+    # Physics-only baseline on test set
+    physics_metrics = _evaluate_physics_only(te_phys, test_np)
+    results['physics_only'] = physics_metrics
+
+    # Persistence on test set
+    test_wins_2x = split_into_windows(test_grid, window_size=window * 2)
+    if test_wins_2x:
+        test_tensor_2x = torch.tensor(np.array(test_wins_2x), dtype=torch.float32)
+        te_ds_2x = CGMDataset(test_tensor_2x, task='forecast', window_size=window * 2)
+        p_mae, p_rmse = persistence_baseline(te_ds_2x, window)
+    else:
+        p_mae, p_rmse = float('nan'), float('nan')
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)}
+
+    # Run each architecture: scratch + transfer
+    for arch_name, arch_cfg in architectures.items():
+        print(f'\n{"=" * 50}')
+        print(f'  Architecture: {arch_name}')
+        print(f'{"=" * 50}')
+        ModelClass = arch_cfg['class']
+        model_kwargs = arch_cfg['kwargs']
+        arch_results = {}
+
+        # --- Pre-train on synthetic ---
+        synth_ckpt = str(out / f'ae_014_{arch_name}_synth.pth')
+        if has_synthetic:
+            print(f'\n  --- Pre-train {arch_name} on synthetic ---')
+            set_seed(42)
+            model_synth = ModelClass(**model_kwargs)
+            train_loop(model_synth,
+                       DataLoader(syn_res_train_ds, batch_size=args.batch, shuffle=True),
+                       DataLoader(syn_res_val_ds, batch_size=args.batch),
+                       lr=1e-3, epochs=args.epochs, patience=args.patience,
+                       save_path=synth_ckpt, label=f'{arch_name}-synth')
+
+        # --- Transfer: synth pretrain → real finetune ---
+        print(f'\n  --- Transfer {arch_name} (synth→real walk-forward) ---')
+        set_seed(42)
+        model_ft = ModelClass(**model_kwargs)
+        if has_synthetic:
+            load_best(model_ft, synth_ckpt)
+        ft_ckpt = str(out / f'ae_014_{arch_name}_transfer.pth')
+        train_loop(model_ft, real_tr_ld, real_te_ld,
+                   lr=5e-4, epochs=args.epochs, patience=args.patience,
+                   save_path=ft_ckpt, label=f'{arch_name}-transfer')
+
+        # --- Scratch baseline ---
+        print(f'\n  --- Scratch {arch_name} on walk-forward ---')
+        set_seed(42)
+        model_sc = ModelClass(**model_kwargs)
+        sc_ckpt = str(out / f'ae_014_{arch_name}_scratch.pth')
+        train_loop(model_sc, real_tr_ld, real_te_ld,
+                   lr=1e-3, epochs=args.epochs, patience=args.patience,
+                   save_path=sc_ckpt, label=f'{arch_name}-scratch')
+
+        # --- Evaluate both ---
+        print(f'\n  --- Evaluate {arch_name} ---')
+        load_best(model_ft, ft_ckpt)
+        load_best(model_sc, sc_ckpt)
+
+        for variant_name, model_v in [('transfer', model_ft), ('scratch', model_sc)]:
+            recon = _evaluate_residual_model(model_v, te_res, te_phys, test_np)
+            forecast = _evaluate_residual_future_only(
+                model_v, te_res, te_phys, test_np,
+                history_steps=window // 2)
+            arch_results[variant_name] = {
+                'reconstruction': recon,
+                'future_only': forecast,
+            }
+            print(f'  [{arch_name} {variant_name}] recon={recon["mae_mgdl"]:.2f}  '
+                  f'forecast={forecast["mae_mgdl"]:.2f} mg/dL')
+
+        results[arch_name] = arch_results
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+
+    # Summary
+    print('\n' + '=' * 60)
+    print('SUMMARY — Walk-Forward with Grouped + Transfer')
+    print(f'  (70/30 split, 1-day gap, {train_days}d train / {test_days}d test)')
+    print('=' * 60)
+    header = f'  {"Variant":<28s}  {"Recon MAE":>10s}  {"Forecast MAE":>12s}'
+    print(header)
+    print(f'  {"-"*28}  {"-"*10}  {"-"*12}')
+    print(f'  {"Persistence":<28s}  {"\u2014":>10s}  {p_mae:>12.2f}')
+    print(f'  {"Physics-only":<28s}  {physics_metrics["mae_mgdl"]:>10.2f}  {"\u2014":>12s}')
+
+    for arch in ['ae', 'grouped']:
+        ar = results[arch]
+        for variant in ['transfer', 'scratch']:
+            label = f'{arch} {variant}'
+            vr = ar[variant]
+            print(f'  {label:<28s}  {vr["reconstruction"]["mae_mgdl"]:>10.2f}  '
+                  f'{vr["future_only"]["mae_mgdl"]:>12.2f}')
+
+    # Compare to EXP-012b (random split) results
+    ae_wf = results['ae']['transfer']['future_only']['mae_mgdl']
+    gr_wf = results['grouped']['transfer']['future_only']['mae_mgdl']
+    print(f'\n  Walk-forward vs random split (EXP-012b):')
+    print(f'    AE transfer forecast:      {ae_wf:.2f} (wf) vs 0.80 (random)')
+    print(f'    Grouped transfer forecast:  {gr_wf:.2f} (wf) vs 0.43 (random)')
+
+    winner = 'Grouped' if gr_wf < ae_wf else 'AE'
+    pct = abs(ae_wf - gr_wf) / max(ae_wf, gr_wf) * 100
+    print(f'    Walk-forward winner: {winner} ({pct:.1f}% better)')
+
+    print(f'\n  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp014_walkforward_transfer.json'))
+    return results
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Run cgmencode experiments',
@@ -2064,6 +2465,7 @@ def main():
                                  'residual-transfer', 'longer-horizons',
                                  'walkforward', 'grouped-benchmark',
                                  'grouped-transfer', 'causal-longer-horizons',
+                                 'multiseed', 'walkforward-transfer',
                                  'all'],
                         help='Which experiment to run')
     parser.add_argument('--real-data', required=True,
@@ -2106,6 +2508,10 @@ def main():
         run_grouped_transfer(args)
     if args.experiment in ('causal-longer-horizons', 'all'):
         run_causal_longer_horizons(args)
+    if args.experiment in ('multiseed', 'all'):
+        run_multiseed_robustness(args)
+    if args.experiment in ('walkforward-transfer', 'all'):
+        run_walkforward_grouped_transfer(args)
 
 
 if __name__ == '__main__':
