@@ -1,0 +1,35 @@
+{
+  "experiment": "EXP-096",
+  "name": "patient-adaptive",
+  "results": {
+    "per_patient": {
+      "a": {
+        "mae": 18.508665084838867,
+        "suggestions": 235,
+        "precision": 0.9957446808510638
+      },
+      "b": {
+        "mae": 24.844919204711914,
+        "suggestions": 192,
+        "precision": 1.0
+      },
+      "c": {
+        "mae": 17.315059661865234,
+        "suggestions": 181,
+        "precision": 1.0
+      },
+      "d": {
+        "mae": 15.690884590148926,
+        "suggestions": 92,
+        "precision": 0.9782608695652174
+      },
+      "e": {
+        "mae": 15.659470558166504,
+        "suggestions": 163,
+        "precision": 0.9938650306748467
+      }
+    },
+    "avg_precision": 0.9935741162182256,
+    "avg_mae": 18.40379981994629
+  }
+}

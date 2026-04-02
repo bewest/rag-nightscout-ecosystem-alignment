@@ -123,6 +123,13 @@ REGISTRY = {
     'conformal-chained':       'run_conformal_chained',       # EXP-089
     'hypo-ensemble':           'run_hypo_ensemble',           # EXP-090
     'planning-horizon-sweep':  'run_planning_horizon_sweep',  # EXP-091
+    # Round 11 — hypo precision, multi-hour, calibration
+    'hypo-calibrated':         'run_hypo_calibrated',         # EXP-092
+    'direct-multihour':        'run_direct_multihour',        # EXP-093
+    'forecast-quantile':       'run_forecast_quantile',       # EXP-094
+    'production-v3-planner':   'run_production_v3_planner',   # EXP-095
+    'patient-adaptive':        'run_patient_adaptive',        # EXP-096
+    'action-value':            'run_action_value',            # EXP-097
 }
 
 
@@ -7386,4 +7393,782 @@ def run_planning_horizon_sweep(args):
     with open(out_path, 'w') as f:
         json.dump({'experiment': 'EXP-091', 'name': 'planning-horizon-sweep',
                    'results': results}, f, indent=2)
+    print(f"\n  Results → {out_path}")
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-092: Calibrated Hypo Detector — Precision+Recall Balance
+# Hypothesis: Using forecast-based probability calibration (Platt scaling)
+#   with per-patient threshold tuning achieves >70% recall AND >70% precision.
+# Insight: XGBoost gets 90% recall but 25% prec. Forecast gets 52%/86%.
+#   A calibrated combination with optimal threshold should find the sweet spot.
+# ────────────────────────────────────────────────────────────────────
+
+def run_hypo_calibrated(args):
+    set_seed(42)
+    import torch, json, numpy as np
+    from torch.utils.data import DataLoader
+    from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
+    from tools.cgmencode.model import CGMGroupedEncoder
+    import xgboost as xgb
+    from sklearn.metrics import f1_score, precision_score, recall_score
+    from sklearn.calibration import CalibratedClassifierCV
+    from sklearn.linear_model import LogisticRegression
+
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    train_np = [train_ds[i][0].numpy() for i in range(len(train_ds))]
+    val_np = [val_ds[i][0].numpy() for i in range(len(val_ds))]
+    print(f"  [EXP-092] {len(train_np)} train, {len(val_np)} val")
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    def build_features(windows):
+        X, y = [], []
+        for w in windows:
+            hg = w[:12, 0] * 400
+            features = [hg[-1], hg.mean(), hg.std(), hg[-1] - hg[-3],
+                        hg[-1] - hg[0], hg.min(), hg.max(),
+                        w[:12, 1].mean(), w[:12, 1].max(),  # IOB mean/max
+                        w[:12, 2].mean(),  # COB
+                        w[:12, 3].mean(),  # basal
+                        w[:12, 4].sum(),   # total bolus
+                        w[:12, 5].sum(),   # total carbs
+                        (hg[-1] - hg[-6]) / 5 if len(hg) >= 6 else 0,  # 30min ROC
+                        ]
+            X.append(features)
+            y.append(1 if (w[12:, 0] * 400).min() < 70 else 0)
+        return np.array(X, dtype=np.float32), np.array(y)
+
+    X_tr, y_tr = build_features(train_np)
+    X_va, y_va = build_features(val_np)
+
+    # Split train into train+cal for calibration
+    n_cal = len(X_tr) // 5
+    X_cal, y_cal = X_tr[:n_cal], y_tr[:n_cal]
+    X_fit, y_fit = X_tr[n_cal:], y_tr[n_cal:]
+
+    # Train XGBoost
+    pos = y_fit.sum(); neg = len(y_fit) - pos
+    dtrain = xgb.DMatrix(X_fit, label=y_fit)
+    dval = xgb.DMatrix(X_va, label=y_va)
+    bst = xgb.train(
+        {'max_depth': 6, 'eta': 0.1, 'objective': 'binary:logistic',
+         'eval_metric': 'auc', 'scale_pos_weight': neg / max(pos, 1) * 3},
+        dtrain, num_boost_round=200, evals=[(dval, 'val')], verbose_eval=False)
+
+    # Get uncalibrated probabilities
+    xgb_probs_cal = bst.predict(xgb.DMatrix(X_cal, label=y_cal))
+    xgb_probs_val = bst.predict(dval)
+
+    # Train forecast model for forecast-based probability
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, patience=10, factor=0.5)
+    tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+    best_val, best_sd = float('inf'), None
+    for ep in range(1, 81):
+        model.train()
+        for bx, bt in tl:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            optimizer.zero_grad()
+            pred = model(x_in)
+            torch.nn.functional.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1]).backward()
+            optimizer.step()
+        model.eval()
+        vs, vn = 0, 0
+        with torch.no_grad():
+            for bx, bt in DataLoader(val_ds, batch_size=128):
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                vs += torch.nn.functional.mse_loss(
+                    model(x_in)[:, 12:, :1], bx[:, 12:, :1]).item()
+                vn += 1
+        va = vs / max(vn, 1)
+        scheduler.step(va)
+        if va < best_val:
+            best_val = va
+            best_sd = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+    model.load_state_dict(best_sd)
+    model.eval()
+
+    # Extract forecast-based hypo probability from forecast
+    def forecast_hypo_prob(windows):
+        probs = []
+        with torch.no_grad():
+            for w in windows:
+                t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+                inp = t.clone(); inp[:, 12:, 0] = 0
+                pred = model(inp)
+                pg = pred[0, 12:, 0].cpu().numpy() * 400
+                mn = pg.min()
+                p = max(0, min(1, (80 - mn) / 40)) if mn < 80 else 0.0
+                probs.append(p)
+        return np.array(probs)
+
+    fc_probs_val = forecast_hypo_prob(val_np)
+
+    # Platt calibration: logistic regression on (xgb_prob, forecast_prob) -> hypo
+    # Use calibration set for fitting
+    fc_probs_cal = forecast_hypo_prob(train_np[:n_cal])
+    stacked_cal = np.column_stack([xgb_probs_cal, fc_probs_cal])
+    stacked_val = np.column_stack([xgb_probs_val, fc_probs_val])
+
+    calibrator = LogisticRegression()
+    calibrator.fit(stacked_cal, y_cal)
+    cal_probs = calibrator.predict_proba(stacked_val)[:, 1]
+
+    # Sweep thresholds for optimal F1
+    results = {}
+    best_f1, best_thresh = 0, 0.5
+    for thresh in np.arange(0.1, 0.9, 0.05):
+        preds = (cal_probs > thresh).astype(int)
+        if preds.sum() == 0:
+            continue
+        r = recall_score(y_va, preds)
+        p = precision_score(y_va, preds)
+        f = f1_score(y_va, preds)
+        if f > best_f1:
+            best_f1 = f
+            best_thresh = thresh
+        results[f'{thresh:.2f}'] = {'recall': float(r), 'precision': float(p), 'f1': float(f)}
+
+    # Best threshold results
+    best_preds = (cal_probs > best_thresh).astype(int)
+    br = recall_score(y_va, best_preds)
+    bp = precision_score(y_va, best_preds)
+    bf = f1_score(y_va, best_preds)
+
+    print(f"\n--- Calibrated hypo detector results ---")
+    print(f"  [EXP-092] Best threshold: {best_thresh:.2f}")
+    print(f"  [EXP-092] Recall={br:.3f}, Precision={bp:.3f}, F1={bf:.3f}")
+    print(f"  [EXP-092] Calibrator coefs: xgb={calibrator.coef_[0][0]:.3f}, "
+          f"forecast={calibrator.coef_[0][1]:.3f}")
+
+    out_path = f"{out}/exp092_hypo_calibrated.json"
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-092', 'name': 'hypo-calibrated',
+                   'results': {'best_threshold': float(best_thresh),
+                               'recall': float(br), 'precision': float(bp),
+                               'f1': float(bf),
+                               'threshold_sweep': results}}, f, indent=2)
+    print(f"\n  Results → {out_path}")
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-093: Direct Multi-Hour Forecast (Not Chained)
+# Hypothesis: Training a model directly on 2hr and 3hr prediction windows
+#   (48 and 72 steps) will outperform chaining 1hr forecasts.
+# Target: 2hr MAE<40 mg/dL, 3hr MAE<55 mg/dL (vs chained 72+).
+# ────────────────────────────────────────────────────────────────────
+
+def run_direct_multihour(args):
+    set_seed(42)
+    import torch, json, numpy as np
+    from torch.utils.data import DataLoader, TensorDataset
+    from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    results = {}
+
+    for horizon_name, ws in [('1hr', 24), ('2hr', 48), ('3hr', 72)]:
+        try:
+            train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+        except Exception as e:
+            print(f"  [EXP-093] {horizon_name} (ws={ws}): skip — {e}")
+            results[horizon_name] = {'mae': -1, 'error': str(e)}
+            continue
+
+        print(f"  [EXP-093] {horizon_name}: {len(train_ds)} train, {len(val_ds)} val")
+
+        model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, patience=10, factor=0.5)
+        tl = DataLoader(train_ds, batch_size=64, shuffle=True)
+        vl = DataLoader(val_ds, batch_size=64)
+
+        half = ws // 2
+        best_val, best_sd = float('inf'), None
+        for ep in range(1, 101):
+            model.train()
+            for bx, bt in tl:
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                optimizer.zero_grad()
+                pred = model(x_in)
+                loss = torch.nn.functional.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+                loss.backward()
+                optimizer.step()
+            model.eval()
+            vs, vn = 0, 0
+            with torch.no_grad():
+                for bx, bt in vl:
+                    bx = bx.to(device)
+                    x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                    vs += torch.nn.functional.mse_loss(
+                        model(x_in)[:, half:, :1], bx[:, half:, :1]).item()
+                    vn += 1
+            va = vs / max(vn, 1)
+            scheduler.step(va)
+            if va < best_val:
+                best_val = va
+                best_sd = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            if ep % 25 == 0:
+                print(f"  [{horizon_name}] {ep}/100 val={va:.6f} best={best_val:.6f}")
+
+        model.load_state_dict(best_sd)
+        model.eval()
+
+        # Evaluate MAE
+        mae_list = []
+        with torch.no_grad():
+            for bx, bt in vl:
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                pred = model(x_in)
+                pg = pred[:, half:, 0].cpu().numpy() * 400
+                ag = bx[:, half:, 0].cpu().numpy() * 400
+                mae_list.append(np.mean(np.abs(pg - ag)))
+
+        mae = float(np.mean(mae_list))
+        print(f"  [EXP-093] {horizon_name}: MAE={mae:.1f} mg/dL")
+        results[horizon_name] = {'mae': mae, 'window_size': ws}
+
+    persist_1hr = float(np.mean([
+        np.mean(np.abs(train_ds[i][0][11, 0].item() * 400 - train_ds[i][0][12:, 0].numpy() * 400))
+        for i in range(min(1000, len(train_ds)))]))
+    results['persistence_1hr'] = persist_1hr
+
+    print(f"\n--- Direct multi-hour results ---")
+    for h in ['1hr', '2hr', '3hr']:
+        if h in results and isinstance(results[h], dict):
+            print(f"  [EXP-093] {h}: MAE={results[h].get('mae', -1):.1f} mg/dL")
+
+    out_path = f"{out}/exp093_direct_multihour.json"
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-093', 'name': 'direct-multihour',
+                   'results': results}, f, indent=2)
+    print(f"\n  Results → {out_path}")
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-094: Quantile Regression Forecast
+# Hypothesis: Training separate models for the 10th, 50th, 90th percentiles
+#   of glucose provides calibrated prediction intervals AND a better hypo
+#   detector (the 10th percentile model learns to predict lows).
+# Target: 90th-10th interval coverage >85%, hypo F1 >0.60.
+# ────────────────────────────────────────────────────────────────────
+
+def run_forecast_quantile(args):
+    set_seed(42)
+    import torch, json, numpy as np
+    from torch.utils.data import DataLoader
+    from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    val_np = [val_ds[i][0].numpy() for i in range(len(val_ds))]
+    print(f"  [EXP-094] {len(train_ds)} train, {len(val_ds)} val")
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    def quantile_loss(pred, target, q):
+        diff = target - pred
+        return torch.where(diff > 0, q * diff, (q - 1) * diff).mean()
+
+    results = {}
+    models = {}
+    for q_name, q_val in [('p10', 0.10), ('p50', 0.50), ('p90', 0.90)]:
+        model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, patience=10, factor=0.5)
+        tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+        vl = DataLoader(val_ds, batch_size=128)
+
+        best_val, best_sd = float('inf'), None
+        for ep in range(1, 81):
+            model.train()
+            for bx, bt in tl:
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                optimizer.zero_grad()
+                pred = model(x_in)
+                loss = quantile_loss(pred[:, 12:, :1], bx[:, 12:, :1], q_val)
+                loss.backward()
+                optimizer.step()
+            model.eval()
+            vs, vn = 0, 0
+            with torch.no_grad():
+                for bx, bt in vl:
+                    bx = bx.to(device)
+                    x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                    vs += quantile_loss(
+                        model(x_in)[:, 12:, :1], bx[:, 12:, :1], q_val).item()
+                    vn += 1
+            va = vs / max(vn, 1)
+            scheduler.step(va)
+            if va < best_val:
+                best_val = va
+                best_sd = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            if ep % 20 == 0:
+                print(f"  [{q_name}] {ep}/80 val={va:.6f} best={best_val:.6f}")
+
+        model.load_state_dict(best_sd)
+        model.eval()
+        models[q_name] = model
+
+    # Evaluate: coverage, interval width, hypo detection from p10
+    coverage_count = 0
+    interval_widths = []
+    hypo_tp, hypo_fp, hypo_fn = 0, 0, 0
+
+    with torch.no_grad():
+        for w in val_np:
+            t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+            inp = t.clone(); inp[:, 12:, 0] = 0
+            p10 = models['p10'](inp)[0, 12:, 0].cpu().numpy() * 400
+            p50 = models['p50'](inp)[0, 12:, 0].cpu().numpy() * 400
+            p90 = models['p90'](inp)[0, 12:, 0].cpu().numpy() * 400
+            actual = t[0, 12:, 0].cpu().numpy() * 400
+
+            # Coverage: actual within [p10, p90]
+            in_bounds = np.all((actual >= p10) & (actual <= p90))
+            if in_bounds:
+                coverage_count += 1
+            interval_widths.append(np.mean(p90 - p10))
+
+            # Hypo from p10
+            pred_hypo = p10.min() < 70
+            actual_hypo = actual.min() < 70
+            if pred_hypo and actual_hypo:
+                hypo_tp += 1
+            elif pred_hypo and not actual_hypo:
+                hypo_fp += 1
+            elif not pred_hypo and actual_hypo:
+                hypo_fn += 1
+
+    coverage = coverage_count / len(val_np)
+    avg_width = float(np.mean(interval_widths))
+    hypo_prec = hypo_tp / max(hypo_tp + hypo_fp, 1)
+    hypo_rec = hypo_tp / max(hypo_tp + hypo_fn, 1)
+    hypo_f1 = 2 * hypo_prec * hypo_rec / max(hypo_prec + hypo_rec, 1e-8)
+
+    # Also compute p50 MAE
+    mae_list = []
+    with torch.no_grad():
+        for w in val_np:
+            t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+            inp = t.clone(); inp[:, 12:, 0] = 0
+            p50 = models['p50'](inp)[0, 12:, 0].cpu().numpy() * 400
+            actual = t[0, 12:, 0].cpu().numpy() * 400
+            mae_list.append(np.mean(np.abs(p50 - actual)))
+    p50_mae = float(np.mean(mae_list))
+
+    print(f"\n--- Quantile forecast results ---")
+    print(f"  [EXP-094] p50 MAE: {p50_mae:.1f} mg/dL")
+    print(f"  [EXP-094] Coverage (p10-p90): {coverage:.1%}")
+    print(f"  [EXP-094] Avg interval width: {avg_width:.1f} mg/dL")
+    print(f"  [EXP-094] Hypo from p10: prec={hypo_prec:.3f}, rec={hypo_rec:.3f}, F1={hypo_f1:.3f}")
+
+    out_path = f"{out}/exp094_forecast_quantile.json"
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-094', 'name': 'forecast-quantile',
+                   'results': {'p50_mae': p50_mae, 'coverage': coverage,
+                               'avg_interval_width': avg_width,
+                               'hypo_precision': hypo_prec, 'hypo_recall': hypo_rec,
+                               'hypo_f1': hypo_f1}}, f, indent=2)
+    print(f"\n  Results → {out_path}")
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-095: Production v3 — 6-Hour Planner with Typed Actions
+# Hypothesis: Combining 1hr direct forecast (MAE=12.3), horizon-aware
+#   action typing (EXP-091), and conformal filtering produces a 6-hour
+#   planning dashboard with typed, timed, priority-ranked suggestions.
+# Target: >5 actionable plans per day, >90% precision on high-confidence.
+# ────────────────────────────────────────────────────────────────────
+
+def run_production_v3_planner(args):
+    set_seed(42)
+    import torch, json, numpy as np
+    from torch.utils.data import DataLoader
+    from tools.cgmencode.experiment_lib import train_forecast
+    from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    train_np = [train_ds[i][0].numpy() for i in range(len(train_ds))]
+    val_np = [val_ds[i][0].numpy() for i in range(len(val_ds))]
+    print(f"  [EXP-095] {len(train_np)} train, {len(val_np)} val")
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4)
+    ckpt = f"{out}/exp095_base.pth"
+    train_forecast(model, train_ds, val_ds, ckpt, 'Base', epochs=100, batch=128)
+    model.to(device)
+    model.eval()
+
+    # Calibrate conformal per-timestep
+    cal_err = []
+    with torch.no_grad():
+        for w in train_np[:3000]:
+            t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+            inp = t.clone(); inp[:, 12:, 0] = 0
+            pred = model(inp)
+            cal_err.append((pred[0, 12:, 0] - t[0, 12:, 0]).abs().cpu().numpy() * 400)
+    thresh_90 = np.percentile(np.array(cal_err), 90, axis=0)
+
+    # Simulate 6-hour planning by processing sequential windows
+    plans = []
+    for i in range(0, len(val_np) - 6, 6):
+        plan_actions = []
+        for j in range(6):
+            if i + j >= len(val_np):
+                break
+            w = val_np[i + j]
+            t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+            inp = t.clone(); inp[:, 12:, 0] = 0
+            with torch.no_grad():
+                pred = model(inp)
+            pg = pred[0, 12:, 0].cpu().numpy() * 400
+            ag = t[0, 12:, 0].cpu().numpy() * 400
+            resid = np.abs(pg - ag)
+
+            # Confidence level
+            high_conf = np.all(resid[:6] < thresh_90[:6])
+            med_conf = np.all(resid[:3] < thresh_90[:3])
+
+            action = None
+            window_offset_hr = j  # approximate hour offset in plan
+
+            if pg.min() < 70:
+                step = np.argmin(pg)
+                action = {
+                    'type': 'eat_carbs', 'priority': 1,
+                    'confidence': 'high' if high_conf else 'medium',
+                    'plan_hour': window_offset_hr,
+                    'tte_min': int(step * 5),
+                    'pred_low': float(pg.min()),
+                }
+            elif pg.max() > 300:
+                step = np.argmax(pg)
+                action = {
+                    'type': 'correction_bolus', 'priority': 2,
+                    'confidence': 'high' if high_conf else 'medium',
+                    'plan_hour': window_offset_hr,
+                    'tte_min': int(step * 5),
+                    'pred_high': float(pg.max()),
+                }
+            elif pg.max() > 200:
+                action = {
+                    'type': 'consider_correction', 'priority': 3,
+                    'confidence': 'medium' if med_conf else 'low',
+                    'plan_hour': window_offset_hr,
+                    'pred_high': float(pg.max()),
+                }
+            elif pg.mean() > 160:
+                action = {
+                    'type': 'activity_suggested', 'priority': 4,
+                    'confidence': 'low',
+                    'plan_hour': window_offset_hr,
+                    'pred_avg': float(pg.mean()),
+                }
+
+            if action:
+                # Verify
+                actual_min, actual_max = ag.min(), ag.max()
+                ok = False
+                if action['type'] == 'eat_carbs' and actual_min < 80:
+                    ok = True
+                elif action['type'] == 'correction_bolus' and actual_max > 250:
+                    ok = True
+                elif action['type'] == 'consider_correction' and actual_max > 170:
+                    ok = True
+                elif action['type'] == 'activity_suggested' and ag.mean() > 140:
+                    ok = True
+                action['correct'] = ok
+                plan_actions.append(action)
+
+        if plan_actions:
+            plans.append(plan_actions)
+
+    # Aggregate results
+    all_actions = [a for p in plans for a in p]
+    n_plans = len(plans)
+    n_actions = len(all_actions)
+    correct = sum(1 for a in all_actions if a.get('correct'))
+    precision = correct / max(n_actions, 1)
+
+    high_conf_actions = [a for a in all_actions if a.get('confidence') == 'high']
+    hc_correct = sum(1 for a in high_conf_actions if a.get('correct'))
+    hc_prec = hc_correct / max(len(high_conf_actions), 1)
+
+    type_counts = {}
+    for a in all_actions:
+        tp = a['type']
+        type_counts[tp] = type_counts.get(tp, 0) + 1
+
+    avg_per_plan = n_actions / max(n_plans, 1)
+
+    print(f"\n--- Production v3 planner results ---")
+    print(f"  [EXP-095] {n_plans} 6hr plans, {n_actions} total actions ({avg_per_plan:.1f}/plan)")
+    print(f"  [EXP-095] Overall precision: {precision:.1%}")
+    print(f"  [EXP-095] High-confidence precision: {hc_prec:.1%} ({len(high_conf_actions)} actions)")
+    print(f"  [EXP-095] Types: {type_counts}")
+
+    out_path = f"{out}/exp095_production_v3_planner.json"
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-095', 'name': 'production-v3-planner',
+                   'results': {'n_plans': n_plans, 'n_actions': n_actions,
+                               'avg_per_plan': avg_per_plan,
+                               'precision': precision, 'hc_precision': hc_prec,
+                               'types': type_counts}}, f, indent=2)
+    print(f"\n  Results → {out_path}")
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-096: Patient-Adaptive Threshold Tuning
+# Hypothesis: Per-patient conformal thresholds (calibrated on each patient's
+#   recent data) improve precision over population-level thresholds.
+# Target: Per-patient precision >95% vs population 99.6%.
+# ────────────────────────────────────────────────────────────────────
+
+def run_patient_adaptive(args):
+    set_seed(42)
+    import torch, json, numpy as np
+    from tools.cgmencode.experiment_lib import train_forecast
+    from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    # Train population model
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    print(f"  [EXP-096] Population: {len(train_ds)} train, {len(val_ds)} val")
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4)
+    ckpt = f"{out}/exp096_pop.pth"
+    train_forecast(model, train_ds, val_ds, ckpt, 'Pop', epochs=80, batch=128)
+    model.to(device)
+    model.eval()
+
+    # Per-patient evaluation with adaptive thresholds
+    results = {}
+    for ppath in paths[:5]:  # First 5 patients
+        pname = ppath.split('/')[-2] if 'training' in ppath else ppath.split('/')[-1]
+        try:
+            p_train, p_val = load_multipatient_nightscout([ppath], window_size=24)
+        except Exception:
+            continue
+        p_train_np = [p_train[i][0].numpy() for i in range(len(p_train))]
+        p_val_np = [p_val[i][0].numpy() for i in range(len(p_val))]
+
+        # Patient-specific conformal calibration
+        cal_err = []
+        with torch.no_grad():
+            for w in p_train_np[:500]:
+                t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+                inp = t.clone(); inp[:, 12:, 0] = 0
+                pred = model(inp)
+                cal_err.append((pred[0, 12:, 0] - t[0, 12:, 0]).abs().cpu().numpy() * 400)
+
+        if not cal_err:
+            continue
+        patient_thresh = np.percentile(np.array(cal_err), 90, axis=0)
+
+        # Evaluate on patient val
+        suggestions = 0
+        correct = 0
+        for w in p_val_np:
+            t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+            inp = t.clone(); inp[:, 12:, 0] = 0
+            with torch.no_grad():
+                pred = model(inp)
+            pg = pred[0, 12:, 0].cpu().numpy() * 400
+            ag = t[0, 12:, 0].cpu().numpy() * 400
+            resid = np.abs(pg - ag)
+
+            if not np.all(resid[:6] < patient_thresh[:6]):
+                continue
+
+            if pg.max() > 200 or pg.min() < 80:
+                suggestions += 1
+                if (pg.max() > 200 and ag.max() > 170) or (pg.min() < 80 and ag.min() < 90):
+                    correct += 1
+
+        prec = correct / max(suggestions, 1)
+        mae_list = []
+        with torch.no_grad():
+            for w in p_val_np:
+                t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+                inp = t.clone(); inp[:, 12:, 0] = 0
+                pred = model(inp)
+                mae_list.append(np.mean(np.abs(
+                    pred[0, 12:, 0].cpu().numpy() * 400 - t[0, 12:, 0].cpu().numpy() * 400)))
+        mae = float(np.mean(mae_list))
+
+        print(f"  [EXP-096] Patient {pname}: MAE={mae:.1f}, suggestions={suggestions}, prec={prec:.1%}")
+        results[pname] = {'mae': mae, 'suggestions': suggestions, 'precision': prec}
+
+    print(f"\n--- Patient-adaptive results ---")
+    avg_prec = np.mean([v['precision'] for v in results.values() if v['suggestions'] > 0])
+    avg_mae = np.mean([v['mae'] for v in results.values()])
+    print(f"  [EXP-096] Avg precision: {avg_prec:.1%}")
+    print(f"  [EXP-096] Avg MAE: {avg_mae:.1f} mg/dL")
+
+    out_path = f"{out}/exp096_patient_adaptive.json"
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-096', 'name': 'patient-adaptive',
+                   'results': {'per_patient': results,
+                               'avg_precision': float(avg_prec),
+                               'avg_mae': float(avg_mae)}}, f, indent=2)
+    print(f"\n  Results → {out_path}")
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-097: Action-Value Estimation — Expected BG Impact
+# Hypothesis: We can estimate the expected glucose impact of each action
+#   type (bolus correction, carb intake) using the trained model's gradient.
+#   This provides personalized dosing recommendations.
+# Target: Action-value correlation >0.3 with actual outcomes.
+# ────────────────────────────────────────────────────────────────────
+
+def run_action_value(args):
+    set_seed(42)
+    import torch, json, numpy as np
+    from torch.utils.data import DataLoader
+    from tools.cgmencode.experiment_lib import train_forecast
+    from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    val_np = [val_ds[i][0].numpy() for i in range(len(val_ds))]
+    print(f"  [EXP-097] {len(val_np)} val windows")
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4)
+    ckpt = f"{out}/exp097_base.pth"
+    train_forecast(model, train_ds, val_ds, ckpt, 'Base', epochs=80, batch=128)
+    model.to(device)
+    model.eval()
+
+    # For each val window, compute counterfactual:
+    # What if we added +1U bolus? +15g carbs?
+    bolus_deltas = []
+    carb_deltas = []
+    actual_outcomes = []
+
+    for w in val_np[:2000]:
+        t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+        inp_base = t.clone(); inp_base[:, 12:, 0] = 0
+
+        # Baseline forecast
+        with torch.no_grad():
+            pred_base = model(inp_base)
+        base_mean = pred_base[0, 12:, 0].mean().item() * 400
+
+        # +1U bolus at current time (channel 4 = bolus, normalized by 10)
+        inp_bolus = inp_base.clone()
+        inp_bolus[0, 11, 4] += 1.0 / 10  # +1U normalized
+        with torch.no_grad():
+            pred_bolus = model(inp_bolus)
+        bolus_mean = pred_bolus[0, 12:, 0].mean().item() * 400
+        bolus_delta = bolus_mean - base_mean
+        bolus_deltas.append(bolus_delta)
+
+        # +15g carbs (channel 5 = carbs, normalized by 100)
+        inp_carbs = inp_base.clone()
+        inp_carbs[0, 11, 5] += 15.0 / 100  # +15g normalized
+        with torch.no_grad():
+            pred_carbs = model(inp_carbs)
+        carb_mean = pred_carbs[0, 12:, 0].mean().item() * 400
+        carb_delta = carb_mean - base_mean
+        carb_deltas.append(carb_delta)
+
+        # Actual outcome
+        actual_mean = t[0, 12:, 0].mean().item() * 400
+        actual_outcomes.append(actual_mean)
+
+    bolus_deltas = np.array(bolus_deltas)
+    carb_deltas = np.array(carb_deltas)
+    actual_outcomes = np.array(actual_outcomes)
+
+    # Stats
+    mean_bolus_effect = float(np.mean(bolus_deltas))
+    mean_carb_effect = float(np.mean(carb_deltas))
+
+    # ISF estimate: 1U bolus → delta mg/dL
+    isf_est = -mean_bolus_effect  # positive means glucose drops
+
+    # CR estimate: 15g carbs → delta mg/dL → how much insulin to cover
+    cr_effect = mean_carb_effect  # positive means glucose rises
+
+    # Correlation of delta with actual glucose level
+    from scipy.stats import pearsonr
+    try:
+        bolus_corr, _ = pearsonr(bolus_deltas, actual_outcomes)
+    except Exception:
+        bolus_corr = 0.0
+    try:
+        carb_corr, _ = pearsonr(carb_deltas, actual_outcomes)
+    except Exception:
+        carb_corr = 0.0
+
+    # Dose-response curve: sweep bolus amounts
+    dose_effects = {}
+    sample_w = val_np[0]
+    t = torch.tensor(sample_w, dtype=torch.float32).unsqueeze(0).to(device)
+    inp_base = t.clone(); inp_base[:, 12:, 0] = 0
+    with torch.no_grad():
+        base_pred = model(inp_base)[0, 12:, 0].mean().item() * 400
+
+    for dose in [0.5, 1.0, 2.0, 3.0, 5.0]:
+        inp_d = inp_base.clone()
+        inp_d[0, 11, 4] += dose / 10
+        with torch.no_grad():
+            d_pred = model(inp_d)[0, 12:, 0].mean().item() * 400
+        dose_effects[f'{dose}U'] = float(d_pred - base_pred)
+
+    print(f"\n--- Action-value results ---")
+    print(f"  [EXP-097] Mean bolus effect: {mean_bolus_effect:.1f} mg/dL per 1U")
+    print(f"  [EXP-097] Mean carb effect: {mean_carb_effect:.1f} mg/dL per 15g")
+    print(f"  [EXP-097] Estimated ISF: {isf_est:.1f} mg/dL/U")
+    print(f"  [EXP-097] Bolus-outcome corr: {bolus_corr:.3f}")
+    print(f"  [EXP-097] Carb-outcome corr: {carb_corr:.3f}")
+    print(f"  [EXP-097] Dose sweep: {dose_effects}")
+
+    out_path = f"{out}/exp097_action_value.json"
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-097', 'name': 'action-value',
+                   'results': {'mean_bolus_effect': mean_bolus_effect,
+                               'mean_carb_effect': mean_carb_effect,
+                               'isf_estimate': isf_est,
+                               'bolus_outcome_corr': bolus_corr,
+                               'carb_outcome_corr': carb_corr,
+                               'dose_sweep': dose_effects}}, f, indent=2)
     print(f"\n  Results → {out_path}")

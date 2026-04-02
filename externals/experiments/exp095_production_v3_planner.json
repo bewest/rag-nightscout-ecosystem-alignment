@@ -1,0 +1,17 @@
+{
+  "experiment": "EXP-095",
+  "name": "production-v3-planner",
+  "results": {
+    "n_plans": 1048,
+    "n_actions": 2877,
+    "avg_per_plan": 2.7452290076335877,
+    "precision": 0.9610705596107056,
+    "hc_precision": 1.0,
+    "types": {
+      "consider_correction": 1685,
+      "activity_suggested": 774,
+      "correction_bolus": 387,
+      "eat_carbs": 31
+    }
+  }
+}
