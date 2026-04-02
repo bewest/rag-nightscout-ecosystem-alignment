@@ -442,6 +442,78 @@ class DriftDetector:
         }
 
 
+class PatternStateMachine:
+    """Track physiological state transitions over time.
+
+    Wraps DriftDetector to maintain state history and detect transitions
+    between normal, pre-menstrual, illness, travel, and stress states.
+
+    States: {normal, resistance, sensitivity, carb_change}
+    Transitions are logged with timestamps and confidence.
+    """
+
+    def __init__(self, detector: DriftDetector, min_confidence: float = 0.3):
+        self.detector = detector
+        self.min_confidence = min_confidence
+        self.current_state = 'stable'
+        self.state_history: List[Dict] = []
+        self.transitions: List[Dict] = []
+
+    def update(self, timestamp=None):
+        """Classify current state and record transitions.
+
+        Args:
+            timestamp: optional timestamp for the observation
+
+        Returns:
+            dict with current state, whether a transition occurred
+        """
+        classification = self.detector.classify()
+        new_state = classification['state']
+        confidence = classification['confidence']
+
+        entry = {
+            'state': new_state,
+            'confidence': confidence,
+            'timestamp': str(timestamp) if timestamp else len(self.state_history),
+            'isf_drift_pct': classification['isf_drift_pct'],
+            'cr_drift_pct': classification['cr_drift_pct'],
+        }
+        self.state_history.append(entry)
+
+        transitioned = False
+        if new_state != self.current_state and confidence >= self.min_confidence:
+            self.transitions.append({
+                'from': self.current_state,
+                'to': new_state,
+                'timestamp': entry['timestamp'],
+                'confidence': confidence,
+            })
+            self.current_state = new_state
+            transitioned = True
+
+        return {
+            'state': self.current_state,
+            'transitioned': transitioned,
+            'confidence': confidence,
+        }
+
+    def get_state_durations(self) -> Dict[str, int]:
+        """Count how many observations were spent in each state."""
+        from collections import Counter
+        return dict(Counter(e['state'] for e in self.state_history))
+
+    def summary(self) -> Dict:
+        """Return summary of state tracking."""
+        return {
+            'current_state': self.current_state,
+            'n_observations': len(self.state_history),
+            'n_transitions': len(self.transitions),
+            'state_durations': self.get_state_durations(),
+            'transitions': self.transitions[-10:],  # last 10
+        }
+
+
 def run_retrospective_tracking(data_path: str, nominal_isf: float = 40.0,
                                 nominal_cr: float = 10.0,
                                 level: str = 'simple') -> Dict:

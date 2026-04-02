@@ -1299,6 +1299,39 @@ class TestStateTracker(unittest.TestCase):
         np.testing.assert_allclose(tracker.state, [40.0, 10.0])
         self.assertEqual(len(tracker.history), 0)
 
+    def test_pattern_state_machine_stable(self):
+        """State machine stays stable with no drift."""
+        from tools.cgmencode.state_tracker import ISFCRTracker, DriftDetector, PatternStateMachine
+        tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0)
+        detector = DriftDetector(tracker, min_observations=5)
+        psm = PatternStateMachine(detector)
+
+        for i in range(20):
+            tracker.update(0.0, 0.5, 1.0)
+            result = psm.update(timestamp=f't{i}')
+
+        self.assertEqual(psm.current_state, 'stable')
+        self.assertEqual(len(psm.transitions), 0)
+        summary = psm.summary()
+        self.assertEqual(summary['n_observations'], 20)
+
+    def test_pattern_state_machine_transition(self):
+        """State machine detects transition to resistance."""
+        from tools.cgmencode.state_tracker import ISFCRTracker, DriftDetector, PatternStateMachine
+        tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0, process_noise=0.5)
+        detector = DriftDetector(tracker, drift_threshold_pct=15.0, min_observations=5)
+        psm = PatternStateMachine(detector, min_confidence=0.1)
+
+        # Feed strong resistance signal
+        for i in range(30):
+            tracker.update(10.0, 1.0, 0.0)
+            psm.update(timestamp=f't{i}')
+
+        # Should have transitioned at some point
+        self.assertGreater(len(psm.transitions), 0)
+        durations = psm.get_state_durations()
+        self.assertIn('stable', durations)  # started stable
+
 
 class TestOverrideExtraction(unittest.TestCase):
     """Tests for extended override extraction and pre-event windows."""
