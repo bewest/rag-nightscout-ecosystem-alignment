@@ -10558,3 +10558,651 @@ def run_range_stratified(args):
         json.dump({'experiment': 'EXP-115', 'name': 'range-stratified',
                    'results': results}, f, indent=2, cls=_NumpyEncoder)
     print(f'  Results -> {out_path}')
+
+
+# ══════════════════════════════════════════════════════════════════════
+# ║  ROUND 15: Hypo safety, ISF improvement, 12hr horizon, ensemble  ║
+# ══════════════════════════════════════════════════════════════════════
+
+REGISTRY.update({
+    'hypo-weighted-loss':      'run_hypo_weighted_loss',      # EXP-116
+    'insulin-aware-training':  'run_insulin_aware_training',  # EXP-117
+    'direct-12hr':             'run_direct_12hr',             # EXP-118
+    'ensemble-6hr':            'run_ensemble_6hr',            # EXP-119
+    'gradient-isf-per-patient':'run_gradient_isf_per_patient',# EXP-120
+    'trend-conditioned':       'run_trend_conditioned',       # EXP-121
+})
+
+
+# ── EXP-116: Hypo-weighted loss ────────────────────────────────────
+# EXP-115 showed hypo MAE=15.7 vs in-range=10.3 (53% worse).
+# Hypothesis: Weighting hypo timesteps 5× in loss reduces hypo MAE by >20%.
+def run_hypo_weighted_loss(args):
+    """EXP-116: Loss weighting for hypo accuracy improvement."""
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    _dev = getattr(args, 'device', 'cpu')
+    import torch as _torch
+    device = 'cuda' if _dev == 'auto' and _torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+    import torch, torch.nn.functional as F, numpy as np, json
+    from torch.utils.data import DataLoader
+    from .model import CGMGroupedEncoder
+    from .experiment_lib import resolve_patient_paths
+    from .real_data_adapter import load_multipatient_nightscout
+    from .schema import NORMALIZATION_SCALES
+
+    gluc_scale = NORMALIZATION_SCALES.get('glucose', 400.0)
+    hypo_norm = 70.0 / gluc_scale
+    severe_norm = 54.0 / gluc_scale
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    print(f'  [EXP-116] {len(train_ds)} train, {len(val_ds)} val')
+
+    results = {}
+    for weight_name, hypo_w, severe_w in [('baseline', 1.0, 1.0), ('weighted', 5.0, 10.0)]:
+        model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+        opt = torch.optim.AdamW(model.parameters(), lr=1e-3)
+        tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+        vl = DataLoader(val_ds, batch_size=256)
+        best_val = float('inf'); best_state = None
+
+        for ep in range(1, 101):
+            model.train()
+            for bx, bt in tl:
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                opt.zero_grad()
+                pred = model(x_in)
+                # Per-timestep loss weighting based on actual glucose
+                actual_gluc = bx[:, 12:, 0]  # [B, 12]
+                weights = torch.ones_like(actual_gluc)
+                weights[actual_gluc < hypo_norm] = hypo_w
+                weights[actual_gluc < severe_norm] = severe_w
+                per_ts_loss = (pred[:, 12:, 0] - actual_gluc) ** 2
+                loss = (per_ts_loss * weights).mean()
+                loss.backward(); opt.step()
+            model.eval()
+            vloss = 0; vn = 0
+            with torch.no_grad():
+                for bx, bt in vl:
+                    bx = bx.to(device)
+                    x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                    pred = model(x_in)
+                    vloss += F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1]).item() * bx.size(0)
+                    vn += bx.size(0)
+            vl_avg = vloss / vn
+            if vl_avg < best_val:
+                best_val = vl_avg; best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            if ep % 25 == 0:
+                print(f'  [{weight_name}] {ep}/100 val={vl_avg:.6f}')
+
+        model.load_state_dict(best_state); model.eval()
+
+        # Stratified evaluation
+        hypo_e = []; severe_e = []; inrange_e = []; hyper_e = []
+        with torch.no_grad():
+            for bx, bt in vl:
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                pred = model(x_in)
+                pred_mg = pred[:, 12:, 0] * gluc_scale
+                actual_mg = bx[:, 12:, 0] * gluc_scale
+                err = (pred_mg - actual_mg).abs()
+                for i in range(bx.size(0)):
+                    for t in range(12):
+                        a = actual_mg[i, t].item(); e = err[i, t].item()
+                        if a < 54: severe_e.append(e); hypo_e.append(e)
+                        elif a < 70: hypo_e.append(e)
+                        elif a <= 180: inrange_e.append(e)
+                        else: hyper_e.append(e)
+
+        results[weight_name] = {
+            'overall_mae': round(float(np.mean(hypo_e + inrange_e + hyper_e)), 1),
+            'hypo_mae': round(float(np.mean(hypo_e)) if hypo_e else -1, 1),
+            'severe_hypo_mae': round(float(np.mean(severe_e)) if severe_e else -1, 1),
+            'inrange_mae': round(float(np.mean(inrange_e)), 1),
+            'hyper_mae': round(float(np.mean(hyper_e)), 1),
+            'hypo_n': len(hypo_e), 'severe_n': len(severe_e),
+        }
+        print(f'  [{weight_name}] hypo={results[weight_name]["hypo_mae"]}, '
+              f'severe={results[weight_name]["severe_hypo_mae"]}, '
+              f'inrange={results[weight_name]["inrange_mae"]}')
+
+    # Compare
+    imp_hypo = (results['baseline']['hypo_mae'] - results['weighted']['hypo_mae']) / results['baseline']['hypo_mae'] * 100
+    imp_severe = (results['baseline']['severe_hypo_mae'] - results['weighted']['severe_hypo_mae']) / max(results['baseline']['severe_hypo_mae'], 0.01) * 100
+    results['hypo_improvement_pct'] = round(imp_hypo, 1)
+    results['severe_improvement_pct'] = round(imp_severe, 1)
+
+    print(f'\n--- Hypo-weighted loss results ---')
+    print(f'  [EXP-116] Hypo improvement: {imp_hypo:.1f}%')
+    print(f'  [EXP-116] Severe improvement: {imp_severe:.1f}%')
+
+    out_path = 'externals/experiments/exp116_hypo_weighted_loss.json'
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-116', 'name': 'hypo-weighted-loss',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')
+
+
+# ── EXP-117: Insulin-aware training ────────────────────────────────
+# EXP-114 showed model only uses 8.7% insulin attribution.
+# Hypothesis: Auxiliary loss on insulin impact improves ISF + forecast.
+# Add loss term: predict insulin-on-board at each future step.
+def run_insulin_aware_training(args):
+    """EXP-117: Auxiliary IOB prediction for insulin awareness."""
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    _dev = getattr(args, 'device', 'cpu')
+    import torch as _torch
+    device = 'cuda' if _dev == 'auto' and _torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+    import torch, torch.nn.functional as F, numpy as np, json
+    from torch.utils.data import DataLoader
+    from .model import CGMGroupedEncoder
+    from .experiment_lib import resolve_patient_paths
+    from .real_data_adapter import load_multipatient_nightscout
+    from .schema import NORMALIZATION_SCALES
+
+    gluc_scale = NORMALIZATION_SCALES.get('glucose', 400.0)
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    print(f'  [EXP-117] {len(train_ds)} train, {len(val_ds)} val')
+
+    results = {}
+    for variant, aux_weight in [('baseline', 0.0), ('insulin_aux', 0.3)]:
+        model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+        opt = torch.optim.AdamW(model.parameters(), lr=1e-3)
+        tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+        vl = DataLoader(val_ds, batch_size=256)
+        best_val = float('inf'); best_state = None
+
+        for ep in range(1, 101):
+            model.train()
+            for bx, bt in tl:
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                opt.zero_grad()
+                pred = model(x_in)
+                # Primary: glucose forecast
+                gluc_loss = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+                # Auxiliary: predict IOB (feature idx 3) in future timesteps
+                if aux_weight > 0 and pred.size(-1) >= 4:
+                    iob_loss = F.mse_loss(pred[:, 12:, 3:4], bx[:, 12:, 3:4])
+                    loss = gluc_loss + aux_weight * iob_loss
+                else:
+                    loss = gluc_loss
+                loss.backward(); opt.step()
+            model.eval()
+            vloss = 0; vn = 0
+            with torch.no_grad():
+                for bx, bt in vl:
+                    bx = bx.to(device)
+                    x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                    pred = model(x_in)
+                    vloss += F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1]).item() * bx.size(0)
+                    vn += bx.size(0)
+            vl_avg = vloss / vn
+            if vl_avg < best_val:
+                best_val = vl_avg; best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            if ep % 25 == 0:
+                print(f'  [{variant}] {ep}/100 val={vl_avg:.6f}')
+
+        model.load_state_dict(best_state); model.eval()
+
+        # Evaluate
+        all_mae = []; ins_attr = []
+        for bx, bt in vl:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            x_in.requires_grad_(True)
+            pred = model(x_in)
+            mae = (pred[:, 12:, 0] - bx[:, 12:, 0]).abs().mean() * gluc_scale
+            all_mae.append(mae.item())
+            # Quick gradient check
+            target = pred[:, 12:, 0].mean()
+            target.backward()
+            g_ins = x_in.grad[:, :12, 1].abs().mean().item()
+            ins_attr.append(g_ins)
+            x_in.requires_grad_(False)
+
+        results[variant] = {
+            'mae_mgdl': round(float(np.mean(all_mae)), 1),
+            'insulin_gradient': round(float(np.mean(ins_attr)), 4),
+        }
+        print(f'  [{variant}] MAE={results[variant]["mae_mgdl"]}, '
+              f'ins_grad={results[variant]["insulin_gradient"]}')
+
+    imp = (results['baseline']['mae_mgdl'] - results['insulin_aux']['mae_mgdl']) / results['baseline']['mae_mgdl'] * 100
+    grad_imp = (results['insulin_aux']['insulin_gradient'] - results['baseline']['insulin_gradient']) / max(results['baseline']['insulin_gradient'], 1e-6) * 100
+    results['mae_improvement_pct'] = round(imp, 1)
+    results['gradient_improvement_pct'] = round(grad_imp, 1)
+
+    print(f'\n--- Insulin-aware results ---')
+    print(f'  [EXP-117] MAE improvement: {imp:.1f}%')
+    print(f'  [EXP-117] Insulin gradient increase: {grad_imp:.1f}%')
+
+    out_path = 'externals/experiments/exp117_insulin_aware.json'
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-117', 'name': 'insulin-aware-training',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')
+
+
+# ── EXP-118: Direct 12hr forecast ──────────────────────────────────
+# Extends EXP-111 (6hr) to 12hr horizon. Uses ws=144 (12hr at 5min).
+# For memory efficiency, subsample to every 2 steps (10min resolution).
+def run_direct_12hr(args):
+    """EXP-118: Direct 12hr forecast with subsampled windows."""
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    _dev = getattr(args, 'device', 'cpu')
+    import torch as _torch
+    device = 'cuda' if _dev == 'auto' and _torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+    import torch, torch.nn.functional as F, numpy as np, json
+    from torch.utils.data import DataLoader
+    from .model import CGMGroupedEncoder
+    from .experiment_lib import resolve_patient_paths
+    from .real_data_adapter import load_multipatient_nightscout
+    from .schema import NORMALIZATION_SCALES
+
+    gluc_scale = NORMALIZATION_SCALES.get('glucose', 400.0)
+    paths = resolve_patient_paths(patients_dir, real_data)
+
+    # Load ws=144 (12hr), then subsample every 2 steps → 72 effective steps at 10min
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=144)
+    print(f'  [EXP-118] ws=144 raw: {len(train_ds)} train, {len(val_ds)} val')
+
+    # Subsample: take every 2nd timestep
+    class SubsampledDataset(torch.utils.data.Dataset):
+        def __init__(self, ds, step=2):
+            self.ds = ds; self.step = step
+        def __len__(self): return len(self.ds)
+        def __getitem__(self, idx):
+            x, t = self.ds[idx]
+            return x[::self.step], t  # 144 → 72 at 10min resolution
+
+    sub_train = SubsampledDataset(train_ds, step=2)
+    sub_val = SubsampledDataset(val_ds, step=2)
+    half = 36  # 36 steps × 10min = 6hr history, 6hr forecast
+
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+    opt = torch.optim.AdamW(model.parameters(), lr=1e-3)
+    tl = DataLoader(sub_train, batch_size=64, shuffle=True)
+    vl = DataLoader(sub_val, batch_size=128)
+
+    best_val = float('inf'); best_state = None
+    for ep in range(1, 121):
+        model.train()
+        for bx, bt in tl:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+            opt.zero_grad()
+            pred = model(x_in)
+            loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+            loss.backward(); opt.step()
+        model.eval()
+        vloss = 0; vn = 0
+        with torch.no_grad():
+            for bx, bt in vl:
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                pred = model(x_in)
+                vloss += F.mse_loss(pred[:, half:, :1], bx[:, half:, :1]).item() * bx.size(0)
+                vn += bx.size(0)
+        vl_avg = vloss / vn
+        if vl_avg < best_val:
+            best_val = vl_avg; best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+        if ep % 30 == 0:
+            print(f'  [12hr] {ep}/120 val={vl_avg:.6f} best={best_val:.6f}')
+
+    model.load_state_dict(best_state); model.eval()
+
+    # Evaluate at key horizons (each step = 10min)
+    maes_by_step = []
+    with torch.no_grad():
+        for bx, bt in vl:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+            pred = model(x_in)
+            for t in range(half, 72):
+                e = (pred[:, t, 0] - bx[:, t, 0]).abs().mean() * gluc_scale
+                if len(maes_by_step) <= t - half:
+                    maes_by_step.append([])
+                maes_by_step[t - half].append(e.item())
+
+    step_maes = [float(np.mean(m)) for m in maes_by_step]
+
+    # Persistence baseline
+    persist_maes = []
+    with torch.no_grad():
+        for bx, bt in vl:
+            bx = bx.to(device)
+            last_known = bx[:, half-1:half, 0].expand(-1, 36)
+            actual = bx[:, half:, 0]
+            persist_maes.append((last_known - actual).abs().mean().item() * gluc_scale)
+
+    results = {
+        'resolution': '10min',
+        'history_hours': 6,
+        'forecast_hours': 6,
+        'total_window_hours': 12,
+        'mae_1hr_mgdl': round(float(np.mean(step_maes[:6])), 1),
+        'mae_2hr_mgdl': round(float(np.mean(step_maes[:12])), 1),
+        'mae_3hr_mgdl': round(float(np.mean(step_maes[:18])), 1),
+        'mae_4hr_mgdl': round(float(np.mean(step_maes[:24])), 1),
+        'mae_5hr_mgdl': round(float(np.mean(step_maes[:30])), 1),
+        'mae_6hr_mgdl': round(float(np.mean(step_maes)), 1),
+        'persistence_6hr': round(float(np.mean(persist_maes)), 1),
+    }
+    print(f'\n--- Direct 12hr forecast results ---')
+    for k, v in results.items():
+        print(f'  [EXP-118] {k}: {v}')
+
+    out_path = 'externals/experiments/exp118_direct_12hr.json'
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-118', 'name': 'direct-12hr',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')
+
+
+# ── EXP-119: 6hr ensemble with conformal ──────────────────────────
+# Best combination: 5-seed ensemble at 6hr + conformal calibration.
+# Planning-critical: 6hr forecast with calibrated uncertainty.
+def run_ensemble_6hr(args):
+    """EXP-119: 5-seed 6hr forecast ensemble with conformal bands."""
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    _dev = getattr(args, 'device', 'cpu')
+    import torch as _torch
+    device = 'cuda' if _dev == 'auto' and _torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+    import torch, torch.nn.functional as F, numpy as np, json
+    from torch.utils.data import DataLoader
+    from .model import CGMGroupedEncoder
+    from .experiment_lib import resolve_patient_paths
+    from .real_data_adapter import load_multipatient_nightscout
+    from .schema import NORMALIZATION_SCALES
+
+    gluc_scale = NORMALIZATION_SCALES.get('glucose', 400.0)
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=72)
+    half = 36
+    print(f'  [EXP-119] ws=72: {len(train_ds)} train, {len(val_ds)} val')
+
+    n_seeds = 3  # reduced from 5 for speed (still useful)
+    models = []
+    for seed in range(n_seeds):
+        torch.manual_seed(seed * 42 + 7)
+        m = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+        opt = torch.optim.AdamW(m.parameters(), lr=1e-3)
+        tl = DataLoader(train_ds, batch_size=64, shuffle=True)
+
+        best_val = float('inf'); best_st = None
+        for ep in range(1, 81):
+            m.train()
+            for bx, bt in tl:
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                opt.zero_grad()
+                pred = m(x_in)
+                loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+                loss.backward(); opt.step()
+            if ep % 20 == 0:
+                m.eval()
+                vl_loader = DataLoader(val_ds, batch_size=128)
+                vs = 0; vn = 0
+                with torch.no_grad():
+                    for bx, bt in vl_loader:
+                        bx = bx.to(device)
+                        x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                        pred = m(x_in)
+                        vs += F.mse_loss(pred[:, half:, :1], bx[:, half:, :1]).item() * bx.size(0)
+                        vn += bx.size(0)
+                vavg = vs / vn
+                if vavg < best_val: best_val = vavg; best_st = {k: v.cpu().clone() for k, v in m.state_dict().items()}
+                print(f'  [seed {seed}] {ep}/80 val={vavg:.6f}')
+        m.load_state_dict(best_st); m.eval()
+        models.append(m)
+
+    # Split val: 60% cal, 40% test
+    n_cal = int(len(val_ds) * 0.6)
+    cal_ds = torch.utils.data.Subset(val_ds, range(n_cal))
+    test_ds = torch.utils.data.Subset(val_ds, range(n_cal, len(val_ds)))
+
+    # Calibrate
+    cal_loader = DataLoader(cal_ds, batch_size=128)
+    cal_scores = []
+    with torch.no_grad():
+        for bx, bt in cal_loader:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+            preds = torch.stack([m(x_in)[:, half:, 0] for m in models])
+            mean_p = preds.mean(0); std_p = preds.std(0) + 1e-6
+            actual = bx[:, half:, 0]
+            scores = ((actual - mean_p).abs() / std_p).max(dim=1).values
+            cal_scores.append(scores.cpu())
+    cal_scores = torch.cat(cal_scores).numpy()
+    q90 = float(np.percentile(cal_scores, 90))
+
+    # Test
+    test_loader = DataLoader(test_ds, batch_size=128)
+    all_mae = []; cov_90 = []; width_90 = []
+    with torch.no_grad():
+        for bx, bt in test_loader:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+            preds = torch.stack([m(x_in)[:, half:, 0] for m in models])
+            mean_p = preds.mean(0); std_p = preds.std(0) + 1e-6
+            actual = bx[:, half:, 0]
+            mae = (mean_p - actual).abs().mean() * gluc_scale
+            all_mae.append(mae.item())
+            lower = (mean_p - q90 * std_p) * gluc_scale
+            upper = (mean_p + q90 * std_p) * gluc_scale
+            actual_mg = actual * gluc_scale
+            cov = ((actual_mg >= lower) & (actual_mg <= upper)).float().mean()
+            cov_90.append(cov.item())
+            width_90.append((upper - lower).mean().item())
+
+    results = {
+        'n_seeds': n_seeds,
+        'horizon': '6hr (3hr history + 3hr forecast)',
+        'ensemble_mae_mgdl': round(float(np.mean(all_mae)), 1),
+        'conformal_q90': round(q90, 2),
+        'coverage_90': round(float(np.mean(cov_90)), 3),
+        'width_90_mgdl': round(float(np.mean(width_90)), 1),
+    }
+    print(f'\n--- 6hr Ensemble results ---')
+    for k, v in results.items():
+        print(f'  [EXP-119] {k}: {v}')
+
+    out_path = 'externals/experiments/exp119_ensemble_6hr.json'
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-119', 'name': 'ensemble-6hr',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')
+
+
+# ── EXP-120: Per-patient gradient ISF ──────────────────────────────
+# EXP-113 gave mean ISF=12.35 mg/dL/U across all patients.
+# Hypothesis: Per-patient ISF varies 2-5× between patients.
+def run_gradient_isf_per_patient(args):
+    """EXP-120: Per-patient gradient-based ISF estimation."""
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    _dev = getattr(args, 'device', 'cpu')
+    import torch as _torch
+    device = 'cuda' if _dev == 'auto' and _torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+    import torch, torch.nn.functional as F, numpy as np, json, os
+    from torch.utils.data import DataLoader
+    from .model import CGMGroupedEncoder
+    from .experiment_lib import resolve_patient_paths
+    from .real_data_adapter import load_multipatient_nightscout
+    from .schema import NORMALIZATION_SCALES
+
+    gluc_scale = NORMALIZATION_SCALES.get('glucose', 400.0)
+    insulin_scale = NORMALIZATION_SCALES.get('insulin', 20.0)
+    paths = resolve_patient_paths(patients_dir, real_data)
+
+    # Train shared model on all patients
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    print(f'  [EXP-120] {len(train_ds)} train, {len(val_ds)} val')
+
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+    opt = torch.optim.AdamW(model.parameters(), lr=1e-3)
+    tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+    best_val = float('inf'); best_state = None
+    vl = DataLoader(val_ds, batch_size=256)
+    for ep in range(1, 81):
+        model.train()
+        for bx, bt in tl:
+            bx = bx.to(device); x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            opt.zero_grad(); pred = model(x_in)
+            loss = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+            loss.backward(); opt.step()
+        if ep % 20 == 0:
+            model.eval(); vs = 0; vn = 0
+            with torch.no_grad():
+                for bx, bt in vl:
+                    bx = bx.to(device); x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                    pred = model(x_in)
+                    vs += F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1]).item() * bx.size(0); vn += bx.size(0)
+            vavg = vs / vn
+            if vavg < best_val: best_val = vavg; best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            print(f'  [ISF-pp] {ep}/80 val={vavg:.6f}')
+    model.load_state_dict(best_state); model.eval()
+
+    # Compute per-patient ISF
+    patient_isfs = {}
+    for p in sorted(paths):
+        pname = os.path.basename(os.path.dirname(p))
+        p_train, p_val = load_multipatient_nightscout([p], window_size=24)
+        p_loader = DataLoader(p_val, batch_size=32)
+        isf_vals = []
+        for bx, bt in p_loader:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            x_in.requires_grad_(True)
+            pred = model(x_in)
+            target = pred[:, 12:, 0].mean(dim=1)
+            for i in range(min(bx.size(0), 8)):
+                if x_in.grad is not None: x_in.grad.zero_()
+                target[i].backward(retain_graph=True)
+                g_ins = x_in.grad[i, :12, 1].cpu().numpy()
+                isf = float((-g_ins * gluc_scale / insulin_scale).sum())
+                isf_vals.append(isf)
+            x_in.requires_grad_(False)
+            if len(isf_vals) >= 50: break
+
+        if isf_vals:
+            patient_isfs[pname] = {
+                'mean': round(float(np.mean(isf_vals)), 2),
+                'median': round(float(np.median(isf_vals)), 2),
+                'std': round(float(np.std(isf_vals)), 2),
+                'n': len(isf_vals),
+            }
+            print(f'  [EXP-120] Patient {pname}: ISF={patient_isfs[pname]["mean"]} ± {patient_isfs[pname]["std"]}')
+
+    all_means = [v['mean'] for v in patient_isfs.values()]
+    results = {
+        'patient_isfs': patient_isfs,
+        'overall_mean': round(float(np.mean(all_means)), 2),
+        'overall_std': round(float(np.std(all_means)), 2),
+        'range_ratio': round(max(all_means) / max(min(all_means), 0.01), 1),
+    }
+    print(f'\n--- Per-patient ISF results ---')
+    print(f'  [EXP-120] Overall mean: {results["overall_mean"]}')
+    print(f'  [EXP-120] Range ratio: {results["range_ratio"]}×')
+
+    out_path = 'externals/experiments/exp120_gradient_isf_per_patient.json'
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-120', 'name': 'gradient-isf-per-patient',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')
+
+
+# ── EXP-121: Trend-conditioned forecast ────────────────────────────
+# Instead of crude event conditioning (EXP-054, -32.6%), condition on
+# GLUCOSE TREND: rising, falling, flat, volatile. More natural grouping.
+def run_trend_conditioned(args):
+    """EXP-121: Trend-conditioned forecast accuracy."""
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    _dev = getattr(args, 'device', 'cpu')
+    import torch as _torch
+    device = 'cuda' if _dev == 'auto' and _torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+    import torch, torch.nn.functional as F, numpy as np, json
+    from torch.utils.data import DataLoader
+    from .model import CGMGroupedEncoder
+    from .experiment_lib import resolve_patient_paths
+    from .real_data_adapter import load_multipatient_nightscout
+    from .schema import NORMALIZATION_SCALES
+
+    gluc_scale = NORMALIZATION_SCALES.get('glucose', 400.0)
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    print(f'  [EXP-121] {len(train_ds)} train, {len(val_ds)} val')
+
+    # Train standard model
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+    opt = torch.optim.AdamW(model.parameters(), lr=1e-3)
+    tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+    vl = DataLoader(val_ds, batch_size=256)
+    best_val = float('inf'); best_state = None
+    for ep in range(1, 101):
+        model.train()
+        for bx, bt in tl:
+            bx = bx.to(device); x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            opt.zero_grad(); pred = model(x_in)
+            loss = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+            loss.backward(); opt.step()
+        model.eval(); vs = 0; vn = 0
+        with torch.no_grad():
+            for bx, bt in vl:
+                bx = bx.to(device); x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                pred = model(x_in)
+                vs += F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1]).item() * bx.size(0); vn += bx.size(0)
+        vavg = vs / vn
+        if vavg < best_val: best_val = vavg; best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+        if ep % 25 == 0: print(f'  [trend] {ep}/100 val={vavg:.6f}')
+    model.load_state_dict(best_state); model.eval()
+
+    # Classify trends and evaluate per-trend MAE
+    trend_results = {'rising': [], 'falling': [], 'flat': [], 'volatile': []}
+    with torch.no_grad():
+        for bx, bt in vl:
+            bx = bx.to(device); x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            pred = model(x_in)
+            pred_mg = pred[:, 12:, 0] * gluc_scale
+            actual_mg = bx[:, 12:, 0] * gluc_scale
+            history_mg = bx[:, :12, 0] * gluc_scale
+
+            for i in range(bx.size(0)):
+                h = history_mg[i].cpu().numpy()
+                mae_i = (pred_mg[i] - actual_mg[i]).abs().mean().item()
+
+                # Classify trend from history
+                slope = (h[-1] - h[0]) / 12  # mg/dL per 5min step
+                volatility = float(np.std(np.diff(h)))
+
+                if volatility > 5:
+                    trend_results['volatile'].append(mae_i)
+                elif slope > 1:  # >1 mg/dL per 5min = rising
+                    trend_results['rising'].append(mae_i)
+                elif slope < -1:
+                    trend_results['falling'].append(mae_i)
+                else:
+                    trend_results['flat'].append(mae_i)
+
+    results = {}
+    for trend, maes in trend_results.items():
+        results[f'{trend}_mae'] = round(float(np.mean(maes)), 1) if maes else -1
+        results[f'{trend}_n'] = len(maes)
+
+    print(f'\n--- Trend-conditioned results ---')
+    for k, v in results.items():
+        print(f'  [EXP-121] {k}: {v}')
+
+    out_path = 'externals/experiments/exp121_trend_conditioned.json'
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-121', 'name': 'trend-conditioned',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')

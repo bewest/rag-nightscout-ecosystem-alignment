@@ -1,0 +1,26 @@
+{
+  "experiment": "EXP-116",
+  "name": "hypo-weighted-loss",
+  "results": {
+    "baseline": {
+      "overall_mae": 12.5,
+      "hypo_mae": 13.9,
+      "severe_hypo_mae": 17.9,
+      "inrange_mae": 10.1,
+      "hyper_mae": 17.7,
+      "hypo_n": 2881,
+      "severe_n": 791
+    },
+    "weighted": {
+      "overall_mae": 13.1,
+      "hypo_mae": 12.0,
+      "severe_hypo_mae": 16.1,
+      "inrange_mae": 11.1,
+      "hyper_mae": 17.8,
+      "hypo_n": 2881,
+      "severe_n": 791
+    },
+    "hypo_improvement_pct": 13.7,
+    "severe_improvement_pct": 10.1
+  }
+}

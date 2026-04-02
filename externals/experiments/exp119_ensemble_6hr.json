@@ -1,0 +1,12 @@
+{
+  "experiment": "EXP-119",
+  "name": "ensemble-6hr",
+  "results": {
+    "n_seeds": 3,
+    "horizon": "6hr (3hr history + 3hr forecast)",
+    "ensemble_mae_mgdl": 18.9,
+    "conformal_q90": 21.58,
+    "coverage_90": 0.993,
+    "width_90_mgdl": 484.9
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "experiment": "EXP-120",
+  "name": "gradient-isf-per-patient",
+  "results": {
+    "patient_isfs": {
+      "a": {
+        "mean": 12.14,
+        "median": 13.03,
+        "std": 4.64,
+        "n": 56
+      },
+      "b": {
+        "mean": 14.6,
+        "median": 14.42,
+        "std": 4.44,
+        "n": 56
+      },
+      "c": {
+        "mean": 13.57,
+        "median": 14.08,
+        "std": 7.03,
+        "n": 56
+      },
+      "d": {
+        "mean": 13.95,
+        "median": 13.45,
+        "std": 4.02,
+        "n": 56
+      },
+      "e": {
+        "mean": 8.27,
+        "median": 8.27,
+        "std": 5.64,
+        "n": 56
+      },
+      "f": {
+        "mean": 7.14,
+        "median": 7.92,
+        "std": 4.2,
+        "n": 56
+      },
+      "g": {
+        "mean": 15.03,
+        "median": 15.79,
+        "std": 5.93,
+        "n": 56
+      },
+      "h": {
+        "mean": 11.64,
+        "median": 12.16,
+        "std": 5.92,
+        "n": 56
+      },
+      "i": {
+        "mean": 7.85,
+        "median": 7.39,
+        "std": 5.0,
+        "n": 56
+      },
+      "j": {
+        "mean": 13.98,
+        "median": 15.33,
+        "std": 4.44,
+        "n": 56
+      }
+    },
+    "overall_mean": 11.82,
+    "overall_std": 2.84,
+    "range_ratio": 2.1
+  }
+}
