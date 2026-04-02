@@ -1062,7 +1062,8 @@ def run_physics_residual_6hr(args):
                         'time_sin', 'time_cos']], dtype=np.float32)
 
     ctx.section('Loading 6hr model')
-    ckpt = find_checkpoint(out, 'exp035_norm_mh_6hr_15min.pth',
+    ckpt = find_checkpoint(out, 'exp043_forecast_mh_6hr_15min.pth',
+                           'exp035_norm_mh_6hr_15min.pth',
                            'exp028_multihorizon_6hr_15min.pth')
     model = create_model('grouped', input_dim=8)
     if ckpt:
@@ -1116,8 +1117,10 @@ def run_physics_residual_6hr(args):
         true_gl = raw_win[half:, 0]
 
         x = torch.from_numpy(norm_win).unsqueeze(0).float().to(device)
+        x_in = x.clone()
+        x_in[0, half:, 0] = 0.0  # mask future glucose
         with torch.no_grad():
-            pred = model(x, causal=True)
+            pred = model(x_in, causal=True)
         ml_gl = pred[0, half:, 0].cpu().numpy() * glucose_scale
 
         gl_now = raw_win[half - 1, 0]
@@ -1129,7 +1132,8 @@ def run_physics_residual_6hr(args):
             phys_gl[t] = (gl_now - iob_now * (1 - decay) * isf
                           + cob_now * (1 - decay) / max(cr, 1) * isf)
 
-        combo_gl = phys_gl + (ml_gl - phys_gl)  # physics + ML residual
+        # Residual composition: ML predicts the error the physics model makes
+        combo_gl = phys_gl + (ml_gl - phys_gl) * 0.5 + (ml_gl - gl_now) * 0.5
 
         ml_errors.append(np.mean(np.abs(ml_gl - true_gl)))
         phys_errors.append(np.mean(np.abs(phys_gl - true_gl)))
@@ -1211,17 +1215,17 @@ def run_horizon_transfer(args):
         safe = label.replace('@', '_').replace('/', '_')
 
         m_scratch = create_model('grouped', input_dim=8)
-        _, ep_s = train(m_scratch, train_ds, val_ds,
+        _, ep_s = train_forecast(m_scratch, train_ds, val_ds,
                         f'{out}/exp040_scratch_{safe}.pth', f'Scratch-{label}')
-        mse_s = forecast_mse(m_scratch, val_ds)
+        mse_s = forecast_mse(m_scratch, val_ds, mask_future=True)
 
         m_transfer = create_model('grouped', input_dim=8)
         if prev_ckpt and os.path.exists(prev_ckpt):
             load_checkpoint(m_transfer, prev_ckpt)
             ctx.log(f'Transferred from {prev_ckpt}')
         transfer_path = f'{out}/exp040_transfer_{safe}.pth'
-        _, ep_t = train(m_transfer, train_ds, val_ds, transfer_path, f'Transfer-{label}')
-        mse_t = forecast_mse(m_transfer, val_ds)
+        _, ep_t = train_forecast(m_transfer, train_ds, val_ds, transfer_path, f'Transfer-{label}')
+        mse_t = forecast_mse(m_transfer, val_ds, mask_future=True)
         prev_ckpt = transfer_path
 
         improv = improvement_pct(mse_t, mse_s)
@@ -1254,7 +1258,8 @@ def run_backtest_denorm(args):
     glucose_scale = NORMALIZATION_SCALES['glucose']
 
     model = create_model('grouped', input_dim=8)
-    ckpt = find_checkpoint(out, 'exp026_grouped_8f.pth',
+    ckpt = find_checkpoint(out, 'exp043_forecast_8f_1hr.pth',
+                           'exp026_grouped_8f.pth',
                            'exp035_norm_mh_1hr_5min.pth',
                            'grouped_multi_transfer.pth')
     if ckpt:
