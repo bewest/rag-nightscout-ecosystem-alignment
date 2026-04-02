@@ -27,7 +27,12 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+import json
+import os
+import tempfile
+
 import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 
@@ -85,6 +90,48 @@ class TestSchema(unittest.TestCase):
         self.assertGreater(GLUCOSE_CLIP_MIN, 0)
         self.assertLess(GLUCOSE_CLIP_MIN, GLUCOSE_CLIP_MAX)
         self.assertGreaterEqual(GLUCOSE_CLIP_MAX, 400)
+
+    def test_extended_feature_count(self):
+        from tools.cgmencode.schema import (
+            NUM_FEATURES_EXTENDED, EXTENDED_FEATURE_NAMES, EXTENDED_SCALE_ARRAY,
+        )
+        self.assertEqual(NUM_FEATURES_EXTENDED, 16)
+        self.assertEqual(len(EXTENDED_FEATURE_NAMES), 16)
+        self.assertEqual(len(EXTENDED_SCALE_ARRAY), 16)
+
+    def test_extended_preserves_core(self):
+        """First 8 extended features must match core FEATURE_NAMES exactly."""
+        from tools.cgmencode.schema import (
+            FEATURE_NAMES, EXTENDED_FEATURE_NAMES, SCALE_ARRAY, EXTENDED_SCALE_ARRAY,
+        )
+        self.assertEqual(EXTENDED_FEATURE_NAMES[:8], FEATURE_NAMES)
+        self.assertEqual(EXTENDED_SCALE_ARRAY[:8], SCALE_ARRAY)
+
+    def test_extended_groups_disjoint(self):
+        from tools.cgmencode.schema import (
+            STATE_IDX, ACTION_IDX, TIME_IDX, CONTEXT_IDX,
+        )
+        core = set(STATE_IDX) | set(ACTION_IDX) | set(TIME_IDX)
+        context = set(CONTEXT_IDX)
+        self.assertEqual(len(core & context), 0,
+                         "Context indices must not overlap core indices")
+
+    def test_extended_groups_cover_all(self):
+        from tools.cgmencode.schema import (
+            STATE_IDX, ACTION_IDX, TIME_IDX, CONTEXT_IDX,
+            NUM_FEATURES_EXTENDED,
+        )
+        all_idx = set(STATE_IDX) | set(ACTION_IDX) | set(TIME_IDX) | set(CONTEXT_IDX)
+        self.assertEqual(all_idx, set(range(NUM_FEATURES_EXTENDED)))
+
+    def test_override_types_valid(self):
+        from tools.cgmencode.schema import OVERRIDE_TYPES, OVERRIDE_TYPE_NAMES
+        self.assertIn('none', OVERRIDE_TYPES)
+        self.assertEqual(OVERRIDE_TYPES['none'], 0.0)
+        for name, val in OVERRIDE_TYPES.items():
+            self.assertGreaterEqual(val, 0.0)
+            self.assertLessEqual(val, 1.0)
+            self.assertEqual(OVERRIDE_TYPE_NAMES[val], name)
 
 
 # =============================================================================
@@ -416,6 +463,81 @@ class TestCGMGroupedEncoder(unittest.TestCase):
             self.assertIsNotNone(layer.weight.grad, f"No gradient for {name}")
 
 
+class TestCGMGroupedEncoderExtended(unittest.TestCase):
+    """Tests for the extended 16-feature GroupedEncoder (agentic delivery)."""
+
+    def setUp(self):
+        from tools.cgmencode.model import CGMGroupedEncoder
+        self.model_ext = CGMGroupedEncoder(input_dim=16, d_model=64, nhead=4, num_layers=2)
+        self.model_core = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=2)
+        self.x_ext = torch.randn(2, 12, 16)
+        self.x_core = torch.randn(2, 12, 8)
+
+    def test_extended_forward_shape(self):
+        y = self.model_ext(self.x_ext)
+        self.assertEqual(y.shape, (2, 12, 16))
+
+    def test_extended_causal_forward(self):
+        y = self.model_ext(self.x_ext, causal=True)
+        self.assertEqual(y.shape, (2, 12, 16))
+
+    def test_core_still_works(self):
+        """Core 8-feature model must produce identical behavior."""
+        y = self.model_core(self.x_core)
+        self.assertEqual(y.shape, (2, 12, 8))
+
+    def test_context_group_has_gradients(self):
+        y = self.model_ext(self.x_ext)
+        loss = y.sum()
+        loss.backward()
+        self.assertIsNotNone(self.model_ext.context_proj.weight.grad)
+        self.assertIsNotNone(self.model_ext.fusion.weight.grad)
+
+    def test_core_model_has_no_context_layers(self):
+        self.assertFalse(self.model_core._has_context)
+        self.assertFalse(hasattr(self.model_core, 'context_proj'))
+
+    def test_extended_param_count_reasonable(self):
+        core_params = sum(p.numel() for p in self.model_core.parameters())
+        ext_params = sum(p.numel() for p in self.model_ext.parameters())
+        # Extended should have more params (context_proj + fusion), but not dramatically more
+        self.assertGreater(ext_params, core_params)
+        self.assertLess(ext_params, core_params * 1.5)
+
+    def test_checkpoint_backward_compat(self):
+        """Saving a core model checkpoint and loading it into a fresh core model must work."""
+        import tempfile, os
+        from tools.cgmencode.model import CGMGroupedEncoder
+        # Save core state
+        state = self.model_core.state_dict()
+        with tempfile.NamedTemporaryFile(suffix='.pth', delete=False) as f:
+            torch.save({'model_state': state, 'config': {'input_dim': 8}}, f.name)
+            ckpt_path = f.name
+        try:
+            # Load into fresh core model — must not throw
+            fresh = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=2)
+            ckpt = torch.load(ckpt_path, map_location='cpu', weights_only=True)
+            fresh.load_state_dict(ckpt['model_state'])
+            # All keys must match
+            self.assertEqual(set(fresh.state_dict().keys()),
+                             set(self.model_core.state_dict().keys()))
+            # Forward pass must not throw
+            with torch.no_grad():
+                y = fresh(self.x_core)
+            self.assertEqual(y.shape, (2, 12, 8))
+        finally:
+            os.unlink(ckpt_path)
+
+    def test_core_checkpoint_keys_unchanged(self):
+        """Core model state_dict keys must match the original architecture exactly."""
+        expected_prefixes = {'state_proj', 'action_proj', 'time_proj',
+                             'pos_encoder', 'transformer_encoder', 'output_projection'}
+        for key in self.model_core.state_dict().keys():
+            prefix = key.split('.')[0]
+            self.assertIn(prefix, expected_prefixes,
+                          f"Unexpected key prefix '{prefix}' in core model state_dict")
+
+
 class TestVAE(unittest.TestCase):
     """Smoke tests for the redesigned VAE."""
 
@@ -740,6 +862,671 @@ class TestModelRegistry(unittest.TestCase):
         for name, reg in MODEL_REGISTRY.items():
             self.assertIn(reg['task'], valid_tasks,
                           f"Model {name} has invalid task: {reg['task']}")
+
+
+# =============================================================================
+# Extended Data Adapter Tests
+# =============================================================================
+
+class TestExtendedFeatures(unittest.TestCase):
+    """Tests for build_extended_features() in real_data_adapter."""
+
+    def _make_synthetic_grid(self, n_steps=100):
+        """Create a synthetic 5-min DataFrame matching build_nightscout_grid output."""
+        import pandas as pd
+        import numpy as np
+        from tools.cgmencode.schema import NORMALIZATION_SCALES
+
+        start = pd.Timestamp('2026-03-01 08:00:00', tz='UTC')
+        idx = pd.date_range(start, periods=n_steps, freq='5min')
+        df = pd.DataFrame({
+            'glucose': np.linspace(120, 180, n_steps),
+            'iob': np.linspace(2.0, 0.5, n_steps),
+            'cob': np.linspace(30, 0, n_steps),
+            'net_basal': np.sin(np.linspace(0, 4, n_steps)) * 0.5,
+            'bolus': np.zeros(n_steps),
+            'carbs': np.zeros(n_steps),
+        }, index=idx)
+        # Add a bolus at step 10 and carbs at step 20
+        df.iloc[10, df.columns.get_loc('bolus')] = 3.0
+        df.iloc[20, df.columns.get_loc('carbs')] = 45.0
+
+        hours = idx.hour + idx.minute / 60.0
+        features = np.column_stack([
+            df['glucose'].values / NORMALIZATION_SCALES['glucose'],
+            df['iob'].values / NORMALIZATION_SCALES['iob'],
+            df['cob'].values / NORMALIZATION_SCALES['cob'],
+            df['net_basal'].values / NORMALIZATION_SCALES['net_basal'],
+            df['bolus'].values / NORMALIZATION_SCALES['bolus'],
+            df['carbs'].values / NORMALIZATION_SCALES['carbs'],
+            np.sin(2 * np.pi * hours / 24.0),
+            np.cos(2 * np.pi * hours / 24.0),
+        ]).astype(np.float32)
+        return df, features
+
+    def test_extended_shape(self):
+        from tools.cgmencode.real_data_adapter import build_extended_features
+        df, features = self._make_synthetic_grid()
+        ext = build_extended_features(df, features)
+        self.assertEqual(ext.shape, (100, 16))
+
+    def test_core_features_preserved(self):
+        from tools.cgmencode.real_data_adapter import build_extended_features
+        df, features = self._make_synthetic_grid()
+        ext = build_extended_features(df, features)
+        np.testing.assert_array_equal(ext[:, :8], features)
+
+    def test_day_of_week_encoding(self):
+        from tools.cgmencode.real_data_adapter import build_extended_features
+        df, features = self._make_synthetic_grid()
+        ext = build_extended_features(df, features)
+        # Day sin/cos should be in [-1, 1]
+        self.assertTrue(np.all(ext[:, 8] >= -1.0))
+        self.assertTrue(np.all(ext[:, 8] <= 1.0))
+        self.assertTrue(np.all(ext[:, 9] >= -1.0))
+        self.assertTrue(np.all(ext[:, 9] <= 1.0))
+
+    def test_glucose_roc(self):
+        from tools.cgmencode.real_data_adapter import build_extended_features
+        df, features = self._make_synthetic_grid()
+        ext = build_extended_features(df, features)
+        # Glucose goes from 120→180 over 100 steps → positive ROC
+        roc_norm = ext[:, 12]
+        # Most values should be positive (glucose rising)
+        self.assertGreater(np.mean(roc_norm[1:] > 0), 0.8)
+
+    def test_time_since_bolus(self):
+        from tools.cgmencode.real_data_adapter import build_extended_features
+        df, features = self._make_synthetic_grid()
+        ext = build_extended_features(df, features)
+        # Before bolus at step 10, time_since_bolus should be capped (360 min)
+        self.assertAlmostEqual(ext[0, 14], 1.0, places=2)  # 360/360 = 1.0 (capped)
+        # At step 10 (bolus), time_since_bolus = 0
+        self.assertAlmostEqual(ext[10, 14], 0.0, places=2)
+        # At step 15, time_since_bolus = 25 min → 25/360
+        self.assertAlmostEqual(ext[15, 14], 25.0/360.0, places=2)
+
+    def test_no_overrides_without_treatments(self):
+        from tools.cgmencode.real_data_adapter import build_extended_features
+        df, features = self._make_synthetic_grid()
+        ext = build_extended_features(df, features, treatments=None)
+        # No treatments → override channels all zero
+        self.assertTrue(np.all(ext[:, 10] == 0.0))
+        self.assertTrue(np.all(ext[:, 11] == 0.0))
+
+    def test_override_extraction(self):
+        from tools.cgmencode.real_data_adapter import build_extended_features
+        from tools.cgmencode.schema import OVERRIDE_TYPES
+        import pandas as pd
+        df, features = self._make_synthetic_grid()
+        # Simulate an "Eating Soon" override at step 30, duration 30 min
+        ts = df.index[30].isoformat()
+        treatments = [{
+            'eventType': 'Temporary Override',
+            'created_at': ts,
+            'duration': 30,
+            'reason': 'Eating Soon',
+        }]
+        ext = build_extended_features(df, features, treatments=treatments)
+        # Steps 30–35 should be active (30 min = 6 steps)
+        self.assertEqual(ext[30, 10], 1.0)
+        self.assertEqual(ext[35, 10], 1.0)
+        self.assertEqual(ext[36, 10], 0.0)
+        self.assertAlmostEqual(ext[30, 11], OVERRIDE_TYPES['eating_soon'])
+
+
+# =============================================================================
+# 8. State Tracker Tests (ISF/CR drift detection)
+# =============================================================================
+
+class TestStateTracker(unittest.TestCase):
+    """Tests for ISFCRTracker and DriftDetector (Kalman-based drift tracking)."""
+
+    def test_tracker_init(self):
+        """Initial state matches nominal values."""
+        from tools.cgmencode.state_tracker import ISFCRTracker
+        tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0)
+        np.testing.assert_allclose(tracker.state, [40.0, 10.0])
+        np.testing.assert_allclose(tracker.nominal, [40.0, 10.0])
+        self.assertEqual(len(tracker.history), 0)
+        self.assertEqual(tracker.P.shape, (2, 2))
+        # P should be symmetric positive-definite
+        eigenvalues = np.linalg.eigvalsh(tracker.P)
+        self.assertTrue(np.all(eigenvalues > 0))
+
+    def test_tracker_update_stable(self):
+        """With zero residuals, ISF/CR should stay near nominal."""
+        from tools.cgmencode.state_tracker import ISFCRTracker
+        tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0)
+
+        for _ in range(50):
+            result = tracker.update(
+                glucose_residual=0.0,
+                iob_delta=0.5,
+                cob_delta=5.0,
+            )
+
+        # Should remain close to nominal
+        self.assertAlmostEqual(result['isf'], 40.0, delta=5.0)
+        self.assertAlmostEqual(result['cr'], 10.0, delta=3.0)
+        self.assertLess(result['isf_drift_pct'], 15.0)
+        self.assertLess(result['cr_drift_pct'], 15.0)
+
+    def test_tracker_detects_isf_drop(self):
+        """Positive residuals (actual > predicted) indicate ISF dropped.
+
+        If true ISF is 30 but the physics model assumes 40, each unit of
+        insulin has LESS effect → the model over-predicts the BG drop →
+        actual BG is higher than predicted → positive residual.
+
+        The tracker should lower its ISF estimate.
+        """
+        from tools.cgmencode.state_tracker import ISFCRTracker
+        tracker = ISFCRTracker(
+            nominal_isf=40.0, nominal_cr=10.0,
+            process_noise=0.1, measurement_noise=2.0,
+        )
+
+        # Simulate: true ISF=30, nominal=40 → insulin effect is weaker
+        # Each step: iob_delta=0.5 U, residual = -(0.5)*(40-30) = +5 mg/dL
+        for _ in range(60):
+            tracker.update(
+                glucose_residual=5.0,
+                iob_delta=0.5,
+                cob_delta=0.0,
+            )
+
+        # ISF should have decreased from 40 toward 30
+        self.assertLess(tracker.state[0], 38.0,
+                        f"ISF should drop below 38, got {tracker.state[0]:.1f}")
+
+    def test_tracker_detects_cr_change(self):
+        """Residuals from carb absorption indicate CR change.
+
+        If true CR is 15 but model assumes 10, each gram of carbs has
+        LESS effect → model over-predicts BG rise → actual is lower →
+        negative residual.
+        """
+        from tools.cgmencode.state_tracker import ISFCRTracker
+        tracker = ISFCRTracker(
+            nominal_isf=40.0, nominal_cr=10.0,
+            process_noise=0.1, measurement_noise=2.0,
+        )
+
+        # Simulate: carb-only information
+        for _ in range(60):
+            tracker.update(
+                glucose_residual=-3.0,
+                iob_delta=0.0,
+                cob_delta=5.0,
+            )
+
+        # CR should have shifted from nominal
+        cr_drift = abs(tracker.state[1] - 10.0)
+        self.assertGreater(cr_drift, 0.5,
+                           f"CR should drift from nominal, drift was {cr_drift:.2f}")
+
+    def test_drift_detector_stable(self):
+        """No drift → 'stable' classification."""
+        from tools.cgmencode.state_tracker import ISFCRTracker, DriftDetector
+        tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0)
+
+        # Feed enough stable observations
+        for _ in range(20):
+            tracker.update(
+                glucose_residual=0.0,
+                iob_delta=0.5,
+                cob_delta=5.0,
+            )
+
+        detector = DriftDetector(tracker, min_observations=12)
+        result = detector.classify()
+        self.assertEqual(result['state'], 'stable')
+
+    def test_drift_detector_resistance(self):
+        """ISF drop → 'resistance' classification."""
+        from tools.cgmencode.state_tracker import ISFCRTracker, DriftDetector
+        tracker = ISFCRTracker(
+            nominal_isf=40.0, nominal_cr=10.0,
+            process_noise=0.5, measurement_noise=1.0,
+        )
+
+        # Strong positive residuals → ISF has dropped
+        for _ in range(40):
+            tracker.update(
+                glucose_residual=10.0,
+                iob_delta=1.0,
+                cob_delta=0.0,
+            )
+
+        detector = DriftDetector(tracker, drift_threshold_pct=15.0,
+                                 min_observations=12)
+        result = detector.classify()
+        self.assertEqual(result['state'], 'resistance',
+                         f"Expected 'resistance', got '{result['state']}' "
+                         f"(ISF drift: {result['isf_drift_pct']:.1f}%)")
+
+    def test_drift_summary(self):
+        """Verify summary dict has all expected keys."""
+        from tools.cgmencode.state_tracker import ISFCRTracker
+        tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0)
+
+        # Feed some data
+        for _ in range(5):
+            tracker.update(0.0, 0.5, 2.0)
+
+        summary = tracker.drift_summary()
+        expected_keys = {
+            'mean_isf', 'mean_cr', 'isf_trend', 'cr_trend',
+            'isf_drift_pct', 'cr_drift_pct', 'is_significant',
+            'suggested_adjustment',
+        }
+        self.assertEqual(set(summary.keys()), expected_keys)
+
+        # Verify types
+        self.assertIsInstance(summary['mean_isf'], float)
+        self.assertIsInstance(summary['mean_cr'], float)
+        self.assertIn(summary['is_significant'], (True, False))
+
+    def test_drift_summary_empty(self):
+        """Summary on empty tracker returns nominal values."""
+        from tools.cgmencode.state_tracker import ISFCRTracker
+        tracker = ISFCRTracker(nominal_isf=42.0, nominal_cr=12.0)
+        summary = tracker.drift_summary()
+        self.assertAlmostEqual(summary['mean_isf'], 42.0)
+        self.assertAlmostEqual(summary['mean_cr'], 12.0)
+        self.assertFalse(summary['is_significant'])
+
+    def test_suggested_override_stable(self):
+        """Stable state → no override suggested."""
+        from tools.cgmencode.state_tracker import ISFCRTracker, DriftDetector
+        tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0)
+        for _ in range(20):
+            tracker.update(0.0, 0.5, 5.0)
+        detector = DriftDetector(tracker, min_observations=12)
+        self.assertIsNone(detector.suggested_override())
+
+    def test_suggested_override_resistance(self):
+        """Resistance → override with insulin_needs_factor > 1."""
+        from tools.cgmencode.state_tracker import ISFCRTracker, DriftDetector
+        tracker = ISFCRTracker(
+            nominal_isf=40.0, nominal_cr=10.0,
+            process_noise=0.5, measurement_noise=1.0,
+        )
+        for _ in range(40):
+            tracker.update(10.0, 1.0, 0.0)
+        detector = DriftDetector(tracker, drift_threshold_pct=15.0,
+                                 min_observations=12)
+        override = detector.suggested_override()
+        self.assertIsNotNone(override)
+        self.assertEqual(override['type'], 'sick')
+        self.assertGreater(override['insulin_needs_factor'], 1.0)
+        self.assertGreater(override['confidence'], 0.0)
+
+    def test_zero_deltas_no_crash(self):
+        """Zero IOB/COB deltas should not cause numerical errors."""
+        from tools.cgmencode.state_tracker import ISFCRTracker
+        tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0)
+        result = tracker.update(5.0, 0.0, 0.0)
+        # Should return valid result without NaN
+        self.assertFalse(np.isnan(result['isf']))
+        self.assertFalse(np.isnan(result['cr']))
+
+    def test_covariance_stays_positive_definite(self):
+        """Covariance matrix should remain positive-definite after many updates."""
+        from tools.cgmencode.state_tracker import ISFCRTracker
+        tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0)
+        rng = np.random.RandomState(42)
+        for _ in range(200):
+            tracker.update(
+                glucose_residual=rng.normal(0, 10),
+                iob_delta=rng.uniform(0, 2),
+                cob_delta=rng.uniform(0, 10),
+            )
+        eigenvalues = np.linalg.eigvalsh(tracker.P)
+        self.assertTrue(np.all(eigenvalues > 0),
+                        f"Covariance not PD: eigenvalues = {eigenvalues}")
+
+    def test_tracker_reset(self):
+        """Reset returns tracker to initial state."""
+        from tools.cgmencode.state_tracker import ISFCRTracker
+        tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0)
+        for _ in range(20):
+            tracker.update(5.0, 0.5, 2.0)
+        tracker.reset()
+        np.testing.assert_allclose(tracker.state, [40.0, 10.0])
+        self.assertEqual(len(tracker.history), 0)
+
+
+class TestOverrideExtraction(unittest.TestCase):
+    """Tests for extended override extraction and pre-event windows."""
+
+    def test_classify_override_reason(self):
+        from tools.cgmencode.label_events import classify_override_reason
+        self.assertEqual(classify_override_reason('Eating Soon'), 'eating_soon')
+        self.assertEqual(classify_override_reason('Pre-Meal Override'), 'eating_soon')
+        self.assertEqual(classify_override_reason('exercise'), 'exercise')
+        self.assertEqual(classify_override_reason('Going to the Gym'), 'exercise')
+        self.assertEqual(classify_override_reason('Sleep'), 'sleep')
+        self.assertEqual(classify_override_reason('Bedtime routine'), 'sleep')
+        self.assertEqual(classify_override_reason('sick day'), 'sick')
+        self.assertEqual(classify_override_reason('Custom thing'), 'custom_override')
+        self.assertEqual(classify_override_reason(''), 'custom_override')
+        self.assertEqual(classify_override_reason(None), 'custom_override')
+
+    def test_extended_label_map(self):
+        from tools.cgmencode.label_events import EXTENDED_LABEL_MAP
+        # Must have all expected keys
+        expected_keys = {'none', 'meal', 'correction_bolus', 'override',
+                         'eating_soon', 'exercise', 'sleep', 'sick', 'custom_override'}
+        self.assertEqual(set(EXTENDED_LABEL_MAP.keys()), expected_keys)
+        # All values unique
+        vals = list(EXTENDED_LABEL_MAP.values())
+        self.assertEqual(len(vals), len(set(vals)))
+        # none is 0, meal is 1 (backward compat)
+        self.assertEqual(EXTENDED_LABEL_MAP['none'], 0)
+        self.assertEqual(EXTENDED_LABEL_MAP['meal'], 1)
+
+    def test_extract_override_events_treatments(self):
+        """Test extraction from a minimal treatments.json."""
+        import tempfile
+        from tools.cgmencode.label_events import extract_override_events
+        treatments = [
+            {'eventType': 'Meal Bolus', 'created_at': '2024-01-15T12:00:00Z',
+             'carbs': 45, 'insulin': 3.5},
+            {'eventType': 'Temporary Override', 'created_at': '2024-01-15T14:00:00Z',
+             'reason': 'Exercise - Running', 'duration': 60, 'insulinNeedsScaleFactor': 0.5},
+            {'eventType': 'Temporary Override', 'created_at': '2024-01-15T22:00:00Z',
+             'reason': 'Sleep', 'duration': 480, 'insulinNeedsScaleFactor': 1.0},
+            {'eventType': 'Correction Bolus', 'created_at': '2024-01-15T16:00:00Z',
+             'insulin': 1.2},
+        ]
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+            json.dump(treatments, f)
+            path = f.name
+        try:
+            events, stats = extract_override_events(path)
+            types = [e['event_type'] for e in events]
+            self.assertIn('meal', types)
+            self.assertIn('exercise', types)
+            self.assertIn('sleep', types)
+            self.assertIn('correction_bolus', types)
+            # Check exercise event has scale factor
+            ex_event = [e for e in events if e['event_type'] == 'exercise'][0]
+            self.assertAlmostEqual(ex_event['insulin_needs_scale'], 0.5)
+            self.assertAlmostEqual(ex_event['duration_min'], 60.0)
+        finally:
+            os.unlink(path)
+
+    def test_extract_override_events_devicestatus(self):
+        """Test extraction from devicestatus with Loop override."""
+        import tempfile
+        from tools.cgmencode.label_events import extract_override_events
+        treatments = []
+        devicestatus = [
+            {'created_at': '2024-01-15T14:01:00Z',
+             'override': {'active': True, 'name': 'Eating Soon', 'duration': 60}},
+            {'created_at': '2024-01-15T14:02:00Z',
+             'override': {'active': True, 'name': 'Eating Soon', 'duration': 60}},
+            {'created_at': '2024-01-15T22:00:00Z',
+             'override': {'active': False, 'name': 'Sleep'}},
+        ]
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as ft:
+            json.dump(treatments, ft)
+            tx_path = ft.name
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as fd:
+            json.dump(devicestatus, fd)
+            ds_path = fd.name
+        try:
+            events, stats = extract_override_events(tx_path, ds_path)
+            # Only one eating_soon (dedup), no sleep (active=False)
+            eating = [e for e in events if e['event_type'] == 'eating_soon']
+            self.assertEqual(len(eating), 1)
+            sleeping = [e for e in events if e['event_type'] == 'sleep']
+            self.assertEqual(len(sleeping), 0)
+        finally:
+            os.unlink(tx_path)
+            os.unlink(ds_path)
+
+    def test_build_pre_event_windows_shape(self):
+        """Pre-event windows have correct shape and lead times."""
+        from tools.cgmencode.label_events import (
+            build_pre_event_windows, EXTENDED_LABEL_MAP,
+        )
+        # Synthetic grid: 200 steps of 8 features
+        n_steps = 200
+        idx = pd.date_range('2024-01-15', periods=n_steps, freq='5min')
+        cols = ['glucose', 'iob', 'cob', 'net_basal', 'bolus', 'carbs',
+                'time_sin', 'time_cos']
+        data = np.random.RandomState(42).rand(n_steps, 8) * 0.5 + 0.3
+        data[:, 0] = 120 / 400  # normalized glucose
+        grid = pd.DataFrame(data, index=idx, columns=cols)
+
+        events = [
+            {'timestamp': idx[80], 'event_type': 'meal', 'carbs': 40, 'insulin': 2.0},
+            {'timestamp': idx[150], 'event_type': 'exercise', 'duration_min': 60,
+             'insulin_needs_scale': 0.5},
+        ]
+
+        features, labels, meta = build_pre_event_windows(
+            grid, events, window_steps=12, lead_steps=[6], neg_ratio=2)
+
+        self.assertEqual(features.ndim, 3)
+        self.assertEqual(features.shape[1], 12)  # window_steps
+        self.assertEqual(features.shape[2], 8)   # features
+        # Should have exactly 2 positive windows (1 per event × 1 lead time)
+        n_pos = np.sum(labels > 0)
+        self.assertEqual(n_pos, 2)
+        # Lead time should be recorded in metadata
+        for m in meta:
+            if m['event_type'] != 'none':
+                self.assertEqual(m['lead_time_min'], 30)
+
+    def test_extract_extended_tabular_shape(self):
+        """Extended tabular features add 4 columns."""
+        from tools.cgmencode.label_events import extract_extended_tabular
+        N, T, F = 10, 12, 8
+        windows = np.random.rand(N, T, F) * 0.5 + 0.1
+        labels = np.array([0, 0, 0, 1, 1, 2, 3, 4, 5, 0])
+        meta = [{'lead_time_min': 30 if i >= 3 else 0} for i in range(N)]
+        tab, names = extract_extended_tabular(windows, labels, meta)
+        self.assertEqual(tab.shape[0], N)
+        # Original 17 + 4 extended = 21
+        self.assertEqual(tab.shape[1], 21)
+        self.assertEqual(len(names), 21)
+        self.assertIn('lead_time_hr', names)
+        self.assertIn('glucose_accel', names)
+
+
+# =============================================================================
+# MC-Dropout Uncertainty Tests
+# =============================================================================
+
+class TestUncertainty(unittest.TestCase):
+    """Verify MC-Dropout uncertainty quantification utilities."""
+
+    def _make_model(self, input_dim=8, dropout=0.3):
+        from tools.cgmencode.model import CGMGroupedEncoder
+        return CGMGroupedEncoder(
+            input_dim=input_dim, d_model=32, nhead=4,
+            num_layers=2, dim_feedforward=64, dropout=dropout,
+        )
+
+    def _make_input(self, batch=2, seq_len=24, features=8):
+        return torch.randn(batch, seq_len, features)
+
+    # ---- enable_mc_dropout ---------------------------------------------------
+
+    def test_enable_mc_dropout(self):
+        """Dropout layers are active inside context, restored on exit."""
+        from tools.cgmencode.uncertainty import enable_mc_dropout
+        model = self._make_model()
+        model.eval()
+
+        # Before: all Dropout modules should be in eval (training=False)
+        for m in model.modules():
+            if isinstance(m, nn.Dropout):
+                self.assertFalse(m.training)
+
+        # During: Dropout modules should be in training mode
+        with enable_mc_dropout(model):
+            for m in model.modules():
+                if isinstance(m, nn.Dropout):
+                    self.assertTrue(m.training, "Dropout not active inside MC context")
+
+        # After: restored back to eval
+        for m in model.modules():
+            if isinstance(m, nn.Dropout):
+                self.assertFalse(m.training, "Dropout not restored after MC context")
+
+    # ---- mc_predict ----------------------------------------------------------
+
+    def test_mc_predict_shapes(self):
+        """Output shapes match (B,S,F) for mean/std and (N,B,S,F) for samples."""
+        from tools.cgmencode.uncertainty import mc_predict
+        model = self._make_model()
+        x = self._make_input(batch=3, seq_len=24, features=8)
+        n = 10
+        mean, std, samples = mc_predict(model, x, n_samples=n)
+
+        self.assertEqual(mean.shape, (3, 24, 8))
+        self.assertEqual(std.shape, (3, 24, 8))
+        self.assertEqual(samples.shape, (n, 3, 24, 8))
+
+    def test_mc_predict_variance(self):
+        """With dropout, MC samples should exhibit non-zero variance."""
+        from tools.cgmencode.uncertainty import mc_predict
+        model = self._make_model(dropout=0.3)
+        x = self._make_input(batch=2, seq_len=24, features=8)
+        _, std, _ = mc_predict(model, x, n_samples=30)
+        # At least some timesteps should have variance > 0
+        self.assertGreater(std.max().item(), 0.0,
+                           "MC samples have zero variance — dropout not active?")
+
+    def test_mc_predict_extended(self):
+        """mc_predict works with 16-feature extended input."""
+        from tools.cgmencode.uncertainty import mc_predict
+        model = self._make_model(input_dim=16)
+        x = self._make_input(batch=2, seq_len=24, features=16)
+        mean, std, samples = mc_predict(model, x, n_samples=5)
+        self.assertEqual(mean.shape, (2, 24, 16))
+
+    def test_mc_predict_causal(self):
+        """mc_predict with causal=True produces valid output."""
+        from tools.cgmencode.uncertainty import mc_predict
+        model = self._make_model()
+        x = self._make_input(batch=2, seq_len=12, features=8)
+        mean, std, samples = mc_predict(model, x, n_samples=5, causal=True)
+        self.assertEqual(mean.shape, (2, 12, 8))
+        self.assertFalse(torch.isnan(mean).any())
+
+    # ---- hypo_probability ----------------------------------------------------
+
+    def test_hypo_probability_range(self):
+        """P(hypo) values are in [0, 1]."""
+        from tools.cgmencode.uncertainty import hypo_probability
+        mean = torch.tensor([[120.0, 80.0, 60.0]])
+        std = torch.tensor([[15.0, 15.0, 15.0]])
+        p = hypo_probability(mean, std, threshold_mgdl=70.0)
+        self.assertTrue((p >= 0.0).all() and (p <= 1.0).all())
+
+    def test_hypo_probability_ordering(self):
+        """Lower mean glucose → higher P(hypo)."""
+        from tools.cgmencode.uncertainty import hypo_probability
+        mean = torch.tensor([[150.0, 80.0, 50.0]])
+        std = torch.tensor([[10.0, 10.0, 10.0]])
+        p = hypo_probability(mean, std, threshold_mgdl=70.0)
+        # p[0,2] > p[0,1] > p[0,0]
+        self.assertGreater(p[0, 2].item(), p[0, 1].item())
+        self.assertGreater(p[0, 1].item(), p[0, 0].item())
+
+    # ---- hyper_probability ---------------------------------------------------
+
+    def test_hyper_probability_range(self):
+        """P(hyper) values are in [0, 1]."""
+        from tools.cgmencode.uncertainty import hyper_probability
+        mean = torch.tensor([[120.0, 180.0, 250.0]])
+        std = torch.tensor([[15.0, 15.0, 15.0]])
+        p = hyper_probability(mean, std, threshold_mgdl=180.0)
+        self.assertTrue((p >= 0.0).all() and (p <= 1.0).all())
+
+    def test_hyper_probability_ordering(self):
+        """Higher mean glucose → higher P(hyper)."""
+        from tools.cgmencode.uncertainty import hyper_probability
+        mean = torch.tensor([[120.0, 180.0, 250.0]])
+        std = torch.tensor([[10.0, 10.0, 10.0]])
+        p = hyper_probability(mean, std, threshold_mgdl=180.0)
+        self.assertGreater(p[0, 2].item(), p[0, 1].item())
+        self.assertGreater(p[0, 1].item(), p[0, 0].item())
+
+    # ---- prediction_interval -------------------------------------------------
+
+    def test_prediction_interval(self):
+        """Lower < mean < upper and width increases with std."""
+        from tools.cgmencode.uncertainty import prediction_interval
+        mean = torch.tensor([[120.0, 80.0]])
+        std = torch.tensor([[10.0, 20.0]])
+        lo, hi = prediction_interval(mean, std, confidence=0.95)
+
+        self.assertTrue((lo < mean).all(), "Lower bound should be < mean")
+        self.assertTrue((hi > mean).all(), "Upper bound should be > mean")
+        # Wider std → wider interval
+        width = hi - lo
+        self.assertGreater(width[0, 1].item(), width[0, 0].item())
+
+    def test_prediction_interval_symmetry(self):
+        """Interval is symmetric around the mean."""
+        from tools.cgmencode.uncertainty import prediction_interval
+        mean = torch.tensor([[100.0]])
+        std = torch.tensor([[10.0]])
+        lo, hi = prediction_interval(mean, std, confidence=0.90)
+        self.assertAlmostEqual((mean - lo).item(), (hi - mean).item(), places=4)
+
+    # ---- mc_forecast_with_safety ---------------------------------------------
+
+    def test_mc_forecast_with_safety(self):
+        """Full pipeline returns expected keys and shapes."""
+        from tools.cgmencode.uncertainty import mc_forecast_with_safety
+        model = self._make_model()
+        x = self._make_input(batch=2, seq_len=24, features=8)
+        result = mc_forecast_with_safety(model, x, n_samples=10)
+
+        expected_keys = {
+            'mean_glucose_mgdl', 'std_glucose_mgdl',
+            'p_hypo', 'p_hyper', 'ci_lower', 'ci_upper', 'is_safe',
+        }
+        self.assertEqual(set(result.keys()), expected_keys)
+
+        # Shape checks — glucose channel only → (B, SeqLen)
+        self.assertEqual(result['mean_glucose_mgdl'].shape, (2, 24))
+        self.assertEqual(result['std_glucose_mgdl'].shape, (2, 24))
+        self.assertEqual(result['p_hypo'].shape, (2, 24))
+        self.assertEqual(result['p_hyper'].shape, (2, 24))
+        self.assertEqual(result['ci_lower'].shape, (2, 24))
+        self.assertEqual(result['ci_upper'].shape, (2, 24))
+        self.assertEqual(result['is_safe'].shape, (2,))
+
+        # Probabilities in [0, 1]
+        self.assertTrue((result['p_hypo'] >= 0).all())
+        self.assertTrue((result['p_hypo'] <= 1).all())
+        self.assertTrue((result['p_hyper'] >= 0).all())
+        self.assertTrue((result['p_hyper'] <= 1).all())
+
+        # is_safe is boolean
+        self.assertEqual(result['is_safe'].dtype, torch.bool)
+
+    def test_mc_forecast_with_safety_transformer_ae(self):
+        """Works with CGMTransformerAE as well."""
+        from tools.cgmencode.model import CGMTransformerAE
+        from tools.cgmencode.uncertainty import mc_forecast_with_safety
+        model = CGMTransformerAE(
+            input_dim=8, d_model=32, nhead=4,
+            num_layers=1, dim_feedforward=64, dropout=0.3,
+        )
+        x = self._make_input(batch=2, seq_len=12, features=8)
+        result = mc_forecast_with_safety(model, x, n_samples=5)
+        self.assertIn('is_safe', result)
+        self.assertEqual(result['mean_glucose_mgdl'].shape, (2, 12))
 
 
 if __name__ == '__main__':
