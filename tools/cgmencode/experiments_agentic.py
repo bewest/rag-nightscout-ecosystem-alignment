@@ -17,7 +17,10 @@ Example:
         --patients-dir externals/ns-data/patients --real-data ...
 """
 
+import glob as _glob_mod
+import os
 import numpy as np
+import pandas as pd
 import torch
 
 from .experiment_lib import (
@@ -99,6 +102,13 @@ REGISTRY = {
     'multitask-finetune':      'run_multitask_finetune',     # EXP-071
     'production-pipeline':     'run_production_pipeline',    # EXP-072
     'action-recommendation':   'run_action_recommendation',  # EXP-073
+    # Round 8 — planning horizons, counterfactuals, circadian
+    'time-to-event':           'run_time_to_event',          # EXP-074
+    'counterfactual-dose':     'run_counterfactual_dose',    # EXP-075
+    'circadian-forecast':      'run_circadian_forecast',     # EXP-076
+    'action-magnitude':        'run_action_magnitude',       # EXP-077
+    'streaming-conformal':     'run_streaming_conformal',    # EXP-078
+    'multihorizon-trajectory': 'run_multihorizon_trajectory', # EXP-079
 }
 
 
@@ -4921,3 +4931,701 @@ def run_action_recommendation(args):
     for a, v in sorted(by_action.items()):
         ctx.log(f'  {a}: {v["total"]} ({v["correct"]} correct)')
     return ctx.save('exp073_action_recommendation.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-074: Time-to-Event Regression
+# Hypothesis: Predict minutes until glucose crosses 70 (hypo) or 180
+#   (hyper) thresholds. Use censored regression — many windows never
+#   cross. Target: MAE < 30 min for events that DO occur within 1hr.
+# ────────────────────────────────────────────────────────────────────
+
+def run_time_to_event(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-074', out,
+                           hypothesis='time-to-event MAE < 30 min')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    ctx.log(f'{len(train_ds)} train, {len(val_ds)} val windows')
+
+    SCALE = NORMALIZATION_SCALES.get('glucose', 400)
+    HYPO = 70.0 / SCALE
+    HYPER = 180.0 / SCALE
+    MAX_STEPS = 12  # future half
+
+    # Build time-to-event labels from actual future glucose
+    def make_tte_labels(ds):
+        hypo_tte = []
+        hyper_tte = []
+        for i in range(len(ds)):
+            w = ds[i]
+            if isinstance(w, tuple):
+                w = w[0]
+            if hasattr(w, 'numpy'):
+                w = w.numpy()
+            future_gluc = w[12:, 0]  # future half, channel 0
+            below = np.where(future_gluc < HYPO)[0]
+            hypo_tte.append(below[0] + 1 if len(below) > 0 else MAX_STEPS + 1)
+            above = np.where(future_gluc > HYPER)[0]
+            hyper_tte.append(above[0] + 1 if len(above) > 0 else MAX_STEPS + 1)
+        return np.array(hypo_tte), np.array(hyper_tte)
+
+    train_hypo, train_hyper = make_tte_labels(train_ds)
+    val_hypo, val_hyper = make_tte_labels(val_ds)
+
+    hypo_rate = np.mean(val_hypo <= MAX_STEPS)
+    hyper_rate = np.mean(val_hyper <= MAX_STEPS)
+    ctx.log(f'Hypo events in window: {hypo_rate:.1%}, Hyper: {hyper_rate:.1%}')
+
+    # Train forecast model, extract predicted future glucose
+    model = create_model('grouped', input_dim=8)
+    train_forecast(model, train_ds, val_ds, f'{out}/exp074_base.pth',
+                   'Forecast-base', epochs=80)
+
+    device = next(model.parameters()).device
+    model.eval()
+    pred_hypo_tte = []
+    pred_hyper_tte = []
+    with torch.no_grad():
+        for i in range(len(val_ds)):
+            w = val_ds[i]
+            if isinstance(w, tuple):
+                w = w[0]
+            x = w.unsqueeze(0).to(device) if hasattr(w, 'unsqueeze') else torch.tensor(w).unsqueeze(0).to(device)
+            x_in = x.clone()
+            x_in[:, 12:, 0] = 0.0
+            pred = model(x_in)
+            pred_gluc = pred[0, 12:, 0].cpu().numpy()
+            below = np.where(pred_gluc < HYPO)[0]
+            pred_hypo_tte.append(below[0] + 1 if len(below) > 0 else MAX_STEPS + 1)
+            above = np.where(pred_gluc > HYPER)[0]
+            pred_hyper_tte.append(above[0] + 1 if len(above) > 0 else MAX_STEPS + 1)
+
+    pred_hypo_tte = np.array(pred_hypo_tte)
+    pred_hyper_tte = np.array(pred_hyper_tte)
+
+    hypo_mask = val_hypo <= MAX_STEPS
+    hyper_mask = val_hyper <= MAX_STEPS
+
+    hypo_mae = float(np.mean(np.abs(pred_hypo_tte[hypo_mask] - val_hypo[hypo_mask]))) * 5 if hypo_mask.sum() > 0 else None
+    hyper_mae = float(np.mean(np.abs(pred_hyper_tte[hyper_mask] - val_hyper[hyper_mask]))) * 5 if hyper_mask.sum() > 0 else None
+
+    hypo_detected = float(np.mean(pred_hypo_tte[hypo_mask] <= MAX_STEPS)) if hypo_mask.sum() > 0 else None
+    hyper_detected = float(np.mean(pred_hyper_tte[hyper_mask] <= MAX_STEPS)) if hyper_mask.sum() > 0 else None
+
+    no_hypo = ~hypo_mask
+    no_hyper = ~hyper_mask
+    hypo_fa = float(np.mean(pred_hypo_tte[no_hypo] <= MAX_STEPS)) if no_hypo.sum() > 0 else None
+    hyper_fa = float(np.mean(pred_hyper_tte[no_hyper] <= MAX_STEPS)) if no_hyper.sum() > 0 else None
+
+    ctx.result.update({
+        'hypo_event_rate': float(hypo_rate),
+        'hyper_event_rate': float(hyper_rate),
+        'hypo_n_events': int(hypo_mask.sum()),
+        'hyper_n_events': int(hyper_mask.sum()),
+        'hypo_mae_minutes': hypo_mae,
+        'hyper_mae_minutes': hyper_mae,
+        'hypo_detection_rate': float(hypo_detected) if hypo_detected is not None else None,
+        'hyper_detection_rate': float(hyper_detected) if hyper_detected is not None else None,
+        'hypo_false_alarm_rate': hypo_fa,
+        'hyper_false_alarm_rate': hyper_fa,
+        'success': (hypo_mae is not None and hypo_mae < 30) or
+                   (hyper_mae is not None and hyper_mae < 30),
+    })
+    ctx.section('Time-to-event results')
+    if hypo_mae is not None:
+        ctx.log(f'Hypo: {hypo_mask.sum()} events, MAE={hypo_mae:.1f} min, '
+                f'detect={hypo_detected:.1%}, FA={hypo_fa:.1%}')
+    else:
+        ctx.log('Hypo: no events')
+    if hyper_mae is not None:
+        ctx.log(f'Hyper: {hyper_mask.sum()} events, MAE={hyper_mae:.1f} min, '
+                f'detect={hyper_detected:.1%}, FA={hyper_fa:.1%}')
+    else:
+        ctx.log('Hyper: no events')
+    return ctx.save('exp074_time_to_event.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-075: Counterfactual Dose-Response
+# Hypothesis: Find pairs of similar glucose states with different
+#   insulin actions, train model to predict dose → glucose outcome.
+#   Target: correlation > 0.3 between predicted and actual delta.
+# ────────────────────────────────────────────────────────────────────
+
+def run_counterfactual_dose(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-075', out,
+                           hypothesis='dose-response correlation > 0.3')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    ctx.log(f'{len(train_ds)} train, {len(val_ds)} val')
+
+    GLUC_SCALE = NORMALIZATION_SCALES.get('glucose', 400)
+    BOLUS_SCALE = NORMALIZATION_SCALES.get('bolus', 10)
+    CARB_SCALE = NORMALIZATION_SCALES.get('carbs', 100)
+
+    def extract_dose_response(ds):
+        records = []
+        for i in range(len(ds)):
+            w = ds[i]
+            if isinstance(w, tuple):
+                w = w[0]
+            if hasattr(w, 'numpy'):
+                w = w.numpy()
+            hist_gluc = w[:12, 0] * GLUC_SCALE
+            future_gluc = w[12:, 0] * GLUC_SCALE
+            bolus_hist = w[:12, 4] * BOLUS_SCALE if w.shape[1] > 4 else np.zeros(12)
+            carbs_hist = w[:12, 5] * CARB_SCALE if w.shape[1] > 5 else np.zeros(12)
+            iob_mid = float(w[11, 1]) * NORMALIZATION_SCALES.get('iob', 20) if w.shape[1] > 1 else 0
+            records.append({
+                'start_gluc': float(hist_gluc[-1]),
+                'gluc_trend': float(hist_gluc[-1] - hist_gluc[-4]) if len(hist_gluc) >= 4 else 0,
+                'total_bolus': float(bolus_hist.sum()),
+                'total_carbs': float(carbs_hist.sum()),
+                'iob': iob_mid,
+                'end_gluc': float(future_gluc[-1]),
+                'min_gluc': float(future_gluc.min()),
+                'max_gluc': float(future_gluc.max()),
+                'delta_gluc': float(future_gluc[-1] - hist_gluc[-1]),
+            })
+        return records
+
+    train_recs = extract_dose_response(train_ds)
+    val_recs = extract_dose_response(val_ds)
+
+    import sklearn.ensemble as ske
+    from sklearn.metrics import mean_absolute_error
+
+    feat_cols = ['start_gluc', 'gluc_trend', 'total_bolus', 'total_carbs', 'iob']
+    X_train = np.array([[r[c] for c in feat_cols] for r in train_recs])
+    y_train = np.array([r['delta_gluc'] for r in train_recs])
+    X_val = np.array([[r[c] for c in feat_cols] for r in val_recs])
+    y_val = np.array([r['delta_gluc'] for r in val_recs])
+
+    gbr = ske.GradientBoostingRegressor(n_estimators=200, max_depth=5,
+                                         learning_rate=0.05, random_state=42)
+    gbr.fit(X_train, y_train)
+    pred_delta = gbr.predict(X_val)
+
+    mae = float(mean_absolute_error(y_val, pred_delta))
+    corr = float(np.corrcoef(y_val, pred_delta)[0, 1])
+
+    # Counterfactual: vary bolus for fixed glucose state (~120 mg/dL)
+    base_mask = (X_val[:, 0] > 100) & (X_val[:, 0] < 140)
+    dose_sweep = []
+    isf_estimate = None
+    if base_mask.sum() > 50:
+        base_X = X_val[base_mask].copy()
+        for dose in np.arange(0, 5.5, 0.5):
+            test_X = base_X.copy()
+            test_X[:, 2] = dose
+            pred = gbr.predict(test_X)
+            dose_sweep.append({
+                'bolus_u': float(dose),
+                'mean_delta': float(pred.mean()),
+                'std_delta': float(pred.std()),
+            })
+        isf_estimate = (dose_sweep[0]['mean_delta'] - dose_sweep[-1]['mean_delta']) / 5.0
+
+    fi = dict(zip(feat_cols, [float(x) for x in gbr.feature_importances_]))
+
+    ctx.result.update({
+        'mae_mgdl': mae,
+        'correlation': corr,
+        'n_train': len(train_recs),
+        'n_val': len(val_recs),
+        'dose_sweep': dose_sweep,
+        'estimated_isf': isf_estimate,
+        'feature_importance': fi,
+        'success': corr > 0.3,
+    })
+    ctx.section('Dose-response results')
+    ctx.log(f'Delta glucose prediction: MAE={mae:.1f} mg/dL, corr={corr:.3f}')
+    if dose_sweep:
+        ctx.log(f'Dose sweep (0->5U): {dose_sweep[0]["mean_delta"]:.1f} -> {dose_sweep[-1]["mean_delta"]:.1f} mg/dL')
+        ctx.log(f'Estimated ISF: {isf_estimate:.1f} mg/dL per unit')
+    ctx.log(f'Feature importance: {fi}')
+    return ctx.save('exp075_counterfactual_dose.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-076: Circadian-Aware Forecasting
+# Hypothesis: Adding sin/cos hour-of-day embedding improves forecast
+#   MAE, especially for dawn phenomenon (4-8am glucose rise).
+#   Target: >5% MAE improvement in 4-8am windows.
+# ────────────────────────────────────────────────────────────────────
+
+def run_circadian_forecast(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-076', out,
+                           hypothesis='circadian features improve dawn MAE >5%')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    # Load standard windows — assign synthetic hour based on window index
+    # (Windows are sequential 5-min intervals, so position encodes time-of-day)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    ctx.log(f'{len(train_ds)} train, {len(val_ds)} val')
+
+    # Extract windows as numpy for manipulation
+    def ds_to_numpy(ds):
+        windows = []
+        for i in range(len(ds)):
+            w = ds[i]
+            if isinstance(w, tuple):
+                w = w[0]
+            if hasattr(w, 'numpy'):
+                w = w.numpy()
+            windows.append(w)
+        return np.array(windows)
+
+    val_np = ds_to_numpy(val_ds)
+    train_np = ds_to_numpy(train_ds)
+
+    # Derive approximate hour from window position within each patient's data
+    # Use modular arithmetic: each window is ~3 steps apart (stride=3 in loader)
+    # 288 steps per day at 5min intervals, so hour = (index * 3 % 288) / 12
+    n_val = len(val_np)
+    val_hours = np.array([(i * 3 % 288) // 12 for i in range(n_val)])
+    n_train = len(train_np)
+    train_hours = np.array([(i * 3 % 288) // 12 for i in range(n_train)])
+
+    # 1. Baseline: standard GroupedEncoder on 8 features
+    model_base = create_model('grouped', input_dim=8)
+    train_forecast(model_base, train_ds, val_ds, f'{out}/exp076_base.pth',
+                   'Base', epochs=80)
+
+    # 2. Circadian: append sin/cos hour as 2 extra channels
+    def add_circadian(windows, hours):
+        sin_h = np.sin(2 * np.pi * hours / 24.0).astype(np.float32)
+        cos_h = np.cos(2 * np.pi * hours / 24.0).astype(np.float32)
+        circ = np.zeros((len(windows), windows.shape[1], 2), dtype=np.float32)
+        for i in range(len(windows)):
+            circ[i, :, 0] = sin_h[i]
+            circ[i, :, 1] = cos_h[i]
+        return np.concatenate([windows, circ], axis=2)
+
+    train_circ = add_circadian(train_np, train_hours)
+    val_circ = add_circadian(val_np, val_hours)
+
+    train_ds_c = torch.utils.data.TensorDataset(torch.tensor(train_circ))
+    val_ds_c = torch.utils.data.TensorDataset(torch.tensor(val_circ))
+
+    model_circ = create_model('grouped', input_dim=10)
+    train_forecast(model_circ, train_ds_c, val_ds_c, f'{out}/exp076_circ.pth',
+                   'Circadian', epochs=80)
+
+    # Evaluate both by time-of-day bucket
+    def eval_by_hour(model, ds, hours):
+        device = next(model.parameters()).device
+        model.eval()
+        SCALE = NORMALIZATION_SCALES.get('glucose', 400)
+        errors = []
+        with torch.no_grad():
+            for i in range(len(ds)):
+                w = ds[i][0]
+                x = w.unsqueeze(0).to(device)
+                x_in = x.clone()
+                x_in[:, 12:, 0] = 0.0
+                pred = model(x_in)
+                target = x[:, 12:, 0].cpu().numpy() * SCALE
+                forecast = pred[:, 12:, 0].cpu().numpy() * SCALE
+                errors.append(float(np.mean(np.abs(forecast - target))))
+        errors = np.array(errors)
+        dawn = (hours >= 4) & (hours < 8)
+        day = (hours >= 8) & (hours < 20)
+        night = (hours >= 20) | (hours < 4)
+        return {
+            'overall': float(errors.mean()),
+            'dawn_4_8': float(errors[dawn].mean()) if dawn.sum() > 0 else None,
+            'day_8_20': float(errors[day].mean()) if day.sum() > 0 else None,
+            'night_20_4': float(errors[night].mean()) if night.sum() > 0 else None,
+            'dawn_n': int(dawn.sum()), 'day_n': int(day.sum()), 'night_n': int(night.sum()),
+        }
+
+    base_metrics = eval_by_hour(model_base, val_ds, val_hours)
+    circ_metrics = eval_by_hour(model_circ, val_ds_c, val_hours)
+
+    dawn_improvement = None
+    if base_metrics['dawn_4_8'] and circ_metrics['dawn_4_8']:
+        dawn_improvement = (base_metrics['dawn_4_8'] - circ_metrics['dawn_4_8']) / base_metrics['dawn_4_8'] * 100
+
+    ctx.result.update({
+        'base': base_metrics,
+        'circadian': circ_metrics,
+        'dawn_improvement_pct': dawn_improvement,
+        'overall_improvement_pct': (base_metrics['overall'] - circ_metrics['overall']) / base_metrics['overall'] * 100,
+        'success': dawn_improvement is not None and dawn_improvement > 5,
+    })
+    ctx.section('Circadian forecast results')
+    ctx.log(f'Base overall: {base_metrics["overall"]:.1f}, dawn: {base_metrics["dawn_4_8"]}')
+    ctx.log(f'Circ overall: {circ_metrics["overall"]:.1f}, dawn: {circ_metrics["dawn_4_8"]}')
+    if dawn_improvement is not None:
+        ctx.log(f'Dawn improvement: {dawn_improvement:.1f}%')
+    return ctx.save('exp076_circadian_forecast.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-077: Action Magnitude Prediction
+# Hypothesis: For windows preceding bolus or carb events, predict the
+#   actual dose/amount. Target: bolus MAE < 2U, carbs MAE < 20g.
+# ────────────────────────────────────────────────────────────────────
+
+def run_action_magnitude(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-077', out,
+                           hypothesis='bolus MAE < 2U, carbs MAE < 20g')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    ctx.log(f'{len(train_ds)} train, {len(val_ds)} val')
+
+    GLUC_SCALE = NORMALIZATION_SCALES.get('glucose', 400)
+    BOLUS_SCALE = NORMALIZATION_SCALES.get('bolus', 10)
+    CARB_SCALE = NORMALIZATION_SCALES.get('carbs', 100)
+    IOB_SCALE = NORMALIZATION_SCALES.get('iob', 20)
+
+    def extract_action_data(ds):
+        bolus_records = []
+        carb_records = []
+        for i in range(len(ds)):
+            w = ds[i]
+            if isinstance(w, tuple):
+                w = w[0]
+            if hasattr(w, 'numpy'):
+                w = w.numpy()
+            future_bolus = w[12:, 4] * BOLUS_SCALE if w.shape[1] > 4 else np.zeros(12)
+            future_carbs = w[12:, 5] * CARB_SCALE if w.shape[1] > 5 else np.zeros(12)
+            total_bolus = float(future_bolus.sum())
+            total_carbs = float(future_carbs.sum())
+
+            feat = {
+                'gluc_now': float(w[11, 0] * GLUC_SCALE),
+                'gluc_trend': float((w[11, 0] - w[8, 0]) * GLUC_SCALE),
+                'iob': float(w[11, 1] * IOB_SCALE) if w.shape[1] > 1 else 0,
+                'cob': float(w[11, 2] * NORMALIZATION_SCALES.get('cob', 100)) if w.shape[1] > 2 else 0,
+                'gluc_mean': float(w[:12, 0].mean() * GLUC_SCALE),
+                'gluc_std': float(w[:12, 0].std() * GLUC_SCALE),
+                'gluc_min': float(w[:12, 0].min() * GLUC_SCALE),
+                'gluc_max': float(w[:12, 0].max() * GLUC_SCALE),
+            }
+
+            if total_bolus > 0.1:
+                bolus_records.append({**feat, 'target': total_bolus})
+            if total_carbs > 1.0:
+                carb_records.append({**feat, 'target': total_carbs})
+
+        return bolus_records, carb_records
+
+    train_bolus, train_carbs = extract_action_data(train_ds)
+    val_bolus, val_carbs = extract_action_data(val_ds)
+    ctx.log(f'Bolus events: {len(train_bolus)} train, {len(val_bolus)} val')
+    ctx.log(f'Carb events: {len(train_carbs)} train, {len(val_carbs)} val')
+
+    import sklearn.ensemble as ske
+    from sklearn.metrics import mean_absolute_error
+
+    feat_cols = ['gluc_now', 'gluc_trend', 'iob', 'cob', 'gluc_mean',
+                 'gluc_std', 'gluc_min', 'gluc_max']
+
+    results = {}
+    for name, train_recs, val_recs in [('bolus', train_bolus, val_bolus),
+                                        ('carbs', train_carbs, val_carbs)]:
+        if len(train_recs) < 50 or len(val_recs) < 10:
+            results[name] = {'n_train': len(train_recs), 'n_val': len(val_recs),
+                             'error': 'too few samples'}
+            continue
+        X_tr = np.array([[r[c] for c in feat_cols] for r in train_recs])
+        y_tr = np.array([r['target'] for r in train_recs])
+        X_va = np.array([[r[c] for c in feat_cols] for r in val_recs])
+        y_va = np.array([r['target'] for r in val_recs])
+
+        gbr = ske.GradientBoostingRegressor(n_estimators=200, max_depth=4,
+                                             learning_rate=0.05, random_state=42)
+        gbr.fit(X_tr, y_tr)
+        pred = gbr.predict(X_va)
+
+        mae = float(mean_absolute_error(y_va, pred))
+        corr = float(np.corrcoef(y_va, pred)[0, 1]) if len(y_va) > 1 else 0
+        fi = dict(zip(feat_cols, [float(x) for x in gbr.feature_importances_]))
+
+        results[name] = {
+            'n_train': len(train_recs), 'n_val': len(val_recs),
+            'mae': mae, 'correlation': corr,
+            'target_mean': float(y_va.mean()), 'target_std': float(y_va.std()),
+            'pred_mean': float(pred.mean()), 'pred_std': float(pred.std()),
+            'feature_importance': fi,
+        }
+
+    bolus_ok = results.get('bolus', {}).get('mae', 999) < 2.0
+    carbs_ok = results.get('carbs', {}).get('mae', 999) < 20.0
+
+    ctx.result.update({
+        'bolus': results.get('bolus', {}),
+        'carbs': results.get('carbs', {}),
+        'success': bolus_ok or carbs_ok,
+    })
+    ctx.section('Action magnitude results')
+    for name in ['bolus', 'carbs']:
+        r = results.get(name, {})
+        if 'mae' in r:
+            unit = 'U' if name == 'bolus' else 'g'
+            ctx.log(f'{name}: MAE={r["mae"]:.2f}{unit}, corr={r["correlation"]:.3f}, '
+                    f'mean={r["target_mean"]:.1f}{unit}')
+    return ctx.save('exp077_action_magnitude.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-078: Streaming Conformal Adaptation
+# Hypothesis: Using a sliding window of recent N=100 calibration
+#   samples adapts conformal thresholds to distribution shifts.
+#   Target: tighter intervals (< global) while maintaining 90% coverage.
+# ────────────────────────────────────────────────────────────────────
+
+def run_streaming_conformal(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-078', out,
+                           hypothesis='streaming conformal tighter than global')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    cal_paths = paths[:5]
+    test_paths = paths[5:]
+    ctx.log(f'Calibration: {len(cal_paths)} patients, Test: {len(test_paths)} patients')
+
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    model = create_model('grouped', input_dim=8)
+    train_forecast(model, train_ds, val_ds, f'{out}/exp078_base.pth',
+                   'Base', epochs=80)
+
+    device = next(model.parameters()).device
+    SCALE = NORMALIZATION_SCALES.get('glucose', 400)
+
+    def compute_residuals_sequential(paths_list):
+        all_residuals = []
+        for p in paths_list:
+            ds_t, ds_v = load_multipatient_nightscout([p], window_size=24)
+            model.eval()
+            with torch.no_grad():
+                for i in range(len(ds_v)):
+                    w = ds_v[i]
+                    if isinstance(w, tuple):
+                        w = w[0]
+                    x = w.unsqueeze(0).to(device) if hasattr(w, 'unsqueeze') else torch.tensor(w).unsqueeze(0).to(device)
+                    x_in = x.clone()
+                    x_in[:, 12:, 0] = 0.0
+                    pred = model(x_in)
+                    target = x[0, 12:, 0].cpu().numpy() * SCALE
+                    forecast = pred[0, 12:, 0].cpu().numpy() * SCALE
+                    max_resid = float(np.max(np.abs(forecast - target)))
+                    all_residuals.append(max_resid)
+        return all_residuals
+
+    cal_residuals = compute_residuals_sequential(cal_paths)
+    global_threshold = float(np.quantile(cal_residuals, 0.9))
+    ctx.log(f'Global 90% threshold: +/-{global_threshold:.1f} mg/dL ({len(cal_residuals)} cal samples)')
+
+    test_residuals = compute_residuals_sequential(test_paths)
+    ctx.log(f'Test samples: {len(test_residuals)}')
+
+    global_coverage = float(np.mean(np.array(test_residuals) <= global_threshold))
+
+    window_sizes = [50, 100, 200, 500]
+    streaming_results = {}
+    for N in window_sizes:
+        all_resid = cal_residuals + test_residuals
+        coverages = []
+        thresholds = []
+        for i in range(len(cal_residuals), len(all_resid)):
+            start = max(0, i - N)
+            cal_window = all_resid[start:i]
+            if len(cal_window) < 10:
+                continue
+            thresh = float(np.quantile(cal_window, 0.9))
+            thresholds.append(thresh)
+            coverages.append(1 if all_resid[i] <= thresh else 0)
+
+        if coverages:
+            streaming_results[f'N={N}'] = {
+                'mean_coverage': float(np.mean(coverages)),
+                'mean_threshold': float(np.mean(thresholds)),
+                'std_threshold': float(np.std(thresholds)),
+                'min_threshold': float(np.min(thresholds)),
+                'max_threshold': float(np.max(thresholds)),
+                'n_eval': len(coverages),
+            }
+
+    best_streaming = None
+    best_tightening = 0
+    for k, v in streaming_results.items():
+        if v['mean_coverage'] >= 0.88:
+            tightening = global_threshold - v['mean_threshold']
+            if tightening > best_tightening:
+                best_tightening = tightening
+                best_streaming = k
+
+    ctx.result.update({
+        'global_threshold_mgdl': global_threshold,
+        'global_coverage': global_coverage,
+        'n_calibration': len(cal_residuals),
+        'n_test': len(test_residuals),
+        'streaming': streaming_results,
+        'best_streaming': best_streaming,
+        'best_tightening_mgdl': best_tightening,
+        'success': best_tightening > 2.0,
+    })
+    ctx.section('Streaming conformal results')
+    ctx.log(f'Global: +/-{global_threshold:.1f} mg/dL, coverage={global_coverage:.1%}')
+    for k, v in streaming_results.items():
+        ctx.log(f'{k}: +/-{v["mean_threshold"]:.1f} mg/dL, coverage={v["mean_coverage"]:.1%}')
+    return ctx.save('exp078_streaming_conformal.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-079: Multi-Horizon Planning Trajectory
+# Hypothesis: Generating 1hr forecasts and scoring trajectory shape
+#   (trend, curvature, time-below/above) predicts next event class
+#   better than raw features. Target: F1 > 0.75.
+# ────────────────────────────────────────────────────────────────────
+
+def run_multihorizon_trajectory(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-079', out,
+                           hypothesis='trajectory features F1 > 0.75')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    SCALE = NORMALIZATION_SCALES.get('glucose', 400)
+    BOLUS_SCALE = NORMALIZATION_SCALES.get('bolus', 10)
+    CARB_SCALE = NORMALIZATION_SCALES.get('carbs', 100)
+
+    # Train 1hr model
+    model = create_model('grouped', input_dim=8)
+    train_forecast(model, train_ds, val_ds, f'{out}/exp079_1hr.pth', '1hr', epochs=60)
+
+    device = next(model.parameters()).device
+
+    def extract_trajectory_features(model, ds):
+        features = []
+        model.eval()
+        with torch.no_grad():
+            for i in range(len(ds)):
+                w = ds[i]
+                if isinstance(w, tuple):
+                    w = w[0]
+                x = w.unsqueeze(0).to(device) if hasattr(w, 'unsqueeze') else torch.tensor(w).unsqueeze(0).to(device)
+                x_in = x.clone()
+                x_in[:, 12:, 0] = 0.0
+                pred = model(x_in)
+                forecast = pred[0, 12:, 0].cpu().numpy() * SCALE
+                actual_hist = x[0, :12, 0].cpu().numpy() * SCALE
+
+                start_gluc = float(actual_hist[-1])
+                end_gluc = float(forecast[-1])
+                min_gluc = float(forecast.min())
+                max_gluc = float(forecast.max())
+                mean_gluc = float(forecast.mean())
+                slope = float(forecast[-1] - forecast[0]) / 12
+                if len(forecast) >= 3:
+                    d2 = np.diff(np.diff(forecast))
+                    curvature = float(np.mean(np.abs(d2)))
+                else:
+                    curvature = 0
+                time_below_70 = float(np.mean(forecast < 70))
+                time_above_180 = float(np.mean(forecast > 180))
+                nadir_step = int(np.argmin(forecast))
+                peak_step = int(np.argmax(forecast))
+                gluc_range = max_gluc - min_gluc
+                diffs = np.diff(forecast)
+                reversals = int(np.sum(np.diff(np.sign(diffs)) != 0))
+                features.append([
+                    start_gluc, end_gluc, min_gluc, max_gluc, mean_gluc,
+                    slope, curvature, time_below_70, time_above_180,
+                    nadir_step, peak_step, gluc_range, reversals,
+                    end_gluc - start_gluc,
+                ])
+        return np.array(features)
+
+    traj_features = extract_trajectory_features(model, val_ds)
+
+    # Build labels from actual future data
+    labels = []
+    for i in range(len(val_ds)):
+        w = val_ds[i]
+        if isinstance(w, tuple):
+            w = w[0]
+        if hasattr(w, 'numpy'):
+            w = w.numpy()
+        future_gluc = w[12:, 0] * SCALE
+        future_bolus = w[12:, 4] * BOLUS_SCALE if w.shape[1] > 4 else np.zeros(12)
+        future_carbs = w[12:, 5] * CARB_SCALE if w.shape[1] > 5 else np.zeros(12)
+
+        if future_gluc.min() < 70:
+            labels.append('hypo_risk')
+        elif future_gluc.max() > 250:
+            labels.append('hyper_risk')
+        elif future_bolus.sum() > 0.5:
+            labels.append('correction_bolus')
+        elif future_carbs.sum() > 5:
+            labels.append('meal_bolus')
+        else:
+            labels.append('normal')
+
+    labels = np.array(labels)
+
+    from sklearn.preprocessing import LabelEncoder
+    le = LabelEncoder()
+    y = le.fit_transform(labels)
+
+    n = len(traj_features)
+    idx = np.random.RandomState(42).permutation(n)
+    split = int(0.7 * n)
+    X_tr, X_va = traj_features[idx[:split]], traj_features[idx[split:]]
+    y_tr, y_va = y[idx[:split]], y[idx[split:]]
+
+    import xgboost as xgb
+    from sklearn.metrics import f1_score, classification_report
+
+    clf = xgb.XGBClassifier(n_estimators=200, max_depth=5, learning_rate=0.1,
+                             use_label_encoder=False, eval_metric='mlogloss',
+                             random_state=42)
+    clf.fit(X_tr, y_tr)
+    pred = clf.predict(X_va)
+
+    f1 = float(f1_score(y_va, pred, average='macro'))
+    report = classification_report(y_va, pred, target_names=le.classes_, output_dict=True)
+
+    feat_names = ['start_gluc', 'end_gluc', 'min_gluc', 'max_gluc', 'mean_gluc',
+                  'slope', 'curvature', 'time_below_70', 'time_above_180',
+                  'nadir_step', 'peak_step', 'gluc_range', 'reversals', 'net_delta']
+    fi = dict(zip(feat_names, [float(x) for x in clf.feature_importances_]))
+
+    ctx.result.update({
+        'f1_macro': f1,
+        'per_class': {k: {'f1': v['f1-score'], 'support': v['support']}
+                      for k, v in report.items() if k in le.classes_},
+        'feature_importance': fi,
+        'n_classes': len(le.classes_),
+        'class_distribution': {c: int((labels == c).sum()) for c in le.classes_},
+        'success': f1 > 0.75,
+    })
+    ctx.section('Trajectory classification results')
+    ctx.log(f'F1 macro: {f1:.3f}')
+    for c in le.classes_:
+        if c in report:
+            ctx.log(f'  {c}: F1={report[c]["f1-score"]:.3f} (n={report[c]["support"]})')
+    ctx.log(f'Top features: {sorted(fi.items(), key=lambda x: -x[1])[:5]}')
+    return ctx.save('exp079_multihorizon_trajectory.json')

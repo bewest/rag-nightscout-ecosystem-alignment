@@ -1,0 +1,76 @@
+{
+  "experiment": "EXP-075",
+  "timestamp": "2026-04-02T03:03:25Z",
+  "hypothesis": "dose-response correlation > 0.3",
+  "mae_mgdl": 31.785454959872226,
+  "correlation": 0.4970685537025678,
+  "n_train": 25937,
+  "n_val": 6485,
+  "dose_sweep": [
+    {
+      "bolus_u": 0.0,
+      "mean_delta": 10.843658827801788,
+      "std_delta": 17.500189271692303
+    },
+    {
+      "bolus_u": 0.5,
+      "mean_delta": 6.709200186813424,
+      "std_delta": 16.024361132096914
+    },
+    {
+      "bolus_u": 1.0,
+      "mean_delta": 6.519323428895884,
+      "std_delta": 14.537181991107122
+    },
+    {
+      "bolus_u": 1.5,
+      "mean_delta": 6.104499118238229,
+      "std_delta": 13.801229275441733
+    },
+    {
+      "bolus_u": 2.0,
+      "mean_delta": 5.3478535067718544,
+      "std_delta": 12.573984325933575
+    },
+    {
+      "bolus_u": 2.5,
+      "mean_delta": 6.543605195621093,
+      "std_delta": 12.04048275716155
+    },
+    {
+      "bolus_u": 3.0,
+      "mean_delta": 3.407073630414984,
+      "std_delta": 11.458699846938218
+    },
+    {
+      "bolus_u": 3.5,
+      "mean_delta": 4.645827217477584,
+      "std_delta": 12.176699378909534
+    },
+    {
+      "bolus_u": 4.0,
+      "mean_delta": 5.325527813466742,
+      "std_delta": 12.507310200893818
+    },
+    {
+      "bolus_u": 4.5,
+      "mean_delta": 4.473485161057579,
+      "std_delta": 12.1221479758564
+    },
+    {
+      "bolus_u": 5.0,
+      "mean_delta": 6.615719608201328,
+      "std_delta": 12.512273184211569
+    }
+  ],
+  "estimated_isf": 0.8455878439200919,
+  "feature_importance": {
+    "start_gluc": 0.502756610254661,
+    "gluc_trend": 0.2688936825658832,
+    "total_bolus": 0.05330926697486976,
+    "total_carbs": 0.06591073844317294,
+    "iob": 0.10912970176141318
+  },
+  "success": true,
+  "elapsed_seconds": 52.7
+}

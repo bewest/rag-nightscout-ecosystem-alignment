@@ -1,0 +1,27 @@
+{
+  "experiment": "EXP-076",
+  "timestamp": "2026-04-02T03:13:44Z",
+  "hypothesis": "circadian features improve dawn MAE >5%",
+  "base": {
+    "overall": 19.32314676471922,
+    "dawn_4_8": 19.480394584291123,
+    "day_8_20": 18.997841819444115,
+    "night_20_4": 19.731446061090185,
+    "dawn_n": 1088,
+    "day_n": 3237,
+    "night_n": 2160
+  },
+  "circadian": {
+    "overall": 20.576402271097223,
+    "dawn_4_8": 19.915676372892715,
+    "day_8_20": 20.502179704553594,
+    "night_20_4": 21.020443116073256,
+    "dawn_n": 1088,
+    "day_n": 3237,
+    "night_n": 2160
+  },
+  "dawn_improvement_pct": -2.2344608407090556,
+  "overall_improvement_pct": -6.485773366200558,
+  "success": false,
+  "elapsed_seconds": 584.8
+}

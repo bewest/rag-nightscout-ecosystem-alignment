@@ -1,0 +1,54 @@
+{
+  "experiment": "EXP-079",
+  "timestamp": "2026-04-02T03:23:42Z",
+  "hypothesis": "trajectory features F1 > 0.75",
+  "f1_macro": 0.5753136912849544,
+  "per_class": {
+    "correction_bolus": {
+      "f1": 0.5830845771144278,
+      "support": 489.0
+    },
+    "hyper_risk": {
+      "f1": 0.8237347294938918,
+      "support": 292.0
+    },
+    "hypo_risk": {
+      "f1": 0.6784660766961652,
+      "support": 195.0
+    },
+    "meal_bolus": {
+      "f1": 0.04878048780487805,
+      "support": 38.0
+    },
+    "normal": {
+      "f1": 0.7425025853154085,
+      "support": 932.0
+    }
+  },
+  "feature_importance": {
+    "start_gluc": 0.1333361119031906,
+    "end_gluc": 0.11646324396133423,
+    "min_gluc": 0.07899434864521027,
+    "max_gluc": 0.24996893107891083,
+    "mean_gluc": 0.05196060240268707,
+    "slope": 0.0413505919277668,
+    "curvature": 0.05220206081867218,
+    "time_below_70": 0.0,
+    "time_above_180": 0.057242367416620255,
+    "nadir_step": 0.05440066009759903,
+    "peak_step": 0.0432627871632576,
+    "gluc_range": 0.035604819655418396,
+    "reversals": 0.03399788960814476,
+    "net_delta": 0.051215555518865585
+  },
+  "n_classes": 5,
+  "class_distribution": {
+    "correction_bolus": 1683,
+    "hyper_risk": 988,
+    "hypo_risk": 606,
+    "meal_bolus": 133,
+    "normal": 3075
+  },
+  "success": false,
+  "elapsed_seconds": 260.3
+}
