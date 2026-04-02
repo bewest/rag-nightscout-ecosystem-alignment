@@ -268,13 +268,78 @@ relevant edge cases where model accuracy matters most.
 
 ---
 
-## 8. Recommendations
+## 8. Caveat: What "Beats Loop" Actually Means
+
+Throughout this report, "Loop MAE" refers to the **predicted glucose curve** that
+Loop stored in `devicestatus.json` at a given moment, compared against what actually
+happened 60 minutes later. When we say a model "beats Loop," we mean our hindcast
+prediction was closer to actual glucose than Loop's prediction was — in hindsight.
+
+This comparison is informative but requires careful interpretation:
+
+### 8.1 Loop Is a Controller, Not a Forecaster
+
+Loop's predictions feed its **dosing algorithm**. Loop predicts future glucose *in
+order to decide how much insulin to deliver* — and then its own actions change the
+future it predicted. A Loop prediction that looks "wrong" in hindsight may have been
+correct *before Loop acted on it*. This is the fundamental observer-effect problem
+in closed-loop control: successful control makes the controller's predictions appear
+inaccurate.
+
+### 8.2 Our Models See Loop's Control Effects
+
+Our training data includes the outcomes of Loop's decisions — basal rate adjustments,
+correction boluses, suspend events. The ML models implicitly learn patterns like
+"when IOB is high and rising, glucose tends to come down" — which is partly a
+statement about Loop's control behavior, not just physiology. We are predicting the
+*controlled system*, while Loop is predicting the *uncontrolled trajectory* in order
+to decide its next action.
+
+### 8.3 The Fair Physics Comparison
+
+| Model | Avg MAE | What It Tells Us |
+|-------|:-------:|-----------------|
+| Our physics alone | 156.0 mg/dL | Simple IOB/COB integration + liver + circadian |
+| **Loop's physics** | **40.9 mg/dL** | Patient-tuned DIA, insulin activity curves, retrospective correction |
+| Our physics + ML | 26.5 mg/dL | ML corrects systematic errors in our simpler physics |
+
+Loop's physics engine is substantially more sophisticated than ours — it uses
+patient-specific Duration of Insulin Action (DIA) curves, proper insulin activity
+models (exponential decay), dynamic carb absorption, and retrospective correction.
+Our enhanced physics uses a much simpler forward integration with fixed-coefficient
+liver and circadian models.
+
+The ML residual layer's value is **compensating for our simpler physics baseline**,
+not outperforming Loop's physics per se. A future direction would be to train the
+ML residual on top of Loop's own physics predictions, which could yield substantially
+better results.
+
+### 8.4 When the Comparison Is Valid
+
+The comparison is most meaningful for:
+
+- **Volatile windows** (meals, corrections) where Loop's predictions diverge most
+  from outcomes — these are the windows where better prediction could improve control
+- **Reconstruction quality** — how well the model captures what actually happened,
+  regardless of what was predicted
+- **Counterfactual reasoning** — "what if" scenarios that Loop doesn't attempt
+
+The comparison is least meaningful for:
+- **Stable periods** where Loop successfully controlled glucose to a flat line —
+  Loop's predictions may look "wrong" precisely because its control was effective
+- **Absolute MAE rankings** — a lower MAE doesn't mean a better controller
+
+---
+
+## 9. Recommendations
 
 ### For Production Deployment
 
-1. **Use Grouped+Physics as the primary forecasting model**. Its stability across
-   patients (std 0.3 mg/dL) makes it the safest choice. Deploy with enhanced physics
-   (liver + circadian) and patient-specific ISF/CR from profile.
+1. **Use Grouped+Physics as the primary forecasting model**. Consider training the
+   ML residual on top of Loop's own predicted curves rather than our simple physics,
+   which could combine Loop's superior physics with ML error correction. Its stability
+   across patients (std 0.3 mg/dL) makes it the safest choice. Deploy with enhanced
+   physics (liver + circadian) and patient-specific ISF/CR from profile.
 
 2. **Do not deploy Conditioned Transformer for dose guidance** until the paradoxical
    dose-response is resolved. The model's counterfactual frame is useful for
@@ -286,19 +351,23 @@ relevant edge cases where model accuracy matters most.
 
 ### For Future Research
 
-4. **Priority: Fix the dose-response paradox** in the Conditioned Transformer.
+4. **Train ML residual on Loop's own predictions** — use Loop's predicted glucose
+   curve from `devicestatus.json` as the physics baseline instead of our simple
+   forward integration. This would give the ML layer a much better starting point.
+
+5. **Priority: Fix the dose-response paradox** in the Conditioned Transformer.
    Options: causal regularization, physics-constrained loss, or training on simulator
    data with randomized doses.
 
-5. **Increase hindcast scan depth** — 5 windows per patient is a small sample.
+6. **Increase hindcast scan depth** — 5 windows per patient is a small sample.
    A full scan across all verification data would provide statistically robust
    metrics with confidence intervals.
 
-6. **Test longer horizons** — all results here use 60-minute forecast windows.
+7. **Test longer horizons** — all results here use 60-minute forecast windows.
    EXP-018 showed horizon-dependent performance (AE better at 60/120 min,
    Grouped better at 180 min). Production use cases may need 2–3 hour predictions.
 
-7. **Explore ensemble methods** — EXP-017 showed 5-seed ensemble reduces MAE to
+8. **Explore ensemble methods** — EXP-017 showed 5-seed ensemble reduces MAE to
    0.30 in residual space. A Grouped+Conditioned ensemble could combine the
    stability of Grouped with the patient-specific adaptability of Conditioned.
 
