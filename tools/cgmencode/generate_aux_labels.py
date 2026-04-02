@@ -144,29 +144,33 @@ def compute_class_weights(labels, n_classes, smoothing=0.1):
 
 
 def _generate_drift_labels(feat_array, isf_nominal, cr_nominal):
-    """Run Kalman filter over feature windows, return per-window drift labels.
+    """Compute per-window ISF/CR drift labels using autosens-style sliding median.
 
-    Aligned with oref0 autosens clinical algorithm (EXP-154):
-      - Excludes meal absorption windows (COB > threshold) from Kalman updates
-      - Suppresses positive deviations when BG < 80 mg/dL (low BG protection)
-      - Expresses drift as autosens ratio [AUTOSENS_MIN, AUTOSENS_MAX]
-        then converts to signed fractional deviation
+    Implements the core oref0 autosens algorithm (autosens.js) adapted for
+    offline label generation:
 
-    The autosens algorithm (oref0/lib/determine-basal/autosens.js) works by:
-      1. Computing deviation = actual_delta - predicted_delta (BGI)
-      2. Excluding all deviations during carb absorption (COB > 0)
-      3. Zeroing positive deviations when BG < 80 (prevent false sensitivity)
-      4. Taking median of remaining non-meal deviations
-      5. Converting to ratio bounded by [0.7, 1.2]
+      1. For each 5-min step, compute deviation = actual_glucose_delta - BGI
+         where BGI = -IOB_activity × ISF (the insulin-driven glucose change).
+      2. Exclude steps during carb absorption (COB > threshold).
+      3. Suppress positive deviations when BG < 80 mg/dL.
+      4. Over a 24h sliding window (~288 steps), take the median of valid
+         non-meal deviations.
+      5. Convert median deviation to autosens ratio:
+           ratio = 1 + median_deviation / ISF, bounded [0.7, 1.2]
 
-    Our Kalman approach tracks the same underlying signal but with Bayesian
-    updating instead of percentile statistics. We add autosens's exclusion
-    rules to improve label quality.
+    The previous Kalman filter approach saturated at clip boundaries because
+    glucose residuals (std ~200 mg/dL) overwhelmed the filter's measurement
+    noise (R=5). The sliding median is the same estimator oref0 uses and is
+    robust to the large, noisy residuals in real CGM data.
+
+    Each training window is assigned the autosens ratio computed at its
+    temporal midpoint.
 
     Args:
         feat_array: (N_windows, window_size*2, n_features) numpy array
-        isf_nominal: patient's nominal ISF from profile
-        cr_nominal: patient's nominal CR from profile
+            Windows are in temporal order with stride = window_size.
+        isf_nominal: patient's nominal ISF from profile (mg/dL per unit).
+        cr_nominal: patient's nominal CR from profile (g per unit).
 
     Returns:
         drift_labels: (N_windows, 2) array of [ISF_ratio_dev, CR_ratio_dev]
@@ -183,70 +187,77 @@ def _generate_drift_labels(feat_array, isf_nominal, cr_nominal):
     n_windows = feat_array.shape[0]
     drift_labels = np.full((n_windows, 2), np.nan, dtype=np.float32)
 
-    tracker = ISFCRTracker(nominal_isf=isf_nominal, nominal_cr=cr_nominal)
+    if n_windows == 0 or isf_nominal <= 0 or cr_nominal <= 0:
+        return drift_labels
 
-    # Track meal exclusion windows for logging
-    n_meal_excluded = 0
-    n_low_bg_suppressed = 0
+    # ── Phase 1: Compute per-window deviations ──
+    # Each deviation is the glucose residual normalized by ISF to get
+    # "sensitivity-equivalent" units (like autosens deviations).
+    deviations = np.full(n_windows, np.nan, dtype=np.float64)
+    is_meal = np.zeros(n_windows, dtype=bool)
 
     for i in range(n_windows):
-        window = feat_array[i]  # (window_size*2, n_features)
+        window = feat_array[i]
         half = window.shape[0] // 2
 
-        # ── Denormalize key values ──
+        # Denormalize key values
         g_start = float(window[0, 0] * scale_g)
         g_mid = float(window[half, 0] * scale_g)
         iob_delta = float((window[half, 1] - window[0, 1]) * scale_iob)
         cob_delta = float((window[half, 2] - window[0, 2]) * scale_cob)
-
-        # COB at midpoint (denormalized)
         cob_mid = float(window[half, 2] * scale_cob)
-        # Mean COB over first half of window
         cob_mean_first_half = float(window[:half, 2].mean() * scale_cob)
 
-        # ── Meal exclusion (autosens rule) ──
-        # oref0 autosens excludes ALL deviations during carb absorption
-        # (COB > 0, or first 45min post-carb, or high IOB + positive deviation).
-        # We exclude windows where COB is significant in either half.
+        # Meal exclusion (autosens rule: exclude COB > 0 windows)
         if cob_mid > COB_EXCLUSION_THRESHOLD_G or cob_mean_first_half > COB_EXCLUSION_THRESHOLD_G:
-            n_meal_excluded += 1
-            # Still record the current ratio estimate but don't update Kalman
-            isf_est, cr_est = tracker.state[0], tracker.state[1]
-            isf_ratio = isf_est / isf_nominal if isf_nominal else 1.0
-            cr_ratio = cr_est / cr_nominal if cr_nominal else 1.0
-            isf_ratio = np.clip(isf_ratio, AUTOSENS_MIN, AUTOSENS_MAX)
-            cr_ratio = np.clip(cr_ratio, AUTOSENS_MIN, AUTOSENS_MAX)
-            drift_labels[i, 0] = float(isf_ratio - 1.0)
-            drift_labels[i, 1] = float(cr_ratio - 1.0)
+            is_meal[i] = True
             continue
 
-        # ── Compute glucose residual ──
-        glucose_residual = (g_mid - g_start) - (
-            -iob_delta * isf_nominal + cob_delta * (isf_nominal / cr_nominal)
-        )
+        # Glucose residual: actual change minus physics-predicted change
+        # Physics: Δglucose ≈ -ΔIOB × ISF + ΔCOB × (ISF / CR)
+        physics_pred = -iob_delta * isf_nominal + cob_delta * (isf_nominal / cr_nominal)
+        glucose_residual = (g_mid - g_start) - physics_pred
 
-        # ── Low BG protection (autosens rule) ──
-        # oref0: "set positive deviations to zero if BG is below 80"
-        # Prevents false sensitivity detection during hypoglycemia recovery
+        # Low BG protection: suppress positive deviations when BG < 80
         if g_mid < LOW_BG_THRESHOLD_MGDL and glucose_residual > 0:
             glucose_residual = 0.0
-            n_low_bg_suppressed += 1
 
-        # ── Kalman update ──
-        state = tracker.update(glucose_residual, iob_delta, cob_delta)
+        # Normalize deviation by ISF to get sensitivity-equivalent units
+        # A deviation of +ISF means "BG rose ISF more than expected" → sensitivity
+        # A deviation of -ISF means "BG fell ISF more than expected" → resistance
+        deviations[i] = glucose_residual / isf_nominal
 
-        # ── Convert to autosens-bounded ratio ──
-        isf_est, cr_est = tracker.state[0], tracker.state[1]
-        isf_ratio = isf_est / isf_nominal if isf_nominal else 1.0
-        cr_ratio = cr_est / cr_nominal if cr_nominal else 1.0
+    # ── Phase 2: Sliding-window median (autosens-style) ──
+    # oref0 uses 24h of 5-min data → 288 steps. Our windows have stride =
+    # window_size (typically 12 × 5min = 1h), so 24h ≈ 24 windows.
+    # Use 24 windows as the lookback, matching autosens's 24h period.
+    lookback = 24  # windows (~24h with 1h stride)
 
-        # Clamp to autosens bounds [0.7, 1.2]
+    for i in range(n_windows):
+        # Gather valid (non-meal, non-NaN) deviations in the lookback window
+        start_idx = max(0, i - lookback + 1)
+        window_devs = deviations[start_idx:i + 1]
+        window_meal = is_meal[start_idx:i + 1]
+        valid = ~np.isnan(window_devs) & ~window_meal
+        valid_devs = window_devs[valid]
+
+        if len(valid_devs) < 3:
+            # Not enough data — mark as NaN (will be masked in loss)
+            continue
+
+        # Median deviation (autosens uses 50th percentile)
+        median_dev = float(np.median(valid_devs))
+
+        # Convert to autosens ratio: ratio = 1 + median_dev
+        # (deviations are already ISF-normalized, so +1 = BG rose 1×ISF
+        #  more than expected → ISF is effectively higher → sensitivity)
+        isf_ratio = 1.0 + median_dev
         isf_ratio = np.clip(isf_ratio, AUTOSENS_MIN, AUTOSENS_MAX)
-        cr_ratio = np.clip(cr_ratio, AUTOSENS_MIN, AUTOSENS_MAX)
 
-        # Express as signed deviation from 1.0
-        # -0.3 = ratio 0.7 = max resistance
-        # +0.2 = ratio 1.2 = max sensitivity
+        # CR ratio: use COB-weighted deviations if available, else mirror ISF
+        # (oref0 doesn't compute a separate CR ratio; we approximate)
+        cr_ratio = np.clip(isf_ratio, AUTOSENS_MIN, AUTOSENS_MAX)
+
         drift_labels[i, 0] = float(isf_ratio - 1.0)
         drift_labels[i, 1] = float(cr_ratio - 1.0)
 

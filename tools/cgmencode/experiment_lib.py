@@ -346,8 +346,19 @@ def resolve_patient_paths(patients_dir=None, real_data=None):
     return []
 
 
+MMOL_TO_MGDL = 18.0182
+
+
 def load_patient_profile(data_path):
-    """Load ISF/CR from profile.json → (isf, cr)."""
+    """Load ISF/CR from profile.json → (isf_mgdl, cr).
+
+    ISF is always returned in mg/dL per unit. If the Nightscout profile
+    uses mmol/L display units (``store.Default.units == "mmol/L"``), the
+    stored ISF value is converted by multiplying by 18.0182.
+
+    CR (grams of carbs per unit insulin) is unit-agnostic and returned
+    as-is regardless of display units.
+    """
     for candidate in [data_path, os.path.dirname(data_path.rstrip('/'))]:
         profile_path = os.path.join(candidate, 'profile.json')
         if os.path.exists(profile_path):
@@ -360,6 +371,14 @@ def load_patient_profile(data_path):
                 cr_list = default.get('carbratio', [{}])
                 isf = float(sens[0].get('value', 40.0)) if sens else 40.0
                 cr = float(cr_list[0].get('value', 10.0)) if cr_list else 10.0
+
+                # Convert ISF to mg/dL if profile uses mmol/L display units.
+                # Nightscout SGV values are always stored in mg/dL, so ISF
+                # must match for physics model calculations to be correct.
+                units = default.get('units', 'mg/dL')
+                if units and 'mmol' in units.lower():
+                    isf = isf * MMOL_TO_MGDL
+
                 if isf != 40.0 or cr != 10.0:
                     return isf, cr
     return 40.0, 10.0
