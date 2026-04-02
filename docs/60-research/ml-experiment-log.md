@@ -1122,3 +1122,139 @@ Note: Absolute MAE values are higher in EXP-018b because sweep-uva-250 has wider
 **Implication for L4**: Use the bolus detector (AUROC 0.90) as a "decision trigger" — when the model predicts a bolus should happen, feed that to the Conditioned Transformer (EXP-021, 15.08 MAE) to predict the glucose outcome of different doses.
 
 **Results**: `externals/experiments/exp025_xgboost_events.json`, `exp025b_xgboost_cgm_only.json`
+
+---
+
+## Agentic Insulin Delivery Experiment Slate (EXP-026 – EXP-033)
+
+**Context**: Infrastructure for agentic insulin delivery is now complete (6 commits, 151 tests, 57 API symbols). The framework has: 16-feature extended schema, XGBoost event classifier, MC-Dropout uncertainty, Kalman ISF/CR tracker, HierarchicalForecaster, ScenarioSimulator, BacktestEngine. **No models are trained on the new capabilities yet.** This experiment slate validates each component.
+
+### EXP-026: Extended 16-Feature GroupedEncoder (2026-04-02)
+
+**Goal**: Determine whether context features (day-of-week, override state, glucose dynamics, time-since-event) improve forecast quality beyond the 8-feature baseline.
+
+**Setup**:
+- Engine: Real patient data (10 patients)
+- Model: CGMGroupedEncoder(input_dim=16) with 8→16 weight transfer
+- Extended features: day_sin/cos, override_active/type, glucose_roc/accel, time_since_bolus/carb
+- Training: 50 epochs, batch 32, lr 5e-4 (lower for fine-tuning), patience 15
+- Comparison: 8-feature baseline trained on same data
+
+**Success Criteria**: >5% improvement in causal forecast MSE over 8-feature baseline
+
+**Runner**: `python3 -m tools.cgmencode.run_experiment extended-features --patients-dir externals/ns-data/patients --real-data externals/ns-data/patients/a/training`
+
+---
+
+### EXP-027: XGBoost Event Classifier on Real Data (2026-04-02)
+
+**Goal**: Train event classifier on pre-event windows and measure detection accuracy at multiple lead times.
+
+**Setup**:
+- Pipeline: `build_classifier_dataset()` → `train_event_classifier()` with hyperparameter sweep
+- Sweep: max_depth ∈ {4,6,8,10}, n_estimators ∈ {100,200,300,500}, lr ∈ {0.01,0.05,0.1}
+- Labels: 9-class EXTENDED_LABEL_MAP (none, meal, correction_bolus, override, eating_soon, exercise, sleep, sick, custom_override)
+- Lead times: 15, 30, 45, 60 min ahead
+
+**Success Criteria**: Macro F1 > 0.5, meal class F1 > 0.7, overall AUROC > 0.85
+
+**Runner**: `python3 -m tools.cgmencode.run_experiment event-classifier --patients-dir externals/ns-data/patients --real-data externals/ns-data/patients/a/training`
+
+**Builds on**: EXP-025 (AUROC 0.897 bolus, 0.724 meal, 0.902 any-event with CGM-only features)
+
+---
+
+### EXP-028: Multi-Horizon Coarse-Grid Training (2026-04-02)
+
+**Goal**: Train separate models at 5-min/15-min/60-min resolution for HierarchicalForecaster.
+
+**Setup**:
+- Resolutions: 1hr@5min (12 steps), 6hr@15min (24 steps), 3day@1hr (72 steps)
+- Data: `downsample_grid()` + `build_multihorizon_windows()` from 10 patients
+- Model: CGMGroupedEncoder at each resolution
+- Comparison: Persistence baseline at each horizon
+
+**Success Criteria**: >20% over persistence at 6hr, >10% at 3-day
+
+**Runner**: `python3 -m tools.cgmencode.run_experiment multihorizon --patients-dir externals/ns-data/patients --real-data externals/ns-data/patients/a/training`
+
+---
+
+### EXP-029: MC-Dropout Uncertainty Calibration (2026-04-02)
+
+**Goal**: Calibrate prediction intervals and validate uncertainty estimates.
+
+**Setup**:
+- Model: Best existing grouped checkpoint (0.43 MAE)
+- n_samples sweep: 10, 20, 50, 100 forward passes
+- Calibration: Does 95% PI contain 95% of observations?
+- Metrics: Calibration gap, sharpness (interval width), error-uncertainty correlation, P(hypo) reliability
+
+**Success Criteria**: 95% PI coverage within ±5% of target, positive error-uncertainty correlation (r > 0.3)
+
+**Runner**: `python3 -m tools.cgmencode.run_experiment uncertainty-calibration --patients-dir externals/ns-data/patients --real-data externals/ns-data/patients/a/training`
+
+---
+
+### EXP-030: ISF/CR Drift Tracking Retrospective (2026-04-02)
+
+**Goal**: Validate Kalman ISF/CR tracker on real patient data over 85-day periods.
+
+**Setup**:
+- Tracker: `run_retrospective_tracking()` on 10 patients
+- Profile: Nominal ISF/CR from each patient's profile.json
+- Detector: DriftDetector classification (stable/resistance/sensitivity/carb_change)
+
+**Success Criteria**: Detects meaningful drift in >50% of patients; classifications agree with clinical intuition
+
+**Runner**: `python3 -m tools.cgmencode.run_experiment isf-cr-tracking --patients-dir externals/ns-data/patients --real-data externals/ns-data/patients/a/training`
+
+---
+
+### EXP-031: Scenario Simulation Validation (2026-04-02)
+
+**Goal**: Validate "what if" scenario predictions against actual meal/exercise outcomes.
+
+**Setup**:
+- Scenarios: meal_small/medium/large, exercise_light/moderate
+- Validation: Compare predicted TIR delta to windows with actual meals vs without
+- Model: Best existing grouped checkpoint
+
+**Success Criteria**: Correct directional impact for >80% of scenarios
+
+**Runner**: `python3 -m tools.cgmencode.run_experiment scenario-validation --patients-dir externals/ns-data/patients --real-data externals/ns-data/patients/a/training`
+
+---
+
+### EXP-032: End-to-End Backtest (2026-04-02)
+
+**Goal**: Full pipeline validation with override suggestions on verification data.
+
+**Depends on**: EXP-026, EXP-027, EXP-028
+
+**Setup**:
+- Pipeline: BacktestEngine with HierarchicalForecaster + event classifier
+- Data: Verification splits from 3 patients
+- Metrics: Suggestion P/R/F1, mean lead time, clinical impact (TIR delta)
+
+**Success Criteria**: Suggestion precision > 0.6, mean lead time > 20 min
+
+**Runner**: `python3 -m tools.cgmencode.run_experiment backtest --patients-dir externals/ns-data/patients --real-data externals/ns-data/patients/a/training`
+
+---
+
+### EXP-033: 8→16 Feature Transfer Learning Strategies (2026-04-02)
+
+**Goal**: Find best strategy for bootstrapping 16-feature models from 8-feature checkpoints.
+
+**Depends on**: EXP-026
+
+**Setup**:
+- Strategy A: 16-feature from scratch (lr=1e-3)
+- Strategy B: Transfer 8f weights, train all params (lr=5e-4)
+- Strategy C: Transfer 8f weights, freeze core, train only context layers (lr=1e-3)
+- Data: 16-feature windows from 10 patients
+
+**Success Criteria**: Transfer reduces training time >30% OR improves forecast MSE >5%
+
+**Runner**: `python3 -m tools.cgmencode.run_experiment feature-transfer --patients-dir externals/ns-data/patients --real-data externals/ns-data/patients/a/training`

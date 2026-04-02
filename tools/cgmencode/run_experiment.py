@@ -4067,23 +4067,55 @@ def run_multiseed_conditioned(args):
 
 
 
+def _build_legacy_registry():
+    """Map legacy experiment names to local functions."""
+    return {
+        'transfer': run_transfer,
+        'conditioned': run_conditioned,
+        'cond-transfer': run_conditioned_transfer,
+        'residual': run_residual,
+        'physics-compare': run_physics_comparison,
+        'residual-transfer': run_residual_transfer,
+        'longer-horizons': run_longer_horizons,
+        'walkforward': run_walkforward,
+        'grouped-benchmark': run_grouped_benchmark,
+        'grouped-transfer': run_grouped_transfer,
+        'causal-longer-horizons': run_causal_longer_horizons,
+        'multiseed': run_multiseed_robustness,
+        'walkforward-transfer': run_walkforward_grouped_transfer,
+        'multiseed-transfer': run_multiseed_transfer,
+        'diffusion-benchmark': run_diffusion_benchmark,
+        'seed-ensemble': run_seed_ensemble,
+        'transfer-horizons': run_transfer_longer_horizons,
+        'multipatient-cond-transfer': run_multipatient_cond_transfer,
+        'multipatient-diffusion': run_multipatient_diffusion,
+        'multiseed-conditioned': run_multiseed_conditioned,
+    }
+
+
+def _build_full_registry():
+    """Merge legacy + agentic experiment registries."""
+    registry = _build_legacy_registry()
+    # Import agentic experiments (experiments_agentic.py)
+    try:
+        from . import experiments_agentic as _agentic
+        for key, func_name in _agentic.REGISTRY.items():
+            registry[key] = getattr(_agentic, func_name)
+    except ImportError:
+        pass
+    return registry
+
+
 def main():
+    registry = _build_full_registry()
+    all_choices = sorted(registry.keys()) + ['all']
+
     parser = argparse.ArgumentParser(
         description='Run cgmencode experiments',
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('experiment',
-                        choices=['transfer', 'conditioned', 'cond-transfer',
-                                 'residual', 'physics-compare',
-                                 'residual-transfer', 'longer-horizons',
-                                 'walkforward', 'grouped-benchmark',
-                                 'grouped-transfer', 'causal-longer-horizons',
-                                 'multiseed', 'walkforward-transfer',
-                                 'multiseed-transfer', 'diffusion-benchmark',
-                                 'seed-ensemble', 'transfer-horizons',
-                                 'multipatient-cond-transfer',
-                                 'multipatient-diffusion',
-                                 'multiseed-conditioned',
-                                 'all'],
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='Agentic experiments (EXP-026+) live in experiments_agentic.py\n'
+               'Legacy experiments (EXP-001-025) live in this file.')
+    parser.add_argument('experiment', choices=all_choices,
                         help='Which experiment to run')
     parser.add_argument('--real-data', required=True,
                         help='Path to Nightscout JSON directory')
@@ -4104,53 +4136,25 @@ def main():
     add_device_arg(parser)
     args = parser.parse_args()
 
-    # Resolve compute device and store for all experiment functions
+    # Resolve compute device — shared with experiment_lib
     args.resolved_device = resolve_device(args.device)
     set_default_device(args.resolved_device)
+    from . import experiment_lib as _lib
+    _lib.set_device(args.resolved_device)
     print(f'Device: {args.resolved_device}')
 
     os.makedirs(args.output_dir, exist_ok=True)
 
-    if args.experiment in ('transfer', 'all'):
-        run_transfer(args)
-    if args.experiment in ('conditioned', 'all'):
-        run_conditioned(args)
-    if args.experiment in ('cond-transfer', 'all'):
-        run_conditioned_transfer(args)
-    if args.experiment in ('residual', 'all'):
-        run_residual(args)
-    if args.experiment in ('physics-compare', 'all'):
-        run_physics_comparison(args)
-    if args.experiment in ('residual-transfer', 'all'):
-        run_residual_transfer(args)
-    if args.experiment in ('longer-horizons', 'all'):
-        run_longer_horizons(args)
-    if args.experiment in ('walkforward', 'all'):
-        run_walkforward(args)
-    if args.experiment in ('grouped-benchmark', 'all'):
-        run_grouped_benchmark(args)
-    if args.experiment in ('grouped-transfer', 'all'):
-        run_grouped_transfer(args)
-    if args.experiment in ('causal-longer-horizons', 'all'):
-        run_causal_longer_horizons(args)
-    if args.experiment in ('multiseed', 'all'):
-        run_multiseed_robustness(args)
-    if args.experiment in ('walkforward-transfer', 'all'):
-        run_walkforward_grouped_transfer(args)
-    if args.experiment in ('multiseed-transfer', 'all'):
-        run_multiseed_transfer(args)
-    if args.experiment in ('diffusion-benchmark', 'all'):
-        run_diffusion_benchmark(args)
-    if args.experiment in ('seed-ensemble', 'all'):
-        run_seed_ensemble(args)
-    if args.experiment in ('transfer-horizons', 'all'):
-        run_transfer_longer_horizons(args)
-    if args.experiment == 'multipatient-cond-transfer':
-        run_multipatient_cond_transfer(args)
-    if args.experiment == 'multipatient-diffusion':
-        run_multipatient_diffusion(args)
-    if args.experiment == 'multiseed-conditioned':
-        run_multiseed_conditioned(args)
+    exp = args.experiment
+    if exp == 'all':
+        # Run legacy experiments only (agentic have dependencies)
+        for name, func in _build_legacy_registry().items():
+            func(args)
+    elif exp in registry:
+        registry[exp](args)
+    else:
+        print(f'Unknown experiment: {exp}')
+        sys.exit(1)
 
 
 if __name__ == '__main__':
