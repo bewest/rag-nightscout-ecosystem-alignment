@@ -1,0 +1,15 @@
+{
+  "experiment": "EXP-082",
+  "timestamp": "2026-04-02T03:48:00Z",
+  "hypothesis": "direct TTE regression hypo MAE < 25 min",
+  "hypo_n_events": 606,
+  "hyper_n_events": 2687,
+  "direct_hypo_mae_min": 20.564064979553223,
+  "direct_hyper_mae_min": 8.405162692070007,
+  "direct_hypo_detect": 0.6353135313531353,
+  "direct_hyper_detect": 0.9196129512467436,
+  "forecast_hypo_mae_min": 40.2,
+  "forecast_hyper_mae_min": 6.8,
+  "success": true,
+  "elapsed_seconds": 194.8
+}

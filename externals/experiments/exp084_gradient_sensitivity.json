@@ -1,0 +1,16 @@
+{
+  "experiment": "EXP-084",
+  "timestamp": "2026-04-02T03:57:11Z",
+  "hypothesis": "gradient sensitivity corr > 0.3",
+  "bolus_sensitivity_mean": -22.543894076906145,
+  "carb_sensitivity_mean": 2.0551480215862394,
+  "iob_sensitivity_mean": -7.798554916149005,
+  "bolus_delta_correlation": 0.10375981343244589,
+  "carb_delta_correlation": -0.04094011730913726,
+  "estimated_isf_mgdl_per_u": 22.543894076906145,
+  "n_bolus_windows": 959,
+  "n_carb_windows": 306,
+  "n_total": 2000,
+  "success": false,
+  "elapsed_seconds": 328.2
+}

@@ -1,0 +1,13 @@
+{
+  "experiment": "EXP-083",
+  "timestamp": "2026-04-02T03:51:25Z",
+  "hypothesis": "chained 3hr MAE < 30 mg/dL",
+  "single_1hr_mae": 19.32447787452649,
+  "chained_2hr_mae": 64.4229235785201,
+  "chained_3hr_mae": 57.27314806315532,
+  "n_eval": 6482,
+  "persist_2hr": 73.37024067596535,
+  "persist_3hr": 72.56562541950746,
+  "success": false,
+  "elapsed_seconds": 336.9
+}

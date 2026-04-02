@@ -1,0 +1,33 @@
+{
+  "experiment": "EXP-085",
+  "timestamp": "2026-04-02T04:02:47Z",
+  "hypothesis": "stacked ensemble F1 > 0.85",
+  "xgb_f1": 0.5812383594076584,
+  "nn_f1": 0.5546335388994843,
+  "stacked_f1": 0.5749141795063195,
+  "per_class": {
+    "correction_bolus": {
+      "f1": 0.536095035028937,
+      "support": 1683.0
+    },
+    "hyper_risk": {
+      "f1": 0.7757059136920618,
+      "support": 988.0
+    },
+    "hypo_risk": {
+      "f1": 0.6151111111111112,
+      "support": 606.0
+    },
+    "meal_bolus": {
+      "f1": 0.2146341463414634,
+      "support": 133.0
+    },
+    "normal": {
+      "f1": 0.7330246913580247,
+      "support": 3075.0
+    }
+  },
+  "improvement_over_best": -0.006324179901338933,
+  "success": false,
+  "elapsed_seconds": 132.4
+}
