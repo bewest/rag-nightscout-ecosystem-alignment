@@ -1,0 +1,77 @@
+{
+  "experiment": "EXP-070",
+  "timestamp": "2026-04-02T02:32:24Z",
+  "hypothesis": "timestep-conformal backtest prec>90%",
+  "global": {
+    "f": {
+      "n_suggestions": 37,
+      "n_correct": 35,
+      "precision": 0.9459459459459459
+    },
+    "g": {
+      "n_suggestions": 31,
+      "n_correct": 30,
+      "precision": 0.967741935483871
+    },
+    "h": {
+      "n_suggestions": 4,
+      "n_correct": 4,
+      "precision": 1.0
+    },
+    "i": {
+      "n_suggestions": 40,
+      "n_correct": 40,
+      "precision": 1.0
+    },
+    "j": {
+      "n_suggestions": 0,
+      "n_correct": 0,
+      "precision": 0
+    }
+  },
+  "timestep": {
+    "f": {
+      "n_suggestions": 32,
+      "n_correct": 30,
+      "precision": 0.9375
+    },
+    "g": {
+      "n_suggestions": 27,
+      "n_correct": 26,
+      "precision": 0.9629629629629629
+    },
+    "h": {
+      "n_suggestions": 4,
+      "n_correct": 4,
+      "precision": 1.0
+    },
+    "i": {
+      "n_suggestions": 31,
+      "n_correct": 31,
+      "precision": 1.0
+    },
+    "j": {
+      "n_suggestions": 1,
+      "n_correct": 1,
+      "precision": 1.0
+    }
+  },
+  "timestep_precision": 0.968421052631579,
+  "timestep_total": 95,
+  "thresholds": [
+    11.543327666456191,
+    17.119360957216465,
+    20.453475083722847,
+    23.586934558266524,
+    25.90765461054,
+    28.409723728760838,
+    29.868855717655304,
+    32.196544677835035,
+    34.44957634987183,
+    35.4110502510427,
+    37.08043184159809,
+    38.70257851305472
+  ],
+  "success": true,
+  "elapsed_seconds": 48.9
+}

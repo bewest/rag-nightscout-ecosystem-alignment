@@ -1,0 +1,44 @@
+{
+  "experiment": "EXP-072",
+  "timestamp": "2026-04-02T02:33:22Z",
+  "hypothesis": "E2E pipeline: actionable suggestions",
+  "total_suggestions": 674,
+  "correct": 671,
+  "precision": 0.9955489614243324,
+  "high_conf_total": 315,
+  "high_conf_correct": 315,
+  "high_conf_precision": 1.0,
+  "by_type": {
+    "correction_bolus": {
+      "total": 260,
+      "correct": 260,
+      "precision": 1.0
+    },
+    "consider_correction": {
+      "total": 359,
+      "correct": 356,
+      "precision": 0.9916434540389972
+    },
+    "eat_carbs": {
+      "total": 55,
+      "correct": 55,
+      "precision": 1.0
+    }
+  },
+  "thresholds": [
+    11.539466094970704,
+    17.114907836914064,
+    20.44287033081055,
+    23.570483398437503,
+    25.87279052734376,
+    28.368963623046884,
+    29.76928405761721,
+    32.17125854492188,
+    34.3928924560547,
+    35.381159210205084,
+    37.07015533447266,
+    38.67130737304688
+  ],
+  "success": true,
+  "elapsed_seconds": 49.2
+}

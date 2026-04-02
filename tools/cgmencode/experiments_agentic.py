@@ -92,6 +92,13 @@ REGISTRY = {
     'timestep-conformal':      'run_timestep_conformal',     # EXP-065
     'patient-conformal':       'run_patient_conformal',      # EXP-066
     'multitask-encoder':       'run_multitask_encoder',      # EXP-067
+    # Round 7 — multi-task refinement, production pipeline
+    'multitask-balanced':      'run_multitask_balanced',     # EXP-068
+    'combined-all-classifier': 'run_combined_all_classifier', # EXP-069
+    'timestep-backtest':       'run_timestep_backtest',      # EXP-070
+    'multitask-finetune':      'run_multitask_finetune',     # EXP-071
+    'production-pipeline':     'run_production_pipeline',    # EXP-072
+    'action-recommendation':   'run_action_recommendation',  # EXP-073
 }
 
 
@@ -3995,3 +4002,922 @@ def run_multitask_encoder(args):
     ctx.log(f'Forecast MAE: {mae:.1f} mg/dL')
     ctx.log(f'Classifier F1: {f1:.3f}')
     return ctx.save('exp067_multitask.json')
+
+
+# ════════════════════════════════════════════════════════════════════
+# ROUND 7 — Multi-Task Refinement, Production Pipeline
+# ════════════════════════════════════════════════════════════════════
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-068: Balanced Multi-Task (sweep forecast:classify loss ratio)
+# Hypothesis: Adjusting loss weights to 1:0.01 or 1:0.5 finds a
+#   Pareto point with MAE < 14 AND F1 > 0.80.
+# ────────────────────────────────────────────────────────────────────
+
+def run_multitask_balanced(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-068', out,
+                           hypothesis='balanced multi-task: MAE<14, F1>0.80')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader
+
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    device = get_device()
+    half = 12
+
+    class MultiTaskModel(torch.nn.Module):
+        def __init__(self, input_dim=8, d_model=64, n_classes=6):
+            super().__init__()
+            self.input_proj = torch.nn.Linear(input_dim, d_model)
+            encoder_layer = torch.nn.TransformerEncoderLayer(
+                d_model=d_model, nhead=4, dim_feedforward=128,
+                dropout=0.1, batch_first=True, norm_first=True)
+            self.encoder = torch.nn.TransformerEncoder(encoder_layer, num_layers=2)
+            self.forecast_head = torch.nn.Linear(d_model, 1)
+            self.class_head = torch.nn.Sequential(
+                torch.nn.Linear(d_model, 64), torch.nn.ReLU(),
+                torch.nn.Dropout(0.2), torch.nn.Linear(64, n_classes))
+
+        def forward(self, x, task='both'):
+            h = self.input_proj(x)
+            h = self.encoder(h)
+            result = {}
+            if task in ('forecast', 'both'):
+                result['forecast'] = self.forecast_head(h).squeeze(-1)
+            if task in ('classify', 'both'):
+                result['logits'] = self.class_head(h[:, :x.shape[1] // 2].mean(dim=1))
+            return result
+
+    def label_window(x_batch):
+        labels = []
+        for i in range(len(x_batch)):
+            future = x_batch[i, half:]
+            bolus = float(future[:, 4].sum()) * 10
+            carbs = float(future[:, 5].sum()) * 100
+            gl = future[:, 0].numpy() * glucose_scale
+            if bolus > 0.5 and carbs > 10:
+                labels.append(0)
+            elif bolus > 0.5:
+                labels.append(1)
+            elif carbs > 10:
+                labels.append(2)
+            elif gl.min() < 70:
+                labels.append(3)
+            elif gl.max() > 250:
+                labels.append(4)
+            else:
+                labels.append(5)
+        return torch.tensor(labels, dtype=torch.long)
+
+    from sklearn.metrics import f1_score
+
+    # Sweep loss weight ratios
+    ratios = [0.01, 0.05, 0.1, 0.5, 1.0]
+    sweep_results = {}
+
+    for cls_weight in ratios:
+        set_seed(42)
+        model = MultiTaskModel(input_dim=8).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5)
+        best_val = float('inf')
+        patience_ctr = 0
+        ckpt_path = f'{out}/exp068_w{cls_weight}.pth'
+
+        ctx.section(f'Weight ratio 1:{cls_weight}')
+        for epoch in range(80):
+            model.train()
+            for batch in DataLoader(train_ds, batch_size=64, shuffle=True):
+                x = batch[0].to(device)
+                labels = label_window(batch[0]).to(device)
+                x_in = x.clone(); x_in[:, half:, 0] = 0.0
+                mout = model(x_in, task='both')
+                fl = torch.nn.functional.mse_loss(mout['forecast'][:, half:], x[:, half:, 0])
+                cl = torch.nn.functional.cross_entropy(mout['logits'], labels)
+                loss = fl + cls_weight * cl
+                optimizer.zero_grad(); loss.backward(); optimizer.step()
+
+            model.eval()
+            val_losses = []
+            with torch.no_grad():
+                for batch in DataLoader(val_ds, batch_size=64):
+                    x = batch[0].to(device)
+                    x_in = x.clone(); x_in[:, half:, 0] = 0.0
+                    mout = model(x_in, task='forecast')
+                    val_losses.append(
+                        torch.nn.functional.mse_loss(
+                            mout['forecast'][:, half:], x[:, half:, 0]).item())
+
+            val_loss = np.mean(val_losses)
+            scheduler.step(val_loss)
+            if val_loss < best_val:
+                best_val = val_loss
+                torch.save(model.state_dict(), ckpt_path)
+                patience_ctr = 0
+            else:
+                patience_ctr += 1
+            if patience_ctr >= 15:
+                break
+
+        # Evaluate
+        model.load_state_dict(torch.load(ckpt_path, map_location=device,
+                                         weights_only=True))
+        model.eval()
+        preds, trues, logits_all, labels_all = [], [], [], []
+        with torch.no_grad():
+            for batch in DataLoader(val_ds, batch_size=64):
+                x = batch[0].to(device)
+                labels = label_window(batch[0])
+                x_in = x.clone(); x_in[:, half:, 0] = 0.0
+                mout = model(x_in, task='both')
+                preds.append(mout['forecast'][:, half:].cpu().numpy() * glucose_scale)
+                trues.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+                logits_all.append(mout['logits'].cpu())
+                labels_all.append(labels)
+
+        mae = float(np.mean(np.abs(
+            np.concatenate(preds).flatten() - np.concatenate(trues).flatten())))
+        y_pred = torch.cat(logits_all).argmax(dim=1).numpy()
+        y_true = torch.cat(labels_all).numpy()
+        f1 = float(f1_score(y_true, y_pred, average='macro', zero_division=0))
+
+        sweep_results[str(cls_weight)] = {'mae': mae, 'f1': f1}
+        ctx.log(f'w={cls_weight}: MAE={mae:.1f}, F1={f1:.3f}')
+
+    # Find Pareto best
+    best_pareto = None
+    for w, r in sweep_results.items():
+        if r['mae'] < 14 and r['f1'] > 0.80:
+            if best_pareto is None or r['mae'] + (1 - r['f1']) * 20 < \
+                    best_pareto[1]['mae'] + (1 - best_pareto[1]['f1']) * 20:
+                best_pareto = (w, r)
+
+    ctx.result.update({
+        'sweep': sweep_results,
+        'best_pareto': best_pareto[0] if best_pareto else None,
+        'success': best_pareto is not None,
+    })
+    return ctx.save('exp068_multitask_balanced.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-069: Combined All-Features Classifier
+# Hypothesis: Merging rolling features (EXP-049) + forecast features
+#   (EXP-064) + history features pushes F1 > 0.75 in XGBoost.
+# ────────────────────────────────────────────────────────────────────
+
+def run_combined_all_classifier(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-069', out,
+                           hypothesis='all-features F1 > 0.75')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader
+
+    # Load forecast model for generating forecast features
+    ckpt = find_checkpoint(out, 'exp053_long_1hr_5min.pth',
+                           'exp043_forecast_mh_1hr_5min.pth')
+    if not ckpt:
+        ctx.result['success'] = False
+        return ctx.save('exp069_combined_all_classifier.json')
+
+    model = create_model('grouped', input_dim=8)
+    load_checkpoint(model, ckpt)
+    model.eval()
+    device = get_device()
+
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+
+    def extract_all_features(ds):
+        all_feats = []
+        half = 12
+        for batch in DataLoader(ds, batch_size=64):
+            x = batch[0].to(device)
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            pred_gl = pred[:, half:, 0].cpu().numpy() * glucose_scale
+            hist_x = batch[0][:, :half, :]
+
+            for i in range(len(pred_gl)):
+                fg = pred_gl[i]
+                hg = hist_x[i, :, 0].numpy() * glucose_scale
+                iob = hist_x[i, :, 1].numpy() * 20
+                cob = hist_x[i, :, 2].numpy() * 100
+
+                feats = {}
+                # Forecast features (from EXP-064)
+                feats['fc_min'] = fg.min(); feats['fc_max'] = fg.max()
+                feats['fc_mean'] = fg.mean(); feats['fc_std'] = fg.std()
+                feats['fc_range'] = fg.max() - fg.min()
+                feats['fc_slope'] = (fg[-1] - fg[0]) / len(fg)
+                feats['fc_below_70'] = (fg < 70).sum() / len(fg)
+                feats['fc_above_180'] = (fg > 180).sum() / len(fg)
+
+                # History features
+                feats['h_mean'] = hg.mean(); feats['h_std'] = hg.std()
+                feats['h_last'] = hg[-1]; feats['h_min'] = hg.min()
+                feats['h_max'] = hg.max()
+                feats['h_roc'] = (hg[-1] - hg[0]) / max(len(hg), 1)
+
+                # Rolling features (from EXP-049)
+                for w in [3, 6, 12]:
+                    window = hg[-w:] if len(hg) >= w else hg
+                    feats[f'gl_mean_{w}'] = window.mean()
+                    feats[f'gl_std_{w}'] = window.std()
+                    feats[f'gl_min_{w}'] = window.min()
+                    feats[f'gl_max_{w}'] = window.max()
+                    feats[f'gl_roc_{w}'] = (window[-1] - window[0]) / max(w, 1)
+
+                # IOB/COB rolling
+                feats['iob_mean'] = iob.mean(); feats['iob_last'] = iob[-1]
+                feats['iob_max'] = iob.max(); feats['iob_roc'] = iob[-1] - iob[0]
+                feats['cob_mean'] = cob.mean(); feats['cob_last'] = cob[-1]
+                feats['cob_max'] = cob.max()
+
+                # Treatment signals
+                bolus = hist_x[i, :, 4].numpy() * 10
+                carbs = hist_x[i, :, 5].numpy() * 100
+                feats['bolus_sum'] = bolus.sum()
+                feats['carbs_sum'] = carbs.sum()
+                feats['bolus_recent'] = bolus[-3:].sum()
+                feats['carbs_recent'] = carbs[-3:].sum()
+
+                all_feats.append(feats)
+        return all_feats
+
+    ctx.section('Extracting features')
+    train_feats = extract_all_features(train_ds)
+    val_feats = extract_all_features(val_ds)
+
+    # Labels
+    def label_events(ds):
+        labels = []
+        half = 12
+        for batch in DataLoader(ds, batch_size=64):
+            x = batch[0]
+            for i in range(len(x)):
+                future = x[i, half:]
+                bolus = float(future[:, 4].sum()) * 10
+                carbs = float(future[:, 5].sum()) * 100
+                gl = future[:, 0].numpy() * glucose_scale
+                if bolus > 0.5 and carbs > 10:
+                    labels.append('meal_bolus')
+                elif bolus > 0.5:
+                    labels.append('correction_bolus')
+                elif carbs > 10:
+                    labels.append('eating_soon')
+                elif gl.min() < 70:
+                    labels.append('hypo_risk')
+                elif gl.max() > 250:
+                    labels.append('hyper_risk')
+                else:
+                    labels.append('normal')
+        return labels
+
+    train_labels = label_events(train_ds)
+    val_labels = label_events(val_ds)
+
+    import pandas as pd
+    try:
+        from xgboost import XGBClassifier
+    except ImportError:
+        ctx.result['success'] = False
+        return ctx.save('exp069_combined_all_classifier.json')
+    from sklearn.metrics import f1_score, classification_report
+    from sklearn.preprocessing import LabelEncoder
+
+    le = LabelEncoder()
+    y_train = le.fit_transform(train_labels[:len(train_feats)])
+    y_val = le.transform(val_labels[:len(val_feats)])
+    train_df = pd.DataFrame(train_feats)
+    val_df = pd.DataFrame(val_feats)
+
+    ctx.section('Training XGBoost')
+    sample_weights = np.ones(len(y_train))
+    for cls in range(len(le.classes_)):
+        mask = y_train == cls
+        if mask.sum() > 0:
+            sample_weights[mask] = (len(y_train) / (len(le.classes_) * mask.sum())) ** 0.5
+
+    clf = XGBClassifier(n_estimators=300, max_depth=8, learning_rate=0.1,
+                        random_state=42, eval_metric='mlogloss', verbosity=0,
+                        subsample=0.8, colsample_bytree=0.8)
+    clf.fit(train_df, y_train, sample_weight=sample_weights)
+    y_pred = clf.predict(val_df)
+    f1 = float(f1_score(y_val, y_pred, average='macro'))
+    report = classification_report(y_val, y_pred, target_names=le.classes_,
+                                   output_dict=True, zero_division=0)
+
+    # Feature importance top 10
+    imp = dict(zip(train_df.columns, clf.feature_importances_))
+    top_feats = sorted(imp.items(), key=lambda x: -x[1])[:10]
+
+    ctx.result.update({
+        'f1_macro': f1,
+        'per_class': {c: report[c]['f1-score'] for c in le.classes_},
+        'top_features': {k: float(v) for k, v in top_feats},
+        'n_features': len(train_df.columns),
+        'success': f1 > 0.75,
+    })
+    ctx.log(f'F1 macro: {f1:.3f}')
+    for cls in le.classes_:
+        ctx.log(f'  {cls}: {report[cls]["f1-score"]:.3f}')
+    return ctx.save('exp069_combined_all_classifier.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-070: Timestep-Conformal Backtest
+# Hypothesis: Using per-timestep conformal thresholds (from EXP-065)
+#   for backtest produces more suggestions than max-residual while
+#   keeping precision >90%.
+# ────────────────────────────────────────────────────────────────────
+
+def run_timestep_backtest(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-070', out,
+                           hypothesis='timestep-conformal backtest prec>90%')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader, Subset
+
+    ckpt = find_checkpoint(out, 'exp053_long_1hr_5min.pth',
+                           'exp043_forecast_mh_1hr_5min.pth')
+    if not ckpt:
+        ctx.result['success'] = False
+        return ctx.save('exp070_timestep_backtest.json')
+
+    model = create_model('grouped', input_dim=8)
+    load_checkpoint(model, ckpt)
+    model.eval()
+    device = get_device()
+    half = 12
+
+    HYPO_THRESH = 70.0
+    HYPER_THRESH = 180.0
+
+    # Step 1: Calibrate per-timestep thresholds on patients a-e
+    ctx.section('Per-timestep calibration')
+    cal_residuals = [[] for _ in range(half)]
+    for ppath in paths[:5]:
+        train_ds, val_ds = load_multipatient_nightscout([ppath], window_size=24)
+        for batch in DataLoader(val_ds, batch_size=64):
+            x = batch[0].to(device)
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            pred_gl = pred[:, half:, 0].cpu().numpy() * glucose_scale
+            true_gl = x[:, half:, 0].cpu().numpy() * glucose_scale
+            for t in range(half):
+                cal_residuals[t].extend(np.abs(pred_gl[:, t] - true_gl[:, t]).tolist())
+
+    thresholds_90 = []
+    for t in range(half):
+        q = min(0.90 * (1 + 1 / len(cal_residuals[t])), 1.0)
+        thresholds_90.append(float(np.quantile(cal_residuals[t], q)))
+    ctx.log(f'Thresholds: ±{thresholds_90[0]:.1f} → ±{thresholds_90[-1]:.1f} mg/dL')
+
+    # Step 2: Backtest on patients f-j using per-timestep confidence
+    ctx.section('Timestep-conformal backtest')
+    results = {'global': {}, 'timestep': {}}
+
+    # Also compute global threshold for comparison
+    global_q90 = float(np.quantile(
+        [r for step_r in cal_residuals for r in step_r], 0.90))
+
+    for ppath in paths[5:]:
+        pname = ppath.rstrip('/').split('/')[-2]
+        train_ds, val_ds = load_multipatient_nightscout([ppath], window_size=24)
+        if len(val_ds) < 10:
+            continue
+
+        sugg_global, sugg_timestep = [], []
+        for batch in DataLoader(val_ds, batch_size=1):
+            x = batch[0].to(device)
+            true_gl = x[0, half:, 0].cpu().numpy() * glucose_scale
+            current_gl = float(x[0, half - 1, 0].cpu().numpy() * glucose_scale)
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            pred_gl = pred[0, half:, 0].cpu().numpy() * glucose_scale
+
+            # Per-timestep: check if pred±threshold crosses danger zone
+            for t in range(half):
+                lo = pred_gl[t] - thresholds_90[t]
+                hi = pred_gl[t] + thresholds_90[t]
+
+                if hi < HYPO_THRESH and current_gl > HYPO_THRESH:
+                    sugg_timestep.append({
+                        'type': 'hypo', 'timestep': t + 1,
+                        'correct': true_gl[t] < HYPO_THRESH
+                    })
+                    break  # one suggestion per window
+                elif lo > HYPER_THRESH and current_gl < HYPER_THRESH:
+                    sugg_timestep.append({
+                        'type': 'hyper', 'timestep': t + 1,
+                        'correct': true_gl[t] > HYPER_THRESH
+                    })
+                    break
+
+            # Global: same as EXP-062 approach
+            min_pred, max_pred = pred_gl.min(), pred_gl.max()
+            if min_pred + global_q90 < HYPO_THRESH and current_gl > HYPO_THRESH:
+                sugg_global.append({
+                    'type': 'hypo',
+                    'correct': float(true_gl.min()) < HYPO_THRESH
+                })
+            elif max_pred - global_q90 > HYPER_THRESH and current_gl < HYPER_THRESH:
+                sugg_global.append({
+                    'type': 'hyper',
+                    'correct': float(true_gl.max()) > HYPER_THRESH
+                })
+
+        for label, suggs in [('global', sugg_global), ('timestep', sugg_timestep)]:
+            n = len(suggs)
+            correct = sum(1 for s in suggs if s['correct'])
+            results[label][pname] = {
+                'n_suggestions': n, 'n_correct': correct,
+                'precision': correct / n if n else 0
+            }
+
+    for label in ['global', 'timestep']:
+        r = results[label]
+        total = sum(v['n_suggestions'] for v in r.values())
+        correct = sum(v['n_correct'] for v in r.values())
+        prec = correct / total if total else 0
+        ctx.log(f'{label}: {total} sugg, {correct} correct ({prec:.0%})')
+
+    ts_total = sum(v['n_suggestions'] for v in results['timestep'].values())
+    ts_correct = sum(v['n_correct'] for v in results['timestep'].values())
+    ts_prec = ts_correct / ts_total if ts_total else 0
+
+    ctx.result.update({
+        'global': results['global'],
+        'timestep': results['timestep'],
+        'timestep_precision': ts_prec,
+        'timestep_total': ts_total,
+        'thresholds': thresholds_90,
+        'success': ts_prec > 0.90,
+    })
+    return ctx.save('exp070_timestep_backtest.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-071: Multi-Task + Selective Fine-Tuning
+# Hypothesis: Fine-tuning the multi-task encoder per patient
+#   improves forecast MAE to < 14 while keeping F1 > 0.80.
+# ────────────────────────────────────────────────────────────────────
+
+def run_multitask_finetune(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-071', out,
+                           hypothesis='MT + selective FT: MAE<14, F1>0.80')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader
+
+    mt_ckpt = find_checkpoint(out, 'exp067_multitask.pth')
+    if not mt_ckpt:
+        ctx.result['success'] = False
+        return ctx.save('exp071_multitask_ft.json')
+
+    # Inline MultiTaskModel definition (needed for loading)
+    class MultiTaskModel(torch.nn.Module):
+        def __init__(self, input_dim=8, d_model=64, n_classes=6):
+            super().__init__()
+            self.input_proj = torch.nn.Linear(input_dim, d_model)
+            encoder_layer = torch.nn.TransformerEncoderLayer(
+                d_model=d_model, nhead=4, dim_feedforward=128,
+                dropout=0.1, batch_first=True, norm_first=True)
+            self.encoder = torch.nn.TransformerEncoder(encoder_layer, num_layers=2)
+            self.forecast_head = torch.nn.Linear(d_model, 1)
+            self.class_head = torch.nn.Sequential(
+                torch.nn.Linear(d_model, 64), torch.nn.ReLU(),
+                torch.nn.Dropout(0.2), torch.nn.Linear(64, n_classes))
+
+        def forward(self, x, task='both'):
+            h = self.input_proj(x)
+            h = self.encoder(h)
+            result = {}
+            if task in ('forecast', 'both'):
+                result['forecast'] = self.forecast_head(h).squeeze(-1)
+            if task in ('classify', 'both'):
+                result['logits'] = self.class_head(h[:, :x.shape[1] // 2].mean(dim=1))
+            return result
+
+    half = 12
+    device = get_device()
+
+    def label_window(x_batch):
+        labels = []
+        for i in range(len(x_batch)):
+            future = x_batch[i, half:]
+            bolus = float(future[:, 4].sum()) * 10
+            carbs = float(future[:, 5].sum()) * 100
+            gl = future[:, 0].numpy() * glucose_scale
+            if bolus > 0.5 and carbs > 10:
+                labels.append(0)
+            elif bolus > 0.5:
+                labels.append(1)
+            elif carbs > 10:
+                labels.append(2)
+            elif gl.min() < 70:
+                labels.append(3)
+            elif gl.max() > 250:
+                labels.append(4)
+            else:
+                labels.append(5)
+        return torch.tensor(labels, dtype=torch.long)
+
+    from sklearn.metrics import f1_score
+
+    results = {}
+    for ppath in paths[:5]:  # test on 5 patients
+        pname = ppath.rstrip('/').split('/')[-2]
+        ctx.section(f'Patient {pname}')
+        train_ds, val_ds = load_multipatient_nightscout([ppath], window_size=24)
+        if len(train_ds) < 50:
+            continue
+
+        # Generic model
+        gen_model = MultiTaskModel(input_dim=8).to(device)
+        gen_model.load_state_dict(torch.load(mt_ckpt, map_location=device,
+                                             weights_only=True))
+        gen_model.eval()
+
+        # Evaluate generic
+        gen_preds, gen_trues, gen_logits, gen_labels = [], [], [], []
+        with torch.no_grad():
+            for batch in DataLoader(val_ds, batch_size=64):
+                x = batch[0].to(device)
+                labels = label_window(batch[0])
+                x_in = x.clone(); x_in[:, half:, 0] = 0.0
+                mout = gen_model(x_in, task='both')
+                gen_preds.append(mout['forecast'][:, half:].cpu().numpy() * glucose_scale)
+                gen_trues.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+                gen_logits.append(mout['logits'].cpu())
+                gen_labels.append(labels)
+        gen_mae = float(np.mean(np.abs(
+            np.concatenate(gen_preds).flatten() - np.concatenate(gen_trues).flatten())))
+        gen_f1 = float(f1_score(torch.cat(gen_labels).numpy(),
+                                torch.cat(gen_logits).argmax(dim=1).numpy(),
+                                average='macro', zero_division=0))
+
+        # Fine-tune
+        ft_model = MultiTaskModel(input_dim=8).to(device)
+        ft_model.load_state_dict(torch.load(mt_ckpt, map_location=device,
+                                            weights_only=True))
+        optimizer = torch.optim.Adam(ft_model.parameters(), lr=5e-5)
+
+        for epoch in range(15):
+            ft_model.train()
+            for batch in DataLoader(train_ds, batch_size=64, shuffle=True):
+                x = batch[0].to(device)
+                labels = label_window(batch[0]).to(device)
+                x_in = x.clone(); x_in[:, half:, 0] = 0.0
+                mout = ft_model(x_in, task='both')
+                fl = torch.nn.functional.mse_loss(mout['forecast'][:, half:], x[:, half:, 0])
+                cl = torch.nn.functional.cross_entropy(mout['logits'], labels)
+                loss = fl + 0.1 * cl
+                optimizer.zero_grad(); loss.backward(); optimizer.step()
+
+        # Evaluate FT
+        ft_model.eval()
+        ft_preds, ft_trues, ft_logits, ft_labels = [], [], [], []
+        with torch.no_grad():
+            for batch in DataLoader(val_ds, batch_size=64):
+                x = batch[0].to(device)
+                labels = label_window(batch[0])
+                x_in = x.clone(); x_in[:, half:, 0] = 0.0
+                mout = ft_model(x_in, task='both')
+                ft_preds.append(mout['forecast'][:, half:].cpu().numpy() * glucose_scale)
+                ft_trues.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+                ft_logits.append(mout['logits'].cpu())
+                ft_labels.append(labels)
+        ft_mae = float(np.mean(np.abs(
+            np.concatenate(ft_preds).flatten() - np.concatenate(ft_trues).flatten())))
+        ft_f1 = float(f1_score(torch.cat(ft_labels).numpy(),
+                                torch.cat(ft_logits).argmax(dim=1).numpy(),
+                                average='macro', zero_division=0))
+
+        use_ft = ft_mae < gen_mae
+        results[pname] = {
+            'gen_mae': gen_mae, 'gen_f1': gen_f1,
+            'ft_mae': ft_mae, 'ft_f1': ft_f1,
+            'used_ft': use_ft,
+        }
+        ctx.log(f'{pname}: GEN MAE={gen_mae:.1f}/F1={gen_f1:.3f}, '
+                f'FT MAE={ft_mae:.1f}/F1={ft_f1:.3f} → {"FT" if use_ft else "GEN"}')
+
+    maes = [r['ft_mae' if r['used_ft'] else 'gen_mae'] for r in results.values()]
+    f1s = [r['ft_f1' if r['used_ft'] else 'gen_f1'] for r in results.values()]
+    ctx.result.update({
+        'patients': results,
+        'mean_mae': float(np.mean(maes)) if maes else 999,
+        'mean_f1': float(np.mean(f1s)) if f1s else 0,
+        'success': float(np.mean(maes)) < 14 and float(np.mean(f1s)) > 0.80 if maes else False,
+    })
+    ctx.section('Summary')
+    ctx.log(f'Mean MAE: {np.mean(maes):.1f}, Mean F1: {np.mean(f1s):.3f}')
+    return ctx.save('exp071_multitask_ft.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-072: Production Pipeline Integration Test
+# Hypothesis: End-to-end pipeline (forecast + conformal + classifier
+#   + backtest) produces actionable suggestions for 6hr planning.
+# ────────────────────────────────────────────────────────────────────
+
+def run_production_pipeline(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-072', out,
+                           hypothesis='E2E pipeline: actionable suggestions')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader
+
+    ckpt = find_checkpoint(out, 'exp053_long_1hr_5min.pth',
+                           'exp043_forecast_mh_1hr_5min.pth')
+    if not ckpt:
+        ctx.result['success'] = False
+        return ctx.save('exp072_production_pipeline.json')
+
+    model = create_model('grouped', input_dim=8)
+    load_checkpoint(model, ckpt)
+    model.eval()
+    device = get_device()
+    half = 12
+
+    # Load conformal thresholds (compute if not cached)
+    ctx.section('Calibrating conformal thresholds')
+    cal_residuals = [[] for _ in range(half)]
+    for ppath in paths[:5]:
+        train_ds, val_ds = load_multipatient_nightscout([ppath], window_size=24)
+        for batch in DataLoader(val_ds, batch_size=64):
+            x = batch[0].to(device)
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            pred_gl = pred[:, half:, 0].cpu().numpy() * glucose_scale
+            true_gl = x[:, half:, 0].cpu().numpy() * glucose_scale
+            for t in range(half):
+                cal_residuals[t].extend(np.abs(pred_gl[:, t] - true_gl[:, t]).tolist())
+
+    thresholds = [float(np.quantile(r, 0.90)) for r in cal_residuals]
+
+    # Run pipeline on test patients
+    ctx.section('Production pipeline')
+    ZONES = {
+        'urgent_hypo': (0, 54), 'hypo': (54, 70), 'low': (70, 80),
+        'target': (80, 180), 'high': (180, 250), 'hyper': (250, 400),
+    }
+
+    all_suggestions = []
+    for ppath in paths[5:]:
+        pname = ppath.rstrip('/').split('/')[-2]
+        train_ds, val_ds = load_multipatient_nightscout([ppath], window_size=24)
+
+        for batch in DataLoader(val_ds, batch_size=1):
+            x = batch[0].to(device)
+            current_gl = float(x[0, half - 1, 0].cpu().numpy() * glucose_scale)
+            true_future = x[0, half:, 0].cpu().numpy() * glucose_scale
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            pred_gl = pred[0, half:, 0].cpu().numpy() * glucose_scale
+
+            # Build confidence bands
+            lo_band = pred_gl - np.array(thresholds[:len(pred_gl)])
+            hi_band = pred_gl + np.array(thresholds[:len(pred_gl)])
+
+            # Determine predicted trajectory zone
+            suggestion = None
+            confidence = 'uncertain'
+
+            # Check for confident out-of-range
+            for t in range(len(pred_gl)):
+                if hi_band[t] < 70:  # confident hypo
+                    suggestion = {
+                        'type': 'eat_carbs',
+                        'reason': f'Confident hypo at t+{t+1} '
+                                  f'({pred_gl[t]:.0f}±{thresholds[t]:.0f})',
+                        'urgency': 'high' if hi_band[t] < 54 else 'medium',
+                        'timestep': t + 1,
+                    }
+                    confidence = 'high'
+                    break
+                elif lo_band[t] > 250:  # confident severe hyper
+                    suggestion = {
+                        'type': 'correction_bolus',
+                        'reason': f'Confident hyper at t+{t+1} '
+                                  f'({pred_gl[t]:.0f}±{thresholds[t]:.0f})',
+                        'urgency': 'medium',
+                        'timestep': t + 1,
+                    }
+                    confidence = 'high'
+                    break
+                elif lo_band[t] > 180 and t <= 3:
+                    suggestion = {
+                        'type': 'consider_correction',
+                        'reason': f'Rising to {pred_gl[t]:.0f} at t+{t+1}',
+                        'urgency': 'low',
+                        'timestep': t + 1,
+                    }
+                    confidence = 'medium'
+                    # Don't break — keep looking for worse
+
+            if suggestion:
+                # Verify against actual outcomes
+                suggestion['actual_min'] = float(true_future.min())
+                suggestion['actual_max'] = float(true_future.max())
+                if suggestion['type'] == 'eat_carbs':
+                    suggestion['correct'] = true_future.min() < 70
+                elif suggestion['type'] in ('correction_bolus', 'consider_correction'):
+                    suggestion['correct'] = true_future.max() > 180
+                suggestion['patient'] = pname
+                suggestion['current_gl'] = current_gl
+                suggestion['confidence'] = confidence
+                all_suggestions.append(suggestion)
+
+    # Analyze suggestion quality
+    n_total = len(all_suggestions)
+    n_correct = sum(1 for s in all_suggestions if s.get('correct', False))
+    n_high_conf = sum(1 for s in all_suggestions if s['confidence'] == 'high')
+    n_high_correct = sum(1 for s in all_suggestions
+                         if s['confidence'] == 'high' and s.get('correct', False))
+
+    by_type = {}
+    for s in all_suggestions:
+        t = s['type']
+        if t not in by_type:
+            by_type[t] = {'total': 0, 'correct': 0}
+        by_type[t]['total'] += 1
+        if s.get('correct', False):
+            by_type[t]['correct'] += 1
+
+    ctx.result.update({
+        'total_suggestions': n_total,
+        'correct': n_correct,
+        'precision': n_correct / n_total if n_total else 0,
+        'high_conf_total': n_high_conf,
+        'high_conf_correct': n_high_correct,
+        'high_conf_precision': n_high_correct / n_high_conf if n_high_conf else 0,
+        'by_type': {k: {**v, 'precision': v['correct'] / v['total'] if v['total'] else 0}
+                    for k, v in by_type.items()},
+        'thresholds': thresholds,
+        'success': n_total > 10 and (n_correct / n_total if n_total else 0) > 0.7,
+    })
+    ctx.section('Summary')
+    ctx.log(f'Total: {n_total} suggestions, {n_correct} correct ({n_correct/n_total:.0%})')
+    ctx.log(f'High-conf: {n_high_conf} suggestions, {n_high_correct} correct '
+            f'({n_high_correct/n_high_conf:.0%})' if n_high_conf else 'No high-conf')
+    for t, v in by_type.items():
+        ctx.log(f'  {t}: {v["total"]} sugg, {v["correct"]} correct')
+    return ctx.save('exp072_production_pipeline.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-073: Action Recommendation Engine
+# Hypothesis: Combining forecast trajectory + event classification +
+#   conformal confidence generates typed recommendations (eat, bolus,
+#   exercise, wait) with >70% actionability score.
+# ────────────────────────────────────────────────────────────────────
+
+def run_action_recommendation(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-073', out,
+                           hypothesis='typed recommendations >70% actionable')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader
+
+    ckpt = find_checkpoint(out, 'exp053_long_1hr_5min.pth',
+                           'exp043_forecast_mh_1hr_5min.pth')
+    if not ckpt:
+        ctx.result['success'] = False
+        return ctx.save('exp073_action_recommendation.json')
+
+    model = create_model('grouped', input_dim=8)
+    load_checkpoint(model, ckpt)
+    model.eval()
+    device = get_device()
+    half = 12
+
+    # Action definitions
+    ACTIONS = {
+        'eat_fast_carbs': {'condition': 'urgent_hypo_predicted',
+                           'verify': lambda t: t.min() < 54},
+        'eat_carbs': {'condition': 'hypo_predicted',
+                      'verify': lambda t: t.min() < 70},
+        'correction_bolus': {'condition': 'sustained_hyper',
+                             'verify': lambda t: t.max() > 250},
+        'reduce_basal': {'condition': 'dropping_fast',
+                         'verify': lambda t: (t[-1] - t[0]) < -30},
+        'prebolus': {'condition': 'rising_post_meal',
+                     'verify': lambda t: t.max() > 180},
+        'no_action': {'condition': 'in_range',
+                      'verify': lambda t: t.min() > 70 and t.max() < 180},
+    }
+
+    recommendations = []
+    for ppath in paths[5:]:
+        pname = ppath.rstrip('/').split('/')[-2]
+        train_ds, val_ds = load_multipatient_nightscout([ppath], window_size=24)
+
+        for batch in DataLoader(val_ds, batch_size=1):
+            x = batch[0].to(device)
+            current_gl = float(x[0, half - 1, 0].cpu().numpy() * glucose_scale)
+            true_future = x[0, half:, 0].cpu().numpy() * glucose_scale
+            iob = float(x[0, half - 1, 1].cpu().numpy() * 20)
+            cob = float(x[0, half - 1, 2].cpu().numpy() * 100)
+
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            pred_gl = pred[0, half:, 0].cpu().numpy() * glucose_scale
+            pred_slope = (pred_gl[-1] - pred_gl[0]) / len(pred_gl)
+
+            # Determine action
+            action = 'no_action'
+            reason = 'in range'
+            if pred_gl.min() < 54:
+                action = 'eat_fast_carbs'
+                reason = f'urgent hypo: pred min {pred_gl.min():.0f}'
+            elif pred_gl.min() < 70:
+                action = 'eat_carbs'
+                reason = f'hypo: pred min {pred_gl.min():.0f}'
+            elif pred_gl.max() > 250:
+                action = 'correction_bolus'
+                reason = f'severe hyper: pred max {pred_gl.max():.0f}'
+            elif pred_slope < -3 and current_gl < 120:
+                action = 'reduce_basal'
+                reason = f'fast drop: slope {pred_slope:.1f} mg/dL/step'
+            elif pred_gl.max() > 180 and cob > 0:
+                action = 'prebolus'
+                reason = f'post-meal rise: pred max {pred_gl.max():.0f}'
+
+            # Verify against actual outcome
+            verifier = ACTIONS[action]['verify']
+            correct = verifier(true_future)
+
+            recommendations.append({
+                'patient': pname, 'action': action, 'reason': reason,
+                'current_gl': current_gl, 'iob': iob, 'cob': cob,
+                'pred_min': float(pred_gl.min()), 'pred_max': float(pred_gl.max()),
+                'actual_min': float(true_future.min()),
+                'actual_max': float(true_future.max()),
+                'correct': correct,
+            })
+
+    # Analyze
+    n_total = len(recommendations)
+    n_correct = sum(1 for r in recommendations if r['correct'])
+    n_actionable = sum(1 for r in recommendations if r['action'] != 'no_action')
+    n_action_correct = sum(1 for r in recommendations
+                          if r['action'] != 'no_action' and r['correct'])
+
+    by_action = {}
+    for r in recommendations:
+        a = r['action']
+        if a not in by_action:
+            by_action[a] = {'total': 0, 'correct': 0}
+        by_action[a]['total'] += 1
+        if r['correct']:
+            by_action[a]['correct'] += 1
+
+    ctx.result.update({
+        'total': n_total,
+        'actionable': n_actionable,
+        'actionable_correct': n_action_correct,
+        'actionable_precision': n_action_correct / n_actionable if n_actionable else 0,
+        'overall_accuracy': n_correct / n_total if n_total else 0,
+        'by_action': {k: {**v, 'precision': v['correct'] / v['total'] if v['total'] else 0}
+                      for k, v in by_action.items()},
+        'success': n_actionable > 10 and (n_action_correct / n_actionable if n_actionable else 0) > 0.7,
+    })
+    ctx.section('Summary')
+    ctx.log(f'Total: {n_total}, Actionable: {n_actionable}, '
+            f'Correct: {n_action_correct} ({n_action_correct/n_actionable:.0%})')
+    for a, v in sorted(by_action.items()):
+        ctx.log(f'  {a}: {v["total"]} ({v["correct"]} correct)')
+    return ctx.save('exp073_action_recommendation.json')
