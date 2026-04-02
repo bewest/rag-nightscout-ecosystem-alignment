@@ -23,7 +23,7 @@ import torch
 from .experiment_lib import (
     ExperimentContext, set_seed, create_model,
     load_checkpoint, find_checkpoint, transfer_weights,
-    train, forecast_mse, persistence_mse, improvement_pct,
+    train, train_forecast, forecast_mse, persistence_mse, improvement_pct,
     resolve_patient_paths, load_patient_profile,
     build_16f_windows, windows_to_datasets, get_device,
 )
@@ -63,6 +63,7 @@ REGISTRY = {
     'backtest-denorm':        'run_backtest_denorm',        # EXP-041
     # Round 3 — composite evaluation
     'composite-decision':     'run_composite_decision',     # EXP-042
+    'forecast-masked':        'run_forecast_masked',        # EXP-043
 }
 
 
@@ -618,8 +619,10 @@ def run_clinical_metrics(args):
         for batch in DataLoader(val_ds, batch_size=64):
             x = batch[0].to(device)
             half = x.shape[1] // 2
+            x_in = x.clone()
+            x_in[:, half:, 0] = 0.0  # mask future glucose
             with torch.no_grad():
-                pred = model_8f(x, causal=True)
+                pred = model_8f(x_in, causal=True)
             pred_gl = pred[:, half:, 0].cpu().numpy() * glucose_scale
             true_gl = x[:, half:, 0].cpu().numpy() * glucose_scale
             all_pred_mgdl.append(pred_gl)
@@ -654,8 +657,10 @@ def run_clinical_metrics(args):
             for batch in DataLoader(val16, batch_size=64):
                 x = batch[0].to(device)
                 half = x.shape[1] // 2
+                x_in = x.clone()
+                x_in[:, half:, 0] = 0.0  # mask future glucose
                 with torch.no_grad():
-                    pred = model_16f(x, causal=True)
+                    pred = model_16f(x_in, causal=True)
                 pred_gl = pred[:, half:, 0].cpu().numpy() * glucose_scale
                 true_gl = x[:, half:, 0].cpu().numpy() * glucose_scale
                 all_pred_mgdl.append(pred_gl)
@@ -715,8 +720,10 @@ def run_clinical_metrics(args):
         for batch in DataLoader(val_mh, batch_size=64):
             x = batch[0].to(device)
             half = x.shape[1] // 2
+            x_in = x.clone()
+            x_in[:, half:, 0] = 0.0  # mask future glucose
             with torch.no_grad():
-                pred = model_mh(x, causal=True)
+                pred = model_mh(x_in, causal=True)
             pred_gl = pred[:, half:, 0].cpu().numpy()
             true_gl = x[:, half:, 0].cpu().numpy()
             all_pred_mgdl.append(pred_gl)
@@ -805,8 +812,10 @@ def run_norm_multihorizon(args):
         for batch in DataLoader(val_ds, batch_size=64):
             x = batch[0].to(device)
             half = x.shape[1] // 2
+            x_in = x.clone()
+            x_in[:, half:, 0] = 0.0  # mask future glucose
             with torch.no_grad():
-                pred = model(x, causal=True)
+                pred = model(x_in, causal=True)
             all_pred.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
             all_true.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
 
@@ -1426,3 +1435,154 @@ def run_composite_decision(args):
     ctx.log(f'Drift↔TIR r: {correlation}')
     ctx.log(f'Success: {ctx.result["success"]}')
     return ctx.save('exp042_composite_decision.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-043: Forecast-Masked Training
+# Hypothesis: Training with future glucose masked forces the model
+#   to learn actual forecasting (from IOB/COB/basal + history) instead
+#   of reconstruction.  True forecast MAE should drop from ~155 to <30 mg/dL
+#   at 1hr and <60 mg/dL at 6hr.
+# ────────────────────────────────────────────────────────────────────
+
+def run_forecast_masked(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-043', out,
+                           hypothesis='masked training → real forecast')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    from .schema import NORMALIZATION_SCALES, FEATURE_NAMES
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    scales = np.array([NORMALIZATION_SCALES.get(f, 1.0)
+                       for f in FEATURE_NAMES], dtype=np.float32)
+    epochs = getattr(args, 'epochs', 80)
+    results = {}
+
+    from torch.utils.data import DataLoader
+
+    # --- Train at 1hr (normalized, 8f) ---
+    ctx.section('1hr forecast-masked training (8f)')
+    windows_8f = load_multipatient_nightscout(paths, window_size=24)
+    if len(windows_8f) > 100:
+        train_ds, val_ds = windows_to_datasets(windows_8f)
+        model = create_model('grouped', input_dim=8)
+        best, ep = train_forecast(
+            model, train_ds, val_ds,
+            f'{out}/exp043_forecast_8f_1hr.pth', 'FM-8f-1hr',
+            epochs=epochs)
+
+        fmse = forecast_mse(model, val_ds, mask_future=True)
+        pmse = persistence_mse(val_ds)
+
+        device = get_device()
+        model.eval()
+        all_pred, all_true = [], []
+        for batch in DataLoader(val_ds, batch_size=64):
+            x = batch[0].to(device)
+            half = x.shape[1] // 2
+            x_in = x.clone()
+            x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            all_pred.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
+            all_true.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+
+        pred_flat = np.concatenate(all_pred).flatten()
+        true_flat = np.concatenate(all_true).flatten()
+        mae_1hr = float(np.mean(np.abs(pred_flat - true_flat)))
+        rmse_1hr = float(np.sqrt(np.mean((pred_flat - true_flat) ** 2)))
+
+        results['8f_1hr'] = {
+            'mae_mgdl': mae_1hr, 'rmse_mgdl': rmse_1hr,
+            'forecast_mse': fmse, 'persistence_mse': pmse,
+            'improvement_pct': improvement_pct(fmse, pmse),
+            'epochs': ep, 'best_loss': best,
+        }
+        ctx.log(f'1hr 8f: MAE={mae_1hr:.1f} mg/dL, RMSE={rmse_1hr:.1f}, '
+                f'vs persist Δ={improvement_pct(fmse, pmse):.1f}%')
+
+    # --- Train multi-horizon (normalized, masked) ---
+    for h_label in ['1hr@5min', '6hr@15min', '3day@1hr']:
+        ctx.section(f'{h_label} forecast-masked training')
+        all_windows = []
+        for ppath in paths:
+            try:
+                grid_df, feat = build_nightscout_grid(ppath, verbose=False)
+                if feat is None:
+                    continue
+                if 'time_sin' not in grid_df.columns:
+                    hours = grid_df.index.hour + grid_df.index.minute / 60.0
+                    grid_df['time_sin'] = np.sin(2 * np.pi * hours / 24.0)
+                    grid_df['time_cos'] = np.cos(2 * np.pi * hours / 24.0)
+                mh = build_multihorizon_windows(grid_df)
+                for label, h_data in mh.items():
+                    safe = label.replace('@', '_').replace('/', '_')
+                    target = h_label.replace('@', '_').replace('/', '_')
+                    if safe == target:
+                        features = h_data['features']
+                        n_cols = min(features.shape[1], len(scales))
+                        norm_feat = features.copy()
+                        norm_feat[:, :n_cols] /= scales[:n_cols]
+                        stride = max(1, 24 // 2)
+                        for i in range(0, len(norm_feat) - 24 + 1, stride):
+                            win = norm_feat[i:i + 24]
+                            if not np.isnan(win).any() and not np.isinf(win).any():
+                                all_windows.append(win)
+            except Exception:
+                continue
+
+        if len(all_windows) < 50:
+            ctx.log(f'{h_label}: only {len(all_windows)} windows, skipping')
+            continue
+
+        train_ds, val_ds = windows_to_datasets(all_windows)
+        dim = all_windows[0].shape[-1]
+        safe_label = h_label.replace('@', '_').replace('/', '_')
+        model = create_model('grouped', input_dim=dim)
+        best, ep = train_forecast(
+            model, train_ds, val_ds,
+            f'{out}/exp043_forecast_mh_{safe_label}.pth',
+            f'FM-{h_label}', epochs=epochs)
+
+        fmse = forecast_mse(model, val_ds, mask_future=True)
+        pmse = persistence_mse(val_ds)
+
+        device = get_device()
+        model.eval()
+        all_pred, all_true = [], []
+        for batch in DataLoader(val_ds, batch_size=64):
+            x = batch[0].to(device)
+            half = x.shape[1] // 2
+            x_in = x.clone()
+            x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            all_pred.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
+            all_true.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+
+        pred_flat = np.concatenate(all_pred).flatten()
+        true_flat = np.concatenate(all_true).flatten()
+        mae_val = float(np.mean(np.abs(pred_flat - true_flat)))
+        rmse_val = float(np.sqrt(np.mean((pred_flat - true_flat) ** 2)))
+
+        results[h_label] = {
+            'mae_mgdl': mae_val, 'rmse_mgdl': rmse_val,
+            'forecast_mse': fmse, 'persistence_mse': pmse,
+            'improvement_pct': improvement_pct(fmse, pmse),
+            'epochs': ep, 'best_loss': best,
+        }
+        ctx.log(f'{h_label}: MAE={mae_val:.1f} mg/dL, RMSE={rmse_val:.1f}, '
+                f'vs persist Δ={improvement_pct(fmse, pmse):.1f}%')
+
+    # --- Summary ---
+    ctx.section('Summary')
+    for k, v in results.items():
+        ctx.log(f'{k}: MAE={v["mae_mgdl"]:.1f} mg/dL, '
+                f'Δ={v["improvement_pct"]:.1f}% vs persistence')
+
+    ctx.result['metrics'] = results
+    mae_vals = [v['mae_mgdl'] for v in results.values()]
+    ctx.result['success'] = any(m < 30 for m in mae_vals) if mae_vals else False
+    return ctx.save('exp043_forecast_masked.json')

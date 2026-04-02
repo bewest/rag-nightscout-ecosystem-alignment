@@ -197,14 +197,97 @@ def train(model, train_ds, val_ds, save_path, label,
     return best, ep + 1
 
 
+def train_forecast(model, train_ds, val_ds, save_path, label,
+                   lr=1e-3, epochs=50, batch=32, patience=15,
+                   weight_decay=1e-5, lr_patience=5):
+    """Forecast-aware training: masks future glucose so the model learns to
+    predict it from history + other features.
+
+    Input windows are (x, x) autoencoder pairs where x = [history | future].
+    During training, future glucose (channel 0, positions half:) is zeroed in
+    the model input. The loss is MSE on future glucose only.
+    Returns (best_val_loss, epochs_run).
+    """
+    device = get_device()
+    model.to(device)
+    train_dl = DataLoader(train_ds, batch_size=batch, shuffle=True)
+    val_dl = DataLoader(val_ds, batch_size=batch)
+    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=lr_patience, factor=0.5)
+    crit = nn.MSELoss()
+    best = float('inf')
+    stale = 0
+
+    def _forecast_step(batch_data, backward=False):
+        x = batch_to_device(batch_data[0], device)
+        half = x.shape[1] // 2
+        x_in = x.clone()
+        x_in[:, half:, 0] = 0.0          # mask future glucose
+        pred = model(x_in, causal=True)
+        loss = crit(pred[:, half:, :1], x[:, half:, :1])  # future glucose only
+        if backward:
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        return loss.item() * x.size(0), x.size(0)
+
+    for ep in range(epochs):
+        model.train()
+        ttl, tn = 0.0, 0
+        for b in train_dl:
+            opt.zero_grad()
+            l, n = _forecast_step(b, backward=True)
+            opt.step()
+            ttl += l; tn += n
+        tl = ttl / tn if tn else float('inf')
+
+        model.eval()
+        vtl, vn = 0.0, 0
+        with torch.no_grad():
+            for b in val_dl:
+                l, n = _forecast_step(b, backward=False)
+                vtl += l; vn += n
+        vl = vtl / vn if vn else float('inf')
+        sched.step(vl)
+
+        if vl < best:
+            best = vl
+            stale = 0
+            os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+            torch.save({
+                'epoch': ep, 'model_state': model.state_dict(),
+                'val_loss': vl, 'label': label,
+            }, save_path)
+        else:
+            stale += 1
+
+        if (ep + 1) % 10 == 0 or ep == epochs - 1:
+            lr_now = opt.param_groups[0]['lr']
+            mark = ' *' if stale == 0 else ''
+            print(f'  [{label}] {ep+1:3d}/{epochs} '
+                  f'train={tl:.6f} val={vl:.6f} best={best:.6f} '
+                  f'lr={lr_now:.1e}{mark}')
+
+        if patience > 0 and stale >= patience:
+            print(f'  [{label}] Early stop at epoch {ep+1}')
+            break
+
+    if os.path.exists(save_path):
+        load_checkpoint(model, save_path)
+    return best, ep + 1
+
+
 # ── Evaluation ───────────────────────────────────────────────────────────
 
-def forecast_mse(model, val_ds, batch_size=64):
+def forecast_mse(model, val_ds, batch_size=64, mask_future=True):
     """Causal future-only forecast MSE on glucose channel.
 
     This is THE standard metric for comparing forecast models.
     Input windows are [history | future], each half = window_size steps.
     Model predicts with causal mask; we score only future glucose (channel 0).
+
+    When mask_future=True (default), future glucose values in the input are
+    zeroed out so the model cannot simply copy them.  This makes the metric
+    a TRUE forecast evaluation rather than a reconstruction test.
     """
     device = get_device()
     model.eval()
@@ -213,8 +296,13 @@ def forecast_mse(model, val_ds, batch_size=64):
     for batch in DataLoader(val_ds, batch_size=batch_size):
         x = batch_to_device(batch[0], device)
         half = x.shape[1] // 2
+        if mask_future:
+            x_input = x.clone()
+            x_input[:, half:, 0] = 0.0  # zero future glucose channel
+        else:
+            x_input = x
         with torch.no_grad():
-            pred = model(x, causal=True)
+            pred = model(x_input, causal=True)
         losses.append(crit(pred[:, half:, :1], x[:, half:, :1]).item())
     return float(np.mean(losses))
 
