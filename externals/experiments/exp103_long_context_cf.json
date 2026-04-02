@@ -1,0 +1,16 @@
+{
+  "experiment": "EXP-103",
+  "name": "long-context-counterfactual",
+  "results": {
+    "mae_2hr_mgdl": 18.0,
+    "isf_estimate": 3.2,
+    "bolus_outcome_corr": -0.022,
+    "dose_sweep": {
+      "0.5U": -1.6,
+      "1.0U": -3.2,
+      "2.0U": -6.9,
+      "3.0U": -10.8,
+      "5.0U": -16.7
+    }
+  }
+}

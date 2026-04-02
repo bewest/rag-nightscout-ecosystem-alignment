@@ -1,0 +1,14 @@
+{
+  "experiment": "EXP-098",
+  "name": "wide-quantile",
+  "results": {
+    "p50_mae_mgdl": 14.1,
+    "raw_coverage": 0.938,
+    "raw_width_mgdl": 62.0,
+    "conformal_coverage": 0.9,
+    "conformal_width_mgdl": 54.3,
+    "hypo_precision": 0.373,
+    "hypo_recall": 0.919,
+    "hypo_f1": 0.531
+  }
+}

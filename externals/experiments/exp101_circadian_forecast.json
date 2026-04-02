@@ -1,0 +1,9 @@
+{
+  "experiment": "EXP-101",
+  "name": "circadian-forecast",
+  "results": {
+    "circadian_mae_mgdl": 12.3,
+    "baseline_mae_mgdl": 12.3,
+    "improvement_pct": -0.0
+  }
+}
