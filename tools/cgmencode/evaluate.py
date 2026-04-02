@@ -166,6 +166,200 @@ def per_horizon_mae(model, val_loader, model_name, window_size=12, interval_min=
     return results
 
 
+# =============================================================================
+# Clinical Outcome Metrics (agentic delivery scoring)
+# =============================================================================
+
+def time_in_range(glucose_mgdl, low=70.0, high=180.0):
+    """Compute Time-in-Range (TIR) percentage.
+
+    Standard ranges per international consensus:
+    - Very low: <54 mg/dL
+    - Low: 54-69 mg/dL
+    - Target: 70-180 mg/dL
+    - High: 181-250 mg/dL
+    - Very high: >250 mg/dL
+
+    Args:
+        glucose_mgdl: array-like of glucose values in mg/dL
+        low: lower bound of target range (default 70)
+        high: upper bound of target range (default 180)
+
+    Returns:
+        dict with TIR breakdown percentages
+    """
+    g = np.asarray(glucose_mgdl, dtype=float)
+    g = g[~np.isnan(g)]
+    if len(g) == 0:
+        return {'tir': 0.0, 'below_54': 0.0, 'below_70': 0.0,
+                'above_180': 0.0, 'above_250': 0.0, 'n_readings': 0}
+
+    n = len(g)
+    return {
+        'tir': float(np.mean((g >= low) & (g <= high)) * 100),
+        'below_54': float(np.mean(g < 54) * 100),
+        'below_70': float(np.mean(g < 70) * 100),
+        'above_180': float(np.mean(g > 180) * 100),
+        'above_250': float(np.mean(g > 250) * 100),
+        'n_readings': n,
+    }
+
+
+def glucose_variability(glucose_mgdl):
+    """Compute glucose variability metrics.
+
+    Returns:
+        dict with CV (coefficient of variation), SD, and mean
+    """
+    g = np.asarray(glucose_mgdl, dtype=float)
+    g = g[~np.isnan(g)]
+    if len(g) < 2:
+        return {'cv': 0.0, 'sd': 0.0, 'mean': 0.0}
+
+    mean_g = float(np.mean(g))
+    sd_g = float(np.std(g, ddof=1))
+    cv = (sd_g / mean_g * 100) if mean_g > 0 else 0.0
+    return {'cv': round(cv, 2), 'sd': round(sd_g, 2), 'mean': round(mean_g, 2)}
+
+
+def glycemia_risk_index(glucose_mgdl):
+    """Compute the Glycemia Risk Index (GRI).
+
+    GRI = (3.0 × %below54) + (2.4 × %below70-54) + (1.6 × %above250) + (0.8 × %above180-250)
+    Range: 0 (perfect) to 100 (worst).
+    Reference: Klonoff et al., J Diabetes Sci Technol, 2023.
+
+    Args:
+        glucose_mgdl: array-like of glucose values in mg/dL
+
+    Returns:
+        dict with GRI score and components
+    """
+    g = np.asarray(glucose_mgdl, dtype=float)
+    g = g[~np.isnan(g)]
+    if len(g) == 0:
+        return {'gri': 0.0, 'vlow_component': 0.0, 'low_component': 0.0,
+                'high_component': 0.0, 'vhigh_component': 0.0}
+
+    pct_below54 = np.mean(g < 54) * 100
+    pct_54_70 = np.mean((g >= 54) & (g < 70)) * 100
+    pct_180_250 = np.mean((g > 180) & (g <= 250)) * 100
+    pct_above250 = np.mean(g > 250) * 100
+
+    vlow = 3.0 * pct_below54
+    low = 2.4 * pct_54_70
+    high = 0.8 * pct_180_250
+    vhigh = 1.6 * pct_above250
+
+    gri = min(100.0, vlow + low + high + vhigh)
+
+    return {
+        'gri': round(float(gri), 2),
+        'vlow_component': round(float(vlow), 2),
+        'low_component': round(float(low), 2),
+        'high_component': round(float(high), 2),
+        'vhigh_component': round(float(vhigh), 2),
+    }
+
+
+def hypo_events(glucose_mgdl, threshold=70.0, min_duration_steps=3):
+    """Count hypoglycemic events (consecutive readings below threshold).
+
+    Args:
+        glucose_mgdl: array-like of glucose readings in mg/dL
+        threshold: hypo threshold (default 70 mg/dL)
+        min_duration_steps: minimum consecutive steps to count as event (default 3 = 15 min)
+
+    Returns:
+        dict with event count and total time below threshold
+    """
+    g = np.asarray(glucose_mgdl, dtype=float)
+    below = g < threshold
+    events = 0
+    streak = 0
+    total_steps_below = 0
+
+    for b in below:
+        if b:
+            streak += 1
+            total_steps_below += 1
+        else:
+            if streak >= min_duration_steps:
+                events += 1
+            streak = 0
+    if streak >= min_duration_steps:
+        events += 1
+
+    return {
+        'hypo_events': events,
+        'total_steps_below': int(total_steps_below),
+        'pct_below': float(np.mean(below) * 100) if len(g) > 0 else 0.0,
+    }
+
+
+def clinical_summary(glucose_mgdl):
+    """Compute all clinical metrics in one call.
+
+    Args:
+        glucose_mgdl: array-like of glucose values in mg/dL
+
+    Returns:
+        dict with TIR, variability, GRI, and hypo event data
+    """
+    return {
+        **time_in_range(glucose_mgdl),
+        **glucose_variability(glucose_mgdl),
+        **glycemia_risk_index(glucose_mgdl),
+        **hypo_events(glucose_mgdl),
+    }
+
+
+# =============================================================================
+# Decision Quality Metrics (override suggestion scoring)
+# =============================================================================
+
+def override_accuracy(suggested, actual, lead_window_steps=6):
+    """Score override suggestion quality.
+
+    Args:
+        suggested: list of dicts {'timestamp_idx': int, 'event_type': str}
+        actual: list of dicts {'timestamp_idx': int, 'event_type': str}
+        lead_window_steps: how many steps before actual event counts as "correct"
+
+    Returns:
+        dict with precision, recall, F1, and mean lead time
+    """
+    if not suggested:
+        return {'precision': 0.0, 'recall': 0.0, 'f1': 0.0,
+                'mean_lead_time': 0.0, 'n_suggested': 0, 'n_actual': len(actual)}
+
+    tp = 0
+    lead_times = []
+
+    for s in suggested:
+        for a in actual:
+            if s['event_type'] == a['event_type']:
+                delta = a['timestamp_idx'] - s['timestamp_idx']
+                if 0 <= delta <= lead_window_steps:
+                    tp += 1
+                    lead_times.append(delta)
+                    break
+
+    precision = tp / len(suggested) if suggested else 0.0
+    recall = tp / len(actual) if actual else 0.0
+    f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0.0
+
+    return {
+        'precision': round(precision, 4),
+        'recall': round(recall, 4),
+        'f1': round(f1, 4),
+        'mean_lead_time': round(float(np.mean(lead_times)), 2) if lead_times else 0.0,
+        'n_suggested': len(suggested),
+        'n_actual': len(actual),
+        'true_positives': tp,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description='Evaluate cgmencode models')
     parser.add_argument('--model', choices=list(MODEL_REGISTRY.keys()),

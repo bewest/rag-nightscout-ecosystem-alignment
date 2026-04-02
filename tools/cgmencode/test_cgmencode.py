@@ -836,6 +836,108 @@ class TestEvaluationMetrics(unittest.TestCase):
 
 
 # =============================================================================
+# Clinical Metrics Tests
+# =============================================================================
+
+class TestClinicalMetrics(unittest.TestCase):
+    """Tests for clinical outcome metrics (TIR, GRI, CV, hypo events)."""
+
+    def test_tir_all_in_range(self):
+        from tools.cgmencode.evaluate import time_in_range
+        glucose = np.array([100, 120, 140, 160, 170])
+        result = time_in_range(glucose)
+        self.assertAlmostEqual(result['tir'], 100.0)
+        self.assertAlmostEqual(result['below_70'], 0.0)
+        self.assertAlmostEqual(result['above_180'], 0.0)
+
+    def test_tir_mixed(self):
+        from tools.cgmencode.evaluate import time_in_range
+        glucose = np.array([50, 60, 100, 200, 300])
+        result = time_in_range(glucose)
+        self.assertAlmostEqual(result['tir'], 20.0)  # only 100
+        self.assertAlmostEqual(result['below_54'], 20.0)  # only 50
+        self.assertAlmostEqual(result['above_250'], 20.0)  # only 300
+        self.assertEqual(result['n_readings'], 5)
+
+    def test_tir_empty(self):
+        from tools.cgmencode.evaluate import time_in_range
+        result = time_in_range(np.array([]))
+        self.assertEqual(result['tir'], 0.0)
+        self.assertEqual(result['n_readings'], 0)
+
+    def test_glucose_variability(self):
+        from tools.cgmencode.evaluate import glucose_variability
+        glucose = np.array([100.0, 100.0, 100.0, 100.0])
+        result = glucose_variability(glucose)
+        self.assertAlmostEqual(result['cv'], 0.0)
+        self.assertAlmostEqual(result['mean'], 100.0)
+
+    def test_glucose_variability_nonzero(self):
+        from tools.cgmencode.evaluate import glucose_variability
+        glucose = np.array([80.0, 120.0, 80.0, 120.0])
+        result = glucose_variability(glucose)
+        self.assertGreater(result['cv'], 0)
+        self.assertAlmostEqual(result['mean'], 100.0)
+
+    def test_gri_perfect(self):
+        from tools.cgmencode.evaluate import glycemia_risk_index
+        glucose = np.array([100, 110, 120, 130, 140])  # all in range
+        result = glycemia_risk_index(glucose)
+        self.assertAlmostEqual(result['gri'], 0.0)
+
+    def test_gri_all_hypo(self):
+        from tools.cgmencode.evaluate import glycemia_risk_index
+        glucose = np.array([40, 45, 50])  # all very low
+        result = glycemia_risk_index(glucose)
+        self.assertGreater(result['gri'], 0)
+        self.assertGreater(result['vlow_component'], 0)
+
+    def test_hypo_events_count(self):
+        from tools.cgmencode.evaluate import hypo_events
+        # One hypo event: 3 consecutive readings below 70
+        glucose = np.array([100, 100, 60, 55, 65, 100, 100])
+        result = hypo_events(glucose, threshold=70, min_duration_steps=3)
+        self.assertEqual(result['hypo_events'], 1)
+
+    def test_hypo_events_no_events(self):
+        from tools.cgmencode.evaluate import hypo_events
+        glucose = np.array([100, 120, 140, 160])
+        result = hypo_events(glucose, threshold=70, min_duration_steps=3)
+        self.assertEqual(result['hypo_events'], 0)
+
+    def test_clinical_summary_keys(self):
+        from tools.cgmencode.evaluate import clinical_summary
+        glucose = np.array([100, 120, 60, 200, 300])
+        result = clinical_summary(glucose)
+        # Should have all keys from TIR + variability + GRI + hypo
+        self.assertIn('tir', result)
+        self.assertIn('cv', result)
+        self.assertIn('gri', result)
+        self.assertIn('hypo_events', result)
+
+    def test_override_accuracy(self):
+        from tools.cgmencode.evaluate import override_accuracy
+        suggested = [
+            {'timestamp_idx': 10, 'event_type': 'meal'},
+            {'timestamp_idx': 50, 'event_type': 'exercise'},
+        ]
+        actual = [
+            {'timestamp_idx': 14, 'event_type': 'meal'},  # 4 steps after suggestion
+            {'timestamp_idx': 80, 'event_type': 'exercise'},  # too far
+        ]
+        result = override_accuracy(suggested, actual, lead_window_steps=6)
+        self.assertEqual(result['true_positives'], 1)
+        self.assertAlmostEqual(result['precision'], 0.5)
+        self.assertAlmostEqual(result['recall'], 0.5)
+
+    def test_override_accuracy_empty(self):
+        from tools.cgmencode.evaluate import override_accuracy
+        result = override_accuracy([], [{'timestamp_idx': 10, 'event_type': 'meal'}])
+        self.assertAlmostEqual(result['precision'], 0.0)
+        self.assertAlmostEqual(result['recall'], 0.0)
+
+
+# =============================================================================
 # 6. Integration: MODEL_REGISTRY consistency
 # =============================================================================
 
@@ -1527,6 +1629,140 @@ class TestUncertainty(unittest.TestCase):
         result = mc_forecast_with_safety(model, x, n_samples=5)
         self.assertIn('is_safe', result)
         self.assertEqual(result['mean_glucose_mgdl'].shape, (2, 12))
+
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+# =============================================================================
+# 18. Coarse-Grid Downsampling Tests
+# =============================================================================
+
+class TestCoarseGrid(unittest.TestCase):
+    """Verify downsample_grid and build_multihorizon_windows."""
+
+    def _make_5min_grid(self, n_rows=100):
+        """Create a synthetic 5-min grid DataFrame matching schema columns."""
+        import pandas as pd
+        idx = pd.date_range('2024-01-01', periods=n_rows, freq='5min')
+        rng = np.random.RandomState(99)
+
+        hours = idx.hour + idx.minute / 60.0
+        df = pd.DataFrame({
+            'glucose': 120.0 + rng.normal(0, 5, n_rows),
+            'iob': np.linspace(2.0, 0.5, n_rows),
+            'cob': np.linspace(30.0, 0.0, n_rows),
+            'net_basal': rng.uniform(-0.5, 0.5, n_rows),
+            'bolus': np.zeros(n_rows),
+            'carbs': np.zeros(n_rows),
+            'time_sin': np.sin(2 * np.pi * hours / 24.0),
+            'time_cos': np.cos(2 * np.pi * hours / 24.0),
+        }, index=idx)
+
+        # Inject bolus/carbs at specific rows for summation testing
+        df.iloc[0, df.columns.get_loc('bolus')] = 3.0
+        df.iloc[1, df.columns.get_loc('bolus')] = 2.0
+        df.iloc[2, df.columns.get_loc('bolus')] = 1.0
+        df.iloc[0, df.columns.get_loc('carbs')] = 10.0
+        df.iloc[1, df.columns.get_loc('carbs')] = 20.0
+        df.iloc[2, df.columns.get_loc('carbs')] = 30.0
+        return df
+
+    def test_downsample_15min(self):
+        """15-min downsample: shape, glucose smoothing, bolus summation."""
+        from tools.cgmencode.real_data_adapter import downsample_grid
+
+        df = self._make_5min_grid(100)
+        ds = downsample_grid(df, target_interval_min=15)
+
+        # Each 15-min bin holds 3 five-min rows; 100 rows → ceil(100/3) bins
+        expected_rows = len(df.resample('15min').mean())
+        self.assertEqual(len(ds), expected_rows)
+        self.assertEqual(list(ds.columns), list(df.columns))
+
+        # Glucose should be mean → smoother (lower std) than original
+        self.assertLessEqual(ds['glucose'].std(), df['glucose'].std())
+
+        # Bolus should be summed: first 15-min bin = 3+2+1 = 6
+        self.assertAlmostEqual(ds['bolus'].iloc[0], 6.0, places=5)
+        # Carbs summed: first bin = 10+20+30 = 60
+        self.assertAlmostEqual(ds['carbs'].iloc[0], 60.0, places=5)
+
+        # IOB should be 'last' within first 15-min bin
+        self.assertAlmostEqual(ds['iob'].iloc[0], df['iob'].iloc[2], places=5)
+
+    def test_downsample_60min(self):
+        """60-min downsample: shape and aggregation."""
+        from tools.cgmencode.real_data_adapter import downsample_grid
+
+        df = self._make_5min_grid(120)  # 10 hours of data
+        ds = downsample_grid(df, target_interval_min=60)
+
+        expected_rows = len(df.resample('60min').mean())
+        self.assertEqual(len(ds), expected_rows)
+        self.assertEqual(list(ds.columns), list(df.columns))
+
+        # First hour = 12 five-min rows; bolus sum should include rows 0-2
+        first_hour_bolus = df.iloc[:12]['bolus'].sum()
+        self.assertAlmostEqual(ds['bolus'].iloc[0], first_hour_bolus, places=5)
+
+    def test_downsample_identity(self):
+        """target_interval_min <= 5 returns a copy, not a resample."""
+        from tools.cgmencode.real_data_adapter import downsample_grid
+
+        df = self._make_5min_grid(20)
+        ds = downsample_grid(df, target_interval_min=5)
+        self.assertEqual(len(ds), len(df))
+        np.testing.assert_array_equal(ds.values, df.values)
+
+    def test_downsample_handles_nan(self):
+        """NaN in sum columns should not become 0; mean/last propagate NaN."""
+        from tools.cgmencode.real_data_adapter import downsample_grid
+
+        df = self._make_5min_grid(15)
+        df.iloc[3:6, df.columns.get_loc('bolus')] = np.nan
+        ds = downsample_grid(df, target_interval_min=15)
+        # Second 15-min bin (rows 3-5) was all-NaN bolus → should be NaN
+        self.assertTrue(np.isnan(ds['bolus'].iloc[1]))
+
+    def test_multihorizon_windows(self):
+        """build_multihorizon_windows returns correct keys and shapes."""
+        from tools.cgmencode.real_data_adapter import build_multihorizon_windows
+
+        df = self._make_5min_grid(300)  # 25 hours
+        result = build_multihorizon_windows(df)
+
+        # Default horizons produce 3 entries
+        self.assertEqual(set(result.keys()), {'1hr@5min', '6hr@15min', '3day@1hr'})
+
+        for label, entry in result.items():
+            self.assertIn('features', entry)
+            self.assertIn('grid', entry)
+            self.assertIn('interval_min', entry)
+            # Features should be float32 2-D array with 8 columns (core)
+            self.assertEqual(entry['features'].ndim, 2)
+            self.assertEqual(entry['features'].shape[1], 8)
+            self.assertEqual(entry['features'].dtype, np.float32)
+
+        # 5-min grid should keep all rows
+        self.assertEqual(result['1hr@5min']['features'].shape[0], 300)
+        # 15-min grid should be ~1/3 the rows
+        self.assertLess(result['6hr@15min']['features'].shape[0], 300)
+        self.assertGreater(result['6hr@15min']['features'].shape[0], 0)
+        # 60-min grid should be ~1/12 the rows
+        self.assertLess(result['3day@1hr']['features'].shape[0],
+                        result['6hr@15min']['features'].shape[0])
+
+    def test_multihorizon_custom_horizons(self):
+        """Custom horizons list is respected."""
+        from tools.cgmencode.real_data_adapter import build_multihorizon_windows
+
+        df = self._make_5min_grid(60)
+        custom = [{'interval_min': 15, 'history_steps': 4, 'forecast_steps': 8, 'label': 'test'}]
+        result = build_multihorizon_windows(df, horizons=custom)
+        self.assertEqual(list(result.keys()), ['test'])
+        self.assertEqual(result['test']['interval_min'], 15)
 
 
 if __name__ == '__main__':
