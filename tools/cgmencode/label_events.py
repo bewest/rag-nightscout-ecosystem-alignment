@@ -725,6 +725,130 @@ def extract_extended_tabular(windows, labels, metadata):
     return np.hstack([base_tabular, extra]), extended_names
 
 
+def compute_rolling_features(grid_df, windows_1hr=12, windows_3hr=36, windows_6hr=72):
+    """Compute rolling temporal features from the full grid.
+
+    Adds rolling statistics at multiple horizons for each grid point:
+    - 1hr, 3hr, 6hr glucose: mean, std, min, max, range
+    - 1hr, 3hr IOB: mean, max
+    - 1hr, 3hr COB: mean, max
+
+    Args:
+        grid_df: DataFrame with glucose, iob, cob columns and DatetimeIndex
+
+    Returns:
+        DataFrame with rolling feature columns appended
+    """
+    df = grid_df.copy()
+    glucose = df['glucose'] if 'glucose' in df.columns else df.iloc[:, 0]
+
+    for label, steps in [('1hr', windows_1hr), ('3hr', windows_3hr), ('6hr', windows_6hr)]:
+        roll = glucose.rolling(steps, min_periods=1)
+        df[f'glucose_mean_{label}'] = roll.mean()
+        df[f'glucose_std_{label}'] = roll.std().fillna(0)
+        df[f'glucose_min_{label}'] = roll.min()
+        df[f'glucose_max_{label}'] = roll.max()
+        df[f'glucose_range_{label}'] = df[f'glucose_max_{label}'] - df[f'glucose_min_{label}']
+
+    # IOB/COB rolling
+    if 'iob' in df.columns:
+        for label, steps in [('1hr', windows_1hr), ('3hr', windows_3hr)]:
+            df[f'iob_mean_{label}'] = df['iob'].rolling(steps, min_periods=1).mean()
+            df[f'iob_max_{label}'] = df['iob'].rolling(steps, min_periods=1).max()
+    if 'cob' in df.columns:
+        for label, steps in [('1hr', windows_1hr), ('3hr', windows_3hr)]:
+            df[f'cob_mean_{label}'] = df['cob'].rolling(steps, min_periods=1).mean()
+            df[f'cob_max_{label}'] = df['cob'].rolling(steps, min_periods=1).max()
+
+    return df
+
+
+def build_classifier_dataset(patients_dir, window_steps=12, lead_steps=None):
+    """End-to-end pipeline: patient data → XGBoost-ready tabular dataset.
+
+    Chains: extract_override_events → build_pre_event_windows →
+    extract_extended_tabular → optional rolling features.
+
+    Args:
+        patients_dir: path to patient directory with subdirs
+        window_steps: lookback window (5-min steps)
+        lead_steps: lead times for pre-event windows
+
+    Returns:
+        dict with tabular features, labels, feature names, metadata
+    """
+    patients_dir = Path(patients_dir)
+    patient_dirs = sorted(
+        d / 'training' for d in patients_dir.iterdir()
+        if d.is_dir() and (d / 'training').is_dir()
+    )
+
+    all_tabular = []
+    all_labels = []
+    all_meta = []
+    patient_stats = {}
+
+    for pd_path in patient_dirs:
+        patient_name = pd_path.parent.name
+        tx_path = pd_path / 'treatments.json'
+        ds_path = pd_path / 'devicestatus.json'
+
+        if not tx_path.exists():
+            continue
+
+        # Extract events
+        events, stats = extract_override_events(
+            str(tx_path),
+            str(ds_path) if ds_path.exists() else None
+        )
+        if not events:
+            continue
+
+        # Build grid
+        grid_df, _ = build_nightscout_grid(str(pd_path))
+        if grid_df is None:
+            continue
+
+        # Add time encoding
+        hours = grid_df.index.hour + grid_df.index.minute / 60.0
+        grid_df['time_sin'] = np.sin(2 * np.pi * hours / 24.0)
+        grid_df['time_cos'] = np.cos(2 * np.pi * hours / 24.0)
+
+        # Build pre-event windows
+        features, labels, meta = build_pre_event_windows(
+            grid_df, events, window_steps=window_steps, lead_steps=lead_steps
+        )
+        if len(features) == 0:
+            continue
+
+        # Extract extended tabular
+        tabular, tab_names = extract_extended_tabular(features, labels, meta)
+
+        for m in meta:
+            m['patient'] = patient_name
+        all_tabular.append(tabular)
+        all_labels.append(labels)
+        all_meta.extend(meta)
+        patient_stats[patient_name] = {
+            'n_events': len(events),
+            'n_windows': len(labels),
+            'n_positive': int(np.sum(labels > 0)),
+            'stats': stats,
+        }
+
+    if not all_tabular:
+        return None
+
+    return {
+        'tabular': np.concatenate(all_tabular),
+        'labels': np.concatenate(all_labels),
+        'feature_names': tab_names,
+        'metadata': all_meta,
+        'patient_stats': patient_stats,
+        'label_map': EXTENDED_LABEL_MAP,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Mine event labels from Nightscout treatment logs')

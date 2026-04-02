@@ -1631,10 +1631,6 @@ class TestUncertainty(unittest.TestCase):
         self.assertEqual(result['mean_glucose_mgdl'].shape, (2, 12))
 
 
-if __name__ == '__main__':
-    unittest.main()
-
-
 # =============================================================================
 # 18. Coarse-Grid Downsampling Tests
 # =============================================================================
@@ -1763,6 +1759,99 @@ class TestCoarseGrid(unittest.TestCase):
         result = build_multihorizon_windows(df, horizons=custom)
         self.assertEqual(list(result.keys()), ['test'])
         self.assertEqual(result['test']['interval_min'], 15)
+
+
+# =============================================================================
+# 19. Event Classifier Tests
+# =============================================================================
+
+class TestEventClassifier(unittest.TestCase):
+    """Tests for XGBoost event classifier and scoring."""
+
+    def _make_synthetic_data(self, n=200, n_features=21):
+        """Create synthetic classification data."""
+        rng = np.random.RandomState(42)
+        X = rng.randn(n, n_features)
+        # Create separable classes: class 1 has positive feature 0, class 2 negative
+        y = np.zeros(n, dtype=int)
+        y[X[:, 0] > 0.5] = 1
+        y[X[:, 1] < -0.5] = 2
+        return X, y
+
+    def test_compute_per_class_metrics(self):
+        from tools.cgmencode.event_classifier import compute_per_class_metrics
+        y_true = np.array([0, 0, 1, 1, 2, 2])
+        y_pred = np.array([0, 0, 1, 0, 2, 2])
+        probs = np.eye(3)[y_pred]  # one-hot
+        result = compute_per_class_metrics(y_true, y_pred, probs)
+        self.assertIn('accuracy', result)
+        self.assertIn('per_class', result)
+        self.assertIn('macro_f1_events', result)
+        # Class 0: perfect, class 1: 1 FN, class 2: perfect
+        self.assertAlmostEqual(result['per_class']['none']['precision'], 2/3, places=2)
+
+    def test_manual_auroc(self):
+        from tools.cgmencode.event_classifier import _manual_auroc
+        # Perfect separation
+        y = np.array([1, 1, 0, 0])
+        scores = np.array([0.9, 0.8, 0.2, 0.1])
+        self.assertAlmostEqual(_manual_auroc(y, scores), 1.0)
+        # Inverse separation
+        scores_inv = np.array([0.1, 0.2, 0.8, 0.9])
+        self.assertAlmostEqual(_manual_auroc(y, scores_inv), 0.0)
+        # Partial separation
+        y2 = np.array([1, 0, 1, 0])
+        scores2 = np.array([0.9, 0.7, 0.3, 0.1])
+        auroc = _manual_auroc(y2, scores2)
+        self.assertGreater(auroc, 0.5)
+
+    def test_train_event_classifier(self):
+        from tools.cgmencode.event_classifier import train_event_classifier
+        X, y = self._make_synthetic_data(n=300)
+        names = [f'f{i}' for i in range(X.shape[1])]
+        result = train_event_classifier(X, y, feature_names=names, val_fraction=0.2,
+                                        xgb_params={'n_estimators': 20, 'max_depth': 3})
+        self.assertIn('model', result)
+        self.assertIn('metrics', result)
+        self.assertIn('feature_importance', result)
+        self.assertGreater(result['metrics']['accuracy'], 0.5)
+
+    def test_predict_events(self):
+        from tools.cgmencode.event_classifier import train_event_classifier, predict_events
+        X, y = self._make_synthetic_data(n=300)
+        result = train_event_classifier(X, y, xgb_params={'n_estimators': 20, 'max_depth': 3})
+        suggestions = predict_events(result['model'], X[:10], threshold=0.3)
+        self.assertIsInstance(suggestions, list)
+        for s in suggestions:
+            self.assertIn('event_type', s)
+            self.assertIn('probability', s)
+            self.assertGreaterEqual(s['probability'], 0.3)
+
+    def test_score_override_candidates(self):
+        from tools.cgmencode.event_classifier import (
+            train_event_classifier, score_override_candidates,
+        )
+        X, y = self._make_synthetic_data(n=300)
+        # Relabel: 1=meal, 2=exercise (match EXTENDED_LABEL_MAP)
+        result = train_event_classifier(X, y, xgb_params={'n_estimators': 20, 'max_depth': 3})
+        meta = [{'timestamp': f't{i}', 'lead_time_min': 30} for i in range(10)]
+        overrides = score_override_candidates(result['model'], X[:10], meta, min_prob=0.3)
+        self.assertIsInstance(overrides, list)
+
+    def test_rolling_features(self):
+        from tools.cgmencode.label_events import compute_rolling_features
+        idx = pd.date_range('2024-01-15', periods=100, freq='5min')
+        df = pd.DataFrame({
+            'glucose': np.random.RandomState(42).rand(100) * 200 + 70,
+            'iob': np.random.RandomState(43).rand(100) * 5,
+            'cob': np.random.RandomState(44).rand(100) * 40,
+        }, index=idx)
+        result = compute_rolling_features(df)
+        self.assertIn('glucose_mean_1hr', result.columns)
+        self.assertIn('glucose_std_3hr', result.columns)
+        self.assertIn('glucose_range_6hr', result.columns)
+        self.assertIn('iob_mean_1hr', result.columns)
+        self.assertEqual(len(result), 100)
 
 
 if __name__ == '__main__':
