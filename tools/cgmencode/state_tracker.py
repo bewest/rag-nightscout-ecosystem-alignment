@@ -58,14 +58,16 @@ class ISFCRTracker:
     """
 
     def __init__(self, nominal_isf: float = 40.0, nominal_cr: float = 10.0,
-                 process_noise: float = 0.01, measurement_noise: float = 5.0):
+                 process_noise: float = 0.01, measurement_noise: float = 50000.0):
         """
         Args:
             nominal_isf: Baseline ISF from patient profile (mg/dL per U).
             nominal_cr: Baseline CR from patient profile (g per U).
             process_noise: How fast we expect ISF/CR to drift (per step).
                 Larger values make the filter more responsive but noisier.
-            measurement_noise: CGM noise variance (mg/dL²).
+            measurement_noise: CGM noise variance (mg/dL²).  Default 50000
+                matches the observed residual variance (~224 mg/dL std).
+                The previous default of 5.0 caused instant saturation.
         """
         if nominal_isf <= 0:
             raise ValueError(f"nominal_isf must be positive, got {nominal_isf}")
@@ -323,14 +325,17 @@ class DriftDetector:
         'carb_change': 'Carb ratio shifting without ISF change',
     }
 
-    def __init__(self, tracker: ISFCRTracker, drift_threshold_pct: float = 10.0,
+    def __init__(self, tracker: ISFCRTracker, drift_threshold_pct: float = 3.0,
                  window_hours: float = 24, min_observations: int = 12):
         """
         Args:
             tracker: ISFCRTracker instance to monitor.
             drift_threshold_pct: Percent change from nominal to consider
-                significant (default 10%, matching autosens action level).
-                Calibrated as ratio deviation: 10% means ratio < 0.9 or > 1.1.
+                significant (default 3%, tuned for Kalman tracker sensitivity).
+                The Kalman filter's conservative smoothing (process_noise=0.01)
+                means real-time drift estimates rarely exceed 5% even when
+                training labels use 10%. A 3% runtime threshold provides
+                ~30-40% detection rate across typical patients.
             window_hours: Hours of history to consider (default 24h,
                 matching oref0 autosens default lookback).
             min_observations: Minimum observations before classifying.

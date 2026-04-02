@@ -1722,22 +1722,13 @@ def run_grouped_benchmark(args):
 
 
 def _load_patient_profile(data_path):
-    """Load ISF/CR from Nightscout profile.json."""
-    profile_path = os.path.join(data_path, 'profile.json')
-    isf, cr = 40.0, 10.0
-    if os.path.exists(profile_path):
-        with open(profile_path) as f:
-            profiles = json.load(f)
-        if profiles:
-            store = profiles[0].get('store', {})
-            default = store.get('Default', {})
-            sens = default.get('sens', [{}])
-            carbratio = default.get('carbratio', [{}])
-            if sens and 'value' in sens[0]:
-                isf = float(sens[0]['value'])
-            if carbratio and 'value' in carbratio[0]:
-                cr = float(carbratio[0]['value'])
-    return isf, cr
+    """Load ISF/CR from Nightscout profile.json with unit conversion.
+
+    Delegates to experiment_lib.load_patient_profile() which correctly
+    handles mmol/L → mg/dL ISF conversion.
+    """
+    from .experiment_lib import load_patient_profile
+    return load_patient_profile(data_path)
 
 
 def run_grouped_transfer(args):
