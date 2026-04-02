@@ -43,7 +43,8 @@ DEFAULT_XGB_PARAMS = {
 
 
 def train_event_classifier(tabular, labels, feature_names=None,
-                           val_fraction=0.2, xgb_params=None):
+                           val_fraction=0.2, xgb_params=None,
+                           sample_weight=None):
     """Train an XGBoost multi-class event classifier.
 
     Args:
@@ -87,13 +88,16 @@ def train_event_classifier(tabular, labels, feature_names=None,
     # Handle class imbalance with sample weights
     class_counts = np.bincount(y_train.astype(int),
                                minlength=len(unique_labels))
-    class_weights = np.where(class_counts > 0, n / (len(class_counts) * class_counts), 1.0)
-    sample_weights = class_weights[y_train.astype(int)]
+    if sample_weight is not None:
+        sw_train = sample_weight[train_idx]
+    else:
+        class_weights = np.where(class_counts > 0, n / (len(class_counts) * class_counts), 1.0)
+        sw_train = class_weights[y_train.astype(int)]
 
     model = xgb.XGBClassifier(**params)
     model.fit(
         X_train, y_train,
-        sample_weight=sample_weights,
+        sample_weight=sw_train,
         eval_set=[(X_val, y_val)],
         verbose=False,
     )

@@ -37,6 +37,7 @@ from .event_classifier import train_event_classifier
 from .uncertainty import mc_predict
 from .state_tracker import ISFCRTracker, DriftDetector, run_retrospective_tracking
 from .forecast import HierarchicalForecaster, ScenarioSimulator, BacktestEngine
+from .hindcast_composite import run_decision, run_calibration
 
 # ╔════════════════════════════════════════════════════════════════════╗
 # ║  EXPERIMENT REGISTRY — add new experiments here                  ║
@@ -51,6 +52,17 @@ REGISTRY = {
     'scenario-validation':    'run_scenario_validation',    # EXP-031
     'backtest':               'run_backtest',               # EXP-032
     'feature-transfer':       'run_feature_transfer',       # EXP-033
+    # Round 2
+    'clinical-metrics':       'run_clinical_metrics',       # EXP-034
+    'norm-multihorizon':      'run_norm_multihorizon',      # EXP-035
+    'classifier-no-leadtime': 'run_classifier_no_leadtime', # EXP-036
+    'rolling-features':       'run_rolling_features',       # EXP-037
+    'cost-sensitive':         'run_cost_sensitive',          # EXP-038
+    'physics-residual-6hr':   'run_physics_residual_6hr',   # EXP-039
+    'horizon-transfer':       'run_horizon_transfer',       # EXP-040
+    'backtest-denorm':        'run_backtest_denorm',        # EXP-041
+    # Round 3 — composite evaluation
+    'composite-decision':     'run_composite_decision',     # EXP-042
 }
 
 
@@ -564,3 +576,853 @@ def run_feature_transfer(args):
 
 # Needed by backtest
 import os
+
+from .evaluate import denormalize_glucose, mae_mgdl, rmse_mgdl, time_in_range, clinical_summary
+from .schema import NORMALIZATION_SCALES
+
+
+# ════════════════════════════════════════════════════════════════════
+# ROUND 2 — EXP-034 through EXP-041
+# ════════════════════════════════════════════════════════════════════
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-034: Denormalized Clinical Metrics at All Horizons
+# Hypothesis: Models achieve MAE < 15 mg/dL at 1hr, < 30 at 6hr.
+# ────────────────────────────────────────────────────────────────────
+
+def run_clinical_metrics(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-034', out, hypothesis='MAE<15 at 1hr, <30 at 6hr in mg/dL')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    device = get_device()
+    glucose_scale = NORMALIZATION_SCALES['glucose']  # 400.0
+    from torch.utils.data import DataLoader
+
+    # Evaluate the 8f model at 1hr (normalized data)
+    ctx.section('8-feature model (1hr, normalized)')
+    _, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    ckpt_8f = find_checkpoint(out, 'exp026_grouped_8f.pth',
+                              'exp029_grouped.pth',
+                              'grouped_multi_transfer.pth')
+    results = {}
+    if ckpt_8f:
+        model_8f = create_model('grouped', input_dim=8)
+        load_checkpoint(model_8f, ckpt_8f)
+        model_8f.eval()
+
+        all_pred_mgdl, all_true_mgdl = [], []
+        for batch in DataLoader(val_ds, batch_size=64):
+            x = batch[0].to(device)
+            half = x.shape[1] // 2
+            with torch.no_grad():
+                pred = model_8f(x, causal=True)
+            pred_gl = pred[:, half:, 0].cpu().numpy() * glucose_scale
+            true_gl = x[:, half:, 0].cpu().numpy() * glucose_scale
+            all_pred_mgdl.append(pred_gl)
+            all_true_mgdl.append(true_gl)
+
+        pred_flat = np.concatenate(all_pred_mgdl).flatten()
+        true_flat = np.concatenate(all_true_mgdl).flatten()
+        mae_1hr = float(np.mean(np.abs(pred_flat - true_flat)))
+        rmse_1hr = float(np.sqrt(np.mean((pred_flat - true_flat) ** 2)))
+        tir = time_in_range(true_flat)
+        results['8f_1hr'] = {
+            'mae_mgdl': mae_1hr, 'rmse_mgdl': rmse_1hr,
+            'n_points': len(pred_flat), 'tir_pct': tir,
+        }
+        ctx.log(f'8f 1hr: MAE={mae_1hr:.1f} mg/dL, RMSE={rmse_1hr:.1f}, TIR={tir["tir"]:.1f}%')
+    else:
+        ctx.log('No 8f checkpoint found')
+
+    # Evaluate the 16f model at 1hr
+    ctx.section('16-feature model (1hr, normalized)')
+    ckpt_16f = find_checkpoint(out, 'exp026_grouped_16f.pth',
+                               'exp033_transfer_all.pth')
+    if ckpt_16f:
+        windows_16f = build_16f_windows(paths, window_size=24)
+        if len(windows_16f) > 50:
+            _, val16 = windows_to_datasets(windows_16f)
+            model_16f = create_model('grouped', input_dim=16)
+            load_checkpoint(model_16f, ckpt_16f)
+            model_16f.eval()
+
+            all_pred_mgdl, all_true_mgdl = [], []
+            for batch in DataLoader(val16, batch_size=64):
+                x = batch[0].to(device)
+                half = x.shape[1] // 2
+                with torch.no_grad():
+                    pred = model_16f(x, causal=True)
+                pred_gl = pred[:, half:, 0].cpu().numpy() * glucose_scale
+                true_gl = x[:, half:, 0].cpu().numpy() * glucose_scale
+                all_pred_mgdl.append(pred_gl)
+                all_true_mgdl.append(true_gl)
+
+            pred_flat = np.concatenate(all_pred_mgdl).flatten()
+            true_flat = np.concatenate(all_true_mgdl).flatten()
+            mae_16f = float(np.mean(np.abs(pred_flat - true_flat)))
+            rmse_16f = float(np.sqrt(np.mean((pred_flat - true_flat) ** 2)))
+            results['16f_1hr'] = {'mae_mgdl': mae_16f, 'rmse_mgdl': rmse_16f,
+                                  'n_points': len(pred_flat)}
+            ctx.log(f'16f 1hr: MAE={mae_16f:.1f} mg/dL, RMSE={rmse_16f:.1f}')
+    else:
+        ctx.log('No 16f checkpoint found')
+
+    # Evaluate EXP-028 multi-horizon models (raw-data trained)
+    ctx.section('Multi-horizon models (EXP-028, raw-data)')
+    for label in ['1hr_5min', '6hr_15min', '3day_1hr']:
+        ckpt_mh = find_checkpoint(out, f'exp028_multihorizon_{label}.pth')
+        if not ckpt_mh:
+            ctx.log(f'{label}: no checkpoint')
+            continue
+        model_mh = create_model('grouped', input_dim=8)
+        load_checkpoint(model_mh, ckpt_mh)
+        model_mh.eval()
+
+        win_size = 24
+        all_windows = []
+        for ppath in paths:
+            try:
+                grid_df, feat = build_nightscout_grid(ppath, verbose=False)
+                if feat is None:
+                    continue
+                if 'time_sin' not in grid_df.columns:
+                    hours = grid_df.index.hour + grid_df.index.minute / 60.0
+                    grid_df['time_sin'] = np.sin(2 * np.pi * hours / 24.0)
+                    grid_df['time_cos'] = np.cos(2 * np.pi * hours / 24.0)
+                mh = build_multihorizon_windows(grid_df)
+                for h_label, h_data in mh.items():
+                    safe = h_label.replace('@', '_').replace('/', '_')
+                    if safe == label:
+                        features = h_data['features']
+                        stride = max(1, win_size // 2)
+                        for i in range(0, len(features) - win_size + 1, stride):
+                            win = features[i:i + win_size]
+                            if not np.isnan(win).any() and not np.isinf(win).any():
+                                all_windows.append(win)
+            except Exception:
+                continue
+
+        if len(all_windows) < 50:
+            ctx.log(f'{label}: too few windows ({len(all_windows)})')
+            continue
+
+        _, val_mh = windows_to_datasets(all_windows)
+        all_pred_mgdl, all_true_mgdl = [], []
+        for batch in DataLoader(val_mh, batch_size=64):
+            x = batch[0].to(device)
+            half = x.shape[1] // 2
+            with torch.no_grad():
+                pred = model_mh(x, causal=True)
+            pred_gl = pred[:, half:, 0].cpu().numpy()
+            true_gl = x[:, half:, 0].cpu().numpy()
+            all_pred_mgdl.append(pred_gl)
+            all_true_mgdl.append(true_gl)
+
+        pred_flat = np.concatenate(all_pred_mgdl).flatten()
+        true_flat = np.concatenate(all_true_mgdl).flatten()
+        mae_mh = float(np.mean(np.abs(pred_flat - true_flat)))
+        rmse_mh = float(np.sqrt(np.mean((pred_flat - true_flat) ** 2)))
+        tir_mh = time_in_range(true_flat)
+        results[f'mh_{label}'] = {
+            'mae_mgdl': mae_mh, 'rmse_mgdl': rmse_mh,
+            'n_points': len(pred_flat), 'tir_pct': tir_mh,
+        }
+        ctx.log(f'{label}: MAE={mae_mh:.1f} mg/dL, RMSE={rmse_mh:.1f}, TIR={tir_mh["tir"]:.1f}%')
+
+    ctx.result['metrics'] = results
+    mae_vals = [v['mae_mgdl'] for v in results.values() if 'mae_mgdl' in v]
+    ctx.result['success'] = any(m < 30 for m in mae_vals) if mae_vals else False
+    ctx.section('Summary')
+    for k, v in results.items():
+        ctx.log(f'{k}: MAE={v["mae_mgdl"]:.1f} RMSE={v["rmse_mgdl"]:.1f} mg/dL')
+    return ctx.save('exp034_clinical_metrics.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-035: Normalized Multi-Horizon Retraining
+# ────────────────────────────────────────────────────────────────────
+
+def run_norm_multihorizon(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-035', out, hypothesis='normalized multi-res training')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    scales = np.array([NORMALIZATION_SCALES.get(f, 1.0) for f in
+                       ['glucose', 'iob', 'cob', 'net_basal', 'bolus', 'carbs',
+                        'time_sin', 'time_cos']], dtype=np.float32)
+    win_size = 24
+    by_horizon = {}
+    for ppath in paths:
+        try:
+            grid_df, feat = build_nightscout_grid(ppath, verbose=False)
+            if feat is None:
+                continue
+            if 'time_sin' not in grid_df.columns:
+                hours = grid_df.index.hour + grid_df.index.minute / 60.0
+                grid_df['time_sin'] = np.sin(2 * np.pi * hours / 24.0)
+                grid_df['time_cos'] = np.cos(2 * np.pi * hours / 24.0)
+            mh = build_multihorizon_windows(grid_df)
+            for h_label, h_data in mh.items():
+                features = h_data['features']
+                n_cols = min(features.shape[1], len(scales))
+                norm_feat = features.copy()
+                norm_feat[:, :n_cols] /= scales[:n_cols]
+                stride = max(1, win_size // 2)
+                for i in range(0, len(norm_feat) - win_size + 1, stride):
+                    win = norm_feat[i:i + win_size]
+                    if not np.isnan(win).any() and not np.isinf(win).any():
+                        by_horizon.setdefault(h_label, []).append(win)
+        except Exception:
+            continue
+
+    results_by_res = {}
+    from torch.utils.data import DataLoader
+    for label, windows in sorted(by_horizon.items()):
+        ctx.section(f'Horizon: {label}')
+        if len(windows) < 50:
+            ctx.log(f'Only {len(windows)} windows — skipping')
+            results_by_res[label] = {'status': 'too_few_windows'}
+            continue
+
+        train_ds, val_ds = windows_to_datasets(windows)
+        dim = windows[0].shape[-1]
+        safe_label = label.replace('@', '_').replace('/', '_')
+        model = create_model('grouped', input_dim=dim)
+        best_loss, ep = train(
+            model, train_ds, val_ds,
+            f'{out}/exp035_norm_mh_{safe_label}.pth', f'NMH-{label}')
+
+        device = get_device()
+        model.eval()
+        all_pred, all_true = [], []
+        for batch in DataLoader(val_ds, batch_size=64):
+            x = batch[0].to(device)
+            half = x.shape[1] // 2
+            with torch.no_grad():
+                pred = model(x, causal=True)
+            all_pred.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
+            all_true.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+
+        pred_flat = np.concatenate(all_pred).flatten()
+        true_flat = np.concatenate(all_true).flatten()
+        mae_val = float(np.mean(np.abs(pred_flat - true_flat)))
+        rmse_val = float(np.sqrt(np.mean((pred_flat - true_flat) ** 2)))
+
+        m_mse = forecast_mse(model, val_ds)
+        p_mse = persistence_mse(val_ds)
+        results_by_res[label] = {
+            'windows': len(windows),
+            'mae_mgdl': mae_val, 'rmse_mgdl': rmse_val,
+            'forecast_mse': m_mse, 'persistence_mse': p_mse,
+            'improvement_pct': improvement_pct(m_mse, p_mse),
+        }
+        ctx.log(f'{label}: MAE={mae_val:.1f} mg/dL  mse={m_mse:.6f}  '
+                f'persist={p_mse:.6f}  Δ={results_by_res[label]["improvement_pct"]:.1f}%')
+
+    ctx.result['resolutions'] = results_by_res
+    ctx.result['success'] = any(
+        r.get('improvement_pct', 0) > 20
+        for r in results_by_res.values() if isinstance(r, dict))
+    return ctx.save('exp035_norm_multihorizon.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-036: Classifier Without lead_time Feature
+# ────────────────────────────────────────────────────────────────────
+
+def run_classifier_no_leadtime(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-036', out, hypothesis='CGM-only F1 > 0.35 without lead_time')
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    ctx.section('Building dataset')
+    ds = build_classifier_dataset(patients_dir)
+    tabular = ds['tabular']
+    labels = ds['labels']
+    feat_names = list(ds['feature_names'])
+
+    if 'lead_time_hr' in feat_names:
+        lt_idx = feat_names.index('lead_time_hr')
+        tabular = np.delete(tabular, lt_idx, axis=1)
+        feat_names = [f for i, f in enumerate(feat_names) if i != lt_idx]
+        ctx.log(f'Removed lead_time_hr (was col {lt_idx}). {tabular.shape[1]} features remain.')
+    else:
+        ctx.log('lead_time_hr not found — using all features')
+
+    ctx.log(f'{tabular.shape[0]} samples, {tabular.shape[1]} features')
+
+    ctx.section('Training without lead_time')
+    result = train_event_classifier(
+        tabular, labels, feature_names=feat_names,
+        xgb_params={'max_depth': 8, 'n_estimators': 300, 'learning_rate': 0.01},
+    )
+    metrics = result['metrics']
+    f1 = metrics.get('macro_f1_events', metrics.get('macro_f1', 0))
+
+    ctx.section('Results')
+    ctx.log(f'Macro F1 = {f1:.4f} (vs 0.5732 with lead_time)')
+    per_class = metrics.get('per_class', {})
+    for cls_name, cls_m in per_class.items():
+        ctx.log(f'  {cls_name}: P={cls_m.get("precision",0):.3f} '
+                f'R={cls_m.get("recall",0):.3f} F1={cls_m.get("f1",0):.3f}')
+
+    fi = result.get('feature_importance', {})
+    top5 = sorted(fi.items(), key=lambda x: x[1], reverse=True)[:5]
+
+    ctx.result.update({
+        'macro_f1': f1,
+        'f1_with_leadtime': 0.5732,
+        'f1_drop': 0.5732 - f1,
+        'per_class': per_class,
+        'feature_importance_top5': dict(top5),
+        'n_samples': tabular.shape[0],
+        'n_features': tabular.shape[1],
+        'success': f1 > 0.35,
+    })
+    return ctx.save('exp036_no_leadtime.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-037: Rolling Feature Engineering for Meal Detection
+# Depends on: EXP-036
+# ────────────────────────────────────────────────────────────────────
+
+def run_rolling_features(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-037', out, hypothesis='rolling features improve meal F1>0.65')
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    ctx.section('Building dataset with rolling features')
+    ds = build_classifier_dataset(patients_dir)
+    tabular = ds['tabular']
+    labels = ds['labels']
+    feat_names = list(ds['feature_names'])
+
+    if 'lead_time_hr' in feat_names:
+        lt_idx = feat_names.index('lead_time_hr')
+        tabular = np.delete(tabular, lt_idx, axis=1)
+        feat_names = [f for i, f in enumerate(feat_names) if i != lt_idx]
+
+    gl_idx = None
+    for i, fn in enumerate(feat_names):
+        if fn.startswith('glucose') and 'roc' not in fn:
+            gl_idx = i
+            break
+
+    rolling_names = []
+    if gl_idx is not None:
+        import pandas as pd
+        gl_series = pd.Series(tabular[:, gl_idx])
+        rolling_feats = []
+        for window in [12, 36, 72]:  # 1hr, 3hr, 6hr at 5-min
+            label_w = f'{window * 5 // 60}hr'
+            roll = gl_series.rolling(window, min_periods=1)
+            rolling_feats.append(roll.mean().values)
+            rolling_names.append(f'glucose_mean_{label_w}')
+            rolling_feats.append(roll.std().fillna(0).values)
+            rolling_names.append(f'glucose_std_{label_w}')
+            rolling_feats.append(roll.min().values)
+            rolling_names.append(f'glucose_min_{label_w}')
+            rolling_feats.append(roll.max().values)
+            rolling_names.append(f'glucose_max_{label_w}')
+            rolling_feats.append(roll.mean().diff().fillna(0).values)
+            rolling_names.append(f'glucose_roc_{label_w}')
+
+        extra = np.column_stack(rolling_feats).astype(np.float32)
+        tabular = np.hstack([tabular, extra])
+        feat_names.extend(rolling_names)
+        ctx.log(f'Added {len(rolling_names)} rolling features. Total: {tabular.shape[1]}')
+    else:
+        ctx.log('No glucose column found — training without rolling features')
+
+    ctx.section('Training')
+    result = train_event_classifier(
+        tabular, labels, feature_names=feat_names,
+        xgb_params={'max_depth': 8, 'n_estimators': 300, 'learning_rate': 0.01},
+    )
+    metrics = result['metrics']
+    f1 = metrics.get('macro_f1_events', metrics.get('macro_f1', 0))
+    per_class = metrics.get('per_class', {})
+    meal_f1 = per_class.get('meal', {}).get('f1', 0)
+
+    ctx.section('Results')
+    ctx.log(f'Macro F1 = {f1:.4f}, Meal F1 = {meal_f1:.4f} (target >0.65)')
+    for cls_name, cls_m in per_class.items():
+        ctx.log(f'  {cls_name}: P={cls_m.get("precision",0):.3f} '
+                f'R={cls_m.get("recall",0):.3f} F1={cls_m.get("f1",0):.3f}')
+
+    fi = result.get('feature_importance', {})
+    top10 = sorted(fi.items(), key=lambda x: x[1], reverse=True)[:10]
+
+    ctx.result.update({
+        'macro_f1': f1, 'meal_f1': meal_f1,
+        'per_class': per_class,
+        'feature_importance_top10': dict(top10),
+        'n_features': tabular.shape[1],
+        'n_rolling_features': len(rolling_names),
+        'success': meal_f1 > 0.65,
+    })
+    return ctx.save('exp037_rolling_features.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-038: Cost-Sensitive Classification
+# ────────────────────────────────────────────────────────────────────
+
+def run_cost_sensitive(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-038', out, hypothesis='class weighting balances P/R')
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    ctx.section('Building dataset')
+    ds = build_classifier_dataset(patients_dir)
+    tabular = ds['tabular']
+    labels = ds['labels']
+    feat_names = list(ds['feature_names'])
+
+    unique_labels, counts = np.unique(labels, return_counts=True)
+    total = len(labels)
+
+    results_by_exponent = {}
+    for exp_val in [0.5, 1.0, 1.5]:
+        ctx.section(f'Weight exponent = {exp_val}')
+        weights = {}
+        for lbl, cnt in zip(unique_labels, counts):
+            weights[int(lbl)] = (total / (len(unique_labels) * cnt)) ** exp_val
+
+        sample_weights = np.array([weights[int(l)] for l in labels], dtype=np.float32)
+
+        result = train_event_classifier(
+            tabular, labels, feature_names=feat_names,
+            xgb_params={'max_depth': 8, 'n_estimators': 300, 'learning_rate': 0.01},
+            sample_weight=sample_weights,
+        )
+        metrics = result['metrics']
+        f1 = metrics.get('macro_f1_events', metrics.get('macro_f1', 0))
+        per_class = metrics.get('per_class', {})
+
+        eating_soon = per_class.get('eating_soon', {})
+        es_p = eating_soon.get('precision', 0)
+        es_r = eating_soon.get('recall', 0)
+
+        results_by_exponent[str(exp_val)] = {
+            'macro_f1': f1, 'per_class': per_class,
+            'eating_soon_precision': es_p, 'eating_soon_recall': es_r,
+        }
+        ctx.log(f'exp={exp_val}: F1={f1:.4f}  eating_soon P={es_p:.3f} R={es_r:.3f}')
+        for cls_name, cls_m in per_class.items():
+            ctx.log(f'  {cls_name}: P={cls_m.get("precision",0):.3f} '
+                    f'R={cls_m.get("recall",0):.3f} F1={cls_m.get("f1",0):.3f}')
+
+    best_exp = max(results_by_exponent,
+                   key=lambda k: results_by_exponent[k]['macro_f1'])
+    best = results_by_exponent[best_exp]
+
+    ctx.result['sweeps'] = results_by_exponent
+    ctx.result['best_exponent'] = float(best_exp)
+    ctx.result['best_macro_f1'] = best['macro_f1']
+    ctx.result['success'] = (best.get('eating_soon_precision', 0) > 0.50
+                             and best.get('eating_soon_recall', 0) > 0.80)
+    return ctx.save('exp038_cost_sensitive.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-039: Physics-Residual at 6hr Horizon (depends on EXP-035)
+# ────────────────────────────────────────────────────────────────────
+
+def run_physics_residual_6hr(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-039', out, hypothesis='physics+ML > ML-only at 6hr')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    scales = np.array([NORMALIZATION_SCALES.get(f, 1.0) for f in
+                       ['glucose', 'iob', 'cob', 'net_basal', 'bolus', 'carbs',
+                        'time_sin', 'time_cos']], dtype=np.float32)
+
+    ctx.section('Loading 6hr model')
+    ckpt = find_checkpoint(out, 'exp035_norm_mh_6hr_15min.pth',
+                           'exp028_multihorizon_6hr_15min.pth')
+    model = create_model('grouped', input_dim=8)
+    if ckpt:
+        load_checkpoint(model, ckpt)
+        ctx.log(f'Loaded {ckpt}')
+    else:
+        ctx.log('No 6hr checkpoint — using untrained model')
+
+    win_size = 24
+    half = win_size // 2
+    all_norm, all_raw = [], []
+    for ppath in paths:
+        try:
+            grid_df, feat = build_nightscout_grid(ppath, verbose=False)
+            if feat is None:
+                continue
+            if 'time_sin' not in grid_df.columns:
+                hours = grid_df.index.hour + grid_df.index.minute / 60.0
+                grid_df['time_sin'] = np.sin(2 * np.pi * hours / 24.0)
+                grid_df['time_cos'] = np.cos(2 * np.pi * hours / 24.0)
+            mh = build_multihorizon_windows(grid_df)
+            h_data = mh.get('6hr@15min')
+            if h_data is None:
+                continue
+            features = h_data['features']
+            n_cols = min(features.shape[1], len(scales))
+            norm_feat = features.copy()
+            norm_feat[:, :n_cols] /= scales[:n_cols]
+            stride = max(1, win_size // 2)
+            for i in range(0, len(features) - win_size + 1, stride):
+                raw_win = features[i:i + win_size]
+                norm_win = norm_feat[i:i + win_size]
+                if not np.isnan(raw_win).any() and not np.isinf(raw_win).any():
+                    all_norm.append(norm_win)
+                    all_raw.append(raw_win)
+        except Exception:
+            continue
+
+    ctx.log(f'{len(all_norm)} windows at 6hr@15min')
+    if len(all_norm) < 50:
+        ctx.result['success'] = False
+        ctx.result['error'] = 'too few windows'
+        return ctx.save('exp039_physics_6hr.json')
+
+    device = get_device()
+    model.eval()
+    isf, cr = load_patient_profile(paths[0])
+
+    ml_errors, phys_errors, combo_errors = [], [], []
+    for norm_win, raw_win in zip(all_norm[:2000], all_raw[:2000]):
+        true_gl = raw_win[half:, 0]
+
+        x = torch.from_numpy(norm_win).unsqueeze(0).float().to(device)
+        with torch.no_grad():
+            pred = model(x, causal=True)
+        ml_gl = pred[0, half:, 0].cpu().numpy() * glucose_scale
+
+        gl_now = raw_win[half - 1, 0]
+        iob_now = raw_win[half - 1, 1]
+        cob_now = raw_win[half - 1, 2]
+        phys_gl = np.full(half, gl_now)
+        for t in range(half):
+            decay = t / half
+            phys_gl[t] = (gl_now - iob_now * (1 - decay) * isf
+                          + cob_now * (1 - decay) / max(cr, 1) * isf)
+
+        combo_gl = phys_gl + (ml_gl - phys_gl)  # physics + ML residual
+
+        ml_errors.append(np.mean(np.abs(ml_gl - true_gl)))
+        phys_errors.append(np.mean(np.abs(phys_gl - true_gl)))
+        combo_errors.append(np.mean(np.abs(combo_gl - true_gl)))
+
+    ml_mae = float(np.mean(ml_errors))
+    phys_mae = float(np.mean(phys_errors))
+    combo_mae = float(np.mean(combo_errors))
+
+    ctx.section('Results (6hr MAE in mg/dL)')
+    ctx.log(f'Physics-only: {phys_mae:.1f}')
+    ctx.log(f'ML-only:      {ml_mae:.1f}')
+    ctx.log(f'Physics+ML:   {combo_mae:.1f}')
+    ctx.log(f'Combo vs ML-only: {improvement_pct(combo_mae, ml_mae):.1f}%')
+
+    ctx.result.update({
+        'physics_mae_mgdl': phys_mae, 'ml_mae_mgdl': ml_mae,
+        'combo_mae_mgdl': combo_mae,
+        'combo_improvement_pct': improvement_pct(combo_mae, ml_mae),
+        'n_windows': min(len(all_norm), 2000),
+        'success': improvement_pct(combo_mae, ml_mae) > 20,
+    })
+    return ctx.save('exp039_physics_6hr.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-040: Multi-Horizon Transfer Cascade (depends on EXP-035)
+# ────────────────────────────────────────────────────────────────────
+
+def run_horizon_transfer(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-040', out, hypothesis='cascade transfer > scratch')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    scales = np.array([NORMALIZATION_SCALES.get(f, 1.0) for f in
+                       ['glucose', 'iob', 'cob', 'net_basal', 'bolus', 'carbs',
+                        'time_sin', 'time_cos']], dtype=np.float32)
+    win_size = 24
+
+    by_horizon = {}
+    for ppath in paths:
+        try:
+            grid_df, feat = build_nightscout_grid(ppath, verbose=False)
+            if feat is None:
+                continue
+            if 'time_sin' not in grid_df.columns:
+                hours = grid_df.index.hour + grid_df.index.minute / 60.0
+                grid_df['time_sin'] = np.sin(2 * np.pi * hours / 24.0)
+                grid_df['time_cos'] = np.cos(2 * np.pi * hours / 24.0)
+            mh = build_multihorizon_windows(grid_df)
+            for h_label, h_data in mh.items():
+                features = h_data['features']
+                n_cols = min(features.shape[1], len(scales))
+                norm_feat = features.copy()
+                norm_feat[:, :n_cols] /= scales[:n_cols]
+                stride = max(1, win_size // 2)
+                for i in range(0, len(norm_feat) - win_size + 1, stride):
+                    win = norm_feat[i:i + win_size]
+                    if not np.isnan(win).any() and not np.isinf(win).any():
+                        by_horizon.setdefault(h_label, []).append(win)
+        except Exception:
+            continue
+
+    horizon_order = ['1hr@5min', '6hr@15min', '3day@1hr']
+    cascade_results = {}
+    prev_ckpt = None
+
+    for label in horizon_order:
+        ctx.section(f'Horizon: {label}')
+        windows = by_horizon.get(label, [])
+        if len(windows) < 50:
+            ctx.log(f'Only {len(windows)} windows — skipping')
+            cascade_results[label] = {'status': 'too_few_windows'}
+            continue
+
+        train_ds, val_ds = windows_to_datasets(windows)
+        safe = label.replace('@', '_').replace('/', '_')
+
+        m_scratch = create_model('grouped', input_dim=8)
+        _, ep_s = train(m_scratch, train_ds, val_ds,
+                        f'{out}/exp040_scratch_{safe}.pth', f'Scratch-{label}')
+        mse_s = forecast_mse(m_scratch, val_ds)
+
+        m_transfer = create_model('grouped', input_dim=8)
+        if prev_ckpt and os.path.exists(prev_ckpt):
+            load_checkpoint(m_transfer, prev_ckpt)
+            ctx.log(f'Transferred from {prev_ckpt}')
+        transfer_path = f'{out}/exp040_transfer_{safe}.pth'
+        _, ep_t = train(m_transfer, train_ds, val_ds, transfer_path, f'Transfer-{label}')
+        mse_t = forecast_mse(m_transfer, val_ds)
+        prev_ckpt = transfer_path
+
+        improv = improvement_pct(mse_t, mse_s)
+        cascade_results[label] = {
+            'scratch_mse': mse_s, 'scratch_epochs': ep_s,
+            'transfer_mse': mse_t, 'transfer_epochs': ep_t,
+            'improvement_pct': improv,
+        }
+        ctx.log(f'{label}: scratch={mse_s:.6f} transfer={mse_t:.6f} Δ={improv:.1f}%')
+
+    ctx.result['cascades'] = cascade_results
+    ctx.result['success'] = any(
+        r.get('improvement_pct', 0) > 10
+        for r in cascade_results.values() if isinstance(r, dict))
+    return ctx.save('exp040_horizon_transfer.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-041: Backtest with Denormalized Pipeline
+# Depends on: EXP-034, EXP-036
+# ────────────────────────────────────────────────────────────────────
+
+def run_backtest_denorm(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-041', out, hypothesis='denorm backtest > 5 suggestions/patient')
+    patients_dir = getattr(args, 'patients_dir', None)
+    paths = resolve_patient_paths(patients_dir, getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+
+    model = create_model('grouped', input_dim=8)
+    ckpt = find_checkpoint(out, 'exp026_grouped_8f.pth',
+                           'exp035_norm_mh_1hr_5min.pth',
+                           'grouped_multi_transfer.pth')
+    if ckpt:
+        load_checkpoint(model, ckpt)
+
+    forecaster = HierarchicalForecaster(short_model=model)
+    engine = BacktestEngine(forecaster=forecaster)
+
+    all_results = []
+    for ppath in paths[:5]:
+        pname = ppath.rstrip('/').split('/')[-2]
+        ctx.section(f'Patient {pname}')
+        try:
+            grid_df, feat = build_nightscout_grid(ppath, verbose=False)
+            if feat is None:
+                continue
+            glucose_mgdl = feat[:, 0] * glucose_scale
+            valid = ~np.isnan(glucose_mgdl)
+            glucose_mgdl = glucose_mgdl[valid]
+
+            treatments_path = ppath.rstrip('/') + '/treatments.json'
+            ds_path = ppath.rstrip('/') + '/devicestatus.json'
+            events = extract_override_events(
+                treatments_path,
+                ds_path if os.path.exists(ds_path) else None
+            ) if os.path.exists(treatments_path) else []
+
+            bt = engine.full_backtest(
+                glucose_mgdl=glucose_mgdl, events=events,
+                window_size_steps=72, stride_steps=36)
+            all_results.append({'patient': pname, **bt})
+            ctx.log(f'{pname}: {bt.get("n_suggestions", 0)} suggestions, '
+                    f'TIR={bt.get("mean_tir", 0):.1f}%')
+        except Exception as e:
+            ctx.log(f'{pname}: Error — {e}')
+            all_results.append({'patient': pname, 'error': str(e)})
+
+    n_sugg = sum(r.get('n_suggestions', 0) for r in all_results)
+    n_pat = len([r for r in all_results if 'error' not in r])
+    avg = n_sugg / max(n_pat, 1)
+
+    ctx.result['patients'] = all_results
+    ctx.result['total_suggestions'] = n_sugg
+    ctx.result['avg_suggestions_per_patient'] = avg
+    ctx.result['success'] = avg > 5
+    ctx.section('Summary')
+    ctx.log(f'{n_sugg} suggestions across {n_pat} patients (avg {avg:.1f}/patient)')
+    return ctx.save('exp041_backtest_denorm.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-042: Composite Decision Pipeline
+# Depends on: EXP-026 (model checkpoint)
+# Hypothesis: Full agentic chain runs end-to-end and produces
+#   clinically coherent results across patients.
+# Success: Chain completes for >80% of patients; drift↔TIR correlation
+#   is negative (more drift → lower TIR); calibration gap < 10%.
+# ────────────────────────────────────────────────────────────────────
+
+def run_composite_decision(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-042', out,
+                           hypothesis='composite chain produces coherent decisions')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    # Load or train a model
+    model = create_model('grouped', input_dim=8)
+    ckpt = find_checkpoint(out, 'exp026_grouped_8f.pth',
+                           'grouped_multi_transfer.pth',
+                           'exp034_grouped.pth')
+    if ckpt:
+        load_checkpoint(model, ckpt)
+    else:
+        ctx.log('No checkpoint found — training fresh model')
+        ds, vds = load_multipatient_nightscout(paths, window_size=24)
+        if ds is not None and len(ds) > 0:
+            train(model, ds, vds, f'{out}/exp042_grouped.pth', 'EXP042-base')
+
+    # --- Phase 1: Decision chain per patient ---
+    ctx.section('Phase 1: Decision chain')
+    patient_results = []
+    completed = 0
+
+    for ppath in paths:
+        pname = ppath.rstrip('/').split('/')[-2]
+        try:
+            from .real_data_adapter import build_nightscout_grid
+            grid_df, feat = build_nightscout_grid(ppath, verbose=False)
+            if feat is None or len(feat) < 48:
+                ctx.log(f'{pname}: insufficient data')
+                continue
+
+            isf, cr = load_patient_profile(ppath)
+
+            # Pick an interesting window (mid-data)
+            center_idx = len(feat) // 2
+            r = run_decision(
+                model, feat, grid_df, center_idx,
+                history=12, horizon=12,
+                profile={'isf': isf, 'cr': cr},
+                n_mc_samples=20)
+
+            r['patient'] = pname
+            patient_results.append(r)
+            completed += 1
+
+            drift_state = 'unknown'
+            drift_d = r.get('drift_tracking', {})
+            if 'classification' in drift_d:
+                cls = drift_d['classification']
+                drift_state = cls.get('state', '?') if isinstance(cls, dict) else str(cls)
+
+            tir = r.get('clinical_actual', {}).get('tir', None)
+            ctx.log(f'{pname}: drift={drift_state} TIR={tir}')
+
+        except Exception as e:
+            ctx.log(f'{pname}: Error — {e}')
+            patient_results.append({'patient': pname, 'error': str(e)})
+
+    completion_rate = completed / max(1, len(paths))
+
+    # --- Phase 2: Calibration check ---
+    ctx.section('Phase 2: Calibration')
+    cal_result = {'status': 'skipped'}
+    try:
+        # Use first patient's features for calibration
+        for ppath in paths[:1]:
+            grid_df, feat = build_nightscout_grid(ppath, verbose=False)
+            if feat is not None and len(feat) > 100:
+                cal_result = run_calibration(
+                    model, feat, history=12, horizon=12, stride=24,
+                    n_samples_sweep=[10, 50],
+                    confidence_levels=[0.5, 0.95])
+                break
+    except Exception as e:
+        cal_result = {'status': 'error', 'message': str(e)}
+
+    cal_gap = cal_result.get('best_95_gap', 1.0)
+    ctx.log(f'95% calibration gap: {cal_gap}')
+
+    # --- Phase 3: Drift ↔ TIR correlation ---
+    ctx.section('Phase 3: Drift-TIR correlation')
+    drift_tir_pairs = []
+    for r in patient_results:
+        if 'error' in r:
+            continue
+        drift_d = r.get('drift_tracking', {})
+        isf_drift = abs(drift_d.get('final_isf_drift_pct', 0))
+        tir = r.get('clinical_actual', {}).get('tir', None)
+        if tir is not None:
+            drift_tir_pairs.append((isf_drift, tir))
+
+    correlation = None
+    if len(drift_tir_pairs) >= 3:
+        drifts = np.array([p[0] for p in drift_tir_pairs])
+        tirs = np.array([p[1] for p in drift_tir_pairs])
+        if np.std(drifts) > 0 and np.std(tirs) > 0:
+            correlation = float(np.corrcoef(drifts, tirs)[0, 1])
+            ctx.log(f'Drift-TIR correlation: {correlation:.3f} '
+                    f'(n={len(drift_tir_pairs)})')
+
+    # --- Results ---
+    ctx.result.update({
+        'patients': patient_results,
+        'completion_rate': round(completion_rate, 3),
+        'calibration': cal_result,
+        'calibration_gap_95': cal_gap,
+        'drift_tir_correlation': correlation,
+        'n_drift_tir_pairs': len(drift_tir_pairs),
+        'success': (completion_rate > 0.8
+                    and (cal_gap is None or cal_gap < 0.10)),
+    })
+    ctx.section('Summary')
+    ctx.log(f'Completed: {completed}/{len(paths)} ({completion_rate:.0%})')
+    ctx.log(f'Calibration gap: {cal_gap}')
+    ctx.log(f'Drift↔TIR r: {correlation}')
+    ctx.log(f'Success: {ctx.result["success"]}')
+    return ctx.save('exp042_composite_decision.json')

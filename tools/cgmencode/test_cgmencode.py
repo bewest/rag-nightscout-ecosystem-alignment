@@ -1967,5 +1967,211 @@ class TestHierarchicalForecaster(unittest.TestCase):
         self.assertIn('suggestion_accuracy', result)
 
 
+class TestHindcastComposite(unittest.TestCase):
+    """Tests for composite hindcast modes (decision, drift-scan, calibration)."""
+
+    def _make_model(self):
+        from tools.cgmencode.model import CGMGroupedEncoder
+        return CGMGroupedEncoder(input_dim=8, d_model=32, nhead=4, num_layers=1,
+                                 dropout=0.1)
+
+    def _make_features_and_df(self, n_steps=288):
+        """Create synthetic features (n_steps, 8) and a matching DataFrame."""
+        rng = np.random.RandomState(42)
+        features = np.zeros((n_steps, 8), dtype=np.float32)
+        # glucose: oscillating around 140/400 normalized
+        t = np.arange(n_steps)
+        features[:, 0] = (140 + 30 * np.sin(t * 2 * np.pi / 288)) / 400.0
+        # IOB: slow decay
+        features[:, 1] = np.maximum(0, 5.0 - t * 0.02) / 10.0
+        # COB: spike then decay
+        features[:, 2] = np.maximum(0, 30.0 * np.exp(-t / 50.0)) / 60.0
+        # time_sin/cos
+        hours = (t * 5 / 60.0) % 24
+        features[:, 6] = np.sin(2 * np.pi * hours / 24)
+        features[:, 7] = np.cos(2 * np.pi * hours / 24)
+        # Small noise
+        features += rng.normal(0, 0.01, features.shape).astype(np.float32)
+        features = np.clip(features, 0, 1)
+
+        import pandas as pd
+        idx = pd.date_range('2026-01-01', periods=n_steps, freq='5min', tz='UTC')
+        df = pd.DataFrame({
+            'glucose': features[:, 0] * 400,
+            'iob': features[:, 1] * 10,
+            'cob': features[:, 2] * 60,
+        }, index=idx)
+        return features, df
+
+    # --- Decision mode ---
+
+    def test_decision_returns_all_keys(self):
+        from tools.cgmencode.hindcast_composite import run_decision
+        model = self._make_model()
+        features, df = self._make_features_and_df()
+        result = run_decision(
+            model, features, df, center_idx=144,
+            history=12, horizon=12,
+            profile={'isf': 40.0, 'cr': 10.0},
+            n_mc_samples=5)
+        # All pipeline stages must be present
+        self.assertIn('event_classification', result)
+        self.assertIn('drift_tracking', result)
+        self.assertIn('forecast', result)
+        self.assertIn('scenario_simulation', result)
+        self.assertIn('uncertainty', result)
+        self.assertIn('clinical_actual', result)
+        self.assertIn('time', result)
+
+    def test_decision_without_classifier(self):
+        """Decision mode should work (skip classification) without a classifier."""
+        from tools.cgmencode.hindcast_composite import run_decision
+        model = self._make_model()
+        features, df = self._make_features_and_df()
+        result = run_decision(
+            model, features, df, center_idx=144,
+            history=12, horizon=12,
+            profile={'isf': 40.0, 'cr': 10.0},
+            n_mc_samples=5,
+            classifier_model=None, classifier_features=None)
+        self.assertEqual(result['event_classification']['status'], 'skipped')
+        # Other stages should still work
+        self.assertIn('drift_tracking', result)
+        self.assertIn('forecast', result)
+
+    def test_decision_out_of_bounds(self):
+        """Decision mode should handle window out of bounds gracefully."""
+        from tools.cgmencode.hindcast_composite import run_decision
+        model = self._make_model()
+        features, df = self._make_features_and_df(n_steps=20)
+        result = run_decision(
+            model, features, df, center_idx=5,
+            history=12, horizon=12,
+            profile={'isf': 40.0, 'cr': 10.0})
+        self.assertIn('error', result)
+
+    def test_decision_uncertainty_has_bounds(self):
+        """Uncertainty section should have P(hypo), P(hyper), and prediction intervals."""
+        from tools.cgmencode.hindcast_composite import run_decision
+        model = self._make_model()
+        features, df = self._make_features_and_df()
+        result = run_decision(
+            model, features, df, center_idx=144,
+            history=12, horizon=12,
+            profile={'isf': 40.0, 'cr': 10.0},
+            n_mc_samples=5)
+        unc = result.get('uncertainty', {})
+        if unc.get('status') != 'error':
+            self.assertIn('max_p_hypo', unc)
+            self.assertIn('max_p_hyper', unc)
+            self.assertIn('pi_95_low_mgdl', unc)
+            self.assertIn('pi_95_high_mgdl', unc)
+            self.assertGreaterEqual(unc['max_p_hypo'], 0)
+            self.assertLessEqual(unc['max_p_hypo'], 1)
+
+    # --- Drift-scan mode ---
+
+    def test_drift_scan_returns_ranked(self):
+        from tools.cgmencode.hindcast_composite import run_drift_scan
+        model = self._make_model()
+        features, df = self._make_features_and_df()
+        results = run_drift_scan(
+            model, features, df,
+            profile={'isf': 40.0, 'cr': 10.0},
+            history=12, horizon=12, top_n=5, stride=12)
+        self.assertIsInstance(results, list)
+        self.assertLessEqual(len(results), 5)
+        if len(results) >= 2:
+            # Should be sorted by drift_magnitude descending
+            self.assertGreaterEqual(
+                results[0]['drift_magnitude'],
+                results[1]['drift_magnitude'])
+
+    def test_drift_scan_has_anomaly_cross_ref(self):
+        from tools.cgmencode.hindcast_composite import run_drift_scan
+        model = self._make_model()
+        features, df = self._make_features_and_df()
+        results = run_drift_scan(
+            model, features, df,
+            profile={'isf': 40.0, 'cr': 10.0},
+            history=12, horizon=12, top_n=3, stride=24)
+        for r in results:
+            self.assertIn('isf_drift_pct', r)
+            self.assertIn('cr_drift_pct', r)
+            self.assertIn('anomaly_mae', r)
+            self.assertIn('co_occurrence', r)
+
+    # --- Calibration mode ---
+
+    def test_calibration_coverage_structure(self):
+        from tools.cgmencode.hindcast_composite import run_calibration
+        model = self._make_model()
+        features, _ = self._make_features_and_df()
+        result = run_calibration(
+            model, features,
+            history=12, horizon=12, stride=48,
+            n_samples_sweep=[5, 10],
+            confidence_levels=[0.5, 0.95])
+        self.assertIn('calibration', result)
+        self.assertIn('best_n_samples', result)
+        self.assertIn('confidence_levels', result)
+
+    def test_calibration_coverage_monotonic(self):
+        """Higher confidence level should give equal or higher actual coverage."""
+        from tools.cgmencode.hindcast_composite import run_calibration
+        model = self._make_model()
+        features, _ = self._make_features_and_df()
+        result = run_calibration(
+            model, features,
+            history=12, horizon=12, stride=48,
+            n_samples_sweep=[10],
+            confidence_levels=[0.5, 0.8, 0.95])
+        cal = result['calibration'].get(10, {})
+        if not isinstance(cal, dict) or 'status' in cal:
+            self.skipTest('No calibration data produced')
+        coverages = []
+        for cl in ['0.5', '0.8', '0.95']:
+            if cl in cal:
+                coverages.append(cal[cl]['actual_coverage'])
+        if len(coverages) >= 2:
+            for i in range(len(coverages) - 1):
+                self.assertGreaterEqual(coverages[i + 1], coverages[i] - 0.05,
+                                        'Coverage should be approximately monotonic')
+
+    # --- Display functions (smoke tests) ---
+
+    def test_display_decision_runs(self):
+        """display_decision should not crash on a valid result dict."""
+        from tools.cgmencode.hindcast_composite import run_decision, display_decision
+        model = self._make_model()
+        features, df = self._make_features_and_df()
+        result = run_decision(
+            model, features, df, center_idx=144,
+            history=12, horizon=12,
+            profile={'isf': 40.0, 'cr': 10.0},
+            n_mc_samples=5)
+        # Should not raise
+        display_decision(result, 'grouped', 'test.pth')
+
+    def test_display_drift_scan_runs(self):
+        from tools.cgmencode.hindcast_composite import run_drift_scan, display_drift_scan
+        model = self._make_model()
+        features, df = self._make_features_and_df()
+        results = run_drift_scan(
+            model, features, df,
+            profile={'isf': 40.0, 'cr': 10.0},
+            history=12, horizon=12, top_n=3, stride=24)
+        display_drift_scan(results, 'grouped', 'test.pth')
+
+    def test_display_calibration_runs(self):
+        from tools.cgmencode.hindcast_composite import run_calibration, display_calibration
+        model = self._make_model()
+        features, _ = self._make_features_and_df()
+        result = run_calibration(
+            model, features, history=12, horizon=12, stride=48,
+            n_samples_sweep=[5], confidence_levels=[0.5, 0.95])
+        display_calibration(result, 'grouped', 'test.pth')
+
+
 if __name__ == '__main__':
     unittest.main()

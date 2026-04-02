@@ -25,6 +25,10 @@ from .event_classifier import (
 )
 from .state_tracker import PatternStateMachine
 from .forecast import HierarchicalForecaster, ScenarioSimulator, BacktestEngine
+from .hindcast_composite import (
+    run_decision, run_drift_scan, run_calibration,
+    display_decision, display_drift_scan, display_calibration,
+)
 
 __all__ = [
     # Schema (core)
@@ -78,4 +82,11 @@ __all__ = [
     'HierarchicalForecaster',
     'ScenarioSimulator',
     'BacktestEngine',
+    # Composite hindcast modes
+    'run_decision',
+    'run_drift_scan',
+    'run_calibration',
+    'display_decision',
+    'display_drift_scan',
+    'display_calibration',
 ]

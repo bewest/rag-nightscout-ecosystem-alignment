@@ -1561,6 +1561,9 @@ Inference Frames:
   impute         Mask glucose values, predict from IOB/actions alone (tests understanding)
   similarity     Find past windows with similar metabolic embeddings
   dosesweep      [conditioned only] Sweep bolus doses and compare outcomes
+  decision       Full agentic chain: detect → track → forecast → simulate → bound
+  drift-scan     Rank windows by ISF/CR drift, cross-ref with anomaly
+  calibration    MC-Dropout prediction interval coverage analysis
         ''')
 
     parser.add_argument('--data', required=True,
@@ -1582,7 +1585,8 @@ Inference Frames:
     parser.add_argument('--mode', default='forecast',
                         choices=['forecast', 'reconstruct', 'anomaly',
                                  'counterfactual', 'impute', 'similarity',
-                                 'dosesweep'],
+                                 'dosesweep',
+                                 'decision', 'drift-scan', 'calibration'],
                         help='Inference frame (default: forecast). See help for descriptions.')
 
     # Physics-residual model options
@@ -1604,6 +1608,12 @@ Inference Frames:
                         help='Step stride for scanning modes (default: 6 = 30 min)')
     parser.add_argument('--doses', type=str, default=None,
                         help='Comma-separated bolus doses for dosesweep (default: 0,0.5,1,2,3,5,8,10)')
+
+    # Composite mode options (decision, drift-scan, calibration)
+    parser.add_argument('--n-mc-samples', type=int, default=50,
+                        help='MC-Dropout samples for decision/calibration modes (default: 50)')
+    parser.add_argument('--classifier-checkpoint', default=None,
+                        help='Path to trained XGBoost classifier pickle (optional, for decision mode)')
 
     # Second model for comparison
     parser.add_argument('--checkpoint2', help='Second model checkpoint for side-by-side comparison')
@@ -1681,6 +1691,79 @@ Inference Frames:
         if args.json:
             json.dump(results, sys.stdout, indent=2, default=str)
         return
+
+    # === COMPOSITE MODES: decision, drift-scan, calibration ===
+    if args.mode in ('decision', 'drift-scan', 'calibration'):
+        from .hindcast_composite import (
+            run_decision, run_drift_scan, run_calibration,
+            display_decision, display_drift_scan, display_calibration,
+        )
+        if args.mode == 'calibration':
+            cal_result = run_calibration(
+                model, features,
+                history=args.history, horizon=args.horizon,
+                stride=args.stride, n_samples_sweep=[10, 20, 50, 100])
+            display_calibration(cal_result, args.model, ckpt_name)
+            if args.json:
+                json.dump(cal_result, sys.stdout, indent=2, default=str)
+            return
+
+        if args.mode == 'drift-scan':
+            drift_results = run_drift_scan(
+                model, features, df, profile=profile,
+                history=args.history, horizon=args.horizon,
+                top_n=args.top, stride=args.stride,
+                residual=args.residual)
+            display_drift_scan(drift_results, args.model, ckpt_name)
+            if args.json:
+                json.dump(drift_results, sys.stdout, indent=2, default=str)
+            return
+
+        if args.mode == 'decision':
+            # Load optional classifier
+            classifier_model, classifier_features = None, None
+            if args.classifier_checkpoint:
+                try:
+                    import pickle
+                    with open(args.classifier_checkpoint, 'rb') as f:
+                        classifier_model = pickle.load(f)
+                except Exception as e:
+                    print(f'  WARNING: Could not load classifier: {e}')
+
+            center_idx = _resolve_center_idx(args, df, features)
+            if args.scan:
+                indices = find_interesting_windows(
+                    df, features, n=args.scan,
+                    history=args.history, horizon=args.horizon)
+                all_results = []
+                for idx in indices:
+                    r = run_decision(
+                        model, features, df, idx,
+                        history=args.history, horizon=args.horizon,
+                        profile=profile, residual=args.residual,
+                        isf=profile['isf'], cr=profile['cr'],
+                        physics_level=args.physics_level,
+                        n_mc_samples=args.n_mc_samples,
+                        classifier_model=classifier_model,
+                        classifier_features=classifier_features)
+                    display_decision(r, args.model, ckpt_name)
+                    all_results.append(r)
+                if args.json:
+                    json.dump(all_results, sys.stdout, indent=2, default=str)
+            else:
+                r = run_decision(
+                    model, features, df, center_idx,
+                    history=args.history, horizon=args.horizon,
+                    profile=profile, residual=args.residual,
+                    isf=profile['isf'], cr=profile['cr'],
+                    physics_level=args.physics_level,
+                    n_mc_samples=args.n_mc_samples,
+                    classifier_model=classifier_model,
+                    classifier_features=classifier_features)
+                display_decision(r, args.model, ckpt_name)
+                if args.json:
+                    json.dump(r, sys.stdout, indent=2, default=str)
+            return
 
     # === Modes that need a center_idx: resolve time target ===
     center_idx = _resolve_center_idx(args, df, features)
