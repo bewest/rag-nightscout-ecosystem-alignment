@@ -31,7 +31,8 @@ from .real_data_adapter import (
     load_multipatient_nightscout, build_nightscout_grid,
     build_extended_features, downsample_grid, build_multihorizon_windows,
 )
-from .schema import NUM_FEATURES, NUM_FEATURES_EXTENDED
+from .schema import NUM_FEATURES, NUM_FEATURES_EXTENDED, NORMALIZATION_SCALES
+from .model import CGMGroupedEncoder
 from .label_events import build_classifier_dataset, extract_override_events
 from .event_classifier import train_event_classifier
 from .uncertainty import mc_predict
@@ -64,6 +65,19 @@ REGISTRY = {
     # Round 3 — composite evaluation
     'composite-decision':     'run_composite_decision',     # EXP-042
     'forecast-masked':        'run_forecast_masked',        # EXP-043
+    # Round 4 — forecast refinement + classifier combos
+    'arch-sweep':             'run_arch_sweep',             # EXP-044
+    'per-patient-finetune':   'run_per_patient_finetune',   # EXP-045
+    'walkforward-forecast':   'run_walkforward_forecast',   # EXP-046
+    'forecast-16f':           'run_forecast_16f',           # EXP-047
+    'physics-residual-train': 'run_physics_residual_train', # EXP-048
+    'combined-classifier':    'run_combined_classifier',    # EXP-049
+    'binary-detectors':       'run_binary_detectors',       # EXP-050
+    'forecast-multiseed':     'run_forecast_multiseed',     # EXP-051
+    'forecast-uncertainty':   'run_forecast_uncertainty',   # EXP-052
+    'longer-training':        'run_longer_training',        # EXP-053
+    'event-conditioned':      'run_event_conditioned',      # EXP-054
+    'patient-generalization':  'run_patient_generalization', # EXP-055
 }
 
 
@@ -1591,3 +1605,1049 @@ def run_forecast_masked(args):
     mae_vals = [v['mae_mgdl'] for v in results.values()]
     ctx.result['success'] = any(m < 30 for m in mae_vals) if mae_vals else False
     return ctx.save('exp043_forecast_masked.json')
+
+
+# ════════════════════════════════════════════════════════════════════
+# ROUND 4 — Forecast Refinement & Classifier Combos
+# ════════════════════════════════════════════════════════════════════
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-044: Architecture Sweep (forecast-masked)
+# Hypothesis: Wider/deeper models improve forecast MAE at 1hr.
+# Configs: {d_model: 32/64/128} × {layers: 2/4}
+# ────────────────────────────────────────────────────────────────────
+
+def run_arch_sweep(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-044', out, hypothesis='wider/deeper → lower MAE')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    if len(train_ds) < 100:
+        ctx.result['success'] = False
+        return ctx.save('exp044_arch_sweep.json')
+
+    configs = [
+        {'d_model': 32, 'num_layers': 2, 'nhead': 4},   # baseline (270K params)
+        {'d_model': 64, 'num_layers': 2, 'nhead': 4},   # wider
+        {'d_model': 64, 'num_layers': 4, 'nhead': 4},   # wider+deeper
+        {'d_model': 128, 'num_layers': 2, 'nhead': 8},  # much wider
+        {'d_model': 128, 'num_layers': 4, 'nhead': 8},  # large
+    ]
+
+    from torch.utils.data import DataLoader
+    results = {}
+    for cfg in configs:
+        label = f'd{cfg["d_model"]}_L{cfg["num_layers"]}'
+        ctx.section(f'Config: {label}')
+        model = CGMGroupedEncoder(
+            input_dim=8, d_model=cfg['d_model'],
+            nhead=cfg['nhead'], num_layers=cfg['num_layers'])
+        n_params = sum(p.numel() for p in model.parameters())
+        save = f'{out}/exp044_{label}.pth'
+        best, ep = train_forecast(model, train_ds, val_ds, save, label,
+                                  epochs=60, patience=12)
+        fmse = forecast_mse(model, val_ds, mask_future=True)
+        pmse = persistence_mse(val_ds)
+
+        device = get_device()
+        model.eval()
+        preds, trues = [], []
+        for batch in DataLoader(val_ds, batch_size=64):
+            x = batch[0].to(device)
+            half = x.shape[1] // 2
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            preds.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
+            trues.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+
+        mae = float(np.mean(np.abs(
+            np.concatenate(preds).flatten() - np.concatenate(trues).flatten())))
+        results[label] = {
+            'mae_mgdl': mae, 'params': n_params,
+            'forecast_mse': fmse, 'persistence_mse': pmse,
+            'improvement_pct': improvement_pct(fmse, pmse),
+            'epochs': ep,
+        }
+        ctx.log(f'{label}: MAE={mae:.1f} mg/dL, params={n_params:,}, '
+                f'Δ={improvement_pct(fmse, pmse):.1f}%')
+
+    ctx.result['configs'] = results
+    best_cfg = min(results, key=lambda k: results[k]['mae_mgdl'])
+    ctx.result['best_config'] = best_cfg
+    ctx.result['best_mae'] = results[best_cfg]['mae_mgdl']
+    ctx.result['success'] = results[best_cfg]['mae_mgdl'] < 12.0
+    ctx.section('Winner')
+    ctx.log(f'{best_cfg}: MAE={results[best_cfg]["mae_mgdl"]:.1f} mg/dL')
+    return ctx.save('exp044_arch_sweep.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-045: Per-Patient Fine-Tuning
+# Hypothesis: Fine-tuning the multi-patient model per patient
+#   reduces MAE by >15% vs the generic model.
+# ────────────────────────────────────────────────────────────────────
+
+def run_per_patient_finetune(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-045', out, hypothesis='finetune > generic by 15%')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader
+
+    base_ckpt = find_checkpoint(out, 'exp043_forecast_mh_1hr_5min.pth',
+                                'exp043_forecast_8f_1hr.pth')
+    if not base_ckpt:
+        ctx.log('No base checkpoint'); ctx.result['success'] = False
+        return ctx.save('exp045_finetune.json')
+
+    results = {}
+    for ppath in paths:
+        pname = ppath.rstrip('/').split('/')[-2]
+        ctx.section(f'Patient {pname}')
+        try:
+            train_ds, val_ds = load_multipatient_nightscout([ppath], window_size=24)
+            if len(train_ds) < 50:
+                ctx.log(f'{pname}: too few windows — skip')
+                continue
+
+            # Generic model eval
+            model_gen = create_model('grouped', input_dim=8)
+            load_checkpoint(model_gen, base_ckpt)
+            gen_mse = forecast_mse(model_gen, val_ds, mask_future=True)
+
+            # Fine-tune
+            model_ft = create_model('grouped', input_dim=8)
+            load_checkpoint(model_ft, base_ckpt)
+            ft_path = f'{out}/exp045_ft_{pname}.pth'
+            best, ep = train_forecast(model_ft, train_ds, val_ds, ft_path,
+                                      f'FT-{pname}', epochs=30, lr=5e-4,
+                                      patience=8)
+            ft_mse = forecast_mse(model_ft, val_ds, mask_future=True)
+
+            # MAE in mg/dL
+            device = get_device()
+            model_ft.eval()
+            preds, trues = [], []
+            for batch in DataLoader(val_ds, batch_size=64):
+                x = batch[0].to(device)
+                half = x.shape[1] // 2
+                x_in = x.clone(); x_in[:, half:, 0] = 0.0
+                with torch.no_grad():
+                    pred = model_ft(x_in, causal=True)
+                preds.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
+                trues.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+
+            ft_mae = float(np.mean(np.abs(
+                np.concatenate(preds).flatten() - np.concatenate(trues).flatten())))
+            improv = improvement_pct(ft_mse, gen_mse)
+            results[pname] = {
+                'generic_mse': gen_mse, 'finetune_mse': ft_mse,
+                'finetune_mae_mgdl': ft_mae,
+                'improvement_pct': improv, 'epochs': ep,
+            }
+            ctx.log(f'{pname}: FT MAE={ft_mae:.1f} mg/dL, Δ={improv:.1f}% vs generic')
+        except Exception as e:
+            ctx.log(f'{pname}: Error — {e}')
+
+    ctx.result['patients'] = results
+    avg_improv = np.mean([r['improvement_pct'] for r in results.values()]) if results else 0
+    ctx.result['avg_improvement_pct'] = float(avg_improv)
+    ctx.result['success'] = avg_improv > 15
+    ctx.section('Summary')
+    ctx.log(f'Avg improvement: {avg_improv:.1f}%')
+    return ctx.save('exp045_finetune.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-046: Walk-Forward Temporal Validation
+# Hypothesis: Temporal split gives more realistic (higher) MAE than
+#   random split, revealing overfitting to temporal patterns.
+# ────────────────────────────────────────────────────────────────────
+
+def run_walkforward_forecast(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-046', out, hypothesis='temporal split → higher MAE')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader, TensorDataset
+
+    # Random split (baseline — same as EXP-043)
+    train_rnd, val_rnd = load_multipatient_nightscout(paths, window_size=24)
+    if len(train_rnd) < 200:
+        ctx.result['success'] = False
+        return ctx.save('exp046_walkforward.json')
+
+    model_rnd = create_model('grouped', input_dim=8)
+    train_forecast(model_rnd, train_rnd, val_rnd,
+                   f'{out}/exp046_random.pth', 'WF-random', epochs=60)
+    rnd_mse = forecast_mse(model_rnd, val_rnd, mask_future=True)
+
+    # Temporal split: extract all data, sort, split 80/20
+    all_tensors = []
+    for ds in [train_rnd, val_rnd]:
+        for i in range(len(ds)):
+            all_tensors.append(ds[i][0])
+    all_t = torch.stack(all_tensors)
+    n = all_t.shape[0]
+    split = int(n * 0.8)
+    train_temp = TensorDataset(all_t[:split], all_t[:split])
+    val_temp = TensorDataset(all_t[split:], all_t[split:])
+
+    model_temp = create_model('grouped', input_dim=8)
+    train_forecast(model_temp, train_temp, val_temp,
+                   f'{out}/exp046_temporal.pth', 'WF-temporal', epochs=60)
+    temp_mse = forecast_mse(model_temp, val_temp, mask_future=True)
+
+    # MAE for both
+    device = get_device()
+    mae_results = {}
+    for name, model, vds in [('random', model_rnd, val_rnd),
+                              ('temporal', model_temp, val_temp)]:
+        model.eval()
+        preds, trues = [], []
+        for batch in DataLoader(vds, batch_size=64):
+            x = batch[0].to(device)
+            half = x.shape[1] // 2
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            preds.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
+            trues.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+        mae = float(np.mean(np.abs(
+            np.concatenate(preds).flatten() - np.concatenate(trues).flatten())))
+        mae_results[name] = mae
+
+    ctx.result.update({
+        'random_mse': rnd_mse, 'temporal_mse': temp_mse,
+        'random_mae_mgdl': mae_results['random'],
+        'temporal_mae_mgdl': mae_results['temporal'],
+        'temporal_harder_pct': improvement_pct(temp_mse, rnd_mse),
+        'success': True,  # informational
+    })
+    ctx.section('Results')
+    ctx.log(f'Random:   MAE={mae_results["random"]:.1f} mg/dL  MSE={rnd_mse:.6f}')
+    ctx.log(f'Temporal: MAE={mae_results["temporal"]:.1f} mg/dL  MSE={temp_mse:.6f}')
+    ctx.log(f'Temporal is {abs(improvement_pct(temp_mse, rnd_mse)):.1f}% '
+            f'{"harder" if temp_mse > rnd_mse else "easier"}')
+    return ctx.save('exp046_walkforward.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-047: 16-Feature Forecast-Masked
+# Hypothesis: Extended features (glucose ROC, day-of-week, override
+#   state) improve forecast when trained with proper masking.
+# ────────────────────────────────────────────────────────────────────
+
+def run_forecast_16f(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-047', out, hypothesis='16f masked > 8f masked')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader
+
+    # Build 16f windows
+    windows_16f = build_16f_windows(paths, window_size=24)
+    if len(windows_16f) < 100:
+        ctx.result['success'] = False
+        return ctx.save('exp047_forecast_16f.json')
+
+    # 8f baseline (from EXP-043)
+    train_8f, val_8f = load_multipatient_nightscout(paths, window_size=24)
+    model_8f = create_model('grouped', input_dim=8)
+    train_forecast(model_8f, train_8f, val_8f,
+                   f'{out}/exp047_8f.pth', '047-8f', epochs=60)
+    mse_8f = forecast_mse(model_8f, val_8f, mask_future=True)
+
+    # 16f
+    train_16f, val_16f = windows_to_datasets(windows_16f)
+    model_16f = create_model('grouped', input_dim=16)
+    train_forecast(model_16f, train_16f, val_16f,
+                   f'{out}/exp047_16f.pth', '047-16f', epochs=60)
+    mse_16f = forecast_mse(model_16f, val_16f, mask_future=True)
+
+    # MAE for both
+    device = get_device()
+    mae_results = {}
+    for name, model, vds in [('8f', model_8f, val_8f), ('16f', model_16f, val_16f)]:
+        model.eval()
+        preds, trues = [], []
+        for batch in DataLoader(vds, batch_size=64):
+            x = batch[0].to(device)
+            half = x.shape[1] // 2
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            preds.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
+            trues.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+        mae = float(np.mean(np.abs(
+            np.concatenate(preds).flatten() - np.concatenate(trues).flatten())))
+        mae_results[name] = mae
+
+    improv = improvement_pct(mse_16f, mse_8f)
+    ctx.result.update({
+        'mse_8f': mse_8f, 'mse_16f': mse_16f,
+        'mae_8f_mgdl': mae_results['8f'], 'mae_16f_mgdl': mae_results['16f'],
+        'improvement_pct': improv,
+        'success': improv > 5,
+    })
+    ctx.section('Results')
+    ctx.log(f'8f:  MAE={mae_results["8f"]:.1f} mg/dL')
+    ctx.log(f'16f: MAE={mae_results["16f"]:.1f} mg/dL')
+    ctx.log(f'16f vs 8f: {improv:.1f}%')
+    return ctx.save('exp047_forecast_16f.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-048: Physics-Residual Training
+# Hypothesis: Train ML to predict (true - physics_pred) residual,
+#   then compose forecast = physics + ML_residual.
+# ────────────────────────────────────────────────────────────────────
+
+def run_physics_residual_train(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-048', out,
+                           hypothesis='residual training > direct forecast')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader, TensorDataset
+
+    # Build windows and compute physics predictions
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    if len(train_ds) < 100:
+        ctx.result['success'] = False
+        return ctx.save('exp048_physics_residual.json')
+
+    isf, cr = load_patient_profile(paths[0])
+    ctx.log(f'ISF={isf}, CR={cr}')
+
+    # Extract numpy windows from datasets for physics computation
+    all_windows = []
+    for ds in [train_ds, val_ds]:
+        for i in range(len(ds)):
+            all_windows.append(ds[i][0].numpy())
+
+    # Compute physics baseline for each window and create residual targets
+    residual_windows = []
+    for win in all_windows:
+        half = win.shape[0] // 2
+        gl_now = win[half - 1, 0] * glucose_scale
+        iob_now = win[half - 1, 1] * NORMALIZATION_SCALES.get('iob', 20)
+        cob_now = win[half - 1, 2] * NORMALIZATION_SCALES.get('cob', 100)
+
+        phys_gl = np.full(half, gl_now)
+        for t in range(half):
+            decay = t / half
+            phys_gl[t] = (gl_now - iob_now * (1 - decay) * isf
+                          + cob_now * (1 - decay) / max(cr, 1) * isf)
+        phys_norm = phys_gl / glucose_scale  # back to normalized
+
+        # Residual target: true - physics (in normalized space)
+        residual = win.copy()
+        residual[half:, 0] = win[half:, 0] - phys_norm
+        residual_windows.append(residual)
+
+    # Split residual windows
+    n = len(residual_windows)
+    idx = np.random.RandomState(42).permutation(n)
+    split = int(n * 0.8)
+    t_train = torch.stack([torch.from_numpy(residual_windows[i]).float() for i in idx[:split]])
+    t_val = torch.stack([torch.from_numpy(residual_windows[i]).float() for i in idx[split:]])
+    orig_val = [all_windows[i] for i in idx[split:]]
+
+    train_res = TensorDataset(t_train, t_train)
+    val_res = TensorDataset(t_val, t_val)
+
+    # Train residual model
+    ctx.section('Training residual model')
+    model_res = create_model('grouped', input_dim=8)
+    train_forecast(model_res, train_res, val_res,
+                   f'{out}/exp048_residual.pth', 'PhysRes', epochs=60)
+
+    # Evaluate: compose physics + residual
+    ctx.section('Evaluation')
+    device = get_device()
+    model_res.eval()
+    combo_errors, direct_errors, physics_errors = [], [], []
+
+    direct_ckpt = find_checkpoint(out, 'exp043_forecast_mh_1hr_5min.pth',
+                                  'exp043_forecast_8f_1hr.pth')
+    model_direct = create_model('grouped', input_dim=8)
+    if direct_ckpt:
+        load_checkpoint(model_direct, direct_ckpt)
+    model_direct.eval()
+
+    for orig_win, res_win in zip(orig_val[:2000], [residual_windows[i] for i in idx[split:]]):
+        half = orig_win.shape[0] // 2
+        true_gl = orig_win[half:, 0] * glucose_scale
+
+        # Physics
+        gl_now = orig_win[half - 1, 0] * glucose_scale
+        iob_now = orig_win[half - 1, 1] * NORMALIZATION_SCALES.get('iob', 20)
+        cob_now = orig_win[half - 1, 2] * NORMALIZATION_SCALES.get('cob', 100)
+        phys_gl = np.full(half, gl_now)
+        for t in range(half):
+            decay = t / half
+            phys_gl[t] = (gl_now - iob_now * (1 - decay) * isf
+                          + cob_now * (1 - decay) / max(cr, 1) * isf)
+
+        # Residual model → combo
+        x_res = torch.from_numpy(res_win).unsqueeze(0).float().to(device)
+        x_in = x_res.clone(); x_in[0, half:, 0] = 0.0
+        with torch.no_grad():
+            pred_res = model_res(x_in, causal=True)
+        residual_gl = pred_res[0, half:, 0].cpu().numpy() * glucose_scale
+        combo_gl = phys_gl + residual_gl
+
+        # Direct model
+        x_orig = torch.from_numpy(orig_win).unsqueeze(0).float().to(device)
+        x_direct = x_orig.clone(); x_direct[0, half:, 0] = 0.0
+        with torch.no_grad():
+            pred_direct = model_direct(x_direct, causal=True)
+        direct_gl = pred_direct[0, half:, 0].cpu().numpy() * glucose_scale
+
+        combo_errors.append(np.mean(np.abs(combo_gl - true_gl)))
+        direct_errors.append(np.mean(np.abs(direct_gl - true_gl)))
+        physics_errors.append(np.mean(np.abs(phys_gl - true_gl)))
+
+    combo_mae = float(np.mean(combo_errors))
+    direct_mae = float(np.mean(direct_errors))
+    phys_mae = float(np.mean(physics_errors))
+
+    ctx.result.update({
+        'physics_mae': phys_mae, 'direct_mae': direct_mae,
+        'combo_mae': combo_mae,
+        'combo_vs_direct_pct': improvement_pct(combo_mae, direct_mae),
+        'combo_vs_physics_pct': improvement_pct(combo_mae, phys_mae),
+        'success': combo_mae < direct_mae,
+    })
+    ctx.section('Results')
+    ctx.log(f'Physics:         {phys_mae:.1f} mg/dL')
+    ctx.log(f'Direct ML:       {direct_mae:.1f} mg/dL')
+    ctx.log(f'Physics+Residual: {combo_mae:.1f} mg/dL')
+    return ctx.save('exp048_physics_residual.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-049: Combined Rolling + Cost-Sensitive Classifier
+# Hypothesis: Rolling features (EXP-037) + cost-sensitive (EXP-038)
+#   combine for F1 > 0.70.
+# ────────────────────────────────────────────────────────────────────
+
+def run_combined_classifier(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-049', out, hypothesis='rolling+cost > 0.70 F1')
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    ds = build_classifier_dataset(patients_dir)
+    tabular = ds['tabular']
+    labels = ds['labels']
+    feat_names = list(ds['feature_names'])
+
+    # Remove lead_time
+    if 'lead_time_hr' in feat_names:
+        lt_idx = feat_names.index('lead_time_hr')
+        tabular = np.delete(tabular, lt_idx, axis=1)
+        feat_names = [f for i, f in enumerate(feat_names) if i != lt_idx]
+
+    # Add rolling features
+    gl_idx = None
+    for i, fn in enumerate(feat_names):
+        if fn.startswith('glucose') and 'roc' not in fn:
+            gl_idx = i; break
+
+    if gl_idx is not None:
+        import pandas as pd
+        gl_series = pd.Series(tabular[:, gl_idx])
+        rolling_feats, rolling_names = [], []
+        for window in [12, 36, 72]:
+            label_w = f'{window * 5 // 60}hr'
+            roll = gl_series.rolling(window, min_periods=1)
+            for stat, fn in [('mean', roll.mean), ('std', lambda: roll.std().fillna(0)),
+                             ('min', roll.min), ('max', roll.max)]:
+                rolling_feats.append(fn().values if callable(fn) else fn.values)
+                rolling_names.append(f'glucose_{stat}_{label_w}')
+        tabular = np.hstack([tabular, np.column_stack(rolling_feats).astype(np.float32)])
+        feat_names.extend(rolling_names)
+        ctx.log(f'Added {len(rolling_names)} rolling features → {tabular.shape[1]} total')
+
+    # Cost-sensitive weights (exp=0.5, best from EXP-038)
+    from collections import Counter
+    counts = Counter(labels.tolist())
+    max_count = max(counts.values())
+    weight_map = {c: (max_count / cnt) ** 0.5 for c, cnt in counts.items()}
+    sample_weight = np.array([weight_map[int(l)] for l in labels], dtype=np.float32)
+
+    ctx.section('Training')
+    result = train_event_classifier(
+        tabular, labels, feature_names=feat_names,
+        xgb_params={'max_depth': 8, 'n_estimators': 300, 'learning_rate': 0.01},
+        sample_weight=sample_weight,
+    )
+    metrics = result['metrics']
+    f1 = metrics.get('macro_f1_events', metrics.get('macro_f1', 0))
+    per_class = metrics.get('per_class', {})
+
+    ctx.section('Results')
+    ctx.log(f'Macro F1 = {f1:.4f} (target > 0.70)')
+    for cls_name, cls_m in per_class.items():
+        ctx.log(f'  {cls_name}: P={cls_m.get("precision",0):.3f} '
+                f'R={cls_m.get("recall",0):.3f} F1={cls_m.get("f1",0):.3f}')
+
+    fi = result.get('feature_importance', {})
+    top10 = sorted(fi.items(), key=lambda x: x[1], reverse=True)[:10]
+
+    ctx.result.update({
+        'macro_f1': f1, 'per_class': per_class,
+        'feature_importance_top10': dict(top10),
+        'n_features': tabular.shape[1],
+        'success': f1 > 0.70,
+    })
+    return ctx.save('exp049_combined_classifier.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-050: Binary One-vs-Rest Detectors
+# Hypothesis: Individual binary classifiers per event type achieve
+#   higher per-class F1 than the multi-class model.
+# ────────────────────────────────────────────────────────────────────
+
+def run_binary_detectors(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-050', out, hypothesis='binary > multiclass per-event')
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    ds = build_classifier_dataset(patients_dir)
+    tabular = ds['tabular']
+    labels = ds['labels']
+    feat_names = list(ds['feature_names'])
+    label_map = ds['label_map']
+
+    if 'lead_time_hr' in feat_names:
+        lt_idx = feat_names.index('lead_time_hr')
+        tabular = np.delete(tabular, lt_idx, axis=1)
+        feat_names = [f for i, f in enumerate(feat_names) if i != lt_idx]
+
+    import xgboost as xgb
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import f1_score, precision_score, recall_score
+
+    inv_map = {v: k for k, v in label_map.items()}
+    results = {}
+
+    for cls_id, cls_name in sorted(inv_map.items()):
+        if cls_name == 'none':
+            continue
+        ctx.section(f'Binary: {cls_name}')
+        binary_labels = (labels == cls_id).astype(int)
+        pos_count = int(binary_labels.sum())
+        neg_count = len(binary_labels) - pos_count
+
+        X_train, X_val, y_train, y_val = train_test_split(
+            tabular, binary_labels, test_size=0.2, random_state=42,
+            stratify=binary_labels)
+
+        model = xgb.XGBClassifier(
+            max_depth=6, n_estimators=200, learning_rate=0.02,
+            scale_pos_weight=neg_count / max(pos_count, 1),
+            eval_metric='logloss', verbosity=0,
+            tree_method='hist', random_state=42)
+        model.fit(X_train, y_train,
+                  eval_set=[(X_val, y_val)], verbose=False)
+
+        y_pred = model.predict(X_val)
+        f1 = float(f1_score(y_val, y_pred))
+        prec = float(precision_score(y_val, y_pred))
+        rec = float(recall_score(y_val, y_pred))
+
+        results[cls_name] = {
+            'f1': f1, 'precision': prec, 'recall': rec,
+            'pos_count': pos_count, 'neg_count': neg_count,
+        }
+        ctx.log(f'{cls_name}: F1={f1:.3f} P={prec:.3f} R={rec:.3f} '
+                f'(pos={pos_count})')
+
+    ctx.result['binary_results'] = results
+    avg_f1 = np.mean([r['f1'] for r in results.values()])
+    ctx.result['avg_binary_f1'] = float(avg_f1)
+    ctx.result['success'] = avg_f1 > 0.60
+    ctx.section('Summary')
+    ctx.log(f'Avg binary F1: {avg_f1:.3f}')
+    return ctx.save('exp050_binary_detectors.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-051: Multi-Seed Forecast Stability
+# Hypothesis: Forecast-masked training is stable across seeds
+#   (std < 1.0 mg/dL MAE across 5 seeds).
+# ────────────────────────────────────────────────────────────────────
+
+def run_forecast_multiseed(args):
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-051', out, hypothesis='std < 1.0 mg/dL across seeds')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader
+
+    windows = load_multipatient_nightscout(paths, window_size=24)
+    # Unpack tuple: (train_ds, val_ds)
+    if isinstance(windows, tuple):
+        train_ds, val_ds = windows
+    else:
+        train_ds, val_ds = windows_to_datasets(windows)
+
+    seeds = [42, 123, 456, 789, 2024]
+    seed_results = []
+
+    for seed in seeds:
+        set_seed(seed)
+        ctx.section(f'Seed {seed}')
+        model = create_model('grouped', input_dim=8)
+        save = f'{out}/exp051_seed{seed}.pth'
+        best, ep = train_forecast(model, train_ds, val_ds, save,
+                                  f'Seed-{seed}', epochs=50)
+        fmse = forecast_mse(model, val_ds, mask_future=True)
+        pmse = persistence_mse(val_ds)
+
+        device = get_device()
+        model.eval()
+        preds, trues = [], []
+        for batch in DataLoader(val_ds, batch_size=64):
+            x = batch[0].to(device)
+            half = x.shape[1] // 2
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            preds.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
+            trues.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+        mae = float(np.mean(np.abs(
+            np.concatenate(preds).flatten() - np.concatenate(trues).flatten())))
+
+        seed_results.append({'seed': seed, 'mae_mgdl': mae,
+                             'forecast_mse': fmse, 'epochs': ep})
+        ctx.log(f'Seed {seed}: MAE={mae:.1f} mg/dL')
+
+    maes = [r['mae_mgdl'] for r in seed_results]
+    ctx.result.update({
+        'seeds': seed_results,
+        'mean_mae': float(np.mean(maes)),
+        'std_mae': float(np.std(maes)),
+        'min_mae': float(np.min(maes)),
+        'max_mae': float(np.max(maes)),
+        'success': float(np.std(maes)) < 1.0,
+    })
+    ctx.section('Summary')
+    ctx.log(f'MAE: {np.mean(maes):.1f} ± {np.std(maes):.2f} mg/dL '
+            f'(range {np.min(maes):.1f}–{np.max(maes):.1f})')
+    return ctx.save('exp051_multiseed.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-052: Forecast Uncertainty with Masked Model
+# Hypothesis: MC-Dropout on forecast-masked model gives calibrated
+#   prediction intervals (coverage 85–95% at 90% target).
+# ────────────────────────────────────────────────────────────────────
+
+def run_forecast_uncertainty(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-052', out,
+                           hypothesis='MC-Dropout coverage 85–95%')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader
+
+    ckpt = find_checkpoint(out, 'exp043_forecast_mh_1hr_5min.pth',
+                           'exp043_forecast_8f_1hr.pth')
+    if not ckpt:
+        ctx.result['success'] = False
+        return ctx.save('exp052_uncertainty.json')
+
+    _, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    model = create_model('grouped', input_dim=8)
+    load_checkpoint(model, ckpt)
+
+    device = get_device()
+    n_mc = 30
+    coverages = {50: [], 80: [], 90: [], 95: []}
+
+    for batch in DataLoader(val_ds, batch_size=32):
+        x = batch[0].to(device)
+        half = x.shape[1] // 2
+        true_gl = x[:, half:, 0].cpu().numpy() * glucose_scale
+
+        # MC dropout predictions
+        mc_preds = []
+        model.train()  # enable dropout
+        for _ in range(n_mc):
+            x_in = x.clone()
+            x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            mc_preds.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
+        model.eval()
+
+        mc_stack = np.stack(mc_preds, axis=0)  # (n_mc, batch, time)
+        mean_pred = mc_stack.mean(axis=0)
+
+        for pct, cov_list in coverages.items():
+            lo = np.percentile(mc_stack, (100 - pct) / 2, axis=0)
+            hi = np.percentile(mc_stack, 100 - (100 - pct) / 2, axis=0)
+            covered = ((true_gl >= lo) & (true_gl <= hi)).mean()
+            cov_list.append(float(covered))
+
+    results = {}
+    for pct, vals in coverages.items():
+        actual = float(np.mean(vals))
+        results[f'{pct}pct'] = {'target': pct / 100, 'actual': actual,
+                                'gap': actual - pct / 100}
+        ctx.log(f'{pct}% interval: actual coverage = {actual:.3f} '
+                f'(gap = {actual - pct / 100:+.3f})')
+
+    gap_90 = abs(results['90pct']['gap'])
+    ctx.result.update({
+        'coverage': results,
+        'gap_90': gap_90,
+        'success': gap_90 < 0.05,  # within 5% of target
+    })
+    return ctx.save('exp052_uncertainty.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-053: Longer Training (150 epochs) at All Horizons
+# Hypothesis: More epochs improve EXP-043 results, especially
+#   at longer horizons where loss was still decreasing.
+# ────────────────────────────────────────────────────────────────────
+
+def run_longer_training(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-053', out, hypothesis='150ep > 80ep at all horizons')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    from .schema import NORMALIZATION_SCALES, FEATURE_NAMES
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    scales = np.array([NORMALIZATION_SCALES.get(f, 1.0)
+                       for f in FEATURE_NAMES], dtype=np.float32)
+    from torch.utils.data import DataLoader
+    results = {}
+
+    for h_label in ['1hr@5min', '6hr@15min', '3day@1hr']:
+        ctx.section(f'{h_label} — 150 epochs')
+        all_windows = []
+        for ppath in paths:
+            try:
+                grid_df, feat = build_nightscout_grid(ppath, verbose=False)
+                if feat is None:
+                    continue
+                if 'time_sin' not in grid_df.columns:
+                    hours = grid_df.index.hour + grid_df.index.minute / 60.0
+                    grid_df['time_sin'] = np.sin(2 * np.pi * hours / 24.0)
+                    grid_df['time_cos'] = np.cos(2 * np.pi * hours / 24.0)
+                mh = build_multihorizon_windows(grid_df)
+                for label, h_data in mh.items():
+                    safe = label.replace('@', '_').replace('/', '_')
+                    target = h_label.replace('@', '_').replace('/', '_')
+                    if safe == target:
+                        features = h_data['features']
+                        n_cols = min(features.shape[1], len(scales))
+                        norm_feat = features.copy()
+                        norm_feat[:, :n_cols] /= scales[:n_cols]
+                        stride = max(1, 24 // 2)
+                        for i in range(0, len(norm_feat) - 24 + 1, stride):
+                            win = norm_feat[i:i + 24]
+                            if not np.isnan(win).any() and not np.isinf(win).any():
+                                all_windows.append(win)
+            except Exception:
+                continue
+
+        if len(all_windows) < 50:
+            continue
+
+        train_ds, val_ds = windows_to_datasets(all_windows)
+        dim = all_windows[0].shape[-1]
+        safe_label = h_label.replace('@', '_').replace('/', '_')
+        model = create_model('grouped', input_dim=dim)
+        best, ep = train_forecast(
+            model, train_ds, val_ds,
+            f'{out}/exp053_long_{safe_label}.pth',
+            f'Long-{h_label}', epochs=150, patience=25)
+
+        fmse = forecast_mse(model, val_ds, mask_future=True)
+        pmse = persistence_mse(val_ds)
+
+        device = get_device()
+        model.eval()
+        preds, trues = [], []
+        for batch in DataLoader(val_ds, batch_size=64):
+            x = batch[0].to(device)
+            half = x.shape[1] // 2
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            preds.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
+            trues.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+
+        mae = float(np.mean(np.abs(
+            np.concatenate(preds).flatten() - np.concatenate(trues).flatten())))
+        results[h_label] = {
+            'mae_mgdl': mae, 'epochs': ep,
+            'forecast_mse': fmse, 'persistence_mse': pmse,
+            'improvement_pct': improvement_pct(fmse, pmse),
+        }
+        ctx.log(f'{h_label}: MAE={mae:.1f} mg/dL (ep={ep}), '
+                f'Δ={improvement_pct(fmse, pmse):.1f}%')
+
+    ctx.result['metrics'] = results
+    ctx.result['success'] = any(
+        r['mae_mgdl'] < 12.0 for r in results.values())
+    ctx.section('Summary (vs EXP-043 80ep)')
+    for k, v in results.items():
+        ctx.log(f'{k}: MAE={v["mae_mgdl"]:.1f} mg/dL')
+    return ctx.save('exp053_longer_training.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-054: Event-Conditioned Forecast
+# Hypothesis: Adding predicted event probabilities as extra forecast
+#   input features improves forecast MAE by > 5%.
+# ────────────────────────────────────────────────────────────────────
+
+def run_event_conditioned(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-054', out,
+                           hypothesis='event probs → 5% better forecast')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader, TensorDataset
+    import xgboost as xgb
+
+    # Step 1: Load classifier
+    ctx.section('Loading classifier')
+    ds = build_classifier_dataset(getattr(args, 'patients_dir', None))
+    tabular_cls = ds['tabular']
+    labels_cls = ds['labels']
+    feat_names_cls = list(ds['feature_names'])
+    label_map = ds['label_map']
+
+    if 'lead_time_hr' in feat_names_cls:
+        lt_idx = feat_names_cls.index('lead_time_hr')
+        tabular_cls = np.delete(tabular_cls, lt_idx, axis=1)
+        feat_names_cls = [f for i, f in enumerate(feat_names_cls) if i != lt_idx]
+
+    # Remap labels to contiguous
+    unique_labels = sorted(set(labels_cls.tolist()))
+    label_to_idx = {l: i for i, l in enumerate(unique_labels)}
+    y_cls = np.array([label_to_idx[int(l)] for l in labels_cls])
+    n_classes = len(unique_labels)
+
+    clf = xgb.XGBClassifier(
+        max_depth=8, n_estimators=200, learning_rate=0.02,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', verbosity=0,
+        tree_method='hist', random_state=42)
+    clf.fit(tabular_cls, y_cls)
+    ctx.log(f'Classifier: {n_classes} classes, {tabular_cls.shape[1]} features')
+
+    # Step 2: Build forecast windows with event probabilities appended
+    ctx.section('Building event-conditioned windows')
+    train_base, val_base = load_multipatient_nightscout(paths, window_size=24)
+    if len(train_base) < 100:
+        ctx.result['success'] = False
+        return ctx.save('exp054_event_conditioned.json')
+
+    # Extract numpy windows for augmentation
+    base_numpy = []
+    for ds in [train_base, val_base]:
+        for i in range(len(ds)):
+            base_numpy.append(ds[i][0].numpy())
+
+    # For each window, get classifier prediction on the history portion
+    aug_windows = []
+    for win in base_numpy:
+        half = win.shape[0] // 2
+        hist = win[:half]
+        gl_mean = float(np.mean(hist[:, 0]))
+        gl_std = float(np.std(hist[:, 0]))
+        iob_mean = float(np.mean(hist[:, 1]))
+        cob_mean = float(np.mean(hist[:, 2]))
+        gl_roc = float(hist[-1, 0] - hist[0, 0]) if half > 1 else 0.0
+        # Pad to match classifier input dim
+        feat_vec = np.zeros(tabular_cls.shape[1], dtype=np.float32)
+        feat_vec[0] = gl_mean
+        if len(feat_vec) > 1: feat_vec[1] = gl_std
+        if len(feat_vec) > 2: feat_vec[2] = iob_mean
+        if len(feat_vec) > 3: feat_vec[3] = cob_mean
+        if len(feat_vec) > 4: feat_vec[4] = gl_roc
+
+        probs = clf.predict_proba(feat_vec.reshape(1, -1))[0]  # (n_classes,)
+        prob_tile = np.tile(probs, (win.shape[0], 1))
+        aug_win = np.hstack([win, prob_tile])
+        aug_windows.append(aug_win)
+
+    # Train conditioned model
+    ctx.section('Training event-conditioned forecast')
+    train_aug, val_aug = windows_to_datasets(aug_windows)
+    aug_dim = aug_windows[0].shape[-1]  # 8 + n_classes
+    model_aug = create_model('grouped', input_dim=aug_dim)
+    train_forecast(model_aug, train_aug, val_aug,
+                   f'{out}/exp054_conditioned.pth', 'EvtCond',
+                   epochs=60)
+    mse_aug = forecast_mse(model_aug, val_aug, mask_future=True)
+
+    # Baseline: 8f model (use the already-loaded datasets)
+    model_base = create_model('grouped', input_dim=8)
+    base_ckpt = find_checkpoint(out, 'exp043_forecast_8f_1hr.pth',
+                                'exp043_forecast_mh_1hr_5min.pth')
+    if base_ckpt:
+        load_checkpoint(model_base, base_ckpt)
+    else:
+        train_forecast(model_base, train_base, val_base,
+                       f'{out}/exp054_baseline.pth', 'Base', epochs=60)
+    mse_base = forecast_mse(model_base, val_base, mask_future=True)
+
+    # MAE comparison
+    device = get_device()
+    mae_results = {}
+    for name, model, vds in [('base', model_base, val_base),
+                              ('conditioned', model_aug, val_aug)]:
+        model.eval()
+        preds, trues = [], []
+        for batch in DataLoader(vds, batch_size=64):
+            x = batch[0].to(device)
+            half = x.shape[1] // 2
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            preds.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
+            trues.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+        mae = float(np.mean(np.abs(
+            np.concatenate(preds).flatten() - np.concatenate(trues).flatten())))
+        mae_results[name] = mae
+
+    improv = improvement_pct(mse_aug, mse_base)
+    ctx.result.update({
+        'base_mae': mae_results['base'], 'conditioned_mae': mae_results['conditioned'],
+        'base_mse': mse_base, 'conditioned_mse': mse_aug,
+        'improvement_pct': improv, 'n_event_features': n_classes,
+        'success': improv > 5,
+    })
+    ctx.section('Results')
+    ctx.log(f'Base 8f:       MAE={mae_results["base"]:.1f} mg/dL')
+    ctx.log(f'Event-cond:    MAE={mae_results["conditioned"]:.1f} mg/dL')
+    ctx.log(f'Improvement:   {improv:.1f}%')
+    return ctx.save('exp054_event_conditioned.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-055: Patient Generalization (Leave-One-Out)
+# Hypothesis: Model trained on 9 patients generalizes to held-out
+#   patient with MAE < 20 mg/dL at 1hr.
+# ────────────────────────────────────────────────────────────────────
+
+def run_patient_generalization(args):
+    set_seed(42)
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    ctx = ExperimentContext('EXP-055', out,
+                           hypothesis='leave-one-out MAE < 20 mg/dL')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+
+    glucose_scale = NORMALIZATION_SCALES['glucose']
+    from torch.utils.data import DataLoader
+
+    # Test on first 5 patients (leave-one-out is expensive)
+    test_paths = paths[:5]
+    results = {}
+
+    for held_out_idx, test_path in enumerate(test_paths):
+        pname = test_path.rstrip('/').split('/')[-2]
+        ctx.section(f'Hold out: {pname}')
+
+        train_paths = [p for i, p in enumerate(paths) if i != held_out_idx]
+        train_ds, train_val_ds = load_multipatient_nightscout(train_paths, window_size=24)
+        test_train, test_val = load_multipatient_nightscout([test_path], window_size=24)
+
+        if len(train_ds) < 100 or len(test_train) + len(test_val) < 20:
+            ctx.log(f'{pname}: insufficient data')
+            continue
+
+        # Combine test splits into one test set
+        test_tensors = []
+        for ds in [test_train, test_val]:
+            for i in range(len(ds)):
+                test_tensors.append(ds[i][0])
+        test_t = torch.stack(test_tensors)
+        from torch.utils.data import TensorDataset
+        test_full = TensorDataset(test_t, test_t)
+
+        model = create_model('grouped', input_dim=8)
+        save = f'{out}/exp055_loo_{pname}.pth'
+        # Use train_val_ds for early stopping
+        train_forecast(model, train_ds, train_val_ds, save,
+                       f'LOO-{pname}', epochs=50, patience=10)
+
+        # Eval on held-out patient
+        fmse = forecast_mse(model, test_full, mask_future=True)
+        pmse = persistence_mse(test_full)
+
+        device = get_device()
+        model.eval()
+        preds, trues = [], []
+        for batch in DataLoader(test_full, batch_size=64):
+            x = batch[0].to(device)
+            half = x.shape[1] // 2
+            x_in = x.clone(); x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in, causal=True)
+            preds.append(pred[:, half:, 0].cpu().numpy() * glucose_scale)
+            trues.append(x[:, half:, 0].cpu().numpy() * glucose_scale)
+
+        mae = float(np.mean(np.abs(
+            np.concatenate(preds).flatten() - np.concatenate(trues).flatten())))
+        results[pname] = {
+            'mae_mgdl': mae,
+            'forecast_mse': fmse, 'persistence_mse': pmse,
+            'improvement_pct': improvement_pct(fmse, pmse),
+            'n_test_windows': len(test_tensors),
+        }
+        ctx.log(f'{pname}: MAE={mae:.1f} mg/dL, Δ={improvement_pct(fmse, pmse):.1f}%')
+
+    ctx.result['patients'] = results
+    maes = [r['mae_mgdl'] for r in results.values()]
+    ctx.result['mean_mae'] = float(np.mean(maes)) if maes else 999
+    ctx.result['std_mae'] = float(np.std(maes)) if maes else 0
+    ctx.result['success'] = (float(np.mean(maes)) < 20) if maes else False
+    ctx.section('Summary')
+    if maes:
+        ctx.log(f'Mean LOO MAE: {np.mean(maes):.1f} ± {np.std(maes):.1f} mg/dL')
+    else:
+        ctx.log('No patient results')
+    return ctx.save('exp055_generalization.json')
