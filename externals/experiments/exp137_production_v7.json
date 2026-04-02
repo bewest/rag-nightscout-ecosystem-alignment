@@ -1,0 +1,28 @@
+{
+  "experiment": "EXP-137",
+  "name": "production-v7",
+  "results": {
+    "mae_overall": 13.4,
+    "mae_hypo": 13.4,
+    "hypo_precision": 0.829,
+    "hypo_recall": 0.591,
+    "hypo_f1": 0.69,
+    "conformal_coverage_90": 0.9,
+    "conformal_width": 60.0,
+    "n_plans": 1681,
+    "top_actions": {
+      "consider_correction": 2636,
+      "urgent_high": 917,
+      "hypo_alert": 432,
+      "rapid_rise": 212,
+      "rapid_fall": 120
+    },
+    "tod": {
+      "morning_mae": 10.3,
+      "afternoon_mae": 12.2,
+      "evening_mae": 14.9,
+      "night_a_mae": 15.5,
+      "night_b_mae": 15.9
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "experiment": "EXP-134",
+  "name": "night-specialist",
+  "results": {
+    "general_night_mae": 14.6,
+    "specialist_night_mae": 16.5,
+    "general_day_mae": 11.8,
+    "night_val_n": 2147,
+    "day_val_n": 4338,
+    "night_train_n": 8530,
+    "improvement_pct": -13.0
+  }
+}

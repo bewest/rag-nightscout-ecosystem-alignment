@@ -1,0 +1,17 @@
+{
+  "experiment": "EXP-135",
+  "name": "clarke-optimized",
+  "results": {
+    "clarke_optimized": {
+      "zone_a_pct": 86.6,
+      "zone_ab_pct": 97.3,
+      "mae": 16.1
+    },
+    "baseline": {
+      "zone_a_pct": 88.5,
+      "zone_ab_pct": 97.4,
+      "mae": 14.9
+    },
+    "ab_improvement": -0.1
+  }
+}
