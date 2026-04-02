@@ -1,0 +1,21 @@
+{
+  "experiment": "EXP-122",
+  "name": "volatile-focused",
+  "results": {
+    "baseline": {
+      "volatile_mae": 14.9,
+      "calm_mae": 9.2,
+      "overall_mae": 12.9
+    },
+    "volatile_2x": {
+      "volatile_mae": 14.9,
+      "calm_mae": 9.6,
+      "overall_mae": 13.0
+    },
+    "volatile_3x": {
+      "volatile_mae": 14.7,
+      "calm_mae": 9.0,
+      "overall_mae": 12.7
+    }
+  }
+}

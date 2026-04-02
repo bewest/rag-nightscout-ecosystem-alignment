@@ -1,0 +1,18 @@
+{
+  "experiment": "EXP-127",
+  "name": "conformal-per-trend",
+  "results": {
+    "trend_q90": {
+      "rising": 46.9,
+      "falling": 37.0,
+      "flat": 34.4,
+      "volatile": 59.0
+    },
+    "global_q90": 51.4,
+    "global_coverage": 0.968,
+    "global_width": 102.7,
+    "trend_coverage": 0.968,
+    "trend_width": 98.0,
+    "width_reduction_pct": 4.6
+  }
+}

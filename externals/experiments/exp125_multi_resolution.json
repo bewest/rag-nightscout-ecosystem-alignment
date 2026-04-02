@@ -1,0 +1,18 @@
+{
+  "experiment": "EXP-125",
+  "name": "multi-resolution",
+  "results": {
+    "1hr_model": {
+      "mae_5min": 6.1,
+      "mae_15min": 8.0,
+      "mae_30min": 9.9,
+      "mae_60min": 12.8
+    },
+    "2hr_model": {
+      "mae_30min": 10.9,
+      "mae_60min": 13.7,
+      "mae_90min": 15.5,
+      "mae_120min": 17.0
+    }
+  }
+}

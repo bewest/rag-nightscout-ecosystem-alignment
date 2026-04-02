@@ -1,0 +1,11 @@
+{
+  "experiment": "EXP-126",
+  "name": "asymmetric-quantile",
+  "results": {
+    "p50_mae": 13.0,
+    "coverage_90": 0.872,
+    "width_mgdl": 47.3,
+    "hypo_lower_coverage": 0.834,
+    "n_hypo_timesteps": 2881
+  }
+}

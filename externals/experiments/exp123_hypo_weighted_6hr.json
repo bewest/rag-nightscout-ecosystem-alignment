@@ -1,0 +1,11 @@
+{
+  "experiment": "EXP-123",
+  "name": "hypo-weighted-6hr",
+  "results": {
+    "overall_mae": 20.0,
+    "hypo_mae": 21.8,
+    "inrange_mae": 15.2,
+    "hyper_mae": 30.6,
+    "hypo_n": 2583
+  }
+}

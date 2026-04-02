@@ -1,0 +1,15 @@
+{
+  "experiment": "EXP-124",
+  "name": "production-v6",
+  "results": {
+    "overall_mae": 13.3,
+    "hypo_mae": 13.0,
+    "inrange_mae": 10.9,
+    "conformal_q90": 51.3,
+    "n_plans": 2381,
+    "correction_precision": 0.999,
+    "hypo_precision": 0.75,
+    "hypo_recall": 0.658,
+    "hypo_f1": 0.701
+  }
+}
