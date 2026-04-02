@@ -77,7 +77,7 @@ def run_extended_features(args):
 
     # 8-feature baseline
     ds8, vds8 = load_multipatient_nightscout(
-        [p for p in paths], window_size=24, device=get_device())
+        [p for p in paths], window_size=24)
     base_mse = persistence_mse(vds8)
 
     model8 = create_model('grouped', input_dim=8)
@@ -238,14 +238,14 @@ def run_uncertainty_calibration(args):
     paths = resolve_patient_paths(
         getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
 
-    _, val_ds = load_multipatient_nightscout(paths, window_size=24, device=get_device())
+    _, val_ds = load_multipatient_nightscout(paths, window_size=24)
 
     # Find existing grouped checkpoint
     ckpt_path = find_checkpoint(out, 'exp026_grouped_16f.pth',
                                 'grouped_multi_transfer.pth')
     if not ckpt_path:
         ctx.log('Training fresh model for calibration')
-        ds, _ = load_multipatient_nightscout(paths, window_size=24, device=get_device())
+        ds, _ = load_multipatient_nightscout(paths, window_size=24)
         model = create_model('grouped', input_dim=8)
         train(model, ds, val_ds, f'{out}/exp029_grouped.pth', 'Cal-base')
         ckpt_path = f'{out}/exp029_grouped.pth'
@@ -373,7 +373,7 @@ def run_scenario_validation(args):
     correct, total = 0, 0
     scenario_results = []
     for ppath in paths[:3]:  # Use 3 patients for speed
-        _, val_ds = load_multipatient_nightscout([ppath], window_size=24, device=get_device())
+        _, val_ds = load_multipatient_nightscout([ppath], window_size=24)
         if len(val_ds) == 0:
             continue
         sample = val_ds[0][0].unsqueeze(0)

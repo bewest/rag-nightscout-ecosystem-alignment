@@ -294,14 +294,19 @@ def build_16f_windows(patient_paths, window_size):
 
 
 def windows_to_datasets(windows, val_fraction=0.2, seed=42):
-    """Convert list of numpy windows to train/val TensorDatasets."""
+    """Convert list of numpy windows to train/val TensorDatasets.
+
+    Each dataset yields (x, x) pairs for autoencoder-style training
+    (matching what train_one_epoch expects).
+    """
     arr = np.stack(windows).astype(np.float32)
     rng = np.random.RandomState(seed)
     rng.shuffle(arr)
     split = int((1 - val_fraction) * len(arr))
-    tensors = torch.from_numpy(arr)
-    train_ds = torch.utils.data.TensorDataset(tensors[:split])
-    val_ds = torch.utils.data.TensorDataset(tensors[split:])
+    t_train = torch.from_numpy(arr[:split])
+    t_val = torch.from_numpy(arr[split:])
+    train_ds = torch.utils.data.TensorDataset(t_train, t_train)
+    val_ds = torch.utils.data.TensorDataset(t_val, t_val)
     return train_ds, val_ds
 
 
