@@ -108,19 +108,29 @@ class CGMGroupedEncoder(nn.Module):
     an inductive bias about which features are physiological state vs.
     control inputs vs. temporal context.
 
-    Architecture:
+    Architecture (core, input_dim=8):
       state_proj(3 → d_model//2) | action_proj(3 → d_model//4) | time_proj(2 → d_model//4)
       → concatenate → d_model → PositionalEncoding → TransformerEncoder → output heads
 
-    Maintains the same external interface as CGMTransformerAE (input_dim=8, output_dim=8)
-    so it's a drop-in replacement in MODEL_REGISTRY.
+    Architecture (extended, input_dim=16):
+      state_proj(3) | action_proj(3) | time_proj(2) | context_proj(8 → d_context)
+      → concatenate → d_model + d_context → LayerNorm → d_model (via fusion)
+      → PositionalEncoding → TransformerEncoder → output heads
+
+    Maintains the same external interface as CGMTransformerAE so it's a
+    drop-in replacement in MODEL_REGISTRY. When input_dim=8 (default),
+    behaves identically to the original — no context group is created,
+    existing checkpoints load without modification.
     """
     def __init__(self, input_dim: int = 8, d_model: int = 64, nhead: int = 4,
                  num_layers: int = 2, dim_feedforward: int = 128, dropout: float = 0.1):
         super().__init__()
         assert d_model % 4 == 0, "d_model must be divisible by 4 for feature grouping"
 
-        # Feature-grouped projections
+        self.input_dim = input_dim
+        self.d_model = d_model
+
+        # Feature-grouped projections (core — always present)
         d_state = d_model // 2    # 50% capacity for physiological state
         d_action = d_model // 4   # 25% capacity for control inputs
         d_time = d_model - d_state - d_action  # remaining for temporal
@@ -128,6 +138,16 @@ class CGMGroupedEncoder(nn.Module):
         self.state_proj = nn.Linear(3, d_state)    # glucose, IOB, COB
         self.action_proj = nn.Linear(3, d_action)   # net_basal, bolus, carbs
         self.time_proj = nn.Linear(2, d_time)       # time_sin, time_cos
+
+        # Context group (extended schema only — agentic features)
+        self._has_context = input_dim > 8
+        if self._has_context:
+            n_context = input_dim - 8
+            d_context = max(d_model // 8, 8)  # ~12.5% capacity for context
+            self.context_proj = nn.Linear(n_context, d_context)
+            # Fusion layer: (d_model + d_context) → d_model
+            self.fusion = nn.Linear(d_model + d_context, d_model)
+            self.fusion_norm = nn.LayerNorm(d_model)
 
         self.pos_encoder = PositionalEncoding(d_model)
 
@@ -141,13 +161,13 @@ class CGMGroupedEncoder(nn.Module):
         )
         self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
 
-        # Reconstruction head (back to all 8 features)
+        # Reconstruction head (back to all input features)
         self.output_projection = nn.Linear(d_model, input_dim)
 
     def forward(self, x, mask=None, causal=False):
         """
         Args:
-            x: (Batch, SeqLen, 8) — standard 8-feature cgmencode vector
+            x: (Batch, SeqLen, input_dim) — 8 or 16 feature cgmencode vector
             mask: Optional attention mask (SeqLen, SeqLen)
             causal: If True, apply causal attention mask for autoregressive tasks.
         """
@@ -157,6 +177,11 @@ class CGMGroupedEncoder(nn.Module):
         time = self.time_proj(x[..., 6:8])        # time_sin, time_cos
 
         z = torch.cat([state, action, time], dim=-1)
+
+        if self._has_context and x.size(-1) > 8:
+            ctx = self.context_proj(x[..., 8:])
+            z = self.fusion_norm(self.fusion(torch.cat([z, ctx], dim=-1)))
+
         z = self.pos_encoder(z)
 
         if causal and mask is None:
@@ -211,3 +236,18 @@ if __name__ == "__main__":
     print(f"Causal: {x.shape} → Output: {y_causal.shape}")
     params = sum(p.numel() for p in model.parameters())
     print(f"Parameters: {params:,}")
+
+    # Extended GroupedEncoder (16 features)
+    model_ext = CGMGroupedEncoder(input_dim=16, d_model=64, nhead=4, num_layers=2)
+    x_ext = torch.randn(2, 12, 16)
+    y_ext = model_ext(x_ext)
+    print(f"\nExtended Input: {x_ext.shape} → Output: {y_ext.shape}")
+    params_ext = sum(p.numel() for p in model_ext.parameters())
+    print(f"Extended Parameters: {params_ext:,}")
+
+    # Core GroupedEncoder (8 features) — backward compat
+    model_core = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=2)
+    y_core = model_core(x)
+    print(f"\nCore Input: {x.shape} → Output: {y_core.shape}")
+    params_core = sum(p.numel() for p in model_core.parameters())
+    print(f"Core Parameters: {params_core:,}")

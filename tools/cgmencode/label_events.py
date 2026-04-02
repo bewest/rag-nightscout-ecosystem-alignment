@@ -20,7 +20,10 @@ import numpy as np
 import pandas as pd
 
 from .real_data_adapter import build_nightscout_grid
-from .schema import NORMALIZATION_SCALES, FEATURE_NAMES, IDX_GLUCOSE
+from .schema import (
+    NORMALIZATION_SCALES, FEATURE_NAMES, IDX_GLUCOSE,
+    OVERRIDE_TYPES,
+)
 
 
 # Event detection configuration
@@ -29,6 +32,42 @@ BOLUS_THRESHOLD = 0.1         # minimum insulin (U) to count as bolus
 WINDOW_BEFORE_MIN = 15        # look-back window (minutes) for pre-event features
 WINDOW_AFTER_MIN = 60         # look-ahead window (minutes) for post-event features
 GRID_INTERVAL_MIN = 5         # 5-minute grid
+
+# Override reason → category mapping (fuzzy match on lowercased reason)
+OVERRIDE_REASON_MAP = {
+    'eating soon': 'eating_soon',
+    'eating': 'eating_soon',
+    'pre-meal': 'eating_soon',
+    'exercise': 'exercise',
+    'workout': 'exercise',
+    'running': 'exercise',
+    'walking': 'exercise',
+    'gym': 'exercise',
+    'sleep': 'sleep',
+    'sleeping': 'sleep',
+    'bedtime': 'sleep',
+    'night': 'sleep',
+    'sick': 'sick',
+    'illness': 'sick',
+    'ill': 'sick',
+    'sickness': 'sick',
+}
+
+# Extended label map: adds override subtypes
+EXTENDED_LABEL_MAP = {
+    'none': 0,
+    'meal': 1,
+    'correction_bolus': 2,
+    'override': 3,           # generic/unknown override
+    'eating_soon': 4,
+    'exercise': 5,
+    'sleep': 6,
+    'sick': 7,
+    'custom_override': 8,
+}
+
+# Pre-event lead times in 5-min steps
+LEAD_TIME_STEPS = [3, 6, 9, 12]  # 15, 30, 45, 60 minutes
 
 
 def extract_events_from_treatments(treatments_path):
@@ -389,6 +428,301 @@ def mine_all_patients(patients_dir, window_steps=12):
         'total_event_counts': dict(total_counts),
         'n_patients': len(patient_summaries),
     }
+
+
+def classify_override_reason(reason_str):
+    """Classify an override reason string into a canonical category.
+
+    Uses fuzzy matching (lowercase substring) against OVERRIDE_REASON_MAP.
+
+    Returns one of: 'eating_soon', 'exercise', 'sleep', 'sick', 'custom_override'
+    """
+    if not reason_str:
+        return 'custom_override'
+    lower = reason_str.lower().strip()
+    for keyword, category in OVERRIDE_REASON_MAP.items():
+        if keyword in lower:
+            return category
+    return 'custom_override'
+
+
+def extract_override_events(treatments_path, devicestatus_path=None):
+    """Extract rich override events from treatments and devicestatus.
+
+    Unlike extract_events_from_treatments (which lumps all overrides),
+    this classifies overrides into subtypes: eating_soon, exercise, sleep, sick.
+
+    Also mines Loop overrideStatus from devicestatus.json if provided.
+
+    Returns:
+        events: list of event dicts with 'event_type' in EXTENDED_LABEL_MAP keys
+        stats: dict of extraction statistics
+    """
+    events = []
+    stats = Counter()
+
+    # --- Mine treatments.json ---
+    with open(treatments_path) as f:
+        treatments = json.load(f)
+
+    for tx in treatments:
+        et = tx.get('eventType', '')
+        ts_str = tx.get('created_at') or tx.get('timestamp')
+        if not ts_str:
+            continue
+        ts = pd.Timestamp(ts_str).round(f'{GRID_INTERVAL_MIN}min')
+
+        carbs = float(tx.get('carbs') or 0)
+        insulin = float(tx.get('insulin') or 0)
+
+        # Standard meal/bolus events (same as original)
+        if carbs >= MEAL_CARB_THRESHOLD:
+            events.append({
+                'timestamp': ts,
+                'event_type': 'meal',
+                'carbs': carbs,
+                'insulin': insulin,
+                'food_type': tx.get('foodType', ''),
+                'absorption_time': tx.get('absorptionTime', 180),
+            })
+            stats['meal'] += 1
+
+        elif insulin >= BOLUS_THRESHOLD and carbs < MEAL_CARB_THRESHOLD:
+            events.append({
+                'timestamp': ts,
+                'event_type': 'correction_bolus',
+                'insulin': insulin,
+            })
+            stats['correction_bolus'] += 1
+
+        # Richer override extraction
+        elif et in ('Temporary Override', 'Override'):
+            reason = tx.get('reason', tx.get('notes', ''))
+            category = classify_override_reason(reason)
+            duration = float(tx.get('duration') or tx.get('durationInMilliseconds', 0) / 60000 or 0)
+            scale = float(tx.get('insulinNeedsScaleFactor', 1.0))
+
+            events.append({
+                'timestamp': ts,
+                'event_type': category,
+                'duration_min': duration,
+                'insulin_needs_scale': scale,
+                'reason_raw': reason,
+            })
+            stats[category] += 1
+
+    # --- Mine devicestatus.json for Loop overrides ---
+    if devicestatus_path and os.path.exists(devicestatus_path):
+        with open(devicestatus_path) as f:
+            statuses = json.load(f)
+
+        seen_ts = set()
+        for ds in statuses:
+            override = (ds.get('override') or
+                        ds.get('overrideStatus') or
+                        (ds.get('loop', {}) or {}).get('override'))
+            if not override or not override.get('active', False):
+                continue
+
+            ts_str = ds.get('created_at') or ds.get('timestamp')
+            if not ts_str:
+                continue
+            ts = pd.Timestamp(ts_str).round(f'{GRID_INTERVAL_MIN}min')
+
+            # Deduplicate: only first entry per 5-min slot
+            ts_key = str(ts)
+            if ts_key in seen_ts:
+                continue
+            seen_ts.add(ts_key)
+
+            name = override.get('name', override.get('reason', ''))
+            category = classify_override_reason(name)
+            duration = float(override.get('duration', 0))
+            scale = float(override.get('insulinNeedsScaleFactor',
+                                       override.get('currentCorrectionRange', {}).get('override', 1.0)))
+
+            events.append({
+                'timestamp': ts,
+                'event_type': category,
+                'duration_min': duration,
+                'insulin_needs_scale': scale,
+                'reason_raw': name,
+                'source': 'devicestatus',
+            })
+            stats[f'ds_{category}'] += 1
+
+    # Sort by timestamp
+    events.sort(key=lambda e: e['timestamp'])
+    return events, dict(stats)
+
+
+def build_pre_event_windows(grid_df, events, window_steps=12,
+                            lead_steps=None, neg_ratio=3):
+    """Build labeled windows BEFORE events for prospective prediction.
+
+    Unlike build_feature_windows (which places the window ending AT the event),
+    this creates windows ending lead_steps BEFORE the event. This trains the
+    classifier to recognize "what does glucose look like 30 min before a meal?"
+
+    Args:
+        grid_df: DataFrame with 5-min grid
+        events: list of event dicts (from extract_override_events)
+        window_steps: lookback window size (5-min steps, default 12 = 1hr)
+        lead_steps: list of lead times in 5-min steps (default: [3,6,9,12])
+        neg_ratio: negative:positive sampling ratio (default 3)
+
+    Returns:
+        features: (N, window_steps, n_features) array
+        labels: (N,) array with EXTENDED_LABEL_MAP values
+        metadata: list of dicts with event info + lead_time_min
+    """
+    if lead_steps is None:
+        lead_steps = LEAD_TIME_STEPS
+
+    feature_cols = ['glucose', 'iob', 'cob', 'net_basal', 'bolus',
+                    'carbs', 'time_sin', 'time_cos']
+    scales = [NORMALIZATION_SCALES.get(c, 1.0) for c in feature_cols]
+
+    if not isinstance(grid_df.index, pd.DatetimeIndex):
+        grid_df.index = pd.to_datetime(grid_df.index)
+    grid_df = grid_df.sort_index()
+
+    ts_to_idx = {ts: i for i, ts in enumerate(grid_df.index)}
+
+    pos_features = []
+    pos_labels = []
+    pos_meta = []
+    event_zones = set()  # grid indices near events (exclusion zone for negatives)
+
+    for ev in events:
+        ts = ev['timestamp']
+        event_idx = ts_to_idx.get(ts)
+        if event_idx is None:
+            diffs = np.abs((grid_df.index - ts).total_seconds())
+            nearest = int(np.argmin(diffs))
+            if diffs[nearest] <= GRID_INTERVAL_MIN * 60:
+                event_idx = nearest
+            else:
+                continue
+
+        label = EXTENDED_LABEL_MAP.get(ev['event_type'], 0)
+        if label == 0:
+            continue
+
+        # Mark exclusion zone around event
+        for offset in range(-max(lead_steps) - window_steps,
+                            max(lead_steps) + window_steps + 1):
+            event_zones.add(event_idx + offset)
+
+        # Create windows at each lead time
+        for lead in lead_steps:
+            # Window ends `lead` steps BEFORE the event
+            end_idx = event_idx - lead
+            start_idx = end_idx - window_steps
+
+            if start_idx < 0 or end_idx > len(grid_df):
+                continue
+
+            window_data = grid_df.iloc[start_idx:end_idx][feature_cols].values
+            window_norm = window_data / np.array(scales)
+
+            glucose_col = window_norm[:, 0]
+            if np.any(np.isnan(glucose_col)) or np.any(glucose_col <= 0):
+                continue
+
+            pos_features.append(window_norm)
+            pos_labels.append(label)
+            pos_meta.append({
+                'event_type': ev['event_type'],
+                'timestamp': str(ts),
+                'lead_time_min': lead * GRID_INTERVAL_MIN,
+                'lead_steps': lead,
+                'carbs': ev.get('carbs', 0),
+                'insulin': ev.get('insulin', 0),
+                'duration_min': ev.get('duration_min', 0),
+                'insulin_needs_scale': ev.get('insulin_needs_scale', 1.0),
+            })
+
+    # Negative windows: no event within exclusion zone
+    neg_features = []
+    neg_labels = []
+    neg_meta = []
+
+    n_neg_target = len(pos_features) * neg_ratio
+    rng = np.random.RandomState(42)
+    candidates = [i for i in range(window_steps, len(grid_df))
+                  if i not in event_zones]
+
+    if candidates:
+        chosen = rng.choice(candidates,
+                            size=min(n_neg_target, len(candidates)),
+                            replace=False)
+        for idx in chosen:
+            start = idx - window_steps
+            window_data = grid_df.iloc[start:idx][feature_cols].values
+            window_norm = window_data / np.array(scales)
+            glucose_col = window_norm[:, 0]
+            if np.any(np.isnan(glucose_col)) or np.any(glucose_col <= 0):
+                continue
+            neg_features.append(window_norm)
+            neg_labels.append(0)
+            neg_meta.append({
+                'event_type': 'none',
+                'timestamp': str(grid_df.index[idx]),
+                'lead_time_min': 0,
+                'lead_steps': 0,
+            })
+
+    all_features = pos_features + neg_features
+    all_labels = pos_labels + neg_labels
+    all_meta = pos_meta + neg_meta
+
+    if not all_features:
+        return np.array([]), np.array([]), []
+
+    return np.stack(all_features), np.array(all_labels), all_meta
+
+
+def extract_extended_tabular(windows, labels, metadata):
+    """Extract tabular features including lead-time and override context.
+
+    Extends extract_tabular_features with:
+    - lead_time_min as a feature (enables lead-time-aware scoring)
+    - glucose acceleration (2nd derivative)
+    - IOB velocity
+    - COB velocity
+
+    Returns: (N, n_features) array, feature_names list
+    """
+    base_tabular, base_names = extract_tabular_features(windows)
+
+    N = base_tabular.shape[0]
+    extra = np.zeros((N, 4))
+
+    for i in range(N):
+        w = windows[i]
+        # Lead time
+        extra[i, 0] = metadata[i].get('lead_time_min', 0) / 60.0  # hours
+
+        # Glucose acceleration (2nd derivative)
+        glucose = w[:, 0] * NORMALIZATION_SCALES['glucose']
+        if len(glucose) >= 3:
+            roc = np.diff(glucose)
+            accel = np.diff(roc)
+            extra[i, 1] = float(np.mean(accel))
+        # IOB velocity
+        iob = w[:, 1] * NORMALIZATION_SCALES['iob']
+        if len(iob) >= 2:
+            extra[i, 2] = float(iob[-1] - iob[-2])
+        # COB velocity
+        cob = w[:, 2] * NORMALIZATION_SCALES.get('cob', 1.0)
+        if len(cob) >= 2:
+            extra[i, 3] = float(cob[-1] - cob[-2])
+
+    extended_names = base_names + [
+        'lead_time_hr', 'glucose_accel', 'iob_velocity', 'cob_velocity',
+    ]
+    return np.hstack([base_tabular, extra]), extended_names
 
 
 def main():

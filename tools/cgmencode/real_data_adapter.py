@@ -36,7 +36,11 @@ from pathlib import Path
 from typing import Optional, Tuple, Dict, List
 
 from .encoder import CGMDataset, ConditionedDataset
-from .schema import NORMALIZATION_SCALES, GLUCOSE_CLIP_MIN, GLUCOSE_CLIP_MAX
+from .schema import (
+    NORMALIZATION_SCALES, GLUCOSE_CLIP_MIN, GLUCOSE_CLIP_MAX,
+    NUM_FEATURES_EXTENDED, OVERRIDE_TYPES, TIME_SINCE_CAP_MIN,
+    FEATURE_NAMES, EXTENDED_FEATURE_NAMES,
+)
 
 
 # Normalization constants from canonical schema
@@ -410,6 +414,130 @@ def build_nightscout_grid(data_path: str,
     return df, features
 
 
+def build_extended_features(df: pd.DataFrame, features: np.ndarray,
+                            treatments: list = None,
+                            verbose: bool = False,
+                            ) -> np.ndarray:
+    """
+    Extend the 8-feature grid with agentic context features (→ 16 features).
+
+    Adds: day-of-week encoding, override state, glucose dynamics, temporal gaps.
+    The first 8 columns are identical to the input features array.
+
+    Args:
+        df: DataFrame from build_nightscout_grid (DatetimeIndex, raw columns)
+        features: (N, 8) normalized array from build_nightscout_grid
+        treatments: Optional pre-loaded treatments list. If None, skips override
+                    extraction (override channels will be zero).
+        verbose: Print progress
+
+    Returns:
+        (N, 16) normalized float32 array matching EXTENDED_FEATURE_NAMES
+    """
+    N = len(features)
+    extended = np.zeros((N, NUM_FEATURES_EXTENDED), dtype=np.float32)
+    extended[:, :8] = features
+
+    # --- Channel 8–9: Day-of-week encoding (sin/cos, period=7 days) ---
+    dow = df.index.dayofweek.values.astype(np.float64)  # 0=Monday .. 6=Sunday
+    extended[:, 8] = np.sin(2 * np.pi * dow / 7.0).astype(np.float32)
+    extended[:, 9] = np.cos(2 * np.pi * dow / 7.0).astype(np.float32)
+
+    # --- Channel 10–11: Override state ---
+    if treatments is not None:
+        _fill_override_channels(df, extended, treatments)
+
+    # --- Channel 12: Glucose rate of change (mg/dL per 5 min) ---
+    glucose_raw = df['glucose'].values
+    roc = np.zeros(N, dtype=np.float32)
+    roc[1:] = np.diff(glucose_raw)
+    roc[0] = roc[1] if N > 1 else 0.0
+    # NaN propagation: if glucose was NaN, roc is NaN → fill with 0
+    roc = np.nan_to_num(roc, nan=0.0)
+    extended[:, 12] = roc / NORMALIZATION_SCALES['glucose_roc']
+
+    # --- Channel 13: Glucose acceleration (Δ rate-of-change) ---
+    accel = np.zeros(N, dtype=np.float32)
+    accel[1:] = np.diff(roc)
+    accel = np.nan_to_num(accel, nan=0.0)
+    extended[:, 13] = accel / NORMALIZATION_SCALES['glucose_accel']
+
+    # --- Channel 14: Time since last bolus (minutes, capped at 6 hr) ---
+    extended[:, 14] = _time_since_last_nonzero(
+        df['bolus'].values, TIME_SINCE_CAP_MIN
+    ) / NORMALIZATION_SCALES['time_since_bolus']
+
+    # --- Channel 15: Time since last carb entry (minutes, capped at 6 hr) ---
+    extended[:, 15] = _time_since_last_nonzero(
+        df['carbs'].values, TIME_SINCE_CAP_MIN
+    ) / NORMALIZATION_SCALES['time_since_carb']
+
+    if verbose:
+        print(f"  Extended features: {extended.shape}")
+        print(f"  Glucose ROC range: [{roc.min():.1f}, {roc.max():.1f}] mg/dL/5min")
+        n_overrides = int(np.sum(extended[:, 10] > 0))
+        print(f"  Override active steps: {n_overrides} ({100*n_overrides/max(N,1):.1f}%)")
+
+    return extended
+
+
+def _fill_override_channels(df: pd.DataFrame, extended: np.ndarray,
+                            treatments: list) -> None:
+    """Populate override_active and override_type channels from treatments."""
+    override_map = {
+        'eating soon': 'eating_soon',
+        'exercise': 'exercise',
+        'sleep': 'sleep',
+        'sick': 'sick',
+        'pre-meal': 'eating_soon',
+    }
+
+    for tx in treatments:
+        et = tx.get('eventType', '')
+        if et != 'Temporary Override':
+            continue
+        ts_str = tx.get('created_at') or tx.get('timestamp')
+        if not ts_str:
+            continue
+
+        ts = pd.Timestamp(ts_str).round('5min')
+        dur_min = float(tx.get('duration', 0))
+        reason = (tx.get('reason') or '').lower().strip()
+
+        # Map reason to override type
+        otype = 'custom'
+        for key, val in override_map.items():
+            if key in reason:
+                otype = val
+                break
+
+        otype_val = OVERRIDE_TYPES.get(otype, OVERRIDE_TYPES['custom'])
+        n_slots = max(1, int(dur_min / 5))
+        if ts in df.index:
+            slot_idx = df.index.get_loc(ts)
+            if isinstance(slot_idx, int):
+                end_idx = min(slot_idx + n_slots, len(df))
+                extended[slot_idx:end_idx, 10] = 1.0         # override_active
+                extended[slot_idx:end_idx, 11] = otype_val   # override_type
+
+
+def _time_since_last_nonzero(values: np.ndarray, cap_min: float,
+                              interval_min: float = 5.0) -> np.ndarray:
+    """Compute minutes since last non-zero value, capped at cap_min."""
+    N = len(values)
+    result = np.full(N, cap_min, dtype=np.float32)
+    last_nonzero_idx = -1
+
+    for i in range(N):
+        if not np.isnan(values[i]) and values[i] > 0:
+            last_nonzero_idx = i
+        if last_nonzero_idx >= 0:
+            minutes = (i - last_nonzero_idx) * interval_min
+            result[i] = min(minutes, cap_min)
+
+    return result
+
+
 def load_nightscout_to_dataset(data_path: str,
                                 task: str = 'forecast',
                                 window_size: int = 24,
@@ -705,6 +833,125 @@ def generate_synthetic_test_data(n_hours: int = 48, interval_min: int = 5) -> pd
     }, index=idx)
 
     return df
+
+
+# ── Coarse-grid downsampling for multi-horizon forecasting ───────────────
+
+# Aggregation rules per column type
+_AGG_MEAN = {'glucose', 'net_basal'}
+_AGG_SUM  = {'bolus', 'carbs'}
+_AGG_LAST = {'iob', 'cob', 'time_sin', 'time_cos'}
+
+# Extended features all use 'last' (point-in-time state or end-of-interval)
+_EXTENDED_ONLY = set(EXTENDED_FEATURE_NAMES) - set(FEATURE_NAMES)
+
+
+def downsample_grid(grid_df: pd.DataFrame,
+                    target_interval_min: int = 15) -> pd.DataFrame:
+    """Downsample a 5-min grid to coarser resolution for extended-horizon forecasting.
+
+    Aggregation rules:
+      - glucose: mean (smooths sensor noise)
+      - iob, cob: last (point-in-time state)
+      - net_basal: mean (average rate over interval)
+      - bolus, carbs: sum (total delivered in interval)
+      - time_sin, time_cos: last (end-of-interval time)
+      - Extended features (if present): last
+
+    Args:
+        grid_df: DataFrame with DatetimeIndex at 5-min intervals
+        target_interval_min: Target interval (15 or 60)
+
+    Returns:
+        Downsampled DataFrame with same columns
+    """
+    if target_interval_min <= 5:
+        return grid_df.copy()
+
+    freq = f'{target_interval_min}min'
+    present_cols = set(grid_df.columns)
+
+    agg_dict = {}
+    for col in grid_df.columns:
+        if col in _AGG_MEAN:
+            agg_dict[col] = 'mean'
+        elif col in _AGG_SUM:
+            agg_dict[col] = 'sum'
+        elif col in _AGG_LAST:
+            agg_dict[col] = 'last'
+        elif col in _EXTENDED_ONLY:
+            agg_dict[col] = 'last'
+        else:
+            # Unknown columns default to last
+            agg_dict[col] = 'last'
+
+    resampled = grid_df.resample(freq)
+
+    result_parts = {}
+    for col, method in agg_dict.items():
+        if method == 'sum':
+            result_parts[col] = resampled[col].sum(min_count=1)
+        elif method == 'mean':
+            result_parts[col] = resampled[col].mean()
+        else:
+            result_parts[col] = resampled[col].last()
+
+    result = pd.DataFrame(result_parts, columns=grid_df.columns)
+    return result
+
+
+_DEFAULT_HORIZONS = [
+    {'interval_min': 5,  'history_steps': 12, 'forecast_steps': 12, 'label': '1hr@5min'},
+    {'interval_min': 15, 'history_steps': 12, 'forecast_steps': 24, 'label': '6hr@15min'},
+    {'interval_min': 60, 'history_steps': 12, 'forecast_steps': 72, 'label': '3day@1hr'},
+]
+
+
+def build_multihorizon_windows(grid_df: pd.DataFrame,
+                               horizons: List[Dict] = None) -> Dict:
+    """Build training windows at multiple time resolutions.
+
+    Args:
+        grid_df: 5-min base grid DataFrame
+        horizons: list of dicts, each with:
+            - 'interval_min': grid resolution (5, 15, 60)
+            - 'history_steps': number of history timesteps
+            - 'forecast_steps': number of forecast timesteps
+            - 'label': human-readable label (e.g., '3hr@15min')
+
+    Returns:
+        dict mapping label → {'features': np.array, 'grid': DataFrame, 'interval_min': int}
+
+    Default horizons if None:
+        [{'interval_min': 5,  'history_steps': 12, 'forecast_steps': 12, 'label': '1hr@5min'},
+         {'interval_min': 15, 'history_steps': 12, 'forecast_steps': 24, 'label': '6hr@15min'},
+         {'interval_min': 60, 'history_steps': 12, 'forecast_steps': 72, 'label': '3day@1hr'}]
+    """
+    if horizons is None:
+        horizons = _DEFAULT_HORIZONS
+
+    results = {}
+    for h in horizons:
+        interval = h['interval_min']
+        label = h['label']
+
+        if interval <= 5:
+            grid = grid_df.copy()
+        else:
+            grid = downsample_grid(grid_df, target_interval_min=interval)
+
+        # Build feature array from the grid columns that match schema names
+        all_names = EXTENDED_FEATURE_NAMES if len(grid.columns) > len(FEATURE_NAMES) else FEATURE_NAMES
+        cols = [c for c in all_names if c in grid.columns]
+        features = grid[cols].values.astype(np.float32)
+
+        results[label] = {
+            'features': features,
+            'grid': grid,
+            'interval_min': interval,
+        }
+
+    return results
 
 
 def main():
