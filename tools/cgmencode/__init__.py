@@ -16,8 +16,15 @@ from .state_tracker import ISFCRTracker, DriftDetector
 from .label_events import (
     extract_override_events, classify_override_reason,
     build_pre_event_windows, extract_extended_tabular,
+    build_classifier_dataset, compute_rolling_features,
     EXTENDED_LABEL_MAP, OVERRIDE_REASON_MAP,
 )
+from .event_classifier import (
+    train_event_classifier, predict_events, score_override_candidates,
+    compute_per_class_metrics,
+)
+from .state_tracker import PatternStateMachine
+from .forecast import HierarchicalForecaster, ScenarioSimulator, BacktestEngine
 
 __all__ = [
     # Schema (core)
@@ -52,11 +59,23 @@ __all__ = [
     # State tracking
     'ISFCRTracker',
     'DriftDetector',
+    'PatternStateMachine',
     # Event label pipeline (agentic delivery)
     'extract_override_events',
     'classify_override_reason',
     'build_pre_event_windows',
     'extract_extended_tabular',
+    'build_classifier_dataset',
+    'compute_rolling_features',
     'EXTENDED_LABEL_MAP',
     'OVERRIDE_REASON_MAP',
+    # Event classifier
+    'train_event_classifier',
+    'predict_events',
+    'score_override_candidates',
+    'compute_per_class_metrics',
+    # Forecast pipeline
+    'HierarchicalForecaster',
+    'ScenarioSimulator',
+    'BacktestEngine',
 ]

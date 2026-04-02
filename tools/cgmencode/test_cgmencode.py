@@ -1887,5 +1887,85 @@ class TestEventClassifier(unittest.TestCase):
         self.assertEqual(len(result), 100)
 
 
+# =============================================================================
+# 20. Forecast Pipeline Tests
+# =============================================================================
+
+class TestHierarchicalForecaster(unittest.TestCase):
+    """Tests for HierarchicalForecaster, ScenarioSimulator, BacktestEngine."""
+
+    def _make_model(self):
+        from tools.cgmencode.model import CGMGroupedEncoder
+        return CGMGroupedEncoder(input_dim=8, d_model=32, nhead=4, num_layers=1)
+
+    def test_hierarchical_short_only(self):
+        from tools.cgmencode.forecast import HierarchicalForecaster
+        model = self._make_model()
+        forecaster = HierarchicalForecaster(short_model=model)
+        x = torch.randn(1, 24, 8)
+        result = forecaster.forecast(x, horizon_hours=2.0)
+        self.assertIn('short', result)
+        self.assertEqual(result['short']['interval_min'], 5)
+
+    def test_hierarchical_combined(self):
+        from tools.cgmencode.forecast import HierarchicalForecaster
+        model = self._make_model()
+        forecaster = HierarchicalForecaster(short_model=model)
+        x = torch.randn(1, 24, 8)
+        glucose, times = forecaster.combined_forecast_mgdl(x, horizon_hours=2.0)
+        self.assertGreater(len(glucose), 0)
+        self.assertEqual(len(glucose), len(times))
+
+    def test_hierarchical_long_term(self):
+        from tools.cgmencode.forecast import HierarchicalForecaster
+        forecaster = HierarchicalForecaster(short_model=self._make_model())
+        x = torch.randn(1, 24, 8)
+        result = forecaster.forecast(x, horizon_hours=24.0)
+        self.assertIn('long', result)
+        self.assertEqual(result['long']['interval_min'], 60)
+
+    def test_scenario_simulator(self):
+        from tools.cgmencode.forecast import HierarchicalForecaster, ScenarioSimulator
+        forecaster = HierarchicalForecaster(short_model=self._make_model())
+        sim = ScenarioSimulator(forecaster)
+        x = torch.randn(1, 24, 8)
+        result = sim.simulate_scenario(x, 'meal_medium', horizon_hours=2.0)
+        self.assertIn('baseline_mgdl', result)
+        self.assertIn('scenario_mgdl', result)
+        self.assertIn('delta_mgdl', result)
+        self.assertIn('max_impact_mgdl', result)
+
+    def test_scenario_compare(self):
+        from tools.cgmencode.forecast import HierarchicalForecaster, ScenarioSimulator
+        forecaster = HierarchicalForecaster(short_model=self._make_model())
+        sim = ScenarioSimulator(forecaster)
+        x = torch.randn(1, 24, 8)
+        results = sim.compare_scenarios(x, ['meal_small', 'meal_large'], horizon_hours=2.0)
+        self.assertEqual(len(results), 2)
+        # Sorted by TIR descending
+        self.assertGreaterEqual(results[0]['tir'], results[1]['tir'])
+
+    def test_backtest_full(self):
+        from tools.cgmencode.forecast import BacktestEngine
+        engine = BacktestEngine()
+        # Synthetic glucose: 500 readings (41+ hours)
+        glucose = np.random.RandomState(42).normal(140, 30, size=500).clip(40, 400)
+        events = [{'timestamp_idx': 100, 'event_type': 'meal'}]
+        result = engine.full_backtest(glucose, events, window_size_steps=72, stride_steps=36)
+        self.assertGreater(result['n_windows'], 0)
+        self.assertIn('mean_tir', result)
+        self.assertIn('mean_gri', result)
+        self.assertIn('total_hypo_events', result)
+
+    def test_backtest_replay(self):
+        from tools.cgmencode.forecast import BacktestEngine
+        engine = BacktestEngine()
+        glucose = np.array([120, 130, 140, 150, 160, 100, 90, 80, 70, 110])
+        events = [{'timestamp_idx': 5, 'event_type': 'meal'}]
+        result = engine.replay(glucose, events)
+        self.assertIn('actual_clinical', result)
+        self.assertIn('suggestion_accuracy', result)
+
+
 if __name__ == '__main__':
     unittest.main()
