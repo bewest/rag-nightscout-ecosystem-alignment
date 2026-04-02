@@ -180,39 +180,55 @@ def run_multihorizon(args):
     paths = resolve_patient_paths(
         getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
 
-    horizons = {'5min': 1, '15min': 3, '60min': 12}
-    results_by_res = {}
-
-    for label, ds_factor in horizons.items():
-        ctx.section(f'Resolution: {label} (downsample {ds_factor}×)')
-        all_windows = []
-        for ppath in paths:
-            try:
-                grid_df, feat = build_nightscout_grid(ppath, verbose=False)
-                if feat is None:
-                    continue
-                ds_df = downsample_grid(grid_df, factor=ds_factor) if ds_factor > 1 else grid_df
-                mh = build_multihorizon_windows(ds_df)
-                for h_label, wins in mh.items():
-                    all_windows.extend(wins)
-            except Exception:
+    # build_multihorizon_windows handles downsampling internally and returns
+    # {'1hr@5min': {'features': ndarray(T,F), ...}, '6hr@15min': {...}, ...}
+    # We need to window those feature arrays into fixed-size training chunks.
+    by_horizon = {}  # label → list of (win_size, F) arrays
+    win_size = 24
+    for ppath in paths:
+        try:
+            grid_df, feat = build_nightscout_grid(ppath, verbose=False)
+            if feat is None:
                 continue
+            # Add time features to grid_df so build_multihorizon_windows
+            # can find all 8 standard features
+            if 'time_sin' not in grid_df.columns and grid_df.index is not None:
+                import numpy as _np
+                hours = grid_df.index.hour + grid_df.index.minute / 60.0
+                grid_df['time_sin'] = _np.sin(2 * _np.pi * hours / 24.0)
+                grid_df['time_cos'] = _np.cos(2 * _np.pi * hours / 24.0)
+            mh = build_multihorizon_windows(grid_df)
+            for h_label, h_data in mh.items():
+                features = h_data['features']  # (T, num_features)
+                stride = max(1, win_size // 2)
+                for i in range(0, len(features) - win_size + 1, stride):
+                    win = features[i:i + win_size]
+                    import numpy as _np
+                    if _np.isnan(win).any() or _np.isinf(win).any():
+                        continue
+                    by_horizon.setdefault(h_label, []).append(win)
+        except Exception:
+            continue
 
-        if len(all_windows) < 50:
-            ctx.log(f'Only {len(all_windows)} windows — skipping')
+    results_by_res = {}
+    for label, windows in sorted(by_horizon.items()):
+        ctx.section(f'Horizon: {label}')
+        if len(windows) < 50:
+            ctx.log(f'Only {len(windows)} windows — skipping')
             results_by_res[label] = {'status': 'too_few_windows'}
             continue
 
-        train_ds, val_ds = windows_to_datasets(all_windows)
-        dim = all_windows[0].shape[-1] if all_windows[0].ndim > 1 else 1
+        train_ds, val_ds = windows_to_datasets(windows)
+        dim = windows[0].shape[-1]
+        safe_label = label.replace('@', '_').replace('/', '_')
         model = create_model('grouped', input_dim=dim)
         best_loss, _ = train(
             model, train_ds, val_ds,
-            f'{out}/exp028_multihorizon_{label}.pth', f'MH-{label}')
+            f'{out}/exp028_multihorizon_{safe_label}.pth', f'MH-{label}')
         m_mse = forecast_mse(model, val_ds)
         p_mse = persistence_mse(val_ds)
         results_by_res[label] = {
-            'windows': len(all_windows), 'forecast_mse': m_mse,
+            'windows': len(windows), 'forecast_mse': m_mse,
             'persistence_mse': p_mse,
             'improvement_pct': improvement_pct(m_mse, p_mse),
         }
@@ -423,10 +439,11 @@ def run_backtest(args):
     patients_dir = getattr(args, 'patients_dir', None)
     paths = resolve_patient_paths(patients_dir, getattr(args, 'real_data', None))
 
-    # Load components
+    # Load components — prefer 8f checkpoint (matches input_dim=8)
     model = create_model('grouped', input_dim=8)
-    ckpt = find_checkpoint(out, 'exp026_grouped_16f.pth',
-                           'grouped_multi_transfer.pth')
+    ckpt = find_checkpoint(out, 'exp026_grouped_8f.pth',
+                           'grouped_multi_transfer.pth',
+                           'exp028_multihorizon_1hr_5min.pth')
     if ckpt:
         load_checkpoint(model, ckpt)
 

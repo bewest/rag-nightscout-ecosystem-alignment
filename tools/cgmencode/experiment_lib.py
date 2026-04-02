@@ -192,7 +192,8 @@ def train(model, train_ds, val_ds, save_path, label,
             print(f'  [{label}] Early stop at epoch {ep+1}')
             break
 
-    load_checkpoint(model, save_path)
+    if os.path.exists(save_path):
+        load_checkpoint(model, save_path)
     return best, ep + 1
 
 
