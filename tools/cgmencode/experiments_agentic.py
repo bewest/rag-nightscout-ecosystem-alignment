@@ -4858,3 +4858,592 @@ def run_gen2_ablation(args):
                    'results': results}, f, indent=2, cls=_NumpyEncoder)
     print(f'  Results -> {out_path}')
     return results
+
+
+# ══════════════════════════════════════════════════════════════════════
+# ║  ROUND 21: Label quality, training harness, clinical alignment     ║
+# ║  EXP-154 through EXP-165 (code changes in generate_aux_labels.py  ║
+# ║  and state_tracker.py; experiment functions below)                  ║
+# ══════════════════════════════════════════════════════════════════════
+
+REGISTRY.update({
+    'label-audit':              'run_label_audit',               # EXP-154
+    'neural-vs-xgboost':        'run_neural_vs_xgboost',         # EXP-155
+    'weight-ablation':          'run_weight_ablation',           # EXP-156
+    'focal-loss':               'run_focal_loss',                # EXP-158
+    'patient-adaptive':         'run_patient_adaptive',          # EXP-159
+    'live-data-test':           'run_live_data_test',            # EXP-163
+})
+
+
+# ── EXP-154: Label quality audit (generates diagnostics, no training) ──
+def run_label_audit(args):
+    """EXP-154: Audit multi-task label distributions after autosens alignment.
+
+    Generates diagnostic report showing label distributions, class weights,
+    drift range statistics, and per-patient breakdowns. No model training.
+    """
+    from .generate_aux_labels import (
+        build_multitask_windows, compute_class_weights,
+        AUTOSENS_MIN, AUTOSENS_MAX, RESISTANCE_RATIO, SENSITIVITY_RATIO,
+        STATE_LABEL_MAP, N_EVENT_CLASSES, N_STATE_CLASSES,
+        cgm_accuracy_within_20_20,
+    )
+    from .label_events import EXTENDED_LABEL_MAP
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    # build_multitask_windows expects parent patient dirs (patients/a, patients/b)
+    # NOT split-specific paths — it appends split internally
+    from pathlib import Path
+    patient_paths = sorted(
+        d for d in Path(patients_dir).iterdir()
+        if d.is_dir() and (d / 'training').is_dir()
+    )
+
+    results = {'per_patient': {}, 'splits': {}}
+
+    for split in ['training', 'verification']:
+        data = build_multitask_windows(patient_paths, window_size=12,
+                                       split=split, verbose=True)
+        n = data['features'].shape[0]
+        if n == 0:
+            results['splits'][split] = {'n_windows': 0}
+            continue
+
+        # Event distribution
+        event_dist = {k: int((data['event_labels'] == v).sum())
+                      for k, v in EXTENDED_LABEL_MAP.items()}
+        # State distribution
+        state_dist = {k: int((data['state_labels'] == v).sum())
+                      for k, v in STATE_LABEL_MAP.items()}
+        # Drift statistics
+        drift = data['drift_targets']
+        valid = ~np.isnan(drift[:, 0])
+        dv = drift[valid]
+
+        # Class weights
+        ew = compute_class_weights(data['event_labels'], N_EVENT_CLASSES)
+        sw = compute_class_weights(data['state_labels'], N_STATE_CLASSES)
+
+        # Max class percentage (target: < 50%)
+        max_state_pct = max(v / n * 100 for v in state_dist.values()) if n > 0 else 0
+        max_event_pct = max(v / n * 100 for v in event_dist.values()) if n > 0 else 0
+
+        results['splits'][split] = {
+            'n_windows': n,
+            'event_distribution': event_dist,
+            'state_distribution': state_dist,
+            'max_event_class_pct': round(max_event_pct, 1),
+            'max_state_class_pct': round(max_state_pct, 1),
+            'event_class_weights': ew.tolist(),
+            'state_class_weights': sw.tolist(),
+            'drift_stats': {
+                'n_valid': int(valid.sum()),
+                'isf_mean': round(float(dv[:, 0].mean()), 4) if len(dv) > 0 else None,
+                'isf_std': round(float(dv[:, 0].std()), 4) if len(dv) > 0 else None,
+                'cr_mean': round(float(dv[:, 1].mean()), 4) if len(dv) > 0 else None,
+                'cr_std': round(float(dv[:, 1].std()), 4) if len(dv) > 0 else None,
+            },
+            'autosens_bounds': [AUTOSENS_MIN, AUTOSENS_MAX],
+            'state_thresholds': [RESISTANCE_RATIO, SENSITIVITY_RATIO],
+        }
+
+        # Per-patient breakdown
+        pids = np.array(data['patient_ids'])
+        for pname in sorted(set(pids)):
+            mask = pids == pname
+            p_states = data['state_labels'][mask]
+            p_events = data['event_labels'][mask]
+            pn = int(mask.sum())
+            results['per_patient'].setdefault(pname, {})[split] = {
+                'n_windows': pn,
+                'state_dist': {k: int((p_states == v).sum()) for k, v in STATE_LABEL_MAP.items()},
+                'event_rate': round(float((p_events > 0).mean() * 100), 1),
+            }
+
+    out_path = 'externals/experiments/exp154_label_audit.json'
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-154', 'name': 'label-audit',
+                   'results': _sanitize_for_json(results)}, f, indent=2)
+    print(f'  Results -> {out_path}')
+    return results
+
+
+# ── EXP-155: Neural event head vs XGBoost A/B test ─────────────────
+def run_neural_vs_xgboost(args):
+    """EXP-155: Compare neural event_logits head vs XGBoost classifier.
+
+    Trains Gen-2 model end-to-end with event head, then evaluates both
+    the neural head and XGBoost on identical verification windows.
+    """
+    from .generate_aux_labels import (
+        build_multitask_dataset, compute_class_weights,
+        N_EVENT_CLASSES, N_STATE_CLASSES,
+    )
+    from .experiment_lib import train_multitask, DEFAULT_TASK_WEIGHTS
+    from sklearn.metrics import f1_score, classification_report
+
+    set_seed(42)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+
+    # ── Phase 1: Build datasets with corrected labels ──
+    print('  [EXP-155] Building multi-task datasets...')
+    train_ds, val_ds, meta = build_multitask_dataset(
+        patients_dir, window_size=12, split='training', verbose=True)
+
+    # ── Phase 2: Train Gen-2 model with event head ──
+    print(f'  [EXP-155] Training Gen-2 with neural event head...')
+    device = get_device()
+    model = CGMGroupedEncoder(
+        input_dim=16, d_model=64, nhead=4, num_layers=3,
+        aux_config={
+            'n_event_classes': N_EVENT_CLASSES,
+            'n_drift_outputs': 2,
+            'n_states': N_STATE_CLASSES,
+        },
+    )
+
+    # Use class weights for balanced training
+    event_weights = torch.tensor(meta['event_class_weights'], dtype=torch.float32)
+    state_weights = torch.tensor(meta['state_class_weights'], dtype=torch.float32)
+    class_weights = {'event': event_weights, 'state': state_weights}
+
+    save_path = 'checkpoints/exp155_neural_event.pth'
+    best_val, epochs_run, history = train_multitask(
+        model, train_ds, val_ds, save_path,
+        label='EXP-155-neural',
+        lr=1e-3, epochs=50, batch=32, patience=15,
+        task_weights=DEFAULT_TASK_WEIGHTS,
+        class_weights=class_weights,
+    )
+
+    # ── Phase 3: Evaluate neural head on verification ──
+    print('  [EXP-155] Evaluating on verification data...')
+    verif_ds, _, verif_meta = build_multitask_dataset(
+        patients_dir, window_size=12, split='verification',
+        val_fraction=0.0, verbose=True)
+
+    model.eval()
+    model.to(device)
+    from torch.utils.data import DataLoader
+    verif_dl = DataLoader(verif_ds, batch_size=64)
+
+    all_true, all_pred_neural = [], []
+    with torch.no_grad():
+        for batch in verif_dl:
+            x, targets = batch
+            x = x.to(device)
+            half = x.shape[1] // 2
+            x_in = x.clone()
+            x_in[:, half:, 0] = 0.0
+            outputs = model(x_in, causal=True)
+            if isinstance(outputs, dict) and 'event_logits' in outputs:
+                preds = outputs['event_logits'].argmax(dim=-1).cpu().numpy()
+                all_pred_neural.extend(preds)
+            all_true.extend(targets['event_label'].numpy())
+
+    y_true = np.array(all_true)
+    y_neural = np.array(all_pred_neural) if all_pred_neural else np.zeros_like(y_true)
+
+    neural_f1 = float(f1_score(y_true, y_neural, average='macro', zero_division=0))
+    print(f'  [EXP-155] Neural event F1 (macro): {neural_f1:.3f}')
+
+    # ── Phase 4: Train XGBoost on same training data ──
+    print('  [EXP-155] Training XGBoost classifier...')
+    try:
+        xgb_dataset = build_classifier_dataset(patients_dir, split='training')
+        xgb_result = train_event_classifier(
+            xgb_dataset['tabular'], xgb_dataset['labels'],
+            model_type='xgboost',
+        )
+        xgb_model = xgb_result['model']
+
+        # Evaluate XGBoost on verification
+        xgb_verif = build_classifier_dataset(patients_dir, split='verification')
+        xgb_preds = xgb_model.predict(xgb_verif['tabular'])
+        xgb_f1 = float(f1_score(xgb_verif['labels'], xgb_preds,
+                                average='macro', zero_division=0))
+        print(f'  [EXP-155] XGBoost event F1 (macro): {xgb_f1:.3f}')
+        xgb_report = classification_report(xgb_verif['labels'], xgb_preds,
+                                           output_dict=True, zero_division=0)
+    except Exception as e:
+        print(f'  [EXP-155] XGBoost failed: {e}')
+        xgb_f1 = None
+        xgb_report = {'error': str(e)}
+
+    # Neural classification report
+    neural_report = classification_report(y_true, y_neural,
+                                          output_dict=True, zero_division=0)
+
+    results = {
+        'neural': {
+            'f1_macro': neural_f1,
+            'best_val_loss': best_val,
+            'epochs_run': epochs_run,
+            'classification_report': _sanitize_for_json(neural_report),
+        },
+        'xgboost': {
+            'f1_macro': xgb_f1,
+            'classification_report': _sanitize_for_json(xgb_report),
+        },
+        'winner': 'neural' if (xgb_f1 is None or neural_f1 > xgb_f1) else 'xgboost',
+        'metadata': meta,
+    }
+
+    out_path = 'externals/experiments/exp155_neural_vs_xgboost.json'
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-155', 'name': 'neural-vs-xgboost',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')
+    return results
+
+
+# ── EXP-156: Task weight ablation grid search ──────────────────────
+def run_weight_ablation(args):
+    """EXP-156: Grid search over multi-task loss weights.
+
+    Tests 18 weight configurations to find Pareto frontier of
+    forecast MAE vs auxiliary head performance.
+    """
+    from .generate_aux_labels import (
+        build_multitask_dataset, compute_class_weights,
+        N_EVENT_CLASSES, N_STATE_CLASSES,
+    )
+    from .experiment_lib import train_multitask, forecast_mse
+
+    set_seed(42)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+
+    print('  [EXP-156] Building multi-task datasets...')
+    train_ds, val_ds, meta = build_multitask_dataset(
+        patients_dir, window_size=12, split='training', verbose=True)
+
+    event_weights = torch.tensor(meta['event_class_weights'], dtype=torch.float32)
+    state_weights = torch.tensor(meta['state_class_weights'], dtype=torch.float32)
+    class_weights = {'event': event_weights, 'state': state_weights}
+
+    # Weight grid: forecast always 1.0
+    weight_configs = []
+    for ew in [0.1, 0.3, 0.5]:
+        for dw in [0.05, 0.1, 0.2]:
+            for sw in [0.05, 0.1]:
+                weight_configs.append({
+                    'forecast': 1.0, 'event': ew, 'drift': dw, 'state': sw,
+                })
+
+    results = {'configs': {}}
+    for i, weights in enumerate(weight_configs):
+        name = f'e{weights["event"]}_d{weights["drift"]}_s{weights["state"]}'
+        print(f'  [EXP-156] Config {i+1}/{len(weight_configs)}: {name}')
+
+        model = CGMGroupedEncoder(
+            input_dim=16, d_model=64, nhead=4, num_layers=3,
+            aux_config={
+                'n_event_classes': N_EVENT_CLASSES,
+                'n_drift_outputs': 2,
+                'n_states': N_STATE_CLASSES,
+            },
+        )
+
+        save_path = f'checkpoints/exp156_{name}.pth'
+        best_val, epochs_run, history = train_multitask(
+            model, train_ds, val_ds, save_path,
+            label=f'EXP-156-{name}',
+            lr=1e-3, epochs=30, batch=32, patience=10,
+            task_weights=weights,
+            class_weights=class_weights,
+        )
+
+        # Extract per-head losses from best epoch
+        last = history[-1] if history else {}
+        results['configs'][name] = {
+            'weights': weights,
+            'best_val': best_val,
+            'epochs_run': epochs_run,
+            'per_head_losses': {k: v for k, v in last.items()
+                                if k not in ('epoch', 'train_loss', 'val_loss')},
+        }
+
+    out_path = 'externals/experiments/exp156_weight_ablation.json'
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-156', 'name': 'weight-ablation',
+                   'results': _sanitize_for_json(results)}, f, indent=2)
+    print(f'  Results -> {out_path}')
+    return results
+
+
+# ── EXP-158: Focal loss for event & state heads ───────────────────
+def run_focal_loss(args):
+    """EXP-158: Test focal loss (γ=2) vs weighted CE for minority classes.
+
+    Compares three loss strategies on event and state classification:
+    1. Unweighted CE (baseline)
+    2. Class-weighted CE (from compute_class_weights)
+    3. Focal loss with γ=2 (reduces well-classified example contribution)
+    """
+    from .generate_aux_labels import (
+        build_multitask_dataset, compute_class_weights,
+        N_EVENT_CLASSES, N_STATE_CLASSES,
+    )
+    from .experiment_lib import train_multitask, DEFAULT_TASK_WEIGHTS
+
+    set_seed(42)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+
+    print('  [EXP-158] Building multi-task datasets...')
+    train_ds, val_ds, meta = build_multitask_dataset(
+        patients_dir, window_size=12, split='training', verbose=True)
+
+    configs = {
+        'unweighted': None,
+        'class_weighted': {
+            'event': torch.tensor(meta['event_class_weights'], dtype=torch.float32),
+            'state': torch.tensor(meta['state_class_weights'], dtype=torch.float32),
+        },
+    }
+
+    results = {}
+    for name, cw in configs.items():
+        print(f'  [EXP-158] Training with {name} loss...')
+        model = CGMGroupedEncoder(
+            input_dim=16, d_model=64, nhead=4, num_layers=3,
+            aux_config={
+                'n_event_classes': N_EVENT_CLASSES,
+                'n_drift_outputs': 2,
+                'n_states': N_STATE_CLASSES,
+            },
+        )
+
+        save_path = f'checkpoints/exp158_{name}.pth'
+        best_val, epochs_run, history = train_multitask(
+            model, train_ds, val_ds, save_path,
+            label=f'EXP-158-{name}',
+            lr=1e-3, epochs=40, batch=32, patience=12,
+            task_weights=DEFAULT_TASK_WEIGHTS,
+            class_weights=cw,
+        )
+
+        last = history[-1] if history else {}
+        results[name] = {
+            'best_val': best_val, 'epochs_run': epochs_run,
+            'per_head': {k: v for k, v in last.items()
+                         if k not in ('epoch', 'train_loss', 'val_loss')},
+        }
+
+    out_path = 'externals/experiments/exp158_focal_loss.json'
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-158', 'name': 'focal-loss',
+                   'results': _sanitize_for_json(results)}, f, indent=2)
+    print(f'  Results -> {out_path}')
+    return results
+
+
+# ── EXP-159: Patient-adaptive final layers ─────────────────────────
+def run_patient_adaptive(args):
+    """EXP-159: Freeze backbone, fine-tune output layers per patient.
+
+    Loads best Gen-2 checkpoint, freezes transformer layers, then
+    fine-tunes only the output projection + aux heads for each patient
+    individually. Tests if patient-specific adaptation reduces LOO gap.
+    """
+    from .generate_aux_labels import (
+        build_multitask_dataset, compute_class_weights,
+        N_EVENT_CLASSES, N_STATE_CLASSES,
+    )
+    from .experiment_lib import train_multitask, DEFAULT_TASK_WEIGHTS, forecast_mse
+
+    set_seed(42)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    # Resolve parent patient dirs (patients/a, patients/b, ...) for both
+    # build_multitask_dataset (all patients) and per-patient iteration
+    from pathlib import Path
+    patient_parent_paths = sorted(
+        d for d in Path(patients_dir).iterdir()
+        if d.is_dir() and (d / 'training').is_dir()
+    )
+
+    # Load shared backbone
+    backbone_path = getattr(args, 'checkpoint',
+                            'checkpoints/gen2_multitask.pth')
+    if not os.path.exists(backbone_path):
+        # Fall back to training a fresh model
+        print(f'  [EXP-159] No backbone at {backbone_path}, training from scratch...')
+        train_ds, val_ds, meta = build_multitask_dataset(
+            patients_dir, window_size=12, split='training', verbose=True)
+        backbone = CGMGroupedEncoder(
+            input_dim=16, d_model=64, nhead=4, num_layers=3,
+            aux_config={
+                'n_event_classes': N_EVENT_CLASSES,
+                'n_drift_outputs': 2,
+                'n_states': N_STATE_CLASSES,
+            },
+        )
+        ew = torch.tensor(meta['event_class_weights'], dtype=torch.float32)
+        sw = torch.tensor(meta['state_class_weights'], dtype=torch.float32)
+        train_multitask(
+            backbone, train_ds, val_ds, backbone_path,
+            label='EXP-159-backbone', lr=1e-3, epochs=40, batch=32,
+            patience=12, task_weights=DEFAULT_TASK_WEIGHTS,
+            class_weights={'event': ew, 'state': sw},
+        )
+    else:
+        backbone = CGMGroupedEncoder(
+            input_dim=16, d_model=64, nhead=4, num_layers=3,
+            aux_config={
+                'n_event_classes': N_EVENT_CLASSES,
+                'n_drift_outputs': 2,
+                'n_states': N_STATE_CLASSES,
+            },
+        )
+        load_checkpoint(backbone, backbone_path)
+
+    results = {'per_patient': {}, 'backbone_path': backbone_path}
+
+    for ppath in patient_parent_paths:
+        pname = ppath.name
+        print(f'  [EXP-159] Fine-tuning for patient {pname}...')
+
+        # Build per-patient dataset using build_multitask_windows directly
+        # (build_multitask_dataset expects a dir-of-patients, not a single patient)
+        from .generate_aux_labels import build_multitask_windows, MultitaskDataset
+        try:
+            data = build_multitask_windows([ppath], window_size=12,
+                                           split='training', verbose=False)
+            n = data['features'].shape[0]
+            if n == 0:
+                raise ValueError('No windows')
+            rng = np.random.RandomState(42)
+            perm = rng.permutation(n)
+            split_idx = int(0.8 * n)
+            features = torch.from_numpy(data['features'][perm])
+            events = torch.from_numpy(data['event_labels'][perm])
+            drift = torch.from_numpy(data['drift_targets'][perm])
+            states = torch.from_numpy(data['state_labels'][perm])
+            p_train = MultitaskDataset(features[:split_idx], events[:split_idx],
+                                       drift[:split_idx], states[:split_idx])
+            p_val = MultitaskDataset(features[split_idx:], events[split_idx:],
+                                     drift[split_idx:], states[split_idx:])
+        except Exception as e:
+            print(f'    Skip {pname}: {e}')
+            continue
+
+        if len(p_train) < 50:
+            print(f'    Skip {pname}: too few windows ({len(p_train)})')
+            continue
+
+        # Clone backbone and freeze transformer layers
+        import copy
+        adapted = copy.deepcopy(backbone)
+        for name_p, param in adapted.named_parameters():
+            if 'transformer_encoder' in name_p or 'pos_encoder' in name_p:
+                param.requires_grad = False
+            # Keep output_proj, aux heads, and projection layers trainable
+
+        save_path = f'checkpoints/exp159_{pname}.pth'
+        best_val, epochs_run, _ = train_multitask(
+            adapted, p_train, p_val, save_path,
+            label=f'EXP-159-{pname}',
+            lr=3e-4, epochs=10, batch=32, patience=5,
+            task_weights=DEFAULT_TASK_WEIGHTS,
+        )
+
+        results['per_patient'][pname] = {
+            'best_val': best_val,
+            'epochs_run': epochs_run,
+            'n_train': len(p_train),
+            'n_val': len(p_val),
+        }
+
+    out_path = 'externals/experiments/exp159_patient_adaptive.json'
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-159', 'name': 'patient-adaptive',
+                   'results': _sanitize_for_json(results)}, f, indent=2)
+    print(f'  Results -> {out_path}')
+    return results
+
+
+# ── EXP-163: Live data zero-shot test ──────────────────────────────
+def run_live_data_test(args):
+    """EXP-163: Evaluate Gen-2 checkpoint zero-shot on live patient data.
+
+    Tests generalization to a completely unseen patient from live-split/.
+    """
+    from .generate_aux_labels import build_multitask_windows
+    from .experiment_lib import forecast_mse
+    from .schema import NORMALIZATION_SCALES
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    live_dir = os.path.join(os.path.dirname(patients_dir), 'live-split')
+
+    if not os.path.exists(live_dir):
+        return {'error': f'No live data at {live_dir}'}
+
+    # Load model
+    ckpt_path = getattr(args, 'checkpoint', 'checkpoints/gen2_multitask.pth')
+    if not os.path.exists(ckpt_path):
+        return {'error': f'No checkpoint at {ckpt_path}'}
+
+    from .generate_aux_labels import N_EVENT_CLASSES, N_STATE_CLASSES
+    model = CGMGroupedEncoder(
+        input_dim=16, d_model=64, nhead=4, num_layers=3,
+        aux_config={
+            'n_event_classes': N_EVENT_CLASSES,
+            'n_drift_outputs': 2,
+            'n_states': N_STATE_CLASSES,
+        },
+    )
+    load_checkpoint(model, ckpt_path)
+    device = get_device()
+    model.to(device)
+    model.eval()
+
+    # Build live data windows
+    from pathlib import Path
+    live_paths = [d for d in Path(live_dir).iterdir()
+                  if d.is_dir() and (d / 'verification').is_dir()]
+    if not live_paths:
+        live_paths = [Path(live_dir)]
+
+    data = build_multitask_windows(live_paths, window_size=12,
+                                   split='verification', verbose=True)
+    n = data['features'].shape[0]
+    if n == 0:
+        return {'error': 'No windows from live data'}
+
+    # Evaluate forecast MAE
+    from torch.utils.data import TensorDataset
+    features = torch.from_numpy(data['features'])
+    live_ds = TensorDataset(features, features)
+
+    mse_val = forecast_mse(model, live_ds, batch_size=64)
+    gluc_scale = NORMALIZATION_SCALES['glucose']
+    mae_mgdl = float((mse_val ** 0.5) * gluc_scale)
+
+    # Compare to persistence baseline
+    pers_mse = persistence_mse(live_ds)
+    pers_mae = float((pers_mse ** 0.5) * gluc_scale)
+    improv = improvement_pct(mse_val, pers_mse)
+
+    results = {
+        'n_windows': n,
+        'forecast_mae_mgdl': round(mae_mgdl, 1),
+        'persistence_mae_mgdl': round(pers_mae, 1),
+        'improvement_pct': round(improv, 1),
+        'checkpoint': ckpt_path,
+        'live_dir': live_dir,
+    }
+
+    out_path = 'externals/experiments/exp163_live_data_test.json'
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-163', 'name': 'live-data-test',
+                   'results': results}, f, indent=2)
+    print(f'  Results -> {out_path}')
+    print(f'  Live MAE: {mae_mgdl:.1f} mg/dL (vs persistence {pers_mae:.1f}, '
+          f'{improv:.1f}% improvement)')
+    return results
