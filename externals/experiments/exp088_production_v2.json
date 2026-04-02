@@ -1,0 +1,15 @@
+{
+  "experiment": "EXP-088",
+  "name": "production-v2",
+  "results": {
+    "n_suggestions": 1397,
+    "precision": 0.9964209019327129,
+    "types": {
+      "consider_correction": 926,
+      "eat_carbs": 328,
+      "correction_bolus": 143
+    },
+    "hypo_warnings": 328,
+    "avg_hypo_tte_min": 9.740853658536585
+  }
+}

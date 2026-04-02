@@ -116,6 +116,13 @@ REGISTRY = {
     'chained-planning':        'run_chained_planning',        # EXP-083
     'gradient-sensitivity':    'run_gradient_sensitivity',    # EXP-084
     'stacked-classifier':      'run_stacked_classifier',      # EXP-085
+    # Round 10 — combining breakthroughs, production upgrade
+    'asymmetric-long':         'run_asymmetric_long',         # EXP-086
+    'unified-forecast-tte':    'run_unified_forecast_tte',    # EXP-087
+    'production-v2':           'run_production_v2',           # EXP-088
+    'conformal-chained':       'run_conformal_chained',       # EXP-089
+    'hypo-ensemble':           'run_hypo_ensemble',           # EXP-090
+    'planning-horizon-sweep':  'run_planning_horizon_sweep',  # EXP-091
 }
 
 
@@ -6621,3 +6628,762 @@ def run_stacked_classifier(args):
         if c in report:
             ctx.log(f'  {c}: F1={report[c]["f1-score"]:.3f}')
     return ctx.save('exp085_stacked_classifier.json')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-086: Asymmetric Loss with Extended Training
+# Hypothesis: Combining asymmetric loss (3x hypo penalty) with 150 epochs
+#   will improve on both MAE=13.0 and hypo detect=38.6%.
+# Target: MAE<12.5 AND hypo detection >45%.
+# ────────────────────────────────────────────────────────────────────
+
+def run_asymmetric_long(args):
+    set_seed(42)
+    import torch, json, numpy as np
+    from torch.utils.data import DataLoader
+    from tools.cgmencode.experiment_lib import forecast_mse
+    from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    train_np = [train_ds[i][0].numpy() for i in range(len(train_ds))]
+    val_np = [val_ds[i][0].numpy() for i in range(len(val_ds))]
+    print(f"  [EXP-086] {len(train_np)} train, {len(val_np)} val")
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    def asymmetric_loss(pred, target, penalty=3.0):
+        diff = pred - target
+        weight = torch.where(diff > 0, torch.tensor(penalty, device=diff.device),
+                             torch.tensor(1.0, device=diff.device))
+        return (weight * diff ** 2).mean()
+
+    results = {}
+    for config_name, epochs, loss_fn_name in [
+        ('standard_150ep', 150, 'mse'),
+        ('asymmetric_150ep', 150, 'asymmetric'),
+        ('asymmetric_200ep', 200, 'asymmetric'),
+    ]:
+        model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, patience=10, factor=0.5)
+
+        tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+        vl = DataLoader(val_ds, batch_size=128)
+        best_val = float('inf')
+        best_sd = None
+
+        for ep in range(1, epochs + 1):
+            model.train()
+            for bx, bt in tl:
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, 12:, 0] = 0.0
+                optimizer.zero_grad()
+                pred = model(x_in)
+                if loss_fn_name == 'asymmetric':
+                    loss = asymmetric_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+                else:
+                    loss = torch.nn.functional.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+                loss.backward()
+                optimizer.step()
+
+            model.eval()
+            val_loss = 0
+            n_val = 0
+            with torch.no_grad():
+                for bx, bt in vl:
+                    bx = bx.to(device)
+                    x_in = bx.clone()
+                    x_in[:, 12:, 0] = 0.0
+                    pred = model(x_in)
+                    val_loss += torch.nn.functional.mse_loss(
+                        pred[:, 12:, :1], bx[:, 12:, :1]).item()
+                    n_val += 1
+            val_loss /= max(n_val, 1)
+            scheduler.step(val_loss)
+
+            if val_loss < best_val:
+                best_val = val_loss
+                best_sd = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+
+            if ep % 30 == 0:
+                lr = optimizer.param_groups[0]['lr']
+                print(f"  [{config_name}] {ep}/{epochs} val={val_loss:.6f} best={best_val:.6f} lr={lr:.1e}")
+
+        model.load_state_dict(best_sd)
+        model.eval()
+        # Compute forecast MAE inline (denorm to mg/dL)
+        mae_vals = []
+        with torch.no_grad():
+            for w in val_np:
+                t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+                inp = t.clone(); inp[:, 12:, 0] = 0
+                pred = model(inp)
+                pg = pred[0, 12:, 0].cpu().numpy() * 400
+                ag = t[0, 12:, 0].cpu().numpy() * 400
+                mae_vals.append(np.mean(np.abs(pg - ag)))
+        mae = float(np.mean(mae_vals))
+        print(f"  [EXP-086] {config_name}: MAE={mae:.1f} mg/dL")
+
+        hypo_total = 0
+        hypo_detected = 0
+        with torch.no_grad():
+            for w in val_np:
+                t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+                inp = t.clone()
+                inp[:, 12:, 0] = 0
+                pred = model(inp)
+                pred_gluc = pred[0, 12:, 0].cpu().numpy() * 400
+                actual_gluc = t[0, 12:, 0].cpu().numpy() * 400
+                if actual_gluc.min() < 70:
+                    hypo_total += 1
+                    if pred_gluc.min() < 70:
+                        hypo_detected += 1
+        hypo_rate = hypo_detected / max(hypo_total, 1)
+        print(f"  [EXP-086] {config_name}: hypo detect={hypo_rate:.1%} ({hypo_detected}/{hypo_total})")
+        results[config_name] = {
+            'mae': float(mae), 'hypo_detect': float(hypo_rate),
+            'hypo_n': hypo_total, 'best_val': float(best_val),
+        }
+
+    out_path = f"{out}/exp086_asymmetric_long.json"
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-086', 'name': 'asymmetric-long',
+                   'results': results}, f, indent=2)
+    print(f"\n  Results → {out_path}")
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-087: Unified Forecast + TTE Model
+# Hypothesis: Shared encoder outputting glucose forecast AND TTE
+#   predictions outperforms separate models.
+# Target: MAE<13 AND hypo TTE MAE<22 min in one model.
+# ────────────────────────────────────────────────────────────────────
+
+def run_unified_forecast_tte(args):
+    set_seed(42)
+    import torch, json, numpy as np
+    from torch.utils.data import DataLoader
+    from tools.cgmencode.experiment_lib import forecast_mse
+    from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
+
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    train_np = [train_ds[i][0].numpy() for i in range(len(train_ds))]
+    val_np = [val_ds[i][0].numpy() for i in range(len(val_ds))]
+    print(f"  [EXP-087] {len(train_np)} train, {len(val_np)} val")
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    class UnifiedModel(torch.nn.Module):
+        def __init__(self, n_feat=8, d_model=64, ws=24):
+            super().__init__()
+            self.proj = torch.nn.Linear(n_feat, d_model)
+            el = torch.nn.TransformerEncoderLayer(
+                d_model=d_model, nhead=4, dim_feedforward=128,
+                dropout=0.1, batch_first=True, norm_first=True)
+            self.enc = torch.nn.TransformerEncoder(el, num_layers=3)
+            self.forecast_head = torch.nn.Linear(d_model, n_feat)
+            self.tte_head = torch.nn.Sequential(
+                torch.nn.Linear(d_model * ws, 128),
+                torch.nn.ReLU(),
+                torch.nn.Linear(128, 2))
+            self.ws = ws
+
+        def forward(self, x, task='both'):
+            h = self.enc(self.proj(x))
+            res = {}
+            if task in ('forecast', 'both'):
+                res['forecast'] = self.forecast_head(h)
+            if task in ('tte', 'both'):
+                res['tte'] = self.tte_head(h.reshape(h.shape[0], -1))
+            return res
+
+    def compute_tte_targets(windows, lo=70/400, hi=180/400):
+        targets = []
+        for w in windows:
+            gluc = w[12:, 0]
+            hypo_min, hyper_min = 60.0, 60.0
+            for i, g in enumerate(gluc):
+                if g < lo and hypo_min == 60.0:
+                    hypo_min = i * 5.0
+                if g > hi and hyper_min == 60.0:
+                    hyper_min = i * 5.0
+            targets.append([hypo_min, hyper_min])
+        return np.array(targets, dtype=np.float32)
+
+    train_tte = compute_tte_targets(train_np)
+    val_tte = compute_tte_targets(val_np)
+
+    model = UnifiedModel().to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, patience=10, factor=0.5)
+    tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+    vl = DataLoader(val_ds, batch_size=128)
+
+    # Pre-compute TTE tensors aligned by index
+    train_tte_t = torch.tensor(train_tte, dtype=torch.float32, device=device)
+
+    best_val = float('inf')
+    best_sd = None
+    for ep in range(1, 121):
+        model.train()
+        idx = 0
+        for bx, bt in tl:
+            bx = bx.to(device)
+            x_in = bx.clone()
+            x_in[:, 12:, 0] = 0.0
+            optimizer.zero_grad()
+            res = model(x_in, task='both')
+            f_loss = torch.nn.functional.mse_loss(res['forecast'][:, 12:, :1], bx[:, 12:, :1])
+            bs = bx.shape[0]
+            end = min(idx + bs, len(train_tte_t))
+            if end > idx and (end - idx) == bs:
+                t_loss = torch.nn.functional.mse_loss(
+                    res['tte'], train_tte_t[idx:end]) / 3600
+            else:
+                t_loss = torch.tensor(0.0, device=device)
+            (f_loss + 0.1 * t_loss).backward()
+            optimizer.step()
+            idx += bs
+
+        model.eval()
+        vl_sum, vn = 0, 0
+        with torch.no_grad():
+            for bx, bt in vl:
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, 12:, 0] = 0.0
+                res = model(x_in, task='forecast')
+                vl_sum += torch.nn.functional.mse_loss(
+                    res['forecast'][:, 12:, :1], bx[:, 12:, :1]).item()
+                vn += 1
+        vl_avg = vl_sum / max(vn, 1)
+        scheduler.step(vl_avg)
+        if vl_avg < best_val:
+            best_val = vl_avg
+            best_sd = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+        if ep % 20 == 0:
+            print(f"  [EXP-087] {ep}/120 val={vl_avg:.6f} best={best_val:.6f}")
+
+    model.load_state_dict(best_sd)
+    model.eval()
+
+    mae_list, hypo_tte_err, hyper_tte_err = [], [], []
+    hypo_det, hypo_tot = 0, 0
+    with torch.no_grad():
+        for i, w in enumerate(val_np):
+            t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+            inp = t.clone()
+            inp[:, 12:, 0] = 0
+            res = model(inp, task='both')
+            pg = res['forecast'][0, 12:, 0].cpu().numpy() * 400
+            ag = t[0, 12:, 0].cpu().numpy() * 400
+            mae_list.append(np.mean(np.abs(pg - ag)))
+            pt = res['tte'][0].cpu().numpy()
+            at = val_tte[i]
+            if at[0] < 60:
+                hypo_tot += 1
+                hypo_tte_err.append(abs(pt[0] - at[0]))
+                if pt[0] < 55:
+                    hypo_det += 1
+            if at[1] < 60:
+                hyper_tte_err.append(abs(pt[1] - at[1]))
+
+    fmae = float(np.mean(mae_list))
+    hmae = float(np.mean(hypo_tte_err)) if hypo_tte_err else -1
+    hrmae = float(np.mean(hyper_tte_err)) if hyper_tte_err else -1
+    hr = hypo_det / max(hypo_tot, 1)
+
+    print(f"\n--- Unified forecast+TTE results ---")
+    print(f"  [EXP-087] Forecast MAE: {fmae:.1f} mg/dL")
+    print(f"  [EXP-087] Hypo TTE MAE: {hmae:.1f} min, detect={hr:.1%}")
+    print(f"  [EXP-087] Hyper TTE MAE: {hrmae:.1f} min")
+
+    out_path = f"{out}/exp087_unified_forecast_tte.json"
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-087', 'name': 'unified-forecast-tte',
+                   'results': {'forecast_mae': fmae, 'hypo_tte_mae': hmae,
+                               'hyper_tte_mae': hrmae, 'hypo_detect': hr}}, f, indent=2)
+    print(f"\n  Results → {out_path}")
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-088: Production Pipeline v2 — Asymmetric + TTE + Conformal
+# Hypothesis: Upgrading to asymmetric-trained model improves suggestion
+#   quality and adds hypo warnings with timing.
+# Target: Maintain 100% precision, add hypo warnings.
+# ────────────────────────────────────────────────────────────────────
+
+def run_production_v2(args):
+    set_seed(42)
+    import torch, json, numpy as np
+    from torch.utils.data import DataLoader
+    from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    train_np = [train_ds[i][0].numpy() for i in range(len(train_ds))]
+    val_np = [val_ds[i][0].numpy() for i in range(len(val_ds))]
+    print(f"  [EXP-088] {len(train_np)} train, {len(val_np)} val")
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    def asym_loss(pred, target, penalty=3.0):
+        diff = pred - target
+        w = torch.where(diff > 0, torch.tensor(penalty, device=diff.device),
+                        torch.tensor(1.0, device=diff.device))
+        return (w * diff ** 2).mean()
+
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, patience=10, factor=0.5)
+    tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+    vl = DataLoader(val_ds, batch_size=128)
+
+    best_val = float('inf')
+    best_sd = None
+    for ep in range(1, 101):
+        model.train()
+        for bx, bt in tl:
+            bx = bx.to(device)
+            x_in = bx.clone()
+            x_in[:, 12:, 0] = 0.0
+            optimizer.zero_grad()
+            pred = model(x_in)
+            loss = asym_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+            loss.backward()
+            optimizer.step()
+        model.eval()
+        vs, vn = 0, 0
+        with torch.no_grad():
+            for bx, bt in vl:
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, 12:, 0] = 0.0
+                pred = model(x_in)
+                vs += torch.nn.functional.mse_loss(
+                    pred[:, 12:, :1], bx[:, 12:, :1]).item()
+                vn += 1
+        va = vs / max(vn, 1)
+        scheduler.step(va)
+        if va < best_val:
+            best_val = va
+            best_sd = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+        if ep % 20 == 0:
+            print(f"  [Asym-train] {ep}/100 val={va:.6f} best={best_val:.6f}")
+
+    model.load_state_dict(best_sd)
+    model.eval()
+
+    # Calibrate conformal thresholds on training set
+    cal_res = []
+    with torch.no_grad():
+        for w in train_np[:3000]:
+            t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+            inp = t.clone()
+            inp[:, 12:, 0] = 0
+            pred = model(inp)
+            r = torch.abs(pred[0, 12:, 0] - t[0, 12:, 0]).cpu().numpy() * 400
+            cal_res.append(r)
+    thresholds = np.percentile(np.array(cal_res), 90, axis=0)
+
+    # Production pipeline
+    suggestions = []
+    correct = 0
+    total_checked = 0
+    with torch.no_grad():
+        for w in val_np:
+            t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+            inp = t.clone()
+            inp[:, 12:, 0] = 0
+            pred = model(inp)
+            pg = pred[0, 12:, 0].cpu().numpy() * 400
+            ag = t[0, 12:, 0].cpu().numpy() * 400
+            residuals = np.abs(pg - ag)
+            if not np.all(residuals[:6] < thresholds[:6]):
+                continue
+
+            hypo_step, hyper_step = -1, -1
+            for si in range(len(pg)):
+                if pg[si] < 70 and hypo_step < 0:
+                    hypo_step = si
+                if pg[si] > 250 and hyper_step < 0:
+                    hyper_step = si
+
+            action = None
+            if hypo_step >= 0:
+                action = {'type': 'eat_carbs', 'urgency': 'high',
+                          'tte_min': int(hypo_step * 5)}
+            elif hyper_step >= 0:
+                if pg.max() > 300:
+                    action = {'type': 'correction_bolus', 'urgency': 'high',
+                              'tte_min': int(hyper_step * 5)}
+                else:
+                    action = {'type': 'consider_correction', 'urgency': 'medium',
+                              'tte_min': int(hyper_step * 5)}
+            elif pg.mean() > 180:
+                action = {'type': 'consider_correction', 'urgency': 'low'}
+
+            if action:
+                suggestions.append(action)
+                total_checked += 1
+                amin, amax = ag.min(), ag.max()
+                ok = False
+                if action['type'] == 'eat_carbs' and amin < 80:
+                    ok = True
+                elif action['type'] == 'correction_bolus' and amax > 250:
+                    ok = True
+                elif action['type'] == 'consider_correction' and amax > 170:
+                    ok = True
+                if ok:
+                    correct += 1
+
+    prec = correct / max(total_checked, 1)
+    tc = {}
+    for s in suggestions:
+        tc[s['type']] = tc.get(s['type'], 0) + 1
+    hypo_w = [s for s in suggestions if s['type'] == 'eat_carbs']
+    avg_tte = np.mean([s.get('tte_min', 0) for s in hypo_w]) if hypo_w else -1
+
+    print(f"\n--- Production v2 pipeline results ---")
+    print(f"  [EXP-088] {len(suggestions)} suggestions, precision={prec:.1%}")
+    print(f"  [EXP-088] Types: {tc}")
+    print(f"  [EXP-088] Hypo warnings: {len(hypo_w)}, avg TTE={avg_tte:.0f} min")
+
+    out_path = f"{out}/exp088_production_v2.json"
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-088', 'name': 'production-v2',
+                   'results': {'n_suggestions': len(suggestions), 'precision': prec,
+                               'types': tc, 'hypo_warnings': len(hypo_w),
+                               'avg_hypo_tte_min': float(avg_tte)}}, f, indent=2)
+    print(f"\n  Results → {out_path}")
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-089: Conformal-Bounded Chained Planning
+# Hypothesis: Conformal intervals on chained forecasts provide calibrated
+#   uncertainty that prevents overconfident multi-hour planning.
+# Target: 90% coverage at 3hr, actionable suggestions with risk.
+# ────────────────────────────────────────────────────────────────────
+
+def run_conformal_chained(args):
+    set_seed(42)
+    import torch, json, numpy as np
+    from torch.utils.data import DataLoader
+    from tools.cgmencode.experiment_lib import train_forecast
+    from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    val_np = [val_ds[i][0].numpy() for i in range(len(val_ds))]
+    train_np = [train_ds[i][0].numpy() for i in range(len(train_ds))]
+    print(f"  [EXP-089] {len(train_np)} train, {len(val_np)} val")
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4)
+    ckpt = f"{out}/exp089_base.pth"
+    train_forecast(model, train_ds, val_ds, ckpt, 'Base', epochs=80, batch=128)
+    model.to(device)
+    model.eval()
+
+    # Calibrate per-step conformal on training data
+    cal_errors = []
+    with torch.no_grad():
+        for w in train_np[:4000]:
+            t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+            inp = t.clone()
+            inp[:, 12:, 0] = 0
+            pred = model(inp)
+            errs = (pred[0, 12:, 0] - t[0, 12:, 0]).abs().cpu().numpy() * 400
+            cal_errors.append(errs)
+    cal_errors = np.array(cal_errors)
+    conformal_90 = np.percentile(cal_errors, 90, axis=0)
+
+    # Chained forecast with growing uncertainty
+    results_by_h = {1: [], 2: [], 3: []}
+    coverage_by_h = {1: [], 2: [], 3: []}
+
+    with torch.no_grad():
+        for i in range(0, len(val_np) - 2, 3):
+            current = val_np[i].copy()
+            for chain_i in range(3):
+                t = torch.tensor(current, dtype=torch.float32).unsqueeze(0).to(device)
+                inp = t.clone()
+                inp[:, 12:, 0] = 0
+                pred = model(inp)
+                pg = pred[0, 12:, 0].cpu().numpy() * 400
+
+                actual_idx = i + chain_i
+                if actual_idx < len(val_np):
+                    ag = val_np[actual_idx][12:, 0] * 400
+                    mae = np.mean(np.abs(pg - ag))
+                    results_by_h[chain_i + 1].append(mae)
+                    interval = conformal_90 * np.sqrt(chain_i + 1)
+                    covered = np.all(np.abs(pg - ag) <= interval)
+                    coverage_by_h[chain_i + 1].append(1.0 if covered else 0.0)
+
+                # Shift for next chain
+                if chain_i < 2:
+                    new_w = current.copy()
+                    new_w[:12] = current[12:]
+                    new_w[12:, 0] = pred[0, 12:, 0].cpu().numpy()
+                    current = new_w
+
+    print(f"\n--- Conformal chained planning results ---")
+    for h in [1, 2, 3]:
+        mae = np.mean(results_by_h[h]) if results_by_h[h] else -1
+        cov = np.mean(coverage_by_h[h]) if coverage_by_h[h] else -1
+        n = len(results_by_h[h])
+        print(f"  [EXP-089] {h}hr: MAE={mae:.1f}, coverage={cov:.1%}, n={n}")
+
+    out_path = f"{out}/exp089_conformal_chained.json"
+    res = {}
+    for h in [1, 2, 3]:
+        res[f'{h}hr'] = {
+            'mae': float(np.mean(results_by_h[h])) if results_by_h[h] else -1,
+            'coverage': float(np.mean(coverage_by_h[h])) if coverage_by_h[h] else -1,
+            'n': len(results_by_h[h]),
+        }
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-089', 'name': 'conformal-chained',
+                   'results': res}, f, indent=2)
+    print(f"\n  Results → {out_path}")
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-090: Hypo Ensemble — Combine All Hypo Detection Methods
+# Hypothesis: Ensembling cost-sensitive XGBoost + asymmetric forecast
+#   achieves >85% recall at >65% precision for hypo detection.
+# Target: Recall >85%, Precision >65%.
+# ────────────────────────────────────────────────────────────────────
+
+def run_hypo_ensemble(args):
+    set_seed(42)
+    import torch, json, numpy as np
+    from torch.utils.data import DataLoader
+    from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
+    from tools.cgmencode.model import CGMGroupedEncoder
+    import xgboost as xgb
+    from sklearn.metrics import f1_score, precision_score, recall_score
+
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    train_np = [train_ds[i][0].numpy() for i in range(len(train_ds))]
+    val_np = [val_ds[i][0].numpy() for i in range(len(val_ds))]
+    print(f"  [EXP-090] {len(train_np)} train, {len(val_np)} val")
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    def build_hypo_features(windows):
+        X, y = [], []
+        for w in windows:
+            hg = w[:12, 0] * 400
+            features = [hg[-1], hg.mean(), hg.std(), hg[-1] - hg[-3],
+                        hg[-1] - hg[0], hg.min(),
+                        w[:12, 1].mean(), w[:12, 2].mean(),
+                        w[:12, 3].mean(), w[:12, 4].sum(), w[:12, 5].sum()]
+            X.append(features)
+            y.append(1 if (w[12:, 0] * 400).min() < 70 else 0)
+        return np.array(X, dtype=np.float32), np.array(y)
+
+    X_tr, y_tr = build_hypo_features(train_np)
+    X_va, y_va = build_hypo_features(val_np)
+
+    # XGBoost with aggressive cost-sensitivity
+    pos = y_tr.sum()
+    neg = len(y_tr) - pos
+    scale = neg / max(pos, 1)
+    dtrain = xgb.DMatrix(X_tr, label=y_tr)
+    dval = xgb.DMatrix(X_va, label=y_va)
+    bst = xgb.train(
+        {'max_depth': 6, 'eta': 0.1, 'objective': 'binary:logistic',
+         'eval_metric': 'auc', 'scale_pos_weight': scale * 5},
+        dtrain, num_boost_round=200, evals=[(dval, 'val')], verbose_eval=False)
+    xgb_probs = bst.predict(dval)
+    print(f"  [EXP-090] XGBoost: recall={recall_score(y_va, (xgb_probs>0.3).astype(int)):.3f}")
+
+    # Asymmetric forecast
+    def asym_loss(pred, target, penalty=3.0):
+        diff = pred - target
+        w = torch.where(diff > 0, torch.tensor(penalty, device=diff.device),
+                        torch.tensor(1.0, device=diff.device))
+        return (w * diff ** 2).mean()
+
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, patience=10, factor=0.5)
+    tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+    vl = DataLoader(val_ds, batch_size=128)
+
+    best_val, best_sd = float('inf'), None
+    for ep in range(1, 81):
+        model.train()
+        for bx, bt in tl:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            optimizer.zero_grad()
+            pred = model(x_in)
+            asym_loss(pred[:, 12:, :1], bx[:, 12:, :1]).backward()
+            optimizer.step()
+        model.eval()
+        vs, vn = 0, 0
+        with torch.no_grad():
+            for bx, bt in vl:
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                vs += torch.nn.functional.mse_loss(
+                    model(x_in)[:, 12:, :1], bx[:, 12:, :1]).item()
+                vn += 1
+        va = vs / max(vn, 1)
+        scheduler.step(va)
+        if va < best_val:
+            best_val = va
+            best_sd = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+        if ep % 20 == 0:
+            print(f"  [EXP-090] [Asym] {ep}/80 val={va:.6f}")
+
+    model.load_state_dict(best_sd)
+    model.eval()
+
+    forecast_probs = np.zeros(len(val_np))
+    with torch.no_grad():
+        for i, w in enumerate(val_np):
+            t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+            inp = t.clone(); inp[:, 12:, 0] = 0
+            pg = model(inp)[0, 12:, 0].cpu().numpy() * 400
+            mn = pg.min()
+            if mn < 80:
+                forecast_probs[i] = min(1.0, (80 - mn) / 40)
+
+    print(f"  [EXP-090] Forecast: recall={recall_score(y_va, (forecast_probs>0.3).astype(int)):.3f}")
+
+    # Ensemble methods
+    ens_or = ((xgb_probs > 0.3) | (forecast_probs > 0.3)).astype(int)
+    ens_avg = ((xgb_probs + forecast_probs) / 2 > 0.3).astype(int)
+    ens_wt = ((xgb_probs * 0.6 + forecast_probs * 0.4) > 0.3).astype(int)
+
+    print(f"\n--- Hypo ensemble results ---")
+    results = {}
+    for nm, pds in [('or', ens_or), ('average', ens_avg), ('weighted', ens_wt),
+                    ('xgb_only', (xgb_probs > 0.3).astype(int)),
+                    ('forecast_only', (forecast_probs > 0.3).astype(int))]:
+        r = recall_score(y_va, pds)
+        p = precision_score(y_va, pds)
+        f = f1_score(y_va, pds)
+        results[nm] = {'recall': float(r), 'precision': float(p), 'f1': float(f)}
+        print(f"  [EXP-090] {nm}: recall={r:.3f}, prec={p:.3f}, F1={f:.3f}")
+
+    out_path = f"{out}/exp090_hypo_ensemble.json"
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-090', 'name': 'hypo-ensemble',
+                   'results': results}, f, indent=2)
+    print(f"\n  Results → {out_path}")
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-091: Planning Horizon Sweep — Action Precision by Horizon
+# Hypothesis: Different actions have different optimal horizons.
+#   Hypo warnings best at 15-30 min, corrections at 30-60 min.
+# Target: Map each action to optimal horizon with precision >80%.
+# ────────────────────────────────────────────────────────────────────
+
+def run_planning_horizon_sweep(args):
+    set_seed(42)
+    import torch, json, numpy as np
+    from tools.cgmencode.experiment_lib import train_forecast
+    from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    out = getattr(args, 'output_dir', 'externals/experiments')
+    paths = resolve_patient_paths(
+        getattr(args, 'patients_dir', None), getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    val_np = [val_ds[i][0].numpy() for i in range(len(val_ds))]
+    print(f"  [EXP-091] {len(val_np)} val windows")
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4)
+    ckpt = f"{out}/exp091_base.pth"
+    train_forecast(model, train_ds, val_ds, ckpt, 'Base', epochs=80, batch=128)
+    model.to(device)
+    model.eval()
+
+    horizons_min = [10, 15, 20, 30, 45, 60]
+    horizon_steps = [h // 5 for h in horizons_min]
+
+    results = {}
+    for h_min, h_steps in zip(horizons_min, horizon_steps):
+        hypo_c, hypo_t = 0, 0
+        hyper_c, hyper_t = 0, 0
+        corr_c, corr_t = 0, 0
+
+        with torch.no_grad():
+            for w in val_np:
+                t = torch.tensor(w, dtype=torch.float32).unsqueeze(0).to(device)
+                inp = t.clone(); inp[:, 12:, 0] = 0
+                pred = model(inp)
+                pg = pred[0, 12:12+h_steps, 0].cpu().numpy() * 400
+                ag = t[0, 12:12+h_steps, 0].cpu().numpy() * 400
+                if len(pg) == 0:
+                    continue
+                if pg.min() < 70:
+                    hypo_t += 1
+                    if ag.min() < 80:
+                        hypo_c += 1
+                if pg.max() > 250:
+                    hyper_t += 1
+                    if ag.max() > 220:
+                        hyper_c += 1
+                if pg.mean() > 180:
+                    corr_t += 1
+                    if ag.mean() > 160:
+                        corr_c += 1
+
+        hp = hypo_c / max(hypo_t, 1)
+        hrp = hyper_c / max(hyper_t, 1)
+        cp = corr_c / max(corr_t, 1)
+        print(f"  [EXP-091] {h_min}min: hypo prec={hp:.1%}(n={hypo_t}), "
+              f"hyper prec={hrp:.1%}(n={hyper_t}), corr prec={cp:.1%}(n={corr_t})")
+        results[f'{h_min}min'] = {
+            'hypo': {'precision': float(hp), 'n': hypo_t},
+            'hyper': {'precision': float(hrp), 'n': hyper_t},
+            'correction': {'precision': float(cp), 'n': corr_t},
+        }
+
+    print(f"\n--- Optimal horizons ---")
+    for at in ['hypo', 'hyper', 'correction']:
+        best_h, best_p = None, 0
+        for h in horizons_min:
+            p = results[f'{h}min'][at]['precision']
+            n = results[f'{h}min'][at]['n']
+            if p > best_p and n >= 5:
+                best_p = p
+                best_h = h
+        print(f"  [EXP-091] Best {at}: {best_h}min (prec={best_p:.1%})")
+
+    out_path = f"{out}/exp091_planning_horizon_sweep.json"
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-091', 'name': 'planning-horizon-sweep',
+                   'results': results}, f, indent=2)
+    print(f"\n  Results → {out_path}")

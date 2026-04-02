@@ -1,0 +1,10 @@
+{
+  "experiment": "EXP-087",
+  "name": "unified-forecast-tte",
+  "results": {
+    "forecast_mae": 13.871557235717773,
+    "hypo_tte_mae": 39.327064514160156,
+    "hyper_tte_mae": 32.63081359863281,
+    "hypo_detect": 0.10891089108910891
+  }
+}
