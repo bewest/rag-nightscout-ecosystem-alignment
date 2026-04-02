@@ -413,3 +413,188 @@ def promote_checkpoint(src_path, dest_name, output_dir='checkpoints'):
     shutil.copy2(src_path, dest)
     print(f'  Promoted: {src_path} → {dest}')
     return dest
+
+
+# ── Multi-Task Training ──────────────────────────────────────────────────
+
+DEFAULT_TASK_WEIGHTS = {
+    'forecast': 1.0,
+    'event': 0.3,
+    'drift': 0.2,
+    'state': 0.1,
+}
+
+
+def multitask_loss(outputs, targets, weights=None):
+    """Compute composite loss from multi-task model outputs.
+
+    Args:
+        outputs: dict from CGMGroupedEncoder with aux_config
+            - 'forecast': (B, T, input_dim) — reconstruction
+            - 'event_logits': (B, n_classes) — optional event classification
+            - 'drift_pred': (B, 2) — optional ISF/CR deviation prediction
+            - 'state_logits': (B, n_states) — optional metabolic state
+        targets: dict with matching keys
+            - 'x': (B, T, input_dim) — full window for forecast target
+            - 'event_label': (B,) LongTensor — optional event class index
+            - 'drift_target': (B, 2) — optional ISF/CR % deviation
+            - 'state_label': (B,) LongTensor — optional metabolic state index
+        weights: dict of task name → weight (default: DEFAULT_TASK_WEIGHTS)
+
+    Returns:
+        (total_loss, loss_dict) where loss_dict has per-head losses for logging
+    """
+    w = weights or DEFAULT_TASK_WEIGHTS
+    mse = nn.MSELoss()
+    ce = nn.CrossEntropyLoss()
+
+    loss_dict = {}
+    total = torch.tensor(0.0, device=targets['x'].device)
+
+    # If model returned a plain tensor (no aux heads), wrap it
+    if isinstance(outputs, torch.Tensor):
+        outputs = {'forecast': outputs}
+
+    # Forecast head: MSE on future glucose only
+    x = targets['x']
+    pred = outputs['forecast']
+    half = x.shape[1] // 2
+    forecast_loss = mse(pred[:, half:, :1], x[:, half:, :1])
+    loss_dict['forecast'] = forecast_loss.item()
+    total = total + w.get('forecast', 1.0) * forecast_loss
+
+    # Event head: CrossEntropy on event classification
+    if 'event_logits' in outputs and 'event_label' in targets:
+        labels = targets['event_label']
+        # Skip if all labels are -1 (no labels available for this batch)
+        valid = labels >= 0
+        if valid.any():
+            event_loss = ce(outputs['event_logits'][valid], labels[valid])
+            loss_dict['event'] = event_loss.item()
+            total = total + w.get('event', 0.3) * event_loss
+
+    # Drift head: MSE on ISF/CR % deviation
+    if 'drift_pred' in outputs and 'drift_target' in targets:
+        drift_tgt = targets['drift_target']
+        # Skip if all targets are NaN (no drift labels for this batch)
+        valid = ~torch.isnan(drift_tgt[:, 0])
+        if valid.any():
+            drift_loss = mse(outputs['drift_pred'][valid], drift_tgt[valid])
+            loss_dict['drift'] = drift_loss.item()
+            total = total + w.get('drift', 0.2) * drift_loss
+
+    # State head: CrossEntropy on metabolic state
+    if 'state_logits' in outputs and 'state_label' in targets:
+        labels = targets['state_label']
+        valid = labels >= 0
+        if valid.any():
+            state_loss = ce(outputs['state_logits'][valid], labels[valid])
+            loss_dict['state'] = state_loss.item()
+            total = total + w.get('state', 0.1) * state_loss
+
+    return total, loss_dict
+
+
+def train_multitask(model, train_ds, val_ds, save_path, label,
+                    lr=1e-3, epochs=50, batch=32, patience=15,
+                    weight_decay=1e-5, lr_patience=5, task_weights=None):
+    """Multi-objective training loop with composite loss.
+
+    Handles both plain autoencoders (backward compatible — just MSE)
+    and multi-task models with auxiliary heads.
+
+    Datasets should yield tuples of (features, targets_dict) where
+    targets_dict is a dict with 'x' and optional 'event_label',
+    'drift_target', 'state_label'. For backward compatibility,
+    also accepts (x, x) pairs from standard AE datasets.
+
+    Returns (best_val_loss, epochs_run, loss_history).
+    """
+    device = get_device()
+    model.to(device)
+    train_dl = DataLoader(train_ds, batch_size=batch, shuffle=True)
+    val_dl = DataLoader(val_ds, batch_size=batch)
+    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=lr_patience, factor=0.5)
+    best = float('inf')
+    stale = 0
+    history = []
+
+    def _make_targets(batch_data):
+        """Convert batch to targets dict, handling both AE and multitask formats."""
+        features = batch_to_device(batch_data[0], device)
+        if len(batch_data) > 1 and isinstance(batch_data[1], dict):
+            targets = {k: batch_to_device(v, device) if isinstance(v, torch.Tensor) else v
+                       for k, v in batch_data[1].items()}
+            targets['x'] = features
+        else:
+            targets = {'x': features}
+        return features, targets
+
+    def _step(batch_data, backward=False):
+        features, targets = _make_targets(batch_data)
+        half = features.shape[1] // 2
+        x_in = features.clone()
+        x_in[:, half:, 0] = 0.0  # mask future glucose
+
+        outputs = model(x_in, causal=True)
+        total_loss, loss_dict = multitask_loss(outputs, targets, task_weights)
+
+        if backward:
+            total_loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        return total_loss.item() * features.size(0), features.size(0), loss_dict
+
+    for ep in range(epochs):
+        model.train()
+        ttl, tn = 0.0, 0
+        epoch_losses = {}
+        for b in train_dl:
+            opt.zero_grad()
+            l, n, ld = _step(b, backward=True)
+            opt.step()
+            ttl += l; tn += n
+            for k, v in ld.items():
+                epoch_losses.setdefault(k, []).append(v)
+        tl = ttl / tn if tn else float('inf')
+
+        model.eval()
+        vtl, vn = 0.0, 0
+        with torch.no_grad():
+            for b in val_dl:
+                l, n, _ = _step(b, backward=False)
+                vtl += l; vn += n
+        vl = vtl / vn if vn else float('inf')
+        sched.step(vl)
+
+        avg_losses = {k: float(np.mean(v)) for k, v in epoch_losses.items()}
+        history.append({'epoch': ep, 'train_loss': tl, 'val_loss': vl, **avg_losses})
+
+        if vl < best:
+            best = vl
+            stale = 0
+            os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+            torch.save({
+                'epoch': ep, 'model_state': model.state_dict(),
+                'val_loss': vl, 'label': label,
+                'task_weights': task_weights or DEFAULT_TASK_WEIGHTS,
+                'aux_config': getattr(model, 'aux_config', {}),
+            }, save_path)
+        else:
+            stale += 1
+
+        if (ep + 1) % 10 == 0 or ep == epochs - 1:
+            lr_now = opt.param_groups[0]['lr']
+            mark = ' *' if stale == 0 else ''
+            head_str = ' '.join(f'{k}={v:.4f}' for k, v in avg_losses.items())
+            print(f'  [{label}] {ep+1:3d}/{epochs} '
+                  f'train={tl:.6f} val={vl:.6f} best={best:.6f} '
+                  f'lr={lr_now:.1e} [{head_str}]{mark}')
+
+        if patience > 0 and stale >= patience:
+            print(f'  [{label}] Early stop at epoch {ep+1}')
+            break
+
+    if os.path.exists(save_path):
+        load_checkpoint(model, save_path)
+    return best, ep + 1, history

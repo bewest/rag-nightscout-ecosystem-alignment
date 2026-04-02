@@ -35,6 +35,7 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
+from tools.cgmencode.model import CGMGroupedEncoder
 
 
 # =============================================================================
@@ -2260,6 +2261,231 @@ class TestValidationSuites(unittest.TestCase):
         self.assertEqual(_safe_div(10, 0), 0.0)
         self.assertEqual(_safe_div(10, 0, default=-1.0), -1.0)
         self.assertAlmostEqual(_safe_div(10, 2), 5.0)
+
+
+class TestMultitaskModel(unittest.TestCase):
+    """Tests for multi-task GroupedEncoder with auxiliary heads."""
+
+    def test_grouped_no_aux_returns_tensor(self):
+        """Without aux_config, forward() returns plain tensor (backward compat)."""
+        model = CGMGroupedEncoder(input_dim=8, d_model=32, nhead=2, num_layers=1)
+        x = torch.randn(2, 24, 8)
+        out = model(x)
+        self.assertIsInstance(out, torch.Tensor)
+        self.assertEqual(out.shape, (2, 24, 8))
+
+    def test_grouped_with_aux_returns_dict(self):
+        """With aux_config, forward() returns dict with all heads."""
+        aux = {'n_event_classes': 9, 'n_drift_outputs': 2, 'n_states': 4}
+        model = CGMGroupedEncoder(input_dim=8, d_model=32, nhead=2,
+                                  num_layers=1, aux_config=aux)
+        x = torch.randn(2, 24, 8)
+        out = model(x)
+        self.assertIsInstance(out, dict)
+        self.assertIn('forecast', out)
+        self.assertIn('event_logits', out)
+        self.assertIn('drift_pred', out)
+        self.assertIn('state_logits', out)
+        self.assertEqual(out['forecast'].shape, (2, 24, 8))
+        self.assertEqual(out['event_logits'].shape, (2, 9))
+        self.assertEqual(out['drift_pred'].shape, (2, 2))
+        self.assertEqual(out['state_logits'].shape, (2, 4))
+
+    def test_grouped_partial_aux(self):
+        """Only requested heads are created."""
+        aux = {'n_event_classes': 5}
+        model = CGMGroupedEncoder(input_dim=8, d_model=32, nhead=2,
+                                  num_layers=1, aux_config=aux)
+        x = torch.randn(2, 24, 8)
+        out = model(x)
+        self.assertIsInstance(out, dict)
+        self.assertIn('forecast', out)
+        self.assertIn('event_logits', out)
+        self.assertNotIn('drift_pred', out)
+        self.assertNotIn('state_logits', out)
+
+    def test_encode_method(self):
+        """encode() returns d_model-dimensional representations."""
+        model = CGMGroupedEncoder(input_dim=8, d_model=32, nhead=2, num_layers=1)
+        x = torch.randn(2, 24, 8)
+        encoded = model.encode(x)
+        self.assertEqual(encoded.shape, (2, 24, 32))
+
+    def test_extended_with_aux(self):
+        """16-feature model with aux heads works correctly."""
+        aux = {'n_event_classes': 9, 'n_states': 4}
+        model = CGMGroupedEncoder(input_dim=16, d_model=64, nhead=4,
+                                  num_layers=2, aux_config=aux)
+        x = torch.randn(2, 24, 16)
+        out = model(x)
+        self.assertIsInstance(out, dict)
+        self.assertEqual(out['forecast'].shape, (2, 24, 16))
+        self.assertEqual(out['event_logits'].shape, (2, 9))
+
+    def test_backward_compat_checkpoint_load(self):
+        """Model trained without aux can load into model with aux."""
+        # Train without aux → save
+        model_old = CGMGroupedEncoder(input_dim=8, d_model=32, nhead=2, num_layers=1)
+        state = model_old.state_dict()
+
+        # Create model with aux
+        aux = {'n_event_classes': 9, 'n_drift_outputs': 2}
+        model_new = CGMGroupedEncoder(input_dim=8, d_model=32, nhead=2,
+                                      num_layers=1, aux_config=aux)
+        # Load old weights — should work with strict=False
+        model_new.load_state_dict(state, strict=False)
+        x = torch.randn(2, 24, 8)
+        out = model_new(x)
+        self.assertIsInstance(out, dict)
+
+
+class TestMultitaskLoss(unittest.TestCase):
+    """Tests for composite multi-task loss computation."""
+
+    def test_forecast_only(self):
+        """With just forecast output, loss is pure MSE."""
+        from tools.cgmencode.experiment_lib import multitask_loss
+        x = torch.randn(4, 24, 8)
+        outputs = torch.randn(4, 24, 8)  # plain tensor
+        targets = {'x': x}
+        total, loss_dict = multitask_loss(outputs, targets)
+        self.assertIn('forecast', loss_dict)
+        self.assertGreater(total.item(), 0)
+
+    def test_all_heads(self):
+        """Composite loss with all 4 heads."""
+        from tools.cgmencode.experiment_lib import multitask_loss
+        x = torch.randn(4, 24, 8)
+        outputs = {
+            'forecast': torch.randn(4, 24, 8),
+            'event_logits': torch.randn(4, 9),
+            'drift_pred': torch.randn(4, 2),
+            'state_logits': torch.randn(4, 4),
+        }
+        targets = {
+            'x': x,
+            'event_label': torch.randint(0, 9, (4,)),
+            'drift_target': torch.randn(4, 2),
+            'state_label': torch.randint(0, 4, (4,)),
+        }
+        total, loss_dict = multitask_loss(outputs, targets)
+        self.assertIn('forecast', loss_dict)
+        self.assertIn('event', loss_dict)
+        self.assertIn('drift', loss_dict)
+        self.assertIn('state', loss_dict)
+        self.assertGreater(total.item(), 0)
+
+    def test_masked_labels_skipped(self):
+        """Labels of -1 are skipped in event/state loss."""
+        from tools.cgmencode.experiment_lib import multitask_loss
+        x = torch.randn(4, 24, 8)
+        outputs = {
+            'forecast': torch.randn(4, 24, 8),
+            'event_logits': torch.randn(4, 9),
+            'state_logits': torch.randn(4, 4),
+        }
+        targets = {
+            'x': x,
+            'event_label': torch.full((4,), -1, dtype=torch.long),
+            'state_label': torch.full((4,), -1, dtype=torch.long),
+        }
+        total, loss_dict = multitask_loss(outputs, targets)
+        self.assertIn('forecast', loss_dict)
+        # Event and state should be skipped (all -1)
+        self.assertNotIn('event', loss_dict)
+        self.assertNotIn('state', loss_dict)
+
+    def test_nan_drift_skipped(self):
+        """NaN drift targets are skipped."""
+        from tools.cgmencode.experiment_lib import multitask_loss
+        x = torch.randn(4, 24, 8)
+        outputs = {
+            'forecast': torch.randn(4, 24, 8),
+            'drift_pred': torch.randn(4, 2),
+        }
+        targets = {
+            'x': x,
+            'drift_target': torch.full((4, 2), float('nan')),
+        }
+        total, loss_dict = multitask_loss(outputs, targets)
+        self.assertNotIn('drift', loss_dict)
+
+
+class TestOutcomeBasedOverride(unittest.TestCase):
+    """Tests for outcome_based_override_score."""
+
+    def test_basic_score(self):
+        """Score returns expected fields."""
+        from tools.cgmencode.evaluate import outcome_based_override_score
+        # Glucose: 200 for 2h, then 120 for 2h (improving)
+        g = np.concatenate([np.full(24, 200.0), np.full(24, 120.0)])
+        result = outcome_based_override_score(g, [24])
+        self.assertIn('tir_before', result)
+        self.assertIn('tir_after', result)
+        self.assertIn('tir_delta', result)
+        self.assertEqual(result['n_evaluated'], 1)
+        # After is better (120 is in range, 200 is above range)
+        self.assertGreater(result['tir_after'], result['tir_before'])
+
+    def test_empty_suggestions(self):
+        """No suggestions → zero results."""
+        from tools.cgmencode.evaluate import outcome_based_override_score
+        g = np.full(100, 120.0)
+        result = outcome_based_override_score(g, [])
+        self.assertEqual(result['n_suggestions'], 0)
+
+    def test_edge_indices(self):
+        """Suggestions near edges are handled gracefully."""
+        from tools.cgmencode.evaluate import outcome_based_override_score
+        g = np.full(20, 120.0)
+        result = outcome_based_override_score(g, [2, 18])
+        # Should handle gracefully (small windows)
+        self.assertIn('n_evaluated', result)
+
+
+class TestAuxLabelGeneration(unittest.TestCase):
+    """Tests for generate_aux_labels module."""
+
+    def test_drift_labels_shape(self):
+        """Drift label generator returns correct shape."""
+        from tools.cgmencode.generate_aux_labels import _generate_drift_labels
+        feat = np.random.randn(10, 24, 8).astype(np.float32)
+        labels = _generate_drift_labels(feat, isf_nominal=40.0, cr_nominal=10.0)
+        self.assertEqual(labels.shape, (10, 2))
+
+    def test_state_labels_shape(self):
+        """State label generator returns correct shape."""
+        from tools.cgmencode.generate_aux_labels import _generate_state_labels
+        drift = np.array([[0, 0], [-10, 0], [10, 0], [0, 10]], dtype=np.float32)
+        states = _generate_state_labels(drift, 40.0, 10.0)
+        self.assertEqual(states.shape, (4,))
+        self.assertEqual(states[0], 0)  # stable
+        self.assertEqual(states[1], 1)  # resistance
+        self.assertEqual(states[2], 2)  # sensitivity
+
+    def test_multitask_dataset_iteration(self):
+        """MultitaskDataset yields (features, targets_dict) pairs."""
+        from tools.cgmencode.generate_aux_labels import MultitaskDataset
+        features = torch.randn(10, 24, 8)
+        events = torch.randint(0, 9, (10,))
+        drift = torch.randn(10, 2)
+        states = torch.randint(0, 4, (10,))
+        ds = MultitaskDataset(features, events, drift, states)
+        self.assertEqual(len(ds), 10)
+        x, targets = ds[0]
+        self.assertEqual(x.shape, (24, 8))
+        self.assertIn('x', targets)
+        self.assertIn('event_label', targets)
+        self.assertIn('drift_target', targets)
+        self.assertIn('state_label', targets)
+
+    def test_state_labels_nan_handling(self):
+        """NaN drift values produce -1 state labels (masked)."""
+        from tools.cgmencode.generate_aux_labels import _generate_state_labels
+        drift = np.array([[float('nan'), float('nan')], [0.0, 0.0]], dtype=np.float32)
+        states = _generate_state_labels(drift, 40.0, 10.0)
+        self.assertEqual(states[0], -1)  # invalid → masked
+        self.assertEqual(states[1], 0)   # stable
 
 
 if __name__ == '__main__':

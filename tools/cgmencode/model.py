@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import math
-from typing import Optional
+from typing import Dict, Optional, Union
 
 
 def generate_causal_mask(seq_len: int, device: torch.device) -> torch.Tensor:
@@ -117,18 +117,27 @@ class CGMGroupedEncoder(nn.Module):
       → concatenate → d_model + d_context → LayerNorm → d_model (via fusion)
       → PositionalEncoding → TransformerEncoder → output heads
 
+    Multi-task heads (when aux_config is provided):
+      encoded = TransformerEncoder(z)
+        ├── forecast_head(encoded)              → (B, T, input_dim)   [reconstruction]
+        ├── event_head(mean_pool(encoded))      → (B, n_event_classes) [classification]
+        ├── drift_head(mean_pool(encoded))      → (B, 2)              [ISF/CR deviation]
+        └── state_head(mean_pool(encoded))      → (B, n_states)       [metabolic state]
+
     Maintains the same external interface as CGMTransformerAE so it's a
-    drop-in replacement in MODEL_REGISTRY. When input_dim=8 (default),
-    behaves identically to the original — no context group is created,
-    existing checkpoints load without modification.
+    drop-in replacement in MODEL_REGISTRY. When aux_config=None (default),
+    forward() returns a plain tensor — existing checkpoints and callers
+    work without modification.
     """
     def __init__(self, input_dim: int = 8, d_model: int = 64, nhead: int = 4,
-                 num_layers: int = 2, dim_feedforward: int = 128, dropout: float = 0.1):
+                 num_layers: int = 2, dim_feedforward: int = 128, dropout: float = 0.1,
+                 aux_config: Optional[Dict] = None):
         super().__init__()
         assert d_model % 4 == 0, "d_model must be divisible by 4 for feature grouping"
 
         self.input_dim = input_dim
         self.d_model = d_model
+        self.aux_config = aux_config or {}
 
         # Feature-grouped projections (core — always present)
         d_state = d_model // 2    # 50% capacity for physiological state
@@ -161,20 +170,30 @@ class CGMGroupedEncoder(nn.Module):
         )
         self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
 
-        # Reconstruction head (back to all input features)
+        # Primary head: reconstruction (always present)
         self.output_projection = nn.Linear(d_model, input_dim)
 
-    def forward(self, x, mask=None, causal=False):
+        # Auxiliary heads (only created when aux_config specifies them)
+        self._has_aux = bool(self.aux_config)
+        if 'n_event_classes' in self.aux_config:
+            self.event_head = nn.Linear(d_model, self.aux_config['n_event_classes'])
+        if 'n_drift_outputs' in self.aux_config:
+            self.drift_head = nn.Linear(d_model, self.aux_config.get('n_drift_outputs', 2))
+        if 'n_states' in self.aux_config:
+            self.state_head = nn.Linear(d_model, self.aux_config['n_states'])
+
+    def encode(self, x, mask=None, causal=False):
+        """Run encoder backbone, return encoded representations.
+
+        Useful for extracting features for downstream tasks without
+        running the prediction heads.
+
+        Returns:
+            encoded: (Batch, SeqLen, d_model)
         """
-        Args:
-            x: (Batch, SeqLen, input_dim) — 8 or 16 feature cgmencode vector
-            mask: Optional attention mask (SeqLen, SeqLen)
-            causal: If True, apply causal attention mask for autoregressive tasks.
-        """
-        # Split by semantic group and project
-        state = self.state_proj(x[..., :3])      # glucose, IOB, COB
-        action = self.action_proj(x[..., 3:6])    # net_basal, bolus, carbs
-        time = self.time_proj(x[..., 6:8])        # time_sin, time_cos
+        state = self.state_proj(x[..., :3])
+        action = self.action_proj(x[..., 3:6])
+        time = self.time_proj(x[..., 6:8])
 
         z = torch.cat([state, action, time], dim=-1)
 
@@ -187,8 +206,38 @@ class CGMGroupedEncoder(nn.Module):
         if causal and mask is None:
             mask = generate_causal_mask(x.size(1), x.device)
 
-        encoded = self.transformer_encoder(z, mask=mask)
-        return self.output_projection(encoded)
+        return self.transformer_encoder(z, mask=mask)
+
+    def forward(self, x, mask=None, causal=False) -> Union[torch.Tensor, Dict[str, torch.Tensor]]:
+        """
+        Args:
+            x: (Batch, SeqLen, input_dim) — 8 or 16 feature cgmencode vector
+            mask: Optional attention mask (SeqLen, SeqLen)
+            causal: If True, apply causal attention mask for autoregressive tasks.
+
+        Returns:
+            If aux_config is empty (default): tensor (B, T, input_dim) — backward compatible
+            If aux_config is set: dict with 'forecast' and any active aux head outputs
+        """
+        encoded = self.encode(x, mask=mask, causal=causal)
+
+        forecast = self.output_projection(encoded)
+
+        if not self._has_aux:
+            return forecast
+
+        # Pool over time for window-level classification/regression heads
+        pooled = encoded.mean(dim=1)  # (B, d_model)
+
+        result = {'forecast': forecast}
+        if hasattr(self, 'event_head'):
+            result['event_logits'] = self.event_head(pooled)
+        if hasattr(self, 'drift_head'):
+            result['drift_pred'] = self.drift_head(pooled)
+        if hasattr(self, 'state_head'):
+            result['state_logits'] = self.state_head(pooled)
+
+        return result
 
 
 # ── Training helpers ─────────────────────────────────────────────

@@ -319,7 +319,7 @@ def clinical_summary(glucose_mgdl):
 # =============================================================================
 
 def override_accuracy(suggested, actual, lead_window_steps=6):
-    """Score override suggestion quality.
+    """Score override suggestion quality by event-type matching.
 
     Args:
         suggested: list of dicts {'timestamp_idx': int, 'event_type': str}
@@ -357,6 +357,86 @@ def override_accuracy(suggested, actual, lead_window_steps=6):
         'n_suggested': len(suggested),
         'n_actual': len(actual),
         'true_positives': tp,
+    }
+
+
+def outcome_based_override_score(glucose_mgdl, suggestion_indices,
+                                  window_before=24, window_after=24):
+    """Score overrides by clinical outcome: does glucose improve after suggestion?
+
+    Instead of matching suggested events to treatment-log events (which measures
+    the wrong thing — classifier detects glucose patterns while ground truth is
+    treatment actions), this measures whether the glucose trace improves after
+    an override suggestion.
+
+    For each suggestion index, compares TIR in the 2h before vs 2h after.
+    A good recommendation correlates with improving glucose control.
+
+    Args:
+        glucose_mgdl: array of glucose values in mg/dL (full patient trace)
+        suggestion_indices: list of integer indices where overrides were suggested
+        window_before: steps to look back (default 24 = 2h at 5-min intervals)
+        window_after: steps to look forward (default 24 = 2h)
+
+    Returns:
+        dict with outcome metrics
+    """
+    g = np.asarray(glucose_mgdl, dtype=float)
+    if len(g) == 0 or not suggestion_indices:
+        return {
+            'n_suggestions': 0, 'tir_before': 0.0, 'tir_after': 0.0,
+            'tir_delta': 0.0, 'pct_improved': 0.0, 'pct_worsened': 0.0,
+            'mean_gri_before': 0.0, 'mean_gri_after': 0.0, 'gri_delta': 0.0,
+        }
+
+    tir_befores, tir_afters = [], []
+    gri_befores, gri_afters = [], []
+
+    for idx in suggestion_indices:
+        idx = int(idx)
+        before_start = max(0, idx - window_before)
+        after_end = min(len(g), idx + window_after)
+
+        before_g = g[before_start:idx]
+        after_g = g[idx:after_end]
+
+        if len(before_g) < 6 or len(after_g) < 6:
+            continue
+
+        tir_b = time_in_range(before_g)
+        tir_a = time_in_range(after_g)
+        gri_b = glycemia_risk_index(before_g)
+        gri_a = glycemia_risk_index(after_g)
+
+        tir_befores.append(tir_b['tir'])
+        tir_afters.append(tir_a['tir'])
+        gri_befores.append(gri_b['gri'])
+        gri_afters.append(gri_a['gri'])
+
+    n = len(tir_befores)
+    if n == 0:
+        return {
+            'n_suggestions': len(suggestion_indices), 'n_evaluated': 0,
+            'tir_before': 0.0, 'tir_after': 0.0, 'tir_delta': 0.0,
+            'pct_improved': 0.0, 'pct_worsened': 0.0,
+            'mean_gri_before': 0.0, 'mean_gri_after': 0.0, 'gri_delta': 0.0,
+        }
+
+    tir_b_arr = np.array(tir_befores)
+    tir_a_arr = np.array(tir_afters)
+    deltas = tir_a_arr - tir_b_arr
+
+    return {
+        'n_suggestions': len(suggestion_indices),
+        'n_evaluated': n,
+        'tir_before': round(float(np.mean(tir_b_arr)), 2),
+        'tir_after': round(float(np.mean(tir_a_arr)), 2),
+        'tir_delta': round(float(np.mean(deltas)), 2),
+        'pct_improved': round(float(np.mean(deltas > 0) * 100), 1),
+        'pct_worsened': round(float(np.mean(deltas < 0) * 100), 1),
+        'mean_gri_before': round(float(np.mean(gri_befores)), 2),
+        'mean_gri_after': round(float(np.mean(gri_afters)), 2),
+        'gri_delta': round(float(np.mean(np.array(gri_afters) - np.array(gri_befores))), 2),
     }
 
 

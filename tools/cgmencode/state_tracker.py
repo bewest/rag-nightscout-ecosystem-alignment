@@ -314,13 +314,14 @@ class DriftDetector:
         'carb_change': 'Carb ratio shifting without ISF change',
     }
 
-    def __init__(self, tracker: ISFCRTracker, drift_threshold_pct: float = 15.0,
+    def __init__(self, tracker: ISFCRTracker, drift_threshold_pct: float = 5.0,
                  window_hours: float = 72, min_observations: int = 12):
         """
         Args:
             tracker: ISFCRTracker instance to monitor.
             drift_threshold_pct: Percent change from nominal to consider
-                significant (default 15%).
+                significant (default 5%).  Lowered from 15% after EXP-124
+                showed 9/10 patients had 0% detection at the old threshold.
             window_hours: Hours of history to consider for classification.
             min_observations: Minimum observations before making a call.
         """
@@ -452,7 +453,7 @@ class PatternStateMachine:
     Transitions are logged with timestamps and confidence.
     """
 
-    def __init__(self, detector: DriftDetector, min_confidence: float = 0.3):
+    def __init__(self, detector: DriftDetector, min_confidence: float = 0.15):
         self.detector = detector
         self.min_confidence = min_confidence
         self.current_state = 'stable'

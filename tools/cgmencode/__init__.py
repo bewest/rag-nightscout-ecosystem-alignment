@@ -33,6 +33,15 @@ from .validate_verification import (
     run_event_detection_verification, run_override_recommendation_verification,
     run_drift_tir_correlation, run_composite_verification, run_all_suites,
 )
+from .evaluate import outcome_based_override_score
+from .generate_aux_labels import (
+    build_multitask_dataset, build_multitask_windows,
+    MultitaskDataset, N_EVENT_CLASSES, N_STATE_CLASSES, STATE_LABEL_MAP,
+)
+from .experiment_lib import (
+    multitask_loss, train_multitask, promote_checkpoint,
+    DEFAULT_TASK_WEIGHTS,
+)
 
 __all__ = [
     # Schema (core)
@@ -99,4 +108,17 @@ __all__ = [
     'run_drift_tir_correlation',
     'run_composite_verification',
     'run_all_suites',
+    # Outcome-based evaluation
+    'outcome_based_override_score',
+    # Multi-task training
+    'build_multitask_dataset',
+    'build_multitask_windows',
+    'MultitaskDataset',
+    'N_EVENT_CLASSES',
+    'N_STATE_CLASSES',
+    'STATE_LABEL_MAP',
+    'multitask_loss',
+    'train_multitask',
+    'promote_checkpoint',
+    'DEFAULT_TASK_WEIGHTS',
 ]
