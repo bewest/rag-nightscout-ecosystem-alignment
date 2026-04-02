@@ -29,6 +29,10 @@ from .hindcast_composite import (
     run_decision, run_drift_scan, run_calibration,
     display_decision, display_drift_scan, display_calibration,
 )
+from .validate_verification import (
+    run_event_detection_verification, run_override_recommendation_verification,
+    run_drift_tir_correlation, run_composite_verification, run_all_suites,
+)
 
 __all__ = [
     # Schema (core)
@@ -89,4 +93,10 @@ __all__ = [
     'display_decision',
     'display_drift_scan',
     'display_calibration',
+    # Multi-objective validation suites
+    'run_event_detection_verification',
+    'run_override_recommendation_verification',
+    'run_drift_tir_correlation',
+    'run_composite_verification',
+    'run_all_suites',
 ]

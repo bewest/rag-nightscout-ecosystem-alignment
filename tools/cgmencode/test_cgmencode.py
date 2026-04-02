@@ -2173,5 +2173,94 @@ class TestHindcastComposite(unittest.TestCase):
         display_calibration(result, 'grouped', 'test.pth')
 
 
+class TestValidationSuites(unittest.TestCase):
+    """Tests for multi-objective validation suites (validate_verification.py)."""
+
+    def test_build_classifier_dataset_split_param(self):
+        """build_classifier_dataset() accepts split='verification'."""
+        from tools.cgmencode.label_events import build_classifier_dataset
+        import inspect
+        sig = inspect.signature(build_classifier_dataset)
+        self.assertIn('split', sig.parameters)
+        self.assertEqual(sig.parameters['split'].default, 'training')
+
+    def test_per_class_metrics_shape(self):
+        """_per_class_metrics returns per-class dicts with expected keys."""
+        from tools.cgmencode.validate_verification import _per_class_metrics
+        from tools.cgmencode.label_events import EXTENDED_LABEL_MAP
+        y_true = np.array([0, 1, 2, 1, 0, 3, 1, 2])
+        y_pred = np.array([0, 1, 1, 1, 0, 3, 2, 2])
+        result = _per_class_metrics(y_true, y_pred, EXTENDED_LABEL_MAP)
+        # Should have entries for non-zero classes present in data
+        self.assertIn('meal', result)  # class 1
+        for cls_metrics in result.values():
+            for key in ('precision', 'recall', 'f1', 'tp', 'fp', 'fn', 'support'):
+                self.assertIn(key, cls_metrics)
+
+    def test_per_class_metrics_perfect(self):
+        """Perfect predictions → F1 = 1.0 for all classes."""
+        from tools.cgmencode.validate_verification import _per_class_metrics
+        label_map = {'none': 0, 'meal': 1, 'exercise': 5}
+        y = np.array([0, 1, 5, 1, 0, 5])
+        result = _per_class_metrics(y, y, label_map)
+        for name, m in result.items():
+            self.assertAlmostEqual(m['f1'], 1.0, places=3,
+                                   msg=f'{name} should have perfect F1')
+
+    def test_per_class_metrics_zero_support(self):
+        """Classes with zero support should have 0 metrics."""
+        from tools.cgmencode.validate_verification import _per_class_metrics
+        label_map = {'none': 0, 'meal': 1, 'exercise': 5}
+        y_true = np.array([0, 0, 0])
+        y_pred = np.array([0, 1, 0])  # FP for meal, but no actual meals
+        result = _per_class_metrics(y_true, y_pred, label_map)
+        if 'meal' in result:
+            self.assertEqual(result['meal']['recall'], 0.0)
+            self.assertEqual(result['meal']['support'], 0)
+
+    def test_patient_dirs_helper(self):
+        """_patient_dirs returns directories with the given split."""
+        from tools.cgmencode.validate_verification import _patient_dirs
+        import tempfile, os
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create patient dirs with training and verification
+            for p in ['a', 'b', 'c']:
+                os.makedirs(os.path.join(tmpdir, p, 'training'))
+                os.makedirs(os.path.join(tmpdir, p, 'verification'))
+            # Patient d only has training
+            os.makedirs(os.path.join(tmpdir, 'd', 'training'))
+
+            train_dirs = _patient_dirs(tmpdir, 'training')
+            verif_dirs = _patient_dirs(tmpdir, 'verification')
+            self.assertEqual(len(train_dirs), 4)
+            self.assertEqual(len(verif_dirs), 3)
+
+    def test_event_detection_returns_expected_keys(self):
+        """run_event_detection_verification returns structured dict even on no data."""
+        from tools.cgmencode.validate_verification import run_event_detection_verification
+        import tempfile, os
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Empty patients dir → should return error status
+            result = run_event_detection_verification(tmpdir)
+            self.assertIn('status', result)
+            self.assertIn(result['status'], ('error', 'partial'))
+
+    def test_drift_tir_correlation_empty(self):
+        """run_drift_tir_correlation handles empty data gracefully."""
+        from tools.cgmencode.validate_verification import run_drift_tir_correlation
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = run_drift_tir_correlation(tmpdir)
+            self.assertEqual(result['status'], 'ok')
+            self.assertEqual(len(result['per_patient']), 0)
+
+    def test_safe_div(self):
+        """_safe_div handles zero denominator."""
+        from tools.cgmencode.validate_verification import _safe_div
+        self.assertEqual(_safe_div(10, 0), 0.0)
+        self.assertEqual(_safe_div(10, 0, default=-1.0), -1.0)
+        self.assertAlmostEqual(_safe_div(10, 2), 5.0)
+
+
 if __name__ == '__main__':
     unittest.main()

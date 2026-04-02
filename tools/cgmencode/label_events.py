@@ -763,7 +763,8 @@ def compute_rolling_features(grid_df, windows_1hr=12, windows_3hr=36, windows_6h
     return df
 
 
-def build_classifier_dataset(patients_dir, window_steps=12, lead_steps=None):
+def build_classifier_dataset(patients_dir, window_steps=12, lead_steps=None,
+                             split='training'):
     """End-to-end pipeline: patient data → XGBoost-ready tabular dataset.
 
     Chains: extract_override_events → build_pre_event_windows →
@@ -773,14 +774,15 @@ def build_classifier_dataset(patients_dir, window_steps=12, lead_steps=None):
         patients_dir: path to patient directory with subdirs
         window_steps: lookback window (5-min steps)
         lead_steps: lead times for pre-event windows
+        split: which data split to use ('training' or 'verification')
 
     Returns:
         dict with tabular features, labels, feature names, metadata
     """
     patients_dir = Path(patients_dir)
     patient_dirs = sorted(
-        d / 'training' for d in patients_dir.iterdir()
-        if d.is_dir() and (d / 'training').is_dir()
+        d / split for d in patients_dir.iterdir()
+        if d.is_dir() and (d / split).is_dir()
     )
 
     all_tabular = []
