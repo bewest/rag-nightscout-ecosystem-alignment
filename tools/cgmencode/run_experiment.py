@@ -3943,6 +3943,130 @@ def _train_residual_model(model, train_ds, val_ds, arch_name, args, save_path):
             break
 
 
+def run_multiseed_conditioned(args):
+    """EXP-021: Multi-Seed Robustness of Conditioned Transformer.
+
+    EXP-019 showed 14.8 MAE on seed=42. Verify this is stable across
+    5 seeds to confirm the Conditioned Transformer is reliably useful.
+    """
+    print('=' * 60)
+    print('EXP-021: Multi-Seed Robustness — Conditioned Transformer')
+    print('=' * 60)
+    t0 = time.time()
+    out = Path(args.output_dir)
+
+    seeds = [42, 123, 456, 789, 1024]
+    results = {
+        'experiment': 'EXP-021',
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+        'hypothesis': ('EXP-019 got 14.8 MAE on seed=42. Is this stable '
+                       'across seeds or a lucky initialization?'),
+        'seeds': seeds,
+    }
+
+    # --- Load data ONCE (deterministic) ---
+    print('\n--- Loading multi-patient conditioned data (shared across seeds) ---')
+    patient_paths = _resolve_multipatient_paths(args)
+    n_patients = len(patient_paths)
+    print(f'  Patients: {n_patients} training directories')
+    results['n_patients'] = n_patients
+
+    if n_patients > 1:
+        real_t, real_v = load_multipatient_nightscout(
+            patient_paths, window_size=args.window, conditioned=True)
+    else:
+        real_t, real_v = load_nightscout_to_dataset(
+            patient_paths[0], window_size=args.window, conditioned=True)
+    results['samples'] = {'train': len(real_t), 'val': len(real_v)}
+    print(f'  Windows: {len(real_t)} train, {len(real_v)} val')
+
+    # Persistence baseline (deterministic)
+    _, rv_2x = load_nightscout_to_dataset(
+        patient_paths[0], task='forecast', window_size=args.window * 2)
+    p_mae, p_rmse = persistence_baseline(rv_2x, args.window)
+    results['persistence'] = {'mae_mgdl': round(p_mae, 2), 'rmse_mgdl': round(p_rmse, 2)}
+    print(f'  Persistence baseline: MAE={p_mae:.2f}')
+
+    # --- Run per-seed ---
+    seed_maes = []
+    seed_rmses = []
+    seed_details = {}
+
+    for i, seed in enumerate(seeds):
+        print(f'\n{"─" * 60}')
+        print(f'  Seed {seed} ({i+1}/{len(seeds)})')
+        print(f'{"─" * 60}')
+        set_seed(seed)
+
+        model = ConditionedTransformer(history_dim=8, action_dim=3, d_model=64)
+        if i == 0:
+            n_params = sum(p.numel() for p in model.parameters())
+            results['model_params'] = n_params
+            print(f'  Model params: {n_params:,}')
+
+        ckpt_path = str(out / f'exp021_cond_s{seed}.pth')
+        best_val, epochs_run = _train_conditioned(
+            model, real_t, real_v, lr=5e-4, epochs=args.epochs,
+            patience=args.patience, save_path=ckpt_path,
+            label=f'seed-{seed}', batch=args.batch, weight_decay=1e-4)
+
+        # Reload best and evaluate
+        load_best(model, ckpt_path)
+        val_ld = DataLoader(real_v, batch_size=args.batch)
+        metrics = evaluate_model(model, val_ld, 'conditioned', args.window)
+
+        seed_maes.append(metrics['mae_mgdl'])
+        seed_rmses.append(metrics['rmse_mgdl'])
+        seed_details[str(seed)] = {
+            'mae_mgdl': metrics['mae_mgdl'],
+            'rmse_mgdl': metrics['rmse_mgdl'],
+            'best_val_loss': round(best_val, 6),
+            'epochs_run': epochs_run,
+        }
+        print(f'  Seed {seed}: MAE={metrics["mae_mgdl"]:.2f}, '
+              f'RMSE={metrics["rmse_mgdl"]:.2f}, val_loss={best_val:.6f}')
+
+    # --- Summary ---
+    import numpy as np
+    mae_arr = np.array(seed_maes)
+    rmse_arr = np.array(seed_rmses)
+
+    results['seed_details'] = seed_details
+    results['summary'] = {
+        'mae_mean': round(float(mae_arr.mean()), 2),
+        'mae_std': round(float(mae_arr.std()), 2),
+        'mae_min': round(float(mae_arr.min()), 2),
+        'mae_max': round(float(mae_arr.max()), 2),
+        'rmse_mean': round(float(rmse_arr.mean()), 2),
+        'rmse_std': round(float(rmse_arr.std()), 2),
+    }
+    results['exp019_reference'] = {
+        'note': 'EXP-019 seed=42: scratch 14.76, transfer 14.81, persistence 26.92',
+        'scratch_mae': 14.76,
+        'transfer_mae': 14.81,
+    }
+
+    print(f'\n  === EXP-021 Summary ===')
+    print(f'  Conditioned Transformer across {len(seeds)} seeds:')
+    print(f'  MAE: {mae_arr.mean():.2f} ± {mae_arr.std():.2f} mg/dL '
+          f'(range: {mae_arr.min():.2f} – {mae_arr.max():.2f})')
+    print(f'  RMSE: {rmse_arr.mean():.2f} ± {rmse_arr.std():.2f} mg/dL')
+    pct = (mae_arr.mean() - p_mae) / p_mae * 100
+    print(f'  vs Persistence ({p_mae:.2f}): {pct:+.1f}%')
+    if mae_arr.std() < 2.0:
+        print(f'  ✓ STABLE — std={mae_arr.std():.2f} < 2.0 mg/dL')
+    else:
+        print(f'  ✗ UNSTABLE — std={mae_arr.std():.2f} ≥ 2.0 mg/dL')
+
+    elapsed = time.time() - t0
+    results['elapsed_seconds'] = round(elapsed, 1)
+    print(f'\n  Total time: {elapsed:.0f}s')
+
+    save_results(results, str(out / 'exp021_multiseed_conditioned.json'))
+    return results
+
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Run cgmencode experiments',
@@ -3958,6 +4082,7 @@ def main():
                                  'seed-ensemble', 'transfer-horizons',
                                  'multipatient-cond-transfer',
                                  'multipatient-diffusion',
+                                 'multiseed-conditioned',
                                  'all'],
                         help='Which experiment to run')
     parser.add_argument('--real-data', required=True,
@@ -4024,6 +4149,8 @@ def main():
         run_multipatient_cond_transfer(args)
     if args.experiment == 'multipatient-diffusion':
         run_multipatient_diffusion(args)
+    if args.experiment == 'multiseed-conditioned':
+        run_multiseed_conditioned(args)
 
 
 if __name__ == '__main__':
