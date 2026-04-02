@@ -120,12 +120,19 @@ def run_event_classifier(args):
         ctx.log('Need --patients-dir'); return ctx.save('exp027_results.json')
 
     ctx.section('Building classifier dataset')
-    tabular, labels, feature_names = build_classifier_dataset(
+    ds = build_classifier_dataset(
         patients_dir, window_steps=12, lead_steps=[3, 6, 9, 12])
-    ctx.log(f'{len(labels)} samples, {len(feature_names)} features')
+    if ds is None:
+        ctx.log('No data returned'); return ctx.save('exp027_results.json')
+    tabular = ds['tabular']
+    labels = ds['labels']
+    feature_names = ds.get('feature_names', ds.get('tabular_names', []))
+    ctx.log(f'{len(labels)} samples, {tabular.shape[1]} features, '
+            f'classes={sorted(set(labels.astype(int).tolist()))}')
 
     # Hyperparameter sweep
-    best_f1, best_params = 0, {}
+    best_f1, best_params = -1, {}
+    best_result = {}
     sweep = [
         {'max_depth': 4, 'n_estimators': 100, 'learning_rate': 0.1},
         {'max_depth': 6, 'n_estimators': 200, 'learning_rate': 0.05},
@@ -133,21 +140,27 @@ def run_event_classifier(args):
     ]
     for params in sweep:
         ctx.log(f'Training depth={params["max_depth"]} trees={params["n_estimators"]}')
-        metrics = train_event_classifier(
-            tabular, labels, feature_names=feature_names,
+        result = train_event_classifier(
+            tabular, labels, feature_names=feature_names or None,
             xgb_params=params, val_fraction=0.2)
-        f1 = metrics.get('macro_f1', 0)
+        metrics = result.get('metrics', {})
+        f1 = metrics.get('macro_f1_events', metrics.get('macro_f1', 0))
+        ctx.log(f'  → F1={f1:.3f} acc={metrics.get("accuracy", 0):.3f}')
         if f1 > best_f1:
             best_f1, best_params = f1, params
-            best_metrics = metrics
+            best_result = result
 
+    best_metrics = best_result.get('metrics', {})
     ctx.result.update({
         'n_samples': len(labels),
-        'n_features': len(feature_names),
+        'n_features': tabular.shape[1],
         'best_params': best_params,
         'macro_f1': best_f1,
         'per_class': best_metrics.get('per_class', {}),
         'auroc': best_metrics.get('auroc', None),
+        'class_distribution': best_result.get('class_distribution', {}),
+        'feature_importance_top5': dict(list(
+            best_result.get('feature_importance', {}).items())[:5]),
         'success': best_f1 > 0.5,
     })
     ctx.section('Results')
@@ -296,18 +309,25 @@ def run_isf_cr_tracking(args):
         try:
             tracking = run_retrospective_tracking(
                 ppath, nominal_isf=isf, nominal_cr=cr, level='simple')
-            drift = tracking.get('drift_events', [])
+            classification = tracking.get('classification', {})
+            if isinstance(classification, dict):
+                cls_state = classification.get('state', 'unknown')
+            else:
+                cls_state = str(classification)
+            summary = tracking.get('summary', {})
+            trajectory = tracking.get('trajectory', [])
+            has_drift = cls_state not in ('stable', 'insufficient_data', 'unknown')
             patient_results[pname] = {
                 'isf': isf, 'cr': cr,
-                'n_drift_events': len(drift),
-                'final_isf': tracking.get('final_isf', isf),
-                'final_cr': tracking.get('final_cr', cr),
+                'classification': cls_state,
+                'n_trajectory_points': len(trajectory),
+                'summary': summary,
             }
-            if len(drift) > 0:
+            if has_drift:
                 drift_detected += 1
-                ctx.log(f'{len(drift)} drift events detected')
+                ctx.log(f'Drift: {cls_state} ({len(trajectory)} points)')
             else:
-                ctx.log('No drift detected')
+                ctx.log(f'Stable ({len(trajectory)} points)')
         except Exception as e:
             patient_results[pname] = {'error': str(e)}
             ctx.log(f'Error: {e}')

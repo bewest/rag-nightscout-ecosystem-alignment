@@ -66,20 +66,27 @@ def train_event_classifier(tabular, labels, feature_names=None,
 
     params = {**DEFAULT_XGB_PARAMS, **(xgb_params or {})}
 
+    # Remap labels to contiguous 0..N-1 (XGBoost requires this)
+    unique_labels = sorted(set(labels.astype(int)))
+    label_to_idx = {lbl: i for i, lbl in enumerate(unique_labels)}
+    idx_to_label = {i: lbl for lbl, i in label_to_idx.items()}
+    labels_remapped = np.array([label_to_idx[int(l)] for l in labels])
+    params['num_class'] = len(unique_labels)
+
     # Train/val split (stratified by label)
-    n = len(labels)
+    n = len(labels_remapped)
     rng = np.random.RandomState(42)
     indices = rng.permutation(n)
     n_val = max(1, int(n * val_fraction))
     val_idx = indices[:n_val]
     train_idx = indices[n_val:]
 
-    X_train, y_train = tabular[train_idx], labels[train_idx]
-    X_val, y_val = tabular[val_idx], labels[val_idx]
+    X_train, y_train = tabular[train_idx], labels_remapped[train_idx]
+    X_val, y_val = tabular[val_idx], labels_remapped[val_idx]
 
     # Handle class imbalance with sample weights
     class_counts = np.bincount(y_train.astype(int),
-                               minlength=params.get('num_class', 9))
+                               minlength=len(unique_labels))
     class_weights = np.where(class_counts > 0, n / (len(class_counts) * class_counts), 1.0)
     sample_weights = class_weights[y_train.astype(int)]
 
@@ -110,7 +117,9 @@ def train_event_classifier(tabular, labels, feature_names=None,
         'feature_importance': importance,
         'n_train': len(train_idx),
         'n_val': len(val_idx),
-        'class_distribution': {LABEL_NAMES.get(i, str(i)): int(c)
+        'label_to_idx': label_to_idx,
+        'idx_to_label': idx_to_label,
+        'class_distribution': {LABEL_NAMES.get(idx_to_label.get(i, i), str(i)): int(c)
                                for i, c in enumerate(class_counts)},
     }
 

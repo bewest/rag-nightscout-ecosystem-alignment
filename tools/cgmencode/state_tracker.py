@@ -541,9 +541,15 @@ def run_retrospective_tracking(data_path: str, nominal_isf: float = 40.0,
     iob_scale = NORMALIZATION_SCALES['iob']
     cob_scale = NORMALIZATION_SCALES['cob']
 
-    # Load patient data
-    grid = build_nightscout_grid(data_path)
-    windows_norm = grid['windows']  # (N, T, 8) normalized
+    # Load patient data — build_nightscout_grid returns (df, features_array)
+    _grid_df, features = build_nightscout_grid(data_path)
+    if features is None or len(features) == 0:
+        return {'tracker': None, 'detector': None, 'classification': 'insufficient_data',
+                'trajectory': [], 'summary': {}}
+    # Slice into non-overlapping windows of length 24 (2 hours)
+    win_len = 24
+    n_windows = len(features) // win_len
+    windows_norm = features[:n_windows * win_len].reshape(n_windows, win_len, -1)
     N, T, _F = windows_norm.shape
 
     tracker = ISFCRTracker(nominal_isf=nominal_isf, nominal_cr=nominal_cr)
