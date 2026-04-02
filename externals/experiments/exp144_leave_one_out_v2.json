@@ -1,0 +1,82 @@
+{
+  "experiment": "EXP-144",
+  "name": "leave-one-out-v2",
+  "results": {
+    "per_patient": {
+      "a": {
+        "mae": 18.2,
+        "n_test": 3755,
+        "n_train": 22933,
+        "hypo_mae": 30.4,
+        "in_range_mae": 12.3
+      },
+      "b": {
+        "mae": 21.0,
+        "n_test": 3839,
+        "n_train": 22866,
+        "hypo_mae": 40.4,
+        "in_range_mae": 16.8
+      },
+      "c": {
+        "mae": 15.3,
+        "n_test": 3528,
+        "n_train": 23115,
+        "hypo_mae": 25.4,
+        "in_range_mae": 10.7
+      },
+      "d": {
+        "mae": 14.4,
+        "n_test": 3725,
+        "n_train": 22957,
+        "hypo_mae": 30.8,
+        "in_range_mae": 12.6
+      },
+      "e": {
+        "mae": 18.6,
+        "n_test": 3339,
+        "n_train": 23266,
+        "hypo_mae": 19.0,
+        "in_range_mae": 16.0
+      },
+      "f": {
+        "mae": 14.5,
+        "n_test": 3798,
+        "n_train": 22899,
+        "hypo_mae": 12.7,
+        "in_range_mae": 10.3
+      },
+      "g": {
+        "mae": 14.5,
+        "n_test": 3792,
+        "n_train": 22904,
+        "hypo_mae": 18.6,
+        "in_range_mae": 11.7
+      },
+      "h": {
+        "mae": 16.5,
+        "n_test": 1520,
+        "n_train": 24721,
+        "hypo_mae": 28.4,
+        "in_range_mae": 14.2
+      },
+      "i": {
+        "mae": 13.8,
+        "n_test": 3816,
+        "n_train": 22884,
+        "hypo_mae": 13.0,
+        "in_range_mae": 11.4
+      },
+      "j": {
+        "mae": 19.1,
+        "n_test": 1310,
+        "n_train": 24889,
+        "hypo_mae": 37.2,
+        "in_range_mae": 17.1
+      }
+    },
+    "mean_mae": 16.6,
+    "std_mae": 2.4,
+    "worst": "b",
+    "best": "i"
+  }
+}

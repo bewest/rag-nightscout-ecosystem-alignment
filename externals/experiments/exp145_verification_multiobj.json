@@ -1,0 +1,1575 @@
+{
+  "experiment": "EXP-145",
+  "name": "verification-multiobj",
+  "results": {
+    "EXP-122": {
+      "status": "ok",
+      "experiment": "EXP-122",
+      "name": "event-detection-verification",
+      "training_metrics": {
+        "per_class": {
+          "none": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 8524
+          },
+          "meal": {
+            "precision": 0.4294,
+            "recall": 0.7107,
+            "f1": 0.5353,
+            "support": 8222
+          },
+          "correction_bolus": {
+            "precision": 0.8442,
+            "recall": 0.5585,
+            "f1": 0.6723,
+            "support": 48299
+          },
+          "override": {
+            "precision": 0.4249,
+            "recall": 0.9853,
+            "f1": 0.5938,
+            "support": 2590
+          },
+          "eating_soon": {
+            "precision": 0.4211,
+            "recall": 0.9874,
+            "f1": 0.5905,
+            "support": 2626
+          },
+          "exercise": {
+            "precision": 0.6661,
+            "recall": 0.7725,
+            "f1": 0.7154,
+            "support": 25142
+          }
+        },
+        "accuracy": 0.6908,
+        "macro_f1_events": 0.6215,
+        "auroc": {
+          "none": 1.0,
+          "meal": 0.9078,
+          "correction_bolus": 0.8362,
+          "override": 0.9943,
+          "eating_soon": 0.9925,
+          "exercise": 0.9032
+        }
+      },
+      "verification_metrics": {
+        "accuracy": 0.6198,
+        "macro_f1": 0.5435,
+        "per_class": {
+          "meal": {
+            "precision": 0.4471,
+            "recall": 0.7038,
+            "f1": 0.5468,
+            "tp": 3036,
+            "fp": 3755,
+            "fn": 1278,
+            "support": 4314
+          },
+          "correction_bolus": {
+            "precision": 0.7674,
+            "recall": 0.5447,
+            "f1": 0.6372,
+            "tp": 13101,
+            "fp": 3970,
+            "fn": 10950,
+            "support": 24051
+          },
+          "override": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "eating_soon": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "exercise": {
+            "precision": 0.3707,
+            "recall": 0.9765,
+            "f1": 0.5374,
+            "tp": 1039,
+            "fp": 1764,
+            "fn": 25,
+            "support": 1064
+          },
+          "sleep": {
+            "precision": 0.244,
+            "recall": 0.6334,
+            "f1": 0.3523,
+            "tp": 755,
+            "fp": 2339,
+            "fn": 437,
+            "support": 1192
+          },
+          "sick": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "custom_override": {
+            "precision": 0.6248,
+            "recall": 0.6639,
+            "f1": 0.6438,
+            "tp": 9131,
+            "fp": 5484,
+            "fn": 4622,
+            "support": 13753
+          }
+        },
+        "n_windows": 45530,
+        "n_positive": 44374,
+        "class_distribution": {
+          "none": 1156,
+          "meal": 4314,
+          "correction_bolus": 24051,
+          "exercise": 1064,
+          "sleep": 1192,
+          "custom_override": 13753
+        }
+      },
+      "per_patient": {
+        "a": {
+          "accuracy": 0.8298,
+          "macro_f1": 0.3391,
+          "n_windows": 5539,
+          "per_class": {
+            "meal": {
+              "precision": 0.0726,
+              "recall": 0.0629,
+              "f1": 0.0674,
+              "tp": 18,
+              "fp": 230,
+              "fn": 268,
+              "support": 286
+            },
+            "correction_bolus": {
+              "precision": 0.3214,
+              "recall": 0.0274,
+              "f1": 0.0504,
+              "tp": 9,
+              "fp": 19,
+              "fn": 320,
+              "support": 329
+            },
+            "override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "eating_soon": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "exercise": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 134,
+              "fn": 0,
+              "support": 0
+            },
+            "sleep": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "sick": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "custom_override": {
+              "precision": 0.8796,
+              "recall": 0.9201,
+              "f1": 0.8994,
+              "tp": 4090,
+              "fp": 560,
+              "fn": 355,
+              "support": 4445
+            }
+          }
+        },
+        "b": {
+          "accuracy": 0.5662,
+          "macro_f1": 0.528,
+          "n_windows": 6487,
+          "per_class": {
+            "meal": {
+              "precision": 0.4973,
+              "recall": 0.9731,
+              "f1": 0.6582,
+              "tp": 2710,
+              "fp": 2739,
+              "fn": 75,
+              "support": 2785
+            },
+            "correction_bolus": {
+              "precision": 0.9253,
+              "recall": 0.2533,
+              "f1": 0.3977,
+              "tp": 929,
+              "fp": 75,
+              "fn": 2739,
+              "support": 3668
+            },
+            "override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "eating_soon": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "exercise": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "sleep": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "sick": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "custom_override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            }
+          }
+        },
+        "c": {
+          "accuracy": 0.6412,
+          "macro_f1": 0.4202,
+          "n_windows": 5198,
+          "per_class": {
+            "meal": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 42,
+              "fn": 140,
+              "support": 140
+            },
+            "correction_bolus": {
+              "precision": 0.6951,
+              "recall": 0.7405,
+              "f1": 0.7171,
+              "tp": 2243,
+              "fp": 984,
+              "fn": 786,
+              "support": 3029
+            },
+            "override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "eating_soon": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "exercise": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 54,
+              "fn": 0,
+              "support": 0
+            },
+            "sleep": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 80,
+              "fn": 0,
+              "support": 0
+            },
+            "sick": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "custom_override": {
+              "precision": 0.5814,
+              "recall": 0.5104,
+              "f1": 0.5436,
+              "tp": 979,
+              "fp": 705,
+              "fn": 939,
+              "support": 1918
+            }
+          }
+        },
+        "d": {
+          "accuracy": 0.8934,
+          "macro_f1": 0.3232,
+          "n_windows": 3857,
+          "per_class": {
+            "meal": {
+              "precision": 0.0652,
+              "recall": 0.0194,
+              "f1": 0.0299,
+              "tp": 3,
+              "fp": 43,
+              "fn": 152,
+              "support": 155
+            },
+            "correction_bolus": {
+              "precision": 0.9544,
+              "recall": 0.9253,
+              "f1": 0.9396,
+              "tp": 3160,
+              "fp": 151,
+              "fn": 255,
+              "support": 3415
+            },
+            "override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "eating_soon": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "exercise": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 76,
+              "fn": 0,
+              "support": 0
+            },
+            "sleep": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 35,
+              "fn": 0,
+              "support": 0
+            },
+            "sick": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "custom_override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 106,
+              "fn": 4,
+              "support": 4
+            }
+          }
+        },
+        "e": {
+          "accuracy": 0.662,
+          "macro_f1": 0.4092,
+          "n_windows": 5068,
+          "per_class": {
+            "meal": {
+              "precision": 0.1184,
+              "recall": 0.0563,
+              "f1": 0.0763,
+              "tp": 9,
+              "fp": 67,
+              "fn": 151,
+              "support": 160
+            },
+            "correction_bolus": {
+              "precision": 0.7821,
+              "recall": 0.7848,
+              "f1": 0.7835,
+              "tp": 2918,
+              "fp": 813,
+              "fn": 800,
+              "support": 3718
+            },
+            "override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "eating_soon": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "exercise": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 2,
+              "fn": 0,
+              "support": 0
+            },
+            "sleep": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 253,
+              "fn": 0,
+              "support": 0
+            },
+            "sick": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "custom_override": {
+              "precision": 0.4029,
+              "recall": 0.3385,
+              "f1": 0.3679,
+              "tp": 390,
+              "fp": 578,
+              "fn": 762,
+              "support": 1152
+            }
+          }
+        },
+        "f": {
+          "accuracy": 0.4005,
+          "macro_f1": 0.3246,
+          "n_windows": 412,
+          "per_class": {
+            "meal": {
+              "precision": 0.3922,
+              "recall": 0.625,
+              "f1": 0.4819,
+              "tp": 80,
+              "fp": 124,
+              "fn": 48,
+              "support": 128
+            },
+            "correction_bolus": {
+              "precision": 0.6774,
+              "recall": 0.0955,
+              "f1": 0.1673,
+              "tp": 21,
+              "fp": 10,
+              "fn": 199,
+              "support": 220
+            },
+            "override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "eating_soon": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "exercise": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "sleep": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 6,
+              "fn": 0,
+              "support": 0
+            },
+            "sick": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "custom_override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 107,
+              "fn": 0,
+              "support": 0
+            }
+          }
+        },
+        "g": {
+          "accuracy": 0.5692,
+          "macro_f1": 0.4076,
+          "n_windows": 5348,
+          "per_class": {
+            "meal": {
+              "precision": 0.2548,
+              "recall": 0.2876,
+              "f1": 0.2702,
+              "tp": 134,
+              "fp": 392,
+              "fn": 332,
+              "support": 466
+            },
+            "correction_bolus": {
+              "precision": 0.8948,
+              "recall": 0.506,
+              "f1": 0.6465,
+              "tp": 1804,
+              "fp": 212,
+              "fn": 1761,
+              "support": 3565
+            },
+            "override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "eating_soon": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "exercise": {
+              "precision": 0.4205,
+              "recall": 0.9765,
+              "f1": 0.5878,
+              "tp": 1039,
+              "fp": 1432,
+              "fn": 25,
+              "support": 1064
+            },
+            "sleep": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 24,
+              "fn": 0,
+              "support": 0
+            },
+            "sick": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "custom_override": {
+              "precision": 0.1127,
+              "recall": 0.1429,
+              "f1": 0.126,
+              "tp": 31,
+              "fp": 244,
+              "fn": 186,
+              "support": 217
+            }
+          }
+        },
+        "h": {
+          "accuracy": 0.6795,
+          "macro_f1": 0.3893,
+          "n_windows": 1170,
+          "per_class": {
+            "meal": {
+              "precision": 0.1538,
+              "recall": 0.1519,
+              "f1": 0.1529,
+              "tp": 12,
+              "fp": 66,
+              "fn": 67,
+              "support": 79
+            },
+            "correction_bolus": {
+              "precision": 0.8357,
+              "recall": 0.8028,
+              "f1": 0.8189,
+              "tp": 753,
+              "fp": 148,
+              "fn": 185,
+              "support": 938
+            },
+            "override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "eating_soon": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "exercise": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 18,
+              "fn": 0,
+              "support": 0
+            },
+            "sleep": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 53,
+              "fn": 0,
+              "support": 0
+            },
+            "sick": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "custom_override": {
+              "precision": 0.2241,
+              "recall": 0.1745,
+              "f1": 0.1962,
+              "tp": 26,
+              "fp": 90,
+              "fn": 123,
+              "support": 149
+            }
+          }
+        },
+        "i": {
+          "accuracy": 0.4641,
+          "macro_f1": 0.3216,
+          "n_windows": 12312,
+          "per_class": {
+            "meal": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 10,
+              "fn": 45,
+              "support": 45
+            },
+            "correction_bolus": {
+              "precision": 0.4479,
+              "recall": 0.2465,
+              "f1": 0.318,
+              "tp": 1264,
+              "fp": 1558,
+              "fn": 3863,
+              "support": 5127
+            },
+            "override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "eating_soon": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "exercise": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 48,
+              "fn": 0,
+              "support": 0
+            },
+            "sleep": {
+              "precision": 0.2857,
+              "recall": 0.6334,
+              "f1": 0.3937,
+              "tp": 755,
+              "fp": 1888,
+              "fn": 437,
+              "support": 1192
+            },
+            "sick": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "custom_override": {
+              "precision": 0.5388,
+              "recall": 0.6161,
+              "f1": 0.5749,
+              "tp": 3615,
+              "fp": 3094,
+              "fn": 2253,
+              "support": 5868
+            }
+          }
+        },
+        "j": {
+          "accuracy": 0.6978,
+          "macro_f1": 0.3846,
+          "n_windows": 139,
+          "per_class": {
+            "meal": {
+              "precision": 0.625,
+              "recall": 1.0,
+              "f1": 0.7692,
+              "tp": 70,
+              "fp": 42,
+              "fn": 0,
+              "support": 70
+            },
+            "correction_bolus": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 42,
+              "support": 42
+            },
+            "override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "eating_soon": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "exercise": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "sleep": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "sick": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            },
+            "custom_override": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "support": 0
+            }
+          }
+        }
+      },
+      "lead_time_stats": {
+        "mean_min": 36.9,
+        "median_min": 30.0,
+        "std_min": 16.8,
+        "pct_over_15min": 100.0,
+        "pct_over_30min": 73.8,
+        "n_correct_with_lead": 27062
+      },
+      "generalization_gap": {
+        "train_f1": 0,
+        "verif_f1": 0.5435,
+        "absolute_gap": -0.5435,
+        "relative_gap_pct": 0.0
+      },
+      "train_result": {
+        "metrics": {
+          "per_class": {
+            "none": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "support": 8524
+            },
+            "meal": {
+              "precision": 0.4294,
+              "recall": 0.7107,
+              "f1": 0.5353,
+              "support": 8222
+            },
+            "correction_bolus": {
+              "precision": 0.8442,
+              "recall": 0.5585,
+              "f1": 0.6723,
+              "support": 48299
+            },
+            "override": {
+              "precision": 0.4249,
+              "recall": 0.9853,
+              "f1": 0.5938,
+              "support": 2590
+            },
+            "eating_soon": {
+              "precision": 0.4211,
+              "recall": 0.9874,
+              "f1": 0.5905,
+              "support": 2626
+            },
+            "exercise": {
+              "precision": 0.6661,
+              "recall": 0.7725,
+              "f1": 0.7154,
+              "support": 25142
+            }
+          },
+          "accuracy": 0.6908,
+          "macro_f1_events": 0.6215,
+          "auroc": {
+            "none": 1.0,
+            "meal": 0.9078,
+            "correction_bolus": 0.8362,
+            "override": 0.9943,
+            "eating_soon": 0.9925,
+            "exercise": 0.9032
+          }
+        },
+        "feature_importance": {
+          "lead_time_hr": 0.4266,
+          "carbs_total": 0.11,
+          "cob_now": 0.0862,
+          "net_basal_now": 0.0778,
+          "hour_of_day": 0.0462,
+          "iob_now": 0.0425,
+          "bolus_total": 0.0329,
+          "time_sin": 0.0269,
+          "iob_change": 0.0199,
+          "glucose_max": 0.0178,
+          "time_cos": 0.0172,
+          "cob_velocity": 0.0127,
+          "glucose_min": 0.0125,
+          "bolus_now": 0.0116,
+          "glucose_mean": 0.0109,
+          "glucose_now": 0.0108,
+          "iob_velocity": 0.0107,
+          "glucose_trend": 0.0097,
+          "glucose_std": 0.0088,
+          "carbs_now": 0.0047,
+          "glucose_accel": 0.0036
+        },
+        "n_train": 381614,
+        "n_val": 95403,
+        "label_to_idx": {
+          "0": 0,
+          "1": 1,
+          "2": 2,
+          "5": 3,
+          "6": 4,
+          "8": 5
+        },
+        "idx_to_label": {
+          "0": 0,
+          "1": 1,
+          "2": 2,
+          "3": 5,
+          "4": 6,
+          "5": 8
+        },
+        "class_distribution": {
+          "none": 34267,
+          "meal": 32819,
+          "correction_bolus": 192765,
+          "exercise": 10362,
+          "sleep": 10159,
+          "custom_override": 101242
+        }
+      }
+    },
+    "EXP-123": {
+      "status": "ok",
+      "experiment": "EXP-123",
+      "name": "override-recommendation-verification",
+      "aggregate": {
+        "precision": 0.1564,
+        "recall": 0.1111,
+        "f1": 0.1299,
+        "total_suggested": 31529,
+        "total_actual": 44374,
+        "true_positives": 4930,
+        "false_alarms": 26599,
+        "false_alarm_rate_per_hour": 0.71,
+        "total_verification_hours": 37453.3,
+        "lead_time_quality_pct_over_15min": 11.1
+      },
+      "per_patient": {
+        "a": {
+          "override_accuracy": {
+            "precision": 0.0192,
+            "recall": 0.0217,
+            "f1": 0.0204,
+            "mean_lead_time": 1.64,
+            "n_suggested": 5735,
+            "n_actual": 5060,
+            "true_positives": 110
+          },
+          "n_overrides_suggested": 5735,
+          "n_actual_events": 1424,
+          "false_alarms": 5625,
+          "false_alarm_rate_per_hour": 1.379,
+          "data_hours": 4080.1,
+          "type_confusion": {
+            "meal": {
+              "eating_soon": 859
+            },
+            "exercise": {
+              "exercise": 4876
+            }
+          }
+        },
+        "b": {
+          "override_accuracy": {
+            "precision": 0.6894,
+            "recall": 0.6316,
+            "f1": 0.6593,
+            "mean_lead_time": 1.19,
+            "n_suggested": 5912,
+            "n_actual": 6453,
+            "true_positives": 4076
+          },
+          "n_overrides_suggested": 5912,
+          "n_actual_events": 1825,
+          "false_alarms": 1836,
+          "false_alarm_rate_per_hour": 0.45,
+          "data_hours": 4080.1,
+          "type_confusion": {
+            "meal": {
+              "eating_soon": 5910
+            },
+            "eating_soon": {
+              "eating_soon": 2
+            }
+          }
+        },
+        "c": {
+          "override_accuracy": {
+            "precision": 0.0059,
+            "recall": 0.0035,
+            "f1": 0.0044,
+            "mean_lead_time": 3.44,
+            "n_suggested": 3063,
+            "n_actual": 5087,
+            "true_positives": 18
+          },
+          "n_overrides_suggested": 3063,
+          "n_actual_events": 1393,
+          "false_alarms": 3045,
+          "false_alarm_rate_per_hour": 0.748,
+          "data_hours": 4068.6,
+          "type_confusion": {
+            "exercise": {
+              "exercise": 2685
+            },
+            "eating_soon": {
+              "eating_soon": 161
+            },
+            "meal": {
+              "eating_soon": 217
+            }
+          }
+        },
+        "d": {
+          "override_accuracy": {
+            "precision": 0.0175,
+            "recall": 0.0045,
+            "f1": 0.0071,
+            "mean_lead_time": 2.31,
+            "n_suggested": 916,
+            "n_actual": 3574,
+            "true_positives": 16
+          },
+          "n_overrides_suggested": 916,
+          "n_actual_events": 1025,
+          "false_alarms": 900,
+          "false_alarm_rate_per_hour": 0.221,
+          "data_hours": 4080.1,
+          "type_confusion": {
+            "meal": {
+              "eating_soon": 522
+            },
+            "exercise": {
+              "exercise": 322
+            },
+            "eating_soon": {
+              "eating_soon": 72
+            }
+          }
+        },
+        "e": {
+          "override_accuracy": {
+            "precision": 0.0096,
+            "recall": 0.0046,
+            "f1": 0.0062,
+            "mean_lead_time": 1.35,
+            "n_suggested": 2388,
+            "n_actual": 5030,
+            "true_positives": 23
+          },
+          "n_overrides_suggested": 2388,
+          "n_actual_events": 1547,
+          "false_alarms": 2365,
+          "false_alarm_rate_per_hour": 0.657,
+          "data_hours": 3600.1,
+          "type_confusion": {
+            "exercise": {
+              "exercise": 1673
+            },
+            "eating_soon": {
+              "eating_soon": 402
+            },
+            "meal": {
+              "eating_soon": 313
+            }
+          }
+        },
+        "f": {
+          "override_accuracy": {
+            "precision": 0.3619,
+            "recall": 0.4856,
+            "f1": 0.4147,
+            "mean_lead_time": 1.72,
+            "n_suggested": 467,
+            "n_actual": 348,
+            "true_positives": 169
+          },
+          "n_overrides_suggested": 467,
+          "n_actual_events": 102,
+          "false_alarms": 298,
+          "false_alarm_rate_per_hour": 0.073,
+          "data_hours": 4080.1,
+          "type_confusion": {
+            "meal": {
+              "eating_soon": 268
+            },
+            "exercise": {
+              "exercise": 191
+            },
+            "eating_soon": {
+              "eating_soon": 8
+            }
+          }
+        },
+        "g": {
+          "override_accuracy": {
+            "precision": 0.2544,
+            "recall": 0.0713,
+            "f1": 0.1114,
+            "mean_lead_time": 1.18,
+            "n_suggested": 1490,
+            "n_actual": 5312,
+            "true_positives": 379
+          },
+          "n_overrides_suggested": 1490,
+          "n_actual_events": 1443,
+          "false_alarms": 1111,
+          "false_alarm_rate_per_hour": 0.272,
+          "data_hours": 4080.1,
+          "type_confusion": {
+            "meal": {
+              "eating_soon": 867
+            },
+            "exercise": {
+              "exercise": 581
+            },
+            "eating_soon": {
+              "eating_soon": 42
+            }
+          }
+        },
+        "h": {
+          "override_accuracy": {
+            "precision": 0.049,
+            "recall": 0.0249,
+            "f1": 0.033,
+            "mean_lead_time": 1.97,
+            "n_suggested": 592,
+            "n_actual": 1166,
+            "true_positives": 29
+          },
+          "n_overrides_suggested": 592,
+          "n_actual_events": 781,
+          "false_alarms": 563,
+          "false_alarm_rate_per_hour": 0.138,
+          "data_hours": 4080.1,
+          "type_confusion": {
+            "exercise": {
+              "exercise": 241
+            },
+            "meal": {
+              "eating_soon": 278
+            },
+            "eating_soon": {
+              "eating_soon": 73
+            }
+          }
+        },
+        "i": {
+          "override_accuracy": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "mean_lead_time": 0.0,
+            "n_suggested": 10854,
+            "n_actual": 12232,
+            "true_positives": 0
+          },
+          "n_overrides_suggested": 10854,
+          "n_actual_events": 3405,
+          "false_alarms": 10854,
+          "false_alarm_rate_per_hour": 2.66,
+          "data_hours": 4080.1,
+          "type_confusion": {
+            "exercise": {
+              "exercise": 7813
+            },
+            "meal": {
+              "eating_soon": 92
+            },
+            "eating_soon": {
+              "eating_soon": 2949
+            }
+          }
+        },
+        "j": {
+          "override_accuracy": {
+            "precision": 0.9821,
+            "recall": 0.9821,
+            "f1": 0.9821,
+            "mean_lead_time": 0.95,
+            "n_suggested": 112,
+            "n_actual": 112,
+            "true_positives": 110
+          },
+          "n_overrides_suggested": 112,
+          "n_actual_events": 33,
+          "false_alarms": 2,
+          "false_alarm_rate_per_hour": 0.002,
+          "data_hours": 1224.1,
+          "type_confusion": {
+            "meal": {
+              "eating_soon": 112
+            }
+          }
+        }
+      }
+    },
+    "EXP-124": {
+      "status": "ok",
+      "experiment": "EXP-124",
+      "name": "drift-tir-correlation",
+      "aggregate": {
+        "pearson_correlation": 0.7004,
+        "expected_sign": "negative (drift should predict TIR decrease)",
+        "correlation_matches_expectation": false,
+        "n_total_paired": 334,
+        "n_patients_with_correlation": 8,
+        "mean_drift_detection_rate_pct": 10.3,
+        "mean_false_signal_rate_pct": 6.7
+      },
+      "per_patient": {
+        "a": {
+          "correlation": 0.5654,
+          "n_drift_chunks": 207,
+          "n_tir_windows": 78,
+          "n_paired": 44,
+          "drift_detection_rate_pct": 94.7,
+          "n_non_stable": 196,
+          "false_signals": 0,
+          "false_signal_rate_pct": 0.0,
+          "baseline_tir": 3.5,
+          "nominal_isf": 2.7,
+          "nominal_cr": 4.0
+        },
+        "b": {
+          "correlation": null,
+          "n_drift_chunks": 202,
+          "n_tir_windows": 73,
+          "n_paired": 38,
+          "drift_detection_rate_pct": 0.0,
+          "n_non_stable": 0,
+          "false_signals": 0,
+          "false_signal_rate_pct": 0.0,
+          "baseline_tir": 59.6,
+          "nominal_isf": 90.0,
+          "nominal_cr": 15.0
+        },
+        "c": {
+          "correlation": 0.0871,
+          "n_drift_chunks": 179,
+          "n_tir_windows": 66,
+          "n_paired": 36,
+          "drift_detection_rate_pct": 0.0,
+          "n_non_stable": 0,
+          "false_signals": 0,
+          "false_signal_rate_pct": 0.0,
+          "baseline_tir": 78.4,
+          "nominal_isf": 72.0,
+          "nominal_cr": 4.5
+        },
+        "d": {
+          "correlation": 0.1428,
+          "n_drift_chunks": 189,
+          "n_tir_windows": 71,
+          "n_paired": 38,
+          "drift_detection_rate_pct": 0.0,
+          "n_non_stable": 0,
+          "false_signals": 0,
+          "false_signal_rate_pct": 0.0,
+          "baseline_tir": 67.0,
+          "nominal_isf": 40.0,
+          "nominal_cr": 14.0
+        },
+        "e": {
+          "correlation": 0.083,
+          "n_drift_chunks": 163,
+          "n_tir_windows": 62,
+          "n_paired": 28,
+          "drift_detection_rate_pct": 0.0,
+          "n_non_stable": 0,
+          "false_signals": 0,
+          "false_signal_rate_pct": 0.0,
+          "baseline_tir": 58.8,
+          "nominal_isf": 33.0,
+          "nominal_cr": 3.0
+        },
+        "f": {
+          "correlation": 0.1894,
+          "n_drift_chunks": 201,
+          "n_tir_windows": 76,
+          "n_paired": 42,
+          "drift_detection_rate_pct": 0.0,
+          "n_non_stable": 0,
+          "false_signals": 0,
+          "false_signal_rate_pct": 0.0,
+          "baseline_tir": 54.4,
+          "nominal_isf": 21.0,
+          "nominal_cr": 4.5
+        },
+        "g": {
+          "correlation": 0.17,
+          "n_drift_chunks": 196,
+          "n_tir_windows": 75,
+          "n_paired": 41,
+          "drift_detection_rate_pct": 0.0,
+          "n_non_stable": 0,
+          "false_signals": 0,
+          "false_signal_rate_pct": 0.0,
+          "baseline_tir": 60.3,
+          "nominal_isf": 70.0,
+          "nominal_cr": 12.0
+        },
+        "h": {
+          "correlation": 0.1168,
+          "n_drift_chunks": 70,
+          "n_tir_windows": 23,
+          "n_paired": 13,
+          "drift_detection_rate_pct": 8.6,
+          "n_non_stable": 6,
+          "false_signals": 4,
+          "false_signal_rate_pct": 66.7,
+          "baseline_tir": 81.9,
+          "nominal_isf": 92.0,
+          "nominal_cr": 10.0
+        },
+        "i": {
+          "correlation": 0.3563,
+          "n_drift_chunks": 200,
+          "n_tir_windows": 74,
+          "n_paired": 39,
+          "drift_detection_rate_pct": 0.0,
+          "n_non_stable": 0,
+          "false_signals": 0,
+          "false_signal_rate_pct": 0.0,
+          "baseline_tir": 55.4,
+          "nominal_isf": 55.0,
+          "nominal_cr": 6.0
+        },
+        "j": {
+          "correlation": null,
+          "n_drift_chunks": 71,
+          "n_tir_windows": 25,
+          "n_paired": 15,
+          "drift_detection_rate_pct": 0.0,
+          "n_non_stable": 0,
+          "false_signals": 0,
+          "false_signal_rate_pct": 0.0,
+          "baseline_tir": 86.5,
+          "nominal_isf": 40.0,
+          "nominal_cr": 6.0
+        }
+      }
+    },
+    "EXP-125": {
+      "status": "ok",
+      "experiment": "EXP-125",
+      "name": "composite-verification",
+      "aggregate": {
+        "n_patients": 10,
+        "total_windows": 508,
+        "overall_event_detection_rate_pct": 11.4,
+        "overall_override_suggestion_rate_pct": 0.0,
+        "mean_forecast_mae": null,
+        "has_model": false,
+        "has_classifier": true
+      },
+      "per_patient": {
+        "a": {
+          "n_windows": 64,
+          "event_detection_rate_pct": 10.9,
+          "override_suggestion_rate_pct": 0.0,
+          "drift_non_stable_rate_pct": 0.0,
+          "mean_forecast_mae": null,
+          "n_forecast_windows": 0
+        },
+        "b": {
+          "n_windows": 58,
+          "event_detection_rate_pct": 17.2,
+          "override_suggestion_rate_pct": 0.0,
+          "drift_non_stable_rate_pct": 0.0,
+          "mean_forecast_mae": null,
+          "n_forecast_windows": 0
+        },
+        "c": {
+          "n_windows": 56,
+          "event_detection_rate_pct": 8.9,
+          "override_suggestion_rate_pct": 0.0,
+          "drift_non_stable_rate_pct": 0.0,
+          "mean_forecast_mae": null,
+          "n_forecast_windows": 0
+        },
+        "d": {
+          "n_windows": 57,
+          "event_detection_rate_pct": 12.3,
+          "override_suggestion_rate_pct": 0.0,
+          "drift_non_stable_rate_pct": 0.0,
+          "mean_forecast_mae": null,
+          "n_forecast_windows": 0
+        },
+        "e": {
+          "n_windows": 47,
+          "event_detection_rate_pct": 10.6,
+          "override_suggestion_rate_pct": 0.0,
+          "drift_non_stable_rate_pct": 0.0,
+          "mean_forecast_mae": null,
+          "n_forecast_windows": 0
+        },
+        "f": {
+          "n_windows": 62,
+          "event_detection_rate_pct": 4.8,
+          "override_suggestion_rate_pct": 0.0,
+          "drift_non_stable_rate_pct": 0.0,
+          "mean_forecast_mae": null,
+          "n_forecast_windows": 0
+        },
+        "g": {
+          "n_windows": 61,
+          "event_detection_rate_pct": 9.8,
+          "override_suggestion_rate_pct": 0.0,
+          "drift_non_stable_rate_pct": 0.0,
+          "mean_forecast_mae": null,
+          "n_forecast_windows": 0
+        },
+        "h": {
+          "n_windows": 21,
+          "event_detection_rate_pct": 19.0,
+          "override_suggestion_rate_pct": 0.0,
+          "drift_non_stable_rate_pct": 0.0,
+          "mean_forecast_mae": null,
+          "n_forecast_windows": 0
+        },
+        "i": {
+          "n_windows": 59,
+          "event_detection_rate_pct": 28.8,
+          "override_suggestion_rate_pct": 0.0,
+          "drift_non_stable_rate_pct": 0.0,
+          "mean_forecast_mae": null,
+          "n_forecast_windows": 0
+        },
+        "j": {
+          "n_windows": 23,
+          "event_detection_rate_pct": 8.7,
+          "override_suggestion_rate_pct": 0.0,
+          "drift_non_stable_rate_pct": 0.0,
+          "mean_forecast_mae": null,
+          "n_forecast_windows": 0
+        }
+      }
+    }
+  }
+}

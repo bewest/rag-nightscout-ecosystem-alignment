@@ -1,0 +1,14 @@
+{
+  "experiment": "EXP-141",
+  "name": "uva-pretrain-finetune",
+  "results": {
+    "synth_train_n": 8000,
+    "real_train_n": 25937,
+    "real_only_mae": 13.2,
+    "pretrain_before_finetune_mae": 42.1,
+    "pretrain_finetune_mae": 13.2,
+    "long_finetune_mae": 13.8,
+    "improvement_pct": 0.3,
+    "synth_only_mae_on_real": 42.1
+  }
+}
