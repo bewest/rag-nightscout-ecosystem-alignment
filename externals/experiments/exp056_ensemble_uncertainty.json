@@ -1,0 +1,32 @@
+{
+  "experiment": "EXP-056",
+  "timestamp": "2026-04-02T01:49:30Z",
+  "hypothesis": "5-seed ensemble coverage 85\u201395%",
+  "coverage": {
+    "50pct": {
+      "target": 0.5,
+      "actual": 0.15690302701540387,
+      "gap": -0.3430969729845961
+    },
+    "80pct": {
+      "target": 0.8,
+      "actual": 0.2777282967784815,
+      "gap": -0.5222717032215185
+    },
+    "90pct": {
+      "target": 0.9,
+      "actual": 0.31379200387051376,
+      "gap": -0.5862079961294863
+    },
+    "95pct": {
+      "target": 0.95,
+      "actual": 0.3313424867073266,
+      "gap": -0.6186575132926734
+    }
+  },
+  "gap_90": 0.5862079961294863,
+  "ensemble_mae": 12.394546508789062,
+  "n_models": 5,
+  "success": false,
+  "elapsed_seconds": 47.8
+}

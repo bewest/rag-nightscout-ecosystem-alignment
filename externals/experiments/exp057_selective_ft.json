@@ -1,0 +1,81 @@
+{
+  "experiment": "EXP-057",
+  "timestamp": "2026-04-02T01:52:22Z",
+  "hypothesis": "selective FT > unconditional FT",
+  "patients": {
+    "a": {
+      "generic_mse": 0.0024173924466595054,
+      "finetune_mse": 0.002251043372477094,
+      "used_finetune": true,
+      "selective_mae_mgdl": 12.34428596496582,
+      "improvement_pct": 6.881343342173592
+    },
+    "b": {
+      "generic_mse": 0.003507334738969803,
+      "finetune_mse": 0.003617164174405237,
+      "used_finetune": false,
+      "selective_mae_mgdl": 16.55434799194336,
+      "improvement_pct": -3.1314215382730803
+    },
+    "c": {
+      "generic_mse": 0.001932156999828294,
+      "finetune_mse": 0.0017594221668938796,
+      "used_finetune": true,
+      "selective_mae_mgdl": 10.735058784484863,
+      "improvement_pct": 8.939999852484286
+    },
+    "d": {
+      "generic_mse": 0.001253992333658971,
+      "finetune_mse": 0.0010602262967343752,
+      "used_finetune": true,
+      "selective_mae_mgdl": 8.12989330291748,
+      "improvement_pct": 15.451931540858311
+    },
+    "e": {
+      "generic_mse": 0.001434731418901885,
+      "finetune_mse": 0.001344508475581692,
+      "used_finetune": true,
+      "selective_mae_mgdl": 9.772786140441895,
+      "improvement_pct": 6.288490105642762
+    },
+    "f": {
+      "generic_mse": 0.0017835374746937305,
+      "finetune_mse": 0.001756711004418321,
+      "used_finetune": true,
+      "selective_mae_mgdl": 10.335053443908691,
+      "improvement_pct": 1.50411587398892
+    },
+    "g": {
+      "generic_mse": 0.0013298477036490415,
+      "finetune_mse": 0.0012486698008918513,
+      "used_finetune": true,
+      "selective_mae_mgdl": 9.765238761901855,
+      "improvement_pct": 6.104300705595212
+    },
+    "h": {
+      "generic_mse": 0.001999855600297451,
+      "finetune_mse": 0.0019069659058004618,
+      "used_finetune": true,
+      "selective_mae_mgdl": 11.135212898254395,
+      "improvement_pct": 4.644820080168449
+    },
+    "i": {
+      "generic_mse": 0.0015375294945746039,
+      "finetune_mse": 0.0014455508984004457,
+      "used_finetune": true,
+      "selective_mae_mgdl": 9.59597110748291,
+      "improvement_pct": 5.982232958698873
+    },
+    "j": {
+      "generic_mse": 0.0026277563069015742,
+      "finetune_mse": 0.0027408047812059523,
+      "used_finetune": false,
+      "selective_mae_mgdl": 15.7169189453125,
+      "improvement_pct": -4.30209125585451
+    }
+  },
+  "mean_mae": 11.408476734161377,
+  "ft_rate": 0.8,
+  "success": true,
+  "elapsed_seconds": 83.5
+}
