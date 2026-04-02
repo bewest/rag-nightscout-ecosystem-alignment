@@ -1,0 +1,17 @@
+{
+  "experiment": "EXP-112",
+  "name": "conformal-ensemble",
+  "results": {
+    "ensemble_mae_mgdl": 12.8,
+    "n_seeds": 5,
+    "conformal_q80": 7.44,
+    "conformal_q90": 10.76,
+    "conformal_q95": 14.5,
+    "coverage_80": 0.942,
+    "coverage_90": 0.976,
+    "coverage_95": 0.99,
+    "width_80_mgdl": 86.6,
+    "width_90_mgdl": 125.2,
+    "width_95_mgdl": 168.7
+  }
+}

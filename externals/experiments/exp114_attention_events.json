@@ -1,0 +1,16 @@
+{
+  "experiment": "EXP-114",
+  "name": "attention-events",
+  "results": {
+    "n_samples": 504,
+    "mean_glucose_attr": 0.5251,
+    "mean_insulin_attr": 0.0577,
+    "mean_carb_attr": 0.0163,
+    "frac_glucose_dominant": 0.998,
+    "frac_insulin_dominant": 0.0,
+    "frac_carb_dominant": 0.002,
+    "relative_glucose": 0.891,
+    "relative_insulin": 0.087,
+    "relative_carb": 0.022
+  }
+}

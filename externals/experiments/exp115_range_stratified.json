@@ -1,0 +1,19 @@
+{
+  "experiment": "EXP-115",
+  "name": "range-stratified",
+  "results": {
+    "overall_mae": 12.6,
+    "hypo_mae": 15.7,
+    "hypo_n": 2881,
+    "severe_hypo_mae": 20.2,
+    "severe_hypo_n": 791,
+    "inrange_mae": 10.3,
+    "inrange_n": 51650,
+    "hyper_mae": 17.2,
+    "hyper_n": 23289,
+    "rise_accuracy": 0.77,
+    "fall_accuracy": 0.848,
+    "rise_n": 2662,
+    "fall_n": 3022
+  }
+}

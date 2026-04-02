@@ -1,0 +1,29 @@
+{
+  "experiment": "EXP-113",
+  "name": "gradient-isf",
+  "results": {
+    "n_samples": 512,
+    "isf_mean": 12.35,
+    "isf_median": 12.01,
+    "isf_std": 6.63,
+    "isf_p10": 4.23,
+    "isf_p25": 7.58,
+    "isf_p75": 16.62,
+    "isf_p90": 20.89,
+    "per_step_mean_isf": [
+      -0.0,
+      -0.06,
+      0.04,
+      0.18,
+      0.29,
+      0.4,
+      0.32,
+      0.25,
+      0.31,
+      0.58,
+      1.84,
+      8.19
+    ],
+    "expected_range": "20-50 mg/dL/U for T1D"
+  }
+}

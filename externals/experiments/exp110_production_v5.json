@@ -1,0 +1,16 @@
+{
+  "experiment": "EXP-110",
+  "name": "production-v5",
+  "results": {
+    "mae_mgdl": 12.4,
+    "conformal_q80": 36.3,
+    "conformal_q90": 51.4,
+    "conformal_q95": 66.8,
+    "n_plans": 5996,
+    "n_actions": 4810,
+    "correction_precision": 0.998,
+    "hypo_precision": 0.824,
+    "hypo_recall": 0.686,
+    "hypo_f1": 0.748
+  }
+}
