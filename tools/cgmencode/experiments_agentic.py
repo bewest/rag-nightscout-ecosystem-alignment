@@ -241,7 +241,8 @@ def run_uncertainty_calibration(args):
     _, val_ds = load_multipatient_nightscout(paths, window_size=24)
 
     # Find existing grouped checkpoint
-    ckpt_path = find_checkpoint(out, 'exp026_grouped_16f.pth',
+    ckpt_path = find_checkpoint(out, 'exp026_grouped_8f.pth',
+                                'exp029_grouped.pth',
                                 'grouped_multi_transfer.pth')
     if not ckpt_path:
         ctx.log('Training fresh model for calibration')
@@ -376,21 +377,21 @@ def run_scenario_validation(args):
         _, val_ds = load_multipatient_nightscout([ppath], window_size=24)
         if len(val_ds) == 0:
             continue
-        sample = val_ds[0][0].unsqueeze(0)
+        sample = val_ds[0][0].unsqueeze(0).to(get_device())
         for sc in scenarios:
             try:
                 result = sim.simulate_scenario(sample, sc)
-                predicted_mean = result.get('predicted_mean', result.get('forecast', None))
-                if predicted_mean is not None:
-                    delta = float(predicted_mean[-1] - predicted_mean[0]) if hasattr(predicted_mean, '__len__') else 0
-                    direction = 'rise' if delta > 5 else 'drop' if delta < -5 else 'flat'
+                delta_arr = result.get('delta_mgdl', None)
+                if delta_arr is not None and hasattr(delta_arr, '__len__') and len(delta_arr) > 0:
+                    mean_delta = float(result.get('mean_impact_mgdl', 0))
+                    direction = 'rise' if mean_delta > 5 else 'drop' if mean_delta < -5 else 'flat'
                     expected = sc['expected']
                     hit = (expected == direction or
-                           (expected == 'moderate' and abs(delta) < 30))
+                           (expected == 'moderate' and abs(mean_delta) < 30))
                     correct += int(hit)
                     total += 1
                     scenario_results.append({
-                        'scenario': sc['name'], 'delta': delta,
+                        'scenario': sc['name'], 'mean_delta': mean_delta,
                         'direction': direction, 'expected': expected, 'hit': hit,
                     })
             except Exception as e:

@@ -74,7 +74,7 @@ class HierarchicalForecaster:
                 pred = self.short_model(x, causal=causal)
             glucose = pred[..., IDX_GLUCOSE] * GLUCOSE_SCALE
             results['short'] = {
-                'glucose_mgdl': glucose.numpy() if isinstance(glucose, torch.Tensor) else glucose,
+                'glucose_mgdl': glucose.detach().cpu().numpy() if isinstance(glucose, torch.Tensor) else glucose,
                 'interval_min': 5,
                 'horizon_steps': short_steps,
             }
@@ -94,7 +94,7 @@ class HierarchicalForecaster:
                 glucose_med = last_glucose.unsqueeze(-1).expand(-1, med_steps)
 
             results['medium'] = {
-                'glucose_mgdl': glucose_med.numpy() if isinstance(glucose_med, torch.Tensor) else glucose_med,
+                'glucose_mgdl': glucose_med.detach().cpu().numpy() if isinstance(glucose_med, torch.Tensor) else glucose_med,
                 'interval_min': 15,
                 'horizon_steps': glucose_med.shape[-1] if hasattr(glucose_med, 'shape') else 0,
             }
