@@ -1,0 +1,18 @@
+{
+  "experiment": "EXP-129",
+  "name": "planner-6hr",
+  "results": {
+    "n_plans": 571,
+    "total_actions": 1700,
+    "conformal_q90": 89.2,
+    "hypo_precision": 0.818,
+    "hyper_precision": 0.986,
+    "top_actions": {
+      "consider_correction": 620,
+      "rapid_fall": 320,
+      "urgent_high": 307,
+      "rapid_rise": 268,
+      "hypo_alert": 185
+    }
+  }
+}

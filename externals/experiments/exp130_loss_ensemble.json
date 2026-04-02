@@ -1,0 +1,30 @@
+{
+  "experiment": "EXP-130",
+  "name": "loss-ensemble",
+  "results": {
+    "individual_maes": [
+      13.2,
+      13.2,
+      13.5,
+      13.6,
+      12.9
+    ],
+    "equal_ensemble_mae": 12.5,
+    "weighted_ensemble_mae": 12.5,
+    "weights": [
+      0.197,
+      0.201,
+      0.2,
+      0.197,
+      0.205
+    ],
+    "val_losses": [
+      0.002597,
+      0.002542,
+      0.00256,
+      0.00259,
+      0.002496
+    ],
+    "improvement_pct": 0.0
+  }
+}

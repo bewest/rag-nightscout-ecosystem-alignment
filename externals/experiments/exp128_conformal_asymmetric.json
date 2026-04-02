@@ -1,0 +1,12 @@
+{
+  "experiment": "EXP-128",
+  "name": "conformal-asymmetric",
+  "results": {
+    "p50_mae": 12.9,
+    "raw_coverage": 0.882,
+    "raw_width": 49.3,
+    "conformal_coverage": 0.968,
+    "conformal_width": 75.9,
+    "conformal_adjustment": 13.3
+  }
+}

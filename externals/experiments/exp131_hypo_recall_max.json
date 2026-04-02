@@ -1,0 +1,48 @@
+{
+  "experiment": "EXP-131",
+  "name": "hypo-recall-max",
+  "results": {
+    "thresholds": {
+      "thresh_60": {
+        "precision": 0.744,
+        "recall": 0.403,
+        "f1": 0.522,
+        "tp": 244,
+        "fp": 84,
+        "fn": 362
+      },
+      "thresh_65": {
+        "precision": 0.672,
+        "recall": 0.601,
+        "f1": 0.634,
+        "tp": 364,
+        "fp": 178,
+        "fn": 242
+      },
+      "thresh_70": {
+        "precision": 0.594,
+        "recall": 0.764,
+        "f1": 0.668,
+        "tp": 463,
+        "fp": 317,
+        "fn": 143
+      },
+      "thresh_75": {
+        "precision": 0.514,
+        "recall": 0.84,
+        "f1": 0.638,
+        "tp": 509,
+        "fp": 481,
+        "fn": 97
+      },
+      "thresh_80": {
+        "precision": 0.462,
+        "recall": 0.863,
+        "f1": 0.601,
+        "tp": 523,
+        "fp": 610,
+        "fn": 83
+      }
+    }
+  }
+}
