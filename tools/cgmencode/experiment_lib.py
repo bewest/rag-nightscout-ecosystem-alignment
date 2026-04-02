@@ -428,7 +428,7 @@ DEFAULT_TASK_WEIGHTS = {
 }
 
 
-def multitask_loss(outputs, targets, weights=None):
+def multitask_loss(outputs, targets, weights=None, class_weights=None):
     """Compute composite loss from multi-task model outputs.
 
     Args:
@@ -443,13 +443,18 @@ def multitask_loss(outputs, targets, weights=None):
             - 'drift_target': (B, 2) — optional ISF/CR % deviation
             - 'state_label': (B,) LongTensor — optional metabolic state index
         weights: dict of task name → weight (default: DEFAULT_TASK_WEIGHTS)
+        class_weights: optional dict with per-class weights for CE losses
+            - 'event': (n_event_classes,) tensor of per-class weights
+            - 'state': (n_state_classes,) tensor of per-class weights
+            These address class imbalance (e.g., correction_bolus at 48%).
+            Computed by generate_aux_labels.compute_class_weights().
 
     Returns:
         (total_loss, loss_dict) where loss_dict has per-head losses for logging
     """
     w = weights or DEFAULT_TASK_WEIGHTS
+    cw = class_weights or {}
     mse = nn.MSELoss()
-    ce = nn.CrossEntropyLoss()
 
     loss_dict = {}
     total = torch.tensor(0.0, device=targets['x'].device)
@@ -466,32 +471,38 @@ def multitask_loss(outputs, targets, weights=None):
     loss_dict['forecast'] = forecast_loss.item()
     total = total + w.get('forecast', 1.0) * forecast_loss
 
-    # Event head: CrossEntropy on event classification
+    # Event head: CrossEntropy on event classification (with optional class weights)
     if 'event_logits' in outputs and 'event_label' in targets:
         labels = targets['event_label']
-        # Skip if all labels are -1 (no labels available for this batch)
         valid = labels >= 0
         if valid.any():
-            event_loss = ce(outputs['event_logits'][valid], labels[valid])
+            event_cw = cw.get('event')
+            if event_cw is not None:
+                event_cw = event_cw.to(targets['x'].device)
+            ce_event = nn.CrossEntropyLoss(weight=event_cw)
+            event_loss = ce_event(outputs['event_logits'][valid], labels[valid])
             loss_dict['event'] = event_loss.item()
             total = total + w.get('event', 0.3) * event_loss
 
     # Drift head: MSE on ISF/CR % deviation
     if 'drift_pred' in outputs and 'drift_target' in targets:
         drift_tgt = targets['drift_target']
-        # Skip if all targets are NaN (no drift labels for this batch)
         valid = ~torch.isnan(drift_tgt[:, 0])
         if valid.any():
             drift_loss = mse(outputs['drift_pred'][valid], drift_tgt[valid])
             loss_dict['drift'] = drift_loss.item()
             total = total + w.get('drift', 0.2) * drift_loss
 
-    # State head: CrossEntropy on metabolic state
+    # State head: CrossEntropy on metabolic state (with optional class weights)
     if 'state_logits' in outputs and 'state_label' in targets:
         labels = targets['state_label']
         valid = labels >= 0
         if valid.any():
-            state_loss = ce(outputs['state_logits'][valid], labels[valid])
+            state_cw = cw.get('state')
+            if state_cw is not None:
+                state_cw = state_cw.to(targets['x'].device)
+            ce_state = nn.CrossEntropyLoss(weight=state_cw)
+            state_loss = ce_state(outputs['state_logits'][valid], labels[valid])
             loss_dict['state'] = state_loss.item()
             total = total + w.get('state', 0.1) * state_loss
 
@@ -500,7 +511,8 @@ def multitask_loss(outputs, targets, weights=None):
 
 def train_multitask(model, train_ds, val_ds, save_path, label,
                     lr=1e-3, epochs=50, batch=32, patience=15,
-                    weight_decay=1e-5, lr_patience=5, task_weights=None):
+                    weight_decay=1e-5, lr_patience=5, task_weights=None,
+                    class_weights=None):
     """Multi-objective training loop with composite loss.
 
     Handles both plain autoencoders (backward compatible — just MSE)
@@ -510,6 +522,13 @@ def train_multitask(model, train_ds, val_ds, save_path, label,
     targets_dict is a dict with 'x' and optional 'event_label',
     'drift_target', 'state_label'. For backward compatibility,
     also accepts (x, x) pairs from standard AE datasets.
+
+    Args:
+        class_weights: optional dict with per-class weight tensors:
+            {'event': (n_event_classes,) tensor, 'state': (n_state_classes,) tensor}
+            From generate_aux_labels.compute_class_weights(). Addresses class
+            imbalance in event detection (correction_bolus dominance) and
+            state classification.
 
     Returns (best_val_loss, epochs_run, loss_history).
     """
@@ -541,7 +560,8 @@ def train_multitask(model, train_ds, val_ds, save_path, label,
         x_in[:, half:, 0] = 0.0  # mask future glucose
 
         outputs = model(x_in, causal=True)
-        total_loss, loss_dict = multitask_loss(outputs, targets, task_weights)
+        total_loss, loss_dict = multitask_loss(outputs, targets, task_weights,
+                                               class_weights=class_weights)
 
         if backward:
             total_loss.backward()
