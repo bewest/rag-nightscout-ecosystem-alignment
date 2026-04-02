@@ -1,0 +1,72 @@
+{
+  "experiment": "EXP-066",
+  "timestamp": "2026-04-02T02:28:05Z",
+  "hypothesis": "per-patient conformal < global threshold",
+  "patients": {
+    "a": {
+      "threshold_90": 49.134121704101574,
+      "coverage": 0.8936170212765957,
+      "used_ft": true,
+      "n_cal": 375
+    },
+    "b": {
+      "threshold_90": 63.83168945312499,
+      "coverage": 0.9348958333333334,
+      "used_ft": false,
+      "n_cal": 384
+    },
+    "c": {
+      "threshold_90": 41.864549255371095,
+      "coverage": 0.9008498583569405,
+      "used_ft": true,
+      "n_cal": 353
+    },
+    "d": {
+      "threshold_90": 33.359194946289065,
+      "coverage": 0.8793565683646113,
+      "used_ft": true,
+      "n_cal": 372
+    },
+    "e": {
+      "threshold_90": 42.05667724609374,
+      "coverage": 0.9161676646706587,
+      "used_ft": true,
+      "n_cal": 334
+    },
+    "f": {
+      "threshold_90": 48.06437988281251,
+      "coverage": 0.9052631578947369,
+      "used_ft": true,
+      "n_cal": 380
+    },
+    "g": {
+      "threshold_90": 38.4533447265625,
+      "coverage": 0.9026315789473685,
+      "used_ft": true,
+      "n_cal": 379
+    },
+    "h": {
+      "threshold_90": 50.759307098388675,
+      "coverage": 0.9013157894736842,
+      "used_ft": true,
+      "n_cal": 152
+    },
+    "i": {
+      "threshold_90": 38.962727355957036,
+      "coverage": 0.8743455497382199,
+      "used_ft": true,
+      "n_cal": 382
+    },
+    "j": {
+      "threshold_90": 51.366241455078125,
+      "coverage": 0.8091603053435115,
+      "used_ft": false,
+      "n_cal": 131
+    }
+  },
+  "global_threshold_90": 45.468553161621095,
+  "mean_patient_threshold_90": 45.78522331237793,
+  "threshold_reduction": -0.6964597039875208,
+  "success": false,
+  "elapsed_seconds": 47.0
+}
