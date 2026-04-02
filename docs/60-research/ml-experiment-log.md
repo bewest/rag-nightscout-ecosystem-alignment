@@ -871,3 +871,145 @@ Score: AE 2/5, **Grouped 3/5**.
 glucose/400, iob/20, cob/100, net_basal/5, bolus/10, carbs/100
 time_sin ∈ [-1,1], time_cos ∈ [-1,1]
 ```
+
+---
+
+### EXP-018b: Transfer at Longer Horizons — Revisited with sweep-uva-250 (2025-07-15)
+
+**Hypothesis**: EXP-018 found transfer HURT at all horizons because synthetic data was tiny (63-424 vectors). With sweep-uva-250 providing 8K-16K synthetic vectors, transfer should help.
+
+**Data Scale Comparison**:
+
+| Horizon | Old synth | New synth | Real train | Old ratio | New ratio |
+|---------|-----------|-----------|------------|-----------|-----------|
+| 60min   | 424       | 16,000    | 3,085      | 1:7.3     | 5.2:1     |
+| 120min  | 127       | 8,000     | 1,538      | 1:12.1    | 5.2:1     |
+| 180min  | 63        | **0**     | 1,019      | 1:16.2    | N/A       |
+
+**Results** (future-only MAE, mg/dL):
+
+| Horizon | AE scratch | AE transfer | Gr scratch | Gr transfer | Winner |
+|---------|-----------|-------------|-----------|-------------|--------|
+| 60min   | 2.16      | **1.09**    | 3.21      | **1.21**    | AE transfer |
+| 120min  | 6.04      | **5.23**    | **3.53**  | 5.49        | Gr scratch |
+| 180min  | **10.14** | N/A         | 11.02     | N/A         | AE scratch |
+
+**Transfer effect** (% improvement, scratch → transfer):
+
+| Arch    | 60min      | 120min     | 180min |
+|---------|------------|------------|--------|
+| AE      | **+49.5%** | **+13.4%** | N/A    |
+| Grouped | **+62.3%** | -55.5%     | N/A    |
+
+**Comparison to original EXP-018** (old → new):
+
+| Horizon | AE transfer old→new | Grouped transfer old→new |
+|---------|---------------------|--------------------------|
+| 60min   | 0.79→1.09           | 0.49→1.21                |
+| 120min  | 2.96→5.23           | 2.66→5.49                |
+| 180min  | 5.06→N/A            | 7.11→N/A                 |
+
+Note: Absolute MAE values are higher in EXP-018b because sweep-uva-250 has wider physiological parameter ranges (ISF 10-120, CR 3-30 vs original narrower ranges). The key metric is **relative improvement from transfer**, which flipped from negative to strongly positive at 1hr.
+
+**Key Findings**:
+1. **Transfer now helps at 1hr** — 50-62% improvement (was negative before)
+2. **Mixed at 2hr** — AE benefits (+13%), Grouped hurts (-55%)
+3. **No synthetic data at 180min** — sweep-uva-250 scenarios are too short for 3hr windows
+4. **Data ratio matters** — transfer helps most when synth:real > 1 (60min is 5.2:1)
+
+**Action Item**: Generate longer UVA/Padova scenarios (>3hr) to enable 180min transfer experiments.
+
+**Results**: `externals/experiments/exp018_transfer_horizons.json`
+
+---
+
+### EXP-019: Multi-Patient Conditioned Transfer (2025-07-15)
+
+**Hypothesis**: Conditioned Transformer was a "dead end" in EXP-006 (31.49 MAE transfer, 25.10 scratch) because it had only 267 synthetic and 1,538 real training samples for an 846K-parameter model. With sweep-uva-250 (8K conditioned windows) and 10-patient real data (25.9K windows), the model should learn meaningful action→glucose relationships.
+
+**Data Scale**:
+
+| Source | EXP-006 | EXP-019 | Increase |
+|--------|---------|---------|----------|
+| Synthetic (conditioned) | 267 | 8,000 | 30× |
+| Real (conditioned) | 1,538 | 25,937 | 17× |
+| Patients | 1 | 10 | 10× |
+| Param:sample ratio | 1:1.8 | 1:30.7 | — |
+
+**Results** (1hr forecast, future-only MAE mg/dL):
+
+| Method | MAE | RMSE | vs Persistence | vs EXP-006 |
+|--------|-----|------|----------------|------------|
+| Transfer (synth→real) | 14.81 | 22.17 | **-45.0%** | -53.0% (was 31.49) |
+| Scratch (real only) | **14.76** | 22.06 | **-45.2%** | -41.2% (was 25.10) |
+| Zero-shot (synth only) | 49.84 | 61.05 | +85.1% | — |
+| Persistence | 26.92 | 39.46 | baseline | — |
+| Physics-only | 30.56 | 64.01 | +13.5% | — |
+
+**Pre-training details**:
+- Synth pre-train: 8K windows from sweep-uva-250, val loss 0.000500 (50 epochs)
+- Fine-tune: 25.9K windows from 10 patients, val loss 0.003114
+- Scratch: 25.9K windows, val loss 0.003091
+
+**Key Findings**:
+1. **Conditioned Transformer is NO LONGER a dead end** — beats persistence by 45%
+2. **Transfer doesn't add value** over scratch (14.81 vs 14.76) — 25.9K real windows provide sufficient action diversity without pre-training
+3. **Zero-shot fails** (49.84 MAE) — large sim-to-real domain gap persists
+4. **Data was the bottleneck**, not architecture — same 846K params, same training procedure
+5. **Multi-patient diversity is key** — 10 patients provide varied insulin regimens, meal patterns, and sensitivities that a single patient cannot
+
+**Implication for L4 (Decision/Policy)**: The Conditioned Transformer can now answer "what happens to glucose if I give X insulin?" with 14.8 mg/dL accuracy — a prerequisite for action optimization. Next step: verify causal dose-response with paired counterfactual experiments.
+
+**Results**: `externals/experiments/exp019_multipatient_cond_transfer.json`
+
+---
+
+### EXP-020: Multi-Patient Diffusion Benchmark — Revisited at Scale (2025-07-15)
+
+**Hypothesis**: DDPM was a "dead end" in EXP-016 (28.66 MAE, 50% worse than persistence) because it had only 3,085 training windows. With 52K windows from 10 patients and GPU training, the 857K-parameter denoising model should learn to generate accurate forecasts.
+
+**Data Scale**:
+
+| Metric | EXP-016 | EXP-020 | Increase |
+|--------|---------|---------|----------|
+| Train windows | 3,085 | 52,188 | 17× |
+| Val windows | 771 | 13,048 | 17× |
+| Patients | 1 | 10 | 10× |
+| Training device | CPU | GPU (CUDA) | — |
+
+**Results** (1hr forecast MAE, mg/dL):
+
+| Method | MAE | RMSE | vs Persistence |
+|--------|-----|------|----------------|
+| DDPM (multi-patient) | 48.65 | 79.52 | **+80.7%** (much worse) |
+| AE (reconstruction) | 0.04 | 0.05 | — |
+| Grouped (reconstruction) | 0.03 | 0.03 | — |
+| Persistence | 26.92 | 39.46 | baseline |
+| Physics-only | 30.56 | 64.01 | +13.5% |
+| DDPM (EXP-016 reference) | 28.66 | — | +50.7% |
+
+**Per-horizon DDPM error** (5-min steps):
+| +5min | +10min | +15min | +20min | +25min | +30min |
+|-------|--------|--------|--------|--------|--------|
+| 38.80 | 43.33  | 46.73  | 51.15  | 54.39  | 57.50  |
+
+**Training details**:
+- Best val loss: 0.046061 (epoch 49/50)
+- 857K params, 200 diffusion timesteps, 20 evaluation samples
+- Inpainting-based forecast: condition on history, denoise future
+
+**Key Findings**:
+1. **DDPM is CONFIRMED dead** — 17× more data made it WORSE (48.65 vs 28.66)
+2. **The architecture is wrong** — inpainting-based conditioning via masked denoising is fundamentally ill-suited for time-series forecasting
+3. **Multi-patient diversity hurts DDPM** — more patients = more modes = harder generation
+4. **AE/Grouped reconstruction remains excellent** (0.03-0.04 MAE) confirming the issue is specific to DDPM's generative approach, not the data pipeline
+
+**Post-mortem**: DDPM generates by iterative denoising from random noise, conditioned on history via inpainting (overwriting history positions each step). This approach:
+- Requires the model to learn the full data distribution, not just point forecasts
+- Has no causal structure — treats glucose as spatial, not temporal
+- 200 reverse steps × 20 samples = expensive and inaccurate
+- Fails to exploit the strong autoregressive structure of CGM data
+
+**Recommendation**: Archive DDPM permanently. For generative modeling, consider normalizing flows or direct conditional generation instead of iterative denoising. The Conditioned Transformer (EXP-019) already achieves 14.8 MAE for action-conditional forecasting without generative modeling.
+
+**Results**: `externals/experiments/exp020_multipatient_diffusion.json`
