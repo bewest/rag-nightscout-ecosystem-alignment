@@ -299,14 +299,23 @@ class ISFCRTracker:
 class DriftDetector:
     """Detect physiological state changes from ISF/CR drift patterns.
 
-    Monitors ISF/CR tracker output and classifies drift into:
-    - 'stable': ISF/CR within ±threshold of nominal
-    - 'resistance': ISF dropping → need more insulin (illness, hormones)
-    - 'sensitivity': ISF rising → need less insulin (exercise adaptation)
-    - 'carb_change': CR shifting without ISF change
+    Aligned with oref0/AAPS/Trio autosens algorithms (EXP-154):
+    - Uses autosens ratio [0.7, 1.2] instead of unbounded % drift
+    - Classification thresholds match clinical autosens action levels
+    - Confidence ramps with observation count (matches AAPS gradual autosens)
+    - Padding for insufficient data dampens wild swings (oref0 zero-padding)
+
+    States:
+    - 'stable': autosens ratio within [0.9, 1.1] (±10%)
+    - 'resistance': ratio < 0.9 (ISF dropped → need more insulin)
+    - 'sensitivity': ratio > 1.1 (ISF risen → need less insulin)
+    - 'carb_change': CR shifted without ISF change
     """
 
-    # Classification thresholds
+    # Clinical reference: oref0 profile/index.js:18-19
+    AUTOSENS_MIN = 0.7   # Maximum resistance bound
+    AUTOSENS_MAX = 1.2   # Maximum sensitivity bound
+
     CLASSIFICATIONS = {
         'stable': 'No significant drift detected',
         'resistance': 'Insulin resistance increasing (illness, hormones, stress)',
@@ -314,16 +323,18 @@ class DriftDetector:
         'carb_change': 'Carb ratio shifting without ISF change',
     }
 
-    def __init__(self, tracker: ISFCRTracker, drift_threshold_pct: float = 5.0,
-                 window_hours: float = 72, min_observations: int = 12):
+    def __init__(self, tracker: ISFCRTracker, drift_threshold_pct: float = 10.0,
+                 window_hours: float = 24, min_observations: int = 12):
         """
         Args:
             tracker: ISFCRTracker instance to monitor.
             drift_threshold_pct: Percent change from nominal to consider
-                significant (default 5%).  Lowered from 15% after EXP-124
-                showed 9/10 patients had 0% detection at the old threshold.
-            window_hours: Hours of history to consider for classification.
-            min_observations: Minimum observations before making a call.
+                significant (default 10%, matching autosens action level).
+                Calibrated as ratio deviation: 10% means ratio < 0.9 or > 1.1.
+            window_hours: Hours of history to consider (default 24h,
+                matching oref0 autosens default lookback).
+            min_observations: Minimum observations before classifying.
+                AAPS requires MIN_HOURS_FULL_AUTOSENS = 4h for full effect.
         """
         self.tracker = tracker
         self.drift_threshold_pct = drift_threshold_pct
@@ -333,10 +344,17 @@ class DriftDetector:
     def classify(self) -> Dict:
         """Classify current physiological state from drift patterns.
 
+        Uses autosens-style ratio classification:
+        1. Compute ISF/CR ratio = estimate / nominal
+        2. Clamp to autosens bounds [0.7, 1.2]
+        3. Classify: ratio < 0.9 = resistance, > 1.1 = sensitivity
+        4. Scale confidence with observation count (AAPS gradual ramp)
+
         Returns:
             dict with:
                 - 'state': one of 'stable', 'resistance', 'sensitivity', 'carb_change'
                 - 'description': human-readable explanation
+                - 'autosens_ratio': ISF ratio clamped to [0.7, 1.2]
                 - 'isf_drift_pct': signed drift (negative = resistance)
                 - 'cr_drift_pct': signed drift
                 - 'confidence': 0–1 confidence in classification
@@ -345,10 +363,12 @@ class DriftDetector:
         n_obs = len(self.tracker.history)
 
         # Not enough data → stable by default
+        # (oref0 pads with zeros when < 8h data; AAPS requires 4h for full effect)
         if n_obs < self.min_observations:
             return {
                 'state': 'stable',
                 'description': self.CLASSIFICATIONS['stable'],
+                'autosens_ratio': 1.0,
                 'isf_drift_pct': 0.0,
                 'cr_drift_pct': 0.0,
                 'confidence': 0.0,
@@ -357,20 +377,34 @@ class DriftDetector:
         isf_nom = self.tracker.nominal[0]
         cr_nom = self.tracker.nominal[1]
 
-        # Signed drift: negative ISF drift = ISF dropped = resistance
-        isf_signed = (summary['mean_isf'] - isf_nom) / isf_nom * 100.0
-        cr_signed = (summary['mean_cr'] - cr_nom) / cr_nom * 100.0
+        # Compute autosens ratio = estimate / nominal
+        # ratio > 1 = more sensitive (need less insulin)
+        # ratio < 1 = more resistant (need more insulin)
+        isf_ratio = summary['mean_isf'] / isf_nom if isf_nom > 0 else 1.0
+        cr_ratio = summary['mean_cr'] / cr_nom if cr_nom > 0 else 1.0
 
-        isf_significant = abs(isf_signed) > self.drift_threshold_pct
-        cr_significant = abs(cr_signed) > self.drift_threshold_pct
+        # Clamp to autosens bounds [0.7, 1.2]
+        isf_ratio = float(np.clip(isf_ratio, self.AUTOSENS_MIN, self.AUTOSENS_MAX))
+        cr_ratio = float(np.clip(cr_ratio, self.AUTOSENS_MIN, self.AUTOSENS_MAX))
 
-        # Confidence scales with observation count and drift magnitude
+        # Signed % drift for API compatibility
+        isf_signed = (isf_ratio - 1.0) * 100.0  # -30% to +20%
+        cr_signed = (cr_ratio - 1.0) * 100.0
+
+        threshold = self.drift_threshold_pct  # default 10%
+        isf_significant = abs(isf_signed) > threshold
+        cr_significant = abs(cr_signed) > threshold
+
+        # Confidence ramps with observation count.
+        # AAPS: full autosens after MIN_HOURS_FULL_AUTOSENS = 4h
+        # contribution = (obs_hours - MIN_HOURS) / (FULL_HOURS - MIN_HOURS)
+        # We approximate: full confidence at 3x min_observations (~36 obs)
         confidence = min(1.0, n_obs / (self.min_observations * 3))
         if isf_significant or cr_significant:
             drift_mag = max(abs(isf_signed), abs(cr_signed))
-            confidence *= min(1.0, drift_mag / (self.drift_threshold_pct * 2))
+            confidence *= min(1.0, drift_mag / (threshold * 2))
 
-        # Classification logic
+        # Classification logic (matches generate_aux_labels state assignment)
         if isf_significant and isf_signed < 0:
             state = 'resistance'
         elif isf_significant and isf_signed > 0:
@@ -383,6 +417,7 @@ class DriftDetector:
         return {
             'state': state,
             'description': self.CLASSIFICATIONS[state],
+            'autosens_ratio': isf_ratio,
             'isf_drift_pct': float(isf_signed),
             'cr_drift_pct': float(cr_signed),
             'confidence': float(confidence),
@@ -391,10 +426,14 @@ class DriftDetector:
     def suggested_override(self) -> Optional[Dict]:
         """Suggest override parameters based on detected drift.
 
+        Uses autosens ratio to determine insulin needs adjustment,
+        bounded to clinically safe range [0.5, 2.0].
+
         Returns:
             None if stable, or dict with:
             - 'type': 'sick', 'exercise_recovery', 'hormone_cycle', etc.
             - 'insulin_needs_factor': e.g., 1.2 means 20% more insulin
+            - 'autosens_ratio': ISF ratio [0.7, 1.2]
             - 'confidence': 0–1 confidence in suggestion
             - 'duration_hours': suggested override duration
         """
@@ -405,13 +444,12 @@ class DriftDetector:
 
         state = classification['state']
         confidence = classification['confidence']
-        summary = self.tracker.drift_summary(self.window_hours)
+        isf_ratio = classification['autosens_ratio']
 
-        # Insulin needs factor: >1 means need more insulin
-        # ISF dropped → need more insulin → factor > 1
-        isf_nom = self.tracker.nominal[0]
-        mean_isf = summary['mean_isf']
-        insulin_needs = isf_nom / mean_isf if mean_isf > 0 else 1.0
+        # Insulin needs factor = 1 / autosens_ratio
+        # ratio < 1 (resistant) → need MORE insulin → factor > 1
+        # ratio > 1 (sensitive) → need LESS insulin → factor < 1
+        insulin_needs = 1.0 / isf_ratio if isf_ratio > 0 else 1.0
         insulin_needs = float(np.clip(insulin_needs, 0.5, 2.0))
 
         # Map classification to override type and duration
@@ -438,6 +476,7 @@ class DriftDetector:
         return {
             'type': override_info['type'],
             'insulin_needs_factor': insulin_needs,
+            'autosens_ratio': isf_ratio,
             'confidence': confidence,
             'duration_hours': override_info['duration_hours'],
         }
