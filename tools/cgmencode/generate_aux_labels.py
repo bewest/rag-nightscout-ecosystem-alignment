@@ -81,8 +81,15 @@ def _generate_drift_labels(feat_array, isf_nominal, cr_nominal):
         )
 
         state = tracker.update(glucose_residual, iob_delta, cob_delta)
-        drift_labels[i, 0] = state['isf_drift_pct']
-        drift_labels[i, 1] = state['cr_drift_pct']
+        # Use SIGNED deviation so resistance (ISF decreased) is negative
+        # and sensitivity (ISF increased) is positive.
+        # tracker.state holds [isf_estimate, cr_estimate] from Kalman filter
+        isf_est, cr_est = tracker.state[0], tracker.state[1]
+        isf_signed = (isf_est - isf_nominal) / isf_nominal if isf_nominal else 0.0
+        cr_signed = (cr_est - cr_nominal) / cr_nominal if cr_nominal else 0.0
+        # Clip to [-1, 1] to cap Kalman divergence artifacts
+        drift_labels[i, 0] = np.clip(isf_signed, -1.0, 1.0)
+        drift_labels[i, 1] = np.clip(cr_signed, -1.0, 1.0)
 
     return drift_labels
 
@@ -104,6 +111,11 @@ def _generate_state_labels(drift_labels, isf_nominal, cr_nominal):
     n = drift_labels.shape[0]
     state_labels = np.zeros(n, dtype=np.int64)
     threshold = 5.0  # matches recalibrated DriftDetector default
+    # Note: drift_labels are now in fractional form (0-1), clipped to [-1,1]
+    frac_threshold = threshold / 100.0
+    # Use a higher effective threshold for state classification since
+    # Kalman filter routinely reports 5-50%+ deviations on noisy real data
+    state_threshold = 0.15  # 15% — clinically meaningful drift
 
     for i in range(n):
         isf_dev = drift_labels[i, 0]
@@ -112,11 +124,11 @@ def _generate_state_labels(drift_labels, isf_nominal, cr_nominal):
             state_labels[i] = -1  # invalid — will be masked in loss
             continue
 
-        if abs(isf_dev) < threshold and abs(cr_dev) < threshold:
+        if abs(isf_dev) < state_threshold and abs(cr_dev) < state_threshold:
             state_labels[i] = STATE_LABEL_MAP['stable']
-        elif isf_dev < -threshold:
+        elif isf_dev < -state_threshold:
             state_labels[i] = STATE_LABEL_MAP['resistance']
-        elif isf_dev > threshold:
+        elif isf_dev > state_threshold:
             state_labels[i] = STATE_LABEL_MAP['sensitivity']
         else:
             state_labels[i] = STATE_LABEL_MAP['carb_change']
@@ -149,6 +161,24 @@ def _generate_event_labels(patient_path, n_windows, window_size, stride):
     )
     if not events:
         return event_labels
+
+    # Convert event timestamps to 5-min step indices relative to grid start.
+    # extract_override_events returns events with 'timestamp' (datetime) but
+    # no 'step_index'. We need to compute step indices from the grid.
+    import pandas as pd
+    try:
+        grid_df, _ = build_nightscout_grid(patient_path, verbose=False)
+        if grid_df is not None and len(grid_df) > 0:
+            grid_start = grid_df.index[0]
+            for ev in events:
+                ts = ev.get('timestamp')
+                if ts is not None:
+                    if isinstance(ts, str):
+                        ts = pd.Timestamp(ts)
+                    delta = (ts - grid_start).total_seconds() / 300  # 5-min steps
+                    ev['step_index'] = int(round(delta))
+    except Exception:
+        pass  # fall through — events without step_index are skipped below
 
     # Build a map: 5-min step index → event type
     event_steps = {}
@@ -252,7 +282,7 @@ def build_multitask_windows(patient_paths, window_size=12,
 
         if verbose:
             n_events = int((event_labels > 0).sum())
-            n_drift = int((~np.isnan(drift_labels[:, 0])).sum() & (np.abs(drift_labels[:, 0]) > 5).sum())
+            n_drift = int(((~np.isnan(drift_labels[:, 0])) & (np.abs(drift_labels[:, 0]) > 0.05)).sum())
             print(f'  {patient_name}: {n_win} windows, {n_events} events, {n_drift} drifts')
 
     if not all_features:

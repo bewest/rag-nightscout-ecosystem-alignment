@@ -68,7 +68,7 @@ def _save_manifest(manifest):
         json.dump(manifest, f, indent=2)
 
 
-def evaluate_forecast(checkpoint_path, patients_dir, window_size=12):
+def evaluate_forecast(checkpoint_path, patients_dir, window_size=24):
     """Evaluate forecast accuracy of a checkpoint.
 
     Returns dict with mae, improvement_pct, persistence_mae.
@@ -98,10 +98,29 @@ def evaluate_forecast(checkpoint_path, patients_dir, window_size=12):
     n_features = windows[0].shape[-1]
 
     # Detect architecture from state dict
-    if any('state_proj' in k for k in state.keys()):
-        model = CGMGroupedEncoder(input_dim=n_features, d_model=64, nhead=4, num_layers=2)
+    is_grouped = any('state_proj' in k for k in state.keys())
+    has_aux = any('event_head' in k or 'drift_head' in k for k in state.keys())
+
+    # Detect num_layers from state dict
+    layer_indices = set()
+    for k in state:
+        if '.layers.' in k:
+            parts = k.split('.')
+            for i, p in enumerate(parts):
+                if p == 'layers':
+                    layer_indices.add(int(parts[i + 1]))
+                    break
+    num_layers = max(layer_indices) + 1 if layer_indices else 2
+
+    aux_config = None
+    if has_aux:
+        aux_config = {'n_event_classes': 9, 'n_drift_outputs': 2, 'n_states': 4}
+
+    if is_grouped:
+        model = CGMGroupedEncoder(input_dim=n_features, d_model=64, nhead=4,
+                                  num_layers=num_layers, aux_config=aux_config)
     else:
-        model = CGMTransformerAE(input_dim=n_features, d_model=64, nhead=4, num_layers=2)
+        model = CGMTransformerAE(input_dim=n_features, d_model=64, nhead=4, num_layers=num_layers)
 
     try:
         model.load_state_dict(state, strict=False)

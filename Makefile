@@ -408,6 +408,33 @@ sweep-uva-250: ## Generate 250 virtual patients with wide parameter ranges (UVA/
 		--output-dir externals/sweep-uva-250
 	@echo "Sweep data written to externals/sweep-uva-250/"
 
+# ── Gen-2 Multi-Task Training Targets ────────────────────────────────
+
+train-gen2-pretrain: ## Stage 1: Pre-train 16-feature GroupedEncoder on synthetic data (forecast-only)
+	@echo "Gen-2 Stage 1: Synthetic pre-training (16-feat, forecast-only)..."
+	python3 -m tools.cgmencode.train --model grouped --epochs 50 --batch 64 \
+		--window 24 --patience 15 --lr 1e-3 \
+		--source conformance --data externals/sweep-uva-250 \
+		--output checkpoints/gen2_pretrain.pth
+	@echo "Stage 1 checkpoint: checkpoints/gen2_pretrain.pth"
+
+train-gen2-finetune: ## Stage 2: Multi-task fine-tune on real patient data (all 4 heads)
+	@echo "Gen-2 Stage 2: Multi-task fine-tuning on real data..."
+	python3 -m tools.cgmencode.train --model grouped --multitask \
+		--epochs 50 --batch 32 --lr 3e-4 --patience 15 --window 24 \
+		--patients-dir externals/ns-data/patients \
+		--pretrained checkpoints/gen2_pretrain.pth \
+		--output checkpoints/gen2_multitask.pth
+	@echo "Stage 2 checkpoint: checkpoints/gen2_multitask.pth"
+
+train-gen2: train-gen2-pretrain train-gen2-finetune ## Full Gen-2 training pipeline (Stage 1 + Stage 2)
+
+eval-gen2: ## Evaluate Gen-2 model on all 4 validation suites
+	@echo "Evaluating Gen-2 model on verification data..."
+	python3 -m tools.cgmencode.run_experiment gen2-eval \
+		--patients-dir externals/ns-data/patients
+	@echo "Results in externals/experiments/exp_gen2_eval.json"
+
 score-in-silico: ## Score algorithms against SIM-* vectors
 	@echo "Scoring algorithms against in-silico vectors..."
 	@node $(INSIL_DIR)/score-in-silico.js

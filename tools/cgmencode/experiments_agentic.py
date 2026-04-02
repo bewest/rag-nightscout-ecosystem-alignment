@@ -73,7 +73,27 @@ class _NumpyEncoder(_json_mod.JSONEncoder):
             return float(obj)
         if isinstance(obj, _np.ndarray):
             return obj.tolist()
-        return super().default(obj)
+        # Skip non-serializable objects (e.g. sklearn classifiers)
+        try:
+            return super().default(obj)
+        except TypeError:
+            return f"<{type(obj).__name__}>"
+
+
+def _sanitize_for_json(obj):
+    """Recursively convert numpy types in keys and values for JSON safety."""
+    import numpy as _np
+    if isinstance(obj, dict):
+        return {str(k) if isinstance(k, _np.integer) else k: _sanitize_for_json(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_sanitize_for_json(v) for v in obj]
+    if isinstance(obj, _np.integer):
+        return int(obj)
+    if isinstance(obj, _np.floating):
+        return float(obj)
+    if isinstance(obj, _np.ndarray):
+        return obj.tolist()
+    return obj
 
 import json  # standard import used by most experiments
 
@@ -4758,8 +4778,8 @@ def run_gen2_eval(args):
 
     out_path = 'externals/experiments/exp152_gen2_eval.json'
     with open(out_path, 'w') as f:
-        json.dump({'experiment': 'EXP-152', 'name': 'gen2-eval',
-                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+        json.dump(_sanitize_for_json({'experiment': 'EXP-152', 'name': 'gen2-eval',
+                   'results': results}), f, indent=2, cls=_NumpyEncoder)
     print(f'  Results -> {out_path}')
     return results
 

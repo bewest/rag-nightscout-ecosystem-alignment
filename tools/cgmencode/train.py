@@ -340,6 +340,13 @@ def main():
     parser.add_argument('--lr-patience', type=int, default=5,
                         help='ReduceLROnPlateau patience')
 
+    # Gen-2 multi-task training
+    parser.add_argument('--multitask', action='store_true',
+                        help='Enable multi-task training (forecast + event + drift + state). '
+                             'Requires --source nightscout or --patients-dir.')
+    parser.add_argument('--task-weights', type=str, default=None,
+                        help='JSON dict of task weights, e.g. \'{"forecast":1.0,"event":0.3}\'')
+
     args = parser.parse_args()
 
     # Expand --patients-dir into --data-path list
@@ -358,7 +365,95 @@ def main():
         args.source = 'nightscout'
         print(f"Auto-detected {len(patient_paths)} patients from {args.patients_dir}")
 
-    run_training(args)
+    if args.multitask:
+        run_multitask_training(args)
+    else:
+        run_training(args)
+
+
+def run_multitask_training(args):
+    """Gen-2 multi-task training: all 4 objectives on real patient data."""
+    from .generate_aux_labels import (
+        build_multitask_dataset, N_EVENT_CLASSES, N_STATE_CLASSES,
+    )
+    from .experiment_lib import train_multitask, DEFAULT_TASK_WEIGHTS
+
+    print(f"=== cgmencode Gen-2 multi-task training ===")
+
+    device = resolve_device(args.device)
+    print(f"Device: {device}")
+
+    patients_dir = args.patients_dir
+    if not patients_dir and args.data_path:
+        # Infer patients_dir from data paths
+        patients_dir = str(Path(args.data_path[0]).parent.parent)
+
+    if not patients_dir:
+        print("ERROR: --patients-dir or --data-path required for multi-task training")
+        sys.exit(1)
+
+    print(f"Building multi-task dataset from {patients_dir}...")
+    train_ds, val_ds, meta = build_multitask_dataset(
+        patients_dir, window_size=args.window, verbose=True,
+    )
+    print(f"Data: {len(train_ds)} train, {len(val_ds)} val windows")
+    print(f"  Patients: {meta.get('n_patients', '?')}, "
+          f"Events: {meta.get('event_counts', '?')}")
+
+    input_dim = meta.get('n_features', 16)
+    aux_config = {
+        'n_event_classes': N_EVENT_CLASSES,
+        'n_drift_outputs': 2,
+        'n_states': N_STATE_CLASSES,
+    }
+
+    model = CGMGroupedEncoder(
+        input_dim=input_dim, d_model=64, nhead=4, num_layers=3,
+        aux_config=aux_config,
+    )
+    model.to(device)
+    param_count = sum(p.numel() for p in model.parameters())
+    print(f"Model: grouped+multitask ({param_count:,} params, "
+          f"input_dim={input_dim}, aux={list(aux_config.keys())})")
+
+    # Transfer learning
+    if args.pretrained:
+        print(f"Loading pretrained weights from {args.pretrained}")
+        checkpoint = torch.load(args.pretrained, map_location=device, weights_only=True)
+        state = checkpoint.get('model_state', checkpoint)
+        model.load_state_dict(state, strict=False)
+        print(f"  Loaded (strict=False, aux heads initialized fresh)")
+
+    # Task weights
+    task_weights = DEFAULT_TASK_WEIGHTS.copy()
+    if args.task_weights:
+        task_weights.update(json.loads(args.task_weights))
+    print(f"Task weights: {task_weights}")
+
+    save_path = args.output or 'checkpoints/gen2_multitask.pth'
+    best_val, epochs_run, history = train_multitask(
+        model, train_ds, val_ds, save_path,
+        label='gen2-multitask',
+        lr=args.lr, epochs=args.epochs, batch=args.batch,
+        patience=args.patience if args.patience > 0 else 15,
+        weight_decay=args.weight_decay, lr_patience=args.lr_patience,
+        task_weights=task_weights,
+    )
+
+    print(f"\nGen-2 training complete.")
+    print(f"  Best val loss: {best_val:.6f}")
+    print(f"  Epochs run:    {epochs_run}/{args.epochs}")
+    print(f"  Checkpoint:    {save_path}")
+
+    # Save history
+    hist_path = save_path.replace('.pth', '_history.json')
+    os.makedirs(os.path.dirname(hist_path) or '.', exist_ok=True)
+    with open(hist_path, 'w') as f:
+        json.dump({'history': history, 'meta': meta, 'task_weights': task_weights},
+                  f, indent=2, default=str)
+    print(f"  History:       {hist_path}")
+
+    return history
 
 
 if __name__ == '__main__':

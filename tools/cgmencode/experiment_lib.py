@@ -303,6 +303,9 @@ def forecast_mse(model, val_ds, batch_size=64, mask_future=True):
             x_input = x
         with torch.no_grad():
             pred = model(x_input, causal=True)
+        # Handle multi-task models that return a dict
+        if isinstance(pred, dict):
+            pred = pred['forecast']
         losses.append(crit(pred[:, half:, :1], x[:, half:, :1]).item())
     return float(np.mean(losses))
 
