@@ -1,0 +1,33 @@
+{
+  "experiment": "EXP-104",
+  "name": "confidence-gated",
+  "results": {
+    "threshold_sweep": [
+      {
+        "threshold": 0.3,
+        "plans": 2200,
+        "precision": 0.978
+      },
+      {
+        "threshold": 0.5,
+        "plans": 2176,
+        "precision": 0.98
+      },
+      {
+        "threshold": 0.7,
+        "plans": 2158,
+        "precision": 0.981
+      },
+      {
+        "threshold": 0.8,
+        "plans": 2141,
+        "precision": 0.981
+      },
+      {
+        "threshold": 0.9,
+        "plans": 2109,
+        "precision": 0.984
+      }
+    ]
+  }
+}

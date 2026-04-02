@@ -1,0 +1,20 @@
+{
+  "experiment": "EXP-105",
+  "name": "hypo-augmented",
+  "results": {
+    "augmented": {
+      "mae": 13.2,
+      "hypo_prec": 0.763,
+      "hypo_rec": 0.68,
+      "hypo_f1": 0.719
+    },
+    "baseline": {
+      "mae": 13.1,
+      "hypo_prec": 0.896,
+      "hypo_rec": 0.483,
+      "hypo_f1": 0.628
+    },
+    "hypo_windows": 2277,
+    "augmented_total": 32768
+  }
+}

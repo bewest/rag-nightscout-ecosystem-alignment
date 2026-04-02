@@ -1,0 +1,24 @@
+{
+  "experiment": "EXP-106",
+  "name": "conformal-2hr",
+  "results": {
+    "mae_2hr": 16.6,
+    "conformal": {
+      "80": {
+        "coverage": 0.797,
+        "width_mgdl": 51.9,
+        "q_hat_mean": 25.9
+      },
+      "90": {
+        "coverage": 0.906,
+        "width_mgdl": 81.2,
+        "q_hat_mean": 40.6
+      },
+      "95": {
+        "coverage": 0.954,
+        "width_mgdl": 110.6,
+        "q_hat_mean": 55.3
+      }
+    }
+  }
+}

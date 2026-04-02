@@ -1,0 +1,24 @@
+{
+  "experiment": "EXP-108",
+  "name": "dropout-ensemble",
+  "results": {
+    "mae_mgdl": 13.5,
+    "mean_std_mgdl": 5.4,
+    "n_mc_passes": 20,
+    "dropout_rate": 0.3,
+    "coverages": {
+      "68": {
+        "coverage": 0.303,
+        "width": 10.8
+      },
+      "95": {
+        "coverage": 0.536,
+        "width": 21.2
+      },
+      "99": {
+        "coverage": 0.649,
+        "width": 27.9
+      }
+    }
+  }
+}

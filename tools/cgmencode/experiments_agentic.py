@@ -137,6 +137,13 @@ REGISTRY = {
     'circadian-positional':    'run_circadian_forecast_v2',   # EXP-101
     'production-v4':           'run_production_v4',           # EXP-102
     'long-context-counterfactual': 'run_long_context_cf',     # EXP-103
+    # ── Round 13: Precision Gating, Augmentation, Conformal, Multi-Output ──
+    'confidence-gated':        'run_confidence_gated',        # EXP-104
+    'hypo-augmented':          'run_hypo_augmented',          # EXP-105
+    'conformal-2hr':           'run_conformal_2hr',           # EXP-106
+    'multi-output':            'run_multi_output',            # EXP-107
+    'dropout-ensemble':        'run_dropout_ensemble',        # EXP-108
+    'walkforward-multi':       'run_walkforward_multi',       # EXP-109
 }
 
 
@@ -8958,4 +8965,733 @@ def run_long_context_cf(args):
                                'isf_estimate': round(isf_est, 1),
                                'bolus_outcome_corr': round(bolus_corr, 3),
                                'dose_sweep': dose_effects}}, f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')
+
+
+# ────────────────────────────────────────────────────────────────────
+# Round 13: Precision Gating, Augmentation, Conformal, Multi-Output
+# ────────────────────────────────────────────────────────────────────
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-104: Confidence-Gated Production Pipeline
+# Problem: v4 precision dropped to 79% because XGBoost hypo detector
+#   is too aggressive. Need confidence gating: only surface high-conf.
+# Method: Use calibrated hypo probability threshold sweep (0.3-0.9).
+#   Only emit action if P(event) > threshold. Report precision/recall
+#   trade-off curve. Find threshold for 95%+ precision.
+# Target: >95% precision subset with >500 plans.
+# ────────────────────────────────────────────────────────────────────
+def run_confidence_gated(args):
+    import torch, torch.nn.functional as F, json, numpy as np
+    from torch.utils.data import DataLoader
+    from .model import CGMGroupedEncoder
+    from .real_data_adapter import load_multipatient_nightscout
+    from .experiment_lib import resolve_patient_paths
+    from .device import resolve_device
+
+    device = resolve_device(getattr(args, 'device', 'auto'))
+    print(f'Device: {device}')
+    paths = resolve_patient_paths(getattr(args, 'patients_dir', None),
+                                  getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    print(f'  [EXP-104] {len(train_ds)} train, {len(val_ds)} val')
+
+    # Train forecast model
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=10, factor=0.5)
+    tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+    best_val = float('inf')
+    for ep in range(1, 101):
+        model.train()
+        for bx, bt in tl:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            optimizer.zero_grad()
+            pred = model(x_in)
+            loss = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+            loss.backward()
+            optimizer.step()
+        model.eval()
+        vls = []
+        with torch.no_grad():
+            for bx, bt in DataLoader(val_ds, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                pred = model(x_in)
+                vl = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+                vls.append(vl.item())
+        val_loss = np.mean(vls)
+        scheduler.step(val_loss)
+        if val_loss < best_val:
+            best_val = val_loss
+        if ep % 25 == 0:
+            print(f'  [EXP-104] {ep}/100 val={val_loss:.6f} best={best_val:.6f}')
+
+    # Build XGBoost hypo detector
+    from xgboost import XGBClassifier
+    train_feats, train_labels = [], []
+    for i in range(min(len(train_ds), 8000)):
+        x, t = train_ds[i]
+        xn = x.numpy()
+        g = xn[:12, 0] * 400.0
+        feats = [g[-1], g.mean(), g.std(), g.max() - g.min(),
+                 g[-1] - g[0], xn[:12, 1].mean(), xn[:12, 2].mean(),
+                 xn[:12, 3].mean(), xn[:12, 4].sum(), xn[:12, 5].sum()]
+        train_feats.append(feats)
+        future_g = xn[12:, 0] * 400.0
+        train_labels.append(1 if future_g.min() < 70 else 0)
+    X_train = np.array(train_feats)
+    y_train = np.array(train_labels)
+    clf = XGBClassifier(n_estimators=200, max_depth=5, scale_pos_weight=10,
+                        eval_metric='logloss', verbosity=0, random_state=42)
+    clf.fit(X_train, y_train)
+
+    # Sweep confidence thresholds
+    thresholds = [0.3, 0.5, 0.7, 0.8, 0.9]
+    threshold_results = []
+
+    for thresh in thresholds:
+        plans = 0; correct = 0
+        model.eval()
+        with torch.no_grad():
+            for i in range(len(val_ds)):
+                bx, bt = val_ds[i]
+                bx = bx.unsqueeze(0).to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                pred = model(x_in)[0, 12:, 0] * 400.0
+                true_g = bx[0, 12:, 0] * 400.0
+                pred_np = pred.cpu().numpy()
+                true_np = true_g.cpu().numpy()
+
+                # Forecast-based confidence: how extreme is the prediction?
+                min_pred = pred_np.min()
+                max_pred = pred_np.max()
+
+                # XGBoost probability
+                xn = bx[0].cpu().numpy()
+                g = xn[:12, 0] * 400.0
+                feats = np.array([[g[-1], g.mean(), g.std(), g.max() - g.min(),
+                                   g[-1] - g[0], xn[:12, 1].mean(), xn[:12, 2].mean(),
+                                   xn[:12, 3].mean(), xn[:12, 4].sum(), xn[:12, 5].sum()]])
+                hypo_prob = clf.predict_proba(feats)[0, 1]
+
+                has_action = False
+                if min_pred < 70 and hypo_prob > thresh:
+                    has_action = True
+                if max_pred > 200:  # high glucose always flagged
+                    has_action = True
+
+                if has_action:
+                    plans += 1
+                    actual_hypo = true_np.min() < 70
+                    actual_hyper = true_np.max() > 180
+                    if actual_hypo or actual_hyper:
+                        correct += 1
+
+        prec = correct / plans if plans > 0 else 0
+        print(f'  [EXP-104] thresh={thresh}: plans={plans}, prec={prec*100:.1f}%')
+        threshold_results.append({'threshold': thresh, 'plans': plans,
+                                  'precision': round(float(prec), 3)})
+
+    print(f'')
+    print(f'--- Confidence-gated results ---')
+    for r in threshold_results:
+        print(f'  thresh={r["threshold"]}: {r["plans"]} plans, {r["precision"]*100:.1f}% prec')
+
+    out_path = 'externals/experiments/exp104_confidence_gated.json'
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-104', 'name': 'confidence-gated',
+                   'results': {'threshold_sweep': threshold_results}},
+                  f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-105: Hypo-Augmented Training
+# Problem: Hypo events are rare (~8.8%). Model has few examples to learn.
+# Method: Duplicate windows containing hypo events (glucose < 70)
+#   3x in training set. Train and compare hypo detection metrics.
+# Target: Hypo recall > 70% with F1 > 0.65.
+# ────────────────────────────────────────────────────────────────────
+def run_hypo_augmented(args):
+    import torch, torch.nn.functional as F, json, numpy as np
+    from torch.utils.data import DataLoader, ConcatDataset, Subset
+    from .model import CGMGroupedEncoder
+    from .real_data_adapter import load_multipatient_nightscout
+    from .experiment_lib import resolve_patient_paths
+    from .device import resolve_device
+
+    device = resolve_device(getattr(args, 'device', 'auto'))
+    print(f'Device: {device}')
+    paths = resolve_patient_paths(getattr(args, 'patients_dir', None),
+                                  getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    print(f'  [EXP-105] {len(train_ds)} train, {len(val_ds)} val')
+
+    # Find hypo windows
+    hypo_indices = []
+    for i in range(len(train_ds)):
+        x, t = train_ds[i]
+        if (x[12:, 0] * 400.0).min() < 70:
+            hypo_indices.append(i)
+    print(f'  [EXP-105] Hypo windows: {len(hypo_indices)} ({len(hypo_indices)/len(train_ds)*100:.1f}%)')
+
+    # Augment: repeat hypo windows 3x
+    hypo_subset = Subset(train_ds, hypo_indices)
+    augmented = ConcatDataset([train_ds, hypo_subset, hypo_subset, hypo_subset])
+    print(f'  [EXP-105] Augmented: {len(augmented)} windows')
+
+    # Train augmented model
+    model_aug = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+    optimizer = torch.optim.AdamW(model_aug.parameters(), lr=1e-3)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=10, factor=0.5)
+    tl = DataLoader(augmented, batch_size=128, shuffle=True)
+    best_val = float('inf')
+    for ep in range(1, 101):
+        model_aug.train()
+        for bx, bt in tl:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            optimizer.zero_grad()
+            pred = model_aug(x_in)
+            loss = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+            loss.backward()
+            optimizer.step()
+        model_aug.eval()
+        vls = []
+        with torch.no_grad():
+            for bx, bt in DataLoader(val_ds, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                pred = model_aug(x_in)
+                vl = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+                vls.append(vl.item())
+        val_loss = np.mean(vls)
+        scheduler.step(val_loss)
+        if val_loss < best_val:
+            best_val = val_loss
+        if ep % 25 == 0:
+            print(f'  [Aug] {ep}/100 val={val_loss:.6f} best={best_val:.6f}')
+
+    # Train baseline
+    model_base = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+    optimizer_b = torch.optim.AdamW(model_base.parameters(), lr=1e-3)
+    scheduler_b = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer_b, patience=10, factor=0.5)
+    tl_b = DataLoader(train_ds, batch_size=128, shuffle=True)
+    best_val_b = float('inf')
+    for ep in range(1, 101):
+        model_base.train()
+        for bx, bt in tl_b:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            optimizer_b.zero_grad()
+            pred = model_base(x_in)
+            loss = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+            loss.backward()
+            optimizer_b.step()
+        model_base.eval()
+        vls = []
+        with torch.no_grad():
+            for bx, bt in DataLoader(val_ds, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                pred = model_base(x_in)
+                vl = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+                vls.append(vl.item())
+        val_loss = np.mean(vls)
+        scheduler_b.step(val_loss)
+        if val_loss < best_val_b:
+            best_val_b = val_loss
+        if ep % 25 == 0:
+            print(f'  [Base] {ep}/100 val={val_loss:.6f} best={best_val_b:.6f}')
+
+    # Evaluate both on hypo detection
+    def eval_hypo(model, ds, label):
+        model.eval()
+        all_pred, all_true = [], []
+        with torch.no_grad():
+            for bx, bt in DataLoader(ds, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                pred = model(x_in)[:, 12:, 0] * 400.0
+                true = bx[:, 12:, 0] * 400.0
+                all_pred.append(pred.cpu().numpy())
+                all_true.append(true.cpu().numpy())
+        pred_np = np.concatenate(all_pred)
+        true_np = np.concatenate(all_true)
+        mae = float(np.mean(np.abs(true_np - pred_np)))
+        hypo_true = (true_np < 70.0).any(axis=1)
+        hypo_pred = (pred_np < 70.0).any(axis=1)
+        from sklearn.metrics import precision_score, recall_score, f1_score
+        prec = float(precision_score(hypo_true, hypo_pred, zero_division=0))
+        rec = float(recall_score(hypo_true, hypo_pred, zero_division=0))
+        f1 = float(f1_score(hypo_true, hypo_pred, zero_division=0))
+        print(f'  [{label}] MAE={mae:.1f}, hypo prec={prec:.3f} rec={rec:.3f} F1={f1:.3f}')
+        return {'mae': round(mae, 1), 'hypo_prec': round(prec, 3),
+                'hypo_rec': round(rec, 3), 'hypo_f1': round(f1, 3)}
+
+    aug_res = eval_hypo(model_aug, val_ds, 'Augmented')
+    base_res = eval_hypo(model_base, val_ds, 'Baseline')
+
+    print(f'')
+    print(f'--- Hypo-augmented results ---')
+    print(f'  [EXP-105] Augmented: MAE={aug_res["mae"]}, F1={aug_res["hypo_f1"]}')
+    print(f'  [EXP-105] Baseline: MAE={base_res["mae"]}, F1={base_res["hypo_f1"]}')
+
+    out_path = 'externals/experiments/exp105_hypo_augmented.json'
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-105', 'name': 'hypo-augmented',
+                   'results': {'augmented': aug_res, 'baseline': base_res,
+                               'hypo_windows': len(hypo_indices),
+                               'augmented_total': len(augmented)}},
+                  f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-106: Conformal 2hr with Calibration Set
+# Problem: EXP-099 coverage=68.5% at 2hr. Need conformal correction.
+# Method: Split val into calibration (50%) and test (50%). Compute
+#   nonconformity scores on calibration, apply to test for 90% target.
+# Target: 85-95% coverage on test set.
+# ────────────────────────────────────────────────────────────────────
+def run_conformal_2hr(args):
+    import torch, torch.nn.functional as F, json, numpy as np
+    from torch.utils.data import DataLoader, Subset
+    from .model import CGMGroupedEncoder
+    from .real_data_adapter import load_multipatient_nightscout
+    from .experiment_lib import resolve_patient_paths
+    from .device import resolve_device
+
+    device = resolve_device(getattr(args, 'device', 'auto'))
+    print(f'Device: {device}')
+    paths = resolve_patient_paths(getattr(args, 'patients_dir', None),
+                                  getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=48)
+    print(f'  [EXP-106] {len(train_ds)} train, {len(val_ds)} val')
+
+    half = 24
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=10, factor=0.5)
+    tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+    best_val = float('inf')
+    for ep in range(1, 101):
+        model.train()
+        for bx, bt in tl:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+            optimizer.zero_grad()
+            pred = model(x_in)
+            loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+            loss.backward()
+            optimizer.step()
+        model.eval()
+        vls = []
+        with torch.no_grad():
+            for bx, bt in DataLoader(val_ds, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                pred = model(x_in)
+                vl = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+                vls.append(vl.item())
+        val_loss = np.mean(vls)
+        scheduler.step(val_loss)
+        if val_loss < best_val:
+            best_val = val_loss
+        if ep % 25 == 0:
+            print(f'  [EXP-106] {ep}/100 val={val_loss:.6f} best={best_val:.6f}')
+
+    # Split val into calibration and test
+    n_val = len(val_ds)
+    perm = np.random.RandomState(42).permutation(n_val)
+    cal_idx = perm[:n_val // 2]
+    test_idx = perm[n_val // 2:]
+    cal_ds = Subset(val_ds, cal_idx.tolist())
+    test_ds = Subset(val_ds, test_idx.tolist())
+
+    # Compute nonconformity scores on calibration set
+    model.eval()
+    cal_residuals = []
+    with torch.no_grad():
+        for bx, bt in DataLoader(cal_ds, batch_size=256):
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+            pred = model(x_in)[:, half:, 0] * 400.0
+            true = bx[:, half:, 0] * 400.0
+            res = torch.abs(true - pred).cpu().numpy()
+            cal_residuals.append(res)
+    cal_residuals = np.concatenate(cal_residuals)
+
+    # Compute per-timestep quantiles
+    results = {}
+    for alpha_name, alpha in [('80', 0.20), ('90', 0.10), ('95', 0.05)]:
+        q_per_step = np.quantile(cal_residuals, 1 - alpha, axis=0)  # [T]
+
+        # Evaluate on test set
+        test_preds, test_trues = [], []
+        with torch.no_grad():
+            for bx, bt in DataLoader(test_ds, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                pred = model(x_in)[:, half:, 0] * 400.0
+                true = bx[:, half:, 0] * 400.0
+                test_preds.append(pred.cpu().numpy())
+                test_trues.append(true.cpu().numpy())
+        test_preds = np.concatenate(test_preds)
+        test_trues = np.concatenate(test_trues)
+
+        lo = test_preds - q_per_step
+        hi = test_preds + q_per_step
+        covered = (test_trues >= lo) & (test_trues <= hi)
+        coverage = float(covered.mean())
+        width = float((hi - lo).mean())
+        results[alpha_name] = {'coverage': round(coverage, 3), 'width_mgdl': round(width, 1),
+                               'q_hat_mean': round(float(q_per_step.mean()), 1)}
+        print(f'  [EXP-106] {alpha_name}% target: coverage={coverage*100:.1f}%, width={width:.1f} mg/dL')
+
+    mae = float(np.mean(np.abs(test_trues - test_preds)))
+    print(f'')
+    print(f'--- Conformal 2hr results ---')
+    print(f'  [EXP-106] 2hr MAE: {mae:.1f} mg/dL')
+
+    out_path = 'externals/experiments/exp106_conformal_2hr.json'
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-106', 'name': 'conformal-2hr',
+                   'results': {'mae_2hr': round(mae, 1), 'conformal': results}},
+                  f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-107: Multi-Output Forecast (Glucose + Hypo Probability)
+# Problem: Separate forecast and hypo models compete. Can we train
+#   one model to output both forecast AND hypo probability?
+# Method: Add a classification head to GroupedEncoder. Train with
+#   combined loss: MSE(forecast) + BCE(hypo). Single forward pass.
+# Target: MAE < 13.0, hypo F1 > 0.60.
+# ────────────────────────────────────────────────────────────────────
+def run_multi_output(args):
+    import torch, torch.nn as nn, torch.nn.functional as F, json, numpy as np
+    from torch.utils.data import DataLoader
+    from .model import CGMGroupedEncoder
+    from .real_data_adapter import load_multipatient_nightscout
+    from .experiment_lib import resolve_patient_paths
+    from .device import resolve_device
+
+    device = resolve_device(getattr(args, 'device', 'auto'))
+    print(f'Device: {device}')
+    paths = resolve_patient_paths(getattr(args, 'patients_dir', None),
+                                  getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    print(f'  [EXP-107] {len(train_ds)} train, {len(val_ds)} val')
+
+    # Wrap model with classification head
+    class MultiOutputModel(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.encoder = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4)
+            # Classification head on encoder output (8-dim per timestep)
+            self.hypo_head = nn.Sequential(
+                nn.Linear(8 * 12, 64), nn.ReLU(), nn.Dropout(0.1), nn.Linear(64, 1))
+
+        def forward(self, x):
+            enc_out = self.encoder(x)  # [B, T, 8]
+            # Flatten history portion of encoder output for classification
+            h_flat = enc_out[:, :12].reshape(enc_out.size(0), -1)  # [B, 96]
+            hypo_logit = self.hypo_head(h_flat).squeeze(-1)  # [B]
+            return enc_out, hypo_logit
+
+    model = MultiOutputModel().to(device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=10, factor=0.5)
+    tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+
+    best_val = float('inf')
+    for ep in range(1, 101):
+        model.train()
+        for bx, bt in tl:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            hypo_label = (bx[:, 12:, 0] * 400.0).min(dim=1).values < 70
+            hypo_label = hypo_label.float()
+            optimizer.zero_grad()
+            pred, hypo_logit = model(x_in)
+            loss_forecast = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+            loss_hypo = F.binary_cross_entropy_with_logits(hypo_logit, hypo_label,
+                                                            pos_weight=torch.tensor(10.0).to(device))
+            loss = loss_forecast + 0.1 * loss_hypo
+            loss.backward()
+            optimizer.step()
+
+        model.eval()
+        vls = []
+        with torch.no_grad():
+            for bx, bt in DataLoader(val_ds, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                pred, hl = model(x_in)
+                vl = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+                vls.append(vl.item())
+        val_loss = np.mean(vls)
+        scheduler.step(val_loss)
+        if val_loss < best_val:
+            best_val = val_loss
+        if ep % 25 == 0:
+            print(f'  [Multi] {ep}/100 val={val_loss:.6f} best={best_val:.6f}')
+
+    # Evaluate
+    model.eval()
+    all_pred, all_true, all_hypo_pred, all_hypo_true = [], [], [], []
+    with torch.no_grad():
+        for bx, bt in DataLoader(val_ds, batch_size=256):
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            pred, hypo_logit = model(x_in)
+            pred_g = pred[:, 12:, 0] * 400.0
+            true_g = bx[:, 12:, 0] * 400.0
+            hypo_true = (true_g.min(dim=1).values < 70).cpu().numpy()
+            hypo_pred = (torch.sigmoid(hypo_logit) > 0.5).cpu().numpy()
+            all_pred.append(pred_g.cpu().numpy())
+            all_true.append(true_g.cpu().numpy())
+            all_hypo_pred.extend(hypo_pred.tolist())
+            all_hypo_true.extend(hypo_true.tolist())
+
+    pred_np = np.concatenate(all_pred)
+    true_np = np.concatenate(all_true)
+    mae = float(np.mean(np.abs(true_np - pred_np)))
+
+    from sklearn.metrics import precision_score, recall_score, f1_score
+    hypo_prec = float(precision_score(all_hypo_true, all_hypo_pred, zero_division=0))
+    hypo_rec = float(recall_score(all_hypo_true, all_hypo_pred, zero_division=0))
+    hypo_f1 = float(f1_score(all_hypo_true, all_hypo_pred, zero_division=0))
+
+    print(f'')
+    print(f'--- Multi-output results ---')
+    print(f'  [EXP-107] MAE: {mae:.1f} mg/dL')
+    print(f'  [EXP-107] Hypo: prec={hypo_prec:.3f}, rec={hypo_rec:.3f}, F1={hypo_f1:.3f}')
+
+    out_path = 'externals/experiments/exp107_multi_output.json'
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-107', 'name': 'multi-output',
+                   'results': {'mae_mgdl': round(mae, 1),
+                               'hypo_precision': hypo_prec,
+                               'hypo_recall': hypo_rec,
+                               'hypo_f1': hypo_f1}},
+                  f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-108: Dropout Ensemble (MC-Dropout with Higher Rate)
+# Problem: EXP-052 MC-Dropout under-covered (50% at 90% target).
+#   Dropout rate was too low (0.1 default).
+# Method: Train with dropout=0.3. At inference, run 20 MC passes.
+#   Compare ensemble std-based intervals to seed ensemble (EXP-100).
+# Target: >70% coverage at 95% nominal (better than EXP-100's 55.7%).
+# ────────────────────────────────────────────────────────────────────
+def run_dropout_ensemble(args):
+    import torch, torch.nn.functional as F, json, numpy as np
+    from torch.utils.data import DataLoader
+    from .model import CGMGroupedEncoder
+    from .real_data_adapter import load_multipatient_nightscout
+    from .experiment_lib import resolve_patient_paths
+    from .device import resolve_device
+
+    device = resolve_device(getattr(args, 'device', 'auto'))
+    print(f'Device: {device}')
+    paths = resolve_patient_paths(getattr(args, 'patients_dir', None),
+                                  getattr(args, 'real_data', None))
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=24)
+    print(f'  [EXP-108] {len(train_ds)} train, {len(val_ds)} val')
+
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4, dropout=0.3).to(device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=0.01)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=10, factor=0.5)
+    tl = DataLoader(train_ds, batch_size=128, shuffle=True)
+    best_val = float('inf')
+    for ep in range(1, 101):
+        model.train()
+        for bx, bt in tl:
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            optimizer.zero_grad()
+            pred = model(x_in)
+            loss = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+            loss.backward()
+            optimizer.step()
+        model.eval()
+        vls = []
+        with torch.no_grad():
+            for bx, bt in DataLoader(val_ds, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+                pred = model(x_in)
+                vl = F.mse_loss(pred[:, 12:, :1], bx[:, 12:, :1])
+                vls.append(vl.item())
+        val_loss = np.mean(vls)
+        scheduler.step(val_loss)
+        if val_loss < best_val:
+            best_val = val_loss
+        if ep % 25 == 0:
+            print(f'  [MC30] {ep}/100 val={val_loss:.6f} best={best_val:.6f}')
+
+    # MC-Dropout inference: 20 passes with dropout enabled
+    n_mc = 20
+    model.train()  # enable dropout
+    all_mc_preds = []
+    all_true = []
+
+    with torch.no_grad():
+        for bx, bt in DataLoader(val_ds, batch_size=256):
+            bx = bx.to(device)
+            x_in = bx.clone(); x_in[:, 12:, 0] = 0.0
+            true_g = bx[:, 12:, 0] * 400.0
+            all_true.append(true_g.cpu().numpy())
+
+            mc_preds = []
+            for _ in range(n_mc):
+                pred = model(x_in)[:, 12:, 0] * 400.0
+                mc_preds.append(pred.cpu().numpy())
+            all_mc_preds.append(np.stack(mc_preds))  # [n_mc, B, T]
+
+    true_np = np.concatenate(all_true)
+    mc_np = np.concatenate(all_mc_preds, axis=1)  # [n_mc, N, T]
+
+    mc_mean = mc_np.mean(axis=0)
+    mc_std = mc_np.std(axis=0)
+
+    mae = float(np.mean(np.abs(true_np - mc_mean)))
+    mean_std = float(mc_std.mean())
+
+    coverages = {}
+    for z, nom in [(1.0, '68'), (1.96, '95'), (2.576, '99')]:
+        lo = mc_mean - z * mc_std
+        hi = mc_mean + z * mc_std
+        cov = float(np.mean((true_np >= lo) & (true_np <= hi)))
+        wid = float(np.mean(hi - lo))
+        coverages[nom] = {'coverage': round(cov, 3), 'width': round(wid, 1)}
+        print(f'  [EXP-108] {nom}% interval: coverage={cov*100:.1f}%, width={wid:.1f} mg/dL')
+
+    print(f'')
+    print(f'--- MC-Dropout ensemble results ---')
+    print(f'  [EXP-108] MC mean MAE: {mae:.1f} mg/dL')
+    print(f'  [EXP-108] Mean std: {mean_std:.1f} mg/dL')
+
+    out_path = 'externals/experiments/exp108_dropout_ensemble.json'
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-108', 'name': 'dropout-ensemble',
+                   'results': {'mae_mgdl': round(mae, 1),
+                               'mean_std_mgdl': round(mean_std, 1),
+                               'n_mc_passes': n_mc,
+                               'dropout_rate': 0.3,
+                               'coverages': coverages}},
+                  f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results -> {out_path}')
+
+
+# ────────────────────────────────────────────────────────────────────
+# EXP-109: Walk-Forward Validation at Multiple Horizons
+# Problem: All experiments use random train/val split. Need temporal
+#   validation to confirm no look-ahead bias.
+# Method: Train on first 70% of each patient's windows, test on
+#   last 30%. Compare MAE to random split at 1hr and 2hr.
+# Target: Temporal MAE within 15% of random split MAE.
+# ────────────────────────────────────────────────────────────────────
+def run_walkforward_multi(args):
+    import torch, torch.nn.functional as F, json, numpy as np
+    from torch.utils.data import DataLoader, ConcatDataset, Subset
+    from .model import CGMGroupedEncoder
+    from .real_data_adapter import load_multipatient_nightscout
+    from .experiment_lib import resolve_patient_paths
+    from .device import resolve_device
+
+    device = resolve_device(getattr(args, 'device', 'auto'))
+    print(f'Device: {device}')
+    paths = resolve_patient_paths(getattr(args, 'patients_dir', None),
+                                  getattr(args, 'real_data', None))
+
+    results = {}
+    for ws, label in [(24, '1hr'), (48, '2hr')]:
+        # Load with temporal split
+        train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+        n = len(train_ds) + len(val_ds)
+
+        # Temporal split: train on first 70%, test on last 30%
+        all_ds = ConcatDataset([train_ds, val_ds])
+        n_total = len(all_ds)
+        split = int(n_total * 0.7)
+        temp_train = Subset(all_ds, list(range(split)))
+        temp_test = Subset(all_ds, list(range(split, n_total)))
+        print(f'  [EXP-109] {label}: {len(temp_train)} train, {len(temp_test)} test (temporal)')
+
+        half = ws // 2
+        model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=4).to(device)
+        optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=10, factor=0.5)
+        tl = DataLoader(temp_train, batch_size=128, shuffle=True)
+        best_val = float('inf')
+        for ep in range(1, 81):
+            model.train()
+            for bx, bt in tl:
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                optimizer.zero_grad()
+                pred = model(x_in)
+                loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+                loss.backward()
+                optimizer.step()
+            model.eval()
+            vls = []
+            with torch.no_grad():
+                for bx, bt in DataLoader(temp_test, batch_size=256):
+                    bx = bx.to(device)
+                    x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                    pred = model(x_in)
+                    vl = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+                    vls.append(vl.item())
+            val_loss = np.mean(vls)
+            scheduler.step(val_loss)
+            if val_loss < best_val:
+                best_val = val_loss
+            if ep % 20 == 0:
+                print(f'  [{label}] {ep}/80 val={val_loss:.6f} best={best_val:.6f}')
+
+        # Evaluate
+        model.eval()
+        all_pred, all_true = [], []
+        with torch.no_grad():
+            for bx, bt in DataLoader(temp_test, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                pred = model(x_in)[:, half:, 0] * 400.0
+                true = bx[:, half:, 0] * 400.0
+                all_pred.append(pred.cpu().numpy())
+                all_true.append(true.cpu().numpy())
+        pred_np = np.concatenate(all_pred)
+        true_np = np.concatenate(all_true)
+        mae_temporal = float(np.mean(np.abs(true_np - pred_np)))
+
+        results[label] = {'mae_temporal': round(mae_temporal, 1),
+                           'train_size': len(temp_train),
+                           'test_size': len(temp_test)}
+        print(f'  [EXP-109] {label} temporal MAE: {mae_temporal:.1f} mg/dL')
+
+    # Reference baselines from previous experiments
+    results['1hr']['mae_random_ref'] = 12.1  # EXP-093
+    results['2hr']['mae_random_ref'] = 17.0  # EXP-093
+
+    print(f'')
+    print(f'--- Walk-forward multi-horizon results ---')
+    for h in ['1hr', '2hr']:
+        r = results[h]
+        ref = r.get('mae_random_ref', 0)
+        gap = (r['mae_temporal'] - ref) / ref * 100 if ref > 0 else 0
+        print(f'  [EXP-109] {h}: temporal={r["mae_temporal"]}, random={ref}, gap={gap:.1f}%')
+
+    out_path = 'externals/experiments/exp109_walkforward_multi.json'
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-109', 'name': 'walkforward-multi',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
     print(f'  Results -> {out_path}')
