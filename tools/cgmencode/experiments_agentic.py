@@ -13542,3 +13542,676 @@ REGISTRY.update({
     'drift-adaptive-ensemble-online':  'run_drift_adaptive_ensemble',     # EXP-207
     'production-v12-integrated':       'run_production_v12_integrated',   # EXP-208
 })
+
+
+# =============================================================================
+# Phase 12: Combining Winners + Novel Approaches (EXP-209 to EXP-213)
+# =============================================================================
+
+def run_per_patient_temporal_combined(args):
+    """EXP-209: Combine per-patient normalization (EXP-205) with temporal features (EXP-202).
+    
+    Hypothesis: Both per-patient z-norm (+2.5%) and temporal features (+0.82pp)
+    gave independent gains. Combining should push event F1 from 0.700 toward 0.72+.
+    """
+    import numpy as np, json, os
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from sklearn.metrics import f1_score
+    import xgboost as xgb
+
+    ctx = ExperimentContext('EXP-209', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    print("  [Stage 1] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+    if train_data is None or val_data is None:
+        print("  No data"); return {}
+
+    X_train = train_data['tabular']
+    y_train = train_data['labels']
+    X_val = val_data['tabular']
+    y_val = val_data['labels']
+    feat_names = list(train_data['feature_names'])
+
+    unique_classes = np.unique(np.concatenate([y_train, y_val]))
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map[y] for y in y_val])
+    n_classes = len(unique_classes)
+
+    # Add temporal features (from EXP-202)
+    print("  [Stage 2] Engineering temporal features...")
+    def add_temporal_features(X, fnames):
+        n = X.shape[0]
+        new_feats, new_names = [], []
+        if X.shape[1] > 1:
+            g_mean, g_std = X[:, 0], X[:, 1]
+            new_feats.append(g_std / (g_mean + 1e-10)); new_names.append('circadian_proxy')
+            new_feats.append(g_mean ** 2); new_names.append('glucose_mean_sq')
+        if X.shape[1] > 5:
+            iob = X[:, 3] if X.shape[1] > 3 else np.zeros(n)
+            new_feats.append(iob * X[:, 0]); new_names.append('iob_glucose_interaction')
+            new_feats.append(iob / (X[:, 0] + 1e-10)); new_names.append('iob_glucose_ratio')
+        if X.shape[1] > 2:
+            t1 = X[:, min(2, X.shape[1]-1)]
+            t2 = X[:, min(4, X.shape[1]-1)] if X.shape[1] > 4 else t1
+            new_feats.append(t2 - t1); new_names.append('glucose_curvature')
+            new_feats.append(np.abs(t1)); new_names.append('abs_trend')
+        if X.shape[1] >= 4:
+            new_feats.append(X[:, 1] / (X[:, 0] + 1e-10)); new_names.append('glucose_cv')
+            g_range = X[:, 3] - X[:, 2] if X.shape[1] > 3 else np.zeros(n)
+            new_feats.append(g_range / (X[:, 0] + 1e-10)); new_names.append('normalized_range')
+        if new_feats:
+            return np.column_stack([X] + new_feats), fnames + new_names
+        return X, fnames
+
+    X_train_t, feat_names_t = add_temporal_features(X_train, feat_names)
+    X_val_t, _ = add_temporal_features(X_val, feat_names)
+
+    # Global baseline with temporal features
+    print("  [Stage 3] Global baseline with temporal features...")
+    global_clf = xgb.XGBClassifier(
+        max_depth=8, n_estimators=300, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42, tree_method='hist'
+    )
+    global_clf.fit(X_train_t, y_train_m, eval_set=[(X_val_t, y_val_m)], verbose=False)
+    global_f1 = f1_score(y_val_m, global_clf.predict(X_val_t), average='weighted')
+    print(f"    Global+temporal F1={global_f1:.4f}")
+
+    # Per-patient z-normalized + temporal features
+    print("  [Stage 4] Per-patient z-normalized + temporal...")
+    train_meta = train_data.get('metadata', [])
+    val_meta = val_data.get('metadata', [])
+    train_pids, val_pids = None, None
+    if isinstance(train_meta, list) and len(train_meta) > 0 and isinstance(train_meta[0], dict):
+        train_pids = [row.get('patient', '') for row in train_meta]
+    if isinstance(val_meta, list) and len(val_meta) > 0 and isinstance(val_meta[0], dict):
+        val_pids = [row.get('patient', '') for row in val_meta]
+
+    patient_ids = sorted([chr(ord('a') + i) for i in range(10)])
+    per_patient_results = {}
+    all_preds = np.zeros_like(y_val_m)
+    all_mask = np.zeros(len(y_val_m), dtype=bool)
+
+    if train_pids and val_pids:
+        train_pids_arr = np.array(train_pids)
+        val_pids_arr = np.array(val_pids)
+
+        for pid in patient_ids:
+            tr_mask = train_pids_arr == pid
+            vl_mask = val_pids_arr == pid
+            if tr_mask.sum() < 20 or vl_mask.sum() < 5:
+                continue
+
+            X_tr_p = X_train_t[tr_mask]
+            y_tr_p = y_train_m[tr_mask]
+            X_vl_p = X_val_t[vl_mask]
+            y_vl_p = y_val_m[vl_mask]
+
+            mu = X_tr_p.mean(axis=0)
+            sigma = X_tr_p.std(axis=0) + 1e-8
+            X_tr_n = (X_tr_p - mu) / sigma
+            X_vl_n = (X_vl_p - mu) / sigma
+
+            unique_p = np.unique(np.concatenate([y_tr_p, y_vl_p]))
+            if len(unique_p) < 2:
+                continue
+            local_map = {old: new for new, old in enumerate(unique_p)}
+            local_rev = {new: old for old, new in local_map.items()}
+            y_tr_l = np.array([local_map[y] for y in y_tr_p])
+            y_vl_l = np.array([local_map[y] for y in y_vl_p])
+
+            clf_p = xgb.XGBClassifier(
+                max_depth=8, n_estimators=300, learning_rate=0.08,
+                subsample=0.8, colsample_bytree=0.8,
+                objective='multi:softprob', num_class=len(unique_p),
+                eval_metric='mlogloss', random_state=42, tree_method='hist'
+            )
+            try:
+                clf_p.fit(X_tr_n, y_tr_l, eval_set=[(X_vl_n, y_vl_l)], verbose=False)
+            except Exception:
+                clf_p.fit(X_tr_n, y_tr_l, verbose=False)
+            pred_l = clf_p.predict(X_vl_n)
+            pred_p = np.array([local_rev.get(int(p), y_vl_p[0]) for p in pred_l])
+            f1_p = f1_score(y_vl_p, pred_p, average='weighted')
+
+            global_pred_p = global_clf.predict(X_val_t[vl_mask])
+            global_f1_p = f1_score(y_vl_p, global_pred_p, average='weighted')
+
+            imp = (f1_p - global_f1_p) / (global_f1_p + 1e-10) * 100
+            per_patient_results[pid] = {
+                'combined_f1': float(f1_p), 'global_temporal_f1': float(global_f1_p),
+                'improvement_pct': float(imp),
+            }
+            print(f"    {pid}: global+temp={global_f1_p:.3f} -> combined={f1_p:.3f} ({imp:+.1f}%)")
+            all_preds[vl_mask] = pred_p
+            all_mask[vl_mask] = True
+
+    combined_f1 = f1_score(y_val_m[all_mask], all_preds[all_mask], average='weighted') if all_mask.any() else 0.0
+    mean_imp = np.mean([v['improvement_pct'] for v in per_patient_results.values()]) if per_patient_results else 0.0
+
+    print(f"\n  Combined F1={combined_f1:.4f}, mean improvement={mean_imp:+.1f}%")
+
+    results = {
+        'global_temporal_f1': float(global_f1),
+        'combined_per_patient_f1': float(combined_f1),
+        'mean_improvement_pct': float(mean_imp),
+        'per_patient': per_patient_results,
+        'comparison_exp205': 0.700,
+        'comparison_exp202': 0.687,
+    }
+    out_path = os.path.join(args.output_dir, 'exp209_per_patient_temporal.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-209', 'name': 'per-patient-temporal-combined',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+def run_class_rebalanced_xgb(args):
+    """EXP-210: Class-rebalanced XGBoost with SMOTE + cost-sensitive learning.
+    
+    Hypothesis: Minority event classes (exercise=0.3%, sleep=2.1%) drag down
+    macro F1. SMOTE oversampling + class weights should boost minority F1
+    without hurting majority.
+    """
+    import numpy as np, json, os
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from sklearn.metrics import f1_score, classification_report
+    import xgboost as xgb
+
+    ctx = ExperimentContext('EXP-210', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    print("  [Stage 1] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+    if train_data is None or val_data is None:
+        print("  No data"); return {}
+
+    X_train = train_data['tabular']
+    y_train = train_data['labels']
+    X_val = val_data['tabular']
+    y_val = val_data['labels']
+
+    unique_classes = np.unique(np.concatenate([y_train, y_val]))
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map[y] for y in y_val])
+    n_classes = len(unique_classes)
+
+    # Class distribution
+    print("  [Stage 2] Class distribution analysis...")
+    for c in range(n_classes):
+        cnt = (y_train_m == c).sum()
+        pct = cnt / len(y_train_m) * 100
+        print(f"    Class {c}: {cnt} ({pct:.1f}%)")
+
+    # Baseline
+    print("  [Stage 3] Baseline XGBoost...")
+    base_clf = xgb.XGBClassifier(
+        max_depth=8, n_estimators=300, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42, tree_method='hist'
+    )
+    base_clf.fit(X_train, y_train_m, eval_set=[(X_val, y_val_m)], verbose=False)
+    base_pred = base_clf.predict(X_val)
+    base_f1_w = f1_score(y_val_m, base_pred, average='weighted')
+    base_f1_m = f1_score(y_val_m, base_pred, average='macro')
+    print(f"    Baseline: weighted F1={base_f1_w:.4f}, macro F1={base_f1_m:.4f}")
+
+    # Cost-sensitive: compute class weights inversely proportional to frequency
+    print("  [Stage 4] Cost-sensitive XGBoost...")
+    class_counts = np.bincount(y_train_m, minlength=n_classes)
+    class_weights = len(y_train_m) / (n_classes * class_counts + 1)
+    sample_weights = np.array([class_weights[y] for y in y_train_m])
+
+    cs_clf = xgb.XGBClassifier(
+        max_depth=8, n_estimators=300, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42, tree_method='hist'
+    )
+    cs_clf.fit(X_train, y_train_m, sample_weight=sample_weights,
+               eval_set=[(X_val, y_val_m)], verbose=False)
+    cs_pred = cs_clf.predict(X_val)
+    cs_f1_w = f1_score(y_val_m, cs_pred, average='weighted')
+    cs_f1_m = f1_score(y_val_m, cs_pred, average='macro')
+    print(f"    Cost-sensitive: weighted F1={cs_f1_w:.4f}, macro F1={cs_f1_m:.4f}")
+
+    # SMOTE-like oversampling (simple random oversampling of minorities)
+    print("  [Stage 5] Oversampled XGBoost...")
+    max_count = class_counts.max()
+    X_resampled = [X_train]
+    y_resampled = [y_train_m]
+    for c in range(n_classes):
+        c_mask = y_train_m == c
+        c_count = c_mask.sum()
+        if c_count < max_count // 2:
+            oversample_n = max_count // 2 - c_count
+            indices = np.random.RandomState(42).choice(np.where(c_mask)[0], oversample_n, replace=True)
+            X_resampled.append(X_train[indices])
+            y_resampled.append(y_train_m[indices])
+    X_over = np.concatenate(X_resampled)
+    y_over = np.concatenate(y_resampled)
+    print(f"    Oversampled: {len(X_train)} -> {len(X_over)} samples")
+
+    os_clf = xgb.XGBClassifier(
+        max_depth=8, n_estimators=300, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42, tree_method='hist'
+    )
+    os_clf.fit(X_over, y_over, eval_set=[(X_val, y_val_m)], verbose=False)
+    os_pred = os_clf.predict(X_val)
+    os_f1_w = f1_score(y_val_m, os_pred, average='weighted')
+    os_f1_m = f1_score(y_val_m, os_pred, average='macro')
+    print(f"    Oversampled: weighted F1={os_f1_w:.4f}, macro F1={os_f1_m:.4f}")
+
+    # Combined: cost-sensitive + oversampling
+    print("  [Stage 6] Combined (cost-sensitive + oversampled)...")
+    cs_os_weights = np.array([class_weights[y] for y in y_over])
+    comb_clf = xgb.XGBClassifier(
+        max_depth=8, n_estimators=300, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42, tree_method='hist'
+    )
+    comb_clf.fit(X_over, y_over, sample_weight=cs_os_weights,
+                 eval_set=[(X_val, y_val_m)], verbose=False)
+    comb_pred = comb_clf.predict(X_val)
+    comb_f1_w = f1_score(y_val_m, comb_pred, average='weighted')
+    comb_f1_m = f1_score(y_val_m, comb_pred, average='macro')
+    print(f"    Combined: weighted F1={comb_f1_w:.4f}, macro F1={comb_f1_m:.4f}")
+
+    best_w = max(base_f1_w, cs_f1_w, os_f1_w, comb_f1_w)
+    best_m = max(base_f1_m, cs_f1_m, os_f1_m, comb_f1_m)
+
+    results = {
+        'baseline_weighted_f1': float(base_f1_w), 'baseline_macro_f1': float(base_f1_m),
+        'cost_sensitive_weighted_f1': float(cs_f1_w), 'cost_sensitive_macro_f1': float(cs_f1_m),
+        'oversampled_weighted_f1': float(os_f1_w), 'oversampled_macro_f1': float(os_f1_m),
+        'combined_weighted_f1': float(comb_f1_w), 'combined_macro_f1': float(comb_f1_m),
+        'best_weighted_f1': float(best_w), 'best_macro_f1': float(best_m),
+        'n_classes': n_classes,
+        'class_distribution': {str(c): int(class_counts[c]) for c in range(n_classes)},
+    }
+    out_path = os.path.join(args.output_dir, 'exp210_class_rebalanced.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-210', 'name': 'class-rebalanced-xgb',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+def run_forecast_recipe_sweep(args):
+    """EXP-211: Forecast training recipe sweep to find optimal hyperparams.
+    
+    Hypothesis: v12 underperformed v11 (18.0 vs 12.8 MAE) due to recipe
+    differences. Systematically sweep lr, weight_decay, patience to find
+    the best recipe for the d64_L3 architecture.
+    """
+    import numpy as np, json, os, torch
+    from tools.cgmencode.model import CGMGroupedEncoder
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        train_forecast, forecast_mse, persistence_mse
+    )
+
+    ctx = ExperimentContext('EXP-211', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+    batch_size = getattr(args, 'batch', 128)
+
+    print("  [Stage 1] Loading data...")
+    train_paths = resolve_patient_paths(patients_dir, real_data=True)
+    ds_train, ds_val = load_multipatient_nightscout(train_paths)
+    
+    pers = persistence_mse(ds_val, batch_size=batch_size)
+    pers_mgdl = pers**0.5 * 400
+    print(f"    Persistence MAE: {pers_mgdl:.1f} mg/dL")
+
+    # Sweep learning rate, weight decay, patience, epochs
+    print("  [Stage 2] Recipe sweep...")
+    configs = [
+        {'lr': 1e-3, 'wd': 1e-5, 'patience': 15, 'epochs': 100, 'name': 'default'},
+        {'lr': 3e-4, 'wd': 1e-4, 'patience': 30, 'epochs': 150, 'name': 'slow_wd'},
+        {'lr': 1e-3, 'wd': 1e-4, 'patience': 20, 'epochs': 150, 'name': 'fast_wd'},
+        {'lr': 5e-4, 'wd': 5e-5, 'patience': 25, 'epochs': 150, 'name': 'mid'},
+        {'lr': 3e-4, 'wd': 1e-5, 'patience': 30, 'epochs': 200, 'name': 'slow_long'},
+        {'lr': 1e-3, 'wd': 0, 'patience': 15, 'epochs': 100, 'name': 'nowd'},
+    ]
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    sweep_results = {}
+
+    for cfg in configs:
+        print(f"    {cfg['name']}: lr={cfg['lr']}, wd={cfg['wd']}, pat={cfg['patience']}, ep={cfg['epochs']}")
+        model = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3).to(device)
+        save_p = os.path.join(args.output_dir, f"exp211_{cfg['name']}.pth")
+        
+        try:
+            train_forecast(model, ds_train, ds_val, save_path=save_p,
+                         label=cfg['name'], lr=cfg['lr'], epochs=cfg['epochs'],
+                         batch=batch_size, patience=cfg['patience'],
+                         weight_decay=cfg['wd'])
+            mse = forecast_mse(model, ds_val, batch_size=batch_size)
+            mae = mse**0.5 * 400
+            print(f"      MAE={mae:.1f} mg/dL")
+            sweep_results[cfg['name']] = {
+                'mae_mgdl': float(mae), 'mse': float(mse),
+                'config': cfg, 'diverged': False,
+            }
+        except Exception as e:
+            print(f"      Failed: {e}")
+            sweep_results[cfg['name']] = {'diverged': True, 'error': str(e)}
+
+    best = min(sweep_results.items(), key=lambda x: x[1].get('mae_mgdl', 999))
+    print(f"\n  Best recipe: {best[0]} -> MAE={best[1].get('mae_mgdl', 'N/A'):.1f}")
+
+    results = {
+        'persistence_mae': float(pers_mgdl),
+        'sweep': sweep_results,
+        'best_recipe': best[0],
+        'best_mae': float(best[1].get('mae_mgdl', 0)),
+    }
+    out_path = os.path.join(args.output_dir, 'exp211_recipe_sweep.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-211', 'name': 'forecast-recipe-sweep',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+def run_event_confidence_override(args):
+    """EXP-212: Event-confidence-gated override with per-patient thresholds.
+    
+    Hypothesis: Combining per-patient event detection (EXP-205, F1=0.700)
+    with confidence gating (EXP-197, utility=0.644) and per-patient thresholds
+    should maximize override utility.
+    """
+    import numpy as np, json, os
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from sklearn.metrics import f1_score
+    import xgboost as xgb
+
+    ctx = ExperimentContext('EXP-212', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    print("  [Stage 1] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+    if train_data is None or val_data is None:
+        print("  No data"); return {}
+
+    X_train = train_data['tabular']
+    y_train = train_data['labels']
+    X_val = val_data['tabular']
+    y_val = val_data['labels']
+
+    unique_classes = np.unique(np.concatenate([y_train, y_val]))
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map[y] for y in y_val])
+    n_classes = len(unique_classes)
+
+    # Train global model
+    print("  [Stage 2] Training XGBoost...")
+    clf = xgb.XGBClassifier(
+        max_depth=8, n_estimators=300, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42, tree_method='hist'
+    )
+    clf.fit(X_train, y_train_m, eval_set=[(X_val, y_val_m)], verbose=False)
+    probs = clf.predict_proba(X_val)
+    preds = clf.predict(X_val)
+
+    # Per-patient confidence analysis
+    print("  [Stage 3] Per-patient confidence analysis...")
+    train_meta = train_data.get('metadata', [])
+    val_meta = val_data.get('metadata', [])
+    val_pids = None
+    if isinstance(val_meta, list) and len(val_meta) > 0 and isinstance(val_meta[0], dict):
+        val_pids = [row.get('patient', '') for row in val_meta]
+
+    # Override utility: predict non-baseline events, score by accuracy
+    # Baseline class (normal) is typically class 0
+    baseline_class = 0
+
+    # Global confidence sweep
+    print("  [Stage 4] Confidence threshold sweep...")
+    thresholds = [0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.95]
+    sweep_results = {}
+
+    for thresh in thresholds:
+        max_probs = probs.max(axis=1)
+        confident = max_probs >= thresh
+        non_baseline = preds != baseline_class
+
+        # Override suggestions: confident + non-baseline predictions
+        override_mask = confident & non_baseline
+        if override_mask.sum() == 0:
+            sweep_results[str(thresh)] = {'utility': 0, 'coverage': 0, 'precision': 0}
+            continue
+
+        # True positives: predicted non-baseline + actually non-baseline
+        true_non_baseline = y_val_m != baseline_class
+        tp = (override_mask & true_non_baseline).sum()
+        fp = (override_mask & ~true_non_baseline).sum()
+        fn = (~override_mask & true_non_baseline).sum()
+
+        precision = tp / (tp + fp + 1e-10)
+        recall = tp / (tp + fn + 1e-10)
+        coverage = override_mask.sum() / len(y_val_m)
+        # Utility: precision * recall - false_alarm_penalty
+        utility = precision * recall - 0.1 * (fp / (len(y_val_m) + 1e-10))
+
+        sweep_results[str(thresh)] = {
+            'utility': float(utility), 'precision': float(precision),
+            'recall': float(recall), 'coverage': float(coverage),
+            'n_overrides': int(override_mask.sum()),
+            'tp': int(tp), 'fp': int(fp), 'fn': int(fn),
+        }
+        print(f"    thresh={thresh}: utility={utility:.3f}, prec={precision:.3f}, recall={recall:.3f}, coverage={coverage:.3f}")
+
+    # Per-patient optimal thresholds
+    per_patient_optimal = {}
+    if val_pids:
+        val_pids_arr = np.array(val_pids)
+        for pid in sorted(set(val_pids)):
+            mask = val_pids_arr == pid
+            if mask.sum() < 10:
+                continue
+            p_probs = probs[mask]
+            p_preds = preds[mask]
+            p_true = y_val_m[mask]
+            best_util = -1
+            best_thresh = 0.5
+            for t in np.arange(0.4, 0.96, 0.05):
+                conf = p_probs.max(axis=1) >= t
+                non_base = p_preds != baseline_class
+                om = conf & non_base
+                if om.sum() == 0:
+                    continue
+                tnb = p_true != baseline_class
+                tp = (om & tnb).sum()
+                fp = (om & ~tnb).sum()
+                fn = (~om & tnb).sum()
+                prec = tp / (tp + fp + 1e-10)
+                rec = tp / (tp + fn + 1e-10)
+                u = prec * rec - 0.1 * (fp / (len(p_true) + 1e-10))
+                if u > best_util:
+                    best_util = u
+                    best_thresh = t
+            per_patient_optimal[pid] = {
+                'optimal_threshold': float(best_thresh),
+                'utility': float(best_util),
+            }
+            print(f"    {pid}: optimal thresh={best_thresh:.2f}, utility={best_util:.3f}")
+
+    best_global = max(sweep_results.items(), key=lambda x: x[1].get('utility', -1))
+    print(f"\n  Best global: thresh={best_global[0]}, utility={best_global[1].get('utility', 0):.3f}")
+
+    results = {
+        'global_sweep': sweep_results,
+        'per_patient_optimal': per_patient_optimal,
+        'best_global_threshold': float(best_global[0]),
+        'best_global_utility': float(best_global[1].get('utility', 0)),
+        'n_classes': n_classes,
+    }
+    out_path = os.path.join(args.output_dir, 'exp212_event_confidence_override.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-212', 'name': 'event-confidence-override',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+def run_volatile_specialist(args):
+    """EXP-213: Volatile-period specialist model.
+    
+    Hypothesis: Calm periods (MAE~8.8) vs volatile (MAE~15.4) have very
+    different characteristics. Training a specialist on high-variability
+    windows should reduce volatile MAE by 10-15%.
+    """
+    import numpy as np, json, os, torch, torch.nn.functional as F
+    from tools.cgmencode.model import CGMGroupedEncoder
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        train_forecast, forecast_mse, persistence_mse
+    )
+    from torch.utils.data import DataLoader, Subset
+
+    ctx = ExperimentContext('EXP-213', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+    epochs = getattr(args, 'epochs', 150)
+    batch_size = getattr(args, 'batch', 128)
+
+    print("  [Stage 1] Loading data and computing volatility...")
+    train_paths = resolve_patient_paths(patients_dir, real_data=True)
+    ds_train, ds_val = load_multipatient_nightscout(train_paths)
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    # Compute per-window volatility (glucose std in mg/dL)
+    volatilities = []
+    for i in range(len(ds_val)):
+        x, _ = ds_val[i]
+        if isinstance(x, torch.Tensor):
+            x = x.numpy()
+        g = x[:, 0] * 400  # denormalize
+        volatilities.append(np.std(g))
+    volatilities = np.array(volatilities)
+
+    # Split into calm vs volatile using median
+    median_vol = np.median(volatilities)
+    calm_idx = np.where(volatilities <= median_vol)[0]
+    vol_idx = np.where(volatilities > median_vol)[0]
+    print(f"    Median volatility: {median_vol:.1f} mg/dL")
+    print(f"    Calm: {len(calm_idx)} windows, Volatile: {len(vol_idx)} windows")
+
+    # Train generic model
+    print("  [Stage 2] Training generic model...")
+    generic = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3).to(device)
+    save_p = os.path.join(args.output_dir, 'exp213_generic.pth')
+    train_forecast(generic, ds_train, ds_val, save_path=save_p,
+                  label='generic', lr=1e-3, epochs=epochs, batch=batch_size, patience=15)
+    
+    # Evaluate generic on calm vs volatile
+    ws = 24
+    half = ws // 2
+    
+    def eval_subset(model, ds, indices):
+        subset = Subset(ds, indices)
+        loader = DataLoader(subset, batch_size=batch_size, shuffle=False)
+        errors = []
+        for bx, bt in loader:
+            bx = bx.to(device)
+            x_in = bx.clone()
+            x_in[:, half:, 0] = 0.0
+            model.eval()
+            with torch.no_grad():
+                out = model(x_in)
+                if isinstance(out, dict):
+                    out = out['forecast']
+                err = (out[:, half:, :1] - bx[:, half:, :1]).abs() * 400
+                errors.append(err.cpu().numpy())
+        return np.concatenate(errors, axis=0).mean() if errors else 0
+
+    generic_calm_mae = eval_subset(generic, ds_val, calm_idx)
+    generic_vol_mae = eval_subset(generic, ds_val, vol_idx)
+    generic_all_mae = forecast_mse(generic, ds_val, batch_size=batch_size)**0.5 * 400
+    print(f"    Generic: all={generic_all_mae:.1f}, calm={generic_calm_mae:.1f}, volatile={generic_vol_mae:.1f}")
+
+    # Train volatile specialist — weight volatile windows more heavily
+    print("  [Stage 3] Training volatile-weighted specialist...")
+    
+    # Compute training volatilities
+    train_vols = []
+    for i in range(len(ds_train)):
+        x, _ = ds_train[i]
+        if isinstance(x, torch.Tensor):
+            x = x.numpy()
+        train_vols.append(np.std(x[:, 0] * 400))
+    train_vols = np.array(train_vols)
+    train_median = np.median(train_vols)
+    
+    # Create volatile-enriched training set by oversampling volatile windows
+    vol_train_idx = np.where(train_vols > train_median)[0]
+    # Duplicate volatile windows 2x
+    enriched_idx = np.concatenate([np.arange(len(ds_train)), vol_train_idx])
+    np.random.RandomState(42).shuffle(enriched_idx)
+    enriched_ds = Subset(ds_train, enriched_idx)
+    
+    specialist = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3).to(device)
+    save_p2 = os.path.join(args.output_dir, 'exp213_specialist.pth')
+    train_forecast(specialist, enriched_ds, ds_val, save_path=save_p2,
+                  label='volatile', lr=1e-3, epochs=epochs, batch=batch_size, patience=15)
+
+    spec_calm_mae = eval_subset(specialist, ds_val, calm_idx)
+    spec_vol_mae = eval_subset(specialist, ds_val, vol_idx)
+    spec_all_mae = forecast_mse(specialist, ds_val, batch_size=batch_size)**0.5 * 400
+    print(f"    Specialist: all={spec_all_mae:.1f}, calm={spec_calm_mae:.1f}, volatile={spec_vol_mae:.1f}")
+
+    # Routing: use generic for calm, specialist for volatile
+    print("  [Stage 4] Routed ensemble (generic calm + specialist volatile)...")
+    routed_calm = generic_calm_mae * len(calm_idx)
+    routed_vol = spec_vol_mae * len(vol_idx)
+    routed_mae = (routed_calm + routed_vol) / (len(calm_idx) + len(vol_idx))
+    print(f"    Routed MAE: {routed_mae:.1f} mg/dL")
+
+    vol_improvement = (generic_vol_mae - spec_vol_mae) / generic_vol_mae * 100
+
+    results = {
+        'median_volatility': float(median_vol),
+        'generic_mae': float(generic_all_mae),
+        'generic_calm_mae': float(generic_calm_mae),
+        'generic_volatile_mae': float(generic_vol_mae),
+        'specialist_mae': float(spec_all_mae),
+        'specialist_calm_mae': float(spec_calm_mae),
+        'specialist_volatile_mae': float(spec_vol_mae),
+        'routed_mae': float(routed_mae),
+        'volatile_improvement_pct': float(vol_improvement),
+        'n_calm': len(calm_idx),
+        'n_volatile': len(vol_idx),
+    }
+    out_path = os.path.join(args.output_dir, 'exp213_volatile_specialist.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-213', 'name': 'volatile-specialist',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# Register Phase 12
+REGISTRY.update({
+    'per-patient-temporal-combined':  'run_per_patient_temporal_combined',  # EXP-209
+    'class-rebalanced-xgb':           'run_class_rebalanced_xgb',          # EXP-210
+    'forecast-recipe-sweep':           'run_forecast_recipe_sweep',         # EXP-211
+    'event-confidence-override':       'run_event_confidence_override',     # EXP-212
+    'volatile-specialist':             'run_volatile_specialist',           # EXP-213
+})

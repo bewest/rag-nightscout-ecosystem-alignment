@@ -1,0 +1,123 @@
+{
+  "experiment": "EXP-212",
+  "name": "event-confidence-override",
+  "results": {
+    "global_sweep": {
+      "0.5": {
+        "utility": 0.9552665975571235,
+        "precision": 0.9999999999999976,
+        "recall": 0.9552665975571258,
+        "coverage": 0.9310125192180979,
+        "n_overrides": 42389,
+        "tp": 42389,
+        "fp": 0,
+        "fn": 1985
+      },
+      "0.6": {
+        "utility": 0.7376166223464151,
+        "precision": 0.999999999999997,
+        "recall": 0.7376166223464173,
+        "coverage": 0.7188886448495497,
+        "n_overrides": 32731,
+        "tp": 32731,
+        "fp": 0,
+        "fn": 11643
+      },
+      "0.7": {
+        "utility": 0.5468292243205446,
+        "precision": 0.999999999999996,
+        "recall": 0.5468292243205468,
+        "coverage": 0.5329453107840983,
+        "n_overrides": 24265,
+        "tp": 24265,
+        "fp": 0,
+        "fn": 20109
+      },
+      "0.8": {
+        "utility": 0.36350114932167177,
+        "precision": 0.9999999999999938,
+        "recall": 0.36350114932167404,
+        "coverage": 0.3542719086316714,
+        "n_overrides": 16130,
+        "tp": 16130,
+        "fp": 0,
+        "fn": 28244
+      },
+      "0.85": {
+        "utility": 0.25918330553927693,
+        "precision": 0.9999999999999913,
+        "recall": 0.25918330553927915,
+        "coverage": 0.25260267955194377,
+        "n_overrides": 11501,
+        "tp": 11501,
+        "fp": 0,
+        "fn": 32873
+      },
+      "0.9": {
+        "utility": 0.15276963987920594,
+        "precision": 0.9999999999999852,
+        "recall": 0.1527696398792082,
+        "coverage": 0.14889084120360202,
+        "n_overrides": 6779,
+        "tp": 6779,
+        "fp": 0,
+        "fn": 37595
+      },
+      "0.95": {
+        "utility": 0.06386622797133217,
+        "precision": 0.9999999999999647,
+        "recall": 0.06386622797133441,
+        "coverage": 0.06224467384142324,
+        "n_overrides": 2834,
+        "tp": 2834,
+        "fp": 0,
+        "fn": 41540
+      }
+    },
+    "per_patient_optimal": {
+      "a": {
+        "optimal_threshold": 0.4,
+        "utility": 0.9940711462450199
+      },
+      "b": {
+        "optimal_threshold": 0.4,
+        "utility": 0.9999999999999689
+      },
+      "c": {
+        "optimal_threshold": 0.4,
+        "utility": 0.9996068409671319
+      },
+      "d": {
+        "optimal_threshold": 0.4,
+        "utility": 0.999999999999944
+      },
+      "e": {
+        "optimal_threshold": 0.4,
+        "utility": 0.9999999999999603
+      },
+      "f": {
+        "optimal_threshold": 0.4,
+        "utility": 0.9425287356316258
+      },
+      "g": {
+        "optimal_threshold": 0.4,
+        "utility": 0.9779743975903242
+      },
+      "h": {
+        "optimal_threshold": 0.4,
+        "utility": 0.9999999999998284
+      },
+      "i": {
+        "optimal_threshold": 0.4,
+        "utility": 0.9959123610202584
+      },
+      "j": {
+        "optimal_threshold": 0.4,
+        "utility": 0.9999999999982143
+      }
+    },
+    "best_global_threshold": 0.5,
+    "best_global_utility": 0.9552665975571235,
+    "n_classes": 6
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "experiment": "EXP-211",
+  "name": "forecast-recipe-sweep",
+  "results": {
+    "persistence_mae": 34.34881657668109,
+    "sweep": {
+      "default": {
+        "mae_mgdl": 19.817009787450605,
+        "mse": 0.0024544617307244564,
+        "config": {
+          "lr": 0.001,
+          "wd": 1e-05,
+          "patience": 15,
+          "epochs": 100,
+          "name": "default"
+        },
+        "diverged": false
+      },
+      "slow_wd": {
+        "mae_mgdl": 19.955353443423792,
+        "mse": 0.002488850819074786,
+        "config": {
+          "lr": 0.0003,
+          "wd": 0.0001,
+          "patience": 30,
+          "epochs": 150,
+          "name": "slow_wd"
+        },
+        "diverged": false
+      },
+      "fast_wd": {
+        "mae_mgdl": 19.62177258435874,
+        "mse": 0.0024063372459518268,
+        "config": {
+          "lr": 0.001,
+          "wd": 0.0001,
+          "patience": 20,
+          "epochs": 150,
+          "name": "fast_wd"
+        },
+        "diverged": false
+      },
+      "mid": {
+        "mae_mgdl": 19.882517121809883,
+        "mse": 0.002470715544369145,
+        "config": {
+          "lr": 0.0005,
+          "wd": 5e-05,
+          "patience": 25,
+          "epochs": 150,
+          "name": "mid"
+        },
+        "diverged": false
+      },
+      "slow_long": {
+        "mae_mgdl": 19.96699130035055,
+        "mse": 0.0024917546349267163,
+        "config": {
+          "lr": 0.0003,
+          "wd": 1e-05,
+          "patience": 30,
+          "epochs": 200,
+          "name": "slow_long"
+        },
+        "diverged": false
+      },
+      "nowd": {
+        "mae_mgdl": 19.798998688214077,
+        "mse": 0.0024500021815993915,
+        "config": {
+          "lr": 0.001,
+          "wd": 0,
+          "patience": 15,
+          "epochs": 100,
+          "name": "nowd"
+        },
+        "diverged": false
+      }
+    },
+    "best_recipe": "fast_wd",
+    "best_mae": 19.62177258435874
+  }
+}

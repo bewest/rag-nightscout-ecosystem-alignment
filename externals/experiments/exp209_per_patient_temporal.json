@@ -1,0 +1,63 @@
+{
+  "experiment": "EXP-209",
+  "name": "per-patient-temporal-combined",
+  "results": {
+    "global_temporal_f1": 0.6864948707000169,
+    "combined_per_patient_f1": 0.7053137328528565,
+    "mean_improvement_pct": 3.160287361611221,
+    "per_patient": {
+      "a": {
+        "combined_f1": 0.8418830961213903,
+        "global_temporal_f1": 0.8329788194502561,
+        "improvement_pct": 1.068967957185498
+      },
+      "b": {
+        "combined_f1": 0.6682248403147631,
+        "global_temporal_f1": 0.6712702009655254,
+        "improvement_pct": -0.4536713600467048
+      },
+      "c": {
+        "combined_f1": 0.6711019664942027,
+        "global_temporal_f1": 0.6437815519455129,
+        "improvement_pct": 4.243739893118028
+      },
+      "d": {
+        "combined_f1": 0.9386332973408749,
+        "global_temporal_f1": 0.9352519675929934,
+        "improvement_pct": 0.3615421153533857
+      },
+      "e": {
+        "combined_f1": 0.6652465129085532,
+        "global_temporal_f1": 0.6977205729434947,
+        "improvement_pct": -4.6543073673874735
+      },
+      "f": {
+        "combined_f1": 0.6302889166254806,
+        "global_temporal_f1": 0.5395673429939564,
+        "improvement_pct": 16.81376287736647
+      },
+      "g": {
+        "combined_f1": 0.7229488574628545,
+        "global_temporal_f1": 0.7107453279203833,
+        "improvement_pct": 1.717004538948063
+      },
+      "h": {
+        "combined_f1": 0.7701558290545012,
+        "global_temporal_f1": 0.7273131291083927,
+        "improvement_pct": 5.8905440071923945
+      },
+      "i": {
+        "combined_f1": 0.5403017600834172,
+        "global_temporal_f1": 0.5069150028462017,
+        "improvement_pct": 6.586263386005722
+      },
+      "j": {
+        "combined_f1": 0.6861915094724744,
+        "global_temporal_f1": 0.6859923825645367,
+        "improvement_pct": 0.02902756837682719
+      }
+    },
+    "comparison_exp205": 0.7,
+    "comparison_exp202": 0.687
+  }
+}

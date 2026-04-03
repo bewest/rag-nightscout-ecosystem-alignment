@@ -1,0 +1,17 @@
+{
+  "experiment": "EXP-213",
+  "name": "volatile-specialist",
+  "results": {
+    "median_volatility": 18.186485290527344,
+    "generic_mae": 20.08011686759818,
+    "generic_calm_mae": 21.474807739257812,
+    "generic_volatile_mae": 24.49166488647461,
+    "specialist_mae": 19.96793975175074,
+    "specialist_calm_mae": 21.481239318847656,
+    "specialist_volatile_mae": 24.851913452148438,
+    "routed_mae": 23.163103103637695,
+    "volatile_improvement_pct": -1.4709028005599976,
+    "n_calm": 3243,
+    "n_volatile": 3242
+  }
+}
