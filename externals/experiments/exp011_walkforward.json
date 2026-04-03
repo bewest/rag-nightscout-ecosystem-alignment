@@ -1,0 +1,86 @@
+{
+  "experiment": "EXP-011",
+  "timestamp": "2026-04-02T18:45:13Z",
+  "original_split": {
+    "train_windows": 3004,
+    "val_windows": 751,
+    "residual_ae": {
+      "mae_mgdl": 1.16,
+      "rmse_mgdl": 1.59
+    },
+    "physics_only": {
+      "mae_mgdl": 37.92,
+      "rmse_mgdl": 54.48
+    }
+  },
+  "walkforward_70_30": {
+    "train_windows": 2632,
+    "test_windows": 1122,
+    "train_days": 126,
+    "test_days": 54,
+    "gap_days": 0,
+    "residual_ae": {
+      "mae_mgdl": 1.5,
+      "rmse_mgdl": 2.09
+    },
+    "physics_only": {
+      "mae_mgdl": 36.74,
+      "rmse_mgdl": 53.61
+    },
+    "persistence": {
+      "mae_mgdl": 40.3,
+      "rmse_mgdl": 58.96
+    },
+    "residual_stats": {
+      "train_std": 52.017660682018175,
+      "test_std": 53.32901122556169
+    }
+  },
+  "walkforward_70_30_gap1d": {
+    "train_windows": 2632,
+    "test_windows": 1110,
+    "train_days": 126,
+    "test_days": 53,
+    "gap_days": 1,
+    "residual_ae": {
+      "mae_mgdl": 1.68,
+      "rmse_mgdl": 2.24
+    },
+    "physics_only": {
+      "mae_mgdl": 36.78,
+      "rmse_mgdl": 53.64
+    },
+    "persistence": {
+      "mae_mgdl": 40.07,
+      "rmse_mgdl": 58.74
+    },
+    "residual_stats": {
+      "train_std": 52.017660682018175,
+      "test_std": 53.3842047382123
+    }
+  },
+  "walkforward_80_20": {
+    "train_windows": 2996,
+    "test_windows": 765,
+    "train_days": 144,
+    "test_days": 36,
+    "gap_days": 0,
+    "residual_ae": {
+      "mae_mgdl": 1.41,
+      "rmse_mgdl": 1.96
+    },
+    "physics_only": {
+      "mae_mgdl": 37.83,
+      "rmse_mgdl": 54.42
+    },
+    "persistence": {
+      "mae_mgdl": 40.95,
+      "rmse_mgdl": 59.18
+    },
+    "residual_stats": {
+      "train_std": 52.012144494001305,
+      "test_std": 54.112882290231575
+    }
+  },
+  "elapsed_seconds": 53.0
+}

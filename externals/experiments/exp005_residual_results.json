@@ -1,0 +1,51 @@
+{
+  "experiment": "EXP-005",
+  "timestamp": "2026-04-02T18:45:13Z",
+  "patient": {
+    "isf": 2.7,
+    "cr": 4.0
+  },
+  "samples": {
+    "train": 3004,
+    "val": 751
+  },
+  "residual_stats": {
+    "train": {
+      "mean": -0.8586882823378076,
+      "std": 52.743991733052376,
+      "min": -345.30358255654573,
+      "max": 299.6577595472336,
+      "p5": -85.63111190218478,
+      "p95": 89.83875869773328,
+      "scale": 200.0,
+      "level": "simple"
+    },
+    "val": {
+      "mean": -0.3184342243634124,
+      "std": 54.9907198633943,
+      "min": -251.24364334344864,
+      "max": 243.16706331074238,
+      "p5": -94.99118033023551,
+      "p95": 95.35553585030137,
+      "scale": 200.0,
+      "level": "simple"
+    }
+  },
+  "physics_only": {
+    "mae_mgdl": 37.77,
+    "rmse_mgdl": 54.99
+  },
+  "residual_ae": {
+    "mae_mgdl": 1.05,
+    "rmse_mgdl": 1.26
+  },
+  "raw_ae": {
+    "mae_mgdl": 3.66,
+    "rmse_mgdl": 5.21
+  },
+  "persistence": {
+    "mae_mgdl": 40.91,
+    "rmse_mgdl": 58.94
+  },
+  "elapsed_seconds": 46.8
+}
