@@ -1,0 +1,97 @@
+{
+  "experiment": "EXP-191",
+  "name": "drift-timestamp-aligned",
+  "results": {
+    "median_treatment_correlation": 0.009803011580599742,
+    "median_glucose_correlation": -0.18615922568443619,
+    "n_patients_with_treatment_drift": 10,
+    "n_patients_total": 10,
+    "per_patient": {
+      "a": {
+        "corr_treatment_isf": 0.023585285354722842,
+        "corr_glucose_only": -0.23446386387997992,
+        "n_bolus_events": 895,
+        "n_valid_isf_estimates": 511,
+        "nominal_isf": 45.0,
+        "mean_estimated_isf": 34.26291443581659
+      },
+      "b": {
+        "corr_treatment_isf": -0.07717432195164618,
+        "corr_glucose_only": -0.24283099101430447,
+        "n_bolus_events": 11256,
+        "n_valid_isf_estimates": 3087,
+        "nominal_isf": 45.0,
+        "mean_estimated_isf": 73.95821016727956
+      },
+      "c": {
+        "corr_treatment_isf": 0.010354169140918421,
+        "corr_glucose_only": -0.07024109940338777,
+        "n_bolus_events": 10558,
+        "n_valid_isf_estimates": 2510,
+        "nominal_isf": 45.0,
+        "mean_estimated_isf": 88.2421309209185
+      },
+      "d": {
+        "corr_treatment_isf": 0.04111828876744913,
+        "corr_glucose_only": -0.1653912620881183,
+        "n_bolus_events": 12185,
+        "n_valid_isf_estimates": 3679,
+        "nominal_isf": 45.0,
+        "mean_estimated_isf": 81.75667728504878
+      },
+      "e": {
+        "corr_treatment_isf": 0.025990492039991858,
+        "corr_glucose_only": -0.18505671718502162,
+        "n_bolus_events": 14063,
+        "n_valid_isf_estimates": 2837,
+        "nominal_isf": 45.0,
+        "mean_estimated_isf": 80.46897083125998
+      },
+      "f": {
+        "corr_treatment_isf": 0.11224159880659557,
+        "corr_glucose_only": -0.18726173418385075,
+        "n_bolus_events": 542,
+        "n_valid_isf_estimates": 191,
+        "nominal_isf": 45.0,
+        "mean_estimated_isf": 20.849812894764014
+      },
+      "g": {
+        "corr_treatment_isf": -0.013775447530894032,
+        "corr_glucose_only": -0.21830953664896394,
+        "n_bolus_events": 11458,
+        "n_valid_isf_estimates": 2202,
+        "nominal_isf": 45.0,
+        "mean_estimated_isf": 86.55629109428045
+      },
+      "h": {
+        "corr_treatment_isf": 0.009251854020281064,
+        "corr_glucose_only": -0.13617476084242588,
+        "n_bolus_events": 8681,
+        "n_valid_isf_estimates": 784,
+        "nominal_isf": 45.0,
+        "mean_estimated_isf": 79.6860516793768
+      },
+      "i": {
+        "corr_treatment_isf": -0.036327782877204694,
+        "corr_glucose_only": -0.05893610550566093,
+        "n_bolus_events": 14564,
+        "n_valid_isf_estimates": 4396,
+        "nominal_isf": 45.0,
+        "mean_estimated_isf": 78.01199981290952
+      },
+      "j": {
+        "corr_treatment_isf": -0.1976447457728632,
+        "corr_glucose_only": -0.21061422618326184,
+        "n_bolus_events": 159,
+        "n_valid_isf_estimates": 21,
+        "nominal_isf": 45.0,
+        "mean_estimated_isf": 19.79308720255233
+      }
+    },
+    "method": "timestamp_aligned_bolus_isf",
+    "comparison": {
+      "exp183_median": -0.156,
+      "exp188_median": -0.156
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "experiment": "EXP-190",
+  "name": "xgb-event-stacked",
+  "results": {
+    "f1_stacked": 0.4862567217749267,
+    "f1_single_baseline": 0.6736886992438457,
+    "improvement": -0.187431977468919,
+    "n_classes": 6,
+    "n_meta_features": 6,
+    "comparison": {
+      "exp181_f1": 0.679
+    }
+  }
+}
