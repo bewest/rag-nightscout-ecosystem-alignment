@@ -726,6 +726,7 @@ def load_multipatient_nightscout(data_paths: List[str],
                                   window_size: int = 24,
                                   val_fraction: float = 0.2,
                                   conditioned: bool = False,
+                                  extended_features: bool = False,
                                   ) -> Tuple[Optional[object], Optional[object]]:
     """
     Load multiple patient Nightscout directories → single combined dataset.
@@ -737,11 +738,24 @@ def load_multipatient_nightscout(data_paths: List[str],
     and shuffled. The val split is random (not chronological) since windows
     come from different patients with different time ranges.
 
+    Args:
+        extended_features: If True, build 21-feature extended arrays (includes
+            CAGE/SAGE, monthly phase, ROC/accel, etc.) and use doubled window
+            size (window_size*2 total steps = window_size history + future).
+            Returns TensorDataset pairs for use with train_forecast().
+
     Returns:
         (train_dataset, val_dataset)
     """
     all_windows = []
-    actual_window = window_size * 2 if conditioned else window_size
+
+    if extended_features:
+        # Extended path: 21 features, doubled window for history+future
+        actual_window = window_size * 2
+    elif conditioned:
+        actual_window = window_size * 2
+    else:
+        actual_window = window_size
 
     for i, data_path in enumerate(data_paths):
         patient_id = Path(data_path).parent.name  # e.g. 'a', 'b', ...
@@ -752,13 +766,17 @@ def load_multipatient_nightscout(data_paths: List[str],
             print(f"    SKIP: no valid data")
             continue
 
+        if extended_features:
+            features = build_extended_features(df, features, verbose=False)
+
         windows = split_into_windows(features, window_size=actual_window)
         if not windows:
             print(f"    SKIP: no valid windows")
             continue
 
+        n_feat = features.shape[1] if hasattr(features, 'shape') else '?'
         print(f"    {len(df)} rows → {len(windows)} windows "
-              f"({df['glucose'].min():.0f}-{df['glucose'].max():.0f} mg/dL)")
+              f"({n_feat}f, {df['glucose'].min():.0f}-{df['glucose'].max():.0f} mg/dL)")
         all_windows.extend(windows)
 
     if not all_windows:
@@ -776,7 +794,11 @@ def load_multipatient_nightscout(data_paths: List[str],
     train_tensor = torch.tensor(np.array(train_windows), dtype=torch.float32)
     val_tensor = torch.tensor(np.array(val_windows), dtype=torch.float32)
 
-    if conditioned:
+    if extended_features:
+        # TensorDataset (x, x) pairs for train_forecast() which handles its own masking
+        train_ds = torch.utils.data.TensorDataset(train_tensor, train_tensor)
+        val_ds = torch.utils.data.TensorDataset(val_tensor, val_tensor)
+    elif conditioned:
         train_ds = ConditionedDataset(train_tensor, window_size=window_size)
         val_ds = ConditionedDataset(val_tensor, window_size=window_size)
     else:

@@ -25,14 +25,12 @@ import torch
 
 from tools.cgmencode.device import resolve_device
 from tools.cgmencode.experiment_lib import (
-    build_16f_windows,
     create_model,
     forecast_mse,
     persistence_mse,
     set_device,
     set_seed,
     train_forecast,
-    windows_to_datasets,
 )
 from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
 
@@ -56,21 +54,23 @@ def run_experiment(feature_mode, patient_paths, args):
     label = f"{feature_mode}f"
     t0 = time.time()
 
-    # Load data
+    # Load data — both paths use load_multipatient_nightscout for consistent
+    # windowing (stride, NaN tolerance, interpolation, train/val split)
     if feature_mode == 8:
         print(f"\n  Loading 8-feature data (window_size={args.window})...")
         train_ds, val_ds = load_multipatient_nightscout(
             patient_paths, task='forecast', window_size=args.window)
         input_dim = 8
     else:
-        print(f"\n  Loading {feature_mode}-feature extended data (window_size={args.window})...")
-        windows = build_16f_windows(patient_paths, window_size=args.window)
-        if not windows:
-            print("  ERROR: No valid windows produced")
+        print(f"\n  Loading extended-feature data (window_size={args.window})...")
+        train_ds, val_ds = load_multipatient_nightscout(
+            patient_paths, task='forecast', window_size=args.window,
+            extended_features=True)
+        if train_ds is None:
+            print("  ERROR: No valid data produced")
             return None
-        input_dim = windows[0].shape[1]
+        input_dim = train_ds[0][0].shape[-1]
         label = f"{input_dim}f"
-        train_ds, val_ds = windows_to_datasets(windows, val_fraction=0.2, seed=42)
 
     print(f"  Train: {len(train_ds)}, Val: {len(val_ds)}, input_dim: {input_dim}")
 
