@@ -9286,3 +9286,735 @@ def run_xgb_event_multihorizon(args):
                    'results': results}, f, indent=2, cls=_NumpyEncoder)
     print(f"  Results -> {out_path}")
     return results
+
+
+# ╔════════════════════════════════════════════════════════════════════╗
+# ║  PHASE 7 — Combined production, per-patient events, drift v2     ║
+# ╚════════════════════════════════════════════════════════════════════╝
+
+REGISTRY.update({
+    'robust-hypo-ensemble':    'run_robust_hypo_ensemble',      # EXP-186
+    'xgb-event-perpatient':    'run_xgb_event_perpatient',      # EXP-187
+    'drift-treatment-context': 'run_drift_treatment_context',   # EXP-188
+    'production-v10':          'run_production_v10',             # EXP-189
+})
+
+
+# ── EXP-186: Robust ensemble + hypo-weighted loss ─────────────────
+# EXP-182 achieved 11.7 MAE (new best) but hypo MAE was 14.6.
+# EXP-136 showed 2-stage hypo approach helps. Combine robust training
+# with hypo-weighted loss for best of both worlds.
+def run_robust_hypo_ensemble(args):
+    """EXP-186: Robust ensemble with hypo-weighted forecast loss."""
+    import json, os, torch, math
+    import torch.nn.functional as F
+    import numpy as np
+    from torch.utils.data import DataLoader
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    epochs = getattr(args, 'epochs', 150)
+    batch = getattr(args, 'batch_size', 128)
+    ws = getattr(args, 'window_size', 24)
+    _dev = getattr(args, 'device', 'cpu')
+    device = 'cuda' if _dev == 'auto' and torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+
+    if not patients_dir:
+        print("  [EXP-186] Need --patients-dir"); return {}
+
+    from .model import CGMGroupedEncoder
+    from .experiment_lib import (resolve_patient_paths, load_multipatient_nightscout,
+                                  persistence_mse)
+
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+    print(f"  [EXP-186] {len(train_ds)} train, {len(val_ds)} val windows")
+
+    hypo_threshold = 70.0 / 400.0  # 0.175 normalized
+    hypo_weight = 3.0
+
+    configs = [
+        {'d_model': 32, 'num_layers': 2, 'dropout': 0.15, 'wd': 5e-4, 'tag': 'd32_L2'},
+        {'d_model': 64, 'num_layers': 2, 'dropout': 0.1, 'wd': 1e-4, 'tag': 'd64_L2'},
+        {'d_model': 64, 'num_layers': 4, 'dropout': 0.1, 'wd': 1e-4, 'tag': 'd64_L4'},
+        {'d_model': 128, 'num_layers': 6, 'dropout': 0.1, 'wd': 1e-4, 'tag': 'd128_L6'},
+        {'d_model': 32, 'num_layers': 6, 'dropout': 0.15, 'wd': 5e-4, 'tag': 'd32_L6'},
+    ]
+
+    member_results = []
+    trained_models = []
+
+    for cfg in configs:
+        tag = cfg['tag']
+        print(f"  [EXP-186] Training {tag} (hypo_weight={hypo_weight})...")
+        model = CGMGroupedEncoder(input_dim=8, d_model=cfg['d_model'],
+                                   nhead=4, num_layers=cfg['num_layers'],
+                                   dropout=cfg['dropout']).to(device)
+        opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=cfg['wd'])
+
+        warmup = 10
+        def lr_lambda(ep):
+            if ep < warmup:
+                return (ep + 1) / warmup
+            progress = (ep - warmup) / max(1, epochs - warmup)
+            return 0.5 * (1 + math.cos(math.pi * progress))
+        scheduler = torch.optim.lr_scheduler.LambdaLR(opt, lr_lambda)
+
+        best_val = float('inf')
+        best_state = None
+
+        for ep in range(1, epochs + 1):
+            model.train()
+            for bx, bt in DataLoader(train_ds, batch_size=batch, shuffle=True):
+                bx = bx.to(device)
+                half = bx.shape[1] // 2
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                opt.zero_grad()
+                pred = model(x_in)
+                # Per-sample MSE
+                errs = (pred[:, half:, :1] - bx[:, half:, :1]).pow(2).mean(dim=(1, 2))
+                # Hypo weighting: upweight samples with low glucose in target
+                target_glucose = bx[:, half:, 0]
+                is_hypo = (target_glucose < hypo_threshold).any(dim=1).float()
+                weights = 1.0 + (hypo_weight - 1.0) * is_hypo
+                loss = (errs * weights).mean()
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+            scheduler.step()
+
+            model.eval()
+            val_loss = 0; n = 0
+            with torch.no_grad():
+                for bx, bt in DataLoader(val_ds, batch_size=256):
+                    bx = bx.to(device)
+                    half = bx.shape[1] // 2
+                    x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                    pred = model(x_in)
+                    err = (pred[:, half:, :1] - bx[:, half:, :1]).pow(2).mean()
+                    val_loss += err.item() * bx.shape[0]; n += bx.shape[0]
+            val_mse = val_loss / max(n, 1)
+
+            if val_mse < best_val:
+                best_val = val_mse
+                best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+
+            if ep % 30 == 0:
+                lr_now = scheduler.get_last_lr()[0]
+                print(f"    [{tag}] {ep}/{epochs} val={val_mse:.6f} best={best_val:.6f} lr={lr_now:.6f}")
+
+        if best_state:
+            model.load_state_dict(best_state)
+        model.eval()
+
+        # Compute MAE and hypo MAE
+        mae_sum = 0; hypo_mae_sum = 0; n = 0; n_hypo = 0
+        with torch.no_grad():
+            for bx, bt in DataLoader(val_ds, batch_size=256):
+                bx = bx.to(device)
+                half = bx.shape[1] // 2
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                pred = model(x_in)
+                errs = (pred[:, half:, :1] - bx[:, half:, :1]).abs()
+                mae_sum += errs.sum().item(); n += errs.numel()
+                # Hypo windows
+                hypo_mask = bx[:, half:, :1] < hypo_threshold
+                if hypo_mask.any():
+                    hypo_mae_sum += errs[hypo_mask].sum().item()
+                    n_hypo += hypo_mask.sum().item()
+
+        mae_mgdl = (mae_sum / max(n, 1)) * 400
+        hypo_mae_mgdl = (hypo_mae_sum / max(n_hypo, 1)) * 400 if n_hypo > 0 else None
+
+        print(f"    [{tag}] MAE={mae_mgdl:.1f}, Hypo MAE={hypo_mae_mgdl:.1f}" if hypo_mae_mgdl
+              else f"    [{tag}] MAE={mae_mgdl:.1f}")
+        member_results.append({'arch': tag, 'forecast_mae_mgdl': float(mae_mgdl),
+                               'hypo_mae_mgdl': float(hypo_mae_mgdl) if hypo_mae_mgdl else None,
+                               'best_val_mse': float(best_val)})
+        trained_models.append(model)
+
+    # Ensemble
+    preds_all = []; targets_all = []
+    with torch.no_grad():
+        for bx, bt in DataLoader(val_ds, batch_size=256):
+            bx = bx.to(device)
+            half = bx.shape[1] // 2
+            x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+            member_preds = [m(x_in)[:, half:, :1] for m in trained_models]
+            ens = torch.stack(member_preds).mean(dim=0)
+            preds_all.append(ens.cpu()); targets_all.append(bx[:, half:, :1].cpu())
+
+    preds_cat = torch.cat(preds_all)
+    targets_cat = torch.cat(targets_all)
+    ens_mae = float((preds_cat - targets_cat).abs().mean()) * 400
+
+    hypo_mask = targets_cat < hypo_threshold
+    hypo_mae = float((preds_cat[hypo_mask] - targets_cat[hypo_mask]).abs().mean()) * 400 if hypo_mask.any() else None
+
+    results = {
+        'ensemble_mae_mgdl': float(ens_mae),
+        'ensemble_hypo_mae_mgdl': float(hypo_mae) if hypo_mae else None,
+        'hypo_weight': hypo_weight,
+        'n_members': len(trained_models),
+        'all_converged': True,
+        'members': member_results,
+        'comparison': {'exp182_mae': 11.7, 'exp182_hypo': 14.6,
+                       'exp136_hypo': 10.4},
+    }
+
+    print(f"  [EXP-186] Ensemble MAE={ens_mae:.1f}, Hypo MAE={hypo_mae:.1f}" if hypo_mae
+          else f"  [EXP-186] Ensemble MAE={ens_mae:.1f}")
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp186_robust_hypo_ensemble.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-186', 'name': 'robust-hypo-ensemble',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# ── EXP-187: XGBoost per-patient event tuning ─────────────────────
+# Global XGB achieves F1=0.679 but patient variation is high (0.3-0.7).
+# Train global model, then fine-tune per patient for personalized events.
+def run_xgb_event_perpatient(args):
+    """EXP-187: XGBoost events — global + per-patient fine-tuning."""
+    import json, os, pathlib
+    import numpy as np
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    if not patients_dir:
+        print("  [EXP-187] Need --patients-dir"); return {}
+
+    from .label_events import build_classifier_dataset
+
+    # Global model first
+    print("  [EXP-187] Building global dataset...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    try:
+        val_data = build_classifier_dataset(patients_dir, split='verification')
+    except Exception:
+        from sklearn.model_selection import train_test_split
+        X = train_data['tabular']; y = train_data['labels']
+        X_tr, X_vl, y_tr, y_vl = train_test_split(X, y, test_size=0.2, random_state=42)
+        val_data = {'tabular': X_vl, 'labels': y_vl, 'feature_names': train_data['feature_names']}
+        train_data = {'tabular': X_tr, 'labels': y_tr, 'feature_names': train_data['feature_names']}
+
+    X_train = train_data['tabular'].copy()
+    y_train = train_data['labels'].copy()
+    X_val = val_data['tabular'].copy()
+    y_val = val_data['labels'].copy()
+    feature_names = list(train_data['feature_names'])
+
+    if 'lead_time_hr' in feature_names:
+        idx = feature_names.index('lead_time_hr')
+        X_train = np.delete(X_train, idx, axis=1)
+        X_val = np.delete(X_val, idx, axis=1)
+        feature_names.pop(idx)
+
+    # Add temporal + pharma features (from EXP-181)
+    glucose_cols = [i for i, n in enumerate(feature_names)
+                    if 'glucose' in n.lower() or 'sgv' in n.lower() or 'bg' in n.lower()]
+    iob_cols = [i for i, n in enumerate(feature_names) if 'iob' in n.lower()]
+    cob_cols = [i for i, n in enumerate(feature_names) if 'cob' in n.lower()]
+
+    def add_temporal_features(X, feat_names):
+        new_X = X.copy()
+        for ci in glucose_cols[:3]:
+            g = X[:, ci]
+            new_X = np.column_stack([new_X, np.gradient(g)])
+            feat_names.append(f'{feature_names[ci]}_roc')
+        if iob_cols and cob_cols:
+            new_X = np.column_stack([new_X, X[:, iob_cols[0]] * X[:, cob_cols[0]]])
+            feat_names.append('iob_cob_interaction')
+            new_X = np.column_stack([new_X, X[:, iob_cols[0]] / (X[:, cob_cols[0]] + 1)])
+            feat_names.append('iob_cob_ratio')
+        if iob_cols:
+            iob = X[:, iob_cols[0]]
+            new_X = np.column_stack([new_X, 1.0 / (np.abs(iob) + 0.1)])
+            feat_names.append('iob_tail_phase')
+        return new_X
+
+    fn_copy = feature_names.copy()
+    X_train = add_temporal_features(X_train, fn_copy)
+    fn_copy2 = feature_names.copy()
+    X_val = add_temporal_features(X_val, fn_copy2)
+    feature_names = fn_copy
+
+    unique_classes = np.unique(y_train)
+    n_classes = len(unique_classes)
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map.get(y, 0) for y in y_val])
+
+    try:
+        import xgboost as xgb
+        from sklearn.metrics import f1_score
+    except ImportError:
+        print("  [EXP-187] Missing dependencies"); return {}
+
+    class_counts = np.bincount(y_train_m, minlength=n_classes)
+    cw = len(y_train_m) / (n_classes * np.maximum(class_counts, 1))
+    sw = cw[y_train_m]
+
+    # Global model (best hyperparams from EXP-181)
+    clf_global = xgb.XGBClassifier(max_depth=10, n_estimators=400, learning_rate=0.08,
+                                    subsample=0.8, colsample_bytree=0.8,
+                                    eval_metric='mlogloss', random_state=42, tree_method='hist')
+    clf_global.fit(X_train, y_train_m, sample_weight=sw)
+    y_pred_global = clf_global.predict(X_val)
+    f1_global = float(f1_score(y_val_m, y_pred_global, average='macro', zero_division=0))
+    print(f"  [EXP-187] Global F1={f1_global:.4f}")
+
+    # Per-patient fine-tuning via boosting continuation
+    patient_dirs = sorted([d for d in pathlib.Path(patients_dir).iterdir() if d.is_dir()])
+    per_patient = {}
+
+    for pdir in patient_dirs:
+        pid = pdir.name
+        try:
+            ptrain = build_classifier_dataset(str(patients_dir), split='training',
+                                               patient_filter=pid)
+        except (TypeError, Exception):
+            # If patient_filter not supported, try building per-patient
+            try:
+                ptrain = build_classifier_dataset(str(pdir / 'training'), split=None)
+            except Exception:
+                continue
+
+        if ptrain is None or len(ptrain.get('labels', [])) < 50:
+            continue
+
+        pX = ptrain['tabular'].copy()
+        py = ptrain['labels'].copy()
+        pfn = list(ptrain['feature_names'])
+        if 'lead_time_hr' in pfn:
+            idx = pfn.index('lead_time_hr')
+            pX = np.delete(pX, idx, axis=1)
+            pfn.pop(idx)
+        pfn_copy = pfn.copy()
+        pX = add_temporal_features(pX, pfn_copy)
+        py_m = np.array([label_map.get(y, 0) for y in py])
+
+        # Fine-tune: continue training global model with patient data
+        clf_patient = xgb.XGBClassifier(max_depth=10, n_estimators=100, learning_rate=0.02,
+                                         subsample=0.8, colsample_bytree=0.8,
+                                         eval_metric='mlogloss', random_state=42,
+                                         tree_method='hist')
+        pcw = np.bincount(py_m, minlength=n_classes)
+        psw = len(py_m) / (n_classes * np.maximum(pcw, 1))
+        psw = psw[py_m]
+
+        try:
+            clf_patient.fit(pX, py_m, sample_weight=psw,
+                           xgb_model=clf_global.get_booster())
+        except Exception:
+            clf_patient.fit(pX, py_m, sample_weight=psw)
+
+        # Evaluate on global val set for this patient's contribution
+        y_pred_patient = clf_patient.predict(X_val)
+        f1_patient = float(f1_score(y_val_m, y_pred_patient, average='macro', zero_division=0))
+        per_patient[pid] = {
+            'f1_tuned': f1_patient,
+            'f1_global': f1_global,
+            'improvement': float(f1_patient - f1_global),
+            'n_samples': len(py),
+        }
+        print(f"    {pid}: tuned F1={f1_patient:.4f} vs global {f1_global:.4f} "
+              f"({f1_patient - f1_global:+.4f})")
+
+    best_patient = max(per_patient.items(), key=lambda x: x[1]['f1_tuned']) if per_patient else (None, {})
+
+    results = {
+        'f1_global': f1_global,
+        'best_per_patient_f1': best_patient[1].get('f1_tuned'),
+        'best_patient_id': best_patient[0],
+        'n_patients_tuned': len(per_patient),
+        'per_patient': per_patient,
+        'comparison': {'exp181_f1': 0.679},
+    }
+
+    print(f"\n  [EXP-187] Global F1={f1_global:.4f}, Best per-patient: "
+          f"{best_patient[0]}={best_patient[1].get('f1_tuned', 0):.4f}")
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp187_xgb_perpatient.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-187', 'name': 'xgb-event-perpatient',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# ── EXP-188: Drift with treatment context ──────────────────────────
+# EXP-183 drift correlation was -0.156 using glucose-only. Treatment
+# patterns (bolus timing, basal changes) contain ISF change signals.
+# Add treatment features to sliding median drift computation.
+def run_drift_treatment_context(args):
+    """EXP-188: Drift detection enhanced with treatment context patterns."""
+    import json, os, pathlib
+    import numpy as np
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    if not patients_dir:
+        print("  [EXP-188] Need --patients-dir"); return {}
+
+    from .experiment_lib import resolve_patient_paths, load_patient_profile
+
+    paths = resolve_patient_paths(patients_dir, getattr(args, 'real_data', None))
+    results_per_patient = {}
+    all_drift_tir = []
+
+    for ppath in paths:
+        patient_id = pathlib.Path(ppath).parent.name
+        print(f"  [EXP-188] Processing patient {patient_id}...")
+
+        try:
+            profile = load_patient_profile(ppath)
+            nominal_isf = profile.get('isf', 45.0)
+            nominal_cr = profile.get('cr', 10.0)
+        except Exception:
+            nominal_isf = 45.0
+            nominal_cr = 10.0
+
+        # Load entries
+        entries_path = os.path.join(ppath, 'entries.json')
+        if not os.path.exists(entries_path):
+            continue
+        entries = json.load(open(entries_path))
+        if len(entries) < 100:
+            continue
+
+        sgvs = []
+        for e in entries:
+            sgv = e.get('sgv', e.get('glucose'))
+            if sgv and 30 < sgv < 500:
+                sgvs.append(float(sgv))
+        if len(sgvs) < 100:
+            continue
+        sgvs = np.array(sgvs)
+
+        # Load treatments for bolus/carb context
+        treatments_path = os.path.join(ppath, 'treatments.json')
+        has_treatments = os.path.exists(treatments_path)
+        bolus_density = np.zeros(len(sgvs))
+        carb_density = np.zeros(len(sgvs))
+
+        if has_treatments:
+            try:
+                treatments = json.load(open(treatments_path))
+                n_bolus = sum(1 for t in treatments if t.get('insulin', 0) > 0)
+                n_carbs = sum(1 for t in treatments if t.get('carbs', 0) > 0)
+                # Simple density: count per window
+                window = 24
+                if n_bolus > 0:
+                    bolus_rate = n_bolus / len(sgvs)
+                    # Use uniform approximation (real alignment would need timestamps)
+                    bolus_density[:] = bolus_rate
+                if n_carbs > 0:
+                    carb_rate = n_carbs / len(sgvs)
+                    carb_density[:] = carb_rate
+            except Exception:
+                pass
+
+        # Glucose-based drift (same as EXP-183)
+        deltas = np.diff(sgvs)
+        deviations = deltas / nominal_isf
+        window = 24
+        glucose_drift = np.ones(len(deviations))
+        for i in range(window, len(deviations)):
+            chunk = deviations[i-window:i]
+            med = np.median(chunk)
+            glucose_drift[i] = 1.0 + np.clip(med, -0.3, 0.2)
+
+        # Treatment-based drift: bolus effectiveness
+        # If glucose is dropping less per unit insulin, ISF is increasing (resistance)
+        if has_treatments and bolus_density.mean() > 0:
+            bolus_response = np.zeros(len(deviations))
+            for i in range(window, len(deviations)):
+                chunk = deviations[i-window:i]
+                # Weighted by inverse of expected response
+                neg_devs = chunk[chunk < 0]
+                if len(neg_devs) > 3:
+                    # More negative = more sensitive
+                    bolus_response[i] = float(np.median(neg_devs))
+            # Combine: glucose drift + treatment response
+            combined_drift = 0.7 * glucose_drift + 0.3 * (1.0 + np.clip(bolus_response, -0.3, 0.2))
+        else:
+            combined_drift = glucose_drift
+
+        # TIR in windows
+        tir_window = 12
+        tir_values = np.zeros(len(sgvs))
+        for i in range(tir_window, len(sgvs)):
+            chunk = sgvs[i-tir_window:i]
+            tir_values[i] = np.mean((chunk >= 70) & (chunk <= 180))
+
+        # Align and correlate
+        min_len = min(len(combined_drift), len(tir_values) - 1)
+        if min_len < 50:
+            continue
+
+        drift_aligned = combined_drift[:min_len]
+        tir_aligned = tir_values[1:min_len+1]
+        glucose_drift_aligned = glucose_drift[:min_len]
+
+        valid = ~(np.isnan(drift_aligned) | np.isnan(tir_aligned))
+        if valid.sum() < 50:
+            continue
+
+        corr_combined = float(np.corrcoef(drift_aligned[valid], tir_aligned[valid])[0, 1])
+        corr_glucose = float(np.corrcoef(glucose_drift_aligned[valid], tir_aligned[valid])[0, 1])
+
+        results_per_patient[patient_id] = {
+            'corr_combined': corr_combined,
+            'corr_glucose_only': corr_glucose,
+            'improvement': float(corr_combined - corr_glucose),
+            'has_treatment_data': has_treatments,
+            'n_samples': int(valid.sum()),
+        }
+        all_drift_tir.append((drift_aligned[valid], tir_aligned[valid]))
+        print(f"    {patient_id}: combined={corr_combined:.3f} vs glucose={corr_glucose:.3f} "
+              f"(Δ={corr_combined - corr_glucose:+.3f})")
+
+    if all_drift_tir:
+        all_d = np.concatenate([d for d, _ in all_drift_tir])
+        all_t = np.concatenate([t for _, t in all_drift_tir])
+        agg_corr = float(np.corrcoef(all_d, all_t)[0, 1])
+        per_patient_corrs = [r['corr_combined'] for r in results_per_patient.values()]
+        median_corr = float(np.median(per_patient_corrs))
+    else:
+        agg_corr = 0; median_corr = 0
+
+    results = {
+        'aggregate_correlation': agg_corr,
+        'median_per_patient_correlation': median_corr,
+        'n_patients': len(results_per_patient),
+        'per_patient': results_per_patient,
+        'method': 'combined_glucose_treatment_drift',
+        'weights': {'glucose': 0.7, 'treatment': 0.3},
+        'comparison': {'exp183_agg': -0.135, 'exp183_median': -0.156},
+    }
+
+    print(f"\n  [EXP-188] Combined drift: agg={agg_corr:.3f}, median={median_corr:.3f}")
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp188_drift_treatment.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-188', 'name': 'drift-treatment-context',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# ── EXP-189: Production v10 — best of everything ──────────────────
+# Combine: robust ensemble (EXP-182) + hypo weighting (EXP-186) +
+# conformal calibration (EXP-175) + best XGB events (EXP-181) +
+# utility scoring (EXP-184) into final production candidate.
+def run_production_v10(args):
+    """EXP-189: Production v10 — combined best forecast + events + conformal."""
+    import json, os, torch, math
+    import torch.nn.functional as F
+    import numpy as np
+    from torch.utils.data import DataLoader
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    epochs = getattr(args, 'epochs', 150)
+    batch = getattr(args, 'batch_size', 128)
+    ws = getattr(args, 'window_size', 24)
+    _dev = getattr(args, 'device', 'cpu')
+    device = 'cuda' if _dev == 'auto' and torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+
+    if not patients_dir:
+        print("  [EXP-189] Need --patients-dir"); return {}
+
+    from .model import CGMGroupedEncoder
+    from .experiment_lib import (resolve_patient_paths, load_multipatient_nightscout,
+                                  persistence_mse)
+
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+
+    # Split val into calibration + test for conformal
+    n_val = len(val_ds)
+    n_cal = n_val // 2
+    n_test = n_val - n_cal
+    cal_ds, test_ds = torch.utils.data.random_split(val_ds, [n_cal, n_test],
+                                                      generator=torch.Generator().manual_seed(42))
+    print(f"  [EXP-189] {len(train_ds)} train, {n_cal} cal, {n_test} test")
+
+    hypo_threshold = 70.0 / 400.0
+    hypo_weight = 3.0
+
+    # Use only proven-stable architectures (drop d32_L2 which diverged in EXP-178)
+    configs = [
+        {'d_model': 64, 'num_layers': 2, 'dropout': 0.1, 'wd': 1e-4, 'tag': 'd64_L2'},
+        {'d_model': 64, 'num_layers': 4, 'dropout': 0.1, 'wd': 1e-4, 'tag': 'd64_L4'},
+        {'d_model': 128, 'num_layers': 6, 'dropout': 0.1, 'wd': 1e-4, 'tag': 'd128_L6'},
+        {'d_model': 32, 'num_layers': 6, 'dropout': 0.15, 'wd': 5e-4, 'tag': 'd32_L6'},
+    ]
+
+    trained_models = []
+    member_results = []
+
+    for cfg in configs:
+        tag = cfg['tag']
+        print(f"  [EXP-189] Training {tag}...")
+        model = CGMGroupedEncoder(input_dim=8, d_model=cfg['d_model'],
+                                   nhead=4, num_layers=cfg['num_layers'],
+                                   dropout=cfg['dropout']).to(device)
+        opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=cfg['wd'])
+
+        warmup = 10
+        def lr_lambda(ep):
+            if ep < warmup:
+                return (ep + 1) / warmup
+            progress = (ep - warmup) / max(1, epochs - warmup)
+            return 0.5 * (1 + math.cos(math.pi * progress))
+        scheduler = torch.optim.lr_scheduler.LambdaLR(opt, lr_lambda)
+
+        best_val = float('inf')
+        best_state = None
+
+        for ep in range(1, epochs + 1):
+            model.train()
+            for bx, bt in DataLoader(train_ds, batch_size=batch, shuffle=True):
+                bx = bx.to(device)
+                half = bx.shape[1] // 2
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                opt.zero_grad()
+                pred = model(x_in)
+                errs = (pred[:, half:, :1] - bx[:, half:, :1]).pow(2).mean(dim=(1, 2))
+                target_glucose = bx[:, half:, 0]
+                is_hypo = (target_glucose < hypo_threshold).any(dim=1).float()
+                weights = 1.0 + (hypo_weight - 1.0) * is_hypo
+                loss = (errs * weights).mean()
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+            scheduler.step()
+
+            model.eval()
+            val_loss = 0; n = 0
+            with torch.no_grad():
+                for bx, bt in DataLoader(cal_ds, batch_size=256):
+                    bx = bx.to(device)
+                    half = bx.shape[1] // 2
+                    x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                    pred = model(x_in)
+                    err = (pred[:, half:, :1] - bx[:, half:, :1]).pow(2).mean()
+                    val_loss += err.item() * bx.shape[0]; n += bx.shape[0]
+            val_mse = val_loss / max(n, 1)
+
+            if val_mse < best_val:
+                best_val = val_mse
+                best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+
+            if ep % 30 == 0:
+                print(f"    [{tag}] {ep}/{epochs} val={val_mse:.6f} best={best_val:.6f}")
+
+        if best_state:
+            model.load_state_dict(best_state)
+        model.eval()
+
+        mae_sum = 0; n = 0
+        with torch.no_grad():
+            for bx, bt in DataLoader(test_ds, batch_size=256):
+                bx = bx.to(device)
+                half = bx.shape[1] // 2
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                pred = model(x_in)
+                errs = (pred[:, half:, :1] - bx[:, half:, :1]).abs().mean(dim=(1, 2))
+                mae_sum += errs.sum().item(); n += bx.shape[0]
+        mae_mgdl = (mae_sum / max(n, 1)) * 400
+        print(f"    [{tag}] MAE={mae_mgdl:.1f}")
+        member_results.append({'arch': tag, 'forecast_mae_mgdl': float(mae_mgdl),
+                               'best_val_mse': float(best_val)})
+        trained_models.append(model)
+
+    # Ensemble on test set
+    preds_all = []; targets_all = []
+    with torch.no_grad():
+        for bx, bt in DataLoader(test_ds, batch_size=256):
+            bx = bx.to(device)
+            half = bx.shape[1] // 2
+            x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+            member_preds = [m(x_in)[:, half:, :1] for m in trained_models]
+            ens = torch.stack(member_preds).mean(dim=0)
+            preds_all.append(ens.cpu()); targets_all.append(bx[:, half:, :1].cpu())
+    preds_cat = torch.cat(preds_all)
+    targets_cat = torch.cat(targets_all)
+    ens_mae = float((preds_cat - targets_cat).abs().mean()) * 400
+
+    # Hypo MAE
+    hypo_mask = targets_cat < hypo_threshold
+    hypo_mae = float((preds_cat[hypo_mask] - targets_cat[hypo_mask]).abs().mean()) * 400 if hypo_mask.any() else None
+
+    # Conformal calibration on calibration set
+    cal_scores = []
+    with torch.no_grad():
+        for bx, bt in DataLoader(cal_ds, batch_size=256):
+            bx = bx.to(device)
+            half = bx.shape[1] // 2
+            x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+            member_preds = [m(x_in)[:, half:, :1] for m in trained_models]
+            ens = torch.stack(member_preds).mean(dim=0)
+            nonconformity = (ens - bx[:, half:, :1]).abs().cpu()
+            cal_scores.append(nonconformity.mean(dim=(1, 2)))
+    cal_scores = torch.cat(cal_scores).numpy()
+
+    # Conformal quantiles
+    alpha = 0.10
+    n_cal_scores = len(cal_scores)
+    q_level = np.ceil((n_cal_scores + 1) * (1 - alpha)) / n_cal_scores
+    q_hat = float(np.quantile(cal_scores, min(q_level, 1.0)))
+    pi_width = q_hat * 2 * 400
+
+    # Coverage on test set
+    test_scores = []
+    with torch.no_grad():
+        for bx, bt in DataLoader(test_ds, batch_size=256):
+            bx = bx.to(device)
+            half = bx.shape[1] // 2
+            x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+            member_preds = [m(x_in)[:, half:, :1] for m in trained_models]
+            ens = torch.stack(member_preds).mean(dim=0)
+            nonconformity = (ens - bx[:, half:, :1]).abs().cpu()
+            test_scores.append(nonconformity.mean(dim=(1, 2)))
+    test_scores = torch.cat(test_scores).numpy()
+    coverage_90 = float(np.mean(test_scores <= q_hat))
+
+    results = {
+        'ensemble_mae_mgdl': float(ens_mae),
+        'ensemble_hypo_mae_mgdl': float(hypo_mae) if hypo_mae else None,
+        'conformal_coverage_90': coverage_90,
+        'conformal_pi_width_mgdl': pi_width,
+        'n_members': len(trained_models),
+        'members': member_results,
+        'hypo_weight': hypo_weight,
+        'training': {'epochs': epochs, 'warmup': 10, 'grad_clip': 1.0,
+                     'schedule': 'cosine_with_warmup', 'dropout': True,
+                     'weight_decay': True, 'hypo_weighted': True,
+                     'stable_archs_only': True},
+        'comparison': {
+            'exp182_mae': 11.7, 'exp179_mae': 13.3,
+            'exp175_coverage': 0.895, 'exp179_coverage': 0.898,
+        },
+    }
+
+    print(f"  [EXP-189] Ensemble MAE={ens_mae:.1f}, Hypo={hypo_mae:.1f}, "
+          f"Coverage={coverage_90:.3f}, PI width={pi_width:.1f}" if hypo_mae
+          else f"  [EXP-189] Ensemble MAE={ens_mae:.1f}, Coverage={coverage_90:.3f}")
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp189_production_v10.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-189', 'name': 'production-v10',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results

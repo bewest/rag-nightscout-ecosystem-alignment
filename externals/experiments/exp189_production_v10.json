@@ -1,0 +1,50 @@
+{
+  "experiment": "EXP-189",
+  "name": "production-v10",
+  "results": {
+    "ensemble_mae_mgdl": 12.005297094583511,
+    "ensemble_hypo_mae_mgdl": 13.920365273952484,
+    "conformal_coverage_90": 0.8985507246376812,
+    "conformal_pi_width_mgdl": 51.35538991883093,
+    "n_members": 4,
+    "members": [
+      {
+        "arch": "d64_L2",
+        "forecast_mae_mgdl": 13.049408391857822,
+        "best_val_mse": 0.0024839632530834
+      },
+      {
+        "arch": "d64_L4",
+        "forecast_mae_mgdl": 12.61018099624582,
+        "best_val_mse": 0.002452713256399621
+      },
+      {
+        "arch": "d128_L6",
+        "forecast_mae_mgdl": 12.691091042847095,
+        "best_val_mse": 0.002490944758213868
+      },
+      {
+        "arch": "d32_L6",
+        "forecast_mae_mgdl": 13.237467614949356,
+        "best_val_mse": 0.0025102991499018237
+      }
+    ],
+    "hypo_weight": 3.0,
+    "training": {
+      "epochs": 150,
+      "warmup": 10,
+      "grad_clip": 1.0,
+      "schedule": "cosine_with_warmup",
+      "dropout": true,
+      "weight_decay": true,
+      "hypo_weighted": true,
+      "stable_archs_only": true
+    },
+    "comparison": {
+      "exp182_mae": 11.7,
+      "exp179_mae": 13.3,
+      "exp175_coverage": 0.895,
+      "exp179_coverage": 0.898
+    }
+  }
+}

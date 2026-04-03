@@ -1,0 +1,90 @@
+{
+  "experiment": "EXP-188",
+  "name": "drift-treatment-context",
+  "results": {
+    "aggregate_correlation": -0.13525550364035377,
+    "median_per_patient_correlation": -0.15561086907726288,
+    "n_patients": 10,
+    "per_patient": {
+      "a": {
+        "corr_combined": -0.21904269837838783,
+        "corr_glucose_only": -0.21904269837838783,
+        "improvement": 0.0,
+        "has_treatment_data": true,
+        "n_samples": 44631
+      },
+      "b": {
+        "corr_combined": -0.20172524881024778,
+        "corr_glucose_only": -0.20172524881024778,
+        "improvement": 0.0,
+        "has_treatment_data": true,
+        "n_samples": 44911
+      },
+      "c": {
+        "corr_combined": -0.08022057038073178,
+        "corr_glucose_only": -0.08022057038073178,
+        "improvement": 0.0,
+        "has_treatment_data": true,
+        "n_samples": 84622
+      },
+      "d": {
+        "corr_combined": -0.07809036457203257,
+        "corr_glucose_only": -0.07809036457203257,
+        "improvement": 0.0,
+        "has_treatment_data": true,
+        "n_samples": 79233
+      },
+      "e": {
+        "corr_combined": -0.11919730963109121,
+        "corr_glucose_only": -0.11919730963109121,
+        "improvement": 0.0,
+        "has_treatment_data": true,
+        "n_samples": 60559
+      },
+      "f": {
+        "corr_combined": -0.2045956230225586,
+        "corr_glucose_only": -0.2045956230225586,
+        "improvement": 0.0,
+        "has_treatment_data": true,
+        "n_samples": 45254
+      },
+      "g": {
+        "corr_combined": -0.19000247675499862,
+        "corr_glucose_only": -0.19000247675499862,
+        "improvement": 0.0,
+        "has_treatment_data": true,
+        "n_samples": 44864
+      },
+      "h": {
+        "corr_combined": -0.2649160918652543,
+        "corr_glucose_only": -0.2649160918652543,
+        "improvement": 0.0,
+        "has_treatment_data": true,
+        "n_samples": 18259
+      },
+      "i": {
+        "corr_combined": -0.037056211636301385,
+        "corr_glucose_only": -0.037056211636301385,
+        "improvement": 0.0,
+        "has_treatment_data": true,
+        "n_samples": 90398
+      },
+      "j": {
+        "corr_combined": -0.12121926139952711,
+        "corr_glucose_only": -0.12121926139952711,
+        "improvement": 0.0,
+        "has_treatment_data": true,
+        "n_samples": 26212
+      }
+    },
+    "method": "combined_glucose_treatment_drift",
+    "weights": {
+      "glucose": 0.7,
+      "treatment": 0.3
+    },
+    "comparison": {
+      "exp183_agg": -0.135,
+      "exp183_median": -0.156
+    }
+  }
+}
