@@ -14215,3 +14215,850 @@ REGISTRY.update({
     'event-confidence-override':       'run_event_confidence_override',     # EXP-212
     'volatile-specialist':             'run_volatile_specialist',           # EXP-213
 })
+
+
+# ── Phase 13: Per-patient deepening + drift fix + meal proof-of-concept ──────
+# EXP-214: Per-patient forecast adapters (lightweight fine-tune per patient)
+# EXP-215: Time-of-day routed event classification
+# EXP-216: Per-patient Bayesian drift detection
+# EXP-217: Stratified per-patient oversampled events
+# EXP-218: Per-patient ensemble meal detection
+
+
+def run_per_patient_forecast_adapters(args):
+    """EXP-214: Per-patient lightweight forecast adapters.
+    Hypothesis: Fine-tune last encoder layer per patient (freeze rest) to capture
+    patient-specific ISF/CR variation without catastrophic forgetting.
+    """
+    import torch, torch.nn as nn, torch.nn.functional as F, json, os, numpy as np
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        train_forecast, forecast_mse, persistence_mse
+    )
+    from tools.cgmencode.model import CGMGroupedEncoder
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp214_per_patient_adapters', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    pids = sorted([d for d in os.listdir(patients_dir)
+                   if os.path.isdir(os.path.join(patients_dir, d))])
+
+    # Stage 1: Train base ensemble model on all patients
+    print("  [Stage 1] Training base model on all patients...")
+    train_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(train_paths)
+    ws = getattr(args, 'window', 24)
+    base_model = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+    base_path = os.path.join(args.output_dir, 'exp214_base.pth')
+    train_forecast(base_model, train_ds, val_ds, save_path=base_path, label='base',
+                   lr=0.001, epochs=getattr(args, 'epochs', 150),
+                   batch=getattr(args, 'batch', 128), patience=15, weight_decay=1e-4)
+    ckpt = torch.load(base_path, map_location='cpu', weights_only=True)
+    state_dict = ckpt.get('model_state', ckpt) if isinstance(ckpt, dict) else ckpt
+    base_model.load_state_dict(state_dict)
+    base_mae = forecast_mse(base_model, val_ds) ** 0.5 * 400
+    persist_mae = persistence_mse(val_ds) ** 0.5 * 400
+    print(f"    Base model MAE: {base_mae:.1f} mg/dL, persistence: {persist_mae:.1f}")
+
+    # Stage 2: Per-patient fine-tuning (freeze all but last layer)
+    print("  [Stage 2] Per-patient adapter fine-tuning...")
+    per_patient_results = {}
+    for pid in pids:
+        try:
+            p_train_path = os.path.join(patients_dir, pid, 'training')
+            p_val_path = os.path.join(patients_dir, pid, 'verification')
+            if not os.path.isdir(p_train_path) or not os.path.isdir(p_val_path):
+                continue
+            p_train_ds, _ = load_multipatient_nightscout([p_train_path])
+            _, p_val_ds = load_multipatient_nightscout([p_val_path])
+
+            # Clone base model
+            adapted = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+            ckpt_b = torch.load(base_path, map_location='cpu', weights_only=True)
+            adapted.load_state_dict(ckpt_b.get('model_state', ckpt_b) if isinstance(ckpt_b, dict) else ckpt_b)
+
+            # Freeze all but last encoder layer + output projection
+            for name, param in adapted.named_parameters():
+                if 'encoder.layers.2' in name or 'output' in name or 'fc_out' in name:
+                    param.requires_grad = True
+                else:
+                    param.requires_grad = False
+
+            trainable = sum(p.numel() for p in adapted.parameters() if p.requires_grad)
+            total = sum(p.numel() for p in adapted.parameters())
+
+            # Fine-tune with low lr
+            adapt_path = os.path.join(args.output_dir, f'exp214_adapt_{pid}.pth')
+            train_forecast(adapted, p_train_ds, p_val_ds, save_path=adapt_path,
+                           label=f'adapt_{pid}', lr=1e-4, epochs=50,
+                           batch=64, patience=10, weight_decay=1e-5)
+            ckpt_a = torch.load(adapt_path, map_location='cpu', weights_only=True)
+            adapted.load_state_dict(ckpt_a.get('model_state', ckpt_a) if isinstance(ckpt_a, dict) else ckpt_a)
+
+            base_pid_mae = forecast_mse(base_model, p_val_ds) ** 0.5 * 400
+            adapt_pid_mae = forecast_mse(adapted, p_val_ds) ** 0.5 * 400
+            improvement = (base_pid_mae - adapt_pid_mae) / base_pid_mae * 100
+
+            per_patient_results[pid] = {
+                'base_mae': round(base_pid_mae, 2),
+                'adapted_mae': round(adapt_pid_mae, 2),
+                'improvement_pct': round(improvement, 1),
+                'trainable_params': trainable,
+                'total_params': total
+            }
+            print(f"    {pid}: base={base_pid_mae:.1f} -> adapted={adapt_pid_mae:.1f} ({improvement:+.1f}%)")
+        except Exception as e:
+            print(f"    {pid}: FAILED - {e}")
+            per_patient_results[pid] = {'error': str(e)}
+
+    # Aggregate
+    valid = {k: v for k, v in per_patient_results.items() if 'adapted_mae' in v}
+    if valid:
+        mean_base = np.mean([v['base_mae'] for v in valid.values()])
+        mean_adapted = np.mean([v['adapted_mae'] for v in valid.values()])
+        mean_improvement = np.mean([v['improvement_pct'] for v in valid.values()])
+        improved_count = sum(1 for v in valid.values() if v['improvement_pct'] > 0)
+    else:
+        mean_base = mean_adapted = mean_improvement = 0
+        improved_count = 0
+
+    print(f"\n  Adapted mean MAE: {mean_adapted:.1f} (base: {mean_base:.1f})")
+    print(f"  Mean improvement: {mean_improvement:+.1f}%, {improved_count}/{len(valid)} patients improved")
+
+    result = ({
+        'experiment': 'EXP-214: Per-Patient Forecast Adapters',
+        'hypothesis': 'Fine-tuning last layer per patient captures ISF/CR variation',
+        'base_mae': round(base_mae, 2),
+        'persistence_mae': round(persist_mae, 2),
+        'mean_base_per_patient': round(mean_base, 2),
+        'mean_adapted_per_patient': round(mean_adapted, 2),
+        'mean_improvement_pct': round(mean_improvement, 1),
+        'improved_count': improved_count,
+        'total_patients': len(valid),
+        'per_patient': per_patient_results
+    })
+    out_path = os.path.join(args.output_dir, "exp214_per_patient_adapters.json")
+    with open(out_path, "w") as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+
+def run_time_of_day_routed_events(args):
+    """EXP-215: Time-of-day routed event classification.
+    Hypothesis: Events have circadian signatures; routing by time-of-day
+    lets per-period classifiers specialize (sleep at night, meals at mealtimes).
+    """
+    import json, os, numpy as np
+    from xgboost import XGBClassifier
+    from sklearn.metrics import f1_score, classification_report
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp215_time_routed_events', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+
+    # Stage 1: Build dataset
+    print("  [Stage 1] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+
+    X_train, y_train = train_data['tabular'], train_data['labels']
+    X_val, y_val = val_data['tabular'], val_data['labels']
+    label_map = train_data['label_map']
+    rev_map = {v: k for k, v in label_map.items()}
+
+    # Create contiguous label mapping
+    all_labels = sorted(set(y_train) | set(y_val))
+    local_map = {old: new for new, old in enumerate(all_labels)}
+    local_rev = {new: old for old, new in local_map.items()}
+    y_train_local = np.array([local_map[y] for y in y_train])
+    y_val_local = np.array([local_map.get(y, 0) for y in y_val])
+
+    # Stage 2: Extract time-of-day feature (hour from glucose feature index)
+    # Use glucose rate-of-change patterns to infer approximate time
+    # Since we don't have raw timestamps, use cyclic glucose patterns
+    print("  [Stage 2] Time-of-day routing...")
+
+    # Define time periods based on feature patterns
+    # Use the glucose level (feature 0) as proxy for circadian phase
+    # Split into 4 quadrants based on glucose derivative patterns
+    n_features = X_train.shape[1]
+
+    # Strategy: train global baseline first, then route by glucose regime
+    # (high/rising = likely post-meal, low/stable = likely overnight)
+    glucose_train = X_train[:, 0] if n_features > 0 else np.zeros(len(X_train))
+    glucose_val = X_val[:, 0] if n_features > 0 else np.zeros(len(X_val))
+
+    # Split by glucose quartile as proxy for metabolic state
+    quartiles = np.percentile(glucose_train, [25, 50, 75])
+    def assign_regime(glucose_vals):
+        regimes = np.zeros(len(glucose_vals), dtype=int)
+        regimes[glucose_vals < quartiles[0]] = 0  # low glucose (likely fasting/night)
+        regimes[(glucose_vals >= quartiles[0]) & (glucose_vals < quartiles[1])] = 1  # normal-low
+        regimes[(glucose_vals >= quartiles[1]) & (glucose_vals < quartiles[2])] = 2  # normal-high
+        regimes[glucose_vals >= quartiles[2]] = 3  # high glucose (likely post-meal)
+        return regimes
+
+    train_regimes = assign_regime(glucose_train)
+    val_regimes = assign_regime(glucose_val)
+
+    # Stage 3: Global baseline
+    print("  [Stage 3] Global baseline...")
+    n_classes = len(all_labels)
+    global_clf = XGBClassifier(
+        n_estimators=200, max_depth=6, learning_rate=0.1,
+        num_class=n_classes, objective='multi:softprob',
+        eval_metric='mlogloss', random_state=42, verbosity=0
+    )
+    try:
+        global_clf.fit(X_train, y_train_local,
+                       eval_set=[(X_val, y_val_local)],
+                       verbose=False)
+    except Exception:
+        global_clf.fit(X_train, y_train_local, verbose=False)
+
+    global_preds = global_clf.predict(X_val)
+    global_f1 = f1_score(y_val_local, global_preds, average='weighted')
+    global_macro = f1_score(y_val_local, global_preds, average='macro')
+    print(f"    Global: weighted F1={global_f1:.4f}, macro F1={global_macro:.4f}")
+
+    # Stage 4: Per-regime classifiers
+    print("  [Stage 4] Per-regime classifiers...")
+    regime_names = ['low_glucose', 'normal_low', 'normal_high', 'high_glucose']
+    regime_clfs = {}
+    regime_stats = {}
+
+    for r in range(4):
+        mask_train = train_regimes == r
+        mask_val = val_regimes == r
+
+        if mask_train.sum() < 50 or mask_val.sum() < 10:
+            regime_clfs[r] = None
+            regime_stats[r] = {'n_train': int(mask_train.sum()), 'n_val': int(mask_val.sum()), 'skipped': True}
+            continue
+
+        X_r_train = X_train[mask_train]
+        y_r_train = y_train_local[mask_train]
+        X_r_val = X_val[mask_val]
+        y_r_val = y_val_local[mask_val]
+
+        # Local label remapping for this regime
+        r_labels = sorted(set(y_r_train))
+        r_local = {old: new for new, old in enumerate(r_labels)}
+        r_rev = {new: old for old, new in r_local.items()}
+        y_r_train_l = np.array([r_local[y] for y in y_r_train])
+
+        clf = XGBClassifier(
+            n_estimators=200, max_depth=6, learning_rate=0.1,
+            num_class=len(r_labels), objective='multi:softprob',
+            eval_metric='mlogloss', random_state=42, verbosity=0
+        )
+        try:
+            y_r_val_l = np.array([r_local.get(y, 0) for y in y_r_val])
+            clf.fit(X_r_train, y_r_train_l, eval_set=[(X_r_val, y_r_val_l)], verbose=False)
+        except Exception:
+            clf.fit(X_r_train, y_r_train_l, verbose=False)
+
+        regime_clfs[r] = (clf, r_local, r_rev)
+        regime_stats[r] = {
+            'n_train': int(mask_train.sum()),
+            'n_val': int(mask_val.sum()),
+            'n_classes': len(r_labels),
+            'skipped': False
+        }
+
+    # Stage 5: Routed predictions
+    print("  [Stage 5] Routed predictions...")
+    routed_preds = np.zeros(len(X_val), dtype=int)
+    for r in range(4):
+        mask = val_regimes == r
+        if not mask.any():
+            continue
+        if regime_clfs[r] is None:
+            routed_preds[mask] = global_clf.predict(X_val[mask])
+        else:
+            clf, r_local, r_rev = regime_clfs[r]
+            local_preds = clf.predict(X_val[mask])
+            routed_preds[mask] = np.array([r_rev.get(int(p), 0) for p in local_preds])
+
+    routed_f1 = f1_score(y_val_local, routed_preds, average='weighted')
+    routed_macro = f1_score(y_val_local, routed_preds, average='macro')
+    print(f"    Routed: weighted F1={routed_f1:.4f}, macro F1={routed_macro:.4f}")
+    print(f"    Improvement: weighted {(routed_f1-global_f1)/global_f1*100:+.1f}%, macro {(routed_macro-global_macro)/global_macro*100:+.1f}%")
+
+    result = ({
+        'experiment': 'EXP-215: Time-of-Day Routed Event Classification',
+        'hypothesis': 'Glucose-regime routing lets per-regime classifiers specialize',
+        'global_weighted_f1': round(global_f1, 4),
+        'global_macro_f1': round(global_macro, 4),
+        'routed_weighted_f1': round(routed_f1, 4),
+        'routed_macro_f1': round(routed_macro, 4),
+        'weighted_improvement_pct': round((routed_f1-global_f1)/global_f1*100, 1),
+        'macro_improvement_pct': round((routed_macro-global_macro)/global_macro*100, 1),
+        'regime_stats': {regime_names[r]: regime_stats[r] for r in range(4)},
+        'n_train': len(X_train), 'n_val': len(X_val)
+    })
+    out_path = os.path.join(args.output_dir, "exp215_time_routed_events.json")
+    with open(out_path, "w") as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+
+def run_per_patient_bayesian_drift(args):
+    """EXP-216: Per-patient Bayesian drift detection.
+    Hypothesis: Per-patient drift correlation beats global because patients have
+    different ISF baselines. Use sliding median (autosens-style) per patient.
+    """
+    import json, os, numpy as np
+    from scipy import stats as sp_stats
+    from tools.cgmencode.experiment_lib import (
+        load_patient_profile, load_multipatient_nightscout
+    )
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp216_per_patient_drift', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    pids = sorted([d for d in os.listdir(patients_dir)
+                   if os.path.isdir(os.path.join(patients_dir, d))])
+
+    print("  [Stage 1] Per-patient drift analysis...")
+    per_patient_results = {}
+
+    for pid in pids:
+        try:
+            val_path = os.path.join(patients_dir, pid, 'verification')
+            if not os.path.isdir(val_path):
+                continue
+
+            # Load profile
+            isf, cr = load_patient_profile(os.path.join(patients_dir, pid))
+
+            # Load glucose data from dataset
+            _, val_ds = load_multipatient_nightscout([val_path])
+            if val_ds is None or len(val_ds) == 0:
+                per_patient_results[pid] = {'error': 'no data'}
+                continue
+            # Extract glucose from all windows (first feature, all timesteps)
+            import torch
+            all_glucose = []
+            for i in range(len(val_ds)):
+                window = val_ds[i][0] if isinstance(val_ds[i], tuple) else val_ds[i]
+                if isinstance(window, torch.Tensor):
+                    all_glucose.extend(window[:, 0].numpy().tolist())
+                else:
+                    all_glucose.extend(window[:, 0].tolist())
+            glucose = np.array(all_glucose)
+            glucose_mgdl = glucose * 400  # Denormalize
+
+            # Compute glucose deviations (residuals from 5-point median)
+            deviations = []
+            window = 12  # 1-hour windows (5-min intervals)
+            for i in range(window, len(glucose_mgdl) - window):
+                local_median = np.median(glucose_mgdl[max(0, i-window):i])
+                dev = glucose_mgdl[i] - local_median
+                deviations.append(dev / isf if isf > 0 else 0)
+
+            deviations = np.array(deviations)
+            if len(deviations) < 48:  # Need at least 4 hours
+                per_patient_results[pid] = {'error': 'insufficient data'}
+                continue
+
+            # Sliding median drift estimate (autosens-style, 24-window = 2 hours)
+            drift_window = 24
+            drift_estimates = []
+            for i in range(drift_window, len(deviations)):
+                window_devs = deviations[i-drift_window:i]
+                # Autosens ratio: 1.0 + median(deviations)
+                ratio = 1.0 + np.clip(np.median(window_devs), -0.3, 0.2)
+                drift_estimates.append(ratio)
+
+            drift_estimates = np.array(drift_estimates)
+
+            # Compute TIR in matching windows
+            tir_values = []
+            for i in range(drift_window, len(deviations)):
+                idx = i + window  # Offset back to glucose index
+                if idx + drift_window < len(glucose_mgdl):
+                    future_bg = glucose_mgdl[idx:idx+drift_window]
+                    tir = np.mean((future_bg >= 70) & (future_bg <= 180))
+                    tir_values.append(tir)
+                else:
+                    tir_values.append(np.nan)
+
+            tir_values = np.array(tir_values)
+            valid_mask = ~np.isnan(tir_values) & (len(drift_estimates) == len(tir_values))
+
+            if isinstance(valid_mask, bool) or valid_mask.sum() < 20:
+                # Truncate to matching lengths
+                min_len = min(len(drift_estimates), len(tir_values))
+                drift_estimates = drift_estimates[:min_len]
+                tir_values = tir_values[:min_len]
+                valid_mask = ~np.isnan(tir_values)
+
+            if valid_mask.sum() >= 20:
+                corr, pval = sp_stats.spearmanr(drift_estimates[valid_mask], tir_values[valid_mask])
+            else:
+                corr, pval = 0.0, 1.0
+
+            # State classification: resistance (<0.9), stable (0.9-1.1), sensitivity (>1.1)
+            states = np.zeros(len(drift_estimates), dtype=int)
+            states[drift_estimates < 0.9] = 0  # resistance
+            states[(drift_estimates >= 0.9) & (drift_estimates <= 1.1)] = 1  # stable
+            states[drift_estimates > 1.1] = 2  # sensitivity
+
+            state_dist = {
+                'resistance': float(np.mean(states == 0)),
+                'stable': float(np.mean(states == 1)),
+                'sensitivity': float(np.mean(states == 2))
+            }
+
+            per_patient_results[pid] = {
+                'isf': round(isf, 1),
+                'drift_tir_corr': round(corr, 4),
+                'drift_tir_pval': round(pval, 4),
+                'mean_drift': round(float(np.mean(drift_estimates)), 4),
+                'std_drift': round(float(np.std(drift_estimates)), 4),
+                'state_distribution': state_dist,
+                'n_windows': len(drift_estimates)
+            }
+            print(f"    {pid}: ISF={isf:.0f}, drift-TIR corr={corr:.3f} (p={pval:.3f}), "
+                  f"states: R={state_dist['resistance']:.0%}/S={state_dist['stable']:.0%}/Se={state_dist['sensitivity']:.0%}")
+
+        except Exception as e:
+            print(f"    {pid}: FAILED - {e}")
+            per_patient_results[pid] = {'error': str(e)}
+
+    # Aggregate
+    valid_corrs = [v['drift_tir_corr'] for v in per_patient_results.values()
+                   if 'drift_tir_corr' in v]
+    if valid_corrs:
+        median_corr = float(np.median(valid_corrs))
+        mean_corr = float(np.mean(valid_corrs))
+        # Fisher z-transform for meta-correlation
+        z_values = [np.arctanh(np.clip(c, -0.999, 0.999)) for c in valid_corrs]
+        meta_z = np.mean(z_values)
+        meta_r = float(np.tanh(meta_z))
+        negative_count = sum(1 for c in valid_corrs if c < 0)
+    else:
+        median_corr = mean_corr = meta_r = 0
+        negative_count = 0
+
+    print(f"\n  Median per-patient corr: {median_corr:.3f}")
+    print(f"  Fisher meta-correlation: {meta_r:.3f}")
+    print(f"  Negative correlations: {negative_count}/{len(valid_corrs)}")
+
+    result = ({
+        'experiment': 'EXP-216: Per-Patient Bayesian Drift Detection',
+        'hypothesis': 'Per-patient drift-TIR correlation beats global',
+        'median_correlation': round(median_corr, 4),
+        'mean_correlation': round(mean_corr, 4),
+        'fisher_meta_r': round(meta_r, 4),
+        'negative_count': negative_count,
+        'total_patients': len(valid_corrs),
+        'per_patient': per_patient_results
+    })
+    out_path = os.path.join(args.output_dir, "exp216_per_patient_drift.json")
+    with open(out_path, "w") as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+
+def run_stratified_per_patient_oversampled(args):
+    """EXP-217: Stratified per-patient oversampled events.
+    Hypothesis: Per-patient oversampling of rare events + combined training
+    beats global oversampling by preserving patient-specific patterns.
+    """
+    import json, os, numpy as np
+    from xgboost import XGBClassifier
+    from sklearn.metrics import f1_score, matthews_corrcoef
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp217_stratified_oversampled', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    pids = sorted([d for d in os.listdir(patients_dir)
+                   if os.path.isdir(os.path.join(patients_dir, d))])
+
+    # Stage 1: Build per-patient datasets
+    print("  [Stage 1] Building per-patient datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+
+    X_train, y_train = train_data['tabular'], train_data['labels']
+    X_val, y_val = val_data['tabular'], val_data['labels']
+    metadata_train = train_data['metadata']
+    metadata_val = val_data['metadata']
+
+    # Create contiguous labels
+    all_labels = sorted(set(y_train) | set(y_val))
+    local_map = {old: new for new, old in enumerate(all_labels)}
+    local_rev = {new: old for old, new in local_map.items()}
+    y_train_local = np.array([local_map[y] for y in y_train])
+    y_val_local = np.array([local_map.get(y, 0) for y in y_val])
+    n_classes = len(all_labels)
+
+    # Extract patient IDs
+    train_patients = np.array([m.get('patient', 'unknown') if isinstance(m, dict) else 'unknown'
+                               for m in metadata_train])
+    val_patients = np.array([m.get('patient', 'unknown') if isinstance(m, dict) else 'unknown'
+                             for m in metadata_val])
+
+    # Stage 2: Global baseline
+    print("  [Stage 2] Global baseline...")
+    global_clf = XGBClassifier(
+        n_estimators=200, max_depth=6, learning_rate=0.1,
+        num_class=n_classes, objective='multi:softprob',
+        eval_metric='mlogloss', random_state=42, verbosity=0
+    )
+    try:
+        global_clf.fit(X_train, y_train_local, eval_set=[(X_val, y_val_local)], verbose=False)
+    except Exception:
+        global_clf.fit(X_train, y_train_local, verbose=False)
+    global_preds = global_clf.predict(X_val)
+    global_wf1 = f1_score(y_val_local, global_preds, average='weighted')
+    global_mf1 = f1_score(y_val_local, global_preds, average='macro')
+    global_mcc = matthews_corrcoef(y_val_local, global_preds)
+    print(f"    Global: wF1={global_wf1:.4f}, mF1={global_mf1:.4f}, MCC={global_mcc:.4f}")
+
+    # Stage 3: Per-patient stratified oversampling
+    print("  [Stage 3] Per-patient stratified oversampling...")
+    oversampled_X = []
+    oversampled_y = []
+
+    for pid in pids:
+        mask = train_patients == pid
+        if mask.sum() == 0:
+            continue
+
+        X_p = X_train[mask]
+        y_p = y_train_local[mask]
+
+        # Find minority classes for this patient
+        unique, counts = np.unique(y_p, return_counts=True)
+        max_count = max(counts)
+        target_count = max(int(max_count * 0.15), 10)  # At least 15% of majority
+
+        for cls, cnt in zip(unique, counts):
+            cls_mask = y_p == cls
+            cls_X = X_p[cls_mask]
+            cls_y = y_p[cls_mask]
+
+            if cnt < target_count:
+                # Oversample with replacement + small noise
+                n_needed = target_count - cnt
+                indices = np.random.choice(cnt, n_needed, replace=True)
+                noise = np.random.normal(0, 0.01, (n_needed, cls_X.shape[1]))
+                augmented_X = cls_X[indices] + noise
+                oversampled_X.append(np.vstack([cls_X, augmented_X]))
+                oversampled_y.append(np.concatenate([cls_y, np.full(n_needed, cls)]))
+            else:
+                oversampled_X.append(cls_X)
+                oversampled_y.append(cls_y)
+
+    X_train_os = np.vstack(oversampled_X)
+    y_train_os = np.concatenate(oversampled_y)
+    print(f"    Oversampled: {len(X_train)} -> {len(X_train_os)} samples")
+
+    # Stage 4: Train on oversampled data
+    print("  [Stage 4] Training on oversampled data...")
+    os_clf = XGBClassifier(
+        n_estimators=200, max_depth=6, learning_rate=0.1,
+        num_class=n_classes, objective='multi:softprob',
+        eval_metric='mlogloss', random_state=42, verbosity=0
+    )
+    try:
+        os_clf.fit(X_train_os, y_train_os, eval_set=[(X_val, y_val_local)], verbose=False)
+    except Exception:
+        os_clf.fit(X_train_os, y_train_os, verbose=False)
+    os_preds = os_clf.predict(X_val)
+    os_wf1 = f1_score(y_val_local, os_preds, average='weighted')
+    os_mf1 = f1_score(y_val_local, os_preds, average='macro')
+    os_mcc = matthews_corrcoef(y_val_local, os_preds)
+    print(f"    Oversampled: wF1={os_wf1:.4f}, mF1={os_mf1:.4f}, MCC={os_mcc:.4f}")
+
+    # Stage 5: Per-patient eval with oversampled model + per-patient z-norm
+    print("  [Stage 5] Per-patient evaluation with z-norm...")
+    per_patient_results = {}
+    all_preds_pp = []
+    all_true_pp = []
+
+    for pid in pids:
+        train_mask = train_patients == pid
+        val_mask = val_patients == pid
+        if train_mask.sum() == 0 or val_mask.sum() == 0:
+            continue
+
+        X_p_train = X_train[train_mask]
+        X_p_val = X_val[val_mask]
+        y_p_val = y_val_local[val_mask]
+
+        # Z-normalize per patient
+        mu = X_p_train.mean(axis=0)
+        sigma = X_p_train.std(axis=0) + 1e-8
+        X_p_val_z = (X_p_val - mu) / sigma
+
+        # Retrain per-patient model on z-normed oversampled
+        X_p_train_z = (X_p_train - mu) / sigma
+        y_p_train = y_train_local[train_mask]
+
+        # Oversample this patient's training data
+        unique, counts = np.unique(y_p_train, return_counts=True)
+        max_count = max(counts) if len(counts) > 0 else 10
+        target = max(int(max_count * 0.15), 5)
+
+        os_X_parts, os_y_parts = [], []
+        for cls, cnt in zip(unique, counts):
+            cls_mask = y_p_train == cls
+            if cnt < target:
+                n_needed = target - cnt
+                idx = np.random.choice(cnt, n_needed, replace=True)
+                noise = np.random.normal(0, 0.01, (n_needed, X_p_train_z.shape[1]))
+                os_X_parts.append(np.vstack([X_p_train_z[cls_mask], X_p_train_z[cls_mask][idx] + noise]))
+                os_y_parts.append(np.concatenate([y_p_train[cls_mask], np.full(n_needed, cls)]))
+            else:
+                os_X_parts.append(X_p_train_z[cls_mask])
+                os_y_parts.append(y_p_train[cls_mask])
+
+        X_pp_train = np.vstack(os_X_parts)
+        y_pp_train = np.concatenate(os_y_parts)
+
+        # Local label remap
+        pp_labels = sorted(set(y_pp_train))
+        pp_map = {old: new for new, old in enumerate(pp_labels)}
+        pp_rev = {new: old for old, new in pp_map.items()}
+        y_pp_train_l = np.array([pp_map[y] for y in y_pp_train])
+
+        pp_clf = XGBClassifier(
+            n_estimators=150, max_depth=6, learning_rate=0.1,
+            num_class=len(pp_labels), objective='multi:softprob',
+            eval_metric='mlogloss', random_state=42, verbosity=0
+        )
+        try:
+            y_pp_val_l = np.array([pp_map.get(y, 0) for y in y_p_val])
+            pp_clf.fit(X_pp_train, y_pp_train_l, eval_set=[(X_p_val_z, y_pp_val_l)], verbose=False)
+        except Exception:
+            pp_clf.fit(X_pp_train, y_pp_train_l, verbose=False)
+
+        pp_preds_l = pp_clf.predict(X_p_val_z)
+        pp_preds = np.array([pp_rev.get(int(p), 0) for p in pp_preds_l])
+
+        f1_pp = f1_score(y_p_val, pp_preds, average='weighted', zero_division=0)
+        all_preds_pp.extend(pp_preds.tolist())
+        all_true_pp.extend(y_p_val.tolist())
+
+        per_patient_results[pid] = {
+            'n_train': int(train_mask.sum()),
+            'n_val': int(val_mask.sum()),
+            'f1': round(f1_pp, 4),
+            'n_oversampled': len(X_pp_train)
+        }
+        print(f"    {pid}: F1={f1_pp:.4f} (n_train={train_mask.sum()}, n_val={val_mask.sum()})")
+
+    if all_preds_pp:
+        pp_wf1 = f1_score(all_true_pp, all_preds_pp, average='weighted')
+        pp_mf1 = f1_score(all_true_pp, all_preds_pp, average='macro')
+        pp_mcc = matthews_corrcoef(all_true_pp, all_preds_pp)
+    else:
+        pp_wf1 = pp_mf1 = pp_mcc = 0
+
+    print(f"\n  Per-patient + oversampled: wF1={pp_wf1:.4f}, mF1={pp_mf1:.4f}, MCC={pp_mcc:.4f}")
+
+    result = ({
+        'experiment': 'EXP-217: Stratified Per-Patient Oversampled Events',
+        'hypothesis': 'Per-patient oversampling preserves patient-specific patterns',
+        'global_weighted_f1': round(global_wf1, 4),
+        'global_macro_f1': round(global_mf1, 4),
+        'global_mcc': round(global_mcc, 4),
+        'oversampled_weighted_f1': round(os_wf1, 4),
+        'oversampled_macro_f1': round(os_mf1, 4),
+        'oversampled_mcc': round(os_mcc, 4),
+        'per_patient_weighted_f1': round(pp_wf1, 4),
+        'per_patient_macro_f1': round(pp_mf1, 4),
+        'per_patient_mcc': round(pp_mcc, 4),
+        'per_patient': per_patient_results,
+        'n_train_original': len(X_train),
+        'n_train_oversampled': len(X_train_os)
+    })
+    out_path = os.path.join(args.output_dir, "exp217_stratified_oversampled.json")
+    with open(out_path, "w") as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+
+def run_per_patient_meal_ensemble(args):
+    """EXP-218: Per-patient ensemble meal detection proof-of-concept.
+    Hypothesis: Meals are the clearest event signal. Per-patient ensemble
+    should achieve high F1 and validate the per-patient+ensemble strategy.
+    """
+    import json, os, numpy as np
+    from xgboost import XGBClassifier
+    from sklearn.metrics import f1_score, precision_score, recall_score
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp218_meal_ensemble', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    pids = sorted([d for d in os.listdir(patients_dir)
+                   if os.path.isdir(os.path.join(patients_dir, d))])
+
+    # Stage 1: Build dataset and extract meal labels
+    print("  [Stage 1] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+
+    X_train, y_train = train_data['tabular'], train_data['labels']
+    X_val, y_val = val_data['tabular'], val_data['labels']
+    label_map = train_data['label_map']
+    metadata_train = train_data['metadata']
+    metadata_val = val_data['metadata']
+
+    # Find meal-related labels
+    rev_map = {v: k for k, v in label_map.items()}
+    meal_labels = set()
+    for label_id, label_name in rev_map.items():
+        name_lower = label_name.lower() if isinstance(label_name, str) else ''
+        if any(kw in name_lower for kw in ['meal', 'eat', 'carb', 'bolus', 'food']):
+            meal_labels.add(label_id)
+
+    if not meal_labels:
+        # Fallback: use the most common non-normal label as "meal proxy"
+        unique, counts = np.unique(y_train, return_counts=True)
+        sorted_idx = np.argsort(-counts)
+        if len(sorted_idx) > 1:
+            meal_labels = {unique[sorted_idx[1]]}  # Second most common
+        else:
+            meal_labels = {unique[0]}
+
+    print(f"    Meal labels: {meal_labels} -> {[rev_map.get(l, l) for l in meal_labels]}")
+
+    # Binary: meal vs non-meal
+    y_train_meal = np.array([1 if y in meal_labels else 0 for y in y_train])
+    y_val_meal = np.array([1 if y in meal_labels else 0 for y in y_val])
+    train_patients = np.array([m.get('patient', 'unknown') if isinstance(m, dict) else 'unknown'
+                               for m in metadata_train])
+    val_patients = np.array([m.get('patient', 'unknown') if isinstance(m, dict) else 'unknown'
+                             for m in metadata_val])
+
+    print(f"    Train: {y_train_meal.sum()}/{len(y_train_meal)} meal ({y_train_meal.mean()*100:.1f}%)")
+    print(f"    Val: {y_val_meal.sum()}/{len(y_val_meal)} meal ({y_val_meal.mean()*100:.1f}%)")
+
+    # Stage 2: Global baseline
+    print("  [Stage 2] Global baseline...")
+    global_clf = XGBClassifier(
+        n_estimators=200, max_depth=6, learning_rate=0.1,
+        objective='binary:logistic', eval_metric='logloss',
+        scale_pos_weight=len(y_train_meal) / max(y_train_meal.sum(), 1) - 1,
+        random_state=42, verbosity=0
+    )
+    try:
+        global_clf.fit(X_train, y_train_meal, eval_set=[(X_val, y_val_meal)], verbose=False)
+    except Exception:
+        global_clf.fit(X_train, y_train_meal, verbose=False)
+    global_preds = global_clf.predict(X_val)
+    global_proba = global_clf.predict_proba(X_val)[:, 1]
+    global_f1 = f1_score(y_val_meal, global_preds)
+    global_prec = precision_score(y_val_meal, global_preds, zero_division=0)
+    global_rec = recall_score(y_val_meal, global_preds, zero_division=0)
+    print(f"    Global: F1={global_f1:.4f}, Prec={global_prec:.4f}, Rec={global_rec:.4f}")
+
+    # Stage 3: Per-patient ensemble (5 seeds per patient)
+    print("  [Stage 3] Per-patient ensemble (5 seeds)...")
+    per_patient_results = {}
+    all_preds_pp = []
+    all_true_pp = []
+    all_proba_pp = []
+
+    for pid in pids:
+        train_mask = train_patients == pid
+        val_mask = val_patients == pid
+        if train_mask.sum() < 20 or val_mask.sum() < 5:
+            continue
+
+        X_p_train = X_train[train_mask]
+        y_p_train = y_train_meal[train_mask]
+        X_p_val = X_val[val_mask]
+        y_p_val = y_val_meal[val_mask]
+
+        # Z-normalize
+        mu = X_p_train.mean(axis=0)
+        sigma = X_p_train.std(axis=0) + 1e-8
+        X_p_train_z = (X_p_train - mu) / sigma
+        X_p_val_z = (X_p_val - mu) / sigma
+
+        # Ensemble of 5 seeds
+        ensemble_proba = np.zeros(len(X_p_val))
+        n_seeds = 5
+        for seed in range(n_seeds):
+            clf = XGBClassifier(
+                n_estimators=150, max_depth=6, learning_rate=0.1,
+                objective='binary:logistic', eval_metric='logloss',
+                scale_pos_weight=len(y_p_train) / max(y_p_train.sum(), 1) - 1,
+                random_state=seed * 42, verbosity=0,
+                subsample=0.8, colsample_bytree=0.8
+            )
+            try:
+                clf.fit(X_p_train_z, y_p_train, eval_set=[(X_p_val_z, y_p_val)], verbose=False)
+            except Exception:
+                clf.fit(X_p_train_z, y_p_train, verbose=False)
+            ensemble_proba += clf.predict_proba(X_p_val_z)[:, 1]
+
+        ensemble_proba /= n_seeds
+        ensemble_preds = (ensemble_proba > 0.5).astype(int)
+
+        f1_pp = f1_score(y_p_val, ensemble_preds, zero_division=0)
+        prec_pp = precision_score(y_p_val, ensemble_preds, zero_division=0)
+        rec_pp = recall_score(y_p_val, ensemble_preds, zero_division=0)
+
+        all_preds_pp.extend(ensemble_preds.tolist())
+        all_true_pp.extend(y_p_val.tolist())
+        all_proba_pp.extend(ensemble_proba.tolist())
+
+        per_patient_results[pid] = {
+            'f1': round(f1_pp, 4),
+            'precision': round(prec_pp, 4),
+            'recall': round(rec_pp, 4),
+            'n_train': int(train_mask.sum()),
+            'n_val': int(val_mask.sum()),
+            'meal_rate_train': round(float(y_p_train.mean()), 4),
+            'meal_rate_val': round(float(y_p_val.mean()), 4)
+        }
+        print(f"    {pid}: F1={f1_pp:.4f}, Prec={prec_pp:.4f}, Rec={rec_pp:.4f}")
+
+    if all_preds_pp:
+        pp_f1 = f1_score(all_true_pp, all_preds_pp, zero_division=0)
+        pp_prec = precision_score(all_true_pp, all_preds_pp, zero_division=0)
+        pp_rec = recall_score(all_true_pp, all_preds_pp, zero_division=0)
+    else:
+        pp_f1 = pp_prec = pp_rec = 0
+
+    print(f"\n  Per-patient ensemble: F1={pp_f1:.4f}, Prec={pp_prec:.4f}, Rec={pp_rec:.4f}")
+    print(f"  vs Global: F1={global_f1:.4f}, Prec={global_prec:.4f}, Rec={global_rec:.4f}")
+
+    result = ({
+        'experiment': 'EXP-218: Per-Patient Ensemble Meal Detection',
+        'hypothesis': 'Meals are clearest signal; per-patient ensemble maximizes F1',
+        'meal_labels': list(meal_labels),
+        'meal_label_names': [rev_map.get(l, str(l)) for l in meal_labels],
+        'global_f1': round(global_f1, 4),
+        'global_precision': round(global_prec, 4),
+        'global_recall': round(global_rec, 4),
+        'per_patient_f1': round(pp_f1, 4),
+        'per_patient_precision': round(pp_prec, 4),
+        'per_patient_recall': round(pp_rec, 4),
+        'improvement_f1_pct': round((pp_f1 - global_f1) / max(global_f1, 0.001) * 100, 1),
+        'per_patient': per_patient_results
+    })
+    out_path = os.path.join(args.output_dir, "exp218_meal_ensemble.json")
+    with open(out_path, "w") as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+
+REGISTRY.update({
+    # Phase 13
+    'per-patient-adapters': 'run_per_patient_forecast_adapters',
+    'time-routed-events': 'run_time_of_day_routed_events',
+    'per-patient-drift': 'run_per_patient_bayesian_drift',
+    'stratified-oversampled': 'run_stratified_per_patient_oversampled',
+    'meal-ensemble': 'run_per_patient_meal_ensemble',
+})

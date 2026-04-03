@@ -1,0 +1,141 @@
+{
+  "experiment": "EXP-216: Per-Patient Bayesian Drift Detection",
+  "hypothesis": "Per-patient drift-TIR correlation beats global",
+  "median_correlation": -0.0986,
+  "mean_correlation": -0.1124,
+  "fisher_meta_r": -0.113,
+  "negative_count": 10,
+  "total_patients": 10,
+  "per_patient": {
+    "a": {
+      "isf": 40.0,
+      "drift_tir_corr": -0.1861,
+      "drift_tir_pval": 0.0,
+      "mean_drift": 0.911,
+      "std_drift": 0.1935,
+      "state_distribution": {
+        "resistance": 0.5169753086419753,
+        "stable": 0.23713991769547324,
+        "sensitivity": 0.24588477366255143
+      },
+      "n_windows": 1944
+    },
+    "b": {
+      "isf": 40.0,
+      "drift_tir_corr": -0.1223,
+      "drift_tir_pval": 0.0,
+      "mean_drift": 0.9557,
+      "std_drift": 0.1903,
+      "state_distribution": {
+        "resistance": 0.4094650205761317,
+        "stable": 0.2752057613168724,
+        "sensitivity": 0.3153292181069959
+      },
+      "n_windows": 1944
+    },
+    "c": {
+      "isf": 40.0,
+      "drift_tir_corr": -0.2505,
+      "drift_tir_pval": 0.0,
+      "mean_drift": 0.9115,
+      "std_drift": 0.2039,
+      "state_distribution": {
+        "resistance": 0.5211267605633803,
+        "stable": 0.1977699530516432,
+        "sensitivity": 0.2811032863849765
+      },
+      "n_windows": 1704
+    },
+    "d": {
+      "isf": 40.0,
+      "drift_tir_corr": -0.0907,
+      "drift_tir_pval": 0.0001,
+      "mean_drift": 0.9367,
+      "std_drift": 0.178,
+      "state_distribution": {
+        "resistance": 0.4711111111111111,
+        "stable": 0.27555555555555555,
+        "sensitivity": 0.25333333333333335
+      },
+      "n_windows": 1800
+    },
+    "e": {
+      "isf": 40.0,
+      "drift_tir_corr": -0.0651,
+      "drift_tir_pval": 0.0088,
+      "mean_drift": 0.9767,
+      "std_drift": 0.1769,
+      "state_distribution": {
+        "resistance": 0.34620098039215685,
+        "stable": 0.3400735294117647,
+        "sensitivity": 0.3137254901960784
+      },
+      "n_windows": 1632
+    },
+    "f": {
+      "isf": 40.0,
+      "drift_tir_corr": -0.181,
+      "drift_tir_pval": 0.0,
+      "mean_drift": 0.9448,
+      "std_drift": 0.1902,
+      "state_distribution": {
+        "resistance": 0.43354430379746833,
+        "stable": 0.2732067510548523,
+        "sensitivity": 0.29324894514767935
+      },
+      "n_windows": 1896
+    },
+    "g": {
+      "isf": 40.0,
+      "drift_tir_corr": -0.1065,
+      "drift_tir_pval": 0.0,
+      "mean_drift": 0.9522,
+      "std_drift": 0.1856,
+      "state_distribution": {
+        "resistance": 0.41452991452991456,
+        "stable": 0.297008547008547,
+        "sensitivity": 0.28846153846153844
+      },
+      "n_windows": 1872
+    },
+    "h": {
+      "isf": 40.0,
+      "drift_tir_corr": -0.0344,
+      "drift_tir_pval": 0.3865,
+      "mean_drift": 0.963,
+      "std_drift": 0.1788,
+      "state_distribution": {
+        "resistance": 0.3734567901234568,
+        "stable": 0.3256172839506173,
+        "sensitivity": 0.30092592592592593
+      },
+      "n_windows": 648
+    },
+    "i": {
+      "isf": 40.0,
+      "drift_tir_corr": -0.0006,
+      "drift_tir_pval": 0.9802,
+      "mean_drift": 0.9798,
+      "std_drift": 0.1992,
+      "state_distribution": {
+        "resistance": 0.37083333333333335,
+        "stable": 0.23802083333333332,
+        "sensitivity": 0.39114583333333336
+      },
+      "n_windows": 1920
+    },
+    "j": {
+      "isf": 40.0,
+      "drift_tir_corr": -0.0866,
+      "drift_tir_pval": 0.0322,
+      "mean_drift": 0.9873,
+      "std_drift": 0.1845,
+      "state_distribution": {
+        "resistance": 0.2916666666666667,
+        "stable": 0.34615384615384615,
+        "sensitivity": 0.36217948717948717
+      },
+      "n_windows": 624
+    }
+  }
+}
