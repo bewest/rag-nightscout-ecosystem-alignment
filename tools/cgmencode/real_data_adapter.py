@@ -515,10 +515,10 @@ def build_extended_features(df: pd.DataFrame, features: np.ndarray,
                             verbose: bool = False,
                             ) -> np.ndarray:
     """
-    Extend the 8-feature grid with agentic context features (→ 19 features).
+    Extend the 8-feature grid with agentic context features (→ 21 features).
 
     Adds: day-of-week encoding, override state, glucose dynamics, temporal gaps,
-    CAGE (cannula age), SAGE (sensor age), and sensor warmup flag.
+    CAGE (cannula age), SAGE (sensor age), sensor warmup flag, and monthly phase.
     The first 8 columns are identical to the input features array.
 
     Args:
@@ -529,7 +529,7 @@ def build_extended_features(df: pd.DataFrame, features: np.ndarray,
         verbose: Print progress
 
     Returns:
-        (N, 19) normalized float32 array matching EXTENDED_FEATURE_NAMES
+        (N, 21) normalized float32 array matching EXTENDED_FEATURE_NAMES
     """
     N = len(features)
     extended = np.zeros((N, NUM_FEATURES_EXTENDED), dtype=np.float32)
@@ -585,6 +585,13 @@ def build_extended_features(df: pd.DataFrame, features: np.ndarray,
     # --- Channel 18: Sensor warmup flag (binary, 1.0 during first 2h after Sensor Start) ---
     if 'sensor_warmup' in df.columns:
         extended[:, 18] = df['sensor_warmup'].values.astype(np.float32)
+
+    # --- Channel 19–20: Month-of-year encoding (sin/cos, period ≈ 30.4 days) ---
+    # Use patient-local time for day-of-month
+    dom = local_index.day.values.astype(np.float64)  # 1–31
+    MEAN_MONTH_DAYS = 30.4375  # average days per month
+    extended[:, 19] = np.sin(2 * np.pi * dom / MEAN_MONTH_DAYS).astype(np.float32)
+    extended[:, 20] = np.cos(2 * np.pi * dom / MEAN_MONTH_DAYS).astype(np.float32)
 
     if verbose:
         print(f"  Extended features: {extended.shape}")

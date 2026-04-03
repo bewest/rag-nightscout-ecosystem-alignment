@@ -37,6 +37,10 @@ IDX_CAGE_HOURS          = 16  # Hours since last Site Change (cannula age)
 IDX_SAGE_HOURS          = 17  # Hours since last Sensor Start (sensor age)
 IDX_SENSOR_WARMUP       = 18  # Binary: 1.0 during first 2h after Sensor Start
 
+# ── Monthly phase encoding ──────────────────────────────────────────────
+IDX_MONTH_SIN           = 19  # sin(2π · day_of_month / 30.4) — monthly patterns
+IDX_MONTH_COS           = 20  # cos(2π · day_of_month / 30.4)
+
 # ── Semantic groups ─────────────────────────────────────────────────────
 STATE_IDX  = [IDX_GLUCOSE, IDX_IOB, IDX_COB]
 ACTION_IDX = [IDX_NET_BASAL, IDX_BOLUS, IDX_CARBS]
@@ -49,11 +53,12 @@ OVERRIDE_IDX  = [IDX_OVERRIDE_ACTIVE, IDX_OVERRIDE_TYPE]
 DYNAMICS_IDX  = [IDX_GLUCOSE_ROC, IDX_GLUCOSE_ACCEL]
 TEMPORAL_IDX  = [IDX_TIME_SINCE_BOLUS, IDX_TIME_SINCE_CARB]
 DEVICE_IDX    = [IDX_CAGE_HOURS, IDX_SAGE_HOURS, IDX_SENSOR_WARMUP]
-CONTEXT_IDX   = WEEKDAY_IDX + OVERRIDE_IDX + DYNAMICS_IDX + TEMPORAL_IDX + DEVICE_IDX
+MONTHLY_IDX   = [IDX_MONTH_SIN, IDX_MONTH_COS]
+CONTEXT_IDX   = WEEKDAY_IDX + OVERRIDE_IDX + DYNAMICS_IDX + TEMPORAL_IDX + DEVICE_IDX + MONTHLY_IDX
 
 # ── Feature counts ──────────────────────────────────────────────────────
 NUM_FEATURES = 8                  # Core — existing models use this
-NUM_FEATURES_EXTENDED = 19        # Core + extended context + CAGE/SAGE
+NUM_FEATURES_EXTENDED = 21        # Core + extended context + CAGE/SAGE + monthly
 
 FEATURE_NAMES = ['glucose', 'iob', 'cob', 'net_basal', 'bolus', 'carbs', 'time_sin', 'time_cos']
 
@@ -63,6 +68,7 @@ EXTENDED_FEATURE_NAMES = FEATURE_NAMES + [
     'glucose_roc', 'glucose_accel',
     'time_since_bolus', 'time_since_carb',
     'cage_hours', 'sage_hours', 'sensor_warmup',
+    'month_sin', 'month_cos',
 ]
 
 # ── Override type encoding ──────────────────────────────────────────────
@@ -135,4 +141,6 @@ EXTENDED_SCALE_ARRAY = SCALE_ARRAY + [
     NORMALIZATION_SCALES['cage_hours'],
     NORMALIZATION_SCALES['sage_hours'],
     1.0,  # sensor_warmup (binary)
+    1.0,  # month_sin (native)
+    1.0,  # month_cos (native)
 ]
