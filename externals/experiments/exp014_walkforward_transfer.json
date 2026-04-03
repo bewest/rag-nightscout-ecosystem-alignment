@@ -1,0 +1,144 @@
+{
+  "experiment": "EXP-014",
+  "timestamp": "2026-04-02T19:25:47Z",
+  "patient": {
+    "isf": 48.64914,
+    "cr": 4.0
+  },
+  "has_synthetic": true,
+  "synthetic_residual_stats": {
+    "mean": -16.484034325694786,
+    "std": 54.39257088460878,
+    "min": -376.0425777435303,
+    "max": 265.0071451033,
+    "p5": -103.62092764899134,
+    "p95": 65.131815983355,
+    "scale": 200.0,
+    "level": "enhanced"
+  },
+  "walk_forward": {
+    "split_date": "2026-02-06",
+    "train_days": 126,
+    "test_days": 53,
+    "gap_days": 1,
+    "train_windows": 2632,
+    "test_windows": 1103
+  },
+  "physics_only": {
+    "mae_mgdl": 33.36,
+    "rmse_mgdl": 62.73
+  },
+  "persistence": {
+    "mae_mgdl": 40.07,
+    "rmse_mgdl": 58.74
+  },
+  "ae": {
+    "transfer": {
+      "reconstruction": {
+        "mae_mgdl": 1.28,
+        "rmse_mgdl": 1.72
+      },
+      "future_only": {
+        "mae_mgdl": 2.49,
+        "rmse_mgdl": 3.17,
+        "history_steps": 12,
+        "future_steps": 12,
+        "per_horizon": {
+          "5min": 1.65,
+          "10min": 2.95,
+          "15min": 3.41,
+          "20min": 2.78,
+          "25min": 2.08,
+          "30min": 1.9,
+          "35min": 2.71,
+          "40min": 2.61,
+          "45min": 2.58,
+          "50min": 2.9,
+          "55min": 2.21,
+          "60min": 2.08
+        }
+      }
+    },
+    "scratch": {
+      "reconstruction": {
+        "mae_mgdl": 1.22,
+        "rmse_mgdl": 1.73
+      },
+      "future_only": {
+        "mae_mgdl": 4.99,
+        "rmse_mgdl": 6.38,
+        "history_steps": 12,
+        "future_steps": 12,
+        "per_horizon": {
+          "5min": 6.93,
+          "10min": 6.37,
+          "15min": 7.27,
+          "20min": 7.86,
+          "25min": 6.46,
+          "30min": 5.91,
+          "35min": 4.35,
+          "40min": 3.47,
+          "45min": 2.62,
+          "50min": 2.83,
+          "55min": 3.28,
+          "60min": 2.49
+        }
+      }
+    }
+  },
+  "grouped": {
+    "transfer": {
+      "reconstruction": {
+        "mae_mgdl": 0.64,
+        "rmse_mgdl": 0.9
+      },
+      "future_only": {
+        "mae_mgdl": 3.2,
+        "rmse_mgdl": 4.41,
+        "history_steps": 12,
+        "future_steps": 12,
+        "per_horizon": {
+          "5min": 5.75,
+          "10min": 7.68,
+          "15min": 8.21,
+          "20min": 5.83,
+          "25min": 2.35,
+          "30min": 1.39,
+          "35min": 1.43,
+          "40min": 1.28,
+          "45min": 0.97,
+          "50min": 1.23,
+          "55min": 1.05,
+          "60min": 1.2
+        }
+      }
+    },
+    "scratch": {
+      "reconstruction": {
+        "mae_mgdl": 0.9,
+        "rmse_mgdl": 1.23
+      },
+      "future_only": {
+        "mae_mgdl": 4.84,
+        "rmse_mgdl": 6.88,
+        "history_steps": 12,
+        "future_steps": 12,
+        "per_horizon": {
+          "5min": 10.59,
+          "10min": 11.68,
+          "15min": 11.47,
+          "20min": 8.7,
+          "25min": 4.55,
+          "30min": 1.67,
+          "35min": 2.18,
+          "40min": 1.58,
+          "45min": 1.48,
+          "50min": 1.55,
+          "55min": 1.46,
+          "60min": 1.19
+        }
+      }
+    }
+  },
+  "elapsed_seconds": 68.9
+}

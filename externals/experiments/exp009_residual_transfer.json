@@ -1,0 +1,54 @@
+{
+  "experiment": "EXP-009",
+  "timestamp": "2026-04-02T19:25:47Z",
+  "patient": {
+    "isf": 2.7,
+    "cr": 4.0
+  },
+  "has_synthetic": true,
+  "synthetic_residual_stats": {
+    "mean": -6.770044443003674,
+    "std": 41.242971373185554,
+    "min": -212.60834343591705,
+    "max": 264.94424269713636,
+    "p5": -71.29045154363848,
+    "p95": 60.51783724348052,
+    "scale": 200.0,
+    "level": "enhanced"
+  },
+  "real_samples": {
+    "train": 3004,
+    "val": 751
+  },
+  "real_residual_stats": {
+    "mean": -7.623032245108757,
+    "std": 51.96861842719054,
+    "min": -345.67641906812787,
+    "max": 280.7710135281086,
+    "p5": -91.10581832937896,
+    "p95": 80.69955626432784,
+    "scale": 200.0,
+    "level": "enhanced"
+  },
+  "zero_shot": {
+    "mae_mgdl": 22.88,
+    "rmse_mgdl": 30.34
+  },
+  "transfer": {
+    "mae_mgdl": 0.65,
+    "rmse_mgdl": 0.86
+  },
+  "scratch": {
+    "mae_mgdl": 0.76,
+    "rmse_mgdl": 1.05
+  },
+  "physics_only": {
+    "mae_mgdl": 37.92,
+    "rmse_mgdl": 54.48
+  },
+  "persistence": {
+    "mae_mgdl": 40.91,
+    "rmse_mgdl": 58.94
+  },
+  "elapsed_seconds": 60.9
+}
