@@ -24,6 +24,22 @@ class FixtureEncoder:
         if not profile or 'basalSchedule' not in profile:
             return self.default_basal_rate
         
+        # basalSchedule uses local-time startSeconds, so convert timestamp if tz-aware
+        if hasattr(timestamp, 'tzinfo') and timestamp.tzinfo is not None:
+            tz_str = profile.get('timezone', '') if isinstance(profile, dict) else ''
+            if tz_str:
+                if tz_str.upper().startswith('ETC/'):
+                    tz_str = 'Etc/' + tz_str[4:]
+                try:
+                    import pytz
+                    timestamp = timestamp.astimezone(pytz.timezone(tz_str))
+                except Exception:
+                    try:
+                        from zoneinfo import ZoneInfo
+                        timestamp = timestamp.astimezone(ZoneInfo(tz_str))
+                    except Exception:
+                        pass  # Use UTC if conversion fails
+
         seconds = timestamp.hour * 3600 + timestamp.minute * 60 + timestamp.second
         active_rate = self.default_basal_rate
         for entry in sorted(profile['basalSchedule'], key=lambda x: x['startSeconds']):
@@ -138,8 +154,22 @@ class FixtureEncoder:
         if 'smb' in df.columns: df['bolus'] += df['smb'].fillna(0)
 
         # --- NEW: CIRCADIAN TIME FEATURES ---
-        # Maps hour [0-23] to circular coordinates
-        hours = df.index.hour + df.index.minute / 60.0
+        # Use patient-local time for circadian encoding when profile has timezone
+        tz_str = profile.get('timezone', '') if isinstance(profile, dict) else ''
+        if tz_str:
+            # Normalize Nightscout timezone format (ETC/GMT+7 → Etc/GMT+7)
+            if tz_str.upper().startswith('ETC/'):
+                tz_str = 'Etc/' + tz_str[4:]
+            try:
+                if df.index.tz is not None:
+                    local_idx = df.index.tz_convert(tz_str)
+                else:
+                    local_idx = df.index.tz_localize('UTC').tz_convert(tz_str)
+                hours = local_idx.hour + local_idx.minute / 60.0
+            except Exception:
+                hours = df.index.hour + df.index.minute / 60.0
+        else:
+            hours = df.index.hour + df.index.minute / 60.0
         df['time_sin'] = np.sin(2 * np.pi * hours / 24.0)
         df['time_cos'] = np.cos(2 * np.pi * hours / 24.0)
 

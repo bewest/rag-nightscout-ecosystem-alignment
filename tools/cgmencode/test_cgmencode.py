@@ -96,9 +96,9 @@ class TestSchema(unittest.TestCase):
         from tools.cgmencode.schema import (
             NUM_FEATURES_EXTENDED, EXTENDED_FEATURE_NAMES, EXTENDED_SCALE_ARRAY,
         )
-        self.assertEqual(NUM_FEATURES_EXTENDED, 16)
-        self.assertEqual(len(EXTENDED_FEATURE_NAMES), 16)
-        self.assertEqual(len(EXTENDED_SCALE_ARRAY), 16)
+        self.assertEqual(NUM_FEATURES_EXTENDED, 19)
+        self.assertEqual(len(EXTENDED_FEATURE_NAMES), 19)
+        self.assertEqual(len(EXTENDED_SCALE_ARRAY), 19)
 
     def test_extended_preserves_core(self):
         """First 8 extended features must match core FEATURE_NAMES exactly."""
@@ -1011,7 +1011,7 @@ class TestExtendedFeatures(unittest.TestCase):
         from tools.cgmencode.real_data_adapter import build_extended_features
         df, features = self._make_synthetic_grid()
         ext = build_extended_features(df, features)
-        self.assertEqual(ext.shape, (100, 16))
+        self.assertEqual(ext.shape, (100, 19))
 
     def test_core_features_preserved(self):
         from tools.cgmencode.real_data_adapter import build_extended_features

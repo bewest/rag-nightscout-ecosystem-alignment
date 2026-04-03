@@ -48,6 +48,34 @@ SCALE = NORMALIZATION_SCALES
 
 # Default DIA for IOB approximation (hours)
 DEFAULT_DIA = 5.0
+
+
+def _normalize_timezone(tz_str: str) -> str:
+    """Normalize Nightscout timezone string to Python-compatible IANA format.
+
+    Nightscout stores 'ETC/GMT+7' (uppercase) while Python/pandas needs 'Etc/GMT+7'.
+    Note: In IANA convention, Etc/GMT+7 = UTC-7 (signs are inverted).
+    """
+    if not tz_str:
+        return 'UTC'
+    # Nightscout uses uppercase 'ETC/' prefix
+    if tz_str.upper().startswith('ETC/'):
+        return 'Etc/' + tz_str[4:]
+    return tz_str
+
+
+def _to_local_index(index: pd.DatetimeIndex, patient_tz: str) -> pd.DatetimeIndex:
+    """Convert a DatetimeIndex to patient-local time for circadian features.
+
+    Returns the index in local time. Falls back to original index on error.
+    """
+    try:
+        if index.tz is not None:
+            return index.tz_convert(patient_tz)
+        else:
+            return index.tz_localize('UTC').tz_convert(patient_tz)
+    except Exception:
+        return index
 # Default carb absorption time (hours)
 DEFAULT_CARB_ABS = 3.0
 
@@ -361,6 +389,60 @@ def build_nightscout_grid(data_path: str,
     if verbose:
         print(f"  Treatments: {bolus_count} bolus, {carb_count} carbs, {temp_count} temp basals")
 
+    # --- 3b. Extract Site Change (CAGE) and Sensor Start (SAGE) events ---
+    site_change_times = []
+    sensor_start_times = []
+    for tx in treatments:
+        et = tx.get('eventType', '')
+        ts_str = tx.get('created_at') or tx.get('timestamp')
+        if not ts_str:
+            continue
+        if et == 'Site Change':
+            site_change_times.append(pd.Timestamp(ts_str))
+        elif et == 'Sensor Start':
+            sensor_start_times.append(pd.Timestamp(ts_str))
+
+    site_change_times.sort()
+    sensor_start_times.sort()
+
+    # Compute hours since last Site Change (cannula age) for each grid point
+    df['cage_hours'] = np.nan
+    if site_change_times:
+        sc_idx = 0
+        for i, ts in enumerate(df.index):
+            while sc_idx < len(site_change_times) - 1 and site_change_times[sc_idx + 1] <= ts:
+                sc_idx += 1
+            if site_change_times[sc_idx] <= ts:
+                delta_h = (ts - site_change_times[sc_idx]).total_seconds() / 3600.0
+                df.iloc[i, df.columns.get_loc('cage_hours')] = delta_h
+
+    # Compute hours since last Sensor Start (sensor age) for each grid point
+    df['sage_hours'] = np.nan
+    if sensor_start_times:
+        ss_idx = 0
+        for i, ts in enumerate(df.index):
+            while ss_idx < len(sensor_start_times) - 1 and sensor_start_times[ss_idx + 1] <= ts:
+                ss_idx += 1
+            if sensor_start_times[ss_idx] <= ts:
+                delta_h = (ts - sensor_start_times[ss_idx]).total_seconds() / 3600.0
+                df.iloc[i, df.columns.get_loc('sage_hours')] = delta_h
+
+    # Detect sensor warmup: first 2 hours after Sensor Start
+    df['sensor_warmup'] = 0.0
+    for ss_ts in sensor_start_times:
+        warmup_end = ss_ts + pd.Timedelta(hours=2)
+        mask = (df.index >= ss_ts) & (df.index < warmup_end)
+        df.loc[mask, 'sensor_warmup'] = 1.0
+
+    if verbose:
+        print(f"  CAGE: {len(site_change_times)} site changes, "
+              f"SAGE: {len(sensor_start_times)} sensor starts, "
+              f"warmup windows: {int(df['sensor_warmup'].sum())} steps")
+
+    # Store raw event timestamps for downstream use
+    df.attrs['site_change_times'] = site_change_times
+    df.attrs['sensor_start_times'] = sensor_start_times
+
     # --- 4. Compute net_basal ---
     with open(data_dir / 'profile.json') as f:
         profiles = json.load(f)
@@ -372,8 +454,21 @@ def build_nightscout_grid(data_path: str,
     default_profile = store.get('Default', store.get(list(store.keys())[0], {})) if store else {}
     basal_schedule = default_profile.get('basal', [])
 
+    # Extract patient timezone for circadian features and basal schedule
+    patient_tz = _normalize_timezone(default_profile.get('timezone', ''))
+    df.attrs['patient_tz'] = patient_tz
+    local_index = _to_local_index(df.index, patient_tz)
+
+    if verbose:
+        tz_offset = ''
+        if local_index is not df.index and len(local_index) > 0:
+            offset = local_index[0].utcoffset()
+            tz_offset = f" (UTC{offset})" if offset else ''
+        print(f"  Patient timezone: {patient_tz}{tz_offset}")
+
+    # Use LOCAL time for basal schedule lookup (timeAsSeconds is local midnight-relative)
     scheduled = np.zeros(len(df))
-    for i, ts in enumerate(df.index):
+    for i, ts in enumerate(local_index):
         sec_of_day = ts.hour * 3600 + ts.minute * 60 + ts.second
         rate = basal_schedule[0]['value'] if basal_schedule else 0
         for entry in basal_schedule:
@@ -391,9 +486,10 @@ def build_nightscout_grid(data_path: str,
               f"{max(e['value'] for e in basal_schedule):.1f}] U/hr")
 
     # --- 5. Build 8-feature array ---
-    hours = df.index.hour + df.index.minute / 60.0
-    time_sin = np.sin(2 * np.pi * hours / 24.0)
-    time_cos = np.cos(2 * np.pi * hours / 24.0)
+    # Use LOCAL time for circadian encoding (patient's actual time-of-day)
+    local_hours = local_index.hour + local_index.minute / 60.0
+    time_sin = np.sin(2 * np.pi * local_hours / 24.0)
+    time_cos = np.cos(2 * np.pi * local_hours / 24.0)
 
     features = np.column_stack([
         df['glucose'].values / SCALE['glucose'],
@@ -419,9 +515,10 @@ def build_extended_features(df: pd.DataFrame, features: np.ndarray,
                             verbose: bool = False,
                             ) -> np.ndarray:
     """
-    Extend the 8-feature grid with agentic context features (→ 16 features).
+    Extend the 8-feature grid with agentic context features (→ 19 features).
 
-    Adds: day-of-week encoding, override state, glucose dynamics, temporal gaps.
+    Adds: day-of-week encoding, override state, glucose dynamics, temporal gaps,
+    CAGE (cannula age), SAGE (sensor age), and sensor warmup flag.
     The first 8 columns are identical to the input features array.
 
     Args:
@@ -432,14 +529,17 @@ def build_extended_features(df: pd.DataFrame, features: np.ndarray,
         verbose: Print progress
 
     Returns:
-        (N, 16) normalized float32 array matching EXTENDED_FEATURE_NAMES
+        (N, 19) normalized float32 array matching EXTENDED_FEATURE_NAMES
     """
     N = len(features)
     extended = np.zeros((N, NUM_FEATURES_EXTENDED), dtype=np.float32)
     extended[:, :8] = features
 
     # --- Channel 8–9: Day-of-week encoding (sin/cos, period=7 days) ---
-    dow = df.index.dayofweek.values.astype(np.float64)  # 0=Monday .. 6=Sunday
+    # Use patient-local time so day-of-week reflects actual local calendar
+    patient_tz = df.attrs.get('patient_tz', 'UTC')
+    local_index = _to_local_index(df.index, patient_tz)
+    dow = local_index.dayofweek.values.astype(np.float64)  # 0=Monday .. 6=Sunday
     extended[:, 8] = np.sin(2 * np.pi * dow / 7.0).astype(np.float32)
     extended[:, 9] = np.cos(2 * np.pi * dow / 7.0).astype(np.float32)
 
@@ -472,11 +572,33 @@ def build_extended_features(df: pd.DataFrame, features: np.ndarray,
         df['carbs'].values, TIME_SINCE_CAP_MIN
     ) / NORMALIZATION_SCALES['time_since_carb']
 
+    # --- Channel 16: Cannula age (hours since last Site Change) ---
+    if 'cage_hours' in df.columns:
+        cage = df['cage_hours'].fillna(NORMALIZATION_SCALES['cage_hours']).values
+        extended[:, 16] = (cage / NORMALIZATION_SCALES['cage_hours']).astype(np.float32)
+
+    # --- Channel 17: Sensor age (hours since last Sensor Start) ---
+    if 'sage_hours' in df.columns:
+        sage = df['sage_hours'].fillna(NORMALIZATION_SCALES['sage_hours']).values
+        extended[:, 17] = (sage / NORMALIZATION_SCALES['sage_hours']).astype(np.float32)
+
+    # --- Channel 18: Sensor warmup flag (binary, 1.0 during first 2h after Sensor Start) ---
+    if 'sensor_warmup' in df.columns:
+        extended[:, 18] = df['sensor_warmup'].values.astype(np.float32)
+
     if verbose:
         print(f"  Extended features: {extended.shape}")
         print(f"  Glucose ROC range: [{roc.min():.1f}, {roc.max():.1f}] mg/dL/5min")
         n_overrides = int(np.sum(extended[:, 10] > 0))
         print(f"  Override active steps: {n_overrides} ({100*n_overrides/max(N,1):.1f}%)")
+        if 'cage_hours' in df.columns:
+            cage_valid = df['cage_hours'].notna().sum()
+            print(f"  CAGE coverage: {cage_valid}/{N} ({100*cage_valid/max(N,1):.1f}%)")
+        if 'sage_hours' in df.columns:
+            sage_valid = df['sage_hours'].notna().sum()
+            warmup_steps = int(df.get('sensor_warmup', pd.Series([0])).sum())
+            print(f"  SAGE coverage: {sage_valid}/{N} ({100*sage_valid/max(N,1):.1f}%), "
+                  f"warmup steps: {warmup_steps}")
 
     return extended
 

@@ -32,6 +32,11 @@ IDX_GLUCOSE_ACCEL       = 13  # Acceleration (Δ rate-of-change), normalized
 IDX_TIME_SINCE_BOLUS    = 14  # Minutes since last bolus, normalized
 IDX_TIME_SINCE_CARB     = 15  # Minutes since last carb entry, normalized
 
+# ── Device lifecycle indices (CAGE/SAGE) ────────────────────────────────
+IDX_CAGE_HOURS          = 16  # Hours since last Site Change (cannula age)
+IDX_SAGE_HOURS          = 17  # Hours since last Sensor Start (sensor age)
+IDX_SENSOR_WARMUP       = 18  # Binary: 1.0 during first 2h after Sensor Start
+
 # ── Semantic groups ─────────────────────────────────────────────────────
 STATE_IDX  = [IDX_GLUCOSE, IDX_IOB, IDX_COB]
 ACTION_IDX = [IDX_NET_BASAL, IDX_BOLUS, IDX_CARBS]
@@ -43,11 +48,12 @@ WEEKDAY_IDX   = [IDX_DAY_SIN, IDX_DAY_COS]
 OVERRIDE_IDX  = [IDX_OVERRIDE_ACTIVE, IDX_OVERRIDE_TYPE]
 DYNAMICS_IDX  = [IDX_GLUCOSE_ROC, IDX_GLUCOSE_ACCEL]
 TEMPORAL_IDX  = [IDX_TIME_SINCE_BOLUS, IDX_TIME_SINCE_CARB]
-CONTEXT_IDX   = WEEKDAY_IDX + OVERRIDE_IDX + DYNAMICS_IDX + TEMPORAL_IDX
+DEVICE_IDX    = [IDX_CAGE_HOURS, IDX_SAGE_HOURS, IDX_SENSOR_WARMUP]
+CONTEXT_IDX   = WEEKDAY_IDX + OVERRIDE_IDX + DYNAMICS_IDX + TEMPORAL_IDX + DEVICE_IDX
 
 # ── Feature counts ──────────────────────────────────────────────────────
 NUM_FEATURES = 8                  # Core — existing models use this
-NUM_FEATURES_EXTENDED = 16        # Core + extended context
+NUM_FEATURES_EXTENDED = 19        # Core + extended context + CAGE/SAGE
 
 FEATURE_NAMES = ['glucose', 'iob', 'cob', 'net_basal', 'bolus', 'carbs', 'time_sin', 'time_cos']
 
@@ -56,6 +62,7 @@ EXTENDED_FEATURE_NAMES = FEATURE_NAMES + [
     'override_active', 'override_type',
     'glucose_roc', 'glucose_accel',
     'time_since_bolus', 'time_since_carb',
+    'cage_hours', 'sage_hours', 'sensor_warmup',
 ]
 
 # ── Override type encoding ──────────────────────────────────────────────
@@ -93,6 +100,8 @@ NORMALIZATION_SCALES = {
     'glucose_accel':      5.0,
     'time_since_bolus': 360.0,
     'time_since_carb':  360.0,
+    'cage_hours':        72.0,   # 3-day infusion set life (0-72h typical)
+    'sage_hours':       240.0,   # 10-day sensor life (0-240h, allows extended wear)
 }
 
 # Glucose clipping range (mg/dL) — applied before normalization
@@ -123,4 +132,7 @@ EXTENDED_SCALE_ARRAY = SCALE_ARRAY + [
     NORMALIZATION_SCALES['glucose_accel'],
     NORMALIZATION_SCALES['time_since_bolus'],
     NORMALIZATION_SCALES['time_since_carb'],
+    NORMALIZATION_SCALES['cage_hours'],
+    NORMALIZATION_SCALES['sage_hours'],
+    1.0,  # sensor_warmup (binary)
 ]
