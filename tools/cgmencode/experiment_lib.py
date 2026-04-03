@@ -223,6 +223,11 @@ def train_forecast(model, train_ds, val_ds, save_path, label,
         half = x.shape[1] // 2
         x_in = x.clone()
         x_in[:, half:, 0] = 0.0          # mask future glucose
+        # Also mask glucose-derived features (ROC, accel) to prevent leak
+        if x_in.shape[2] > 12:
+            x_in[:, half:, 12] = 0.0      # glucose ROC
+        if x_in.shape[2] > 13:
+            x_in[:, half:, 13] = 0.0      # glucose acceleration
         pred = model(x_in, causal=True)
         loss = crit(pred[:, half:, :1], x[:, half:, :1])  # future glucose only
         if backward:
@@ -299,6 +304,11 @@ def forecast_mse(model, val_ds, batch_size=64, mask_future=True):
         if mask_future:
             x_input = x.clone()
             x_input[:, half:, 0] = 0.0  # zero future glucose channel
+            # Also mask glucose-derived features (ROC, accel) to prevent leak
+            if x_input.shape[2] > 12:
+                x_input[:, half:, 12] = 0.0  # glucose ROC
+            if x_input.shape[2] > 13:
+                x_input[:, half:, 13] = 0.0  # glucose acceleration
         else:
             x_input = x
         with torch.no_grad():
