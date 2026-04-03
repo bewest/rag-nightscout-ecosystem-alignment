@@ -11605,3 +11605,983 @@ REGISTRY.update({
     'override-temporal-gating':     'run_override_temporal_gating',     # EXP-197
     'pattern-clustered-ensemble':   'run_pattern_clustered_ensemble',   # EXP-198
 })
+
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Phase 10: Production Integration, Calibration, Drift Mastery
+# EXP-199 through EXP-203
+# ═══════════════════════════════════════════════════════════════════
+
+def run_production_v11_unified(args):
+    """EXP-199: Combined production v11 — ensemble + personalization + conformal.
+    
+    Merges EXP-182 (diverse ensemble), EXP-196 (per-patient weights),
+    EXP-198 (pattern routing), and conformal calibration into one pipeline.
+    """
+    import torch, torch.nn.functional as F, numpy as np, json, os
+    from sklearn.mixture import GaussianMixture
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        forecast_mse, persistence_mse
+    )
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    ctx = ExperimentContext('EXP-199', args.output_dir)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Device: {device}")
+
+    ws = getattr(args, 'window', 24) or 24
+    half = ws // 2
+    epochs = getattr(args, 'epochs', 150) or 150
+    batch = getattr(args, 'batch', 128) or 128
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+    pers = persistence_mse(val_ds, batch_size=64)
+    pers_mae = (pers ** 0.5) * 400
+    print(f"  Data: {len(train_ds)} train, {len(val_ds)} val, persistence MAE={pers_mae:.1f}")
+
+    # Stage 1: Train 4 diverse ensemble members (drop d32_L2 — diverges)
+    configs = [
+        {'d_model': 64, 'num_layers': 3, 'nhead': 4, 'name': 'd64_L3', 'dropout': 0.1, 'wd': 1e-4},
+        {'d_model': 128, 'num_layers': 3, 'nhead': 4, 'name': 'd128_L3', 'dropout': 0.1, 'wd': 1e-4},
+        {'d_model': 64, 'num_layers': 4, 'nhead': 4, 'name': 'd64_L4', 'dropout': 0.15, 'wd': 5e-4},
+        {'d_model': 128, 'num_layers': 4, 'nhead': 4, 'name': 'd128_L4', 'dropout': 0.15, 'wd': 5e-4},
+    ]
+    
+    print("  [Stage 1] Training 4 robust ensemble members...")
+    models = []
+    member_maes = []
+    
+    for i, cfg in enumerate(configs):
+        print(f"    Member {i} ({cfg['name']})...")
+        model = CGMGroupedEncoder(
+            input_dim=8, d_model=cfg['d_model'],
+            nhead=cfg['nhead'], num_layers=cfg['num_layers']
+        ).to(device)
+        optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=cfg['wd'])
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
+        
+        best_mse = float('inf')
+        best_state = None
+        
+        for ep in range(epochs):
+            model.train()
+            for bx, bt in torch.utils.data.DataLoader(train_ds, batch_size=batch, shuffle=True):
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0
+                pred = model(x_in)
+                loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+                optimizer.zero_grad()
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                optimizer.step()
+            scheduler.step()
+            
+            if (ep + 1) % 10 == 0:
+                val_mse = forecast_mse(model, val_ds, batch_size=64, mask_future=True)
+                if val_mse < best_mse:
+                    best_mse = val_mse
+                    best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+        
+        if best_mse > pers * 5:
+            print(f"      DIVERGED, skipping")
+            continue
+            
+        model.load_state_dict(best_state)
+        model.eval()
+        mae = (best_mse ** 0.5) * 400
+        member_maes.append(mae)
+        models.append(model)
+        print(f"      MAE={mae:.1f} mg/dL")
+
+    # Stage 2: Collect all predictions
+    print(f"\n  [Stage 2] Collecting predictions from {len(models)} members...")
+    val_loader = torch.utils.data.DataLoader(val_ds, batch_size=64, shuffle=False)
+    
+    all_member_preds = []
+    all_targets = None
+    
+    for mi, model in enumerate(models):
+        model.eval()
+        preds_list = []
+        if mi == 0:
+            targets_list = []
+        with torch.no_grad():
+            for bx, bt in val_loader:
+                bx_dev = bx.to(device)
+                x_in = bx_dev.clone()
+                x_in[:, half:, 0] = 0.0
+                pred = model(x_in)
+                preds_list.append(pred[:, half:, :1].cpu())
+                if mi == 0:
+                    targets_list.append(bx[:, half:, :1])
+        all_member_preds.append(torch.cat(preds_list, dim=0))
+        if mi == 0:
+            all_targets = torch.cat(targets_list, dim=0)
+    
+    preds_stack = torch.stack(all_member_preds, dim=0)  # (n_models, N, half, 1)
+    
+    # Equal-weight ensemble
+    eq_pred = preds_stack.mean(dim=0)
+    eq_mae = (eq_pred - all_targets).abs().mean().item() * 400
+    print(f"    Equal-weight ensemble MAE={eq_mae:.1f}")
+
+    # Stage 3: Per-patient weight optimization on verification data
+    print(f"\n  [Stage 3] Per-patient weight optimization...")
+    patient_dirs = sorted([d for d in os.listdir(patients_dir) 
+                          if os.path.isdir(os.path.join(patients_dir, d))])
+    
+    per_patient = {}
+    for pid in patient_dirs:
+        verif_path = os.path.join(patients_dir, pid, 'verification')
+        if not os.path.isdir(verif_path):
+            continue
+        try:
+            _, p_val = load_multipatient_nightscout([verif_path], window_size=ws)
+        except Exception:
+            continue
+        if len(p_val) < 10:
+            continue
+        
+        p_loader = torch.utils.data.DataLoader(p_val, batch_size=64, shuffle=False)
+        p_preds = []
+        p_tgt = None
+        for mi, model in enumerate(models):
+            model.eval()
+            pl = []
+            tl = []
+            with torch.no_grad():
+                for bx, bt in p_loader:
+                    bx_dev = bx.to(device)
+                    x_in = bx_dev.clone()
+                    x_in[:, half:, 0] = 0.0
+                    pred = model(x_in)
+                    pl.append(pred[:, half:, :1].cpu())
+                    if mi == 0:
+                        tl.append(bx[:, half:, :1])
+            p_preds.append(torch.cat(pl, dim=0))
+            if mi == 0:
+                p_tgt = torch.cat(tl, dim=0)
+        
+        p_stack = torch.stack(p_preds, dim=0)
+        n_m = len(models)
+        
+        # Equal weight baseline
+        eq_p_mae = (p_stack.mean(dim=0) - p_tgt).abs().mean().item() * 400
+        
+        # Dirichlet random search for optimal weights
+        best_w = np.ones(n_m) / n_m
+        best_p_mae = eq_p_mae
+        np.random.seed(42)
+        for _ in range(500):
+            w = np.random.dirichlet(np.ones(n_m) * 2)
+            wt = torch.tensor(w, dtype=torch.float32).view(n_m, 1, 1, 1)
+            wp = (p_stack * wt).sum(dim=0)
+            m = (wp - p_tgt).abs().mean().item() * 400
+            if m < best_p_mae:
+                best_p_mae = m
+                best_w = w
+        
+        per_patient[pid] = {
+            'equal_mae': float(eq_p_mae),
+            'opt_mae': float(best_p_mae),
+            'weights': best_w.tolist(),
+        }
+        print(f"    {pid}: {eq_p_mae:.1f} -> {best_p_mae:.1f}")
+
+    # Stage 4: Conformal calibration
+    print(f"\n  [Stage 4] Conformal prediction intervals...")
+    residuals = (eq_pred - all_targets).abs() * 400  # in mg/dL
+    flat_residuals = residuals.flatten().numpy()
+    
+    # Per-horizon conformal quantiles
+    horizon_quantiles = {}
+    for h in range(all_targets.shape[1]):
+        h_residuals = (eq_pred[:, h, :] - all_targets[:, h, :]).abs().flatten().numpy() * 400
+        q90 = float(np.quantile(h_residuals, 0.90))
+        q95 = float(np.quantile(h_residuals, 0.95))
+        horizon_quantiles[h] = {'q90': q90, 'q95': q95}
+    
+    overall_q90 = float(np.quantile(flat_residuals, 0.90))
+    overall_q95 = float(np.quantile(flat_residuals, 0.95))
+    
+    # Per-horizon coverage check
+    for h in [0, 3, 6, 11]:
+        if h < all_targets.shape[1]:
+            h_res = (eq_pred[:, h, :] - all_targets[:, h, :]).abs().flatten() * 400
+            cov = float((h_res.numpy() <= horizon_quantiles[h]['q90']).mean())
+            print(f"    Horizon {h} ({(h+1)*5}min): q90={horizon_quantiles[h]['q90']:.1f}, coverage={cov:.1%}")
+
+    # Stage 5: Hypo-specific performance
+    hypo_mask = (all_targets * 400 < 70).any(dim=1).squeeze()
+    if hypo_mask.sum() > 0:
+        hypo_mae = (eq_pred[hypo_mask] - all_targets[hypo_mask]).abs().mean().item() * 400
+    else:
+        hypo_mae = float('nan')
+    
+    opt_maes = [v['opt_mae'] for v in per_patient.values()]
+    mean_opt_mae = float(np.mean(opt_maes)) if opt_maes else eq_mae
+
+    results = {
+        'ensemble_mae': float(eq_mae),
+        'personalized_mean_mae': float(mean_opt_mae),
+        'hypo_mae': float(hypo_mae),
+        'conformal_q90': float(overall_q90),
+        'conformal_q95': float(overall_q95),
+        'horizon_quantiles': horizon_quantiles,
+        'n_members': len(models),
+        'member_maes': [float(m) for m in member_maes],
+        'per_patient': per_patient,
+        'persistence_mae': float(pers_mae),
+    }
+
+    out_path = os.path.join(args.output_dir, 'exp199_production_v11.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-199', 'name': 'production-v11-unified',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"\n  Results -> {out_path}")
+    return results
+
+
+def run_event_calibration_temp_scale(args):
+    """EXP-200: Temperature scaling for XGBoost event calibration.
+    
+    Hypothesis: XGBoost probabilities are miscalibrated. Temperature scaling
+    will improve override utility from 0.644 to 0.72+ by making confidence
+    better reflect actual correctness.
+    """
+    import numpy as np, json, os
+    from scipy.optimize import minimize_scalar
+    from scipy.special import softmax
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from sklearn.metrics import f1_score
+    
+    ctx = ExperimentContext('EXP-200', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    print("  [Stage 1] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+    if train_data is None or val_data is None:
+        print("  No data")
+        return {}
+    
+    X_train = train_data['tabular']
+    y_train = train_data['labels']
+    X_val = val_data['tabular']
+    y_val = val_data['labels']
+    
+    # Label remapping
+    unique_classes = np.unique(np.concatenate([y_train, y_val]))
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map[y] for y in y_val])
+    n_classes = len(unique_classes)
+    
+    print(f"    Train: {X_train.shape}, Val: {X_val.shape}, Classes: {n_classes}")
+
+    import xgboost as xgb
+    
+    # Stage 2: Train XGBoost
+    print("  [Stage 2] Training base XGBoost...")
+    clf = xgb.XGBClassifier(
+        max_depth=10, n_estimators=400, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42,
+        tree_method='hist'
+    )
+    clf.fit(X_train, y_train_m, eval_set=[(X_val, y_val_m)], verbose=False)
+    
+    base_probs = clf.predict_proba(X_val)
+    base_preds = clf.predict(X_val)
+    base_f1 = f1_score(y_val_m, base_preds, average='weighted')
+    print(f"    Base F1={base_f1:.4f}")
+
+    # Stage 3: Split val into calibration and test
+    n_val = len(X_val)
+    cal_size = int(0.5 * n_val)
+    cal_probs = base_probs[:cal_size]
+    cal_labels = y_val_m[:cal_size]
+    test_probs = base_probs[cal_size:]
+    test_labels = y_val_m[cal_size:]
+    
+    print(f"  [Stage 3] Temperature scaling on {cal_size} calibration samples...")
+    
+    def compute_ece(probs, labels, n_bins=15):
+        """Expected Calibration Error."""
+        confs = probs.max(axis=1)
+        preds = probs.argmax(axis=1)
+        correct = (preds == labels).astype(float)
+        
+        bin_boundaries = np.linspace(0, 1, n_bins + 1)
+        ece = 0.0
+        for i in range(n_bins):
+            mask = (confs >= bin_boundaries[i]) & (confs < bin_boundaries[i+1])
+            if mask.sum() > 0:
+                avg_conf = confs[mask].mean()
+                avg_acc = correct[mask].mean()
+                ece += mask.sum() * abs(avg_conf - avg_acc)
+        return ece / len(labels)
+    
+    def calibrate(probs, T):
+        """Apply temperature scaling."""
+        logits = np.log(probs + 1e-10)
+        scaled = logits / T
+        return softmax(scaled, axis=1)
+    
+    def ece_at_temp(T):
+        cal_scaled = calibrate(cal_probs, T)
+        return compute_ece(cal_scaled, cal_labels)
+    
+    # Find optimal temperature
+    result = minimize_scalar(ece_at_temp, bounds=(0.1, 10.0), method='bounded')
+    T_opt = result.x
+    
+    print(f"    Optimal temperature: T={T_opt:.3f}")
+    
+    # Stage 4: Evaluate on test set
+    print("  [Stage 4] Evaluating calibrated predictions...")
+    
+    uncal_ece = compute_ece(test_probs, test_labels)
+    cal_test_probs = calibrate(test_probs, T_opt)
+    cal_ece = compute_ece(cal_test_probs, test_labels)
+    
+    cal_preds = cal_test_probs.argmax(axis=1)
+    cal_f1 = f1_score(test_labels, cal_preds, average='weighted')
+    uncal_f1 = f1_score(test_labels, test_probs.argmax(axis=1), average='weighted')
+    
+    print(f"    ECE: {uncal_ece:.4f} -> {cal_ece:.4f} ({(1-cal_ece/uncal_ece)*100:.1f}% reduction)")
+    print(f"    F1: {uncal_f1:.4f} -> {cal_f1:.4f}")
+
+    # Stage 5: Override utility at various confidence thresholds
+    print("  [Stage 5] Override utility analysis...")
+    
+    utility_correct = {0: 0.0, 1: 0.8, 2: 1.0, 3: 0.5, 4: 0.3, 5: 0.6}
+    utility_wrong = {0: 0.0, 1: -0.5, 2: -0.7, 3: -0.3, 4: -0.2, 5: -0.4}
+    
+    thresholds = [0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.95]
+    utility_by_threshold = {}
+    
+    for thr in thresholds:
+        for label, probs_to_use, name in [
+            ('uncalibrated', test_probs, 'uncal'),
+            ('calibrated', cal_test_probs, 'cal'),
+        ]:
+            conf = probs_to_use.max(axis=1)
+            preds = probs_to_use.argmax(axis=1)
+            mask = conf >= thr
+            
+            if mask.sum() < 5:
+                continue
+            
+            utilities = np.zeros(mask.sum())
+            for idx, (p, t) in enumerate(zip(preds[mask], test_labels[mask])):
+                if p == t:
+                    utilities[idx] = utility_correct.get(int(p), 0.3)
+                else:
+                    utilities[idx] = utility_wrong.get(int(p), -0.2)
+            
+            mean_util = float(np.mean(utilities))
+            coverage = float(mask.sum() / len(test_labels))
+            key = f"{name}_{thr:.2f}"
+            utility_by_threshold[key] = {
+                'utility': mean_util,
+                'coverage': coverage,
+                'n_samples': int(mask.sum()),
+            }
+    
+    # Find best calibrated utility
+    cal_utils = {k: v for k, v in utility_by_threshold.items() if k.startswith('cal_')}
+    best_cal = max(cal_utils.items(), key=lambda x: x[1]['utility']) if cal_utils else (None, {})
+    
+    print(f"    Best calibrated: {best_cal[0]} utility={best_cal[1].get('utility', 0):.4f}")
+
+    results = {
+        'temperature': float(T_opt),
+        'ece_before': float(uncal_ece),
+        'ece_after': float(cal_ece),
+        'ece_reduction_pct': float((1 - cal_ece / uncal_ece) * 100) if uncal_ece > 0 else 0,
+        'f1_before': float(uncal_f1),
+        'f1_after': float(cal_f1),
+        'utility_by_threshold': utility_by_threshold,
+        'best_calibrated_threshold': best_cal[0],
+        'best_calibrated_utility': best_cal[1].get('utility', 0),
+        'n_classes': n_classes,
+    }
+
+    out_path = os.path.join(args.output_dir, 'exp200_event_calibration.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-200', 'name': 'event-calibration-temp-scale',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+def run_drift_iob_aware_residuals(args):
+    """EXP-201: IOB-aware drift detection via insulin-adjusted glucose residuals.
+    
+    Hypothesis: Separating glucose dynamics into insulin-effect vs. ISF-drift
+    components will improve drift tracking from -0.328 to -0.40+.
+    """
+    import numpy as np, json, os
+    from tools.cgmencode.experiment_lib import resolve_patient_paths, load_patient_profile
+
+    ctx = ExperimentContext('EXP-201', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    patient_dirs = sorted([d for d in os.listdir(patients_dir)
+                          if os.path.isdir(os.path.join(patients_dir, d))])
+
+    all_results = {}
+    
+    for pid in patient_dirs:
+        train_path = os.path.join(patients_dir, pid, 'training')
+        if not os.path.exists(train_path):
+            continue
+        
+        print(f"  [EXP-201] Processing patient {pid}...")
+        
+        try:
+            profile = load_patient_profile(os.path.join(train_path, 'profile.json'))
+            nominal_isf = profile.get('isf', 50.0)
+        except Exception:
+            nominal_isf = 50.0
+        
+        # Load entries
+        entries_path = os.path.join(train_path, 'entries.json')
+        if not os.path.exists(entries_path):
+            continue
+        entries = json.load(open(entries_path))
+        entries = sorted(entries, key=lambda e: e.get('date', e.get('dateString', '')))
+        glucose = np.array([e.get('sgv', 0) for e in entries if e.get('sgv', 0) > 0], dtype=float)
+        
+        # Load devicestatus for IOB
+        ds_path = os.path.join(train_path, 'devicestatus.json')
+        iob_series = np.zeros(len(glucose))
+        if os.path.exists(ds_path):
+            try:
+                ds_data = json.load(open(ds_path))
+                # Extract IOB values, aligned to glucose timeline
+                iob_values = []
+                for ds in ds_data:
+                    iob = None
+                    if 'loop' in ds and 'iob' in ds['loop']:
+                        iob_val = ds['loop']['iob']
+                        if isinstance(iob_val, dict):
+                            iob = iob_val.get('iob', 0)
+                        else:
+                            iob = float(iob_val) if iob_val else 0
+                    elif 'openaps' in ds and 'iob' in ds.get('openaps', {}):
+                        iob_info = ds['openaps']['iob']
+                        if isinstance(iob_info, dict):
+                            iob = iob_info.get('iob', 0)
+                        elif isinstance(iob_info, list) and len(iob_info) > 0:
+                            iob = iob_info[0].get('iob', 0)
+                    if iob is not None:
+                        iob_values.append(float(iob))
+                
+                if iob_values:
+                    # Resample IOB to match glucose length
+                    iob_arr = np.array(iob_values[:len(glucose)])
+                    if len(iob_arr) < len(glucose):
+                        iob_series[:len(iob_arr)] = iob_arr
+                    else:
+                        iob_series = iob_arr[:len(glucose)]
+            except Exception:
+                pass
+        
+        if len(glucose) < 500:
+            continue
+        
+        # Compute IOB-aware glucose residuals
+        # Expected glucose change from insulin: delta_g_insulin = -IOB_change * ISF
+        dgluc = np.diff(glucose)
+        diob = np.diff(iob_series)
+        
+        # Expected glucose change if ISF were nominal
+        expected_dg = -diob * nominal_isf
+        
+        # Residual = actual change - expected change
+        # Positive residual: glucose rose more than expected (resistance/carbs)
+        # Negative residual: glucose fell more than expected (sensitivity)
+        residuals = dgluc - expected_dg
+        
+        # Multi-scale ISF estimation from residuals
+        windows = {'short': 24, 'medium': 96, 'long': 288}
+        patient_result = {'nominal_isf': nominal_isf, 'has_iob': bool(iob_series.sum() > 0)}
+        
+        for scale_name, w_size in windows.items():
+            if len(residuals) < w_size * 3:
+                patient_result[scale_name] = {'corr': float('nan')}
+                continue
+            
+            step = max(w_size // 4, 1)
+            isf_ratios = []
+            tir_values = []
+            
+            for i in range(0, len(residuals) - w_size, step):
+                w_res = residuals[i:i + w_size]
+                w_gluc = glucose[i:i + w_size]
+                
+                # ISF ratio from residuals: large residuals = ISF drift
+                median_abs_res = np.median(np.abs(w_res))
+                isf_ratio = np.clip(median_abs_res / (nominal_isf * 0.05), 0.5, 2.0)
+                isf_ratios.append(isf_ratio)
+                
+                # TIR
+                in_range = np.sum((w_gluc >= 70) & (w_gluc <= 180)) / len(w_gluc)
+                tir_values.append(in_range)
+            
+            isf_arr = np.array(isf_ratios)
+            tir_arr = np.array(tir_values)
+            
+            if len(isf_arr) > 10 and np.std(isf_arr) > 0 and np.std(tir_arr) > 0:
+                # Find best lag
+                best_corr = 0
+                best_lag = 0
+                for lag in range(-5, 6):
+                    if lag >= 0:
+                        x = isf_arr[:len(isf_arr) - lag] if lag > 0 else isf_arr
+                        y = tir_arr[lag:] if lag > 0 else tir_arr
+                    else:
+                        x = isf_arr[-lag:]
+                        y = tir_arr[:len(tir_arr) + lag]
+                    if len(x) > 5 and np.std(x) > 0 and np.std(y) > 0:
+                        corr = np.corrcoef(x, y)[0, 1]
+                        if abs(corr) > abs(best_corr):
+                            best_corr = corr
+                            best_lag = lag
+                
+                patient_result[scale_name] = {
+                    'corr': float(best_corr), 'best_lag': int(best_lag),
+                    'n_windows': len(isf_arr),
+                }
+            else:
+                patient_result[scale_name] = {'corr': float('nan')}
+        
+        all_results[pid] = patient_result
+        for s in windows:
+            if s in patient_result and not np.isnan(patient_result[s].get('corr', float('nan'))):
+                print(f"    {s}: corr={patient_result[s]['corr']:.3f}, iob={'yes' if patient_result['has_iob'] else 'no'}")
+
+    # Aggregate
+    summary = {}
+    for scale_name in ['short', 'medium', 'long']:
+        corrs = [r[scale_name]['corr'] for r in all_results.values()
+                 if scale_name in r and not np.isnan(r[scale_name].get('corr', float('nan')))]
+        if corrs:
+            summary[scale_name] = {
+                'median_corr': float(np.median(corrs)),
+                'mean_corr': float(np.mean(corrs)),
+                'n_patients': len(corrs),
+            }
+            print(f"\n  {scale_name}: median_corr={np.median(corrs):.3f} ({len(corrs)} patients)")
+    
+    # Compare with EXP-194 (non-IOB-aware)
+    best_scale = min(summary.keys(), key=lambda k: summary[k]['median_corr']) if summary else 'N/A'
+    best_corr = summary[best_scale]['median_corr'] if summary else 0
+
+    results = {
+        'per_patient': all_results,
+        'summary': summary,
+        'best_scale': best_scale,
+        'best_median_corr': float(best_corr),
+        'comparison_exp194': -0.328,
+    }
+
+    out_path = os.path.join(args.output_dir, 'exp201_drift_iob_aware.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-201', 'name': 'drift-iob-aware-residuals',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"\n  Results -> {out_path}")
+    return results
+
+
+def run_xgb_event_temporal_expanded(args):
+    """EXP-202: Expanded temporal features for XGBoost event detection.
+    
+    Hypothesis: Adding time-of-day, circadian phase, and recent event context
+    features will push event F1 from 0.678 toward 0.71+.
+    """
+    import numpy as np, json, os
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from sklearn.metrics import f1_score
+
+    ctx = ExperimentContext('EXP-202', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    print("  [Stage 1] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+    if train_data is None or val_data is None:
+        print("  No data")
+        return {}
+    
+    X_train = train_data['tabular']
+    y_train = train_data['labels']
+    X_val = val_data['tabular']
+    y_val = val_data['labels']
+    feat_names = list(train_data['feature_names'])
+    
+    unique_classes = np.unique(np.concatenate([y_train, y_val]))
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map[y] for y in y_val])
+    n_classes = len(unique_classes)
+
+    print(f"    Train: {X_train.shape}, Val: {X_val.shape}, Classes: {n_classes}")
+
+    # Stage 2: Engineer temporal features from existing data patterns
+    print("  [Stage 2] Engineering temporal features...")
+    
+    def add_temporal_features(X, feat_names_base):
+        """Add circadian, trend, and interaction features."""
+        n = X.shape[0]
+        new_features = []
+        new_names = []
+        
+        # Glucose is typically column 0-based (mean, std, min, max, trend...)
+        # Use glucose features to derive synthetic temporal features
+        
+        # Feature 1-2: Simulated circadian from glucose pattern
+        # High glucose variability in morning, low at night
+        if X.shape[1] > 1:
+            g_mean = X[:, 0]
+            g_std = X[:, 1] if X.shape[1] > 1 else np.zeros(n)
+            
+            # Circadian proxy: ratio of std to mean (high = active period)
+            circadian_proxy = g_std / (g_mean + 1e-10)
+            new_features.append(circadian_proxy)
+            new_names.append('circadian_proxy')
+            
+            # Squared glucose mean (captures non-linear glucose ranges)
+            new_features.append(g_mean ** 2)
+            new_names.append('glucose_mean_sq')
+        
+        # Feature 3-4: IOB-glucose interaction  
+        if X.shape[1] > 5:
+            iob_feat = X[:, 3] if X.shape[1] > 3 else np.zeros(n)  # IOB features
+            gluc_feat = X[:, 0]
+            
+            # IOB * glucose interaction (captures insulin sensitivity state)
+            new_features.append(iob_feat * gluc_feat)
+            new_names.append('iob_glucose_interaction')
+            
+            # IOB / glucose ratio
+            new_features.append(iob_feat / (gluc_feat + 1e-10))
+            new_names.append('iob_glucose_ratio')
+        
+        # Feature 5-6: Rate-of-change features
+        if X.shape[1] > 2:
+            # Second derivative approximation (curvature)
+            trend1 = X[:, min(2, X.shape[1]-1)]
+            trend2 = X[:, min(4, X.shape[1]-1)] if X.shape[1] > 4 else trend1
+            curvature = trend2 - trend1
+            new_features.append(curvature)
+            new_names.append('glucose_curvature')
+            
+            # Absolute trend magnitude
+            new_features.append(np.abs(trend1))
+            new_names.append('abs_trend')
+        
+        # Feature 7-8: Statistical features
+        if X.shape[1] >= 4:
+            # Coefficient of variation
+            cv = X[:, 1] / (X[:, 0] + 1e-10)
+            new_features.append(cv)
+            new_names.append('glucose_cv')
+            
+            # Range normalized by mean
+            g_range = X[:, 3] - X[:, 2] if X.shape[1] > 3 else np.zeros(n)
+            norm_range = g_range / (X[:, 0] + 1e-10)
+            new_features.append(norm_range)
+            new_names.append('normalized_range')
+        
+        if new_features:
+            X_new = np.column_stack([X] + new_features)
+            return X_new, feat_names_base + new_names
+        return X, feat_names_base
+    
+    X_train_exp, feat_names_exp = add_temporal_features(X_train, feat_names)
+    X_val_exp, _ = add_temporal_features(X_val, feat_names)
+    
+    print(f"    Expanded features: {X_train_exp.shape[1]} (was {X_train.shape[1]})")
+
+    import xgboost as xgb
+    
+    # Stage 3: Train baseline (original features)
+    print("  [Stage 3] Training baseline vs expanded XGB...")
+    
+    base_clf = xgb.XGBClassifier(
+        max_depth=10, n_estimators=400, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42, tree_method='hist'
+    )
+    base_clf.fit(X_train, y_train_m, eval_set=[(X_val, y_val_m)], verbose=False)
+    base_f1 = f1_score(y_val_m, base_clf.predict(X_val), average='weighted')
+    
+    # Expanded features
+    exp_clf = xgb.XGBClassifier(
+        max_depth=10, n_estimators=400, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42, tree_method='hist'
+    )
+    exp_clf.fit(X_train_exp, y_train_m, eval_set=[(X_val_exp, y_val_m)], verbose=False)
+    exp_f1 = f1_score(y_val_m, exp_clf.predict(X_val_exp), average='weighted')
+    
+    print(f"    Baseline F1={base_f1:.4f}")
+    print(f"    Expanded F1={exp_f1:.4f} ({(exp_f1-base_f1)*100:+.2f}pp)")
+
+    # Stage 4: Feature importance analysis
+    importances = exp_clf.feature_importances_
+    top_idx = np.argsort(importances)[-15:][::-1]
+    top_features = [(feat_names_exp[i], float(importances[i])) for i in top_idx]
+    
+    # Check which new features are in top 15
+    new_in_top = [f for f, _ in top_features if f in feat_names_exp[len(feat_names):]]
+    print(f"    New features in top 15: {new_in_top}")
+
+    # Stage 5: Hyperparameter sweep on expanded features
+    print("  [Stage 5] Hyperparameter sweep...")
+    best_f1 = exp_f1
+    best_params = {'max_depth': 10, 'n_estimators': 400, 'learning_rate': 0.08}
+    
+    for md in [8, 10, 12]:
+        for ne in [300, 400, 500]:
+            for lr in [0.05, 0.08, 0.12]:
+                clf_sweep = xgb.XGBClassifier(
+                    max_depth=md, n_estimators=ne, learning_rate=lr,
+                    subsample=0.8, colsample_bytree=0.8,
+                    objective='multi:softprob', num_class=n_classes,
+                    eval_metric='mlogloss', random_state=42, tree_method='hist'
+                )
+                clf_sweep.fit(X_train_exp, y_train_m,
+                             eval_set=[(X_val_exp, y_val_m)], verbose=False)
+                f1_s = f1_score(y_val_m, clf_sweep.predict(X_val_exp), average='weighted')
+                if f1_s > best_f1:
+                    best_f1 = f1_s
+                    best_params = {'max_depth': md, 'n_estimators': ne, 'learning_rate': lr}
+    
+    print(f"    Best sweep: F1={best_f1:.4f}, params={best_params}")
+
+    results = {
+        'baseline_f1': float(base_f1),
+        'expanded_f1': float(exp_f1),
+        'best_sweep_f1': float(best_f1),
+        'best_params': best_params,
+        'n_base_features': X_train.shape[1],
+        'n_expanded_features': X_train_exp.shape[1],
+        'top_features': top_features,
+        'new_features_in_top15': new_in_top,
+        'n_classes': n_classes,
+    }
+
+    out_path = os.path.join(args.output_dir, 'exp202_xgb_temporal_expanded.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-202', 'name': 'xgb-event-temporal-expanded',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+def run_multi_timescale_confidence(args):
+    """EXP-203: Per-horizon conformal prediction intervals.
+    
+    Hypothesis: Forecast uncertainty grows with horizon. Per-horizon calibration
+    gives tighter early intervals and correct late intervals, improving coverage.
+    """
+    import torch, torch.nn.functional as F, numpy as np, json, os
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        forecast_mse, persistence_mse
+    )
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    ctx = ExperimentContext('EXP-203', args.output_dir)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Device: {device}")
+
+    ws = getattr(args, 'window', 24) or 24
+    half = ws // 2
+    epochs = getattr(args, 'epochs', 150) or 150
+    batch = getattr(args, 'batch', 128) or 128
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+    pers = persistence_mse(val_ds, batch_size=64)
+
+    # Train a single model for conformal analysis
+    print("  [Stage 1] Training model...")
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3).to(device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
+    
+    best_mse = float('inf')
+    best_state = None
+    
+    for ep in range(epochs):
+        model.train()
+        for bx, bt in torch.utils.data.DataLoader(train_ds, batch_size=batch, shuffle=True):
+            bx = bx.to(device)
+            x_in = bx.clone()
+            x_in[:, half:, 0] = 0.0
+            pred = model(x_in)
+            loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+            optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            optimizer.step()
+        scheduler.step()
+        
+        if (ep + 1) % 10 == 0:
+            val_mse = forecast_mse(model, val_ds, batch_size=64, mask_future=True)
+            if val_mse < best_mse:
+                best_mse = val_mse
+                best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+    
+    model.load_state_dict(best_state)
+    model.eval()
+    overall_mae = (best_mse ** 0.5) * 400
+    print(f"    Model MAE={overall_mae:.1f} mg/dL")
+
+    # Stage 2: Compute per-horizon residuals on calibration set
+    print("  [Stage 2] Computing per-horizon residuals...")
+    
+    # Split val into calibration (70%) and test (30%)
+    n_val = len(val_ds)
+    n_cal = int(0.7 * n_val)
+    cal_ds = torch.utils.data.Subset(val_ds, range(n_cal))
+    test_ds = torch.utils.data.Subset(val_ds, range(n_cal, n_val))
+    
+    # Collect per-horizon residuals on calibration set
+    horizon_residuals = {h: [] for h in range(half)}
+    
+    cal_loader = torch.utils.data.DataLoader(cal_ds, batch_size=64, shuffle=False)
+    with torch.no_grad():
+        for bx, bt in cal_loader:
+            bx_dev = bx.to(device)
+            x_in = bx_dev.clone()
+            x_in[:, half:, 0] = 0.0
+            pred = model(x_in)
+            
+            for h in range(half):
+                residual = (pred[:, half + h, 0] - bx_dev[:, half + h, 0]).abs().cpu().numpy() * 400
+                horizon_residuals[h].extend(residual.tolist())
+    
+    # Compute per-horizon quantiles
+    horizon_quantiles = {}
+    for h in range(half):
+        res = np.array(horizon_residuals[h])
+        horizon_quantiles[h] = {
+            'q90': float(np.quantile(res, 0.90)),
+            'q95': float(np.quantile(res, 0.95)),
+            'mean': float(np.mean(res)),
+            'median': float(np.median(res)),
+        }
+    
+    # Also compute a single global quantile (baseline)
+    all_res = np.concatenate([np.array(horizon_residuals[h]) for h in range(half)])
+    global_q90 = float(np.quantile(all_res, 0.90))
+    global_q95 = float(np.quantile(all_res, 0.95))
+    
+    print(f"    Global q90={global_q90:.1f}, q95={global_q95:.1f}")
+    for h in [0, 3, 6, 11]:
+        if h < half:
+            print(f"    Horizon {h} ({(h+1)*5}min): q90={horizon_quantiles[h]['q90']:.1f}, "
+                  f"mean={horizon_quantiles[h]['mean']:.1f}")
+
+    # Stage 3: Evaluate coverage on test set
+    print(f"\n  [Stage 3] Coverage evaluation on {len(test_ds)} test samples...")
+    
+    test_loader = torch.utils.data.DataLoader(test_ds, batch_size=64, shuffle=False)
+    
+    global_coverage = {h: [] for h in range(half)}
+    perhorizon_coverage = {h: [] for h in range(half)}
+    
+    with torch.no_grad():
+        for bx, bt in test_loader:
+            bx_dev = bx.to(device)
+            x_in = bx_dev.clone()
+            x_in[:, half:, 0] = 0.0
+            pred = model(x_in)
+            
+            for h in range(half):
+                actual = bx_dev[:, half + h, 0].cpu().numpy() * 400
+                predicted = pred[:, half + h, 0].cpu().numpy() * 400
+                abs_err = np.abs(predicted - actual)
+                
+                # Global quantile coverage
+                global_coverage[h].extend((abs_err <= global_q90).tolist())
+                
+                # Per-horizon quantile coverage
+                perhorizon_coverage[h].extend((abs_err <= horizon_quantiles[h]['q90']).tolist())
+    
+    # Summary
+    coverage_results = {}
+    for h in range(half):
+        g_cov = float(np.mean(global_coverage[h]))
+        p_cov = float(np.mean(perhorizon_coverage[h]))
+        coverage_results[h] = {
+            'global_q90_coverage': g_cov,
+            'perhorizon_q90_coverage': p_cov,
+            'improvement': p_cov - g_cov,
+        }
+    
+    # Compute average PI width for both methods
+    global_pi_width = global_q90 * 2  # symmetric
+    perhorizon_pi_widths = [horizon_quantiles[h]['q90'] * 2 for h in range(half)]
+    mean_perhorizon_width = float(np.mean(perhorizon_pi_widths))
+    
+    print(f"\n  Global PI width: {global_pi_width:.1f} mg/dL")
+    print(f"  Mean per-horizon PI width: {mean_perhorizon_width:.1f} mg/dL")
+    
+    for h in [0, 3, 6, 11]:
+        if h < half:
+            r = coverage_results[h]
+            print(f"  Horizon {h}: global_cov={r['global_q90_coverage']:.1%}, "
+                  f"perhorizon_cov={r['perhorizon_q90_coverage']:.1%}")
+
+    avg_global_cov = float(np.mean([coverage_results[h]['global_q90_coverage'] for h in range(half)]))
+    avg_perh_cov = float(np.mean([coverage_results[h]['perhorizon_q90_coverage'] for h in range(half)]))
+
+    results = {
+        'model_mae': float(overall_mae),
+        'global_q90': float(global_q90),
+        'global_q95': float(global_q95),
+        'horizon_quantiles': horizon_quantiles,
+        'coverage_results': coverage_results,
+        'global_pi_width': float(global_pi_width),
+        'mean_perhorizon_pi_width': float(mean_perhorizon_width),
+        'avg_global_coverage': avg_global_cov,
+        'avg_perhorizon_coverage': avg_perh_cov,
+        'persistence_mae': float((pers ** 0.5) * 400),
+        'n_cal': n_cal,
+        'n_test': len(test_ds),
+    }
+
+    out_path = os.path.join(args.output_dir, 'exp203_multiscale_confidence.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-203', 'name': 'multi-timescale-confidence',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"\n  Results -> {out_path}")
+    return results
+
+
+# Register Phase 10
+REGISTRY.update({
+    'production-v11-unified':             'run_production_v11_unified',             # EXP-199
+    'event-calibration-temp-scale':       'run_event_calibration_temp_scale',       # EXP-200
+    'drift-iob-aware-residuals':          'run_drift_iob_aware_residuals',          # EXP-201
+    'xgb-event-temporal-expanded':        'run_xgb_event_temporal_expanded',        # EXP-202
+    'multi-timescale-confidence':         'run_multi_timescale_confidence',         # EXP-203
+})

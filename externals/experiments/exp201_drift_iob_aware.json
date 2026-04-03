@@ -1,0 +1,218 @@
+{
+  "experiment": "EXP-201",
+  "name": "drift-iob-aware-residuals",
+  "results": {
+    "per_patient": {
+      "a": {
+        "nominal_isf": 50.0,
+        "has_iob": true,
+        "short": {
+          "corr": -0.12892925009498515,
+          "best_lag": 2,
+          "n_windows": 7435
+        },
+        "medium": {
+          "corr": 0.13039330752929493,
+          "best_lag": -5,
+          "n_windows": 1856
+        },
+        "long": {
+          "corr": -0.034727283354162274,
+          "best_lag": -5,
+          "n_windows": 616
+        }
+      },
+      "b": {
+        "nominal_isf": 50.0,
+        "has_iob": true,
+        "short": {
+          "corr": -0.12343171366650287,
+          "best_lag": 4,
+          "n_windows": 7482
+        },
+        "medium": {
+          "corr": -0.10990582777494888,
+          "best_lag": 1,
+          "n_windows": 1868
+        },
+        "long": {
+          "corr": -0.10268193502808363,
+          "best_lag": -5,
+          "n_windows": 620
+        }
+      },
+      "c": {
+        "nominal_isf": 50.0,
+        "has_iob": true,
+        "short": {
+          "corr": -0.009869104225220287,
+          "best_lag": 2,
+          "n_windows": 14100
+        },
+        "medium": {
+          "corr": 0.03551571701998763,
+          "best_lag": 4,
+          "n_windows": 3522
+        },
+        "long": {
+          "corr": 0.042165156797607586,
+          "best_lag": 4,
+          "n_windows": 1172
+        }
+      },
+      "d": {
+        "nominal_isf": 50.0,
+        "has_iob": true,
+        "short": {
+          "corr": -0.14726143084580864,
+          "best_lag": 1,
+          "n_windows": 13202
+        },
+        "medium": {
+          "corr": -0.14347944425409304,
+          "best_lag": 0,
+          "n_windows": 3298
+        },
+        "long": {
+          "corr": -0.15964064450254184,
+          "best_lag": -1,
+          "n_windows": 1097
+        }
+      },
+      "e": {
+        "nominal_isf": 50.0,
+        "has_iob": true,
+        "short": {
+          "corr": -0.07844623944367445,
+          "best_lag": 2,
+          "n_windows": 10090
+        },
+        "medium": {
+          "corr": -0.09677593746529592,
+          "best_lag": 0,
+          "n_windows": 2520
+        },
+        "long": {
+          "corr": -0.13426023368453271,
+          "best_lag": 0,
+          "n_windows": 838
+        }
+      },
+      "f": {
+        "nominal_isf": 50.0,
+        "has_iob": true,
+        "short": {
+          "corr": -0.1832177370492091,
+          "best_lag": 1,
+          "n_windows": 7539
+        },
+        "medium": {
+          "corr": -0.1855716381356304,
+          "best_lag": 0,
+          "n_windows": 1882
+        },
+        "long": {
+          "corr": -0.12217569073258379,
+          "best_lag": 1,
+          "n_windows": 625
+        }
+      },
+      "g": {
+        "nominal_isf": 50.0,
+        "has_iob": true,
+        "short": {
+          "corr": -0.18651038878037485,
+          "best_lag": 4,
+          "n_windows": 7474
+        },
+        "medium": {
+          "corr": -0.18723223246131637,
+          "best_lag": 1,
+          "n_windows": 1866
+        },
+        "long": {
+          "corr": -0.0952137874528952,
+          "best_lag": 0,
+          "n_windows": 620
+        }
+      },
+      "h": {
+        "nominal_isf": 50.0,
+        "has_iob": true,
+        "short": {
+          "corr": -0.16661807041774412,
+          "best_lag": 0,
+          "n_windows": 3040
+        },
+        "medium": {
+          "corr": 0.13419308887975737,
+          "best_lag": -4,
+          "n_windows": 757
+        },
+        "long": {
+          "corr": -0.09608333264923076,
+          "best_lag": 3,
+          "n_windows": 250
+        }
+      },
+      "i": {
+        "nominal_isf": 50.0,
+        "has_iob": true,
+        "short": {
+          "corr": 0.0491647652042792,
+          "best_lag": 5,
+          "n_windows": 15063
+        },
+        "medium": {
+          "corr": 0.09579305347120919,
+          "best_lag": 5,
+          "n_windows": 3763
+        },
+        "long": {
+          "corr": 0.15155288784795087,
+          "best_lag": 5,
+          "n_windows": 1252
+        }
+      },
+      "j": {
+        "nominal_isf": 50.0,
+        "has_iob": false,
+        "short": {
+          "corr": -0.4025814301559596,
+          "best_lag": 0,
+          "n_windows": 4365
+        },
+        "medium": {
+          "corr": -0.5329921436654937,
+          "best_lag": 0,
+          "n_windows": 1089
+        },
+        "long": {
+          "corr": -0.49679066803600636,
+          "best_lag": 0,
+          "n_windows": 361
+        }
+      }
+    },
+    "summary": {
+      "short": {
+        "median_corr": -0.1380953404703969,
+        "mean_corr": -0.13777005994752,
+        "n_patients": 10
+      },
+      "medium": {
+        "median_corr": -0.10334088262012239,
+        "mean_corr": -0.08600620568565291,
+        "n_patients": 10
+      },
+      "long": {
+        "median_corr": -0.0993826338386572,
+        "mean_corr": -0.10478555307944781,
+        "n_patients": 10
+      }
+    },
+    "best_scale": "short",
+    "best_median_corr": -0.1380953404703969,
+    "comparison_exp194": -0.328
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "experiment": "EXP-200",
+  "name": "event-calibration-temp-scale",
+  "results": {
+    "temperature": 1.0982110350084744,
+    "ece_before": 0.13973423429643508,
+    "ece_after": 0.12056527145720998,
+    "ece_reduction_pct": 13.718157855690304,
+    "f1_before": 0.5760432152234766,
+    "f1_after": 0.5760432152234766,
+    "utility_by_threshold": {
+      "uncal_0.50": {
+        "utility": 0.3002998364528439,
+        "coverage": 0.9669229079727653,
+        "n_samples": 22012
+      },
+      "cal_0.50": {
+        "utility": 0.3037159524137614,
+        "coverage": 0.9563364814408083,
+        "n_samples": 21771
+      },
+      "uncal_0.60": {
+        "utility": 0.3419801536132758,
+        "coverage": 0.7835273446079508,
+        "n_samples": 17837
+      },
+      "cal_0.60": {
+        "utility": 0.34832722406470007,
+        "coverage": 0.7549747419283989,
+        "n_samples": 17187
+      },
+      "uncal_0.70": {
+        "utility": 0.38549439272887187,
+        "coverage": 0.5992971667032726,
+        "n_samples": 13643
+      },
+      "cal_0.70": {
+        "utility": 0.3972810146650813,
+        "coverage": 0.554140127388535,
+        "n_samples": 12615
+      },
+      "uncal_0.80": {
+        "utility": 0.4409095773140716,
+        "coverage": 0.41049857236986603,
+        "n_samples": 9345
+      },
+      "cal_0.80": {
+        "utility": 0.4620507788544094,
+        "coverage": 0.3581374917636723,
+        "n_samples": 8153
+      },
+      "uncal_0.85": {
+        "utility": 0.47806944444444444,
+        "coverage": 0.3162749835273446,
+        "n_samples": 7200
+      },
+      "cal_0.85": {
+        "utility": 0.49452621134446834,
+        "coverage": 0.265627059081924,
+        "n_samples": 6047
+      },
+      "uncal_0.90": {
+        "utility": 0.5124947764312578,
+        "coverage": 0.21023500988359323,
+        "n_samples": 4786
+      },
+      "cal_0.90": {
+        "utility": 0.5388858547241944,
+        "coverage": 0.1608609707884911,
+        "n_samples": 3662
+      },
+      "uncal_0.95": {
+        "utility": 0.5574468085106383,
+        "coverage": 0.10322864045684164,
+        "n_samples": 2350
+      },
+      "cal_0.95": {
+        "utility": 0.6166558230318803,
+        "coverage": 0.06751592356687898,
+        "n_samples": 1537
+      }
+    },
+    "best_calibrated_threshold": "cal_0.95",
+    "best_calibrated_utility": 0.6166558230318803,
+    "n_classes": 6
+  }
+}
