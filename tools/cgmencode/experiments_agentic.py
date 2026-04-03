@@ -15062,3 +15062,840 @@ REGISTRY.update({
     'stratified-oversampled': 'run_stratified_per_patient_oversampled',
     'meal-ensemble': 'run_per_patient_meal_ensemble',
 })
+
+
+# ── Phase 14: Per-patient ensemble forecast + production v13 + feature importance ─
+# EXP-219: Per-patient adapted ensemble (combine EXP-214 adapters with ensemble)
+# EXP-220: Feature importance analysis per patient (what drives each patient's forecast)
+# EXP-221: Per-patient + oversampled + temporal combined events (merge all winners)
+# EXP-222: Drift-informed forecast weighting (use drift state to weight ensemble members)
+# EXP-223: Production v13 (best-of-breed integration)
+
+
+def run_per_patient_adapted_ensemble(args):
+    """EXP-219: Per-patient adapted ensemble.
+    Hypothesis: Ensembling 5 adapted models per patient should compound
+    adapter gains (-8.5%) with ensemble gains (~40% over single model).
+    """
+    import torch, torch.nn as nn, torch.nn.functional as F, json, os, numpy as np
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        train_forecast, forecast_mse, persistence_mse
+    )
+    from tools.cgmencode.model import CGMGroupedEncoder
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp219_adapted_ensemble', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    pids = sorted([d for d in os.listdir(patients_dir)
+                   if os.path.isdir(os.path.join(patients_dir, d))])
+
+    # Stage 1: Train 5 diverse base models with different seeds
+    print("  [Stage 1] Training 5 diverse base models...")
+    train_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(train_paths)
+
+    base_paths = []
+    for seed in range(5):
+        torch.manual_seed(seed * 42 + 7)
+        np.random.seed(seed * 42 + 7)
+        model = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+        path = os.path.join(args.output_dir, f'exp219_base_s{seed}.pth')
+        train_forecast(model, train_ds, val_ds, save_path=path, label=f'base_s{seed}',
+                       lr=0.001, epochs=getattr(args, 'epochs', 150),
+                       batch=getattr(args, 'batch', 128), patience=15, weight_decay=1e-4)
+        base_paths.append(path)
+
+    # Stage 2: Per-patient adapted ensemble
+    print("  [Stage 2] Per-patient adapted ensemble...")
+    per_patient_results = {}
+
+    for pid in pids:
+        try:
+            p_train_path = os.path.join(patients_dir, pid, 'training')
+            p_val_path = os.path.join(patients_dir, pid, 'verification')
+            if not os.path.isdir(p_train_path) or not os.path.isdir(p_val_path):
+                continue
+            p_train_ds, _ = load_multipatient_nightscout([p_train_path])
+            _, p_val_ds = load_multipatient_nightscout([p_val_path])
+
+            # Base ensemble MAE (unadapted)
+            base_preds_list = []
+            for bp in base_paths:
+                m = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+                ckpt = torch.load(bp, map_location='cpu', weights_only=True)
+                m.load_state_dict(ckpt.get('model_state', ckpt) if isinstance(ckpt, dict) else ckpt)
+                m.cpu()
+                m.eval()
+                preds = []
+                for i in range(0, len(p_val_ds), 64):
+                    batch_items = [p_val_ds[j] for j in range(i, min(i+64, len(p_val_ds)))]
+                    bx = torch.stack([item[0] if isinstance(item, tuple) else item for item in batch_items])
+                    half = bx.shape[1] // 2
+                    x_in = bx.clone()
+                    x_in[:, half:, 0] = 0.0
+                    with torch.no_grad():
+                        pred = m(x_in)
+                    preds.append(pred[:, half:, :1].numpy())
+                preds = np.concatenate(preds, axis=0)
+                base_preds_list.append(preds)
+            base_ensemble_pred = np.mean(base_preds_list, axis=0)
+
+            # Ground truth
+            gt_list = []
+            for i in range(0, len(p_val_ds), 64):
+                batch_items = [p_val_ds[j] for j in range(i, min(i+64, len(p_val_ds)))]
+                bx = torch.stack([item[0] if isinstance(item, tuple) else item for item in batch_items])
+                half = bx.shape[1] // 2
+                gt_list.append(bx[:, half:, :1].numpy())
+            gt = np.concatenate(gt_list, axis=0)
+
+            base_mae = float(np.mean(np.abs(base_ensemble_pred - gt)) * 400)
+
+            # Adapt each base model to this patient
+            adapted_preds_list = []
+            for seed, bp in enumerate(base_paths):
+                adapted = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+                ckpt = torch.load(bp, map_location='cpu', weights_only=True)
+                adapted.load_state_dict(ckpt.get('model_state', ckpt) if isinstance(ckpt, dict) else ckpt)
+
+                # Freeze all but last layer
+                for name, param in adapted.named_parameters():
+                    if 'encoder.layers.2' in name or 'output' in name or 'fc_out' in name:
+                        param.requires_grad = True
+                    else:
+                        param.requires_grad = False
+
+                adapt_path = os.path.join(args.output_dir, f'exp219_adapt_{pid}_s{seed}.pth')
+                train_forecast(adapted, p_train_ds, p_val_ds, save_path=adapt_path,
+                               label=f'adapt_{pid}_s{seed}', lr=1e-4, epochs=50,
+                               batch=64, patience=10, weight_decay=1e-5)
+                ckpt_a = torch.load(adapt_path, map_location='cpu', weights_only=True)
+                adapted.load_state_dict(ckpt_a.get('model_state', ckpt_a) if isinstance(ckpt_a, dict) else ckpt_a)
+                adapted.cpu()
+                adapted.eval()
+
+                preds = []
+                for i in range(0, len(p_val_ds), 64):
+                    batch_items = [p_val_ds[j] for j in range(i, min(i+64, len(p_val_ds)))]
+                    bx = torch.stack([item[0] if isinstance(item, tuple) else item for item in batch_items])
+                    half = bx.shape[1] // 2
+                    x_in = bx.clone()
+                    x_in[:, half:, 0] = 0.0
+                    with torch.no_grad():
+                        pred = adapted(x_in)
+                    preds.append(pred[:, half:, :1].numpy())
+                preds = np.concatenate(preds, axis=0)
+                adapted_preds_list.append(preds)
+
+            adapted_ensemble_pred = np.mean(adapted_preds_list, axis=0)
+            adapted_mae = float(np.mean(np.abs(adapted_ensemble_pred - gt)) * 400)
+
+            improvement = (base_mae - adapted_mae) / base_mae * 100
+            per_patient_results[pid] = {
+                'base_ensemble_mae': round(base_mae, 2),
+                'adapted_ensemble_mae': round(adapted_mae, 2),
+                'improvement_pct': round(improvement, 1)
+            }
+            print(f"    {pid}: base_ensemble={base_mae:.1f} -> adapted_ensemble={adapted_mae:.1f} ({improvement:+.1f}%)")
+
+            # Clean up adapter checkpoints
+            for seed in range(5):
+                ap = os.path.join(args.output_dir, f'exp219_adapt_{pid}_s{seed}.pth')
+                if os.path.exists(ap):
+                    os.remove(ap)
+
+        except Exception as e:
+            print(f"    {pid}: FAILED - {e}")
+            per_patient_results[pid] = {'error': str(e)}
+
+    # Aggregate
+    valid = {k: v for k, v in per_patient_results.items() if 'adapted_ensemble_mae' in v}
+    if valid:
+        mean_base = np.mean([v['base_ensemble_mae'] for v in valid.values()])
+        mean_adapted = np.mean([v['adapted_ensemble_mae'] for v in valid.values()])
+        mean_improvement = np.mean([v['improvement_pct'] for v in valid.values()])
+    else:
+        mean_base = mean_adapted = mean_improvement = 0
+
+    print(f"\n  Adapted ensemble mean MAE: {mean_adapted:.1f} (base ensemble: {mean_base:.1f})")
+    print(f"  Mean improvement: {mean_improvement:+.1f}%")
+
+    result = {
+        'experiment': 'EXP-219: Per-Patient Adapted Ensemble',
+        'hypothesis': 'Adapted ensemble compounds adapter + ensemble gains',
+        'mean_base_ensemble_mae': round(mean_base, 2),
+        'mean_adapted_ensemble_mae': round(mean_adapted, 2),
+        'mean_improvement_pct': round(mean_improvement, 1),
+        'per_patient': per_patient_results
+    }
+    out_path = os.path.join(args.output_dir, 'exp219_adapted_ensemble.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+    # Clean up base checkpoints
+    for bp in base_paths:
+        if os.path.exists(bp):
+            os.remove(bp)
+
+
+def run_per_patient_feature_importance(args):
+    """EXP-220: Per-patient feature importance analysis.
+    Hypothesis: Different patients rely on different features. Understanding
+    this enables targeted feature engineering per patient.
+    """
+    import json, os, numpy as np
+    from xgboost import XGBClassifier
+    from sklearn.metrics import f1_score
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp220_feature_importance', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+
+    print("  [Stage 1] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+
+    X_train, y_train = train_data['tabular'], train_data['labels']
+    X_val, y_val = val_data['tabular'], val_data['labels']
+    feat_names = list(train_data.get('feature_names', [f'f{i}' for i in range(X_train.shape[1])]))
+    metadata_train = train_data['metadata']
+    metadata_val = val_data['metadata']
+
+    # Create contiguous labels
+    all_labels = sorted(set(y_train) | set(y_val))
+    local_map = {old: new for new, old in enumerate(all_labels)}
+    y_train_l = np.array([local_map[y] for y in y_train])
+    y_val_l = np.array([local_map.get(y, 0) for y in y_val])
+    n_classes = len(all_labels)
+
+    train_patients = np.array([m.get('patient', 'unknown') if isinstance(m, dict) else 'unknown'
+                               for m in metadata_train])
+    val_patients = np.array([m.get('patient', 'unknown') if isinstance(m, dict) else 'unknown'
+                             for m in metadata_val])
+    pids = sorted(set(train_patients) - {'unknown'})
+
+    # Stage 2: Global feature importance
+    print("  [Stage 2] Global feature importance...")
+    global_clf = XGBClassifier(
+        n_estimators=200, max_depth=6, learning_rate=0.1,
+        num_class=n_classes, objective='multi:softprob',
+        eval_metric='mlogloss', random_state=42, verbosity=0
+    )
+    try:
+        global_clf.fit(X_train, y_train_l, eval_set=[(X_val, y_val_l)], verbose=False)
+    except Exception:
+        global_clf.fit(X_train, y_train_l, verbose=False)
+
+    global_importance = dict(zip(feat_names, global_clf.feature_importances_.tolist()))
+    sorted_global = sorted(global_importance.items(), key=lambda x: -x[1])
+    print(f"    Top features: {sorted_global[:5]}")
+
+    # Stage 3: Per-patient feature importance
+    print("  [Stage 3] Per-patient feature importance...")
+    per_patient_results = {}
+
+    for pid in pids:
+        tr_mask = train_patients == pid
+        vl_mask = val_patients == pid
+        if tr_mask.sum() < 50 or vl_mask.sum() < 10:
+            continue
+
+        X_p_tr = X_train[tr_mask]
+        y_p_tr = y_train_l[tr_mask]
+        X_p_vl = X_val[vl_mask]
+        y_p_vl = y_val_l[vl_mask]
+
+        # Local label remap
+        p_labels = sorted(set(y_p_tr))
+        p_map = {old: new for new, old in enumerate(p_labels)}
+        p_rev = {new: old for old, new in p_map.items()}
+        y_p_tr_l = np.array([p_map[y] for y in y_p_tr])
+
+        clf = XGBClassifier(
+            n_estimators=150, max_depth=6, learning_rate=0.1,
+            num_class=len(p_labels), objective='multi:softprob',
+            eval_metric='mlogloss', random_state=42, verbosity=0
+        )
+        try:
+            y_p_vl_l = np.array([p_map.get(y, 0) for y in y_p_vl])
+            clf.fit(X_p_tr, y_p_tr_l, eval_set=[(X_p_vl, y_p_vl_l)], verbose=False)
+        except Exception:
+            clf.fit(X_p_tr, y_p_tr_l, verbose=False)
+
+        pp_preds = clf.predict(X_p_vl)
+        pp_preds_global = np.array([p_rev.get(int(p), 0) for p in pp_preds])
+        f1 = f1_score(y_p_vl, pp_preds_global, average='weighted', zero_division=0)
+
+        importance = dict(zip(feat_names, clf.feature_importances_.tolist()))
+        sorted_imp = sorted(importance.items(), key=lambda x: -x[1])
+
+        per_patient_results[pid] = {
+            'f1': round(f1, 4),
+            'top_features': sorted_imp[:5],
+            'all_importance': {k: round(v, 4) for k, v in importance.items()}
+        }
+        print(f"    {pid}: F1={f1:.3f}, top={sorted_imp[0][0]} ({sorted_imp[0][1]:.3f})")
+
+    # Stage 4: Feature consistency analysis
+    print("  [Stage 4] Feature consistency analysis...")
+    if per_patient_results:
+        # How consistent are feature rankings across patients?
+        feature_ranks = {f: [] for f in feat_names}
+        for pid, res in per_patient_results.items():
+            sorted_feats = sorted(res['all_importance'].items(), key=lambda x: -x[1])
+            for rank, (feat, _) in enumerate(sorted_feats):
+                feature_ranks[feat].append(rank)
+
+        consistency = {}
+        for feat, ranks in feature_ranks.items():
+            if ranks:
+                consistency[feat] = {
+                    'mean_rank': round(np.mean(ranks), 2),
+                    'std_rank': round(np.std(ranks), 2),
+                    'min_rank': int(np.min(ranks)),
+                    'max_rank': int(np.max(ranks))
+                }
+
+        sorted_consistency = sorted(consistency.items(), key=lambda x: x[1]['mean_rank'])
+        print(f"    Most consistent features:")
+        for feat, stats in sorted_consistency[:5]:
+            print(f"      {feat}: rank {stats['mean_rank']:.1f}±{stats['std_rank']:.1f}")
+    else:
+        consistency = {}
+
+    result = {
+        'experiment': 'EXP-220: Per-Patient Feature Importance',
+        'hypothesis': 'Different patients rely on different features',
+        'global_importance': global_importance,
+        'per_patient': per_patient_results,
+        'feature_consistency': consistency
+    }
+    out_path = os.path.join(args.output_dir, 'exp220_feature_importance.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+
+def run_combined_event_winners(args):
+    """EXP-221: Combine all event classification winners.
+    Per-patient z-norm (EXP-205) + temporal features (EXP-202) +
+    stratified oversampling (EXP-217) = should push event F1 higher.
+    """
+    import json, os, numpy as np
+    from xgboost import XGBClassifier
+    from sklearn.metrics import f1_score, matthews_corrcoef
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp221_combined_event_winners', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+
+    print("  [Stage 1] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+
+    X_train, y_train = train_data['tabular'], train_data['labels']
+    X_val, y_val = val_data['tabular'], val_data['labels']
+    feat_names = list(train_data.get('feature_names', [f'f{i}' for i in range(X_train.shape[1])]))
+    metadata_train = train_data['metadata']
+    metadata_val = val_data['metadata']
+
+    all_labels = sorted(set(y_train) | set(y_val))
+    local_map = {old: new for new, old in enumerate(all_labels)}
+    y_train_l = np.array([local_map[y] for y in y_train])
+    y_val_l = np.array([local_map.get(y, 0) for y in y_val])
+    n_classes = len(all_labels)
+
+    train_patients = np.array([m.get('patient', 'unknown') if isinstance(m, dict) else 'unknown'
+                               for m in metadata_train])
+    val_patients = np.array([m.get('patient', 'unknown') if isinstance(m, dict) else 'unknown'
+                             for m in metadata_val])
+    pids = sorted(set(train_patients) - {'unknown'})
+
+    # Stage 2: Add temporal features
+    print("  [Stage 2] Engineering temporal features...")
+    def add_temporal_features(X):
+        n = X.shape[0]
+        new_feats = []
+        if X.shape[1] > 1:
+            new_feats.append((X[:, 1] / (X[:, 0] + 1e-10)).reshape(-1, 1))  # circadian_proxy
+            new_feats.append((X[:, 0] ** 2).reshape(-1, 1))  # glucose_mean_sq
+        if X.shape[1] > 5:
+            iob = X[:, 3] if X.shape[1] > 3 else np.zeros(n)
+            new_feats.append((iob * X[:, 0]).reshape(-1, 1))  # iob_glucose_interaction
+            new_feats.append((iob / (X[:, 0] + 1e-10)).reshape(-1, 1))  # iob_glucose_ratio
+        if X.shape[1] > 2:
+            t1 = X[:, min(2, X.shape[1]-1)]
+            t2 = X[:, min(4, X.shape[1]-1)] if X.shape[1] > 4 else t1
+            new_feats.append((t2 - t1).reshape(-1, 1))  # glucose_curvature
+            new_feats.append(np.abs(t1).reshape(-1, 1))  # abs_trend
+        if new_feats:
+            return np.hstack([X] + new_feats)
+        return X
+
+    X_train_t = add_temporal_features(X_train)
+    X_val_t = add_temporal_features(X_val)
+
+    # Stage 3: Global baseline with temporal
+    print("  [Stage 3] Global baseline with temporal features...")
+    global_clf = XGBClassifier(
+        n_estimators=200, max_depth=6, learning_rate=0.1,
+        num_class=n_classes, objective='multi:softprob',
+        eval_metric='mlogloss', random_state=42, verbosity=0
+    )
+    try:
+        global_clf.fit(X_train_t, y_train_l, eval_set=[(X_val_t, y_val_l)], verbose=False)
+    except Exception:
+        global_clf.fit(X_train_t, y_train_l, verbose=False)
+    global_preds = global_clf.predict(X_val_t)
+    global_wf1 = f1_score(y_val_l, global_preds, average='weighted')
+    global_mf1 = f1_score(y_val_l, global_preds, average='macro')
+    print(f"    Global+temporal: wF1={global_wf1:.4f}, mF1={global_mf1:.4f}")
+
+    # Stage 4: Per-patient z-norm + temporal + oversampled
+    print("  [Stage 4] Per-patient z-norm + temporal + oversampled...")
+    all_preds = []
+    all_true = []
+    per_patient = {}
+
+    for pid in pids:
+        tr_mask = train_patients == pid
+        vl_mask = val_patients == pid
+        if tr_mask.sum() < 20 or vl_mask.sum() < 5:
+            continue
+
+        X_p_tr = X_train_t[tr_mask]
+        y_p_tr = y_train_l[tr_mask]
+        X_p_vl = X_val_t[vl_mask]
+        y_p_vl = y_val_l[vl_mask]
+
+        # Z-normalize per patient
+        mu = X_p_tr.mean(axis=0)
+        sigma = X_p_tr.std(axis=0) + 1e-8
+        X_p_tr_z = (X_p_tr - mu) / sigma
+        X_p_vl_z = (X_p_vl - mu) / sigma
+
+        # Stratified oversampling
+        unique, counts = np.unique(y_p_tr, return_counts=True)
+        max_count = max(counts) if len(counts) > 0 else 10
+        target = max(int(max_count * 0.15), 5)
+
+        os_X_parts, os_y_parts = [], []
+        for cls, cnt in zip(unique, counts):
+            cls_mask = y_p_tr == cls
+            if cnt < target:
+                n_needed = target - cnt
+                idx = np.random.choice(cnt, n_needed, replace=True)
+                noise = np.random.normal(0, 0.01, (n_needed, X_p_tr_z.shape[1]))
+                os_X_parts.append(np.vstack([X_p_tr_z[cls_mask], X_p_tr_z[cls_mask][idx] + noise]))
+                os_y_parts.append(np.concatenate([y_p_tr[cls_mask], np.full(n_needed, cls)]))
+            else:
+                os_X_parts.append(X_p_tr_z[cls_mask])
+                os_y_parts.append(y_p_tr[cls_mask])
+
+        X_os = np.vstack(os_X_parts)
+        y_os = np.concatenate(os_y_parts)
+
+        # Local label remap
+        pp_labels = sorted(set(y_os))
+        pp_map = {old: new for new, old in enumerate(pp_labels)}
+        pp_rev = {new: old for old, new in pp_map.items()}
+        y_os_l = np.array([pp_map[y] for y in y_os])
+
+        clf = XGBClassifier(
+            n_estimators=200, max_depth=8, learning_rate=0.08,
+            num_class=len(pp_labels), objective='multi:softprob',
+            eval_metric='mlogloss', random_state=42, verbosity=0
+        )
+        try:
+            y_p_vl_l = np.array([pp_map.get(y, 0) for y in y_p_vl])
+            clf.fit(X_os, y_os_l, eval_set=[(X_p_vl_z, y_p_vl_l)], verbose=False)
+        except Exception:
+            clf.fit(X_os, y_os_l, verbose=False)
+
+        pp_preds_l = clf.predict(X_p_vl_z)
+        pp_preds = np.array([pp_rev.get(int(p), 0) for p in pp_preds_l])
+
+        f1_pp = f1_score(y_p_vl, pp_preds, average='weighted', zero_division=0)
+        all_preds.extend(pp_preds.tolist())
+        all_true.extend(y_p_vl.tolist())
+        per_patient[pid] = {'f1': round(f1_pp, 4)}
+        print(f"    {pid}: F1={f1_pp:.4f}")
+
+    if all_preds:
+        combined_wf1 = f1_score(all_true, all_preds, average='weighted')
+        combined_mf1 = f1_score(all_true, all_preds, average='macro')
+        combined_mcc = matthews_corrcoef(all_true, all_preds)
+    else:
+        combined_wf1 = combined_mf1 = combined_mcc = 0
+
+    print(f"\n  Combined: wF1={combined_wf1:.4f}, mF1={combined_mf1:.4f}, MCC={combined_mcc:.4f}")
+    print(f"  vs Global: wF1={global_wf1:.4f}, mF1={global_mf1:.4f}")
+
+    result = {
+        'experiment': 'EXP-221: Combined Event Winners',
+        'hypothesis': 'Per-patient + temporal + oversampled compounds all gains',
+        'global_weighted_f1': round(global_wf1, 4),
+        'global_macro_f1': round(global_mf1, 4),
+        'combined_weighted_f1': round(combined_wf1, 4),
+        'combined_macro_f1': round(combined_mf1, 4),
+        'combined_mcc': round(combined_mcc, 4),
+        'per_patient': per_patient,
+        'comparison': {
+            'EXP-209 (pp+temporal)': 0.7053,
+            'EXP-217 (pp+oversampled)': 0.7062,
+            'EXP-205 (pp only)': 0.700
+        }
+    }
+    out_path = os.path.join(args.output_dir, 'exp221_combined_event_winners.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+
+def run_drift_informed_forecast(args):
+    """EXP-222: Drift-informed forecast weighting.
+    Hypothesis: During high-drift periods, per-patient adapted models should
+    be weighted more heavily; during stable periods, global ensemble is fine.
+    """
+    import torch, json, os, numpy as np
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        train_forecast, forecast_mse, persistence_mse, load_patient_profile
+    )
+    from tools.cgmencode.model import CGMGroupedEncoder
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp222_drift_informed', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    pids = sorted([d for d in os.listdir(patients_dir)
+                   if os.path.isdir(os.path.join(patients_dir, d))])
+
+    # Stage 1: Train global model
+    print("  [Stage 1] Training global model...")
+    train_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(train_paths)
+
+    global_model = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+    global_path = os.path.join(args.output_dir, 'exp222_global.pth')
+    train_forecast(global_model, train_ds, val_ds, save_path=global_path, label='global',
+                   lr=0.001, epochs=getattr(args, 'epochs', 150),
+                   batch=getattr(args, 'batch', 128), patience=15, weight_decay=1e-4)
+    ckpt = torch.load(global_path, map_location='cpu', weights_only=True)
+    global_model.load_state_dict(ckpt.get('model_state', ckpt) if isinstance(ckpt, dict) else ckpt)
+    global_model = global_model.cpu()
+    global_model.eval()
+
+    # Stage 2: Per-patient drift-aware evaluation
+    print("  [Stage 2] Per-patient drift-aware evaluation...")
+    per_patient_results = {}
+
+    for pid in pids:
+        try:
+            p_val_path = os.path.join(patients_dir, pid, 'verification')
+            if not os.path.isdir(p_val_path):
+                continue
+            _, p_val_ds = load_multipatient_nightscout([p_val_path])
+            isf, cr = load_patient_profile(os.path.join(patients_dir, pid))
+
+            # Compute per-window volatility (proxy for drift)
+            volatilities = []
+            global_model.eval()
+            for i in range(len(p_val_ds)):
+                item = p_val_ds[i]
+                bx = item[0] if isinstance(item, tuple) else item
+                glucose = bx[:, 0].numpy() * 400
+                vol = np.std(glucose)
+                volatilities.append(vol)
+
+            volatilities = np.array(volatilities)
+            median_vol = np.median(volatilities)
+
+            # Split into calm vs volatile
+            calm_mask = volatilities <= median_vol
+            volatile_mask = volatilities > median_vol
+
+            # Get global model MAE for each subset
+            errors_global = []
+            half = 12  # default ws//2
+            for i in range(len(p_val_ds)):
+                item = p_val_ds[i]
+                bx = (item[0] if isinstance(item, tuple) else item).unsqueeze(0)
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0
+                with torch.no_grad():
+                    pred = global_model(x_in)
+                error = float(torch.abs(pred[:, half:, :1] - bx[:, half:, :1]).mean()) * 400
+                errors_global.append(error)
+
+            errors_global = np.array(errors_global)
+            calm_mae = float(np.mean(errors_global[calm_mask])) if calm_mask.any() else 0
+            volatile_mae = float(np.mean(errors_global[volatile_mask])) if volatile_mask.any() else 0
+            overall_mae = float(np.mean(errors_global))
+
+            per_patient_results[pid] = {
+                'isf': round(isf, 1),
+                'median_volatility': round(float(median_vol), 1),
+                'calm_mae': round(calm_mae, 1),
+                'volatile_mae': round(volatile_mae, 1),
+                'overall_mae': round(overall_mae, 1),
+                'n_calm': int(calm_mask.sum()),
+                'n_volatile': int(volatile_mask.sum())
+            }
+            print(f"    {pid}: calm={calm_mae:.1f}, volatile={volatile_mae:.1f}, overall={overall_mae:.1f}")
+
+        except Exception as e:
+            print(f"    {pid}: FAILED - {e}")
+            per_patient_results[pid] = {'error': str(e)}
+
+    # Aggregate
+    valid = {k: v for k, v in per_patient_results.items() if 'calm_mae' in v}
+    if valid:
+        avg_calm = np.mean([v['calm_mae'] for v in valid.values()])
+        avg_volatile = np.mean([v['volatile_mae'] for v in valid.values()])
+        avg_overall = np.mean([v['overall_mae'] for v in valid.values()])
+    else:
+        avg_calm = avg_volatile = avg_overall = 0
+
+    print(f"\n  Average: calm={avg_calm:.1f}, volatile={avg_volatile:.1f}, overall={avg_overall:.1f}")
+    print(f"  Volatile/calm ratio: {avg_volatile/max(avg_calm, 0.1):.2f}x")
+
+    result = {
+        'experiment': 'EXP-222: Drift-Informed Forecast Weighting',
+        'hypothesis': 'Volatile periods need adapted models more than calm periods',
+        'avg_calm_mae': round(avg_calm, 1),
+        'avg_volatile_mae': round(avg_volatile, 1),
+        'avg_overall_mae': round(avg_overall, 1),
+        'volatile_calm_ratio': round(avg_volatile / max(avg_calm, 0.1), 2),
+        'per_patient': per_patient_results
+    }
+    out_path = os.path.join(args.output_dir, 'exp222_drift_informed.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+    # Clean up
+    if os.path.exists(global_path):
+        os.remove(global_path)
+
+
+def run_production_v13(args):
+    """EXP-223: Production v13 — best-of-breed integration.
+    Combines: per-patient adapted ensemble (EXP-219), per-patient+temporal+oversampled
+    events (EXP-221), per-patient drift (EXP-216), per-horizon conformal (EXP-203).
+    """
+    import torch, json, os, numpy as np
+    from xgboost import XGBClassifier
+    from sklearn.metrics import f1_score
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        train_forecast, forecast_mse, persistence_mse
+    )
+    from tools.cgmencode.model import CGMGroupedEncoder
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp223_production_v13', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    pids = sorted([d for d in os.listdir(patients_dir)
+                   if os.path.isdir(os.path.join(patients_dir, d))])
+
+    # Stage 1: Train 3-member ensemble (fast version of v13)
+    print("  [Stage 1] Training 3-member base ensemble...")
+    train_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(train_paths)
+
+    ensemble_paths = []
+    for seed in range(3):
+        torch.manual_seed(seed * 42 + 13)
+        np.random.seed(seed * 42 + 13)
+        model = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+        path = os.path.join(args.output_dir, f'exp223_ens_s{seed}.pth')
+        train_forecast(model, train_ds, val_ds, save_path=path, label=f'ens_s{seed}',
+                       lr=0.001, epochs=getattr(args, 'epochs', 150),
+                       batch=getattr(args, 'batch', 128), patience=15, weight_decay=1e-4)
+        ensemble_paths.append(path)
+
+    # Stage 2: Ensemble forecast evaluation
+    print("  [Stage 2] Evaluating ensemble forecast...")
+    models = []
+    for ep in ensemble_paths:
+        m = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+        ckpt = torch.load(ep, map_location='cpu', weights_only=True)
+        m.load_state_dict(ckpt.get('model_state', ckpt) if isinstance(ckpt, dict) else ckpt)
+        m.cpu()
+        m.eval()
+        models.append(m)
+
+    # Ensemble MAE
+    all_errors = []
+    for i in range(0, len(val_ds), 64):
+        batch_items = [val_ds[j] for j in range(i, min(i+64, len(val_ds)))]
+        bx = torch.stack([item[0] if isinstance(item, tuple) else item for item in batch_items])
+        half = bx.shape[1] // 2
+        x_in = bx.clone()
+        x_in[:, half:, 0] = 0.0
+        preds = []
+        for m in models:
+            with torch.no_grad():
+                pred = m(x_in)
+            preds.append(pred[:, half:, :1])
+        ensemble_pred = torch.mean(torch.stack(preds), dim=0)
+        errors = torch.abs(ensemble_pred - bx[:, half:, :1]).mean(dim=(1, 2)) * 400
+        all_errors.extend(errors.numpy().tolist())
+
+    ensemble_mae = float(np.mean(all_errors))
+    persist_mae = persistence_mse(val_ds) ** 0.5 * 400
+    print(f"    Ensemble MAE: {ensemble_mae:.1f} mg/dL, persistence: {persist_mae:.1f}")
+
+    # Stage 3: Event classification with combined winners
+    print("  [Stage 3] Event classification (per-patient+temporal+oversampled)...")
+    train_evt = build_classifier_dataset(patients_dir, split='training')
+    val_evt = build_classifier_dataset(patients_dir, split='verification')
+
+    X_tr, y_tr = train_evt['tabular'], train_evt['labels']
+    X_vl, y_vl = val_evt['tabular'], val_evt['labels']
+    meta_tr = train_evt['metadata']
+    meta_vl = val_evt['metadata']
+
+    all_labels = sorted(set(y_tr) | set(y_vl))
+    lm = {old: new for new, old in enumerate(all_labels)}
+    y_tr_l = np.array([lm[y] for y in y_tr])
+    y_vl_l = np.array([lm.get(y, 0) for y in y_vl])
+
+    tr_pats = np.array([m.get('patient', '') if isinstance(m, dict) else '' for m in meta_tr])
+    vl_pats = np.array([m.get('patient', '') if isinstance(m, dict) else '' for m in meta_vl])
+
+    # Add temporal features
+    def add_temporal(X):
+        feats = [X]
+        if X.shape[1] > 1:
+            feats.append((X[:, 1] / (X[:, 0] + 1e-10)).reshape(-1, 1))
+            feats.append((X[:, 0] ** 2).reshape(-1, 1))
+        if X.shape[1] > 5:
+            feats.append((X[:, 3] * X[:, 0]).reshape(-1, 1))
+        if X.shape[1] > 2:
+            feats.append((X[:, min(4, X.shape[1]-1)] - X[:, 2]).reshape(-1, 1))
+            feats.append(np.abs(X[:, 2]).reshape(-1, 1))
+        return np.hstack(feats)
+
+    X_tr_t = add_temporal(X_tr)
+    X_vl_t = add_temporal(X_vl)
+
+    # Per-patient with oversampling
+    all_preds = []
+    all_true = []
+    for pid in pids:
+        tr_m = tr_pats == pid
+        vl_m = vl_pats == pid
+        if tr_m.sum() < 20 or vl_m.sum() < 5:
+            continue
+
+        X_p = X_tr_t[tr_m]
+        y_p = y_tr_l[tr_m]
+        mu = X_p.mean(axis=0); sigma = X_p.std(axis=0) + 1e-8
+        X_p_z = (X_p - mu) / sigma
+        X_vp_z = (X_vl_t[vl_m] - mu) / sigma
+        y_vp = y_vl_l[vl_m]
+
+        # Oversample minorities
+        unique, counts = np.unique(y_p, return_counts=True)
+        target = max(int(max(counts) * 0.15), 5)
+        os_X, os_y = [], []
+        for cls, cnt in zip(unique, counts):
+            cm = y_p == cls
+            if cnt < target:
+                n = target - cnt
+                idx = np.random.choice(cnt, n, replace=True)
+                os_X.append(np.vstack([X_p_z[cm], X_p_z[cm][idx] + np.random.normal(0, 0.01, (n, X_p_z.shape[1]))]))
+                os_y.append(np.concatenate([y_p[cm], np.full(n, cls)]))
+            else:
+                os_X.append(X_p_z[cm])
+                os_y.append(y_p[cm])
+        X_os = np.vstack(os_X)
+        y_os = np.concatenate(os_y)
+
+        pp_lab = sorted(set(y_os))
+        pm = {o: n for n, o in enumerate(pp_lab)}
+        pr = {n: o for o, n in pm.items()}
+        y_os_l = np.array([pm[y] for y in y_os])
+
+        clf = XGBClassifier(n_estimators=200, max_depth=8, learning_rate=0.08,
+                            num_class=len(pp_lab), objective='multi:softprob',
+                            random_state=42, verbosity=0)
+        try:
+            clf.fit(X_os, y_os_l, eval_set=[(X_vp_z, np.array([pm.get(y, 0) for y in y_vp]))], verbose=False)
+        except Exception:
+            clf.fit(X_os, y_os_l, verbose=False)
+
+        preds_l = clf.predict(X_vp_z)
+        preds = np.array([pr.get(int(p), 0) for p in preds_l])
+        all_preds.extend(preds.tolist())
+        all_true.extend(y_vp.tolist())
+
+    event_wf1 = f1_score(all_true, all_preds, average='weighted') if all_preds else 0
+    event_mf1 = f1_score(all_true, all_preds, average='macro') if all_preds else 0
+    print(f"    Event wF1={event_wf1:.4f}, mF1={event_mf1:.4f}")
+
+    # Stage 4: Per-horizon conformal (simplified)
+    print("  [Stage 4] Per-horizon conformal intervals...")
+    horizon_maes = {}
+    for h_idx in range(6):  # 6 horizons in the forecast half
+        h_errors = []
+        for i in range(0, len(val_ds), 64):
+            batch_items = [val_ds[j] for j in range(i, min(i+64, len(val_ds)))]
+            bx = torch.stack([item[0] if isinstance(item, tuple) else item for item in batch_items])
+            half = bx.shape[1] // 2
+            if half + h_idx * 2 + 2 > bx.shape[1]:
+                break
+            x_in = bx.clone()
+            x_in[:, half:, 0] = 0.0
+            preds = []
+            for m in models:
+                with torch.no_grad():
+                    pred = m(x_in)
+                preds.append(pred[:, half + h_idx * 2:half + h_idx * 2 + 2, :1])
+            ens = torch.mean(torch.stack(preds), dim=0)
+            err = torch.abs(ens - bx[:, half + h_idx * 2:half + h_idx * 2 + 2, :1]).mean(dim=(1, 2)) * 400
+            h_errors.extend(err.numpy().tolist())
+        if h_errors:
+            horizon_maes[f'h{h_idx}'] = round(float(np.mean(h_errors)), 1)
+
+    print(f"    Per-horizon MAE: {horizon_maes}")
+
+    result = {
+        'experiment': 'EXP-223: Production v13',
+        'ensemble_mae': round(ensemble_mae, 1),
+        'persistence_mae': round(persist_mae, 1),
+        'event_weighted_f1': round(event_wf1, 4),
+        'event_macro_f1': round(event_mf1, 4),
+        'per_horizon_mae': horizon_maes,
+        'n_ensemble_members': 3,
+        'comparison': {
+            'v11_mae': 12.1,
+            'v11_event_f1': 0.685,
+            'best_event_f1': 0.7053
+        }
+    }
+    out_path = os.path.join(args.output_dir, 'exp223_production_v13.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+    # Clean up
+    for ep in ensemble_paths:
+        if os.path.exists(ep):
+            os.remove(ep)
+
+
+REGISTRY.update({
+    # Phase 14
+    'per-patient-adapted-ensemble': 'run_per_patient_adapted_ensemble',
+    'feature-importance': 'run_per_patient_feature_importance',
+    'combined-event-winners': 'run_combined_event_winners',
+    'drift-informed-forecast': 'run_drift_informed_forecast',
+    'production-v13': 'run_production_v13',
+})

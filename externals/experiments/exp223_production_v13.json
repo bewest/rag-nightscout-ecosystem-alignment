@@ -1,0 +1,21 @@
+{
+  "experiment": "EXP-223: Production v13",
+  "ensemble_mae": 18.1,
+  "persistence_mae": 34.3,
+  "event_weighted_f1": 0.7063,
+  "event_macro_f1": 0.6854,
+  "per_horizon_mae": {
+    "h0": 9.9,
+    "h1": 12.2,
+    "h2": 14.4,
+    "h3": 18.7,
+    "h4": 23.7,
+    "h5": 30.1
+  },
+  "n_ensemble_members": 3,
+  "comparison": {
+    "v11_mae": 12.1,
+    "v11_event_f1": 0.685,
+    "best_event_f1": 0.7053
+  }
+}
