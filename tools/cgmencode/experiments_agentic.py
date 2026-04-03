@@ -10018,3 +10018,1587 @@ def run_production_v10(args):
                    'results': results}, f, indent=2, cls=_NumpyEncoder)
     print(f"  Results -> {out_path}")
     return results
+
+
+# ╔════════════════════════════════════════════════════════════════════╗
+# ║  PHASE 8 — Event stacking, timestamp-aligned drift, worst-patient║
+# ╚════════════════════════════════════════════════════════════════════╝
+
+REGISTRY.update({
+    'xgb-event-stacked':       'run_xgb_event_stacked',        # EXP-190
+    'drift-timestamp-aligned': 'run_drift_timestamp_aligned',   # EXP-191
+    'worst-patient-robust':    'run_worst_patient_robust',      # EXP-192
+    'xgb-event-feature-select':'run_xgb_event_feature_select',  # EXP-193
+})
+
+
+# ── EXP-190: XGBoost stacked ensemble for events ─────────────────
+# Instead of single XGB, stack: (1) per-class binary classifiers,
+# (2) meta-learner on their probabilities. May capture per-class
+# feature interactions better than single multi-class model.
+def run_xgb_event_stacked(args):
+    """EXP-190: Stacked XGBoost — per-class binary + meta-learner."""
+    import json, os
+    import numpy as np
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    if not patients_dir:
+        print("  [EXP-190] Need --patients-dir"); return {}
+
+    from .label_events import build_classifier_dataset
+
+    print("  [EXP-190] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    try:
+        val_data = build_classifier_dataset(patients_dir, split='verification')
+    except Exception:
+        from sklearn.model_selection import train_test_split
+        X = train_data['tabular']; y = train_data['labels']
+        X_tr, X_vl, y_tr, y_vl = train_test_split(X, y, test_size=0.2, random_state=42)
+        val_data = {'tabular': X_vl, 'labels': y_vl, 'feature_names': train_data['feature_names']}
+        train_data = {'tabular': X_tr, 'labels': y_tr, 'feature_names': train_data['feature_names']}
+
+    X_train = train_data['tabular'].copy()
+    y_train = train_data['labels'].copy()
+    X_val = val_data['tabular'].copy()
+    y_val = val_data['labels'].copy()
+    feature_names = list(train_data['feature_names'])
+
+    if 'lead_time_hr' in feature_names:
+        idx = feature_names.index('lead_time_hr')
+        X_train = np.delete(X_train, idx, axis=1)
+        X_val = np.delete(X_val, idx, axis=1)
+        feature_names.pop(idx)
+
+    # Add all temporal + pharma features (from EXP-181)
+    glucose_cols = [i for i, n in enumerate(feature_names)
+                    if 'glucose' in n.lower() or 'sgv' in n.lower() or 'bg' in n.lower()]
+    iob_cols = [i for i, n in enumerate(feature_names) if 'iob' in n.lower()]
+    cob_cols = [i for i, n in enumerate(feature_names) if 'cob' in n.lower()]
+
+    new_feats = []; new_names = []
+    for ci in glucose_cols[:5]:
+        g_tr = X_train[:, ci]; g_vl = X_val[:, ci]
+        roc_tr = np.gradient(g_tr); roc_vl = np.gradient(g_vl)
+        new_feats.append((roc_tr, roc_vl)); new_names.append(f'{feature_names[ci]}_roc')
+        acc_tr = np.gradient(roc_tr); acc_vl = np.gradient(roc_vl)
+        new_feats.append((acc_tr, acc_vl)); new_names.append(f'{feature_names[ci]}_acc')
+        def rstd(arr, w=10):
+            r = np.zeros_like(arr, dtype=float)
+            for i in range(len(arr)):
+                r[i] = np.std(arr[max(0,i-w):i+1])
+            return r
+        new_feats.append((rstd(g_tr), rstd(g_vl))); new_names.append(f'{feature_names[ci]}_rstd')
+
+    if iob_cols and cob_cols:
+        iob_tr = X_train[:, iob_cols[0]]; iob_vl = X_val[:, iob_cols[0]]
+        cob_tr = X_train[:, cob_cols[0]]; cob_vl = X_val[:, cob_cols[0]]
+        new_feats.append((iob_tr * cob_tr, iob_vl * cob_vl)); new_names.append('iob_cob_interaction')
+        new_feats.append((iob_tr / (cob_tr + 1), iob_vl / (cob_vl + 1))); new_names.append('iob_cob_ratio')
+    if iob_cols:
+        iob_tr = X_train[:, iob_cols[0]]; iob_vl = X_val[:, iob_cols[0]]
+        new_feats.append((1.0/(np.abs(iob_tr)+0.1), 1.0/(np.abs(iob_vl)+0.1))); new_names.append('iob_tail')
+        new_feats.append((np.gradient(iob_tr), np.gradient(iob_vl))); new_names.append('iob_roc')
+
+    for (f_tr, f_vl), name in zip(new_feats, new_names):
+        X_train = np.column_stack([X_train, f_tr])
+        X_val = np.column_stack([X_val, f_vl])
+        feature_names.append(name)
+
+    unique_classes = np.unique(y_train)
+    n_classes = len(unique_classes)
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map.get(y, 0) for y in y_val])
+
+    try:
+        import xgboost as xgb
+        from sklearn.metrics import f1_score
+        from sklearn.model_selection import cross_val_predict
+    except ImportError:
+        print("  [EXP-190] Missing dependencies"); return {}
+
+    # Stage 1: Per-class binary classifiers with cross-validated probabilities
+    print(f"  [EXP-190] Stage 1: {n_classes} binary classifiers with CV...")
+    meta_train = np.zeros((len(y_train_m), n_classes))
+    meta_val = np.zeros((len(y_val_m), n_classes))
+
+    for c in range(n_classes):
+        y_bin_train = (y_train_m == c).astype(int)
+        class_counts = np.bincount(y_bin_train, minlength=2)
+        scale = class_counts[0] / max(class_counts[1], 1)
+
+        clf_bin = xgb.XGBClassifier(max_depth=8, n_estimators=200, learning_rate=0.05,
+                                     scale_pos_weight=min(scale, 20),
+                                     subsample=0.8, colsample_bytree=0.8,
+                                     eval_metric='logloss', random_state=42,
+                                     tree_method='hist')
+
+        # Cross-val predict for meta features (avoid leakage)
+        try:
+            cv_probs = cross_val_predict(clf_bin, X_train, y_bin_train,
+                                          cv=3, method='predict_proba')
+            meta_train[:, c] = cv_probs[:, 1]
+        except Exception:
+            clf_bin.fit(X_train, y_bin_train)
+            meta_train[:, c] = clf_bin.predict_proba(X_train)[:, 1]
+
+        # Fit on full train for val predictions
+        clf_bin.fit(X_train, y_bin_train)
+        meta_val[:, c] = clf_bin.predict_proba(X_val)[:, 1]
+
+    # Stage 2: Meta-learner on binary probabilities + original features
+    print("  [EXP-190] Stage 2: Meta-learner...")
+    X_meta_train = np.column_stack([X_train, meta_train])
+    X_meta_val = np.column_stack([X_val, meta_val])
+
+    class_counts = np.bincount(y_train_m, minlength=n_classes)
+    cw = len(y_train_m) / (n_classes * np.maximum(class_counts, 1))
+    sw = cw[y_train_m]
+
+    clf_meta = xgb.XGBClassifier(max_depth=10, n_estimators=400, learning_rate=0.08,
+                                  subsample=0.8, colsample_bytree=0.8,
+                                  eval_metric='mlogloss', random_state=42, tree_method='hist')
+    clf_meta.fit(X_meta_train, y_train_m, sample_weight=sw)
+    y_pred_stacked = clf_meta.predict(X_meta_val)
+    f1_stacked = float(f1_score(y_val_m, y_pred_stacked, average='macro', zero_division=0))
+
+    # Baseline (single multi-class, same hyperparams as EXP-181)
+    clf_single = xgb.XGBClassifier(max_depth=10, n_estimators=400, learning_rate=0.08,
+                                    subsample=0.8, colsample_bytree=0.8,
+                                    eval_metric='mlogloss', random_state=42, tree_method='hist')
+    clf_single.fit(X_train, y_train_m, sample_weight=sw)
+    y_pred_single = clf_single.predict(X_val)
+    f1_single = float(f1_score(y_val_m, y_pred_single, average='macro', zero_division=0))
+
+    results = {
+        'f1_stacked': f1_stacked,
+        'f1_single_baseline': f1_single,
+        'improvement': float(f1_stacked - f1_single),
+        'n_classes': n_classes,
+        'n_meta_features': n_classes,
+        'comparison': {'exp181_f1': 0.679},
+    }
+
+    print(f"  [EXP-190] Stacked F1={f1_stacked:.4f} vs Single F1={f1_single:.4f} "
+          f"({f1_stacked - f1_single:+.4f})")
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp190_xgb_stacked.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-190', 'name': 'xgb-event-stacked',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# ── EXP-191: Drift with timestamp-aligned treatment response ──────
+# EXP-188 failed because treatment density was uniform (no timestamps).
+# This version aligns bolus/carb events to glucose readings by timestamp
+# and computes actual per-bolus glucose response as ISF proxy.
+def run_drift_timestamp_aligned(args):
+    """EXP-191: Drift — timestamp-aligned treatment-glucose response."""
+    import json, os, pathlib
+    import numpy as np
+    from datetime import datetime, timezone
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    if not patients_dir:
+        print("  [EXP-191] Need --patients-dir"); return {}
+
+    from .experiment_lib import resolve_patient_paths, load_patient_profile
+
+    paths = resolve_patient_paths(patients_dir, getattr(args, 'real_data', None))
+    results_per_patient = {}
+    all_drift_tir = []
+
+    def parse_ts(entry):
+        """Extract epoch ms from entry."""
+        if 'date' in entry and isinstance(entry['date'], (int, float)):
+            return entry['date']
+        for field in ['mills', 'created_at', 'dateString', 'timestamp']:
+            if field in entry:
+                val = entry[field]
+                if isinstance(val, (int, float)):
+                    return val
+                try:
+                    dt = datetime.fromisoformat(str(val).replace('Z', '+00:00'))
+                    return dt.timestamp() * 1000
+                except Exception:
+                    pass
+        return None
+
+    for ppath in paths:
+        patient_id = pathlib.Path(ppath).parent.name
+        print(f"  [EXP-191] Processing patient {patient_id}...")
+
+        try:
+            profile = load_patient_profile(ppath)
+            nominal_isf = profile.get('isf', 45.0)
+        except Exception:
+            nominal_isf = 45.0
+
+        # Load entries with timestamps
+        entries_path = os.path.join(ppath, 'entries.json')
+        treatments_path = os.path.join(ppath, 'treatments.json')
+        if not os.path.exists(entries_path):
+            continue
+
+        entries = json.load(open(entries_path))
+        sgv_ts = []
+        for e in entries:
+            sgv = e.get('sgv', e.get('glucose'))
+            ts = parse_ts(e)
+            if sgv and ts and 30 < sgv < 500:
+                sgv_ts.append((ts, float(sgv)))
+
+        if len(sgv_ts) < 100:
+            continue
+
+        sgv_ts.sort(key=lambda x: x[0])
+        times = np.array([t for t, _ in sgv_ts])
+        sgvs = np.array([s for _, s in sgv_ts])
+
+        # Load bolus treatments with timestamps
+        bolus_events = []
+        if os.path.exists(treatments_path):
+            treatments = json.load(open(treatments_path))
+            for t in treatments:
+                insulin = t.get('insulin', 0)
+                ts = parse_ts(t)
+                if insulin and insulin > 0 and ts:
+                    bolus_events.append((ts, float(insulin)))
+            bolus_events.sort(key=lambda x: x[0])
+
+        # Compute per-bolus glucose response (ISF proxy)
+        # For each bolus, find glucose 30-90 min after and compute Δglucose/insulin
+        bolus_isf_estimates = []
+        for bts, bunits in bolus_events:
+            # Find glucose at bolus time
+            idx_before = np.searchsorted(times, bts) - 1
+            if idx_before < 0 or idx_before >= len(sgvs):
+                continue
+
+            # Find glucose 60-120 min after (peak insulin action)
+            t_after_start = bts + 60 * 60 * 1000  # 60 min
+            t_after_end = bts + 120 * 60 * 1000    # 120 min
+            mask_after = (times >= t_after_start) & (times <= t_after_end)
+            if not mask_after.any():
+                continue
+
+            glucose_before = sgvs[idx_before]
+            glucose_after = np.mean(sgvs[mask_after])
+            delta_glucose = glucose_before - glucose_after  # positive = glucose dropped
+
+            if bunits > 0.1:  # Avoid tiny boluses
+                estimated_isf = delta_glucose / bunits
+                if 5 < estimated_isf < 200:  # Reasonable ISF range
+                    bolus_isf_estimates.append((bts, estimated_isf))
+
+        # Compute rolling ISF ratio from bolus responses
+        if len(bolus_isf_estimates) >= 5:
+            bolus_times = np.array([t for t, _ in bolus_isf_estimates])
+            bolus_isfs = np.array([isf for _, isf in bolus_isf_estimates])
+
+            # Rolling window of 10 boluses
+            window = min(10, len(bolus_isfs) // 2)
+            treatment_drift = np.ones(len(bolus_isfs))
+            for i in range(window, len(bolus_isfs)):
+                chunk = bolus_isfs[i-window:i]
+                ratio = np.median(chunk) / nominal_isf
+                treatment_drift[i] = np.clip(ratio, 0.5, 2.0)
+
+            # Find corresponding TIR for each bolus time
+            bolus_tir = np.zeros(len(bolus_isfs))
+            for i, bt in enumerate(bolus_times):
+                # TIR in 2-hour window around bolus
+                mask = (times >= bt - 60*60*1000) & (times <= bt + 60*60*1000)
+                if mask.sum() >= 6:
+                    chunk = sgvs[mask]
+                    bolus_tir[i] = np.mean((chunk >= 70) & (chunk <= 180))
+
+            # Correlation between treatment-derived drift and TIR
+            valid = (bolus_tir > 0) & (treatment_drift > 0)
+            if valid.sum() >= 10:
+                corr_treatment = float(np.corrcoef(treatment_drift[valid], bolus_tir[valid])[0, 1])
+            else:
+                corr_treatment = float('nan')
+        else:
+            corr_treatment = float('nan')
+            treatment_drift = np.array([])
+
+        # Glucose-only drift (same as EXP-183 for comparison)
+        deltas = np.diff(sgvs)
+        deviations = deltas / nominal_isf
+        g_window = 24
+        glucose_drift = np.ones(len(deviations))
+        for i in range(g_window, len(deviations)):
+            chunk = deviations[i-g_window:i]
+            glucose_drift[i] = 1.0 + np.clip(np.median(chunk), -0.3, 0.2)
+
+        tir_window = 12
+        tir_values = np.zeros(len(sgvs))
+        for i in range(tir_window, len(sgvs)):
+            chunk = sgvs[i-tir_window:i]
+            tir_values[i] = np.mean((chunk >= 70) & (chunk <= 180))
+
+        min_len = min(len(glucose_drift), len(tir_values) - 1)
+        if min_len >= 50:
+            gd = glucose_drift[:min_len]
+            ti = tir_values[1:min_len+1]
+            v = ~(np.isnan(gd) | np.isnan(ti))
+            corr_glucose = float(np.corrcoef(gd[v], ti[v])[0, 1]) if v.sum() > 10 else float('nan')
+        else:
+            corr_glucose = float('nan')
+
+        results_per_patient[patient_id] = {
+            'corr_treatment_isf': corr_treatment if not np.isnan(corr_treatment) else None,
+            'corr_glucose_only': corr_glucose if not np.isnan(corr_glucose) else None,
+            'n_bolus_events': len(bolus_events),
+            'n_valid_isf_estimates': len(bolus_isf_estimates),
+            'nominal_isf': float(nominal_isf),
+            'mean_estimated_isf': float(np.mean([isf for _, isf in bolus_isf_estimates])) if bolus_isf_estimates else None,
+        }
+        if not np.isnan(corr_treatment) and min_len >= 50:
+            all_drift_tir.append((glucose_drift[:min_len][~np.isnan(tir_values[1:min_len+1])],
+                                  tir_values[1:min_len+1][~np.isnan(tir_values[1:min_len+1])]))
+        tc_str = f"{corr_treatment:.3f}" if not np.isnan(corr_treatment) else "N/A"
+        gc_str = f"{corr_glucose:.3f}" if not np.isnan(corr_glucose) else "N/A"
+        print(f"    {patient_id}: treatment_corr={tc_str}, glucose_corr={gc_str}, "
+              f"{len(bolus_isf_estimates)} ISF estimates")
+
+    # Aggregate
+    treatment_corrs = [r['corr_treatment_isf'] for r in results_per_patient.values()
+                       if r['corr_treatment_isf'] is not None]
+    glucose_corrs = [r['corr_glucose_only'] for r in results_per_patient.values()
+                     if r['corr_glucose_only'] is not None]
+
+    results = {
+        'median_treatment_correlation': float(np.median(treatment_corrs)) if treatment_corrs else None,
+        'median_glucose_correlation': float(np.median(glucose_corrs)) if glucose_corrs else None,
+        'n_patients_with_treatment_drift': len(treatment_corrs),
+        'n_patients_total': len(results_per_patient),
+        'per_patient': results_per_patient,
+        'method': 'timestamp_aligned_bolus_isf',
+        'comparison': {'exp183_median': -0.156, 'exp188_median': -0.156},
+    }
+
+    print(f"\n  [EXP-191] Treatment drift median corr={np.median(treatment_corrs):.3f} "
+          f"({len(treatment_corrs)} patients)" if treatment_corrs
+          else "\n  [EXP-191] No valid treatment drift estimates")
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp191_drift_timestamp.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-191', 'name': 'drift-timestamp-aligned',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# ── EXP-192: Worst-patient fine-tuning on robust ensemble ─────────
+# EXP-173 showed fine-tuning helps worst patients 1.5-13.5%.
+# Apply to robust ensemble (EXP-182 architecture) for patients b, j, a.
+def run_worst_patient_robust(args):
+    """EXP-192: Per-patient fine-tuning on top of robust ensemble members."""
+    import json, os, torch, math, pathlib
+    import torch.nn.functional as F
+    import numpy as np
+    from torch.utils.data import DataLoader
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    ws = getattr(args, 'window_size', 24)
+    batch = getattr(args, 'batch_size', 128)
+    _dev = getattr(args, 'device', 'cpu')
+    device = 'cuda' if _dev == 'auto' and torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+
+    if not patients_dir:
+        print("  [EXP-192] Need --patients-dir"); return {}
+
+    from .model import CGMGroupedEncoder
+    from .experiment_lib import (resolve_patient_paths, load_multipatient_nightscout)
+
+    # Train global model first (d64_L4 — best single architecture)
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+    print(f"  [EXP-192] Global: {len(train_ds)} train, {len(val_ds)} val")
+
+    model = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=4,
+                               dropout=0.1).to(device)
+    opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
+
+    epochs = getattr(args, 'epochs', 150)
+    warmup = 10
+    def lr_lambda(ep):
+        if ep < warmup:
+            return (ep + 1) / warmup
+        progress = (ep - warmup) / max(1, epochs - warmup)
+        return 0.5 * (1 + math.cos(math.pi * progress))
+    scheduler = torch.optim.lr_scheduler.LambdaLR(opt, lr_lambda)
+
+    best_val = float('inf'); best_state = None
+    for ep in range(1, epochs + 1):
+        model.train()
+        for bx, bt in DataLoader(train_ds, batch_size=batch, shuffle=True):
+            bx = bx.to(device)
+            half = bx.shape[1] // 2
+            x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+            opt.zero_grad()
+            pred = model(x_in)
+            loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            opt.step()
+        scheduler.step()
+        model.eval()
+        vl = 0; n = 0
+        with torch.no_grad():
+            for bx, bt in DataLoader(val_ds, batch_size=256):
+                bx = bx.to(device); half = bx.shape[1] // 2
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                pred = model(x_in)
+                vl += F.mse_loss(pred[:, half:, :1], bx[:, half:, :1]).item() * bx.shape[0]
+                n += bx.shape[0]
+        val_mse = vl / max(n, 1)
+        if val_mse < best_val:
+            best_val = val_mse
+            best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+        if ep % 50 == 0:
+            print(f"    Global: {ep}/{epochs} val={val_mse:.6f} best={best_val:.6f}")
+
+    if best_state:
+        model.load_state_dict(best_state)
+
+    # Evaluate per patient before fine-tuning
+    patient_dirs = sorted([d for d in pathlib.Path(patients_dir).iterdir() if d.is_dir()])
+    results_per_patient = {}
+
+    for pdir in patient_dirs:
+        pid = pdir.name
+        ver_path = str(pdir / 'verification')
+        train_path = str(pdir / 'training')
+
+        try:
+            _, p_val_ds = load_multipatient_nightscout([ver_path], window_size=ws)
+            p_train_ds, _ = load_multipatient_nightscout([train_path], window_size=ws)
+        except Exception:
+            continue
+
+        if len(p_val_ds) < 10:
+            continue
+
+        # Global model MAE on this patient
+        model.eval()
+        mae_sum = 0; n = 0
+        with torch.no_grad():
+            for bx, bt in DataLoader(p_val_ds, batch_size=256):
+                bx = bx.to(device); half = bx.shape[1] // 2
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                pred = model(x_in)
+                mae_sum += (pred[:, half:, :1] - bx[:, half:, :1]).abs().sum().item()
+                n += bx[:, half:, :1].numel()
+        global_mae = (mae_sum / max(n, 1)) * 400
+
+        # Fine-tune: clone model, train 30 epochs on patient data with low LR
+        ft_model = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=4,
+                                      dropout=0.1).to(device)
+        ft_model.load_state_dict(model.state_dict())
+        ft_opt = torch.optim.AdamW(ft_model.parameters(), lr=1e-4, weight_decay=1e-4)
+
+        ft_best_val = float('inf'); ft_best_state = None
+        for ep in range(1, 31):
+            ft_model.train()
+            for bx, bt in DataLoader(p_train_ds, batch_size=min(batch, len(p_train_ds)), shuffle=True):
+                bx = bx.to(device); half = bx.shape[1] // 2
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                ft_opt.zero_grad()
+                pred = ft_model(x_in)
+                loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(ft_model.parameters(), 1.0)
+                ft_opt.step()
+
+            ft_model.eval()
+            vl = 0; n_v = 0
+            with torch.no_grad():
+                for bx, bt in DataLoader(p_val_ds, batch_size=256):
+                    bx = bx.to(device); half = bx.shape[1] // 2
+                    x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                    pred = ft_model(x_in)
+                    vl += F.mse_loss(pred[:, half:, :1], bx[:, half:, :1]).item() * bx.shape[0]
+                    n_v += bx.shape[0]
+            if vl / max(n_v, 1) < ft_best_val:
+                ft_best_val = vl / max(n_v, 1)
+                ft_best_state = {k: v.cpu().clone() for k, v in ft_model.state_dict().items()}
+
+        if ft_best_state:
+            ft_model.load_state_dict(ft_best_state)
+
+        ft_model.eval()
+        mae_sum = 0; n = 0
+        with torch.no_grad():
+            for bx, bt in DataLoader(p_val_ds, batch_size=256):
+                bx = bx.to(device); half = bx.shape[1] // 2
+                x_in = bx.clone(); x_in[:, half:, 0] = 0.0
+                pred = ft_model(x_in)
+                mae_sum += (pred[:, half:, :1] - bx[:, half:, :1]).abs().sum().item()
+                n += bx[:, half:, :1].numel()
+        ft_mae = (mae_sum / max(n, 1)) * 400
+
+        improvement = float((global_mae - ft_mae) / global_mae * 100)
+        results_per_patient[pid] = {
+            'global_mae': float(global_mae),
+            'finetuned_mae': float(ft_mae),
+            'improvement_pct': improvement,
+            'n_train': len(p_train_ds),
+            'n_val': len(p_val_ds),
+        }
+        print(f"    {pid}: global={global_mae:.1f} → ft={ft_mae:.1f} ({improvement:+.1f}%)")
+
+    results = {
+        'per_patient': results_per_patient,
+        'mean_improvement_pct': float(np.mean([r['improvement_pct'] for r in results_per_patient.values()])),
+        'worst_patients_improved': {pid: r for pid, r in results_per_patient.items()
+                                    if r['improvement_pct'] > 0},
+        'comparison': {'exp173_best_improvement': '13.5%'},
+    }
+
+    print(f"\n  [EXP-192] Mean improvement: {results['mean_improvement_pct']:.1f}%")
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp192_worst_patient_robust.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-192', 'name': 'worst-patient-robust',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# ── EXP-193: XGBoost feature selection for events ─────────────────
+# EXP-181 has 46 features. Many may be redundant. Use RFECV or
+# importance-based pruning to find minimal high-impact feature set.
+def run_xgb_event_feature_select(args):
+    """EXP-193: Feature selection — find minimal high-F1 feature set."""
+    import json, os
+    import numpy as np
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    if not patients_dir:
+        print("  [EXP-193] Need --patients-dir"); return {}
+
+    from .label_events import build_classifier_dataset
+
+    print("  [EXP-193] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    try:
+        val_data = build_classifier_dataset(patients_dir, split='verification')
+    except Exception:
+        from sklearn.model_selection import train_test_split
+        X = train_data['tabular']; y = train_data['labels']
+        X_tr, X_vl, y_tr, y_vl = train_test_split(X, y, test_size=0.2, random_state=42)
+        val_data = {'tabular': X_vl, 'labels': y_vl, 'feature_names': train_data['feature_names']}
+        train_data = {'tabular': X_tr, 'labels': y_tr, 'feature_names': train_data['feature_names']}
+
+    X_train = train_data['tabular'].copy()
+    y_train = train_data['labels'].copy()
+    X_val = val_data['tabular'].copy()
+    y_val = val_data['labels'].copy()
+    feature_names = list(train_data['feature_names'])
+
+    if 'lead_time_hr' in feature_names:
+        idx = feature_names.index('lead_time_hr')
+        X_train = np.delete(X_train, idx, axis=1)
+        X_val = np.delete(X_val, idx, axis=1)
+        feature_names.pop(idx)
+
+    # Add all features (same as EXP-181)
+    glucose_cols = [i for i, n in enumerate(feature_names)
+                    if 'glucose' in n.lower() or 'sgv' in n.lower() or 'bg' in n.lower()]
+    iob_cols = [i for i, n in enumerate(feature_names) if 'iob' in n.lower()]
+    cob_cols = [i for i, n in enumerate(feature_names) if 'cob' in n.lower()]
+
+    new_names = []
+    for ci in glucose_cols[:5]:
+        g_tr = X_train[:, ci]; g_vl = X_val[:, ci]
+        roc_tr = np.gradient(g_tr); roc_vl = np.gradient(g_vl)
+        X_train = np.column_stack([X_train, roc_tr]); X_val = np.column_stack([X_val, roc_vl])
+        new_names.append(f'{feature_names[ci]}_roc'); feature_names.append(new_names[-1])
+        acc_tr = np.gradient(roc_tr); acc_vl = np.gradient(roc_vl)
+        X_train = np.column_stack([X_train, acc_tr]); X_val = np.column_stack([X_val, acc_vl])
+        new_names.append(f'{feature_names[ci]}_acc'); feature_names.append(new_names[-1])
+        def rstd(arr, w=10):
+            r = np.zeros_like(arr, dtype=float)
+            for i in range(len(arr)):
+                r[i] = np.std(arr[max(0,i-w):i+1])
+            return r
+        X_train = np.column_stack([X_train, rstd(g_tr)]); X_val = np.column_stack([X_val, rstd(g_vl)])
+        new_names.append(f'{feature_names[ci]}_rstd'); feature_names.append(new_names[-1])
+
+    if iob_cols and cob_cols:
+        iob_tr = X_train[:, iob_cols[0]]; iob_vl = X_val[:, iob_cols[0]]
+        cob_tr = X_train[:, cob_cols[0]]; cob_vl = X_val[:, cob_cols[0]]
+        X_train = np.column_stack([X_train, iob_tr*cob_tr]); X_val = np.column_stack([X_val, iob_vl*cob_vl])
+        feature_names.append('iob_cob_interaction'); new_names.append('iob_cob_interaction')
+        X_train = np.column_stack([X_train, iob_tr/(cob_tr+1)]); X_val = np.column_stack([X_val, iob_vl/(cob_vl+1)])
+        feature_names.append('iob_cob_ratio'); new_names.append('iob_cob_ratio')
+    if iob_cols:
+        iob_tr = X_train[:, iob_cols[0]]; iob_vl = X_val[:, iob_cols[0]]
+        X_train = np.column_stack([X_train, 1.0/(np.abs(iob_tr)+0.1)])
+        X_val = np.column_stack([X_val, 1.0/(np.abs(iob_vl)+0.1)])
+        feature_names.append('iob_tail'); new_names.append('iob_tail')
+        X_train = np.column_stack([X_train, np.gradient(iob_tr)])
+        X_val = np.column_stack([X_val, np.gradient(iob_vl)])
+        feature_names.append('iob_roc'); new_names.append('iob_roc')
+
+    unique_classes = np.unique(y_train)
+    n_classes = len(unique_classes)
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map.get(y, 0) for y in y_val])
+
+    try:
+        import xgboost as xgb
+        from sklearn.metrics import f1_score
+    except ImportError:
+        print("  [EXP-193] Missing dependencies"); return {}
+
+    class_counts = np.bincount(y_train_m, minlength=n_classes)
+    cw = len(y_train_m) / (n_classes * np.maximum(class_counts, 1))
+    sw = cw[y_train_m]
+
+    # Full model
+    clf_full = xgb.XGBClassifier(max_depth=10, n_estimators=400, learning_rate=0.08,
+                                  subsample=0.8, colsample_bytree=0.8,
+                                  eval_metric='mlogloss', random_state=42, tree_method='hist')
+    clf_full.fit(X_train, y_train_m, sample_weight=sw)
+    y_pred_full = clf_full.predict(X_val)
+    f1_full = float(f1_score(y_val_m, y_pred_full, average='macro', zero_division=0))
+
+    # Feature importance ranking
+    importances = clf_full.feature_importances_
+    ranked = sorted(enumerate(importances), key=lambda x: -x[1])
+    ranked_names = [(feature_names[i], float(imp)) for i, imp in ranked]
+
+    # Progressive feature elimination: test top-K features
+    results_by_k = {}
+    for k in [5, 10, 15, 20, 25, 30, 35, len(feature_names)]:
+        if k > len(feature_names):
+            continue
+        top_indices = [i for i, _ in ranked[:k]]
+        clf_k = xgb.XGBClassifier(max_depth=10, n_estimators=400, learning_rate=0.08,
+                                    subsample=0.8, colsample_bytree=0.8,
+                                    eval_metric='mlogloss', random_state=42, tree_method='hist')
+        clf_k.fit(X_train[:, top_indices], y_train_m, sample_weight=sw)
+        y_pred_k = clf_k.predict(X_val[:, top_indices])
+        f1_k = float(f1_score(y_val_m, y_pred_k, average='macro', zero_division=0))
+        results_by_k[k] = f1_k
+        print(f"  [EXP-193] Top-{k}: F1={f1_k:.4f}")
+
+    # Find optimal k (best F1)
+    best_k = max(results_by_k.items(), key=lambda x: x[1])
+
+    results = {
+        'f1_full': f1_full,
+        'n_features_full': len(feature_names),
+        'best_k': best_k[0],
+        'best_k_f1': best_k[1],
+        'results_by_k': results_by_k,
+        'top_20_features': ranked_names[:20],
+        'comparison': {'exp181_f1': 0.679},
+    }
+
+    print(f"\n  [EXP-193] Best: top-{best_k[0]} F1={best_k[1]:.4f} vs full F1={f1_full:.4f}")
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp193_xgb_feature_select.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-193', 'name': 'xgb-event-feature-select',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Phase 9: Drift, Events, Personalization, Utility, Pattern Recognition
+# EXP-194 through EXP-198
+# ═══════════════════════════════════════════════════════════════════
+
+def run_personalized_ensemble_finetuning(args):
+    """EXP-196: Per-patient ensemble weight learning on backbone models.
+    
+    Hypothesis: EXP-182 (ensemble MAE=11.7) + EXP-192 (per-patient +9.6%) are orthogonal.
+    Learning per-patient combination weights for the 5 ensemble members should give further gains.
+    """
+    import torch, torch.nn.functional as F, numpy as np, json, os, time
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        forecast_mse, persistence_mse, train_forecast
+    )
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    ctx = ExperimentContext('EXP-196', args.output_dir)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Device: {device}")
+
+    ws = getattr(args, 'window', 24) or 24
+
+    # Architecture configs for 5 diverse ensemble members
+    configs = [
+        {'d_model': 64, 'num_layers': 3, 'nhead': 4, 'name': 'd64_L3'},
+        {'d_model': 128, 'num_layers': 3, 'nhead': 4, 'name': 'd128_L3'},
+        {'d_model': 64, 'num_layers': 4, 'nhead': 4, 'name': 'd64_L4'},
+        {'d_model': 128, 'num_layers': 4, 'nhead': 4, 'name': 'd128_L4'},
+        {'d_model': 64, 'num_layers': 2, 'nhead': 4, 'name': 'd64_L2'},
+    ]
+
+    # Load all-patient data for training ensemble
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+    pers = persistence_mse(val_ds, batch_size=64)
+    print(f"  Data: {len(train_ds)} train, {len(val_ds)} val, persistence={pers:.1f}")
+
+    epochs = getattr(args, 'epochs', 150) or 150
+    batch = getattr(args, 'batch', 128) or 128
+
+    # Stage 1: Train 5 ensemble members with stability features
+    print("  [Stage 1] Training 5 ensemble members...")
+    models = []
+    member_maes = []
+    half = ws // 2
+    
+    for i, cfg in enumerate(configs):
+        print(f"    Member {i} ({cfg['name']})...")
+        model = CGMGroupedEncoder(
+            input_dim=8, d_model=cfg['d_model'],
+            nhead=cfg['nhead'], num_layers=cfg['num_layers']
+        ).to(device)
+        optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
+        
+        best_mse = float('inf')
+        best_state = None
+        
+        for ep in range(epochs):
+            model.train()
+            loader = torch.utils.data.DataLoader(train_ds, batch_size=batch, shuffle=True)
+            for bx, bt in loader:
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0
+                pred = model(x_in)
+                loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+                optimizer.zero_grad()
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                optimizer.step()
+            scheduler.step()
+            
+            if (ep + 1) % 10 == 0:
+                val_mse = forecast_mse(model, val_ds, batch_size=64, mask_future=True)
+                if val_mse < best_mse:
+                    best_mse = val_mse
+                    best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+        
+        # Check for divergence
+        if best_mse > pers * 5:
+            print(f"      DIVERGED (MSE={best_mse:.1f}), skipping")
+            continue
+            
+        model.load_state_dict(best_state)
+        model.eval()
+        mae = (best_mse ** 0.5) * 400
+        member_maes.append(mae)
+        models.append(model)
+        print(f"      MAE={mae:.1f} mg/dL")
+
+    # Stage 2: Global ensemble MAE (equal weights)
+    print(f"\n  [Stage 2] Global ensemble ({len(models)} members)...")
+    
+    val_loader = torch.utils.data.DataLoader(val_ds, batch_size=64, shuffle=False)
+    
+    all_preds = []
+    all_targets = []
+    for mi, model in enumerate(models):
+        model.eval()
+        preds_list = []
+        targets_list = []
+        with torch.no_grad():
+            for bx, bt in val_loader:
+                bx_dev = bx.to(device)
+                x_in = bx_dev.clone()
+                x_in[:, half:, 0] = 0.0
+                pred = model(x_in)
+                preds_list.append(pred[:, half:, :1].cpu())
+                if mi == 0:
+                    targets_list.append(bx[:, half:, :1])
+        all_preds.append(torch.cat(preds_list, dim=0))
+        if mi == 0:
+            all_targets = torch.cat(targets_list, dim=0)
+    
+    targets = all_targets
+    ensemble_pred = torch.stack(all_preds, dim=0).mean(dim=0)
+    global_mae = (ensemble_pred - targets).abs().mean().item() * 400
+    print(f"    Global ensemble MAE={global_mae:.1f} mg/dL")
+
+    # Stage 3: Per-patient weight optimization
+    print(f"\n  [Stage 3] Per-patient weight optimization...")
+    patient_dirs = sorted([d for d in os.listdir(patients_dir) if os.path.isdir(os.path.join(patients_dir, d))])
+    
+    per_patient_results = {}
+    for pid in patient_dirs:
+        p_path = os.path.join(patients_dir, pid)
+        try:
+            p_train, p_val = load_multipatient_nightscout([p_path], window_size=ws)
+        except Exception:
+            continue
+        if len(p_val) < 10:
+            continue
+        
+        p_loader = torch.utils.data.DataLoader(p_val, batch_size=64, shuffle=False)
+        p_preds = []
+        p_targets_list = []
+        for mi, model in enumerate(models):
+            model.eval()
+            preds_l = []
+            tgts_l = []
+            with torch.no_grad():
+                for bx, bt in p_loader:
+                    bx_dev = bx.to(device)
+                    x_in = bx_dev.clone()
+                    x_in[:, half:, 0] = 0.0
+                    pred = model(x_in)
+                    preds_l.append(pred[:, half:, :1].cpu())
+                    if mi == 0:
+                        tgts_l.append(bx[:, half:, :1])
+            p_preds.append(torch.cat(preds_l, dim=0))
+            if mi == 0:
+                p_targets_list = torch.cat(tgts_l, dim=0)
+        
+        p_targets = p_targets_list
+        p_preds_stack = torch.stack(p_preds, dim=0)
+        
+        eq_mae = (p_preds_stack.mean(dim=0) - p_targets).abs().mean().item() * 400
+        
+        # Optimize weights via Dirichlet random search
+        n_models = len(models)
+        best_w = np.ones(n_models) / n_models
+        best_mae = eq_mae
+        
+        np.random.seed(42)
+        for _ in range(500):
+            w = np.random.dirichlet(np.ones(n_models) * 2)
+            w_tensor = torch.tensor(w, dtype=torch.float32).view(n_models, 1, 1, 1)
+            weighted = (p_preds_stack * w_tensor).sum(dim=0)
+            mae_val = (weighted - p_targets).abs().mean().item() * 400
+            if mae_val < best_mae:
+                best_mae = mae_val
+                best_w = w
+        
+        improvement = (eq_mae - best_mae) / eq_mae * 100
+        per_patient_results[pid] = {
+            'equal_mae': float(eq_mae),
+            'optimized_mae': float(best_mae),
+            'improvement_pct': float(improvement),
+            'weights': best_w.tolist(),
+            'n_val': len(p_val)
+        }
+        print(f"    {pid}: equal={eq_mae:.1f} -> opt={best_mae:.1f} ({improvement:+.1f}%)")
+
+    improvements = [v['improvement_pct'] for v in per_patient_results.values()]
+    opt_maes = [v['optimized_mae'] for v in per_patient_results.values()]
+    mean_improvement = np.mean(improvements) if improvements else 0
+    mean_opt_mae = np.mean(opt_maes) if opt_maes else 0
+    
+    results = {
+        'global_ensemble_mae': float(global_mae),
+        'mean_optimized_mae': float(mean_opt_mae),
+        'mean_improvement_pct': float(mean_improvement),
+        'n_members': len(models),
+        'member_maes': [float(m) for m in member_maes],
+        'per_patient': per_patient_results,
+        'persistence_mae': float(pers ** 0.5 * 400),
+    }
+
+    out_path = os.path.join(args.output_dir, 'exp196_personalized_ensemble.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-196', 'name': 'personalized-ensemble',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"\n  Results -> {out_path}")
+    return results
+
+
+def run_xgb_event_multihorizon_ensemble(args):
+    """EXP-195: Multi-horizon XGB ensemble with learned gating.
+    
+    Hypothesis: Different event types have different optimal lookahead windows.
+    Train 3 XGB models for short/medium/long horizons, combine via learned gating.
+    """
+    import numpy as np, json, os
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from sklearn.metrics import f1_score, classification_report
+    from sklearn.linear_model import LogisticRegression
+    
+    ctx = ExperimentContext('EXP-195', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    print("  [Stage 1] Building classifier datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+    if train_data is None or val_data is None:
+        print("  No data available")
+        return {}
+    X_train = train_data['tabular']
+    y_train = train_data['labels']
+    X_val = val_data['tabular']
+    y_val = val_data['labels']
+    print(f"    Train: {X_train.shape}, Val: {X_val.shape}")
+    print(f"    Classes: {np.unique(y_train)}")
+
+    unique_classes = np.unique(np.concatenate([y_train, y_val]))
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map[y] for y in y_val])
+    n_classes = len(unique_classes)
+
+    import xgboost as xgb
+
+    n_feat = X_train.shape[1]
+    third = n_feat // 3
+    
+    # Feature subsets simulating different temporal horizons
+    short_cols = list(range(0, min(third + 5, n_feat)))
+    medium_cols = list(range(max(0, third - 5), min(2 * third + 5, n_feat)))
+    long_cols = list(range(0, n_feat))
+    
+    horizons = [
+        ('short', short_cols),
+        ('medium', medium_cols), 
+        ('long', long_cols),
+    ]
+
+    print("\n  [Stage 2] Training horizon-specific XGB models...")
+    horizon_models = []
+    horizon_f1s = []
+    
+    for h_name, h_cols in horizons:
+        clf = xgb.XGBClassifier(
+            max_depth=10, n_estimators=400, learning_rate=0.08,
+            subsample=0.8, colsample_bytree=0.8,
+            objective='multi:softprob', num_class=n_classes,
+            eval_metric='mlogloss', random_state=42,
+            tree_method='hist'
+        )
+        clf.fit(X_train[:, h_cols], y_train_m,
+                eval_set=[(X_val[:, h_cols], y_val_m)],
+                verbose=False)
+        
+        y_pred = clf.predict(X_val[:, h_cols])
+        f1 = f1_score(y_val_m, y_pred, average='weighted')
+        horizon_f1s.append(f1)
+        horizon_models.append((clf, h_cols))
+        print(f"    {h_name}: F1={f1:.4f} ({len(h_cols)} features)")
+
+    # Stage 3: Stacked probabilities meta-learner
+    print("\n  [Stage 3] Meta-learning with stacked probabilities...")
+    
+    meta_features_train = []
+    meta_features_val = []
+    for clf, h_cols in horizon_models:
+        probs_tr = clf.predict_proba(X_train[:, h_cols])
+        probs_va = clf.predict_proba(X_val[:, h_cols])
+        meta_features_train.append(probs_tr)
+        meta_features_val.append(probs_va)
+    
+    X_meta_train = np.hstack(meta_features_train)
+    X_meta_val = np.hstack(meta_features_val)
+    
+    meta_clf = LogisticRegression(max_iter=1000, C=1.0, random_state=42)
+    meta_clf.fit(X_meta_train, y_train_m)
+    y_meta_pred = meta_clf.predict(X_meta_val)
+    meta_f1 = f1_score(y_val_m, y_meta_pred, average='weighted')
+    print(f"    Meta-learner F1={meta_f1:.4f}")
+
+    # Stage 4: Simple averaging ensemble
+    print("\n  [Stage 4] Probability averaging...")
+    avg_probs = np.mean([clf.predict_proba(X_val[:, h_cols]) 
+                         for clf, h_cols in horizon_models], axis=0)
+    y_avg_pred = avg_probs.argmax(axis=1)
+    avg_f1 = f1_score(y_val_m, y_avg_pred, average='weighted')
+    print(f"    Averaged F1={avg_f1:.4f}")
+
+    # Single model baseline
+    single_clf = xgb.XGBClassifier(
+        max_depth=10, n_estimators=400, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42,
+        tree_method='hist'
+    )
+    single_clf.fit(X_train, y_train_m,
+                   eval_set=[(X_val, y_val_m)], verbose=False)
+    y_single = single_clf.predict(X_val)
+    single_f1 = f1_score(y_val_m, y_single, average='weighted')
+    print(f"    Single model F1={single_f1:.4f}")
+
+    best_method = max([
+        ('meta_learner', meta_f1),
+        ('avg_ensemble', avg_f1),
+        ('single_model', single_f1),
+    ], key=lambda x: x[1])
+    print(f"\n  Best: {best_method[0]} F1={best_method[1]:.4f}")
+
+    results = {
+        'horizon_f1s': {h[0]: float(f) for h, f in zip(horizons, horizon_f1s)},
+        'meta_f1': float(meta_f1),
+        'avg_f1': float(avg_f1),
+        'single_f1': float(single_f1),
+        'best_method': best_method[0],
+        'best_f1': float(best_method[1]),
+        'n_classes': n_classes,
+        'n_features': n_feat,
+    }
+
+    out_path = os.path.join(args.output_dir, 'exp195_xgb_multihorizon.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-195', 'name': 'xgb-multihorizon-ensemble',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+def run_drift_wavelet_sync(args):
+    """EXP-194: Multi-scale drift detection via windowed ISF estimation.
+    
+    Hypothesis: ISF changes manifest at different time scales.
+    Use multi-window approach: short (2h), medium (8h), long (24h) windows
+    with glucose-deviation method, then cross-correlate with TIR at matching windows.
+    """
+    import numpy as np, json, os
+    from tools.cgmencode.experiment_lib import resolve_patient_paths, load_patient_profile
+
+    ctx = ExperimentContext('EXP-194', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    patient_dirs = sorted([d for d in os.listdir(patients_dir)
+                          if os.path.isdir(os.path.join(patients_dir, d))])
+
+    windows = {'short': 24, 'medium': 96, 'long': 288}
+    
+    all_results = {}
+    
+    for pid in patient_dirs:
+        p_path = os.path.join(patients_dir, pid)
+        train_path = os.path.join(p_path, 'training')
+        if not os.path.exists(train_path):
+            continue
+        
+        print(f"  [EXP-194] Processing patient {pid}...")
+        
+        try:
+            profile = load_patient_profile(os.path.join(train_path, 'profile.json'))
+            nominal_isf = profile.get('isf', 50.0)
+        except Exception:
+            nominal_isf = 50.0
+        
+        entries_path = os.path.join(train_path, 'entries.json')
+        if not os.path.exists(entries_path):
+            continue
+        
+        entries = json.load(open(entries_path))
+        entries = sorted(entries, key=lambda e: e.get('date', e.get('dateString', '')))
+        glucose = np.array([e.get('sgv', 0) for e in entries if e.get('sgv', 0) > 0], dtype=float)
+        
+        if len(glucose) < 500:
+            print(f"    Skipping {pid}: only {len(glucose)} readings")
+            continue
+        
+        patient_result = {'nominal_isf': nominal_isf, 'n_readings': len(glucose)}
+        
+        for scale_name, w_size in windows.items():
+            if len(glucose) < w_size * 3:
+                patient_result[scale_name] = {'corr': float('nan'), 'n_windows': 0}
+                continue
+            
+            step = max(w_size // 4, 1)
+            isf_ratios = []
+            tir_values = []
+            
+            for i in range(0, len(glucose) - w_size, step):
+                window = glucose[i:i + w_size]
+                
+                deltas = np.abs(np.diff(window))
+                median_delta = np.median(deltas) if len(deltas) > 0 else 0
+                
+                if median_delta > 0:
+                    isf_ratio = median_delta / (nominal_isf * 0.1)
+                else:
+                    isf_ratio = 1.0
+                isf_ratios.append(np.clip(isf_ratio, 0.5, 2.0))
+                
+                in_range = np.sum((window >= 70) & (window <= 180)) / len(window)
+                tir_values.append(in_range)
+            
+            isf_arr = np.array(isf_ratios)
+            tir_arr = np.array(tir_values)
+            
+            if len(isf_arr) > 10:
+                best_corr = 0
+                best_lag = 0
+                for lag in range(-5, 6):
+                    if lag >= 0:
+                        x = isf_arr[:len(isf_arr) - lag] if lag > 0 else isf_arr
+                        y = tir_arr[lag:] if lag > 0 else tir_arr
+                    else:
+                        x = isf_arr[-lag:]
+                        y = tir_arr[:len(tir_arr) + lag]
+                    
+                    if len(x) > 5 and np.std(x) > 0 and np.std(y) > 0:
+                        corr = np.corrcoef(x, y)[0, 1]
+                        if abs(corr) > abs(best_corr):
+                            best_corr = corr
+                            best_lag = lag
+                
+                patient_result[scale_name] = {
+                    'corr': float(best_corr),
+                    'best_lag': int(best_lag),
+                    'n_windows': len(isf_arr),
+                    'isf_mean': float(np.mean(isf_arr)),
+                    'isf_std': float(np.std(isf_arr)),
+                    'tir_mean': float(np.mean(tir_arr)),
+                }
+            else:
+                patient_result[scale_name] = {'corr': float('nan'), 'n_windows': len(isf_arr)}
+        
+        all_results[pid] = patient_result
+        for s in windows:
+            if s in patient_result and 'corr' in patient_result[s]:
+                c = patient_result[s]['corr']
+                c_str = f"{c:.3f}" if not np.isnan(c) else "N/A"
+                lag = patient_result[s].get('best_lag', 0)
+                print(f"    {s}: corr={c_str}, lag={lag}")
+
+    summary = {}
+    for scale_name in windows:
+        corrs = [r[scale_name]['corr'] for r in all_results.values() 
+                 if scale_name in r and not np.isnan(r[scale_name].get('corr', float('nan')))]
+        if corrs:
+            summary[scale_name] = {
+                'median_corr': float(np.median(corrs)),
+                'mean_corr': float(np.mean(corrs)),
+                'n_patients': len(corrs),
+            }
+            print(f"\n  {scale_name} aggregate: median_corr={np.median(corrs):.3f} ({len(corrs)} patients)")
+
+    results = {
+        'per_patient': all_results,
+        'summary': summary,
+        'windows_steps': {k: v for k, v in windows.items()},
+    }
+
+    out_path = os.path.join(args.output_dir, 'exp194_drift_wavelet_sync.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-194', 'name': 'drift-wavelet-sync',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"\n  Results -> {out_path}")
+    return results
+
+
+def run_override_temporal_gating(args):
+    """EXP-197: Override utility with temporal context features.
+    
+    Hypothesis: Override recommendations should consider circadian phase,
+    recent override frequency, and forecast uncertainty trends.
+    """
+    import numpy as np, json, os
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from sklearn.metrics import f1_score
+    from sklearn.linear_model import LogisticRegression
+    
+    ctx = ExperimentContext('EXP-197', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    print("  [Stage 1] Building classifier datasets with temporal features...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+    if train_data is None or val_data is None:
+        print("  No data available")
+        return {}
+    X_train = train_data['tabular']
+    y_train = train_data['labels']
+    X_val = val_data['tabular']
+    y_val = val_data['labels']
+    
+    unique_classes = np.unique(np.concatenate([y_train, y_val]))
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map[y] for y in y_val])
+    n_classes = len(unique_classes)
+
+    import xgboost as xgb
+    
+    print("  [Stage 2] Training base XGB classifier...")
+    base_clf = xgb.XGBClassifier(
+        max_depth=10, n_estimators=400, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42,
+        tree_method='hist'
+    )
+    base_clf.fit(X_train, y_train_m,
+                 eval_set=[(X_val, y_val_m)], verbose=False)
+    
+    base_probs = base_clf.predict_proba(X_val)
+    base_preds = base_clf.predict(X_val)
+    base_conf = np.max(base_probs, axis=1)
+    base_f1 = f1_score(y_val_m, base_preds, average='weighted')
+    print(f"    Base F1={base_f1:.4f}")
+
+    print("  [Stage 3] Computing temporal features...")
+    n_val = len(X_val)
+    
+    entropy = -np.sum(base_probs * np.log(base_probs + 1e-10), axis=1)
+    
+    recent_overrides = np.zeros(n_val)
+    window_size = 24
+    for i in range(n_val):
+        start = max(0, i - window_size)
+        recent_overrides[i] = np.sum(base_preds[start:i+1] != 0) / max(1, i - start + 1)
+    
+    conf_trend = np.zeros(n_val)
+    for i in range(5, n_val):
+        conf_trend[i] = base_conf[i] - np.mean(base_conf[max(0, i-5):i])
+    
+    meta_X = np.column_stack([
+        base_conf,
+        entropy,
+        recent_overrides,
+        conf_trend,
+        base_probs,
+    ])
+    
+    # Utility matrix
+    utility_correct = {0: 0.0, 1: 0.8, 2: 1.0, 3: 0.5, 4: 0.3, 5: 0.6}
+    utility_wrong = {0: 0.0, 1: -0.5, 2: -0.7, 3: -0.3, 4: -0.2, 5: -0.4}
+    
+    utilities = np.zeros(n_val)
+    for i in range(n_val):
+        pred_c = int(base_preds[i])
+        true_c = int(y_val_m[i])
+        if pred_c == true_c:
+            utilities[i] = utility_correct.get(pred_c, 0.3)
+        else:
+            utilities[i] = utility_wrong.get(pred_c, -0.2)
+    
+    base_utility = np.mean(utilities)
+    print(f"    Base utility={base_utility:.4f}")
+
+    print("  [Stage 4] Temporal gating optimization...")
+    
+    best_utility = base_utility
+    best_threshold = 0.0
+    best_coverage = 1.0
+    
+    for threshold in np.arange(0.3, 0.95, 0.05):
+        mask = base_conf >= threshold
+        if mask.sum() < 10:
+            continue
+        
+        gated_utility = np.mean(utilities[mask])
+        coverage = mask.sum() / n_val
+        
+        if gated_utility > best_utility:
+            best_utility = gated_utility
+            best_threshold = threshold
+            best_coverage = coverage
+    
+    print(f"    Best: threshold={best_threshold:.2f}, utility={best_utility:.4f}, coverage={best_coverage:.1%}")
+
+    print("  [Stage 5] Training utility predictor...")
+    utility_labels = (utilities > 0).astype(int)
+    
+    split_idx = int(0.7 * n_val)
+    meta_train_X, meta_test_X = meta_X[:split_idx], meta_X[split_idx:]
+    meta_train_y, meta_test_y = utility_labels[:split_idx], utility_labels[split_idx:]
+    
+    meta_lr = LogisticRegression(max_iter=1000, random_state=42)
+    meta_lr.fit(meta_train_X, meta_train_y)
+    meta_preds = meta_lr.predict(meta_test_X)
+    meta_probs_out = meta_lr.predict_proba(meta_test_X)
+    if meta_lr.classes_.shape[0] > 1:
+        meta_probs_pos = meta_probs_out[:, 1]
+    else:
+        meta_probs_pos = np.ones(len(meta_test_X))
+    
+    test_utilities = utilities[split_idx:]
+    meta_mask = meta_probs_pos >= 0.5
+    if meta_mask.sum() > 0:
+        meta_gated_utility = np.mean(test_utilities[meta_mask])
+        meta_coverage = meta_mask.sum() / len(meta_test_X)
+    else:
+        meta_gated_utility = 0
+        meta_coverage = 0
+    
+    meta_f1 = f1_score(meta_test_y, meta_preds, average='weighted')
+    print(f"    Meta-learner: utility_pred_f1={meta_f1:.4f}, gated_utility={meta_gated_utility:.4f}, coverage={meta_coverage:.1%}")
+
+    results = {
+        'base_f1': float(base_f1),
+        'base_utility': float(base_utility),
+        'best_conf_threshold': float(best_threshold),
+        'best_conf_utility': float(best_utility),
+        'best_conf_coverage': float(best_coverage),
+        'meta_utility_pred_f1': float(meta_f1),
+        'meta_gated_utility': float(meta_gated_utility),
+        'meta_coverage': float(meta_coverage),
+        'entropy_mean': float(np.mean(entropy)),
+        'utility_positive_rate': float(np.mean(utilities > 0)),
+        'n_classes': n_classes,
+    }
+
+    out_path = os.path.join(args.output_dir, 'exp197_override_temporal.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-197', 'name': 'override-temporal-gating',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+def run_pattern_clustered_ensemble(args):
+    """EXP-198: Circadian+meal pattern clustering -> per-pattern forecast routing.
+    
+    Hypothesis: Different glucose patterns (fasting, post-meal, night, etc.) need
+    different model emphasis. Cluster daily patterns, train per-cluster models.
+    """
+    import torch, torch.nn.functional as F, numpy as np, json, os
+    from sklearn.mixture import GaussianMixture
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        forecast_mse, persistence_mse
+    )
+    from tools.cgmencode.model import CGMGroupedEncoder
+
+    ctx = ExperimentContext('EXP-198', args.output_dir)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Device: {device}")
+
+    ws = getattr(args, 'window', 24) or 24
+    half = ws // 2
+    epochs = getattr(args, 'epochs', 100) or 100
+    batch = getattr(args, 'batch', 128) or 128
+    
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+    pers = persistence_mse(val_ds, batch_size=64)
+    print(f"  Data: {len(train_ds)} train, {len(val_ds)} val, persistence={pers:.1f}")
+
+    print("  [Stage 1] Extracting pattern features...")
+    train_loader = torch.utils.data.DataLoader(train_ds, batch_size=256, shuffle=False)
+    val_loader = torch.utils.data.DataLoader(val_ds, batch_size=256, shuffle=False)
+    
+    def extract_pattern_features(loader):
+        features = []
+        for bx, bt in loader:
+            glucose = bx[:, :, 0].numpy()
+            means = glucose.mean(axis=1)
+            stds = glucose.std(axis=1)
+            trends = glucose[:, -1] - glucose[:, 0]
+            if glucose.shape[1] > 2:
+                d2 = np.diff(glucose, n=2, axis=1)
+                curvatures = np.mean(np.abs(d2), axis=1)
+            else:
+                curvatures = np.zeros(len(glucose))
+            ranges = glucose.max(axis=1) - glucose.min(axis=1)
+            
+            iob = bx[:, :, 1].numpy() if bx.shape[2] > 1 else np.zeros_like(glucose)
+            iob_mean = iob.mean(axis=1)
+            cob = bx[:, :, 2].numpy() if bx.shape[2] > 2 else np.zeros_like(glucose)
+            cob_mean = cob.mean(axis=1)
+            
+            batch_feats = np.column_stack([means, stds, trends, curvatures, ranges, iob_mean, cob_mean])
+            features.append(batch_feats)
+        return np.vstack(features)
+    
+    train_feats = extract_pattern_features(train_loader)
+    val_feats = extract_pattern_features(val_loader)
+    print(f"    Pattern features: train={train_feats.shape}, val={val_feats.shape}")
+
+    K = 4
+    print(f"  [Stage 2] GMM clustering (K={K})...")
+    gmm = GaussianMixture(n_components=K, random_state=42, n_init=5)
+    train_clusters = gmm.fit_predict(train_feats)
+    val_clusters = gmm.predict(val_feats)
+    
+    for k in range(K):
+        n_train = (train_clusters == k).sum()
+        n_val = (val_clusters == k).sum()
+        mean_glucose = train_feats[train_clusters == k, 0].mean() * 400
+        mean_std = train_feats[train_clusters == k, 1].mean() * 400
+        print(f"    Cluster {k}: {n_train} train, {n_val} val, glucose={mean_glucose:.0f}+/-{mean_std:.0f} mg/dL")
+
+    print(f"\n  [Stage 3] Training global + per-cluster models...")
+    global_model = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3).to(device)
+    global_opt = torch.optim.AdamW(global_model.parameters(), lr=1e-3, weight_decay=1e-4)
+    global_sched = torch.optim.lr_scheduler.CosineAnnealingLR(global_opt, T_max=epochs)
+    
+    best_global_mse = float('inf')
+    best_global_state = None
+    
+    for ep in range(epochs):
+        global_model.train()
+        for bx, bt in torch.utils.data.DataLoader(train_ds, batch_size=batch, shuffle=True):
+            bx = bx.to(device)
+            x_in = bx.clone()
+            x_in[:, half:, 0] = 0.0
+            pred = global_model(x_in)
+            loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+            global_opt.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(global_model.parameters(), 1.0)
+            global_opt.step()
+        global_sched.step()
+        
+        if (ep + 1) % 20 == 0:
+            val_mse = forecast_mse(global_model, val_ds, batch_size=64, mask_future=True)
+            if val_mse < best_global_mse:
+                best_global_mse = val_mse
+                best_global_state = {k: v.cpu().clone() for k, v in global_model.state_dict().items()}
+    
+    global_model.load_state_dict(best_global_state)
+    global_model.eval()
+    global_mae = (best_global_mse ** 0.5) * 400
+    print(f"    Global model MAE={global_mae:.1f} mg/dL")
+    
+    cluster_models = {}
+    cluster_maes = {}
+    
+    for k in range(K):
+        mask_train = (train_clusters == k)
+        mask_val = (val_clusters == k)
+        
+        if mask_train.sum() < 100 or mask_val.sum() < 20:
+            print(f"    Cluster {k}: too few samples, using global")
+            cluster_models[k] = global_model
+            continue
+        
+        train_subset = torch.utils.data.Subset(train_ds, np.where(mask_train)[0])
+        val_subset = torch.utils.data.Subset(val_ds, np.where(mask_val)[0])
+        
+        model_k = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3).to(device)
+        model_k.load_state_dict(best_global_state)
+        
+        opt_k = torch.optim.AdamW(model_k.parameters(), lr=3e-4, weight_decay=1e-4)
+        ft_epochs = 30
+        
+        best_k_mse = float('inf')
+        best_k_state = None
+        
+        for ep in range(ft_epochs):
+            model_k.train()
+            for bx, bt in torch.utils.data.DataLoader(train_subset, batch_size=batch, shuffle=True):
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0
+                pred = model_k(x_in)
+                loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+                opt_k.zero_grad()
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model_k.parameters(), 1.0)
+                opt_k.step()
+            
+            val_mse = forecast_mse(model_k, val_subset, batch_size=64, mask_future=True)
+            if val_mse < best_k_mse:
+                best_k_mse = val_mse
+                best_k_state = {kk: v.cpu().clone() for kk, v in model_k.state_dict().items()}
+        
+        model_k.load_state_dict(best_k_state)
+        model_k.eval()
+        k_mae = (best_k_mse ** 0.5) * 400
+        cluster_models[k] = model_k
+        cluster_maes[k] = k_mae
+        print(f"    Cluster {k} fine-tuned MAE={k_mae:.1f} mg/dL")
+
+    print(f"\n  [Stage 4] Routed evaluation...")
+    total_errors = []
+    global_errors = []
+    
+    val_loader2 = torch.utils.data.DataLoader(val_ds, batch_size=64, shuffle=False)
+    cluster_idx = 0
+    
+    for bx, bt in val_loader2:
+        bx_dev = bx.to(device)
+        x_in = bx_dev.clone()
+        x_in[:, half:, 0] = 0.0
+        targets = bx[:, half:, :1]
+        
+        batch_size_actual = bx.shape[0]
+        batch_clusters = val_clusters[cluster_idx:cluster_idx + batch_size_actual]
+        cluster_idx += batch_size_actual
+        
+        with torch.no_grad():
+            global_pred = global_model(x_in)
+        global_err = (global_pred[:, half:, :1].cpu() - targets).abs() * 400
+        global_errors.append(global_err)
+        
+        routed_preds = torch.zeros_like(targets)
+        for k in range(K):
+            k_mask_np = (batch_clusters == k)
+            if k_mask_np.sum() == 0:
+                continue
+            k_mask = torch.tensor(k_mask_np)
+            if k not in cluster_models or cluster_models[k] is global_model:
+                with torch.no_grad():
+                    routed_preds[k_mask] = global_pred[:, half:, :1].cpu()[k_mask]
+            else:
+                k_input = x_in[k_mask]
+                with torch.no_grad():
+                    k_pred = cluster_models[k](k_input)
+                routed_preds[k_mask] = k_pred[:, half:, :1].cpu()
+        
+        routed_err = (routed_preds - targets).abs() * 400
+        total_errors.append(routed_err)
+    
+    routed_mae = torch.cat(total_errors).mean().item()
+    global_only_mae = torch.cat(global_errors).mean().item()
+    
+    improvement = (global_only_mae - routed_mae) / global_only_mae * 100
+    
+    print(f"\n  Global MAE={global_only_mae:.1f}, Routed MAE={routed_mae:.1f} ({improvement:+.1f}%)")
+    print(f"  Persistence MAE={pers**0.5*400:.1f}")
+
+    results = {
+        'global_mae': float(global_only_mae),
+        'routed_mae': float(routed_mae),
+        'improvement_pct': float(improvement),
+        'persistence_mae': float(pers ** 0.5 * 400),
+        'n_clusters': K,
+        'cluster_maes': {str(k): float(v) for k, v in cluster_maes.items()},
+        'cluster_sizes_train': {str(k): int((train_clusters == k).sum()) for k in range(K)},
+        'cluster_sizes_val': {str(k): int((val_clusters == k).sum()) for k in range(K)},
+    }
+
+    out_path = os.path.join(args.output_dir, 'exp198_pattern_clustered.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-198', 'name': 'pattern-clustered-ensemble',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# Register Phase 9
+REGISTRY.update({
+    'drift-wavelet-sync':           'run_drift_wavelet_sync',           # EXP-194
+    'xgb-multihorizon-ensemble':    'run_xgb_event_multihorizon_ensemble', # EXP-195
+    'personalized-ensemble':        'run_personalized_ensemble_finetuning', # EXP-196
+    'override-temporal-gating':     'run_override_temporal_gating',     # EXP-197
+    'pattern-clustered-ensemble':   'run_pattern_clustered_ensemble',   # EXP-198
+})

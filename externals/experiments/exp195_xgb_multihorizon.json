@@ -1,0 +1,18 @@
+{
+  "experiment": "EXP-195",
+  "name": "xgb-multihorizon-ensemble",
+  "results": {
+    "horizon_f1s": {
+      "short": 0.626934846222516,
+      "medium": 0.665766658406568,
+      "long": 0.6783269265649949
+    },
+    "meta_f1": 0.6707849466511437,
+    "avg_f1": 0.6730080727664062,
+    "single_f1": 0.6783269265649949,
+    "best_method": "single_model",
+    "best_f1": 0.6783269265649949,
+    "n_classes": 6,
+    "n_features": 21
+  }
+}
