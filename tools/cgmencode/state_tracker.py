@@ -1,37 +1,25 @@
 """
-state_tracker.py — Bayesian ISF/CR drift tracker using Kalman filtering.
+state_tracker.py — ISF/CR drift tracking (Kalman filter DEPRECATED).
 
-Tracks effective insulin sensitivity factor (ISF) and carb ratio (CR) over
-time by observing the discrepancy between physics-predicted and actual glucose.
-Detects when these parameters drift significantly, indicating illness,
-hormonal changes, or other physiological shifts.
+The Kalman-based ISFCRTracker is retained for reference and testing but is
+**deprecated for production use**.  Its measurement noise (R) must be set
+unreasonably high (~50 000) to avoid instant saturation against real CGM
+residuals (std ≈ 224 mg/dL).  All production drift detection now uses the
+autosens-style sliding median implemented in:
+  - generate_aux_labels._generate_drift_labels()   (training labels)
+  - validate_verification._compute_drift_sliding_median()  (validation)
+  - hindcast_composite._compute_drift_at_index()    (hindcast/decision)
 
-Addresses GAP-ML-006: no runtime detection of ISF/CR drift across AID systems.
+DriftDetector and PatternStateMachine are still usable — they accept
+pre-computed ratios and do not depend on the Kalman filter directly.
 
-The physics model says:
-    Δglucose ≈ -ΔIOB × ISF + ΔCOB × (ISF / CR)
-
-If actual glucose deviates from prediction (positive residual when ISF is
-overestimated), the Kalman filter adjusts ISF and CR estimates to explain
-the residual.
-
-Usage:
-    from tools.cgmencode.state_tracker import ISFCRTracker, DriftDetector
-
-    tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0)
-    for window in patient_windows:
-        state = tracker.update(glucose_residual, iob_delta, cob_delta)
-        if state['isf_drift_pct'] > 20:
-            print(f"ISF drift detected: {state['isf_drift_pct']:.0f}%")
-
-    detector = DriftDetector(tracker)
-    classification = detector.classify()
-    override = detector.suggested_override()
+Addresses GAP-ML-006: runtime detection of ISF/CR drift across AID systems.
 """
 
 import argparse
 import json
 import sys
+import warnings
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -42,6 +30,13 @@ from .schema import NORMALIZATION_SCALES
 
 class ISFCRTracker:
     """Track effective ISF and CR using a 2-state Kalman filter.
+
+    .. deprecated::
+        The Kalman approach saturates on real CGM data because glucose
+        residuals (std ≈ 224 mg/dL) overwhelm any reasonable measurement
+        noise setting.  Use the autosens sliding median in
+        ``generate_aux_labels._generate_drift_labels()`` or
+        ``hindcast_composite._compute_drift_at_index()`` instead.
 
     State vector: x = [ISF, CR]
     Observation: glucose_residual = actual - physics_predicted (mg/dL)
@@ -69,6 +64,13 @@ class ISFCRTracker:
                 matches the observed residual variance (~224 mg/dL std).
                 The previous default of 5.0 caused instant saturation.
         """
+        warnings.warn(
+            "ISFCRTracker is deprecated — Kalman filter saturates on real CGM data. "
+            "Use generate_aux_labels._generate_drift_labels() or "
+            "hindcast_composite._compute_drift_at_index() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         if nominal_isf <= 0:
             raise ValueError(f"nominal_isf must be positive, got {nominal_isf}")
         if nominal_cr <= 0:

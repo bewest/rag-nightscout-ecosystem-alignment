@@ -1083,7 +1083,12 @@ class TestExtendedFeatures(unittest.TestCase):
 # =============================================================================
 
 class TestStateTracker(unittest.TestCase):
-    """Tests for ISFCRTracker and DriftDetector (Kalman-based drift tracking)."""
+    """Tests for ISFCRTracker and DriftDetector (Kalman-based, deprecated)."""
+
+    def setUp(self):
+        import warnings
+        warnings.filterwarnings('ignore', category=DeprecationWarning,
+                                message='ISFCRTracker is deprecated')
 
     def test_tracker_init(self):
         """Initial state matches nominal values."""
