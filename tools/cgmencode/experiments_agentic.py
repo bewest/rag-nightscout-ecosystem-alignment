@@ -12585,3 +12585,955 @@ REGISTRY.update({
     'xgb-event-temporal-expanded':        'run_xgb_event_temporal_expanded',        # EXP-202
     'multi-timescale-confidence':         'run_multi_timescale_confidence',         # EXP-203
 })
+
+
+
+# =============================================================================
+# Phase 11: Event F1 Breakthrough + Drift Adaptation (EXP-204 to EXP-208)
+# =============================================================================
+
+def run_per_patient_event_norm(args):
+    """EXP-205: Per-patient feature normalization for event detection.
+    
+    Hypothesis: Patient distribution shift hurts global XGBoost. Per-patient
+    z-normalization + per-patient models should boost event F1 by 3-6%.
+    """
+    import numpy as np, json, os
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from sklearn.metrics import f1_score
+    import xgboost as xgb
+
+    ctx = ExperimentContext('EXP-205', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    print("  [Stage 1] Building per-patient datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+    if train_data is None or val_data is None:
+        print("  No data"); return {}
+
+    X_train = train_data['tabular']
+    y_train = train_data['labels']
+    X_val = val_data['tabular']
+    y_val = val_data['labels']
+    feat_names = list(train_data['feature_names'])
+
+    unique_classes = np.unique(np.concatenate([y_train, y_val]))
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map[y] for y in y_val])
+    n_classes = len(unique_classes)
+
+    # Global baseline
+    print("  [Stage 2] Training global baseline...")
+    global_clf = xgb.XGBClassifier(
+        max_depth=8, n_estimators=300, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42, tree_method='hist'
+    )
+    global_clf.fit(X_train, y_train_m, eval_set=[(X_val, y_val_m)], verbose=False)
+    global_f1 = f1_score(y_val_m, global_clf.predict(X_val), average='weighted')
+    print(f"    Global F1={global_f1:.4f}")
+
+    # Per-patient models with z-normalization
+    print("  [Stage 3] Training per-patient normalized models...")
+    patient_ids = sorted([chr(ord('a') + i) for i in range(10)])
+
+    # Get per-patient indices from metadata (list of dicts with 'patient' key)
+    train_meta = train_data.get('metadata', [])
+    val_meta = val_data.get('metadata', [])
+    train_pids = None
+    val_pids = None
+    if isinstance(train_meta, list) and len(train_meta) > 0 and isinstance(train_meta[0], dict):
+        train_pids = [row.get('patient', '') for row in train_meta]
+    if isinstance(val_meta, list) and len(val_meta) > 0 and isinstance(val_meta[0], dict):
+        val_pids = [row.get('patient', '') for row in val_meta]
+
+    per_patient_results = {}
+    all_per_patient_preds = np.zeros_like(y_val_m)
+    all_per_patient_mask = np.zeros(len(y_val_m), dtype=bool)
+
+    if train_pids is not None and val_pids is not None:
+        train_pids = np.array(train_pids)
+        val_pids = np.array(val_pids)
+        
+        for pid in patient_ids:
+            tr_mask = train_pids == pid
+            vl_mask = val_pids == pid
+            
+            if tr_mask.sum() < 20 or vl_mask.sum() < 5:
+                print(f"    {pid}: skip ({tr_mask.sum()} train, {vl_mask.sum()} val)")
+                continue
+            
+            X_tr_p = X_train[tr_mask]
+            y_tr_p = y_train_m[tr_mask]
+            X_vl_p = X_val[vl_mask]
+            y_vl_p = y_val_m[vl_mask]
+            
+            # Z-normalize per patient
+            mu = X_tr_p.mean(axis=0)
+            sigma = X_tr_p.std(axis=0) + 1e-8
+            X_tr_norm = (X_tr_p - mu) / sigma
+            X_vl_norm = (X_vl_p - mu) / sigma
+            
+            # Ensure patient has multiple classes
+            unique_p = np.unique(np.concatenate([y_tr_p, y_vl_p]))
+            if len(unique_p) < 2:
+                print(f"    {pid}: skip (only {len(unique_p)} class)")
+                continue
+            
+            # Remap to contiguous labels for per-patient XGBoost
+            local_map = {old: new for new, old in enumerate(unique_p)}
+            local_rev = {new: old for old, new in local_map.items()}
+            y_tr_local = np.array([local_map[y] for y in y_tr_p])
+            y_vl_local = np.array([local_map[y] for y in y_vl_p])
+            
+            clf_p = xgb.XGBClassifier(
+                max_depth=8, n_estimators=300, learning_rate=0.08,
+                subsample=0.8, colsample_bytree=0.8,
+                objective='multi:softprob', num_class=len(unique_p),
+                eval_metric='mlogloss', random_state=42, tree_method='hist'
+            )
+            try:
+                clf_p.fit(X_tr_norm, y_tr_local, eval_set=[(X_vl_norm, y_vl_local)], verbose=False)
+            except Exception:
+                # Eval set may have classes not in training; train without eval
+                clf_p.fit(X_tr_norm, y_tr_local, verbose=False)
+            pred_local = clf_p.predict(X_vl_norm)
+            # Map back to global labels for F1 comparison
+            pred_p = np.array([local_rev.get(int(p), y_vl_p[0]) for p in pred_local])
+            f1_p = f1_score(y_vl_p, pred_p, average='weighted')
+            
+            # Global model on same patient
+            global_pred_p = global_clf.predict(X_vl_p)
+            global_f1_p = f1_score(y_vl_p, global_pred_p, average='weighted')
+            
+            improvement = (f1_p - global_f1_p) / (global_f1_p + 1e-10) * 100
+            per_patient_results[pid] = {
+                'per_patient_f1': float(f1_p),
+                'global_f1': float(global_f1_p),
+                'improvement_pct': float(improvement),
+                'n_train': int(tr_mask.sum()),
+                'n_val': int(vl_mask.sum()),
+            }
+            print(f"    {pid}: global={global_f1_p:.3f} -> per_patient={f1_p:.3f} ({improvement:+.1f}%)")
+            
+            all_per_patient_preds[vl_mask] = pred_p
+            all_per_patient_mask[vl_mask] = True
+    
+    # If no patient metadata, try without per-patient split
+    if len(per_patient_results) == 0:
+        print("  [Fallback] No patient metadata - trying feature-based normalization...")
+        mu = X_train.mean(axis=0)
+        sigma = X_train.std(axis=0) + 1e-8
+        X_tr_norm = (X_train - mu) / sigma
+        X_vl_norm = (X_val - mu) / sigma
+        
+        norm_clf = xgb.XGBClassifier(
+            max_depth=8, n_estimators=300, learning_rate=0.08,
+            subsample=0.8, colsample_bytree=0.8,
+            objective='multi:softprob', num_class=n_classes,
+            eval_metric='mlogloss', random_state=42, tree_method='hist'
+        )
+        norm_clf.fit(X_tr_norm, y_train_m, eval_set=[(X_vl_norm, y_val_m)], verbose=False)
+        norm_f1 = f1_score(y_val_m, norm_clf.predict(X_vl_norm), average='weighted')
+        print(f"    Z-normalized global F1={norm_f1:.4f} (was {global_f1:.4f})")
+        per_patient_results['global_znorm'] = {
+            'per_patient_f1': float(norm_f1),
+            'global_f1': float(global_f1),
+            'improvement_pct': float((norm_f1 - global_f1) / (global_f1 + 1e-10) * 100),
+        }
+
+    # Combined per-patient F1
+    if all_per_patient_mask.any():
+        combined_f1 = f1_score(y_val_m[all_per_patient_mask],
+                              all_per_patient_preds[all_per_patient_mask],
+                              average='weighted')
+    else:
+        combined_f1 = 0.0
+    
+    mean_improvement = np.mean([v['improvement_pct'] for v in per_patient_results.values()])
+    
+    print(f"\n  Combined per-patient F1={combined_f1:.4f}")
+    print(f"  Mean improvement: {mean_improvement:+.1f}%")
+
+    results = {
+        'global_f1': float(global_f1),
+        'combined_per_patient_f1': float(combined_f1),
+        'mean_improvement_pct': float(mean_improvement),
+        'per_patient': per_patient_results,
+        'n_classes': n_classes,
+    }
+    out_path = os.path.join(args.output_dir, 'exp205_per_patient_event_norm.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-205', 'name': 'per-patient-event-normalization',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+def run_hierarchical_event(args):
+    """EXP-206: Hierarchical event detection -- coarse-to-fine classification.
+    
+    Hypothesis: Exploiting event class structure (glucose-response vs behavioral)
+    with a 2-stage classifier should reduce cross-class confusion and boost F1.
+    """
+    import numpy as np, json, os
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from sklearn.metrics import f1_score, classification_report
+    import xgboost as xgb
+
+    ctx = ExperimentContext('EXP-206', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    print("  [Stage 1] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+    if train_data is None or val_data is None:
+        print("  No data"); return {}
+
+    X_train = train_data['tabular']
+    y_train = train_data['labels']
+    X_val = val_data['tabular']
+    y_val = val_data['labels']
+    label_map_orig = train_data.get('label_map', {})
+    
+    unique_classes = np.unique(np.concatenate([y_train, y_val]))
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    rev_map = {new: old for old, new in label_map.items()}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map[y] for y in y_val])
+    n_classes = len(unique_classes)
+
+    # Flat baseline
+    print("  [Stage 2] Flat baseline...")
+    flat_clf = xgb.XGBClassifier(
+        max_depth=8, n_estimators=300, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42, tree_method='hist'
+    )
+    flat_clf.fit(X_train, y_train_m, eval_set=[(X_val, y_val_m)], verbose=False)
+    flat_pred = flat_clf.predict(X_val)
+    flat_f1 = f1_score(y_val_m, flat_pred, average='weighted')
+    flat_f1_macro = f1_score(y_val_m, flat_pred, average='macro')
+    print(f"    Flat weighted F1={flat_f1:.4f}, macro F1={flat_f1_macro:.4f}")
+
+    # Define hierarchy: glucose-response (0) vs behavioral (1)
+    print("  [Stage 3] Hierarchical classification...")
+    
+    coarse_map = {}
+    for mapped_cls in range(n_classes):
+        orig_cls = rev_map[mapped_cls]
+        if orig_cls == 0:
+            coarse_map[mapped_cls] = 0  # normal/baseline
+        elif orig_cls in [1, 2]:
+            coarse_map[mapped_cls] = 1  # glucose-response
+        else:
+            coarse_map[mapped_cls] = 2  # behavioral
+    
+    y_train_coarse = np.array([coarse_map[y] for y in y_train_m])
+    y_val_coarse = np.array([coarse_map[y] for y in y_val_m])
+    
+    coarse_classes = sorted(set(coarse_map.values()))
+    n_coarse = len(coarse_classes)
+    
+    # Train coarse classifier
+    coarse_clf = xgb.XGBClassifier(
+        max_depth=8, n_estimators=200, learning_rate=0.1,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_coarse,
+        eval_metric='mlogloss', random_state=42, tree_method='hist'
+    )
+    coarse_clf.fit(X_train, y_train_coarse, eval_set=[(X_val, y_val_coarse)], verbose=False)
+    coarse_pred = coarse_clf.predict(X_val)
+    coarse_acc = np.mean(coarse_pred == y_val_coarse)
+    print(f"    Coarse accuracy: {coarse_acc:.4f}")
+    
+    # Train per-coarse-category fine classifiers
+    fine_clfs = {}
+    for coarse_cls in coarse_classes:
+        tr_mask = y_train_coarse == coarse_cls
+        fine_labels_tr = y_train_m[tr_mask]
+        fine_unique = np.unique(fine_labels_tr)
+        
+        if len(fine_unique) < 2:
+            print(f"    Coarse {coarse_cls}: only {len(fine_unique)} fine class, skip")
+            continue
+        
+        fine_map_local = {old: new for new, old in enumerate(fine_unique)}
+        fine_rev_local = {new: old for old, new in fine_map_local.items()}
+        y_tr_fine = np.array([fine_map_local[y] for y in fine_labels_tr])
+        
+        fine_clf = xgb.XGBClassifier(
+            max_depth=8, n_estimators=300, learning_rate=0.08,
+            subsample=0.8, colsample_bytree=0.8,
+            objective='multi:softprob', num_class=len(fine_unique),
+            eval_metric='mlogloss', random_state=42, tree_method='hist'
+        )
+        fine_clf.fit(X_train[tr_mask], y_tr_fine, verbose=False)
+        fine_clfs[coarse_cls] = (fine_clf, fine_map_local, fine_rev_local)
+        print(f"    Coarse {coarse_cls}: trained fine classifier ({len(fine_unique)} classes)")
+    
+    # Hierarchical inference
+    print("  [Stage 4] Hierarchical inference...")
+    hier_pred = np.zeros_like(y_val_m)
+    
+    for i in range(len(X_val)):
+        coarse_c = int(coarse_pred[i])
+        if coarse_c in fine_clfs:
+            fine_clf, fine_map_local, fine_rev_local = fine_clfs[coarse_c]
+            fine_p = fine_clf.predict(X_val[i:i+1]).flat[0]
+            hier_pred[i] = fine_rev_local[fine_p]
+        else:
+            for mapped_c, coarse_c2 in coarse_map.items():
+                if coarse_c2 == coarse_c:
+                    hier_pred[i] = mapped_c
+                    break
+    
+    hier_f1 = f1_score(y_val_m, hier_pred, average='weighted')
+    hier_f1_macro = f1_score(y_val_m, hier_pred, average='macro')
+    print(f"    Hierarchical weighted F1={hier_f1:.4f}, macro F1={hier_f1_macro:.4f}")
+    
+    # Oracle analysis
+    print("  [Stage 5] Oracle analysis...")
+    oracle_pred = np.zeros_like(y_val_m)
+    for i in range(len(X_val)):
+        true_coarse = int(y_val_coarse[i])
+        if true_coarse in fine_clfs:
+            fine_clf, fine_map_local, fine_rev_local = fine_clfs[true_coarse]
+            fine_p = fine_clf.predict(X_val[i:i+1]).flat[0]
+            oracle_pred[i] = fine_rev_local[fine_p]
+        else:
+            for mapped_c, coarse_c2 in coarse_map.items():
+                if coarse_c2 == true_coarse:
+                    oracle_pred[i] = mapped_c
+                    break
+    
+    oracle_f1 = f1_score(y_val_m, oracle_pred, average='weighted')
+    print(f"    Oracle (perfect coarse) F1={oracle_f1:.4f}")
+    
+    improvement = (hier_f1 - flat_f1) / (flat_f1 + 1e-10) * 100
+
+    results = {
+        'flat_f1_weighted': float(flat_f1),
+        'flat_f1_macro': float(flat_f1_macro),
+        'hierarchical_f1_weighted': float(hier_f1),
+        'hierarchical_f1_macro': float(hier_f1_macro),
+        'oracle_f1_weighted': float(oracle_f1),
+        'coarse_accuracy': float(coarse_acc),
+        'improvement_pct': float(improvement),
+        'n_classes': n_classes,
+        'n_coarse_classes': n_coarse,
+        'coarse_map': {str(k): int(v) for k, v in coarse_map.items()},
+    }
+    out_path = os.path.join(args.output_dir, 'exp206_hierarchical_event.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-206', 'name': 'hierarchical-event-coarse-to-fine',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+def run_drift_adaptive_ensemble(args):
+    """EXP-207: Per-patient drift-adaptive ensemble with optimal windows.
+    
+    Hypothesis: Each patient has a different optimal drift detection window.
+    Per-patient window selection + exponential smoothing should improve
+    drift-TIR correlation from -0.328 to -0.55+.
+    """
+    import numpy as np, json, os
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        load_patient_profile
+    )
+    from scipy.stats import pearsonr
+
+    ctx = ExperimentContext('EXP-207', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+    patient_ids = sorted([d for d in os.listdir(patients_dir)
+                         if os.path.isdir(os.path.join(patients_dir, d))])
+
+    print("  [Stage 1] Per-patient drift fingerprinting...")
+    windows = [4, 8, 12, 16, 24, 36, 48]  # in 5-min steps
+    
+    patient_results = {}
+    all_best_corrs = []
+    
+    for pid in patient_ids:
+        train_path = os.path.join(patients_dir, pid, 'training')
+        if not os.path.isdir(train_path):
+            continue
+        
+        try:
+            ds_train, ds_val = load_multipatient_nightscout([train_path])
+        except Exception as e:
+            print(f"    {pid}: load failed ({e})")
+            continue
+        
+        if len(ds_val) < 50:
+            print(f"    {pid}: too few samples ({len(ds_val)})")
+            continue
+        
+        # Get profile for ISF — load_patient_profile returns (isf, cr) tuple
+        profile = load_patient_profile(os.path.join(patients_dir, pid))
+        isf = profile[0] if profile else 45.0
+        
+        # Extract glucose time series from validation set
+        import torch
+        all_glucose = []
+        for i in range(len(ds_val)):
+            x, _ = ds_val[i]
+            if isinstance(x, torch.Tensor):
+                x = x.numpy()
+            all_glucose.append(x[:, 0])  # glucose channel
+        glucose = np.array(all_glucose)
+        
+        # Compute drift at each window size
+        best_corr = 0
+        best_window = windows[0]
+        window_corrs = {}
+        
+        half = glucose.shape[1] // 2
+        
+        for w in windows:
+            if len(glucose) < w + 10:
+                continue
+            
+            residuals = []
+            for i in range(len(glucose)):
+                pred = glucose[i, half-1]
+                actual_mean = glucose[i, half:].mean()
+                residuals.append((actual_mean - pred) * 400 / isf)
+            residuals = np.array(residuals)
+            
+            # Sliding median over window w
+            drift_estimates = np.zeros(len(glucose))
+            for i in range(len(glucose)):
+                start = max(0, i - w)
+                drift_estimates[i] = np.median(residuals[start:i+1])
+            
+            # TIR proxy
+            tir_values = np.zeros(len(glucose))
+            for i in range(len(glucose)):
+                g = glucose[i] * 400
+                tir_values[i] = np.mean((g >= 70) & (g <= 180))
+            
+            # Correlation with future TIR
+            shift = min(w // 2, 5)
+            if shift > 0 and len(drift_estimates) > shift:
+                d = drift_estimates[:-shift]
+                t = tir_values[shift:]
+            else:
+                d = drift_estimates
+                t = tir_values
+            
+            if len(d) > 10 and np.std(d) > 1e-8 and np.std(t) > 1e-8:
+                corr, pval = pearsonr(d, t)
+                window_corrs[w] = {'corr': float(corr), 'pval': float(pval)}
+                
+                if abs(corr) > abs(best_corr):
+                    best_corr = corr
+                    best_window = w
+        
+        # Apply exponential smoothing at best window
+        alpha = 0.3
+        raw_residuals = []
+        for i in range(len(glucose)):
+            pred = glucose[i, half-1]
+            actual_mean = glucose[i, half:].mean()
+            raw_residuals.append((actual_mean - pred) * 400 / isf)
+        raw_residuals = np.array(raw_residuals)
+        
+        smoothed_drift = np.zeros(len(glucose))
+        smoothed_drift[0] = raw_residuals[0]
+        for i in range(1, len(raw_residuals)):
+            smoothed_drift[i] = alpha * raw_residuals[i] + (1 - alpha) * smoothed_drift[i-1]
+        
+        tir_all = np.zeros(len(glucose))
+        for i in range(len(glucose)):
+            g = glucose[i] * 400
+            tir_all[i] = np.mean((g >= 70) & (g <= 180))
+        
+        shift = min(best_window // 2, 5)
+        if shift > 0 and len(smoothed_drift) > shift:
+            d_s = smoothed_drift[:-shift]
+            t_s = tir_all[shift:]
+        else:
+            d_s = smoothed_drift
+            t_s = tir_all
+        
+        smoothed_corr = 0.0
+        if len(d_s) > 10 and np.std(d_s) > 1e-8 and np.std(t_s) > 1e-8:
+            smoothed_corr, _ = pearsonr(d_s, t_s)
+        
+        patient_results[pid] = {
+            'best_window': int(best_window),
+            'best_corr': float(best_corr),
+            'smoothed_corr': float(smoothed_corr),
+            'window_corrs': window_corrs,
+            'n_samples': len(glucose),
+            'isf': float(isf),
+        }
+        all_best_corrs.append(best_corr)
+        print(f"    {pid}: best_window={best_window}, corr={best_corr:.3f}, smoothed={smoothed_corr:.3f}")
+    
+    median_corr = float(np.median(all_best_corrs)) if all_best_corrs else 0.0
+    mean_corr = float(np.mean(all_best_corrs)) if all_best_corrs else 0.0
+    
+    print(f"\n  Per-patient adaptive: median corr={median_corr:.3f}, mean={mean_corr:.3f}")
+    print(f"  Previous best (EXP-194 fixed 8h): -0.328")
+
+    results = {
+        'median_corr': median_corr,
+        'mean_corr': mean_corr,
+        'comparison_exp194': -0.328,
+        'per_patient': patient_results,
+        'windows_tested': windows,
+        'smoothing_alpha': 0.3,
+    }
+    out_path = os.path.join(args.output_dir, 'exp207_drift_adaptive.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-207', 'name': 'drift-adaptive-ensemble-online',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+def run_hybrid_xgb_nn_event(args):
+    """EXP-204: Hybrid XGBoost-NN event detection fusion.
+    
+    Hypothesis: XGBoost captures tabular feature interactions while a simple
+    1D-CNN captures sequential glucose patterns. Fusing both should break
+    the F1 0.69 plateau.
+    """
+    import numpy as np, json, os, torch, torch.nn as nn
+    from torch.utils.data import DataLoader, TensorDataset
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from tools.cgmencode.experiment_lib import load_multipatient_nightscout, resolve_patient_paths
+    from sklearn.metrics import f1_score
+    from sklearn.linear_model import LogisticRegression
+    import xgboost as xgb
+
+    ctx = ExperimentContext('EXP-204', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+
+    print("  [Stage 1] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+    if train_data is None or val_data is None:
+        print("  No data"); return {}
+
+    X_train = train_data['tabular']
+    y_train = train_data['labels']
+    X_val = val_data['tabular']
+    y_val = val_data['labels']
+
+    unique_classes = np.unique(np.concatenate([y_train, y_val]))
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    y_train_m = np.array([label_map[y] for y in y_train])
+    y_val_m = np.array([label_map[y] for y in y_val])
+    n_classes = len(unique_classes)
+
+    # Stage 2: Train XGBoost component
+    print("  [Stage 2] Training XGBoost...")
+    xgb_clf = xgb.XGBClassifier(
+        max_depth=8, n_estimators=300, learning_rate=0.08,
+        subsample=0.8, colsample_bytree=0.8,
+        objective='multi:softprob', num_class=n_classes,
+        eval_metric='mlogloss', random_state=42, tree_method='hist'
+    )
+    xgb_clf.fit(X_train, y_train_m, eval_set=[(X_val, y_val_m)], verbose=False)
+    xgb_probs_train = xgb_clf.predict_proba(X_train)
+    xgb_probs_val = xgb_clf.predict_proba(X_val)
+    xgb_f1 = f1_score(y_val_m, xgb_clf.predict(X_val), average='weighted')
+    print(f"    XGBoost F1={xgb_f1:.4f}")
+
+    # Stage 3: Train 1D-CNN on tabular features as pseudo-sequence
+    print("  [Stage 3] Training CNN on features...")
+    
+    class EventCNN(nn.Module):
+        def __init__(self, n_features, n_classes_out):
+            super().__init__()
+            self.conv1 = nn.Conv1d(1, 32, kernel_size=3, padding=1)
+            self.conv2 = nn.Conv1d(32, 64, kernel_size=5, padding=2)
+            self.conv3 = nn.Conv1d(64, 32, kernel_size=7, padding=3)
+            self.pool = nn.AdaptiveAvgPool1d(1)
+            self.fc = nn.Linear(32, n_classes_out)
+            self.relu = nn.ReLU()
+            self.dropout = nn.Dropout(0.2)
+        
+        def forward(self, x):
+            x = x.permute(0, 2, 1)
+            x = self.relu(self.conv1(x))
+            x = self.dropout(x)
+            x = self.relu(self.conv2(x))
+            x = self.dropout(x)
+            x = self.relu(self.conv3(x))
+            x = self.pool(x).squeeze(-1)
+            return self.fc(x)
+
+    n_feat = X_train.shape[1]
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
+    cnn_model = EventCNN(n_feat, n_classes).to(device)
+    
+    X_tr_seq = torch.FloatTensor(X_train).unsqueeze(-1).to(device)
+    X_vl_seq = torch.FloatTensor(X_val).unsqueeze(-1).to(device)
+    y_tr_t = torch.LongTensor(y_train_m).to(device)
+    y_vl_t = torch.LongTensor(y_val_m).to(device)
+    
+    optimizer = torch.optim.Adam(cnn_model.parameters(), lr=1e-3, weight_decay=1e-4)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=50)
+    
+    train_ds_cnn = TensorDataset(X_tr_seq, y_tr_t)
+    train_loader = DataLoader(train_ds_cnn, batch_size=256, shuffle=True)
+    
+    best_cnn_f1 = 0
+    for epoch in range(50):
+        cnn_model.train()
+        for bx, by in train_loader:
+            optimizer.zero_grad()
+            logits = cnn_model(bx)
+            loss = nn.CrossEntropyLoss()(logits, by)
+            loss.backward()
+            optimizer.step()
+        scheduler.step()
+        
+        if (epoch + 1) % 10 == 0:
+            cnn_model.eval()
+            with torch.no_grad():
+                val_logits = cnn_model(X_vl_seq)
+                val_pred = val_logits.argmax(dim=1).cpu().numpy()
+                cnn_f1 = f1_score(y_val_m, val_pred, average='weighted')
+                if cnn_f1 > best_cnn_f1:
+                    best_cnn_f1 = cnn_f1
+    
+    print(f"    CNN F1={best_cnn_f1:.4f}")
+    
+    # Get CNN probabilities (batch on CPU to avoid OOM)
+    cnn_model.eval().cpu()
+    with torch.no_grad():
+        X_tr_cpu = torch.FloatTensor(X_train).unsqueeze(-1)
+        X_vl_cpu = torch.FloatTensor(X_val).unsqueeze(-1)
+        # Process in batches
+        cnn_probs_train_parts = []
+        for start in range(0, len(X_tr_cpu), 4096):
+            batch = X_tr_cpu[start:start+4096]
+            logits = cnn_model(batch)
+            cnn_probs_train_parts.append(torch.softmax(logits, dim=1).numpy())
+        cnn_probs_train = np.concatenate(cnn_probs_train_parts, axis=0)
+        
+        cnn_probs_val_parts = []
+        for start in range(0, len(X_vl_cpu), 4096):
+            batch = X_vl_cpu[start:start+4096]
+            logits = cnn_model(batch)
+            cnn_probs_val_parts.append(torch.softmax(logits, dim=1).numpy())
+        cnn_probs_val = np.concatenate(cnn_probs_val_parts, axis=0)
+
+    # Stage 4: Stacked fusion
+    print("  [Stage 4] Training fusion layer...")
+    
+    fusion_train = np.concatenate([xgb_probs_train, cnn_probs_train], axis=1)
+    fusion_val = np.concatenate([xgb_probs_val, cnn_probs_val], axis=1)
+    
+    # Logistic regression meta-learner
+    lr_meta = LogisticRegression(max_iter=1000, C=1.0)
+    lr_meta.fit(fusion_train, y_train_m)
+    fusion_pred_lr = lr_meta.predict(fusion_val)
+    fusion_f1_lr = f1_score(y_val_m, fusion_pred_lr, average='weighted')
+    print(f"    LR fusion F1={fusion_f1_lr:.4f}")
+    
+    # XGBoost meta-learner
+    xgb_meta = xgb.XGBClassifier(
+        max_depth=4, n_estimators=100, learning_rate=0.1,
+        objective='multi:softprob', num_class=n_classes,
+        random_state=42, tree_method='hist'
+    )
+    xgb_meta.fit(fusion_train, y_train_m, eval_set=[(fusion_val, y_val_m)], verbose=False)
+    fusion_pred_xgb = xgb_meta.predict(fusion_val)
+    fusion_f1_xgb = f1_score(y_val_m, fusion_pred_xgb, average='weighted')
+    print(f"    XGB meta fusion F1={fusion_f1_xgb:.4f}")
+    
+    # Simple and weighted averaging
+    avg_probs = (xgb_probs_val + cnn_probs_val) / 2
+    avg_pred = avg_probs.argmax(axis=1)
+    avg_f1 = f1_score(y_val_m, avg_pred, average='weighted')
+    print(f"    Average fusion F1={avg_f1:.4f}")
+    
+    weighted_results = {}
+    for w in [0.7, 0.8, 0.9]:
+        w_probs = w * xgb_probs_val + (1-w) * cnn_probs_val
+        w_pred = w_probs.argmax(axis=1)
+        w_f1 = f1_score(y_val_m, w_pred, average='weighted')
+        weighted_results[f"w{w:.1f}"] = float(w_f1)
+        print(f"    Weighted ({w:.1f}xgb+{1-w:.1f}cnn) F1={w_f1:.4f}")
+    
+    best_fusion_f1 = max(fusion_f1_lr, fusion_f1_xgb, avg_f1,
+                         max(weighted_results.values()))
+    all_f1s = {'lr_meta': fusion_f1_lr, 'xgb_meta': fusion_f1_xgb, 'averaging': avg_f1}
+    all_f1s.update(weighted_results)
+    best_method = max(all_f1s, key=all_f1s.get)
+    
+    improvement = (best_fusion_f1 - xgb_f1) / (xgb_f1 + 1e-10) * 100
+
+    results = {
+        'xgb_f1': float(xgb_f1),
+        'cnn_f1': float(best_cnn_f1),
+        'fusion_lr_f1': float(fusion_f1_lr),
+        'fusion_xgb_f1': float(fusion_f1_xgb),
+        'fusion_avg_f1': float(avg_f1),
+        'weighted_results': weighted_results,
+        'best_fusion_f1': float(best_fusion_f1),
+        'best_method': best_method,
+        'improvement_pct': float(improvement),
+        'n_classes': n_classes,
+    }
+    out_path = os.path.join(args.output_dir, 'exp204_hybrid_xgb_nn.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-204', 'name': 'hybrid-xgb-nn-event-fusion',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+def run_production_v12_integrated(args):
+    """EXP-208: Production v12 -- integrated best components from Phase 11.
+    
+    Combines: forecast ensemble + per-horizon conformal + best event model +
+    adaptive drift + confidence-gated overrides.
+    """
+    import numpy as np, json, os, torch, torch.nn as nn, torch.nn.functional as F
+    from tools.cgmencode.model import CGMGroupedEncoder
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        train_forecast, forecast_mse, persistence_mse, load_patient_profile
+    )
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from sklearn.metrics import f1_score
+    from scipy.stats import pearsonr
+    import xgboost as xgb
+
+    ctx = ExperimentContext('EXP-208', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', None)
+    epochs = getattr(args, 'epochs', 150)
+    batch_size = getattr(args, 'batch', 128)
+
+    # Stage 1: Train forecast ensemble (4 architectures)
+    print("  [Stage 1] Training forecast ensemble...")
+    train_paths = resolve_patient_paths(patients_dir, real_data=True)
+    ds_train, ds_val = load_multipatient_nightscout(train_paths)
+    
+    architectures = [
+        {'d_model': 64, 'nhead': 4, 'num_layers': 3, 'name': 'd64_L3'},
+        {'d_model': 64, 'nhead': 4, 'num_layers': 4, 'name': 'd64_L4'},
+        {'d_model': 96, 'nhead': 4, 'num_layers': 3, 'name': 'd96_L3'},
+        {'d_model': 128, 'nhead': 4, 'num_layers': 3, 'name': 'd128_L3'},
+    ]
+    
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    pers = persistence_mse(ds_val, batch_size=batch_size)
+    pers_mgdl = pers**0.5 * 400
+    
+    models = []
+    for arch in architectures:
+        print(f"    Training {arch['name']}...")
+        model = CGMGroupedEncoder(
+            input_dim=8, d_model=arch['d_model'],
+            nhead=arch['nhead'], num_layers=arch['num_layers']
+        ).to(device)
+        
+        try:
+            train_forecast(model, ds_train, ds_val, epochs=epochs, batch_size=batch_size,
+                         lr=3e-4, device=device, patience=30)
+            mse = forecast_mse(model, ds_val, batch_size=batch_size, device=device)
+            mae = mse**0.5 * 400
+            print(f"      MAE={mae:.1f} mg/dL")
+            
+            if mse < pers * 5:
+                models.append(model)
+            else:
+                print(f"      DIVERGED, skipping")
+        except Exception as e:
+            print(f"      Failed: {e}")
+    
+    # Ensemble forecast
+    print(f"  [Stage 1b] Ensemble of {len(models)} models...")
+    from torch.utils.data import DataLoader
+    val_loader = DataLoader(ds_val, batch_size=batch_size, shuffle=False)
+    
+    ws = 24
+    half = ws // 2
+    all_errors = []
+    
+    for bx, bt in val_loader:
+        bx = bx.to(device)
+        x_in = bx.clone()
+        x_in[:, half:, 0] = 0.0
+        
+        preds = []
+        for m in models:
+            m.eval()
+            with torch.no_grad():
+                out = m(x_in)
+                if isinstance(out, dict):
+                    out = out['forecast']
+                preds.append(out[:, half:, :1])
+        
+        ensemble_pred = torch.stack(preds).mean(0)
+        errors = (ensemble_pred - bx[:, half:, :1]).abs() * 400
+        all_errors.append(errors.cpu().numpy())
+    
+    all_errors = np.concatenate(all_errors, axis=0)
+    ensemble_mae = float(all_errors.mean())
+    print(f"    Ensemble MAE={ensemble_mae:.1f} mg/dL")
+    
+    # Per-horizon conformal
+    print("  [Stage 2] Per-horizon conformal...")
+    horizon_quantiles = {}
+    for h in range(half):
+        h_errors = all_errors[:, h, 0]
+        q90 = float(np.quantile(h_errors, 0.9))
+        q95 = float(np.quantile(h_errors, 0.95))
+        horizon_quantiles[h] = {'q90': q90, 'q95': q95}
+    
+    # Stage 3: Event detection
+    print("  [Stage 3] Event detection (XGBoost)...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+    
+    event_f1 = 0.0
+    if train_data is not None and val_data is not None:
+        X_tr = train_data['tabular']
+        y_tr = train_data['labels']
+        X_vl = val_data['tabular']
+        y_vl = val_data['labels']
+        unique_c = np.unique(np.concatenate([y_tr, y_vl]))
+        lm = {old: new for new, old in enumerate(unique_c)}
+        y_tr_m = np.array([lm[y] for y in y_tr])
+        y_vl_m = np.array([lm[y] for y in y_vl])
+        n_c = len(unique_c)
+        
+        event_clf = xgb.XGBClassifier(
+            max_depth=8, n_estimators=300, learning_rate=0.08,
+            subsample=0.8, colsample_bytree=0.8,
+            objective='multi:softprob', num_class=n_c,
+            eval_metric='mlogloss', random_state=42, tree_method='hist'
+        )
+        event_clf.fit(X_tr, y_tr_m, eval_set=[(X_vl, y_vl_m)], verbose=False)
+        event_f1 = f1_score(y_vl_m, event_clf.predict(X_vl), average='weighted')
+        print(f"    Event F1={event_f1:.4f}")
+    
+    # Stage 4: Per-patient evaluation
+    print("  [Stage 4] Per-patient evaluation...")
+    patient_ids = sorted([d for d in os.listdir(patients_dir)
+                         if os.path.isdir(os.path.join(patients_dir, d))])
+    
+    per_patient_mae = {}
+    per_patient_drift = {}
+    
+    for pid in patient_ids:
+        ver_path = os.path.join(patients_dir, pid, 'verification')
+        if not os.path.isdir(ver_path):
+            continue
+        try:
+            _, ds_p = load_multipatient_nightscout([ver_path])
+        except:
+            continue
+        
+        if len(ds_p) < 10:
+            continue
+        
+        p_loader = DataLoader(ds_p, batch_size=batch_size, shuffle=False)
+        p_errors = []
+        p_glucose = []
+        
+        for bx, bt in p_loader:
+            bx_d = bx.to(device)
+            x_in = bx_d.clone()
+            x_in[:, half:, 0] = 0.0
+            
+            preds = []
+            for m in models:
+                m.eval()
+                with torch.no_grad():
+                    out = m(x_in)
+                    if isinstance(out, dict):
+                        out = out['forecast']
+                    preds.append(out[:, half:, :1])
+            
+            ens_p = torch.stack(preds).mean(0)
+            err = (ens_p - bx_d[:, half:, :1]).abs() * 400
+            p_errors.append(err.cpu().numpy())
+            p_glucose.append(bx[:, :, 0].numpy())
+        
+        p_errors = np.concatenate(p_errors, axis=0)
+        p_glucose = np.concatenate(p_glucose, axis=0)
+        p_mae = float(p_errors.mean())
+        per_patient_mae[pid] = p_mae
+        
+        # Drift assessment
+        profile = load_patient_profile(os.path.join(patients_dir, pid))
+        isf = profile[0] if profile else 45.0
+        
+        residuals = []
+        for i in range(len(p_glucose)):
+            pred_v = p_glucose[i, half-1]
+            actual_v = p_glucose[i, half:].mean()
+            residuals.append((actual_v - pred_v) * 400 / isf)
+        residuals = np.array(residuals)
+        
+        w = 16
+        if len(residuals) > w + 5:
+            drift_est = np.array([np.median(residuals[max(0,i-w):i+1]) for i in range(len(residuals))])
+            tir = np.array([np.mean((p_glucose[i]*400 >= 70) & (p_glucose[i]*400 <= 180)) for i in range(len(p_glucose))])
+            
+            shift = 5
+            if len(drift_est) > shift:
+                d = drift_est[:-shift]
+                t = tir[shift:]
+                if np.std(d) > 1e-8 and np.std(t) > 1e-8:
+                    corr, _ = pearsonr(d, t)
+                    per_patient_drift[pid] = float(corr)
+        
+        print(f"    {pid}: MAE={p_mae:.1f}, drift_corr={per_patient_drift.get(pid, 'N/A')}")
+    
+    mean_mae = np.mean(list(per_patient_mae.values()))
+    median_drift = float(np.median(list(per_patient_drift.values()))) if per_patient_drift else 0.0
+    
+    print(f"\n  === Production v12 Summary ===")
+    print(f"  Ensemble MAE: {ensemble_mae:.1f} mg/dL")
+    print(f"  Mean per-patient MAE: {mean_mae:.1f} mg/dL")
+    print(f"  Event F1: {event_f1:.4f}")
+    print(f"  Median drift corr: {median_drift:.3f}")
+    print(f"  Persistence: {pers_mgdl:.1f} mg/dL")
+
+    results = {
+        'ensemble_mae': float(ensemble_mae),
+        'mean_per_patient_mae': float(mean_mae),
+        'persistence_mae': float(pers_mgdl),
+        'event_f1': float(event_f1),
+        'median_drift_corr': float(median_drift),
+        'n_ensemble_members': len(models),
+        'per_patient_mae': per_patient_mae,
+        'per_patient_drift': per_patient_drift,
+        'horizon_quantiles': {str(k): v for k, v in horizon_quantiles.items()},
+        'conformal_coverage_target': 0.9,
+    }
+    out_path = os.path.join(args.output_dir, 'exp208_production_v12.json')
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-208', 'name': 'production-v12-integrated',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# Register Phase 11
+REGISTRY.update({
+    'hybrid-xgb-nn-event-fusion':     'run_hybrid_xgb_nn_event',         # EXP-204
+    'per-patient-event-normalization': 'run_per_patient_event_norm',      # EXP-205
+    'hierarchical-event-coarse-fine':  'run_hierarchical_event',          # EXP-206
+    'drift-adaptive-ensemble-online':  'run_drift_adaptive_ensemble',     # EXP-207
+    'production-v12-integrated':       'run_production_v12_integrated',   # EXP-208
+})

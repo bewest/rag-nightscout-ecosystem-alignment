@@ -1,0 +1,82 @@
+{
+  "experiment": "EXP-205",
+  "name": "per-patient-event-normalization",
+  "results": {
+    "global_f1": 0.6847949322029746,
+    "combined_per_patient_f1": 0.7004778787264768,
+    "mean_improvement_pct": 2.456578884601922,
+    "per_patient": {
+      "a": {
+        "per_patient_f1": 0.840239499239526,
+        "global_f1": 0.8317217413218821,
+        "improvement_pct": 1.024111489869461,
+        "n_train": 55934,
+        "n_val": 5539
+      },
+      "b": {
+        "per_patient_f1": 0.6607998877718204,
+        "global_f1": 0.6672872110669827,
+        "improvement_pct": -0.9721935602237899,
+        "n_train": 63241,
+        "n_val": 6487
+      },
+      "c": {
+        "per_patient_f1": 0.6541079416540446,
+        "global_f1": 0.6301610110759154,
+        "improvement_pct": 3.800128880306788,
+        "n_train": 56280,
+        "n_val": 5198
+      },
+      "d": {
+        "per_patient_f1": 0.9386332973408749,
+        "global_f1": 0.9357738148422883,
+        "improvement_pct": 0.3055741091412071,
+        "n_train": 50649,
+        "n_val": 3857
+      },
+      "e": {
+        "per_patient_f1": 0.6720223529073832,
+        "global_f1": 0.698660425076974,
+        "improvement_pct": -3.8127352301145794,
+        "n_train": 50574,
+        "n_val": 5068
+      },
+      "f": {
+        "per_patient_f1": 0.6300469130227542,
+        "global_f1": 0.533855308487316,
+        "improvement_pct": 18.018291283827388,
+        "n_train": 12163,
+        "n_val": 412
+      },
+      "g": {
+        "per_patient_f1": 0.7215883395540892,
+        "global_f1": 0.7120948816535102,
+        "improvement_pct": 1.3331731688903108,
+        "n_train": 54438,
+        "n_val": 5348
+      },
+      "h": {
+        "per_patient_f1": 0.764379130060943,
+        "global_f1": 0.731471105076911,
+        "improvement_pct": 4.4988824235337335,
+        "n_train": 15832,
+        "n_val": 1170
+      },
+      "i": {
+        "per_patient_f1": 0.531719117048914,
+        "global_f1": 0.5071652934234735,
+        "improvement_pct": 4.84138483823598,
+        "n_train": 113142,
+        "n_val": 12312
+      },
+      "j": {
+        "per_patient_f1": 0.6639177482397247,
+        "global_f1": 0.6949895390262525,
+        "improvement_pct": -4.470828557447286,
+        "n_train": 4764,
+        "n_val": 139
+      }
+    },
+    "n_classes": 6
+  }
+}
