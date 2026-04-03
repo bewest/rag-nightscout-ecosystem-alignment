@@ -1,0 +1,37 @@
+{
+  "experiment": "EXP-164",
+  "name": "xgb-feature-engineering",
+  "results": {
+    "baseline_f1": 1.0,
+    "enhanced_f1": 1.0,
+    "optimized_f1": 0.99999999995,
+    "best_threshold": 0.999829888343811,
+    "improvement_pct": 0.0,
+    "n_base_features": 21,
+    "n_engineered_features": 6,
+    "n_total_features": 27,
+    "engineered_feature_names": [
+      "glucose_roc",
+      "glucose_accel",
+      "glucose_roll_std",
+      "glucose_cv",
+      "iob_roc",
+      "cob_roc"
+    ],
+    "top_features": {
+      "lead_time_hr": 0.6957889199256897,
+      "glucose_cv": 0.09293641895055771,
+      "bolus_total": 0.06415357440710068,
+      "carbs_total": 0.025256425142288208,
+      "bolus_now": 0.02471846342086792,
+      "cob_now": 0.020789019763469696,
+      "iob_change": 0.012002352625131607,
+      "glucose_std": 0.01111284364014864,
+      "glucose_roll_std": 0.010122072882950306,
+      "iob_now": 0.007852582260966301
+    },
+    "n_samples": 477017,
+    "n_events": 434226,
+    "event_rate": 0.910294601659899
+  }
+}

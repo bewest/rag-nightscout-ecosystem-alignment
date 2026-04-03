@@ -1,0 +1,24 @@
+{
+  "experiment": "EXP-166",
+  "name": "volatile-specialist",
+  "results": {
+    "general": {
+      "overall_mae": 1.4596394847947325,
+      "volatile_mae": 1.8682023073704448,
+      "calm_mae": 1.1883126752287438
+    },
+    "specialist": {
+      "overall_mae": 0.6535776474579414,
+      "volatile_mae": 0.7523634687396191,
+      "calm_mae": 0.5879739333989632
+    },
+    "routed": {
+      "overall_mae": 1.0143361564805102
+    },
+    "volatile_pct_train": 38.639781007826656,
+    "volatile_pct_val": 39.907478797224364,
+    "n_train_volatile": 10022,
+    "n_val_volatile": 2588,
+    "volatility_threshold": 0.15
+  }
+}

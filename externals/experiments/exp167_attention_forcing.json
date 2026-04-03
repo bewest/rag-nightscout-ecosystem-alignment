@@ -1,0 +1,130 @@
+{
+  "experiment": "EXP-167",
+  "name": "attention-forcing",
+  "results": {
+    "configs": {
+      "standard": {
+        "mae_mgdl": 1.4596394847947325,
+        "mask_prob": 0.0,
+        "feature_importance": {
+          "glucose": {
+            "ablated_mae": 154.30582384253125,
+            "importance_pct": 10471.502446320237
+          },
+          "iob": {
+            "ablated_mae": 1.4876971346527468,
+            "importance_pct": 1.9222314927963193
+          },
+          "cob": {
+            "ablated_mae": 1.5260633274020525,
+            "importance_pct": 4.550701957522145
+          },
+          "delta": {
+            "ablated_mae": 1.5008246638235043,
+            "importance_pct": 2.8215994057302214
+          },
+          "bolus": {
+            "ablated_mae": 1.4570876866372255,
+            "importance_pct": -0.17482386466585637
+          },
+          "carbs": {
+            "ablated_mae": 1.4536618365324792,
+            "importance_pct": -0.40952908745778155
+          },
+          "basal": {
+            "ablated_mae": 1.67627216702836,
+            "importance_pct": 14.841519737600983
+          },
+          "rate": {
+            "ablated_mae": 1.6486352343572745,
+            "importance_pct": 12.948111607786517
+          }
+        },
+        "glucose_dominance_pct": 99.65264747423308,
+        "best_val_loss": 2.535647185782984e-05
+      },
+      "mask_30pct": {
+        "mae_mgdl": 3.127587499057257,
+        "mask_prob": 0.3,
+        "feature_importance": {
+          "glucose": {
+            "ablated_mae": 32.50930284173162,
+            "importance_pct": 939.4370373820345
+          },
+          "iob": {
+            "ablated_mae": 3.603165346379453,
+            "importance_pct": 15.205900633173282
+          },
+          "cob": {
+            "ablated_mae": 3.638916746015507,
+            "importance_pct": 16.348998936476733
+          },
+          "delta": {
+            "ablated_mae": 3.236566762696254,
+            "importance_pct": 3.484451311812905
+          },
+          "bolus": {
+            "ablated_mae": 3.125903689135196,
+            "importance_pct": -0.05383734020449949
+          },
+          "carbs": {
+            "ablated_mae": 3.11945123802387,
+            "importance_pct": -0.2601449531256704
+          },
+          "basal": {
+            "ablated_mae": 3.2701949808536903,
+            "importance_pct": 4.559664017055295
+          },
+          "rate": {
+            "ablated_mae": 3.258738815554676,
+            "importance_pct": 4.193370018806881
+          }
+        },
+        "glucose_dominance_pct": 95.5765876845186,
+        "best_val_loss": 0.0001320470272570246
+      },
+      "mask_50pct": {
+        "mae_mgdl": 3.985037616150326,
+        "mask_prob": 0.5,
+        "feature_importance": {
+          "glucose": {
+            "ablated_mae": 31.836213342514174,
+            "importance_pct": 698.8936720067645
+          },
+          "iob": {
+            "ablated_mae": 4.594024603301288,
+            "importance_pct": 15.281837859770645
+          },
+          "cob": {
+            "ablated_mae": 4.871750113223274,
+            "importance_pct": 22.251044594393075
+          },
+          "delta": {
+            "ablated_mae": 4.217208577011214,
+            "importance_pct": 5.826066984159932
+          },
+          "bolus": {
+            "ablated_mae": 3.9711315201107626,
+            "importance_pct": -0.34895771079313226
+          },
+          "carbs": {
+            "ablated_mae": 3.9628062006808955,
+            "importance_pct": -0.5578721610890787
+          },
+          "basal": {
+            "ablated_mae": 4.1261692434373165,
+            "importance_pct": 3.5415381454624293
+          },
+          "rate": {
+            "ablated_mae": 4.0460056696107225,
+            "importance_pct": 1.5299241646630566
+          }
+        },
+        "glucose_dominance_pct": 93.63310780541052,
+        "best_val_loss": 0.00021272215092846868
+      }
+    },
+    "n_train": 25937,
+    "n_val": 6485
+  }
+}
