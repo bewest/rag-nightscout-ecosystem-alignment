@@ -1319,7 +1319,8 @@ class TestStateTracker(unittest.TestCase):
     def test_pattern_state_machine_transition(self):
         """State machine detects transition to resistance."""
         from tools.cgmencode.state_tracker import ISFCRTracker, DriftDetector, PatternStateMachine
-        tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0, process_noise=0.5)
+        tracker = ISFCRTracker(nominal_isf=40.0, nominal_cr=10.0,
+                               process_noise=0.5, measurement_noise=5.0)
         detector = DriftDetector(tracker, drift_threshold_pct=15.0, min_observations=5)
         psm = PatternStateMachine(detector, min_confidence=0.1)
 

@@ -51,7 +51,7 @@ from .evaluate import (
     time_in_range,
 )
 from .experiment_lib import load_patient_profile
-from .state_tracker import ISFCRTracker, DriftDetector
+from .state_tracker import DriftDetector  # ISFCRTracker removed — use sliding median
 
 GLUCOSE_SCALE = NORMALIZATION_SCALES['glucose']
 

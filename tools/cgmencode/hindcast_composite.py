@@ -5,7 +5,7 @@ Extends hindcast.py with modes that compose multiple agentic modules into
 end-to-end evaluations:
 
   decision      Full agentic chain: detect → track → forecast → simulate → bound
-  drift-scan    Rank windows by Kalman ISF/CR drift, cross-ref with anomaly
+  drift-scan    Rank windows by autosens-style ISF/CR drift, cross-ref with anomaly
   calibration   MC-dropout coverage at multiple confidence levels
 
 These reuse hindcast's data loading, model loading, and window selection.
@@ -41,7 +41,7 @@ from .hindcast import (
     compute_physics_baseline, make_residual_input, format_glucose, sparkline,
 )
 from .real_data_adapter import build_nightscout_grid
-from .state_tracker import ISFCRTracker, DriftDetector, PatternStateMachine
+from .state_tracker import DriftDetector, PatternStateMachine
 from .uncertainty import mc_predict, hypo_probability, hyper_probability, prediction_interval
 from .forecast import HierarchicalForecaster, ScenarioSimulator
 from .evaluate import clinical_summary, override_accuracy
@@ -61,7 +61,7 @@ def run_decision(model, features, df, center_idx, history=12, horizon=12,
 
     Pipeline:
         1. Event classification (if classifier available)
-        2. ISF/CR drift tracking via Kalman filter
+        2. ISF/CR drift tracking via autosens sliding median
         3. Multi-resolution forecast via HierarchicalForecaster
         4. Scenario simulation for top detected events
         5. MC-Dropout uncertainty bounds
@@ -228,46 +228,108 @@ def run_decision(model, features, df, center_idx, history=12, horizon=12,
     return result
 
 
+_AUTOSENS_MIN = 0.7
+_AUTOSENS_MAX = 1.2
+_COB_EXCLUSION_G = 0.5
+_LOW_BG_MGDL = 80.0
+
+
+def _compute_drift_at_index(features, center_idx, isf, cr):
+    """Compute autosens-style drift using a sliding median of ISF-normalized
+    deviations over the 24h preceding *center_idx*.
+
+    Replaces ISFCRTracker (Kalman R=5 saturates instantly).  Algorithm
+    mirrors oref0 autosens and generate_aux_labels._generate_drift_labels().
+    """
+    glucose_scale = GLUCOSE_SCALE
+    iob_scale = NORMALIZATION_SCALES['iob']
+    cob_scale = NORMALIZATION_SCALES['cob']
+
+    lookback = min(center_idx, 288)  # up to 24h at 5-min steps
+    start = center_idx - lookback
+    deviations = []
+
+    for i in range(max(1, start), center_idx):
+        g_now = features[i, IDX_GLUCOSE] * glucose_scale
+        g_prev = features[i - 1, IDX_GLUCOSE] * glucose_scale
+        if np.isnan(g_now) or np.isnan(g_prev):
+            continue
+
+        iob_delta = float((features[i, IDX_IOB] - features[i - 1, IDX_IOB]) * iob_scale)
+        cob_delta = float((features[i, IDX_COB] - features[i - 1, IDX_COB]) * cob_scale)
+        cob_now = float(features[i, IDX_COB] * cob_scale)
+
+        # Meal exclusion
+        if cob_now > _COB_EXCLUSION_G:
+            continue
+
+        physics_pred = -iob_delta * isf + cob_delta * (isf / cr)
+        residual = (g_now - g_prev) - physics_pred
+
+        # Low BG protection
+        if g_now < _LOW_BG_MGDL and residual > 0:
+            residual = 0.0
+
+        deviations.append(residual / isf)
+
+    if len(deviations) < 12:
+        return {
+            'classification': {'state': 'unknown', 'description': 'Insufficient data',
+                               'autosens_ratio': 1.0, 'confidence': 0.0},
+            'suggested_override': None,
+            'n_observations': len(deviations),
+            'final_isf_drift_pct': 0.0,
+            'final_cr_drift_pct': 0.0,
+        }
+
+    median_dev = float(np.median(deviations))
+    isf_ratio = float(np.clip(1.0 + median_dev, _AUTOSENS_MIN, _AUTOSENS_MAX))
+    isf_pct = (isf_ratio - 1.0) * 100.0
+    cr_pct = isf_pct  # oref0 mirrors ISF→CR
+
+    if isf_pct < -10.0:
+        state = 'resistance'
+    elif isf_pct > 10.0:
+        state = 'sensitivity'
+    else:
+        state = 'stable'
+
+    confidence = min(1.0, len(deviations) / 144)
+
+    classification = {
+        'state': state,
+        'description': f'{state} (autosens ratio {isf_ratio:.2f})',
+        'autosens_ratio': isf_ratio,
+        'isf_drift_pct': isf_pct,
+        'cr_drift_pct': cr_pct,
+        'confidence': confidence,
+    }
+
+    suggested_override = None
+    if state != 'stable' and confidence >= 0.3:
+        insulin_needs = 1.0 / isf_ratio
+        suggested_override = {
+            'type': 'sick' if state == 'resistance' else 'exercise_recovery',
+            'insulin_needs_factor': round(insulin_needs, 2),
+            'autosens_ratio': isf_ratio,
+            'confidence': confidence,
+            'duration_hours': 2,
+        }
+
+    return {
+        'classification': classification,
+        'suggested_override': suggested_override,
+        'n_observations': len(deviations),
+        'final_isf_drift_pct': round(isf_pct, 1),
+        'final_cr_drift_pct': round(cr_pct, 1),
+    }
+
+
 def _run_drift_for_window(features, df, center_idx, lookback_windows,
                           isf, cr, physics_level):
-    """Run ISF/CR drift tracker over recent windows leading up to center_idx."""
+    """Run autosens-style drift detection over recent data leading up to center_idx."""
     try:
-        tracker = ISFCRTracker(nominal_isf=isf, nominal_cr=cr)
-        detector = DriftDetector(tracker)
-
-        # Feed tracker with recent data (up to 24 hours before center)
-        n_recent = min(center_idx, 288)  # up to 288 steps = 24hr
-        stride = 6  # every 30 min
-        trajectory = []
-
-        for i in range(max(0, center_idx - n_recent), center_idx, stride):
-            if i + 1 >= len(features):
-                break
-            glucose_actual = features[i, IDX_GLUCOSE] * GLUCOSE_SCALE
-            glucose_prev = features[max(0, i - 1), IDX_GLUCOSE] * GLUCOSE_SCALE
-            iob_delta = float((features[i, IDX_IOB] - features[max(0, i - 1), IDX_IOB])
-                              * NORMALIZATION_SCALES['iob'])
-            cob_delta = float((features[i, IDX_COB] - features[max(0, i - 1), IDX_COB])
-                              * NORMALIZATION_SCALES['cob'])
-
-            # Physics prediction for this step
-            glucose_expected = glucose_prev - iob_delta * isf + cob_delta * isf / cr
-            residual = glucose_actual - glucose_expected
-
-            ts = str(df.index[i]) if i < len(df) else None
-            state = tracker.update(residual, iob_delta, cob_delta, timestamp=ts)
-            trajectory.append(state)
-
-        classification = detector.classify()
-        override = detector.suggested_override()
-
-        return {
-            'classification': classification,
-            'suggested_override': override,
-            'n_observations': len(trajectory),
-            'final_isf_drift_pct': trajectory[-1]['isf_drift_pct'] if trajectory else 0.0,
-            'final_cr_drift_pct': trajectory[-1]['cr_drift_pct'] if trajectory else 0.0,
-        }
+        return _compute_drift_at_index(features, center_idx, isf, cr)
     except Exception as e:
         return {'status': 'error', 'message': str(e)}
 
@@ -316,38 +378,30 @@ def run_drift_scan(model, features, df, profile=None,
     for ar in anomaly_results:
         anomaly_by_idx[ar['center_idx']] = ar.get('glucose_mae', 0.0)
 
-    # Step 2: Run drift tracker across all windows
-    tracker = ISFCRTracker(nominal_isf=_isf, nominal_cr=_cr)
+    # Step 2: Compute drift via sliding median at each scan point
     drift_results = []
 
     total_needed = history + horizon
     for center_idx in range(history, len(features) - horizon, stride):
-        # Feed a single observation to tracker
-        i = center_idx
-        glucose_actual = features[i, IDX_GLUCOSE] * GLUCOSE_SCALE
-        glucose_prev = features[max(0, i - 1), IDX_GLUCOSE] * GLUCOSE_SCALE
-        iob_delta = float((features[i, IDX_IOB] - features[max(0, i - 1), IDX_IOB])
-                          * NORMALIZATION_SCALES['iob'])
-        cob_delta = float((features[i, IDX_COB] - features[max(0, i - 1), IDX_COB])
-                          * NORMALIZATION_SCALES['cob'])
+        drift_info = _compute_drift_at_index(features, center_idx, _isf, _cr)
+        if drift_info.get('status') == 'error':
+            continue
 
-        glucose_expected = glucose_prev - iob_delta * _isf + cob_delta * _isf / _cr
-        residual_val = glucose_actual - glucose_expected
-
-        ts = str(df.index[i]) if i < len(df) else None
-        state = tracker.update(residual_val, iob_delta, cob_delta, timestamp=ts)
-
-        drift_mag = abs(state['isf_drift_pct']) + abs(state['cr_drift_pct'])
+        isf_pct = drift_info['final_isf_drift_pct']
+        cr_pct = drift_info['final_cr_drift_pct']
+        drift_mag = abs(isf_pct) + abs(cr_pct)
         anomaly_mae = anomaly_by_idx.get(center_idx, None)
+
+        classification = drift_info.get('classification', {})
 
         drift_results.append({
             'center_idx': center_idx,
             'time': str(df.index[center_idx]) if center_idx < len(df) else None,
-            'isf_drift_pct': round(state['isf_drift_pct'], 1),
-            'cr_drift_pct': round(state['cr_drift_pct'], 1),
+            'isf_drift_pct': round(isf_pct, 1),
+            'cr_drift_pct': round(cr_pct, 1),
             'drift_magnitude': round(drift_mag, 1),
-            'isf_estimate': round(state['isf'], 1),
-            'cr_estimate': round(state['cr'], 1),
+            'autosens_ratio': classification.get('autosens_ratio', 1.0),
+            'state': classification.get('state', 'unknown'),
             'anomaly_mae': round(anomaly_mae, 2) if anomaly_mae is not None else None,
             'co_occurrence': (drift_mag > 15 and anomaly_mae is not None
                               and anomaly_mae > np.median([a.get('glucose_mae', 0)
