@@ -1,0 +1,45 @@
+{
+  "experiment": "EXP-176",
+  "name": "xgb-event-balanced",
+  "results": {
+    "strategies": {
+      "weighted": {
+        "f1_macro": 0.5053257565683277,
+        "f1_weighted": 0.5952494562513855
+      },
+      "balanced": {
+        "f1_macro": 0.49845055759490503,
+        "f1_weighted": 0.5880768305542461
+      },
+      "balanced_weighted": {
+        "f1_macro": 0.5016526472844074,
+        "f1_weighted": 0.5939855301904473
+      }
+    },
+    "best_strategy": "weighted",
+    "best_f1_macro": 0.5053257565683277,
+    "n_classes": 6,
+    "label_map": {
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "5": 3,
+      "6": 4,
+      "8": 5
+    },
+    "top_features": {
+      "carbs_total": 0.2299792319536209,
+      "cob_now": 0.13910596072673798,
+      "bolus_total": 0.13124245405197144,
+      "net_basal_now": 0.12592709064483643,
+      "iob_now": 0.06289228051900864,
+      "hour_of_day": 0.06262771040201187,
+      "time_sin": 0.04082581028342247,
+      "glucose_max": 0.03146830201148987,
+      "time_cos": 0.026926983147859573,
+      "iob_change": 0.023001573979854584
+    },
+    "balanced_size": 251496,
+    "original_size": 477017
+  }
+}
