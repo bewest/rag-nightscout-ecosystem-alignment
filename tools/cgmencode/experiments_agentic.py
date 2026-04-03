@@ -10854,9 +10854,12 @@ def run_personalized_ensemble_finetuning(args):
     
     per_patient_results = {}
     for pid in patient_dirs:
-        p_path = os.path.join(patients_dir, pid)
+        # Use verification data for weight optimization (held-out from ensemble training)
+        p_verif_path = os.path.join(patients_dir, pid, 'verification')
+        if not os.path.isdir(p_verif_path):
+            continue
         try:
-            p_train, p_val = load_multipatient_nightscout([p_path], window_size=ws)
+            _, p_val = load_multipatient_nightscout([p_verif_path], window_size=ws)
         except Exception:
             continue
         if len(p_val) < 10:
