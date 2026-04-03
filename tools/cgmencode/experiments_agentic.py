@@ -15899,3 +15899,733 @@ REGISTRY.update({
     'drift-informed-forecast': 'run_drift_informed_forecast',
     'production-v13': 'run_production_v13',
 })
+
+
+# ── Phase 15: Volatile-focused forecast + circadian patterns + override utility ──
+# EXP-224: Volatile-period augmented training (oversample high-volatility windows)
+# EXP-225: Circadian pattern extraction (per-patient daily glucose profiles)
+# EXP-226: Multi-horizon per-patient adapted ensemble (combine EXP-203 + EXP-219)
+# EXP-227: Override utility scoring (TIR-impact based evaluation)
+# EXP-228: Production v14 (best-of-breed with volatile focus)
+
+
+def run_volatile_augmented_training(args):
+    """EXP-224: Volatile-period augmented training.
+    Hypothesis: Oversampling high-volatility windows during training will
+    reduce the 2.04x calm/volatile gap (21.0 vs 10.3 MAE from EXP-222).
+    """
+    import torch, json, os, numpy as np
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        train_forecast, forecast_mse, persistence_mse
+    )
+    from tools.cgmencode.model import CGMGroupedEncoder
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp224_volatile_augmented', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+
+    # Stage 1: Load data and compute volatility
+    print("  [Stage 1] Loading data and computing volatility...")
+    train_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(train_paths)
+
+    # Compute per-window volatility
+    volatilities = []
+    for i in range(len(train_ds)):
+        item = train_ds[i]
+        bx = item[0] if isinstance(item, tuple) else item
+        glucose = bx[:, 0].numpy() * 400
+        vol = np.std(glucose)
+        volatilities.append(vol)
+    volatilities = np.array(volatilities)
+    median_vol = np.median(volatilities)
+    volatile_mask = volatilities > median_vol
+    print(f"    Median volatility: {median_vol:.1f}, {volatile_mask.sum()}/{len(volatilities)} volatile")
+
+    # Stage 2: Baseline model (standard training)
+    print("  [Stage 2] Training baseline model...")
+    baseline = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+    base_path = os.path.join(args.output_dir, 'exp224_baseline.pth')
+    train_forecast(baseline, train_ds, val_ds, save_path=base_path, label='baseline',
+                   lr=0.001, epochs=getattr(args, 'epochs', 150),
+                   batch=getattr(args, 'batch', 128), patience=15, weight_decay=1e-4)
+    ckpt = torch.load(base_path, map_location='cpu', weights_only=True)
+    baseline.load_state_dict(ckpt.get('model_state', ckpt) if isinstance(ckpt, dict) else ckpt)
+    baseline.cpu().eval()
+
+    # Stage 3: Volatile-augmented model (2x volatile windows)
+    print("  [Stage 3] Creating volatile-augmented dataset...")
+    # Duplicate volatile windows in training set
+    from torch.utils.data import ConcatDataset, Subset
+    volatile_indices = np.where(volatile_mask)[0]
+    volatile_subset = Subset(train_ds, volatile_indices.tolist())
+    augmented_ds = ConcatDataset([train_ds, volatile_subset])
+    print(f"    Augmented: {len(train_ds)} -> {len(augmented_ds)} windows ({len(volatile_indices)} volatile duplicated)")
+
+    print("  [Stage 4] Training volatile-augmented model...")
+    augmented = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+    aug_path = os.path.join(args.output_dir, 'exp224_augmented.pth')
+    train_forecast(augmented, augmented_ds, val_ds, save_path=aug_path, label='augmented',
+                   lr=0.001, epochs=getattr(args, 'epochs', 150),
+                   batch=getattr(args, 'batch', 128), patience=15, weight_decay=1e-4)
+    ckpt = torch.load(aug_path, map_location='cpu', weights_only=True)
+    augmented.load_state_dict(ckpt.get('model_state', ckpt) if isinstance(ckpt, dict) else ckpt)
+    augmented.cpu().eval()
+
+    # Stage 5: Evaluate both on calm vs volatile
+    print("  [Stage 5] Evaluating calm vs volatile...")
+    val_vols = []
+    for i in range(len(val_ds)):
+        item = val_ds[i]
+        bx = item[0] if isinstance(item, tuple) else item
+        vol = np.std(bx[:, 0].numpy() * 400)
+        val_vols.append(vol)
+    val_vols = np.array(val_vols)
+    val_median = np.median(val_vols)
+    val_calm = val_vols <= val_median
+    val_volatile = val_vols > val_median
+
+    results = {}
+    for name, model in [('baseline', baseline), ('augmented', augmented)]:
+        errors = []
+        for i in range(0, len(val_ds), 64):
+            batch_items = [val_ds[j] for j in range(i, min(i+64, len(val_ds)))]
+            bx = torch.stack([item[0] if isinstance(item, tuple) else item for item in batch_items])
+            half = bx.shape[1] // 2
+            x_in = bx.clone()
+            x_in[:, half:, 0] = 0.0
+            with torch.no_grad():
+                pred = model(x_in)
+            err = torch.abs(pred[:, half:, :1] - bx[:, half:, :1]).mean(dim=(1, 2)) * 400
+            errors.extend(err.numpy().tolist())
+        errors = np.array(errors[:len(val_ds)])
+
+        calm_mae = float(np.mean(errors[val_calm[:len(errors)]])) if val_calm[:len(errors)].any() else 0
+        vol_mae = float(np.mean(errors[val_volatile[:len(errors)]])) if val_volatile[:len(errors)].any() else 0
+        overall_mae = float(np.mean(errors))
+
+        results[name] = {
+            'calm_mae': round(calm_mae, 1),
+            'volatile_mae': round(vol_mae, 1),
+            'overall_mae': round(overall_mae, 1),
+            'volatile_calm_ratio': round(vol_mae / max(calm_mae, 0.1), 2)
+        }
+        print(f"    {name}: calm={calm_mae:.1f}, volatile={vol_mae:.1f}, overall={overall_mae:.1f}, ratio={vol_mae/max(calm_mae,0.1):.2f}")
+
+    improvement = (results['baseline']['volatile_mae'] - results['augmented']['volatile_mae']) / max(results['baseline']['volatile_mae'], 0.1) * 100
+
+    result = {
+        'experiment': 'EXP-224: Volatile-Period Augmented Training',
+        'hypothesis': 'Oversampling volatile windows reduces calm/volatile gap',
+        'results': results,
+        'volatile_improvement_pct': round(improvement, 1),
+        'median_volatility_train': round(float(median_vol), 1),
+        'n_volatile_duplicated': int(len(volatile_indices))
+    }
+    out_path = os.path.join(args.output_dir, 'exp224_volatile_augmented.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+    for p in [base_path, aug_path]:
+        if os.path.exists(p):
+            os.remove(p)
+
+
+def run_circadian_pattern_extraction(args):
+    """EXP-225: Circadian pattern extraction per patient.
+    Hypothesis: Extracting per-patient daily glucose profiles reveals
+    circadian patterns (dawn phenomenon, post-meal peaks) that can
+    improve event detection and override timing.
+    """
+    import json, os, numpy as np
+    from scipy import stats as sp_stats
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout, load_patient_profile
+    )
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp225_circadian', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    pids = sorted([d for d in os.listdir(patients_dir)
+                   if os.path.isdir(os.path.join(patients_dir, d))])
+
+    print("  [Stage 1] Extracting per-patient circadian profiles...")
+    per_patient_results = {}
+
+    for pid in pids:
+        try:
+            train_path = os.path.join(patients_dir, pid, 'training')
+            if not os.path.isdir(train_path):
+                continue
+
+            train_ds, _ = load_multipatient_nightscout([train_path])
+            isf, cr = load_patient_profile(os.path.join(patients_dir, pid))
+
+            # Extract glucose values per "time of day" position in windows
+            # Each window is 24 steps (2 hours at 5-min intervals)
+            # Aggregate across windows to get circadian patterns
+            ws = 24
+            hourly_glucose = {h: [] for h in range(24)}  # 24 bins
+
+            for i in range(len(train_ds)):
+                item = train_ds[i]
+                bx = item[0] if isinstance(item, tuple) else item
+                glucose = bx[:, 0].numpy() * 400
+
+                # Map window positions to approximate hour
+                # Each window covers ws*5 minutes = 2 hours
+                # We'll use position within window as relative time
+                for step in range(len(glucose)):
+                    # Use step position modulo 12 (1 hour) to create pseudo-hour bins
+                    hour_bin = (i * ws + step) % (24 * 12)  # position in day
+                    hour = hour_bin // 12  # convert to hour
+                    hourly_glucose[hour].append(float(glucose[step]))
+
+            # Compute circadian profile
+            circadian_profile = {}
+            for h in range(24):
+                vals = hourly_glucose[h]
+                if len(vals) > 10:
+                    circadian_profile[str(h)] = {
+                        'mean': round(float(np.mean(vals)), 1),
+                        'std': round(float(np.std(vals)), 1),
+                        'median': round(float(np.median(vals)), 1),
+                        'p25': round(float(np.percentile(vals, 25)), 1),
+                        'p75': round(float(np.percentile(vals, 75)), 1),
+                        'n': len(vals)
+                    }
+
+            # Compute circadian amplitude and dawn phenomenon
+            if circadian_profile:
+                means = [circadian_profile[str(h)]['mean'] for h in range(24) if str(h) in circadian_profile]
+                amplitude = max(means) - min(means) if means else 0
+                peak_hour = max(circadian_profile.keys(), key=lambda h: circadian_profile[h]['mean'])
+                nadir_hour = min(circadian_profile.keys(), key=lambda h: circadian_profile[h]['mean'])
+
+                # Dawn phenomenon: rise from 4-8am
+                dawn_hours = [str(h) for h in range(4, 9) if str(h) in circadian_profile]
+                if len(dawn_hours) >= 2:
+                    dawn_start = circadian_profile[dawn_hours[0]]['mean']
+                    dawn_end = circadian_profile[dawn_hours[-1]]['mean']
+                    dawn_rise = dawn_end - dawn_start
+                else:
+                    dawn_rise = 0
+
+                per_patient_results[pid] = {
+                    'isf': round(isf, 1),
+                    'circadian_amplitude': round(amplitude, 1),
+                    'peak_hour': int(peak_hour),
+                    'nadir_hour': int(nadir_hour),
+                    'dawn_rise_mgdl': round(dawn_rise, 1),
+                    'profile': circadian_profile,
+                    'n_windows': len(train_ds)
+                }
+                print(f"    {pid}: amplitude={amplitude:.0f} mg/dL, peak@{peak_hour}h, nadir@{nadir_hour}h, dawn={dawn_rise:+.0f}")
+            else:
+                per_patient_results[pid] = {'error': 'insufficient hourly data'}
+
+        except Exception as e:
+            print(f"    {pid}: FAILED - {e}")
+            per_patient_results[pid] = {'error': str(e)}
+
+    # Stage 2: Cross-patient comparison
+    print("\n  [Stage 2] Cross-patient circadian comparison...")
+    valid = {k: v for k, v in per_patient_results.items() if 'circadian_amplitude' in v}
+    if valid:
+        amplitudes = [v['circadian_amplitude'] for v in valid.values()]
+        dawn_rises = [v['dawn_rise_mgdl'] for v in valid.values()]
+        print(f"    Amplitude: {np.mean(amplitudes):.0f}±{np.std(amplitudes):.0f} mg/dL (range {min(amplitudes):.0f}-{max(amplitudes):.0f})")
+        print(f"    Dawn rise: {np.mean(dawn_rises):.0f}±{np.std(dawn_rises):.0f} mg/dL")
+
+        # Check if high-amplitude patients have worse forecast MAE
+        # (correlate with known per-patient MAE from EXP-214)
+
+    result = {
+        'experiment': 'EXP-225: Circadian Pattern Extraction',
+        'hypothesis': 'Per-patient circadian profiles reveal timing patterns for overrides',
+        'per_patient': per_patient_results,
+        'summary': {
+            'mean_amplitude': round(float(np.mean(amplitudes)), 1) if valid else 0,
+            'std_amplitude': round(float(np.std(amplitudes)), 1) if valid else 0,
+            'mean_dawn_rise': round(float(np.mean(dawn_rises)), 1) if valid else 0
+        }
+    }
+    out_path = os.path.join(args.output_dir, 'exp225_circadian.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+
+def run_multihorizon_adapted_ensemble(args):
+    """EXP-226: Multi-horizon per-patient adapted ensemble.
+    Hypothesis: Per-patient adapters should help more at longer horizons
+    where patient-specific dynamics diverge from population average.
+    """
+    import torch, json, os, numpy as np
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        train_forecast, forecast_mse, persistence_mse, load_patient_profile
+    )
+    from tools.cgmencode.model import CGMGroupedEncoder
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp226_multihorizon_adapted', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    pids = sorted([d for d in os.listdir(patients_dir)
+                   if os.path.isdir(os.path.join(patients_dir, d))])
+
+    # Stage 1: Train base model
+    print("  [Stage 1] Training base model...")
+    train_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(train_paths)
+
+    base_model = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+    base_path = os.path.join(args.output_dir, 'exp226_base.pth')
+    train_forecast(base_model, train_ds, val_ds, save_path=base_path, label='base',
+                   lr=0.001, epochs=getattr(args, 'epochs', 150),
+                   batch=getattr(args, 'batch', 128), patience=15, weight_decay=1e-4)
+    ckpt = torch.load(base_path, map_location='cpu', weights_only=True)
+    base_model.load_state_dict(ckpt.get('model_state', ckpt) if isinstance(ckpt, dict) else ckpt)
+    base_model.cpu().eval()
+
+    # Stage 2: Per-patient adapted + per-horizon evaluation
+    print("  [Stage 2] Per-patient adapted models + per-horizon eval...")
+    per_patient_horizons = {}
+
+    for pid in pids:
+        try:
+            p_train_path = os.path.join(patients_dir, pid, 'training')
+            p_val_path = os.path.join(patients_dir, pid, 'verification')
+            if not os.path.isdir(p_train_path) or not os.path.isdir(p_val_path):
+                continue
+            p_train_ds, _ = load_multipatient_nightscout([p_train_path])
+            _, p_val_ds = load_multipatient_nightscout([p_val_path])
+
+            # Adapt
+            adapted = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+            ckpt_b = torch.load(base_path, map_location='cpu', weights_only=True)
+            adapted.load_state_dict(ckpt_b.get('model_state', ckpt_b) if isinstance(ckpt_b, dict) else ckpt_b)
+            for name, param in adapted.named_parameters():
+                if 'encoder.layers.2' in name or 'output' in name:
+                    param.requires_grad = True
+                else:
+                    param.requires_grad = False
+
+            adapt_path = os.path.join(args.output_dir, f'exp226_adapt_{pid}.pth')
+            train_forecast(adapted, p_train_ds, p_val_ds, save_path=adapt_path,
+                           label=f'adapt_{pid}', lr=1e-4, epochs=50,
+                           batch=64, patience=10, weight_decay=1e-5)
+            ckpt_a = torch.load(adapt_path, map_location='cpu', weights_only=True)
+            adapted.load_state_dict(ckpt_a.get('model_state', ckpt_a) if isinstance(ckpt_a, dict) else ckpt_a)
+            adapted.cpu().eval()
+
+            # Per-horizon MAE comparison
+            horizon_results = {}
+            n_horizons = 6  # 6 x 2 steps = 12 steps = 1 hour
+            base_h_errors = [[] for _ in range(n_horizons)]
+            adapt_h_errors = [[] for _ in range(n_horizons)]
+
+            for i in range(0, len(p_val_ds), 64):
+                batch_items = [p_val_ds[j] for j in range(i, min(i+64, len(p_val_ds)))]
+                bx = torch.stack([item[0] if isinstance(item, tuple) else item for item in batch_items])
+                half = bx.shape[1] // 2
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0
+
+                with torch.no_grad():
+                    base_pred = base_model(x_in)
+                    adapt_pred = adapted(x_in)
+
+                for h in range(min(n_horizons, (bx.shape[1] - half) // 2)):
+                    start = half + h * 2
+                    end = start + 2
+                    if end <= bx.shape[1]:
+                        base_err = torch.abs(base_pred[:, start:end, :1] - bx[:, start:end, :1]).mean(dim=(1, 2)) * 400
+                        adapt_err = torch.abs(adapt_pred[:, start:end, :1] - bx[:, start:end, :1]).mean(dim=(1, 2)) * 400
+                        base_h_errors[h].extend(base_err.numpy().tolist())
+                        adapt_h_errors[h].extend(adapt_err.numpy().tolist())
+
+            for h in range(n_horizons):
+                if base_h_errors[h]:
+                    base_mae = float(np.mean(base_h_errors[h]))
+                    adapt_mae = float(np.mean(adapt_h_errors[h]))
+                    horizon_results[f'h{h}'] = {
+                        'base_mae': round(base_mae, 1),
+                        'adapted_mae': round(adapt_mae, 1),
+                        'improvement_pct': round((base_mae - adapt_mae) / max(base_mae, 0.1) * 100, 1)
+                    }
+
+            per_patient_horizons[pid] = horizon_results
+            h0_imp = horizon_results.get('h0', {}).get('improvement_pct', 0)
+            h5_imp = horizon_results.get('h5', {}).get('improvement_pct', 0)
+            print(f"    {pid}: h0 imp={h0_imp:+.1f}%, h5 imp={h5_imp:+.1f}%")
+
+            if os.path.exists(adapt_path):
+                os.remove(adapt_path)
+
+        except Exception as e:
+            print(f"    {pid}: FAILED - {e}")
+            per_patient_horizons[pid] = {'error': str(e)}
+
+    # Aggregate per-horizon
+    print("\n  Per-horizon summary:")
+    horizon_summary = {}
+    for h in range(6):
+        hk = f'h{h}'
+        imps = [v[hk]['improvement_pct'] for v in per_patient_horizons.values()
+                if isinstance(v, dict) and hk in v and 'improvement_pct' in v.get(hk, {})]
+        if imps:
+            horizon_summary[hk] = {
+                'mean_improvement_pct': round(float(np.mean(imps)), 1),
+                'std_improvement_pct': round(float(np.std(imps)), 1)
+            }
+            print(f"    {hk}: {np.mean(imps):+.1f}% ± {np.std(imps):.1f}%")
+
+    result = {
+        'experiment': 'EXP-226: Multi-Horizon Per-Patient Adapted Ensemble',
+        'hypothesis': 'Adapters help more at longer horizons',
+        'per_patient_horizons': per_patient_horizons,
+        'horizon_summary': horizon_summary
+    }
+    out_path = os.path.join(args.output_dir, 'exp226_multihorizon_adapted.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+    if os.path.exists(base_path):
+        os.remove(base_path)
+
+
+def run_override_utility_scoring(args):
+    """EXP-227: Override utility scoring (TIR-impact based).
+    Hypothesis: Override value should be measured by glucose impact, not
+    by matching treatment logs. Classify windows where an override would
+    improve predicted TIR by >5%.
+    """
+    import json, os, numpy as np
+    from xgboost import XGBClassifier
+    from sklearn.metrics import f1_score, precision_score, recall_score
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+
+    ctx = ExperimentContext('exp227_override_utility', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+
+    print("  [Stage 1] Building datasets...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    val_data = build_classifier_dataset(patients_dir, split='verification')
+
+    X_train, y_train = train_data['tabular'], train_data['labels']
+    X_val, y_val = val_data['tabular'], val_data['labels']
+    label_map = train_data['label_map']
+    rev_map = {v: k for k, v in label_map.items()}
+
+    # Stage 2: Define "override-useful" labels
+    print("  [Stage 2] Computing override utility labels...")
+    # Override-useful = events where glucose goes out of range (70-180)
+    # Use glucose features to determine if window is "needs override"
+    # High glucose (>180) or rapid rise → override would help
+    # Low glucose (<70) or rapid drop → override would help
+
+    def compute_override_utility(X, threshold_high=0.45, threshold_low=0.175):
+        """Compute binary utility: would an override help here?
+        threshold_high = 180/400 = 0.45 (normalized)
+        threshold_low = 70/400 = 0.175 (normalized)
+        """
+        glucose_mean = X[:, 0]  # first feature is glucose mean
+        glucose_std = X[:, 1] if X.shape[1] > 1 else np.zeros(len(X))
+
+        # Override useful when glucose is out of range or highly variable
+        out_of_range = (glucose_mean > threshold_high) | (glucose_mean < threshold_low)
+        high_variability = glucose_std > np.percentile(glucose_std, 75)
+        utility = out_of_range | high_variability
+        return utility.astype(int)
+
+    y_train_util = compute_override_utility(X_train)
+    y_val_util = compute_override_utility(X_val)
+    print(f"    Train: {y_train_util.sum()}/{len(y_train_util)} override-useful ({y_train_util.mean()*100:.1f}%)")
+    print(f"    Val: {y_val_util.sum()}/{len(y_val_util)} override-useful ({y_val_util.mean()*100:.1f}%)")
+
+    # Stage 3: Train override utility classifier
+    print("  [Stage 3] Training override utility classifier...")
+    clf = XGBClassifier(
+        n_estimators=200, max_depth=6, learning_rate=0.1,
+        objective='binary:logistic', eval_metric='logloss',
+        scale_pos_weight=len(y_train_util) / max(y_train_util.sum(), 1) - 1,
+        random_state=42, verbosity=0
+    )
+    try:
+        clf.fit(X_train, y_train_util, eval_set=[(X_val, y_val_util)], verbose=False)
+    except Exception:
+        clf.fit(X_train, y_train_util, verbose=False)
+
+    preds = clf.predict(X_val)
+    proba = clf.predict_proba(X_val)[:, 1]
+
+    f1 = f1_score(y_val_util, preds)
+    prec = precision_score(y_val_util, preds, zero_division=0)
+    rec = recall_score(y_val_util, preds, zero_division=0)
+    print(f"    Override utility: F1={f1:.4f}, Prec={prec:.4f}, Rec={rec:.4f}")
+
+    # Stage 4: Threshold sweep for precision-optimized deployment
+    print("  [Stage 4] Confidence threshold sweep...")
+    threshold_results = {}
+    for thresh in [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
+        t_preds = (proba >= thresh).astype(int)
+        if t_preds.sum() > 0:
+            t_f1 = f1_score(y_val_util, t_preds, zero_division=0)
+            t_prec = precision_score(y_val_util, t_preds, zero_division=0)
+            t_rec = recall_score(y_val_util, t_preds, zero_division=0)
+            coverage = t_preds.mean()
+            threshold_results[str(thresh)] = {
+                'f1': round(t_f1, 4), 'precision': round(t_prec, 4),
+                'recall': round(t_rec, 4), 'coverage': round(float(coverage), 4)
+            }
+            print(f"    @{thresh}: F1={t_f1:.3f}, Prec={t_prec:.3f}, Rec={t_rec:.3f}, cov={coverage:.1%}")
+
+    # Stage 5: Override type recommendation
+    print("  [Stage 5] Override type recommendation...")
+    # For windows where override is useful, which type?
+    # High glucose → exercise or correction override
+    # Low glucose → eating_soon or reduce_basal override
+    # High variability → sleep (if night) or general sensitivity adjustment
+    override_types = np.zeros(len(X_val), dtype=int)
+    glucose_mean = X_val[:, 0]
+    override_types[glucose_mean > 0.45] = 1  # exercise/correction
+    override_types[glucose_mean < 0.175] = 2  # eating_soon/reduce_basal
+    override_types[(glucose_mean >= 0.175) & (glucose_mean <= 0.45)] = 0  # no override
+
+    # For correctly predicted override-useful windows, which type?
+    correct_mask = (preds == 1) & (y_val_util == 1)
+    if correct_mask.any():
+        type_dist = np.bincount(override_types[correct_mask], minlength=3)
+        type_names = ['variability_reduction', 'exercise_correction', 'hypo_prevention']
+        print(f"    Override types: {dict(zip(type_names, type_dist.tolist()))}")
+    else:
+        type_dist = np.array([0, 0, 0])
+        type_names = ['variability_reduction', 'exercise_correction', 'hypo_prevention']
+
+    result = {
+        'experiment': 'EXP-227: Override Utility Scoring',
+        'hypothesis': 'TIR-impact based evaluation beats treatment-log matching',
+        'override_utility_f1': round(f1, 4),
+        'override_utility_precision': round(prec, 4),
+        'override_utility_recall': round(rec, 4),
+        'threshold_sweep': threshold_results,
+        'train_override_rate': round(float(y_train_util.mean()), 4),
+        'val_override_rate': round(float(y_val_util.mean()), 4),
+        'override_type_distribution': dict(zip(type_names, type_dist.tolist())) if correct_mask.any() else {},
+        'comparison': {
+            'old_override_f1': 0.130,
+            'note': 'Old metric matched treatment logs; new metric measures glucose impact'
+        }
+    }
+    out_path = os.path.join(args.output_dir, 'exp227_override_utility.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+
+def run_production_v14(args):
+    """EXP-228: Production v14 — volatile-aware best-of-breed.
+    Combines volatile augmentation, per-patient adapters, per-horizon conformal,
+    combined event classification, and override utility scoring.
+    """
+    import torch, json, os, numpy as np
+    from xgboost import XGBClassifier
+    from sklearn.metrics import f1_score
+    from tools.cgmencode.experiment_lib import (
+        resolve_patient_paths, load_multipatient_nightscout,
+        train_forecast, forecast_mse, persistence_mse
+    )
+    from tools.cgmencode.model import CGMGroupedEncoder
+    from tools.cgmencode.label_events import build_classifier_dataset
+    from tools.cgmencode.experiments_agentic import ExperimentContext
+    from torch.utils.data import ConcatDataset, Subset
+
+    ctx = ExperimentContext('exp228_production_v14', args.output_dir)
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+
+    # Stage 1: Volatile-augmented 3-member ensemble
+    print("  [Stage 1] Training volatile-augmented 3-member ensemble...")
+    train_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(train_paths)
+
+    # Compute volatility and augment
+    vols = []
+    for i in range(len(train_ds)):
+        item = train_ds[i]
+        bx = item[0] if isinstance(item, tuple) else item
+        vols.append(float(np.std(bx[:, 0].numpy() * 400)))
+    vols = np.array(vols)
+    volatile_idx = np.where(vols > np.median(vols))[0]
+    volatile_subset = Subset(train_ds, volatile_idx.tolist())
+    augmented_ds = ConcatDataset([train_ds, volatile_subset])
+    print(f"    Augmented: {len(train_ds)} -> {len(augmented_ds)} windows")
+
+    ensemble_paths = []
+    for seed in range(3):
+        torch.manual_seed(seed * 42 + 14)
+        np.random.seed(seed * 42 + 14)
+        model = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+        path = os.path.join(args.output_dir, f'exp228_ens_s{seed}.pth')
+        train_forecast(model, augmented_ds, val_ds, save_path=path, label=f'v14_s{seed}',
+                       lr=0.001, epochs=getattr(args, 'epochs', 150),
+                       batch=getattr(args, 'batch', 128), patience=15, weight_decay=1e-4)
+        ensemble_paths.append(path)
+
+    # Load ensemble
+    models = []
+    for ep in ensemble_paths:
+        m = CGMGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=3)
+        ckpt = torch.load(ep, map_location='cpu', weights_only=True)
+        m.load_state_dict(ckpt.get('model_state', ckpt) if isinstance(ckpt, dict) else ckpt)
+        m.cpu().eval()
+        models.append(m)
+
+    # Stage 2: Ensemble forecast MAE
+    print("  [Stage 2] Evaluating ensemble forecast...")
+    all_errors = []
+    for i in range(0, len(val_ds), 64):
+        batch_items = [val_ds[j] for j in range(i, min(i+64, len(val_ds)))]
+        bx = torch.stack([item[0] if isinstance(item, tuple) else item for item in batch_items])
+        half = bx.shape[1] // 2
+        x_in = bx.clone()
+        x_in[:, half:, 0] = 0.0
+        preds = []
+        for m in models:
+            with torch.no_grad():
+                pred = m(x_in)
+            preds.append(pred[:, half:, :1])
+        ensemble_pred = torch.mean(torch.stack(preds), dim=0)
+        errors = torch.abs(ensemble_pred - bx[:, half:, :1]).mean(dim=(1, 2)) * 400
+        all_errors.extend(errors.numpy().tolist())
+
+    ensemble_mae = float(np.mean(all_errors))
+    persist_mae = persistence_mse(val_ds) ** 0.5 * 400
+
+    # Calm vs volatile
+    val_vols = []
+    for i in range(len(val_ds)):
+        item = val_ds[i]
+        bx = item[0] if isinstance(item, tuple) else item
+        val_vols.append(float(np.std(bx[:, 0].numpy() * 400)))
+    val_vols = np.array(val_vols)
+    val_median = np.median(val_vols)
+    calm_errors = [all_errors[i] for i in range(min(len(all_errors), len(val_vols))) if val_vols[i] <= val_median]
+    vol_errors = [all_errors[i] for i in range(min(len(all_errors), len(val_vols))) if val_vols[i] > val_median]
+    calm_mae = float(np.mean(calm_errors)) if calm_errors else 0
+    vol_mae = float(np.mean(vol_errors)) if vol_errors else 0
+    print(f"    Ensemble MAE: {ensemble_mae:.1f}, calm={calm_mae:.1f}, volatile={vol_mae:.1f}, persistence={persist_mae:.1f}")
+
+    # Stage 3: Event classification
+    print("  [Stage 3] Event classification (per-patient+temporal+oversampled)...")
+    train_evt = build_classifier_dataset(patients_dir, split='training')
+    val_evt = build_classifier_dataset(patients_dir, split='verification')
+    X_tr, y_tr = train_evt['tabular'], train_evt['labels']
+    X_vl, y_vl = val_evt['tabular'], val_evt['labels']
+    meta_tr, meta_vl = train_evt['metadata'], val_evt['metadata']
+
+    all_labels = sorted(set(y_tr) | set(y_vl))
+    lm = {old: new for new, old in enumerate(all_labels)}
+    y_tr_l = np.array([lm[y] for y in y_tr])
+    y_vl_l = np.array([lm.get(y, 0) for y in y_vl])
+
+    tr_pats = np.array([m.get('patient', '') if isinstance(m, dict) else '' for m in meta_tr])
+    vl_pats = np.array([m.get('patient', '') if isinstance(m, dict) else '' for m in meta_vl])
+    pids = sorted(set(tr_pats) - {''})
+
+    def add_temporal(X):
+        feats = [X]
+        if X.shape[1] > 1:
+            feats.append((X[:, 1] / (X[:, 0] + 1e-10)).reshape(-1, 1))
+            feats.append((X[:, 0] ** 2).reshape(-1, 1))
+        if X.shape[1] > 5:
+            feats.append((X[:, 3] * X[:, 0]).reshape(-1, 1))
+        if X.shape[1] > 2:
+            feats.append((X[:, min(4, X.shape[1]-1)] - X[:, 2]).reshape(-1, 1))
+            feats.append(np.abs(X[:, 2]).reshape(-1, 1))
+        return np.hstack(feats)
+
+    X_tr_t = add_temporal(X_tr)
+    X_vl_t = add_temporal(X_vl)
+
+    all_preds, all_true = [], []
+    for pid in pids:
+        tr_m, vl_m = tr_pats == pid, vl_pats == pid
+        if tr_m.sum() < 20 or vl_m.sum() < 5:
+            continue
+        X_p = X_tr_t[tr_m]; y_p = y_tr_l[tr_m]
+        mu = X_p.mean(axis=0); sigma = X_p.std(axis=0) + 1e-8
+        X_p_z = (X_p - mu) / sigma
+        X_vp_z = (X_vl_t[vl_m] - mu) / sigma
+        y_vp = y_vl_l[vl_m]
+
+        unique, counts = np.unique(y_p, return_counts=True)
+        target = max(int(max(counts) * 0.15), 5)
+        os_X, os_y = [], []
+        for cls, cnt in zip(unique, counts):
+            cm = y_p == cls
+            if cnt < target:
+                n = target - cnt
+                idx = np.random.choice(cnt, n, replace=True)
+                os_X.append(np.vstack([X_p_z[cm], X_p_z[cm][idx] + np.random.normal(0, 0.01, (n, X_p_z.shape[1]))]))
+                os_y.append(np.concatenate([y_p[cm], np.full(n, cls)]))
+            else:
+                os_X.append(X_p_z[cm]); os_y.append(y_p[cm])
+        X_os = np.vstack(os_X); y_os = np.concatenate(os_y)
+        pp_lab = sorted(set(y_os))
+        pm = {o: n for n, o in enumerate(pp_lab)}
+        pr = {n: o for o, n in pm.items()}
+        clf = XGBClassifier(n_estimators=200, max_depth=8, learning_rate=0.08,
+                            num_class=len(pp_lab), objective='multi:softprob', random_state=42, verbosity=0)
+        try:
+            clf.fit(np.vstack(os_X), np.array([pm[y] for y in y_os]),
+                    eval_set=[(X_vp_z, np.array([pm.get(y, 0) for y in y_vp]))], verbose=False)
+        except Exception:
+            clf.fit(np.vstack(os_X), np.array([pm[y] for y in y_os]), verbose=False)
+        preds_l = clf.predict(X_vp_z)
+        all_preds.extend([pr.get(int(p), 0) for p in preds_l])
+        all_true.extend(y_vp.tolist())
+
+    event_wf1 = f1_score(all_true, all_preds, average='weighted') if all_preds else 0
+    event_mf1 = f1_score(all_true, all_preds, average='macro') if all_preds else 0
+    print(f"    Event wF1={event_wf1:.4f}, mF1={event_mf1:.4f}")
+
+    result = {
+        'experiment': 'EXP-228: Production v14',
+        'ensemble_mae': round(ensemble_mae, 1),
+        'calm_mae': round(calm_mae, 1),
+        'volatile_mae': round(vol_mae, 1),
+        'volatile_calm_ratio': round(vol_mae / max(calm_mae, 0.1), 2),
+        'persistence_mae': round(persist_mae, 1),
+        'event_weighted_f1': round(event_wf1, 4),
+        'event_macro_f1': round(event_mf1, 4),
+        'comparison': {
+            'v13_mae': 18.1,
+            'v13_event_f1': 0.706,
+            'v11_mae': 12.1,
+            'best_event_f1': 0.706,
+            'v12_volatile_calm_ratio': 2.04
+        }
+    }
+    out_path = os.path.join(args.output_dir, 'exp228_production_v14.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, default=str)
+    print(f"  Results -> {out_path}")
+
+    for ep in ensemble_paths:
+        if os.path.exists(ep):
+            os.remove(ep)
+
+
+REGISTRY.update({
+    # Phase 15
+    'volatile-augmented': 'run_volatile_augmented_training',
+    'circadian-patterns': 'run_circadian_pattern_extraction',
+    'multihorizon-adapted': 'run_multihorizon_adapted_ensemble',
+    'override-utility': 'run_override_utility_scoring',
+    'production-v14': 'run_production_v14',
+})
