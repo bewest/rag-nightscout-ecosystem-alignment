@@ -1301,6 +1301,193 @@ def run_personalization_assessment(patients_dir, **kwargs):
     return results
 
 
+# ─── Suite G: Device Lifecycle Stratified Analysis ─────────────────
+
+def run_device_lifecycle_analysis(patients_dir, **kwargs):
+    """EXP-128: Stratify glucose metrics by CAGE (cannula age) and SAGE
+    (sensor age) to quantify how device lifecycle affects data quality.
+
+    Hypotheses:
+    - Sensor accuracy peaks mid-life (days 2-7) and degrades at extremes
+    - Infusion site aging (>48h) correlates with increased glucose variability
+    - Sensor warmup windows (first 2h) have degraded accuracy
+
+    Returns dict with per-patient and aggregate stratified metrics.
+    """
+    patients_dir = str(patients_dir)
+    print('\nEXP-128: Device Lifecycle Stratified Analysis')
+    print('=' * 50)
+
+    # SAGE bins: warmup (0-2h), early (2-48h), peak (48-168h), late (168-240h), extended (>240h)
+    SAGE_BINS = [
+        ('warmup',   0,    2),
+        ('early',    2,   48),
+        ('peak',    48,  168),    # days 2-7
+        ('late',   168,  240),    # days 7-10
+        ('extended', 240, 9999),  # >10 days (sensor restart)
+    ]
+    # CAGE bins: fresh (0-24h), mid (24-48h), aging (48-72h), overdue (>72h)
+    CAGE_BINS = [
+        ('fresh',    0,   24),
+        ('mid',     24,   48),
+        ('aging',   48,   72),
+        ('overdue', 72, 9999),
+    ]
+
+    per_patient = {}
+    agg_sage = {b[0]: {'glucose_std': [], 'roc_std': [], 'n_steps': []} for b in SAGE_BINS}
+    agg_cage = {b[0]: {'glucose_std': [], 'roc_std': [], 'n_steps': []} for b in CAGE_BINS}
+
+    for pdir in _patient_dirs(patients_dir, 'verification'):
+        vpath = pdir / 'verification'
+        patient_name = pdir.name
+
+        grid_df, features = build_nightscout_grid(str(vpath))
+        if features is None or len(features) < 72:
+            continue
+
+        glucose_mgdl = features[:, IDX_GLUCOSE] * GLUCOSE_SCALE
+        roc = np.zeros(len(glucose_mgdl))
+        roc[1:] = np.diff(glucose_mgdl)
+
+        cage_hours = grid_df['cage_hours'].values if 'cage_hours' in grid_df.columns else None
+        sage_hours = grid_df['sage_hours'].values if 'sage_hours' in grid_df.columns else None
+        warmup = grid_df['sensor_warmup'].values if 'sensor_warmup' in grid_df.columns else None
+
+        patient_sage = {}
+        patient_cage = {}
+
+        # SAGE stratification
+        if sage_hours is not None:
+            for bin_name, lo, hi in SAGE_BINS:
+                mask = (~np.isnan(sage_hours)) & (sage_hours >= lo) & (sage_hours < hi) & (~np.isnan(glucose_mgdl))
+                n = int(mask.sum())
+                if n < 12:  # need at least 1 hour
+                    patient_sage[bin_name] = {'n_steps': n, 'glucose_std': None, 'roc_std': None}
+                    continue
+                g_std = float(np.std(glucose_mgdl[mask]))
+                r_std = float(np.std(roc[mask]))
+                g_mean = float(np.mean(glucose_mgdl[mask]))
+                tir = float(np.mean((glucose_mgdl[mask] >= 70) & (glucose_mgdl[mask] <= 180))) * 100
+                patient_sage[bin_name] = {
+                    'n_steps': n,
+                    'glucose_mean': round(g_mean, 1),
+                    'glucose_std': round(g_std, 1),
+                    'roc_std': round(r_std, 2),
+                    'tir_pct': round(tir, 1),
+                }
+                agg_sage[bin_name]['glucose_std'].append(g_std)
+                agg_sage[bin_name]['roc_std'].append(r_std)
+                agg_sage[bin_name]['n_steps'].append(n)
+
+        # CAGE stratification
+        if cage_hours is not None:
+            for bin_name, lo, hi in CAGE_BINS:
+                mask = (~np.isnan(cage_hours)) & (cage_hours >= lo) & (cage_hours < hi) & (~np.isnan(glucose_mgdl))
+                n = int(mask.sum())
+                if n < 12:
+                    patient_cage[bin_name] = {'n_steps': n, 'glucose_std': None, 'roc_std': None}
+                    continue
+                g_std = float(np.std(glucose_mgdl[mask]))
+                r_std = float(np.std(roc[mask]))
+                g_mean = float(np.mean(glucose_mgdl[mask]))
+                tir = float(np.mean((glucose_mgdl[mask] >= 70) & (glucose_mgdl[mask] <= 180))) * 100
+                patient_cage[bin_name] = {
+                    'n_steps': n,
+                    'glucose_mean': round(g_mean, 1),
+                    'glucose_std': round(g_std, 1),
+                    'roc_std': round(r_std, 2),
+                    'tir_pct': round(tir, 1),
+                }
+                agg_cage[bin_name]['glucose_std'].append(g_std)
+                agg_cage[bin_name]['roc_std'].append(r_std)
+                agg_cage[bin_name]['n_steps'].append(n)
+
+        # Warmup impact
+        warmup_impact = None
+        if warmup is not None:
+            wu_mask = (warmup > 0.5) & (~np.isnan(glucose_mgdl))
+            nwu_mask = (warmup < 0.5) & (~np.isnan(glucose_mgdl))
+            if wu_mask.sum() >= 6 and nwu_mask.sum() >= 12:
+                warmup_impact = {
+                    'warmup_glucose_std': round(float(np.std(glucose_mgdl[wu_mask])), 1),
+                    'normal_glucose_std': round(float(np.std(glucose_mgdl[nwu_mask])), 1),
+                    'warmup_roc_std': round(float(np.std(roc[wu_mask])), 2),
+                    'normal_roc_std': round(float(np.std(roc[nwu_mask])), 2),
+                    'warmup_n': int(wu_mask.sum()),
+                    'normal_n': int(nwu_mask.sum()),
+                }
+
+        per_patient[patient_name] = {
+            'sage_stratified': patient_sage,
+            'cage_stratified': patient_cage,
+            'warmup_impact': warmup_impact,
+        }
+
+        # Print summary
+        sage_summary = ' '.join(
+            f'{b}={patient_sage.get(b, {}).get("glucose_std", "?")}' for b, _, _ in SAGE_BINS
+        )
+        cage_summary = ' '.join(
+            f'{b}={patient_cage.get(b, {}).get("glucose_std", "?")}' for b, _, _ in CAGE_BINS
+        )
+        print(f'    {patient_name}: SAGE std=[{sage_summary}]  CAGE std=[{cage_summary}]')
+
+    # Aggregate across patients
+    sage_aggregate = {}
+    for bin_name in [b[0] for b in SAGE_BINS]:
+        vals = agg_sage[bin_name]
+        if vals['glucose_std']:
+            sage_aggregate[bin_name] = {
+                'mean_glucose_std': round(float(np.mean(vals['glucose_std'])), 1),
+                'mean_roc_std': round(float(np.mean(vals['roc_std'])), 2),
+                'total_steps': int(sum(vals['n_steps'])),
+                'n_patients': len(vals['glucose_std']),
+            }
+
+    cage_aggregate = {}
+    for bin_name in [b[0] for b in CAGE_BINS]:
+        vals = agg_cage[bin_name]
+        if vals['glucose_std']:
+            cage_aggregate[bin_name] = {
+                'mean_glucose_std': round(float(np.mean(vals['glucose_std'])), 1),
+                'mean_roc_std': round(float(np.mean(vals['roc_std'])), 2),
+                'total_steps': int(sum(vals['n_steps'])),
+                'n_patients': len(vals['glucose_std']),
+            }
+
+    # Trend analysis: does glucose_std increase with CAGE/SAGE?
+    sage_trend = [sage_aggregate.get(b[0], {}).get('mean_glucose_std') for b in SAGE_BINS]
+    cage_trend = [cage_aggregate.get(b[0], {}).get('mean_glucose_std') for b in CAGE_BINS]
+
+    aggregate = {
+        'sage_stratified': sage_aggregate,
+        'cage_stratified': cage_aggregate,
+        'sage_std_trend': [round(v, 1) if v else None for v in sage_trend],
+        'cage_std_trend': [round(v, 1) if v else None for v in cage_trend],
+        'n_patients': len(per_patient),
+    }
+
+    print(f'\n  SAGE glucose_std trend: {aggregate["sage_std_trend"]}')
+    print(f'  CAGE glucose_std trend: {aggregate["cage_std_trend"]}')
+
+    results = {
+        'status': 'ok',
+        'experiment': 'EXP-128',
+        'name': 'device-lifecycle-analysis',
+        'aggregate': aggregate,
+        'per_patient': per_patient,
+    }
+
+    out_path = 'externals/experiments/exp128_device_lifecycle.json'
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump(results, f, indent=2, cls=_NumpyEncoder)
+    print(f'  Results → {out_path}')
+
+    return results
+
+
 # ─── Orchestrator ──────────────────────────────────────────────────
 
 def run_all_suites(patients_dir, checkpoint_path=None, **kwargs):
@@ -1384,6 +1571,15 @@ def run_all_suites(patients_dir, checkpoint_path=None, **kwargs):
         traceback.print_exc()
         all_results['EXP-127'] = {'status': 'error', 'reason': str(e)}
 
+    # Suite G: Device Lifecycle Analysis
+    try:
+        g_results = run_device_lifecycle_analysis(patients_dir, **kwargs)
+        all_results['EXP-128'] = g_results
+    except Exception as e:
+        print(f'  Suite G failed: {e}')
+        traceback.print_exc()
+        all_results['EXP-128'] = {'status': 'error', 'reason': str(e)}
+
     # Summary scorecard
     print('\n' + '=' * 60)
     print('  VALIDATION SCORECARD')
@@ -1410,6 +1606,10 @@ def run_all_suites(patients_dir, checkpoint_path=None, **kwargs):
             f'{r.get("aggregate", {}).get("mean_cross_patient_cv_pct", "N/A")}%'),
         ('Personalization Needed', 'EXP-127', lambda r:
             f'{"Yes" if r.get("aggregate", {}).get("personalization_recommended") else "No"}'),
+        ('SAGE Std Trend', 'EXP-128', lambda r:
+            f'{r.get("aggregate", {}).get("sage_std_trend", "N/A")}'),
+        ('CAGE Std Trend', 'EXP-128', lambda r:
+            f'{r.get("aggregate", {}).get("cage_std_trend", "N/A")}'),
     ]
 
     for name, exp_id, extractor in objectives:
