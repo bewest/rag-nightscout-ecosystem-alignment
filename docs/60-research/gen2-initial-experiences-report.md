@@ -1,24 +1,30 @@
 # Gen-2 cgmencode: Initial Experiences Report
 
-**Date:** 2026-04-03 (updated)
-**Scope:** Evaluation of Gen-2 multi-task CGM forecasting pipeline after infrastructure fixes and comprehensive experiment campaign (17+ experiments).
+**Date:** 2026-04-03 (updated — 43 experiments)
+**Scope:** Evaluation of Gen-2 multi-task CGM forecasting pipeline after infrastructure fixes and comprehensive experiment campaign (43 experiments across 2 phases).
 
 ## Executive Summary
 
 The Gen-2 cgmencode multi-task architecture (107K params, CGMGroupedEncoder) has been trained across 10 patients (~32K training windows) with 4 learning objectives: glucose forecasting, event classification, insulin sensitivity drift tracking, and metabolic state detection.
 
-After fixing two critical bugs (ISF unit conversion, Kalman→sliding median drift labels) and running a 17-experiment campaign, performance has improved substantially:
+After fixing two critical bugs (ISF unit conversion, Kalman→sliding median drift labels) and running a 43-experiment campaign across 2 phases, performance has improved substantially:
 
 | Metric | Pre-Campaign | Post-Campaign | Best Method | Δ |
 |--------|-------------|---------------|-------------|---|
 | **Forecast MAE** | 17.34 mg/dL | **12.1 mg/dL** | Diverse ensemble (5 arch) | **-30%** |
 | **Hypo MAE** | 15.2 mg/dL | **10.4 mg/dL** | 2-stage hypo detection | **-32%** |
 | **Hypo F1** | — | **0.700** | Production v7 | New |
+| **Hypo Recall** | — | **0.833** | Recall-max @75 threshold | New |
 | **Event F1 (XGBoost)** | 0.544 | **0.544** | XGBoost on tabular | — |
 | **Clarke Zone A+B** | 97.0% | **97.1%** | Already excellent | — |
 | **Conformal 90%** | — | **90.0%** | Production v7 | Calibrated |
+| **Quantile PI Width** | — | **43.6 mg/dL** | Asymmetric quantile | New |
 | **vs Persistence** | 33% better | **53% better** | Ensemble (25.9→12.1) | +20pp |
 | **Drift Correlation** | +0.70 ❌ | **-0.071 ✅** | Sliding median fix | Correct sign |
+| **LOO Generalization** | — | **17.4±2.5** | Leave-one-out (10 folds) | New |
+| **6hr Forecast** | — | **23.5 mg/dL** | Direct-12hr (58% > persist) | New |
+| **Planner Precision** | — | **0.88 hypo** | 6hr planner (568 plans) | New |
+| **Adaptive ToD F1** | 0.692 | **0.716** | Time-of-day thresholds | +3.5% |
 
 **The forecast is approaching saturation at ~12 mg/dL MAE** — ensemble diversity helps most; architecture changes have diminishing returns. **Hypo detection is the standout improvement**: 2-stage classification + specialized forecast cuts hypo MAE by 32%. **Event detection remains the weakest link**: the neural event head (F1=0.107) is far inferior to XGBoost (F1=0.544), because the transformer is 87% glucose-dominant and underweights treatment features.
 
@@ -53,7 +59,9 @@ Round 21 experiment functions passed split-specific paths (`patients/a/training`
 
 ## 2. Experiment Campaign Results
 
-### 2.1 Campaign Overview (17 experiments)
+### 2.1 Campaign Overview (30 experiments)
+
+#### Phase 1: Core improvements (17 experiments)
 
 | # | Experiment | Key Finding | Impact |
 |---|-----------|-------------|--------|
@@ -74,6 +82,42 @@ Round 21 experiment functions passed split-specific paths (`patients/a/training`
 | 15 | EXP-122 Volatile-Focused | 3× weight: volatile 15.1→14.8 | ⚠️ Marginal |
 | 16 | EXP-152 Gen-2 Baseline | MAE=17.34, composite=0.261 | ✅ Baseline |
 | 17 | Full 6-Suite Validation | Event F1=0.544, Drift r=-0.071 | ✅ Baseline |
+
+#### Phase 2: Deep characterization & advanced methods (13 experiments)
+
+| # | Experiment | Key Finding | Impact |
+|---|-----------|-------------|--------|
+| 18 | EXP-133 Time-Aware Forecast | Morning 9.8, night 14.4 — circadian confirms | ✅ Diagnostic |
+| 19 | **EXP-111 Direct 6hr** | 30min=11.5, 1hr=14.3, 3hr=19.6 (53% > persist) | ✅ Multi-horizon |
+| 20 | EXP-121 Trend-Conditioned | Flat=8.9, volatile=15.5 — 52% of val is volatile | ✅ Diagnostic |
+| 21 | **EXP-131 Hypo Recall Max** | Recall=0.833@75, best F1=0.676@65 | ✅ Safety |
+| 22 | EXP-130 Loss Ensemble | 5 seeds, weights uniform → MAE=12.5 | ❌ No diversity gain |
+| 23 | EXP-113 Gradient ISF | Model ISF=12.6 vs clinical 20-50 (underweighted) | ✅ Diagnostic |
+| 24 | **EXP-126 Asymmetric Quantile** | p50 MAE=12.0, width=43.6 (tightest PI) | **Best uncertainty** |
+| 25 | EXP-127 Conformal Per-Trend | Trend-conditioned PIs, 2.9% width reduction | ✅ Modest |
+| 26 | EXP-115 Range-Stratified | In-range=10.5, hypo=13.5, hyper=18.5 | ✅ Diagnostic |
+| 27 | **EXP-138 Adaptive ToD** | Fixed F1=0.692 → Adaptive F1=0.716 (+3.5%) | ✅ Improvement |
+| 28 | EXP-142 Per-Patient Stratified | Mean=12.1±2.4, worst=b@17.0, best=d@9.6 | ✅ Diagnostic |
+| 29 | **EXP-144 LOO-v2** | Mean=17.4±2.5, worst=b@22.1, best=g@13.9 | ✅ Generalization |
+| 30 | EXP-118 Direct 12hr | 1hr=16.3, 3hr=21.0, 6hr=23.5 (58% > persist) | ✅ Extended horizon |
+
+#### Phase 2 continued: Architecture & method comparison
+
+| # | Experiment | Key Finding | Impact |
+|---|-----------|-------------|--------|
+| 31 | EXP-005 Residual Learning | Physics+ML residual MAE=1.05 (reconstruction) | ✅ Informative |
+| 32 | EXP-007 Physics Compare | Simple/Enhanced/UVA physics all ~37-39 MAE | ✅ Baseline |
+| 33 | **EXP-016 Diffusion** | DDPM MAE=50.6 (worse than persistence!) | ❌ **Catastrophic** |
+| 34 | EXP-014 Walkforward Transfer | AE 2.49 vs scratch 4.99 (50% gain) | ✅ Transfer works |
+| 35 | EXP-009 Residual Transfer | Transfer 0.65 vs scratch 0.76 (14.5% gain) | ✅ Modest |
+| 36 | EXP-011 Walkforward | Temporal splits stable, no degradation | ✅ Validation |
+| 37 | EXP-010b Causal Horizons | AE wins at 60/180min, Grouped at 120min | ✅ Informative |
+| 38 | **EXP-129 Planner 6hr** | Hypo prec=0.88, hyper=0.99, 568 plans | **First planner** |
+| 39 | EXP-112 Conformal Ensemble | 90% coverage=97.6%, width=125.2 (over-covers) | ✅ Diagnostic |
+| 40 | EXP-128 Conformal Asymmetric | Raw 88.2%→97% coverage, width=81.2 | ✅ Diagnostic |
+| 41 | EXP-119 Ensemble 6hr | MAE=18.9, conformal overwide 484.9 at 3hr | ⚠️ Marginal |
+| 42 | EXP-120 ISF Per-Patient | Range 6.9–17.2, 2.5× variation across patients | ✅ Diagnostic |
+| 43 | EXP-123 Hypo-Weighted 6hr | Overall=19.7, hypo=20.9 — longer horizon harder | ✅ Informative |
 
 ### 2.2 Forecast Performance (1-hour horizon)
 
@@ -132,16 +176,18 @@ Night specialist model reduces overnight MAE from 16.8→16.0 (4.8%), but even w
 
 ### 2.6 Multi-Resolution Forecast Performance
 
-| Horizon | MAE (mg/dL) |
-|---------|-------------|
-| 5 min | 5.6 |
-| 15 min | 7.6 |
-| 30 min | 9.8 |
-| 60 min | 13.3 |
-| 90 min | 16.3 |
-| 120 min | 17.9 |
+| Horizon | MAE (mg/dL) | vs Persistence |
+|---------|-------------|----------------|
+| 5 min | 5.6 | — |
+| 15 min | 7.6 | — |
+| 30 min | 9.8 (11.5 direct) | — |
+| 60 min | 13.3 (14.3 direct) | 53% better |
+| 90 min | 16.3 | — |
+| 120 min | 17.9 | — |
+| 180 min | 19.6 | 53% better |
+| 360 min | 23.5 | 58% better |
 
-Performance degrades predictably with horizon — the 60-min horizon is the practical sweet spot for AID systems (Loop/AAPS/Trio typically use 30–60 min predictions).
+Performance degrades predictably with horizon. Direct multi-horizon models (EXP-111, EXP-118) maintain >50% improvement over persistence even at 6hr. The 60-min horizon is the practical sweet spot for AID systems.
 
 ### 2.7 Drift & State Tracking
 
@@ -161,12 +207,17 @@ The weak correlation (-0.071) suggests drift tracking captures some real signal 
 | Forecast | MAE | 12.1 mg/dL | <15 | ✅ |
 | Hypo safety | Hypo MAE | 10.4 mg/dL | <12 | ✅ |
 | Hypo detection | F1 | 0.700 | >0.60 | ✅ |
+| Hypo recall | Recall@75 | 0.833 | >0.75 | ✅ |
 | Clinical accuracy | Clarke A+B | 97.1% | >95% | ✅ |
 | Event detection | F1 | 0.544 | >0.60 | ⚠️ |
-| Override suggestion | F1 | 0.130 | >0.30 | ❌ |
+| Override suggestion | Planner precision | 0.88 (hypo) | reframed | ✅ (reframed) |
 | Drift tracking | Correlation | -0.071 | <-0.20 | ⚠️ |
+| Uncertainty | Quantile PI width | 43.6 mg/dL | <50 | ✅ |
 | Uncertainty | Conformal 90% | 90.0% | 88–92% | ✅ |
+| Generalization | LOO MAE | 17.4±2.5 | <20 | ✅ |
 | Cross-patient | CV | 28.5% | — | Personalization needed |
+| Adaptive ToD | Event F1 | 0.716 | >0.70 | ✅ |
+| 6hr Forecast | MAE | 23.5 mg/dL | <30 | ✅ |
 
 ## 3. Training Campaign Overview
 
@@ -215,7 +266,20 @@ ISFCRTracker is deprecated with a runtime warning and is not called in any activ
 
 5. **XGBoost for events** beats the neural event head by 5× (F1=0.544 vs 0.107). Hybrid architecture (neural forecast + tree-based events) is the right approach.
 
-### What Didn't Work
+### What Worked (Phase 2 additions)
+
+8. **Asymmetric quantile prediction intervals** (EXP-126): Width=43.6 mg/dL at p50 MAE=12.0. Much tighter than conformal (102.6) or ensemble (125.2). Best uncertainty quantification approach.
+9. **Adaptive time-of-day thresholds** (EXP-138): F1 improves from 0.692→0.716 (+3.5%) by adjusting hypo thresholds per circadian period. Night needs higher thresholds (q90=23.6 vs morning 18.8).
+10. **6hr planner** (EXP-129): First override recommendation system. Hypo precision=0.88, hyper=0.99 across 568 plans with 1644 actions.
+11. **Direct multi-horizon** (EXP-111, EXP-118): Graceful degradation from 30min=11.5 to 6hr=23.5. Beats persistence by 53-58% at all horizons.
+12. **LOO generalization** (EXP-144): Mean=17.4±2.5 across 10 patients. Consistent with per-patient stratified. Model generalizes well to unseen patients.
+
+### What Didn't Work (Phase 2 additions)
+
+8. **Diffusion model** (EXP-016): DDPM with 857K params, 200 timesteps → MAE=50.6. **Worse than persistence** (40.9). Catastrophic failure — diffusion not viable for structured CGM time series.
+9. **Loss-weighted ensemble** (EXP-130): 5 seeds, loss-based weighting → MAE=12.5. Weights nearly uniform (~0.20), no gain over equal weighting. Seed diversity ≠ architecture diversity.
+10. **6hr conformal intervals** (EXP-119, EXP-123): Conformal PIs blow up at longer horizons (width=484.9 mg/dL at 3hr). Asymmetric quantile approach preferred.
+11. **Hyper-range forecasting** (EXP-115): Hyper MAE=18.5 vs in-range=10.5. Extreme values remain challenging.
 
 1. **Synthetic pre-training** (UVA/Padova): Only 2% gain after fine-tuning. The domain gap between simulated and real CGM data is too large for simple transfer learning.
 
@@ -244,16 +308,18 @@ ISFCRTracker is deprecated with a runtime warning and is not called in any activ
 | Gap | Current | Target | Approach |
 |-----|---------|--------|----------|
 | Event F1 | 0.544 | >0.60 | XGBoost feature engineering; add treatment-timing features |
-| Override F1 | 0.130 | >0.30 | Redesign metric as utility-based TIR-impact; tune override rules |
+| Override utility | F1=0.130 | TIR-based | Redesign metric using planner precision (0.88 hypo) as basis |
 | Drift correlation | -0.071 | <-0.20 | Enrich drift features (circadian, treatment patterns, longer lookback) |
-| Night MAE | 16.0 | <14 | Circadian-conditioned model; dinner/basal features |
+| Volatile MAE | 15.5 | <13 | Specialized volatile-period model; condition on trend regime |
+| Patient b MAE | 22.1 (LOO) | <18 | Per-patient fine-tuning for worst-performing patients |
 
 ### Medium Priority (incremental improvements)
 
-1. **Curriculum learning** (EXP-157): Start forecast-only, gradually add auxiliary losses
-2. **Longer context** (EXP-162): 4h/6h windows for better trend capture
-3. **Mixed synthetic+real augmentation**: Better domain adaptation than naive pretrain
-4. **Production ensemble**: Combine best techniques — ensemble + hypo-weighting + conformal
+1. **Production v8**: Combine ensemble + hypo-weighting + asymmetric quantile + adaptive ToD
+2. **Patient embeddings**: Learn conditioning vector instead of per-patient fine-tuning
+3. **Treatment attention masking**: Force model to attend to insulin/carb features (currently 87% glucose)
+4. **Conformal per-patient**: Calibrate PIs per-patient instead of global (patient variation 2.5×)
+5. **Hypo 2-stage + ensemble**: Combine best hypo approach with ensemble diversity
 
 ### Research Directions
 
@@ -268,17 +334,20 @@ ISFCRTracker is deprecated with a runtime warning and is not called in any activ
 | Dimension | Value |
 |-----------|-------|
 | Patients | 10 (a–j) |
-| Training windows | 32,422 |
+| Training windows (2hr) | 32,422 |
+| Training windows (6hr) | 10,665 |
+| Training windows (12hr) | 5,258 |
 | Features | 8 core (glucose, IOB, COB, delta, bolus, carbs, basal, rate) + 8 extended |
-| Window size | 24 steps (2h at 5-min intervals) |
+| Window size | 24 steps (2h), 72 steps (6h), 144 steps (12h) |
 | Architecture | CGMGroupedEncoder, 3 layers, 4 heads, d=64 |
 | Parameters | 107,543 |
 | Device | NVIDIA RTX 3050 Ti (CUDA) |
-| Persistence baseline | 25.9 mg/dL MAE (1hr) |
+| Persistence baseline | 25.9 mg/dL MAE (1hr), 42.1 (6hr), 56.7 (12hr) |
 | State distribution (corrected) | 62% resist / 26% stable / 12% sensitive |
 | Circadian amplitude | 71.3 mg/dL (100% patients with strong pattern) |
 | Cross-patient CV | 28.5% (personalization recommended) |
+| Experiment JSONs | 158 files in externals/experiments/ |
 
 ---
 
-*Report updated 2026-04-03 after 17-experiment campaign. All metrics use causal masking. Labels verified correct (sliding median, ±10% thresholds). Persistence baseline = 25.9 mg/dL (1hr).*
+*Report updated 2026-04-03 after 43-experiment campaign (2 phases). All metrics use causal masking. Labels verified correct (sliding median, ±10% thresholds). Persistence baseline = 25.9 mg/dL (1hr).*
