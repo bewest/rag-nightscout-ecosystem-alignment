@@ -2,17 +2,17 @@
   "experiment": "EXP-129",
   "name": "planner-6hr",
   "results": {
-    "n_plans": 571,
-    "total_actions": 1700,
-    "conformal_q90": 89.2,
-    "hypo_precision": 0.818,
-    "hyper_precision": 0.986,
+    "n_plans": 568,
+    "total_actions": 1644,
+    "conformal_q90": 85.1,
+    "hypo_precision": 0.88,
+    "hyper_precision": 0.99,
     "top_actions": {
-      "consider_correction": 620,
-      "rapid_fall": 320,
-      "urgent_high": 307,
-      "rapid_rise": 268,
-      "hypo_alert": 185
+      "consider_correction": 624,
+      "rapid_rise": 306,
+      "rapid_fall": 287,
+      "urgent_high": 251,
+      "hypo_alert": 176
     }
   }
 }
