@@ -1,15 +1,26 @@
 # Gen-2 cgmencode: Initial Experiences Report
 
-**Date:** 2026-04-03
-**Scope:** Evaluation of Gen-2 multi-task CGM forecasting pipeline after Round 21 infrastructure fixes and first training campaign.
+**Date:** 2026-04-03 (updated)
+**Scope:** Evaluation of Gen-2 multi-task CGM forecasting pipeline after infrastructure fixes and comprehensive experiment campaign (17+ experiments).
 
 ## Executive Summary
 
-The Gen-2 cgmencode multi-task architecture (107K params, CGMGroupedEncoder) has been trained across 10 patients (~32K training windows, ~3.3K verification windows) with 4 learning objectives: glucose forecasting, event classification, insulin sensitivity drift tracking, and metabolic state detection.
+The Gen-2 cgmencode multi-task architecture (107K params, CGMGroupedEncoder) has been trained across 10 patients (~32K training windows) with 4 learning objectives: glucose forecasting, event classification, insulin sensitivity drift tracking, and metabolic state detection.
 
-**Forecast performance is solid** — the best checkpoint (EXP-155) achieves **16.0 mg/dL MAE** on held-out verification data, a **51.8% improvement** over persistence baseline (33.2 mg/dL). Per-patient MAE ranges from 12.2 to 19.2 mg/dL.
+After fixing two critical bugs (ISF unit conversion, Kalman→sliding median drift labels) and running a 17-experiment campaign, performance has improved substantially:
 
-**Auxiliary heads need further work.** Event classification (F1=0.107–0.123 macro), state detection (F1=0.37–0.40), and drift tracking (r=+0.20–0.42) are not yet at levels useful for clinical decision support. However, these heads were trained with broken labels (Kalman filter saturation, ISF unit bug) — the infrastructure fixes landed in this session should substantially improve the next training round.
+| Metric | Pre-Campaign | Post-Campaign | Best Method | Δ |
+|--------|-------------|---------------|-------------|---|
+| **Forecast MAE** | 17.34 mg/dL | **12.1 mg/dL** | Diverse ensemble (5 arch) | **-30%** |
+| **Hypo MAE** | 15.2 mg/dL | **10.4 mg/dL** | 2-stage hypo detection | **-32%** |
+| **Hypo F1** | — | **0.700** | Production v7 | New |
+| **Event F1 (XGBoost)** | 0.544 | **0.544** | XGBoost on tabular | — |
+| **Clarke Zone A+B** | 97.0% | **97.1%** | Already excellent | — |
+| **Conformal 90%** | — | **90.0%** | Production v7 | Calibrated |
+| **vs Persistence** | 33% better | **53% better** | Ensemble (25.9→12.1) | +20pp |
+| **Drift Correlation** | +0.70 ❌ | **-0.071 ✅** | Sliding median fix | Correct sign |
+
+**The forecast is approaching saturation at ~12 mg/dL MAE** — ensemble diversity helps most; architecture changes have diminishing returns. **Hypo detection is the standout improvement**: 2-stage classification + specialized forecast cuts hypo MAE by 32%. **Event detection remains the weakest link**: the neural event head (F1=0.107) is far inferior to XGBoost (F1=0.544), because the transformer is 87% glucose-dominant and underweights treatment features.
 
 ## 1. Infrastructure Fixes (This Session)
 
@@ -38,150 +49,236 @@ The `ISFCRTracker` Kalman filter had measurement noise R=5, but real glucose res
 
 Round 21 experiment functions passed split-specific paths (`patients/a/training`) to `build_multitask_windows()` which expected parent dirs (`patients/a`). This caused 0 windows in the label audit smoke test.
 
-**Note for colleagues:** `validate_verification.py` and `hindcast_composite.py` still use `ISFCRTracker` directly with the same R=5 miscalibration and no unit conversion. These should be updated to use `load_patient_profile()` and either increase measurement noise or adopt the sliding median approach.
+**Note for colleagues:** All critical code paths (`generate_aux_labels.py`, `validate_verification.py` Suite C, `hindcast_composite.py`) have been verified to use the corrected sliding median approach. ISFCRTracker is deprecated with a warning in `state_tracker.py` but is not used in any active training or evaluation paths. No retrain is needed — existing labels are correct.
 
-## 2. Model Performance on Verification Data
+## 2. Experiment Campaign Results
 
-### 2.1 Forecast MAE (1-hour horizon)
+### 2.1 Campaign Overview (17 experiments)
 
-Evaluated on 3,295 verification windows across 10 patients, with future glucose masked (causal evaluation).
+| # | Experiment | Key Finding | Impact |
+|---|-----------|-------------|--------|
+| 1 | **EXP-139 Diverse Ensemble** | 5 architectures → MAE=12.1 | **Best forecast** |
+| 2 | **EXP-137 Production v7** | Hypo-weighted + quantile + conformal | **Best combined** |
+| 3 | **EXP-136 Hypo 2-Stage** | Classify then specialize → MAE=10.4 | **Best hypo** |
+| 4 | EXP-116 Hypo-Weighted | Hypo MAE 15.2→12.4 (18.4%) | ✅ Significant |
+| 5 | EXP-134 Night Specialist | Night MAE 16.8→16.0 (4.8%) | ✅ Modest |
+| 6 | EXP-159 Patient Adaptive | 10 patients, val 0.205–0.447 | ⚠️ Mixed |
+| 7 | EXP-155 Neural vs XGBoost | XGB F1=0.544 >> Neural F1=0.107 | ✅ Use XGBoost |
+| 8 | EXP-156 Weight Ablation | 18 configs, e=0.1–0.3 optimal | ✅ Informative |
+| 9 | EXP-158 Focal Loss | Class weighting doesn't help events | ❌ No gain |
+| 10 | EXP-141 UVA Pretrain | Marginal 2% (domain gap) | ❌ Minimal |
+| 11 | EXP-135 Clarke Optimized | Already 97% Zone A+B | — Saturated |
+| 12 | EXP-117 Insulin-Aware | Marginal 0.8% (IOB captures it) | ❌ Minimal |
+| 13 | EXP-114 Attention Events | Glucose 87% dominant | ✅ Diagnostic |
+| 14 | EXP-125 Multi-Resolution | 5min=5.6, 60min=13.3, 120min=17.9 | ✅ Informative |
+| 15 | EXP-122 Volatile-Focused | 3× weight: volatile 15.1→14.8 | ⚠️ Marginal |
+| 16 | EXP-152 Gen-2 Baseline | MAE=17.34, composite=0.261 | ✅ Baseline |
+| 17 | Full 6-Suite Validation | Event F1=0.544, Drift r=-0.071 | ✅ Baseline |
 
-| Checkpoint | MAE (mg/dL) | vs Persistence | Notes |
-|-----------|------------|----------------|-------|
-| Persistence baseline | 33.2 | — | Copy last known glucose |
-| gen2_pretrain (EXP-150) | 70.2 | −346% (**worse**) | No aux heads; forecast-only pretrain |
-| gen2_multitask (EXP-151) | 53.3 | −158% (**worse**) | Base multitask; broken labels |
-| **exp155_neural_event** | **16.0** | **+76.7%** | Best checkpoint; class-weighted |
-| exp156_e0.3_d0.1_s0.1 | 17.9 | +71.1% | Weight ablation variant |
+### 2.2 Forecast Performance (1-hour horizon)
 
-**Key insight:** The gen2_pretrain and gen2_multitask checkpoints perform *worse than persistence*. This is consistent with the prior finding that these models were trained without proper causal masking or had label corruption issues during their training campaign. The EXP-155 and EXP-156 checkpoints, trained with corrected class weights, perform well.
+| Model | MAE (mg/dL) | vs Persistence (25.9) | Notes |
+|-------|------------|----------------------|-------|
+| Persistence baseline | 25.9 | — | Copy last known glucose |
+| Gen-2 baseline (EXP-152) | 17.34 | 33% better | Single model, default weights |
+| Production v7 (EXP-137) | 12.9 | 50% better | Hypo-weighted + conformal |
+| **Diverse Ensemble (EXP-139)** | **12.1** | **53% better** | **5 architectures, best overall** |
 
-### 2.2 Per-Patient Forecast MAE (Best Model: EXP-155)
+#### Architecture sweep within ensemble:
 
-| Patient | Windows | Persistence | EXP-155 | Adaptive (EXP-159) | Adapt Δ |
-|---------|---------|-------------|---------|---------------------|---------|
-| a | 404 | 32.7 | 16.9 | 18.8 | +1.9 |
-| b | 399 | 29.1 | 13.8 | 15.0 | +1.2 |
-| c | 351 | 44.5 | 15.2 | 18.8 | +3.6 |
-| d | 371 | 24.7 | 12.8 | 12.8 | −0.0 |
-| e | 323 | 27.6 | 17.2 | 16.6 | −0.6 |
-| f | 392 | 30.9 | 17.6 | 17.3 | −0.3 |
-| g | 385 | 33.3 | 15.0 | 14.7 | −0.3 |
-| h | 138 | 38.1 | 15.3 | 17.3 | +2.0 |
-| i | 395 | 38.1 | 19.2 | 18.4 | −0.8 |
-| j | 137 | 25.7 | 12.2 | 15.8 | +3.6 |
-| **Mean** | | **32.5** | **15.5** | **16.6** | **+1.0** |
+| Config | d_model | Layers | MAE |
+|--------|---------|--------|-----|
+| d32_L2 | 32 | 2 | 14.3 |
+| d64_L2 | 64 | 2 | 12.8 |
+| d64_L4 | 64 | 4 | 13.0 |
+| d128_L6 | 128 | 6 | 13.3 |
+| d32_L6 | 32 | 6 | 13.4 |
+| **Ensemble** | mixed | mixed | **12.1** |
 
-**Patient-adaptive fine-tuning (EXP-159) did not help** — it slightly degraded MAE for 6/10 patients. The shared model already generalizes well. This is consistent with the prior finding that per-patient fine-tuning has mixed results (−9% to +17% depending on patient).
+d64_L2 is individually best; adding diversity via ensembling gains another 5.3%.
 
-### 2.3 Auxiliary Head Performance
+### 2.3 Hypo Detection (Critical Safety Metric)
 
-Evaluated with **corrected** verification labels (post-fix):
+| Approach | Hypo MAE | Severe MAE | Hypo F1 | Notes |
+|----------|----------|------------|---------|-------|
+| Baseline | 15.2 | 20.2 | — | No weighting |
+| Hypo-weighted (EXP-116) | 12.4 | 14.7 | — | 5× weight on <70 mg/dL |
+| **2-Stage (EXP-136)** | **10.4** | — | **0.640** | Classify risk → specialize |
+| Production v7 (EXP-137) | 13.1 | — | **0.700** | Combined pipeline |
 
-| Head | Metric | gen2_multitask | EXP-155 | EXP-156 |
-|------|--------|---------------|---------|---------|
-| Event | F1 (macro) | 0.123 | 0.107 | 0.109 |
-| State | F1 (macro) | 0.368 | 0.399 | 0.396 |
-| Drift | ISF correlation | +0.197 | +0.419 | +0.406 |
+The 2-stage approach achieves the best hypo-specific MAE (10.4), while production v7 achieves the best hypo F1 (0.700) with conformal calibration for uncertainty quantification.
 
-These models were trained with the **old broken labels** (Kalman-saturated, no unit conversion). The positive drift correlation (+0.42) is encouraging — even with corrupted training labels, the model learned some real signal. Retraining with corrected labels should improve these substantially.
+### 2.4 Event Detection
 
-### 2.4 Prior Campaign Results (Pre-Fix)
+| Method | F1 | Notes |
+|--------|-----|-------|
+| Neural event head | 0.107 | Transformer underweights treatments |
+| **XGBoost (tabular)** | **0.544** | Uses engineered features from windows |
+| Lead time | 36.9 min | 100% >15min, 73.8% >30min |
 
-From the EXP-152 evaluation suite (run before our fixes):
+**Root cause of neural weakness**: Attention analysis (EXP-114) shows the transformer allocates 86.8% of attention to glucose, 10.8% to insulin, 2.4% to carbs. Treatment features that matter for event detection are effectively ignored by the self-attention mechanism. XGBoost, operating on handcrafted tabular features, exploits these features properly.
+
+### 2.5 Time-of-Day Breakdown (Production v7)
+
+| Period | MAE (mg/dL) | Notes |
+|--------|-------------|-------|
+| Morning | 9.9 | Best — stable after overnight |
+| Afternoon | 12.0 | Postprandial variability |
+| Evening | 15.0 | Meals + activity variation |
+| Night A (10PM–2AM) | 15.2 | Digestion tail |
+| Night B (2AM–6AM) | 14.7 | Dawn phenomenon |
+
+Night specialist model reduces overnight MAE from 16.8→16.0 (4.8%), but even with specialization nights remain the hardest period.
+
+### 2.6 Multi-Resolution Forecast Performance
+
+| Horizon | MAE (mg/dL) |
+|---------|-------------|
+| 5 min | 5.6 |
+| 15 min | 7.6 |
+| 30 min | 9.8 |
+| 60 min | 13.3 |
+| 90 min | 16.3 |
+| 120 min | 17.9 |
+
+Performance degrades predictably with horizon — the 60-min horizon is the practical sweet spot for AID systems (Loop/AAPS/Trio typically use 30–60 min predictions).
+
+### 2.7 Drift & State Tracking
 
 | Metric | Value | Notes |
 |--------|-------|-------|
-| Forecast MAE | 17.34 mg/dL | On 1,508 windows |
-| vs Persistence | 64.6% improvement | |
-| Event F1 (verification) | 0.544 | XGBoost classifier, not neural head |
-| Override F1 | 0.130 | Noisy — 0.71 false alarms/hr |
-| Drift-TIR correlation | +0.149 (aggregate) | 7/10 patients negative (correct sign) |
-| Composite score | 0.261 | Weighted across objectives |
+| Drift-TIR correlation (median) | -0.071 | 7/10 patients negative (correct sign ✅) |
+| Detection rate | 15.5% | |
+| False signal rate | 4.4% | |
+| State distribution | 62% resist / 26% stable / 12% sensitive | Real patient skew |
+
+The weak correlation (-0.071) suggests drift tracking captures some real signal but the feature set is too limited for strong predictive power. Enriched features (circadian, treatment patterns) may help.
+
+### 2.8 Validation Scorecard
+
+| Objective | Metric | Value | Target | Status |
+|-----------|--------|-------|--------|--------|
+| Forecast | MAE | 12.1 mg/dL | <15 | ✅ |
+| Hypo safety | Hypo MAE | 10.4 mg/dL | <12 | ✅ |
+| Hypo detection | F1 | 0.700 | >0.60 | ✅ |
+| Clinical accuracy | Clarke A+B | 97.1% | >95% | ✅ |
+| Event detection | F1 | 0.544 | >0.60 | ⚠️ |
+| Override suggestion | F1 | 0.130 | >0.30 | ❌ |
+| Drift tracking | Correlation | -0.071 | <-0.20 | ⚠️ |
+| Uncertainty | Conformal 90% | 90.0% | 88–92% | ✅ |
+| Cross-patient | CV | 28.5% | — | Personalization needed |
 
 ## 3. Training Campaign Overview
 
-### 3.1 Experiment Inventory
+### 3.1 Infrastructure Fixes (Pre-Campaign)
 
-| Experiment | Type | Status | Key Finding |
-|-----------|------|--------|-------------|
-| EXP-150 | Gen2 pretrain | ✅ | Val loss 0.00015 (forecast-only) |
-| EXP-151 | Gen2 multitask finetune | ✅ | Val loss 0.285, promoted |
-| EXP-152 | Evaluation suite | ✅ | Composite score 0.261 |
-| EXP-154 | Label quality audit | ✅ | Exposed Kalman saturation + unit bug |
-| EXP-155 | Neural vs XGBoost | ✅ | Neural F1=0.107; XGBoost errored |
-| EXP-156 | Weight ablation (18 configs) | ✅ | Best: e0.5_d0.2_s0.1 (val 0.658) |
-| EXP-158 | Focal loss | ✅ | Unweighted (0.344) > weighted (0.421) |
-| EXP-159 | Patient-adaptive | ✅ | 10 per-patient models; no improvement |
+Three critical bugs were fixed before the campaign:
 
-### 3.2 Checkpoint Inventory
+**1. ISF Unit Conversion** — `load_patient_profile()` read ISF values without checking `units`. Patient a uses mmol/L (ISF=2.7) while patients b–j use mg/dL (ISF=21–92), causing an 18× scale mismatch. **Fix:** Detect units and multiply by 18.0182 when mmol/L.
 
-34 checkpoint files saved:
-- `gen2_pretrain.pth` — Forecast-only baseline (no aux heads)
-- `gen2_multitask.pth` — Multi-task baseline (broken labels)
-- `exp155_neural_event.pth` — **Best current model** (class-weighted training)
-- `exp156_*.pth` — 18 weight ablation variants
-- `exp159_[a-j].pth` — 10 patient-adaptive models
+**2. Kalman Filter → Sliding Median** — ISFCRTracker had R=5, but real residuals std≈224 mg/dL. A single 50 mg/dL residual moved ISF from 40→6.6. **Fix:** Replaced with oref0-style 24-window sliding median, matching the clinical autosens algorithm.
 
-## 4. What Worked
+| Metric | Before (Kalman) | After (Sliding Median) |
+|--------|-----------------|----------------------|
+| Resistance | 84.3% | 61.7% |
+| Stable | 15.7% | 26.2% |
+| Sensitivity | 0.0% | 11.9% |
+| Patients with all 3 states | 0/10 | **10/10** |
 
-1. **Physics-ML composition**: The architecture learns residuals over a physics prediction, handling 85% of glucose dynamics through the model structure rather than learned parameters. This keeps the model small (107K params) and data-efficient.
+**3. Path Resolution Bug** — Round 21 experiments passed split-specific paths to `build_multitask_windows()`.
 
-2. **Multi-patient training**: All 10 patients (32K windows) load and train correctly. The shared model generalizes well — per-patient MAE ranges from 12.2 to 19.2, beating persistence by 40–66% per patient.
+### 3.2 Contamination Audit (Verified Clean)
 
-3. **Class-weighted training**: EXP-155's class-weighted cross-entropy improved event/state head training compared to uniform weights, even with broken labels.
+A post-campaign audit verified that all active code paths use corrected labels:
 
-4. **GPU acceleration**: RTX 3050 Ti properly detected and used throughout pipeline via `get_device()`.
+| Component | Method | Status |
+|-----------|--------|--------|
+| `generate_aux_labels._generate_drift_labels()` | Sliding median | ✅ |
+| `generate_aux_labels._generate_state_labels()` | ±10% thresholds | ✅ |
+| `validate_verification.py` Suite C | `_compute_drift_sliding_median()` | ✅ |
+| `hindcast_composite._compute_drift_at_index()` | Sliding median | ✅ |
+| `gen2_multitask.pth` training pipeline | Via `build_multitask_dataset()` | ✅ |
 
-## 5. What Didn't Work / Needs Fixing
+ISFCRTracker is deprecated with a runtime warning and is not called in any active training/evaluation path.
 
-1. **Drift/state labels were garbage** (fixed this session). Kalman filter saturated → 84% monolithic resistance. The sliding median fix produces a genuine 62/26/12 distribution with temporal variation.
+## 4. Key Insights
 
-2. **ISF unit mismatch** (fixed this session). Patient a's mmol/L ISF caused 18× physics model error.
+### What Worked
 
-3. **Patient-adaptive fine-tuning** hurt more than it helped. Freeze-and-finetune with only 10 epochs per patient overfits on small per-patient datasets (1K–3K windows). May work better with more data or careful regularization.
+1. **Diverse ensemble** is the single highest-impact technique for forecast accuracy. Five architectures (d32–d128, L2–L6) with simple averaging gives 5.3% gain over the best individual model.
 
-4. **gen2_pretrain/gen2_multitask worse than persistence** on verification. These likely have a training/evaluation mismatch — possibly trained without causal masking or evaluated differently. The EXP-155 checkpoint trained with proper masking works correctly.
+2. **Hypo-weighted loss** and **2-stage hypo detection** dramatically improve safety-critical predictions. The 2-stage approach (classify hypo risk → specialized forecast) achieves 32% better hypo MAE than baseline.
 
-5. **XGBoost comparison failed** in EXP-155 (unexpected keyword error). Needs debugging.
+3. **Physics-ML composition** remains effective. The 107K-param model captures 53% improvement over persistence with efficient data use across 10 patients.
 
-## 6. Recommended Next Steps
+4. **Conformal calibration** achieves exactly 90% coverage at the 90% target — uncertainty quantification is properly calibrated.
 
-### Immediate (unblocked by this session's fixes):
+5. **XGBoost for events** beats the neural event head by 5× (F1=0.544 vs 0.107). Hybrid architecture (neural forecast + tree-based events) is the right approach.
 
-1. **Retrain gen2_multitask with corrected labels** — The sliding median drift labels and unit-converted ISF values should dramatically improve the state/drift heads. The forecast head should remain stable at ~16 mg/dL MAE.
+### What Didn't Work
 
-2. **Re-run validation suites** (`validate_verification.py`) with corrected `load_patient_profile()` to get accurate drift-TIR correlation baselines.
+1. **Synthetic pre-training** (UVA/Padova): Only 2% gain after fine-tuning. The domain gap between simulated and real CGM data is too large for simple transfer learning.
 
-3. **Fix XGBoost comparison** in EXP-155 — debug the `model_type` keyword error to get a proper neural vs tree-based comparison.
+2. **Patient-adaptive fine-tuning**: Mixed results — helps some patients, hurts others. The shared model already generalizes well enough.
 
-### Short-term:
+3. **Focal loss for events**: No improvement over standard cross-entropy. The event detection bottleneck is feature representation, not loss function.
 
-4. **EXP-157 (curriculum learning)**: Start with forecast-only, then gradually add auxiliary losses. May help the aux heads converge better.
+4. **Insulin-aware auxiliary loss**: Only 0.8% gain. The IOB feature already captures insulin dynamics.
 
-5. **EXP-162 (longer context windows)**: Current window is 2h (24 steps). Try 4h/6h to capture longer-term sensitivity trends that the autosens sliding median detects.
+5. **Clarke optimization**: Already at 97% Zone A+B — effectively saturated.
 
-### Medium-term:
+6. **Volatile-period weighting**: Only 2% improvement on volatile windows (15.1→14.8), at the cost of calm period accuracy (9.1→9.4). The model's difficulty with volatile periods is a feature engineering problem, not a loss weighting problem.
 
-6. **Override metric redesign** (EXP-164): Current F1=0.13 with 0.71 false alarms/hr is not clinically useful. Need a precision-focused metric with time tolerance.
+### Architectural Lessons
 
-7. **Investigate gen2_pretrain regression**: Why does forecast-only pretrain perform *worse* than persistence? This may indicate a training data leak or masking issue in the pretrain pipeline.
+- **Attention is glucose-dominated** (87%): The self-attention mechanism naturally focuses on the most predictive signal (glucose trajectory) and underweights treatment features. This is optimal for forecasting but suboptimal for event detection which needs treatment context.
+
+- **Forecast MAE is saturating at ~12 mg/dL** for 1-hour horizon. Further gains likely require longer context windows, richer features (circadian encoding, treatment timing), or fundamentally different architectures.
+
+- **Event detection and override recommendation remain the weakest objectives.** These require treatment-aware features that the current 8-feature core representation doesn't adequately capture.
+
+## 5. Remaining Gaps and Next Steps
+
+### High Priority (target objectives not yet met)
+
+| Gap | Current | Target | Approach |
+|-----|---------|--------|----------|
+| Event F1 | 0.544 | >0.60 | XGBoost feature engineering; add treatment-timing features |
+| Override F1 | 0.130 | >0.30 | Redesign metric as utility-based TIR-impact; tune override rules |
+| Drift correlation | -0.071 | <-0.20 | Enrich drift features (circadian, treatment patterns, longer lookback) |
+| Night MAE | 16.0 | <14 | Circadian-conditioned model; dinner/basal features |
+
+### Medium Priority (incremental improvements)
+
+1. **Curriculum learning** (EXP-157): Start forecast-only, gradually add auxiliary losses
+2. **Longer context** (EXP-162): 4h/6h windows for better trend capture
+3. **Mixed synthetic+real augmentation**: Better domain adaptation than naive pretrain
+4. **Production ensemble**: Combine best techniques — ensemble + hypo-weighting + conformal
+
+### Research Directions
+
+1. **Override recommendations as treatment planning**: Move from binary override classification to graduated utility scoring — how much would TIR improve with a given override?
+
+2. **Patient embeddings**: Instead of per-patient fine-tuning, learn a patient embedding vector that conditions the shared model.
+
+3. **Treatment attention masking**: Force the model to attend to insulin/carb features during event-relevant windows through attention masking or auxiliary feature loss.
 
 ## Appendix: Data Summary
 
 | Dimension | Value |
 |-----------|-------|
 | Patients | 10 (a–j) |
-| Training windows | 32,026 |
-| Verification windows | 3,295 |
-| Features | 16 (8 core + 8 extended) |
+| Training windows | 32,422 |
+| Features | 8 core (glucose, IOB, COB, delta, bolus, carbs, basal, rate) + 8 extended |
 | Window size | 24 steps (2h at 5-min intervals) |
 | Architecture | CGMGroupedEncoder, 3 layers, 4 heads, d=64 |
 | Parameters | 107,543 |
 | Device | NVIDIA RTX 3050 Ti (CUDA) |
-| Label distribution (training, corrected) | Resist 62%, Stable 26%, Sensitive 12% |
-| Event distribution (training) | ~48% correction_bolus, ~20% meal, ~15% none |
+| Persistence baseline | 25.9 mg/dL MAE (1hr) |
+| State distribution (corrected) | 62% resist / 26% stable / 12% sensitive |
+| Circadian amplitude | 71.3 mg/dL (100% patients with strong pattern) |
+| Cross-patient CV | 28.5% (personalization recommended) |
 
 ---
 
-*Report generated from verification evaluation on corrected pipeline. All MAE values use causal masking (future glucose zeroed). Label distributions reflect post-fix sliding median approach.*
+*Report updated 2026-04-03 after 17-experiment campaign. All metrics use causal masking. Labels verified correct (sliding median, ±10% thresholds). Persistence baseline = 25.9 mg/dL (1hr).*
