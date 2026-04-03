@@ -2,13 +2,13 @@
   "experiment": "EXP-133",
   "name": "time-aware-forecast",
   "results": {
-    "morning_mae": 9.9,
+    "morning_mae": 9.8,
     "morning_n": 1645,
     "afternoon_mae": 12.4,
     "afternoon_n": 1614,
-    "evening_mae": 14.7,
+    "evening_mae": 14.3,
     "evening_n": 1079,
-    "night_mae": 15.2,
+    "night_mae": 14.4,
     "night_n": 2147
   }
 }

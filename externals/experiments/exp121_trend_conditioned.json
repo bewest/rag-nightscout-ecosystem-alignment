@@ -2,13 +2,13 @@
   "experiment": "EXP-121",
   "name": "trend-conditioned",
   "results": {
-    "rising_mae": 11.5,
+    "rising_mae": 12.2,
     "rising_n": 673,
     "falling_mae": 9.2,
     "falling_n": 1292,
-    "flat_mae": 8.8,
+    "flat_mae": 8.9,
     "flat_n": 1153,
-    "volatile_mae": 15.4,
+    "volatile_mae": 15.5,
     "volatile_n": 3367
   }
 }
