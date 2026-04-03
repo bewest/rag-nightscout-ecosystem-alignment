@@ -1,0 +1,29 @@
+{
+  "experiment": "EXP-179",
+  "name": "production-v9",
+  "results": {
+    "ensemble_mae_mgdl": 13.303188277315243,
+    "ensemble_hypo_mae_mgdl": 12.918808532352427,
+    "individual_maes": {
+      "d32_L2": 17.916687347404267,
+      "d64_L2": 14.473386061684817,
+      "d64_L4": 14.061318851295457,
+      "d128_L6": 13.60254094484869,
+      "d32_L6": 14.413167945157896
+    },
+    "persistence_mae_mgdl": 34.31648655280201,
+    "conformal_coverage_90": 0.8979340117175455,
+    "conformal_pi_width_mgdl": 62.19522681168608,
+    "techniques": [
+      "stable_training",
+      "hypo_weighting",
+      "diverse_ensemble",
+      "conformal_pi"
+    ],
+    "hypo_weight": 3.0,
+    "warmup_epochs": 10,
+    "grad_clip": 1.0,
+    "epochs": 150,
+    "causal_masked": true
+  }
+}

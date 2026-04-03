@@ -1,0 +1,22 @@
+{
+  "experiment": "EXP-178",
+  "name": "stable-ensemble",
+  "results": {
+    "ensemble_mae_mgdl": 14.962725417530038,
+    "ensemble_hypo_mae_mgdl": 20.076969476460857,
+    "individual_maes": {
+      "d32_L2": 39.28276511500899,
+      "d64_L2": 13.654797404065471,
+      "d64_L4": 13.354468407161558,
+      "d128_L6": 12.923234181243576,
+      "d32_L6": 12.909569634854472
+    },
+    "persistence_mae_mgdl": 34.31648655280201,
+    "all_members_converged": false,
+    "warmup_epochs": 10,
+    "grad_clip": 1.0,
+    "schedule": "cosine_with_warmup",
+    "epochs": 150,
+    "causal_masked": true
+  }
+}

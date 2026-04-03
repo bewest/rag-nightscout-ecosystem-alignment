@@ -1,0 +1,22 @@
+{
+  "experiment": "EXP-185",
+  "name": "xgb-event-multihorizon",
+  "results": {
+    "f1_event_type": 0.5396330310503594,
+    "accuracy_lead_time": 0.8372019651147068,
+    "joint_accuracy": 0.4943114430046123,
+    "n_positive_train": 434226,
+    "n_positive_val": 44374,
+    "lead_time_dist": {
+      "0-15min": 0.0253898528442785,
+      "15-30min": 0.24893476828464747,
+      "30-60min": 0.4873929277399517,
+      "60+min": 0.23828245113112234
+    },
+    "n_classes": 6,
+    "comparison": {
+      "exp180_f1": 0.618,
+      "exp185_f1_type": 0.5396330310503594
+    }
+  }
+}

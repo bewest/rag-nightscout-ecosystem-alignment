@@ -1,0 +1,148 @@
+{
+  "experiment": "EXP-183",
+  "name": "drift-pattern",
+  "results": {
+    "aggregate_correlation": -0.13525550364035377,
+    "median_per_patient_correlation": -0.15561086907726288,
+    "n_patients": 10,
+    "per_patient": {
+      "a": {
+        "correlation": -0.21904269837838783,
+        "n_samples": 44631,
+        "nominal_isf": 45.0,
+        "drift_mean": 1.008524219588278,
+        "drift_std": 0.07366725546388252,
+        "state_distribution": {
+          "resistance": 0.06513409961685823,
+          "stable": 0.8434720261701508,
+          "sensitivity": 0.09139387421299097
+        },
+        "mean_tir": 0.5590396809392575
+      },
+      "b": {
+        "correlation": -0.20172524881024778,
+        "n_samples": 44911,
+        "nominal_isf": 45.0,
+        "drift_mean": 1.0030163360127067,
+        "drift_std": 0.0573939512722252,
+        "state_distribution": {
+          "resistance": 0.03907728618823896,
+          "stable": 0.9242724499565808,
+          "sensitivity": 0.03665026385518025
+        },
+        "mean_tir": 0.5653737391730311
+      },
+      "c": {
+        "correlation": -0.08022057038073178,
+        "n_samples": 84622,
+        "nominal_isf": 45.0,
+        "drift_mean": 1.0009642882465553,
+        "drift_std": 0.008540046074901804,
+        "state_distribution": {
+          "resistance": 0.00014180709508165726,
+          "stable": 0.9992318782349744,
+          "sensitivity": 0.0006263146699439862
+        },
+        "mean_tir": 0.6148844272175085
+      },
+      "d": {
+        "correlation": -0.07809036457203257,
+        "n_samples": 79233,
+        "nominal_isf": 45.0,
+        "drift_mean": 0.9998810820968255,
+        "drift_std": 0.01975653783571445,
+        "state_distribution": {
+          "resistance": 0.002864967879545139,
+          "stable": 0.9949263564423915,
+          "sensitivity": 0.0022086756780634333
+        },
+        "mean_tir": 0.7961329244128078
+      },
+      "e": {
+        "correlation": -0.11919730963109121,
+        "n_samples": 60559,
+        "nominal_isf": 45.0,
+        "drift_mean": 1.0011725938524596,
+        "drift_std": 0.03577175448216306,
+        "state_distribution": {
+          "resistance": 0.016677950428507737,
+          "stable": 0.9699962020508925,
+          "sensitivity": 0.013325847520599746
+        },
+        "mean_tir": 0.6607647087963804
+      },
+      "f": {
+        "correlation": -0.2045956230225586,
+        "n_samples": 45254,
+        "nominal_isf": 45.0,
+        "drift_mean": 1.0097970467926716,
+        "drift_std": 0.06414072386938224,
+        "state_distribution": {
+          "resistance": 0.048769169576170064,
+          "stable": 0.883082158483228,
+          "sensitivity": 0.06814867194060194
+        },
+        "mean_tir": 0.6576877182127546
+      },
+      "g": {
+        "correlation": -0.19000247675499862,
+        "n_samples": 44864,
+        "nominal_isf": 45.0,
+        "drift_mean": 1.0096754140909812,
+        "drift_std": 0.06150058962963579,
+        "state_distribution": {
+          "resistance": 0.037936875891583455,
+          "stable": 0.9082337731811697,
+          "sensitivity": 0.05382935092724679
+        },
+        "mean_tir": 0.7549984397289586
+      },
+      "h": {
+        "correlation": -0.2649160918652543,
+        "n_samples": 18259,
+        "nominal_isf": 45.0,
+        "drift_mean": 1.0046874904917513,
+        "drift_std": 0.05504277430988387,
+        "state_distribution": {
+          "resistance": 0.02979352648009201,
+          "stable": 0.9300071197765486,
+          "sensitivity": 0.04019935374335944
+        },
+        "mean_tir": 0.8494441097540939
+      },
+      "i": {
+        "correlation": -0.037056211636301385,
+        "n_samples": 90398,
+        "nominal_isf": 45.0,
+        "drift_mean": 1.0009856412752496,
+        "drift_std": 0.008003868240042289,
+        "state_distribution": {
+          "resistance": 0.00013274629969689595,
+          "stable": 0.9996570720591164,
+          "sensitivity": 0.00021018164118675193
+        },
+        "mean_tir": 0.5996758777849067
+      },
+      "j": {
+        "correlation": -0.12121926139952711,
+        "n_samples": 26212,
+        "nominal_isf": 45.0,
+        "drift_mean": 1.0005451277616697,
+        "drift_std": 0.03334215671529656,
+        "state_distribution": {
+          "resistance": 0.00610407446970853,
+          "stable": 0.9884785594384251,
+          "sensitivity": 0.005417366091866321
+        },
+        "mean_tir": 0.8083320616511521
+      }
+    },
+    "method": "autosens_sliding_median",
+    "window_size": 24,
+    "isf_source": "load_patient_profile",
+    "comparison": {
+      "exp124_corr": 0.7,
+      "exp154_median_corr": -0.071
+    }
+  }
+}

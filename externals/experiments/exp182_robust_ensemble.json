@@ -1,0 +1,57 @@
+{
+  "experiment": "EXP-182",
+  "name": "robust-ensemble",
+  "results": {
+    "ensemble_mae_mgdl": 11.689650267362595,
+    "ensemble_hypo_mae_mgdl": 14.599315822124481,
+    "persistence_mae_mgdl": 34.34881657668109,
+    "n_members_trained": 5,
+    "n_members_valid": 5,
+    "n_members_diverged": 0,
+    "all_converged": true,
+    "members": [
+      {
+        "arch": "d32_L2",
+        "diverged": false,
+        "best_val_mse": 0.0024568401532694293,
+        "forecast_mae_mgdl": 12.94257441206721
+      },
+      {
+        "arch": "d64_L2",
+        "diverged": false,
+        "best_val_mse": 0.0023404727946268935,
+        "forecast_mae_mgdl": 12.26939237384311
+      },
+      {
+        "arch": "d64_L4",
+        "diverged": false,
+        "best_val_mse": 0.002418882964048233,
+        "forecast_mae_mgdl": 12.311732454674926
+      },
+      {
+        "arch": "d128_L6",
+        "diverged": false,
+        "best_val_mse": 0.002528679837438988,
+        "forecast_mae_mgdl": 12.620102875767621
+      },
+      {
+        "arch": "d32_L6",
+        "diverged": false,
+        "best_val_mse": 0.00236027662677485,
+        "forecast_mae_mgdl": 12.373798020362118
+      }
+    ],
+    "training": {
+      "epochs": 150,
+      "warmup": 10,
+      "grad_clip": 1.0,
+      "schedule": "cosine_with_warmup"
+    },
+    "robustness": {
+      "dropout": true,
+      "weight_decay": true,
+      "divergence_detection": true,
+      "divergence_threshold": "10x persistence"
+    }
+  }
+}
