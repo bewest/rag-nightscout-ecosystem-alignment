@@ -1,0 +1,34 @@
+{
+  "experiment": "EXP-169",
+  "name": "forecast-volatile-specialist",
+  "results": {
+    "general": {
+      "overall_mae": 12.448960520969322,
+      "volatile_mae": 19.03338519955101,
+      "calm_mae": 10.935529322326994,
+      "hypo_mae": 12.506806814485726,
+      "n_volatile": 14544,
+      "n_calm": 63276
+    },
+    "specialist": {
+      "overall_mae": 22.815053938765416,
+      "volatile_mae": 22.798026426659426,
+      "calm_mae": 22.818967715490707,
+      "hypo_mae": 17.317133592594715,
+      "n_volatile": 14544,
+      "n_calm": 63276
+    },
+    "routed": {
+      "overall_mae": 13.152544972357974,
+      "volatile_mae": 22.798026426659426,
+      "calm_mae": 10.935529322326994,
+      "hypo_mae": 14.498441428216973,
+      "n_volatile": 14544,
+      "n_calm": 63276
+    },
+    "persistence_mae_mgdl": 34.31648655280201,
+    "volatile_pct": 18.390715965608976,
+    "epochs": 100,
+    "causal_masked": true
+  }
+}

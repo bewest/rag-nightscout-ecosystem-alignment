@@ -1,0 +1,70 @@
+{
+  "experiment": "EXP-172",
+  "name": "xgb-event-clean",
+  "results": {
+    "configs": {
+      "baseline": {
+        "f1_macro": 0.5090691914589506,
+        "f1_weighted": 0.5956722110665421,
+        "top_features": {
+          "carbs_total": 0.21852493286132812,
+          "cob_now": 0.1310010850429535,
+          "bolus_total": 0.12943516671657562,
+          "net_basal_now": 0.10524286329746246,
+          "iob_now": 0.06356017291545868,
+          "hour_of_day": 0.06088755279779434,
+          "time_sin": 0.039759211242198944,
+          "glucose_max": 0.02905569225549698,
+          "glucose_mean_roc": 0.028629224747419357,
+          "time_cos": 0.02459450624883175
+        }
+      },
+      "deeper": {
+        "f1_macro": 0.5318326687091712,
+        "f1_weighted": 0.6132149213922784,
+        "top_features": {
+          "carbs_total": 0.2206912338733673,
+          "cob_now": 0.13537350296974182,
+          "bolus_total": 0.12649381160736084,
+          "net_basal_now": 0.12057887762784958,
+          "iob_now": 0.06140054017305374,
+          "hour_of_day": 0.05939629673957825,
+          "time_sin": 0.038962315768003464,
+          "glucose_max": 0.02940427139401436,
+          "time_cos": 0.024825025349855423,
+          "iob_change": 0.0221213661134243
+        }
+      },
+      "shallow_long": {
+        "f1_macro": 0.4712596601725107,
+        "f1_weighted": 0.56338562397889,
+        "top_features": {
+          "carbs_total": 0.19901247322559357,
+          "cob_now": 0.14430460333824158,
+          "bolus_total": 0.1232074648141861,
+          "net_basal_now": 0.08426986634731293,
+          "hour_of_day": 0.06756032258272171,
+          "iob_now": 0.06078336015343666,
+          "time_sin": 0.04409908875823021,
+          "glucose_mean_roc": 0.04238023981451988,
+          "glucose_std": 0.0294368676841259,
+          "glucose_max": 0.025917263701558113
+        }
+      }
+    },
+    "best_config": "deeper",
+    "best_f1_macro": 0.5318326687091712,
+    "n_classes": 6,
+    "label_map": {
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "5": 3,
+      "6": 4,
+      "8": 5
+    },
+    "n_features": 23,
+    "lead_time_removed": true,
+    "derivative_features_added": true
+  }
+}

@@ -6449,3 +6449,789 @@ def run_worst_patient_finetune(args):
                    'results': results}, f, indent=2)
     print(f"  Results -> {out_path}")
     return results
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Phase 3b: Forecast-masked experiments (proper causal evaluation)
+# All Phase 3 experiments (164-168) used reconstruction MAE.
+# These repeat the most promising techniques with proper causal masking.
+# ═══════════════════════════════════════════════════════════════════
+
+REGISTRY.update({
+    'forecast-volatile-specialist':   'run_forecast_volatile_specialist',   # EXP-169
+    'forecast-attention-forcing':     'run_forecast_attention_forcing',     # EXP-170
+    'forecast-production-v8':         'run_forecast_production_v8',         # EXP-171
+    'xgb-event-clean':               'run_xgb_event_clean',               # EXP-172
+    'forecast-worst-patient':         'run_forecast_worst_patient',         # EXP-173
+})
+
+
+# ── EXP-169: Forecast-masked volatile specialist ──────────────────
+# EXP-166 showed volatile specialist helps in reconstruction.
+# Does the same routing strategy help when evaluating true forecast MAE?
+# Hypothesis: routing volatile windows to a specialist improves
+# forecast MAE on volatile periods (currently ~15.5 mg/dL).
+def run_forecast_volatile_specialist(args):
+    """EXP-169: Volatile-period specialist with causal forecast masking."""
+    import json, os, torch
+    import torch.nn.functional as F
+    import numpy as np
+    from torch.utils.data import DataLoader
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    epochs = getattr(args, 'epochs', 100)
+    batch = getattr(args, 'batch_size', 128)
+    ws = getattr(args, 'window_size', 24)
+    _dev = getattr(args, 'device', 'cpu')
+    device = 'cuda' if _dev == 'auto' and torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+
+    if not patients_dir:
+        print("  [EXP-169] Need --patients-dir"); return {}
+
+    from .real_data_adapter import load_multipatient_nightscout
+    from .experiment_lib import resolve_patient_paths, forecast_mse, persistence_mse
+    from .model import CGMGroupedEncoder
+
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+    half = ws // 2
+    print(f"  [EXP-169] {len(train_ds)} train, {len(val_ds)} val, device={device}")
+
+    def classify_volatility(ds, threshold=0.15):
+        """Split dataset into volatile/calm based on future glucose CoV."""
+        volatile_idx, calm_idx = [], []
+        for i in range(len(ds)):
+            x = ds[i][0]
+            future_g = x[half:, 0]
+            cov = float(future_g.std() / max(future_g.mean(), 1e-6))
+            (volatile_idx if cov > threshold else calm_idx).append(i)
+        return volatile_idx, calm_idx
+
+    def train_forecast_model(ds, tag, ep=None):
+        """Train a model with causal masking."""
+        ep = ep or epochs
+        m = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=3).to(device)
+        opt = torch.optim.AdamW(m.parameters(), lr=1e-3, weight_decay=1e-5)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=10)
+        tl = DataLoader(ds, batch_size=batch, shuffle=True)
+        best_val = float('inf')
+        for e in range(1, ep + 1):
+            m.train()
+            for bx, bt in tl:
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0  # mask future glucose
+                opt.zero_grad()
+                pred = m(x_in)
+                loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+                loss.backward(); opt.step()
+            # Validate
+            m.eval()
+            val_mae = forecast_mse(m, val_ds, mask_future=True)
+            sched.step(val_mae)
+            if val_mae < best_val:
+                best_val = val_mae
+            if e % 20 == 0:
+                print(f"    [{tag}] {e}/{ep} val_mse={val_mae:.6f} best={best_val:.6f}")
+        return m, best_val
+
+    # 1. Train general model on all data
+    print("  [EXP-169] Training general forecast model...")
+    general_model, gen_val = train_forecast_model(train_ds, "general")
+
+    # 2. Classify volatile/calm in training data
+    vol_idx, calm_idx = classify_volatility(train_ds)
+    vol_pct = len(vol_idx) / len(train_ds) * 100
+    print(f"  [EXP-169] Volatile: {len(vol_idx)} ({vol_pct:.0f}%), Calm: {len(calm_idx)}")
+
+    # 3. Train specialist on volatile subset
+    if len(vol_idx) > 100:
+        vol_ds = torch.utils.data.Subset(train_ds, vol_idx)
+        print("  [EXP-169] Training volatile specialist...")
+        specialist_model, spec_val = train_forecast_model(vol_ds, "specialist", ep=epochs)
+    else:
+        specialist_model = general_model
+        spec_val = gen_val
+
+    # 4. Evaluate all three strategies on val set
+    def eval_strategy(models_fn, tag):
+        """Evaluate a routing strategy for forecast MAE."""
+        mae_sum, n, hypo_sum, hypo_n = 0, 0, 0, 0
+        vol_mae_sum, vol_n = 0, 0
+        calm_mae_sum, calm_n = 0, 0
+        with torch.no_grad():
+            vl = DataLoader(val_ds, batch_size=256)
+            for bx, bt in vl:
+                bx = bx.to(device)
+                B = bx.shape[0]
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0
+                # Classify each sample
+                for i in range(B):
+                    future_g = bx[i, half:, 0]
+                    cov = float(future_g.std() / max(future_g.mean(), 1e-6))
+                    is_vol = cov > 0.15
+                    model = models_fn(is_vol)
+                    pred = model(x_in[i:i+1])
+                    err = (pred[0, half:, 0] - bx[i, half:, 0]).abs() * 400
+                    mae_sum += err.sum().item()
+                    n += err.numel()
+                    if is_vol:
+                        vol_mae_sum += err.sum().item()
+                        vol_n += err.numel()
+                    else:
+                        calm_mae_sum += err.sum().item()
+                        calm_n += err.numel()
+                    # Hypo
+                    hypo_mask = bx[i, half:, 0] < 0.2  # <80 mg/dL
+                    if hypo_mask.any():
+                        hypo_sum += err[hypo_mask].sum().item()
+                        hypo_n += hypo_mask.sum().item()
+        return {
+            'overall_mae': mae_sum / max(n, 1),
+            'volatile_mae': vol_mae_sum / max(vol_n, 1),
+            'calm_mae': calm_mae_sum / max(calm_n, 1),
+            'hypo_mae': hypo_sum / max(hypo_n, 1),
+            'n_volatile': vol_n, 'n_calm': calm_n,
+        }
+
+    print("  [EXP-169] Evaluating strategies...")
+    general_results = eval_strategy(lambda _: general_model, "general")
+    specialist_results = eval_strategy(lambda _: specialist_model, "specialist")
+    routed_results = eval_strategy(
+        lambda is_vol: specialist_model if is_vol else general_model, "routed")
+
+    # Persistence baseline
+    pers_mse = persistence_mse(val_ds)
+    pers_mae = float(np.sqrt(pers_mse) * 400) if pers_mse else 25.9
+
+    results = {
+        'general': general_results,
+        'specialist': specialist_results,
+        'routed': routed_results,
+        'persistence_mae_mgdl': pers_mae,
+        'volatile_pct': vol_pct,
+        'epochs': epochs,
+        'causal_masked': True,
+    }
+    for tag, r in [('general', general_results), ('specialist', specialist_results), ('routed', routed_results)]:
+        print(f"  [{tag}] overall={r['overall_mae']:.1f}, volatile={r['volatile_mae']:.1f}, calm={r['calm_mae']:.1f}")
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp169_forecast_volatile_specialist.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-169', 'name': 'forecast-volatile-specialist',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# ── EXP-170: Forecast-masked attention forcing ────────────────────
+# EXP-167 showed glucose masking reduces dominance from 99.7→93.6% in
+# reconstruction. Does this transfer to better forecast generalization?
+# Hypothesis: randomly masking glucose history during training forces
+# the model to learn IOB/COB/insulin features, improving forecast MAE.
+def run_forecast_attention_forcing(args):
+    """EXP-170: Glucose channel masking + causal forecast masking."""
+    import json, os, torch
+    import torch.nn.functional as F
+    import numpy as np
+    from torch.utils.data import DataLoader
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    epochs = getattr(args, 'epochs', 100)
+    batch = getattr(args, 'batch_size', 128)
+    ws = getattr(args, 'window_size', 24)
+    _dev = getattr(args, 'device', 'cpu')
+    device = 'cuda' if _dev == 'auto' and torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+
+    if not patients_dir:
+        print("  [EXP-170] Need --patients-dir"); return {}
+
+    from .real_data_adapter import load_multipatient_nightscout
+    from .experiment_lib import resolve_patient_paths, forecast_mse, persistence_mse
+    from .model import CGMGroupedEncoder
+
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+    half = ws // 2
+    print(f"  [EXP-170] {len(train_ds)} train, {len(val_ds)} val, device={device}")
+
+    mask_rates = [0.0, 0.15, 0.30, 0.50]
+    all_results = {}
+
+    for mask_rate in mask_rates:
+        tag = f"mask_{int(mask_rate*100)}pct"
+        print(f"  [EXP-170] Training with {mask_rate*100:.0f}% glucose history masking...")
+        m = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=3).to(device)
+        opt = torch.optim.AdamW(m.parameters(), lr=1e-3, weight_decay=1e-5)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=10)
+        tl = DataLoader(train_ds, batch_size=batch, shuffle=True)
+        best_val = float('inf')
+        best_state = None
+
+        for e in range(1, epochs + 1):
+            m.train()
+            for bx, bt in tl:
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0  # mask future glucose (causal)
+                # Additionally mask random positions in history glucose
+                if mask_rate > 0:
+                    mask = torch.rand(bx.shape[0], half, device=device) < mask_rate
+                    x_in[:, :half, 0] = x_in[:, :half, 0] * (~mask).float()
+                opt.zero_grad()
+                pred = m(x_in)
+                loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+                loss.backward(); opt.step()
+            # Validate (no history masking during eval)
+            m.eval()
+            val_mse = forecast_mse(m, val_ds, mask_future=True)
+            sched.step(val_mse)
+            if val_mse < best_val:
+                best_val = val_mse
+                best_state = {k: v.cpu().clone() for k, v in m.state_dict().items()}
+            if e % 25 == 0:
+                print(f"    [{tag}] {e}/{epochs} val_mse={val_mse:.6f} best={best_val:.6f}")
+
+        # Reload best
+        if best_state:
+            m.load_state_dict(best_state)
+            m.to(device)
+
+        # Evaluate MAE in mg/dL
+        m.eval()
+        mae_sum, n = 0, 0
+        with torch.no_grad():
+            for bx, bt in DataLoader(val_ds, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0
+                pred = m(x_in)
+                err = (pred[:, half:, :1] - bx[:, half:, :1]).abs() * 400
+                mae_sum += err.sum().item()
+                n += err.numel()
+        mae_mgdl = mae_sum / max(n, 1)
+
+        # Glucose dominance: check attention weights
+        # Approximation: compare MAE with/without glucose history
+        m.eval()
+        mae_no_g_sum, n2 = 0, 0
+        with torch.no_grad():
+            for bx, bt in DataLoader(val_ds, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, :, 0] = 0.0  # remove ALL glucose (history + future)
+                pred = m(x_in)
+                err = (pred[:, half:, :1] - bx[:, half:, :1]).abs() * 400
+                mae_no_g_sum += err.sum().item()
+                n2 += err.numel()
+        mae_no_glucose = mae_no_g_sum / max(n2, 1)
+        glucose_importance = 1.0 - mae_mgdl / max(mae_no_glucose, 0.01)
+
+        all_results[tag] = {
+            'mask_rate': mask_rate,
+            'forecast_mae_mgdl': float(mae_mgdl),
+            'best_val_mse': float(best_val),
+            'mae_without_glucose_mgdl': float(mae_no_glucose),
+            'glucose_importance': float(glucose_importance),
+        }
+        print(f"    [{tag}] MAE={mae_mgdl:.1f}, no-glucose MAE={mae_no_glucose:.1f}, "
+              f"glucose_importance={glucose_importance:.3f}")
+
+    pers_mse = persistence_mse(val_ds)
+    pers_mae = float(np.sqrt(pers_mse) * 400) if pers_mse else 25.9
+
+    results = {
+        'conditions': all_results,
+        'persistence_mae_mgdl': pers_mae,
+        'epochs': epochs,
+        'causal_masked': True,
+    }
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp170_forecast_attention_forcing.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-170', 'name': 'forecast-attention-forcing',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# ── EXP-171: Forecast-masked production v8 ────────────────────────
+# Production v7 (EXP-137) achieved MAE=12.9, Hypo F1=0.700.
+# Best ensemble (EXP-139) achieved MAE=12.1.
+# Hypothesis: combining diverse architectures + hypo weighting +
+# longer training with proper causal masking beats both.
+def run_forecast_production_v8(args):
+    """EXP-171: Combined best-practices ensemble with causal forecast."""
+    import json, os, torch
+    import torch.nn.functional as F
+    import numpy as np
+    from torch.utils.data import DataLoader
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    epochs = getattr(args, 'epochs', 150)
+    batch = getattr(args, 'batch_size', 128)
+    ws = getattr(args, 'window_size', 24)
+    _dev = getattr(args, 'device', 'cpu')
+    device = 'cuda' if _dev == 'auto' and torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+
+    if not patients_dir:
+        print("  [EXP-171] Need --patients-dir"); return {}
+
+    from .real_data_adapter import load_multipatient_nightscout
+    from .experiment_lib import resolve_patient_paths, forecast_mse, persistence_mse
+    from .model import CGMGroupedEncoder
+
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+    half = ws // 2
+    print(f"  [EXP-171] {len(train_ds)} train, {len(val_ds)} val, device={device}")
+
+    configs = [
+        {'d_model': 32, 'num_layers': 2, 'tag': 'd32_L2'},
+        {'d_model': 64, 'num_layers': 2, 'tag': 'd64_L2'},
+        {'d_model': 64, 'num_layers': 4, 'tag': 'd64_L4'},
+        {'d_model': 128, 'num_layers': 6, 'tag': 'd128_L6'},
+        {'d_model': 32, 'num_layers': 6, 'tag': 'd32_L6'},
+    ]
+
+    hypo_weight = 3.0
+    models = []
+    individual_maes = {}
+
+    for cfg in configs:
+        tag = cfg['tag']
+        print(f"  [EXP-171] Training {tag} ({epochs} epochs)...")
+        m = CGMGroupedEncoder(input_dim=8, d_model=cfg['d_model'],
+                              num_layers=cfg['num_layers']).to(device)
+        opt = torch.optim.AdamW(m.parameters(), lr=1e-3, weight_decay=1e-5)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=15, factor=0.5)
+        tl = DataLoader(train_ds, batch_size=batch, shuffle=True)
+        best_val = float('inf')
+        best_state = None
+
+        for e in range(1, epochs + 1):
+            m.train()
+            for bx, bt in tl:
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0
+                opt.zero_grad()
+                pred = m(x_in)
+                # Hypo-weighted loss
+                base_loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1], reduction='none')
+                tgt = bx[:, half:, :1]
+                hypo_mask = (tgt < 0.2).float()  # <80 mg/dL
+                weights = 1.0 + (hypo_weight - 1.0) * hypo_mask
+                loss = (base_loss * weights).mean()
+                loss.backward(); opt.step()
+            m.eval()
+            val_mse = forecast_mse(m, val_ds, mask_future=True)
+            sched.step(val_mse)
+            if val_mse < best_val:
+                best_val = val_mse
+                best_state = {k: v.cpu().clone() for k, v in m.state_dict().items()}
+            if e % 30 == 0:
+                print(f"    [{tag}] {e}/{epochs} val_mse={val_mse:.6f} best={best_val:.6f}")
+
+        if best_state:
+            m.load_state_dict(best_state)
+            m.to(device)
+        m.eval()
+
+        # Per-model MAE
+        mae_sum, n = 0, 0
+        with torch.no_grad():
+            for bx, bt in DataLoader(val_ds, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0
+                pred = m(x_in)
+                err = (pred[:, half:, :1] - bx[:, half:, :1]).abs() * 400
+                mae_sum += err.sum().item()
+                n += err.numel()
+        ind_mae = mae_sum / max(n, 1)
+        individual_maes[tag] = ind_mae
+        print(f"    [{tag}] forecast MAE={ind_mae:.1f} mg/dL")
+        models.append(m)
+
+    # Ensemble evaluation
+    print("  [EXP-171] Evaluating ensemble...")
+    ens_mae_sum, ens_n = 0, 0
+    hypo_mae_sum, hypo_n = 0, 0
+    all_errors = []
+    all_spreads = []
+
+    with torch.no_grad():
+        for bx, bt in DataLoader(val_ds, batch_size=256):
+            bx = bx.to(device)
+            x_in = bx.clone()
+            x_in[:, half:, 0] = 0.0
+            preds = [m(x_in)[:, half:, 0:1] for m in models]
+            stacked = torch.stack(preds, dim=0)
+            mean_pred = stacked.mean(dim=0)
+            tgt = bx[:, half:, 0:1]
+            errors = (mean_pred - tgt).abs() * 400
+            ens_mae_sum += errors.sum().item()
+            ens_n += errors.numel()
+            all_errors.extend(errors.cpu().numpy().flatten())
+            # Ensemble spread for PI
+            spread = stacked.std(dim=0) * 400
+            all_spreads.extend(spread.cpu().numpy().flatten())
+            # Hypo
+            hypo_mask = tgt < 0.2
+            if hypo_mask.any():
+                hypo_mae_sum += errors[hypo_mask].sum().item()
+                hypo_n += hypo_mask.sum().item()
+
+    ens_mae = ens_mae_sum / max(ens_n, 1)
+    ens_hypo_mae = hypo_mae_sum / max(hypo_n, 1) if hypo_n > 0 else float('nan')
+
+    # PI from error distribution
+    errors_arr = np.array(all_errors)
+    pi_90_width = float(np.percentile(errors_arr, 95) - np.percentile(errors_arr, 5))
+    pi_coverage = float(np.mean(errors_arr < np.percentile(errors_arr, 90)))
+
+    # Conformal coverage using ±2σ ensemble spread
+    spreads_arr = np.array(all_spreads)
+    coverage_2sigma = float(np.mean(errors_arr < 2 * spreads_arr))
+
+    pers_mse = persistence_mse(val_ds)
+    pers_mae = float(np.sqrt(pers_mse) * 400) if pers_mse else 25.9
+
+    results = {
+        'ensemble_mae_mgdl': float(ens_mae),
+        'ensemble_hypo_mae_mgdl': float(ens_hypo_mae),
+        'persistence_mae_mgdl': float(pers_mae),
+        'improvement_vs_persistence': float((pers_mae - ens_mae) / pers_mae * 100),
+        'individual_maes': {k: float(v) for k, v in individual_maes.items()},
+        'pi_90_width_mgdl': float(pi_90_width),
+        'pi_coverage_90': float(pi_coverage),
+        'coverage_2sigma': float(coverage_2sigma),
+        'n_ensemble_members': len(models),
+        'hypo_weight': hypo_weight,
+        'epochs': epochs,
+        'causal_masked': True,
+    }
+    print(f"  [EXP-171] Ensemble MAE={ens_mae:.1f}, Hypo MAE={ens_hypo_mae:.1f}, "
+          f"PI width={pi_90_width:.1f}, coverage_2σ={coverage_2sigma:.3f}")
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp171_forecast_production_v8.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-171', 'name': 'forecast-production-v8',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# ── EXP-172: Clean XGBoost event detection ────────────────────────
+# EXP-164 revealed label leakage (lead_time_hr encodes the answer).
+# EXP-155 got F1=0.544 with macro-F1 on 6 event classes.
+# Hypothesis: removing lead_time_hr and adding proper temporal features
+# (rate-of-change, rolling stats) improves multi-class event detection.
+def run_xgb_event_clean(args):
+    """EXP-172: XGBoost event detection with cleaned features."""
+    import json, os
+    import numpy as np
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    if not patients_dir:
+        print("  [EXP-172] Need --patients-dir"); return {}
+
+    from .label_events import build_classifier_dataset
+
+    print("  [EXP-172] Building training dataset...")
+    train_data = build_classifier_dataset(patients_dir, split='training')
+    print("  [EXP-172] Building verification dataset...")
+    try:
+        val_data = build_classifier_dataset(patients_dir, split='verification')
+    except Exception as e:
+        print(f"  [EXP-172] No verification split: {e}")
+        # Fall back to train/test split
+        from sklearn.model_selection import train_test_split
+        X = train_data['tabular']
+        y = train_data['labels']
+        feature_names = train_data['feature_names']
+        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42,
+                                                            stratify=y if len(np.unique(y)) > 1 else None)
+        val_data = {'tabular': X_val, 'labels': y_val, 'feature_names': feature_names}
+        train_data = {'tabular': X_train, 'labels': y_train, 'feature_names': feature_names}
+
+    X_train = train_data['tabular']
+    y_train = train_data['labels']
+    X_val = val_data['tabular']
+    y_val = val_data['labels']
+    feature_names = list(train_data['feature_names'])
+
+    # Remove lead_time_hr (leaky feature)
+    if 'lead_time_hr' in feature_names:
+        leak_idx = feature_names.index('lead_time_hr')
+        X_train = np.delete(X_train, leak_idx, axis=1)
+        X_val = np.delete(X_val, leak_idx, axis=1)
+        feature_names.pop(leak_idx)
+        print(f"  [EXP-172] Removed lead_time_hr (was at index {leak_idx})")
+    else:
+        print("  [EXP-172] lead_time_hr not found in features")
+
+    # Add temporal derivative features from glucose columns
+    glucose_cols = [i for i, n in enumerate(feature_names) if 'glucose' in n.lower() or 'sgv' in n.lower() or 'bg' in n.lower()]
+    if glucose_cols:
+        print(f"  [EXP-172] Adding derivatives from {len(glucose_cols)} glucose features")
+        for ci in glucose_cols[:3]:  # limit to first 3
+            col_vals_train = X_train[:, ci]
+            col_vals_val = X_val[:, ci]
+            # Rate of change (finite diff from neighbor rows — approximate)
+            roc_train = np.gradient(col_vals_train)
+            roc_val = np.gradient(col_vals_val)
+            X_train = np.column_stack([X_train, roc_train])
+            X_val = np.column_stack([X_val, roc_val])
+            feature_names.append(f'{feature_names[ci]}_roc')
+
+    print(f"  [EXP-172] {X_train.shape[0]} train, {X_val.shape[0]} val, {len(feature_names)} features")
+    print(f"  [EXP-172] Class dist train: {dict(zip(*np.unique(y_train, return_counts=True)))}")
+    print(f"  [EXP-172] Class dist val: {dict(zip(*np.unique(y_val, return_counts=True)))}")
+
+    try:
+        import xgboost as xgb
+        from sklearn.metrics import f1_score, classification_report
+    except ImportError:
+        print("  [EXP-172] xgboost/sklearn not installed")
+        return {}
+
+    # Train with class weighting — remap non-contiguous labels to 0..N-1
+    unique_classes = np.unique(y_train)
+    n_classes = len(unique_classes)
+    label_map = {old: new for new, old in enumerate(unique_classes)}
+    inv_label_map = {new: int(old) for old, new in label_map.items()}
+    y_train_mapped = np.array([label_map[y] for y in y_train])
+    y_val_mapped = np.array([label_map.get(y, 0) for y in y_val])
+    print(f"  [EXP-172] Label map: {label_map}")
+
+    class_counts = np.bincount(y_train_mapped, minlength=n_classes)
+    class_weights = len(y_train_mapped) / (n_classes * np.maximum(class_counts, 1))
+    sample_weights = class_weights[y_train_mapped]
+
+    configs = [
+        {'max_depth': 6, 'n_estimators': 200, 'learning_rate': 0.1, 'tag': 'baseline'},
+        {'max_depth': 8, 'n_estimators': 300, 'learning_rate': 0.05, 'tag': 'deeper'},
+        {'max_depth': 4, 'n_estimators': 500, 'learning_rate': 0.05, 'tag': 'shallow_long'},
+    ]
+
+    best_f1 = 0
+    best_tag = ""
+    all_configs_results = {}
+
+    for cfg in configs:
+        tag = cfg['tag']
+        clf_params = {k: v for k, v in cfg.items() if k != 'tag'}
+        clf = xgb.XGBClassifier(**clf_params, use_label_encoder=False, eval_metric='mlogloss',
+                                 random_state=42, tree_method='hist')
+        clf.fit(X_train, y_train_mapped, sample_weight=sample_weights)
+        y_pred = clf.predict(X_val)
+        f1_macro = float(f1_score(y_val_mapped, y_pred, average='macro', zero_division=0))
+        f1_weighted = float(f1_score(y_val_mapped, y_pred, average='weighted', zero_division=0))
+
+        # Feature importance
+        importances = clf.feature_importances_
+        top_k = sorted(zip(feature_names, importances), key=lambda x: -x[1])[:10]
+
+        all_configs_results[tag] = {
+            'f1_macro': f1_macro,
+            'f1_weighted': f1_weighted,
+            'top_features': {n: float(v) for n, v in top_k},
+        }
+        print(f"  [{tag}] F1 macro={f1_macro:.3f}, weighted={f1_weighted:.3f}")
+        if f1_macro > best_f1:
+            best_f1 = f1_macro
+            best_tag = tag
+
+    results = {
+        'configs': all_configs_results,
+        'best_config': best_tag,
+        'best_f1_macro': best_f1,
+        'n_classes': n_classes,
+        'label_map': {str(k): int(v) for k, v in label_map.items()},
+        'n_features': len(feature_names),
+        'lead_time_removed': True,
+        'derivative_features_added': len(glucose_cols) > 0,
+    }
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp172_xgb_event_clean.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-172', 'name': 'xgb-event-clean',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
+
+
+# ── EXP-173: Forecast-masked worst-patient fine-tuning ────────────
+# EXP-168 showed 12-16% improvement from fine-tuning in reconstruction.
+# Does per-patient fine-tuning improve forecast MAE for worst patients?
+# Current LOO worst: patient b (22.1), patient j (20.3).
+def run_forecast_worst_patient(args):
+    """EXP-173: Per-patient fine-tuning with causal forecast masking."""
+    import json, os, torch
+    import torch.nn.functional as F
+    import numpy as np
+    from torch.utils.data import DataLoader
+
+    patients_dir = getattr(args, 'patients_dir', None)
+    real_data = getattr(args, 'real_data', None)
+    epochs = getattr(args, 'epochs', 100)
+    ft_epochs = min(30, epochs // 3)
+    batch = getattr(args, 'batch_size', 128)
+    ws = getattr(args, 'window_size', 24)
+    _dev = getattr(args, 'device', 'cpu')
+    device = 'cuda' if _dev == 'auto' and torch.cuda.is_available() else ('cpu' if _dev == 'auto' else _dev)
+
+    if not patients_dir:
+        print("  [EXP-173] Need --patients-dir"); return {}
+
+    from .real_data_adapter import load_multipatient_nightscout
+    from .experiment_lib import resolve_patient_paths, forecast_mse, persistence_mse
+    from .model import CGMGroupedEncoder
+
+    # Train base model on all patients
+    paths = resolve_patient_paths(patients_dir, real_data)
+    train_ds, val_ds = load_multipatient_nightscout(paths, window_size=ws)
+    half = ws // 2
+    print(f"  [EXP-173] {len(train_ds)} train, {len(val_ds)} val, device={device}")
+
+    print("  [EXP-173] Training base forecast model...")
+    base_model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=3).to(device)
+    opt = torch.optim.AdamW(base_model.parameters(), lr=1e-3, weight_decay=1e-5)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=15)
+    tl = DataLoader(train_ds, batch_size=batch, shuffle=True)
+    best_val = float('inf')
+    best_state = None
+
+    for e in range(1, epochs + 1):
+        base_model.train()
+        for bx, bt in tl:
+            bx = bx.to(device)
+            x_in = bx.clone()
+            x_in[:, half:, 0] = 0.0
+            opt.zero_grad()
+            pred = base_model(x_in)
+            loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+            loss.backward(); opt.step()
+        base_model.eval()
+        val_mse = forecast_mse(base_model, val_ds, mask_future=True)
+        sched.step(val_mse)
+        if val_mse < best_val:
+            best_val = val_mse
+            best_state = {k: v.cpu().clone() for k, v in base_model.state_dict().items()}
+        if e % 25 == 0:
+            print(f"    [base] {e}/{epochs} val_mse={val_mse:.6f} best={best_val:.6f}")
+
+    if best_state:
+        base_model.load_state_dict(best_state)
+        base_model.to(device)
+    base_model.eval()
+
+    # Per-patient evaluation
+    patient_dirs = sorted([d for d in os.listdir(patients_dir)
+                           if os.path.isdir(os.path.join(patients_dir, d))])
+    per_patient_base = {}
+    per_patient_finetuned = {}
+
+    for pid in patient_dirs:
+        p_path = os.path.join(patients_dir, pid, 'training')
+        if not os.path.isdir(p_path):
+            continue
+        try:
+            p_train, p_val = load_multipatient_nightscout([p_path], window_size=ws)
+        except Exception:
+            continue
+        if len(p_val) < 10:
+            continue
+
+        # Base model MAE on this patient
+        mae_sum, n = 0, 0
+        with torch.no_grad():
+            for bx, bt in DataLoader(p_val, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0
+                pred = base_model(x_in)
+                err = (pred[:, half:, :1] - bx[:, half:, :1]).abs() * 400
+                mae_sum += err.sum().item()
+                n += err.numel()
+        base_mae = mae_sum / max(n, 1)
+        per_patient_base[pid] = base_mae
+        print(f"  [EXP-173] Patient {pid}: base forecast MAE={base_mae:.1f}")
+
+    # Fine-tune on worst patients
+    sorted_patients = sorted(per_patient_base.items(), key=lambda x: -x[1])
+    worst_patients = [p for p, _ in sorted_patients[:3]]
+    print(f"  [EXP-173] Worst patients: {worst_patients}")
+
+    for pid in worst_patients:
+        p_path = os.path.join(patients_dir, pid, 'training')
+        p_train, p_val = load_multipatient_nightscout([p_path], window_size=ws)
+
+        # Clone base model for fine-tuning
+        ft_model = CGMGroupedEncoder(input_dim=8, d_model=64, num_layers=3).to(device)
+        ft_model.load_state_dict(base_model.state_dict())
+        ft_opt = torch.optim.AdamW(ft_model.parameters(), lr=5e-5, weight_decay=1e-5)
+        ptl = DataLoader(p_train, batch_size=min(batch, len(p_train)), shuffle=True)
+
+        for e in range(1, ft_epochs + 1):
+            ft_model.train()
+            for bx, bt in ptl:
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0
+                ft_opt.zero_grad()
+                pred = ft_model(x_in)
+                loss = F.mse_loss(pred[:, half:, :1], bx[:, half:, :1])
+                loss.backward(); ft_opt.step()
+
+        ft_model.eval()
+        mae_sum, n = 0, 0
+        with torch.no_grad():
+            for bx, bt in DataLoader(p_val, batch_size=256):
+                bx = bx.to(device)
+                x_in = bx.clone()
+                x_in[:, half:, 0] = 0.0
+                pred = ft_model(x_in)
+                err = (pred[:, half:, :1] - bx[:, half:, :1]).abs() * 400
+                mae_sum += err.sum().item()
+                n += err.numel()
+        ft_mae = mae_sum / max(n, 1)
+        per_patient_finetuned[pid] = ft_mae
+        improvement = (per_patient_base[pid] - ft_mae) / per_patient_base[pid] * 100
+        print(f"    {pid}: {per_patient_base[pid]:.1f} → {ft_mae:.1f} ({improvement:+.1f}%)")
+
+    pers_mse = persistence_mse(val_ds)
+    pers_mae = float(np.sqrt(pers_mse) * 400) if pers_mse else 25.9
+
+    results = {
+        'per_patient_base': {k: float(v) for k, v in per_patient_base.items()},
+        'per_patient_finetuned': {k: float(v) for k, v in per_patient_finetuned.items()},
+        'worst_patients': worst_patients,
+        'persistence_mae_mgdl': pers_mae,
+        'ft_epochs': ft_epochs,
+        'base_epochs': epochs,
+        'causal_masked': True,
+    }
+
+    out_path = os.path.join(getattr(args, 'output_dir', 'externals/experiments'),
+                            'exp173_forecast_worst_patient.json')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w') as f:
+        json.dump({'experiment': 'EXP-173', 'name': 'forecast-worst-patient',
+                   'results': results}, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return results
