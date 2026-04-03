@@ -13345,9 +13345,11 @@ def run_production_v12_integrated(args):
         ).to(device)
         
         try:
-            train_forecast(model, ds_train, ds_val, epochs=epochs, batch_size=batch_size,
-                         lr=3e-4, device=device, patience=30)
-            mse = forecast_mse(model, ds_val, batch_size=batch_size, device=device)
+            save_p = os.path.join(args.output_dir, f"exp208_{arch['name']}.pth")
+            train_forecast(model, ds_train, ds_val, save_path=save_p,
+                         label=arch['name'], epochs=epochs, batch=batch_size,
+                         lr=3e-4, patience=30)
+            mse = forecast_mse(model, ds_val, batch_size=batch_size)
             mae = mse**0.5 * 400
             print(f"      MAE={mae:.1f} mg/dL")
             
@@ -13359,6 +13361,9 @@ def run_production_v12_integrated(args):
             print(f"      Failed: {e}")
     
     # Ensemble forecast
+    if len(models) == 0:
+        print("  ERROR: No models trained successfully")
+        return {}
     print(f"  [Stage 1b] Ensemble of {len(models)} models...")
     from torch.utils.data import DataLoader
     val_loader = DataLoader(ds_val, batch_size=batch_size, shuffle=False)
