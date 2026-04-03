@@ -3,24 +3,24 @@
   "name": "hypo-weighted-loss",
   "results": {
     "baseline": {
-      "overall_mae": 12.5,
-      "hypo_mae": 13.9,
-      "severe_hypo_mae": 17.9,
-      "inrange_mae": 10.1,
-      "hyper_mae": 17.7,
+      "overall_mae": 12.6,
+      "hypo_mae": 15.2,
+      "severe_hypo_mae": 20.2,
+      "inrange_mae": 10.3,
+      "hyper_mae": 17.5,
       "hypo_n": 2881,
       "severe_n": 791
     },
     "weighted": {
       "overall_mae": 13.1,
-      "hypo_mae": 12.0,
-      "severe_hypo_mae": 16.1,
-      "inrange_mae": 11.1,
-      "hyper_mae": 17.8,
+      "hypo_mae": 12.4,
+      "severe_hypo_mae": 14.7,
+      "inrange_mae": 10.7,
+      "hyper_mae": 18.3,
       "hypo_n": 2881,
       "severe_n": 791
     },
-    "hypo_improvement_pct": 13.7,
-    "severe_improvement_pct": 10.1
+    "hypo_improvement_pct": 18.4,
+    "severe_improvement_pct": 27.2
   }
 }

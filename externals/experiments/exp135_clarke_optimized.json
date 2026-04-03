@@ -3,15 +3,15 @@
   "name": "clarke-optimized",
   "results": {
     "clarke_optimized": {
-      "zone_a_pct": 86.6,
-      "zone_ab_pct": 97.3,
-      "mae": 16.1
+      "zone_a_pct": 86.7,
+      "zone_ab_pct": 97.1,
+      "mae": 15.9
     },
     "baseline": {
-      "zone_a_pct": 88.5,
-      "zone_ab_pct": 97.4,
-      "mae": 14.9
+      "zone_a_pct": 87.6,
+      "zone_ab_pct": 97.0,
+      "mae": 15.1
     },
-    "ab_improvement": -0.1
+    "ab_improvement": 0.1
   }
 }

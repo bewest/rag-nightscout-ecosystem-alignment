@@ -4,11 +4,11 @@
   "results": {
     "synth_train_n": 8000,
     "real_train_n": 25937,
-    "real_only_mae": 13.2,
-    "pretrain_before_finetune_mae": 42.1,
-    "pretrain_finetune_mae": 13.2,
-    "long_finetune_mae": 13.8,
-    "improvement_pct": 0.3,
-    "synth_only_mae_on_real": 42.1
+    "real_only_mae": 12.9,
+    "pretrain_before_finetune_mae": 48.2,
+    "pretrain_finetune_mae": 13.1,
+    "long_finetune_mae": 12.8,
+    "improvement_pct": -2.0,
+    "synth_only_mae_on_real": 48.2
   }
 }

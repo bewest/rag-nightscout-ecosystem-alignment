@@ -3,11 +3,11 @@
   "name": "diverse-ensemble",
   "results": {
     "individual_maes": [
-      13.6,
-      12.6,
-      16.7,
-      14.4,
-      13.2
+      14.3,
+      13.0,
+      13.3,
+      12.8,
+      13.4
     ],
     "configs": [
       "d32_L2",
@@ -16,10 +16,10 @@
       "d64_L2",
       "d32_L6"
     ],
-    "ensemble_mae": 13.0,
-    "best_individual": 12.6,
-    "improvement_pct": -3.0,
-    "avg_ensemble_std": 7.1,
-    "coverage_95_2sigma": 0.648
+    "ensemble_mae": 12.1,
+    "best_individual": 12.8,
+    "improvement_pct": 5.3,
+    "avg_ensemble_std": 6.9,
+    "coverage_95_2sigma": 0.659
   }
 }

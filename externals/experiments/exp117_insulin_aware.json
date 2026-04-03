@@ -3,14 +3,14 @@
   "name": "insulin-aware-training",
   "results": {
     "baseline": {
+      "mae_mgdl": 12.9,
+      "insulin_gradient": 0.0003
+    },
+    "insulin_aux": {
       "mae_mgdl": 12.8,
       "insulin_gradient": 0.0002
     },
-    "insulin_aux": {
-      "mae_mgdl": 12.7,
-      "insulin_gradient": 0.0002
-    },
     "mae_improvement_pct": 0.8,
-    "gradient_improvement_pct": 0.0
+    "gradient_improvement_pct": -33.3
   }
 }
