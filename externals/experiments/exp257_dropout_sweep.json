@@ -1,0 +1,97 @@
+{
+  "experiment": "EXP-257: Dropout Sweep (L=4, seed=42)",
+  "hypothesis": "Higher dropout creates implicit ensemble, reduces verification gap",
+  "dropout_results": {
+    "dp=0.15": {
+      "base_mae": 12.69,
+      "patients": {
+        "d": {
+          "training_mae": 8.27,
+          "verification_mae": 8.68,
+          "gap": 0.41,
+          "gap_pct": 4.9
+        },
+        "a": {
+          "training_mae": 11.85,
+          "verification_mae": 10.98,
+          "gap": -0.86,
+          "gap_pct": -7.3
+        },
+        "j": {
+          "training_mae": 16.07,
+          "verification_mae": 20.7,
+          "gap": 4.63,
+          "gap_pct": 28.8
+        }
+      }
+    },
+    "dp=0.2": {
+      "base_mae": 12.8,
+      "patients": {
+        "d": {
+          "training_mae": 8.34,
+          "verification_mae": 8.36,
+          "gap": 0.02,
+          "gap_pct": 0.2
+        },
+        "a": {
+          "training_mae": 12.12,
+          "verification_mae": 10.75,
+          "gap": -1.37,
+          "gap_pct": -11.3
+        },
+        "j": {
+          "training_mae": 16.13,
+          "verification_mae": 21.46,
+          "gap": 5.33,
+          "gap_pct": 33.1
+        }
+      }
+    },
+    "dp=0.3": {
+      "base_mae": 12.51,
+      "patients": {
+        "d": {
+          "training_mae": 8.28,
+          "verification_mae": 7.78,
+          "gap": -0.5,
+          "gap_pct": -6.1
+        },
+        "a": {
+          "training_mae": 12.09,
+          "verification_mae": 10.95,
+          "gap": -1.14,
+          "gap_pct": -9.4
+        },
+        "j": {
+          "training_mae": 16.53,
+          "verification_mae": 22.48,
+          "gap": 5.95,
+          "gap_pct": 36.0
+        }
+      }
+    }
+  },
+  "config": {
+    "d_model": 64,
+    "nhead": 4,
+    "num_layers": 4,
+    "test_patients": [
+      "d",
+      "a",
+      "j"
+    ],
+    "seed": 42,
+    "dropout_values": [
+      0.15,
+      0.2,
+      0.3
+    ],
+    "base_epochs": 150,
+    "ft_epochs": 30
+  },
+  "comparison": {
+    "exp250_dp0.1_base_mae": 12.72,
+    "exp254_dp0.1_ver_gap_pct": 7.4
+  }
+}
