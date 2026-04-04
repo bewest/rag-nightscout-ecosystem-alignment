@@ -1,0 +1,41 @@
+{
+  "experiment": "EXP-246: Snapshot Ensemble (6 checkpoints, 1 training run)",
+  "individual": {
+    "ep40": 14.26,
+    "ep60": 13.61,
+    "ep80": 13.48,
+    "ep90": 13.18,
+    "ep100": 13.19,
+    "ep110": 13.12
+  },
+  "ensemble_mae": 13.11,
+  "config": {
+    "snapshot_epochs": [
+      40,
+      60,
+      80,
+      90,
+      100,
+      110
+    ],
+    "total_epochs": 120,
+    "scheduler": "cosine",
+    "n_snapshots": 6
+  },
+  "masking": {
+    "channels": [
+      0,
+      4,
+      5,
+      12,
+      13,
+      14,
+      15
+    ],
+    "type": "selective"
+  },
+  "comparison": {
+    "exp234_5seed_ensemble": 12.38,
+    "exp232_individual": 12.9
+  }
+}
