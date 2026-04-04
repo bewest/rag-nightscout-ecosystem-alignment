@@ -2334,23 +2334,42 @@ def run_forward_feature_selection(args):
     persist_mae = compute_persistence_mae(val_ds_full)
     print(f"  Persistence baseline: {persist_mae:.1f} mg/dL")
 
+    # Order by ablation impact (EXP-261): profile +7.4, aid +2.2, pump +0.5, cgm +0.3, sensor +0.2
     group_order = [
-        ('aid_context', AID_CONTEXT_IDX),
-        ('cgm_quality', CGM_QUALITY_IDX),
         ('profile', PROFILE_IDX),
-        ('sensor_lifecycle', SENSOR_LIFECYCLE_IDX),
+        ('aid_context', AID_CONTEXT_IDX),
         ('pump_state', PUMP_STATE_IDX),
+        ('cgm_quality', CGM_QUALITY_IDX),
+        ('sensor_lifecycle', SENSOR_LIFECYCLE_IDX),
     ]
 
     results_by_step = {}
     active_channels = set(range(21))  # Start with base 21 channels
+    import copy
 
-    for step, (gname, gidx) in enumerate(group_order):
+    # Step 0: Base 21f (no Gen-4 groups) as reference
+    zero_base = [c for c in range(NUM_FEATURES_ENRICHED) if c not in active_channels]
+    train_ds0 = copy.deepcopy(train_ds_full)
+    val_ds0 = copy.deepcopy(val_ds_full)
+    _zero_channels_in_dataset(train_ds0, zero_base)
+    _zero_channels_in_dataset(val_ds0, zero_base)
+    set_seed(42)
+    m0 = create_model(arch='grouped', input_dim=NUM_FEATURES_ENRICHED,
+                      d_model=64, nhead=4, num_layers=2)
+    sp0 = os.path.join(output_dir, 'exp263_step0_base21f_s42.pth')
+    train_forecast(m0, train_ds0, val_ds0, sp0,
+                   label='EXP-263 base-21f', epochs=100, lr=1e-3, patience=15)
+    base_mae = _mae_from_model(m0, val_ds0)
+    results_by_step['step0_base21f'] = {
+        'mae': round(base_mae, 2), 'added_group': 'base_21f',
+        'added_channels': list(range(21)), 'total_active': 21,
+    }
+    print(f"  Step 0 (base 21f): MAE={base_mae:.1f}, active=21 ch")
+
+    for step, (gname, gidx) in enumerate(group_order, start=1):
         active_channels = active_channels | set(gidx)
         zero_channels = [c for c in range(NUM_FEATURES_ENRICHED) if c not in active_channels]
 
-        # Clone datasets and zero inactive channels
-        import copy
         train_ds = copy.deepcopy(train_ds_full)
         val_ds = copy.deepcopy(val_ds_full)
         _zero_channels_in_dataset(train_ds, zero_channels)
@@ -2376,8 +2395,9 @@ def run_forward_feature_selection(args):
     result = {
         'experiment': 'EXP-263: Forward Feature Selection',
         'hypothesis': 'Cumulative improvement curve with diminishing returns',
+        'persistence_mae': round(persist_mae, 2),
         'steps': results_by_step,
-        'group_order': [g[0] for g in group_order],
+        'group_order': ['base_21f'] + [g[0] for g in group_order],
         'config': {'input_dim': NUM_FEATURES_ENRICHED, 'seed': 42},
     }
     save_results(result, os.path.join(output_dir, 'exp263_forward_selection.json'))
