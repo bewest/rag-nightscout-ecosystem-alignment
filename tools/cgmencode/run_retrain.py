@@ -27,6 +27,7 @@ from tools.cgmencode.device import resolve_device
 from tools.cgmencode.experiment_lib import (
     create_model,
     forecast_mse,
+    mask_future_channels,
     persistence_mse,
     set_device,
     set_seed,
@@ -99,6 +100,7 @@ def run_experiment(feature_mode, patient_paths, args):
         model = create_model(
             'grouped', input_dim=input_dim,
             d_model=args.d_model, nhead=args.nhead, num_layers=args.num_layers,
+            semantic_groups=getattr(args, 'gen3', False),
         )
         n_params = sum(p.numel() for p in model.parameters())
         if seed == args.seeds[0]:
@@ -166,8 +168,17 @@ def main():
     parser.add_argument('--seeds', type=int, nargs='+', default=[42, 456, 789])
     parser.add_argument('--device', type=str, default='auto',
                         help='Device: auto, cpu, cuda')
+    parser.add_argument('--gen3', action='store_true',
+                        help='Enable Gen-3 architecture: d_model=128, nhead=8, semantic groups')
 
     args = parser.parse_args()
+
+    # Gen-3 defaults override d_model and nhead if --gen3 is set
+    if args.gen3:
+        if args.d_model == 64:
+            args.d_model = 128
+        if args.nhead == 4:
+            args.nhead = 8
 
     # Setup device
     device = resolve_device(args.device)

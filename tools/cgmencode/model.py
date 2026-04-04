@@ -98,6 +98,27 @@ class CGMTransformerAE(nn.Module):
         return reconstructed
 
 
+class AttentionPooling(nn.Module):
+    """Learned attention-weighted temporal pooling.
+
+    Replaces naive mean pooling for classification/regression heads.
+    Learns which timesteps matter for each downstream task.
+    """
+    def __init__(self, d_model: int):
+        super().__init__()
+        self.query = nn.Linear(d_model, 1, bias=False)
+
+    def forward(self, encoded: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            encoded: (B, T, d_model)
+        Returns:
+            pooled: (B, d_model) — attention-weighted temporal summary
+        """
+        weights = torch.softmax(self.query(encoded).squeeze(-1), dim=1)
+        return (weights.unsqueeze(-1) * encoded).sum(dim=1)
+
+
 class CGMGroupedEncoder(nn.Module):
     """
     Feature-grouped Masked Sequence Encoder for CGM/Insulin time-series.
@@ -112,32 +133,36 @@ class CGMGroupedEncoder(nn.Module):
       state_proj(3 → d_model//2) | action_proj(3 → d_model//4) | time_proj(2 → d_model//4)
       → concatenate → d_model → PositionalEncoding → TransformerEncoder → output heads
 
-    Architecture (extended, input_dim=16):
-      state_proj(3) | action_proj(3) | time_proj(2) | context_proj(8 → d_context)
+    Architecture (extended, semantic_groups=False — Gen-2 legacy):
+      state_proj(3) | action_proj(3) | time_proj(2) | context_proj(N → d_context)
       → concatenate → d_model + d_context → LayerNorm → d_model (via fusion)
-      → PositionalEncoding → TransformerEncoder → output heads
+
+    Architecture (extended, semantic_groups=True — Gen-3):
+      state_proj(3) | action_proj(3) | time_proj(2)
+        + weekday_proj(2) | override_proj(2) | dynamics_proj(2)
+        + timing_proj(2) | device_proj(3) | monthly_proj(2)
+      → concatenate → d_model + d_context → fusion → d_model
 
     Multi-task heads (when aux_config is provided):
       encoded = TransformerEncoder(z)
-        ├── forecast_head(encoded)              → (B, T, input_dim)   [reconstruction]
-        ├── event_head(mean_pool(encoded))      → (B, n_event_classes) [classification]
-        ├── drift_head(mean_pool(encoded))      → (B, 2)              [ISF/CR deviation]
-        └── state_head(mean_pool(encoded))      → (B, n_states)       [metabolic state]
+        ├── forecast_head(encoded)              → (B, T, input_dim)
+        ├── event_head(attn_pool(encoded))      → (B, n_event_classes)
+        ├── drift_head(attn_pool(encoded))      → (B, 2)
+        └── state_head(attn_pool(encoded))      → (B, n_states)
 
-    Maintains the same external interface as CGMTransformerAE so it's a
-    drop-in replacement in MODEL_REGISTRY. When aux_config=None (default),
-    forward() returns a plain tensor — existing checkpoints and callers
-    work without modification.
+    When aux_config=None (default), forward() returns a plain tensor.
     """
     def __init__(self, input_dim: int = 8, d_model: int = 64, nhead: int = 4,
                  num_layers: int = 2, dim_feedforward: int = 128, dropout: float = 0.1,
-                 aux_config: Optional[Dict] = None):
+                 aux_config: Optional[Dict] = None,
+                 semantic_groups: bool = False):
         super().__init__()
         assert d_model % 4 == 0, "d_model must be divisible by 4 for feature grouping"
 
         self.input_dim = input_dim
         self.d_model = d_model
         self.aux_config = aux_config or {}
+        self._semantic_groups = semantic_groups and input_dim > 8
 
         # Feature-grouped projections (core — always present)
         d_state = d_model // 2    # 50% capacity for physiological state
@@ -148,13 +173,24 @@ class CGMGroupedEncoder(nn.Module):
         self.action_proj = nn.Linear(3, d_action)   # net_basal, bolus, carbs
         self.time_proj = nn.Linear(2, d_time)       # time_sin, time_cos
 
-        # Context group (extended schema only — agentic features)
+        # Context handling: semantic groups (Gen-3) vs monolithic (Gen-2)
         self._has_context = input_dim > 8
         if self._has_context:
-            n_context = input_dim - 8
-            d_context = max(d_model // 8, 8)  # ~12.5% capacity for context
-            self.context_proj = nn.Linear(n_context, d_context)
-            # Fusion layer: (d_model + d_context) → d_model
+            if self._semantic_groups:
+                # Gen-3: per-domain group projections (6× more capacity)
+                d_ctx_group = max(d_model // 8, 8)
+                self.weekday_proj = nn.Linear(2, d_ctx_group)   # day_sin, day_cos
+                self.override_proj = nn.Linear(2, d_ctx_group)  # override_active, type
+                self.dynamics_proj = nn.Linear(2, d_ctx_group)  # glucose_roc, accel
+                self.timing_proj = nn.Linear(2, d_ctx_group)    # time_since_bolus/carb
+                self.device_proj = nn.Linear(3, d_ctx_group)    # CAGE, SAGE, warmup
+                self.monthly_proj = nn.Linear(2, d_ctx_group)   # month_sin, month_cos
+                d_context = d_ctx_group * 6
+            else:
+                # Gen-2 legacy: single projection for all context features
+                n_context = input_dim - 8
+                d_context = max(d_model // 8, 8)
+                self.context_proj = nn.Linear(n_context, d_context)
             self.fusion = nn.Linear(d_model + d_context, d_model)
             self.fusion_norm = nn.LayerNorm(d_model)
 
@@ -173,8 +209,10 @@ class CGMGroupedEncoder(nn.Module):
         # Primary head: reconstruction (always present)
         self.output_projection = nn.Linear(d_model, input_dim)
 
-        # Auxiliary heads (only created when aux_config specifies them)
+        # Auxiliary heads with attention pooling (Gen-3) or mean pooling (Gen-2)
         self._has_aux = bool(self.aux_config)
+        if self._has_aux:
+            self.aux_pool = AttentionPooling(d_model)
         if 'n_event_classes' in self.aux_config:
             self.event_head = nn.Linear(d_model, self.aux_config['n_event_classes'])
         if 'n_drift_outputs' in self.aux_config:
@@ -198,7 +236,16 @@ class CGMGroupedEncoder(nn.Module):
         z = torch.cat([state, action, time], dim=-1)
 
         if self._has_context and x.size(-1) > 8:
-            ctx = self.context_proj(x[..., 8:])
+            if self._semantic_groups:
+                weekday = self.weekday_proj(x[..., 8:10])
+                override = self.override_proj(x[..., 10:12])
+                dynamics = self.dynamics_proj(x[..., 12:14])
+                timing = self.timing_proj(x[..., 14:16])
+                device = self.device_proj(x[..., 16:19])
+                monthly = self.monthly_proj(x[..., 19:21])
+                ctx = torch.cat([weekday, override, dynamics, timing, device, monthly], dim=-1)
+            else:
+                ctx = self.context_proj(x[..., 8:])
             z = self.fusion_norm(self.fusion(torch.cat([z, ctx], dim=-1)))
 
         z = self.pos_encoder(z)
@@ -211,7 +258,7 @@ class CGMGroupedEncoder(nn.Module):
     def forward(self, x, mask=None, causal=False) -> Union[torch.Tensor, Dict[str, torch.Tensor]]:
         """
         Args:
-            x: (Batch, SeqLen, input_dim) — 8 or 16 feature cgmencode vector
+            x: (Batch, SeqLen, input_dim) — 8 or 21 feature cgmencode vector
             mask: Optional attention mask (SeqLen, SeqLen)
             causal: If True, apply causal attention mask for autoregressive tasks.
 
@@ -226,8 +273,8 @@ class CGMGroupedEncoder(nn.Module):
         if not self._has_aux:
             return forecast
 
-        # Pool over time for window-level classification/regression heads
-        pooled = encoded.mean(dim=1)  # (B, d_model)
+        # Attention-weighted pooling for classification/regression heads
+        pooled = self.aux_pool(encoded)
 
         result = {'forecast': forecast}
         if hasattr(self, 'event_head'):

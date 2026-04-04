@@ -19,12 +19,13 @@ from pathlib import Path
 from torch.utils.data import DataLoader
 
 from .device import resolve_device, batch_to_device
-from .model import CGMTransformerAE, CGMGroupedEncoder, train_one_epoch, eval_loss
+from .model import CGMTransformerAE, CGMGroupedEncoder, AttentionPooling, train_one_epoch, eval_loss
 from .real_data_adapter import (
     load_nightscout_to_dataset, load_multipatient_nightscout,
     build_nightscout_grid, build_extended_features,
     downsample_grid, build_multihorizon_windows,
 )
+from .schema import FUTURE_UNKNOWN_CHANNELS
 from .evaluate import (
     evaluate_model, persistence_baseline,
     time_in_range, glycemia_risk_index, clinical_summary, override_accuracy,
@@ -103,16 +104,31 @@ class ExperimentContext:
 
 # ── Model Factory ────────────────────────────────────────────────────────
 
-def create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2):
+def create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2,
+                 semantic_groups=False, aux_config=None):
     """Create a model by name."""
     if arch == 'grouped':
         return CGMGroupedEncoder(
-            input_dim=input_dim, d_model=d_model, nhead=nhead, num_layers=num_layers)
+            input_dim=input_dim, d_model=d_model, nhead=nhead, num_layers=num_layers,
+            semantic_groups=semantic_groups, aux_config=aux_config)
     elif arch == 'ae':
         return CGMTransformerAE(
             input_dim=input_dim, d_model=d_model, nhead=nhead, num_layers=num_layers)
     else:
         raise ValueError(f'Unknown architecture: {arch}')
+
+
+def mask_future_channels(x_in, half):
+    """Zero out future-unknown channels in positions half: onward.
+
+    Uses FUTURE_UNKNOWN_CHANNELS from schema.py — channels whose values
+    are unknown at real-time inference (future glucose, IOB, COB, actions,
+    glucose derivatives, and treatment-timing features).
+    """
+    for ch in FUTURE_UNKNOWN_CHANNELS:
+        if ch < x_in.shape[2]:
+            x_in[:, half:, ch] = 0.0
+    return x_in
 
 
 def load_checkpoint(model, path):
@@ -222,12 +238,7 @@ def train_forecast(model, train_ds, val_ds, save_path, label,
         x = batch_to_device(batch_data[0], device)
         half = x.shape[1] // 2
         x_in = x.clone()
-        x_in[:, half:, 0] = 0.0          # mask future glucose
-        # Also mask glucose-derived features (ROC, accel) to prevent leak
-        if x_in.shape[2] > 12:
-            x_in[:, half:, 12] = 0.0      # glucose ROC
-        if x_in.shape[2] > 13:
-            x_in[:, half:, 13] = 0.0      # glucose acceleration
+        mask_future_channels(x_in, half)
         pred = model(x_in, causal=True)
         loss = crit(pred[:, half:, :1], x[:, half:, :1])  # future glucose only
         if backward:
@@ -303,12 +314,7 @@ def forecast_mse(model, val_ds, batch_size=64, mask_future=True):
         half = x.shape[1] // 2
         if mask_future:
             x_input = x.clone()
-            x_input[:, half:, 0] = 0.0  # zero future glucose channel
-            # Also mask glucose-derived features (ROC, accel) to prevent leak
-            if x_input.shape[2] > 12:
-                x_input[:, half:, 12] = 0.0  # glucose ROC
-            if x_input.shape[2] > 13:
-                x_input[:, half:, 13] = 0.0  # glucose acceleration
+            mask_future_channels(x_input, half)
         else:
             x_input = x
         with torch.no_grad():
@@ -586,7 +592,7 @@ def train_multitask(model, train_ds, val_ds, save_path, label,
         features, targets = _make_targets(batch_data)
         half = features.shape[1] // 2
         x_in = features.clone()
-        x_in[:, half:, 0] = 0.0  # mask future glucose
+        mask_future_channels(x_in, half)
 
         outputs = model(x_in, causal=True)
         total_loss, loss_dict = multitask_loss(outputs, targets, task_weights,
