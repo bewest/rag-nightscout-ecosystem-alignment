@@ -1,0 +1,116 @@
+{
+  "experiment": "EXP-258: TTA Ensemble on EXP-251 checkpoints",
+  "hypothesis": "Test-time augmentation reduces verification gap without retraining",
+  "per_patient": {
+    "a": {
+      "standard_train": 10.94,
+      "standard_ver": 10.61,
+      "standard_gap": -0.33,
+      "tta_train": 17.28,
+      "tta_ver": 14.44,
+      "tta_gap": -2.84,
+      "tta_improvement_ver": -3.83
+    },
+    "b": {
+      "standard_train": 17.4,
+      "standard_ver": 15.49,
+      "standard_gap": -1.91,
+      "tta_train": 21.86,
+      "tta_ver": 22.22,
+      "tta_gap": 0.35,
+      "tta_improvement_ver": -6.73
+    },
+    "c": {
+      "standard_train": 9.59,
+      "standard_ver": 13.03,
+      "standard_gap": 3.44,
+      "tta_train": 15.25,
+      "tta_ver": 18.07,
+      "tta_gap": 2.82,
+      "tta_improvement_ver": -5.04
+    },
+    "d": {
+      "standard_train": 7.95,
+      "standard_ver": 7.94,
+      "standard_gap": -0.0,
+      "tta_train": 11.16,
+      "tta_ver": 10.12,
+      "tta_gap": -1.04,
+      "tta_improvement_ver": -2.18
+    },
+    "e": {
+      "standard_train": 8.14,
+      "standard_ver": 9.07,
+      "standard_gap": 0.93,
+      "tta_train": 12.42,
+      "tta_ver": 13.56,
+      "tta_gap": 1.15,
+      "tta_improvement_ver": -4.49
+    },
+    "f": {
+      "standard_train": 8.82,
+      "standard_ver": 8.45,
+      "standard_gap": -0.37,
+      "tta_train": 13.78,
+      "tta_ver": 12.53,
+      "tta_gap": -1.24,
+      "tta_improvement_ver": -4.08
+    },
+    "g": {
+      "standard_train": 9.0,
+      "standard_ver": 7.97,
+      "standard_gap": -1.04,
+      "tta_train": 12.64,
+      "tta_ver": 11.45,
+      "tta_gap": -1.19,
+      "tta_improvement_ver": -3.48
+    },
+    "h": {
+      "standard_train": 10.01,
+      "standard_ver": 10.32,
+      "standard_gap": 0.32,
+      "tta_train": 14.12,
+      "tta_ver": 12.7,
+      "tta_gap": -1.42,
+      "tta_improvement_ver": -2.38
+    },
+    "i": {
+      "standard_train": 8.58,
+      "standard_ver": 10.63,
+      "standard_gap": 2.06,
+      "tta_train": 13.89,
+      "tta_ver": 15.56,
+      "tta_gap": 1.67,
+      "tta_improvement_ver": -4.93
+    },
+    "j": {
+      "standard_train": 15.44,
+      "standard_ver": 21.25,
+      "standard_gap": 5.81,
+      "tta_train": 19.58,
+      "tta_ver": 24.61,
+      "tta_gap": 5.03,
+      "tta_improvement_ver": -3.36
+    }
+  },
+  "summary": {
+    "mean_standard_ver": 11.48,
+    "mean_tta_ver": 15.53,
+    "mean_standard_gap": 0.89,
+    "mean_tta_gap": 0.33,
+    "n_patients": 10
+  },
+  "config": {
+    "n_aug": 7,
+    "noise_std": 0.02,
+    "shift_range": 2,
+    "base_models": "EXP-251 per-patient FT",
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ]
+  }
+}
