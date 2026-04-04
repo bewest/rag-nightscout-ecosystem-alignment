@@ -3604,3 +3604,202 @@ def run_pattern_override_vs_forecast(output_dir, patients_dir, **kwargs):
     return result
 
 REGISTRY['pattern-override-vs-forecast'] = 'run_pattern_override_vs_forecast'
+
+
+# ── EXP-276: Aggressive FT Regularization Sweep ──────────────────
+# EXP-275 showed FT is where remaining overfitting happens (8.5% base → 14.9% after FT).
+# Test: aggressive ch_drop during FT, frozen base layers, reduced FT capacity.
+def run_aggressive_ft_regularization(args):
+    """EXP-276: FT regularization sweep.
+
+    Tests 4 strategies to reduce overfitting during per-patient fine-tuning:
+    1. Aggressive channel dropout (0.30) during FT
+    2. Frozen encoder layers (only tune output projection)
+    3. Very short FT (10 epochs, patience=3)
+    4. Combined: frozen + ch_drop + short
+    """
+    import copy
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    device = get_device()
+
+    validate_masking(NUM_FEATURES_ENRICHED, label='EXP-276')
+
+    # Load enriched data
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24,
+        enriched_features=True)
+    persist_mae = compute_persistence_mae(val_ds)
+
+    patients_base = os.path.dirname(os.path.dirname(patient_paths[0]))
+    patient_dirs = sorted([d for d in os.listdir(patients_base)
+                          if os.path.isdir(os.path.join(patients_base, d))])
+
+    from torch.utils.data import DataLoader
+    from .schema import FUTURE_UNKNOWN_CHANNELS
+
+    CH_DROP_BASE = 0.15
+
+    def _ch_drop_forward(model, x_batch, crit, ch_drop_p, training=False):
+        x = batch_to_device(x_batch, device)
+        half = x.shape[1] // 2
+        x_in = x.clone()
+        mask_future_channels(x_in, half)
+        if training and ch_drop_p > 0:
+            n_ch = x_in.shape[2]
+            droppable = [c for c in range(n_ch)
+                        if c not in {0, 6, 7}
+                        and c not in set(FUTURE_UNKNOWN_CHANNELS)]
+            mask = torch.rand(len(droppable)) < ch_drop_p
+            for i, ch in enumerate(droppable):
+                if mask[i]:
+                    x_in[:, :, ch] = 0.0
+        pred = model(x_in, causal=True)
+        loss = crit(pred[:, half:, :1], x[:, half:, :1])
+        return loss, pred
+
+    def _train_cd(model, t_ds, v_ds, ch_drop_p, epochs, patience,
+                  lr=1e-3, wd=1e-5, save_path=None):
+        model.to(device)
+        train_dl = DataLoader(t_ds, batch_size=32, shuffle=True)
+        val_dl = DataLoader(v_ds, batch_size=64)
+        opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=wd)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=max(3, patience//3), factor=0.5)
+        crit = torch.nn.MSELoss()
+        best_vl, stale = float('inf'), 0
+        for ep in range(epochs):
+            model.train()
+            for b in train_dl:
+                opt.zero_grad()
+                loss, _ = _ch_drop_forward(model, b[0], crit, ch_drop_p, training=True)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+            model.eval()
+            vtl, vn = 0.0, 0
+            with torch.no_grad():
+                for b in val_dl:
+                    loss, _ = _ch_drop_forward(model, b[0], crit, 0.0, training=False)
+                    vtl += loss.item() * b[0].shape[0]; vn += b[0].shape[0]
+            vl = vtl / vn if vn else float('inf')
+            sched.step(vl)
+            if vl < best_vl:
+                best_vl = vl; stale = 0
+                if save_path:
+                    os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+                    torch.save({'model_state': model.state_dict(), 'epoch': ep, 'val_loss': vl}, save_path)
+            else:
+                stale += 1
+            if stale >= patience:
+                break
+        if save_path and os.path.exists(save_path):
+            ckpt = torch.load(save_path, map_location=device, weights_only=True)
+            model.load_state_dict(ckpt['model_state'])
+        return model
+
+    # Train single base model (seed 42, ch_drop=0.15)
+    print("=== Training base model (seed 42, ch_drop=0.15) ===")
+    set_seed(42)
+    base_model = create_model(arch='grouped', input_dim=NUM_FEATURES_ENRICHED,
+                               d_model=64, nhead=4, num_layers=2, dropout=0.1)
+    sp = os.path.join(output_dir, 'exp276_base_s42.pth')
+    base_model = _train_cd(base_model, train_ds, val_ds, CH_DROP_BASE,
+                            epochs=100, patience=15, save_path=sp)
+    base_mae = _mae_from_model(base_model, val_ds)
+    print(f"  Base MAE: {base_mae:.2f}")
+
+    # FT strategies: (name, ch_drop_ft, epochs, patience, freeze_encoder, lr)
+    ft_strategies = [
+        ('baseline_ft',   0.15, 30, 8,  False, 3e-4),  # EXP-275 style
+        ('aggr_chdrop',   0.30, 30, 8,  False, 3e-4),  # More channel dropout
+        ('frozen_enc',    0.15, 30, 8,  True,  3e-4),   # Freeze encoder
+        ('short_ft',      0.15, 10, 3,  False, 3e-4),   # Very short FT
+        ('combined',      0.30, 10, 3,  True,  3e-4),   # All of the above
+    ]
+
+    all_results = {}
+    for sname, ch_ft, ep_ft, pat_ft, freeze, lr_ft in ft_strategies:
+        print(f"\n=== Strategy: {sname} ===")
+        strat_patients = {}
+        for pid in patient_dirs:
+            train_path = os.path.join(patients_base, pid, 'training')
+            ver_path = os.path.join(patients_base, pid, 'verification')
+            if not os.path.isdir(train_path):
+                continue
+            try:
+                pt_train, pt_val = load_multipatient_nightscout(
+                    [train_path], task='forecast', window_size=24,
+                    enriched_features=True)
+            except:
+                continue
+
+            pt_ver = None
+            if os.path.isdir(ver_path):
+                try:
+                    _, pt_ver = load_multipatient_nightscout(
+                        [ver_path], task='forecast', window_size=24,
+                        enriched_features=True)
+                    if pt_ver and len(pt_ver) < 5:
+                        pt_ver = None
+                except:
+                    pt_ver = None
+
+            set_seed(42)
+            ft_model = copy.deepcopy(base_model)
+
+            if freeze:
+                for name, param in ft_model.named_parameters():
+                    if 'transformer' in name or 'input_proj' in name:
+                        param.requires_grad = False
+
+            ft_sp = os.path.join(output_dir, f'exp276_{sname}_{pid}.pth')
+            ft_model = _train_cd(ft_model, pt_train, pt_val, ch_ft,
+                                  epochs=ep_ft, patience=pat_ft,
+                                  lr=lr_ft, save_path=ft_sp)
+
+            if freeze:
+                for param in ft_model.parameters():
+                    param.requires_grad = True
+
+            tr_mae = _mae_from_model(ft_model, pt_val)
+            ver_mae = _mae_from_model(ft_model, pt_ver) if pt_ver else None
+            gap = round((ver_mae / tr_mae - 1) * 100, 1) if ver_mae and tr_mae > 0 else None
+
+            strat_patients[pid] = {
+                'train_mae': round(tr_mae, 2),
+                'ver_mae': round(ver_mae, 2) if ver_mae else None,
+                'gap_pct': gap,
+            }
+            ver_s = f"{ver_mae:.2f}" if ver_mae is not None else "N/A"
+            gap_s = f"{gap:+.1f}%" if gap is not None else "N/A"
+            print(f"  {pid}: train={tr_mae:.2f} ver={ver_s} gap={gap_s}")
+
+        # Aggregate
+        tr_ms = [v['train_mae'] for v in strat_patients.values()]
+        ver_ms = [v['ver_mae'] for v in strat_patients.values() if v['ver_mae'] is not None]
+        gaps = [v['gap_pct'] for v in strat_patients.values() if v['gap_pct'] is not None]
+
+        agg = {
+            'mean_train': round(float(np.mean(tr_ms)), 2) if tr_ms else None,
+            'mean_ver': round(float(np.mean(ver_ms)), 2) if ver_ms else None,
+            'mean_gap': round(float(np.mean(gaps)), 1) if gaps else None,
+        }
+        all_results[sname] = {'patients': strat_patients, 'summary': agg}
+        print(f"  → {sname}: train={agg['mean_train']} ver={agg['mean_ver']} gap={agg['mean_gap']}%")
+
+    result = {
+        'experiment': 'EXP-276: Aggressive FT Regularization Sweep',
+        'base_mae': round(base_mae, 2),
+        'persistence_mae': round(persist_mae, 2),
+        'strategies': all_results,
+        'comparison': {
+            'exp275_ch15_ens_ft': {'train': 14.63, 'ver': 16.39, 'gap': 14.9},
+            'exp242_8f_ft_ens': {'train': 11.25, 'ver': 11.56, 'gap': 2.8},
+        },
+    }
+    save_results(result, os.path.join(output_dir, 'exp276_aggressive_ft.json'))
+    return result
+
+REGISTRY['aggressive-ft-regularization'] = 'run_aggressive_ft_regularization'
