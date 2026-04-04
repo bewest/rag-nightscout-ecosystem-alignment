@@ -1,0 +1,58 @@
+{
+  "experiment": "EXP-231",
+  "title": "Gen-3 Semantic Groups with Selective Masking",
+  "hypothesis": "Gen-3 with selective mask should beat Gen-2 selective (18.2 MAE)",
+  "architecture": {
+    "type": "Gen-3",
+    "d_model": 128,
+    "nhead": 8,
+    "num_layers": 3,
+    "input_dim": 21,
+    "semantic_groups": true
+  },
+  "masking": {
+    "type": "selective",
+    "channels": [
+      0,
+      4,
+      5,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "results": {
+    "s42": {
+      "mae": 17.98,
+      "mse": 0.004873,
+      "rmse": 27.92,
+      "params": 331301,
+      "train_time": 1411.4
+    },
+    "s456": {
+      "mae": 17.7,
+      "mse": 0.004834,
+      "rmse": 27.81,
+      "params": 331301,
+      "train_time": 1602.4
+    },
+    "s789": {
+      "mae": 17.86,
+      "mse": 0.004914,
+      "rmse": 28.04,
+      "params": 331301,
+      "train_time": 1543.2
+    }
+  },
+  "summary": {
+    "mean_mae": 17.85,
+    "std_mae": 0.11
+  },
+  "comparison": {
+    "gen3_full_mask_10ch": 22.7,
+    "gen2_selective_7ch": 18.2,
+    "gen2_oracle_ch0": 17.9,
+    "persistence_approx": 49.0
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "experiment": "EXP-232",
+  "title": "Gen-2 5-Seed Ensemble with Selective Masking",
+  "architecture": {
+    "type": "Gen-2",
+    "d_model": 64,
+    "nhead": 4,
+    "num_layers": 2,
+    "input_dim": 8
+  },
+  "masking": {
+    "type": "selective",
+    "channels": [
+      0,
+      4,
+      5,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "results": {
+    "individual": {
+      "s42": {
+        "mae": 12.92,
+        "mse": 0.002577,
+        "train_time": 1452.3
+      },
+      "s123": {
+        "mae": 12.99,
+        "mse": 0.002562,
+        "train_time": 1190.5
+      },
+      "s456": {
+        "mae": 13.09,
+        "mse": 0.002584,
+        "train_time": 1133.1
+      },
+      "s789": {
+        "mae": 12.93,
+        "mse": 0.002587,
+        "train_time": 1142.3
+      },
+      "s1024": {
+        "mae": 12.8,
+        "mse": 0.002543,
+        "train_time": 838.5
+      }
+    },
+    "ensemble_mae": 12.46,
+    "mean_individual_mae": 12.95,
+    "std_individual_mae": 0.09
+  },
+  "comparison": {
+    "gen2_ensemble_leaked": 12.1,
+    "gen2_single_selective": 18.2,
+    "persistence_approx": 34.3
+  }
+}
