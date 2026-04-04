@@ -122,6 +122,8 @@ FUTURE_UNKNOWN_CHANNELS = [
     IDX_LOOP_RECOMMENDED,   # 29 - future AID recommendation unknown
     IDX_LOOP_ENACTED_RATE,  # 30 - future AID actions unknown
     IDX_LOOP_ENACTED_BOLUS, # 31 - future AID actions unknown
+    IDX_GLUCOSE_VS_TARGET,  # 34 - contains (glucose-target)/100 → glucose leak!
+    IDX_PUMP_RESERVOIR,     # 36 - decreases with insulin delivery → reveals future dosing
     IDX_SUSPENSION_TIME,    # 38 - future suspensions unknown
 ]
 # Deterministic channels kept unmasked (EXP-230 validated):
@@ -129,7 +131,11 @@ FUTURE_UNKNOWN_CHANNELS = [
 #   COB (2) - decays via known absorption model from current value
 #   net_basal (3) - scheduled from pump profile
 # Also unmasked: time_sin/cos (6,7), day_sin/cos (8,9),
-# override (10,11), CAGE/SAGE/warmup (16-18), month_sin/cos (19,20)
+# override (10,11), CAGE/SAGE/warmup (16-18), month_sin/cos (19,20),
+# scheduled_isf/cr (32,33), pump_battery (35), sensor_phase (37)
+#
+# EXP-261 leak detection: ch34 (glucose_vs_target) caused 1.1 MAE →
+# 39.5 MAE when ablated. ch36 (pump_reservoir) caused 1.1 → 1.6 MAE.
 
 # ── Feature counts ──────────────────────────────────────────────────────
 NUM_FEATURES = 8                  # Core — existing models use this

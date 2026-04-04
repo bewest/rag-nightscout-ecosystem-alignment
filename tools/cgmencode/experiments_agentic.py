@@ -101,8 +101,11 @@ def validate_masking(input_dim, label=''):
         IDX_HOURS_SINCE_CGM, IDX_LOOP_PREDICTED_30, IDX_LOOP_PREDICTED_60,
         IDX_LOOP_PREDICTED_MIN, IDX_LOOP_HYPO_RISK, IDX_LOOP_RECOMMENDED,
         IDX_LOOP_ENACTED_RATE, IDX_LOOP_ENACTED_BOLUS, IDX_SUSPENSION_TIME,
+        IDX_GLUCOSE_VS_TARGET, IDX_PUMP_RESERVOIR,
     )
-    # All channels that MUST be masked if they exist in the input
+    # All channels that MUST be masked if they exist in the input.
+    # Derived from audit: any channel containing or derived from future glucose,
+    # future user actions, or future AID decisions must be masked.
     must_mask = {
         IDX_GLUCOSE, IDX_BOLUS, IDX_CARBS,
         IDX_GLUCOSE_ROC, IDX_GLUCOSE_ACCEL,
@@ -111,6 +114,8 @@ def validate_masking(input_dim, label=''):
         IDX_HOURS_SINCE_CGM, IDX_LOOP_PREDICTED_30, IDX_LOOP_PREDICTED_60,
         IDX_LOOP_PREDICTED_MIN, IDX_LOOP_HYPO_RISK, IDX_LOOP_RECOMMENDED,
         IDX_LOOP_ENACTED_RATE, IDX_LOOP_ENACTED_BOLUS, IDX_SUSPENSION_TIME,
+        IDX_GLUCOSE_VS_TARGET,  # contains (glucose-target)/100 → glucose leak
+        IDX_PUMP_RESERVOIR,     # decreases with delivery → reveals future dosing
     }
     present_must_mask = {ch for ch in must_mask if ch < input_dim}
     actually_masked = {ch for ch in FUTURE_UNKNOWN_CHANNELS if ch < input_dim}
