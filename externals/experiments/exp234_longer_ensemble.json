@@ -1,0 +1,42 @@
+{
+  "experiment": "EXP-234",
+  "title": "Longer Training (150ep) 5-Seed Ensemble",
+  "hypothesis": "150 epochs + selective mask \u2192 push below 12.5 MAE",
+  "config": {
+    "epochs": 150,
+    "patience": 25,
+    "lr": 0.001,
+    "batch": 32
+  },
+  "results": {
+    "individual": {
+      "s42": {
+        "mae": 12.92,
+        "train_time": 2988.4
+      },
+      "s123": {
+        "mae": 12.85,
+        "train_time": 2191.6
+      },
+      "s456": {
+        "mae": 12.94,
+        "train_time": 1546.1
+      },
+      "s789": {
+        "mae": 12.86,
+        "train_time": 1472.0
+      },
+      "s1024": {
+        "mae": 12.77,
+        "train_time": 1278.7
+      }
+    },
+    "ensemble_mae": 12.38,
+    "mean_individual_mae": 12.87,
+    "std_individual_mae": 0.06
+  },
+  "comparison": {
+    "exp232_ensemble_100ep": 12.5,
+    "exp232_individual_100ep": 12.9
+  }
+}

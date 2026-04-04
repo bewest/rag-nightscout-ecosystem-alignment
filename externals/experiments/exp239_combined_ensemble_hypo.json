@@ -1,0 +1,48 @@
+{
+  "experiment": "EXP-239: Combined Ensemble + Hypo Weighting",
+  "config": {
+    "hypo_weight": 5.0,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ],
+    "epochs": 100
+  },
+  "masking": {
+    "channels": [
+      0,
+      4,
+      5,
+      12,
+      13,
+      14,
+      15
+    ],
+    "type": "selective"
+  },
+  "individual": {
+    "s42": {
+      "mae": 13.34
+    },
+    "s123": {
+      "mae": 13.53
+    },
+    "s456": {
+      "mae": 13.64
+    },
+    "s789": {
+      "mae": 13.28
+    },
+    "s1024": {
+      "mae": 13.36
+    }
+  },
+  "ensemble_mae": 12.87,
+  "comparison": {
+    "exp232_ensemble": 12.5,
+    "exp235_baseline_hypo": 14.2
+  }
+}
