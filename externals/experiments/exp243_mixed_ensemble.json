@@ -1,0 +1,39 @@
+{
+  "experiment": "EXP-243: Mixed Hypo/Standard Ensemble (3+2)",
+  "individual": {
+    "s42_std": 12.88,
+    "s123_std": 12.96,
+    "s456_std": 12.95,
+    "s789_hypo": 12.97,
+    "s1024_hypo": 13.04
+  },
+  "ensemble_mae": 12.46,
+  "config": {
+    "std_seeds": [
+      42,
+      123,
+      456
+    ],
+    "hypo_seeds": [
+      789,
+      1024
+    ],
+    "hypo_weight": 3.0
+  },
+  "masking": {
+    "channels": [
+      0,
+      4,
+      5,
+      12,
+      13,
+      14,
+      15
+    ],
+    "type": "selective"
+  },
+  "comparison": {
+    "exp234_ensemble": 12.38,
+    "exp239_hypo_ensemble": 12.87
+  }
+}
