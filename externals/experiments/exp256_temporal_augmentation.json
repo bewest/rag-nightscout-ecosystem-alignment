@@ -1,0 +1,177 @@
+{
+  "experiment": "EXP-256: Temporal Distribution Augmentation (L=4)",
+  "hypothesis": "Noise + temporal jitter during base training reduces verification gap",
+  "per_patient": {
+    "a": {
+      "seeds": {
+        "s42": 11.63,
+        "s123": 11.9,
+        "s456": 12.04,
+        "s789": 11.47,
+        "s1024": 11.98
+      },
+      "training_ensemble_mae": 11.12,
+      "verification_ensemble_mae": 11.32,
+      "generalization_gap": 0.2,
+      "gap_pct": 1.8,
+      "mean_seed": 11.8
+    },
+    "b": {
+      "seeds": {
+        "s42": 17.75,
+        "s123": 17.92,
+        "s456": 18.19,
+        "s789": 18.09,
+        "s1024": 17.95
+      },
+      "training_ensemble_mae": 17.66,
+      "verification_ensemble_mae": 15.87,
+      "generalization_gap": -1.79,
+      "gap_pct": -10.1,
+      "mean_seed": 17.98
+    },
+    "c": {
+      "seeds": {
+        "s42": 10.2,
+        "s123": 10.12,
+        "s456": 10.21,
+        "s789": 10.35,
+        "s1024": 10.81
+      },
+      "training_ensemble_mae": 9.76,
+      "verification_ensemble_mae": 12.87,
+      "generalization_gap": 3.11,
+      "gap_pct": 31.9,
+      "mean_seed": 10.34
+    },
+    "d": {
+      "seeds": {
+        "s42": 8.12,
+        "s123": 8.25,
+        "s456": 8.27,
+        "s789": 8.38,
+        "s1024": 8.12
+      },
+      "training_ensemble_mae": 7.92,
+      "verification_ensemble_mae": 7.72,
+      "generalization_gap": -0.2,
+      "gap_pct": -2.5,
+      "mean_seed": 8.23
+    },
+    "e": {
+      "seeds": {
+        "s42": 9.04,
+        "s123": 8.91,
+        "s456": 9.12,
+        "s789": 8.99,
+        "s1024": 9.29
+      },
+      "training_ensemble_mae": 8.35,
+      "verification_ensemble_mae": 9.71,
+      "generalization_gap": 1.36,
+      "gap_pct": 16.3,
+      "mean_seed": 9.07
+    },
+    "f": {
+      "seeds": {
+        "s42": 9.58,
+        "s123": 9.7,
+        "s456": 9.83,
+        "s789": 9.65,
+        "s1024": 10.08
+      },
+      "training_ensemble_mae": 9.19,
+      "verification_ensemble_mae": 8.45,
+      "generalization_gap": -0.73,
+      "gap_pct": -8.0,
+      "mean_seed": 9.77
+    },
+    "g": {
+      "seeds": {
+        "s42": 9.56,
+        "s123": 9.76,
+        "s456": 9.61,
+        "s789": 9.67,
+        "s1024": 9.69
+      },
+      "training_ensemble_mae": 9.28,
+      "verification_ensemble_mae": 8.75,
+      "generalization_gap": -0.53,
+      "gap_pct": -5.7,
+      "mean_seed": 9.66
+    },
+    "h": {
+      "seeds": {
+        "s42": 10.68,
+        "s123": 11.15,
+        "s456": 10.87,
+        "s789": 10.73,
+        "s1024": 11.39
+      },
+      "training_ensemble_mae": 10.29,
+      "verification_ensemble_mae": 10.71,
+      "generalization_gap": 0.42,
+      "gap_pct": 4.1,
+      "mean_seed": 10.96
+    },
+    "i": {
+      "seeds": {
+        "s42": 9.27,
+        "s123": 9.43,
+        "s456": 9.48,
+        "s789": 9.1,
+        "s1024": 9.41
+      },
+      "training_ensemble_mae": 8.78,
+      "verification_ensemble_mae": 10.53,
+      "generalization_gap": 1.75,
+      "gap_pct": 19.9,
+      "mean_seed": 9.34
+    },
+    "j": {
+      "seeds": {
+        "s42": 15.89,
+        "s123": 16.12,
+        "s456": 15.87,
+        "s789": 15.99,
+        "s1024": 15.93
+      },
+      "training_ensemble_mae": 15.69,
+      "verification_ensemble_mae": 22.67,
+      "generalization_gap": 6.98,
+      "gap_pct": 44.5,
+      "mean_seed": 15.96
+    }
+  },
+  "summary": {
+    "mean_training_mae": 10.8,
+    "mean_verification_mae": 11.86,
+    "mean_gap": 1.06,
+    "mean_gap_pct": 9.8,
+    "n_patients": 10
+  },
+  "config": {
+    "d_model": 64,
+    "nhead": 4,
+    "num_layers": 4,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ],
+    "base_epochs": 150,
+    "base_patience": 20,
+    "aug_noise_std": 0.02,
+    "aug_shift_range": 2,
+    "aug_p": 0.5,
+    "ft_epochs": 30,
+    "ft_lr": 0.0001
+  },
+  "comparison": {
+    "exp251_training": 10.59,
+    "exp254_verification": 11.49,
+    "exp254_gap_pct": 7.4
+  }
+}
