@@ -1423,3 +1423,108 @@ def run_verification_exp250(args):
     return result
 
 REGISTRY['verification-exp250'] = 'run_verification_exp250'
+
+
+# ── EXP-255: Regularized FT (Weight Decay + Verification) ────────
+# EXP-254 showed L=4 FT overfits (+7.4% gap vs +2.8% for L=2).
+# Patients c, i, j have 22-36% gaps. Higher weight_decay during FT
+# should keep models closer to pre-trained weights.
+# Test wd=1e-4 and wd=1e-3 (vs default 1e-5), evaluate both
+# training val and verification MAE to measure gap reduction.
+def run_regularized_ft_l4(args):
+    """EXP-255: Weight decay regularized FT (L=4) with verification eval."""
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    patient_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    device = get_device()
+    seeds = [42, 123, 456, 789, 1024]
+    wd_value = 1e-3  # 100× default — strong regularization
+
+    # Reuse EXP-247 base checkpoints (same as EXP-250)
+    base_states = {}
+    for seed in seeds:
+        fp = os.path.join(output_dir, f'exp247_deep_s{seed}.pth')
+        if not os.path.exists(fp):
+            raise FileNotFoundError(f"EXP-247 base not found: {fp}")
+        ckpt = torch.load(fp, map_location=device, weights_only=False)
+        base_states[seed] = ckpt['model_state']
+        print(f"  Reusing EXP-247 base s{seed}")
+
+    per_patient = {}
+    for pid in patient_dirs:
+        p_path = os.path.join(patients_base, pid, 'training')
+        tds, vds = load_multipatient_nightscout([p_path], task='forecast', window_size=24)
+
+        # Also load verification split for gap measurement
+        ver_path = os.path.join(patients_base, pid, 'verification')
+        ver_ds = None
+        if os.path.isdir(ver_path):
+            try:
+                _, ver_ds = load_multipatient_nightscout(
+                    [ver_path], task='forecast', window_size=24)
+                if len(ver_ds) < 10:
+                    ver_ds = None
+            except Exception:
+                ver_ds = None
+
+        seed_maes = {}
+        ft_models = []
+        for seed in seeds:
+            torch.manual_seed(seed)
+            m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=4)
+            m.load_state_dict(base_states[seed])
+            fp = os.path.join(output_dir, f'exp255_ft_{pid}_s{seed}.pth')
+            train_forecast(m, tds, vds, fp,
+                           label=f'EXP-255 FT-{pid}-s{seed}',
+                           epochs=30, lr=1e-4, patience=10,
+                           weight_decay=wd_value)
+            mae = _mae_from_model(m, vds)
+            seed_maes[f's{seed}'] = round(mae, 2)
+            ft_models.append(m)
+
+        train_ens = _ensemble_mae(ft_models, vds)
+        ver_ens = _ensemble_mae(ft_models, ver_ds) if ver_ds else float('nan')
+        gap = ver_ens - train_ens if ver_ds else float('nan')
+
+        per_patient[pid] = {
+            'seeds': seed_maes,
+            'training_ensemble_mae': round(train_ens, 2),
+            'verification_ensemble_mae': round(ver_ens, 2) if ver_ds else None,
+            'generalization_gap': round(gap, 2) if ver_ds else None,
+            'gap_pct': round(gap / train_ens * 100, 1) if ver_ds and train_ens > 0 else None,
+            'mean_seed': round(float(np.mean(list(seed_maes.values()))), 2),
+        }
+        gap_str = f" ver={ver_ens:.1f} gap={gap:+.1f}" if ver_ds else ""
+        print(f"  {pid}: train_ens={train_ens:.1f}{gap_str}")
+
+    all_train = [v['training_ensemble_mae'] for v in per_patient.values()]
+    all_ver = [v['verification_ensemble_mae'] for v in per_patient.values()
+               if v['verification_ensemble_mae'] is not None]
+    all_gap = [v['generalization_gap'] for v in per_patient.values()
+               if v['generalization_gap'] is not None]
+    result = {
+        'experiment': f'EXP-255: Regularized FT (L=4, wd={wd_value})',
+        'per_patient': per_patient,
+        'summary': {
+            'mean_training_mae': round(float(np.mean(all_train)), 2),
+            'mean_verification_mae': round(float(np.mean(all_ver)), 2) if all_ver else None,
+            'mean_gap': round(float(np.mean(all_gap)), 2) if all_gap else None,
+            'mean_gap_pct': round(float(np.mean(all_gap)) /
+                                  float(np.mean(all_train)) * 100, 1)
+                           if all_train and all_gap else None,
+            'n_patients': len(per_patient),
+        },
+        'config': {'d_model': 64, 'nhead': 4, 'num_layers': 4,
+                    'base': 'EXP-247 (reused)', 'seeds': seeds,
+                    'ft_epochs': 30, 'ft_lr': 1e-4, 'ft_weight_decay': wd_value},
+        'comparison': {'exp250_training': 10.71, 'exp250_verification': 11.49,
+                        'exp250_gap_pct': 7.4},
+    }
+    save_results(result, os.path.join(output_dir, 'exp255_regularized_ft.json'))
+    return result
+
+REGISTRY['regularized-ft-l4'] = 'run_regularized_ft_l4'
