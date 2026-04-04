@@ -34,7 +34,11 @@ from .real_data_adapter import (
     load_multipatient_nightscout, build_nightscout_grid,
     build_extended_features, downsample_grid, build_multihorizon_windows,
 )
-from .schema import NUM_FEATURES, NUM_FEATURES_EXTENDED, NORMALIZATION_SCALES
+from .schema import (
+    NUM_FEATURES, NUM_FEATURES_EXTENDED, NORMALIZATION_SCALES,
+    FUTURE_UNKNOWN_CHANNELS, IDX_GLUCOSE,
+)
+from .experiment_lib import mask_future_channels, batch_to_device
 from .model import CGMGroupedEncoder
 from .label_events import build_classifier_dataset, extract_override_events
 from .event_classifier import train_event_classifier
@@ -16628,4 +16632,502 @@ REGISTRY.update({
     'multihorizon-adapted': 'run_multihorizon_adapted_ensemble',
     'override-utility': 'run_override_utility_scoring',
     'production-v14': 'run_production_v14',
+})
+
+
+# ╔════════════════════════════════════════════════════════════════════╗
+# ║  Phase 16: Selective Masking Era (EXP-229+)                      ║
+# ║                                                                   ║
+# ║  CRITICAL CONTEXT: All prior experiments (EXP-110–228) ran with  ║
+# ║  incorrect masking that leaked future treatment info. The schema  ║
+# ║  fix (commit 646e135) changed FUTURE_UNKNOWN_CHANNELS from 10    ║
+# ║  channels to 7, keeping IOB/COB/basal (deterministic from        ║
+# ║  current state). EXP-230 proved selective mask recovers 95% of   ║
+# ║  oracle performance (18.2 vs 17.9 MAE).                          ║
+# ║                                                                   ║
+# ║  Baselines under correct masking:                                 ║
+# ║    Gen-2 individual (8f, 3hr):  12.9 ± 0.1 MAE  (EXP-232)      ║
+# ║    Gen-2 ensemble   (8f, 3hr):  12.5 MAE         (EXP-232)      ║
+# ║    Gen-3 individual (21f, 6hr): 17.8 ± 0.1 MAE  (EXP-231)      ║
+# ║    Persistence      (8f, 3hr):  22.7 MAE                        ║
+# ║    Persistence      (21f, 6hr): ~35 MAE                          ║
+# ╚════════════════════════════════════════════════════════════════════╝
+
+SCALE = NORMALIZATION_SCALES.get('glucose', 400.0)
+
+
+def _compute_mae(model, val_ds, batch_size=64):
+    """True MAE in mg/dL using selective masking from schema."""
+    device = get_device()
+    model.eval()
+    total_ae, total_n = 0.0, 0
+    from torch.utils.data import DataLoader
+    for batch in DataLoader(val_ds, batch_size=batch_size):
+        x = batch_to_device(batch[0], device)
+        half = x.shape[1] // 2
+        x_input = x.clone()
+        mask_future_channels(x_input, half)
+        with torch.no_grad():
+            pred = model(x_input, causal=True)
+        if isinstance(pred, dict):
+            pred = pred['forecast']
+        ae = torch.abs(pred[:, half:, :1] - x[:, half:, :1])
+        total_ae += ae.sum().item()
+        total_n += ae.numel()
+    return float(total_ae / total_n * SCALE)
+
+
+def _compute_ensemble_mae(models, val_ds, batch_size=64):
+    """Ensemble MAE: average predictions from multiple models."""
+    device = get_device()
+    total_ae, total_n = 0.0, 0
+    from torch.utils.data import DataLoader
+    for batch in DataLoader(val_ds, batch_size=batch_size):
+        x = batch_to_device(batch[0], device)
+        half = x.shape[1] // 2
+        x_input = x.clone()
+        mask_future_channels(x_input, half)
+        preds = []
+        for m in models:
+            m.eval()
+            with torch.no_grad():
+                pred = m(x_input, causal=True)
+            if isinstance(pred, dict):
+                pred = pred['forecast']
+            preds.append(pred[:, half:, :1])
+        ensemble = torch.stack(preds).mean(dim=0)
+        ae = torch.abs(ensemble - x[:, half:, :1])
+        total_ae += ae.sum().item()
+        total_n += ae.numel()
+    return float(total_ae / total_n * SCALE)
+
+
+def _compute_hypo_mae(model, val_ds, batch_size=64):
+    """MAE for hypoglycemic timesteps only (<80 mg/dL)."""
+    hypo_thresh = 80.0 / SCALE
+    device = get_device()
+    model.eval()
+    total_ae, total_n = 0.0, 0
+    from torch.utils.data import DataLoader
+    for batch in DataLoader(val_ds, batch_size=batch_size):
+        x = batch_to_device(batch[0], device)
+        half = x.shape[1] // 2
+        x_input = x.clone()
+        mask_future_channels(x_input, half)
+        with torch.no_grad():
+            pred = model(x_input, causal=True)
+        if isinstance(pred, dict):
+            pred = pred['forecast']
+        pred_g = pred[:, half:, :1]
+        true_g = x[:, half:, :1]
+        mask = true_g < hypo_thresh
+        if mask.sum() > 0:
+            total_ae += torch.abs(pred_g[mask] - true_g[mask]).sum().item()
+            total_n += mask.sum().item()
+    if total_n == 0:
+        return float('nan')
+    return float(total_ae / total_n * SCALE)
+
+
+# ── EXP-234: Longer Training Ensemble ──────────────────────────────
+# EXP-053 showed 150 epochs > 100 epochs for Gen-2 (leaked masking).
+# Hypothesis: more training also helps under correct selective masking.
+# Expected: individual 12.5–12.7, ensemble 12.0–12.3.
+def run_longer_training_ensemble(args):
+    """EXP-234: 5-seed ensemble with 150 epoch training."""
+    patients_dir = getattr(args, 'patients_dir', None)
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+    print(f"Data: train={len(train_ds)} val={len(val_ds)}")
+
+    persist_mae = np.sqrt(persistence_mse(val_ds)) * SCALE
+    seeds = [42, 123, 456, 789, 1024]
+    models, individual = [], {}
+
+    for seed in seeds:
+        set_seed(seed)
+        model = create_model(arch='grouped', input_dim=8, d_model=64,
+                             nhead=4, num_layers=2)
+        save_path = os.path.join(output_dir, f'exp234_long_s{seed}.pth')
+        train_forecast(model, train_ds, val_ds, save_path,
+                       label=f'EXP-234 s{seed}',
+                       epochs=150, lr=1e-3, patience=25, batch=32)
+        mae = _compute_mae(model, val_ds)
+        individual[f's{seed}'] = {'mae': round(mae, 2)}
+        models.append(model)
+        print(f"  s{seed}: MAE={mae:.1f}")
+
+    ens_mae = _compute_ensemble_mae(models, val_ds)
+    mean_ind = np.mean([r['mae'] for r in individual.values()])
+
+    result = {
+        'experiment': 'EXP-234: Longer Training Ensemble',
+        'config': {'epochs': 150, 'patience': 25, 'seeds': seeds},
+        'masking': {'channels': FUTURE_UNKNOWN_CHANNELS, 'type': 'selective'},
+        'individual': individual,
+        'ensemble_mae': round(float(ens_mae), 2),
+        'mean_individual_mae': round(float(mean_ind), 2),
+        'persistence_mae': round(float(persist_mae), 1),
+        'comparison': {'exp232_100ep_ensemble': 12.5, 'exp232_100ep_individual': 12.9},
+    }
+    out_path = os.path.join(output_dir, 'exp234_longer_ensemble.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return result
+
+
+# ── EXP-235: Hypo-Weighted Training ────────────────────────────────
+# Assigns higher loss weight to glucose < 80 mg/dL timesteps.
+# Clinically critical: hypo prediction accuracy is most important.
+# Tests weight sweep: 1× (baseline), 3×, 5×, 10×.
+def run_hypo_weighted_selective(args):
+    """EXP-235: Hypo-weighted loss with selective masking."""
+    import torch.nn as nn
+    from torch.utils.data import DataLoader
+    patients_dir = getattr(args, 'patients_dir', None)
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+
+    hypo_thresh = 80.0 / SCALE
+    weights_to_test = [1.0, 3.0, 5.0, 10.0]
+    results = {}
+
+    for hw in weights_to_test:
+        print(f"\n  Hypo weight = {hw}")
+        set_seed(42)
+        device = get_device()
+        model = create_model(arch='grouped', input_dim=8, d_model=64,
+                             nhead=4, num_layers=2)
+        model.to(device)
+        opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
+        train_dl = DataLoader(train_ds, batch_size=32, shuffle=True)
+        val_dl = DataLoader(val_ds, batch_size=64)
+        crit = nn.MSELoss()
+        best, stale = float('inf'), 0
+        save_path = os.path.join(output_dir, f'exp235_hypo_w{int(hw)}.pth')
+
+        for ep in range(100):
+            model.train()
+            for b in train_dl:
+                x = batch_to_device(b[0], device)
+                half = x.shape[1] // 2
+                x_in = x.clone()
+                mask_future_channels(x_in, half)
+                pred = model(x_in, causal=True)
+                if isinstance(pred, dict):
+                    pred = pred['forecast']
+                pred_g, true_g = pred[:, half:, :1], x[:, half:, :1]
+                weights = torch.ones_like(true_g)
+                weights[true_g < hypo_thresh] = hw
+                loss = (weights * (pred_g - true_g) ** 2).mean()
+                opt.zero_grad()
+                loss.backward()
+                opt.step()
+
+            model.eval()
+            vtl, vn = 0.0, 0
+            with torch.no_grad():
+                for b in val_dl:
+                    x = batch_to_device(b[0], device)
+                    half = x.shape[1] // 2
+                    x_in = x.clone()
+                    mask_future_channels(x_in, half)
+                    pred = model(x_in, causal=True)
+                    if isinstance(pred, dict):
+                        pred = pred['forecast']
+                    vtl += crit(pred[:, half:, :1], x[:, half:, :1]).item() * x.shape[0]
+                    vn += x.shape[0]
+            vl = vtl / vn
+            sched.step(vl)
+            if vl < best:
+                best = vl
+                stale = 0
+                os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+                torch.save({'model_state': model.state_dict(), 'val_loss': vl}, save_path)
+            else:
+                stale += 1
+            if stale >= 15:
+                break
+
+        if os.path.exists(save_path):
+            ckpt = torch.load(save_path, map_location=device, weights_only=False)
+            model.load_state_dict(ckpt['model_state'])
+
+        overall = _compute_mae(model, val_ds)
+        hypo = _compute_hypo_mae(model, val_ds)
+        results[f'w{int(hw)}'] = {
+            'hypo_weight': hw, 'overall_mae': round(overall, 2),
+            'hypo_mae': round(hypo, 2),
+        }
+        print(f"    Overall={overall:.1f}, Hypo={hypo:.1f}")
+
+    result = {
+        'experiment': 'EXP-235: Hypo-Weighted Selective Masking',
+        'masking': {'channels': FUTURE_UNKNOWN_CHANNELS, 'type': 'selective'},
+        'results': results,
+        'comparison': {'exp232_unweighted': 12.9},
+    }
+    out_path = os.path.join(output_dir, 'exp235_hypo_weighted.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return result
+
+
+# ── EXP-236: Gen-3 Ensemble with Selective Masking ─────────────────
+# Gen-3 individual = 17.8 MAE (6hr horizon). Ensemble should help.
+# Uses 21f extended features + semantic_groups.
+def run_gen3_ensemble_selective(args):
+    """EXP-236: Gen-3 5-seed ensemble with selective masking (6hr horizon)."""
+    patients_dir = getattr(args, 'patients_dir', None)
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24, extended_features=True)
+    n_feat = train_ds[0][0].shape[1]
+    print(f"Data: train={len(train_ds)} val={len(val_ds)} features={n_feat}")
+
+    seeds = [42, 123, 456, 789, 1024]
+    models, individual = [], {}
+
+    for seed in seeds:
+        set_seed(seed)
+        model = create_model(arch='grouped', input_dim=n_feat, d_model=128,
+                             nhead=8, num_layers=3, semantic_groups=True)
+        save_path = os.path.join(output_dir, f'exp236_gen3ens_s{seed}.pth')
+        train_forecast(model, train_ds, val_ds, save_path,
+                       label=f'EXP-236 Gen3-Ens s{seed}',
+                       epochs=100, lr=5e-4, patience=20, batch=32)
+        mae = _compute_mae(model, val_ds)
+        individual[f's{seed}'] = {'mae': round(mae, 2)}
+        models.append(model)
+        print(f"  s{seed}: MAE={mae:.1f}")
+
+    ens_mae = _compute_ensemble_mae(models, val_ds)
+    mean_ind = np.mean([r['mae'] for r in individual.values()])
+
+    result = {
+        'experiment': 'EXP-236: Gen-3 Ensemble Selective',
+        'architecture': {'type': 'Gen-3', 'semantic_groups': True, 'd_model': 128,
+                         'nhead': 8, 'num_layers': 3, 'input_dim': n_feat},
+        'masking': {'channels': FUTURE_UNKNOWN_CHANNELS, 'type': 'selective'},
+        'individual': individual,
+        'ensemble_mae': round(float(ens_mae), 2),
+        'mean_individual_mae': round(float(mean_ind), 2),
+        'comparison': {'exp231_gen3_individual': 17.8, 'exp232_gen2_ensemble': 12.5},
+    }
+    out_path = os.path.join(output_dir, 'exp236_gen3_ensemble_selective.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return result
+
+
+# ── EXP-237: Projected IOB/COB Decay ──────────────────────────────
+# Instead of keeping raw future IOB/COB (assumes no new boluses),
+# compute expected decay from current state. More principled approach.
+# If a bolus IS given, the projected IOB will be lower than actual —
+# this creates a learned "surprise" signal the model can exploit.
+def run_projected_iob_cob(args):
+    """EXP-237: Fill future IOB/COB with exponential decay projection."""
+    from torch.utils.data import DataLoader
+    patients_dir = getattr(args, 'patients_dir', None)
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+    device = get_device()
+
+    # DIA-based IOB decay curve (5-min steps, DIA=5hr → 60 steps)
+    DIA_STEPS = 60
+    def iob_decay(t):
+        """Exponential IOB activity curve, normalized."""
+        return max(0.0, 1.0 - t / DIA_STEPS)
+
+    COB_HALF_STEPS = 12  # ~60 min half-life for carb absorption
+
+    def project_and_train(model, train_ds, val_ds, save_path, label,
+                          epochs=100, lr=1e-3, patience=15):
+        model.to(device)
+        opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-5)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
+        train_dl = DataLoader(train_ds, batch_size=32, shuffle=True)
+        val_dl = DataLoader(val_ds, batch_size=64)
+        crit = torch.nn.MSELoss()
+        best, stale = float('inf'), 0
+
+        for ep in range(epochs):
+            model.train()
+            for b in train_dl:
+                x = batch_to_device(b[0], device)
+                half = x.shape[1] // 2
+                x_in = x.clone()
+                # Mask truly unknown channels
+                for ch in FUTURE_UNKNOWN_CHANNELS:
+                    if ch < x_in.shape[2]:
+                        x_in[:, half:, ch] = 0.0
+                # Project IOB decay from half-1
+                iob_now = x[:, half - 1, 1:2]  # IOB at boundary
+                cob_now = x[:, half - 1, 2:3]  # COB at boundary
+                for t in range(half):
+                    x_in[:, half + t, 1:2] = iob_now * iob_decay(t + 1)
+                    x_in[:, half + t, 2:3] = cob_now * (0.5 ** ((t + 1) / COB_HALF_STEPS))
+
+                pred = model(x_in, causal=True)
+                if isinstance(pred, dict):
+                    pred = pred['forecast']
+                loss = crit(pred[:, half:, :1], x[:, half:, :1])
+                opt.zero_grad()
+                loss.backward()
+                opt.step()
+
+            model.eval()
+            vtl, vn = 0.0, 0
+            with torch.no_grad():
+                for b in val_dl:
+                    x = batch_to_device(b[0], device)
+                    half = x.shape[1] // 2
+                    x_in = x.clone()
+                    for ch in FUTURE_UNKNOWN_CHANNELS:
+                        if ch < x_in.shape[2]:
+                            x_in[:, half:, ch] = 0.0
+                    iob_now = x[:, half - 1, 1:2]
+                    cob_now = x[:, half - 1, 2:3]
+                    for t in range(half):
+                        x_in[:, half + t, 1:2] = iob_now * iob_decay(t + 1)
+                        x_in[:, half + t, 2:3] = cob_now * (0.5 ** ((t + 1) / COB_HALF_STEPS))
+                    pred = model(x_in, causal=True)
+                    if isinstance(pred, dict):
+                        pred = pred['forecast']
+                    vtl += crit(pred[:, half:, :1], x[:, half:, :1]).item() * x.shape[0]
+                    vn += x.shape[0]
+            vl = vtl / vn
+            sched.step(vl)
+            if vl < best:
+                best = vl
+                stale = 0
+                os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+                torch.save({'model_state': model.state_dict()}, save_path)
+            else:
+                stale += 1
+            if stale >= patience:
+                break
+
+        if os.path.exists(save_path):
+            ckpt = torch.load(save_path, map_location=device, weights_only=False)
+            model.load_state_dict(ckpt['model_state'])
+
+    # Arm A: Projected IOB/COB
+    set_seed(42)
+    model_proj = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+    project_and_train(model_proj, train_ds, val_ds,
+                      os.path.join(output_dir, 'exp237_projected_s42.pth'),
+                      'EXP-237 Projected')
+    proj_mae = _compute_mae(model_proj, val_ds)
+
+    # Arm B: Standard selective masking (baseline)
+    set_seed(42)
+    model_std = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+    train_forecast(model_std, train_ds, val_ds,
+                   os.path.join(output_dir, 'exp237_standard_s42.pth'),
+                   label='EXP-237 Standard', epochs=100, lr=1e-3, patience=15)
+    std_mae = _compute_mae(model_std, val_ds)
+
+    result = {
+        'experiment': 'EXP-237: Projected IOB/COB Decay',
+        'hypothesis': 'Projected decay is more principled than keeping raw future IOB/COB',
+        'results': {
+            'projected_mae': round(proj_mae, 2),
+            'standard_selective_mae': round(std_mae, 2),
+            'delta': round(proj_mae - std_mae, 2),
+        },
+        'comparison': {'exp232_selective': 12.9},
+    }
+    out_path = os.path.join(output_dir, 'exp237_projected_iob_cob.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return result
+
+
+# ── EXP-238: Verification Holdout under Selective Masking ──────────
+# Re-evaluate best models on held-out verification split to measure
+# the true generalization gap with correct masking. Prior gap was 37%.
+def run_verification_selective(args):
+    """EXP-238: Eval on verification splits with selective masking."""
+    patients_dir = getattr(args, 'patients_dir', None)
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+
+    # Load verification data
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    ver_paths = sorted([
+        os.path.join(patients_base, p, 'verification')
+        for p in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, p, 'verification'))
+    ])
+    train_paths = sorted([
+        os.path.join(patients_base, p, 'training')
+        for p in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, p, 'training'))
+    ])
+
+    _, val_train = load_multipatient_nightscout(
+        train_paths, task='forecast', window_size=24)
+    _, val_ver = load_multipatient_nightscout(
+        ver_paths, task='forecast', window_size=24)
+
+    results = {}
+    # Load best EXP-232 ensemble models
+    model_paths = [os.path.join(output_dir, f'exp232_ens_s{s}.pth')
+                   for s in [42, 123, 456, 789, 1024]]
+    existing = [p for p in model_paths if os.path.exists(p)]
+
+    if existing:
+        models = []
+        for p in existing:
+            model = create_model(arch='grouped', input_dim=8, d_model=64,
+                                 nhead=4, num_layers=2)
+            load_checkpoint(model, p)
+            models.append(model)
+
+        train_mae = _compute_ensemble_mae(models, val_train)
+        ver_mae = _compute_ensemble_mae(models, val_ver)
+        gap = (ver_mae - train_mae) / train_mae * 100
+
+        results['ensemble'] = {
+            'train_mae': round(train_mae, 2),
+            'verification_mae': round(ver_mae, 2),
+            'gap_pct': round(gap, 1),
+        }
+        print(f"  Ensemble: train={train_mae:.1f}, ver={ver_mae:.1f}, gap={gap:.1f}%")
+
+    result = {
+        'experiment': 'EXP-238: Verification Holdout Selective',
+        'results': results,
+        'comparison': {'prior_gap_pct': 37.0},
+    }
+    out_path = os.path.join(output_dir, 'exp238_verification_selective.json')
+    with open(out_path, 'w') as f:
+        json.dump(result, f, indent=2, cls=_NumpyEncoder)
+    print(f"  Results -> {out_path}")
+    return result
+
+
+REGISTRY.update({
+    # Phase 16: Selective Masking Era
+    'longer-training-ensemble':  'run_longer_training_ensemble',  # EXP-234
+    'hypo-weighted-selective':   'run_hypo_weighted_selective',    # EXP-235
+    'gen3-ensemble-selective':   'run_gen3_ensemble_selective',    # EXP-236
+    'projected-iob-cob':        'run_projected_iob_cob',         # EXP-237
+    'verification-selective':    'run_verification_selective',     # EXP-238
 })
