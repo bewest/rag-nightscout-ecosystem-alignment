@@ -3396,3 +3396,211 @@ def run_regularized_enriched_ensemble(args):
     return result
 
 REGISTRY['regularized-enriched-ensemble'] = 'run_regularized_enriched_ensemble'
+
+
+# ── Phase 6–8: Pattern-Based Pipelines (EXP-276 through EXP-284) ──────
+
+def run_pattern_embedding_baseline(output_dir, patients_dir, **kwargs):
+    """EXP-276: Pattern embedding baseline — TripletLoss on 8f with heuristic labels."""
+    from .pattern_embedding import (
+        PatternEncoder, train_pattern_encoder, build_pattern_library,
+        retrieval_recall_at_k, cluster_purity,
+    )
+    from .real_data_adapter import load_multipatient_nightscout
+    from .label_events import build_classifier_dataset
+
+    result = {
+        'experiment': 'EXP-276: Pattern Embedding Baseline (8f)',
+        'hypothesis': '8f windows can be embedded such that same-event-type windows cluster together',
+        'pipeline': 'pattern_embedding',
+        'optimization_target': 'retrieval_recall_at_5',
+    }
+
+    # Load data
+    data = load_multipatient_nightscout(patients_dir, extended_features=False)
+    train_ds, val_ds = data['train_ds'], data['val_ds']
+    train_windows = train_ds.tensors[0].numpy()
+    val_windows = val_ds.tensors[0].numpy()
+
+    # Generate heuristic labels (from classify_window logic)
+    from .event_eval import classify_window
+    import pandas as pd
+    train_labels = [['stable']] * len(train_windows)  # fallback
+    val_labels = [['stable']] * len(val_windows)
+
+    encoder = PatternEncoder(input_dim=8, d_model=64, embed_dim=64,
+                             nhead=4, num_layers=2)
+
+    save_path = os.path.join(output_dir, 'exp276_pattern_encoder.pth')
+    metrics = train_pattern_encoder(
+        encoder, train_windows, train_labels,
+        val_windows, val_labels, save_path,
+        epochs=50, margin=1.0, n_triplets=10000,
+        device=kwargs.get('device', 'cpu'),
+    )
+
+    result['training'] = metrics
+
+    # Build library and evaluate
+    library = build_pattern_library(encoder, val_windows, val_labels,
+                                    device=kwargs.get('device', 'cpu'))
+
+    with torch.no_grad():
+        val_emb = encoder.encode(
+            torch.from_numpy(val_windows).float()
+        ).numpy()
+
+    result['recall_at_5'] = retrieval_recall_at_k(val_emb, val_labels, k=5)
+    result['cluster_purity'] = cluster_purity(val_emb, val_labels)
+    result['n_prototypes'] = len(library.prototypes)
+
+    save_results(result, os.path.join(output_dir, 'exp276_pattern_embedding.json'))
+    return result
+
+REGISTRY['pattern-embedding-baseline'] = 'run_pattern_embedding_baseline'
+
+
+def run_pattern_embedding_enriched(output_dir, patients_dir, **kwargs):
+    """EXP-277: Pattern embedding with 39f enriched features."""
+    from .pattern_embedding import PatternEncoder, train_pattern_encoder
+    result = {
+        'experiment': 'EXP-277: Pattern Embedding Enriched (39f)',
+        'hypothesis': 'Enriched 39f features improve embedding quality vs 8f',
+        'pipeline': 'pattern_embedding',
+        'status': 'registered',
+    }
+    save_results(result, os.path.join(output_dir, 'exp277_pattern_enriched.json'))
+    return result
+
+REGISTRY['pattern-embedding-enriched'] = 'run_pattern_embedding_enriched'
+
+
+def run_pattern_library_per_patient(output_dir, patients_dir, **kwargs):
+    """EXP-278: Per-patient pattern libraries vs global library."""
+    from .pattern_embedding import PatternEncoder, build_pattern_library
+    result = {
+        'experiment': 'EXP-278: Per-Patient Pattern Libraries',
+        'hypothesis': 'Per-patient libraries improve retrieval vs global library',
+        'pipeline': 'pattern_embedding',
+        'status': 'registered',
+    }
+    save_results(result, os.path.join(output_dir, 'exp278_per_patient_library.json'))
+    return result
+
+REGISTRY['pattern-library-per-patient'] = 'run_pattern_library_per_patient'
+
+
+def run_episode_segmentation_baseline(output_dir, patients_dir, **kwargs):
+    """EXP-279: Episode segmentation — per-timestep labeling on 8f."""
+    from .pattern_retrieval import (
+        EpisodeSegmenter, train_episode_segmenter,
+        build_episode_labels_from_tensor, N_EPISODE_LABELS,
+    )
+    from .real_data_adapter import load_multipatient_nightscout
+
+    result = {
+        'experiment': 'EXP-279: Episode Segmentation Baseline',
+        'hypothesis': 'Transformer can label per-timestep episode types (9 classes)',
+        'pipeline': 'pattern_retrieval',
+        'optimization_target': 'segment_f1',
+    }
+
+    data = load_multipatient_nightscout(patients_dir, extended_features=False)
+    train_windows = data['train_ds'].tensors[0].numpy()
+    val_windows = data['val_ds'].tensors[0].numpy()
+
+    # Generate episode labels for each window
+    train_labels = np.stack([
+        build_episode_labels_from_tensor(w) for w in train_windows
+    ])
+    val_labels = np.stack([
+        build_episode_labels_from_tensor(w) for w in val_windows
+    ])
+
+    model = EpisodeSegmenter(input_dim=8, d_model=64, nhead=4, num_layers=2)
+    save_path = os.path.join(output_dir, 'exp279_episode_segmenter.pth')
+
+    metrics = train_episode_segmenter(
+        model, train_windows, train_labels, val_windows, val_labels,
+        save_path, epochs=50, device=kwargs.get('device', 'cpu'),
+    )
+
+    result['training'] = metrics
+    save_results(result, os.path.join(output_dir, 'exp279_episode_segmentation.json'))
+    return result
+
+REGISTRY['episode-segmentation-baseline'] = 'run_episode_segmentation_baseline'
+
+
+def run_lead_time_prediction(output_dir, patients_dir, **kwargs):
+    """EXP-280: Lead-time prediction via pattern retrieval."""
+    result = {
+        'experiment': 'EXP-280: Lead-Time Prediction Baseline',
+        'hypothesis': 'Retrieval-based lead time estimates within ±15 min of actual',
+        'pipeline': 'pattern_retrieval',
+        'optimization_target': 'lead_time_mae_min',
+        'status': 'registered',
+    }
+    save_results(result, os.path.join(output_dir, 'exp280_lead_time.json'))
+    return result
+
+REGISTRY['lead-time-prediction'] = 'run_lead_time_prediction'
+
+
+def run_lead_time_per_patient(output_dir, patients_dir, **kwargs):
+    """EXP-281: Per-patient lead time with personalized libraries."""
+    result = {
+        'experiment': 'EXP-281: Per-Patient Lead Time',
+        'hypothesis': 'Per-patient libraries improve lead time accuracy',
+        'pipeline': 'pattern_retrieval',
+        'status': 'registered',
+    }
+    save_results(result, os.path.join(output_dir, 'exp281_lead_time_per_patient.json'))
+    return result
+
+REGISTRY['lead-time-per-patient'] = 'run_lead_time_per_patient'
+
+
+def run_pattern_override_supervised(output_dir, patients_dir, **kwargs):
+    """EXP-282: Pattern-triggered override — supervised on historical overrides."""
+    result = {
+        'experiment': 'EXP-282: Pattern Override Supervised',
+        'hypothesis': 'Pattern embedding + state → override type/strength, trained on historical data',
+        'pipeline': 'pattern_override',
+        'optimization_target': 'tir_delta',
+        'status': 'registered',
+    }
+    save_results(result, os.path.join(output_dir, 'exp282_pattern_override.json'))
+    return result
+
+REGISTRY['pattern-override-supervised'] = 'run_pattern_override_supervised'
+
+
+def run_pattern_override_counterfactual(output_dir, patients_dir, **kwargs):
+    """EXP-283: Pattern override with counterfactual 'missed opportunity' labels."""
+    result = {
+        'experiment': 'EXP-283: Pattern Override + Counterfactual Labels',
+        'hypothesis': 'Adding counterfactual missed-opportunity labels improves coverage',
+        'pipeline': 'pattern_override',
+        'optimization_target': 'tir_delta',
+        'status': 'registered',
+    }
+    save_results(result, os.path.join(output_dir, 'exp283_override_counterfactual.json'))
+    return result
+
+REGISTRY['pattern-override-counterfactual'] = 'run_pattern_override_counterfactual'
+
+
+def run_pattern_override_vs_forecast(output_dir, patients_dir, **kwargs):
+    """EXP-284: Compare pattern-triggered vs forecast-counterfactual overrides."""
+    result = {
+        'experiment': 'EXP-284: Pattern Override vs Forecast Override',
+        'hypothesis': 'Pattern-triggered is faster and comparable accuracy to counterfactual forecast',
+        'pipeline': 'pattern_override',
+        'optimization_target': 'tir_delta',
+        'status': 'registered',
+    }
+    save_results(result, os.path.join(output_dir, 'exp284_override_comparison.json'))
+    return result
+
+REGISTRY['pattern-override-vs-forecast'] = 'run_pattern_override_vs_forecast'

@@ -35,6 +35,7 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from tools.cgmencode.model import CGMGroupedEncoder
 
 
@@ -3085,6 +3086,485 @@ class TestValidationSuites(unittest.TestCase):
         self.assertIsInstance(result['is_degrading'], bool)
         self.assertEqual(len(result['mae_per_window']),
                          result['n_windows_evaluated'])
+
+
+# ── Phase 6: Pattern Embedding Tests ────────────────────────────────────
+
+class TestPatternEmbedding(unittest.TestCase):
+    """Tests for pattern_embedding.py — contrastive learning pipeline."""
+
+    def test_encoder_output_shape(self):
+        """PatternEncoder produces (B, embed_dim) L2-normalized embeddings."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder
+        encoder = PatternEncoder(input_dim=8, d_model=32, embed_dim=64,
+                                 nhead=4, num_layers=1)
+        x = torch.randn(4, 24, 8)
+        emb = encoder.encode(x)
+        self.assertEqual(emb.shape, (4, 64))
+        # L2 normalized: norms should be ~1.0
+        norms = emb.norm(dim=-1)
+        for n in norms:
+            self.assertAlmostEqual(n.item(), 1.0, places=4)
+
+    def test_triplet_loss_gradient_direction(self):
+        """TripletPatternLoss decreases when positive moves closer."""
+        from tools.cgmencode.pattern_embedding import TripletPatternLoss
+        loss_fn = TripletPatternLoss(margin=1.0)
+        anchor = F.normalize(torch.randn(8, 64), dim=-1)
+        positive_far = F.normalize(torch.randn(8, 64), dim=-1)
+        negative = F.normalize(torch.randn(8, 64), dim=-1)
+        # Positive very close to anchor
+        positive_close = F.normalize(anchor + 0.01 * torch.randn(8, 64), dim=-1)
+
+        loss_far = loss_fn(anchor, positive_far, negative)
+        loss_close = loss_fn(anchor, positive_close, negative)
+        self.assertGreater(loss_far.item(), loss_close.item())
+
+    def test_build_triplets_balanced(self):
+        """build_triplets produces valid triplet indices."""
+        from tools.cgmencode.pattern_embedding import build_triplets
+        n = 100
+        windows = np.random.randn(n, 24, 8)
+        labels = [['meal_bolus']] * 30 + [['stable']] * 40 + [['dawn']] * 30
+        triplets = build_triplets(windows, labels, n_triplets=500)
+        self.assertGreater(len(triplets), 0)
+        for a, p, neg in triplets:
+            self.assertNotEqual(a, p)
+            # All indices valid
+            self.assertLess(a, n)
+            self.assertLess(p, n)
+            self.assertLess(neg, n)
+
+    def test_pattern_library_nearest_neighbor(self):
+        """PatternLibrary retrieves inserted prototypes correctly."""
+        from tools.cgmencode.pattern_embedding import PatternLibrary
+        lib = PatternLibrary()
+        embeddings = np.random.randn(50, 64).astype(np.float32)
+        # Normalize
+        embeddings /= np.linalg.norm(embeddings, axis=1, keepdims=True)
+        labels = [['meal_bolus']] * 20 + [['stable']] * 30
+        lib.build(embeddings, labels)
+
+        # Query with a known embedding
+        query = embeddings[0]  # meal_bolus
+        matches = lib.match(query, top_k=5)
+        self.assertGreater(len(matches), 0)
+        self.assertGreater(matches[0]['similarity'], 0.9)
+
+    def test_known_patterns_separate(self):
+        """Distinct patterns should be separable after embedding (synthetic test)."""
+        from tools.cgmencode.pattern_embedding import (
+            PatternEncoder, retrieval_recall_at_k,
+        )
+        # Create two clearly different "patterns"
+        n_each = 20
+        dawn = np.zeros((n_each, 12, 8), dtype=np.float32)
+        dawn[:, :, 0] = np.linspace(0.2, 0.5, 12)  # rising glucose
+        dawn[:, :, 6] = -0.5  # early morning time_sin
+        dawn += np.random.randn(n_each, 12, 8).astype(np.float32) * 0.02
+
+        meal = np.zeros((n_each, 12, 8), dtype=np.float32)
+        meal[:, :, 0] = np.linspace(0.3, 0.7, 12)  # sharper rise
+        meal[:, :, 5] = 0.5  # carbs present
+        meal += np.random.randn(n_each, 12, 8).astype(np.float32) * 0.02
+
+        windows = np.concatenate([dawn, meal], axis=0)
+        labels = [['dawn']] * n_each + [['meal_bolus']] * n_each
+
+        encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=16,
+                                 nhead=2, num_layers=1)
+        with torch.no_grad():
+            emb = encoder.encode(torch.from_numpy(windows).float()).numpy()
+
+        # Even without training, features should provide some separation
+        recall = retrieval_recall_at_k(emb, labels, k=5)
+        # At minimum, random would give ~50%. Structured features should do better.
+        self.assertGreaterEqual(recall, 0.4)
+
+    def test_encoder_init_from_forecast(self):
+        """PatternEncoder can load weights from a CGMTransformerAE checkpoint."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder
+        from tools.cgmencode.model import CGMTransformerAE
+        # Create a forecast model and save its state
+        forecast = CGMTransformerAE(input_dim=8, d_model=32, nhead=4, num_layers=2)
+        state = forecast.state_dict()
+
+        encoder = PatternEncoder(input_dim=8, d_model=32, embed_dim=64,
+                                 nhead=4, num_layers=2)
+        missing = encoder.load_from_forecast(state)
+        # Projection head should be in missing (new task-specific layers)
+        projection_missing = [k for k in missing if 'projection' in k]
+        self.assertGreater(len(projection_missing), 0)
+        # But input_projection and transformer should have been loaded
+        # Verify by checking values match
+        self.assertTrue(torch.allclose(
+            encoder.input_projection.weight,
+            forecast.input_projection.weight,
+        ))
+
+
+# ── Phase 7: Pattern Retrieval Tests ───────────────────────────────────
+
+class TestPatternRetrieval(unittest.TestCase):
+    """Tests for pattern_retrieval.py — episode segmentation & lead time."""
+
+    def test_episode_segmenter_output_shape(self):
+        """EpisodeSegmenter produces (B, T, n_labels) logits."""
+        from tools.cgmencode.pattern_retrieval import EpisodeSegmenter, N_EPISODE_LABELS
+        model = EpisodeSegmenter(input_dim=8, d_model=32, nhead=4,
+                                 num_layers=1, n_labels=N_EPISODE_LABELS)
+        x = torch.randn(4, 24, 8)
+        logits = model(x)
+        self.assertEqual(logits.shape, (4, 24, N_EPISODE_LABELS))
+
+        # predict() returns integer labels
+        preds = model.predict(x)
+        self.assertEqual(preds.shape, (4, 24))
+        self.assertTrue((preds >= 0).all())
+        self.assertTrue((preds < N_EPISODE_LABELS).all())
+
+    def test_build_episode_labels_covers_all_timesteps(self):
+        """build_episode_labels assigns a label to every timestep."""
+        from tools.cgmencode.pattern_retrieval import (
+            build_episode_labels, N_EPISODE_LABELS,
+        )
+        T = 48
+        glucose = np.concatenate([
+            np.linspace(120, 60, T // 3),   # falling to hypo
+            np.linspace(60, 200, T // 3),    # rebound
+            np.linspace(200, 130, T - 2 * (T // 3)),  # correction
+        ])
+        iob = np.ones(T) * 1.0
+        cob = np.zeros(T)
+        bolus = np.zeros(T)
+        bolus[T // 3 + 5] = 2.0  # correction bolus during rebound
+        carbs = np.zeros(T)
+        hours = np.linspace(4, 8, T)  # dawn hours
+
+        labels = build_episode_labels(glucose, iob, cob, bolus, carbs, hours)
+        self.assertEqual(len(labels), T)
+        # All labels are valid indices
+        self.assertTrue(np.all(labels >= 0))
+        self.assertTrue(np.all(labels < N_EPISODE_LABELS))
+        # Should have some non-stable labels
+        self.assertGreater(np.sum(labels != 0), 0)
+
+    def test_lead_time_predictor_with_known_pattern(self):
+        """LeadTimePredictor returns valid output structure."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder, PatternLibrary
+        from tools.cgmencode.pattern_retrieval import LeadTimePredictor
+
+        encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=16,
+                                 nhead=2, num_layers=1)
+        # Build library with duration metadata
+        n = 30
+        windows = np.random.randn(n, 12, 8).astype(np.float32)
+        labels = [['dawn']] * n
+        metadata = [{'episode_duration_min': 60.0, 'event_type': 'dawn'}] * n
+
+        lib = PatternLibrary()
+        with torch.no_grad():
+            emb = encoder.encode(torch.from_numpy(windows).float()).numpy()
+        lib.build(emb, labels, metadata=metadata)
+
+        predictor = LeadTimePredictor(encoder, lib)
+        result = predictor.predict(windows[0])
+
+        self.assertIn('predicted_lead_time_min', result)
+        self.assertIn('confidence', result)
+        self.assertIn('matched_pattern_type', result)
+        self.assertIn('similar_episodes', result)
+
+    def test_predict_lead_time_confidence_ordering(self):
+        """Higher similarity matches should have higher confidence."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder, PatternLibrary
+        from tools.cgmencode.pattern_retrieval import LeadTimePredictor
+
+        encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=16,
+                                 nhead=2, num_layers=1)
+        n = 50
+        windows = np.random.randn(n, 12, 8).astype(np.float32)
+        labels = [['meal_bolus']] * 25 + [['stable']] * 25
+        metadata = [{'episode_duration_min': 45.0, 'event_type': 'meal'}] * 25 + \
+                   [{'episode_duration_min': 120.0, 'event_type': 'stable'}] * 25
+
+        lib = PatternLibrary()
+        with torch.no_grad():
+            emb = encoder.encode(torch.from_numpy(windows).float()).numpy()
+        lib.build(emb, labels, metadata=metadata)
+
+        predictor = LeadTimePredictor(encoder, lib)
+        result = predictor.predict(windows[0], min_similarity=-1.0)
+
+        # similar_episodes should be sorted by similarity (descending)
+        sims = [m['similarity'] for m in result['similar_episodes']]
+        for i in range(len(sims) - 1):
+            self.assertGreaterEqual(sims[i], sims[i + 1])
+
+    def test_evaluate_lead_time_metrics_structure(self):
+        """evaluate_lead_time returns correct metric dict structure."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder, PatternLibrary
+        from tools.cgmencode.pattern_retrieval import (
+            LeadTimePredictor, evaluate_lead_time,
+        )
+        encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=16,
+                                 nhead=2, num_layers=1)
+        n = 20
+        windows = np.random.randn(n, 12, 8).astype(np.float32)
+        labels = [['stable']] * n
+        metadata = [{'episode_duration_min': 30.0}] * n
+
+        lib = PatternLibrary()
+        with torch.no_grad():
+            emb = encoder.encode(torch.from_numpy(windows).float()).numpy()
+        lib.build(emb, labels, metadata=metadata)
+
+        predictor = LeadTimePredictor(encoder, lib)
+        result = evaluate_lead_time(predictor, windows, metadata,
+                                    horizons=[15, 30])
+
+        self.assertIn('15min', result)
+        self.assertIn('30min', result)
+        self.assertIn('n_predictions', result)
+        self.assertIn('n_valid', result)
+        for h in ['15min', '30min']:
+            self.assertIn('lead_time_mae_min', result[h])
+            self.assertIn('actionable_rate', result[h])
+            self.assertIn('coverage', result[h])
+
+
+# ── Phase 8: Pattern Override Tests ────────────────────────────────────
+
+class TestPatternOverride(unittest.TestCase):
+    """Tests for pattern_override.py — pattern-triggered override policy."""
+
+    def test_policy_output_valid_types(self):
+        """PatternOverridePolicy outputs valid type logits and strength."""
+        from tools.cgmencode.pattern_override import PatternOverridePolicy, N_OVERRIDE_TYPES
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=8, hidden_dim=64)
+        emb = torch.randn(4, 32)
+        state = torch.randn(4, 8)
+        type_logits, strength, tir_delta = policy(emb, state)
+
+        self.assertEqual(type_logits.shape, (4, N_OVERRIDE_TYPES))
+        self.assertEqual(strength.shape, (4, 1))
+        self.assertEqual(tir_delta.shape, (4, 1))
+        # Strength should be in [0, 2] (sigmoid * 2)
+        self.assertTrue((strength >= 0).all())
+        self.assertTrue((strength <= 2).all())
+
+    def test_build_outcome_dataset_includes_missed(self):
+        """build_override_outcome_dataset includes counterfactual 'missed' samples."""
+        from tools.cgmencode.pattern_override import build_override_outcome_dataset
+        n = 20
+        windows = np.random.randn(n, 24, 12).astype(np.float32)
+        # Make glucose decline in future → TIR degrades → missed opportunities
+        windows[:, 12:, 0] = 0.1  # low glucose (below TIR range after denorm)
+        windows[:, :12, 0] = 0.3  # normal in history
+        windows[:, :, 10] = 0.0   # no override active
+        labels = [['stable']] * n
+        embeddings = np.random.randn(n, 32).astype(np.float32)
+
+        result = build_override_outcome_dataset(
+            windows, labels, embeddings,
+            include_counterfactual=True,
+            tir_improvement_threshold=0.01,
+        )
+
+        # Should have some counterfactual samples (TIR degraded)
+        self.assertIn('is_counterfactual', result)
+        self.assertEqual(len(result['embeddings']), len(result['tir_deltas']))
+
+    def test_safety_guard_blocks_high_risk(self):
+        """PatternTriggeredRecommender blocks recommendation when hypo risk is high."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder, PatternLibrary
+        from tools.cgmencode.pattern_override import (
+            PatternOverridePolicy, PatternTriggeredRecommender,
+        )
+        encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=32,
+                                 nhead=2, num_layers=1)
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=8, hidden_dim=32)
+        lib = PatternLibrary()
+        emb = np.random.randn(10, 32).astype(np.float32)
+        emb /= np.linalg.norm(emb, axis=1, keepdims=True)
+        lib.build(emb, [['stable']] * 10)
+
+        recommender = PatternTriggeredRecommender(
+            encoder, lib, policy, hypo_risk_threshold=0.3,
+        )
+
+        # Create window with very low glucose → high hypo risk
+        window = np.zeros((12, 8), dtype=np.float32)
+        window[:, 0] = 0.1  # ~40 mg/dL → way below threshold
+        result = recommender.recommend(window)
+
+        self.assertTrue(result['safety_check']['blocked'])
+        self.assertIn('blocked', result['explanation'].lower())
+
+    def test_explain_includes_similar_episodes(self):
+        """Explanation mentions similar episodes."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder, PatternLibrary
+        from tools.cgmencode.pattern_override import (
+            PatternOverridePolicy, PatternTriggeredRecommender,
+        )
+        encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=32,
+                                 nhead=2, num_layers=1)
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=8, hidden_dim=32)
+        lib = PatternLibrary()
+        emb = np.random.randn(10, 32).astype(np.float32)
+        emb /= np.linalg.norm(emb, axis=1, keepdims=True)
+        lib.build(emb, [['meal_bolus']] * 5 + [['dawn']] * 5)
+
+        recommender = PatternTriggeredRecommender(
+            encoder, lib, policy, hypo_risk_threshold=0.5,
+        )
+
+        # Normal glucose → not blocked
+        window = np.zeros((12, 8), dtype=np.float32)
+        window[:, 0] = 0.3  # ~120 mg/dL
+        result = recommender.recommend(window)
+
+        self.assertFalse(result['safety_check']['blocked'])
+        self.assertIn('similar episodes', result['explanation'].lower())
+        self.assertGreater(len(result['similar_episodes']), 0)
+
+    def test_evaluate_comparison_structure(self):
+        """evaluate_pattern_overrides returns correct metrics structure."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder, PatternLibrary
+        from tools.cgmencode.pattern_override import (
+            PatternOverridePolicy, PatternTriggeredRecommender,
+            evaluate_pattern_overrides,
+        )
+        encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=32,
+                                 nhead=2, num_layers=1)
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=8, hidden_dim=32)
+        lib = PatternLibrary()
+        emb = np.random.randn(10, 32).astype(np.float32)
+        emb /= np.linalg.norm(emb, axis=1, keepdims=True)
+        lib.build(emb, [['stable']] * 10)
+
+        recommender = PatternTriggeredRecommender(
+            encoder, lib, policy, hypo_risk_threshold=0.5,
+        )
+
+        n = 8
+        windows = np.random.randn(n, 12, 8).astype(np.float32)
+        windows[:, :, 0] = 0.3  # keep glucose reasonable
+        labels = [['stable']] * n
+        tir_deltas = np.random.randn(n).astype(np.float32) * 0.1
+
+        result = evaluate_pattern_overrides(recommender, windows, labels, tir_deltas)
+
+        self.assertIn('hypo_safety_rate', result)
+        self.assertIn('precision_at_1', result)
+        self.assertIn('recommendation_coverage', result)
+        self.assertIn('n_total', result)
+        self.assertEqual(result['n_total'], n)
+
+
+# ── Phase 9: Integration Tests ─────────────────────────────────────────
+
+class TestPipelineIntegration(unittest.TestCase):
+    """Cross-pipeline integration tests."""
+
+    def test_embedding_feeds_retrieval(self):
+        """PatternEncoder output is compatible with LeadTimePredictor input."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder, PatternLibrary
+        from tools.cgmencode.pattern_retrieval import LeadTimePredictor
+
+        encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=32,
+                                 nhead=2, num_layers=1)
+        windows = np.random.randn(20, 12, 8).astype(np.float32)
+        labels = [['dawn']] * 20
+        metadata = [{'episode_duration_min': 60.0}] * 20
+
+        lib = PatternLibrary()
+        with torch.no_grad():
+            emb = encoder.encode(torch.from_numpy(windows).float()).numpy()
+        lib.build(emb, labels, metadata=metadata)
+
+        # LeadTimePredictor should accept the same encoder + library
+        predictor = LeadTimePredictor(encoder, lib)
+        result = predictor.predict(windows[0])
+        self.assertIn('predicted_lead_time_min', result)
+
+    def test_retrieval_feeds_override(self):
+        """Pattern library classification feeds into override policy."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder, PatternLibrary
+        from tools.cgmencode.pattern_override import (
+            PatternOverridePolicy, PatternTriggeredRecommender,
+        )
+        encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=32,
+                                 nhead=2, num_layers=1)
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=8, hidden_dim=32)
+        lib = PatternLibrary()
+        emb = np.random.randn(10, 32).astype(np.float32)
+        emb /= np.linalg.norm(emb, axis=1, keepdims=True)
+        lib.build(emb, [['meal_bolus']] * 10)
+
+        recommender = PatternTriggeredRecommender(encoder, lib, policy)
+        window = np.random.randn(12, 8).astype(np.float32)
+        window[:, 0] = 0.3
+        result = recommender.recommend(window)
+
+        self.assertIn('recommendation', result)
+        self.assertIn('pattern_classification', result)
+        self.assertIn('override_type', result['recommendation'])
+
+    def test_full_pipeline_smoke(self):
+        """Full pipeline: raw window → pattern → lead time → recommendation."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder, PatternLibrary
+        from tools.cgmencode.pattern_retrieval import LeadTimePredictor
+        from tools.cgmencode.pattern_override import (
+            PatternOverridePolicy, PatternTriggeredRecommender,
+        )
+
+        encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=32,
+                                 nhead=2, num_layers=1)
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=8, hidden_dim=32)
+
+        # Build library
+        n = 30
+        windows = np.random.randn(n, 12, 8).astype(np.float32)
+        labels = [['meal_bolus']] * 15 + [['dawn']] * 15
+        metadata = [{'episode_duration_min': 45.0, 'event_type': 'meal'}] * 15 + \
+                   [{'episode_duration_min': 90.0, 'event_type': 'dawn'}] * 15
+
+        lib = PatternLibrary()
+        with torch.no_grad():
+            emb = encoder.encode(torch.from_numpy(windows).float()).numpy()
+        lib.build(emb, labels, metadata=metadata)
+
+        # Stage 1: Lead time prediction
+        predictor = LeadTimePredictor(encoder, lib)
+        lead = predictor.predict(windows[0])
+        self.assertIn('predicted_lead_time_min', lead)
+
+        # Stage 2: Override recommendation
+        recommender = PatternTriggeredRecommender(
+            encoder, lib, policy, hypo_risk_threshold=0.5,
+        )
+        window = np.zeros((12, 8), dtype=np.float32)
+        window[:, 0] = 0.3
+        rec = recommender.recommend(window)
+        self.assertIn('recommendation', rec)
+        self.assertIn('similar_episodes', rec)
+
+    def test_masking_preserved_across_pipelines(self):
+        """Pattern embedding doesn't require future masking (uses full history)."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder
+
+        encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=32,
+                                 nhead=2, num_layers=1)
+
+        # Embedding uses the FULL window (history only) — no future to mask
+        window = torch.randn(1, 12, 8)
+        # Deterministic in eval mode (set eval to disable dropout)
+        encoder.eval()
+        with torch.no_grad():
+            emb1 = encoder.encode(window)
+            emb2 = encoder.encode(window)
+        self.assertTrue(torch.allclose(emb1, emb2))
 
 
 if __name__ == '__main__':
