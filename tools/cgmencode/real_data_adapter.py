@@ -288,6 +288,8 @@ def build_nightscout_grid(data_path: str,
 
     cgm_times = []
     cgm_values = []
+    cgm_directions = []
+    cgm_trend_rates = []
     for e in entries:
         if e.get('type') != 'sgv' or 'sgv' not in e:
             continue
@@ -299,8 +301,14 @@ def build_nightscout_grid(data_path: str,
             continue
         cgm_times.append(ts)
         cgm_values.append(float(e['sgv']))
+        cgm_directions.append(e.get('direction', ''))
+        cgm_trend_rates.append(e.get('trendRate', np.nan))
 
-    cgm_df = pd.DataFrame({'glucose': cgm_values}, index=pd.DatetimeIndex(cgm_times))
+    cgm_df = pd.DataFrame({
+        'glucose': cgm_values,
+        'direction': cgm_directions,
+        'trend_rate': cgm_trend_rates,
+    }, index=pd.DatetimeIndex(cgm_times))
     cgm_df = cgm_df.sort_index()
     cgm_df = cgm_df[~cgm_df.index.duplicated(keep='first')]
 
@@ -310,9 +318,13 @@ def build_nightscout_grid(data_path: str,
     df = pd.DataFrame(index=grid)
 
     cgm_df.index = cgm_df.index.round('5min')
-    cgm_grouped = cgm_df.groupby(level=0).mean()
+    cgm_grouped = cgm_df.groupby(level=0).first()
     df['glucose'] = cgm_grouped['glucose']
     df['glucose'] = df['glucose'].interpolate(limit=6)
+
+    # Preserve CGM-provided direction and trendRate for enriched features
+    df['direction'] = cgm_grouped['direction']
+    df['trend_rate_raw'] = pd.to_numeric(cgm_grouped['trend_rate'], errors='coerce')
 
     if verbose:
         print(f"  CGM: {len(entries)} raw → {df['glucose'].notna().sum()}/{len(df)} grid points "
@@ -325,6 +337,15 @@ def build_nightscout_grid(data_path: str,
     ds_times = []
     ds_iob = []
     ds_cob = []
+    ds_predicted_30 = []
+    ds_predicted_60 = []
+    ds_predicted_min = []
+    ds_hypo_risk = []
+    ds_recommended_bolus = []
+    ds_enacted_rate = []
+    ds_enacted_bolus = []
+    ds_pump_battery = []
+    ds_pump_reservoir = []
     for ds in devicestatus:
         loop = ds.get('loop', {})
         iob_data = loop.get('iob', {})
@@ -336,16 +357,53 @@ def build_nightscout_grid(data_path: str,
         ds_iob.append(float(iob_data['iob']))
         ds_cob.append(float(cob_data.get('cob', 0)))
 
-    ds_df = pd.DataFrame({'iob': ds_iob, 'cob': ds_cob},
-                          index=pd.DatetimeIndex(ds_times))
+        # Loop predicted glucose trajectory
+        predicted = loop.get('predicted', {})
+        pred_values = predicted.get('values', []) if isinstance(predicted, dict) else []
+        ds_predicted_30.append(float(pred_values[6]) if len(pred_values) > 6 else np.nan)
+        ds_predicted_60.append(float(pred_values[12]) if len(pred_values) > 12 else np.nan)
+        ds_predicted_min.append(float(min(pred_values)) if pred_values else np.nan)
+        ds_hypo_risk.append(float(sum(1 for v in pred_values if v < 70)))
+
+        # Loop recommendations and enacted actions
+        ds_recommended_bolus.append(float(loop.get('recommendedBolus', 0) or 0))
+        enacted = loop.get('enacted', {})
+        if isinstance(enacted, dict):
+            ds_enacted_rate.append(float(enacted.get('rate', np.nan)))
+            ds_enacted_bolus.append(float(enacted.get('bolusVolume', 0) or 0))
+        else:
+            ds_enacted_rate.append(np.nan)
+            ds_enacted_bolus.append(0.0)
+
+        # Pump hardware state
+        pump = ds.get('pump', {})
+        batt = pump.get('battery', {})
+        ds_pump_battery.append(float(batt.get('percent', np.nan)) if isinstance(batt, dict) else np.nan)
+        ds_pump_reservoir.append(float(pump.get('reservoir', np.nan)))
+
+    ds_df = pd.DataFrame({
+        'iob': ds_iob, 'cob': ds_cob,
+        'predicted_30': ds_predicted_30, 'predicted_60': ds_predicted_60,
+        'predicted_min': ds_predicted_min, 'hypo_risk': ds_hypo_risk,
+        'recommended_bolus': ds_recommended_bolus,
+        'enacted_rate': ds_enacted_rate, 'enacted_bolus': ds_enacted_bolus,
+        'pump_battery': ds_pump_battery, 'pump_reservoir': ds_pump_reservoir,
+    }, index=pd.DatetimeIndex(ds_times))
     ds_df = ds_df.sort_index()
     ds_df = ds_df[~ds_df.index.duplicated(keep='first')]
     ds_df.index = ds_df.index.round('5min')
-    ds_grouped = ds_df.groupby(level=0).mean()
+    ds_grouped = ds_df.groupby(level=0).first()
     df['iob'] = ds_grouped['iob']
     df['cob'] = ds_grouped['cob']
     df['iob'] = df['iob'].interpolate(limit=6).fillna(0)
     df['cob'] = df['cob'].interpolate(limit=6).fillna(0)
+
+    # Preserve enriched devicestatus fields for Gen-4 features
+    for col in ['predicted_30', 'predicted_60', 'predicted_min', 'hypo_risk',
+                'recommended_bolus', 'enacted_rate', 'enacted_bolus',
+                'pump_battery', 'pump_reservoir']:
+        df[col] = ds_grouped[col] if col in ds_grouped.columns else np.nan
+        df[col] = df[col].interpolate(limit=6) if col != 'hypo_risk' else df[col].ffill(limit=6)
 
     if verbose:
         print(f"  DeviceStatus: {len(devicestatus)} raw → {ds_df.shape[0]} with IOB/COB")
@@ -443,6 +501,19 @@ def build_nightscout_grid(data_path: str,
     df.attrs['site_change_times'] = site_change_times
     df.attrs['sensor_start_times'] = sensor_start_times
 
+    # --- 3c. Extract insulin suspension events ---
+    suspension_times = []
+    for tx in treatments:
+        et = tx.get('eventType', '')
+        reason = tx.get('reason', '')
+        ts_str = tx.get('created_at') or tx.get('timestamp')
+        if not ts_str:
+            continue
+        if et == 'Temp Basal' and (reason == 'suspend' or float(tx.get('rate', 1)) == 0):
+            suspension_times.append(pd.Timestamp(ts_str))
+    suspension_times.sort()
+    df.attrs['suspension_times'] = suspension_times
+
     # --- 4. Compute net_basal ---
     with open(data_dir / 'profile.json') as f:
         profiles = json.load(f)
@@ -453,6 +524,34 @@ def build_nightscout_grid(data_path: str,
         store = profiles.get('store', {})
     default_profile = store.get('Default', store.get(list(store.keys())[0], {})) if store else {}
     basal_schedule = default_profile.get('basal', [])
+
+    # Extract patient-specific DIA (fixes hardcoded DEFAULT_DIA=5.0 bug)
+    patient_dia = float(default_profile.get('dia', DEFAULT_DIA))
+    df.attrs['patient_dia'] = patient_dia
+
+    # Extract ISF schedule (insulin sensitivity factor — mg/dL per unit)
+    isf_schedule = default_profile.get('sens', default_profile.get('isfProfile', {}).get('sensitivities', []))
+    if not isf_schedule:
+        isf_schedule = [{'time': '00:00', 'timeAsSeconds': 0, 'value': 100}]
+
+    # Extract CR schedule (carb ratio — grams per unit)
+    cr_schedule = default_profile.get('carbratio', default_profile.get('carbRatio', []))
+    if not cr_schedule:
+        cr_schedule = [{'time': '00:00', 'timeAsSeconds': 0, 'value': 10}]
+
+    # Extract glucose targets
+    target_low_schedule = default_profile.get('target_low', [])
+    target_high_schedule = default_profile.get('target_high', [])
+    if not target_low_schedule:
+        target_low_schedule = [{'time': '00:00', 'timeAsSeconds': 0, 'value': 100}]
+    if not target_high_schedule:
+        target_high_schedule = [{'time': '00:00', 'timeAsSeconds': 0, 'value': 120}]
+
+    # Store schedules for downstream feature computation
+    df.attrs['isf_schedule'] = isf_schedule
+    df.attrs['cr_schedule'] = cr_schedule
+    df.attrs['target_low_schedule'] = target_low_schedule
+    df.attrs['target_high_schedule'] = target_high_schedule
 
     # Extract patient timezone for circadian features and basal schedule
     patient_tz = _normalize_timezone(default_profile.get('timezone', ''))
@@ -506,6 +605,12 @@ def build_nightscout_grid(data_path: str,
         print(f"  Feature matrix: {features.shape}")
         print(f"  Glucose: [{df['glucose'].min():.0f}, {df['glucose'].max():.0f}] mg/dL")
         print(f"  IOB: [{df['iob'].min():.2f}, {df['iob'].max():.2f}] U")
+        print(f"  Patient DIA: {patient_dia:.1f}h")
+        n_with_trend = df['trend_rate_raw'].notna().sum()
+        n_with_dir = (df['direction'].fillna('') != '').sum()
+        n_with_pred = df['predicted_30'].notna().sum()
+        print(f"  Enriched fields: {n_with_trend} trendRate, {n_with_dir} direction, "
+              f"{n_with_pred} loop.predicted, {len(suspension_times)} suspensions")
 
     return df, features
 
@@ -608,6 +713,208 @@ def build_extended_features(df: pd.DataFrame, features: np.ndarray,
                   f"warmup steps: {warmup_steps}")
 
     return extended
+
+
+def _lookup_schedule_value(sec_of_day: int, schedule: list, default: float = 0.0) -> float:
+    """Look up value from a time-of-day schedule (ISF, CR, target)."""
+    value = default
+    for entry in schedule:
+        if entry.get('timeAsSeconds', 0) <= sec_of_day:
+            value = float(entry.get('value', default))
+    return value
+
+
+# Trend arrow direction encoding (Dexcom standard)
+_DIRECTION_MAP = {
+    'DoubleDown': -2.0, 'SingleDown': -1.0, 'FortyFiveDown': -0.5,
+    'Flat': 0.0,
+    'FortyFiveUp': 0.5, 'SingleUp': 1.0, 'DoubleUp': 2.0,
+    'NOT COMPUTABLE': 0.0, 'RATE OUT OF RANGE': 0.0, 'NONE': 0.0, '': 0.0,
+}
+
+
+def build_enriched_features(df: pd.DataFrame, features_21: np.ndarray,
+                            verbose: bool = False) -> np.ndarray:
+    """
+    Extend the 21-feature array with Gen-4 enrichment (→ 39 features).
+
+    Adds diabetes-relevant signals derivable from existing Nightscout data:
+    - CGM signal quality: trend arrows, hardware trendRate, rolling noise, gap proxy
+    - AID algorithm context: Loop predicted glucose, enacted actions, recommendations
+    - Profile-derived: scheduled ISF/CR, glucose-vs-target offset
+    - Device hardware: pump battery, reservoir
+    - Enhanced lifecycle: sensor phase encoding, suspension tracking
+
+    Args:
+        df: DataFrame from build_nightscout_grid (with enriched columns)
+        features_21: (N, 21) normalized array from build_extended_features
+        verbose: Print progress
+
+    Returns:
+        (N, 39) normalized float32 array matching ENRICHED_FEATURE_NAMES
+    """
+    from .schema import (NUM_FEATURES_ENRICHED, NORMALIZATION_SCALES,
+                         IDX_TREND_DIRECTION, IDX_TREND_RATE, IDX_ROLLING_NOISE,
+                         IDX_HOURS_SINCE_CGM, IDX_LOOP_PREDICTED_30,
+                         IDX_LOOP_PREDICTED_60, IDX_LOOP_PREDICTED_MIN,
+                         IDX_LOOP_HYPO_RISK, IDX_LOOP_RECOMMENDED,
+                         IDX_LOOP_ENACTED_RATE, IDX_LOOP_ENACTED_BOLUS,
+                         IDX_SCHEDULED_ISF, IDX_SCHEDULED_CR,
+                         IDX_GLUCOSE_VS_TARGET, IDX_PUMP_BATTERY,
+                         IDX_PUMP_RESERVOIR, IDX_SENSOR_PHASE,
+                         IDX_SUSPENSION_TIME)
+
+    N = len(features_21)
+    enriched = np.zeros((N, NUM_FEATURES_ENRICHED), dtype=np.float32)
+    enriched[:, :21] = features_21
+
+    SCALE = NORMALIZATION_SCALES
+
+    # --- Channel 21: Trend direction (ordinal from CGM arrows) ---
+    if 'direction' in df.columns:
+        directions = df['direction'].fillna('').values
+        dir_vals = np.array([_DIRECTION_MAP.get(str(d).strip(), 0.0) for d in directions],
+                           dtype=np.float32)
+        enriched[:, IDX_TREND_DIRECTION] = dir_vals / SCALE['trend_direction']
+
+    # --- Channel 22: CGM-provided trendRate (cleaner than computed ROC) ---
+    if 'trend_rate_raw' in df.columns:
+        tr = df['trend_rate_raw'].interpolate(limit=6).fillna(0).values.astype(np.float32)
+        enriched[:, IDX_TREND_RATE] = tr / SCALE['trend_rate']
+
+    # --- Channel 23: Rolling glucose noise (1hr std of glucose diffs) ---
+    glucose_raw = df['glucose'].values
+    diffs = np.diff(glucose_raw, prepend=glucose_raw[0])
+    diffs = np.nan_to_num(diffs, nan=0.0)
+    # Rolling std with 12-step window (1 hour at 5min intervals)
+    rolling_std = pd.Series(diffs).rolling(12, min_periods=3).std().fillna(0).values
+    enriched[:, IDX_ROLLING_NOISE] = rolling_std.astype(np.float32) / SCALE['rolling_noise']
+
+    # --- Channel 24: Hours since last valid CGM reading (gap proxy) ---
+    cgm_valid = ~np.isnan(df['glucose'].values)
+    hours_since = np.zeros(N, dtype=np.float32)
+    last_valid_idx = -1
+    for i in range(N):
+        if cgm_valid[i]:
+            last_valid_idx = i
+        if last_valid_idx >= 0:
+            hours_since[i] = (i - last_valid_idx) * 5.0 / 60.0
+        else:
+            hours_since[i] = 24.0  # cap
+    enriched[:, IDX_HOURS_SINCE_CGM] = np.clip(hours_since, 0, 24) / SCALE['hours_since_cgm']
+
+    # --- Channels 25-28: Loop predicted glucose summary ---
+    for col, idx, scale_key in [
+        ('predicted_30', IDX_LOOP_PREDICTED_30, 'loop_predicted'),
+        ('predicted_60', IDX_LOOP_PREDICTED_60, 'loop_predicted'),
+        ('predicted_min', IDX_LOOP_PREDICTED_MIN, 'loop_predicted'),
+        ('hypo_risk', IDX_LOOP_HYPO_RISK, 'loop_hypo_risk'),
+    ]:
+        if col in df.columns:
+            vals = df[col].fillna(0).values.astype(np.float32)
+            enriched[:, idx] = vals / SCALE[scale_key]
+
+    # --- Channel 29: Loop recommended bolus ---
+    if 'recommended_bolus' in df.columns:
+        enriched[:, IDX_LOOP_RECOMMENDED] = (
+            df['recommended_bolus'].fillna(0).values.astype(np.float32) / SCALE['loop_recommended']
+        )
+
+    # --- Channels 30-31: Loop enacted actions ---
+    if 'enacted_rate' in df.columns:
+        enriched[:, IDX_LOOP_ENACTED_RATE] = (
+            df['enacted_rate'].interpolate(limit=6).fillna(0).values.astype(np.float32)
+            / SCALE['loop_enacted_rate']
+        )
+    if 'enacted_bolus' in df.columns:
+        enriched[:, IDX_LOOP_ENACTED_BOLUS] = (
+            df['enacted_bolus'].fillna(0).values.astype(np.float32)
+            / SCALE['loop_enacted_bolus']
+        )
+
+    # --- Channels 32-33: Scheduled ISF and CR from profile ---
+    patient_tz = df.attrs.get('patient_tz', 'UTC')
+    local_index = _to_local_index(df.index, patient_tz)
+    isf_schedule = df.attrs.get('isf_schedule', [{'timeAsSeconds': 0, 'value': 100}])
+    cr_schedule = df.attrs.get('cr_schedule', [{'timeAsSeconds': 0, 'value': 10}])
+    target_low_schedule = df.attrs.get('target_low_schedule', [{'timeAsSeconds': 0, 'value': 100}])
+    target_high_schedule = df.attrs.get('target_high_schedule', [{'timeAsSeconds': 0, 'value': 120}])
+
+    for i, ts in enumerate(local_index):
+        sec_of_day = ts.hour * 3600 + ts.minute * 60 + ts.second
+        enriched[i, IDX_SCHEDULED_ISF] = (
+            _lookup_schedule_value(sec_of_day, isf_schedule, 100.0) / SCALE['scheduled_isf']
+        )
+        enriched[i, IDX_SCHEDULED_CR] = (
+            _lookup_schedule_value(sec_of_day, cr_schedule, 10.0) / SCALE['scheduled_cr']
+        )
+        # Channel 34: Glucose vs target midpoint
+        t_low = _lookup_schedule_value(sec_of_day, target_low_schedule, 100.0)
+        t_high = _lookup_schedule_value(sec_of_day, target_high_schedule, 120.0)
+        t_mid = (t_low + t_high) / 2.0
+        if not np.isnan(glucose_raw[i]):
+            enriched[i, IDX_GLUCOSE_VS_TARGET] = (
+                (glucose_raw[i] - t_mid) / SCALE['glucose_vs_target']
+            )
+
+    # --- Channels 35-36: Pump hardware state ---
+    if 'pump_battery' in df.columns:
+        enriched[:, IDX_PUMP_BATTERY] = (
+            df['pump_battery'].interpolate(limit=12).fillna(100).values.astype(np.float32)
+            / SCALE['pump_battery']
+        )
+    if 'pump_reservoir' in df.columns:
+        enriched[:, IDX_PUMP_RESERVOIR] = (
+            df['pump_reservoir'].interpolate(limit=12).fillna(300).values.astype(np.float32)
+            / SCALE['pump_reservoir']
+        )
+
+    # --- Channel 37: Sensor phase (discrete lifecycle encoding) ---
+    if 'sage_hours' in df.columns:
+        sage = df['sage_hours'].values
+        phase = np.zeros(N, dtype=np.float32)
+        for i in range(N):
+            s = sage[i]
+            if np.isnan(s):
+                phase[i] = 0.5  # assume peak if unknown
+            elif s < 2:
+                phase[i] = 0.0    # warmup
+            elif s < 48:
+                phase[i] = 0.25   # early
+            elif s < 168:
+                phase[i] = 0.5    # peak (days 2-7)
+            elif s < 240:
+                phase[i] = 0.75   # late (days 7-10)
+            else:
+                phase[i] = 1.0    # extended (>10 days)
+        enriched[:, IDX_SENSOR_PHASE] = phase
+
+    # --- Channel 38: Time since last insulin suspension ---
+    suspension_times = df.attrs.get('suspension_times', [])
+    if suspension_times:
+        susp_minutes = np.full(N, SCALE['suspension_time'], dtype=np.float32)
+        s_idx = 0
+        for i, ts in enumerate(df.index):
+            while s_idx < len(suspension_times) - 1 and suspension_times[s_idx + 1] <= ts:
+                s_idx += 1
+            if suspension_times[s_idx] <= ts:
+                delta_min = (ts - suspension_times[s_idx]).total_seconds() / 60.0
+                susp_minutes[i] = min(delta_min, SCALE['suspension_time'])
+        enriched[:, IDX_SUSPENSION_TIME] = susp_minutes / SCALE['suspension_time']
+    else:
+        enriched[:, IDX_SUSPENSION_TIME] = 1.0  # capped (no suspensions known)
+
+    if verbose:
+        print(f"  Enriched features: {enriched.shape} ({NUM_FEATURES_ENRICHED} channels)")
+        n_trend = int(np.sum(enriched[:, IDX_TREND_DIRECTION] != 0))
+        n_pred = int(np.sum(enriched[:, IDX_LOOP_PREDICTED_30] != 0))
+        n_enacted = int(np.sum(enriched[:, IDX_LOOP_ENACTED_RATE] != 0))
+        print(f"    Trend arrows: {n_trend}/{N}, Loop predicted: {n_pred}/{N}, "
+              f"Enacted: {n_enacted}/{N}")
+        noise_mean = float(np.mean(rolling_std))
+        print(f"    Rolling noise mean: {noise_mean:.2f} mg/dL/5min")
+
+    return enriched
 
 
 def _fill_override_channels(df: pd.DataFrame, extended: np.ndarray,
@@ -727,6 +1034,7 @@ def load_multipatient_nightscout(data_paths: List[str],
                                   val_fraction: float = 0.2,
                                   conditioned: bool = False,
                                   extended_features: bool = False,
+                                  enriched_features: bool = False,
                                   ) -> Tuple[Optional[object], Optional[object]]:
     """
     Load multiple patient Nightscout directories → single combined dataset.
@@ -743,14 +1051,20 @@ def load_multipatient_nightscout(data_paths: List[str],
             CAGE/SAGE, monthly phase, ROC/accel, etc.) and use doubled window
             size (window_size*2 total steps = window_size history + future).
             Returns TensorDataset pairs for use with train_forecast().
+        enriched_features: If True, build 39-feature Gen-4 arrays (includes
+            CGM quality, AID context, profile, pump state, sensor lifecycle).
+            Implies extended_features=True. Overrides extended_features flag.
 
     Returns:
         (train_dataset, val_dataset)
     """
+    if enriched_features:
+        extended_features = True  # enriched builds on top of extended
+
     all_windows = []
 
     if extended_features:
-        # Extended path: 21 features, doubled window for history+future
+        # Extended path: 21+ features, doubled window for history+future
         actual_window = window_size * 2
     elif conditioned:
         actual_window = window_size * 2
@@ -768,6 +1082,9 @@ def load_multipatient_nightscout(data_paths: List[str],
 
         if extended_features:
             features = build_extended_features(df, features, verbose=False)
+
+        if enriched_features:
+            features = build_enriched_features(df, features, verbose=False)
 
         windows = split_into_windows(features, window_size=actual_window)
         if not windows:
