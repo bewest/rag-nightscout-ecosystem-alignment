@@ -2442,9 +2442,10 @@ def run_lookback_sweep(args):
                          d_model=64, nhead=4, num_layers=2)
         sp = os.path.join(output_dir, f'exp264_lb_{name}_s42.pth')
 
-        # Use asymmetric split: override the half point
+        # Use asymmetric split: pass forecast_steps so training masks correctly
         train_forecast(m, train_ds, val_ds, sp,
-                       label=f'EXP-264 LB-{name}', epochs=100, lr=1e-3, patience=15)
+                       label=f'EXP-264 LB-{name}', epochs=100, lr=1e-3, patience=15,
+                       forecast_steps=fcast_steps)
 
         # Custom eval with asymmetric split
         mae = _asymmetric_mae(m, val_ds, hist_steps=hist_steps)

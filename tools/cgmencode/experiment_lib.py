@@ -215,13 +215,17 @@ def train(model, train_ds, val_ds, save_path, label,
 
 def train_forecast(model, train_ds, val_ds, save_path, label,
                    lr=1e-3, epochs=50, batch=32, patience=15,
-                   weight_decay=1e-5, lr_patience=5):
+                   weight_decay=1e-5, lr_patience=5, forecast_steps=None):
     """Forecast-aware training: masks future glucose so the model learns to
     predict it from history + other features.
 
     Input windows are (x, x) autoencoder pairs where x = [history | future].
     During training, future glucose (channel 0, positions half:) is zeroed in
     the model input. The loss is MSE on future glucose only.
+
+    Args:
+        forecast_steps: Number of future steps. If None, defaults to len//2
+            (symmetric split). Set explicitly for asymmetric windows.
     Returns (best_val_loss, epochs_run).
     """
     device = get_device()
@@ -236,7 +240,7 @@ def train_forecast(model, train_ds, val_ds, save_path, label,
 
     def _forecast_step(batch_data, backward=False):
         x = batch_to_device(batch_data[0], device)
-        half = x.shape[1] // 2
+        half = x.shape[1] - forecast_steps if forecast_steps else x.shape[1] // 2
         x_in = x.clone()
         mask_future_channels(x_in, half)
         pred = model(x_in, causal=True)
@@ -294,12 +298,15 @@ def train_forecast(model, train_ds, val_ds, save_path, label,
 
 # ── Evaluation ───────────────────────────────────────────────────────────
 
-def forecast_mse(model, val_ds, batch_size=64, mask_future=True):
+def forecast_mse(model, val_ds, batch_size=64, mask_future=True, forecast_steps=None):
     """Causal future-only forecast MSE on glucose channel.
 
     This is THE standard metric for comparing forecast models.
     Input windows are [history | future], each half = window_size steps.
     Model predicts with causal mask; we score only future glucose (channel 0).
+
+    Args:
+        forecast_steps: Number of future steps. If None, defaults to len//2.
 
     When mask_future=True (default), future glucose values in the input are
     zeroed out so the model cannot simply copy them.  This makes the metric
@@ -311,7 +318,7 @@ def forecast_mse(model, val_ds, batch_size=64, mask_future=True):
     losses = []
     for batch in DataLoader(val_ds, batch_size=batch_size):
         x = batch_to_device(batch[0], device)
-        half = x.shape[1] // 2
+        half = x.shape[1] - forecast_steps if forecast_steps else x.shape[1] // 2
         if mask_future:
             x_input = x.clone()
             mask_future_channels(x_input, half)
@@ -326,14 +333,15 @@ def forecast_mse(model, val_ds, batch_size=64, mask_future=True):
     return float(np.mean(losses))
 
 
-def persistence_mse(val_ds, batch_size=64):
+def persistence_mse(val_ds, batch_size=64, forecast_steps=None):
     """Persistence baseline: last known glucose repeated forward."""
     crit = nn.MSELoss()
     losses = []
     for batch in DataLoader(val_ds, batch_size=batch_size):
         x = batch[0]
-        half = x.shape[1] // 2
-        persist = x[:, half - 1:half, :1].expand(-1, half, -1)
+        half = x.shape[1] - forecast_steps if forecast_steps else x.shape[1] // 2
+        fcast_len = x.shape[1] - half
+        persist = x[:, half - 1:half, :1].expand(-1, fcast_len, -1)
         losses.append(crit(persist, x[:, half:, :1]).item())
     return float(np.mean(losses))
 
