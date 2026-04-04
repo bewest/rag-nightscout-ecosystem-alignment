@@ -3187,3 +3187,211 @@ def run_regularized_enriched(args):
     return result
 
 REGISTRY['regularized-enriched'] = 'run_regularized_enriched'
+
+
+# ── EXP-275: Regularized Enriched Ensemble with Per-Patient FT ──────
+# Builds on EXP-274 finding: ch_drop=0.15 gives best verification MAE.
+# Now: 5-seed ensemble + per-patient FT to push toward 8f FT ensemble (11.25).
+def run_regularized_enriched_ensemble(args):
+    """EXP-275: Regularized 39f ensemble with per-patient fine-tuning.
+
+    Applies channel dropout during both base training AND fine-tuning
+    to prevent the ensemble overfitting that caused 26.6% gap in EXP-260.
+    """
+    import copy
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    device = get_device()
+
+    validate_masking(NUM_FEATURES_ENRICHED, label='EXP-275')
+
+    # Load enriched training data
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24,
+        enriched_features=True)
+    persist_mae = compute_persistence_mae(val_ds)
+    print(f"  Persistence baseline: {persist_mae:.1f} mg/dL")
+
+    patients_base = os.path.dirname(os.path.dirname(patient_paths[0]))
+    patient_dirs = sorted([d for d in os.listdir(patients_base)
+                          if os.path.isdir(os.path.join(patients_base, d))])
+
+    from torch.utils.data import DataLoader
+    from .schema import FUTURE_UNKNOWN_CHANNELS
+
+    CH_DROP_P = 0.15  # Optimal from EXP-274
+
+    def _ch_drop_forward(model, x_batch, crit, ch_drop_p, training=False):
+        """Forward pass with channel dropout."""
+        x = batch_to_device(x_batch, device)
+        half = x.shape[1] // 2
+        x_in = x.clone()
+        mask_future_channels(x_in, half)
+
+        if training and ch_drop_p > 0:
+            n_ch = x_in.shape[2]
+            droppable = [c for c in range(n_ch)
+                        if c not in {0, 6, 7}
+                        and c not in set(FUTURE_UNKNOWN_CHANNELS)]
+            mask = torch.rand(len(droppable)) < ch_drop_p
+            for i, ch in enumerate(droppable):
+                if mask[i]:
+                    x_in[:, :, ch] = 0.0
+
+        pred = model(x_in, causal=True)
+        loss = crit(pred[:, half:, :1], x[:, half:, :1])
+        return loss, pred
+
+    def _train_with_ch_dropout(model, t_ds, v_ds, ch_drop_p, epochs, patience,
+                                lr=1e-3, wd=1e-5, save_path=None):
+        """Train model with channel dropout."""
+        model.to(device)
+        train_dl = DataLoader(t_ds, batch_size=32, shuffle=True)
+        val_dl = DataLoader(v_ds, batch_size=64)
+        opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=wd)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
+        crit = torch.nn.MSELoss()
+        best_vl, stale = float('inf'), 0
+
+        for ep in range(epochs):
+            model.train()
+            for b in train_dl:
+                opt.zero_grad()
+                loss, _ = _ch_drop_forward(model, b[0], crit, ch_drop_p, training=True)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+
+            model.eval()
+            vtl, vn = 0.0, 0
+            with torch.no_grad():
+                for b in val_dl:
+                    loss, _ = _ch_drop_forward(model, b[0], crit, 0.0, training=False)
+                    vtl += loss.item() * b[0].shape[0]
+                    vn += b[0].shape[0]
+            vl = vtl / vn if vn else float('inf')
+            sched.step(vl)
+
+            if vl < best_vl:
+                best_vl = vl
+                stale = 0
+                if save_path:
+                    os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+                    torch.save({'model_state': model.state_dict(), 'epoch': ep, 'val_loss': vl}, save_path)
+            else:
+                stale += 1
+            if stale >= patience:
+                break
+
+        if save_path and os.path.exists(save_path):
+            ckpt = torch.load(save_path, map_location=device, weights_only=True)
+            model.load_state_dict(ckpt['model_state'])
+        return model, best_vl
+
+    # ── Phase 1: Train 5-seed base models ──
+    SEEDS = [42, 123, 456, 789, 2024]
+    base_models = []
+    base_maes = []
+    print("\n=== Phase 1: 5-seed base training with ch_drop=0.15 ===")
+    for seed in SEEDS:
+        set_seed(seed)
+        model = create_model(arch='grouped', input_dim=NUM_FEATURES_ENRICHED,
+                             d_model=64, nhead=4, num_layers=2, dropout=0.1)
+        sp = os.path.join(output_dir, f'exp275_base_s{seed}.pth')
+        model, _ = _train_with_ch_dropout(model, train_ds, val_ds, CH_DROP_P,
+                                           epochs=100, patience=15, save_path=sp)
+        mae = _mae_from_model(model, val_ds)
+        base_models.append(model)
+        base_maes.append(mae)
+        print(f"  Seed {seed}: MAE={mae:.2f}")
+
+    # Base ensemble MAE
+    base_ens_mae = _ensemble_mae(base_models, val_ds)
+    print(f"  Base ensemble MAE: {base_ens_mae:.2f}")
+
+    # ── Phase 2: Per-patient FT ──
+    FT_SEEDS = [42, 123, 456, 789, 2024]
+    per_patient_results = {}
+    print("\n=== Phase 2: Per-patient fine-tuning with ch_drop=0.15 ===")
+    for pid in patient_dirs:
+        train_path = os.path.join(patients_base, pid, 'training')
+        ver_path = os.path.join(patients_base, pid, 'verification')
+        if not os.path.isdir(train_path):
+            continue
+
+        try:
+            pt_train, pt_val = load_multipatient_nightscout(
+                [train_path], task='forecast', window_size=24,
+                enriched_features=True)
+        except:
+            continue
+
+        # Load verification if available
+        pt_ver = None
+        if os.path.isdir(ver_path):
+            try:
+                _, pt_ver = load_multipatient_nightscout(
+                    [ver_path], task='forecast', window_size=24,
+                    enriched_features=True)
+                if pt_ver and len(pt_ver) < 5:
+                    pt_ver = None
+            except:
+                pt_ver = None
+
+        ft_models = []
+        for base_seed_idx, base_model in enumerate(base_models):
+            for ft_seed in FT_SEEDS:
+                set_seed(ft_seed)
+                ft_model = copy.deepcopy(base_model)
+                sp = os.path.join(output_dir,
+                    f'exp275_ft_{pid}_b{SEEDS[base_seed_idx]}_f{ft_seed}.pth')
+                ft_model, _ = _train_with_ch_dropout(
+                    ft_model, pt_train, pt_val, CH_DROP_P,
+                    epochs=30, patience=8, lr=3e-4, save_path=sp)
+                ft_models.append(ft_model)
+
+        # Per-patient ensemble MAE
+        pt_train_mae = _ensemble_mae(ft_models, pt_val)
+        pt_ver_mae = _ensemble_mae(ft_models, pt_ver) if pt_ver else None
+        gap = round((pt_ver_mae / pt_train_mae - 1) * 100, 1) if pt_ver_mae else None
+
+        per_patient_results[pid] = {
+            'train_mae': round(pt_train_mae, 2),
+            'verification_mae': round(pt_ver_mae, 2) if pt_ver_mae else None,
+            'gap_pct': gap,
+            'n_ft_models': len(ft_models),
+        }
+        gap_str = f"gap={gap:+.1f}%" if gap is not None else "no ver"
+        print(f"  Patient {pid}: train={pt_train_mae:.2f} ver={pt_ver_mae:.2f if pt_ver_mae else 'N/A'} {gap_str}")
+
+    # Aggregate
+    train_maes = [v['train_mae'] for v in per_patient_results.values()]
+    ver_maes = [v['verification_mae'] for v in per_patient_results.values()
+                if v['verification_mae'] is not None]
+    gaps = [v['gap_pct'] for v in per_patient_results.values()
+            if v['gap_pct'] is not None]
+
+    result = {
+        'experiment': 'EXP-275: Regularized Enriched Ensemble + Per-Patient FT',
+        'ch_dropout': CH_DROP_P,
+        'persistence_mae': round(persist_mae, 2),
+        'base_ensemble_mae': round(base_ens_mae, 2),
+        'base_seed_maes': [round(m, 2) for m in base_maes],
+        'per_patient': per_patient_results,
+        'summary': {
+            'mean_train_mae': round(float(np.mean(train_maes)), 2),
+            'mean_ver_mae': round(float(np.mean(ver_maes)), 2) if ver_maes else None,
+            'mean_gap_pct': round(float(np.mean(gaps)), 1) if gaps else None,
+        },
+        'comparison': {
+            'exp274_ch15_single': {'train': 17.25, 'ver': 17.97, 'gap': 4.2},
+            'exp260_39f_ens': {'train': 13.8, 'ver': 17.06, 'gap': 28.6},
+            'exp242_8f_ft_ens': {'train': 11.25, 'ver': 11.56, 'gap': 2.8},
+        },
+    }
+    save_results(result, os.path.join(output_dir, 'exp275_regularized_ensemble.json'))
+    return result
+
+REGISTRY['regularized-enriched-ensemble'] = 'run_regularized_enriched_ensemble'
