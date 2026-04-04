@@ -28,7 +28,7 @@ import torch.nn.functional as F
 PATTERN_LABELS = [
     'stable', 'meal_bolus', 'meal_no_bolus', 'correction',
     'dawn', 'uam', 'exercise_candidate', 'high_volatility',
-    'nocturnal', 'other',
+    'nocturnal', 'sensitivity_shift', 'resistance_shift', 'other',
 ]
 LABEL_TO_IDX = {label: i for i, label in enumerate(PATTERN_LABELS)}
 
@@ -584,3 +584,111 @@ def build_pattern_library(encoder: PatternEncoder,
     library.build(embeddings, labels, metadata=metadata,
                   n_prototypes_per_label=n_prototypes_per_label)
     return library
+
+
+# ── Feature Ablation Framework ──────────────────────────────────────────
+
+# Channel groups matching schema.py definitions
+CHANNEL_GROUPS = {
+    'base_8f':     list(range(0, 8)),     # glucose, IOB, COB, basal, bolus, carbs, time
+    'dynamics':    list(range(8, 12)),     # weekday, override, glucose dynamics
+    'temporal':    list(range(12, 16)),    # ROC, accel, time-since-bolus/carb
+    'cgm_quality': list(range(16, 21)),   # CAGE, SAGE, warmup, noise, calibration
+    'aid_context': list(range(21, 32)),   # Loop predictions, enacted actions
+    'profile':     list(range(32, 35)),   # scheduled ISF, CR, glucose_vs_target
+    'pump_state':  list(range(35, 39)),   # pump reservoir, battery, suspension
+}
+
+
+def ablation_sweep(encoder_factory, train_fn, eval_fn,
+                   train_ds, val_ds, input_dim: int = 39,
+                   groups: Optional[Dict[str, List[int]]] = None,
+                   device: str = 'cpu') -> Dict[str, Dict]:
+    """Run channel-group ablation: mask each group, measure metric delta.
+
+    Args:
+        encoder_factory: callable(input_dim) → PatternEncoder
+        train_fn: callable(encoder, train_ds, val_ds, masked_channels) → trained encoder
+        eval_fn: callable(encoder, val_ds) → dict of metrics
+        train_ds: training dataset
+        val_ds: validation dataset
+        input_dim: total number of channels
+        groups: channel group definitions (defaults to CHANNEL_GROUPS)
+        device: torch device string
+
+    Returns:
+        dict mapping group_name → {
+            'baseline_metrics': {...}, 'ablated_metrics': {...},
+            'delta': {...}, 'channels_masked': [...]
+        }
+    """
+    if groups is None:
+        groups = CHANNEL_GROUPS
+
+    # Train and evaluate baseline (no masking)
+    baseline_encoder = encoder_factory(input_dim)
+    baseline_encoder = train_fn(baseline_encoder, train_ds, val_ds, [])
+    baseline_metrics = eval_fn(baseline_encoder, val_ds)
+
+    results = {}
+    for group_name, channels in groups.items():
+        # Only ablate channels that exist in the input
+        valid_channels = [c for c in channels if c < input_dim]
+        if not valid_channels:
+            continue
+
+        ablated_encoder = encoder_factory(input_dim)
+        ablated_encoder = train_fn(ablated_encoder, train_ds, val_ds, valid_channels)
+        ablated_metrics = eval_fn(ablated_encoder, val_ds)
+
+        delta = {}
+        for k in baseline_metrics:
+            if isinstance(baseline_metrics[k], (int, float)):
+                delta[k] = ablated_metrics.get(k, 0) - baseline_metrics[k]
+
+        results[group_name] = {
+            'baseline_metrics': baseline_metrics,
+            'ablated_metrics': ablated_metrics,
+            'delta': delta,
+            'channels_masked': valid_channels,
+        }
+
+    return results
+
+
+def window_sweep(encoder_factory, train_fn, eval_fn,
+                 data_loader_fn, window_sizes: Optional[List[int]] = None,
+                 input_dim: int = 8,
+                 device: str = 'cpu') -> Dict[int, Dict]:
+    """Sweep window lengths: train + evaluate at each size.
+
+    Args:
+        encoder_factory: callable(input_dim) → PatternEncoder
+        train_fn: callable(encoder, train_ds, val_ds) → trained encoder
+        eval_fn: callable(encoder, val_ds) → dict of metrics
+        data_loader_fn: callable(window_size) → (train_ds, val_ds)
+        window_sizes: list of window sizes to test (steps)
+        input_dim: number of channels
+        device: torch device string
+
+    Returns:
+        dict mapping window_size → metrics dict
+    """
+    if window_sizes is None:
+        window_sizes = [12, 24, 48, 96, 144]  # 1h, 2h, 4h, 8h, 12h
+
+    results = {}
+    for ws in window_sizes:
+        train_ds, val_ds = data_loader_fn(ws)
+        if train_ds is None or len(train_ds) < 10:
+            results[ws] = {'error': 'insufficient data', 'n_train': 0}
+            continue
+
+        encoder = encoder_factory(input_dim)
+        encoder = train_fn(encoder, train_ds, val_ds)
+        metrics = eval_fn(encoder, val_ds)
+        metrics['window_size'] = ws
+        metrics['n_train'] = len(train_ds)
+        results[ws] = metrics
+
+    return results

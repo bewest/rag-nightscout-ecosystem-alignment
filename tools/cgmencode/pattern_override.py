@@ -48,7 +48,7 @@ class PatternOverridePolicy(nn.Module):
         - pattern_embedding: (B, embed_dim) from PatternEncoder
         - glucose_state: (B, state_dim) current glucose metrics
           (current_glucose, glucose_roc, iob, cob, time_sin, time_cos,
-           recent_variability, hypo_risk)
+           recent_variability, hypo_risk, autosens_ratio, drift_trend)
 
     Outputs:
         - type_logits: (B, N_OVERRIDE_TYPES) override type probabilities
@@ -56,7 +56,7 @@ class PatternOverridePolicy(nn.Module):
         - tir_delta: (B, 1) predicted TIR improvement
     """
 
-    def __init__(self, embed_dim: int = 64, state_dim: int = 8,
+    def __init__(self, embed_dim: int = 64, state_dim: int = 10,
                  hidden_dim: int = 128, n_override_types: int = N_OVERRIDE_TYPES):
         super().__init__()
         self.embed_dim = embed_dim
@@ -144,8 +144,14 @@ def extract_glucose_state(window: np.ndarray, glucose_scale: float = 400.0
                           ) -> np.ndarray:
     """Extract glucose state features from the most recent timestep of a window.
 
-    Returns (8,) array: [glucose_norm, roc, iob, cob, time_sin, time_cos,
-                         variability, hypo_risk_proxy]
+    Returns (10,) array: [glucose_norm, roc, iob, cob, time_sin, time_cos,
+                          variability, hypo_risk_proxy, autosens_ratio, drift_trend]
+
+    The last two elements are ISF-drift features:
+    - autosens_ratio: from channel 32 (scheduled ISF), normalized. Falls back to
+      0.5 (=ratio 1.0) if unavailable.
+    - drift_trend: slope of glucose over the last 12 steps (1h), as a proxy for
+      slow ISF drift onset. Positive = rising trend = possible resistance.
     """
     if len(window.shape) == 1:
         window = window.reshape(1, -1)
@@ -172,8 +178,24 @@ def extract_glucose_state(window: np.ndarray, glucose_scale: float = 400.0
     glucose_mgdl = glucose * glucose_scale
     hypo_risk = max(0.0, (80.0 - glucose_mgdl) / 80.0)
 
+    # ISF drift features
+    # Channel 32 = IDX_SCHEDULED_ISF (normalized by /200)
+    if window.shape[1] > 32:
+        autosens_ratio = float(last[32])  # normalized ISF value
+    else:
+        autosens_ratio = 0.5  # neutral (ratio ≈ 1.0)
+
+    # Drift trend: slope of glucose over 12 steps (1h) as slow-drift proxy
+    lookback = min(12, len(window))
+    if lookback >= 4:
+        g_segment = window[-lookback:, 0]
+        drift_trend = float((g_segment[-1] - g_segment[0]) / lookback)
+    else:
+        drift_trend = 0.0
+
     return np.array([glucose, roc, iob, cob, time_sin, time_cos,
-                     variability, hypo_risk], dtype=np.float32)
+                     variability, hypo_risk, autosens_ratio, drift_trend],
+                    dtype=np.float32)
 
 
 def build_override_outcome_dataset(
@@ -476,8 +498,8 @@ class PatternTriggeredRecommender:
         state = extract_glucose_state(window, glucose_scale)
         state_t = torch.from_numpy(state).float().unsqueeze(0).to(self.device)
 
-        # Safety check
-        hypo_risk = state[-1]  # last element is hypo_risk_proxy
+        # Safety check — hypo_risk_proxy is at index 7 in the state vector
+        hypo_risk = state[7]  # [glucose, roc, iob, cob, sin, cos, var, hypo_risk, ...]
         safety_blocked = hypo_risk > self.hypo_risk_threshold
 
         # Get recommendation from policy

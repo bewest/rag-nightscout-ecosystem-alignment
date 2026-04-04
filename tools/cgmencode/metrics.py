@@ -251,3 +251,162 @@ def _fmt(v) -> str:
     if isinstance(v, bool):
         return "✅" if v else "❌"
     return str(v)
+
+
+# ── ISF Drift Metrics ──────────────────────────────────────────────────
+
+def compute_drift_metrics(predicted_ratios: np.ndarray,
+                          actual_ratios: np.ndarray,
+                          predicted_states: Optional[np.ndarray] = None,
+                          actual_states: Optional[np.ndarray] = None,
+                          ) -> Dict:
+    """ISF drift detection accuracy metrics.
+
+    Args:
+        predicted_ratios: (N,) predicted autosens ratios [0.7-1.2]
+        actual_ratios: (N,) ground truth ratios from oref0-style computation
+        predicted_states: (N,) optional predicted drift state labels
+            (0=stable, 1=sensitivity, 2=resistance)
+        actual_states: (N,) optional ground truth state labels
+
+    Returns:
+        dict with ratio_mae, ratio_rmse, state_accuracy, state_f1_per_class,
+        shift_lead_time_steps (if state transitions detected)
+    """
+    valid = ~(np.isnan(predicted_ratios) | np.isnan(actual_ratios))
+    pr = predicted_ratios[valid]
+    ar = actual_ratios[valid]
+
+    ratio_mae = float(np.mean(np.abs(pr - ar))) if len(pr) > 0 else float('nan')
+    ratio_rmse = float(np.sqrt(np.mean((pr - ar) ** 2))) if len(pr) > 0 else float('nan')
+
+    result = {
+        'ratio_mae': ratio_mae,
+        'ratio_rmse': ratio_rmse,
+        'n_valid': int(valid.sum()),
+    }
+
+    if predicted_states is not None and actual_states is not None:
+        ps = predicted_states[valid]
+        acts = actual_states[valid]
+        result['state_accuracy'] = float(np.mean(ps == acts)) if len(ps) > 0 else 0.0
+
+        # Per-class F1
+        state_names = ['stable', 'sensitivity', 'resistance']
+        per_class = {}
+        for c, name in enumerate(state_names):
+            tp = np.sum((ps == c) & (acts == c))
+            fp = np.sum((ps == c) & (acts != c))
+            fn = np.sum((ps != c) & (acts == c))
+            if tp + fp + fn == 0:
+                continue
+            prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+            rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+            f1 = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0
+            per_class[name] = {'precision': prec, 'recall': rec, 'f1': f1}
+        result['per_class'] = per_class
+
+        # Shift lead time: how many steps before actual transition
+        # does predicted transition occur?
+        lead_times = []
+        for t in range(1, len(acts)):
+            if acts[t] != acts[t - 1] and acts[t] != 0:  # actual shift from stable
+                # Find earliest predicted shift before this point
+                for s in range(max(0, t - 60), t):  # look back up to 5 hours
+                    if ps[s] == acts[t]:
+                        lead_times.append(t - s)
+                        break
+        if lead_times:
+            result['shift_lead_time_steps'] = float(np.mean(lead_times))
+            result['shift_lead_time_min'] = float(np.mean(lead_times)) * 5.0
+        else:
+            result['shift_lead_time_steps'] = 0.0
+            result['shift_lead_time_min'] = 0.0
+
+    return result
+
+
+def compute_uam_metrics(y_true_uam: np.ndarray, y_pred_uam: np.ndarray,
+                        lead_times_min: Optional[np.ndarray] = None,
+                        threshold: float = 0.5) -> Dict:
+    """Unannounced Meal (UAM) detection metrics.
+
+    Args:
+        y_true_uam: (N,) binary (1 = UAM occurred)
+        y_pred_uam: (N,) predicted probabilities
+        lead_times_min: (N,) optional lead time in minutes for each detection
+        threshold: classification threshold
+
+    Returns:
+        dict with recall, precision, f1, false_alarm_rate, mean_lead_time_min
+    """
+    y_pred_binary = (y_pred_uam >= threshold).astype(int)
+    y_true_binary = y_true_uam.astype(int)
+
+    tp = int(np.sum((y_pred_binary == 1) & (y_true_binary == 1)))
+    fp = int(np.sum((y_pred_binary == 1) & (y_true_binary == 0)))
+    fn = int(np.sum((y_pred_binary == 0) & (y_true_binary == 1)))
+    tn = int(np.sum((y_pred_binary == 0) & (y_true_binary == 0)))
+
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+    false_alarm_rate = fp / (fp + tn) if (fp + tn) > 0 else 0.0
+
+    result = {
+        'recall': recall,
+        'precision': precision,
+        'f1': f1,
+        'false_alarm_rate': false_alarm_rate,
+        'n_uam_events': tp + fn,
+        'n_total': tp + fp + fn + tn,
+    }
+
+    if lead_times_min is not None:
+        detected = (y_pred_binary == 1) & (y_true_binary == 1)
+        if detected.sum() > 0:
+            result['mean_lead_time_min'] = float(np.mean(lead_times_min[detected]))
+            result['actionable_rate_30min'] = float(np.mean(lead_times_min[detected] >= 30))
+        else:
+            result['mean_lead_time_min'] = 0.0
+            result['actionable_rate_30min'] = 0.0
+
+    return result
+
+
+def compute_meal_absorption_metrics(expected_cob: np.ndarray,
+                                    actual_glucose_delta: np.ndarray,
+                                    cr_nominal: float = 10.0) -> Dict:
+    """Meal absorption tracking — expected vs actual glucose response.
+
+    Args:
+        expected_cob: (N,) expected COB decay (from CR and meal size)
+        actual_glucose_delta: (N,) actual glucose change over same period
+        cr_nominal: nominal carb ratio (g/U)
+
+    Returns:
+        dict with absorption_deviation, cr_mismatch_rate, mean_deviation_pct
+    """
+    valid = ~(np.isnan(expected_cob) | np.isnan(actual_glucose_delta))
+    ec = expected_cob[valid]
+    ag = actual_glucose_delta[valid]
+
+    if len(ec) == 0:
+        return {'absorption_deviation': float('nan'), 'cr_mismatch_rate': 0.0, 'n_valid': 0}
+
+    # Expected glucose impact from COB: glucose_delta ≈ COB / CR × ISF
+    # Deviation = actual - expected direction
+    deviation = ag - ec
+    mean_deviation = float(np.mean(np.abs(deviation)))
+
+    # CR mismatch: absorption significantly faster or slower than expected
+    # Threshold: >30% deviation from expected
+    mismatch = np.abs(deviation) > 0.3 * (np.abs(ec) + 1e-6)
+    cr_mismatch_rate = float(np.mean(mismatch))
+
+    return {
+        'absorption_deviation': mean_deviation,
+        'cr_mismatch_rate': cr_mismatch_rate,
+        'mean_deviation_pct': float(np.mean(np.abs(deviation) / (np.abs(ec) + 1e-6))) * 100,
+        'n_valid': int(valid.sum()),
+    }

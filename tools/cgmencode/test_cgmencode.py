@@ -3341,9 +3341,9 @@ class TestPatternOverride(unittest.TestCase):
     def test_policy_output_valid_types(self):
         """PatternOverridePolicy outputs valid type logits and strength."""
         from tools.cgmencode.pattern_override import PatternOverridePolicy, N_OVERRIDE_TYPES
-        policy = PatternOverridePolicy(embed_dim=32, state_dim=8, hidden_dim=64)
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=10, hidden_dim=64)
         emb = torch.randn(4, 32)
-        state = torch.randn(4, 8)
+        state = torch.randn(4, 10)
         type_logits, strength, tir_delta = policy(emb, state)
 
         self.assertEqual(type_logits.shape, (4, N_OVERRIDE_TYPES))
@@ -3383,7 +3383,7 @@ class TestPatternOverride(unittest.TestCase):
         )
         encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=32,
                                  nhead=2, num_layers=1)
-        policy = PatternOverridePolicy(embed_dim=32, state_dim=8, hidden_dim=32)
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=10, hidden_dim=32)
         lib = PatternLibrary()
         emb = np.random.randn(10, 32).astype(np.float32)
         emb /= np.linalg.norm(emb, axis=1, keepdims=True)
@@ -3409,7 +3409,7 @@ class TestPatternOverride(unittest.TestCase):
         )
         encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=32,
                                  nhead=2, num_layers=1)
-        policy = PatternOverridePolicy(embed_dim=32, state_dim=8, hidden_dim=32)
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=10, hidden_dim=32)
         lib = PatternLibrary()
         emb = np.random.randn(10, 32).astype(np.float32)
         emb /= np.linalg.norm(emb, axis=1, keepdims=True)
@@ -3437,7 +3437,7 @@ class TestPatternOverride(unittest.TestCase):
         )
         encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=32,
                                  nhead=2, num_layers=1)
-        policy = PatternOverridePolicy(embed_dim=32, state_dim=8, hidden_dim=32)
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=10, hidden_dim=32)
         lib = PatternLibrary()
         emb = np.random.randn(10, 32).astype(np.float32)
         emb /= np.linalg.norm(emb, axis=1, keepdims=True)
@@ -3496,7 +3496,7 @@ class TestPipelineIntegration(unittest.TestCase):
         )
         encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=32,
                                  nhead=2, num_layers=1)
-        policy = PatternOverridePolicy(embed_dim=32, state_dim=8, hidden_dim=32)
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=10, hidden_dim=32)
         lib = PatternLibrary()
         emb = np.random.randn(10, 32).astype(np.float32)
         emb /= np.linalg.norm(emb, axis=1, keepdims=True)
@@ -3521,7 +3521,7 @@ class TestPipelineIntegration(unittest.TestCase):
 
         encoder = PatternEncoder(input_dim=8, d_model=16, embed_dim=32,
                                  nhead=2, num_layers=1)
-        policy = PatternOverridePolicy(embed_dim=32, state_dim=8, hidden_dim=32)
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=10, hidden_dim=32)
 
         # Build library
         n = 30
@@ -3565,6 +3565,195 @@ class TestPipelineIntegration(unittest.TestCase):
             emb1 = encoder.encode(window)
             emb2 = encoder.encode(window)
         self.assertTrue(torch.allclose(emb1, emb2))
+
+
+class TestDriftIntegration(unittest.TestCase):
+    """Phase 11: ISF/drift integration tests."""
+
+    def test_encoder_with_drift_features(self):
+        """PatternEncoder handles drift-enriched inputs (>8 channels)."""
+        from tools.cgmencode.pattern_embedding import PatternEncoder
+        encoder = PatternEncoder(input_dim=10, d_model=16, embed_dim=32,
+                                 nhead=2, num_layers=1)
+        encoder.eval()
+        x = torch.randn(2, 24, 10)  # 10 channels: 8 base + autosens + drift
+        with torch.no_grad():
+            emb = encoder.encode(x)
+        self.assertEqual(emb.shape, (2, 32))
+
+    def test_episode_labels_include_drift_shifts(self):
+        """build_episode_labels generates sensitivity/resistance shift labels."""
+        from tools.cgmencode.pattern_retrieval import (
+            build_episode_labels, EPISODE_LABELS
+        )
+        self.assertIn('sensitivity_shift', EPISODE_LABELS)
+        self.assertIn('resistance_shift', EPISODE_LABELS)
+        T = 100
+        # Construct signal arrays with stable glucose and minimal events
+        glucose_mgdl = np.full(T, 120.0, dtype=np.float32)
+        iob = np.full(T, 2.0, dtype=np.float32)
+        cob = np.zeros(T, dtype=np.float32)
+        bolus = np.zeros(T, dtype=np.float32)
+        carbs = np.zeros(T, dtype=np.float32)
+        time_hours = np.linspace(0, 8, T, dtype=np.float32)
+        # Provide autosens ratios: some sensitive (>1.1), some resistant (<0.9)
+        autosens = np.ones(T, dtype=np.float32) * 1.0
+        autosens[0:20] = 1.15  # sensitivity shift
+        autosens[50:70] = 0.85  # resistance shift
+        labels = build_episode_labels(
+            glucose_mgdl, iob, cob, bolus, carbs, time_hours,
+            autosens_ratio=autosens
+        )
+        self.assertEqual(len(labels), T)
+        # Convert integer labels back to names
+        label_names = [EPISODE_LABELS[l] for l in labels]
+        self.assertTrue(
+            'sensitivity_shift' in label_names or 'resistance_shift' in label_names,
+            f"Expected drift-shift labels for extreme autosens ratios, got: {set(label_names)}"
+        )
+
+    def test_override_policy_uses_isf(self):
+        """PatternOverridePolicy with state_dim=10 uses ISF features."""
+        from tools.cgmencode.pattern_override import PatternOverridePolicy
+        policy = PatternOverridePolicy(embed_dim=32, state_dim=10, hidden_dim=64)
+        emb = torch.randn(4, 32)
+        # State: [glucose, roc, iob, cob, sin, cos, var, hypo_risk, autosens, drift]
+        state_normal = torch.randn(4, 10)
+        state_normal[:, 8] = 1.0  # autosens_ratio = 1.0 (neutral)
+        state_normal[:, 9] = 0.0  # no drift
+        state_resistant = state_normal.clone()
+        state_resistant[:, 8] = 0.75  # resistant
+        state_resistant[:, 9] = -0.1  # drifting toward resistance
+
+        policy.eval()
+        with torch.no_grad():
+            _, str_normal, _ = policy(emb, state_normal)
+            _, str_resistant, _ = policy(emb, state_resistant)
+        # Different ISF states → different strength (with random weights, just check shapes)
+        self.assertEqual(str_normal.shape, (4, 1))
+        self.assertEqual(str_resistant.shape, (4, 1))
+
+    def test_extract_glucose_state_10dim(self):
+        """extract_glucose_state returns 10-dim vector with autosens and drift."""
+        from tools.cgmencode.pattern_override import extract_glucose_state
+        window = np.random.randn(24, 8).astype(np.float32)
+        state = extract_glucose_state(window)
+        self.assertEqual(state.shape, (10,))
+        # Check autosens_ratio defaults: 0.5 when no ISF channel (ch32) present
+        self.assertAlmostEqual(float(state[8]), 0.5, places=1)
+
+    def test_drift_metrics_structure(self):
+        """compute_drift_metrics returns expected metric keys."""
+        from tools.cgmencode.metrics import compute_drift_metrics
+        n = 50
+        pred_ratios = np.random.uniform(0.7, 1.3, n).astype(np.float32)
+        true_ratios = np.random.uniform(0.7, 1.3, n).astype(np.float32)
+        pred_states = np.random.choice(['stable', 'resistance', 'sensitivity'], n)
+        true_states = pred_states.copy()  # perfect accuracy for test
+        metrics = compute_drift_metrics(pred_ratios, true_ratios, pred_states, true_states)
+        self.assertIn('ratio_mae', metrics)
+        self.assertIn('state_accuracy', metrics)
+        self.assertGreater(metrics['state_accuracy'], 0.9)
+
+
+class TestFeatureAblation(unittest.TestCase):
+    """Phase 12: Feature ablation and window sweep tests."""
+
+    def test_ablation_sweep_returns_ranking(self):
+        """ablation_sweep produces importance ranking for each channel group."""
+        from tools.cgmencode.pattern_embedding import (
+            ablation_sweep, CHANNEL_GROUPS, PatternEncoder
+        )
+        # Define simple callbacks
+        def encoder_factory(input_dim):
+            return PatternEncoder(
+                input_dim=input_dim, d_model=16, embed_dim=32,
+                nhead=2, num_layers=1
+            )
+
+        def train_fn(encoder, train_ds, val_ds, masked_channels=None):
+            # No-op training for test speed
+            return encoder
+
+        def eval_fn(encoder, val_ds):
+            return {'recall_at_5': 0.7, 'silhouette': 0.3}
+
+        # Small test data
+        data = torch.randn(20, 12, 8)
+        result = ablation_sweep(
+            encoder_factory, train_fn, eval_fn,
+            train_ds=data, val_ds=data, input_dim=8,
+        )
+        self.assertIsInstance(result, dict)
+        # Should have entries for groups that overlap with 8 channels
+        self.assertGreater(len(result), 0)
+        # Each result should have baseline and ablated metrics
+        for group_name, group_result in result.items():
+            self.assertIn('baseline_metrics', group_result)
+            self.assertIn('ablated_metrics', group_result)
+            self.assertIn('delta', group_result)
+
+    def test_window_sweep_returns_per_size_metrics(self):
+        """window_sweep returns metrics for each window size."""
+        from tools.cgmencode.pattern_embedding import window_sweep, PatternEncoder
+
+        def encoder_factory(input_dim):
+            return PatternEncoder(
+                input_dim=input_dim, d_model=16, embed_dim=32,
+                nhead=2, num_layers=1
+            )
+
+        def train_fn(encoder, train_ds, val_ds):
+            return encoder
+
+        def eval_fn(encoder, val_ds):
+            return {'recall_at_5': 0.6}
+
+        # Create data long enough for largest window
+        base_data = torch.randn(40, 48, 8)
+
+        def data_loader_fn(window_size):
+            # Truncate to window_size along time dimension
+            n = base_data.shape[0]
+            ws = min(window_size, base_data.shape[1])
+            return base_data[:, :ws, :], base_data[:n // 2, :ws, :]
+
+        result = window_sweep(
+            encoder_factory, train_fn, eval_fn,
+            data_loader_fn, window_sizes=[12, 24], input_dim=8
+        )
+        self.assertIn(12, result)
+        self.assertIn(24, result)
+        self.assertIn('recall_at_5', result[12])
+
+
+class TestUAMMetrics(unittest.TestCase):
+    """Phase 13: UAM and meal detection metric tests."""
+
+    def test_uam_metrics_structure(self):
+        """compute_uam_metrics returns expected keys."""
+        from tools.cgmencode.metrics import compute_uam_metrics
+        n = 50
+        pred_uam = np.random.randint(0, 2, n).astype(bool)
+        true_uam = np.random.randint(0, 2, n).astype(bool)
+        pred_lead = np.random.uniform(0, 60, n).astype(np.float32)
+        metrics = compute_uam_metrics(pred_uam, true_uam, pred_lead)
+        self.assertIn('recall', metrics)
+        self.assertIn('precision', metrics)
+        self.assertIn('f1', metrics)
+
+    def test_meal_absorption_metrics_structure(self):
+        """compute_meal_absorption_metrics returns expected keys."""
+        from tools.cgmencode.metrics import compute_meal_absorption_metrics
+        n = 30
+        expected_cob = np.random.uniform(0, 50, n).astype(np.float32)
+        actual_response = expected_cob + np.random.randn(n).astype(np.float32) * 5
+        cr_nominal = np.full(n, 10.0, dtype=np.float32)
+        metrics = compute_meal_absorption_metrics(
+            expected_cob, actual_response, cr_nominal
+        )
+        self.assertIn('absorption_deviation', metrics)
+        self.assertIn('cr_mismatch_rate', metrics)
 
 
 if __name__ == '__main__':

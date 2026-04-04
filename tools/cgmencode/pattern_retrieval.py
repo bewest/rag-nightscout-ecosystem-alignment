@@ -35,6 +35,8 @@ EPISODE_LABELS = [
     'rebound',            # 6: rapid rise after hypo event
     'hypo_risk',          # 7: glucose < 80 or rapidly approaching 70
     'correction_response',# 8: glucose falling after correction bolus
+    'sensitivity_shift',  # 9: autosens ratio > 1.1 (body more sensitive)
+    'resistance_shift',   # 10: autosens ratio < 0.9 (body more resistant)
 ]
 LABEL_TO_IDX = {label: i for i, label in enumerate(EPISODE_LABELS)}
 N_EPISODE_LABELS = len(EPISODE_LABELS)
@@ -50,7 +52,9 @@ _FALLING_RATE = -1.0
 def build_episode_labels(glucose_mgdl: np.ndarray, iob: np.ndarray,
                          cob: np.ndarray, bolus: np.ndarray,
                          carbs: np.ndarray, time_hours: np.ndarray,
-                         interval_min: float = 5.0) -> np.ndarray:
+                         interval_min: float = 5.0,
+                         autosens_ratio: Optional[np.ndarray] = None,
+                         ) -> np.ndarray:
     """Generate per-timestep episode labels from raw signals.
 
     Applies a priority-based heuristic: more specific labels override generic ones.
@@ -63,6 +67,9 @@ def build_episode_labels(glucose_mgdl: np.ndarray, iob: np.ndarray,
         carbs: (T,) carb events (grams)
         time_hours: (T,) hour of day [0, 24)
         interval_min: grid interval in minutes
+        autosens_ratio: (T,) optional autosens ratio [0.7-1.2].
+            If provided, sensitivity_shift (>1.1) and resistance_shift (<0.9)
+            labels are applied as low-priority background episodes.
 
     Returns:
         labels: (T,) integer labels indexing EPISODE_LABELS
@@ -130,6 +137,21 @@ def build_episode_labels(glucose_mgdl: np.ndarray, iob: np.ndarray,
         elif r < _FALLING_RATE:
             labels[t] = LABEL_TO_IDX['falling']
         # else: stays 'stable' (default)
+
+    # Low-priority overlay: ISF drift labels (only override 'stable')
+    if autosens_ratio is not None:
+        _SENSITIVITY_THRESH = 1.1   # matches oref0/AAPS/Trio autosens bounds
+        _RESISTANCE_THRESH = 0.9
+        for t in range(T):
+            if labels[t] != LABEL_TO_IDX['stable']:
+                continue  # don't override specific episode labels
+            ratio = autosens_ratio[t]
+            if np.isnan(ratio):
+                continue
+            if ratio > _SENSITIVITY_THRESH:
+                labels[t] = LABEL_TO_IDX['sensitivity_shift']
+            elif ratio < _RESISTANCE_THRESH:
+                labels[t] = LABEL_TO_IDX['resistance_shift']
 
     return labels
 
