@@ -4085,15 +4085,27 @@ def _build_legacy_registry():
 
 
 def _build_full_registry():
-    """Merge legacy + agentic experiment registries."""
+    """Merge legacy + agentic + archived experiment registries."""
     registry = _build_legacy_registry()
-    # Import agentic experiments (experiments_agentic.py)
+    # Import active agentic experiments (experiments_agentic.py)
     try:
         from . import experiments_agentic as _agentic
         for key, func_name in _agentic.REGISTRY.items():
             registry[key] = getattr(_agentic, func_name)
     except ImportError:
         pass
+    # Import archived experiments on demand
+    for archive_module in [
+        'experiments_archive_r1_r13',
+        'experiments_archive_r14_r30',
+    ]:
+        try:
+            mod = __import__(f'tools.cgmencode.{archive_module}', fromlist=['ARCHIVE_REGISTRY'])
+            for key, func_name in getattr(mod, 'ARCHIVE_REGISTRY', {}).items():
+                if key not in registry:  # active experiments take precedence
+                    registry[key] = getattr(mod, func_name)
+        except (ImportError, AttributeError):
+            pass
     return registry
 
 
