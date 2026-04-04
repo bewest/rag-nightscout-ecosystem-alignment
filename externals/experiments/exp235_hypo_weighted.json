@@ -1,0 +1,35 @@
+{
+  "experiment": "EXP-235",
+  "title": "Hypo-Weighted Training with Selective Masking",
+  "hypothesis": "Higher weight on <80 mg/dL improves hypo prediction",
+  "hypo_threshold": "80 mg/dL",
+  "results": {
+    "w1": {
+      "hypo_weight": 1.0,
+      "overall_mae": 12.92,
+      "hypo_mae": 14.15,
+      "train_time": 2851.2
+    },
+    "w3": {
+      "hypo_weight": 3.0,
+      "overall_mae": 13.2,
+      "hypo_mae": 12.14,
+      "train_time": 1908.4
+    },
+    "w5": {
+      "hypo_weight": 5.0,
+      "overall_mae": 13.41,
+      "hypo_mae": 12.0,
+      "train_time": 1000.0
+    },
+    "w10": {
+      "hypo_weight": 10.0,
+      "overall_mae": 14.16,
+      "hypo_mae": 12.83,
+      "train_time": 706.3
+    }
+  },
+  "comparison": {
+    "exp232_individual_unweighted": 12.9
+  }
+}
