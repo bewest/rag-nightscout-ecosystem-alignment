@@ -48,6 +48,7 @@ from .real_data_adapter import load_multipatient_nightscout
 from .schema import (
     NUM_FEATURES,
     NUM_FEATURES_EXTENDED,
+    NUM_FEATURES_ENRICHED,
     FUTURE_UNKNOWN_CHANNELS,
     IDX_GLUCOSE,
 )
@@ -82,6 +83,65 @@ def save_results(result, path):
 def compute_mae(model_mse, scale=400.0):
     """Convert normalized MSE to MAE in mg/dL.  MAE = sqrt(MSE) * scale."""
     return (model_mse ** 0.5) * scale
+
+
+def validate_masking(input_dim, label=''):
+    """Assert masking correctness for a given input_dim.
+
+    Verifies that FUTURE_UNKNOWN_CHANNELS makes sense for the feature count:
+    - All maskable channels < input_dim actually need masking
+    - Prints a clear summary of what will/won't be masked
+    Raises ValueError if a future-unknown channel exists in the data but
+    is not in FUTURE_UNKNOWN_CHANNELS (would be a leak).
+    """
+    from .schema import (
+        IDX_GLUCOSE, IDX_BOLUS, IDX_CARBS, IDX_GLUCOSE_ROC, IDX_GLUCOSE_ACCEL,
+        IDX_TIME_SINCE_BOLUS, IDX_TIME_SINCE_CARB,
+        IDX_TREND_DIRECTION, IDX_TREND_RATE, IDX_ROLLING_NOISE,
+        IDX_HOURS_SINCE_CGM, IDX_LOOP_PREDICTED_30, IDX_LOOP_PREDICTED_60,
+        IDX_LOOP_PREDICTED_MIN, IDX_LOOP_HYPO_RISK, IDX_LOOP_RECOMMENDED,
+        IDX_LOOP_ENACTED_RATE, IDX_LOOP_ENACTED_BOLUS, IDX_SUSPENSION_TIME,
+    )
+    # All channels that MUST be masked if they exist in the input
+    must_mask = {
+        IDX_GLUCOSE, IDX_BOLUS, IDX_CARBS,
+        IDX_GLUCOSE_ROC, IDX_GLUCOSE_ACCEL,
+        IDX_TIME_SINCE_BOLUS, IDX_TIME_SINCE_CARB,
+        IDX_TREND_DIRECTION, IDX_TREND_RATE, IDX_ROLLING_NOISE,
+        IDX_HOURS_SINCE_CGM, IDX_LOOP_PREDICTED_30, IDX_LOOP_PREDICTED_60,
+        IDX_LOOP_PREDICTED_MIN, IDX_LOOP_HYPO_RISK, IDX_LOOP_RECOMMENDED,
+        IDX_LOOP_ENACTED_RATE, IDX_LOOP_ENACTED_BOLUS, IDX_SUSPENSION_TIME,
+    }
+    present_must_mask = {ch for ch in must_mask if ch < input_dim}
+    actually_masked = {ch for ch in FUTURE_UNKNOWN_CHANNELS if ch < input_dim}
+
+    leaked = present_must_mask - actually_masked
+    if leaked:
+        raise ValueError(
+            f"{label} MASKING LEAK: channels {sorted(leaked)} exist in "
+            f"{input_dim}-dim input but are NOT in FUTURE_UNKNOWN_CHANNELS"
+        )
+
+    extra_masked = actually_masked - present_must_mask
+    prefix = f"[{label}] " if label else ""
+    print(f"  {prefix}Masking validated: {len(actually_masked)}/{input_dim} channels masked, "
+          f"0 leaks detected")
+    return True
+
+
+def compute_persistence_mae(val_ds, batch_size=64):
+    """Compute persistence baseline MAE in mg/dL (last glucose repeated)."""
+    from torch.utils.data import DataLoader
+    total_ae, n = 0.0, 0
+    for batch in DataLoader(val_ds, batch_size=batch_size):
+        x = batch[0]
+        half = x.shape[1] // 2
+        last_glucose = x[:, half - 1, 0:1].unsqueeze(1).expand(-1, x.shape[1] - half, -1)
+        target = x[:, half:, 0:1]
+        ae = torch.abs(last_glucose - target)
+        total_ae += ae.sum().item()
+        n += ae.numel()
+    return float(total_ae / n * SCALE) if n else float('nan')
 
 
 # ─── Experiment Registry ─────────────────────────────────────────
@@ -1901,3 +1961,521 @@ def run_tta_ensemble(args):
     return result
 
 REGISTRY['tta-ensemble'] = 'run_tta_ensemble'
+
+
+# ═════════════════════════════════════════════════════════════════
+#  GEN-4 ENRICHMENT EXPERIMENTS (EXP-260+)
+# ═════════════════════════════════════════════════════════════════
+#
+# These experiments test the 39-channel Gen-4 enrichment pipeline.
+# Baseline comparison: EXP-242 per-patient FT ensemble @ 11.25 MAE.
+# All use enriched_features=True → 39 channels, selective masking
+# with 19 future-unknown channels.
+
+from .schema import NUM_FEATURES_ENRICHED
+
+
+# ── EXP-260: Gen-4 Enriched Baseline ────────────────────────────
+# Train with all 39 channels, 5 seeds, per-patient FT.
+# Direct comparison to EXP-242 (8-channel, same architecture).
+def run_enriched_baseline(args):
+    """EXP-260: 39-feature enriched baseline with per-patient FT ensemble.
+
+    Hypothesis: Richer features break the 29.5 MAE ceiling for 8f and
+    the 11.25 MAE ceiling for per-patient FT ensemble.
+    Baseline: EXP-242 = 11.25 MAE (8f per-patient FT ensemble).
+
+    Includes:
+    - Masking validation (assert no future leaks)
+    - Persistence baseline (for fair comparison)
+    - Verification evaluation (measure generalization gap)
+    """
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    patient_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    device = get_device()
+    seeds = [42, 123, 456, 789, 1024]
+
+    validate_masking(NUM_FEATURES_ENRICHED, label='EXP-260')
+
+    # Phase 1: Multi-patient base models (39f)
+    patient_paths = resolve_patient_paths(patients_dir)
+    print("=== Phase 1: Training 39f base models ===")
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24,
+        enriched_features=True)
+
+    persist_mae = compute_persistence_mae(val_ds)
+    print(f"  Persistence baseline: {persist_mae:.1f} mg/dL")
+
+    base_models_state = {}
+    base_maes = {}
+    for seed in seeds:
+        set_seed(seed)
+        m = create_model(arch='grouped', input_dim=NUM_FEATURES_ENRICHED,
+                         d_model=64, nhead=4, num_layers=2)
+        bp = os.path.join(output_dir, f'exp260_base_s{seed}.pth')
+        train_forecast(m, train_ds, val_ds, bp,
+                       label=f'EXP-260 Base-s{seed}', epochs=100, lr=1e-3, patience=15)
+        mae = _mae_from_model(m, val_ds)
+        base_maes[f's{seed}'] = round(mae, 2)
+        base_models_state[seed] = torch.load(bp, map_location=device,
+                                              weights_only=False)['model_state']
+        print(f"  Base s{seed}: MAE={mae:.1f}")
+
+    # Phase 2: Per-patient fine-tuning + verification
+    print("\n=== Phase 2: Per-patient fine-tuning ===")
+    per_patient = {}
+    for pid in patient_dirs:
+        tp = os.path.join(patients_base, pid, 'training')
+        if not os.path.isdir(tp):
+            continue
+        try:
+            tds, vds = load_multipatient_nightscout(
+                [tp], task='forecast', window_size=24,
+                enriched_features=True)
+        except Exception as e:
+            print(f"  {pid}: SKIP ({e})")
+            continue
+        if tds is None or len(vds) < 10:
+            continue
+
+        ft_models = []
+        seed_maes = {}
+        for seed in seeds:
+            set_seed(seed)
+            m = create_model(arch='grouped', input_dim=NUM_FEATURES_ENRICHED,
+                             d_model=64, nhead=4, num_layers=2)
+            m.load_state_dict(base_models_state[seed])
+            fp = os.path.join(output_dir, f'exp260_ft_{pid}_s{seed}.pth')
+            train_forecast(m, tds, vds, fp,
+                           label=f'EXP-260 FT-{pid}-s{seed}',
+                           epochs=30, lr=1e-4, patience=10)
+            mae = _mae_from_model(m, vds)
+            seed_maes[f's{seed}'] = round(mae, 2)
+            ft_models.append(m)
+        train_ens = _ensemble_mae(ft_models, vds)
+
+        # Verification evaluation (held-out temporal split)
+        ver_path = os.path.join(patients_base, pid, 'verification')
+        ver_ens = None
+        ver_gap = None
+        if os.path.isdir(ver_path):
+            try:
+                _, ver_ds = load_multipatient_nightscout(
+                    [ver_path], task='forecast', window_size=24,
+                    enriched_features=True)
+                if ver_ds is not None and len(ver_ds) >= 10:
+                    ver_ens = _ensemble_mae(ft_models, ver_ds)
+                    ver_gap = round((ver_ens / train_ens - 1) * 100, 1) if train_ens > 0 else None
+            except Exception as e:
+                print(f"  {pid}: verification load failed ({e})")
+
+        per_patient[pid] = {
+            'seeds': seed_maes,
+            'ensemble_mae': round(train_ens, 2),
+            'mean_seed': round(float(np.mean(list(seed_maes.values()))), 2),
+            'verification_mae': round(ver_ens, 2) if ver_ens is not None else None,
+            'generalization_gap_pct': ver_gap,
+        }
+        ver_str = f" ver={ver_ens:.1f} gap={ver_gap:+.1f}%" if ver_ens is not None else ""
+        print(f"  {pid}: mean={per_patient[pid]['mean_seed']:.1f} "
+              f"ens={train_ens:.1f}{ver_str}")
+
+    all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+    all_ver = [v['verification_mae'] for v in per_patient.values()
+               if v['verification_mae'] is not None]
+    all_gaps = [v['generalization_gap_pct'] for v in per_patient.values()
+                if v['generalization_gap_pct'] is not None]
+    result = {
+        'experiment': 'EXP-260: Gen-4 Enriched Baseline (39f)',
+        'hypothesis': '39 channels break the 11.25 MAE ceiling',
+        'base_maes': base_maes,
+        'persistence_mae': round(persist_mae, 2),
+        'per_patient': per_patient,
+        'summary': {
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2) if all_ens else None,
+            'mean_verification_mae': round(float(np.mean(all_ver)), 2) if all_ver else None,
+            'mean_generalization_gap_pct': round(float(np.mean(all_gaps)), 1) if all_gaps else None,
+            'pct_vs_persist': round((1 - float(np.mean(all_ens)) / persist_mae) * 100, 1) if all_ens else None,
+            'n_patients': len(per_patient),
+            'n_verified': len(all_ver),
+        },
+        'comparison': {'exp242_8f_ensemble': 11.25, 'exp249_verification_gap': 2.8},
+        'config': {
+            'input_dim': NUM_FEATURES_ENRICHED,
+            'd_model': 64, 'nhead': 4, 'num_layers': 2,
+            'seeds': seeds, 'window_size': 24,
+            'masking': f'selective_{len([c for c in FUTURE_UNKNOWN_CHANNELS if c < NUM_FEATURES_ENRICHED])}ch',
+        },
+    }
+    save_results(result, os.path.join(output_dir, 'exp260_enriched_baseline.json'))
+    return result
+
+REGISTRY['enriched-baseline'] = 'run_enriched_baseline'
+
+
+# ── EXP-261: Feature Group Ablation ─────────────────────────────
+# Train with 39f, then remove one group at a time.
+# Measures marginal contribution of each Gen-4 group.
+def run_feature_group_ablation(args):
+    """EXP-261: N-choose-1 ablation of Gen-4 feature groups.
+
+    Hypothesis: Some feature groups contribute more than others.
+    Method: Train full 39f baseline, then zero out each group and re-eval.
+    This is inference-time ablation (no retraining) — fast but approximate.
+    """
+    from .schema import (CGM_QUALITY_IDX, AID_CONTEXT_IDX, PROFILE_IDX,
+                         PUMP_STATE_IDX, SENSOR_LIFECYCLE_IDX)
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    device = get_device()
+
+    validate_masking(NUM_FEATURES_ENRICHED, label='EXP-261')
+
+    # Load 39f data
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24,
+        enriched_features=True)
+
+    persist_mae = compute_persistence_mae(val_ds)
+    print(f"  Persistence baseline: {persist_mae:.1f} mg/dL")
+
+    # Train a single 39f model
+    set_seed(42)
+    model = create_model(arch='grouped', input_dim=NUM_FEATURES_ENRICHED,
+                         d_model=64, nhead=4, num_layers=2)
+    sp = os.path.join(output_dir, 'exp261_full39f_s42.pth')
+    train_forecast(model, train_ds, val_ds, sp,
+                   label='EXP-261 Full-39f', epochs=100, lr=1e-3, patience=15)
+
+    # Full model baseline
+    full_mae = _mae_from_model(model, val_ds)
+    print(f"  Full 39f MAE: {full_mae:.1f}")
+
+    # Ablation: zero out each group at inference time
+    groups = {
+        'cgm_quality': CGM_QUALITY_IDX,
+        'aid_context': AID_CONTEXT_IDX,
+        'profile': PROFILE_IDX,
+        'pump_state': PUMP_STATE_IDX,
+        'sensor_lifecycle': SENSOR_LIFECYCLE_IDX,
+    }
+
+    ablation_results = {}
+    for gname, gidx in groups.items():
+        mae = _ablation_mae(model, val_ds, zero_channels=gidx)
+        delta = mae - full_mae
+        ablation_results[gname] = {
+            'mae': round(mae, 2),
+            'delta': round(delta, 2),
+            'channels': gidx,
+            'interpretation': 'helpful' if delta > 0.1 else ('neutral' if delta > -0.1 else 'harmful'),
+        }
+        print(f"  Without {gname}: MAE={mae:.1f} (Δ={delta:+.1f})")
+
+    result = {
+        'experiment': 'EXP-261: Feature Group Ablation (inference-time)',
+        'hypothesis': 'Identify which Gen-4 groups contribute to accuracy',
+        'full_mae': round(full_mae, 2),
+        'persistence_mae': round(persist_mae, 2),
+        'ablation': ablation_results,
+        'ranking': sorted(ablation_results.keys(),
+                         key=lambda k: -ablation_results[k]['delta']),
+        'config': {'input_dim': NUM_FEATURES_ENRICHED, 'method': 'inference_ablation'},
+    }
+    save_results(result, os.path.join(output_dir, 'exp261_feature_ablation.json'))
+    return result
+
+REGISTRY['feature-group-ablation'] = 'run_feature_group_ablation'
+
+
+def _ablation_mae(model, val_ds, zero_channels, batch_size=64):
+    """MAE with specific channels zeroed at inference time."""
+    from torch.utils.data import DataLoader
+    device = get_device()
+    model.eval()
+    total_ae, n = 0.0, 0
+    for batch in DataLoader(val_ds, batch_size=batch_size):
+        x = batch_to_device(batch[0], device)
+        half = x.shape[1] // 2
+        x_in = x.clone()
+        mask_future_channels(x_in, half)
+        # Ablate: zero out the target channels in BOTH halves
+        for ch in zero_channels:
+            x_in[:, :, ch] = 0.0
+        with torch.no_grad():
+            pred = model(x_in, causal=True)
+        if isinstance(pred, dict):
+            pred = pred['forecast']
+        ae = torch.abs(pred[:, half:, :1] - x[:, half:, :1])
+        total_ae += ae.sum().item()
+        n += ae.numel()
+    return float(total_ae / n * SCALE) if n else float('nan')
+
+
+# ── EXP-262: Loop Predicted Features Only ────────────────────────
+# Add ONLY the AID context channels (Loop predictions + enacted) to 8f.
+# Minimal extension: 8 + 7 = 15 channels.
+def run_loop_predicted_only(args):
+    """EXP-262: 8f + Loop AID context (15 channels total).
+
+    Hypothesis: Loop's own predictions are the single most informative
+    feature group (the AID system already models the patient).
+    Method: Use enriched pipeline but zero out all non-AID-context Gen-4 channels.
+    """
+    from .schema import AID_CONTEXT_IDX
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    device = get_device()
+    seeds = [42, 123, 456]
+
+    validate_masking(NUM_FEATURES_ENRICHED, label='EXP-262')
+
+    # Use enriched data but we'll train on full 39f (with non-AID zeroed)
+    # This way masking is handled correctly by the existing infrastructure
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24,
+        enriched_features=True)
+
+    # Zero out all Gen-4 channels EXCEPT AID context — ONCE before seed loop
+    keep_channels = set(range(21)) | set(AID_CONTEXT_IDX)  # core 21 + AID
+    all_channels = set(range(NUM_FEATURES_ENRICHED))
+    zero_channels = list(all_channels - keep_channels)
+    _zero_channels_in_dataset(train_ds, zero_channels)
+    _zero_channels_in_dataset(val_ds, zero_channels)
+
+    persist_mae = compute_persistence_mae(val_ds)
+    print(f"  Persistence baseline: {persist_mae:.1f} mg/dL")
+
+    models = []
+    individual = {}
+    for seed in seeds:
+        set_seed(seed)
+        m = create_model(arch='grouped', input_dim=NUM_FEATURES_ENRICHED,
+                         d_model=64, nhead=4, num_layers=2)
+        sp = os.path.join(output_dir, f'exp262_loop_pred_s{seed}.pth')
+
+        train_forecast(m, train_ds, val_ds, sp,
+                       label=f'EXP-262 LoopPred-s{seed}',
+                       epochs=100, lr=1e-3, patience=15)
+        mae = _mae_from_model(m, val_ds)
+        individual[f's{seed}'] = round(mae, 2)
+        models.append(m)
+        print(f"  s{seed}: MAE={mae:.1f}")
+
+    ens = _ensemble_mae(models, val_ds)
+    result = {
+        'experiment': 'EXP-262: 8f + Loop AID Context Only',
+        'hypothesis': 'Loop predictions are the most informative Gen-4 group',
+        'individual': individual,
+        'ensemble_mae': round(ens, 2),
+        'persistence_mae': round(persist_mae, 2),
+        'pct_vs_persist': round((1 - ens / persist_mae) * 100, 1) if persist_mae > 0 else None,
+        'effective_channels': sorted(list(keep_channels)),
+        'zeroed_channels': sorted(zero_channels),
+        'comparison': {'exp242_8f_ensemble': 11.25},
+        'config': {
+            'input_dim': NUM_FEATURES_ENRICHED,
+            'active_gen4_groups': ['aid_context'],
+        },
+    }
+    save_results(result, os.path.join(output_dir, 'exp262_loop_predicted.json'))
+    return result
+
+REGISTRY['loop-predicted-only'] = 'run_loop_predicted_only'
+
+
+def _zero_channels_in_dataset(ds, channels):
+    """Zero out specific channels in a TensorDataset (in-place)."""
+    for tensor in ds.tensors:
+        for ch in channels:
+            if ch < tensor.shape[-1]:
+                tensor[:, :, ch] = 0.0
+
+
+# ── EXP-263: Forward Feature Selection ───────────────────────────
+# Start with 8f base, add one Gen-4 group at a time, measure improvement.
+# Order: AID context → CGM quality → Profile → Sensor lifecycle → Pump.
+def run_forward_feature_selection(args):
+    """EXP-263: Forward feature selection — add groups incrementally.
+
+    Hypothesis: Cumulative improvement curve shows diminishing returns.
+    Method: Train with progressively more feature groups enabled.
+    """
+    from .schema import (CGM_QUALITY_IDX, AID_CONTEXT_IDX, PROFILE_IDX,
+                         PUMP_STATE_IDX, SENSOR_LIFECYCLE_IDX)
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    device = get_device()
+
+    validate_masking(NUM_FEATURES_ENRICHED, label='EXP-263')
+
+    # Load full enriched data
+    train_ds_full, val_ds_full = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24,
+        enriched_features=True)
+
+    persist_mae = compute_persistence_mae(val_ds_full)
+    print(f"  Persistence baseline: {persist_mae:.1f} mg/dL")
+
+    group_order = [
+        ('aid_context', AID_CONTEXT_IDX),
+        ('cgm_quality', CGM_QUALITY_IDX),
+        ('profile', PROFILE_IDX),
+        ('sensor_lifecycle', SENSOR_LIFECYCLE_IDX),
+        ('pump_state', PUMP_STATE_IDX),
+    ]
+
+    results_by_step = {}
+    active_channels = set(range(21))  # Start with base 21 channels
+
+    for step, (gname, gidx) in enumerate(group_order):
+        active_channels = active_channels | set(gidx)
+        zero_channels = [c for c in range(NUM_FEATURES_ENRICHED) if c not in active_channels]
+
+        # Clone datasets and zero inactive channels
+        import copy
+        train_ds = copy.deepcopy(train_ds_full)
+        val_ds = copy.deepcopy(val_ds_full)
+        _zero_channels_in_dataset(train_ds, zero_channels)
+        _zero_channels_in_dataset(val_ds, zero_channels)
+
+        set_seed(42)
+        m = create_model(arch='grouped', input_dim=NUM_FEATURES_ENRICHED,
+                         d_model=64, nhead=4, num_layers=2)
+        sp = os.path.join(output_dir, f'exp263_step{step}_{gname}_s42.pth')
+        train_forecast(m, train_ds, val_ds, sp,
+                       label=f'EXP-263 +{gname}',
+                       epochs=100, lr=1e-3, patience=15)
+        mae = _mae_from_model(m, val_ds)
+
+        results_by_step[f'step{step}_{gname}'] = {
+            'mae': round(mae, 2),
+            'added_group': gname,
+            'added_channels': gidx,
+            'total_active': len(active_channels),
+        }
+        print(f"  Step {step} (+{gname}): MAE={mae:.1f}, active={len(active_channels)} ch")
+
+    result = {
+        'experiment': 'EXP-263: Forward Feature Selection',
+        'hypothesis': 'Cumulative improvement curve with diminishing returns',
+        'steps': results_by_step,
+        'group_order': [g[0] for g in group_order],
+        'config': {'input_dim': NUM_FEATURES_ENRICHED, 'seed': 42},
+    }
+    save_results(result, os.path.join(output_dir, 'exp263_forward_selection.json'))
+    return result
+
+REGISTRY['forward-feature-selection'] = 'run_forward_feature_selection'
+
+
+# ── EXP-264: Context Window Lookback Sweep ───────────────────────
+# Test asymmetric history:forecast ratios at fixed 1hr forecast.
+def run_lookback_sweep(args):
+    """EXP-264: History length ablation — 30/60/90/120min history → 1hr forecast.
+
+    Hypothesis: More history helps, but with diminishing returns.
+    Requires asymmetric window splitting.
+    """
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    device = get_device()
+
+    # Configs: (history_steps, forecast_steps, total_window)
+    configs = [
+        ('30min', 6, 12, 18),
+        ('60min', 12, 12, 24),
+        ('90min', 18, 12, 30),
+        ('120min', 24, 12, 36),
+    ]
+
+    results_by_config = {}
+    for name, hist_steps, fcast_steps, total_ws in configs:
+        print(f"\n=== Config: {name} history → {fcast_steps*5}min forecast ===")
+        train_ds, val_ds = load_multipatient_nightscout(
+            patient_paths, task='forecast', window_size=total_ws,
+            extended_features=True)
+        if train_ds is None:
+            print(f"  SKIP: no data for ws={total_ws}")
+            continue
+
+        set_seed(42)
+        m = create_model(arch='grouped', input_dim=NUM_FEATURES_EXTENDED,
+                         d_model=64, nhead=4, num_layers=2)
+        sp = os.path.join(output_dir, f'exp264_lb_{name}_s42.pth')
+
+        # Use asymmetric split: override the half point
+        train_forecast(m, train_ds, val_ds, sp,
+                       label=f'EXP-264 LB-{name}', epochs=100, lr=1e-3, patience=15)
+
+        # Custom eval with asymmetric split
+        mae = _asymmetric_mae(m, val_ds, hist_steps=hist_steps)
+        persist = _asymmetric_persistence(val_ds, hist_steps=hist_steps)
+
+        results_by_config[name] = {
+            'mae': round(mae, 2),
+            'persistence_mae': round(persist, 2),
+            'pct_vs_persist': round((1 - mae / persist) * 100, 1) if persist > 0 else None,
+            'hist_steps': hist_steps,
+            'fcast_steps': fcast_steps,
+            'total_ws': total_ws,
+        }
+        print(f"  {name}: MAE={mae:.1f} persist={persist:.1f}")
+
+    result = {
+        'experiment': 'EXP-264: Lookback Sweep (history length ablation)',
+        'hypothesis': 'More history helps with diminishing returns',
+        'configs': results_by_config,
+        'config': {'forecast_steps': 12, 'input_dim': NUM_FEATURES_EXTENDED},
+    }
+    save_results(result, os.path.join(output_dir, 'exp264_lookback_sweep.json'))
+    return result
+
+REGISTRY['lookback-sweep'] = 'run_lookback_sweep'
+
+
+def _asymmetric_mae(model, val_ds, hist_steps, batch_size=64):
+    """MAE with asymmetric history/forecast split."""
+    from torch.utils.data import DataLoader
+    device = get_device()
+    model.eval()
+    total_ae, n = 0.0, 0
+    for batch in DataLoader(val_ds, batch_size=batch_size):
+        x = batch_to_device(batch[0], device)
+        x_in = x.clone()
+        mask_future_channels(x_in, hist_steps)
+        with torch.no_grad():
+            pred = model(x_in, causal=True)
+        if isinstance(pred, dict):
+            pred = pred['forecast']
+        ae = torch.abs(pred[:, hist_steps:, :1] - x[:, hist_steps:, :1])
+        total_ae += ae.sum().item()
+        n += ae.numel()
+    return float(total_ae / n * SCALE) if n else float('nan')
+
+
+def _asymmetric_persistence(val_ds, hist_steps, batch_size=64):
+    """Persistence MAE: last known glucose repeated for forecast window."""
+    from torch.utils.data import DataLoader
+    total_ae, n = 0.0, 0
+    for batch in DataLoader(val_ds, batch_size=batch_size):
+        x = batch[0]
+        last_glucose = x[:, hist_steps - 1, 0:1].unsqueeze(1)
+        target = x[:, hist_steps:, 0:1]
+        ae = torch.abs(last_glucose - target)
+        total_ae += ae.sum().item()
+        n += ae.numel()
+    return float(total_ae / n * SCALE) if n else float('nan')
