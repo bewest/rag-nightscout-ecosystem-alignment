@@ -1,0 +1,12 @@
+{
+  "experiment": "EXP-237: Projected IOB/COB Decay",
+  "hypothesis": "Projected decay is more principled than keeping raw future IOB/COB",
+  "results": {
+    "projected_mae": 17.45,
+    "standard_selective_mae": 12.88,
+    "delta": 4.58
+  },
+  "comparison": {
+    "exp232_selective": 12.9
+  }
+}

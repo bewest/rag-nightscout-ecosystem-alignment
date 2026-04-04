@@ -1,0 +1,13 @@
+{
+  "experiment": "EXP-238: Verification Holdout Selective",
+  "results": {
+    "ensemble": {
+      "train_mae": 12.46,
+      "verification_mae": 11.68,
+      "gap_pct": -6.3
+    }
+  },
+  "comparison": {
+    "prior_gap_pct": 37.0
+  }
+}
