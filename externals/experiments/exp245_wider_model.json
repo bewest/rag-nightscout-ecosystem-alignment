@@ -1,0 +1,40 @@
+{
+  "experiment": "EXP-245: Wider Model (d_model=128) 5-Seed Ensemble",
+  "individual": {
+    "s42": 13.1,
+    "s123": 12.84,
+    "s456": 13.16,
+    "s789": 12.99,
+    "s1024": 13.02
+  },
+  "ensemble_mae": 12.49,
+  "config": {
+    "d_model": 128,
+    "nhead": 4,
+    "num_layers": 2,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ],
+    "n_params": 200680
+  },
+  "masking": {
+    "channels": [
+      0,
+      4,
+      5,
+      12,
+      13,
+      14,
+      15
+    ],
+    "type": "selective"
+  },
+  "comparison": {
+    "exp234_d64_ensemble": 12.38,
+    "exp234_d64_individual": 12.9
+  }
+}
