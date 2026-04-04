@@ -2504,3 +2504,521 @@ def _asymmetric_persistence(val_ds, hist_steps, batch_size=64):
         total_ae += ae.sum().item()
         n += ae.numel()
     return float(total_ae / n * SCALE) if n else float('nan')
+
+
+# ── EXP-265/266/267: Hypo Safety Pipeline ────────────────────────
+# Addresses GAP: 39.8 MAE in hypo range (2.54× worse than overall).
+# Builds on EXP-136 (2-stage) and EXP-248 (hypo-weighted ensemble).
+
+def run_hypo_safety_baseline(args):
+    """EXP-265: Train with AsymmetricHypoLoss on all patients."""
+    from .hypo_safety import train_hypo_forecaster, evaluate_hypo_safety
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+
+    seeds = [42, 123, 456]
+    models = []
+    individual = {}
+    for seed in seeds:
+        set_seed(seed)
+        m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+        sp = os.path.join(output_dir, f'exp265_hypo_base_s{seed}.pth')
+        vl, ep = train_hypo_forecaster(
+            m, train_ds, val_ds, sp,
+            label=f'EXP-265 hypo-base-s{seed}', miss_weight=5.0,
+            epochs=100, patience=15)
+        mae = _mae_from_model(m, val_ds)
+        individual[f's{seed}'] = {'mae': round(mae, 2), 'val_loss': round(vl, 6)}
+        models.append(m)
+
+    safety = evaluate_hypo_safety(models, val_ds)
+    result = {
+        'experiment': 'EXP-265: Hypo Safety Baseline (AsymmetricHypoLoss)',
+        'config': {'miss_weight': 5.0, 'seeds': seeds},
+        'masking': {'channels': list(FUTURE_UNKNOWN_CHANNELS), 'type': 'selective'},
+        'individual': individual,
+        'ensemble_mae': round(_ensemble_mae(models, val_ds), 2),
+        'safety_metrics': safety,
+    }
+    save_results(result, os.path.join(output_dir, 'exp265_hypo_safety_baseline.json'))
+    return result
+
+REGISTRY['hypo-safety-baseline'] = 'run_hypo_safety_baseline'
+
+
+def run_hypo_2stage_ensemble(args):
+    """EXP-266: 2-stage (classifier + forecaster ensemble) hypo pipeline."""
+    from .hypo_safety import (
+        train_hypo_classifier, train_hypo_forecaster,
+        HypoSafetyEnsemble, evaluate_hypo_safety,
+    )
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+    device = get_device()
+
+    # Stage 1: Train classifier
+    set_seed(42)
+    clf = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+    clf_path = os.path.join(output_dir, 'exp266_hypo_clf.pth')
+    clf_metrics = train_hypo_classifier(
+        clf, train_ds, val_ds, clf_path,
+        label='EXP-266 hypo-clf', epochs=50, patience=15)
+
+    # Stage 2: Train forecaster ensemble
+    seeds = [42, 123, 456]
+    forecasters = []
+    for seed in seeds:
+        set_seed(seed)
+        m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+        sp = os.path.join(output_dir, f'exp266_hypo_fc_s{seed}.pth')
+        train_hypo_forecaster(
+            m, train_ds, val_ds, sp,
+            label=f'EXP-266 hypo-fc-s{seed}', miss_weight=5.0,
+            epochs=100, patience=15)
+        forecasters.append(m)
+
+    safety = evaluate_hypo_safety(forecasters, val_ds)
+    result = {
+        'experiment': 'EXP-266: 2-Stage Hypo Ensemble (Classifier + Forecaster)',
+        'classifier_metrics': clf_metrics,
+        'config': {'miss_weight': 5.0, 'seeds': seeds},
+        'masking': {'channels': list(FUTURE_UNKNOWN_CHANNELS), 'type': 'selective'},
+        'safety_metrics': safety,
+        'ensemble_mae': round(_ensemble_mae(forecasters, val_ds), 2),
+    }
+    save_results(result, os.path.join(output_dir, 'exp266_hypo_2stage_ensemble.json'))
+    return result
+
+REGISTRY['hypo-2stage-ensemble'] = 'run_hypo_2stage_ensemble'
+
+
+def run_hypo_per_patient_safety(args):
+    """EXP-267: Per-patient FT with hypo safety module."""
+    from .hypo_safety import train_hypo_forecaster, evaluate_hypo_safety
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    patient_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    device = get_device()
+    seeds = [42, 123]
+
+    # Train base models
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+    base_states = {}
+    for seed in seeds:
+        set_seed(seed)
+        m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+        bp = os.path.join(output_dir, f'exp267_hypo_base_s{seed}.pth')
+        train_hypo_forecaster(m, train_ds, val_ds, bp,
+                              label=f'EXP-267 base-s{seed}', miss_weight=5.0,
+                              epochs=100, patience=15)
+        base_states[seed] = m.state_dict()
+
+    # Per-patient fine-tune
+    per_patient = {}
+    for pid in patient_dirs:
+        tp = os.path.join(patients_base, pid, 'training')
+        if not os.path.isdir(tp):
+            continue
+        try:
+            tds, vds = load_multipatient_nightscout([tp], task='forecast', window_size=24)
+        except Exception:
+            continue
+        if len(vds) < 10:
+            continue
+
+        ft_models = []
+        for seed in seeds:
+            set_seed(seed)
+            m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+            m.load_state_dict(base_states[seed])
+            fp = os.path.join(output_dir, f'exp267_ft_{pid}_s{seed}.pth')
+            train_hypo_forecaster(m, tds, vds, fp,
+                                  label=f'EXP-267 FT-{pid}-s{seed}', miss_weight=5.0,
+                                  epochs=30, patience=10)
+            ft_models.append(m)
+
+        safety = evaluate_hypo_safety(ft_models, vds)
+        per_patient[pid] = {
+            'ensemble_mae': round(_ensemble_mae(ft_models, vds), 2),
+            'safety_metrics': safety,
+        }
+        print(f"  {pid}: ens={per_patient[pid]['ensemble_mae']:.1f}")
+
+    result = {
+        'experiment': 'EXP-267: Per-Patient FT Hypo Safety',
+        'per_patient': per_patient,
+        'config': {'miss_weight': 5.0, 'seeds': seeds},
+        'masking': {'channels': list(FUTURE_UNKNOWN_CHANNELS), 'type': 'selective'},
+    }
+    save_results(result, os.path.join(output_dir, 'exp267_hypo_per_patient_safety.json'))
+    return result
+
+REGISTRY['hypo-per-patient-safety'] = 'run_hypo_per_patient_safety'
+
+
+# ── EXP-268/269/270: Override WHICH/HOW Pipeline ─────────────────
+# Completes override pipeline: WHEN (F1=0.993) → WHICH type + HOW strong.
+# Uses counterfactual forecasting and value model approaches.
+
+def run_override_counterfactual_baseline(args):
+    """EXP-268: Brute-force counterfactual override evaluation on all patients."""
+    from .override_recommender import evaluate_overrides, recommend_override
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+
+    # Need extended features (≥21 channels) for override channels
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24,
+        extended_features=True)
+
+    set_seed(42)
+    model = create_model(arch='grouped', input_dim=NUM_FEATURES_EXTENDED,
+                         d_model=64, nhead=4, num_layers=2)
+    sp = os.path.join(output_dir, 'exp268_override_model.pth')
+    train_forecast(model, train_ds, val_ds, sp,
+                   label='EXP-268 override-base', epochs=100, patience=15)
+
+    # Evaluate on validation set (sample for speed)
+    from torch.utils.data import DataLoader
+    device = get_device()
+    model.to(device)
+    recs = []
+    for batch in DataLoader(val_ds, batch_size=32):
+        x = batch_to_device(batch[0], device)
+        rec = recommend_override(model, x, horizon_steps=12)
+        recs.append(rec)
+        if len(recs) >= 10:
+            break
+
+    type_dist = {}
+    for r in recs:
+        t = r['override_type']
+        type_dist[t] = type_dist.get(t, 0) + 1
+
+    result = {
+        'experiment': 'EXP-268: Override Counterfactual Baseline',
+        'config': {'input_dim': NUM_FEATURES_EXTENDED, 'horizon_steps': 12},
+        'masking': {'channels': list(FUTURE_UNKNOWN_CHANNELS), 'type': 'selective'},
+        'type_distribution': type_dist,
+        'mean_confidence': round(float(np.mean([r['confidence'] for r in recs])), 4),
+        'mean_tir_improvement': round(float(np.mean([
+            r['predicted_tir'] - r['predicted_tir_no_override'] for r in recs
+        ])), 4),
+    }
+    save_results(result, os.path.join(output_dir, 'exp268_override_counterfactual.json'))
+    return result
+
+REGISTRY['override-counterfactual-baseline'] = 'run_override_counterfactual_baseline'
+
+
+def run_override_value_model(args):
+    """EXP-269: Train value model for fast override recommendation."""
+    from .override_recommender import (
+        train_override_value_model, OverrideValueModel,
+        evaluate_overrides, OVERRIDE_TYPE_LIST, OVERRIDE_STRENGTHS,
+    )
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24,
+        extended_features=True)
+
+    # First train a forecast model to generate training labels
+    set_seed(42)
+    fc_model = create_model(arch='grouped', input_dim=NUM_FEATURES_EXTENDED,
+                            d_model=64, nhead=4, num_layers=2)
+    fc_path = os.path.join(output_dir, 'exp269_forecast_model.pth')
+    train_forecast(fc_model, train_ds, val_ds, fc_path,
+                   label='EXP-269 forecast-base', epochs=50, patience=15)
+
+    # Generate override labels from counterfactual forecasting
+    from torch.utils.data import DataLoader, TensorDataset
+    device = get_device()
+    fc_model.to(device)
+    states, otypes, strengths, tir_deltas = [], [], [], []
+
+    for batch in DataLoader(train_ds, batch_size=32):
+        x = batch_to_device(batch[0], device)
+        half = x.shape[1] // 2
+        state_summary = x[:, half - 1, :8].cpu()  # last history step, core features
+
+        # Compute baseline TIR
+        x_base = x.clone()
+        mask_future_channels(x_base, half)
+        with torch.no_grad():
+            base_pred = fc_model(x_base, causal=True)
+        if isinstance(base_pred, dict):
+            base_pred = base_pred['forecast']
+        base_g = base_pred[:, half:half + 12, 0]
+        base_tir = ((base_g >= 0.175) & (base_g <= 0.45)).float().mean(dim=1)
+
+        for ti, otype in enumerate(OVERRIDE_TYPE_LIST):
+            for strength in OVERRIDE_STRENGTHS:
+                from .override_recommender import counterfactual_forecast
+                cf_pred = counterfactual_forecast(fc_model, x, otype, strength, 12)
+                cf_g = cf_pred.squeeze(-1)  # (B, 12)
+                cf_tir = ((cf_g >= 0.175) & (cf_g <= 0.45)).float().mean(dim=1)
+                delta = (cf_tir - base_tir).cpu()
+
+                states.append(state_summary)
+                otypes.append(torch.full((x.size(0),), ti, dtype=torch.long))
+                strengths.append(torch.full((x.size(0), 1), strength))
+                tir_deltas.append(delta)
+
+        if len(states) >= 500:
+            break
+
+    all_states = torch.cat(states)
+    all_otypes = torch.cat(otypes)
+    all_strengths = torch.cat(strengths)
+    all_deltas = torch.cat(tir_deltas)
+
+    n_train = int(len(all_states) * 0.8)
+    vm_train = TensorDataset(all_states[:n_train], all_otypes[:n_train],
+                             all_strengths[:n_train], all_deltas[:n_train])
+    vm_val = TensorDataset(all_states[n_train:], all_otypes[n_train:],
+                           all_strengths[n_train:], all_deltas[n_train:])
+
+    vl, ep, vm = train_override_value_model(
+        vm_train, vm_val, os.path.join(output_dir, 'exp269_value_model.pth'),
+        label='EXP-269 value-model', epochs=50, patience=15)
+
+    result = {
+        'experiment': 'EXP-269: Override Value Model',
+        'config': {'n_training_samples': len(all_states), 'state_dim': 8},
+        'val_loss': round(vl, 6),
+        'epochs': ep,
+    }
+    save_results(result, os.path.join(output_dir, 'exp269_override_value_model.json'))
+    return result
+
+REGISTRY['override-value-model'] = 'run_override_value_model'
+
+
+def run_override_per_patient_recommendation(args):
+    """EXP-270: Personalized override thresholds per patient."""
+    from .override_recommender import recommend_override
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    patient_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    device = get_device()
+
+    per_patient = {}
+    for pid in patient_dirs:
+        tp = os.path.join(patients_base, pid, 'training')
+        if not os.path.isdir(tp):
+            continue
+        try:
+            tds, vds = load_multipatient_nightscout(
+                [tp], task='forecast', window_size=24, extended_features=True)
+        except Exception:
+            continue
+        if len(vds) < 10:
+            continue
+
+        set_seed(42)
+        m = create_model(arch='grouped', input_dim=NUM_FEATURES_EXTENDED,
+                         d_model=64, nhead=4, num_layers=2)
+        sp = os.path.join(output_dir, f'exp270_override_{pid}.pth')
+        train_forecast(m, tds, vds, sp,
+                       label=f'EXP-270 {pid}', epochs=50, patience=15)
+        m.to(device)
+
+        from torch.utils.data import DataLoader
+        recs = []
+        for batch in DataLoader(vds, batch_size=32):
+            x = batch_to_device(batch[0], device)
+            rec = recommend_override(m, x, horizon_steps=12)
+            recs.append(rec)
+            if len(recs) >= 5:
+                break
+
+        type_dist = {}
+        for r in recs:
+            t = r['override_type']
+            type_dist[t] = type_dist.get(t, 0) + 1
+
+        per_patient[pid] = {
+            'type_distribution': type_dist,
+            'mean_confidence': round(float(np.mean([r['confidence'] for r in recs])), 4),
+        }
+        print(f"  {pid}: conf={per_patient[pid]['mean_confidence']:.4f}")
+
+    result = {
+        'experiment': 'EXP-270: Per-Patient Override Recommendation',
+        'per_patient': per_patient,
+        'config': {'input_dim': NUM_FEATURES_EXTENDED, 'horizon_steps': 12},
+        'masking': {'channels': list(FUTURE_UNKNOWN_CHANNELS), 'type': 'selective'},
+    }
+    save_results(result, os.path.join(output_dir, 'exp270_override_per_patient.json'))
+    return result
+
+REGISTRY['override-per-patient-recommendation'] = 'run_override_per_patient_recommendation'
+
+
+# ── EXP-271/272/273: Online Adaptation Pipeline ──────────────────
+# Addresses 7.4% verification gap from temporal drift (EXP-249).
+
+def run_online_adaptation_baseline(args):
+    """EXP-271: Periodic retrain vs static model on all patients."""
+    from .online_adaptation import periodic_retrain, evaluate_temporal_stability
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    patient_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    device = get_device()
+
+    # Train base model on all patients
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+    set_seed(42)
+    m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+    base_path = os.path.join(output_dir, 'exp271_base_model.pth')
+    train_forecast(m, train_ds, val_ds, base_path,
+                   label='EXP-271 base', epochs=100, patience=15)
+
+    # Evaluate temporal stability per patient
+    per_patient = {}
+    for pid in patient_dirs:
+        tp = os.path.join(patients_base, pid, 'training')
+        if not os.path.isdir(tp):
+            continue
+        try:
+            tds, vds = load_multipatient_nightscout([tp], task='forecast', window_size=24)
+        except Exception:
+            continue
+        if len(vds) < 20:
+            continue
+
+        data = vds.tensors[0]
+        stability = evaluate_temporal_stability(m, data, n_windows=4, window_weeks=2)
+
+        # Periodic retrain on this patient
+        retrain_path = os.path.join(output_dir, f'exp271_retrained_{pid}.pth')
+        retrain_result = periodic_retrain(
+            base_path, data, retrain_path,
+            window_weeks=2, lr=5e-5, epochs=10, patience=5)
+
+        per_patient[pid] = {
+            'stability': stability,
+            'retrain': retrain_result,
+        }
+        print(f"  {pid}: degrading={stability['is_degrading']} "
+              f"improvement={retrain_result['improvement_pct']:.1f}%")
+
+    result = {
+        'experiment': 'EXP-271: Online Adaptation Baseline',
+        'per_patient': per_patient,
+        'config': {'window_weeks': 2, 'lr': 5e-5, 'epochs': 10},
+        'masking': {'channels': list(FUTURE_UNKNOWN_CHANNELS), 'type': 'selective'},
+    }
+    save_results(result, os.path.join(output_dir, 'exp271_online_adaptation_baseline.json'))
+    return result
+
+REGISTRY['online-adaptation-baseline'] = 'run_online_adaptation_baseline'
+
+
+def run_online_sliding_window_sweep(args):
+    """EXP-272: Test 2/4/8 week sliding windows for retraining."""
+    from .online_adaptation import periodic_retrain
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+
+    set_seed(42)
+    m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+    base_path = os.path.join(output_dir, 'exp272_base_model.pth')
+    train_forecast(m, train_ds, val_ds, base_path,
+                   label='EXP-272 base', epochs=100, patience=15)
+
+    data = val_ds.tensors[0]
+    sweep_results = {}
+    for weeks in [2, 4, 8]:
+        rp = os.path.join(output_dir, f'exp272_retrained_w{weeks}.pth')
+        result = periodic_retrain(
+            base_path, data, rp,
+            window_weeks=weeks, lr=5e-5, epochs=10, patience=5)
+        sweep_results[f'{weeks}w'] = result
+        print(f"  {weeks}w: improvement={result['improvement_pct']:.1f}%")
+
+    result = {
+        'experiment': 'EXP-272: Sliding Window Sweep',
+        'sweep': sweep_results,
+        'config': {'lr': 5e-5, 'epochs': 10},
+        'masking': {'channels': list(FUTURE_UNKNOWN_CHANNELS), 'type': 'selective'},
+    }
+    save_results(result, os.path.join(output_dir, 'exp272_sliding_window_sweep.json'))
+    return result
+
+REGISTRY['online-sliding-window-sweep'] = 'run_online_sliding_window_sweep'
+
+
+def run_online_adaptive_threshold(args):
+    """EXP-273: Auto-trigger retrain on degradation detection."""
+    from .online_adaptation import AdaptiveRetrainer
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+
+    set_seed(42)
+    m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+    base_path = os.path.join(output_dir, 'exp273_base_model.pth')
+    train_forecast(m, train_ds, val_ds, base_path,
+                   label='EXP-273 base', epochs=100, patience=15)
+
+    data = val_ds.tensors[0]
+    config = {
+        'degradation_threshold': 15.0,
+        'window_weeks': 4,
+        'lr': 5e-5,
+        'epochs': 10,
+        'patience': 5,
+        'input_dim': 8,
+        'd_model': 64,
+        'nhead': 4,
+        'num_layers': 2,
+    }
+    ar = AdaptiveRetrainer(base_path, data, config)
+
+    # Run adaptive check
+    check = ar.check_and_retrain()
+
+    result = {
+        'experiment': 'EXP-273: Adaptive Retrain Threshold',
+        'check_result': check,
+        'history': ar.history,
+        'retrain_events': ar.retrain_events,
+        'config': config,
+        'masking': {'channels': list(FUTURE_UNKNOWN_CHANNELS), 'type': 'selective'},
+    }
+    save_results(result, os.path.join(output_dir, 'exp273_adaptive_threshold.json'))
+    return result
+
+REGISTRY['online-adaptive-threshold'] = 'run_online_adaptive_threshold'

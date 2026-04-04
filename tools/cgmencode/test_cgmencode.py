@@ -119,11 +119,19 @@ class TestSchema(unittest.TestCase):
 
     def test_extended_groups_cover_all(self):
         from tools.cgmencode.schema import (
-            STATE_IDX, ACTION_IDX, TIME_IDX, CONTEXT_IDX,
+            STATE_IDX, ACTION_IDX, TIME_IDX, EXTENDED_CONTEXT_IDX,
             NUM_FEATURES_EXTENDED,
         )
-        all_idx = set(STATE_IDX) | set(ACTION_IDX) | set(TIME_IDX) | set(CONTEXT_IDX)
+        all_idx = set(STATE_IDX) | set(ACTION_IDX) | set(TIME_IDX) | set(EXTENDED_CONTEXT_IDX)
         self.assertEqual(all_idx, set(range(NUM_FEATURES_EXTENDED)))
+
+    def test_enriched_groups_cover_all(self):
+        from tools.cgmencode.schema import (
+            STATE_IDX, ACTION_IDX, TIME_IDX, ENRICHED_CONTEXT_IDX,
+            NUM_FEATURES_ENRICHED,
+        )
+        all_idx = set(STATE_IDX) | set(ACTION_IDX) | set(TIME_IDX) | set(ENRICHED_CONTEXT_IDX)
+        self.assertEqual(all_idx, set(range(NUM_FEATURES_ENRICHED)))
 
     def test_override_types_valid(self):
         from tools.cgmencode.schema import OVERRIDE_TYPES, OVERRIDE_TYPE_NAMES
@@ -2492,6 +2500,591 @@ class TestAuxLabelGeneration(unittest.TestCase):
         states = _generate_state_labels(drift, 40.0, 10.0)
         self.assertEqual(states[0], -1)  # invalid → masked
         self.assertEqual(states[1], 0)   # stable
+
+
+# =============================================================================
+# Masking Correctness Tests
+# =============================================================================
+
+class TestMaskingCorrectness(unittest.TestCase):
+    """Verify mask_future_channels and validate_masking work correctly."""
+
+    def test_mask_future_channels_zeros_correct_channels(self):
+        """Masked channels are zeroed in future half, non-masked are preserved."""
+        from tools.cgmencode.experiment_lib import mask_future_channels
+        from tools.cgmencode.schema import FUTURE_UNKNOWN_CHANNELS, NUM_FEATURES_ENRICHED
+        batch, seq, ch = 2, 24, NUM_FEATURES_ENRICHED
+        half = seq // 2
+        x = torch.ones(batch, seq, ch)
+        x = mask_future_channels(x, half)
+        for c in FUTURE_UNKNOWN_CHANNELS:
+            self.assertTrue(
+                (x[:, half:, c] == 0.0).all(),
+                f"Channel {c} should be zeroed in future half"
+            )
+        # Deterministic channels must be preserved (IOB=1, COB=2, net_basal=3)
+        for c in [1, 2, 3, 6, 7]:
+            self.assertTrue(
+                (x[:, half:, c] == 1.0).all(),
+                f"Deterministic channel {c} should be preserved"
+            )
+
+    def test_mask_future_channels_preserves_history(self):
+        """History half ([:half]) is never modified."""
+        from tools.cgmencode.experiment_lib import mask_future_channels
+        from tools.cgmencode.schema import NUM_FEATURES_ENRICHED
+        batch, seq, ch = 2, 24, NUM_FEATURES_ENRICHED
+        half = seq // 2
+        x = torch.ones(batch, seq, ch)
+        original_history = x[:, :half, :].clone()
+        mask_future_channels(x, half)
+        self.assertTrue(
+            torch.equal(x[:, :half, :], original_history),
+            "History half must not be modified"
+        )
+
+    def test_mask_future_channels_bounds_check(self):
+        """8-channel input with 39-channel mask list doesn't crash."""
+        from tools.cgmencode.experiment_lib import mask_future_channels
+        from tools.cgmencode.schema import NUM_FEATURES
+        batch, seq, ch = 2, 24, NUM_FEATURES  # 8 channels
+        half = seq // 2
+        x = torch.ones(batch, seq, ch)
+        x = mask_future_channels(x, half)
+        # Only channels 0, 4, 5 should be masked (other mask channels > 7)
+        for c in [0, 4, 5]:
+            self.assertTrue((x[:, half:, c] == 0.0).all(),
+                            f"Channel {c} should be masked even in 8-ch input")
+        # IOB, COB, net_basal should be preserved
+        for c in [1, 2, 3]:
+            self.assertTrue((x[:, half:, c] == 1.0).all(),
+                            f"Channel {c} should be preserved in 8-ch input")
+
+    def test_clone_before_mask_pattern(self):
+        """Masking on a clone doesn't corrupt the original tensor."""
+        from tools.cgmencode.experiment_lib import mask_future_channels
+        from tools.cgmencode.schema import NUM_FEATURES_ENRICHED
+        batch, seq, ch = 1, 24, NUM_FEATURES_ENRICHED
+        half = seq // 2
+        original = torch.ones(batch, seq, ch)
+        cloned = original.clone()
+        mask_future_channels(cloned, half)
+        self.assertTrue(
+            (original == 1.0).all(),
+            "Original tensor must not be modified when cloning before mask"
+        )
+        # But the clone should have zeros
+        self.assertFalse(
+            (cloned[:, half:, 0] == 1.0).all(),
+            "Clone should have masked glucose channel"
+        )
+
+    def test_validate_masking_passes_all_tiers(self):
+        """validate_masking succeeds for 8f, 21f, and 39f input dims."""
+        from tools.cgmencode.experiments_agentic import validate_masking
+        for dim in [8, 21, 39]:
+            result = validate_masking(dim, label=f'test-{dim}f')
+            self.assertTrue(result, f"validate_masking should pass for {dim}-dim input")
+
+    def test_validate_masking_raises_on_leak(self):
+        """Removing a must-mask channel from FUTURE_UNKNOWN_CHANNELS raises ValueError."""
+        from tools.cgmencode.schema import FUTURE_UNKNOWN_CHANNELS, IDX_GLUCOSE
+        import tools.cgmencode.experiments_agentic as ea_mod
+        import tools.cgmencode.schema as schema_mod
+        import tools.cgmencode.experiment_lib as elib
+        # Save originals
+        orig_schema = list(schema_mod.FUTURE_UNKNOWN_CHANNELS)
+        orig_ea = list(ea_mod.FUTURE_UNKNOWN_CHANNELS)
+        orig_elib = list(elib.FUTURE_UNKNOWN_CHANNELS)
+        leaked_list = [ch for ch in orig_schema if ch != IDX_GLUCOSE]
+        try:
+            schema_mod.FUTURE_UNKNOWN_CHANNELS = leaked_list
+            ea_mod.FUTURE_UNKNOWN_CHANNELS = leaked_list
+            elib.FUTURE_UNKNOWN_CHANNELS = leaked_list
+            with self.assertRaises(ValueError, msg="Should detect glucose leak"):
+                ea_mod.validate_masking(39, label='leak-test')
+        finally:
+            schema_mod.FUTURE_UNKNOWN_CHANNELS = orig_schema
+            ea_mod.FUTURE_UNKNOWN_CHANNELS = orig_ea
+            elib.FUTURE_UNKNOWN_CHANNELS = orig_elib
+
+    def test_future_unknown_channels_complete(self):
+        """Every glucose-derived channel is in FUTURE_UNKNOWN_CHANNELS."""
+        from tools.cgmencode.schema import (
+            FUTURE_UNKNOWN_CHANNELS, IDX_GLUCOSE, IDX_GLUCOSE_ROC,
+            IDX_GLUCOSE_ACCEL, IDX_TREND_DIRECTION, IDX_TREND_RATE,
+            IDX_ROLLING_NOISE, IDX_GLUCOSE_VS_TARGET,
+        )
+        glucose_derived = [
+            IDX_GLUCOSE, IDX_GLUCOSE_ROC, IDX_GLUCOSE_ACCEL,
+            IDX_TREND_DIRECTION, IDX_TREND_RATE, IDX_ROLLING_NOISE,
+            IDX_GLUCOSE_VS_TARGET,
+        ]
+        masked_set = set(FUTURE_UNKNOWN_CHANNELS)
+        for ch in glucose_derived:
+            self.assertIn(ch, masked_set,
+                          f"Glucose-derived channel {ch} must be in FUTURE_UNKNOWN_CHANNELS")
+
+
+# =============================================================================
+# Online Adaptation Tests
+# =============================================================================
+
+class TestOnlineAdaptation(unittest.TestCase):
+    """Verify online_adaptation module components."""
+
+    def test_sliding_window_dataset_time_ordered(self):
+        """Windows should be yielded in chronological order."""
+        from tools.cgmencode.online_adaptation import SlidingWindowDataset
+        n_samples = 100
+        data = torch.arange(n_samples).float().unsqueeze(-1).unsqueeze(-1).expand(n_samples, 24, 8)
+        swd = SlidingWindowDataset(data, window_weeks=1, stride_weeks=1,
+                                   samples_per_week=20)
+        windows = list(swd.windows())
+        self.assertGreater(len(windows), 1)
+        # First element of each window should increase
+        for i in range(1, len(windows)):
+            first_prev = windows[i - 1].tensors[0][0, 0, 0].item()
+            first_curr = windows[i].tensors[0][0, 0, 0].item()
+            self.assertGreater(first_curr, first_prev,
+                               "Windows must be in chronological order")
+
+    def test_sliding_window_latest(self):
+        """latest_window should return the most recent data."""
+        from tools.cgmencode.online_adaptation import SlidingWindowDataset
+        data = torch.arange(100).float().unsqueeze(-1).unsqueeze(-1).expand(100, 24, 8)
+        swd = SlidingWindowDataset(data, window_weeks=1, samples_per_week=20)
+        latest = swd.latest_window()
+        # Should contain the last 20 samples
+        self.assertEqual(len(latest), 20)
+        self.assertEqual(latest.tensors[0][-1, 0, 0].item(), 99.0)
+
+    def test_evaluate_temporal_stability_structure(self):
+        """evaluate_temporal_stability returns expected dict structure."""
+        from tools.cgmencode.online_adaptation import evaluate_temporal_stability
+        model = CGMGroupedEncoder(input_dim=8, d_model=16, nhead=2,
+                                  num_layers=1, dim_feedforward=32, dropout=0.0)
+        data = torch.randn(200, 24, 8)
+        result = evaluate_temporal_stability(
+            model, data, n_windows=3, window_weeks=1)
+        self.assertIn('mae_per_window', result)
+        self.assertIn('trend_slope', result)
+        self.assertIn('is_degrading', result)
+        self.assertIn('n_windows_evaluated', result)
+
+    def test_adaptive_retrainer_triggers_on_threshold(self):
+        """AdaptiveRetrainer.should_retrain() returns True when MAE degrades enough."""
+        from tools.cgmencode.online_adaptation import AdaptiveRetrainer
+        # Create minimal model checkpoint
+        model = CGMGroupedEncoder(input_dim=8, d_model=16, nhead=2,
+                                  num_layers=1, dim_feedforward=32, dropout=0.0)
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix='.pth', delete=False) as f:
+            torch.save({'model_state': model.state_dict()}, f.name)
+            ckpt_path = f.name
+
+        try:
+            data = torch.randn(50, 24, 8)
+            ar = AdaptiveRetrainer(ckpt_path, data,
+                                   config={'degradation_threshold': 10.0})
+            # Simulate history with degradation
+            ar.history = [
+                {'mae': 0.01, 'model_path': ckpt_path},
+                {'mae': 0.02, 'model_path': ckpt_path},  # 100% increase
+            ]
+            self.assertTrue(ar.should_retrain())
+
+            # No degradation
+            ar.history = [
+                {'mae': 0.01, 'model_path': ckpt_path},
+                {'mae': 0.0105, 'model_path': ckpt_path},  # only 5%
+            ]
+            self.assertFalse(ar.should_retrain())
+        finally:
+            os.unlink(ckpt_path)
+
+    def test_periodic_retrain_preserves_architecture(self):
+        """Retrained model should have same architecture as base."""
+        from tools.cgmencode.online_adaptation import periodic_retrain
+        model = CGMGroupedEncoder(input_dim=8, d_model=16, nhead=2,
+                                  num_layers=1, dropout=0.0)
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix='.pth', delete=False) as f:
+            torch.save({'model_state': model.state_dict()}, f.name)
+            base_path = f.name
+        out_path = base_path + '.retrained'
+
+        try:
+            data = torch.randn(50, 24, 8)
+            result = periodic_retrain(
+                base_path, data, out_path,
+                input_dim=8, d_model=16, nhead=2, num_layers=1,
+                window_weeks=1, epochs=2, patience=2)
+
+            self.assertIn('new_mae', result)
+            self.assertIn('old_mae', result)
+            self.assertIn('improvement_pct', result)
+
+            # Verify checkpoint can be loaded
+            ckpt = torch.load(out_path, map_location='cpu', weights_only=False)
+            new_model = CGMGroupedEncoder(input_dim=8, d_model=16, nhead=2,
+                                          num_layers=1, dropout=0.0)
+            new_model.load_state_dict(ckpt['model_state'])
+        finally:
+            os.unlink(base_path)
+            if os.path.exists(out_path):
+                os.unlink(out_path)
+
+
+# =============================================================================
+# Override Recommender Tests
+# =============================================================================
+
+class TestOverrideRecommender(unittest.TestCase):
+    """Verify override_recommender module components."""
+
+    def _make_model(self, input_dim=21):
+        return CGMGroupedEncoder(
+            input_dim=input_dim, d_model=16, nhead=2,
+            num_layers=1, dim_feedforward=32, dropout=0.0)
+
+    def test_counterfactual_forecast_changes_prediction(self):
+        """Override injection should produce different predictions than no-override."""
+        from tools.cgmencode.override_recommender import counterfactual_forecast
+        model = self._make_model(21)
+        x = torch.randn(2, 24, 21) * 0.1 + 0.3
+        x[:, :, 10] = 0.0  # no override active
+        x[:, :, 11] = 0.0
+
+        pred_no_override = counterfactual_forecast(model, x, 'none', 1.0)
+        pred_exercise = counterfactual_forecast(model, x, 'exercise', 1.0)
+
+        # With different override inputs, predictions should differ
+        self.assertFalse(
+            torch.allclose(pred_no_override, pred_exercise, atol=1e-6),
+            "Counterfactual with override should differ from no-override"
+        )
+
+    def test_evaluate_overrides_ranks_correctly(self):
+        """Best TIR should be ranked first."""
+        from tools.cgmencode.override_recommender import evaluate_overrides
+        model = self._make_model(21)
+        x = torch.randn(4, 24, 21) * 0.1 + 0.3
+        ranked = evaluate_overrides(
+            model, x, override_types=['eating_soon', 'exercise'],
+            strengths=[0.5, 1.0], horizon_steps=6)
+
+        self.assertGreater(len(ranked), 0)
+        # Verify sorted by TIR descending
+        tirs = [r['predicted_tir'] for r in ranked]
+        self.assertEqual(tirs, sorted(tirs, reverse=True))
+
+    def test_recommend_override_returns_valid_type(self):
+        """Recommendation should return a valid override type."""
+        from tools.cgmencode.override_recommender import (
+            recommend_override, OVERRIDE_TYPE_LIST,
+        )
+        model = self._make_model(21)
+        x = torch.randn(2, 24, 21) * 0.1 + 0.3
+        result = recommend_override(model, x, horizon_steps=6)
+
+        self.assertIn(result['override_type'], OVERRIDE_TYPE_LIST)
+        self.assertIn('confidence', result)
+        self.assertIn('predicted_tir', result)
+        self.assertIn('predicted_tir_no_override', result)
+        self.assertIn('all_evaluations', result)
+
+    def test_override_channels_correctly_injected(self):
+        """Counterfactual should modify channels 10,11 only."""
+        from tools.cgmencode.override_recommender import (
+            counterfactual_forecast, IDX_OVERRIDE_ACTIVE, IDX_OVERRIDE_TYPE,
+        )
+        model = self._make_model(21)
+        x = torch.zeros(1, 24, 21)
+        # Run counterfactual — the function clones internally,
+        # so original x should be unchanged
+        _ = counterfactual_forecast(model, x, 'exercise', 1.5)
+        self.assertTrue((x[:, :, IDX_OVERRIDE_ACTIVE] == 0.0).all(),
+                        "Original tensor should not be modified")
+
+    def test_override_value_model_forward(self):
+        """OverrideValueModel forward pass produces correct shape."""
+        from tools.cgmencode.override_recommender import OverrideValueModel
+        vm = OverrideValueModel(state_dim=8, hidden_dim=32, n_override_types=5)
+        state = torch.randn(4, 8)
+        otype = torch.tensor([0, 1, 2, 3])
+        strength = torch.randn(4, 1)
+        out = vm(state, otype, strength)
+        self.assertEqual(out.shape, (4, 1))
+
+
+# =============================================================================
+# Hypo Safety Module Tests
+# =============================================================================
+
+class TestHypoSafety(unittest.TestCase):
+    """Verify hypo_safety module components."""
+
+    def test_asymmetric_loss_penalizes_misses_more(self):
+        """Loss for missed hypos should be higher than same-magnitude false alarms."""
+        from tools.cgmencode.hypo_safety import AsymmetricHypoLoss, HYPO_THRESHOLD_NORM
+        loss_fn = AsymmetricHypoLoss(miss_weight=5.0, false_alarm_weight=1.0)
+
+        # Scenario 1: True glucose is hypo (0.15 = 60 mg/dL), predicted normal (0.25 = 100 mg/dL)
+        pred_miss = torch.tensor([[[0.25]]])
+        true_hypo = torch.tensor([[[0.15]]])  # below threshold (0.175)
+        loss_miss = loss_fn(pred_miss, true_hypo)
+
+        # Scenario 2: True glucose is normal (0.25 = 100), predicted hypo (0.15 = 60)
+        pred_alarm = torch.tensor([[[0.15]]])
+        true_normal = torch.tensor([[[0.25]]])  # above threshold
+        loss_alarm = loss_fn(pred_alarm, true_normal)
+
+        # Same squared error but miss should be 5x heavier
+        self.assertAlmostEqual(loss_miss.item() / loss_alarm.item(), 5.0, places=3)
+
+    def test_asymmetric_loss_equals_mse_when_weights_equal(self):
+        """With equal weights, AsymmetricHypoLoss == MSELoss."""
+        from tools.cgmencode.hypo_safety import AsymmetricHypoLoss
+        loss_fn = AsymmetricHypoLoss(miss_weight=1.0, false_alarm_weight=1.0)
+        mse_fn = nn.MSELoss()
+        pred = torch.randn(4, 12, 1)
+        target = torch.randn(4, 12, 1)
+        self.assertAlmostEqual(
+            loss_fn(pred, target).item(),
+            mse_fn(pred, target).item(),
+            places=5
+        )
+
+    def test_hypo_ensemble_predict_returns_expected_keys(self):
+        """HypoSafetyEnsemble.predict() returns dict with required keys."""
+        from tools.cgmencode.hypo_safety import HypoSafetyEnsemble
+        clf = CGMGroupedEncoder(input_dim=8, d_model=16, nhead=2,
+                                num_layers=1, dim_feedforward=32, dropout=0.0)
+        forecasters = [
+            CGMGroupedEncoder(input_dim=8, d_model=16, nhead=2,
+                              num_layers=1, dim_feedforward=32, dropout=0.0)
+            for _ in range(2)
+        ]
+        ensemble = HypoSafetyEnsemble(clf, forecasters, clf_threshold=0.5)
+        x = torch.randn(2, 24, 8)
+        result = ensemble.predict(x, horizon_steps=6)
+
+        self.assertIn('hypo_probability', result)
+        self.assertIn('predicted_glucose', result)
+        self.assertIn('is_hypo_alert', result)
+        self.assertEqual(result['hypo_probability'].shape, (2,))
+        self.assertEqual(result['predicted_glucose'].shape, (2, 24, 1))
+        self.assertEqual(result['is_hypo_alert'].shape, (2,))
+
+    def test_evaluate_hypo_safety_returns_expected_structure(self):
+        """evaluate_hypo_safety returns per-horizon metrics dict."""
+        from tools.cgmencode.hypo_safety import evaluate_hypo_safety, GLUCOSE_SCALE
+        from torch.utils.data import TensorDataset
+        # Create synthetic data with some hypo values
+        n, seq, ch = 32, 24, 8
+        x = torch.randn(n, seq, ch) * 0.1 + 0.3  # centered around 120 mg/dL
+        # Force some samples to have hypo values
+        x[:4, 12:18, 0] = 0.12  # 48 mg/dL — definitely hypo
+        ds = TensorDataset(x)
+
+        model = CGMGroupedEncoder(input_dim=8, d_model=16, nhead=2,
+                                  num_layers=1, dim_feedforward=32, dropout=0.0)
+        result = evaluate_hypo_safety([model], ds, thresholds_steps=[6],
+                                      batch_size=16)
+        self.assertIn('30min', result)
+        metrics = result['30min']
+        self.assertIn('sensitivity', metrics)
+        self.assertIn('specificity', metrics)
+        self.assertIn('n_hypo_samples', metrics)
+        self.assertIn('n_total_samples', metrics)
+        self.assertGreater(metrics['n_hypo_samples'], 0)
+
+
+# =============================================================================
+# Forecast MSE Tests
+# =============================================================================
+
+class TestForecastMSE(unittest.TestCase):
+    """Verify forecast_mse evaluation metric."""
+
+    def _make_tiny_model(self, input_dim=8):
+        """Create a minimal model for testing."""
+        return CGMGroupedEncoder(
+            input_dim=input_dim, d_model=16, nhead=2,
+            num_layers=1, dim_feedforward=32, dropout=0.0,
+        )
+
+    def _make_synthetic_dataset(self, n_samples=16, seq_len=24, n_features=8):
+        """Create a synthetic TensorDataset for testing."""
+        from torch.utils.data import TensorDataset
+        x = torch.randn(n_samples, seq_len, n_features)
+        return TensorDataset(x)
+
+    def test_forecast_mse_with_masking(self):
+        """forecast_mse produces a valid float with mask_future=True."""
+        from tools.cgmencode.experiment_lib import forecast_mse
+        model = self._make_tiny_model()
+        ds = self._make_synthetic_dataset()
+        mse = forecast_mse(model, ds, batch_size=8, mask_future=True)
+        self.assertIsInstance(mse, float)
+        self.assertGreater(mse, 0.0, "MSE should be positive on random data")
+
+    def test_forecast_mse_without_masking(self):
+        """forecast_mse with mask_future=False should also work."""
+        from tools.cgmencode.experiment_lib import forecast_mse
+        model = self._make_tiny_model()
+        ds = self._make_synthetic_dataset()
+        mse = forecast_mse(model, ds, batch_size=8, mask_future=False)
+        self.assertIsInstance(mse, float)
+        self.assertGreater(mse, 0.0)
+
+    def test_forecast_mse_handles_dict_output(self):
+        """Multi-task model returning dict with 'forecast' key is handled."""
+        from tools.cgmencode.experiment_lib import forecast_mse
+        # Wrap model to return dict
+        model = self._make_tiny_model()
+
+        class DictWrapper(nn.Module):
+            def __init__(self, inner):
+                super().__init__()
+                self.inner = inner
+            def forward(self, x, causal=False):
+                out = self.inner(x, causal=causal)
+                return {'forecast': out, 'event_logits': torch.zeros(x.size(0), 3)}
+
+        wrapped = DictWrapper(model)
+        ds = self._make_synthetic_dataset()
+        mse = forecast_mse(wrapped, ds, batch_size=8, mask_future=True)
+        self.assertIsInstance(mse, float)
+        self.assertGreater(mse, 0.0)
+
+    def test_masking_changes_mse(self):
+        """MSE should differ between masked and unmasked evaluation."""
+        from tools.cgmencode.experiment_lib import forecast_mse
+        model = self._make_tiny_model()
+        ds = self._make_synthetic_dataset()
+        mse_masked = forecast_mse(model, ds, batch_size=16, mask_future=True)
+        mse_unmasked = forecast_mse(model, ds, batch_size=16, mask_future=False)
+        # With random data these will almost certainly differ
+        # (masking zeroes out future channels which changes model input)
+        self.assertNotEqual(
+            round(mse_masked, 6), round(mse_unmasked, 6),
+            "Masking should change model inputs and thus MSE"
+        )
+
+
+# =============================================================================
+# End-to-End Masking Regression Test
+# =============================================================================
+
+class TestMaskingEndToEnd(unittest.TestCase):
+    """End-to-end verification that masking behaves correctly during training."""
+
+    def test_train_and_eval_masking_consistent(self):
+        """Train a tiny model, verify masking is applied in both train and eval."""
+        from tools.cgmencode.experiment_lib import (
+            train_forecast, forecast_mse, mask_future_channels,
+        )
+        from tools.cgmencode.schema import FUTURE_UNKNOWN_CHANNELS
+        from torch.utils.data import TensorDataset
+
+        n, seq, ch = 32, 24, 8
+        x = torch.randn(n, seq, ch)
+        train_ds = TensorDataset(x[:24])
+        val_ds = TensorDataset(x[24:])
+
+        model = CGMGroupedEncoder(input_dim=8, d_model=16, nhead=2,
+                                  num_layers=1, dropout=0.0)
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix='.pth', delete=False) as f:
+            sp = f.name
+
+        try:
+            # Train for 2 epochs
+            best_val, ep = train_forecast(model, train_ds, val_ds, sp,
+                                          label='e2e-test', lr=1e-3,
+                                          epochs=2, patience=2)
+            self.assertIsInstance(best_val, float)
+            self.assertGreater(ep, 0)
+
+            # Verify forecast_mse with masking
+            mse = forecast_mse(model, val_ds, mask_future=True)
+            self.assertIsInstance(mse, float)
+            self.assertGreater(mse, 0.0)
+
+            # Verify masking preserves deterministic channels
+            test_input = torch.ones(1, seq, ch)
+            half = seq // 2
+            masked = test_input.clone()
+            mask_future_channels(masked, half)
+
+            # Glucose (0), bolus (4), carbs (5) should be zeroed
+            for c in [0, 4, 5]:
+                self.assertTrue((masked[0, half:, c] == 0.0).all())
+            # IOB (1), COB (2), net_basal (3) should be preserved
+            for c in [1, 2, 3]:
+                self.assertTrue((masked[0, half:, c] == 1.0).all())
+        finally:
+            os.unlink(sp)
+
+    def test_masking_regression_all_tiers(self):
+        """validate_masking passes for all 3 input dimension tiers."""
+        from tools.cgmencode.experiments_agentic import validate_masking
+        for dim, tier in [(8, 'core'), (21, 'extended'), (39, 'enriched')]:
+            result = validate_masking(dim, label=f'e2e-{tier}')
+            self.assertTrue(result, f"Masking validation failed for {tier}")
+
+
+# =============================================================================
+# Validation Suite Tests
+# =============================================================================
+
+class TestValidationSuites(unittest.TestCase):
+    """Verify that validation suite functions return expected structures."""
+
+    def test_hypo_safety_evaluate_returns_per_horizon(self):
+        """evaluate_hypo_safety returns metrics for each requested horizon."""
+        from tools.cgmencode.hypo_safety import evaluate_hypo_safety
+        from torch.utils.data import TensorDataset
+        model = CGMGroupedEncoder(input_dim=8, d_model=16, nhead=2,
+                                  num_layers=1, dropout=0.0)
+        x = torch.randn(16, 24, 8)
+        ds = TensorDataset(x)
+        result = evaluate_hypo_safety([model], ds, thresholds_steps=[6, 12])
+        self.assertIn('30min', result)
+        self.assertIn('60min', result)
+        for key in ['30min', '60min']:
+            self.assertIn('n_total_samples', result[key])
+
+    def test_override_evaluate_returns_ranked_list(self):
+        """evaluate_overrides returns sorted results with TIR."""
+        from tools.cgmencode.override_recommender import evaluate_overrides
+        model = CGMGroupedEncoder(input_dim=21, d_model=16, nhead=2,
+                                  num_layers=1, dropout=0.0)
+        x = torch.randn(4, 24, 21)
+        ranked = evaluate_overrides(model, x,
+                                    override_types=['eating_soon'],
+                                    strengths=[0.5, 1.0],
+                                    horizon_steps=6)
+        self.assertEqual(len(ranked), 2)
+        for r in ranked:
+            self.assertIn('type', r)
+            self.assertIn('strength', r)
+            self.assertIn('predicted_tir', r)
+
+    def test_temporal_stability_detects_trend(self):
+        """evaluate_temporal_stability returns valid trend data."""
+        from tools.cgmencode.online_adaptation import evaluate_temporal_stability
+        model = CGMGroupedEncoder(input_dim=8, d_model=16, nhead=2,
+                                  num_layers=1, dropout=0.0)
+        data = torch.randn(200, 24, 8)
+        result = evaluate_temporal_stability(model, data, n_windows=3,
+                                             window_weeks=1)
+        self.assertIsInstance(result['trend_slope'], float)
+        self.assertIsInstance(result['is_degrading'], bool)
+        self.assertEqual(len(result['mae_per_window']),
+                         result['n_windows_evaluated'])
 
 
 if __name__ == '__main__':

@@ -92,9 +92,16 @@ PROFILE_IDX       = [IDX_SCHEDULED_ISF, IDX_SCHEDULED_CR, IDX_GLUCOSE_VS_TARGET]
 PUMP_STATE_IDX    = [IDX_PUMP_BATTERY, IDX_PUMP_RESERVOIR]
 SENSOR_LIFECYCLE_IDX = [IDX_SENSOR_PHASE, IDX_SUSPENSION_TIME]
 
-CONTEXT_IDX   = (WEEKDAY_IDX + OVERRIDE_IDX + DYNAMICS_IDX + TEMPORAL_IDX
-                 + DEVICE_IDX + MONTHLY_IDX + CGM_QUALITY_IDX + AID_CONTEXT_IDX
-                 + PROFILE_IDX + PUMP_STATE_IDX + SENSOR_LIFECYCLE_IDX)
+# Extended-tier context: only indices 8-20 (for 21-dim models)
+EXTENDED_CONTEXT_IDX = (WEEKDAY_IDX + OVERRIDE_IDX + DYNAMICS_IDX + TEMPORAL_IDX
+                        + DEVICE_IDX + MONTHLY_IDX)
+
+# Enriched-tier context: indices 8-38 (for 39-dim models)
+ENRICHED_CONTEXT_IDX = (EXTENDED_CONTEXT_IDX + CGM_QUALITY_IDX + AID_CONTEXT_IDX
+                        + PROFILE_IDX + PUMP_STATE_IDX + SENSOR_LIFECYCLE_IDX)
+
+# Full context (backward compat alias — includes all non-core indices)
+CONTEXT_IDX = ENRICHED_CONTEXT_IDX
 
 # ── Future masking ───────────────────────────────────────────────────────
 # Channels containing information truly unknown at real-time inference.
