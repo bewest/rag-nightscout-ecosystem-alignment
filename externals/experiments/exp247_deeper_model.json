@@ -1,0 +1,40 @@
+{
+  "experiment": "EXP-247: Deeper Model (num_layers=4) 5-Seed Ensemble",
+  "individual": {
+    "s42": 12.73,
+    "s123": 12.82,
+    "s456": 12.58,
+    "s789": 12.77,
+    "s1024": 12.61
+  },
+  "ensemble_mae": 12.2,
+  "config": {
+    "d_model": 64,
+    "nhead": 4,
+    "num_layers": 4,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ],
+    "n_params": 134648
+  },
+  "masking": {
+    "channels": [
+      0,
+      4,
+      5,
+      12,
+      13,
+      14,
+      15
+    ],
+    "type": "selective"
+  },
+  "comparison": {
+    "exp234_L2_ensemble": 12.38,
+    "exp245_d128L2_ensemble": 12.49
+  }
+}
