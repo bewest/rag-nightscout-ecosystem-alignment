@@ -105,12 +105,12 @@ class ExperimentContext:
 # ── Model Factory ────────────────────────────────────────────────────────
 
 def create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2,
-                 semantic_groups=False, aux_config=None):
+                 semantic_groups=False, aux_config=None, dropout=0.1):
     """Create a model by name."""
     if arch == 'grouped':
         return CGMGroupedEncoder(
             input_dim=input_dim, d_model=d_model, nhead=nhead, num_layers=num_layers,
-            semantic_groups=semantic_groups, aux_config=aux_config)
+            dropout=dropout, semantic_groups=semantic_groups, aux_config=aux_config)
     elif arch == 'ae':
         return CGMTransformerAE(
             input_dim=input_dim, d_model=d_model, nhead=nhead, num_layers=num_layers)

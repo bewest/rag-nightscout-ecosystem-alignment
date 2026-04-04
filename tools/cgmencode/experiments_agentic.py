@@ -1528,3 +1528,376 @@ def run_regularized_ft_l4(args):
     return result
 
 REGISTRY['regularized-ft-l4'] = 'run_regularized_ft_l4'
+
+
+# ── EXP-256: Temporal Distribution Augmentation ──────────────────
+# Weight decay didn't help (EXP-255 = identical to EXP-254).
+# Gap is distribution shift, not parameter overfitting.
+# Hypothesis: Adding noise + temporal jitter during base training
+# widens the training distribution, reducing the verification gap.
+# Use AugmentedDataset wrapper to add Gaussian noise (σ=0.02) and
+# random temporal shift (±2 steps = ±10min) on glucose history.
+def run_temporal_dist_augmentation(args):
+    """EXP-256: Data augmentation during base training to close ver gap."""
+    from torch.utils.data import DataLoader, Dataset
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    patient_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    device = get_device()
+    seeds = [42, 123, 456, 789, 1024]
+
+    # ── Augmented dataset wrapper ──
+    class AugmentedDataset(Dataset):
+        """Wraps a CGMDataset adding noise + temporal jitter."""
+        def __init__(self, ds, noise_std=0.02, shift_range=2, p_aug=0.5):
+            self.ds = ds
+            self.noise_std = noise_std
+            self.shift_range = shift_range
+            self.p_aug = p_aug
+
+        def __len__(self):
+            return len(self.ds)
+
+        def __getitem__(self, idx):
+            x = self.ds[idx]
+            if isinstance(x, (tuple, list)):
+                x = x[0]
+            if torch.rand(1).item() > self.p_aug:
+                return (x,)
+            x = x.clone()
+            half = x.shape[0] // 2
+            # Gaussian noise on history glucose (channel 0)
+            x[:half, 0] += torch.randn(half) * self.noise_std
+            # Small temporal shift on history glucose
+            shift = torch.randint(-self.shift_range, self.shift_range + 1, (1,)).item()
+            if shift != 0:
+                x[:half, 0] = torch.roll(x[:half, 0], shift, dims=0)
+            return (x,)
+
+    # ── Load ALL patient data for base training ──
+    all_paths = [os.path.join(patients_base, p, 'training') for p in patient_dirs]
+    train_ds, val_ds = load_multipatient_nightscout(all_paths, task='forecast', window_size=24)
+    aug_train_ds = AugmentedDataset(train_ds, noise_std=0.02, shift_range=2, p_aug=0.5)
+
+    # ── Train 5 augmented base models ──
+    base_states = {}
+    for seed in seeds:
+        set_seed(seed)
+        m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=4)
+        fp = os.path.join(output_dir, f'exp256_base_s{seed}.pth')
+        train_forecast(m, aug_train_ds, val_ds, fp,
+                       label=f'EXP-256 Base-s{seed}',
+                       epochs=150, lr=1e-3, patience=20, lr_patience=7)
+        base_mae = _mae_from_model(m, val_ds)
+        base_states[seed] = m.state_dict()
+        print(f"  Base s{seed} MAE: {base_mae:.2f}")
+
+    # ── Per-patient FT (standard, no augmentation) ──
+    per_patient = {}
+    for pid in patient_dirs:
+        p_path = os.path.join(patients_base, pid, 'training')
+        tds, vds = load_multipatient_nightscout([p_path], task='forecast', window_size=24)
+        ver_path = os.path.join(patients_base, pid, 'verification')
+        ver_ds = None
+        if os.path.isdir(ver_path):
+            try:
+                _, ver_ds = load_multipatient_nightscout(
+                    [ver_path], task='forecast', window_size=24)
+                if len(ver_ds) < 10:
+                    ver_ds = None
+            except Exception:
+                ver_ds = None
+
+        seed_maes = {}
+        ft_models = []
+        for seed in seeds:
+            torch.manual_seed(seed)
+            m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=4)
+            m.load_state_dict(base_states[seed])
+            fp = os.path.join(output_dir, f'exp256_ft_{pid}_s{seed}.pth')
+            train_forecast(m, tds, vds, fp,
+                           label=f'EXP-256 FT-{pid}-s{seed}',
+                           epochs=30, lr=1e-4, patience=10)
+            mae = _mae_from_model(m, vds)
+            seed_maes[f's{seed}'] = round(mae, 2)
+            ft_models.append(m)
+
+        train_ens = _ensemble_mae(ft_models, vds)
+        ver_ens = _ensemble_mae(ft_models, ver_ds) if ver_ds else float('nan')
+        gap = ver_ens - train_ens if ver_ds else float('nan')
+        per_patient[pid] = {
+            'seeds': seed_maes,
+            'training_ensemble_mae': round(train_ens, 2),
+            'verification_ensemble_mae': round(ver_ens, 2) if ver_ds else None,
+            'generalization_gap': round(gap, 2) if ver_ds else None,
+            'gap_pct': round(gap / train_ens * 100, 1) if ver_ds and train_ens > 0 else None,
+            'mean_seed': round(float(np.mean(list(seed_maes.values()))), 2),
+        }
+        gap_str = f" ver={ver_ens:.1f} gap={gap:+.1f}" if ver_ds else ""
+        print(f"  {pid}: train_ens={train_ens:.1f}{gap_str}")
+
+    all_train = [v['training_ensemble_mae'] for v in per_patient.values()]
+    all_ver = [v['verification_ensemble_mae'] for v in per_patient.values()
+               if v['verification_ensemble_mae'] is not None]
+    all_gap = [v['generalization_gap'] for v in per_patient.values()
+               if v['generalization_gap'] is not None]
+    result = {
+        'experiment': 'EXP-256: Temporal Distribution Augmentation (L=4)',
+        'hypothesis': 'Noise + temporal jitter during base training reduces verification gap',
+        'per_patient': per_patient,
+        'summary': {
+            'mean_training_mae': round(float(np.mean(all_train)), 2),
+            'mean_verification_mae': round(float(np.mean(all_ver)), 2) if all_ver else None,
+            'mean_gap': round(float(np.mean(all_gap)), 2) if all_gap else None,
+            'mean_gap_pct': round(float(np.mean(all_gap)) /
+                                  float(np.mean(all_train)) * 100, 1)
+                           if all_train and all_gap else None,
+            'n_patients': len(per_patient),
+        },
+        'config': {'d_model': 64, 'nhead': 4, 'num_layers': 4, 'seeds': seeds,
+                    'base_epochs': 150, 'base_patience': 20,
+                    'aug_noise_std': 0.02, 'aug_shift_range': 2, 'aug_p': 0.5,
+                    'ft_epochs': 30, 'ft_lr': 1e-4},
+        'comparison': {'exp251_training': 10.59, 'exp254_verification': 11.49,
+                        'exp254_gap_pct': 7.4},
+    }
+    save_results(result, os.path.join(output_dir, 'exp256_temporal_augmentation.json'))
+    return result
+
+REGISTRY['temporal-dist-aug'] = 'run_temporal_dist_augmentation'
+
+
+# ── EXP-257: Dropout Sweep (0.15 / 0.2 / 0.3) ──────────────────
+# Test structural regularization via higher dropout during both
+# base training AND fine-tuning. This is fundamentally different
+# from weight decay (EXP-255) — dropout creates implicit ensembles
+# within a single model, forcing distributed representations.
+# Trains ONE base model per dropout value (seed=42) + FT on 3 patients
+# (d=easiest, a=medium, j=hardest) to quickly identify best dropout.
+def run_dropout_sweep(args):
+    """EXP-257: Dropout sweep to find optimal structural regularization."""
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    device = get_device()
+    test_patients = ['d', 'a', 'j']  # easy, medium, hard
+    dropout_values = [0.15, 0.2, 0.3]
+
+    # Load ALL patient data for base training
+    all_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    all_paths = [os.path.join(patients_base, p, 'training') for p in all_dirs]
+    train_ds, val_ds = load_multipatient_nightscout(all_paths, task='forecast', window_size=24)
+
+    dropout_results = {}
+    for dp in dropout_values:
+        set_seed(42)
+        m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4,
+                         num_layers=4, dropout=dp)
+        fp = os.path.join(output_dir, f'exp257_base_dp{int(dp*100)}_s42.pth')
+        train_forecast(m, train_ds, val_ds, fp,
+                       label=f'EXP-257 Base dp={dp}',
+                       epochs=150, lr=1e-3, patience=20, lr_patience=7)
+        base_mae = _mae_from_model(m, val_ds)
+        base_state = m.state_dict()
+        print(f"  dp={dp}: base MAE = {base_mae:.2f}")
+
+        patient_results = {}
+        for pid in test_patients:
+            p_path = os.path.join(patients_base, pid, 'training')
+            tds, vds = load_multipatient_nightscout(
+                [p_path], task='forecast', window_size=24)
+            ver_path = os.path.join(patients_base, pid, 'verification')
+            ver_ds = None
+            if os.path.isdir(ver_path):
+                try:
+                    _, ver_ds = load_multipatient_nightscout(
+                        [ver_path], task='forecast', window_size=24)
+                    if len(ver_ds) < 10:
+                        ver_ds = None
+                except Exception:
+                    ver_ds = None
+
+            torch.manual_seed(42)
+            ft_m = create_model(arch='grouped', input_dim=8, d_model=64,
+                                nhead=4, num_layers=4, dropout=dp)
+            ft_m.load_state_dict(base_state)
+            fp = os.path.join(output_dir, f'exp257_ft_{pid}_dp{int(dp*100)}_s42.pth')
+            train_forecast(ft_m, tds, vds, fp,
+                           label=f'EXP-257 FT-{pid} dp={dp}',
+                           epochs=30, lr=1e-4, patience=10)
+            train_mae = _mae_from_model(ft_m, vds)
+            ver_mae = _mae_from_model(ft_m, ver_ds) if ver_ds else float('nan')
+            gap = ver_mae - train_mae if ver_ds else float('nan')
+            patient_results[pid] = {
+                'training_mae': round(train_mae, 2),
+                'verification_mae': round(ver_mae, 2) if ver_ds else None,
+                'gap': round(gap, 2) if ver_ds else None,
+                'gap_pct': round(gap / train_mae * 100, 1) if ver_ds and train_mae > 0 else None,
+            }
+            gap_str = f" ver={ver_mae:.1f} gap={gap:+.1f}" if ver_ds else ""
+            print(f"    {pid}: train={train_mae:.1f}{gap_str}")
+
+        dropout_results[f'dp={dp}'] = {
+            'base_mae': round(base_mae, 2),
+            'patients': patient_results,
+        }
+
+    result = {
+        'experiment': 'EXP-257: Dropout Sweep (L=4, seed=42)',
+        'hypothesis': 'Higher dropout creates implicit ensemble, reduces verification gap',
+        'dropout_results': dropout_results,
+        'config': {'d_model': 64, 'nhead': 4, 'num_layers': 4,
+                    'test_patients': test_patients, 'seed': 42,
+                    'dropout_values': dropout_values,
+                    'base_epochs': 150, 'ft_epochs': 30},
+        'comparison': {'exp250_dp0.1_base_mae': 12.72,
+                        'exp254_dp0.1_ver_gap_pct': 7.4},
+    }
+    save_results(result, os.path.join(output_dir, 'exp257_dropout_sweep.json'))
+    return result
+
+REGISTRY['dropout-sweep'] = 'run_dropout_sweep'
+
+
+# ── EXP-258: Test-Time Augmentation (TTA) Ensemble ──────────────
+# Quick win: no training required! Reuse EXP-251 per-patient FT
+# checkpoints and run inference with temporal perturbations averaged.
+# Each model prediction is averaged across N augmented inputs
+# (Gaussian noise on history glucose + small temporal shift).
+# This should directly reduce variance from temporal distribution shift.
+def run_tta_ensemble(args):
+    """EXP-258: TTA on EXP-251 checkpoints — no training needed."""
+    from torch.utils.data import DataLoader
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    patient_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    device = get_device()
+    seeds = [42, 123, 456, 789, 1024]
+    n_aug = 7       # augmentations per model
+    noise_std = 0.02
+    shift_range = 2
+
+    def _tta_mae(models, val_ds, n_aug, noise_std, shift_range, batch_size=64):
+        """Ensemble MAE with test-time augmentation."""
+        total_ae, n = 0.0, 0
+        for batch in DataLoader(val_ds, batch_size=batch_size):
+            x = batch_to_device(batch[0], device)
+            half = x.shape[1] // 2
+            all_preds = []
+            for m in models:
+                m.eval()
+                for aug_i in range(n_aug):
+                    x_in = x.clone()
+                    mask_future_channels(x_in, half)
+                    if aug_i > 0:
+                        # Add noise to history glucose
+                        x_in[:, :half, 0] += torch.randn(
+                            x_in.shape[0], half, device=device) * noise_std
+                        # Small temporal shift on history glucose
+                        shift = torch.randint(
+                            -shift_range, shift_range + 1, (1,)).item()
+                        if shift != 0:
+                            x_in[:, :half, 0] = torch.roll(
+                                x_in[:, :half, 0], shift, dims=1)
+                    with torch.no_grad():
+                        p = m(x_in, causal=True)
+                    if isinstance(p, dict):
+                        p = p['forecast']
+                    all_preds.append(p[:, half:, :1])
+            ens = torch.stack(all_preds).mean(0)
+            ae = torch.abs(ens - x[:, half:, :1])
+            total_ae += ae.sum().item()
+            n += ae.numel()
+        return float(total_ae / n * SCALE) if n else float('nan')
+
+    per_patient = {}
+    for pid in patient_dirs:
+        # Load FT models from EXP-251
+        ft_models = []
+        missing = False
+        for seed in seeds:
+            fp = os.path.join(output_dir, f'exp251_ft_{pid}_s{seed}.pth')
+            if not os.path.exists(fp):
+                print(f"  Warning: {fp} not found, skipping {pid}")
+                missing = True
+                break
+            m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=4)
+            ckpt = torch.load(fp, map_location=device, weights_only=False)
+            m.load_state_dict(ckpt['model_state'])
+            m.to(device)
+            ft_models.append(m)
+        if missing:
+            continue
+
+        # Load training val data
+        p_path = os.path.join(patients_base, pid, 'training')
+        tds, vds = load_multipatient_nightscout([p_path], task='forecast', window_size=24)
+
+        # Load verification data
+        ver_path = os.path.join(patients_base, pid, 'verification')
+        ver_ds = None
+        if os.path.isdir(ver_path):
+            try:
+                _, ver_ds = load_multipatient_nightscout(
+                    [ver_path], task='forecast', window_size=24)
+                if len(ver_ds) < 10:
+                    ver_ds = None
+            except Exception:
+                ver_ds = None
+
+        # Standard ensemble (no TTA) for comparison
+        train_ens = _ensemble_mae(ft_models, vds)
+        ver_ens = _ensemble_mae(ft_models, ver_ds) if ver_ds else float('nan')
+
+        # TTA ensemble
+        train_tta = _tta_mae(ft_models, vds, n_aug, noise_std, shift_range)
+        ver_tta = _tta_mae(ft_models, ver_ds, n_aug, noise_std, shift_range) if ver_ds else float('nan')
+
+        gap_std = ver_ens - train_ens if ver_ds else float('nan')
+        gap_tta = ver_tta - train_tta if ver_ds else float('nan')
+
+        per_patient[pid] = {
+            'standard_train': round(train_ens, 2),
+            'standard_ver': round(ver_ens, 2) if ver_ds else None,
+            'standard_gap': round(gap_std, 2) if ver_ds else None,
+            'tta_train': round(train_tta, 2),
+            'tta_ver': round(ver_tta, 2) if ver_ds else None,
+            'tta_gap': round(gap_tta, 2) if ver_ds else None,
+            'tta_improvement_ver': round(ver_ens - ver_tta, 2) if ver_ds else None,
+        }
+        tta_str = f" TTA: train={train_tta:.1f} ver={ver_tta:.1f}" if ver_ds else ""
+        print(f"  {pid}: std ver={ver_ens:.1f}{tta_str}")
+
+    all_std_ver = [v['standard_ver'] for v in per_patient.values() if v['standard_ver'] is not None]
+    all_tta_ver = [v['tta_ver'] for v in per_patient.values() if v['tta_ver'] is not None]
+    all_std_gap = [v['standard_gap'] for v in per_patient.values() if v['standard_gap'] is not None]
+    all_tta_gap = [v['tta_gap'] for v in per_patient.values() if v['tta_gap'] is not None]
+    result = {
+        'experiment': 'EXP-258: TTA Ensemble on EXP-251 checkpoints',
+        'hypothesis': 'Test-time augmentation reduces verification gap without retraining',
+        'per_patient': per_patient,
+        'summary': {
+            'mean_standard_ver': round(float(np.mean(all_std_ver)), 2) if all_std_ver else None,
+            'mean_tta_ver': round(float(np.mean(all_tta_ver)), 2) if all_tta_ver else None,
+            'mean_standard_gap': round(float(np.mean(all_std_gap)), 2) if all_std_gap else None,
+            'mean_tta_gap': round(float(np.mean(all_tta_gap)), 2) if all_tta_gap else None,
+            'n_patients': len(per_patient),
+        },
+        'config': {'n_aug': n_aug, 'noise_std': noise_std, 'shift_range': shift_range,
+                    'base_models': 'EXP-251 per-patient FT', 'seeds': seeds},
+    }
+    save_results(result, os.path.join(output_dir, 'exp258_tta_ensemble.json'))
+    return result
+
+REGISTRY['tta-ensemble'] = 'run_tta_ensemble'
