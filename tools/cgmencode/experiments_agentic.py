@@ -741,3 +741,117 @@ def run_wider_model_ensemble(args):
     return result
 
 REGISTRY['wider-model-ensemble'] = 'run_wider_model_ensemble'
+
+
+# ── EXP-246: Snapshot Ensemble (checkpoints from same run) ───────
+# Save model at multiple epochs, ensemble. Free diversity from one
+# training run — tests if optimization path provides useful variety.
+def run_snapshot_ensemble(args):
+    """EXP-246: Ensemble of checkpoints from same training run."""
+    from torch.utils.data import DataLoader
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+    device = get_device()
+    set_seed(42)
+    model = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+    model.to(device)
+
+    # Custom training loop to save snapshots at regular intervals
+    opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=120, eta_min=1e-5)
+    snapshot_epochs = [40, 60, 80, 90, 100, 110]
+    snapshots = {}
+
+    for ep in range(1, 121):
+        model.train()
+        for b in DataLoader(train_ds, batch_size=32, shuffle=True):
+            x = batch_to_device(b[0], device)
+            half = x.shape[1] // 2
+            x_in = x.clone()
+            mask_future_channels(x_in, half)
+            pred = model(x_in, causal=True)
+            if isinstance(pred, dict): pred = pred['forecast']
+            loss = ((pred[:, half:, :1] - x[:, half:, :1]) ** 2).mean()
+            opt.zero_grad(); loss.backward(); opt.step()
+        sched.step()
+
+        if ep in snapshot_epochs:
+            sp = os.path.join(output_dir, f'exp246_snap_ep{ep}.pth')
+            torch.save({'model_state': model.state_dict(), 'epoch': ep}, sp)
+            snapshots[ep] = model.state_dict().copy()
+            # Deepcopy state for later
+            import copy
+            snapshots[ep] = copy.deepcopy(model.state_dict())
+            mae = _mae_from_model(model, val_ds)
+            print(f"  Snapshot ep{ep}: MAE={mae:.1f}")
+
+    # Load snapshots and ensemble
+    snap_models = []
+    individual = {}
+    for ep, state in snapshots.items():
+        m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+        m.load_state_dict(state)
+        m.to(device)
+        mae = _mae_from_model(m, val_ds)
+        individual[f'ep{ep}'] = round(mae, 2)
+        snap_models.append(m)
+
+    ens = _ensemble_mae(snap_models, val_ds)
+    result = {
+        'experiment': 'EXP-246: Snapshot Ensemble (6 checkpoints, 1 training run)',
+        'individual': individual,
+        'ensemble_mae': round(ens, 2),
+        'config': {'snapshot_epochs': snapshot_epochs, 'total_epochs': 120,
+                   'scheduler': 'cosine', 'n_snapshots': len(snapshot_epochs)},
+        'masking': {'channels': list(FUTURE_UNKNOWN_CHANNELS), 'type': 'selective'},
+        'comparison': {'exp234_5seed_ensemble': 12.38, 'exp232_individual': 12.9},
+    }
+    save_results(result, os.path.join(output_dir, 'exp246_snapshot_ensemble.json'))
+    return result
+
+REGISTRY['snapshot-ensemble'] = 'run_snapshot_ensemble'
+
+
+# ── EXP-247: Deeper Model (L=4) ──────────────────────────────────
+# Width didn't help (EXP-245). Test depth: 4 layers instead of 2.
+# More layers → longer-range temporal dependencies in 12-step history.
+def run_deeper_model_ensemble(args):
+    """EXP-247: 5-seed ensemble with num_layers=4 (2× depth)."""
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+    seeds = [42, 123, 456, 789, 1024]
+    models, individual = [], {}
+    device = get_device()
+
+    for seed in seeds:
+        set_seed(seed)
+        m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=4)
+        m.to(device)
+        sp = os.path.join(output_dir, f'exp247_deep_s{seed}.pth')
+        train_forecast(m, train_ds, val_ds, sp,
+                       label=f'EXP-247 Deep-s{seed}', epochs=100, lr=1e-3, patience=15)
+        mae = _mae_from_model(m, val_ds)
+        individual[f's{seed}'] = round(mae, 2)
+        models.append(m)
+        print(f"  s{seed}: MAE={mae:.1f}")
+
+    ens = _ensemble_mae(models, val_ds)
+    n_params = sum(p.numel() for p in models[0].parameters())
+    result = {
+        'experiment': 'EXP-247: Deeper Model (num_layers=4) 5-Seed Ensemble',
+        'individual': individual, 'ensemble_mae': round(ens, 2),
+        'config': {'d_model': 64, 'nhead': 4, 'num_layers': 4, 'seeds': seeds,
+                   'n_params': n_params},
+        'masking': {'channels': list(FUTURE_UNKNOWN_CHANNELS), 'type': 'selective'},
+        'comparison': {'exp234_L2_ensemble': 12.38, 'exp245_d128L2_ensemble': 12.49},
+    }
+    save_results(result, os.path.join(output_dir, 'exp247_deeper_model.json'))
+    return result
+
+REGISTRY['deeper-model-ensemble'] = 'run_deeper_model_ensemble'
