@@ -1,0 +1,144 @@
+{
+  "experiment": "EXP-248: Per-Patient FT Ensemble + Hypo Weighting (w=3)",
+  "per_patient": {
+    "a": {
+      "seeds": {
+        "s42": 13.58,
+        "s123": 13.51,
+        "s456": 13.07,
+        "s789": 13.66,
+        "s1024": 13.53
+      },
+      "ensemble_mae": 12.53,
+      "hypo_ensemble_mae": 17.29,
+      "mean_seed": 13.47
+    },
+    "b": {
+      "seeds": {
+        "s42": 18.45,
+        "s123": 18.61,
+        "s456": 19.71,
+        "s789": 18.87,
+        "s1024": 18.54
+      },
+      "ensemble_mae": 18.25,
+      "hypo_ensemble_mae": 35.0,
+      "mean_seed": 18.84
+    },
+    "c": {
+      "seeds": {
+        "s42": 11.14,
+        "s123": 11.16,
+        "s456": 11.65,
+        "s789": 11.07,
+        "s1024": 10.79
+      },
+      "ensemble_mae": 10.46,
+      "hypo_ensemble_mae": 12.77,
+      "mean_seed": 11.16
+    },
+    "d": {
+      "seeds": {
+        "s42": 8.74,
+        "s123": 8.54,
+        "s456": 8.72,
+        "s789": 8.52,
+        "s1024": 8.64
+      },
+      "ensemble_mae": 8.19,
+      "hypo_ensemble_mae": 21.76,
+      "mean_seed": 8.63
+    },
+    "e": {
+      "seeds": {
+        "s42": 10.33,
+        "s123": 10.08,
+        "s456": 9.93,
+        "s789": 10.13,
+        "s1024": 9.77
+      },
+      "ensemble_mae": 9.18,
+      "hypo_ensemble_mae": 16.41,
+      "mean_seed": 10.05
+    },
+    "f": {
+      "seeds": {
+        "s42": 11.02,
+        "s123": 10.7,
+        "s456": 10.96,
+        "s789": 10.98,
+        "s1024": 10.86
+      },
+      "ensemble_mae": 10.2,
+      "hypo_ensemble_mae": 12.24,
+      "mean_seed": 10.9
+    },
+    "g": {
+      "seeds": {
+        "s42": 10.51,
+        "s123": 9.97,
+        "s456": 10.04,
+        "s789": 10.19,
+        "s1024": 10.21
+      },
+      "ensemble_mae": 9.6,
+      "hypo_ensemble_mae": 16.92,
+      "mean_seed": 10.18
+    },
+    "h": {
+      "seeds": {
+        "s42": 12.17,
+        "s123": 11.95,
+        "s456": 11.6,
+        "s789": 12.04,
+        "s1024": 11.1
+      },
+      "ensemble_mae": 10.83,
+      "hypo_ensemble_mae": 14.47,
+      "mean_seed": 11.77
+    },
+    "i": {
+      "seeds": {
+        "s42": 10.26,
+        "s123": 9.88,
+        "s456": 10.09,
+        "s789": 10.0,
+        "s1024": 10.05
+      },
+      "ensemble_mae": 9.44,
+      "hypo_ensemble_mae": 9.42,
+      "mean_seed": 10.06
+    },
+    "j": {
+      "seeds": {
+        "s42": 16.37,
+        "s123": 16.58,
+        "s456": 16.7,
+        "s789": 16.28,
+        "s1024": 16.21
+      },
+      "ensemble_mae": 15.98,
+      "hypo_ensemble_mae": 35.82,
+      "mean_seed": 16.43
+    }
+  },
+  "summary": {
+    "mean_ensemble_mae": 11.47,
+    "mean_hypo_ensemble_mae": 19.21,
+    "n_patients": 10
+  },
+  "config": {
+    "hypo_weight": 3.0,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ]
+  },
+  "comparison": {
+    "exp242_ensemble": 11.25,
+    "exp243_mixed": 12.46
+  }
+}
