@@ -1172,3 +1172,254 @@ def run_deep_per_patient_ensemble(args):
     return result
 
 REGISTRY['deep-per-patient-ensemble'] = 'run_deep_per_patient_ensemble'
+
+
+# ── EXP-251: Extended Base Training (L=4, 200ep) + Per-Patient FT ─
+# EXP-250 base models trained ~100ep. Longer training may yield better
+# representations. L=4 + per-patient FT is the proven best recipe.
+# Hypothesis: 200ep base with more patience yields ~10.2-10.5 MAE.
+def run_extended_training_l4(args):
+    """EXP-251: 200ep L=4 base training + per-patient FT ensemble."""
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    patient_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    device = get_device()
+    seeds = [42, 123, 456, 789, 1024]
+
+    # Load multi-patient data
+    data_paths = [os.path.join(patients_base, p, 'training') for p in patient_dirs]
+    train_ds, val_ds = load_multipatient_nightscout(data_paths, task='forecast', window_size=24)
+
+    # Phase 1: Train 5 L=4 base models with extended training
+    base_states = {}
+    for seed in seeds:
+        fp = os.path.join(output_dir, f'exp251_base_s{seed}.pth')
+        torch.manual_seed(seed)
+        m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=4)
+        train_forecast(m, train_ds, val_ds, fp,
+                       label=f'EXP-251 Base-s{seed}',
+                       epochs=200, lr=1e-3, patience=20, lr_patience=7)
+        ckpt = torch.load(fp, map_location=device, weights_only=False)
+        base_states[seed] = ckpt['model_state']
+        base_mae = _mae_from_model(m, val_ds)
+        print(f"  Base s{seed}: {base_mae:.2f}")
+
+    # Phase 2: Per-patient fine-tuning
+    per_patient = {}
+    for pid in patient_dirs:
+        p_path = os.path.join(patients_base, pid, 'training')
+        tds, vds = load_multipatient_nightscout([p_path], task='forecast', window_size=24)
+        seed_maes = {}
+        ft_models = []
+        for seed in seeds:
+            torch.manual_seed(seed)
+            m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=4)
+            m.load_state_dict(base_states[seed])
+            fp = os.path.join(output_dir, f'exp251_ft_{pid}_s{seed}.pth')
+            train_forecast(m, tds, vds, fp,
+                           label=f'EXP-251 FT-{pid}-s{seed}',
+                           epochs=30, lr=1e-4, patience=10)
+            mae = _mae_from_model(m, vds)
+            seed_maes[f's{seed}'] = round(mae, 2)
+            ft_models.append(m)
+        ens = _ensemble_mae(ft_models, vds)
+        per_patient[pid] = {
+            'seeds': seed_maes,
+            'ensemble_mae': round(ens, 2),
+            'mean_seed': round(float(np.mean(list(seed_maes.values()))), 2),
+        }
+        print(f"  {pid}: mean_seed={per_patient[pid]['mean_seed']:.1f} ens={ens:.1f}")
+
+    all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+    result = {
+        'experiment': 'EXP-251: Extended Training (200ep) L=4 Per-Patient FT Ensemble',
+        'per_patient': per_patient,
+        'summary': {
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'n_patients': len(per_patient),
+        },
+        'config': {'d_model': 64, 'nhead': 4, 'num_layers': 4,
+                    'base_epochs': 200, 'base_patience': 20, 'base_lr_patience': 7,
+                    'seeds': seeds, 'ft_epochs': 30, 'ft_lr': 1e-4},
+        'comparison': {'exp250_L4_per_patient': 10.71,
+                        'exp242_L2_per_patient': 11.25},
+    }
+    save_results(result, os.path.join(output_dir, 'exp251_extended_training_l4.json'))
+    return result
+
+REGISTRY['extended-training-l4'] = 'run_extended_training_l4'
+
+
+# ── EXP-252: FT Learning Rate Tuning (L=4) ───────────────────────
+# EXP-250 FT used lr=1e-4 for 30ep, early stopping ~15-20ep.
+# Lower LR (5e-5) with more runway (50ep) may find finer local optima.
+# Reuses EXP-247 base checkpoints (same as EXP-250).
+def run_ft_lr_tuning_l4(args):
+    """EXP-252: Lower FT learning rate (5e-5, 50ep) with L=4 bases."""
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    patient_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    device = get_device()
+    seeds = [42, 123, 456, 789, 1024]
+
+    # Reuse EXP-247 base checkpoints (same as EXP-250)
+    base_states = {}
+    for seed in seeds:
+        fp = os.path.join(output_dir, f'exp247_deep_s{seed}.pth')
+        if not os.path.exists(fp):
+            raise FileNotFoundError(f"EXP-247 base not found: {fp}")
+        ckpt = torch.load(fp, map_location=device, weights_only=False)
+        base_states[seed] = ckpt['model_state']
+        print(f"  Reusing EXP-247 base s{seed}")
+
+    per_patient = {}
+    for pid in patient_dirs:
+        p_path = os.path.join(patients_base, pid, 'training')
+        tds, vds = load_multipatient_nightscout([p_path], task='forecast', window_size=24)
+        seed_maes = {}
+        ft_models = []
+        for seed in seeds:
+            torch.manual_seed(seed)
+            m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=4)
+            m.load_state_dict(base_states[seed])
+            fp = os.path.join(output_dir, f'exp252_ft_{pid}_s{seed}.pth')
+            train_forecast(m, tds, vds, fp,
+                           label=f'EXP-252 FT-{pid}-s{seed}',
+                           epochs=50, lr=5e-5, patience=15)
+            mae = _mae_from_model(m, vds)
+            seed_maes[f's{seed}'] = round(mae, 2)
+            ft_models.append(m)
+        ens = _ensemble_mae(ft_models, vds)
+        per_patient[pid] = {
+            'seeds': seed_maes,
+            'ensemble_mae': round(ens, 2),
+            'mean_seed': round(float(np.mean(list(seed_maes.values()))), 2),
+        }
+        print(f"  {pid}: mean_seed={per_patient[pid]['mean_seed']:.1f} ens={ens:.1f}")
+
+    all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+    result = {
+        'experiment': 'EXP-252: FT Learning Rate Tuning (L=4, lr=5e-5, 50ep)',
+        'per_patient': per_patient,
+        'summary': {
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'n_patients': len(per_patient),
+        },
+        'config': {'d_model': 64, 'nhead': 4, 'num_layers': 4,
+                    'base': 'EXP-247 (reused)', 'seeds': seeds,
+                    'ft_epochs': 50, 'ft_lr': 5e-5, 'ft_patience': 15},
+        'comparison': {'exp250_ft_lr_1e4_30ep': 10.71},
+    }
+    save_results(result, os.path.join(output_dir, 'exp252_ft_lr_tuning.json'))
+    return result
+
+REGISTRY['ft-lr-tuning-l4'] = 'run_ft_lr_tuning_l4'
+
+
+# ── EXP-254: Verification of EXP-250 (L=4 Per-Patient FT) ────────
+# EXP-249 showed +2.8% gap for L=2 models (EXP-242).
+# Verify that L=4 per-patient FT (EXP-250) also generalizes well.
+# No training — pure evaluation on held-out verification splits.
+def run_verification_exp250(args):
+    """EXP-254: Evaluate EXP-250 L=4 models on verification splits."""
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    patient_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    device = get_device()
+    seeds = [42, 123, 456, 789, 1024]
+
+    per_patient = {}
+    for pid in patient_dirs:
+        ver_path = os.path.join(patients_base, pid, 'verification')
+        if not os.path.isdir(ver_path):
+            print(f"  {pid}: no verification dir, skipping")
+            continue
+        try:
+            _, ver_ds = load_multipatient_nightscout(
+                [ver_path], task='forecast', window_size=24)
+        except Exception as e:
+            print(f"  {pid}: verification load failed ({e}), skipping")
+            continue
+        if len(ver_ds) < 10:
+            print(f"  {pid}: too few verification windows ({len(ver_ds)}), skipping")
+            continue
+
+        # Load fine-tuned L=4 models from EXP-250
+        ft_models = []
+        missing = False
+        for seed in seeds:
+            fp = os.path.join(output_dir, f'exp250_ft_{pid}_s{seed}.pth')
+            if not os.path.exists(fp):
+                missing = True
+                break
+            m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=4)
+            ckpt = torch.load(fp, map_location=device, weights_only=False)
+            m.load_state_dict(ckpt['model_state'])
+            m.to(device)
+            ft_models.append(m)
+
+        if missing:
+            print(f"  {pid}: missing EXP-250 checkpoints, skipping")
+            continue
+
+        seed_maes = {}
+        for i, seed in enumerate(seeds):
+            mae = _mae_from_model(ft_models[i], ver_ds)
+            seed_maes[f's{seed}'] = round(mae, 2)
+        ver_ens = _ensemble_mae(ft_models, ver_ds)
+
+        # Training val split for gap comparison
+        train_path = os.path.join(patients_base, pid, 'training')
+        try:
+            _, train_val_ds = load_multipatient_nightscout(
+                [train_path], task='forecast', window_size=24)
+            train_ens = _ensemble_mae(ft_models, train_val_ds)
+        except Exception:
+            train_ens = float('nan')
+
+        gap = ver_ens - train_ens
+        per_patient[pid] = {
+            'verification_seeds': seed_maes,
+            'verification_ensemble_mae': round(ver_ens, 2),
+            'training_val_ensemble_mae': round(train_ens, 2),
+            'generalization_gap': round(gap, 2),
+            'gap_pct': round(gap / train_ens * 100, 1) if train_ens > 0 else None,
+        }
+        print(f"  {pid}: ver_ens={ver_ens:.1f} train_ens={train_ens:.1f} gap={gap:+.1f}")
+
+    all_ver = [v['verification_ensemble_mae'] for v in per_patient.values()]
+    all_train = [v['training_val_ensemble_mae'] for v in per_patient.values()
+                 if not np.isnan(v['training_val_ensemble_mae'])]
+    all_gap = [v['generalization_gap'] for v in per_patient.values()
+               if not np.isnan(v['generalization_gap'])]
+    result = {
+        'experiment': 'EXP-254: Verification Set Generalization (EXP-250 L=4 models)',
+        'per_patient': per_patient,
+        'summary': {
+            'mean_verification_mae': round(float(np.mean(all_ver)), 2) if all_ver else None,
+            'mean_training_val_mae': round(float(np.mean(all_train)), 2) if all_train else None,
+            'mean_gap': round(float(np.mean(all_gap)), 2) if all_gap else None,
+            'mean_gap_pct': round(float(np.mean(all_gap)) /
+                                  float(np.mean(all_train)) * 100, 1)
+                           if all_train and all_gap else None,
+            'n_patients': len(per_patient),
+        },
+        'comparison': {'exp250_training_mae': 10.71,
+                        'exp249_L2_gap_pct': 2.8},
+    }
+    save_results(result, os.path.join(output_dir, 'exp254_verification_exp250.json'))
+    return result
+
+REGISTRY['verification-exp250'] = 'run_verification_exp250'
