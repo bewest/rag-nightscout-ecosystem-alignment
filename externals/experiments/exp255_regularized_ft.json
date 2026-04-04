@@ -1,0 +1,173 @@
+{
+  "experiment": "EXP-255: Regularized FT (L=4, wd=0.001)",
+  "per_patient": {
+    "a": {
+      "seeds": {
+        "s42": 11.89,
+        "s123": 12.06,
+        "s456": 11.9,
+        "s789": 11.79,
+        "s1024": 11.45
+      },
+      "training_ensemble_mae": 11.09,
+      "verification_ensemble_mae": 10.98,
+      "generalization_gap": -0.11,
+      "gap_pct": -1.0,
+      "mean_seed": 11.82
+    },
+    "b": {
+      "seeds": {
+        "s42": 17.91,
+        "s123": 17.76,
+        "s456": 17.9,
+        "s789": 17.79,
+        "s1024": 17.85
+      },
+      "training_ensemble_mae": 17.6,
+      "verification_ensemble_mae": 15.55,
+      "generalization_gap": -2.05,
+      "gap_pct": -11.6,
+      "mean_seed": 17.84
+    },
+    "c": {
+      "seeds": {
+        "s42": 10.42,
+        "s123": 10.08,
+        "s456": 10.44,
+        "s789": 10.42,
+        "s1024": 10.24
+      },
+      "training_ensemble_mae": 9.72,
+      "verification_ensemble_mae": 13.21,
+      "generalization_gap": 3.5,
+      "gap_pct": 36.0,
+      "mean_seed": 10.32
+    },
+    "d": {
+      "seeds": {
+        "s42": 8.15,
+        "s123": 8.34,
+        "s456": 8.34,
+        "s789": 8.22,
+        "s1024": 8.22
+      },
+      "training_ensemble_mae": 8.0,
+      "verification_ensemble_mae": 7.92,
+      "generalization_gap": -0.08,
+      "gap_pct": -1.0,
+      "mean_seed": 8.25
+    },
+    "e": {
+      "seeds": {
+        "s42": 8.9,
+        "s123": 9.13,
+        "s456": 9.06,
+        "s789": 9.1,
+        "s1024": 8.69
+      },
+      "training_ensemble_mae": 8.24,
+      "verification_ensemble_mae": 8.85,
+      "generalization_gap": 0.61,
+      "gap_pct": 7.4,
+      "mean_seed": 8.98
+    },
+    "f": {
+      "seeds": {
+        "s42": 9.71,
+        "s123": 9.78,
+        "s456": 9.43,
+        "s789": 9.52,
+        "s1024": 9.54
+      },
+      "training_ensemble_mae": 8.95,
+      "verification_ensemble_mae": 8.37,
+      "generalization_gap": -0.58,
+      "gap_pct": -6.5,
+      "mean_seed": 9.6
+    },
+    "g": {
+      "seeds": {
+        "s42": 9.55,
+        "s123": 9.7,
+        "s456": 9.33,
+        "s789": 9.54,
+        "s1024": 9.25
+      },
+      "training_ensemble_mae": 9.08,
+      "verification_ensemble_mae": 8.03,
+      "generalization_gap": -1.05,
+      "gap_pct": -11.6,
+      "mean_seed": 9.47
+    },
+    "h": {
+      "seeds": {
+        "s42": 10.94,
+        "s123": 10.72,
+        "s456": 10.51,
+        "s789": 10.46,
+        "s1024": 10.43
+      },
+      "training_ensemble_mae": 10.04,
+      "verification_ensemble_mae": 10.33,
+      "generalization_gap": 0.29,
+      "gap_pct": 2.9,
+      "mean_seed": 10.61
+    },
+    "i": {
+      "seeds": {
+        "s42": 9.29,
+        "s123": 9.37,
+        "s456": 9.06,
+        "s789": 9.29,
+        "s1024": 9.22
+      },
+      "training_ensemble_mae": 8.7,
+      "verification_ensemble_mae": 10.64,
+      "generalization_gap": 1.94,
+      "gap_pct": 22.3,
+      "mean_seed": 9.25
+    },
+    "j": {
+      "seeds": {
+        "s42": 15.92,
+        "s123": 15.77,
+        "s456": 16.06,
+        "s789": 15.72,
+        "s1024": 15.69
+      },
+      "training_ensemble_mae": 15.66,
+      "verification_ensemble_mae": 21.15,
+      "generalization_gap": 5.49,
+      "gap_pct": 35.0,
+      "mean_seed": 15.83
+    }
+  },
+  "summary": {
+    "mean_training_mae": 10.71,
+    "mean_verification_mae": 11.5,
+    "mean_gap": 0.8,
+    "mean_gap_pct": 7.4,
+    "n_patients": 10
+  },
+  "config": {
+    "d_model": 64,
+    "nhead": 4,
+    "num_layers": 4,
+    "base": "EXP-247 (reused)",
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ],
+    "ft_epochs": 30,
+    "ft_lr": 0.0001,
+    "ft_weight_decay": 0.001
+  },
+  "comparison": {
+    "exp250_training": 10.71,
+    "exp250_verification": 11.49,
+    "exp250_gap_pct": 7.4
+  }
+}
