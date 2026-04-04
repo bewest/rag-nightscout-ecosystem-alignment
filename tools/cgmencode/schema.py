@@ -57,21 +57,26 @@ MONTHLY_IDX   = [IDX_MONTH_SIN, IDX_MONTH_COS]
 CONTEXT_IDX   = WEEKDAY_IDX + OVERRIDE_IDX + DYNAMICS_IDX + TEMPORAL_IDX + DEVICE_IDX + MONTHLY_IDX
 
 # ── Future masking ───────────────────────────────────────────────────────
-# Channels containing information unknown at real-time inference.
+# Channels containing information truly unknown at real-time inference.
 # These must be zeroed in the future half during forecast training/eval.
+#
+# EXP-230 showed selective masking (7 channels) achieves 18.2 MAE vs
+# full masking (10 channels) at 25.1 MAE.  IOB/COB/basal decay curves
+# are deterministic from current state and must NOT be masked.
 FUTURE_UNKNOWN_CHANNELS = [
     IDX_GLUCOSE,            # 0 - future glucose is what we predict
-    IDX_IOB,                # 1 - future IOB depends on future deliveries
-    IDX_COB,                # 2 - future COB depends on future carb absorption
-    IDX_NET_BASAL,          # 3 - future basal decisions unknown
-    IDX_BOLUS,              # 4 - future boluses unknown
+    IDX_BOLUS,              # 4 - future bolus events unknown
     IDX_CARBS,              # 5 - future carb entries unknown
     IDX_GLUCOSE_ROC,        # 12 - derived from future glucose
     IDX_GLUCOSE_ACCEL,      # 13 - derived from future glucose
     IDX_TIME_SINCE_BOLUS,   # 14 - reveals future bolus timing
     IDX_TIME_SINCE_CARB,    # 15 - reveals future carb timing
 ]
-# Known-future channels left unmasked: time_sin/cos (6,7), day_sin/cos (8,9),
+# Deterministic channels kept unmasked (EXP-230 validated):
+#   IOB (1) - decays via known insulin curve from current value
+#   COB (2) - decays via known absorption model from current value
+#   net_basal (3) - scheduled from pump profile
+# Also unmasked: time_sin/cos (6,7), day_sin/cos (8,9),
 # override (10,11), CAGE/SAGE/warmup (16-18), month_sin/cos (19,20)
 
 # ── Feature counts ──────────────────────────────────────────────────────
