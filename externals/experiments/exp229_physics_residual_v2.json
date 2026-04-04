@@ -1,0 +1,37 @@
+{
+  "arms": {
+    "direct": {
+      "42": {
+        "mae": 27.124191284179688,
+        "val_loss": 0.005444453866633895,
+        "epochs": 73
+      },
+      "456": {
+        "mae": 22.996971130371094,
+        "val_loss": 0.005477239727850432,
+        "epochs": 80
+      }
+    },
+    "residual": {
+      "42": {
+        "mae": 28.06789435390598,
+        "val_loss": 0.059168602725402204,
+        "epochs": 66
+      },
+      "456": {
+        "mae": 27.927214207604347,
+        "val_loss": 0.05853232365409959,
+        "epochs": 68
+      }
+    }
+  },
+  "persistence_mae": 22.747314453125,
+  "physics_only_mae": 54.638286804380805,
+  "direct_mean_mae": 25.06058120727539,
+  "residual_mean_mae": 27.997554280755164,
+  "residual_vs_direct_pct": 11.71949305240827,
+  "residual_vs_persistence_pct": 23.080701849219352,
+  "elapsed_seconds": 3378.5037190914154,
+  "masking": "FUTURE_UNKNOWN_CHANNELS (10 channels)",
+  "physics_level": "enhanced"
+}
