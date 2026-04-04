@@ -12,8 +12,8 @@ The **cgmencode pipeline** — a 134K-parameter `CGMGroupedEncoder` transformer 
 
 The system addresses four high-level objectives from the ML Composition Architecture:
 
-1. **Glucose Forecasting**: 10.59 mg/dL MAE (53% better than persistence)
-2. **Event Detection**: 0.710 weighted F1 (XGBoost on tabular features)
+1. **Glucose Forecasting**: 10.59 mg/dL MAE (59% better than persistence)
+2. **Event Detection**: 0.705 weighted F1 (XGBoost on tabular features)
 3. **Pattern / Drift Recognition**: Circadian amplitude 71.3 mg/dL, drift r = −0.156
 4. **Override Recommendations**: 0.993 F1 on TIR-impact metric
 
@@ -29,7 +29,7 @@ After a critical masking-correctness fix in Phase 4, the per-patient fine-tuning
 | Forecast (verification) | mg/dL | — | **11.49** | Same, held-out data | — | ✅ Validated |
 | Hypo Detection F1 | F1 | — | **0.700** | Production v7 conformal | New | ✅ Production-ready |
 | Hypo MAE | mg/dL | 15.2 | **10.4** | 2-stage detection | −32% | ⚠️ Needs dedicated module |
-| Event Detection | wF1 | 0.107 (neural) | **0.710** | Per-patient XGBoost | +562% | ✅ Production-ready |
+| Event Detection | wF1 | 0.107 (neural) | **0.705** | Per-patient XGBoost | +559% | ✅ Production-ready |
 | Event Lead Time | % >30 min | — | **73.8%** | Combined winners | New | ✅ Actionable |
 | Override WHEN | F1 | 0.130 (broken metric) | **0.993** | TIR-impact scoring | +664% | ✅ Metric fixed |
 | Override WHICH/HOW | — | — | Not started | — | — | ❌ Next priority |
@@ -92,7 +92,7 @@ Explored ensemble diversity, hypo-specific models, and built the production infe
 
 ### Phase 3 — Multi-Objective (EXP-150 → 228)
 
-Pushed event detection to its ceiling (0.710 wF1), fixed the override metric (0.993 F1), corrected drift-tracking sign error, and began per-patient exploration.
+Pushed event detection to its ceiling (0.705 wF1), fixed the override metric (0.993 F1), corrected drift-tracking sign error, and began per-patient exploration.
 
 **Key insight**: Different objectives need different tools — XGBoost for events, metric redesign for overrides, feature engineering for drift.
 

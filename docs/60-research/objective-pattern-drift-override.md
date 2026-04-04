@@ -51,15 +51,15 @@ the clinical algorithm used in openaps / Loop. After fix:
 | Patient | Correlation | TIR | Drift Std | Notes |
 |---------|-------------|-----|-----------|-------|
 | a | −0.219 | 55.9 % | 0.074 | Highest drift variability |
-| b | −0.202 | 62.8 % | — | |
-| c | −0.080 | 75.2 % | — | Low drift |
-| d | −0.078 | 84.9 % | — | Best TIR, low drift |
-| e | −0.119 | 77.8 % | — | |
-| f | −0.205 | 74.5 % | — | |
-| g | −0.190 | 75.0 % | — | |
-| h | −0.265 | 66.4 % | — | Strongest correlation |
-| i | −0.037 | 80.2 % | — | Weakest |
-| j | −0.121 | — | — | |
+| b | −0.202 | 56.5 % | 0.057 | |
+| c | −0.080 | 61.5 % | 0.009 | Low drift |
+| d | −0.078 | 79.6 % | 0.020 | High TIR, low drift |
+| e | −0.119 | 66.1 % | 0.036 | |
+| f | −0.205 | 65.8 % | 0.064 | |
+| g | −0.190 | 75.5 % | 0.062 | |
+| h | −0.265 | 84.9 % | 0.055 | Best TIR, strongest correlation |
+| i | −0.037 | 60.0 % | 0.008 | Weakest correlation |
+| j | −0.121 | 80.8 % | 0.033 | |
 
 ### What WORKED for Drift
 

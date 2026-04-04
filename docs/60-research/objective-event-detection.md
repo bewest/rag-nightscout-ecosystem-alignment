@@ -134,11 +134,11 @@ Per-patient personalization and combination of best techniques.
 | EXP-205 | Per-patient models | 0.700 | Personalization helps |
 | EXP-209 | Per-patient + temporal | 0.705 | Marginal stacking gain |
 | EXP-217 | Stratified oversampled | 0.706 | Alternative approach, same ceiling |
-| **EXP-221** | Combined all winners | **0.710** (weighted) | Best overall result |
+| **EXP-221** | Combined all winners | **0.705** (weighted) | Best overall result |
 
 **EXP-221 detailed metrics:**
 
-- Weighted F1: **0.710**
+- Weighted F1: **0.705**
 - Macro F1: **0.678**
 - MCC: **0.520**
 
@@ -154,13 +154,13 @@ Per-patient personalization and combination of best techniques.
 
 ### Ceiling Analysis
 
-Three independent methods converge at F1 ≈ 0.705–0.710:
+Three independent methods converge at F1 ≈ 0.705–0.706:
 
 | Method | Experiment | F1 |
 |--------|------------|-----|
 | Per-patient + temporal | EXP-209 | 0.705 |
 | Stratified oversampled | EXP-217 | 0.706 |
-| Combined all winners | EXP-221 | 0.710 |
+| Combined all winners | EXP-221 | 0.705 |
 
 This convergence across different approaches **strongly suggests 0.71 is the
 practical ceiling** for these features and this dataset. Breaking through
@@ -258,10 +258,10 @@ Event detection verified on **held-out temporal data** at F1 = **0.544**
 
 | Split | F1 | Gap |
 |-------|----|-----|
-| Training / cross-validation | 0.710 | — |
-| Held-out temporal verification | 0.544 | −0.166 |
+| Training / cross-validation | 0.705 | — |
+| Held-out temporal verification | 0.544 | −0.161 |
 
-The gap from training F1 (0.710) to verification F1 (0.544) is substantial
+The gap from training F1 (0.705) to verification F1 (0.544) is substantial
 but expected — event patterns change over time:
 
 - Different meal schedules (weekday vs weekend, seasonal)
@@ -329,7 +329,7 @@ Temperature-scaled calibration (EXP-200) enables safety-gated deployment:
 
 | Metric | Value | Source |
 |--------|-------|--------|
-| Best F1 (weighted) | **0.710** | EXP-221 |
+| Best F1 (weighted) | **0.705** | EXP-221 |
 | Best F1 (macro) | **0.678** | EXP-221 |
 | MCC | **0.520** | EXP-221 |
 | Lead time (>30 min) | **73.8%** | EXP-221 |

@@ -145,18 +145,18 @@ architecture, the training technique, or the feature set — it is the patient.
 
 | Patient | MAE (mg/dL) | TIR (%) | Event F1 | Notes |
 |---------|-------------|---------|----------|-------|
-| d | 7.9 | 84.9 | 0.939 | Consistently best outcomes |
-| e | 8.4 | 79.3 | 0.912 | Stable, well-controlled |
-| a | 9.2 | 76.1 | 0.887 | Average complexity |
-| g | 9.8 | 73.5 | 0.871 | Moderate variability |
-| h | 10.1 | 71.8 | 0.856 | Moderate variability |
-| c | 10.9 | 69.2 | 0.834 | Higher glycemic variability |
-| f | 11.1 | 68.7 | 0.828 | Higher glycemic variability |
-| i | 12.3 | 65.4 | 0.791 | Complex patterns |
-| j | 15.7 | 58.2 | 0.643 | 0% IOB data, model struggles |
-| b | 17.6 | 54.1 | 0.612 | Consistently hardest patient |
+| d | 7.95 | 79.6 | 0.939 | Consistently best outcomes |
+| e | 8.14 | 66.1 | 0.679 | Low forecast error, moderate TIR |
+| i | 8.58 | 60.0 | 0.537 | Low MAE but low event detection |
+| f | 8.82 | 65.8 | 0.618 | Moderate variability |
+| g | 9.00 | 75.5 | 0.720 | Good TIR, moderate MAE |
+| c | 9.59 | 61.5 | 0.676 | Higher glycemic variability |
+| h | 10.01 | 84.9 | 0.760 | Best TIR, moderate MAE |
+| a | 10.94 | 55.9 | 0.840 | High event F1 despite low TIR |
+| j | 15.44 | 80.8 | 0.655 | 0% IOB data, model struggles |
+| b | 17.40 | 56.5 | 0.667 | Consistently hardest patient |
 
-The **2.2× range** in MAE (7.9 to 17.6) persists regardless of which model or
+The **2.2× range** in MAE (7.95 to 17.40) persists regardless of which model or
 technique is applied. Patient d is "easy" — stable glucose patterns, complete
 data, consistent routines. Patient b is "hard" — high glycemic variability,
 unpredictable meal patterns, frequent excursions.
@@ -175,9 +175,10 @@ unpredictable meal patterns, frequent excursions.
 
 **The case for per-patient models**: Population models (trained on all patients)
 provide a reasonable baseline. But **per-patient fine-tuning improves outcomes
-for every single patient** in our cohort. The improvement ranges from modest
-(patient d, already excellent) to dramatic (patient b, where personalization
-reduces MAE by 15-20%).
+for every single patient** in our cohort. Fine-tuning alone yields a 12%
+reduction for patient d (base 9.49 → fine-tuned 8.35 in EXP-241), and
+the full pipeline (fine-tuning + ensembling + extended training) pushes
+d to 7.95 mg/dL — the best in the cohort.
 
 **Clinical implication**: "One size fits all" AID settings are fundamentally
 suboptimal. The oref0/AAPS approach of continuous autotune — adjusting basal
@@ -365,8 +366,8 @@ In our cohort, IOB data completeness varies enormously:
 
 | Data Completeness | Patients | MAE Range (mg/dL) |
 |-------------------|----------|-------------------|
-| Full IOB data | 9 patients | 7.9–11.1 |
-| 0% IOB data | 1 patient (j) | 15.7 (train), 22.7 (verify) |
+| Full IOB data | 9 patients | 7.95–10.94 |
+| 0% IOB data | 1 patient (j) | 15.44 (train), 21.04 (verify) |
 
 Patient j has **zero usable IOB data**. This patient's pump data either was not
 uploaded to Nightscout or was incomplete. The model must predict glucose using
@@ -374,13 +375,13 @@ only the CGM trace and carbohydrate records — it is effectively flying blind
 about insulin delivery.
 
 The result: patient j has the **worst verification accuracy in the cohort**
-(22.7 mg/dL MAE) and only 274 usable verification windows compared to thousands
-for other patients. The model can learn patient j's glucose patterns during
-training but cannot generalize — without knowing what insulin is on board, future
-glucose depends on an unobserved variable.
+(21.04 mg/dL MAE) with fewer usable verification windows than most other
+patients. The model can learn patient j's glucose patterns
+during training but cannot generalize — without knowing what insulin is on board,
+future glucose depends on an unobserved variable.
 
-**The accuracy gap** between CGM-only (patient j, ~15-22 mg/dL) and CGM+pump
-(other patients, 7.9-11.1 mg/dL) represents roughly a **2× accuracy penalty**
+**The accuracy gap** between CGM-only (patient j, ~15–22 mg/dL) and CGM+pump
+(other patients, 7.95–10.94 mg/dL) represents roughly a **2× accuracy penalty**
 for missing insulin data.
 
 **Clinical implications**:
