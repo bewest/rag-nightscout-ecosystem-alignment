@@ -458,3 +458,286 @@ def run_per_patient_finetune(args):
     return result
 
 REGISTRY['per-patient-finetune'] = 'run_per_patient_finetune'
+
+
+# ── Shared: hypo-weighted training loop ──────────────────────────
+def _train_hypo_weighted(model, train_ds, val_ds, save_path, label,
+                         hypo_weight=3.0, epochs=100, patience=15):
+    """Train model with hypo-weighted MSE loss. Returns best val loss."""
+    from torch.utils.data import DataLoader
+    device = get_device()
+    model.to(device)
+    hypo_thresh = 80.0 / SCALE
+    opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
+    best_val, stale = float('inf'), 0
+    for ep in range(epochs):
+        model.train()
+        for b in DataLoader(train_ds, batch_size=32, shuffle=True):
+            x = batch_to_device(b[0], device)
+            half = x.shape[1] // 2
+            x_in = x.clone()
+            mask_future_channels(x_in, half)
+            pred = model(x_in, causal=True)
+            if isinstance(pred, dict): pred = pred['forecast']
+            pg, tg = pred[:, half:, :1], x[:, half:, :1]
+            w = torch.ones_like(tg)
+            w[tg < hypo_thresh] = hypo_weight
+            loss = (w * (pg - tg) ** 2).mean()
+            opt.zero_grad(); loss.backward(); opt.step()
+        model.eval()
+        vtl, vn = 0.0, 0
+        with torch.no_grad():
+            for b in DataLoader(val_ds, batch_size=64):
+                x = batch_to_device(b[0], device)
+                half = x.shape[1] // 2
+                x_in = x.clone()
+                mask_future_channels(x_in, half)
+                pred = model(x_in, causal=True)
+                if isinstance(pred, dict): pred = pred['forecast']
+                vtl += ((pred[:, half:, :1] - x[:, half:, :1]) ** 2).mean().item() * x.shape[0]
+                vn += x.shape[0]
+        vl = vtl / vn
+        sched.step(vl)
+        if vl < best_val:
+            best_val, stale = vl, 0
+            os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+            torch.save({'model_state': model.state_dict()}, save_path)
+        else:
+            stale += 1
+        if stale >= patience: break
+    if os.path.exists(save_path):
+        ckpt = torch.load(save_path, map_location=device, weights_only=False)
+        model.load_state_dict(ckpt['model_state'])
+    return best_val
+
+
+# ── EXP-242: Per-Patient Fine-Tuned Ensemble ─────────────────────
+# Fine-tune 5 seeds per-patient, then ensemble. Combines EXP-234
+# ensemble + EXP-241 per-patient gains.
+def run_per_patient_finetuned_ensemble(args):
+    """EXP-242: 5-seed ensemble fine-tuned per-patient."""
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    patient_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    device = get_device()
+    seeds = [42, 123, 456, 789, 1024]
+
+    # First train multi-patient base models (5 seeds)
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+    base_models_state = {}
+    for seed in seeds:
+        set_seed(seed)
+        m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+        bp = os.path.join(output_dir, f'exp242_base_s{seed}.pth')
+        train_forecast(m, train_ds, val_ds, bp,
+                       label=f'EXP-242 Base-s{seed}', epochs=100, lr=1e-3, patience=15)
+        base_models_state[seed] = torch.load(bp, map_location=device, weights_only=False)['model_state']
+
+    per_patient = {}
+    for pid in patient_dirs:
+        tp = os.path.join(patients_base, pid, 'training')
+        if not os.path.isdir(tp): continue
+        try:
+            tds, vds = load_multipatient_nightscout([tp], task='forecast', window_size=24)
+        except Exception: continue
+        if len(vds) < 10: continue
+
+        ft_models = []
+        seed_maes = {}
+        for seed in seeds:
+            set_seed(seed)
+            m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+            m.load_state_dict(base_models_state[seed])
+            fp = os.path.join(output_dir, f'exp242_ft_{pid}_s{seed}.pth')
+            train_forecast(m, tds, vds, fp,
+                           label=f'EXP-242 FT-{pid}-s{seed}', epochs=30, lr=1e-4, patience=10)
+            mae = _mae_from_model(m, vds)
+            seed_maes[f's{seed}'] = round(mae, 2)
+            ft_models.append(m)
+        ens = _ensemble_mae(ft_models, vds)
+        per_patient[pid] = {
+            'seeds': seed_maes,
+            'ensemble_mae': round(ens, 2),
+            'mean_seed': round(float(np.mean(list(seed_maes.values()))), 2),
+        }
+        print(f"  {pid}: mean_seed={per_patient[pid]['mean_seed']:.1f} ens={ens:.1f}")
+
+    all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+    result = {
+        'experiment': 'EXP-242: Per-Patient Fine-Tuned Ensemble',
+        'per_patient': per_patient,
+        'summary': {
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'n_patients': len(per_patient),
+        },
+        'comparison': {'exp234_ensemble': 12.38, 'exp241_mean_ft': 12.0},
+    }
+    save_results(result, os.path.join(output_dir, 'exp242_per_patient_ensemble.json'))
+    return result
+
+REGISTRY['per-patient-finetuned-ensemble'] = 'run_per_patient_finetuned_ensemble'
+
+
+# ── EXP-243: Mixed Hypo/Standard Ensemble ────────────────────────
+# 3 standard + 2 hypo-weighted (w=3) seeds. Diversity from different
+# loss landscapes + minority hypo safety.
+def run_mixed_hypo_standard_ensemble(args):
+    """EXP-243: 3 standard + 2 hypo-weighted seeds, all ensembled."""
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+    device = get_device()
+    models, individual = [], {}
+
+    for seed in [42, 123, 456]:
+        set_seed(seed)
+        m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+        sp = os.path.join(output_dir, f'exp243_std_s{seed}.pth')
+        train_forecast(m, train_ds, val_ds, sp,
+                       label=f'EXP-243 Std-s{seed}', epochs=100, lr=1e-3, patience=15)
+        mae = _mae_from_model(m, val_ds)
+        individual[f's{seed}_std'] = round(mae, 2)
+        models.append(m)
+        print(f"  s{seed} (standard): MAE={mae:.1f}")
+
+    for seed in [789, 1024]:
+        set_seed(seed)
+        m = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+        sp = os.path.join(output_dir, f'exp243_hypo_s{seed}.pth')
+        _train_hypo_weighted(m, train_ds, val_ds, sp,
+                             label=f'EXP-243 Hypo-s{seed}', hypo_weight=3.0)
+        mae = _mae_from_model(m, val_ds)
+        individual[f's{seed}_hypo'] = round(mae, 2)
+        models.append(m)
+        print(f"  s{seed} (hypo w=3): MAE={mae:.1f}")
+
+    ens = _ensemble_mae(models, val_ds)
+    result = {
+        'experiment': 'EXP-243: Mixed Hypo/Standard Ensemble (3+2)',
+        'individual': individual, 'ensemble_mae': round(ens, 2),
+        'config': {'std_seeds': [42, 123, 456], 'hypo_seeds': [789, 1024], 'hypo_weight': 3.0},
+        'masking': {'channels': list(FUTURE_UNKNOWN_CHANNELS), 'type': 'selective'},
+        'comparison': {'exp234_ensemble': 12.38, 'exp239_hypo_ensemble': 12.87},
+    }
+    save_results(result, os.path.join(output_dir, 'exp243_mixed_ensemble.json'))
+    return result
+
+REGISTRY['mixed-hypo-standard-ensemble'] = 'run_mixed_hypo_standard_ensemble'
+
+
+# ── EXP-244: MC-Dropout Ensemble ─────────────────────────────────
+# Single model with dropout=0.2, 10 forward passes at inference.
+# 5× cheaper than 5-seed ensemble (1 model vs 5).
+def run_mc_dropout_ensemble(args):
+    """EXP-244: MC-Dropout at inference (10 passes, dropout=0.2)."""
+    from torch.utils.data import DataLoader
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+    device = get_device()
+    set_seed(42)
+    model = create_model(arch='grouped', input_dim=8, d_model=64, nhead=4, num_layers=2)
+    # Increase dropout to 0.2 for MC sampling diversity
+    for layer in model.transformer_encoder.layers:
+        for attr in ['dropout', 'dropout1', 'dropout2']:
+            d = getattr(layer, attr, None)
+            if d is not None and hasattr(d, 'p'): d.p = 0.2
+        if hasattr(layer, 'self_attn') and hasattr(layer.self_attn, 'dropout'):
+            layer.self_attn.dropout = 0.2
+    model.to(device)
+    sp = os.path.join(output_dir, 'exp244_mc_dropout_s42.pth')
+    train_forecast(model, train_ds, val_ds, sp,
+                   label='EXP-244 MC-Dropout', epochs=100, lr=1e-3, patience=15)
+    ckpt = torch.load(sp, map_location=device, weights_only=False)
+    model.load_state_dict(ckpt['model_state'])
+
+    single_mae = _mae_from_model(model, val_ds)
+
+    # MC-Dropout: 10 passes with dropout enabled
+    model.train()  # keep dropout on
+    n_mc = 10
+    total_ae, n = 0.0, 0
+    for batch in DataLoader(val_ds, batch_size=64):
+        x = batch_to_device(batch[0], device)
+        half = x.shape[1] // 2
+        x_in = x.clone()
+        mask_future_channels(x_in, half)
+        preds = []
+        for _ in range(n_mc):
+            with torch.no_grad():
+                p = model(x_in, causal=True)
+            if isinstance(p, dict): p = p['forecast']
+            preds.append(p[:, half:, :1])
+        ens = torch.stack(preds).mean(0)
+        ae = torch.abs(ens - x[:, half:, :1])
+        total_ae += ae.sum().item(); n += ae.numel()
+    mc_mae = float(total_ae / n * SCALE) if n else float('nan')
+    model.eval()
+
+    result = {
+        'experiment': 'EXP-244: MC-Dropout Ensemble (10 samples)',
+        'results': {
+            'single_mae': round(single_mae, 2),
+            'mc_ensemble_mae': round(mc_mae, 2),
+            'delta': round(mc_mae - single_mae, 2),
+        },
+        'config': {'dropout': 0.2, 'n_mc_samples': n_mc,
+                   'n_params': sum(p.numel() for p in model.parameters())},
+        'comparison': {'exp234_5seed_ensemble': 12.38, 'exp232_individual': 12.9},
+    }
+    save_results(result, os.path.join(output_dir, 'exp244_mc_dropout.json'))
+    return result
+
+REGISTRY['mc-dropout-ensemble'] = 'run_mc_dropout_ensemble'
+
+
+# ── EXP-245: Wider Model (d_model=128) ───────────────────────────
+# Test if model is capacity-limited. 2× wider, same depth. 5-seed.
+def run_wider_model_ensemble(args):
+    """EXP-245: 5-seed ensemble with d_model=128 (2× width)."""
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+    seeds = [42, 123, 456, 789, 1024]
+    models, individual = [], {}
+    device = get_device()
+
+    for seed in seeds:
+        set_seed(seed)
+        m = create_model(arch='grouped', input_dim=8, d_model=128, nhead=4, num_layers=2)
+        m.to(device)
+        sp = os.path.join(output_dir, f'exp245_wider_s{seed}.pth')
+        train_forecast(m, train_ds, val_ds, sp,
+                       label=f'EXP-245 Wide-s{seed}', epochs=100, lr=1e-3, patience=15)
+        mae = _mae_from_model(m, val_ds)
+        individual[f's{seed}'] = round(mae, 2)
+        models.append(m)
+        print(f"  s{seed}: MAE={mae:.1f}")
+
+    ens = _ensemble_mae(models, val_ds)
+    n_params = sum(p.numel() for p in models[0].parameters())
+    result = {
+        'experiment': 'EXP-245: Wider Model (d_model=128) 5-Seed Ensemble',
+        'individual': individual, 'ensemble_mae': round(ens, 2),
+        'config': {'d_model': 128, 'nhead': 4, 'num_layers': 2, 'seeds': seeds,
+                   'n_params': n_params},
+        'masking': {'channels': list(FUTURE_UNKNOWN_CHANNELS), 'type': 'selective'},
+        'comparison': {'exp234_d64_ensemble': 12.38, 'exp234_d64_individual': 12.9},
+    }
+    save_results(result, os.path.join(output_dir, 'exp245_wider_model.json'))
+    return result
+
+REGISTRY['wider-model-ensemble'] = 'run_wider_model_ensemble'
