@@ -1,0 +1,182 @@
+{
+  "experiment": "EXP-162",
+  "description": "Gen-2 architecture with proper future masking (controlled comparison)",
+  "timestamp": "2026-04-03T20:56:13.149595",
+  "device": "cuda",
+  "configs": {
+    "8f_gen2_tiny": {
+      "architecture": "Gen-2 (monolithic context_proj)",
+      "semantic_groups": false,
+      "future_masking": "full (FUTURE_UNKNOWN_CHANNELS)",
+      "config": {
+        "d_model": 64,
+        "nhead": 4,
+        "num_layers": 2,
+        "dropout": 0.1
+      },
+      "seeds": [
+        {
+          "seed": 42,
+          "mae_mgdl": 29.5,
+          "pct_vs_persist": 14.1,
+          "params": 67704,
+          "epochs": 59
+        },
+        {
+          "seed": 456,
+          "mae_mgdl": 29.5,
+          "pct_vs_persist": 14.0,
+          "params": 67704,
+          "epochs": 55
+        }
+      ],
+      "avg_mae_mgdl": 29.5,
+      "persistence_mae_mgdl": 34.3
+    },
+    "8f_gen2_medium": {
+      "architecture": "Gen-2 (monolithic context_proj)",
+      "semantic_groups": false,
+      "future_masking": "full (FUTURE_UNKNOWN_CHANNELS)",
+      "config": {
+        "d_model": 128,
+        "nhead": 8,
+        "num_layers": 3,
+        "dropout": 0.1
+      },
+      "seeds": [
+        {
+          "seed": 42,
+          "mae_mgdl": 29.5,
+          "pct_vs_persist": 14.1,
+          "params": 300264,
+          "epochs": 51
+        },
+        {
+          "seed": 456,
+          "mae_mgdl": 29.6,
+          "pct_vs_persist": 13.9,
+          "params": 300264,
+          "epochs": 53
+        }
+      ],
+      "avg_mae_mgdl": 29.6,
+      "persistence_mae_mgdl": 34.3
+    },
+    "8f_gen2_deep_narrow": {
+      "architecture": "Gen-2 (monolithic context_proj)",
+      "semantic_groups": false,
+      "future_masking": "full (FUTURE_UNKNOWN_CHANNELS)",
+      "config": {
+        "d_model": 64,
+        "nhead": 4,
+        "num_layers": 6,
+        "dropout": 0.15
+      },
+      "seeds": [
+        {
+          "seed": 42,
+          "mae_mgdl": 29.9,
+          "pct_vs_persist": 12.9,
+          "params": 201592,
+          "epochs": 43
+        },
+        {
+          "seed": 456,
+          "mae_mgdl": 29.8,
+          "pct_vs_persist": 13.3,
+          "params": 201592,
+          "epochs": 40
+        }
+      ],
+      "avg_mae_mgdl": 29.9,
+      "persistence_mae_mgdl": 34.3
+    },
+    "21f_gen2_tiny": {
+      "architecture": "Gen-2 (monolithic context_proj)",
+      "semantic_groups": false,
+      "future_masking": "full (FUTURE_UNKNOWN_CHANNELS)",
+      "config": {
+        "d_model": 64,
+        "nhead": 4,
+        "num_layers": 2,
+        "dropout": 0.1
+      },
+      "seeds": [
+        {
+          "seed": 42,
+          "mae_mgdl": 41.6,
+          "pct_vs_persist": 15.1,
+          "params": 73461,
+          "epochs": 45
+        },
+        {
+          "seed": 456,
+          "mae_mgdl": 41.8,
+          "pct_vs_persist": 14.6,
+          "params": 73461,
+          "epochs": 50
+        }
+      ],
+      "avg_mae_mgdl": 41.7,
+      "persistence_mae_mgdl": 49.0
+    },
+    "21f_gen2_medium": {
+      "architecture": "Gen-2 (monolithic context_proj)",
+      "semantic_groups": false,
+      "future_masking": "full (FUTURE_UNKNOWN_CHANNELS)",
+      "config": {
+        "d_model": 128,
+        "nhead": 8,
+        "num_layers": 3,
+        "dropout": 0.1
+      },
+      "seeds": [
+        {
+          "seed": 42,
+          "mae_mgdl": 41.5,
+          "pct_vs_persist": 15.3,
+          "params": 320981,
+          "epochs": 38
+        },
+        {
+          "seed": 456,
+          "mae_mgdl": 41.7,
+          "pct_vs_persist": 14.8,
+          "params": 320981,
+          "epochs": 33
+        }
+      ],
+      "avg_mae_mgdl": 41.6,
+      "persistence_mae_mgdl": 49.0
+    },
+    "21f_gen2_deep_narrow": {
+      "architecture": "Gen-2 (monolithic context_proj)",
+      "semantic_groups": false,
+      "future_masking": "full (FUTURE_UNKNOWN_CHANNELS)",
+      "config": {
+        "d_model": 64,
+        "nhead": 4,
+        "num_layers": 6,
+        "dropout": 0.15
+      },
+      "seeds": [
+        {
+          "seed": 42,
+          "mae_mgdl": 41.5,
+          "pct_vs_persist": 15.4,
+          "params": 207349,
+          "epochs": 38
+        },
+        {
+          "seed": 456,
+          "mae_mgdl": 41.8,
+          "pct_vs_persist": 14.7,
+          "params": 207349,
+          "epochs": 36
+        }
+      ],
+      "avg_mae_mgdl": 41.6,
+      "persistence_mae_mgdl": 49.0
+    }
+  }
+}

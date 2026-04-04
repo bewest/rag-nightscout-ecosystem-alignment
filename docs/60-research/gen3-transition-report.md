@@ -1,9 +1,9 @@
 # Gen-3 Architecture Transition Report
 
 **Date**: 2026-04-05
-**Experiments**: EXP-158 (Gen-2 final) → EXP-159 (Gen-3 baseline)
-**Models**: `CGMGroupedEncoder` with `semantic_groups=True`, `d_model=128`
-**Headline**: ~60% of Gen-2's forecast improvement was from future action leakage
+**Experiments**: EXP-158 through EXP-162
+**Models**: `CGMGroupedEncoder` with `semantic_groups=True/False`, `d_model=64–256`
+**Headline**: ~60% of Gen-2's improvement was from future action leakage; Gen-3 semantic groups provide zero additional benefit for forecasting
 
 ---
 
@@ -22,11 +22,17 @@ Gen-3 corrects this with proper future masking of all 10 unknown channels, while
 simultaneously upgrading the encoder with semantic group projections, wider
 capacity (128D), and attention-weighted pooling.
 
-**The honest result**: forecast MAE increased from 19.7 → 29.6 mg/dL (8-feature)
-and 26.6 → 41.9 mg/dL (21-feature). What looks like a 50–58% regression is
-actually the removal of a 60% artificial advantage. The remaining 25–27%
-improvement over persistence is real, reproducible, and — crucially — will
-generalize.
+**The honest result**: forecast MAE increased from 19.7 → 29.5 mg/dL (8-feature)
+and 26.6 → 41.5 mg/dL (21-feature). What looks like a 50–56% regression is
+actually the removal of a 60% artificial advantage. The remaining 14–15%
+improvement over persistence (in MAE terms) is real, reproducible, and —
+crucially — will generalize.
+
+**The architecture verdict** (EXP-162): A controlled comparison of Gen-2
+(monolithic context projection) vs Gen-3 (semantic group projections) — both
+with identical proper future masking — shows **zero measurable difference**
+for forecasting. The semantic groups do not help with 10 patients / 16K windows.
+The only change that mattered was fixing the future action leak.
 
 ---
 
@@ -41,9 +47,11 @@ generalize.
 7. [Persistence Baselines](#7-persistence-baselines)
 8. [Files Changed](#8-files-changed)
 9. [Experiment Log](#9-experiment-log)
-10. [Lessons Learned](#10-lessons-learned)
-11. [What This Means Going Forward](#11-what-this-means-going-forward)
-12. [Appendix: Channel Reference](#appendix-channel-reference)
+10. [EXP-161: Full Architecture Sweep](#10-exp-161-full-architecture-sweep)
+11. [EXP-162: Gen-2 vs Gen-3 Controlled Comparison](#11-exp-162-gen-2-vs-gen-3-controlled-comparison)
+12. [Lessons Learned](#12-lessons-learned)
+13. [What This Means Going Forward](#13-what-this-means-going-forward)
+14. [Appendix: Channel Reference](#appendix-channel-reference)
 
 ---
 
@@ -534,7 +542,20 @@ propagate automatically.
 | EXP | Generation | Config | 8f MAE | 21f MAE | 8f vs Persist | 21f vs Persist | Notes |
 |-----|-----------|--------|--------|---------|---------------|----------------|-------|
 | 158 | Gen-2 | d_model=64, 3ch mask | 19.7 ± 0.0 | 26.6 ± 0.2 | 66.9% | 70.4% | Leaked future actions |
-| 159 | Gen-3 | d_model=128, 10ch mask, semantic groups, attn pool | 29.6 ± 0.1 | 41.9 ± 0.1 | 25.7% | 27.0% | Honest baseline |
+| 159 | Gen-3 | d_model=128, 10ch mask, semantic groups | 29.6 ± 0.1 | 41.9 ± 0.1 | 26.1%* | 27.0%* | Honest baseline |
+| 160 | Gen-3 | Quick sweep, 3 configs × 1 seed | 29.5 | 41.6 | 26.1%* | 28.0%* | Saturation signal |
+| 161 | Gen-3 | Full sweep, 12 configs × 2 seeds | 29.4–29.8 | 41.5–42.2 | 25–27%* | 26–28%* | Total 8f saturation |
+| 162 | Gen-2 | 3 configs × 2 seeds, full masking | 29.5–29.9 | 41.5–41.8 | 14.0–14.1%† | 14.6–15.4%† | Identical to Gen-3 |
+
+\* MSE-space comparison: `(1 - model_mse/persist_mse) × 100`
+† RMSE-space comparison: `(1 - sqrt(model_mse)/sqrt(persist_mse)) × 100`
+
+> **Note on metric discrepancy**: EXP-159–161 computed "% vs persistence" in MSE
+> space (26%), while EXP-162 used RMSE/MAE space (14%). Both describe the same
+> models. The MSE-space number overstates the visual improvement because squaring
+> amplifies differences. The RMSE-space number (14%) is more intuitive: it directly
+> means "this model's errors are 14% smaller in mg/dL than just using the last
+> reading." For consistency, all future reporting will use RMSE-space.
 
 ### Prior Context (Selected)
 
@@ -546,11 +567,145 @@ propagate automatically.
 | 141–150 | Gen-2 | Synthetic pre-training, composite loss tuning |
 | 151–157 | Gen-2 | Multi-task fine-tuning, evaluation, attention analysis |
 | 158 | Gen-2 | Final Gen-2 baseline (leaked) |
-| 159 | Gen-3 | Honest baseline (this report) |
+| 159–162 | Gen-3 | Honest baseline, full sweep, controlled comparison |
 
 ---
 
-## 10. Lessons Learned
+## 10. EXP-161: Full Architecture Sweep
+
+**Objective**: Determine if any architecture configuration breaks through the
+~29.5 mg/dL ceiling observed in EXP-159/160.
+
+**Setup**: 12 configurations × 2 seeds × 2 feature modes = 48 runs (3.3 hours on RTX 3050 Ti)
+
+### Configurations Tested
+
+| Config | d_model | nhead | layers | dropout | weight_decay | params (8f) | params (21f) |
+|--------|---------|-------|--------|---------|-------------|-------------|--------------|
+| tiny | 64 | 4 | 2 | 0.10 | 1e-5 | 67K | 76K |
+| small | 64 | 4 | 3 | 0.10 | 1e-5 | 101K | 110K |
+| medium | 128 | 8 | 3 | 0.10 | 1e-5 | 300K | 331K |
+| large | 192 | 8 | 4 | 0.10 | 1e-5 | 654K | 698K |
+| xlarge | 256 | 8 | 4 | 0.10 | 1e-5 | 993K | 1.05M |
+| med_highreg | 128 | 8 | 3 | 0.20 | 1e-4 | 300K | 331K |
+| med_maxreg | 128 | 8 | 3 | 0.30 | 5e-4 | 300K | 331K |
+| small_highreg | 64 | 4 | 3 | 0.15 | 1e-4 | 101K | 110K |
+| med_slowlr | 128 | 8 | 3 | 0.10 | 1e-5 | 300K | 331K |
+| med_fastlr | 128 | 8 | 3 | 0.10 | 1e-5 | 300K | 331K |
+| deep_narrow | 64 | 4 | 6 | 0.15 | 1e-4 | 202K | 210K |
+| shallow_wide | 256 | 8 | 2 | 0.10 | 1e-5 | 596K | 637K |
+
+### 8-Feature Results (1-hour forecast, persistence = 34.3 mg/dL)
+
+**TOTAL SATURATION.** All 12 configurations achieve 29.4–29.8 mg/dL regardless
+of model size, regularization, or learning rate:
+
+| Rank | Config | MAE ± σ | vs Persist | Params |
+|------|--------|---------|-----------|--------|
+| 1 | med_fastlr | 29.4 ± 0.0 | 14.3% | 300K |
+| 2 | small_highreg | 29.4 ± 0.1 | 14.3% | 101K |
+| 3 | tiny | 29.5 ± 0.0 | 14.0% | 67K |
+| ... | (all others) | 29.5–29.8 | 13–14% | 101K–993K |
+| 12 | shallow_wide | 29.8 ± 0.1 | 13.1% | 596K |
+
+**Key insight**: A 67K-parameter "tiny" model matches a 993K-parameter "xlarge"
+model. The 15× parameter increase provides zero improvement. The 8-feature,
+1-hour forecast ceiling is a **data limitation**, not a model limitation.
+
+### 21-Feature Results (2-hour forecast, persistence = 49.0 mg/dL)
+
+More differentiation than 8f, but still narrow (~1 mg/dL spread):
+
+| Rank | Config | MAE ± σ | vs Persist | Params |
+|------|--------|---------|-----------|--------|
+| 1 | deep_narrow | 41.5 ± 0.0 | 15.3% | 210K |
+| 2 | small | 41.6 ± 0.1 | 15.1% | 110K |
+| 3 | small_highreg | 41.6 ± 0.0 | 15.1% | 110K |
+| 4 | med_highreg | 41.7 ± 0.2 | 14.9% | 331K |
+| 5 | medium | 41.8 ± 0.1 | 14.7% | 331K |
+| ... | | | | |
+| 12 | med_maxreg | 42.2 ± 0.1 | 13.9% | 331K |
+
+**Key insights**:
+1. **Deep + narrow wins**: 6 layers × 64D beats 3 layers × 128D for 21f
+2. **Regularization doesn't help**: med_highreg/med_maxreg are worse than medium
+3. **Bigger is not better**: xlarge (1.05M params) is middle-of-pack
+4. The 21f bottleneck is also data-limited (16K windows for 48-step prediction)
+
+---
+
+## 11. EXP-162: Gen-2 vs Gen-3 Controlled Comparison
+
+**Objective**: Isolate the effect of semantic group projections by training Gen-2
+(monolithic `context_proj`) with the same full future masking used in Gen-3.
+
+**Setup**: 3 matched configs × 2 seeds × 2 feature modes = 12 runs
+
+**Hypothesis**: If Gen-3's semantic groups help with 21-feature context embedding,
+Gen-3 should outperform Gen-2 on 21f (the two architectures are identical for 8f
+since semantic groups only activate when `input_dim > 8`).
+
+### Results
+
+#### 8-Feature (1-hour, persistence = 34.3 mg/dL)
+
+| Config | Gen-2 MAE | Gen-3 MAE | Δ (G3−G2) | Gen-2 params | Gen-3 params |
+|--------|-----------|-----------|-----------|-------------|-------------|
+| tiny | 29.5 | 29.5 | 0.0 | 67,704 | 67,704 |
+| medium | 29.6 | 29.5 | −0.1 | 300,264 | 300,264 |
+| deep_narrow | 29.9 | 29.7 | −0.2 | 201,592 | 201,592 |
+
+Identical as expected — both architectures use the same encoder for 8 features.
+
+#### 21-Feature (2-hour, persistence = 49.0 mg/dL)
+
+| Config | Gen-2 MAE | Gen-3 MAE | Δ (G3−G2) | Gen-2 params | Gen-3 params |
+|--------|-----------|-----------|-----------|-------------|-------------|
+| tiny | 41.7 | 41.6 | −0.1 | 73,461 | 76,061 |
+| medium | 41.6 | 41.8 | **+0.2** | 320,981 | 331,301 |
+| deep_narrow | 41.6 | 41.5 | −0.1 | 207,349 | 209,949 |
+
+**No statistically significant difference.** The largest delta is 0.2 mg/dL (for
+medium, where Gen-3 is slightly *worse*). The semantic group projections — which
+add 2,600–10,300 extra parameters — provide zero measurable benefit for
+forecasting on this dataset.
+
+### Interpretation
+
+The Gen-2 monolithic `context_proj(13→8)` compresses 13 extended features into
+8 dimensions. We hypothesized this was a catastrophic bottleneck at 0.6D per
+feature. However:
+
+1. **The features may not carry enough useful information to benefit from wider
+   embedding.** With proper future masking, only the temporal (day/month phase),
+   device (CAGE/SAGE/warmup), and override features remain visible in the future
+   window. These may be too slowly-varying to help with 2-hour glucose prediction.
+
+2. **The data volume may be insufficient.** With only 16K training windows, larger
+   models with more context capacity may simply overfit the noise rather than
+   learning the signal.
+
+3. **Forecasting may be the wrong task to evaluate context embedding improvements.**
+   The extended features (device lifecycle, circadian phase) are more relevant for
+   drift detection, event classification, and override recommendation — tasks that
+   operate on longer timescales where these features change meaningfully.
+
+### Verdict
+
+**For forecasting, Gen-3 semantic groups are architectural complexity without
+measurable benefit.** The future action leak fix was the only change that
+meaningfully affected results. The honest forecast performance (14–15% better
+than persistence in MAE terms) is a property of the data and task, not the
+architecture.
+
+However, this does NOT mean Gen-3 is wasted effort:
+- Semantic groups may prove valuable for **multi-task training** (event/drift heads)
+- The proper future masking is **essential** regardless of architecture
+- The attention pooling may help with **aux head** performance (untested in EXP-162)
+
+---
+
+## 12. Lessons Learned
 
 ### Lesson 1: Validate Your Masking Exhaustively
 
@@ -636,80 +791,90 @@ ablations will tell.
 
 ---
 
-## 11. What This Means Going Forward
+## 13. What This Means Going Forward
 
 ### The Honest Starting Point
 
-Gen-3's 25–27% improvement over persistence is the new floor. Every future
-improvement builds from here. No more phantom metrics.
+Gen-3's 14–15% improvement over persistence (RMSE-space) is the new floor. Every
+future improvement builds from here. No more phantom metrics.
 
 ```
-                Persistence ──── 0% improvement
+                Persistence ──── 0% improvement (34.3 / 49.0 mg/dL)
                      │
-              Gen-3 baseline ── 25-27%  ← YOU ARE HERE
+              Gen-3 baseline ── 14-15%  ← YOU ARE HERE (29.5 / 41.5 mg/dL)
                      │
-              Published SOTA ── 30-45%  (larger models, more data)
+              Published SOTA ── 30-45%  (larger datasets, longer histories)
                      │
          Theoretical limit ──── ???%    (glucose is partially stochastic)
 ```
 
-### Priority Directions
+### What We Now Know (EXP-161/162 Conclusions)
 
-#### 1. Regularization for 21f (Highest Priority)
+1. **Architecture doesn't matter for forecasting at this data scale.** 67K params
+   matches 993K params. Monolithic context_proj matches semantic groups. The model
+   has saturated on the available signal.
 
-The 21-feature model's overfitting (36% train/val gap, 331K params / 12.9K
-windows) is the most addressable limitation. Candidate interventions:
+2. **The 8-feature, 1-hour ceiling is absolute.** 29.5 mg/dL across all 12
+   configurations, all architectures, all regularization strategies. This is a
+   fundamental data limitation.
 
-- **Increased dropout**: Current 0.1 → try 0.2–0.3
-- **Weight decay**: Current 1e-5 → try 1e-4
-- **Smaller model**: d_model=96 instead of 128 (reduce params ~40%)
-- **Data augmentation**: Time jitter, Gaussian noise on glucose
-- **Gradient clipping**: May already be in place; verify
+3. **21-feature models show a narrow optimization window.** Deep + narrow + mild
+   regularization wins (41.5 vs 42.2 for worst), but the spread is only 0.7 mg/dL.
 
-Expected outcome: 2–5 pp improvement in verification metrics if overfitting
-is the primary bottleneck.
+4. **Extended features don't help with forecasting (yet).** The 13 additional
+   features (CAGE/SAGE, device lifecycle, monthly phase, overrides) don't improve
+   forecast MAE. They may prove valuable for longer-horizon tasks.
 
-#### 2. Longer Context Windows
+### Priority Directions (Revised Post-Sweep)
 
-Current windows capture 1–2 hours of history. Slow dynamics — basal rate changes,
-exercise aftereffects, sensor drift — play out over 4–8 hours. Longer windows
-would give the model access to these signals.
+#### 1. More Data (Highest Priority)
 
-Trade-off: Longer windows mean fewer training samples from the same data,
-potentially worsening the overfitting problem. May need to be paired with
-regularization.
+The single most impactful change. Currently: 10 patients, ~32K windows (8f) or
+~16K windows (21f). Options:
+- **More patients**: Recruit from Nightscout community (Open Humans, Tidepool)
+- **Longer histories**: Current ~6-month windows could be extended to years
+- **Data augmentation**: Time jitter, Gaussian noise, interpolation
 
-#### 3. Multi-Task Training
+At SOTA benchmarks, models train on 50–500 patients with 1+ year of data each.
+Our 10-patient dataset is 10–50× smaller than typical published work.
 
-The event, drift, and state heads are architecturally present in Gen-3 but
-untrained in the EXP-159 baseline (forecast-only loss). Training these heads
-could:
+#### 2. Multi-Task Training (Unlock Non-Forecasting Capabilities)
 
-- Provide regularization through multi-task learning
-- Enable the hybrid XGBoost pipeline (Phase 5)
-- Produce useful auxiliary predictions (event detection, state classification)
+The event, drift, and state heads are architecturally present but untrained.
+This is the highest-leverage code change:
+- Event detection needs separate training (XGBoost hybrid, F1=0.710 ceiling)
+- Drift tracking needs longer windows (24–72h timescale)
+- Override recommendation needs compositional pipeline
+- Semantic groups may prove their worth here (untested)
 
-#### 4. Per-Patient Adaptation
+#### 3. Per-Patient Adaptation
 
 LOO analysis showed 15% of variance is patient-specific. Options:
-
 - Patient embedding vectors (learned per-patient offsets)
 - Fine-tuning on individual patients after group pre-training
 - Adaptive normalization (patient-specific glucose scaling)
 
-#### 5. Hybrid XGBoost (Phase 5)
+#### 4. Hybrid XGBoost for Events (Phase 5)
 
 Neural event detection F1 = 0.107 vs XGBoost F1 = 0.710 shows that
 gradient boosting dramatically outperforms transformers for event
 classification. The planned hybrid architecture:
 
 ```
-Transformer → glucose forecast (MAE ≈ 29.6 mg/dL)
+Transformer → glucose forecast (MAE ≈ 29.5 mg/dL)
     │
     └── encoded representations → XGBoost → event detection (F1 ≈ 0.710)
 ```
 
 Use the transformer as a feature extractor and XGBoost as the classifier.
+
+#### 5. Longer Context or Hierarchical Architecture
+
+Current 1–2 hour windows may be too short for slow dynamics (exercise
+aftereffects, sensor drift, circadian patterns). Options:
+- Longer windows (4–8h), though this reduces training samples
+- Hierarchical: fast encoder for recent data + slow encoder for daily patterns
+- Summary statistics as inputs (24h glucose statistics, 7-day trends)
 
 ---
 
