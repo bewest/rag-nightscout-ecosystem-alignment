@@ -1078,3 +1078,97 @@ def run_verification_per_patient_ensemble(args):
     return result
 
 REGISTRY['verification-per-patient-ensemble'] = 'run_verification_per_patient_ensemble'
+
+
+# ── EXP-250: Deep (L=4) Per-Patient FT Ensemble ──────────────────
+# L=4 improved multi-patient ensemble from 12.38→12.20 (EXP-247).
+# Per-patient FT improved L=2 from 12.38→11.25 (EXP-242).
+# Hypothesis: gains compound → ~11.0 MAE.
+def run_deep_per_patient_ensemble(args):
+    """EXP-250: L=4 per-patient FT ensemble (stacking depth + personalization)."""
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_base = patients_dir or 'externals/ns-data/patients'
+    patient_dirs = sorted([
+        d for d in os.listdir(patients_base)
+        if os.path.isdir(os.path.join(patients_base, d))
+    ])
+    device = get_device()
+    seeds = [42, 123, 456, 789, 1024]
+
+    # Train 5 L=4 base models (multi-patient)
+    patient_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24)
+    base_states = {}
+    for seed in seeds:
+        # Try to load from EXP-247 checkpoints first
+        ckpt_path = os.path.join(output_dir, f'exp247_deep_s{seed}.pth')
+        if os.path.exists(ckpt_path):
+            print(f"  Reusing EXP-247 base s{seed}")
+            base_states[seed] = torch.load(
+                ckpt_path, map_location=device, weights_only=False)['model_state']
+        else:
+            set_seed(seed)
+            m = create_model(arch='grouped', input_dim=8, d_model=64,
+                             nhead=4, num_layers=4)
+            bp = os.path.join(output_dir, f'exp250_base_s{seed}.pth')
+            train_forecast(m, train_ds, val_ds, bp,
+                           label=f'EXP-250 Base-s{seed}', epochs=100,
+                           lr=1e-3, patience=15)
+            base_states[seed] = torch.load(
+                bp, map_location=device, weights_only=False)['model_state']
+
+    # Per-patient fine-tuning with L=4 models
+    per_patient = {}
+    for pid in patient_dirs:
+        tp = os.path.join(patients_base, pid, 'training')
+        if not os.path.isdir(tp):
+            continue
+        try:
+            tds, vds = load_multipatient_nightscout(
+                [tp], task='forecast', window_size=24)
+        except Exception:
+            continue
+        if len(vds) < 10:
+            continue
+
+        ft_models = []
+        seed_maes = {}
+        for seed in seeds:
+            set_seed(seed)
+            m = create_model(arch='grouped', input_dim=8, d_model=64,
+                             nhead=4, num_layers=4)
+            m.load_state_dict(base_states[seed])
+            fp = os.path.join(output_dir, f'exp250_ft_{pid}_s{seed}.pth')
+            train_forecast(m, tds, vds, fp,
+                           label=f'EXP-250 FT-{pid}-s{seed}',
+                           epochs=30, lr=1e-4, patience=10)
+            mae = _mae_from_model(m, vds)
+            seed_maes[f's{seed}'] = round(mae, 2)
+            ft_models.append(m)
+        ens = _ensemble_mae(ft_models, vds)
+        per_patient[pid] = {
+            'seeds': seed_maes,
+            'ensemble_mae': round(ens, 2),
+            'mean_seed': round(float(np.mean(list(seed_maes.values()))), 2),
+        }
+        print(f"  {pid}: mean_seed={per_patient[pid]['mean_seed']:.1f} ens={ens:.1f}")
+
+    all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+    result = {
+        'experiment': 'EXP-250: Deep (L=4) Per-Patient FT Ensemble',
+        'per_patient': per_patient,
+        'summary': {
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'n_patients': len(per_patient),
+        },
+        'config': {'d_model': 64, 'nhead': 4, 'num_layers': 4,
+                   'seeds': seeds, 'ft_epochs': 30, 'ft_lr': 1e-4},
+        'comparison': {'exp242_L2_per_patient': 11.25,
+                       'exp247_L4_ensemble': 12.20},
+    }
+    save_results(result, os.path.join(output_dir, 'exp250_deep_per_patient.json'))
+    return result
+
+REGISTRY['deep-per-patient-ensemble'] = 'run_deep_per_patient_ensemble'
