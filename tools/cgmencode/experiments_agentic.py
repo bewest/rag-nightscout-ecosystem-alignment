@@ -3364,7 +3364,8 @@ def run_regularized_enriched_ensemble(args):
             'n_ft_models': len(ft_models),
         }
         gap_str = f"gap={gap:+.1f}%" if gap is not None else "no ver"
-        print(f"  Patient {pid}: train={pt_train_mae:.2f} ver={pt_ver_mae:.2f if pt_ver_mae else 'N/A'} {gap_str}")
+        ver_str = f"{pt_ver_mae:.2f}" if pt_ver_mae is not None else "N/A"
+        print(f"  Patient {pid}: train={pt_train_mae:.2f} ver={ver_str} {gap_str}")
 
     # Aggregate
     train_maes = [v['train_mae'] for v in per_patient_results.values()]
