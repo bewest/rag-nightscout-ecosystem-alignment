@@ -1,0 +1,146 @@
+{
+  "experiment": "EXP-249: Verification Set Generalization (EXP-242 models)",
+  "per_patient": {
+    "a": {
+      "verification_seeds": {
+        "s42": 11.63,
+        "s123": 12.16,
+        "s456": 11.58,
+        "s789": 12.04,
+        "s1024": 11.18
+      },
+      "verification_ensemble_mae": 11.19,
+      "training_val_ensemble_mae": 12.01,
+      "generalization_gap": -0.82,
+      "gap_pct": -6.8
+    },
+    "b": {
+      "verification_seeds": {
+        "s42": 16.58,
+        "s123": 15.83,
+        "s456": 16.13,
+        "s789": 16.23,
+        "s1024": 15.89
+      },
+      "verification_ensemble_mae": 15.85,
+      "training_val_ensemble_mae": 17.94,
+      "generalization_gap": -2.09,
+      "gap_pct": -11.6
+    },
+    "c": {
+      "verification_seeds": {
+        "s42": 12.78,
+        "s123": 12.64,
+        "s456": 13.29,
+        "s789": 13.28,
+        "s1024": 12.55
+      },
+      "verification_ensemble_mae": 12.35,
+      "training_val_ensemble_mae": 10.45,
+      "generalization_gap": 1.9,
+      "gap_pct": 18.2
+    },
+    "d": {
+      "verification_seeds": {
+        "s42": 8.0,
+        "s123": 8.55,
+        "s456": 8.2,
+        "s789": 8.64,
+        "s1024": 8.43
+      },
+      "verification_ensemble_mae": 8.07,
+      "training_val_ensemble_mae": 8.16,
+      "generalization_gap": -0.09,
+      "gap_pct": -1.1
+    },
+    "e": {
+      "verification_seeds": {
+        "s42": 9.05,
+        "s123": 9.86,
+        "s456": 9.07,
+        "s789": 10.05,
+        "s1024": 9.27
+      },
+      "verification_ensemble_mae": 8.72,
+      "training_val_ensemble_mae": 9.01,
+      "generalization_gap": -0.29,
+      "gap_pct": -3.2
+    },
+    "f": {
+      "verification_seeds": {
+        "s42": 8.75,
+        "s123": 8.71,
+        "s456": 8.87,
+        "s789": 9.2,
+        "s1024": 9.27
+      },
+      "verification_ensemble_mae": 8.39,
+      "training_val_ensemble_mae": 9.52,
+      "generalization_gap": -1.13,
+      "gap_pct": -11.9
+    },
+    "g": {
+      "verification_seeds": {
+        "s42": 9.12,
+        "s123": 9.32,
+        "s456": 8.65,
+        "s789": 9.0,
+        "s1024": 8.49
+      },
+      "verification_ensemble_mae": 8.51,
+      "training_val_ensemble_mae": 9.52,
+      "generalization_gap": -1.02,
+      "gap_pct": -10.7
+    },
+    "h": {
+      "verification_seeds": {
+        "s42": 11.75,
+        "s123": 12.15,
+        "s456": 11.06,
+        "s789": 10.93,
+        "s1024": 11.9
+      },
+      "verification_ensemble_mae": 11.1,
+      "training_val_ensemble_mae": 10.8,
+      "generalization_gap": 0.31,
+      "gap_pct": 2.8
+    },
+    "i": {
+      "verification_seeds": {
+        "s42": 10.36,
+        "s123": 10.76,
+        "s456": 11.15,
+        "s789": 10.47,
+        "s1024": 11.18
+      },
+      "verification_ensemble_mae": 10.33,
+      "training_val_ensemble_mae": 9.23,
+      "generalization_gap": 1.1,
+      "gap_pct": 11.9
+    },
+    "j": {
+      "verification_seeds": {
+        "s42": 21.65,
+        "s123": 21.31,
+        "s456": 20.87,
+        "s789": 21.55,
+        "s1024": 20.93
+      },
+      "verification_ensemble_mae": 21.11,
+      "training_val_ensemble_mae": 15.86,
+      "generalization_gap": 5.25,
+      "gap_pct": 33.1
+    }
+  },
+  "summary": {
+    "mean_verification_mae": 11.56,
+    "mean_training_val_mae": 11.25,
+    "mean_gap": 0.31,
+    "mean_gap_pct": 2.8,
+    "n_patients": 10
+  },
+  "comparison": {
+    "exp242_training_mae": 11.25,
+    "exp238_gap_pct": -6.3
+  }
+}
