@@ -3606,11 +3606,12 @@ def run_pattern_override_vs_forecast(output_dir, patients_dir, **kwargs):
 REGISTRY['pattern-override-vs-forecast'] = 'run_pattern_override_vs_forecast'
 
 
-# ── EXP-276: Aggressive FT Regularization Sweep ──────────────────
+# ── EXP-285: Aggressive FT Regularization Sweep ──────────────────
+# (Renumbered from EXP-276 to resolve conflict with pattern-embedding-baseline)
 # EXP-275 showed FT is where remaining overfitting happens (8.5% base → 14.9% after FT).
 # Test: aggressive ch_drop during FT, frozen base layers, reduced FT capacity.
 def run_aggressive_ft_regularization(args):
-    """EXP-276: FT regularization sweep.
+    """EXP-285: FT regularization sweep.
 
     Tests 4 strategies to reduce overfitting during per-patient fine-tuning:
     1. Aggressive channel dropout (0.30) during FT
@@ -3625,7 +3626,7 @@ def run_aggressive_ft_regularization(args):
     patient_paths = resolve_patient_paths(patients_dir)
     device = get_device()
 
-    validate_masking(NUM_FEATURES_ENRICHED, label='EXP-276')
+    validate_masking(NUM_FEATURES_ENRICHED, label='EXP-285')
 
     # Load enriched data
     train_ds, val_ds = load_multipatient_nightscout(
@@ -3790,7 +3791,7 @@ def run_aggressive_ft_regularization(args):
         print(f"  → {sname}: train={agg['mean_train']} ver={agg['mean_ver']} gap={agg['mean_gap']}%")
 
     result = {
-        'experiment': 'EXP-276: Aggressive FT Regularization Sweep',
+        'experiment': 'EXP-285: Aggressive FT Regularization Sweep',
         'base_mae': round(base_mae, 2),
         'persistence_mae': round(persist_mae, 2),
         'strategies': all_results,
@@ -3799,7 +3800,422 @@ def run_aggressive_ft_regularization(args):
             'exp242_8f_ft_ens': {'train': 11.25, 'ver': 11.56, 'gap': 2.8},
         },
     }
-    save_results(result, os.path.join(output_dir, 'exp276_aggressive_ft.json'))
+    save_results(result, os.path.join(output_dir, 'exp285_aggressive_ft.json'))
     return result
 
 REGISTRY['aggressive-ft-regularization'] = 'run_aggressive_ft_regularization'
+
+
+# ── EXP-286: ISF-Drift Episode Segmentation ────────────────────────────
+
+def run_isf_drift_segmentation(cfg, patients_dir, output_dir, device):
+    """EXP-286: Do drift-shift episode types improve Segment F1?
+
+    Trains EpisodeSegmenter with 11 labels (including sensitivity_shift,
+    resistance_shift) vs baseline 9-label segmenter.  Requires autosens_ratio
+    data from generate_aux_labels._generate_drift_labels().
+    """
+    from .pattern_retrieval import (
+        EpisodeSegmenter, build_episode_labels, N_EPISODE_LABELS,
+        build_episode_labels_from_tensor
+    )
+    from .metrics import compute_drift_metrics
+    from .experiment_lib import save_results
+
+    result = {
+        'experiment': 'EXP-286',
+        'name': 'isf-drift-segmentation',
+        'description': 'Test drift-shift episode types (11 labels vs 9)',
+        'status': 'stub',
+    }
+    save_results(result, os.path.join(output_dir, 'exp286_isf_drift_seg.json'))
+    return result
+
+REGISTRY['isf-drift-segmentation'] = 'run_isf_drift_segmentation'
+
+
+# ── EXP-287: Channel-Group Ablation (Embedding) ───────────────────────
+
+def run_channel_ablation_embedding(cfg, patients_dir, output_dir, device):
+    """EXP-287: Which feature groups matter for pattern Recall@5?
+
+    Uses ablation_sweep() to mask each CHANNEL_GROUP and measure
+    embedding quality degradation.  Priority: answers 'which features
+    matter?' for all downstream pattern work.
+    """
+    from .pattern_embedding import ablation_sweep, CHANNEL_GROUPS, PatternEncoder
+    from .experiment_lib import save_results
+
+    result = {
+        'experiment': 'EXP-287',
+        'name': 'channel-ablation-embedding',
+        'description': 'Channel-group ablation for pattern embedding quality',
+        'channel_groups': list(CHANNEL_GROUPS.keys()),
+        'status': 'stub',
+    }
+    save_results(result, os.path.join(output_dir, 'exp287_channel_ablation_emb.json'))
+    return result
+
+REGISTRY['channel-ablation-embedding'] = 'run_channel_ablation_embedding'
+
+
+# ── EXP-288: Channel-Group Ablation (Segmentation) ────────────────────
+
+def run_channel_ablation_segmentation(cfg, patients_dir, output_dir, device):
+    """EXP-288: Which feature groups matter for Segment F1?
+
+    Same ablation sweep as EXP-287 but for EpisodeSegmenter.
+    Key question: does PROFILE group (ISF/CR) help episode classification?
+    """
+    from .pattern_retrieval import EpisodeSegmenter, N_EPISODE_LABELS
+    from .pattern_embedding import ablation_sweep, CHANNEL_GROUPS
+    from .experiment_lib import save_results
+
+    result = {
+        'experiment': 'EXP-288',
+        'name': 'channel-ablation-segmentation',
+        'description': 'Channel-group ablation for episode segmentation F1',
+        'channel_groups': list(CHANNEL_GROUPS.keys()),
+        'status': 'stub',
+    }
+    save_results(result, os.path.join(output_dir, 'exp288_channel_ablation_seg.json'))
+    return result
+
+REGISTRY['channel-ablation-segmentation'] = 'run_channel_ablation_segmentation'
+
+
+# ── EXP-289: Window Length Sweep (Embedding) ───────────────────────────
+
+def run_window_sweep_embedding(cfg, patients_dir, output_dir, device):
+    """EXP-289: What timescale is optimal for pattern matching?
+
+    Uses window_sweep() to test window sizes [12, 24, 48, 96, 144] steps
+    (1h to 12h) for pattern embedding Recall@5.
+    """
+    from .pattern_embedding import window_sweep, PatternEncoder
+    from .experiment_lib import save_results
+
+    result = {
+        'experiment': 'EXP-289',
+        'name': 'window-sweep-embedding',
+        'description': 'Window length sweep for pattern embedding quality',
+        'window_sizes': [12, 24, 48, 96, 144],
+        'status': 'stub',
+    }
+    save_results(result, os.path.join(output_dir, 'exp289_window_sweep_emb.json'))
+    return result
+
+REGISTRY['window-sweep-embedding'] = 'run_window_sweep_embedding'
+
+
+# ── EXP-290: Window Length Sweep (Segmentation) ───────────────────────
+
+def run_window_sweep_segmentation(cfg, patients_dir, output_dir, device):
+    """EXP-290: What timescale is optimal per episode type?
+
+    Window sweep for EpisodeSegmenter.  Hypotheses:
+    - Dawn phenomenon: 96+ steps (8h)
+    - Meal response: 12-24 steps (1-2h)
+    - ISF drift: 96+ steps (gradual onset)
+    """
+    from .pattern_retrieval import EpisodeSegmenter, N_EPISODE_LABELS
+    from .experiment_lib import save_results
+
+    result = {
+        'experiment': 'EXP-290',
+        'name': 'window-sweep-segmentation',
+        'description': 'Window length sweep per episode type for segmentation',
+        'window_sizes': [12, 24, 48, 96, 144],
+        'status': 'stub',
+    }
+    save_results(result, os.path.join(output_dir, 'exp290_window_sweep_seg.json'))
+    return result
+
+REGISTRY['window-sweep-segmentation'] = 'run_window_sweep_segmentation'
+
+
+# ── EXP-291: UAM Detection via Embedding ──────────────────────────────
+
+def run_uam_detection_embedding(cfg, patients_dir, output_dir, device):
+    """EXP-291: Can embedding-based UAM beat heuristic detection?
+
+    Uses PatternEncoder embeddings to train a UAM classifier.
+    Training signal: glucose > +30 mg/dL over 1h, no carbs in [-30, +15] min.
+    Compares to heuristic UAM in event_eval.py.
+    """
+    from .pattern_embedding import PatternEncoder
+    from .metrics import compute_uam_metrics
+    from .experiment_lib import save_results
+
+    result = {
+        'experiment': 'EXP-291',
+        'name': 'uam-detection-embedding',
+        'description': 'ML-based UAM detection using pattern embeddings',
+        'status': 'stub',
+    }
+    save_results(result, os.path.join(output_dir, 'exp291_uam_detection.json'))
+    return result
+
+REGISTRY['uam-detection-embedding'] = 'run_uam_detection_embedding'
+
+
+# ── EXP-292: ISF-Informed Override Policy ─────────────────────────────
+
+def run_isf_informed_override(cfg, patients_dir, output_dir, device):
+    """EXP-292: Does autosens_ratio in state improve TIR Delta?
+
+    Compares PatternOverridePolicy with state_dim=10 (includes autosens_ratio
+    and drift_trend) vs state_dim=8 (baseline).
+    """
+    from .pattern_override import PatternOverridePolicy
+    from .experiment_lib import save_results
+
+    result = {
+        'experiment': 'EXP-292',
+        'name': 'isf-informed-override',
+        'description': 'ISF-aware override policy vs baseline (state_dim 10 vs 8)',
+        'status': 'stub',
+    }
+    save_results(result, os.path.join(output_dir, 'exp292_isf_override.json'))
+    return result
+
+REGISTRY['isf-informed-override'] = 'run_isf_informed_override'
+
+
+# ── EXP-293: Multi-Scale Pattern Matching ─────────────────────────────
+
+def run_multi_scale_pattern(cfg, patients_dir, output_dir, device):
+    """EXP-293: Different window size per episode type?
+
+    After EXP-290 identifies optimal window per episode type, trains
+    a multi-scale PatternEncoder that uses different windows for different
+    pattern types.
+    """
+    from .pattern_embedding import PatternEncoder
+    from .experiment_lib import save_results
+
+    result = {
+        'experiment': 'EXP-293',
+        'name': 'multi-scale-pattern',
+        'description': 'Multi-scale pattern matching (different window per episode type)',
+        'status': 'stub',
+    }
+    save_results(result, os.path.join(output_dir, 'exp293_multi_scale.json'))
+    return result
+
+REGISTRY['multi-scale-pattern'] = 'run_multi_scale_pattern'
+
+
+# ── EXP-294: Drift-Conditioned Forecasting ────────────────────────────
+
+def run_drift_conditioned_forecasting(cfg, patients_dir, output_dir, device):
+    """EXP-294: Does ISF drift state conditioning reduce 39f verification gap?
+
+    Hypotheses: EXP-275's 14.9% gap comes from temporal drift in ISF.
+    If we condition the forecast model on drift state, the gap should shrink.
+    Uses DriftDetector.classify() to provide autosens_ratio as conditioning.
+    """
+    from .experiment_lib import save_results
+
+    result = {
+        'experiment': 'EXP-294',
+        'name': 'drift-conditioned-forecasting',
+        'description': 'Forecast model conditioned on ISF drift state',
+        'status': 'stub',
+    }
+    save_results(result, os.path.join(output_dir, 'exp294_drift_forecast.json'))
+    return result
+
+REGISTRY['drift-conditioned-forecasting'] = 'run_drift_conditioned_forecasting'
+
+
+# ── EXP-277: 21f Channel Dropout Ensemble + Per-Patient FT ──────────
+# Hypothesis: 21f features (dynamics, CAGE/SAGE, overrides) generalize better
+# than 39f because they lack redundant profile constants. Combined with
+# channel dropout + ensemble + FT, this should close the verification gap.
+def run_21f_chdrop_ensemble(args):
+    """EXP-277: 21f extended features with ch_drop + FT ensemble.
+
+    Compares directly against:
+    - EXP-242: 8f FT ensemble (11.25/11.56/2.8%) — gold standard
+    - EXP-275: 39f ch_drop FT ensemble (14.63/16.39/14.9%)
+    """
+    import copy
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    device = get_device()
+
+    from .schema import NUM_FEATURES_EXTENDED, FUTURE_UNKNOWN_CHANNELS
+    from torch.utils.data import DataLoader
+
+    validate_masking(NUM_FEATURES_EXTENDED, label='EXP-277')
+
+    # Load 21f extended data
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24,
+        extended_features=True)
+    persist_mae = compute_persistence_mae(val_ds)
+    print(f"  21f features, Persistence baseline: {persist_mae:.1f} mg/dL")
+
+    patients_base = os.path.dirname(os.path.dirname(patient_paths[0]))
+    patient_dirs = sorted([d for d in os.listdir(patients_base)
+                          if os.path.isdir(os.path.join(patients_base, d))])
+
+    CH_DROP_P = 0.15
+
+    def _ch_drop_fwd(model, x_batch, crit, ch_drop_p, training=False):
+        x = batch_to_device(x_batch, device)
+        half = x.shape[1] // 2
+        x_in = x.clone()
+        mask_future_channels(x_in, half)
+        if training and ch_drop_p > 0:
+            n_ch = x_in.shape[2]
+            droppable = [c for c in range(n_ch)
+                        if c not in {0, 6, 7}
+                        and c not in set(FUTURE_UNKNOWN_CHANNELS)]
+            mask = torch.rand(len(droppable)) < ch_drop_p
+            for i, ch in enumerate(droppable):
+                if mask[i]:
+                    x_in[:, :, ch] = 0.0
+        pred = model(x_in, causal=True)
+        loss = crit(pred[:, half:, :1], x[:, half:, :1])
+        return loss
+
+    def _train_cd(model, t_ds, v_ds, ch_drop_p, epochs, patience,
+                  lr=1e-3, wd=1e-5, save_path=None):
+        model.to(device)
+        t_dl = DataLoader(t_ds, batch_size=32, shuffle=True)
+        v_dl = DataLoader(v_ds, batch_size=64)
+        opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=wd)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
+        crit = torch.nn.MSELoss()
+        best_vl, stale = float('inf'), 0
+        for ep in range(epochs):
+            model.train()
+            for b in t_dl:
+                opt.zero_grad()
+                loss = _ch_drop_fwd(model, b[0], crit, ch_drop_p, training=True)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+            model.eval()
+            vt, vn = 0.0, 0
+            with torch.no_grad():
+                for b in v_dl:
+                    l = _ch_drop_fwd(model, b[0], crit, 0.0, training=False)
+                    vt += l.item() * b[0].shape[0]; vn += b[0].shape[0]
+            vl = vt / vn if vn else float('inf')
+            sched.step(vl)
+            if vl < best_vl:
+                best_vl = vl; stale = 0
+                if save_path:
+                    os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+                    torch.save({'model_state': model.state_dict(), 'epoch': ep}, save_path)
+            else:
+                stale += 1
+            if stale >= patience:
+                break
+        if save_path and os.path.exists(save_path):
+            ckpt = torch.load(save_path, map_location=device, weights_only=True)
+            model.load_state_dict(ckpt['model_state'])
+        return model
+
+    # Phase 1: 5-seed base models
+    SEEDS = [42, 123, 456, 789, 2024]
+    base_models = []
+    base_maes = []
+    print("\n=== Phase 1: 5-seed base (21f, ch_drop=0.15) ===")
+    for seed in SEEDS:
+        set_seed(seed)
+        model = create_model(arch='grouped', input_dim=NUM_FEATURES_EXTENDED,
+                             d_model=64, nhead=4, num_layers=2, dropout=0.1)
+        sp = os.path.join(output_dir, f'exp277_base_s{seed}.pth')
+        model = _train_cd(model, train_ds, val_ds, CH_DROP_P,
+                          epochs=100, patience=15, save_path=sp)
+        mae = _mae_from_model(model, val_ds)
+        base_models.append(model)
+        base_maes.append(mae)
+        print(f"  Seed {seed}: MAE={mae:.2f}")
+
+    base_ens_mae = _ensemble_mae(base_models, val_ds)
+    print(f"  Base ensemble MAE: {base_ens_mae:.2f}")
+
+    # Phase 2: Per-patient FT
+    FT_SEEDS = [42, 123, 456, 789, 2024]
+    per_patient = {}
+    print("\n=== Phase 2: Per-patient FT (21f, ch_drop=0.15) ===")
+    for pid in patient_dirs:
+        train_path = os.path.join(patients_base, pid, 'training')
+        ver_path = os.path.join(patients_base, pid, 'verification')
+        if not os.path.isdir(train_path):
+            continue
+        try:
+            pt_train, pt_val = load_multipatient_nightscout(
+                [train_path], task='forecast', window_size=24,
+                extended_features=True)
+        except:
+            continue
+
+        pt_ver = None
+        if os.path.isdir(ver_path):
+            try:
+                _, pt_ver = load_multipatient_nightscout(
+                    [ver_path], task='forecast', window_size=24,
+                    extended_features=True)
+                if pt_ver and len(pt_ver) < 5:
+                    pt_ver = None
+            except:
+                pt_ver = None
+
+        ft_models = []
+        for bi, bm in enumerate(base_models):
+            for fs in FT_SEEDS:
+                set_seed(fs)
+                ftm = copy.deepcopy(bm)
+                sp = os.path.join(output_dir, f'exp277_ft_{pid}_b{SEEDS[bi]}_f{fs}.pth')
+                ftm = _train_cd(ftm, pt_train, pt_val, CH_DROP_P,
+                                epochs=30, patience=8, lr=3e-4, save_path=sp)
+                ft_models.append(ftm)
+
+        tr_mae = _ensemble_mae(ft_models, pt_val)
+        ver_mae = _ensemble_mae(ft_models, pt_ver) if pt_ver else None
+        gap = round((ver_mae / tr_mae - 1) * 100, 1) if ver_mae and tr_mae > 0 else None
+
+        per_patient[pid] = {
+            'train_mae': round(tr_mae, 2),
+            'ver_mae': round(ver_mae, 2) if ver_mae else None,
+            'gap_pct': gap,
+            'n_models': len(ft_models),
+        }
+        ver_s = f"{ver_mae:.2f}" if ver_mae is not None else "N/A"
+        gap_s = f"{gap:+.1f}%" if gap is not None else "N/A"
+        print(f"  {pid}: train={tr_mae:.2f} ver={ver_s} gap={gap_s}")
+
+    tr_ms = [v['train_mae'] for v in per_patient.values()]
+    ver_ms = [v['ver_mae'] for v in per_patient.values() if v['ver_mae'] is not None]
+    gaps = [v['gap_pct'] for v in per_patient.values() if v['gap_pct'] is not None]
+
+    result = {
+        'experiment': 'EXP-277: 21f Channel Dropout Ensemble + FT',
+        'features': '21f extended (dynamics, overrides, CAGE/SAGE)',
+        'ch_dropout': CH_DROP_P,
+        'persistence_mae': round(persist_mae, 2),
+        'base_ensemble_mae': round(base_ens_mae, 2),
+        'base_seed_maes': [round(m, 2) for m in base_maes],
+        'per_patient': per_patient,
+        'summary': {
+            'mean_train_mae': round(float(np.mean(tr_ms)), 2),
+            'mean_ver_mae': round(float(np.mean(ver_ms)), 2) if ver_ms else None,
+            'mean_gap_pct': round(float(np.mean(gaps)), 1) if gaps else None,
+        },
+        'comparison': {
+            'exp275_39f_chdrop_ens': {'train': 14.63, 'ver': 16.39, 'gap': 14.9},
+            'exp242_8f_ft_ens': {'train': 11.25, 'ver': 11.56, 'gap': 2.8},
+        },
+    }
+    save_results(result, os.path.join(output_dir, 'exp277_21f_chdrop_ensemble.json'))
+    return result
+
+REGISTRY['21f-chdrop-ensemble'] = 'run_21f_chdrop_ensemble'
