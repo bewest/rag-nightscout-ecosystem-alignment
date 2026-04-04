@@ -3023,3 +3023,167 @@ def run_online_adaptive_threshold(args):
     return result
 
 REGISTRY['online-adaptive-threshold'] = 'run_online_adaptive_threshold'
+
+
+# ── EXP-274: Regularized 39f with Channel Dropout ────────────────
+# Addresses: 26.6% verification gap in 39f base ensemble.
+# Method: Channel dropout (randomly zero entire channels during training)
+# + higher model dropout + stronger weight decay.
+def run_regularized_enriched(args):
+    """EXP-274: Regularized 39f training with channel dropout.
+
+    Hypothesis: Channel dropout prevents overfitting to period-specific
+    feature patterns, reducing the verification gap while preserving
+    the accuracy gains from enriched features.
+    """
+    import copy
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    device = get_device()
+
+    validate_masking(NUM_FEATURES_ENRICHED, label='EXP-274')
+
+    # Load enriched data
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=24,
+        enriched_features=True)
+    persist_mae = compute_persistence_mae(val_ds)
+    print(f"  Persistence baseline: {persist_mae:.1f} mg/dL")
+
+    # Load verification data per patient
+    patients_base = os.path.dirname(os.path.dirname(patient_paths[0]))
+    patient_dirs = sorted([d for d in os.listdir(patients_base)
+                          if os.path.isdir(os.path.join(patients_base, d))])
+
+    from torch.utils.data import DataLoader
+    from .schema import FUTURE_UNKNOWN_CHANNELS
+
+    def _channel_dropout_step(model, batch_data, crit, ch_drop_p=0.15, backward=False):
+        """Forward step with random channel dropout during training."""
+        x = batch_to_device(batch_data[0], device)
+        half = x.shape[1] // 2
+        x_in = x.clone()
+        mask_future_channels(x_in, half)
+
+        # Channel dropout: randomly zero entire channels (training only)
+        if backward and ch_drop_p > 0:
+            n_ch = x_in.shape[2]
+            # Don't drop glucose (ch0) or time features (ch6,7)
+            droppable = [c for c in range(n_ch)
+                        if c not in {0, 6, 7}
+                        and c not in set(FUTURE_UNKNOWN_CHANNELS)]
+            mask = torch.rand(len(droppable)) < ch_drop_p
+            for i, ch in enumerate(droppable):
+                if mask[i]:
+                    x_in[:, :, ch] = 0.0
+
+        pred = model(x_in, causal=True)
+        loss = crit(pred[:, half:, :1], x[:, half:, :1])
+        if backward:
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        return loss.item() * x.size(0), x.size(0)
+
+    # Configs to test: (name, ch_drop_p, dropout, weight_decay)
+    configs = [
+        ('baseline',  0.0,  0.1,  1e-5),  # no regularization (match EXP-260)
+        ('ch_drop15', 0.15, 0.1,  1e-5),  # channel dropout only
+        ('ch_drop30', 0.30, 0.1,  1e-5),  # aggressive channel dropout
+        ('combined',  0.15, 0.2,  1e-3),  # channel dropout + high dropout + weight decay
+    ]
+
+    results_by_config = {}
+    for cname, ch_drop_p, dropout, wd in configs:
+        print(f"\n=== Config: {cname} (ch_drop={ch_drop_p}, drop={dropout}, wd={wd}) ===")
+        set_seed(42)
+        model = create_model(arch='grouped', input_dim=NUM_FEATURES_ENRICHED,
+                             d_model=64, nhead=4, num_layers=2, dropout=dropout)
+        model.to(device)
+
+        train_dl = DataLoader(train_ds, batch_size=32, shuffle=True)
+        val_dl = DataLoader(val_ds, batch_size=64)
+        opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=wd)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
+        crit = torch.nn.MSELoss()
+        best_vl, stale = float('inf'), 0
+        sp = os.path.join(output_dir, f'exp274_{cname}_s42.pth')
+
+        for ep in range(100):
+            model.train()
+            ttl, tn = 0.0, 0
+            for b in train_dl:
+                opt.zero_grad()
+                l, n = _channel_dropout_step(model, b, crit, ch_drop_p, backward=True)
+                opt.step()
+                ttl += l; tn += n
+
+            model.eval()
+            vtl, vn = 0.0, 0
+            with torch.no_grad():
+                for b in val_dl:
+                    l, n = _channel_dropout_step(model, b, crit, ch_drop_p=0.0, backward=False)
+                    vtl += l; vn += n
+            vl = vtl / vn if vn else float('inf')
+            sched.step(vl)
+
+            if vl < best_vl:
+                best_vl = vl
+                stale = 0
+                os.makedirs(os.path.dirname(sp) or '.', exist_ok=True)
+                torch.save({'model_state': model.state_dict(), 'epoch': ep, 'val_loss': vl}, sp)
+            else:
+                stale += 1
+
+            if (ep + 1) % 10 == 0:
+                lr_now = opt.param_groups[0]['lr']
+                print(f'  [{cname}] {ep+1:3d}/100 train={ttl/tn:.6f} val={vl:.6f} '
+                      f'best={best_vl:.6f} lr={lr_now:.1e}')
+
+            if stale >= 15:
+                print(f'  [{cname}] Early stop at epoch {ep+1}')
+                break
+
+        # Load best and evaluate
+        ckpt = torch.load(sp, map_location=device, weights_only=True)
+        model.load_state_dict(ckpt['model_state'])
+        train_mae = _mae_from_model(model, val_ds)
+
+        # Per-patient verification
+        ver_maes = []
+        for pid in patient_dirs:
+            ver_path = os.path.join(patients_base, pid, 'verification')
+            if not os.path.isdir(ver_path):
+                continue
+            try:
+                _, ver_ds = load_multipatient_nightscout(
+                    [ver_path], task='forecast', window_size=24,
+                    enriched_features=True)
+                if ver_ds and len(ver_ds) >= 5:
+                    ver_maes.append(_mae_from_model(model, ver_ds))
+            except:
+                pass
+
+        ver_mae = float(np.mean(ver_maes)) if ver_maes else None
+        gap = round((ver_mae / train_mae - 1) * 100, 1) if ver_mae else None
+        results_by_config[cname] = {
+            'train_mae': round(train_mae, 2),
+            'verification_mae': round(ver_mae, 2) if ver_mae else None,
+            'gap_pct': gap,
+            'ch_dropout': ch_drop_p, 'model_dropout': dropout, 'weight_decay': wd,
+        }
+        print(f"  {cname}: train={train_mae:.1f} ver={ver_mae:.1f} gap={gap:+.1f}%")
+
+    result = {
+        'experiment': 'EXP-274: Regularized 39f with Channel Dropout',
+        'hypothesis': 'Channel dropout reduces verification gap',
+        'persistence_mae': round(persist_mae, 2),
+        'configs': results_by_config,
+        'comparison': {'exp260_39f_base_ens': {'train': 13.9, 'ver': 17.6, 'gap': 26.6},
+                       'exp242_8f_ft_ens': {'train': 11.25, 'ver': 11.56, 'gap': 2.8}},
+    }
+    save_results(result, os.path.join(output_dir, 'exp274_regularized_enriched.json'))
+    return result
+
+REGISTRY['regularized-enriched'] = 'run_regularized_enriched'
