@@ -854,6 +854,538 @@ def run_attention_vs_cnn_override(args):
     return summary
 
 
+# ─── Phase 3: Transfer Best Techniques Across Objectives ──────────────
+
+def run_bspline_override(args):
+    """EXP-340: B-spline smoothing for override detection.
+
+    EXP-337 showed B-spline input gives UAM F1=0.939 vs 0.918 baseline (+0.021)
+    and halved ECE (0.014 vs 0.025). Transfer this technique to override.
+
+    Hypothesis: B-spline improves override F1 by >= 0.01 and reduces ECE.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = getattr(args, 'epochs', 30)
+
+    print("=" * 60)
+    print("EXP-340: B-Spline CNN for Override Detection")
+    print("=" * 60)
+
+    data = load_multiscale_data_3way(patient_paths, scale='fast')
+    train_np, val_np, test_np = data['train'], data['val'], data['test']
+
+    train_bs = _bspline_smooth_windows(train_np)
+    test_bs = _bspline_smooth_windows(test_np)
+    print(f"  B-spline: {train_bs.shape[2]} channels (was {train_np.shape[2]})")
+
+    train_labels = build_override_labels(train_np, lead_steps=3)
+    test_labels = build_override_labels(test_np, lead_steps=3)
+    cw = _compute_class_weights(train_labels, 3, device)
+
+    def train_and_eval(seed):
+        set_seed(seed)
+        model = OverrideCNN(in_channels=9)  # 8 + derivative
+        preds, probs = _train_classifier(
+            model, train_bs, train_labels, test_bs, test_labels,
+            device, epochs=epochs, class_weights=cw,
+        )
+        return {
+            'y_true': (test_labels > 0).astype(int),
+            'y_pred': (preds > 0).astype(int),
+            'y_prob': 1.0 - probs[:, 0],
+        }
+
+    result = run_validated_classification(
+        'EXP-340', output_dir, train_and_eval,
+        task_name='override', positive_label=1,
+        seeds=[42, 123, 456, 789, 1337],
+    )
+    print(f"\n✅ EXP-340 complete.")
+    return result
+
+
+def run_bspline_hypo(args):
+    """EXP-341: B-spline smoothing for hypo prediction.
+
+    Transfer B-spline technique to hypo (weakest objective, F1=0.681).
+    B-spline derivative captures glucose rate-of-change which is clinically
+    relevant for hypoglycemia risk (falling glucose).
+
+    Hypothesis: B-spline derivative channel improves hypo F1 by >= 0.01.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = getattr(args, 'epochs', 30)
+
+    print("=" * 60)
+    print("EXP-341: B-Spline CNN for Hypo Prediction")
+    print("=" * 60)
+
+    data = load_multiscale_data_3way(patient_paths, scale='fast')
+    train_np, val_np, test_np = data['train'], data['val'], data['test']
+
+    train_bs = _bspline_smooth_windows(train_np)
+    test_bs = _bspline_smooth_windows(test_np)
+    print(f"  B-spline: {train_bs.shape[2]} channels (was {train_np.shape[2]})")
+
+    train_labels = build_hypo_labels(train_np, lead_steps=6)
+    test_labels = build_hypo_labels(test_np, lead_steps=6)
+    cw = _compute_class_weights(train_labels, 2, device)
+
+    class BSplineMultiTaskCNN(nn.Module):
+        """Multi-task CNN with B-spline input (9ch)."""
+        def __init__(self, in_channels=9, n_override=3, n_hypo=2):
+            super().__init__()
+            self.backbone = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.Conv1d(64, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.override_head = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, n_override),
+            )
+            self.hypo_head = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, n_hypo),
+            )
+
+        def forward(self, x):
+            h = x.shape[1] // 2
+            feat = self.backbone(x[:, :h].permute(0, 2, 1)).squeeze(-1)
+            return self.override_head(feat), self.hypo_head(feat)
+
+    # Override labels needed for multi-task
+    train_override = build_override_labels(train_np, lead_steps=3)
+    test_override = build_override_labels(test_np, lead_steps=3)
+    cw_override = _compute_class_weights(train_override, 3, device)
+    cw_hypo = cw
+
+    def train_and_eval(seed):
+        set_seed(seed)
+        model = BSplineMultiTaskCNN(in_channels=9).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        crit_ovr = nn.CrossEntropyLoss(weight=cw_override)
+        crit_hypo = nn.CrossEntropyLoss(weight=cw_hypo)
+
+        train_t = torch.from_numpy(train_bs).float()
+        train_y_ovr = torch.from_numpy(train_override).long()
+        train_y_hypo = torch.from_numpy(train_labels).long()
+        batch_size = 256
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_bs))
+            for start in range(0, len(perm), batch_size):
+                idx = perm[start:min(start + batch_size, len(perm))]
+                ovr_logits, hypo_logits = model(train_t[idx].to(device))
+                loss = crit_ovr(ovr_logits, train_y_ovr[idx].to(device)) + \
+                       crit_hypo(hypo_logits, train_y_hypo[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        model.eval()
+        test_t = torch.from_numpy(test_bs).float()
+        all_preds, all_probs = [], []
+        with torch.no_grad():
+            for s in range(0, len(test_bs), 512):
+                e = min(s + 512, len(test_bs))
+                _, hypo_logits = model(test_t[s:e].to(device))
+                all_preds.append(hypo_logits.argmax(dim=-1).cpu().numpy())
+                all_probs.append(torch.softmax(hypo_logits, dim=-1).cpu().numpy())
+
+        preds = np.concatenate(all_preds)
+        probs = np.concatenate(all_probs)
+        return {
+            'y_true': test_labels,
+            'y_pred': preds,
+            'y_prob': probs[:, 1],
+        }
+
+    result = run_validated_classification(
+        'EXP-341', output_dir, train_and_eval,
+        task_name='hypo', positive_label=1,
+        seeds=[42, 123, 456, 789, 1337],
+    )
+    print(f"\n✅ EXP-341 complete.")
+    return result
+
+
+def run_glucodensity_hypo(args):
+    """EXP-342: Glucodensity head injection for hypo prediction.
+
+    EXP-338 showed glucodensity head injection improved override F1 by +0.006
+    and ECE by 16%. Transfer to hypo. Glucose distribution shape may help
+    predict upcoming lows (skewed left = dropping trend).
+
+    Hypothesis: glucodensity improves hypo F1 by >= 0.01.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = getattr(args, 'epochs', 30)
+
+    print("=" * 60)
+    print("EXP-342: Glucodensity-Enhanced Hypo CNN")
+    print("=" * 60)
+
+    data = load_multiscale_data_3way(patient_paths, scale='fast')
+    train_np, val_np, test_np = data['train'], data['val'], data['test']
+
+    n_bins = 8
+
+    def compute_glucodensity(windows):
+        half = windows.shape[1] // 2
+        glucose = windows[:, :half, 0] * 400.0
+        bin_edges = np.linspace(40, 400, n_bins + 1)
+        histograms = np.zeros((len(windows), n_bins), dtype=np.float32)
+        for i in range(len(windows)):
+            h, _ = np.histogram(glucose[i], bins=bin_edges)
+            histograms[i] = h
+        row_sums = histograms.sum(axis=1, keepdims=True)
+        histograms = histograms / np.maximum(row_sums, 1e-8)
+        return histograms
+
+    train_gd = compute_glucodensity(train_np)
+    test_gd = compute_glucodensity(test_np)
+
+    train_labels = build_hypo_labels(train_np, lead_steps=6)
+    test_labels = build_hypo_labels(test_np, lead_steps=6)
+
+    # Multi-task setup (override + hypo) with glucodensity
+    train_override = build_override_labels(train_np, lead_steps=3)
+    test_override = build_override_labels(test_np, lead_steps=3)
+    cw_override = _compute_class_weights(train_override, 3, device)
+    cw_hypo = _compute_class_weights(train_labels, 2, device)
+
+    class GlucodensityMultiTaskCNN(nn.Module):
+        def __init__(self, in_channels=8, n_gd_bins=8, n_override=3, n_hypo=2):
+            super().__init__()
+            self.backbone = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.Conv1d(64, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.override_head = nn.Sequential(
+                nn.Linear(64 + n_gd_bins, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, n_override),
+            )
+            self.hypo_head = nn.Sequential(
+                nn.Linear(64 + n_gd_bins, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, n_hypo),
+            )
+
+        def forward(self, x, gd):
+            h = x.shape[1] // 2
+            feat = self.backbone(x[:, :h].permute(0, 2, 1)).squeeze(-1)
+            combined = torch.cat([feat, gd], dim=1)
+            return self.override_head(combined), self.hypo_head(combined)
+
+    def train_and_eval(seed):
+        set_seed(seed)
+        model = GlucodensityMultiTaskCNN(n_gd_bins=n_bins).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        crit_ovr = nn.CrossEntropyLoss(weight=cw_override)
+        crit_hypo = nn.CrossEntropyLoss(weight=cw_hypo)
+
+        train_t = torch.from_numpy(train_np).float()
+        train_gd_t = torch.from_numpy(train_gd).float()
+        train_y_ovr = torch.from_numpy(train_override).long()
+        train_y_hypo = torch.from_numpy(train_labels).long()
+        batch_size = 256
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_np))
+            for start in range(0, len(perm), batch_size):
+                idx = perm[start:min(start + batch_size, len(perm))]
+                ovr_logits, hypo_logits = model(
+                    train_t[idx].to(device), train_gd_t[idx].to(device))
+                loss = crit_ovr(ovr_logits, train_y_ovr[idx].to(device)) + \
+                       crit_hypo(hypo_logits, train_y_hypo[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        model.eval()
+        test_t = torch.from_numpy(test_np).float()
+        test_gd_t = torch.from_numpy(test_gd).float()
+        all_preds, all_probs = [], []
+        with torch.no_grad():
+            for s in range(0, len(test_np), 512):
+                e = min(s + 512, len(test_np))
+                _, hypo_logits = model(
+                    test_t[s:e].to(device), test_gd_t[s:e].to(device))
+                all_preds.append(hypo_logits.argmax(dim=-1).cpu().numpy())
+                all_probs.append(torch.softmax(hypo_logits, dim=-1).cpu().numpy())
+
+        preds = np.concatenate(all_preds)
+        probs = np.concatenate(all_probs)
+        return {
+            'y_true': test_labels,
+            'y_pred': preds,
+            'y_prob': probs[:, 1],
+        }
+
+    result = run_validated_classification(
+        'EXP-342', output_dir, train_and_eval,
+        task_name='hypo', positive_label=1,
+        seeds=[42, 123, 456, 789, 1337],
+    )
+    print(f"\n✅ EXP-342 complete.")
+    return result
+
+
+def run_platt_calibrated_override(args):
+    """EXP-343: Platt calibration for override CNN.
+
+    EXP-324 showed Platt scaling reduces ECE from 0.206 to 0.010. Our validated
+    baselines show ECE=0.084 (override) and 0.114 (hypo). Integrate Platt as
+    a post-processing step inside the validated framework.
+
+    Hypothesis: Platt reduces ECE by >= 50% while preserving F1 within CI.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = getattr(args, 'epochs', 30)
+
+    print("=" * 60)
+    print("EXP-343: Platt-Calibrated Override CNN")
+    print("=" * 60)
+
+    data = load_multiscale_data_3way(patient_paths, scale='fast')
+    train_np, val_np, test_np = data['train'], data['val'], data['test']
+
+    train_labels = build_override_labels(train_np, lead_steps=3)
+    val_labels = build_override_labels(val_np, lead_steps=3)
+    test_labels = build_override_labels(test_np, lead_steps=3)
+    cw = _compute_class_weights(train_labels, 3, device)
+
+    from sklearn.linear_model import LogisticRegression
+
+    def train_and_eval(seed):
+        set_seed(seed)
+        model = OverrideCNN(in_channels=8).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        criterion = nn.CrossEntropyLoss(weight=cw)
+        batch_size = 256
+
+        train_t = torch.from_numpy(train_np).float()
+        train_y = torch.from_numpy(train_labels).long()
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_np))
+            for start in range(0, len(perm), batch_size):
+                idx = perm[start:min(start + batch_size, len(perm))]
+                h = train_t[idx].shape[1] // 2
+                logits = model(train_t[idx].to(device))
+                loss = criterion(logits, train_y[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        # Collect validation logits for Platt scaling
+        model.eval()
+        val_t = torch.from_numpy(val_np).float()
+        val_logits = []
+        with torch.no_grad():
+            for s in range(0, len(val_np), 512):
+                e = min(s + 512, len(val_np))
+                logits = model(val_t[s:e].to(device))
+                val_logits.append(logits.cpu().numpy())
+        val_logits = np.concatenate(val_logits)
+        val_probs_raw = np.exp(val_logits) / np.exp(val_logits).sum(axis=1, keepdims=True)
+        val_binary = (val_labels > 0).astype(int)
+        val_override_prob = 1.0 - val_probs_raw[:, 0]
+
+        # Fit Platt scaler on validation set
+        platt = LogisticRegression(C=1e10, solver='lbfgs', max_iter=1000)
+        platt.fit(val_override_prob.reshape(-1, 1), val_binary)
+
+        # Evaluate on test set with Platt calibration
+        test_t = torch.from_numpy(test_np).float()
+        test_logits = []
+        with torch.no_grad():
+            for s in range(0, len(test_np), 512):
+                e = min(s + 512, len(test_np))
+                logits = model(test_t[s:e].to(device))
+                test_logits.append(logits.cpu().numpy())
+        test_logits = np.concatenate(test_logits)
+        test_probs_raw = np.exp(test_logits) / np.exp(test_logits).sum(axis=1, keepdims=True)
+        test_override_prob_raw = 1.0 - test_probs_raw[:, 0]
+
+        # Apply Platt calibration
+        test_override_prob_cal = platt.predict_proba(
+            test_override_prob_raw.reshape(-1, 1))[:, 1]
+
+        test_binary = (test_labels > 0).astype(int)
+        test_preds = (test_override_prob_cal >= 0.5).astype(int)
+
+        return {
+            'y_true': test_binary,
+            'y_pred': test_preds,
+            'y_prob': test_override_prob_cal,
+        }
+
+    result = run_validated_classification(
+        'EXP-343', output_dir, train_and_eval,
+        task_name='override', positive_label=1,
+        seeds=[42, 123, 456, 789, 1337],
+    )
+    print(f"\n✅ EXP-343 complete.")
+    return result
+
+
+def run_bspline_glucodensity_override(args):
+    """EXP-344: B-spline + glucodensity combined for override.
+
+    Stack the two positive signals from Phase 2:
+    - B-spline smoothing + derivative (EXP-337: +0.021 F1 for UAM)
+    - Glucodensity head injection (EXP-338: +0.006 F1, -16% ECE)
+
+    Hypothesis: combined effect yields override F1 >= 0.880.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = getattr(args, 'epochs', 30)
+
+    print("=" * 60)
+    print("EXP-344: B-Spline + Glucodensity Override CNN")
+    print("=" * 60)
+
+    data = load_multiscale_data_3way(patient_paths, scale='fast')
+    train_np, val_np, test_np = data['train'], data['val'], data['test']
+
+    n_bins = 8
+    train_bs = _bspline_smooth_windows(train_np)
+    test_bs = _bspline_smooth_windows(test_np)
+
+    def compute_glucodensity(windows):
+        half = windows.shape[1] // 2
+        glucose = windows[:, :half, 0] * 400.0
+        bin_edges = np.linspace(40, 400, n_bins + 1)
+        histograms = np.zeros((len(windows), n_bins), dtype=np.float32)
+        for i in range(len(windows)):
+            h, _ = np.histogram(glucose[i], bins=bin_edges)
+            histograms[i] = h
+        row_sums = histograms.sum(axis=1, keepdims=True)
+        return histograms / np.maximum(row_sums, 1e-8)
+
+    train_gd = compute_glucodensity(train_np)
+    test_gd = compute_glucodensity(test_np)
+
+    train_labels = build_override_labels(train_np, lead_steps=3)
+    test_labels = build_override_labels(test_np, lead_steps=3)
+    cw = _compute_class_weights(train_labels, 3, device)
+
+    class BSplineGlucodensityCNN(nn.Module):
+        """B-spline CNN (9ch temporal) + glucodensity (8-bin head injection)."""
+        def __init__(self, in_channels=9, n_gd_bins=8, n_classes=3):
+            super().__init__()
+            self.conv = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.classifier = nn.Sequential(
+                nn.Linear(64 + n_gd_bins, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, n_classes),
+            )
+
+        def forward(self, x, gd):
+            h = x.shape[1] // 2
+            conv_feat = self.conv(x[:, :h].permute(0, 2, 1)).squeeze(-1)
+            combined = torch.cat([conv_feat, gd], dim=1)
+            return self.classifier(combined)
+
+    def train_and_eval(seed):
+        set_seed(seed)
+        model = BSplineGlucodensityCNN(n_gd_bins=n_bins).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        criterion = nn.CrossEntropyLoss(weight=cw)
+
+        train_t = torch.from_numpy(train_bs).float()
+        train_gd_t = torch.from_numpy(train_gd).float()
+        train_y = torch.from_numpy(train_labels).long()
+        batch_size = 256
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_bs))
+            for start in range(0, len(perm), batch_size):
+                idx = perm[start:min(start + batch_size, len(perm))]
+                logits = model(train_t[idx].to(device), train_gd_t[idx].to(device))
+                loss = criterion(logits, train_y[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        model.eval()
+        test_t = torch.from_numpy(test_bs).float()
+        test_gd_t = torch.from_numpy(test_gd).float()
+        all_preds, all_probs = [], []
+        with torch.no_grad():
+            for s in range(0, len(test_bs), 512):
+                e = min(s + 512, len(test_bs))
+                logits = model(test_t[s:e].to(device), test_gd_t[s:e].to(device))
+                all_preds.append(logits.argmax(dim=-1).cpu().numpy())
+                all_probs.append(torch.softmax(logits, dim=-1).cpu().numpy())
+
+        preds = np.concatenate(all_preds)
+        probs = np.concatenate(all_probs)
+        return {
+            'y_true': (test_labels > 0).astype(int),
+            'y_pred': (preds > 0).astype(int),
+            'y_prob': 1.0 - probs[:, 0],
+        }
+
+    result = run_validated_classification(
+        'EXP-344', output_dir, train_and_eval,
+        task_name='override', positive_label=1,
+        seeds=[42, 123, 456, 789, 1337],
+    )
+    print(f"\n✅ EXP-344 complete.")
+    return result
+
+
+# ─── Shared utilities for Phase 3 ──────────────────────────────────────
+
+def _bspline_smooth_windows(windows, n_basis=12):
+    """Replace glucose channel with B-spline smoothed version + derivative."""
+    from scipy.interpolate import make_interp_spline
+    half = windows.shape[1] // 2
+    smoothed = windows.copy()
+    deriv_channel = np.zeros((len(windows), windows.shape[1], 1), dtype=np.float32)
+
+    t = np.arange(half)
+    for i in range(len(windows)):
+        glucose = windows[i, :half, 0]
+        try:
+            spl = make_interp_spline(t, glucose, k=3)
+            smoothed[i, :half, 0] = spl(t)
+            deriv_channel[i, :half, 0] = spl.derivative()(t)
+        except Exception:
+            deriv_channel[i, :half, 0] = np.gradient(glucose)
+    return np.concatenate([smoothed, deriv_channel], axis=2).astype(np.float32)
+
+
 # ─── Registry ──────────────────────────────────────────────────────────
 
 VALIDATED_REGISTRY = {
@@ -874,6 +1406,18 @@ VALIDATED_REGISTRY = {
                               'Glucodensity-enhanced override CNN'),
     'attention-vs-cnn': ('EXP-339', run_attention_vs_cnn_override,
                          'Attention vs CNN head-to-head override'),
+
+    # Phase 3: Transfer best techniques across objectives
+    'bspline-override': ('EXP-340', run_bspline_override,
+                         'B-spline smoothed CNN for override detection'),
+    'bspline-hypo': ('EXP-341', run_bspline_hypo,
+                     'B-spline multi-task CNN for hypo prediction'),
+    'glucodensity-hypo': ('EXP-342', run_glucodensity_hypo,
+                          'Glucodensity-enhanced multi-task hypo CNN'),
+    'platt-override': ('EXP-343', run_platt_calibrated_override,
+                       'Platt-calibrated override CNN'),
+    'bspline-gluco-override': ('EXP-344', run_bspline_glucodensity_override,
+                               'B-spline + glucodensity combined override'),
 }
 
 
