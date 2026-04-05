@@ -1,8 +1,8 @@
 # Gen-4 Enrichment Regularization Report
 
-> **Experiments**: EXP-274 through EXP-278  
+> **Experiments**: EXP-274 through EXP-303  
 > **Objective**: Tame the verification gap introduced by feature enrichment (8f → 21f → 39f)  
-> **Key Result**: Channel dropout reduces the 39f gap from 28.6% to 2.8% (single seed)
+> **Key Result**: Ch-drop ensemble achieves NEW BEST 11.14 mg/dL verified MAE with -0.2% gap
 
 ---
 
@@ -503,3 +503,110 @@ distant glucose values that have already been integrated into IOB/COB.
 2. **Clinical zone loss weighting** — prioritize hypo accuracy (EXP-235: w=3 optimal)
 3. **Per-patient window selection** — use 6hr for patients j/c/f/h, 1hr for others
 4. **2hr forecast model** — sym_2h2h (14.47 ver, 52.4% skill) for override planning
+
+---
+
+## Multi-Seed Ch-Drop Ensemble (EXP-302)
+
+**Hypothesis**: Combining channel dropout (eliminates gap) with multi-seed ensembling
+(reduces variance) should push verified MAE below 11 mg/dL.
+
+### Results
+
+| Config | Train | Ver | Gap | Notes |
+|--------|-------|-----|-----|-------|
+| EXP-242 (5-seed, no ch_drop) | 11.25 | 11.56 | +2.8% | Old best |
+| EXP-280 (1-seed, ch_drop) | 11.50 | 11.44 | -0.9% | Previous best ver |
+| **EXP-302 (5-seed + ch_drop)** | **11.12** | **11.14** | **-0.2%** | **NEW BEST** |
+
+### Base Model Consistency
+
+Channel dropout makes seeds remarkably consistent:
+
+| Seed | Base MAE |
+|------|----------|
+| 42 | 12.56 |
+| 123 | 12.61 |
+| 456 | 12.46 |
+| 789 | 12.62 |
+| 1337 | 12.43 |
+| **Ensemble** | **12.14** |
+
+Range = 0.19 mg/dL. Without ch_drop, seed variance is typically 3-5× larger.
+
+### Per-Patient Ensemble Benefit
+
+Ensemble improves verification MAE for 9/11 patients vs single-seed:
+
+| Patient | Single Ver | Ensemble Ver | Δ | Gap (ens) |
+|---------|-----------|-------------|---|-----------|
+| a | 12.49 | 11.55 | -0.94 | -8.7% |
+| c | 12.86 | 12.30 | -0.56 | +11.5% |
+| j | 20.79 | 20.22 | -0.57 | +25.7% |
+| f | 9.26 | 8.86 | -0.40 | -15.1% |
+| d | 8.73 | 8.35 | -0.38 | +2.9% |
+| g | 9.35 | 9.03 | -0.32 | -10.9% |
+| e | 9.20 | 9.05 | -0.15 | -4.2% |
+| i | 11.02 | 10.87 | -0.15 | +9.4% |
+| h | 11.79 | 11.76 | -0.03 | +4.1% |
+| k | 4.95 | 4.95 | 0.00 | -2.6% |
+| b | 15.35 | 15.55 | +0.20 | -14.2% |
+
+---
+
+## Clinical Zone Loss + Ch-Drop (EXP-303)
+
+**Hypothesis**: Asymmetric zone loss (hypo costs more than hyper) combined with
+ch_drop regularization improves hypo-range accuracy.
+
+### Results Summary
+
+| Variant | FT Ver | Gap | Ver Hypo MAE | Ver In-Range MAE |
+|---------|--------|-----|-------------|-----------------|
+| MSE baseline | **11.44** | -0.9% | 26.35 | **9.57** |
+| Zone 5× | 12.14 | +0.3% | 26.51 | 10.66 |
+| Zone 10× | 12.09 | -1.4% | 26.33 | 10.83 |
+| Zone 19× | 12.56 | -1.1% | **24.37** | 11.14 |
+
+### Per-Patient Hypo Analysis (MSE vs Zone 19×)
+
+Zone 19× improves hypo MAE for **9/10 patients** (median: -2.5 mg/dL):
+
+| Patient | MSE Hypo | Z19 Hypo | Δ Hypo | Δ Overall |
+|---------|----------|----------|--------|-----------|
+| j | 44.5 | 27.5 | **-17.0** | -0.3 |
+| f | 25.0 | 18.1 | **-6.9** | +0.6 |
+| d | 15.2 | 9.1 | **-6.0** | +0.7 |
+| c | 19.9 | 15.5 | -4.4 | +1.3 |
+| e | 7.2 | 3.8 | -3.4 | +2.8 |
+| h | 16.8 | 15.0 | -1.7 | +0.4 |
+| a | 12.4 | 11.2 | -1.2 | +2.0 |
+| i | 7.9 | 7.2 | -0.7 | +0.2 |
+| k | 18.0 | 17.9 | -0.1 | +0.3 |
+| b | 104.7 | 118.3 | +13.6 | +1.1 |
+
+**Conclusion**: Zone loss presents a clear safety-accuracy tradeoff. Hypo MAE improves
+by median 2.5 mg/dL (9/10 patients), but overall MAE worsens by 1.12 mg/dL and
+in-range MAE by 1.57 mg/dL.
+
+---
+
+## Complete Results Table (All Gen-4 Experiments)
+
+| Experiment | Config | FT Ver MAE | Gap | Key Finding |
+|------------|--------|-----------|-----|-------------|
+| **EXP-302** | **5-seed ens + ch_drop** | **11.14** | **-0.2%** | **NEW BEST** |
+| EXP-280 | 1-seed ch_drop ws=24 | 11.44 | -0.9% | Production-viable single model |
+| EXP-242 | 5-seed ens (no ch_drop) | 11.56 | +2.8% | Old best |
+| EXP-278 | 8f_ws48 ch_drop | 14.47 | -1.8% | 2hr forecast (52.4% skill) |
+| EXP-303 | Zone 19× + ch_drop | 12.56 | -1.1% | Best hypo accuracy (-2.5 median) |
+| EXP-278 | 21f_ws24 ch_drop | 16.28 | +14.8% | 21f still overfits with ch_drop |
+
+### Production Recommendations
+
+| Use Case | Config | Expected Ver MAE |
+|----------|--------|-----------------|
+| General forecasting | EXP-302 (5-seed ens + ch_drop) | 11.14 |
+| Resource-constrained | EXP-280 (single seed + ch_drop) | 11.44 |
+| Hypo-safety focus | EXP-303 zone_19× + ch_drop | 12.56 (hypo: 24.37) |
+| Override planning (2hr) | EXP-278 8f_ws48 + ch_drop | 14.47 (skill: 52.4%) |
