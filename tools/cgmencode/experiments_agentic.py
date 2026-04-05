@@ -4399,3 +4399,289 @@ def run_window_feature_comparison(args):
     return result
 
 REGISTRY['window-feature-comparison'] = 'run_window_feature_comparison'
+
+
+# ═════════════════════════════════════════════════════════════════
+#  B-SERIES: Clinical Zone Loss Experiments
+#  Inspired by GluPredKit weighted_ridge.py (Wolff et al., JOSS 2024)
+#  Goal: Reduce hypo MAE (39.8 → <15) without degrading in-range
+# ═════════════════════════════════════════════════════════════════
+
+
+# ── EXP-295: Zone-Weighted Forecast Training ──────────────────────────
+def run_zone_weighted_forecast(args):
+    """EXP-295: Clinical zone loss vs MSE for hypo-aware forecasting.
+
+    Hypothesis: Asymmetric zone cost (19:1 hypo/hyper) will reduce
+    hypo-range MAE significantly while preserving in-range accuracy.
+    The loss penalizes errors logarithmically relative to 105 mg/dL,
+    making errors at BG=50 cost 19× more than errors at BG=200.
+
+    Baseline: 8f best config MAE ~29.5 mg/dL (MSE loss).
+    """
+    from .clinical_loss import ClinicalZoneLoss, train_forecast_clinical
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+
+    data_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        data_paths, task='forecast', window_size=24,
+        extended_features=False,
+    )
+    validate_masking(NUM_FEATURES, label='EXP-295')
+
+    results = {}
+    seeds = [42, 456, 789]
+
+    for variant, loss_fn in [
+        ('mse_baseline', None),
+        ('zone_19x', ClinicalZoneLoss(left_weight=19.0, scale=SCALE)),
+        ('zone_19x_no_slope', ClinicalZoneLoss(left_weight=19.0, alpha=0.0, scale=SCALE)),
+    ]:
+        variant_results = []
+        for seed in seeds:
+            set_seed(seed)
+            model = create_model('grouped', input_dim=NUM_FEATURES,
+                                 d_model=64, nhead=4, num_layers=6, dropout=0.15)
+            ckpt = os.path.join(output_dir, f'exp295_{variant}_s{seed}.pth')
+            best_val, ep = train_forecast_clinical(
+                model, train_ds, val_ds, ckpt,
+                label=f'EXP-295: {variant} s{seed}',
+                loss_fn=loss_fn, epochs=100, patience=20,
+                lr=1e-3, weight_decay=1e-4, scale=SCALE,
+            )
+
+            # Evaluate with standard MSE metric for fair comparison
+            model_mse = forecast_mse(model, val_ds)
+            persist_mse = persistence_mse(val_ds)
+            overall_mae = compute_mae(model_mse)
+            persist_mae = compute_mae(persist_mse)
+
+            # Stratified evaluation: hypo (<70) vs in-range (70-180) vs hyper (>180)
+            hypo_mae, inrange_mae, hyper_mae = _stratified_mae(model, val_ds)
+
+            variant_results.append({
+                'seed': seed, 'epochs': ep,
+                'overall_mae': round(overall_mae, 2),
+                'hypo_mae': round(hypo_mae, 2),
+                'inrange_mae': round(inrange_mae, 2),
+                'hyper_mae': round(hyper_mae, 2),
+                'persist_mae': round(persist_mae, 2),
+            })
+            model.cpu()
+
+        results[variant] = {
+            'seeds': variant_results,
+            'mean_overall': round(np.mean([r['overall_mae'] for r in variant_results]), 2),
+            'mean_hypo': round(np.mean([r['hypo_mae'] for r in variant_results]), 2),
+            'mean_inrange': round(np.mean([r['inrange_mae'] for r in variant_results]), 2),
+        }
+
+    result = {
+        'experiment': 'EXP-295: Zone-Weighted Forecast Training',
+        'hypothesis': 'Asymmetric zone cost reduces hypo MAE without in-range degradation',
+        'variants': results,
+        'n_patients': len(data_paths),
+    }
+    save_results(result, os.path.join(output_dir, 'exp295_zone_weighted.json'))
+    return result
+
+
+def _stratified_mae(model, val_ds, batch_size=64):
+    """Compute MAE stratified by glucose zone: hypo/in-range/hyper.
+
+    Returns (hypo_mae, inrange_mae, hyper_mae) in mg/dL.
+    Hypo: <70, In-range: 70-180, Hyper: >180.
+    """
+    from torch.utils.data import DataLoader
+    from .experiment_lib import batch_to_device, get_device, mask_future_channels
+
+    device = get_device()
+    model.to(device)
+    model.eval()
+
+    hypo_ae, hypo_n = 0.0, 0
+    inrange_ae, inrange_n = 0.0, 0
+    hyper_ae, hyper_n = 0.0, 0
+
+    with torch.no_grad():
+        for batch in DataLoader(val_ds, batch_size=batch_size):
+            x = batch_to_device(batch[0], device)
+            half = x.shape[1] // 2
+            x_in = x.clone()
+            mask_future_channels(x_in, half)
+            pred = model(x_in, causal=True)
+
+            # Future glucose in mg/dL
+            pred_mg = pred[:, half:, 0] * SCALE
+            target_mg = x[:, half:, 0] * SCALE
+            ae = torch.abs(pred_mg - target_mg)
+
+            # Stratify by target glucose zone
+            hypo_mask = target_mg < 70.0
+            inrange_mask = (target_mg >= 70.0) & (target_mg <= 180.0)
+            hyper_mask = target_mg > 180.0
+
+            if hypo_mask.any():
+                hypo_ae += ae[hypo_mask].sum().item()
+                hypo_n += hypo_mask.sum().item()
+            if inrange_mask.any():
+                inrange_ae += ae[inrange_mask].sum().item()
+                inrange_n += inrange_mask.sum().item()
+            if hyper_mask.any():
+                hyper_ae += ae[hyper_mask].sum().item()
+                hyper_n += hyper_mask.sum().item()
+
+    return (
+        hypo_ae / max(hypo_n, 1),
+        inrange_ae / max(inrange_n, 1),
+        hyper_ae / max(hyper_n, 1),
+    )
+
+
+REGISTRY['zone-weighted-forecast'] = 'run_zone_weighted_forecast'
+
+
+# ── EXP-296: Hypo Weight Asymmetry Sweep ─────────────────────────────
+def run_asymmetry_sweep(args):
+    """EXP-296: Sweep left_weight to find optimal hypo/hyper asymmetry.
+
+    Hypothesis: There's an optimal asymmetry ratio that maximizes
+    hypo MAE improvement while keeping in-range MAE within 5% of MSE.
+    Sweep: left_weight in {1, 5, 10, 19, 30, 50}.
+
+    Depends on EXP-295 MSE baseline for comparison.
+    """
+    from .clinical_loss import ClinicalZoneLoss, train_forecast_clinical
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+
+    data_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        data_paths, task='forecast', window_size=24,
+        extended_features=False,
+    )
+    validate_masking(NUM_FEATURES, label='EXP-296')
+
+    sweep_results = {}
+    for lw in [1.0, 5.0, 10.0, 19.0, 30.0, 50.0]:
+        set_seed(42)
+        loss_fn = ClinicalZoneLoss(left_weight=lw, scale=SCALE)
+        model = create_model('grouped', input_dim=NUM_FEATURES,
+                             d_model=64, nhead=4, num_layers=6, dropout=0.15)
+        ckpt = os.path.join(output_dir, f'exp296_lw{int(lw)}_s42.pth')
+        best_val, ep = train_forecast_clinical(
+            model, train_ds, val_ds, ckpt,
+            label=f'EXP-296: lw={lw}',
+            loss_fn=loss_fn, epochs=100, patience=20,
+            lr=1e-3, weight_decay=1e-4, scale=SCALE,
+        )
+
+        model_mse = forecast_mse(model, val_ds)
+        overall_mae = compute_mae(model_mse)
+        hypo_mae, inrange_mae, hyper_mae = _stratified_mae(model, val_ds)
+
+        sweep_results[f'lw_{int(lw)}'] = {
+            'left_weight': lw, 'epochs': ep,
+            'overall_mae': round(overall_mae, 2),
+            'hypo_mae': round(hypo_mae, 2),
+            'inrange_mae': round(inrange_mae, 2),
+            'hyper_mae': round(hyper_mae, 2),
+        }
+        model.cpu()
+        print(f'  lw={lw:5.1f}: overall={overall_mae:.1f} hypo={hypo_mae:.1f} '
+              f'inrange={inrange_mae:.1f} hyper={hyper_mae:.1f}')
+
+    result = {
+        'experiment': 'EXP-296: Hypo Weight Asymmetry Sweep',
+        'hypothesis': 'Optimal asymmetry maximizes hypo improvement within 5% in-range budget',
+        'sweep': sweep_results,
+        'n_patients': len(data_paths),
+    }
+    save_results(result, os.path.join(output_dir, 'exp296_asymmetry_sweep.json'))
+    return result
+
+
+REGISTRY['asymmetry-sweep'] = 'run_asymmetry_sweep'
+
+
+# ── EXP-297: Two-Stage MSE → Clinical Training ──────────────────────
+def run_two_stage_training(args):
+    """EXP-297: Two-stage training: MSE warmup → clinical zone loss.
+
+    Hypothesis: Starting with MSE lets the model learn basic glucose
+    dynamics first, then clinical loss refines hypo-range predictions.
+    This avoids the risk that asymmetric weighting distorts early
+    gradient updates when the model hasn't learned the data distribution.
+
+    Stage 1: MSE for 50 epochs (learn dynamics)
+    Stage 2: Load best MSE checkpoint → ClinicalZoneLoss for 50 epochs
+    """
+    from .clinical_loss import ClinicalZoneLoss, train_forecast_clinical
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+
+    data_paths = resolve_patient_paths(patients_dir)
+    train_ds, val_ds = load_multipatient_nightscout(
+        data_paths, task='forecast', window_size=24,
+        extended_features=False,
+    )
+    validate_masking(NUM_FEATURES, label='EXP-297')
+
+    results = {}
+    for seed in [42, 456, 789]:
+        set_seed(seed)
+        model = create_model('grouped', input_dim=NUM_FEATURES,
+                             d_model=64, nhead=4, num_layers=6, dropout=0.15)
+
+        # Stage 1: MSE warmup
+        ckpt_s1 = os.path.join(output_dir, f'exp297_stage1_s{seed}.pth')
+        best_s1, ep_s1 = train_forecast_clinical(
+            model, train_ds, val_ds, ckpt_s1,
+            label=f'EXP-297: S1-MSE s{seed}',
+            loss_fn=None, epochs=50, patience=15,
+            lr=1e-3, weight_decay=1e-4, scale=SCALE,
+        )
+
+        # Stage 2: Clinical zone loss (lower LR for fine-tuning)
+        ckpt_s2 = os.path.join(output_dir, f'exp297_stage2_s{seed}.pth')
+        clinical_loss = ClinicalZoneLoss(left_weight=19.0, scale=SCALE)
+        best_s2, ep_s2 = train_forecast_clinical(
+            model, train_ds, val_ds, ckpt_s2,
+            label=f'EXP-297: S2-Clinical s{seed}',
+            loss_fn=clinical_loss, epochs=50, patience=15,
+            lr=1e-4, weight_decay=1e-4, scale=SCALE,
+        )
+
+        # Evaluate final model
+        model_mse = forecast_mse(model, val_ds)
+        overall_mae = compute_mae(model_mse)
+        hypo_mae, inrange_mae, hyper_mae = _stratified_mae(model, val_ds)
+
+        results[f's{seed}'] = {
+            'seed': seed,
+            'stage1_epochs': ep_s1, 'stage1_best_val': float(best_s1),
+            'stage2_epochs': ep_s2, 'stage2_best_val': float(best_s2),
+            'overall_mae': round(overall_mae, 2),
+            'hypo_mae': round(hypo_mae, 2),
+            'inrange_mae': round(inrange_mae, 2),
+            'hyper_mae': round(hyper_mae, 2),
+        }
+        model.cpu()
+
+    result = {
+        'experiment': 'EXP-297: Two-Stage MSE → Clinical Training',
+        'hypothesis': 'MSE warmup + clinical refinement outperforms single-stage clinical',
+        'seeds': results,
+        'mean_overall': round(np.mean([r['overall_mae'] for r in results.values()]), 2),
+        'mean_hypo': round(np.mean([r['hypo_mae'] for r in results.values()]), 2),
+        'mean_inrange': round(np.mean([r['inrange_mae'] for r in results.values()]), 2),
+    }
+    save_results(result, os.path.join(output_dir, 'exp297_two_stage.json'))
+    return result
+
+
+REGISTRY['two-stage-training'] = 'run_two_stage_training'
