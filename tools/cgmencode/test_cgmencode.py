@@ -3756,5 +3756,88 @@ class TestUAMMetrics(unittest.TestCase):
         self.assertIn('cr_mismatch_rate', metrics)
 
 
+class TestMultiScalePipeline(unittest.TestCase):
+    """Phase 17: Multi-scale data pipeline tests."""
+
+    def test_grid_to_features_shape(self):
+        """_grid_to_features returns 8-channel normalized array."""
+        import pandas as pd
+        from tools.cgmencode.run_pattern_experiments import _grid_to_features
+
+        # Build a synthetic grid DataFrame
+        n = 100
+        idx = pd.date_range('2024-01-01', periods=n, freq='5min')
+        df = pd.DataFrame({
+            'glucose': np.random.uniform(70, 250, n),
+            'iob': np.random.uniform(0, 5, n),
+            'cob': np.random.uniform(0, 50, n),
+            'net_basal': np.random.uniform(0.5, 2.0, n),
+            'bolus': np.zeros(n),
+            'carbs': np.zeros(n),
+        }, index=idx)
+        features = _grid_to_features(df)
+        self.assertEqual(features.shape, (n, 8))
+        self.assertEqual(features.dtype, np.float32)
+        # Glucose should be normalized by 400
+        np.testing.assert_allclose(
+            features[:, 0], df['glucose'].values / 400.0, rtol=1e-5)
+
+    def test_split_windows_stride_1(self):
+        """_split_windows with stride=1 produces maximum windows."""
+        from tools.cgmencode.run_pattern_experiments import _split_windows
+        n = 50
+        features = np.random.randn(n, 8).astype(np.float32)
+        windows_s1 = _split_windows(features, window_size=10, stride=1)
+        windows_s5 = _split_windows(features, window_size=10, stride=5)
+        self.assertEqual(len(windows_s1), n - 10 + 1)  # 41
+        self.assertEqual(len(windows_s5), (n - 10) // 5 + 1)  # 9
+        self.assertGreater(len(windows_s1), len(windows_s5))
+
+    def test_split_windows_nan_filtering(self):
+        """_split_windows skips windows with too many NaN glucose values."""
+        from tools.cgmencode.run_pattern_experiments import _split_windows
+        features = np.random.randn(30, 8).astype(np.float32)
+        # Make first 10 rows have NaN glucose
+        features[:10, 0] = np.nan
+        windows = _split_windows(features, window_size=10, stride=10)
+        # First window (0-9) should be skipped (all glucose NaN)
+        # Second window (10-19) should be kept
+        # Third window (20-29) should be kept
+        self.assertEqual(len(windows), 2)
+
+    def test_scale_configs_valid(self):
+        """All scale configs have expected fields."""
+        from tools.cgmencode.run_pattern_experiments import load_multiscale_data
+        import inspect
+        src = inspect.getsource(load_multiscale_data)
+        for scale in ['fast', 'episode', 'daily', 'weekly']:
+            self.assertIn(f"'{scale}'", src)
+
+    def test_grid_to_features_nan_handling(self):
+        """_grid_to_features interpolates NaN values."""
+        import pandas as pd
+        from tools.cgmencode.run_pattern_experiments import _grid_to_features
+        n = 20
+        idx = pd.date_range('2024-01-01', periods=n, freq='5min')
+        df = pd.DataFrame({
+            'glucose': np.concatenate([np.ones(5)*100, [np.nan]*10, np.ones(5)*200]),
+            'iob': np.ones(n),
+            'cob': np.zeros(n),
+            'net_basal': np.ones(n),
+            'bolus': np.zeros(n),
+            'carbs': np.zeros(n),
+        }, index=idx)
+        features = _grid_to_features(df)
+        self.assertFalse(np.any(np.isnan(features)))
+
+    def test_experiment_registry_completeness(self):
+        """All multi-scale experiments are registered."""
+        from tools.cgmencode.run_pattern_experiments import EXPERIMENTS
+        required = ['ablation-12h', 'uam-12h', 'drift-daily', 'weekly-isf']
+        for name in required:
+            self.assertIn(name, EXPERIMENTS,
+                          f"Experiment '{name}' missing from registry")
+
+
 if __name__ == '__main__':
     unittest.main()

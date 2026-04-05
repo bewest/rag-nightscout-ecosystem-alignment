@@ -8,18 +8,26 @@ These experiments optimize for non-MAE objectives:
   - Feature importance via ablation
   - Optimal timescale via window sweep
 
+Multi-scale experiments (Phase 18+) re-run at optimal timescales:
+  - 12h (144-step @ 5-min): Complete insulin DIA cycles
+  - 24h (96-step @ 15-min): Daily drift patterns
+  - 7-day (168-step @ 1-hr): Weekly ISF trends
+
 Usage:
-    # Channel-group ablation for pattern embedding (EXP-287)
-    python3 -m tools.cgmencode.run_pattern_experiments ablation-embedding \
-        --patients-dir externals/ns-data/patients --device cpu
+    # Channel-group ablation at 2h (EXP-287)
+    python3 -m tools.cgmencode.run_pattern_experiments ablation-embedding
 
-    # Window length sweep for pattern embedding (EXP-289)
-    python3 -m tools.cgmencode.run_pattern_experiments window-sweep-embedding \
-        --patients-dir externals/ns-data/patients --device cpu
+    # Channel ablation at 12h (EXP-298) — tests if features matter more
+    python3 -m tools.cgmencode.run_pattern_experiments ablation-12h
 
-    # ISF-drift episode segmentation (EXP-286)
-    python3 -m tools.cgmencode.run_pattern_experiments drift-segmentation \
-        --patients-dir externals/ns-data/patients --device cpu
+    # UAM detection at 12h (EXP-299) — tests precision improvement
+    python3 -m tools.cgmencode.run_pattern_experiments uam-12h
+
+    # Drift segmentation at 24h/15-min (EXP-300)
+    python3 -m tools.cgmencode.run_pattern_experiments drift-daily
+
+    # Weekly ISF trends at 7-day/1-hr (EXP-301)
+    python3 -m tools.cgmencode.run_pattern_experiments weekly-isf
 
     # List available experiments
     python3 -m tools.cgmencode.run_pattern_experiments --list
@@ -797,9 +805,537 @@ def run_uam_detection(args):
     return results
 
 
+# ── Multi-Scale Data Pipeline ──────────────────────────────────────────
+
+def load_multiscale_data(patient_paths, scale='episode', val_fraction=0.2):
+    """Load data at a specific timescale for pattern experiments.
+
+    Scales:
+      fast:    24 steps @ 5-min  = 2h   (acute events)
+      episode: 144 steps @ 5-min = 12h  (complete insulin cycles)
+      daily:   96 steps @ 15-min = 24h  (ISF drift, dawn phenomenon)
+      weekly:  168 steps @ 1-hr  = 7d   (multi-day ISF trends)
+
+    Returns:
+      (train_np, val_np) — numpy arrays of shape (N, window_steps, channels)
+    """
+    from .real_data_adapter import build_nightscout_grid, downsample_grid
+
+    SCALE_CONFIG = {
+        'fast':    {'window': 24,  'interval_min': 5,  'stride': None},
+        'episode': {'window': 144, 'interval_min': 5,  'stride': None},
+        'daily':   {'window': 96,  'interval_min': 15, 'stride': 1},
+        'weekly':  {'window': 168, 'interval_min': 60, 'stride': 1},
+    }
+
+    cfg = SCALE_CONFIG[scale]
+    window = cfg['window']
+    interval = cfg['interval_min']
+    stride = cfg['stride'] or window // 2
+
+    all_windows = []
+    for i, path in enumerate(patient_paths):
+        patient_id = os.path.basename(os.path.dirname(path))
+        print(f"  Patient {patient_id} ({i+1}/{len(patient_paths)}): {path}")
+
+        df, features = build_nightscout_grid(path, verbose=False)
+        if df is None:
+            print(f"    SKIP: no valid data")
+            continue
+
+        # Downsample if needed
+        if interval > 5:
+            df_ds = downsample_grid(df, target_interval_min=interval)
+            # Rebuild normalized features from downsampled grid
+            features = _grid_to_features(df_ds)
+        else:
+            features = features  # already 5-min, 8ch normalized
+
+        # Split into windows with configurable stride
+        windows = _split_windows(features, window, stride)
+        if not windows:
+            print(f"    SKIP: no valid windows")
+            continue
+
+        dur_h = window * interval / 60
+        print(f"    {len(df)} rows → {len(windows)} windows "
+              f"({features.shape[1]}ch, {dur_h:.0f}h @ {interval}min)")
+        all_windows.extend(windows)
+
+    if not all_windows:
+        raise RuntimeError(f"No valid windows for scale={scale}")
+
+    rng = np.random.RandomState(42)
+    rng.shuffle(all_windows)
+    split_idx = int(len(all_windows) * (1 - val_fraction))
+    arr = np.array(all_windows, dtype=np.float32)
+    return arr[:split_idx], arr[split_idx:]
+
+
+def _grid_to_features(df):
+    """Extract normalized 8-channel features from a grid DataFrame."""
+    SCALE = {'glucose': 400.0, 'iob': 20.0, 'cob': 200.0,
+             'net_basal': 5.0, 'bolus': 10.0, 'carbs': 100.0}
+    t = df.index
+    hours = t.hour + t.minute / 60.0
+    time_sin = np.sin(2 * np.pi * hours / 24.0)
+    time_cos = np.cos(2 * np.pi * hours / 24.0)
+
+    features = np.column_stack([
+        df['glucose'].values / SCALE['glucose'],
+        df['iob'].values / SCALE['iob'],
+        df['cob'].values / SCALE['cob'],
+        df['net_basal'].values / SCALE['net_basal'],
+        df['bolus'].values / SCALE['bolus'],
+        df['carbs'].values / SCALE['carbs'],
+        time_sin,
+        time_cos,
+    ]).astype(np.float32)
+
+    # Fill NaN
+    for col in range(features.shape[1]):
+        mask = np.isnan(features[:, col])
+        if mask.any():
+            valid = ~mask
+            if valid.sum() >= 2:
+                features[mask, col] = np.interp(
+                    np.where(mask)[0], np.where(valid)[0], features[valid, col])
+            else:
+                features[mask, col] = 0.0
+    return features
+
+
+def _split_windows(features, window_size, stride, min_valid=0.8):
+    """Split features into windows with configurable stride."""
+    windows = []
+    for start in range(0, len(features) - window_size + 1, stride):
+        w = features[start:start + window_size].copy()
+        glucose_valid = np.sum(~np.isnan(w[:, 0]))
+        if glucose_valid / window_size >= min_valid:
+            for col in range(w.shape[1]):
+                mask = np.isnan(w[:, col])
+                if mask.any():
+                    valid = ~mask
+                    if valid.sum() >= 2:
+                        w[mask, col] = np.interp(
+                            np.where(mask)[0], np.where(valid)[0], w[valid, col])
+                    else:
+                        w[mask, col] = 0.0
+            windows.append(w)
+    return windows
+
+
+# ── Multi-Scale Experiments ────────────────────────────────────────────
+
+def run_ablation_12h(args):
+    """EXP-298: Re-run channel ablation at 12h window.
+
+    Hypothesis: Feature importance deltas become MUCH larger when the model
+    sees the full insulin DIA cycle. At 2h, all deltas were <1.12%.
+    """
+    from .pattern_embedding import PatternEncoder
+
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-298: Channel Ablation at 12h (144-step) Window")
+    print("=" * 60)
+
+    train_np, val_np = load_multiscale_data(patient_paths, scale='episode')
+    input_dim = train_np.shape[2]
+    print(f"Data: {train_np.shape[0]} train, {val_np.shape[0]} val, "
+          f"{input_dim} channels, window={train_np.shape[1]} steps")
+
+    train_labels = build_episode_labels_batch(train_np)
+    val_labels = build_episode_labels_batch(val_np)
+
+    # Baseline
+    print("\n--- Baseline (all channels) ---")
+    encoder = PatternEncoder(input_dim=input_dim, d_model=64, embed_dim=32,
+                             nhead=4, num_layers=2)
+    encoder, _ = train_pattern_encoder(
+        encoder, train_np, train_labels, val_np, val_labels,
+        epochs=epochs, device=device)
+    baseline = eval_pattern_encoder(encoder, val_np, val_labels, device=device)
+    print(f"Baseline: Recall@5={baseline['recall_at_5']:.4f}, "
+          f"Silhouette={baseline['silhouette']:.4f}")
+
+    # Per-channel ablation
+    channel_names = ['glucose', 'iob', 'cob', 'basal_rate', 'bolus',
+                     'carbs', 'time_sin', 'time_cos']
+    ablations = {}
+    for ch_idx, ch_name in enumerate(channel_names):
+        print(f"\n--- Ablating {ch_name} (channel {ch_idx}) ---")
+        train_abl = train_np.copy()
+        val_abl = val_np.copy()
+        train_abl[:, :, ch_idx] = 0.0
+        val_abl[:, :, ch_idx] = 0.0
+
+        enc = PatternEncoder(input_dim=input_dim, d_model=64, embed_dim=32,
+                             nhead=4, num_layers=2)
+        enc, hist = train_pattern_encoder(
+            enc, train_abl, train_labels, val_abl, val_labels,
+            epochs=epochs, device=device)
+        m = eval_pattern_encoder(enc, val_abl, val_labels, device=device)
+
+        dr = m['recall_at_5'] - baseline['recall_at_5']
+        ds = m['silhouette'] - baseline['silhouette']
+        ablations[ch_name] = {
+            'channels_masked': [ch_idx],
+            'metrics': m,
+            'delta_recall_at_5': dr,
+            'delta_silhouette': ds,
+            'train_epochs': len(hist.get('train_loss', [])),
+        }
+        print(f"  Recall@5={m['recall_at_5']:.4f} (Δ={dr:+.4f}), "
+              f"Silhouette={m['silhouette']:.4f} (Δ={ds:+.4f})")
+
+    # Ranking
+    ranking = sorted(ablations.items(), key=lambda x: x[1]['delta_recall_at_5'])
+    print(f"\n=== Feature Importance at 12h (by Recall@5 drop) ===")
+    for name, v in ranking:
+        print(f"  {name:15s}: ΔRecall={v['delta_recall_at_5']:+.4f}, "
+              f"ΔSilhouette={v['delta_silhouette']:+.4f}")
+
+    # Compare with 2h results
+    print(f"\n=== Comparison: 2h vs 12h max |ΔRecall| ===")
+    max_delta_12h = max(abs(v['delta_recall_at_5']) for v in ablations.values())
+    print(f"  12h max |ΔRecall|: {max_delta_12h:.4f}")
+    print(f"  2h max |ΔRecall|:  0.0112 (basal_rate from EXP-287)")
+
+    results = {
+        'baseline': baseline,
+        'ablations': ablations,
+        'ranking': [{'group': n, 'delta_recall': v['delta_recall_at_5'],
+                     'delta_silhouette': v['delta_silhouette']}
+                    for n, v in ranking],
+        'experiment': 'EXP-298',
+        'name': 'channel-ablation-embedding-12h',
+        'scale': 'episode',
+        'window_steps': 144,
+        'window_hours': 12,
+        'input_dim': input_dim,
+        'n_train': len(train_np),
+        'n_val': len(val_np),
+        'epochs': epochs,
+        'device': device,
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+    save_results(results, os.path.join(output_dir, 'exp298_ablation_12h.json'))
+    return results
+
+
+def run_uam_12h(args):
+    """EXP-299: UAM detection at 12h window.
+
+    Hypothesis: Precision improves because the model sees the full
+    meal→absorption→resolution cycle, reducing false positives from
+    dawn phenomenon and rebound highs.
+    """
+    from .pattern_embedding import PatternEncoder
+
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-299: UAM Detection at 12h (144-step) Window")
+    print("=" * 60)
+
+    train_np, val_np = load_multiscale_data(patient_paths, scale='episode')
+    input_dim = train_np.shape[2]
+    print(f"Data: {train_np.shape[0]} train, {val_np.shape[0]} val")
+
+    # Build UAM labels
+    train_labels = build_episode_labels_batch(train_np)
+    val_labels = build_episode_labels_batch(val_np)
+    train_uam = np.array([1 if 'meal_response' in lbl and 'correction_response' not in lbl
+                          else 0 for lbl in train_labels])
+    val_uam = np.array([1 if 'meal_response' in lbl and 'correction_response' not in lbl
+                        else 0 for lbl in val_labels])
+    print(f"UAM prevalence: train={train_uam.mean():.3f}, val={val_uam.mean():.3f}")
+
+    # Train encoder
+    encoder = PatternEncoder(input_dim=input_dim, d_model=64, embed_dim=32,
+                             nhead=4, num_layers=2)
+    encoder, _ = train_pattern_encoder(
+        encoder, train_np, train_labels, val_np, val_labels,
+        epochs=epochs, device=device)
+
+    # Train UAM classifier on embeddings
+    with torch.no_grad():
+        encoder.eval()
+        x_train = torch.tensor(train_np, dtype=torch.float32)
+        x_val = torch.tensor(val_np, dtype=torch.float32)
+        train_emb = encoder.encode(x_train.to(device))
+        val_emb = encoder.encode(x_val.to(device))
+
+    embed_dim = train_emb.shape[1]
+    uam_head = nn.Linear(embed_dim, 2).to(device)
+    opt = torch.optim.Adam(uam_head.parameters(), lr=1e-3)
+    y_train = torch.tensor(train_uam, dtype=torch.long).to(device)
+    y_val = torch.tensor(val_uam, dtype=torch.long).to(device)
+
+    # Class weighting for imbalanced UAM
+    n_pos = max(train_uam.sum(), 1)
+    n_neg = max(len(train_uam) - n_pos, 1)
+    weight = torch.tensor([1.0, n_neg / n_pos], dtype=torch.float32).to(device)
+    criterion = nn.CrossEntropyLoss(weight=weight)
+
+    best_val_f1 = 0
+    for ep in range(min(epochs, 50)):
+        uam_head.train()
+        logits = uam_head(train_emb)
+        loss = criterion(logits, y_train)
+        opt.zero_grad()
+        loss.backward()
+        opt.step()
+
+        uam_head.eval()
+        with torch.no_grad():
+            vl = uam_head(val_emb)
+            vp = vl.argmax(dim=-1).cpu().numpy()
+            from sklearn.metrics import f1_score
+            vf1 = f1_score(val_uam, vp, zero_division=0)
+            best_val_f1 = max(best_val_f1, vf1)
+
+    # Final eval
+    uam_head.eval()
+    with torch.no_grad():
+        val_logits = uam_head(val_emb)
+        val_preds = val_logits.argmax(dim=-1).cpu().numpy()
+
+    from sklearn.metrics import f1_score, precision_score, recall_score
+    results = {
+        'experiment': 'EXP-299',
+        'name': 'uam-detection-12h',
+        'scale': 'episode',
+        'window_steps': 144,
+        'window_hours': 12,
+        'uam_f1': float(f1_score(val_uam, val_preds, zero_division=0)),
+        'uam_precision': float(precision_score(val_uam, val_preds, zero_division=0)),
+        'uam_recall': float(recall_score(val_uam, val_preds, zero_division=0)),
+        'best_val_f1': float(best_val_f1),
+        'uam_prevalence_train': float(train_uam.mean()),
+        'uam_prevalence_val': float(val_uam.mean()),
+        'n_train': len(train_np),
+        'n_val': len(val_np),
+        'epochs': epochs,
+        'device': device,
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n=== UAM at 12h: F1={results['uam_f1']:.4f}, "
+          f"P={results['uam_precision']:.4f}, R={results['uam_recall']:.4f} ===")
+    print(f"  (vs 2h: F1=0.399, P=0.283, R=0.676)")
+
+    save_results(results, os.path.join(output_dir, 'exp299_uam_12h.json'))
+    return results
+
+
+def run_daily_drift(args):
+    """EXP-300: Drift segmentation at 24h/15-min resolution.
+
+    Uses downsampled data so 24h of context fits in 96 steps.
+    With 24h windows, ISF drift patterns should be detectable even
+    without enriched ISF profile features.
+    """
+    from .pattern_retrieval import EpisodeSegmenter, EPISODE_LABELS
+
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-300: Drift Segmentation at 24h (96-step @ 15-min)")
+    print("=" * 60)
+
+    train_np, val_np = load_multiscale_data(patient_paths, scale='daily')
+    input_dim = train_np.shape[2]
+    print(f"Data: {train_np.shape[0]} train, {val_np.shape[0]} val, "
+          f"{input_dim}ch, window={train_np.shape[1]} steps (24h)")
+
+    train_labels = build_episode_labels_batch(train_np, glucose_scale=400.0)
+    val_labels = build_episode_labels_batch(val_np, glucose_scale=400.0)
+
+    # Count label distribution
+    from collections import Counter
+    all_labels = [l for labels in train_labels for l in labels]
+    dist = Counter(all_labels)
+    print(f"Label distribution: {dict(dist.most_common())}")
+
+    # 11-label (with drift)
+    n_labels = len(EPISODE_LABELS)
+    print(f"\n--- {n_labels}-label segmenter (with drift) ---")
+    seg = EpisodeSegmenter(input_dim=input_dim, n_labels=n_labels,
+                           d_model=64, nhead=4, num_layers=2)
+
+    # Convert multi-label to primary label for training
+    label_to_idx = {l: i for i, l in enumerate(EPISODE_LABELS)}
+    def primary_label(labels):
+        for l in labels:
+            if l != 'stable' and l in label_to_idx:
+                return label_to_idx[l]
+        return label_to_idx.get('stable', 0)
+
+    train_y = torch.tensor([primary_label(l) for l in train_labels], dtype=torch.long)
+    val_y = torch.tensor([primary_label(l) for l in val_labels], dtype=torch.long)
+
+    # Train
+    seg = seg.to(device)
+    opt = torch.optim.Adam(seg.parameters(), lr=1e-3, weight_decay=1e-4)
+    criterion = nn.CrossEntropyLoss()
+
+    train_tensor = torch.tensor(train_np, dtype=torch.float32)
+    val_tensor = torch.tensor(val_np, dtype=torch.float32)
+
+    best_val_loss = float('inf')
+    patience_counter = 0
+    for ep in range(epochs):
+        seg.train()
+        indices = torch.randperm(len(train_tensor))
+        epoch_loss = 0.0
+        n_batches = 0
+        for start in range(0, len(indices), 64):
+            batch_idx = indices[start:start+64]
+            x = train_tensor[batch_idx].to(device)
+            y = train_y[batch_idx].to(device)
+            logits = seg(x)
+            loss = criterion(logits, y)
+            opt.zero_grad()
+            loss.backward()
+            opt.step()
+            epoch_loss += loss.item()
+            n_batches += 1
+
+        seg.eval()
+        with torch.no_grad():
+            vl = criterion(seg(val_tensor.to(device)), val_y.to(device))
+        if vl.item() < best_val_loss:
+            best_val_loss = vl.item()
+            patience_counter = 0
+        else:
+            patience_counter += 1
+            if patience_counter >= 5:
+                break
+
+    seg.eval()
+    with torch.no_grad():
+        val_logits = seg(val_tensor.to(device))
+        val_preds = val_logits.argmax(dim=-1).cpu().numpy()
+
+    from sklearn.metrics import f1_score
+    macro_f1 = f1_score(val_y.numpy(), val_preds, average='macro', zero_division=0)
+    weighted_f1 = f1_score(val_y.numpy(), val_preds, average='weighted', zero_division=0)
+    print(f"  Macro F1={macro_f1:.4f}, Weighted F1={weighted_f1:.4f}")
+
+    # Check if drift labels were actually assigned
+    drift_labels = {'sensitivity_shift', 'resistance_shift'}
+    drift_count = sum(1 for labels in train_labels
+                      for l in labels if l in drift_labels)
+    print(f"  Drift labels in training: {drift_count} "
+          f"({drift_count/len(train_labels)*100:.1f}% of windows)")
+
+    results = {
+        'experiment': 'EXP-300',
+        'name': 'drift-segmentation-24h',
+        'scale': 'daily',
+        'window_steps': 96,
+        'resolution_min': 15,
+        'window_hours': 24,
+        'macro_f1': float(macro_f1),
+        'weighted_f1': float(weighted_f1),
+        'n_labels': n_labels,
+        'drift_label_count': drift_count,
+        'label_distribution': dict(dist.most_common()),
+        'n_train': len(train_np),
+        'n_val': len(val_np),
+        'epochs_trained': ep + 1,
+        'device': device,
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n=== Daily Drift: Macro F1={macro_f1:.4f} ===")
+    print(f"  (vs 2h baseline: Macro F1=0.861)")
+
+    save_results(results, os.path.join(output_dir, 'exp300_drift_24h.json'))
+    return results
+
+
+def run_weekly_isf(args):
+    """EXP-301: Weekly ISF trend detection at 7-day/1-hr resolution.
+
+    Can we detect multi-day ISF drift patterns (sick days, menstrual cycle,
+    exercise adaptation) using weekly-scale embeddings?
+    """
+    from .pattern_embedding import PatternEncoder
+
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-301: Weekly ISF Trends (168-step @ 1-hr = 7 days)")
+    print("=" * 60)
+
+    train_np, val_np = load_multiscale_data(patient_paths, scale='weekly')
+    input_dim = train_np.shape[2]
+    print(f"Data: {train_np.shape[0]} train, {val_np.shape[0]} val, "
+          f"{input_dim}ch, window={train_np.shape[1]} steps (7 days)")
+
+    train_labels = build_episode_labels_batch(train_np, glucose_scale=400.0)
+    val_labels = build_episode_labels_batch(val_np, glucose_scale=400.0)
+
+    # Train encoder
+    encoder = PatternEncoder(input_dim=input_dim, d_model=64, embed_dim=32,
+                             nhead=4, num_layers=2)
+    encoder, hist = train_pattern_encoder(
+        encoder, train_np, train_labels, val_np, val_labels,
+        epochs=epochs, device=device)
+    metrics = eval_pattern_encoder(encoder, val_np, val_labels, device=device)
+
+    # Analyze: do weekly embeddings cluster by ISF drift state?
+    from collections import Counter
+    all_labels = [l for labels in val_labels for l in labels]
+    dist = Counter(all_labels)
+
+    results = {
+        'experiment': 'EXP-301',
+        'name': 'weekly-isf-trends',
+        'scale': 'weekly',
+        'window_steps': 168,
+        'resolution_min': 60,
+        'window_days': 7,
+        'recall_at_5': float(metrics['recall_at_5']),
+        'silhouette': float(metrics['silhouette']),
+        'n_unique_labels': metrics.get('n_unique_labels', 0),
+        'label_distribution': dict(dist.most_common()),
+        'n_train': len(train_np),
+        'n_val': len(val_np),
+        'train_epochs': len(hist.get('train_loss', [])),
+        'device': device,
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n=== Weekly: Recall@5={metrics['recall_at_5']:.4f}, "
+          f"Silhouette={metrics['silhouette']:.4f} ===")
+    print(f"  (vs 2h: R@5=0.950, Sil=-0.367)")
+    print(f"  (vs 12h: R@5=0.952, Sil=-0.339)")
+
+    save_results(results, os.path.join(output_dir, 'exp301_weekly_isf.json'))
+    return results
+
+
 # ── Registry & CLI ─────────────────────────────────────────────────────
 
 EXPERIMENTS = {
+    # Phase 15: Original 2h-scale experiments
     'ablation-embedding': ('EXP-287', run_ablation_embedding,
                            'Channel-group ablation for pattern embedding Recall@5'),
     'window-sweep-embedding': ('EXP-289', run_window_sweep_embedding,
@@ -808,6 +1344,15 @@ EXPERIMENTS = {
                            'ISF-drift episode segmentation (11 vs 9 labels)'),
     'uam-detection': ('EXP-291', run_uam_detection,
                       'UAM detection via pattern embedding'),
+    # Phase 18: Multi-scale re-runs at optimal timescales
+    'ablation-12h': ('EXP-298', run_ablation_12h,
+                     'Channel ablation at 12h — feature importance at full DIA'),
+    'uam-12h': ('EXP-299', run_uam_12h,
+                'UAM detection at 12h — precision vs 2h baseline'),
+    'drift-daily': ('EXP-300', run_daily_drift,
+                    'Drift segmentation at 24h/15-min resolution'),
+    'weekly-isf': ('EXP-301', run_weekly_isf,
+                   'Weekly ISF trends (7-day @ 1-hr embeddings)'),
 }
 
 
