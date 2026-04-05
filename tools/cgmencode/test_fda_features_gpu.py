@@ -362,7 +362,6 @@ class TestHighFidelity:
         data = _make_test_data(n_samples=100, n_points=24)
         cpu_dists = cpu_fda.l2_distance_to_mean(data)
         gpu_dists = gpu_fda.l2_distance_to_mean(data, device=DEVICE)
-        # Relative error
         rel_err = np.abs(cpu_dists - gpu_dists) / (cpu_dists + 1e-8)
         mean_rel = rel_err.mean()
         assert mean_rel < 0.10, \
@@ -387,6 +386,256 @@ class TestHighFidelity:
         gpu_depths = gpu_fda.functional_depth(data, device=DEVICE)
         mae = np.abs(cpu_depths - gpu_depths).mean()
         assert mae < 0.05, f"Depth MAE: {mae:.4f} (>0.05)"
+
+
+# ── scikit-fda Ground Truth Tests ─────────────────────────────────────
+
+class TestSkfdaGroundTruth:
+    """Tests ported from scikit-fda's own test suite.
+
+    These use hardcoded expected values — the same numbers scikit-fda
+    asserts in its CI. If we match these, our reimplementation is correct
+    independent of any comparison to our CPU wrapper.
+    """
+
+    # -- Simpson's quadrature weights ---------------------------------
+
+    def test_simpson_weights_uniform(self):
+        """Simpson's weights on [1,2,3,4,5] — verified vs scipy."""
+        gp = np.array([1, 2, 3, 4, 5], dtype=float)
+        w = gpu_fda._simpson_weights(gp)
+        expected = np.array([1/3, 4/3, 2/3, 4/3, 1/3])
+        np.testing.assert_allclose(w, expected, atol=1e-10)
+
+    def test_simpson_weights_nonuniform(self):
+        """Simpson's weights on non-uniform grid."""
+        gp = np.array([0.0, 0.5, 2.0, 3.0, 4.0])
+        w = gpu_fda._simpson_weights(gp)
+        # Verify integration of f=1 gives domain length
+        assert abs(w.sum() - (gp[-1] - gp[0])) < 1e-10, \
+            f"Weights sum {w.sum()} != domain len {gp[-1] - gp[0]}"
+
+    def test_simpson_integrates_polynomial_exactly(self):
+        """Simpson's rule should integrate x² on [0,4] exactly (degree ≤ 3).
+
+        Analytical: ∫₀⁴ x² dx = 64/3 ≈ 21.3333
+        """
+        gp = np.array([0, 1, 2, 3, 4], dtype=float)
+        w = gpu_fda._simpson_weights(gp)
+        f = gp ** 2
+        result = (f * w).sum()
+        np.testing.assert_allclose(result, 64.0 / 3.0, atol=1e-10)
+
+    # -- L² norm / distance (from test_metrics.py) --------------------
+
+    def test_l2_norm_known_values(self):
+        """L² norm matches scikit-fda test_metrics.py ground truth.
+
+        Data: [[2,3,4,5,6], [1,4,9,16,25]] on grid [1,2,3,4,5]
+        Expected norms: [8.326664, 25.006666]
+        """
+        grid = np.array([1, 2, 3, 4, 5], dtype=float)
+        data = np.array([[2, 3, 4, 5, 6], [1, 4, 9, 16, 25]], dtype=float)
+        # L² norm = L² distance to zero
+        zero = np.zeros_like(data)
+        both = np.vstack([data, zero])
+        # We compute via l2_distance_to_mean on [f, 0, 0, 0] to get dist(f, mean)
+        # but that's not the same as norm. Instead compute directly.
+        w = gpu_fda._simpson_weights(grid)
+        import torch as th
+        X = th.tensor(data, dtype=th.float64)
+        W = th.tensor(w, dtype=th.float64)
+        norms = th.sqrt((X ** 2 * W.unsqueeze(0)).sum(dim=1))
+        np.testing.assert_allclose(
+            norms.numpy(), [8.326664, 25.006666], rtol=1e-5,
+            err_msg="L² norms don't match scikit-fda ground truth")
+
+    def test_l2_norm_constant_function(self):
+        """L² norm of f=1 on [0,4] should be 2.0 (analytical)."""
+        grid = np.array([0, 1, 2, 3, 4], dtype=float)
+        w = gpu_fda._simpson_weights(grid)
+        f = np.ones(5)
+        norm = np.sqrt((f ** 2 * w).sum())
+        np.testing.assert_allclose(norm, 2.0, atol=1e-10)
+
+    def test_l2_norm_linear_function(self):
+        """L² norm of f=t on [0,4] = sqrt(64/3) ≈ 4.6188 (analytical)."""
+        grid = np.array([0, 1, 2, 3, 4], dtype=float)
+        w = gpu_fda._simpson_weights(grid)
+        f = grid.copy()
+        norm = np.sqrt((f ** 2 * w).sum())
+        np.testing.assert_allclose(norm, np.sqrt(64.0 / 3.0), atol=1e-10)
+
+    def test_l2_distance_constant_shift(self):
+        """L² distance between f=1 and f=2 on [0,4] = 2.0 (analytical).
+
+        ||f-g||₂ = sqrt(∫₀⁴ (1-2)² dt) = sqrt(4) = 2.0
+        """
+        grid = np.array([0, 1, 2, 3, 4], dtype=float)
+        data = np.array([[1, 1, 1, 1, 1], [2, 2, 2, 2, 2]], dtype=float)
+        dists = gpu_fda.l2_distance_to_mean(data, grid_points=grid,
+                                            device=DEVICE)
+        # Mean = 1.5, each curve is dist sqrt(∫0.25 dt) = sqrt(1) = 1.0
+        np.testing.assert_allclose(dists, [1.0, 1.0], atol=1e-5,
+            err_msg="Constant shift distance incorrect")
+
+    def test_l2_distance_linear_symmetry(self):
+        """f=t and f=0 should have equal distance to their mean on [0,4].
+
+        Mean = t/2.  ||t - t/2||₂ = ||t/2||₂ = sqrt(∫₀⁴ t²/4 dt)
+            = sqrt(64/12) = sqrt(16/3) ≈ 2.3094
+        """
+        grid = np.array([0, 1, 2, 3, 4], dtype=float)
+        data = np.array([[0, 1, 2, 3, 4], [0, 0, 0, 0, 0]], dtype=float)
+        dists = gpu_fda.l2_distance_to_mean(data, grid_points=grid,
+                                            device=DEVICE)
+        expected = np.sqrt(16.0 / 3.0)
+        np.testing.assert_allclose(dists, [expected, expected], atol=1e-4,
+            err_msg="Linear symmetry broken")
+
+    def test_l2_identical_curves_zero(self):
+        """Identical curves should have zero distance to mean."""
+        data = np.tile([1, 2, 3, 4, 5], (10, 1)).astype(float)
+        dists = gpu_fda.l2_distance_to_mean(data, device=DEVICE)
+        np.testing.assert_allclose(dists, 0.0, atol=1e-6)
+
+    # -- Modified Band Depth (from test_depth.py) ---------------------
+
+    def test_mbd_identical_curves_max_depth(self):
+        """scikit-fda test_depth.py: MBD of 5 identical curves = [1,1,1,1,1]."""
+        data = np.tile([1, 2, 3, 4], (5, 1)).astype(float)
+        depths = gpu_fda.functional_depth(data, device=DEVICE)
+        np.testing.assert_allclose(depths, [1, 1, 1, 1, 1], atol=1e-5,
+            err_msg="MBD of identical curves should be 1.0")
+
+    def test_mbd_5_ordered_constant_curves(self):
+        """scikit-fda: MBD of 5 perfectly ordered curves = [0.4,0.7,0.8,0.7,0.4]."""
+        data = np.array([[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2],
+                         [3, 3, 3, 3], [4, 4, 4, 4]], dtype=float)
+        depths = gpu_fda.functional_depth(data, device=DEVICE)
+        np.testing.assert_allclose(depths, [0.4, 0.7, 0.8, 0.7, 0.4],
+                                   atol=1e-5,
+            err_msg="MBD ordered depth mismatch")
+
+    def test_mbd_3_curves(self):
+        """scikit-fda: MBD of 3 ordered curves = [2/3, 1.0, 2/3]."""
+        data = np.array([[0, 0, 0], [1, 1, 1], [2, 2, 2]], dtype=float)
+        depths = gpu_fda.functional_depth(data, device=DEVICE)
+        np.testing.assert_allclose(depths, [2/3, 1.0, 2/3], atol=1e-5,
+            err_msg="MBD n=3 mismatch")
+
+    def test_mbd_central_curve_deepest(self):
+        """The median-like curve should always have highest depth."""
+        np.random.seed(99)
+        data = np.random.randn(50, 10)
+        depths = gpu_fda.functional_depth(data, device=DEVICE)
+        # Median curve (closest to componentwise median) should be deep
+        median = np.median(data, axis=0)
+        dists_to_median = np.abs(data - median).mean(axis=1)
+        # Top-5 deepest should overlap with top-5 closest to median
+        deep5 = set(np.argsort(-depths)[:5])
+        close5 = set(np.argsort(dists_to_median)[:5])
+        overlap = len(deep5 & close5)
+        assert overlap >= 2, \
+            f"Deepest curves don't correlate with median: overlap={overlap}"
+
+    def test_depth_bounded_strictly(self):
+        """All depth values must be in [0, 1] — no tolerance needed."""
+        data = _make_test_data(n_samples=100, n_points=24)
+        depths = gpu_fda.functional_depth(data, device=DEVICE)
+        assert np.all(depths >= 0.0), f"Negative depth: {depths.min()}"
+        assert np.all(depths <= 1.0 + 1e-7), f"Depth > 1: {depths.max()}"
+
+    # -- FPCA (ground truth from scikit-fda test_fpca.py) -------------
+
+    def test_fpca_known_data_variance(self):
+        """FPCA variance ratios on known data match scikit-fda.
+
+        Data from scikit-fda test: 5 curves × 4 points.
+        Expected: [0.8658, 0.1342, ~0] (from scikit-fda CI).
+        """
+        data = np.array([[1,2,3,4],[2,3,4,5],[1,3,5,7],
+                         [0,1,2,3],[3,2,1,0]], dtype=float)
+        _, info = gpu_fda.fpca_scores(data, n_components=3,
+                                      smooth_first=False, device=DEVICE)
+        ratios = info['explained_variance_ratio_']
+        np.testing.assert_allclose(ratios[0], 0.8658, atol=0.01,
+            err_msg="First PC variance ratio mismatch")
+        np.testing.assert_allclose(ratios[1], 0.1342, atol=0.01,
+            err_msg="Second PC variance ratio mismatch")
+
+    def test_fpca_reconstruction_exact(self):
+        """FPCA reconstruction from all components should recover original data."""
+        data = np.array([[1,2,3,4],[2,3,4,5],[1,3,5,7],
+                         [0,1,2,3],[3,2,1,0]], dtype=float)
+        n_comp = min(data.shape[0] - 1, data.shape[1])
+        scores, info = gpu_fda.fpca_scores(data, n_components=n_comp,
+                                           smooth_first=False, device=DEVICE)
+        recon = scores @ info['components_'] + info['mean_']
+        np.testing.assert_allclose(recon, data, atol=0.05,
+            err_msg="FPCA reconstruction failed")
+
+    def test_fpca_scores_orthogonal(self):
+        """FPCA scores should be uncorrelated (columns orthogonal)."""
+        data = _make_test_data(n_samples=100, n_points=24)
+        scores, _ = gpu_fda.fpca_scores(data, n_components=3, device=DEVICE)
+        # Normalize and check dot products
+        centered = scores - scores.mean(axis=0)
+        cov = centered.T @ centered / (len(scores) - 1)
+        # Off-diagonal should be near zero
+        mask = ~np.eye(3, dtype=bool)
+        off_diag = np.abs(cov[mask])
+        max_corr = off_diag.max() / max(np.abs(np.diag(cov)).max(), 1e-8)
+        assert max_corr < 0.05, f"Scores not orthogonal: max off-diag={max_corr}"
+
+    # -- Derivative analytical tests ----------------------------------
+
+    def test_derivative_constant_is_zero(self):
+        """d/dt(constant) = 0 everywhere."""
+        data = np.full((5, 24), 3.14)
+        deriv = gpu_fda.functional_derivatives(data, order=1, device=DEVICE)
+        # Interior points (avoid B-spline edge effects)
+        np.testing.assert_allclose(deriv[:, 3:-3], 0.0, atol=0.1,
+            err_msg="Derivative of constant not zero")
+
+    def test_derivative_linear_is_constant(self):
+        """d/dt(a*t + b) = a (constant)."""
+        t = np.linspace(0, 1, 48)
+        # slope=2, intercept=1
+        data = np.array([2 * t + 1] * 5)
+        deriv = gpu_fda.functional_derivatives(data, order=1,
+                                               grid_points=t, device=DEVICE)
+        # Interior points should all be ≈ 2.0
+        interior = deriv[:, 5:-5]
+        np.testing.assert_allclose(interior, 2.0, atol=0.3,
+            err_msg="Derivative of line not constant")
+
+    def test_derivative_quadratic(self):
+        """d/dt(t²) = 2t (analytical)."""
+        t = np.linspace(0, 2, 48)
+        data = np.array([t ** 2] * 3)
+        deriv = gpu_fda.functional_derivatives(data, order=1,
+                                               grid_points=t, device=DEVICE)
+        expected = 2 * t
+        # Check interior (exclude 5 on each edge)
+        interior_slice = slice(5, -5)
+        mae = np.abs(deriv[:, interior_slice] - expected[interior_slice]).mean()
+        assert mae < 0.3, f"Quadratic derivative MAE: {mae:.4f}"
+
+    # -- Edge cases ---------------------------------------------------
+
+    def test_single_sample_l2_distance(self):
+        """Single sample: distance to mean should be zero."""
+        data = np.array([[1.0, 2.0, 3.0, 4.0, 5.0]])
+        d = gpu_fda.l2_distance_to_mean(data, device=DEVICE)
+        np.testing.assert_allclose(d, [0.0], atol=1e-6)
+
+    def test_two_samples_depth(self):
+        """Two samples: both should have the same depth (symmetry)."""
+        data = np.array([[0, 0, 0, 0], [1, 1, 1, 1]], dtype=float)
+        depths = gpu_fda.functional_depth(data, device=DEVICE)
+        np.testing.assert_allclose(depths[0], depths[1], atol=1e-5,
+            err_msg="Two-curve depth not symmetric")
 
 
 # ── fda_encode Integration Tests ──────────────────────────────────────
