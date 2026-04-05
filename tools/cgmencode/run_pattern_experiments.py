@@ -6460,6 +6460,482 @@ def run_calibration_analysis(args):
     return results
 
 
+def run_cusum_isf_drift(args):
+    """EXP-325: CUSUM and online change-point detection for ISF drift.
+
+    EXP-312 showed rolling biweekly ISF_effective detects drift in 9/11 patients,
+    but requires 14 days of data. Can online methods detect changes faster?
+
+    Tests:
+    1. CUSUM (Cumulative Sum Control Chart) — sequential detection
+    2. EWMA (Exponentially Weighted Moving Average) control chart
+    3. Sliding-window t-test with various window sizes (3d, 5d, 7d, 10d, 14d)
+
+    Ground truth: biweekly ISF trend from EXP-312 (linear regression slope).
+    Detection metric: earliest day where method flags a significant change,
+    vs biweekly method that needs ≥14 days.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+
+    print("=" * 60)
+    print("EXP-325: CUSUM/Online Change-Point ISF Drift Detection")
+    print("=" * 60)
+
+    from tools.cgmencode.real_data_adapter import build_nightscout_grid
+    from scipy import stats as sp_stats
+
+    def compute_daily_isf(features_np):
+        """Compute daily ISF_effective from features array.
+        features_np: (T, 8) — ch0=glucose(normed), ch1=IOB, ch2=COB, etc.
+        """
+        glucose = features_np[:, 0] * 400.0  # denormalize
+        iob = features_np[:, 1]  # already in units
+
+        samples_per_day = 288
+        n_days = len(glucose) // samples_per_day
+        daily_isf = []
+        day_indices = []
+
+        for d in range(n_days):
+            s, e = d * samples_per_day, (d + 1) * samples_per_day
+            g = glucose[s:e].astype(np.float64)
+            i = iob[s:e].astype(np.float64)
+
+            valid = ~(np.isnan(g) | np.isnan(i))
+            if valid.sum() < samples_per_day * 0.5:
+                continue
+
+            g_valid = g[valid]
+            i_valid = i[valid]
+
+            active_iob = i_valid[i_valid > 0.1]
+            if len(active_iob) < 10:
+                continue
+
+            g_range = np.nanmax(g_valid) - np.nanmin(g_valid)
+            mean_iob = np.nanmean(active_iob)
+            if mean_iob < 0.05:
+                continue
+
+            isf_eff = g_range / mean_iob
+            daily_isf.append(isf_eff)
+            day_indices.append(d)
+
+        return np.array(daily_isf), np.array(day_indices)
+
+    def cusum_detect(values, threshold_sigma=2.0):
+        """CUSUM change-point detection. Returns detection days."""
+        if len(values) < 5:
+            return [], float('nan')
+        mu = np.mean(values[:min(7, len(values))])
+        sigma = max(np.std(values[:min(7, len(values))]), 1e-6)
+        h = threshold_sigma * sigma  # Decision threshold
+        k = 0.5 * sigma  # Allowance
+
+        s_pos = np.zeros(len(values))
+        s_neg = np.zeros(len(values))
+        detections = []
+
+        for i in range(1, len(values)):
+            s_pos[i] = max(0, s_pos[i-1] + (values[i] - mu) - k)
+            s_neg[i] = max(0, s_neg[i-1] - (values[i] - mu) - k)
+            if s_pos[i] > h or s_neg[i] > h:
+                detections.append(i)
+                s_pos[i] = 0
+                s_neg[i] = 0
+
+        first_detect = detections[0] if detections else len(values)
+        return detections, first_detect
+
+    def ewma_detect(values, lam=0.2, L=3.0):
+        """EWMA control chart. Returns detection days."""
+        if len(values) < 5:
+            return [], float('nan')
+        mu = np.mean(values[:min(7, len(values))])
+        sigma = max(np.std(values[:min(7, len(values))]), 1e-6)
+
+        z = np.zeros(len(values))
+        z[0] = values[0]
+        detections = []
+
+        for i in range(1, len(values)):
+            z[i] = lam * values[i] + (1 - lam) * z[i-1]
+            # Control limit
+            cl = L * sigma * np.sqrt(lam / (2 - lam) * (1 - (1-lam)**(2*(i+1))))
+            if abs(z[i] - mu) > cl:
+                detections.append(i)
+
+        first_detect = detections[0] if detections else len(values)
+        return detections, first_detect
+
+    def sliding_ttest(values, window_size):
+        """Sliding window t-test for change detection."""
+        if len(values) < 2 * window_size:
+            return [], float('nan')
+        detections = []
+        for i in range(window_size, len(values) - window_size + 1):
+            left = values[i-window_size:i]
+            right = values[i:i+window_size]
+            if len(left) < 3 or len(right) < 3:
+                continue
+            t_stat, p_val = sp_stats.ttest_ind(left, right)
+            if p_val < 0.05:
+                detections.append(i)
+
+        first_detect = detections[0] if detections else len(values)
+        return detections, first_detect
+
+    # Ground truth: linear regression slope significance on full data
+    def ground_truth_drift(values):
+        """Is there significant drift in the full series?"""
+        if len(values) < 10:
+            return False, 0.0, 1.0
+        x = np.arange(len(values))
+        slope, intercept, r_value, p_value, std_err = sp_stats.linregress(x, values)
+        return p_value < 0.05, float(slope), float(p_value)
+
+    all_patient_results = {}
+
+    for pid_path in patient_paths:
+        pid = os.path.basename(os.path.dirname(pid_path))
+        print(f"\n  Patient {pid}:")
+
+        try:
+            grid_df, features_np = _get_cached_grid(pid_path)
+        except Exception as e:
+            print(f"    SKIP: {e}")
+            continue
+
+        daily_isf, day_idx = compute_daily_isf(features_np)
+        if len(daily_isf) < 14:
+            print(f"    SKIP: only {len(daily_isf)} daily ISF values")
+            continue
+
+        # Remove extreme outliers (>3 sigma)
+        mu, sigma = np.mean(daily_isf), np.std(daily_isf)
+        mask = np.abs(daily_isf - mu) < 3 * sigma
+        daily_isf = daily_isf[mask]
+        day_idx = day_idx[mask]
+
+        has_drift, slope, p_val = ground_truth_drift(daily_isf)
+        print(f"    {len(daily_isf)} days, slope={slope:.3f}/day, p={p_val:.4f}, "
+              f"drift={'YES' if has_drift else 'no'}")
+
+        # Run all detection methods
+        methods = {}
+
+        # CUSUM at different thresholds
+        for sigma_mult in [1.5, 2.0, 3.0]:
+            detections, first = cusum_detect(daily_isf, threshold_sigma=sigma_mult)
+            methods[f'cusum_{sigma_mult}σ'] = {
+                'first_detect_day': int(first),
+                'n_detections': len(detections),
+            }
+
+        # EWMA at different smoothing
+        for lam in [0.1, 0.2, 0.3]:
+            detections, first = ewma_detect(daily_isf, lam=lam)
+            methods[f'ewma_λ{lam}'] = {
+                'first_detect_day': int(first),
+                'n_detections': len(detections),
+            }
+
+        # Sliding t-test at different windows
+        for win_days in [3, 5, 7, 10, 14]:
+            detections, first = sliding_ttest(daily_isf, window_size=win_days)
+            methods[f'ttest_{win_days}d'] = {
+                'first_detect_day': int(first),
+                'n_detections': len(detections),
+            }
+
+        all_patient_results[pid] = {
+            'n_days': len(daily_isf),
+            'has_drift': has_drift,
+            'slope': slope,
+            'p_value': p_val,
+            'methods': methods,
+        }
+
+        # Summary for this patient
+        fastest = min((v['first_detect_day'], k) for k, v in methods.items())
+        print(f"    Fastest detection: day {fastest[0]} ({fastest[1]})")
+
+    # Aggregate: for patients WITH drift, how fast is each method?
+    drift_patients = {k: v for k, v in all_patient_results.items() if v['has_drift']}
+    no_drift_patients = {k: v for k, v in all_patient_results.items() if not v['has_drift']}
+
+    print(f"\n{'='*60}")
+    print(f"EXP-325: Change-Point Detection Summary")
+    print(f"{'='*60}")
+    print(f"Patients with ground-truth drift: {len(drift_patients)}/{len(all_patient_results)}")
+    print(f"Patients without drift: {len(no_drift_patients)}/{len(all_patient_results)}")
+
+    # Average first-detection day per method (for drift patients only)
+    method_names = list(next(iter(all_patient_results.values()))['methods'].keys()) \
+                   if all_patient_results else []
+
+    method_summary = {}
+    for method in method_names:
+        detect_days = []
+        false_alarms = 0
+        for pid, pr in drift_patients.items():
+            detect_days.append(pr['methods'][method]['first_detect_day'])
+        for pid, pr in no_drift_patients.items():
+            if pr['methods'][method]['first_detect_day'] < pr['n_days']:
+                false_alarms += 1
+        mean_detect = np.mean(detect_days) if detect_days else float('nan')
+        method_summary[method] = {
+            'mean_detect_day': float(mean_detect),
+            'median_detect_day': float(np.median(detect_days)) if detect_days else float('nan'),
+            'detected_fraction': float(np.mean([d < p['n_days'] for p, d in
+                                                 zip(drift_patients.values(), detect_days)])) if detect_days else 0,
+            'false_alarm_rate': float(false_alarms / max(1, len(no_drift_patients))),
+        }
+
+    print(f"\n{'Method':>15} {'MeanDay':>8} {'MedDay':>7} {'Detect%':>8} {'FA Rate':>8}")
+    print("-" * 50)
+    for method, ms in sorted(method_summary.items(), key=lambda x: x[1]['mean_detect_day']):
+        print(f"{method:>15} {ms['mean_detect_day']:>8.1f} {ms['median_detect_day']:>7.1f} "
+              f"{ms['detected_fraction']*100:>7.1f}% {ms['false_alarm_rate']*100:>7.1f}%")
+    print(f"{'='*60}")
+    print(f"  Biweekly baseline: 14.0 days (from EXP-312)")
+
+    results = {
+        'experiment': 'EXP-325',
+        'name': 'cusum-isf-drift',
+        'method': 'CUSUM, EWMA, and sliding t-test for ISF change-point detection',
+        'per_patient': all_patient_results,
+        'method_summary': method_summary,
+        'n_drift_patients': len(drift_patients),
+        'n_no_drift_patients': len(no_drift_patients),
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    save_results(results, os.path.join(output_dir, 'exp325_cusum_drift.json'))
+    return results
+
+
+def run_leave_patient_out(args):
+    """EXP-326: Leave-one-patient-out generalization for classification.
+
+    Critical deployment question: do override/hypo models trained on N-1 patients
+    generalize to an unseen patient?
+
+    Method: For each of 11 patients, train multi-task CNN on 10 others, test on
+    the held-out patient. Report per-patient F1 and compare to within-patient
+    (trained-on-all) baseline from EXP-322.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-326: Leave-One-Patient-Out Classification Generalization")
+    print("=" * 60)
+
+    # Load per-patient data
+    per_patient = {}
+    for pp in patient_paths:
+        pid = os.path.basename(os.path.dirname(pp))
+        try:
+            data = load_multiscale_data([pp], scale='fast', val_fraction=0.0)
+            if isinstance(data, tuple):
+                windows = data[0]
+            else:
+                windows = data
+            per_patient[pid] = windows
+            print(f"  Patient {pid}: {windows.shape}")
+        except Exception as e:
+            print(f"  Patient {pid}: SKIP ({e})")
+
+    pids = sorted(per_patient.keys())
+    print(f"\nLoaded {len(pids)} patients: {pids}")
+
+    half = next(iter(per_patient.values())).shape[1] // 2
+
+    def build_override_labels(windows, lead=3):
+        future = windows[:, half:half + lead, 0] * 400.0
+        high = (future > 180).any(axis=1)
+        low = (future < 70).any(axis=1)
+        labels = np.zeros(len(windows), dtype=np.int64)
+        labels[high] = 1
+        labels[low] = 2
+        return labels
+
+    def build_hypo_labels(windows, lead=6):
+        future = windows[:, half:half + lead, 0] * 400.0
+        return (future < 70).any(axis=1).astype(np.int64)
+
+    class MultiTaskCNN(nn.Module):
+        def __init__(self, in_channels=8):
+            super().__init__()
+            self.backbone = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.Conv1d(64, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.override_head = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, 3),
+            )
+            self.hypo_head = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.3),
+                nn.Linear(32, 2),
+            )
+
+        def forward(self, x):
+            h = x.shape[1] // 2
+            x = x[:, :h].permute(0, 2, 1)
+            feat = self.backbone(x).squeeze(-1)
+            return self.override_head(feat), self.hypo_head(feat)
+
+    from sklearn.metrics import f1_score, roc_auc_score
+
+    loo_results = {}
+    batch_size = 256
+
+    for hold_pid in pids:
+        print(f"\n  Holding out patient {hold_pid}:")
+
+        # Build train from all other patients
+        train_windows = [per_patient[p] for p in pids if p != hold_pid]
+        train_np = np.concatenate(train_windows, axis=0)
+        test_np = per_patient[hold_pid]
+
+        train_override = build_override_labels(train_np)
+        test_override = build_override_labels(test_np)
+        train_hypo = build_hypo_labels(train_np)
+        test_hypo = build_hypo_labels(test_np)
+
+        # Class weights from training data
+        from collections import Counter
+        ov_counts = Counter(train_override.tolist())
+        n_total = len(train_override)
+        ov_cw = torch.tensor([n_total / (3 * max(1, ov_counts.get(c, 1))) for c in range(3)],
+                              dtype=torch.float32).to(device)
+        n_pos = train_hypo.sum()
+        n_neg = len(train_hypo) - n_pos
+        hypo_weight = max(2.0, n_neg / max(1, n_pos))
+        hypo_cw = torch.tensor([1.0, hypo_weight], dtype=torch.float32).to(device)
+
+        model = MultiTaskCNN().to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        ov_criterion = nn.CrossEntropyLoss(weight=ov_cw)
+        hypo_criterion = nn.CrossEntropyLoss(weight=hypo_cw)
+
+        # Train
+        train_t = torch.from_numpy(train_np).float()
+        train_ov_t = torch.from_numpy(train_override).long()
+        train_hypo_t = torch.from_numpy(train_hypo).long()
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_np))
+            for start in range(0, len(perm), batch_size):
+                end = min(start + batch_size, len(perm))
+                idx = perm[start:end]
+                ov_logits, hypo_logits = model(train_t[idx].to(device))
+                loss = ov_criterion(ov_logits, train_ov_t[idx].to(device)) + \
+                       hypo_criterion(hypo_logits, train_hypo_t[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        # Evaluate on held-out patient
+        model.eval()
+        test_t = torch.from_numpy(test_np).float()
+        all_ov_preds, all_hypo_probs = [], []
+        with torch.no_grad():
+            for vs in range(0, len(test_np), 512):
+                ve = min(vs + 512, len(test_np))
+                ov_logits, hypo_logits = model(test_t[vs:ve].to(device))
+                all_ov_preds.append(ov_logits.argmax(dim=-1).cpu().numpy())
+                all_hypo_probs.append(torch.softmax(hypo_logits, dim=-1)[:, 1].cpu().numpy())
+
+        ov_preds = np.concatenate(all_ov_preds)
+        hypo_probs = np.concatenate(all_hypo_probs)
+
+        ov_f1 = f1_score(test_override, ov_preds, average='macro', zero_division=0)
+
+        # Threshold sweep for hypo
+        best_f1, best_thresh = 0.0, 0.5
+        for thresh in np.arange(0.01, 1.0, 0.01):
+            f1 = f1_score(test_hypo, (hypo_probs >= thresh).astype(int), zero_division=0)
+            if f1 > best_f1:
+                best_f1, best_thresh = f1, float(thresh)
+
+        try:
+            hypo_auc = roc_auc_score(test_hypo, hypo_probs)
+        except ValueError:
+            hypo_auc = float('nan')
+
+        hypo_prev = test_hypo.mean()
+        ov_prev = (test_override > 0).mean()
+
+        loo_results[hold_pid] = {
+            'n_test': len(test_np),
+            'n_train': len(train_np),
+            'override_f1': float(ov_f1),
+            'hypo_f1': float(best_f1),
+            'hypo_threshold': float(best_thresh),
+            'hypo_auc': float(hypo_auc),
+            'hypo_prevalence': float(hypo_prev),
+            'override_prevalence': float(ov_prev),
+        }
+        print(f"    n={len(test_np)}, OV F1={ov_f1:.4f}, "
+              f"Hypo F1={best_f1:.4f} @{best_thresh:.2f}, AUC={hypo_auc:.4f}")
+
+    # Baselines from EXP-322 (trained on all, validated on 20% split)
+    baseline_ov_f1 = 0.809
+    baseline_hypo_f1 = 0.672
+
+    mean_ov_f1 = np.mean([r['override_f1'] for r in loo_results.values()])
+    mean_hypo_f1 = np.mean([r['hypo_f1'] for r in loo_results.values()])
+    mean_hypo_auc = np.nanmean([r['hypo_auc'] for r in loo_results.values()])
+
+    print(f"\n{'='*60}")
+    print(f"EXP-326: Leave-One-Patient-Out Results")
+    print(f"{'='*60}")
+    print(f"{'Patient':>8} {'N':>6} {'OV F1':>7} {'Hypo F1':>8} {'Hypo AUC':>9} {'Hypo Prev':>10}")
+    print("-" * 55)
+    for pid in sorted(loo_results.keys()):
+        r = loo_results[pid]
+        print(f"{pid:>8} {r['n_test']:>6} {r['override_f1']:>7.4f} "
+              f"{r['hypo_f1']:>8.4f} {r['hypo_auc']:>9.4f} {r['hypo_prevalence']:>10.3f}")
+    print("-" * 55)
+    print(f"{'LOO Mean':>8} {'':>6} {mean_ov_f1:>7.4f} {mean_hypo_f1:>8.4f} {mean_hypo_auc:>9.4f}")
+    print(f"{'Baseline':>8} {'':>6} {baseline_ov_f1:>7.4f} {baseline_hypo_f1:>8.4f}")
+    print(f"{'Δ':>8} {'':>6} {mean_ov_f1 - baseline_ov_f1:>+7.4f} "
+          f"{mean_hypo_f1 - baseline_hypo_f1:>+8.4f}")
+    print(f"{'='*60}")
+
+    results = {
+        'experiment': 'EXP-326',
+        'name': 'leave-patient-out-classification',
+        'method': 'LOO multi-task CNN for override + hypo generalization',
+        'per_patient': loo_results,
+        'summary': {
+            'mean_override_f1': float(mean_ov_f1),
+            'mean_hypo_f1': float(mean_hypo_f1),
+            'mean_hypo_auc': float(mean_hypo_auc),
+            'baseline_override_f1': baseline_ov_f1,
+            'baseline_hypo_f1': baseline_hypo_f1,
+            'delta_override': float(mean_ov_f1 - baseline_ov_f1),
+            'delta_hypo': float(mean_hypo_f1 - baseline_hypo_f1),
+        },
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    save_results(results, os.path.join(output_dir, 'exp326_loo_classification.json'))
+    return results
+
+
 # ── Registry & CLI ─────────────────────────────────────────────────────
 
 EXPERIMENTS = {
@@ -6532,6 +7008,11 @@ EXPERIMENTS = {
                         'Multi-task CNN + focal loss for hypo head'),
     'calibration': ('EXP-324', run_calibration_analysis,
                     'Temperature scaling and Platt calibration for hypo CNN'),
+    # Phase 33: Generalization and online drift detection
+    'cusum-drift': ('EXP-325', run_cusum_isf_drift,
+                    'CUSUM/EWMA/sliding-ttest change-point detection for ISF drift'),
+    'loo-classification': ('EXP-326', run_leave_patient_out,
+                           'Leave-one-patient-out multi-task CNN generalization'),
 }
 
 
