@@ -653,6 +653,134 @@ class TestValidationReport(unittest.TestCase):
 
 
 # =============================================================================
+# 12. Validated Forecast Helper Tests
+# =============================================================================
+
+class TestRunValidatedForecast(unittest.TestCase):
+    """Tests for run_validated_forecast helper."""
+
+    def test_basic_forecast(self):
+        """Should run multi-seed forecast and save JSON."""
+        from tools.cgmencode.experiment_lib import run_validated_forecast
+
+        def train_fn(seed):
+            rng = np.random.RandomState(seed)
+            y_true = rng.uniform(70, 250, 50)
+            y_pred = y_true + rng.normal(0, 10, 50)
+            return {'y_true': y_true, 'y_pred': y_pred}
+
+        with tempfile.TemporaryDirectory() as d:
+            result = run_validated_forecast(
+                'EXP-FTEST', d, train_fn,
+                seeds=[42, 123], denormalize=False,
+            )
+            self.assertIn('multi_seed', result)
+            agg = result['multi_seed']['aggregate']
+            self.assertIn('mae', agg)
+            self.assertIn('rmse', agg)
+            self.assertEqual(result['validation_metadata']['objective'], 'forecasting')
+
+    def test_verification_gap(self):
+        """Should compute verification gap when train_mae provided."""
+        from tools.cgmencode.experiment_lib import run_validated_forecast
+
+        def train_fn(seed):
+            rng = np.random.RandomState(seed)
+            y_true = rng.uniform(70, 250, 50)
+            y_pred = y_true + rng.normal(0, 15, 50)
+            return {'y_true': y_true, 'y_pred': y_pred}
+
+        with tempfile.TemporaryDirectory() as d:
+            result = run_validated_forecast(
+                'EXP-FGAP', d, train_fn,
+                seeds=[42], denormalize=False, train_mae=5.0,
+            )
+            agg = result['multi_seed']['aggregate']
+            self.assertIn('verification_gap_pct', agg)
+
+    def test_zone_mae_flattened(self):
+        """Zone MAE should be flattened to scalar metrics."""
+        from tools.cgmencode.experiment_lib import run_validated_forecast
+
+        def train_fn(seed):
+            rng = np.random.RandomState(seed)
+            y_true = np.concatenate([
+                rng.uniform(40, 69, 20),   # hypo
+                rng.uniform(70, 179, 40),  # target
+                rng.uniform(180, 350, 20), # hyper
+            ])
+            y_pred = y_true + rng.normal(0, 5, 80)
+            return {'y_true': y_true, 'y_pred': y_pred}
+
+        with tempfile.TemporaryDirectory() as d:
+            result = run_validated_forecast(
+                'EXP-FZONE', d, train_fn,
+                seeds=[42], denormalize=False,
+            )
+            agg = result['multi_seed']['aggregate']
+            # Zone MAE should be flattened as mae_hypo, mae_target, mae_hyper
+            self.assertIn('mae_hypo', agg)
+            self.assertIn('mae_target', agg)
+            self.assertIn('mae_hyper', agg)
+
+
+# =============================================================================
+# 13. Validated Drift Helper Tests
+# =============================================================================
+
+class TestRunValidatedDrift(unittest.TestCase):
+    """Tests for run_validated_drift helper."""
+
+    def test_statistical_drift(self):
+        """Should run per-patient drift without seeds."""
+        from tools.cgmencode.experiment_lib import run_validated_drift
+
+        rng = np.random.RandomState(42)
+
+        def patient_fn(pid):
+            ts = np.arange(30)
+            slope = rng.uniform(-0.5, 1.0)
+            isf = 50 + slope * ts + rng.normal(0, 2, 30)
+            return {'timestamps': ts, 'isf_values': isf}
+
+        with tempfile.TemporaryDirectory() as d:
+            result = run_validated_drift(
+                'EXP-DTEST', d, patient_fn,
+                patient_ids=['a', 'b', 'c', 'd', 'e'],
+            )
+            self.assertIn('per_patient', result)
+            self.assertIn('aggregate', result)
+            self.assertEqual(len(result['per_patient']), 5)
+            self.assertEqual(result['aggregate']['n_patients'], 5)
+            self.assertEqual(result['validation_metadata']['objective'], 'drift')
+
+    def test_model_based_drift(self):
+        """Should run multi-seed when function takes (pid, seed)."""
+        from tools.cgmencode.experiment_lib import run_validated_drift
+
+        def patient_fn(pid, seed):
+            rng = np.random.RandomState(seed + hash(pid) % 1000)
+            ts = np.arange(20)
+            isf = 50 + 0.5 * ts + rng.normal(0, 2, 20)
+            return {'timestamps': ts, 'isf_values': isf}
+
+        with tempfile.TemporaryDirectory() as d:
+            result = run_validated_drift(
+                'EXP-DSEED', d, patient_fn,
+                patient_ids=['a', 'b', 'c'],
+                seeds=[42, 123],
+            )
+            self.assertIn('multi_seed', result)
+            self.assertEqual(result['validation_metadata']['objective'], 'drift')
+
+    def test_requires_patient_ids(self):
+        """Should raise when patient_ids not provided."""
+        from tools.cgmencode.experiment_lib import run_validated_drift
+        with self.assertRaises(ValueError):
+            run_validated_drift('EXP-X', '/tmp', lambda pid: {}, patient_ids=None)
+
+
+# =============================================================================
 
 if __name__ == '__main__':
     unittest.main()

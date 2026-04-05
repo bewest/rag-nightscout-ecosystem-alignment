@@ -832,3 +832,136 @@ def run_validated_retrieval(experiment_id, output_dir, train_eval_fn,
     ctx.record_validation(objective='retrieval')
     ctx.attach_multi_seed_report(ms_report)
     return ctx.save(f'{experiment_id.lower().replace("-", "_")}_validated.json')
+
+
+def run_validated_forecast(experiment_id, output_dir, train_eval_fn,
+                            seeds=None, split_fractions=(0.6, 0.2, 0.2),
+                            denormalize=True, train_mae=None):
+    """Run a forecasting experiment with multi-seed validation.
+
+    Args:
+        experiment_id: E.g. 'EXP-302'.
+        output_dir: Where to save result JSON.
+        train_eval_fn: f(seed) -> dict with 'y_true' and 'y_pred'
+            (numpy arrays of glucose values). May include extra metrics.
+        seeds: List of seeds (default: STANDARD_SEEDS).
+        split_fractions: Tuple for temporal split metadata.
+        denormalize: If True, ForecastValidator multiplies by glucose_scale.
+        train_mae: Optional training MAE for verification gap computation.
+
+    Returns:
+        ExperimentContext result dict (also saved as JSON).
+    """
+    from .validation_framework import MultiSeedRunner, STANDARD_SEEDS
+    from .objective_validators import ForecastValidator
+
+    seeds = seeds or STANDARD_SEEDS
+    fv = ForecastValidator()
+
+    def _inner(seed):
+        raw = train_eval_fn(seed)
+        y_true = np.asarray(raw.pop('y_true')).ravel()
+        y_pred = np.asarray(raw.pop('y_pred')).ravel()
+        metrics = fv.evaluate(y_true, y_pred, denormalize=denormalize, bootstrap=False)
+        # Flatten zone_mae into scalar metrics for aggregation
+        if 'zone_mae' in metrics:
+            for zone, info in metrics.pop('zone_mae').items():
+                if isinstance(info, dict) and not np.isnan(info.get('mae', float('nan'))):
+                    metrics[f'mae_{zone}'] = info['mae']
+        # Flatten clarke_pct
+        if 'clarke_pct' in metrics:
+            for zone, pct in metrics.pop('clarke_pct').items():
+                metrics[f'clarke_{zone.lower()}'] = pct
+        # Verification gap
+        seed_train_mae = raw.pop('train_mae', train_mae)
+        if seed_train_mae is not None:
+            gap = (metrics['mae'] - seed_train_mae) / seed_train_mae * 100
+            metrics['verification_gap_pct'] = gap
+            metrics['train_mae'] = seed_train_mae
+        # Remove non-scalar fields
+        metrics.pop('metric_type', None)
+        metrics.update({k: v for k, v in raw.items() if isinstance(v, (int, float))})
+        return metrics
+
+    runner = MultiSeedRunner(seeds=seeds)
+    ms_report = runner.run(_inner)
+
+    ctx = ExperimentContext(experiment_id, output_dir)
+    ctx.record_split('temporal', fractions=split_fractions)
+    ctx.record_validation(objective='forecasting')
+    ctx.attach_multi_seed_report(ms_report)
+    return ctx.save(f'{experiment_id.lower().replace("-", "_")}_validated.json')
+
+
+def run_validated_drift(experiment_id, output_dir, patient_eval_fn,
+                         patient_ids=None, seeds=None):
+    """Run an ISF drift experiment with per-patient evaluation.
+
+    Drift analysis is inherently per-patient (not per-seed), but if the
+    drift signal depends on a learned model (e.g., ISF estimation from
+    embeddings), multi-seed evaluation captures model variance.
+
+    Args:
+        experiment_id: E.g. 'EXP-312'.
+        output_dir: Where to save result JSON.
+        patient_eval_fn: One of two signatures:
+            - f(patient_id) -> dict with 'timestamps' and 'isf_values'
+              (for statistical-only drift, no seeds needed)
+            - f(patient_id, seed) -> dict with 'timestamps' and 'isf_values'
+              (for model-based ISF estimation, runs across seeds)
+        patient_ids: List of patient IDs. Required.
+        seeds: List of seeds (default: None = no multi-seed, statistical only).
+            Provide seeds when the drift signal depends on a learned model.
+
+    Returns:
+        ExperimentContext result dict (also saved as JSON).
+    """
+    import inspect
+    from .validation_framework import MultiSeedRunner, STANDARD_SEEDS
+    from .objective_validators import DriftValidator
+
+    if patient_ids is None:
+        raise ValueError("patient_ids is required for drift validation")
+
+    dv = DriftValidator()
+    fn_params = inspect.signature(patient_eval_fn).parameters
+    uses_seed = len(fn_params) >= 2
+
+    if uses_seed and seeds is None:
+        seeds = STANDARD_SEEDS
+
+    if uses_seed:
+        # Model-based drift: run each seed, aggregate per-patient results
+        def _inner(seed):
+            patient_results = []
+            for pid in patient_ids:
+                raw = patient_eval_fn(pid, seed)
+                ts = np.asarray(raw['timestamps'])
+                isf = np.asarray(raw['isf_values'])
+                patient_results.append(dv.evaluate_per_patient(ts, isf, pid))
+            agg = dv.aggregate(patient_results)
+            return {k: v for k, v in agg.items() if isinstance(v, (int, float, str))}
+
+        runner = MultiSeedRunner(seeds=seeds)
+        ms_report = runner.run(_inner)
+
+        ctx = ExperimentContext(experiment_id, output_dir)
+        ctx.record_validation(objective='drift')
+        ctx.attach_multi_seed_report(ms_report)
+    else:
+        # Statistical drift: no seeds needed, one pass over patients
+        patient_results = []
+        for pid in patient_ids:
+            raw = patient_eval_fn(pid)
+            ts = np.asarray(raw['timestamps'])
+            isf = np.asarray(raw['isf_values'])
+            patient_results.append(dv.evaluate_per_patient(ts, isf, pid))
+
+        agg = dv.aggregate(patient_results)
+
+        ctx = ExperimentContext(experiment_id, output_dir)
+        ctx.record_validation(objective='drift')
+        ctx.result['per_patient'] = patient_results
+        ctx.result['aggregate'] = agg
+
+    return ctx.save(f'{experiment_id.lower().replace("-", "_")}_validated.json')
