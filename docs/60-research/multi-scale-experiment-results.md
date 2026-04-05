@@ -1,8 +1,8 @@
 # Multi-Scale Pattern Experiment Results
 
 **Date**: 2026-04-04  
-**Experiments**: EXP-287, EXP-289, EXP-286, EXP-291, EXP-298, EXP-299, EXP-300, EXP-301  
-**Status**: Complete (8 experiments across 4 timescales)
+**Experiments**: EXP-287, EXP-289, EXP-286, EXP-291, EXP-298, EXP-299, EXP-300, EXP-301, EXP-304, EXP-305  
+**Status**: Complete (10 experiments across 4 timescales + cross-scale)
 
 ## Executive Summary
 
@@ -433,6 +433,178 @@ python3 -m tools.cgmencode.run_pattern_experiments drift-daily --device cuda --e
 
 # EXP-301: Weekly ISF
 python3 -m tools.cgmencode.run_pattern_experiments weekly-isf --device cuda --epochs 30
+```
+
+All results saved to `externals/experiments/` (gitignored).
+Scripts in `tools/cgmencode/run_pattern_experiments.py` (committed).
+
+---
+
+## Cross-Scale Experiments (EXP-304, EXP-305)
+
+### EXP-304: Cross-Scale Retrieval — Concatenation Hurts
+
+**Question**: Does combining embeddings from multiple scales beat the best single scale?
+
+**Method**: Staged training — train each per-scale encoder independently with triplet loss,
+then freeze and concatenate embeddings. Uses 6h alignment stride (reduced from 1h to avoid
+temporal autocorrelation — the original run with 1h stride failed with Sil=-0.81).
+
+**Data**: 5,446 aligned windows (4,356 train, 1,090 val) across 11 patients.
+Each window tuple shares the same end timestamp, providing fast (2h), episode (12h),
+and weekly (7d) views of the same moment.
+
+| Configuration | Dim | R@5 | Silhouette | Notes |
+|---------------|-----|-----|------------|-------|
+| Fast only | 32d | 1.00 | -0.677 | Worst — 2h too short for clustering |
+| Episode only | 32d | 1.00 | -0.601 | Mid — 12h moderate quality |
+| **Weekly only** | **32d** | **1.00** | **+0.326** | **BEST — only positive Sil** |
+| Cross-scale | 96d | 1.00 | -0.200 | **Worse than weekly alone (ΔSil=-0.525)** |
+
+**Key findings**:
+
+1. **Weekly scale dominates**: Sil=+0.326 is the first POSITIVE silhouette we've seen,
+   indicating genuine cluster structure. This is dramatically better than the -0.301
+   from EXP-301 (different data subset, stride).
+
+2. **Concatenation dilutes**: Fast and episode embeddings add noise that destroys the
+   weekly signal. The 96d cross-scale embedding (Sil=-0.200) is *worse* than weekly
+   alone by 0.525 silhouette points.
+
+3. **R@5 saturated at 1.0**: Recall@5 cannot discriminate — all configurations achieve
+   perfect recall. This metric needs harder evaluation (k=1, or leave-patient-out).
+
+4. **First attempt failed**: Joint training with 1h stride produced Sil=-0.81 due to
+   99%+ temporal overlap. The 6h stride fix was essential.
+
+**Conclusion**: For pattern retrieval, use weekly-scale alone. Cross-scale concatenation
+is counterproductive — different scales serve different tasks, not the same task better.
+
+```
+Silhouette by Configuration:
+  +0.33 ┤    ● Weekly (32d) — BEST, only positive
+  +0.00 ┤─────────────────────────────────────────
+  -0.20 ┤                          ● Cross (96d)
+  -0.60 ┤  ● Episode (32d)
+  -0.68 ┤  ● Fast (32d)
+```
+
+#### Architecture Implication: Task-Specific Scale Selection
+
+The right approach is NOT "combine everything" but "pick the right scale for each task":
+
+| Task | Best Scale | Rationale |
+|------|-----------|-----------|
+| Pattern retrieval | Weekly (7d) | Best clustering (Sil=+0.326) |
+| UAM detection | Fast (2h) | Acute events dilute at 12h+ (EXP-299) |
+| ISF drift | Weekly (7d) | Needs multi-day comparison |
+| Override recommendation | See EXP-305 | May benefit from multi-scale context |
+
+### EXP-305: Scale-Comparison Override Classification
+
+**Question**: Does adding pattern embeddings help predict upcoming glucose excursions
+that would warrant an override?
+
+**Method**: Forward-looking labels — split fast window at the midpoint (1h context /
+1h future). Label based on whether glucose exceeds thresholds in the FUTURE portion,
+making the problem genuinely predictive rather than trivially observable from current
+state. Compare 4 input representations, each feeding a 2-layer MLP with class-weighted
+cross-entropy loss.
+
+**Data**: 1,090 val windows (872 train, 218 val for policy).
+Label distribution: none=805, upcoming_high=75, upcoming_low=69, upcoming_spike=141.
+
+| Configuration | Dim | Macro-F1 | Accuracy | Best Val Acc |
+|---------------|-----|----------|----------|-------------|
+| state-only | 10d | 0.3915 | 0.425 | 0.459 |
+| **weekly+state** | **42d** | **0.3917** | **0.440** | 0.436 |
+| episode+state | 42d | 0.3915 | 0.443 | 0.463 |
+| cross+state | 106d | 0.3462 | 0.364 | 0.427 |
+
+**Key findings**:
+
+1. **Forward-looking labels work**: Models actually learn meaningful classifiers
+   (F1=0.39) rather than collapsing to majority class (was F1=0.21 with trivial labels).
+
+2. **Pattern embeddings barely help override**: Weekly+state achieves F1=0.3917 vs
+   state-only 0.3915 — a negligible +0.0003 improvement. Upcoming glucose excursions
+   are primarily predictable from current trajectory (rate of change, recent variability).
+
+3. **Cross-scale hurts AGAIN**: 106d input produces the worst results (F1=0.346),
+   confirming EXP-304. The fast/episode embeddings add noise for this task too.
+
+4. **Small dataset limits**: Only 872 training windows for a 4-class problem. The
+   embedding→override mapping may need more data to learn.
+
+**Conclusion**: Override prediction is fundamentally a short-horizon problem where current
+glucose state carries most of the predictive signal. Pattern context from longer scales
+provides marginal benefit at best. This suggests override recommendation should use a
+sequence model on the fast window rather than static embeddings.
+
+---
+
+## Updated Synthesis
+
+### The Task–Scale Matrix (Complete)
+
+| Objective | Best Scale | Best Metric | Embedding Value |
+|-----------|-----------|-------------|-----------------|
+| Pattern retrieval | Weekly (7d) | Sil=+0.326 | **Essential** — only positive Sil |
+| UAM detection | Fast (2h) | F1=0.40 | N/A (classification) |
+| ISF drift | Weekly (7d) | TBD | TBD — needs profile features |
+| Override recommendation | Fast (2h) state | F1=0.39 | **Marginal** — ΔF1<0.001 |
+| Glucose forecasting | 2h window | MAE=11.25 | N/A (regression) |
+
+### Cross-Scale Architecture: Verdict
+
+The cross-scale concatenation hypothesis is **rejected** for both retrieval and
+classification. Combining embeddings from different scales consistently degrades
+performance:
+
+- **Retrieval**: ΔSil = -0.525 (cross vs weekly alone)
+- **Override**: ΔF1 = -0.045 (cross vs state-only)
+
+The correct architecture is **task-specific scale selection**: use the scale whose
+temporal resolution matches the phenomenon you're detecting.
+
+### Remaining Open Questions
+
+1. **ISF drift detection**: Zero drift labels assigned at any scale with 8 channels.
+   Need either profile features (ISF values from therapy settings) or indirect
+   estimation via cross-week pattern comparison.
+
+2. **Sequence-based override**: Since current state captures most override signal,
+   a temporal model (LSTM/Transformer) on the raw fast window may outperform
+   embedding-based approaches.
+
+3. **Larger training sets**: Override classification with only 872 windows is
+   data-limited. Non-aligned data (stride=1) could provide 36K fast windows.
+
+---
+
+## Reproduction
+
+```bash
+# EXP-289: Window sweep
+python3 -m tools.cgmencode.run_pattern_experiments window-sweep-embedding --device cuda
+
+# EXP-298: 12h ablation
+python3 -m tools.cgmencode.run_pattern_experiments ablation-12h --device cuda --epochs 30
+
+# EXP-299: 12h UAM
+python3 -m tools.cgmencode.run_pattern_experiments uam-12h --device cuda --epochs 30
+
+# EXP-300: 24h drift
+python3 -m tools.cgmencode.run_pattern_experiments drift-daily --device cuda --epochs 30
+
+# EXP-301: Weekly ISF
+python3 -m tools.cgmencode.run_pattern_experiments weekly-isf --device cuda --epochs 30
+
+# EXP-304: Cross-scale retrieval (staged training, 6h stride)
+python3 -m tools.cgmencode.run_pattern_experiments cross-scale --device cuda --epochs 30
+
+# EXP-305: Scale-comparison override (forward-looking labels)
+python3 -m tools.cgmencode.run_pattern_experiments multiscale-override --device cuda --epochs 50
 ```
 
 All results saved to `externals/experiments/` (gitignored).

@@ -1720,109 +1720,157 @@ def run_cross_scale_retrieval(args):
     """EXP-304: Cross-scale retrieval — does combining fast+episode+weekly
     beat any single scale for pattern retrieval?
 
-    Uses aligned multi-scale loader (single disk load) to train a
-    CrossScaleEncoder with 3 scales → 96d concatenated embedding.
-    Compares against single-scale baselines from EXP-289/301.
+    Staged approach (avoids joint-training convergence issues):
+    1. Train each per-scale encoder INDEPENDENTLY with triplet loss
+    2. Freeze per-scale encoders
+    3. Generate per-scale embeddings on validation set
+    4. Concatenate → evaluate cross-scale R@5 and Silhouette
+    5. Compare: cross-scale vs best single-scale (weekly, Sil=-0.301)
+
+    Uses 6h alignment stride to reduce temporal autocorrelation.
     """
+    from .pattern_embedding import PatternEncoder, retrieval_recall_at_k
+    from sklearn.metrics import silhouette_score
+
     patient_paths = resolve_patient_paths(args.patients_dir)
     output_dir = args.output_dir
     device = args.device
     epochs = args.epochs
 
     print("=" * 60)
-    print("EXP-304: Cross-Scale Retrieval (fast+episode+weekly)")
+    print("EXP-304: Cross-Scale Retrieval (staged training)")
     print("=" * 60)
 
-    # Load aligned data (single grid load per patient)
+    # Load aligned data with 6h stride (reduces temporal autocorrelation)
     scales = ('fast', 'episode', 'weekly')
     data = load_aligned_multiscale(patient_paths, scales=scales,
-                                   alignment_stride_hr=1)
+                                   alignment_stride_hr=6)
 
-    # Build labels from episode-scale windows (best granularity for labeling)
+    # Build labels from episode-scale windows (best granularity)
+    print("\nBuilding episode labels...")
     train_labels = build_episode_labels_batch(data['episode']['train'])
     val_labels = build_episode_labels_batch(data['episode']['val'])
+    flat_val_labels = [l[0] if isinstance(l, list) else l for l in val_labels]
 
-    # Train cross-scale encoder
-    scale_configs = {s: SCALE_CONFIG[s] for s in scales}
-    encoder = CrossScaleEncoder(
-        scale_configs, input_dim=8, d_model=64, nhead=4,
-        num_layers=2, embed_dim=32,
-    )
-    total_params = sum(p.numel() for p in encoder.parameters())
-    print(f"\nCrossScaleEncoder: {total_params:,} params "
-          f"(3 scales × 32d = {encoder.total_embed_dim}d output)")
-
-    train_inputs = {s: data[s]['train'] for s in scales}
-    val_inputs = {s: data[s]['val'] for s in scales}
-
-    encoder, history = train_cross_scale_encoder(
-        encoder, train_inputs, val_inputs, train_labels, val_labels,
-        epochs=epochs, batch_size=32, lr=1e-3, device=device,
-    )
-
-    # Evaluate cross-scale
-    cross_metrics = eval_cross_scale_encoder(
-        encoder, val_inputs, val_labels, device=device,
-    )
-
-    # Evaluate per-scale baselines (using same aligned data)
+    # Stage 1: Train each per-scale encoder independently
+    per_scale_encoders = {}
     per_scale_metrics = {}
-    for s in scales:
-        from .pattern_embedding import PatternEncoder, retrieval_recall_at_k
-        from sklearn.metrics import silhouette_score
 
-        single_enc = encoder.encoders[s].to(device).eval()
+    for s in scales:
+        print(f"\n--- Training {s}-scale encoder ---")
+        enc = PatternEncoder(
+            input_dim=8, d_model=64, nhead=4, num_layers=2, embed_dim=32,
+        )
+        enc, hist = train_pattern_encoder(
+            enc, data[s]['train'], train_labels,
+            data[s]['val'], val_labels,
+            epochs=epochs, batch_size=32, lr=1e-3, device=device,
+        )
+        per_scale_encoders[s] = enc
+
+        # Evaluate per-scale
+        enc = enc.to(device).eval()
         all_embs = []
-        n_val = len(val_inputs[s])
+        n_val = len(data[s]['val'])
         with torch.no_grad():
             for start in range(0, n_val, 512):
                 end = min(start + 512, n_val)
-                batch = torch.from_numpy(val_inputs[s][start:end]).float().to(device)
-                emb = single_enc(batch)
+                batch = torch.from_numpy(data[s]['val'][start:end]).float().to(device)
+                emb = enc(batch)
                 all_embs.append(emb.cpu().numpy())
         embeddings = np.concatenate(all_embs)
 
-        flat_labels = [l[0] if isinstance(l, list) else l for l in val_labels]
-        r5 = retrieval_recall_at_k(embeddings, flat_labels, k=5)
-        unique_labels = list(set(flat_labels))
-        label_ints = [unique_labels.index(l) for l in flat_labels]
-        sil = silhouette_score(embeddings, label_ints,
-                               metric='cosine',
+        r5 = retrieval_recall_at_k(embeddings, flat_val_labels, k=5)
+        unique_labels = list(set(flat_val_labels))
+        label_ints = [unique_labels.index(l) for l in flat_val_labels]
+        sil = silhouette_score(embeddings, label_ints, metric='cosine',
                                sample_size=min(5000, len(label_ints)))
-        per_scale_metrics[s] = {'recall_at_5': r5, 'silhouette': sil}
+        per_scale_metrics[s] = {
+            'recall_at_5': float(r5), 'silhouette': float(sil),
+            'embed_dim': 32,
+        }
+        print(f"  {s}: R@5={r5:.4f}, Sil={sil:.4f}")
+
+    # Stage 2: Generate all per-scale embeddings and concatenate
+    print(f"\n--- Cross-scale concatenation ---")
+    per_scale_embs = {}
+    for s in scales:
+        enc = per_scale_encoders[s].to(device).eval()
+        all_embs = []
+        n_val = len(data[s]['val'])
+        with torch.no_grad():
+            for start in range(0, n_val, 512):
+                end = min(start + 512, n_val)
+                batch = torch.from_numpy(data[s]['val'][start:end]).float().to(device)
+                emb = enc(batch)
+                all_embs.append(emb.cpu().numpy())
+        per_scale_embs[s] = np.concatenate(all_embs)
+
+    # Concatenate: [fast_32d || episode_32d || weekly_32d] = 96d
+    cross_emb = np.concatenate([per_scale_embs[s] for s in scales], axis=1)
+    cross_emb_norm = cross_emb / (np.linalg.norm(cross_emb, axis=1, keepdims=True) + 1e-8)
+
+    r5_cross = retrieval_recall_at_k(cross_emb_norm, flat_val_labels, k=5)
+    unique_labels = list(set(flat_val_labels))
+    label_ints = [unique_labels.index(l) for l in flat_val_labels]
+    sil_cross = silhouette_score(cross_emb_norm, label_ints, metric='cosine',
+                                 sample_size=min(5000, len(label_ints)))
+
+    cross_metrics = {
+        'recall_at_5': float(r5_cross), 'silhouette': float(sil_cross),
+        'embed_dim': cross_emb.shape[1], 'n_val': len(flat_val_labels),
+        'n_unique_labels': len(unique_labels),
+    }
+
+    # Build CrossScaleEncoder and load trained weights for checkpoint
+    scale_configs = {s: SCALE_CONFIG[s] for s in scales}
+    cross_encoder = CrossScaleEncoder(
+        scale_configs, input_dim=8, d_model=64, nhead=4,
+        num_layers=2, embed_dim=32,
+    )
+    for s in scales:
+        cross_encoder.encoders[s].load_state_dict(per_scale_encoders[s].state_dict())
+    total_params = sum(p.numel() for p in cross_encoder.parameters())
 
     results = {
         'experiment': 'EXP-304',
-        'name': 'cross-scale-retrieval',
+        'name': 'cross-scale-retrieval-staged',
         'scales': list(scales),
+        'alignment_stride_hr': 6,
+        'training_method': 'staged (independent per-scale, then concat)',
         'cross_scale': cross_metrics,
         'per_scale': per_scale_metrics,
         'total_params': total_params,
-        'embed_dim': encoder.total_embed_dim,
+        'embed_dim': cross_emb.shape[1],
         'n_train': len(train_labels),
-        'n_val': len(val_labels),
+        'n_val': len(flat_val_labels),
         'train_epochs': epochs,
-        'scale_attention': F.softmax(encoder.scale_attention, dim=0).detach().cpu().tolist(),
         'device': device,
         'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
     }
 
+    # Determine best single scale
+    best_s = max(per_scale_metrics, key=lambda s: per_scale_metrics[s]['silhouette'])
+    best_sil = per_scale_metrics[best_s]['silhouette']
+    delta_sil = sil_cross - best_sil
+    results['best_single_scale'] = best_s
+    results['delta_sil_vs_best'] = float(delta_sil)
+
     print(f"\n{'='*60}")
-    print(f"Cross-scale: R@5={cross_metrics['recall_at_5']:.4f}, "
-          f"Sil={cross_metrics['silhouette']:.4f}")
+    print(f"Cross-scale (96d): R@5={r5_cross:.4f}, Sil={sil_cross:.4f}")
     for s in scales:
         m = per_scale_metrics[s]
-        print(f"  {s:10s}: R@5={m['recall_at_5']:.4f}, Sil={m['silhouette']:.4f}")
-    attn = results['scale_attention']
-    print(f"Scale attention: {dict(zip(scales, [f'{a:.3f}' for a in attn]))}")
+        marker = " ← best single" if s == best_s else ""
+        print(f"  {s:10s} (32d): R@5={m['recall_at_5']:.4f}, Sil={m['silhouette']:.4f}{marker}")
+    print(f"\nΔSil vs best single ({best_s}): {delta_sil:+.4f}")
     print(f"{'='*60}")
 
     save_results(results, os.path.join(output_dir, 'exp304_cross_scale.json'))
 
-    # Save the encoder checkpoint for downstream use (EXP-305)
+    # Save checkpoint for EXP-305
     ckpt_path = os.path.join(output_dir, 'cross_scale_encoder.pth')
     torch.save({
-        'model_state': encoder.state_dict(),
+        'model_state': cross_encoder.state_dict(),
         'scale_configs': scale_configs,
         'scales': list(scales),
         'embed_dim': 32,
@@ -1834,13 +1882,21 @@ def run_cross_scale_retrieval(args):
 
 
 def run_multiscale_override(args):
-    """EXP-305: Multi-scale override recommendation.
+    """EXP-305: Scale-comparison override recommendation.
 
-    Uses cross-scale embeddings (96d from EXP-304) + glucose state (10d)
-    to produce override recommendations. Evaluates by simulating overrides
-    on historical windows and measuring TIR improvement.
+    EXP-304 showed cross-scale concat hurts retrieval (ΔSil=-0.525 vs weekly).
+    This experiment tests whether multi-scale context helps CLASSIFICATION:
+    - Does weekly embedding + glucose state beat glucose state alone?
+    - Does adding fast/episode context help or hurt override classification?
+
+    Compares 4 input configurations:
+    1. state-only (10d) — glucose state baseline
+    2. weekly+state (42d) — best retrieval scale + state
+    3. episode+state (42d) — mid scale + state
+    4. cross-scale+state (106d) — all scales + state
     """
-    from .pattern_override import PatternOverridePolicy, extract_glucose_state
+    from .pattern_override import extract_glucose_state
+    from .pattern_embedding import PatternEncoder
 
     patient_paths = resolve_patient_paths(args.patients_dir)
     output_dir = args.output_dir
@@ -1848,148 +1904,196 @@ def run_multiscale_override(args):
     epochs = args.epochs
 
     print("=" * 60)
-    print("EXP-305: Multi-Scale Override Recommendation")
+    print("EXP-305: Scale-Comparison Override Classification")
     print("=" * 60)
 
-    # Load aligned data
+    # Load aligned data with 6h stride (matching EXP-304)
     scales = ('fast', 'episode', 'weekly')
     data = load_aligned_multiscale(patient_paths, scales=scales,
-                                   alignment_stride_hr=1)
+                                   alignment_stride_hr=6)
 
-    # Load or train cross-scale encoder
+    # Load pretrained per-scale encoders from EXP-304 checkpoint
     ckpt_path = os.path.join(output_dir, 'cross_scale_encoder.pth')
     scale_configs = {s: SCALE_CONFIG[s] for s in scales}
-    encoder = CrossScaleEncoder(
-        scale_configs, input_dim=8, d_model=64, nhead=4,
-        num_layers=2, embed_dim=32,
-    )
 
     if os.path.exists(ckpt_path):
-        print(f"Loading pretrained cross-scale encoder: {ckpt_path}")
+        print(f"Loading pretrained encoders from: {ckpt_path}")
         ckpt = torch.load(ckpt_path, map_location='cpu', weights_only=False)
-        encoder.load_state_dict(ckpt['model_state'])
+        cross_encoder = CrossScaleEncoder(
+            scale_configs, input_dim=8, d_model=64, nhead=4,
+            num_layers=2, embed_dim=32,
+        )
+        cross_encoder.load_state_dict(ckpt['model_state'])
+        per_scale_encoders = {s: cross_encoder.encoders[s] for s in scales}
     else:
-        print("No pretrained encoder found — training fresh (run EXP-304 first)")
+        print("No pretrained encoder — training per-scale from scratch")
         train_labels = build_episode_labels_batch(data['episode']['train'])
         val_labels = build_episode_labels_batch(data['episode']['val'])
-        train_inputs = {s: data[s]['train'] for s in scales}
-        val_inputs = {s: data[s]['val'] for s in scales}
-        encoder, _ = train_cross_scale_encoder(
-            encoder, train_inputs, val_inputs, train_labels, val_labels,
-            epochs=epochs, batch_size=32, lr=1e-3, device=device,
-        )
+        per_scale_encoders = {}
+        for s in scales:
+            enc = PatternEncoder(
+                input_dim=8, d_model=64, nhead=4, num_layers=2, embed_dim=32,
+            )
+            enc, _ = train_pattern_encoder(
+                enc, data[s]['train'], train_labels,
+                data[s]['val'], val_labels,
+                epochs=epochs, batch_size=32, lr=1e-3, device=device,
+            )
+            per_scale_encoders[s] = enc
 
-    encoder = encoder.to(device).eval()
+    # Generate embeddings for val set
+    val_data = {s: data[s]['val'] for s in scales}
+    n_val = len(val_data['fast'])
 
-    # Generate cross-scale embeddings for val set
-    val_inputs = {s: data[s]['val'] for s in scales}
-    n_val = len(val_inputs[scales[0]])
-    all_embs = []
-    with torch.no_grad():
-        for start in range(0, n_val, 512):
-            end = min(start + 512, n_val)
-            batch = {
-                s: torch.from_numpy(val_inputs[s][start:end]).float().to(device)
-                for s in scales
-            }
-            emb = encoder(batch)
-            all_embs.append(emb.cpu().numpy())
-    cross_embeddings = np.concatenate(all_embs)  # (N, 96)
+    per_scale_embs = {}
+    for s in scales:
+        enc = per_scale_encoders[s].to(device).eval()
+        embs = []
+        with torch.no_grad():
+            for start in range(0, n_val, 512):
+                end = min(start + 512, n_val)
+                batch = torch.from_numpy(val_data[s][start:end]).float().to(device)
+                embs.append(enc(batch).cpu().numpy())
+        per_scale_embs[s] = np.concatenate(embs)  # (N, 32)
 
-    # Extract glucose state from fast-scale windows (most recent context)
-    fast_val = val_inputs['fast']  # (N, 24, 8)
-    glucose_states = []
-    for i in range(n_val):
-        state = extract_glucose_state(fast_val[i], glucose_scale=400.0)
-        glucose_states.append(state)
-    glucose_states = np.array(glucose_states)  # (N, 10)
+    cross_emb = np.concatenate([per_scale_embs[s] for s in scales], axis=1)  # (N, 96)
 
-    # Build combined input: [state_10d || cross_emb_96d] = 106d
-    combined = np.concatenate([glucose_states, cross_embeddings], axis=1)  # (N, 106)
+    # Build FORWARD-LOOKING override labels from fast window trajectory
+    # Split fast window: first 12 steps (1h) = context, last 12 steps (1h) = future
+    # This makes pattern embeddings meaningful — they predict what WILL happen
+    fast_val = val_data['fast']  # (N, 24, 8)
+    context_steps = 12  # first 1h for state extraction
+    future_steps = 12   # last 1h for label generation
 
-    # Override policy with extended state
-    policy = PatternOverridePolicy(state_dim=combined.shape[1])
-    policy = policy.to(device)
-    optimizer = torch.optim.Adam(policy.parameters(), lr=1e-3)
+    # Extract glucose state from CONTEXT portion only (first 1h)
+    glucose_states = np.array([
+        extract_glucose_state(fast_val[i, :context_steps, :], glucose_scale=400.0)
+        for i in range(n_val)
+    ])  # (N, 10)
 
-    # Train policy: predict override type from combined input
-    # Target: TIR improvement (simulate by looking at glucose in fast window)
-    # For now: classify whether override would help (glucose out of range)
-    glucose_raw = fast_val[:, -1, 0] * 400.0  # last glucose value, denormalized
+    # Labels from FUTURE portion: what happens in the next hour?
+    future_glucose = fast_val[:, context_steps:, 0] * 400.0  # (N, 12) denormalized
+    future_max = future_glucose.max(axis=1)
+    future_min = future_glucose.min(axis=1)
+    current_glucose = fast_val[:, context_steps - 1, 0] * 400.0  # glucose at split point
+
     needs_override = np.zeros(n_val, dtype=np.int64)
-    needs_override[glucose_raw > 180] = 1  # high → eating_soon or activity
-    needs_override[glucose_raw < 70] = 2   # low → temp target raise
-    needs_override[glucose_raw > 250] = 3  # very high → strong correction
+    # Class 1: will go high (future max > 180 AND currently in-range)
+    needs_override[(future_max > 180) & (current_glucose <= 180)] = 1
+    # Class 2: will go low (future min < 70 AND currently not low)
+    needs_override[(future_min < 70) & (current_glucose >= 70)] = 2
+    # Class 3: will spike very high (future max > 250)
+    needs_override[future_max > 250] = 3
 
-    combined_t = torch.from_numpy(combined).float()
+    override_dist = {
+        'none': int((needs_override == 0).sum()),
+        'upcoming_high': int((needs_override == 1).sum()),
+        'upcoming_low': int((needs_override == 2).sum()),
+        'upcoming_spike': int((needs_override == 3).sum()),
+    }
+    print(f"\nForward-looking override distribution: {override_dist}")
+    in_range_now = (current_glucose >= 70) & (current_glucose <= 180)
+    tir_baseline = float(in_range_now.mean())
+    print(f"Current TIR (at split point): {tir_baseline:.4f}")
+
+    # Compute class weights for imbalanced loss
+    class_counts = np.bincount(needs_override, minlength=4).astype(np.float32)
+    class_counts = np.maximum(class_counts, 1.0)  # avoid div by zero
+    class_weights = (1.0 / class_counts) * n_val / 4.0
+    class_weights_t = torch.from_numpy(class_weights).float().to(device)
+    print(f"Class weights: {dict(zip(['none','high','low','spike'], class_weights_t.cpu().tolist()))}")
+
+    # Define input configurations to compare
+    configs = {
+        'state-only': glucose_states,                                       # 10d
+        'weekly+state': np.concatenate([glucose_states, per_scale_embs['weekly']], axis=1),  # 42d
+        'episode+state': np.concatenate([glucose_states, per_scale_embs['episode']], axis=1), # 42d
+        'cross+state': np.concatenate([glucose_states, cross_emb], axis=1),  # 106d
+    }
+
+    # Train and evaluate a simple MLP classifier for each config
+    # (Using a plain MLP rather than PatternOverridePolicy to isolate
+    #  the input representation as the variable under test)
     target_t = torch.from_numpy(needs_override).long()
-
-    # Simple classification training
     train_idx = int(n_val * 0.8)
-    train_combined = combined_t[:train_idx].to(device)
-    train_target = target_t[:train_idx].to(device)
-    val_combined = combined_t[train_idx:].to(device)
-    val_target = target_t[train_idx:].to(device)
 
-    ce_loss = nn.CrossEntropyLoss()
-    history = {'train_loss': [], 'val_acc': []}
+    config_results = {}
+    for cfg_name, features in configs.items():
+        print(f"\n--- {cfg_name} ({features.shape[1]}d) ---")
+        features_t = torch.from_numpy(features).float()
 
-    for epoch in range(epochs):
-        policy.train()
-        # Get override predictions
+        classifier = nn.Sequential(
+            nn.Linear(features.shape[1], 128),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+            nn.Linear(128, 128),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+            nn.Linear(128, 4),  # 4 override classes
+        ).to(device)
+        optimizer = torch.optim.Adam(classifier.parameters(), lr=1e-3,
+                                     weight_decay=1e-4)
+        ce_loss = nn.CrossEntropyLoss(weight=class_weights_t)
+
+        train_x = features_t[:train_idx].to(device)
+        train_y = target_t[:train_idx].to(device)
+        val_x = features_t[train_idx:].to(device)
+        val_y = target_t[train_idx:].to(device)
+
+        best_val_acc = 0.0
+        for epoch in range(epochs):
+            classifier.train()
+            logits = classifier(train_x)
+            loss = ce_loss(logits, train_y)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            classifier.eval()
+            with torch.no_grad():
+                vl = classifier(val_x)
+                acc = (vl.argmax(dim=1) == val_y).float().mean().item()
+            best_val_acc = max(best_val_acc, acc)
+
+            if epoch % 10 == 0 or epoch == epochs - 1:
+                print(f"  Epoch {epoch+1}/{epochs}: loss={loss.item():.4f}, acc={acc:.4f}")
+
+        # Full-set eval
+        classifier.eval()
         with torch.no_grad():
-            state_batch = train_combined
-        actions = policy(state_batch)  # (N, action_dim)
+            all_l = classifier(features_t.to(device))
+            preds = all_l.argmax(dim=1).cpu().numpy()
+        full_acc = float((preds == needs_override).mean())
 
-        # Use first 4 outputs as override type logits
-        logits = actions[:, :4] if actions.shape[1] >= 4 else actions
-        loss = ce_loss(logits, train_target)
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+        # Per-class F1
+        from sklearn.metrics import f1_score, classification_report
+        macro_f1 = float(f1_score(needs_override, preds, average='macro', zero_division=0))
+        weighted_f1 = float(f1_score(needs_override, preds, average='weighted', zero_division=0))
 
-        # Validation accuracy
-        policy.eval()
-        with torch.no_grad():
-            val_actions = policy(val_combined)
-            val_logits = val_actions[:, :4] if val_actions.shape[1] >= 4 else val_actions
-            val_preds = val_logits.argmax(dim=1)
-            val_acc = (val_preds == val_target).float().mean().item()
+        config_results[cfg_name] = {
+            'input_dim': features.shape[1],
+            'full_accuracy': full_acc,
+            'best_val_accuracy': float(best_val_acc),
+            'macro_f1': macro_f1,
+            'weighted_f1': weighted_f1,
+        }
+        print(f"  → Acc={full_acc:.4f}, Macro-F1={macro_f1:.4f}, "
+              f"W-F1={weighted_f1:.4f}")
 
-        history['train_loss'].append(loss.item())
-        history['val_acc'].append(val_acc)
-
-        if epoch % 5 == 0 or epoch == epochs - 1:
-            print(f"  Epoch {epoch+1}/{epochs}: loss={loss.item():.4f}, "
-                  f"val_acc={val_acc:.4f}")
-
-    # Compute TIR metrics
-    policy.eval()
-    with torch.no_grad():
-        all_actions = policy(combined_t.to(device))
-        all_logits = all_actions[:, :4] if all_actions.shape[1] >= 4 else all_actions
-        all_preds = all_logits.argmax(dim=1).cpu().numpy()
-
-    # Calculate simulated TIR improvement
-    in_range = (glucose_raw >= 70) & (glucose_raw <= 180)
-    tir_baseline = in_range.mean()
-    # Count cases where override was correctly suggested
-    correct_override = (all_preds == needs_override).mean()
+    # Determine best configuration
+    best_cfg = max(config_results, key=lambda c: config_results[c]['macro_f1'])
+    best_f1 = config_results[best_cfg]['macro_f1']
 
     results = {
         'experiment': 'EXP-305',
-        'name': 'multiscale-override',
+        'name': 'scale-comparison-override',
+        'alignment_stride_hr': 6,
         'scales': list(scales),
-        'input_dim': combined.shape[1],
-        'tir_baseline': float(tir_baseline),
-        'override_accuracy': float(correct_override),
-        'val_accuracy': float(history['val_acc'][-1]) if history['val_acc'] else 0,
-        'override_distribution': {
-            'none': int((needs_override == 0).sum()),
-            'high': int((needs_override == 1).sum()),
-            'low': int((needs_override == 2).sum()),
-            'very_high': int((needs_override == 3).sum()),
-        },
+        'tir_baseline': tir_baseline,
+        'override_distribution': override_dist,
+        'configs': config_results,
+        'best_config': best_cfg,
+        'best_macro_f1': best_f1,
         'n_total': n_val,
         'n_train': train_idx,
         'n_val_policy': n_val - train_idx,
@@ -1999,12 +2103,14 @@ def run_multiscale_override(args):
     }
 
     print(f"\n{'='*60}")
-    print(f"Override accuracy: {correct_override:.4f}")
-    print(f"Baseline TIR: {tir_baseline:.4f}")
-    print(f"Val accuracy: {history['val_acc'][-1]:.4f}" if history['val_acc'] else "N/A")
-    dist = results['override_distribution']
-    print(f"Distribution: none={dist['none']}, high={dist['high']}, "
-          f"low={dist['low']}, very_high={dist['very_high']}")
+    print(f"Scale Comparison — Override Classification")
+    print(f"{'='*60}")
+    for cfg, m in config_results.items():
+        marker = " ← BEST" if cfg == best_cfg else ""
+        print(f"  {cfg:20s} ({m['input_dim']:3d}d): "
+              f"F1={m['macro_f1']:.4f}, Acc={m['full_accuracy']:.4f}{marker}")
+    print(f"\nBaseline TIR: {tir_baseline:.4f}")
+    print(f"Best: {best_cfg} (Macro-F1={best_f1:.4f})")
     print(f"{'='*60}")
 
     save_results(results, os.path.join(output_dir, 'exp305_multiscale_override.json'))
