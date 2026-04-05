@@ -481,3 +481,13 @@ The system is deployment-viable today for UAM detection (F1=0.94), override pred
 is viable with calibration (AUC=0.96, ECE=0.01) but needs F1 improvement for
 stand-alone deployment. ISF drift tracking works as a monitoring tool but needs
 clinical validation.
+
+### Related: Functional Data Analysis Extension
+
+A companion proposal (`fda-experiment-proposals-2026-04-05.md`) defines 14 experiments
+(EXP-328–341) exploring Functional Data Analysis (FDA) representations — B-spline
+encoding, FPCA embeddings, glucodensity profiles, and functional derivatives — as
+complementary features across all five objectives. Motivated by Klonoff et al. (2025)
+"CGM Data Analysis 2.0", these experiments test whether FDA representations improve
+feature selection, encoding quality, and downstream performance where neural approaches
+have plateaued (particularly pattern retrieval and ISF drift).
