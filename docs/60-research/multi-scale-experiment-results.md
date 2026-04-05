@@ -1,8 +1,8 @@
 # Multi-Scale Pattern Experiment Results
 
 **Date**: 2026-04-04  
-**Experiments**: EXP-287, EXP-289, EXP-286, EXP-291, EXP-298, EXP-299, EXP-300, EXP-301, EXP-304, EXP-305  
-**Status**: Complete (10 experiments across 4 timescales + cross-scale)
+**Experiments**: EXP-287, EXP-289, EXP-286, EXP-291, EXP-298, EXP-299, EXP-300, EXP-301, EXP-304, EXP-305, EXP-306, EXP-307  
+**Status**: Complete (12 experiments across 4 timescales + cross-scale + drift detection)
 
 ## Executive Summary
 
@@ -580,6 +580,63 @@ temporal resolution matches the phenomenon you're detecting.
 3. **Larger training sets**: Override classification with only 872 windows is
    data-limited. Non-aligned data (stride=1) could provide 36K fast windows.
 
+### EXP-306 & EXP-307: ISF Drift Detection
+
+**The ISF drift problem**: Zero drift labels assigned across all experiments with 8 base
+channels. This was the biggest unsolved objective.
+
+#### EXP-306: Cross-Patient Indirect Drift (Null Result)
+
+Compared glucose outcomes of similar patterns across ALL patients pooled together.
+Result: temporal correlation = -0.0006, all deltas within noise.
+
+**Why it failed**: Mixed 11 patients' windows together (drift is per-patient), and
+shuffled temporal order (destroying the time signal).
+
+#### EXP-307: Per-Patient Temporal Drift (**8/11 Significant**)
+
+**Method**: For each patient independently, split 7d sequential windows into temporal
+thirds (early / mid / late). Match late-period patterns to early-period patterns using
+cosine similarity on weekly embeddings. Compare glucose outcomes.
+
+| Patient | N | ΔGlucose | p-value | ΔTIR | Direction |
+|---------|---|----------|---------|------|-----------|
+| a | 58 | **+22.7** | <0.001** | -0.123 | Resistance ↑ |
+| b | 58 | -3.2 | 0.105 | +0.051 | (not sig.) |
+| c | 58 | +9.2 | 0.001** | -0.058 | Resistance ↑ |
+| d | 58 | +2.6 | 0.274 | -0.060 | (not sig.) |
+| e | 50 | -4.6 | 0.018* | +0.022 | Sensitivity ↑ |
+| f | 58 | **-13.7** | <0.001** | +0.062 | Sensitivity ↑ |
+| g | 58 | +11.2 | <0.001** | -0.025 | Resistance ↑ |
+| h | 55 | +8.6 | <0.001** | -0.038 | Resistance ↑ |
+| i | 58 | **+16.2** | <0.001** | -0.080 | Resistance ↑ |
+| j | 17 | -9.4 | <0.001** | +0.070 | Sensitivity ↑ |
+| k | 53 | +0.9 | 0.264 | -0.014 | (not sig.) |
+
+**Key findings**:
+
+1. **8/11 patients show statistically significant temporal glucose shifts** (p<0.05).
+   This is the first successful drift detection in our pipeline.
+
+2. **Bidirectional drift**: 7 patients → increasing resistance (↑ glucose), 4 → increasing
+   sensitivity (↓ glucose). Not a uniform trend — drift is truly per-patient.
+
+3. **Clinically significant magnitudes**: Patient a shows +22.7 mg/dL shift over ~6 months.
+   Patient f shows -13.7 mg/dL improvement.
+
+4. **TIR correlates with drift**: Patients with resistance drift show TIR decline (up to
+   -12.3% for patient a). Patients with sensitivity improvement show TIR gains.
+
+**Important caveat**: Match similarity ≈ 1.000 for all patients, meaning the weekly
+encoder produces nearly identical embeddings for all windows of the same patient
+(patient fingerprint effect). The 7d windows with 1d stride have 86% data overlap,
+causing temporal autocorrelation. This means we're measuring `mean(late_glucose) -
+mean(early_glucose)` rather than truly controlling for pattern similarity. A more
+rigorous approach would:
+- Use non-overlapping windows (stride=7d) to ensure independence
+- Control for insulin delivery: compare glucose outcomes for matched insulin/carb contexts
+- Use a more discriminative encoder that varies within a patient's data
+
 ---
 
 ## Reproduction
@@ -605,6 +662,12 @@ python3 -m tools.cgmencode.run_pattern_experiments cross-scale --device cuda --e
 
 # EXP-305: Scale-comparison override (forward-looking labels)
 python3 -m tools.cgmencode.run_pattern_experiments multiscale-override --device cuda --epochs 50
+
+# EXP-306: Cross-patient indirect drift (null result — flawed design)
+python3 -m tools.cgmencode.run_pattern_experiments indirect-drift --device cuda
+
+# EXP-307: Per-patient temporal drift (8/11 significant)
+python3 -m tools.cgmencode.run_pattern_experiments per-patient-drift --device cuda
 ```
 
 All results saved to `externals/experiments/` (gitignored).

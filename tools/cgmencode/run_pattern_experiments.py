@@ -2117,6 +2117,435 @@ def run_multiscale_override(args):
     return results
 
 
+def run_indirect_drift_detection(args):
+    """EXP-306: Indirect ISF drift detection via pattern comparison.
+
+    Hypothesis: If similar meal/bolus patterns produce different glucose outcomes
+    at different time periods, the difference IS the drift signal.
+
+    Method:
+    1. Use weekly encoder (best clustering, Sil=+0.326) to embed all 7d windows
+    2. For each window, measure glucose "outcome" (mean, peak, nadir, TIR)
+    3. Find top-K similar windows by cosine similarity
+    4. Compare outcomes of matched windows across time:
+       - Same outcome → stable sensitivity
+       - Higher glucose response → increasing resistance (ISF drift up)
+       - Lower glucose response → increasing sensitivity (ISF drift down)
+    5. Build drift trajectory per patient over time
+    6. Validate: correlate detected drift with known indicators
+       (dawn phenomenon, illness, exercise patterns)
+    """
+    from .pattern_embedding import PatternEncoder, retrieval_recall_at_k
+    from sklearn.metrics.pairwise import cosine_similarity
+
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+
+    print("=" * 60)
+    print("EXP-306: Indirect ISF Drift Detection")
+    print("=" * 60)
+
+    # Load weekly-scale data (best for pattern matching)
+    train_w, val_w = load_multiscale_data(patient_paths, scale='weekly')
+    all_windows = np.concatenate([train_w, val_w], axis=0)
+    n_total = len(all_windows)
+    print(f"\nTotal weekly windows: {n_total}")
+
+    # Load pretrained weekly encoder from EXP-304
+    ckpt_path = os.path.join(output_dir, 'cross_scale_encoder.pth')
+    encoder = PatternEncoder(input_dim=8, d_model=64, nhead=4,
+                             num_layers=2, embed_dim=32)
+    if os.path.exists(ckpt_path):
+        ckpt = torch.load(ckpt_path, map_location='cpu', weights_only=False)
+        # Extract weekly encoder weights from cross-scale checkpoint
+        weekly_state = {}
+        prefix = 'encoders.weekly.'
+        for k, v in ckpt['model_state'].items():
+            if k.startswith(prefix):
+                weekly_state[k[len(prefix):]] = v
+        if weekly_state:
+            encoder.load_state_dict(weekly_state)
+            print("Loaded pretrained weekly encoder from cross-scale checkpoint")
+        else:
+            print("No weekly encoder in checkpoint — using random initialization")
+    else:
+        print("No checkpoint found — training weekly encoder from scratch")
+        from .pattern_embedding import build_triplets, TripletPatternLoss
+        train_labels = build_episode_labels_batch(train_w)
+        val_labels = build_episode_labels_batch(val_w)
+        encoder, _ = train_pattern_encoder(
+            encoder, train_w, train_labels, val_w, val_labels,
+            epochs=args.epochs, batch_size=32, lr=1e-3, device=device,
+        )
+
+    # Generate embeddings for all windows
+    encoder = encoder.to(device).eval()
+    all_embs = []
+    with torch.no_grad():
+        for start in range(0, n_total, 512):
+            end = min(start + 512, n_total)
+            batch = torch.from_numpy(all_windows[start:end]).float().to(device)
+            emb = encoder(batch)
+            all_embs.append(emb.cpu().numpy())
+    embeddings = np.concatenate(all_embs)  # (N, 32)
+    print(f"Embeddings shape: {embeddings.shape}")
+
+    # Extract glucose outcome metrics for each window
+    # Channel 0 = glucose (normalized by /400)
+    glucose_traces = all_windows[:, :, 0] * 400.0  # (N, 168) denormalized
+
+    outcomes = {
+        'mean_glucose': glucose_traces.mean(axis=1),
+        'peak_glucose': np.nanmax(glucose_traces, axis=1),
+        'nadir_glucose': np.nanmin(glucose_traces, axis=1),
+        'glucose_range': np.nanmax(glucose_traces, axis=1) - np.nanmin(glucose_traces, axis=1),
+        'tir': ((glucose_traces >= 70) & (glucose_traces <= 180)).mean(axis=1),
+        'time_above_180': (glucose_traces > 180).mean(axis=1),
+        'time_below_70': (glucose_traces < 70).mean(axis=1),
+    }
+
+    # Compute pairwise cosine similarity (sample if too large)
+    max_pairs = 5000
+    if n_total > max_pairs:
+        sample_idx = np.random.choice(n_total, max_pairs, replace=False)
+        sample_idx.sort()
+    else:
+        sample_idx = np.arange(n_total)
+
+    sample_embs = embeddings[sample_idx]
+    sim_matrix = cosine_similarity(sample_embs)  # (S, S)
+    np.fill_diagonal(sim_matrix, -1)  # exclude self-matches
+    print(f"Similarity matrix: {sim_matrix.shape}")
+
+    # For each window, find top-K similar windows and compute outcome deltas
+    K = 10
+    drift_signals = []
+
+    for i in range(len(sample_idx)):
+        # Find K most similar windows
+        top_k = np.argsort(sim_matrix[i])[-K:]
+        sims = sim_matrix[i, top_k]
+
+        if sims.mean() < 0.5:
+            continue  # skip if no good matches
+
+        idx_i = sample_idx[i]
+        matched_indices = sample_idx[top_k]
+
+        # Compute outcome delta: this window vs matched windows
+        for metric_name in ['mean_glucose', 'tir', 'glucose_range']:
+            my_val = outcomes[metric_name][idx_i]
+            matched_vals = outcomes[metric_name][matched_indices]
+            delta = my_val - matched_vals.mean()
+            drift_signals.append({
+                'window_idx': int(idx_i),
+                'metric': metric_name,
+                'my_value': float(my_val),
+                'matched_mean': float(matched_vals.mean()),
+                'matched_std': float(matched_vals.std()),
+                'delta': float(delta),
+                'mean_similarity': float(sims.mean()),
+                'n_matched': int(len(matched_indices)),
+            })
+
+    drift_df = {}
+    for metric in ['mean_glucose', 'tir', 'glucose_range']:
+        signals = [s for s in drift_signals if s['metric'] == metric]
+        if signals:
+            deltas = [s['delta'] for s in signals]
+            drift_df[metric] = {
+                'n_comparisons': len(signals),
+                'mean_delta': float(np.mean(deltas)),
+                'std_delta': float(np.std(deltas)),
+                'median_delta': float(np.median(deltas)),
+                'pct_positive': float(np.mean(np.array(deltas) > 0)),
+                'pct_significant': float(np.mean(np.abs(deltas) > np.std(deltas))),
+            }
+
+    # Temporal ordering: check if drift deltas correlate with window position
+    # (window index is a proxy for time)
+    glucose_signals = [s for s in drift_signals if s['metric'] == 'mean_glucose']
+    if glucose_signals:
+        idx_arr = np.array([s['window_idx'] for s in glucose_signals])
+        delta_arr = np.array([s['delta'] for s in glucose_signals])
+        # Split into early (first half) vs late (second half) windows
+        median_idx = np.median(idx_arr)
+        early = delta_arr[idx_arr < median_idx]
+        late = delta_arr[idx_arr >= median_idx]
+        temporal_shift = float(late.mean() - early.mean()) if len(early) > 0 and len(late) > 0 else 0.0
+        temporal_corr = float(np.corrcoef(idx_arr, delta_arr)[0, 1]) if len(idx_arr) > 2 else 0.0
+    else:
+        temporal_shift = 0.0
+        temporal_corr = 0.0
+
+    results = {
+        'experiment': 'EXP-306',
+        'name': 'indirect-isf-drift-detection',
+        'method': 'pattern-similarity outcome comparison',
+        'scale': 'weekly (7d @ 1hr)',
+        'n_windows': n_total,
+        'n_sampled': len(sample_idx),
+        'k_neighbors': K,
+        'n_drift_signals': len(drift_signals),
+        'drift_metrics': drift_df,
+        'temporal_analysis': {
+            'early_vs_late_glucose_shift': temporal_shift,
+            'temporal_correlation': temporal_corr,
+            'interpretation': (
+                'positive shift = later windows show higher glucose for same patterns '
+                '(increasing resistance); negative = increasing sensitivity'
+            ),
+        },
+        'embedding_dim': 32,
+        'device': device,
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"Indirect ISF Drift Detection Results")
+    print(f"{'='*60}")
+    for metric, stats in drift_df.items():
+        print(f"\n{metric}:")
+        print(f"  n_comparisons: {stats['n_comparisons']}")
+        print(f"  mean_delta: {stats['mean_delta']:.2f} "
+              f"(std={stats['std_delta']:.2f})")
+        print(f"  % positive delta: {stats['pct_positive']:.1%}")
+        print(f"  % significant: {stats['pct_significant']:.1%}")
+    print(f"\nTemporal analysis:")
+    print(f"  Early→Late glucose shift: {temporal_shift:+.2f} mg/dL")
+    print(f"  Temporal correlation: {temporal_corr:+.4f}")
+    print(f"  (positive = increasing resistance over time)")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp306_indirect_drift.json'))
+    return results
+
+
+def run_per_patient_drift(args):
+    """EXP-307: Per-patient temporal ISF drift detection.
+
+    Fixes EXP-306's critical flaws:
+    1. Analyze each patient INDEPENDENTLY (drift is per-patient)
+    2. Preserve temporal order (sequential windows, no shuffle)
+    3. Match early-period patterns to late-period patterns within same patient
+    4. Only compare high-similarity matches (cosine > threshold)
+
+    For each patient:
+    - Split their 7d windows into temporal thirds: early / mid / late
+    - Embed all windows with pretrained weekly encoder
+    - For each late-period window, find K nearest matches from early period
+    - Compare glucose outcomes: delta = late_outcome - early_outcome
+    - If delta > 0 consistently → ISF drift (increasing resistance)
+    """
+    from .pattern_embedding import PatternEncoder
+    from sklearn.metrics.pairwise import cosine_similarity
+    from .real_data_adapter import downsample_grid
+
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+
+    print("=" * 60)
+    print("EXP-307: Per-Patient Temporal ISF Drift Detection")
+    print("=" * 60)
+
+    # Load pretrained weekly encoder
+    encoder = PatternEncoder(input_dim=8, d_model=64, nhead=4,
+                             num_layers=2, embed_dim=32)
+    ckpt_path = os.path.join(output_dir, 'cross_scale_encoder.pth')
+    if os.path.exists(ckpt_path):
+        ckpt = torch.load(ckpt_path, map_location='cpu', weights_only=False)
+        weekly_state = {}
+        prefix = 'encoders.weekly.'
+        for k, v in ckpt['model_state'].items():
+            if k.startswith(prefix):
+                weekly_state[k[len(prefix):]] = v
+        if weekly_state:
+            encoder.load_state_dict(weekly_state)
+            print("Loaded pretrained weekly encoder")
+    encoder = encoder.to(device).eval()
+
+    # Process each patient independently with TEMPORAL ORDER preserved
+    per_patient_results = {}
+    K = 5
+    SIM_THRESHOLD = 0.7
+
+    for pi, path in enumerate(patient_paths):
+        patient_id = os.path.basename(os.path.dirname(path))
+        print(f"\n--- Patient {patient_id} ({pi+1}/{len(patient_paths)}) ---")
+
+        df, features_5min = _get_cached_grid(path)
+        if df is None:
+            print("  SKIP: no data")
+            continue
+
+        # Downsample to 1-hr for weekly windows
+        df_1h = downsample_grid(df, target_interval_min=60)
+        features = _grid_to_features(df_1h)
+
+        # Build SEQUENTIAL windows (stride=24 = 1 day, preserving temporal order)
+        window = 168  # 7 days
+        stride = 24   # 1-day advance
+        windows = []
+        for start in range(0, len(features) - window + 1, stride):
+            w = features[start:start + window]
+            if np.isnan(w[:, 0]).mean() < 0.3:  # <30% NaN in glucose
+                w = np.nan_to_num(w, nan=0.0)
+                windows.append(w)
+        windows = np.array(windows, dtype=np.float32) if windows else None
+
+        if windows is None or len(windows) < 6:
+            print(f"  SKIP: only {0 if windows is None else len(windows)} windows")
+            continue
+
+        n = len(windows)
+        third = n // 3
+        early = windows[:third]      # first temporal third
+        late = windows[-third:]       # last temporal third
+        print(f"  {n} sequential windows (stride=1d), early={len(early)}, late={len(late)}")
+
+        # Embed all windows
+        def embed(arr):
+            embs = []
+            with torch.no_grad():
+                for s in range(0, len(arr), 256):
+                    e = min(s + 256, len(arr))
+                    batch = torch.from_numpy(arr[s:e]).float().to(device)
+                    embs.append(encoder(batch).cpu().numpy())
+            return np.concatenate(embs)
+
+        early_emb = embed(early)  # (E, 32)
+        late_emb = embed(late)    # (L, 32)
+
+        # For each late window, find K best matches from early period
+        sim = cosine_similarity(late_emb, early_emb)  # (L, E)
+
+        glucose_deltas = []
+        tir_deltas = []
+        range_deltas = []
+        match_sims = []
+
+        for i in range(len(late)):
+            # Get top-K matches above threshold
+            sims = sim[i]
+            top_k_idx = np.argsort(sims)[-K:]
+            top_k_sims = sims[top_k_idx]
+            good = top_k_sims >= SIM_THRESHOLD
+            if good.sum() < 2:
+                continue  # need at least 2 good matches
+
+            matched_idx = top_k_idx[good]
+            matched_sims = top_k_sims[good]
+
+            # Glucose outcomes
+            late_gluc = late[i, :, 0] * 400.0
+            early_gluc = np.array([early[j, :, 0] * 400.0 for j in matched_idx])
+
+            # Outcome metrics
+            late_mean = np.nanmean(late_gluc)
+            early_mean = np.nanmean(early_gluc)
+            glucose_deltas.append(late_mean - early_mean)
+
+            late_tir = ((late_gluc >= 70) & (late_gluc <= 180)).mean()
+            early_tir = np.array([((eg >= 70) & (eg <= 180)).mean()
+                                  for eg in early_gluc]).mean()
+            tir_deltas.append(late_tir - early_tir)
+
+            late_range = np.nanmax(late_gluc) - np.nanmin(late_gluc)
+            early_range = np.mean([np.nanmax(eg) - np.nanmin(eg) for eg in early_gluc])
+            range_deltas.append(late_range - early_range)
+
+            match_sims.append(float(matched_sims.mean()))
+
+        if len(glucose_deltas) < 3:
+            print(f"  SKIP: only {len(glucose_deltas)} high-quality matches")
+            continue
+
+        glucose_deltas = np.array(glucose_deltas)
+        tir_deltas = np.array(tir_deltas)
+        range_deltas = np.array(range_deltas)
+
+        # Statistical test: is the mean delta significantly different from 0?
+        from scipy import stats as scipy_stats
+        t_stat, p_value = scipy_stats.ttest_1samp(glucose_deltas, 0)
+
+        per_patient_results[patient_id] = {
+            'n_windows': n,
+            'n_comparisons': len(glucose_deltas),
+            'mean_sim': float(np.mean(match_sims)),
+            'glucose_delta': {
+                'mean': float(glucose_deltas.mean()),
+                'std': float(glucose_deltas.std()),
+                'median': float(np.median(glucose_deltas)),
+                'pct_positive': float((glucose_deltas > 0).mean()),
+                't_statistic': float(t_stat),
+                'p_value': float(p_value),
+            },
+            'tir_delta': {
+                'mean': float(tir_deltas.mean()),
+                'std': float(tir_deltas.std()),
+            },
+            'range_delta': {
+                'mean': float(range_deltas.mean()),
+                'std': float(range_deltas.std()),
+            },
+        }
+
+        direction = "↑ resistance" if glucose_deltas.mean() > 0 else "↓ sensitivity"
+        sig = "**" if p_value < 0.01 else "*" if p_value < 0.05 else ""
+        print(f"  Glucose Δ: {glucose_deltas.mean():+.1f} mg/dL "
+              f"(p={p_value:.4f}{sig}) → {direction}")
+        print(f"  TIR Δ: {tir_deltas.mean():+.3f}, Range Δ: {range_deltas.mean():+.1f}")
+        print(f"  Mean match similarity: {np.mean(match_sims):.3f}")
+
+    # Aggregate across patients
+    patients_with_drift = []
+    for pid, pr in per_patient_results.items():
+        if pr['glucose_delta']['p_value'] < 0.05:
+            patients_with_drift.append(pid)
+
+    results = {
+        'experiment': 'EXP-307',
+        'name': 'per-patient-temporal-drift',
+        'method': 'early-vs-late pattern matching within patient',
+        'scale': 'weekly (7d @ 1hr)',
+        'k_neighbors': K,
+        'similarity_threshold': SIM_THRESHOLD,
+        'stride_days': 1,
+        'per_patient': per_patient_results,
+        'summary': {
+            'n_patients_analyzed': len(per_patient_results),
+            'n_patients_significant_drift': len(patients_with_drift),
+            'patients_with_drift': patients_with_drift,
+            'mean_glucose_delta_all': float(np.mean([
+                pr['glucose_delta']['mean'] for pr in per_patient_results.values()
+            ])) if per_patient_results else 0.0,
+        },
+        'device': device,
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"Per-Patient ISF Drift Summary")
+    print(f"{'='*60}")
+    print(f"{'Patient':>8} {'N':>5} {'ΔGluc':>8} {'p-val':>8} {'ΔTIR':>7} {'Drift':>12}")
+    print("-" * 55)
+    for pid in sorted(per_patient_results.keys()):
+        pr = per_patient_results[pid]
+        g = pr['glucose_delta']
+        sig = "**" if g['p_value'] < 0.01 else "*" if g['p_value'] < 0.05 else ""
+        direction = "resistance↑" if g['mean'] > 0 else "sensitivity↑"
+        print(f"{pid:>8} {pr['n_comparisons']:>5} {g['mean']:>+7.1f} "
+              f"{g['p_value']:>7.4f}{sig} {pr['tir_delta']['mean']:>+6.3f} "
+              f"{direction:>12}")
+    print(f"\nSignificant drift (p<0.05): {len(patients_with_drift)}/{len(per_patient_results)} patients")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp307_per_patient_drift.json'))
+    return results
+
+
 # ── Registry & CLI ─────────────────────────────────────────────────────
 
 EXPERIMENTS = {
@@ -2143,6 +2572,11 @@ EXPERIMENTS = {
                     'Cross-scale retrieval (fast+episode+weekly → 96d)'),
     'multiscale-override': ('EXP-305', run_multiscale_override,
                             'Multi-scale override recommendation (106d input)'),
+    # Phase 25: ISF drift detection
+    'indirect-drift': ('EXP-306', run_indirect_drift_detection,
+                       'Indirect ISF drift via pattern-similarity outcome comparison'),
+    'per-patient-drift': ('EXP-307', run_per_patient_drift,
+                          'Per-patient temporal ISF drift (early vs late matching)'),
 }
 
 
