@@ -4685,3 +4685,229 @@ def run_two_stage_training(args):
 
 
 REGISTRY['two-stage-training'] = 'run_two_stage_training'
+
+
+# ── EXP-279: Asymmetric DIA-Aware Lookback Sweep ──────────────────
+# Insulin DIA = 6hr, peak at ~75min. Current windows use symmetric splits
+# that give only 1hr history — can't see boluses >1hr ago.
+# Test asymmetric: {2hr, 3hr, 6hr} history → 1hr forecast.
+def run_dia_aware_lookback(args):
+    """EXP-279: Asymmetric DIA-aware lookback sweep.
+
+    Tests clinically-motivated history lengths aligned to insulin dynamics:
+    - 2hr (24 steps): covers insulin peak (~75min)
+    - 3hr (36 steps): covers ~75% of DIA tail
+    - 6hr (72 steps): covers full DIA (360min)
+    All with fixed 1hr (12 steps) forecast horizon.
+
+    Uses 21f features with ch_drop=0.15. Single seed + single FT
+    for fast sweep, with verification evaluation.
+    """
+    import copy
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    device = get_device()
+
+    from .schema import NUM_FEATURES_EXTENDED, FUTURE_UNKNOWN_CHANNELS
+    from torch.utils.data import DataLoader
+
+    validate_masking(NUM_FEATURES_EXTENDED, label='EXP-279')
+    CH_DROP_P = 0.15
+    FORECAST_STEPS = 12  # Fixed 1hr forecast
+
+    def _ch_drop_fwd(model, x_batch, crit, ch_drop_p, forecast_steps, training=False):
+        x = batch_to_device(x_batch, device)
+        split = x.shape[1] - forecast_steps
+        x_in = x.clone()
+        mask_future_channels(x_in, split)
+        if training and ch_drop_p > 0:
+            n_ch = x_in.shape[2]
+            droppable = [c for c in range(n_ch)
+                        if c not in {0, 6, 7}
+                        and c not in set(FUTURE_UNKNOWN_CHANNELS)]
+            mask = torch.rand(len(droppable)) < ch_drop_p
+            for i, ch in enumerate(droppable):
+                if mask[i]:
+                    x_in[:, :, ch] = 0.0
+        pred = model(x_in, causal=True)
+        loss = crit(pred[:, split:, :1], x[:, split:, :1])
+        return loss
+
+    def _persist_mae_asym(ds, forecast_steps):
+        """Persistence MAE with asymmetric split."""
+        all_ae = []
+        for i in range(len(ds)):
+            x = ds[i][0]  # (seq, features)
+            split = x.shape[0] - forecast_steps
+            last_known = x[split - 1, 0].item()
+            actual = x[split:, 0]
+            ae = torch.abs(actual - last_known).mean().item()
+            all_ae.append(ae)
+        scale = 400.0
+        return float(np.mean(all_ae)) * scale
+
+    def _mae_asym(model, ds, forecast_steps):
+        """MAE with asymmetric split."""
+        model.eval()
+        model.to(device)
+        dl = DataLoader(ds, batch_size=64)
+        total_ae, total_n = 0.0, 0
+        scale = 400.0
+        with torch.no_grad():
+            for b in dl:
+                x = batch_to_device(b[0], device)
+                split = x.shape[1] - forecast_steps
+                x_in = x.clone()
+                mask_future_channels(x_in, split)
+                pred = model(x_in, causal=True)
+                ae = torch.abs(pred[:, split:, :1] - x[:, split:, :1])
+                total_ae += ae.sum().item() * scale
+                total_n += ae.numel()
+        return total_ae / total_n if total_n else float('inf')
+
+    def _train_cd_asym(model, t_ds, v_ds, ch_drop_p, forecast_steps,
+                        epochs, patience, lr=1e-3, wd=1e-5, save_path=None):
+        model.to(device)
+        t_dl = DataLoader(t_ds, batch_size=32, shuffle=True)
+        v_dl = DataLoader(v_ds, batch_size=64)
+        opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=wd)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
+        crit = torch.nn.MSELoss()
+        best_vl, stale = float('inf'), 0
+        for ep in range(epochs):
+            model.train()
+            for b in t_dl:
+                opt.zero_grad()
+                loss = _ch_drop_fwd(model, b[0], crit, ch_drop_p, forecast_steps, training=True)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+            model.eval()
+            vt, vn = 0.0, 0
+            with torch.no_grad():
+                for b in v_dl:
+                    l = _ch_drop_fwd(model, b[0], crit, 0.0, forecast_steps, training=False)
+                    vt += l.item() * b[0].shape[0]; vn += b[0].shape[0]
+            vl = vt / vn if vn else float('inf')
+            sched.step(vl)
+            if vl < best_vl:
+                best_vl = vl; stale = 0
+                if save_path:
+                    os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+                    torch.save({'model_state': model.state_dict()}, save_path)
+            else:
+                stale += 1
+            if stale >= patience:
+                break
+        if save_path and os.path.exists(save_path):
+            ckpt = torch.load(save_path, map_location=device, weights_only=True)
+            model.load_state_dict(ckpt['model_state'])
+        return model
+
+    patients_base = os.path.dirname(os.path.dirname(patient_paths[0]))
+    patient_dirs = sorted([d for d in os.listdir(patients_base)
+                          if os.path.isdir(os.path.join(patients_base, d))])
+
+    # Configs: (name, history_steps, forecast_steps, total_ws)
+    # Also include symmetric baseline for comparison
+    configs = [
+        ('sym_1h1h',   12, 12, 24,  '1hr hist → 1hr fore (symmetric baseline)'),
+        ('asym_2h1h',  24, 12, 36,  '2hr hist → 1hr fore (covers insulin peak)'),
+        ('asym_3h1h',  36, 12, 48,  '3hr hist → 1hr fore (covers 75% DIA)'),
+        ('asym_6h1h',  72, 12, 84,  '6hr hist → 1hr fore (full DIA)'),
+        ('sym_2h2h',   24, 24, 48,  '2hr hist → 2hr fore (EXP-242 equivalent)'),
+    ]
+
+    all_results = {}
+    for cname, hist_steps, fcast_steps, ws, desc in configs:
+        print(f"\n=== {cname}: {desc} (ws={ws}, hist={hist_steps*5}min, fore={fcast_steps*5}min) ===")
+
+        # Load data with this window size
+        train_ds, val_ds = load_multipatient_nightscout(
+            patient_paths, task='forecast', window_size=ws,
+            extended_features=True)
+        persist = _persist_mae_asym(val_ds, fcast_steps)
+        print(f"  Data: {len(train_ds)} train, {len(val_ds)} val, persist={persist:.1f}")
+
+        # Train base model
+        set_seed(42)
+        model = create_model(arch='grouped', input_dim=NUM_FEATURES_EXTENDED,
+                             d_model=64, nhead=4, num_layers=2, dropout=0.1)
+        sp = os.path.join(output_dir, f'exp279_{cname}_s42.pth')
+        model = _train_cd_asym(model, train_ds, val_ds, CH_DROP_P, fcast_steps,
+                               epochs=100, patience=15, save_path=sp)
+        base_mae = _mae_asym(model, val_ds, fcast_steps)
+        print(f"  Base MAE: {base_mae:.2f} (persist={persist:.1f}, improvement={((persist-base_mae)/persist*100):.1f}%)")
+
+        # Per-patient FT + verification
+        pt_results = {}
+        for pid in patient_dirs:
+            train_path = os.path.join(patients_base, pid, 'training')
+            ver_path = os.path.join(patients_base, pid, 'verification')
+            if not os.path.isdir(train_path):
+                continue
+            try:
+                pt_tr, pt_vl = load_multipatient_nightscout(
+                    [train_path], task='forecast', window_size=ws,
+                    extended_features=True)
+            except:
+                continue
+
+            pt_ver = None
+            if os.path.isdir(ver_path):
+                try:
+                    _, pt_ver = load_multipatient_nightscout(
+                        [ver_path], task='forecast', window_size=ws,
+                        extended_features=True)
+                    if pt_ver and len(pt_ver) < 5:
+                        pt_ver = None
+                except:
+                    pt_ver = None
+
+            set_seed(42)
+            ftm = copy.deepcopy(model)
+            ft_sp = os.path.join(output_dir, f'exp279_{cname}_{pid}.pth')
+            ftm = _train_cd_asym(ftm, pt_tr, pt_vl, CH_DROP_P, fcast_steps,
+                                  epochs=30, patience=8, lr=3e-4, save_path=ft_sp)
+
+            tr_mae = _mae_asym(ftm, pt_vl, fcast_steps)
+            ver_mae = _mae_asym(ftm, pt_ver, fcast_steps) if pt_ver else None
+            gap = round((ver_mae / tr_mae - 1) * 100, 1) if ver_mae and tr_mae > 0 else None
+            pt_results[pid] = {'train': round(tr_mae, 2),
+                               'ver': round(ver_mae, 2) if ver_mae else None,
+                               'gap': gap}
+
+        tr_ms = [v['train'] for v in pt_results.values()]
+        ver_ms = [v['ver'] for v in pt_results.values() if v['ver'] is not None]
+        gaps = [v['gap'] for v in pt_results.values() if v['gap'] is not None]
+
+        all_results[cname] = {
+            'description': desc,
+            'window_size': ws,
+            'history_min': hist_steps * 5,
+            'forecast_min': fcast_steps * 5,
+            'n_train': len(train_ds),
+            'n_val': len(val_ds),
+            'persist_mae': round(persist, 2),
+            'base_mae': round(base_mae, 2),
+            'mean_ft_train': round(float(np.mean(tr_ms)), 2),
+            'mean_ft_ver': round(float(np.mean(ver_ms)), 2) if ver_ms else None,
+            'mean_gap': round(float(np.mean(gaps)), 1) if gaps else None,
+            'patients': pt_results,
+        }
+        print(f"  FT: train={all_results[cname]['mean_ft_train']} "
+              f"ver={all_results[cname]['mean_ft_ver']} gap={all_results[cname]['mean_gap']}%")
+
+    result = {
+        'experiment': 'EXP-279: Asymmetric DIA-Aware Lookback Sweep',
+        'features': '21f extended',
+        'ch_dropout': CH_DROP_P,
+        'forecast_horizon': '1hr (12 steps) fixed for asymmetric configs',
+        'configs': all_results,
+    }
+    save_results(result, os.path.join(output_dir, 'exp279_dia_aware_lookback.json'))
+    return result
+
+REGISTRY['dia-aware-lookback'] = 'run_dia_aware_lookback'
