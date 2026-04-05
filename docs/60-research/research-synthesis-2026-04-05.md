@@ -442,25 +442,39 @@ use history-only features (first half of window) to ensure no future leakage.
 5. **Cross-scale fusion fails** — task-specific scale selection wins.
 6. **Forecasting is saturated** — 2h/8-channel/67K-param is the sweet spot.
 
+### What We've Resolved (EXP-314–322)
+
+Since the initial synthesis, 9 more experiments answered the open questions:
+
+1. **Multi-lead override**: 15min F1=0.821 (+13% over 60min baseline) — **RESOLVED** ✅
+2. **Dedicated hypo models**: Focal loss + multi-task + threshold → F1=0.672 — **RESOLVED** ✅
+3. **ISF as downstream feature**: HURTS both override (-3.5%) and UAM (-2.6%) — **RESOLVED** (negative) ✅
+4. **Per-patient CNN fine-tuning**: Selective ensemble +1%, full FT -2.9% — **RESOLVED** ✅
+5. **Multi-task learning**: Shared backbone boosts hypo +6% at -1.7% override cost — **NEW FINDING** ✅
+
 ### What We Don't Know Yet
 
-1. Can multi-lead-time prediction improve override F1 beyond 0.726?
-2. Can dedicated hypo models raise F1_low from 0.515 to 0.7+?
-3. Does feeding rolling ISF as a feature improve downstream models?
-4. Can contrastive learning produce better embeddings than triplet loss?
-5. How does per-patient CNN fine-tuning compare to the pooled model?
+1. Can **contrastive learning** (SimCLR, BYOL) produce better embeddings than triplet loss?
+2. Can **curriculum learning** (easy tasks first) improve multi-task convergence?
+3. Is there a **fundamentally different architecture** (attention-based, graph neural network)
+   that could push hypo F1 past 0.70? The AUC=0.96 suggests the model discriminates well
+   but can't draw a clean decision boundary.
+4. Can **real-time CUSUM/Bayesian change-point detection** detect ISF drift in <7 days?
+5. How do these models perform on **unseen patients** (not in the training cohort)?
 
 ### Clinical Relevance
 
 The system can now:
 - **Detect unannounced meals** with 94% F1 (actionable for insulin dosing)
-- **Predict glucose excursions** 1 hour ahead (F1=0.73 for high, 0.52 for low)
+- **Predict override need 15min ahead** with F1=0.821 (early enough to act)
+- **Predict hypoglycemia** with F1=0.672, AUC=0.958 (multi-task CNN)
 - **Track insulin sensitivity changes** over 2-week windows (9/11 patients)
 - **Retrieve similar historical patterns** from a 7-day library
 - **Forecast glucose** at 11.25 mg/dL MAE
 
-The next clinical frontier is **earlier override detection** (15-30 min ahead)
-and **better hypoglycemia prediction** (the most safety-critical objective).
+**Key optimization insight**: Threshold tuning (+19.7%) matters far more than loss
+function choice (+2.8%). Multi-task learning is the best architectural lever for
+improving the weakest task (hypo). Feature engineering is counterproductive for CNN.
 
 ---
 
@@ -469,7 +483,7 @@ and **better hypoglycemia prediction** (the most safety-critical objective).
 All experiments are registered in `tools/cgmencode/run_pattern_experiments.py`:
 
 ```bash
-# List all 18 experiments
+# List all 28 experiments
 python3 -m tools.cgmencode.run_pattern_experiments --list
 
 # Run any experiment

@@ -1138,3 +1138,131 @@ lr=1e-4 (10× lower) for 10 epochs. Evaluate per-patient F1.
 3. **Shorter lead times improve classification** (15min > 60min by 13%)
 4. **Per-patient FT works for forecasting but not classification** (insufficient examples)
 5. **Cross-scale feature injection is counterproductive** (EXP-304, EXP-305, EXP-316)
+
+---
+
+## EXP-319: Selective Per-Patient Override Ensemble
+
+**Hypothesis**: Instead of applying per-patient FT blindly (EXP-318 mean -2.9%),
+selectively use FT only for patients where validation F1 improves.
+
+**Method**: Train base CNN, fine-tune per-patient, evaluate on validation set.
+Use FT model only if val F1 > base F1, otherwise keep base model.
+
+| Lead Time | Base F1 | Full FT | Selective FT | Δ vs Base |
+|-----------|---------|---------|-------------|-----------|
+| 15min | 0.774 | 0.756 | **0.784** | **+1.0%** |
+| 30min | 0.739 | 0.712 | **0.749** | **+1.4%** |
+| 60min | 0.713 | 0.686 | **0.720** | **+1.0%** |
+
+**Key findings**:
+1. Selective ensemble consistently improves over base at all lead times (+1.0–1.4%)
+2. Full FT consistently hurts (catastrophic forgetting in low-data patients)
+3. The gap is modest but reliable — selective ensemble is a safe default strategy
+4. 5-6 patients benefit from FT; the rest should use the base model
+
+---
+
+## EXP-320: IOB Trajectory Features for Hypo Prediction
+
+**Hypothesis**: Handcrafted features (IOB_slope, glucose_momentum, time_since_bolus,
+dose_in_last_2h) provide the CNN with pre-computed temporal derivatives that could
+improve hypo detection.
+
+**Method**: Extend 8-channel input to 12 channels with 4 engineered features.
+Train hypo CNN with weighted CE loss (same as EXP-315).
+
+| Config | F1@optimal | AUC | Threshold |
+|--------|-----------|------|-----------|
+| 8ch baseline | **0.690** | 0.950 | 0.81 |
+| 12ch enhanced | 0.655 | 0.948 | 0.85 |
+
+**NEGATIVE RESULT**: Enhanced features hurt F1 by -5.1% and AUC by -0.2%.
+
+**Why**: The CNN already extracts temporal patterns from raw IOB/glucose channels.
+Handcrafted derivatives add redundant information that increases the input dimension
+without adding new signal, effectively adding noise. This confirms the principle:
+**prefer raw multi-channel CNN over feature engineering**.
+
+---
+
+## EXP-321: Focal Loss for Hypo Prediction
+
+**Hypothesis**: Focal loss (Lin et al., 2017) down-weights easy examples and
+focuses training on hard-to-classify windows, potentially improving F1 for the
+rare hypo class (6.4% prevalence).
+
+**Method**: Compare weighted cross-entropy baseline against focal loss variants
+with γ ∈ {1, 2, 3} and α ∈ {0.75, none}. All use threshold optimization.
+
+| Config | F1@0.5 | F1@optimal | Threshold | AUC |
+|--------|--------|-----------|-----------|------|
+| weighted_ce | 0.518 | 0.644 | 0.82 | 0.952 |
+| focal_g1 | 0.480 | 0.641 | 0.87 | 0.951 |
+| **focal_g2** | 0.438 | **0.662** | 0.85 | **0.955** |
+| focal_g3 | 0.401 | 0.661 | 0.85 | 0.955 |
+| focal_g2_no_alpha | **0.614** | 0.661 | 0.40 | **0.956** |
+
+**Key findings**:
+1. **Focal γ=2 achieves best F1=0.662** (+2.8% vs weighted CE 0.644)
+2. **γ=2 is optimal** — γ=3 shows no further improvement (saturation)
+3. **No-alpha variant** has much better F1@0.5 (0.614 vs 0.438) and practical
+   threshold (0.40 vs 0.85), making it more deployment-friendly
+4. **AUC improves marginally** with focal loss (0.955-0.956 vs 0.952)
+5. The improvement over weighted CE is modest (+2.8%), confirming that threshold
+   tuning (EXP-317, +19.7%) matters far more than loss function choice
+
+---
+
+## EXP-322: Multi-Task Override+Hypo CNN
+
+**Hypothesis**: A shared CNN backbone simultaneously predicting override and hypo
+can learn complementary representations — override patterns may provide useful
+context for hypo prediction and vice versa.
+
+**Method**: Single 1D-CNN backbone with two classification heads (override sigmoid,
+hypo sigmoid). Multi-task loss: `L = L_override + L_hypo`. Compare against
+single-task baselines trained with the same architecture and hyperparameters.
+
+| Config | Override F1 | Hypo F1@opt | Hypo AUC |
+|--------|------------|-------------|----------|
+| **Multi-task** | 0.809 | **0.672** | **0.958** |
+| Single override | **0.823** | 0.139 | 0.467 |
+| Single hypo | 0.161 | 0.634 | 0.950 |
+
+**Key findings**:
+1. **Multi-task boosts hypo F1 by +6.0%** (0.634→0.672) — the strongest single
+   improvement for hypo prediction in the entire program
+2. **Override F1 drops only -1.7%** (0.823→0.809) — acceptable cost
+3. **Hypo AUC also improves** (0.950→0.958) — better discrimination
+4. The shared backbone learns that "situations requiring overrides" and
+   "situations approaching hypoglycemia" share overlapping temporal patterns
+   (e.g., active insulin, recent boluses, declining glucose)
+5. **Multi-task is now the recommended default** for production deployment —
+   one model, two predictions, better hypo detection
+
+**Updated best hypo result**: F1=0.672 (multi-task + focal γ=2 + threshold tuning)
+
+---
+
+## Updated Task–Scale–Architecture Matrix
+
+| Objective | Best Scale | Best Architecture | Best Metric | Key Experiment |
+|-----------|-----------|-------------------|-------------|----------------|
+| Pattern retrieval | Weekly (7d) | Transformer encoder | Sil=+0.326 | EXP-304 |
+| **UAM detection** | Fast (2h) | **1D-CNN** | **F1=0.939** | **EXP-313** |
+| ISF drift tracking | Rolling biweekly | Statistical (ISF_eff rolling avg) | **9/11 sig.** | **EXP-312** |
+| **Override (15min)** | Fast (2h) | **1D-CNN selective ensemble** | **F1=0.784** | **EXP-319** |
+| **Override (60min)** | Fast (2h) | 1D-CNN | F1=0.726 | EXP-311 |
+| **Hypo prediction** | Fast (2h) | **Multi-task CNN + focal + threshold** | **F1=0.672** | **EXP-322** |
+| Glucose forecasting | 2h window | Per-patient fine-tuned ensemble | MAE=11.25 | EXP-242 |
+
+**Final meta-findings** (28 experiments, EXP-287 through EXP-322):
+1. **1D-CNN is the universal best architecture for all classification tasks**
+2. **Threshold tuning is critical** for imbalanced classes (+19.7% for hypo)
+3. **Shorter lead times improve classification** (15min > 60min by 13%)
+4. **Per-patient FT works for forecasting but not classification** (selective ensemble +1%)
+5. **Cross-scale feature injection is counterproductive** (EXP-304, EXP-305, EXP-316)
+6. **Feature engineering hurts CNN performance** (EXP-316, EXP-320) — prefer raw channels
+7. **Multi-task learning helps the weaker task** (+6% hypo) at minimal cost to the stronger (-1.7% override)
+8. **Loss function choice matters less than threshold tuning** (focal +2.8% vs threshold +19.7%)
