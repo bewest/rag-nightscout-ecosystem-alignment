@@ -868,7 +868,7 @@ def load_aligned_multiscale(patient_paths, scales=('fast', 'episode', 'weekly'),
         for s in scales
     )
 
-    per_scale_windows = {s: [] for s in scales}
+    per_patient_per_scale = []  # list of {scale: [windows]} per patient
 
     for i, path in enumerate(patient_paths):
         patient_id = os.path.basename(os.path.dirname(path))
@@ -946,31 +946,46 @@ def load_aligned_multiscale(patient_paths, scales=('fast', 'episode', 'weekly'),
                     patient_aligned[s].append(windows_at_t[s])
                 n_valid += 1
 
-        for s in scales:
-            per_scale_windows[s].extend(patient_aligned[s])
+        if n_valid > 0:
+            per_patient_per_scale.append(patient_aligned)
 
         print(f"    {n_valid} aligned windows across {len(scales)} scales")
 
-    # Shuffle consistently and split train/val (same indices for all scales)
-    n_total = len(per_scale_windows[scales[0]])
+    # Per-patient chronological split: within each patient, first (1-val_fraction)
+    # aligned windows become training, last val_fraction become validation.
+    # Indices are kept consistent across all scales so row alignment is preserved.
+    n_total = sum(len(p[scales[0]]) for p in per_patient_per_scale)
     if n_total == 0:
         raise RuntimeError(f"No aligned windows for scales={scales}")
 
+    train_per_scale = {s: [] for s in scales}
+    val_per_scale = {s: [] for s in scales}
+    for patient_aligned in per_patient_per_scale:
+        n_patient = len(patient_aligned[scales[0]])
+        split_idx = int(n_patient * (1 - val_fraction))
+        for s in scales:
+            train_per_scale[s].extend(patient_aligned[s][:split_idx])
+            val_per_scale[s].extend(patient_aligned[s][split_idx:])
+
+    # Shuffle training set consistently across scales (same permutation).
+    # Validation set is NOT shuffled to preserve temporal ordering.
+    n_train = len(train_per_scale[scales[0]])
     rng = np.random.RandomState(42)
-    perm = rng.permutation(n_total)
-    split_idx = int(n_total * (1 - val_fraction))
+    train_perm = rng.permutation(n_train)
 
     result = {}
     for s in scales:
-        arr = np.array(per_scale_windows[s], dtype=np.float32)[perm]
+        train_arr = np.array(train_per_scale[s], dtype=np.float32)[train_perm]
+        val_arr = np.array(val_per_scale[s], dtype=np.float32)
         result[s] = {
-            'train': arr[:split_idx],
-            'val': arr[split_idx:],
+            'train': train_arr,
+            'val': val_arr,
             'config': configs[s],
         }
 
-    print(f"\nAligned multi-scale: {n_total} total, {split_idx} train, "
-          f"{n_total - split_idx} val")
+    n_val = n_total - n_train
+    print(f"\nAligned multi-scale: {n_total} total, {n_train} train, "
+          f"{n_val} val (chronological split per patient)")
     for s in scales:
         cfg = configs[s]
         dur = cfg['window'] * cfg['interval_min'] / 60
@@ -999,7 +1014,7 @@ def load_multiscale_data(patient_paths, scale='episode', val_fraction=0.2):
     interval = cfg['interval_min']
     stride = cfg['stride'] or window // 2
 
-    all_windows = []
+    per_patient_windows = []
     for i, path in enumerate(patient_paths):
         patient_id = os.path.basename(os.path.dirname(path))
         print(f"  Patient {patient_id} ({i+1}/{len(patient_paths)}): {path}")
@@ -1026,16 +1041,27 @@ def load_multiscale_data(patient_paths, scale='episode', val_fraction=0.2):
         dur_h = window * interval / 60
         print(f"    {len(df)} rows → {len(windows)} windows "
               f"({features.shape[1]}ch, {dur_h:.0f}h @ {interval}min)")
-        all_windows.extend(windows)
+        per_patient_windows.append(windows)
 
-    if not all_windows:
+    if not per_patient_windows:
         raise RuntimeError(f"No valid windows for scale={scale}")
 
+    # Per-patient chronological split: within each patient, first (1-val_fraction)
+    # windows become training, last val_fraction become validation. This ensures
+    # val windows are always temporally AFTER train windows for each patient,
+    # preventing temporal proximity leakage from random shuffling.
+    train_windows = []
+    val_windows = []
+    for patient_windows in per_patient_windows:
+        split_idx = int(len(patient_windows) * (1 - val_fraction))
+        train_windows.extend(patient_windows[:split_idx])
+        val_windows.extend(patient_windows[split_idx:])
+
+    # Shuffle training set to mix patients (batch diversity).
+    # Validation set is NOT shuffled to preserve temporal ordering.
     rng = np.random.RandomState(42)
-    rng.shuffle(all_windows)
-    split_idx = int(len(all_windows) * (1 - val_fraction))
-    arr = np.array(all_windows, dtype=np.float32)
-    return arr[:split_idx], arr[split_idx:]
+    rng.shuffle(train_windows)
+    return np.array(train_windows, dtype=np.float32), np.array(val_windows, dtype=np.float32)
 
 
 def _grid_to_features(df):

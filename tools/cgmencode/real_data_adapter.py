@@ -1042,9 +1042,10 @@ def load_multipatient_nightscout(data_paths: List[str],
     Each path should point to a patient's training/ directory containing
     entries.json, treatments.json, devicestatus.json, profile.json.
 
-    Windows from each patient are extracted independently, then concatenated
-    and shuffled. The val split is random (not chronological) since windows
-    come from different patients with different time ranges.
+    Windows from each patient are extracted independently, then split
+    chronologically per patient (first 80% train, last 20% val). Training
+    windows are shuffled across patients for batch diversity; validation
+    windows preserve temporal ordering.
 
     Args:
         extended_features: If True, build 21-feature extended arrays (includes
@@ -1061,7 +1062,7 @@ def load_multipatient_nightscout(data_paths: List[str],
     if enriched_features:
         extended_features = True  # enriched builds on top of extended
 
-    all_windows = []
+    per_patient_windows = []
 
     if extended_features:
         # Extended path: 21+ features, doubled window for history+future
@@ -1094,19 +1095,27 @@ def load_multipatient_nightscout(data_paths: List[str],
         n_feat = features.shape[1] if hasattr(features, 'shape') else '?'
         print(f"    {len(df)} rows → {len(windows)} windows "
               f"({n_feat}f, {df['glucose'].min():.0f}-{df['glucose'].max():.0f} mg/dL)")
-        all_windows.extend(windows)
+        per_patient_windows.append(windows)
 
-    if not all_windows:
+    if not per_patient_windows:
         print("  ERROR: no valid windows from any patient")
         return None, None
 
-    # Shuffle to mix patients (prevents batch-level patient bias)
-    rng = np.random.RandomState(42)
-    rng.shuffle(all_windows)
+    # Per-patient chronological split: within each patient, first (1-val_fraction)
+    # windows become training, last val_fraction become validation. This ensures
+    # val windows are always temporally AFTER train windows for each patient,
+    # preventing temporal proximity leakage from random shuffling.
+    train_windows = []
+    val_windows = []
+    for patient_windows in per_patient_windows:
+        split_idx = int(len(patient_windows) * (1 - val_fraction))
+        train_windows.extend(patient_windows[:split_idx])
+        val_windows.extend(patient_windows[split_idx:])
 
-    split_idx = int(len(all_windows) * (1 - val_fraction))
-    train_windows = all_windows[:split_idx]
-    val_windows = all_windows[split_idx:]
+    # Shuffle training set to mix patients (prevents batch-level patient bias).
+    # Validation set is NOT shuffled to preserve temporal ordering for analysis.
+    rng = np.random.RandomState(42)
+    rng.shuffle(train_windows)
 
     train_tensor = torch.tensor(np.array(train_windows), dtype=torch.float32)
     val_tensor = torch.tensor(np.array(val_windows), dtype=torch.float32)
@@ -1122,9 +1131,10 @@ def load_multipatient_nightscout(data_paths: List[str],
         train_ds = CGMDataset(train_tensor, task=task, window_size=window_size)
         val_ds = CGMDataset(val_tensor, task=task, window_size=window_size)
 
-    print(f"  Multi-patient total: {len(all_windows)} windows from "
+    total_windows = len(train_windows) + len(val_windows)
+    print(f"  Multi-patient total: {total_windows} windows from "
           f"{len(data_paths)} patients → {len(train_windows)} train, "
-          f"{len(val_windows)} val")
+          f"{len(val_windows)} val (chronological split per patient)")
 
     return train_ds, val_ds
 
