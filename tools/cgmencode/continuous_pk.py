@@ -5,35 +5,39 @@ Converts sparse treatment events (bolus, carbs, basal) into dense continuous
 physiological state signals at 5-min resolution, guided by the UVA/Padova
 compartment model and oref0 insulin activity curves.
 
-EXP-348: Validate that continuous PK channels (insulin_activity, carb_absorption_rate,
-hepatic_production, net_metabolic_balance) correlate with observed glucose dynamics
-better than raw sparse event channels.
+Design philosophy: The AID pump delivers insulin continuously via three
+mechanisms — scheduled basal (maintaining metabolic equilibrium), temp basal
+adjustments (AID corrections), and boluses (meal/correction). ALL three are
+real insulin creating real absorption and activity. The open source community
+(oref0, Loop, AAPS) models this as:
 
-Key insight: Instead of feeding models sparse bolus/carb spikes alongside crude
-IOB/COB exponential/linear decays, we compute the continuous physiological states
-those events create — absorption rates, activity curves, metabolic balance — giving
-the model dense, physiologically grounded input channels.
+  total_activity = scheduled_basal_activity + temp_deviation_activity + bolus_activity
+
+When the pump suspends (0 U/hr), that's not "zero insulin" — it's a DEFICIT
+relative to what the body needs. Activity from prior scheduled doses continues
+to decay over DIA hours, so a 1-hour suspension only reduces activity to ~65%
+of baseline.
+
+Normalization: Insulin can be expressed as:
+  - Absolute: U/min (what we compute)
+  - TDD-relative: activity / (TDD / 1440) = fraction of daily average
+  - Basal-relative: actual_rate / scheduled_rate (1.0=nominal, 0=suspended)
+
+EXP-348: Validate that continuous PK channels correlate with glucose dynamics.
 
 Usage:
-    from tools.cgmencode.continuous_pk import (
-        compute_insulin_activity,
-        compute_carb_absorption_rate,
-        compute_hepatic_production,
-        compute_net_metabolic_balance,
-        build_continuous_pk_features,
-    )
+    from tools.cgmencode.continuous_pk import build_continuous_pk_features
 
-    # From a build_nightscout_grid DataFrame:
-    pk_channels = build_continuous_pk_features(df, dia=5.0, peak_min=55, isf=40, cr=10)
-    # pk_channels is (N, 6) array: [insulin_activity, insulin_accel, carb_rate,
-    #                                carb_accel, hepatic_production, net_balance]
+    pk_channels = build_continuous_pk_features(df)
+    # pk_channels is (N, 8) normalized array
 
 References:
     - UVA/Padova T1DMS: externals/cgmsim-lib/src/lt1/core/models/UvaPadova_T1DMS.ts
-    - oref0 exponential IOB: externals/oref0/lib/iob/calculate.js
-    - cgmsim-lib insulin activity: externals/cgmsim-lib/src/utils.ts (getExpTreatmentActivity)
+    - oref0 IOB/net basal: externals/oref0/lib/iob/total.js (netbasalinsulin)
+    - Loop BasalRelativeDose: externals/LoopAlgorithm/.../Insulin/RelativeDelivery.swift
+    - oref0 exponential model: externals/oref0/lib/iob/calculate.js
+    - cgmsim-lib insulin activity: externals/cgmsim-lib/src/utils.ts
     - cgmsim-lib liver model: externals/cgmsim-lib/src/liver.ts
-    - cgmsim-lib circadian: externals/cgmsim-lib/src/sinus.ts
 """
 
 import numpy as np
@@ -84,30 +88,140 @@ def _insulin_activity_at_t(t_min: float, dose: float, dia_min: float,
     return max(activity, 0.0)
 
 
-def compute_insulin_activity(bolus_series: pd.Series, basal_series: pd.Series,
-                              scheduled_basal: float,
+def _build_activity_kernel(dia_hours: float = 5.0, peak_min: float = 55.0,
+                           interval_min: int = 5) -> np.ndarray:
+    """Pre-compute the insulin activity kernel for convolution.
+
+    The kernel represents the activity curve for a 1-unit dose, sampled at
+    interval_min resolution. This is computed once and reused for all doses
+    via convolution, avoiding the O(N × DIA_steps) nested loop.
+
+    Returns:
+        (K,) array where K = DIA / interval_min, representing activity per
+        unit dose at each time offset.
+    """
+    dia_min = dia_hours * 60
+    K = int(dia_min / interval_min)
+    kernel = np.zeros(K)
+    for k in range(K):
+        t_min = (k + 1) * interval_min  # +1 because activity at t=0 is 0
+        kernel[k] = _insulin_activity_at_t(t_min, 1.0, dia_min, peak_min)
+    return kernel
+
+
+def _convolve_doses_with_kernel(dose_series: np.ndarray,
+                                 kernel: np.ndarray) -> np.ndarray:
+    """Convolve a sparse dose time series with the activity kernel.
+
+    Each nonzero entry in dose_series creates a scaled copy of the kernel
+    extending forward in time. This is equivalent to the nested loop but
+    uses numpy for efficiency.
+
+    Args:
+        dose_series: (N,) array of doses at each timestep (most are 0)
+        kernel: (K,) activity-per-unit kernel from _build_activity_kernel
+
+    Returns:
+        (N,) array of total activity at each timestep
+    """
+    N = len(dose_series)
+    K = len(kernel)
+    activity = np.zeros(N)
+
+    # Sparse iteration: only process nonzero doses
+    nonzero_idx = np.nonzero(dose_series)[0]
+    for i in nonzero_idx:
+        dose = dose_series[i]
+        end = min(i + K, N)
+        length = end - i
+        activity[i:end] += dose * kernel[:length]
+
+    return activity
+
+
+def compute_insulin_activity(bolus_series: pd.Series,
+                              actual_basal_series: pd.Series,
+                              scheduled_basal_array: np.ndarray,
                               dia_hours: float = 5.0, peak_min: float = 55.0,
-                              interval_min: int = 5) -> np.ndarray:
-    """Compute continuous insulin activity curve from bolus + basal history.
+                              interval_min: int = 5) -> dict:
+    """Compute continuous insulin activity from ALL insulin delivery sources.
 
-    Returns the instantaneous rate of insulin action (U/min) at each timestep,
-    combining contributions from all prior boluses and net basal deviation.
+    Models insulin exactly as Loop does: every micro-dose of actual delivery
+    (scheduled basal + temp adjustment + bolus) creates its own absorption
+    curve. The scheduled basal maintains a steady-state activity floor;
+    temp basals and boluses perturb above/below.
 
-    Unlike IOB (which is remaining insulin), this is the ACTIVITY — the rate
-    at which insulin is currently lowering glucose. This is the derivative of
-    the IOB curve and more directly relates to glucose dynamics.
+    Returns a dict with decomposed signals:
+      - 'total':     Activity from all insulin (scheduled + temp + bolus)
+      - 'net':       Activity from deviations only (temp deviation + bolus)
+                     This is what drives dBG/dt (scheduled = equilibrium)
+      - 'basal_steady_state': The equilibrium activity from scheduled basal
+      - 'bolus_only': Activity from boluses alone
+      - 'basal_ratio': actual_rate / scheduled_rate at each timestep
+                       (1.0 = nominal, 0 = suspended, >1 = high temp)
+
+    The open source AID community insight: receiving 100% of scheduled basal
+    means the body gets its needed insulin to maintain glucose homeostasis.
+    Suspension (0%) creates a "net negative" — not zero activity, but a
+    growing deficit as scheduled activity decays without replenishment.
 
     Args:
         bolus_series: Series of bolus doses (U) with DatetimeIndex
-        basal_series: Series of actual basal rates (U/hr) with DatetimeIndex
-        scheduled_basal: Scheduled basal rate (U/hr) for net basal computation
+        actual_basal_series: Series of ACTUAL basal rates (U/hr) — includes
+            temp basals, suspensions, overrides. Use temp_rate after ffill.
+        scheduled_basal_array: (N,) array of SCHEDULED basal rates (U/hr)
+            from the patient's basal profile, expanded per timestep.
         dia_hours: Duration of insulin action in hours
         peak_min: Time to peak activity in minutes
         interval_min: Grid interval in minutes
 
     Returns:
-        (N,) array of insulin activity in U/min at each grid point
+        Dict with 'total', 'net', 'basal_steady_state', 'bolus_only',
+        'basal_ratio' arrays, each (N,).
     """
+    N = len(bolus_series)
+    kernel = _build_activity_kernel(dia_hours, peak_min, interval_min)
+
+    bolus_vals = bolus_series.fillna(0).values
+    actual_basal_vals = actual_basal_series.ffill().fillna(0).values
+    sched_basal_vals = scheduled_basal_array
+
+    # Convert basal rates (U/hr) to micro-doses (U per interval)
+    actual_basal_doses = actual_basal_vals * interval_min / 60.0
+    sched_basal_doses = sched_basal_vals * interval_min / 60.0
+    net_basal_doses = actual_basal_doses - sched_basal_doses
+
+    # Convolve each source with the activity kernel
+    bolus_activity = _convolve_doses_with_kernel(bolus_vals, kernel)
+    actual_basal_activity = _convolve_doses_with_kernel(actual_basal_doses, kernel)
+    sched_basal_activity = _convolve_doses_with_kernel(sched_basal_doses, kernel)
+    net_basal_activity = _convolve_doses_with_kernel(net_basal_doses, kernel)
+
+    # Total = everything actually delivered
+    total_activity = bolus_activity + actual_basal_activity
+    # Net = only deviations from equilibrium (what drives glucose changes)
+    net_activity = bolus_activity + net_basal_activity
+
+    # Basal coverage ratio: actual / scheduled (handles schedule = 0 edge case)
+    safe_sched = np.where(sched_basal_vals > 0.01, sched_basal_vals, 0.01)
+    basal_ratio = actual_basal_vals / safe_sched
+    # Clip to reasonable range (0 to 5x scheduled)
+    basal_ratio = np.clip(basal_ratio, 0.0, 5.0)
+
+    return {
+        'total': total_activity,
+        'net': net_activity,
+        'basal_steady_state': sched_basal_activity,
+        'bolus_only': bolus_activity,
+        'basal_ratio': basal_ratio,
+    }
+
+
+def compute_insulin_activity_legacy(bolus_series: pd.Series, basal_series: pd.Series,
+                              scheduled_basal: float,
+                              dia_hours: float = 5.0, peak_min: float = 55.0,
+                              interval_min: int = 5) -> np.ndarray:
+    """Legacy: net-only activity for backward compatibility. Use compute_insulin_activity."""
     N = len(bolus_series)
     dia_min = dia_hours * 60
     dia_steps = int(dia_min / interval_min)
@@ -116,7 +230,6 @@ def compute_insulin_activity(bolus_series: pd.Series, basal_series: pd.Series,
     bolus_vals = bolus_series.fillna(0).values
     basal_vals = basal_series.ffill().fillna(0).values
 
-    # Bolus contributions: each bolus creates an activity curve
     for i in range(N):
         if bolus_vals[i] > 0:
             dose = bolus_vals[i]
@@ -124,11 +237,9 @@ def compute_insulin_activity(bolus_series: pd.Series, basal_series: pd.Series,
                 t_min = (j - i) * interval_min
                 activity[j] += _insulin_activity_at_t(t_min, dose, dia_min, peak_min)
 
-    # Basal deviation contributions: net basal above/below scheduled
-    # Each 5-min basal "micro-dose" = (rate U/hr) * (5/60) hrs = rate/12 U
     for i in range(N):
         net_rate = basal_vals[i] - scheduled_basal
-        if abs(net_rate) > 0.01:  # skip negligible deviations
+        if abs(net_rate) > 0.01:
             micro_dose = net_rate * interval_min / 60.0
             for j in range(i, min(i + dia_steps, N)):
                 t_min = (j - i) * interval_min
@@ -143,15 +254,18 @@ def _carb_absorption_rate_at_t(t_min: float, carbs: float,
                                 abs_time_min: float) -> float:
     """Carb absorption rate at time t_min after ingestion.
 
-    Uses a trapezoidal model inspired by UVA/Padova's Qsto1→Qsto2→Qgut pathway:
-    - Rising phase (0 → peak): gastric emptying accelerates
-    - Peak phase: maximum absorption rate
-    - Falling phase (peak → end): absorption decelerates
+    Uses a piecewise-linear model inspired by Loop's CarbMath and UVA/Padova's
+    Qsto1→Qsto2→Qgut pathway:
+    - Rising phase (0 → 15%): gastric emptying accelerates (quadratic onset)
+    - Plateau phase (15% → 50%): peak absorption rate sustained
+    - Falling phase (50% → 100%): absorption decelerates (linear decline)
+
+    This captures the key asymmetry observed physiologically: fast onset (carbs
+    hit bloodstream quickly) with a long tail (slow carbs, fiber, fat delay).
 
     The area under the curve integrates to total carbs (mass conservation).
 
-    This is a simplification of UVA/Padova's nonlinear kempt model but captures
-    the key asymmetry: faster onset than resolution.
+    Based on Loop's PiecewiseLinearAbsorption (CarbMath.swift:147-202).
 
     Args:
         t_min: Minutes since carb ingestion
@@ -164,22 +278,43 @@ def _carb_absorption_rate_at_t(t_min: float, carbs: float,
     if t_min <= 0 or t_min >= abs_time_min or carbs <= 0:
         return 0.0
 
-    # Peak at 30% of absorption time (UVA/Padova bmeal ≈ 0.69, so peak is early)
-    peak_fraction = 0.30
-    peak_time = abs_time_min * peak_fraction
+    # Loop-style: 3-phase with early peak
+    pct_time = t_min / abs_time_min
+    rise_end = 0.15      # Peak reached at 15% of absorption time
+    plateau_end = 0.50   # Plateau until 50%
 
-    # Trapezoidal: rise linearly to peak, then fall linearly
-    # Area = carbs, so peak_rate = 2 * carbs / abs_time_min
-    peak_rate = 2.0 * carbs / abs_time_min
+    # Scale factor ensures area = 1.0 for unit carbs
+    # Area = rise_triangle + plateau_rect + fall_triangle
+    # = 0.5*rise_end*scale + (plateau_end - rise_end)*scale + 0.5*(1-plateau_end)*scale
+    # = scale * (0.5*rise_end + plateau_end - rise_end + 0.5 - 0.5*plateau_end)
+    # = scale * (0.5 + 0.5*plateau_end - 0.5*rise_end)
+    scale = 2.0 / (1.0 + plateau_end - rise_end)
 
-    if t_min < peak_time:
-        # Rising phase
-        rate = peak_rate * (t_min / peak_time)
+    # Peak rate (g per unit-time-fraction)
+    peak_rate = scale * carbs / abs_time_min  # g/min at plateau
+
+    if pct_time < rise_end:
+        # Rising: linear ramp to peak
+        rate = peak_rate * (pct_time / rise_end)
+    elif pct_time < plateau_end:
+        # Plateau: sustained peak rate
+        rate = peak_rate
     else:
-        # Falling phase
-        rate = peak_rate * (1.0 - (t_min - peak_time) / (abs_time_min - peak_time))
+        # Falling: linear decline to zero
+        rate = peak_rate * (1.0 - pct_time) / (1.0 - plateau_end)
 
     return max(rate, 0.0)
+
+
+def _build_carb_kernel(abs_hours: float = 3.0, interval_min: int = 5) -> np.ndarray:
+    """Pre-compute carb absorption kernel for convolution."""
+    abs_min = abs_hours * 60
+    K = int(abs_min / interval_min)
+    kernel = np.zeros(K)
+    for k in range(K):
+        t_min = (k + 1) * interval_min
+        kernel[k] = _carb_absorption_rate_at_t(t_min, 1.0, abs_min)
+    return kernel
 
 
 def compute_carb_absorption_rate(carbs_series: pd.Series,
@@ -201,21 +336,9 @@ def compute_carb_absorption_rate(carbs_series: pd.Series,
     Returns:
         (N,) array of carb absorption rate in g/min at each grid point
     """
-    N = len(carbs_series)
-    abs_min = abs_hours * 60
-    abs_steps = int(abs_min / interval_min)
-    rate = np.zeros(N)
-
+    kernel = _build_carb_kernel(abs_hours, interval_min)
     carbs_vals = carbs_series.fillna(0).values
-
-    for i in range(N):
-        if carbs_vals[i] > 0:
-            carb_amount = carbs_vals[i]
-            for j in range(i, min(i + abs_steps, N)):
-                t_min = (j - i) * interval_min
-                rate[j] += _carb_absorption_rate_at_t(t_min, carb_amount, abs_min)
-
-    return rate
+    return _convolve_doses_with_kernel(carbs_vals, kernel)
 
 
 # ── Hepatic Glucose Production (liver model) ──────────────────────────
@@ -420,18 +543,22 @@ def compute_acceleration(signal: np.ndarray, interval_min: int = 5) -> np.ndarra
 
 # Normalization scales for continuous PK channels
 PK_NORMALIZATION = {
-    'insulin_activity':  0.05,    # U/min; typical peak ~0.02-0.04 for 5U bolus
-    'insulin_accel':     0.005,   # d(U/min)/min; rate of change of activity
+    'insulin_total':     0.05,    # U/min; steady-state ~0.015 + bolus peaks ~0.04
+    'insulin_net':       0.05,    # U/min; net deviation activity (can be negative)
+    'basal_ratio':       2.0,     # ratio; 1.0 = nominal, normalized to [0, 2.5]
     'carb_rate':         0.5,     # g/min; typical peak ~0.2-0.4 for 50g meal
     'carb_accel':        0.05,    # d(g/min)/min
     'hepatic_production': 3.0,    # mg/dL per 5min; range ~0.5-2.5
     'net_balance':       20.0,    # mg/dL per 5min; range ~±15
+    'isf_curve':         200.0,   # mg/dL per U; time-varying ISF from schedule
 }
 
 PK_CHANNEL_NAMES = [
-    'insulin_activity', 'insulin_accel',
+    'insulin_total', 'insulin_net',
+    'basal_ratio',
     'carb_rate', 'carb_accel',
     'hepatic_production', 'net_balance',
+    'isf_curve',
 ]
 
 NUM_PK_CHANNELS = len(PK_CHANNEL_NAMES)
@@ -442,36 +569,58 @@ def build_continuous_pk_features(df: pd.DataFrame,
                                   peak_min: float = 55.0,
                                   isf_schedule: list = None,
                                   cr_schedule: list = None,
+                                  basal_schedule: list = None,
                                   carb_abs_hours: float = 3.0,
                                   weight_kg: float = 70.0,
-                                  scheduled_basal: float = None,
                                   interval_min: int = 5,
                                   verbose: bool = False) -> np.ndarray:
     """Build all continuous PK feature channels from a Nightscout grid DataFrame.
 
-    Takes the DataFrame produced by build_nightscout_grid() and computes 6
-    continuous physiological state channels. ISF and CR are expanded from
-    their therapy schedules into time-varying arrays, preserving the circadian
-    variation that a scalar median would destroy.
+    Produces 8 dense physiological state channels from sparse treatment events:
+
+    1. insulin_total:  Total insulin activity from ALL sources (scheduled basal
+                       + temp deviation + bolus). Represents the full insulin
+                       state. Steady-state floor from scheduled basal; bolus
+                       peaks on top; suspension → gradual decay over DIA.
+    2. insulin_net:    Activity from DEVIATIONS only (temp deviation + bolus).
+                       This drives glucose changes — scheduled basal maintains
+                       equilibrium and contributes zero net glucose effect.
+    3. basal_ratio:    actual_rate / scheduled_rate at each timestep.
+                       1.0 = pump delivering 100% of scheduled (equilibrium).
+                       0.0 = suspended (net negative insulin delivery).
+                       >1.0 = high temp (more aggressive correction).
+    4. carb_rate:      Carb absorption rate (g/min) from piecewise-linear GI
+                       model (Loop-style: fast rise 15%, plateau, slow tail).
+    5. carb_accel:     d/dt of carb absorption rate. Positive = ramping up,
+                       negative = winding down, zero = at peak.
+    6. hepatic_prod:   Estimated hepatic glucose production (mg/dL per 5min).
+                       Hill-equation insulin suppression + circadian modulation.
+    7. net_balance:    Instantaneous net glucose flux (mg/dL per 5min).
+                       Positive = glucose rising, negative = falling.
+                       Uses time-varying ISF and CR from therapy schedules.
+    8. isf_curve:      Time-varying ISF from schedule expansion (mg/dL per U).
+                       Captures circadian insulin sensitivity variation.
+
+    ISF and CR are expanded from therapy schedules (not collapsed to scalars).
+    Basal schedule is expanded per-timestep, matching how build_nightscout_grid
+    expands it for net_basal computation.
 
     Args:
-        df: DataFrame with columns: glucose, bolus, carbs, iob, plus basal info.
-            Must have DatetimeIndex at regular intervals. Expects df.attrs to
-            contain 'isf_schedule', 'cr_schedule', 'patient_tz' from the grid builder.
+        df: DataFrame from build_nightscout_grid(). Must have DatetimeIndex and
+            columns: glucose, bolus, carbs, iob, temp_rate, net_basal.
+            Expects df.attrs: isf_schedule, cr_schedule, patient_tz, profile_units.
         dia_hours: Duration of insulin action
         peak_min: Time to peak insulin activity (minutes)
-        isf_schedule: ISF schedule list. If None, reads from df.attrs['isf_schedule'].
-        cr_schedule: CR schedule list. If None, reads from df.attrs['cr_schedule'].
+        isf_schedule: ISF schedule list. If None, reads from df.attrs.
+        cr_schedule: CR schedule list. If None, reads from df.attrs.
+        basal_schedule: Basal rate schedule list. If None, reads from df.attrs.
         carb_abs_hours: Carb absorption time (hours)
         weight_kg: Patient body weight
-        scheduled_basal: Scheduled basal rate. If None, uses median of actual.
         interval_min: Grid interval in minutes
         verbose: Print progress
 
     Returns:
-        (N, 6) normalized array: [insulin_activity, insulin_accel,
-                                   carb_rate, carb_accel,
-                                   hepatic_production, net_balance]
+        (N, 8) normalized array of continuous PK channels.
     """
     from .real_data_adapter import _normalize_timezone, _to_local_index
 
@@ -479,20 +628,13 @@ def build_continuous_pk_features(df: pd.DataFrame,
 
     # Extract series
     bolus = df['bolus'] if 'bolus' in df.columns else pd.Series(np.zeros(N), index=df.index)
-    carbs = df['carbs'] if 'carbs' in df.columns else pd.Series(np.zeros(N), index=df.index)
+    carbs_col = df['carbs'] if 'carbs' in df.columns else pd.Series(np.zeros(N), index=df.index)
 
-    # Basal rate: use temp_rate if available, else fall back
+    # Actual basal: temp_rate represents what the pump actually delivered
     if 'temp_rate' in df.columns:
-        basal = df['temp_rate'].ffill().fillna(0)
-    elif 'basal' in df.columns:
-        basal = df['basal'].ffill().fillna(0)
+        actual_basal = df['temp_rate'].ffill().fillna(0)
     else:
-        basal = pd.Series(np.zeros(N), index=df.index)
-
-    if scheduled_basal is None:
-        basal_vals = basal.values
-        positive = basal_vals[basal_vals > 0]
-        scheduled_basal = float(np.median(positive)) if len(positive) > 0 else 0.0
+        actual_basal = pd.Series(np.zeros(N), index=df.index)
 
     # IOB for liver suppression (use pre-computed from devicestatus if available)
     if 'iob' in df.columns:
@@ -511,49 +653,64 @@ def build_continuous_pk_features(df: pd.DataFrame,
     else:
         hours = np.zeros(N)
 
-    # Expand ISF schedule → continuous time-varying array
+    # ── Expand therapy schedules into continuous curves ──
+
+    # ISF schedule → continuous time-varying array
     if isf_schedule is None:
         isf_schedule = df.attrs.get('isf_schedule', [])
     isf_array = expand_schedule(df.index, isf_schedule, default=40.0,
                                 local_index=local_index)
 
     # Detect mmol/L units and convert ISF to mg/dL/U
-    # ISF in mmol/L means "mmol/L drop per unit insulin" → ×18.0182 for mg/dL
-    # Heuristic: if max ISF < 15, it's almost certainly mmol/L
-    # (mg/dL ISF ranges 15-200+; mmol/L ISF ranges 0.5-12)
     profile_units = df.attrs.get('profile_units', 'mg/dL')
     if 'mmol' in profile_units.lower() or (isf_array.max() < 15 and isf_array.max() > 0):
         isf_array = isf_array * 18.0182
         if verbose:
             print(f"    Converted ISF from mmol/L → mg/dL (×18)")
 
-    # Expand CR schedule → continuous time-varying array
-    # CR is g carbs per unit insulin — unit-independent, no conversion needed
+    # CR schedule → continuous time-varying array
     if cr_schedule is None:
         cr_schedule = df.attrs.get('cr_schedule', [])
     cr_array = expand_schedule(df.index, cr_schedule, default=10.0,
                                local_index=local_index)
 
+    # Basal schedule → continuous per-timestep scheduled rate
+    if basal_schedule is None:
+        basal_schedule = df.attrs.get('basal_schedule', [])
+    if basal_schedule:
+        sched_basal_array = expand_schedule(df.index, basal_schedule, default=0.0,
+                                             local_index=local_index)
+    else:
+        # Fall back: estimate scheduled basal from median of actual delivery
+        actual_vals = actual_basal.values
+        positive = actual_vals[actual_vals > 0]
+        median_rate = float(np.median(positive)) if len(positive) > 0 else 0.0
+        sched_basal_array = np.full(N, median_rate)
+
     if verbose:
         print(f"  Computing continuous PK channels ({N} timesteps)...")
         n_bolus = int((bolus.fillna(0) > 0).sum())
-        n_carbs = int((carbs.fillna(0) > 0).sum())
+        n_carbs = int((carbs_col.fillna(0) > 0).sum())
         print(f"    Bolus events: {n_bolus}, Carb events: {n_carbs}")
         print(f"    DIA={dia_hours}h, peak={peak_min}min")
-        print(f"    ISF schedule: {len(isf_schedule)} segments, "
+        print(f"    ISF: {len(isf_schedule)} segments, "
               f"range [{isf_array.min():.1f}, {isf_array.max():.1f}] mg/dL/U")
-        print(f"    CR schedule: {len(cr_schedule)} segments, "
+        print(f"    CR: {len(cr_schedule)} segments, "
               f"range [{cr_array.min():.1f}, {cr_array.max():.1f}] g/U")
+        print(f"    Basal sched: {len(basal_schedule)} segments, "
+              f"range [{sched_basal_array.min():.2f}, {sched_basal_array.max():.2f}] U/hr")
 
-    # 1. Insulin activity curve
-    insulin_act = compute_insulin_activity(
-        bolus, basal, scheduled_basal, dia_hours, peak_min, interval_min)
+    # 1-2. Insulin activity — full decomposition
+    insulin = compute_insulin_activity(
+        bolus, actual_basal, sched_basal_array,
+        dia_hours, peak_min, interval_min)
 
-    # 2. Insulin acceleration (d/dt of activity)
-    insulin_accel = compute_acceleration(insulin_act, interval_min)
+    insulin_total = insulin['total']
+    insulin_net = insulin['net']
+    basal_ratio = insulin['basal_ratio']
 
     # 3. Carb absorption rate
-    carb_rate = compute_carb_absorption_rate(carbs, carb_abs_hours, interval_min)
+    carb_rate = compute_carb_absorption_rate(carbs_col, carb_abs_hours, interval_min)
 
     # 4. Carb acceleration (d/dt of absorption)
     carb_accel = compute_acceleration(carb_rate, interval_min)
@@ -561,24 +718,30 @@ def build_continuous_pk_features(df: pd.DataFrame,
     # 5. Hepatic glucose production
     hepatic = compute_hepatic_production(iob, hours, weight_kg)
 
-    # 6. Net metabolic balance (uses time-varying ISF and CR)
+    # 6. Net metabolic balance (uses net insulin activity + time-varying ISF/CR)
     net_balance = compute_net_metabolic_balance(
-        insulin_act, carb_rate, hepatic, isf_array, cr_array)
+        insulin_net, carb_rate, hepatic, isf_array, cr_array)
 
     if verbose:
-        print(f"    Insulin activity range: [{insulin_act.min():.4f}, {insulin_act.max():.4f}] U/min")
+        print(f"    Insulin total range: [{insulin_total.min():.4f}, {insulin_total.max():.4f}] U/min")
+        print(f"    Insulin net range: [{insulin_net.min():.4f}, {insulin_net.max():.4f}] U/min")
+        ss_mean = insulin['basal_steady_state'].mean()
+        print(f"    Basal steady-state mean: {ss_mean:.5f} U/min")
+        print(f"    Basal ratio range: [{basal_ratio.min():.2f}, {basal_ratio.max():.2f}]")
         print(f"    Carb rate range: [{carb_rate.min():.4f}, {carb_rate.max():.4f}] g/min")
         print(f"    Hepatic range: [{hepatic.min():.2f}, {hepatic.max():.2f}] mg/dL per 5min")
         print(f"    Net balance range: [{net_balance.min():.2f}, {net_balance.max():.2f}] mg/dL per 5min")
 
     # Stack and normalize
     features = np.column_stack([
-        insulin_act / PK_NORMALIZATION['insulin_activity'],
-        insulin_accel / PK_NORMALIZATION['insulin_accel'],
+        insulin_total / PK_NORMALIZATION['insulin_total'],
+        insulin_net / PK_NORMALIZATION['insulin_net'],
+        basal_ratio / PK_NORMALIZATION['basal_ratio'],
         carb_rate / PK_NORMALIZATION['carb_rate'],
         carb_accel / PK_NORMALIZATION['carb_accel'],
         hepatic / PK_NORMALIZATION['hepatic_production'],
         net_balance / PK_NORMALIZATION['net_balance'],
+        isf_array / PK_NORMALIZATION['isf_curve'],
     ])
 
     return features.astype(np.float32)
@@ -596,7 +759,7 @@ def validate_pk_correlation(df: pd.DataFrame, pk_features: np.ndarray,
 
     Args:
         df: DataFrame with 'glucose' column
-        pk_features: (N, 6) array from build_continuous_pk_features
+        pk_features: (N, 8) array from build_continuous_pk_features
         interval_min: Grid interval
 
     Returns:
@@ -722,14 +885,11 @@ def run_exp348(patients_dir: str, output_path: str = None,
 
             # Extract patient-specific parameters from profile
             dia = df.attrs.get('patient_dia', 5.0)
-            isf_schedule = df.attrs.get('isf_schedule', [])
-            cr_schedule = df.attrs.get('cr_schedule', [])
 
-            # Build continuous PK features (ISF/CR expanded from schedules)
+            # Build continuous PK features (all schedules expanded from df.attrs)
             pk = build_continuous_pk_features(
                 df, dia_hours=dia, peak_min=55.0,
-                isf_schedule=isf_schedule, cr_schedule=cr_schedule,
-                carb_abs_hours=3.0, scheduled_basal=None, verbose=verbose)
+                carb_abs_hours=3.0, verbose=verbose)
 
             # Validate correlation with glucose dynamics
             corr = validate_pk_correlation(df, pk)

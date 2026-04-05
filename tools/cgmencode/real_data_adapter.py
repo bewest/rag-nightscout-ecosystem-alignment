@@ -550,6 +550,7 @@ def build_nightscout_grid(data_path: str,
     # Store schedules for downstream feature computation
     df.attrs['isf_schedule'] = isf_schedule
     df.attrs['cr_schedule'] = cr_schedule
+    df.attrs['basal_schedule'] = basal_schedule
     df.attrs['target_low_schedule'] = target_low_schedule
     df.attrs['target_high_schedule'] = target_high_schedule
     df.attrs['profile_units'] = default_profile.get('units', 'mg/dL')
