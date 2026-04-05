@@ -552,6 +552,7 @@ def build_nightscout_grid(data_path: str,
     df.attrs['cr_schedule'] = cr_schedule
     df.attrs['target_low_schedule'] = target_low_schedule
     df.attrs['target_high_schedule'] = target_high_schedule
+    df.attrs['profile_units'] = default_profile.get('units', 'mg/dL')
 
     # Extract patient timezone for circadian features and basal schedule
     patient_tz = _normalize_timezone(default_profile.get('timezone', ''))
