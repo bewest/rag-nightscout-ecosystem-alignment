@@ -4219,3 +4219,183 @@ def run_21f_chdrop_ensemble(args):
     return result
 
 REGISTRY['21f-chdrop-ensemble'] = 'run_21f_chdrop_ensemble'
+
+
+# ── EXP-278: Window Size vs Feature Set Fair Comparison ──────────
+# EXP-242 (8f, ws=48) = 11.25/11.56/2.8% but uses 2× more history than
+# EXP-277 (21f, ws=24). Test 21f and 8f at both window sizes with ch_drop.
+def run_window_feature_comparison(args):
+    """EXP-278: Window size × feature set comparison.
+
+    Tests 4 configs: {8f, 21f} × {ws=24, ws=48} with ch_drop=0.15.
+    Single seed for fast sweep — identifies which combination to scale up.
+    """
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    device = get_device()
+
+    from .schema import (NUM_FEATURES, NUM_FEATURES_EXTENDED,
+                         FUTURE_UNKNOWN_CHANNELS)
+    from torch.utils.data import DataLoader
+
+    CH_DROP_P = 0.15
+
+    def _ch_drop_fwd(model, x_batch, crit, ch_drop_p, training=False):
+        x = batch_to_device(x_batch, device)
+        half = x.shape[1] // 2
+        x_in = x.clone()
+        mask_future_channels(x_in, half)
+        if training and ch_drop_p > 0:
+            n_ch = x_in.shape[2]
+            droppable = [c for c in range(n_ch)
+                        if c not in {0, 6, 7}
+                        and c not in set(FUTURE_UNKNOWN_CHANNELS)]
+            mask = torch.rand(len(droppable)) < ch_drop_p
+            for i, ch in enumerate(droppable):
+                if mask[i]:
+                    x_in[:, :, ch] = 0.0
+        pred = model(x_in, causal=True)
+        loss = crit(pred[:, half:, :1], x[:, half:, :1])
+        return loss
+
+    def _train_cd(model, t_ds, v_ds, ch_drop_p, epochs, patience,
+                  lr=1e-3, wd=1e-5, save_path=None):
+        model.to(device)
+        t_dl = DataLoader(t_ds, batch_size=32, shuffle=True)
+        v_dl = DataLoader(v_ds, batch_size=64)
+        opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=wd)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
+        crit = torch.nn.MSELoss()
+        best_vl, stale = float('inf'), 0
+        for ep in range(epochs):
+            model.train()
+            for b in t_dl:
+                opt.zero_grad()
+                loss = _ch_drop_fwd(model, b[0], crit, ch_drop_p, training=True)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+            model.eval()
+            vt, vn = 0.0, 0
+            with torch.no_grad():
+                for b in v_dl:
+                    l = _ch_drop_fwd(model, b[0], crit, 0.0, training=False)
+                    vt += l.item() * b[0].shape[0]; vn += b[0].shape[0]
+            vl = vt / vn if vn else float('inf')
+            sched.step(vl)
+            if vl < best_vl:
+                best_vl = vl; stale = 0
+                if save_path:
+                    os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+                    torch.save({'model_state': model.state_dict()}, save_path)
+            else:
+                stale += 1
+            if stale >= patience:
+                break
+        if save_path and os.path.exists(save_path):
+            ckpt = torch.load(save_path, map_location=device, weights_only=True)
+            model.load_state_dict(ckpt['model_state'])
+        return model
+
+    patients_base = os.path.dirname(os.path.dirname(patient_paths[0]))
+    patient_dirs = sorted([d for d in os.listdir(patients_base)
+                          if os.path.isdir(os.path.join(patients_base, d))])
+
+    # Configs: (name, n_features, window_size, extended_features)
+    configs = [
+        ('8f_ws24',  NUM_FEATURES,          24, False),
+        ('8f_ws48',  NUM_FEATURES,          48, False),
+        ('21f_ws24', NUM_FEATURES_EXTENDED,  24, True),
+        ('21f_ws48', NUM_FEATURES_EXTENDED,  48, True),
+    ]
+
+    all_results = {}
+    for cname, nf, ws, ext in configs:
+        print(f"\n=== Config: {cname} (features={nf}, ws={ws}) ===")
+
+        validate_masking(nf, label=f'EXP-278-{cname}')
+
+        # Load data
+        train_ds, val_ds = load_multipatient_nightscout(
+            patient_paths, task='forecast', window_size=ws,
+            extended_features=ext)
+        persist = compute_persistence_mae(val_ds)
+        print(f"  Data: {len(train_ds)} train, {len(val_ds)} val, persist={persist:.1f}")
+
+        # Train base model
+        set_seed(42)
+        model = create_model(arch='grouped', input_dim=nf,
+                             d_model=64, nhead=4, num_layers=2, dropout=0.1)
+        sp = os.path.join(output_dir, f'exp278_{cname}_s42.pth')
+        model = _train_cd(model, train_ds, val_ds, CH_DROP_P,
+                          epochs=100, patience=15, save_path=sp)
+        base_mae = _mae_from_model(model, val_ds)
+        print(f"  Base MAE: {base_mae:.2f}")
+
+        # Per-patient verification (single base model, single FT seed)
+        import copy
+        pt_results = {}
+        for pid in patient_dirs:
+            train_path = os.path.join(patients_base, pid, 'training')
+            ver_path = os.path.join(patients_base, pid, 'verification')
+            if not os.path.isdir(train_path):
+                continue
+            try:
+                pt_tr, pt_vl = load_multipatient_nightscout(
+                    [train_path], task='forecast', window_size=ws,
+                    extended_features=ext)
+            except:
+                continue
+
+            pt_ver = None
+            if os.path.isdir(ver_path):
+                try:
+                    _, pt_ver = load_multipatient_nightscout(
+                        [ver_path], task='forecast', window_size=ws,
+                        extended_features=ext)
+                    if pt_ver and len(pt_ver) < 5:
+                        pt_ver = None
+                except:
+                    pt_ver = None
+
+            set_seed(42)
+            ftm = copy.deepcopy(model)
+            ft_sp = os.path.join(output_dir, f'exp278_{cname}_{pid}.pth')
+            ftm = _train_cd(ftm, pt_tr, pt_vl, CH_DROP_P,
+                            epochs=30, patience=8, lr=3e-4, save_path=ft_sp)
+
+            tr_mae = _mae_from_model(ftm, pt_vl)
+            ver_mae = _mae_from_model(ftm, pt_ver) if pt_ver else None
+            gap = round((ver_mae / tr_mae - 1) * 100, 1) if ver_mae and tr_mae > 0 else None
+            pt_results[pid] = {'train': round(tr_mae, 2),
+                               'ver': round(ver_mae, 2) if ver_mae else None,
+                               'gap': gap}
+
+        tr_ms = [v['train'] for v in pt_results.values()]
+        ver_ms = [v['ver'] for v in pt_results.values() if v['ver'] is not None]
+        gaps = [v['gap'] for v in pt_results.values() if v['gap'] is not None]
+
+        summary = {
+            'base_mae': round(base_mae, 2),
+            'persist_mae': round(persist, 2),
+            'mean_ft_train': round(float(np.mean(tr_ms)), 2),
+            'mean_ft_ver': round(float(np.mean(ver_ms)), 2) if ver_ms else None,
+            'mean_gap': round(float(np.mean(gaps)), 1) if gaps else None,
+            'patients': pt_results,
+        }
+        all_results[cname] = summary
+        print(f"  FT: train={summary['mean_ft_train']} ver={summary['mean_ft_ver']} gap={summary['mean_gap']}%")
+
+    result = {
+        'experiment': 'EXP-278: Window Size × Feature Set Comparison',
+        'ch_dropout': CH_DROP_P,
+        'configs': all_results,
+        'comparison': {
+            'exp242_8f_ws48_ens': {'train': 11.25, 'ver': 11.56, 'gap': 2.8},
+        },
+    }
+    save_results(result, os.path.join(output_dir, 'exp278_window_feature_comparison.json'))
+    return result
+
+REGISTRY['window-feature-comparison'] = 'run_window_feature_comparison'
