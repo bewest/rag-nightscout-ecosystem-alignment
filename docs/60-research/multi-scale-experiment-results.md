@@ -1,8 +1,8 @@
 # Multi-Scale Pattern Experiment Results
 
 **Date**: 2026-04-04  
-**Experiments**: EXP-287, EXP-289, EXP-286, EXP-291, EXP-298, EXP-299  
-**Status**: EXP-300 (daily drift) and EXP-301 (weekly ISF) pending
+**Experiments**: EXP-287, EXP-289, EXP-286, EXP-291, EXP-298, EXP-299, EXP-300  
+**Status**: EXP-301 (weekly ISF) running
 
 ## Executive Summary
 
@@ -217,23 +217,125 @@ EXP-300 uses stride=1 for daily scale to maximize training data.
 
 ---
 
+### EXP-300: Daily Drift Segmentation (24h @ 15-min)
+
+**Question**: Does 24h context with 15-min resolution enable drift detection that
+failed at 2h?
+
+| Metric | 2h (EXP-286) | 24h (EXP-300) | Change |
+|--------|-------------|--------------|--------|
+| Macro F1 | 0.861 | 0.782 | -9.2% |
+| Weighted F1 | 0.934 | 0.873 | -6.5% |
+| Drift labels assigned | 0 | 0 | — |
+| Training windows | 28,965 | 140,312 | +384% |
+| Validation windows | 7,242 | 35,079 | +384% |
+
+**Why drift detection still fails**: Zero drift labels were assigned even at 24h.
+The `build_episode_labels()` function detects sensitivity shifts by comparing glucose
+response to insulin delivery — but with only 8 base channels, there is no ISF profile
+reference (ch32: scheduled ISF) to compare against. The model cannot distinguish "glucose
+is high because ISF shifted" from "glucose is high because carbs were underestimated."
+
+**Why overall F1 dropped**: The 24h @ 15-min resolution loses temporal granularity.
+Acute events (hypo spikes, rapid corrections) that are sharp features at 5-min resolution
+become smoothed blobs at 15-min. The model has more data (140K vs 29K) but less
+informative features per window.
+
+**Label distribution at 24h** (train set):
+| Label | Count | % |
+|-------|-------|---|
+| stable | 71,780 | 40.9% |
+| correction_response | 30,477 | 17.4% |
+| hypo_risk | 11,218 | 6.4% |
+| rising | 10,368 | 5.9% |
+| meal_response | 7,344 | 4.2% |
+| falling | 6,086 | 3.5% |
+| exercise_response | 2,813 | 1.6% |
+| dawn_phenomenon | 226 | 0.1% |
+| sensitivity_shift | 0 | 0.0% |
+| resistance_shift | 0 | 0.0% |
+
+**Actionable conclusion**: ISF drift detection requires either:
+1. **Enriched 39-feature data** (ch32/33 ISF/CR profiles) at daily scale, OR
+2. **Indirect drift estimation** — compare same-context glucose responses across different
+   days (e.g., "same meal, same bolus, different glucose outcome → ISF changed")
+
+Approach #2 is novel and doesn't require profile features. It treats drift as a
+*departure from expected pattern response* rather than a direct ISF measurement.
+
+---
+
+## Synthesis: What We've Learned
+
+### 1. Timescale-Objective Mapping is Validated
+
+Every experiment confirmed that objectives have natural timescales:
+
+| Objective | Best Scale | Evidence | Wrong Scale | Evidence |
+|-----------|-----------|----------|-------------|----------|
+| UAM detection | 2h | F1=0.40 | 12h | F1=0.07 (-83%) |
+| Pattern clustering | 12h | Sil=-0.291 | 8h | Sil=-0.642 (+120% worse) |
+| Episode segmentation | 2h | F1=0.883 | 24h | F1=0.782 (-11%) |
+| ISF drift | ≥24h + profiles | — | 2h or 24h w/o profiles | 0 labels |
+
+### 2. Feature Importance is Scale-Dependent
+
+Features that help at one scale hurt at another:
+
+| Feature | 2h impact | 12h impact | Recommendation |
+|---------|-----------|------------|----------------|
+| bolus | helpful | harmful (+0.224 sil when removed) | Drop at ≥12h |
+| COB | noise (+0.178 sil removed) | essential (-0.456 sil removed) | Include ≥12h only |
+| time_sin/cos | neutral | harmful (+0.014 R@5 removed) | Drop at 12h, keep at 24h |
+| carbs | minor | #1 feature (-0.604 sil removed) | Critical at ≥12h |
+
+### 3. Data Quantity vs Quality Trade-off
+
+| Scale | stride=w//2 windows | stride=1 windows | Resolution | Quality |
+|-------|---------------------|------------------|------------|---------|
+| 2h | 36K | 585K | 5-min | Best for acute events |
+| 12h | 5.9K | 585K | 5-min | Best clusters (U-shape winner) |
+| 24h | ~3.5K | 175K | 15-min | Smoothed — loses acute detail |
+| 7d | ~580 | ~45K | 1-hr | TBD (EXP-301 running) |
+
+stride=1 at daily scale gave 175K windows — massive. But 15-min smoothing hurt F1
+by 9.2% vs 5-min. **More data doesn't compensate for resolution loss**.
+
+### 4. The ISF Drift Problem is Unsolved
+
+Neither 2h, 12h, nor 24h windows with 8 base channels can detect ISF drift.
+The fundamental issue is **observability**: you need a reference ISF value to detect
+drift FROM that value. Two paths forward:
+
+- **Path A**: Use enriched 39-feature data (ISF profile in ch32). Requires
+  `extended_features=True` loading (~2 min). Directly measurable.
+- **Path B**: Use pattern comparison across time — if the same type of episode
+  (matched by embedding similarity) has a different glucose outcome on different days,
+  that delta IS the ISF drift signal. Novel, doesn't need profiles.
+
+Path B is more interesting because it works even without explicit ISF profiles,
+and is the approach that best fits the multi-scale architecture.
+
+---
+
 ## Open Questions
 
-1. **EXP-300 (pending)**: Does 24h context with 15-min resolution enable drift detection
-   that failed at 2h? Hypothesis: yes, if the model sees circadian variation.
+1. **EXP-301 (running)**: Are 7-day weekly-scale embeddings meaningful? Can they capture
+   multi-day ISF trends even without profile features?
 
-2. **EXP-301 (pending)**: Is 7-day weekly scale data-sufficient? stride=1 gives ~8.5K
-   windows, but only from ~160 days per patient — high overlap between windows.
+2. **Cross-scale integration**: How to combine fast (2h) + episode (12h) + daily (24h)
+   embeddings for override decisions?
 
-3. **Cross-scale embedding**: Simple concatenation vs attention-based fusion? The scales
-   have very different dimensionalities and semantics.
+3. **Resolution vs information**: 24h @ 15-min lost 9% F1 vs 2h @ 5-min. Should daily
+   scale use 5-min resolution (288 steps) instead of downsampling? VRAM cost: ~1GB,
+   still feasible on 4GB GPU.
 
-4. **Bolus encoding**: Since bolus spikes hurt 12h clustering, should we encode bolus
-   as a *cumulative* signal (total insulin delivered) rather than instantaneous rate?
+4. **Indirect drift estimation**: Can we detect ISF drift by comparing similar-pattern
+   glucose responses across different days? This would be a novel contribution.
 
-5. **Time features**: Time hurts episode-scale retrieval but is essential for daily-scale
-   drift (circadian patterns). The per-scale feature selection reinforces the multi-model
-   architecture.
+5. **Bolus encoding at episode scale**: Instead of dropping bolus entirely, encode it as
+   cumulative insulin delivered (running sum) — preserves information without the spiky
+   noise that hurts clustering.
 
 ---
 
@@ -249,10 +351,10 @@ python3 -m tools.cgmencode.run_pattern_experiments ablation-12h --device cuda --
 # EXP-299: 12h UAM
 python3 -m tools.cgmencode.run_pattern_experiments uam-12h --device cuda --epochs 30
 
-# EXP-300: Daily drift (pending)
+# EXP-300: 24h drift
 python3 -m tools.cgmencode.run_pattern_experiments drift-daily --device cuda --epochs 30
 
-# EXP-301: Weekly ISF (pending)
+# EXP-301: Weekly ISF
 python3 -m tools.cgmencode.run_pattern_experiments weekly-isf --device cuda --epochs 30
 ```
 
