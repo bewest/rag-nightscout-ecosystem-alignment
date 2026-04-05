@@ -2546,6 +2546,228 @@ def run_per_patient_drift(args):
     return results
 
 
+def run_insulin_controlled_drift(args):
+    """EXP-308: Insulin-controlled ISF drift detection.
+
+    Addresses EXP-307's caveat: match sim≈1.0 means embedding matching
+    wasn't discriminative. Instead, match windows by TREATMENT CONTEXT
+    (insulin delivery + carb intake) directly from the data channels.
+
+    If similar treatment contexts produce different glucose outcomes at
+    different times → that's true ISF drift (not just behavior change).
+
+    Treatment context (from channels 1-5):
+    - Mean IOB (ch1), Mean COB (ch2), Mean basal (ch3)
+    - Total bolus (ch4), Total carbs (ch5)
+    - These are normalized, so we match on normalized values directly.
+
+    Uses 12h episode windows (captures complete DIA cycle, best for
+    insulin response analysis) with non-overlapping stride.
+    """
+    from sklearn.metrics.pairwise import cosine_similarity
+    from scipy import stats as scipy_stats
+    from .real_data_adapter import downsample_grid
+
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+
+    print("=" * 60)
+    print("EXP-308: Insulin-Controlled ISF Drift Detection")
+    print("=" * 60)
+
+    # Use episode scale (12h @ 5min) — captures full DIA cycle
+    # Non-overlapping stride to ensure statistical independence
+    window = 144  # 12h at 5-min
+    stride = 144  # NON-OVERLAPPING
+
+    per_patient_results = {}
+    K = 5
+    TREATMENT_SIM_THRESHOLD = 0.85
+
+    for pi, path in enumerate(patient_paths):
+        patient_id = os.path.basename(os.path.dirname(path))
+        print(f"\n--- Patient {patient_id} ({pi+1}/{len(patient_paths)}) ---")
+
+        df, features_5min = _get_cached_grid(path)
+        if df is None:
+            print("  SKIP: no data")
+            continue
+
+        # Build NON-OVERLAPPING 12h windows preserving temporal order
+        windows = []
+        for start in range(0, len(features_5min) - window + 1, stride):
+            w = features_5min[start:start + window]
+            # Require <20% NaN in glucose
+            if np.isnan(w[:, 0]).mean() < 0.2:
+                w = np.nan_to_num(w, nan=0.0)
+                windows.append(w)
+
+        if len(windows) < 10:
+            print(f"  SKIP: only {len(windows)} non-overlapping 12h windows")
+            continue
+
+        windows = np.array(windows, dtype=np.float32)  # (N, 144, 8)
+        n = len(windows)
+
+        # Extract treatment context: summary of insulin/carb channels per window
+        # Channels: 0=glucose, 1=IOB, 2=COB, 3=basal, 4=bolus, 5=carbs, 6=tsin, 7=tcos
+        treatment_ctx = np.column_stack([
+            windows[:, :, 1].mean(axis=1),  # mean IOB
+            windows[:, :, 2].mean(axis=1),  # mean COB
+            windows[:, :, 3].mean(axis=1),  # mean basal
+            windows[:, :, 4].sum(axis=1),   # total bolus (sum, not mean)
+            windows[:, :, 5].sum(axis=1),   # total carbs (sum, not mean)
+        ])  # (N, 5) treatment context vector
+
+        # Normalize treatment context for cosine similarity
+        norms = np.linalg.norm(treatment_ctx, axis=1, keepdims=True)
+        norms = np.maximum(norms, 1e-8)
+        treatment_ctx_norm = treatment_ctx / norms
+
+        # Split into temporal thirds
+        third = n // 3
+        early_idx = np.arange(third)
+        late_idx = np.arange(n - third, n)
+
+        early_ctx = treatment_ctx_norm[early_idx]
+        late_ctx = treatment_ctx_norm[late_idx]
+
+        # Match late windows to early windows by treatment similarity
+        sim = cosine_similarity(late_ctx, early_ctx)  # (L, E)
+
+        glucose_deltas = []
+        tir_deltas = []
+        match_sims = []
+        insulin_deltas = []
+
+        for i in range(len(late_idx)):
+            sims = sim[i]
+            top_k = np.argsort(sims)[-K:]
+            top_k_sims = sims[top_k]
+            good = top_k_sims >= TREATMENT_SIM_THRESHOLD
+
+            if good.sum() < 2:
+                continue
+
+            matched_early = early_idx[top_k[good]]
+            matched_sims_arr = top_k_sims[good]
+            li = late_idx[i]
+
+            # Glucose outcomes (channel 0, denormalized)
+            late_gluc = windows[li, :, 0] * 400.0
+            early_gluc = np.array([windows[j, :, 0] * 400.0 for j in matched_early])
+
+            # Insulin delivery (channel 4, denormalized)
+            late_insulin = windows[li, :, 4].sum() * 10.0  # bolus units
+            early_insulin = np.mean([windows[j, :, 4].sum() * 10.0
+                                     for j in matched_early])
+
+            glucose_deltas.append(float(np.nanmean(late_gluc) - np.nanmean(early_gluc)))
+            insulin_deltas.append(float(late_insulin - early_insulin))
+
+            late_tir = ((late_gluc >= 70) & (late_gluc <= 180)).mean()
+            early_tir = np.mean([((windows[j, :, 0] * 400.0 >= 70) &
+                                   (windows[j, :, 0] * 400.0 <= 180)).mean()
+                                  for j in matched_early])
+            tir_deltas.append(float(late_tir - early_tir))
+            match_sims.append(float(matched_sims_arr.mean()))
+
+        if len(glucose_deltas) < 3:
+            print(f"  SKIP: only {len(glucose_deltas)} treatment-matched pairs")
+            continue
+
+        glucose_deltas = np.array(glucose_deltas)
+        tir_deltas = np.array(tir_deltas)
+        insulin_deltas = np.array(insulin_deltas)
+
+        t_stat, p_value = scipy_stats.ttest_1samp(glucose_deltas, 0)
+
+        # Also test if insulin delivery changed (confounder check)
+        t_ins, p_ins = scipy_stats.ttest_1samp(insulin_deltas, 0)
+
+        per_patient_results[patient_id] = {
+            'n_windows': n,
+            'n_non_overlapping': n,
+            'n_comparisons': len(glucose_deltas),
+            'mean_treatment_sim': float(np.mean(match_sims)),
+            'glucose_delta': {
+                'mean': float(glucose_deltas.mean()),
+                'std': float(glucose_deltas.std()),
+                'median': float(np.median(glucose_deltas)),
+                'pct_positive': float((glucose_deltas > 0).mean()),
+                't_statistic': float(t_stat),
+                'p_value': float(p_value),
+            },
+            'insulin_delta': {
+                'mean': float(insulin_deltas.mean()),
+                'p_value': float(p_ins),
+                'note': 'should be ~0 if treatment matching worked',
+            },
+            'tir_delta': {
+                'mean': float(tir_deltas.mean()),
+                'std': float(tir_deltas.std()),
+            },
+        }
+
+        direction = "↑ resistance" if glucose_deltas.mean() > 0 else "↓ sensitivity"
+        sig = "**" if p_value < 0.01 else "*" if p_value < 0.05 else ""
+        ins_note = f" (ΔInsulin={insulin_deltas.mean():+.2f}U, p={p_ins:.3f})" if p_ins < 0.05 else ""
+        print(f"  {n} non-overlapping 12h windows, {len(glucose_deltas)} matched pairs")
+        print(f"  Glucose Δ: {glucose_deltas.mean():+.1f} mg/dL "
+              f"(p={p_value:.4f}{sig}) → {direction}")
+        print(f"  Mean treatment sim: {np.mean(match_sims):.3f}{ins_note}")
+
+    # Summary
+    patients_with_drift = [pid for pid, pr in per_patient_results.items()
+                           if pr['glucose_delta']['p_value'] < 0.05]
+    # Patients where insulin changed significantly (confounded)
+    confounded = [pid for pid, pr in per_patient_results.items()
+                  if pr['insulin_delta']['p_value'] < 0.05]
+
+    results = {
+        'experiment': 'EXP-308',
+        'name': 'insulin-controlled-drift',
+        'method': 'treatment-context matching (12h non-overlapping)',
+        'scale': 'episode (12h @ 5min, stride=12h)',
+        'k_neighbors': K,
+        'treatment_sim_threshold': TREATMENT_SIM_THRESHOLD,
+        'per_patient': per_patient_results,
+        'summary': {
+            'n_patients_analyzed': len(per_patient_results),
+            'n_significant_drift': len(patients_with_drift),
+            'patients_with_drift': patients_with_drift,
+            'n_confounded': len(confounded),
+            'confounded_patients': confounded,
+            'clean_drift': [p for p in patients_with_drift if p not in confounded],
+        },
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"Insulin-Controlled Drift Summary")
+    print(f"{'='*60}")
+    print(f"{'Patient':>8} {'N':>5} {'ΔGluc':>8} {'p-val':>8} {'ΔIns':>7} {'TxSim':>6} {'Drift':>12}")
+    print("-" * 65)
+    for pid in sorted(per_patient_results.keys()):
+        pr = per_patient_results[pid]
+        g = pr['glucose_delta']
+        sig = "**" if g['p_value'] < 0.01 else "*" if g['p_value'] < 0.05 else ""
+        conf = "†" if pr['insulin_delta']['p_value'] < 0.05 else ""
+        direction = "resistance↑" if g['mean'] > 0 else "sensitivity↑"
+        print(f"{pid:>8} {pr['n_comparisons']:>5} {g['mean']:>+7.1f} "
+              f"{g['p_value']:>7.4f}{sig} {pr['insulin_delta']['mean']:>+6.2f}{conf} "
+              f"{pr['mean_treatment_sim']:>5.3f} {direction:>12}")
+    clean = results['summary']['clean_drift']
+    print(f"\nSignificant drift: {len(patients_with_drift)}/{len(per_patient_results)}")
+    print(f"Confounded (insulin also changed): {len(confounded)}")
+    print(f"Clean drift (glucose changed, insulin didn't): {len(clean)} → {clean}")
+    print(f"† = insulin delivery also changed significantly (p<0.05)")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp308_insulin_drift.json'))
+    return results
+
+
 # ── Registry & CLI ─────────────────────────────────────────────────────
 
 EXPERIMENTS = {
@@ -2577,6 +2799,8 @@ EXPERIMENTS = {
                        'Indirect ISF drift via pattern-similarity outcome comparison'),
     'per-patient-drift': ('EXP-307', run_per_patient_drift,
                           'Per-patient temporal ISF drift (early vs late matching)'),
+    'insulin-drift': ('EXP-308', run_insulin_controlled_drift,
+                      'Insulin-controlled drift (treatment-context matching)'),
 }
 
 

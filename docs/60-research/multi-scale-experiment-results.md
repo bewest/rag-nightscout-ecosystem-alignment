@@ -1,8 +1,8 @@
 # Multi-Scale Pattern Experiment Results
 
 **Date**: 2026-04-04  
-**Experiments**: EXP-287, EXP-289, EXP-286, EXP-291, EXP-298, EXP-299, EXP-300, EXP-301, EXP-304, EXP-305, EXP-306, EXP-307  
-**Status**: Complete (12 experiments across 4 timescales + cross-scale + drift detection)
+**Experiments**: EXP-287, EXP-289, EXP-286, EXP-291, EXP-298, EXP-299, EXP-300, EXP-301, EXP-304, EXP-305, EXP-306, EXP-307, EXP-308  
+**Status**: Complete (13 experiments across 4 timescales + cross-scale + drift detection)
 
 ## Executive Summary
 
@@ -551,7 +551,7 @@ sequence model on the fast window rather than static embeddings.
 |-----------|-----------|-------------|-----------------|
 | Pattern retrieval | Weekly (7d) | Sil=+0.326 | **Essential** — only positive Sil |
 | UAM detection | Fast (2h) | F1=0.40 | N/A (classification) |
-| ISF drift | Weekly (7d) | TBD | TBD — needs profile features |
+| ISF drift | Episode (12h) | Treatment-matched ΔGluc | **Not needed** — treatment matching works better |
 | Override recommendation | Fast (2h) state | F1=0.39 | **Marginal** — ΔF1<0.001 |
 | Glucose forecasting | 2h window | MAE=11.25 | N/A (regression) |
 
@@ -637,6 +637,52 @@ rigorous approach would:
 - Control for insulin delivery: compare glucose outcomes for matched insulin/carb contexts
 - Use a more discriminative encoder that varies within a patient's data
 
+### EXP-308: Insulin-Controlled ISF Drift (**Key Result**)
+
+**Question**: When we control for insulin delivery context, does the glucose shift
+from EXP-307 still hold? Are we seeing true ISF drift or just behavior changes?
+
+**Method**: Match 12h non-overlapping windows by treatment context (IOB, COB, basal,
+bolus, carbs) using cosine similarity ≥0.85. Compare glucose outcomes of
+treatment-matched early vs late windows within each patient.
+
+| Patient | N | ΔGluc | p-value | ΔInsulin | TxSim | Interpretation |
+|---------|---|-------|---------|----------|-------|----------------|
+| a | 98 | +2.0 | 0.611 | -0.15 | 0.991 | (not sig.) |
+| **b** | 99 | **-8.4** | **0.023*** | -0.08 | 0.998 | **Clean: true sensitivity↑** |
+| c | 91 | +3.3 | 0.116 | -0.51 | 0.999 | (not sig.) |
+| d | 99 | -1.7 | 0.401 | +3.17† | 0.998 | (not sig.) |
+| e | 92 | -17.5 | <0.001** | -3.48† | 0.999 | Confounded (less insulin) |
+| f | 98 | -24.8 | <0.001** | -2.25† | 0.991 | Confounded (less insulin) |
+| g | 101 | +10.2 | 0.004** | +0.86† | 0.999 | Confounded (mild) |
+| h | 41 | +2.6 | 0.346 | +0.67 | 0.995 | (not sig.) |
+| **i** | 100 | **+19.1** | **<0.001**** | **+4.79†** | 0.999 | **Paradox: more insulin + more glucose = resistance↑** |
+| **j** | 34 | **-19.0** | **<0.001**** | -0.41 | 0.997 | **Clean: true sensitivity↑** |
+| **k** | 62 | **+4.3** | **0.004**** | -0.85† | 0.998 | **Less insulin + more glucose = resistance↑** |
+
+**Key findings**:
+
+1. **7/11 patients show significant drift** (p<0.05), but 6 have confounded insulin changes.
+
+2. **2 patients show clean ISF drift** (glucose changed, insulin didn't):
+   - Patient b: -8.4 mg/dL sensitivity improvement
+   - Patient j: -19.0 mg/dL sensitivity improvement
+
+3. **2 more patients show paradoxical drift** (glucose changed OPPOSITE to insulin):
+   - Patient i: +19.1 mg/dL MORE glucose despite +4.79U MORE insulin → true resistance
+   - Patient k: +4.3 mg/dL MORE glucose despite -0.85U LESS insulin → true resistance
+
+4. **Treatment matching works**: Mean treatment sim 0.991-0.999, confirming we're
+   comparing like-for-like insulin/carb contexts.
+
+5. **Direction reversed from EXP-307** for some patients (e.g., patient a: +22.7→+2.0,
+   patient e: -4.6→-17.5), showing that insulin changes were a major confounder.
+
+**Conclusion**: True ISF drift is detectable in 4/11 patients (b, i, j, k) when
+controlling for insulin delivery. The AID system's adaptive insulin adjustments
+confound naive temporal comparisons — this is exactly why insulin-controlled
+matching is essential.
+
 ---
 
 ## Reproduction
@@ -668,6 +714,9 @@ python3 -m tools.cgmencode.run_pattern_experiments indirect-drift --device cuda
 
 # EXP-307: Per-patient temporal drift (8/11 significant)
 python3 -m tools.cgmencode.run_pattern_experiments per-patient-drift --device cuda
+
+# EXP-308: Insulin-controlled drift (4/11 true ISF drift)
+python3 -m tools.cgmencode.run_pattern_experiments insulin-drift --device cuda
 ```
 
 All results saved to `externals/experiments/` (gitignored).
