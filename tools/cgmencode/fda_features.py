@@ -325,18 +325,34 @@ def bspline_roundtrip_error(data, n_knots=None, order=4, grid_points=None,
     }
 
 
+# ── GPU Acceleration ───────────────────────────────────────────────────
+
+def _gpu_available():
+    """Check if GPU-accelerated FDA module is usable."""
+    try:
+        import torch
+        from . import fda_features_gpu  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
 # ── Multi-Channel FDA Encoding ─────────────────────────────────────────
 
-def fda_encode(windows, method='fpca', channel=0, **kwargs):
+def fda_encode(windows, method='fpca', channel=0, device=None, **kwargs):
     """Apply FDA encoding to windowed data.
 
     Drop-in encoding step: takes (N, T, C) windows, returns features.
+    Automatically dispatches to GPU when device is set and PyTorch is
+    available, falling back to scikit-fda CPU implementations.
 
     Args:
         windows: np.ndarray (n_samples, n_timesteps, n_channels)
         method: one of 'bspline_coeffs', 'fpca', 'glucodensity',
                 'derivatives', 'depth', 'l2_dist'
         channel: which channel to operate on (default 0 = glucose)
+        device: torch device string/object, or None for CPU (scikit-fda).
+                Pass 'auto' to use GPU if available, else CPU.
         **kwargs: passed to the underlying FDA function
 
     Returns:
@@ -348,6 +364,12 @@ def fda_encode(windows, method='fpca', channel=0, **kwargs):
           depth:          (N,)
           l2_dist:        (N,)
     """
+    # Auto-dispatch to GPU module if device is specified
+    if device is not None and _gpu_available():
+        from . import fda_features_gpu as gpu
+        return gpu.fda_encode(windows, method=method, channel=channel,
+                              device=device, **kwargs)
+
     if windows.ndim == 2:
         channel_data = windows
     elif windows.ndim == 3:
@@ -374,13 +396,15 @@ def fda_encode(windows, method='fpca', channel=0, **kwargs):
                          f"derivatives, depth, l2_dist")
 
 
-def fda_encode_multichannel(windows, method='fpca', channels=None, **kwargs):
+def fda_encode_multichannel(windows, method='fpca', channels=None,
+                            device=None, **kwargs):
     """Apply FDA encoding to multiple channels and concatenate.
 
     Args:
         windows: np.ndarray (n_samples, n_timesteps, n_channels)
         method: FDA method to apply per channel
         channels: list of channel indices (default: [0] = glucose only)
+        device: torch device or None for CPU
         **kwargs: passed to fda_encode
 
     Returns:
@@ -391,7 +415,8 @@ def fda_encode_multichannel(windows, method='fpca', channels=None, **kwargs):
 
     features = []
     for ch in channels:
-        feat = fda_encode(windows, method=method, channel=ch, **kwargs)
+        feat = fda_encode(windows, method=method, channel=ch,
+                          device=device, **kwargs)
         if feat.ndim == 1:
             feat = feat[:, np.newaxis]
         features.append(feat)

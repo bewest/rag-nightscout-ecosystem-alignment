@@ -7468,11 +7468,26 @@ def main():
             print(f"  {name:30s} {exp_id}  {desc}")
         return
 
+    # FDA experiments (EXP-328–335) use scikit-fda (CPU-only) unless
+    # fda_features_gpu is available; report compute backend honestly.
+    FDA_EXPERIMENTS = {
+        'fda-bootstrap', 'fpca-variance', 'glucodensity-vs-tir',
+        'functional-derivatives', 'fpca-retrieval', 'fpca-isf-drift',
+        'depth-hypo',
+    }
+
     exp_id, func, desc = EXPERIMENTS[args.experiment]
     print(f"\nRunning {exp_id}: {desc}")
     print(f"  patients: {args.patients_dir}")
     print(f"  output:   {args.output_dir}")
-    print(f"  device:   {args.device}")
+    if args.experiment in FDA_EXPERIMENTS:
+        try:
+            from . import fda_features_gpu  # noqa: F401
+            print(f"  compute:  GPU-accelerated FDA (PyTorch on {args.device})")
+        except ImportError:
+            print(f"  compute:  CPU-only (scikit-fda) — install fda_features_gpu for GPU")
+    else:
+        print(f"  device:   {args.device}")
     print(f"  epochs:   {args.epochs}")
     print()
 
