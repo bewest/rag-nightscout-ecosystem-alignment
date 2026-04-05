@@ -5135,3 +5135,559 @@ def run_8f_asymmetric_lookback(args):
     return result
 
 REGISTRY['8f-asymmetric-lookback'] = 'run_8f_asymmetric_lookback'
+
+
+# ── EXP-302: Multi-Seed Ch-Drop Ensemble ────────────────────────────
+def run_chdrop_ensemble(args):
+    """EXP-302: Multi-seed ensemble WITH channel dropout.
+
+    Hypothesis: Combining the two best regularization techniques—
+    channel dropout (eliminates verification gap per EXP-274/278)
+    and multi-seed ensembling (reduces variance per EXP-242)—
+    should push verified MAE below 11 mg/dL.
+
+    Reference points:
+    - EXP-242 (5-seed ensemble, NO ch_drop):  train=11.25, ver=11.56, gap=+2.8%
+    - EXP-280 sym_1h1h (1-seed, ch_drop=0.15): train=11.50, ver=11.44, gap=-0.9%
+
+    Config: 8f, ws=24, ch_drop=0.15, 5 seeds, per-patient FT, ensemble.
+    """
+    import copy
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    device = get_device()
+
+    from .schema import NUM_FEATURES, FUTURE_UNKNOWN_CHANNELS
+    from torch.utils.data import DataLoader
+
+    validate_masking(NUM_FEATURES, label='EXP-302')
+    CH_DROP_P = 0.15
+    NF = NUM_FEATURES  # 8
+    WS = 24
+    FORECAST_STEPS = 12
+    SEEDS = [42, 123, 456, 789, 1337]
+
+    def _ch_drop_fwd(model, x_batch, crit, ch_drop_p, training=False):
+        x = batch_to_device(x_batch, device)
+        split = x.shape[1] - FORECAST_STEPS
+        x_in = x.clone()
+        mask_future_channels(x_in, split)
+        if training and ch_drop_p > 0:
+            n_ch = x_in.shape[2]
+            droppable = [c for c in range(n_ch)
+                        if c not in {0, 6, 7}
+                        and c not in set(FUTURE_UNKNOWN_CHANNELS)]
+            mask = torch.rand(len(droppable)) < ch_drop_p
+            for i, ch in enumerate(droppable):
+                if mask[i]:
+                    x_in[:, :, ch] = 0.0
+        pred = model(x_in, causal=True)
+        loss = crit(pred[:, split:, :1], x[:, split:, :1])
+        return loss
+
+    def _train_cd(model, t_ds, v_ds, ch_drop_p,
+                  epochs, patience, lr=1e-3, wd=1e-5, save_path=None):
+        model.to(device)
+        t_dl = DataLoader(t_ds, batch_size=32, shuffle=True)
+        v_dl = DataLoader(v_ds, batch_size=64)
+        opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=wd)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
+        crit = torch.nn.MSELoss()
+        best_vl, stale = float('inf'), 0
+        for ep in range(epochs):
+            model.train()
+            for b in t_dl:
+                opt.zero_grad()
+                loss = _ch_drop_fwd(model, b[0], crit, ch_drop_p, training=True)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+            model.eval()
+            vt, vn = 0.0, 0
+            with torch.no_grad():
+                for b in v_dl:
+                    l = _ch_drop_fwd(model, b[0], crit, 0.0, training=False)
+                    vt += l.item() * b[0].shape[0]; vn += b[0].shape[0]
+            vl = vt / vn if vn else float('inf')
+            sched.step(vl)
+            if vl < best_vl:
+                best_vl = vl; stale = 0
+                if save_path:
+                    os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+                    torch.save({'model_state': model.state_dict()}, save_path)
+            else:
+                stale += 1
+            if stale >= patience:
+                break
+        if save_path and os.path.exists(save_path):
+            ckpt = torch.load(save_path, map_location=device, weights_only=True)
+            model.load_state_dict(ckpt['model_state'])
+        return model
+
+    def _mae(model, ds):
+        model.eval(); model.to(device)
+        dl = DataLoader(ds, batch_size=64)
+        total_ae, total_n = 0.0, 0
+        with torch.no_grad():
+            for b in dl:
+                x = batch_to_device(b[0], device)
+                split = x.shape[1] - FORECAST_STEPS
+                x_in = x.clone()
+                mask_future_channels(x_in, split)
+                pred = model(x_in, causal=True)
+                ae = torch.abs(pred[:, split:, :1] - x[:, split:, :1])
+                total_ae += ae.sum().item() * 400.0
+                total_n += ae.numel()
+        return total_ae / total_n if total_n else float('inf')
+
+    def _ensemble_mae(models, ds):
+        """Average predictions from multiple models, then compute MAE."""
+        for m in models:
+            m.eval(); m.to(device)
+        dl = DataLoader(ds, batch_size=64)
+        total_ae, total_n = 0.0, 0
+        with torch.no_grad():
+            for b in dl:
+                x = batch_to_device(b[0], device)
+                split = x.shape[1] - FORECAST_STEPS
+                preds = []
+                for m in models:
+                    x_in = x.clone()
+                    mask_future_channels(x_in, split)
+                    preds.append(m(x_in, causal=True)[:, split:, :1])
+                avg_pred = torch.stack(preds).mean(dim=0)
+                ae = torch.abs(avg_pred - x[:, split:, :1])
+                total_ae += ae.sum().item() * 400.0
+                total_n += ae.numel()
+        return total_ae / total_n if total_n else float('inf')
+
+    def _persist_mae(ds):
+        all_ae = []
+        for i in range(len(ds)):
+            x = ds[i][0]
+            split = x.shape[0] - FORECAST_STEPS
+            last_known = x[split - 1, 0].item()
+            actual = x[split:, 0]
+            ae = torch.abs(actual - last_known).mean().item()
+            all_ae.append(ae)
+        return float(np.mean(all_ae)) * 400.0
+
+    # Load multi-patient data
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=WS,
+        extended_features=False)
+    persist = _persist_mae(val_ds)
+    print(f"Data: {len(train_ds)} train, {len(val_ds)} val, persist={persist:.1f}")
+
+    # Phase 1: Train 5 base models with different seeds
+    print("\n=== Phase 1: Train 5 base models ===")
+    base_models = []
+    seed_results = {}
+    for seed in SEEDS:
+        set_seed(seed)
+        model = create_model(arch='grouped', input_dim=NF,
+                             d_model=64, nhead=4, num_layers=2, dropout=0.1)
+        sp = os.path.join(output_dir, f'exp302_base_s{seed}.pth')
+        model = _train_cd(model, train_ds, val_ds, CH_DROP_P,
+                          epochs=100, patience=15, save_path=sp)
+        mae = _mae(model, val_ds)
+        base_models.append(model)
+        seed_results[f's{seed}'] = {'base_mae': round(mae, 2)}
+        print(f"  seed={seed}: base MAE={mae:.2f}")
+
+    # Base ensemble MAE (no FT)
+    base_ens_mae = _ensemble_mae(base_models, val_ds)
+    print(f"\n  Base ensemble MAE: {base_ens_mae:.2f}")
+
+    # Phase 2: Per-patient FT of each seed, then ensemble
+    print("\n=== Phase 2: Per-patient FT + ensemble ===")
+    patients_base = os.path.dirname(os.path.dirname(patient_paths[0]))
+    patient_dirs = sorted([d for d in os.listdir(patients_base)
+                          if os.path.isdir(os.path.join(patients_base, d))])
+
+    patient_results = {}
+    for pid in patient_dirs:
+        train_path = os.path.join(patients_base, pid, 'training')
+        ver_path = os.path.join(patients_base, pid, 'verification')
+        if not os.path.isdir(train_path):
+            continue
+        try:
+            pt_tr, pt_vl = load_multipatient_nightscout(
+                [train_path], task='forecast', window_size=WS,
+                extended_features=False)
+        except:
+            continue
+
+        pt_ver = None
+        if os.path.isdir(ver_path):
+            try:
+                _, pt_ver = load_multipatient_nightscout(
+                    [ver_path], task='forecast', window_size=WS,
+                    extended_features=False)
+                if pt_ver and len(pt_ver) < 5:
+                    pt_ver = None
+            except:
+                pt_ver = None
+
+        # FT each seed model for this patient
+        ft_models = []
+        ft_train_maes, ft_ver_maes = [], []
+        for si, seed in enumerate(SEEDS):
+            set_seed(seed)
+            ftm = copy.deepcopy(base_models[si])
+            ft_sp = os.path.join(output_dir, f'exp302_ft_{pid}_s{seed}.pth')
+            ftm = _train_cd(ftm, pt_tr, pt_vl, CH_DROP_P,
+                            epochs=30, patience=8, lr=3e-4, save_path=ft_sp)
+            ft_models.append(ftm)
+            ft_train_maes.append(_mae(ftm, pt_vl))
+            if pt_ver:
+                ft_ver_maes.append(_mae(ftm, pt_ver))
+
+        # Ensemble of FT models
+        ens_train = _ensemble_mae(ft_models, pt_vl)
+        ens_ver = _ensemble_mae(ft_models, pt_ver) if pt_ver else None
+
+        # Single-seed FT (first seed only, for comparison)
+        single_train = ft_train_maes[0]
+        single_ver = ft_ver_maes[0] if ft_ver_maes else None
+
+        gap_ens = round((ens_ver / ens_train - 1) * 100, 1) if ens_ver and ens_train > 0 else None
+        gap_single = round((single_ver / single_train - 1) * 100, 1) if single_ver and single_train > 0 else None
+
+        patient_results[pid] = {
+            'single_train': round(single_train, 2),
+            'single_ver': round(single_ver, 2) if single_ver else None,
+            'single_gap': gap_single,
+            'ensemble_train': round(ens_train, 2),
+            'ensemble_ver': round(ens_ver, 2) if ens_ver else None,
+            'ensemble_gap': gap_ens,
+        }
+        print(f"  {pid}: single={single_train:.2f}/{f'{single_ver:.2f}' if single_ver else 'N/A'} "
+              f"ens={ens_train:.2f}/{f'{ens_ver:.2f}' if ens_ver else 'N/A'}")
+
+    # Aggregate
+    s_tr = [v['single_train'] for v in patient_results.values()]
+    s_vr = [v['single_ver'] for v in patient_results.values() if v['single_ver'] is not None]
+    e_tr = [v['ensemble_train'] for v in patient_results.values()]
+    e_vr = [v['ensemble_ver'] for v in patient_results.values() if v['ensemble_ver'] is not None]
+    s_gaps = [v['single_gap'] for v in patient_results.values() if v['single_gap'] is not None]
+    e_gaps = [v['ensemble_gap'] for v in patient_results.values() if v['ensemble_gap'] is not None]
+
+    result = {
+        'experiment': 'EXP-302: Multi-Seed Ch-Drop Ensemble',
+        'hypothesis': 'ch_drop + ensemble pushes verified MAE below 11 mg/dL',
+        'config': {
+            'features': '8f', 'window_size': WS, 'ch_drop': CH_DROP_P,
+            'seeds': SEEDS, 'architecture': 'd64/nh4/L2',
+            'base_epochs': 100, 'ft_epochs': 30,
+        },
+        'reference': {
+            'exp242_ensemble_no_chdrop': {'train': 11.25, 'ver': 11.56, 'gap': 2.8},
+            'exp280_single_chdrop': {'train': 11.50, 'ver': 11.44, 'gap': -0.9},
+        },
+        'base_models': seed_results,
+        'base_ensemble_mae': round(base_ens_mae, 2),
+        'persistence_mae': round(persist, 2),
+        'single_seed_mean': {
+            'train': round(float(np.mean(s_tr)), 2),
+            'ver': round(float(np.mean(s_vr)), 2) if s_vr else None,
+            'gap': round(float(np.mean(s_gaps)), 1) if s_gaps else None,
+        },
+        'ensemble_mean': {
+            'train': round(float(np.mean(e_tr)), 2),
+            'ver': round(float(np.mean(e_vr)), 2) if e_vr else None,
+            'gap': round(float(np.mean(e_gaps)), 1) if e_gaps else None,
+        },
+        'patients': patient_results,
+    }
+    save_results(result, os.path.join(output_dir, 'exp302_chdrop_ensemble.json'))
+    return result
+
+
+REGISTRY['chdrop-ensemble'] = 'run_chdrop_ensemble'
+
+
+# ── EXP-303: Clinical Zone Loss + Ch-Drop ───────────────────────────
+def run_clinical_chdrop(args):
+    """EXP-303: Clinical zone loss with ch_drop regularization.
+
+    Hypothesis: Asymmetric zone loss (hypo costs more) combined with
+    ch_drop regularization improves hypo-range accuracy without degrading
+    overall MAE or introducing verification gap.
+
+    Uses the production config (8f ws=24 ch_drop=0.15) as baseline.
+    Tests zone loss with left_weight in {1 (MSE), 5, 10, 19}.
+
+    EXP-235 found w=3 optimal for hypo weighting without ch_drop.
+    """
+    import copy
+
+    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
+    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patient_paths = resolve_patient_paths(patients_dir)
+    device = get_device()
+
+    from .schema import NUM_FEATURES, FUTURE_UNKNOWN_CHANNELS
+    from torch.utils.data import DataLoader
+
+    validate_masking(NUM_FEATURES, label='EXP-303')
+    CH_DROP_P = 0.15
+    NF = NUM_FEATURES  # 8
+    WS = 24
+    FORECAST_STEPS = 12
+    SCALE = 400.0
+
+    def _ch_drop_fwd(model, x_batch, loss_fn, ch_drop_p, training=False):
+        """Forward pass with ch_drop and flexible loss."""
+        x = batch_to_device(x_batch, device)
+        split = x.shape[1] - FORECAST_STEPS
+        x_in = x.clone()
+        mask_future_channels(x_in, split)
+        if training and ch_drop_p > 0:
+            n_ch = x_in.shape[2]
+            droppable = [c for c in range(n_ch)
+                        if c not in {0, 6, 7}
+                        and c not in set(FUTURE_UNKNOWN_CHANNELS)]
+            mask = torch.rand(len(droppable)) < ch_drop_p
+            for i, ch in enumerate(droppable):
+                if mask[i]:
+                    x_in[:, :, ch] = 0.0
+        pred = model(x_in, causal=True)
+        loss = loss_fn(pred[:, split:, :1], x[:, split:, :1])
+        return loss
+
+    def _train_zone(model, t_ds, v_ds, loss_fn, ch_drop_p,
+                    epochs, patience, lr=1e-3, wd=1e-5, save_path=None):
+        model.to(device)
+        t_dl = DataLoader(t_ds, batch_size=32, shuffle=True)
+        v_dl = DataLoader(v_ds, batch_size=64)
+        opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=wd)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=5, factor=0.5)
+        mse_crit = torch.nn.MSELoss()
+        best_vl, stale = float('inf'), 0
+        for ep in range(epochs):
+            model.train()
+            for b in t_dl:
+                opt.zero_grad()
+                loss = _ch_drop_fwd(model, b[0], loss_fn, ch_drop_p, training=True)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+            model.eval()
+            vt, vn = 0.0, 0
+            with torch.no_grad():
+                for b in v_dl:
+                    # Always validate on MSE for fair comparison
+                    l = _ch_drop_fwd(model, b[0], mse_crit, 0.0, training=False)
+                    vt += l.item() * b[0].shape[0]; vn += b[0].shape[0]
+            vl = vt / vn if vn else float('inf')
+            sched.step(vl)
+            if vl < best_vl:
+                best_vl = vl; stale = 0
+                if save_path:
+                    os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+                    torch.save({'model_state': model.state_dict()}, save_path)
+            else:
+                stale += 1
+            if stale >= patience:
+                break
+        if save_path and os.path.exists(save_path):
+            ckpt = torch.load(save_path, map_location=device, weights_only=True)
+            model.load_state_dict(ckpt['model_state'])
+        return model
+
+    def _mae(model, ds):
+        model.eval(); model.to(device)
+        dl = DataLoader(ds, batch_size=64)
+        total_ae, total_n = 0.0, 0
+        with torch.no_grad():
+            for b in dl:
+                x = batch_to_device(b[0], device)
+                split = x.shape[1] - FORECAST_STEPS
+                x_in = x.clone()
+                mask_future_channels(x_in, split)
+                pred = model(x_in, causal=True)
+                ae = torch.abs(pred[:, split:, :1] - x[:, split:, :1])
+                total_ae += ae.sum().item() * SCALE
+                total_n += ae.numel()
+        return total_ae / total_n if total_n else float('inf')
+
+    def _stratified_mae_ch(model, ds):
+        """Compute MAE stratified by glucose zone: hypo/in-range/hyper."""
+        model.eval(); model.to(device)
+        dl = DataLoader(ds, batch_size=64)
+        hypo_ae, hypo_n = 0.0, 0
+        inrange_ae, inrange_n = 0.0, 0
+        hyper_ae, hyper_n = 0.0, 0
+        with torch.no_grad():
+            for b in dl:
+                x = batch_to_device(b[0], device)
+                split = x.shape[1] - FORECAST_STEPS
+                x_in = x.clone()
+                mask_future_channels(x_in, split)
+                pred = model(x_in, causal=True)
+                actual_mg = x[:, split:, :1] * SCALE
+                pred_mg = pred[:, split:, :1] * SCALE
+                ae = torch.abs(pred_mg - actual_mg)
+                hypo_mask = actual_mg < 70
+                inrange_mask = (actual_mg >= 70) & (actual_mg <= 180)
+                hyper_mask = actual_mg > 180
+                if hypo_mask.any():
+                    hypo_ae += ae[hypo_mask].sum().item()
+                    hypo_n += hypo_mask.sum().item()
+                if inrange_mask.any():
+                    inrange_ae += ae[inrange_mask].sum().item()
+                    inrange_n += inrange_mask.sum().item()
+                if hyper_mask.any():
+                    hyper_ae += ae[hyper_mask].sum().item()
+                    hyper_n += hyper_mask.sum().item()
+        return (
+            hypo_ae / hypo_n if hypo_n else float('nan'),
+            inrange_ae / inrange_n if inrange_n else float('nan'),
+            hyper_ae / hyper_n if hyper_n else float('nan'),
+        )
+
+    def _persist_mae(ds):
+        all_ae = []
+        for i in range(len(ds)):
+            x = ds[i][0]
+            split = x.shape[0] - FORECAST_STEPS
+            last_known = x[split - 1, 0].item()
+            actual = x[split:, 0]
+            ae = torch.abs(actual - last_known).mean().item()
+            all_ae.append(ae)
+        return float(np.mean(all_ae)) * SCALE
+
+    # Load data
+    train_ds, val_ds = load_multipatient_nightscout(
+        patient_paths, task='forecast', window_size=WS,
+        extended_features=False)
+    persist = _persist_mae(val_ds)
+    print(f"Data: {len(train_ds)} train, {len(val_ds)} val, persist={persist:.1f}")
+
+    # Define zone loss variants
+    from .clinical_loss import ClinicalZoneLoss
+
+    variants = [
+        ('mse_baseline', torch.nn.MSELoss(), 'Standard MSE (control)'),
+        ('zone_5x', ClinicalZoneLoss(left_weight=5.0, scale=SCALE), 'Zone 5× hypo'),
+        ('zone_10x', ClinicalZoneLoss(left_weight=10.0, scale=SCALE), 'Zone 10× hypo'),
+        ('zone_19x', ClinicalZoneLoss(left_weight=19.0, scale=SCALE), 'Zone 19× hypo'),
+    ]
+
+    # Per-patient FT for each variant
+    patients_base = os.path.dirname(os.path.dirname(patient_paths[0]))
+    patient_dirs = sorted([d for d in os.listdir(patients_base)
+                          if os.path.isdir(os.path.join(patients_base, d))])
+
+    all_results = {}
+    for vname, loss_fn, desc in variants:
+        print(f"\n=== {vname}: {desc} ===")
+
+        # Train base model
+        set_seed(42)
+        model = create_model(arch='grouped', input_dim=NF,
+                             d_model=64, nhead=4, num_layers=2, dropout=0.1)
+        sp = os.path.join(output_dir, f'exp303_{vname}_base.pth')
+        model = _train_zone(model, train_ds, val_ds, loss_fn, CH_DROP_P,
+                            epochs=100, patience=15, save_path=sp)
+        base_mae = _mae(model, val_ds)
+        base_hypo, base_inrange, base_hyper = _stratified_mae_ch(model, val_ds)
+        print(f"  Base: overall={base_mae:.2f} hypo={base_hypo:.2f} "
+              f"inrange={base_inrange:.2f} hyper={base_hyper:.2f}")
+
+        # Per-patient FT
+        pt_results = {}
+        for pid in patient_dirs:
+            train_path = os.path.join(patients_base, pid, 'training')
+            ver_path = os.path.join(patients_base, pid, 'verification')
+            if not os.path.isdir(train_path):
+                continue
+            try:
+                pt_tr, pt_vl = load_multipatient_nightscout(
+                    [train_path], task='forecast', window_size=WS,
+                    extended_features=False)
+            except:
+                continue
+
+            pt_ver = None
+            if os.path.isdir(ver_path):
+                try:
+                    _, pt_ver = load_multipatient_nightscout(
+                        [ver_path], task='forecast', window_size=WS,
+                        extended_features=False)
+                    if pt_ver and len(pt_ver) < 5:
+                        pt_ver = None
+                except:
+                    pt_ver = None
+
+            set_seed(42)
+            ftm = copy.deepcopy(model)
+            ft_sp = os.path.join(output_dir, f'exp303_{vname}_{pid}.pth')
+            ftm = _train_zone(ftm, pt_tr, pt_vl, loss_fn, CH_DROP_P,
+                              epochs=30, patience=8, lr=3e-4, save_path=ft_sp)
+
+            tr_mae = _mae(ftm, pt_vl)
+            ver_mae = _mae(ftm, pt_ver) if pt_ver else None
+            gap = round((ver_mae / tr_mae - 1) * 100, 1) if ver_mae and tr_mae > 0 else None
+
+            # Stratified MAE on verification
+            ver_hypo, ver_inrange, ver_hyper = (None, None, None)
+            if pt_ver:
+                ver_hypo, ver_inrange, ver_hyper = _stratified_mae_ch(ftm, pt_ver)
+
+            pt_results[pid] = {
+                'train': round(tr_mae, 2),
+                'ver': round(ver_mae, 2) if ver_mae else None,
+                'gap': gap,
+                'ver_hypo': round(ver_hypo, 2) if ver_hypo and not np.isnan(ver_hypo) else None,
+                'ver_inrange': round(ver_inrange, 2) if ver_inrange and not np.isnan(ver_inrange) else None,
+                'ver_hyper': round(ver_hyper, 2) if ver_hyper and not np.isnan(ver_hyper) else None,
+            }
+            ftm.cpu()
+
+        tr_ms = [v['train'] for v in pt_results.values()]
+        ver_ms = [v['ver'] for v in pt_results.values() if v['ver'] is not None]
+        gaps = [v['gap'] for v in pt_results.values() if v['gap'] is not None]
+        ver_hypos = [v['ver_hypo'] for v in pt_results.values() if v['ver_hypo'] is not None]
+        ver_inranges = [v['ver_inrange'] for v in pt_results.values() if v['ver_inrange'] is not None]
+
+        all_results[vname] = {
+            'description': desc,
+            'base_mae': round(base_mae, 2),
+            'base_hypo': round(base_hypo, 2) if not np.isnan(base_hypo) else None,
+            'base_inrange': round(base_inrange, 2) if not np.isnan(base_inrange) else None,
+            'base_hyper': round(base_hyper, 2) if not np.isnan(base_hyper) else None,
+            'mean_ft_train': round(float(np.mean(tr_ms)), 2),
+            'mean_ft_ver': round(float(np.mean(ver_ms)), 2) if ver_ms else None,
+            'mean_gap': round(float(np.mean(gaps)), 1) if gaps else None,
+            'mean_ver_hypo': round(float(np.mean(ver_hypos)), 2) if ver_hypos else None,
+            'mean_ver_inrange': round(float(np.mean(ver_inranges)), 2) if ver_inranges else None,
+            'patients': pt_results,
+        }
+        ver_str = f"{all_results[vname]['mean_ft_ver']}" if all_results[vname]['mean_ft_ver'] else "N/A"
+        gap_str = f"{all_results[vname]['mean_gap']}%" if all_results[vname]['mean_gap'] is not None else "N/A"
+        hypo_str = f"{all_results[vname]['mean_ver_hypo']}" if all_results[vname]['mean_ver_hypo'] else "N/A"
+        print(f"  FT mean: train={all_results[vname]['mean_ft_train']} ver={ver_str} "
+              f"gap={gap_str} ver_hypo={hypo_str}")
+
+    result = {
+        'experiment': 'EXP-303: Clinical Zone Loss + Ch-Drop',
+        'hypothesis': 'Zone loss + ch_drop improves hypo accuracy without degrading overall MAE',
+        'config': {
+            'features': '8f', 'window_size': WS, 'ch_drop': CH_DROP_P,
+            'seed': 42, 'architecture': 'd64/nh4/L2',
+        },
+        'reference': {
+            'exp280_mse_single': {'train': 11.50, 'ver': 11.44, 'gap': -0.9},
+        },
+        'persistence_mae': round(persist, 2),
+        'variants': all_results,
+    }
+    save_results(result, os.path.join(output_dir, 'exp303_clinical_chdrop.json'))
+    return result
+
+
+REGISTRY['clinical-chdrop'] = 'run_clinical_chdrop'
