@@ -7217,6 +7217,18 @@ def run_attention_hypo(args):
     save_results(results, os.path.join(output_dir, 'exp327_attention_hypo.json'))
     return results
 
+# ── FDA Experiment Imports ─────────────────────────────────────────────
+
+from .fda_experiments import (
+    run_fda_bootstrap,
+    run_fpca_variance,
+    run_glucodensity_vs_tir,
+    run_functional_derivatives,
+    run_fpca_retrieval,
+    run_fpca_isf_drift,
+    run_depth_hypo,
+)
+
 
 # ── Registry & CLI ─────────────────────────────────────────────────────
 
@@ -7297,6 +7309,21 @@ EXPERIMENTS = {
                            'Leave-one-patient-out multi-task CNN generalization'),
     'attention-hypo': ('EXP-327', run_attention_hypo,
                        'Self-attention vs CNN for multi-task hypo prediction'),
+    # Phase 34: Functional Data Analysis (FDA) experiments
+    'fda-bootstrap': ('EXP-328', run_fda_bootstrap,
+                      'FDA toolchain validation (B-spline, FPCA, glucodensity)'),
+    'fpca-variance': ('EXP-329', run_fpca_variance,
+                      'FPCA eigenvalue structure across timescales'),
+    'glucodensity-vs-tir': ('EXP-330', run_glucodensity_vs_tir,
+                            'Glucodensity vs TIR information content comparison'),
+    'functional-derivatives': ('EXP-331', run_functional_derivatives,
+                               'B-spline derivatives vs finite-difference ROC'),
+    'fpca-retrieval': ('EXP-332', run_fpca_retrieval,
+                       'FPCA scores as pattern retrieval embeddings'),
+    'fpca-isf-drift': ('EXP-334', run_fpca_isf_drift,
+                       'FPCA score trajectories for ISF drift detection'),
+    'depth-hypo': ('EXP-335', run_depth_hypo,
+                   'Functional depth for hypo novelty detection'),
 }
 
 
