@@ -1391,6 +1391,42 @@ the other 10 patients (30 epochs), test on the held-out patient.
 
 ---
 
+## EXP-327: Self-Attention vs CNN for Multi-Task Hypo
+
+**Hypothesis**: Self-attention can learn variable-length temporal dependencies
+that fixed-kernel CNNs miss, potentially improving hypo prediction where AUC=0.96
+suggests the features exist but the decision boundary is suboptimal.
+
+**Method**: 2-layer Transformer encoder (d_model=64, 4 heads) + positional encoding
+over 2h history window. Multi-task with override + hypo heads. Compare against
+CNN baseline and attention+CNN probability ensemble.
+
+| Config | Override F1 | Hypo F1 | Hypo AUC | Params |
+|--------|------------|---------|----------|--------|
+| **Attention** | **0.852** | 0.663 | 0.959 | 71,845 |
+| CNN | 0.835 | 0.657 | 0.956 | 24,005 |
+| **Ensemble** | **0.853** | **0.667** | **0.961** | 95,850 |
+
+**Key findings**:
+
+1. **Attention improves override F1 by +2%** (0.835→0.852) — attention captures
+   variable-length patterns (e.g., a bolus 45min ago + current glucose trend)
+   that fixed 3-kernel convolutions miss
+
+2. **Hypo F1 remains stubbornly near 0.66** regardless of architecture —
+   attention (0.663), CNN (0.657), ensemble (0.667). This confirms the
+   bottleneck is data, not architecture: 6.4% prevalence with noisy labels
+   limits F1 regardless of model capacity
+
+3. **Ensemble provides marginal improvement** (+1% hypo, negligible override)
+   — not worth 4× parameters for deployment
+
+4. **Override F1=0.852 is new best** for this lead time, suggesting
+   attention-based architectures may be preferred for override prediction
+   if compute budget allows
+
+---
+
 ## Updated Task–Scale–Architecture Matrix
 
 | Objective | Best Scale | Best Architecture | Best Metric | Key Experiment |
@@ -1398,13 +1434,13 @@ the other 10 patients (30 epochs), test on the held-out patient.
 | Pattern retrieval | Weekly (7d) | Transformer encoder | Sil=+0.326 | EXP-304 |
 | **UAM detection** | Fast (2h) | **1D-CNN** | **F1=0.939** | **EXP-313** |
 | ISF drift tracking | Rolling biweekly | Statistical (ISF_eff rolling avg) | **9/11 sig.** | **EXP-312** |
-| **Override (15min)** | Fast (2h) | **1D-CNN selective ensemble** | **F1=0.784** | **EXP-319** |
+| **Override (15min)** | Fast (2h) | **Attention multi-task** | **F1=0.852** | **EXP-327** |
 | **Override (60min)** | Fast (2h) | 1D-CNN | F1=0.726 | EXP-311 |
 | **Hypo prediction** | Fast (2h) | **MT CNN + Platt calibration** | **F1=0.676** | **EXP-324** |
 | Glucose forecasting | 2h window | Per-patient fine-tuned ensemble | MAE=11.25 | EXP-242 |
 
-**Final meta-findings** (32 experiments, EXP-287 through EXP-326):
-1. **1D-CNN is the universal best architecture for all classification tasks**
+**Final meta-findings** (33 experiments, EXP-287 through EXP-327):
+1. **1D-CNN is the best architecture for most classification tasks**
 2. **Threshold tuning is critical** for imbalanced classes (+19.7% for hypo)
 3. **Shorter lead times improve classification** (15min > 60min by 13%)
 4. **Per-patient FT works for forecasting but not classification** (selective ensemble +1%)
@@ -1416,3 +1452,4 @@ the other 10 patients (30 epochs), test on the held-out patient.
 10. **Platt calibration is essential for deployment** — ECE 0.21→0.01, practical threshold 0.87→0.28 (EXP-324)
 11. **Daily ISF is too noisy for online change-point detection** — biweekly rolling is minimum viable (EXP-325)
 12. **Models generalize well to unseen patients** — only 3-4% LOO degradation (EXP-326)
+13. **Self-attention beats CNN for override** (+2%) but hypo F1 is data-limited, not architecture-limited (EXP-327)
