@@ -6,6 +6,8 @@ stay small (~100 lines each) and focused on *what* to test, not *how*
 to train/evaluate/save.
 
 Coding agents should NOT edit this file.  Edit experiments_agentic.py instead.
+Use the validated experiment helpers (run_validated_classification, run_validated_retrieval)
+for new experiments — they provide multi-seed evaluation and standardized metrics automatically.
 """
 
 import json
@@ -731,3 +733,90 @@ def train_multitask(model, train_ds, val_ds, save_path, label,
     if os.path.exists(save_path):
         load_checkpoint(model, save_path)
     return best, ep + 1, history
+
+
+# ── Validated Experiment Helpers ────────────────────────────────────────
+# These wrap common patterns so experiments get rigorous validation
+# automatically: multi-seed, temporal splits, objective-specific metrics.
+
+def run_validated_classification(experiment_id, output_dir, train_eval_fn,
+                                  task_name='binary', positive_label=1,
+                                  seeds=None, split_fractions=(0.6, 0.2, 0.2)):
+    """Run a classification experiment with multi-seed validation.
+
+    Args:
+        experiment_id: E.g. 'EXP-313'.
+        output_dir: Where to save result JSON.
+        train_eval_fn: f(seed) -> dict with 'y_true', 'y_pred', and
+            optionally 'y_prob' (numpy arrays). May include extra metrics.
+        task_name: Label for the task (e.g. 'uam', 'hypo', 'override').
+        positive_label: Which class is positive for F1/AUC.
+        seeds: List of seeds (default: STANDARD_SEEDS).
+        split_fractions: Tuple for temporal split metadata.
+
+    Returns:
+        ExperimentContext result dict (also saved as JSON).
+    """
+    from .validation_framework import MultiSeedRunner, STANDARD_SEEDS
+    from .objective_validators import ClassificationValidator
+
+    seeds = seeds or STANDARD_SEEDS
+    cv = ClassificationValidator(task_name=task_name, positive_label=positive_label)
+
+    def _inner(seed):
+        raw = train_eval_fn(seed)
+        y_true = np.asarray(raw.pop('y_true'))
+        y_pred = np.asarray(raw.pop('y_pred'))
+        y_prob = raw.pop('y_prob', None)
+        if y_prob is not None:
+            y_prob = np.asarray(y_prob)
+        metrics = cv.evaluate(y_true, y_pred, y_prob, bootstrap=False)
+        metrics.update({k: v for k, v in raw.items() if isinstance(v, (int, float))})
+        return metrics
+
+    runner = MultiSeedRunner(seeds=seeds)
+    ms_report = runner.run(_inner)
+
+    ctx = ExperimentContext(experiment_id, output_dir)
+    ctx.record_split('temporal', fractions=split_fractions)
+    ctx.record_validation(objective='classification', task=task_name)
+    ctx.attach_multi_seed_report(ms_report)
+    return ctx.save(f'{experiment_id.lower().replace("-", "_")}_validated.json')
+
+
+def run_validated_retrieval(experiment_id, output_dir, train_eval_fn,
+                             k_values=(1, 5, 10), seeds=None):
+    """Run a retrieval experiment with multi-seed validation.
+
+    Args:
+        experiment_id: E.g. 'EXP-304'.
+        output_dir: Where to save result JSON.
+        train_eval_fn: f(seed) -> dict with 'embeddings' and 'labels'
+            (numpy arrays). May include extra metrics.
+        k_values: Tuple of K values for Recall@K.
+        seeds: List of seeds (default: STANDARD_SEEDS).
+
+    Returns:
+        ExperimentContext result dict (also saved as JSON).
+    """
+    from .validation_framework import MultiSeedRunner, STANDARD_SEEDS
+    from .objective_validators import RetrievalValidator
+
+    seeds = seeds or STANDARD_SEEDS
+    rv = RetrievalValidator()
+
+    def _inner(seed):
+        raw = train_eval_fn(seed)
+        emb = np.asarray(raw.pop('embeddings'))
+        labels = np.asarray(raw.pop('labels'))
+        metrics = rv.evaluate(emb, labels, k_values=k_values, bootstrap=False)
+        metrics.update({k: v for k, v in raw.items() if isinstance(v, (int, float))})
+        return metrics
+
+    runner = MultiSeedRunner(seeds=seeds)
+    ms_report = runner.run(_inner)
+
+    ctx = ExperimentContext(experiment_id, output_dir)
+    ctx.record_validation(objective='retrieval')
+    ctx.attach_multi_seed_report(ms_report)
+    return ctx.save(f'{experiment_id.lower().replace("-", "_")}_validated.json')

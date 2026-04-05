@@ -197,3 +197,26 @@ Raw data → AI-ready vectors via three critical steps:
 - `inference.py` — T1PalPredictor wrapper for loading trained models
 - `viz.py` — Stochastic forecast cloud + dose comparison plots
 - `requirements.txt` — Dependencies: pandas, numpy, torch, matplotlib, scipy
+
+### Validation Framework
+- `validation_framework.py` — Reusable validation infrastructure for auto-research experiments:
+  - `MultiSeedRunner` — Run any train/eval function across multiple seeds (default: `[42, 123, 456, 789, 1337]`), aggregate with mean ± CI
+  - `TemporalSplitter` — Chronological 2-way (80/20) or 3-way (60/20/20) data splits
+  - `StratifiedTemporalSplitter` — Prevalence-preserving splits for imbalanced tasks (e.g., hypo at 6.4%)
+  - `BootstrapCI` — Non-parametric bootstrap CIs on predictions, t-distribution CIs from seed values
+  - `LOOValidator` — Leave-one-out patient cross-validation with degradation analysis
+  - `ValidationReport` — Structured report builder for experiment JSON output
+- `objective_validators.py` — Objective-specific metric computation:
+  - `ForecastValidator` — MAE, RMSE, per-zone MAE (hypo/target/hyper), Clarke Error Grid
+  - `ClassificationValidator` — Positive-class F1, macro F1, AUC-ROC, AUPRC, ECE, optimal threshold
+  - `RetrievalValidator` — Silhouette, ARI, class-balanced Recall@K, per-cluster breakdown
+  - `DriftValidator` — Spearman ρ, OLS slope ± CI, per-patient significance, aggregation
+
+### Experiment Infrastructure
+- `experiment_lib.py` — `ExperimentContext` with validation integration (`record_seed`, `record_split`, `attach_multi_seed_report`)
+- `run_pattern_experiments.py` — Multi-scale pattern experiments (EXP-286+), `load_multiscale_data_3way()` for held-out test sets
+- `experiments_agentic.py` — Agentic experiment runner (EXP-328+)
+
+### Tests
+- `test_cgmencode.py` — 46 test classes covering data pipeline, models, training
+- `test_validation.py` — 49 tests covering validation framework and objective validators
