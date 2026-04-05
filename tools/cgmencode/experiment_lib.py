@@ -83,6 +83,7 @@ class ExperimentContext:
             'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ'),
             **extra,
         }
+        self._validation_metadata = {}
         print('=' * 60)
         print(f'{exp_id}')
         print('=' * 60)
@@ -93,8 +94,74 @@ class ExperimentContext:
     def section(self, title):
         print(f'\n--- {title} ---')
 
+    # ── Validation integration ───────────────────────────────────────
+
+    def record_seed(self, seed):
+        """Record the training seed used for this run."""
+        self._validation_metadata['seed'] = seed
+
+    def record_seeds(self, seeds):
+        """Record multiple seeds (multi-seed experiment)."""
+        self._validation_metadata['seeds'] = seeds
+        self._validation_metadata['n_seeds'] = len(seeds)
+
+    def record_split(self, strategy='temporal', fractions=None, **extra):
+        """Record data split metadata.
+
+        Args:
+            strategy: 'temporal', 'stratified_temporal', 'random', 'loo'
+            fractions: e.g. (0.6, 0.2, 0.2) for train/val/test
+            **extra: Additional split info (e.g., n_patients, prevalence)
+        """
+        split_info = {'strategy': strategy}
+        if fractions:
+            split_info['fractions'] = list(fractions)
+        split_info.update(extra)
+        self._validation_metadata['split'] = split_info
+
+    def record_validation(self, **kwargs):
+        """Record arbitrary validation metadata."""
+        self._validation_metadata.update(kwargs)
+
+    def attach_multi_seed_report(self, report):
+        """Attach a MultiSeedReport from validation_framework.
+
+        Args:
+            report: MultiSeedReport instance (has .to_dict() method).
+        """
+        self.result['multi_seed'] = report.to_dict()
+        self._validation_metadata['seeds'] = report.seeds
+        self._validation_metadata['n_seeds'] = len(report.seeds)
+
+    def attach_loo_report(self, report, baseline=None):
+        """Attach a LOOReport from validation_framework.
+
+        Args:
+            report: LOOReport instance (has .to_dict() method).
+            baseline: Optional baseline metrics dict for degradation.
+        """
+        self.result['loo'] = report.to_dict()
+        if baseline:
+            self.result['loo']['degradation'] = report.degradation(baseline)
+
+    def attach_bootstrap_ci(self, metric_name, ci_result):
+        """Attach bootstrap CI for a metric.
+
+        Args:
+            metric_name: e.g. 'f1_positive', 'mae'
+            ci_result: Dict from BootstrapCI.compute()
+        """
+        if 'bootstrap_ci' not in self.result:
+            self.result['bootstrap_ci'] = {}
+        self.result['bootstrap_ci'][metric_name] = ci_result
+
     def save(self, filename):
         self.result['elapsed_seconds'] = round(time.time() - self.t0, 1)
+        if self._validation_metadata:
+            self.result['validation_metadata'] = {
+                'framework_version': '1.0',
+                **self._validation_metadata,
+            }
         path = self.output_dir / filename
         with open(path, 'w') as f:
             json.dump(self.result, f, indent=2, default=str)

@@ -1064,6 +1064,94 @@ def load_multiscale_data(patient_paths, scale='episode', val_fraction=0.2):
     return np.array(train_windows, dtype=np.float32), np.array(val_windows, dtype=np.float32)
 
 
+def load_multiscale_data_3way(patient_paths, scale='fast',
+                               fractions=(0.6, 0.2, 0.2)):
+    """Load data with 3-way temporal split: train / val / test.
+
+    The test set is reserved for final evaluation and should NEVER be used
+    for architecture selection or hyperparameter tuning. Use the val set
+    for early stopping and threshold optimization.
+
+    Args:
+        patient_paths: List of patient data directories.
+        scale: Timescale ('fast', 'episode', 'daily', 'weekly').
+        fractions: (train, val, test) fractions. Must sum to 1.0.
+
+    Returns:
+        (train_np, val_np, test_np) — numpy arrays, plus metadata dict.
+        Returns a dict: {'train': np.ndarray, 'val': np.ndarray,
+                         'test': np.ndarray, 'metadata': dict}
+    """
+    assert len(fractions) == 3 and abs(sum(fractions) - 1.0) < 1e-6, \
+        f"fractions must be 3 values summing to 1.0, got {fractions}"
+
+    from .real_data_adapter import downsample_grid
+
+    cfg = SCALE_CONFIG[scale]
+    window = cfg['window']
+    interval = cfg['interval_min']
+    stride = cfg['stride'] or window // 2
+
+    per_patient_windows = []
+    for i, path in enumerate(patient_paths):
+        patient_id = os.path.basename(os.path.dirname(path))
+        print(f"  Patient {patient_id} ({i+1}/{len(patient_paths)}): {path}")
+
+        df, features = _get_cached_grid(path)
+        if df is None:
+            print(f"    SKIP: no valid data")
+            continue
+
+        if interval > 5:
+            df_ds = downsample_grid(df, target_interval_min=interval)
+            features = _grid_to_features(df_ds)
+
+        windows = _split_windows(features, window, stride)
+        if not windows:
+            print(f"    SKIP: no valid windows")
+            continue
+
+        dur_h = window * interval / 60
+        print(f"    {len(df)} rows → {len(windows)} windows "
+              f"({features.shape[1]}ch, {dur_h:.0f}h @ {interval}min)")
+        per_patient_windows.append(windows)
+
+    if not per_patient_windows:
+        raise RuntimeError(f"No valid windows for scale={scale}")
+
+    # Per-patient chronological 3-way split
+    train_windows, val_windows, test_windows = [], [], []
+    for patient_windows in per_patient_windows:
+        n = len(patient_windows)
+        i1 = int(n * fractions[0])
+        i2 = int(n * (fractions[0] + fractions[1]))
+        train_windows.extend(patient_windows[:i1])
+        val_windows.extend(patient_windows[i1:i2])
+        test_windows.extend(patient_windows[i2:])
+
+    # Shuffle training only
+    rng = np.random.RandomState(42)
+    rng.shuffle(train_windows)
+
+    result = {
+        'train': np.array(train_windows, dtype=np.float32),
+        'val': np.array(val_windows, dtype=np.float32),
+        'test': np.array(test_windows, dtype=np.float32),
+        'metadata': {
+            'strategy': 'temporal_3way',
+            'fractions': list(fractions),
+            'scale': scale,
+            'n_patients': len(per_patient_windows),
+            'n_train': len(train_windows),
+            'n_val': len(val_windows),
+            'n_test': len(test_windows),
+        },
+    }
+    print(f"  3-way split: train={len(train_windows)}, val={len(val_windows)}, "
+          f"test={len(test_windows)}")
+    return result
+
+
 def _grid_to_features(df):
     """Extract normalized 8-channel features from a grid DataFrame."""
     SCALE = {'glucose': 400.0, 'iob': 20.0, 'cob': 200.0,
