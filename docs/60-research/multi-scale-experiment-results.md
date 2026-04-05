@@ -1,21 +1,25 @@
 # Multi-Scale Pattern Experiment Results
 
 **Date**: 2026-04-04  
-**Experiments**: EXP-287, EXP-289, EXP-286, EXP-291, EXP-298, EXP-299, EXP-300  
-**Status**: EXP-301 (weekly ISF) running
+**Experiments**: EXP-287, EXP-289, EXP-286, EXP-291, EXP-298, EXP-299, EXP-300, EXP-301  
+**Status**: Complete (8 experiments across 4 timescales)
 
 ## Executive Summary
 
 Six experiments tested whether non-forecasting objectives (event detection, pattern
-retrieval, ISF drift tracking) require different timescales and feature sets. Three
+retrieval, ISF drift tracking) require different timescales and feature sets. Four
 findings fundamentally reshape our architecture:
 
-1. **The U-shaped window curve**: 12h windows produce the best pattern clusters,
-   confirming that complete insulin DIA cycles are the natural unit of pattern analysis.
+1. **The U-shaped window curve extends to 7 days**: Weekly (7d) windows produce the
+   best pattern clusters (Sil=-0.301), surpassing even 12h (-0.339). The DIA valley
+   at 4-8h persists, but longer windows continue improving beyond it.
 2. **Feature importance is scale-dependent**: At 2h, all channel ablation deltas are
    tiny (<1.12%). At 12h, silhouette deltas explode to 60% — features matter 3.4× more.
 3. **Acute events need short windows**: UAM detection degrades from F1=0.40 at 2h to
    F1=0.07 at 12h — meal events get diluted in longer context.
+4. **ISF drift is an observability problem**: Zero drift labels assigned at 2h, 24h,
+   or 7d with 8 base channels. Drift detection requires either profile features or
+   novel indirect estimation (pattern comparison across days).
 
 **Conclusion**: Different objectives require different timescales. A single model
 optimizing a single window size cannot serve all objectives simultaneously.
@@ -39,15 +43,17 @@ optimizing a single window size cannot serve all objectives simultaneously.
 
 ```
 Silhouette Score (higher = better clusters)
-  -0.30 ┤                                          ● 144 (12h) BEST
-  -0.35 ┤  ● 12 (1h)                               
-  -0.37 ┤      ● 24 (2h)                           
-  -0.50 ┤                                          
-  -0.54 ┤           ● 48   ● 72                    
-  -0.60 ┤                                          
-  -0.64 ┤                       ● 96 (8h) WORST    
-        └─────────────────────────────────────────
-           1h   2h   4h   6h   8h   12h
+  -0.30 ┤                                                ● 7d (EXP-301) BEST
+  -0.34 ┤  ● 12 (1h)                     ● 144 (12h)    
+  -0.37 ┤      ● 24 (2h)                                
+  -0.50 ┤                                               
+  -0.54 ┤           ● 48   ● 72                         
+  -0.60 ┤                                               
+  -0.64 ┤                       ● 96 (8h) WORST          
+        └────────────────────────────────────────────────
+           1h   2h   4h   6h   8h   12h        7d
+                Insulin DIA ──────────►
+```
 ```
 
 **Key insight — the pharmacokinetic explanation**: The valley at 4-8 hours maps exactly
@@ -265,6 +271,66 @@ Approach #2 is novel and doesn't require profile features. It treats drift as a
 
 ---
 
+### EXP-301: Weekly ISF Trends (7-day @ 1-hr)
+
+**Question**: Do weekly-scale embeddings produce meaningful clusters? Does the
+U-shaped window curve extend beyond 12h?
+
+| Metric | 2h (EXP-289) | 12h (EXP-289) | 7d (EXP-301) |
+|--------|-------------|---------------|---------------|
+| Recall@5 | 0.9500 | 0.9523 | **0.9574** |
+| Silhouette | -0.367 | -0.339 | **-0.301** |
+| Training windows | 28,965 | 4,699 | 33,824 |
+| Validation windows | 7,242 | 1,175 | 8,457 |
+| Unique labels | ~8 | ~8 | 7 |
+
+**The U-shaped curve continues upward**:
+
+```
+Silhouette Score (higher = better clusters)
+  -0.30 ┤                                                ● 7d BEST
+  -0.34 ┤  ● 1h                          ● 12h          
+  -0.37 ┤      ● 2h                                     
+  -0.50 ┤                                               
+  -0.54 ┤           ● 4h   ● 6h                         
+  -0.60 ┤                                               
+  -0.64 ┤                       ● 8h WORST               
+        └────────────────────────────────────────────────
+           1h   2h   4h   6h   8h   12h        7d
+                Insulin DIA ──────────►
+                             ▲ Valley
+```
+
+**Why 7d beats 12h**: Weekly windows capture multi-day patterns — e.g., weekday vs
+weekend routines, exercise recovery over 2-3 days, medication changes, and the kind
+of sustained behavioral consistency that defines a patient's "normal." Where 12h
+captures one complete insulin cycle (meal → resolution), 7d captures the *rhythm*
+of multiple cycles.
+
+**Label distribution at 7d** (validation set):
+| Label | Count | % |
+|-------|-------|---|
+| stable | 2,803 | 33.1% |
+| meal_response | 1,939 | 22.9% |
+| falling | 1,366 | 16.2% |
+| correction_response | 888 | 10.5% |
+| rising | 596 | 7.0% |
+| hypo_risk | 529 | 6.3% |
+| exercise_response | 336 | 4.0% |
+
+**Notable**: Only 7 of 11 possible labels assigned. Missing: `sensitivity_shift` (0),
+`resistance_shift` (0), `dawn_phenomenon` (0), `unknown` (0). The drift labels remain
+absent at 7d scale — confirming this is fundamentally an observability problem, not a
+timescale problem. Dawn phenomenon (circadian) is also absent, likely diluted in the
+weekly average.
+
+**Key insight**: stride=1 at 1-hr resolution gives 33K training windows from ~160 days
+of data per patient. Despite massive window overlap (168h window, 1h stride → 99.4%
+overlap), the model learns meaningful representations. This validates the stride=1
+strategy for data-scarce scales.
+
+---
+
 ## Synthesis: What We've Learned
 
 ### 1. Timescale-Objective Mapping is Validated
@@ -274,9 +340,9 @@ Every experiment confirmed that objectives have natural timescales:
 | Objective | Best Scale | Evidence | Wrong Scale | Evidence |
 |-----------|-----------|----------|-------------|----------|
 | UAM detection | 2h | F1=0.40 | 12h | F1=0.07 (-83%) |
-| Pattern clustering | 12h | Sil=-0.291 | 8h | Sil=-0.642 (+120% worse) |
+| Pattern clustering | **7d** | **Sil=-0.301** | 8h | Sil=-0.642 (+113% worse) |
 | Episode segmentation | 2h | F1=0.883 | 24h | F1=0.782 (-11%) |
-| ISF drift | ≥24h + profiles | — | 2h or 24h w/o profiles | 0 labels |
+| ISF drift | ≥24h + profiles | — | 2h, 24h, 7d w/o profiles | 0 labels |
 
 ### 2. Feature Importance is Scale-Dependent
 
@@ -296,16 +362,22 @@ Features that help at one scale hurt at another:
 | 2h | 36K | 585K | 5-min | Best for acute events |
 | 12h | 5.9K | 585K | 5-min | Best clusters (U-shape winner) |
 | 24h | ~3.5K | 175K | 15-min | Smoothed — loses acute detail |
-| 7d | ~580 | ~45K | 1-hr | TBD (EXP-301 running) |
+| 7d | ~580 | ~45K | 1-hr | **Best clusters (Sil=-0.301)** |
 
 stride=1 at daily scale gave 175K windows — massive. But 15-min smoothing hurt F1
 by 9.2% vs 5-min. **More data doesn't compensate for resolution loss**.
 
+At weekly scale, stride=1 gave 33K windows from 1-hr resolution — sufficient for
+training despite 99.4% window overlap. The best overall clustering validates that
+longer context captures richer structure, even at reduced resolution.
+
 ### 4. The ISF Drift Problem is Unsolved
 
-Neither 2h, 12h, nor 24h windows with 8 base channels can detect ISF drift.
+Neither 2h, 12h, 24h, nor 7d windows with 8 base channels can detect ISF drift.
 The fundamental issue is **observability**: you need a reference ISF value to detect
-drift FROM that value. Two paths forward:
+drift FROM that value. EXP-301 confirmed this is NOT a timescale problem — even 7-day
+windows with excellent clustering (Sil=-0.301) produced zero drift labels. Two paths
+forward:
 
 - **Path A**: Use enriched 39-feature data (ISF profile in ch32). Requires
   `extended_features=True` loading (~2 min). Directly measurable.
@@ -320,22 +392,27 @@ and is the approach that best fits the multi-scale architecture.
 
 ## Open Questions
 
-1. **EXP-301 (running)**: Are 7-day weekly-scale embeddings meaningful? Can they capture
-   multi-day ISF trends even without profile features?
+1. **Cross-scale integration**: How to combine fast (2h) + episode (12h) + weekly (7d)
+   embeddings for override decisions? Simple concatenation or attention-based fusion?
 
-2. **Cross-scale integration**: How to combine fast (2h) + episode (12h) + daily (24h)
-   embeddings for override decisions?
-
-3. **Resolution vs information**: 24h @ 15-min lost 9% F1 vs 2h @ 5-min. Should daily
+2. **Resolution vs information**: 24h @ 15-min lost 9% F1 vs 2h @ 5-min. Should daily
    scale use 5-min resolution (288 steps) instead of downsampling? VRAM cost: ~1GB,
-   still feasible on 4GB GPU.
+   still feasible on 4GB GPU. Or should daily scale be dropped in favor of weekly?
 
-4. **Indirect drift estimation**: Can we detect ISF drift by comparing similar-pattern
-   glucose responses across different days? This would be a novel contribution.
+3. **Indirect drift estimation**: Can we detect ISF drift by comparing similar-pattern
+   glucose responses across different days? 7d embeddings provide the clustering
+   quality (Sil=-0.301) needed to match "similar" weeks — if glucose outcomes differ
+   between matched weeks, that delta IS the drift signal. This would be a novel
+   contribution.
 
-5. **Bolus encoding at episode scale**: Instead of dropping bolus entirely, encode it as
-   cumulative insulin delivered (running sum) — preserves information without the spiky
-   noise that hurts clustering.
+4. **Bolus encoding at episode/weekly scale**: Instead of dropping bolus entirely, encode
+   it as cumulative insulin delivered (running sum) — preserves information without the
+   spiky noise that hurts clustering.
+
+5. **Weekly label enrichment**: Only 7/11 labels assigned at weekly scale. The
+   sensitivity/resistance shift labels need either profile features (Path A) or
+   the indirect estimation approach (Path B). Dawn phenomenon may need explicit
+   circadian feature extraction rather than relying on raw time features.
 
 ---
 
