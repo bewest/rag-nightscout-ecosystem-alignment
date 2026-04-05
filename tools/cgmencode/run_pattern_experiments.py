@@ -5587,6 +5587,388 @@ def run_iob_hypo(args):
     return results
 
 
+# ── EXP-321: Focal Loss for Hypo Prediction ─────────────────────────
+
+def run_focal_hypo(args):
+    """EXP-321: Focal loss for hypo prediction.
+
+    EXP-315/317 used class-weighted CrossEntropyLoss. Focal loss (Lin et al. 2017)
+    naturally down-weights easy negatives and focuses on hard-to-classify examples.
+    This should help with the precision problem (too many false positives) because
+    easy true negatives won't dominate the gradient.
+
+    Tests: focal γ=1,2,3 vs weighted CE baseline. All with threshold optimization.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-321: Focal Loss for Hypo Prediction")
+    print("=" * 60)
+
+    train_np, val_np = load_multiscale_data(patient_paths, scale='fast',
+                                            val_fraction=0.2)
+    print(f"Loaded: {train_np.shape} train, {val_np.shape} val")
+
+    half = train_np.shape[1] // 2
+    threshold = 70.0
+    lead_steps = 6  # 30 min
+
+    def build_hypo_labels(windows):
+        future = windows[:, half:half + lead_steps, 0] * 400.0
+        return (future < threshold).any(axis=1).astype(np.int64)
+
+    train_labels = build_hypo_labels(train_np)
+    val_labels = build_hypo_labels(val_np)
+    n_pos = train_labels.sum()
+    n_neg = len(train_labels) - n_pos
+    prevalence = n_pos / len(train_labels)
+    print(f"Prevalence: {prevalence:.3f} ({n_pos}/{len(train_labels)})")
+
+    class FocalLoss(nn.Module):
+        def __init__(self, gamma=2.0, alpha=None):
+            super().__init__()
+            self.gamma = gamma
+            self.alpha = alpha
+
+        def forward(self, logits, targets):
+            ce_loss = nn.functional.cross_entropy(logits, targets, reduction='none',
+                                                  weight=self.alpha)
+            pt = torch.exp(-ce_loss)
+            focal_loss = ((1 - pt) ** self.gamma) * ce_loss
+            return focal_loss.mean()
+
+    class HypoCNN(nn.Module):
+        def __init__(self, in_channels=8):
+            super().__init__()
+            self.conv = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.Conv1d(64, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.classifier = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.3),
+                nn.Linear(32, 2),
+            )
+        def forward(self, x):
+            h = x.shape[1] // 2
+            x = x[:, :h].permute(0, 2, 1)
+            feat = self.conv(x).squeeze(-1)
+            return self.classifier(feat)
+
+    pos_weight = max(2.0, n_neg / max(1, n_pos))
+    alpha = torch.tensor([1.0, pos_weight], dtype=torch.float32).to(device)
+
+    configs = [
+        ('weighted_ce', None, None),
+        ('focal_g1', 1.0, alpha),
+        ('focal_g2', 2.0, alpha),
+        ('focal_g3', 3.0, alpha),
+        ('focal_g2_no_alpha', 2.0, None),
+    ]
+
+    all_results = {}
+    train_t = torch.from_numpy(train_np).float()
+    val_t = torch.from_numpy(val_np).float()
+    train_y = torch.from_numpy(train_labels).long()
+
+    for config_name, gamma, alpha_weights in configs:
+        print(f"\n--- {config_name} ---")
+
+        model = HypoCNN().to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+
+        if gamma is None:
+            criterion = nn.CrossEntropyLoss(weight=alpha)
+        else:
+            criterion = FocalLoss(gamma=gamma, alpha=alpha_weights)
+
+        batch_size = 256
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_np))
+            for start in range(0, len(perm), batch_size):
+                end = min(start + batch_size, len(perm))
+                idx = perm[start:end]
+                logits = model(train_t[idx].to(device))
+                loss = criterion(logits, train_y[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        # Get probabilities
+        model.eval()
+        all_probs = []
+        with torch.no_grad():
+            for vs in range(0, len(val_np), 512):
+                ve = min(vs + 512, len(val_np))
+                logits = model(val_t[vs:ve].to(device))
+                all_probs.append(torch.softmax(logits, dim=-1)[:, 1].cpu().numpy())
+        probs = np.concatenate(all_probs)
+
+        # Threshold sweep
+        from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_score
+        best_f1 = 0.0
+        best_thresh = 0.5
+        for thresh in np.arange(0.01, 1.0, 0.01):
+            preds = (probs >= thresh).astype(int)
+            f1 = f1_score(val_labels, preds, zero_division=0)
+            if f1 > best_f1:
+                best_f1 = f1
+                best_thresh = float(thresh)
+
+        preds_opt = (probs >= best_thresh).astype(int)
+        f1_at_05 = f1_score(val_labels, (probs >= 0.5).astype(int), zero_division=0)
+        try:
+            auc = roc_auc_score(val_labels, probs)
+        except ValueError:
+            auc = float('nan')
+        prec = precision_score(val_labels, preds_opt, zero_division=0)
+        rec = recall_score(val_labels, preds_opt, zero_division=0)
+
+        all_results[config_name] = {
+            'gamma': gamma,
+            'has_alpha': alpha_weights is not None,
+            'f1_at_0.5': float(f1_at_05),
+            'best_f1': float(best_f1),
+            'best_threshold': float(best_thresh),
+            'precision': float(prec),
+            'recall': float(rec),
+            'auc_roc': float(auc),
+        }
+        print(f"  F1@0.5={f1_at_05:.4f}, F1@{best_thresh:.2f}={best_f1:.4f}, "
+              f"P={prec:.3f}, R={rec:.3f}, AUC={auc:.4f}")
+
+    results = {
+        'experiment': 'EXP-321',
+        'name': 'focal-loss-hypo',
+        'method': 'Focal loss vs weighted CE for hypo prediction CNN',
+        'configs': all_results,
+        'data': {'n_train': len(train_np), 'n_val': len(val_np),
+                 'prevalence': float(prevalence)},
+        'comparison': {'exp317_best_f1': 0.630},
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"Focal Loss Comparison")
+    print(f"{'='*60}")
+    print(f"{'Config':>20} {'F1@0.5':>8} {'F1@opt':>8} {'Thresh':>7} {'AUC':>7}")
+    print("-" * 55)
+    for name, r in all_results.items():
+        print(f"{name:>20} {r['f1_at_0.5']:>7.4f} {r['best_f1']:>7.4f} "
+              f"{r['best_threshold']:>6.2f} {r['auc_roc']:>6.4f}")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp321_focal_hypo.json'))
+    return results
+
+
+# ── EXP-322: Multi-Task Override+Hypo CNN ────────────────────────────
+
+def run_multitask_cnn(args):
+    """EXP-322: Multi-task CNN predicting override type AND hypo probability.
+
+    Hypothesis: Shared feature extraction between related tasks (override
+    prediction and hypo prediction) should improve both via shared
+    representations. Both tasks use the same 2h input window.
+
+    Architecture:
+    - Shared CNN backbone (32→64→64 channels)
+    - Override head: 3-class (none/high/low)
+    - Hypo head: binary (hypo/not-hypo at 30min)
+    - Joint loss = override_loss + λ × hypo_loss (λ=1.0)
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-322: Multi-Task Override+Hypo CNN")
+    print("=" * 60)
+
+    train_np, val_np = load_multiscale_data(patient_paths, scale='fast',
+                                            val_fraction=0.2)
+    print(f"Loaded: {train_np.shape} train, {val_np.shape} val")
+
+    half = train_np.shape[1] // 2
+
+    # Override labels (15min lead — best from EXP-314)
+    def build_override_labels(windows, lead=3):
+        future = windows[:, half:half + lead, 0] * 400.0
+        high = (future > 180).any(axis=1)
+        low = (future < 70).any(axis=1)
+        labels = np.zeros(len(windows), dtype=np.int64)
+        labels[high] = 1
+        labels[low] = 2
+        return labels
+
+    # Hypo labels (30min lead)
+    def build_hypo_labels(windows, lead=6):
+        future = windows[:, half:half + lead, 0] * 400.0
+        return (future < 70).any(axis=1).astype(np.int64)
+
+    train_override = build_override_labels(train_np)
+    val_override = build_override_labels(val_np)
+    train_hypo = build_hypo_labels(train_np)
+    val_hypo = build_hypo_labels(val_np)
+
+    print(f"Override: {(train_override > 0).mean():.3f} positive rate")
+    print(f"Hypo: {train_hypo.mean():.3f} prevalence")
+
+    class MultiTaskCNN(nn.Module):
+        def __init__(self, in_channels=8):
+            super().__init__()
+            self.backbone = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.Conv1d(64, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.override_head = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, 3),
+            )
+            self.hypo_head = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.3),
+                nn.Linear(32, 2),
+            )
+
+        def forward(self, x):
+            h = x.shape[1] // 2
+            x = x[:, :h].permute(0, 2, 1)
+            feat = self.backbone(x).squeeze(-1)
+            return self.override_head(feat), self.hypo_head(feat)
+
+    # Class weights
+    from collections import Counter
+    ov_counts = Counter(train_override.tolist())
+    n_total = len(train_override)
+    ov_cw = torch.tensor([n_total / (3 * max(1, ov_counts.get(c, 1))) for c in range(3)],
+                          dtype=torch.float32).to(device)
+
+    n_hypo_pos = train_hypo.sum()
+    n_hypo_neg = len(train_hypo) - n_hypo_pos
+    hypo_weight = max(2.0, n_hypo_neg / max(1, n_hypo_pos))
+    hypo_cw = torch.tensor([1.0, hypo_weight], dtype=torch.float32).to(device)
+
+    # Also train single-task baselines for fair comparison
+    configs = {
+        'multitask': 'multi',
+        'single_override': 'override',
+        'single_hypo': 'hypo',
+    }
+
+    all_results = {}
+    train_t = torch.from_numpy(train_np).float()
+    val_t = torch.from_numpy(val_np).float()
+    train_ov_t = torch.from_numpy(train_override).long()
+    train_hypo_t = torch.from_numpy(train_hypo).long()
+    batch_size = 256
+
+    for config_name, mode in configs.items():
+        print(f"\n--- {config_name} ---")
+
+        model = MultiTaskCNN().to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        ov_criterion = nn.CrossEntropyLoss(weight=ov_cw)
+        hypo_criterion = nn.CrossEntropyLoss(weight=hypo_cw)
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_np))
+            for start in range(0, len(perm), batch_size):
+                end = min(start + batch_size, len(perm))
+                idx = perm[start:end]
+                ov_logits, hypo_logits = model(train_t[idx].to(device))
+
+                if mode == 'multi':
+                    loss = ov_criterion(ov_logits, train_ov_t[idx].to(device)) + \
+                           hypo_criterion(hypo_logits, train_hypo_t[idx].to(device))
+                elif mode == 'override':
+                    loss = ov_criterion(ov_logits, train_ov_t[idx].to(device))
+                else:
+                    loss = hypo_criterion(hypo_logits, train_hypo_t[idx].to(device))
+
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        # Evaluate both tasks
+        model.eval()
+        all_ov_preds = []
+        all_hypo_probs = []
+        with torch.no_grad():
+            for vs in range(0, len(val_np), 512):
+                ve = min(vs + 512, len(val_np))
+                ov_logits, hypo_logits = model(val_t[vs:ve].to(device))
+                all_ov_preds.append(ov_logits.argmax(dim=-1).cpu().numpy())
+                all_hypo_probs.append(torch.softmax(hypo_logits, dim=-1)[:, 1].cpu().numpy())
+
+        ov_preds = np.concatenate(all_ov_preds)
+        hypo_probs = np.concatenate(all_hypo_probs)
+
+        from sklearn.metrics import f1_score, roc_auc_score
+        ov_f1 = f1_score(val_override, ov_preds, average='macro', zero_division=0)
+
+        # Hypo with threshold sweep
+        best_hypo_f1 = 0.0
+        best_hypo_thresh = 0.5
+        for thresh in np.arange(0.01, 1.0, 0.01):
+            preds = (hypo_probs >= thresh).astype(int)
+            f1 = f1_score(val_hypo, preds, zero_division=0)
+            if f1 > best_hypo_f1:
+                best_hypo_f1 = f1
+                best_hypo_thresh = float(thresh)
+
+        try:
+            hypo_auc = roc_auc_score(val_hypo, hypo_probs)
+        except ValueError:
+            hypo_auc = float('nan')
+
+        all_results[config_name] = {
+            'mode': mode,
+            'override_f1': float(ov_f1),
+            'hypo_best_f1': float(best_hypo_f1),
+            'hypo_threshold': float(best_hypo_thresh),
+            'hypo_auc': float(hypo_auc),
+        }
+        print(f"  Override F1={ov_f1:.4f}, Hypo F1@opt={best_hypo_f1:.4f} "
+              f"@{best_hypo_thresh:.2f}, AUC={hypo_auc:.4f}")
+
+    results = {
+        'experiment': 'EXP-322',
+        'name': 'multitask-override-hypo',
+        'method': 'Multi-task CNN: shared backbone + dual heads',
+        'configs': all_results,
+        'data': {'n_train': len(train_np), 'n_val': len(val_np)},
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"Multi-Task CNN Comparison")
+    print(f"{'='*60}")
+    print(f"{'Config':>20} {'OV_F1':>8} {'Hypo_F1':>8} {'Hypo_AUC':>8}")
+    print("-" * 46)
+    for name, r in all_results.items():
+        print(f"{name:>20} {r['override_f1']:>7.4f} {r['hypo_best_f1']:>7.4f} "
+              f"{r['hypo_auc']:>7.4f}")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp322_multitask.json'))
+    return results
+
+
 # ── Registry & CLI ─────────────────────────────────────────────────────
 
 EXPERIMENTS = {
@@ -5649,6 +6031,11 @@ EXPERIMENTS = {
                            'Selective per-patient override ensemble'),
     'iob-hypo': ('EXP-320', run_iob_hypo,
                  'IOB trajectory features for hypo prediction CNN'),
+    # Phase 31: Loss function and multi-task
+    'focal-hypo': ('EXP-321', run_focal_hypo,
+                   'Focal loss for hypo prediction CNN'),
+    'multitask-cnn': ('EXP-322', run_multitask_cnn,
+                      'Multi-task override+hypo CNN with shared backbone'),
 }
 
 
