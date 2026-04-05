@@ -64,7 +64,7 @@ except ImportError:
     from ns_split import split_records
 
 PATIENTS_DIR = Path('externals/ns-data/patients')
-PATIENT_IDS = list('abcdefghij')
+PATIENT_IDS = list('abcdefghijklmnopqrstuvwxyz')
 MIN_DAYS = 90
 RECOMMENDED_DAYS = 180
 

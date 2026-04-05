@@ -5154,8 +5154,8 @@ def run_chdrop_ensemble(args):
     """
     import copy
 
-    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
-    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_dir = getattr(args, 'patients_dir', None) or 'externals/ns-data/patients'
+    output_dir = getattr(args, 'output_dir', None) or 'externals/experiments'
     patient_paths = resolve_patient_paths(patients_dir)
     device = get_device()
 
@@ -5424,8 +5424,8 @@ def run_clinical_chdrop(args):
     """
     import copy
 
-    patients_dir = getattr(args, 'patients_dir', 'externals/ns-data/patients')
-    output_dir = getattr(args, 'output_dir', 'externals/experiments')
+    patients_dir = getattr(args, 'patients_dir', None) or 'externals/ns-data/patients'
+    output_dir = getattr(args, 'output_dir', None) or 'externals/experiments'
     patient_paths = resolve_patient_paths(patients_dir)
     device = get_device()
 
