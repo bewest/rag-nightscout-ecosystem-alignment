@@ -1386,6 +1386,340 @@ def _bspline_smooth_windows(windows, n_basis=12):
     return np.concatenate([smoothed, deriv_channel], axis=2).astype(np.float32)
 
 
+# ─── Phase 4: Stack winning techniques ──────────────────────────────────
+
+def run_platt_hypo(args):
+    """EXP-345: Platt calibration for hypo prediction.
+
+    EXP-343 showed Platt drops ECE from 0.084→0.046 and boosts F1 +0.018 for
+    override. Hypo has the worst ECE (0.114) and the most to gain. The multi-task
+    hypo models (EXP-341, 342) showed F1@opt ≈ 0.675 but argmax F1 ≈ 0.53,
+    proving the threshold problem. Platt should fix this.
+
+    Hypothesis: Platt boosts hypo F1 by >= 0.02 and cuts ECE by >= 50%.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = getattr(args, 'epochs', 30)
+
+    print("=" * 60)
+    print("EXP-345: Platt-Calibrated Hypo CNN")
+    print("=" * 60)
+
+    data = load_multiscale_data_3way(patient_paths, scale='fast')
+    train_np, val_np, test_np = data['train'], data['val'], data['test']
+
+    train_hypo = build_hypo_labels(train_np, lead_steps=6)
+    val_hypo = build_hypo_labels(val_np, lead_steps=6)
+    test_hypo = build_hypo_labels(test_np, lead_steps=6)
+
+    train_override = build_override_labels(train_np, lead_steps=3)
+    val_override = build_override_labels(val_np, lead_steps=3)
+    cw_override = _compute_class_weights(train_override, 3, device)
+    cw_hypo = _compute_class_weights(train_hypo, 2, device)
+
+    from sklearn.linear_model import LogisticRegression
+
+    def train_and_eval(seed):
+        set_seed(seed)
+        model = MultiTaskCNN(in_channels=8).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        crit_ovr = nn.CrossEntropyLoss(weight=cw_override)
+        crit_hypo = nn.CrossEntropyLoss(weight=cw_hypo)
+        batch_size = 256
+
+        train_t = torch.from_numpy(train_np).float()
+        train_y_ovr = torch.from_numpy(train_override).long()
+        train_y_hypo = torch.from_numpy(train_hypo).long()
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_np))
+            for start in range(0, len(perm), batch_size):
+                idx = perm[start:min(start + batch_size, len(perm))]
+                ovr_logits, hypo_logits = model(train_t[idx].to(device))
+                loss = crit_ovr(ovr_logits, train_y_ovr[idx].to(device)) + \
+                       crit_hypo(hypo_logits, train_y_hypo[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        # Collect validation logits for Platt scaling
+        model.eval()
+        val_t = torch.from_numpy(val_np).float()
+        val_probs_list = []
+        with torch.no_grad():
+            for s in range(0, len(val_np), 512):
+                e = min(s + 512, len(val_np))
+                _, hypo_logits = model(val_t[s:e].to(device))
+                val_probs_list.append(
+                    torch.softmax(hypo_logits, dim=-1)[:, 1].cpu().numpy())
+        val_hypo_prob = np.concatenate(val_probs_list)
+
+        # Fit Platt scaler
+        platt = LogisticRegression(C=1e10, solver='lbfgs', max_iter=1000)
+        platt.fit(val_hypo_prob.reshape(-1, 1), val_hypo)
+
+        # Evaluate on test with Platt
+        test_t = torch.from_numpy(test_np).float()
+        test_probs_list = []
+        with torch.no_grad():
+            for s in range(0, len(test_np), 512):
+                e = min(s + 512, len(test_np))
+                _, hypo_logits = model(test_t[s:e].to(device))
+                test_probs_list.append(
+                    torch.softmax(hypo_logits, dim=-1)[:, 1].cpu().numpy())
+        test_hypo_prob_raw = np.concatenate(test_probs_list)
+        test_hypo_prob_cal = platt.predict_proba(
+            test_hypo_prob_raw.reshape(-1, 1))[:, 1]
+
+        test_preds = (test_hypo_prob_cal >= 0.5).astype(int)
+        return {
+            'y_true': test_hypo,
+            'y_pred': test_preds,
+            'y_prob': test_hypo_prob_cal,
+        }
+
+    result = run_validated_classification(
+        'EXP-345', output_dir, train_and_eval,
+        task_name='hypo', positive_label=1,
+        seeds=[42, 123, 456, 789, 1337],
+    )
+    print(f"\n✅ EXP-345 complete.")
+    return result
+
+
+def run_platt_bspline_uam(args):
+    """EXP-346: Platt + B-spline for UAM (stack the two biggest wins).
+
+    B-spline UAM: F1=0.939, ECE=0.014 (already low ECE).
+    Platt may still help at decision boundary and make probabilities
+    fully calibrated for downstream use.
+
+    Hypothesis: combined gives F1 >= 0.939 + ECE <= 0.010.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = getattr(args, 'epochs', 30)
+
+    print("=" * 60)
+    print("EXP-346: Platt + B-Spline UAM CNN")
+    print("=" * 60)
+
+    data = load_multiscale_data_3way(patient_paths, scale='fast')
+    train_np, val_np, test_np = data['train'], data['val'], data['test']
+
+    train_bs = _bspline_smooth_windows(train_np)
+    val_bs = _bspline_smooth_windows(val_np)
+    test_bs = _bspline_smooth_windows(test_np)
+
+    train_uam = build_uam_labels(train_np)
+    val_uam = build_uam_labels(val_np)
+    test_uam = build_uam_labels(test_np)
+
+    n_pos = train_uam.sum()
+    n_neg = len(train_uam) - n_pos
+    cw = torch.tensor([1.0, n_neg / max(1, n_pos)], dtype=torch.float32)
+
+    from sklearn.linear_model import LogisticRegression
+
+    def train_and_eval(seed):
+        set_seed(seed)
+        model = UAMCNN(in_channels=9).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        criterion = nn.CrossEntropyLoss(weight=cw.to(device))
+        batch_size = 256
+
+        train_t = torch.from_numpy(train_bs).float()
+        train_yt = torch.from_numpy(train_uam).long()
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_bs))
+            for start in range(0, len(perm), batch_size):
+                idx = perm[start:min(start + batch_size, len(perm))]
+                logits = model(train_t[idx].to(device))
+                loss = criterion(logits, train_yt[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        # Platt on validation
+        model.eval()
+        val_t = torch.from_numpy(val_bs).float()
+        val_probs_list = []
+        with torch.no_grad():
+            for s in range(0, len(val_bs), 512):
+                e = min(s + 512, len(val_bs))
+                logits = model(val_t[s:e].to(device))
+                val_probs_list.append(
+                    torch.softmax(logits, dim=-1)[:, 1].cpu().numpy())
+        val_prob = np.concatenate(val_probs_list)
+
+        platt = LogisticRegression(C=1e10, solver='lbfgs', max_iter=1000)
+        platt.fit(val_prob.reshape(-1, 1), val_uam)
+
+        # Test with Platt
+        test_t = torch.from_numpy(test_bs).float()
+        test_probs_list = []
+        with torch.no_grad():
+            for s in range(0, len(test_bs), 512):
+                e = min(s + 512, len(test_bs))
+                logits = model(test_t[s:e].to(device))
+                test_probs_list.append(
+                    torch.softmax(logits, dim=-1)[:, 1].cpu().numpy())
+        test_prob_raw = np.concatenate(test_probs_list)
+        test_prob_cal = platt.predict_proba(test_prob_raw.reshape(-1, 1))[:, 1]
+
+        return {
+            'y_true': test_uam,
+            'y_pred': (test_prob_cal >= 0.5).astype(int),
+            'y_prob': test_prob_cal,
+        }
+
+    result = run_validated_classification(
+        'EXP-346', output_dir, train_and_eval,
+        task_name='uam', positive_label=1,
+        seeds=[42, 123, 456, 789, 1337],
+    )
+    print(f"\n✅ EXP-346 complete.")
+    return result
+
+
+def run_platt_glucodensity_override(args):
+    """EXP-347: Platt + glucodensity for override (stack both wins).
+
+    EXP-343 (Platt): F1=0.882, ECE=0.046
+    EXP-338 (Gluco): F1=0.870, ECE=0.070
+
+    Hypothesis: combining yields F1 >= 0.885 and ECE <= 0.040.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = getattr(args, 'epochs', 30)
+
+    print("=" * 60)
+    print("EXP-347: Platt + Glucodensity Override CNN")
+    print("=" * 60)
+
+    data = load_multiscale_data_3way(patient_paths, scale='fast')
+    train_np, val_np, test_np = data['train'], data['val'], data['test']
+
+    n_bins = 8
+
+    def compute_glucodensity(windows):
+        half = windows.shape[1] // 2
+        glucose = windows[:, :half, 0] * 400.0
+        bin_edges = np.linspace(40, 400, n_bins + 1)
+        histograms = np.zeros((len(windows), n_bins), dtype=np.float32)
+        for i in range(len(windows)):
+            h, _ = np.histogram(glucose[i], bins=bin_edges)
+            histograms[i] = h
+        row_sums = histograms.sum(axis=1, keepdims=True)
+        return histograms / np.maximum(row_sums, 1e-8)
+
+    train_gd = compute_glucodensity(train_np)
+    val_gd = compute_glucodensity(val_np)
+    test_gd = compute_glucodensity(test_np)
+
+    train_labels = build_override_labels(train_np, lead_steps=3)
+    val_labels = build_override_labels(val_np, lead_steps=3)
+    test_labels = build_override_labels(test_np, lead_steps=3)
+    cw = _compute_class_weights(train_labels, 3, device)
+
+    from sklearn.linear_model import LogisticRegression
+
+    class GlucodensityOverrideCNN(nn.Module):
+        def __init__(self, in_channels=8, n_gd_bins=8, n_classes=3):
+            super().__init__()
+            self.conv = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.classifier = nn.Sequential(
+                nn.Linear(64 + n_gd_bins, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, n_classes),
+            )
+
+        def forward(self, x, gd_features):
+            h = x.shape[1] // 2
+            conv_feat = self.conv(x[:, :h].permute(0, 2, 1)).squeeze(-1)
+            combined = torch.cat([conv_feat, gd_features], dim=1)
+            return self.classifier(combined)
+
+    def train_and_eval(seed):
+        set_seed(seed)
+        model = GlucodensityOverrideCNN(n_gd_bins=n_bins).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        criterion = nn.CrossEntropyLoss(weight=cw)
+        batch_size = 256
+
+        train_t = torch.from_numpy(train_np).float()
+        train_gd_t = torch.from_numpy(train_gd).float()
+        train_y = torch.from_numpy(train_labels).long()
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_np))
+            for start in range(0, len(perm), batch_size):
+                idx = perm[start:min(start + batch_size, len(perm))]
+                logits = model(train_t[idx].to(device), train_gd_t[idx].to(device))
+                loss = criterion(logits, train_y[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        # Platt on validation
+        model.eval()
+        val_t = torch.from_numpy(val_np).float()
+        val_gd_t = torch.from_numpy(val_gd).float()
+        val_probs_list = []
+        with torch.no_grad():
+            for s in range(0, len(val_np), 512):
+                e = min(s + 512, len(val_np))
+                logits = model(val_t[s:e].to(device), val_gd_t[s:e].to(device))
+                probs = torch.softmax(logits, dim=-1)
+                val_probs_list.append((1.0 - probs[:, 0]).cpu().numpy())
+        val_override_prob = np.concatenate(val_probs_list)
+        val_binary = (val_labels > 0).astype(int)
+
+        platt = LogisticRegression(C=1e10, solver='lbfgs', max_iter=1000)
+        platt.fit(val_override_prob.reshape(-1, 1), val_binary)
+
+        # Test with Platt
+        test_t = torch.from_numpy(test_np).float()
+        test_gd_t = torch.from_numpy(test_gd).float()
+        test_probs_list = []
+        with torch.no_grad():
+            for s in range(0, len(test_np), 512):
+                e = min(s + 512, len(test_np))
+                logits = model(test_t[s:e].to(device), test_gd_t[s:e].to(device))
+                probs = torch.softmax(logits, dim=-1)
+                test_probs_list.append((1.0 - probs[:, 0]).cpu().numpy())
+        test_prob_raw = np.concatenate(test_probs_list)
+        test_prob_cal = platt.predict_proba(test_prob_raw.reshape(-1, 1))[:, 1]
+
+        return {
+            'y_true': (test_labels > 0).astype(int),
+            'y_pred': (test_prob_cal >= 0.5).astype(int),
+            'y_prob': test_prob_cal,
+        }
+
+    result = run_validated_classification(
+        'EXP-347', output_dir, train_and_eval,
+        task_name='override', positive_label=1,
+        seeds=[42, 123, 456, 789, 1337],
+    )
+    print(f"\n✅ EXP-347 complete.")
+    return result
+
+
 # ─── Registry ──────────────────────────────────────────────────────────
 
 VALIDATED_REGISTRY = {
@@ -1418,6 +1752,14 @@ VALIDATED_REGISTRY = {
                        'Platt-calibrated override CNN'),
     'bspline-gluco-override': ('EXP-344', run_bspline_glucodensity_override,
                                'B-spline + glucodensity combined override'),
+
+    # Phase 4: Stack winning techniques
+    'platt-hypo': ('EXP-345', run_platt_hypo,
+                   'Platt-calibrated multi-task hypo CNN'),
+    'platt-bspline-uam': ('EXP-346', run_platt_bspline_uam,
+                          'Platt + B-spline UAM (stack best two wins)'),
+    'platt-gluco-override': ('EXP-347', run_platt_glucodensity_override,
+                             'Platt + glucodensity override (stack wins)'),
 }
 
 
