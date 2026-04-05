@@ -45,11 +45,9 @@ def grid_to_fdatagrid(data, grid_points=None):
         FDataGrid object
     """
     if data.ndim == 2:
-        # (n_samples, n_points) → single-channel
-        pass
+        pass  # (n_samples, n_points) → single-channel, accepted directly
     elif data.ndim == 3:
-        # (n_samples, n_points, n_channels) — scikit-fda expects (n_samples, n_points, n_dim)
-        pass
+        pass  # (n_samples, n_points, n_channels) → multi-channel, accepted directly
     else:
         raise ValueError(f"Expected 2D or 3D array, got shape {data.shape}")
 
@@ -82,7 +80,7 @@ def bspline_smooth(data, n_knots=None, order=4, grid_points=None,
     n_points = data.shape[1]
 
     if n_basis is not None:
-        pass
+        pass  # user-specified, use as-is
     elif n_knots is not None:
         n_basis = n_knots + order
     else:

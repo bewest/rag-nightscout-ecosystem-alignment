@@ -13,6 +13,7 @@ for new experiments — they provide multi-seed evaluation and standardized metr
 import json
 import os
 import time
+import warnings
 import numpy as np
 import torch
 import torch.nn as nn
@@ -500,9 +501,20 @@ def build_16f_windows(patient_paths, window_size):
 def windows_to_datasets(windows, val_fraction=0.2, seed=42):
     """Convert list of numpy windows to train/val TensorDatasets.
 
+    .. deprecated::
+        This function uses random shuffling which breaks temporal order.
+        Use ``real_data_adapter.load_multiscale_data()`` or
+        ``real_data_adapter.load_nightscout_to_dataset()`` instead,
+        which perform per-patient chronological splitting.
+
     Each dataset yields (x, x) pairs for autoencoder-style training
     (matching what train_one_epoch expects).
     """
+    warnings.warn(
+        "windows_to_datasets() uses random shuffle that breaks temporal order. "
+        "Use real_data_adapter.load_multiscale_data() instead.",
+        DeprecationWarning, stacklevel=2,
+    )
     arr = np.stack(windows).astype(np.float32)
     rng = np.random.RandomState(seed)
     rng.shuffle(arr)

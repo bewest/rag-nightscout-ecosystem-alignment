@@ -64,6 +64,13 @@ class BootstrapCI:
         """
         rng = np.random.RandomState(seed)
         n = len(y_true)
+        if n == 0:
+            return {
+                'point_estimate': float('nan'),
+                'mean': float('nan'), 'std': float('nan'),
+                'ci_lower': float('nan'), 'ci_upper': float('nan'),
+                'ci_level': ci, 'n_bootstrap': n_bootstrap,
+            }
         point_estimate = float(metric_fn(y_true, y_pred))
 
         bootstraps = np.empty(n_bootstrap)
@@ -376,8 +383,15 @@ class MultiSeedRunner:
                 print(f"  Seed {seed} ({i+1}/{len(self.seeds)})...")
 
             t0 = time.time()
-            metrics = train_eval_fn(seed)
-            elapsed = time.time() - t0
+            try:
+                metrics = train_eval_fn(seed)
+            except Exception as e:
+                elapsed = time.time() - t0
+                if verbose:
+                    print(f"    → ERROR: {e} ({elapsed:.1f}s)")
+                metrics = {'error': str(e)}
+            else:
+                elapsed = time.time() - t0
 
             result = SeedResult(seed=seed, metrics=metrics,
                                 extra={'elapsed_seconds': round(elapsed, 1)})

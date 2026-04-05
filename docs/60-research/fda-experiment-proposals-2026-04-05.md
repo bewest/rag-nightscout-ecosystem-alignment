@@ -2,7 +2,8 @@
 
 **Date**: 2026-04-05  
 **Basis**: Klonoff et al. "CGM Data Analysis 2.0: Functional Data Pattern Recognition
-and Artificial Intelligence Applications" (2025); 327 verified experiments (EXP-001–327)  
+and Artificial Intelligence Applications" (2025); 327 experiments in research logs
+(EXP-001–327, 33 independently verified — see `accuracy-validation-2026-04-05.md`)  
 **Purpose**: Validate whether FDA representations improve feature selection, encoding
 quality, and objective performance across the five CGM/AID intelligence objectives.
 Define actionable experiments with clear baselines, success criteria, and auto-research

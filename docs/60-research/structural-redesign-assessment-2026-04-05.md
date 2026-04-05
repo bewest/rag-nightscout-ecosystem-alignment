@@ -1,8 +1,9 @@
 # Structural Redesign Assessment: Incremental Progress vs Architectural Change
 
 **Date**: 2026-04-05  
-**Based on**: 335 experiments (EXP-001–327 verified, EXP-328–335 code implemented),
-20+ research reports, independent accuracy validation  
+**Based on**: 335 experiments in research logs (EXP-001–327), 33 independently
+verified (EXP-286–327 — see `accuracy-validation-2026-04-05.md`),
+EXP-328–335 FDA phase code implemented, 20+ research reports  
 **Question**: Does the CGM/AID intelligence program need structural redesign, or
 should it continue incremental progress on the current architecture?
 

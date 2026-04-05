@@ -51,8 +51,10 @@ def _safe_macro_f1(y_true, y_pred):
 
 
 def _auc_roc(y_true, y_prob, pos_label=1):
-    """AUC-ROC using trapezoidal rule. No sklearn dependency."""
-    # Binary: isolate positive class probability
+    """AUC-ROC using trapezoidal rule. No sklearn dependency.
+
+    Groups tied probability thresholds to produce correct TPR/FPR curves.
+    """
     if y_prob.ndim == 2:
         scores = y_prob[:, pos_label]
     else:
@@ -60,48 +62,55 @@ def _auc_roc(y_true, y_prob, pos_label=1):
 
     pos = y_true == pos_label
     neg = ~pos
-    n_pos, n_neg = pos.sum(), neg.sum()
+    n_pos, n_neg = int(pos.sum()), int(neg.sum())
     if n_pos == 0 or n_neg == 0:
         return float('nan')
 
-    # Sort by descending score
-    order = np.argsort(-scores)
-    y_sorted = pos[order]
+    # Use unique descending thresholds to handle tied probabilities
+    desc_thresholds = np.sort(np.unique(scores))[::-1]
 
-    tpr_points = np.cumsum(y_sorted) / n_pos
-    fpr_points = np.cumsum(~y_sorted) / n_neg
-
-    # Prepend (0, 0)
-    tpr_points = np.concatenate([[0], tpr_points])
-    fpr_points = np.concatenate([[0], fpr_points])
+    tpr_points = [0.0]
+    fpr_points = [0.0]
+    for thresh in desc_thresholds:
+        predicted_pos = scores >= thresh
+        tp = (predicted_pos & pos).sum()
+        fp = (predicted_pos & neg).sum()
+        tpr_points.append(tp / n_pos)
+        fpr_points.append(fp / n_neg)
 
     return float(_trapz(tpr_points, fpr_points))
 
 
 def _auprc(y_true, y_prob, pos_label=1):
-    """Area under Precision-Recall Curve. Better than AUC for imbalanced data."""
+    """Area under Precision-Recall Curve. Better than AUC for imbalanced data.
+
+    Groups tied probability thresholds to produce correct precision/recall curves.
+    """
     if y_prob.ndim == 2:
         scores = y_prob[:, pos_label]
     else:
         scores = y_prob
 
     pos = y_true == pos_label
-    n_pos = pos.sum()
+    n_pos = int(pos.sum())
     if n_pos == 0:
         return float('nan')
 
-    order = np.argsort(-scores)
-    y_sorted = pos[order]
+    # Use unique descending thresholds to handle tied probabilities
+    desc_thresholds = np.sort(np.unique(scores))[::-1]
 
-    tp_cumsum = np.cumsum(y_sorted)
-    precision = tp_cumsum / np.arange(1, len(y_sorted) + 1)
-    recall = tp_cumsum / n_pos
+    precision_pts = [1.0]
+    recall_pts = [0.0]
+    for thresh in desc_thresholds:
+        predicted_pos = scores >= thresh
+        tp = int((predicted_pos & pos).sum())
+        n_pred = int(predicted_pos.sum())
+        prec = tp / n_pred if n_pred > 0 else 0.0
+        rec = tp / n_pos
+        precision_pts.append(prec)
+        recall_pts.append(rec)
 
-    # Prepend (recall=0, precision=1)
-    precision = np.concatenate([[1.0], precision])
-    recall = np.concatenate([[0.0], recall])
-
-    return float(_trapz(precision, recall))
+    return float(_trapz(precision_pts, recall_pts))
 
 
 def _expected_calibration_error(y_true, y_prob, n_bins: int = 10,
@@ -115,8 +124,10 @@ def _expected_calibration_error(y_true, y_prob, n_bins: int = 10,
     labels = (y_true == pos_label).astype(float)
     bin_edges = np.linspace(0, 1, n_bins + 1)
     ece = 0.0
-    for lo, hi in zip(bin_edges[:-1], bin_edges[1:]):
-        mask = (probs >= lo) & (probs < hi)
+    for i, (lo, hi) in enumerate(zip(bin_edges[:-1], bin_edges[1:])):
+        is_last_bin = (i == n_bins - 1)
+        # Include upper boundary in last bin so y_prob=1.0 is not excluded
+        mask = (probs >= lo) & (probs <= hi if is_last_bin else probs < hi)
         if mask.sum() == 0:
             continue
         avg_conf = probs[mask].mean()
@@ -239,7 +250,12 @@ class ForecastValidator:
 
     @staticmethod
     def _clarke_zones(y_true, y_pred):
-        """Simplified Clarke Error Grid zone classification."""
+        """Simplified glucose error zone classification.
+
+        NOTE: This is an approximation using 20%/40% percentage rules,
+        NOT the published Clarke Error Grid which uses curved boundaries
+        that vary by glucose level. Use for quick screening only.
+        """
         n = len(y_true)
         if n == 0:
             return {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0}
@@ -309,6 +325,15 @@ class ClassificationValidator:
         y_pred = np.asarray(y_pred).ravel()
         if y_prob is not None:
             y_prob = np.asarray(y_prob)
+
+        if len(y_true) == 0:
+            raise ValueError("y_true is empty — cannot compute classification metrics")
+        if len(y_pred) != len(y_true):
+            raise ValueError(
+                f"y_pred length ({len(y_pred)}) != y_true length ({len(y_true)})")
+        if y_prob is not None and y_prob.shape[0] != len(y_true):
+            raise ValueError(
+                f"y_prob rows ({y_prob.shape[0]}) != y_true length ({len(y_true)})")
 
         # Core metrics
         f1_pos = _safe_f1(y_true, y_pred, pos_label=pos)
@@ -400,8 +425,9 @@ class ClassificationValidator:
         bin_edges = np.linspace(0, 1, n_bins + 1)
         bins = []
 
-        for lo, hi in zip(bin_edges[:-1], bin_edges[1:]):
-            mask = (probs >= lo) & (probs < hi)
+        for i, (lo, hi) in enumerate(zip(bin_edges[:-1], bin_edges[1:])):
+            is_last_bin = (i == n_bins - 1)
+            mask = (probs >= lo) & (probs <= hi if is_last_bin else probs < hi)
             count = int(mask.sum())
             if count > 0:
                 bins.append({

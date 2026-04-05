@@ -1,9 +1,13 @@
 # Accuracy Validation Report: Multi-Scale CGM/AID Research (EXP-286–327)
 
 **Date**: 2026-04-05  
-**Scope**: Independent verification of 33 experiments across 11 research reports  
+**Scope**: Independent verification of 33 multi-scale experiments (EXP-286–327, 42 experiment IDs)
+across 11 research reports  
 **Method**: Cross-referencing all quantitative claims in reports against raw experiment JSON files  
 **Verdict**: **All primary metrics verified accurate.** Five minor report-level discrepancies identified. Three methodology caveats noted for future work.
+**Note**: This audit covers the multi-scale/architecture phase (EXP-286–327).
+Earlier experiments (EXP-001–285) are documented in research logs but have not
+received independent cross-validation against raw JSON files.
 
 ---
 
