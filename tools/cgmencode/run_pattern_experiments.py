@@ -279,13 +279,34 @@ def run_ablation_embedding(args):
     train_labels = build_episode_labels_batch(train_np)
     val_labels = build_episode_labels_batch(val_np)
 
+    # For 8-channel data, do per-channel ablation (groups only cover base_8f)
+    # For 39-channel data, do group-level ablation
+    if input_dim <= 8:
+        channel_map = {
+            'glucose': [0],
+            'iob': [1],
+            'cob': [2],
+            'basal_rate': [3],
+            'bolus': [4],
+            'carbs': [5],
+            'time_sin': [6],
+            'time_cos': [7],
+        }
+        # Also test combined ablations
+        channel_map['insulin_all'] = [1, 3, 4]  # IOB + basal + bolus
+        channel_map['meal_all'] = [2, 5]         # COB + carbs
+        channel_map['time_all'] = [6, 7]         # sin + cos
+    else:
+        channel_map = {k: v for k, v in CHANNEL_GROUPS.items()}
+
     label_dist = {}
     for ls in train_labels:
         for l in ls:
             label_dist[l] = label_dist.get(l, 0) + 1
     print(f"Label distribution: {label_dist}")
+    print(f"Ablation strategy: {'per-channel' if input_dim <= 8 else 'per-group'} "
+          f"({len(channel_map)} conditions)")
 
-    # Baseline: train with all channels
     print("\n--- Baseline (all channels) ---")
     baseline_encoder = PatternEncoder(
         input_dim=input_dim, d_model=64, embed_dim=32,
@@ -304,10 +325,9 @@ def run_ablation_embedding(args):
     # Ablation sweep: mask each group
     results = {'baseline': baseline_metrics, 'ablations': {}, 'ranking': []}
 
-    for group_name, channels in CHANNEL_GROUPS.items():
+    for group_name, channels in channel_map.items():
         valid_channels = [c for c in channels if c < input_dim]
         if not valid_channels:
-            print(f"\n--- {group_name}: skipped (no channels in {input_dim}ch data) ---")
             continue
 
         print(f"\n--- Ablating {group_name} (channels {valid_channels}) ---")
@@ -371,8 +391,18 @@ def run_ablation_embedding(args):
 def run_window_sweep_embedding(args):
     """EXP-289: What timescale is optimal for pattern matching?
 
-    Trains PatternEncoder at window sizes [12, 24, 48] steps (1h, 2h, 4h)
-    and measures Recall@5. Larger windows need more data per window.
+    Trains PatternEncoder at multiple window sizes and measures Recall@5.
+    Physiological rationale for window selection (5-min intervals):
+      12 steps =  1h — acute events, insulin onset only
+      24 steps =  2h — meal peak, partial correction
+      48 steps =  4h — most of insulin action curve
+      72 steps =  6h — full DIA (Duration of Insulin Action)
+      96 steps =  8h — overnight/dawn phenomenon
+     144 steps = 12h — ISF drift onset, half-day patterns
+
+    Insulin pharmacokinetics: onset ~15min, peak ~60-90min, tail ~5-6h.
+    A 2h window can't observe whether a correction actually worked.
+    6h is the minimum to capture a complete bolus→effect→resolution cycle.
     """
     from .pattern_embedding import PatternEncoder
 
@@ -380,7 +410,9 @@ def run_window_sweep_embedding(args):
     output_dir = args.output_dir
     device = args.device
     epochs = args.epochs
-    window_sizes = [12, 24, 48]
+    # Physiologically-grounded window sizes (5-min intervals)
+    # 72 steps (6h) = full DIA; 96 (8h) = dawn; 144 (12h) = ISF drift
+    window_sizes = [12, 24, 48, 72, 96, 144]
 
     print("=" * 60)
     print("EXP-289: Window Length Sweep for Pattern Embedding")
