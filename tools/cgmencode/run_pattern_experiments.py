@@ -3475,6 +3475,449 @@ def run_temporal_override(args):
     return results
 
 
+# ── EXP-312: Rolling Weekly ISF Aggregation ───────────────────────────
+
+def run_rolling_isf(args):
+    """EXP-312: Rolling weekly aggregation of ISF response ratio.
+
+    EXP-309 showed per-cycle ISF_effective has enormous variance (std up to
+    59 mg/dL/U), making individual-cycle drift detection impossible. This
+    experiment aggregates ISF_effective into rolling weekly windows, then
+    tests for temporal trend in the smoothed series.
+
+    Method:
+    1. Compute per-cycle ISF_effective (same as EXP-309)
+    2. Group into rolling 7-day windows with 1-day stride
+    3. Compute weekly mean ISF_effective (reduces variance by √N)
+    4. Test for temporal trend in weekly series (Spearman + OLS)
+    5. Also test month-scale aggregation for even more smoothing
+
+    If weekly smoothing reveals significant trends that per-cycle didn't →
+    ISF drift is real but needs aggregation to detect.
+    """
+    from scipy import stats as scipy_stats
+
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+
+    print("=" * 60)
+    print("EXP-312: Rolling Weekly ISF Aggregation")
+    print("=" * 60)
+
+    window = 72   # 6h at 5-min = 1 DIA cycle
+    stride = 72   # non-overlapping
+    MIN_INSULIN = 0.5
+    STEPS_PER_DAY = 288  # 24h * 60min / 5min
+
+    per_patient_results = {}
+
+    for pi, path in enumerate(patient_paths):
+        patient_id = os.path.basename(os.path.dirname(path))
+        print(f"\n--- Patient {patient_id} ({pi+1}/{len(patient_paths)}) ---")
+
+        df, features_5min = _get_cached_grid(path)
+        if df is None:
+            print("  SKIP: no data")
+            continue
+
+        # Compute per-cycle ISF_effective (reuse EXP-309 logic)
+        cycle_isf = []
+        cycle_times = []  # time index (in 5-min steps)
+
+        for start in range(0, len(features_5min) - window + 1, stride):
+            w = features_5min[start:start + window]
+            if np.isnan(w[:, 0]).mean() >= 0.2:
+                continue
+            w = np.nan_to_num(w, nan=0.0)
+
+            bolus_units = w[:, 4].sum() * 10.0
+            basal_total = w[:, 3].mean() * 10.0 * (window * 5 / 60)
+            total_insulin = bolus_units + basal_total
+
+            if total_insulin < MIN_INSULIN:
+                continue
+
+            glucose_start = w[:12, 0].mean() * 400.0
+            glucose_end = w[-12:, 0].mean() * 400.0
+            isf_eff = (glucose_end - glucose_start) / total_insulin
+
+            cycle_isf.append(isf_eff)
+            cycle_times.append(start)
+
+        if len(cycle_isf) < 20:
+            print(f"  SKIP: only {len(cycle_isf)} qualified cycles")
+            continue
+
+        cycle_isf = np.array(cycle_isf)
+        cycle_times = np.array(cycle_times)
+
+        # Rolling aggregation at multiple scales
+        results_by_scale = {}
+        for scale_name, scale_days in [('weekly', 7), ('biweekly', 14), ('monthly', 30)]:
+            scale_steps = scale_days * STEPS_PER_DAY
+
+            # Group cycles into rolling windows
+            rolling_means = []
+            rolling_times = []
+            rolling_n = []
+
+            # Slide a window of scale_steps across the data
+            day_stride = STEPS_PER_DAY  # 1-day stride
+            t_min, t_max = cycle_times.min(), cycle_times.max()
+
+            for win_start in range(int(t_min), int(t_max - scale_steps) + 1, day_stride):
+                win_end = win_start + scale_steps
+                mask = (cycle_times >= win_start) & (cycle_times < win_end)
+                n_in_window = mask.sum()
+
+                if n_in_window >= 3:  # need at least 3 cycles per window
+                    rolling_means.append(cycle_isf[mask].mean())
+                    rolling_times.append((win_start + win_end) / 2)  # midpoint
+                    rolling_n.append(int(n_in_window))
+
+            if len(rolling_means) < 5:
+                results_by_scale[scale_name] = {
+                    'n_windows': len(rolling_means),
+                    'error': 'insufficient_rolling_windows',
+                }
+                continue
+
+            rolling_means = np.array(rolling_means)
+            rolling_times = np.array(rolling_times)
+            times_norm = (rolling_times - rolling_times.min()) / max(1, rolling_times.max() - rolling_times.min())
+
+            rho, p_spearman = scipy_stats.spearmanr(times_norm, rolling_means)
+            slope, intercept = np.polyfit(times_norm, rolling_means, 1)
+
+            # Variance reduction: compare std of rolling means vs raw cycles
+            variance_reduction = cycle_isf.std() / max(0.01, rolling_means.std())
+
+            results_by_scale[scale_name] = {
+                'n_windows': len(rolling_means),
+                'mean_cycles_per_window': float(np.mean(rolling_n)),
+                'isf_mean': float(rolling_means.mean()),
+                'isf_std': float(rolling_means.std()),
+                'raw_std': float(cycle_isf.std()),
+                'variance_reduction': float(variance_reduction),
+                'spearman_rho': float(rho),
+                'spearman_p': float(p_spearman),
+                'ols_slope': float(slope),
+                'first_half_mean': float(rolling_means[:len(rolling_means)//2].mean()),
+                'second_half_mean': float(rolling_means[len(rolling_means)//2:].mean()),
+            }
+
+        per_patient_results[patient_id] = {
+            'n_raw_cycles': len(cycle_isf),
+            'raw_isf_std': float(cycle_isf.std()),
+            'scales': results_by_scale,
+        }
+
+        # Print weekly summary
+        w = results_by_scale.get('weekly', {})
+        if 'error' not in w and w:
+            sig = "**" if w['spearman_p'] < 0.01 else "*" if w['spearman_p'] < 0.05 else ""
+            direction = "resistance↑" if w['ols_slope'] > 0 else "sensitivity↑"
+            print(f"  {len(cycle_isf)} cycles → {w['n_windows']} weekly windows")
+            print(f"  Variance reduction: {w['variance_reduction']:.1f}× "
+                  f"(raw std={cycle_isf.std():.1f}, weekly std={w['isf_std']:.1f})")
+            print(f"  Weekly trend: ρ={w['spearman_rho']:+.3f} (p={w['spearman_p']:.4f}{sig})")
+            print(f"  1st half→2nd half: {w['first_half_mean']:+.1f} → {w['second_half_mean']:+.1f}")
+        else:
+            print(f"  Insufficient rolling windows")
+
+    # Summary across all scales
+    results = {
+        'experiment': 'EXP-312',
+        'name': 'rolling-isf-aggregation',
+        'method': 'Rolling weekly/biweekly/monthly mean of per-cycle ISF_effective',
+        'cycle_window': f'{window*5/60:.0f}h (non-overlapping)',
+        'per_patient': per_patient_results,
+        'summary': {},
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"Rolling ISF Aggregation Summary")
+    print(f"{'='*60}")
+
+    for scale_name in ['weekly', 'biweekly', 'monthly']:
+        print(f"\n--- {scale_name.upper()} scale ---")
+        print(f"{'Patient':>8} {'N_win':>6} {'VarRed':>7} {'ρ':>7} {'p':>8} {'Slope':>7} {'Trend':>14}")
+        print("-" * 65)
+
+        trending = []
+        for pid in sorted(per_patient_results.keys()):
+            s = per_patient_results[pid]['scales'].get(scale_name, {})
+            if 'error' in s or not s:
+                print(f"{pid:>8} {'—':>6}")
+                continue
+            sig = "**" if s['spearman_p'] < 0.01 else "*" if s['spearman_p'] < 0.05 else ""
+            direction = "resistance↑" if s['ols_slope'] > 0 else "sensitivity↑"
+            print(f"{pid:>8} {s['n_windows']:>6} {s['variance_reduction']:>6.1f}× "
+                  f"{s['spearman_rho']:>+6.3f} {s['spearman_p']:>7.4f}{sig} "
+                  f"{s['ols_slope']:>+6.2f} {direction:>14}")
+            if s['spearman_p'] < 0.05:
+                trending.append(pid)
+
+        results['summary'][scale_name] = {
+            'n_significant': len(trending),
+            'patients_significant': trending,
+        }
+        print(f"  Significant: {len(trending)}/{len(per_patient_results)}")
+
+    print(f"\n{'='*60}")
+    save_results(results, os.path.join(output_dir, 'exp312_rolling_isf.json'))
+    return results
+
+
+# ── EXP-313: 1D-CNN UAM Detection ────────────────────────────────────
+
+def run_cnn_uam(args):
+    """EXP-313: 1D-CNN for UAM (Unannounced Meal) detection.
+
+    EXP-291 achieved F1=0.40 with embedding + linear classifier at 2h.
+    EXP-311 showed 1D-CNN beats embeddings for override prediction.
+    This tests whether 1D-CNN also beats embeddings for UAM detection.
+
+    Compares:
+    1. Embedding + classifier (EXP-291 approach)
+    2. 1D-CNN on raw 2h window
+    3. Combined (CNN + embedding)
+
+    UAM = rapid glucose rise (>2 mg/dL/min) without recent carb entry.
+    """
+    from .pattern_embedding import PatternEncoder
+
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-313: 1D-CNN UAM Detection")
+    print("=" * 60)
+
+    # Load 2h fast data
+    train_np, val_np = load_multiscale_data(patient_paths, scale='fast',
+                                            val_fraction=0.2)
+    print(f"Loaded: {train_np.shape} train, {val_np.shape} val")
+
+    # Build UAM labels (same logic as EXP-291)
+    def build_uam_labels(windows):
+        """UAM = rapid glucose rise without recent carbs."""
+        half = windows.shape[1] // 2
+        hist = windows[:, :half]
+        glucose = hist[:, :, 0] * 400.0
+        carbs = hist[:, :, 5]  # carb channel
+
+        # Rate of change > 2 mg/dL/min = 10 mg/dL per 5min step
+        roc = np.diff(glucose, axis=1)
+        rapid_rise = (roc > 10).any(axis=1)
+
+        # No significant carbs in recent history
+        no_carbs = carbs.sum(axis=1) < 0.01
+
+        # UAM = rapid rise + no carbs
+        uam = (rapid_rise & no_carbs).astype(np.int64)
+        return uam
+
+    train_uam = build_uam_labels(train_np)
+    val_uam = build_uam_labels(val_np)
+    print(f"UAM prevalence: train={train_uam.mean():.3f} ({train_uam.sum()}/{len(train_uam)}), "
+          f"val={val_uam.mean():.3f} ({val_uam.sum()}/{len(val_uam)})")
+
+    if train_uam.sum() < 10:
+        print("ERROR: insufficient UAM events")
+        return {'experiment': 'EXP-313', 'error': 'insufficient UAM events'}
+
+    # Class weights
+    n_pos = train_uam.sum()
+    n_neg = len(train_uam) - n_pos
+    class_weights = torch.tensor([1.0, n_neg / max(1, n_pos)], dtype=torch.float32).to(device)
+    print(f"Class weights: {class_weights.tolist()}")
+
+    # ── Model 1: Embedding + classifier (EXP-291 approach) ──
+    class EmbeddingClassifier(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.encoder = PatternEncoder(input_dim=8, d_model=64, nhead=4,
+                                          num_layers=2, embed_dim=32)
+            self.classifier = nn.Sequential(
+                nn.Linear(32, 16), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(16, 2),
+            )
+        def forward(self, x):
+            half = x.shape[1] // 2
+            emb = self.encoder(x[:, :half])
+            return self.classifier(emb)
+
+    # ── Model 2: 1D-CNN ──
+    class UAMCNN(nn.Module):
+        def __init__(self, in_channels=8):
+            super().__init__()
+            self.conv = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.Conv1d(64, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.classifier = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, 2),
+            )
+        def forward(self, x):
+            half = x.shape[1] // 2
+            x = x[:, :half].permute(0, 2, 1)
+            features = self.conv(x).squeeze(-1)
+            return self.classifier(features)
+
+    # ── Model 3: CNN + Embedding ──
+    class CombinedUAM(nn.Module):
+        def __init__(self, in_channels=8):
+            super().__init__()
+            self.encoder = PatternEncoder(input_dim=8, d_model=64, nhead=4,
+                                          num_layers=2, embed_dim=32)
+            self.conv = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.classifier = nn.Sequential(
+                nn.Linear(64 + 32, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, 2),
+            )
+        def forward(self, x):
+            half = x.shape[1] // 2
+            emb = self.encoder(x[:, :half])
+            cnn_feat = self.conv(x[:, :half].permute(0, 2, 1)).squeeze(-1)
+            return self.classifier(torch.cat([cnn_feat, emb], dim=1))
+
+    # ── Generic training loop ──
+    def train_uam_model(model, model_name):
+        model = model.to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        criterion = nn.CrossEntropyLoss(weight=class_weights)
+
+        train_t = torch.from_numpy(train_np).float()
+        val_t = torch.from_numpy(val_np).float()
+        train_y = torch.from_numpy(train_uam).long()
+        val_y = torch.from_numpy(val_uam).long()
+
+        batch_size = 256
+        best_val_f1 = 0.0
+        patience_counter = 0
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_np))
+            epoch_loss = 0.0
+            n_batches = 0
+
+            for start in range(0, len(perm), batch_size):
+                end = min(start + batch_size, len(perm))
+                idx = perm[start:end]
+                logits = model(train_t[idx].to(device))
+                loss = criterion(logits, train_y[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                epoch_loss += loss.item()
+                n_batches += 1
+
+            if (epoch + 1) % 5 == 0 or epoch == epochs - 1:
+                model.eval()
+                all_preds = []
+                with torch.no_grad():
+                    for vs in range(0, len(val_np), 512):
+                        ve = min(vs + 512, len(val_np))
+                        logits = model(val_t[vs:ve].to(device))
+                        all_preds.append(logits.argmax(dim=-1).cpu().numpy())
+                preds = np.concatenate(all_preds)
+
+                from sklearn.metrics import f1_score
+                val_f1 = f1_score(val_uam, preds, zero_division=0)
+                if val_f1 > best_val_f1:
+                    best_val_f1 = val_f1
+                    patience_counter = 0
+                else:
+                    patience_counter += 1
+
+                if (epoch + 1) % 10 == 0:
+                    print(f"  [{model_name}] E{epoch+1}: loss={epoch_loss/n_batches:.4f}, "
+                          f"val_F1={val_f1:.4f} (best={best_val_f1:.4f})")
+
+                if patience_counter >= 4:
+                    print(f"  [{model_name}] Early stop at epoch {epoch+1}")
+                    break
+
+        # Final eval
+        model.eval()
+        all_preds = []
+        with torch.no_grad():
+            for vs in range(0, len(val_np), 512):
+                ve = min(vs + 512, len(val_np))
+                logits = model(val_t[vs:ve].to(device))
+                all_preds.append(logits.argmax(dim=-1).cpu().numpy())
+        preds = np.concatenate(all_preds)
+
+        from sklearn.metrics import f1_score, precision_score, recall_score
+        return {
+            'f1': float(f1_score(val_uam, preds, zero_division=0)),
+            'precision': float(precision_score(val_uam, preds, zero_division=0)),
+            'recall': float(recall_score(val_uam, preds, zero_division=0)),
+            'best_val_f1': float(best_val_f1),
+        }
+
+    print("\n--- Model 1: Embedding + Classifier (EXP-291 approach) ---")
+    emb_results = train_uam_model(EmbeddingClassifier(), 'Emb')
+
+    print("\n--- Model 2: 1D-CNN ---")
+    cnn_results = train_uam_model(UAMCNN(), 'CNN')
+
+    print("\n--- Model 3: Combined (CNN + Embedding) ---")
+    combined_results = train_uam_model(CombinedUAM(), 'Combined')
+
+    results = {
+        'experiment': 'EXP-313',
+        'name': 'cnn-uam-detection',
+        'method': '1D-CNN vs embedding vs combined for UAM detection',
+        'models': {
+            'embedding': emb_results,
+            'cnn': cnn_results,
+            'combined': combined_results,
+        },
+        'data': {
+            'n_train': len(train_np),
+            'n_val': len(val_np),
+            'uam_prevalence_train': float(train_uam.mean()),
+            'uam_prevalence_val': float(val_uam.mean()),
+        },
+        'comparison': {
+            'exp291_f1': 0.40,
+            'note': 'EXP-291 used same embedding approach, achieved F1=0.40',
+        },
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"UAM Detection Model Comparison")
+    print(f"{'='*60}")
+    print(f"{'Model':>15} {'F1':>7} {'Prec':>7} {'Recall':>7}")
+    print("-" * 40)
+    for name, r in results['models'].items():
+        print(f"{name:>15} {r['f1']:>6.4f} {r['precision']:>6.4f} {r['recall']:>6.4f}")
+    print(f"\nEXP-291 baseline: F1=0.40, Recall=0.68")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp313_cnn_uam.json'))
+    return results
+
+
 # ── Registry & CLI ─────────────────────────────────────────────────────
 
 EXPERIMENTS = {
@@ -3515,6 +3958,11 @@ EXPERIMENTS = {
                           'Leave-one-patient-out weekly retrieval (generalization)'),
     'temporal-override': ('EXP-311', run_temporal_override,
                           '1D-CNN temporal model vs static state for override prediction'),
+    # Phase 27: Rolling ISF aggregation, CNN UAM
+    'rolling-isf': ('EXP-312', run_rolling_isf,
+                    'Rolling weekly ISF aggregation for drift detection'),
+    'cnn-uam': ('EXP-313', run_cnn_uam,
+                '1D-CNN for UAM detection vs embedding baseline'),
 }
 
 
