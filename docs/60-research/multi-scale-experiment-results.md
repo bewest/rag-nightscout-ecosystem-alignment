@@ -1245,6 +1245,73 @@ single-task baselines trained with the same architecture and hyperparameters.
 
 ---
 
+## EXP-323: Multi-Task + Focal Loss Combination
+
+**Hypothesis**: Multi-task learning (+6.0% hypo, EXP-322) and focal loss (+2.8%,
+EXP-321) are complementary improvements that should combine for even better hypo F1.
+
+**Method**: Multi-task CNN with focal loss γ=2 on hypo head vs weighted CE baseline.
+Also test single-task focal for comparison.
+
+| Config | Mode | Loss | Override F1 | Hypo F1@opt | AUC |
+|--------|------|------|------------|------------|------|
+| mt_weighted_ce | Multi | WCE | **0.831** | **0.670** | 0.956 |
+| mt_focal_g2 | Multi | Focal γ=2 | 0.786 | 0.655 | 0.956 |
+| st_focal_g2 | Hypo | Focal γ=2 | — | 0.666 | 0.960 |
+| st_weighted_ce | Hypo | WCE | — | 0.650 | 0.953 |
+| mt_focal_no_α | Multi | Focal γ=2 | 0.783 | 0.664 | 0.960 |
+
+**NEGATIVE RESULT**: Improvements are **NOT additive**.
+
+1. **Multi-task + weighted CE remains the best combination** (F1=0.670)
+2. Adding focal loss to multi-task **hurts** (-2.3%): 0.670→0.655
+3. Focal loss helps single-task (+2.4%: 0.650→0.666) but multi-task already
+   provides similar regularization through the shared backbone
+4. The multi-task gradient from the override head already focuses the backbone
+   on hard examples (similar effect to focal loss down-weighting)
+5. **Lesson**: When combining optimization techniques, test interactions —
+   two individually-positive changes can cancel each other out
+
+---
+
+## EXP-324: Temperature Scaling and Platt Calibration
+
+**Hypothesis**: The high AUC (0.958) vs moderate F1 (0.672) gap may be partly
+due to poor probability calibration — if predicted probabilities don't match
+true frequencies, threshold selection becomes fragile.
+
+**Method**: Train multi-task CNN (focal γ=2), then apply post-hoc calibration:
+1. Temperature scaling: learn T to rescale logits (p = softmax(z/T))
+2. Platt scaling: logistic regression on raw logits
+Both fitted on held-out calibration set (50% of validation), tested on remainder.
+
+| Method | AUC | ECE↓ | Brier↓ | F1@0.5 | F1@opt | Threshold |
+|--------|-----|------|--------|--------|--------|-----------|
+| Uncalibrated | 0.958 | 0.206 | 0.102 | 0.505 | 0.672 | 0.87 |
+| Temp scaled | 0.958 | 0.207 | 0.102 | 0.505 | 0.673 | 0.85 |
+| **Platt scaled** | 0.956 | **0.010** | **0.033** | **0.608** | **0.676** | **0.28** |
+
+**Key findings**:
+
+1. **Temperature scaling does nothing** — learned T=1.005 ≈ 1.0. The model's
+   logit scale is already near-optimal. This is unusual; typically neural networks
+   are overconfident. The focal loss may already correct this.
+
+2. **Platt scaling is transformative for deployment**:
+   - ECE drops 95% (0.206→0.010): predicted probabilities now match reality
+   - Brier score drops 68% (0.102→0.033): sharper, more accurate probabilities
+   - F1@0.5 improves 20% (0.505→0.608): default threshold becomes usable
+   - Practical threshold drops from 0.87→0.28: much more intuitive
+
+3. **F1@optimal improves marginally** (0.672→0.676): the discrimination is the
+   same (AUC unchanged), but the decision boundary is now at a more natural location
+
+4. **Platt scaling should be standard in the deployment pipeline** — it's a
+   single logistic regression (2 parameters), trivial compute cost, and
+   dramatically improves the usability of predictions
+
+---
+
 ## Updated Task–Scale–Architecture Matrix
 
 | Objective | Best Scale | Best Architecture | Best Metric | Key Experiment |
@@ -1254,10 +1321,10 @@ single-task baselines trained with the same architecture and hyperparameters.
 | ISF drift tracking | Rolling biweekly | Statistical (ISF_eff rolling avg) | **9/11 sig.** | **EXP-312** |
 | **Override (15min)** | Fast (2h) | **1D-CNN selective ensemble** | **F1=0.784** | **EXP-319** |
 | **Override (60min)** | Fast (2h) | 1D-CNN | F1=0.726 | EXP-311 |
-| **Hypo prediction** | Fast (2h) | **Multi-task CNN + focal + threshold** | **F1=0.672** | **EXP-322** |
+| **Hypo prediction** | Fast (2h) | **MT CNN + Platt calibration** | **F1=0.676** | **EXP-324** |
 | Glucose forecasting | 2h window | Per-patient fine-tuned ensemble | MAE=11.25 | EXP-242 |
 
-**Final meta-findings** (28 experiments, EXP-287 through EXP-322):
+**Final meta-findings** (30 experiments, EXP-287 through EXP-324):
 1. **1D-CNN is the universal best architecture for all classification tasks**
 2. **Threshold tuning is critical** for imbalanced classes (+19.7% for hypo)
 3. **Shorter lead times improve classification** (15min > 60min by 13%)
@@ -1266,3 +1333,5 @@ single-task baselines trained with the same architecture and hyperparameters.
 6. **Feature engineering hurts CNN performance** (EXP-316, EXP-320) — prefer raw channels
 7. **Multi-task learning helps the weaker task** (+6% hypo) at minimal cost to the stronger (-1.7% override)
 8. **Loss function choice matters less than threshold tuning** (focal +2.8% vs threshold +19.7%)
+9. **Optimization improvements are NOT additive** — focal+multi-task < multi-task alone (EXP-323)
+10. **Platt calibration is essential for deployment** — ECE 0.21→0.01, practical threshold 0.87→0.28 (EXP-324)

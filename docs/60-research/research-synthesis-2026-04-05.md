@@ -442,15 +442,17 @@ use history-only features (first half of window) to ensure no future leakage.
 5. **Cross-scale fusion fails** — task-specific scale selection wins.
 6. **Forecasting is saturated** — 2h/8-channel/67K-param is the sweet spot.
 
-### What We've Resolved (EXP-314–322)
+### What We've Resolved (EXP-314–324)
 
-Since the initial synthesis, 9 more experiments answered the open questions:
+Since the initial synthesis, 11 more experiments answered the open questions:
 
 1. **Multi-lead override**: 15min F1=0.821 (+13% over 60min baseline) — **RESOLVED** ✅
-2. **Dedicated hypo models**: Focal loss + multi-task + threshold → F1=0.672 — **RESOLVED** ✅
+2. **Dedicated hypo models**: Multi-task + Platt calibration → F1=0.676 — **RESOLVED** ✅
 3. **ISF as downstream feature**: HURTS both override (-3.5%) and UAM (-2.6%) — **RESOLVED** (negative) ✅
 4. **Per-patient CNN fine-tuning**: Selective ensemble +1%, full FT -2.9% — **RESOLVED** ✅
-5. **Multi-task learning**: Shared backbone boosts hypo +6% at -1.7% override cost — **NEW FINDING** ✅
+5. **Multi-task learning**: Shared backbone boosts hypo +6% at -1.7% override cost — ✅
+6. **Optimization stacking**: Focal + multi-task NOT additive (EXP-323) — **RESOLVED** (negative) ✅
+7. **Probability calibration**: Platt scaling ECE 0.21→0.01, threshold 0.87→0.28 (EXP-324) — ✅
 
 ### What We Don't Know Yet
 
@@ -467,14 +469,16 @@ Since the initial synthesis, 9 more experiments answered the open questions:
 The system can now:
 - **Detect unannounced meals** with 94% F1 (actionable for insulin dosing)
 - **Predict override need 15min ahead** with F1=0.821 (early enough to act)
-- **Predict hypoglycemia** with F1=0.672, AUC=0.958 (multi-task CNN)
+- **Predict hypoglycemia** with F1=0.676, AUC=0.958, ECE=0.010 (calibrated)
 - **Track insulin sensitivity changes** over 2-week windows (9/11 patients)
 - **Retrieve similar historical patterns** from a 7-day library
 - **Forecast glucose** at 11.25 mg/dL MAE
 
-**Key optimization insight**: Threshold tuning (+19.7%) matters far more than loss
-function choice (+2.8%). Multi-task learning is the best architectural lever for
-improving the weakest task (hypo). Feature engineering is counterproductive for CNN.
+**Key optimization insights**:
+- Threshold tuning (+19.7%) matters far more than loss function choice (+2.8%)
+- Multi-task learning is the best architectural lever for the weakest task
+- Feature engineering and optimization stacking are counterproductive for CNN
+- **Platt calibration is essential** for deployment (ECE 0.21→0.01, trivial cost)
 
 ---
 
@@ -483,7 +487,7 @@ improving the weakest task (hypo). Feature engineering is counterproductive for 
 All experiments are registered in `tools/cgmencode/run_pattern_experiments.py`:
 
 ```bash
-# List all 28 experiments
+# List all 30 experiments
 python3 -m tools.cgmencode.run_pattern_experiments --list
 
 # Run any experiment
