@@ -1205,8 +1205,10 @@ def run_daily_drift(args):
             batch_idx = indices[start:start+64]
             x = train_tensor[batch_idx].to(device)
             y = train_y[batch_idx].to(device)
-            logits = seg(x)
-            loss = criterion(logits, y)
+            logits = seg(x)  # [B, T, n_labels]
+            # Pool per-timestep logits to per-window classification
+            logits_pooled = logits.mean(dim=1)  # [B, n_labels]
+            loss = criterion(logits_pooled, y)
             opt.zero_grad()
             loss.backward()
             opt.step()
@@ -1215,9 +1217,16 @@ def run_daily_drift(args):
 
         seg.eval()
         with torch.no_grad():
-            vl = criterion(seg(val_tensor.to(device)), val_y.to(device))
-        if vl.item() < best_val_loss:
-            best_val_loss = vl.item()
+            # Batched validation to avoid OOM with large datasets
+            val_loss_sum = 0.0
+            for vs in range(0, len(val_tensor), 512):
+                vb = val_tensor[vs:vs+512].to(device)
+                vy = val_y[vs:vs+512].to(device)
+                vl_logits = seg(vb)
+                val_loss_sum += criterion(vl_logits.mean(dim=1), vy).item() * len(vb)
+            vl_avg = val_loss_sum / len(val_tensor)
+        if vl_avg < best_val_loss:
+            best_val_loss = vl_avg
             patience_counter = 0
         else:
             patience_counter += 1
@@ -1225,9 +1234,14 @@ def run_daily_drift(args):
                 break
 
     seg.eval()
+    all_preds = []
     with torch.no_grad():
-        val_logits = seg(val_tensor.to(device))
-        val_preds = val_logits.argmax(dim=-1).cpu().numpy()
+        for vs in range(0, len(val_tensor), 512):
+            vb = val_tensor[vs:vs+512].to(device)
+            vl_logits = seg(vb)
+            vp = vl_logits.mean(dim=1).argmax(dim=-1).cpu()
+            all_preds.append(vp)
+    val_preds = torch.cat(all_preds).numpy()
 
     from sklearn.metrics import f1_score
     macro_f1 = f1_score(val_y.numpy(), val_preds, average='macro', zero_division=0)
