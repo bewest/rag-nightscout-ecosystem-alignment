@@ -2768,6 +2768,713 @@ def run_insulin_controlled_drift(args):
     return results
 
 
+# ── EXP-309: ISF Response Ratio Tracking ──────────────────────────────
+
+def run_isf_response_ratio(args):
+    """EXP-309: Direct ISF measurement via glucose/insulin response ratio.
+
+    Instead of embedding-based drift detection (EXP-306/307 had caveats),
+    directly measure effective insulin sensitivity by computing the
+    glucose response per unit insulin over complete DIA cycles.
+
+    Method:
+    1. Identify bolus events (ch4 sum > threshold in a 6h window)
+    2. For each bolus window, compute:
+       - glucose_delta = end_glucose - start_glucose (should be negative)
+       - insulin_total = total bolus + basal over window
+       - ISF_effective = glucose_delta / insulin_total (mg/dL per unit)
+    3. Track ISF_effective over time within each patient
+    4. Test for temporal trend (Spearman correlation + OLS slope)
+
+    If ISF_effective trends toward 0 → developing resistance.
+    If ISF_effective trends more negative → improving sensitivity.
+
+    Uses 6h (72-step @ 5min) windows — one complete DIA cycle.
+    Non-overlapping stride ensures independence.
+    """
+    from scipy import stats as scipy_stats
+
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+
+    print("=" * 60)
+    print("EXP-309: ISF Response Ratio Tracking")
+    print("=" * 60)
+
+    window = 72   # 6h at 5-min = 1 DIA cycle
+    stride = 72   # non-overlapping
+    BOLUS_THRESHOLD = 0.01  # normalized threshold for bolus presence (ch4)
+    MIN_INSULIN = 0.5       # minimum total insulin (denorm units) to qualify
+
+    per_patient_results = {}
+
+    for pi, path in enumerate(patient_paths):
+        patient_id = os.path.basename(os.path.dirname(path))
+        print(f"\n--- Patient {patient_id} ({pi+1}/{len(patient_paths)}) ---")
+
+        df, features_5min = _get_cached_grid(path)
+        if df is None:
+            print("  SKIP: no data")
+            continue
+
+        # Build non-overlapping 6h windows
+        windows = []
+        window_times = []  # track temporal order
+        for start in range(0, len(features_5min) - window + 1, stride):
+            w = features_5min[start:start + window]
+            # Require <20% NaN in glucose
+            if np.isnan(w[:, 0]).mean() < 0.2:
+                w_clean = np.nan_to_num(w, nan=0.0)
+                windows.append(w_clean)
+                window_times.append(start)  # temporal index
+
+        if len(windows) < 10:
+            print(f"  SKIP: only {len(windows)} windows")
+            continue
+
+        windows = np.array(windows, dtype=np.float32)  # (N, 72, 8)
+        n = len(windows)
+
+        # Identify bolus windows (ch4 = bolus, normalized)
+        bolus_sums = windows[:, :, 4].sum(axis=1)  # total normalized bolus
+        basal_means = windows[:, :, 3].mean(axis=1)  # mean normalized basal
+
+        # Denormalize: bolus channel normalized by /10.0 in encoder
+        # basal channel normalized by mean subtraction in encoder
+        bolus_units = bolus_sums * 10.0  # approx total bolus units
+        basal_total = basal_means * 10.0 * (window * 5 / 60)  # basal rate * hours
+        total_insulin = bolus_units + basal_total
+
+        # Glucose response: end - start (denormalized)
+        glucose_start = windows[:, :12, 0].mean(axis=1) * 400.0  # first hour mean
+        glucose_end = windows[:, -12:, 0].mean(axis=1) * 400.0    # last hour mean
+        glucose_delta = glucose_end - glucose_start
+
+        # Filter: only windows with meaningful insulin delivery
+        mask = total_insulin >= MIN_INSULIN
+        if mask.sum() < 10:
+            print(f"  SKIP: only {mask.sum()} windows with insulin >= {MIN_INSULIN}U")
+            continue
+
+        # Compute ISF_effective = glucose_delta / total_insulin
+        isf_eff = glucose_delta[mask] / total_insulin[mask]  # mg/dL per unit
+        times = np.array(window_times)[mask]
+
+        # Normalize times to [0, 1] for correlation
+        if len(times) < 5:
+            continue
+        times_norm = (times - times.min()) / max(1, times.max() - times.min())
+
+        # Spearman correlation: is ISF_effective trending over time?
+        rho, p_spearman = scipy_stats.spearmanr(times_norm, isf_eff)
+
+        # OLS slope in mg/dL per unit per normalized time
+        slope, intercept = np.polyfit(times_norm, isf_eff, 1)
+
+        # Also compute early vs late ISF to compare with EXP-308
+        n_qualified = mask.sum()
+        third = n_qualified // 3
+        early_isf = isf_eff[:third]
+        late_isf = isf_eff[-third:]
+        t_stat, p_ttest = scipy_stats.ttest_ind(early_isf, late_isf)
+
+        # Bolus-only analysis (exclude low-bolus windows)
+        bolus_mask = mask & (bolus_units >= 0.5)
+        if bolus_mask.sum() >= 10:
+            bolus_isf = glucose_delta[bolus_mask] / total_insulin[bolus_mask]
+            bolus_times = np.array(window_times)[bolus_mask]
+            bolus_times_n = (bolus_times - bolus_times.min()) / max(1, bolus_times.max() - bolus_times.min())
+            rho_bolus, p_bolus = scipy_stats.spearmanr(bolus_times_n, bolus_isf)
+            bolus_slope, _ = np.polyfit(bolus_times_n, bolus_isf, 1)
+        else:
+            rho_bolus, p_bolus, bolus_slope = float('nan'), float('nan'), float('nan')
+
+        per_patient_results[patient_id] = {
+            'n_total_windows': n,
+            'n_qualified': int(n_qualified),
+            'n_bolus_windows': int(bolus_mask.sum()) if bolus_mask.sum() >= 10 else 0,
+            'isf_effective': {
+                'mean': float(isf_eff.mean()),
+                'std': float(isf_eff.std()),
+                'median': float(np.median(isf_eff)),
+            },
+            'temporal_trend': {
+                'spearman_rho': float(rho),
+                'spearman_p': float(p_spearman),
+                'ols_slope': float(slope),
+                'intercept': float(intercept),
+            },
+            'early_vs_late': {
+                'early_mean': float(early_isf.mean()),
+                'late_mean': float(late_isf.mean()),
+                'delta': float(late_isf.mean() - early_isf.mean()),
+                't_stat': float(t_stat),
+                'p_value': float(p_ttest),
+            },
+            'bolus_only': {
+                'spearman_rho': float(rho_bolus),
+                'spearman_p': float(p_bolus),
+                'ols_slope': float(bolus_slope),
+            },
+        }
+
+        sig = "**" if p_spearman < 0.01 else "*" if p_spearman < 0.05 else ""
+        direction = "→ resistance↑" if slope > 0 else "→ sensitivity↑"
+        print(f"  {n_qualified} qualified windows (insulin≥{MIN_INSULIN}U)")
+        print(f"  ISF_eff: mean={isf_eff.mean():+.1f} mg/dL/U (std={isf_eff.std():.1f})")
+        print(f"  Trend: ρ={rho:+.3f} (p={p_spearman:.4f}{sig}), slope={slope:+.2f} {direction}")
+        print(f"  Early→Late: {early_isf.mean():+.1f} → {late_isf.mean():+.1f} (Δ={late_isf.mean()-early_isf.mean():+.1f}, p={p_ttest:.4f})")
+
+    # Summary
+    trending = [pid for pid, pr in per_patient_results.items()
+                if pr['temporal_trend']['spearman_p'] < 0.05]
+    trending_resistance = [pid for pid in trending
+                           if per_patient_results[pid]['temporal_trend']['ols_slope'] > 0]
+    trending_sensitivity = [pid for pid in trending
+                            if per_patient_results[pid]['temporal_trend']['ols_slope'] < 0]
+
+    results = {
+        'experiment': 'EXP-309',
+        'name': 'isf-response-ratio',
+        'method': 'glucose_delta/insulin_total per 6h DIA cycle (non-overlapping)',
+        'window': f'{window*5/60:.0f}h @ 5min (stride={stride*5/60:.0f}h)',
+        'min_insulin_threshold': MIN_INSULIN,
+        'per_patient': per_patient_results,
+        'summary': {
+            'n_patients': len(per_patient_results),
+            'n_significant_trend': len(trending),
+            'patients_trending': trending,
+            'trending_resistance': trending_resistance,
+            'trending_sensitivity': trending_sensitivity,
+        },
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"ISF Response Ratio Summary")
+    print(f"{'='*60}")
+    print(f"{'Patient':>8} {'N':>5} {'ISF_eff':>8} {'ρ':>7} {'p':>8} {'Slope':>7} {'E→L Δ':>7} {'Trend':>14}")
+    print("-" * 72)
+    for pid in sorted(per_patient_results.keys()):
+        pr = per_patient_results[pid]
+        t = pr['temporal_trend']
+        el = pr['early_vs_late']
+        sig = "**" if t['spearman_p'] < 0.01 else "*" if t['spearman_p'] < 0.05 else ""
+        direction = "resistance↑" if t['ols_slope'] > 0 else "sensitivity↑"
+        print(f"{pid:>8} {pr['n_qualified']:>5} {pr['isf_effective']['mean']:>+7.1f} "
+              f"{t['spearman_rho']:>+6.3f} {t['spearman_p']:>7.4f}{sig} "
+              f"{t['ols_slope']:>+6.2f} {el['delta']:>+6.1f} {direction:>14}")
+    print(f"\nSignificant trend: {len(trending)}/{len(per_patient_results)}")
+    print(f"  Resistance↑: {len(trending_resistance)} → {trending_resistance}")
+    print(f"  Sensitivity↑: {len(trending_sensitivity)} → {trending_sensitivity}")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp309_isf_response_ratio.json'))
+    return results
+
+
+# ── EXP-310: Leave-Patient-Out Retrieval ──────────────────────────────
+
+def run_leave_patient_out_retrieval(args):
+    """EXP-310: Leave-one-patient-out weekly retrieval evaluation.
+
+    Tests whether weekly pattern embeddings generalize across patients.
+    For each patient:
+    1. Train weekly encoder on all OTHER patients
+    2. Embed held-out patient's windows
+    3. Evaluate R@5, R@1, and Silhouette on held-out patient
+
+    If metrics hold → encoder learns universal CGM patterns.
+    If metrics collapse → encoder overfits to patient-specific fingerprints.
+
+    Uses weekly scale (168h @ 1hr) — proven best for retrieval (EXP-301/304).
+    """
+    from .pattern_embedding import PatternEncoder, retrieval_recall_at_k
+    from sklearn.metrics import silhouette_score
+
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-310: Leave-Patient-Out Weekly Retrieval")
+    print("=" * 60)
+
+    # Load weekly-scale data PER PATIENT (need patient identity)
+    per_patient_data = {}
+    for path in patient_paths:
+        patient_id = os.path.basename(os.path.dirname(path))
+        df, features_5min = _get_cached_grid(path)
+        if df is None:
+            continue
+
+        from .real_data_adapter import downsample_grid
+        df_1h = downsample_grid(df, target_interval_min=60)
+        feat_1h = _grid_to_features(df_1h)
+
+        window = 168  # 7 days
+        stride = 24   # 1-day stride for sufficient windows
+        windows = []
+        for start in range(0, len(feat_1h) - window + 1, stride):
+            w = feat_1h[start:start + window]
+            if np.isnan(w[:, 0]).mean() < 0.2:
+                for col in range(w.shape[1]):
+                    mask = np.isnan(w[:, col])
+                    if mask.any():
+                        v = ~mask
+                        if v.sum() >= 2:
+                            w[mask, col] = np.interp(
+                                np.where(mask)[0], np.where(v)[0], w[v, col])
+                        else:
+                            w[mask, col] = 0.0
+                windows.append(w)
+
+        if len(windows) >= 5:
+            per_patient_data[patient_id] = np.array(windows, dtype=np.float32)
+            print(f"  Patient {patient_id}: {len(windows)} weekly windows")
+        else:
+            print(f"  Patient {patient_id}: SKIP ({len(windows)} windows)")
+
+    patient_ids = sorted(per_patient_data.keys())
+    if len(patient_ids) < 3:
+        print("ERROR: Need at least 3 patients")
+        return {'experiment': 'EXP-310', 'error': 'insufficient patients'}
+
+    print(f"\n{len(patient_ids)} patients available for LOO evaluation\n")
+
+    per_patient_results = {}
+
+    for held_out in patient_ids:
+        print(f"--- Holding out patient {held_out} ---")
+
+        # Combine all OTHER patients for training
+        train_windows = []
+        train_labels_all = []
+        for pid in patient_ids:
+            if pid == held_out:
+                continue
+            w = per_patient_data[pid]
+            train_windows.append(w)
+            labels = build_episode_labels_batch(w)
+            train_labels_all.extend(labels)
+
+        train_np = np.concatenate(train_windows, axis=0)
+
+        # Held-out patient as validation
+        val_np = per_patient_data[held_out]
+        val_labels = build_episode_labels_batch(val_np)
+        flat_val_labels = [l[0] if isinstance(l, list) else l for l in val_labels]
+
+        if len(set(flat_val_labels)) < 2:
+            print(f"  SKIP: only 1 label type in held-out patient")
+            per_patient_results[held_out] = {'error': 'single_label'}
+            continue
+
+        # Train encoder
+        enc = PatternEncoder(input_dim=8, d_model=64, nhead=4, num_layers=2,
+                             embed_dim=32)
+        enc, hist = train_pattern_encoder(
+            enc, train_np, train_labels_all,
+            val_np, val_labels,
+            epochs=epochs, batch_size=32, lr=1e-3, device=device,
+        )
+
+        # Embed held-out patient
+        enc = enc.to(device).eval()
+        all_embs = []
+        with torch.no_grad():
+            for start in range(0, len(val_np), 512):
+                end = min(start + 512, len(val_np))
+                batch = torch.from_numpy(val_np[start:end]).float().to(device)
+                emb = enc(batch)
+                all_embs.append(emb.cpu().numpy())
+        embeddings = np.concatenate(all_embs)
+
+        # Evaluate
+        r5 = retrieval_recall_at_k(embeddings, flat_val_labels, k=5)
+        r1 = retrieval_recall_at_k(embeddings, flat_val_labels, k=1)
+
+        unique_labels = list(set(flat_val_labels))
+        label_ints = [unique_labels.index(l) for l in flat_val_labels]
+        try:
+            sil = silhouette_score(embeddings, label_ints, metric='cosine',
+                                   sample_size=min(2000, len(label_ints)))
+        except ValueError:
+            sil = float('nan')
+
+        per_patient_results[held_out] = {
+            'n_train': len(train_np),
+            'n_val': len(val_np),
+            'n_labels': len(unique_labels),
+            'recall_at_5': float(r5),
+            'recall_at_1': float(r1),
+            'silhouette': float(sil),
+            'train_loss_final': float(hist.get('train_loss', [float('nan')])[-1])
+                if 'train_loss' in hist and hist['train_loss'] else float('nan'),
+        }
+        print(f"  R@5={r5:.4f}, R@1={r1:.4f}, Sil={sil:.4f} "
+              f"(trained on {len(train_np)} windows from {len(patient_ids)-1} patients)")
+
+    # Summary
+    valid = {k: v for k, v in per_patient_results.items() if 'error' not in v}
+    if valid:
+        mean_r5 = np.mean([v['recall_at_5'] for v in valid.values()])
+        mean_r1 = np.mean([v['recall_at_1'] for v in valid.values()])
+        mean_sil = np.nanmean([v['silhouette'] for v in valid.values()])
+    else:
+        mean_r5 = mean_r1 = mean_sil = float('nan')
+
+    results = {
+        'experiment': 'EXP-310',
+        'name': 'leave-patient-out-retrieval',
+        'method': 'LOO: train on N-1, eval on held-out (weekly 7d @ 1hr)',
+        'scale': 'weekly (168h @ 1hr, stride=24h)',
+        'per_patient': per_patient_results,
+        'summary': {
+            'n_patients': len(per_patient_results),
+            'n_valid': len(valid),
+            'mean_recall_at_5': float(mean_r5),
+            'mean_recall_at_1': float(mean_r1),
+            'mean_silhouette': float(mean_sil),
+        },
+        'comparison': {
+            'within_patient_sil': -0.301,
+            'note': 'EXP-301 trained/tested mixed: Sil=-0.301, R@5=0.957',
+        },
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"Leave-Patient-Out Retrieval Summary")
+    print(f"{'='*60}")
+    print(f"{'Patient':>8} {'N_val':>6} {'R@5':>6} {'R@1':>6} {'Sil':>7}")
+    print("-" * 40)
+    for pid in sorted(per_patient_results.keys()):
+        pr = per_patient_results[pid]
+        if 'error' in pr:
+            print(f"{pid:>8} {'—':>6} {'SKIP':>6}")
+        else:
+            print(f"{pid:>8} {pr['n_val']:>6} {pr['recall_at_5']:>5.3f} "
+                  f"{pr['recall_at_1']:>5.3f} {pr['silhouette']:>+6.3f}")
+    print(f"\nMean: R@5={mean_r5:.4f}, R@1={mean_r1:.4f}, Sil={mean_sil:.4f}")
+    print(f"Comparison: within-patient Sil={-0.301:.3f} (EXP-301)")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp310_lpo_retrieval.json'))
+    return results
+
+
+# ── EXP-311: Temporal Override Model (1D-CNN) ─────────────────────────
+
+def run_temporal_override(args):
+    """EXP-311: 1D-CNN temporal model for override prediction.
+
+    EXP-305 showed static state features predict overrides (F1=0.39)
+    but embeddings barely help (ΔF1<0.001). This tests whether a
+    temporal model on the raw 2h fast window can do better by
+    capturing temporal dynamics that static state summaries miss.
+
+    Compares:
+    1. Baseline: MLP on 10-dim static state features (EXP-305 approach)
+    2. 1D-CNN: Conv1d on raw 2h window → override prediction
+    3. Combined: 1D-CNN + static state concatenated
+
+    Uses forward-looking labels: will glucose exceed threshold in NEXT 1h?
+    (Same label scheme proven in EXP-305.)
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-311: Temporal Override Model (1D-CNN)")
+    print("=" * 60)
+
+    # Load 2h fast-scale data
+    train_np, val_np = load_multiscale_data(patient_paths, scale='fast',
+                                            val_fraction=0.2)
+    print(f"Loaded: {train_np.shape} train, {val_np.shape} val")
+
+    # Build forward-looking override labels
+    # Label: will glucose exceed 180 or drop below 70 in NEXT 1h (12 steps)?
+    def build_forward_labels(windows):
+        """Binary label: will glucose leave [70,180] range in second half of window?"""
+        half = windows.shape[1] // 2
+        future_glucose = windows[:, half:, 0] * 400.0  # denormalize
+        high = (future_glucose > 180).any(axis=1)
+        low = (future_glucose < 70).any(axis=1)
+        # 0=no_override, 1=high_override, 2=low_override
+        labels = np.zeros(len(windows), dtype=np.int64)
+        labels[high] = 1
+        labels[low] = 2  # low overrides high (safety priority)
+        return labels
+
+    train_labels = build_forward_labels(train_np)
+    val_labels = build_forward_labels(val_np)
+
+    print(f"Label dist (train): no={np.sum(train_labels==0)}, "
+          f"high={np.sum(train_labels==1)}, low={np.sum(train_labels==2)}")
+    print(f"Label dist (val): no={np.sum(val_labels==0)}, "
+          f"high={np.sum(val_labels==1)}, low={np.sum(val_labels==2)}")
+
+    # Class weights for imbalanced labels
+    from collections import Counter
+    counts = Counter(train_labels.tolist())
+    n_total = len(train_labels)
+    n_classes = 3
+    class_weights = torch.tensor([
+        n_total / (n_classes * max(1, counts.get(c, 1))) for c in range(n_classes)
+    ], dtype=torch.float32).to(device)
+
+    # Extract static state features (10-dim, same as EXP-305)
+    def extract_state_batch(windows):
+        """Extract 10-dim static state from each window's history half."""
+        half = windows.shape[1] // 2
+        hist = windows[:, :half]
+        glucose = hist[:, :, 0] * 400.0
+        states = np.column_stack([
+            np.nanmean(glucose, axis=1),                    # mean glucose
+            np.nanstd(glucose, axis=1),                     # glucose variability
+            glucose[:, -1] - glucose[:, 0],                 # glucose trend
+            (glucose[:, -1] - glucose[:, -3]) if hist.shape[1] >= 3 else np.zeros(len(hist)),  # recent ROC
+            np.nanmean(hist[:, :, 1], axis=1),              # mean IOB
+            np.nanmean(hist[:, :, 2], axis=1),              # mean COB
+            np.nanmean(hist[:, :, 3], axis=1),              # mean basal
+            hist[:, :, 4].sum(axis=1),                      # total bolus
+            hist[:, :, 5].sum(axis=1),                      # total carbs
+            (glucose < 70/400.0).any(axis=1).astype(float), # hypo flag
+        ])
+        return np.nan_to_num(states, nan=0.0).astype(np.float32)
+
+    train_state = extract_state_batch(train_np)
+    val_state = extract_state_batch(val_np)
+
+    # ── Model Definitions ──
+
+    class StateMLP(nn.Module):
+        """Baseline: MLP on 10-dim static state."""
+        def __init__(self, state_dim=10, n_classes=3):
+            super().__init__()
+            self.net = nn.Sequential(
+                nn.Linear(state_dim, 64), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.1),
+                nn.Linear(32, n_classes),
+            )
+        def forward(self, state):
+            return self.net(state)
+
+    class TemporalCNN(nn.Module):
+        """1D-CNN on raw 2h window → override prediction."""
+        def __init__(self, in_channels=8, n_classes=3):
+            super().__init__()
+            # Only process history half (first 12 steps)
+            self.conv = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),  # global average pool
+            )
+            self.classifier = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, n_classes),
+            )
+        def forward(self, x):
+            # x: (B, T, C) → (B, C, T) for Conv1d
+            half = x.shape[1] // 2
+            x = x[:, :half].permute(0, 2, 1)
+            features = self.conv(x).squeeze(-1)  # (B, 64)
+            return self.classifier(features)
+
+    class CombinedModel(nn.Module):
+        """1D-CNN + static state features combined."""
+        def __init__(self, in_channels=8, state_dim=10, n_classes=3):
+            super().__init__()
+            self.conv = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.classifier = nn.Sequential(
+                nn.Linear(64 + state_dim, 48), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(48, n_classes),
+            )
+        def forward(self, x, state):
+            half = x.shape[1] // 2
+            x = x[:, :half].permute(0, 2, 1)
+            cnn_feat = self.conv(x).squeeze(-1)  # (B, 64)
+            combined = torch.cat([cnn_feat, state], dim=1)
+            return self.classifier(combined)
+
+    # ── Training Loop ──
+
+    def train_model(model, model_name, use_state=False, use_sequence=False):
+        """Generic training loop for any model variant."""
+        model = model.to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        criterion = nn.CrossEntropyLoss(weight=class_weights)
+
+        train_t = torch.from_numpy(train_np).float()
+        val_t = torch.from_numpy(val_np).float()
+        train_s = torch.from_numpy(train_state).float()
+        val_s = torch.from_numpy(val_state).float()
+        train_y = torch.from_numpy(train_labels).long()
+        val_y = torch.from_numpy(val_labels).long()
+
+        batch_size = 256
+        best_val_f1 = 0.0
+        patience_counter = 0
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_np))
+            epoch_loss = 0.0
+            n_batches = 0
+
+            for start in range(0, len(perm), batch_size):
+                end = min(start + batch_size, len(perm))
+                idx = perm[start:end]
+
+                if use_state and use_sequence:
+                    logits = model(train_t[idx].to(device), train_s[idx].to(device))
+                elif use_state:
+                    logits = model(train_s[idx].to(device))
+                else:
+                    logits = model(train_t[idx].to(device))
+
+                loss = criterion(logits, train_y[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                epoch_loss += loss.item()
+                n_batches += 1
+
+            # Validate every 5 epochs
+            if (epoch + 1) % 5 == 0 or epoch == epochs - 1:
+                model.eval()
+                all_preds = []
+                with torch.no_grad():
+                    for vs in range(0, len(val_np), 512):
+                        ve = min(vs + 512, len(val_np))
+                        if use_state and use_sequence:
+                            logits = model(val_t[vs:ve].to(device), val_s[vs:ve].to(device))
+                        elif use_state:
+                            logits = model(val_s[vs:ve].to(device))
+                        else:
+                            logits = model(val_t[vs:ve].to(device))
+                        all_preds.append(logits.argmax(dim=-1).cpu().numpy())
+                preds = np.concatenate(all_preds)
+
+                from sklearn.metrics import f1_score
+                val_f1 = f1_score(val_labels, preds, average='macro', zero_division=0)
+                if val_f1 > best_val_f1:
+                    best_val_f1 = val_f1
+                    patience_counter = 0
+                else:
+                    patience_counter += 1
+
+                if (epoch + 1) % 10 == 0:
+                    print(f"  [{model_name}] E{epoch+1}: loss={epoch_loss/n_batches:.4f}, "
+                          f"val_F1={val_f1:.4f} (best={best_val_f1:.4f})")
+
+                if patience_counter >= 4:
+                    print(f"  [{model_name}] Early stop at epoch {epoch+1}")
+                    break
+
+        # Final evaluation
+        model.eval()
+        all_preds = []
+        with torch.no_grad():
+            for vs in range(0, len(val_np), 512):
+                ve = min(vs + 512, len(val_np))
+                if use_state and use_sequence:
+                    logits = model(val_t[vs:ve].to(device), val_s[vs:ve].to(device))
+                elif use_state:
+                    logits = model(val_s[vs:ve].to(device))
+                else:
+                    logits = model(val_t[vs:ve].to(device))
+                all_preds.append(logits.argmax(dim=-1).cpu().numpy())
+        preds = np.concatenate(all_preds)
+
+        from sklearn.metrics import f1_score, precision_score, recall_score, classification_report
+        f1_macro = f1_score(val_labels, preds, average='macro', zero_division=0)
+        f1_per = f1_score(val_labels, preds, average=None, zero_division=0)
+        precision = precision_score(val_labels, preds, average='macro', zero_division=0)
+        recall = recall_score(val_labels, preds, average='macro', zero_division=0)
+
+        report = classification_report(val_labels, preds,
+                                       target_names=['no_override', 'high', 'low'],
+                                       zero_division=0, output_dict=True)
+
+        return {
+            'f1_macro': float(f1_macro),
+            'f1_per_class': [float(f) for f in f1_per],
+            'precision_macro': float(precision),
+            'recall_macro': float(recall),
+            'best_val_f1': float(best_val_f1),
+            'classification_report': report,
+        }
+
+    # ── Run all three models ──
+
+    print("\n--- Model 1: StateMLP (baseline) ---")
+    state_results = train_model(StateMLP(), 'StateMLP', use_state=True)
+
+    print("\n--- Model 2: TemporalCNN (raw window) ---")
+    cnn_results = train_model(TemporalCNN(), 'CNN', use_sequence=True)
+
+    print("\n--- Model 3: Combined (CNN + state) ---")
+    combined_results = train_model(CombinedModel(), 'Combined',
+                                   use_state=True, use_sequence=True)
+
+    results = {
+        'experiment': 'EXP-311',
+        'name': 'temporal-override-model',
+        'method': '1D-CNN vs StateMLP vs Combined for override prediction',
+        'labels': 'forward-looking: will glucose leave [70,180] in next 1h',
+        'models': {
+            'state_mlp': state_results,
+            'temporal_cnn': cnn_results,
+            'combined': combined_results,
+        },
+        'data': {
+            'n_train': len(train_np),
+            'n_val': len(val_np),
+            'window': '2h @ 5min (24 steps)',
+            'label_dist_train': {
+                'no_override': int(np.sum(train_labels == 0)),
+                'high': int(np.sum(train_labels == 1)),
+                'low': int(np.sum(train_labels == 2)),
+            },
+        },
+        'comparison': {
+            'exp305_state_f1': 0.39,
+            'note': 'EXP-305 used embeddings+state; ΔF1<0.001 from embeddings',
+        },
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"Override Model Comparison")
+    print(f"{'='*60}")
+    print(f"{'Model':>15} {'F1_macro':>9} {'F1_no':>7} {'F1_hi':>7} {'F1_lo':>7}")
+    print("-" * 50)
+    for name, r in results['models'].items():
+        f1s = r['f1_per_class']
+        print(f"{name:>15} {r['f1_macro']:>8.4f} "
+              f"{f1s[0]:>6.3f} {f1s[1] if len(f1s)>1 else 0:>6.3f} "
+              f"{f1s[2] if len(f1s)>2 else 0:>6.3f}")
+    print(f"\nEXP-305 baseline (state+embedding): F1=0.39")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp311_temporal_override.json'))
+    return results
+
+
 # ── Registry & CLI ─────────────────────────────────────────────────────
 
 EXPERIMENTS = {
@@ -2801,6 +3508,13 @@ EXPERIMENTS = {
                           'Per-patient temporal ISF drift (early vs late matching)'),
     'insulin-drift': ('EXP-308', run_insulin_controlled_drift,
                       'Insulin-controlled drift (treatment-context matching)'),
+    # Phase 26: ISF response ratio, generalization, temporal override
+    'isf-response-ratio': ('EXP-309', run_isf_response_ratio,
+                           'Direct ISF measurement via glucose/insulin response ratio'),
+    'leave-patient-out': ('EXP-310', run_leave_patient_out_retrieval,
+                          'Leave-one-patient-out weekly retrieval (generalization)'),
+    'temporal-override': ('EXP-311', run_temporal_override,
+                          '1D-CNN temporal model vs static state for override prediction'),
 }
 
 
