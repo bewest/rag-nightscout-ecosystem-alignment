@@ -55,12 +55,18 @@ from cgmencode.continuous_pk import build_continuous_pk_features
 # ─── Constants ───
 
 SEEDS = [42, 123, 456]
+SEEDS_QUICK = [42]
 GLUCOSE_SCALE = 400.0
 HORIZONS = {
     'h30': 6,    # 30 min = 6 × 5-min steps
     'h60': 12,   # 60 min
     'h120': 24,  # 120 min
 }
+
+# Quick mode config: 1 seed, 30 epochs, patience 8, max 4 patients
+QUICK_PATIENTS = 4
+QUICK_EPOCHS = 30
+QUICK_PATIENCE = 8
 
 
 # ─── Channel Variant Definitions ───
@@ -132,12 +138,16 @@ def find_patient_dirs(patients_dir):
     return [d for d in dirs if os.path.isdir(d)]
 
 
-def load_forecast_data(patients_dir, history_steps=72, max_horizon=24):
+def load_forecast_data(patients_dir, history_steps=72, max_horizon=24,
+                       max_patients=None):
     """Load base + PK features, create forecast windows.
 
     Each window has:
       history: [0, history_steps) — model input
       future:  [history_steps, history_steps + max_horizon) — targets
+
+    Args:
+        max_patients: limit number of patients (for --quick mode)
 
     Returns:
         base_train, base_val: (N, T_total, 8) baseline windows
@@ -145,6 +155,8 @@ def load_forecast_data(patients_dir, history_steps=72, max_horizon=24):
         T_total = history_steps + max_horizon
     """
     patient_dirs = find_patient_dirs(patients_dir)
+    if max_patients:
+        patient_dirs = patient_dirs[:max_patients]
     print(f"Loading {len(patient_dirs)} patients "
           f"(history={history_steps}, horizon={max_horizon})")
 
@@ -289,17 +301,7 @@ class ForecastCNNWithFuture(nn.Module):
 
 def train_forecast(train_x, train_y, val_x, val_y, device,
                    epochs=80, batch_size=256, patience=15, lr=1e-3):
-    """Train a ForecastCNN and return best val metrics.
-
-    Args:
-        train_x: (N, T_hist, C) history input
-        train_y: (N, n_horizons) target glucose (normalized 0-1)
-        val_x, val_y: validation set
-        device: torch device
-
-    Returns:
-        dict with MAE in mg/dL at each horizon
-    """
+    """Train a ForecastCNN and return best val metrics."""
     in_ch = train_x.shape[2]
     n_horizons = train_y.shape[1]
     model = ForecastCNN(in_ch, n_horizons).to(device)
@@ -462,8 +464,10 @@ def persistence_baseline(base_val, history_steps):
 # ─── EXP-352: Baseline PK Forecast Comparison ───
 
 def run_exp_352(base_train, base_val, pk_train, pk_val,
-                history_steps, device, output_dir):
+                history_steps, device, output_dir, seeds=SEEDS, train_kw=None):
     """Compare 6 channel variants for glucose forecasting."""
+    if train_kw is None:
+        train_kw = {}
     print("\n" + "=" * 60)
     print("EXP-352: PK-Enhanced Glucose Forecasting")
     print("=" * 60)
@@ -486,27 +490,25 @@ def run_exp_352(base_train, base_val, pk_train, pk_val,
         'horizons': {k: v * 5 for k, v in HORIZONS.items()},
         'n_train': len(base_train),
         'n_val': len(base_val),
-        'seeds': SEEDS,
+        'seeds': seeds,
         'persistence_baseline': persist,
         'variants': {},
     }
 
     for vname in variants:
         print(f"\n─── Variant: {vname} ───")
-        # Build features
         v_train = _build_variant(base_train, pk_train, vname)
         v_val = _build_variant(base_val, pk_val, vname)
-
-        # Extract history portion only
         hist_train = v_train[:, :history_steps].copy()
         hist_val = v_val[:, :history_steps].copy()
 
         seed_results = []
-        for seed in SEEDS:
+        for seed in seeds:
             torch.manual_seed(seed)
             np.random.seed(seed)
             metrics = train_forecast(
-                hist_train, targets_train, hist_val, targets_val, device)
+                hist_train, targets_train, hist_val, targets_val, device,
+                **train_kw)
             seed_results.append(metrics)
             print(f"  seed={seed}: MAE={metrics['mae_overall']:.1f} mg/dL "
                   f"[h30={metrics['mae_per_horizon']['h30']:.1f}, "
@@ -527,8 +529,11 @@ def run_exp_352(base_train, base_val, pk_train, pk_val,
 
 # ─── EXP-353: History Length × PK Interaction ───
 
-def run_exp_353(patients_dir, device, output_dir):
+def run_exp_353(patients_dir, device, output_dir, seeds=SEEDS, train_kw=None,
+                max_patients=None):
     """Test PK benefit at different history lengths."""
+    if train_kw is None:
+        train_kw = {}
     print("\n" + "=" * 60)
     print("EXP-353: History Length × PK Interaction")
     print("=" * 60)
@@ -543,7 +548,7 @@ def run_exp_353(patients_dir, device, output_dir):
         'title': 'History Length × PK Channel Interaction',
         'hypothesis': ('PK channels help at ≥4h history (full DIA visible), '
                        'baseline wins at ≤2h'),
-        'seeds': SEEDS,
+        'seeds': seeds,
         'grid': {},
     }
 
@@ -551,7 +556,8 @@ def run_exp_353(patients_dir, device, output_dir):
         print(f"\n{'='*40} History: {hname} ({hsteps} steps) {'='*40}")
         try:
             bt, bv, pt, pv = load_forecast_data(
-                patients_dir, history_steps=hsteps, max_horizon=24)
+                patients_dir, history_steps=hsteps, max_horizon=24,
+                max_patients=max_patients)
         except RuntimeError as e:
             print(f"  SKIP: {e}")
             continue
@@ -569,11 +575,12 @@ def run_exp_353(patients_dir, device, output_dir):
             hist_val = v_val[:, :hsteps].copy()
 
             seed_results = []
-            for seed in SEEDS:
+            for seed in seeds:
                 torch.manual_seed(seed)
                 np.random.seed(seed)
                 metrics = train_forecast(
-                    hist_train, targets_train, hist_val, targets_val, device)
+                    hist_train, targets_train, hist_val, targets_val, device,
+                    **train_kw)
                 seed_results.append(metrics)
 
             agg = aggregate_seed_results(seed_results)
@@ -587,8 +594,10 @@ def run_exp_353(patients_dir, device, output_dir):
 # ─── EXP-354: Selective PK Channel Ablation ───
 
 def run_exp_354(base_train, base_val, pk_train, pk_val,
-                history_steps, device, output_dir):
+                history_steps, device, output_dir, seeds=SEEDS, train_kw=None):
     """Add PK channels one at a time to glucose-only baseline."""
+    if train_kw is None:
+        train_kw = {}
     print("\n" + "=" * 60)
     print("EXP-354: Selective PK Channel Ablation")
     print("=" * 60)
@@ -611,7 +620,7 @@ def run_exp_354(base_train, base_val, pk_train, pk_val,
         'hypothesis': ('insulin_net and carb_rate are most informative; '
                        'hepatic_prod and isf_curve add noise'),
         'history_steps': history_steps,
-        'seeds': SEEDS,
+        'seeds': seeds,
         'variants': {},
     }
 
@@ -623,11 +632,12 @@ def run_exp_354(base_train, base_val, pk_train, pk_val,
         hist_val = v_val[:, :history_steps].copy()
 
         seed_results = []
-        for seed in SEEDS:
+        for seed in seeds:
             torch.manual_seed(seed)
             np.random.seed(seed)
             metrics = train_forecast(
-                hist_train, targets_train, hist_val, targets_val, device)
+                hist_train, targets_train, hist_val, targets_val, device,
+                **train_kw)
             seed_results.append(metrics)
             print(f"  seed={seed}: MAE={metrics['mae_overall']:.1f}")
 
@@ -649,13 +659,15 @@ def run_exp_354(base_train, base_val, pk_train, pk_val,
 # ─── EXP-355: PK Forward Projection ───
 
 def run_exp_355(base_train, base_val, pk_train, pk_val,
-                history_steps, device, output_dir):
+                history_steps, device, output_dir, seeds=SEEDS, train_kw=None):
     """Test whether projecting PK channels into the future helps.
 
     Since insulin absorption and carb digestion are deterministic given
     past events, PK channels in the prediction window are KNOWN. This
     gives the model the physical trajectory of metabolic state.
     """
+    if train_kw is None:
+        train_kw = {}
     print("\n" + "=" * 60)
     print("EXP-355: PK Forward Projection")
     print("=" * 60)
@@ -676,7 +688,7 @@ def run_exp_355(base_train, base_val, pk_train, pk_val,
                        'carbs) improves forecasting — no information leakage'),
         'history_steps': history_steps,
         'max_horizon_steps': max_horizon,
-        'seeds': SEEDS,
+        'seeds': seeds,
         'variants': {},
     }
 
@@ -688,11 +700,12 @@ def run_exp_355(base_train, base_val, pk_train, pk_val,
     hist_val = v_val[:, :history_steps].copy()
 
     seed_results_ctrl = []
-    for seed in SEEDS:
+    for seed in seeds:
         torch.manual_seed(seed)
         np.random.seed(seed)
         metrics = train_forecast(
-            hist_train, targets_train, hist_val, targets_val, device)
+            hist_train, targets_train, hist_val, targets_val, device,
+            **train_kw)
         seed_results_ctrl.append(metrics)
     results['variants']['pk_hist_only'] = aggregate_seed_results(seed_results_ctrl)
 
@@ -705,12 +718,12 @@ def run_exp_355(base_train, base_val, pk_train, pk_val,
     fpk_val = pk_future_val[:, :, future_pk_idx].copy()
 
     seed_results_proj = []
-    for seed in SEEDS:
+    for seed in seeds:
         torch.manual_seed(seed)
         np.random.seed(seed)
         metrics = train_forecast_with_future(
             hist_train, fpk_train, targets_train,
-            hist_val, fpk_val, targets_val, device)
+            hist_val, fpk_val, targets_val, device, **train_kw)
         seed_results_proj.append(metrics)
         print(f"  seed={seed}: MAE={metrics['mae_overall']:.1f}")
 
@@ -722,12 +735,12 @@ def run_exp_355(base_train, base_val, pk_train, pk_val,
     base_hist_val = base_val[:, :history_steps].copy()
 
     seed_results_hybrid = []
-    for seed in SEEDS:
+    for seed in seeds:
         torch.manual_seed(seed)
         np.random.seed(seed)
         metrics = train_forecast_with_future(
             base_hist_train, fpk_train, targets_train,
-            base_hist_val, fpk_val, targets_val, device)
+            base_hist_val, fpk_val, targets_val, device, **train_kw)
         seed_results_hybrid.append(metrics)
 
     results['variants']['baseline_hist+future_pk'] = aggregate_seed_results(
@@ -792,7 +805,14 @@ def main():
                         help='Which experiment(s): 352, 353, 354, 355, or all')
     parser.add_argument('--history-steps', type=int, default=72,
                         help='History window in 5-min steps (default: 72 = 6h)')
+    parser.add_argument('--quick', action='store_true',
+                        help='Quick mode: 1 seed, 4 patients, 30 epochs for fast directionality')
     args = parser.parse_args()
+
+    # Quick mode overrides
+    seeds = SEEDS_QUICK if args.quick else SEEDS
+    max_patients = QUICK_PATIENTS if args.quick else None
+    train_kw = dict(epochs=QUICK_EPOCHS, patience=QUICK_PATIENCE) if args.quick else {}
 
     # Resolve device
     if args.device == 'auto':
@@ -818,14 +838,15 @@ def main():
     if run_352 or run_354 or run_355:
         bt, bv, pt, pv = load_forecast_data(
             args.patients_dir, history_steps=args.history_steps,
-            max_horizon=max(HORIZONS.values()))
+            max_horizon=max(HORIZONS.values()),
+            max_patients=max_patients)
 
     all_results = {}
     t0 = time.time()
 
     if run_352:
         r = run_exp_352(bt, bv, pt, pv, args.history_steps, device,
-                        args.output_dir)
+                        args.output_dir, seeds=seeds, train_kw=train_kw)
         r['elapsed_seconds'] = time.time() - t0
         all_results['EXP-352'] = r
         outfile = os.path.join(args.output_dir, 'exp352_pk_forecast.json')
@@ -836,7 +857,7 @@ def main():
     if run_354:
         t1 = time.time()
         r = run_exp_354(bt, bv, pt, pv, args.history_steps, device,
-                        args.output_dir)
+                        args.output_dir, seeds=seeds, train_kw=train_kw)
         r['elapsed_seconds'] = time.time() - t1
         all_results['EXP-354'] = r
         outfile = os.path.join(args.output_dir, 'exp354_pk_ablation.json')
@@ -847,7 +868,7 @@ def main():
     if run_355:
         t1 = time.time()
         r = run_exp_355(bt, bv, pt, pv, args.history_steps, device,
-                        args.output_dir)
+                        args.output_dir, seeds=seeds, train_kw=train_kw)
         r['elapsed_seconds'] = time.time() - t1
         all_results['EXP-355'] = r
         outfile = os.path.join(args.output_dir, 'exp355_pk_forward.json')
@@ -857,7 +878,9 @@ def main():
 
     if run_353:
         t1 = time.time()
-        r = run_exp_353(args.patients_dir, device, args.output_dir)
+        r = run_exp_353(args.patients_dir, device, args.output_dir,
+                        seeds=seeds, train_kw=train_kw,
+                        max_patients=max_patients)
         r['elapsed_seconds'] = time.time() - t1
         all_results['EXP-353'] = r
         outfile = os.path.join(args.output_dir, 'exp353_history_pk.json')
