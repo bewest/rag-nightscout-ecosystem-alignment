@@ -723,3 +723,10 @@ question systematically.
 | **P4** | EXP-339 | Circadian ISF | ISF Drift | Can Fourier basis detect dawn phenomenon? |
 | **P4** | EXP-340 | Meal Registration | Analysis | Does curve alignment improve meal comparison? |
 | **P4** | EXP-341 | MFPCA | Retrieval, Drift | Does multivariate FDA capture cross-variable dynamics? |
+
+---
+
+## Results
+
+Phase A and Phase B experiments (EXP-328–335) completed 2026-04-05.
+See **[fda-experiment-results-2026-04-05.md](fda-experiment-results-2026-04-05.md)** for full findings, data tables, and integration recommendations.
