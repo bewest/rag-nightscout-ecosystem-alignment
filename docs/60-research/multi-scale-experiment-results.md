@@ -1312,6 +1312,85 @@ Both fitted on held-out calibration set (50% of validation), tested on remainder
 
 ---
 
+## EXP-325: CUSUM/Online Change-Point ISF Drift Detection
+
+**Hypothesis**: Online methods (CUSUM, EWMA, sliding t-test) can detect ISF drift
+faster than the biweekly rolling average from EXP-312 (which requires 14 days).
+
+**Method**: Compute daily ISF_effective (glucose range / mean active IOB), then
+apply 11 detection methods with varying sensitivity. Ground truth: linear
+regression significance (p<0.05) on the full series.
+
+**Results**: Only 2/9 patients have ground-truth drift (a: slope=-1.9/day, e: slope=-1.1/day).
+
+| Method | Mean Detect Day | Detect % | False Alarm Rate |
+|--------|----------------|----------|-----------------|
+| EWMA λ=0.1 | 1.0 | 100% | **100%** |
+| CUSUM 1.5σ | 5.0 | 100% | **100%** |
+| t-test 3d | 9.0 | 100% | **100%** |
+| t-test 7d | 9.0 | 100% | 85.7% |
+| CUSUM 2.0σ | 20.5 | 100% | **100%** |
+| CUSUM 3.0σ | 24.0 | 100% | **100%** |
+| t-test 14d | 29.0 | 100% | 85.7% |
+
+**NEGATIVE RESULT**: All methods have 85-100% false alarm rates.
+
+1. **Daily ISF is too noisy for online change-point detection** — per-day variance
+   overwhelms any real drift signal (confirming EXP-309's per-cycle finding)
+2. **Even the most conservative method (CUSUM 3.0σ) fires on 100% of non-drift patients**
+3. **Confirms EXP-312**: biweekly rolling aggregation is the minimum viable window
+   to reduce variance enough for reliable detection
+4. **A practical approach**: pre-smooth with 7-day rolling average, THEN apply CUSUM.
+   But this would detect at day 7+ (the rolling window) + CUSUM detection delay ≈ 10-14 days,
+   roughly equal to biweekly rolling.
+
+---
+
+## EXP-326: Leave-One-Patient-Out Classification Generalization
+
+**Hypothesis**: Multi-task CNN models trained on N-1 patients should generalize
+to an unseen 11th patient — critical for real-world deployment.
+
+**Method**: For each of 11 patients, train multi-task CNN (override + hypo) on
+the other 10 patients (30 epochs), test on the held-out patient.
+
+| Patient | N | Override F1 | Hypo F1 | Hypo AUC | Hypo Prev |
+|---------|---|------------|---------|----------|-----------|
+| a | 3754 | 0.817 | 0.665 | 0.969 | 5.2% |
+| b | 3839 | 0.780 | 0.551 | 0.936 | 2.3% |
+| c | 3527 | **0.844** | **0.733** | 0.966 | 8.2% |
+| d | 3721 | 0.704 | 0.500 | 0.896 | **1.6%** |
+| e | 3338 | 0.769 | 0.603 | 0.948 | 3.8% |
+| f | 3798 | 0.796 | 0.653 | 0.945 | 4.9% |
+| g | 3788 | 0.812 | 0.623 | 0.932 | 6.5% |
+| h | 1520 | 0.779 | 0.661 | 0.914 | 11.9% |
+| i | 3813 | **0.890** | **0.799** | **0.969** | **15.1%** |
+| j | 1308 | 0.674 | 0.575 | 0.938 | 2.6% |
+| k | 3783 | 0.714 | 0.589 | 0.884 | 9.0% |
+| **LOO Mean** | — | **0.780** | **0.632** | **0.936** | — |
+| Baseline | — | 0.809 | 0.672 | — | — |
+| **Δ** | — | **-2.9%** | **-4.0%** | — | — |
+
+**Key findings**:
+
+1. **Only 3-4% degradation on completely unseen patients** — the models
+   generalize well across the cohort. This is deployment-viable.
+
+2. **Hypo F1 correlates with prevalence**: patients with more hypo events
+   (i: 15.1%, h: 11.9%) get better F1. Patient d (1.6% prevalence) gets
+   worst F1=0.50 — too few hypo windows to learn the pattern.
+
+3. **Override is more robust than hypo** (-2.9% vs -4.0%): override events
+   are more common (34% positive rate), giving the model more to learn from.
+
+4. **AUC remains strong**: LOO mean 0.936 — the model discriminates well even
+   on unseen patients, but the rare-event F1 penalty is larger.
+
+5. **Patient i is the easiest** (hypo F1=0.80): highest prevalence AND distinctive
+   patterns. Patient d and j are hardest (small N or low prevalence).
+
+---
+
 ## Updated Task–Scale–Architecture Matrix
 
 | Objective | Best Scale | Best Architecture | Best Metric | Key Experiment |
@@ -1324,7 +1403,7 @@ Both fitted on held-out calibration set (50% of validation), tested on remainder
 | **Hypo prediction** | Fast (2h) | **MT CNN + Platt calibration** | **F1=0.676** | **EXP-324** |
 | Glucose forecasting | 2h window | Per-patient fine-tuned ensemble | MAE=11.25 | EXP-242 |
 
-**Final meta-findings** (30 experiments, EXP-287 through EXP-324):
+**Final meta-findings** (32 experiments, EXP-287 through EXP-326):
 1. **1D-CNN is the universal best architecture for all classification tasks**
 2. **Threshold tuning is critical** for imbalanced classes (+19.7% for hypo)
 3. **Shorter lead times improve classification** (15min > 60min by 13%)
@@ -1335,3 +1414,5 @@ Both fitted on held-out calibration set (50% of validation), tested on remainder
 8. **Loss function choice matters less than threshold tuning** (focal +2.8% vs threshold +19.7%)
 9. **Optimization improvements are NOT additive** — focal+multi-task < multi-task alone (EXP-323)
 10. **Platt calibration is essential for deployment** — ECE 0.21→0.01, practical threshold 0.87→0.28 (EXP-324)
+11. **Daily ISF is too noisy for online change-point detection** — biweekly rolling is minimum viable (EXP-325)
+12. **Models generalize well to unseen patients** — only 3-4% LOO degradation (EXP-326)

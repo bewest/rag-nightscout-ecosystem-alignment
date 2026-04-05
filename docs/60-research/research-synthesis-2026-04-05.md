@@ -442,9 +442,9 @@ use history-only features (first half of window) to ensure no future leakage.
 5. **Cross-scale fusion fails** — task-specific scale selection wins.
 6. **Forecasting is saturated** — 2h/8-channel/67K-param is the sweet spot.
 
-### What We've Resolved (EXP-314–324)
+### What We've Resolved (EXP-314–326)
 
-Since the initial synthesis, 11 more experiments answered the open questions:
+Since the initial synthesis, 13 more experiments answered the open questions:
 
 1. **Multi-lead override**: 15min F1=0.821 (+13% over 60min baseline) — **RESOLVED** ✅
 2. **Dedicated hypo models**: Multi-task + Platt calibration → F1=0.676 — **RESOLVED** ✅
@@ -453,16 +453,18 @@ Since the initial synthesis, 11 more experiments answered the open questions:
 5. **Multi-task learning**: Shared backbone boosts hypo +6% at -1.7% override cost — ✅
 6. **Optimization stacking**: Focal + multi-task NOT additive (EXP-323) — **RESOLVED** (negative) ✅
 7. **Probability calibration**: Platt scaling ECE 0.21→0.01, threshold 0.87→0.28 (EXP-324) — ✅
+8. **Faster ISF drift detection**: Online methods have 85-100% FA rate (EXP-325) — biweekly is minimum ✅
+9. **Unseen patient generalization**: LOO Δ = -2.9% override, -4.0% hypo (EXP-326) — **deployment-viable** ✅
 
 ### What We Don't Know Yet
 
 1. Can **contrastive learning** (SimCLR, BYOL) produce better embeddings than triplet loss?
 2. Can **curriculum learning** (easy tasks first) improve multi-task convergence?
 3. Is there a **fundamentally different architecture** (attention-based, graph neural network)
-   that could push hypo F1 past 0.70? The AUC=0.96 suggests the model discriminates well
-   but can't draw a clean decision boundary.
-4. Can **real-time CUSUM/Bayesian change-point detection** detect ISF drift in <7 days?
-5. How do these models perform on **unseen patients** (not in the training cohort)?
+   that could push hypo F1 past 0.70?
+4. Can **pre-smoothed CUSUM** (7-day rolling → CUSUM) detect ISF drift meaningfully faster
+   than biweekly rolling alone?
+5. How much does **patient-specific calibration** improve over population-level Platt scaling?
 
 ### Clinical Relevance
 
@@ -473,12 +475,14 @@ The system can now:
 - **Track insulin sensitivity changes** over 2-week windows (9/11 patients)
 - **Retrieve similar historical patterns** from a 7-day library
 - **Forecast glucose** at 11.25 mg/dL MAE
+- **Generalize to unseen patients** with only 3-4% degradation (LOO validated)
 
 **Key optimization insights**:
 - Threshold tuning (+19.7%) matters far more than loss function choice (+2.8%)
 - Multi-task learning is the best architectural lever for the weakest task
 - Feature engineering and optimization stacking are counterproductive for CNN
 - **Platt calibration is essential** for deployment (ECE 0.21→0.01, trivial cost)
+- **Models are deployment-viable**: LOO generalization gap is small (-3-4%)
 
 ---
 
@@ -487,7 +491,7 @@ The system can now:
 All experiments are registered in `tools/cgmencode/run_pattern_experiments.py`:
 
 ```bash
-# List all 30 experiments
+# List all 32 experiments
 python3 -m tools.cgmencode.run_pattern_experiments --list
 
 # Run any experiment
