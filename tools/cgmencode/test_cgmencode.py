@@ -3807,11 +3807,13 @@ class TestMultiScalePipeline(unittest.TestCase):
 
     def test_scale_configs_valid(self):
         """All scale configs have expected fields."""
-        from tools.cgmencode.run_pattern_experiments import load_multiscale_data
-        import inspect
-        src = inspect.getsource(load_multiscale_data)
+        from tools.cgmencode.run_pattern_experiments import SCALE_CONFIG
         for scale in ['fast', 'episode', 'daily', 'weekly']:
-            self.assertIn(f"'{scale}'", src)
+            self.assertIn(scale, SCALE_CONFIG)
+            cfg = SCALE_CONFIG[scale]
+            self.assertIn('window', cfg)
+            self.assertIn('interval_min', cfg)
+            self.assertIn('stride', cfg)
 
     def test_grid_to_features_nan_handling(self):
         """_grid_to_features interpolates NaN values."""
@@ -3833,10 +3835,89 @@ class TestMultiScalePipeline(unittest.TestCase):
     def test_experiment_registry_completeness(self):
         """All multi-scale experiments are registered."""
         from tools.cgmencode.run_pattern_experiments import EXPERIMENTS
-        required = ['ablation-12h', 'uam-12h', 'drift-daily', 'weekly-isf']
+        required = ['ablation-12h', 'uam-12h', 'drift-daily', 'weekly-isf',
+                     'cross-scale', 'multiscale-override']
         for name in required:
             self.assertIn(name, EXPERIMENTS,
                           f"Experiment '{name}' missing from registry")
+
+
+class TestCrossScale(unittest.TestCase):
+    """Phase 21-23: Cross-scale encoder and integration tests."""
+
+    def test_cross_scale_encoder_shapes(self):
+        """CrossScaleEncoder produces correct output dims."""
+        import torch
+        from tools.cgmencode.run_pattern_experiments import (
+            CrossScaleEncoder, SCALE_CONFIG,
+        )
+        scales = {s: SCALE_CONFIG[s] for s in ('fast', 'episode', 'weekly')}
+        enc = CrossScaleEncoder(scales, input_dim=8, embed_dim=32)
+
+        self.assertEqual(enc.total_embed_dim, 96)
+        batch = {
+            'fast': torch.randn(4, 24, 8),
+            'episode': torch.randn(4, 144, 8),
+            'weekly': torch.randn(4, 168, 8),
+        }
+        out = enc(batch)
+        self.assertEqual(out.shape, (4, 96))
+
+    def test_cross_scale_encoder_l2_normalized(self):
+        """Output embeddings are L2 normalized."""
+        import torch
+        from tools.cgmencode.run_pattern_experiments import (
+            CrossScaleEncoder, SCALE_CONFIG,
+        )
+        scales = {s: SCALE_CONFIG[s] for s in ('fast', 'episode', 'weekly')}
+        enc = CrossScaleEncoder(scales, input_dim=8, embed_dim=32)
+
+        batch = {
+            'fast': torch.randn(4, 24, 8),
+            'episode': torch.randn(4, 144, 8),
+            'weekly': torch.randn(4, 168, 8),
+        }
+        out = enc(batch)
+        norms = torch.norm(out, dim=1)
+        for i in range(4):
+            self.assertAlmostEqual(norms[i].item(), 1.0, places=4)
+
+    def test_cross_scale_encode_single_scale(self):
+        """Can encode individual scales separately."""
+        import torch
+        from tools.cgmencode.run_pattern_experiments import (
+            CrossScaleEncoder, SCALE_CONFIG,
+        )
+        scales = {s: SCALE_CONFIG[s] for s in ('fast', 'episode', 'weekly')}
+        enc = CrossScaleEncoder(scales, input_dim=8, embed_dim=32)
+
+        x = torch.randn(2, 24, 8)
+        out = enc.encode_scale('fast', x)
+        self.assertEqual(out.shape, (2, 32))
+
+    def test_grid_cache_works(self):
+        """Grid cache avoids redundant loads."""
+        from tools.cgmencode.run_pattern_experiments import (
+            _GRID_CACHE, clear_grid_cache,
+        )
+        clear_grid_cache()
+        self.assertEqual(len(_GRID_CACHE), 0)
+
+    def test_scale_attention_learnable(self):
+        """Scale attention weights are learnable parameters."""
+        import torch
+        from tools.cgmencode.run_pattern_experiments import (
+            CrossScaleEncoder, SCALE_CONFIG,
+        )
+        scales = {s: SCALE_CONFIG[s] for s in ('fast', 'episode', 'weekly')}
+        enc = CrossScaleEncoder(scales, input_dim=8, embed_dim=32)
+
+        self.assertEqual(enc.scale_attention.shape[0], 3)
+        self.assertTrue(enc.scale_attention.requires_grad)
+        # Initial weights should be uniform
+        attn = torch.nn.functional.softmax(enc.scale_attention, dim=0)
+        for a in attn:
+            self.assertAlmostEqual(a.item(), 1/3, places=4)
 
 
 if __name__ == '__main__':
