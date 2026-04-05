@@ -295,11 +295,19 @@ def run_glucodensity_vs_tir(args):
     gd_features = glucodensity(glucose, n_bins=50)
 
     # Cluster both representations and compare
+    # Subsample for scalability (silhouette_score is O(n²))
+    max_clust = min(5000, glucose.shape[0])
+    rng = np.random.RandomState(42)
+    clust_idx = rng.choice(glucose.shape[0], max_clust, replace=False)
+    tir_sub = tir_features[clust_idx]
+    gd_sub = gd_features[clust_idx]
+
     results = {
         'experiment': 'EXP-330',
         'name': 'glucodensity-vs-tir',
         'method': 'Compare TIR vs glucodensity via clustering quality',
         'n_samples': int(glucose.shape[0]),
+        'n_clustered': max_clust,
         'tir_dim': 5,
         'glucodensity_dim': 50,
         'clustering': {},
@@ -310,13 +318,13 @@ def run_glucodensity_vs_tir(args):
 
         # TIR clustering
         km_tir = KMeans(n_clusters=k, random_state=42, n_init=10)
-        labels_tir = km_tir.fit_predict(tir_features)
-        sil_tir = silhouette_score(tir_features, labels_tir)
+        labels_tir = km_tir.fit_predict(tir_sub)
+        sil_tir = silhouette_score(tir_sub, labels_tir)
 
         # Glucodensity clustering
         km_gd = KMeans(n_clusters=k, random_state=42, n_init=10)
-        labels_gd = km_gd.fit_predict(gd_features)
-        sil_gd = silhouette_score(gd_features, labels_gd)
+        labels_gd = km_gd.fit_predict(gd_sub)
+        sil_gd = silhouette_score(gd_sub, labels_gd)
 
         # Cross-comparison
         ari = adjusted_rand_score(labels_tir, labels_gd)
@@ -333,21 +341,25 @@ def run_glucodensity_vs_tir(args):
               f"Δ={sil_gd - sil_tir:+.3f}, ARI={ari:.3f}")
 
     # Find windows where TIR is similar but glucodensity differs
+    # Subsample to avoid O(n²) memory blow-up on large datasets
     from scipy.spatial.distance import cdist
-    tir_dists = cdist(tir_features, tir_features, metric='euclidean')
-    gd_dists = cdist(gd_features, gd_features, metric='euclidean')
+    max_disc = min(2000, glucose.shape[0])
+    disc_idx = np.random.RandomState(42).choice(glucose.shape[0], max_disc,
+                                                 replace=False)
+    tir_sub = tir_features[disc_idx]
+    gd_sub = gd_features[disc_idx]
+    tir_dists = cdist(tir_sub, tir_sub, metric='euclidean')
+    gd_dists = cdist(gd_sub, gd_sub, metric='euclidean')
 
     # Pairs with TIR dist < 10th percentile but GD dist > 90th percentile
-    tir_thresh = np.percentile(tir_dists[np.triu_indices_from(tir_dists, k=1)], 10)
-    gd_thresh = np.percentile(gd_dists[np.triu_indices_from(gd_dists, k=1)], 90)
+    triu = np.triu_indices_from(tir_dists, k=1)
+    tir_thresh = np.percentile(tir_dists[triu], 10)
+    gd_thresh = np.percentile(gd_dists[triu], 90)
 
-    similar_tir_diff_gd = 0
-    n_checked = 0
-    for i in range(min(1000, glucose.shape[0])):
-        for j in range(i + 1, min(1000, glucose.shape[0])):
-            n_checked += 1
-            if tir_dists[i, j] < tir_thresh and gd_dists[i, j] > gd_thresh:
-                similar_tir_diff_gd += 1
+    similar_tir_diff_gd = int(np.sum(
+        (tir_dists[triu] < tir_thresh) & (gd_dists[triu] > gd_thresh)
+    ))
+    n_checked = len(triu[0])
 
     results['discrimination'] = {
         'pairs_checked': n_checked,
