@@ -5969,6 +5969,497 @@ def run_multitask_cnn(args):
     return results
 
 
+def run_multitask_focal(args):
+    """EXP-323: Multi-task CNN with focal loss for hypo head.
+
+    Combines two best hypo improvements:
+    - Multi-task backbone (EXP-322): +6.0% hypo F1
+    - Focal loss γ=2 (EXP-321): +2.8% hypo F1
+
+    Hypothesis: improvements are complementary — multi-task learns shared
+    representations while focal loss focuses on hard hypo examples.
+    Tests: multi-task + focal vs multi-task + weighted CE vs single-task + focal.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-323: Multi-Task CNN + Focal Loss")
+    print("=" * 60)
+
+    train_np, val_np = load_multiscale_data(patient_paths, scale='fast',
+                                            val_fraction=0.2)
+    print(f"Loaded: {train_np.shape} train, {val_np.shape} val")
+
+    half = train_np.shape[1] // 2
+
+    def build_override_labels(windows, lead=3):
+        future = windows[:, half:half + lead, 0] * 400.0
+        high = (future > 180).any(axis=1)
+        low = (future < 70).any(axis=1)
+        labels = np.zeros(len(windows), dtype=np.int64)
+        labels[high] = 1
+        labels[low] = 2
+        return labels
+
+    def build_hypo_labels(windows, lead=6):
+        future = windows[:, half:half + lead, 0] * 400.0
+        return (future < 70).any(axis=1).astype(np.int64)
+
+    train_override = build_override_labels(train_np)
+    val_override = build_override_labels(val_np)
+    train_hypo = build_hypo_labels(train_np)
+    val_hypo = build_hypo_labels(val_np)
+
+    print(f"Override: {(train_override > 0).mean():.3f} positive rate")
+    print(f"Hypo: {train_hypo.mean():.3f} prevalence")
+
+    class FocalLoss(nn.Module):
+        def __init__(self, gamma=2.0, alpha=None):
+            super().__init__()
+            self.gamma = gamma
+            self.alpha = alpha
+
+        def forward(self, logits, targets):
+            ce_loss = nn.functional.cross_entropy(logits, targets, reduction='none',
+                                                  weight=self.alpha)
+            pt = torch.exp(-ce_loss)
+            focal_loss = ((1 - pt) ** self.gamma) * ce_loss
+            return focal_loss.mean()
+
+    class MultiTaskCNN(nn.Module):
+        def __init__(self, in_channels=8):
+            super().__init__()
+            self.backbone = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.Conv1d(64, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.override_head = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, 3),
+            )
+            self.hypo_head = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.3),
+                nn.Linear(32, 2),
+            )
+
+        def forward(self, x):
+            h = x.shape[1] // 2
+            x = x[:, :h].permute(0, 2, 1)
+            feat = self.backbone(x).squeeze(-1)
+            return self.override_head(feat), self.hypo_head(feat)
+
+    # Class weights
+    from collections import Counter
+    ov_counts = Counter(train_override.tolist())
+    n_total = len(train_override)
+    ov_cw = torch.tensor([n_total / (3 * max(1, ov_counts.get(c, 1))) for c in range(3)],
+                          dtype=torch.float32).to(device)
+
+    n_hypo_pos = train_hypo.sum()
+    n_hypo_neg = len(train_hypo) - n_hypo_pos
+    hypo_weight = max(2.0, n_hypo_neg / max(1, n_hypo_pos))
+    hypo_cw = torch.tensor([1.0, hypo_weight], dtype=torch.float32).to(device)
+
+    # Configs: vary hypo loss function and multi-task vs single
+    configs = {
+        'mt_focal_g2': ('multi', 'focal', 2.0),
+        'mt_weighted_ce': ('multi', 'wce', 0),
+        'st_focal_g2': ('hypo', 'focal', 2.0),
+        'st_weighted_ce': ('hypo', 'wce', 0),
+        'mt_focal_g2_no_alpha': ('multi', 'focal_no_alpha', 2.0),
+    }
+
+    all_results = {}
+    train_t = torch.from_numpy(train_np).float()
+    val_t = torch.from_numpy(val_np).float()
+    train_ov_t = torch.from_numpy(train_override).long()
+    train_hypo_t = torch.from_numpy(train_hypo).long()
+    batch_size = 256
+
+    for config_name, (task_mode, loss_type, gamma) in configs.items():
+        print(f"\n--- {config_name} ---")
+
+        model = MultiTaskCNN().to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        ov_criterion = nn.CrossEntropyLoss(weight=ov_cw)
+
+        if loss_type == 'focal':
+            hypo_criterion = FocalLoss(gamma=gamma, alpha=hypo_cw)
+        elif loss_type == 'focal_no_alpha':
+            hypo_criterion = FocalLoss(gamma=gamma, alpha=None)
+        else:
+            hypo_criterion = nn.CrossEntropyLoss(weight=hypo_cw)
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_np))
+            for start in range(0, len(perm), batch_size):
+                end = min(start + batch_size, len(perm))
+                idx = perm[start:end]
+                ov_logits, hypo_logits = model(train_t[idx].to(device))
+
+                if task_mode == 'multi':
+                    loss = ov_criterion(ov_logits, train_ov_t[idx].to(device)) + \
+                           hypo_criterion(hypo_logits, train_hypo_t[idx].to(device))
+                else:
+                    loss = hypo_criterion(hypo_logits, train_hypo_t[idx].to(device))
+
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        # Evaluate
+        model.eval()
+        all_ov_preds, all_hypo_probs = [], []
+        with torch.no_grad():
+            for vs in range(0, len(val_np), 512):
+                ve = min(vs + 512, len(val_np))
+                ov_logits, hypo_logits = model(val_t[vs:ve].to(device))
+                all_ov_preds.append(ov_logits.argmax(dim=-1).cpu().numpy())
+                all_hypo_probs.append(torch.softmax(hypo_logits, dim=-1)[:, 1].cpu().numpy())
+
+        ov_preds = np.concatenate(all_ov_preds)
+        hypo_probs = np.concatenate(all_hypo_probs)
+
+        from sklearn.metrics import f1_score, roc_auc_score
+        ov_f1 = f1_score(val_override, ov_preds, average='macro', zero_division=0)
+
+        best_hypo_f1 = 0.0
+        best_hypo_thresh = 0.5
+        for thresh in np.arange(0.01, 1.0, 0.01):
+            preds = (hypo_probs >= thresh).astype(int)
+            f1 = f1_score(val_hypo, preds, zero_division=0)
+            if f1 > best_hypo_f1:
+                best_hypo_f1 = f1
+                best_hypo_thresh = float(thresh)
+
+        f1_at_05 = f1_score(val_hypo, (hypo_probs >= 0.5).astype(int), zero_division=0)
+
+        try:
+            hypo_auc = roc_auc_score(val_hypo, hypo_probs)
+        except ValueError:
+            hypo_auc = float('nan')
+
+        all_results[config_name] = {
+            'task_mode': task_mode,
+            'loss_type': loss_type,
+            'gamma': gamma,
+            'override_f1': float(ov_f1),
+            'hypo_f1_at_05': float(f1_at_05),
+            'hypo_best_f1': float(best_hypo_f1),
+            'hypo_threshold': float(best_hypo_thresh),
+            'hypo_auc': float(hypo_auc),
+        }
+        print(f"  OV F1={ov_f1:.4f}, Hypo F1@0.5={f1_at_05:.4f}, "
+              f"F1@opt={best_hypo_f1:.4f} @{best_hypo_thresh:.2f}, AUC={hypo_auc:.4f}")
+
+    results = {
+        'experiment': 'EXP-323',
+        'name': 'multitask-focal',
+        'method': 'Multi-task CNN with focal loss hypo head',
+        'configs': all_results,
+        'data': {'n_train': len(train_np), 'n_val': len(val_np)},
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"EXP-323: Multi-Task + Focal Loss Comparison")
+    print(f"{'='*60}")
+    print(f"{'Config':>25} {'Mode':>6} {'Loss':>10} {'OV_F1':>7} "
+          f"{'H_F1@.5':>8} {'H_F1opt':>8} {'H_AUC':>7}")
+    print("-" * 80)
+    for name, r in all_results.items():
+        print(f"{name:>25} {r['task_mode']:>6} {r['loss_type']:>10} "
+              f"{r['override_f1']:>7.4f} {r['hypo_f1_at_05']:>8.4f} "
+              f"{r['hypo_best_f1']:>8.4f} {r['hypo_auc']:>7.4f}")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp323_multitask_focal.json'))
+    return results
+
+
+def run_calibration_analysis(args):
+    """EXP-324: Temperature scaling and calibration analysis for hypo prediction.
+
+    The AUC=0.958 vs F1=0.672 gap suggests the model discriminates well but
+    the predicted probabilities are poorly calibrated. Temperature scaling
+    is a simple post-hoc calibration technique that learns a single parameter T
+    to rescale logits: p = softmax(logits / T).
+
+    Also computes reliability diagrams and ECE (Expected Calibration Error).
+    Tests: uncalibrated vs temperature-scaled vs Platt scaling (logistic regression).
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-324: Temperature Scaling & Calibration Analysis")
+    print("=" * 60)
+
+    train_np, val_np = load_multiscale_data(patient_paths, scale='fast',
+                                            val_fraction=0.2)
+
+    # Split val into calibration + test (50/50)
+    n_val = len(val_np)
+    n_cal = n_val // 2
+    cal_np = val_np[:n_cal]
+    test_np = val_np[n_cal:]
+    print(f"Loaded: {train_np.shape} train, {cal_np.shape} cal, {test_np.shape} test")
+
+    half = train_np.shape[1] // 2
+
+    def build_hypo_labels(windows, lead=6):
+        future = windows[:, half:half + lead, 0] * 400.0
+        return (future < 70).any(axis=1).astype(np.int64)
+
+    def build_override_labels(windows, lead=3):
+        future = windows[:, half:half + lead, 0] * 400.0
+        high = (future > 180).any(axis=1)
+        low = (future < 70).any(axis=1)
+        labels = np.zeros(len(windows), dtype=np.int64)
+        labels[high] = 1
+        labels[low] = 2
+        return labels
+
+    train_hypo = build_hypo_labels(train_np)
+    cal_hypo = build_hypo_labels(cal_np)
+    test_hypo = build_hypo_labels(test_np)
+    train_override = build_override_labels(train_np)
+
+    print(f"Train hypo prevalence: {train_hypo.mean():.3f}")
+    print(f"Cal hypo prevalence: {cal_hypo.mean():.3f}")
+    print(f"Test hypo prevalence: {test_hypo.mean():.3f}")
+
+    class MultiTaskCNN(nn.Module):
+        def __init__(self, in_channels=8):
+            super().__init__()
+            self.backbone = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.Conv1d(64, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.override_head = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, 3),
+            )
+            self.hypo_head = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.3),
+                nn.Linear(32, 2),
+            )
+
+        def forward(self, x):
+            h = x.shape[1] // 2
+            x = x[:, :h].permute(0, 2, 1)
+            feat = self.backbone(x).squeeze(-1)
+            return self.override_head(feat), self.hypo_head(feat)
+
+    # Train multi-task CNN with focal loss (best config from EXP-322/321)
+    from collections import Counter
+    ov_counts = Counter(train_override.tolist())
+    n_total = len(train_override)
+    ov_cw = torch.tensor([n_total / (3 * max(1, ov_counts.get(c, 1))) for c in range(3)],
+                          dtype=torch.float32).to(device)
+    n_hypo_pos = train_hypo.sum()
+    n_hypo_neg = len(train_hypo) - n_hypo_pos
+    hypo_weight = max(2.0, n_hypo_neg / max(1, n_hypo_pos))
+    hypo_cw = torch.tensor([1.0, hypo_weight], dtype=torch.float32).to(device)
+
+    class FocalLoss(nn.Module):
+        def __init__(self, gamma=2.0, alpha=None):
+            super().__init__()
+            self.gamma = gamma
+            self.alpha = alpha
+
+        def forward(self, logits, targets):
+            ce_loss = nn.functional.cross_entropy(logits, targets, reduction='none',
+                                                  weight=self.alpha)
+            pt = torch.exp(-ce_loss)
+            return (((1 - pt) ** self.gamma) * ce_loss).mean()
+
+    model = MultiTaskCNN().to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    ov_criterion = nn.CrossEntropyLoss(weight=ov_cw)
+    hypo_criterion = FocalLoss(gamma=2.0, alpha=hypo_cw)
+
+    print("\nTraining multi-task CNN (focal γ=2)...")
+    train_t = torch.from_numpy(train_np).float()
+    train_ov_t = torch.from_numpy(train_override).long()
+    train_hypo_t = torch.from_numpy(train_hypo).long()
+    batch_size = 256
+
+    for epoch in range(epochs):
+        model.train()
+        perm = torch.randperm(len(train_np))
+        for start in range(0, len(perm), batch_size):
+            end = min(start + batch_size, len(perm))
+            idx = perm[start:end]
+            ov_logits, hypo_logits = model(train_t[idx].to(device))
+            loss = ov_criterion(ov_logits, train_ov_t[idx].to(device)) + \
+                   hypo_criterion(hypo_logits, train_hypo_t[idx].to(device))
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+    # Collect logits on calibration and test sets
+    model.eval()
+    def get_logits_and_probs(data_np):
+        data_t = torch.from_numpy(data_np).float()
+        all_logits, all_probs = [], []
+        with torch.no_grad():
+            for vs in range(0, len(data_np), 512):
+                ve = min(vs + 512, len(data_np))
+                _, hypo_logits = model(data_t[vs:ve].to(device))
+                all_logits.append(hypo_logits.cpu())
+                all_probs.append(torch.softmax(hypo_logits, dim=-1)[:, 1].cpu().numpy())
+        return torch.cat(all_logits), np.concatenate(all_probs)
+
+    cal_logits, cal_probs = get_logits_and_probs(cal_np)
+    test_logits, test_probs = get_logits_and_probs(test_np)
+
+    # 1. Temperature Scaling (learn T on calibration set)
+    temperature = nn.Parameter(torch.ones(1) * 1.5)
+    temp_optimizer = torch.optim.LBFGS([temperature], lr=0.01, max_iter=50)
+    cal_labels_t = torch.from_numpy(cal_hypo).long()
+
+    def temp_eval():
+        temp_optimizer.zero_grad()
+        scaled = cal_logits / temperature
+        loss = nn.functional.cross_entropy(scaled, cal_labels_t)
+        loss.backward()
+        return loss
+
+    temp_optimizer.step(temp_eval)
+    learned_T = temperature.item()
+    print(f"\nLearned temperature: T={learned_T:.4f}")
+
+    # Apply temperature to test set
+    test_scaled_logits = test_logits / learned_T
+    test_scaled_probs = torch.softmax(test_scaled_logits, dim=-1)[:, 1].detach().numpy()
+
+    # 2. Platt Scaling (logistic regression on calibration logits)
+    from sklearn.linear_model import LogisticRegression
+    cal_log_odds = cal_logits[:, 1].numpy().reshape(-1, 1)
+    platt_model = LogisticRegression(C=1e10, solver='lbfgs', max_iter=1000)
+    platt_model.fit(cal_log_odds, cal_hypo)
+    test_log_odds = test_logits[:, 1].numpy().reshape(-1, 1)
+    test_platt_probs = platt_model.predict_proba(test_log_odds)[:, 1]
+
+    # 3. Compute metrics for each calibration method
+    from sklearn.metrics import f1_score, roc_auc_score, brier_score_loss
+
+    def compute_ece(probs, labels, n_bins=10):
+        """Expected Calibration Error."""
+        bin_boundaries = np.linspace(0, 1, n_bins + 1)
+        ece = 0.0
+        for i in range(n_bins):
+            in_bin = (probs >= bin_boundaries[i]) & (probs < bin_boundaries[i + 1])
+            if in_bin.sum() == 0:
+                continue
+            avg_conf = probs[in_bin].mean()
+            avg_acc = labels[in_bin].mean()
+            ece += in_bin.sum() / len(probs) * abs(avg_acc - avg_conf)
+        return float(ece)
+
+    def eval_calibration(probs, labels, name):
+        auc = roc_auc_score(labels, probs) if len(np.unique(labels)) > 1 else float('nan')
+        ece = compute_ece(probs, labels)
+        brier = brier_score_loss(labels, probs)
+
+        best_f1, best_thresh = 0.0, 0.5
+        for thresh in np.arange(0.01, 1.0, 0.01):
+            f1 = f1_score(labels, (probs >= thresh).astype(int), zero_division=0)
+            if f1 > best_f1:
+                best_f1, best_thresh = f1, float(thresh)
+
+        f1_at_05 = f1_score(labels, (probs >= 0.5).astype(int), zero_division=0)
+
+        return {
+            'method': name,
+            'auc': float(auc),
+            'ece': float(ece),
+            'brier': float(brier),
+            'f1_at_05': float(f1_at_05),
+            'f1_optimal': float(best_f1),
+            'threshold': float(best_thresh),
+        }
+
+    uncalibrated = eval_calibration(test_probs, test_hypo, 'uncalibrated')
+    temp_scaled = eval_calibration(test_scaled_probs, test_hypo, 'temperature_scaled')
+    platt_scaled = eval_calibration(test_platt_probs, test_hypo, 'platt_scaled')
+
+    # 4. Reliability diagram data (binned accuracy vs confidence)
+    def reliability_bins(probs, labels, n_bins=10):
+        bins = []
+        boundaries = np.linspace(0, 1, n_bins + 1)
+        for i in range(n_bins):
+            mask = (probs >= boundaries[i]) & (probs < boundaries[i + 1])
+            if mask.sum() > 0:
+                bins.append({
+                    'bin_center': float((boundaries[i] + boundaries[i + 1]) / 2),
+                    'mean_confidence': float(probs[mask].mean()),
+                    'mean_accuracy': float(labels[mask].mean()),
+                    'count': int(mask.sum()),
+                })
+        return bins
+
+    uncal_bins = reliability_bins(test_probs, test_hypo)
+    temp_bins = reliability_bins(test_scaled_probs, test_hypo)
+    platt_bins = reliability_bins(test_platt_probs, test_hypo)
+
+    results = {
+        'experiment': 'EXP-324',
+        'name': 'calibration-analysis',
+        'method': 'Temperature scaling and Platt calibration for hypo CNN',
+        'learned_temperature': learned_T,
+        'metrics': {
+            'uncalibrated': uncalibrated,
+            'temperature_scaled': temp_scaled,
+            'platt_scaled': platt_scaled,
+        },
+        'reliability': {
+            'uncalibrated': uncal_bins,
+            'temperature_scaled': temp_bins,
+            'platt_scaled': platt_bins,
+        },
+        'data': {
+            'n_train': len(train_np),
+            'n_cal': len(cal_np),
+            'n_test': len(test_np),
+        },
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"EXP-324: Calibration Analysis")
+    print(f"{'='*60}")
+    print(f"Learned temperature T={learned_T:.4f}")
+    print(f"\n{'Method':>20} {'AUC':>7} {'ECE':>7} {'Brier':>7} "
+          f"{'F1@.5':>7} {'F1opt':>7} {'Thresh':>7}")
+    print("-" * 70)
+    for m in [uncalibrated, temp_scaled, platt_scaled]:
+        print(f"{m['method']:>20} {m['auc']:>7.4f} {m['ece']:>7.4f} "
+              f"{m['brier']:>7.4f} {m['f1_at_05']:>7.4f} "
+              f"{m['f1_optimal']:>7.4f} {m['threshold']:>7.2f}")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp324_calibration.json'))
+    return results
+
+
 # ── Registry & CLI ─────────────────────────────────────────────────────
 
 EXPERIMENTS = {
@@ -6036,6 +6527,11 @@ EXPERIMENTS = {
                    'Focal loss for hypo prediction CNN'),
     'multitask-cnn': ('EXP-322', run_multitask_cnn,
                       'Multi-task override+hypo CNN with shared backbone'),
+    # Phase 32: Combined optimization and calibration
+    'multitask-focal': ('EXP-323', run_multitask_focal,
+                        'Multi-task CNN + focal loss for hypo head'),
+    'calibration': ('EXP-324', run_calibration_analysis,
+                    'Temperature scaling and Platt calibration for hypo CNN'),
 }
 
 
