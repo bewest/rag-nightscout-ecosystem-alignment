@@ -1212,6 +1212,156 @@ def run_exp_363(args, seeds=None, train_kw=None, max_patients=None):
     return results
 
 
+def run_exp_364(args, seeds=None, train_kw=None, max_patients=None):
+    """EXP-364: Combined Best — ISF normalization + 8ch + Future PK at extended horizons.
+
+    Combines the two validated improvements:
+    - EXP-356: 8ch + future_pk = best architecture (MAE 37.6 vs 44.2 glucose_only)
+    - EXP-361: ISF normalization = -1.2 MAE improvement
+
+    Variants:
+    1. glucose_only — baseline
+    2. 8ch_future_pk — EXP-356 champion (fixed /400 normalization)
+    3. isf_8ch_future_pk — ISF normalization + 8ch + future PK
+    4. isf_glucose_future_pk — ISF normalization + glucose-only + future PK
+
+    Run at extended horizons to test full horizon sweep.
+    """
+    device = torch.device(args.device)
+    seeds = seeds or SEEDS
+    train_kw = train_kw or {}
+    epochs = train_kw.get('epochs', 60)
+    patience = train_kw.get('patience', 15)
+    horizons = HORIZONS_EXTENDED if not args.quick else HORIZONS_STANDARD
+
+    patients_dir = args.patients_dir
+    max_horizon = max(horizons.values())
+    history_steps = 72
+
+    bt, bv, pt, pv, isf_t, isf_v = load_forecast_data(
+        patients_dir, history_steps, max_horizon, max_patients, load_isf=True)
+    n_horizons = len(horizons)
+
+    results = {'experiment': 'EXP-364',
+               'description': 'Combined ISF + 8ch + future PK',
+               'horizons': list(horizons.keys()), 'variants': {}}
+
+    for seed in seeds:
+        torch.manual_seed(seed)
+        np.random.seed(seed)
+        print(f"\n  seed={seed}:")
+
+        for variant_name in ['glucose_only', '8ch_future_pk',
+                             'isf_8ch_future_pk', 'isf_glucose_future_pk']:
+            print(f"    {variant_name}...", end=' ', flush=True)
+            t0 = time.time()
+
+            use_isf = variant_name.startswith('isf_')
+            use_future = 'future_pk' in variant_name
+            use_8ch = '8ch' in variant_name
+
+            # Prepare glucose history
+            if use_8ch:
+                hist_raw = bt[:, :history_steps, :].copy()
+                hist_raw_val = bv[:, :history_steps, :].copy()
+            else:
+                hist_raw = bt[:, :history_steps, :1].copy()
+                hist_raw_val = bv[:, :history_steps, :1].copy()
+
+            # ISF normalization on glucose channel
+            if use_isf:
+                scale_t = (GLUCOSE_SCALE / isf_t).reshape(-1, 1, 1)
+                scale_v = (GLUCOSE_SCALE / isf_v).reshape(-1, 1, 1)
+                hist_raw[:, :, 0:1] = hist_raw[:, :, 0:1] * scale_t
+                hist_raw_val[:, :, 0:1] = hist_raw_val[:, :, 0:1] * scale_v
+                np.clip(hist_raw[:, :, 0:1], 0, 10, out=hist_raw[:, :, 0:1])
+                np.clip(hist_raw_val[:, :, 0:1], 0, 10, out=hist_raw_val[:, :, 0:1])
+
+            # Targets
+            targets_train = extract_targets(bt, history_steps, horizons)
+            targets_val = extract_targets(bv, history_steps, horizons)
+            if use_isf:
+                scale_t_flat = (GLUCOSE_SCALE / isf_t).reshape(-1, 1)
+                scale_v_flat = (GLUCOSE_SCALE / isf_v).reshape(-1, 1)
+                targets_train = targets_train * scale_t_flat
+                targets_val = targets_val * scale_v_flat
+
+            hist_channels = hist_raw.shape[-1]
+
+            if use_future:
+                pk_future = pt[:, history_steps:, :][:, :, FUTURE_PK_INDICES].copy()
+                pk_future_val = pv[:, history_steps:, :][:, :, FUTURE_PK_INDICES].copy()
+                for i, idx in enumerate(FUTURE_PK_INDICES):
+                    pk_future[:, :, i] /= (PK_NORMS[idx] + 1e-8)
+                    pk_future_val[:, :, i] /= (PK_NORMS[idx] + 1e-8)
+
+                model = ForecastCNNWithFuture(
+                    hist_channels, len(FUTURE_PK_INDICES), n_horizons)
+                train_ds = TensorDataset(
+                    torch.from_numpy(hist_raw.astype(np.float32)),
+                    torch.from_numpy(pk_future.astype(np.float32)),
+                    torch.from_numpy(targets_train.astype(np.float32)))
+                val_ds = TensorDataset(
+                    torch.from_numpy(hist_raw_val.astype(np.float32)),
+                    torch.from_numpy(pk_future_val.astype(np.float32)),
+                    torch.from_numpy(targets_val.astype(np.float32)))
+            else:
+                model = ForecastCNN(hist_channels, n_horizons)
+                train_ds = TensorDataset(
+                    torch.from_numpy(hist_raw.astype(np.float32)),
+                    torch.from_numpy(targets_train.astype(np.float32)))
+                val_ds = TensorDataset(
+                    torch.from_numpy(hist_raw_val.astype(np.float32)),
+                    torch.from_numpy(targets_val.astype(np.float32)))
+
+            train_loader = DataLoader(train_ds, batch_size=256, shuffle=True)
+            val_loader = DataLoader(val_ds, batch_size=256)
+
+            model = train_model(model, train_loader, val_loader, device,
+                                epochs=epochs, patience=patience)
+
+            # Evaluate — convert back to mg/dL for fair comparison
+            model.eval()
+            all_preds, all_tgts = [], []
+            with torch.no_grad():
+                for batch in val_loader:
+                    inputs = [b.to(device) for b in batch[:-1]]
+                    tgt = batch[-1]
+                    preds = model(*inputs).cpu().numpy()
+                    all_preds.append(preds)
+                    all_tgts.append(tgt.numpy())
+
+            preds = np.concatenate(all_preds)
+            tgts = np.concatenate(all_tgts)
+
+            if use_isf:
+                inv_scale = (isf_v / GLUCOSE_SCALE).reshape(-1, 1)
+                preds_mg = preds * inv_scale * GLUCOSE_SCALE
+                tgts_mg = tgts * inv_scale * GLUCOSE_SCALE
+            else:
+                preds_mg = preds * GLUCOSE_SCALE
+                tgts_mg = tgts * GLUCOSE_SCALE
+
+            per_horizon = {}
+            for i, name in enumerate(horizons.keys()):
+                mae = float(np.mean(np.abs(preds_mg[:, i] - tgts_mg[:, i])))
+                per_horizon[name] = mae
+
+            res = {
+                'mae_overall': float(np.mean(list(per_horizon.values()))),
+                'mae_per_horizon': per_horizon,
+            }
+            h_str = ', '.join(f"{k}={v:.1f}"
+                              for k, v in res['mae_per_horizon'].items())
+            print(f"MAE={res['mae_overall']:.1f} [{h_str}]  ({time.time()-t0:.0f}s)")
+
+            key = f"{variant_name}_s{seed}"
+            results['variants'][key] = res
+
+    results['summary'] = _aggregate_results(results['variants'], seeds, horizons)
+    return results
+
+
 # ─── Aggregation ───
 
 def _aggregate_results(variants, seeds, horizons):
@@ -1272,6 +1422,7 @@ def main():
         '361': ('exp361_isf_norm', run_exp_361),
         '362': ('exp362_conservation', run_exp_362),
         '363': ('exp363_learned_pk', run_exp_363),
+        '364': ('exp364_combined_best', run_exp_364),
     }
 
     if args.quick:
