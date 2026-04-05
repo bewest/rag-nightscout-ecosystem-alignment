@@ -1,8 +1,8 @@
 # Multi-Scale Pattern Experiment Results
 
 **Date**: 2026-04-04  
-**Experiments**: EXP-287, EXP-289, EXP-286, EXP-291, EXP-298, EXP-299, EXP-300, EXP-301, EXP-304, EXP-305, EXP-306, EXP-307, EXP-308  
-**Status**: Complete (13 experiments across 4 timescales + cross-scale + drift detection)
+**Experiments**: EXP-287, EXP-289, EXP-286, EXP-291, EXP-298, EXP-299, EXP-300, EXP-301, EXP-304, EXP-305, EXP-306, EXP-307, EXP-308, EXP-309, EXP-310, EXP-311  
+**Status**: Complete (16 experiments across 4 timescales + cross-scale + drift + override)
 
 ## Executive Summary
 
@@ -717,7 +717,157 @@ python3 -m tools.cgmencode.run_pattern_experiments per-patient-drift --device cu
 
 # EXP-308: Insulin-controlled drift (4/11 true ISF drift)
 python3 -m tools.cgmencode.run_pattern_experiments insulin-drift --device cuda
+
+# EXP-309: ISF response ratio (direct measurement, no GPU needed)
+python3 -m tools.cgmencode.run_pattern_experiments isf-response-ratio --device cpu
+
+# EXP-310: Leave-patient-out weekly retrieval (generalization test)
+python3 -m tools.cgmencode.run_pattern_experiments leave-patient-out --device cuda
+
+# EXP-311: 1D-CNN temporal override model
+python3 -m tools.cgmencode.run_pattern_experiments temporal-override --device cuda
 ```
 
 All results saved to `externals/experiments/` (gitignored).
 Scripts in `tools/cgmencode/run_pattern_experiments.py` (committed).
+
+---
+
+## Phase 3: Direct Measurement & Model Architecture (EXP-309, 310, 311)
+
+### EXP-309: Direct ISF Response Ratio (**Null Result**)
+
+**Question**: Can we detect ISF drift by directly measuring glucose response
+per unit insulin over complete 6h DIA cycles?
+
+**Method**: For each patient, extract non-overlapping 6h windows. Compute
+`ISF_effective = glucose_delta / total_insulin` (mg/dL per unit). Test for
+temporal trend via Spearman correlation.
+
+| Patient | N_qual | ISF_eff | ρ | p-value | E→L Δ | Trend |
+|---------|--------|---------|---|---------|-------|-------|
+| a | 591 | -0.9 | +0.016 | 0.694 | -1.2 | — |
+| b | 110 | +5.0 | -0.157 | 0.101 | -15.6 | — |
+| c | 119 | +7.5 | +0.109 | 0.238 | +12.6 | — |
+| d | 167 | +10.5 | +0.040 | 0.611 | -5.5 | — |
+| e | 207 | -0.2 | -0.018 | 0.792 | +4.8 | — |
+| f | 473 | -1.4 | +0.006 | 0.901 | -0.5 | — |
+| g | 326 | +2.9 | +0.022 | 0.687 | +0.7 | — |
+| h | 56 | +4.7 | -0.055 | 0.689 | -0.7 | — |
+| i | 188 | -1.7 | -0.014 | 0.850 | -2.7 | — |
+| j | 120 | +0.3 | +0.048 | 0.600 | +0.3 | — |
+| k | 211 | -0.1 | +0.062 | 0.372 | +2.2 | — |
+
+**Result: 0/11 patients show significant ISF temporal trend** (all p > 0.10).
+
+**Key findings**:
+
+1. **Per-cycle ISF variance is enormous** (std 4.5–59.3 mg/dL/U), drowning any
+   secular trend. Individual DIA cycles are too noisy for drift detection.
+
+2. **ISF_effective near zero for most patients** — glucose doesn't systematically
+   drop after insulin delivery at the 6h scale. This suggests meal carbs and
+   other factors dominate the glucose response within individual cycles.
+
+3. **Contrast with EXP-307/308**: Those experiments found significant drift
+   by aggregating many windows. The aggregation smooths noise and reveals
+   subtle mean shifts. But individual ISF measurements are too noisy.
+
+4. **Implication**: ISF drift detection requires longer aggregation (weeks/months
+   of averaged ISF_effective), not individual cycle measurements. A rolling
+   weekly ISF_effective average might succeed where per-cycle fails.
+
+### EXP-311: Temporal Override Model (**Significant Improvement**)
+
+**Question**: Can a 1D-CNN on raw 2h windows predict overrides better than
+static state features? (EXP-305 showed embeddings barely help.)
+
+**Method**: Compare three architectures on forward-looking override labels
+(will glucose leave [70,180] in next 1h?):
+
+| Model | F1_macro | F1_no_override | F1_high | F1_low |
+|-------|---------|----------------|---------|--------|
+| StateMLP (10-dim) | 0.700 | 0.784 | 0.821 | 0.493 |
+| **TemporalCNN (8ch×12)** | **0.726** | **0.803** | **0.858** | **0.515** |
+| Combined (CNN+state) | 0.721 | 0.792 | 0.855 | 0.515 |
+
+**Key findings**:
+
+1. **TemporalCNN beats StateMLP** by +2.6% macro F1. Temporal dynamics in the
+   raw signal provide predictive value beyond static summaries.
+
+2. **Combined model doesn't improve over CNN alone** — the CNN already captures
+   what the static features encode, plus temporal patterns.
+
+3. **High override detection is strong** (F1=0.858) — hyperglycemia is predictable
+   from temporal patterns. Low override detection is harder (F1=0.515) — hypoglycemia
+   has more varied temporal signatures.
+
+4. **Label scheme matters enormously**: EXP-305's F1=0.39 used a different label
+   granularity (4 override types). This experiment's binary high/low/none scheme
+   is more actionable and produces much higher F1.
+
+5. **Architecture recommendation**: Use 1D-CNN on raw fast window for override
+   prediction. Embeddings and static features add no value when the CNN has
+   access to the raw temporal signal.
+
+---
+
+## Updated Task–Scale–Architecture Matrix
+
+| Objective | Best Scale | Best Architecture | Best Metric | Key Experiment |
+|-----------|-----------|-------------------|-------------|----------------|
+| Pattern retrieval | Weekly (7d) | Transformer encoder | Sil=+0.326 | EXP-304 |
+| UAM detection | Fast (2h) | Embedding + classifier | F1=0.40 | EXP-291 |
+| ISF drift | Episode (12h) | Treatment matching (statistical) | 4/11 clean | EXP-308 |
+| ISF response ratio | 6h cycles | Direct computation (no model) | 0/11 sig. | EXP-309 |
+| Override prediction | Fast (2h) | **1D-CNN on raw window** | **F1=0.726** | **EXP-311** |
+| Glucose forecasting | 2h window | Per-patient fine-tuned ensemble | MAE=11.25 | EXP-242 |
+
+**Key insight**: Each objective demands not just a different timescale but a
+fundamentally different architecture. Pattern retrieval needs learned embeddings,
+override prediction needs temporal CNNs, ISF drift needs statistical matching,
+and direct ISF measurement needs longer aggregation windows.
+
+### EXP-310: Leave-Patient-Out Weekly Retrieval
+
+**Question**: Do weekly pattern embeddings generalize to unseen patients, or
+do they just learn patient-specific fingerprints?
+
+**Method**: For each of 11 patients, train weekly encoder on the other 10,
+evaluate on the held-out patient. Weekly scale (168h @ 1hr, stride 24h).
+
+| Patient | N_val | R@5 | R@1 | Silhouette |
+|---------|-------|-----|-----|------------|
+| a | 174 | 1.000 | 1.000 | -0.465 |
+| b | 174 | 1.000 | 1.000 | -0.238 |
+| c | 174 | 1.000 | 1.000 | -0.654 |
+| d | 174 | 1.000 | 1.000 | -0.381 |
+| e | 151 | 1.000 | 1.000 | -0.235 |
+| f | 174 | 1.000 | 1.000 | -0.260 |
+| g | 174 | 1.000 | 1.000 | -0.191 |
+| h | 173 | 1.000 | 1.000 | -0.631 |
+| i | 174 | 1.000 | 1.000 | -0.525 |
+| j | 55 | 1.000 | 1.000 | -0.267 |
+| k | 173 | 1.000 | 1.000 | -0.108 |
+| **Mean** | — | **1.000** | **1.000** | **-0.360** |
+
+**Comparison**: Within-patient Sil = -0.301 (EXP-301) vs LOO Sil = -0.360.
+
+**Key findings**:
+
+1. **R@K is completely saturated** — R@5=R@1=1.000 for ALL patients. Label density
+   is so high that even mediocre embeddings achieve perfect recall. R@K is not a
+   discriminative metric for this task; need class-balanced or cross-patient evaluation.
+
+2. **Embeddings transfer modestly** — LOO Silhouette degrades only -0.059 (-20%
+   relative) from within-patient training. Patterns learned from other patients
+   apply reasonably well.
+
+3. **Patient variation is 6×** — Patient k (Sil=-0.108, best) has highly stereotyped
+   patterns; patients c and h (Sil < -0.63) have heterogeneous patterns that don't
+   cluster well regardless of training data.
+
+4. **Implication**: A single encoder trained on a patient pool would work as a
+   reasonable starting point for new patients, with per-patient fine-tuning
+   likely closing the -0.059 gap.
