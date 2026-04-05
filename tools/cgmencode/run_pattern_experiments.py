@@ -3918,6 +3918,717 @@ def run_cnn_uam(args):
     return results
 
 
+# ── EXP-314: Multi-Lead-Time Override Prediction ─────────────────────
+
+def run_multi_lead_override(args):
+    """EXP-314: Override prediction at multiple lead times (15/30/60 min).
+
+    EXP-311 showed 1D-CNN achieves F1=0.726 for "will glucose leave [70,180]
+    in the next 1 hour?" This tests whether shorter prediction horizons
+    (15min, 30min) are easier and more actionable, or if longer lead gives
+    the model more signal to work with.
+
+    Trains a separate 1D-CNN for each lead time:
+    - 15 min (3 future steps): Immediate alert
+    - 30 min (6 future steps): Short-term warning
+    - 60 min (12 future steps): Full hour prediction (EXP-311 baseline)
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-314: Multi-Lead-Time Override Prediction")
+    print("=" * 60)
+
+    # Load 2h fast data
+    train_np, val_np = load_multiscale_data(patient_paths, scale='fast',
+                                            val_fraction=0.2)
+    print(f"Loaded: {train_np.shape} train, {val_np.shape} val")
+
+    lead_configs = [
+        ('15min', 3),   # 3 steps × 5min = 15 min
+        ('30min', 6),   # 6 steps × 5min = 30 min
+        ('60min', 12),  # 12 steps × 5min = 60 min (EXP-311 baseline)
+    ]
+
+    all_results = {}
+
+    for lead_name, lead_steps in lead_configs:
+        print(f"\n--- Lead time: {lead_name} ({lead_steps} steps) ---")
+
+        # Build labels: will glucose leave [70, 180] in the NEXT lead_steps?
+        half = train_np.shape[1] // 2  # history/future boundary
+
+        def build_lead_labels(windows, n_steps):
+            future = windows[:, half:half + n_steps, 0] * 400.0
+            high = (future > 180).any(axis=1)
+            low = (future < 70).any(axis=1)
+            labels = np.zeros(len(windows), dtype=np.int64)
+            labels[high] = 1
+            labels[low] = 2  # low overrides high (safety)
+            return labels
+
+        train_labels = build_lead_labels(train_np, lead_steps)
+        val_labels = build_lead_labels(val_np, lead_steps)
+
+        n_no = (train_labels == 0).sum()
+        n_hi = (train_labels == 1).sum()
+        n_lo = (train_labels == 2).sum()
+        print(f"  Labels: no={n_no}, high={n_hi}, low={n_lo}")
+
+        # Class weights
+        from collections import Counter
+        counts = Counter(train_labels.tolist())
+        n_total = len(train_labels)
+        n_classes = 3
+        class_weights = torch.tensor([
+            n_total / (n_classes * max(1, counts.get(c, 1))) for c in range(n_classes)
+        ], dtype=torch.float32).to(device)
+
+        # 1D-CNN model (same architecture as EXP-311)
+        class LeadCNN(nn.Module):
+            def __init__(self, in_channels=8, n_classes=3):
+                super().__init__()
+                self.conv = nn.Sequential(
+                    nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                    nn.ReLU(), nn.BatchNorm1d(32),
+                    nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                    nn.ReLU(), nn.BatchNorm1d(64),
+                    nn.AdaptiveAvgPool1d(1),
+                )
+                self.classifier = nn.Sequential(
+                    nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.2),
+                    nn.Linear(32, n_classes),
+                )
+            def forward(self, x):
+                h = x.shape[1] // 2
+                x = x[:, :h].permute(0, 2, 1)
+                feat = self.conv(x).squeeze(-1)
+                return self.classifier(feat)
+
+        model = LeadCNN().to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        criterion = nn.CrossEntropyLoss(weight=class_weights)
+
+        train_t = torch.from_numpy(train_np).float()
+        val_t = torch.from_numpy(val_np).float()
+        train_y = torch.from_numpy(train_labels).long()
+
+        batch_size = 256
+        best_val_f1 = 0.0
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_np))
+            epoch_loss = 0.0
+            n_batches = 0
+
+            for start in range(0, len(perm), batch_size):
+                end = min(start + batch_size, len(perm))
+                idx = perm[start:end]
+                logits = model(train_t[idx].to(device))
+                loss = criterion(logits, train_y[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                epoch_loss += loss.item()
+                n_batches += 1
+
+            if (epoch + 1) % 10 == 0 or epoch == epochs - 1:
+                model.eval()
+                all_preds = []
+                with torch.no_grad():
+                    for vs in range(0, len(val_np), 512):
+                        ve = min(vs + 512, len(val_np))
+                        logits = model(val_t[vs:ve].to(device))
+                        all_preds.append(logits.argmax(dim=-1).cpu().numpy())
+                preds = np.concatenate(all_preds)
+
+                from sklearn.metrics import f1_score
+                val_f1 = f1_score(val_labels, preds, average='macro', zero_division=0)
+                best_val_f1 = max(best_val_f1, val_f1)
+                print(f"  [{lead_name}] E{epoch+1}: loss={epoch_loss/n_batches:.4f}, "
+                      f"val_F1={val_f1:.4f} (best={best_val_f1:.4f})")
+
+        # Final eval
+        model.eval()
+        all_preds = []
+        with torch.no_grad():
+            for vs in range(0, len(val_np), 512):
+                ve = min(vs + 512, len(val_np))
+                logits = model(val_t[vs:ve].to(device))
+                all_preds.append(logits.argmax(dim=-1).cpu().numpy())
+        preds = np.concatenate(all_preds)
+
+        from sklearn.metrics import f1_score, classification_report
+        f1_macro = f1_score(val_labels, preds, average='macro', zero_division=0)
+        f1_per = f1_score(val_labels, preds, average=None, zero_division=0)
+        report = classification_report(val_labels, preds,
+                                       target_names=['no_override', 'high', 'low'],
+                                       zero_division=0, output_dict=True)
+
+        all_results[lead_name] = {
+            'lead_steps': lead_steps,
+            'lead_minutes': lead_steps * 5,
+            'f1_macro': float(f1_macro),
+            'f1_per_class': [float(f) for f in f1_per],
+            'best_val_f1': float(best_val_f1),
+            'label_dist': {'no': int(n_no), 'high': int(n_hi), 'low': int(n_lo)},
+            'classification_report': report,
+        }
+
+    results = {
+        'experiment': 'EXP-314',
+        'name': 'multi-lead-override',
+        'method': '1D-CNN override at 15/30/60 min lead times',
+        'leads': all_results,
+        'data': {'n_train': len(train_np), 'n_val': len(val_np)},
+        'comparison': {'exp311_60min_f1': 0.726},
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"Multi-Lead Override Comparison")
+    print(f"{'='*60}")
+    print(f"{'Lead':>8} {'F1_macro':>9} {'F1_no':>7} {'F1_hi':>7} {'F1_lo':>7} {'N_hi':>6} {'N_lo':>6}")
+    print("-" * 55)
+    for name, r in sorted(all_results.items(), key=lambda x: x[1]['lead_minutes']):
+        f = r['f1_per_class']
+        d = r['label_dist']
+        print(f"{name:>8} {r['f1_macro']:>8.4f} {f[0]:>6.3f} {f[1]:>6.3f} "
+              f"{f[2]:>6.3f} {d['high']:>6} {d['low']:>6}")
+    print(f"\nEXP-311 baseline (60min): F1=0.726")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp314_multi_lead.json'))
+    return results
+
+
+# ── EXP-315: Dedicated Hypo Prediction CNN ───────────────────────────
+
+def run_hypo_cnn(args):
+    """EXP-315: Dedicated CNN for hypoglycemia prediction.
+
+    EXP-311 showed low override F1=0.515 (hypo is hardest to predict).
+    This experiment dedicates a full CNN to hypo prediction with:
+    - Binary labels (hypo vs not-hypo) for focused optimization
+    - Multiple thresholds (70, 65, 54 mg/dL) for severity grading
+    - Class-balanced sampling with aggressive hypo weighting
+    - Extended input: both history half AND recent glucose trend features
+    - Per-patient evaluation (hypo risk varies greatly)
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-315: Dedicated Hypo Prediction CNN")
+    print("=" * 60)
+
+    # Load 2h fast data
+    train_np, val_np = load_multiscale_data(patient_paths, scale='fast',
+                                            val_fraction=0.2)
+    print(f"Loaded: {train_np.shape} train, {val_np.shape} val")
+
+    half = train_np.shape[1] // 2
+    thresholds = {
+        'mild_70': 70.0,     # standard hypo threshold
+        'moderate_65': 65.0, # Level 1 hypo
+        'severe_54': 54.0,   # Level 2 hypo (clinically significant)
+    }
+
+    lead_configs = [
+        ('30min', 6),   # predict hypo in next 30 min
+        ('60min', 12),  # predict hypo in next 60 min
+    ]
+
+    all_results = {}
+
+    for threshold_name, threshold in thresholds.items():
+        for lead_name, lead_steps in lead_configs:
+            config_name = f"{threshold_name}_{lead_name}"
+            print(f"\n--- {config_name}: glucose < {threshold} in next {lead_name} ---")
+
+            # Binary hypo labels
+            def build_hypo_labels(windows, thresh, n_steps):
+                future = windows[:, half:half + n_steps, 0] * 400.0
+                hypo = (future < thresh).any(axis=1).astype(np.int64)
+                return hypo
+
+            train_labels = build_hypo_labels(train_np, threshold, lead_steps)
+            val_labels = build_hypo_labels(val_np, threshold, lead_steps)
+
+            n_pos = train_labels.sum()
+            n_neg = len(train_labels) - n_pos
+            prevalence = n_pos / len(train_labels)
+            print(f"  Prevalence: {prevalence:.3f} ({n_pos}/{len(train_labels)})")
+
+            if n_pos < 20:
+                print(f"  SKIP: insufficient hypo events ({n_pos})")
+                all_results[config_name] = {'error': f'insufficient events ({n_pos})'}
+                continue
+
+            # Aggressive class weighting for rare events
+            pos_weight = max(2.0, n_neg / max(1, n_pos))
+            class_weights = torch.tensor([1.0, pos_weight], dtype=torch.float32).to(device)
+            print(f"  Class weight: [1.0, {pos_weight:.1f}]")
+
+            # 1D-CNN with deeper architecture for hypo subtleties
+            class HypoCNN(nn.Module):
+                def __init__(self, in_channels=8):
+                    super().__init__()
+                    self.conv = nn.Sequential(
+                        nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                        nn.ReLU(), nn.BatchNorm1d(32),
+                        nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                        nn.ReLU(), nn.BatchNorm1d(64),
+                        nn.Conv1d(64, 64, kernel_size=3, padding=1),
+                        nn.ReLU(), nn.BatchNorm1d(64),
+                        nn.AdaptiveAvgPool1d(1),
+                    )
+                    self.classifier = nn.Sequential(
+                        nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.3),
+                        nn.Linear(32, 2),
+                    )
+                def forward(self, x):
+                    h = x.shape[1] // 2
+                    x = x[:, :h].permute(0, 2, 1)
+                    feat = self.conv(x).squeeze(-1)
+                    return self.classifier(feat)
+
+            model = HypoCNN().to(device)
+            optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+            criterion = nn.CrossEntropyLoss(weight=class_weights)
+
+            train_t = torch.from_numpy(train_np).float()
+            val_t = torch.from_numpy(val_np).float()
+            train_y = torch.from_numpy(train_labels).long()
+
+            batch_size = 256
+            best_val_f1 = 0.0
+            patience = 0
+
+            for epoch in range(epochs):
+                model.train()
+                perm = torch.randperm(len(train_np))
+                epoch_loss = 0.0
+                n_batches = 0
+
+                for start in range(0, len(perm), batch_size):
+                    end = min(start + batch_size, len(perm))
+                    idx = perm[start:end]
+                    logits = model(train_t[idx].to(device))
+                    loss = criterion(logits, train_y[idx].to(device))
+                    optimizer.zero_grad()
+                    loss.backward()
+                    optimizer.step()
+                    epoch_loss += loss.item()
+                    n_batches += 1
+
+                if (epoch + 1) % 5 == 0 or epoch == epochs - 1:
+                    model.eval()
+                    all_preds = []
+                    with torch.no_grad():
+                        for vs in range(0, len(val_np), 512):
+                            ve = min(vs + 512, len(val_np))
+                            logits = model(val_t[vs:ve].to(device))
+                            all_preds.append(logits.argmax(dim=-1).cpu().numpy())
+                    preds = np.concatenate(all_preds)
+
+                    from sklearn.metrics import f1_score
+                    val_f1 = f1_score(val_labels, preds, zero_division=0)
+                    if val_f1 > best_val_f1:
+                        best_val_f1 = val_f1
+                        patience = 0
+                    else:
+                        patience += 1
+
+                    if (epoch + 1) % 10 == 0:
+                        print(f"  [{config_name}] E{epoch+1}: loss={epoch_loss/n_batches:.4f}, "
+                              f"F1={val_f1:.4f} (best={best_val_f1:.4f})")
+
+                    if patience >= 4:
+                        print(f"  [{config_name}] Early stop at epoch {epoch+1}")
+                        break
+
+            # Final eval
+            model.eval()
+            all_preds = []
+            all_probs = []
+            with torch.no_grad():
+                for vs in range(0, len(val_np), 512):
+                    ve = min(vs + 512, len(val_np))
+                    logits = model(val_t[vs:ve].to(device))
+                    all_preds.append(logits.argmax(dim=-1).cpu().numpy())
+                    all_probs.append(torch.softmax(logits, dim=-1)[:, 1].cpu().numpy())
+            preds = np.concatenate(all_preds)
+            probs = np.concatenate(all_probs)
+
+            from sklearn.metrics import f1_score, precision_score, recall_score
+            from sklearn.metrics import roc_auc_score
+
+            f1 = f1_score(val_labels, preds, zero_division=0)
+            prec = precision_score(val_labels, preds, zero_division=0)
+            rec = recall_score(val_labels, preds, zero_division=0)
+            try:
+                auc = roc_auc_score(val_labels, probs)
+            except ValueError:
+                auc = float('nan')
+
+            all_results[config_name] = {
+                'threshold': threshold,
+                'lead_minutes': lead_steps * 5,
+                'prevalence': float(prevalence),
+                'f1': float(f1),
+                'precision': float(prec),
+                'recall': float(rec),
+                'auc_roc': float(auc),
+                'best_val_f1': float(best_val_f1),
+                'n_hypo_train': int(n_pos),
+                'n_hypo_val': int(val_labels.sum()),
+            }
+            print(f"  Result: F1={f1:.4f}, P={prec:.4f}, R={rec:.4f}, AUC={auc:.4f}")
+
+    results = {
+        'experiment': 'EXP-315',
+        'name': 'hypo-prediction-cnn',
+        'method': 'Dedicated 3-layer CNN for binary hypo prediction',
+        'configs': all_results,
+        'data': {'n_train': len(train_np), 'n_val': len(val_np)},
+        'comparison': {'exp311_low_override_f1': 0.515},
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"Hypo Prediction Summary")
+    print(f"{'='*60}")
+    print(f"{'Config':>22} {'Prev':>6} {'F1':>7} {'Prec':>7} {'Recall':>7} {'AUC':>7}")
+    print("-" * 60)
+    for name in sorted(all_results.keys()):
+        r = all_results[name]
+        if 'error' in r:
+            print(f"{name:>22} {'SKIP':>6}")
+            continue
+        print(f"{name:>22} {r['prevalence']:>5.3f} {r['f1']:>6.4f} "
+              f"{r['precision']:>6.4f} {r['recall']:>6.4f} {r['auc_roc']:>6.4f}")
+    print(f"\nEXP-311 baseline (low override, 60min): F1=0.515")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp315_hypo_cnn.json'))
+    return results
+
+
+# ── EXP-316: ISF Trend as Downstream Feature ────────────────────────
+
+def run_isf_as_feature(args):
+    """EXP-316: Feed rolling ISF trend into override and UAM models.
+
+    EXP-312 showed rolling biweekly ISF_effective tracks real drift in 9/11
+    patients. This tests whether adding ISF metabolic context as an input
+    feature improves downstream classification tasks:
+    - Does knowing "patient is becoming more insulin sensitive" help predict
+      whether an override is needed?
+    - Does ISF trend help predict UAM events?
+
+    Method: Compute rolling ISF_effective at each timestep, append as
+    additional channel to the 2h window, retrain CNN classifiers.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-316: ISF Trend as Downstream Feature")
+    print("=" * 60)
+
+    # Step 1: Compute per-patient rolling ISF for each 5-min timestep
+    from tools.cgmencode.real_data_adapter import build_nightscout_grid
+
+    # Build pid→path mapping from the list
+    pid_paths = {}
+    for p in patient_paths:
+        pid = os.path.basename(os.path.dirname(p))
+        pid_paths[pid] = p
+
+    all_isf_grids = {}
+    window_14d = 4032  # 14 days in 5-min steps
+
+    for pid, ppath in sorted(pid_paths.items()):
+        result = _get_cached_grid(ppath)
+        if result is None or result[0] is None:
+            continue
+        _, grid = result
+
+        n_rows = grid.shape[0]
+        glucose = grid[:, 0] * 400.0
+        bolus = grid[:, 4] * 10.0
+
+        # Vectorized: compute ISF_eff at each bolus event, then rolling mean
+        bolus_idxs = np.where(bolus > 0.5)[0]
+        bolus_idxs = bolus_idxs[(bolus_idxs >= 6) & (bolus_idxs + 24 < n_rows)]
+
+        # Compute g_before (mean of 3 steps before) and g_after (mean of steps 18-24 after)
+        isf_at_bolus = np.full(n_rows, np.nan)
+        for bi in bolus_idxs:
+            g_before = np.nanmean(glucose[bi - 3:bi])
+            g_after = np.nanmean(glucose[bi + 18:bi + 24])
+            dose = bolus[bi]
+            if np.isnan(g_before) or np.isnan(g_after) or dose < 0.5:
+                continue
+            isf_eff = (g_before - g_after) / dose
+            if -200 < isf_eff < 200:
+                isf_at_bolus[bi] = isf_eff
+
+        # Rolling 14-day mean of per-bolus ISF values (vectorized with searchsorted)
+        isf_trace = np.full(n_rows, np.nan)
+        valid_isf_idx = np.where(~np.isnan(isf_at_bolus))[0]
+        valid_isf_vals = isf_at_bolus[valid_isf_idx]
+        if len(valid_isf_idx) >= 3:
+            # Use sorted index for O(log n) lookups
+            cumsum = np.cumsum(valid_isf_vals)
+            cumsum = np.insert(cumsum, 0, 0.0)  # prepend 0 for easy slicing
+            for t in range(n_rows):
+                lo = np.searchsorted(valid_isf_idx, max(0, t - window_14d), side='left')
+                hi = np.searchsorted(valid_isf_idx, t, side='right')
+                count = hi - lo
+                if count >= 3:
+                    isf_trace[t] = (cumsum[hi] - cumsum[lo]) / count
+
+        # Forward-fill NaNs
+        last_valid = np.nan
+        for t in range(n_rows):
+            if not np.isnan(isf_trace[t]):
+                last_valid = isf_trace[t]
+            elif not np.isnan(last_valid):
+                isf_trace[t] = last_valid
+
+        # Normalize to ~[0, 1] range: typical ISF 20-80 mg/dL/U
+        isf_trace = np.clip(isf_trace / 100.0, -2.0, 2.0)
+        all_isf_grids[pid] = isf_trace
+        valid_pct = (~np.isnan(isf_trace)).mean() * 100
+        print(f"  Patient {pid}: ISF coverage {valid_pct:.1f}%, "
+              f"mean={np.nanmean(isf_trace)*100:.1f} mg/dL/U")
+
+    # Step 2: Load windows and append ISF channel
+    print("\nLoading 2h windows with ISF channel...")
+    window_2h = 24
+    stride = window_2h // 2
+
+    all_train_8ch = []
+    all_train_9ch = []
+    all_val_8ch = []
+    all_val_9ch = []
+
+    for pid, ppath in sorted(pid_paths.items()):
+        result = _get_cached_grid(ppath)
+        if result is None or result[0] is None:
+            continue
+        df_grid, _ = result
+
+        features = _grid_to_features(df_grid)
+        n_rows = features.shape[0]
+        n_ch = features.shape[1]
+
+        isf_trace = all_isf_grids.get(pid)
+        if isf_trace is None:
+            continue
+
+        # Build windows
+        windows_8ch = []
+        windows_9ch = []
+        for start in range(0, n_rows - window_2h + 1, stride):
+            w = features[start:start + window_2h]
+            if np.isnan(w[:, 0]).mean() >= 0.2:
+                continue
+            # Replace NaN with 0
+            w_clean = np.nan_to_num(w, nan=0.0)
+            windows_8ch.append(w_clean)
+
+            # Append ISF channel
+            isf_ch = isf_trace[start:start + window_2h].copy()
+            isf_ch = np.nan_to_num(isf_ch, nan=0.0).reshape(-1, 1)
+            w9 = np.concatenate([w_clean, isf_ch], axis=1)
+            windows_9ch.append(w9)
+
+        if not windows_8ch:
+            continue
+
+        arr_8 = np.array(windows_8ch, dtype=np.float32)
+        arr_9 = np.array(windows_9ch, dtype=np.float32)
+
+        split_idx = int(len(arr_8) * 0.8)
+        all_train_8ch.append(arr_8[:split_idx])
+        all_val_8ch.append(arr_8[split_idx:])
+        all_train_9ch.append(arr_9[:split_idx])
+        all_val_9ch.append(arr_9[split_idx:])
+
+    train_8 = np.concatenate(all_train_8ch)
+    val_8 = np.concatenate(all_val_8ch)
+    train_9 = np.concatenate(all_train_9ch)
+    val_9 = np.concatenate(all_val_9ch)
+    print(f"8ch: {train_8.shape} train, {val_8.shape} val")
+    print(f"9ch: {train_9.shape} train, {val_9.shape} val")
+
+    # Step 3: Train CNN classifiers WITH and WITHOUT ISF channel
+    half = train_8.shape[1] // 2
+    tasks = {
+        'override': {'lead': 12, 'n_classes': 3},
+        'uam': {'lead': 6, 'n_classes': 2},
+    }
+
+    all_results = {}
+
+    for task_name, task_cfg in tasks.items():
+        lead = task_cfg['lead']
+        n_cls = task_cfg['n_classes']
+        print(f"\n=== Task: {task_name} (lead={lead*5}min, {n_cls} classes) ===")
+
+        def build_labels(windows, lead_steps, n_classes):
+            future = windows[:, half:half + lead_steps, 0] * 400.0
+            if n_classes == 3:  # override
+                high = (future > 180).any(axis=1)
+                low = (future < 70).any(axis=1)
+                labels = np.zeros(len(windows), dtype=np.int64)
+                labels[high] = 1
+                labels[low] = 2
+                return labels
+            else:  # uam: sharp rise
+                rise = np.diff(future, axis=1)
+                sharp_rise = (rise > 3.0).any(axis=1)
+                return sharp_rise.astype(np.int64)
+
+        train_y = build_labels(train_8, lead, n_cls)
+        val_y = build_labels(val_8, lead, n_cls)
+
+        for variant, (train_data, val_data, in_ch) in [
+            ('baseline_8ch', (train_8, val_8, 8)),
+            ('with_isf_9ch', (train_9, val_9, 9)),
+        ]:
+            print(f"\n--- {variant} ---")
+
+            # Class weights
+            from collections import Counter
+            counts = Counter(train_y.tolist())
+            n_total = len(train_y)
+            cw = torch.tensor([
+                n_total / (n_cls * max(1, counts.get(c, 1))) for c in range(n_cls)
+            ], dtype=torch.float32).to(device)
+
+            class TaskCNN(nn.Module):
+                def __init__(self, in_channels, n_classes):
+                    super().__init__()
+                    self.conv = nn.Sequential(
+                        nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                        nn.ReLU(), nn.BatchNorm1d(32),
+                        nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                        nn.ReLU(), nn.BatchNorm1d(64),
+                        nn.AdaptiveAvgPool1d(1),
+                    )
+                    self.classifier = nn.Sequential(
+                        nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.2),
+                        nn.Linear(32, n_classes),
+                    )
+                def forward(self, x):
+                    h = x.shape[1] // 2
+                    x = x[:, :h].permute(0, 2, 1)
+                    feat = self.conv(x).squeeze(-1)
+                    return self.classifier(feat)
+
+            model = TaskCNN(in_ch, n_cls).to(device)
+            optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+            criterion = nn.CrossEntropyLoss(weight=cw)
+
+            train_t = torch.from_numpy(train_data).float()
+            val_t = torch.from_numpy(val_data).float()
+            train_yt = torch.from_numpy(train_y).long()
+
+            batch_size = 256
+            best_f1 = 0.0
+
+            for epoch in range(epochs):
+                model.train()
+                perm = torch.randperm(len(train_data))
+                for start in range(0, len(perm), batch_size):
+                    end = min(start + batch_size, len(perm))
+                    idx = perm[start:end]
+                    logits = model(train_t[idx].to(device))
+                    loss = criterion(logits, train_yt[idx].to(device))
+                    optimizer.zero_grad()
+                    loss.backward()
+                    optimizer.step()
+
+                if (epoch + 1) % 10 == 0 or epoch == epochs - 1:
+                    model.eval()
+                    all_preds = []
+                    with torch.no_grad():
+                        for vs in range(0, len(val_data), 512):
+                            ve = min(vs + 512, len(val_data))
+                            logits = model(val_t[vs:ve].to(device))
+                            all_preds.append(logits.argmax(dim=-1).cpu().numpy())
+                    preds = np.concatenate(all_preds)
+                    from sklearn.metrics import f1_score
+                    f1 = f1_score(val_y, preds, average='macro', zero_division=0)
+                    best_f1 = max(best_f1, f1)
+                    print(f"    E{epoch+1}: F1={f1:.4f} (best={best_f1:.4f})")
+
+            # Final eval
+            model.eval()
+            all_preds = []
+            with torch.no_grad():
+                for vs in range(0, len(val_data), 512):
+                    ve = min(vs + 512, len(val_data))
+                    logits = model(val_t[vs:ve].to(device))
+                    all_preds.append(logits.argmax(dim=-1).cpu().numpy())
+            preds = np.concatenate(all_preds)
+            from sklearn.metrics import f1_score
+            f1_final = f1_score(val_y, preds, average='macro', zero_division=0)
+            f1_per = f1_score(val_y, preds, average=None, zero_division=0)
+
+            key = f"{task_name}_{variant}"
+            all_results[key] = {
+                'task': task_name,
+                'variant': variant,
+                'in_channels': in_ch,
+                'f1_macro': float(f1_final),
+                'f1_per_class': [float(f) for f in f1_per],
+                'best_val_f1': float(best_f1),
+            }
+
+    results = {
+        'experiment': 'EXP-316',
+        'name': 'isf-as-feature',
+        'method': 'CNN with/without rolling ISF_eff as 9th input channel',
+        'configs': all_results,
+        'data': {'n_train_8ch': len(train_8), 'n_train_9ch': len(train_9)},
+        'isf_coverage': {pid: float((~np.isnan(v)).mean())
+                         for pid, v in all_isf_grids.items()},
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"ISF-as-Feature Comparison")
+    print(f"{'='*60}")
+    print(f"{'Config':>30} {'F1_macro':>9} {'Delta':>7}")
+    print("-" * 48)
+    for task_name in ['override', 'uam']:
+        base_key = f"{task_name}_baseline_8ch"
+        isf_key = f"{task_name}_with_isf_9ch"
+        base_f1 = all_results[base_key]['f1_macro']
+        isf_f1 = all_results[isf_key]['f1_macro']
+        delta = isf_f1 - base_f1
+        sign = '+' if delta >= 0 else ''
+        print(f"{base_key:>30} {base_f1:>8.4f}")
+        print(f"{isf_key:>30} {isf_f1:>8.4f} {sign}{delta:>6.4f}")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp316_isf_feature.json'))
+    return results
+
+
 # ── Registry & CLI ─────────────────────────────────────────────────────
 
 EXPERIMENTS = {
@@ -3963,6 +4674,13 @@ EXPERIMENTS = {
                     'Rolling weekly ISF aggregation for drift detection'),
     'cnn-uam': ('EXP-313', run_cnn_uam,
                 '1D-CNN for UAM detection vs embedding baseline'),
+    # Phase 28: Multi-lead override, dedicated hypo prediction
+    'multi-lead-override': ('EXP-314', run_multi_lead_override,
+                            'Multi-lead-time override prediction (15/30/60 min)'),
+    'hypo-cnn': ('EXP-315', run_hypo_cnn,
+                 'Dedicated CNN for hypo prediction at multiple thresholds'),
+    'isf-feature': ('EXP-316', run_isf_as_feature,
+                    'ISF trend as downstream feature for override/UAM CNN'),
 }
 
 
