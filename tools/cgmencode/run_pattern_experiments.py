@@ -5100,6 +5100,493 @@ def run_per_patient_override(args):
     return results
 
 
+# ── EXP-319: Selective Per-Patient Override Ensemble ─────────────────
+
+def run_selective_ensemble(args):
+    """EXP-319: Selective ensemble — FT where validation improves, base elsewhere.
+
+    EXP-318 showed FT helps 5/11 patients. This tests the practical deployment
+    strategy: train base model, fine-tune all patients, but only USE the fine-tuned
+    model when validation F1 improves. Otherwise keep the base model.
+
+    Also tests at both 15min and 30min lead times (EXP-314 showed 15min is best).
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-319: Selective Per-Patient Override Ensemble")
+    print("=" * 60)
+
+    # Load per-patient data
+    per_patient_data = {}
+    for ppath in patient_paths:
+        pid = os.path.basename(os.path.dirname(ppath))
+        result = _get_cached_grid(ppath)
+        if result is None or result[0] is None:
+            continue
+        df_grid, _ = result
+        features = _grid_to_features(df_grid)
+
+        window = 24
+        stride = window // 2
+        windows = []
+        for start in range(0, len(features) - window + 1, stride):
+            w = features[start:start + window]
+            if np.isnan(w[:, 0]).mean() < 0.2:
+                windows.append(np.nan_to_num(w, nan=0.0))
+
+        if len(windows) < 100:
+            continue
+
+        arr = np.array(windows, dtype=np.float32)
+        split = int(len(arr) * 0.8)
+        per_patient_data[pid] = {'train': arr[:split], 'val': arr[split:]}
+
+    all_train = np.concatenate([d['train'] for d in per_patient_data.values()])
+    half = all_train.shape[1] // 2
+
+    lead_configs = [('15min', 3), ('30min', 6)]
+    all_results = {}
+
+    class OverrideCNN(nn.Module):
+        def __init__(self, in_channels=8, n_classes=3):
+            super().__init__()
+            self.conv = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.classifier = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, n_classes),
+            )
+        def forward(self, x):
+            h = x.shape[1] // 2
+            x = x[:, :h].permute(0, 2, 1)
+            feat = self.conv(x).squeeze(-1)
+            return self.classifier(feat)
+
+    for lead_name, lead_steps in lead_configs:
+        print(f"\n{'='*50}")
+        print(f"Lead time: {lead_name}")
+        print(f"{'='*50}")
+
+        def build_labels(windows, lead=lead_steps):
+            future = windows[:, half:half + lead, 0] * 400.0
+            high = (future > 180).any(axis=1)
+            low = (future < 70).any(axis=1)
+            labels = np.zeros(len(windows), dtype=np.int64)
+            labels[high] = 1
+            labels[low] = 2
+            return labels
+
+        # Train base model
+        print("\n--- Training base model ---")
+        all_train = np.concatenate([d['train'] for d in per_patient_data.values()])
+        train_labels = build_labels(all_train)
+        from collections import Counter
+        counts = Counter(train_labels.tolist())
+        n_total = len(train_labels)
+        cw = torch.tensor([n_total / (3 * max(1, counts.get(c, 1))) for c in range(3)],
+                           dtype=torch.float32).to(device)
+
+        base_model = OverrideCNN().to(device)
+        optimizer = torch.optim.Adam(base_model.parameters(), lr=1e-3, weight_decay=1e-5)
+        criterion = nn.CrossEntropyLoss(weight=cw)
+        train_t = torch.from_numpy(all_train).float()
+        train_y = torch.from_numpy(train_labels).long()
+        batch_size = 256
+
+        for epoch in range(epochs):
+            base_model.train()
+            perm = torch.randperm(len(all_train))
+            for start in range(0, len(perm), batch_size):
+                end = min(start + batch_size, len(perm))
+                idx = perm[start:end]
+                logits = base_model(train_t[idx].to(device))
+                loss = criterion(logits, train_y[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        base_state = {k: v.clone() for k, v in base_model.state_dict().items()}
+
+        # Evaluate base + FT per patient, select best
+        patient_results = {}
+        ft_epochs = max(10, epochs // 3)
+
+        for pid in sorted(per_patient_data.keys()):
+            data = per_patient_data[pid]
+            val_arr = data['val']
+            val_y = build_labels(val_arr)
+            val_t = torch.from_numpy(val_arr).float()
+
+            def eval_model(model):
+                model.eval()
+                all_preds = []
+                with torch.no_grad():
+                    for vs in range(0, len(val_arr), 512):
+                        ve = min(vs + 512, len(val_arr))
+                        logits = model(val_t[vs:ve].to(device))
+                        all_preds.append(logits.argmax(dim=-1).cpu().numpy())
+                preds = np.concatenate(all_preds)
+                from sklearn.metrics import f1_score
+                return f1_score(val_y, preds, average='macro', zero_division=0)
+
+            # Base model eval
+            base_f1 = eval_model(base_model)
+
+            # Fine-tune
+            ft_model = OverrideCNN().to(device)
+            ft_model.load_state_dict(base_state)
+            ft_optimizer = torch.optim.Adam(ft_model.parameters(), lr=1e-4, weight_decay=1e-5)
+            train_arr = data['train']
+            ft_train_y = build_labels(train_arr)
+            p_counts = Counter(ft_train_y.tolist())
+            p_total = len(ft_train_y)
+            p_cw = torch.tensor([p_total / (3 * max(1, p_counts.get(c, 1))) for c in range(3)],
+                                 dtype=torch.float32).to(device)
+            ft_criterion = nn.CrossEntropyLoss(weight=p_cw)
+            ft_train_t = torch.from_numpy(train_arr).float()
+            ft_train_yt = torch.from_numpy(ft_train_y).long()
+
+            for epoch in range(ft_epochs):
+                ft_model.train()
+                perm = torch.randperm(len(train_arr))
+                for start in range(0, len(perm), batch_size):
+                    end = min(start + batch_size, len(perm))
+                    idx = perm[start:end]
+                    logits = ft_model(ft_train_t[idx].to(device))
+                    loss = ft_criterion(logits, ft_train_yt[idx].to(device))
+                    ft_optimizer.zero_grad()
+                    loss.backward()
+                    ft_optimizer.step()
+
+            ft_f1 = eval_model(ft_model)
+
+            # Selective: use FT only if it improves
+            use_ft = ft_f1 > base_f1
+            selected_f1 = ft_f1 if use_ft else base_f1
+            patient_results[pid] = {
+                'base_f1': float(base_f1),
+                'ft_f1': float(ft_f1),
+                'selected': 'ft' if use_ft else 'base',
+                'selected_f1': float(selected_f1),
+            }
+            marker = '✓ FT' if use_ft else '✗ BASE'
+            print(f"  {pid}: base={base_f1:.4f} ft={ft_f1:.4f} → {marker} ({selected_f1:.4f})")
+
+        # Compute ensemble metrics
+        base_mean = np.mean([r['base_f1'] for r in patient_results.values()])
+        ft_mean = np.mean([r['ft_f1'] for r in patient_results.values()])
+        sel_mean = np.mean([r['selected_f1'] for r in patient_results.values()])
+        n_ft = sum(1 for r in patient_results.values() if r['selected'] == 'ft')
+        n_base = sum(1 for r in patient_results.values() if r['selected'] == 'base')
+
+        print(f"\n  Ensemble: {n_ft} FT + {n_base} base")
+        print(f"  Mean: base={base_mean:.4f}, ft_all={ft_mean:.4f}, selective={sel_mean:.4f}")
+
+        all_results[lead_name] = {
+            'lead_steps': lead_steps,
+            'patients': patient_results,
+            'base_mean_f1': float(base_mean),
+            'ft_all_mean_f1': float(ft_mean),
+            'selective_mean_f1': float(sel_mean),
+            'n_ft': n_ft,
+            'n_base': n_base,
+        }
+
+    results = {
+        'experiment': 'EXP-319',
+        'name': 'selective-per-patient-ensemble',
+        'method': 'Selective FT: use fine-tuned model only when val F1 improves',
+        'leads': all_results,
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"Selective Ensemble Summary")
+    print(f"{'='*60}")
+    print(f"{'Lead':>8} {'Base':>8} {'FT all':>8} {'Select':>8} {'N_FT':>5} {'Δ vs base':>9}")
+    print("-" * 50)
+    for name, r in all_results.items():
+        d = r['selective_mean_f1'] - r['base_mean_f1']
+        sign = '+' if d >= 0 else ''
+        print(f"{name:>8} {r['base_mean_f1']:>7.4f} {r['ft_all_mean_f1']:>7.4f} "
+              f"{r['selective_mean_f1']:>7.4f} {r['n_ft']:>4}/{r['n_ft']+r['n_base']} "
+              f"{sign}{d:>8.4f}")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp319_selective_ensemble.json'))
+    return results
+
+
+# ── EXP-320: IOB Trajectory Features for Hypo ───────────────────────
+
+def run_iob_hypo(args):
+    """EXP-320: Enhanced features for hypo prediction.
+
+    EXP-315/317 showed hypo AUC=0.95 but F1=0.63 (with threshold tuning).
+    This adds derived features specifically informative for hypo events:
+    - IOB slope (rate of IOB change over last 30 min)
+    - Time since last bolus (minutes, normalized)
+    - Glucose momentum (2nd derivative — acceleration of glucose change)
+    - IOB × glucose_slope interaction (high IOB + falling glucose → danger)
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-320: IOB Trajectory Features for Hypo Prediction")
+    print("=" * 60)
+
+    # Load per-patient and compute derived features
+    all_train_8 = []
+    all_val_8 = []
+    all_train_12 = []
+    all_val_12 = []
+
+    for ppath in patient_paths:
+        pid = os.path.basename(os.path.dirname(ppath))
+        result = _get_cached_grid(ppath)
+        if result is None or result[0] is None:
+            continue
+        df_grid, _ = result
+        features = _grid_to_features(df_grid)  # [n, 8]
+        n_rows = features.shape[0]
+
+        # Compute derived channels
+        glucose = features[:, 0]    # normalized
+        iob = features[:, 1]        # normalized
+        bolus = features[:, 4]      # normalized
+
+        # IOB slope: rate of IOB change over 6 steps (30 min)
+        iob_slope = np.zeros(n_rows, dtype=np.float32)
+        for i in range(6, n_rows):
+            iob_slope[i] = (iob[i] - iob[i - 6]) / 6.0
+
+        # Time since last bolus (in 5-min steps, normalized by 288 = 24h)
+        time_since_bolus = np.zeros(n_rows, dtype=np.float32)
+        last_bolus_idx = -1
+        for i in range(n_rows):
+            if bolus[i] > 0.01:
+                last_bolus_idx = i
+            if last_bolus_idx >= 0:
+                time_since_bolus[i] = min((i - last_bolus_idx) / 288.0, 1.0)
+            else:
+                time_since_bolus[i] = 1.0
+
+        # Glucose momentum (2nd derivative over 3 steps)
+        glucose_momentum = np.zeros(n_rows, dtype=np.float32)
+        for i in range(6, n_rows):
+            d1 = glucose[i] - glucose[i - 3]
+            d2 = glucose[i - 3] - glucose[i - 6]
+            glucose_momentum[i] = (d1 - d2)  # acceleration
+
+        # IOB × glucose_slope interaction
+        glucose_slope = np.zeros(n_rows, dtype=np.float32)
+        for i in range(3, n_rows):
+            glucose_slope[i] = glucose[i] - glucose[i - 3]
+        iob_gluc_interaction = iob * glucose_slope
+
+        derived = np.column_stack([iob_slope, time_since_bolus,
+                                   glucose_momentum, iob_gluc_interaction])
+
+        # Build windows
+        window = 24
+        stride = window // 2
+        windows_8 = []
+        windows_12 = []
+        for start in range(0, n_rows - window + 1, stride):
+            w8 = features[start:start + window]
+            if np.isnan(w8[:, 0]).mean() >= 0.2:
+                continue
+            w8_clean = np.nan_to_num(w8, nan=0.0)
+            d4 = derived[start:start + window]
+            d4_clean = np.nan_to_num(d4, nan=0.0)
+            w12 = np.concatenate([w8_clean, d4_clean], axis=1)
+            windows_8.append(w8_clean)
+            windows_12.append(w12)
+
+        if not windows_8:
+            continue
+
+        arr_8 = np.array(windows_8, dtype=np.float32)
+        arr_12 = np.array(windows_12, dtype=np.float32)
+        split = int(len(arr_8) * 0.8)
+        all_train_8.append(arr_8[:split])
+        all_val_8.append(arr_8[split:])
+        all_train_12.append(arr_12[:split])
+        all_val_12.append(arr_12[split:])
+        print(f"  Patient {pid}: {len(arr_8)} windows")
+
+    train_8 = np.concatenate(all_train_8)
+    val_8 = np.concatenate(all_val_8)
+    train_12 = np.concatenate(all_train_12)
+    val_12 = np.concatenate(all_val_12)
+    print(f"\n8ch: {train_8.shape} train, {val_8.shape} val")
+    print(f"12ch: {train_12.shape} train, {val_12.shape} val")
+
+    half = train_8.shape[1] // 2
+    threshold = 70.0
+    lead_steps = 6  # 30 min
+
+    def build_hypo_labels(windows):
+        future = windows[:, half:half + lead_steps, 0] * 400.0
+        return (future < threshold).any(axis=1).astype(np.int64)
+
+    train_y = build_hypo_labels(train_8)
+    val_y = build_hypo_labels(val_8)
+    prevalence = train_y.mean()
+    print(f"Hypo prevalence: {prevalence:.3f}")
+
+    pos_weight = max(2.0, (1 - prevalence) / max(prevalence, 0.001))
+
+    all_results = {}
+
+    for variant, train_data, val_data, in_ch in [
+        ('baseline_8ch', train_8, val_8, 8),
+        ('enhanced_12ch', train_12, val_12, 12),
+    ]:
+        print(f"\n--- {variant} (in_ch={in_ch}) ---")
+        class_weights = torch.tensor([1.0, pos_weight], dtype=torch.float32).to(device)
+
+        class HypoCNN(nn.Module):
+            def __init__(self, in_channels):
+                super().__init__()
+                self.conv = nn.Sequential(
+                    nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                    nn.ReLU(), nn.BatchNorm1d(32),
+                    nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                    nn.ReLU(), nn.BatchNorm1d(64),
+                    nn.Conv1d(64, 64, kernel_size=3, padding=1),
+                    nn.ReLU(), nn.BatchNorm1d(64),
+                    nn.AdaptiveAvgPool1d(1),
+                )
+                self.classifier = nn.Sequential(
+                    nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.3),
+                    nn.Linear(32, 2),
+                )
+            def forward(self, x):
+                h = x.shape[1] // 2
+                x = x[:, :h].permute(0, 2, 1)
+                feat = self.conv(x).squeeze(-1)
+                return self.classifier(feat)
+
+        model = HypoCNN(in_ch).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        criterion = nn.CrossEntropyLoss(weight=class_weights)
+
+        train_t = torch.from_numpy(train_data).float()
+        val_t = torch.from_numpy(val_data).float()
+        train_yt = torch.from_numpy(train_y).long()
+        batch_size = 256
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_data))
+            for start in range(0, len(perm), batch_size):
+                end = min(start + batch_size, len(perm))
+                idx = perm[start:end]
+                logits = model(train_t[idx].to(device))
+                loss = criterion(logits, train_yt[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+            if (epoch + 1) % 10 == 0:
+                model.eval()
+                all_probs = []
+                with torch.no_grad():
+                    for vs in range(0, len(val_data), 512):
+                        ve = min(vs + 512, len(val_data))
+                        logits = model(val_t[vs:ve].to(device))
+                        all_probs.append(torch.softmax(logits, dim=-1)[:, 1].cpu().numpy())
+                probs = np.concatenate(all_probs)
+                preds = (probs >= 0.5).astype(int)
+                from sklearn.metrics import f1_score
+                f1 = f1_score(val_y, preds, zero_division=0)
+                print(f"    E{epoch+1}: F1@0.5={f1:.4f}")
+
+        # Final eval with threshold sweep
+        model.eval()
+        all_probs = []
+        with torch.no_grad():
+            for vs in range(0, len(val_data), 512):
+                ve = min(vs + 512, len(val_data))
+                logits = model(val_t[vs:ve].to(device))
+                all_probs.append(torch.softmax(logits, dim=-1)[:, 1].cpu().numpy())
+        probs = np.concatenate(all_probs)
+
+        from sklearn.metrics import f1_score, precision_score, recall_score
+        from sklearn.metrics import roc_auc_score, fbeta_score
+
+        best_f1 = 0.0
+        best_thresh = 0.5
+        for thresh in np.arange(0.01, 1.0, 0.01):
+            preds = (probs >= thresh).astype(int)
+            f1 = f1_score(val_y, preds, zero_division=0)
+            if f1 > best_f1:
+                best_f1 = f1
+                best_thresh = float(thresh)
+
+        preds_opt = (probs >= best_thresh).astype(int)
+        f1_at_05 = f1_score(val_y, (probs >= 0.5).astype(int), zero_division=0)
+        try:
+            auc = roc_auc_score(val_y, probs)
+        except ValueError:
+            auc = float('nan')
+
+        prec = precision_score(val_y, preds_opt, zero_division=0)
+        rec = recall_score(val_y, preds_opt, zero_division=0)
+
+        all_results[variant] = {
+            'in_channels': in_ch,
+            'f1_at_0.5': float(f1_at_05),
+            'best_f1': float(best_f1),
+            'best_threshold': float(best_thresh),
+            'precision_at_opt': float(prec),
+            'recall_at_opt': float(rec),
+            'auc_roc': float(auc),
+        }
+        print(f"  F1@0.5={f1_at_05:.4f}, F1@{best_thresh:.2f}={best_f1:.4f}, "
+              f"AUC={auc:.4f}")
+
+    results = {
+        'experiment': 'EXP-320',
+        'name': 'iob-trajectory-hypo',
+        'method': 'Enhanced IOB/glucose features for hypo CNN',
+        'features_added': ['iob_slope', 'time_since_bolus', 'glucose_momentum',
+                          'iob_glucose_interaction'],
+        'configs': all_results,
+        'data': {'n_train': len(train_8), 'n_val': len(val_8)},
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"IOB Trajectory Hypo Features Comparison")
+    print(f"{'='*60}")
+    for name, r in all_results.items():
+        print(f"  {name}: F1@opt={r['best_f1']:.4f} @{r['best_threshold']:.2f}, "
+              f"AUC={r['auc_roc']:.4f}")
+    base_f1 = all_results['baseline_8ch']['best_f1']
+    enh_f1 = all_results['enhanced_12ch']['best_f1']
+    delta = enh_f1 - base_f1
+    sign = '+' if delta >= 0 else ''
+    print(f"  Delta: {sign}{delta:.4f} ({sign}{delta/max(base_f1,0.001)*100:.1f}%)")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp320_iob_hypo.json'))
+    return results
+
+
 # ── Registry & CLI ─────────────────────────────────────────────────────
 
 EXPERIMENTS = {
@@ -5157,6 +5644,11 @@ EXPERIMENTS = {
                        'Probability threshold optimization for hypo CNN'),
     'per-patient-override': ('EXP-318', run_per_patient_override,
                              'Per-patient fine-tuning for override CNN'),
+    # Phase 30: Selective ensemble, IOB trajectory features
+    'selective-ensemble': ('EXP-319', run_selective_ensemble,
+                           'Selective per-patient override ensemble'),
+    'iob-hypo': ('EXP-320', run_iob_hypo,
+                 'IOB trajectory features for hypo prediction CNN'),
 }
 
 
