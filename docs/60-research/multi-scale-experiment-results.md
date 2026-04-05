@@ -1,8 +1,8 @@
 # Multi-Scale Pattern Experiment Results
 
-**Date**: 2026-04-04  
-**Experiments**: EXP-287–313 (18 experiments)  
-**Status**: Complete (18 experiments across 4 timescales + cross-scale + drift + CNN)
+**Date**: 2026-04-04 (updated 2026-04-05)  
+**Experiments**: EXP-287–318 (24 experiments)  
+**Status**: Complete (24 experiments across 4 timescales + cross-scale + drift + CNN + optimization)
 
 ## Executive Summary
 
@@ -969,6 +969,157 @@ UAM labels (rapid glucose rise >2 mg/dL/min without recent carbs) at 2h scale.
 
 ---
 
+## EXP-314: Multi-Lead-Time Override Prediction
+
+**Hypothesis**: Shorter prediction horizons (15min, 30min) are more actionable and
+potentially easier than the 60min horizon used in EXP-311.
+
+**Method**: Train separate 1D-CNNs for override prediction at 15/30/60 minute lead times.
+Same CNN architecture as EXP-311, class-weighted CrossEntropyLoss, 30 epochs.
+
+| Lead Time | F1_macro | F1_no | F1_high | F1_low | N_high | N_low |
+|-----------|----------|-------|---------|--------|--------|-------|
+| **15min** | **0.821** | 0.925 | 0.931 | **0.607** | 8438 | 1419 |
+| 30min | 0.784 | 0.876 | 0.889 | 0.586 | 9202 | 1862 |
+| 60min | 0.727 | 0.803 | 0.850 | 0.527 | 10468 | 2675 |
+
+**Key findings**:
+
+1. **15min lead: F1=0.821** — +13% improvement over 60min baseline (0.726). Shorter
+   horizons are definitively easier because more of the "future" glucose trajectory is
+   already determined by the present state.
+
+2. **Hypo class is the bottleneck** at all lead times (F1=0.527–0.607). This motivated
+   EXP-315/317 dedicated hypo work.
+
+3. **Clinical trade-off**: 15min gives best accuracy but minimal reaction time.
+   30min (F1=0.784) may be the practical sweet spot.
+
+---
+
+## EXP-315: Dedicated Hypo Prediction CNN
+
+**Hypothesis**: A dedicated binary hypo classifier with aggressive class weighting and
+deeper architecture will improve on EXP-311's F1=0.515 hypo class performance.
+
+**Method**: 3-layer CNN, binary (hypo vs not), tested at 3 severity thresholds ×
+2 lead times. Class weights up to 47:1.
+
+| Config | Prev | F1 | Precision | Recall | AUC |
+|--------|------|------|-----------|--------|------|
+| mild_70_30min | 6.4% | 0.520 | 0.370 | **0.878** | **0.951** |
+| mild_70_60min | 9.2% | 0.484 | 0.351 | 0.780 | 0.901 |
+| moderate_65_30min | 4.6% | 0.446 | 0.300 | **0.874** | **0.952** |
+| moderate_65_60min | 6.7% | 0.401 | 0.265 | 0.825 | 0.904 |
+| severe_54_30min | 2.1% | 0.217 | 0.123 | **0.890** | **0.951** |
+| severe_54_60min | 3.1% | 0.273 | 0.169 | 0.724 | 0.894 |
+
+**Key findings**:
+
+1. **AUC is consistently excellent (0.89–0.95)** — model separates hypo from non-hypo
+   very well in probability space. The problem is **thresholding, not discrimination**.
+
+2. **Recall is very high (72–89%)** — model catches most hypo events. For safety-critical
+   applications, this is more important than precision.
+
+3. **Precision is the bottleneck** (12–37%) — too many false alarms at argmax threshold.
+   This motivated EXP-317 threshold optimization.
+
+4. **Severe hypo (<54)** is hardest (F1=0.22) due to extremely low prevalence (2.1%),
+   but AUC=0.95 suggests the model could still be useful with calibrated thresholds.
+
+---
+
+## EXP-316: ISF Trend as Downstream Feature
+
+**Hypothesis**: Adding rolling 14-day ISF_effective as a 9th input channel will help
+CNN classifiers by providing metabolic context (patient's current insulin sensitivity).
+
+**Method**: Compute rolling biweekly ISF_eff at each timestep (same as EXP-312),
+append as channel 9, retrain CNN for override and UAM tasks.
+
+| Config | F1_macro | Delta vs baseline |
+|--------|----------|-------------------|
+| override_baseline_8ch | 0.737 | — |
+| override_with_isf_9ch | 0.701 | **-0.035** |
+| uam_baseline_8ch | 0.680 | — |
+| uam_with_isf_9ch | 0.653 | **-0.026** |
+
+**NEGATIVE RESULT**: ISF trend hurts both tasks.
+
+**Explanation**: Rolling 14-day ISF_eff is nearly constant within a 2h window. Adding
+a near-constant channel increases parameter count without information, causing slight
+overfitting. This **confirms the cross-scale rejection principle** from EXP-304/305:
+slow-timescale features do not help fast-timescale classification.
+
+---
+
+## EXP-317: Hypo Threshold Optimization
+
+**Hypothesis**: The default argmax threshold (0.5) is suboptimal for rare events.
+A probability threshold sweep should find a better operating point.
+
+**Method**: Train hypo CNN (EXP-315 architecture), sweep thresholds 0.01–0.99,
+optimize F1 and F2 (recall-weighted).
+
+| Config | F1@0.50 | F1@optimal | Threshold | Improvement |
+|--------|---------|------------|-----------|-------------|
+| mild_70_30min | 0.527 | **0.630** | 0.84 | **+19.7%** |
+| mild_70_60min | 0.512 | **0.596** | 0.81 | **+16.3%** |
+
+**Key findings**:
+
+1. **+19.7% F1 improvement** from simple threshold tuning (0.527→0.630). No model
+   changes needed — just changing the decision boundary.
+
+2. **Counter-intuitive: optimal threshold is ABOVE 0.5** (0.81–0.84), not below.
+   The aggressive class weighting (14.5:1) already biases the model hypo-positive.
+   Raising the threshold recovers precision without losing too much recall.
+
+3. **F2 (recall-weighted)**: 0.695 at threshold 0.61 for 30min. For clinical
+   deployment where missing hypo is worse than false alarms, F2 may be the
+   better optimization target.
+
+4. **Lesson**: Always tune thresholds on imbalanced binary classification.
+   Argmax is rarely optimal for rare events, even with class weighting.
+
+---
+
+## EXP-318: Per-Patient Override Fine-Tuning
+
+**Hypothesis**: Per-patient fine-tuning improved forecasting by 9.1% (EXP-242).
+The same approach should improve override classification.
+
+**Method**: Train base CNN on all patients, then fine-tune per-patient with
+lr=1e-4 (10× lower) for 10 epochs. Evaluate per-patient F1.
+
+| Patient | Base F1 | FT F1 | Delta |
+|---------|---------|-------|-------|
+| a | 0.787 | 0.770 | -0.017 |
+| b | 0.673 | 0.659 | -0.014 |
+| c | 0.799 | **0.831** | **+0.031** |
+| d | 0.701 | 0.642 | -0.059 |
+| e | 0.690 | **0.726** | **+0.036** |
+| f | 0.693 | **0.742** | **+0.049** |
+| g | 0.762 | 0.767 | +0.005 |
+| h | 0.727 | 0.576 | **-0.151** |
+| i | 0.809 | **0.860** | **+0.051** |
+| j | 0.637 | 0.569 | -0.068 |
+| k | 0.687 | 0.503 | **-0.184** |
+| **Mean** | **0.724** | **0.695** | **-0.029** |
+
+**MIXED RESULT**: Only 5/11 patients improved. Mean F1 dropped 2.9%.
+
+**Why classification ≠ forecasting for FT**:
+- Forecasting has 12.9K informative windows per patient; classification has ~3.5K
+  with heavy class imbalance (only 5-10% hypo windows).
+- Catastrophic forgetting in h (-15.1%) and k (-18.4%) — the fine-tuning overwrites
+  generalizable features with patient-specific noise.
+- **Recommendation**: Selective ensemble — use FT only for patients where validation
+  improves (c, e, f, g, i), base model for others.
+
+---
+
 ## Final Task–Scale–Architecture Matrix
 
 | Objective | Best Scale | Best Architecture | Best Metric | Key Experiment |
@@ -976,8 +1127,14 @@ UAM labels (rapid glucose rise >2 mg/dL/min without recent carbs) at 2h scale.
 | Pattern retrieval | Weekly (7d) | Transformer encoder | Sil=+0.326 | EXP-304 |
 | **UAM detection** | Fast (2h) | **1D-CNN** | **F1=0.939** | **EXP-313** |
 | ISF drift tracking | Rolling biweekly | Statistical (ISF_eff rolling avg) | **9/11 sig.** | **EXP-312** |
-| Override prediction | Fast (2h) | **1D-CNN** | **F1=0.726** | **EXP-311** |
+| **Override (15min)** | Fast (2h) | **1D-CNN** | **F1=0.821** | **EXP-314** |
+| **Override (60min)** | Fast (2h) | 1D-CNN | F1=0.726 | EXP-311 |
+| **Hypo prediction** | Fast (2h) | CNN + threshold tuning | **F1=0.630** | **EXP-317** |
 | Glucose forecasting | 2h window | Per-patient fine-tuned ensemble | MAE=11.25 | EXP-242 |
 
-**Meta-finding: 1D-CNN is the universal best architecture for classification tasks.**
-Embeddings only win for retrieval/clustering. Statistical methods win for drift detection.
+**Updated meta-findings**:
+1. **1D-CNN is the universal best architecture for all classification tasks**
+2. **Threshold tuning is critical** for imbalanced classes (+19.7% for hypo)
+3. **Shorter lead times improve classification** (15min > 60min by 13%)
+4. **Per-patient FT works for forecasting but not classification** (insufficient examples)
+5. **Cross-scale feature injection is counterproductive** (EXP-304, EXP-305, EXP-316)

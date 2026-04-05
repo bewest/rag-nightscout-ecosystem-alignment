@@ -1,7 +1,7 @@
 # Research Synthesis: Multi-Objective CGM/AID Intelligence
 
-**Date**: 2026-04-05  
-**Experiments**: EXP-287–313 (18 multi-scale/architecture experiments)  
+**Date**: 2026-04-05 (updated with EXP-314–318)  
+**Experiments**: EXP-287–318 (24 multi-scale/architecture experiments)  
 **Context**: Built on 258 prior experiments (EXP-001–285) covering forecasting,
 event detection, and initial pattern/drift/override work.
 
