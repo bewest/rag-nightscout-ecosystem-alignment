@@ -304,6 +304,12 @@ class ClassificationValidator:
         """
         pos = self.positive_label
 
+        # Coerce to numpy (handles torch tensors, lists, etc.)
+        y_true = np.asarray(y_true).ravel()
+        y_pred = np.asarray(y_pred).ravel()
+        if y_prob is not None:
+            y_prob = np.asarray(y_prob)
+
         # Core metrics
         f1_pos = _safe_f1(y_true, y_pred, pos_label=pos)
         f1_macro = _safe_macro_f1(y_true, y_pred)
