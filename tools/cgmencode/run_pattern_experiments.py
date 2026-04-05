@@ -6936,6 +6936,288 @@ def run_leave_patient_out(args):
     return results
 
 
+def run_attention_hypo(args):
+    """EXP-327: Self-attention multi-task model for hypo prediction.
+
+    The CNN (3-kernel convolutions) may miss variable-length temporal patterns
+    that are important for hypo prediction. Self-attention can learn to attend
+    to any timestep in the 2h window (e.g., a bolus 45 min ago + current ROC).
+
+    Architecture: Positional encoding + 2-layer self-attention + dual heads.
+    Compare: Attention-only, CNN-only, Attention+CNN ensemble.
+    """
+    patient_paths = resolve_patient_paths(args.patients_dir)
+    output_dir = args.output_dir
+    device = args.device
+    epochs = args.epochs
+
+    print("=" * 60)
+    print("EXP-327: Self-Attention Multi-Task Hypo Prediction")
+    print("=" * 60)
+
+    train_np, val_np = load_multiscale_data(patient_paths, scale='fast',
+                                            val_fraction=0.2)
+    print(f"Loaded: {train_np.shape} train, {val_np.shape} val")
+
+    half = train_np.shape[1] // 2
+
+    def build_override_labels(windows, lead=3):
+        future = windows[:, half:half + lead, 0] * 400.0
+        high = (future > 180).any(axis=1)
+        low = (future < 70).any(axis=1)
+        labels = np.zeros(len(windows), dtype=np.int64)
+        labels[high] = 1
+        labels[low] = 2
+        return labels
+
+    def build_hypo_labels(windows, lead=6):
+        future = windows[:, half:half + lead, 0] * 400.0
+        return (future < 70).any(axis=1).astype(np.int64)
+
+    train_override = build_override_labels(train_np)
+    val_override = build_override_labels(val_np)
+    train_hypo = build_hypo_labels(train_np)
+    val_hypo = build_hypo_labels(val_np)
+
+    print(f"Override: {(train_override > 0).mean():.3f} positive rate")
+    print(f"Hypo: {train_hypo.mean():.3f} prevalence")
+
+    import math
+
+    class PositionalEncoding(nn.Module):
+        def __init__(self, d_model, max_len=100):
+            super().__init__()
+            pe = torch.zeros(max_len, d_model)
+            position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+            div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+            pe[:, 0::2] = torch.sin(position * div_term)
+            if d_model > 1:
+                pe[:, 1::2] = torch.cos(position * div_term[:d_model // 2])
+            self.register_buffer('pe', pe.unsqueeze(0))
+
+        def forward(self, x):
+            return x + self.pe[:, :x.size(1)]
+
+    class AttentionMultiTask(nn.Module):
+        def __init__(self, in_channels=8, d_model=64, n_heads=4, n_layers=2):
+            super().__init__()
+            self.input_proj = nn.Linear(in_channels, d_model)
+            self.pos_enc = PositionalEncoding(d_model)
+            encoder_layer = nn.TransformerEncoderLayer(
+                d_model=d_model, nhead=n_heads, dim_feedforward=128,
+                dropout=0.1, batch_first=True
+            )
+            self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=n_layers)
+            self.override_head = nn.Sequential(
+                nn.Linear(d_model, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, 3),
+            )
+            self.hypo_head = nn.Sequential(
+                nn.Linear(d_model, 32), nn.ReLU(), nn.Dropout(0.3),
+                nn.Linear(32, 2),
+            )
+
+        def forward(self, x):
+            h = x.shape[1] // 2
+            x = x[:, :h]  # history only [B, T, C]
+            x = self.input_proj(x)
+            x = self.pos_enc(x)
+            x = self.transformer(x)
+            x = x.mean(dim=1)  # global average pooling over time
+            return self.override_head(x), self.hypo_head(x)
+
+    class MultiTaskCNN(nn.Module):
+        def __init__(self, in_channels=8):
+            super().__init__()
+            self.backbone = nn.Sequential(
+                nn.Conv1d(in_channels, 32, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(32),
+                nn.Conv1d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.Conv1d(64, 64, kernel_size=3, padding=1),
+                nn.ReLU(), nn.BatchNorm1d(64),
+                nn.AdaptiveAvgPool1d(1),
+            )
+            self.override_head = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.2),
+                nn.Linear(32, 3),
+            )
+            self.hypo_head = nn.Sequential(
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.3),
+                nn.Linear(32, 2),
+            )
+
+        def forward(self, x):
+            h = x.shape[1] // 2
+            x = x[:, :h].permute(0, 2, 1)
+            feat = self.backbone(x).squeeze(-1)
+            return self.override_head(feat), self.hypo_head(feat)
+
+    from collections import Counter
+    ov_counts = Counter(train_override.tolist())
+    n_total = len(train_override)
+    ov_cw = torch.tensor([n_total / (3 * max(1, ov_counts.get(c, 1))) for c in range(3)],
+                          dtype=torch.float32).to(device)
+    n_pos = train_hypo.sum()
+    n_neg = len(train_hypo) - n_pos
+    hypo_weight = max(2.0, n_neg / max(1, n_pos))
+    hypo_cw = torch.tensor([1.0, hypo_weight], dtype=torch.float32).to(device)
+
+    configs = {
+        'attention': ('attention', None),
+        'cnn': ('cnn', None),
+    }
+
+    all_results = {}
+    train_t = torch.from_numpy(train_np).float()
+    val_t = torch.from_numpy(val_np).float()
+    train_ov_t = torch.from_numpy(train_override).long()
+    train_hypo_t = torch.from_numpy(train_hypo).long()
+    batch_size = 256
+
+    trained_models = {}
+
+    for config_name, (arch, _) in configs.items():
+        print(f"\n--- {config_name} ---")
+
+        if arch == 'attention':
+            model = AttentionMultiTask().to(device)
+        else:
+            model = MultiTaskCNN().to(device)
+
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        ov_criterion = nn.CrossEntropyLoss(weight=ov_cw)
+        hypo_criterion = nn.CrossEntropyLoss(weight=hypo_cw)
+
+        for epoch in range(epochs):
+            model.train()
+            perm = torch.randperm(len(train_np))
+            for start in range(0, len(perm), batch_size):
+                end = min(start + batch_size, len(perm))
+                idx = perm[start:end]
+                ov_logits, hypo_logits = model(train_t[idx].to(device))
+                loss = ov_criterion(ov_logits, train_ov_t[idx].to(device)) + \
+                       hypo_criterion(hypo_logits, train_hypo_t[idx].to(device))
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+        model.eval()
+        trained_models[config_name] = model
+
+        # Evaluate
+        all_ov_preds, all_hypo_probs = [], []
+        with torch.no_grad():
+            for vs in range(0, len(val_np), 512):
+                ve = min(vs + 512, len(val_np))
+                ov_logits, hypo_logits = model(val_t[vs:ve].to(device))
+                all_ov_preds.append(ov_logits.argmax(dim=-1).cpu().numpy())
+                all_hypo_probs.append(torch.softmax(hypo_logits, dim=-1)[:, 1].cpu().numpy())
+
+        ov_preds = np.concatenate(all_ov_preds)
+        hypo_probs = np.concatenate(all_hypo_probs)
+
+        from sklearn.metrics import f1_score, roc_auc_score
+        ov_f1 = f1_score(val_override, ov_preds, average='macro', zero_division=0)
+
+        best_f1, best_thresh = 0.0, 0.5
+        for thresh in np.arange(0.01, 1.0, 0.01):
+            f1 = f1_score(val_hypo, (hypo_probs >= thresh).astype(int), zero_division=0)
+            if f1 > best_f1:
+                best_f1, best_thresh = f1, float(thresh)
+
+        try:
+            hypo_auc = roc_auc_score(val_hypo, hypo_probs)
+        except ValueError:
+            hypo_auc = float('nan')
+
+        n_params = sum(p.numel() for p in model.parameters())
+
+        all_results[config_name] = {
+            'architecture': arch,
+            'override_f1': float(ov_f1),
+            'hypo_f1': float(best_f1),
+            'hypo_threshold': float(best_thresh),
+            'hypo_auc': float(hypo_auc),
+            'n_params': n_params,
+        }
+        print(f"  OV F1={ov_f1:.4f}, Hypo F1={best_f1:.4f} @{best_thresh:.2f}, "
+              f"AUC={hypo_auc:.4f}, params={n_params:,}")
+
+    # Ensemble: average probabilities from attention + CNN
+    print(f"\n--- ensemble (attention + cnn) ---")
+    att_model = trained_models['attention']
+    cnn_model = trained_models['cnn']
+
+    all_ov_att, all_ov_cnn, all_hypo_att, all_hypo_cnn = [], [], [], []
+    with torch.no_grad():
+        for vs in range(0, len(val_np), 512):
+            ve = min(vs + 512, len(val_np))
+            batch = val_t[vs:ve].to(device)
+            ov_a, hypo_a = att_model(batch)
+            ov_c, hypo_c = cnn_model(batch)
+            all_ov_att.append(torch.softmax(ov_a, dim=-1).cpu().numpy())
+            all_ov_cnn.append(torch.softmax(ov_c, dim=-1).cpu().numpy())
+            all_hypo_att.append(torch.softmax(hypo_a, dim=-1)[:, 1].cpu().numpy())
+            all_hypo_cnn.append(torch.softmax(hypo_c, dim=-1)[:, 1].cpu().numpy())
+
+    ov_att_probs = np.concatenate(all_ov_att)
+    ov_cnn_probs = np.concatenate(all_ov_cnn)
+    hypo_att_probs = np.concatenate(all_hypo_att)
+    hypo_cnn_probs = np.concatenate(all_hypo_cnn)
+
+    # Average ensemble
+    ov_ens_probs = (ov_att_probs + ov_cnn_probs) / 2
+    hypo_ens_probs = (hypo_att_probs + hypo_cnn_probs) / 2
+
+    ov_ens_preds = ov_ens_probs.argmax(axis=1)
+    ov_ens_f1 = f1_score(val_override, ov_ens_preds, average='macro', zero_division=0)
+
+    best_ens_f1, best_ens_thresh = 0.0, 0.5
+    for thresh in np.arange(0.01, 1.0, 0.01):
+        f1 = f1_score(val_hypo, (hypo_ens_probs >= thresh).astype(int), zero_division=0)
+        if f1 > best_ens_f1:
+            best_ens_f1, best_ens_thresh = f1, float(thresh)
+
+    try:
+        hypo_ens_auc = roc_auc_score(val_hypo, hypo_ens_probs)
+    except ValueError:
+        hypo_ens_auc = float('nan')
+
+    all_results['ensemble'] = {
+        'architecture': 'attention+cnn ensemble',
+        'override_f1': float(ov_ens_f1),
+        'hypo_f1': float(best_ens_f1),
+        'hypo_threshold': float(best_ens_thresh),
+        'hypo_auc': float(hypo_ens_auc),
+        'n_params': all_results['attention']['n_params'] + all_results['cnn']['n_params'],
+    }
+    print(f"  OV F1={ov_ens_f1:.4f}, Hypo F1={best_ens_f1:.4f} @{best_ens_thresh:.2f}, "
+          f"AUC={hypo_ens_auc:.4f}")
+
+    results = {
+        'experiment': 'EXP-327',
+        'name': 'attention-hypo',
+        'method': 'Self-attention vs CNN vs ensemble for multi-task hypo',
+        'configs': all_results,
+        'data': {'n_train': len(train_np), 'n_val': len(val_np)},
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
+    }
+
+    print(f"\n{'='*60}")
+    print(f"EXP-327: Attention vs CNN Multi-Task")
+    print(f"{'='*60}")
+    print(f"{'Config':>12} {'OV F1':>7} {'Hypo F1':>8} {'AUC':>7} {'Params':>10}")
+    print("-" * 50)
+    for name, r in all_results.items():
+        print(f"{name:>12} {r['override_f1']:>7.4f} {r['hypo_f1']:>8.4f} "
+              f"{r['hypo_auc']:>7.4f} {r['n_params']:>10,}")
+    print(f"{'='*60}")
+
+    save_results(results, os.path.join(output_dir, 'exp327_attention_hypo.json'))
+    return results
+
+
 # ── Registry & CLI ─────────────────────────────────────────────────────
 
 EXPERIMENTS = {
@@ -7013,6 +7295,8 @@ EXPERIMENTS = {
                     'CUSUM/EWMA/sliding-ttest change-point detection for ISF drift'),
     'loo-classification': ('EXP-326', run_leave_patient_out,
                            'Leave-one-patient-out multi-task CNN generalization'),
+    'attention-hypo': ('EXP-327', run_attention_hypo,
+                       'Self-attention vs CNN for multi-task hypo prediction'),
 }
 
 
