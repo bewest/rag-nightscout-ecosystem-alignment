@@ -1,15 +1,16 @@
 # Research Synthesis: Multi-Objective CGM/AID Intelligence
 
-**Date**: 2026-04-05 (updated with EXP-314–318)  
-**Experiments**: EXP-287–318 (24 multi-scale/architecture experiments)  
+**Date**: 2026-04-05 (updated with EXP-314–327)  
+**Experiments**: EXP-287–327 (33 multi-scale/architecture experiments)  
 **Context**: Built on 258 prior experiments (EXP-001–285) covering forecasting,
-event detection, and initial pattern/drift/override work.
+event detection, and initial pattern/drift/override work.  
+**Verified**: All metrics independently validated — see `accuracy-validation-2026-04-05.md`.
 
 ---
 
 ## 1. Executive Summary
 
-This report synthesizes findings from 18 experiments that systematically tested
+This report synthesizes findings from 33 experiments that systematically tested
 whether the five high-level objectives of CGM/AID intelligence require different
 timescales, architectures, and training pipelines. The answer is a definitive
 **yes** — and we've now identified the optimal approach for each.
@@ -18,8 +19,10 @@ timescales, architectures, and training pipelines. The answer is a definitive
 
 | Objective | Best Architecture | Best Metric | Status |
 |-----------|------------------|-------------|--------|
-| **UAM Detection** | 1D-CNN, 2h window | **F1 = 0.939** | 🟢 Production-viable |
-| **Override Prediction** | 1D-CNN, 2h window | **F1 = 0.726** | 🟡 Good, improvable |
+| **UAM Detection** | 1D-CNN, 2h window | **F1 = 0.939** (positive-class) | 🟢 Production-viable |
+| **Override Prediction (15min)** | Self-attention, 2h window | **F1 = 0.852** (macro) | 🟢 Production-viable |
+| **Override Prediction (60min)** | 1D-CNN, 2h window | **F1 = 0.726** (macro) | 🟡 Good, improvable |
+| **Hypo Prediction** | Multi-task CNN + Platt | **F1 = 0.676**, AUC = 0.958 | 🟡 Viable with calibration |
 | **ISF Drift Tracking** | Rolling biweekly statistics | **9/11 patients sig.** | 🟢 Method proven |
 | **Pattern Retrieval** | Transformer encoder, 7d window | **Sil = +0.326** | 🟡 Works but R@K saturated |
 | **Glucose Forecasting** | Per-patient fine-tuned ensemble | **MAE = 11.25 mg/dL** | 🟢 Prior work validated |

@@ -1,8 +1,9 @@
 # Multi-Scale Pattern Experiment Results
 
 **Date**: 2026-04-04 (updated 2026-04-05)  
-**Experiments**: EXP-287–318 (24 experiments)  
-**Status**: Complete (24 experiments across 4 timescales + cross-scale + drift + CNN + optimization)
+**Experiments**: EXP-287–327 (33 experiments)  
+**Status**: Complete (33 experiments across 4 timescales + cross-scale + drift + CNN + optimization)  
+**Verified**: All metrics independently validated — see `accuracy-validation-2026-04-05.md`.
 
 ## Executive Summary
 
