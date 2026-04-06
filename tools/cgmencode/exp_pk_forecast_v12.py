@@ -709,7 +709,7 @@ def _make_shared_loaders(h_t, h_v, f_t, f_v, t_t, t_v, batch_size=128):
             DataLoader(val_ds, batch_size=256))
 
 
-def _make_patient_loaders(g_all, pk_h_all, f_all, t_all, pinfo, is_dual=True):
+def _make_patient_loaders(g_all, pinfo, is_dual=True):
     """Create per-patient train/val loaders from full arrays."""
     t_start, t_end = pinfo['train_idx']
     v_start, v_end = pinfo['val_idx']
