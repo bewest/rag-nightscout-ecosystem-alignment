@@ -1415,20 +1415,25 @@ def train_bridge_cosine(model, train_x, val_x, save_path, label, device,
 
 
 def prepare_pk_future_with_derivatives(data, use_isf=False, drop_time=False):
-    """PK features + explicit glucose rate-of-change channels.
+    """PK features + derivatives of deterministic PK channels.
 
-    Adds dBG/dt (first derivative) and d²BG/dt² (second derivative) as
-    channels 8 and 9, producing a 10ch input.
-    Use-case guide: glucose derivatives help short horizons (EXP-358: -0.4).
+    Adds d(insulin_net)/dt and d(carb_rate)/dt as channels 8-9.
+    These are DETERMINISTIC (computed from past treatments) so safe to keep
+    in future half — no leakage. Also adds history-only glucose derivatives
+    (dBG/dt) as channel 10, zeroed in future.
+
+    PK derivatives tell the model about insulin/carb absorption dynamics:
+    - Rising insulin_net = bolus absorption ramping up
+    - Falling carb_rate = meal winding down
     """
     bt = data['base_train'].copy()
     bv = data['base_val'].copy()
     pt, pv = data['pk_train'], data['pk_val']
 
     # Replace sparse with dense PK
-    bt[:, :, 4] = pt[:, :, 1] / PK_NORMS[1]
+    bt[:, :, 4] = pt[:, :, 1] / PK_NORMS[1]  # insulin_net
     bv[:, :, 4] = pv[:, :, 1] / PK_NORMS[1]
-    bt[:, :, 5] = pt[:, :, 3] / PK_NORMS[3]
+    bt[:, :, 5] = pt[:, :, 3] / PK_NORMS[3]  # carb_rate
     bv[:, :, 5] = pv[:, :, 3] / PK_NORMS[3]
 
     if not drop_time:
@@ -1438,33 +1443,35 @@ def prepare_pk_future_with_derivatives(data, use_isf=False, drop_time=False):
     if use_isf and 'isf_train' in data:
         _apply_isf_norm(bt, bv, data['isf_train'], data['isf_val'])
 
-    # Compute glucose derivatives (5-min interval, already /400 scaled)
-    # dBG/dt: forward difference, normalized by typical range
-    d1_t = np.zeros_like(bt[:, :, 0:1])
-    d1_v = np.zeros_like(bv[:, :, 0:1])
-    d1_t[:, 1:, 0] = bt[:, 1:, 0] - bt[:, :-1, 0]
-    d1_v[:, 1:, 0] = bv[:, 1:, 0] - bv[:, :-1, 0]
-
-    # d²BG/dt²: second difference
-    d2_t = np.zeros_like(bt[:, :, 0:1])
-    d2_v = np.zeros_like(bv[:, :, 0:1])
-    d2_t[:, 2:, 0] = d1_t[:, 2:, 0] - d1_t[:, 1:-1, 0]
-    d2_v[:, 2:, 0] = d1_v[:, 2:, 0] - d1_v[:, 1:-1, 0]
-
-    # Scale derivatives (typical dBG is ~0.01 per step in /400 units = 4 mg/dL)
-    d1_t *= 10.0  # scale to ~O(1)
-    d1_v *= 10.0
-    d2_t *= 10.0
-    d2_v *= 10.0
-
-    bt = np.concatenate([bt, d1_t, d2_t], axis=-1)
-    bv = np.concatenate([bv, d1_v, d2_v], axis=-1)
-
-    # CRITICAL: Zero out glucose derivatives in future half to prevent leakage.
-    # dBG/dt and d²BG/dt² are computed from glucose which is unknown in the future.
     half = bt.shape[1] // 2
-    bt[:, half:, -2:] = 0.0
-    bv[:, half:, -2:] = 0.0
+
+    # PK derivatives — DETERMINISTIC, safe in future
+    # d(insulin_net)/dt from channel 4
+    d_ins_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+    d_ins_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+    d_ins_t[:, 1:, 0] = bt[:, 1:, 4] - bt[:, :-1, 4]
+    d_ins_v[:, 1:, 0] = bv[:, 1:, 4] - bv[:, :-1, 4]
+
+    # d(carb_rate)/dt from channel 5
+    d_carb_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+    d_carb_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+    d_carb_t[:, 1:, 0] = bt[:, 1:, 5] - bt[:, :-1, 5]
+    d_carb_v[:, 1:, 0] = bv[:, 1:, 5] - bv[:, :-1, 5]
+
+    # Glucose derivative — NOT deterministic, history-only
+    d_gluc_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+    d_gluc_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+    d_gluc_t[:, 1:half, 0] = bt[:, 1:half, 0] - bt[:, :half-1, 0]
+    d_gluc_v[:, 1:half, 0] = bv[:, 1:half, 0] - bv[:, :half-1, 0]
+    # Future portion stays zero — glucose is unknown there
+
+    # Scale to ~O(1) (PK derivatives are small: ~0.01 per step)
+    d_ins_t *= 10.0; d_ins_v *= 10.0
+    d_carb_t *= 10.0; d_carb_v *= 10.0
+    d_gluc_t *= 10.0; d_gluc_v *= 10.0
+
+    bt = np.concatenate([bt, d_ins_t, d_carb_t, d_gluc_t], axis=-1)  # 11ch
+    bv = np.concatenate([bv, d_ins_v, d_carb_v, d_gluc_v], axis=-1)
 
     return torch.tensor(bt, dtype=torch.float32), torch.tensor(bv, dtype=torch.float32)
 
@@ -1474,8 +1481,11 @@ def run_exp413(args):
 
     Tests three independent improvements on the EXP-410 champion (w24):
     a) cosine_lr: Cosine LR schedule with warmup (replaces ReduceLROnPlateau)
-    b) derivatives: Add explicit dBG/dt and d²BG/dt² channels (10ch)
+    b) derivatives: PK derivatives (d(ins)/dt, d(carb)/dt) + history-only dBG/dt
     c) combined: cosine_lr + derivatives together
+
+    PK derivatives are DETERMINISTIC (safe in future). Glucose derivatives
+    are zeroed in future half to prevent leakage.
 
     All use w24, base training only (no FT), to quickly measure direction.
     """
@@ -1508,9 +1518,9 @@ def run_exp413(args):
         'cosine_lr': {'train': train_std, 'val': val_std, 'n_ch': n_ch_std,
                        'cosine': True, 'label': 'Cosine LR + warmup'},
         'derivatives': {'train': train_deriv, 'val': val_deriv, 'n_ch': n_ch_deriv,
-                         'cosine': False, 'label': f'+dBG/dt, d²BG/dt² ({n_ch_deriv}ch)'},
+                         'cosine': False, 'label': f'+PK derivs + hist dBG/dt ({n_ch_deriv}ch)'},
         'combined': {'train': train_deriv, 'val': val_deriv, 'n_ch': n_ch_deriv,
-                      'cosine': True, 'label': f'Cosine + derivatives ({n_ch_deriv}ch)'},
+                      'cosine': True, 'label': f'Cosine + PK derivs ({n_ch_deriv}ch)'},
     }
 
     results = {}
