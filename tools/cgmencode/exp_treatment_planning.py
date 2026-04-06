@@ -269,8 +269,25 @@ def downsample(arr, factor):
     return arr[::factor]
 
 
-def temporal_split(X, *extras, val_frac=0.2):
-    """Chronological train/val split.  Returns (train_parts, val_parts)."""
+def temporal_split(X, *extras, val_frac=0.2, pids=None):
+    """Chronological train/val split.  Returns (train_parts, val_parts).
+
+    When *pids* is provided, split is done per-patient to avoid the
+    pathological case where pooled multi-patient data causes the
+    validation set to contain only the last patient(s).
+    """
+    if pids is not None:
+        pids = np.asarray(pids)
+        train_mask = np.zeros(len(X), dtype=bool)
+        for pid in np.unique(pids):
+            idxs = np.where(pids == pid)[0]
+            split = int(len(idxs) * (1 - val_frac))
+            train_mask[idxs[:split]] = True
+        val_mask = ~train_mask
+        train = [X[train_mask]] + [e[train_mask] for e in extras]
+        val   = [X[val_mask]]   + [e[val_mask]   for e in extras]
+        return train, val
+
     n = len(X)
     split = int(n * (1 - val_frac))
     train = [X[:split]] + [e[:split] for e in extras]
@@ -631,12 +648,13 @@ def run_exp412(args):
     y_hypo = np.array(all_y_hypo)
     y_high = np.array(all_y_high)
     y_tir  = np.array(all_y_tir, dtype=np.float32)
+    pids   = np.array(all_pids)
     print(f"  Windows: {len(X)}, hypo rate: {y_hypo.mean():.2%}, high rate: {y_high.mean():.2%}")
 
     results = {}
     for target_name, target_y in [('hypo', y_hypo), ('high', y_high)]:
         print(f"\n  Target: {target_name}")
-        (tr_X, tr_y), (va_X, va_y) = temporal_split(X, target_y)
+        (tr_X, tr_y), (va_X, va_y) = temporal_split(X, target_y, pids=pids)
 
         seed_metrics = []
         for seed in cfg['seeds']:
@@ -656,8 +674,8 @@ def run_exp412(args):
     # TIR regression — filter NaN targets
     print("\n  Target: overnight TIR (regression)")
     tir_valid = ~np.isnan(y_tir)
-    X_tir, y_tir_clean = X[tir_valid], y_tir[tir_valid]
-    (tr_X, tr_y), (va_X, va_y) = temporal_split(X_tir, y_tir_clean)
+    X_tir, y_tir_clean, pids_tir = X[tir_valid], y_tir[tir_valid], pids[tir_valid]
+    (tr_X, tr_y), (va_X, va_y) = temporal_split(X_tir, y_tir_clean, pids=pids_tir)
     seed_reg = []
     for seed in cfg['seeds']:
         torch.manual_seed(seed); np.random.seed(seed)
@@ -737,10 +755,11 @@ def run_exp413(args):
     if len(tab_features) < 20:
         print("  Insufficient day pairs."); return {}
 
-    X_tab = np.array(tab_features, dtype=np.float32)
-    X_seq = np.stack(seq_features).astype(np.float32)
+    X_tab = np.nan_to_num(np.array(tab_features, dtype=np.float32), nan=0.0)
+    X_seq = np.nan_to_num(np.stack(seq_features).astype(np.float32), nan=0.0)
     y_tir_arr = np.array(y_tir, dtype=np.float32)
     y_bad_arr = np.array(y_bad, dtype=np.int64)
+    pids_arr  = np.array(pids)
     print(f"  Day-pairs: {len(X_tab)}, bad-day rate: {y_bad_arr.mean():.2%}")
 
     results = {}
@@ -748,7 +767,7 @@ def run_exp413(args):
     # --- XGBoost ---
     if HAS_XGB:
         print("\n  XGBoost TIR regression")
-        (tr_tab, tr_tir), (va_tab, va_tir) = temporal_split(X_tab, y_tir_arr)
+        (tr_tab, tr_tir), (va_tab, va_tir) = temporal_split(X_tab, y_tir_arr, pids=pids_arr)
         model_xgb = xgb.XGBRegressor(
             n_estimators=200, max_depth=5, learning_rate=0.1,
             subsample=0.8, colsample_bytree=0.8, random_state=42)
@@ -761,7 +780,7 @@ def run_exp413(args):
         }
 
         print("  XGBoost bad-day classification")
-        (tr_tab2, tr_bad), (va_tab2, va_bad) = temporal_split(X_tab, y_bad_arr)
+        (tr_tab2, tr_bad), (va_tab2, va_bad) = temporal_split(X_tab, y_bad_arr, pids=pids_arr)
         model_xgb_cls = xgb.XGBClassifier(
             n_estimators=200, max_depth=5, learning_rate=0.1,
             scale_pos_weight=max(1, (1 - y_bad_arr.mean()) / max(y_bad_arr.mean(), 0.01)),
@@ -780,7 +799,7 @@ def run_exp413(args):
 
     # --- CNN on 15-min sequence ---
     print("\n  1D-CNN TIR regression (15-min resolution)")
-    (tr_seq, tr_tir), (va_seq, va_tir) = temporal_split(X_seq, y_tir_arr)
+    (tr_seq, tr_tir), (va_seq, va_tir) = temporal_split(X_seq, y_tir_arr, pids=pids_arr)
     seed_reg = []
     for seed in cfg['seeds']:
         torch.manual_seed(seed); np.random.seed(seed)
@@ -794,7 +813,7 @@ def run_exp413(args):
     results['cnn_tir'] = {'seeds': seed_reg, 'average': avg}
 
     print("  1D-CNN bad-day classifier (15-min resolution)")
-    (tr_seq2, tr_bad), (va_seq2, va_bad) = temporal_split(X_seq, y_bad_arr)
+    (tr_seq2, tr_bad), (va_seq2, va_bad) = temporal_split(X_seq, y_bad_arr, pids=pids_arr)
     seed_cls = []
     for seed in cfg['seeds']:
         torch.manual_seed(seed); np.random.seed(seed)
@@ -957,7 +976,7 @@ def run_exp415(args):
         for event_type in ['hypo', 'high']:
             key = f"{event_type}_{horizon_name}"
             print(f"\n  Target: {key}")
-            all_X, all_y = [], []
+            all_X, all_y, all_pids = [], [], []
 
             for pat in patients:
                 glucose_raw = pat['grid'][:, 0] * 400
@@ -973,17 +992,19 @@ def run_exp415(args):
                         all_y.append(int((future < threshold).any()))
                     else:
                         all_y.append(int((future > threshold).sum() / max(len(future), 1) > 0.1))
+                    all_pids.append(pat['name'])
 
             if len(all_X) < 20:
                 print(f"    Insufficient samples for {key}"); continue
 
             X = np.stack(all_X)                          # (N, 28, 4)
             y = np.array(all_y, dtype=np.int64)
+            pids = np.array(all_pids)
             print(f"    Samples: {len(X)}, positive rate: {y.mean():.2%}")
 
             # XGBoost on flattened features
             X_flat = X.reshape(len(X), -1)
-            (tr_flat, tr_y), (va_flat, va_y) = temporal_split(X_flat, y)
+            (tr_flat, tr_y), (va_flat, va_y) = temporal_split(X_flat, y, pids=pids)
             key_res = {}
 
             if HAS_XGB:
@@ -1003,7 +1024,7 @@ def run_exp415(args):
                 }
 
             # CNN on (28, 4) sequence
-            (tr_seq, tr_y_s), (va_seq, va_y_s) = temporal_split(X, y)
+            (tr_seq, tr_y_s), (va_seq, va_y_s) = temporal_split(X, y, pids=pids)
             seed_cls = []
             for seed in cfg['seeds']:
                 torch.manual_seed(seed); np.random.seed(seed)
@@ -1141,7 +1162,7 @@ def run_exp417(args):
                 key = f"{h_label}_{vname}_{task_name}"
                 print(f"  {key}")
 
-                all_X, all_y = [], []
+                all_X, all_y, all_pids = [], [], []
                 for pat in patients:
                     glucose_raw = pat['grid'][:, 0] * 400
                     total = history_steps + future_steps
@@ -1156,14 +1177,16 @@ def run_exp417(args):
                             label = int((future_g > 180).sum() / max(len(future_g), 1) > 0.2)
                         all_X.append(x)
                         all_y.append(label)
+                        all_pids.append(pat['name'])
 
                 if len(all_X) < 20:
                     print(f"    Insufficient samples"); continue
 
-                X = np.stack(all_X).astype(np.float32)
+                X = np.nan_to_num(np.stack(all_X).astype(np.float32), nan=0.0)
                 y = np.array(all_y, dtype=np.int64)
+                pids = np.array(all_pids)
                 print(f"    N={len(X)}, pos={y.mean():.2%}, ch={X.shape[-1]}")
-                (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y)
+                (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y, pids=pids)
 
                 seed_metrics = []
                 for seed in cfg['seeds']:
@@ -1215,7 +1238,7 @@ def run_exp418(args):
             print(f"\n--- {scale_name} / {task_name} ---")
 
             # Build two feature variants: baseline (raw) vs EMA
-            all_raw, all_ema, all_y = [], [], []
+            all_raw, all_ema, all_y, all_pids = [], [], [], []
             for pat in patients:
                 glucose_raw = pat['grid'][:, 0] * 400
                 grid = pat['grid']
@@ -1249,18 +1272,20 @@ def run_exp418(args):
                     all_raw.append(hist_raw)
                     all_ema.append(hist_ema)
                     all_y.append(label)
+                    all_pids.append(pat['name'])
 
             if len(all_raw) < 20:
                 print(f"  Insufficient samples"); continue
 
             y = np.array(all_y, dtype=np.int64)
+            pids = np.array(all_pids)
             print(f"  N={len(all_raw)}, pos={y.mean():.2%}")
 
             for variant_name, X_list in [('raw', all_raw), ('ema_3ch', all_ema)]:
-                X = np.stack(X_list).astype(np.float32)
+                X = np.nan_to_num(np.stack(X_list).astype(np.float32), nan=0.0)
                 key = f"{scale_name}_{task_name}_{variant_name}"
                 print(f"  {key}: shape {X.shape}")
-                (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y)
+                (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y, pids=pids)
 
                 seed_metrics = []
                 for seed in cfg['seeds']:
