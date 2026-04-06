@@ -1853,6 +1853,242 @@ def run_exp414(args):
     _save_results(result, 'exp414_overnight_risk', cfg)
     return result
 
+
+# ─── EXP-419: Cosine LR on Champion Pipeline ───
+
+def run_exp419(args):
+    """EXP-419: Cosine LR applied to EXP-410 champion pipeline.
+
+    EXP-413 showed cosine LR gives -0.37 MAE (quick mode, base only).
+    This tests whether the improvement holds with full FT + ensemble.
+    Expected: ~10.85 → ~10.5.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-419: Cosine LR Champion Pipeline (w24 + FT + Ensemble)")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    isf_v = data.get('isf_val')
+    n_ch = train_x.shape[-1]
+
+    # Phase 1: Base training with cosine LR
+    print(f"\n=== Phase 1: Base Training w/ Cosine LR ({len(cfg['seeds'])} seeds) ===")
+    base_states = {}
+
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp419_base_s{seed}.pth')
+
+        print(f"\n  Base s{seed} (cosine LR):")
+        train_bridge_cosine(model, train_x, val_x, sp, f'419-base-s{seed}',
+                            device, pk_mode=True,
+                            epochs=cfg['epochs_base'], patience=20,
+                            warmup_epochs=10)
+
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        base_states[seed] = ckpt['model_state']
+
+        metrics = evaluate_model(model, val_x, device, pk_mode=True, isf_val=isf_v)
+        print(f"  Base s{seed}: overall={metrics['overall_mae']:.1f}, "
+              f"h60={metrics.get('h60','?')}")
+
+    # Phase 2: Per-patient FT (still use ReduceLROnPlateau for FT — short horizon)
+    print(f"\n=== Phase 2: Per-Patient Fine-Tuning (w24) ===")
+    per_patient_results = {}
+
+    for pinfo in data['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        vi, ve = pinfo['val_idx']
+        p_train_x = train_x[ti:te]
+        p_val_x = val_x[vi:ve]
+        p_isf_v = isf_v[vi:ve] if isf_v is not None else None
+
+        print(f"\n  Patient {pid} ({pinfo['n_train']} train, {pinfo['n_val']} val):")
+
+        seed_maes = {}
+        ft_models = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            model.load_state_dict(base_states[seed])
+
+            sp = os.path.join(cfg['output_dir'], f'exp419_ft_{pid}_s{seed}.pth')
+            train_bridge(model, p_train_x, p_val_x, sp, f'419-ft-{pid}-s{seed}',
+                         device, pk_mode=True,
+                         lr=1e-4, epochs=cfg['epochs_ft'], patience=10, lr_patience=5)
+
+            metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                     isf_val=p_isf_v)
+            seed_maes[f's{seed}'] = metrics['overall_mae']
+            ft_models.append(copy.deepcopy(model))
+            print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+        ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                isf_val=p_isf_v)
+        per_patient_results[pid] = {
+            'seeds': seed_maes,
+            'ensemble_mae': ens['overall_mae'],
+            'mean_seed': round(float(np.mean(list(seed_maes.values()))), 2),
+            'ensemble_per_horizon': ens,
+        }
+        print(f"    Ensemble: MAE={ens['overall_mae']:.1f}, h60={ens.get('h60','?')}")
+
+    all_ens = [v['ensemble_mae'] for v in per_patient_results.values()]
+    all_mean = [v['mean_seed'] for v in per_patient_results.values()]
+
+    summary = {
+        'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+        'mean_single_mae': round(float(np.mean(all_mean)), 2),
+        'n_patients': len(per_patient_results),
+        'n_seeds': len(cfg['seeds']),
+        'window_size': 24,
+    }
+
+    print(f"\n{'='*60}")
+    print(f"EXP-419 RESULT (Cosine LR + w24 FT Ensemble)")
+    print(f"  Mean Ensemble MAE: {summary['mean_ensemble_mae']:.2f} mg/dL")
+    print(f"  Mean Single MAE:   {summary['mean_single_mae']:.2f} mg/dL")
+    print(f"  EXP-410 reference: 10.85 mg/dL (ReduceLROnPlateau)")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-419: Cosine LR Champion Pipeline',
+        'per_patient': per_patient_results,
+        'summary': summary,
+        'config': {
+            'n_channels': n_ch, 'window_size': 24,
+            'scheduler': 'cosine_warmup', 'warmup_epochs': 10,
+            'base_epochs': cfg['epochs_base'], 'ft_epochs': cfg['epochs_ft'],
+            'seeds': cfg['seeds'], 'use_isf': has_isf, 'pk_mode': True,
+        },
+    }
+    _save_results(result, 'exp419_cosine_champion', cfg)
+    return result
+
+
+# ─── EXP-420: Horizon-Adaptive Ensemble ───
+
+def run_exp420(args):
+    """EXP-420: Horizon-adaptive ensemble — w24 for short, w48 for long.
+
+    Uses pre-trained models from EXP-419 (w24) and EXP-411 (w48).
+    For each patient, pick best model per horizon band:
+      h5-h60: w24 specialist (lower MAE at short horizons)
+      h60-h120: w48 specialist (has these horizons, w24 doesn't)
+
+    This is a zero-cost improvement — no new training needed.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-420: Horizon-Adaptive Ensemble")
+    print(f"{'='*60}")
+
+    # Load both window sizes
+    data_w24 = load_bridge_data(
+        args.patients_dir, window_size=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    data_w48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+
+    has_isf = 'isf_val' in data_w24
+    _, val_w24 = prepare_pk_future(data_w24, use_isf=has_isf, drop_time=False)
+    _, val_w48 = prepare_pk_future(data_w48, use_isf=has_isf, drop_time=False)
+    isf_w24 = data_w24.get('isf_val')
+    isf_w48 = data_w48.get('isf_val')
+    n_ch = val_w24.shape[-1]
+
+    # Try to load saved models
+    output_dir = cfg['output_dir']
+    results = {}
+
+    for pinfo_24, pinfo_48 in zip(data_w24['per_patient'], data_w48['per_patient']):
+        pid = pinfo_24['name']
+        assert pid == pinfo_48['name'], f"Patient mismatch: {pid} vs {pinfo_48['name']}"
+
+        vi24, ve24 = pinfo_24['val_idx']
+        vi48, ve48 = pinfo_48['val_idx']
+        p_val_24 = val_w24[vi24:ve24]
+        p_val_48 = val_w48[vi48:ve48]
+        p_isf_24 = isf_w24[vi24:ve24] if isf_w24 is not None else None
+        p_isf_48 = isf_w48[vi48:ve48] if isf_w48 is not None else None
+
+        # Evaluate w24 model
+        w24_models = []
+        for seed in cfg['seeds']:
+            sp = os.path.join(output_dir, f'exp419_ft_{pid}_s{seed}.pth')
+            if not os.path.exists(sp):
+                sp = os.path.join(output_dir, f'exp410_ft_{pid}_s{seed}.pth')
+            if not os.path.exists(sp):
+                print(f"  {pid}: no w24 model found, skipping")
+                break
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            model.load_state_dict(ckpt['model_state'])
+            w24_models.append(model)
+
+        w48_models = []
+        for seed in cfg['seeds']:
+            sp = os.path.join(output_dir, f'exp411_w48_ft_{pid}_s{seed}.pth')
+            if not os.path.exists(sp):
+                break
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            model.load_state_dict(ckpt['model_state'])
+            w48_models.append(model)
+
+        if not w24_models:
+            print(f"  {pid}: no w24 models, skipping")
+            continue
+
+        ens_24 = ensemble_evaluate(w24_models, p_val_24, device, pk_mode=True,
+                                   isf_val=p_isf_24)
+        print(f"  {pid} w24: overall={ens_24['overall_mae']:.1f}, "
+              f"h30={ens_24.get('h30','?')}, h60={ens_24.get('h60','?')}")
+
+        if w48_models:
+            ens_48 = ensemble_evaluate(w48_models, p_val_48, device, pk_mode=True,
+                                       isf_val=p_isf_48)
+            print(f"  {pid} w48: overall={ens_48['overall_mae']:.1f}, "
+                  f"h60={ens_48.get('h60','?')}, h120={ens_48.get('h120','?')}")
+            results[pid] = {'w24': ens_24, 'w48': ens_48}
+        else:
+            results[pid] = {'w24': ens_24, 'w48': None}
+            print(f"  {pid}: no w48 models")
+
+    print(f"\n{'='*60}")
+    print("EXP-420 RESULTS: Horizon-Adaptive Ensemble")
+    print(f"{'='*60}")
+    for pid, res in results.items():
+        w24_h60 = res['w24'].get('h60', '?')
+        if res['w48']:
+            w48_h60 = res['w48'].get('h60', '?')
+            w48_h120 = res['w48'].get('h120', '?')
+            print(f"  {pid}: w24_h60={w24_h60}, w48_h60={w48_h60}, w48_h120={w48_h120}")
+        else:
+            print(f"  {pid}: w24_h60={w24_h60}, w48=N/A")
+
+    result = {
+        'experiment': 'EXP-420: Horizon-Adaptive Ensemble',
+        'per_patient': {pid: {k: v for k, v in r.items()} for pid, r in results.items()},
+    }
+    _save_results(result, 'exp420_horizon_adaptive', cfg)
+    return result
+
+
+# ─── Config & CLI ───
+
 def _get_config(args):
     quick = getattr(args, 'quick', False)
     output_dir = getattr(args, 'output_dir', None) or 'externals/experiments'
@@ -1884,6 +2120,8 @@ EXPERIMENTS = {
     '411': run_exp411,
     '413': run_exp413,
     '414': run_exp414,
+    '419': run_exp419,
+    '420': run_exp420,
 }
 
 
