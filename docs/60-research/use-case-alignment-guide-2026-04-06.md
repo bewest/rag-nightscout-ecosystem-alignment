@@ -66,6 +66,22 @@ The 8-hour window is maximally confusing: it captures enough of 2–3 overlappin
 - For forecasting: include **future PK projection** to resolve the ambiguity explicitly (EXP-356)
 - Avoid 4–8h windows for tasks that depend on insulin dynamics unless using PK encoding
 
+### History Window × PK Interaction (EXP-353)
+
+The DIA Valley applies differently depending on feature encoding. **PK channels resolve the valley**:
+
+| History | Baseline MAE | PK MAE | PK Δ | Interpretation |
+|---------|-------------|--------|------|----------------|
+| 1h | 31.3 | 32.8 | +1.5 | PK is noise — too little history for DIA curves |
+| 2h | 32.5 | 32.9 | +0.4 | Near-neutral — DIA curve barely begins |
+| 4h | 35.7 | 34.9 | **-0.9** | **Crossover** — PK starts resolving partial DIA |
+| 6h | 43.5 | 36.1 | **-7.4** | **Maximum PK benefit** — baseline collapses, PK stabilizes |
+| 12h | 45.4 | 43.0 | -2.4 | Both degrade, PK still helps |
+
+**Key insight**: Without PK, the model with raw sparse bolus/carb events *catastrophically degrades* at 6h+ history (h30 MAE: 20.5→38.9). PK encoding converts the DIA Valley from a performance cliff into a plateau. This means **longer history windows (3–6h) are viable and potentially superior when paired with PK encoding and appropriate architecture** (EXP-353).
+
+**Critical gap**: The champion architecture (PKGroupedEncoder Transformer, EXP-408) has only been tested with **2h history** (window_size=48 = 24 history + 24 future). The architecture most suited to benefit from longer history + PK (positional grouping + attention) has never been tested at 4–6h lookback. EXP-372/376 showed monotonic improvement from 6h→12h with overlapping windows (MAE: 26.8→27.5), suggesting longer history could close the gap to CGM-grade at all horizons.
+
 ---
 
 ## Part 4: Complete Sub-Use-Case Registry
@@ -92,8 +108,8 @@ The 8-hour window is maximally confusing: it captures enough of 2–3 overlappin
 | Validation | MAE + MARD + Clarke zones | EXP-408 |
 
 **Current Best Result**: MAE = 13.50 mg/dL, MARD ≈ 8.7% (EXP-408)
-**Status**: ✅ Production
-**Key Finding**: Glucose-only carries 87% of transformer attention — additional channels matter but glucose dominates (EXP-162).
+**Status**: ✅ Production (but improvement likely available)
+**Key Finding**: Glucose-only carries 87% of transformer attention (EXP-162). **Untested opportunity**: EXP-408 uses only 2h history. EXP-353 showed PK channels stabilize MAE at 6h history (Δ=-7.4), and PKGroupedEncoder has never been tested at 4–6h lookback.
 
 ---
 
@@ -762,6 +778,15 @@ What is your task?
 | Override WHICH + HOW MUCH (C2, C3) | Cannot recommend actions without knowing which action | Very Hard | Counterfactual physics simulation (UVA/Padova or similar) |
 | Multi-day forecast >24h (A5) | Cannot support multi-day planning | Hard | Multi-rate encoding, STL decomposition, extended datasets |
 | External signal integration | Illness/menstrual/HR data missing | Medium | API integration + prospective data collection |
+
+### Tier 1.5: High-Probability Improvements (Untested Combinations)
+
+| Gap | Current State | Expected Impact | Approach |
+|-----|--------------|-----------------|----------|
+| PKGroupedEncoder + 4–6h history (A1/A2) | Champion uses only 2h lookback | Potentially large: EXP-353 showed PK Δ=-7.4 at 6h | Test window_size=96 (48 history) and 144 (72 history) with v14 architecture |
+| Multi-rate EMA for 12h+ classification (B4) | Proposed, code skeleton exists, never run | Unknown but theoretically motivated | Run EXP-375/406 with α=0.1/0.3/0.7 EMA channels |
+| STL decomposition for multi-day | Proposed, no implementation | Enables trend/seasonal/residual separation | Implement and test 3-day windows |
+| Cumulative glucose load features | Skeleton in exp_normalization_conditioning.py | Captures metabolic load accumulation | Run 12h/24h/72h integral features |
 
 ### Tier 2: Improves Quality
 
