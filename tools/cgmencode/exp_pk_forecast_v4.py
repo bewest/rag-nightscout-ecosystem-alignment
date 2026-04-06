@@ -77,6 +77,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from cgmencode.real_data_adapter import build_nightscout_grid
 from cgmencode.continuous_pk import build_continuous_pk_features
+from cgmencode.metrics import compute_clinical_forecast_metrics
 
 # ─── Constants ───
 
@@ -625,10 +626,20 @@ def evaluate_model(model, val_loader, device, horizons):
         mae = float(np.mean(np.abs(preds[:, i] - targets[:, i])) * GLUCOSE_SCALE)
         per_horizon[name] = mae
 
-    return {
+    result = {
         'mae_overall': float(np.mean(list(per_horizon.values()))),
         'mae_per_horizon': per_horizon,
-    }, preds, targets
+    }
+
+    # Clinical metrics (MARD, Clarke, ISO 15197, bias, trend accuracy)
+    try:
+        clinical = compute_clinical_forecast_metrics(
+            targets, preds, glucose_scale=GLUCOSE_SCALE)
+        result['clinical'] = clinical
+    except Exception:
+        pass
+
+    return result, preds, targets
 
 
 # ─── Feature Preparation ───

@@ -46,6 +46,244 @@ def compute_forecasting_metrics(y_true: np.ndarray, y_pred: np.ndarray,
     return result
 
 
+# ─── Clinical Forecast Accuracy Metrics ───
+
+
+def clarke_zone(ref_mgdl: float, pred_mgdl: float) -> str:
+    """Clarke Error Grid zone classification.
+
+    Args:
+        ref_mgdl: Reference (actual) glucose in mg/dL
+        pred_mgdl: Predicted glucose in mg/dL
+
+    Returns:
+        Zone letter: 'A' (accurate), 'B' (benign), 'C', 'D', or 'E' (dangerous)
+    """
+    if ref_mgdl <= 70 and pred_mgdl <= 70:
+        return 'A'
+    if ref_mgdl >= 180 and pred_mgdl >= 180:
+        return 'A'
+    if ref_mgdl > 0:
+        pct_err = abs(pred_mgdl - ref_mgdl) / ref_mgdl
+        if pct_err <= 0.20:
+            return 'A'
+        if pct_err <= 0.40:
+            return 'B'
+    if ref_mgdl <= 70 and pred_mgdl >= 180:
+        return 'E'
+    if ref_mgdl >= 180 and pred_mgdl <= 70:
+        return 'E'
+    if pred_mgdl > ref_mgdl + 110:
+        return 'D'
+    if pred_mgdl < ref_mgdl - 110:
+        return 'D'
+    return 'C'
+
+
+def compute_mard(y_true_mgdl: np.ndarray, y_pred_mgdl: np.ndarray,
+                 min_ref: float = 40.0) -> float:
+    """Mean Absolute Relative Difference (MARD).
+
+    Industry-standard CGM accuracy metric. Excludes samples where reference
+    is below min_ref to avoid division instability.
+
+    Args:
+        y_true_mgdl: Reference glucose values in mg/dL
+        y_pred_mgdl: Predicted glucose values in mg/dL
+        min_ref: Minimum reference value to include (default 40 mg/dL)
+
+    Returns:
+        MARD as fraction (0.10 = 10%). Multiply by 100 for percentage.
+    """
+    mask = y_true_mgdl >= min_ref
+    if mask.sum() == 0:
+        return float('nan')
+    ref = y_true_mgdl[mask]
+    pred = y_pred_mgdl[mask]
+    return float(np.mean(np.abs(pred - ref) / ref))
+
+
+def compute_clarke_zones(y_true_mgdl: np.ndarray,
+                         y_pred_mgdl: np.ndarray) -> dict:
+    """Clarke Error Grid zone distribution.
+
+    Args:
+        y_true_mgdl: Reference glucose values in mg/dL
+        y_pred_mgdl: Predicted glucose values in mg/dL
+
+    Returns:
+        dict with zone counts, percentages, and clinical pass/fail
+    """
+    zones = {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0}
+    for ref, pred in zip(y_true_mgdl.flat, y_pred_mgdl.flat):
+        if np.isnan(ref) or np.isnan(pred):
+            continue
+        zones[clarke_zone(float(ref), float(pred))] += 1
+
+    total = sum(zones.values())
+    if total == 0:
+        return {'n_samples': 0}
+
+    pcts = {f'zone_{z}_pct': zones[z] / total for z in 'ABCDE'}
+    pcts['zone_AB_pct'] = (zones['A'] + zones['B']) / total
+    pcts['zone_CDE_pct'] = (zones['C'] + zones['D'] + zones['E']) / total
+    pcts['clinically_acceptable'] = pcts['zone_AB_pct'] >= 0.95
+    pcts['n_samples'] = total
+    pcts.update({f'zone_{z}_count': zones[z] for z in 'ABCDE'})
+    return pcts
+
+
+def compute_iso15197(y_true_mgdl: np.ndarray,
+                     y_pred_mgdl: np.ndarray) -> dict:
+    """ISO 15197:2013 accuracy assessment.
+
+    For BG < 100 mg/dL: within ±15 mg/dL
+    For BG ≥ 100 mg/dL: within ±15%
+
+    Args:
+        y_true_mgdl: Reference glucose in mg/dL
+        y_pred_mgdl: Predicted glucose in mg/dL
+
+    Returns:
+        dict with pass_rate, pass_flag (≥95%), counts by range
+    """
+    low_mask = y_true_mgdl < 100
+    high_mask = y_true_mgdl >= 100
+    errors = np.abs(y_pred_mgdl - y_true_mgdl)
+
+    low_pass = np.sum(errors[low_mask] <= 15) if low_mask.any() else 0
+    low_total = int(low_mask.sum())
+    high_pass = np.sum(errors[high_mask] <= 0.15 * y_true_mgdl[high_mask]) if high_mask.any() else 0
+    high_total = int(high_mask.sum())
+
+    total_pass = int(low_pass + high_pass)
+    total = low_total + high_total
+    rate = total_pass / total if total > 0 else 0.0
+
+    return {
+        'iso15197_pass_rate': float(rate),
+        'iso15197_pass': rate >= 0.95,
+        'n_below_100': low_total,
+        'n_above_100': high_total,
+        'pass_below_100': int(low_pass),
+        'pass_above_100': int(high_pass),
+    }
+
+
+def compute_trend_accuracy(y_true_mgdl: np.ndarray,
+                           y_pred_mgdl: np.ndarray,
+                           threshold_mgdl: float = 1.0) -> dict:
+    """Trend direction accuracy: does prediction agree with actual direction?
+
+    Classifies each sample pair as rising, falling, or flat and checks agreement.
+
+    Args:
+        y_true_mgdl: (N, T) reference glucose trajectories in mg/dL
+        y_pred_mgdl: (N, T) predicted glucose trajectories in mg/dL
+        threshold_mgdl: Change below this is 'flat' (per 5-min step)
+
+    Returns:
+        dict with direction_accuracy, per-direction precision
+    """
+    if y_true_mgdl.ndim == 1 or y_true_mgdl.shape[-1] < 2:
+        return {'direction_accuracy': float('nan'), 'note': 'need sequential predictions'}
+
+    # Use last - first as overall trend
+    true_delta = y_true_mgdl[:, -1] - y_true_mgdl[:, 0]
+    pred_delta = y_pred_mgdl[:, -1] - y_pred_mgdl[:, 0]
+
+    def classify(delta):
+        return np.where(delta > threshold_mgdl, 1,
+                        np.where(delta < -threshold_mgdl, -1, 0))
+
+    true_dir = classify(true_delta)
+    pred_dir = classify(pred_delta)
+    match = (true_dir == pred_dir)
+
+    result = {
+        'direction_accuracy': float(match.mean()),
+        'n_rising': int((true_dir == 1).sum()),
+        'n_falling': int((true_dir == -1).sum()),
+        'n_flat': int((true_dir == 0).sum()),
+    }
+
+    for label, val in [('rising', 1), ('falling', -1), ('flat', 0)]:
+        mask = true_dir == val
+        if mask.any():
+            result[f'{label}_accuracy'] = float(match[mask].mean())
+
+    return result
+
+
+def compute_clinical_forecast_metrics(y_true: np.ndarray,
+                                      y_pred: np.ndarray,
+                                      glucose_scale: float = 400.0,
+                                      persistence: Optional[np.ndarray] = None,
+                                      ) -> dict:
+    """Comprehensive clinical forecast metrics — superset of compute_forecasting_metrics.
+
+    Computes MAE, RMSE, MARD, bias, Clarke zones, ISO 15197, and trend accuracy.
+
+    Args:
+        y_true: (N,) or (N, T) true glucose (normalized, 0-1 scale)
+        y_pred: (N,) or (N, T) predicted glucose (normalized)
+        glucose_scale: Denormalization factor (default 400.0 mg/dL)
+        persistence: Optional persistence baseline (normalized)
+
+    Returns:
+        dict with all clinical metrics
+    """
+    y_true_mgdl = y_true * glucose_scale
+    y_pred_mgdl = y_pred * glucose_scale
+
+    yt = y_true_mgdl.flatten()
+    yp = y_pred_mgdl.flatten()
+
+    # Absolute metrics
+    errors = yp - yt
+    abs_errors = np.abs(errors)
+    mae = float(np.mean(abs_errors))
+    rmse = float(np.sqrt(np.mean(errors ** 2)))
+
+    result = {
+        'mae_mgdl': mae,
+        'rmse_mgdl': rmse,
+        'bias_mgdl': float(np.mean(errors)),
+        'median_ae_mgdl': float(np.median(abs_errors)),
+        'mard': compute_mard(yt, yp),
+        'mard_pct': compute_mard(yt, yp) * 100,
+    }
+
+    # Clarke zones
+    result['clarke'] = compute_clarke_zones(yt, yp)
+
+    # ISO 15197
+    result['iso15197'] = compute_iso15197(yt, yp)
+
+    # Trend accuracy (only if sequential)
+    if y_true_mgdl.ndim == 2 and y_true_mgdl.shape[-1] >= 2:
+        result['trend'] = compute_trend_accuracy(y_true_mgdl, y_pred_mgdl)
+
+    # Persistence comparison
+    if persistence is not None:
+        p_mgdl = persistence.flatten() * glucose_scale
+        p_mae = float(np.mean(np.abs(yt - p_mgdl)))
+        result['persistence_mae_mgdl'] = p_mae
+        result['persistence_mard'] = compute_mard(yt, p_mgdl)
+        if p_mae > 0:
+            result['improvement_pct'] = (1 - mae / p_mae) * 100
+
+    # Range-stratified MARD (clinically important)
+    for label, lo, hi in [('hypo', 40, 70), ('euglycemic', 70, 180), ('hyper', 180, 400)]:
+        mask = (yt >= lo) & (yt < hi)
+        if mask.sum() > 0:
+            result[f'mard_{label}'] = compute_mard(yt[mask], yp[mask])
+            result[f'mae_{label}_mgdl'] = float(np.mean(np.abs(yt[mask] - yp[mask])))
+            result[f'n_{label}'] = int(mask.sum())
+
+    return result
+
+
 def compute_embedding_metrics(embeddings: np.ndarray,
                               labels: list,
                               k: int = 5) -> Dict:

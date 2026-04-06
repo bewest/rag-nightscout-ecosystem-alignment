@@ -41,6 +41,7 @@ from collections import defaultdict
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from cgmencode.real_data_adapter import build_nightscout_grid
 from cgmencode.continuous_pk import build_continuous_pk_features
+from cgmencode.metrics import compute_clinical_forecast_metrics
 
 # ─── Constants ───
 
@@ -523,10 +524,19 @@ def evaluate_model(model, val_loader, device, horizons, scale=GLUCOSE_SCALE):
         mae = float(np.mean(np.abs(preds[:, i] - targets[:, i])) * scale)
         per_horizon[name] = mae
 
-    return {
+    result = {
         'mae_overall': float(np.mean(list(per_horizon.values()))),
         'mae_per_horizon': per_horizon,
-    }, preds, targets
+    }
+
+    try:
+        clinical = compute_clinical_forecast_metrics(
+            targets, preds, glucose_scale=scale)
+        result['clinical'] = clinical
+    except Exception:
+        pass
+
+    return result, preds, targets
 
 
 # ─── Feature Preparation ───
