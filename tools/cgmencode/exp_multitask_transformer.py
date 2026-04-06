@@ -18,6 +18,35 @@ Loss = weighted sum (override_weight=1.0, hypo_weight=0.5, prolonged_high_weight
 
 Also tests EXP-374: Transformer at 2h to see if attention helps at shortest scale.
 
+── NEXT EXPERIMENTS (after 373/374 complete) ──────────────────────────────
+
+  exp_fda_classification_v2.py has EXP-405 and EXP-406 ready to run:
+
+  EXP-405: Glucodensity + functional depth head injection
+    Proven FDA features at CLASSIFIER HEAD (not input channels — those give
+    zero gradient, EXP-338). Glucodensity 8-bin histogram + Modified Band
+    Depth concatenated to pooled CNN features. Tested at 2h AND 12h.
+    Key: glucodensity Δ=+0.54 Silhouette vs TIR (EXP-330), depth 112×
+    hypo enrichment (EXP-335). Uses shared feature_helpers.py.
+
+  EXP-406: Multi-rate EMA channels at 12h
+    Replaces single glucose channel with 5ch: raw + EMA(0.7) + EMA(0.3)
+    + EMA(0.1) + derivative. Captures multi-scale glucose dynamics.
+    Expected benefit at 12h where single-scale features fail.
+    Uses feature_helpers.py.
+
+  These DON'T conflict with your transformer/multi-task direction:
+    - Head injection is architecture-agnostic (works WITH your transformer)
+    - EMA channels are input features (can combine with kitchen_sink)
+    - If you prefer, try head injection ON your multi-task transformer
+      for the best combo of all three approaches
+
+  Run: python tools/cgmencode/exp_fda_classification_v2.py --experiment 405
+       python tools/cgmencode/exp_fda_classification_v2.py --experiment 406
+
+  All results include ECE (Expected Calibration Error) for clinical
+  calibration assessment alongside F1 and AUC.
+
 Usage:
     python tools/cgmencode/exp_multitask_transformer.py [--scales 2h 6h]
 """

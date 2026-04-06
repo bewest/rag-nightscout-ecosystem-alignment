@@ -24,9 +24,10 @@ prior experiments) to test if better architecture unlocks PK benefit.
 ─── Cross-thread coordination (evidence-synthesis-normalization-long-horizon-2026-04-06.md) ───
 
   EXPERIMENT ID REGISTRY: This thread owns EXP-361 (arch_12h) and EXP-362
-  (transformer_features). Forecasting thread (exp_pk_forecast_v3/v4) owns
-  EXP-360–368. Normalization primitives runner (exp_normalization_conditioning.py)
-  owns EXP-369–376. Next available for this thread: EXP-385+.
+  (transformer_features). Forecasting thread (exp_pk_forecast_v3→v13) owns
+  EXP-352–404. Normalization primitives runner (exp_normalization_conditioning.py)
+  owns EXP-369–376. FDA classification v2 (exp_fda_classification_v2.py)
+  owns EXP-405–406.
 
   RESULT: Transformer wins override +0.5% and prolonged_high +1.0%, margins tiny.
   pk_no_time_6ch HURTS all architectures at 12h.
@@ -47,6 +48,15 @@ prior experiments) to test if better architecture unlocks PK benefit.
   4. Sparse attention / local-global hybrid: At 12h, most timesteps are
      irrelevant (fasting periods). Sparse attention (attend to top-k by gradient
      magnitude) could outperform dense transformer while being faster.
+
+  NEW — FDA feature experiments ready for you (exp_fda_classification_v2.py):
+    EXP-405: Glucodensity + depth at classifier HEAD (proven in EXP-330, EXP-335).
+             Architecture-agnostic — works with your CNN or transformer.
+    EXP-406: Multi-rate EMA channels (α=0.7/0.3/0.1) at 12h. Captures
+             multi-scale dynamics where single-channel glucose fails.
+    Both use feature_helpers.py (shared utility).
+    Run: python tools/cgmencode/exp_fda_classification_v2.py --experiment 405
+         python tools/cgmencode/exp_fda_classification_v2.py --experiment 406
 
   ASSIGNED FROM NORMALIZATION RUNNER (exp_normalization_conditioning.py):
   When your own experiments above are complete, pick up these from the shared

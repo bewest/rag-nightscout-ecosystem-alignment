@@ -19,8 +19,9 @@ Tests transformer vs deep_cnn with the best feature variants from EXP-360:
 ─── Cross-thread coordination ───
 
   EXPERIMENT ID REGISTRY: This file owns EXP-362. Forecasting thread owns
-  EXP-360–368. Normalization runner (exp_normalization_conditioning.py) owns
-  EXP-369–376. Next available for this thread: EXP-385+.
+  EXP-352–404. Normalization runner (exp_normalization_conditioning.py) owns
+  EXP-369–376. FDA classification v2 (exp_fda_classification_v2.py) owns
+  EXP-405–406. Next available: EXP-407+.
 
   DIRECTIONS THAT STAY IN YOUR LANE (transformer × features, won't conflict):
   1. Attention head specialization: Do different heads attend to different
@@ -35,6 +36,13 @@ Tests transformer vs deep_cnn with the best feature variants from EXP-360:
   4. Positional encoding ablation: Remove sinusoidal positional encoding at
      12h (time-translation invariance was proven at ≤12h, EXP-349). Transformer
      without position encoding = pure set function on timestep features.
+
+  NEW — FDA feature experiments ready (exp_fda_classification_v2.py):
+    EXP-405: Glucodensity + depth as classifier HEAD features. Architecture-
+             agnostic — can work with your transformer too. See feature_helpers.py.
+    EXP-406: Multi-rate EMA channels (5ch glucose) at 12h.
+    Run: python tools/cgmencode/exp_fda_classification_v2.py
+    Both include ECE (calibration scoring) alongside F1 and AUC.
 
   NOTE: ISF normalization, z-score, EMA, glucodensity, depth features are
   being developed in exp_normalization_conditioning.py (EXP-369+). Once
