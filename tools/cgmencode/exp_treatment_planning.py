@@ -270,28 +270,34 @@ def downsample(arr, factor):
     return arr[::factor]
 
 
-def temporal_split(X, *extras, val_frac=0.2, pids=None):
+def temporal_split(X, *extras, val_frac=0.2, pids=None, gap=0):
     """Chronological train/val split.  Returns (train_parts, val_parts).
 
     When *pids* is provided, split is done per-patient to avoid the
     pathological case where pooled multi-patient data causes the
     validation set to contain only the last patient(s).
+
+    When *gap* > 0, that many samples at the train/val boundary (per
+    patient) are dropped to prevent autocorrelation leakage from
+    overlapping windows.  E.g. gap=window_size_in_samples removes all
+    windows that share any data across the boundary.
     """
     if pids is not None:
         pids = np.asarray(pids)
         train_mask = np.zeros(len(X), dtype=bool)
+        val_mask = np.zeros(len(X), dtype=bool)
         for pid in np.unique(pids):
             idxs = np.where(pids == pid)[0]
             split = int(len(idxs) * (1 - val_frac))
-            train_mask[idxs[:split]] = True
-        val_mask = ~train_mask
+            train_mask[idxs[:max(split - gap, 0)]] = True
+            val_mask[idxs[split:]] = True
         train = [X[train_mask]] + [e[train_mask] for e in extras]
         val   = [X[val_mask]]   + [e[val_mask]   for e in extras]
         return train, val
 
     n = len(X)
     split = int(n * (1 - val_frac))
-    train = [X[:split]] + [e[:split] for e in extras]
+    train = [X[:max(split - gap, 0)]] + [e[:max(split - gap, 0)] for e in extras]
     val   = [X[split:]] + [e[split:] for e in extras]
     return train, val
 
@@ -2444,11 +2450,13 @@ def run_exp431(args):
     if not patients:
         print("  No patient data found."); return {}
 
-    # Classify phenotypes
+    # Classify phenotypes using ONLY training portion (first 80%) to avoid
+    # leaking validation-period patterns into the phenotype label.
     phenotypes = {}
     for pat in patients:
         glucose_raw = pat['grid'][:, 0] * 400
-        ptype = _classify_phenotype(glucose_raw)
+        train_end = int(len(glucose_raw) * 0.8)
+        ptype = _classify_phenotype(glucose_raw[:train_end])
         phenotypes[pat['name']] = ptype
         print(f"  {pat['name']}: {ptype}")
 
@@ -2821,6 +2829,232 @@ def run_exp432(args):
     return results
 
 
+# ===================================================================
+# EXP-433: Gapped Validation — Autocorrelation Leakage Audit
+# ===================================================================
+
+def run_exp433(args):
+    """EXP-433: Gapped Validation — quantify autocorrelation inflation.
+
+    Re-runs the key EXP-430 and EXP-420 configurations with a temporal
+    gap buffer between train and validation sets.  The gap removes
+    overlapping windows at the boundary to ensure no autocorrelation
+    leakage.
+
+    Compares:
+      - gap=0 (original): same as EXP-430 baseline (stride=12)
+      - gap=window: drop window_size samples at boundary
+      - stride=window: non-overlapping windows (stride = total window)
+
+    If gap ≈ no-gap AUC, the breakthrough is fully validated.
+    If gap << no-gap, autocorrelation inflated the result.
+    """
+    cfg = _get_config(args)
+    device = resolve_device(args.device)
+
+    print(f"\n{'='*60}")
+    print("EXP-433: Gapped Validation — Autocorrelation Audit")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    results = {}
+    history_steps = STEPS_2H
+    future_steps = STEPS_2H
+    total = history_steps + future_steps
+
+    for task_name, threshold, above in [('hypo', 70, False), ('high', 180, True)]:
+        print(f"\n  --- {task_name.upper()} ---")
+
+        # Build windows at different strides
+        configs = [
+            ('stride12_gap0',  STEPS_PER_HOUR, 0),        # original
+            ('stride12_gap48', STEPS_PER_HOUR, total),     # gap = window size
+            ('stride48_gap0',  total, 0),                  # non-overlapping, no gap
+            ('stride48_gap48', total, total),               # non-overlapping + gap
+        ]
+
+        for stride_name, stride, gap_samples in configs:
+            all_feats, all_y, all_pids = [], [], []
+
+            for pat in patients:
+                grid = pat['grid']
+                glucose_raw = grid[:, 0] * 400
+
+                for start in range(0, len(grid) - total, stride):
+                    ctx_end = start + history_steps
+                    label_end = ctx_end + future_steps
+                    future_g = glucose_raw[ctx_end:label_end]
+                    if np.isnan(future_g).mean() > 0.3:
+                        continue
+                    future_valid = future_g[~np.isnan(future_g)]
+                    if len(future_valid) == 0:
+                        continue
+
+                    if above:
+                        label = int(np.sum(future_valid > threshold) / len(future_valid) > 0.2)
+                    else:
+                        label = int((future_valid < threshold).any())
+
+                    ctx_gluc = glucose_raw[start:ctx_end]
+                    valid_gluc = ctx_gluc[~np.isnan(ctx_gluc)]
+                    if len(valid_gluc) < 5:
+                        valid_gluc = np.array([120.0] * 5)
+
+                    feats = [
+                        float(np.mean(valid_gluc)), float(np.std(valid_gluc)),
+                        float(np.min(valid_gluc)), float(np.max(valid_gluc)),
+                        float(valid_gluc[-1]),
+                        float(valid_gluc[-1] - valid_gluc[-min(6, len(valid_gluc))]),
+                        float(np.mean(valid_gluc < 80)), float(np.mean(valid_gluc < 70)),
+                        float(np.mean(valid_gluc > 180)),
+                        float(np.sum(np.abs(np.diff(valid_gluc)))),
+                    ]
+                    for ch_idx in [1, 2, 3, 4]:
+                        ch = grid[start:ctx_end, ch_idx]
+                        ch_v = ch[~np.isnan(ch)]
+                        if len(ch_v) == 0:
+                            ch_v = np.array([0.0])
+                        feats.extend([float(np.mean(ch_v)), float(np.sum(ch_v)),
+                                      float(ch_v[-1])])
+
+                    all_feats.append(feats)
+                    all_y.append(label)
+                    all_pids.append(pat['name'])
+
+            if len(all_y) < 50:
+                print(f"    {stride_name}: insufficient samples ({len(all_y)})")
+                continue
+
+            X = np.nan_to_num(np.array(all_feats, dtype=np.float32), nan=0.0)
+            y = np.array(all_y)
+            pids = np.array(all_pids)
+
+            # Convert gap from original-data steps to window-index count.
+            # Each window is `stride` apart in the original data, so
+            # gap_samples // stride windows need to be dropped.
+            gap_windows = gap_samples // stride if gap_samples > 0 else 0
+
+            (tr_X, tr_y), (va_X, va_y) = temporal_split(
+                X, y, pids=pids, gap=gap_windows)
+
+            seed_metrics = []
+            for seed in cfg['seeds']:
+                np.random.seed(seed)
+                scale_pos = max(1.0, (tr_y == 0).sum() / max((tr_y == 1).sum(), 1))
+                clf = xgb.XGBClassifier(
+                    n_estimators=200, max_depth=6, learning_rate=0.05,
+                    scale_pos_weight=float(scale_pos),
+                    eval_metric='logloss', random_state=seed, verbosity=0,
+                    use_label_encoder=False)
+                clf.fit(tr_X, tr_y, eval_set=[(va_X, va_y)], verbose=False)
+                va_prob = clf.predict_proba(va_X)[:, 1]
+                va_pred = clf.predict(va_X)
+                m = {'f1': round(float(f1_score(va_y, va_pred, zero_division=0)), 4),
+                     'accuracy': round(float(accuracy_score(va_y, va_pred)), 4)}
+                try:
+                    m['auc_roc'] = round(float(roc_auc_score(va_y, va_prob)), 4)
+                except ValueError:
+                    pass
+                seed_metrics.append(m)
+
+            avg = {k: round(float(np.mean([s[k] for s in seed_metrics if k in s])), 4)
+                   for k in seed_metrics[0]}
+            key = f"{stride_name}_{task_name}"
+            results[key] = {
+                'seeds': seed_metrics, 'average': avg,
+                'n_train': int(len(tr_y)), 'n_val': int(len(va_y)),
+                'pos_rate_train': round(float(tr_y.mean()), 4),
+                'pos_rate_val': round(float(va_y.mean()), 4),
+                'gap_windows': gap_windows,
+                'stride': stride, 'n_features': int(X.shape[1]),
+            }
+            auc = avg.get('auc_roc', 0)
+            print(f"    {key:35s}  AUC={auc:.4f}  "
+                  f"N_tr={len(tr_y):>5d}  N_va={len(va_y):>5d}  "
+                  f"gap={gap_windows}")
+
+    # Summary comparison
+    print(f"\n  {'='*60}")
+    print(f"  AUTOCORRELATION AUDIT SUMMARY")
+    print(f"  {'='*60}")
+    for task in ['hypo', 'high']:
+        print(f"\n  --- {task.upper()} ---")
+        items = [(k, v) for k, v in results.items() if task in k]
+        ref_auc = None
+        for k, v in sorted(items, key=lambda x: x[0]):
+            auc = v['average'].get('auc_roc', 0)
+            if ref_auc is None:
+                ref_auc = auc
+            delta = auc - ref_auc
+            sign = '+' if delta >= 0 else ''
+            print(f"    {k:35s}  AUC={auc:.4f}  ({sign}{delta:.4f} vs original)")
+
+    # Also test CNN (FlexCNN) at original and gapped for comparison
+    print(f"\n  --- CNN COMPARISON (2h HYPO only) ---")
+    for stride_name, stride, gap_samples in [
+        ('cnn_stride12_gap0', STEPS_PER_HOUR, 0),
+        ('cnn_stride12_gap48', STEPS_PER_HOUR, total),
+    ]:
+        all_X, all_y, all_pids = [], [], []
+        for pat in patients:
+            grid = pat['grid']
+            glucose_raw = grid[:, 0] * 400
+            for start in range(0, len(grid) - total, stride):
+                ctx_end = start + history_steps
+                future_g = glucose_raw[ctx_end:ctx_end + future_steps]
+                if np.isnan(future_g).mean() > 0.3:
+                    continue
+                future_valid = future_g[~np.isnan(future_g)]
+                if len(future_valid) == 0:
+                    continue
+                label = int((future_valid < 70).any())
+                x_win = np.nan_to_num(grid[start:ctx_end, :8].copy(), nan=0.0)
+                all_X.append(x_win)
+                all_y.append(label)
+                all_pids.append(pat['name'])
+
+        if len(all_y) < 50:
+            print(f"    {stride_name}: insufficient samples"); continue
+
+        X_cnn = np.array(all_X, dtype=np.float32)
+        y_cnn = np.array(all_y)
+        pids_cnn = np.array(all_pids)
+        gap_w = gap_samples // stride if gap_samples > 0 else 0
+
+        (tr_X, tr_y), (va_X, va_y) = temporal_split(
+            X_cnn, y_cnn, pids=pids_cnn, gap=gap_w)
+
+        seed_aucs = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed)
+            np.random.seed(seed)
+            model = FlexCNN(8, 2).to(device)  # 8ch input, 2 classes
+            m = _train_torch_classifier(
+                model, tr_X, tr_y, va_X, va_y,
+                device=device, epochs=cfg['epochs'],
+                patience=cfg['patience'])
+            if 'auc_roc' in m:
+                seed_aucs.append(m['auc_roc'])
+
+        if seed_aucs:
+            avg_auc = round(float(np.mean(seed_aucs)), 4)
+            key = f"{stride_name}"
+            results[key] = {
+                'average': {'auc_roc': avg_auc},
+                'n_train': int(len(tr_y)), 'n_val': int(len(va_y)),
+                'seed_aucs': [round(float(a), 4) for a in seed_aucs],
+                'gap_windows': gap_w,
+            }
+            print(f"    {key:35s}  AUC={avg_auc:.4f}  "
+                  f"N_tr={len(tr_y):>5d}  N_va={len(va_y):>5d}")
+
+    save_results(results, 'exp433_gapped_validation')
+    return results
+
+
 EXPERIMENTS = {
     '411': run_exp411,
     '412': run_exp412,
@@ -2835,6 +3069,7 @@ EXPERIMENTS = {
     '422': run_exp422,
     '430': run_exp430,
     '431': run_exp431,
+    '433': run_exp433,
     '432': run_exp432,
 }
 
@@ -2868,6 +3103,7 @@ Experiments:
   430  Forecast→Classification bridge (use forecast models as features)
   431  Phenotype-adaptive classification (morning-high vs night-hypo routing)
   432  Operating point optimization (sensitivity/specificity for deployment)
+  433  Gapped validation (autocorrelation leakage audit)
 """)
     parser.add_argument('--experiment', '-e', nargs='+', default=['all'],
                         help='Experiment number(s) or "all" (default: all)')
