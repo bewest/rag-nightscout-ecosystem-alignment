@@ -1,11 +1,22 @@
 # Evidence Synthesis: Normalization, Regularization, and Long-Horizon Strategies
 
-**Date**: 2026-04-06
-**Context**: Synthesis of EXP-001–362 findings, symmetry/sparsity analysis,
+**Date**: 2026-04-06 (updated 2026-04-06)
+**Context**: Synthesis of EXP-001–368 findings, symmetry/sparsity analysis,
 continuous PK modeling, FDA features, and cross-scale feature selection experiments.
 Covers what the evidence shows so far, untried normalization/conditioning techniques,
 strategies for extending to multi-day and multi-month analysis, and prioritized
 experiment proposals for the next phase.
+
+> **Addendum (2026-04-06)**: Two concurrent research threads discovered running
+> EXP-360–368 in parallel with overlapping IDs. The forecasting thread
+> (`exp_pk_forecast_v3/v4.py`) claimed EXP-360–368 for dual-branch CNN, ISF
+> normalization, conservation regularization, learned PK kernels, ensemble methods,
+> dilated TCN, horizon conditioning, and ResNet experiments. The classification
+> thread (`exp_arch_12h.py`, `exp_transformer_features.py`) independently claimed
+> EXP-360–362 for hybrid features, architecture search, and transformer+features.
+> All experiment proposals below have been renumbered **+6** (EXP-363→369 through
+> EXP-378→384) to avoid conflicts. New best forecasting result: **Dilated TCN +
+> future PK = MAE 26.7** (EXP-366, supersedes EXP-356's MAE=35.4).
 
 **Prior Reports Referenced**:
 - `symmetry-sparsity-feature-selection-2026-04-05.md` — Symmetry hypotheses & sparse/dense problem
@@ -27,7 +38,11 @@ experiment proposals for the next phase.
 | Hypo Prediction | **F1=0.676, AUC=0.958** | EXP-345 MT-CNN+Platt | Multi-task CNN, 2h | ✅ Viable w/ calibration |
 | ISF Drift | **10/11 patients** detected | EXP-334 FPCA biweekly | Rolling statistics | ✅ Method proven |
 | Glucose Forecasting | **MAE=11.25 mg/dL** | EXP-251 ensemble | GroupedEncoder, 2h | ✅ Saturated |
-| Future-PK Forecasting | **MAE=35.4** (−14% vs baseline) | EXP-356/357 | Dual-head CNN | ✅ Breakthrough |
+| Future-PK Forecasting | **MAE=26.7** (−35% vs baseline) | EXP-366 dilated TCN | Dilated TCN + future PK | ✅ New best |
+
+> **Updated**: EXP-366 (dilated TCN deep with future PK channels) supersedes
+> EXP-356/357 (MAE=35.4). Also notable: EXP-367 horizon conditioning + ISF +
+> future PK = MAE=27.1; EXP-365 learned ensemble = MAE=30.7.
 
 ### 1.2 Definitively Proven Principles
 
@@ -96,7 +111,7 @@ heterogeneous representations.
 
 Platt scaling makes probability thresholds practical for clinical use.
 
-**Principle 6: Future PK Projection — Biggest Forecasting Breakthrough (EXP-356)**
+**Principle 6: Future PK Projection — Biggest Forecasting Breakthrough (EXP-356→366)**
 
 Known-future insulin decay and carb absorption are legitimate inputs (no information
 leakage — these are deterministic consequences of past events):
@@ -107,9 +122,37 @@ leakage — these are deterministic consequences of past events):
 | glucose+future_pk | **39.9** | **40.4** | **51.6** | −4.3 (−10%) |
 | baseline_8ch | 42.0 | 41.8 | 51.0 | −2.2 |
 | baseline_8ch+future_pk | **37.6** | **38.2** | **42.1** | −6.6 (−15%) |
+| dilated_tcn_deep+future_pk | **26.7** | — | — | **−17.5 (−40%)** |
+
+> **Updated (EXP-365–368)**: Dilated TCN architecture with future PK channels
+> achieves MAE=26.7 (EXP-366), a 40% reduction from glucose-only baseline. The
+> dilated convolutions (d=[1,2,4,8,16]) provide receptive field covering the full
+> history, while future PK channels provide absorption trajectory. Horizon
+> conditioning (EXP-367) with ISF normalization + future PK reaches MAE=27.1.
+> Learned ensemble of ISF-normalized and standard models reaches MAE=30.7 (EXP-365).
 
 Peak gain at h120 (−10 mg/dL). At h720 (12 hours), future_pk advantage grows to
 −12.6 mg/dL when combined with full 8ch history.
+
+**Principle 7: Architecture Matters at Long Scales (EXP-361 arch_12h)**
+
+At 12h episode scale, standard deep CNN receptive field (RF=9 steps = 45min) covers
+only 6.2% of the window. Architecture search across 6 architectures × 2 feature
+sets (3 seeds each) shows:
+
+| Architecture | Override F1 | Hypo AUC | Prolonged High F1 | RF Coverage |
+|-------------|------------|----------|-------------------|-------------|
+| deep_cnn (control) | 0.605 | 0.778 | 0.518 | 6.2% |
+| transformer (global attn) | **0.610** | 0.778 | **0.528** | 100% |
+| cnn_downsample (2×) | 0.608 | 0.778 | 0.521 | 12.5% |
+| dilated_cnn (d=1..16) | 0.598 | **0.780** | 0.491 | 43.8% |
+| large_kernel (k=7) | 0.602 | 0.775 | 0.513 | 34.0% |
+| se_cnn (channel attn) | 0.603 | 0.777 | 0.520 | 6.2% |
+
+Transformer wins override and prolonged_high but margins are tiny (+0.5–1.0%).
+Dilated CNN wins hypo AUC. pk_no_time_6ch features HURT all architectures at 12h
+(control baseline_8ch consistently better). This suggests the 12h classification
+bottleneck is not architecture but feature engineering for long episodes.
 
 ### 1.3 Approaches That Failed
 
@@ -526,9 +569,9 @@ Each layer adds **interpretable features** and avoids raw 5-min data at long sca
 
 ## 5. Prioritized Experiment Proposals
 
-### Tier 1: High Impact, Ready to Run (Next Available: EXP-363+)
+### Tier 1: High Impact, Ready to Run (Next Available: EXP-369+)
 
-#### EXP-363: ISF-Normalized Glucose for Cross-Patient Generalization
+#### EXP-369: ISF-Normalized Glucose for Cross-Patient Generalization
 
 **Hypothesis**: Using `(BG - target) / ISF` as glucose channel (replacing `BG / 400`)
 reduces LOO generalization gap by ≥1% on override and hypo tasks.
@@ -547,7 +590,7 @@ Directly tests the scaling equivariance hypothesis from symmetry doc §2.4.
 
 ---
 
-#### EXP-364: Per-Patient Z-Score + Raw Dual-Channel
+#### EXP-370: Per-Patient Z-Score + Raw Dual-Channel
 
 **Hypothesis**: Providing both `BG/400` and `(BG−μ_patient)/σ_patient` as separate
 channels improves cross-patient pattern retrieval Silhouette by ≥0.05.
@@ -564,7 +607,7 @@ channels improves cross-patient pattern retrieval Silhouette by ≥0.05.
 
 ---
 
-#### EXP-365: Functional Depth as Hypo Enrichment Feature
+#### EXP-371: Functional Depth as Hypo Enrichment Feature
 
 **Hypothesis**: Adding functional depth score as a model feature improves hypo
 F1 by ≥0.02, exploiting EXP-335's finding that Q1 depth has 33.7% hypo rate
@@ -581,7 +624,7 @@ vs Q4's 0.3%.
 
 ---
 
-#### EXP-366: Glucodensity-Augmented Override Classifier
+#### EXP-372: Glucodensity-Augmented Override Classifier
 
 **Hypothesis**: Appending 8-bin glucodensity histogram to CNN classifier head
 improves override F1 by ≥0.01 at 6h scale.
@@ -598,7 +641,7 @@ integrated into supervised classification. Head injection proven (EXP-338).
 
 ---
 
-#### EXP-367: Multi-Seed Future PK Validation
+#### EXP-373: Multi-Seed Future PK Validation
 
 **Hypothesis**: EXP-356's future PK breakthrough (−10 mg/dL at h120) replicates
 across 5 seeds with CI excluding zero improvement.
@@ -618,7 +661,7 @@ building on it. EXP-356 used 3 seeds; needs 5 for publication-grade CIs.
 
 ### Tier 2: Medium Impact, Extends Proven Methods
 
-#### EXP-368: Cumulative Glucose Load Features at 3-Day Scale
+#### EXP-374: Cumulative Glucose Load Features at 3-Day Scale
 
 **Hypothesis**: Rolling 6h/12h/24h hyperglycemic exposure integrals improve 3-day
 episode classification by ≥0.03 F1_macro.
@@ -637,7 +680,7 @@ are the natural representation at this timescale.
 
 ---
 
-#### EXP-369: Multi-Rate EMA Channels
+#### EXP-375: Multi-Rate EMA Channels
 
 **Hypothesis**: Adding fast/medium/slow EMA channels (and their differences) improves
 6h/12h classification without increasing window size.
@@ -655,7 +698,7 @@ Addresses the 6h performance plateau (baseline_8ch wins everything there).
 
 ---
 
-#### EXP-370: STL Decomposition Channels at 3-Day Scale
+#### EXP-376: STL Decomposition Channels at 3-Day Scale
 
 **Hypothesis**: Decomposing glucose into trend+seasonal+residual and providing
 each as separate channels improves 3-day classification vs raw glucose.
@@ -673,7 +716,7 @@ channel feeds drift detection; residual channel feeds event detection.
 
 ---
 
-#### EXP-371: Hierarchical 12h-Block → Sequence Model at 3-Day Scale
+#### EXP-377: Hierarchical 12h-Block → Sequence Model at 3-Day Scale
 
 **Hypothesis**: Processing 3 days as six 12h blocks (using proven episode CNN)
 then sequencing with GRU outperforms flat 3-day dilated CNN.
@@ -691,7 +734,7 @@ proven components rather than training from scratch.
 
 ---
 
-#### EXP-372: Daily Glucodensity Sequences for Weekly Patterns
+#### EXP-378: Daily Glucodensity Sequences for Weekly Patterns
 
 **Hypothesis**: 7 × 50-bin daily glucodensity histograms → 2D CNN produces
 weekly pattern Silhouette > +0.40 (vs current +0.326 with raw embeddings).
@@ -711,7 +754,7 @@ weekly embedding from EXP-304) in a novel way.
 
 ### Tier 3: Exploratory, Higher Risk
 
-#### EXP-373: Log-Transformed Dose Channels
+#### EXP-379: Log-Transformed Dose Channels
 
 **Hypothesis**: `log(1 + dose)` normalization of bolus and carb channels improves
 episode-scale (6h/12h) classification by making small corrections visible.
@@ -728,7 +771,7 @@ episode scale (EXP-298 shows bolus removal helps at 12h).
 
 ---
 
-#### EXP-374: Absorption Symmetry Quantification
+#### EXP-380: Absorption Symmetry Quantification
 
 **Hypothesis**: Isolated insulin bolus glucose responses have symmetry ratio
 0.7–1.3 around nadir; carb responses are more asymmetric (ratio 0.4–0.8).
@@ -747,7 +790,7 @@ symmetry-aware regularization (absorption_symmetry_loss from symmetry doc §5.3)
 
 ---
 
-#### EXP-375: Time-Translation Invariance Quantification
+#### EXP-381: Time-Translation Invariance Quantification
 
 **Hypothesis**: Meal glucose responses have cosine similarity > 0.7 regardless of
 time-of-day, with Spearman r < 0.15 between time_diff and similarity.
@@ -765,7 +808,7 @@ effects are stronger than expected at meal scale.
 
 ---
 
-#### EXP-376: Kalman Filter ISF/CR State Tracking
+#### EXP-382: Kalman Filter ISF/CR State Tracking
 
 **Hypothesis**: A Kalman filter tracking latent ISF and CR as hidden states
 with daily TDD and mean glucose as observations achieves smoother drift
@@ -786,7 +829,7 @@ Kalman filter is the right formalism for slow-moving hidden physiological states
 
 ---
 
-#### EXP-377: Bayesian Hierarchical A1C Trajectory
+#### EXP-383: Bayesian Hierarchical A1C Trajectory
 
 **Hypothesis**: A Bayesian hierarchical model pooling across patients estimates
 eA1C trajectory with narrower posterior intervals than per-patient models.
@@ -805,7 +848,7 @@ statistical approach needed when neural networks can't be trained.
 
 ---
 
-#### EXP-378: Heteroscedastic Loss Weighted by Sensor Age
+#### EXP-384: Heteroscedastic Loss Weighted by Sensor Age
 
 **Hypothesis**: Weighting forecast loss by inverse SAGE (newer sensors = higher
 weight) improves late-sensor-life MAE by ≥0.5 mg/dL without hurting overall.
@@ -826,17 +869,17 @@ deployment where sensor quality varies.
 
 ```
                     ┌─────────────────────────────────┐
-                    │  EXP-367: Multi-Seed Future PK   │ (validate breakthrough)
+                    │  EXP-373: Multi-Seed Future PK   │ (validate breakthrough)
                     └─────────────┬───────────────────┘
                                   │
                     ┌─────────────▼───────────────────┐
-                    │  EXP-363: ISF-Normalized Glucose │ (highest leverage)
+                    │  EXP-369: ISF-Normalized Glucose │ (highest leverage)
                     └─────────────┬───────────────────┘
                                   │
               ┌───────────────────┼───────────────────┐
               │                   │                   │
     ┌─────────▼─────────┐ ┌──────▼──────────┐ ┌──────▼──────────┐
-    │ EXP-364: Z-Score  │ │ EXP-365: Depth  │ │ EXP-366: Gluco- │
+    │ EXP-370: Z-Score  │ │ EXP-371: Depth  │ │ EXP-372: Gluco- │
     │ Dual Channel      │ │ Hypo Feature    │ │ density Override │
     └─────────┬─────────┘ └──────┬──────────┘ └──────┬──────────┘
               │                   │                   │
@@ -845,20 +888,20 @@ deployment where sensor quality varies.
          ┌────────────────────────┼────────────────────────┐
          │                        │                        │
   ┌──────▼──────────┐  ┌─────────▼─────────┐  ┌───────────▼─────────┐
-  │ EXP-368: Cumul. │  │ EXP-369: Multi-   │  │ EXP-370: STL        │
+  │ EXP-374: Cumul. │  │ EXP-375: Multi-   │  │ EXP-376: STL        │
   │ Load Features   │  │ Rate EMA          │  │ Decomposition       │
   └──────┬──────────┘  └─────────┬─────────┘  └───────────┬─────────┘
          │                        │                        │
          └────────────────────────┼────────────────────────┘
                                   │
                     ┌─────────────▼───────────────────┐
-                    │ EXP-371: Hierarchical 12h→3d    │ (3-day scale)
+                    │ EXP-377: Hierarchical 12h→3d    │ (3-day scale)
                     └─────────────┬───────────────────┘
                                   │
               ┌───────────────────┼───────────────────┐
               │                   │                   │
     ┌─────────▼─────────┐ ┌──────▼──────────┐ ┌──────▼──────────┐
-    │ EXP-372: Weekly   │ │ EXP-374: Absorp.│ │ EXP-375: Time   │
+    │ EXP-378: Weekly   │ │ EXP-380: Absorp.│ │ EXP-381: Time   │
     │ Glucodensity      │ │ Symmetry        │ │ Invariance      │
     └─────────┬─────────┘ └──────┬──────────┘ └──────┬──────────┘
               │                   │                   │
@@ -867,7 +910,7 @@ deployment where sensor quality varies.
               ┌───────────────────┼───────────────────┐
               │                   │                   │
     ┌─────────▼─────────┐ ┌──────▼──────────┐ ┌──────▼──────────┐
-    │ EXP-376: Kalman   │ │ EXP-377: Bayes  │ │ EXP-378: Hetero │
+    │ EXP-382: Kalman   │ │ EXP-383: Bayes  │ │ EXP-384: Hetero │
     │ Filter ISF        │ │ Hierarchical    │ │ scedastic Loss  │
     └───────────────────┘ └─────────────────┘ └─────────────────┘
 ```
@@ -878,24 +921,24 @@ deployment where sensor quality varies.
 
 ### Immediate Actions (Run This Week)
 
-1. **EXP-367**: Validate future PK breakthrough with 5 seeds — this is the single
+1. **EXP-373**: Validate future PK breakthrough with 5 seeds — this is the single
    most important finding to confirm (EXP-356: −10 mg/dL at h120)
-2. **EXP-363**: ISF-normalized glucose — highest leverage normalization change
-3. **EXP-365**: Functional depth as hypo feature — lowest cost, strong prior signal
-4. **EXP-366**: Glucodensity at classifier head — proven signal, untried integration
+2. **EXP-369**: ISF-normalized glucose — highest leverage normalization change
+3. **EXP-371**: Functional depth as hypo feature — lowest cost, strong prior signal
+4. **EXP-372**: Glucodensity at classifier head — proven signal, untried integration
 
 ### Near-Term (2–4 Weeks)
 
-5. **EXP-364**: Z-score dual-channel for cross-patient work
-6. **EXP-368**: Cumulative load features for 3-day scale (first multi-day experiment)
-7. **EXP-371**: Hierarchical 12h→3d (tests the pipeline architecture concept)
-8. **EXP-372**: Weekly glucodensity sequences
+5. **EXP-370**: Z-score dual-channel for cross-patient work
+6. **EXP-374**: Cumulative load features for 3-day scale (first multi-day experiment)
+7. **EXP-377**: Hierarchical 12h→3d (tests the pipeline architecture concept)
+8. **EXP-378**: Weekly glucodensity sequences
 
 ### Longer-Term (1–2 Months)
 
-9. **EXP-370**: STL decomposition (enables clean separation for drift vs event detection)
-10. **EXP-376**: Kalman filter ISF tracking (bridge to clinical decision support)
-11. **EXP-377**: Bayesian hierarchical A1C (multi-month methodology)
+9. **EXP-376**: STL decomposition (enables clean separation for drift vs event detection)
+10. **EXP-382**: Kalman filter ISF tracking (bridge to clinical decision support)
+11. **EXP-383**: Bayesian hierarchical A1C (multi-month methodology)
 
 ### Techniques to Avoid
 
@@ -917,6 +960,11 @@ deployment where sensor quality varies.
 | `tools/cgmencode/schema.py` | Normalization constants | ~250 | NORMALIZATION_SCALES, GLUCOSE_CLIP |
 | `tools/cgmencode/run_pattern_experiments.py` | Multi-scale experiments | 7,502 | Scale configs, aligned loading, cross-scale |
 | `tools/cgmencode/experiments_validated.py` | Validated classifiers | ~800 | EXP-336–347 with CIs |
-| `tools/cgmencode/exp_pk_forecast_v2.py` | PK forecasting | ~800 | EXP-356–359, future PK projection |
+| `tools/cgmencode/exp_pk_forecast_v2.py` | PK forecasting (Thread A) | ~800 | EXP-356–359, future PK projection |
+| `tools/cgmencode/exp_pk_forecast_v3.py` | PK extensions (Thread A) | 1,463 | EXP-360–364, ISF norm, conservation, learned PK |
+| `tools/cgmencode/exp_pk_forecast_v4.py` | Horizon-adaptive (Thread A) | 1,258 | EXP-365–368, ensemble, dilated TCN, ResNet |
+| `tools/cgmencode/exp_arch_12h.py` | Architecture search (Thread B) | 577 | EXP-361, 6 archs × 2 feature sets at 12h |
+| `tools/cgmencode/exp_transformer_features.py` | Transformer+features (Thread B) | 461 | EXP-362, transformer × feature variants |
+| `tools/cgmencode/exp_normalization_conditioning.py` | **Next-phase runner** | ~TBD | EXP-369+, normalization/conditioning proposals |
 | `tools/cgmencode/experiment_lib.py` | Shared ML infrastructure | 967 | Training loops, model creation, evaluation |
-| `externals/experiments/` | Result JSONs | 346 files | All experiment metrics and configurations |
+| `externals/experiments/` | Result JSONs | 368+ files | All experiment metrics and configurations |

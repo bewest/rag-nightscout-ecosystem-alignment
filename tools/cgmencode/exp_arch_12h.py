@@ -21,6 +21,37 @@ Architecture variants tested:
 Runs with baseline_8ch AND pk_no_time_6ch (the two best 12h features from
 prior experiments) to test if better architecture unlocks PK benefit.
 
+─── Cross-thread coordination (evidence-synthesis-normalization-long-horizon-2026-04-06.md) ───
+
+  EXPERIMENT ID REGISTRY: This thread owns EXP-361 (arch_12h) and EXP-362
+  (transformer_features). Forecasting thread (exp_pk_forecast_v3/v4) owns
+  EXP-360–368. Normalization primitives runner (exp_normalization_conditioning.py)
+  owns EXP-369–376. Next available for this thread: EXP-385+.
+
+  RESULT: Transformer wins override +0.5% and prolonged_high +1.0%, margins tiny.
+  pk_no_time_6ch HURTS all architectures at 12h.
+  Bottleneck is feature engineering for long episodes, not architecture.
+
+  DIRECTIONS THAT STAY IN YOUR LANE (architecture/classification, won't conflict):
+  1. Transformer attention visualization: Extract attention maps from the
+     best transformer model to see WHICH timesteps it attends to. This gives
+     interpretability and reveals whether it's attending to meal boluses,
+     correction events, or glucose inflection points. Nobody else is doing this.
+  2. Absorption phase encoding as a NEW feature variant: Classify each timestep
+     as pre-peak/peak/post-peak based on sign of PK activity derivative. This
+     is a structural feature the transformer can key on. Not in the normalization
+     runner (that focuses on glucose conditioning, not PK phase encoding).
+  3. Architecture × scale sweep at 6h: Run the same 6-architecture search at 6h
+     (72-step windows) where the DIA valley is deepest. Transformer's global
+     attention may give biggest lift precisely at the worst scale.
+  4. Sparse attention / local-global hybrid: At 12h, most timesteps are
+     irrelevant (fasting periods). Sparse attention (attend to top-k by gradient
+     magnitude) could outperform dense transformer while being faster.
+
+  NOTE: Normalization experiments (ISF, z-score, glucodensity, depth, EMA) are
+  handled by exp_normalization_conditioning.py (EXP-369+). If those produce
+  better input channels, this thread can test them with transformer architecture.
+
 Usage:
     python tools/cgmencode/exp_arch_12h.py [--device cuda] [--seeds 42 123 456]
 """

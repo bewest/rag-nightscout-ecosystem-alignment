@@ -26,6 +26,30 @@ EXP-368 — Residual CNN with wider layers
   Deeper ResNet-style blocks (64→128→128→64) with skip connections.
   Hypothesis: More capacity captures complex insulin:glucose dynamics.
 
+─── Cross-thread coordination (evidence-synthesis-normalization-long-horizon-2026-04-06.md) ───
+
+  EXPERIMENT ID REGISTRY: This thread owns EXP-365–368.
+  Classification thread (exp_arch_12h, exp_transformer_features) owns EXP-360–362.
+  Normalization primitives runner (exp_normalization_conditioning.py) owns EXP-369–376.
+  Next available for this thread: EXP-385+.
+
+  DIRECTIONS THAT STAY IN YOUR LANE (forecasting-specific, won't conflict):
+  1. Multi-seed validation of EXP-366 dilated TCN (MAE=26.7): Run 5 seeds with
+     bootstrap CIs to confirm this breakthrough is real. This is the single most
+     important next step — nobody else is doing forecasting validation.
+  2. Extend dilated TCN to h1440 (24h) and h2160 (36h) horizons: The dilated
+     architecture may unlock multi-day forecasting. Push the frontier.
+  3. Horizon-conditioned FiLM + dilated TCN combo: EXP-367 used FiLM on standard
+     CNN; combining it with the dilated backbone (EXP-366) could unify the
+     horizon-adaptive approach into one model.
+  4. Patient-specific fine-tuning: Train a universal dilated TCN, then fine-tune
+     per patient with 50 epochs. Tests whether forecasting benefits from
+     personalization — directly extends the ensemble idea (EXP-365).
+
+  NOTE: Normalization experiments (ISF, z-score, EMA) are handled by
+  exp_normalization_conditioning.py (EXP-369+). If those produce better
+  input channels, this thread can consume them as pre-built features.
+
 Usage:
     python tools/cgmencode/exp_pk_forecast_v4.py --experiment 365 --device cuda --quick
     python tools/cgmencode/exp_pk_forecast_v4.py --experiment all --device cuda
