@@ -79,6 +79,9 @@ def load_patient_profile_isf(train_dir):
     try:
         with open(profile_path) as f:
             profile = json.load(f)
+        # Profile can be a list (Nightscout API format) or dict
+        if isinstance(profile, list):
+            profile = profile[0] if profile else {}
         store = profile.get('store', {})
         default_profile = store.get('Default', store.get(next(iter(store), ''), {}))
         sens = default_profile.get('sens', [])
@@ -162,8 +165,8 @@ def load_bridge_data(patients_dir, window_size=48, max_patients=None,
             all_data['isf_val'].extend([isf] * (n - split))
 
         per_patient.append(info)
-        print(f"  {pdir.name}: {n} windows ({split} train, {n-split} val)"
-              f" [isf={isf:.0f}]" if isf else f"  {pdir.name}: {n} windows")
+        isf_str = f" [isf={isf:.0f}]" if isf else ""
+        print(f"  {pdir.name}: {n} windows ({split} train, {n-split} val){isf_str}")
 
     result = {
         'base_train': np.array(all_data['base_train'], dtype=np.float32),
