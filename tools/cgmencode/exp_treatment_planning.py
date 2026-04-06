@@ -3055,6 +3055,432 @@ def run_exp433(args):
     return results
 
 
+# ===================================================================
+# EXP-450: Feature Importance Ablation
+# ===================================================================
+
+TABULAR_FEATURE_NAMES = [
+    'gluc_mean', 'gluc_std', 'gluc_min', 'gluc_max', 'gluc_last',
+    'trend_30min', 'frac_near_hypo80', 'frac_hypo70', 'frac_high180',
+    'glucose_excursion',
+    'iob_mean', 'iob_sum', 'iob_last',
+    'cob_mean', 'cob_sum', 'cob_last',
+    'net_basal_mean', 'net_basal_sum', 'net_basal_last',
+    'bolus_mean', 'bolus_sum', 'bolus_last',
+]
+
+
+def _build_tabular_features(grid, glucose_raw, start, ctx_end):
+    """Build the standard 22 tabular features for a single window.
+
+    Returns list of 22 floats, or None if insufficient data.
+    """
+    ctx_gluc = glucose_raw[start:ctx_end]
+    valid_gluc = ctx_gluc[~np.isnan(ctx_gluc)]
+    if len(valid_gluc) < 5:
+        valid_gluc = np.array([120.0] * 5)
+    feats = [
+        float(np.mean(valid_gluc)), float(np.std(valid_gluc)),
+        float(np.min(valid_gluc)), float(np.max(valid_gluc)),
+        float(valid_gluc[-1]),
+        float(valid_gluc[-1] - valid_gluc[-min(6, len(valid_gluc))]),
+        float(np.mean(valid_gluc < 80)), float(np.mean(valid_gluc < 70)),
+        float(np.mean(valid_gluc > 180)),
+        float(np.sum(np.abs(np.diff(valid_gluc)))),
+    ]
+    for ch_idx in [1, 2, 3, 4]:
+        ch = grid[start:ctx_end, ch_idx]
+        ch_v = ch[~np.isnan(ch)]
+        if len(ch_v) == 0:
+            ch_v = np.array([0.0])
+        feats.extend([float(np.mean(ch_v)), float(np.sum(ch_v)),
+                      float(ch_v[-1])])
+    return feats
+
+
+def _build_dataset(patients, history_steps, future_steps, threshold, above,
+                   stride=None, extra_feat_fn=None):
+    """Build tabular dataset across all patients.
+
+    Args:
+        extra_feat_fn: Optional callable(pat, start, ctx_end) -> list of floats.
+                       Appended to the 22 baseline features.
+
+    Returns: (X, y, pids, feature_names)
+    """
+    if stride is None:
+        stride = STEPS_PER_HOUR
+    total = history_steps + future_steps
+    all_feats, all_y, all_pids = [], [], []
+
+    for pat in patients:
+        grid = pat['grid']
+        glucose_raw = grid[:, 0] * 400
+
+        for start in range(0, len(grid) - total, stride):
+            ctx_end = start + history_steps
+            label_end = ctx_end + future_steps
+            future_g = glucose_raw[ctx_end:label_end]
+            if np.isnan(future_g).mean() > 0.3:
+                continue
+            future_valid = future_g[~np.isnan(future_g)]
+            if len(future_valid) == 0:
+                continue
+
+            if above:
+                label = int(np.sum(future_valid > threshold) / len(future_valid) > 0.2)
+            else:
+                label = int((future_valid < threshold).any())
+
+            feats = _build_tabular_features(grid, glucose_raw, start, ctx_end)
+            if feats is None:
+                continue
+
+            if extra_feat_fn is not None:
+                extra = extra_feat_fn(pat, start, ctx_end)
+                if extra is None:
+                    continue
+                feats = feats + extra
+
+            all_feats.append(feats)
+            all_y.append(label)
+            all_pids.append(pat['name'])
+
+    if len(all_y) < 50:
+        return None, None, None, None
+
+    X = np.nan_to_num(np.array(all_feats, dtype=np.float32), nan=0.0)
+    y = np.array(all_y)
+    pids = np.array(all_pids)
+    return X, y, pids, TABULAR_FEATURE_NAMES
+
+
+def _train_xgb_eval(X, y, pids, seeds, gap=0):
+    """Train XGBoost with temporal split and return avg metrics."""
+    (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y, pids=pids, gap=gap)
+    seed_metrics = []
+    for seed in seeds:
+        np.random.seed(seed)
+        scale_pos = max(1.0, (tr_y == 0).sum() / max((tr_y == 1).sum(), 1))
+        clf = xgb.XGBClassifier(
+            n_estimators=200, max_depth=6, learning_rate=0.05,
+            scale_pos_weight=float(scale_pos),
+            eval_metric='logloss', random_state=seed, verbosity=0,
+            use_label_encoder=False)
+        clf.fit(tr_X, tr_y, eval_set=[(va_X, va_y)], verbose=False)
+        va_prob = clf.predict_proba(va_X)[:, 1]
+        va_pred = clf.predict(va_X)
+        m = {'f1': round(float(f1_score(va_y, va_pred, zero_division=0)), 4),
+             'accuracy': round(float(accuracy_score(va_y, va_pred)), 4)}
+        try:
+            m['auc_roc'] = round(float(roc_auc_score(va_y, va_prob)), 4)
+        except ValueError:
+            pass
+        seed_metrics.append(m)
+    avg = {k: round(float(np.mean([s[k] for s in seed_metrics if k in s])), 4)
+           for k in seed_metrics[0]}
+    return {'seeds': seed_metrics, 'average': avg,
+            'n_train': int(len(tr_y)), 'n_val': int(len(va_y)),
+            'pos_rate': round(float(y.mean()), 4)}
+
+
+def run_exp450(args):
+    """EXP-450: Feature Importance Ablation.
+
+    Permutation-based feature importance on the 22 tabular features that
+    broke the hypo ceiling in EXP-430.  For each feature, shuffle its values
+    in the validation set and measure AUC drop.
+
+    Also tests feature groups: glucose-only, insulin-only, trend-only.
+    """
+    cfg = _get_config(args)
+
+    print(f"\n{'='*60}")
+    print("EXP-450: Feature Importance Ablation")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    results = {}
+
+    for task_name, threshold, above in [('hypo', 70, False), ('high', 180, True)]:
+        print(f"\n  --- {task_name.upper()} ---")
+        X, y, pids, fnames = _build_dataset(
+            patients, STEPS_2H, STEPS_2H, threshold, above)
+        if X is None:
+            print("    Insufficient data"); continue
+
+        # Train baseline model
+        (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y, pids=pids)
+        seed = cfg['seeds'][0]
+        np.random.seed(seed)
+        scale_pos = max(1.0, (tr_y == 0).sum() / max((tr_y == 1).sum(), 1))
+        clf = xgb.XGBClassifier(
+            n_estimators=200, max_depth=6, learning_rate=0.05,
+            scale_pos_weight=float(scale_pos),
+            eval_metric='logloss', random_state=seed, verbosity=0,
+            use_label_encoder=False)
+        clf.fit(tr_X, tr_y, eval_set=[(va_X, va_y)], verbose=False)
+        base_prob = clf.predict_proba(va_X)[:, 1]
+        base_auc = float(roc_auc_score(va_y, base_prob))
+        print(f"    Baseline AUC: {base_auc:.4f}")
+
+        # Permutation importance (5 repeats)
+        n_repeats = 5
+        importances = {}
+        for fi in range(X.shape[1]):
+            fname = fnames[fi] if fi < len(fnames) else f'feat_{fi}'
+            auc_drops = []
+            for rep in range(n_repeats):
+                va_X_perm = va_X.copy()
+                rng = np.random.RandomState(seed + rep)
+                va_X_perm[:, fi] = rng.permutation(va_X_perm[:, fi])
+                perm_prob = clf.predict_proba(va_X_perm)[:, 1]
+                try:
+                    perm_auc = float(roc_auc_score(va_y, perm_prob))
+                except ValueError:
+                    perm_auc = 0.5
+                auc_drops.append(base_auc - perm_auc)
+            importances[fname] = {
+                'mean_drop': round(float(np.mean(auc_drops)), 5),
+                'std_drop': round(float(np.std(auc_drops)), 5),
+            }
+
+        # Sort by importance
+        sorted_imp = sorted(importances.items(), key=lambda x: -x[1]['mean_drop'])
+        print(f"\n    {'Feature':25s} {'AUC Drop':>10s} {'Std':>8s}")
+        print(f"    {'-'*45}")
+        for fname, imp in sorted_imp:
+            print(f"    {fname:25s} {imp['mean_drop']:>10.5f} {imp['std_drop']:>8.5f}")
+
+        # Feature group ablation
+        glucose_idx = list(range(0, 10))
+        insulin_idx = [10, 11, 12, 15, 16, 17]  # IOB + net_basal
+        carb_idx = [13, 14, 15]                  # COB
+        trend_idx = [5, 9]                        # trend_30min, excursion
+
+        groups = {
+            'glucose_only': glucose_idx,
+            'insulin_only': insulin_idx,
+            'glucose+trend': glucose_idx + trend_idx,
+            'all_22': list(range(22)),
+        }
+
+        group_results = {}
+        for gname, gidx in groups.items():
+            X_g = X[:, gidx]
+            res = _train_xgb_eval(X_g, y, pids, cfg['seeds'])
+            group_results[gname] = res
+            auc = res['average'].get('auc_roc', 0)
+            print(f"    {gname:25s}  AUC={auc:.4f}  ({len(gidx)} features)")
+
+        results[f'importance_{task_name}'] = {
+            'baseline_auc': base_auc,
+            'permutation': importances,
+            'sorted': [(k, v) for k, v in sorted_imp],
+        }
+        results[f'groups_{task_name}'] = group_results
+
+    save_results(results, 'exp450_feature_importance')
+    return results
+
+
+# ===================================================================
+# EXP-451: Throughput Features for Classification
+# ===================================================================
+
+def run_exp451(args):
+    """EXP-451: Throughput Features for Classification.
+
+    Tests whether adding metabolic throughput (supply × demand) from
+    EXP-441's findings improves the 22-feature XGBoost classifier.
+
+    Throughput has 0.987 cross-patient similarity and 18× spectral power
+    at meal frequencies.  Can it help hypo/high classification?
+
+    Variants:
+      - baseline: 22 features only
+      - throughput_stats: 22 + 6 throughput features (mean, std, max, slope, area, peak_ratio)
+      - supply_demand: 22 + 12 (supply + demand separate)
+      - throughput_only: 6 throughput features only
+    """
+    cfg = _get_config(args)
+
+    print(f"\n{'='*60}")
+    print("EXP-451: Throughput Features for Classification")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    # Import throughput computation
+    try:
+        from exp_metabolic_441 import compute_supply_demand
+    except ImportError:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from exp_metabolic_441 import compute_supply_demand
+
+    # Precompute supply/demand for each patient
+    patient_sd = {}
+    for pat in patients:
+        sd = compute_supply_demand(pat['df'], pk_array=pat['pk'])
+        patient_sd[pat['name']] = sd
+        print(f"  {pat['name']}: throughput mean={sd['product'].mean():.3f}")
+
+    results = {}
+
+    def throughput_feats(pat, start, ctx_end):
+        """6 throughput features from a window."""
+        sd = patient_sd[pat['name']]
+        tp = sd['product'][start:ctx_end]
+        supply = sd['supply'][start:ctx_end]
+        demand = sd['demand'][start:ctx_end]
+        tp_v = tp[~np.isnan(tp)] if len(tp) > 0 else np.array([0.0])
+        if len(tp_v) == 0:
+            tp_v = np.array([0.0])
+        return [
+            float(np.mean(tp_v)),
+            float(np.std(tp_v)),
+            float(np.max(tp_v)),
+            float(tp_v[-1] - tp_v[-min(6, len(tp_v))]),  # throughput trend
+            float(np.sum(tp_v)),  # area under throughput
+            float(np.max(tp_v) / max(np.mean(tp_v), 1e-8)),  # peak ratio
+        ]
+
+    def supply_demand_feats(pat, start, ctx_end):
+        """12 features: 6 throughput + 3 supply + 3 demand."""
+        sd = patient_sd[pat['name']]
+        tp_f = throughput_feats(pat, start, ctx_end)
+        supply = sd['supply'][start:ctx_end]
+        demand = sd['demand'][start:ctx_end]
+        s_v = supply[~np.isnan(supply)] if len(supply) > 0 else np.array([0.0])
+        d_v = demand[~np.isnan(demand)] if len(demand) > 0 else np.array([0.0])
+        if len(s_v) == 0: s_v = np.array([0.0])
+        if len(d_v) == 0: d_v = np.array([0.0])
+        return tp_f + [
+            float(np.mean(s_v)), float(np.max(s_v)), float(np.sum(s_v)),
+            float(np.mean(d_v)), float(np.max(d_v)), float(np.sum(d_v)),
+        ]
+
+    for task_name, threshold, above in [('hypo', 70, False), ('high', 180, True)]:
+        print(f"\n  --- {task_name.upper()} ---")
+
+        # Baseline (22 features)
+        X_base, y, pids, _ = _build_dataset(
+            patients, STEPS_2H, STEPS_2H, threshold, above)
+        if X_base is None:
+            print("    Insufficient data"); continue
+
+        # Throughput stats (22 + 6 = 28 features)
+        X_tp, _, _, _ = _build_dataset(
+            patients, STEPS_2H, STEPS_2H, threshold, above,
+            extra_feat_fn=throughput_feats)
+
+        # Supply+demand (22 + 12 = 34 features)
+        X_sd, _, _, _ = _build_dataset(
+            patients, STEPS_2H, STEPS_2H, threshold, above,
+            extra_feat_fn=supply_demand_feats)
+
+        # Throughput only (6 features)
+        def tp_only(pat, start, ctx_end):
+            return throughput_feats(pat, start, ctx_end)
+        X_tpo, y_tpo, pids_tpo, _ = _build_dataset(
+            patients, STEPS_2H, STEPS_2H, threshold, above,
+            extra_feat_fn=tp_only)
+        # Strip the 22 baseline features, keep only last 6
+        if X_tpo is not None:
+            X_tpo = X_tpo[:, 22:]
+
+        variants = [
+            ('baseline_22', X_base, y, pids),
+            ('throughput_28', X_tp, y, pids),
+            ('supply_demand_34', X_sd, y, pids),
+        ]
+        if X_tpo is not None:
+            variants.append(('throughput_only_6', X_tpo, y_tpo, pids_tpo))
+
+        for vname, X_v, y_v, p_v in variants:
+            if X_v is None:
+                continue
+            res = _train_xgb_eval(X_v, y_v, p_v, cfg['seeds'])
+            key = f"{vname}_{task_name}"
+            res['n_features'] = int(X_v.shape[1])
+            results[key] = res
+            auc = res['average'].get('auc_roc', 0)
+            print(f"    {key:35s}  AUC={auc:.4f}  ({X_v.shape[1]} feats)")
+
+    save_results(results, 'exp451_throughput_classification')
+    return results
+
+
+# ===================================================================
+# EXP-452: Horizon Scaling — Tabular at 2h/4h/6h/12h
+# ===================================================================
+
+def run_exp452(args):
+    """EXP-452: Horizon Scaling — XGBoost Tabular at Multiple Horizons.
+
+    Tests whether the XGBoost tabular breakthrough (0.849 at 2h) extends
+    to longer prediction horizons.  CNN was stuck at ~0.69 for 6h+.
+
+    Horizons: 2h, 4h, 6h, 12h (all with 2h history context).
+    """
+    cfg = _get_config(args)
+
+    print(f"\n{'='*60}")
+    print("EXP-452: Horizon Scaling — Tabular at Multiple Horizons")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    results = {}
+    horizons = [
+        ('2h', STEPS_2H),
+        ('4h', STEPS_4H),
+        ('6h', STEPS_6H),
+        ('12h', STEPS_12H),
+    ]
+
+    for task_name, threshold, above in [('hypo', 70, False), ('high', 180, True)]:
+        print(f"\n  --- {task_name.upper()} ---")
+
+        for h_name, future_steps in horizons:
+            X, y, pids, _ = _build_dataset(
+                patients, STEPS_2H, future_steps, threshold, above)
+            if X is None:
+                print(f"    {h_name}: insufficient data"); continue
+
+            res = _train_xgb_eval(X, y, pids, cfg['seeds'])
+            key = f"{h_name}_{task_name}"
+            res['horizon_steps'] = future_steps
+            res['horizon_name'] = h_name
+            results[key] = res
+            auc = res['average'].get('auc_roc', 0)
+            pos = res['pos_rate']
+            print(f"    {key:25s}  AUC={auc:.4f}  pos_rate={pos:.3f}  "
+                  f"N={res['n_train']+res['n_val']}")
+
+    # Summary comparison
+    print(f"\n  {'='*60}")
+    print(f"  HORIZON SCALING SUMMARY")
+    print(f"  {'='*60}")
+    for task in ['hypo', 'high']:
+        print(f"\n  --- {task.upper()} ---")
+        items = [(k, v) for k, v in results.items() if task in k]
+        for k, v in sorted(items, key=lambda x: x[1].get('horizon_steps', 0)):
+            auc = v['average'].get('auc_roc', 0)
+            pos = v['pos_rate']
+            print(f"    {k:25s}  AUC={auc:.4f}  pos_rate={pos:.3f}")
+
+    save_results(results, 'exp452_horizon_scaling')
+    return results
+
+
 EXPERIMENTS = {
     '411': run_exp411,
     '412': run_exp412,
@@ -3071,6 +3497,9 @@ EXPERIMENTS = {
     '431': run_exp431,
     '433': run_exp433,
     '432': run_exp432,
+    '450': run_exp450,
+    '451': run_exp451,
+    '452': run_exp452,
 }
 
 
@@ -3104,6 +3533,9 @@ Experiments:
   431  Phenotype-adaptive classification (morning-high vs night-hypo routing)
   432  Operating point optimization (sensitivity/specificity for deployment)
   433  Gapped validation (autocorrelation leakage audit)
+  450  Feature importance ablation (permutation + group ablation)
+  451  Throughput features for classification (metabolic supply × demand)
+  452  Horizon scaling (XGBoost tabular at 2h/4h/6h/12h)
 """)
     parser.add_argument('--experiment', '-e', nargs='+', default=['all'],
                         help='Experiment number(s) or "all" (default: all)')
