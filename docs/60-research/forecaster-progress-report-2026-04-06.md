@@ -1,5 +1,11 @@
 # Forecaster Researcher Progress Report
 
+> **Note**: This report covers the CNN-era experiments (EXP-352–398) with a
+> champion MAE of 24.4 mg/dL. It has been **superseded** by the transformer
+> breakthrough documented in [era-bridge-report-2026-04-06.md](era-bridge-report-2026-04-06.md)
+> (EXP-405–408, MAE=13.50) and [gap-closing-report-2026-04-07.md](gap-closing-report-2026-04-07.md)
+> (EXP-410, MAE=10.85). Retained as historical record of the CNN exploration phase.
+
 **Date**: 2026-04-06
 **Scope**: EXP-352 through EXP-398 (47 experiments, 318 variants)
 **Period**: 2026-04-05 15:00–21:58 (~7 hours of autonomous research)

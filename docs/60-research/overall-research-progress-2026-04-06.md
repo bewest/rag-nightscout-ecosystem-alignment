@@ -21,7 +21,7 @@ This report synthesizes progress across the full CGM/AID machine learning resear
 
 ### Goal 1: Glucose Forecasting (30/60/90/120 min ahead)
 
-**Status: BREAKTHROUGH** — MAE reduced from 34 → 13.5 mg/dL (60% improvement)
+**Status: BREAKTHROUGH** — MAE reduced from persistence baseline 34 → 13.5 mg/dL (60% vs persistence; 45% vs CNN-era champion 24.4)
 
 | Metric | Value |
 |--------|-------|

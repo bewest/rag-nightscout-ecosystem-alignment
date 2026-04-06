@@ -39,9 +39,11 @@
 
 ### 1.2 Discrepancies Found ⚠️
 
-#### 1.2.1 ERA 2 Patient Count — INCORRECT
+#### 1.2.1 ERA 2 Patient Count — CORRECTED
 
-**Claim** (era-bridge-report): "4/11 patients < ERA 2 level (10.59 MAE)"
+**Claim** (era-bridge-report, original version): "4/11 patients < ERA 2 level (10.59 MAE)"
+
+> **Status**: This error was identified during verification and **corrected in the same commit** (3a47451). The era-bridge-report now correctly reads "3/11".
 
 **Actual data** (EXP-408 JSON):
 
@@ -93,7 +95,7 @@ Reports should consistently annotate horizon ranges when citing MAE values.
 ### 1.3 Verification Summary
 
 - **22/22** primary quantitative claims verified as accurate (within rounding)
-- **1** factual error: patient count "4/11 < ERA 2" should be "3/11"
+- **1** factual error found and **corrected**: patient count "4/11 < ERA 2" → "3/11" (fixed in era-bridge-report)
 - **3** claims unverifiable (missing JSON files for EXP-337/343/345)
 - **2** cross-report inconsistencies traced to different experimental contexts
 

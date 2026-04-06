@@ -8,7 +8,7 @@
 
 This session closed the remaining gap between ERA 2 (GroupedEncoder transformer,
 MAE=10.59) and our v14 PK-enhanced pipeline. **At matched patient counts, v14
-now surpasses ERA 2**: 10.42 vs 10.59 (−1.6%). Two critical discoveries enabled
+now surpasses ERA 2**: 10.41 vs 10.59 (−1.7%). Two critical discoveries enabled
 this result:
 
 1. **Window convention mismatch**: ERA 2's `window_size=24` creates 24-total-step
@@ -27,13 +27,13 @@ this result:
 | Metric | EXP-408 (w48) | EXP-410 (w24) | ERA 2 | Δ vs ERA 2 |
 |--------|:------------:|:--------------:|:-----:|:----------:|
 | **Overall MAE (11pt)** | 13.50 | **10.85** | 10.59* | +2.5% |
-| **Overall MAE (10pt)** | — | **10.42** | **10.59** | **−1.6%** 🏆 |
+| **Overall MAE (10pt)** | — | **10.41** | **10.59** | **−1.7%** 🏆 |
 | **Mean h60 MAE** | 14.21 | **14.73** | — | — |
 | **Best patient** | k=7.2 | **k=6.1** | — | — |
 | **Patients < 10 MAE** | 3/11 | **5/11** | — | — |
 
 *ERA 2 trained on 10 patients (no patient j). Patient j has 0% IOB data, causing
-~2× worse MAE. Excluding j for fair comparison gives 10.42.
+~2× worse MAE. Excluding j for fair comparison gives 10.41.
 
 ---
 
@@ -147,7 +147,7 @@ approaching Dexcom G7 MARD (~8.2% ≈ 5.0 mg/dL at mean glucose 155).
 
 | Metric | ERA 2 (10pt) | EXP-410 (10pt) | EXP-410 (11pt) |
 |--------|:------------:|:---------------:|:---------------:|
-| Mean MAE | 10.59 | **10.42** (−1.6%) | 10.85 (+2.5%) |
+| Mean MAE | 10.59 | **10.41** (−1.7%) | 10.85 (+2.5%) |
 | MARD est. | ~6.8% | **~6.7%** | ~7.0% |
 | Best patient | ~7.2 (d) | **6.1 (k)** | 6.1 (k) |
 | Worst patient | ~18 (b) | **17.1 (b)** | 17.1 (b) |
@@ -220,7 +220,7 @@ The gradient from predicting h5 provides useful signal for h60 and vice versa.
 
 ### Finding 3: The Gap Was Never 2.3× — It Was ~3%
 
-At matched evaluation, v14 (10.42) beats ERA 2 (10.59) by 1.6%. The real
+At matched evaluation, v14 (10.41) beats ERA 2 (10.59) by 1.7%. The real
 contribution of this session's experiments was not "closing a gap" but
 **discovering there was almost no gap to close** once we compared fairly.
 
@@ -247,7 +247,7 @@ particular patterns but learning generalizable glucose dynamics.
 | ERA 1 | ~42 | VAE, GAN, Diffusion | Generative approaches | 2025 |
 | ERA 2 | 10.59 | GroupedEncoder Transformer | Architecture + FT | 2026-03 |
 | ERA 3 | 24.4 | CNN/ResNet/DualEncoder | PK features, ISF | 2026-04-05 |
-| **ERA 3.5** | **10.42** | **PKGroupedEncoder** | **PK + ISF + Transformer** | **2026-04-07** |
+| **ERA 3.5** | **10.41** | **PKGroupedEncoder** | **PK + ISF + Transformer** | **2026-04-07** |
 
 **ERA 3.5** = ERA 2's architecture + ERA 3's feature discoveries. The two
 research tracks were complementary: ERA 2 found the right architecture,

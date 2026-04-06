@@ -56,10 +56,10 @@ One of the most important discoveries in this workspace. Duration of Insulin Act
 
 | History Window | Sil Score | Why |
 |----------------|-----------|-----|
-| 2h | -0.424 | See onset only → clear but limited signal |
-| 4h | -0.524 | See onset + peak but NOT resolution → ambiguous |
+| 2h | -0.367 | See onset only → clear but limited signal |
+| 4h | -0.537 | See onset + peak but NOT resolution → ambiguous |
 | **8h** | **-0.642** | **WORST** — overlapping incomplete insulin action curves |
-| 12h | -0.472 | See complete rise→peak→resolution → improves |
+| 12h | -0.339 | See complete rise→peak→resolution → improves |
 | **7d** | **-0.301** | **BEST** — multiple complete DIA cycles, weekly patterns emerge |
 
 The 8-hour window is maximally confusing: it captures enough of 2–3 overlapping insulin curves to create interference, but never sees any single curve resolve. This is not a modeling failure — it is a *physics* failure. The data is genuinely ambiguous at that scale.

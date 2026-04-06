@@ -1,7 +1,7 @@
 # Strategic Exploration Map: Frontiers in Glucose Forecasting
 
 **Date**: 2026-04-07  
-**Context**: 413 experiments (EXP-001 through EXP-410), 11 real-world patients  
+**Context**: 410 experiments (EXP-001 through EXP-410), 11 real-world patients  
 **Predecessors**:
 - [diabetes-domain-learnings-2026-04-06.md](diabetes-domain-learnings-2026-04-06.md)
 - [evidence-synthesis-normalization-long-horizon-2026-04-06.md](evidence-synthesis-normalization-long-horizon-2026-04-06.md)
@@ -13,7 +13,7 @@
 
 ### The Causal Structure of Blood Glucose
 
-Through 413 experiments, we've empirically mapped the causal hierarchy:
+Through 410 experiments, we've empirically mapped the causal hierarchy:
 
 ```
                         ┌─────────────────┐
@@ -521,7 +521,7 @@ the transformer architecture yet. This is where the highest-impact work remains.
 
 ---
 
-*This report synthesizes findings from 413 experiments across 4 research eras.
+*This report synthesizes findings from 410 experiments across 4 research eras.
 It aims to guide resource allocation toward the highest-impact unexplored
 territories while acknowledging the considerable success already achieved in
 short-horizon forecasting.*

@@ -212,7 +212,7 @@ Insulin-on-board data doesn't gradually improve forecasts — it is **nearly all
 
 | Patient j (0% IOB data) | Same architecture, patients with IOB |
 |--------------------------|--------------------------------------|
-| MAE = 21.04 mg/dL | MAE = 8–11 mg/dL |
+| MAE = 18.31 mg/dL (EXP-408) | MAE = 7–13 mg/dL |
 | **~2× worse** | |
 
 Without IOB, the model is doing pure extrapolation — guessing future glucose from past glucose momentum alone. With IOB, the model has the **causal mechanism**: it knows how much insulin is active and can predict the resulting glucose trajectory. There is no middle ground; partial IOB data doesn't help proportionally.

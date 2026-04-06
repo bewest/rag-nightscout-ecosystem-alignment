@@ -22,6 +22,11 @@ assumption that "more information is always better."
 
 ### Updated Best Models (All Scales)
 
+> **Note**: This table reflects the EXP-375–381 systematic Transformer evaluation.
+> For UAM at 2h, earlier 1D-CNN experiments achieved higher F1: EXP-337 (F1=0.939,
+> multi-seed validated) and EXP-349 (F1=0.962, no-time variant). The Transformer
+> results below use matched feature sets for controlled comparison.
+
 | Scale | Task | Best Config | Metric | Improvement |
 |-------|------|-------------|--------|-------------|
 | 2h | UAM | Tfm + fda_10ch | F1=0.920 | +5.4% vs baseline |
@@ -201,7 +206,8 @@ optimal, and what architectural choices help:
 **What doesn't help**: Time features (noise), PK channels (smooth out events),
 longer windows (dilute the signal).
 
-**Current best**: F1=0.920 at 2h, approaching practical ceiling.
+**Current best (Transformer)**: F1=0.920 at 2h (EXP-375). 1D-CNN achieves higher
+F1=0.939 (EXP-337, multi-seed) and F1=0.962 (EXP-349, no-time).
 
 ### Override Prediction (Will glucose leave 70–180 range?)
 

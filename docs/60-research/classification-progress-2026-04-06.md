@@ -189,7 +189,13 @@ U-shaped window curve observed: 7d best > 12h > DIA valley (4–8h).
 | **6h** | Hurts (−1.9% F1) |
 | **12h** | Hurts more (−6.5% F1) |
 
-**Root cause at 12h+**: The CNN learns better features from raw data than FDA provides as hand-crafted inputs. FDA features may still help when injected at the classifier head (to be tested in EXP-405).
+**Root cause at 12h+**: The CNN learns better features from raw data than FDA provides as hand-crafted inputs.
+
+> **Update (EXP-375–377)**: With Transformer architecture, FDA B-spline derivatives
+> HELP at all scales (+1.4–2.2%). The hurt observed here was CNN-specific — Transformers
+> leverage FDA features effectively via learned attention. See
+> [cross-scale-feature-synthesis](cross-scale-feature-synthesis-2026-04-06.md)
+> and [classification-research-synthesis](classification-research-synthesis-2026-04-07.md).
 
 ---
 

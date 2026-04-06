@@ -9,11 +9,15 @@ learning, ablation, augmentation, and their interactions across 3 timescales
 (2h, 6h, 12h) and 4 tasks.
 
 **DEFINITIVE finding (EXP-375→377)**: **Transformer + baseline_plus_fda_10ch** is
-universally optimal across ALL three timescales. FDA B-spline derivatives are THE
-single most impactful feature, contributing +1.4–2.2% to override across scales.
-PK channels are noise at ≤6h. This was first discovered at 2h (EXP-375) and
-confirmed at 6h/12h (EXP-377), overturning the earlier finding (EXP-351) that
-FDA hurts at 6h/12h — the difference was CNN vs Transformer architecture.
+the best general-purpose configuration across all three timescales at the time of
+these experiments. FDA B-spline derivatives are THE single most impactful feature,
+contributing +1.4–2.2% to override across scales.
+PK channels are noise at ≤6h.
+
+> **Update (EXP-381)**: At 12h, ISF normalization + cumulative integrals + time_warp
+> surpasses baseline_plus_fda, achieving override F1=0.633 (+3.3% total improvement
+> chain). The "universally optimal" designation applies to 2h and 6h; at 12h,
+> additional feature engineering (ISF, integrals) yields further gains.
 
 **Scale-dependent time features**: Time (sin/cos) is noise at 2h (removing helps),
 but essential at 12h (removing hurts override -1.8%). Diurnal patterns matter for
