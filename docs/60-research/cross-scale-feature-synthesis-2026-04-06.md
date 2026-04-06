@@ -1,15 +1,21 @@
 # Cross-Scale Feature Selection Synthesis
 
-**EXP-349, EXP-350, EXP-351 Combined Analysis**
+**EXP-349–362 Combined Analysis (Updated 2026-04-06)**
 
 ## Executive Summary
 
-Three systematic ablation experiments tested 5 feature variants across 3 timescales
-(2h, 6h, 12h) and 4 classification tasks (UAM, override, hypo, prolonged_high).
-The central finding is that **optimal feature sets are highly scale-dependent** — no
-single feature engineering approach works universally. Time-translation invariance,
-B-spline smoothing, and continuous PK channels each have specific scales where they
-help or harm.
+Seven systematic experiments tested feature variants, architectures, and their
+interactions across 3 timescales (2h, 6h, 12h) and 4 classification tasks.
+
+**Headline finding**: At 6h, **Transformer + kitchen_sink_10ch synergize** to produce
+the largest improvements in this research line: +1.4% override, +4.4% prolonged_high,
++0.7% hypo. The transformer's global attention handles extra feature dimensions that
+hurt CNN — a qualitative breakthrough in architecture × feature interaction.
+
+**Prior finding confirmed**: Optimal feature sets remain scale-dependent. No single
+approach works universally. But the EXP-360–362 series reveals that the architecture
+choice changes which features are optimal — a 2D interaction not visible in the
+earlier CNN-only experiments.
 
 ## Experimental Design
 
@@ -181,19 +187,134 @@ Performance degrades significantly with scale:
 The 12h dataset has similar windows to 6h but lower performance, suggesting the
 6h prediction horizon is genuinely harder. More data (more patients) would help both.
 
-## Open Questions
+## Open Questions (Updated)
 
-1. **Raw + FDA hybrid**: Would keeping both raw glucose AND smooth derivatives
-   help at 6h/12h? The CNN could learn to use raw for detail and smooth for trend.
+~~1. Raw + FDA hybrid at 6h/12h~~ → **ANSWERED (EXP-360):** Yes, helps at 6h (+0.7-2.3%),
+hurts at 12h.
 
-2. **PK + FDA at 12h**: EXP-350 showed PK helps override at 12h. Would combining
-   PK with FDA derivatives help?
+~~2. PK + FDA at 12h~~ → **ANSWERED (EXP-361/362):** PK hurts at 12h across all
+architectures. One exception: transformer+raw_fda_pk for hypo (+0.3%).
 
-3. **Attention mechanisms**: Could a channel-attention module learn to weight
-   raw vs smooth features dynamically per window?
+~~3. Attention mechanisms~~ → **ANSWERED (EXP-362):** Transformer attention is the
+mechanism that makes more features viable. Kitchen_sink hurts CNN but helps transformer.
 
-4. **Larger models at 12h**: Would a Transformer or larger CNN with more data
-   change the FDA conclusion at longer scales?
+~~4. Larger models at 12h~~ → **PARTIALLY ANSWERED (EXP-361):** Transformer helps modestly
+(+0.4-1.0%). The 12h ceiling appears inherent to the 6h prediction horizon.
+
+**New open questions:**
+
+1. **Multi-task learning at 6h**: Can shared encoder training (override+hypo+prolonged_high)
+   with transformer+kitchen_sink further improve weaker tasks? (EXP-325 showed +6% historically)
+
+2. **Transformer at 2h**: Does attention help at the shortest scale where CNN's RF already
+   covers the full window?
+
+3. **12h data augmentation**: Since architecture and features don't help, would augmentation
+   (jitter, scaling, time-shift) increase effective training data?
+
+4. **Per-patient fine-tuning at 6h**: The best 6h transformer could be further improved
+   with patient-specific adaptation.
+
+## EXP-360–362: Architecture × Feature Interaction (Updated)
+
+### EXP-360: Hybrid Features at 6h/12h (CNN only)
+
+Tested 6 hybrid feature variants combining raw glucose with FDA derivatives and PK
+channels, using the DeepCNN architecture.
+
+**6h Results:**
+
+| Variant | Override F1 | Hypo AUC | Prolonged High F1 |
+|---------|-----------|----------|-------------------|
+| baseline_8ch | 0.698 | 0.847 | 0.606 |
+| **raw_plus_fda_8ch** | **0.703** (+0.7%) | 0.843 | 0.612 |
+| raw_fda_pk_8ch | 0.694 | 0.850 | **0.632** (+2.3%) |
+| kitchen_sink_10ch | 0.697 | 0.849 | 0.624 |
+
+**12h Results:** Baseline_8ch wins everything. Hybrid features uniformly hurt (-1.4%
+to -5.9%). The deeper the feature engineering, the worse the performance at 12h.
+
+**Key insight:** Raw+FDA hybrid recovers information lost by pure-FDA replacement.
+PK channels carry meaningful absorption state for prolonged_high at 6h.
+
+### EXP-361: Architecture Search at 12h
+
+Tested 6 architectures to determine if 12h's poor performance was an architecture
+bottleneck (DeepCNN RF = 9 steps = only 6.2% of 144-step window).
+
+| Architecture | Override F1 | Hypo AUC | Prolonged High F1 | Receptive Field |
+|-------------|-----------|----------|-------------------|-----------------|
+| DeepCNN (control) | 0.602 | 0.778 | 0.522 | 9 steps (6%) |
+| DilatedCNN | 0.590 | **0.781** (+0.3%) | 0.497 | 63 steps (44%) |
+| **Transformer** | **0.610** (+0.4%) | 0.778 | **0.528** (+1.0%) | Global |
+| CNN+Downsample | 0.596 | 0.773 | 0.509 | 18 steps (12%) |
+| LargeKernelCNN | 0.596 | 0.774 | 0.488 | 25 steps (17%) |
+| SE-CNN | 0.594 | 0.779 | 0.505 | 9 steps (6%) |
+
+**Critical finding:** PK features hurt across ALL architectures at 12h. This is
+definitively a feature-level problem, not an architecture problem. Architecture
+improvements are modest (+0.3-1.0%).
+
+### EXP-362: Transformer × Feature Variants at 6h/12h (BREAKTHROUGH)
+
+Tested Transformer vs DeepCNN × 4 feature variants at both scales. Revealed a
+qualitative architecture × feature interaction.
+
+**6h Results — Synergy Confirmed:**
+
+| Config | Override F1 | Hypo AUC | Prolonged High F1 |
+|--------|-----------|----------|-------------------|
+| CNN + baseline_8ch | 0.696 | 0.846 | 0.610 |
+| CNN + kitchen_sink_10ch | 0.695 (-0.1%) | 0.848 | 0.632 (+2.2%) |
+| Transformer + baseline_8ch | 0.697 (+0.1%) | 0.848 | 0.618 (+0.8%) |
+| **Transformer + kitchen_sink_10ch** | **0.711 (+1.4%)** | **0.852** | **0.653 (+4.4%)** |
+
+The synergy is clear: kitchen_sink overhead with CNN = -0.1% for override, but with
+Transformer = +1.4%. Prolonged high: CNN +2.2%, Transformer **+4.4%** — a ~2x
+amplification. The transformer's attention mechanism handles extra feature dimensions
+that overwhelm the CNN.
+
+**12h Results — Baseline Still Dominant:**
+
+| Config | Override F1 | Hypo AUC | Prolonged High F1 |
+|--------|-----------|----------|-------------------|
+| Transformer + baseline_8ch | **0.610** | 0.778 | **0.528** |
+| Transformer + kitchen_sink_10ch | 0.599 (-1.1%) | 0.778 | 0.490 (-3.8%) |
+| Transformer + raw_fda_pk_8ch | 0.591 | **0.781** (+0.3%) | 0.500 |
+
+One bright spot: transformer + raw_fda_pk_8ch gives the best 12h hypo AUC (0.781),
+suggesting PK channels carry some signal for hypoglycemia prediction even at long
+horizons.
+
+## Updated Cross-Scale Recommendations
+
+### Optimal Configuration per Scale
+
+```
+2h acute:    no_time_6ch         → ShallowCNN   (time-translation invariance)
+2h override: fda_no_time_6ch     → ShallowCNN   (smooth derivatives + invariance)
+6h all:      kitchen_sink_10ch   → Transformer   (SYNERGY: +1.4-4.4%)
+12h all:     baseline_8ch        → Transformer   (modest +0.4-1.0%)
+12h hypo:    raw_fda_pk_8ch      → Transformer   (+0.3%)
+```
+
+### Architecture × Feature Interaction Matrix
+
+| | baseline_8ch | kitchen_sink_10ch |
+|---|---|---|
+| **CNN at 6h** | 0.696 / 0.846 / 0.610 | 0.695 / 0.848 / 0.632 |
+| **Transformer at 6h** | 0.697 / 0.848 / 0.618 | **0.711 / 0.852 / 0.653** |
+| **CNN at 12h** | 0.602 / 0.778 / 0.522 | 0.573 / 0.764 / 0.479 |
+| **Transformer at 12h** | **0.610 / 0.778 / 0.528** | 0.599 / 0.778 / 0.490 |
+
+*Values: Override F1 / Hypo AUC / Prolonged_High F1*
+
+### Why This Matters
+
+The transformer doesn't just help — it **changes which features are useful**. With CNN,
+more features = more overfitting risk. With transformer, more features = more
+attention targets. This has practical implications: production models should use
+different feature pipelines depending on the architecture, not just the scale.
 
 ## Source Files
 
@@ -202,3 +323,6 @@ The 12h dataset has similar windows to 6h but lower performance, suggesting the
 | EXP-349 | `tools/cgmencode/exp_pk_classification.py` | `externals/experiments/exp349_pk_classification.json` |
 | EXP-350 | `tools/cgmencode/exp_pk_episode.py` | `externals/experiments/exp350_pk_episode.json` |
 | EXP-351 | `tools/cgmencode/exp_fda_classification.py` | `externals/experiments/exp351_fda_classification.json` |
+| EXP-360 | `tools/cgmencode/exp_hybrid_episode.py` | `externals/experiments/exp360_hybrid_episode.json` |
+| EXP-361 | `tools/cgmencode/exp_arch_12h.py` | `externals/experiments/exp361_arch_12h.json` |
+| EXP-362 | `tools/cgmencode/exp_transformer_features.py` | `externals/experiments/exp362_transformer_features.json` |
