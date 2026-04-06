@@ -11,7 +11,7 @@
 
 This workspace has executed **398+ controlled experiments** across 11 patients with ~85 days of CGM/AID data each. The central, non-obvious finding:
 
-**What appears to be ONE problem ("predict glucose") is actually 25+ distinct sub-use-cases**, each requiring a *different* combination of:
+**What appears to be ONE problem ("predict glucose") is actually 34+ distinct sub-use-cases**, each requiring a *different* combination of:
 
 - Time scale and history window
 - Feature channels and encoding
@@ -37,11 +37,14 @@ Every sub-use-case maps to a physiological driver. The biology dictates the time
 | **Absorption** | Insulin subcutaneous→plasma, carb gut→blood | 30–120 min | Isc1→Isc2→Ip (UVA/Padova), Qsto→Qgut→Ra |
 | **DIA Completion** | Full insulin action curve, DIA ≈ 5–6h | 2–6h | The "DIA Valley" — partial action curves are ambiguous |
 | **Circadian** | Dawn phenomenon, cortisol cycle, meal timing | 12–24h | 71.3 ± 18.7 mg/dL amplitude (EXP-126), 100% of patients |
+| **Strategic** | Multi-day routine, metabolic load accumulation | 6h–4 days | **NEW**: The "treatment planning" horizon — event likelihoods, not point forecasts |
 | **Lifestyle** | Weekly routines, exercise, work schedules | 3–7 days | U-shaped curve: 7d Sil = -0.301 (best window, EXP-289) |
 | **Drift** | ISF changes, menstrual cycle, seasonal | Weeks–months | 9/11 patients show significant ISF drift at biweekly scale (EXP-194) |
 | **Seasonal** | Temperature, activity level, illness frequency | Months | NOT TESTED — data insufficient (~85 days/patient) |
 
 **Why this matters**: Choosing a 4-hour history window for a task governed by circadian physiology is a category error. The biology doesn't fit. The DIA Valley section below shows how dramatic the consequences are.
+
+**The Strategic Scale** is a newly identified layer between Circadian (AID handles automatically) and Lifestyle (endocrinologist handles quarterly). It requires a fundamentally different output: calibrated event probabilities that patients can act on when attention is available, not real-time control signals. See Category E (Strategic Plan) for the 6 sub-use-cases that populate this scale.
 
 ---
 
@@ -534,6 +537,151 @@ The DIA Valley applies differently depending on feature encoding. **PK channels 
 
 ---
 
+### E: STRATEGIC PLAN (Treatment Planning Layer)
+
+> **The Missing Clinical Layer**: Real-time AID handles moment-to-moment (≤2h). Endocrinologists handle quarterly adjustments. **Nothing fills the 6h–4 day strategic gap** — where patients/caregivers can plan ahead when attention is available, then go "hands off" while still improving TIR. The output is **event likelihoods and state assessments**, not glucose point predictions.
+>
+> **Clinical value proposition**: Less effort, better results — strategic planning vs. constant monitoring.
+
+---
+
+#### E1: Overnight Risk Assessment (6–8h)
+
+**Physiological Basis**: Overnight physiology is distinct: no meals, reduced cortisol (until dawn phenomenon ~3–5 AM), basal insulin dominance. Overnight glucose trajectory is highly predictable from evening state. Nocturnal hypoglycemia is the highest-risk event in diabetes management.
+
+**Optimal Configuration**:
+
+| Dimension | Specification | Evidence |
+|-----------|---------------|----------|
+| Scale | 6h evening context → 6h overnight prediction | EXP-126: night TIR=60.1% (worst period) |
+| History window | 72 steps (6h @ 5min) | EXP-353: PK stabilizes at 6h |
+| Features | glucose, IOB, COB, basal_rate, time_sin/cos, last_meal_hours_ago | EXP-162: IOB dominates overnight |
+| Encoding | PK channels (IOB trajectory critical for basal adequacy) | EXP-353 |
+| Architecture | 1D-CNN (proven at 2h, should extend to 6h with PK) | EXP-313 |
+| Post-processing | Platt calibration (essential for probability output) | EXP-324: ECE 0.21→0.01 |
+| Validation | AUC-ROC (rare event), ECE, per-patient F1 | — |
+
+**Output**: P(hypo tonight), P(high overnight), expected overnight TIR
+**Clinical Action**: "Set higher/lower temp target before bed" or "Have a snack — 40% hypo risk tonight"
+**Data Feasibility**: ~85 nights per patient, ~935 pooled. **Sufficient for CNN.**
+**Status**: ❌ Gap — DESIGNED (EXP-412), NOT YET RUN
+**Key Finding**: Night TIR (60.1%) is the worst period (EXP-126). Dawn effect varies −76.7 to +28.2 mg/dL per patient. Volatile periods show 2.04× MAE (EXP-222). Time features ARE relevant here (circadian matters).
+
+---
+
+#### E2: Next-Day TIR Prediction (24h)
+
+**Physiological Basis**: Day-to-day glucose control has strong autocorrelation — "bad days" cluster due to illness, stress, schedule disruption, or cumulative insulin resistance. Today's distributional features (not sequence details) predict tomorrow's outcome.
+
+**Optimal Configuration**:
+
+| Dimension | Specification | Evidence |
+|-----------|---------------|----------|
+| Scale | 24h context → 24h prediction | EXP-126: circadian amp=71.3 mg/dL |
+| History window | 288 steps (24h @ 5min) or 96 steps (24h @ 15min) | — |
+| Features | glucodensity (distributional), TIR per 6h block, event counts, IOB_mean, carb_total, day-of-week | EXP-330: glucodensity ΔSil=+0.508 |
+| Encoding | Distributional (histograms), not sequential | EXP-330 |
+| Architecture | XGBoost (tabular features, ~85 samples/patient) OR 1D-CNN on 15-min series | — |
+| Validation | MAE on TIR regression, F1 on binary bad-day (TIR<60%) | — |
+
+**Output**: Expected tomorrow TIR, P(bad day), likely problem periods (night/morning/afternoon/evening)
+**Clinical Action**: "Tomorrow looks like a high-risk day (similar to last Tuesday). Consider proactive override."
+**Data Feasibility**: ~85 days per patient, ~935 pooled. **Abundant for both XGBoost and CNN.**
+**Status**: ❌ Gap — DESIGNED (EXP-413), NOT YET RUN
+**Key Finding**: Circadian amplitude (71.3 mg/dL) is larger than forecast error (13.50 MAE), so time-of-day is already a dominant factor (EXP-126). Day-of-week should be explored (weekday vs weekend patterns).
+
+---
+
+#### E3: Multi-Day Control Quality Forecast (3–4 days)
+
+**Physiological Basis**: 96-hour (4-day) windows capture the natural cycle of insulin sensitivity variation, medication adherence patterns, and meal routine stability. The U-shaped silhouette curve (EXP-289/301) shows 3–4 day windows should fall in the "recovery zone" between the 12h episode peak and the 7d weekly peak. A 4-day window = 8 consecutive 12-hour episodes, enabling hierarchical analysis.
+
+**Optimal Configuration**:
+
+| Dimension | Specification | Evidence |
+|-----------|---------------|----------|
+| Scale | 4-day context → 4-day prediction | EXP-194: 96h wavelet best drift correlation |
+| History window | 1152 steps (4d @ 5min) or 96 steps (4d @ 1hr) | EXP-301: 7d Sil=-0.301 (best tested) |
+| Features | Hierarchical: 8 × 12h episode features → sequence | EXP-350: 12h episode CNN proven |
+| Encoding | Per-episode: glucodensity, TIR, event counts, IOB stats | EXP-330, EXP-335 |
+| Architecture | Episode CNN embeddings → GRU/attention → classification head | EXP-377 (proposed) |
+| Validation | Macro F1, ECE, LOSO (leave-one-subject-out) | EXP-326: LOO gap only 3-4% |
+
+**Output**: Next 4-day control quality (Good/Moderate/Poor), P(declining control), recommended adjustment
+**Clinical Action**: "Your control has been trending down for 3 days. Consider ISF adjustment." Or: "This week looks stable — no changes needed."
+**Data Feasibility**: 21–42 windows per patient (non-overlapping/50% overlap), ~500–1000 pooled. **Borderline for deep learning** — use pooled training + LOSO validation. Classical ML (XGBoost) is safer.
+**Status**: ❌ Gap — DESIGNED (EXP-414), NOT YET RUN
+**Key Finding**: EXP-194 wavelet analysis at 8h windows showed strongest drift-TIR correlation (r=-0.328). 3-day CUSUM triggers earliest reliable change-point detection (EXP-325). Data is borderline but feasible with hierarchical approach (reuses proven episode embeddings, fewer parameters).
+
+---
+
+#### E4: Event Recurrence Prediction (6h–3d variable)
+
+**Physiological Basis**: Glucose events cluster in time — a hypo at 3 PM today increases P(hypo at 3 PM tomorrow) due to persistent causes (activity pattern, basal rate mismatch, meal timing). Events are not independent; they recur with circadian and multi-day periodicity.
+
+**Optimal Configuration**:
+
+| Dimension | Specification | Evidence |
+|-----------|---------------|----------|
+| Scale | 7-day event history → 6h/24h/3d recurrence prediction | EXP-126: circadian clustering |
+| History window | 28 time slots (7d × 4 blocks/day of 6h each) | — |
+| Features | Hypo count, high count, override count per 6h slot, rolling 24h/3d TIR, day-of-week | EXP-312: biweekly rolling optimal |
+| Encoding | Tabular (event counts per block) + temporal (1D sequence) | — |
+| Architecture | XGBoost (tabular) + 1D-CNN (temporal) ensemble | — |
+| Validation | AUC-ROC (rare events), precision-recall, ECE | — |
+
+**Output**: P(hypo in next 6h/24h/3d), P(prolonged high), P(override needed)
+**Clinical Action**: "You've had 3 hypos this week around 3 PM. Consider lowering afternoon basal."
+**Data Feasibility**: ~78 7-day windows per patient with overlap. **Sufficient.**
+**Status**: ❌ Gap — DESIGNED (EXP-415), NOT YET RUN
+**Key Finding**: Not yet tested. Builds on proven event detection (B1, B2, B4) by adding temporal recurrence. The approach is tabular-first (low-dimensional summary statistics), not sequential deep learning.
+
+---
+
+#### E5: Weekly Routine Hotspot Identification (7 days)
+
+**Physiological Basis**: Patients have weekly routines — work days vs. weekends, exercise schedules, social eating patterns. These create predictable glucose response patterns. Identifying the 2–3 worst 6-hour blocks in a patient's typical week enables targeted intervention with minimal effort.
+
+**Optimal Configuration**:
+
+| Dimension | Specification | Evidence |
+|-----------|---------------|----------|
+| Scale | 7-day @ 1-hour resolution (168 steps) | EXP-301: 7d Sil=-0.301 (best) |
+| History window | 168 steps (7d @ 1hr) | EXP-289/301: 7d outperforms 12h |
+| Features | Per-block TIR, event counts, variability (CV), IOB/carb means | EXP-126: time-of-day effect |
+| Encoding | 28-slot grid (4 blocks/day × 7 days) | — |
+| Architecture | Self-supervised ranking (no labels needed — rank by TIR/events) | — |
+| Validation | Hotspot stability across weeks, simulated TIR improvement from intervention | — |
+
+**Output**: Ranked list of weekly hotspots with risk profiles ("Sunday evenings: 3× hypo rate, lowest TIR")
+**Clinical Action**: "Focus on these 2–3 time windows. Ignore the rest — your AID handles them well."
+**Data Feasibility**: ~22–44 7-day windows per patient. **Sufficient for statistical analysis.** No deep learning needed — this is primarily descriptive analytics with temporal stability checks.
+**Status**: ❌ Gap — DESIGNED (EXP-416), NOT YET RUN
+**Key Finding**: EXP-301 showed 7d windows produce best embedding quality (Sil=-0.301). EXP-126 showed circadian amplitude of 71.3 mg/dL — the raw signal is large enough to detect routine-level patterns. This is the lowest-complexity, highest-impact treatment planning use case.
+
+---
+
+#### E6: Strategic Override Planning (Multi-day)
+
+**Physiological Basis**: Override recommendations today (C1–C6) operate in real-time — "override NOW because of current glucose." Strategic planning operates on a longer horizon: "Based on this week's pattern, SCHEDULE these overrides." Moves from reactive to proactive management.
+
+**Optimal Configuration**:
+
+| Dimension | Specification | Evidence |
+|-----------|---------------|----------|
+| Scale | 7-day history → next 3–4 day override plan | EXP-227: TIR-impact utility=0.993 |
+| Features | Combines E5 hotspots + E3 control quality + E4 event recurrence | — |
+| Architecture | Rule-based layer on top of E3/E4/E5 predictions (no additional ML needed) | — |
+| Validation | Simulated TIR improvement from applying planned overrides | — |
+
+**Output**: "For this week, I recommend: (1) Sleep override every night at 10 PM, (2) Pre-dinner higher target on Tuesdays and Thursdays, (3) Reduce afternoon basal on weekends."
+**Clinical Action**: Patient/caregiver sets up planned overrides for the week, then monitors passively.
+**Data Feasibility**: Depends on E3, E4, E5 outputs. No additional data needed.
+**Status**: ❌ Gap — CONCEPTUAL, depends on E3+E4+E5
+**Key Finding**: This is the **capstone use case** that combines overnight risk (E1), daily prediction (E2), multi-day quality (E3), event recurrence (E4), and weekly hotspots (E5) into actionable weekly plans. It represents the "less effort, better results" vision.
+
+---
+
 ## Part 5: Cross-Cutting Principles (Evidence-Based)
 
 These are not opinions. Each principle is proven by specific experiments with measurable effect sizes.
@@ -777,6 +925,7 @@ What is your task?
 |-----|---------------|------------|----------|
 | Override WHICH + HOW MUCH (C2, C3) | Cannot recommend actions without knowing which action | Very Hard | Counterfactual physics simulation (UVA/Padova or similar) |
 | Multi-day forecast >24h (A5) | Cannot support multi-day planning | Hard | Multi-rate encoding, STL decomposition, extended datasets |
+| Treatment planning layer (E1–E6) | Missing entire clinical layer between AID and endocrinologist | Medium-Hard | Event likelihood prediction at 6h–4d horizons (EXP-411–418) |
 | External signal integration | Illness/menstrual/HR data missing | Medium | API integration + prospective data collection |
 
 ### Tier 1.5: High-Probability Improvements (Untested Combinations)
@@ -787,6 +936,9 @@ What is your task?
 | Multi-rate EMA for 12h+ classification (B4) | Proposed, code skeleton exists, never run | Unknown but theoretically motivated | Run EXP-375/406 with α=0.1/0.3/0.7 EMA channels |
 | STL decomposition for multi-day | Proposed, no implementation | Enables trend/seasonal/residual separation | Implement and test 3-day windows |
 | Cumulative glucose load features | Skeleton in exp_normalization_conditioning.py | Captures metabolic load accumulation | Run 12h/24h/72h integral features |
+| Overnight risk assessment (E1) | Designed, not run | High: night TIR=60.1% is worst period, biggest clinical impact | EXP-412: 6h evening context → overnight P(hypo), P(high), TIR |
+| Next-day TIR prediction (E2) | Designed, not run | Medium: enables proactive planning | EXP-413: 24h context → next-day TIR prediction |
+| Extended history for classification (B1/B2/B4) | Only 2h tested | PK channels should resolve DIA Valley for classifiers too | EXP-417: test 4h/6h with PK channels |
 
 ### Tier 2: Improves Quality
 
@@ -846,11 +998,19 @@ All 28 sub-use-cases in one view:
 | D4 | Illness detection | — | Requires external signals | — | — | ❌ |
 | D5 | Menstrual cycle effects | — | Requires cycle labels | — | — | ❌ |
 | D6 | Seasonal trends | — | Requires >6 months data | — | — | ❌ |
+| **E: STRATEGIC PLAN** | | | | | | |
+| E1 | Overnight risk assessment | 6h | glucose, IOB, time, PK | 1D-CNN + Platt | — | ❌ Designed (EXP-412) |
+| E2 | Next-day TIR prediction | 24h | glucodensity, events, day-of-week | XGBoost / CNN | — | ❌ Designed (EXP-413) |
+| E3 | Multi-day control quality | 3–4d | 8×12h episode features → GRU | Hierarchical CNN+GRU | — | ❌ Designed (EXP-414) |
+| E4 | Event recurrence | 7d→6h/24h/3d | event counts per 6h block | XGBoost + CNN | — | ❌ Designed (EXP-415) |
+| E5 | Weekly routine hotspots | 7d | per-block TIR, events, CV | Descriptive + ranking | — | ❌ Designed (EXP-416) |
+| E6 | Strategic override planning | 7d→3-4d | Combines E1-E5 outputs | Rule-based on top of ML | — | ❌ Conceptual |
 
 **Production-ready (✅)**: 7 sub-use-cases — A1, A6, B1, B4-2h, C1, D1, D3
 **Active research (🟡)**: 11 sub-use-cases
+**Designed but untested (❌ Designed)**: 6 sub-use-cases — E1-E5, EXP-411-416
 **Untested gaps (❌)**: 10 sub-use-cases
 
 ---
 
-*This document synthesizes 398+ experiments across 11 patients. It is a living prescription guide — as new experiments fill gaps, entries should be updated with fresh evidence. The structure (physiological basis → optimal config → evidence → status) ensures every recommendation is traceable to empirical results, not theoretical reasoning.*
+*This document synthesizes 410+ experiments across 11 patients. It is a living prescription guide — as new experiments fill gaps, entries should be updated with fresh evidence. The structure (physiological basis → optimal config → evidence → status) ensures every recommendation is traceable to empirical results, not theoretical reasoning. The newly added Category E (Strategic Plan) represents the critical insight that the 6h–4 day horizon requires a fundamentally different approach: event likelihood prediction and state assessment, not glucose point forecasts.*
