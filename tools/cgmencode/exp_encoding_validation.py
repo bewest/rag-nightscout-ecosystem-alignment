@@ -505,8 +505,8 @@ def absorption_symmetry_test(events, glucose):
         pre_peak = np.abs(deviation[:peak_idx])
         post_peak = np.abs(deviation[peak_idx:])
 
-        pre_area = float(np.trapz(pre_peak))
-        post_area = float(np.trapz(post_peak))
+        pre_area = float(np.trapezoid(pre_peak))
+        post_area = float(np.trapezoid(post_peak))
 
         if post_area < 1e-6:
             continue
@@ -673,7 +673,7 @@ def conservation_test(glucose_windows, iob_windows, cob_windows,
 
         residual = glucose - predicted
         # Integral in mg/dL · hours (5-min steps → ×5/60)
-        integral = float(np.trapz(residual) * 5.0 / 60.0)
+        integral = float(np.trapezoid(residual) * 5.0 / 60.0)
         residual_integrals.append(integral)
 
     if len(residual_integrals) < 10:
@@ -706,13 +706,20 @@ def conservation_test(glucose_windows, iob_windows, cob_windows,
 
 
 def _extract_isf_scalar(df):
-    """Best-effort scalar ISF from DataFrame attrs or heuristic."""
+    """Best-effort scalar ISF in mg/dL/U from DataFrame attrs or heuristic.
+
+    Detects mmol/L profiles (ISF < 15) and converts via ×18.0182.
+    """
     isf_sched = getattr(df, 'attrs', {}).get('isf_schedule', None)
     if isf_sched and len(isf_sched) > 0:
         vals = [s.get('value', s.get('sensitivity', 40))
                 for s in isf_sched if isinstance(s, dict)]
         if vals:
-            return float(np.median(vals))
+            isf = float(np.median(vals))
+            # mmol/L profiles have ISF < 15; convert to mg/dL
+            if isf < 15:
+                isf *= 18.0182
+            return isf
     return 40.0
 
 
@@ -752,6 +759,10 @@ def run_exp421(args):
         glucose = df['glucose'].values.astype(np.float64)
         iob = df['iob'].values.astype(np.float64) if 'iob' in df.columns else np.zeros(len(df))
         cob = df['cob'].values.astype(np.float64) if 'cob' in df.columns else np.zeros(len(df))
+        # Fill NaN — missing IOB/COB means no active insulin/carbs
+        iob = np.nan_to_num(iob, nan=0.0)
+        cob = np.nan_to_num(cob, nan=0.0)
+        glucose = np.where(np.isnan(glucose), np.nanmean(glucose), glucose)
         isf = _extract_isf_scalar(df)
         cr = _extract_cr_scalar(df)
 
@@ -928,8 +939,12 @@ def run_exp422(args):
 
     result = isf_equivariance_test(patient_events, patient_isf)
     confirmed = result.get('equivariance_confirmed', False)
-    print(f"\n  Delta similarity: {result.get('delta', '?'):.4f}"
-          f"  p={result.get('p_value', '?'):.4f}"
+    delta = result.get('delta', None)
+    pval = result.get('p_value', None)
+    delta_str = f"{delta:.4f}" if isinstance(delta, (int, float)) else str(delta)
+    pval_str = f"{pval:.4f}" if isinstance(pval, (int, float)) else str(pval)
+    print(f"\n  Delta similarity: {delta_str}"
+          f"  p={pval_str}"
           f"  {'✅ CONFIRMED' if confirmed else '❌ NOT CONFIRMED'}")
 
     results = {
@@ -1492,6 +1507,9 @@ def run_exp425(args):
         glucose = df['glucose'].values.astype(np.float64)
         iob = df['iob'].values.astype(np.float64) if 'iob' in df.columns else np.zeros(len(df))
         cob = df['cob'].values.astype(np.float64) if 'cob' in df.columns else np.zeros(len(df))
+        iob = np.nan_to_num(iob, nan=0.0)
+        cob = np.nan_to_num(cob, nan=0.0)
+        glucose = np.where(np.isnan(glucose), np.nanmean(glucose), glucose)
         isf = _extract_isf_scalar(df)
         cr = _extract_cr_scalar(df)
 
