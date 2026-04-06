@@ -21,7 +21,7 @@ across 11 patients with 4 forecast horizons (30/60/90/120 min).
 | **h60 MAE** | 23.7 mg/dL (ERA 3) | **14.21 mg/dL** | **-40.0%** |
 | **Best patient** | ~18 mg/dL | **7.2 mg/dL** (patient k) | **-60%** |
 | **Patients < 10 MAE** | 0/11 | **3/11** (k=7.2, d=8.4, f=9.7) | — |
-| **Patients < ERA 2** | 0/11 | **4/11** (+ c=10.9) | — |
+| **Patients < ERA 2** | 0/11 | **3/11** (d=8.4, f=9.7, k=7.2; c=10.9 approaching) | — |
 
 ### Clinical Context Update
 
