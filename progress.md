@@ -26,6 +26,52 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## E-Series: Strategic Clinical Classification Experiments (2026-07-12)
+
+Full-scale validation (11 patients, 5 seeds) of 8 clinical classification tasks.
+Discovered 2 deployable classifiers (AUC ≥ 0.80) and critical methodological insights.
+
+### Infrastructure Fix: Per-Patient Temporal Split
+Fixed critical data leakage in `temporal_split()` — pooled multi-patient data caused
+val set = last patient only. Now splits chronologically within each patient via `pids=` param.
+Commit: `3aa1837`.
+
+### Full-Scale Results (11 patients, 5 seeds)
+
+| EXP | Task | Key Metric | Deployable? |
+|-----|------|-----------|-------------|
+| 412 | Overnight HIGH risk | AUC=0.805 ±0.009 | ✅ YES |
+| 412 | Overnight HYPO risk | AUC=0.676 ±0.007 | ⚠️ Not yet |
+| 413 | Next-day TIR (CNN) | MAE=12.0% | Useful |
+| 413 | Bad-day classification | AUC=0.784 | Near |
+| 415 | High recurrence 24h | AUC=0.882 | ✅ YES |
+| 415 | High recurrence 3d | AUC=0.919 | ✅ YES |
+| 415 | Hypo recurrence | AUC=0.63-0.67 | ⚠️ Not yet |
+| 416 | Weekly hotspot analytics | Two phenotypes found | Actionable |
+| 417 | PK channel benefit | Task-specific (not uniform) | Insight |
+| 418 | EMA smoothing | Helps high, hurts hypo | Insight |
+
+### Key Scientific Findings
+
+1. **Overnight HIGH is deployable** (AUC=0.805) — evening alert feasible today
+2. **High recurrence at 24h/3d is excellent** (AUC=0.88-0.92) — pattern-based alerts work
+3. **Hypo prediction is the bottleneck** (AUC 0.63-0.73 across all tasks)
+4. **PK channels are task-specific**: PK6 helps hypo at 4-6h, 16ch helps high at 2-4h
+5. **Two patient phenotypes** (EXP-416): "morning-high" (dawn phenomenon) vs "night-hypo"
+6. **Quick mode (4pt) is unreliable** for feature selection — EXP-418 EMA direction reversed at full scale
+7. **Cross-patient generalization fails** for multi-day quality (EXP-414 LOSO F1=0.17)
+
+### Gaps Identified
+- GAP-ALG-080: Hypo classification AUC stuck below 0.75 across all tasks
+- GAP-ALG-081: Cross-patient transfer learning not viable without adaptation
+- GAP-ALG-082: Quick mode (4 patients) gives directionally wrong feature importance
+
+### Source Files
+- `tools/cgmencode/exp_treatment_planning.py` (EXP-411 through EXP-418)
+- `externals/experiments/exp41[2-8]_*.json` (all results)
+
+---
+
 ## Completed Work
 
 ### Phase 3 Completion: 3-Way Cross-Validation & All Prediction Curves Aligned (2026-03-31)

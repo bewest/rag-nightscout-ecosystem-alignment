@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-EXP-411 through EXP-418: Living Treatment Plan — Strategic Planning Horizon Experiments
+EXP-411 through EXP-420: Living Treatment Plan — Strategic Planning Horizon Experiments
 
 This module fills the critical gap between two existing paradigms:
 
@@ -30,6 +30,7 @@ Experiment registry:
   EXP-416: Weekly routine hotspot identification
   EXP-417: Extended history + PK for classification tasks
   EXP-418: Multi-rate EMA for strategic features
+  EXP-420: Hypo breakthrough — systematic ablation + feature engineering
 """
 
 import argparse
@@ -1309,9 +1310,512 @@ def run_exp418(args):
     return results
 
 
-# ===================================================================
-# Registry and CLI
-# ===================================================================
+def run_exp420(args):
+    """EXP-420: Hypo Breakthrough — Systematic Feature + Loss Engineering.
+
+    Hypo classification is stuck at AUC 0.67-0.73 across all tasks/horizons.
+    HIGH prediction already hits 0.80+.  This experiment systematically tests
+    approaches to close the gap:
+
+    1. **Channel ablation**: 8ch (no PK) vs 16ch (with PK) to quantify PK benefit
+    2. **Glucose rate features**: dBG/dt and d²BG/dt² as explicit channels —
+       hypo = fast rate of descent, derivatives capture this directly
+    3. **Focal loss**: Down-weight easy negatives, focus on hard-to-classify
+       near-hypo examples (γ=2)
+    4. **Asymmetric threshold**: Lower clinical threshold (75 mg/dL vs 70)
+       to catch "near-hypo" events earlier
+    5. **Combined best**: Stack winning features + loss
+
+    All variants use the overnight risk framework (EXP-412) as baseline.
+    """
+    cfg = _get_config(args)
+    device = resolve_device(args.device)
+    print(f"\n{'='*60}")
+    print("EXP-420: Hypo Breakthrough — Systematic Feature + Loss")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    # ── Build windows with multiple feature sets ────────────────────
+    windows = {'8ch': [], '16ch': [], '8ch_deriv': [], '16ch_deriv': [],
+               '8ch_deriv_ema': []}
+    all_y70, all_y75, all_pids = [], [], []
+
+    for pat in patients:
+        grid = pat['grid']          # (N, 8)
+        pk   = pat['pk']            # (N, 8)
+        glucose_raw = grid[:, 0] * 400  # de-normalise
+
+        # Compute glucose derivatives (rate of change, acceleration)
+        dbg = np.zeros_like(glucose_raw)
+        dbg[1:] = glucose_raw[1:] - glucose_raw[:-1]
+        d2bg = np.zeros_like(glucose_raw)
+        d2bg[1:] = dbg[1:] - dbg[:-1]
+        dbg_norm  = dbg / 40.0    # typical range ±20 mg/dL per 5min
+        d2bg_norm = d2bg / 20.0
+
+        # EMA spread (fast - slow divergence)
+        ema_slow = np.zeros_like(glucose_raw)
+        ema_fast = np.zeros_like(glucose_raw)
+        ema_slow[0] = glucose_raw[0] if not np.isnan(glucose_raw[0]) else 0
+        ema_fast[0] = glucose_raw[0] if not np.isnan(glucose_raw[0]) else 0
+        for t in range(1, len(glucose_raw)):
+            v = glucose_raw[t] if not np.isnan(glucose_raw[t]) else ema_slow[t-1]
+            ema_slow[t] = 0.05 * v + 0.95 * ema_slow[t-1]
+            ema_fast[t] = 0.3 * v + 0.7 * ema_fast[t-1]
+        ema_spread = (ema_fast - ema_slow) / 400.0
+
+        deriv_cols = np.column_stack([dbg_norm, d2bg_norm])       # (N, 2)
+        ema_col    = ema_spread[:, None]                          # (N, 1)
+
+        for start in range(0, len(grid) - STEPS_12H, STEPS_6H):
+            s, e = start, start + STEPS_6H
+            overnight_gluc = glucose_raw[e:start + STEPS_12H]
+            if len(overnight_gluc) < STEPS_6H or np.isnan(overnight_gluc).mean() > 0.3:
+                continue
+
+            labels = extract_overnight_labels(
+                glucose_raw[start:start + STEPS_12H],
+                midnight_idx=STEPS_6H,
+            )
+
+            ctx_8ch     = grid[s:e]
+            ctx_16ch    = np.concatenate([grid[s:e], pk[s:e]], axis=-1)
+            ctx_8deriv  = np.concatenate([grid[s:e], deriv_cols[s:e]], axis=-1)
+            ctx_16deriv = np.concatenate([grid[s:e], pk[s:e],
+                                          deriv_cols[s:e]], axis=-1)
+            ctx_8de     = np.concatenate([grid[s:e], deriv_cols[s:e],
+                                          ema_col[s:e]], axis=-1)
+
+            windows['8ch'].append(ctx_8ch)
+            windows['16ch'].append(ctx_16ch)
+            windows['8ch_deriv'].append(ctx_8deriv)
+            windows['16ch_deriv'].append(ctx_16deriv)
+            windows['8ch_deriv_ema'].append(ctx_8de)
+
+            all_y70.append(int(labels['hypo']))
+            overnight_g = overnight_gluc[~np.isnan(overnight_gluc)]
+            all_y75.append(int(np.any(overnight_g < 75)) if len(overnight_g) > 0 else 0)
+            all_pids.append(pat['name'])
+
+    if len(all_y70) < 20:
+        print("  Insufficient windows."); return {}
+
+    y70  = np.array(all_y70)
+    y75  = np.array(all_y75)
+    pids = np.array(all_pids)
+    print(f"  Windows: {len(y70)}, hypo70 rate: {y70.mean():.2%}, hypo75 rate: {y75.mean():.2%}")
+
+    results = {}
+
+    # ── Variant 1: Channel ablation (standard CE loss) ───────────────
+    for feat_name in ['8ch', '16ch', '8ch_deriv', '16ch_deriv', '8ch_deriv_ema']:
+        X = np.nan_to_num(np.stack(windows[feat_name]), nan=0.0)
+        key = f'{feat_name}_hypo70_ce'
+        print(f"\n  Config: {key} (ch={X.shape[-1]})")
+        (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y70, pids=pids)
+
+        seed_metrics = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = FlexCNN(in_channels=X.shape[-1], out_dim=2).to(device)
+            m = _train_torch_classifier(
+                model, tr_X, tr_y, va_X, va_y, device,
+                epochs=cfg['epochs'], patience=cfg['patience'],
+                n_classes=2,
+            )
+            seed_metrics.append(m)
+
+        avg = {k: round(float(np.mean([s[k] for s in seed_metrics if k in s])), 4)
+               for k in seed_metrics[0]}
+        results[key] = {'seeds': seed_metrics, 'average': avg,
+                        'n_channels': int(X.shape[-1])}
+
+    # ── Variant 2: Focal loss on promising feature sets ──────────────
+    for feat_name in ['16ch', '8ch_deriv', '16ch_deriv']:
+        X = np.nan_to_num(np.stack(windows[feat_name]), nan=0.0)
+        key = f'{feat_name}_hypo70_focal'
+        print(f"\n  Config: {key} (focal γ=2)")
+        (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y70, pids=pids)
+
+        seed_metrics = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = FlexCNN(in_channels=X.shape[-1], out_dim=2).to(device)
+            m = _train_focal_classifier(
+                model, tr_X, tr_y, va_X, va_y, device,
+                epochs=cfg['epochs'], patience=cfg['patience'],
+                gamma=2.0,
+            )
+            seed_metrics.append(m)
+
+        avg = {k: round(float(np.mean([s[k] for s in seed_metrics if k in s])), 4)
+               for k in seed_metrics[0]}
+        results[key] = {'seeds': seed_metrics, 'average': avg,
+                        'n_channels': int(X.shape[-1])}
+
+    # ── Variant 3: Near-hypo threshold (75 mg/dL) ───────────────────
+    for feat_name in ['16ch_deriv']:
+        X = np.nan_to_num(np.stack(windows[feat_name]), nan=0.0)
+        key = f'{feat_name}_hypo75_ce'
+        print(f"\n  Config: {key} (threshold=75)")
+        (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y75, pids=pids)
+
+        seed_metrics = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = FlexCNN(in_channels=X.shape[-1], out_dim=2).to(device)
+            m = _train_torch_classifier(
+                model, tr_X, tr_y, va_X, va_y, device,
+                epochs=cfg['epochs'], patience=cfg['patience'],
+                n_classes=2,
+            )
+            seed_metrics.append(m)
+
+        avg = {k: round(float(np.mean([s[k] for s in seed_metrics if k in s])), 4)
+               for k in seed_metrics[0]}
+        results[key] = {'seeds': seed_metrics, 'average': avg,
+                        'n_channels': int(X.shape[-1]),
+                        'threshold': 75}
+
+    # ── Variant 4: Focal + near-hypo combined ────────────────────────
+    for feat_name in ['16ch_deriv']:
+        X = np.nan_to_num(np.stack(windows[feat_name]), nan=0.0)
+        key = f'{feat_name}_hypo75_focal'
+        print(f"\n  Config: {key} (threshold=75, focal γ=2)")
+        (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y75, pids=pids)
+
+        seed_metrics = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = FlexCNN(in_channels=X.shape[-1], out_dim=2).to(device)
+            m = _train_focal_classifier(
+                model, tr_X, tr_y, va_X, va_y, device,
+                epochs=cfg['epochs'], patience=cfg['patience'],
+                gamma=2.0,
+            )
+            seed_metrics.append(m)
+
+        avg = {k: round(float(np.mean([s[k] for s in seed_metrics if k in s])), 4)
+               for k in seed_metrics[0]}
+        results[key] = {'seeds': seed_metrics, 'average': avg,
+                        'n_channels': int(X.shape[-1]),
+                        'threshold': 75}
+
+    # ── Summary ──────────────────────────────────────────────────────
+    print(f"\n  {'Config':40s} {'AUC':>7s} {'F1':>7s}")
+    print("  " + "-" * 58)
+    for k, v in sorted(results.items(), key=lambda x: -x[1]['average'].get('auc_roc', 0)):
+        a = v['average']
+        print(f"  {k:40s} {a.get('auc_roc', 0):7.4f} {a.get('f1', 0):7.4f}")
+
+    save_results(results, 'exp420_hypo_breakthrough')
+    return results
+
+
+def _focal_loss(logits, targets, gamma=2.0, pos_weight=None):
+    """Focal loss for binary classification — focuses on hard examples."""
+    ce = F.cross_entropy(logits, targets, weight=pos_weight, reduction='none')
+    probs = torch.softmax(logits, dim=-1)
+    pt = probs.gather(1, targets.unsqueeze(1)).squeeze(1)
+    return ((1 - pt) ** gamma * ce).mean()
+
+
+def _train_focal_classifier(model, train_X, train_y, val_X, val_y, device,
+                             epochs=60, patience=12, batch_size=64, lr=1e-3,
+                             gamma=2.0):
+    """Train with focal loss — identical to _train_torch_classifier except loss."""
+    pos_weight = len(train_y) / max(train_y.sum(), 1)
+    weights = torch.tensor([1.0, float(pos_weight)], dtype=torch.float32).to(device)
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=1e-4)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, patience=max(patience // 2, 3))
+
+    t_X = torch.tensor(train_X, dtype=torch.float32).to(device)
+    t_y = torch.tensor(train_y, dtype=torch.long).to(device)
+    v_X = torch.tensor(val_X, dtype=torch.float32).to(device)
+
+    best_f1, best_state, wait = -1, None, 0
+
+    for epoch in range(epochs):
+        model.train()
+        perm = torch.randperm(len(t_X))
+        for i in range(0, len(t_X), batch_size):
+            idx = perm[i:i + batch_size]
+            logits = model(t_X[idx])
+            loss = _focal_loss(logits, t_y[idx], gamma=gamma, pos_weight=weights)
+            optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            optimizer.step()
+
+        model.eval()
+        with torch.no_grad():
+            v_logits = model(v_X)
+            v_pred = v_logits.argmax(dim=-1).cpu().numpy()
+            v_loss = F.cross_entropy(
+                v_logits, torch.tensor(val_y, dtype=torch.long).to(device)
+            ).item()
+        scheduler.step(v_loss)
+
+        metric = f1_score(val_y, v_pred, average='binary', zero_division=0)
+        if metric > best_f1:
+            best_f1 = metric
+            best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            wait = 0
+        else:
+            wait += 1
+            if wait >= patience:
+                break
+
+    if best_state:
+        model.load_state_dict(best_state)
+    model.eval()
+
+    with torch.no_grad():
+        v_logits = model(v_X)
+        v_probs = torch.softmax(v_logits, dim=-1).cpu().numpy()
+        v_pred  = v_logits.argmax(dim=-1).cpu().numpy()
+
+    results = {
+        'f1': round(float(f1_score(val_y, v_pred, average='binary', zero_division=0)), 4),
+        'accuracy': round(float(accuracy_score(val_y, v_pred)), 4),
+    }
+    try:
+        results['auc_roc'] = round(float(roc_auc_score(val_y, v_probs[:, 1])), 4)
+        results['ece'] = round(compute_ece(v_probs[:, 1], val_y), 4)
+    except ValueError:
+        pass
+
+    return results
+
+
+def run_exp421(args):
+    """EXP-421: Hypo Architecture + Context Sweep.
+
+    EXP-420 showed feature/loss engineering can't break 0.69 AUC for hypo.
+    This experiment tests whether the bottleneck is:
+      (a) Model architecture (CNN vs XGBoost vs Transformer)
+      (b) Context length (6h vs 12h vs 24h evening window)
+      (c) Problem framing (binary vs regression → min glucose)
+
+    Hypotheses:
+      H1: XGBoost on tabular features may find patterns CNN misses
+      H2: Longer context captures more insulin history (DIA Valley)
+      H3: Predicting min glucose (regression) then thresholding may beat
+          direct classification (richer gradient signal)
+      H4: Transformer attention may focus on critical time segments
+
+    Uses 8ch (no PK — EXP-420 showed PK hurts hypo).
+    """
+    cfg = _get_config(args)
+    device = resolve_device(args.device)
+    print(f"\n{'='*60}")
+    print("EXP-421: Hypo Architecture + Context Sweep")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    results = {}
+
+    # ── Build windows at multiple context lengths ────────────────────
+    for ctx_hours, ctx_steps in [(6, STEPS_6H), (12, STEPS_12H), (24, STEPS_24H)]:
+        label_steps = STEPS_6H  # always predict next 6h
+        total_steps = ctx_steps + label_steps
+
+        all_X, all_y_binary, all_y_mingluc, all_pids = [], [], [], []
+        all_tabular = []
+
+        for pat in patients:
+            grid = pat['grid']  # (N, 8)
+            glucose_raw = grid[:, 0] * 400
+
+            for start in range(0, len(grid) - total_steps, STEPS_6H):
+                ctx_end = start + ctx_steps
+                label_end = ctx_end + label_steps
+
+                ctx = grid[start:ctx_end]                    # (ctx_steps, 8)
+                future_gluc = glucose_raw[ctx_end:label_end]
+
+                if len(future_gluc) < label_steps or np.isnan(future_gluc).mean() > 0.3:
+                    continue
+
+                future_valid = future_gluc[~np.isnan(future_gluc)]
+                if len(future_valid) == 0:
+                    continue
+
+                min_gluc = float(np.min(future_valid))
+                is_hypo = int(min_gluc < 70)
+
+                all_X.append(ctx)
+                all_y_binary.append(is_hypo)
+                all_y_mingluc.append(min_gluc)
+                all_pids.append(pat['name'])
+
+                # Tabular features for XGBoost
+                ctx_gluc = glucose_raw[start:ctx_end]
+                valid_gluc = ctx_gluc[~np.isnan(ctx_gluc)]
+                if len(valid_gluc) < 5:
+                    valid_gluc = np.array([120.0] * 5)
+                feats = [
+                    float(np.mean(valid_gluc)),                  # mean glucose
+                    float(np.std(valid_gluc)),                   # glucose variability
+                    float(np.min(valid_gluc)),                   # min in context
+                    float(np.max(valid_gluc)),                   # max in context
+                    float(valid_gluc[-1]),                       # last glucose
+                    float(valid_gluc[-1] - valid_gluc[-min(6,len(valid_gluc))]),  # 30min trend
+                    float(np.mean(valid_gluc < 80)),             # time near-hypo
+                    float(np.mean(valid_gluc < 70)),             # time in hypo
+                    float(np.mean(valid_gluc > 180)),            # time high
+                    float(np.sum(np.abs(np.diff(valid_gluc)))),  # glucose excursion
+                ]
+                # Add insulin/carb features from grid channels
+                for ch_idx in [1, 2, 3, 4]:  # IOB, COB, net_basal, bolus
+                    ch_data = grid[start:ctx_end, ch_idx]
+                    ch_valid = ch_data[~np.isnan(ch_data)]
+                    if len(ch_valid) == 0:
+                        ch_valid = np.array([0.0])
+                    feats.extend([float(np.mean(ch_valid)), float(np.sum(ch_valid)),
+                                  float(ch_valid[-1])])
+                all_tabular.append(feats)
+
+        if len(all_X) < 20:
+            print(f"  {ctx_hours}h context: insufficient windows"); continue
+
+        X_seq = np.nan_to_num(np.stack(all_X), nan=0.0)
+        X_tab = np.nan_to_num(np.array(all_tabular), nan=0.0)
+        y_bin = np.array(all_y_binary)
+        y_min = np.array(all_y_mingluc, dtype=np.float32)
+        pids  = np.array(all_pids)
+
+        hypo_rate = y_bin.mean()
+        print(f"\n  Context: {ctx_hours}h — {len(y_bin)} windows, "
+              f"hypo rate: {hypo_rate:.2%}, mean min glucose: {y_min.mean():.0f}")
+
+        # ── XGBoost on tabular features ────────────────────────────
+        if HAS_XGB:
+            key = f'{ctx_hours}h_xgb_binary'
+            print(f"  Config: {key}")
+            (tr_X, tr_y), (va_X, va_y) = temporal_split(X_tab, y_bin, pids=pids)
+
+            scale = max(tr_y.sum(), 1) / max(len(tr_y) - tr_y.sum(), 1)
+            clf = xgb.XGBClassifier(
+                n_estimators=200, max_depth=6, learning_rate=0.05,
+                scale_pos_weight=float(1.0 / scale),
+                eval_metric='logloss', verbosity=0,
+                tree_method='hist', device='cuda' if device.type == 'cuda' else 'cpu',
+            )
+            clf.fit(tr_X, tr_y, eval_set=[(va_X, va_y)],
+                    verbose=False)
+            va_probs = clf.predict_proba(va_X)[:, 1]
+            va_pred = (va_probs > 0.5).astype(int)
+            m = {
+                'f1': round(float(f1_score(va_y, va_pred, average='binary', zero_division=0)), 4),
+                'accuracy': round(float(accuracy_score(va_y, va_pred)), 4),
+            }
+            try:
+                m['auc_roc'] = round(float(roc_auc_score(va_y, va_probs)), 4)
+                m['ece'] = round(compute_ece(va_probs, va_y), 4)
+            except ValueError:
+                pass
+            results[key] = {'average': m, 'n_features': X_tab.shape[1]}
+
+        # ── XGBoost regression on min glucose ──────────────────────
+        if HAS_XGB:
+            key = f'{ctx_hours}h_xgb_mingluc'
+            print(f"  Config: {key}")
+            (tr_X, tr_y), (va_X, va_y) = temporal_split(X_tab, y_min, pids=pids)
+            (_, tr_yb), (_, va_yb) = temporal_split(X_tab, y_bin, pids=pids)
+
+            reg = xgb.XGBRegressor(
+                n_estimators=200, max_depth=6, learning_rate=0.05,
+                eval_metric='mae', verbosity=0,
+                tree_method='hist', device='cuda' if device.type == 'cuda' else 'cpu',
+            )
+            reg.fit(tr_X, tr_y, eval_set=[(va_X, va_y)], verbose=False)
+            va_pred_mg = reg.predict(va_X)
+            va_pred_bin = (va_pred_mg < 70).astype(int)
+            m = {
+                'mae_mg': round(float(np.mean(np.abs(va_pred_mg - va_y))), 2),
+                'f1': round(float(f1_score(va_yb, va_pred_bin, average='binary', zero_division=0)), 4),
+                'accuracy': round(float(accuracy_score(va_yb, va_pred_bin)), 4),
+            }
+            try:
+                m['auc_roc'] = round(float(roc_auc_score(va_yb, -va_pred_mg)), 4)
+            except ValueError:
+                pass
+            results[key] = {'average': m, 'n_features': X_tab.shape[1]}
+
+        # ── CNN baseline (8ch, same as EXP-420 winner) ─────────────
+        key = f'{ctx_hours}h_cnn_binary'
+        print(f"  Config: {key}")
+        (tr_X, tr_y), (va_X, va_y) = temporal_split(X_seq, y_bin, pids=pids)
+
+        seed_metrics = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = FlexCNN(in_channels=8, out_dim=2).to(device)
+            m = _train_torch_classifier(
+                model, tr_X, tr_y, va_X, va_y, device,
+                epochs=cfg['epochs'], patience=cfg['patience'],
+                n_classes=2,
+            )
+            seed_metrics.append(m)
+
+        avg = {k: round(float(np.mean([s[k] for s in seed_metrics if k in s])), 4)
+               for k in seed_metrics[0]}
+        results[key] = {'seeds': seed_metrics, 'average': avg}
+
+        # ── CNN regression on min glucose ──────────────────────────
+        key = f'{ctx_hours}h_cnn_mingluc'
+        print(f"  Config: {key}")
+        (tr_X, tr_y), (va_X, va_y) = temporal_split(X_seq, y_min, pids=pids)
+        (_, tr_yb), (_, va_yb) = temporal_split(X_seq, y_bin, pids=pids)
+
+        seed_metrics = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = FlexCNN(in_channels=8, out_dim=1).to(device)
+            m = _train_torch_regressor(
+                model, tr_X, tr_y, va_X, va_y, device,
+                epochs=cfg['epochs'], patience=cfg['patience'],
+            )
+            # Also compute classification metrics from thresholded regression
+            model.eval()
+            with torch.no_grad():
+                vX = torch.tensor(va_X, dtype=torch.float32).to(device)
+                pred_mg = model(vX).cpu().numpy().squeeze()
+            pred_bin = (pred_mg < 70).astype(int)
+            m['f1_thresh'] = round(float(f1_score(va_yb, pred_bin, average='binary', zero_division=0)), 4)
+            try:
+                m['auc_roc_thresh'] = round(float(roc_auc_score(va_yb, -pred_mg)), 4)
+            except ValueError:
+                pass
+            seed_metrics.append(m)
+
+        avg = {k: round(float(np.mean([s[k] for s in seed_metrics if k in s])), 4)
+               for k in seed_metrics[0]}
+        results[key] = {'seeds': seed_metrics, 'average': avg}
+
+    # ── Summary ──────────────────────────────────────────────────────
+    print(f"\n  {'Config':35s} {'AUC':>7s} {'F1':>7s} {'Notes':>15s}")
+    print("  " + "-" * 65)
+    for k, v in sorted(results.items(), key=lambda x: -x[1]['average'].get('auc_roc', 0)):
+        a = v['average']
+        notes = ''
+        if 'mae_mg' in a:
+            notes = f"MAE={a['mae_mg']}mg"
+        if 'auc_roc_thresh' in a:
+            notes = f"regAUC={a['auc_roc_thresh']}"
+        print(f"  {k:35s} {a.get('auc_roc', 0):7.4f} {a.get('f1', 0):7.4f} {notes:>15s}")
+
+    save_results(results, 'exp421_hypo_architecture_context')
+    return results
 
 EXPERIMENTS = {
     '411': run_exp411,
@@ -1322,6 +1826,8 @@ EXPERIMENTS = {
     '416': run_exp416,
     '417': run_exp417,
     '418': run_exp418,
+    '420': run_exp420,
+    '421': run_exp421,
 }
 
 
@@ -1336,7 +1842,7 @@ def save_results(result, filename):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='EXP-411-418: Living Treatment Plan — Strategic Planning Horizon',
+        description='EXP-411-420: Living Treatment Plan — Strategic Planning Horizon',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Experiments:
@@ -1348,6 +1854,8 @@ Experiments:
   416  Weekly routine hotspot identification
   417  Extended history + PK for classification
   418  Multi-rate EMA for strategic features
+  420  Hypo breakthrough: feature + loss engineering
+  421  Hypo architecture + context sweep (XGB/CNN × 6h/12h/24h)
 """)
     parser.add_argument('--experiment', '-e', nargs='+', default=['all'],
                         help='Experiment number(s) or "all" (default: all)')
