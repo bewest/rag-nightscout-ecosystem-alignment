@@ -48,9 +48,22 @@ prior experiments) to test if better architecture unlocks PK benefit.
      irrelevant (fasting periods). Sparse attention (attend to top-k by gradient
      magnitude) could outperform dense transformer while being faster.
 
-  NOTE: Normalization experiments (ISF, z-score, glucodensity, depth, EMA) are
-  handled by exp_normalization_conditioning.py (EXP-369+). If those produce
-  better input channels, this thread can test them with transformer architecture.
+  ASSIGNED FROM NORMALIZATION RUNNER (exp_normalization_conditioning.py):
+  When your own experiments above are complete, pick up these from the shared
+  runner — they are classification-native and won't conflict with forecasting:
+    EXP-369: ISF-normalized glucose for classification. Replaces BG/400 with
+             (BG-target)/ISF at 2h and 12h. Tests override + hypo tasks. Run:
+             python tools/cgmencode/exp_normalization_conditioning.py --experiment 369
+    EXP-371: Functional depth as hypo feature. Injects Modified Band Depth at
+             classifier head. Q1 depth = 33.7% hypo prevalence (EXP-335). Run:
+             python tools/cgmencode/exp_normalization_conditioning.py --experiment 371
+    EXP-372: Glucodensity at classifier head. 8-bin histogram injected after
+             CNN pooling (NOT as conv input — zero gradient, EXP-338). Run:
+             python tools/cgmencode/exp_normalization_conditioning.py --experiment 372
+  SHARED POOL (first to finish picks these up):
+    EXP-370: Per-patient z-score + raw dual-channel
+    EXP-375: Multi-rate EMA channels (α=0.1/0.3/0.7)
+    EXP-376: STL decomposition channels
 
 Usage:
     python tools/cgmencode/exp_arch_12h.py [--device cuda] [--seeds 42 123 456]

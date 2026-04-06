@@ -40,6 +40,15 @@ Tests transformer vs deep_cnn with the best feature variants from EXP-360:
   being developed in exp_normalization_conditioning.py (EXP-369+). Once
   validated, they become new feature variants to test here with transformer.
 
+  ASSIGNED FROM NORMALIZATION RUNNER (when your own experiments are done):
+  Classification thread picks up these (see also exp_arch_12h.py hints):
+    EXP-369: ISF-normalized glucose for classification (2h + 12h)
+    EXP-371: Functional depth as hypo feature (head injection)
+    EXP-372: Glucodensity at classifier head (8-bin histogram)
+  Run: python tools/cgmencode/exp_normalization_conditioning.py --experiment 369 371 372
+  SHARED POOL (first thread to finish picks these up):
+    EXP-370, EXP-375, EXP-376
+
 Usage:
     python tools/cgmencode/exp_transformer_features.py [--scales 6h 12h]
 """

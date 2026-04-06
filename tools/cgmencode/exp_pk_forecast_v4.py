@@ -46,9 +46,20 @@ EXP-368 — Residual CNN with wider layers
      per patient with 50 epochs. Tests whether forecasting benefits from
      personalization — directly extends the ensemble idea (EXP-365).
 
-  NOTE: Normalization experiments (ISF, z-score, EMA) are handled by
-  exp_normalization_conditioning.py (EXP-369+). If those produce better
-  input channels, this thread can consume them as pre-built features.
+  ASSIGNED FROM NORMALIZATION RUNNER (exp_normalization_conditioning.py):
+  When your own experiments above are complete, pick up these from the shared
+  runner — they are forecasting-adjacent and won't conflict with classification:
+    EXP-373: Multi-seed future PK validation (5 seeds + bootstrap CIs for
+             EXP-366 dilated TCN). Run:
+             python tools/cgmencode/exp_normalization_conditioning.py --experiment 373
+    EXP-374: Cumulative glucose load at 3-day scale. Running integrals of
+             glucose/insulin/carbs over 12h/24h/72h windows — directly enables
+             extending your forecasting to 3-day horizons. Run:
+             python tools/cgmencode/exp_normalization_conditioning.py --experiment 374
+  SHARED POOL (first to finish picks these up):
+    EXP-370: Per-patient z-score + raw dual-channel
+    EXP-375: Multi-rate EMA channels (α=0.1/0.3/0.7)
+    EXP-376: STL decomposition channels
 
 Usage:
     python tools/cgmencode/exp_pk_forecast_v4.py --experiment 365 --device cuda --quick
