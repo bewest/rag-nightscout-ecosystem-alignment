@@ -97,17 +97,20 @@ def load_patient_profile_isf(train_dir):
 
 
 def load_bridge_data(patients_dir, window_size=48, max_patients=None,
-                     stride=None, load_isf=True):
+                     stride=None, load_isf=True, skip_patients=None):
     """Load data for bridge experiments.
 
     ERA 2 used window_size=24 (12 history + 12 future = 1h each at 5min).
     We use 48 (24 history = 2h, 24 future = 2h) to give PK more room.
 
+    skip_patients: set of patient names to exclude (e.g., {'j'} for MDI-only).
     Returns dict with arrays and per-patient info for fine-tuning.
     """
     patient_dirs = find_patient_dirs(patients_dir)
     if max_patients:
         patient_dirs = patient_dirs[:max_patients]
+    if skip_patients:
+        patient_dirs = [d for d in patient_dirs if d.name not in skip_patients]
 
     if stride is None:
         stride = max(window_size // 3, 12)  # ~every 1h
@@ -359,8 +362,14 @@ def mask_future_pk(x_in, half, pk_mode=False):
 
 def train_bridge(model, train_x, val_x, save_path, label, device,
                  pk_mode=False, lr=1e-3, epochs=200, batch=32,
-                 patience=20, weight_decay=1e-5, lr_patience=7):
-    """ERA 2-style masked-sequence forecast training with PK-aware masking."""
+                 patience=20, weight_decay=1e-5, lr_patience=7,
+                 future_steps=None, augment_std=0.0):
+    """ERA 2-style masked-sequence forecast training with PK-aware masking.
+
+    future_steps: if set, use asymmetric split (seq_len - future_steps history).
+                  Default None = symmetric (seq_len // 2).
+    augment_std: if > 0, add Gaussian noise to training inputs each batch.
+    """
     model.to(device)
     train_dl = DataLoader(TensorDataset(train_x), batch_size=batch, shuffle=True)
     val_dl = DataLoader(TensorDataset(val_x), batch_size=batch)
@@ -372,7 +381,7 @@ def train_bridge(model, train_x, val_x, save_path, label, device,
 
     def _step(batch_data, backward=False):
         x = batch_data[0].to(device)
-        half = x.shape[1] // 2
+        half = x.shape[1] - future_steps if future_steps else x.shape[1] // 2
         x_in = x.clone()
         mask_future_pk(x_in, half, pk_mode=pk_mode)
         pred = model(x_in, causal=True)
@@ -432,8 +441,11 @@ def train_bridge(model, train_x, val_x, save_path, label, device,
 # ─── Evaluation ───
 
 def evaluate_model(model, val_x, device, pk_mode=False, isf_val=None,
-                   scale=GLUCOSE_SCALE):
-    """Evaluate masked-sequence model. Returns MAE in mg/dL at each horizon."""
+                   scale=GLUCOSE_SCALE, future_steps=None):
+    """Evaluate masked-sequence model. Returns MAE in mg/dL at each horizon.
+
+    future_steps: if set, predict last N steps instead of seq_len//2.
+    """
     model.to(device)
     model.eval()
     dl = DataLoader(TensorDataset(val_x), batch_size=64)
@@ -444,7 +456,7 @@ def evaluate_model(model, val_x, device, pk_mode=False, isf_val=None,
         for b in dl:
             x = b[0].to(device)
             bsz = x.size(0)
-            half = x.shape[1] // 2
+            half = x.shape[1] - future_steps if future_steps else x.shape[1] // 2
             x_in = x.clone()
             mask_future_pk(x_in, half, pk_mode=pk_mode)
             pred = model(x_in, causal=True)
@@ -478,7 +490,7 @@ def evaluate_model(model, val_x, device, pk_mode=False, isf_val=None,
 
 
 def ensemble_evaluate(models, val_x, device, pk_mode=False, isf_val=None,
-                      scale=GLUCOSE_SCALE):
+                      scale=GLUCOSE_SCALE, future_steps=None):
     """Average predictions from multiple models, return MAE."""
     dl = DataLoader(TensorDataset(val_x), batch_size=64)
     all_model_preds = []
@@ -491,7 +503,7 @@ def ensemble_evaluate(models, val_x, device, pk_mode=False, isf_val=None,
             for b in dl:
                 x = b[0].to(device)
                 bsz = x.size(0)
-                half = x.shape[1] // 2
+                half = x.shape[1] - future_steps if future_steps else x.shape[1] // 2
                 x_in = x.clone()
                 mask_future_pk(x_in, half, pk_mode=pk_mode)
                 pred = model(x_in, causal=True)
@@ -509,7 +521,7 @@ def ensemble_evaluate(models, val_x, device, pk_mode=False, isf_val=None,
     for b in dl:
         x = b[0]
         bsz = x.size(0)
-        half = x.shape[1] // 2
+        half = x.shape[1] - future_steps if future_steps else x.shape[1] // 2
         t = x[:, half:, 0].numpy()
         if isf_val is not None:
             t = t * (isf_val[idx:idx+bsz] / GLUCOSE_SCALE).reshape(-1, 1) * scale
@@ -1026,6 +1038,8 @@ def train_bridge_h60only(model, train_x, val_x, save_path, label, device,
         model.train()
         ttl, tn = 0.0, 0
         for b in train_dl:
+            if augment_std > 0:
+                b = (b[0] + torch.randn_like(b[0]) * augment_std,)
             opt.zero_grad()
             l, n = _step(b, backward=True)
             opt.step()
@@ -2087,6 +2101,390 @@ def run_exp420(args):
     return result
 
 
+# ─── EXP-421: Asymmetric Windows ───
+
+def run_exp421(args):
+    """EXP-421: Asymmetric windows — more history, same 1h future.
+
+    Hypothesis: The transformer benefits from longer history context without
+    the loss dilution of predicting further into the future.
+
+    Variants:
+      - w24 (baseline): 12 history + 12 future (1h + 1h)
+      - w36_asym: 24 history + 12 future (2h history + 1h future)
+      - w48_asym: 36 history + 12 future (3h history + 1h future)
+
+    Key: future_steps=12 always, but history grows.
+    Loss is only on the last 12 steps, so no dilution.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    future_steps = 12  # always 1h future
+
+    print(f"\n{'='*60}")
+    print(f"EXP-421: Asymmetric Windows (future={future_steps} steps = 1h)")
+    print(f"{'='*60}")
+
+    variants = {
+        'w24_sym': 24,     # baseline: 12+12 (symmetric)
+        'w36_asym': 36,    # 24 hist + 12 future (2h+1h)
+        'w48_asym': 48,    # 36 hist + 12 future (3h+1h)
+    }
+
+    results = {}
+    for vname, wsize in variants.items():
+        is_sym = (vname == 'w24_sym')
+        fs = None if is_sym else future_steps
+        hist = wsize // 2 if is_sym else wsize - future_steps
+
+        print(f"\n--- {vname}: window={wsize}, history={hist} ({hist*5}min), "
+              f"future={wsize-hist} ({(wsize-hist)*5}min) ---")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=wsize,
+            max_patients=cfg['max_patients'], load_isf=True)
+        has_isf = 'isf_val' in data
+        train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+        isf_val = data.get('isf_val')
+        n_ch = train_x.shape[-1]
+
+        seed = cfg['seeds'][0]
+        torch.manual_seed(seed)
+        np.random.seed(seed)
+
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp421_{vname}_s{seed}.pth')
+        _, ep = train_bridge(model, train_x, val_x, sp, f'421-{vname}', device,
+                             pk_mode=True, epochs=cfg['epochs_base'],
+                             future_steps=fs)
+
+        report = evaluate_model(model, val_x, device, pk_mode=True,
+                                isf_val=isf_val, future_steps=fs)
+        print(f"  {vname}: overall={report['overall_mae']}, "
+              f"h30={report.get('h30','?')}, h60={report.get('h60','?')}")
+
+        # Per-patient FT for best variant (quick: just base comparison)
+        if not cfg['quick']:
+            ft_maes = []
+            for pinfo in data['per_patient']:
+                pid = pinfo['name']
+                vi, ve = pinfo['val_idx']
+                ti, te = pinfo['train_idx']
+                p_train = train_x[ti:te]
+                p_val = val_x[vi:ve]
+                p_isf = isf_val[vi:ve] if isf_val is not None else None
+
+                ft_model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                ft_model.load_state_dict(model.state_dict())
+                ft_sp = os.path.join(cfg['output_dir'], f'exp421_{vname}_ft_{pid}_s{seed}.pth')
+                train_bridge(ft_model, p_train, p_val, ft_sp, f'421-ft-{pid}', device,
+                             pk_mode=True, lr=1e-4, epochs=cfg['epochs_ft'],
+                             patience=10, future_steps=fs)
+                ft_report = evaluate_model(ft_model, p_val, device, pk_mode=True,
+                                           isf_val=p_isf, future_steps=fs)
+                ft_maes.append(ft_report['overall_mae'])
+                print(f"    {pid}: {ft_report['overall_mae']:.1f}")
+            report['ft_mean'] = round(np.mean(ft_maes), 2)
+            print(f"  {vname} FT mean: {report['ft_mean']}")
+
+        results[vname] = report
+
+    print(f"\n{'='*60}")
+    print("EXP-421 RESULTS: Asymmetric Windows")
+    print(f"{'='*60}")
+    for vname, r in results.items():
+        ft_str = f", FT={r.get('ft_mean','?')}" if 'ft_mean' in r else ""
+        print(f"  {vname}: base={r['overall_mae']}{ft_str}")
+
+    result = {'experiment': 'EXP-421: Asymmetric Windows', 'variants': results}
+    _save_results(result, 'exp421_asymmetric_windows', cfg)
+    return result
+
+
+# ─── EXP-417: Hard Patient Optimization ───
+
+def run_exp417(args):
+    """EXP-417: Hard patient optimization.
+
+    Patients b (17.1), j (15.0), a (13.1) account for disproportionate error.
+    Uses EXP-410 base models and tries:
+      - longer_ft: 100 epochs (vs 30 default)
+      - augment: Gaussian noise (σ=0.01) during FT
+      - combined: longer FT + augmentation
+      - high_lr: 2e-4 FT learning rate (vs 1e-4)
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-417: Hard Patient Optimization")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    isf_val = data.get('isf_val')
+    n_ch = train_x.shape[-1]
+
+    # Hard patients: top 3 by MAE from EXP-410
+    hard_patients = ['b', 'j', 'a']
+    patient_map = {p['name']: p for p in data['per_patient']}
+
+    ft_variants = {
+        'baseline_30ep': {'epochs': 30, 'lr': 1e-4, 'augment_std': 0.0},
+        'longer_100ep': {'epochs': 100, 'lr': 1e-4, 'augment_std': 0.0},
+        'augment_30ep': {'epochs': 30, 'lr': 1e-4, 'augment_std': 0.01},
+        'combined_100ep': {'epochs': 100, 'lr': 1e-4, 'augment_std': 0.01},
+        'high_lr_30ep': {'epochs': 30, 'lr': 2e-4, 'augment_std': 0.0},
+        'augment_high_lr_100ep': {'epochs': 100, 'lr': 2e-4, 'augment_std': 0.01},
+    }
+
+    results = {}
+
+    for pid in hard_patients:
+        if pid not in patient_map:
+            print(f"  Patient {pid} not in data, skipping")
+            continue
+
+        pinfo = patient_map[pid]
+        vi, ve = pinfo['val_idx']
+        ti, te = pinfo['train_idx']
+        p_train = train_x[ti:te]
+        p_val = val_x[vi:ve]
+        p_isf = isf_val[vi:ve] if isf_val is not None else None
+
+        print(f"\n  Patient {pid} ({te-ti} train, {ve-vi} val):")
+        results[pid] = {}
+
+        for vname, vcfg in ft_variants.items():
+            seed = cfg['seeds'][0]
+            torch.manual_seed(seed)
+            np.random.seed(seed)
+
+            # Load base model from EXP-410
+            base_path = os.path.join(cfg['output_dir'], f'exp410_base_s{seed}.pth')
+            if not os.path.exists(base_path):
+                # Try EXP-419 base
+                base_path = os.path.join(cfg['output_dir'], f'exp419_base_s{seed}.pth')
+            if not os.path.exists(base_path):
+                print(f"    No base model found for s{seed}")
+                break
+
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            ckpt = torch.load(base_path, map_location=device, weights_only=False)
+            model.load_state_dict(ckpt['model_state'])
+
+            sp = os.path.join(cfg['output_dir'], f'exp417_{pid}_{vname}_s{seed}.pth')
+            _, ep = train_bridge(model, p_train, p_val, sp,
+                                 f'417-{pid}-{vname}', device,
+                                 pk_mode=True, lr=vcfg['lr'],
+                                 epochs=vcfg['epochs'], patience=30,
+                                 augment_std=vcfg['augment_std'])
+
+            report = evaluate_model(model, p_val, device, pk_mode=True,
+                                    isf_val=p_isf)
+            results[pid][vname] = report
+            print(f"    {vname}: MAE={report['overall_mae']}, "
+                  f"h30={report.get('h30','?')}, h60={report.get('h60','?')}, ep={ep}")
+
+    print(f"\n{'='*60}")
+    print("EXP-417 RESULTS: Hard Patient Optimization")
+    print(f"{'='*60}")
+    for pid, vres in results.items():
+        print(f"  Patient {pid}:")
+        for vname, r in vres.items():
+            print(f"    {vname}: MAE={r['overall_mae']}")
+
+    result = {'experiment': 'EXP-417: Hard Patient Optimization', 'per_patient': results}
+    _save_results(result, 'exp417_hard_patients', cfg)
+    return result
+
+
+# ─── EXP-422: Asymmetric Champion Pipeline ───
+
+def run_exp422(args):
+    """EXP-422: Full champion pipeline with asymmetric w36 windows.
+
+    Combines EXP-421 discovery (2h history + 1h future = -0.67 MAE)
+    with EXP-410 champion pipeline (PK + ISF + 5-seed + FT + ensemble).
+
+    Two variants tested:
+      A) all_patients: Train base on all 11 patients (like EXP-410)
+      B) pump_only: Train base on 10 pump patients, exclude j (MDI-only).
+         j has 48% insulin_net density (vs >97% for pump patients) and
+         no temp basal — degraded PK signal adds noise to base training.
+         j still gets per-patient FT from the pump-only base.
+
+    Key difference from EXP-410:
+      - window_size=36, future_steps=12 (vs w24 symmetric)
+      - 24 history steps (2h) instead of 12 (1h)
+      - Same 12 future steps (1h prediction)
+      - No loss dilution: MSE computed on same 12 steps as EXP-410
+
+    Expected: ~10.2 MAE (EXP-410=10.85, EXP-421 quick Δ=-4.8%)
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    future_steps = 12
+    MDI_PATIENTS = {'j'}  # MDI-only, no temp basal, degraded PK
+
+    print(f"\n{'='*60}")
+    print(f"EXP-422: Asymmetric Champion Pipeline (w36, {future_steps} future steps)")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"  Variants: all_patients, pump_only (exclude {MDI_PATIENTS})")
+    print(f"{'='*60}")
+
+    # Load ALL patients for FT (including j)
+    data_all = load_bridge_data(
+        args.patients_dir, window_size=36,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data_all
+    train_all, val_all = prepare_pk_future(data_all, use_isf=has_isf, drop_time=False)
+    isf_all = data_all.get('isf_val')
+    n_ch = train_all.shape[-1]
+
+    # Load pump-only patients for filtered base training
+    data_pump = load_bridge_data(
+        args.patients_dir, window_size=36,
+        max_patients=cfg['max_patients'], load_isf=True,
+        skip_patients=MDI_PATIENTS)
+    train_pump, val_pump = prepare_pk_future(data_pump, use_isf=has_isf, drop_time=False)
+    isf_pump = data_pump.get('isf_val')
+
+    base_variants = {
+        'all': {'train': train_all, 'val': val_all, 'isf': isf_all,
+                'label': 'all_patients'},
+        'pump': {'train': train_pump, 'val': val_pump, 'isf': isf_pump,
+                 'label': 'pump_only (no j)'},
+    }
+
+    all_results = {}
+
+    for bvar_name, bvar in base_variants.items():
+        tag = f'422{bvar_name[0]}'  # 422a (all) or 422p (pump)
+        print(f"\n{'='*60}")
+        print(f"  Variant: {bvar['label']} — base on {len(bvar['train'])} windows")
+        print(f"{'='*60}")
+
+        # Phase 1: Multi-seed base training
+        print(f"\n=== Phase 1: Base Training ({len(cfg['seeds'])} seeds, {n_ch}ch, "
+              f"w36 asym={36-future_steps}hist+{future_steps}fut) ===")
+        base_states = {}
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp{tag}_base_s{seed}.pth')
+
+            print(f"\n  Base s{seed} ({bvar['label']}):")
+            train_bridge(model, bvar['train'], bvar['val'], sp,
+                         f'{tag}-base-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps)
+
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+
+            metrics = evaluate_model(model, val_all, device, pk_mode=True,
+                                     isf_val=isf_all, future_steps=future_steps)
+            print(f"  Base s{seed}: overall={metrics['overall_mae']:.1f}, "
+                  f"h30={metrics.get('h30','?')}, h60={metrics.get('h60','?')}")
+
+        # Phase 2: Per-patient FT — ALWAYS on all patients (including j)
+        print(f"\n=== Phase 2: Per-Patient Fine-Tuning ({bvar['label']} base → all patients) ===")
+        per_patient_results = {}
+
+        for pinfo in data_all['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train_x = train_all[ti:te]
+            p_val_x = val_all[vi:ve]
+            p_isf_v = isf_all[vi:ve] if isf_all is not None else None
+
+            mdi_tag = " [MDI]" if pid in MDI_PATIENTS else ""
+            print(f"\n  Patient {pid}{mdi_tag} ({pinfo['n_train']} train, {pinfo['n_val']} val):")
+
+            seed_maes = {}
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+
+                sp = os.path.join(cfg['output_dir'], f'exp{tag}_ft_{pid}_s{seed}.pth')
+                train_bridge(model, p_train_x, p_val_x, sp,
+                             f'{tag}-ft-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             lr=1e-4, epochs=cfg['epochs_ft'], patience=10,
+                             lr_patience=5, future_steps=future_steps)
+
+                metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                         isf_val=p_isf_v, future_steps=future_steps)
+                seed_maes[f's{seed}'] = metrics['overall_mae']
+                ft_models.append(copy.deepcopy(model))
+                print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+            ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                    isf_val=p_isf_v, future_steps=future_steps)
+            per_patient_results[pid] = {
+                'seeds': seed_maes,
+                'ensemble_mae': ens['overall_mae'],
+                'mean_seed': round(float(np.mean(list(seed_maes.values()))), 2),
+                'ensemble_per_horizon': ens,
+                'is_mdi': pid in MDI_PATIENTS,
+            }
+            print(f"    Ensemble: MAE={ens['overall_mae']:.1f}, "
+                  f"h30={ens.get('h30','?')}, h60={ens.get('h60','?')}")
+
+        all_ens = [v['ensemble_mae'] for v in per_patient_results.values()]
+        all_mean = [v['mean_seed'] for v in per_patient_results.values()]
+        pump_ens = [v['ensemble_mae'] for v in per_patient_results.values()
+                    if not v.get('is_mdi')]
+
+        summary = {
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'mean_single_mae': round(float(np.mean(all_mean)), 2),
+            'pump_only_mae': round(float(np.mean(pump_ens)), 2) if pump_ens else None,
+            'n_patients': len(per_patient_results),
+            'n_seeds': len(cfg['seeds']),
+            'base_variant': bvar['label'],
+            'window_size': 36,
+            'future_steps': future_steps,
+        }
+
+        print(f"\n{'='*60}")
+        print(f"EXP-422 RESULT — {bvar['label']} base")
+        print(f"  Mean Ensemble MAE (all): {summary['mean_ensemble_mae']:.2f} mg/dL")
+        print(f"  Mean Ensemble MAE (pump): {summary['pump_only_mae']:.2f} mg/dL")
+        print(f"  Mean Single MAE:          {summary['mean_single_mae']:.2f} mg/dL")
+        print(f"  EXP-410 reference:        10.85 mg/dL (w24 symmetric, all pts)")
+        print(f"{'='*60}")
+
+        all_results[bvar_name] = {
+            'per_patient': per_patient_results,
+            'summary': summary,
+        }
+
+    result = {
+        'experiment': 'EXP-422: Asymmetric Champion Pipeline (w36)',
+        'variants': all_results,
+        'config': {
+            'n_channels': n_ch, 'window_size': 36, 'future_steps': future_steps,
+            'd_model': 64, 'nhead': 4, 'num_layers': 4,
+            'base_epochs': cfg['epochs_base'], 'ft_epochs': cfg['epochs_ft'],
+            'seeds': cfg['seeds'], 'use_isf': has_isf, 'pk_mode': True,
+            'mdi_patients': list(MDI_PATIENTS),
+        },
+    }
+    _save_results(result, 'exp422_asymmetric_champion', cfg)
+    return result
+
+
 # ─── Config & CLI ───
 
 def _get_config(args):
@@ -2120,8 +2518,11 @@ EXPERIMENTS = {
     '411': run_exp411,
     '413': run_exp413,
     '414': run_exp414,
+    '417': run_exp417,
     '419': run_exp419,
     '420': run_exp420,
+    '421': run_exp421,
+    '422': run_exp422,
 }
 
 
