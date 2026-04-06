@@ -1,10 +1,10 @@
 # E-Series Autoresearch Report: Strategic Clinical Classification
 
-**Date**: 2026-07-12
-**Experiments**: EXP-412 through EXP-421 (full-scale: 11 patients, 5 seeds)
+**Date**: 2026-07-12 (updated 2026-07-13)
+**Experiments**: EXP-412 through EXP-453 (full-scale: 11 patients, 5 seeds)
 **Objective**: Validate clinical classification tasks across the strategic planning
-horizon (6h–4 days) and identify the bottleneck preventing hypo prediction from
-reaching clinical deployability.
+horizon (6h–4 days), break the hypo prediction ceiling, and characterize the
+multi-scale feature hierarchy from 2h through weekly patterns.
 
 ---
 
@@ -585,3 +585,322 @@ Both architectures achieve ~0.85 AUC when properly trained at scale.
 
 5. **Longer horizon**: The 2h prediction window showed the best results.
    Can the tabular approach extend to 6h and 12h horizons where CNN failed?
+
+---
+
+## Phase 3: Feature Importance, Throughput Integration, and Horizon Analysis
+
+*Experiments EXP-450 through EXP-453 (11 patients, 5 seeds each)*
+
+### 13. EXP-450: Feature Importance Analysis
+
+**Method**: Permutation importance (AUC drop when feature is shuffled) +
+group ablation (retrain with feature groups removed).
+
+#### Per-Feature Importance (Top 10 by AUC drop)
+
+| Rank | Feature | HYPO Drop | HIGH Drop | Interpretation |
+|------|---------|-----------|-----------|----------------|
+| 1 | gluc_last | **0.284** | **0.313** | Current glucose dominates both tasks |
+| 2 | glucose_excursion | 0.029 | 0.004 | Range of recent glucose movement |
+| 3 | trend_30min | 0.024 | 0.013 | Short-term direction of change |
+| 4 | bolus_mean | 0.006 | 0.003 | Average recent bolus activity |
+| 5 | iob_mean | 0.005 | 0.008 | Insulin on board level |
+| 6 | net_basal_mean | 0.003 | 0.007 | Basal deviation from scheduled |
+| 7 | cob_last | 0.003 | 0.005 | Current carbs on board |
+| 8 | time_sin | 0.002 | 0.004 | Circadian position |
+| 9 | iob_last | 0.002 | 0.003 | Current IOB snapshot |
+| 10+ | *_sum features | <0.001 | <0.001 | Cumulative sums contribute nothing |
+
+**Key finding**: `gluc_last` alone accounts for ~80% of predictive power.
+The 22-feature model outperforms glucose-only by only +0.011 HYPO / +0.015
+HIGH — confirming the breakthrough was primarily about *representation*
+(tabular vs raw sequence) not *feature richness*.
+
+#### Group Ablation Results
+
+| Feature Group | HYPO AUC | HIGH AUC | Notes |
+|---------------|----------|----------|-------|
+| All 22 features | 0.849 | 0.895 | Full baseline |
+| Glucose only (5 feats) | 0.838 | 0.880 | 98.7% of performance |
+| + Insulin (3 feats) | 0.850 | 0.895 | Full recovery |
+| Insulin only | 0.573 | 0.621 | Weak alone |
+| Sum features only | 0.503 | 0.508 | Near random — **zero signal** |
+
+**Implication**: The sum features (iob_sum, cob_sum, bolus_sum, net_basal_sum)
+can be safely removed. They add no predictive value at 2h and likely add noise.
+
+### 14. EXP-451: Throughput Feature Integration
+
+**Hypothesis**: Metabolic throughput features from the other researcher's
+EXP-441 (`compute_supply_demand`) may improve classification by capturing
+metabolic activity intensity beyond what insulin/carb channel statistics provide.
+
+**Features added**: 12 throughput features (supply mean/max/sum, demand
+mean/max/sum, product mean/std/max/trend/sum/spike_ratio).
+
+| Feature Set | Features | HYPO AUC | HIGH AUC |
+|-------------|----------|----------|----------|
+| baseline_22 | 22 | 0.849 | 0.895 |
+| throughput_28 | 22+6 | 0.854 | 0.897 |
+| **supply_demand_34** | **22+12** | **0.855** | **0.901** |
+| throughput_only_6 | 6 | 0.610 | 0.701 |
+
+**Result**: supply_demand_34 achieves **NEW BEST HIGH: 0.901** (+0.006 over
+baseline) and HYPO 0.855 (+0.005). Throughput features alone are weak (0.610)
+but provide additive lift when combined with glucose features.
+
+**Cross-researcher synergy**: The metabolic flux model (EXP-441–446) produces
+features that improve clinical classification. Supply × demand captures a
+dimension of metabolic state not captured by raw insulin/carb statistics.
+
+### 15. EXP-452: Horizon Scaling Analysis
+
+**Question**: How far into the future can XGBoost tabular classification remain
+clinically actionable (AUC ≥ 0.80)?
+
+| Horizon | HYPO AUC | HIGH AUC | HYPO Status | HIGH Status |
+|---------|----------|----------|-------------|-------------|
+| 2h | 0.849 | 0.895 | ✅ Deploy | ✅ Deploy |
+| 4h | 0.756 | 0.838 | ❌ Gap | ✅ Deploy |
+| 6h | 0.720 | 0.812 | ❌ Gap | ✅ Deploy |
+| 12h | 0.684 | 0.802 | ❌ Gap | ✅ Deploy |
+
+**Key findings**:
+
+1. **HIGH is deployable at ALL horizons** up to 12h. This extends the
+   strategic planning window from 2h to half a day — a qualitative leap for
+   day-ahead glucose management.
+
+2. **HYPO degrades steeply**: drops 0.165 AUC from 2h to 12h. Current
+   glucose (`gluc_last`) loses predictive power rapidly because hypo events
+   are sharp, transient, and driven by acute insulin/meal timing.
+
+3. **The asymmetry is physiological**: HIGH states are "sticky" (sustained
+   insulin resistance, missed bolus, slow carb absorption), while HYPO is
+   "transient" (corrected within minutes by counter-regulation or carbs).
+
+### 16. EXP-453: Throughput × Horizon Interaction (KEY EXPERIMENT)
+
+**Hypothesis**: Metabolic throughput should help MORE at longer horizons where
+current glucose loses predictive power. At 2h, `gluc_last` dominates so
+throughput adds little. At 6h+, throughput captures metabolic state that
+persists beyond the current glucose reading.
+
+#### Results: Throughput Lift (Δ AUC) by Horizon
+
+| Horizon | HYPO Baseline | HYPO +Throughput | **HYPO Δ** | HIGH Baseline | HIGH +Throughput | **HIGH Δ** |
+|---------|--------------|-----------------|------------|--------------|-----------------|------------|
+| 2h | 0.849 | 0.855 | +0.005 | 0.895 | 0.901 | +0.006 |
+| 4h | 0.756 | 0.768 | **+0.012** | 0.838 | 0.851 | **+0.013** |
+| 6h | 0.720 | 0.733 | **+0.012** | 0.812 | 0.827 | **+0.016** |
+| 12h | 0.684 | 0.691 | +0.007 | 0.802 | 0.803 | +0.001 |
+
+**Key findings**:
+
+1. **Hypothesis CONFIRMED at 4–6h**: Throughput lift peaks at 4–6h where it
+   is **2–3× larger** than at 2h. This is exactly the range where `gluc_last`
+   power drops but metabolic state still persists.
+
+2. **12h collapse**: At 12h, throughput lift drops to near zero (HIGH: +0.001).
+   This implies that with only 2h of history, **no feature engineering can
+   rescue 12h prediction** — the context window is the bottleneck.
+
+3. **6h HIGH with throughput (0.827)** is a meaningful improvement over baseline
+   (0.812), moving further above the 0.80 deployability threshold.
+
+4. **The 4h HYPO gap narrows**: 0.768 with throughput vs 0.756 baseline —
+   approaching the 0.80 threshold but not yet crossing it.
+
+#### Interpretation: The Context Window Bottleneck
+
+The 12h throughput collapse reveals a fundamental limitation: our current
+experiments use **2h of historical context** (24 steps at 5-min resolution)
+to predict events up to 12h ahead. At 12h, even metabolic throughput from
+the past 2h has decayed — the model needs to see longer patterns.
+
+This motivates **EXP-454: Extended Context for Extended Horizons** and
+connects to the broader question of leveraging **multi-day to weekly
+patterns** for strategic planning.
+
+### 17. Updated Deployability Scorecard (Post EXP-450–453)
+
+| Task | Best AUC | Experiment | Feature Set | Status |
+|------|----------|------------|-------------|--------|
+| 2h HIGH (CNN ensemble) | **0.912** | EXP-432 | 16ch CNN | ✅ DEPLOY |
+| 2h HIGH (supply_demand) | **0.901** | EXP-451 | 34 tabular | ✅ DEPLOY |
+| Time-of-day HIGH | **0.903** | EXP-431 | + time feats | ✅ DEPLOY |
+| 2h HYPO (CNN ensemble) | **0.858** | EXP-432 | 8ch CNN | ✅ DEPLOY |
+| 2h HYPO (supply_demand) | **0.855** | EXP-451 | 34 tabular | ✅ DEPLOY |
+| Overnight HIGH | **0.833** | EXP-432 | CNN ensemble | ✅ DEPLOY |
+| 6h HIGH + throughput | **0.827** | EXP-453 | 34 tabular | ✅ DEPLOY |
+| HIGH recurrence 3d | **0.919** | EXP-415 | recurrence | ✅ DEPLOY |
+| HIGH recurrence 24h | **0.882** | EXP-415 | recurrence | ✅ DEPLOY |
+| 4h HIGH + throughput | **0.851** | EXP-453 | 34 tabular | ✅ DEPLOY |
+| 12h HIGH (baseline) | 0.802 | EXP-452 | 22 tabular | ✅ DEPLOY |
+| 4h HYPO + throughput | 0.768 | EXP-453 | 34 tabular | ❌ Gap |
+| 6h HYPO + throughput | 0.733 | EXP-453 | 34 tabular | ❌ Gap |
+| 12h HYPO | 0.691 | EXP-453 | 34 tabular | ❌ Gap |
+
+**Summary**: 11 tasks now at ✅ DEPLOY (was 7 before EXP-450–453).
+The new 4h and 6h HIGH predictions with throughput are clinically actionable.
+HYPO remains a gap beyond 2h.
+
+---
+
+## Phase 4: Autoresearch Plan — Multi-Scale Pattern Exploitation
+
+### 18. The Multi-Day Pattern Opportunity
+
+Our experiments to date use **2h of historical context** — optimized for
+the 2h prediction horizon but fundamentally limiting for longer planning.
+
+**What patterns exist at longer time scales?**
+
+| Time Scale | Known Pattern | Evidence | Exploited? |
+|------------|---------------|----------|------------|
+| 2–4h | Meal + insulin dynamics | gluc_last dominance | ✅ Yes (EXP-430–453) |
+| 6–8h | DIA valley (overlapping insulin curves) | Sil=-0.642 (EXP-289) | ❌ No |
+| 12h | Circadian half-cycle | 71.3±18.7 mg/dL amplitude | Partially |
+| 24h | Full circadian pattern | Morning-high / night-hypo phenotypes | ❌ Feature only |
+| 3 day | ISF drift begins | r=-0.328 biweekly (EXP-194) | ❌ No |
+| 7 day | Weekly routine (best Silhouette) | Sil=-0.301 (EXP-289) | ❌ No |
+| 14 day | ISF drift completes | Two subpopulations (EXP-194) | ❌ No |
+
+**The 12h throughput collapse in EXP-453 tells us**: features from 2h of
+history cannot bridge to 12h predictions. We need to give the model access
+to multi-day patterns.
+
+### 19. Hypothesis: Extended Context Breaks the 12h Ceiling
+
+**EXP-454 Design: Extended Context for Extended Horizons**
+
+Test whether longer historical context improves longer-horizon predictions:
+
+| Configuration | History | Future | Rationale |
+|---------------|---------|--------|-----------|
+| 2h → 2h | 24 steps | 24 steps | Current baseline |
+| 4h → 6h | 48 steps | 72 steps | Match insulin dynamics (DIA ~4h) |
+| 6h → 12h | 72 steps | 144 steps | See full meal cycles |
+| 12h → 12h | 144 steps | 144 steps | Half circadian cycle |
+| 24h → 12h | 288 steps | 144 steps | Full circadian pattern |
+
+**Expected**: 12h prediction should improve significantly with 12h or 24h
+history, because the model can observe:
+- Complete insulin curves (DIA 4–6h)
+- The previous night's pattern (relevant for morning-high)
+- Whether the patient is in a "good control" or "bad control" streak
+
+**Risk**: Feature dimensionality grows linearly with history. Tabular
+features (mean, max, last, trend) should scale well. Raw sequence features
+require architectural changes.
+
+### 20. Hypothesis: Multi-Day Recurrence Features
+
+**EXP-455 Design: Weekly Pattern Features for Classification**
+
+The recurrence experiment (EXP-415) showed HIGH recurrence at 3d = 0.919,
+demonstrating that multi-day patterns are strongly predictive. But this
+was a binary "did HIGH recur?" prediction — not integrated into the main
+classification pipeline.
+
+**Approach**: Add recurrence-based features to the tabular feature set:
+- `had_high_yesterday` (binary): HIGH event in same time block 24h ago
+- `high_count_3d` (int): Count of HIGH events in past 3 days
+- `hypo_count_3d` (int): Count of HYPO events in past 3 days
+- `tir_7d` (float): Time-in-range over past 7 days
+- `worst_block_7d` (categorical): Worst 6h block in past week
+- `control_trend_3d` (float): Is glucose control improving or worsening?
+
+**These features require longer data lookback but NOT longer model context**
+— they are summary statistics computed once per prediction window, not raw
+sequences. This is critical: we can leverage weekly patterns without
+architectural changes.
+
+**Expected**: +0.01–0.03 AUC for HYPO at 6h+ (moderate lift), +0.02–0.05
+for HIGH recurrence tasks (strong lift, leveraging known 0.919 signal).
+
+### 21. Hypothesis: Context-Adaptive Feature Engineering
+
+**EXP-456 Design: Horizon-Matched Feature Windows**
+
+Rather than one-size-fits-all 2h features, engineer features matched to each
+prediction horizon:
+
+| Feature | 2h Prediction | 6h Prediction | 12h Prediction |
+|---------|---------------|---------------|----------------|
+| glucose trend | 30 min | 2h | 6h |
+| IOB summary | 2h mean | 6h trajectory | 12h decay pattern |
+| meal features | last meal | meal count in 6h | meal regularity |
+| throughput | 2h snapshot | 6h metabolic load | 12h metabolic state |
+| recurrence | same time yesterday | 3-day pattern | weekly pattern |
+
+This creates **horizon-specific feature sets** that better match the
+predictive signal to the time scale.
+
+### 22. The Untapped Multi-Scale Hierarchy
+
+**The big picture**: Our most significant unexploited opportunity lies in
+multi-day to weekly patterns:
+
+```
+Scale         Known Signal      Current Usage    Potential
+───────────   ──────────────    ──────────────   ─────────
+5 min         Glucose trend     ✅ Primary       Saturated
+2 hours       Meal + DIA        ✅ Primary       Saturated
+6–8 hours     Circadian phase   ⚠️ sin/cos only  +0.01–0.03 with phase features
+24 hours      Circadian full    ❌ Not used      +0.02–0.05 for overnight
+3–7 days      Routine/habit     ❌ Not used      +0.03–0.08 for recurrence
+14 days       ISF drift         ❌ Not used      Unknown (requires long data)
+```
+
+**The efficiency argument**: Multi-day features are **cheap to compute**
+(just summary statistics over longer lookback windows) but potentially
+**high impact** because they capture patterns invisible in 2h windows:
+
+- A patient who has been running HIGH for 3 days likely has a systematic
+  issue (ISF drift, infusion site degradation, illness) that predicts
+  continued HIGH — regardless of their current 2h glucose.
+- A patient who consistently goes LOW at 2am on weekdays but not weekends
+  has a weekly pattern invisible in any single 2h window.
+- A patient whose TIR has been declining over 7 days may need a profile
+  change — this is the E9 use case (repeated overrides → profile
+  recommendation).
+
+### 23. Proposed Experiment Sequence
+
+**Priority order based on expected impact and implementation cost:**
+
+| EXP | Name | Hypothesis | Est. Impact | Cost |
+|-----|------|-----------|-------------|------|
+| 454 | Extended context | 12h+ history → better 12h prediction | +0.02–0.05 | Medium |
+| 455 | Multi-day recurrence features | 3d/7d lookback features | +0.02–0.05 | Low |
+| 456 | Horizon-matched features | Feature windows match prediction | +0.01–0.03 | Low |
+| 457 | XGB+CNN meta-ensemble | Combine complementary models | +0.01–0.02 | Low |
+| 458 | Per-patient threshold calibration | Adaptive alert thresholds | Deployment quality | Low |
+| 459 | Weekly pattern classifier | 7d routine → next-day risk | New capability | Medium |
+| 460 | ISF drift features | 14d rolling ISF → prediction | +0.01–0.03 | Medium |
+
+**Non-redundant territory**: These experiments focus on classification
+deployment, multi-scale features, and strategic planning — complementing
+rather than duplicating the other researcher's forecasting and metabolic
+flux work.
+
+### 24. Continuous Autoresearch Protocol
+
+**Loop**: Hypothesis → Implement → Run (full scale) → Analyze → Commit → Repeat
+
+**Guardrails**:
+1. All experiments use validated framework (per-patient temporal_split, 5 seeds)
+2. No future data leakage (gap validation established in EXP-433)
+3. Full-scale runs only (quick mode unreliable per EXP-417/418)
+4. Git commit after each completed experiment
+5. Results in `externals/experiments/` (gitignored), code in `tools/cgmencode/`
+6. Avoid overlap with other researcher (no edits to exp_metabolic_441.py or
+   exp_pk_forecast_v14.py; import only)
+
+**Decision criteria for next experiment**: Prioritize by
+1. Addresses an identified gap (HYPO at 4h+, multi-day patterns)
+2. Leverages known high signals (recurrence 0.919, throughput 0.987)
+3. Low implementation cost relative to expected insight
+4. Produces deployable improvement or reveals new physics

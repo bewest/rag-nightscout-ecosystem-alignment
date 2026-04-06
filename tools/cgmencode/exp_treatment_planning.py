@@ -3481,6 +3481,124 @@ def run_exp452(args):
     return results
 
 
+# ===================================================================
+# EXP-453: Throughput × Horizon Interaction
+# ===================================================================
+
+def run_exp453(args):
+    """EXP-453: Throughput × Horizon — does metabolic signal help more at longer horizons?
+
+    Hypothesis: gluc_last dominates at 2h but becomes irrelevant at 6h+.
+    Metabolic throughput (supply × demand) captures metabolic activity that
+    may predict future risk better at longer horizons where current glucose
+    has lost predictive power.
+
+    Tests: baseline_22 vs supply_demand_34 at 2h, 4h, 6h, 12h.
+    Measures the DELTA (throughput lift) at each horizon.
+    """
+    cfg = _get_config(args)
+
+    print(f"\n{'='*60}")
+    print("EXP-453: Throughput × Horizon Interaction")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    # Import throughput
+    try:
+        from exp_metabolic_441 import compute_supply_demand
+    except ImportError:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from exp_metabolic_441 import compute_supply_demand
+
+    patient_sd = {}
+    for pat in patients:
+        sd = compute_supply_demand(pat['df'], pk_array=pat['pk'])
+        patient_sd[pat['name']] = sd
+
+    def supply_demand_feats(pat, start, ctx_end):
+        sd = patient_sd[pat['name']]
+        tp = sd['product'][start:ctx_end]
+        supply = sd['supply'][start:ctx_end]
+        demand = sd['demand'][start:ctx_end]
+        tp_v = tp[~np.isnan(tp)] if len(tp) > 0 else np.array([0.0])
+        if len(tp_v) == 0: tp_v = np.array([0.0])
+        s_v = supply[~np.isnan(supply)] if len(supply) > 0 else np.array([0.0])
+        d_v = demand[~np.isnan(demand)] if len(demand) > 0 else np.array([0.0])
+        if len(s_v) == 0: s_v = np.array([0.0])
+        if len(d_v) == 0: d_v = np.array([0.0])
+        return [
+            float(np.mean(tp_v)), float(np.std(tp_v)), float(np.max(tp_v)),
+            float(tp_v[-1] - tp_v[-min(6, len(tp_v))]),
+            float(np.sum(tp_v)),
+            float(np.max(tp_v) / max(np.mean(tp_v), 1e-8)),
+            float(np.mean(s_v)), float(np.max(s_v)), float(np.sum(s_v)),
+            float(np.mean(d_v)), float(np.max(d_v)), float(np.sum(d_v)),
+        ]
+
+    results = {}
+    horizons = [
+        ('2h', STEPS_2H),
+        ('4h', STEPS_4H),
+        ('6h', STEPS_6H),
+        ('12h', STEPS_12H),
+    ]
+
+    for task_name, threshold, above in [('hypo', 70, False), ('high', 180, True)]:
+        print(f"\n  --- {task_name.upper()} ---")
+        print(f"    {'Horizon':8s} {'Baseline':>10s} {'+Throughput':>12s} {'Delta':>8s}")
+        print(f"    {'-'*42}")
+
+        for h_name, future_steps in horizons:
+            # Baseline 22
+            X_b, y, pids, _ = _build_dataset(
+                patients, STEPS_2H, future_steps, threshold, above)
+            if X_b is None:
+                print(f"    {h_name}: insufficient data"); continue
+
+            # +Throughput 34
+            X_t, _, _, _ = _build_dataset(
+                patients, STEPS_2H, future_steps, threshold, above,
+                extra_feat_fn=supply_demand_feats)
+
+            res_b = _train_xgb_eval(X_b, y, pids, cfg['seeds'])
+            res_t = _train_xgb_eval(X_t, y, pids, cfg['seeds'])
+
+            auc_b = res_b['average'].get('auc_roc', 0)
+            auc_t = res_t['average'].get('auc_roc', 0)
+            delta = auc_t - auc_b
+
+            key_b = f"{h_name}_baseline_{task_name}"
+            key_t = f"{h_name}_throughput_{task_name}"
+            results[key_b] = res_b
+            results[key_t] = res_t
+            results[f"{h_name}_delta_{task_name}"] = {
+                'baseline_auc': auc_b, 'throughput_auc': auc_t,
+                'delta': round(delta, 5), 'horizon': h_name,
+            }
+
+            sign = '+' if delta >= 0 else ''
+            print(f"    {h_name:8s} {auc_b:>10.4f} {auc_t:>12.4f} {sign}{delta:>7.4f}")
+
+    # Summary
+    print(f"\n  {'='*60}")
+    print(f"  THROUGHPUT LIFT BY HORIZON")
+    print(f"  {'='*60}")
+    for task in ['hypo', 'high']:
+        print(f"\n  --- {task.upper()} ---")
+        for h_name, _ in horizons:
+            d = results.get(f"{h_name}_delta_{task}")
+            if d:
+                sign = '+' if d['delta'] >= 0 else ''
+                print(f"    {h_name:8s}  Δ={sign}{d['delta']:.4f}  "
+                      f"({d['baseline_auc']:.4f} → {d['throughput_auc']:.4f})")
+
+    save_results(results, 'exp453_throughput_horizon')
+    return results
+
+
 EXPERIMENTS = {
     '411': run_exp411,
     '412': run_exp412,
@@ -3500,6 +3618,7 @@ EXPERIMENTS = {
     '450': run_exp450,
     '451': run_exp451,
     '452': run_exp452,
+    '453': run_exp453,
 }
 
 
@@ -3536,6 +3655,7 @@ Experiments:
   450  Feature importance ablation (permutation + group ablation)
   451  Throughput features for classification (metabolic supply × demand)
   452  Horizon scaling (XGBoost tabular at 2h/4h/6h/12h)
+  453  Throughput × horizon interaction (does metabolic signal help more at longer horizons?)
 """)
     parser.add_argument('--experiment', '-e', nargs='+', default=['all'],
                         help='Experiment number(s) or "all" (default: all)')
