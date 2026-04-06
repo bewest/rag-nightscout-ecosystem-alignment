@@ -1817,6 +1817,1010 @@ def run_exp421(args):
     save_results(results, 'exp421_hypo_architecture_context')
     return results
 
+
+def run_exp422(args):
+    """EXP-422: Metabolic Phase Signal for Hypo Prediction.
+
+    Core hypothesis: The phase mismatch between carb absorption (peaks ~15-30 min)
+    and insulin absorption (peaks ~55 min) creates a detectable metabolic activity
+    signature. Even when absolute glucose doesn't change (AID compensates), the
+    INTERACTION of carb and insulin dynamics reveals meal events and predicts
+    whether insulin will overshoot carbs → hypo.
+
+    Current PK channels track announced events only. The metabolic flux approach
+    inverts the model: use OBSERVED GLUCOSE to infer the true metabolic state,
+    capturing unannounced meals, exercise, and stress.
+
+    Novel channels:
+      1. metabolic_flux: dBG/dt + insulin_effect - hepatic (= residual carb absorption)
+      2. phase_balance: carb_rate - insulin_net (instantaneous phase mismatch)
+      3. flux_integral: cumulative unresolved energy over rolling window
+      4. overshoot_risk: insulin_net / max(carb_rate, ε) — ratio >1 = hypo risk
+
+    Conservation insight: ∫(BG - baseline)dt ≈ carbs×factor - insulin×ISF.
+    Over full absorption these cancel. At short timescales, phase mismatch
+    creates detectable "metabolic current" even when glucose "voltage" is stable.
+    """
+    cfg = _get_config(args)
+    device = resolve_device(args.device)
+    print(f"\n{'='*60}")
+    print("EXP-422: Metabolic Phase Signal for Hypo Prediction")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    # ── Feature sets ────────────────────────────────────────────────
+    windows = {
+        'baseline_8ch': [],        # grid only (EXP-421 best = 0.696)
+        'pk_16ch': [],             # grid + PK (EXP-420 showed hurts)
+        'flux_12ch': [],           # grid + 4 novel metabolic channels
+        'flux_pk_20ch': [],        # grid + PK + 4 novel channels
+        'flux_only_4ch': [],       # JUST the 4 novel channels (ablation)
+        'glucose_flux_5ch': [],    # glucose + 4 novel (minimal but physics-rich)
+    }
+    all_y_hypo, all_y_high, all_pids = [], [], []
+
+    for pat in patients:
+        grid = pat['grid']          # (N, 8)
+        pk   = pat['pk']            # (N, 8)
+        glucose_raw = grid[:, 0] * 400  # de-normalise to mg/dL
+
+        # ── Compute observed metabolic flux channels ────────────────
+        # Channel 1: dBG/dt (observed glucose rate of change, mg/dL per 5min)
+        dbg_dt = np.zeros_like(glucose_raw)
+        dbg_dt[1:] = glucose_raw[1:] - glucose_raw[:-1]
+
+        # Channel 2: insulin_net activity (from PK, U/min denormalised)
+        # PK channel 1 = insulin_net, normalised by 0.05
+        insulin_net = pk[:, 1] * 0.05  # U/min
+
+        # Channel 3: carb_rate (from PK, g/min denormalised)
+        # PK channel 3 = carb_rate, normalised by 0.5
+        carb_rate = pk[:, 3] * 0.5  # g/min
+
+        # Channel 4: hepatic_production (from PK, mg/dL per 5min denormalised)
+        # PK channel 5 = hepatic_production, normalised by 3.0
+        hepatic = pk[:, 5] * 3.0  # mg/dL per 5min
+
+        # Channel 5: ISF (from PK, mg/dL per U denormalised)
+        # PK channel 7 = isf_curve, normalised by 200.0
+        isf = pk[:, 7] * 200.0  # mg/dL per U
+
+        # ── Novel metabolic phase channels ──────────────────────────
+
+        # 1. Metabolic flux: what the glucose SHOULD be doing based on
+        #    known insulin + hepatic, minus what it IS doing.
+        #    Residual = actual dBG/dt - expected_from_insulin_and_liver
+        #    = unaccounted carb absorption + exercise + stress + noise
+        #    Positive = unannounced carbs being absorbed
+        #    Negative = unexplained glucose drop (exercise, stress)
+        insulin_effect = insulin_net * 5.0 * np.where(isf > 0, isf, 50.0)  # mg/dL per 5min
+        expected_change = hepatic - insulin_effect  # expected dBG/dt from known sources
+        metabolic_flux = dbg_dt - expected_change   # residual = unknown sources
+        # Normalise: typical range ±30 mg/dL per 5min
+        metabolic_flux_norm = metabolic_flux / 30.0
+
+        # 2. Phase balance: carb_rate vs insulin_net activity
+        #    Positive = carbs dominating (early meal phase)
+        #    Negative = insulin dominating (late phase, hypo risk)
+        #    This captures the INTERACTION, not just individual rates.
+        #    Normalise carb_rate to same units as insulin for comparison:
+        safe_cr = 10.0  # approximate carb ratio (g per U)
+        carb_as_insulin_equiv = carb_rate / safe_cr  # U/min equivalent
+        phase_balance = carb_as_insulin_equiv - insulin_net
+        phase_balance_norm = phase_balance / 0.05
+
+        # 3. Flux integral: cumulative unresolved energy over 1h rolling window
+        #    Tracks whether metabolic flux has been persistently positive or
+        #    negative — sustained positive = ongoing meal, sustained negative
+        #    = ongoing insulin dominance (hypo building)
+        window_steps = STEPS_PER_HOUR  # 12 steps = 1 hour
+        flux_integral = np.zeros_like(metabolic_flux)
+        for t in range(window_steps, len(metabolic_flux)):
+            flux_integral[t] = np.nansum(metabolic_flux[t - window_steps:t])
+        flux_integral_norm = flux_integral / 200.0  # typical range ±100
+
+        # 4. Overshoot risk: ratio of insulin activity to carb activity
+        #    >1 means insulin is winning → glucose will fall → hypo risk
+        #    <1 means carbs are winning → glucose will rise
+        #    Uses smoothed (30min EMA) to avoid divide-by-zero noise
+        alpha = 0.3  # 30min EMA on 5min data ≈ 6 steps
+        smooth_ins = np.zeros_like(insulin_net)
+        smooth_carb = np.zeros_like(carb_as_insulin_equiv)
+        smooth_ins[0] = insulin_net[0]
+        smooth_carb[0] = carb_as_insulin_equiv[0]
+        for t in range(1, len(insulin_net)):
+            smooth_ins[t] = alpha * insulin_net[t] + (1 - alpha) * smooth_ins[t - 1]
+            smooth_carb[t] = alpha * carb_as_insulin_equiv[t] + (1 - alpha) * smooth_carb[t - 1]
+        epsilon = 1e-6
+        overshoot_risk = smooth_ins / (smooth_carb + epsilon)
+        # Clip and normalise: range [0, 10], centred at 1
+        overshoot_risk = np.clip(overshoot_risk, 0, 10) / 5.0
+
+        # Stack the 4 novel channels
+        novel_4ch = np.column_stack([
+            metabolic_flux_norm,
+            phase_balance_norm,
+            flux_integral_norm,
+            overshoot_risk,
+        ])  # (N, 4)
+
+        # ── Build overnight windows ────────────────────────────────
+        for start in range(0, len(grid) - STEPS_12H, STEPS_6H):
+            s, e = start, start + STEPS_6H
+            overnight_gluc = glucose_raw[e:start + STEPS_12H]
+            if len(overnight_gluc) < STEPS_6H or np.isnan(overnight_gluc).mean() > 0.3:
+                continue
+
+            labels = extract_overnight_labels(
+                glucose_raw[start:start + STEPS_12H],
+                midnight_idx=STEPS_6H,
+            )
+
+            windows['baseline_8ch'].append(grid[s:e])
+            windows['pk_16ch'].append(np.concatenate([grid[s:e], pk[s:e]], axis=-1))
+            windows['flux_12ch'].append(np.concatenate([grid[s:e], novel_4ch[s:e]], axis=-1))
+            windows['flux_pk_20ch'].append(np.concatenate([grid[s:e], pk[s:e], novel_4ch[s:e]], axis=-1))
+            windows['flux_only_4ch'].append(novel_4ch[s:e])
+            windows['glucose_flux_5ch'].append(
+                np.concatenate([grid[s:e, :1], novel_4ch[s:e]], axis=-1))
+
+            all_y_hypo.append(int(labels['hypo']))
+            all_y_high.append(int(labels['high']))
+            all_pids.append(pat['name'])
+
+    if len(all_y_hypo) < 20:
+        print("  Insufficient windows."); return {}
+
+    y_hypo = np.array(all_y_hypo)
+    y_high = np.array(all_y_high)
+    pids = np.array(all_pids)
+    print(f"  Windows: {len(y_hypo)}, hypo rate: {y_hypo.mean():.2%}, high rate: {y_high.mean():.2%}")
+
+    results = {}
+
+    # ── Test each feature set for both hypo and high ─────────────────
+    for target_name, target_y in [('hypo', y_hypo), ('high', y_high)]:
+        for feat_name, feat_windows in windows.items():
+            X = np.nan_to_num(np.stack(feat_windows), nan=0.0)
+            key = f'{feat_name}_{target_name}'
+            print(f"\n  Config: {key} (ch={X.shape[-1]})")
+            (tr_X, tr_y), (va_X, va_y) = temporal_split(X, target_y, pids=pids)
+
+            seed_metrics = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                model = FlexCNN(in_channels=X.shape[-1], out_dim=2).to(device)
+                m = _train_torch_classifier(
+                    model, tr_X, tr_y, va_X, va_y, device,
+                    epochs=cfg['epochs'], patience=cfg['patience'],
+                    n_classes=2,
+                )
+                seed_metrics.append(m)
+
+            avg = {k: round(float(np.mean([s[k] for s in seed_metrics if k in s])), 4)
+                   for k in seed_metrics[0]}
+            results[key] = {'seeds': seed_metrics, 'average': avg,
+                            'n_channels': int(X.shape[-1])}
+
+    # ── XGBoost on flux features (tabular) ───────────────────────────
+    if HAS_XGB:
+        for target_name, target_y in [('hypo', y_hypo)]:
+            X_flux = np.nan_to_num(np.stack(windows['flux_12ch']), nan=0.0)
+            # Extract tabular stats from flux channels
+            all_tab = []
+            for i in range(len(X_flux)):
+                feats = []
+                for ch in range(X_flux.shape[-1]):
+                    ch_data = X_flux[i, :, ch]
+                    feats.extend([
+                        float(np.mean(ch_data)),
+                        float(np.std(ch_data)),
+                        float(ch_data[-1]),  # last value
+                        float(np.min(ch_data)),
+                        float(np.max(ch_data)),
+                    ])
+                all_tab.append(feats)
+            X_tab = np.array(all_tab)
+
+            key = f'xgb_flux_tabular_{target_name}'
+            print(f"\n  Config: {key} (features={X_tab.shape[1]})")
+            (tr_X, tr_y), (va_X, va_y) = temporal_split(X_tab, target_y, pids=pids)
+
+            scale = max(tr_y.sum(), 1) / max(len(tr_y) - tr_y.sum(), 1)
+            clf = xgb.XGBClassifier(
+                n_estimators=200, max_depth=6, learning_rate=0.05,
+                scale_pos_weight=float(1.0 / scale),
+                eval_metric='logloss', verbosity=0,
+                tree_method='hist', device='cuda' if device.type == 'cuda' else 'cpu',
+            )
+            clf.fit(tr_X, tr_y, eval_set=[(va_X, va_y)], verbose=False)
+            va_probs = clf.predict_proba(va_X)[:, 1]
+            va_pred = (va_probs > 0.5).astype(int)
+            m = {
+                'f1': round(float(f1_score(va_y, va_pred, average='binary', zero_division=0)), 4),
+                'accuracy': round(float(accuracy_score(va_y, va_pred)), 4),
+            }
+            try:
+                m['auc_roc'] = round(float(roc_auc_score(va_y, va_probs)), 4)
+                m['ece'] = round(compute_ece(va_probs, va_y), 4)
+            except ValueError:
+                pass
+            results[key] = {'average': m, 'n_features': X_tab.shape[1]}
+
+    # ── Summary ──────────────────────────────────────────────────────
+    print(f"\n  {'Config':40s} {'AUC':>7s} {'F1':>7s} {'ch':>4s}")
+    print("  " + "-" * 58)
+    # Group by target
+    for target in ['hypo', 'high']:
+        print(f"\n  --- {target.upper()} ---")
+        target_items = [(k, v) for k, v in results.items() if target in k]
+        for k, v in sorted(target_items, key=lambda x: -x[1]['average'].get('auc_roc', 0)):
+            a = v['average']
+            nch = v.get('n_channels', v.get('n_features', '?'))
+            print(f"  {k:40s} {a.get('auc_roc', 0):7.4f} {a.get('f1', 0):7.4f} {nch!s:>4s}")
+
+    save_results(results, 'exp422_metabolic_phase_signal')
+    return results
+
+
+# ===================================================================
+# EXP-430: Forecast→Classification Bridge
+# ===================================================================
+
+def _load_forecast_models(patient_name, experiments_dir, device, n_seeds=5):
+    """Load pre-trained per-patient forecast models from EXP-419/410.
+
+    Returns list of loaded PKGroupedEncoder models (one per seed).
+    Falls back from EXP-419 → EXP-410 checkpoints.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from exp_pk_forecast_v14 import PKGroupedEncoder
+
+    seeds = [42, 123, 456, 789, 1024][:n_seeds]
+    models = []
+    for seed in seeds:
+        for prefix in [f'exp419_ft_{patient_name}_s{seed}',
+                       f'exp410_ft_{patient_name}_s{seed}']:
+            ckpt_path = os.path.join(experiments_dir, f'{prefix}.pth')
+            if os.path.exists(ckpt_path):
+                model = PKGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=4)
+                ckpt = torch.load(ckpt_path, map_location=device, weights_only=False)
+                model.load_state_dict(ckpt['model_state'])
+                model.to(device)
+                model.eval()
+                models.append(model)
+                break
+    return models
+
+
+def _generate_forecast_features(models, history_grid, history_pk, isf, device,
+                                glucose_scale=400.0):
+    """Generate forecast-derived features from ensemble of forecast models.
+
+    Takes the last 12 steps of history (1h) as context, predicts next 12 steps (1h).
+    Returns dict of scalar features extracted from the predicted trajectory.
+
+    Input channels for PKGroupedEncoder:
+      [glucose/400, IOB, COB, net_basal, insulin_net/0.05, carb_rate/0.5, sin, net_balance/20]
+    """
+    PK_NORMS = [1.0, 0.05, 1.0, 0.5, 0.05, 1.0, 20.0, 1.0]  # from exp_pk_forecast_v14
+
+    half = 12  # 12 steps history + 12 steps future = 24 total (w24)
+    # Need at least 24 steps of data to form a w24 window
+    if len(history_grid) < 24 or len(history_pk) < 24:
+        return None
+
+    # Build a 24-step window: last 24 steps of history
+    base = history_grid[-24:].copy()  # (24, 8)
+    pk = history_pk[-24:]
+
+    # Replace channels 4,5 with PK and add net_balance (PK-future format)
+    x = base.copy()
+    x[:, 4] = pk[:, 1] / PK_NORMS[1]  # insulin_net
+    x[:, 5] = pk[:, 3] / PK_NORMS[3]  # carb_rate
+    x[:, 7] = pk[:, 6] / PK_NORMS[6]  # net_balance replaces cos
+
+    # ISF normalization (if available)
+    if isf is not None and isf > 0:
+        x[:, 0] *= (glucose_scale / isf)
+        x[:, 0] = np.clip(x[:, 0], 0, 10)
+
+    # Mask future glucose (steps 12-23)
+    x_tensor = torch.tensor(x, dtype=torch.float32).unsqueeze(0).to(device)
+    x_masked = x_tensor.clone()
+    x_masked[:, half:, 0] = 0.0  # mask future glucose
+
+    # Get ensemble predictions
+    all_preds = []
+    with torch.no_grad():
+        for model in models:
+            pred = model(x_masked, causal=True)
+            p = pred[0, half:, 0].cpu().numpy()  # future glucose predictions
+            # Undo ISF normalization
+            if isf is not None and isf > 0:
+                p = p * (isf / glucose_scale) * glucose_scale
+            else:
+                p = p * glucose_scale
+            all_preds.append(p)
+
+    if not all_preds:
+        return None
+
+    preds = np.stack(all_preds)  # (n_models, 12)
+    mean_pred = preds.mean(axis=0)  # (12,) — ensemble mean trajectory
+
+    # Extract features from predicted trajectory
+    features = {
+        'pred_min':          float(np.min(mean_pred)),
+        'pred_max':          float(np.max(mean_pred)),
+        'pred_mean':         float(np.mean(mean_pred)),
+        'pred_end':          float(mean_pred[-1]),
+        'pred_slope':        float(mean_pred[-1] - mean_pred[0]),
+        'pred_below_70':     float(np.sum(mean_pred < 70)),
+        'pred_below_80':     float(np.sum(mean_pred < 80)),
+        'pred_above_180':    float(np.sum(mean_pred > 180)),
+        'pred_above_250':    float(np.sum(mean_pred > 250)),
+        'pred_time_to_min':  float(np.argmin(mean_pred)),
+        'pred_range':        float(np.max(mean_pred) - np.min(mean_pred)),
+        'pred_volatility':   float(np.std(np.diff(mean_pred))),
+    }
+
+    # Ensemble uncertainty features
+    if len(all_preds) > 1:
+        features['ens_spread_mean'] = float(np.std(preds, axis=0).mean())
+        features['ens_spread_at_min'] = float(np.std(preds[:, np.argmin(mean_pred)]))
+        mins_per_model = preds.min(axis=1)
+        features['ens_min_spread'] = float(np.std(mins_per_model))
+        features['ens_worst_case'] = float(np.min(mins_per_model))
+    else:
+        features['ens_spread_mean'] = 0.0
+        features['ens_spread_at_min'] = 0.0
+        features['ens_min_spread'] = 0.0
+        features['ens_worst_case'] = features['pred_min']
+
+    return features
+
+
+def run_exp430(args):
+    """EXP-430: Forecast→Classification Bridge.
+
+    Use pre-trained glucose forecast models (EXP-419/410 PKGroupedEncoder)
+    to generate predicted trajectories, then extract features for
+    classification.  Tests whether forecast-derived features can break
+    the hypo AUC ~0.69 ceiling.
+
+    Variants:
+      - baseline_tabular: hand-crafted features only (control)
+      - forecast_only: forecast-derived features only
+      - combined: hand-crafted + forecast features
+      - combined_cnn: CNN on raw history + forecast features as side input
+    """
+    cfg = _get_config(args)
+    device = resolve_device(args.device)
+    experiments_dir = str(RESULTS_DIR)
+
+    print(f"\n{'='*60}")
+    print("EXP-430: Forecast→Classification Bridge")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    # Check forecast model availability
+    n_seeds_forecast = 5 if not args.quick else 1
+    available_patients = []
+    for pat in patients:
+        models = _load_forecast_models(pat['name'], experiments_dir, device,
+                                       n_seeds=n_seeds_forecast)
+        if models:
+            available_patients.append((pat, models))
+            print(f"  {pat['name']}: {len(models)} forecast model(s) loaded")
+        else:
+            print(f"  {pat['name']}: no forecast models found, skipping")
+
+    if not available_patients:
+        print("  No patients with forecast models. Run EXP-419 or EXP-410 first.")
+        return {}
+
+    # Load ISF per patient (for forecast model normalization)
+    from exp_pk_forecast_v14 import load_patient_profile_isf
+    patient_isfs = {}
+    for pat, _ in available_patients:
+        pdir = [d for d in find_patient_dirs(args.patients_dir) if d.name == pat['name']]
+        if pdir:
+            train_dir = str(pdir[0] / 'training')
+            patient_isfs[pat['name']] = load_patient_profile_isf(train_dir)
+        else:
+            patient_isfs[pat['name']] = None
+
+    results = {}
+
+    for task_name, threshold, above in [('hypo', 70, False), ('high', 180, True)]:
+        print(f"\n  --- {task_name.upper()} prediction ---")
+
+        future_steps = STEPS_2H  # predict 2h ahead
+        history_steps = STEPS_2H  # 2h history context
+
+        all_baseline_feats, all_forecast_feats, all_combined_feats = [], [], []
+        all_y, all_pids = [], []
+
+        for pat, forecast_models in available_patients:
+            grid = pat['grid']
+            pk = pat['pk']
+            glucose_raw = grid[:, 0] * 400
+            isf = patient_isfs.get(pat['name'])
+            total = history_steps + future_steps
+
+            for start in range(0, len(grid) - total, STEPS_PER_HOUR):
+                ctx_end = start + history_steps
+                label_end = ctx_end + future_steps
+
+                future_g = glucose_raw[ctx_end:label_end]
+                if np.isnan(future_g).mean() > 0.3:
+                    continue
+                future_valid = future_g[~np.isnan(future_g)]
+                if len(future_valid) == 0:
+                    continue
+
+                if above:
+                    label = int(np.sum(future_valid > threshold) / len(future_valid) > 0.2)
+                else:
+                    label = int((future_valid < threshold).any())
+
+                # Baseline tabular features (same as EXP-421)
+                ctx_gluc = glucose_raw[start:ctx_end]
+                valid_gluc = ctx_gluc[~np.isnan(ctx_gluc)]
+                if len(valid_gluc) < 5:
+                    valid_gluc = np.array([120.0] * 5)
+                baseline = [
+                    float(np.mean(valid_gluc)),
+                    float(np.std(valid_gluc)),
+                    float(np.min(valid_gluc)),
+                    float(np.max(valid_gluc)),
+                    float(valid_gluc[-1]),
+                    float(valid_gluc[-1] - valid_gluc[-min(6, len(valid_gluc))]),
+                    float(np.mean(valid_gluc < 80)),
+                    float(np.mean(valid_gluc < 70)),
+                    float(np.mean(valid_gluc > 180)),
+                    float(np.sum(np.abs(np.diff(valid_gluc)))),
+                ]
+                for ch_idx in [1, 2, 3, 4]:
+                    ch = grid[start:ctx_end, ch_idx]
+                    ch_v = ch[~np.isnan(ch)]
+                    if len(ch_v) == 0:
+                        ch_v = np.array([0.0])
+                    baseline.extend([float(np.mean(ch_v)), float(np.sum(ch_v)),
+                                     float(ch_v[-1])])
+
+                # Forecast features
+                ff = _generate_forecast_features(
+                    forecast_models,
+                    grid[start:ctx_end],
+                    pk[start:ctx_end],
+                    isf, device)
+                if ff is None:
+                    continue
+
+                forecast_vec = list(ff.values())
+                all_baseline_feats.append(baseline)
+                all_forecast_feats.append(forecast_vec)
+                all_combined_feats.append(baseline + forecast_vec)
+                all_y.append(label)
+                all_pids.append(pat['name'])
+
+        if len(all_y) < 50:
+            print(f"    Insufficient samples: {len(all_y)}"); continue
+
+        y = np.array(all_y)
+        pids = np.array(all_pids)
+        X_base = np.nan_to_num(np.array(all_baseline_feats, dtype=np.float32), nan=0.0)
+        X_fore = np.nan_to_num(np.array(all_forecast_feats, dtype=np.float32), nan=0.0)
+        X_comb = np.nan_to_num(np.array(all_combined_feats, dtype=np.float32), nan=0.0)
+
+        pos_rate = y.mean()
+        print(f"    N={len(y)}, pos_rate={pos_rate:.2%}, "
+              f"base={X_base.shape[1]}f, fore={X_fore.shape[1]}f, comb={X_comb.shape[1]}f")
+
+        variants = [
+            ('baseline_tabular', X_base),
+            ('forecast_only', X_fore),
+            ('combined', X_comb),
+        ]
+
+        for vname, X in variants:
+            key = f"{vname}_{task_name}"
+            (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y, pids=pids)
+
+            seed_metrics = []
+            for seed in cfg['seeds']:
+                np.random.seed(seed)
+                # XGBoost for tabular features
+                scale_pos = max(1.0, (tr_y == 0).sum() / max((tr_y == 1).sum(), 1))
+                clf = xgb.XGBClassifier(
+                    n_estimators=200, max_depth=6, learning_rate=0.05,
+                    scale_pos_weight=float(scale_pos),
+                    eval_metric='logloss', random_state=seed, verbosity=0,
+                    use_label_encoder=False)
+                clf.fit(tr_X, tr_y, eval_set=[(va_X, va_y)], verbose=False)
+
+                va_prob = clf.predict_proba(va_X)[:, 1]
+                va_pred = clf.predict(va_X)
+                m = {
+                    'f1': round(float(f1_score(va_y, va_pred, zero_division=0)), 4),
+                    'accuracy': round(float(accuracy_score(va_y, va_pred)), 4),
+                }
+                try:
+                    m['auc_roc'] = round(float(roc_auc_score(va_y, va_prob)), 4)
+                except ValueError:
+                    pass
+                seed_metrics.append(m)
+
+            avg = {k: round(float(np.mean([s[k] for s in seed_metrics if k in s])), 4)
+                   for k in seed_metrics[0]}
+            results[key] = {
+                'seeds': seed_metrics, 'average': avg,
+                'n_samples': len(X), 'n_features': int(X.shape[1]),
+            }
+            auc = avg.get('auc_roc', 0)
+            print(f"    {key:40s}  AUC={auc:.4f}  F1={avg['f1']:.4f}  ({X.shape[1]}f)")
+
+    # Summary
+    print(f"\n  {'='*58}")
+    print(f"  {'Config':40s} {'AUC':>7s} {'F1':>7s} {'feat':>5s}")
+    print(f"  {'-'*58}")
+    for target in ['hypo', 'high']:
+        print(f"\n  --- {target.upper()} ---")
+        items = [(k, v) for k, v in results.items() if target in k]
+        for k, v in sorted(items, key=lambda x: -x[1]['average'].get('auc_roc', 0)):
+            a = v['average']
+            nf = v.get('n_features', '?')
+            print(f"  {k:40s} {a.get('auc_roc',0):7.4f} {a.get('f1',0):7.4f} {nf!s:>5s}")
+
+    save_results(results, 'exp430_forecast_bridge')
+    return results
+
+
+# ===================================================================
+# EXP-431: Phenotype-Adaptive Classification
+# ===================================================================
+
+def _classify_phenotype(glucose_raw):
+    """Classify patient phenotype based on EXP-416 findings.
+
+    Returns 'morning_high' or 'night_hypo' based on when risk events
+    cluster.  Uses the dawn phenomenon vs overnight sensitivity distinction
+    discovered in EXP-416.
+    """
+    morning_start, morning_end = 72, 144    # 06:00-12:00 (indices in 24h)
+    night_start, night_end = 0, 72          # 00:00-06:00
+
+    morning_highs, night_hypos = 0, 0
+    n_days = len(glucose_raw) // STEPS_24H
+    for d in range(n_days):
+        day = glucose_raw[d * STEPS_24H:(d + 1) * STEPS_24H]
+        if len(day) < STEPS_24H:
+            continue
+        morning = day[morning_start:morning_end]
+        night = day[night_start:night_end]
+        morning_valid = morning[~np.isnan(morning)]
+        night_valid = night[~np.isnan(night)]
+        if len(morning_valid) > 10:
+            morning_highs += int((morning_valid > 180).sum() > STEPS_PER_HOUR)
+        if len(night_valid) > 10:
+            night_hypos += int((night_valid < 70).any())
+
+    if n_days == 0:
+        return 'morning_high'
+    if night_hypos / max(n_days, 1) > morning_highs / max(n_days, 1):
+        return 'night_hypo'
+    return 'morning_high'
+
+
+def run_exp431(args):
+    """EXP-431: Phenotype-Adaptive Classification.
+
+    Uses EXP-416 finding that patients cluster into 'morning-high' vs
+    'night-hypo' phenotypes.  Tests whether phenotype-specific features
+    or routing improves classification.
+
+    Variants:
+      - global: single model for all patients (baseline)
+      - phenotype_feature: phenotype as additional feature
+      - phenotype_routed: separate model per phenotype
+      - time_of_day_feature: hour-of-day features (continuous proxy for phenotype)
+    """
+    cfg = _get_config(args)
+    device = resolve_device(args.device)
+
+    print(f"\n{'='*60}")
+    print("EXP-431: Phenotype-Adaptive Classification")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    # Classify phenotypes
+    phenotypes = {}
+    for pat in patients:
+        glucose_raw = pat['grid'][:, 0] * 400
+        ptype = _classify_phenotype(glucose_raw)
+        phenotypes[pat['name']] = ptype
+        print(f"  {pat['name']}: {ptype}")
+
+    morning_count = sum(1 for v in phenotypes.values() if v == 'morning_high')
+    night_count = sum(1 for v in phenotypes.values() if v == 'night_hypo')
+    print(f"  Phenotype split: {morning_count} morning-high, {night_count} night-hypo")
+
+    results = {}
+    history_steps = STEPS_2H
+    future_steps = STEPS_2H
+
+    for task_name, threshold, above in [('hypo', 70, False), ('high', 180, True)]:
+        print(f"\n  --- {task_name.upper()} ---")
+
+        # Build features with phenotype + time-of-day annotations
+        all_feats_base, all_feats_pheno, all_feats_time = [], [], []
+        all_y, all_pids, all_phenos = [], [], []
+
+        for pat in patients:
+            grid = pat['grid']
+            pk = pat['pk']
+            glucose_raw = grid[:, 0] * 400
+            ptype = phenotypes[pat['name']]
+            pheno_code = 1.0 if ptype == 'night_hypo' else 0.0
+            total = history_steps + future_steps
+
+            for start in range(0, len(grid) - total, STEPS_PER_HOUR):
+                ctx_end = start + history_steps
+                future_g = glucose_raw[ctx_end:ctx_end + future_steps]
+                if np.isnan(future_g).mean() > 0.3:
+                    continue
+                future_valid = future_g[~np.isnan(future_g)]
+                if len(future_valid) == 0:
+                    continue
+
+                if above:
+                    label = int(np.sum(future_valid > threshold) / len(future_valid) > 0.2)
+                else:
+                    label = int((future_valid < threshold).any())
+
+                ctx_gluc = glucose_raw[start:ctx_end]
+                valid_gluc = ctx_gluc[~np.isnan(ctx_gluc)]
+                if len(valid_gluc) < 5:
+                    valid_gluc = np.array([120.0] * 5)
+
+                base = [
+                    float(np.mean(valid_gluc)), float(np.std(valid_gluc)),
+                    float(np.min(valid_gluc)), float(np.max(valid_gluc)),
+                    float(valid_gluc[-1]),
+                    float(valid_gluc[-1] - valid_gluc[-min(6, len(valid_gluc))]),
+                    float(np.mean(valid_gluc < 80)), float(np.mean(valid_gluc < 70)),
+                    float(np.mean(valid_gluc > 180)),
+                    float(np.sum(np.abs(np.diff(valid_gluc)))),
+                ]
+                for ch_idx in [1, 2, 3, 4]:
+                    ch = grid[start:ctx_end, ch_idx]
+                    ch_v = ch[~np.isnan(ch)]
+                    if len(ch_v) == 0: ch_v = np.array([0.0])
+                    base.extend([float(np.mean(ch_v)), float(np.sum(ch_v)),
+                                 float(ch_v[-1])])
+
+                # Time-of-day: sin/cos of position within 24h cycle
+                step_in_day = start % STEPS_24H
+                hour_frac = step_in_day / STEPS_24H
+                tod_sin = float(np.sin(2 * np.pi * hour_frac))
+                tod_cos = float(np.cos(2 * np.pi * hour_frac))
+                # Also add morning/night/afternoon/evening flags
+                hour = (step_in_day / STEPS_PER_HOUR) % 24
+                is_morning = float(6 <= hour < 12)
+                is_afternoon = float(12 <= hour < 18)
+                is_evening = float(18 <= hour < 24)
+                is_night = float(0 <= hour < 6)
+
+                all_feats_base.append(base)
+                all_feats_pheno.append(base + [pheno_code])
+                all_feats_time.append(base + [tod_sin, tod_cos,
+                                              is_morning, is_afternoon,
+                                              is_evening, is_night])
+                all_y.append(label)
+                all_pids.append(pat['name'])
+                all_phenos.append(ptype)
+
+        if len(all_y) < 50:
+            print(f"    Insufficient samples"); continue
+
+        y = np.array(all_y)
+        pids = np.array(all_pids)
+        phenos = np.array(all_phenos)
+        X_base = np.nan_to_num(np.array(all_feats_base, dtype=np.float32), nan=0.0)
+        X_pheno = np.nan_to_num(np.array(all_feats_pheno, dtype=np.float32), nan=0.0)
+        X_time = np.nan_to_num(np.array(all_feats_time, dtype=np.float32), nan=0.0)
+
+        print(f"    N={len(y)}, pos={y.mean():.2%}")
+
+        # Variant 1-3: global models with different features
+        for vname, X in [('global', X_base), ('phenotype_feat', X_pheno),
+                         ('time_of_day', X_time)]:
+            key = f"{vname}_{task_name}"
+            (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y, pids=pids)
+
+            seed_metrics = []
+            for seed in cfg['seeds']:
+                np.random.seed(seed)
+                scale_pos = max(1.0, (tr_y == 0).sum() / max((tr_y == 1).sum(), 1))
+                clf = xgb.XGBClassifier(
+                    n_estimators=200, max_depth=6, learning_rate=0.05,
+                    scale_pos_weight=float(scale_pos),
+                    eval_metric='logloss', random_state=seed, verbosity=0,
+                    use_label_encoder=False)
+                clf.fit(tr_X, tr_y, eval_set=[(va_X, va_y)], verbose=False)
+                va_prob = clf.predict_proba(va_X)[:, 1]
+                va_pred = clf.predict(va_X)
+                m = {'f1': round(float(f1_score(va_y, va_pred, zero_division=0)), 4),
+                     'accuracy': round(float(accuracy_score(va_y, va_pred)), 4)}
+                try: m['auc_roc'] = round(float(roc_auc_score(va_y, va_prob)), 4)
+                except ValueError: pass
+                seed_metrics.append(m)
+
+            avg = {k: round(float(np.mean([s[k] for s in seed_metrics if k in s])), 4)
+                   for k in seed_metrics[0]}
+            results[key] = {'seeds': seed_metrics, 'average': avg,
+                            'n_samples': len(X), 'n_features': int(X.shape[1])}
+            print(f"    {key:40s}  AUC={avg.get('auc_roc',0):.4f}")
+
+        # Variant 4: phenotype-routed (separate model per phenotype)
+        key = f"phenotype_routed_{task_name}"
+        (tr_X, tr_y, tr_pids, tr_phenos), (va_X, va_y, va_pids, va_phenos) = \
+            temporal_split(X_base, y, pids, phenos, pids=pids)
+
+        va_prob_routed = np.zeros(len(va_y))
+        va_pred_routed = np.zeros(len(va_y), dtype=int)
+
+        for ptype in ['morning_high', 'night_hypo']:
+            tr_mask = tr_phenos == ptype
+            va_mask = va_phenos == ptype
+            if tr_mask.sum() < 10 or va_mask.sum() < 5:
+                continue
+            seed = cfg['seeds'][0]
+            np.random.seed(seed)
+            scale_pos = max(1.0, (tr_y[tr_mask] == 0).sum() / max((tr_y[tr_mask] == 1).sum(), 1))
+            clf = xgb.XGBClassifier(
+                n_estimators=200, max_depth=6, learning_rate=0.05,
+                scale_pos_weight=float(scale_pos),
+                eval_metric='logloss', random_state=seed, verbosity=0,
+                use_label_encoder=False)
+            clf.fit(tr_X[tr_mask], tr_y[tr_mask],
+                    eval_set=[(va_X[va_mask], va_y[va_mask])], verbose=False)
+            va_prob_routed[va_mask] = clf.predict_proba(va_X[va_mask])[:, 1]
+            va_pred_routed[va_mask] = clf.predict(va_X[va_mask])
+
+        m_routed = {'f1': round(float(f1_score(va_y, va_pred_routed, zero_division=0)), 4),
+                     'accuracy': round(float(accuracy_score(va_y, va_pred_routed)), 4)}
+        try: m_routed['auc_roc'] = round(float(roc_auc_score(va_y, va_prob_routed)), 4)
+        except ValueError: pass
+        results[key] = {'seeds': [m_routed], 'average': m_routed,
+                        'n_samples': len(X_base), 'n_features': int(X_base.shape[1]),
+                        'phenotype_counts': {'morning_high': int(morning_count),
+                                             'night_hypo': int(night_count)}}
+        print(f"    {key:40s}  AUC={m_routed.get('auc_roc',0):.4f}")
+
+    # Summary
+    print(f"\n  {'='*58}")
+    print(f"  {'Config':40s} {'AUC':>7s} {'F1':>7s}")
+    print(f"  {'-'*58}")
+    for target in ['hypo', 'high']:
+        print(f"\n  --- {target.upper()} ---")
+        items = [(k, v) for k, v in results.items() if target in k]
+        for k, v in sorted(items, key=lambda x: -x[1]['average'].get('auc_roc', 0)):
+            a = v['average']
+            print(f"  {k:40s} {a.get('auc_roc',0):7.4f} {a.get('f1',0):7.4f}")
+
+    save_results(results, 'exp431_phenotype_adaptive')
+    return results
+
+
+# ===================================================================
+# EXP-432: Operating Point Optimization
+# ===================================================================
+
+def run_exp432(args):
+    """EXP-432: Operating Point Optimization for Deployable Models.
+
+    For our deployable HIGH classifiers (AUC > 0.80), compute full
+    sensitivity/specificity curves and find optimal alert thresholds
+    for clinical deployment:
+      - Sensitivity@90%: what specificity can we achieve with 90% recall?
+      - PPV at practical threshold: positive predictive value
+      - Alert fatigue: false alarm rate at various operating points
+
+    Tests 2h HIGH, overnight HIGH, and recurrence models.
+    """
+    cfg = _get_config(args)
+    device = resolve_device(args.device)
+
+    print(f"\n{'='*60}")
+    print("EXP-432: Operating Point Optimization")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    from sklearn.metrics import precision_recall_curve, roc_curve
+
+    results = {}
+
+    # Task configurations matching our best models
+    tasks = [
+        {'name': '2h_high_16ch', 'history': STEPS_2H, 'future': STEPS_2H,
+         'threshold': 180, 'above': True,
+         'feat_fn': lambda pat, s, h: np.concatenate([
+             pat['grid'][s:s+h], pat['pk'][s:s+h]], axis=-1)},  # 16ch
+        {'name': 'overnight_high', 'history': STEPS_12H, 'future': STEPS_8H,
+         'threshold': 180, 'above': True,
+         'feat_fn': lambda pat, s, h: pat['grid'][s:s+h]},  # 8ch
+        {'name': '2h_hypo_8ch', 'history': STEPS_2H, 'future': STEPS_2H,
+         'threshold': 70, 'above': False,
+         'feat_fn': lambda pat, s, h: pat['grid'][s:s+h]},  # 8ch baseline
+        {'name': 'recurrence_high_24h', 'history': STEPS_12H, 'future': STEPS_24H,
+         'threshold': 180, 'above': True,
+         'feat_fn': lambda pat, s, h: pat['grid'][s:s+h]},
+    ]
+
+    for task in tasks:
+        tname = task['name']
+        print(f"\n  --- {tname} ---")
+        history = task['history']
+        future = task['future']
+        total = history + future
+
+        all_X, all_y, all_pids = [], [], []
+        for pat in patients:
+            glucose_raw = pat['grid'][:, 0] * 400
+            stride = max(history // 2, STEPS_PER_HOUR)
+            for start in range(0, len(pat['grid']) - total, stride):
+                try:
+                    x = task['feat_fn'](pat, start, history)
+                except (IndexError, KeyError):
+                    continue
+                future_g = glucose_raw[start + history:start + total]
+                if np.isnan(future_g).mean() > 0.3:
+                    continue
+                future_valid = future_g[~np.isnan(future_g)]
+                if len(future_valid) == 0:
+                    continue
+                if task['above']:
+                    label = int(np.sum(future_valid > task['threshold']) / len(future_valid) > 0.2)
+                else:
+                    label = int((future_valid < task['threshold']).any())
+                all_X.append(x)
+                all_y.append(label)
+                all_pids.append(pat['name'])
+
+        if len(all_X) < 50:
+            print(f"    Insufficient samples: {len(all_X)}"); continue
+
+        X = np.nan_to_num(np.stack(all_X).astype(np.float32), nan=0.0)
+        y = np.array(all_y)
+        pids = np.array(all_pids)
+        print(f"    N={len(y)}, pos_rate={y.mean():.2%}, ch={X.shape[-1]}")
+        (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y, pids=pids)
+
+        # Train CNN and collect probability scores across seeds
+        all_probs = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = FlexCNN(in_channels=X.shape[-1], out_dim=2).to(device)
+            _train_torch_classifier(model, tr_X, tr_y, va_X, va_y, device,
+                                    epochs=cfg['epochs'], patience=cfg['patience'])
+            model.eval()
+            with torch.no_grad():
+                v_X_t = torch.tensor(va_X, dtype=torch.float32).to(device)
+                logits = model(v_X_t)
+                probs = torch.softmax(logits, dim=-1)[:, 1].cpu().numpy()
+            all_probs.append(probs)
+
+        # Ensemble probabilities
+        ens_probs = np.mean(all_probs, axis=0)
+
+        # Compute operating point curves
+        try:
+            fpr, tpr, roc_thresholds = roc_curve(va_y, ens_probs)
+            prec, recall, pr_thresholds = precision_recall_curve(va_y, ens_probs)
+            auc = float(roc_auc_score(va_y, ens_probs))
+        except ValueError:
+            print(f"    Cannot compute curves (single class?)"); continue
+
+        # Find key operating points
+        ops = {}
+
+        # 1. Sensitivity@90%: what threshold gives ≥90% sensitivity?
+        idx_90 = np.where(tpr >= 0.90)[0]
+        if len(idx_90) > 0:
+            i = idx_90[0]
+            ops['sensitivity_90'] = {
+                'threshold': round(float(roc_thresholds[i]), 4),
+                'sensitivity': round(float(tpr[i]), 4),
+                'specificity': round(float(1 - fpr[i]), 4),
+                'fpr': round(float(fpr[i]), 4),
+            }
+
+        # 2. Sensitivity@95%
+        idx_95 = np.where(tpr >= 0.95)[0]
+        if len(idx_95) > 0:
+            i = idx_95[0]
+            ops['sensitivity_95'] = {
+                'threshold': round(float(roc_thresholds[i]), 4),
+                'sensitivity': round(float(tpr[i]), 4),
+                'specificity': round(float(1 - fpr[i]), 4),
+                'fpr': round(float(fpr[i]), 4),
+            }
+
+        # 3. Youden's J (optimal balanced point)
+        j_scores = tpr - fpr
+        best_j_idx = np.argmax(j_scores)
+        ops['youden_optimal'] = {
+            'threshold': round(float(roc_thresholds[best_j_idx]), 4),
+            'sensitivity': round(float(tpr[best_j_idx]), 4),
+            'specificity': round(float(1 - fpr[best_j_idx]), 4),
+            'j_score': round(float(j_scores[best_j_idx]), 4),
+        }
+
+        # 4. Max PPV with recall ≥ 50%
+        idx_r50 = np.where(recall >= 0.50)[0]
+        if len(idx_r50) > 0:
+            best_ppv_idx = idx_r50[np.argmax(prec[idx_r50])]
+            ops['max_ppv_recall50'] = {
+                'threshold': round(float(pr_thresholds[min(best_ppv_idx, len(pr_thresholds)-1)]), 4),
+                'ppv': round(float(prec[best_ppv_idx]), 4),
+                'recall': round(float(recall[best_ppv_idx]), 4),
+            }
+
+        # 5. Alert fatigue: FPR at sensitivity = 80%
+        idx_80 = np.where(tpr >= 0.80)[0]
+        if len(idx_80) > 0:
+            i = idx_80[0]
+            ops['alert_fatigue_sens80'] = {
+                'false_alarm_rate': round(float(fpr[i]), 4),
+                'sensitivity': round(float(tpr[i]), 4),
+                'alerts_per_100': round(float(fpr[i] * (1 - va_y.mean()) * 100 + tpr[i] * va_y.mean() * 100), 1),
+            }
+
+        results[tname] = {
+            'auc': round(auc, 4),
+            'n_val': int(len(va_y)),
+            'pos_rate': round(float(va_y.mean()), 4),
+            'operating_points': ops,
+            'n_seeds': len(cfg['seeds']),
+        }
+
+        print(f"    AUC={auc:.4f}")
+        for op_name, op_data in ops.items():
+            details = ', '.join(f'{k}={v}' for k, v in op_data.items())
+            print(f"      {op_name}: {details}")
+
+    # Deployability summary
+    print(f"\n  {'='*60}")
+    print(f"  DEPLOYABILITY ASSESSMENT")
+    print(f"  {'='*60}")
+    for tname, res in results.items():
+        auc = res['auc']
+        ops = res['operating_points']
+        deployable = auc >= 0.80
+        sens90 = ops.get('sensitivity_90', {})
+        spec_at_90 = sens90.get('specificity', 0)
+        status = '✅ DEPLOY' if (deployable and spec_at_90 > 0.40) else '❌ NOT READY'
+        print(f"  {tname:35s}  AUC={auc:.3f}  Spec@Sens90={spec_at_90:.2f}  {status}")
+
+    save_results(results, 'exp432_operating_points')
+    return results
+
+
 EXPERIMENTS = {
     '411': run_exp411,
     '412': run_exp412,
@@ -1828,6 +2832,10 @@ EXPERIMENTS = {
     '418': run_exp418,
     '420': run_exp420,
     '421': run_exp421,
+    '422': run_exp422,
+    '430': run_exp430,
+    '431': run_exp431,
+    '432': run_exp432,
 }
 
 
@@ -1856,6 +2864,10 @@ Experiments:
   418  Multi-rate EMA for strategic features
   420  Hypo breakthrough: feature + loss engineering
   421  Hypo architecture + context sweep (XGB/CNN × 6h/12h/24h)
+  422  Metabolic phase signal (flux/phase/integral/overshoot channels)
+  430  Forecast→Classification bridge (use forecast models as features)
+  431  Phenotype-adaptive classification (morning-high vs night-hypo routing)
+  432  Operating point optimization (sensitivity/specificity for deployment)
 """)
     parser.add_argument('--experiment', '-e', nargs='+', default=['all'],
                         help='Experiment number(s) or "all" (default: all)')
