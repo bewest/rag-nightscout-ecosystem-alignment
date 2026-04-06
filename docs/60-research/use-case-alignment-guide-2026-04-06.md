@@ -11,7 +11,7 @@
 
 This workspace has executed **398+ controlled experiments** across 11 patients with ~85 days of CGM/AID data each. The central, non-obvious finding:
 
-**What appears to be ONE problem ("predict glucose") is actually 34+ distinct sub-use-cases**, each requiring a *different* combination of:
+**What appears to be ONE problem ("predict glucose") is actually 37 distinct sub-use-cases**, each requiring a *different* combination of:
 
 - Time scale and history window
 - Feature channels and encoding
@@ -682,6 +682,85 @@ The DIA Valley applies differently depending on feature encoding. **PK channels 
 
 ---
 
+#### E7: Proactive Meal Scheduling (UAM → Eating Soon Mode)
+
+**Physiological Basis**: Meal timing is highly routine for most patients — breakfast, lunch, dinner occur within ±60 min windows on workdays. UAM detection (F1=0.971) identifies meals *after* they happen. If meals recur at predictable times, the system can proactively activate "eating soon" mode (higher temp target, reduced basal) *before* the meal, reducing postprandial spikes. Pre-bolus timing analysis (EXP-221) shows 73.8% of overrides have >30 min lead time — the biology supports proactive action.
+
+**Optimal Configuration**:
+
+| Dimension | Specification | Evidence |
+|-----------|---------------|----------|
+| Scale | 3-day UAM event history → next-day meal schedule | EXP-349: UAM F1=0.971, time-invariant |
+| History window | 3 days of UAM event timestamps (not raw glucose) | EXP-126: circadian patterns 100% of patients |
+| Features | Per-6h-block UAM count, mean meal time ± std, day-of-week, regularity score | EXP-349, EXP-126 |
+| Encoding | Tabular (event summary statistics, not raw sequence) | — |
+| Architecture | Heuristic first (if 3+ UAMs at similar time ±60min in 7 days → schedule), then XGBoost | — |
+| Validation | Precision of meal timing prediction (within ±30 min), false schedule rate | — |
+
+**Output**: "Based on the last 3 days, you typically eat around 12:30 PM ±20 min and 6:45 PM ±35 min. Scheduling eating-soon mode at 12:00 PM and 6:15 PM."
+**Clinical Action**: Pre-activate higher temp target or reduced basal 30 min before predicted meal time. Patient confirms or dismisses.
+**Data Feasibility**: ~85 days × ~3 meals/day = ~255 meal events per patient. **Abundant.** Regularity scoring needs only timestamps, not glucose traces.
+**Status**: ❌ Gap — NOT YET DESIGNED
+**Key Finding**: UAM detection is production-ready (F1=0.971). The **missing link** is temporal clustering of UAM events to discover meal schedules. Key question: what fraction of patients have regular enough meal timing for this to work? Circadian analysis (EXP-126) confirms 100% of patients have strong circadian glucose patterns (71.3 mg/dL amplitude), but meal regularity may vary. K-means clustering on {hour_of_day, day_of_week} of UAM events would quantify this directly.
+
+**Symmetry Note**: Time-translation invariance (Principle 1) applies to *detecting* meals — a meal is a meal at any hour. But *scheduling* meals breaks this symmetry intentionally — we exploit the patient's routine to predict future events. This is the correct symmetry: invariant for detection, variant for scheduling.
+
+---
+
+#### E8: Acute Absorption Degradation Detection (Canula Aging / Sick / Resistance)
+
+**Physiological Basis**: Insulin absorption degrades from multiple causes: (1) infusion site aging (canula lipohypertrophy, typically days 2-3), (2) illness (counter-regulatory hormones), (3) stress/bloating/hormonal shifts. All manifest as **effective ISF dropping** — same insulin dose produces less glucose reduction. The signature is a divergence between *expected* insulin effect (from PK model) and *observed* glucose response. This differs from gradual ISF drift (D1, biweekly): acute degradation happens over hours to 1-2 days.
+
+**Optimal Configuration**:
+
+| Dimension | Specification | Evidence |
+|-----------|---------------|----------|
+| Scale | Rolling 6-12h residual monitoring | EXP-308: insulin-controlled matching needed |
+| History window | 12h rolling, compared against 7-day patient baseline | EXP-222: volatile MAE 2.04× calm |
+| Features | PK-predicted glucose response, actual glucose, residual = actual − predicted, residual z-score | EXP-353: PK channels capture expected effect |
+| Encoding | Residual time series + cumulative residual integral | — |
+| Architecture | Threshold-based (if residual z-score > 3σ for >30 min, flag) + CUSUM on residual | EXP-325: CUSUM earliest detection at day 3 |
+| Validation | Detection latency (hours to flag), false alarm rate, per-patient sensitivity | — |
+
+**Output**: "Insulin appears less effective than usual over the last 8 hours. Possible causes: infusion site aging (change site?), illness, or temporary resistance. Consider a temporary ISF adjustment of −15%."
+**Clinical Action**: Prompt site change, temporary ISF override, or flag for attention.
+**Data Feasibility**: Every 12h window is a sample = ~170 per patient, ~1870 pooled. **Abundant.** But labeling is hard — we don't have canula change timestamps or illness logs.
+**Status**: ❌ Gap — NOT YET DESIGNED
+**Key Finding**: Gradual ISF drift is proven (9/11 patients, biweekly, EXP-194/312). Acute degradation is **completely untested**. EXP-325 showed online CUSUM has 85-100% false alarm rate on non-drift patients — but that was for ISF *drift*, not *residual* analysis. The key insight is to compare against the PK model's *expected* insulin effect, not raw glucose. If the PK model says "this insulin should have dropped glucose by 40 mg/dL" and it only dropped 15 mg/dL, that's a 62.5% absorption degradation signal. EXP-222 showed volatile periods have 2.04× MAE — some of that variance may be canula/sick effects currently treated as noise.
+
+**Symmetry Note**: This use case exploits PK *equivariance* — ISF-normalized insulin response should be constant across time for the same patient. Deviations from equivariance ARE the signal. The ISF equivariance test (Section 4.4 of symmetry-sparsity document) would directly validate this approach.
+
+---
+
+#### E9: Override Pattern → Profile Recommendation (Repeated Overrides → Basal/ISF/CR Changes)
+
+**Physiological Basis**: When a patient repeatedly applies the same override at similar times (e.g., exercise mode every weekday at 5 PM, sleep override every night at 10 PM), this indicates a **persistent mismatch** between their current profile (basal rates, ISF, CR schedules) and their actual physiology/routine. The overrides are compensating for a profile that doesn't fit. Instead of requiring daily manual overrides, the system should recognize the pattern and recommend a permanent profile change.
+
+This is analogous to how oref0 autotune works — detecting persistent over/under-delivery patterns and suggesting basal/ISF/CR adjustments. But autotune operates on insulin delivery data, while this operates on *override behavior* data, capturing patient intent.
+
+**Optimal Configuration**:
+
+| Dimension | Specification | Evidence |
+|-----------|---------------|----------|
+| Scale | 14-day override history → profile change recommendation | EXP-227: override utility F1=0.993 |
+| History window | 14-day rolling window of override events | EXP-312: biweekly is minimum reliable scale |
+| Features | Override frequency per (time-of-day × day-of-week) cell, override type, associated glucose patterns, TIR before/after override | EXP-221: 73.8% have >30 min lead |
+| Encoding | Tabular: 28-cell grid (4 blocks/day × 7 days) with override counts + mean TIR delta | — |
+| Architecture | Rule-based heuristic: if override frequency > 3/week in same time block, flag for profile review. Optionally: XGBoost to predict TIR improvement from profile change | — |
+| Validation | Simulated TIR improvement from applying profile change vs. continuing manual overrides | — |
+
+**Output**: "You've applied exercise mode 12 times in the last 2 weeks, always between 5-7 PM on weekdays. Consider reducing your 5-7 PM basal rate by 20% permanently — this would eliminate the need for daily overrides while maintaining the same glucose control."
+**Clinical Action**: Suggest specific profile schedule changes. Patient/provider reviews and applies.
+**Data Feasibility**: ~85 days = ~6 biweekly windows per patient. **Borderline for ML** but sufficient for heuristic detection. Override events are sparse — typically 2-5 per day.
+**Status**: ❌ Gap — NOT YET DESIGNED
+**Key Finding**: Override WHEN prediction is solved (F1=0.993, EXP-227). Override TYPE classification (C2) is NOT STARTED. The feedback loop from "detect override pattern" → "recommend profile change" requires: (1) override type classification, (2) temporal clustering of same-type overrides, (3) mapping override effect to profile parameter. Step 1 (C2) is the blocker. However, a simpler heuristic version — just counting overrides per time block and recommending investigation when frequency exceeds threshold — is immediately feasible.
+
+**Connection to AID autotune**: oref0 autotune detects persistent basal under/over-delivery from pump data. This approach detects persistent *override* patterns from user behavior data. They are complementary: autotune fixes the *insulin delivery* side, while E9 fixes the *user behavior* side. Both converge on the same goal: a profile that requires minimal manual intervention.
+
+**Symmetry Note**: Profile changes should be validated against the biweekly ISF drift signal (D1). A profile recommendation is only valid if the underlying physiology is stable — if ISF is actively drifting, a profile change would be chasing a moving target. The ±20% autosens bounds (Finding 5 from diabetes-domain-learnings) provide the appropriate guard rails.
+
+---
+
 ## Part 5: Cross-Cutting Principles (Evidence-Based)
 
 These are not opinions. Each principle is proven by specific experiments with measurable effect sizes.
@@ -790,6 +869,31 @@ PK (pharmacokinetic) encoding converts sparse bolus/carb events into continuous 
 | Future PK projection | All horizons | h120: -10.0 mg/dL (helps) | EXP-356 |
 
 PK history channels *hurt* UAM at 2h because UAM detection specifically looks for *absence* of insulin before a glucose rise — PK smoothing obscures this absence. But future PK projection helps at all horizons because it gives the model explicit knowledge of planned insulin/carb activity.
+
+### Principle 11: Representation Validation — Scale-Specific Symmetry Tests
+
+**Every encoding choice should be validated by testing that it respects the appropriate symmetry for its time scale.** This is not optional — it's how we verify that the representation captures the right structure rather than artifacts.
+
+| Scale | Expected Symmetry | Test | Status | Evidence |
+|-------|-------------------|------|--------|----------|
+| **2h** (Fast) | Time-translation invariance | Remove time features → performance improves | ✅ Confirmed | EXP-349: +0.9% F1 |
+| **2h** (Fast) | Absorption reflection symmetry | Pre-peak area ≈ post-peak area for isolated events | ❌ Proposed | symmetry-sparsity doc §4.2 |
+| **6h** (DIA) | PK-resolves-ambiguity | PK channels stabilize long-window performance | ✅ Confirmed | EXP-353: Δ=-7.4 MAE at 6h |
+| **12h** (Episode) | Time-translation invariance | Remove time features → performance stable or improves | ✅ Confirmed | EXP-298: Sil +0.224 |
+| **12h** (Episode) | Conservation (integral) | Glucose integral ≈ physics-predicted integral | ❌ Proposed | symmetry-sparsity doc §4.3 |
+| **24h** (Daily) | Circadian breaks time-invariance | Time features SHOULD help | ⚠️ Partial | EXP-126: 71.3 mg/dL amp |
+| **6h–4d** (Strategic) | Event recurrence regularity | Same-type events cluster in time-of-day | ❌ Proposed | E7 meal scheduling hypothesis |
+| **6h–4d** (Strategic) | ISF equivariance | ISF-normalized responses more similar cross-patient | ❌ Proposed | symmetry-sparsity doc §4.4 |
+| **7d** (Weekly) | Day-of-week matters | Weekday vs weekend patterns distinguishable | ⚠️ Partial | EXP-301: Sil=-0.301 |
+| **Biweekly** (Drift) | PK equivariance deviation = signal | Residual of actual vs PK-predicted glucose | ❌ Proposed | E8 absorption degradation |
+
+**Validation Protocol for New Encodings**:
+1. **Invariance check**: Ablate features that should be irrelevant (e.g., time at 2h). Performance should not degrade.
+2. **Equivariance check**: Normalize by the appropriate patient-specific factor (ISF). Cross-patient similarity should increase.
+3. **Conservation check**: Over complete physiological cycles, integral quantities should balance.
+4. **Augmentation check**: Apply symmetry-respecting augmentations (time shift at 2h, amplitude scaling). Performance should be robust.
+
+If an encoding fails its symmetry test, the representation is capturing artifacts rather than physiology. This is the data science equivalent of a unit test for feature engineering.
 
 ---
 
@@ -1005,11 +1109,14 @@ All 28 sub-use-cases in one view:
 | E4 | Event recurrence | 7d→6h/24h/3d | event counts per 6h block | XGBoost + CNN | — | ❌ Designed (EXP-415) |
 | E5 | Weekly routine hotspots | 7d | per-block TIR, events, CV | Descriptive + ranking | — | ❌ Designed (EXP-416) |
 | E6 | Strategic override planning | 7d→3-4d | Combines E1-E5 outputs | Rule-based on top of ML | — | ❌ Conceptual |
+| E7 | Proactive meal scheduling | 3d UAM history | UAM timestamps, regularity score | Heuristic + XGBoost | — | ❌ Gap |
+| E8 | Acute absorption degradation | 12h rolling | PK residual (actual − predicted) | CUSUM on residual | — | ❌ Gap |
+| E9 | Override → profile recommendation | 14d overrides | Override frequency per time block | Heuristic + rule-based | — | ❌ Gap |
 
 **Production-ready (✅)**: 7 sub-use-cases — A1, A6, B1, B4-2h, C1, D1, D3
 **Active research (🟡)**: 11 sub-use-cases
-**Designed but untested (❌ Designed)**: 6 sub-use-cases — E1-E5, EXP-411-416
-**Untested gaps (❌)**: 10 sub-use-cases
+**Designed but untested (❌ Designed)**: 6 sub-use-cases — E1-E5, EXP-411-418
+**Undesigned gaps (❌ Gap)**: 13 sub-use-cases — including E7 (meal scheduling), E8 (absorption), E9 (override→profile)
 
 ---
 
