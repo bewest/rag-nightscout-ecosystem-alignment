@@ -37,7 +37,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
-import json, os, sys, time, argparse, copy
+import json, os, sys, time, argparse, copy, math
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -1190,7 +1190,658 @@ def run_exp410(args):
     return result
 
 
-# ─── Config & CLI ───
+# ─── EXP-411: Extended Horizon Pipeline (w48/w72/w96) ───
+
+def run_exp411(args):
+    """EXP-411: Extended horizon forecasting with PKGroupedEncoder.
+
+    Use-cases: A2 (dosing), A3 (meal planning), A4 (overnight basal).
+    Guide Tier 1.5: "PKGroupedEncoder + 4-6h history — potentially large"
+
+    The transformer already exploits future PK via pk_mode=True (unmasked
+    PK channels in future half). Extending window_size gives:
+      w48: 24 hist (2h) + 24 future = h5-h120
+      w72: 36 hist (3h) + 36 future = h5-h180
+      w96: 48 hist (4h) + 48 future = h5-h240
+
+    Hypothesis: Longer windows let the transformer see complete DIA arcs,
+    improving h120+ where PK advantage is maximal (EXP-356: -10 MAE at h120).
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    window_sizes = [48, 72, 96] if not cfg['quick'] else [48, 72]
+
+    print(f"\n{'='*60}")
+    print(f"EXP-411: Extended Horizon Pipeline")
+    print(f"  windows={window_sizes}, seeds={cfg['seeds']}")
+    print(f"{'='*60}")
+
+    all_results = {}
+
+    for ws in window_sizes:
+        half = ws // 2
+        max_h = half * 5  # minutes
+        label = f"w{ws}"
+        print(f"\n{'─'*40}")
+        print(f"  Window {ws} ({half} hist + {half} future = h{max_h})")
+        print(f"{'─'*40}")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=ws,
+            max_patients=cfg['max_patients'], load_isf=True)
+        has_isf = 'isf_val' in data
+        train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+        isf_v = data.get('isf_val')
+        n_ch = train_x.shape[-1]
+
+        print(f"  Total: {train_x.shape[0]} train, {val_x.shape[0]} val, "
+              f"{len(data['per_patient'])} patients, {n_ch}ch")
+
+        # Phase 1: Base training
+        base_states = {}
+        base_metrics = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp411_{label}_base_s{seed}.pth')
+            print(f"\n  Base s{seed} ({label}):")
+            train_bridge(model, train_x, val_x, sp, f'411-{label}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+            metrics = evaluate_model(model, val_x, device, pk_mode=True, isf_val=isf_v)
+            base_metrics[seed] = metrics
+            print(f"  Base s{seed}: overall={metrics['overall_mae']:.1f}, "
+                  f"h60={metrics.get('h60','?')}, h120={metrics.get('h120','?')}")
+
+        # Phase 2: Per-patient FT + ensemble
+        print(f"\n=== Phase 2: Per-Patient FT ({label}) ===")
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train_x = train_x[ti:te]
+            p_val_x = val_x[vi:ve]
+            p_isf_v = isf_v[vi:ve] if isf_v is not None else None
+
+            print(f"\n  Patient {pid} ({pinfo['n_train']} train, {pinfo['n_val']} val):")
+            seed_maes = {}
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'], f'exp411_{label}_ft_{pid}_s{seed}.pth')
+                train_bridge(model, p_train_x, p_val_x, sp,
+                             f'411-ft-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             lr=1e-4, epochs=cfg['epochs_ft'],
+                             patience=10, lr_patience=5)
+                metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                         isf_val=p_isf_v)
+                seed_maes[f's{seed}'] = metrics['overall_mae']
+                ft_models.append(copy.deepcopy(model))
+                print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+            ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                    isf_val=p_isf_v)
+            per_patient[pid] = {
+                'seeds': seed_maes,
+                'ensemble_mae': ens['overall_mae'],
+                'ensemble_per_horizon': ens,
+            }
+            print(f"    Ensemble: MAE={ens['overall_mae']:.1f}, "
+                  f"h60={ens.get('h60','?')}, h120={ens.get('h120','?')}")
+
+        all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+        ws_result = {
+            'window_size': ws,
+            'half': half,
+            'max_horizon_min': max_h,
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'per_patient': per_patient,
+            'base_metrics': {f's{s}': m for s, m in base_metrics.items()},
+        }
+        all_results[label] = ws_result
+
+        print(f"\n  {label} Mean Ensemble: {ws_result['mean_ensemble_mae']:.2f}")
+
+    # Cross-window summary
+    print(f"\n{'='*60}")
+    print("EXP-411 RESULTS: Extended Horizon Comparison")
+    print(f"{'='*60}")
+    print(f"  {'Window':<8} {'Mean MAE':<10} {'Max Horizon':<12}")
+    for label, res in all_results.items():
+        print(f"  {label:<8} {res['mean_ensemble_mae']:<10.2f} "
+              f"h{res['max_horizon_min']}")
+    print(f"  EXP-410 ref: 10.85 (w24, h60)")
+
+    result = {
+        'experiment': 'EXP-411: Extended Horizon Pipeline',
+        'results': all_results,
+        'config': {
+            'window_sizes': window_sizes,
+            'seeds': cfg['seeds'],
+            'epochs_base': cfg['epochs_base'],
+            'epochs_ft': cfg['epochs_ft'],
+        },
+    }
+    _save_results(result, 'exp411_extended_horizon', cfg)
+    return result
+
+
+# ─── EXP-413: Quick Wins (Cosine LR, Derivatives, Horizon-Weighted Loss) ───
+
+def train_bridge_cosine(model, train_x, val_x, save_path, label, device,
+                        pk_mode=False, lr=1e-3, epochs=200, batch=32,
+                        patience=20, weight_decay=1e-5, warmup_epochs=10):
+    """Same as train_bridge but with cosine LR + linear warmup."""
+    model.to(device)
+    train_dl = DataLoader(TensorDataset(train_x), batch_size=batch, shuffle=True)
+    val_dl = DataLoader(TensorDataset(val_x), batch_size=batch)
+    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+
+    # Cosine annealing after warmup
+    def lr_lambda(epoch):
+        if epoch < warmup_epochs:
+            return (epoch + 1) / warmup_epochs
+        progress = (epoch - warmup_epochs) / max(1, epochs - warmup_epochs)
+        return 0.5 * (1 + math.cos(math.pi * progress))
+
+    sched = torch.optim.lr_scheduler.LambdaLR(opt, lr_lambda)
+    crit = nn.MSELoss()
+    best = float('inf')
+    stale = 0
+
+    def _step(batch_data, backward=False):
+        x = batch_data[0].to(device)
+        half = x.shape[1] // 2
+        x_in = x.clone()
+        mask_future_pk(x_in, half, pk_mode=pk_mode)
+        pred = model(x_in, causal=True)
+        loss = crit(pred[:, half:, :1], x[:, half:, :1])
+        if backward:
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        return loss.item() * x.size(0), x.size(0)
+
+    for ep in range(epochs):
+        model.train()
+        ttl, tn = 0.0, 0
+        for b in train_dl:
+            opt.zero_grad()
+            l, n = _step(b, backward=True)
+            opt.step()
+            ttl += l; tn += n
+        tl = ttl / tn if tn else float('inf')
+
+        model.eval()
+        vtl, vn = 0.0, 0
+        with torch.no_grad():
+            for b in val_dl:
+                l, n = _step(b, backward=False)
+                vtl += l; vn += n
+        vl = vtl / vn if vn else float('inf')
+        sched.step()
+
+        if vl < best:
+            best = vl
+            stale = 0
+            os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+            torch.save({
+                'epoch': ep, 'model_state': model.state_dict(),
+                'val_loss': vl, 'label': label,
+            }, save_path)
+        else:
+            stale += 1
+
+        if (ep + 1) % 10 == 0 or ep == epochs - 1:
+            lr_now = opt.param_groups[0]['lr']
+            mark = ' *' if stale == 0 else ''
+            print(f'  [{label}] {ep+1:3d}/{epochs} '
+                  f'train={tl:.6f} val={vl:.6f} best={best:.6f} '
+                  f'lr={lr_now:.1e}{mark}')
+
+        if patience > 0 and stale >= patience:
+            print(f'  [{label}] Early stop at epoch {ep+1}')
+            break
+
+    if os.path.exists(save_path):
+        ckpt = torch.load(save_path, map_location=device, weights_only=False)
+        model.load_state_dict(ckpt['model_state'])
+    return best, ep + 1
+
+
+def prepare_pk_future_with_derivatives(data, use_isf=False, drop_time=False):
+    """PK features + explicit glucose rate-of-change channels.
+
+    Adds dBG/dt (first derivative) and d²BG/dt² (second derivative) as
+    channels 8 and 9, producing a 10ch input.
+    Use-case guide: glucose derivatives help short horizons (EXP-358: -0.4).
+    """
+    bt = data['base_train'].copy()
+    bv = data['base_val'].copy()
+    pt, pv = data['pk_train'], data['pk_val']
+
+    # Replace sparse with dense PK
+    bt[:, :, 4] = pt[:, :, 1] / PK_NORMS[1]
+    bv[:, :, 4] = pv[:, :, 1] / PK_NORMS[1]
+    bt[:, :, 5] = pt[:, :, 3] / PK_NORMS[3]
+    bv[:, :, 5] = pv[:, :, 3] / PK_NORMS[3]
+
+    if not drop_time:
+        bt[:, :, 7] = pt[:, :, 6] / PK_NORMS[6]  # net_balance
+        bv[:, :, 7] = pv[:, :, 6] / PK_NORMS[6]
+
+    if use_isf and 'isf_train' in data:
+        _apply_isf_norm(bt, bv, data['isf_train'], data['isf_val'])
+
+    # Compute glucose derivatives (5-min interval, already /400 scaled)
+    # dBG/dt: forward difference, normalized by typical range
+    d1_t = np.zeros_like(bt[:, :, 0:1])
+    d1_v = np.zeros_like(bv[:, :, 0:1])
+    d1_t[:, 1:, 0] = bt[:, 1:, 0] - bt[:, :-1, 0]
+    d1_v[:, 1:, 0] = bv[:, 1:, 0] - bv[:, :-1, 0]
+
+    # d²BG/dt²: second difference
+    d2_t = np.zeros_like(bt[:, :, 0:1])
+    d2_v = np.zeros_like(bv[:, :, 0:1])
+    d2_t[:, 2:, 0] = d1_t[:, 2:, 0] - d1_t[:, 1:-1, 0]
+    d2_v[:, 2:, 0] = d1_v[:, 2:, 0] - d1_v[:, 1:-1, 0]
+
+    # Scale derivatives (typical dBG is ~0.01 per step in /400 units = 4 mg/dL)
+    d1_t *= 10.0  # scale to ~O(1)
+    d1_v *= 10.0
+    d2_t *= 10.0
+    d2_v *= 10.0
+
+    bt = np.concatenate([bt, d1_t, d2_t], axis=-1)
+    bv = np.concatenate([bv, d1_v, d2_v], axis=-1)
+
+    # CRITICAL: Zero out glucose derivatives in future half to prevent leakage.
+    # dBG/dt and d²BG/dt² are computed from glucose which is unknown in the future.
+    half = bt.shape[1] // 2
+    bt[:, half:, -2:] = 0.0
+    bv[:, half:, -2:] = 0.0
+
+    return torch.tensor(bt, dtype=torch.float32), torch.tensor(bv, dtype=torch.float32)
+
+
+def run_exp413(args):
+    """EXP-413: Quick wins — cosine LR, glucose derivatives, horizon-weighted loss.
+
+    Tests three independent improvements on the EXP-410 champion (w24):
+    a) cosine_lr: Cosine LR schedule with warmup (replaces ReduceLROnPlateau)
+    b) derivatives: Add explicit dBG/dt and d²BG/dt² channels (10ch)
+    c) combined: cosine_lr + derivatives together
+
+    All use w24, base training only (no FT), to quickly measure direction.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-413: Quick Wins (Cosine LR + Derivatives)")
+    print(f"  seeds={cfg['seeds']}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+
+    # Standard features (control)
+    train_std, val_std = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    isf_v = data.get('isf_val')
+
+    # Features with derivatives
+    train_deriv, val_deriv = prepare_pk_future_with_derivatives(
+        data, use_isf=has_isf, drop_time=False)
+
+    n_ch_std = train_std.shape[-1]
+    n_ch_deriv = train_deriv.shape[-1]
+
+    variants = {
+        'control': {'train': train_std, 'val': val_std, 'n_ch': n_ch_std,
+                     'cosine': False, 'label': 'Standard (EXP-410 control)'},
+        'cosine_lr': {'train': train_std, 'val': val_std, 'n_ch': n_ch_std,
+                       'cosine': True, 'label': 'Cosine LR + warmup'},
+        'derivatives': {'train': train_deriv, 'val': val_deriv, 'n_ch': n_ch_deriv,
+                         'cosine': False, 'label': f'+dBG/dt, d²BG/dt² ({n_ch_deriv}ch)'},
+        'combined': {'train': train_deriv, 'val': val_deriv, 'n_ch': n_ch_deriv,
+                      'cosine': True, 'label': f'Cosine + derivatives ({n_ch_deriv}ch)'},
+    }
+
+    results = {}
+    for vname, vcfg in variants.items():
+        print(f"\n─── {vcfg['label']} ───")
+        seed_results = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=vcfg['n_ch'], d_model=64,
+                                     nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp413_{vname}_s{seed}.pth')
+
+            train_fn = train_bridge_cosine if vcfg['cosine'] else train_bridge
+            train_fn(model, vcfg['train'], vcfg['val'], sp,
+                     f'413-{vname}-s{seed}', device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20,
+                     **({'lr_patience': 7} if not vcfg['cosine'] else {}))
+
+            metrics = evaluate_model(model, vcfg['val'], device,
+                                     pk_mode=True, isf_val=isf_v)
+            seed_results.append(metrics)
+            print(f"  s{seed}: overall={metrics['overall_mae']:.1f}, "
+                  f"h60={metrics.get('h60','?')}")
+
+        avg = {k: round(float(np.mean([s[k] for s in seed_results])), 2)
+               for k in seed_results[0]}
+        results[vname] = {'seeds': seed_results, 'average': avg}
+        print(f"  Average: overall={avg['overall_mae']:.1f}")
+
+    print(f"\n{'='*60}")
+    print("EXP-413 RESULTS")
+    print(f"{'='*60}")
+    for vn, vd in results.items():
+        delta = vd['average']['overall_mae'] - results['control']['average']['overall_mae']
+        print(f"  {vn:<14} MAE={vd['average']['overall_mae']:.2f}  "
+              f"Δ={delta:+.2f}")
+
+    result = {
+        'experiment': 'EXP-413: Quick Wins',
+        'results': results,
+    }
+    _save_results(result, 'exp413_quick_wins', cfg)
+    return result
+
+
+# ─── EXP-414: Overnight Risk Assessment (Category E1) ───
+
+def load_overnight_data(patients_dir, max_patients=None):
+    """Extract overnight windows: 6h evening context → overnight outcome labels.
+
+    Each window:
+      Input: 72 steps (6h @ 5min) of evening data (6pm-midnight typical)
+      Labels: P(hypo overnight), P(high overnight), overnight_TIR
+
+    A "night" is 10pm-6am (96 steps). Evening context is 4pm-10pm (72 steps).
+    We use a rolling approach: any 72-step window where the NEXT 96 steps
+    can be evaluated for overnight metrics.
+    """
+    from pathlib import Path
+    patient_dirs = sorted(Path(patients_dir).iterdir())
+    if max_patients:
+        patient_dirs = patient_dirs[:max_patients]
+
+    all_x, all_y = [], []
+    per_patient = []
+
+    for pdir in patient_dirs:
+        if not (pdir / 'training').exists():
+            continue
+        train_dir = str(pdir / 'training')
+        df, grid = build_nightscout_grid(train_dir, verbose=False)
+        if df is None or grid is None:
+            continue
+        pk_grid = build_continuous_pk_features(df, verbose=False)
+
+        glucose = grid[:, 0] * GLUCOSE_SCALE  # restore to mg/dL
+        n = min(len(grid), len(pk_grid))
+
+        # Build 8ch PK features
+        features = grid[:n].copy()
+        features[:, 4] = pk_grid[:n, 1] / PK_NORMS[1]  # insulin_net
+        features[:, 5] = pk_grid[:n, 3] / PK_NORMS[3]  # carb_rate
+
+        isf = load_patient_profile_isf(train_dir)
+
+        # Identify overnight windows
+        # Input: 72 steps (6h), Prediction: next 96 steps (8h overnight)
+        ctx_len = 72
+        night_len = 96
+        total_len = ctx_len + night_len
+
+        windows_x, windows_y = [], []
+        for start in range(0, n - total_len + 1, 12):  # stride=1h
+            ctx = features[start:start + ctx_len]
+            night_gluc = glucose[start + ctx_len:start + total_len]
+
+            # Skip if too many gaps
+            if np.isnan(ctx[:, 0]).mean() > 0.3:
+                continue
+            if np.isnan(night_gluc).mean() > 0.3:
+                continue
+
+            night_gluc_clean = night_gluc[~np.isnan(night_gluc)]
+            if len(night_gluc_clean) < 20:
+                continue
+
+            # Compute overnight labels
+            hypo = int(np.any(night_gluc_clean < 70))
+            high = int(np.any(night_gluc_clean > 250))
+            tir = float(np.mean((night_gluc_clean >= 70) & (night_gluc_clean <= 180)))
+
+            windows_x.append(np.nan_to_num(ctx, 0.0))
+            windows_y.append([hypo, high, tir])
+
+        if len(windows_x) < 10:
+            continue
+
+        nx = len(windows_x)
+        split = int(0.8 * nx)
+
+        per_patient.append({
+            'name': pdir.name,
+            'n_windows': nx,
+            'n_train': split,
+            'n_val': nx - split,
+            'isf': isf,
+            'hypo_rate': round(np.mean([y[0] for y in windows_y]), 3),
+            'high_rate': round(np.mean([y[1] for y in windows_y]), 3),
+            'mean_tir': round(np.mean([y[2] for y in windows_y]), 3),
+        })
+        print(f"  {pdir.name}: {nx} nights (hypo={per_patient[-1]['hypo_rate']:.1%}, "
+              f"high={per_patient[-1]['high_rate']:.1%}, TIR={per_patient[-1]['mean_tir']:.1%})")
+
+        all_x.extend(windows_x[:split])
+        all_y.extend(windows_y[:split])
+        # Store val separately
+        all_x.extend(windows_x[split:])
+        all_y.extend(windows_y[split:])
+
+    # Split into train/val
+    train_n = sum(p['n_train'] for p in per_patient)
+    val_n = sum(p['n_val'] for p in per_patient)
+
+    x_arr = np.array(all_x, dtype=np.float32)
+    y_arr = np.array(all_y, dtype=np.float32)
+
+    return {
+        'train_x': x_arr[:train_n],
+        'train_y': y_arr[:train_n],
+        'val_x': x_arr[train_n:train_n + val_n],
+        'val_y': y_arr[train_n:train_n + val_n],
+        'per_patient': per_patient,
+    }
+
+
+class OvernightRiskCNN(nn.Module):
+    """1D-CNN for overnight risk classification.
+
+    Input: (B, 72, 8) — 6h of PK features
+    Output: (B, 3) — P(hypo), P(high), TIR estimate
+    """
+    def __init__(self, input_dim=8):
+        super().__init__()
+        self.conv = nn.Sequential(
+            nn.Conv1d(input_dim, 32, kernel_size=5, padding=2),
+            nn.ReLU(), nn.BatchNorm1d(32),
+            nn.Conv1d(32, 64, kernel_size=5, padding=2),
+            nn.ReLU(), nn.BatchNorm1d(64),
+            nn.Conv1d(64, 64, kernel_size=3, padding=1),
+            nn.ReLU(), nn.BatchNorm1d(64),
+            nn.AdaptiveAvgPool1d(1),
+        )
+        self.head = nn.Sequential(
+            nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.3),
+            nn.Linear(32, 3),  # hypo_logit, high_logit, tir
+        )
+
+    def forward(self, x):
+        z = self.conv(x.permute(0, 2, 1)).squeeze(-1)
+        out = self.head(z)
+        return out
+
+
+def run_exp414(args):
+    """EXP-414: Overnight Risk Assessment (Use Case E1).
+
+    Predicts P(hypo tonight), P(high tonight), and overnight TIR from
+    6h evening context. The strategic planning layer's highest-impact use case.
+
+    Architecture: 1D-CNN (proven for 2-6h classification) + Platt calibration.
+    Night TIR=60.1% is worst period (EXP-126).
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-414: Overnight Risk Assessment (E1)")
+    print(f"  seeds={cfg['seeds']}")
+    print(f"{'='*60}")
+
+    data = load_overnight_data(args.patients_dir,
+                               max_patients=cfg['max_patients'])
+    train_x = torch.tensor(data['train_x'], dtype=torch.float32)
+    train_y = torch.tensor(data['train_y'], dtype=torch.float32)
+    val_x = torch.tensor(data['val_x'], dtype=torch.float32)
+    val_y = torch.tensor(data['val_y'], dtype=torch.float32)
+
+    n_train = len(train_x)
+    n_val = len(val_x)
+    hypo_prev = float(train_y[:, 0].mean())
+    high_prev = float(train_y[:, 1].mean())
+    print(f"\n  Train: {n_train}, Val: {n_val}")
+    print(f"  Hypo prevalence: {hypo_prev:.1%}")
+    print(f"  High prevalence: {high_prev:.1%}")
+
+    all_seeds = []
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = OvernightRiskCNN(input_dim=train_x.shape[-1]).to(device)
+        opt = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=7, factor=0.5)
+
+        # Use BCE for classification heads, MSE for TIR
+        bce = nn.BCEWithLogitsLoss()
+        mse = nn.MSELoss()
+
+        train_dl = DataLoader(TensorDataset(train_x, train_y),
+                              batch_size=64, shuffle=True)
+        best_loss = float('inf')
+        stale = 0
+        sp = os.path.join(cfg['output_dir'], f'exp414_s{seed}.pth')
+
+        epochs = cfg['epochs_base']
+        for ep in range(epochs):
+            model.train()
+            ttl, tn = 0.0, 0
+            for bx, by in train_dl:
+                bx, by = bx.to(device), by.to(device)
+                opt.zero_grad()
+                pred = model(bx)
+                loss = (bce(pred[:, 0], by[:, 0]) +
+                        bce(pred[:, 1], by[:, 1]) +
+                        mse(torch.sigmoid(pred[:, 2]), by[:, 2]))
+                loss.backward()
+                opt.step()
+                ttl += loss.item() * bx.size(0); tn += bx.size(0)
+
+            model.eval()
+            with torch.no_grad():
+                vx, vy = val_x.to(device), val_y.to(device)
+                vpred = model(vx)
+                vloss = (bce(vpred[:, 0], vy[:, 0]) +
+                         bce(vpred[:, 1], vy[:, 1]) +
+                         mse(torch.sigmoid(vpred[:, 2]), vy[:, 2]))
+                vl = vloss.item()
+
+            sched.step(vl)
+            if vl < best_loss:
+                best_loss = vl
+                stale = 0
+                os.makedirs(os.path.dirname(sp) or '.', exist_ok=True)
+                torch.save(model.state_dict(), sp)
+            else:
+                stale += 1
+
+            if (ep + 1) % 10 == 0:
+                print(f"  [414-s{seed}] {ep+1:3d}/{epochs} "
+                      f"train={ttl/tn:.4f} val={vl:.4f} best={best_loss:.4f}")
+
+            if stale >= 20:
+                print(f"  [414-s{seed}] Early stop at epoch {ep+1}")
+                break
+
+        # Evaluate
+        model.load_state_dict(torch.load(sp, map_location=device, weights_only=False))
+        model.eval()
+        with torch.no_grad():
+            vx = val_x.to(device)
+            vpred = model(vx)
+            hypo_prob = torch.sigmoid(vpred[:, 0]).cpu().numpy()
+            high_prob = torch.sigmoid(vpred[:, 1]).cpu().numpy()
+            tir_pred = torch.sigmoid(vpred[:, 2]).cpu().numpy()
+
+        vy_np = val_y.numpy()
+
+        # AUC-ROC
+        from sklearn.metrics import roc_auc_score, f1_score
+        hypo_auc = roc_auc_score(vy_np[:, 0], hypo_prob) if vy_np[:, 0].sum() > 0 else 0
+        high_auc = roc_auc_score(vy_np[:, 1], high_prob) if vy_np[:, 1].sum() > 0 else 0
+
+        # F1 at threshold 0.5
+        hypo_f1 = f1_score(vy_np[:, 0], (hypo_prob > 0.5).astype(int))
+        high_f1 = f1_score(vy_np[:, 1], (high_prob > 0.5).astype(int))
+
+        # TIR MAE
+        tir_mae = float(np.mean(np.abs(tir_pred - vy_np[:, 2])))
+
+        seed_result = {
+            'hypo_auc': round(hypo_auc, 3),
+            'high_auc': round(high_auc, 3),
+            'hypo_f1': round(hypo_f1, 3),
+            'high_f1': round(high_f1, 3),
+            'tir_mae': round(tir_mae, 3),
+        }
+        all_seeds.append(seed_result)
+        print(f"  s{seed}: hypo_AUC={hypo_auc:.3f} F1={hypo_f1:.3f}, "
+              f"high_AUC={high_auc:.3f} F1={high_f1:.3f}, TIR_MAE={tir_mae:.3f}")
+
+    # Average
+    avg = {k: round(float(np.mean([s[k] for s in all_seeds])), 3)
+           for k in all_seeds[0]}
+    print(f"\n{'='*60}")
+    print(f"EXP-414 RESULTS: Overnight Risk Assessment")
+    print(f"{'='*60}")
+    print(f"  Hypo:   AUC={avg['hypo_auc']:.3f}, F1={avg['hypo_f1']:.3f}")
+    print(f"  High:   AUC={avg['high_auc']:.3f}, F1={avg['high_f1']:.3f}")
+    print(f"  TIR:    MAE={avg['tir_mae']:.3f}")
+
+    result = {
+        'experiment': 'EXP-414: Overnight Risk Assessment (E1)',
+        'seeds': all_seeds,
+        'average': avg,
+        'data': {
+            'n_train': n_train, 'n_val': n_val,
+            'hypo_prevalence': round(hypo_prev, 3),
+            'high_prevalence': round(high_prev, 3),
+            'n_patients': len(data['per_patient']),
+        },
+        'per_patient': data['per_patient'],
+    }
+    _save_results(result, 'exp414_overnight_risk', cfg)
+    return result
 
 def _get_config(args):
     quick = getattr(args, 'quick', False)
@@ -1220,13 +1871,16 @@ EXPERIMENTS = {
     '408': run_exp408,
     '409': run_exp409,
     '410': run_exp410,
+    '411': run_exp411,
+    '413': run_exp413,
+    '414': run_exp414,
 }
 
 
 def main():
     parser = argparse.ArgumentParser(description='ERA 2+3 Bridge Experiments')
     parser.add_argument('--experiment', '-e', default='all',
-                        help='Experiment (405-410) or "all"')
+                        help='Experiment (405-414) or "all"')
     parser.add_argument('--device', '-d', default=None)
     parser.add_argument('--quick', '-q', action='store_true',
                         help='Quick: 4 patients, 1 seed, 60 epochs')

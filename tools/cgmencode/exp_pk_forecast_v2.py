@@ -52,13 +52,16 @@ SEEDS = [42, 123, 456]
 SEEDS_QUICK = [42]
 GLUCOSE_SCALE = 400.0
 
-# Extended horizons: 30min through 4h
+# Extended horizons: 30min through 12h (double DIA)
 HORIZONS_EXTENDED = {
     'h30': 6,     # 30 min
     'h60': 12,    # 60 min
-    'h120': 24,   # 120 min
+    'h120': 24,   # 120 min (2h)
     'h180': 36,   # 180 min (3h)
     'h240': 48,   # 240 min (4h)
+    'h360': 72,   # 360 min (6h = 1×DIA)
+    'h480': 96,   # 480 min (8h)
+    'h720': 144,  # 720 min (12h = 2×DIA)
 }
 HORIZONS_STANDARD = {
     'h30': 6, 'h60': 12, 'h120': 24,
@@ -778,15 +781,17 @@ def run_exp_357(base_train, base_val, pk_train, pk_val,
 
     # Test: Horizon-aware dual-head
     # Short: h30, h60 (2 horizons) — glucose only
-    # Long: h120, h180, h240 (3 horizons) — glucose + PK + future PK
-    print("\n─── horizon_aware dual-head ───")
+    # Long: remaining horizons — glucose + PK + future PK
+    n_short = 2
+    n_long = len(horizons) - n_short
+    print(f"\n─── horizon_aware dual-head (short={n_short}, long={n_long}) ───")
     sr = []
     for seed in seeds:
         torch.manual_seed(seed); np.random.seed(seed)
         m = train_horizon_aware(
             glucose_train, pk_hist_train, fpk_train, targets_train,
             glucose_val, pk_hist_val, fpk_val, targets_val,
-            device, n_short=2, n_long=3, **train_kw)
+            device, n_short=n_short, n_long=n_long, **train_kw)
         sr.append(m)
         _print_horizon_mae(seed, m, horizons)
     results['variants']['horizon_aware'] = aggregate_seed_results(sr)

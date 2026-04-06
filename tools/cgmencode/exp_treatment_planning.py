@@ -627,10 +627,10 @@ def run_exp412(args):
     if len(all_X) < 20:
         print("  Insufficient overnight windows."); return {}
 
-    X = np.stack(all_X)                   # (N, 72, 16)
+    X = np.nan_to_num(np.stack(all_X), nan=0.0)  # (N, 72, 16) — impute NaN
     y_hypo = np.array(all_y_hypo)
     y_high = np.array(all_y_high)
-    y_tir  = np.array(all_y_tir)
+    y_tir  = np.array(all_y_tir, dtype=np.float32)
     print(f"  Windows: {len(X)}, hypo rate: {y_hypo.mean():.2%}, high rate: {y_high.mean():.2%}")
 
     results = {}
@@ -653,9 +653,11 @@ def run_exp412(args):
                for k in seed_metrics[0]}
         results[target_name] = {'seeds': seed_metrics, 'average': avg}
 
-    # TIR regression
+    # TIR regression — filter NaN targets
     print("\n  Target: overnight TIR (regression)")
-    (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y_tir)
+    tir_valid = ~np.isnan(y_tir)
+    X_tir, y_tir_clean = X[tir_valid], y_tir[tir_valid]
+    (tr_X, tr_y), (va_X, va_y) = temporal_split(X_tir, y_tir_clean)
     seed_reg = []
     for seed in cfg['seeds']:
         torch.manual_seed(seed); np.random.seed(seed)
@@ -1036,6 +1038,7 @@ def run_exp416(args):
     if not patients:
         print("  No patient data found."); return {}
 
+    BLOCKS_PER_DAY = 4
     N_BLOCKS = 28  # 7 days × 4 blocks/day
 
     results = {}

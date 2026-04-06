@@ -895,6 +895,48 @@ PK history channels *hurt* UAM at 2h because UAM detection specifically looks fo
 
 If an encoding fails its symmetry test, the representation is capturing artifacts rather than physiology. This is the data science equivalent of a unit test for feature engineering.
 
+**Validation Experiments** (EXP-419 through EXP-426, `exp_encoding_validation.py`):
+
+| EXP | Test | What It Validates | Pass Criterion | Encoding Decision If PASS | Encoding Decision If FAIL |
+|-----|------|-------------------|----------------|--------------------------|--------------------------|
+| 419 | Time-Translation Invariance (formal) | Should time features be included? | Spearman r < 0.15 at ≤12h | Exclude time_sin/cos at ≤12h | Include time — circadian matters even here |
+| 420 | Absorption Envelope Symmetry | Is the DIA Valley caused by asymmetric absorption? | Bolus ratio 0.7–1.3; carbs 0.4–0.8 | Use 12h+ windows for complete arcs; B-spline preserves shape | Shorter windows OK; absorption inherently asymmetric |
+| 421 | Glucose Conservation | Is the physics model (IOB×ISF + COB×ISF/CR) complete? | Mean residual integral ≈ 0 | PK encoding is sufficient; residuals are noise | Need additional channels for unmodeled effects (dawn, stress) |
+| 422 | ISF Equivariance (cross-patient) | Should we normalize glucose by ISF? | Normalized similarity > raw (p<0.05) | ISF normalization → better cross-patient transfer | Keep BG/400; ISF variation is informative, not noise |
+| 423 | Encoding Adequacy Sweep | Which encoding works best at each scale? | Silhouette improvement over raw baseline | Use winning encoding at each scale | Encoding adds complexity without benefit |
+| 424 | Augmentation as Symmetry Probe | Is the model under-learning or over-learning each symmetry? | If augment helps → symmetry under-represented | Add augmentation to training | Model already captures symmetry naturally |
+| 425 | PK Residual Patterns | Are there systematic unmodeled effects? | Low autocorrelation, no time-of-day bias | Physics model adequate; train on residuals | Dawn/exercise/stress need explicit encoding |
+| 426 | Event Recurrence Regularity | Is proactive scheduling (E7) feasible? | >50% of meal events in regular clusters (±60min) | Meal scheduling feasible — event timing is predictable | Patient meals too irregular for scheduling |
+
+**Interpretation Matrix** — What each test tells us about encoding choices:
+
+```
+If EXP-419 PASSES (time-invariant at ≤12h):
+  → Remove time features at 2h, 6h, 12h ✓ (already confirmed)
+  → But: test the crossover point — does it break at 18h? 20h? 24h?
+
+If EXP-420 PASSES (absorption ~symmetric):
+  → The DIA Valley IS caused by incomplete arcs
+  → B-spline preserves symmetry → good at 2h (confirmed)
+  → 12h minimum window for pattern matching (confirmed by EXP-289)
+  → Phase-amplitude registration (FDA) should help align arcs
+
+If EXP-421 FAILS (conservation doesn't hold):
+  → Large positive residual = dawn phenomenon, missed carbs, stress
+  → Large negative residual = exercise, over-bolusing, delayed absorption
+  → The residual PATTERN becomes a feature channel (E8 uses this)
+
+If EXP-422 PASSES (ISF equivariance confirmed):
+  → ISF normalization should be the default encoding for cross-patient models
+  → Explains why per-patient fine-tuning helps (3.2× MAE spread in EXP-408)
+  → LOO gap (3-4%) could shrink further with ISF normalization
+
+If EXP-425 finds systematic dawn bias:
+  → Circadian effects exist even within 12h windows
+  → But: should be modeled as CONDITIONING (scalar dawn-risk), not time features
+  → This would reconcile EXP-349 (time hurts) with EXP-126 (circadian is real)
+```
+
 ---
 
 ## Part 6: Feature × Scale × Task Matrix
