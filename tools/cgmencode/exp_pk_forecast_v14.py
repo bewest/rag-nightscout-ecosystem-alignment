@@ -873,6 +873,323 @@ def run_exp408(args):
     return result
 
 
+# ─── EXP-409: h60-Only Specialist + Window Size Match ───
+
+def run_exp409(args):
+    """EXP-409: Match ERA 2's exact evaluation protocol to close the gap.
+
+    ERA 2 used window_size=24 (12 history + 12 future = h60 max), optimizing
+    loss on all future steps up to h60. Our current window=48 (24+24) dilutes
+    the h60 signal across 24 future steps including h90/h120.
+
+    Variants:
+      a) w48_multi: Current champion config (baseline, 4 horizons)
+      b) w24_h60: ERA 2 window (12+12), h60 = last step
+      c) w48_h60only: Keep 48-step window but loss on h60 step ONLY
+      d) w24_h60_large: ERA 2 window + d_model=128 (2x capacity)
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-409: h60-Only Specialist + Window Size Match")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    results = {}
+    t0 = time.time()
+
+    # --- Variant A: Current champion (w48, multi-horizon) as baseline ---
+    print("\n--- w48_multi (baseline) ---")
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    train_x48, val_x48 = prepare_pk_future(data48, use_isf=True, drop_time=False)
+    isf_v48 = data48.get('isf_val')
+
+    seed_results_a = []
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp409_w48_multi_s{seed}.pth')
+        train_bridge(model, train_x48, val_x48, sp, f'409-w48-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        m = evaluate_model(model, val_x48, device, pk_mode=True, isf_val=isf_v48)
+        seed_results_a.append(m)
+        print(f"  s{seed}: MAE={m['overall_mae']:.1f}, h60={m.get('h60','?')}")
+    avg_a = {k: round(np.mean([r[k] for r in seed_results_a]), 2)
+             for k in seed_results_a[0]}
+    results['w48_multi'] = {'seeds': seed_results_a, 'average': avg_a, 'window': 48}
+    print(f"  → AVG: MAE={avg_a['overall_mae']}, h60={avg_a.get('h60','?')}")
+
+    # --- Variant B: ERA 2 window (w24, h60 = last step) ---
+    print("\n--- w24_h60 (ERA 2 match) ---")
+    data24 = load_bridge_data(
+        args.patients_dir, window_size=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    train_x24, val_x24 = prepare_pk_future(data24, use_isf=True, drop_time=False)
+    isf_v24 = data24.get('isf_val')
+
+    seed_results_b = []
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp409_w24_h60_s{seed}.pth')
+        train_bridge(model, train_x24, val_x24, sp, f'409-w24-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        m = evaluate_model(model, val_x24, device, pk_mode=True, isf_val=isf_v24)
+        seed_results_b.append(m)
+        print(f"  s{seed}: MAE={m['overall_mae']:.1f}, h60={m.get('h60','?')}")
+    avg_b = {k: round(np.mean([r[k] for r in seed_results_b]), 2)
+             for k in seed_results_b[0]}
+    results['w24_h60'] = {'seeds': seed_results_b, 'average': avg_b, 'window': 24}
+    print(f"  → AVG: MAE={avg_b['overall_mae']}, h60={avg_b.get('h60','?')}")
+
+    # --- Variant C: w48 but h60-only loss ---
+    print("\n--- w48_h60only (h60-only loss) ---")
+    seed_results_c = []
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=8, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp409_w48_h60only_s{seed}.pth')
+        train_bridge_h60only(model, train_x48, val_x48, sp, f'409-h60only-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        m = evaluate_model(model, val_x48, device, pk_mode=True, isf_val=isf_v48)
+        seed_results_c.append(m)
+        print(f"  s{seed}: MAE={m['overall_mae']:.1f}, h60={m.get('h60','?')}")
+    avg_c = {k: round(np.mean([r[k] for r in seed_results_c]), 2)
+             for k in seed_results_c[0]}
+    results['w48_h60only'] = {'seeds': seed_results_c, 'average': avg_c, 'window': 48}
+    print(f"  → AVG: MAE={avg_c['overall_mae']}, h60={avg_c.get('h60','?')}")
+
+    # --- Variant D: w24 + larger model ---
+    print("\n--- w24_h60_large (d_model=128, nhead=8) ---")
+    seed_results_d = []
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=8, d_model=128, nhead=8, num_layers=4,
+                                 dim_feedforward=256)
+        n_p = sum(p.numel() for p in model.parameters())
+        sp = os.path.join(cfg['output_dir'], f'exp409_w24_large_s{seed}.pth')
+        print(f"  s{seed}: {n_p:,} params")
+        train_bridge(model, train_x24, val_x24, sp, f'409-large-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        m = evaluate_model(model, val_x24, device, pk_mode=True, isf_val=isf_v24)
+        seed_results_d.append(m)
+        print(f"  s{seed}: MAE={m['overall_mae']:.1f}, h60={m.get('h60','?')}")
+    avg_d = {k: round(np.mean([r[k] for r in seed_results_d]), 2)
+             for k in seed_results_d[0]}
+    results['w24_h60_large'] = {'seeds': seed_results_d, 'average': avg_d, 'window': 24}
+    print(f"  → AVG: MAE={avg_d['overall_mae']}, h60={avg_d.get('h60','?')}")
+
+    elapsed = time.time() - t0
+    print(f"\nEXP-409 complete in {elapsed:.0f}s")
+    _save_results(results, 'exp409_h60_specialist', cfg)
+    return results
+
+
+def train_bridge_h60only(model, train_x, val_x, save_path, label, device,
+                         pk_mode=False, lr=1e-3, epochs=200, batch=32,
+                         patience=20, weight_decay=1e-5, lr_patience=7):
+    """Like train_bridge but loss ONLY on the h60 step (step 11 of future)."""
+    model.to(device)
+    train_dl = DataLoader(TensorDataset(train_x), batch_size=batch, shuffle=True)
+    val_dl = DataLoader(TensorDataset(val_x), batch_size=batch)
+    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=lr_patience, factor=0.5)
+    crit = nn.MSELoss()
+    best = float('inf')
+    stale = 0
+
+    h60_step = 11  # step 11 in the future half = 60 min at 5min resolution
+
+    def _step(batch_data, backward=False):
+        x = batch_data[0].to(device)
+        half = x.shape[1] // 2
+        x_in = x.clone()
+        mask_future_pk(x_in, half, pk_mode=pk_mode)
+        pred = model(x_in, causal=True)
+        # Loss only on the h60 step
+        if half + h60_step < x.shape[1]:
+            loss = crit(pred[:, half + h60_step, :1], x[:, half + h60_step, :1])
+        else:
+            loss = crit(pred[:, half:, :1], x[:, half:, :1])
+        if backward:
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        return loss.item() * x.size(0), x.size(0)
+
+    for ep in range(epochs):
+        model.train()
+        ttl, tn = 0.0, 0
+        for b in train_dl:
+            opt.zero_grad()
+            l, n = _step(b, backward=True)
+            opt.step()
+            ttl += l; tn += n
+        tl = ttl / tn if tn else float('inf')
+
+        model.eval()
+        vtl, vn = 0.0, 0
+        with torch.no_grad():
+            for b in val_dl:
+                l, n = _step(b, backward=False)
+                vtl += l; vn += n
+        vl = vtl / vn if vn else float('inf')
+        sched.step(vl)
+
+        if vl < best:
+            best = vl; stale = 0
+            os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+            torch.save({'epoch': ep, 'model_state': model.state_dict(),
+                        'val_loss': vl, 'label': label}, save_path)
+        else:
+            stale += 1
+
+        if (ep + 1) % 10 == 0 or ep == epochs - 1:
+            lr_now = opt.param_groups[0]['lr']
+            mark = ' *' if stale == 0 else ''
+            print(f'  [{label}] {ep+1:3d}/{epochs} '
+                  f'train={tl:.6f} val={vl:.6f} best={best:.6f} '
+                  f'lr={lr_now:.1e}{mark}')
+
+        if patience > 0 and stale >= patience:
+            print(f'  [{label}] Early stop at epoch {ep+1}')
+            break
+
+    if os.path.exists(save_path):
+        ckpt = torch.load(save_path, map_location=device, weights_only=False)
+        model.load_state_dict(ckpt['model_state'])
+    return best, ep + 1
+
+
+# ─── EXP-410: Per-Patient FT with Best Config ───
+
+def run_exp410(args):
+    """EXP-410: Full pipeline with best EXP-409 variant + per-patient FT.
+
+    Takes the best window/loss config from EXP-409 and runs the full
+    base → FT → ensemble pipeline. This is the definitive gap-closing test.
+
+    Uses w24 (ERA 2 match) with per-patient FT + 5-seed ensemble.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-410: ERA 2-Matched Pipeline (w24 + FT + Ensemble)")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    isf_v = data.get('isf_val')
+    n_ch = train_x.shape[-1]
+
+    # Phase 1: Multi-seed base training
+    print(f"\n=== Phase 1: Base Training ({len(cfg['seeds'])} seeds, {n_ch}ch, w24) ===")
+    base_states = {}
+
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp410_base_s{seed}.pth')
+
+        print(f"\n  Base s{seed}:")
+        train_bridge(model, train_x, val_x, sp, f'410-base-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        base_states[seed] = ckpt['model_state']
+
+        metrics = evaluate_model(model, val_x, device, pk_mode=True, isf_val=isf_v)
+        print(f"  Base s{seed}: overall={metrics['overall_mae']:.1f}, "
+              f"h60={metrics.get('h60','?')}")
+
+    # Phase 2: Per-patient fine-tuning
+    print(f"\n=== Phase 2: Per-Patient Fine-Tuning (w24) ===")
+    per_patient_results = {}
+
+    for pinfo in data['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        vi, ve = pinfo['val_idx']
+        p_train_x = train_x[ti:te]
+        p_val_x = val_x[vi:ve]
+        p_isf_v = isf_v[vi:ve] if isf_v is not None else None
+
+        print(f"\n  Patient {pid} ({pinfo['n_train']} train, {pinfo['n_val']} val):")
+
+        seed_maes = {}
+        ft_models = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            model.load_state_dict(base_states[seed])
+
+            sp = os.path.join(cfg['output_dir'], f'exp410_ft_{pid}_s{seed}.pth')
+            train_bridge(model, p_train_x, p_val_x, sp, f'410-ft-{pid}-s{seed}',
+                         device, pk_mode=True,
+                         lr=1e-4, epochs=cfg['epochs_ft'], patience=10, lr_patience=5)
+
+            metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                     isf_val=p_isf_v)
+            seed_maes[f's{seed}'] = metrics['overall_mae']
+            ft_models.append(copy.deepcopy(model))
+            print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+        ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                isf_val=p_isf_v)
+        per_patient_results[pid] = {
+            'seeds': seed_maes,
+            'ensemble_mae': ens['overall_mae'],
+            'mean_seed': round(float(np.mean(list(seed_maes.values()))), 2),
+            'ensemble_per_horizon': ens,
+        }
+        print(f"    Ensemble: MAE={ens['overall_mae']:.1f}, h60={ens.get('h60','?')}")
+
+    all_ens = [v['ensemble_mae'] for v in per_patient_results.values()]
+    all_mean = [v['mean_seed'] for v in per_patient_results.values()]
+
+    summary = {
+        'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+        'mean_single_mae': round(float(np.mean(all_mean)), 2),
+        'n_patients': len(per_patient_results),
+        'n_seeds': len(cfg['seeds']),
+        'window_size': 24,
+    }
+
+    print(f"\n{'='*60}")
+    print(f"EXP-410 RESULT (w24, ERA 2 match)")
+    print(f"  Mean Ensemble MAE: {summary['mean_ensemble_mae']:.2f} mg/dL")
+    print(f"  Mean Single MAE:   {summary['mean_single_mae']:.2f} mg/dL")
+    print(f"  Patients: {summary['n_patients']}, Seeds: {summary['n_seeds']}")
+    print(f"  ERA 2 reference (EXP-251): 10.59 mg/dL (10pt, 5 seeds, h60 only)")
+    print(f"  EXP-408 reference (w48):   13.50 mg/dL (11pt, 5 seeds, 4 horizons)")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-410: ERA 2-Matched Pipeline (w24 + PK + ISF + FT)',
+        'per_patient': per_patient_results,
+        'summary': summary,
+        'config': {
+            'n_channels': n_ch, 'window_size': 24,
+            'd_model': 64, 'nhead': 4, 'num_layers': 4,
+            'base_epochs': cfg['epochs_base'], 'ft_epochs': cfg['epochs_ft'],
+            'seeds': cfg['seeds'], 'use_isf': has_isf, 'pk_mode': True,
+        },
+    }
+    _save_results(result, 'exp410_era2_matched', cfg)
+    return result
+
+
 # ─── Config & CLI ───
 
 def _get_config(args):
@@ -901,13 +1218,15 @@ EXPERIMENTS = {
     '406': run_exp406,
     '407': run_exp407,
     '408': run_exp408,
+    '409': run_exp409,
+    '410': run_exp410,
 }
 
 
 def main():
     parser = argparse.ArgumentParser(description='ERA 2+3 Bridge Experiments')
     parser.add_argument('--experiment', '-e', default='all',
-                        help='Experiment (405-408) or "all"')
+                        help='Experiment (405-410) or "all"')
     parser.add_argument('--device', '-d', default=None)
     parser.add_argument('--quick', '-q', action='store_true',
                         help='Quick: 4 patients, 1 seed, 60 epochs')
