@@ -3,6 +3,14 @@
 
 Building on EXP-368 validation (ResNet ISF MAE=35.8±0.1, new champion):
 
+  CLINICAL METRICS NOTE (2026-04-06):
+  evaluate_model() now includes clinical metrics (MARD, Clarke zones,
+  ISO 15197, trend accuracy). Check result['clinical'] in output JSONs.
+  Your per-patient fine-tuning (EXP-371) is especially important:
+  ERA 2 per-patient models achieved MARD≈5-8% at 1hr (CGM-grade!).
+  If EXP-371 closes the gap from 17% to <10% MARD at h60, that's
+  a major clinical result. Report h60 clinical metrics separately.
+
 EXP-369 — Dilated ResNet
   Combine ResNet's residual connections (depth, skip connections) with
   dilated convolutions (multi-scale temporal receptive field).

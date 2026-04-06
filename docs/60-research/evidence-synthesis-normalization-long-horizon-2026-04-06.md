@@ -37,12 +37,21 @@ experiment proposals for the next phase.
 | Override Prediction | **F1=0.882** CI=[0.871,0.893] | EXP-343 Platt-CNN | 1D-CNN + Platt, 2h | ✅ Deployment-ready |
 | Hypo Prediction | **F1=0.676, AUC=0.958** | EXP-345 MT-CNN+Platt | Multi-task CNN, 2h | ✅ Viable w/ calibration |
 | ISF Drift | **10/11 patients** detected | EXP-334 FPCA biweekly | Rolling statistics | ✅ Method proven |
-| Glucose Forecasting | **MAE=11.25 mg/dL** | EXP-251 ensemble | GroupedEncoder, 2h | ✅ Saturated |
-| Future-PK Forecasting | **MAE=26.7** (−35% vs baseline) | EXP-366 dilated TCN | Dilated TCN + future PK | ✅ New best |
+| Glucose Forecasting (1hr) | **MAE=11.25 mg/dL, MARD≈7.3%** | EXP-251 ensemble | GroupedEncoder, 2h | ✅ CGM-grade |
+| Multi-Horizon PK Forecast | **MAE=26.7** (−35% vs baseline) | EXP-366 dilated TCN | Dilated TCN + future PK | ⚠️ Regression |
 
-> **Updated**: EXP-366 (dilated TCN deep with future PK channels) supersedes
-> EXP-356/357 (MAE=35.4). Also notable: EXP-367 horizon conditioning + ISF +
-> future PK = MAE=27.1; EXP-365 learned ensemble = MAE=30.7.
+> **Updated (2026-04-06)**: Clinical metrics added. ERA 2 glucose forecasting
+> (EXP-043–171) achieves MARD≈8% at 1hr — **CGM-grade accuracy** (Dexcom G7
+> real-time MARD≈8.2%). ERA 3 multi-horizon forecasters (EXP-352–372) regressed
+> to MARD≈17% at the same 1hr horizon. This 2.2× gap persists even after
+> controlling for data split method (EXP-046: random vs temporal = 0.2 mg/dL
+> difference). Root causes: (1) multi-patient pooling without fine-tuning,
+> (2) CNN vs Transformer architecture, (3) multi-horizon objective diluting
+> single-horizon optimization. See §1.8 below.
+>
+> EXP-366 (dilated TCN deep with future PK channels) supersedes EXP-356/357
+> (MAE=35.4). Also notable: EXP-367 horizon conditioning + ISF + future PK
+> = MAE=27.1; EXP-365 learned ensemble = MAE=30.7.
 
 ### 1.2 Definitively Proven Principles
 
@@ -178,6 +187,66 @@ bottleneck is not architecture but feature engineering for long episodes.
 | PK history channels | EXP-353 | Δ=−7.4 at 6h window | Only tested for forecasting, not classification |
 | Hybrid raw+FDA at 6h | EXP-360 | +0.6% override | Small gain; needs more architectures |
 | Dual-branch CNN | EXP-360b | MAE=27.2 (−18%) | Single-seed; needs multi-seed validation |
+
+### 1.5 Clinical Forecast Metrics: ERA 2 → ERA 3 Performance Gap (2026-04-06)
+
+**Problem**: ERA 2 glucose forecasting (EXP-043–171) achieves MARD≈8% at 1hr,
+matching CGM real-time accuracy (Dexcom G7 MARD≈8.2%). ERA 3 multi-horizon
+forecasters (EXP-352–372) regressed to MARD≈17% at the same 1hr horizon.
+
+**Clinical Scoring Summary** (approximate MARD from stored MAE, population
+glucose mean=155 mg/dL):
+
+| Experiment | Horizon | MAE | MARD≈ | Clarke A+B≈ | Notes |
+|-----------|---------|-----|-------|-------------|-------|
+| EXP-057 patient_d | 1hr | 8.1 | 5.2% | 100% | Per-patient finetuned |
+| EXP-048 physics residual | 1hr | 11.5 | 7.4% | 99.6% | Physics-informed |
+| EXP-043 masked transformer | 1hr | 12.4 | 8.0% | 99.3% | CGM-grade |
+| EXP-171 production ensemble | 1hr | 12.5 | 8.1% | 99.3% | Latest ERA 2 |
+| EXP-169 calm segments | 1hr | 10.9 | 7.0% | 99.6% | Segment-specialized |
+| EXP-169 volatile segments | 1hr | 19.0 | 12.3% | 96.4% | Hard cases |
+| EXP-362 (ERA 3) | h30=30min | 18.7 | 12.1% | 96.6% | Multi-horizon CNN |
+| EXP-362 (ERA 3) | h60=1hr | 25.9 | 16.7% | 91.3% | Multi-horizon CNN |
+| EXP-367+ISF (ERA 3) | h60=1hr | 26.3 | 17.0% | 91.0% | Best ERA 3 at 1hr |
+| Persistence baseline | 1hr | 34.3 | 22.1% | — | Both eras |
+
+**Benchmark**: Dexcom G7 real-time MARD ≈ 8.2%, Clarke A+B > 99%.
+Note: MARD for forecasts is not directly comparable to real-time CGM MARD since
+forecasts predict future glucose, not current sensor readings.
+
+**Controlled Analysis**:
+- **Data leakage?** No — EXP-046 showed random vs temporal split = 0.2 mg/dL
+  difference (12.9 vs 12.7), negligible
+- **Same persistence baseline**: ERA 2 ~34.3, ERA 3 ~33.2 at h60 → same data
+  distribution, very different model performance
+
+**Root Causes of the 2.2× Gap**:
+
+1. **Per-patient fine-tuning**: ERA 2 (EXP-057) fine-tunes per patient → 8.1–16.6
+   mg/dL. ERA 3 pools 11 patients with no fine-tuning → loses personalization.
+   EXP-371 (finetune experiment in our runner) directly addresses this.
+
+2. **Architecture mismatch**: ERA 2 uses 4-layer GroupedEncoder (transformer).
+   ERA 3 uses 1D-CNN. For 1hr forecasting, the transformer may have inherent
+   advantages in capturing temporal attention patterns.
+
+3. **Multi-horizon objective dilution**: ERA 3 optimizes MAE across h30–h720
+   simultaneously. The model compromises short-horizon accuracy to serve
+   long-horizon predictions. Single-horizon models (ERA 2) don't face this
+   tradeoff.
+
+4. **Window size / history length**: ERA 2 uses 2hr windows (12 steps history +
+   12 steps forecast). ERA 3 uses 10hr windows (72 steps history + 48+ steps
+   forecast). More context isn't always better — noise accumulates.
+
+**Recommended Actions**:
+- **Bridge experiment (high priority)**: Run ERA 2 transformer architecture on
+  ERA 3 data pipeline with chronological split and per-patient fine-tuning.
+  Expected to close the gap to ≤15 mg/dL.
+- **Horizon-specific models**: Train separate 1hr-only model alongside multi-horizon.
+  Compare clinical metrics head-to-head.
+- **Clinical-loss fine-tuning**: Use existing `clinical_loss.py` (19:1 hypo/hyper
+  asymmetry) to fine-tune best model. Evaluate MARD specifically in hypo range.
 
 ---
 

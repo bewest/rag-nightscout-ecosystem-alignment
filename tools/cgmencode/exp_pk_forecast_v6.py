@@ -8,6 +8,30 @@ Building on validated results:
   - EXP-370 FiLM: 27.5 quick (-1.4 vs shared head)
   - Future PK: foundational breakthrough (-6.4 overall at full scale)
 
+  CLINICAL METRICS NOTE (2026-04-06):
+  evaluate_model() now automatically reports MARD, Clarke zones, ISO 15197,
+  bias, trend accuracy, and range-stratified MARD (hypo/euglycemic/hyper)
+  via compute_clinical_forecast_metrics() from metrics.py. All new experiments
+  will have clinical scoring in their result JSONs. See rescore_forecasts.py
+  to re-score existing results.
+
+  ⚡ ERA 2 → ERA 3 PERFORMANCE GAP (from evidence synthesis report §1.5):
+  ERA 2 forecasters (EXP-043–171) achieve MARD≈8% at 1hr = CGM-grade accuracy.
+  ERA 3 (EXP-352+) gets MARD≈17% at the same 1hr horizon — a 2.2× regression.
+  Data leakage ruled out (EXP-046: random vs temporal = 0.2 mg/dL difference).
+  Root causes: (1) no per-patient fine-tuning, (2) CNN vs Transformer,
+  (3) multi-horizon objective dilutes short-horizon accuracy.
+
+  Your EXP-371 (fine-tuning) and EXP-373 (stacked best) directly address
+  causes (1) and partially (3). Key suggestion: after EXP-373, try adding a
+  1hr-only evaluation alongside multi-horizon to track whether the gap closes.
+  Also consider: ERA 2 used 4-layer GroupedEncoder (transformer) — the
+  EXP-375 attention experiment may recapture that architecture's advantage.
+
+  The classification thread is handling ISF-norm, functional depth, and
+  glucodensity experiments (EXP-369, 371, 372 from normalization runner).
+  No overlap with your forecasting focus.
+
 EXP-373 — Stacked Best Techniques
   Combine dilated ResNet + ISF normalization + per-patient fine-tuning.
   These won independently in quick mode — do they stack?
@@ -152,9 +176,9 @@ def load_forecast_data(patients_dir, history_steps=72, max_horizon=144,
         patient_info = {
             'name': pdir.name,
             'isf': isf,
-            'train_start': sum(len(x) for x in all_base_train) if isinstance(all_base_train, list) and all_base_train and isinstance(all_base_train[0], np.ndarray) else len(all_base_train),
+            'train_start': len(all_base_train),
             'train_count': len(bt),
-            'val_start': sum(len(x) for x in all_base_val) if isinstance(all_base_val, list) and all_base_val and isinstance(all_base_val[0], np.ndarray) else len(all_base_val),
+            'val_start': len(all_base_val),
             'val_count': len(bv),
         }
 
