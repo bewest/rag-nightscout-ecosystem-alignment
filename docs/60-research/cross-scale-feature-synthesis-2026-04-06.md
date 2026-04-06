@@ -232,17 +232,21 @@ Combined with kitchen_sink: override +2.3%, hypo +0.6%. NEW BEST configs.
 
 **Remaining open questions:**
 
-1. **Kitchen sink channel ablation at 2h**: Which of the 10 channels drive the +2.3%
-   override improvement? FDA derivatives? PK channels? Both?
+~~1. Kitchen sink channel ablation at 2h~~ → **ANSWERED (EXP-375):** FDA derivatives
+drive all the improvement (+2.2% override). PK channels contribute +0.1%. Raw
+bolus/carbs essential for UAM (+5.4%).
 
-2. **Positional encoding ablation**: Since no_time helps at 2h, would removing
-   sinusoidal PE from the transformer further improve time-invariant tasks?
+~~2. Positional encoding ablation~~ → **ANSWERED (EXP-376):** Removing PE hurts (-1.7%
+override, -2.0% UAM). PE encodes ordering (essential), unlike time features (noise).
 
 3. **12h data augmentation**: Since architecture and features don't help at 12h, would
    augmentation (jitter, scaling, time-shift) increase effective training data?
 
-4. **Per-patient fine-tuning at 6h/2h**: Would patient-specific adaptation further
+4. **Per-patient fine-tuning at 2h/6h**: Would patient-specific adaptation further
    improve the best transformer models?
+
+5. **baseline_plus_fda at 6h**: Does the 2h-optimal feature set (baseline+FDA) also
+   improve 6h, or does kitchen_sink remain better there?
 
 ## EXP-373: Multi-Task Learning at 6h
 
@@ -358,16 +362,17 @@ horizons.
 
 ## Updated Cross-Scale Recommendations
 
-### Optimal Configuration per Scale (Post EXP-374)
+### Optimal Configuration per Scale (Post EXP-375)
 
 ```
-2h UAM:           no_time_6ch          → Transformer   (F1=0.891)
-2h override:      kitchen_sink_10ch    → Transformer   (F1=0.866, +2.3%) ⭐
-2h hypo:          kitchen_sink_10ch    → Transformer   (AUC=0.955, +0.6%) ⭐
-6h all:           kitchen_sink_10ch    → Transformer   (SYNERGY: +1.4-4.4%)
-6h prolonged_high: kitchen_sink_10ch   → MT_CNN        (F1=0.641, +2.2%)
-12h all:          baseline_8ch         → Transformer   (modest +0.4-1.0%)
-12h hypo:         raw_fda_pk_8ch       → Transformer   (+0.3%)
+2h UAM:           baseline_plus_fda_10ch → Transformer   (F1=0.920) ⭐ NEW BEST
+2h override:      kitchen_sink_10ch      → Transformer   (F1=0.865)
+2h hypo:          baseline_plus_fda_10ch → Transformer   (AUC=0.956) ⭐ NEW BEST
+2h universal:     baseline_plus_fda_10ch → Transformer   (best compromise)
+6h all:           kitchen_sink_10ch      → Transformer   (SYNERGY: +1.4-4.4%)
+6h prolonged_high: kitchen_sink_10ch     → MT_CNN        (F1=0.641, +2.2%)
+12h all:          baseline_8ch           → Transformer   (modest +0.4-1.0%)
+12h hypo:         raw_fda_pk_8ch         → Transformer   (+0.3%)
 ```
 
 ### Architecture × Feature Interaction Matrix (Complete)
@@ -390,6 +395,83 @@ more features = more overfitting risk. With transformer, more features = more
 attention targets. This has practical implications: production models should use
 different feature pipelines depending on the architecture, not just the scale.
 
+## EXP-375: Kitchen Sink Channel Ablation at 2h (DEFINITIVE)
+
+Systematically ablated channels from kitchen_sink_10ch to identify what drives the
++2.3% override improvement. All configs use Transformer at 2h.
+
+| Variant | Ch | UAM F1 | Override F1 | Hypo AUC |
+|---------|-----|--------|-------------|----------|
+| kitchen_sink_10ch (control) | 10 | 0.906 | **0.865** | 0.955 |
+| kitchen_no_fda_8ch | 8 | 0.881 ▼ | 0.843 ▼ | 0.949 ▼ |
+| kitchen_no_pk_6ch | 6 | 0.866 ▼ | 0.864 | 0.954 |
+| **baseline_plus_fda_10ch** | 10 | **0.920** ⭐ | 0.864 | **0.956** ⭐ |
+| base_notime_fda_8ch | 8 | 0.919 | 0.863 | 0.955 |
+| baseline_plus_pk_12ch | 12 | 0.888 ▼ | 0.843 ▼ | 0.948 ▼ |
+| kitchen_plus_time_12ch | 12 | 0.905 | 0.861 | 0.956 |
+| minimal_override_5ch | 5 | 0.864 ▼ | 0.856 ▼ | 0.953 |
+
+### Channel Contribution Decomposition (Override)
+
+```
+Full kitchen_sink:       0.865
+- Remove FDA (d1, d2):   0.843  → FDA contributes +0.022 (2.2%)
+- Remove PK (4 channels): 0.864  → PK contributes +0.001 (0.1%)
+Interaction term: ~0
+```
+
+**FDA derivatives are THE key ingredient.** PK channels are noise at 2h for override/hypo.
+
+### Key Findings
+
+1. **baseline_plus_fda_10ch is the new OVERALL BEST at 2h**: UAM=0.920 (new record),
+   Hypo=0.956. Override=0.864 essentially tied with kitchen_sink.
+
+2. **Raw bolus/carbs are essential for UAM**: kitchen_no_pk_6ch (no bolus/carbs)
+   gives UAM=0.866 vs baseline_plus_fda (with bolus/carbs) UAM=0.920 (+5.4%!).
+   Kitchen_sink replaced bolus/carbs with PK channels, which helps override but
+   drastically hurts UAM.
+
+3. **PK channels add zero value at 2h** for override (+0.1%) and hypo (+0.1%).
+   baseline_plus_pk_12ch (add PK to baseline) actually hurts (-2.2% override).
+
+4. **Time features are irrelevant at 2h**: baseline_plus_fda vs base_notime_fda
+   differ by <0.1% across all tasks.
+
+5. **Minimal 5ch achieves 85.6% override** — only 0.9% below best, with 50% fewer
+   channels. Viable for resource-constrained deployment.
+
+### Implications
+
+The kitchen_sink_10ch improvement was entirely driven by FDA derivatives (glucose_d1,
+glucose_d2). The PK channels were a red herring. For a production system:
+- **UAM model**: baseline_plus_fda_10ch (need raw bolus/carbs for "unannounced" detection)
+- **Override model**: kitchen_sink_10ch or kitchen_no_pk_6ch (FDA derivatives sufficient)
+- **Hypo model**: baseline_plus_fda_10ch (marginal best)
+- **Universal model**: baseline_plus_fda_10ch (best compromise across all tasks)
+
+## EXP-376: Positional Encoding Ablation at 2h
+
+Tested removing sinusoidal positional encoding from Transformer to evaluate
+time-translation invariance hypothesis.
+
+| Config | PE | no_PE | Δ |
+|--------|-----|-------|---|
+| kitchen_sink UAM | 0.906 | 0.886 | **-2.0%** ▼ |
+| kitchen_sink Override | 0.865 | 0.848 | **-1.7%** ▼ |
+| kitchen_sink Hypo | 0.955 | 0.952 | -0.4% ▼ |
+| kitchen_no_pk UAM | 0.866 | 0.847 | -1.9% ▼ |
+| kitchen_no_pk Override | 0.864 | 0.849 | -1.5% ▼ |
+| kitchen_no_pk Hypo | 0.954 | 0.953 | -0.1% |
+
+**Removing PE uniformly hurts.** This resolves an important conceptual distinction:
+- **time_sin/time_cos** = absolute time of day → noise for acute events (removing helps)
+- **Positional encoding** = relative position within window → essential for trend detection
+  (removing hurts)
+
+These are fundamentally different types of temporal information. The model needs to
+know *ordering* (PE) but not *clock time* (time features).
+
 ## Source Files
 
 | Experiment | Code | Results |
@@ -402,3 +484,5 @@ different feature pipelines depending on the architecture, not just the scale.
 | EXP-362 | `tools/cgmencode/exp_transformer_features.py` | `externals/experiments/exp362_transformer_features.json` |
 | EXP-373 | `tools/cgmencode/exp_multitask_transformer.py` | `externals/experiments/exp373_multitask_transformer.json` |
 | EXP-374 | `tools/cgmencode/exp_multitask_transformer.py` | `externals/experiments/exp373_multitask_transformer.json` |
+| EXP-375 | `tools/cgmencode/exp_kitchen_sink_ablation.py` | `externals/experiments/exp375_kitchen_ablation.json` |
+| EXP-376 | `tools/cgmencode/exp_kitchen_sink_ablation.py` | `externals/experiments/exp375_kitchen_ablation.json` |
