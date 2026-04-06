@@ -1,6 +1,6 @@
 # Evidence Synthesis: Normalization, Regularization, and Long-Horizon Strategies
 
-**Date**: 2026-04-06 (updated 2026-04-06)
+**Date**: 2026-04-06 (updated 2026-04-06T05:30Z)
 **Context**: Synthesis of EXP-001–368 findings, symmetry/sparsity analysis,
 continuous PK modeling, FDA features, and cross-scale feature selection experiments.
 Covers what the evidence shows so far, untried normalization/conditioning techniques,
@@ -27,7 +27,7 @@ experiment proposals for the next phase.
 
 ---
 
-## 1. State of the Evidence: What 362 Experiments Tell Us
+## 1. State of the Evidence: What 398+ Experiments Tell Us
 
 ### 1.1 Production-Viable Results
 
@@ -38,7 +38,7 @@ experiment proposals for the next phase.
 | Hypo Prediction | **F1=0.676, AUC=0.958** | EXP-345 MT-CNN+Platt | Multi-task CNN, 2h | ✅ Viable w/ calibration |
 | ISF Drift | **10/11 patients** detected | EXP-334 FPCA biweekly | Rolling statistics | ✅ Method proven |
 | Glucose Forecasting (1hr) | **MAE=11.25 mg/dL, MARD≈7.3%** | EXP-251 ensemble | GroupedEncoder, 2h | ✅ CGM-grade |
-| Multi-Horizon PK Forecast | **MAE=26.7** (−35% vs baseline) | EXP-366 dilated TCN | Dilated TCN + future PK | ⚠️ Regression |
+| Multi-Horizon PK Forecast | **MAE=24.4, MARD≈15.7%** | EXP-387 per-patient ens. | Dual encoder + ISF + ensemble | ⚠️ 1.9× ERA 2 gap |
 
 > **Updated (2026-04-06)**: Clinical metrics added. ERA 2 glucose forecasting
 > (EXP-043–171) achieves MARD≈8% at 1hr — **CGM-grade accuracy** (Dexcom G7
@@ -205,9 +205,10 @@ glucose mean=155 mg/dL):
 | EXP-171 production ensemble | 1hr | 12.5 | 8.1% | 99.3% | Latest ERA 2 |
 | EXP-169 calm segments | 1hr | 10.9 | 7.0% | 99.6% | Segment-specialized |
 | EXP-169 volatile segments | 1hr | 19.0 | 12.3% | 96.4% | Hard cases |
-| EXP-362 (ERA 3) | h30=30min | 18.7 | 12.1% | 96.6% | Multi-horizon CNN |
-| EXP-362 (ERA 3) | h60=1hr | 25.9 | 16.7% | 91.3% | Multi-horizon CNN |
-| EXP-367+ISF (ERA 3) | h60=1hr | 26.3 | 17.0% | 91.0% | Best ERA 3 at 1hr |
+| EXP-362 (ERA 3 early) | h60=1hr | 25.9 | 16.7% | 91.3% | Multi-horizon CNN |
+| **EXP-390 (ERA 3 best)** | **h60=1hr** | **23.7** | **15.3%** | **~92%** | **Conditional ensemble** |
+| **EXP-387 (ERA 3 best)** | **overall** | **24.4** | **15.7%** | **~92%** | **Per-patient ensemble** |
+| EXP-390 oracle (UPPER BOUND) | h60=1hr | 18.5 | 11.9% | ~96% | Uses true labels! |
 | Persistence baseline | 1hr | 34.3 | 22.1% | — | Both eras |
 
 **Benchmark**: Dexcom G7 real-time MARD ≈ 8.2%, Clarke A+B > 99%.
@@ -247,6 +248,145 @@ forecasts predict future glucose, not current sensor readings.
   Compare clinical metrics head-to-head.
 - **Clinical-loss fine-tuning**: Use existing `clinical_loss.py` (19:1 hypo/hyper
   asymmetry) to fine-tune best model. Evaluate MARD specifically in hypo range.
+
+### 1.6 FDA Effectiveness Assessment: Feature Engineering Yes, Compression No (2026-04-06)
+
+**Question**: Has Functional Data Analysis been an effective way of downsampling or
+dealing with more data across longer horizons in a computationally efficient way?
+
+**Answer**: **No for compression/downsampling. Yes for specific feature engineering.**
+
+FDA experiments (EXP-328–335, EXP-351) establish that FDA's value lies in creating
+*new derived features* (glucodensity, functional depth, analytic derivatives) rather
+than compressing existing data. The "FPCA K=2 captures 90% variance" result is
+**scale-locked to 2h windows only** and does not extend to longer horizons.
+
+#### 1.6.1 FPCA Compression: Scale-Locked, Not Generalizable
+
+| Scale | Points → K (90% var) | Compression | Per-Patient Variation | Viable? |
+|-------|----------------------|-------------|----------------------|---------|
+| 2h (fast) | 24 → 2 | **12×** | Low | ✅ Excellent |
+| 12h (episode) | 144 → 6 | **24×** | Moderate | ⚠️ Acceptable |
+| 24h (daily) | 96 → 9 | **10.7×** | K=8–13 across patients | ⚠️ Patient-variable |
+| 7d (weekly) | 168 → 20+ | **8×** | K≥20 minimum | ❌ Barely compresses |
+
+**Source**: EXP-329 (`exp329_fpca_variance.json`). The weekly scale K≥20 requirement
+means FPCA compression ratios *decrease* as horizons grow — exactly the opposite of
+what's needed for long-horizon efficiency.
+
+**Per-patient gap**: At daily scale, patient h needs K=13 but patient d needs K=8.
+Pooled K=9 loses significant variance for complex patients. The 8.1% pooled-vs-
+per-patient gap (target <15%) is acceptable in aggregate but masks tail cases.
+
+#### 1.6.2 B-spline Smoothing: Actively Harmful at Longer Scales
+
+B-spline preprocessing was tested across all 3 classification scales in EXP-351:
+
+| Scale | Override ΔF1 | Hypo ΔF1 | UAM ΔF1 | Prolonged High ΔF1 |
+|-------|-------------|----------|---------|-------------------|
+| **2h** | **+1.1%** | **+0.6%** | **−5.7%** | N/A |
+| **6h** | −1.2% | **−1.9%** | N/A | **+2.6%** |
+| **12h** | **−4.5%** | −2.1% | N/A | **−6.5%** |
+
+**Root cause**: At 2h (24 points), noise dominates and smoothing helps. At 12h
+(144 points), the CNN has enough context to learn its own multi-scale features —
+external smoothing *destroys* information the model needs. This is Principle 2
+manifested directly.
+
+**B-spline "compression" is also poor**: 50% basis reduction (n_basis = n_points/2)
+costs 1.6–8.5 mg/dL reconstruction MAE depending on scale. Near-interpolation
+(n_basis = n_points−2) preserves data but barely compresses. Neither regime makes
+sense as a preprocessing step for downstream ML.
+
+#### 1.6.3 What FDA DOES Well (Feature Engineering, Not Compression)
+
+| FDA Technique | Best Result | Mechanism | Scale | Status |
+|---------------|------------|-----------|-------|--------|
+| **Glucodensity** | +0.54 Silhouette vs TIR (EXP-330) | KDE distributional profile | All | Ready to integrate |
+| **B-spline derivatives** | +15% SNR, −25% noise (EXP-331) | Analytic d/dt from smooth curve | 2h | Ready to integrate |
+| **Functional depth** | 112× hypo enrichment Q1→Q4 (EXP-335) | Band depth atypicality score | 2h | Ready to integrate |
+| **FPCA drift detection** | 10/11 patients (EXP-334) | PC1 trend over time | Daily+ | Ready to integrate |
+| **Functional inner products** | +0.83 MAE (EXP-359) — **HURT** | Scalar tiled into CNN | 2h | ❌ Failed |
+
+The first four produce **new information** (distributional shape, noise-robust
+derivatives, atypicality scores, drift signals) that raw data doesn't directly
+express. The fifth failed because scalar features (inner products) tiled across
+time give CNN layers zero temporal gradient — a fundamental architectural mismatch.
+
+**Head injection vs input channels**: EXP-338/344 showed FDA-derived scalar features
+(glucodensity bins, depth scores) MUST be injected at the classifier head (after
+conv pooling), not as additional input channels. Constant-valued channels are
+invisible to convolutional kernels. This is a general lesson for any scalar/global
+feature in a CNN pipeline.
+
+#### 1.6.4 Computational Cost: NOT the Bottleneck
+
+EXP-328 timing shows FDA computation is fast:
+
+| Scale | 2000 windows | FDA compute | Throughput |
+|-------|-------------|-------------|-----------|
+| 2h | 24 pts each | 1.7s | 1,184 win/s |
+| 12h | 144 pts each | 7.3s | 274 win/s |
+| 24h | 96 pts each | 4.1s | 487 win/s |
+| 7d | 168 pts each | 10.1s | 199 win/s |
+
+scikit-fda CPU is already adequate; GPU acceleration (`fda_features_gpu.py`) exists
+but is unnecessary. **Computational cost is not why FDA fails at long horizons** —
+it fails because the mathematical compression doesn't preserve the right information.
+
+#### 1.6.5 Implications for Long-Horizon Strategy
+
+FDA's core limitation for multi-day/multi-month analysis:
+
+1. **FPCA components scale linearly with complexity** — at weekly+ scales, K≥20
+   components means the "compression" output is nearly as large as the input
+2. **B-spline smoothing destroys exactly the features CNNs learn** — high-frequency
+   meal responses, bolus timing, sensor noise patterns that encode real events
+3. **Per-patient variance in required K** makes universal compression impractical
+
+**What SHOULD be used instead for long horizons**:
+
+- **Glucodensity** (50-bin KDE): Scale-independent distributional summary that captures
+  *what glucose levels occurred* without preserving temporal sequence — ideal for
+  phenotyping at any window length
+- **Functional depth**: Single scalar measuring curve atypicality — already proven for
+  hypo detection, computationally O(N²) but output is (N,1) regardless of window size
+- **Hierarchical decomposition** (not FDA): STL trend/seasonal/residual separation
+  where each component is analyzed at its natural timescale — the trend at weekly
+  resolution (7 points/week), seasonal at daily (24 points/day), residual at 5-min
+- **Multi-rate EMA** (not FDA): Exponential moving averages at τ={15min, 1h, 4h, 24h}
+  compress arbitrarily long history into 4 channels — constant-width representation
+  regardless of horizon
+
+**Verdict**: For extending beyond 24h, invest in hierarchical temporal decomposition
+and multi-rate aggregation rather than trying to make FDA compress longer windows.
+FDA's best contributions (glucodensity, depth, derivatives) are feature engineering
+tools that augment models at any scale, not compression tools that replace raw data.
+
+### 1.7 Updated Forecaster Progress — 47 Experiments, MARD Scoring (2026-04-06)
+
+The autonomous forecasting researcher completed EXP-352 through EXP-398 (47
+experiments, 318 variants) in ~7 hours. Full report:
+`forecaster-progress-report-2026-04-06.md`.
+
+**Best achievable results (non-oracle)**:
+
+| Metric | Value | Experiment | vs ERA 2 |
+|--------|-------|------------|----------|
+| Overall MAE | **24.4 mg/dL** | EXP-387/390 ensemble | 1.9× gap |
+| MARD @ 1hr | **~15.3%** | EXP-390 cond_volatility | vs 8.1% ERA 2 |
+| h30 MAE | **17.4 mg/dL** | EXP-390 cond_volatility | — |
+| h120 MAE | **31.8 mg/dL** | EXP-390 ensemble_equal | — |
+| Clarke A+B (est.) | **~92%** | EXP-387/390 | vs ~99% ERA 2 |
+
+**Key discovery**: EXP-390 `oracle_conditional` (MAE=19.2) uses true labels to
+select best model per sample — it's an **upper bound**, not achievable. The 24.4→19.2
+gap (5.2 mg/dL) represents the ceiling for conditional ensemble strategies.
+
+**Improvement trajectory**: 31.1 → 24.4 = −6.7 mg/dL (21.5% reduction) across
+5 phases. Phase 4 (ensembles) produced all top-5 results. Phase 5 (training
+tricks) regressed because SWA/augmentation were tested on the base model, not
+the Phase 4 champion.
 
 ---
 
