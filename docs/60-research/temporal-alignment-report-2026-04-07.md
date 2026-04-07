@@ -61,7 +61,7 @@ Hierarchical clustering of 6-hour residual windows into 5 categories:
 
 ### EXP-518: Compression Ratio (Baseline)
 
-All patients R² < 0 when measuring raw flux as predictor of dBG/dt (mean R² = -0.225). However, positive correlations (0.03-0.22) existed, indicating signal was present but temporally misaligned. This motivated the entire temporal alignment investigation.
+All patients R² ≤ 0 when measuring raw flux as predictor of dBG/dt (mean R² = -0.225), with patient f at exactly 0.0 and 10/11 below zero. However, positive correlations (0.03-0.22) existed, indicating signal was present but temporally misaligned. This motivated the entire temporal alignment investigation.
 
 ---
 
@@ -144,9 +144,9 @@ Morning has the longest lag — consistent with dawn phenomenon adding a slow, u
 ### EXP-527: Multi-Channel Lags
 
 Per-channel optimal lags:
-- **Hepatic**: 30-50 min (surprisingly long — reflects EGP regulation loop)
-- **Carb**: 0-40 min (variable — depends on meal type)
-- **Demand**: 15-50 min (insulin transport delay)
+- **Hepatic**: 0-50 min (wide range; reflects variable EGP regulation dynamics)
+- **Carb**: 0-50 min (variable — depends on meal type; patient k = 50 min)
+- **Demand**: 0-50 min (insulin transport delay; patient k = 0 min)
 
 Multi-channel R²=0.054, barely better than uniform lag R²=0.051. Per-channel lags don't significantly help because the between-channel variance is much larger than the lag differences.
 
@@ -210,7 +210,7 @@ Patient-specific noise floors:
 ```
 R² progression:
   0.000  Raw variance ratio (EXP-518)
-  0.040  Linear regression, zero lag (EXP-522)
+  0.040  Linear net flux, population lag (EXP-526)
   0.043  Optimal single lag (EXP-522)
   0.056  BG-dependent sensitivity (EXP-526)
   0.065  Full nonlinear (8 features, EXP-526)
@@ -287,7 +287,7 @@ R² progression:
 | 524 | exp_leadlag_521.py | TDD normalization r=-0.806, no improvement over raw |
 | 525 | exp_nonlinear_525.py | Meal lag=0, fasting lag=+10-15min |
 | 526 | exp_nonlinear_525.py | bg_dependent interaction +40% R²; full model 0.065 |
-| 527 | exp_nonlinear_525.py | Hepatic lag 30-50min; multi-channel barely helps |
+| 527 | exp_nonlinear_525.py | Hepatic lag 0-50min; multi-channel barely helps |
 | 528 | exp_fir_528.py | **3ch×6 FIR: R²=0.102**, patient c: 0.222 |
 | 529 | exp_fir_528.py | 41% high-freq noise; 0% circadian — hepatic works |
 | 530 | exp_fir_528.py | **State-dependent: R²=0.105** (+59% over global) |
@@ -296,7 +296,7 @@ R² progression:
 | 533 | exp_combined_531.py | Markov: 0.6 trans/hr, fasting dwell 155min |
 | 534 | exp_autoresearch_534.py | **AR(24)+flux: R²=0.570** — MAJOR BREAKTHROUGH |
 | 535 | exp_autoresearch_534.py | State bilinear FIR: R²=0.176 (+73% over linear) |
-| 536 | exp_autoresearch_534.py | Cross-patient transfer: 65% ratio (physics shared) |
+| 536 | exp_autoresearch_534.py | Cross-patient transfer: 66% ratio (physics shared) |
 | 537 | exp_autoresearch_534.py | **Phase-space divergence=5.25** — deterministic chaos |
 | 538 | exp_autoresearch_538.py | Temporal CV: test R²=0.15, AR test=0.55. Generalizes |
 | 539 | exp_autoresearch_538.py | **AR(6)=30min sufficient** (BIC=13, plateau=6) |
@@ -328,9 +328,9 @@ Per-patient noise floor (high-frequency sensor noise as % of dBG variance):
 
 | Patient | Noise % | Own R² | Achievable R² | % Achievable |
 |---------|---------|--------|---------------|--------------|
-| c | 30% | 0.289 | 0.70 | **41%** |
+| c | 34% | 0.289 | 0.66 | **44%** |
 | i | 18% | 0.222 | 0.82 | 27% |
-| f | 25% | 0.208 | 0.75 | 28% |
+| f | 40% | 0.208 | 0.60 | 35% |
 | k | 74% | 0.049 | 0.26 | 19% |
 
 ### EXP-533: Markov State Transitions
@@ -354,10 +354,14 @@ Residual autocorrelation at 5-min lag: **r=0.62** (population mean). BG changes 
 
 | AR Order | Window | Combined R² | Improvement |
 |----------|--------|-------------|-------------|
-| AR(3) | 15 min | ~0.43 | +0.27 |
-| AR(6) | 30 min | ~0.47 | +0.31 |
-| AR(12) | 60 min | ~0.52 | +0.36 |
+| AR(3) | 15 min | 0.555 | +0.39 |
+| AR(6) | 30 min | 0.568 | +0.41 |
+| AR(12) | 60 min | 0.570 | +0.41 |
 | AR(24) | **120 min** | **0.570** | **+0.41** |
+
+Note: AR(3) already captures 97% of AR(24)'s R², indicating that 15 minutes of
+residual history captures the dominant glucose momentum. Diminishing returns set
+in rapidly beyond AR(3).
 
 **Physical interpretation**: The residual autoregression captures:
 1. **CGM sensor lag** (~10-15 min physiological interstitial delay)
@@ -395,7 +399,7 @@ The bilinear interaction (flux × BG_level) captures BG-dependent insulin sensit
 
 ### EXP-536: Cross-Patient FIR Transfer
 
-**Transfer ratio = 0.65** (mean across 9 well-controlled patients).
+**Transfer ratio = 0.66** (mean across 9 well-controlled patients).
 
 | Patient | Own R² | Transfer R² | Ratio |
 |---------|--------|-------------|-------|
@@ -406,7 +410,7 @@ The bilinear interaction (flux × BG_level) captures BG-dependent insulin sensit
 | j | 0.010 | -0.034 | negative — too noisy |
 | k | 0.034 | -0.047 | negative — too noisy |
 
-**Interpretation**: ~65% of the FIR transfer function is **shared physics** (universal insulin/glucose kinetics). The remaining 35% is patient-specific. A population-pretrained model with per-patient fine-tuning should work well.
+**Interpretation**: ~66% of the FIR transfer function is **shared physics** (universal insulin/glucose kinetics). The remaining ~34% is patient-specific. A population-pretrained model with per-patient fine-tuning should work well.
 
 ### EXP-537: Phase-Space Embedding — Deterministic Chaos Confirmed
 
@@ -416,7 +420,7 @@ The bilinear interaction (flux × BG_level) captures BG-dependent insulin sensit
 |--------|-------|---------------|
 | Recurrence p5 | 1.01 | Weak attractor — system revisits similar states |
 | Divergence | **5.25** | **Well above chaos threshold (>2.0)** |
-| Speed CV | 0.57 | Alternating fast (meal) and slow (fasting) |
+| Mean speed | 0.57 | Alternating fast (meal) and slow (fasting) |
 
 **Implication**: Long-horizon glucose prediction is fundamentally limited by deterministic chaos. Short-term (15-60 min) is feasible; beyond 2-3 hours, uncertainty grows exponentially. This validates AID systems' 5-minute recomputation cycle.
 
@@ -428,9 +432,9 @@ The bilinear interaction (flux × BG_level) captures BG-dependent insulin sensit
 Model                              Mean R²    Best Patient    Experiment
 ────────────────────────────────────────────────────────────────────────
 Raw variance ratio                 <0.000     —               EXP-518
-Linear net flux                     0.040     c: 0.082        EXP-522
-+ optimal lag correction            0.043     c: 0.087        EXP-522
-+ BG-dependent sensitivity          0.056     c: 0.105        EXP-526
+Linear net flux                     0.040     c: 0.082        EXP-526
++ optimal lag correction            0.043     c: 0.082        EXP-522
++ BG-dependent sensitivity          0.056     c: 0.087        EXP-526
 + full 8-feature nonlinear          0.065     c: 0.127        EXP-526
 3-channel FIR (6 taps each)         0.102     c: 0.222        EXP-528
 State-dependent linear              0.105     c: 0.198        EXP-530
@@ -440,7 +444,7 @@ State-specific FIR + BG             0.161     c: 0.288        EXP-531
 State-specific bilinear FIR         0.176     c: 0.306        EXP-535
 + AR(24) on residuals            ▶  0.570     f: 0.663        EXP-534
 ────────────────────────────────────────────────────────────────────────
-Theoretical ceiling (noise floor)  ~0.600     i: 0.820        EXP-529/532
+Theoretical ceiling (noise floor)  ~0.600     i: 0.815        EXP-529/532
 ```
 
 ---
@@ -544,9 +548,9 @@ Train on first 60% of each patient's data, test on last 40%:
 Model                              Mean R²    Best Patient    Experiment
 ────────────────────────────────────────────────────────────────────────
 Raw variance ratio                 <0.000     —               EXP-518
-Linear net flux                     0.040     c: 0.082        EXP-522
-+ optimal lag correction            0.043     c: 0.087        EXP-522
-+ BG-dependent sensitivity          0.056     c: 0.105        EXP-526
+Linear net flux                     0.040     c: 0.082        EXP-526
++ optimal lag correction            0.043     c: 0.082        EXP-522
++ BG-dependent sensitivity          0.056     c: 0.087        EXP-526
 + full 8-feature nonlinear          0.065     c: 0.127        EXP-526
 3-channel FIR (6 taps each)         0.102     c: 0.222        EXP-528
 State-dependent linear              0.105     c: 0.198        EXP-530
@@ -557,7 +561,7 @@ State-specific bilinear FIR         0.176     c: 0.306        EXP-535
 + AR(6) on residuals                0.565     f: 0.66         EXP-539
 + AR(24) on residuals               0.570     f: 0.663        EXP-534
 ────────────────────────────────────────────────────────────────────────
-Theoretical ceiling (noise floor)  ~0.600     i: 0.820        EXP-529/532
+Theoretical ceiling (noise floor)  ~0.600     i: 0.815        EXP-529/532
 Out-of-sample (60/40 split)         0.55      g: 0.661        EXP-538
 ```
 
@@ -565,26 +569,197 @@ Out-of-sample (60/40 split)         0.55      g: 0.661        EXP-538
 
 ---
 
-## Proposed Next Experiments (EXP-544–550)
+## Part X: Clinical Utility and Production Readiness (EXP-544–549)
 
-### Immediate Priority
+### EXP-544: Auto-Tuned Kalman — Properly Whitened but Still Negative
+
+ML-optimized Kalman parameters (Nelder-Mead on training log-likelihood):
+
+| Metric | Hand-Tuned (EXP-541) | Auto-Tuned (EXP-544) |
+|--------|---------------------|---------------------|
+| Mean skill | -0.703 | **-0.098** |
+| Innovation autocorr | 0.55 | **≈0** (properly whitened) |
+| Positive skill patients | 0/11 | 2/11 (f, g) |
+
+Learned parameters: α=0.96 (velocity persistence near 1.0), observation noise dominates. The Kalman with flux-only control input cannot beat naive persistence because the **flux model explains only 16% of dBG variance**. The Kalman needs the AR process model integrated to be competitive.
+
+### EXP-545: Regularized State-FIR — Fixes Coefficient Explosion
+
+| Patient | Best λ | Test R² | Max |coeff| |
+|---------|--------|---------|------------|
+| b (was exploding) | **100.0** | **0.092** | 3.85 |
+| c (best patient) | 0.001 | 0.284 | 74.7 |
+| h (was overfit) | 1.0 | 0.129 | 25.5 |
+| Population | 0.1-1.0 | **0.142** | ~30 |
+
+**Key finding**: Heavy regularization (λ=100) saves patient b entirely. Most patients need only mild regularization (λ=0.1-1.0) with minimal R² cost (<0.5%). For production, λ=1.0 is a safe default that trades <2% accuracy for 2-3× smaller coefficients.
+
+### EXP-546: Settings Quality Score — Balance is Tautological
+
+**Result**: Balance ratio = 1.000 for all patients — the supply-demand decomposition is balanced by construction (hepatic output perfectly bridges the gap).
+
+**Lesson learned**: The flux decomposition defines net = supply - demand + hepatic, and dBG ≈ net + residual. Since hepatic is the "residual" of the profile model, it absorbs all imbalance. A meaningful settings quality score needs to:
+1. Compare **predicted** BG trajectory (from settings alone) vs **actual** BG
+2. Measure the magnitude of AID corrections relative to profile baseline
+3. Quantify how much basal deviation the AID system applies
+
+This experiment needs redesign — the flux decomposition guarantees balance.
+
+### EXP-547: Anomaly Detection — Post-Meal 2-3× Higher Anomaly Rate
+
+| State | Mean Anomaly Rate (2σ) | Expected Gaussian |
+|-------|----------------------|-------------------|
+| Post-meal | **0.098** | 0.046 |
+| Correction | **0.082** | 0.046 |
+| Fasting | 0.040 | 0.046 |
+| Stable | 0.040 | 0.046 |
+| Recovery | 0.024 | 0.046 |
+
+**Overall**: 5.8% of timesteps are 2σ anomalies (expected: 4.6%). The excess comes entirely from **post-meal and correction states** — these are the metabolic phases where unmodeled dynamics (variable gastric emptying, exercise, stress hormones) create residuals that exceed Gaussian expectations.
+
+**Anomaly event types**: ~1400 events per patient over 180 days (≈8/day). Most are single-step spikes; sustained high/low events are rarer but clinically more significant.
+
+### EXP-548: Circadian AR — Night Has Strongest Memory
+
+| Window | Mean AR(6) R² | Mean Resid Std (mg/dL) |
+|--------|---------------|----------------------|
+| Night (0-6h) | **0.478** | **6.46** |
+| Evening (18-24h) | **0.483** | 6.22 |
+| Morning (6-12h) | 0.467 | 6.40 |
+| Afternoon (12-18h) | **0.408** | **5.22** |
+
+**Interpretation**: Night and evening have the highest AR R² AND highest residual variability — more complex dynamics to model but more predictable temporal structure. Afternoon is the calmest period (lowest std) but least autoregressive — dynamics are more "random walk"-like.
+
+**Dawn phenomenon signature**: Night residual std (6.46) exceeds afternoon (5.22) by 24%, confirming that overnight hepatic glucose production creates systematic drift that the AR model captures.
+
+### EXP-549: Metabolic Efficiency — Complete Variance Decomposition
+
+**Definitive decomposition of dBG/dt variance across 11 patients:**
+
+```
+┌──────────────────────────────────────────────┐
+│  Flux Model:     16.1%  ████████             │
+│  AR Momentum:    40.8%  ████████████████████  │
+│  Sensor Noise:   32.1%  ████████████████      │
+│  Unexplained:    11.1%  █████                 │
+└──────────────────────────────────────────────┘
+```
+
+**Per-patient decomposition:**
+
+| Patient | Flux | AR | Noise | Unexplained | TIR |
+|---------|------|-----|-------|-------------|-----|
+| c | **28.8%** | 33.2% | 24.2% | 13.8% | 0.62 |
+| i | **22.2%** | 37.4% | 28.2% | 12.2% | 0.60 |
+| f | 20.8% | 45.5% | 24.1% | 9.7% | 0.66 |
+| a | 18.6% | 39.2% | 29.9% | 12.3% | 0.56 |
+| h | 17.3% | 40.7% | 29.0% | 13.0% | 0.85 |
+| d | 15.9% | 37.4% | 33.5% | 13.2% | 0.79 |
+| e | 16.1% | 42.9% | 27.0% | 14.1% | 0.65 |
+| g | 14.5% | 49.4% | 24.1% | 12.0% | 0.75 |
+| b | 10.1% | 55.2% | 28.7% | 6.0% | 0.57 |
+| j | 7.5% | 38.1% | 46.1% | 8.2% | 0.81 |
+| k | **4.9%** | 29.2% | **58.7%** | 7.2% | **0.95** |
+
+**Key insights**:
+1. **AR momentum is the dominant explainable component** (41%) — BG changes are persistent and autocorrelated. This is the "physics" that flux alone misses: glucose absorption/clearance kinetics create predictable momentum.
+2. **Sensor noise is the second largest component** (32%) — irreducible measurement error. Patient k has 59% noise (tight control = low true variability, sensor noise dominates).
+3. **Only 11% is truly unexplained** — stress hormones, exercise, device issues, and other confounders together account for just 11% of dBG variance. This is remarkably low.
+4. **Efficiency does NOT predict TIR** (r=-0.19, p=0.57) — well-controlled patients (k: TIR=95%) have LOW efficiency scores because there's nothing to explain. The relationship is actually inverted: low variability means high noise fraction.
+5. Patient k paradox: best TIR (95%) but worst flux R² (4.9%) — the AID system is so effective that it suppresses almost all glucose variability, leaving only sensor noise.
+
+---
+
+## Complete Experiment Index (EXP-511–549)
+
+| EXP | Script | Key Result |
+|-----|--------|-----------|
+| 511 | exp_residual_511.py | 5 residual clusters: 44% moderate, 25% volatile |
+| 514 | exp_residual_511.py | 50% flat meals (AID-suppressed), 41% biphasic |
+| 518 | exp_residual_511.py | R²<0 baseline — temporal misalignment confirmed |
+| 521 | exp_leadlag_521.py | Population lag +10min, supply lags negative |
+| 522 | exp_leadlag_521.py | Lag correction +0.006 R² (modest) |
+| 523 | exp_leadlag_521.py | Morning lag +10-20min, afternoon +0-5min |
+| 524 | exp_leadlag_521.py | TDD normalization r=-0.806, no improvement over raw |
+| 525 | exp_nonlinear_525.py | Meal lag=0, fasting lag=+10-15min |
+| 526 | exp_nonlinear_525.py | bg_dependent interaction +40% R²; full model 0.065 |
+| 527 | exp_nonlinear_525.py | Hepatic lag 30-50min; multi-channel barely helps |
+| 528 | exp_fir_528.py | **3ch×6 FIR: R²=0.102**, patient c: 0.222 |
+| 529 | exp_fir_528.py | 41% high-freq noise; 0% circadian — hepatic works |
+| 530 | exp_fir_528.py | **State-dependent: R²=0.105** (+59% over global) |
+| 531 | exp_combined_531.py | **State-FIR+BG: R²=0.161** — best deterministic |
+| 532 | exp_combined_531.py | Noise floor: 18-74% per patient; ceiling ~0.60 |
+| 533 | exp_combined_531.py | Markov: 0.6 trans/hr, fasting dwell 155min |
+| 534 | exp_autoresearch_534.py | **AR(24)+flux: R²=0.570** — MAJOR BREAKTHROUGH |
+| 535 | exp_autoresearch_534.py | State bilinear FIR: R²=0.176 (+73% over linear) |
+| 536 | exp_autoresearch_534.py | Cross-patient transfer: 65% ratio (physics shared) |
+| 537 | exp_autoresearch_534.py | **Divergence=5.25** — deterministic chaos confirmed |
+| 538 | exp_autoresearch_538.py | Temporal CV: test R²≈0.55, gap=3.5%. Generalizes |
+| 539 | exp_autoresearch_538.py | **AR(6)=30min sufficient** (plateau; BIC=13) |
+| 540 | exp_autoresearch_538.py | Meal AR(1)>1.0 = oscillatory. Recovery=low memory |
+| 541 | exp_autoresearch_538.py | Kalman hand-tuned: skill=-0.70 (broken) |
+| 542 | exp_autoresearch_538.py | Prediction useful ≤15min; chaos kills >30min |
+| 543 | exp_autoresearch_538.py | **No sensor age effect** (0/11 significant) |
+| 544 | exp_autoresearch_544.py | Auto-tuned Kalman: skill=-0.098, innov whitened |
+| 545 | exp_autoresearch_544.py | Ridge λ=1.0: fixes explosion, test R²=0.142 |
+| 546 | exp_autoresearch_544.py | Balance ratio=1.0 by construction (need redesign) |
+| 547 | exp_autoresearch_544.py | Post-meal anomaly 2-3× fasting; 5.8% overall |
+| 548 | exp_autoresearch_544.py | Night AR strongest (0.478); afternoon weakest |
+| 549 | exp_autoresearch_544.py | **Decomposition: Flux 16%, AR 41%, Noise 32%, Unknown 11%** |
+
+---
+
+## Synthesis and Conclusions
+
+### What We Now Know About Glucose Dynamics
+
+1. **Physics-based flux models explain 16% of dBG variance**. This is the "deterministic" component — what insulin, carbs, and hepatic output predict.
+
+2. **Glucose momentum (AR) adds another 41%**. BG changes are highly persistent — knowing the recent trajectory is more predictive than knowing the current inputs. This captures absorption kinetics, sensor lag, and rate-of-change inertia.
+
+3. **Sensor noise accounts for 32%**. Irreducible measurement error. CGM technology limits what any model can achieve.
+
+4. **Only 11% remains truly unexplained**. Stress hormones, exercise, device issues, and other confounders are surprisingly small.
+
+5. **The system is deterministically chaotic** (divergence=5.2). Long-horizon prediction (>30 min) is fundamentally limited. This validates AID systems' 5-minute recomputation cycle.
+
+6. **65% of flux dynamics are universal physics**. Cross-patient transfer works — population models with individual fine-tuning are viable.
+
+7. **AR(6) = 30 minutes of history suffices**. Longer AR windows add <0.5% — the CGM sensor lag is ~10-15 min, so 30 min captures the full temporal kernel.
+
+8. **Meals create oscillatory dynamics** (AR(1) > 1.0) while fasting is damped (AR(1) ≈ 0.88). State-specific modeling is essential.
+
+### Implications for ML/Feature Engineering
+
+- **Always include 30min BG history** as features (captures the dominant AR component)
+- **Channel separation matters** (supply/demand/hepatic, not just net)
+- **State classification is essential** before modeling (5 states with different dynamics)
+- **BG level is a key nonlinear feature** (captures variable insulin sensitivity)
+- **Regularization is necessary** (λ=1.0 ridge for production)
+- **Prediction horizons beyond 30min require fundamentally different approaches** (ensemble, probabilistic)
+
+---
+
+## Proposed Next Experiments (EXP-550–556)
+
+### Settings Assessment (redesigned from EXP-546)
 
 | ID | Name | Hypothesis | Method |
 |----|------|-----------|--------|
-| EXP-544 | Auto-Tuned Kalman | ML-estimated Kalman parameters | Maximize log-likelihood on training data |
-| EXP-545 | Regularized State-FIR | Ridge/LASSO prevents coefficient explosion | Cross-validated regularization strength |
-| EXP-546 | Circadian AR Profile | AR dynamics vary by time-of-day | 4-window circadian AR fitting |
+| EXP-550 | AID Correction Magnitude | Large AID corrections indicate settings mismatch | Measure temp basal deviation from profile |
+| EXP-551 | Profile vs Actual Insulin | Compare scheduled vs delivered insulin | ISF/CR utilization ratio per time-of-day |
 
-### Model Architecture
-
-| ID | Name | Hypothesis | Method |
-|----|------|-----------|--------|
-| EXP-547 | Neural State-FIR | Small MLP replaces linear FIR per state | 2-layer MLP on 3ch×6 + BG |
-| EXP-548 | Ensemble Flux+AR | Weighted combination of models | Stacking with cross-validated weights |
-
-### Clinical Utility
+### Advanced Modeling
 
 | ID | Name | Hypothesis | Method |
 |----|------|-----------|--------|
-| EXP-549 | Settings Quality Score | Flux balance ratio indicates therapy adequacy | Supply/demand integral ratio per patient |
-| EXP-550 | Anomaly Detection | Residual spikes flag unmodeled events | Residual z-score > 3σ classification |
+| EXP-552 | Kalman + AR Process | Integrate AR(6) as Kalman process model | State = [bg, velocity, AR(1..6)] |
+| EXP-553 | Neural FIR | Small MLP replacing linear FIR per state | 2-layer MLP on 3ch×6 + BG + state features |
+
+### Multi-Scale Analysis
+
+| ID | Name | Hypothesis | Method |
+|----|------|-----------|--------|
+| EXP-554 | Weekly Aggregation | Weekly flux integrals predict TIR changes | Rolling 7-day flux statistics → TIR |
+| EXP-555 | Monthly ISF Drift Revisited | Does flux model R² drift monthly? | Monthly R² windows with ISF drift (EXP-312) |
+| EXP-556 | Exercise Detection | Residual patterns during exercise differ | Cluster anomaly events by temporal signature |
