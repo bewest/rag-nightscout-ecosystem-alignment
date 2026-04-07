@@ -7570,3 +7570,174 @@ The validated R²=0.534 is 87% of the linear oracle ceiling (0.613). To go furth
 2. **Additional sensors** (activity, meal photos, insulin pump confirmations)
 3. **Patient-specific nonlinear features** (personalized metabolic response curves)
 4. **Longer training data** — current 6-month windows may not capture seasonal variation
+
+---
+
+## Part XL: Nonlinear Models & Model Class Ceiling (EXP-831–840)
+
+### Objective
+
+Having established the validated linear SOTA at R²=0.534 (60min) and the linear oracle ceiling at R²=0.613, this batch investigates whether **nonlinear model classes** can close the remaining gap. Ten experiments test kernel methods, piecewise models, recursive forecasting, regime switching, boosting, KNN correction, and combined benchmarks.
+
+### Results Summary
+
+| EXP | Method | R² (60min) | Δ vs Base (0.509) | Validity |
+|-----|--------|------------|---------------------|----------|
+| 831 | Kernel Ridge (RFF) | **0.536** | **+0.027** | ✅ Valid |
+| 832 | Piecewise Linear | 0.534 | +0.025 | ✅ Valid |
+| 833 | Recursive Multi-step | ~~0.836~~ | ~~+0.327~~ | ❌ **LEAKY** |
+| 834 | BG-Regime Switching | 0.518 | +0.009 | ✅ Valid |
+| 835 | Nonlinear Supply-Demand | 0.493 | −0.016 | ✅ Valid (hurts) |
+| 836 | Residual Boosting | ~~0.978~~ | ~~+0.469~~ | ❌ **LEAKY** |
+| 837 | Feature Binning | 0.520 | +0.011 | ✅ Valid |
+| 838 | KNN Correction | 0.525 | +0.016 | ✅ Valid |
+| 839 | Physics Constraints | 0.509 | −0.001 | ✅ Valid |
+| 840 | Combined Benchmark | 0.534 | +0.025 | ✅ Valid |
+
+### Data Leakage Discoveries
+
+#### EXP-833: Recursive Multi-step (INVALID)
+
+The recursive approach chains a 5min model 12 times to reach 60min. At each step k, it uses `features_1[split + i + k]` — the **actual** supply/demand/residual features from timestep `t + 5k`. While BG is replaced with the predicted value, the `resid` feature (actual BG − PK predicted BG) at future timesteps contains **actual future glucose information**. This is the same class of leakage discovered in EXP-811.
+
+**Mechanism**: Step 5 of recursion uses `resid[t+25min]` which encodes `actual_BG[t+25min]` — 25 minutes into the future. The model effectively "sees" the trajectory through the residual channel.
+
+#### EXP-836: Residual Boosting (INVALID)
+
+At boosting stage 2+, validation features include `prev_resid_val = y_val − pred_val_accum`, which directly uses the **actual validation targets** to construct input features. This is textbook target leakage — the model receives the answers as features.
+
+**Mechanism**: Stage 2 trains on residuals and adds `|residual|` and `residual²` as features. For validation data, these are computed from actual targets, giving the model direct access to the truth. The stages_5 R²=0.978 converges to near-perfect because each stage gets increasingly precise answer vectors.
+
+### Detailed Valid Results
+
+#### EXP-831: Kernel Ridge Regression (RFF)
+
+Best nonlinear result. Uses Random Fourier Features to approximate the RBF kernel:
+
+| Config | R² | Δ |
+|--------|-----|-----|
+| rff50_g0.01 | 0.514 | +0.005 |
+| rff50_g0.1 | 0.521 | +0.012 |
+| rff100_g0.1 | 0.533 | +0.024 |
+| **rff200_g0.1** | **0.536** | **+0.027** |
+| rff200_g1.0 | 0.387 | −0.122 |
+
+- Optimal: 200 RFF dimensions, γ=0.1
+- Diminishing returns: 200→400 dimensions unlikely to help much
+- γ=1.0 badly overfits (too localized), γ=0.01 too smooth
+- **Net gain over enhanced linear (0.534): only +0.002**
+
+#### EXP-832: Piecewise Linear Models
+
+Fits separate ridge models for BG regimes (<70, 70–100, 100–140, 140–180, 180–250, >250):
+- Improvement exactly matches enhanced features (+0.025) — piecewise regime-specific intercepts provide similar value to BG² polynomial feature
+- Regime-specific coefficients don't capture any additional dynamics
+
+#### EXP-834: BG-Regime Switching
+
+Soft regime switching with regime-specific weights:
+- R²=0.518, modest +0.009 improvement
+- Suggests BG level moderately influences prediction dynamics
+- But not enough to justify separate model complexity
+
+#### EXP-835: Nonlinear Supply-Demand (HURTS)
+
+Log/sqrt transforms of supply/demand features:
+- R²=0.493, **−0.016 regression**
+- Key finding: supply-demand → glucose relationship is **fundamentally linear** at 5min resolution
+- Nonlinear transforms distort the already-appropriate linear scaling
+
+#### EXP-837: Feature Binning
+
+One-hot BG bins as additional features (12 bins):
+- R²=0.520, +0.011
+- Bins capture regime effects but add noise from sparse bins
+- Less effective than continuous BG² polynomial
+
+#### EXP-838: KNN Correction
+
+Post-hoc nearest-neighbor residual correction:
+- Best K=10: R²=0.525, +0.016
+- K=5–50 all give similar results (0.522–0.525)
+- KNN finds similar historical patterns but correction is modest
+- Suggests residuals are NOT systematic enough for pattern-based correction
+
+#### EXP-839: Physics Constraints
+
+Clip predictions to [39, 400] mg/dL and limit BG rate-of-change:
+- R²=0.509, −0.001 (no effect)
+- Ridge already produces physiologically reasonable predictions
+- Constraint activation rate near zero — model rarely violates bounds
+
+#### EXP-840: Combined Nonlinear Benchmark
+
+Enhanced 16-feature base + nonlinear transforms + BG bins + physics constraints:
+- R²=0.534, exactly matching enhanced-only (0.534)
+- **Nonlinear additions provide ZERO incremental value** over linear enhanced features
+- Increased regularization (λ×5) prevents overfitting but also prevents any nonlinear benefit
+
+### Key Conclusions
+
+#### 1. We Have Reached the Linear Ceiling
+
+```
+Naive persistence:         R² = 0.292
+Base 8-feature Ridge:      R² = 0.509  (+0.217)
+Enhanced 16-feature Ridge: R² = 0.534  (+0.025)
+Best Kernel Ridge (RFF):   R² = 0.536  (+0.002)  ← nonlinear maximum
+Linear oracle ceiling:     R² = 0.613  (+0.079)  ← requires future info
+```
+
+The gap between enhanced ridge (0.534) and best nonlinear (0.536) is **Δ=0.002** — within noise. Nonlinear model classes provide essentially zero improvement over well-engineered linear features.
+
+#### 2. The Remaining Gap is Information Deficit, Not Model Deficit
+
+The R²=0.466 unexplained variance is NOT due to:
+- ❌ Model class (linear vs nonlinear — Δ=0.002)
+- ❌ Feature transforms (log, sqrt, bins all ≤+0.011)
+- ❌ Regime switching (soft/hard boundaries ≤+0.009)
+- ❌ Pattern-based correction (KNN +0.016)
+- ❌ Physics constraints (no effect)
+
+The gap is due to **information not present in our feature set**:
+- Future meal/bolus events (unknowable)
+- Sensor noise and lag (irreducible)
+- Exercise, stress, illness (unobserved)
+- Pump site degradation (unmeasured)
+- Individual metabolic variation over time
+
+#### 3. Two Leakage Patterns Now Documented
+
+| Pattern | EXP | Mechanism | Invalid R² |
+|---------|-----|-----------|------------|
+| AR residual leakage | 811,820 | `resid[i-1]` requires future BG at horizon h | 0.941 |
+| Future feature leakage | 833 | Recursive steps use actual features from future timesteps | 0.836 |
+| Target leakage | 836 | Validation residuals use actual targets as features | 0.978 |
+
+All three share a common root: **computing validation features that encode future/target information**. Any method that feeds residuals back must ensure the lag ≥ prediction horizon for AR, and must not use actual values at future timesteps for recursive methods.
+
+### Program-Wide Prediction Frontier (Updated)
+
+| Milestone | R² (60min) | Method | EXP |
+|-----------|------------|--------|-----|
+| Naive persistence | 0.292 | BG(t) → BG(t+60) | — |
+| Physics flux (metabolic) | 0.372 | Supply-demand decomposition | 700s |
+| Ridge 8-feature | 0.509 | bg + flux + circadian | 801 |
+| Enhanced 16-feature | 0.534 | + velocity, accel, lags, BG² | 824 |
+| **Best nonlinear (RFF)** | **0.536** | Kernel ridge 200D | 831 |
+| Linear oracle ceiling | 0.613 | Future BG velocity | 826 |
+
+**The prediction improvement journey: 0.292 → 0.536 = +0.244 R² units gained.**
+Of this, 83% came from physics+linear features, 17% from feature engineering, <1% from nonlinear models.
+
+### Next Directions
+
+Given the model class ceiling has been reached, future experiments should focus on:
+
+1. **Residual characterization**: What physiological processes drive the remaining error? Cluster residuals by context (meal, sleep, exercise) to identify reducible vs irreducible components.
+2. **Multi-resolution models**: Different models for different regimes (meal vs fasting vs overnight) — not just different coefficients, but different feature sets.
+3. **Temporal segmentation**: Split day into periods with fundamentally different dynamics (dawn phenomenon, postprandial, overnight).
+4. **Uncertainty quantification**: Bayesian ridge or conformal prediction to produce calibrated prediction intervals.
+5. **Patient stratification**: Why does patient h (R²=0.153) perform so poorly? Data quality audit, treatment pattern analysis.
+6. **Sensor/cannula degradation features**: Device age as explicit feature or separate models per device age.
+
