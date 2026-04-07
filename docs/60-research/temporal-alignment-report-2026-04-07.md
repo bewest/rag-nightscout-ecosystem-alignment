@@ -5655,3 +5655,137 @@ Pure physics forward sim          0.669          EXP-713
 | EXP-739 | Population Physics Prior | Use cross-patient physics params as prior | Bayesian warm-start for new patients |
 | EXP-740 | Confidence-Weighted Blend | Weight ensemble by prediction confidence (inverse variance) | Adaptive blending per timestep |
 
+
+---
+
+## Part XXX: Multi-Scale Hybrid & Clinical Applications (EXP-731–740)
+
+**Date**: 2026-04-08
+**Experiments**: EXP-731 through EXP-740
+**Script**: `tools/cgmencode/exp_autoresearch_731.py`
+
+### Motivation
+
+EXP-727 demonstrated the hybrid AR-physics ensemble breakthrough (60min R²: −0.302 → 0.421). This wave combines ALL optimizations, adds two-stage correction, and explores clinical applications (meal estimation, exercise detection, sensor age, settings scoring).
+
+### Results Summary
+
+| Exp | Name | Key Result | Insight |
+|-----|------|------------|---------|
+| EXP-731 | Optimized Hybrid | **30min R²=0.789, 60min R²=0.437** | Per-patient decay + ensemble → new best at ALL horizons |
+| EXP-732 | Horizon-Adaptive Decay | 5min: decay=0.5, 30min: decay=0.95 | Short horizons don't need residual memory; long horizons do |
+| EXP-733 | Two-Stage Physics→AR | 30min: 0.699→0.717, **60min: −0.112→0.262** | Two-stage correction viable but weaker than direct ensemble |
+| EXP-734 | Meal Size Estimation | corr(announced,resid)=−0.210, excess=104 | Weak negative correlation — larger meals have LESS residual (AID compensates) |
+| EXP-735 | Exercise Detection | 4634 anomaly windows, 10.3% rate | ~10% of time shows unexplained BG drops — plausible exercise/activity signal |
+| EXP-736 | Sensor Age Drift | bias drift=−0.36 mg/dL, noise Δ=+0.02 | Minimal sensor age effect — CGM quality stable across sessions |
+| EXP-737 | Settings Quality Score | mean=34.5/100 | Most patients have suboptimal settings — consistent with CR score from EXP-694 |
+| EXP-738 | Multi-Day Physics | 1d: R²=−478, 3d: R²=−2918 | **Step-level physics diverges completely at multi-day** — needs segment-level approach |
+| EXP-739 | Population Physics Prior | personal R²=0.703, population R²=0.679, Δ=−0.024 | Population prior retains 96.6% of personal — viable for cold start |
+| EXP-740 | Confidence-Weighted Blend | **60min: fixed=0.392, adaptive=0.427** | Adaptive per-timestep weighting adds +0.035 at 60min |
+
+### Optimized Hybrid Pipeline (EXP-731) — New Best
+
+Combining per-patient decay optimization (from EXP-724/726) with hybrid ensemble (from EXP-727):
+
+| Horizon | R² (EXP-731) | R² (EXP-727 baseline) | Improvement |
+|---------|--------------|----------------------|-------------|
+| 5min | 0.987 | 0.987 | — |
+| 15min | 0.926 | 0.923 | +0.3% |
+| 30min | **0.789** | 0.780 | +1.2% |
+| 60min | **0.437** | 0.421 | +3.8% |
+
+The optimized pipeline uses per-patient decay (grid search on validation set) instead of fixed 0.80. Optimal blend weights shift from physics-heavy at 5min (0.98) to balanced at 30min (0.50) to AR-heavy at 60min (0.39).
+
+### Horizon-Adaptive Decay (EXP-732)
+
+| Horizon | Best Decay | R² | Interpretation |
+|---------|-----------|-----|----------------|
+| 5min | 0.50 | 0.987 | Fast decay — residual barely matters at 1 step |
+| 15min | 1.00 | 0.915 | No decay — full residual memory needed |
+| 30min | 0.95 | 0.699 | Slow decay — balance memory vs drift |
+| 60min | 0.95 | −0.112 | Same as 30min but physics alone still diverges |
+
+**Key insight**: Short horizons prefer fast residual decay (irrelevant at 1 step), while medium horizons need persistent memory. The crossover from "residual doesn't matter" to "residual is everything" happens between 5–15min.
+
+### Two-Stage Physics→AR Correction (EXP-733)
+
+| Horizon | Physics-Only R² | Two-Stage R² | Δ |
+|---------|-----------------|--------------|---|
+| 5min | 0.987 | 0.987 | 0.000 |
+| 15min | 0.914 | 0.866 | −0.048 |
+| 30min | 0.699 | **0.717** | **+0.018** |
+| 60min | −0.112 | **0.262** | **+0.374** |
+
+Two-stage correction (AR model learns systematic physics errors) fixes 60min divergence but less effectively than direct ensemble blending. At 15min it actually hurts — the physics errors at short horizons are noise, not systematic.
+
+### Adaptive Confidence Blending (EXP-740)
+
+| Horizon | Fixed Blend R² | Adaptive Blend R² | Δ |
+|---------|---------------|-------------------|---|
+| 5min | 0.983 | 0.986 | +0.003 |
+| 15min | 0.922 | 0.925 | +0.003 |
+| 30min | 0.787 | 0.790 | +0.003 |
+| 60min | 0.392 | **0.427** | **+0.035** |
+
+Rolling per-timestep confidence weighting provides consistent improvement, largest at 60min where the AR/physics relative accuracy varies most over time. This suggests that the optimal blend weight is NOT constant — it varies with metabolic state.
+
+### Clinical Intelligence
+
+**Meal Size Estimation (EXP-734)**:
+- Weak negative correlation (−0.21) between announced carbs and physics residual
+- This is counterintuitive but explainable: AID systems deliver more insulin for larger meals, so the physics model (which includes insulin demand) already accounts for larger meals
+- Mean residual integral of +104 suggests systematic underestimation of glucose production
+
+**Exercise Detection (EXP-735)**:
+- 4,634 anomaly windows (10.3% of time) show BG drops NOT explained by insulin demand
+- Plausible interpretation: exercise, physical activity, or enhanced insulin sensitivity
+- Needs cross-reference with actual activity data for validation
+
+**Sensor Age (EXP-736)**:
+- Bias drift: −0.36 mg/dL (early→late session) — negligible
+- Noise increase: +0.02 mg/dL std — negligible
+- **Conclusion**: CGM sensor quality is stable across 10-day sessions for physics modeling purposes
+
+**Settings Quality (EXP-737)**:
+- Mean score 34.5/100 — most patients have suboptimal settings
+- Consistent with CR score of 37.4/100 from EXP-694
+- Suggests significant room for CR/ISF/basal optimization across the cohort
+
+### Critical Negative Result: Multi-Day Physics (EXP-738)
+
+Step-level physics forward simulation **completely diverges** at multi-day horizons:
+- 1-day: R²=−478 (catastrophic)
+- 3-day: R²=−2918
+- 7-day: insufficient data
+
+**Root cause**: Flux errors of even 0.1 mg/dL/step compound to ~30 mg/dL/day. The homeostatic damping (0.5% toward 120) is insufficient to counteract this. Multi-day prediction requires a fundamentally different approach — likely segment-level statistical models rather than step-level simulation.
+
+### Cumulative Progress (240 Experiments)
+
+```
+Milestone                              5min    15min   30min   60min
+─────────────────────────────────────────────────────────────────────
+Baseline AR on flux residual           0.405   0.197   0.131   0.074
++ 2σ spike cleaning                    0.461   —       —       —
+Physics forward sim (EXP-713)          0.987   0.909   0.669   −0.302
++ Hybrid ensemble (EXP-727)            0.987   0.923   0.780   0.421
++ Optimized hybrid (EXP-731)           0.987   0.926   0.789   0.437
++ Adaptive blend (EXP-740)             0.986   0.925   0.790   0.427
+CURRENT BEST (EXP-731 optimized)       0.987   0.926   0.789   0.437
+```
+
+### Proposed EXP-741–750: Residual Structure & Longer Horizons
+
+| Exp | Name | Hypothesis | Method |
+|-----|------|-----------|--------|
+| EXP-741 | Segmented Multi-Day | Predict daily mean/range instead of point values | Aggregate daily stats with rolling features |
+| EXP-742 | Residual Autocorrelation Structure | Physics residuals have exploitable temporal patterns | PACF, spectral analysis of physics residuals |
+| EXP-743 | Ensemble with Two-Stage | Combine direct ensemble + two-stage for best of both | Weighted meta-ensemble at each horizon |
+| EXP-744 | State-Dependent Blend | Blend weight depends on metabolic state (meal, sleep, exercise) | Detect state → lookup optimal blend |
+| EXP-745 | Physics Residual Forecaster | Train dedicated model to predict physics residual trajectory | LSTM/GRU on physics residual sequences |
+| EXP-746 | Basal Assessment v2 | Overnight physics residual integral for basal adequacy | Zero-carb zero-bolus segments only |
+| EXP-747 | ISF Response Validation | Compare ISF from profile vs ISF from physics corrections | Regression: demand → BG change, controlling for supply |
+| EXP-748 | Unannounced Meal Detection | Large positive physics residuals = unannounced carbs | Threshold on residual rate + clustering |
+| EXP-749 | Hybrid for Classification | Use hybrid predictions as features for UAM/override/hypo | CNN on hybrid prediction residual sequences |
+| EXP-750 | Production Ensemble Pipeline | Full optimized production pipeline with adaptive blend | End-to-end latency, accuracy, streaming |
+
