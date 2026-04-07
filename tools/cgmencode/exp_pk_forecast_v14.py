@@ -16431,6 +16431,495 @@ def run_exp610(args):
     return result
 
 
+# ════════════════════════════════════════════════════════════
+# EXP-611: Even more aggressive stride on w144 (stride36, stride24)
+# ════════════════════════════════════════════════════════════
+
+def run_exp611(args):
+    """EXP-611: Ultra-dense stride on w144.
+
+    EXP-610 showed stride48 (3448 win) beats stride144 (993 win) by -2.35.
+    Default stride for w144 IS 48 (max(144//3, 12)=48).
+
+    Tests whether even denser overlap helps:
+      - stride36: ~4600 windows (75% overlap)
+      - stride24: ~6900 windows (83% overlap)
+      - stride12: ~13800 windows (92% overlap) — extreme
+
+    Risk: severe correlation between overlapping windows may cause overfitting.
+    Reward: if it works, 2-4x more data could break the data ceiling at h300+.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-611: Ultra-Dense Stride on w144")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+    future_steps_ext = 72
+
+    # ── Phase 1: Train w48 base for transfer ──
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    history48 = 24
+
+    train_d1_48, val_d1_48 = _prepare_pk_derivatives_asymmetric(
+        data48, history48, use_isf=has_isf)
+    n_ch_d1 = train_d1_48.shape[-1]
+
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp611_w48_d1_s{seed}.pth')
+        train_bridge(m48, train_d1_48, val_d1_48, sp, f'611-w48-d1-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # ── Phase 2: w144 at aggressive strides ──
+    # Include stride48 (default) as baseline for comparison
+    strides = [48, 36, 24]
+    result = {}
+
+    for stride in strides:
+        vname = f'stride{stride}'
+        data144 = load_bridge_data(
+            args.patients_dir, window_size=144, stride=stride,
+            max_patients=cfg['max_patients'], load_isf=True)
+        isf_v144 = data144.get('isf_val')
+        history144 = 144 - future_steps_ext
+
+        train_d1_144, val_d1_144 = _prepare_pk_derivatives_asymmetric(
+            data144, history144, use_isf=has_isf)
+
+        n_train = train_d1_144.shape[0]
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {n_train} train windows")
+        print(f"{'─'*40}")
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+
+            src = w48_states[seed]
+            tgt = model.state_dict()
+            transferred = 0
+            for k in src:
+                if k in tgt and 'pos_encoder' not in k and src[k].shape == tgt[k].shape:
+                    tgt[k] = src[k]
+                    transferred += 1
+            model.load_state_dict(tgt)
+            if seed == cfg['seeds'][0]:
+                print(f"    Transferred {transferred} params, {n_train} windows")
+
+            sp = os.path.join(cfg['output_dir'], f'exp611_{vname}_s{seed}.pth')
+            train_bridge(model, train_d1_144, val_d1_144, sp,
+                         f'611-{vname}-s{seed}', device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps_ext)
+
+        # Per-patient fine-tuning
+        per_patient = {}
+        for pinfo in data144['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_d1_144[ti:te]
+            p_val = val_d1_144[vi:ve]
+            p_isf = isf_v144[vi:ve] if isf_v144 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                ft_model = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp611_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                ft_model.load_state_dict(ckpt['model_state'])
+
+                ftp = os.path.join(cfg['output_dir'], f'exp611_{vname}_{pid}_s{seed}.pth')
+                train_bridge(ft_model, p_train, p_val, ftp,
+                             f'611-{vname}-{pid}-s{seed}', device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps_ext)
+
+                rep = evaluate_model(ft_model, p_val, device, pk_mode=True,
+                                     isf_val=p_isf, future_steps=future_steps_ext)
+                per_patient[pid] = rep
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+        result[vname] = {'per_patient': per_patient, 'average': avg,
+                         'n_train': n_train}
+
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240', 'h300', 'h360']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {vname} ({n_train} windows) avg: {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-611 Summary: Ultra-Dense Stride")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        nt = vdata['n_train']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240', 'h300', 'h360']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname} ({nt} win): {', '.join(vals)}")
+
+    base_avg = result.get('stride48', {}).get('average', {})
+    for vname in ['stride36', 'stride24']:
+        vavg = result.get(vname, {}).get('average', {})
+        if base_avg and vavg:
+            print(f"\n  Delta ({vname} - stride48):")
+            for k in sorted(vavg.keys()):
+                if k in base_avg:
+                    d = round(vavg[k] - base_avg[k], 2)
+                    print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp611_ultra_stride', cfg)
+    return result
+
+
+# ════════════════════════════════════════════════════════════
+# EXP-612: w96 Sweet Spot (more data + h240 reach)
+# ════════════════════════════════════════════════════════════
+
+def run_exp612(args):
+    """EXP-612: w96 as middle-ground between w48 and w144.
+
+    w48: 10,360 windows, h120 max — best short-horizon
+    w144: 3,448 windows, h360 max — data-starved
+    w96: ~5,500 windows (stride32), h240 max with future_steps=48
+
+    Hypothesis: w96 fills the h120-h240 gap with 60% more data than w144.
+    Uses d1+transfer from w48.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-612: w96 Sweet Spot")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    # ── Phase 1: Train w48 base ──
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    history48 = 24
+
+    train_d1_48, val_d1_48 = _prepare_pk_derivatives_asymmetric(
+        data48, history48, use_isf=has_isf)
+    n_ch_d1 = train_d1_48.shape[-1]
+
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp612_w48_d1_s{seed}.pth')
+        train_bridge(m48, train_d1_48, val_d1_48, sp, f'612-w48-d1-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # ── Phase 2: w96 configurations ──
+    future_steps_configs = {
+        'w96_h160': 32,   # 64 history (5.3h) + 32 future (h160)
+        'w96_h240': 48,   # 48 history (4h) + 48 future (h240)
+    }
+
+    result = {}
+    for vname, fsteps in future_steps_configs.items():
+        history96 = 96 - fsteps
+        data96 = load_bridge_data(
+            args.patients_dir, window_size=96,
+            max_patients=cfg['max_patients'], load_isf=True)
+        isf_v96 = data96.get('isf_val')
+
+        train_d1_96, val_d1_96 = _prepare_pk_derivatives_asymmetric(
+            data96, history96, use_isf=has_isf)
+
+        n_train = train_d1_96.shape[0]
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {n_train} train windows, history={history96} ({history96*5}min), future_steps={fsteps}")
+        print(f"{'─'*40}")
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+
+            # Transfer from w48
+            src = w48_states[seed]
+            tgt = model.state_dict()
+            transferred = 0
+            for k in src:
+                if k in tgt and 'pos_encoder' not in k and src[k].shape == tgt[k].shape:
+                    tgt[k] = src[k]
+                    transferred += 1
+            model.load_state_dict(tgt)
+            if seed == cfg['seeds'][0]:
+                print(f"    Transferred {transferred} params, {n_train} windows")
+
+            sp = os.path.join(cfg['output_dir'], f'exp612_{vname}_s{seed}.pth')
+            train_bridge(model, train_d1_96, val_d1_96, sp,
+                         f'612-{vname}-s{seed}', device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=fsteps)
+
+        # Per-patient fine-tuning
+        per_patient = {}
+        for pinfo in data96['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_d1_96[ti:te]
+            p_val = val_d1_96[vi:ve]
+            p_isf = isf_v96[vi:ve] if isf_v96 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                ft_model = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp612_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                ft_model.load_state_dict(ckpt['model_state'])
+
+                ftp = os.path.join(cfg['output_dir'], f'exp612_{vname}_{pid}_s{seed}.pth')
+                train_bridge(ft_model, p_train, p_val, ftp,
+                             f'612-{vname}-{pid}-s{seed}', device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=fsteps)
+
+                rep = evaluate_model(ft_model, p_val, device, pk_mode=True,
+                                     isf_val=p_isf, future_steps=fsteps)
+                per_patient[pid] = rep
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+        result[vname] = {'per_patient': per_patient, 'average': avg,
+                         'n_train': n_train, 'history': history96,
+                         'future_steps': fsteps}
+
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240', 'h300', 'h360']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {vname} ({n_train} windows) avg: {', '.join(vals)}")
+
+    # Add w48 and w144 baselines from prior experiments for context
+    print(f"\n{'='*60}")
+    print(f"EXP-612 Summary: w96 Sweet Spot")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        nt = vdata['n_train']
+        hist = vdata['history']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname} ({nt}win, hist={hist}): {', '.join(vals)}")
+
+    print(f"\n  Context from prior experiments:")
+    print(f"  w48 (EXP-609): overall=16.38, h120=21.9")
+    print(f"  w144 stride48 (EXP-610): overall=23.41, h120=24.56, h240=25.76")
+
+    _save_results(result, 'exp612_w96_sweet_spot', cfg)
+    return result
+
+
+# ════════════════════════════════════════════════════════════
+# EXP-613: Horizon-Weighted Loss on w144
+# ════════════════════════════════════════════════════════════
+
+def run_exp613(args):
+    """EXP-613: Horizon-weighted loss to improve extended predictions.
+
+    Currently MSE loss weights all future steps equally. But at w144 with
+    72 future steps, the model may sacrifice h240+ accuracy to minimize
+    h30-h60 loss (which dominates since errors are smaller there).
+
+    Tests weighted loss variants:
+      - uniform: standard MSE (baseline)
+      - linear_ramp: weight increases linearly from 1.0 at h5 to 3.0 at h360
+      - step_boost: weight 1.0 for h30-h120, weight 3.0 for h150-h360
+      - late_only: weight 0.5 for h30-h90, weight 2.0 for h120-h360
+
+    Uses d1+transfer on w144 (stride48, 3448 windows).
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-613: Horizon-Weighted Loss on w144")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+    future_steps_ext = 72
+
+    # ── Phase 1: Train w48 base for transfer ──
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    history48 = 24
+
+    train_d1_48, val_d1_48 = _prepare_pk_derivatives_asymmetric(
+        data48, history48, use_isf=has_isf)
+    n_ch_d1 = train_d1_48.shape[-1]
+
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp613_w48_d1_s{seed}.pth')
+        train_bridge(m48, train_d1_48, val_d1_48, sp, f'613-w48-d1-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # ── Phase 2: w144 with weighted loss variants ──
+    data144 = load_bridge_data(
+        args.patients_dir, window_size=144,
+        max_patients=cfg['max_patients'], load_isf=True)
+    isf_v144 = data144.get('isf_val')
+    history144 = 144 - future_steps_ext
+
+    train_d1_144, val_d1_144 = _prepare_pk_derivatives_asymmetric(
+        data144, history144, use_isf=has_isf)
+
+    # Define weight schedules (length = future_steps_ext = 72)
+    n_future = future_steps_ext
+    weight_schedules = {
+        'uniform': np.ones(n_future, dtype=np.float32),
+        'linear_ramp': np.linspace(1.0, 3.0, n_future).astype(np.float32),
+        'step_boost': np.array([1.0 if i < 24 else 3.0 for i in range(n_future)],
+                               dtype=np.float32),
+        'late_only': np.array([0.5 if i < 18 else 2.0 for i in range(n_future)],
+                              dtype=np.float32),
+    }
+
+    result = {}
+    for vname, weights in weight_schedules.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: weights range [{weights.min():.1f}, {weights.max():.1f}]")
+        print(f"{'─'*40}")
+
+        # Create weighted loss function via closure
+        w_tensor = torch.tensor(weights, device=device).reshape(1, -1, 1)
+        def make_weighted_loss(w):
+            def loss_fn(pred, target):
+                errors = (pred - target) ** 2
+                return (errors * w).mean()
+            return loss_fn
+        custom_loss = make_weighted_loss(w_tensor) if vname != 'uniform' else None
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+
+            # Transfer from w48
+            src = w48_states[seed]
+            tgt = model.state_dict()
+            transferred = 0
+            for k in src:
+                if k in tgt and 'pos_encoder' not in k and src[k].shape == tgt[k].shape:
+                    tgt[k] = src[k]
+                    transferred += 1
+            model.load_state_dict(tgt)
+            if seed == cfg['seeds'][0]:
+                print(f"    Transferred {transferred} params")
+
+            sp = os.path.join(cfg['output_dir'], f'exp613_{vname}_s{seed}.pth')
+
+            train_bridge(model, train_d1_144, val_d1_144, sp,
+                         f'613-{vname}-s{seed}', device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps_ext,
+                         loss_fn=custom_loss)
+
+        # Per-patient fine-tuning
+        per_patient = {}
+        for pinfo in data144['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_d1_144[ti:te]
+            p_val = val_d1_144[vi:ve]
+            p_isf = isf_v144[vi:ve] if isf_v144 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                ft_model = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp613_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                ft_model.load_state_dict(ckpt['model_state'])
+
+                ftp = os.path.join(cfg['output_dir'], f'exp613_{vname}_{pid}_s{seed}.pth')
+                train_bridge(ft_model, p_train, p_val, ftp,
+                             f'613-{vname}-{pid}-s{seed}', device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps_ext,
+                             loss_fn=custom_loss)
+
+                rep = evaluate_model(ft_model, p_val, device, pk_mode=True,
+                                     isf_val=p_isf, future_steps=future_steps_ext)
+                per_patient[pid] = rep
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+        result[vname] = {'per_patient': per_patient, 'average': avg,
+                         'weights_desc': f'[{weights.min():.1f}, {weights.max():.1f}]'}
+
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240', 'h300', 'h360']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {vname} avg: {', '.join(vals)}")
+
+    # Summary with deltas
+    print(f"\n{'='*60}")
+    print(f"EXP-613 Summary: Horizon-Weighted Loss")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240', 'h300', 'h360']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    base_avg = result.get('uniform', {}).get('average', {})
+    for vname in ['linear_ramp', 'step_boost', 'late_only']:
+        vavg = result.get(vname, {}).get('average', {})
+        if base_avg and vavg:
+            print(f"\n  Delta ({vname} - uniform):")
+            for k in sorted(vavg.keys()):
+                if k in base_avg:
+                    d = round(vavg[k] - base_avg[k], 2)
+                    print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp613_horizon_weighted_loss', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -16516,6 +17005,9 @@ EXPERIMENTS = {
     '608': run_exp608,
     '609': run_exp609,
     '610': run_exp610,
+    '611': run_exp611,
+    '612': run_exp612,
+    '613': run_exp613,
 }
 
 
