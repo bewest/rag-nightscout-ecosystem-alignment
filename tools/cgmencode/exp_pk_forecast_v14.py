@@ -14768,6 +14768,925 @@ def run_exp602(args):
     return result
 
 
+# ─── Supply/Demand Channel Helpers ───
+
+def _prepare_supply_demand_channels(data, history_steps, use_isf=False, 
+                                      include_cumulative=False):
+    """Add explicit supply/demand decomposition channels to base features.
+
+    Current PK-replaced features use: insulin_net (ch1), carb_rate (ch3), net_balance (ch6).
+    This adds the DECOMPOSED signals:
+      - hepatic_production (always positive, circadian)
+      - demand = insulin_total × 5 × isf_curve (mg/dL per step)
+      - supply_proxy = hepatic + carb_rate (simplified, avoids CR dependency)
+      - optionally: cumulative integrals of supply/demand within window
+
+    The decomposition makes the physics MORE explicit — the transformer doesn't
+    need to infer supply vs demand from a single net_balance channel.
+
+    Returns (train_tensor, val_tensor) with additional channels appended.
+    """
+    bt = data['base_train'].copy()
+    bv = data['base_val'].copy()
+    pt, pv = data['pk_train'], data['pk_val']
+
+    # Standard PK replacement (ch4=insulin_net, ch5=carb_rate, ch7=net_balance)
+    bt[:, :, 4] = pt[:, :, 1] / PK_NORMS[1]
+    bv[:, :, 4] = pv[:, :, 1] / PK_NORMS[1]
+    bt[:, :, 5] = pt[:, :, 3] / PK_NORMS[3]
+    bv[:, :, 5] = pv[:, :, 3] / PK_NORMS[3]
+    bt[:, :, 7] = pt[:, :, 6] / PK_NORMS[6]
+    bv[:, :, 7] = pv[:, :, 6] / PK_NORMS[6]
+
+    if use_isf and 'isf_train' in data:
+        _apply_isf_norm(bt, bv, data['isf_train'], data['isf_val'])
+
+    # Hepatic production (normalized)
+    hep_t = (pt[:, :, 5] / PK_NORMS[5]).reshape(bt.shape[0], bt.shape[1], 1)
+    hep_v = (pv[:, :, 5] / PK_NORMS[5]).reshape(bv.shape[0], bv.shape[1], 1)
+
+    # Demand proxy: insulin_total × isf_curve (normalized for scale)
+    # demand ∝ insulin_total × isf_curve — captures actual glucose-lowering effect
+    demand_t = (pt[:, :, 0] * pt[:, :, 7] / (PK_NORMS[0] * PK_NORMS[7] / 100.0)
+                ).reshape(bt.shape[0], bt.shape[1], 1)
+    demand_v = (pv[:, :, 0] * pv[:, :, 7] / (PK_NORMS[0] * PK_NORMS[7] / 100.0)
+                ).reshape(bv.shape[0], bv.shape[1], 1)
+
+    # Supply proxy: hepatic + carb contribution
+    # Use carb_rate × isf_curve as proxy (avoids CR dependency)
+    carb_supply_t = (pt[:, :, 3] * pt[:, :, 7] / (PK_NORMS[3] * PK_NORMS[7] / 100.0)
+                     ).reshape(bt.shape[0], bt.shape[1], 1)
+    carb_supply_v = (pv[:, :, 3] * pv[:, :, 7] / (PK_NORMS[3] * PK_NORMS[7] / 100.0)
+                     ).reshape(bv.shape[0], bv.shape[1], 1)
+    supply_t = hep_t + carb_supply_t
+    supply_v = hep_v + carb_supply_v
+
+    extras_t = [hep_t, supply_t, demand_t]
+    extras_v = [hep_v, supply_v, demand_v]
+
+    if include_cumulative:
+        h = history_steps
+        # Cumulative supply/demand from window start (captures total metabolic load)
+        # Only computed within history portion to prevent leakage
+        cum_supply_t = np.cumsum(supply_t, axis=1)
+        cum_supply_v = np.cumsum(supply_v, axis=1)
+        cum_demand_t = np.cumsum(demand_t, axis=1)
+        cum_demand_v = np.cumsum(demand_v, axis=1)
+
+        # Scale down cumulative (grows with window length)
+        window_len = bt.shape[1]
+        cum_supply_t /= max(window_len, 1)
+        cum_supply_v /= max(window_len, 1)
+        cum_demand_t /= max(window_len, 1)
+        cum_demand_v /= max(window_len, 1)
+
+        extras_t.extend([cum_supply_t, cum_demand_t])
+        extras_v.extend([cum_supply_v, cum_demand_v])
+
+    result_t = np.concatenate([bt] + extras_t, axis=-1)
+    result_v = np.concatenate([bv] + extras_v, axis=-1)
+
+    return (torch.tensor(result_t, dtype=torch.float32),
+            torch.tensor(result_v, dtype=torch.float32))
+
+
+# ─── EXP-603: Supply/Demand Decomposition on Transformer ───
+
+def run_exp603(args):
+    """EXP-603: Test supply/demand decomposition channels on transformer.
+
+    Current features use net_balance (supply - demand) as a single channel.
+    The Ridge model that beats transformer uses EXPLICIT supply, demand, hepatic
+    as separate features. Does making the physics explicit help the transformer?
+
+    Variants:
+      - std_7ch: baseline (glucose, IOB, COB, net_basal, ins_net, carb_rate, net_bal)
+      - sd_10ch: +hepatic, +supply, +demand (3 new explicit decomposition channels)
+      - sd_cum_12ch: +hepatic, +supply, +demand, +cum_supply, +cum_demand
+      - sd_d1_14ch: sd_10ch + d1 PK derivatives (combines supply/demand + derivatives)
+
+    Tests on w48 (best data volume) to isolate feature contribution.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-603: Supply/Demand Decomposition Channels")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    isf_v48 = data48.get('isf_val')
+    history48 = 24
+
+    # Prepare variants
+    train_std, val_std = prepare_pk_future(data48, use_isf=has_isf, drop_time=True)
+    n_ch_std = train_std.shape[-1]
+
+    train_sd, val_sd = _prepare_supply_demand_channels(
+        data48, history48, use_isf=has_isf, include_cumulative=False)
+    n_ch_sd = train_sd.shape[-1]
+
+    train_sdc, val_sdc = _prepare_supply_demand_channels(
+        data48, history48, use_isf=has_isf, include_cumulative=True)
+    n_ch_sdc = train_sdc.shape[-1]
+
+    # sd + d1: take sd_10ch and add PK derivatives
+    train_d1, val_d1 = _prepare_pk_derivatives_asymmetric(
+        data48, history48, use_isf=has_isf)
+    # Extract just the derivative channels (last 3: d_ins, d_carb, d_gluc)
+    d_ins_t = train_d1[:, :, -3:-2].numpy()
+    d_carb_t = train_d1[:, :, -2:-1].numpy()
+    d_gluc_t = train_d1[:, :, -1:].numpy()
+    d_ins_v = val_d1[:, :, -3:-2].numpy()
+    d_carb_v = val_d1[:, :, -2:-1].numpy()
+    d_gluc_v = val_d1[:, :, -1:].numpy()
+    train_sd_d1 = torch.tensor(
+        np.concatenate([train_sd.numpy(), d_ins_t, d_carb_t, d_gluc_t], axis=-1),
+        dtype=torch.float32)
+    val_sd_d1 = torch.tensor(
+        np.concatenate([val_sd.numpy(), d_ins_v, d_carb_v, d_gluc_v], axis=-1),
+        dtype=torch.float32)
+    n_ch_sd_d1 = train_sd_d1.shape[-1]
+
+    variants = OrderedDict([
+        ('std_7ch', {'train': train_std, 'val': val_std,
+                     'n_ch': n_ch_std, 'label': f'{n_ch_std}ch standard'}),
+        ('sd_10ch', {'train': train_sd, 'val': val_sd,
+                     'n_ch': n_ch_sd, 'label': f'{n_ch_sd}ch +supply/demand/hepatic'}),
+        ('sd_cum_12ch', {'train': train_sdc, 'val': val_sdc,
+                         'n_ch': n_ch_sdc, 'label': f'{n_ch_sdc}ch +supply/demand +cumulative'}),
+        ('sd_d1_14ch', {'train': train_sd_d1, 'val': val_sd_d1,
+                        'n_ch': n_ch_sd_d1, 'label': f'{n_ch_sd_d1}ch sd+d1 derivatives'}),
+    ])
+
+    result = {}
+    for vname, vcfg in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {vcfg['label']} ({vcfg['train'].shape[0]} windows)")
+        print(f"{'─'*40}")
+
+        train_v = vcfg['train']
+        val_v = vcfg['val']
+        nc = vcfg['n_ch']
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=nc, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp603_{vname}_s{seed}.pth')
+            train_bridge(model, train_v, val_v, sp, f'603-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+        per_patient = {}
+        for pinfo in data48['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_v[ti:te]
+            p_val = val_v[vi:ve]
+            p_isf = isf_v48[vi:ve] if isf_v48 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=nc, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp603_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp603_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'603-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                         isf_val=p_isf)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[vname] = {'per_patient': per_patient, 'average': avg}
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {vname} avg: {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-603 Summary: Supply/Demand Decomposition")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    base = result.get('std_7ch', {}).get('average', {})
+    for vname in ['sd_10ch', 'sd_cum_12ch', 'sd_d1_14ch']:
+        vavg = result.get(vname, {}).get('average', {})
+        if base and vavg:
+            print(f"\n  Delta ({vname} - std_7ch):")
+            for k in sorted(base.keys()):
+                if k in vavg:
+                    d = round(vavg[k] - base[k], 2)
+                    print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp603_supply_demand', cfg)
+    return result
+
+
+# ─── EXP-604: Supply/Demand + Transfer for Extended Horizons (w144) ───
+
+def run_exp604(args):
+    """EXP-604: Supply/demand channels + d1 + transfer for w144 extended horizons.
+
+    Combines the best of EXP-600 (d1+transfer w48→w144) with supply/demand
+    decomposition. If supply/demand helps at w48 (EXP-603), the benefit should
+    be LARGER at w144 where:
+    - Longer history (9.3h) means more cumulative metabolic context
+    - Extended horizons (h120-h150) are in the DIA-dominated zone
+    - Transfer from w48 bootstraps features the w144 data is too sparse to learn
+
+    Variants:
+      - d1_transfer: EXP-600 champion (d1 + transfer, no supply/demand)
+      - sd_d1_transfer: supply/demand + d1 + transfer
+      - sd_cum_d1_transfer: supply/demand + cumulative + d1 + transfer
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-604: Supply/Demand + d1 + Transfer w48→w144")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+    future_steps_144 = 32
+
+    # ── Phase 1: Train w48 bases ──
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    history48 = 24
+
+    # Variant A: d1 only (same as EXP-600)
+    train_d1_48, val_d1_48 = _prepare_pk_derivatives_asymmetric(
+        data48, history48, use_isf=has_isf)
+    n_ch_d1 = train_d1_48.shape[-1]
+
+    # Variant B: sd + d1
+    train_sd48, val_sd48 = _prepare_supply_demand_channels(
+        data48, history48, use_isf=has_isf, include_cumulative=False)
+    d_ins_48 = train_d1_48[:, :, -3:-2].numpy()
+    d_carb_48 = train_d1_48[:, :, -2:-1].numpy()
+    d_gluc_48 = train_d1_48[:, :, -1:].numpy()
+    d_ins_v48 = val_d1_48[:, :, -3:-2].numpy()
+    d_carb_v48 = val_d1_48[:, :, -2:-1].numpy()
+    d_gluc_v48 = val_d1_48[:, :, -1:].numpy()
+    train_sd_d1_48 = torch.tensor(
+        np.concatenate([train_sd48.numpy(), d_ins_48, d_carb_48, d_gluc_48], axis=-1),
+        dtype=torch.float32)
+    val_sd_d1_48 = torch.tensor(
+        np.concatenate([val_sd48.numpy(), d_ins_v48, d_carb_v48, d_gluc_v48], axis=-1),
+        dtype=torch.float32)
+    n_ch_sd_d1 = train_sd_d1_48.shape[-1]
+
+    # Train w48 bases
+    w48_states = {}
+    w48_configs = {
+        'd1': (train_d1_48, val_d1_48, n_ch_d1),
+        'sd_d1': (train_sd_d1_48, val_sd_d1_48, n_ch_sd_d1),
+    }
+
+    for cname, (tr, vl, nc) in w48_configs.items():
+        print(f"\n  Training w48 base: {cname} ({nc}ch, {tr.shape[0]} windows)")
+        w48_states[cname] = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            m48 = PKGroupedEncoder(input_dim=nc, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp604_w48_{cname}_s{seed}.pth')
+            train_bridge(m48, tr, vl, sp, f'604-w48-{cname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            w48_states[cname][seed] = ckpt['model_state']
+
+    # ── Phase 2: w144 data ──
+    data144 = load_bridge_data(
+        args.patients_dir, window_size=144,
+        max_patients=cfg['max_patients'], load_isf=True)
+    isf_v144 = data144.get('isf_val')
+    history144 = 144 - future_steps_144
+
+    # d1 channels for w144
+    train_d1_144, val_d1_144 = _prepare_pk_derivatives_asymmetric(
+        data144, history144, use_isf=has_isf)
+
+    # sd + d1 channels for w144
+    train_sd144, val_sd144 = _prepare_supply_demand_channels(
+        data144, history144, use_isf=has_isf, include_cumulative=False)
+    d_ins_144 = train_d1_144[:, :, -3:-2].numpy()
+    d_carb_144 = train_d1_144[:, :, -2:-1].numpy()
+    d_gluc_144 = train_d1_144[:, :, -1:].numpy()
+    d_ins_v144 = val_d1_144[:, :, -3:-2].numpy()
+    d_carb_v144 = val_d1_144[:, :, -2:-1].numpy()
+    d_gluc_v144 = val_d1_144[:, :, -1:].numpy()
+    train_sd_d1_144 = torch.tensor(
+        np.concatenate([train_sd144.numpy(), d_ins_144, d_carb_144, d_gluc_144], axis=-1),
+        dtype=torch.float32)
+    val_sd_d1_144 = torch.tensor(
+        np.concatenate([val_sd144.numpy(), d_ins_v144, d_carb_v144, d_gluc_v144], axis=-1),
+        dtype=torch.float32)
+
+    # sd + cumulative + d1 for w144
+    train_sdc144, val_sdc144 = _prepare_supply_demand_channels(
+        data144, history144, use_isf=has_isf, include_cumulative=True)
+    train_sdc_d1_144 = torch.tensor(
+        np.concatenate([train_sdc144.numpy(), d_ins_144, d_carb_144, d_gluc_144], axis=-1),
+        dtype=torch.float32)
+    val_sdc_d1_144 = torch.tensor(
+        np.concatenate([val_sdc144.numpy(), d_ins_v144, d_carb_v144, d_gluc_v144], axis=-1),
+        dtype=torch.float32)
+    n_ch_sdc_d1 = train_sdc_d1_144.shape[-1]
+
+    print(f"  w144: d1={n_ch_d1}ch, sd_d1={n_ch_sd_d1}ch, sdc_d1={n_ch_sdc_d1}ch, "
+          f"{train_d1_144.shape[0]} windows")
+
+    variants = OrderedDict([
+        ('d1_transfer', {
+            'train': train_d1_144, 'val': val_d1_144,
+            'n_ch': n_ch_d1, 'w48_key': 'd1',
+            'label': f'{n_ch_d1}ch d1+transfer (EXP-600 champion)'}),
+        ('sd_d1_transfer', {
+            'train': train_sd_d1_144, 'val': val_sd_d1_144,
+            'n_ch': n_ch_sd_d1, 'w48_key': 'sd_d1',
+            'label': f'{n_ch_sd_d1}ch sd+d1+transfer'}),
+        ('sdc_d1_transfer', {
+            'train': train_sdc_d1_144, 'val': val_sdc_d1_144,
+            'n_ch': n_ch_sdc_d1, 'w48_key': 'sd_d1',
+            'label': f'{n_ch_sdc_d1}ch sd+cumul+d1+transfer (skip pos_enc)'}),
+    ])
+
+    result = {}
+    for vname, vcfg in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {vcfg['label']} ({vcfg['train'].shape[0]} windows)")
+        print(f"{'─'*40}")
+
+        train_v = vcfg['train']
+        val_v = vcfg['val']
+        nc = vcfg['n_ch']
+        w48_key = vcfg['w48_key']
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=nc, **arch)
+
+            # Transfer from w48 (skip pos_encoder + mismatched shapes)
+            w48_sd = w48_states[w48_key][seed]
+            m_sd = model.state_dict()
+            transferred = 0
+            for key in w48_sd:
+                if 'pos_encoder' in key:
+                    continue
+                if key in m_sd and w48_sd[key].shape == m_sd[key].shape:
+                    m_sd[key] = w48_sd[key]
+                    transferred += 1
+            model.load_state_dict(m_sd)
+            if seed == cfg['seeds'][0]:
+                print(f"  Transferred {transferred} params from w48 {w48_key}")
+
+            sp = os.path.join(cfg['output_dir'], f'exp604_{vname}_s{seed}.pth')
+            train_bridge(model, train_v, val_v, sp, f'604-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps_144)
+
+        per_patient = {}
+        for pinfo in data144['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_v[ti:te]
+            p_val = val_v[vi:ve]
+            p_isf = isf_v144[vi:ve] if isf_v144 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=nc, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp604_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp604_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'604-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps_144)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                         isf_val=p_isf, future_steps=future_steps_144)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[vname] = {'per_patient': per_patient, 'average': avg}
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {vname} avg: {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-604 Summary: Supply/Demand + d1 + Transfer w48→w144")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    champ = result.get('d1_transfer', {}).get('average', {})
+    for vname in ['sd_d1_transfer', 'sdc_d1_transfer']:
+        vavg = result.get(vname, {}).get('average', {})
+        if champ and vavg:
+            print(f"\n  Delta ({vname} - d1_transfer):")
+            for k in sorted(champ.keys()):
+                if k in vavg:
+                    d = round(vavg[k] - champ[k], 2)
+                    print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp604_sd_transfer', cfg)
+    return result
+
+
+# ─── EXP-605: Fidelity-Filtered Training for Extended Horizons ───
+
+def run_exp605(args):
+    """EXP-605: Filter training by patient data fidelity for h120+ accuracy.
+
+    Hypothesis: Patients with insufficient pump/CGM telemetry add noise to
+    base training. Filtering by PK fidelity metrics improves extended-horizon
+    predictions where PK dynamics matter most.
+
+    Fidelity criteria (from exp_fidelity_495.py):
+    - PK variance > threshold (meaningful insulin/carb activity)
+    - Glucose-IOB correlation (insulin actually affects measured BG)
+
+    Variants:
+      - all_patients: standard (all 4 quick-mode patients)
+      - high_fidelity: skip patients with low PK variance
+      - all_then_ft: train on all, but weight FT by fidelity score
+
+    Uses w48 + d1 + per-patient FT as base configuration.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-605: Fidelity-Filtered Training")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    # Load all patients to compute fidelity metrics
+    data_all = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data_all
+    isf_v = data_all.get('isf_val')
+    history48 = 24
+
+    # Compute per-patient fidelity metrics from PK channels
+    fidelity_scores = {}
+    for pinfo in data_all['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        pk_train = data_all['pk_train'][ti:te]  # (n_windows, window_size, 8)
+
+        # PK variance: how much insulin/carb activity exists
+        insulin_var = np.var(pk_train[:, :, 1])  # insulin_net variance
+        carb_var = np.var(pk_train[:, :, 3])      # carb_rate variance
+
+        # Glucose-IOB temporal correlation within windows
+        base_train = data_all['base_train'][ti:te]
+        gluc = base_train[:, :, 0].flatten()  # glucose
+        iob = base_train[:, :, 1].flatten()   # IOB
+        valid = (~np.isnan(gluc)) & (~np.isnan(iob)) & (iob > 0)
+        if valid.sum() > 100:
+            corr = abs(np.corrcoef(gluc[valid], iob[valid])[0, 1])
+        else:
+            corr = 0.0
+
+        pk_var = float(insulin_var + carb_var)
+        score = pk_var * (1 + corr)  # combined fidelity
+
+        fidelity_scores[pid] = {
+            'pk_variance': round(pk_var, 4),
+            'gluc_iob_corr': round(corr, 4),
+            'score': round(score, 4),
+        }
+        print(f"  {pid}: pk_var={pk_var:.4f}, corr={corr:.4f}, score={score:.4f}")
+
+    # Determine high-fidelity patients (above median)
+    scores = {p: f['score'] for p, f in fidelity_scores.items()}
+    median_score = np.median(list(scores.values()))
+    high_fidelity = {p for p, s in scores.items() if s >= median_score}
+    low_fidelity = set(scores.keys()) - high_fidelity
+    print(f"\n  High fidelity (>={median_score:.4f}): {sorted(high_fidelity)}")
+    print(f"  Low fidelity: {sorted(low_fidelity)}")
+
+    # Prepare features
+    train_d1, val_d1 = _prepare_pk_derivatives_asymmetric(
+        data_all, history48, use_isf=has_isf)
+    nc = train_d1.shape[-1]
+
+    # ── Variant 1: All patients (baseline) ──
+    print(f"\n{'─'*40}")
+    print(f"  all_patients: {nc}ch, all {len(data_all['per_patient'])} patients")
+    print(f"{'─'*40}")
+
+    all_per_patient = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=nc, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp605_all_s{seed}.pth')
+        train_bridge(model, train_d1, val_d1, sp, f'605-all-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+    for pinfo in data_all['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        vi, ve = pinfo['val_idx']
+        p_train = train_d1[ti:te]
+        p_val = val_d1[vi:ve]
+        p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            m = PKGroupedEncoder(input_dim=nc, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp605_all_s{seed}.pth')
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            m.load_state_dict(ckpt['model_state'])
+            fp = os.path.join(cfg['output_dir'], f'exp605_all_{pid}_s{seed}.pth')
+            train_bridge(m, p_train, p_val, fp, f'605-all-{pid}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_ft'], patience=10, lr_patience=5, lr=1e-4)
+            report = evaluate_model(m, p_val, device, pk_mode=True, isf_val=p_isf)
+            all_per_patient[pid] = report
+
+    # ── Variant 2: High-fidelity only base training ──
+    # Build filtered training data (only high-fidelity patients in base)
+    hf_train_indices = []
+    for pinfo in data_all['per_patient']:
+        if pinfo['name'] in high_fidelity:
+            ti, te = pinfo['train_idx']
+            hf_train_indices.extend(range(ti, te))
+
+    if len(hf_train_indices) > 100:
+        hf_train = train_d1[hf_train_indices]
+        hf_val = val_d1  # validate on all
+
+        print(f"\n{'─'*40}")
+        print(f"  high_fidelity: {nc}ch, {len(hf_train)} train windows "
+              f"(from {len(high_fidelity)} patients)")
+        print(f"{'─'*40}")
+
+        hf_per_patient = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=nc, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp605_hf_s{seed}.pth')
+            train_bridge(model, hf_train, hf_val, sp, f'605-hf-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+        for pinfo in data_all['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_d1[ti:te]
+            p_val = val_d1[vi:ve]
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=nc, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp605_hf_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp605_hf_{pid}_s{seed}.pth')
+                ft_epochs = cfg['epochs_ft'] * 2 if pid in low_fidelity else cfg['epochs_ft']
+                train_bridge(m, p_train, p_val, fp, f'605-hf-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=ft_epochs, patience=10, lr_patience=5, lr=1e-4)
+                report = evaluate_model(m, p_val, device, pk_mode=True, isf_val=p_isf)
+                hf_per_patient[pid] = report
+    else:
+        hf_per_patient = {}
+        print(f"  Skipping high_fidelity variant (only {len(hf_train_indices)} windows)")
+
+    # Build results
+    result = {}
+    for label, pp in [('all_patients', all_per_patient),
+                       ('high_fidelity', hf_per_patient)]:
+        if not pp:
+            continue
+        avg = {}
+        for pid, rep in pp.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+        result[label] = {'per_patient': pp, 'average': avg,
+                         'fidelity_scores': fidelity_scores}
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {label} avg: {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-605 Summary: Fidelity-Filtered Training")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    all_avg = result.get('all_patients', {}).get('average', {})
+    hf_avg = result.get('high_fidelity', {}).get('average', {})
+    if all_avg and hf_avg:
+        print(f"\n  Delta (high_fidelity - all_patients):")
+        for k in sorted(all_avg.keys()):
+            if k in hf_avg:
+                d = round(hf_avg[k] - all_avg[k], 2)
+                print(f"    {k}: {d:+.2f}")
+
+    # Per-patient comparison
+    print(f"\n  Per-patient detail:")
+    for pid in sorted(fidelity_scores.keys()):
+        fs = fidelity_scores[pid]
+        all_mae = all_per_patient.get(pid, {}).get('overall_mae', '—')
+        hf_mae = hf_per_patient.get(pid, {}).get('overall_mae', '—')
+        fid = '★' if pid in high_fidelity else ' '
+        print(f"    {fid} {pid}: fid={fs['score']:.3f}, all={all_mae}, hf={hf_mae}")
+
+    _save_results(result, 'exp605_fidelity_filtered', cfg)
+    return result
+
+
+# ─── EXP-606: Supply/Demand Extended Horizon (h180-h360 DIA Valley) ───
+
+def run_exp606(args):
+    """EXP-606: Supply/demand decomposition at extended horizons (h180-h360).
+
+    EXP-603 showed sd_cum helps at h120 (-1.16 MAE) on w48, but w48 only
+    reaches h120. The DIA valley (h180-h360) is where cumulative metabolic
+    integrals should matter MOST — total insulin load and total carb absorption
+    determine BG trajectory over 3-6 hours.
+
+    Uses w144 with 72 future steps:
+      - 72 history steps (6h context — covers full DIA)
+      - 72 future steps (6h forecast — h5 through h360)
+      - Evaluates h30, h60, h90, h120, h150, h180, h240, h300, h360
+
+    Also uses d1+transfer from w48 (proven in EXP-600: -1.17 overall).
+
+    Variants:
+      - std_7ch: baseline (no supply/demand, no transfer)
+      - d1_transfer: d1 + transfer (EXP-600 champion extended to h360)
+      - sd_cum_d1_transfer: supply/demand cumulative + d1 + transfer
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-606: Supply/Demand Extended Horizon (h180-h360)")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+    future_steps_ext = 72  # 72 × 5min = h360
+
+    # ── Phase 1: Train w48 base with d1 (for transfer) ──
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    history48 = 24
+
+    train_d1_48, val_d1_48 = _prepare_pk_derivatives_asymmetric(
+        data48, history48, use_isf=has_isf)
+    n_ch_d1 = train_d1_48.shape[-1]
+
+    # Also train w48 base with sd_cum + d1 (for sd transfer)
+    train_sd48, val_sd48 = _prepare_supply_demand_channels(
+        data48, history48, use_isf=has_isf, include_cumulative=True)
+    # Append d1 derivatives to sd_cum
+    d_ins_48 = train_d1_48[:, :, -3:-2].numpy()
+    d_carb_48 = train_d1_48[:, :, -2:-1].numpy()
+    d_gluc_48 = train_d1_48[:, :, -1:].numpy()
+    d_ins_v48 = val_d1_48[:, :, -3:-2].numpy()
+    d_carb_v48 = val_d1_48[:, :, -2:-1].numpy()
+    d_gluc_v48 = val_d1_48[:, :, -1:].numpy()
+    train_sd_d1_48 = torch.tensor(
+        np.concatenate([train_sd48.numpy(), d_ins_48, d_carb_48, d_gluc_48], axis=-1),
+        dtype=torch.float32)
+    val_sd_d1_48 = torch.tensor(
+        np.concatenate([val_sd48.numpy(), d_ins_v48, d_carb_v48, d_gluc_v48], axis=-1),
+        dtype=torch.float32)
+    n_ch_sd_d1 = train_sd_d1_48.shape[-1]
+
+    print(f"  w48: d1={n_ch_d1}ch, sd_cum_d1={n_ch_sd_d1}ch, "
+          f"{train_d1_48.shape[0]} train windows")
+
+    w48_states = {}
+    for cname, tr, vl, nc in [('d1', train_d1_48, val_d1_48, n_ch_d1),
+                                ('sd_d1', train_sd_d1_48, val_sd_d1_48, n_ch_sd_d1)]:
+        w48_states[cname] = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            m48 = PKGroupedEncoder(input_dim=nc, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp606_w48_{cname}_s{seed}.pth')
+            train_bridge(m48, tr, vl, sp, f'606-w48-{cname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            w48_states[cname][seed] = ckpt['model_state']
+
+    # ── Phase 2: Load w144 data with 72 future steps ──
+    data144 = load_bridge_data(
+        args.patients_dir, window_size=144,
+        max_patients=cfg['max_patients'], load_isf=True)
+    isf_v144 = data144.get('isf_val')
+    history144 = 144 - future_steps_ext  # 72 history steps (6h)
+
+    # Standard 7ch
+    train_std144, val_std144 = prepare_pk_future(data144, use_isf=has_isf, drop_time=True)
+    n_ch_std = train_std144.shape[-1]
+
+    # d1 channels
+    train_d1_144, val_d1_144 = _prepare_pk_derivatives_asymmetric(
+        data144, history144, use_isf=has_isf)
+
+    # sd_cum + d1 channels
+    train_sd144, val_sd144 = _prepare_supply_demand_channels(
+        data144, history144, use_isf=has_isf, include_cumulative=True)
+    d_ins_144 = train_d1_144[:, :, -3:-2].numpy()
+    d_carb_144 = train_d1_144[:, :, -2:-1].numpy()
+    d_gluc_144 = train_d1_144[:, :, -1:].numpy()
+    d_ins_v144 = val_d1_144[:, :, -3:-2].numpy()
+    d_carb_v144 = val_d1_144[:, :, -2:-1].numpy()
+    d_gluc_v144 = val_d1_144[:, :, -1:].numpy()
+    train_sd_d1_144 = torch.tensor(
+        np.concatenate([train_sd144.numpy(), d_ins_144, d_carb_144, d_gluc_144], axis=-1),
+        dtype=torch.float32)
+    val_sd_d1_144 = torch.tensor(
+        np.concatenate([val_sd144.numpy(), d_ins_v144, d_carb_v144, d_gluc_v144], axis=-1),
+        dtype=torch.float32)
+
+    print(f"\n  w144: std={n_ch_std}ch, d1={train_d1_144.shape[-1]}ch, "
+          f"sd_cum_d1={train_sd_d1_144.shape[-1]}ch, "
+          f"{train_std144.shape[0]} train, future_steps={future_steps_ext}")
+
+    variants = OrderedDict([
+        ('std_7ch', {
+            'train': train_std144, 'val': val_std144,
+            'n_ch': n_ch_std, 'transfer': False, 'transfer_key': None,
+            'label': f'{n_ch_std}ch standard'}),
+        ('d1_transfer', {
+            'train': train_d1_144, 'val': val_d1_144,
+            'n_ch': n_ch_d1, 'transfer': True, 'transfer_key': 'd1',
+            'label': f'{n_ch_d1}ch d1 + transfer'}),
+        ('sd_cum_d1_transfer', {
+            'train': train_sd_d1_144, 'val': val_sd_d1_144,
+            'n_ch': n_ch_sd_d1, 'transfer': True, 'transfer_key': 'sd_d1',
+            'label': f'{n_ch_sd_d1}ch sd_cum + d1 + transfer'}),
+    ])
+
+    result = {}
+    for vname, vcfg in variants.items():
+        nc = vcfg['n_ch']
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {vcfg['label']} ({vcfg['train'].shape[0]} windows)")
+        print(f"{'─'*40}")
+
+        per_patient = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=nc, **arch)
+
+            # Transfer if applicable
+            if vcfg['transfer'] and vcfg['transfer_key'] in w48_states:
+                src_state = w48_states[vcfg['transfer_key']][seed]
+                tgt_state = model.state_dict()
+                transferred = 0
+                for k in src_state:
+                    if k in tgt_state and 'pos_encoder' not in k:
+                        if src_state[k].shape == tgt_state[k].shape:
+                            tgt_state[k] = src_state[k]
+                            transferred += 1
+                model.load_state_dict(tgt_state)
+                if seed == cfg['seeds'][0]:
+                    print(f"    Transferred {transferred} params from w48")
+
+            # Base training on w144
+            sp = os.path.join(cfg['output_dir'], f'exp606_{vname}_s{seed}.pth')
+            train_bridge(model, vcfg['train'], vcfg['val'], sp,
+                         f'606-{vname}-s{seed}', device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps_ext)
+
+
+        # Per-patient fine-tuning (using per_patient info from data dict)
+        per_patient = {}
+        for pinfo in data144['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = vcfg['train'][ti:te]
+            p_val = vcfg['val'][vi:ve]
+            p_isf = isf_v144[vi:ve] if isf_v144 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                ft_model = PKGroupedEncoder(input_dim=nc, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp606_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                ft_model.load_state_dict(ckpt['model_state'])
+
+                ftp = os.path.join(cfg['output_dir'], f'exp606_{vname}_{pid}_s{seed}.pth')
+                train_bridge(ft_model, p_train, p_val, ftp,
+                             f'606-{vname}-{pid}-s{seed}', device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps_ext)
+
+                rep = evaluate_model(ft_model, p_val, device, pk_mode=True,
+                                     isf_val=p_isf, future_steps=future_steps_ext)
+                per_patient[pid] = rep
+
+        # Average
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+        result[vname] = {'per_patient': per_patient, 'average': avg}
+
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240', 'h300', 'h360']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {vname} avg: {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-606 Summary: Supply/Demand Extended Horizon (h180-h360)")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240', 'h300', 'h360']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    # Deltas vs baseline
+    base_avg = result.get('std_7ch', {}).get('average', {})
+    for vname in ['d1_transfer', 'sd_cum_d1_transfer']:
+        vavg = result.get(vname, {}).get('average', {})
+        if base_avg and vavg:
+            print(f"\n  Delta ({vname} - std_7ch):")
+            for k in sorted(vavg.keys()):
+                if k in base_avg:
+                    d = round(vavg[k] - base_avg[k], 2)
+                    print(f"    {k}: {d:+.2f}")
+
+    # Delta sd_cum vs d1 (isolates supply/demand contribution)
+    d1_avg = result.get('d1_transfer', {}).get('average', {})
+    sd_avg = result.get('sd_cum_d1_transfer', {}).get('average', {})
+    if d1_avg and sd_avg:
+        print(f"\n  Delta (sd_cum_d1 - d1, isolating supply/demand):")
+        for k in ['h120', 'h150', 'h180', 'h240', 'h300', 'h360', 'overall_mae']:
+            if k in d1_avg and k in sd_avg:
+                d = round(sd_avg[k] - d1_avg[k], 2)
+                print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp606_sd_extended_horizon', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -14845,6 +15764,10 @@ EXPERIMENTS = {
     '600': run_exp600,
     '601': run_exp601,
     '602': run_exp602,
+    '603': run_exp603,
+    '604': run_exp604,
+    '605': run_exp605,
+    '606': run_exp606,
 }
 
 
