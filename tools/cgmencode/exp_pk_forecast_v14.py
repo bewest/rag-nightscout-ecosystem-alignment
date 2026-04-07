@@ -4982,6 +4982,557 @@ def run_exp435(args):
     return result
 
 
+# ─── EXP-436: Horizon-Routed Ensemble ───
+
+def run_exp436(args):
+    """EXP-436: Horizon-routed ensemble — best model per horizon band.
+
+    EXP-435 showed: w48 is best for h30-h120 (more data wins) but w96 is
+    competitive at h240+ (extended PK wins). The solution is to train
+    SEPARATE models for each horizon band and route predictions.
+
+    This avoids the fundamental trade-off: short-horizon models don't
+    sacrifice data for unused long-range context, while long-horizon models
+    get the DIA-length future PK they need.
+
+    Architecture:
+      - Short model: w48 (24 hist + 24 future), predict h5-h120
+      - Long model:  w96 (24 hist + 72 future), predict h120-h360
+      - Combined: short predictions up to h120, long predictions h120+
+
+    The combined system gives best-of-both: data-rich short-range accuracy
+    with PK-informed long-range coverage.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-436: Horizon-Routed Ensemble")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    # ── Train Short Model (w48, symmetric, for h30-h120) ──
+    print(f"\n{'─'*40}")
+    print(f"  SHORT MODEL: w48 (24hist + 24future → h120)")
+    print(f"{'─'*40}")
+
+    data_short = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data_short
+    train_short, val_short = prepare_pk_future(data_short, use_isf=has_isf, drop_time=False)
+    isf_v_short = data_short.get('isf_val')
+    n_ch = train_short.shape[-1]
+
+    print(f"  {train_short.shape[0]} train, {val_short.shape[0]} val, {n_ch}ch")
+
+    short_base_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp436_short_base_s{seed}.pth')
+        print(f"\n  Short base s{seed}:")
+        train_bridge(model, train_short, val_short, sp, f'436-short-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        short_base_states[seed] = ckpt['model_state']
+
+    # ── Train Long Model (w96, asymmetric 24hist+72future, for h120-h360) ──
+    print(f"\n{'─'*40}")
+    print(f"  LONG MODEL: w96 (24hist + 72future → h360)")
+    print(f"{'─'*40}")
+
+    data_long = load_bridge_data(
+        args.patients_dir, window_size=96,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf_l = 'isf_val' in data_long
+    train_long, val_long = prepare_pk_future(data_long, use_isf=has_isf_l, drop_time=False)
+    isf_v_long = data_long.get('isf_val')
+
+    print(f"  {train_long.shape[0]} train, {val_long.shape[0]} val, {n_ch}ch")
+
+    long_base_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp436_long_base_s{seed}.pth')
+        print(f"\n  Long base s{seed}:")
+        train_bridge(model, train_long, val_long, sp, f'436-long-s{seed}',
+                     device, pk_mode=True, future_steps=72,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        long_base_states[seed] = ckpt['model_state']
+
+    # ── Per-Patient FT + Routed Evaluation ──
+    print(f"\n{'='*40}")
+    print(f"  Per-Patient FT + Horizon Routing")
+    print(f"{'='*40}")
+
+    # Build patient alignment between short and long datasets
+    short_patients = {p['name']: p for p in data_short['per_patient']}
+    long_patients = {p['name']: p for p in data_long['per_patient']}
+    common_patients = sorted(set(short_patients) & set(long_patients))
+
+    per_patient_results = {}
+    for pid in common_patients:
+        pinfo_s = short_patients[pid]
+        pinfo_l = long_patients[pid]
+
+        # Short model FT data
+        ti_s, te_s = pinfo_s['train_idx']
+        vi_s, ve_s = pinfo_s['val_idx']
+        p_train_s = train_short[ti_s:te_s]
+        p_val_s = val_short[vi_s:ve_s]
+        p_isf_s = isf_v_short[vi_s:ve_s] if isf_v_short is not None else None
+
+        # Long model FT data
+        ti_l, te_l = pinfo_l['train_idx']
+        vi_l, ve_l = pinfo_l['val_idx']
+        p_train_l = train_long[ti_l:te_l]
+        p_val_l = val_long[vi_l:ve_l]
+        p_isf_l = isf_v_long[vi_l:ve_l] if isf_v_long is not None else None
+
+        print(f"\n  Patient {pid} (short:{pinfo_s['n_train']}tr, long:{pinfo_l['n_train']}tr):")
+
+        # FT + evaluate short model
+        short_ft_models = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            model.load_state_dict(short_base_states[seed])
+            sp = os.path.join(cfg['output_dir'], f'exp436_short_ft_{pid}_s{seed}.pth')
+            train_bridge(model, p_train_s, p_val_s, sp,
+                         f'436-sft-{pid}-s{seed}', device, pk_mode=True,
+                         lr=1e-4, epochs=cfg['epochs_ft'],
+                         patience=10, lr_patience=5)
+            short_ft_models.append(copy.deepcopy(model))
+
+        short_ens = ensemble_evaluate(short_ft_models, p_val_s, device,
+                                      pk_mode=True, isf_val=p_isf_s)
+        print(f"    Short: MAE={short_ens['overall_mae']:.1f}, "
+              f"h60={short_ens.get('h60','?')}, h120={short_ens.get('h120','?')}")
+
+        # FT + evaluate long model
+        long_ft_models = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            model.load_state_dict(long_base_states[seed])
+            sp = os.path.join(cfg['output_dir'], f'exp436_long_ft_{pid}_s{seed}.pth')
+            train_bridge(model, p_train_l, p_val_l, sp,
+                         f'436-lft-{pid}-s{seed}', device, pk_mode=True,
+                         future_steps=72,
+                         lr=1e-4, epochs=cfg['epochs_ft'],
+                         patience=10, lr_patience=5)
+            long_ft_models.append(copy.deepcopy(model))
+
+        long_ens = ensemble_evaluate(long_ft_models, p_val_l, device,
+                                     pk_mode=True, isf_val=p_isf_l,
+                                     future_steps=72)
+        print(f"    Long:  MAE={long_ens['overall_mae']:.1f}, "
+              f"h60={long_ens.get('h60','?')}, h120={long_ens.get('h120','?')}, "
+              f"h240={long_ens.get('h240','?')}, h360={long_ens.get('h360','?')}")
+
+        # Routed result: short for h30-h120, long for h150-h360
+        routed = {}
+        for h in ['h30', 'h60', 'h90', 'h120']:
+            if h in short_ens:
+                routed[h] = short_ens[h]
+        for h in ['h150', 'h180', 'h240', 'h300', 'h360']:
+            if h in long_ens:
+                routed[h] = long_ens[h]
+
+        per_patient_results[pid] = {
+            'short_overall': short_ens['overall_mae'],
+            'long_overall': long_ens['overall_mae'],
+            'short_horizons': {k: v for k, v in short_ens.items() if k.startswith('h')},
+            'long_horizons': {k: v for k, v in long_ens.items() if k.startswith('h')},
+            'routed': routed,
+        }
+        print(f"    Routed: {routed}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-436 SUMMARY — Horizon-Routed Ensemble")
+    print(f"{'='*60}")
+
+    # Per-horizon mean across patients
+    all_horizons = sorted(set(h for pr in per_patient_results.values()
+                               for h in pr['routed']))
+    print(f"\n  Routed ensemble (best model per horizon band):")
+    print(f"  {'Horizon':<8} {'MAE':>6} {'Source':>8}")
+    print(f"  {'─'*24}")
+    for h in all_horizons:
+        vals = [pr['routed'][h] for pr in per_patient_results.values() if h in pr['routed']]
+        source = 'short' if h in ['h30', 'h60', 'h90', 'h120'] else 'long'
+        if vals:
+            print(f"  {h:<8} {np.mean(vals):>6.1f} {source:>8}")
+
+    # Compare to single-model baselines
+    short_means = {h: np.mean([pr['short_horizons'].get(h, float('nan'))
+                               for pr in per_patient_results.values()])
+                   for h in ['h30', 'h60', 'h90', 'h120']}
+    long_means = {h: np.mean([pr['long_horizons'].get(h, float('nan'))
+                              for pr in per_patient_results.values()])
+                  for h in all_horizons if any(h in pr['long_horizons']
+                                               for pr in per_patient_results.values())}
+
+    print(f"\n  Comparison:")
+    print(f"  {'Horizon':<8} {'Short':>7} {'Long':>7} {'Routed':>7} {'Δ vs best single':>16}")
+    print(f"  {'─'*45}")
+    for h in all_horizons:
+        s = short_means.get(h, float('nan'))
+        l = long_means.get(h, float('nan'))
+        r = np.mean([pr['routed'][h] for pr in per_patient_results.values() if h in pr['routed']])
+        best_single = min(x for x in [s, l] if not np.isnan(x))
+        delta = r - best_single
+        s_str = f"{s:.1f}" if not np.isnan(s) else "—"
+        l_str = f"{l:.1f}" if not np.isnan(l) else "—"
+        print(f"  {h:<8} {s_str:>7} {l_str:>7} {r:>7.1f} {delta:>+14.1f}")
+
+    print(f"\n  EXP-411 w48 full ref: 13.50 (h30-h120 only)")
+    print(f"  EXP-435 w96 quick ref: h240=27.02, h360=28.95")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-436: Horizon-Routed Ensemble',
+        'per_patient': per_patient_results,
+        'n_patients': len(per_patient_results),
+    }
+    _save_results(result, 'exp436_horizon_routed', cfg)
+    return result
+
+
+# ─── EXP-437: Extended History for Long-Range Model ───
+
+def run_exp437(args):
+    """EXP-437: Does more history improve long-range (h120-h360) predictions?
+
+    EXP-435/436 used 24-step (2h) history for all models. Prior experiments
+    (EXP-429/430) showed MORE HISTORY DOESN'T HELP at w48 for h30-h120.
+    But PK-driven long-horizon predictions might benefit from longer history
+    because insulin dynamics unfold over DIA (5-6h).
+
+    Tests:
+      - w96  (24 hist + 72 future)  ← EXP-435 baseline
+      - w120 (48 hist + 72 future)  ← 4h history
+      - w144 (72 hist + 72 future)  ← 6h history (= DIA)
+    All have same 72-step (6h) future, varying only history length.
+    If longer history helps, it means the model can extract useful PK context
+    from the past DIA period to improve long-range forecasts.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-437: Extended History for Long-Range Forecasting")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    configs = [
+        (96,  24, 72, 'hist2h'),    # 2h history, 6h future (EXP-435 baseline)
+        (120, 48, 72, 'hist4h'),    # 4h history, 6h future
+        (144, 72, 72, 'hist6h'),    # 6h history (=DIA), 6h future
+    ]
+
+    all_results = {}
+    for ws, hist, fut, label in configs:
+        print(f"\n{'─'*40}")
+        print(f"  {label}: {hist*5}min hist + {fut*5}min future (w{ws})")
+        print(f"{'─'*40}")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=ws,
+            max_patients=cfg['max_patients'], load_isf=True)
+        has_isf = 'isf_val' in data
+        train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+        isf_v = data.get('isf_val')
+        n_ch = train_x.shape[-1]
+
+        print(f"  {train_x.shape[0]} train, {val_x.shape[0]} val, {n_ch}ch, "
+              f"seq_len={ws}")
+
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp437_{label}_base_s{seed}.pth')
+
+            print(f"\n  Base s{seed} ({label}):")
+            train_bridge(model, train_x, val_x, sp, f'437-{label}-s{seed}',
+                         device, pk_mode=True, future_steps=fut,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+
+        # Per-patient FT + evaluation
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]; p_val = val_x[vi:ve]
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'], f'exp437_{label}_ft_{pid}_s{seed}.pth')
+                train_bridge(model, p_train, p_val, sp,
+                             f'437-{label}-ft-{pid}-s{seed}', device,
+                             pk_mode=True, future_steps=fut,
+                             lr=1e-4, epochs=cfg['epochs_ft'],
+                             patience=10, lr_patience=5)
+                ft_models.append(copy.deepcopy(model))
+
+            ens = ensemble_evaluate(ft_models, p_val, device, pk_mode=True,
+                                    isf_val=p_isf, future_steps=fut)
+            per_patient[pid] = ens
+            horizons_str = ', '.join(f"{h}={ens[h]:.1f}" for h in
+                                     ['h120', 'h180', 'h240', 'h300', 'h360']
+                                     if h in ens)
+            print(f"  {pid}: MAE={ens['overall_mae']:.1f}, {horizons_str}")
+
+        # Compute mean per horizon
+        mean_horizons = {}
+        for h in ['h30', 'h60', 'h90', 'h120', 'h150', 'h180', 'h240', 'h300', 'h360']:
+            vals = [pp[h] for pp in per_patient.values() if h in pp]
+            if vals:
+                mean_horizons[h] = np.mean(vals)
+
+        all_results[label] = {
+            'window_size': ws, 'history': hist, 'future': fut,
+            'per_patient': {k: v for k, v in per_patient.items()},
+            'mean_horizons': mean_horizons,
+            'n_train': train_x.shape[0],
+        }
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-437 SUMMARY — Extended History for Long-Range")
+    print(f"{'='*60}")
+
+    all_horizons = sorted(set(h for r in all_results.values() for h in r['mean_horizons']))
+    print(f"\n  {'Config':<12} {'Train':>6}", end='')
+    for h in all_horizons:
+        print(f" {h:>6}", end='')
+    print()
+    print(f"  {'─'*(12 + 7 + 7*len(all_horizons))}")
+
+    for label, r in all_results.items():
+        print(f"  {label:<12} {r['n_train']:>6}", end='')
+        for h in all_horizons:
+            v = r['mean_horizons'].get(h)
+            print(f" {v:>6.1f}" if v else f" {'—':>6}", end='')
+        print()
+
+    # Delta vs baseline (hist2h)
+    baseline = all_results.get('hist2h', {}).get('mean_horizons', {})
+    print(f"\n  Delta vs hist2h baseline:")
+    for label, r in all_results.items():
+        if label == 'hist2h':
+            continue
+        print(f"  {label:<12}", end='')
+        for h in all_horizons:
+            v = r['mean_horizons'].get(h)
+            b = baseline.get(h)
+            if v is not None and b is not None:
+                print(f" {v-b:>+6.1f}", end='')
+            else:
+                print(f" {'—':>6}", end='')
+        print()
+
+    print(f"\n  Question: Does DIA-length history (6h) help predict beyond DIA?")
+    print(f"  If hist6h < hist2h at h240+, answer is YES.")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-437: Extended History for Long-Range',
+        'variants': all_results,
+    }
+    _save_results(result, 'exp437_extended_history_longrange', cfg)
+    return result
+
+
+# ─── EXP-438: Patient Fidelity Gating ───
+
+def run_exp438(args):
+    """EXP-438: Patient-level fidelity gating using settings assessment scores.
+
+    Settings assessment report (2026-04-07) provides per-patient fidelity
+    scores: k=84, d=52, j=50, h=44, g=36, b=35, f=32, e=20, c=17, a=17, i=15.
+
+    Hypothesis: Training ONLY on high-fidelity patients (score ≥ 35) and then
+    fine-tuning on each patient individually should outperform training on all
+    patients, because low-fidelity patients introduce noise into base training.
+
+    Tests:
+      - all_patients: standard pooled training (all available patients)
+      - gold_only: base train only on patients with fidelity ≥ 45 (k,d,j,h)
+      - silver+: base train on fidelity ≥ 35 (k,d,j,h,g,b)
+      - gold_ft_all: base on gold, FT on all patients individually
+
+    This requires full mode (11 patients) to be meaningful. In quick mode (4
+    patients), all may be similar quality, reducing discriminative power.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    # Per-patient fidelity from settings assessment
+    FIDELITY_SCORES = {
+        'k': 84, 'd': 52, 'j': 50, 'h': 44, 'g': 36, 'b': 35,
+        'f': 32, 'e': 20, 'c': 17, 'a': 17, 'i': 15
+    }
+    GOLD_THRESHOLD = 45   # k, d, j, h
+    SILVER_THRESHOLD = 35  # + g, b
+
+    print(f"\n{'='*60}")
+    print(f"EXP-438: Patient Fidelity Gating")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    # Load full dataset
+    data = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_all, val_all = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    isf_v_all = data.get('isf_val')
+    n_ch = train_all.shape[-1]
+
+    # Classify patients
+    patient_names = [p['name'] for p in data['per_patient']]
+    gold_patients = [p for p in patient_names if FIDELITY_SCORES.get(p, 50) >= GOLD_THRESHOLD]
+    silver_patients = [p for p in patient_names if FIDELITY_SCORES.get(p, 50) >= SILVER_THRESHOLD]
+
+    print(f"\n  Patients: {patient_names}")
+    print(f"  Gold (≥{GOLD_THRESHOLD}): {gold_patients}")
+    print(f"  Silver+ (≥{SILVER_THRESHOLD}): {silver_patients}")
+
+    # Build filtered training sets
+    patient_map = {p['name']: p for p in data['per_patient']}
+
+    def _get_filtered_train(patient_subset):
+        """Get training data only from specified patients."""
+        chunks = []
+        for pid in patient_subset:
+            if pid in patient_map:
+                pi = patient_map[pid]
+                ti, te = pi['train_idx']
+                chunks.append(train_all[ti:te].numpy() if isinstance(train_all, torch.Tensor) else train_all[ti:te])
+        if not chunks:
+            return train_all[:0]
+        arr = np.concatenate(chunks, axis=0)
+        return torch.tensor(arr, dtype=torch.float32)
+
+    train_gold = _get_filtered_train(gold_patients)
+    train_silver = _get_filtered_train(silver_patients)
+
+    print(f"  All train: {train_all.shape[0]}, Gold: {train_gold.shape[0]}, "
+          f"Silver+: {train_silver.shape[0]}")
+
+    configs = [
+        ('all_patients', train_all),
+        ('gold_only', train_gold),
+        ('silver_plus', train_silver),
+    ]
+
+    all_results = {}
+    for label, train_data in configs:
+        if len(train_data) < 50:
+            print(f"\n  {label}: SKIP (only {len(train_data)} windows)")
+            continue
+
+        print(f"\n{'─'*40}")
+        print(f"  {label}: {len(train_data)} training windows")
+        print(f"{'─'*40}")
+
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp438_{label}_base_s{seed}.pth')
+
+            train_bridge(model, train_data, val_all, sp, f'438-{label}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+
+        # Per-patient FT and evaluation (FT always on that patient's own data)
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_all[ti:te]; p_val = val_all[vi:ve]
+            p_isf = isf_v_all[vi:ve] if isf_v_all is not None else None
+            fid = FIDELITY_SCORES.get(pid, 50)
+
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'], f'exp438_{label}_ft_{pid}_s{seed}.pth')
+                train_bridge(model, p_train, p_val, sp,
+                             f'438-{label}-ft-{pid}-s{seed}', device,
+                             pk_mode=True, lr=1e-4,
+                             epochs=cfg['epochs_ft'],
+                             patience=10, lr_patience=5)
+                ft_models.append(copy.deepcopy(model))
+
+            ens = ensemble_evaluate(ft_models, p_val, device, pk_mode=True,
+                                    isf_val=p_isf)
+            per_patient[pid] = {**ens, 'fidelity': fid}
+            print(f"  {pid} (fid={fid}): MAE={ens['overall_mae']:.1f}")
+
+        overall = np.mean([pp['overall_mae'] for pp in per_patient.values()])
+        all_results[label] = {
+            'per_patient': per_patient,
+            'overall_mae': overall,
+            'n_train': len(train_data),
+        }
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-438 SUMMARY — Patient Fidelity Gating")
+    print(f"{'='*60}")
+
+    for label, r in all_results.items():
+        print(f"\n  {label} (n_train={r['n_train']}): overall={r['overall_mae']:.2f}")
+        for pid in sorted(r['per_patient'], key=lambda p: r['per_patient'][p]['fidelity'], reverse=True):
+            pp = r['per_patient'][pid]
+            print(f"    {pid} (fid={pp['fidelity']}): {pp['overall_mae']:.1f}")
+
+    # Compare to all_patients baseline
+    if 'all_patients' in all_results:
+        baseline = all_results['all_patients']['overall_mae']
+        print(f"\n  Delta vs all_patients ({baseline:.2f}):")
+        for label, r in all_results.items():
+            if label != 'all_patients':
+                delta = r['overall_mae'] - baseline
+                print(f"    {label}: {delta:+.2f}")
+
+    print(f"\n  NOTE: In quick mode (4 patients), filtering may not differentiate.")
+    print(f"  Full mode (11 patients) needed for meaningful fidelity spread.")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-438: Patient Fidelity Gating',
+        'variants': all_results,
+        'fidelity_scores': FIDELITY_SCORES,
+    }
+    _save_results(result, 'exp438_fidelity_gating', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -5010,6 +5561,9 @@ EXPERIMENTS = {
     '433': run_exp433,
     '434': run_exp434,
     '435': run_exp435,
+    '436': run_exp436,
+    '437': run_exp437,
+    '438': run_exp438,
 }
 
 
