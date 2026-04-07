@@ -885,3 +885,206 @@ Based on these findings, the most promising directions are:
 8. **Temporal block CV with regime-aware model**: True generalization estimate for the 0.581 SOTA
 9. **Error correlation structure exploitation**: The 0.943 autocorrelation suggests a correction at proper lag
 10. **Mixed-effects model**: Patient random intercepts/slopes with fixed feature effects
+
+---
+
+## Part VII: Combination Engineering and Model Limits (EXP-961–970)
+
+### Campaign Context
+
+After 160 experiments, the frontier stood at R²=0.581 (EXP-951, regime+stacking) with an oracle
+ceiling of 0.616. This batch systematically tests whether the remaining Δ=0.035 gap can be closed
+by combining all productive techniques, while also establishing rigorous validation baselines.
+
+### Results Summary
+
+| EXP | Experiment | R² | Delta | Key Finding |
+|-----|------------|-----|-------|-------------|
+| 961 | Correct AR (lag-13) | 0.577 | 0.000 | α=0.014 — confirms leakage fix, causal AR worthless |
+| 962 | Regime + Polynomial | **0.584** | +0.007 | Regime+poly ARE additive → NEW SOTA |
+| 963 | Regime + Interactions + Poly | **0.585** | +0.008 | Triple combo → **NEW CAMPAIGN SOTA** |
+| 964 | Extended Horizon Stacking | 0.577 | 0.000 | 90/120-min horizons add zero information |
+| 965 | Block CV of SOTA | 0.542 | −0.039 | Honest generalization: 0.542 (overstatement=0.039) |
+| 966 | Conformal Prediction | — | — | 90%: cov=0.924 width=128, 80%: cov=0.833 width=91 |
+| 967 | Patient Clustering | 0.248 | −0.017 | TIR-based clusters WORSE than pooled LOPO |
+| 968 | Error Autocorrelation | 0.576 | −0.001 | Causal error features (lag-13) worthless |
+| 969 | Mixed-Effects | **0.635** | — | Patient intercepts: cross-patient R²=0.635! |
+| 970 | Ultimate Combined | 0.584 | +0.007 | 50 features, 94.8% of oracle |
+
+### Detailed Analysis
+
+#### EXP-961: The Leakage Proof
+At proper causal lag-13 (65 minutes), the AR correction weight α=0.014 across patients
+(range: 0.000–0.029). This definitively proves that the EXP-952 "breakthrough" (R²=0.929,
+α=0.934) was pure data leakage — the lag-1 residual literally contained the future target.
+**Lesson**: Any feature built from prediction residuals must use lag ≥ h_steps+1.
+
+Per-patient alpha values:
+| Patient | α | Note |
+|---------|------|------|
+| a | 0.000 | Zero correction needed |
+| b | 0.003 | Near-zero |
+| d | 0.018 | Small positive |
+| g | 0.027 | Largest — still negligible |
+| k | 0.029 | Largest — still negligible |
+
+#### EXP-962–963: Combination Engineering → NEW SOTA R²=0.585
+
+The key question: are regime (+0.004), polynomial meta-learner (+0.004), and feature
+interactions (+0.002) additive?
+
+**Answer: Partially yes.**
+- Regime + Poly: 0.577 → 0.584 (+0.007) — better than either alone
+- Regime + Interactions + Poly: 0.577 → 0.585 (+0.008) — marginal further gain
+- **Diminishing returns are clear**: 0.004 + 0.004 + 0.002 = 0.010 expected, got 0.008
+
+Per-patient triple combination (EXP-963):
+| Patient | Base R² | Triple R² | Delta | Note |
+|---------|---------|-----------|-------|------|
+| a | 0.632 | 0.633 | +0.001 | Stable |
+| b | 0.548 | 0.574 | **+0.026** | Big winner |
+| c | 0.570 | 0.588 | **+0.019** | Big winner |
+| d | 0.708 | 0.706 | −0.002 | Already strong |
+| e | 0.652 | 0.648 | −0.004 | Slight hurt |
+| f | 0.677 | 0.692 | **+0.014** | Good gain |
+| g | 0.604 | 0.622 | **+0.018** | Good gain |
+| h | 0.288 | 0.287 | −0.001 | No help for worst patient |
+| i | 0.784 | 0.788 | +0.004 | Already best |
+| j | 0.467 | 0.472 | +0.005 | Modest |
+| k | 0.421 | 0.424 | +0.004 | Modest |
+
+**Pattern**: Combinations help mid-range patients (b,c,f,g) the most. Already-strong (d,i)
+and already-weak (h,j,k) patients see minimal change. The techniques add nonlinear capacity
+that helps when there's signal to capture but existing features are insufficient.
+
+#### EXP-964: Extended Horizons — Complete Zero
+Adding 90-min and 120-min horizon predictions to the stacking ensemble provides exactly zero
+improvement across all 11 patients (Δ=0.000 for every single one). The 30/60 min horizons
+already capture all useful cross-horizon information. **Dead end confirmed.**
+
+#### EXP-965: Block CV Reveals True Performance
+The honest block-CV test (5 chronological blocks, held-out regime/poly model):
+- Standard evaluation: R²=0.581
+- Block CV: R²=0.542
+- **Overstatement: 0.039 (6.7%)**
+
+Per-patient overstatement:
+| Patient | Standard | Block CV | Overstatement |
+|---------|----------|----------|---------------|
+| a | 0.634 | 0.637 | −0.003 (honest!) |
+| b | 0.558 | 0.599 | −0.041 (understatement!) |
+| d | 0.712 | 0.614 | **0.098** (worst) |
+| f | 0.684 | 0.684 | 0.000 (exact) |
+| i | 0.789 | 0.704 | 0.085 |
+
+**Critical finding**: Patient f shows zero overstatement, patient a shows slight understatement.
+These patients have stable physiology. Patients d and i show high overstatement — suggesting
+regime drift where the meta-model learns patterns that don't persist. The honest SOTA is
+approximately **R²=0.54**, which is still excellent for 60-minute-ahead glucose prediction.
+
+#### EXP-966: Conformal Prediction — Well-Calibrated Bands
+| Target Coverage | Actual Coverage | Mean Width (mg/dL) |
+|-----------------|-----------------|---------------------|
+| 90% | 92.4% | 127.7 |
+| 80% | 83.3% | 90.6 |
+| 70% | 73.8% | 69.0 |
+
+All bands are slightly conservative (actual > target), which is the safe direction for
+clinical applications. Width scales approximately linearly with coverage.
+
+Best-calibrated patient: d (90%: cov=0.945, width=99.5 — tight and accurate)
+Widest bands: a (width=171.3) — high glucose variability
+Tightest bands: d (width=99.5) — well-controlled
+
+#### EXP-967: Patient Clustering — Counterintuitive Failure
+TIR-based clustering (low-control: a,b,c,e,i; high-control: d,f,g,h,j,k) produces
+worse LOPO performance (0.248 vs 0.265). Training on 4 similar patients provides less
+diversity than training on 10 heterogeneous patients. **More data > more similar data.**
+
+#### EXP-968: Causal Error Features — Dead End
+With proper lag-13, error autocorrelation features add nothing (Δ=-0.001).
+The prediction errors at 65-minute lag are uninformative about future errors.
+This confirms that the autocorrelation structure at lag-1 was entirely an artifact
+of having future information embedded in the residuals.
+
+#### EXP-969: Mixed-Effects — Most Interesting Result
+
+The mixed-effects decomposition reveals fundamental model structure:
+- **Fixed effects only** (pooled coefficients): R²=0.627
+- **Mixed effects** (pooled + patient intercepts): R²=0.635
+- **Individual models** (per-patient): R²=0.556
+
+Patient intercepts reveal systematic biases:
+| Patient | Intercept (mg/dL) | Interpretation |
+|---------|-------------------|----------------|
+| a | +7.5 | System under-predicts by 7.5 |
+| b | +5.4 | Under-predicts |
+| c | +4.3 | Under-predicts |
+| k | −13.7 | System over-predicts by 13.7 |
+| h | −6.7 | Over-predicts |
+| g | −1.4 | Near zero |
+
+**Key insight**: The pooled model (R²=0.627) substantially outperforms individual models
+(R²=0.556) because the shared physics-based features generalize well and pooling provides
+more training data. But the patient intercepts capture ~8 mg/dL of systematic bias on average,
+worth +0.008 in R². This suggests that the within-patient evaluation (R²=0.585) benefits
+from learning patient-specific patterns in the training set that partially transfer to the
+validation set — but cross-patient deployment should expect R²≈0.54-0.56.
+
+#### EXP-970: Ultimate Combined — Diminishing Returns Confirmed
+50 features (39 grand + 1 regime + 6 interactions + 4 causal errors), polynomial meta-learning
+stacking: R²=0.584 (94.8% of oracle). Adding causal error features to the triple combo
+actually decreases by 0.001 vs EXP-963 — the kitchen sink approach starts overfitting at
+50 features. **The triple combo (EXP-963, ~47 features) is the optimal configuration.**
+
+### Updated SOTA Progression
+
+```
+EXP-871  Base CV stacking:           R² = 0.561
+EXP-944  All features + stacking:    R² = 0.574  (+0.013)
+EXP-950  Grand Finale:               R² = 0.577  (+0.003)
+EXP-951  Regime + stacking:          R² = 0.581  (+0.004)
+EXP-962  Regime + polynomial:        R² = 0.584  (+0.003)
+EXP-963  Triple combination:         R² = 0.585  (+0.001) ← CURRENT SOTA
+────────────────────────────────────────────────────────
+Honest block CV estimate:            R² ≈ 0.542
+Mixed-effects cross-patient:         R² = 0.635
+Metabolic oracle ceiling:            R² = 0.616
+Oracle gap (standard eval):          0.031 (95.0% of oracle)
+```
+
+### Key Takeaways from 170 Experiments
+
+1. **The 0.585 standard evaluation likely overstates by ~0.04** → honest R²≈0.54
+2. **Feature combinations have diminishing returns** — triple combo captures most value
+3. **Causal AR/error features are worthless** at 60-minute horizon (lag-13 too distant)
+4. **Extended horizons add nothing** beyond 30/60-minute stacking
+5. **Patient clustering hurts** — heterogeneous pooling beats homogeneous subsets
+6. **Mixed-effects decomposition** shows pooled model (0.627) >> individual (0.556)
+7. **Conformal bands are well-calibrated** for clinical use
+8. **The oracle gap (0.031) may be measurement noise** — we may be at the frontier
+
+### Where Does the Remaining Gap Live?
+
+The oracle ceiling (R²=0.616) uses 60-minute future metabolic integrals. Our SOTA (0.585) uses
+only past information. The remaining Δ=0.031 likely comes from:
+
+1. **Unpredictable meal timing** (not encoded in any past feature)
+2. **Stochastic physiological variation** (endogenous glucose production fluctuations)
+3. **Sensor noise** (~15 mg/dL measurement error at 5-minute cadence)
+4. **Model form limitations** (ridge regression is linear in features)
+
+### Proposed Next Experiments (EXP-971–980)
+
+Based on what worked and what didn't:
+
+1. **EXP-971: Nonlinear meta-learner** — Replace ridge stacking with gradient-boosted trees
+2. **EXP-972: Rolling train window** — Use only recent 30 days instead of full 80% history
+3. **EXP-973: Patient-adaptive intercept** — Add EXP-969 intercept to per-patient model
+4. **EXP-974: Meal-conditioned regime** — Separate postprandial vs fasting error regimes
+5. **EXP-975: Sensor noise estimation** — Use CGM noise model to set prediction floor
+6. **EXP-976: Feature-specific horizons** — Different features optimal at different horizons
+7. **EXP-977: Uncertainty-weighted stacking** — Weight fold predictions by conformal width
+8. **EXP-978: Target transformation** — Predict ΔBG (change) instead of absolute BG
+9. **EXP-979: Time-of-day stratified** — Separate models for dawn/day/evening/night
+10. **EXP-980: Residual distribution analysis** — Characterize what the model CAN'T predict
