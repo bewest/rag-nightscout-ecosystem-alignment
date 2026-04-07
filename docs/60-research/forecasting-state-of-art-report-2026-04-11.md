@@ -12,9 +12,9 @@ This report synthesizes findings from **130+ forecasting experiments** across th
 
 ### Key Findings
 
-1. **Short-horizon (h5–h60) is effectively solved.** Ridge on 8 physics features achieves R²=0.803 at h30 and 0.534 at h60 — within 0.08 of the information-theoretic ceiling. The PK-enhanced transformer reaches 10.42 MAE (11pt, 5-seed ensemble), with h30 MARD ~6.6% (below CGM measurement error of 8.2%).
+1. **Short-horizon (h5–h60) is effectively solved.** Ridge on 8 physics features achieves R²=0.803 at h30 and R²=0.509 at h60; the 16-feature enhanced Ridge (EXP-830) reaches R²=0.534 — within 0.08 of the information-theoretic ceiling. The PK-enhanced transformer reaches 10.42 MAE (11pt, 5-seed ensemble), with h30 MARD ~6.6% (below CGM measurement error of 8.2%).
 
-2. **Extended horizons (h90–h480) are the frontier.** PK-enhanced transformers reduce h120 MAE from 38.3 (CNN baseline) to 17.8 (w48+FT) — a **2.15× improvement**. PK derivatives provide an additional −0.78 at h120. The PK advantage grows monotonically with horizon.
+2. **Extended horizons (h90–h480) are the frontier.** PK-enhanced transformers reduce h120 MAE from 38.3 (CNN baseline) to 17.4 (w48+FT) — a **2.2× improvement**. PK derivatives provide an additional −0.78 at h120. The PK advantage grows monotonically with horizon.
 
 3. **Data volume is the binding constraint at quick-mode scale.** w48 (10,360 windows) beats w144 (3,448 windows) at every horizon through h90, despite having only 2h vs 9h20m history. This paradox likely resolves at full scale (11 patients).
 
@@ -31,8 +31,8 @@ This report synthesizes findings from **130+ forecasting experiments** across th
 | Era | Approach | Champion | h30 | h60 | h120 | Key Insight |
 |-----|----------|----------|-----|-----|------|-------------|
 | **1** | Transformer (134K) | CGMGroupedEncoder + FT + ensemble | — | — | — | 10.59 MAE overall (w24) |
-| **2** | Ridge + Physics | 8 metabolic flux features | R²=0.803 | R²=0.534 | — | Physics provides features, statistics predicts |
-| **3** | PK-Enhanced Transformer | PKGroupedEncoder + PK + ISF + FT | 8.4 | 14.1* | 17.8* | Future PK + ISF norm + data volume |
+| **2** | Ridge + Physics | 8→16 metabolic flux features | R²=0.803 | R²=0.509→0.534 | — | Physics provides features, statistics predicts |
+| **3** | PK-Enhanced Transformer | PKGroupedEncoder + PK + ISF + FT | 8.4 | 14.1* | 17.4* | Future PK + ISF norm + data volume |
 
 *Quick-mode (4pt) estimates; full validation pending for the combined pipeline.
 
@@ -45,7 +45,7 @@ This report synthesizes findings from **130+ forecasting experiments** across th
 | h30 | 8.4* | PKGroupedEncoder | w24 + PK + ISF + FT + ensemble | EXP-408 |
 | h60 | 17.3* | Transformer | w48 + PK + d1 derivatives + FT | EXP-481 |
 | h90 | 19.7* | Transformer | w48 + PK + d1 derivatives + FT | EXP-481 |
-| h120 | 17.8* | Transformer | w48 + PK + ISF + FT | EXP-411 (11pt full) |
+| h120 | 17.4* | Transformer | w48 + PK + ISF + FT | EXP-411 (11pt full) |
 | h240 | 26.7** | Transformer | w96 symmetric + PK + FT | EXP-470 |
 | h360 | 30.7** | Transformer | w96 symmetric + PK + FT | EXP-470 |
 | h480 | 42.9 | CNN | 8ch + future PK | EXP-356 |
@@ -60,7 +60,7 @@ From EXP-411 full validation (11 patients, w48, PK + ISF + FT):
 |-------------|-----------------|-------------|---------------|
 | h30 | ~10 | — | ~6.6% |
 | h60 | 14.1 | +4.1 | ~9.3% |
-| h120 | 17.8 | +1.9/step | ~11.7% |
+| h120 | 17.4 | +1.7/step | ~11.5% |
 | h240 | 26.7 | +2.2/step | ~17.6% |
 | h360 | 30.7 | +2.0/step | ~20.2% |
 
@@ -94,7 +94,7 @@ Patient b (ISF=94) is 3.3× worse than patient k at h60. **Patient heterogeneity
 |-----------|-------|----------|----------|-----------|
 | **Future PK projection** | −10.0 at h120 | h60+ | EXP-356 | Provides genuinely new causal info about future insulin/carb absorption |
 | **Per-patient fine-tuning** | −8 to −15% | All | EXP-408 | Adapts to individual physiology |
-| **Spike cleaning** | +52% R² | All | EXP-830 | Removes sensor artifacts that dominate error |
+| **Spike cleaning** | +52% R² | All | EXP-682 | Removes sensor artifacts that dominate error |
 | **PK channels (history)** | −7.4 at 6h | h120+ | EXP-353 | Continuous absorption curves replace sparse bolus/carb |
 
 ### Tier 2: Reliable Improvements (1–5 MAE)
@@ -104,7 +104,7 @@ Patient b (ISF=94) is 3.3× worse than patient k at h60. **Patient heterogeneity
 | **ISF normalization** | −1.2 | h30+ | EXP-361, 364 | Scales glucose by patient sensitivity, fixes h30 |
 | **Window transfer** | −0.93 to −1.21 | h60+ | EXP-462, 465 | Pre-train on data-rich w48, transfer to w144 |
 | **Asymmetric windows** | −1.5 to −3.0 | h120+ | EXP-421, 468 | More history + less future = more context per step |
-| **Circadian correction** | +0.474 R² | h60 | EXP-830 | sin/cos(2πh/24) captures dawn phenomenon |
+| **Circadian correction** | +0.474 R² | h60 | EXP-781 | sin/cos(2πh/24) captures dawn phenomenon |
 | **5-seed ensemble** | −0.7 to −1.0 | All | EXP-408 | Reduces variance from random init |
 
 ### Tier 3: Marginal Improvements (0.1–1 MAE)
@@ -207,9 +207,9 @@ The raw IOB curve tells the model "how much insulin is active." The derivative d
 | h5 | 5.5 | ~3.6% | >99% | ✅ **Production** | None — exceeds CGM accuracy |
 | h15 | 8.7 | ~5.7% | >99% | ✅ **Production** | None |
 | h30 | ~10 | ~6.6% | >98% | ✅ **Production** | None — below CGM MARD |
-| h60 | 14.1–17.3 | ~9–11% | ~97% | ✅ **Production** | Near ceiling (R²=0.534, ceiling ~0.61) |
+| h60 | 14.1–17.3 | ~9–11% | ~97% | ✅ **Production** | Near ceiling (R²=0.534 enhanced, ceiling ~0.61) |
 | h90 | 19.7 | ~13% | ~94% | ⚠️ **Viable** | PK derivatives help; more data needed |
-| h120 | 17.8–22 | ~12–14% | ~92% | ⚠️ **Viable** | PK advantage zone; needs full validation |
+| h120 | 17.4–22 | ~11–14% | ~92% | ⚠️ **Viable** | PK advantage zone; needs full validation |
 | h240 | 26.7 | ~18% | ~85% | 🔬 **Research** | Requires w96+ history with PK |
 | h360 | 30.7 | ~20% | ~80% | 🔬 **Research** | DIA boundary; limited by physiology |
 
@@ -244,7 +244,7 @@ Long-term (h120–h360):  [RESEARCH]
 | Ensemble (5 seeds) | 5× training | 5× inference, parallelizable |
 | Per-patient FT | ~1 min per patient (GPU) | Included in inference |
 
-**GPU**: NVIDIA RTX 3050 Ti (4GB VRAM) is sufficient. Batch size 128, mixed precision not required.
+**GPU**: NVIDIA RTX 3050 Ti (4GB VRAM) is sufficient. Batch size 32, mixed precision not required.
 
 ---
 
@@ -289,7 +289,7 @@ These principles are empirically validated across 130+ experiments:
 
 4. **Uniform MSE is the correct loss.** The transformer allocates attention optimally across horizons without explicit weighting.
 
-5. **Patient heterogeneity > model architecture.** The 3.2× patient MAE spread dwarfs any architecture or hyperparameter change.
+5. **Patient heterogeneity > model architecture.** The 3.3× patient MAE spread dwarfs any architecture or hyperparameter change.
 
 6. **PK derivatives are free signal.** Deterministic, no leakage risk, and they provide absorption dynamics the model can't efficiently compute from raw levels.
 
@@ -378,13 +378,13 @@ None of these are model improvements — they're **data improvements**. The mode
 | 405 | PKGroupedEncoder | New best encoder for PK channels |
 | 408 | Full bridge pipeline | **13.5 MAE** (11pt, 5-seed, ensemble) |
 | 410 | ERA-2 matched pipeline | **10.85 MAE** — surpasses ERA 2's 10.59 |
-| **411** | **Extended horizon full validation** | **h120=17.8 avg (11pt) — 2.15× vs CNN** |
+| **411** | **Extended horizon full validation** | **h120=17.4 avg (11pt) — 2.2× vs CNN** |
 
 ### Transfer & Asymmetry (EXP-461–470)
 
 | EXP | Description | Key Result |
 |-----|-------------|------------|
-| 462 | Window transfer (w48→w144) | −1.21 MAE — most reliable training lever |
+| 462 | Window transfer (w48→w96) | −0.93 MAE — most reliable training lever |
 | 468 | Asymmetric + transfer | asym_64_32 = 19.36 MAE (best w96 config) |
 | 470 | Optimal routing pipeline | Composite: short→asym, mid→sym, long→sym |
 
