@@ -184,11 +184,17 @@ Even at h60 where the extra hour of context should theoretically help most
 (insulin activity from 2 hours ago is still relevant via DIA=5h), the full-scale
 w36 is tied with w24. The quick-mode −0.92 advantage vanishes entirely.
 
-### Pump-Only Variant (Still Running)
+### Pump-Only Variant — Final Results
 
-The pump-only base training (excluding patient j's MDI data) is still running.
-Preliminary base seed s42: 11.8 (vs all-patients 11.9) — marginal improvement
-from filtering noisy PK. Results will be updated when complete.
+| Metric | EXP-422p (pump-only base) | EXP-422a (all base) | EXP-410 |
+|--------|:-------------------------:|:-------------------:|:-------:|
+| **All 11pt MAE** | **10.88** | **10.94** | **10.85** |
+| **Pump 10pt MAE** | **10.45** | **10.54** | — |
+| Patient j MAE | 15.1 | 14.9 | 15.0 |
+
+Excluding MDI patient j from base training provides marginal benefit for pump
+patients (10.45 vs 10.54) but doesn't change the overall picture. All three
+approaches converge to ~10.85–10.94 after FT + ensemble.
 
 ---
 
@@ -232,15 +238,19 @@ improve their MAE.
 - Already well within "reasonable" error range
 - Limited headroom for improvement
 
-### Augmentation Bug Discovered
+### Augmentation Bug — Fixed and Retested (EXP-423)
 
-The noise augmentation implementation adds noise to the entire batch tuple:
-```python
-b = (b[0] + torch.randn_like(b[0]) * augment_std,)
-```
-But `_step()` uses `x = batch_data[0]` as both input (masked first half) and
-target (second half). Noise applies to BOTH, canceling in MSE computation.
-**Fix needed**: Apply noise only to the masked input portion, not the target.
+The original noise augmentation was invalid: noise applied to both input AND
+target, canceling in MSE. EXP-423 fixed this (noise on history input only):
+
+| Variant | MAE | Δ | Notes |
+|---------|:---:|:-:|-------|
+| control | 13.87 | — | Reference |
+| aug_0.5 | 14.44 | +0.57 | Too weak to regularize, strong enough to confuse |
+| aug_1.0 | 13.63 | −0.24 | Modest regularization benefit |
+
+**Conclusion**: Even with the bug fixed, augmentation provides only modest benefit
+(−0.24). Not a priority for full validation.
 
 ---
 
@@ -323,10 +333,11 @@ changes MUST be validated at full scale before declaring a winner.
 | Asymmetric windows (2h hist) | −0.7 | +0.09 | 1h history sufficient for 1h pred |
 | Longer FT (100ep) | −0.5 | 0.0 | Already converged at 30ep |
 | Higher FT LR (2e-4) | −0.3 | +0.3 | Overshoots |
-| Data augmentation* | −0.5 | 0.0 | Bug (noise on target too) |
+| Data augmentation (fixed) | −0.5 | −0.24 | Modest after bug fix (EXP-423) |
 | PK derivatives (EXP-413) | −0.5 | +0.37 | Transformer already extracts |
+| **h60_focus loss** | **−0.5** | **−0.31*** | **Works! Survives FT (EXP-425)** |
 
-*Augmentation needs bug fix before valid conclusion.
+*Quick mode with FT + ensemble. Full validation pending.
 
 ### Where the MAE Floor Comes From
 
@@ -338,7 +349,44 @@ The remaining ~10.85 MAE is composed of:
 
 ---
 
-## §8. Impact on Multi-Horizon Forecasting (90min–6h)
+## §8. Horizon-Weighted Loss: A New Lever (EXP-424/425)
+
+### EXP-424: Loss Weight Exploration
+
+**Hypothesis**: Equal-weighted MSE gives h5 (easy, MAE~6) the same gradient as
+h60 (hard, MAE~15). Upweighting harder horizons should improve long-range
+accuracy.
+
+| Variant | Weights | Overall | h30 | h60 | Δ overall | Δ h60 |
+|---------|---------|:-------:|:---:|:---:|:---------:|:-----:|
+| uniform | all 1.0 | 13.87 | 13.72 | 19.56 | — | — |
+| linear | [0.15→1.85] | 13.78 | 13.68 | 19.43 | −0.09 | −0.13 |
+| sqrt | [0.41→1.42] | 14.29 | 14.51 | 19.68 | +0.42 | +0.12 |
+| **h60_focus** | **1.0×11, 3.0×1** | **13.28** | **13.30** | **18.73** | **−0.59** | **−0.83** |
+
+**Key finding**: h60_focus improves BOTH h30 (−0.42) and h60 (−0.83). The 3×
+weight on the hardest prediction step acts as a regularizer that sharpens
+the model's overall forecasting. Smooth ramps (linear, sqrt) are less effective.
+
+### EXP-425: Combined Champion Pipeline (h60_focus + FT + Ensemble)
+
+| Variant | Mean Ens MAE | a | b | c | d | Δ vs control |
+|---------|:------------:|:--:|:--:|:--:|:--:|:------------:|
+| control | 13.03 | 14.6 | 18.8 | 10.6 | 8.2 | — |
+| **h60_focus** | **12.72** | **13.8** | **18.3** | 10.7 | **8.1** | **−0.31** |
+| h60_aug | 12.90 | 14.4 | 18.4 | 10.6 | 8.2 | −0.13 |
+
+**The h60_focus advantage survives per-patient fine-tuning** (−0.31 after FT vs
+−0.59 base-only), shrinking but persisting. This is the first training dynamics
+change to show any signal after FT. Adding augmentation doesn't compound.
+
+**Caveat**: This is a training dynamics change (not a feature change), so
+quick→full translation is uncertain. Full validation is queued as next priority
+after EXP-411.
+
+---
+
+## §9. Impact on Multi-Horizon Forecasting (90min–6h)
 
 ### What We Know About Extended Horizons
 
@@ -380,7 +428,7 @@ is the optimal approach — NOT just extending history further.
 
 ---
 
-## §9. Recommendations for Next Experiments
+## §10. Recommendations for Next Experiments
 
 ### Highest Priority: Future PK on Transformer (EXP-411)
 
@@ -408,7 +456,7 @@ NOT been tested yet and is the most promising path for h90–h360 improvement.
 
 ---
 
-## §10. Theoretical Implications
+## §11. Theoretical Implications
 
 ### The Attention Saturation Hypothesis
 
