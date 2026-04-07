@@ -7262,3 +7262,170 @@ Total               → R² = 0.519 at 60 minutes
 The ridge regression deep dive confirms the "physics provides features, statistics provides prediction" paradigm. The 8-feature physics-derived vector is sufficient — additional ratio features or joint training hurt rather than help. The most actionable finding is the 0.925 residual autocorrelation, which represents a large untapped signal for the next generation of models.
 
 **Estimated achievable R² with two-stage ridge+AR**: 0.65–0.70 at 60min, based on the recoverable autocorrelation in residuals.
+
+## Part XXXVIII: Two-Stage Ridge+AR and Feature Engineering (EXP-811–820)
+
+### ⚠️ CRITICAL METHODOLOGICAL FINDING: Data Leakage in AR Correction
+
+**EXP-811 reported R²=0.941 at 60min — this result is INVALID due to data leakage.**
+
+#### The Leakage Mechanism
+
+The AR model uses lag-1 residuals: `residual[i-1] = actual[i-1+h] - predicted[i-1+h]`. For a 60min prediction (h_steps=12), the residual at step i-1 requires knowing `actual[i+11]` — the glucose value **55 minutes in the future**. At inference time, this value is unknown.
+
+For AR correction to be valid, the minimum usable lag is `h_steps` (12 steps = 60 minutes), because only then has the prediction target been observed:
+
+```
+Step i:    Want to predict glucose at i + 12
+Step i-1:  Predicted glucose at i + 11  → NOT YET OBSERVED at time i
+Step i-12: Predicted glucose at i       → JUST OBSERVED at time i ✓
+```
+
+#### Residual Autocorrelation at Proper Lags
+
+| Patient | AC lag-1 (5min) | AC lag-6 (30min) | AC lag-12 (60min) | AC lag-24 (2h) |
+|---------|----------------|-----------------|------------------|---------------|
+| a | 0.938 | 0.613 | 0.167 | -0.016 |
+| b | 0.919 | 0.474 | -0.027 | 0.022 |
+| c | 0.932 | 0.545 | 0.067 | -0.019 |
+
+**Residual autocorrelation at the properly-lagged interval (60min) is near zero** (mean ~0.07). This means:
+
+1. The high AC=0.925 at lag-1 from EXP-807 reflects the smooth nature of glucose data, not an exploitable prediction signal
+2. AR correction at 60min horizon is fundamentally limited — by the time we can observe the residual, it has decorrelated
+3. **The ceiling for 60min prediction is closer to R²=0.52 than R²=0.94**
+
+#### Corrected Results: Proper-Lag AR
+
+| Patient | Ridge Only | Naive AR(1) ⚠️LEAKY | Proper AR(lag-12) |
+|---------|-----------|---------------------|-------------------|
+| a | 0.571 | 0.947 | 0.354 |
+| b | 0.528 | 0.927 | 0.132 |
+| c | 0.469 | 0.930 | 0.107 |
+
+**Proper-lag AR actually HURTS performance** — the near-zero autocorrelation at lag-12 means the AR correction adds noise rather than signal. The correctly achievable improvement from AR correction at 60min is approximately **zero**.
+
+#### Implication for Horizon-Dependent AR
+
+AR correction IS valid for shorter horizons where lag < h_steps:
+
+| Horizon | h_steps | Usable AC | AR Valid? | Expected Benefit |
+|---------|---------|-----------|-----------|-----------------|
+| 5min | 1 | 0.938 (lag-1) | ✅ Yes | Significant |
+| 15min | 3 | 0.82 (lag-3) | ✅ Yes | Moderate |
+| 30min | 6 | 0.54 (lag-6) | ✅ Yes | Modest |
+| 60min | 12 | 0.07 (lag-12) | ❌ No | None |
+
+**Lesson learned**: Always verify that AR corrections respect the causal structure of time series prediction. The minimum lag for valid AR correction equals the prediction horizon.
+
+### EXP-811–820 Results (Non-Leaky Experiments)
+
+The remaining experiments (EXP-812–820) that don't involve AR correction remain valid.
+
+#### EXP-812: Lagged BG Features
+
+Adding historical BG values as features:
+
+| Lags | 30min R² | 60min R² |
+|------|----------|----------|
+| 0 (baseline) | 0.765 | 0.509 |
+| 1 (5min) | 0.767 | 0.514 |
+| 3 (15min) | 0.770 | 0.522 |
+| 6 (30min) | 0.770 | 0.523 |
+| 12 (60min) | **0.772** | **0.524** |
+
+Lagged BG features provide modest improvement (+0.015 at 60min). The information from trajectory is partially captured by the physics features already.
+
+#### EXP-813: Polynomial Features
+
+| Horizon | Base (8 feat) | Poly (23 feat) | Δ |
+|---------|-------------|---------------|---|
+| 30min | 0.765 | 0.771 | +0.006 |
+| 60min | 0.509 | 0.515 | +0.006 |
+
+Consistent but small improvement from nonlinear feature interactions. Diminishing returns suggest the relationship is approximately linear in the physics-derived feature space.
+
+#### EXP-815: Population Warm-Start + Fine-Tune
+
+| Configuration | R² at 60min |
+|---------------|-------------|
+| Personal (full training) | 0.509 |
+| Population (no personal) | 0.291 |
+| Fine-tune 5% | 0.413 |
+| Fine-tune 10% | 0.490 |
+| Fine-tune 20% | 0.508 |
+| Fine-tune 50% | 0.509 |
+
+**Key finding**: With just 10% of personal data (~2 weeks), fine-tuning from population weights recovers 96% of personal model performance. This has strong practical implications: a new patient can achieve near-optimal predictions within 2 weeks using population initialization.
+
+#### EXP-816: Per-Horizon Feature Selection
+
+The full 8-feature set wins at ALL horizons. No subset outperforms the full model.
+
+#### EXP-817: Confidence Estimation
+
+| BG Range (mg/dL) | MAE | R² | n |
+|-------------------|-----|-----|---|
+| 0–80 (hypo) | 26.6 | 0.153 | 7,430 |
+| 80–120 (target) | 21.5 | 0.281 | 30,626 |
+| 120–180 (elevated) | 29.8 | 0.284 | 30,070 |
+| 180–250 (high) | 37.0 | 0.246 | 16,883 |
+| 250–500 (very high) | **46.0** | 0.355 | 8,786 |
+
+Prediction error increases monotonically with BG level. Hypo predictions are more precise (MAE=26.6) but less reliable (R²=0.153) due to narrow range. High BG predictions have the largest absolute error (MAE=46).
+
+#### EXP-818: BG Velocity & Acceleration
+
+| Feature Set | 30min R² | 60min R² |
+|------------|----------|----------|
+| Base | 0.765 | 0.509 |
+| +Velocity | 0.767 (+0.002) | 0.514 (+0.005) |
+| +Vel+Accel | 0.769 (+0.004) | **0.518 (+0.009)** |
+
+Adding BG acceleration provides the best single-feature improvement at 60min (+0.009). This makes physical sense — acceleration captures the rate of change of glucose dynamics.
+
+#### EXP-819: Ridge Ensemble
+
+Ensemble of 6 models (λ = 0.001 to 100) provides no improvement over best single model. The optimal λ is sufficiently determined by the data; averaging doesn't help.
+
+### Synthesis: Revised Understanding of Prediction Limits
+
+#### The 60min Prediction Ceiling
+
+Given the data leakage discovery, our best validated 60min predictions are:
+
+| Method | R² at 60min |
+|--------|-------------|
+| Ridge baseline | 0.509 |
+| +BG velocity+acceleration | 0.518 |
+| +Lagged BG (12 lags) | 0.524 |
+| +Polynomial features | 0.515 |
+| Combined (estimated) | ~0.53–0.54 |
+
+The **true achievable R² at 60min with linear methods is approximately 0.53–0.54**, corresponding to MAE ~27–28 mg/dL.
+
+#### Why 60min is Fundamentally Hard
+
+1. **Decorrelation time**: Glucose residuals decorrelate within ~30 minutes (AC drops from 0.9 to 0.5). By 60min, the residual is essentially independent.
+2. **Unmeasured confounders**: Exercise, stress, hormones, digestion variability compound over 60min.
+3. **CGM noise floor**: ±15-20 mg/dL measurement uncertainty limits achievable R².
+4. **Controller interference**: AID systems actively modify glucose trajectory, making prediction a moving target.
+
+#### What Would Actually Improve 60min Predictions
+
+1. **Multi-horizon cascade**: Use 5→15→30→60min predictions, each correcting the next with valid-lag AR
+2. **Additional sensor inputs**: Activity data, meal timing, insulin delivery confirmations
+3. **Nonlinear models**: The +0.006 from polynomial features suggests modest nonlinear signal exists; deep learning might capture more
+4. **Longer BG history windows**: Current features use only the current timestep; richer context windows could help
+
+### Conclusions
+
+The most important outcome of this batch is the **discovery and correction of AR data leakage**. The R²=0.941 headline result was invalid; the true achievable improvement from AR correction at 60min is approximately zero because residuals decorrelate by the time they become observable.
+
+Practically useful findings:
+- **Population warm-start** achieves 96% of personal accuracy with just 10% (~2 weeks) of data
+- **BG acceleration** is the best single feature addition (+0.009 at 60min)  
+- **Error scales with BG level**: predictions at high BG (>250) are 2× less accurate than at target range
+- **The full 8-feature physics-derived set** cannot be improved by subset selection
+
+**The true SOTA at 60min remains R²≈0.52–0.54 with MAE≈27–28 mg/dL.**
