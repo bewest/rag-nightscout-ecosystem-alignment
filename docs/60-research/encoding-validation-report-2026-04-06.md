@@ -3,7 +3,7 @@
 **Date**: 2026-04-06  
 **Experiments**: EXP-419 through EXP-426  
 **Runner**: `tools/cgmencode/exp_encoding_validation.py`  
-**Data**: 11 patients × ~85 days each (537,887 5-min CGM readings)  
+**Data**: 11 patients × ~170 days each (537,887 5-min CGM readings)  
 **Runtime**: 1,944 seconds (32 minutes) for all 8 property tests  
 
 ## Executive Summary
@@ -28,7 +28,7 @@ We ran 8 encoding property tests — "unit tests for feature engineering" — ac
 | PK residual patterns | 12h | ⚠️ DAWN | bias=−48 mg/dL | Dawn phenomenon is universal |
 | Event regularity | meals | ❌ FAIL | 15% regular | Proactive meal scheduling unlikely |
 
-**Bottom line**: 3 confirmed, 3 weak/partial, 4 failed, 2 new findings. The failures are as informative as the passes — they tell us what NOT to assume about our data.
+**Bottom line**: 3 confirmed, 3 weak/partial, 6 failed, 1 new finding. The failures are as informative as the passes — they tell us what NOT to assume about our data.
 
 ---
 
@@ -164,7 +164,7 @@ Additionally, ISF normalization in this test divides the RESPONSE by ISF, but th
 **Encoding decision**:
 - ISF normalization remains recommended based on task evidence (EXP-407: MAE 18.23→17.74)
 - The property test needs a different methodology — compare whole-window glucose distributions rather than isolated event responses
-- The 4.7× ISF range across patients (21–95 mg/dL/U) confirms normalization SHOULD matter
+- The 4.5× ISF range across patients (21–95 mg/dL/U) confirms normalization SHOULD matter
 
 ---
 
@@ -182,14 +182,14 @@ Additionally, ISF normalization in this test divides the RESPONSE by ISF, but th
 | isf_normalized | 0.308 | 0.222 | 0.169 | 0.116 | — |
 | z_scored | 0.308 | 0.222 | 0.169 | 0.116 | — |
 | bspline_smooth | 0.336 | 0.236 | 0.175 | 0.109 | — |
-| **ema_multi** | **0.447** | 0.362 | 0.279 | 0.204 | **2h (4/11 pts)** |
-| **glucodensity** | 0.479 | **0.381** | **0.343** | **0.329** | **All scales (7/11 pts at 2h, 11/11 at 24h)** |
+| **ema_multi** | **0.447** | 0.362 | 0.279 | 0.204 | **2h (3/11 pts)** |
+| **glucodensity** | 0.479 | **0.381** | **0.343** | **0.329** | **All scales (8/11 pts at 2h, 11/11 at 24h)** |
 
 **Winner counts** (which encoding won most often per patient × scale):
 
 | Scale | glucodensity | ema_multi | 
 |-------|-------------|-----------|
-| 2h | 7 patients | 4 patients |
+| 2h | 8 patients | 3 patients |
 | 6h | 6 patients | 5 patients |
 | 12h | 11 patients | 0 patients |
 | 24h | 11 patients | 0 patients |
@@ -218,7 +218,7 @@ Additionally, ISF normalization in this test divides the RESPONSE by ISF, but th
 
 | Augmentation | Tests | Mean Δsil | Under-represented | Interpretation |
 |-------------|-------|-----------|-------------------|----------------|
-| time_shift | Time-translation | −0.009 | 0/11 patients | ✅ Already captured |
+| time_shift | Time-translation | −0.009 | 1/11 patients | ✅ Already captured |
 | amplitude_scale | ISF equivariance | +0.007 | 4/11 patients | ⚠️ Partially missing |
 | time_warp | Absorption symmetry | −0.001 | 2/11 patients | ✅ Already captured |
 | jitter | Noise robustness | +0.001 | 3/11 patients | ✅ Already captured |

@@ -19,12 +19,12 @@ and corrections in real time.
 
 | Finding | Evidence | Impact |
 |---------|----------|--------|
-| Sum flux discriminates events at all scales | AUC 0.87–0.95 (EXP-438) | Better than glucose alone for event classification |
+| Sum flux discriminates events at all scales | AUC 0.87–0.95 (EXP-441) | Better than glucose alone for event classification |
 | Throughput (supply×demand) has 18× spectral power at meal frequencies | EXP-444 | Massive SNR advantage for meal-scale tasks |
 | Hepatic production rescues zero-data patients | 11/11 patients have nonzero supply (EXP-441) | Universal applicability |
-| Cross-patient metabolic response shape similarity = 0.987 | EXP-445 | Near-universal physiology despite 4.7× ISF range |
+| Cross-patient metabolic response shape similarity = 0.987 | EXP-445 | Near-universal physiology despite 4.5× ISF range |
 | Meal counting detects 1.3 ± 0.3 big events/day | EXP-447 | Physics-only detection, no ML needed |
-| Phase lag between carb and insulin peaks = 25 ± 8 min | EXP-436 | Structural temporal signature of meals |
+| Phase lag between carb and insulin peaks = 25 min (range 2–43) | EXP-436 | Structural temporal signature of meals |
 | TDD normalization ≈ ISF normalization (1800 rule) | EXP-442 | Cross-patient equivariance path |
 
 ---
@@ -99,27 +99,27 @@ enormous — this is exactly the signal we exploit.
 - Patient j (zero IOB/COB data) had zero flux — identified the need for hepatic rescue
 
 **EXP-436: Phase Lag**
-- Carb absorption peaks **25 ± 8 minutes** before insulin peak effect
+- Carb absorption peaks **25 minutes** before insulin peak effect (event-weighted mean across 1,913 events; per-patient range 2–43 min)
 - This phase difference is a structural temporal signature unique to meals
 - Pre-bolused meals show *negative* lag (insulin peaks before carbs)
 - Corrections show insulin-only flux with no carb component
 
 **EXP-437: Flux Symmetry**
 - Flux envelopes are **more symmetric** around their peak than raw glucose envelopes
-- Raw glucose: bolus asymmetry ratio = 3.47 (sharp drop, slow recovery)
-- Flux envelopes: ratio closer to 1.5 (more balanced rise and fall)
+- Raw glucose (EXP-437): envelope asymmetry ratio = 1.98 (cf. 3.47 for isolated bolus events, EXP-420)
+- Flux envelopes: ratio 1.36 (more balanced rise and fall)
 - This suggests flux may be more amenable to symmetric kernels in CNNs
 
 **EXP-438: Event Discrimination**
 - Flux features discriminate meal/correction/stable states:
-  - 2h scale: AUC 0.87 (flux) vs 0.79 (glucose alone)
-  - 6h scale: AUC 0.93 (flux) vs 0.85 (glucose alone)
-  - 12h scale: AUC 0.95 (flux) vs 0.83 (glucose alone)
-- Advantage grows with scale — exactly where AID flattens glucose most
+  - 2h scale: AUC 0.86 (flux) vs 0.62 (glucose alone)
+  - 6h scale: AUC 0.86 (flux) vs 0.64 (glucose alone)
+  - 12h scale: AUC 0.85 (flux) vs 0.65 (glucose alone)
+- Advantage is largest at 2h (0.25 AUC gap) where AID flattens glucose most
 
 **EXP-439: Signal-to-Noise Ratio**
-- Flux SNR exceeds glucose SNR at all scales
-- Largest advantage at 2h (where AID compensation is strongest)
+- Flux SNR exceeds glucose SNR at all scales (3–12× ratio, increasing with scale)
+- Flux wins 10/11 patients at 2h–12h; 6/8 at 24h
 
 **EXP-440: Positional Encoding Interaction**
 - Flux + positional encoding shows best discrimination at ≥6h scales
@@ -148,13 +148,13 @@ that affected patient j in EXP-435.
 
 | Patient | TDD (U/day) | Bolus Fraction | ISF (mg/dL/U) | 1800/TDD |
 |:---:|:---:|:---:|:---:|:---:|
-| d | 22 | 36% | 95 | 82 |
-| k | 25 | 42% | 72 | 72 |
-| f | 35 | 55% | 51 | 51 |
-| a | 45 | 63% | 40 | 40 |
-| h | 77 | 93% | 21 | 23 |
+| k | 22 | 79% | 25 | 83 |
+| c | 33 | 74% | 75 | 55 |
+| a | 43 | 44% | 49 | 42 |
+| f | 69 | 36% | 21 | 26 |
+| e | 77 | 74% | 36 | 24 |
 
-TDD-ISF correlation r = 0.44 (moderate), confirming the 1800 rule as approximate.
+TDD-ISF correlation r = 0.43 (moderate), confirming the 1800 rule as approximate.
 The TDD range (22–77 U/day, 3.5×) roughly mirrors the ISF range (21–95 mg/dL/U, 4.5×).
 TDD normalization provides a **data-driven ISF proxy** that doesn't require profile access.
 
@@ -187,7 +187,8 @@ the 3h band. This is the strongest evidence that throughput is a meal-specific s
 ### 2.3 EXP-446–447: Meal Counting Validation
 
 **EXP-446: Detailed Meal Counting (all thresholds)**
-- Very sensitive: 2.5 peaks/day, P=0.70, R=0.63, F1=0.64
+- Very sensitive threshold: 2.5 peaks/day, P=0.62, R=0.67, F1=0.61
+- Moderate threshold: 1.9 peaks/day, P=0.70, R=0.63, F1=0.64
 - Best per-patient: Patient j P=0.96 (hepatic rescue working)
 - Eating style classification: identifies grazers (patient b: 7.2 announced/day),
   regular eaters, and minimal-data patients
@@ -227,9 +228,9 @@ dawn phenomenon, and exercise. This has implications far beyond our ML work:
 | Property | Scale | Status | Metabolic Flux Implication |
 |----------|-------|--------|---------------------------|
 | Time-translation invariance | ≤2h | ✅ PASS | Flux features are time-invariant at event scale |
-| Absorption asymmetry | DIA | ❌ | Flux envelopes are *more* symmetric than glucose (ratio 1.5 vs 3.47) |
+| Absorption asymmetry | DIA | ❌ | Flux envelopes are *more* symmetric than glucose (ratio 1.36 vs 1.98, EXP-437; 3.47 for isolated bolus events, EXP-420) |
 | Glucose conservation | 12h | ✅ PASS | Conservation validates the supply-demand decomposition |
-| ISF equivariance | cross-patient | ⚠️ WEAK | TDD normalization improves (r=0.44) but doesn't solve |
+| ISF equivariance | cross-patient | ⚠️ WEAK | TDD normalization improves (r=0.43) but doesn't solve |
 | Metabolic shape universality | cross-patient | ✅ **NEW** | Shape similarity 0.987 — response is universal |
 | Spectral concentration | meal band | ✅ **NEW** | 18× power at meal frequencies — strong band-pass property |
 
@@ -243,10 +244,10 @@ Modeling hepatic glucose output as the always-on supply baseline:
 
 ### 3.4 Phase Lag as Structural Signature
 
-The 25-minute carb-insulin phase lag is a **structural constant of meal physiology**:
+The 25-minute carb-insulin phase lag is a **structural feature of meal physiology**:
 - Carb absorption peaks at ~20–30 min (Dalla Man gastric emptying model)
 - Insulin subcutaneous absorption peaks at ~55–90 min (Hovorka compartment model)
-- This ~25 min offset is consistent across patients and meal sizes
+- Event-weighted mean offset is ~25 min; per-patient means range from 2 to 43 min
 - Pre-bolused meals flip the sign (insulin arrives first)
 - Corrections show insulin-only flux (zero carb component)
 
@@ -493,9 +494,9 @@ ratios. Expected: shape similarity should increase from 0.987 (raw) toward 0.99+
 | **Asymmetric absorption**: Bolus response ratio 3.47 | EXP-420 | Models need full DIA arc (≥12h windows) |
 | **Universal response shape**: 0.987 similarity | EXP-445 | Cross-patient transfer is feasible |
 | **Spectral concentration**: 18× at meal band | EXP-444 | Band-pass filtering can isolate meal signal |
-| **Phase lag constancy**: 25 ± 8 min | EXP-436 | Phase-based classifier independent of amplitude |
+| **Phase lag constancy**: 25 min (range 2–43) | EXP-436 | Phase-based classifier independent of amplitude |
 | **Hepatic never-zero**: Min 35% of baseline | EXP-441 | Supply signal always available |
-| **ISF≈1800/TDD**: r=0.44 | EXP-442 | TDD as data-driven ISF proxy |
+| **ISF≈1800/TDD**: r=0.43 | EXP-442 | TDD as data-driven ISF proxy |
 | **Time-invariance breaks at 12h**: circadian enters | EXP-419 | Different encodings needed above/below 12h |
 | **Sparse features hurt**: bolus at ≤0.7% density | EXP-298 | Must convert to dense (IOB/COB/flux) |
 
