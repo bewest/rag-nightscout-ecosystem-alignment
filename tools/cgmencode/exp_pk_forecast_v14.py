@@ -14272,6 +14272,502 @@ def run_exp481(args):
     return result
 
 
+# ─── EXP-600: d1 Derivatives + Transfer w48→w144 ───
+
+def run_exp600(args):
+    """EXP-600: Combine d1 PK derivatives with w48→w144 transfer learning.
+
+    Two independently proven techniques:
+    - EXP-481: d1 PK derivatives on w48 improve -0.35 overall, -0.78 h120
+    - EXP-478/480: w48→w144 transfer provides extended horizon coverage
+
+    Hypothesis: d1 derivatives + transfer is ADDITIVE, giving best extended-
+    horizon forecasting. Train w48 base with d1 channels, transfer to w144
+    which also has d1 channels. Compare:
+      - w144 standard 7ch (baseline)
+      - w144 + d1 9ch (derivatives only)
+      - w144 + d1 9ch + transfer from w48 d1 (combined)
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-600: d1 Derivatives + Transfer w48→w144")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+    future_steps_144 = 32  # w144: 112 history + 32 future = h160
+
+    # ── Phase 1: Train w48 base with d1 derivatives ──
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    history48 = 24  # w48 = 24 history + 24 future
+
+    train_d1_48, val_d1_48 = _prepare_pk_derivatives_asymmetric(
+        data48, history48, use_isf=has_isf)
+    n_ch_d1 = train_d1_48.shape[-1]  # 11ch with glucose_deriv, or 9ch
+    print(f"\n  w48 d1: {n_ch_d1}ch, {train_d1_48.shape[0]} train windows")
+
+    w48_d1_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp600_w48_d1_s{seed}.pth')
+        train_bridge(m48, train_d1_48, val_d1_48, sp, f'600-w48d1-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_d1_states[seed] = ckpt['model_state']
+
+    # ── Phase 2: Load w144 data ──
+    data144 = load_bridge_data(
+        args.patients_dir, window_size=144,
+        max_patients=cfg['max_patients'], load_isf=True)
+    isf_v144 = data144.get('isf_val')
+    history144 = 144 - future_steps_144  # 112 history steps
+
+    # Prepare standard 7ch
+    train_std, val_std = prepare_pk_future(data144, use_isf=has_isf, drop_time=True)
+    n_ch_std = train_std.shape[-1]
+
+    # Prepare d1 derivative channels for w144
+    train_d1_144, val_d1_144 = _prepare_pk_derivatives_asymmetric(
+        data144, history144, use_isf=has_isf)
+
+    print(f"  w144: std={n_ch_std}ch, d1={train_d1_144.shape[-1]}ch, "
+          f"{train_std.shape[0]} train windows")
+
+    # ── Phase 3: Three variants ──
+    variants = OrderedDict([
+        ('std_7ch', {
+            'train': train_std, 'val': val_std,
+            'n_ch': n_ch_std, 'transfer': False,
+            'label': '7ch standard (no transfer)'}),
+        ('d1_no_transfer', {
+            'train': train_d1_144, 'val': val_d1_144,
+            'n_ch': n_ch_d1, 'transfer': False,
+            'label': f'{n_ch_d1}ch d1 derivatives (no transfer)'}),
+        ('d1_transfer', {
+            'train': train_d1_144, 'val': val_d1_144,
+            'n_ch': n_ch_d1, 'transfer': True,
+            'label': f'{n_ch_d1}ch d1 derivatives + w48 transfer'}),
+    ])
+
+    result = {}
+    for vname, vcfg in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {vcfg['label']} ({vcfg['train'].shape[0]} windows)")
+        print(f"{'─'*40}")
+
+        train_v = vcfg['train']
+        val_v = vcfg['val']
+        nc = vcfg['n_ch']
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=nc, **arch)
+
+            if vcfg['transfer']:
+                w48_sd = w48_d1_states[seed]
+                m_sd = model.state_dict()
+                transferred = 0
+                for key in w48_sd:
+                    if 'pos_encoder' in key:
+                        continue
+                    if key in m_sd and w48_sd[key].shape == m_sd[key].shape:
+                        m_sd[key] = w48_sd[key]
+                        transferred += 1
+                model.load_state_dict(m_sd)
+                print(f"  Transferred {transferred} params from w48 d1 model")
+
+            sp = os.path.join(cfg['output_dir'], f'exp600_{vname}_s{seed}.pth')
+            train_bridge(model, train_v, val_v, sp, f'600-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps_144)
+
+        # Per-patient fine-tuning
+        per_patient = {}
+        for pinfo in data144['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_v[ti:te]
+            p_val = val_v[vi:ve]
+            p_isf = isf_v144[vi:ve] if isf_v144 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=nc, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp600_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp600_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'600-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps_144)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                         isf_val=p_isf, future_steps=future_steps_144)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[vname] = {'per_patient': per_patient, 'average': avg}
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {vname} avg: {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-600 Summary: d1 Derivatives + Transfer w48→w144")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    base = result.get('std_7ch', {}).get('average', {})
+    for vname in ['d1_no_transfer', 'd1_transfer']:
+        vavg = result.get(vname, {}).get('average', {})
+        if base and vavg:
+            print(f"\n  Delta ({vname} - std_7ch):")
+            for k in sorted(base.keys()):
+                if k in vavg:
+                    d = round(vavg[k] - base[k], 2)
+                    print(f"    {k}: {d:+.2f}")
+
+    # Check additivity
+    d1_only = result.get('d1_no_transfer', {}).get('average', {})
+    d1_xfer = result.get('d1_transfer', {}).get('average', {})
+    if d1_only and d1_xfer:
+        print(f"\n  Additivity check (d1_transfer - d1_no_transfer):")
+        for k in sorted(d1_only.keys()):
+            if k in d1_xfer:
+                d = round(d1_xfer[k] - d1_only[k], 2)
+                print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp600_d1_transfer', cfg)
+    return result
+
+
+# ─── EXP-601: d1 Derivatives on w96 with Transfer ───
+
+def run_exp601(args):
+    """EXP-601: d1 PK derivatives at w96 scale with w48 transfer.
+
+    w48 has more data but only 2h history → h120 max.
+    w96 has 4h history → h240 coverage with less data.
+    d1 derivatives help w48 (EXP-481). Do they also help w96?
+
+    Tests whether d1 improvements transfer to intermediate window sizes,
+    and whether w96 + d1 + transfer beats w144 + d1 + transfer.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-601: d1 Derivatives + Transfer w48→w96")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+    future_steps_96 = 32  # w96: 64 history + 32 future = h160
+
+    # ── Phase 1: Train w48 base with d1 ──
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    history48 = 24
+
+    train_d1_48, val_d1_48 = _prepare_pk_derivatives_asymmetric(
+        data48, history48, use_isf=has_isf)
+    n_ch_d1 = train_d1_48.shape[-1]
+
+    w48_d1_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp601_w48_d1_s{seed}.pth')
+        train_bridge(m48, train_d1_48, val_d1_48, sp, f'601-w48d1-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_d1_states[seed] = ckpt['model_state']
+
+    # ── Phase 2: Load w96 data ──
+    data96 = load_bridge_data(
+        args.patients_dir, window_size=96,
+        max_patients=cfg['max_patients'], load_isf=True)
+    isf_v96 = data96.get('isf_val')
+    history96 = 96 - future_steps_96  # 64 history steps
+
+    train_std96, val_std96 = prepare_pk_future(data96, use_isf=has_isf, drop_time=True)
+    n_ch_std = train_std96.shape[-1]
+
+    train_d1_96, val_d1_96 = _prepare_pk_derivatives_asymmetric(
+        data96, history96, use_isf=has_isf)
+
+    print(f"  w96: std={n_ch_std}ch, d1={train_d1_96.shape[-1]}ch, "
+          f"{train_std96.shape[0]} train windows")
+
+    variants = OrderedDict([
+        ('std_7ch', {
+            'train': train_std96, 'val': val_std96,
+            'n_ch': n_ch_std, 'transfer': False,
+            'label': '7ch standard'}),
+        ('d1_transfer', {
+            'train': train_d1_96, 'val': val_d1_96,
+            'n_ch': n_ch_d1, 'transfer': True,
+            'label': f'{n_ch_d1}ch d1 + w48 transfer'}),
+    ])
+
+    result = {}
+    for vname, vcfg in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {vcfg['label']} ({vcfg['train'].shape[0]} windows)")
+        print(f"{'─'*40}")
+
+        train_v = vcfg['train']
+        val_v = vcfg['val']
+        nc = vcfg['n_ch']
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=nc, **arch)
+
+            if vcfg['transfer']:
+                w48_sd = w48_d1_states[seed]
+                m_sd = model.state_dict()
+                for key in w48_sd:
+                    if 'pos_encoder' in key: continue
+                    if key in m_sd and w48_sd[key].shape == m_sd[key].shape:
+                        m_sd[key] = w48_sd[key]
+                model.load_state_dict(m_sd)
+
+            sp = os.path.join(cfg['output_dir'], f'exp601_{vname}_s{seed}.pth')
+            train_bridge(model, train_v, val_v, sp, f'601-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps_96)
+
+        per_patient = {}
+        for pinfo in data96['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_v[ti:te]
+            p_val = val_v[vi:ve]
+            p_isf = isf_v96[vi:ve] if isf_v96 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=nc, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp601_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp601_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'601-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps_96)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                         isf_val=p_isf, future_steps=future_steps_96)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[vname] = {'per_patient': per_patient, 'average': avg}
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150', 'h160']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {vname} avg: {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-601 Summary: d1 + Transfer w48→w96")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150', 'h160']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    base = result.get('std_7ch', {}).get('average', {})
+    d1x = result.get('d1_transfer', {}).get('average', {})
+    if base and d1x:
+        print(f"\n  Delta (d1_transfer - std_7ch):")
+        for k in sorted(base.keys()):
+            if k in d1x:
+                d = round(d1x[k] - base[k], 2)
+                print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp601_d1_transfer_w96', cfg)
+    return result
+
+
+# ─── EXP-602: PK Derivative Scale Sweep (d1 scaling factor) ───
+
+def run_exp602(args):
+    """EXP-602: Test if d1 derivative scaling factor matters.
+
+    EXP-481 uses 10× scaling for derivatives. Is this optimal?
+    Too small → signal drowned by other channels.
+    Too large → dominates and distorts training.
+
+    Quick sweep: 1×, 5×, 10× (baseline), 20×, 50× on w48.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-602: PK Derivative Scale Sweep")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    isf_v48 = data48.get('isf_val')
+    history48 = 24
+
+    scales = OrderedDict([
+        ('scale_1x', 1.0),
+        ('scale_5x', 5.0),
+        ('scale_10x', 10.0),
+        ('scale_20x', 20.0),
+        ('scale_50x', 50.0),
+    ])
+
+    result = {}
+    for sname, scale in scales.items():
+        print(f"\n{'─'*40}")
+        print(f"  {sname}: derivative scale = {scale}")
+        print(f"{'─'*40}")
+
+        # Build d1 derivatives with custom scale
+        bt = data48['base_train'].copy()
+        bv = data48['base_val'].copy()
+        pt, pv = data48['pk_train'], data48['pk_val']
+
+        bt[:, :, 4] = pt[:, :, 1] / PK_NORMS[1]
+        bv[:, :, 4] = pv[:, :, 1] / PK_NORMS[1]
+        bt[:, :, 5] = pt[:, :, 3] / PK_NORMS[3]
+        bv[:, :, 5] = pv[:, :, 3] / PK_NORMS[3]
+        bt[:, :, 7] = pt[:, :, 6] / PK_NORMS[6]
+        bv[:, :, 7] = pv[:, :, 6] / PK_NORMS[6]
+
+        if has_isf and 'isf_train' in data48:
+            _apply_isf_norm(bt, bv, data48['isf_train'], data48['isf_val'])
+
+        h = history48
+
+        d_ins_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+        d_ins_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+        d_ins_t[:, 1:, 0] = bt[:, 1:, 4] - bt[:, :-1, 4]
+        d_ins_v[:, 1:, 0] = bv[:, 1:, 4] - bv[:, :-1, 4]
+
+        d_carb_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+        d_carb_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+        d_carb_t[:, 1:, 0] = bt[:, 1:, 5] - bt[:, :-1, 5]
+        d_carb_v[:, 1:, 0] = bv[:, 1:, 5] - bv[:, :-1, 5]
+
+        d_gluc_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+        d_gluc_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+        d_gluc_t[:, 1:h, 0] = bt[:, 1:h, 0] - bt[:, :h-1, 0]
+        d_gluc_v[:, 1:h, 0] = bv[:, 1:h, 0] - bv[:, :h-1, 0]
+
+        d_ins_t *= scale; d_ins_v *= scale
+        d_carb_t *= scale; d_carb_v *= scale
+        d_gluc_t *= scale; d_gluc_v *= scale
+
+        train_v = torch.tensor(
+            np.concatenate([bt, d_ins_t, d_carb_t, d_gluc_t], axis=-1),
+            dtype=torch.float32)
+        val_v = torch.tensor(
+            np.concatenate([bv, d_ins_v, d_carb_v, d_gluc_v], axis=-1),
+            dtype=torch.float32)
+        nc = train_v.shape[-1]
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=nc, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp602_{sname}_s{seed}.pth')
+            train_bridge(model, train_v, val_v, sp, f'602-{sname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+        per_patient = {}
+        for pinfo in data48['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_v[ti:te]
+            p_val = val_v[vi:ve]
+            p_isf = isf_v48[vi:ve] if isf_v48 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=nc, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp602_{sname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp602_{sname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'602-{sname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                         isf_val=p_isf)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[sname] = {'per_patient': per_patient, 'average': avg, 'scale': scale}
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {sname}: {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-602 Summary: Derivative Scale Sweep")
+    print(f"{'='*60}")
+    for sname, sdata in result.items():
+        avg = sdata['average']
+        sc = sdata['scale']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {sname} ({sc}×): {', '.join(vals)}")
+
+    best_name = min(result.keys(), key=lambda k: result[k]['average'].get('overall_mae', 999))
+    print(f"\n  Best scale: {best_name} ({result[best_name]['scale']}×)")
+
+    _save_results(result, 'exp602_derivative_scale', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -14346,6 +14842,9 @@ EXPERIMENTS = {
     '479': run_exp479,
     '480': run_exp480,
     '481': run_exp481,
+    '600': run_exp600,
+    '601': run_exp601,
+    '602': run_exp602,
 }
 
 
