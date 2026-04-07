@@ -4228,6 +4228,198 @@ def run_exp457(args):
     return results
 
 
+# ===================================================================
+# EXP-458: 4h HYPO Gap-Closing + XGBoost Hyperparameter Optimization
+# ===================================================================
+
+def run_exp458(args):
+    """EXP-458: Close the 4h HYPO gap — the nearest gap to 0.80 threshold.
+
+    Current best 4h HYPO: 0.768 (EXP-453, throughput_34).
+    Combined_43 gave +0.018 at 6h — if similar at 4h, could reach ~0.785.
+
+    Also tests XGBoost hyperparameter variations (more trees, deeper,
+    lower LR) specifically optimized for hypo detection where class
+    imbalance is high.
+
+    Configurations:
+    1. combined_43 at 4h (fill the gap from EXP-456)
+    2. XGBoost with n_estimators=500, max_depth=8 (more capacity)
+    3. XGBoost with n_estimators=300, max_depth=6, lr=0.02 (slower learning)
+    4. All horizons (2h/4h/6h/12h) with combined_43 for completeness
+    """
+    cfg = _get_config(args)
+
+    print(f"\n{'='*60}")
+    print("EXP-458: 4h HYPO Gap-Closing")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    # Throughput setup
+    try:
+        from exp_metabolic_441 import compute_supply_demand
+    except ImportError:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from exp_metabolic_441 import compute_supply_demand
+
+    patient_sd = {}
+    for pat in patients:
+        sd = compute_supply_demand(pat['df'], pk_array=pat['pk'])
+        patient_sd[pat['name']] = sd
+
+    def combined_43_feats(pat, start, ctx_end):
+        """Same as EXP-456: throughput(12) + multiday(9) extra."""
+        sd = patient_sd[pat['name']]
+        tp = sd['product'][start:ctx_end]
+        supply = sd['supply'][start:ctx_end]
+        demand = sd['demand'][start:ctx_end]
+        tp_v = tp[~np.isnan(tp)] if len(tp) > 0 else np.array([0.0])
+        if len(tp_v) == 0: tp_v = np.array([0.0])
+        s_v = supply[~np.isnan(supply)] if len(supply) > 0 else np.array([0.0])
+        d_v = demand[~np.isnan(demand)] if len(demand) > 0 else np.array([0.0])
+        if len(s_v) == 0: s_v = np.array([0.0])
+        if len(d_v) == 0: d_v = np.array([0.0])
+        tp_feats = [
+            float(np.mean(tp_v)), float(np.std(tp_v)), float(np.max(tp_v)),
+            float(tp_v[-1] - tp_v[-min(6, len(tp_v))]),
+            float(np.sum(tp_v)),
+            float(np.max(tp_v) / max(np.mean(tp_v), 1e-8)),
+            float(np.mean(s_v)), float(np.max(s_v)), float(np.sum(s_v)),
+            float(np.mean(d_v)), float(np.max(d_v)), float(np.sum(d_v)),
+        ]
+        grid = pat['grid']
+        glucose_raw = grid[:, 0] * 400
+        if start < STEPS_3D:
+            return None
+        g_24h = glucose_raw[start - STEPS_24H:start]
+        g_24h_v = g_24h[~np.isnan(g_24h)]
+        if len(g_24h_v) < 12:
+            return None
+        tir_24h = float(np.mean((g_24h_v >= 70) & (g_24h_v <= 180)))
+        mean_24h = float(np.mean(g_24h_v))
+        std_24h = float(np.std(g_24h_v))
+        g_3d = glucose_raw[start - STEPS_3D:start]
+        g_3d_v = g_3d[~np.isnan(g_3d)]
+        if len(g_3d_v) < 24:
+            return None
+        tir_3d = float(np.mean((g_3d_v >= 70) & (g_3d_v <= 180)))
+        control_trend = tir_24h - tir_3d
+        block_size = STEPS_6H
+        high_count = 0
+        hypo_count = 0
+        for bstart in range(start - STEPS_3D, start, block_size):
+            bend = min(bstart + block_size, start)
+            bg = glucose_raw[bstart:bend]
+            bg_v = bg[~np.isnan(bg)]
+            if len(bg_v) > 0:
+                if np.mean(bg_v > 180) > 0.2: high_count += 1
+                if (bg_v < 70).any(): hypo_count += 1
+        yest_start = start - STEPS_24H
+        g_yest = glucose_raw[yest_start:yest_start + block_size]
+        g_yest_v = g_yest[~np.isnan(g_yest)]
+        had_high_yest = int(np.mean(g_yest_v > 180) > 0.2) if len(g_yest_v) > 0 else 0
+        had_hypo_yest = int((g_yest_v < 70).any()) if len(g_yest_v) > 0 else 0
+        md_feats = [had_high_yest, had_hypo_yest, high_count, hypo_count,
+                    tir_24h, tir_3d, control_trend, mean_24h, std_24h]
+        return tp_feats + md_feats
+
+    def _train_xgb_variant(X, y, pids, seeds, n_est=200, max_d=6, lr=0.05,
+                           gap=0, subsample=1.0, colsample=1.0):
+        """Train XGBoost with custom hyperparameters."""
+        (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y, pids=pids, gap=gap)
+        seed_metrics = []
+        for seed in seeds:
+            np.random.seed(seed)
+            scale_pos = max(1.0, (tr_y == 0).sum() / max((tr_y == 1).sum(), 1))
+            clf = xgb.XGBClassifier(
+                n_estimators=n_est, max_depth=max_d, learning_rate=lr,
+                scale_pos_weight=float(scale_pos),
+                subsample=subsample, colsample_bytree=colsample,
+                eval_metric='logloss', random_state=seed, verbosity=0,
+                use_label_encoder=False)
+            clf.fit(tr_X, tr_y, eval_set=[(va_X, va_y)], verbose=False)
+            va_prob = clf.predict_proba(va_X)[:, 1]
+            va_pred = clf.predict(va_X)
+            m = {'f1': round(float(f1_score(va_y, va_pred, zero_division=0)), 4),
+                 'accuracy': round(float(accuracy_score(va_y, va_pred)), 4)}
+            try:
+                m['auc_roc'] = round(float(roc_auc_score(va_y, va_prob)), 4)
+            except ValueError:
+                pass
+            seed_metrics.append(m)
+        avg = {k: round(float(np.mean([s[k] for s in seed_metrics if k in s])), 4)
+               for k in seed_metrics[0]}
+        return {'seeds': seed_metrics, 'average': avg,
+                'n_train': int(len(tr_y)), 'n_val': int(len(va_y)),
+                'pos_rate': round(float(y.mean()), 4)}
+
+    results = {}
+
+    horizons = [
+        ('2h', STEPS_2H),
+        ('4h', STEPS_4H),
+        ('6h', STEPS_6H),
+        ('12h', STEPS_12H),
+    ]
+
+    xgb_configs = [
+        ('default', dict(n_est=200, max_d=6, lr=0.05)),
+        ('deep500', dict(n_est=500, max_d=8, lr=0.05)),
+        ('slow300', dict(n_est=300, max_d=6, lr=0.02)),
+        ('regularized', dict(n_est=300, max_d=6, lr=0.03,
+                             subsample=0.8, colsample=0.8)),
+    ]
+
+    # Focus on HYPO (the gap task) — also test HIGH for comparison
+    for task_name, threshold, above in [('hypo', 70, False), ('high', 180, True)]:
+        print(f"\n  --- {task_name.upper()} ---")
+        print(f"    {'Config':15s}", end='')
+        for h_name, _ in horizons:
+            print(f" {h_name:>10s}", end='')
+        print()
+        print(f"    {'-'*60}")
+
+        for xgb_name, xgb_params in xgb_configs:
+            print(f"    {xgb_name:15s}", end='')
+            for h_name, future_steps in horizons:
+                X, y, pids, _ = _build_dataset(
+                    patients, STEPS_2H, future_steps, threshold, above,
+                    extra_feat_fn=combined_43_feats)
+                if X is None:
+                    print(f" {'N/A':>10s}", end=''); continue
+
+                res = _train_xgb_variant(
+                    X, y, pids, cfg['seeds'], **xgb_params)
+                key = f"{xgb_name}_{h_name}_{task_name}"
+                results[key] = res
+                auc = res['average'].get('auc_roc', 0)
+                print(f" {auc:>10.4f}", end='')
+            print()
+
+    # Summary: best config per horizon
+    print(f"\n  {'='*60}")
+    print(f"  BEST CONFIG PER HORIZON (combined_43 features)")
+    print(f"  {'='*60}")
+    for task in ['hypo', 'high']:
+        print(f"\n  --- {task.upper()} ---")
+        for h_name, _ in horizons:
+            best_auc = 0
+            best_name = ''
+            for xgb_name, _ in xgb_configs:
+                key = f"{xgb_name}_{h_name}_{task}"
+                r = results.get(key, {}).get('average', {}).get('auc_roc', 0)
+                if r > best_auc:
+                    best_auc = r
+                    best_name = xgb_name
+            print(f"    {h_name:8s}  {best_name:15s}  AUC={best_auc:.4f}")
+
+    save_results(results, 'exp458_4h_gap_closing')
+    return results
+
+
 EXPERIMENTS = {
     '411': run_exp411,
     '412': run_exp412,
@@ -4252,6 +4444,7 @@ EXPERIMENTS = {
     '455': run_exp455,
     '456': run_exp456,
     '457': run_exp457,
+    '458': run_exp458,
 }
 
 
@@ -4293,6 +4486,7 @@ Experiments:
   455  Multi-day recurrence features (3d/7d lookback for classification)
   456  Combined throughput + multi-day features (kitchen sink at 2h/6h/12h)
   457  Weekly pattern features (7d lookback, same-time-last-week, weekly trend)
+  458  4h HYPO gap-closing (combined_43 + XGBoost hyperparameter sweep)
 """)
     parser.add_argument('--experiment', '-e', nargs='+', default=['all'],
                         help='Experiment number(s) or "all" (default: all)')
