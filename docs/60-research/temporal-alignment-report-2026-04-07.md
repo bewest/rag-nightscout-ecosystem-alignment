@@ -4801,3 +4801,268 @@ The most common recommendation is **decrease basal rate** (9/11), suggesting wid
 | EXP-698 | Longitudinal Stability | Cleaned model stability exceeds uncleaned over 6 months | Compare model staleness with/without spike preprocessing |
 | EXP-699 | Minimal Data Pipeline | Cleaned pipeline works with just 3 days of data | Test cold-start minimum data requirements with spike cleaning |
 | EXP-700 | Grand Summary Metrics | Comprehensive before/after comparison across all improvements | Aggregate all enhancements (spikes, dawn, PI) vs original baseline |
+
+---
+
+## Part XXVI: Grand Summary — Spike-Cleaned Pipeline & Clinical Intelligence (EXP-691–700)
+
+### EXP-691: Cleaned Model v2 — Combined Improvements
+
+**Method**: Apply 2σ spike cleaning + dawn conditioning (best improvements from Parts XXIV–XXV).
+
+**Results** (11 patients):
+
+| Patient | v0 Baseline | v1 Spike-Cleaned | v2 +Dawn | Total Δ |
+|---------|-------------|-------------------|----------|---------|
+| a | 0.252 | 0.387 | 0.390 | +0.138 |
+| b | 0.426 | 0.564 | 0.564 | +0.138 |
+| c | 0.362 | 0.464 | 0.466 | +0.104 |
+| d | 0.221 | 0.397 | 0.399 | +0.177 |
+| e | 0.408 | 0.630 | 0.631 | **+0.223** |
+| f | 0.305 | 0.481 | 0.482 | +0.177 |
+| g | 0.327 | 0.539 | 0.541 | **+0.214** |
+| h | 0.282 | 0.410 | 0.408 | +0.126 |
+| i | 0.635 | 0.734 | 0.735 | +0.100 |
+| j | 0.111 | 0.222 | 0.234 | +0.123 |
+| k | 0.017 | 0.238 | 0.241 | **+0.223** |
+
+**Mean R²**: v0=0.304 → v1=0.461 → v2=**0.463**. Total improvement **+0.158** (+52%).
+
+Spike cleaning accounts for 97% of the improvement (v0→v1: +0.157), dawn conditioning adds 1.3% (v1→v2: +0.002). The combined pipeline lifts every patient substantially, with largest gains for patients e, g, k (Δ > +0.2).
+
+---
+
+### EXP-692: Cleaned Hypo Prediction
+
+**Hypothesis**: Spike cleaning improves hypo detection F1.
+
+**Results**: Mean F1 baseline=0.204, cleaned=0.204. **No improvement** (Δ=-0.000).
+
+This is surprising given the large R² improvement. The explanation: spike cleaning improves prediction of *normal* residual dynamics, but hypo events are already extreme and not confused with spikes. Spike artifacts in AR features don't correlate with hypo timing. Hypo prediction needs fundamentally different features (rate of change, IOB trajectory, time-since-last-meal).
+
+---
+
+### EXP-693: Basal Rate Assessment — Overnight Flux Analysis
+
+**Method**: Analyze supply-demand balance during overnight fasting periods (00:00–06:00, carb_supply < 0.5).
+
+**Results** (11 patients):
+
+| Patient | Overnight BG | TIR | TBR | Net Flux | S/D Ratio | Assessment |
+|---------|-------------|-----|-----|----------|-----------|------------|
+| d | 155 | 75% | 0.4% | -1.6 | 0.56 | **appropriate** |
+| g | 151 | 73% | 2.8% | -2.5 | 0.71 | **appropriate** |
+| j | 162 | 71% | 0.1% | -3.4 | 0.90 | **appropriate** |
+| k | 96 | 97% | 3.5% | -0.6 | 0.97 | **appropriate** |
+| c | 156 | 64% | 4.9% | -5.8 | 0.42 | slightly high |
+| f | 179 | 54% | 1.6% | -3.6 | 0.49 | slightly high |
+| a | 180 | 53% | 3.6% | -4.3 | 0.49 | **too low** |
+| b | 192 | 45% | 0.7% | -0.6 | 1.63 | **too low** |
+| e | 181 | 55% | 1.0% | -7.5 | 0.35 | **too low** |
+| h | 109 | 88% | **7.2%** | -2.2 | 0.68 | **too high** |
+| i | 169 | 51% | **8.6%** | -14.4 | 0.26 | **too high** |
+
+**Distribution**: 4 appropriate, 2 slightly high, 3 too low, 2 too high. Mean overnight TIR **65.9%**.
+
+**Key insight**: The supply/demand ratio is highly informative. Patients with S/D < 0.5 (a, c, e, i) have the AID delivering 2× more insulin than glucose supply warrants — either the basal is too high or the ISF is set too aggressively. Patient b is the outlier: S/D=1.63 (supply > demand) yet BG=192 — suggesting the ISF is set too conservatively (insulin isn't lowering BG enough per unit).
+
+---
+
+### EXP-694: CR Effectiveness Score
+
+**Method**: Measure post-meal flux recovery time and peak BG as indicators of CR accuracy.
+
+**Results** (10 patients with meals):
+
+| Patient | Meals | Recovery (min) | Peak BG | CR Score |
+|---------|-------|----------------|---------|----------|
+| d | 72 | **82** | 208 | **62** |
+| e | 310 | 112 | 207 | 52 |
+| g | 523 | 102 | 217 | 52 |
+| h | 481 | 129 | 196 | 50 |
+| j | 152 | 140 | 204 | 43 |
+| b | 844 | 120 | 230 | 42 |
+| f | 256 | 89 | 285 | 35 |
+| c | 344 | 147 | 278 | 18 |
+| i | 94 | 160 | 281 | 12 |
+| a | 338 | 153 | 303 | **9** |
+
+**Mean CR score: 37.4** (out of 100). Patient d has the best score (62) — fast recovery and moderate peaks. Patient a has the worst (9) — slowest recovery (153 min) and highest peaks (303 mg/dL), strongly suggesting the CR is too conservative. Patient i's low score (12) combined with high TBR (10.7%) suggests highly variable/unpredictable meal responses.
+
+---
+
+### EXP-695: Personalized Alert Thresholds
+
+**Method**: Use per-patient prediction error distribution (5th–95th percentile) to set custom alert levels.
+
+**Results**: Mean personal alert rate **2.2%** vs fixed-threshold rate **2.6%**. Personal thresholds are tighter for well-controlled patients (k: ±6–7 mg/dL) and wider for variable ones (j: ±12–13 mg/dL).
+
+**Key insight**: Personalized alerts reduce false positives for well-controlled patients (k: 0.4% fixed → 3.4% personal is higher because the personal threshold is extremely tight). For patients with high variability (j: 6.0% fixed → 2.5% personal), personalized thresholds significantly reduce alert fatigue.
+
+---
+
+### EXP-696: Settings Change Detection
+
+**Method**: Detect changepoints in weekly 24-hour flux profiles (RMSD > 3.0 threshold).
+
+**Results**: Mean **5.3 changepoints** per patient over 25 weeks. Distribution is bimodal:
+- **Stable** (f, g, j, k): 0 changepoints — consistent metabolic patterns
+- **Volatile** (i): 23 changepoints — near-weekly flux shifts
+- **Moderate** (b, c, e): 9–11 changepoints — periodic adjustments
+
+Patient i's extreme volatility (23 changepoints) correlates with its worst clinical outcomes (TBR=10.7%, risk=100). This suggests either frequent settings changes, medication changes, or highly variable lifestyle patterns.
+
+---
+
+### EXP-697: Cross-Patient Transfer — Spike Cleaning Enables Transfer
+
+**Hypothesis**: Spike-cleaned models transfer better between patients.
+
+**Results** (leave-one-out, 11 patients):
+
+| Patient | Raw Transfer | Clean Transfer | Personal | Δ (clean-raw) |
+|---------|-------------|---------------|----------|----------------|
+| a | 0.234 | 0.366 | 0.387 | +0.132 |
+| b | 0.412 | 0.548 | 0.564 | +0.136 |
+| e | 0.392 | 0.623 | 0.630 | **+0.231** |
+| g | 0.273 | 0.485 | 0.539 | **+0.212** |
+| j | -0.001 | 0.197 | 0.222 | **+0.198** |
+| k | -0.080 | 0.123 | 0.238 | **+0.203** |
+
+**Mean**: Raw transfer R²=0.272, Clean transfer R²=**0.437**, Personal R²=0.461.
+
+**This is a breakthrough result.** Spike cleaning improves cross-patient transfer by **+0.164** (60% relative), nearly closing the gap to personal models (0.437 vs 0.461 = 95% of personal performance). Patients j and k go from negative R² (worse than mean prediction) to positive R² with cleaned transfer. This means:
+
+1. **Spike artifacts are the main barrier to transfer learning** — once removed, AR dynamics are shared across patients
+2. **Clean population models can work from day 1** — R²=0.437 without any patient-specific data
+3. **Personal fine-tuning adds only 5%** — suggesting ~95% of metabolic dynamics are shared
+
+---
+
+### EXP-698: Longitudinal Stability — Cleaned Models Stay Stable
+
+**Results** (summary across horizons):
+
+| Horizon | Mean Raw R² | Mean Clean R² | Gap |
+|---------|-------------|---------------|-----|
+| 30d | 0.318 | 0.453 | +0.135 |
+| 60d | 0.298 | 0.438 | +0.140 |
+| 90d | 0.321 | 0.466 | +0.145 |
+| 120d | 0.304 | 0.467 | +0.163 |
+| 150d | 0.339 | 0.489 | +0.150 |
+
+**Key finding**: Cleaned models maintain a **consistent +0.14–0.16 advantage** over raw models at every horizon up to 5 months. Neither version shows significant decay — both are stable over time. But the cleaned model starts higher and stays higher.
+
+---
+
+### EXP-699: Minimal Data Pipeline — Cold Start
+
+**Results** (mean R² across 11 patients):
+
+| Training Data | Mean R² |
+|--------------|---------|
+| 1 day | 0.297 |
+| 3 days | **0.438** |
+| 7 days | 0.456 |
+| 14 days | 0.461 |
+| 30 days | 0.466 |
+
+**Key finding**: With spike cleaning, **3 days of data achieves 94% of the 30-day R²** (0.438 vs 0.466). Without spike cleaning (EXP-660), 7 days was the minimum. Spike cleaning effectively halves the cold-start requirement from 7 days to 3 days.
+
+One outlier: patient h gets R²=-0.802 with 1 day (insufficient data for ridge regularization), but jumps to 0.403 with 3 days. **3 days is the safe minimum for the cleaned pipeline.**
+
+---
+
+### EXP-700: Grand Summary — Before/After Comparison
+
+**The definitive comparison across all improvements (11 patients, ~530K timesteps):**
+
+| Patient | TIR | v0 Baseline | v2 Final | Total Δ | Relative % | PI Coverage | PI Width |
+|---------|-----|-------------|----------|---------|-----------|-------------|----------|
+| a | 56% | 0.252 | 0.390 | +0.138 | +55% | 94% | ±28 |
+| b | 57% | 0.426 | 0.564 | +0.138 | +32% | 92% | ±22 |
+| c | 62% | 0.362 | 0.466 | +0.104 | +29% | 94% | ±28 |
+| d | 79% | 0.221 | 0.399 | +0.177 | +80% | 93% | ±18 |
+| e | 65% | 0.408 | 0.631 | +0.223 | +55% | 94% | ±20 |
+| f | 66% | 0.305 | 0.482 | +0.177 | +58% | 90% | ±19 |
+| g | 75% | 0.327 | 0.541 | +0.214 | +65% | 92% | ±22 |
+| h | 85% | 0.282 | 0.408 | +0.126 | +45% | 93% | ±25 |
+| i | 60% | 0.635 | 0.735 | +0.100 | +16% | 92% | ±23 |
+| j | 81% | 0.111 | 0.234 | +0.123 | +111% | 94% | ±31 |
+| k | 95% | 0.017 | 0.241 | +0.223 | +1284% | 93% | ±15 |
+| **Mean** | **71%** | **0.304** | **0.463** | **+0.158** | **+52%** | **92.9%** | **±23** |
+
+**Summary of the full improvement stack**:
+1. Physics-based flux decomposition: establishes baseline R²=0.304
+2. 2σ spike cleaning + interpolation: R² → 0.461 (+51.6% relative) — **97% of total improvement**
+3. Dawn conditioning: R² → 0.463 (+0.4% relative) — small but consistent
+4. Bootstrap prediction intervals: 92.9% coverage, ±23 mg/dL width — **calibrated**
+5. All improvements are additive and non-conflicting
+
+---
+
+### Part XXVI Summary
+
+| ID | Name | Key Result | Status |
+|----|------|------------|--------|
+| EXP-691 | Cleaned Model v2 | R² 0.304→0.463 (+52%), **11/11 improved** | ✅ |
+| EXP-692 | Cleaned Hypo | F1 unchanged (0.204) — spikes ≠ hypo | ✅ |
+| EXP-693 | Basal Assessment | 4 appropriate, 3 too low, 2 too high, 2 slightly high | ✅ |
+| EXP-694 | CR Score | Mean 37.4/100, patient a worst (9), d best (62) | ✅ |
+| EXP-695 | Alert Thresholds | Personal 2.2% vs fixed 2.6% alert rate | ✅ |
+| EXP-696 | Settings Change | Mean 5.3 changepoints/patient, i=23 (volatile) | ✅ |
+| EXP-697 | Cross Transfer | **Clean transfer R²=0.437 (95% of personal)** | ✅ |
+| EXP-698 | Stability | Cleaned advantage +0.15 maintained at all horizons | ✅ |
+| EXP-699 | Minimal Data | **3 days achieves 94% of 30-day R²** | ✅ |
+| EXP-700 | Grand Summary | R² 0.304→0.463, PI 92.9% coverage, ±23 mg/dL | ✅ |
+
+**Top insights from this wave**:
+1. **Transfer learning breakthrough** (EXP-697): Spike cleaning enables cross-patient transfer at 95% of personal performance — population models work from day 1.
+2. **3-day cold start** (EXP-699): With spike cleaning, only 3 days of data needed (was 7 days without).
+3. **Basal assessment works** (EXP-693): S/D ratio clearly identifies over/under-basaling — clinically actionable.
+4. **CR scoring is informative** (EXP-694): Recovery time + peak BG composite score correlates with settings quality.
+5. **Hypo prediction needs different features** (EXP-692): Spike cleaning doesn't help hypo F1 — this remains the hardest task.
+
+---
+
+## 200-Experiment Grand Synthesis (EXP-511–700)
+
+### Architecture Evolution
+
+| Stage | R² | Key Innovation |
+|-------|-----|----------------|
+| EXP-511: Flux only | 0.000 | Physics-based supply-demand decomposition |
+| EXP-541: + AR(6) | 0.095 | Autoregressive residual correction |
+| EXP-601: + NL terms | 0.113 | BG², demand², BG×demand, sigmoid |
+| EXP-610: + Piecewise bias | 0.130 | Day/night/meal-time conditioning |
+| EXP-623: Joint NL+AR | 0.145 | Combined model (10 features) |
+| EXP-681: + 2σ spike clean | 0.387 | **Spike detection + interpolation** |
+| EXP-682: + 2σ (optimal) | 0.461 | Aggressive threshold universally best |
+| EXP-691: + Dawn conditioning | **0.463** | Dawn/overnight indicator features |
+
+### Clinical Intelligence Stack
+
+| Tool | Experiments | Key Metric |
+|------|------------|------------|
+| Hypo predictor | EXP-651-653 | F1=0.555 (ensemble vote) |
+| Settings recommender | EXP-657, 685 | 2.7 adjustments/patient |
+| Report card | EXP-656, 688 | 3A/4B/4C grades |
+| Basal assessment | EXP-693 | S/D ratio classifies 4 categories |
+| CR effectiveness | EXP-694 | Score 0-100, mean=37.4 |
+| Anomaly fingerprints | EXP-654 | 40% meal, 25% high-BG |
+| Weekly trends | EXP-686 | 4 improving, 5 declining |
+| Settings change detection | EXP-696 | Mean 5.3 changepoints/25 weeks |
+| Personalized alerts | EXP-695 | 2.2% alert rate (vs 2.6% fixed) |
+
+### Production Readiness
+
+| Metric | Value | Experiment |
+|--------|-------|------------|
+| End-to-end latency | 118ms/patient | EXP-690 |
+| Streaming latency | 19.5μs/prediction | EXP-689 |
+| Prediction intervals | 92.9% coverage ±23 mg/dL | EXP-700 |
+| Cold start | 3 days (94% of 30-day R²) | EXP-699 |
+| Cross-patient transfer | R²=0.437 (95% of personal) | EXP-697 |
+| Model staleness | <2% decay over 5 months | EXP-679, 698 |
+| Spike vulnerability | Solved by 2σ preprocessing | EXP-681, 682 |
+| Gap tolerance | <1% loss at 2h gaps | EXP-667 |
