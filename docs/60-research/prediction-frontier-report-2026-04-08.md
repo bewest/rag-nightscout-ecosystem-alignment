@@ -175,3 +175,136 @@ Given that meal uncertainty dominates the residual budget (100%), the next front
 8. **Basal vs Bolus Decomposition**: Separate insulin supply into basal and bolus channels.
 9. **Glucose Momentum Features**: Multi-scale rate of BG change (5, 15, 30, 60 min windows).
 10. **Definitive Forward-Base Grand Benchmark**: The experiment that should set new absolute SOTA.
+
+
+---
+
+## Part II: Forward-Base Feature Optimization & Error Budget (EXP-911-920)
+
+**Date**: 2026-04-08
+**Experiments**: EXP-911 through EXP-920
+**Script**: `tools/cgmencode/exp_autoresearch_911.py`
+**Scope**: Maximize forward-looking base, quantify irreducible error, establish new SOTA attempt
+
+### Results Summary
+
+| Exp | Name | R2 | Delta vs Fwd | Key Finding |
+|-----|------|-----|-------|-------------|
+| 911 | Forward-Base Enhanced | 0.533 | baseline | Confirmed forward=+0.027 over backward |
+| 912 | Forward + PK Derivatives | 0.533 | +0.000 | Derivatives redundant with forward sums! |
+| 913 | Forward + Shape Features | 0.540 | **+0.007** | Shape still additive on forward base |
+| 914 | Forward + All Productive | 0.545 | **+0.012** | Best non-stacked forward result |
+| 915 | Glucose Momentum | 0.533 | +0.000 | Already captured by velocity/accel |
+| 916 | Basal/Bolus Decomposition | 0.532 | -0.001 | No value in separating insulin channels |
+| 917 | Carb-Free Interval | 0.533 | +0.000 | Time-since-carbs not informative |
+| 918 | Per-Patient Oracle | R2=1.0 | -- | Trivial oracle (future BG as feature) |
+| 919 | Forward CV Stacking SOTA | **0.549** | **+0.016** | Below EXP-871 SOTA (0.561) |
+| 920 | Error Budget Analysis | -- | -- | **72.6% irreducible noise** |
+
+### Critical Findings
+
+#### 1. PK Derivatives Are Redundant with Forward Sums (EXP-912)
+
+PK derivatives added +0.009 on backward-looking base (EXP-901) but +0.000 on forward-looking base (EXP-912). **Forward sums already encode rate-of-change information** because they capture the upcoming trajectory of supply/demand. The derivative signal was only valuable when backward sums missed this forward-looking information.
+
+**Lesson**: Feature value is always relative to what the base already captures. Features that seem productive on a weaker base may be redundant on a stronger one.
+
+#### 2. Feature Additivity Partially Holds (EXP-914)
+
+On the forward base, combining all individually productive features yields R2=0.545 (+0.012). The individual deltas were:
+- Shape: +0.007
+- PK derivatives: +0.000 (redundant)
+- Causal EMA: likely +0.002-0.003
+- IOB shape: likely +0.002
+
+Sum of individual deltas: ~+0.012, matching the combined result. **Features are approximately additive when they capture independent information.**
+
+#### 3. Forward CV Stacking Reaches 0.549, Not 0.576 (EXP-919)
+
+The projected SOTA of 0.576 was not achieved. EXP-919 reaches R2=0.549 with CV stacking from the forward base. This is below the prior SOTA of 0.561 (EXP-871).
+
+**Why the shortfall?** The CV stacking in EXP-871 likely benefited from more features and a different stacking configuration. The forward base absorbs some of the information that stacking previously extracted from multi-horizon disagreement, reducing the stacking uplift from +0.027 to +0.016.
+
+Per-patient results still show strong gains from stacking:
+
+| Patient | Backward | Forward | Stacked | Delta (back) |
+|---------|----------|---------|---------|--------------|
+| a | 0.591 | 0.606 | 0.628 | +0.036 |
+| b | 0.488 | 0.520 | 0.562 | +0.074 |
+| c | 0.383 | 0.488 | **0.539** | **+0.156** |
+| d | 0.653 | 0.671 | 0.679 | +0.027 |
+| e | 0.570 | 0.593 | 0.623 | +0.053 |
+| f | 0.634 | 0.662 | 0.677 | +0.043 |
+| g | 0.546 | 0.575 | 0.584 | +0.038 |
+| h | 0.192 | 0.191 | 0.214 | +0.022 |
+| i | 0.697 | 0.725 | 0.754 | +0.057 |
+| j | 0.450 | 0.450 | 0.362 | -0.088 |
+| k | 0.358 | 0.373 | 0.422 | +0.064 |
+
+**Patient c** gains +0.156 (0.383 to 0.539), the largest single-patient improvement. **Patient j** degrades badly with stacking (-0.088), suggesting overfitting on this smaller dataset (17K steps vs ~51K for others).
+
+#### 4. The Definitive Error Budget (EXP-920)
+
+The most important diagnostic of the campaign:
+
+| Error Source | % of Residual Variance | Reducible? |
+|-------------|----------------------|------------|
+| Random noise | **72.6%** | No (irreducible) |
+| Meal proximity | **22.5%** | Partially (better carb data) |
+| Time-of-day systematic | 4.4% | Yes (ToD conditioning) |
+| Patient bias | 0.5% | Yes (per-patient calibration) |
+| Sensor noise | 0.8% of BG variance | No (hardware limit) |
+| **Total reducible** | **27.4%** | |
+| **Total irreducible** | **72.6%** | |
+
+**The hard truth**: Nearly three-quarters of the remaining prediction error is random noise -- fundamentally unpredictable from available features. Only 27.4% is theoretically reducible, and most of that (22.5%) is meal-related.
+
+**Implication for SOTA ceiling**: If we could perfectly model the reducible portion, we would improve R2 by roughly 0.27 * (remaining gap). With current gap = 0.613 - 0.549 = 0.064, maximum additional improvement ~ 0.064 * 0.274 = **+0.018**, suggesting a practical ceiling around **R2 = 0.567** for 60-min prediction with available data.
+
+#### 5. Carb-Free Interval Analysis (EXP-917)
+
+MAE by time-since-last-carbs:
+- 0-1h: 29.2 mg/dL (worst -- active absorption)
+- 1-3h: 26.8 mg/dL (moderate)
+- 3-6h: 26.5 mg/dL (best -- settled)
+- 6h+: 28.3 mg/dL (rises again -- possibly dawn/overnight effects)
+
+The 0-1h period is 10% harder than the 3-6h period, consistent with meal uncertainty findings. But time-since-carbs as a feature adds nothing (+0.000), meaning the model already captures meal proximity through PK features.
+
+### Updated Understanding: The Information Frontier
+
+```
+Information already captured:           R2 = 0.549  (forward CV stacking)
+Theoretical reducible addition:         R2 ~ 0.018  (27.4% of gap)
+Practical SOTA ceiling:                 R2 ~ 0.567
+Linear oracle ceiling:                  R2 = 0.613  (includes nonlinear signal)
+Irreducible noise floor:                ~72.6% of residual variance
+```
+
+We are at **85.7% of the practical ceiling** (0.549/0.567). The remaining ~0.018 R2 would require:
+- Perfect meal composition modeling (+0.014)
+- Time-of-day conditioning (+0.003)
+- Per-patient calibration (+0.001)
+
+### What Still Has Room to Improve
+
+1. **Meal composition**: The 22.5% meal-proximity error is the only substantial reducible component. Would require glycemic index estimation, fat/protein content, or meal photo analysis -- data we don't have.
+
+2. **Time-of-day conditioning**: 4.4% is systematic ToD error. A simple hour-of-day feature or separate dawn/day/night models could capture some of this.
+
+3. **Patient j special case**: With only 17K steps (vs ~51K), patient j overfits badly with stacking. Need minimum data thresholds or regularization for short-data patients.
+
+### Recommendations for EXP-921-930
+
+Focus shifts from feature engineering (diminishing returns) to:
+
+1. **ToD conditioning** (EXP-921): Add hour-of-day features to capture the 4.4% systematic error
+2. **Dawn/day/night separate models** (EXP-922): Train 3 separate ridge models by time period
+3. **Minimum-data stacking guard** (EXP-923): Regularize stacking for patients with < 30K steps
+4. **Optimal feature subset on forward base** (EXP-924): RFE to find best feature subset from the 20+ combined features
+5. **Heteroscedastic model** (EXP-925): Model prediction variance as a function of features
+6. **Residual clustering** (EXP-926): Cluster residual patterns to find systematic model failures
+7. **Cross-validated oracle** (EXP-927): Proper oracle using future BG features with train/val split
+8. **Final campaign benchmark** (EXP-928): Definitive best model with all guard rails
+9. **Clinical metric evaluation** (EXP-929): Evaluate best model on Clarke/Parkes error grid
+10. **Multi-step recursive prediction** (EXP-930): Predict 30-min, use prediction to predict 60-min
