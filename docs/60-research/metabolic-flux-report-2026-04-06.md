@@ -99,7 +99,7 @@ enormous — this is exactly the signal we exploit.
 - Patient j (zero IOB/COB data) had zero flux — identified the need for hepatic rescue
 
 **EXP-436: Phase Lag**
-- Carb absorption peaks **25 minutes** before insulin peak effect (event-weighted mean across 1,913 events; per-patient range 2–43 min)
+- Carb absorption peaks **25 minutes** before insulin peak effect (event-weighted mean across 185 meal events; per-patient means range 2–43 min, but median lag is 0 for all patients)
 - This phase difference is a structural temporal signature unique to meals
 - Pre-bolused meals show *negative* lag (insulin peaks before carbs)
 - Corrections show insulin-only flux with no carb component
@@ -116,10 +116,15 @@ enormous — this is exactly the signal we exploit.
   - 6h scale: AUC 0.86 (flux) vs 0.64 (glucose alone)
   - 12h scale: AUC 0.85 (flux) vs 0.65 (glucose alone)
 - Advantage is largest at 2h (0.25 AUC gap) where AID flattens glucose most
+- **Note**: Flux silhouette scores are negative at 6h/12h (−0.18, −0.36), indicating
+  overlapping clusters despite good linear discrimination. Flux improves AUC but does
+  not form separable clusters on its own
 
 **EXP-439: Signal-to-Noise Ratio**
 - Flux SNR exceeds glucose SNR at all scales (3–12× ratio, increasing with scale)
 - Flux wins 10/11 patients at 2h–12h; 6/8 at 24h
+- **Note**: 12h flux SNR mean (44,510×) is an anomalous outlier, likely a numerical
+  artifact; the 2h–6h range (3–3.5×) is more representative
 
 **EXP-440: Positional Encoding Interaction**
 - Flux + positional encoding shows best discrimination at ≥6h scales
@@ -160,7 +165,7 @@ TDD normalization provides a **data-driven ISF proxy** that doesn't require prof
 
 **EXP-443: Throughput + Balance as Dual Channels**
 - 2D (throughput, balance) clustering: silhouette improvement +0.14 at 6h, +0.23 at 12h
-  vs glucose alone
+  vs glucose alone, but **−0.07 at 2h** (2D worse than glucose at short scales)
 - Balance alone is **anti-discriminative** (AUC 0.24–0.46) — the ratio fluctuates too
   rapidly for simple classification
 - But combined with throughput as a 2D feature, balance provides directional context
@@ -182,7 +187,8 @@ the 3h band. This is the strongest evidence that throughput is a meal-specific s
 - Raw glucose shape similarity: only 0.10 (nearly orthogonal)
 - **Implication**: The metabolic response to meals is physiologically universal;
   individual variation is primarily in ISF/TDD scaling, not response shape
-- This enables cross-patient transfer learning with TDD normalization
+- **Caveat**: TDD normalization does not improve glucose similarity (19/55 pairs, p=0.36);
+  throughput is already universal without normalization
 
 ### 2.3 EXP-446–447: Meal Counting Validation
 
@@ -244,10 +250,13 @@ Modeling hepatic glucose output as the always-on supply baseline:
 
 ### 3.4 Phase Lag as Structural Signature
 
-The 25-minute carb-insulin phase lag is a **structural feature of meal physiology**:
+The 25-minute carb-insulin phase lag is a **mean-level feature of meal physiology**,
+though its practical utility as a classifier is limited by high variability:
 - Carb absorption peaks at ~20–30 min (Dalla Man gastric emptying model)
 - Insulin subcutaneous absorption peaks at ~55–90 min (Hovorka compartment model)
 - Event-weighted mean offset is ~25 min; per-patient means range from 2 to 43 min
+- **Caveat**: Median lag is 0 for all patients — most individual events show near-zero lag,
+  with the 25-min mean driven by a subset of events with large positive lag
 - Pre-bolused meals flip the sign (insulin arrives first)
 - Corrections show insulin-only flux (zero carb component)
 
@@ -492,11 +501,11 @@ ratios. Expected: shape similarity should increase from 0.987 (raw) toward 0.99+
 |-----------|----------|------------------|
 | **Conservation**: Glucose integral balances over 12h | EXP-421: −1.8 ± 28.4 mg·h | Validates physics model; residual is meaningful |
 | **Asymmetric absorption**: Bolus response ratio 3.47 | EXP-420 | Models need full DIA arc (≥12h windows) |
-| **Universal response shape**: 0.987 similarity | EXP-445 | Cross-patient transfer is feasible |
+| **Universal response shape**: 0.987 similarity | EXP-445 | Cross-patient transfer feasible (throughput already universal without normalization) |
 | **Spectral concentration**: 18× at meal band | EXP-444 | Band-pass filtering can isolate meal signal |
-| **Phase lag constancy**: 25 min (range 2–43) | EXP-436 | Phase-based classifier independent of amplitude |
+| **Phase lag**: mean 25 min, median 0 | EXP-436 | Mean-level feature; too variable for per-event classification |
 | **Hepatic never-zero**: Min 35% of baseline | EXP-441 | Supply signal always available |
-| **ISF≈1800/TDD**: r=0.43 | EXP-442 | TDD as data-driven ISF proxy |
+| **ISF≈1800/TDD**: r=0.43 (r²=0.19) | EXP-442 | Weak proxy — explains <19% of ISF variance |
 | **Time-invariance breaks at 12h**: circadian enters | EXP-419 | Different encodings needed above/below 12h |
 | **Sparse features hurt**: bolus at ≤0.7% density | EXP-298 | Must convert to dense (IOB/COB/flux) |
 
