@@ -12,7 +12,7 @@ This report covers 10 experiments that establish two major findings:
 
 2. **Asymmetric history:future ratios** dramatically improve h5-h120 predictions. Maximizing history (9h20m) with minimal future projection yields h60=18.05 — a new best.
 
-These findings enable an optimal 3-specialist routing pipeline covering h30-h360 with a composite MAE of 23.34 (quick mode, 4 patients).
+These findings enable an optimal routing pipeline covering h30-h360. EXP-470's 3-specialist pipeline achieved composite MAE of 23.34 (quick mode, 4 patients); adding asym_112_32 as a 4th specialist is projected to improve this to ~22.95.
 
 ## Key Results Table
 
@@ -103,31 +103,37 @@ The benefit from 5h20m→9h20m is smaller than 4h→5h20m, suggesting diminishin
 
 | Band | Best Specialist | MAE Range | Why |
 |------|----------------|-----------|-----|
-| h5-h120 | asym_112_32 (w144, 9h20m hist) | 14.7-22.6 | Maximum history |
+| h5-h30 | short_asym (w96, 64h+32f) | 14.4 | Slightly beats asym_112_32 at h30 (14.41 vs 14.70) |
+| h60-h120 | asym_112_32 (w144, 112h+32f) | 18.1-22.6 | Maximum history for mid horizons |
 | h150-h180 | mid_sym (w96, 48h+48f) | 23.7-24.5 | Balanced coverage |
 | h240-h360 | long_sym (w144, 72h+72f) | 26.7-30.7 | Maximum future projection |
 
 ### Optimal Composite Routing
 
-| Horizon | MAE | Specialist |
-|---------|-----|------------|
-| h30 | 14.41 | short_asym (w96 64+32) |
-| h60 | 18.05 | asym_112_32 (w144 112+32) |
-| h120 | 22.58 | asym_112_32 (w144 112+32) |
-| h150 | 23.66 | mid_sym (w96 48+48) |
-| h180 | 24.54 | mid_sym (w96 48+48) |
-| h240 | 26.67 | long_sym (w144 72+72) |
-| h360 | 30.72 | long_sym (w144 72+72) |
+The following table presents the best specialist per horizon across EXP-468, 469, and 470. Note: EXP-470 itself tested only 3 specialists (short_asym, mid_sym, long_sym); the asym_112_32 results come from EXP-469 and are included here as the ideal cross-experiment routing.
+
+| Horizon | MAE | Specialist | Source |
+|---------|-----|------------|--------|
+| h30 | 14.41 | short_asym (w96 64+32) | EXP-468 |
+| h60 | 18.05 | asym_112_32 (w144 112+32) | EXP-469 |
+| h120 | 22.58 | asym_112_32 (w144 112+32) | EXP-469 |
+| h150 | 23.66 | mid_sym (w96 48+48) | EXP-470 |
+| h180 | 24.54 | mid_sym (w96 48+48) | EXP-470 |
+| h240 | 26.67 | long_sym (w144 72+72) | EXP-470 |
+| h360 | 30.72 | long_sym (w144 72+72) | EXP-470 |
+
+Cross-experiment composite average: 22.95. The EXP-470 3-specialist composite (without asym_112_32) was 23.34.
 
 ### Production Pipeline
 
 ```
-w48 base (shared) ──┬──→ asym w96 (64+32)  → h5-h120 predictions
-                    ├──→ sym w96 (48+48)    → h150-h240 predictions  
+w48 base (shared) ──┬──→ asym w96 (64+32)  → h5-h30 predictions
+                    ├──→ asym w144 (112+32) → h60-h120 predictions
+                    ├──→ sym w96 (48+48)    → h150-h180 predictions  
                     └──→ sym w144 (72+72)   → h240-h360 predictions
 ```
 
-All specialists share the same w48 transfer initialization. Total model count: 4 (1 base + 3 specialists).
+All specialists share the same w48 transfer initialization. Total model count: 5 (1 base + 4 specialists). The 3-specialist variant (EXP-470, without asym_112_32) achieved composite MAE=23.34; the 4-specialist variant with asym_112_32 is expected to improve this to ~22.95.
 
 ## Confirmed Dead Ends (Updated)
 
@@ -162,11 +168,13 @@ All specialists share the same w48 transfer initialization. Total model count: 4
 
 ## Appendix: Per-Patient Results (EXP-469 asym_112_32)
 
-| Patient | Overall | h30 | h60 | h120 | ISF |
-|---------|---------|-----|-----|------|-----|
-| a | 27.37 | 19.93 | 25.32 | — | 49 |
-| b | 18.54 | 13.35 | 17.52 | — | 94 |
-| c | 10.86 | 8.79 | 10.08 | — | 77 |
-| d | 20.26 | 16.72 | 19.28 | — | 40 |
+| Patient | Overall | h30 | h60 | ISF |
+|---------|---------|-----|-----|-----|
+| a | 27.37 | 19.93 | 25.32 | 49 |
+| b | 18.54 | 13.35 | 17.52 | 94 |
+| c | 10.86 | 8.79 | 10.08 | 77 |
+| d | 20.26 | 16.72 | 19.28 | 40 |
+
+Note: Per-patient h120 breakdown was not captured in the experiment output. The aggregate h120=22.58 is reported in the main results table.
 
 Patient c remains the easiest (low ISF variance, high fidelity), patient a the hardest (highest absolute glucose swings).

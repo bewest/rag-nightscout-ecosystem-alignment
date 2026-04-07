@@ -57,7 +57,7 @@ Future window sweep (EXP-476) confirmed: at any fixed total window size, maximiz
 
 ### 4. Data Augmentation Doesn't Help (EXP-477)
 
-4× augmentation (Gaussian noise, scale ±5%, time shift ±1) produced 17,240 training windows from 3,448 originals. The augmented model had much lower training loss (0.095 vs 0.201) but higher validation loss — classic overfitting to synthetic patterns. The augmentations preserve PK physics but don't add the real-world diversity the model needs.
+4× augmentation (Gaussian noise, scale down 5%, scale up 5%, time shift +1) produced 17,240 training windows from 3,448 originals. The augmented model had much lower training loss (0.095 vs 0.201) but higher validation loss — classic overfitting to synthetic patterns. The augmentations preserve PK physics but don't add the real-world diversity the model needs.
 
 ### 5. Hard Patients Are Data-Limited, Not Training-Limited (EXP-479)
 
@@ -132,7 +132,7 @@ But the simpler approach may be best: **just use w48 with transfer for everythin
 
 ### High Priority
 1. **Full validation of w48 vs w144** at 11 patients, 5 seeds — resolve the paradox
-2. **Stride reduction for w144** — increase from stride=36 to stride=18, doubling training data
+2. **Stride reduction for w144** — decrease from stride=48 to stride=24, doubling training data
 3. **Proper prediction-level ensemble** — average model outputs, not MAE metrics
 
 ### Medium Priority
