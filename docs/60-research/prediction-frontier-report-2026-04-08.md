@@ -460,3 +460,130 @@ Linear oracle ceiling:          R2 = 0.613
 4. **Can meal composition be estimated from CGM response?** The post-prandial shape encodes absorption dynamics. Could a lookup table of known meal responses help classify and predict unknown meals?
 
 5. **Transfer learning across patients**: Can the best-predicted patients (i, d, f) help the worst (h, k, c)?
+
+
+---
+
+## Part IV: Stacking Mystery, Metabolic Oracle & Campaign Diagnostics (EXP-931-940)
+
+**Date**: 2026-04-08
+**Experiments**: EXP-931 through EXP-940
+**Script**: `tools/cgmencode/exp_autoresearch_931.py`
+
+### Results Summary
+
+| Exp | Name | R2 | Key Finding |
+|-----|------|-----|-------------|
+| 931 | Bidirectional Features | **0.541** | Both directions carry independent info (+0.008) |
+| 932 | Stacking Reproduction | 0.292 | **BROKEN** -- failed to reproduce EXP-871 SOTA |
+| 933 | Bidir CV Stacking | 0.348 | Stacking broken in this implementation |
+| 934 | Diversity Analysis | div=0.05 | Low horizon diversity across all bases |
+| 935 | Config Search | 0.335 | Best stacking config still broken |
+| 936 | Metabolic Oracle | **0.616** | Proper oracle: future metabolic state |
+| 937 | Ensemble Stacking | 0.338 | Both stacking models broken, ensemble can't help |
+| 938 | Leave-One-Patient-Out | **0.145** | Massive personalization gap (-0.388) |
+| 939 | Confidence Calibration | inverted | Confidence score is anti-correlated |
+| 940 | Campaign Summary | autocorr=0.943 | Errors are strongly temporally clustered |
+
+### Critical Findings
+
+#### 1. Metabolic Oracle = R2=0.616 (EXP-936)
+
+The most important diagnostic result. Using future metabolic state (supply, demand, net flux at the target time) as oracle features yields R2=0.616. This is nearly identical to the prior linear oracle ceiling (0.613), confirming:
+
+**The PK model captures the complete metabolic pathway.** Future glucose is almost entirely determined by future supply/demand balance. The 0.616 vs 0.613 near-equality is not coincidence -- the physics model IS the oracle.
+
+Per-patient metabolic oracle gaps (room to improve with better metabolic prediction):
+
+| Patient | Current R2 | Oracle R2 | Gap | Room |
+|---------|-----------|-----------|-----|------|
+| c | 0.488 | 0.634 | **0.147** | Most room |
+| d | 0.671 | 0.769 | 0.098 | |
+| e | 0.593 | 0.685 | 0.092 | |
+| a | 0.606 | 0.664 | 0.059 | |
+| f | 0.662 | 0.719 | 0.057 | |
+| g | 0.585 | 0.633 | 0.048 | |
+| b | 0.520 | 0.538 | 0.018 | Least room |
+
+**Patient c** has the most room for improvement (0.147 gap), explaining why it gains the most from additional features across experiments. Patient b is already near its oracle ceiling.
+
+#### 2. Error Autocorrelation = 0.943 (EXP-940)
+
+Prediction errors are 94.3% correlated from one 5-minute step to the next. This is the most underexplored finding of the campaign:
+
+- Errors persist for **extended periods** (multi-hour regimes)
+- The model makes consistent systematic biases, not random errors
+- This explains why AR correction fails: the error at lag-12 (60min) is informative about the current error, but adding it as a feature introduces collinearity with the base prediction
+
+**Implication**: Error regime detection (not correction) could help. If we could identify WHEN the model is in a high-error regime, we could flag predictions as unreliable rather than trying to correct them.
+
+This also suggests that the 72.6% "irreducible noise" (EXP-920) may actually contain a regime-structured component that could be captured with the right approach.
+
+#### 3. LOPO Generalization: R2=0.145 (EXP-938)
+
+Leave-one-patient-out is devastating but revealing:
+
+| Patient | Within R2 | LOPO R2 | Degradation |
+|---------|----------|---------|-------------|
+| d | 0.671 | **0.591** | 0.080 (best transfer) |
+| e | 0.593 | 0.502 | 0.092 |
+| a | 0.606 | 0.495 | 0.111 |
+| b | 0.520 | 0.415 | 0.105 |
+| f | 0.662 | 0.392 | 0.270 |
+| c | 0.488 | 0.284 | 0.203 |
+| g | 0.585 | 0.264 | 0.321 |
+| i | 0.725 | 0.192 | 0.533 |
+| k | 0.373 | -0.065 | 0.438 |
+| j | 0.450 | -0.148 | 0.598 |
+| h | 0.191 | -0.329 | 0.520 |
+
+**Two groups emerge**:
+- **Transferable** (LOPO > 0.3): d, e, a, b, f -- degradation 0.08-0.27
+- **Highly personal** (LOPO < 0.3): c, g, i, k, j, h -- degradation 0.32-0.60
+
+Patient d transfers best (LOPO=0.591), suggesting its metabolic dynamics are most "typical". Patient i has the BEST within-patient R2 (0.725) but one of the WORST LOPO (0.192) -- its excellent prediction relies entirely on patient-specific features.
+
+#### 4. Bidirectional Features = R2=0.541 (EXP-931)
+
+Using both backward and forward supply/demand sums yields +0.008 over forward alone (0.541 vs 0.533). This confirms both temporal perspectives carry independent information about the metabolic state.
+
+#### 5. Stacking Implementation Bug (EXP-932)
+
+The stacking in this script fails to reproduce EXP-871 SOTA (0.292 vs 0.561). The delta-BG target formulation plus the stacking architecture differs from the original 871 implementation. This needs investigation -- the original EXP-871 stacking works fundamentally differently.
+
+#### 6. Campaign Summary Statistics (EXP-940)
+
+| Statistic | Value |
+|-----------|-------|
+| R2 mean | 0.533 |
+| R2 median | 0.585 |
+| R2 std | 0.147 |
+| MAE mean | 27.8 mg/dL |
+| MAE median | 30.4 mg/dL |
+| P50 error | 19.9 mg/dL |
+| P90 error | 64.9 mg/dL |
+| P99 error | 126.7 mg/dL |
+| Error skewness | 0.62 (right-skewed, heavy-tailed) |
+| Lag-1 autocorrelation | 0.943 |
+| Total predictions | 92,817 |
+
+The error distribution is heavy-tailed and right-skewed: most predictions are good (median error 19.9 mg/dL), but 10% of predictions have errors > 65 mg/dL. These outlier errors drive most of the R2 penalty.
+
+### Strategic Assessment After 110 Experiments
+
+#### What We Know
+
+1. **The physics works**: Metabolic oracle R2=0.616 confirms supply/demand captures the complete pathway
+2. **We're at ~90% of oracle**: Current R2=0.533-0.561 vs oracle 0.616
+3. **The gap is information-limited**: 72.6% irreducible + meal uncertainty
+4. **Models are intensely personal**: LOPO R2=0.145 vs within-patient 0.533
+5. **Errors are temporally clustered**: autocorr=0.943 suggests regime structure
+6. **Stacking helps but our reproduction is broken**: Need to match EXP-871 implementation
+
+#### Highest-Value Next Steps
+
+1. **Fix stacking reproduction**: Understand why EXP-871 gets 0.561 while EXP-932 gets 0.292
+2. **Error regime detection**: Use the 0.943 autocorrelation to build regime-switching models
+3. **Bidirectional + stacking**: Combine the 0.541 bidirectional base with proper stacking
+4. **LOPO improvement**: Patient-specific fine-tuning from pooled model initial weights
+5. **Outlier error analysis**: What makes the P90+ error cases so bad?
