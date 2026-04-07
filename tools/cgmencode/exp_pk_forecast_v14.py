@@ -15687,6 +15687,400 @@ def run_exp606(args):
     return result
 
 
+# ─── EXP-607: Raw SD (no cumulatives) at h360 ───
+
+def run_exp607(args):
+    """EXP-607: Raw supply/demand (no cumulative) + d1 + transfer at h360.
+
+    EXP-604 showed raw SD beats cumulative at w144/h150 (-0.21 vs +0.75).
+    EXP-606 showed cumulative SD adds at h300-h360 (-0.85/-0.55 vs d1).
+
+    Question: does RAW SD (without cumulatives) do even better at h360?
+    If the transformer can self-compute cumulatives from 6h history,
+    raw decomposition channels should provide cleaner signal.
+
+    Variants:
+      - d1_transfer: EXP-606 champion baseline (d1 + transfer)
+      - sd_d1_transfer: raw SD + d1 + transfer (NO cumulatives)
+      - sd_cum_d1_transfer: SD + cumulative + d1 + transfer (EXP-606 config)
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-607: Raw SD (no cumulative) at h360")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+    future_steps_ext = 72
+
+    # ── Phase 1: Train w48 bases ──
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    history48 = 24
+
+    train_d1_48, val_d1_48 = _prepare_pk_derivatives_asymmetric(
+        data48, history48, use_isf=has_isf)
+    n_ch_d1 = train_d1_48.shape[-1]
+
+    # Raw SD + d1 for w48
+    train_sd48, val_sd48 = _prepare_supply_demand_channels(
+        data48, history48, use_isf=has_isf, include_cumulative=False)
+    d_ins_48 = train_d1_48[:, :, -3:-2].numpy()
+    d_carb_48 = train_d1_48[:, :, -2:-1].numpy()
+    d_gluc_48 = train_d1_48[:, :, -1:].numpy()
+    d_ins_v48 = val_d1_48[:, :, -3:-2].numpy()
+    d_carb_v48 = val_d1_48[:, :, -2:-1].numpy()
+    d_gluc_v48 = val_d1_48[:, :, -1:].numpy()
+    train_sd_d1_48 = torch.tensor(
+        np.concatenate([train_sd48.numpy(), d_ins_48, d_carb_48, d_gluc_48], axis=-1),
+        dtype=torch.float32)
+    val_sd_d1_48 = torch.tensor(
+        np.concatenate([val_sd48.numpy(), d_ins_v48, d_carb_v48, d_gluc_v48], axis=-1),
+        dtype=torch.float32)
+    n_ch_sd_d1 = train_sd_d1_48.shape[-1]
+
+    print(f"  w48: d1={n_ch_d1}ch, sd_d1={n_ch_sd_d1}ch, "
+          f"{train_d1_48.shape[0]} train windows")
+
+    w48_states = {}
+    for cname, tr, vl, nc in [('d1', train_d1_48, val_d1_48, n_ch_d1),
+                                ('sd_d1', train_sd_d1_48, val_sd_d1_48, n_ch_sd_d1)]:
+        w48_states[cname] = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            m48 = PKGroupedEncoder(input_dim=nc, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp607_w48_{cname}_s{seed}.pth')
+            train_bridge(m48, tr, vl, sp, f'607-w48-{cname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            w48_states[cname][seed] = ckpt['model_state']
+
+    # ── Phase 2: Load w144 data ──
+    data144 = load_bridge_data(
+        args.patients_dir, window_size=144,
+        max_patients=cfg['max_patients'], load_isf=True)
+    isf_v144 = data144.get('isf_val')
+    history144 = 144 - future_steps_ext  # 72
+
+    # d1 channels
+    train_d1_144, val_d1_144 = _prepare_pk_derivatives_asymmetric(
+        data144, history144, use_isf=has_isf)
+
+    # Raw SD + d1 (no cumulative)
+    train_sd144, val_sd144 = _prepare_supply_demand_channels(
+        data144, history144, use_isf=has_isf, include_cumulative=False)
+    d_ins_144 = train_d1_144[:, :, -3:-2].numpy()
+    d_carb_144 = train_d1_144[:, :, -2:-1].numpy()
+    d_gluc_144 = train_d1_144[:, :, -1:].numpy()
+    d_ins_v144 = val_d1_144[:, :, -3:-2].numpy()
+    d_carb_v144 = val_d1_144[:, :, -2:-1].numpy()
+    d_gluc_v144 = val_d1_144[:, :, -1:].numpy()
+    train_sd_d1_144 = torch.tensor(
+        np.concatenate([train_sd144.numpy(), d_ins_144, d_carb_144, d_gluc_144], axis=-1),
+        dtype=torch.float32)
+    val_sd_d1_144 = torch.tensor(
+        np.concatenate([val_sd144.numpy(), d_ins_v144, d_carb_v144, d_gluc_v144], axis=-1),
+        dtype=torch.float32)
+
+    # SD + cumulative + d1
+    train_sdc144, val_sdc144 = _prepare_supply_demand_channels(
+        data144, history144, use_isf=has_isf, include_cumulative=True)
+    train_sdc_d1_144 = torch.tensor(
+        np.concatenate([train_sdc144.numpy(), d_ins_144, d_carb_144, d_gluc_144], axis=-1),
+        dtype=torch.float32)
+    val_sdc_d1_144 = torch.tensor(
+        np.concatenate([val_sdc144.numpy(), d_ins_v144, d_carb_v144, d_gluc_v144], axis=-1),
+        dtype=torch.float32)
+    n_ch_sdc_d1 = train_sdc_d1_144.shape[-1]
+
+    print(f"\n  w144: d1={n_ch_d1}ch, sd_d1={n_ch_sd_d1}ch, "
+          f"sdc_d1={n_ch_sdc_d1}ch, {train_d1_144.shape[0]} train, "
+          f"future_steps={future_steps_ext}")
+
+    variants = OrderedDict([
+        ('d1_transfer', {
+            'train': train_d1_144, 'val': val_d1_144,
+            'n_ch': n_ch_d1, 'transfer_key': 'd1',
+            'label': f'{n_ch_d1}ch d1 + transfer'}),
+        ('sd_d1_transfer', {
+            'train': train_sd_d1_144, 'val': val_sd_d1_144,
+            'n_ch': n_ch_sd_d1, 'transfer_key': 'sd_d1',
+            'label': f'{n_ch_sd_d1}ch raw SD + d1 + transfer'}),
+        ('sd_cum_d1_transfer', {
+            'train': train_sdc_d1_144, 'val': val_sdc_d1_144,
+            'n_ch': n_ch_sdc_d1, 'transfer_key': 'sd_d1',
+            'label': f'{n_ch_sdc_d1}ch SD+cum + d1 + transfer'}),
+    ])
+
+    result = {}
+    for vname, vcfg in variants.items():
+        nc = vcfg['n_ch']
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {vcfg['label']} ({vcfg['train'].shape[0]} windows)")
+        print(f"{'─'*40}")
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=nc, **arch)
+
+            # Transfer
+            tk = vcfg['transfer_key']
+            if tk in w48_states:
+                src_state = w48_states[tk][seed]
+                tgt_state = model.state_dict()
+                transferred = 0
+                for k in src_state:
+                    if k in tgt_state and 'pos_encoder' not in k:
+                        if src_state[k].shape == tgt_state[k].shape:
+                            tgt_state[k] = src_state[k]
+                            transferred += 1
+                model.load_state_dict(tgt_state)
+                if seed == cfg['seeds'][0]:
+                    print(f"    Transferred {transferred} params from w48")
+
+            sp = os.path.join(cfg['output_dir'], f'exp607_{vname}_s{seed}.pth')
+            train_bridge(model, vcfg['train'], vcfg['val'], sp,
+                         f'607-{vname}-s{seed}', device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps_ext)
+
+        # Per-patient fine-tuning
+        per_patient = {}
+        for pinfo in data144['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = vcfg['train'][ti:te]
+            p_val = vcfg['val'][vi:ve]
+            p_isf = isf_v144[vi:ve] if isf_v144 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                ft_model = PKGroupedEncoder(input_dim=nc, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp607_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                ft_model.load_state_dict(ckpt['model_state'])
+
+                ftp = os.path.join(cfg['output_dir'], f'exp607_{vname}_{pid}_s{seed}.pth')
+                train_bridge(ft_model, p_train, p_val, ftp,
+                             f'607-{vname}-{pid}-s{seed}', device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps_ext)
+
+                rep = evaluate_model(ft_model, p_val, device, pk_mode=True,
+                                     isf_val=p_isf, future_steps=future_steps_ext)
+                per_patient[pid] = rep
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+        result[vname] = {'per_patient': per_patient, 'average': avg}
+
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240', 'h300', 'h360']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {vname} avg: {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-607 Summary: Raw SD vs Cumulative at h360")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240', 'h300', 'h360']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    d1_avg = result.get('d1_transfer', {}).get('average', {})
+    for vname in ['sd_d1_transfer', 'sd_cum_d1_transfer']:
+        vavg = result.get(vname, {}).get('average', {})
+        if d1_avg and vavg:
+            print(f"\n  Delta ({vname} - d1_transfer):")
+            for k in ['h120', 'h150', 'h180', 'h240', 'h300', 'h360', 'overall_mae']:
+                if k in d1_avg and k in vavg:
+                    d = round(vavg[k] - d1_avg[k], 2)
+                    print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp607_raw_sd_h360', cfg)
+    return result
+
+
+# ─── EXP-608: More Training Capacity for h360 ───
+
+def run_exp608(args):
+    """EXP-608: Address underfitting in h360 models.
+
+    EXP-606 models early-stopped at epoch 23-28 for transfer variants,
+    suggesting the model may need more capacity to learn 72-step prediction.
+
+    Tests:
+      - 2× epochs (120 base, 30 FT) with higher patience
+      - Same d1+transfer config as EXP-606 champion
+      - Compare same-epoch vs extended training
+
+    If extended training helps, all h360 experiments should use it.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    # Override epochs for this experiment
+    epochs_extended = cfg['epochs_base'] * 2  # 120 for full, 60 for quick (same as normal)
+    epochs_ft_ext = cfg['epochs_ft'] * 2
+    patience_ext = 30
+
+    print(f"\n{'='*60}")
+    print(f"EXP-608: Extended Training for h360")
+    print(f"  seeds={cfg['seeds']}, base_ep={epochs_extended}, ft_ep={epochs_ft_ext}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+    future_steps_ext = 72
+
+    # ── Phase 1: Train w48 base ──
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    history48 = 24
+
+    train_d1_48, val_d1_48 = _prepare_pk_derivatives_asymmetric(
+        data48, history48, use_isf=has_isf)
+    n_ch_d1 = train_d1_48.shape[-1]
+
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp608_w48_d1_s{seed}.pth')
+        train_bridge(m48, train_d1_48, val_d1_48, sp, f'608-w48-d1-s{seed}',
+                     device, pk_mode=True,
+                     epochs=epochs_extended, patience=30, lr_patience=10)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # ── Phase 2: w144 with extended training ──
+    data144 = load_bridge_data(
+        args.patients_dir, window_size=144,
+        max_patients=cfg['max_patients'], load_isf=True)
+    isf_v144 = data144.get('isf_val')
+    history144 = 144 - future_steps_ext
+
+    train_d1_144, val_d1_144 = _prepare_pk_derivatives_asymmetric(
+        data144, history144, use_isf=has_isf)
+
+    print(f"\n  w144: d1={n_ch_d1}ch, {train_d1_144.shape[0]} train, "
+          f"future_steps={future_steps_ext}")
+
+    variants = OrderedDict([
+        ('standard_ep', {
+            'epochs': cfg['epochs_base'], 'patience': 20, 'ft_epochs': cfg['epochs_ft'],
+            'label': f"standard ({cfg['epochs_base']}ep base, {cfg['epochs_ft']}ep FT)"}),
+        ('extended_ep', {
+            'epochs': epochs_extended, 'patience': patience_ext, 'ft_epochs': epochs_ft_ext,
+            'label': f"extended ({epochs_extended}ep base, {epochs_ft_ext}ep FT)"}),
+    ])
+
+    result = {}
+    for vname, vcfg in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {vcfg['label']}")
+        print(f"{'─'*40}")
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+
+            # Transfer from w48
+            src_state = w48_states[seed]
+            tgt_state = model.state_dict()
+            transferred = 0
+            for k in src_state:
+                if k in tgt_state and 'pos_encoder' not in k:
+                    if src_state[k].shape == tgt_state[k].shape:
+                        tgt_state[k] = src_state[k]
+                        transferred += 1
+            model.load_state_dict(tgt_state)
+            if seed == cfg['seeds'][0]:
+                print(f"    Transferred {transferred} params from w48")
+
+            sp = os.path.join(cfg['output_dir'], f'exp608_{vname}_s{seed}.pth')
+            train_bridge(model, train_d1_144, val_d1_144, sp,
+                         f'608-{vname}-s{seed}', device, pk_mode=True,
+                         epochs=vcfg['epochs'], patience=vcfg['patience'],
+                         lr_patience=10, future_steps=future_steps_ext)
+
+        # Per-patient fine-tuning
+        per_patient = {}
+        for pinfo in data144['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_d1_144[ti:te]
+            p_val = val_d1_144[vi:ve]
+            p_isf = isf_v144[vi:ve] if isf_v144 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                ft_model = PKGroupedEncoder(input_dim=n_ch_d1, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp608_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                ft_model.load_state_dict(ckpt['model_state'])
+
+                ftp = os.path.join(cfg['output_dir'], f'exp608_{vname}_{pid}_s{seed}.pth')
+                train_bridge(ft_model, p_train, p_val, ftp,
+                             f'608-{vname}-{pid}-s{seed}', device, pk_mode=True,
+                             epochs=vcfg['ft_epochs'], patience=15, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps_ext)
+
+                rep = evaluate_model(ft_model, p_val, device, pk_mode=True,
+                                     isf_val=p_isf, future_steps=future_steps_ext)
+                per_patient[pid] = rep
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+        result[vname] = {'per_patient': per_patient, 'average': avg}
+
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240', 'h300', 'h360']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {vname} avg: {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-608 Summary: Training Capacity for h360")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240', 'h300', 'h360']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    std_avg = result.get('standard_ep', {}).get('average', {})
+    ext_avg = result.get('extended_ep', {}).get('average', {})
+    if std_avg and ext_avg:
+        print(f"\n  Delta (extended - standard):")
+        for k in sorted(ext_avg.keys()):
+            if k in std_avg:
+                d = round(ext_avg[k] - std_avg[k], 2)
+                print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp608_h360_capacity', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -15768,6 +16162,8 @@ EXPERIMENTS = {
     '604': run_exp604,
     '605': run_exp605,
     '606': run_exp606,
+    '607': run_exp607,
+    '608': run_exp608,
 }
 
 
