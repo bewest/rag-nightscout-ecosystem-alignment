@@ -7933,6 +7933,399 @@ def run_exp447(args):
     return result
 
 
+    _save_results(result, 'exp447_tir_pk_features', cfg)
+    return result
+
+
+# ─── EXP-448: Production Champion Analysis ───
+
+def run_exp448(args):
+    """EXP-448: Production Champion — cheapest/simplest model for h60.
+
+    User request: identify the minimal model that achieves near-champion h60
+    accuracy with minimum compute. Production needs: low latency, small memory,
+    fast fine-tuning.
+
+    Variants (all w24, ISF norm, PK channels, 1-seed quick test):
+      a) full: d_model=64, L=4, nhead=4 (champion config, ~120K params)
+      b) medium: d_model=48, L=3, nhead=4 (~70K params)
+      c) small: d_model=32, L=2, nhead=4 (~30K params)
+      d) tiny: d_model=32, L=1, nhead=4 (~15K params)
+      e) no_ft: full config WITHOUT fine-tuning (shows FT value)
+      f) no_isf: full config WITHOUT ISF normalization
+      g) 7ch: full config with drop_time=True (7ch instead of 8ch)
+
+    All use w24 (h60 max — the production target horizon).
+    Reports: h30 MAE, h60 MAE, params, training time, inference time.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-448: Production Champion — Cheapest h60 Model")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+
+    # Prepare feature variants
+    train_isf, val_isf = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    train_no_isf, val_no_isf = prepare_pk_future(data, use_isf=False, drop_time=False)
+    train_7ch, val_7ch = prepare_pk_future(data, use_isf=has_isf, drop_time=True)
+    isf_v = data.get('isf_val')
+
+    model_configs = {
+        'full': {'d_model': 64, 'nhead': 4, 'num_layers': 4, 'train': train_isf, 'val': val_isf, 'n_ch': 8, 'do_ft': True, 'isf': True},
+        'medium': {'d_model': 48, 'nhead': 4, 'num_layers': 3, 'train': train_isf, 'val': val_isf, 'n_ch': 8, 'do_ft': True, 'isf': True},
+        'small': {'d_model': 32, 'nhead': 4, 'num_layers': 2, 'train': train_isf, 'val': val_isf, 'n_ch': 8, 'do_ft': True, 'isf': True},
+        'tiny': {'d_model': 32, 'nhead': 4, 'num_layers': 1, 'train': train_isf, 'val': val_isf, 'n_ch': 8, 'do_ft': True, 'isf': True},
+        'no_ft': {'d_model': 64, 'nhead': 4, 'num_layers': 4, 'train': train_isf, 'val': val_isf, 'n_ch': 8, 'do_ft': False, 'isf': True},
+        'no_isf': {'d_model': 64, 'nhead': 4, 'num_layers': 4, 'train': train_no_isf, 'val': val_no_isf, 'n_ch': 8, 'do_ft': True, 'isf': False},
+        '7ch': {'d_model': 64, 'nhead': 4, 'num_layers': 4, 'train': train_7ch, 'val': val_7ch, 'n_ch': 7, 'do_ft': True, 'isf': True},
+    }
+
+    result = {}
+
+    for vname, vcfg in model_configs.items():
+        print(f"\n{'─'*40}")
+        print(f"  Variant: {vname} (d={vcfg['d_model']}, L={vcfg['num_layers']}, {vcfg['n_ch']}ch)")
+        print(f"{'─'*40}")
+
+        train_x, val_x = vcfg['train'], vcfg['val']
+
+        # Count parameters
+        m_test = PKGroupedEncoder(input_dim=vcfg['n_ch'], d_model=vcfg['d_model'],
+                                  nhead=vcfg['nhead'], num_layers=vcfg['num_layers'])
+        n_params = sum(p.numel() for p in m_test.parameters())
+        print(f"  Parameters: {n_params:,}")
+
+        # Train base
+        t0 = time.time()
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=vcfg['n_ch'], d_model=vcfg['d_model'],
+                                     nhead=vcfg['nhead'], num_layers=vcfg['num_layers'])
+            sp = os.path.join(cfg['output_dir'], f'exp448_{vname}_s{seed}.pth')
+            print(f"\n  Base s{seed}:")
+            train_bridge(model, train_x, val_x, sp, f'448-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+        base_time = time.time() - t0
+
+        # Per-patient evaluation (with or without FT)
+        per_patient = {}
+        ft_time = 0
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]
+            p_val = val_x[vi:ve]
+            p_isf = isf_v[vi:ve] if (isf_v is not None and vcfg.get('isf', True)) else None
+
+            seed_maes = []
+            for seed, bstate in base_states.items():
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=vcfg['n_ch'], d_model=vcfg['d_model'],
+                                     nhead=vcfg['nhead'], num_layers=vcfg['num_layers'])
+                m.load_state_dict(bstate)
+
+                if vcfg['do_ft']:
+                    ft_t0 = time.time()
+                    fp = os.path.join(cfg['output_dir'], f'exp448_{vname}_{pid}_s{seed}.pth')
+                    train_bridge(m, p_train, p_val, fp, f'448-{vname}-{pid}-s{seed}',
+                                 device, pk_mode=True,
+                                 epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                                 lr=1e-4)
+                    ft_time += time.time() - ft_t0
+
+                mae = evaluate_model(m, p_val, device, pk_mode=True, isf_val=p_isf)
+                seed_maes.append(mae)
+
+            avg = {}
+            for k in seed_maes[0]:
+                vals = [m[k] for m in seed_maes if isinstance(m.get(k), (int, float))]
+                if vals:
+                    avg[k] = round(np.mean(vals), 2)
+            per_patient[pid] = avg
+
+        # Measure inference time
+        m = PKGroupedEncoder(input_dim=vcfg['n_ch'], d_model=vcfg['d_model'],
+                             nhead=vcfg['nhead'], num_layers=vcfg['num_layers'])
+        m.load_state_dict(list(base_states.values())[0])
+        m.to(device).eval()
+        sample = val_x[:1].to(device)
+        # Warmup
+        with torch.no_grad():
+            for _ in range(10):
+                _ = m(sample, causal=True)
+        # Measure
+        t0 = time.time()
+        with torch.no_grad():
+            for _ in range(100):
+                _ = m(sample, causal=True)
+        infer_ms = (time.time() - t0) / 100 * 1000
+
+        # Compute averages
+        vavg = {}
+        for k in ['overall_mae', 'h5', 'h10', 'h15', 'h20', 'h25', 'h30', 'h60']:
+            vals = [pp[k] for pp in per_patient.values() if k in pp]
+            if vals:
+                vavg[k] = round(np.mean(vals), 2)
+
+        result[vname] = {
+            'per_patient': per_patient,
+            'average': vavg,
+            'params': n_params,
+            'base_train_time_s': round(base_time, 1),
+            'ft_time_per_patient_s': round(ft_time / max(len(per_patient), 1), 1),
+            'inference_ms': round(infer_ms, 2),
+        }
+
+        print(f"\n  {vname}: h30={vavg.get('h30','?')}, h60={vavg.get('h60','?')}, "
+              f"overall={vavg.get('overall_mae','?')}")
+        print(f"  Params: {n_params:,}, Infer: {infer_ms:.1f}ms, "
+              f"Base train: {base_time:.0f}s, FT/patient: {ft_time/max(len(per_patient),1):.0f}s")
+
+    # Summary table
+    print(f"\n{'='*60}")
+    print(f"EXP-448 Summary: Production Champion Analysis")
+    print(f"{'='*60}")
+    print(f"{'Variant':<12} {'Params':>8} {'h30':>6} {'h60':>6} {'Overall':>8} "
+          f"{'Infer(ms)':>10} {'FT/pt(s)':>9}")
+    print(f"{'─'*60}")
+    for vn, vd in result.items():
+        avg = vd['average']
+        print(f"{vn:<12} {vd['params']:>8,} {avg.get('h30','—'):>6} {avg.get('h60','—'):>6} "
+              f"{avg.get('overall_mae','—'):>8} {vd['inference_ms']:>10.1f} "
+              f"{vd.get('ft_time_per_patient_s',0):>9.0f}")
+
+    # Identify champion and cheapest
+    h60_results = {vn: vd['average'].get('h60', 999) for vn, vd in result.items()
+                   if isinstance(vd['average'].get('h60'), (int, float))}
+    best_h60_name = min(h60_results, key=h60_results.get)
+    best_h60 = h60_results[best_h60_name]
+
+    # Cheapest within 10% of best
+    threshold = best_h60 * 1.10
+    eligible = {vn: result[vn]['params'] for vn, h60 in h60_results.items()
+                if h60 <= threshold}
+    if eligible:
+        cheapest = min(eligible, key=eligible.get)
+        print(f"\n  🏆 Production Champion (best h60): {best_h60_name} — h60={best_h60}")
+        print(f"  💰 Cheapest within 10%: {cheapest} — h60={h60_results[cheapest]}, "
+              f"params={result[cheapest]['params']:,}")
+    else:
+        print(f"\n  🏆 Champion: {best_h60_name} — h60={best_h60}")
+
+    _save_results(result, 'exp448_production_champion', cfg)
+    return result
+
+
+# ─── EXP-449: Ensemble Uncertainty for Risk Assessment ───
+
+def run_exp449(args):
+    """EXP-449: Ensemble Uncertainty as Risk Signal.
+
+    Hypothesis: When multiple seed-models disagree on predictions, the patient
+    is in a harder-to-predict state — which itself is a risk signal. High
+    ensemble spread → unpredictable glucose → higher risk.
+
+    Uses the existing champion w48 model with multiple seeds. For each
+    validation window, measure:
+    - Prediction spread (std across seeds)
+    - Whether high spread correlates with actual glucose excursions
+    - Whether spread + mean prediction improves risk classification
+
+    This costs zero additional training — just evaluate existing models
+    with different seeds and measure disagreement.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-449: Ensemble Uncertainty as Risk Signal")
+    print(f"  seeds={cfg['seeds']}")
+    print(f"{'='*60}")
+
+    # Need multiple seeds for this experiment
+    seeds = cfg['seeds']
+    if len(seeds) < 2:
+        # Force at least 3 seeds for meaningful spread
+        seeds = [42, 123, 456]
+        print(f"  (Forcing 3 seeds for ensemble uncertainty analysis)")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    n_ch = train_x.shape[-1]
+    isf_v = data.get('isf_val')
+
+    # Train base models with multiple seeds
+    print(f"\n  Training {len(seeds)} base models...")
+    base_states = {}
+    for seed in seeds:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp449_base_s{seed}.pth')
+        print(f"\n  Base s{seed}:")
+        train_bridge(model, train_x, val_x, sp, f'449-base-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        base_states[seed] = ckpt['model_state']
+
+    result = {}
+    half = 24
+
+    for pinfo in data['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        vi, ve = pinfo['val_idx']
+        p_train = train_x[ti:te]
+        p_val = val_x[vi:ve]
+        p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+        print(f"\n  Patient {pid} ({pinfo['n_train']}tr, {pinfo['n_val']}val):")
+
+        # FT each seed model
+        ft_models = []
+        for seed, bstate in base_states.items():
+            torch.manual_seed(seed); np.random.seed(seed)
+            m = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            m.load_state_dict(bstate)
+            fp = os.path.join(cfg['output_dir'], f'exp449_{pid}_s{seed}.pth')
+            train_bridge(m, p_train, p_val, fp, f'449-{pid}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_ft'], patience=10, lr_patience=5, lr=1e-4)
+            ft_models.append(m)
+
+        # Get per-seed predictions
+        all_preds = []  # [n_seeds, N, future_steps]
+        with torch.no_grad():
+            for m in ft_models:
+                m.to(device).eval()
+                x = p_val.to(device)
+                x_in = x.clone()
+                mask_future_pk(x_in, half, pk_mode=True)
+                pred = m(x_in, causal=True)
+                p_norm = pred[:, half:, 0].cpu().numpy()  # [N, 24]
+                all_preds.append(p_norm)
+
+        all_preds = np.array(all_preds)  # [n_seeds, N, 24]
+        targets = p_val[:, half:, 0].numpy()  # [N, 24]
+
+        # De-normalize
+        if p_isf is not None:
+            undo = (p_isf / GLUCOSE_SCALE).reshape(1, -1, 1)
+        else:
+            undo = 1.0
+        preds_mg = all_preds * undo * GLUCOSE_SCALE
+        targets_mg = targets * (undo[0] if isinstance(undo, np.ndarray) else undo) * GLUCOSE_SCALE
+
+        # Ensemble statistics
+        mean_pred = np.mean(preds_mg, axis=0)  # [N, 24]
+        std_pred = np.std(preds_mg, axis=0)    # [N, 24]
+
+        # Per-window metrics
+        window_spread = np.mean(std_pred, axis=1)  # [N]
+        window_min_pred = np.min(mean_pred, axis=1)  # min predicted glucose
+        window_max_pred = np.max(mean_pred, axis=1)
+        true_min = np.min(targets_mg, axis=1)
+        true_max = np.max(targets_mg, axis=1)
+
+        # Actual excursions
+        actual_hypo = true_min < 70
+        actual_high = true_max > 250
+
+        # Correlation: does spread predict error?
+        window_error = np.mean(np.abs(mean_pred - targets_mg), axis=1)
+        spread_error_corr = np.corrcoef(window_spread, window_error)[0, 1]
+
+        # Risk classification using spread
+        # High spread + low mean prediction → hypo risk
+        # High spread + high mean prediction → high risk
+        spread_median = np.median(window_spread)
+        high_spread = window_spread > spread_median
+
+        # Combined risk: mean prediction < threshold AND high spread
+        hypo_pred_simple = window_min_pred < 70
+        hypo_pred_spread = (window_min_pred < 85) & high_spread  # relaxed threshold + uncertainty
+
+        if np.any(actual_hypo):
+            # Simple threshold
+            tp_s = np.sum(hypo_pred_simple & actual_hypo)
+            fp_s = np.sum(hypo_pred_simple & ~actual_hypo)
+            fn_s = np.sum(~hypo_pred_simple & actual_hypo)
+            sens_s = tp_s / (tp_s + fn_s) if (tp_s + fn_s) > 0 else 0
+            prec_s = tp_s / (tp_s + fp_s) if (tp_s + fp_s) > 0 else 0
+            f1_s = 2 * sens_s * prec_s / (sens_s + prec_s) if (sens_s + prec_s) > 0 else 0
+
+            # Spread-enhanced
+            tp_e = np.sum(hypo_pred_spread & actual_hypo)
+            fp_e = np.sum(hypo_pred_spread & ~actual_hypo)
+            fn_e = np.sum(~hypo_pred_spread & actual_hypo)
+            sens_e = tp_e / (tp_e + fn_e) if (tp_e + fn_e) > 0 else 0
+            prec_e = tp_e / (tp_e + fp_e) if (tp_e + fp_e) > 0 else 0
+            f1_e = 2 * sens_e * prec_e / (sens_e + prec_e) if (sens_e + prec_e) > 0 else 0
+
+            hypo_results = {
+                'n_hypo_windows': int(np.sum(actual_hypo)),
+                'simple_f1': round(f1_s, 3), 'simple_sens': round(sens_s, 3),
+                'spread_f1': round(f1_e, 3), 'spread_sens': round(sens_e, 3),
+            }
+        else:
+            hypo_results = {'n_hypo_windows': 0}
+
+        result[pid] = {
+            'n_windows': int(len(window_spread)),
+            'mean_spread': round(float(np.mean(window_spread)), 2),
+            'spread_error_corr': round(float(spread_error_corr), 3),
+            'ensemble_mae': round(float(np.mean(window_error)), 2),
+            'hypo': hypo_results,
+        }
+
+        print(f"    Mean spread: {np.mean(window_spread):.1f} mg/dL")
+        print(f"    Spread-Error correlation: {spread_error_corr:.3f}")
+        print(f"    Ensemble MAE: {np.mean(window_error):.1f}")
+        if 'simple_f1' in hypo_results:
+            print(f"    Hypo: simple F1={hypo_results['simple_f1']}, "
+                  f"spread F1={hypo_results['spread_f1']}")
+            print(f"           simple sens={hypo_results['simple_sens']}, "
+                  f"spread sens={hypo_results['spread_sens']}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-449 Summary: Ensemble Uncertainty")
+    print(f"{'='*60}")
+    for pid, pr in result.items():
+        print(f"  {pid}: spread={pr['mean_spread']:.1f}, corr={pr['spread_error_corr']:.3f}, "
+              f"MAE={pr['ensemble_mae']:.1f}")
+        if pr['hypo'].get('simple_f1') is not None:
+            print(f"      hypo: simple F1={pr['hypo']['simple_f1']}, "
+                  f"spread F1={pr['hypo']['spread_f1']}")
+
+    # Key insight
+    corrs = [pr['spread_error_corr'] for pr in result.values()]
+    mean_corr = np.mean(corrs)
+    print(f"\n  Mean spread-error correlation: {mean_corr:.3f}")
+    if mean_corr > 0.3:
+        print(f"  ✓ Ensemble spread IS a useful uncertainty signal!")
+    elif mean_corr > 0.1:
+        print(f"  ~ Ensemble spread is a weak uncertainty signal")
+    else:
+        print(f"  ✗ Ensemble spread doesn't correlate with error")
+
+    _save_results(result, 'exp449_ensemble_uncertainty', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -7973,6 +8366,8 @@ EXPERIMENTS = {
     '445': run_exp445,
     '446': run_exp446,
     '447': run_exp447,
+    '448': run_exp448,
+    '449': run_exp449,
 }
 
 
