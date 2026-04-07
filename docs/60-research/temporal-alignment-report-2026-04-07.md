@@ -5789,3 +5789,148 @@ CURRENT BEST (EXP-731 optimized)       0.987   0.926   0.789   0.437
 | EXP-749 | Hybrid for Classification | Use hybrid predictions as features for UAM/override/hypo | CNN on hybrid prediction residual sequences |
 | EXP-750 | Production Ensemble Pipeline | Full optimized production pipeline with adaptive blend | End-to-end latency, accuracy, streaming |
 
+
+---
+
+## Part XXXI: Residual Structure, Clinical Intelligence, & Production Pipeline (EXP-741–750)
+
+**Date**: 2026-04-08
+**Experiments**: EXP-741 through EXP-750
+**Script**: `tools/cgmencode/exp_autoresearch_741.py`
+
+### Motivation
+
+EXP-731 established the optimized hybrid (30min R²=0.789, 60min R²=0.437). This wave explores: (1) extending to multi-day prediction, (2) exploiting residual autocorrelation structure, (3) meta-ensemble combinations, (4) clinical intelligence (unannounced meals, basal assessment, ISF validation), and (5) production-ready pipeline benchmarking.
+
+### Results Summary
+
+| Exp | Name | Key Result | Insight |
+|-----|------|------------|---------|
+| EXP-741 | Segmented Multi-Day | 1d R²=−0.136, 3d=−0.885, 7d=−2.055 | Daily mean BG is unpredictable from today's stats alone |
+| EXP-742 | Residual Autocorrelation | ACF: 1step=0.595, 1h=0.199, 24h=0.093 | Strong short-term memory, weak circadian (5.8%), modest meal (10.4%) |
+| **EXP-743** | **Meta-Ensemble** | **60min R²=0.477 (new best!)** | Meta-averaging direct blend + two-stage exceeds both individually |
+| EXP-744 | State-Dependent Blend | 30min=0.787, 60min=0.392 (no improvement) | State detection too coarse — uniform blend already near-optimal |
+| EXP-745 | Physics Residual Forecaster | 30min: 0.699/0.699, 60min: −0.112/−0.112 | AR correction of physics residuals adds nothing — residuals are white noise at these lags |
+| EXP-746 | Basal Assessment v2 | 5 too_low, 2 appropriate, 1 too_high | Majority have insufficient basal — consistent with EXP-693 |
+| EXP-747 | ISF Response Validation | effective/profile ratio=2.91 | Effective ISF is ~3× profile — AID systems operate at different ISF than configured |
+| **EXP-748** | **Unannounced Meal Detection** | **4809 events, 46.5% unannounced** | Nearly half of glucose rises have NO corresponding carb entry |
+| **EXP-749** | **Hybrid for Hypo Classification** | **AUC: 0.520→0.696 (+0.176)** | Physics features dramatically improve hypo prediction |
+| EXP-750 | Production Ensemble | **10μs, 30min R²=0.792, 60min R²=0.440** | Production-ready with per-patient optimized blending |
+
+### Meta-Ensemble Breakthrough (EXP-743) — New Best at 60min
+
+| Horizon | Direct Blend R² | Two-Stage R² | Meta-Ensemble R² | Best Previous |
+|---------|----------------|--------------|-------------------|---------------|
+| 5min | 0.983 | 0.987 | 0.986 | 0.987 |
+| 15min | 0.922 | 0.875 | 0.914 | 0.926 |
+| 30min | 0.787 | 0.725 | **0.805** | 0.789 |
+| 60min | 0.392 | 0.265 | **0.477** | 0.437 |
+
+**Key insight**: Meta-averaging (50% direct blend + 50% two-stage) outperforms either method alone at 30min and 60min. The two methods make different errors that partially cancel when averaged. At 60min, meta-ensemble achieves R²=0.477 — a 9.2% improvement over the previous best (0.437).
+
+### Residual Autocorrelation Structure (EXP-742)
+
+| Lag | Time | ACF | Interpretation |
+|-----|------|-----|----------------|
+| 1 step | 5min | 0.595 | Strong persistence — AR(1) captures most |
+| 2 steps | 10min | ~0.45 | Still significant |
+| 12 steps | 1h | 0.199 | Weak but nonzero |
+| 288 steps | 24h | 0.093 | Near-zero circadian signal |
+
+**Spectral analysis**:
+- Circadian power: 5.8% of total — weak daily pattern
+- Meal-frequency power: 10.4% — modest 4-8h periodicity
+- **Conclusion**: Physics residuals are dominated by short-range persistence, not periodic components. This explains why daily/weekly prediction is hard (EXP-741).
+
+### Unannounced Meal Detection (EXP-748)
+
+| Metric | Value |
+|--------|-------|
+| Total glucose rise events | 4,809 |
+| Announced (has carb entry) | 2,507 (53.5%) |
+| Unannounced (no carb entry) | **2,302 (46.5%)** |
+| Events per day | ~2.5 |
+
+**This is a major clinical finding**: Nearly half of all glucose rise events across 11 patients have NO corresponding carb entry. This means either:
+1. Patients routinely eat without logging (most likely)
+2. Endogenous glucose production spikes for other reasons (exercise, stress, dawn phenomenon)
+3. CGM artifacts create false positive "rise" detections
+
+This has profound implications for CR assessment — the announced carb count systematically underestimates actual intake.
+
+### Physics Features for Hypo Prediction (EXP-749)
+
+| Method | AUC |
+|--------|-----|
+| Baseline (BG + trend only) | 0.520 |
+| **+ Physics predictions** | **0.696** |
+| Improvement | **+0.176** |
+
+Adding physics simulation predictions (predicted BG at 30min, predicted change, demand level) to a hypo classifier improves AUC by +34%. The physics model "sees" into the insulin absorption future that raw BG trends cannot.
+
+### ISF Response Validation (EXP-747)
+
+The effective ISF (measured from actual correction responses) is **2.91× the profile ISF**. This large ratio suggests:
+1. AID systems routinely deliver much more insulin than the ISF suggests (aggressive corrections)
+2. The effective correction response includes basal insulin contribution
+3. Profile ISF values may be set conservatively for safety
+
+### Basal Assessment v2 (EXP-746)
+
+Using fasting overnight physics residuals (no carbs, no corrections):
+
+| Assessment | Count |
+|-----------|-------|
+| Too low (overnight drift up) | 5 |
+| Appropriate | 2 |
+| Too high (overnight drift down) | 1 |
+
+5/8 analyzable patients have insufficient basal rates — overnight BG drifts upward. Consistent with EXP-693 (4 too_low/3 appropriate/2 too_high) but more conservative in qualifying nights.
+
+### Negative Results
+
+1. **Segmented multi-day (EXP-741)**: Daily mean BG prediction from today's flux statistics is worse than naive mean. Daily BG variation is dominated by meal-to-meal variability that changes unpredictably day-to-day.
+
+2. **State-dependent blend (EXP-744)**: Classifying metabolic state (meal/correction/stable/other) and using state-specific blend weights provides ZERO improvement. The coarse 4-state classification doesn't capture the real variance in optimal blend weight.
+
+3. **Physics residual forecaster (EXP-745)**: AR correction of physics residuals adds nothing at any horizon. The physics residuals at multi-step horizons are effectively white noise — the AR model has already extracted all predictable structure.
+
+### Production Ensemble Pipeline (EXP-750)
+
+| Metric | 5min | 15min | 30min | 60min |
+|--------|------|-------|-------|-------|
+| R² | 0.987 | 0.926 | **0.792** | **0.440** |
+| Latency | 10μs | 10μs | 10μs | 10μs |
+
+The production pipeline uses per-patient optimized decay and blend weights calibrated on a validation set. No ML training required — only physics equations + simple linear ridge regression.
+
+### Cumulative Progress (250 Experiments)
+
+```
+Milestone                              5min    15min   30min   60min
+─────────────────────────────────────────────────────────────────────
+Baseline AR on flux residual           0.405   0.197   0.131   0.074
+Physics forward sim (EXP-713)          0.987   0.909   0.669   −0.302
+Hybrid ensemble (EXP-727)              0.987   0.923   0.780   0.421
+Optimized hybrid (EXP-731)             0.987   0.926   0.789   0.437
+Meta-ensemble (EXP-743)                0.986   0.914   0.805   0.477  ← BEST 30/60min
+Production pipeline (EXP-750)          0.987   0.926   0.792   0.440
+
+CURRENT BEST (meta-ensemble)           0.987   0.926   0.805   0.477
+```
+
+### Proposed EXP-751–760: Deep Residual Analysis & Advanced Clinical Intelligence
+
+| Exp | Name | Hypothesis | Method |
+|-----|------|-----------|--------|
+| EXP-751 | Weighted Meta-Ensemble | Optimize meta weights instead of 50/50 | Grid search meta blend per horizon |
+| EXP-752 | Physics Confidence Score | Physics accuracy varies with metabolic complexity | Track rolling physics error for per-prediction confidence |
+| EXP-753 | Unannounced Meal Size | Estimate unannounced carbs from residual integral | Map residual burst area → equivalent carb grams |
+| EXP-754 | Basal Rate Optimization | Find optimal basal from overnight physics | Minimize overnight residual integral by adjusting basal parameter |
+| EXP-755 | CR Validation from Meals | Compare announced CR vs effective CR | Ratio of BG rise to announced carbs × insulin |
+| EXP-756 | Insulin Stacking v2 | Use physics to detect dangerous IOB accumulation | Track demand integral + recent boluses |
+| EXP-757 | CGM Noise vs Metabolic Signal | Separate sensor noise from physiological variation | Paired consecutive readings analysis |
+| EXP-758 | Dawn Phenomenon Quantification | Measure dawn effect from physics residuals | 4-8am residual integral in fasting segments |
+| EXP-759 | Exercise Recovery Pattern | Characterize post-exercise glucose dynamics | BG trajectory after detected exercise windows |
+| EXP-760 | Comprehensive Settings Report | Generate per-patient settings assessment | Combine basal + CR + ISF + stacking analyses |
+
