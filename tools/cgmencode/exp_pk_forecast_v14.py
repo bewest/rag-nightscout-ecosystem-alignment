@@ -9194,6 +9194,529 @@ def run_exp452(args):
     return result
 
 
+# ─── EXP-453: CNN Overnight Risk on Raw CGM ───
+
+def run_exp453(args):
+    """EXP-453: CNN-based overnight risk prediction on raw CGM + PK curves.
+
+    EXP-451 showed tabular features give weak AUC=0.646 for overnight hypo.
+    Hypothesis: a 1D-CNN on the raw 6h evening CGM trace (72 steps × 8ch with PK)
+    will capture complex pre-sleep glucose dynamics that tabular features miss.
+
+    Architecture: Same PKGroupedEncoder as forecasting, but with a classification
+    head instead of forecast head. Input: 6h evening window. Output: P(hypo tonight).
+
+    Key difference from EXP-451: uses dense temporal signal, not summary statistics.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-453: CNN Overnight Risk on Raw CGM + PK")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    # Load raw data at w72 (6h window = 72 steps)
+    data = load_bridge_data(
+        args.patients_dir, window_size=72,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    n_ch = train_x.shape[-1]
+    isf_v = data.get('isf_val')
+    isf_t = data.get('isf_train')
+
+    # For overnight risk, we need to identify "evening" windows and label them
+    # with overnight outcomes. Since our sliding window data doesn't have timestamps,
+    # we'll use a proxy: the future portion of the window as the "overnight" outcome.
+    # Windows where future glucose goes below 70 are hypo-positive.
+
+    half = train_x.shape[1] // 2  # 36 steps = 3h
+    # Use the future half as overnight proxy: does glucose drop below 70?
+    # ISF denormalize to get mg/dL
+    def extract_hypo_labels(x_tensor, isf_arr=None):
+        future_gluc = x_tensor[:, half:, 0].numpy()
+        if isf_arr is not None:
+            future_mg = future_gluc * (isf_arr / GLUCOSE_SCALE).reshape(-1, 1) * GLUCOSE_SCALE
+        else:
+            future_mg = future_gluc * GLUCOSE_SCALE
+        min_future = np.min(future_mg, axis=1)
+        return (min_future < 70).astype(np.float32), min_future
+
+    train_labels, train_min = extract_hypo_labels(train_x, isf_t)
+    val_labels, val_min = extract_hypo_labels(val_x, isf_v)
+
+    hypo_rate_train = float(np.mean(train_labels)) * 100
+    hypo_rate_val = float(np.mean(val_labels)) * 100
+    print(f"  Hypo rate: train={hypo_rate_train:.1f}%, val={hypo_rate_val:.1f}%")
+    print(f"  {int(np.sum(train_labels))} hypo windows in train, {int(np.sum(val_labels))} in val")
+
+    if np.sum(val_labels) < 5:
+        print("  Insufficient hypo events in validation — aborting")
+        return {'error': 'insufficient_hypo_events'}
+
+    class OvernightRiskModel(nn.Module):
+        def __init__(self, input_dim, d_model=64, nhead=4, num_layers=4):
+            super().__init__()
+            self.encoder = PKGroupedEncoder(input_dim=input_dim, d_model=d_model,
+                                            nhead=nhead, num_layers=num_layers)
+            self.classifier = nn.Sequential(
+                nn.Linear(d_model, d_model // 2),
+                nn.ReLU(),
+                nn.Dropout(0.2),
+                nn.Linear(d_model // 2, 1),
+            )
+            self.d_model = d_model
+
+        def forward(self, x):
+            history = x[:, :x.shape[1]//2, :]
+            enc = self.encoder.encode(history)  # [B, T, d_model]
+            pooled = enc.mean(dim=1)  # [B, d_model]
+            return self.classifier(pooled).squeeze(-1)
+
+    class MinGlucoseModel(nn.Module):
+        def __init__(self, input_dim, d_model=64, nhead=4, num_layers=4):
+            super().__init__()
+            self.encoder = PKGroupedEncoder(input_dim=input_dim, d_model=d_model,
+                                            nhead=nhead, num_layers=num_layers)
+            self.regressor = nn.Sequential(
+                nn.Linear(d_model, d_model // 2),
+                nn.ReLU(),
+                nn.Dropout(0.2),
+                nn.Linear(d_model // 2, 1),
+            )
+            self.d_model = d_model
+
+        def forward(self, x):
+            history = x[:, :x.shape[1]//2, :]
+            enc = self.encoder.encode(history)
+            pooled = enc.mean(dim=1)
+            return self.regressor(pooled).squeeze(-1)
+
+    from sklearn.metrics import roc_auc_score
+
+    result = {}
+
+    # --- Variant 1: Classification (P(hypo)) ---
+    print(f"\n{'─'*40}")
+    print(f"  Variant: hypo_classifier")
+    print(f"{'─'*40}")
+
+    # Handle class imbalance with weighted loss
+    pos_weight = torch.tensor([(1 - np.mean(train_labels)) / max(np.mean(train_labels), 0.01)])
+
+    best_auc = 0
+    best_model_state = None
+
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = OvernightRiskModel(input_dim=n_ch, d_model=48, nhead=4, num_layers=3)
+        model = model.to(device)
+        opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=0.01)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=7, factor=0.5)
+
+        criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight.to(device))
+
+        # Training
+        train_ds = torch.utils.data.TensorDataset(
+            train_x[:, :half, :],  # history only for input
+            train_x,  # full for OvernightRiskModel which slices internally
+            torch.tensor(train_labels))
+        train_dl = torch.utils.data.DataLoader(
+            torch.utils.data.TensorDataset(train_x, torch.tensor(train_labels)),
+            batch_size=256, shuffle=True)
+        val_dl = torch.utils.data.DataLoader(
+            torch.utils.data.TensorDataset(val_x, torch.tensor(val_labels)),
+            batch_size=256)
+
+        best_val_loss = float('inf')
+        stale = 0
+
+        for ep in range(cfg['epochs_base']):
+            model.train()
+            ttl, tn = 0.0, 0
+            for batch_x, batch_y in train_dl:
+                batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+                opt.zero_grad()
+                logits = model(batch_x)
+                loss = criterion(logits, batch_y)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+                ttl += loss.item() * len(batch_x)
+                tn += len(batch_x)
+
+            model.eval()
+            vtl, vn = 0.0, 0
+            all_probs, all_labels = [], []
+            with torch.no_grad():
+                for batch_x, batch_y in val_dl:
+                    batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+                    logits = model(batch_x)
+                    loss = criterion(logits, batch_y)
+                    vtl += loss.item() * len(batch_x)
+                    vn += len(batch_x)
+                    probs = torch.sigmoid(logits).cpu().numpy()
+                    all_probs.extend(probs)
+                    all_labels.extend(batch_y.cpu().numpy())
+
+            vl = vtl / vn if vn else float('inf')
+            sched.step(vl)
+
+            if vl < best_val_loss:
+                best_val_loss = vl
+                stale = 0
+                best_state_this = {k: v.clone() for k, v in model.state_dict().items()}
+            else:
+                stale += 1
+
+            if (ep + 1) % 20 == 0 or ep == cfg['epochs_base'] - 1:
+                auc = roc_auc_score(all_labels, all_probs) if len(set(all_labels)) > 1 else 0.5
+                print(f"  [453-cls-s{seed}] {ep+1:3d}/{cfg['epochs_base']} "
+                      f"train={ttl/tn:.4f} val={vl:.4f} AUC={auc:.3f}")
+
+            if stale >= 20:
+                auc = roc_auc_score(all_labels, all_probs) if len(set(all_labels)) > 1 else 0.5
+                print(f"  [453-cls-s{seed}] Early stop at ep {ep+1}, AUC={auc:.3f}")
+                break
+
+        # Final evaluation
+        model.load_state_dict(best_state_this)
+        model.eval()
+        all_probs, all_labels_f = [], []
+        with torch.no_grad():
+            for batch_x, batch_y in val_dl:
+                batch_x = batch_x.to(device)
+                logits = model(batch_x)
+                all_probs.extend(torch.sigmoid(logits).cpu().numpy())
+                all_labels_f.extend(batch_y.numpy())
+
+        all_probs = np.array(all_probs)
+        all_labels_f = np.array(all_labels_f)
+        auc = roc_auc_score(all_labels_f, all_probs) if len(set(all_labels_f)) > 1 else 0.5
+
+        if auc > best_auc:
+            best_auc = auc
+            best_model_state = best_state_this
+
+    # Per-patient breakdown with best model
+    model.load_state_dict(best_model_state)
+    model.eval()
+
+    per_patient_cls = {}
+    for pinfo in data['per_patient']:
+        pid = pinfo['name']
+        vi, ve = pinfo['val_idx']
+        p_val = val_x[vi:ve]
+        p_labels = val_labels[vi:ve]
+
+        if len(p_labels) < 5 or np.sum(p_labels) < 1:
+            continue
+
+        with torch.no_grad():
+            logits = model(p_val.to(device))
+            probs = torch.sigmoid(logits).cpu().numpy()
+        preds = (probs >= 0.5).astype(int)
+
+        auc_p = roc_auc_score(p_labels, probs) if len(set(p_labels)) > 1 else 0.5
+        from sklearn.metrics import f1_score, recall_score
+        f1_p = f1_score(p_labels, preds, zero_division=0)
+        sens_p = recall_score(p_labels, preds, zero_division=0)
+
+        per_patient_cls[pid] = {
+            'auc': round(auc_p, 3),
+            'f1': round(f1_p, 3),
+            'sensitivity': round(sens_p, 3),
+            'n_val': len(p_labels),
+            'n_hypo': int(np.sum(p_labels)),
+        }
+
+    result['classifier'] = {
+        'overall_auc': round(best_auc, 3),
+        'per_patient': per_patient_cls,
+    }
+
+    print(f"\n  Classifier: overall AUC={best_auc:.3f}")
+    for pid, pr in per_patient_cls.items():
+        print(f"    {pid}: AUC={pr['auc']}, F1={pr['f1']}, "
+              f"sens={pr['sensitivity']} ({pr['n_hypo']}/{pr['n_val']} hypo)")
+
+    # --- Variant 2: Min glucose regression ---
+    print(f"\n{'─'*40}")
+    print(f"  Variant: min_glucose_regressor")
+    print(f"{'─'*40}")
+
+    # Normalize targets
+    min_scale = GLUCOSE_SCALE
+    train_min_norm = train_min / min_scale
+    val_min_norm = val_min / min_scale
+
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model_reg = MinGlucoseModel(input_dim=n_ch, d_model=48, nhead=4, num_layers=3)
+        model_reg = model_reg.to(device)
+        opt = torch.optim.AdamW(model_reg.parameters(), lr=1e-3, weight_decay=0.01)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=7, factor=0.5)
+        criterion_reg = nn.MSELoss()
+
+        train_dl_r = torch.utils.data.DataLoader(
+            torch.utils.data.TensorDataset(train_x, torch.tensor(train_min_norm)),
+            batch_size=256, shuffle=True)
+        val_dl_r = torch.utils.data.DataLoader(
+            torch.utils.data.TensorDataset(val_x, torch.tensor(val_min_norm)),
+            batch_size=256)
+
+        best_val_loss = float('inf')
+        stale = 0
+        best_state_reg = None
+
+        for ep in range(cfg['epochs_base']):
+            model_reg.train()
+            ttl, tn = 0.0, 0
+            for batch_x, batch_y in train_dl_r:
+                batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+                opt.zero_grad()
+                pred = model_reg(batch_x)
+                loss = criterion_reg(pred, batch_y)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model_reg.parameters(), 1.0)
+                opt.step()
+                ttl += loss.item() * len(batch_x)
+                tn += len(batch_x)
+
+            model_reg.eval()
+            vtl, vn = 0.0, 0
+            with torch.no_grad():
+                for batch_x, batch_y in val_dl_r:
+                    batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+                    pred = model_reg(batch_x)
+                    loss = criterion_reg(pred, batch_y)
+                    vtl += loss.item() * len(batch_x)
+                    vn += len(batch_x)
+
+            vl = vtl / vn if vn else float('inf')
+            sched.step(vl)
+
+            if vl < best_val_loss:
+                best_val_loss = vl
+                stale = 0
+                best_state_reg = {k: v.clone() for k, v in model_reg.state_dict().items()}
+            else:
+                stale += 1
+
+            if (ep + 1) % 20 == 0 or ep == cfg['epochs_base'] - 1:
+                print(f"  [453-reg-s{seed}] {ep+1:3d}/{cfg['epochs_base']} "
+                      f"train={ttl/tn:.6f} val={vl:.6f}")
+
+            if stale >= 20:
+                print(f"  [453-reg-s{seed}] Early stop at ep {ep+1}")
+                break
+
+    # Final evaluation
+    model_reg.load_state_dict(best_state_reg)
+    model_reg.eval()
+
+    per_patient_reg = {}
+    for pinfo in data['per_patient']:
+        pid = pinfo['name']
+        vi, ve = pinfo['val_idx']
+        p_val_r = val_x[vi:ve]
+        p_min_true = val_min[vi:ve]  # mg/dL
+
+        with torch.no_grad():
+            pred_norm = model_reg(p_val_r.to(device)).cpu().numpy()
+        pred_mg = pred_norm * min_scale
+
+        mae = float(np.mean(np.abs(pred_mg - p_min_true)))
+        # Derive hypo classification from regression
+        hypo_true = (p_min_true < 70).astype(int)
+        hypo_pred = (pred_mg < 70).astype(int)
+
+        if np.sum(hypo_true) >= 1:
+            f1_r = f1_score(hypo_true, hypo_pred, zero_division=0)
+            sens_r = recall_score(hypo_true, hypo_pred, zero_division=0)
+        else:
+            f1_r, sens_r = 0, 0
+
+        per_patient_reg[pid] = {
+            'mae': round(mae, 1),
+            'hypo_f1': round(f1_r, 3),
+            'hypo_sens': round(sens_r, 3),
+        }
+
+    result['min_glucose'] = {
+        'per_patient': per_patient_reg,
+        'overall_mae': round(np.mean([v['mae'] for v in per_patient_reg.values()]), 1),
+    }
+
+    print(f"\n  Min glucose regressor:")
+    for pid, pr in per_patient_reg.items():
+        print(f"    {pid}: MAE={pr['mae']}, hypo_F1={pr['hypo_f1']}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-453 Summary: CNN Overnight Risk")
+    print(f"{'='*60}")
+    print(f"  Classifier AUC: {result['classifier']['overall_auc']}")
+    print(f"  Min glucose MAE: {result['min_glucose']['overall_mae']}")
+    print(f"  vs EXP-451 tabular: AUC=0.646, min MAE=28.5")
+
+    _save_results(result, 'exp453_cnn_overnight_risk', cfg)
+    return result
+
+
+# ─── EXP-454: Extended History for Medium Model (h120+) ───
+
+def run_exp454(args):
+    """EXP-454: Extended history sweep with medium model for h120-h360.
+
+    Hypothesis: The medium model (d48, L3) + extended history (4-6h) with PK
+    channels will improve h120-h360 predictions. The PK channels stabilize
+    longer windows (EXP-353 showed -7.4 at 6h). Combined with the medium model's
+    better generalization (fewer params), this should be the best long-range config.
+
+    Variants:
+      a) w48_medium: 2h history → h120 max (baseline)
+      b) w96_medium: 4h history → h240 max
+      c) w144_medium: 6h history → h360 max
+      d) w96_full: 4h history with full model (comparison)
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-454: Extended History + Medium Model for h120+")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    configs = [
+        ('w48_medium', 48, {'d_model': 48, 'nhead': 4, 'num_layers': 3}),
+        ('w96_medium', 96, {'d_model': 48, 'nhead': 4, 'num_layers': 3}),
+        ('w144_medium', 144, {'d_model': 48, 'nhead': 4, 'num_layers': 3}),
+        ('w96_full', 96, {'d_model': 64, 'nhead': 4, 'num_layers': 4}),
+    ]
+
+    result = {}
+
+    for vname, window_size, arch in configs:
+        print(f"\n{'─'*40}")
+        print(f"  Variant: {vname} (w={window_size}, d={arch['d_model']}, L={arch['num_layers']})")
+        print(f"{'─'*40}")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=window_size,
+            max_patients=cfg['max_patients'], load_isf=True)
+        has_isf = 'isf_val' in data
+        train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+        n_ch = train_x.shape[-1]
+        isf_v_local = data.get('isf_val')
+        half = window_size // 2
+
+        m_test = PKGroupedEncoder(input_dim=n_ch, **arch)
+        n_params = sum(p.numel() for p in m_test.parameters())
+        print(f"  {train_x.shape[0]} train, {val_x.shape[0]} val, {n_ch}ch, seq_len={window_size}")
+        print(f"  Parameters: {n_params:,}")
+
+        # Train base
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp454_{vname}_s{seed}.pth')
+            print(f"\n  Base s{seed}:")
+            train_bridge(model, train_x, val_x, sp, f'454-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+
+        # Per-patient FT + evaluation
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]
+            p_val = val_x[vi:ve]
+            p_isf = isf_v_local[vi:ve] if isf_v_local is not None else None
+
+            # FT and ensemble
+            all_preds = []
+            for seed, bstate in base_states.items():
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                m.load_state_dict(bstate)
+                fp = os.path.join(cfg['output_dir'], f'exp454_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'454-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4)
+                m.eval().to(device)
+                with torch.no_grad():
+                    pred = m(p_val.to(device))[:, half:, :1].cpu().numpy()
+                all_preds.append(pred)
+
+            ens_pred = np.mean(all_preds, axis=0)
+            targets = p_val[:, half:, 0].numpy()
+            if p_isf is not None:
+                undo = (p_isf / GLUCOSE_SCALE).reshape(-1, 1)
+            else:
+                undo = 1.0
+            ens_mg = ens_pred[:, :, 0] * undo * GLUCOSE_SCALE
+            tgt_mg = targets * undo * GLUCOSE_SCALE
+
+            overall_mae = float(np.mean(np.abs(ens_mg - tgt_mg)))
+
+            # Per-horizon MAEs
+            horizon_maes = {}
+            for step_idx in range(ens_mg.shape[1]):
+                h_min = (step_idx + 1) * 5
+                hname = f'h{h_min}'
+                if hname in ['h30', 'h60', 'h90', 'h120', 'h180', 'h240', 'h360']:
+                    mae_h = float(np.mean(np.abs(ens_mg[:, step_idx] - tgt_mg[:, step_idx])))
+                    horizon_maes[hname] = round(mae_h, 2)
+
+            per_patient[pid] = {
+                'overall_mae': round(overall_mae, 2),
+                **horizon_maes,
+            }
+
+        # Average
+        avg = {}
+        all_keys = set()
+        for v in per_patient.values():
+            all_keys.update(v.keys())
+        for k in all_keys:
+            vals = [v[k] for v in per_patient.values() if k in v and isinstance(v[k], (int, float))]
+            if vals:
+                avg[k] = round(np.mean(vals), 2)
+
+        result[vname] = {
+            'per_patient': per_patient,
+            'average': avg,
+            'params': n_params,
+            'window_size': window_size,
+        }
+
+        print(f"\n  {vname}: overall={avg.get('overall_mae','—')}, "
+              f"h60={avg.get('h60','—')}, h120={avg.get('h120','—')}, "
+              f"h240={avg.get('h240','—')}, h360={avg.get('h360','—')}")
+
+    # Summary comparison
+    print(f"\n{'='*60}")
+    print(f"EXP-454 Summary: Extended History + Medium Model")
+    print(f"{'='*60}")
+    print(f"{'Variant':<15} {'Params':>8} {'Overall':>8} {'h60':>6} {'h120':>6} "
+          f"{'h240':>6} {'h360':>6}")
+    print(f"{'─'*60}")
+    for vn, vd in result.items():
+        avg = vd['average']
+        print(f"{vn:<15} {vd['params']:>8,} {avg.get('overall_mae','—'):>8} "
+              f"{avg.get('h60','—'):>6} {avg.get('h120','—'):>6} "
+              f"{avg.get('h240','—'):>6} {avg.get('h360','—'):>6}")
+
+    _save_results(result, 'exp454_extended_history_medium', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -9239,6 +9762,8 @@ EXPERIMENTS = {
     '450': run_exp450,
     '451': run_exp451,
     '452': run_exp452,
+    '453': run_exp453,
+    '454': run_exp454,
 }
 
 
