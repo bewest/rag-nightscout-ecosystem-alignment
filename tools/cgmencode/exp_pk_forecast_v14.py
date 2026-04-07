@@ -10558,6 +10558,323 @@ def run_exp458(args):
     return result
 
 
+# ─── EXP-459: Asymmetric Routing — w48 Short + w96 Long ───
+
+def run_exp459(args):
+    """EXP-459: Two-model asymmetric routing validated with evaluate_model.
+
+    EXP-435 showed:
+    - w48_sym: best h5-h120 (MAE=13.50 full val)
+    - w96_asym: best h180-h360 (h360=20.68 full val)
+
+    This experiment validates the routing concept using proper evaluate_model
+    at both specialist scales, ensuring correct masking and de-normalization.
+    Also tests whether the 48-step-history w96 benefits from 2nd-order PK.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-459: Asymmetric Routing (w48 + w96)")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    configs = [
+        ('w48_short', 48, None, {'d_model': 64, 'nhead': 4, 'num_layers': 4}),
+        ('w96_long', 96, 48, {'d_model': 64, 'nhead': 4, 'num_layers': 4}),
+        ('w96_long_2nd', 96, 48, {'d_model': 64, 'nhead': 4, 'num_layers': 4}),
+    ]
+
+    result = {}
+    for vname, wsize, asym_hist, arch in configs:
+        print(f"\n{'─'*40}")
+        print(f"  {vname} (w={wsize}, asym_hist={asym_hist})")
+        print(f"{'─'*40}")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=wsize,
+            max_patients=cfg['max_patients'], load_isf=True)
+        has_isf = 'isf_val' in data
+        isf_v = data.get('isf_val')
+        future_steps = asym_hist if asym_hist else None
+
+        if vname == 'w96_long_2nd':
+            hist_steps = asym_hist or wsize // 2
+            train_x, val_x = _prepare_pk_second_order(data, hist_steps, use_isf=has_isf)
+        else:
+            train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=True)
+        n_ch = train_x.shape[-1]
+
+        # Train base
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp459_{vname}_s{seed}.pth')
+            print(f"\n  Base s{seed}:")
+            train_bridge(model, train_x, val_x, sp, f'459-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps)
+
+        # Per-patient FT + evaluate
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]
+            p_val = val_x[vi:ve]
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp459_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp459_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'459-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps)
+                ft_models.append(m)
+
+            if len(ft_models) > 1:
+                report = ensemble_evaluate(ft_models, p_val, device,
+                                           pk_mode=True, isf_val=p_isf,
+                                           future_steps=future_steps)
+            else:
+                report = evaluate_model(ft_models[0], p_val, device,
+                                        pk_mode=True, isf_val=p_isf,
+                                        future_steps=future_steps)
+
+            per_patient[pid] = report
+            print(f"    {pid}: h60={report.get('h60','—')}, h120={report.get('h120','—')}, "
+                  f"h240={report.get('h240','—')}, h360={report.get('h360','—')}")
+
+        # Average
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg:
+                    avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[vname] = {
+            'window': wsize,
+            'channels': n_ch,
+            'per_patient': per_patient,
+            'average': avg,
+        }
+
+        print(f"\n  {vname} avg: overall={avg.get('overall_mae','?')}, "
+              f"h60={avg.get('h60','?')}, h120={avg.get('h120','?')}, "
+              f"h240={avg.get('h240','?')}, h360={avg.get('h360','?')}")
+
+    # Composite routing
+    print(f"\n{'='*60}")
+    print(f"EXP-459: Routing Summary")
+    print(f"{'='*60}")
+
+    short_avg = result.get('w48_short', {}).get('average', {})
+    long_avg = result.get('w96_long', {}).get('average', {})
+    long2_avg = result.get('w96_long_2nd', {}).get('average', {})
+
+    composite = {}
+    # Short handles h5-h120
+    for h in ['h5', 'h10', 'h15', 'h20', 'h25', 'h30', 'h45', 'h60', 'h90', 'h120']:
+        if h in short_avg:
+            composite[h] = {'source': 'w48_short', 'mae': short_avg[h]}
+
+    # Long handles h150-h360
+    for h in ['h150', 'h180', 'h240', 'h300', 'h360']:
+        if h in long_avg:
+            composite[h] = {'source': 'w96_long', 'mae': long_avg[h]}
+
+    print(f"\n  {'Horizon':<8} {'Source':<15} {'MAE':>6}")
+    print(f"  {'─'*32}")
+    for h in sorted(composite.keys(), key=lambda x: int(x[1:])):
+        print(f"  {h:<8} {composite[h]['source']:<15} {composite[h]['mae']:>6.2f}")
+
+    all_maes = [v['mae'] for v in composite.values()]
+    print(f"\n  Composite MAE: {np.mean(all_maes):.2f}")
+    print(f"\n  2nd-order PK (w96): h240={long2_avg.get('h240','?')}, h360={long2_avg.get('h360','?')}")
+
+    result['composite'] = composite
+    result['composite_mae'] = round(float(np.mean(all_maes)), 2) if all_maes else None
+
+    _save_results(result, 'exp459_asymmetric_routing', cfg)
+    return result
+
+
+# ─── EXP-460: Fidelity-Aware Long-Horizon Training ───
+
+def run_exp460(args):
+    """EXP-460: Combine fidelity filtering with w96 long-horizon specialist.
+
+    EXP-458 showed filtering helps kept patients (−0.4 to −0.85 MAE).
+    Hypothesis: At w96 (where PK signals matter more due to longer horizon),
+    fidelity filtering has LARGER benefit because:
+    1. PK channels are more critical for h180+
+    2. Low-fidelity patients' noise dilutes PK learning more at longer horizons
+    3. Fewer training samples at w96 → noise has larger impact
+
+    Tests all-patients vs fidelity-filtered training at w96.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-460: Fidelity-Aware Long-Horizon Training (w96)")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=96,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    isf_v = data.get('isf_val')
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=True)
+    n_ch = train_x.shape[-1]
+
+    future_steps = 48  # asymmetric: 48 history, 48 future
+
+    # Compute fidelity per patient
+    fidelity = {}
+    for pinfo in data['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        p_train = train_x[ti:te]
+
+        pk_var = float(np.mean(np.var(p_train[:, :, 1:6].numpy(), axis=1)))
+        pk_active = float(np.mean(np.any(np.abs(p_train[:, :, 3:6].numpy()) > 0.01, axis=1)))
+
+        gluc = p_train[:, :, 0].numpy()
+        iob = p_train[:, :, 1].numpy()
+        corrs = []
+        for i in range(len(gluc)):
+            if np.std(gluc[i]) > 0 and np.std(iob[i]) > 0:
+                c = np.corrcoef(gluc[i], iob[i])[0, 1]
+                if not np.isnan(c):
+                    corrs.append(abs(c))
+        mean_corr = float(np.mean(corrs)) if corrs else 0.0
+        score = pk_var * 10 + pk_active + mean_corr
+
+        fidelity[pid] = {
+            'pk_variance': round(pk_var, 4),
+            'pk_active_frac': round(pk_active, 3),
+            'gluc_iob_corr': round(mean_corr, 3),
+            'fidelity_score': round(score, 3),
+        }
+        print(f"  {pid}: score={score:.3f}")
+
+    sorted_patients = sorted(fidelity.items(), key=lambda x: x[1]['fidelity_score'], reverse=True)
+    n_keep = max(2, int(len(sorted_patients) * 0.75))
+    kept = set(p[0] for p in sorted_patients[:n_keep])
+    dropped = set(p[0] for p in sorted_patients[n_keep:])
+    print(f"  Keeping: {kept}, Dropping: {dropped}")
+
+    # Build filtered training data
+    keep_mask = np.zeros(len(train_x), dtype=bool)
+    for pinfo in data['per_patient']:
+        if pinfo['name'] in kept:
+            ti, te = pinfo['train_idx']
+            keep_mask[ti:te] = True
+    train_filt = train_x[keep_mask]
+    print(f"  Filtered: {len(train_filt)} (from {len(train_x)})")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+    variants = {
+        'all_patients': train_x,
+        'filtered': train_filt,
+    }
+
+    result = {}
+    for vname, tx in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  Variant: {vname} ({len(tx)} train)")
+        print(f"{'─'*40}")
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp460_{vname}_s{seed}.pth')
+            print(f"\n  Base s{seed}:")
+            train_bridge(model, tx, val_x, sp, f'460-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps)
+
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]  # Always FT on patient's own data
+            p_val = val_x[vi:ve]
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp460_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp460_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'460-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                        isf_val=p_isf, future_steps=future_steps)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg:
+                    avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[vname] = {
+            'per_patient': per_patient,
+            'average': avg,
+        }
+
+        print(f"\n  {vname} avg: overall={avg.get('overall_mae','?')}, "
+              f"h120={avg.get('h120','?')}, h240={avg.get('h240','?')}, "
+              f"h360={avg.get('h360','?')}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-460 Summary: Fidelity Filtering at w96")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        print(f"  {vname:<18} overall={avg.get('overall_mae','?')}, "
+              f"h120={avg.get('h120','?')}, h240={avg.get('h240','?')}, "
+              f"h360={avg.get('h360','?')}")
+
+    print(f"\n  Per-patient comparison:")
+    for pid in [p['name'] for p in data['per_patient']]:
+        all_h = result['all_patients']['per_patient'].get(pid, {})
+        filt_h = result['filtered']['per_patient'].get(pid, {})
+        in_base = '✓' if pid in kept else '✗'
+        all_h120 = all_h.get('h120', '—')
+        filt_h120 = filt_h.get('h120', '—')
+        delta = round(filt_h120 - all_h120, 2) if isinstance(all_h120, (int, float)) and isinstance(filt_h120, (int, float)) else '—'
+        print(f"  {pid:<6} all_h120={all_h120:>6} filt_h120={filt_h120:>6} Δ={delta:>6} {in_base}")
+
+    result['fidelity'] = fidelity
+    result['kept'] = list(kept)
+    result['dropped'] = list(dropped)
+
+    _save_results(result, 'exp460_fidelity_long_horizon', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -10609,6 +10926,8 @@ EXPERIMENTS = {
     '456': run_exp456,
     '457': run_exp457,
     '458': run_exp458,
+    '459': run_exp459,
+    '460': run_exp460,
 }
 
 
