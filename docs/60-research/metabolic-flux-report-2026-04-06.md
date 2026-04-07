@@ -115,7 +115,7 @@ enormous — this is exactly the signal we exploit.
 
 **EXP-438: Event Discrimination**
 - Flux features discriminate meal/correction/stable states:
-  - 2h scale: AUC 0.86 (flux) vs 0.62 (glucose alone)
+  - 2h scale: AUC 0.86 (flux) vs 0.61 (glucose alone)
   - 6h scale: AUC 0.86 (flux) vs 0.64 (glucose alone)
   - 12h scale: AUC 0.85 (flux) vs 0.65 (glucose alone)
 - Advantage is largest at 2h (0.25 AUC gap) where AID flattens glucose most
@@ -641,7 +641,7 @@ physics model can't account for with current settings.
 ### 8.1 EXP-448: Hepatic-Detrended Meal Detection
 
 Subtracting hepatic baseline from supply improves meal detection from a carb-only
-baseline of **1.7 events/day** to **2.0–2.9 events/day** using sum_flux (mean 2.4/day).
+baseline of **1.7 events/day** to **1.9–2.9 events/day** using sum_flux (mean 2.4/day).
 The hepatic floor was the main reason
 earlier counting underestimated: it constitutes 17–96% of total supply depending on
 the patient and time of day.
@@ -649,9 +649,9 @@ the patient and time of day.
 ### 8.2 EXP-449: Derivative Edge Detection
 
 Computing `d/dt(supply)` and `d/dt(demand)` yields sharp edges at meal onsets.
-Patients c, d, e, i, k show R=0.87–0.96 correlation between derivative peaks and
-known meal times. This is a promising feature for event detection without requiring
-peak-finding heuristics.
+Patients c, e, i, k show recall 0.87–0.96 between derivative peaks and known
+meal times (patient d reaches 0.82). This is a promising feature for event detection
+without requiring peak-finding heuristics.
 
 ### 8.3 EXP-450: Basal Adequacy (Overnight Supply/Demand)
 
@@ -666,7 +666,7 @@ compensates, the patient's settings need adjustment.
 
 ### 8.4 EXP-451: ISF Adequacy from Correction Responses
 
-Only 4/11 patients have enough clean correction-only windows for ISF validation.
+Only 5/11 patients have enough clean correction-only windows for ISF validation.
 Patient h shows nearly perfect ISF calibration (ratio 0.97). Others show systematic
 underprediction, suggesting ISF is too high (less insulin effect per unit than expected).
 
