@@ -8419,8 +8419,9 @@ def run_exp450(args):
                 m.eval().to(device)
                 half = p_val.shape[1] // 2
                 with torch.no_grad():
-                    inp = p_val.to(device)
-                    pred = m(inp)[:, half:, :1].cpu().numpy()
+                    x_in = p_val.clone().to(device)
+                    mask_future_pk(x_in, half, pk_mode=True)
+                    pred = m(x_in, causal=True)[:, half:, :1].cpu().numpy()
                 all_preds.append(pred)
 
             ens_pred = np.mean(all_preds, axis=0)
@@ -9651,7 +9652,9 @@ def run_exp454(args):
                              lr=1e-4)
                 m.eval().to(device)
                 with torch.no_grad():
-                    pred = m(p_val.to(device))[:, half:, :1].cpu().numpy()
+                    x_in = p_val.clone().to(device)
+                    mask_future_pk(x_in, half, pk_mode=True)
+                    pred = m(x_in, causal=True)[:, half:, :1].cpu().numpy()
                 all_preds.append(pred)
 
             ens_pred = np.mean(all_preds, axis=0)
@@ -9717,6 +9720,844 @@ def run_exp454(args):
     return result
 
 
+# ─── EXP-455: Overnight Risk with Platt + Per-Patient FT ───
+
+def run_exp455(args):
+    """EXP-455: Improve overnight risk classifier with Platt calibration and FT.
+
+    EXP-453 achieved AUC=0.885. This experiment adds:
+    a) Platt calibration (shown to reduce ECE by 20× in EXP-324)
+    b) Per-patient fine-tuning (shown to improve 1-2 MAE points)
+    c) Multi-task: jointly predict min glucose + P(hypo) for shared representation
+    d) Bedtime glucose threshold comparison at matched sensitivity
+
+    Targets: AUC≥0.90, sensitivity≥0.80, ECE<0.05
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-455: Overnight Risk — Platt Calibration + Per-Patient FT")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    # Load data (same as EXP-453: w72 = 6h window)
+    data = load_bridge_data(
+        args.patients_dir, window_size=72,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    n_ch = train_x.shape[-1]
+    isf_t = data.get('isf_train')
+    isf_v = data.get('isf_val')
+
+    half = train_x.shape[1] // 2
+
+    def extract_labels(x_tensor, isf_arr=None):
+        future_gluc = x_tensor[:, half:, 0].numpy()
+        if isf_arr is not None:
+            future_mg = future_gluc * (isf_arr / GLUCOSE_SCALE).reshape(-1, 1) * GLUCOSE_SCALE
+        else:
+            future_mg = future_gluc * GLUCOSE_SCALE
+        min_future = np.min(future_mg, axis=1)
+        hypo = (min_future < 70).astype(np.float32)
+        return hypo, min_future
+
+    train_labels, train_min = extract_labels(train_x, isf_t)
+    val_labels, val_min = extract_labels(val_x, isf_v)
+
+    print(f"  Train: {int(np.sum(train_labels))}/{len(train_labels)} hypo "
+          f"({np.mean(train_labels)*100:.1f}%)")
+    print(f"  Val: {int(np.sum(val_labels))}/{len(val_labels)} hypo "
+          f"({np.mean(val_labels)*100:.1f}%)")
+
+    # Multi-task model: predicts both logit(P(hypo)) and min_glucose
+    class MultiTaskRiskModel(nn.Module):
+        def __init__(self, input_dim, d_model=48, nhead=4, num_layers=3):
+            super().__init__()
+            self.encoder = PKGroupedEncoder(input_dim=input_dim, d_model=d_model,
+                                            nhead=nhead, num_layers=num_layers)
+            self.shared = nn.Sequential(
+                nn.Linear(d_model, d_model // 2),
+                nn.ReLU(),
+                nn.Dropout(0.2),
+            )
+            self.cls_head = nn.Linear(d_model // 2, 1)  # P(hypo) logit
+            self.reg_head = nn.Linear(d_model // 2, 1)  # min glucose
+            self.d_model = d_model
+
+        def forward(self, x):
+            history = x[:, :x.shape[1]//2, :]
+            enc = self.encoder.encode(history)
+            pooled = enc.mean(dim=1)
+            shared = self.shared(pooled)
+            return self.cls_head(shared).squeeze(-1), self.reg_head(shared).squeeze(-1)
+
+    from sklearn.metrics import roc_auc_score, f1_score, recall_score
+    from sklearn.linear_model import LogisticRegression
+
+    result = {}
+
+    # --- Train base multi-task model ---
+    pos_weight = torch.tensor([(1 - np.mean(train_labels)) / max(np.mean(train_labels), 0.01)])
+    cls_crit = nn.BCEWithLogitsLoss(pos_weight=pos_weight.to(device))
+    reg_crit = nn.MSELoss()
+
+    min_scale = GLUCOSE_SCALE
+    train_min_norm = train_min / min_scale
+    val_min_norm = val_min / min_scale
+
+    train_dl = torch.utils.data.DataLoader(
+        torch.utils.data.TensorDataset(
+            train_x, torch.tensor(train_labels), torch.tensor(train_min_norm)),
+        batch_size=256, shuffle=True)
+    val_dl = torch.utils.data.DataLoader(
+        torch.utils.data.TensorDataset(
+            val_x, torch.tensor(val_labels), torch.tensor(val_min_norm)),
+        batch_size=256)
+
+    base_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = MultiTaskRiskModel(input_dim=n_ch, d_model=48, nhead=4, num_layers=3)
+        model = model.to(device)
+        opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=0.01)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=7, factor=0.5)
+
+        best_val = float('inf')
+        stale = 0
+        best_state = None
+
+        for ep in range(cfg['epochs_base']):
+            model.train()
+            ttl, tn = 0.0, 0
+            for bx, by_cls, by_reg in train_dl:
+                bx, by_cls, by_reg = bx.to(device), by_cls.to(device), by_reg.to(device)
+                opt.zero_grad()
+                logits, reg_pred = model(bx)
+                loss = cls_crit(logits, by_cls) + 0.5 * reg_crit(reg_pred, by_reg)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+                ttl += loss.item() * len(bx)
+                tn += len(bx)
+
+            model.eval()
+            vtl, vn = 0.0, 0
+            with torch.no_grad():
+                for bx, by_cls, by_reg in val_dl:
+                    bx, by_cls, by_reg = bx.to(device), by_cls.to(device), by_reg.to(device)
+                    logits, reg_pred = model(bx)
+                    loss = cls_crit(logits, by_cls) + 0.5 * reg_crit(reg_pred, by_reg)
+                    vtl += loss.item() * len(bx)
+                    vn += len(bx)
+
+            vl = vtl / vn if vn else float('inf')
+            sched.step(vl)
+
+            if vl < best_val:
+                best_val = vl
+                stale = 0
+                best_state = {k: v.clone() for k, v in model.state_dict().items()}
+            else:
+                stale += 1
+
+            if (ep + 1) % 20 == 0 or ep == cfg['epochs_base'] - 1:
+                print(f"  [455-mt-s{seed}] {ep+1:3d}/{cfg['epochs_base']} "
+                      f"train={ttl/tn:.4f} val={vl:.4f}")
+
+            if stale >= 20:
+                print(f"  [455-mt-s{seed}] Early stop at ep {ep+1}")
+                break
+
+        base_states[seed] = best_state
+
+    # --- Per-patient FT + Platt calibration ---
+    per_patient = {}
+    for pinfo in data['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        vi, ve = pinfo['val_idx']
+        p_train = train_x[ti:te]
+        p_val = val_x[vi:ve]
+        p_labels_train = train_labels[ti:te]
+        p_labels_val = val_labels[vi:ve]
+        p_min_train = train_min_norm[ti:te]
+        p_min_val = val_min[vi:ve]  # raw mg/dL for final eval
+
+        if np.sum(p_labels_val) < 2:
+            continue
+
+        # FT each seed, collect logits for Platt calibration
+        ft_logits_train = []
+        ft_logits_val = []
+        ft_reg_val = []
+
+        for seed, bstate in base_states.items():
+            torch.manual_seed(seed); np.random.seed(seed)
+            m = MultiTaskRiskModel(input_dim=n_ch, d_model=48, nhead=4, num_layers=3)
+            m.load_state_dict(bstate)
+            m = m.to(device)
+
+            # Fine-tune on patient data
+            p_train_dl = torch.utils.data.DataLoader(
+                torch.utils.data.TensorDataset(
+                    p_train, torch.tensor(p_labels_train), torch.tensor(p_min_train)),
+                batch_size=min(128, len(p_train)), shuffle=True)
+            p_val_dl = torch.utils.data.DataLoader(
+                torch.utils.data.TensorDataset(
+                    p_val, torch.tensor(p_labels_val), torch.tensor(p_min_val / min_scale)),
+                batch_size=256)
+
+            opt_ft = torch.optim.AdamW(m.parameters(), lr=1e-4, weight_decay=0.01)
+            sched_ft = torch.optim.lr_scheduler.ReduceLROnPlateau(opt_ft, patience=5, factor=0.5)
+            best_ft = float('inf')
+            stale_ft = 0
+            best_ft_state = None
+
+            for ep in range(cfg['epochs_ft']):
+                m.train()
+                for bx, by_cls, by_reg in p_train_dl:
+                    bx, by_cls, by_reg = bx.to(device), by_cls.to(device), by_reg.to(device)
+                    opt_ft.zero_grad()
+                    logits, reg_pred = m(bx)
+                    loss = cls_crit(logits, by_cls) + 0.5 * reg_crit(reg_pred, by_reg)
+                    loss.backward()
+                    torch.nn.utils.clip_grad_norm_(m.parameters(), 1.0)
+                    opt_ft.step()
+
+                m.eval()
+                vtl_ft, vn_ft = 0.0, 0
+                with torch.no_grad():
+                    for bx, by_cls, by_reg in p_val_dl:
+                        bx, by_cls, by_reg = bx.to(device), by_cls.to(device), by_reg.to(device)
+                        logits, reg_pred = m(bx)
+                        loss = cls_crit(logits, by_cls) + 0.5 * reg_crit(reg_pred, by_reg)
+                        vtl_ft += loss.item() * len(bx)
+                        vn_ft += len(bx)
+
+                vl_ft = vtl_ft / vn_ft if vn_ft else float('inf')
+                sched_ft.step(vl_ft)
+
+                if vl_ft < best_ft:
+                    best_ft = vl_ft
+                    stale_ft = 0
+                    best_ft_state = {k: v.clone() for k, v in m.state_dict().items()}
+                else:
+                    stale_ft += 1
+                if stale_ft >= 10:
+                    break
+
+            if best_ft_state:
+                m.load_state_dict(best_ft_state)
+
+            # Collect logits
+            m.eval()
+            with torch.no_grad():
+                # Training logits (for Platt calibration fitting)
+                logits_t, _ = m(p_train.to(device))
+                ft_logits_train.append(logits_t.cpu().numpy())
+                # Validation logits
+                logits_v, reg_v = m(p_val.to(device))
+                ft_logits_val.append(logits_v.cpu().numpy())
+                ft_reg_val.append(reg_v.cpu().numpy() * min_scale)
+
+        # Ensemble logits
+        ens_logits_train = np.mean(ft_logits_train, axis=0)
+        ens_logits_val = np.mean(ft_logits_val, axis=0)
+        ens_reg_val = np.mean(ft_reg_val, axis=0)
+
+        # --- Raw sigmoid (no Platt) ---
+        raw_probs = 1.0 / (1.0 + np.exp(-ens_logits_val))
+        raw_auc = roc_auc_score(p_labels_val, raw_probs) if len(set(p_labels_val)) > 1 else 0.5
+        raw_preds = (raw_probs >= 0.5).astype(int)
+        raw_f1 = f1_score(p_labels_val, raw_preds, zero_division=0)
+        raw_sens = recall_score(p_labels_val, raw_preds, zero_division=0)
+
+        # --- Platt calibration ---
+        platt = LogisticRegression(C=1e10, max_iter=1000, solver='lbfgs')
+        platt.fit(ens_logits_train.reshape(-1, 1), p_labels_train)
+        platt_probs = platt.predict_proba(ens_logits_val.reshape(-1, 1))[:, 1]
+        platt_auc = roc_auc_score(p_labels_val, platt_probs) if len(set(p_labels_val)) > 1 else 0.5
+
+        # Find threshold for 80% sensitivity
+        for thresh in np.arange(0.1, 0.9, 0.01):
+            preds_t = (platt_probs >= thresh).astype(int)
+            sens_t = recall_score(p_labels_val, preds_t, zero_division=0)
+            if sens_t >= 0.80:
+                platt_thresh = thresh
+                platt_preds = preds_t
+                break
+        else:
+            platt_thresh = 0.3
+            platt_preds = (platt_probs >= platt_thresh).astype(int)
+
+        platt_f1 = f1_score(p_labels_val, platt_preds, zero_division=0)
+        platt_sens = recall_score(p_labels_val, platt_preds, zero_division=0)
+
+        # ECE (Expected Calibration Error)
+        n_bins = 10
+        bin_edges = np.linspace(0, 1, n_bins + 1)
+        ece = 0.0
+        for i in range(n_bins):
+            mask = (platt_probs >= bin_edges[i]) & (platt_probs < bin_edges[i+1])
+            if np.sum(mask) > 0:
+                bin_acc = np.mean(p_labels_val[mask])
+                bin_conf = np.mean(platt_probs[mask])
+                ece += np.sum(mask) / len(p_labels_val) * abs(bin_acc - bin_conf)
+
+        # Min glucose regression MAE
+        reg_mae = float(np.mean(np.abs(ens_reg_val - p_min_val)))
+
+        per_patient[pid] = {
+            'n_val': len(p_labels_val),
+            'n_hypo': int(np.sum(p_labels_val)),
+            'raw_auc': round(raw_auc, 3),
+            'raw_f1': round(raw_f1, 3),
+            'raw_sens': round(raw_sens, 3),
+            'platt_auc': round(platt_auc, 3),
+            'platt_f1': round(platt_f1, 3),
+            'platt_sens': round(platt_sens, 3),
+            'platt_thresh': round(platt_thresh, 2),
+            'ece': round(ece, 4),
+            'reg_mae': round(reg_mae, 1),
+        }
+
+        print(f"\n  {pid} ({int(np.sum(p_labels_val))}/{len(p_labels_val)} hypo):")
+        print(f"    Raw:   AUC={raw_auc:.3f}, F1={raw_f1:.3f}, sens={raw_sens:.3f}")
+        print(f"    Platt: AUC={platt_auc:.3f}, F1={platt_f1:.3f}, "
+              f"sens={platt_sens:.3f} (thresh={platt_thresh:.2f})")
+        print(f"    ECE={ece:.4f}, min_glucose MAE={reg_mae:.1f}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-455 Summary: Multi-Task + Platt + FT Overnight Risk")
+    print(f"{'='*60}")
+    aucs = [v['platt_auc'] for v in per_patient.values()]
+    senss = [v['platt_sens'] for v in per_patient.values()]
+    eces = [v['ece'] for v in per_patient.values()]
+    print(f"  Mean Platt AUC: {np.mean(aucs):.3f}")
+    print(f"  Mean sensitivity: {np.mean(senss):.3f}")
+    print(f"  Mean ECE: {np.mean(eces):.4f}")
+    print(f"  vs EXP-453 (single-task, no FT): AUC=0.885")
+
+    result = {'per_patient': per_patient}
+    result['summary'] = {
+        'mean_platt_auc': round(float(np.mean(aucs)), 3),
+        'mean_sensitivity': round(float(np.mean(senss)), 3),
+        'mean_ece': round(float(np.mean(eces)), 4),
+    }
+
+    _save_results(result, 'exp455_overnight_risk_platt', cfg)
+    return result
+
+
+# ─── EXP-456: Production Routing Pipeline ───
+
+def run_exp456(args):
+    """EXP-456: Production routing pipeline — best model per horizon.
+
+    Combines EXP-448 and EXP-454 findings into a single routing pipeline.
+    For each target horizon, select the best window+model combination:
+      h5-h60: w24, medium (d48,L3) — from EXP-448
+      h90-h120: w48, medium (d48,L3) — from EXP-454
+      h180-h360: w96, full (d64,L4) — from EXP-454
+
+    Evaluates the composite pipeline as a whole vs. single-model baselines.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-456: Production Routing Pipeline")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    # Train 3 specialist models
+    specialists = [
+        ('short', 24, {'d_model': 48, 'nhead': 4, 'num_layers': 3},
+         ['h5', 'h10', 'h15', 'h20', 'h25', 'h30', 'h45', 'h60']),
+        ('mid', 48, {'d_model': 48, 'nhead': 4, 'num_layers': 3},
+         ['h90', 'h120']),
+        ('long', 96, {'d_model': 64, 'nhead': 4, 'num_layers': 4},
+         ['h180', 'h240']),
+    ]
+
+    model_results = {}
+
+    for sname, wsize, arch, target_horizons in specialists:
+        print(f"\n{'─'*40}")
+        print(f"  Specialist: {sname} (w={wsize})")
+        print(f"{'─'*40}")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=wsize,
+            max_patients=cfg['max_patients'], load_isf=True)
+        has_isf = 'isf_val' in data
+        train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+        n_ch = train_x.shape[-1]
+        isf_v_local = data.get('isf_val')
+        half = wsize // 2
+
+        # Train base
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp456_{sname}_s{seed}.pth')
+            print(f"\n  Base s{seed}:")
+            train_bridge(model, train_x, val_x, sp, f'456-{sname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+
+        # Per-patient FT + evaluate
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]
+            p_val = val_x[vi:ve]
+            p_isf = isf_v_local[vi:ve] if isf_v_local is not None else None
+
+            all_preds = []
+            for seed, bstate in base_states.items():
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                m.load_state_dict(bstate)
+                fp = os.path.join(cfg['output_dir'], f'exp456_{sname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'456-{sname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4)
+                m.eval().to(device)
+                with torch.no_grad():
+                    x_in = p_val.clone().to(device)
+                    mask_future_pk(x_in, half, pk_mode=True)
+                    pred = m(x_in, causal=True)[:, half:, :1].cpu().numpy()
+                all_preds.append(pred)
+
+            ens_pred = np.mean(all_preds, axis=0)
+            targets = p_val[:, half:, 0].numpy()
+            if p_isf is not None:
+                undo = (p_isf / GLUCOSE_SCALE).reshape(-1, 1)
+            else:
+                undo = 1.0
+            ens_mg = ens_pred[:, :, 0] * undo * GLUCOSE_SCALE
+            tgt_mg = targets * undo * GLUCOSE_SCALE
+
+            # Per-horizon MAEs
+            horizon_maes = {}
+            for step_idx in range(ens_mg.shape[1]):
+                h_min = (step_idx + 1) * 5
+                hname = f'h{h_min}'
+                if hname in target_horizons:
+                    mae_h = float(np.mean(np.abs(ens_mg[:, step_idx] - tgt_mg[:, step_idx])))
+                    horizon_maes[hname] = round(mae_h, 2)
+
+            per_patient[pid] = horizon_maes
+
+        # Average per horizon
+        avg_horizons = {}
+        for hname in target_horizons:
+            vals = [v.get(hname, None) for v in per_patient.values() if hname in v]
+            if vals:
+                avg_horizons[hname] = round(np.mean(vals), 2)
+
+        model_results[sname] = {
+            'window': wsize,
+            'arch': arch,
+            'target_horizons': target_horizons,
+            'per_patient': per_patient,
+            'average': avg_horizons,
+        }
+
+        print(f"\n  {sname} averages: {avg_horizons}")
+
+    # --- Composite pipeline evaluation ---
+    print(f"\n{'='*60}")
+    print(f"EXP-456: Routing Pipeline Results")
+    print(f"{'='*60}")
+
+    composite = {}
+    for sname, sdata in model_results.items():
+        for hname, mae in sdata['average'].items():
+            composite[hname] = {'specialist': sname, 'mae': mae}
+
+    # Sort by horizon
+    sorted_h = sorted(composite.items(), key=lambda x: int(x[0][1:]))
+    print(f"\n  {'Horizon':<8} {'Specialist':<10} {'MAE':>6}")
+    print(f"  {'─'*26}")
+    for hname, hdata in sorted_h:
+        print(f"  {hname:<8} {hdata['specialist']:<10} {hdata['mae']:>6.2f}")
+
+    # Overall composite MAE (weighted by clinical importance)
+    if sorted_h:
+        all_maes = [h[1]['mae'] for h in sorted_h]
+        composite_mae = np.mean(all_maes)
+        print(f"\n  Composite mean MAE: {composite_mae:.2f}")
+
+    result = {
+        'specialists': model_results,
+        'composite': composite,
+        'composite_mae': round(float(composite_mae), 2) if sorted_h else None,
+    }
+
+    _save_results(result, 'exp456_routing_pipeline', cfg)
+    return result
+
+
+# ─── EXP-457: Metabolic Flux Features for Extended Horizons ───
+
+def run_exp457(args):
+    """EXP-457: Metabolic flux balance features for h120-h360 forecasting.
+
+    Hypothesis: At longer horizons, the model needs to understand the
+    supply/demand dynamics of glucose metabolism:
+    - Insulin supply rate (dIOB/dt) — is insulin decaying or being added?
+    - Carb supply rate (dCOB/dt) — are carbs being absorbed?
+    - Net metabolic balance (insulin effect - carb effect) — which dominates?
+    - IOB/COB ratio — relative balance of insulin vs carbs
+
+    These features encode the *trajectory* of metabolic state, not just
+    the current state. This is the information gap at h120+.
+
+    Tests w96 (4h history → h240 max) with standard vs flux-enhanced.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-457: Metabolic Flux Features for Extended Horizons")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=96,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    isf_v = data.get('isf_val')
+
+    # Variant A: Standard PK (baseline for w96)
+    train_std, val_std = prepare_pk_future(data, use_isf=has_isf, drop_time=True)
+    n_ch_std = train_std.shape[-1]
+    print(f"  Standard: {n_ch_std}ch, {train_std.shape}")
+
+    # Variant B: PK + 1st-order derivatives (metabolic velocity)
+    train_d1, val_d1 = _prepare_pk_derivatives_asymmetric(
+        data, history_steps=48, use_isf=has_isf)
+    n_ch_d1 = train_d1.shape[-1]
+    print(f"  + 1st derivatives: {n_ch_d1}ch, {train_d1.shape}")
+
+    # Variant C: PK + flux balance features (custom)
+    bt = data['base_train'].copy()
+    bv = data['base_val'].copy()
+    pt, pv = data['pk_train'], data['pk_val']
+
+    # Replace sparse treatment channels with PK curves
+    bt[:, :, 4] = pt[:, :, 1] / PK_NORMS[1]   # ins_net
+    bv[:, :, 4] = pv[:, :, 1] / PK_NORMS[1]
+    bt[:, :, 5] = pt[:, :, 3] / PK_NORMS[3]   # carb_rate
+    bv[:, :, 5] = pv[:, :, 3] / PK_NORMS[3]
+    bt[:, :, 7] = pt[:, :, 6] / PK_NORMS[6]   # net_balance
+    bv[:, :, 7] = pv[:, :, 6] / PK_NORMS[6]
+
+    if has_isf:
+        _apply_isf_norm(bt, bv, data['isf_train'], data['isf_val'])
+
+    # Drop time features (sin channel 6)
+    bt = np.delete(bt, 6, axis=-1)  # Now 7ch: gluc, IOB, COB, net_basal, ins_net, carb_rate, net_bal
+    bv = np.delete(bv, 6, axis=-1)
+
+    half = 48  # 4h history for w96
+
+    # Flux features: IOB velocity, COB velocity, IOB/COB ratio, net flux derivative
+    def add_flux_features(arr, h):
+        N, T, C = arr.shape
+        # dIOB/dt — insulin absorption velocity
+        d_iob = np.zeros((N, T, 1), dtype=np.float32)
+        d_iob[:, 1:, 0] = arr[:, 1:, 1] - arr[:, :-1, 1]
+
+        # dCOB/dt — carb absorption velocity
+        d_cob = np.zeros((N, T, 1), dtype=np.float32)
+        d_cob[:, 1:, 0] = arr[:, 1:, 2] - arr[:, :-1, 2]
+
+        # IOB/COB ratio (clamped to avoid division by zero)
+        cob_safe = np.maximum(np.abs(arr[:, :, 2:3]), 0.01)
+        iob_cob_ratio = arr[:, :, 1:2] / cob_safe
+        iob_cob_ratio = np.clip(iob_cob_ratio, -5, 5) * 0.2  # scale to ~[-1, 1]
+
+        # Net flux derivative: d(net_balance)/dt
+        d_flux = np.zeros((N, T, 1), dtype=np.float32)
+        d_flux[:, 1:, 0] = arr[:, 1:, -1] - arr[:, :-1, -1]  # net_balance is last channel
+
+        # Scale derivatives
+        d_iob *= 10.0
+        d_cob *= 10.0
+        d_flux *= 10.0
+
+        # Zero future glucose-derived features (none here — all from PK)
+        # PK derivatives are deterministic and safe in future
+
+        return np.concatenate([arr, d_iob, d_cob, iob_cob_ratio, d_flux], axis=-1)
+
+    bt_flux = add_flux_features(bt, half)
+    bv_flux = add_flux_features(bv, half)
+    n_ch_flux = bt_flux.shape[-1]
+    print(f"  + flux balance: {n_ch_flux}ch, {bt_flux.shape}")
+
+    train_flux = torch.tensor(bt_flux, dtype=torch.float32)
+    val_flux = torch.tensor(bv_flux, dtype=torch.float32)
+
+    variants = {
+        'w96_standard': {'train': train_std, 'val': val_std, 'n_ch': n_ch_std},
+        'w96_1st_deriv': {'train': train_d1, 'val': val_d1, 'n_ch': n_ch_d1},
+        'w96_flux': {'train': train_flux, 'val': val_flux, 'n_ch': n_ch_flux},
+    }
+
+    result = {}
+    for vname, vdata in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  Variant: {vname} ({vdata['n_ch']}ch)")
+        print(f"{'─'*40}")
+
+        tx, vx = vdata['train'], vdata['val']
+        arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+        per_patient = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=vdata['n_ch'], **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp457_{vname}_s{seed}.pth')
+            print(f"\n  Base s{seed}:")
+            train_bridge(model, tx, vx, sp, f'457-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+            # Per-patient FT + eval
+            for pinfo in data['per_patient']:
+                pid = pinfo['name']
+                ti, te = pinfo['train_idx']
+                vi, ve = pinfo['val_idx']
+                p_train = tx[ti:te]
+                p_val = vx[vi:ve]
+                p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=vdata['n_ch'], **arch)
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp457_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'457-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4)
+
+                # Proper evaluation
+                m.eval().to(device)
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                        isf_val=p_isf, future_steps=half)
+
+                if pid not in per_patient:
+                    per_patient[pid] = {}
+                per_patient[pid][f's{seed}'] = report
+
+        # Aggregate per patient (ensemble of seeds)
+        avg = {}
+        for pid, seed_results in per_patient.items():
+            for sid, rep in seed_results.items():
+                for k, v in rep.items():
+                    if k not in avg:
+                        avg[k] = []
+                    avg[k].append(v)
+
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[vname] = {
+            'channels': vdata['n_ch'],
+            'per_patient': per_patient,
+            'average': avg,
+        }
+
+        print(f"\n  {vname} average: overall={avg.get('overall_mae','?')}, "
+              f"h60={avg.get('h60','?')}, h120={avg.get('h120','?')}, "
+              f"h240={avg.get('h240','?')}")
+
+    # Summary comparison
+    print(f"\n{'='*60}")
+    print(f"EXP-457: Metabolic Flux Summary")
+    print(f"{'='*60}")
+    print(f"  {'Variant':<18} {'ch':>3} {'overall':>8} {'h60':>6} {'h120':>6} {'h240':>6}")
+    print(f"  {'─'*50}")
+    for vn, vd in result.items():
+        avg = vd['average']
+        print(f"  {vn:<18} {vd['channels']:>3} {avg.get('overall_mae','—'):>8} "
+              f"{avg.get('h60','—'):>6} {avg.get('h120','—'):>6} "
+              f"{avg.get('h240','—'):>6}")
+
+    _save_results(result, 'exp457_metabolic_flux', cfg)
+    return result
+
+
+# ─── EXP-458: Patient Fidelity Filtering ───
+
+def run_exp458(args):
+    """EXP-458: Train only on patients with sufficient PK fidelity.
+
+    Hypothesis: Patients without good CGM+pump telemetry add noise to
+    PK-enhanced models. Filtering to high-fidelity patients should
+    improve model quality.
+
+    Measures fidelity via:
+    1. Treatment density (events/day)
+    2. PK signal variance (are PK curves actually active?)
+    3. Glucose-PK correlation (does insulin actually correlate with BG drops?)
+
+    Tests: all-patients vs filtered-patients training.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-458: Patient Fidelity Filtering")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=True)
+    isf_v = data.get('isf_val')
+
+    # Compute fidelity metrics per patient
+    fidelity = {}
+    for pinfo in data['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        p_train = train_x[ti:te]
+
+        # PK signal variance (channels 1-5: IOB, COB, net_basal, ins_net, carb_rate)
+        pk_var = float(np.mean(np.var(p_train[:, :, 1:6].numpy(), axis=1)))
+
+        # Treatment activity: fraction of windows with non-zero PK
+        pk_active = float(np.mean(np.any(np.abs(p_train[:, :, 3:6].numpy()) > 0.01, axis=1)))
+
+        # Glucose-insulin correlation: does insulin correspond to BG changes?
+        gluc = p_train[:, :, 0].numpy()
+        iob = p_train[:, :, 1].numpy()
+        # Compute mean correlation across windows
+        corrs = []
+        for i in range(len(gluc)):
+            if np.std(gluc[i]) > 0 and np.std(iob[i]) > 0:
+                c = np.corrcoef(gluc[i], iob[i])[0, 1]
+                if not np.isnan(c):
+                    corrs.append(abs(c))
+        mean_corr = float(np.mean(corrs)) if corrs else 0.0
+
+        # Composite fidelity score
+        score = pk_var * 10 + pk_active + mean_corr
+        fidelity[pid] = {
+            'pk_variance': round(pk_var, 4),
+            'pk_active_frac': round(pk_active, 3),
+            'gluc_iob_corr': round(mean_corr, 3),
+            'fidelity_score': round(score, 3),
+        }
+
+        print(f"  {pid}: pk_var={pk_var:.4f}, active={pk_active:.3f}, "
+              f"corr={mean_corr:.3f}, score={score:.3f}")
+
+    # Rank patients
+    sorted_patients = sorted(fidelity.items(), key=lambda x: x[1]['fidelity_score'], reverse=True)
+    print(f"\n  Fidelity ranking: {[p[0] for p in sorted_patients]}")
+
+    # Train on ALL patients (baseline)
+    print(f"\n{'─'*40}")
+    print(f"  Variant: all_patients")
+    print(f"{'─'*40}")
+
+    n_ch = train_x.shape[-1]
+    arch = {'d_model': 48, 'nhead': 4, 'num_layers': 3}
+
+    per_patient_all = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp458_all_s{seed}.pth')
+        train_bridge(model, train_x, val_x, sp, f'458-all-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            vi, ve = pinfo['val_idx']
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+            report = evaluate_model(model, val_x[vi:ve], device, pk_mode=True,
+                                    isf_val=p_isf)
+            per_patient_all[pid] = report
+
+    # Train on TOP patients only (filtered)
+    # Use top 75% by fidelity
+    n_keep = max(2, int(len(sorted_patients) * 0.75))
+    kept = set(p[0] for p in sorted_patients[:n_keep])
+    dropped = set(p[0] for p in sorted_patients[n_keep:])
+    print(f"\n  Keeping: {kept}, Dropping: {dropped}")
+
+    # Build filtered training data
+    keep_mask = np.zeros(len(train_x), dtype=bool)
+    for pinfo in data['per_patient']:
+        if pinfo['name'] in kept:
+            ti, te = pinfo['train_idx']
+            keep_mask[ti:te] = True
+    train_filt = train_x[keep_mask]
+    print(f"  Filtered train: {len(train_filt)} (from {len(train_x)})")
+
+    print(f"\n{'─'*40}")
+    print(f"  Variant: filtered_patients")
+    print(f"{'─'*40}")
+
+    per_patient_filt = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp458_filt_s{seed}.pth')
+        train_bridge(model, train_filt, val_x, sp, f'458-filt-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            vi, ve = pinfo['val_idx']
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+            report = evaluate_model(model, val_x[vi:ve], device, pk_mode=True,
+                                    isf_val=p_isf)
+            per_patient_filt[pid] = report
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-458: Patient Fidelity Filtering Results")
+    print(f"{'='*60}")
+    print(f"  {'Patient':<10} {'All h60':>8} {'Filt h60':>8} {'Δ':>6} {'Fidelity':>10}")
+    print(f"  {'─'*44}")
+    for pid in [p['name'] for p in data['per_patient']]:
+        all_h60 = per_patient_all.get(pid, {}).get('h60', '—')
+        filt_h60 = per_patient_filt.get(pid, {}).get('h60', '—')
+        fid = fidelity.get(pid, {}).get('fidelity_score', '—')
+        delta = round(filt_h60 - all_h60, 2) if isinstance(all_h60, (int, float)) and isinstance(filt_h60, (int, float)) else '—'
+        in_train = '✓' if pid in kept else '✗'
+        print(f"  {pid:<10} {all_h60:>8} {filt_h60:>8} {delta:>6} {fid:>10} {in_train}")
+
+    result = {
+        'fidelity': fidelity,
+        'fidelity_ranking': [p[0] for p in sorted_patients],
+        'kept': list(kept),
+        'dropped': list(dropped),
+        'all_patients': per_patient_all,
+        'filtered_patients': per_patient_filt,
+    }
+
+    _save_results(result, 'exp458_patient_fidelity', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -9764,6 +10605,10 @@ EXPERIMENTS = {
     '452': run_exp452,
     '453': run_exp453,
     '454': run_exp454,
+    '455': run_exp455,
+    '456': run_exp456,
+    '457': run_exp457,
+    '458': run_exp458,
 }
 
 
