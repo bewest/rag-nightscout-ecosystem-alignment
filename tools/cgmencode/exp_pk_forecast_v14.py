@@ -17262,6 +17262,562 @@ def run_exp615(args):
     _save_results(result, 'exp615_w96_optimization', cfg)
     return result
 
+
+
+# ════════════════════════════════════════════════════════════
+# EXP-616: Production Pipeline Validation
+# ════════════════════════════════════════════════════════════
+
+def run_exp616(args):
+    """EXP-616: Production pipeline — train, export, route, benchmark.
+
+    Trains all 3 specialist engines (w48, w96, w144) with d1+transfer,
+    exports model checkpoints, builds routing table, and benchmarks
+    inference timing. This is the production validation gate.
+
+    Outputs:
+      - Trained model checkpoints in production format
+      - Routing validation (confirm EXP-614/615 results)
+      - Inference benchmarks (timing, memory)
+      - Production config JSON
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-616: Production Pipeline Validation")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"  mode={'quick' if cfg['quick'] else 'FULL'}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+    prod_dir = os.path.join(cfg['output_dir'], 'production')
+    os.makedirs(prod_dir, exist_ok=True)
+
+    # ── Phase 1: Train w48 base ──
+    print("\n── Phase 1: w48 base training ──")
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    history48 = 24
+
+    train_d1_48, val_d1_48 = _prepare_pk_derivatives_asymmetric(
+        data48, history48, use_isf=has_isf)
+    n_ch = train_d1_48.shape[-1]
+
+    # Train and export w48 models
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(prod_dir, f'w48_short_s{seed}.pth')
+        train_bridge(m, train_d1_48, val_d1_48, sp, f'616-w48-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # ── Per-patient fine-tune w48 ──
+    w48_pp = {}
+    isf48 = data48.get('isf_val')
+    for pinfo in data48['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        vi, ve = pinfo['val_idx']
+        p_train = train_d1_48[ti:te]
+        p_val = val_d1_48[vi:ve]
+        p_isf = isf48[vi:ve] if isf48 is not None else None
+
+        pid_results = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            ft = PKGroupedEncoder(input_dim=n_ch, **arch)
+            ft.load_state_dict(w48_states[seed])
+            ftp = os.path.join(prod_dir, f'w48_short_{pid}_s{seed}.pth')
+            train_bridge(ft, p_train, p_val, ftp,
+                         f'616-w48-{pid}-s{seed}', device, pk_mode=True,
+                         epochs=cfg['epochs_ft'], patience=10, lr_patience=5, lr=1e-4)
+            pid_results.append(evaluate_model(ft, p_val, device, pk_mode=True, isf_val=p_isf))
+        # Average across seeds
+        avg = {}
+        for r in pid_results:
+            for k, v in r.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        w48_pp[pid] = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+    w48_avg = {}
+    for pid, rep in w48_pp.items():
+        for k, v in rep.items():
+            if k not in w48_avg: w48_avg[k] = []
+            w48_avg[k].append(v)
+    w48_avg = {k: round(np.mean(v), 2) for k, v in w48_avg.items()}
+
+    # ── Phase 2: w96 specialist with transfer ──
+    print("\n── Phase 2: w96 specialist (transfer from w48) ──")
+    data96 = load_bridge_data(
+        args.patients_dir, window_size=96, stride=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    history96 = 56; future96 = 40
+    train_d1_96, val_d1_96 = _prepare_pk_derivatives_asymmetric(
+        data96, history96, use_isf=has_isf)
+
+    w96_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m = PKGroupedEncoder(input_dim=n_ch, **arch)
+        # Transfer from w48
+        src = w48_states[seed]
+        tgt = m.state_dict()
+        xfr = 0
+        for k in src:
+            if k in tgt and 'pos_encoder' not in k and src[k].shape == tgt[k].shape:
+                tgt[k] = src[k]; xfr += 1
+        m.load_state_dict(tgt)
+        if seed == cfg['seeds'][0]:
+            print(f"  Transferred {xfr} params from w48")
+        sp = os.path.join(prod_dir, f'w96_mid_s{seed}.pth')
+        train_bridge(m, train_d1_96, val_d1_96, sp, f'616-w96-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                     future_steps=future96)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w96_states[seed] = ckpt['model_state']
+
+    # Per-patient fine-tune w96
+    w96_pp = {}
+    isf96 = data96.get('isf_val')
+    for pinfo in data96['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        vi, ve = pinfo['val_idx']
+        p_train = train_d1_96[ti:te]; p_val = val_d1_96[vi:ve]
+        p_isf = isf96[vi:ve] if isf96 is not None else None
+
+        pid_results = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            ft = PKGroupedEncoder(input_dim=n_ch, **arch)
+            ft.load_state_dict(w96_states[seed])
+            ftp = os.path.join(prod_dir, f'w96_mid_{pid}_s{seed}.pth')
+            train_bridge(ft, p_train, p_val, ftp,
+                         f'616-w96-{pid}-s{seed}', device, pk_mode=True,
+                         epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                         lr=1e-4, future_steps=future96)
+            pid_results.append(evaluate_model(ft, p_val, device, pk_mode=True,
+                                              isf_val=p_isf, future_steps=future96))
+        avg = {}
+        for r in pid_results:
+            for k, v in r.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        w96_pp[pid] = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+    w96_avg = {}
+    for pid, rep in w96_pp.items():
+        for k, v in rep.items():
+            if k not in w96_avg: w96_avg[k] = []
+            w96_avg[k].append(v)
+    w96_avg = {k: round(np.mean(v), 2) for k, v in w96_avg.items()}
+
+    # ── Phase 3: w144 specialist with transfer ──
+    print("\n── Phase 3: w144 specialist (transfer from w48) ──")
+    data144 = load_bridge_data(
+        args.patients_dir, window_size=144,
+        max_patients=cfg['max_patients'], load_isf=True)
+    history144 = 72; future144 = 72
+    train_d1_144, val_d1_144 = _prepare_pk_derivatives_asymmetric(
+        data144, history144, use_isf=has_isf)
+
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m = PKGroupedEncoder(input_dim=n_ch, **arch)
+        src = w48_states[seed]
+        tgt = m.state_dict()
+        xfr = 0
+        for k in src:
+            if k in tgt and 'pos_encoder' not in k and src[k].shape == tgt[k].shape:
+                tgt[k] = src[k]; xfr += 1
+        m.load_state_dict(tgt)
+        sp = os.path.join(prod_dir, f'w144_long_s{seed}.pth')
+        train_bridge(m, train_d1_144, val_d1_144, sp, f'616-w144-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                     future_steps=future144)
+
+    # Per-patient fine-tune w144
+    w144_pp = {}
+    isf144 = data144.get('isf_val')
+    for pinfo in data144['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        vi, ve = pinfo['val_idx']
+        p_train = train_d1_144[ti:te]; p_val = val_d1_144[vi:ve]
+        p_isf = isf144[vi:ve] if isf144 is not None else None
+
+        pid_results = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            ft = PKGroupedEncoder(input_dim=n_ch, **arch)
+            sp = os.path.join(prod_dir, f'w144_long_s{seed}.pth')
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            ft.load_state_dict(ckpt['model_state'])
+            ftp = os.path.join(prod_dir, f'w144_long_{pid}_s{seed}.pth')
+            train_bridge(ft, p_train, p_val, ftp,
+                         f'616-w144-{pid}-s{seed}', device, pk_mode=True,
+                         epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                         lr=1e-4, future_steps=future144)
+            pid_results.append(evaluate_model(ft, p_val, device, pk_mode=True,
+                                              isf_val=p_isf, future_steps=future144))
+        avg = {}
+        for r in pid_results:
+            for k, v in r.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        w144_pp[pid] = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+    w144_avg = {}
+    for pid, rep in w144_pp.items():
+        for k, v in rep.items():
+            if k not in w144_avg: w144_avg[k] = []
+            w144_avg[k].append(v)
+    w144_avg = {k: round(np.mean(v), 2) for k, v in w144_avg.items()}
+
+    # ── Phase 4: Build routing table ──
+    print("\n── Phase 4: Routing validation ──")
+    result = {
+        'w48': {'per_patient': w48_pp, 'average': w48_avg},
+        'w96': {'per_patient': w96_pp, 'average': w96_avg},
+        'w144': {'per_patient': w144_pp, 'average': w144_avg},
+    }
+
+    all_horizons = ['h30', 'h60', 'h90', 'h120', 'h150', 'h180', 'h240', 'h300', 'h360']
+    routed = {}
+    routing_map = {}
+    for h in all_horizons:
+        best_model = None
+        best_val = float('inf')
+        for mname, mdata in result.items():
+            val = mdata['average'].get(h)
+            if val is not None and val < best_val:
+                best_val = val
+                best_model = mname
+        if best_model:
+            routed[h] = best_val
+            routing_map[h] = best_model
+
+    if routed:
+        routed['overall_mae'] = round(np.mean([v for k, v in routed.items()
+                                                if k != 'overall_mae']), 2)
+    result['routed'] = {'average': routed, 'routing_map': routing_map}
+
+    # ── Phase 5: Inference benchmark ──
+    print("\n── Phase 5: Inference benchmark ──")
+    import time as _time
+
+    bench = {}
+    configs = [
+        ('w48', 48, 24, n_ch),
+        ('w96', 96, future96, n_ch),
+        ('w144', 144, future144, n_ch),
+    ]
+    total_mem = 0
+    for name, wsize, fsteps, nch in configs:
+        x_dummy = torch.randn(1, wsize, nch).to(device)
+        m = PKGroupedEncoder(input_dim=nch, **arch).to(device)
+        m.eval()
+        mem = sum(p.nelement() * p.element_size() for p in m.parameters())
+        total_mem += mem
+
+        # Warmup
+        with torch.no_grad():
+            for _ in range(10):
+                m(x_dummy, causal=True)
+
+        # Benchmark
+        times = []
+        with torch.no_grad():
+            for _ in range(200):
+                t0 = _time.perf_counter()
+                m(x_dummy, causal=True)
+                if device.type == 'cuda':
+                    torch.cuda.synchronize()
+                times.append(_time.perf_counter() - t0)
+
+        times_ms = np.array(times) * 1000
+        bench[name] = {
+            'mean_ms': round(float(np.mean(times_ms)), 3),
+            'p50_ms': round(float(np.median(times_ms)), 3),
+            'p95_ms': round(float(np.percentile(times_ms, 95)), 3),
+            'memory_kb': round(mem / 1024, 1),
+            'params': sum(p.nelement() for p in m.parameters()),
+        }
+        print(f"  {name}: mean={bench[name]['mean_ms']:.2f}ms, "
+              f"p95={bench[name]['p95_ms']:.2f}ms, "
+              f"params={bench[name]['params']}, "
+              f"mem={bench[name]['memory_kb']:.0f}KB")
+
+    # Combined routing
+    bench['combined'] = {
+        'total_memory_kb': round(total_mem / 1024, 1),
+        'total_params': sum(b['params'] for b in bench.values()
+                            if isinstance(b, dict) and 'params' in b),
+        'estimated_combined_ms': round(
+            sum(b['mean_ms'] for b in bench.values()
+                if isinstance(b, dict) and 'mean_ms' in b), 2),
+    }
+    print(f"\n  Combined: {bench['combined']['total_params']} params, "
+          f"{bench['combined']['total_memory_kb']:.0f}KB, "
+          f"~{bench['combined']['estimated_combined_ms']:.1f}ms total")
+
+    result['benchmark'] = bench
+
+    # ── Phase 6: Export production config ──
+    result['production_config'] = {
+        'routing_map': routing_map,
+        'engines': [
+            {'name': 'w48_short', 'window': 48, 'history': 24,
+             'future': 24, 'channels': n_ch, 'horizons': ['h30','h60','h90','h120']},
+            {'name': 'w96_mid', 'window': 96, 'history': history96,
+             'future': future96, 'channels': n_ch, 'horizons': ['h150','h180']},
+            {'name': 'w144_long', 'window': 144, 'history': history144,
+             'future': future144, 'channels': n_ch, 'horizons': ['h240','h300','h360']},
+        ],
+        'mode': 'quick' if cfg['quick'] else 'full',
+        'n_patients': len(data48['per_patient']),
+        'n_seeds': len(cfg['seeds']),
+    }
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-616 PRODUCTION VALIDATION SUMMARY")
+    print(f"{'='*60}")
+    for mname in ['w48', 'w96', 'w144']:
+        avg = result[mname]['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150',
+                'h180', 'h240', 'h300', 'h360']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {mname}: {', '.join(vals)}")
+
+    print(f"\n  ROUTED:")
+    for h in all_horizons:
+        if h in routed and h in routing_map:
+            print(f"    {h}: {routed[h]:.1f} ← {routing_map[h]}")
+    if 'overall_mae' in routed:
+        print(f"    overall: {routed['overall_mae']}")
+
+    print(f"\n  BENCHMARK:")
+    for name in ['w48', 'w96', 'w144']:
+        b = bench[name]
+        print(f"    {name}: {b['mean_ms']:.2f}ms mean, {b['params']} params")
+    c = bench['combined']
+    print(f"    TOTAL: ~{c['estimated_combined_ms']:.1f}ms, {c['total_params']} params, "
+          f"{c['total_memory_kb']:.0f}KB")
+
+    _save_results(result, 'exp616_production_pipeline', cfg)
+    return result
+
+
+# ════════════════════════════════════════════════════════════
+# EXP-617: Ridge Production Baseline
+# ════════════════════════════════════════════════════════════
+
+def run_exp617(args):
+    """EXP-617: Ridge regression baseline for production Tier 1.
+
+    Trains Ridge models on supply/demand physics features for h5-h60.
+    This is the lightweight baseline that runs on ANY device in <1ms.
+
+    Compares to w48 transformer to establish when Ridge is sufficient
+    vs when the transformer is needed.
+    """
+    cfg = _get_config(args)
+    print(f"\n{'='*60}")
+    print(f"EXP-617: Ridge Production Baseline")
+    print(f"  mode={'quick' if cfg['quick'] else 'FULL'}")
+    print(f"{'='*60}")
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from cgmencode.continuous_pk import build_continuous_pk_features
+    from cgmencode.real_data_adapter import build_nightscout_grid
+
+    patient_dirs = find_patient_dirs(args.patients_dir)
+    if cfg['max_patients']:
+        patient_dirs = patient_dirs[:cfg['max_patients']]
+
+    results = {}
+    all_ridge_mae = {}
+    import time as _time
+
+    for pdir in patient_dirs:
+        pid = pdir.name
+        train_dir = str(pdir / 'training')
+        df, base_grid = build_nightscout_grid(train_dir, verbose=False)
+        if df is None:
+            continue
+        pk_grid = build_continuous_pk_features(df, verbose=False)
+
+        n_steps = min(len(base_grid), len(pk_grid))
+        if n_steps < 100:
+            continue
+
+        # Build features: autoregressive glucose lags + PK physics
+        # base_grid glucose is already normalized (÷400)
+        # Targets are in mg/dL for comparability with transformer MAE
+        X_list, y_list = [], []
+        lookback = 24  # 2h
+
+        for t in range(lookback, n_steps - 12):  # need 12 steps (1h) future
+            if np.isnan(base_grid[t, 0]):
+                continue
+            gluc = base_grid[t-lookback:t+1, 0]
+            if np.isnan(gluc).mean() > 0.3:
+                continue
+            gluc = np.nan_to_num(gluc, 0.0)
+
+            # Autoregressive features (most important for Ridge)
+            gluc_now = gluc[-1]  # already normalized
+            gluc_lag1 = gluc[-2] if len(gluc) > 1 else gluc_now
+            gluc_lag3 = gluc[-4] if len(gluc) > 3 else gluc_now   # 15min ago
+            gluc_lag6 = gluc[-7] if len(gluc) > 6 else gluc_now   # 30min ago
+            gluc_lag12 = gluc[-13] if len(gluc) > 12 else gluc_now  # 1h ago
+            gluc_lag24 = gluc[0]  # 2h ago
+
+            # Glucose derivatives
+            d1 = (gluc[-1] - gluc[-2]) * 10.0 if len(gluc) > 1 else 0
+            d2 = ((gluc[-1] - 2*gluc[-2] + gluc[-3]) * 100.0
+                  if len(gluc) > 2 else 0)
+
+            # Glucose trends
+            trend_30m = gluc[-1] - gluc_lag6
+            trend_1h = gluc[-1] - gluc_lag12
+            trend_2h = gluc[-1] - gluc_lag24
+
+            # Glucose statistics over lookback
+            valid_g = gluc[gluc > 0]
+            gluc_mean = np.mean(valid_g) if len(valid_g) > 0 else gluc_now
+            gluc_std = np.std(valid_g) if len(valid_g) > 2 else 0
+
+            # PK/physics features
+            iob = base_grid[t, 1] / 20.0 if not np.isnan(base_grid[t, 1]) else 0
+            cob = base_grid[t, 2] / 100.0 if not np.isnan(base_grid[t, 2]) else 0
+            net_basal = base_grid[t, 3] / 5.0 if not np.isnan(base_grid[t, 3]) else 0
+            ins_net = pk_grid[t, 1] / PK_NORMS[1] if t < len(pk_grid) else 0
+            carb_rate = pk_grid[t, 3] / PK_NORMS[3] if t < len(pk_grid) else 0
+            net_bal = pk_grid[t, 6] / PK_NORMS[6] if t < len(pk_grid) else 0
+
+            # Circadian
+            sin_h = base_grid[t, 6] if base_grid.shape[1] > 6 else 0
+            cos_h = base_grid[t, 7] if base_grid.shape[1] > 7 else 0
+
+            feat = [gluc_now, gluc_lag1, gluc_lag3, gluc_lag6,
+                    gluc_lag12, gluc_lag24,
+                    d1, d2, trend_30m, trend_1h, trend_2h,
+                    gluc_mean, gluc_std,
+                    iob, cob, ins_net, carb_rate, net_bal, net_basal,
+                    sin_h, cos_h, 1.0]  # bias
+            X_list.append(feat)
+
+            # Targets in mg/dL
+            targets = []
+            for step in [1, 2, 3, 4, 5, 6, 12]:  # h5,h10,h15,h20,h25,h30,h60
+                idx = t + step
+                if idx < n_steps and not np.isnan(base_grid[idx, 0]):
+                    targets.append(base_grid[idx, 0] * GLUCOSE_SCALE)  # to mg/dL
+                else:
+                    targets.append(np.nan)
+            y_list.append(targets)
+
+        if len(X_list) < 50:
+            print(f"  {pid}: too few samples ({len(X_list)})")
+            continue
+
+        X = np.array(X_list, dtype=np.float32)
+        y = np.array(y_list, dtype=np.float32)
+
+        # Chronological split
+        split = int(0.8 * len(X))
+        X_train, X_val = X[:split], X[split:]
+        y_train, y_val = y[:split], y[split:]
+
+        # Ridge regression per horizon
+        horizons = ['h5', 'h10', 'h15', 'h20', 'h25', 'h30', 'h60']
+        pid_mae = {}
+        n_feat = X_train.shape[1]
+        I = np.eye(n_feat)
+
+        for i, h in enumerate(horizons):
+            mask_t = ~np.isnan(y_train[:, i])
+            mask_v = ~np.isnan(y_val[:, i])
+            if mask_t.sum() < 20 or mask_v.sum() < 20:
+                continue
+
+            Xt, yt = X_train[mask_t], y_train[mask_t, i]
+            Xv, yv = X_val[mask_v], y_val[mask_v, i]
+
+            # Ridge: w = (X^TX + αI)^{-1} X^Ty
+            alpha = 1.0
+            XtX = Xt.T @ Xt + alpha * I
+            Xty = Xt.T @ yt
+            w = np.linalg.solve(XtX, Xty)
+
+            preds = Xv @ w
+            mae = np.mean(np.abs(preds - yv))
+            pid_mae[h] = round(float(mae), 2)
+
+        if pid_mae:
+            pid_mae['overall_mae'] = round(np.mean(list(pid_mae.values())), 2)
+            results[pid] = pid_mae
+            for k, v in pid_mae.items():
+                if k not in all_ridge_mae: all_ridge_mae[k] = []
+                all_ridge_mae[k].append(v)
+            print(f"  {pid}: n={len(X)}, "
+                  + ', '.join(f"{k}={v}" for k, v in pid_mae.items()
+                              if k in ['h30', 'h60', 'overall_mae']))
+
+    # Averages
+    avg = {k: round(np.mean(v), 2) for k, v in all_ridge_mae.items()}
+
+    # Inference benchmark
+    if X_val is not None and len(X_val) > 0:
+        x_single = X_val[0:1]
+        times = []
+        w_dummy = np.random.randn(n_feat)
+        for _ in range(10000):
+            t0 = _time.perf_counter()
+            _ = x_single @ w_dummy
+            times.append(_time.perf_counter() - t0)
+        times_us = np.array(times) * 1e6
+        ridge_bench = {
+            'mean_us': round(float(np.mean(times_us)), 2),
+            'p95_us': round(float(np.percentile(times_us, 95)), 2),
+            'n_features': n_feat,
+            'memory_bytes': n_feat * len(horizons) * 8,
+        }
+    else:
+        ridge_bench = {}
+
+    result = {
+        'per_patient': results,
+        'average': avg,
+        'benchmark': ridge_bench,
+        'n_patients': len(results),
+        'horizons': horizons,
+    }
+
+    print(f"\n{'='*60}")
+    print(f"EXP-617 RIDGE BASELINE SUMMARY")
+    print(f"{'='*60}")
+    print(f"  Patients: {len(results)}")
+    print(f"  Average: {', '.join(f'{k}={v}' for k, v in avg.items())}")
+    if ridge_bench:
+        print(f"  Inference: {ridge_bench['mean_us']:.1f}μs mean, "
+              f"{ridge_bench['memory_bytes']} bytes total")
+
+    _save_results(result, 'exp617_ridge_baseline', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -17352,6 +17908,8 @@ EXPERIMENTS = {
     '613': run_exp613,
     '614': run_exp614,
     '615': run_exp615,
+    '616': run_exp616,
+    '617': run_exp617,
 }
 
 
