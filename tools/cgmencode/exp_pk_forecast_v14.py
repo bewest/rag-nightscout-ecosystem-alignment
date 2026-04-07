@@ -3369,6 +3369,220 @@ def run_exp427(args):
     return result
 
 
+
+# ─── EXP-428: Extended Features at w48 ───
+
+def prepare_pk_extended(data, use_isf=False, variant='baseline'):
+    """Prepare features with additional PK channels and glucose derivatives.
+
+    Variants:
+    - baseline: Standard 8ch (matches prepare_pk_future)
+    - glucose_deriv: +dBG/dt, d²BG/dt² (10ch)
+    - hepatic: +hepatic_prod, carb_accel (10ch)
+    - all_pk: Full 8 PK channels + glucose (11ch)
+    - deriv_hepatic: glucose_deriv + hepatic (12ch)
+    """
+    bt = data['base_train'].copy()
+    bv = data['base_val'].copy()
+    pt, pv = data['pk_train'], data['pk_val']
+
+    # Standard PK replacement (always applied)
+    bt[:, :, 4] = pt[:, :, 1] / PK_NORMS[1]  # insulin_net
+    bv[:, :, 4] = pv[:, :, 1] / PK_NORMS[1]
+    bt[:, :, 5] = pt[:, :, 3] / PK_NORMS[3]  # carb_rate
+    bv[:, :, 5] = pv[:, :, 3] / PK_NORMS[3]
+    # Replace cos with net_balance
+    bt[:, :, 7] = pt[:, :, 6] / PK_NORMS[6]
+    bv[:, :, 7] = pv[:, :, 6] / PK_NORMS[6]
+
+    extra_t, extra_v = [], []
+
+    half = bt.shape[1] // 2
+
+    if variant in ('glucose_deriv', 'deriv_hepatic'):
+        # Glucose first derivative: dBG/dt (per 5min step)
+        # ONLY valid in history half — future glucose is masked (predicted),
+        # so derivatives there would be data leakage. Zero them explicitly.
+        g_t = bt[:, :, 0]  # (N, T)
+        g_v = bv[:, :, 0]
+        dg_t = np.diff(g_t, axis=1, prepend=g_t[:, :1])  # (N, T)
+        dg_v = np.diff(g_v, axis=1, prepend=g_v[:, :1])
+        d2g_t = np.diff(dg_t, axis=1, prepend=dg_t[:, :1])
+        d2g_v = np.diff(dg_v, axis=1, prepend=dg_v[:, :1])
+        # Zero future half to prevent glucose label leakage
+        dg_t[:, half:] = 0.0
+        dg_v[:, half:] = 0.0
+        d2g_t[:, half:] = 0.0
+        d2g_v[:, half:] = 0.0
+        # Normalize: typical dBG ~ ±5 mg/dL per step, d2BG ~ ±3
+        extra_t.extend([dg_t[:, :, None] / 5.0, d2g_t[:, :, None] / 3.0])
+        extra_v.extend([dg_v[:, :, None] / 5.0, d2g_v[:, :, None] / 3.0])
+
+    if variant in ('hepatic', 'deriv_hepatic'):
+        # Hepatic glucose production (PK ch5) and carb acceleration (PK ch4)
+        extra_t.extend([
+            pt[:, :, 5:6] / PK_NORMS[5],  # hepatic_prod
+            pt[:, :, 4:5] / PK_NORMS[4],  # carb_accel
+        ])
+        extra_v.extend([
+            pv[:, :, 5:6] / PK_NORMS[5],
+            pv[:, :, 4:5] / PK_NORMS[4],
+        ])
+
+    if variant == 'all_pk':
+        # All 8 PK channels: total, net, basal_ratio, carb_rate, carb_accel,
+        # hepatic, net_balance, isf_curve
+        for i in range(8):
+            extra_t.append(pt[:, :, i:i+1] / PK_NORMS[i])
+            extra_v.append(pv[:, :, i:i+1] / PK_NORMS[i])
+
+    if extra_t:
+        bt = np.concatenate([bt] + extra_t, axis=-1)
+        bv = np.concatenate([bv] + extra_v, axis=-1)
+
+    if use_isf and 'isf_train' in data:
+        _apply_isf_norm(bt, bv, data['isf_train'], data['isf_val'])
+
+    return torch.tensor(bt, dtype=torch.float32), torch.tensor(bv, dtype=torch.float32)
+
+
+def run_exp428(args):
+    """EXP-428: Extended feature channels at w48.
+
+    Hypothesis: Adding glucose derivatives (dBG/dt, d²BG/dt²) and/or
+    hepatic glucose production gives the transformer explicit rate-of-change
+    information that it otherwise must infer. At w48 (2h history), derivatives
+    capture the current trajectory more explicitly than raw glucose values.
+
+    Glucose derivatives are dense, equivariant (same meaning at any time),
+    and causally valid in history. In the future half, derivatives from
+    masked glucose will be zero — acting as implicit masking.
+
+    Key: PK derivative channels (insulin_net d/dt, carb_accel) are CAUSAL
+    and available in the future. Glucose derivatives are ONLY valid in history.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-428: Extended Features at w48")
+    print(f"  seeds={cfg['seeds']}")
+    print(f"{'='*60}")
+
+    ws = 48
+    half = ws // 2
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=ws,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+
+    variants = {
+        'baseline': 'Standard 8ch (control)',
+        'glucose_deriv': '+dBG/dt, d²BG/dt² (10ch)',
+        'hepatic': '+hepatic_prod, carb_accel (10ch)',
+        'deriv_hepatic': '+derivatives + hepatic (12ch)',
+    }
+
+    all_results = {}
+    for vname, desc in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  Variant: {vname} — {desc}")
+        print(f"{'─'*40}")
+
+        train_x, val_x = prepare_pk_extended(data, use_isf=has_isf, variant=vname)
+        isf_v = data.get('isf_val')
+        n_ch = train_x.shape[-1]
+        print(f"  Channels: {n_ch}")
+
+        base_states = {}
+        base_metrics = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp428_{vname}_base_s{seed}.pth')
+            print(f"\n  Base s{seed} ({vname}):")
+            train_bridge(model, train_x, val_x, sp, f'428-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+            metrics = evaluate_model(model, val_x, device, pk_mode=True, isf_val=isf_v)
+            base_metrics[seed] = metrics
+            print(f"  Base s{seed}: overall={metrics['overall_mae']:.1f}, "
+                  f"h60={metrics.get('h60','?')}, h120={metrics.get('h120','?')}")
+
+        # Phase 2: Per-patient FT + ensemble
+        print(f"\n  === Phase 2: Per-Patient FT ({vname}) ===")
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train_x = train_x[ti:te]
+            p_val_x = val_x[vi:ve]
+            p_isf_v = isf_v[vi:ve] if isf_v is not None else None
+
+            print(f"\n  Patient {pid} ({pinfo['n_train']} train, {pinfo['n_val']} val):")
+            seed_maes = {}
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'], f'exp428_{vname}_ft_{pid}_s{seed}.pth')
+                train_bridge(model, p_train_x, p_val_x, sp,
+                             f'428-ft-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             lr=1e-4, epochs=cfg['epochs_ft'],
+                             patience=10, lr_patience=5)
+                metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                         isf_val=p_isf_v)
+                seed_maes[f's{seed}'] = metrics['overall_mae']
+                ft_models.append(copy.deepcopy(model))
+                print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+            ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                    isf_val=p_isf_v)
+            per_patient[pid] = {
+                'seeds': seed_maes,
+                'ensemble_mae': ens['overall_mae'],
+                'ensemble_horizons': ens,
+            }
+            print(f"    Ensemble: MAE={ens['overall_mae']:.1f}, "
+                  f"h60={ens.get('h60','?')}, h120={ens.get('h120','?')}")
+
+        all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+        all_results[vname] = {
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'per_patient': per_patient,
+            'n_channels': n_ch,
+            'description': desc,
+        }
+        print(f"\n  {vname} Mean Ensemble: {all_results[vname]['mean_ensemble_mae']:.2f}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-428 SUMMARY")
+    print(f"{'='*60}")
+    for vn, vr in all_results.items():
+        print(f"  {vn} ({vr['n_channels']}ch): {vr['mean_ensemble_mae']:.2f}")
+    ctrl = all_results.get('baseline', {}).get('mean_ensemble_mae', 0)
+    for vn, vr in all_results.items():
+        if vn != 'baseline':
+            delta = vr['mean_ensemble_mae'] - ctrl
+            print(f"    Δ vs baseline: {delta:+.2f}")
+    print(f"  EXP-411 w48 full reference: 13.50")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-428: Extended Features at w48',
+        'results': all_results,
+    }
+    _save_results(result, 'exp428_extended_features_w48', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -3389,6 +3603,7 @@ EXPERIMENTS = {
     '425': run_exp425,
     '426': run_exp426,
     '427': run_exp427,
+    '428': run_exp428,
 }
 
 
