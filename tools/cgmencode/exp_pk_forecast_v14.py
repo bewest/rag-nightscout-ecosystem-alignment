@@ -17818,6 +17818,538 @@ def run_exp617(args):
     return result
 
 
+
+
+# ════════════════════════════════════════════════════════════
+# EXP-618: Autoregressive Residual Correction
+# ════════════════════════════════════════════════════════════
+
+def run_exp618(args):
+    """EXP-618: Use h60 forecast as feature for h120+ correction.
+
+    Hypothesis: w48 is excellent at h60 (17.3 MAE). If we feed its h60
+    prediction as an additional input feature to w96/w144, those models
+    gain a "future anchor" that should reduce h120+ error.
+
+    This is autoregressive at the MODEL level: model_2 receives model_1's
+    output as input, not at the sequence level (which is data leakage).
+
+    Variants:
+      a) baseline: w96 alone (from EXP-616)
+      b) ar_concat: w96 with w48's h60 prediction concatenated as extra channel
+      c) ar_residual: w96 predicts RESIDUAL from w48's h60 extrapolation
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-618: Autoregressive Residual Correction")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    # ── Phase 1: Train w48 base (reuse if available) ──
+    print("\n── Phase 1: w48 base for h60 predictions ──")
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    history48 = 24
+
+    train_d1_48, val_d1_48 = _prepare_pk_derivatives_asymmetric(
+        data48, history48, use_isf=has_isf)
+    n_ch = train_d1_48.shape[-1]  # 11
+
+    # Check for cached w48 model
+    cached_path = os.path.join(cfg['output_dir'], 'production', 'w48_short_s42.pth')
+    if os.path.exists(cached_path):
+        print(f"  Using cached w48 from {cached_path}")
+        ckpt = torch.load(cached_path, map_location=device, weights_only=False)
+        w48_state = ckpt['model_state']
+    else:
+        torch.manual_seed(42); np.random.seed(42)
+        m48 = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp618_w48_base.pth')
+        train_bridge(m48, train_d1_48, val_d1_48, sp, '618-w48-base',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_state = ckpt['model_state']
+
+    # ── Phase 2: Generate h60 predictions from w48 ──
+    print("\n── Phase 2: Generate w48 h60 predictions ──")
+    # Load w96 data
+    data96 = load_bridge_data(
+        args.patients_dir, window_size=96, stride=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    history96 = 56; future96 = 40
+    train_d1_96, val_d1_96 = _prepare_pk_derivatives_asymmetric(
+        data96, history96, use_isf=has_isf)
+
+    # For each w96 window, we need the w48 model's h60 prediction at the
+    # start of the forecast horizon. The w96 window has 56 history steps.
+    # At step 56 (start of forecast), we need w48's prediction of glucose
+    # at step 56+12 = step 68 (which is h60 from the forecast start).
+    #
+    # We'll generate these predictions offline and concatenate as channel 12.
+
+    # Build w48 model for inference
+    m48_infer = PKGroupedEncoder(input_dim=n_ch, **arch)
+    m48_infer.load_state_dict(w48_state)
+    m48_infer.to(device); m48_infer.eval()
+
+    def get_h60_preds(data_tensor, history_steps):
+        """Extract w48 h60 predictions for each window in the dataset."""
+        # For each w96 window, extract the last 48 steps of history as a w48 window
+        # Then get the model's h60 prediction (step index 11 in future)
+        n = data_tensor.shape[0]
+        h60_preds = np.zeros(n, dtype=np.float32)
+
+        # We need 48-step windows. Take history_steps-24:history_steps+24 slice
+        # (last 24 steps of history + first 24 of future)
+        dl = DataLoader(TensorDataset(data_tensor), batch_size=64)
+        idx = 0
+        with torch.no_grad():
+            for b in dl:
+                x = b[0].to(device)
+                bsz = x.size(0)
+                # Extract w48-compatible window: last 48 steps up to history boundary
+                h = history_steps
+                # Take steps [h-24:h+24] as a 48-step window
+                start = max(0, h - 24)
+                end = min(x.shape[1], h + 24)
+                if end - start < 48:
+                    # Pad if needed
+                    h60_preds[idx:idx+bsz] = 0
+                    idx += bsz
+                    continue
+
+                x48 = x[:, start:end, :n_ch].clone()
+                # Mask future glucose
+                x48[:, 24:, 0] = 0.0
+                pred = m48_infer(x48, causal=True)
+                # h60 is step index 11 in the future half (24+11=35)
+                h60 = pred[:, 35, 0].cpu().numpy()
+                h60_preds[idx:idx+bsz] = h60
+                idx += bsz
+
+        return h60_preds
+
+    h60_train = get_h60_preds(train_d1_96, history96)
+    h60_val = get_h60_preds(val_d1_96, history96)
+    print(f"  h60 predictions: train mean={np.mean(h60_train):.4f}, "
+          f"val mean={np.mean(h60_val):.4f}")
+
+    # ── Phase 3a: Baseline w96 (no AR) ──
+    print("\n── Phase 3a: Baseline w96 ──")
+    results = {}
+
+    # Transfer from w48
+    def make_w96_transferred(seed, input_dim):
+        torch.manual_seed(seed); np.random.seed(seed)
+        m = PKGroupedEncoder(input_dim=input_dim, **arch)
+        if input_dim == n_ch:
+            src = w48_state; tgt = m.state_dict()
+            for k in src:
+                if k in tgt and 'pos_encoder' not in k and src[k].shape == tgt[k].shape:
+                    tgt[k] = src[k]
+            m.load_state_dict(tgt)
+        return m
+
+    # Baseline w96
+    for seed in cfg['seeds']:
+        m = make_w96_transferred(seed, n_ch)
+        sp = os.path.join(cfg['output_dir'], f'exp618_w96_base_s{seed}.pth')
+        train_bridge(m, train_d1_96, val_d1_96, sp, f'618-base-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                     future_steps=future96)
+
+    base_pp = {}
+    isf96 = data96.get('isf_val')
+    for pinfo in data96['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']; vi, ve = pinfo['val_idx']
+        p_train = train_d1_96[ti:te]; p_val = val_d1_96[vi:ve]
+        p_isf = isf96[vi:ve] if isf96 is not None else None
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            ft = PKGroupedEncoder(input_dim=n_ch, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp618_w96_base_s{seed}.pth')
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            ft.load_state_dict(ckpt['model_state'])
+            ftp = os.path.join(cfg['output_dir'], f'exp618_base_{pid}_s{seed}.pth')
+            train_bridge(ft, p_train, p_val, ftp,
+                         f'618-base-{pid}-s{seed}', device, pk_mode=True,
+                         epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                         lr=1e-4, future_steps=future96)
+            base_pp[pid] = evaluate_model(ft, p_val, device, pk_mode=True,
+                                          isf_val=p_isf, future_steps=future96)
+
+    base_avg = {}
+    for pid, rep in base_pp.items():
+        for k, v in rep.items():
+            if k not in base_avg: base_avg[k] = []
+            base_avg[k].append(v)
+    base_avg = {k: round(np.mean(v), 2) for k, v in base_avg.items()}
+    results['baseline'] = {'per_patient': base_pp, 'average': base_avg}
+
+    # ── Phase 3b: AR-concat — add h60 prediction as channel 12 ──
+    print("\n── Phase 3b: AR-concat (h60 prediction as extra channel) ──")
+
+    # Expand train/val tensors with h60 prediction channel
+    h60_t_ch = torch.tensor(h60_train, dtype=torch.float32).unsqueeze(1).unsqueeze(2)
+    h60_t_ch = h60_t_ch.expand(-1, train_d1_96.shape[1], -1)
+    h60_v_ch = torch.tensor(h60_val, dtype=torch.float32).unsqueeze(1).unsqueeze(2)
+    h60_v_ch = h60_v_ch.expand(-1, val_d1_96.shape[1], -1)
+
+    train_ar = torch.cat([train_d1_96, h60_t_ch], dim=-1)  # 12ch
+    val_ar = torch.cat([val_d1_96, h60_v_ch], dim=-1)
+    n_ch_ar = train_ar.shape[-1]
+    print(f"  AR-concat: {n_ch_ar} channels")
+
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m = PKGroupedEncoder(input_dim=n_ch_ar, **arch)
+        # Can't transfer directly (different input dim), train from scratch
+        sp = os.path.join(cfg['output_dir'], f'exp618_w96_ar_s{seed}.pth')
+        train_bridge(m, train_ar, val_ar, sp, f'618-ar-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                     future_steps=future96)
+
+    ar_pp = {}
+    for pinfo in data96['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']; vi, ve = pinfo['val_idx']
+        p_train = train_ar[ti:te]; p_val = val_ar[vi:ve]
+        p_isf = isf96[vi:ve] if isf96 is not None else None
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            ft = PKGroupedEncoder(input_dim=n_ch_ar, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp618_w96_ar_s{seed}.pth')
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            ft.load_state_dict(ckpt['model_state'])
+            ftp = os.path.join(cfg['output_dir'], f'exp618_ar_{pid}_s{seed}.pth')
+            train_bridge(ft, p_train, p_val, ftp,
+                         f'618-ar-{pid}-s{seed}', device, pk_mode=True,
+                         epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                         lr=1e-4, future_steps=future96)
+            ar_pp[pid] = evaluate_model(ft, p_val, device, pk_mode=True,
+                                        isf_val=p_isf, future_steps=future96)
+
+    ar_avg = {}
+    for pid, rep in ar_pp.items():
+        for k, v in rep.items():
+            if k not in ar_avg: ar_avg[k] = []
+            ar_avg[k].append(v)
+    ar_avg = {k: round(np.mean(v), 2) for k, v in ar_avg.items()}
+    results['ar_concat'] = {'per_patient': ar_pp, 'average': ar_avg}
+
+    # ── Phase 3c: AR-residual — predict deviation from linear extrapolation ──
+    print("\n── Phase 3c: AR-residual (predict residual from h60 extrapolation) ──")
+
+    # Instead of adding a channel, modify the TARGET. The w96 model predicts
+    # the residual: actual_glucose - linear_extrapolation_from_h60_prediction.
+    # This is done at evaluation time by adding back the extrapolation.
+    #
+    # For now, use the simpler approach: just add h60 as a constant channel
+    # (same as ar_concat but with explicit framing).
+    # The model should learn to use it as an anchor.
+    #
+    # The real residual approach requires modifying the loss function,
+    # which we'll explore if ar_concat shows promise.
+
+    # ── Summary ──
+    print(f"\n{'='*60}")
+    print(f"EXP-618 SUMMARY: Autoregressive Residual Correction")
+    print(f"{'='*60}")
+    all_horizons = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150', 'h180']
+    for vname, vdata in results.items():
+        avg = vdata['average']
+        vals = [f"{k}={avg.get(k,'—')}" for k in all_horizons if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    # Compute deltas
+    deltas = {}
+    for vname in ['ar_concat']:
+        if vname in results:
+            d = {}
+            for k in results[vname]['average']:
+                if k in results['baseline']['average']:
+                    diff = results[vname]['average'][k] - results['baseline']['average'][k]
+                    d[k] = round(diff, 2)
+            deltas[vname] = d
+            print(f"\n  Δ {vname} vs baseline:")
+            for k, v in d.items():
+                if k in all_horizons:
+                    print(f"    {k}: {v:+.2f}")
+
+    results['deltas'] = deltas
+    _save_results(results, 'exp618_ar_correction', cfg)
+    return results
+
+
+# ════════════════════════════════════════════════════════════
+# EXP-619: Composite Champion — pk_mode + Transfer + Routing
+# ════════════════════════════════════════════════════════════
+
+def run_exp619(args):
+    """EXP-619: Composite Champion selecting proven-best techniques per horizon.
+
+    Synthesis of 600+ experiments identifies the winning combination:
+      - prepare_pk_future (8ch) + pk_mode=True (EXP-411: h120=17.4 at 11pt)
+      - Transfer learning w48→w72/w96/w144 (EXP-600: −0.6 to −1.6 MAE)
+      - Stride optimization (EXP-615: stride-24 gives +33% data volume)
+      - Per-patient fine-tuning (universally helps)
+      - Horizon-adaptive routing (EXP-614: best engine per horizon)
+
+    Windows:
+      w48: 24 hist + 24 future → h5–h120 (data-rich, proven champion)
+      w72: 36 hist + 36 future → h5–h180 (extends coverage)
+      w96: 48 hist + 48 future → h5–h240 (DIA valley)
+      w144: 72 hist + 72 future → h5–h360 (strategic planning)
+
+    All windows use prepare_pk_future (8ch) + ISF normalization + pk_mode=True.
+    Transfer: w48 base → w72/w96/w144 (copy all params except pos_encoder).
+    Stride: 24 for all window sizes (maximizes data volume).
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    window_sizes = [48, 72, 96, 144] if not cfg['quick'] else [48, 72, 96]
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    print(f"\n{'='*60}")
+    print(f"EXP-619: Composite Champion (pk_mode + Transfer + Routing)")
+    print(f"  windows={window_sizes}, seeds={cfg['seeds']}")
+    print(f"  Feature prep: prepare_pk_future (8ch) + ISF + pk_mode")
+    print(f"  Enhancement: transfer w48→larger, stride=24 all")
+    print(f"{'='*60}")
+
+    all_horizons = ['h5','h10','h15','h20','h25','h30','h35','h40','h45',
+                    'h50','h55','h60','h65','h70','h75','h80','h85','h90',
+                    'h95','h100','h105','h110','h115','h120',
+                    'h130','h140','h150','h160','h170','h180',
+                    'h200','h210','h220','h240','h270','h300','h330','h360']
+
+    results = {'window_results': {}, 'routing': {}, 'config': {
+        'windows': window_sizes, 'seeds': cfg['seeds'],
+        'feature_prep': 'prepare_pk_future_8ch', 'pk_mode': True,
+        'transfer': True, 'stride': 24, 'isf': True,
+    }}
+
+    # ── Phase 1: Train w48 base (data-rich champion) ──
+    print(f"\n{'─'*50}")
+    print(f"  Phase 1: w48 base training (stride=24)")
+    print(f"{'─'*50}")
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48, stride=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    train48, val48 = prepare_pk_future(data48, use_isf=has_isf, drop_time=False)
+    n_ch = train48.shape[-1]
+    isf48 = data48.get('isf_val')
+
+    print(f"  Total: {train48.shape[0]} train, {val48.shape[0]} val, "
+          f"{len(data48['per_patient'])} patients, {n_ch}ch")
+
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp619_w48_base_s{seed}.pth')
+        print(f"\n  [w48 base s{seed}]")
+        train_bridge(model, train48, val48, sp, f'619-w48-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # Evaluate w48 base per-patient + per-horizon
+    print(f"\n  w48 per-patient FT:")
+    w48_per_patient = {}
+    for pinfo in data48['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        vi, ve = pinfo['val_idx']
+        p_train = train48[ti:te]
+        p_val = val48[vi:ve]
+        p_isf = isf48[vi:ve] if isf48 is not None else None
+
+        seed_models = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed)
+            m = PKGroupedEncoder(input_dim=n_ch, **arch)
+            m.load_state_dict(w48_states[seed])
+            fp = os.path.join(cfg['output_dir'], f'exp619_w48_ft_{pid}_s{seed}.pth')
+            train_bridge(m, p_train, p_val, fp, f'619-w48-ft-{pid}-s{seed}',
+                         device, pk_mode=True, lr=1e-4,
+                         epochs=cfg['epochs_ft'], patience=10, lr_patience=5)
+            seed_models.append(copy.deepcopy(m))
+
+        ens = ensemble_evaluate(seed_models, p_val, device, pk_mode=True, isf_val=p_isf)
+        w48_per_patient[pid] = ens
+        print(f"    {pid}: overall={ens['overall_mae']:.1f}, "
+              f"h60={ens.get('h60','—')}, h120={ens.get('h120','—')}")
+
+    w48_avg = {}
+    for pid, rep in w48_per_patient.items():
+        for k, v in rep.items():
+            if k not in w48_avg: w48_avg[k] = []
+            w48_avg[k].append(v)
+    w48_avg = {k: round(np.mean(v), 2) for k, v in w48_avg.items()}
+    results['window_results']['w48'] = {
+        'per_patient': w48_per_patient, 'average': w48_avg,
+        'n_train': int(train48.shape[0])
+    }
+    print(f"\n  w48 avg: overall={w48_avg.get('overall_mae','—')}, "
+          f"h60={w48_avg.get('h60','—')}, h120={w48_avg.get('h120','—')}")
+
+    # ── Phase 2: Extended windows with transfer ──
+    for ws in window_sizes:
+        if ws == 48:
+            continue
+        label = f'w{ws}'
+        half = ws // 2
+
+        print(f"\n{'─'*50}")
+        print(f"  Phase 2: {label} ({half} hist + {half} future, "
+              f"max h{half*5}, stride=24)")
+        print(f"{'─'*50}")
+
+        data_ext = load_bridge_data(
+            args.patients_dir, window_size=ws, stride=24,
+            max_patients=cfg['max_patients'], load_isf=True)
+        train_ext, val_ext = prepare_pk_future(data_ext, use_isf=has_isf, drop_time=False)
+        isf_ext = data_ext.get('isf_val')
+        n_ext = train_ext.shape[0]
+
+        print(f"  Total: {n_ext} train, {val_ext.shape[0]} val, "
+              f"{len(data_ext['per_patient'])} patients")
+
+        ext_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, **arch)
+
+            # Transfer from w48 (all params except pos_encoder)
+            src = w48_states[seed]
+            tgt = model.state_dict()
+            transferred = 0
+            for k in src:
+                if k in tgt and 'pos_encoder' not in k and src[k].shape == tgt[k].shape:
+                    tgt[k] = src[k]
+                    transferred += 1
+            model.load_state_dict(tgt)
+            if seed == cfg['seeds'][0]:
+                print(f"  Transferred {transferred} params from w48")
+
+            sp = os.path.join(cfg['output_dir'], f'exp619_{label}_base_s{seed}.pth')
+            print(f"\n  [{label} base s{seed}]")
+            train_bridge(model, train_ext, val_ext, sp, f'619-{label}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            ext_states[seed] = ckpt['model_state']
+
+        # Per-patient FT
+        print(f"\n  {label} per-patient FT:")
+        ext_per_patient = {}
+        for pinfo in data_ext['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_ext[ti:te]
+            p_val = val_ext[vi:ve]
+            p_isf = isf_ext[vi:ve] if isf_ext is not None else None
+
+            seed_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                m.load_state_dict(ext_states[seed])
+                fp = os.path.join(cfg['output_dir'],
+                                  f'exp619_{label}_ft_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp,
+                             f'619-{label}-ft-{pid}-s{seed}',
+                             device, pk_mode=True, lr=1e-4,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5)
+                seed_models.append(copy.deepcopy(m))
+
+            ens = ensemble_evaluate(seed_models, p_val, device,
+                                    pk_mode=True, isf_val=p_isf)
+            ext_per_patient[pid] = ens
+            hkeys = [f'h{h}' for h in [60, 120, 180, 240, 360] if f'h{h}' in ens]
+            hstr = ', '.join(f'{k}={ens[k]}' for k in hkeys[:3])
+            print(f"    {pid}: overall={ens['overall_mae']:.1f}, {hstr}")
+
+        ext_avg = {}
+        for pid, rep in ext_per_patient.items():
+            for k, v in rep.items():
+                if k not in ext_avg: ext_avg[k] = []
+                ext_avg[k].append(v)
+        ext_avg = {k: round(np.mean(v), 2) for k, v in ext_avg.items()}
+        results['window_results'][label] = {
+            'per_patient': ext_per_patient, 'average': ext_avg,
+            'n_train': n_ext
+        }
+
+        hkeys = [f'h{h}' for h in [60, 120, 180, 240, 360] if f'h{h}' in ext_avg]
+        hstr = ', '.join(f'{k}={ext_avg[k]}' for k in hkeys)
+        print(f"\n  {label} avg: overall={ext_avg.get('overall_mae','—')}, {hstr}")
+
+    # ── Phase 3: Horizon routing ──
+    print(f"\n{'='*60}")
+    print(f"  Phase 3: Horizon Routing (best engine per horizon)")
+    print(f"{'='*60}")
+
+    routing_table = {}
+    for h in all_horizons:
+        best_mae = float('inf')
+        best_win = None
+        for wlabel, wdata in results['window_results'].items():
+            avg = wdata['average']
+            if h in avg and avg[h] < best_mae:
+                best_mae = avg[h]
+                best_win = wlabel
+        if best_win:
+            routing_table[h] = {'best_window': best_win, 'mae': best_mae}
+
+    results['routing'] = routing_table
+
+    # Print routing table
+    print(f"\n  Horizon | Best Window | MAE")
+    print(f"  --------|-------------|----")
+    for h in sorted(routing_table.keys(), key=lambda x: int(x[1:])):
+        r = routing_table[h]
+        print(f"  {h:>7s} | {r['best_window']:>11s} | {r['mae']:.2f}")
+
+    # Compute routed overall
+    routed_maes = [r['mae'] for r in routing_table.values()]
+    if routed_maes:
+        routed_overall = round(np.mean(routed_maes), 2)
+        results['routed_overall_mae'] = routed_overall
+        print(f"\n  Routed overall MAE: {routed_overall}")
+
+    # Compare to per-window overall
+    print(f"\n  Per-window overall MAEs:")
+    for wlabel, wdata in results['window_results'].items():
+        avg = wdata['average']
+        nt = wdata['n_train']
+        print(f"    {wlabel} ({nt} win): {avg.get('overall_mae', '—')}")
+
+    # Key horizons summary
+    print(f"\n  KEY HORIZONS (Composite Champion):")
+    for h in ['h30', 'h60', 'h90', 'h120', 'h150', 'h180', 'h240', 'h300', 'h360']:
+        if h in routing_table:
+            r = routing_table[h]
+            print(f"    {h}: {r['mae']:.1f} mg/dL (via {r['best_window']})")
+
+    _save_results(results, 'exp619_composite_champion', cfg)
+    return results
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -17910,6 +18442,8 @@ EXPERIMENTS = {
     '615': run_exp615,
     '616': run_exp616,
     '617': run_exp617,
+    '618': run_exp618,
+    '619': run_exp619,
 }
 
 
