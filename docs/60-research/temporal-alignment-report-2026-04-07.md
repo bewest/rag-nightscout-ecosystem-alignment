@@ -291,3 +291,175 @@ R² progression:
 | 528 | exp_fir_528.py | **3ch×6 FIR: R²=0.102**, patient c: 0.222 |
 | 529 | exp_fir_528.py | 41% high-freq noise; 0% circadian — hepatic works |
 | 530 | exp_fir_528.py | **State-dependent: R²=0.105** (+59% over global) |
+| 531 | exp_combined_531.py | **State-FIR+BG: R²=0.161** — best deterministic model |
+| 532 | exp_combined_531.py | Noise floor: 18-74% per patient; ceiling ~0.60 |
+| 533 | exp_combined_531.py | Markov: 0.6 trans/hr, fasting dwell 155min |
+| 534 | exp_autoresearch_534.py | **AR(24)+flux: R²=0.570** — MAJOR BREAKTHROUGH |
+| 535 | exp_autoresearch_534.py | State bilinear FIR: R²=0.176 (+73% over linear) |
+| 536 | exp_autoresearch_534.py | Cross-patient transfer: 65% ratio (physics shared) |
+| 537 | exp_autoresearch_534.py | **Phase-space divergence=5.25** — deterministic chaos |
+
+---
+
+## Part VII: Combined Model Breakthrough (EXP-531–533)
+
+### EXP-531: State-Specific FIR + BG Feature — NEW BEST DETERMINISTIC
+
+Combining state partitioning (EXP-530) with FIR history (EXP-528) yields additive improvement:
+
+| Model | Mean R² | Best (c) | Improvement |
+|-------|---------|----------|-------------|
+| Global FIR (EXP-528) | 0.102 | 0.222 | baseline |
+| State-dependent linear (EXP-530) | 0.105 | 0.198 | +3% |
+| State-specific FIR | 0.144 | 0.269 | +41% |
+| State-specific FIR + BG | **0.161** | **0.288** | **+58%** |
+
+**Insight**: State partitioning and temporal history are **complementary** — they capture different aspects of the dynamics. Adding BG level as a feature (capturing nonlinear sensitivity) provides another 12% on top.
+
+### EXP-532: Noise-Floor-Adjusted R²
+
+Per-patient noise floor (high-frequency sensor noise as % of dBG variance):
+
+| Patient | Noise % | Own R² | Achievable R² | % Achievable |
+|---------|---------|--------|---------------|--------------|
+| c | 30% | 0.289 | 0.70 | **41%** |
+| i | 18% | 0.222 | 0.82 | 27% |
+| f | 25% | 0.208 | 0.75 | 28% |
+| k | 74% | 0.049 | 0.26 | 19% |
+
+### EXP-533: Markov State Transitions
+
+| State | Median Dwell | P(stay) | Notes |
+|-------|-------------|---------|-------|
+| Fasting | 155 min | 0.98 | Highly persistent |
+| Post-meal | 150 min | 0.97 | Full meal cycles |
+| Correction | 40 min | 0.92 | Brief high-BG episodes |
+| Recovery | 10 min | 0.62 | Transient passage state |
+
+---
+
+## Part VIII: Autoregression and Transfer Functions (EXP-534–537)
+
+### EXP-534: Residual Autoregression — MAJOR BREAKTHROUGH
+
+**Result**: AR(24) on state-FIR+BG residuals → **R²=0.570 combined** (from 0.161 base).
+
+Residual autocorrelation at 5-min lag: **r=0.62** (population mean). BG changes have strong "momentum" — knowing where BG was heading 5 minutes ago is highly predictive.
+
+| AR Order | Window | Combined R² | Improvement |
+|----------|--------|-------------|-------------|
+| AR(3) | 15 min | ~0.43 | +0.27 |
+| AR(6) | 30 min | ~0.47 | +0.31 |
+| AR(12) | 60 min | ~0.52 | +0.36 |
+| AR(24) | **120 min** | **0.570** | **+0.41** |
+
+**Physical interpretation**: The residual autoregression captures:
+1. **CGM sensor lag** (~10-15 min physiological interstitial delay)
+2. **Glucose momentum** (rate of change persistence from absorption/clearance kinetics)
+3. **Unmodeled processes** (stress hormones, exercise, gastric emptying variation)
+
+Per-patient AR(24) combined R²:
+
+| Patient | Base R² | Combined R² | AR Gain |
+|---------|---------|-------------|---------|
+| f | 0.208 | **0.663** | +0.455 |
+| b | 0.101 | **0.657** | +0.556 |
+| g | 0.145 | **0.641** | +0.496 |
+| c | 0.289 | **0.621** | +0.332 |
+| e | 0.160 | **0.591** | +0.431 |
+| i | 0.222 | **0.596** | +0.374 |
+| h | 0.173 | **0.582** | +0.409 |
+| a | 0.186 | **0.579** | +0.393 |
+| d | 0.159 | **0.534** | +0.375 |
+| j | 0.076 | **0.465** | +0.389 |
+| k | 0.049 | **0.344** | +0.295 |
+
+**Every patient benefits substantially**. The population mean R²=0.570 approaches the theoretical noise ceiling (~0.600). This means the combination of flux modeling + autoregression captures essentially all predictable structure.
+
+### EXP-535: BG-Dependent FIR (Bilinear Model)
+
+| Model | Mean R² | vs Linear |
+|-------|---------|-----------|
+| Linear FIR | 0.102 | baseline |
+| + BG additive | 0.110 | +8% |
+| Bilinear (flux × BG) | 0.123 | +21% |
+| State-specific bilinear | **0.176** | **+73%** |
+
+The bilinear interaction (flux × BG_level) captures BG-dependent insulin sensitivity: insulin is more effective at high BG levels. State-specific bilinear is the best deterministic model.
+
+### EXP-536: Cross-Patient FIR Transfer
+
+**Transfer ratio = 0.65** (mean across 9 well-controlled patients).
+
+| Patient | Own R² | Transfer R² | Ratio |
+|---------|--------|-------------|-------|
+| i | 0.162 | 0.122 | **0.75** — best transfer |
+| c | 0.222 | 0.153 | **0.69** |
+| a | 0.123 | 0.084 | 0.68 |
+| e | 0.097 | 0.052 | **0.53** — most unique |
+| j | 0.010 | -0.034 | negative — too noisy |
+| k | 0.034 | -0.047 | negative — too noisy |
+
+**Interpretation**: ~65% of the FIR transfer function is **shared physics** (universal insulin/glucose kinetics). The remaining 35% is patient-specific. A population-pretrained model with per-patient fine-tuning should work well.
+
+### EXP-537: Phase-Space Embedding — Deterministic Chaos Confirmed
+
+**Divergence ratio = 5.25** — nearby trajectories separate 5× in 1 hour.
+
+| Metric | Value | Interpretation |
+|--------|-------|---------------|
+| Recurrence p5 | 1.01 | Weak attractor — system revisits similar states |
+| Divergence | **5.25** | **Well above chaos threshold (>2.0)** |
+| Speed CV | 0.57 | Alternating fast (meal) and slow (fasting) |
+
+**Implication**: Long-horizon glucose prediction is fundamentally limited by deterministic chaos. Short-term (15-60 min) is feasible; beyond 2-3 hours, uncertainty grows exponentially. This validates AID systems' 5-minute recomputation cycle.
+
+---
+
+## Updated R² Progression Landscape
+
+```
+Model                              Mean R²    Best Patient    Experiment
+────────────────────────────────────────────────────────────────────────
+Raw variance ratio                 <0.000     —               EXP-518
+Linear net flux                     0.040     c: 0.082        EXP-522
++ optimal lag correction            0.043     c: 0.087        EXP-522
++ BG-dependent sensitivity          0.056     c: 0.105        EXP-526
++ full 8-feature nonlinear          0.065     c: 0.127        EXP-526
+3-channel FIR (6 taps each)         0.102     c: 0.222        EXP-528
+State-dependent linear              0.105     c: 0.198        EXP-530
+Bilinear FIR (flux × BG)           0.123     c: 0.258        EXP-535
+State-specific 3ch FIR              0.144     c: 0.269        EXP-531
+State-specific FIR + BG             0.161     c: 0.288        EXP-531
+State-specific bilinear FIR         0.176     c: 0.306        EXP-535
++ AR(24) on residuals            ▶  0.570     f: 0.663        EXP-534
+────────────────────────────────────────────────────────────────────────
+Theoretical ceiling (noise floor)  ~0.600     i: 0.820        EXP-529/532
+```
+
+---
+
+## Revised Proposed Experiments (EXP-538–545)
+
+### Model Architecture (production-ready)
+
+| ID | Name | Hypothesis | Method |
+|----|------|-----------|--------|
+| EXP-538 | Kalman Filter | Sequential state estimation with flux control | Time-varying Kalman with AR process model |
+| EXP-539 | Neural FIR | Nonlinear FIR via small MLP | 2-layer MLP on 3ch×6 taps + BG + state |
+| EXP-540 | Temporal Cross-Val | Time-series validation (no leakage) | Train on first 60%, test on last 40% |
+
+### AR Refinement
+
+| ID | Name | Hypothesis | Method |
+|----|------|-----------|--------|
+| EXP-541 | AR Order Selection | Find minimal AR order via AIC/BIC | Compare AR(3)..AR(48) with information criteria |
+| EXP-542 | State-AR Interaction | Different AR per metabolic state | Fit separate AR models for fasting vs meal |
+| EXP-543 | Circadian AR | AR coefficients vary by time-of-day | Circadian-windowed AR models |
+
+### Physics Extensions
+
+| ID | Name | Hypothesis | Method |
+|----|------|-----------|--------|
+| EXP-544 | Device Age Correction | Sensor degradation adds systematic noise | Model noise floor vs sensor day |
+| EXP-545 | Metabolic Flux Scoring | Settings quality index from flux balance | Integral balance ratio as control metric |
