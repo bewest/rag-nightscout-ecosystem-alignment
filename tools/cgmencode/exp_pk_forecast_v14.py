@@ -10875,6 +10875,327 @@ def run_exp460(args):
     return result
 
 
+# ─── EXP-461: Combined Best — 2nd PK + Fidelity + Longer FT ───
+
+def run_exp461(args):
+    """EXP-461: Combine best findings for w96 long-horizon specialist.
+
+    Combines:
+    1. 2nd-order PK derivatives (EXP-459: −0.66 at h240)
+    2. Fidelity-aware base training (EXP-460: −2.13 h120 for patient a)
+    3. Extended per-patient FT (30ep instead of 15ep)
+    4. Full model (d64, L4)
+
+    This is the "kitchen sink" test — do improvements compound or conflict?
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    ft_ep = min(cfg['epochs_ft'] * 2, 30)  # Double FT epochs
+    print(f"\n{'='*60}")
+    print(f"EXP-461: Combined Best for w96 Long-Horizon")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, ft_ep={ft_ep}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=96,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    isf_v = data.get('isf_val')
+    future_steps = 48
+
+    # Use 2nd-order PK derivatives
+    train_x, val_x = _prepare_pk_second_order(data, history_steps=48, use_isf=has_isf)
+    n_ch = train_x.shape[-1]
+    print(f"  2nd-order PK: {n_ch}ch")
+
+    # Compute fidelity and filter
+    fidelity = {}
+    for pinfo in data['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        p_train = train_x[ti:te]
+        pk_var = float(np.mean(np.var(p_train[:, :, 1:6].numpy(), axis=1)))
+        pk_active = float(np.mean(np.any(np.abs(p_train[:, :, 3:6].numpy()) > 0.01, axis=1)))
+        gluc, iob = p_train[:, :, 0].numpy(), p_train[:, :, 1].numpy()
+        corrs = []
+        for i in range(len(gluc)):
+            if np.std(gluc[i]) > 0 and np.std(iob[i]) > 0:
+                c = np.corrcoef(gluc[i], iob[i])[0, 1]
+                if not np.isnan(c): corrs.append(abs(c))
+        mean_corr = float(np.mean(corrs)) if corrs else 0.0
+        score = pk_var * 10 + pk_active + mean_corr
+        fidelity[pid] = score
+        print(f"  {pid}: fidelity={score:.3f}")
+
+    sorted_p = sorted(fidelity.items(), key=lambda x: x[1], reverse=True)
+    n_keep = max(2, int(len(sorted_p) * 0.75))
+    kept = set(p[0] for p in sorted_p[:n_keep])
+    dropped = set(p[0] for p in sorted_p[n_keep:])
+    print(f"  Keeping: {kept}, Dropping: {dropped}")
+
+    keep_mask = np.zeros(len(train_x), dtype=bool)
+    for pinfo in data['per_patient']:
+        if pinfo['name'] in kept:
+            ti, te = pinfo['train_idx']
+            keep_mask[ti:te] = True
+    train_filt = train_x[keep_mask]
+    print(f"  Filtered train: {len(train_filt)} (from {len(train_x)})")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    variants = {
+        'baseline': {'train': train_x, 'label': 'all, 1st-order'},
+        'combined': {'train': train_filt, 'label': 'fidelity+2nd-order'},
+    }
+
+    # For baseline, use standard PK (not 2nd-order) to measure pure combination effect
+    train_std, val_std = prepare_pk_future(data, use_isf=has_isf, drop_time=True)
+    variants['baseline']['train'] = train_std
+    variants['baseline']['val'] = val_std
+    variants['baseline']['n_ch'] = train_std.shape[-1]
+
+    variants['combined']['val'] = val_x
+    variants['combined']['n_ch'] = n_ch
+
+    result = {}
+    for vname, vcfg in variants.items():
+        tx = vcfg['train']
+        vx = vcfg.get('val', val_x)
+        v_nch = vcfg['n_ch']
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {vcfg['label']} ({v_nch}ch, {len(tx)} train)")
+        print(f"{'─'*40}")
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=v_nch, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp461_{vname}_s{seed}.pth')
+            print(f"\n  Base s{seed}:")
+            train_bridge(model, tx, vx, sp, f'461-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps)
+
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            # FT always on patient's own data (with matching channel format)
+            if vname == 'combined':
+                p_train = train_x[ti:te]  # 2nd-order for combined
+            else:
+                p_train = train_std[ti:te]  # standard for baseline
+            p_val = vx[vi:ve]
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=v_nch, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp461_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp461_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'461-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=ft_ep, patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                        isf_val=p_isf, future_steps=future_steps)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[vname] = {
+            'per_patient': per_patient,
+            'average': avg,
+        }
+
+        print(f"\n  {vname} avg: overall={avg.get('overall_mae','?')}, "
+              f"h60={avg.get('h60','?')}, h120={avg.get('h120','?')}, "
+              f"h240={avg.get('h240','?')}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-461 Summary: Combined Best vs Baseline")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        print(f"  {vname:<18} overall={avg.get('overall_mae','?')}, "
+              f"h60={avg.get('h60','?')}, h120={avg.get('h120','?')}, "
+              f"h240={avg.get('h240','?')}")
+
+    base_avg = result.get('baseline', {}).get('average', {})
+    comb_avg = result.get('combined', {}).get('average', {})
+    if base_avg and comb_avg:
+        print(f"\n  Delta (combined - baseline):")
+        for k in sorted(base_avg.keys()):
+            if k in comb_avg:
+                d = round(comb_avg[k] - base_avg[k], 2)
+                print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp461_combined_best', cfg)
+    return result
+
+
+# ─── EXP-462: Window Transfer Learning ───
+
+def run_exp462(args):
+    """EXP-462: Transfer w48 model weights to w96 via positional re-encoding.
+
+    Hypothesis: The w48 model learns excellent glucose+PK representations.
+    If we transfer its encoder weights to a w96 model and fine-tune, we get:
+    - Better w96 initialization (from w48's strong h60-h120 representations)
+    - Faster convergence at w96 (pre-trained attention patterns)
+    - Better h180+ (w96 adds future PK projection the w48 model never saw)
+
+    Transfer strategy:
+    - Copy encoder weights (state_proj, action_proj, extra_proj, transformer layers)
+    - Re-initialize positional encoding (different sequence length)
+    - Re-initialize output projection (same size, just needs fine-tuning)
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-462: Window Transfer Learning (w48 → w96)")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    # Step 1: Train strong w48 base
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    train48, val48 = prepare_pk_future(data48, use_isf=has_isf, drop_time=True)
+    n_ch = train48.shape[-1]
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    print(f"\n  Phase 1: Train w48 base ({n_ch}ch)")
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model48 = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp462_w48_s{seed}.pth')
+        train_bridge(model48, train48, val48, sp, f'462-w48-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # Step 2: Load w96 data
+    data96 = load_bridge_data(
+        args.patients_dir, window_size=96,
+        max_patients=cfg['max_patients'], load_isf=True)
+    isf_v96 = data96.get('isf_val')
+    train96, val96 = prepare_pk_future(data96, use_isf=has_isf, drop_time=True)
+    future_steps = 48
+
+    variants = {
+        'w96_scratch': {'transfer': False},
+        'w96_transfer': {'transfer': True},
+    }
+
+    result = {}
+    for vname, vcfg in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname} (transfer={vcfg['transfer']})")
+        print(f"{'─'*40}")
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model96 = PKGroupedEncoder(input_dim=n_ch, **arch)
+
+            if vcfg['transfer']:
+                # Transfer w48 weights (except positional encoding)
+                w48_sd = w48_states[seed]
+                w96_sd = model96.state_dict()
+                transferred = 0
+                for key in w48_sd:
+                    if 'pos_encoder' in key:
+                        continue  # Skip positional encoding (different seq len)
+                    if key in w96_sd and w48_sd[key].shape == w96_sd[key].shape:
+                        w96_sd[key] = w48_sd[key]
+                        transferred += 1
+                model96.load_state_dict(w96_sd)
+                print(f"  Transferred {transferred} parameter tensors from w48")
+
+            sp = os.path.join(cfg['output_dir'], f'exp462_{vname}_s{seed}.pth')
+            print(f"\n  Base s{seed}:")
+            train_bridge(model96, train96, val96, sp, f'462-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps)
+
+        # Per-patient FT + evaluate
+        per_patient = {}
+        for pinfo in data96['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train96[ti:te]
+            p_val = val96[vi:ve]
+            p_isf = isf_v96[vi:ve] if isf_v96 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp462_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp462_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'462-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                        isf_val=p_isf, future_steps=future_steps)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[vname] = {
+            'per_patient': per_patient,
+            'average': avg,
+        }
+        print(f"\n  {vname} avg: overall={avg.get('overall_mae','?')}, "
+              f"h60={avg.get('h60','?')}, h120={avg.get('h120','?')}, "
+              f"h240={avg.get('h240','?')}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-462 Summary: Window Transfer Learning")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        print(f"  {vname:<18} overall={avg.get('overall_mae','?')}, "
+              f"h60={avg.get('h60','?')}, h120={avg.get('h120','?')}, "
+              f"h240={avg.get('h240','?')}")
+
+    scratch = result.get('w96_scratch', {}).get('average', {})
+    transfer = result.get('w96_transfer', {}).get('average', {})
+    if scratch and transfer:
+        print(f"\n  Delta (transfer - scratch):")
+        for k in sorted(scratch.keys()):
+            if k in transfer:
+                d = round(transfer[k] - scratch[k], 2)
+                print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp462_window_transfer', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -10928,6 +11249,8 @@ EXPERIMENTS = {
     '458': run_exp458,
     '459': run_exp459,
     '460': run_exp460,
+    '461': run_exp461,
+    '462': run_exp462,
 }
 
 
