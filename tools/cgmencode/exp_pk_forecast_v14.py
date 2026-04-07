@@ -2508,6 +2508,593 @@ def _save_results(result, name, cfg):
     print(f"\nSaved: {path}")
 
 
+# ─── EXP-423: Fixed Augmentation + Champion Pipeline ───
+
+def train_bridge_augmented(model, train_x, val_x, save_path, label, device,
+                           pk_mode=False, lr=1e-3, epochs=200, batch=32,
+                           patience=20, weight_decay=1e-5, lr_patience=7,
+                           augment_std=0.5):
+    """train_bridge with FIXED augmentation: noise on input only, not target.
+
+    The original augmentation bug added noise to the batch tuple, meaning both
+    input and target received the same noise, which cancels in MSE. This version
+    applies noise ONLY to x_in (after cloning from x), preserving clean targets.
+    """
+    model.to(device)
+    train_dl = DataLoader(TensorDataset(train_x), batch_size=batch, shuffle=True)
+    val_dl = DataLoader(TensorDataset(val_x), batch_size=batch)
+    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=lr_patience, factor=0.5)
+    crit = nn.MSELoss()
+    best = float('inf')
+    stale = 0
+
+    def _step(batch_data, backward=False, augment=False):
+        x = batch_data[0].to(device)
+        half = x.shape[1] // 2
+        x_in = x.clone()
+        mask_future_pk(x_in, half, pk_mode=pk_mode)
+        if augment and augment_std > 0:
+            # Add noise to INPUT history channels only (not future, not target)
+            noise = torch.randn_like(x_in[:, :half]) * augment_std
+            # Scale noise relative to channel magnitudes
+            x_in[:, :half] = x_in[:, :half] + noise * 0.01
+        pred = model(x_in, causal=True)
+        loss = crit(pred[:, half:, :1], x[:, half:, :1])  # target from CLEAN x
+        if backward:
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        return loss.item() * x.size(0), x.size(0)
+
+    for ep in range(epochs):
+        model.train()
+        ttl, tn = 0.0, 0
+        for b in train_dl:
+            opt.zero_grad()
+            l, n = _step(b, backward=True, augment=True)
+            opt.step()
+            ttl += l; tn += n
+        tl = ttl / tn if tn else float('inf')
+
+        model.eval()
+        vtl, vn = 0.0, 0
+        with torch.no_grad():
+            for b in val_dl:
+                l, n = _step(b, backward=False, augment=False)
+                vtl += l; vn += n
+        vl = vtl / vn if vn else float('inf')
+        sched.step(vl)
+
+        if vl < best:
+            best = vl
+            stale = 0
+            os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+            torch.save({
+                'epoch': ep, 'model_state': model.state_dict(),
+                'val_loss': vl, 'label': label,
+            }, save_path)
+        else:
+            stale += 1
+
+        if (ep + 1) % 10 == 0 or ep == epochs - 1:
+            lr_now = opt.param_groups[0]['lr']
+            mark = ' *' if stale == 0 else ''
+            print(f'  [{label}] {ep+1:3d}/{epochs} '
+                  f'train={tl:.6f} val={vl:.6f} best={best:.6f} '
+                  f'lr={lr_now:.1e}{mark}')
+
+        if patience > 0 and stale >= patience:
+            print(f'  [{label}] Early stop at epoch {ep+1}')
+            break
+
+    if os.path.exists(save_path):
+        ckpt = torch.load(save_path, map_location=device, weights_only=False)
+        model.load_state_dict(ckpt['model_state'])
+    return best, ep + 1
+
+
+def run_exp423(args):
+    """EXP-423: Fixed augmentation on champion pipeline.
+
+    The EXP-417 augmentation test was invalid due to a bug: noise was applied to
+    both input AND target, canceling in MSE. This experiment fixes the bug by
+    applying noise ONLY to history input channels, keeping targets clean.
+
+    Variants:
+    - control: EXP-410 champion (no augmentation)
+    - aug_0.5: Gaussian noise std=0.5 on normalized input (0.5% of scale)
+    - aug_1.0: Gaussian noise std=1.0 on normalized input (1% of scale)
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print("EXP-423: Fixed Augmentation on Champion")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    isf_v = data.get('isf_val')
+    n_ch = train_x.shape[-1]
+
+    variants = [
+        ('control', 0.0),
+        ('aug_0.5', 0.5),
+        ('aug_1.0', 1.0),
+    ]
+
+    all_results = {}
+    for vname, aug_std in variants:
+        print(f"\n{'─'*40}")
+        print(f"  Variant: {vname} (augment_std={aug_std})")
+        print(f"{'─'*40}")
+
+        seed_maes = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp423_{vname}_s{seed}.pth')
+
+            if aug_std > 0:
+                train_bridge_augmented(
+                    model, train_x, val_x, sp, f'423-{vname}-s{seed}',
+                    device, pk_mode=True, augment_std=aug_std,
+                    epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            else:
+                train_bridge(
+                    model, train_x, val_x, sp, f'423-{vname}-s{seed}',
+                    device, pk_mode=True,
+                    epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+            metrics = evaluate_model(model, val_x, device, pk_mode=True, isf_val=isf_v)
+            seed_maes[f's{seed}'] = metrics['overall_mae']
+            print(f"  {vname} s{seed}: MAE={metrics['overall_mae']:.1f}, "
+                  f"h30={metrics.get('h30','?')}, h60={metrics.get('h60','?')}")
+
+        all_results[vname] = {
+            'augment_std': aug_std,
+            'seeds': seed_maes,
+            'mean_mae': round(float(np.mean(list(seed_maes.values()))), 2),
+        }
+
+    result = {
+        'experiment': 'EXP-423: Fixed Augmentation',
+        'note': 'Fixes EXP-417 bug: noise on input only, not target',
+        'results': all_results,
+    }
+    _save_results(result, 'exp423_fixed_augmentation', cfg)
+
+    print(f"\n{'='*60}")
+    print("EXP-423 SUMMARY")
+    for vn, vr in all_results.items():
+        print(f"  {vn}: {vr['mean_mae']:.2f} (aug_std={vr['augment_std']})")
+    print(f"{'='*60}")
+    return result
+
+
+# ─── EXP-424: Horizon-Weighted Loss ───
+
+def train_bridge_horizon_weighted(model, train_x, val_x, save_path, label, device,
+                                  pk_mode=False, lr=1e-3, epochs=200, batch=32,
+                                  patience=20, weight_decay=1e-5, lr_patience=7,
+                                  horizon_weights=None):
+    """train_bridge with horizon-weighted MSE loss.
+
+    horizon_weights: tensor of shape (future_steps,) weighting each prediction
+    step. Default = uniform. Example: linear ramp [1,2,3,...,12]/mean gives
+    more weight to harder long-range predictions.
+    """
+    model.to(device)
+    train_dl = DataLoader(TensorDataset(train_x), batch_size=batch, shuffle=True)
+    val_dl = DataLoader(TensorDataset(val_x), batch_size=batch)
+    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=lr_patience, factor=0.5)
+    best = float('inf')
+    stale = 0
+
+    half = train_x.shape[1] // 2
+    if horizon_weights is not None:
+        hw = horizon_weights.to(device).reshape(1, -1, 1)
+    else:
+        hw = torch.ones(1, half, 1, device=device)
+
+    def _step(batch_data, backward=False):
+        x = batch_data[0].to(device)
+        x_in = x.clone()
+        mask_future_pk(x_in, half, pk_mode=pk_mode)
+        pred = model(x_in, causal=True)
+        errors = (pred[:, half:, :1] - x[:, half:, :1]) ** 2
+        loss = (errors * hw).mean()
+        if backward:
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        return loss.item() * x.size(0), x.size(0)
+
+    for ep in range(epochs):
+        model.train()
+        ttl, tn = 0.0, 0
+        for b in train_dl:
+            opt.zero_grad()
+            l, n = _step(b, backward=True)
+            opt.step()
+            ttl += l; tn += n
+        tl = ttl / tn if tn else float('inf')
+
+        model.eval()
+        vtl, vn = 0.0, 0
+        with torch.no_grad():
+            for b in val_dl:
+                l, n = _step(b, backward=False)
+                vtl += l; vn += n
+        vl = vtl / vn if vn else float('inf')
+        sched.step(vl)
+
+        if vl < best:
+            best = vl
+            stale = 0
+            os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+            torch.save({
+                'epoch': ep, 'model_state': model.state_dict(),
+                'val_loss': vl, 'label': label,
+            }, save_path)
+        else:
+            stale += 1
+
+        if (ep + 1) % 10 == 0 or ep == epochs - 1:
+            lr_now = opt.param_groups[0]['lr']
+            mark = ' *' if stale == 0 else ''
+            print(f'  [{label}] {ep+1:3d}/{epochs} '
+                  f'train={tl:.6f} val={vl:.6f} best={best:.6f} '
+                  f'lr={lr_now:.1e}{mark}')
+
+        if patience > 0 and stale >= patience:
+            print(f'  [{label}] Early stop at epoch {ep+1}')
+            break
+
+    if os.path.exists(save_path):
+        ckpt = torch.load(save_path, map_location=device, weights_only=False)
+        model.load_state_dict(ckpt['model_state'])
+    return best, ep + 1
+
+
+def run_exp424(args):
+    """EXP-424: Horizon-weighted loss on champion pipeline.
+
+    Hypothesis: Equal-weighted multi-horizon MSE gives h5 (easy, MAE~6) the same
+    gradient as h60 (hard, MAE~15). Upweighting longer horizons should improve
+    h60 accuracy without degrading h30 much, since h30 is already below CGM MARD.
+
+    Variants:
+    - uniform: Standard MSE (control, matches EXP-410)
+    - linear: Weights [1..12]/mean — 2x more weight on h60 than h5
+    - sqrt: Weights sqrt([1..12])/mean — gentle ramp
+    - h60_focus: Weight 1.0 for h5-h55, weight 3.0 for h60 only
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print("EXP-424: Horizon-Weighted Loss")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    isf_v = data.get('isf_val')
+    n_ch = train_x.shape[-1]
+    half = 12  # w24 → 12 future steps
+
+    # Build weight tensors
+    linear_w = torch.arange(1.0, half + 1.0)
+    linear_w = linear_w / linear_w.mean()  # mean=1, so total loss ~same
+
+    sqrt_w = torch.sqrt(torch.arange(1.0, half + 1.0))
+    sqrt_w = sqrt_w / sqrt_w.mean()
+
+    h60_focus_w = torch.ones(half)
+    h60_focus_w[-1] = 3.0  # 3x weight on last step (h60)
+    h60_focus_w = h60_focus_w / h60_focus_w.mean()
+
+    variants = [
+        ('uniform', None),
+        ('linear', linear_w),
+        ('sqrt', sqrt_w),
+        ('h60_focus', h60_focus_w),
+    ]
+
+    all_results = {}
+    for vname, weights in variants:
+        print(f"\n{'─'*40}")
+        print(f"  Variant: {vname}")
+        if weights is not None:
+            print(f"  Weights: [{', '.join(f'{w:.2f}' for w in weights)}]")
+        print(f"{'─'*40}")
+
+        seed_maes = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp424_{vname}_s{seed}.pth')
+
+            if weights is not None:
+                train_bridge_horizon_weighted(
+                    model, train_x, val_x, sp, f'424-{vname}-s{seed}',
+                    device, pk_mode=True, horizon_weights=weights,
+                    epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            else:
+                train_bridge(
+                    model, train_x, val_x, sp, f'424-{vname}-s{seed}',
+                    device, pk_mode=True,
+                    epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+            metrics = evaluate_model(model, val_x, device, pk_mode=True, isf_val=isf_v)
+            seed_maes[f's{seed}'] = metrics
+            print(f"  {vname} s{seed}: overall={metrics['overall_mae']:.1f}, "
+                  f"h30={metrics.get('h30','?')}, h60={metrics.get('h60','?')}")
+
+        # Summary: average per-horizon across seeds
+        avg_overall = np.mean([m['overall_mae'] for m in seed_maes.values()])
+        avg_h30 = np.mean([m.get('h30', 0) for m in seed_maes.values()])
+        avg_h60 = np.mean([m.get('h60', 0) for m in seed_maes.values()])
+
+        all_results[vname] = {
+            'seeds': {k: v['overall_mae'] for k, v in seed_maes.items()},
+            'mean_mae': round(float(avg_overall), 2),
+            'mean_h30': round(float(avg_h30), 2),
+            'mean_h60': round(float(avg_h60), 2),
+            'weights': [round(float(w), 3) for w in weights] if weights is not None else 'uniform',
+        }
+
+    result = {
+        'experiment': 'EXP-424: Horizon-Weighted Loss',
+        'hypothesis': 'Upweighting long-range horizons improves h60 without hurting h30',
+        'results': all_results,
+    }
+    _save_results(result, 'exp424_horizon_weighted', cfg)
+
+    print(f"\n{'='*60}")
+    print("EXP-424 SUMMARY")
+    for vn, vr in all_results.items():
+        print(f"  {vn}: overall={vr['mean_mae']:.2f}, "
+              f"h30={vr['mean_h30']:.2f}, h60={vr['mean_h60']:.2f}")
+    print(f"{'='*60}")
+    return result
+
+
+# ─── EXP-425: Combined Champion (h60_focus + augmentation + FT + ensemble) ───
+
+def train_bridge_combined(model, train_x, val_x, save_path, label, device,
+                          pk_mode=False, lr=1e-3, epochs=200, batch=32,
+                          patience=20, weight_decay=1e-5, lr_patience=7,
+                          horizon_weights=None, augment_std=0.0):
+    """Combined training: horizon-weighted loss + fixed augmentation."""
+    model.to(device)
+    train_dl = DataLoader(TensorDataset(train_x), batch_size=batch, shuffle=True)
+    val_dl = DataLoader(TensorDataset(val_x), batch_size=batch)
+    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=lr_patience, factor=0.5)
+    best = float('inf')
+    stale = 0
+
+    half = train_x.shape[1] // 2
+    if horizon_weights is not None:
+        hw = horizon_weights.to(device).reshape(1, -1, 1)
+    else:
+        hw = torch.ones(1, half, 1, device=device)
+
+    def _step(batch_data, backward=False, augment=False):
+        x = batch_data[0].to(device)
+        x_in = x.clone()
+        mask_future_pk(x_in, half, pk_mode=pk_mode)
+        if augment and augment_std > 0:
+            noise = torch.randn_like(x_in[:, :half]) * augment_std * 0.01
+            x_in[:, :half] = x_in[:, :half] + noise
+        pred = model(x_in, causal=True)
+        errors = (pred[:, half:, :1] - x[:, half:, :1]) ** 2
+        loss = (errors * hw).mean()
+        if backward:
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        return loss.item() * x.size(0), x.size(0)
+
+    for ep in range(epochs):
+        model.train()
+        ttl, tn = 0.0, 0
+        for b in train_dl:
+            opt.zero_grad()
+            l, n = _step(b, backward=True, augment=True)
+            opt.step()
+            ttl += l; tn += n
+        tl = ttl / tn if tn else float('inf')
+
+        model.eval()
+        vtl, vn = 0.0, 0
+        with torch.no_grad():
+            for b in val_dl:
+                l, n = _step(b, backward=False, augment=False)
+                vtl += l; vn += n
+        vl = vtl / vn if vn else float('inf')
+        sched.step(vl)
+
+        if vl < best:
+            best = vl
+            stale = 0
+            os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+            torch.save({
+                'epoch': ep, 'model_state': model.state_dict(),
+                'val_loss': vl, 'label': label,
+            }, save_path)
+        else:
+            stale += 1
+
+        if (ep + 1) % 10 == 0 or ep == epochs - 1:
+            lr_now = opt.param_groups[0]['lr']
+            mark = ' *' if stale == 0 else ''
+            print(f'  [{label}] {ep+1:3d}/{epochs} '
+                  f'train={tl:.6f} val={vl:.6f} best={best:.6f} '
+                  f'lr={lr_now:.1e}{mark}')
+
+        if patience > 0 and stale >= patience:
+            print(f'  [{label}] Early stop at epoch {ep+1}')
+            break
+
+    if os.path.exists(save_path):
+        ckpt = torch.load(save_path, map_location=device, weights_only=False)
+        model.load_state_dict(ckpt['model_state'])
+    return best, ep + 1
+
+
+def run_exp425(args):
+    """EXP-425: Combined champion — h60_focus loss + augmentation + FT + ensemble.
+
+    Combines the two quick-mode winners from EXP-423 and EXP-424:
+    - h60_focus loss: 3× weight on h60, reduced h5 weight (EXP-424: -0.59 overall)
+    - aug_1.0: Gaussian noise std=1.0 on input history (EXP-423: -0.24 overall)
+    Plus the proven champion pipeline: ISF norm + PK + per-patient FT + 5-seed ensemble.
+
+    Variants:
+    - h60_focus: Just h60-weighted loss (best from EXP-424)
+    - h60_aug: h60-weighted + augmentation combined
+    - control: Standard uniform MSE (EXP-410 reproduction)
+
+    This is a FEATURE/TRAINING experiment, but h60_focus loss is a training dynamic
+    change. Quick→full translation is uncertain. Run quick first for screening,
+    then full for the best variant.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print("EXP-425: Combined Champion Pipeline")
+    print(f"  seeds={cfg['seeds']}, base={cfg['epochs_base']}ep, ft={cfg['epochs_ft']}ep")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    isf_v = data.get('isf_val')
+    n_ch = train_x.shape[-1]
+    half = 12
+
+    # h60_focus weights: 1.0 for h5-h55, 3.0 for h60
+    h60_w = torch.ones(half)
+    h60_w[-1] = 3.0
+    h60_w = h60_w / h60_w.mean()
+
+    variants = [
+        ('control', None, 0.0),
+        ('h60_focus', h60_w, 0.0),
+        ('h60_aug', h60_w, 1.0),
+    ]
+
+    all_results = {}
+    for vname, weights, aug_std in variants:
+        print(f"\n{'='*40}")
+        print(f"  Variant: {vname} (weights={'h60_focus' if weights is not None else 'uniform'}, aug={aug_std})")
+        print(f"{'='*40}")
+
+        # Phase 1: Base training
+        base_states = {}
+        base_metrics = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp425_{vname}_base_s{seed}.pth')
+
+            print(f"\n  Base s{seed} ({vname}):")
+            if weights is not None or aug_std > 0:
+                train_bridge_combined(
+                    model, train_x, val_x, sp, f'425-{vname}-s{seed}',
+                    device, pk_mode=True, horizon_weights=weights,
+                    augment_std=aug_std,
+                    epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            else:
+                train_bridge(
+                    model, train_x, val_x, sp, f'425-{vname}-s{seed}',
+                    device, pk_mode=True,
+                    epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+            metrics = evaluate_model(model, val_x, device, pk_mode=True, isf_val=isf_v)
+            base_metrics[seed] = metrics
+            print(f"  Base s{seed}: overall={metrics['overall_mae']:.1f}, "
+                  f"h30={metrics.get('h30','?')}, h60={metrics.get('h60','?')}")
+
+        # Phase 2: Per-patient FT + ensemble (using standard MSE for FT)
+        print(f"\n  === Phase 2: Per-Patient FT ({vname}) ===")
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train_x = train_x[ti:te]
+            p_val_x = val_x[vi:ve]
+            p_isf_v = isf_v[vi:ve] if isf_v is not None else None
+
+            print(f"\n  Patient {pid} ({pinfo['n_train']} train, {pinfo['n_val']} val):")
+            seed_maes = {}
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'], f'exp425_{vname}_ft_{pid}_s{seed}.pth')
+
+                # FT uses standard MSE (per-patient data is too small for weighted loss)
+                train_bridge(model, p_train_x, p_val_x, sp,
+                             f'425-ft-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             lr=1e-4, epochs=cfg['epochs_ft'],
+                             patience=10, lr_patience=5)
+
+                metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                         isf_val=p_isf_v)
+                seed_maes[f's{seed}'] = metrics['overall_mae']
+                ft_models.append(copy.deepcopy(model))
+                print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+            ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                    isf_val=p_isf_v)
+            per_patient[pid] = {
+                'seeds': seed_maes,
+                'ensemble_mae': ens['overall_mae'],
+                'ensemble_per_horizon': ens,
+            }
+            print(f"    Ensemble: MAE={ens['overall_mae']:.1f}, "
+                  f"h30={ens.get('h30','?')}, h60={ens.get('h60','?')}")
+
+        all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+        mean_ens = round(float(np.mean(all_ens)), 2)
+
+        all_results[vname] = {
+            'per_patient': per_patient,
+            'base_metrics': {f's{s}': m for s, m in base_metrics.items()},
+            'mean_ensemble_mae': mean_ens,
+            'config': {'weights': vname, 'augment_std': aug_std},
+        }
+        print(f"\n  {vname} Mean Ensemble MAE: {mean_ens}")
+
+    result = {
+        'experiment': 'EXP-425: Combined Champion (h60_focus + aug + FT + ensemble)',
+        'results': all_results,
+    }
+    _save_results(result, 'exp425_combined_champion', cfg)
+
+    print(f"\n{'='*60}")
+    print("EXP-425 SUMMARY")
+    for vn, vr in all_results.items():
+        pp = ', '.join(f"{k}={v['ensemble_mae']:.1f}" for k, v in vr['per_patient'].items())
+        print(f"  {vn}: {vr['mean_ensemble_mae']:.2f} [{pp}]")
+    print(f"  EXP-410 reference: 10.85 (11pt) / ~13.87 (4pt quick)")
+    print(f"{'='*60}")
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -2523,6 +3110,9 @@ EXPERIMENTS = {
     '420': run_exp420,
     '421': run_exp421,
     '422': run_exp422,
+    '423': run_exp423,
+    '424': run_exp424,
+    '425': run_exp425,
 }
 
 
