@@ -322,16 +322,91 @@ For the live-split patient, decompose the conservation residual into:
 | EXP-480 | Live-Split Characterize | ✅ Done | 0.12 bolus/day |
 | EXP-481 | Live-Split Detection | ✅ Done | **2.0/day median** |
 | EXP-482 | Unified Detector | ✅ Done | Mode = 2 meals/day |
-| EXP-483 | Demand-Weighted Unified | 🔲 Proposed | — |
+| EXP-483 | Demand-Weighted Unified | ✅ Done | **96% detection on READY days** |
 | EXP-484 | Meal Size from Demand | 🔲 Proposed | — |
 | EXP-485 | AID Reaction Fingerprint | 🔲 Proposed | — |
-| EXP-486 | Dessert Detection | 🔲 Proposed | — |
+| EXP-486 | Dessert Detection | ✅ Done | 18% of dinners have dessert |
 | EXP-487 | Cross-Validation Transfer | 🔲 Proposed | — |
-| EXP-488 | Residual Decomposition | 🔲 Proposed | — |
+| EXP-488 | Residual Decomposition | ✅ Done | 25% meal, 13% dawn, 53% noise |
 
 ---
 
-## 8. Conclusions
+## 8. Precondition Gating (EXP-483b)
+
+A critical refinement: metabolic flux detection requires physical preconditions
+to be met. Without sufficient telemetry, the supply-demand framework has no inputs.
+
+### 8.1 Preconditions
+
+| Precondition | Threshold | Rationale |
+|:-------------|:---------:|:----------|
+| **CGM coverage** | ≥70% readings/day | Sensor must be active (no warmup, dropout, expiry) |
+| **Insulin telemetry** | ≥10% non-zero demand | Pump must be delivering (functional cannula, no occlusion) |
+| **Sufficient control** | (implicit) | AID must be reacting to meals for demand signal to exist |
+
+### 8.2 Impact on Live-Split
+
+Of 61 calendar days:
+
+| Status | Count | Reason |
+|--------|:-----:|--------|
+| **READY** | 50 | Both CGM and insulin data sufficient |
+| CGM gap | 7 | Sensor outage / warmup / session end |
+| INS gap | 1 | No insulin telemetry (first day, partial) |
+| Both gap | 3 | Full data outage |
+
+### 8.3 Precondition-Gated Results
+
+| Metric | All 61 days | 50 READY days |
+|--------|:-----------:|:-------------:|
+| Events/day mean | 2.2 ± 1.3 | **2.6 ± 1.0** |
+| Events/day median | 2 | **3** |
+| Detection rate | 82% (50/61) | **96% (48/50)** |
+| Days with 2–3 meals | 36/61 (59%) | **36/50 (72%)** |
+
+The 2 remaining zero-detection READY days are genuine algorithm misses that
+need investigation for threshold tuning.
+
+### 8.4 Implications for Production Use
+
+These preconditions should be **formally checked** before running any metabolic
+flux analysis. A "readiness score" can be computed per-day and used to:
+- Filter unreliable days from aggregated statistics
+- Provide user feedback ("sensor gap detected, skipping analysis for Feb 3")
+- Gate therapy adjustment recommendations (don't suggest ISF changes from noisy days)
+
+---
+
+## 9. Residual Decomposition (EXP-488)
+
+The conservation residual (actual ΔBG − predicted ΔBG) decomposes into four components:
+
+| Component | Time Share | Mean Residual | Variance Share | Positive % |
+|:----------|:---------:|:-------------:|:--------------:|:----------:|
+| **Meal** | 19% | **+3.77** | **25%** | 74% |
+| **Dawn** | 13% | +2.49 | 13% | 56% |
+| Exercise | 14% | +0.82 | 6% | 46% |
+| Noise | 55% | +1.70 | 53% | 50% |
+
+Key findings:
+- **Meal residual is strongly positive** (+3.77, 74% positive) — confirms residual
+  captures unmodeled carb supply
+- **Dawn residual positive** (+2.49) — hepatic model underestimates morning production
+- **Exercise window near-balanced** — suggesting insulin sensitivity increase ≈ balances out
+- **53% noise** — still majority of variance is unexplained; device factors (sensor age,
+  cannula degradation), stress, hormonal variation, sleep quality all contribute
+
+---
+
+## 10. Dessert Detection (EXP-486)
+
+Post-dinner secondary peaks (dessert) occur on **18% of dinners** (3/17), with a
+mean gap of **123 minutes** after dinner. This matches the user's description of
+"sometimes followed by dessert."
+
+---
+
+## 11. Conclusions
 
 The metabolic flux decomposition is **robust across the entire bolusing spectrum**,
 from aggressive pre-bolusers to near-100% UAM patients. The key insight is that the
@@ -339,14 +414,17 @@ framework degrades gracefully: when explicit supply data is missing (no carb ent
 the demand signal from AID reactions takes over, and the conservation residual captures
 the implicit supply.
 
-For the live-split acid test (0.12 boluses/day), demand-only detection achieves
-**median 2.0 meals/day** — matching the expected lunch-and-dinner pattern. This
-validates that the "close enough" idealized model works in practice: the physics
-framework provides the structure, the AID's behavior fills in the data, and the
-residual captures what neither explicitly models.
+**With precondition gating**, the demand-weighted detector achieves:
+- **96% detection rate** on days with sufficient telemetry
+- **2.6 meals/day** median on READY days (expected: 2–3)
+- **72% of READY days** show exactly 2–3 meals
+
+For the live-split acid test (0.12 boluses/day), this validates that the "close enough"
+idealized model works in practice: the physics framework provides the structure, the AID's
+behavior fills in the data, and the residual captures what neither explicitly models.
 
 The most promising next steps are:
 1. **Phase lag as UAM feature** (35-min separation) → improve classifier
-2. **Demand-weighted unified detector** → reduce false positives
-3. **Meal size estimation** from demand amplitude → clinical utility
-4. **Cross-validation** → prove features transfer across patients
+2. **Meal size estimation from demand amplitude** → clinical utility
+3. **Cross-validation** → prove features transfer across patients
+4. **Residual noise decomposition** → separate device factors from physiology
