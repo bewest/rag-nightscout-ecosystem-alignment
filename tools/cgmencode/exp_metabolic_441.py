@@ -108,13 +108,19 @@ def compute_supply_demand(df, pk_array=None):
         demand = np.abs(insulin_total * 5.0 * isf_curve)
 
         # carb_supply = carb_rate × 5min × (ISF / CR)
+        # Use time-varying CR schedule to respect circadian CR variation.
+        # Higher CR at certain times = less glucose impact per gram = EGP lower,
+        # which should move in-phase with basal rate changes.
         cr_sched = df.attrs.get('cr_schedule', [])
-        if cr_sched:
+        if cr_sched and hasattr(df.index, 'hour'):
+            cr_curve = expand_schedule(df.index, cr_sched, default=10.0)[:N]
+        elif cr_sched:
             cr_vals = [e.get('value', e.get('carbratio', 10)) for e in cr_sched]
-            cr_scalar = float(np.median(cr_vals))
+            cr_curve = np.full(N, float(np.median(cr_vals)))
         else:
-            cr_scalar = 10.0
-        carb_supply = np.abs(carb_rate * 5.0 * (isf_curve / max(cr_scalar, 1.0)))
+            cr_curve = np.full(N, 10.0)
+        safe_cr = np.maximum(cr_curve, 1.0)
+        carb_supply = np.abs(carb_rate * 5.0 * (isf_curve / safe_cr))
 
         hepatic = np.maximum(hepatic_raw, 0)
         supply = hepatic + carb_supply
