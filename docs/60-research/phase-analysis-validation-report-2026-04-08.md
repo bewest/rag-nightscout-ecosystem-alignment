@@ -282,7 +282,7 @@ The experiments reveal distinct patient archetypes:
 ### Research Direction: Residual Decomposition
 
 The 53% unexplained noise residual is the next frontier. Candidates:
-- **Exercise**: known to increase insulin sensitivity for 24-48h
+- **Exercise**: EXP-501 found no signature from flux alone; needs external markers
 - **Stress/illness**: cortisol increases hepatic glucose production
 - **Sleep quality**: affects dawn phenomenon magnitude
 - **Menstrual cycle**: progesterone increases insulin resistance
@@ -291,7 +291,70 @@ The 53% unexplained noise residual is the next frontier. Candidates:
 These cannot be measured from CGM/pump data alone, but their SIGNATURES may
 be detectable as structured patterns in the residual time series.
 
-## Appendix: Experiment Index
+### Proposed Next Wave (EXP-511–520)
+
+| ID | Name | Hypothesis |
+|----|------|-----------|
+| EXP-511 | Residual Clustering | Residual patterns cluster into interpretable categories |
+| EXP-512 | TDD-Normalized Features | TDD-relative flux features improve cross-patient transfer |
+| EXP-513 | Circadian Residual Phase | Residual has circadian structure beyond dawn phenomenon |
+| EXP-514 | Meal Response Typing | Meals cluster by absorption profile (fast/slow/biphasic) |
+| EXP-515 | Settings Recommendation | Fidelity components suggest specific settings adjustments |
+| EXP-516 | Live-Split Revalidation | Re-run EXP-496-510 on live-split zero-bolus dataset |
+| EXP-517 | Exercise HR Proxy | Basal suspension + low demand + no carbs → exercise proxy |
+| EXP-518 | Compression Ratio | Flux decomposition as lossy compression of BG signal |
+| EXP-519 | PK Channel Importance | SHAP/permutation importance of each PK channel for tasks |
+| EXP-520 | Multi-Month Drift | 3-month rolling fidelity predicts next 3-month outcomes |
+
+## Appendix A: Complete Experiment Results (EXP-495–510)
+
+### EXP-501: Exercise Signature
+- 0/10 confirmed post-exercise insulin sensitivity increase
+- Detection method (high demand without carbs) captures AID corrections, not exercise
+- Requires external physiological markers or different detection strategy
+
+### EXP-502: Meal Size Estimation
+- Demand integral strongly correlates with carb intake for bolusing patients
+  (g: r=0.902, h: r=0.865, a: r=0.789)
+- Weak for UAM patients (k: r=0.122, i: r=0.120) — no carb signal to validate
+- Large meals produce +28 to +80 mg/dL more excursion than small meals
+
+### EXP-503: Cross-Patient Transfer
+- **BREAKTHROUGH**: Distance from gold-standard predicts TIR: r=-0.960, p<0.0001
+- Top divergent features: time_above, resid_mean, flux_mean
+- Metabolic flux features perfectly rank patients by control quality
+
+### EXP-504: Multi-Week Aggregation
+- GMI range: 24.6% (k) to 45.7% (a)
+- 5/11 worsening, 4/11 improving, 2/11 stable over 6 months
+- Patient g worsening confirmed across multiple experiments
+
+### EXP-505: Dawn Phenomenon
+- Dawn rise: +15 (k) to +70 (a) mg/dL on clean fasting nights
+- Only 1-3% of nights are truly 'clean' (no carb/insulin activity)
+- No seasonal trend detected
+
+### EXP-506: Fat/Protein Tail
+- 27% of meals show extended absorption tails
+- Tail ratio consistent across patients (0.31-0.73)
+- Patient k: highest tail ratio (0.73), likely UAM-extended responses
+
+### EXP-508: AID Mode Fingerprint
+- 3 aggressive_temp, 2 conservative, 6 hybrid modes
+- Suspension rates 38-96% — normal for AID systems
+- Correction fraction 57-84% of total insulin activity
+
+### EXP-509: Absorption Window
+- 4-5h optimal for 10/11 patients (not default 3h)
+- Correlation improves monotonically from 1h → 5h
+- Extended absorption tails significant for meal modeling
+
+### EXP-510: Hepatic Production Scoring
+- 7/10 moderate overnight flux-BG correlation
+- Systematic negative bias (model over-predicts hepatic production)
+- Patient k: lowest RMSE (5.2) but poor correlation (BG barely moves)
+
+## Appendix B: Experiment Index
 
 | ID | Name | Script | Status |
 |----|------|--------|--------|
@@ -300,3 +363,12 @@ be detectable as structured patterns in the residual time series.
 | EXP-497 | Sensor Age | `exp_device_age_497.py` | ✅ Done |
 | EXP-498 | Site Age | `exp_device_age_497.py` | ✅ Done |
 | EXP-500 | Weekly Trend | `exp_fidelity_495.py` | ✅ Done |
+| EXP-501 | Exercise | `exp_exercise_501.py` | ✅ Done |
+| EXP-502 | Meal Size | `exp_exercise_501.py` | ✅ Done |
+| EXP-503 | Cross-Patient | `exp_transfer_503.py` | ✅ Done |
+| EXP-504 | Multi-Week | `exp_transfer_503.py` | ✅ Done |
+| EXP-505 | Dawn | `exp_dawn_505.py` | ✅ Done |
+| EXP-506 | Fat/Protein | `exp_dawn_505.py` | ✅ Done |
+| EXP-508 | AID Mode | `exp_dawn_505.py` | ✅ Done |
+| EXP-509 | Absorption | `exp_exercise_501.py` | ✅ Done |
+| EXP-510 | Production | `exp_transfer_503.py` | ✅ Done |
