@@ -308,3 +308,155 @@ Focus shifts from feature engineering (diminishing returns) to:
 8. **Final campaign benchmark** (EXP-928): Definitive best model with all guard rails
 9. **Clinical metric evaluation** (EXP-929): Evaluate best model on Clarke/Parkes error grid
 10. **Multi-step recursive prediction** (EXP-930): Predict 30-min, use prediction to predict 60-min
+
+
+---
+
+## Part III: Final Optimization & Clinical Evaluation (EXP-921-930)
+
+**Date**: 2026-04-08
+**Experiments**: EXP-921 through EXP-930
+**Script**: `tools/cgmencode/exp_autoresearch_921.py`
+
+### Results Summary
+
+| Exp | Name | R2 | Delta | Key Finding |
+|-----|------|-----|-------|-------------|
+| 921 | ToD Conditioning | 0.535 | +0.002 | Small but positive ToD signal |
+| 922 | Dawn/Day/Night Models | 0.531 | -0.002 | Splitting data hurts more than ToD helps |
+| 923 | Stacking Guard | 0.546 | +0.000 | Guard doesn't change outcome |
+| 924 | RFE Combined | 0.605* | -- | 38 features, needs investigation |
+| 925 | Heteroscedastic | corr=0.237 | -- | Poor variance prediction (62.6% coverage) |
+| 926 | Residual Clustering | bias=4.34 | -- | Midnight hours have most systematic bias |
+| 927 | CV Oracle | R2=1.0 | -- | Future BG trivially perfect (uninformative) |
+| 928 | Definitive Best Model | **0.550** | **+0.017** | 89.7% of oracle, campaign SOTA candidate |
+| 929 | Clarke Error Grid | A=64.6% | -- | 91.5% in safe zones A+B |
+| 930 | Recursive Prediction | 0.545 | +0.000 | No benefit from intermediate predictions |
+
+### Critical Findings
+
+#### EXP-928: Definitive Best Model -- R2=0.550
+
+The comprehensive model combining all productive features with CV stacking and data guards:
+
+| Patient | Forward Base | SOTA | Delta | Method |
+|---------|-------------|------|-------|--------|
+| i | 0.725 | **0.777** | +0.052 | CV stacking |
+| d | 0.671 | 0.677 | +0.006 | CV stacking |
+| f | 0.662 | 0.677 | +0.015 | CV stacking |
+| a | 0.606 | 0.628 | +0.022 | CV stacking |
+| e | 0.593 | 0.625 | +0.032 | CV stacking |
+| g | 0.575 | 0.586 | +0.011 | CV stacking |
+| b | 0.520 | 0.555 | +0.035 | CV stacking |
+| c | 0.488 | 0.536 | +0.048 | CV stacking |
+| j | 0.450 | 0.450 | +0.000 | Simple (< 25K steps) |
+| k | 0.373 | 0.373 | +0.000 | Simple (< 25K steps) |
+| h | 0.191 | 0.144 | -0.047 | CV stacking |
+
+**Patient i** reaches R2=0.777, the highest single-patient performance in the campaign. However, the stacking guard for patient j (simple model) prevents degradation, while patient h still drops with stacking.
+
+The population average R2=0.550 is at 89.7% of oracle, but below the prior EXP-871 SOTA of 0.561. This suggests the original backward-base stacking captured information that this forward-base stacking doesn't fully replicate.
+
+#### EXP-929: Clinical Evaluation -- Clarke Error Grid
+
+At 60-minute prediction horizon:
+- **Clarke Zone A** (clinically accurate): 64.6% of predictions
+- **Clarke Zone A+B** (safe): 91.5%
+- **MAE**: 27.3 mg/dL
+- **MARD**: 20.2%
+
+For context, CGM sensors themselves target 95%+ in Zone A+B for *current* readings. Our 60-minute *prediction* achieving 91.5% is competitive. The 20.2% MARD is comparable to early-generation CGM accuracy (~20% MARD for Dexcom G4), meaning our 60-minute forecast is roughly as accurate as a 2014-era CGM reading the current value.
+
+#### EXP-924: RFE Suggests High-Dimensional Model Has Room
+
+The full 38-feature model reaches R2=0.605 on at least some patients, very close to the oracle ceiling (0.613). However, per-patient RFE averages 0.543. The discrepancy suggests possible overfitting with many features on some patients. Key subset results:
+- 8 features: R2=0.052 (catastrophic -- wrong 8 selected)
+- 16 features: R2=0.557
+- 20 features: R2=0.584
+- 24 features: R2=0.604
+
+The 16-to-20 feature jump (+0.027) is large, suggesting features 17-20 carry significant information.
+
+#### EXP-926: Residual Patterns Reveal ToD Bias Structure
+
+Systematic bias by hour of day:
+- **Midnight (0-2.5h)**: +4.34 mg/dL bias, MAE=33.9 (worst)
+- **Morning (7-10h)**: -3.1 mg/dL bias, MAE=23.6 (best MAE)
+- **Afternoon (14-17h)**: +3.6 mg/dL, MAE=29.0
+- **Evening (12-14h)**: +2.6 mg/dL, MAE=21.7
+
+The model systematically over-predicts at night and under-predicts in the morning. This is consistent with dawn phenomenon and overnight insulin sensitivity changes.
+
+### Campaign Summary: 100 Experiments (EXP-831-930)
+
+#### Final Prediction Frontier
+
+```
+Naive persistence:              R2 = 0.292  (MAE=33.1)
+Physics-only flux:              R2 = 0.372
+Backward base 16-feature:       R2 = 0.506
+Forward base 16-feature:        R2 = 0.533
+Forward + all productive:       R2 = 0.545
+Forward CV stacking:            R2 = 0.549-0.550
+Prior SOTA (EXP-871):           R2 = 0.561  <- STILL BEST
+Practical ceiling:              R2 ~ 0.567
+Linear oracle ceiling:          R2 = 0.613
+```
+
+#### Error Budget (EXP-920)
+
+| Source | % of Residual | Reducible? |
+|--------|--------------|------------|
+| Random noise | 72.6% | No |
+| Meal uncertainty | 22.5% | Partially |
+| Time-of-day | 4.4% | Yes |
+| Patient bias | 0.5% | Yes |
+
+#### What Works (ranked by delta)
+
+| Rank | Technique | Delta | Experiment |
+|------|-----------|-------|------------|
+| 1 | Forward-looking sums | +0.027 | EXP-903/911 |
+| 2 | Multi-horizon CV stacking | +0.016-0.027 | EXP-871/919 |
+| 3 | Prediction disagreement | +0.013 | EXP-867 |
+| 4 | PK derivatives (backward only) | +0.009 | EXP-901 |
+| 5 | Post-prandial shape | +0.006 | EXP-893/913 |
+| 6 | Causal EMA | +0.005 | EXP-882 |
+| 7 | IOB curve shape | +0.004 | EXP-898 |
+| 8 | ToD features | +0.002 | EXP-921 |
+| 9 | Phase conditioning | +0.003 | EXP-909 |
+
+#### What Doesn't Work (100 experiment confirmed dead ends)
+
+- Nonlinear models (MLP, boosting): <= +0.002
+- Feature interactions: -0.001
+- AR residuals at any lag: -0.011
+- Sliding windows / recency: -0.006
+- Kalman filtering: -0.083
+- Meal-size proxies: -0.003
+- Basal/bolus decomposition: -0.001
+- Glucose momentum (captured by velocity): +0.000
+- Recursive multi-step prediction: +0.000
+- Separate regime models: -0.002
+
+#### Clinical Performance (EXP-929)
+
+| Metric | Value | Context |
+|--------|-------|---------|
+| Clarke Zone A | 64.6% | Clinically accurate predictions |
+| Clarke A+B | 91.5% | Safe predictions |
+| MAE | 27.3 mg/dL | Comparable to early CGM accuracy |
+| MARD | 20.2% | Similar to Dexcom G4 accuracy |
+| R2 | 0.550 | 89.7% of oracle |
+
+### Open Questions for Future Research
+
+1. **Why does EXP-871 SOTA (0.561) exceed EXP-928 (0.550)?** The backward-base stacking captured something the forward-base approach doesn't. Likely: the backward base's "weakness" created more diverse multi-horizon predictions, improving stacking diversity.
+
+2. **Can we combine backward and forward bases?** Using both sum directions as features could capture information from both temporal perspectives.
+
+3. **Is the 0.613 oracle truly the ceiling?** The oracle computation (EXP-918/927) is trivially R2=1.0 when using actual future BG. A proper oracle would use future *metabolic state* (supply/demand) without future BG directly.
+
+4. **Can meal composition be estimated from CGM response?** The post-prandial shape encodes absorption dynamics. Could a lookup table of known meal responses help classify and predict unknown meals?
+
+5. **Transfer learning across patients**: Can the best-predicted patients (i, d, f) help the worst (h, k, c)?
