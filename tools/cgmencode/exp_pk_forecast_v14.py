@@ -8326,6 +8326,874 @@ def run_exp449(args):
     return result
 
 
+# ─── EXP-450: Full Validation of Medium vs Full Model ───
+
+def run_exp450(args):
+    """EXP-450: Full validation of medium (d48,L3) vs full (d64,L4).
+
+    EXP-448 quick mode found medium BEATS full at h60 (17.85 vs 18.51).
+    Phase 4 taught us architecture comparisons in quick mode can be
+    DIRECTIONALLY WRONG. This is the critical 11-patient confirmation.
+
+    Configs: full (d64,L4,135K) vs medium (d48,L3,67K) vs small (d32,L2,26K).
+    All: w24, ISF norm, 8ch PK, 5-seed, per-patient FT.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-450: Full Validation — Medium vs Full Model")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=24,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    n_ch = train_x.shape[-1]
+    isf_v = data.get('isf_val')
+
+    configs = {
+        'full': {'d_model': 64, 'nhead': 4, 'num_layers': 4},
+        'medium': {'d_model': 48, 'nhead': 4, 'num_layers': 3},
+        'small': {'d_model': 32, 'nhead': 4, 'num_layers': 2},
+    }
+
+    result = {}
+    for vname, arch in configs.items():
+        print(f"\n{'─'*40}")
+        print(f"  Variant: {vname} (d={arch['d_model']}, L={arch['num_layers']})")
+        print(f"{'─'*40}")
+
+        m_test = PKGroupedEncoder(input_dim=n_ch, **arch)
+        n_params = sum(p.numel() for p in m_test.parameters())
+        print(f"  Parameters: {n_params:,}")
+
+        # Train base models
+        t0 = time.time()
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp450_{vname}_s{seed}.pth')
+            print(f"\n  Base s{seed}:")
+            train_bridge(model, train_x, val_x, sp, f'450-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+        base_time = time.time() - t0
+
+        # Per-patient FT + evaluation
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]
+            p_val = val_x[vi:ve]
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+            seed_maes = []
+            for seed, bstate in base_states.items():
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                m.load_state_dict(bstate)
+
+                fp = os.path.join(cfg['output_dir'], f'exp450_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'450-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4)
+                mae = evaluate_model(m, p_val, device, pk_mode=True, isf_val=p_isf)
+                seed_maes.append(mae)
+
+            # Ensemble
+            all_preds = []
+            for seed, bstate in base_states.items():
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                fp = os.path.join(cfg['output_dir'], f'exp450_{vname}_{pid}_s{seed}.pth')
+                if os.path.exists(fp):
+                    ckpt = torch.load(fp, map_location=device, weights_only=False)
+                    m.load_state_dict(ckpt['model_state'])
+                m.eval().to(device)
+                half = p_val.shape[1] // 2
+                with torch.no_grad():
+                    inp = p_val.to(device)
+                    pred = m(inp)[:, half:, :1].cpu().numpy()
+                all_preds.append(pred)
+
+            ens_pred = np.mean(all_preds, axis=0)
+            targets = p_val[:, half:, 0].numpy()
+            if p_isf is not None:
+                undo = (p_isf / GLUCOSE_SCALE).reshape(-1, 1)
+            else:
+                undo = 1.0
+            ens_mg = ens_pred[:, :, 0] * undo * GLUCOSE_SCALE
+            tgt_mg = targets * undo * GLUCOSE_SCALE
+            ens_mae = float(np.mean(np.abs(ens_mg - tgt_mg)))
+
+            # Per-horizon
+            horizons = {f'h{(s+1)*5}': s for s in range(half)}
+            horizon_maes = {}
+            for hname, idx in horizons.items():
+                horizon_maes[hname] = round(float(np.mean(np.abs(ens_mg[:, idx] - tgt_mg[:, idx]))), 2)
+
+            per_patient[pid] = {
+                'overall_mae': round(ens_mae, 2),
+                'ensemble_mae': round(ens_mae, 2),
+                **{k: v for k, v in horizon_maes.items() if k in ['h30', 'h60']},
+            }
+            print(f"    {pid}: overall={per_patient[pid]['overall_mae']}, "
+                  f"h60={per_patient[pid].get('h60','—')}")
+
+        # Average
+        avg = {}
+        for k in ['overall_mae', 'h30', 'h60']:
+            vals = [v[k] for v in per_patient.values() if k in v]
+            if vals:
+                avg[k] = round(np.mean(vals), 2)
+
+        result[vname] = {
+            'per_patient': per_patient,
+            'average': avg,
+            'params': n_params,
+            'base_train_time_s': round(base_time, 1),
+        }
+        print(f"\n  {vname}: h30={avg.get('h30','—')}, h60={avg.get('h60','—')}, "
+              f"overall={avg.get('overall_mae','—')}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-450 Summary: Medium vs Full Validation")
+    print(f"{'='*60}")
+    for vn, vd in result.items():
+        avg = vd['average']
+        print(f"  {vn}: h30={avg.get('h30','—')}, h60={avg.get('h60','—')}, "
+              f"overall={avg.get('overall_mae','—')}, params={vd['params']:,}")
+
+    _save_results(result, 'exp450_medium_vs_full', cfg)
+    return result
+
+
+# ─── EXP-451: Overnight Risk Prediction (Category E1) ───
+
+def _extract_overnight_features(patients_dir, max_patients=None):
+    """Extract evening context features and overnight outcomes.
+
+    For each night: 6h evening window (18:00-00:00) → overnight outcome (00:00-06:00).
+    Features: glucose trajectory, PK dynamics, meal/bolus history, variability.
+    Targets: overnight min glucose, overnight TIR, P(hypo), P(high).
+    """
+    from pathlib import Path
+    from datetime import datetime, timedelta
+
+    patients_path = Path(patients_dir)
+    patient_dirs = sorted(d for d in patients_path.iterdir()
+                          if d.is_dir() and (d / 'training').is_dir())
+    if max_patients:
+        patient_dirs = patient_dirs[:max_patients]
+
+    all_features = []
+    all_targets = []
+    all_patient_ids = []
+    all_patient_boundaries = []
+
+    for pdir in patient_dirs:
+        pid = pdir.name
+        train_dir = pdir / 'training'
+
+        entries_file = train_dir / 'entries.json'
+        if not entries_file.exists():
+            continue
+
+        try:
+            with open(entries_file) as f:
+                entries = json.load(f)
+        except Exception:
+            continue
+
+        if len(entries) < 288:
+            continue
+
+        # Parse glucose
+        timestamps = []
+        glucose_vals = []
+        for entry in entries:
+            try:
+                ts_str = entry.get('dateString', '')
+                mg = float(entry.get('sgv', 0))
+                if mg < 20 or mg > 500 or not ts_str:
+                    continue
+                ts = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
+                timestamps.append(ts)
+                glucose_vals.append(mg)
+            except (ValueError, KeyError, TypeError):
+                continue
+
+        if len(timestamps) < 288:
+            continue
+
+        sorted_idx = np.argsort([ts.timestamp() for ts in timestamps])
+        timestamps = [timestamps[i] for i in sorted_idx]
+        glucose_vals = [glucose_vals[i] for i in sorted_idx]
+        glucose_arr = np.array(glucose_vals, dtype=np.float32)
+        ts_arr = np.array([ts.timestamp() for ts in timestamps])
+
+        # Load treatments for PK context
+        treatments_file = train_dir / 'treatments.json'
+        treatments = []
+        if treatments_file.exists():
+            try:
+                with open(treatments_file) as f:
+                    treatments = json.load(f)
+            except Exception:
+                pass
+
+        # Group by date
+        dates_obj = [ts.date() for ts in timestamps]
+        dates = np.array(dates_obj)
+        unique_dates = sorted(set(dates))
+
+        patient_features = []
+        patient_targets = []
+
+        for date in unique_dates:
+            # Evening window: 18:00-00:00 on this date
+            evening_mask = np.array([
+                d == date and timestamps[i].hour >= 18
+                for i, d in enumerate(dates)
+            ])
+            evening_gluc = glucose_arr[evening_mask]
+
+            if len(evening_gluc) < 36:  # need ~3h coverage in evening
+                continue
+
+            # Overnight window: 00:00-06:00 on NEXT date
+            next_date = date + timedelta(days=1)
+            overnight_mask = np.array([
+                d == next_date and timestamps[i].hour < 6
+                for i, d in enumerate(dates)
+            ])
+            overnight_gluc = glucose_arr[overnight_mask]
+
+            if len(overnight_gluc) < 36:  # need ~3h coverage overnight
+                continue
+
+            # === Evening features (inputs) ===
+            feats = []
+
+            # Glucose trajectory (last 6h before midnight)
+            feats.append(evening_gluc[-1])             # bedtime glucose
+            feats.append(np.mean(evening_gluc))        # evening mean
+            feats.append(np.std(evening_gluc))         # evening variability
+            feats.append(np.min(evening_gluc))         # evening min
+            feats.append(np.max(evening_gluc))         # evening max
+            feats.append(evening_gluc[-1] - evening_gluc[0])  # evening trend
+
+            # TIR in evening
+            tir_eve = np.mean((evening_gluc >= 70) & (evening_gluc <= 180)) * 100
+            feats.append(tir_eve)
+            feats.append(np.mean(evening_gluc < 70) * 100)   # time below 70
+            feats.append(np.mean(evening_gluc > 180) * 100)  # time above 180
+
+            # Glucose rate of change (last hour)
+            if len(evening_gluc) >= 12:
+                roc = (evening_gluc[-1] - evening_gluc[-12]) / 60  # mg/dL per min
+                feats.append(roc)
+            else:
+                feats.append(0.0)
+
+            # Coefficient of variation
+            cv = np.std(evening_gluc) / np.mean(evening_gluc) * 100 if np.mean(evening_gluc) > 0 else 0
+            feats.append(cv)
+
+            # Glucodensity bins (evening)
+            bins = np.linspace(40, 400, 9)
+            hist, _ = np.histogram(evening_gluc, bins=bins, density=True)
+            feats.extend(hist.tolist())
+
+            # Treatment context: dinner bolus, evening carbs, recent IOB
+            date_start = datetime(date.year, date.month, date.day, 18, 0,
+                                  tzinfo=timestamps[0].tzinfo if timestamps[0].tzinfo else None)
+            date_end = datetime(date.year, date.month, date.day, 23, 59,
+                                tzinfo=timestamps[0].tzinfo if timestamps[0].tzinfo else None)
+
+            eve_insulin = 0.0
+            eve_carbs = 0.0
+            eve_bolus_count = 0
+            eve_meal_count = 0
+
+            for t in treatments:
+                try:
+                    t_ts_str = t.get('created_at', t.get('timestamp', ''))
+                    if not t_ts_str:
+                        continue
+                    t_ts = datetime.fromisoformat(t_ts_str.replace('Z', '+00:00'))
+                    if date_start <= t_ts <= date_end:
+                        ins = float(t.get('insulin') or 0)
+                        carbs_val = float(t.get('carbs') or 0)
+                        eve_insulin += ins
+                        eve_carbs += carbs_val
+                        if ins > 0:
+                            eve_bolus_count += 1
+                        if carbs_val > 0:
+                            eve_meal_count += 1
+                except (ValueError, TypeError, KeyError):
+                    continue
+
+            feats.extend([eve_insulin, eve_carbs, eve_bolus_count, eve_meal_count])
+
+            # Day-of-week (sin/cos)
+            dow = date.weekday()  # 0=Monday
+            feats.append(np.sin(2 * np.pi * dow / 7))
+            feats.append(np.cos(2 * np.pi * dow / 7))
+
+            # === Overnight targets (outputs) ===
+            overnight_min = float(np.min(overnight_gluc))
+            overnight_mean = float(np.mean(overnight_gluc))
+            overnight_tir = float(np.mean((overnight_gluc >= 70) & (overnight_gluc <= 180)) * 100)
+            overnight_hypo = int(np.any(overnight_gluc < 70))
+            overnight_high = int(np.any(overnight_gluc > 250))
+            overnight_time_below = float(np.mean(overnight_gluc < 70) * 100)
+
+            patient_features.append(feats)
+            patient_targets.append({
+                'min_glucose': overnight_min,
+                'mean_glucose': overnight_mean,
+                'tir': overnight_tir,
+                'hypo': overnight_hypo,
+                'high': overnight_high,
+                'time_below_70': overnight_time_below,
+            })
+
+        if len(patient_features) < 20:
+            continue
+
+        n_start = len(all_features)
+        all_features.extend(patient_features)
+        all_targets.extend(patient_targets)
+        all_patient_ids.extend([pid] * len(patient_features))
+        all_patient_boundaries.append({
+            'name': pid,
+            'start': n_start,
+            'end': n_start + len(patient_features),
+            'n_nights': len(patient_features),
+            'hypo_rate': np.mean([t['hypo'] for t in patient_targets]) * 100,
+        })
+        print(f"  {pid}: {len(patient_features)} nights, "
+              f"hypo_rate={all_patient_boundaries[-1]['hypo_rate']:.1f}%")
+
+    return {
+        'features': np.array(all_features, dtype=np.float32),
+        'targets': all_targets,
+        'patient_ids': all_patient_ids,
+        'patient_boundaries': all_patient_boundaries,
+    }
+
+
+def run_exp451(args):
+    """EXP-451: Overnight Risk Prediction (Category E1).
+
+    Hypothesis: 6h evening context (glucose trajectory, PK dynamics, meal/bolus
+    history) can predict overnight hypo/high risk with clinically useful AUC-ROC.
+
+    This is the highest-impact Category E use case: "Will I go low tonight?"
+
+    Method:
+    - Extract 27 evening features per night + 8 glucodensity bins + 4 treatment features
+    - Chronological per-patient split (80/20)
+    - Models: LogisticRegression, GradientBoosting, Ridge (for regression targets)
+    - Metrics: AUC-ROC, sensitivity, specificity, F1 for hypo classification
+    - Also: Ridge regression for overnight min glucose and TIR
+    """
+    from sklearn.linear_model import LogisticRegression, Ridge
+    from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
+    from sklearn.metrics import roc_auc_score, f1_score, precision_score, recall_score
+    from sklearn.preprocessing import StandardScaler
+
+    cfg = _get_config(args)
+    print(f"\n{'='*60}")
+    print(f"EXP-451: Overnight Risk Prediction (Category E1)")
+    print(f"{'='*60}")
+
+    data = _extract_overnight_features(args.patients_dir, cfg['max_patients'])
+    if len(data['patient_boundaries']) == 0:
+        print("  No patient data found!")
+        return {}
+
+    result = {}
+    overall_hypo_true = []
+    overall_hypo_pred = []
+    overall_hypo_prob = []
+
+    for pbound in data['patient_boundaries']:
+        pid = pbound['name']
+        s, e = pbound['start'], pbound['end']
+        n = e - s
+
+        feats = data['features'][s:e]
+        targets = data['targets'][s:e]
+
+        # Chronological split
+        split = int(n * 0.8)
+        if split < 15 or (n - split) < 10:
+            continue
+
+        X_train, X_val = feats[:split], feats[split:]
+        y_hypo_train = np.array([t['hypo'] for t in targets[:split]])
+        y_hypo_val = np.array([t['hypo'] for t in targets[split:]])
+        y_min_train = np.array([t['min_glucose'] for t in targets[:split]])
+        y_min_val = np.array([t['min_glucose'] for t in targets[split:]])
+        y_tir_train = np.array([t['tir'] for t in targets[:split]])
+        y_tir_val = np.array([t['tir'] for t in targets[split:]])
+
+        # Standardize features
+        scaler = StandardScaler()
+        X_train_s = scaler.fit_transform(X_train)
+        X_val_s = scaler.transform(X_val)
+
+        patient_result = {
+            'n_nights': n,
+            'n_train': split,
+            'n_val': n - split,
+            'hypo_rate_train': round(float(np.mean(y_hypo_train)) * 100, 1),
+            'hypo_rate_val': round(float(np.mean(y_hypo_val)) * 100, 1),
+        }
+
+        # --- Hypo classification ---
+        hypo_results = {}
+
+        # Check if there's enough positive class
+        n_hypo_train = int(np.sum(y_hypo_train))
+        n_hypo_val = int(np.sum(y_hypo_val))
+
+        if n_hypo_train >= 3 and n_hypo_val >= 2:
+            # Logistic Regression
+            lr = LogisticRegression(max_iter=1000, class_weight='balanced', C=0.1)
+            lr.fit(X_train_s, y_hypo_train)
+            lr_prob = lr.predict_proba(X_val_s)[:, 1]
+            lr_pred = (lr_prob >= 0.5).astype(int)
+
+            lr_auc = roc_auc_score(y_hypo_val, lr_prob) if len(set(y_hypo_val)) > 1 else 0.5
+            lr_f1 = f1_score(y_hypo_val, lr_pred, zero_division=0)
+            lr_sens = recall_score(y_hypo_val, lr_pred, zero_division=0)
+            lr_prec = precision_score(y_hypo_val, lr_pred, zero_division=0)
+
+            hypo_results['logistic'] = {
+                'auc_roc': round(lr_auc, 3),
+                'f1': round(lr_f1, 3),
+                'sensitivity': round(lr_sens, 3),
+                'precision': round(lr_prec, 3),
+            }
+
+            # Gradient Boosting
+            gb = GradientBoostingClassifier(
+                n_estimators=100, max_depth=3, learning_rate=0.1,
+                min_samples_leaf=5, subsample=0.8)
+            gb.fit(X_train_s, y_hypo_train)
+            gb_prob = gb.predict_proba(X_val_s)[:, 1]
+            gb_pred = (gb_prob >= 0.5).astype(int)
+
+            gb_auc = roc_auc_score(y_hypo_val, gb_prob) if len(set(y_hypo_val)) > 1 else 0.5
+            gb_f1 = f1_score(y_hypo_val, gb_pred, zero_division=0)
+            gb_sens = recall_score(y_hypo_val, gb_pred, zero_division=0)
+
+            hypo_results['gradient_boost'] = {
+                'auc_roc': round(gb_auc, 3),
+                'f1': round(gb_f1, 3),
+                'sensitivity': round(gb_sens, 3),
+            }
+
+            # Bedtime-glucose-only baseline
+            bedtime_gluc_train = X_train[:, 0]  # first feature = bedtime glucose
+            bedtime_gluc_val = X_val[:, 0]
+            # Simple threshold: predict hypo if bedtime glucose < threshold
+            # Find best threshold on training data
+            best_thresh = 120
+            best_f1_base = 0
+            for thresh in range(80, 200, 5):
+                base_pred = (bedtime_gluc_train < thresh).astype(int)
+                f1_t = f1_score(y_hypo_train, base_pred, zero_division=0)
+                if f1_t > best_f1_base:
+                    best_f1_base = f1_t
+                    best_thresh = thresh
+
+            base_pred_val = (bedtime_gluc_val < best_thresh).astype(int)
+            base_f1 = f1_score(y_hypo_val, base_pred_val, zero_division=0)
+            base_sens = recall_score(y_hypo_val, base_pred_val, zero_division=0)
+
+            hypo_results['bedtime_threshold'] = {
+                'threshold': best_thresh,
+                'f1': round(base_f1, 3),
+                'sensitivity': round(base_sens, 3),
+            }
+
+            # Collect for overall AUC
+            overall_hypo_true.extend(y_hypo_val.tolist())
+            overall_hypo_prob.extend(lr_prob.tolist())
+            overall_hypo_pred.extend(lr_pred.tolist())
+        else:
+            hypo_results['note'] = f'Insufficient hypo events (train={n_hypo_train}, val={n_hypo_val})'
+
+        patient_result['hypo'] = hypo_results
+
+        # --- Min glucose regression ---
+        ridge_min = Ridge(alpha=1.0)
+        ridge_min.fit(X_train_s, y_min_train)
+        min_pred = ridge_min.predict(X_val_s)
+        min_mae = float(np.mean(np.abs(min_pred - y_min_val)))
+
+        # Persistence baseline: overnight min = bedtime glucose - some constant
+        persist_min_mae = float(np.mean(np.abs(X_val[:, 0] - y_min_val)))
+
+        patient_result['min_glucose'] = {
+            'ridge_mae': round(min_mae, 1),
+            'persist_mae': round(persist_min_mae, 1),
+            'delta': round(min_mae - persist_min_mae, 1),
+        }
+
+        # --- TIR regression ---
+        ridge_tir = Ridge(alpha=1.0)
+        ridge_tir.fit(X_train_s, y_tir_train)
+        tir_pred = ridge_tir.predict(X_val_s)
+        tir_mae = float(np.mean(np.abs(tir_pred - y_tir_val)))
+
+        persist_tir_mae = float(np.mean(np.abs(
+            np.array([t['tir'] for t in targets[:split]])[-1] - y_tir_val)))
+
+        patient_result['overnight_tir'] = {
+            'ridge_mae': round(tir_mae, 1),
+            'persist_mae': round(persist_tir_mae, 1),
+        }
+
+        result[pid] = patient_result
+        print(f"\n  {pid} ({n} nights, {pbound['hypo_rate']:.0f}% hypo rate):")
+        if 'logistic' in hypo_results:
+            print(f"    Hypo AUC={hypo_results['logistic']['auc_roc']}, "
+                  f"F1={hypo_results['logistic']['f1']}, "
+                  f"sens={hypo_results['logistic']['sensitivity']}")
+            print(f"    Bedtime threshold F1={hypo_results['bedtime_threshold']['f1']}, "
+                  f"sens={hypo_results['bedtime_threshold']['sensitivity']} "
+                  f"(thresh={hypo_results['bedtime_threshold']['threshold']})")
+        print(f"    Min glucose: Ridge MAE={patient_result['min_glucose']['ridge_mae']}, "
+              f"Persist MAE={patient_result['min_glucose']['persist_mae']}")
+
+    # Overall hypo classification
+    if len(overall_hypo_true) > 10:
+        overall_auc = roc_auc_score(overall_hypo_true, overall_hypo_prob)
+        overall_f1 = f1_score(overall_hypo_true, overall_hypo_pred, zero_division=0)
+        overall_sens = recall_score(overall_hypo_true, overall_hypo_pred, zero_division=0)
+        result['_overall'] = {
+            'auc_roc': round(overall_auc, 3),
+            'f1': round(overall_f1, 3),
+            'sensitivity': round(overall_sens, 3),
+            'n_nights': len(overall_hypo_true),
+            'hypo_rate': round(np.mean(overall_hypo_true) * 100, 1),
+        }
+        print(f"\n  Overall ({len(overall_hypo_true)} nights, "
+              f"{result['_overall']['hypo_rate']}% hypo):")
+        print(f"    AUC-ROC={overall_auc:.3f}, F1={overall_f1:.3f}, "
+              f"sens={overall_sens:.3f}")
+
+    print(f"\n{'='*60}")
+    print(f"EXP-451 Summary: Overnight Risk Prediction")
+    print(f"{'='*60}")
+    for pid, pr in result.items():
+        if pid == '_overall':
+            continue
+        hypo = pr.get('hypo', {})
+        if 'logistic' in hypo:
+            print(f"  {pid}: AUC={hypo['logistic']['auc_roc']}, "
+                  f"F1={hypo['logistic']['f1']}, "
+                  f"min_gluc_MAE={pr['min_glucose']['ridge_mae']}")
+        else:
+            print(f"  {pid}: {hypo.get('note', 'no hypo data')}")
+    if '_overall' in result:
+        ov = result['_overall']
+        print(f"\n  Pooled: AUC={ov['auc_roc']}, F1={ov['f1']}, sens={ov['sensitivity']}")
+
+    _save_results(result, 'exp451_overnight_risk', cfg)
+    return result
+
+
+# ─── EXP-452: Weekly Hotspot Analysis (Category E5) ───
+
+def _extract_weekly_blocks(patients_dir, max_patients=None):
+    """Extract per-6h-block TIR statistics across weeks.
+
+    Groups all data into 28 weekly time blocks (7 days × 4 6h blocks).
+    For each block, compute TIR, hypo%, mean glucose, variability.
+    Identifies "hotspots" — blocks with consistently worse outcomes.
+    """
+    from pathlib import Path
+    from datetime import datetime
+
+    patients_path = Path(patients_dir)
+    patient_dirs = sorted(d for d in patients_path.iterdir()
+                          if d.is_dir() and (d / 'training').is_dir())
+    if max_patients:
+        patient_dirs = patient_dirs[:max_patients]
+
+    block_names = []
+    days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    periods = ['00-06', '06-12', '12-18', '18-24']
+    for day in days:
+        for period in periods:
+            block_names.append(f'{day}_{period}')
+
+    all_patients = {}
+
+    for pdir in patient_dirs:
+        pid = pdir.name
+        train_dir = pdir / 'training'
+
+        entries_file = train_dir / 'entries.json'
+        if not entries_file.exists():
+            continue
+
+        try:
+            with open(entries_file) as f:
+                entries = json.load(f)
+        except Exception:
+            continue
+
+        if len(entries) < 288:
+            continue
+
+        timestamps = []
+        glucose_vals = []
+        for entry in entries:
+            try:
+                ts_str = entry.get('dateString', '')
+                mg = float(entry.get('sgv', 0))
+                if mg < 20 or mg > 500 or not ts_str:
+                    continue
+                ts = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
+                timestamps.append(ts)
+                glucose_vals.append(mg)
+            except (ValueError, KeyError, TypeError):
+                continue
+
+        if len(timestamps) < 288:
+            continue
+
+        sorted_idx = np.argsort([ts.timestamp() for ts in timestamps])
+        timestamps = [timestamps[i] for i in sorted_idx]
+        glucose_vals = [glucose_vals[i] for i in sorted_idx]
+        glucose_arr = np.array(glucose_vals, dtype=np.float32)
+
+        # Compute block index for each reading
+        # block = weekday * 4 + period_index
+        block_data = {i: [] for i in range(28)}
+        # Also track by week for stability analysis
+        week_block_data = {}  # (iso_week, block_idx) → [glucose values]
+
+        for i, ts in enumerate(timestamps):
+            weekday = ts.weekday()  # 0=Mon
+            period = ts.hour // 6   # 0-3
+            block_idx = weekday * 4 + period
+            block_data[block_idx].append(glucose_arr[i])
+
+            iso_week = ts.isocalendar()[1]
+            key = (iso_week, block_idx)
+            if key not in week_block_data:
+                week_block_data[key] = []
+            week_block_data[key].append(glucose_arr[i])
+
+        # Compute per-block statistics
+        block_stats = {}
+        for bidx in range(28):
+            vals = np.array(block_data[bidx])
+            if len(vals) < 10:
+                continue
+            tir = float(np.mean((vals >= 70) & (vals <= 180)) * 100)
+            hypo_pct = float(np.mean(vals < 70) * 100)
+            high_pct = float(np.mean(vals > 180) * 100)
+            mean_g = float(np.mean(vals))
+            std_g = float(np.std(vals))
+            cv = std_g / mean_g * 100 if mean_g > 0 else 0
+
+            block_stats[block_names[bidx]] = {
+                'tir': round(tir, 1),
+                'hypo_pct': round(hypo_pct, 1),
+                'high_pct': round(high_pct, 1),
+                'mean_glucose': round(mean_g, 1),
+                'std_glucose': round(std_g, 1),
+                'cv': round(cv, 1),
+                'n_readings': len(vals),
+            }
+
+        # Stability: compute per-week TIR for each block, check consistency
+        block_weekly_tir = {i: [] for i in range(28)}
+        weeks = sorted(set(k[0] for k in week_block_data.keys()))
+        for (week, bidx), vals in week_block_data.items():
+            if len(vals) >= 10:
+                tir = float(np.mean((np.array(vals) >= 70) & (np.array(vals) <= 180)) * 100)
+                block_weekly_tir[bidx].append(tir)
+
+        stability = {}
+        for bidx in range(28):
+            tirs = block_weekly_tir[bidx]
+            if len(tirs) >= 4:
+                stability[block_names[bidx]] = {
+                    'mean_tir': round(float(np.mean(tirs)), 1),
+                    'std_tir': round(float(np.std(tirs)), 1),
+                    'n_weeks': len(tirs),
+                    'min_tir': round(float(np.min(tirs)), 1),
+                    'max_tir': round(float(np.max(tirs)), 1),
+                }
+
+        # Rank blocks by risk (lowest TIR = highest risk)
+        ranked = sorted(block_stats.items(), key=lambda x: x[1]['tir'])
+
+        # Identify hotspots: blocks with TIR < patient's median TIR
+        all_tirs = [v['tir'] for v in block_stats.values()]
+        median_tir = float(np.median(all_tirs)) if all_tirs else 70
+
+        hotspots = [name for name, stats in block_stats.items()
+                    if stats['tir'] < median_tir - 5]  # 5% below median
+
+        all_patients[pid] = {
+            'block_stats': block_stats,
+            'stability': stability,
+            'ranked_blocks': [(name, stats['tir']) for name, stats in ranked[:5]],
+            'hotspots': hotspots,
+            'n_weeks': len(weeks),
+            'median_tir': round(median_tir, 1),
+        }
+
+    return all_patients
+
+
+def run_exp452(args):
+    """EXP-452: Weekly Hotspot Analysis (Category E5).
+
+    Hypothesis: Patients have identifiable worst 6h blocks in their weekly routine
+    that are consistent across weeks. Finding these hotspots enables targeted
+    treatment adjustment with minimal data or ML.
+
+    This is the lowest-complexity, highest-impact treatment planning use case.
+    No ML needed — just descriptive statistics + ranking.
+
+    Output: Ranked list of weekly time-blocks by risk for each patient.
+    Metrics: Hotspot stability across weeks, TIR improvement potential.
+    """
+    cfg = _get_config(args)
+    print(f"\n{'='*60}")
+    print(f"EXP-452: Weekly Hotspot Analysis (Category E5)")
+    print(f"{'='*60}")
+
+    all_patients = _extract_weekly_blocks(args.patients_dir, cfg['max_patients'])
+
+    if not all_patients:
+        print("  No patient data found!")
+        return {}
+
+    result = {}
+    for pid, pdata in all_patients.items():
+        result[pid] = pdata
+
+        print(f"\n  {pid} ({pdata['n_weeks']} weeks, median TIR={pdata['median_tir']}%):")
+        print(f"    Worst 5 blocks:")
+        for name, tir in pdata['ranked_blocks'][:5]:
+            stab = pdata['stability'].get(name, {})
+            stab_str = f" (±{stab['std_tir']:.0f}% across {stab['n_weeks']}wk)" if stab else ""
+            print(f"      {name:>12}: TIR={tir:.1f}%{stab_str}")
+
+        if pdata['hotspots']:
+            print(f"    Hotspots (>{5}% below median): {', '.join(pdata['hotspots'][:8])}")
+
+    # Cross-patient analysis: are there universal bad times?
+    print(f"\n{'='*60}")
+    print(f"Cross-Patient Analysis: Universal Hotspots")
+    print(f"{'='*60}")
+
+    # Count how often each block appears in worst-5 across patients
+    block_risk_count = {}
+    block_tirs_across = {}
+    for pid, pdata in all_patients.items():
+        for name, tir in pdata['ranked_blocks'][:5]:
+            block_risk_count[name] = block_risk_count.get(name, 0) + 1
+        for name, stats in pdata['block_stats'].items():
+            if name not in block_tirs_across:
+                block_tirs_across[name] = []
+            block_tirs_across[name].append(stats['tir'])
+
+    # Find blocks that are consistently bad across patients
+    n_patients = len(all_patients)
+    universal_bad = [(name, count) for name, count in
+                     sorted(block_risk_count.items(), key=lambda x: -x[1])
+                     if count >= max(2, n_patients * 0.4)]
+
+    if universal_bad:
+        print(f"  Blocks in worst-5 for ≥40% of patients:")
+        for name, count in universal_bad[:10]:
+            avg_tir = np.mean(block_tirs_across.get(name, [0]))
+            print(f"    {name:>12}: {count}/{n_patients} patients, avg TIR={avg_tir:.1f}%")
+    else:
+        print(f"  No universal hotspots found (patterns are patient-specific)")
+
+    # Weekday vs Weekend
+    weekday_tirs = []
+    weekend_tirs = []
+    for name, tirs in block_tirs_across.items():
+        day = name.split('_')[0]
+        if day in ['Sat', 'Sun']:
+            weekend_tirs.extend(tirs)
+        else:
+            weekday_tirs.extend(tirs)
+
+    if weekday_tirs and weekend_tirs:
+        wd_mean = np.mean(weekday_tirs)
+        we_mean = np.mean(weekend_tirs)
+        print(f"\n  Weekday TIR: {wd_mean:.1f}%, Weekend TIR: {we_mean:.1f}% "
+              f"(Δ={we_mean-wd_mean:+.1f}%)")
+
+    # Night vs Day
+    night_tirs = []
+    day_tirs = []
+    for name, tirs in block_tirs_across.items():
+        period = name.split('_')[1]
+        if period in ['00-06', '18-24']:
+            night_tirs.extend(tirs)
+        else:
+            day_tirs.extend(tirs)
+
+    if night_tirs and day_tirs:
+        night_mean = np.mean(night_tirs)
+        day_mean = np.mean(day_tirs)
+        print(f"  Day TIR: {day_mean:.1f}%, Night TIR: {night_mean:.1f}% "
+              f"(Δ={night_mean-day_mean:+.1f}%)")
+
+    # Improvement potential: if hotspot blocks improved to median
+    total_improvement = []
+    for pid, pdata in all_patients.items():
+        for hs_name in pdata['hotspots']:
+            hs_stats = pdata['block_stats'].get(hs_name, {})
+            gap = pdata['median_tir'] - hs_stats.get('tir', pdata['median_tir'])
+            if gap > 0:
+                total_improvement.append(gap)
+
+    if total_improvement:
+        avg_gap = np.mean(total_improvement)
+        print(f"\n  If hotspot blocks improved to patient median:")
+        print(f"    Average TIR improvement potential: +{avg_gap:.1f}% per hotspot block")
+        print(f"    Total addressable hotspots: {len(total_improvement)}")
+
+    result['_cross_patient'] = {
+        'universal_hotspots': [(n, c) for n, c in universal_bad] if universal_bad else [],
+        'weekday_tir': round(float(np.mean(weekday_tirs)), 1) if weekday_tirs else None,
+        'weekend_tir': round(float(np.mean(weekend_tirs)), 1) if weekend_tirs else None,
+        'night_tir': round(float(np.mean(night_tirs)), 1) if night_tirs else None,
+        'day_tir': round(float(np.mean(day_tirs)), 1) if day_tirs else None,
+        'improvement_potential': round(avg_gap, 1) if total_improvement else 0,
+    }
+
+    _save_results(result, 'exp452_weekly_hotspots', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -8368,6 +9236,9 @@ EXPERIMENTS = {
     '447': run_exp447,
     '448': run_exp448,
     '449': run_exp449,
+    '450': run_exp450,
+    '451': run_exp451,
+    '452': run_exp452,
 }
 
 
