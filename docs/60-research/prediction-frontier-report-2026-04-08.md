@@ -736,3 +736,152 @@ The remaining gap (0.036) decomposes as:
 - Error regime awareness
 
 The campaign has achieved ~90% of what's theoretically possible with available CGM+AID data for 60-minute glucose prediction.
+
+
+---
+
+## Part VI: Beyond the Frontier — Regime, Interactions, Multi-Horizon (EXP-951-960)
+
+**Date**: 2026-04-08
+**Experiments**: EXP-951 through EXP-960
+**Script**: `tools/cgmencode/exp_autoresearch_951.py`
+
+### NEW SOTA: R²=0.581 (EXP-951, Regime + Grand Stacking)
+
+### Results Summary
+
+| Exp | Name | R² | Delta vs 950 | Key Finding |
+|-----|------|-----|-------|-------------|
+| 951 | Regime + Grand Stacking | **0.581** | **+0.004** | **NEW SOTA! Regime additive with stacking** |
+| 952 | Residual AR Correction | 0.929 | -- | ⚠️ LEAKY (see analysis below) |
+| 953 | Sensor Proxy Features | 0.578 | +0.001 | Marginal, not worth complexity |
+| 954 | Dawn/Overnight Conditioning | 0.576 | -0.001 | Hurts slightly — already captured by hour features |
+| 955 | Non-Linear Meta-Learner | **0.581** | **+0.004** | Polynomial stacking matches regime! |
+| 956 | Feature Interactions | 0.579 | +0.002 | Small benefit from cross-products |
+| 957 | Multi-Horizon Evaluation | -- | -- | 30min=0.785, 60min=0.577, 90min=0.430, 120min=0.342 |
+| 958 | Per-Patient Feature Selection | -- | -- | All 39 features >> top-K (ridge regularizes well) |
+| 959 | Rolling/Online Learning | 0.485 | -0.071 | Online HURTS (-0.071) — more data > recency |
+| 960 | Grand Ensemble + AR | 0.579/0.928 | -- | Ensemble +0.002, AR correction leaky |
+
+### EXP-951: Regime Feature Is Additive with Stacking — NEW SOTA
+
+The error regime feature (running median absolute error from a base model, EXP-945) combines with CV stacking to push R² from 0.577 to **0.581**:
+
+| Patient | Base | No-Regime Stack | +Regime Stack | Δ Regime |
+|---------|------|-----------------|---------------|----------|
+| a | 0.618 | 0.632 | 0.634 | +0.002 |
+| b | 0.541 | 0.548 | 0.558 | +0.010 |
+| c | 0.527 | 0.570 | 0.567 | -0.003 |
+| d | 0.692 | 0.708 | 0.712 | +0.004 |
+| e | 0.635 | 0.652 | 0.648 | -0.005 |
+| f | 0.672 | 0.677 | 0.684 | +0.007 |
+| g | 0.600 | 0.604 | 0.614 | +0.010 |
+| h | 0.216 | 0.288 | 0.295 | +0.007 |
+| i | 0.759 | 0.784 | 0.789 | +0.005 |
+| j | 0.455 | 0.467 | 0.467 | +0.001 |
+| k | 0.402 | 0.421 | 0.424 | +0.004 |
+
+8/11 patients improve. The regime feature helps because knowing when the model is in a "calm" vs "volatile" period allows the meta-learner to weight predictions differently.
+
+### EXP-952: Residual AR Correction — DATA LEAKAGE DISCOVERED
+
+The dramatic R²=0.929 (alpha=0.934) is **a data leakage artifact**, not a real improvement. Analysis:
+
+- `residuals[split+j-1]` contains `actual[split+j-1] - pred[split+j-1]`
+- `actual[split+j-1]` = `bg[start+split+j-1+h_steps+1]` = BG at **h_steps steps in the future**
+- At prediction time (start+split+j), this future BG is **unknown**
+- The correct lag for a causal AR correction is `h_steps+1 = 13 steps`, not 1
+- Using lag-1 is equivalent to using the actual 55-minute-ahead BG as a feature
+
+**Lesson**: When implementing temporal AR corrections for multi-step-ahead predictions, the residual lag must be at least as large as the prediction horizon. A follow-up experiment with correct lag-13 is needed.
+
+### EXP-955: Polynomial Meta-Learner Also Reaches 0.581
+
+Non-linear stacking with polynomial (degree-2) features of horizon predictions achieves R²=0.581, matching the regime feature. Key per-patient results:
+
+| Patient | Linear | Poly | Δ |
+|---------|--------|------|---|
+| b | 0.548 | 0.561 | +0.014 |
+| h | 0.288 | 0.306 | +0.018 |
+| c | 0.570 | 0.577 | +0.007 |
+
+The polynomial meta-learner helps MOST for the hardest patients (b, h), suggesting that stacking prediction interactions (e.g., "15min pred × 60min pred") capture regime-like information implicitly.
+
+### EXP-957: Multi-Horizon Performance Curve
+
+The prediction quality degrades smoothly with horizon:
+
+| Horizon | Mean R² | Patient i (best) | Patient h (worst) |
+|---------|---------|-------------------|-------------------|
+| 30 min | **0.785** | 0.906 | 0.599 |
+| 60 min | 0.577 | 0.784 | 0.288 |
+| 90 min | 0.430 | 0.684 | 0.098 |
+| 120 min | 0.342 | 0.603 | -0.002 |
+
+**Key insight**: R² drops roughly 0.15 per 30 minutes. At 30 min, the model is excellent (R²=0.785). At 120 min, it's marginally better than persistence. The "useful prediction horizon" for clinical applications is 30-60 minutes.
+
+Note: 15-minute prediction failed due to insufficient horizon offset (h_steps=3 is too close to the lookback window).
+
+### EXP-958: All Features Are Needed
+
+Per-patient feature selection shows that ridge regression with ALL 39 features dominates any top-K subset:
+
+| Features | Mean R² | Δ vs All |
+|----------|---------|----------|
+| Top 10 | 0.493 | -0.084 |
+| Top 15 | 0.517 | -0.060 |
+| Top 20 | 0.528 | -0.049 |
+| Top 25 | 0.534 | -0.043 |
+| Top 30 | 0.540 | -0.037 |
+| All 39 | **0.577** | — |
+
+Ridge regularization already handles feature redundancy. Reducing features just loses information. Note: this comparison is base ridge without stacking (top-K) vs full stacking (all), so the gap is partially due to stacking. But even at the base level, all features outperform subsets.
+
+### EXP-959: Online Learning Hurts
+
+Rolling/online retraining with expanding windows is WORSE than static 80/20 (0.485 vs 0.556, Δ=-0.071). This means:
+
+1. **More training data > recency**: The model benefits more from having the full history than from being "up to date"
+2. **ISF/CR drift is real but slow**: Over ~6 months, settings don't change enough to justify windowed training
+3. **The expanding window starts too small**: Initial 40% training may be insufficient
+
+### Dead Ends & Lessons
+
+| Feature/Technique | Result | Why |
+|-------------------|--------|-----|
+| Sensor noise proxies | +0.001 | Already captured by BG variance features |
+| Dawn conditioning | -0.001 | Hour sin/cos already encode time-of-day |
+| Online learning | -0.071 | Data volume > recency for 6-month windows |
+| AR(1) correction lag-1 | LEAKY | Must use lag ≥ h_steps for causal correction |
+| Feature reduction | -0.037 to -0.084 | Ridge already regularizes; don't drop features |
+
+### Updated SOTA Progression (130 experiments)
+
+```
+Naive persistence:              R² = 0.292
+Physics-only flux:              R² = 0.372
+Backward base 16-feature:       R² = 0.533
+Grand base (39 features):       R² = 0.556
+CV stacking (EXP-871):          R² = 0.561
+Grand + CV stacking (EXP-950):  R² = 0.577
+>>> Regime + Grand Stack (951): R² = 0.581  <<< NEW SOTA
+>>> Poly Meta-Learner (955):    R² = 0.581  <<< TIED SOTA
+Metabolic oracle ceiling:       R² = 0.616
+```
+
+**Gap to oracle: 0.035 (was 0.036). Closed 43% of original gap (0.061).**
+
+### Next Experiments: EXP-961-970 Proposals
+
+Based on these findings, the most promising directions are:
+
+1. **Correct AR correction with lag-13**: Fix the leakage bug and test proper causal residual correction
+2. **Regime + polynomial meta-learner**: Both reach 0.581 independently — are they additive?
+3. **Interaction + regime + poly combined**: Kitchen sink with all +0.002-0.004 improvements
+4. **Conformal prediction bands**: Calibrated uncertainty using the regime-aware model
+5. **Multi-horizon stacking with extended horizons**: Add 90min and 120min predictions to stacking
+6. **Learned feature interactions via 2-layer MLP**: Instead of manual products, let a small NN find them
+7. **Patient clustering + cluster-specific models**: Group similar patients (e.g., by TIR or ISF) for better LOPO
+8. **Temporal block CV with regime-aware model**: True generalization estimate for the 0.581 SOTA
+9. **Error correlation structure exploitation**: The 0.943 autocorrelation suggests a correction at proper lag
+10. **Mixed-effects model**: Patient random intercepts/slopes with fixed feature effects
