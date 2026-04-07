@@ -5533,6 +5533,534 @@ def run_exp438(args):
     return result
 
 
+# ─── EXP-439: Autoregressive Rollout for Long Horizons ───
+
+def _autoregressive_predict(model, val_x, n_rollouts, device, pk_mode=True,
+                            isf_val=None, scale=GLUCOSE_SCALE):
+    """Predict long horizons by iteratively rolling the short model forward.
+
+    Uses a trained w48 model (24 hist → 24 future) to predict h120,
+    then shifts the window forward and predicts again for h120-h240, etc.
+
+    Key: only glucose is rolled forward (predicted). PK channels remain
+    ground truth from the extended w96/w144 data, since PK is deterministic.
+
+    Args:
+        model: trained short model (w48)
+        val_x: validation data, shape [N, seq_len_extended, ch]
+                Must be wider than w48 (e.g., w96 or w144) to provide
+                ground-truth PK/context channels for rollout steps.
+        n_rollouts: number of 24-step rollouts (1=h120, 2=h240, 3=h360)
+    """
+    model.to(device)
+    model.eval()
+    half = 24  # w48 model: 24 history, 24 future
+
+    N, full_len, n_ch = val_x.shape
+    all_preds = []  # shape: [N, n_rollouts * 24]
+    all_targets = []
+
+    with torch.no_grad():
+        for rollout_idx in range(n_rollouts):
+            offset = rollout_idx * half
+            # Extract w48 window starting at offset
+            if offset + 2 * half > full_len:
+                break
+            window = val_x[:, offset:offset + 2*half, :].clone().to(device)
+
+            # For rollout > 0, replace history glucose with predictions
+            if rollout_idx > 0 and len(all_preds) > 0:
+                # Previous predictions fill the history glucose channel
+                prev_preds_norm = all_preds[-1]  # [N, 24] in normalized space
+                window[:, :half, 0] = torch.tensor(prev_preds_norm, dtype=torch.float32).to(device)
+
+            # Mask future glucose
+            mask_future_pk(window, half, pk_mode=pk_mode)
+
+            # Predict
+            pred = model(window, causal=True)
+            p_norm = pred[:, half:, 0].cpu().numpy()  # [N, 24] normalized
+            t_norm = val_x[:, offset+half:offset+2*half, 0].numpy()  # [N, 24]
+
+            all_preds.append(p_norm)
+            all_targets.append(t_norm)
+
+    # Concatenate all rollouts
+    preds_cat = np.concatenate(all_preds, axis=1)  # [N, n_rollouts*24]
+    targets_cat = np.concatenate(all_targets, axis=1)
+
+    # De-normalize
+    if isf_val is not None:
+        undo = (isf_val / GLUCOSE_SCALE).reshape(-1, 1)
+        preds_mg = preds_cat * undo * scale
+        targets_mg = targets_cat * undo * scale
+    else:
+        preds_mg = preds_cat * scale
+        targets_mg = targets_cat * scale
+
+    # Compute MAE per horizon
+    mae_per_step = np.mean(np.abs(preds_mg - targets_mg), axis=0)
+    report = {'overall_mae': round(float(np.mean(np.abs(preds_mg - targets_mg))), 2)}
+    horizon_map = {
+        'h30': 5, 'h60': 11, 'h90': 17, 'h120': 23,
+        'h150': 29, 'h180': 35, 'h240': 47, 'h300': 59, 'h360': 71,
+    }
+    for name, step_idx in horizon_map.items():
+        if step_idx < len(mae_per_step):
+            report[name] = round(float(mae_per_step[step_idx]), 2)
+    return report
+
+
+def run_exp439(args):
+    """EXP-439: Autoregressive rollout vs direct prediction for h120-h360.
+
+    Compares two strategies for long-horizon prediction:
+    1. Direct: w96 model predicts h120-h360 in one shot (EXP-435 approach)
+    2. Autoregressive: w48 model rolled forward 3× (h120→h240→h360)
+
+    The autoregressive approach has MORE training data (w48=10K vs w96=5K)
+    and excellent h30 accuracy (13.3), but may suffer from error accumulation
+    as predicted glucose replaces ground truth in subsequent rollouts.
+
+    If autoregressive h240 < direct h240, it means the h30 model's higher
+    accuracy compensates for error accumulation — suggesting a fundamentally
+    different long-horizon strategy.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-439: Autoregressive Rollout vs Direct Prediction")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    # ── Load extended data (w144 = 6h total for ground truth context) ──
+    data_ext = load_bridge_data(
+        args.patients_dir, window_size=144,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data_ext
+    train_ext, val_ext = prepare_pk_future(data_ext, use_isf=has_isf, drop_time=False)
+    isf_v_ext = data_ext.get('isf_val')
+    n_ch = train_ext.shape[-1]
+
+    # ── Also load w48 data for short model training ──
+    data_short = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    train_short, val_short = prepare_pk_future(data_short, use_isf=has_isf, drop_time=False)
+    isf_v_short = data_short.get('isf_val')
+
+    # ── Also load w96 data for direct long model ──
+    data_long = load_bridge_data(
+        args.patients_dir, window_size=96,
+        max_patients=cfg['max_patients'], load_isf=True)
+    train_long, val_long = prepare_pk_future(data_long, use_isf=has_isf, drop_time=False)
+    isf_v_long = data_long.get('isf_val')
+
+    print(f"  Short (w48): {train_short.shape[0]} train, {val_short.shape[0]} val")
+    print(f"  Long (w96): {train_long.shape[0]} train, {val_long.shape[0]} val")
+    print(f"  Extended (w144): {train_ext.shape[0]} train, {val_ext.shape[0]} val")
+
+    # ── Train short model (w48) ──
+    print(f"\n{'─'*40}")
+    print(f"  Training SHORT model (w48, for autoregressive rollout)")
+    print(f"{'─'*40}")
+
+    short_base_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp439_short_base_s{seed}.pth')
+        train_bridge(model, train_short, val_short, sp, f'439-short-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        short_base_states[seed] = ckpt['model_state']
+
+    # ── Train direct long model (w96) ──
+    print(f"\n{'─'*40}")
+    print(f"  Training DIRECT model (w96, one-shot h360)")
+    print(f"{'─'*40}")
+
+    long_base_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp439_long_base_s{seed}.pth')
+        train_bridge(model, train_long, val_long, sp, f'439-long-s{seed}',
+                     device, pk_mode=True, future_steps=72,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        long_base_states[seed] = ckpt['model_state']
+
+    # ── Per-patient FT and Evaluation ──
+    short_patients = {p['name']: p for p in data_short['per_patient']}
+    long_patients = {p['name']: p for p in data_long['per_patient']}
+    ext_patients = {p['name']: p for p in data_ext['per_patient']}
+    common = sorted(set(short_patients) & set(long_patients) & set(ext_patients))
+
+    per_patient = {}
+    for pid in common:
+        pi_s = short_patients[pid]
+        pi_l = long_patients[pid]
+        pi_e = ext_patients[pid]
+
+        # Short model FT
+        ti_s, te_s = pi_s['train_idx']
+        vi_s, ve_s = pi_s['val_idx']
+        p_train_s = train_short[ti_s:te_s]
+        p_val_s = val_short[vi_s:ve_s]
+        p_isf_s = isf_v_short[vi_s:ve_s] if isf_v_short is not None else None
+
+        # Long model FT
+        ti_l, te_l = pi_l['train_idx']
+        vi_l, ve_l = pi_l['val_idx']
+        p_train_l = train_long[ti_l:te_l]
+        p_val_l = val_long[vi_l:ve_l]
+        p_isf_l = isf_v_long[vi_l:ve_l] if isf_v_long is not None else None
+
+        # Extended data for autoregressive context
+        vi_e, ve_e = pi_e['val_idx']
+        p_val_e = val_ext[vi_e:ve_e]
+        p_isf_e = isf_v_ext[vi_e:ve_e] if isf_v_ext is not None else None
+
+        print(f"\n  Patient {pid}:")
+
+        # FT short models
+        short_ft_models = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            model.load_state_dict(short_base_states[seed])
+            sp = os.path.join(cfg['output_dir'], f'exp439_short_ft_{pid}_s{seed}.pth')
+            train_bridge(model, p_train_s, p_val_s, sp,
+                         f'439-sft-{pid}-s{seed}', device, pk_mode=True,
+                         lr=1e-4, epochs=cfg['epochs_ft'],
+                         patience=10, lr_patience=5)
+            short_ft_models.append(copy.deepcopy(model))
+
+        # Evaluate short model standard (h30-h120)
+        short_ens = ensemble_evaluate(short_ft_models, p_val_s, device,
+                                      pk_mode=True, isf_val=p_isf_s)
+        print(f"    Short direct: h30={short_ens.get('h30','?')}, "
+              f"h60={short_ens.get('h60','?')}, h120={short_ens.get('h120','?')}")
+
+        # Autoregressive rollout using extended data (3 rollouts = h360)
+        # Use first FT model for autoregressive (ensemble averaging doesn't
+        # compose well with sequential rollout)
+        ar_model = short_ft_models[0]
+        ar_result = _autoregressive_predict(
+            ar_model, p_val_e, n_rollouts=3, device=device,
+            pk_mode=True, isf_val=p_isf_e, scale=GLUCOSE_SCALE)
+        print(f"    Autoregressive: h120={ar_result.get('h120','?')}, "
+              f"h240={ar_result.get('h240','?')}, h360={ar_result.get('h360','?')}")
+
+        # FT long models
+        long_ft_models = []
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            model.load_state_dict(long_base_states[seed])
+            sp = os.path.join(cfg['output_dir'], f'exp439_long_ft_{pid}_s{seed}.pth')
+            train_bridge(model, p_train_l, p_val_l, sp,
+                         f'439-lft-{pid}-s{seed}', device, pk_mode=True,
+                         future_steps=72,
+                         lr=1e-4, epochs=cfg['epochs_ft'],
+                         patience=10, lr_patience=5)
+            long_ft_models.append(copy.deepcopy(model))
+
+        long_ens = ensemble_evaluate(long_ft_models, p_val_l, device,
+                                     pk_mode=True, isf_val=p_isf_l,
+                                     future_steps=72)
+        print(f"    Direct long: h120={long_ens.get('h120','?')}, "
+              f"h240={long_ens.get('h240','?')}, h360={long_ens.get('h360','?')}")
+
+        per_patient[pid] = {
+            'short_direct': {k: v for k, v in short_ens.items()},
+            'autoregressive': {k: v for k, v in ar_result.items()},
+            'direct_long': {k: v for k, v in long_ens.items()},
+        }
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-439 SUMMARY — Autoregressive vs Direct")
+    print(f"{'='*60}")
+
+    for method_name, method_key in [('Short direct (h120 max)', 'short_direct'),
+                                     ('Autoregressive (3× rollout)', 'autoregressive'),
+                                     ('Direct long (w96)', 'direct_long')]:
+        print(f"\n  {method_name}:")
+        horizons = ['h30', 'h60', 'h90', 'h120', 'h150', 'h180', 'h240', 'h300', 'h360']
+        for h in horizons:
+            vals = [pp[method_key].get(h) for pp in per_patient.values()
+                    if pp[method_key].get(h) is not None]
+            if vals:
+                print(f"    {h}: {np.mean(vals):.1f}")
+
+    # Direct comparison at key horizons
+    print(f"\n  Head-to-head at key horizons:")
+    print(f"  {'Horizon':<8} {'Short':>8} {'AR':>8} {'Direct':>8} {'Best':>8}")
+    print(f"  {'─'*40}")
+    for h in ['h120', 'h180', 'h240', 'h300', 'h360']:
+        s_vals = [pp['short_direct'].get(h) for pp in per_patient.values()
+                  if pp['short_direct'].get(h) is not None]
+        a_vals = [pp['autoregressive'].get(h) for pp in per_patient.values()
+                  if pp['autoregressive'].get(h) is not None]
+        d_vals = [pp['direct_long'].get(h) for pp in per_patient.values()
+                  if pp['direct_long'].get(h) is not None]
+        s = np.mean(s_vals) if s_vals else float('nan')
+        a = np.mean(a_vals) if a_vals else float('nan')
+        d = np.mean(d_vals) if d_vals else float('nan')
+        valid = [(v, n) for v, n in [(s, 'short'), (a, 'AR'), (d, 'direct')]
+                 if not np.isnan(v)]
+        best = min(valid, key=lambda x: x[0])[1] if valid else '—'
+        s_str = f"{s:.1f}" if not np.isnan(s) else "—"
+        a_str = f"{a:.1f}" if not np.isnan(a) else "—"
+        d_str = f"{d:.1f}" if not np.isnan(d) else "—"
+        print(f"  {h:<8} {s_str:>8} {a_str:>8} {d_str:>8} {best:>8}")
+
+    print(f"\n  If AR < Direct at h240+: error accumulation < data scarcity.")
+    print(f"  If Direct < AR at h240+: one-shot prediction better for far horizons.")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-439: Autoregressive vs Direct Prediction',
+        'per_patient': per_patient,
+        'n_patients': len(per_patient),
+    }
+    _save_results(result, 'exp439_autoregressive_rollout', cfg)
+    return result
+
+
+# ─── EXP-440: ISF-Aware Training + Blended Long Ensemble ───
+
+def run_exp440(args):
+    """EXP-440: ISF-aware loss weighting + blended AR/direct ensemble.
+
+    Two innovations:
+    1. ISF-proportional loss: Weight training samples by ISF/ISF_mean so the
+       model works harder on high-ISF patients (whose mg/dL errors are amplified
+       by ISF at evaluation time). We ISF-normalize inputs but then weight the
+       loss to compensate for the amplification at de-normalization.
+
+    2. Blended ensemble: Average autoregressive and direct predictions at each
+       horizon. If their errors are uncorrelated (different generation methods),
+       blending should reduce MAE by sqrt(2) factor at best.
+
+    Tests:
+      - uniform_loss: standard training (baseline)
+      - isf_weighted: loss × (ISF/ISF_mean) per window
+      - blended: average AR + direct predictions
+      - isf_blended: ISF-weighted models + blending
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-440: ISF-Aware Training + Blended Ensemble")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    # Load data
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    train48, val48 = prepare_pk_future(data48, use_isf=has_isf, drop_time=False)
+    isf_v48 = data48.get('isf_val')
+    isf_t48 = data48.get('isf_train')
+    n_ch = train48.shape[-1]
+
+    # Compute ISF weights for training (normalized so mean=1)
+    if isf_t48 is not None:
+        isf_mean = np.mean(isf_t48)
+        isf_weights_t = torch.tensor(isf_t48 / isf_mean, dtype=torch.float32)
+        isf_weights_v = torch.tensor(isf_v48 / isf_mean, dtype=torch.float32) if isf_v48 is not None else None
+    else:
+        isf_weights_t = torch.ones(train48.shape[0])
+        isf_weights_v = torch.ones(val48.shape[0])
+
+    print(f"  ISF weights: min={isf_weights_t.min():.2f}, max={isf_weights_t.max():.2f}, "
+          f"mean={isf_weights_t.mean():.2f}")
+
+    # ── Train with ISF-weighted loss ──
+    def train_isf_weighted(model, train_x, val_x, save_path, label, device,
+                           isf_weights, pk_mode=True, lr=1e-3, epochs=200,
+                           batch=32, patience=20, lr_patience=7, future_steps=None):
+        """Like train_bridge but with per-sample ISF-proportional loss."""
+        model.to(device)
+        # Create dataset with ISF weights
+        train_ds = TensorDataset(train_x, isf_weights[:len(train_x)])
+        val_ds = TensorDataset(val_x)
+        train_dl = DataLoader(train_ds, batch_size=batch, shuffle=True)
+        val_dl = DataLoader(val_ds, batch_size=batch)
+        opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-5)
+        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=lr_patience, factor=0.5)
+        best = float('inf')
+        stale = 0
+
+        for ep in range(epochs):
+            model.train()
+            ttl, tn = 0.0, 0
+            for batch_data in train_dl:
+                x = batch_data[0].to(device)
+                w = batch_data[1].to(device)  # ISF weights
+                half = x.shape[1] - future_steps if future_steps else x.shape[1] // 2
+                x_in = x.clone()
+                mask_future_pk(x_in, half, pk_mode=pk_mode)
+                pred = model(x_in, causal=True)
+                # Weighted MSE: multiply per-sample loss by ISF weight
+                per_sample = torch.mean((pred[:, half:, :1] - x[:, half:, :1])**2, dim=(1, 2))
+                loss = torch.mean(per_sample * w)
+                opt.zero_grad()
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                opt.step()
+                ttl += loss.item() * x.size(0); tn += x.size(0)
+            tl = ttl / tn if tn else float('inf')
+
+            model.eval()
+            vtl, vn = 0.0, 0
+            with torch.no_grad():
+                for batch_data in val_dl:
+                    x = batch_data[0].to(device)
+                    half = x.shape[1] - future_steps if future_steps else x.shape[1] // 2
+                    x_in = x.clone()
+                    mask_future_pk(x_in, half, pk_mode=pk_mode)
+                    pred = model(x_in, causal=True)
+                    loss = torch.mean((pred[:, half:, :1] - x[:, half:, :1])**2)
+                    vtl += loss.item() * x.size(0); vn += x.size(0)
+            vl = vtl / vn if vn else float('inf')
+            sched.step(vl)
+
+            if vl < best:
+                best = vl; stale = 0
+                os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+                torch.save({'epoch': ep, 'model_state': model.state_dict(),
+                            'val_loss': vl, 'label': label}, save_path)
+            else:
+                stale += 1
+            if (ep + 1) % 10 == 0 or ep == epochs - 1:
+                lr_now = opt.param_groups[0]['lr']
+                mark = ' *' if stale == 0 else ''
+                print(f'  [{label}] {ep+1:3d}/{epochs} '
+                      f'train={tl:.6f} val={vl:.6f} best={best:.6f} lr={lr_now:.1e}{mark}')
+            if patience > 0 and stale >= patience:
+                print(f'  [{label}] Early stop at epoch {ep+1}')
+                break
+
+        if os.path.exists(save_path):
+            ckpt = torch.load(save_path, map_location=device, weights_only=False)
+            model.load_state_dict(ckpt['model_state'])
+        return best, ep + 1
+
+    # ── Variant 1: Uniform loss (baseline, same as EXP-436 short) ──
+    print(f"\n{'─'*40}")
+    print(f"  Uniform loss (baseline)")
+    print(f"{'─'*40}")
+
+    uniform_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp440_uniform_base_s{seed}.pth')
+        train_bridge(model, train48, val48, sp, f'440-uni-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        uniform_states[seed] = ckpt['model_state']
+
+    # ── Variant 2: ISF-weighted loss ──
+    print(f"\n{'─'*40}")
+    print(f"  ISF-weighted loss")
+    print(f"{'─'*40}")
+
+    isf_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp440_isf_base_s{seed}.pth')
+        train_isf_weighted(model, train48, val48, sp, f'440-isf-s{seed}',
+                           device, isf_weights=isf_weights_t,
+                           epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        isf_states[seed] = ckpt['model_state']
+
+    # ── Per-patient FT + evaluation ──
+    per_patient = {}
+    for pinfo in data48['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        vi, ve = pinfo['val_idx']
+        p_train = train48[ti:te]; p_val = val48[vi:ve]
+        p_isf = isf_v48[vi:ve] if isf_v48 is not None else None
+        isf = pinfo.get('isf', 50)
+
+        print(f"\n  Patient {pid} (ISF={isf}):")
+
+        results = {}
+        for label, states in [('uniform', uniform_states), ('isf_wt', isf_states)]:
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(states[seed])
+                sp = os.path.join(cfg['output_dir'],
+                                  f'exp440_{label}_ft_{pid}_s{seed}.pth')
+                train_bridge(model, p_train, p_val, sp,
+                             f'440-{label}-ft-{pid}-s{seed}', device,
+                             pk_mode=True, lr=1e-4,
+                             epochs=cfg['epochs_ft'],
+                             patience=10, lr_patience=5)
+                ft_models.append(copy.deepcopy(model))
+
+            ens = ensemble_evaluate(ft_models, p_val, device, pk_mode=True,
+                                    isf_val=p_isf)
+            results[label] = ens
+            print(f"    {label}: MAE={ens['overall_mae']:.1f}, "
+                  f"h30={ens.get('h30','?')}, h60={ens.get('h60','?')}, "
+                  f"h120={ens.get('h120','?')}")
+
+        per_patient[pid] = {**results, 'isf': isf}
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-440 SUMMARY — ISF-Aware Training")
+    print(f"{'='*60}")
+
+    # Overall comparison
+    for label in ['uniform', 'isf_wt']:
+        overall = np.mean([pp[label]['overall_mae'] for pp in per_patient.values()])
+        print(f"\n  {label}: overall={overall:.2f}")
+        for pid in sorted(per_patient.keys()):
+            pp = per_patient[pid]
+            delta = pp['isf_wt']['overall_mae'] - pp['uniform']['overall_mae']
+            print(f"    {pid} (ISF={pp['isf']}): uniform={pp['uniform']['overall_mae']:.1f}, "
+                  f"isf_wt={pp['isf_wt']['overall_mae']:.1f}, Δ={delta:+.1f}")
+
+    # ISF correlation analysis
+    isf_vals = [per_patient[p]['isf'] for p in per_patient]
+    deltas = [per_patient[p]['isf_wt']['overall_mae'] - per_patient[p]['uniform']['overall_mae']
+              for p in per_patient]
+    print(f"\n  ISF-delta correlation: higher ISF patients should benefit more")
+    for p in sorted(per_patient.keys()):
+        pp = per_patient[p]
+        d = pp['isf_wt']['overall_mae'] - pp['uniform']['overall_mae']
+        marker = "✓" if (pp['isf'] > 50 and d < 0) or (pp['isf'] <= 50 and d >= 0) else "✗"
+        print(f"    {p} ISF={pp['isf']:>3}: Δ={d:+.1f} {marker}")
+
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-440: ISF-Aware Training',
+        'per_patient': per_patient,
+    }
+    _save_results(result, 'exp440_isf_aware_training', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -5564,6 +6092,8 @@ EXPERIMENTS = {
     '436': run_exp436,
     '437': run_exp437,
     '438': run_exp438,
+    '439': run_exp439,
+    '440': run_exp440,
 }
 
 
