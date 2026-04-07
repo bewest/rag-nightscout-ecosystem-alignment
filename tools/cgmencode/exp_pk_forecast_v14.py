@@ -3095,6 +3095,280 @@ def run_exp425(args):
     return result
 
 
+# ─── EXP-426: w48 + h60_focus Horizon-Weighted Loss ───
+
+def run_exp426(args):
+    """EXP-426: Apply h60_focus weighting to w48 extended horizon pipeline.
+
+    Hypothesis: h60_focus (3× weight on last step) improved h60 by -0.83 at w24
+    (EXP-424). At w48 (24 future steps), the last step is h120. Applying 3× weight
+    on h120 should improve h120 (the hardest and highest-value horizon) while acting
+    as a regularizer for nearer horizons — the same mechanism that helped h30 at w24.
+
+    Additionally, test h60_focus at w48 where h60 = step 12 (midpoint), upweighting
+    the critical clinical horizon.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-426: w48 + Horizon-Weighted Loss")
+    print(f"  seeds={cfg['seeds']}")
+    print(f"{'='*60}")
+
+    ws = 48
+    half = ws // 2  # 24 steps
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=ws,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    isf_v = data.get('isf_val')
+    n_ch = train_x.shape[-1]
+
+    # Weight schemes for 24-step future
+    # h120_focus: 3× weight on last step (h120)
+    h120_w = torch.ones(half)
+    h120_w[-1] = 3.0
+    h120_w = h120_w / h120_w.mean()
+
+    # h60_focus: 3× weight on step 12 (h60 = 60min)
+    h60_w = torch.ones(half)
+    h60_w[11] = 3.0  # step 12 (0-indexed: 11) = 60min
+    h60_w = h60_w / h60_w.mean()
+
+    # linear_ramp: linearly increasing weights
+    linear_w = torch.linspace(1, 3, half)
+    linear_w = linear_w / linear_w.mean()
+
+    variants = {
+        'control': (None, 'Standard MSE (control)'),
+        'h120_focus': (h120_w, '3× weight on h120 (last step)'),
+        'h60_mid_focus': (h60_w, '3× weight on h60 (midpoint)'),
+        'linear_ramp': (linear_w, 'Linear ramp 1→3'),
+    }
+
+    all_results = {}
+    for vname, (weights, desc) in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  Variant: {vname} — {desc}")
+        print(f"{'─'*40}")
+
+        base_states = {}
+        base_metrics = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp426_{vname}_base_s{seed}.pth')
+            print(f"\n  Base s{seed} ({vname}):")
+
+            if weights is not None:
+                train_bridge_horizon_weighted(
+                    model, train_x, val_x, sp, f'426-{vname}-s{seed}',
+                    device, pk_mode=True, horizon_weights=weights,
+                    epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            else:
+                train_bridge(
+                    model, train_x, val_x, sp, f'426-{vname}-s{seed}',
+                    device, pk_mode=True,
+                    epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+            metrics = evaluate_model(model, val_x, device, pk_mode=True, isf_val=isf_v)
+            base_metrics[seed] = metrics
+            print(f"  Base s{seed}: overall={metrics['overall_mae']:.1f}, "
+                  f"h60={metrics.get('h60','?')}, h120={metrics.get('h120','?')}")
+
+        # Phase 2: Per-patient FT + ensemble
+        print(f"\n  === Phase 2: Per-Patient FT ({vname}) ===")
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train_x = train_x[ti:te]
+            p_val_x = val_x[vi:ve]
+            p_isf_v = isf_v[vi:ve] if isf_v is not None else None
+
+            print(f"\n  Patient {pid} ({pinfo['n_train']} train, {pinfo['n_val']} val):")
+            seed_maes = {}
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'], f'exp426_{vname}_ft_{pid}_s{seed}.pth')
+                # FT uses standard MSE
+                train_bridge(model, p_train_x, p_val_x, sp,
+                             f'426-ft-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             lr=1e-4, epochs=cfg['epochs_ft'],
+                             patience=10, lr_patience=5)
+                metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                         isf_val=p_isf_v)
+                seed_maes[f's{seed}'] = metrics['overall_mae']
+                ft_models.append(copy.deepcopy(model))
+                print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+            ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                    isf_val=p_isf_v)
+            per_patient[pid] = {
+                'seeds': seed_maes,
+                'ensemble_mae': ens['overall_mae'],
+                'ensemble_horizons': ens,
+            }
+            print(f"    Ensemble: MAE={ens['overall_mae']:.1f}, "
+                  f"h60={ens.get('h60','?')}, h120={ens.get('h120','?')}")
+
+        all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+        all_results[vname] = {
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'per_patient': per_patient,
+            'base_metrics': {f's{s}': m for s, m in base_metrics.items()},
+            'description': desc,
+        }
+        print(f"\n  {vname} Mean Ensemble: {all_results[vname]['mean_ensemble_mae']:.2f}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-426 SUMMARY")
+    print(f"{'='*60}")
+    for vn, vr in all_results.items():
+        h60s = [vr['per_patient'][p]['ensemble_horizons'].get('h60', '?')
+                for p in vr['per_patient'] if 'ensemble_horizons' in vr['per_patient'][p]]
+        h120s = [vr['per_patient'][p]['ensemble_horizons'].get('h120', '?')
+                 for p in vr['per_patient'] if 'ensemble_horizons' in vr['per_patient'][p]]
+        h60_avg = np.mean([x for x in h60s if isinstance(x, (int, float))]) if h60s else '?'
+        h120_avg = np.mean([x for x in h120s if isinstance(x, (int, float))]) if h120s else '?'
+        h60_str = f"{h60_avg:.1f}" if isinstance(h60_avg, (int, float)) else str(h60_avg)
+        h120_str = f"{h120_avg:.1f}" if isinstance(h120_avg, (int, float)) else str(h120_avg)
+        print(f"  {vn}: overall={vr['mean_ensemble_mae']:.2f}, "
+              f"h60_avg={h60_str}, h120_avg={h120_str}")
+    print(f"  EXP-411 w48 reference: 13.50 (h60=14.2, h120=17.4)")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-426: w48 + Horizon-Weighted Loss',
+        'results': all_results,
+    }
+    _save_results(result, 'exp426_w48_horizon_weighted', cfg)
+    return result
+
+
+# ─── EXP-427: Horizon-Adaptive Ensemble (Analysis Only) ───
+
+def run_exp427(args):
+    """EXP-427: Horizon-adaptive ensemble — select best window per horizon.
+
+    Zero-cost experiment: uses already-computed EXP-411 results to determine
+    optimal window selection per target horizon. No new training needed.
+
+    For each patient and horizon, picks the window with lowest MAE.
+    """
+    cfg = _get_config(args)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-427: Horizon-Adaptive Ensemble (Analysis)")
+    print(f"{'='*60}")
+
+    # Load full EXP-411 results
+    results_path = os.path.join(cfg['output_dir'], 'exp411_extended_horizon_full.json')
+    if not os.path.exists(results_path):
+        print("  ERROR: Need exp411_extended_horizon_full.json")
+        print("  Run EXP-411 full validation first.")
+        return {'error': 'missing_exp411_results'}
+
+    with open(results_path) as f:
+        data = json.load(f)
+
+    # Also load EXP-410 results for w24 comparison
+    exp410_path = os.path.join(cfg['output_dir'], 'exp410_isf_champion.json')
+    w24_patients = {}
+    if os.path.exists(exp410_path):
+        with open(exp410_path) as f:
+            e410 = json.load(f)
+        # Try to extract per-patient h60
+        for key in ['results', 'full']:
+            if key in e410 and isinstance(e410[key], dict):
+                for vk, vv in e410[key].items():
+                    if isinstance(vv, dict) and 'per_patient' in vv:
+                        for pid, pd in vv['per_patient'].items():
+                            if isinstance(pd, dict):
+                                mae = pd.get('ensemble_mae', pd.get('ensemble', {}).get('overall_mae'))
+                                if mae:
+                                    w24_patients[pid] = {'mae': mae, 'h60': mae}
+
+    results = data.get('results', {})
+    horizons = ['h30', 'h60', 'h90', 'h120', 'h150', 'h180']
+    windows = ['w48', 'w72', 'w96']
+
+    # Per-patient × per-horizon best window
+    patients = set()
+    for wk in windows:
+        if wk in results:
+            patients.update(results[wk].get('per_patient', {}).keys())
+    patients = sorted(patients)
+
+    print(f"\n  Patients: {patients}")
+    print(f"  Windows: {windows}")
+    print(f"  Horizons: {horizons}")
+
+    adaptive_results = {}
+    for pid in patients:
+        adaptive_results[pid] = {}
+        for h in horizons:
+            best_w = None
+            best_mae = float('inf')
+            for wk in windows:
+                wd = results.get(wk, {}).get('per_patient', {}).get(pid, {})
+                hval = wd.get(h) or wd.get('ensemble_horizons', {}).get(h)
+                if hval is not None and isinstance(hval, (int, float)) and hval < best_mae:
+                    best_mae = hval
+                    best_w = wk
+            if best_w:
+                adaptive_results[pid][h] = {'best_window': best_w, 'mae': best_mae}
+
+    # Compute per-horizon averages
+    print(f"\n  Per-Horizon Best Window Selection:")
+    print(f"  {'Horizon':>8} {'Best Window':>12} {'Adaptive MAE':>14} {'Static w48':>12} {'Δ':>8}")
+    print(f"  {'─'*56}")
+
+    for h in horizons:
+        adaptive_maes = []
+        static_maes = []
+        window_counts = {}
+        for pid in patients:
+            ar = adaptive_results.get(pid, {}).get(h)
+            if ar:
+                adaptive_maes.append(ar['mae'])
+                wc = ar['best_window']
+                window_counts[wc] = window_counts.get(wc, 0) + 1
+            # Static w48
+            w48d = results.get('w48', {}).get('per_patient', {}).get(pid, {})
+            h_static = w48d.get(h) or w48d.get('ensemble_horizons', {}).get(h)
+            if h_static and isinstance(h_static, (int, float)):
+                static_maes.append(h_static)
+
+        if adaptive_maes:
+            a_avg = np.mean(adaptive_maes)
+            s_avg = np.mean(static_maes) if static_maes else float('nan')
+            delta = a_avg - s_avg if not np.isnan(s_avg) else float('nan')
+            best_w = max(window_counts, key=window_counts.get)
+            print(f"  {h:>8} {best_w:>12} {a_avg:>14.1f} {s_avg:>12.1f} {delta:>+8.1f}")
+
+    result = {
+        'experiment': 'EXP-427: Horizon-Adaptive Ensemble',
+        'adaptive_results': adaptive_results,
+        'note': 'Zero-cost analysis of existing EXP-411 results',
+    }
+    _save_results(result, 'exp427_horizon_adaptive', cfg)
+
+    print(f"\n  Saved analysis to exp427_horizon_adaptive.json")
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -3113,6 +3387,8 @@ EXPERIMENTS = {
     '423': run_exp423,
     '424': run_exp424,
     '425': run_exp425,
+    '426': run_exp426,
+    '427': run_exp427,
 }
 
 
