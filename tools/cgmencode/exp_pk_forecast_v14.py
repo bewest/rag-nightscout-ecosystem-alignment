@@ -6539,6 +6539,1400 @@ def run_exp442(args):
     return result
 
 
+# ─── EXP-443: PK Derivatives for Long-Range Forecasting ───
+
+def _prepare_pk_derivatives_asymmetric(data, history_steps, use_isf=False):
+    """PK features + derivatives for ASYMMETRIC windows (history ≠ future).
+
+    Like prepare_pk_future_with_derivatives but handles asymmetric splits
+    (e.g., 24 history + 72 future for w96). Glucose derivatives are zeroed
+    past the history boundary, not at half.
+
+    Produces: [gluc, IOB, COB, net_basal, ins_net, carb_rate, sin, net_bal,
+               d_ins, d_carb, d_gluc] = 11ch
+    """
+    bt = data['base_train'].copy()
+    bv = data['base_val'].copy()
+    pt, pv = data['pk_train'], data['pk_val']
+
+    bt[:, :, 4] = pt[:, :, 1] / PK_NORMS[1]
+    bv[:, :, 4] = pv[:, :, 1] / PK_NORMS[1]
+    bt[:, :, 5] = pt[:, :, 3] / PK_NORMS[3]
+    bv[:, :, 5] = pv[:, :, 3] / PK_NORMS[3]
+    bt[:, :, 7] = pt[:, :, 6] / PK_NORMS[6]
+    bv[:, :, 7] = pv[:, :, 6] / PK_NORMS[6]
+
+    if use_isf and 'isf_train' in data:
+        _apply_isf_norm(bt, bv, data['isf_train'], data['isf_val'])
+
+    h = history_steps
+
+    # PK derivatives — DETERMINISTIC, safe everywhere
+    d_ins_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+    d_ins_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+    d_ins_t[:, 1:, 0] = bt[:, 1:, 4] - bt[:, :-1, 4]
+    d_ins_v[:, 1:, 0] = bv[:, 1:, 4] - bv[:, :-1, 4]
+
+    d_carb_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+    d_carb_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+    d_carb_t[:, 1:, 0] = bt[:, 1:, 5] - bt[:, :-1, 5]
+    d_carb_v[:, 1:, 0] = bv[:, 1:, 5] - bv[:, :-1, 5]
+
+    # Glucose derivative — history-only (future glucose is unknown)
+    d_gluc_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+    d_gluc_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+    d_gluc_t[:, 1:h, 0] = bt[:, 1:h, 0] - bt[:, :h-1, 0]
+    d_gluc_v[:, 1:h, 0] = bv[:, 1:h, 0] - bv[:, :h-1, 0]
+
+    d_ins_t *= 10.0; d_ins_v *= 10.0
+    d_carb_t *= 10.0; d_carb_v *= 10.0
+    d_gluc_t *= 10.0; d_gluc_v *= 10.0
+
+    bt = np.concatenate([bt, d_ins_t, d_carb_t, d_gluc_t], axis=-1)
+    bv = np.concatenate([bv, d_ins_v, d_carb_v, d_gluc_v], axis=-1)
+
+    return torch.tensor(bt, dtype=torch.float32), torch.tensor(bv, dtype=torch.float32)
+
+
+def _prepare_pk_second_order(data, history_steps, use_isf=False):
+    """PK features + first AND second order derivatives.
+
+    Adds d²(IOB)/dt² and d²(COB)/dt² — acceleration of PK absorption.
+    Second derivatives encode inflection points: peak absorption, transition
+    from absorption to elimination phase.
+
+    Produces: [gluc, IOB, COB, net_basal, ins_net, carb_rate, sin, net_bal,
+               d_ins, d_carb, d_gluc, dd_ins, dd_carb] = 13ch
+    """
+    bt = data['base_train'].copy()
+    bv = data['base_val'].copy()
+    pt, pv = data['pk_train'], data['pk_val']
+
+    bt[:, :, 4] = pt[:, :, 1] / PK_NORMS[1]
+    bv[:, :, 4] = pv[:, :, 1] / PK_NORMS[1]
+    bt[:, :, 5] = pt[:, :, 3] / PK_NORMS[3]
+    bv[:, :, 5] = pv[:, :, 3] / PK_NORMS[3]
+    bt[:, :, 7] = pt[:, :, 6] / PK_NORMS[6]
+    bv[:, :, 7] = pv[:, :, 6] / PK_NORMS[6]
+
+    if use_isf and 'isf_train' in data:
+        _apply_isf_norm(bt, bv, data['isf_train'], data['isf_val'])
+
+    h = history_steps
+
+    # First order
+    d_ins_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+    d_ins_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+    d_ins_t[:, 1:, 0] = bt[:, 1:, 4] - bt[:, :-1, 4]
+    d_ins_v[:, 1:, 0] = bv[:, 1:, 4] - bv[:, :-1, 4]
+
+    d_carb_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+    d_carb_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+    d_carb_t[:, 1:, 0] = bt[:, 1:, 5] - bt[:, :-1, 5]
+    d_carb_v[:, 1:, 0] = bv[:, 1:, 5] - bv[:, :-1, 5]
+
+    d_gluc_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+    d_gluc_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+    d_gluc_t[:, 1:h, 0] = bt[:, 1:h, 0] - bt[:, :h-1, 0]
+    d_gluc_v[:, 1:h, 0] = bv[:, 1:h, 0] - bv[:, :h-1, 0]
+
+    # Second order (acceleration)
+    dd_ins_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+    dd_ins_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+    dd_ins_t[:, 2:, 0] = d_ins_t[:, 2:, 0] - d_ins_t[:, 1:-1, 0]
+    dd_ins_v[:, 2:, 0] = d_ins_v[:, 2:, 0] - d_ins_v[:, 1:-1, 0]
+
+    dd_carb_t = np.zeros((bt.shape[0], bt.shape[1], 1), dtype=np.float32)
+    dd_carb_v = np.zeros((bv.shape[0], bv.shape[1], 1), dtype=np.float32)
+    dd_carb_t[:, 2:, 0] = d_carb_t[:, 2:, 0] - d_carb_t[:, 1:-1, 0]
+    dd_carb_v[:, 2:, 0] = d_carb_v[:, 2:, 0] - d_carb_v[:, 1:-1, 0]
+
+    d_ins_t *= 10.0; d_ins_v *= 10.0
+    d_carb_t *= 10.0; d_carb_v *= 10.0
+    d_gluc_t *= 10.0; d_gluc_v *= 10.0
+    dd_ins_t *= 100.0; dd_ins_v *= 100.0  # 2nd order needs more scaling
+    dd_carb_t *= 100.0; dd_carb_v *= 100.0
+
+    bt = np.concatenate([bt, d_ins_t, d_carb_t, d_gluc_t, dd_ins_t, dd_carb_t], axis=-1)
+    bv = np.concatenate([bv, d_ins_v, d_carb_v, d_gluc_v, dd_ins_v, dd_carb_v], axis=-1)
+
+    return torch.tensor(bt, dtype=torch.float32), torch.tensor(bv, dtype=torch.float32)
+
+
+def run_exp443(args):
+    """EXP-443: PK Derivatives for Long-Range Forecasting.
+
+    Hypothesis: PK derivatives (dIOB/dt, dCOB/dt) provide absorption DYNAMICS
+    that the transformer can't efficiently compute from raw PK levels alone.
+    At long range (h120-h360), knowing whether insulin is ramping up vs winding
+    down is crucial for predicting glucose direction changes.
+
+    Variants:
+      a) w96_standard: Long-range baseline (no derivatives)
+      b) w96_1st_deriv: + first-order PK derivatives (11ch)
+      c) w96_2nd_deriv: + first AND second-order PK derivatives (13ch)
+
+    All use asymmetric 24hist+72future (h360 max), ISF normalization.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-443: PK Derivatives for Long-Range Forecasting")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=96,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    history_steps = 24
+    future_steps = 72
+
+    # Prepare variants
+    train_std, val_std = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    train_d1, val_d1 = _prepare_pk_derivatives_asymmetric(data, history_steps, use_isf=has_isf)
+    train_d2, val_d2 = _prepare_pk_second_order(data, history_steps, use_isf=has_isf)
+
+    variants = {
+        'w96_standard': (train_std, val_std, 8),
+        'w96_1st_deriv': (train_d1, val_d1, 11),
+        'w96_2nd_deriv': (train_d2, val_d2, 13),
+    }
+
+    isf_v = data.get('isf_val')
+    result = {}
+
+    for vname, (train_x, val_x, n_ch) in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  Variant: {vname} ({n_ch}ch)")
+        print(f"  {train_x.shape[0]} train, {val_x.shape[0]} val")
+        print(f"{'─'*40}")
+
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp443_{vname}_s{seed}.pth')
+            print(f"\n  Base s{seed}:")
+            train_bridge(model, train_x, val_x, sp, f'443-{vname}-s{seed}',
+                         device, pk_mode=True, future_steps=future_steps,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+
+        # Per-patient FT + evaluate
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]
+            p_val = val_x[vi:ve]
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+            print(f"\n  Patient {pid} ({pinfo['n_train']}tr):")
+            seed_maes = []
+            for seed, bstate in base_states.items():
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                m.load_state_dict(bstate)
+                fp = os.path.join(cfg['output_dir'], f'exp443_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'443-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True, future_steps=future_steps,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4)
+                mae = evaluate_model(m, p_val, device, pk_mode=True,
+                                     isf_val=p_isf, future_steps=future_steps)
+                seed_maes.append(mae)
+                print(f"    s{seed}: overall={mae['overall_mae']:.1f}, "
+                      f"h60={mae.get('h60','—')}, h120={mae.get('h120','—')}, "
+                      f"h240={mae.get('h240','—')}, h360={mae.get('h360','—')}")
+
+            avg = {}
+            for k in seed_maes[0]:
+                vals = [m[k] for m in seed_maes if isinstance(m.get(k), (int, float))]
+                if vals:
+                    avg[k] = round(np.mean(vals), 2)
+            per_patient[pid] = avg
+
+        # Compute variant average
+        overall_keys = ['overall_mae', 'h30', 'h60', 'h120', 'h150', 'h180',
+                        'h240', 'h300', 'h360']
+        vavg = {}
+        for k in overall_keys:
+            vals = [pp[k] for pp in per_patient.values() if k in pp]
+            if vals:
+                vavg[k] = round(np.mean(vals), 2)
+        result[vname] = {'per_patient': per_patient, 'average': vavg}
+
+        print(f"\n  {vname} average: overall={vavg.get('overall_mae','?')}, "
+              f"h60={vavg.get('h60','?')}, h120={vavg.get('h120','?')}, "
+              f"h240={vavg.get('h240','?')}, h360={vavg.get('h360','?')}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-443 Summary: PK Derivatives for Long-Range")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        print(f"  {vname}: overall={avg.get('overall_mae','?')}, "
+              f"h120={avg.get('h120','?')}, h240={avg.get('h240','?')}, "
+              f"h360={avg.get('h360','?')}")
+
+    std_mae = result['w96_standard']['average'].get('overall_mae', 0)
+    d1_mae = result['w96_1st_deriv']['average'].get('overall_mae', 0)
+    d2_mae = result['w96_2nd_deriv']['average'].get('overall_mae', 0)
+    print(f"\n  Δ (1st deriv vs standard): {d1_mae - std_mae:+.2f}")
+    print(f"  Δ (2nd deriv vs standard): {d2_mae - std_mae:+.2f}")
+
+    if d1_mae < std_mae:
+        print(f"  ✓ First-order PK derivatives HELP long-range forecasting!")
+    else:
+        print(f"  ✗ PK derivatives don't help — transformer already computes them.")
+
+    _save_results(result, 'exp443_pk_derivatives_longrange', cfg)
+    return result
+
+
+# ─── EXP-444: Cosine LR + Long-Range Optimization ───
+
+def _cosine_lr_schedule(optimizer, epoch, total_epochs, warmup_epochs=10, min_lr=1e-6):
+    """Cosine annealing with linear warmup."""
+    if epoch < warmup_epochs:
+        lr = 1e-3 * (epoch + 1) / warmup_epochs
+    else:
+        progress = (epoch - warmup_epochs) / (total_epochs - warmup_epochs)
+        lr = min_lr + 0.5 * (1e-3 - min_lr) * (1 + math.cos(math.pi * progress))
+    for pg in optimizer.param_groups:
+        pg['lr'] = lr
+    return lr
+
+
+def train_bridge_cosine(model, train_x, val_x, save_path, label, device,
+                        pk_mode=False, epochs=200, batch=32, future_steps=None,
+                        weight_decay=1e-5, warmup_epochs=10):
+    """Like train_bridge but with cosine LR schedule instead of ReduceLROnPlateau."""
+    model.to(device)
+    train_dl = DataLoader(TensorDataset(train_x), batch_size=batch, shuffle=True)
+    val_dl = DataLoader(TensorDataset(val_x), batch_size=batch)
+    opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=weight_decay)
+    crit = nn.MSELoss()
+    best = float('inf')
+    stale = 0
+    patience = 30  # slightly higher for cosine (no plateau to trigger reduction)
+
+    def _step(batch_data, backward=False):
+        x = batch_data[0].to(device)
+        half = x.shape[1] - future_steps if future_steps else x.shape[1] // 2
+        x_in = x.clone()
+        mask_future_pk(x_in, half, pk_mode=pk_mode)
+        pred = model(x_in, causal=True)
+        loss = crit(pred[:, half:, :1], x[:, half:, :1])
+        if backward:
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        return loss.item() * x.size(0), x.size(0)
+
+    for ep in range(epochs):
+        lr_now = _cosine_lr_schedule(opt, ep, epochs, warmup_epochs)
+
+        model.train()
+        ttl, tn = 0.0, 0
+        for b in train_dl:
+            opt.zero_grad()
+            l, n = _step(b, backward=True)
+            opt.step()
+            ttl += l; tn += n
+        tl = ttl / tn if tn else float('inf')
+
+        model.eval()
+        vtl, vn = 0.0, 0
+        with torch.no_grad():
+            for b in val_dl:
+                l, n = _step(b, backward=False)
+                vtl += l; vn += n
+        vl = vtl / vn if vn else float('inf')
+
+        if vl < best:
+            best = vl
+            stale = 0
+            os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+            torch.save({
+                'epoch': ep, 'model_state': model.state_dict(),
+                'val_loss': vl, 'label': label,
+            }, save_path)
+        else:
+            stale += 1
+
+        if (ep + 1) % 10 == 0 or ep == epochs - 1:
+            mark = ' *' if stale == 0 else ''
+            print(f'  [{label}] {ep+1:3d}/{epochs} '
+                  f'train={tl:.6f} val={vl:.6f} best={best:.6f} '
+                  f'lr={lr_now:.1e}{mark}')
+
+        if stale >= patience:
+            print(f'  [{label}] Early stop at epoch {ep+1}')
+            break
+
+    if os.path.exists(save_path):
+        ckpt = torch.load(save_path, map_location=device, weights_only=False)
+        model.load_state_dict(ckpt['model_state'])
+    return best, ep + 1
+
+
+def run_exp444(args):
+    """EXP-444: Cosine LR + Training Optimization for Long-Range.
+
+    Hypothesis: Cosine LR with warmup improves convergence for the long-range
+    (w96) model, especially because ReduceLROnPlateau can plateau-lock too early
+    on 5K training windows.
+
+    Variants:
+      a) plateau_lr: Standard ReduceLROnPlateau (control)
+      b) cosine_lr: Cosine annealing with 10-epoch warmup
+      c) cosine_lr_long: Cosine with 50% more epochs (allow longer exploration)
+
+    All use w96 asymmetric (24+72), ISF normalization, standard 8ch PK.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-444: Cosine LR for Long-Range Training")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=96,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    future_steps = 72
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    n_ch = train_x.shape[-1]
+    isf_v = data.get('isf_val')
+
+    result = {}
+
+    # Variant a: plateau_lr (control)
+    vname = 'plateau_lr'
+    print(f"\n{'─'*40}\n  Variant: {vname}\n{'─'*40}")
+    base_states_p = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp444_{vname}_s{seed}.pth')
+        print(f"\n  Base s{seed}:")
+        train_bridge(model, train_x, val_x, sp, f'444-{vname}-s{seed}',
+                     device, pk_mode=True, future_steps=future_steps,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        base_states_p[seed] = ckpt['model_state']
+
+    # Variant b: cosine_lr
+    vname2 = 'cosine_lr'
+    print(f"\n{'─'*40}\n  Variant: {vname2}\n{'─'*40}")
+    base_states_c = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp444_{vname2}_s{seed}.pth')
+        print(f"\n  Base s{seed}:")
+        train_bridge_cosine(model, train_x, val_x, sp, f'444-{vname2}-s{seed}',
+                            device, pk_mode=True, future_steps=future_steps,
+                            epochs=cfg['epochs_base'], warmup_epochs=10)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        base_states_c[seed] = ckpt['model_state']
+
+    # Variant c: cosine_lr_long (50% more epochs)
+    vname3 = 'cosine_lr_long'
+    long_epochs = int(cfg['epochs_base'] * 1.5)
+    print(f"\n{'─'*40}\n  Variant: {vname3} ({long_epochs} epochs)\n{'─'*40}")
+    base_states_cl = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp444_{vname3}_s{seed}.pth')
+        print(f"\n  Base s{seed}:")
+        train_bridge_cosine(model, train_x, val_x, sp, f'444-{vname3}-s{seed}',
+                            device, pk_mode=True, future_steps=future_steps,
+                            epochs=long_epochs, warmup_epochs=15)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        base_states_cl[seed] = ckpt['model_state']
+
+    # Per-patient FT + evaluate all variants
+    all_variants = [
+        ('plateau_lr', base_states_p),
+        ('cosine_lr', base_states_c),
+        ('cosine_lr_long', base_states_cl),
+    ]
+
+    for vn, bstates in all_variants:
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]
+            p_val = val_x[vi:ve]
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+            print(f"\n  {vn}/{pid} ({pinfo['n_train']}tr):")
+            seed_maes = []
+            for seed, bstate in bstates.items():
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                m.load_state_dict(bstate)
+                fp = os.path.join(cfg['output_dir'], f'exp444_{vn}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'444-{vn}-{pid}-s{seed}',
+                             device, pk_mode=True, future_steps=future_steps,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4)
+                mae = evaluate_model(m, p_val, device, pk_mode=True,
+                                     isf_val=p_isf, future_steps=future_steps)
+                seed_maes.append(mae)
+                print(f"    s{seed}: overall={mae['overall_mae']:.1f}, "
+                      f"h120={mae.get('h120','—')}, h360={mae.get('h360','—')}")
+
+            avg = {}
+            for k in seed_maes[0]:
+                vals = [m[k] for m in seed_maes if isinstance(m.get(k), (int, float))]
+                if vals:
+                    avg[k] = round(np.mean(vals), 2)
+            per_patient[pid] = avg
+
+        vavg = {}
+        for k in ['overall_mae', 'h30', 'h60', 'h120', 'h240', 'h360']:
+            vals = [pp[k] for pp in per_patient.values() if k in pp]
+            if vals:
+                vavg[k] = round(np.mean(vals), 2)
+        result[vn] = {'per_patient': per_patient, 'average': vavg}
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-444 Summary: LR Schedule Comparison")
+    print(f"{'='*60}")
+    for vn, vdata in result.items():
+        avg = vdata['average']
+        print(f"  {vn}: overall={avg.get('overall_mae','?')}, "
+              f"h120={avg.get('h120','?')}, h360={avg.get('h360','?')}")
+
+    p_mae = result['plateau_lr']['average'].get('overall_mae', 0)
+    c_mae = result['cosine_lr']['average'].get('overall_mae', 0)
+    cl_mae = result['cosine_lr_long']['average'].get('overall_mae', 0)
+    print(f"\n  Δ (cosine vs plateau): {c_mae - p_mae:+.2f}")
+    print(f"  Δ (cosine_long vs plateau): {cl_mae - p_mae:+.2f}")
+
+    _save_results(result, 'exp444_cosine_lr_longrange', cfg)
+    return result
+
+
+# ─── EXP-445: Next-Day TIR Prediction (Category E2) ───
+
+def _extract_daily_features(patients_dir, max_patients=None):
+    """Extract daily-level features from raw CGM + PK data for TIR prediction.
+
+    For each patient-day, compute:
+    - glucose stats: mean, std, min, max, CV
+    - TIR (70-180), time below 70, time above 180, time above 250
+    - glucodensity: 8-bin histogram (40-400 mg/dL)
+    - period TIR: 6h blocks (00-06, 06-12, 12-18, 18-24)
+    - PK stats: mean IOB, mean COB, total insulin, total carbs
+    - event counts: boluses, meals
+    - day-of-week (encoded as sin/cos)
+    """
+    from pathlib import Path
+    patients_path = Path(patients_dir)
+    patient_dirs = sorted(d for d in patients_path.iterdir()
+                          if d.is_dir() and (d / 'training').is_dir())
+    if max_patients:
+        patient_dirs = patient_dirs[:max_patients]
+
+    all_features = []
+    all_targets = []
+    all_patient_ids = []
+    all_patient_boundaries = []
+
+    from datetime import datetime
+
+    for pdir in patient_dirs:
+        pid = pdir.name
+        train_dir = pdir / 'training'
+
+        # Load glucose from entries.json (Nightscout format)
+        entries_file = train_dir / 'entries.json'
+        if not entries_file.exists():
+            continue
+
+        try:
+            with open(entries_file) as f:
+                entries = json.load(f)
+        except Exception:
+            continue
+
+        if len(entries) < 288:  # less than 1 day
+            continue
+
+        # Parse glucose time series
+        timestamps = []
+        glucose_vals = []
+        for entry in entries:
+            try:
+                ts_str = entry.get('dateString', '')
+                mg = float(entry.get('sgv', 0))
+                if mg < 20 or mg > 500 or not ts_str:
+                    continue
+                ts = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
+                timestamps.append(ts)
+                glucose_vals.append(mg)
+            except (ValueError, KeyError, TypeError):
+                continue
+
+        if len(timestamps) < 288:
+            continue
+
+        # Sort by time (entries may not be ordered)
+        sorted_idx = np.argsort([ts.timestamp() for ts in timestamps])
+        timestamps = [timestamps[i] for i in sorted_idx]
+        glucose_vals_sorted = [glucose_vals[i] for i in sorted_idx]
+        glucose_vals = glucose_vals_sorted
+
+        glucose_vals = np.array(glucose_vals, dtype=np.float32)
+        timestamps = np.array(timestamps)
+
+        # Load PK data if available
+        pk_file = train_dir / 'pk_curves.npz'
+        pk_data = None
+        if pk_file.exists():
+            try:
+                pk_data = np.load(pk_file)
+            except Exception:
+                pass
+
+        # Group by date
+        dates = np.array([ts.date() for ts in timestamps])
+        unique_dates = sorted(set(dates))
+
+        patient_features = []
+        patient_tir = []
+
+        for i, date in enumerate(unique_dates[:-1]):  # skip last day (need next-day target)
+            mask = dates == date
+            day_gluc = glucose_vals[mask]
+
+            if len(day_gluc) < 200:  # need ~70% coverage
+                continue
+
+            # Next-day target
+            next_date = unique_dates[i + 1]
+            next_mask = dates == next_date
+            next_gluc = glucose_vals[next_mask]
+            if len(next_gluc) < 200:
+                continue
+
+            # Target: next-day TIR
+            next_tir = np.mean((next_gluc >= 70) & (next_gluc <= 180)) * 100
+
+            # --- Feature extraction ---
+            feats = []
+
+            # Basic glucose stats
+            feats.extend([
+                np.mean(day_gluc),           # mean glucose
+                np.std(day_gluc),            # glucose SD
+                np.min(day_gluc),            # min
+                np.max(day_gluc),            # max
+                np.std(day_gluc) / np.mean(day_gluc) * 100,  # CV%
+            ])
+
+            # TIR breakdown
+            n = len(day_gluc)
+            feats.extend([
+                np.mean(day_gluc < 54) * 100,       # time < 54 (severe hypo)
+                np.mean(day_gluc < 70) * 100,        # time < 70 (hypo)
+                np.mean((day_gluc >= 70) & (day_gluc <= 180)) * 100,  # TIR
+                np.mean(day_gluc > 180) * 100,       # time > 180 (high)
+                np.mean(day_gluc > 250) * 100,       # time > 250 (very high)
+            ])
+
+            # Glucodensity (8 bins, 40-400 mg/dL)
+            bins = np.linspace(40, 400, 9)
+            hist, _ = np.histogram(np.clip(day_gluc, 40, 400), bins=bins)
+            hist_norm = hist / hist.sum()
+            feats.extend(hist_norm.tolist())
+
+            # Period TIR (6h blocks by index position, approximate)
+            quarter = len(day_gluc) // 4
+            for q in range(4):
+                qstart = q * quarter
+                qend = (q + 1) * quarter if q < 3 else len(day_gluc)
+                q_gluc = day_gluc[qstart:qend]
+                if len(q_gluc) > 0:
+                    feats.append(np.mean((q_gluc >= 70) & (q_gluc <= 180)) * 100)
+                else:
+                    feats.append(50.0)
+
+            # Glucose dynamics
+            diffs = np.diff(day_gluc)
+            feats.extend([
+                np.mean(np.abs(diffs)),       # MAGE-like
+                np.mean(diffs > 0) * 100,     # % rising
+                np.percentile(diffs, 10),     # 10th pctile (fast drops)
+                np.percentile(diffs, 90),     # 90th pctile (fast rises)
+            ])
+
+            # Day of week (sin/cos encoding)
+            dow = date.weekday()
+            feats.extend([
+                np.sin(2 * np.pi * dow / 7),
+                np.cos(2 * np.pi * dow / 7),
+            ])
+
+            patient_features.append(feats)
+            patient_tir.append(next_tir)
+
+        if len(patient_features) < 10:
+            continue
+
+        start_idx = len(all_features)
+        all_features.extend(patient_features)
+        all_targets.extend(patient_tir)
+        all_patient_ids.extend([pid] * len(patient_features))
+        all_patient_boundaries.append({
+            'name': pid,
+            'start': start_idx,
+            'end': start_idx + len(patient_features),
+            'n_days': len(patient_features),
+        })
+        print(f"  {pid}: {len(patient_features)} days, "
+              f"mean TIR={np.mean(patient_tir):.1f}%, "
+              f"bad days (TIR<60%)={np.mean(np.array(patient_tir)<60)*100:.0f}%")
+
+    X = np.array(all_features, dtype=np.float32)
+    y = np.array(all_targets, dtype=np.float32)
+
+    return X, y, all_patient_ids, all_patient_boundaries
+
+
+def run_exp445(args):
+    """EXP-445: Next-Day TIR Prediction (Category E2: Strategic Planning).
+
+    Hypothesis: Today's glucose distribution and dynamics predict tomorrow's TIR.
+    This opens the strategic planning layer — proactive day planning based on
+    patterns rather than short-term forecasting.
+
+    Uses XGBoost/Ridge regression on daily tabular features (safer at ~180
+    samples/patient than deep learning). Per-patient chronological split
+    (first 80% train, last 20% test).
+
+    Features (29 total):
+    - Glucose stats (5): mean, std, min, max, CV%
+    - TIR breakdown (5): <54%, <70%, TIR, >180%, >250%
+    - Glucodensity (8): 8-bin histogram
+    - Period TIR (4): 6h-block TIR
+    - Dynamics (4): mean|diff|, %rising, p10, p90
+    - Day-of-week (2): sin/cos
+
+    Target: next-day TIR (0-100%)
+    """
+    cfg = _get_config(args)
+    print(f"\n{'='*60}")
+    print(f"EXP-445: Next-Day TIR Prediction (Category E2)")
+    print(f"{'='*60}")
+
+    print(f"\n  Extracting daily features...")
+    X, y, pids, boundaries = _extract_daily_features(
+        args.patients_dir, max_patients=cfg['max_patients'])
+
+    if len(X) == 0:
+        print("  No data extracted! Check patient data format.")
+        return {'error': 'no_data'}
+
+    print(f"\n  Total: {len(X)} day-pairs, {len(boundaries)} patients")
+    print(f"  Features: {X.shape[1]}, Target: next-day TIR")
+    print(f"  Target distribution: mean={np.mean(y):.1f}%, std={np.std(y):.1f}%")
+
+    # Use sklearn if available, else ridge regression by hand
+    try:
+        from sklearn.linear_model import Ridge
+        from sklearn.ensemble import GradientBoostingRegressor
+        has_sklearn = True
+    except ImportError:
+        has_sklearn = False
+        print("  sklearn not available, using manual Ridge regression")
+
+    result = {}
+
+    # Per-patient chronological split evaluation
+    models_to_test = {}
+
+    if has_sklearn:
+        models_to_test['ridge'] = lambda: Ridge(alpha=1.0)
+        models_to_test['gbr'] = lambda: GradientBoostingRegressor(
+            n_estimators=100, max_depth=3, learning_rate=0.1,
+            subsample=0.8, random_state=42)
+    else:
+        models_to_test['ridge_manual'] = None
+
+    # Also test baselines
+    # Baseline 1: predict today's TIR (persistence)
+    # Baseline 2: predict patient mean TIR
+
+    for model_name, model_factory in models_to_test.items():
+        print(f"\n{'─'*40}")
+        print(f"  Model: {model_name}")
+        print(f"{'─'*40}")
+
+        per_patient = {}
+        all_preds = []
+        all_trues = []
+
+        for pinfo in boundaries:
+            pid = pinfo['name']
+            s, e = pinfo['start'], pinfo['end']
+            n = e - s
+            split_idx = int(n * 0.8)
+
+            if split_idx < 10 or (n - split_idx) < 5:
+                print(f"  {pid}: too few days ({n}), skipping")
+                continue
+
+            X_train = X[s:s+split_idx]
+            y_train = y[s:s+split_idx]
+            X_test = X[s+split_idx:e]
+            y_test = y[s+split_idx:e]
+
+            if has_sklearn and model_factory is not None:
+                mdl = model_factory()
+                mdl.fit(X_train, y_train)
+                y_pred = mdl.predict(X_test)
+            else:
+                # Manual ridge regression
+                X_b = np.hstack([X_train, np.ones((len(X_train), 1))])
+                Xt_b = np.hstack([X_test, np.ones((len(X_test), 1))])
+                alpha = 1.0
+                I = np.eye(X_b.shape[1])
+                w = np.linalg.solve(X_b.T @ X_b + alpha * I, X_b.T @ y_train)
+                y_pred = Xt_b @ w
+
+            # Baselines
+            # Persistence: predict previous day's TIR
+            # Approximate: ch index 7 is TIR (from feature extraction)
+            y_persist = X_test[:, 7]  # today's TIR → predict as tomorrow's TIR
+            y_mean = np.full_like(y_test, np.mean(y_train))
+
+            mae_model = np.mean(np.abs(y_pred - y_test))
+            mae_persist = np.mean(np.abs(y_persist - y_test))
+            mae_mean = np.mean(np.abs(y_mean - y_test))
+
+            # Binary: bad day (TIR < 60%)
+            bad_true = y_test < 60
+            if np.any(bad_true) and np.any(~bad_true):
+                bad_pred = y_pred < 60
+                bad_persist = y_persist < 60
+                tp = np.sum(bad_pred & bad_true)
+                fp = np.sum(bad_pred & ~bad_true)
+                fn = np.sum(~bad_pred & bad_true)
+                prec = tp / (tp + fp) if (tp + fp) > 0 else 0
+                rec = tp / (tp + fn) if (tp + fn) > 0 else 0
+                f1 = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0
+            else:
+                f1 = float('nan')
+
+            per_patient[pid] = {
+                'n_train': split_idx,
+                'n_test': n - split_idx,
+                'mae_model': round(mae_model, 2),
+                'mae_persist': round(mae_persist, 2),
+                'mae_mean': round(mae_mean, 2),
+                'bad_day_f1': round(f1, 3) if not np.isnan(f1) else 'N/A',
+            }
+            all_preds.extend(y_pred.tolist())
+            all_trues.extend(y_test.tolist())
+
+            print(f"  {pid}: MAE={mae_model:.1f}% (persist={mae_persist:.1f}%, "
+                  f"mean={mae_mean:.1f}%), bad-day F1={f1:.3f}" if not np.isnan(f1) 
+                  else f"  {pid}: MAE={mae_model:.1f}% (persist={mae_persist:.1f}%, "
+                  f"mean={mae_mean:.1f}%)")
+
+        # Overall metrics
+        if all_preds:
+            all_preds = np.array(all_preds)
+            all_trues = np.array(all_trues)
+            overall_mae = np.mean(np.abs(all_preds - all_trues))
+            overall_corr = np.corrcoef(all_preds, all_trues)[0, 1]
+        else:
+            overall_mae = float('nan')
+            overall_corr = float('nan')
+
+        result[model_name] = {
+            'per_patient': per_patient,
+            'overall_mae': round(overall_mae, 2),
+            'overall_corr': round(overall_corr, 3),
+        }
+
+        print(f"\n  {model_name} overall: MAE={overall_mae:.2f}%, corr={overall_corr:.3f}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-445 Summary: Next-Day TIR Prediction")
+    print(f"{'='*60}")
+    for mn, md in result.items():
+        print(f"  {mn}: MAE={md['overall_mae']}%, corr={md['overall_corr']}")
+        for pid, pp in md['per_patient'].items():
+            print(f"    {pid}: model={pp['mae_model']}% persist={pp['mae_persist']}% "
+                  f"mean={pp['mae_mean']}%")
+
+    # Check if model beats persistence
+    for mn, md in result.items():
+        model_maes = [pp['mae_model'] for pp in md['per_patient'].values()]
+        persist_maes = [pp['mae_persist'] for pp in md['per_patient'].values()]
+        if model_maes and persist_maes:
+            avg_model = np.mean(model_maes)
+            avg_persist = np.mean(persist_maes)
+            if avg_model < avg_persist:
+                print(f"\n  ✓ {mn} beats persistence by {avg_persist - avg_model:.1f}% MAE!")
+            else:
+                print(f"\n  ✗ {mn} doesn't beat persistence ({avg_model:.1f}% vs {avg_persist:.1f}%)")
+                print(f"  TIR is highly autocorrelated — tomorrow ≈ today is hard to beat.")
+
+    _save_results(result, 'exp445_nextday_tir', cfg)
+    return result
+
+
+# ─── EXP-446: AR-Enhanced Horizon Routing ───
+
+def run_exp446(args):
+    """EXP-446: AR-Enhanced Horizon Routing — best of EXP-436 + EXP-439.
+
+    Hypothesis: Combining horizon routing (short model h30-h120, long model
+    h120+) with autoregressive rollout for the long-range band provides
+    both data-rich short-range accuracy AND progressive long-range refinement.
+
+    Architecture:
+      - Short: w48 (24+24), direct prediction for h30-h120
+      - AR-Long: w48 model rolled forward on w144 data, for h120-h360
+      - Direct-Long: w96 (24+72), direct prediction for h120-h360
+
+    Compare: short+AR-long vs short+direct-long vs individual models.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-446: AR-Enhanced Horizon Routing")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    # ── Load data at multiple window sizes ──
+    data_48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    data_96 = load_bridge_data(
+        args.patients_dir, window_size=96,
+        max_patients=cfg['max_patients'], load_isf=True)
+    data_144 = load_bridge_data(
+        args.patients_dir, window_size=144,
+        max_patients=cfg['max_patients'], load_isf=True)
+
+    has_isf = 'isf_val' in data_48
+
+    train_48, val_48 = prepare_pk_future(data_48, use_isf=has_isf, drop_time=False)
+    train_96, val_96 = prepare_pk_future(data_96, use_isf=has_isf, drop_time=False)
+    train_144, val_144 = prepare_pk_future(data_144, use_isf=has_isf, drop_time=False)
+
+    n_ch = train_48.shape[-1]
+    isf_v_48 = data_48.get('isf_val')
+    isf_v_96 = data_96.get('isf_val')
+    isf_v_144 = data_144.get('isf_val')
+
+    print(f"  w48: {train_48.shape[0]} train, w96: {train_96.shape[0]} train, "
+          f"w144: {train_144.shape[0]} train")
+
+    # ── Train short model (w48) ──
+    print(f"\n{'─'*40}")
+    print(f"  Training SHORT model (w48)")
+    print(f"{'─'*40}")
+
+    short_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp446_short_s{seed}.pth')
+        print(f"\n  Short s{seed}:")
+        train_bridge(model, train_48, val_48, sp, f'446-short-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        short_states[seed] = ckpt['model_state']
+
+    # ── Train direct long model (w96) ──
+    print(f"\n{'─'*40}")
+    print(f"  Training DIRECT-LONG model (w96)")
+    print(f"{'─'*40}")
+
+    long_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+        sp = os.path.join(cfg['output_dir'], f'exp446_long_s{seed}.pth')
+        print(f"\n  Long s{seed}:")
+        train_bridge(model, train_96, val_96, sp, f'446-long-s{seed}',
+                     device, pk_mode=True, future_steps=72,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        long_states[seed] = ckpt['model_state']
+
+    # ── Per-patient FT + 3-way comparison ──
+    print(f"\n{'='*40}")
+    print(f"  Per-Patient FT + Routing Comparison")
+    print(f"{'='*40}")
+
+    patients_48 = {p['name']: p for p in data_48['per_patient']}
+    patients_96 = {p['name']: p for p in data_96['per_patient']}
+    patients_144 = {p['name']: p for p in data_144['per_patient']}
+    common = sorted(set(patients_48) & set(patients_96) & set(patients_144))
+
+    result = {'short_direct': {}, 'ar_route': {}, 'direct_route': {}}
+
+    for pid in common:
+        p48 = patients_48[pid]
+        p96 = patients_96[pid]
+        p144 = patients_144[pid]
+
+        ti48, te48 = p48['train_idx']
+        vi48, ve48 = p48['val_idx']
+        ti96, te96 = p96['train_idx']
+        vi96, ve96 = p96['val_idx']
+        vi144, ve144 = p144['val_idx']
+
+        pt_48 = train_48[ti48:te48]
+        pv_48 = val_48[vi48:ve48]
+        pisf_48 = isf_v_48[vi48:ve48] if isf_v_48 is not None else None
+
+        pt_96 = train_96[ti96:te96]
+        pv_96 = val_96[vi96:ve96]
+        pisf_96 = isf_v_96[vi96:ve96] if isf_v_96 is not None else None
+
+        pv_144 = val_144[vi144:ve144]
+        pisf_144 = isf_v_144[vi144:ve144] if isf_v_144 is not None else None
+
+        print(f"\n  Patient {pid}:")
+
+        # FT short model
+        short_ft_models = []
+        for seed, bstate in short_states.items():
+            torch.manual_seed(seed); np.random.seed(seed)
+            m = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            m.load_state_dict(bstate)
+            fp = os.path.join(cfg['output_dir'], f'exp446_short_{pid}_s{seed}.pth')
+            train_bridge(m, pt_48, pv_48, fp, f'446-s-{pid}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_ft'], patience=10, lr_patience=5, lr=1e-4)
+            short_ft_models.append(m)
+
+        # FT long model
+        long_ft_models = []
+        for seed, bstate in long_states.items():
+            torch.manual_seed(seed); np.random.seed(seed)
+            m = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            m.load_state_dict(bstate)
+            fp = os.path.join(cfg['output_dir'], f'exp446_long_{pid}_s{seed}.pth')
+            train_bridge(m, pt_96, pv_96, fp, f'446-l-{pid}-s{seed}',
+                         device, pk_mode=True, future_steps=72,
+                         epochs=cfg['epochs_ft'], patience=10, lr_patience=5, lr=1e-4)
+            long_ft_models.append(m)
+
+        # Evaluate: short-only (h30-h120)
+        short_mae = evaluate_model(short_ft_models[0], pv_48, device, pk_mode=True,
+                                   isf_val=pisf_48)
+        print(f"    Short-direct: h30={short_mae.get('h30','—')}, h60={short_mae.get('h60','—')}, "
+              f"h120={short_mae.get('h120','—')}")
+
+        # Evaluate: direct-long (h30-h360)
+        long_mae = evaluate_model(long_ft_models[0], pv_96, device, pk_mode=True,
+                                  isf_val=pisf_96, future_steps=72)
+        print(f"    Direct-long: h60={long_mae.get('h60','—')}, h120={long_mae.get('h120','—')}, "
+              f"h240={long_mae.get('h240','—')}, h360={long_mae.get('h360','—')}")
+
+        # Evaluate: AR rollout (short model on w144 data, 3 rollouts → h360)
+        ar_result = _autoregressive_predict(
+            short_ft_models[0], pv_144, n_rollouts=3, device=device,
+            pk_mode=True, isf_val=pisf_144)
+        print(f"    AR-rollout: h120={ar_result.get('h120','—')}, h240={ar_result.get('h240','—')}, "
+              f"h360={ar_result.get('h360','—')}")
+
+        # Build routed results
+        # Route A: short h30-h120 + AR h120-h360
+        ar_route = {}
+        for k in ['h5', 'h10', 'h15', 'h20', 'h25', 'h30', 'h60', 'h90', 'h120']:
+            if k in short_mae:
+                ar_route[k] = short_mae[k]
+        for k in ['h150', 'h180', 'h240', 'h300', 'h360']:
+            if k in ar_result:
+                ar_route[k] = ar_result[k]
+        ar_vals = [v for v in ar_route.values() if isinstance(v, (int, float))]
+        ar_route['overall_mae'] = round(np.mean(ar_vals), 2) if ar_vals else 0
+
+        # Route B: short h30-h120 + direct-long h120-h360
+        dir_route = {}
+        for k in ['h5', 'h10', 'h15', 'h20', 'h25', 'h30', 'h60', 'h90', 'h120']:
+            if k in short_mae:
+                dir_route[k] = short_mae[k]
+        for k in ['h150', 'h180', 'h240', 'h300', 'h360']:
+            if k in long_mae:
+                dir_route[k] = long_mae[k]
+        dir_vals = [v for v in dir_route.values() if isinstance(v, (int, float))]
+        dir_route['overall_mae'] = round(np.mean(dir_vals), 2) if dir_vals else 0
+
+        result['short_direct'][pid] = short_mae
+        result['ar_route'][pid] = ar_route
+        result['direct_route'][pid] = dir_route
+
+        print(f"    AR-Route overall={ar_route['overall_mae']}")
+        print(f"    Direct-Route overall={dir_route['overall_mae']}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-446 Summary: AR-Enhanced Horizon Routing")
+    print(f"{'='*60}")
+
+    for rtype in ['ar_route', 'direct_route']:
+        all_maes = [v['overall_mae'] for v in result[rtype].values()]
+        avg_mae = np.mean(all_maes)
+        h360_vals = [v.get('h360', 0) for v in result[rtype].values()]
+        h120_vals = [v.get('h120', 0) for v in result[rtype].values()]
+        print(f"  {rtype}: overall={avg_mae:.2f}, h120={np.mean(h120_vals):.1f}, "
+              f"h360={np.mean(h360_vals):.1f}")
+
+    _save_results(result, 'exp446_ar_enhanced_routing', cfg)
+    return result
+
+
+# ─── EXP-447: TIR Prediction with PK-Derived Daily Features ───
+
+def _extract_daily_features_with_pk(patients_dir, max_patients=None):
+    """Daily features enhanced with PK-derived insulin/carb stats.
+
+    In addition to glucose features (from EXP-445), adds:
+    - Mean IOB, max IOB, IOB variability
+    - Total daily insulin dose (TDD) approximation
+    - Meal count, mean carb dose, carb timing spread
+    - Net metabolic balance features
+    """
+    from pathlib import Path
+    from datetime import datetime
+    patients_path = Path(patients_dir)
+    patient_dirs = sorted(d for d in patients_path.iterdir()
+                          if d.is_dir() and (d / 'training').is_dir())
+    if max_patients:
+        patient_dirs = patient_dirs[:max_patients]
+
+    all_features = []
+    all_targets = []
+    all_patient_ids = []
+    all_patient_boundaries = []
+
+    for pdir in patient_dirs:
+        pid = pdir.name
+        train_dir = pdir / 'training'
+
+        # Load entries
+        entries_file = train_dir / 'entries.json'
+        if not entries_file.exists():
+            continue
+        try:
+            with open(entries_file) as f:
+                entries = json.load(f)
+        except Exception:
+            continue
+
+        if len(entries) < 288:
+            continue
+
+        # Parse glucose
+        timestamps = []
+        glucose_vals = []
+        for entry in entries:
+            try:
+                ts_str = entry.get('dateString', '')
+                mg = float(entry.get('sgv', 0))
+                if mg < 20 or mg > 500 or not ts_str:
+                    continue
+                ts = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
+                timestamps.append(ts)
+                glucose_vals.append(mg)
+            except (ValueError, KeyError, TypeError):
+                continue
+
+        if len(timestamps) < 288:
+            continue
+
+        sorted_idx = np.argsort([ts.timestamp() for ts in timestamps])
+        timestamps = [timestamps[i] for i in sorted_idx]
+        glucose_vals = [glucose_vals[i] for i in sorted_idx]
+
+        # Load treatments for insulin/carb data
+        treat_file = train_dir / 'treatments.json'
+        treatments = []
+        if treat_file.exists():
+            try:
+                with open(treat_file) as f:
+                    treatments = json.load(f)
+            except Exception:
+                pass
+
+        # Parse treatments by date
+        treat_by_date = {}
+        for t in treatments:
+            try:
+                ts_str = t.get('created_at', t.get('dateString', ''))
+                if not ts_str:
+                    continue
+                ts = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
+                d = ts.date()
+                if d not in treat_by_date:
+                    treat_by_date[d] = []
+                treat_by_date[d].append(t)
+            except (ValueError, TypeError):
+                continue
+
+        glucose_vals = np.array(glucose_vals, dtype=np.float32)
+        timestamps_arr = np.array(timestamps)
+        dates = np.array([ts.date() for ts in timestamps])
+        unique_dates = sorted(set(dates))
+
+        patient_features = []
+        patient_tir = []
+
+        for i, date in enumerate(unique_dates[:-1]):
+            mask = dates == date
+            day_gluc = glucose_vals[mask]
+
+            if len(day_gluc) < 200:
+                continue
+
+            next_date = unique_dates[i + 1]
+            next_mask = dates == next_date
+            next_gluc = glucose_vals[next_mask]
+            if len(next_gluc) < 200:
+                continue
+
+            next_tir = np.mean((next_gluc >= 70) & (next_gluc <= 180)) * 100
+
+            feats = []
+
+            # === Glucose features (same as EXP-445) ===
+            feats.extend([
+                np.mean(day_gluc), np.std(day_gluc),
+                np.min(day_gluc), np.max(day_gluc),
+                np.std(day_gluc) / np.mean(day_gluc) * 100,
+            ])
+            feats.extend([
+                np.mean(day_gluc < 54) * 100,
+                np.mean(day_gluc < 70) * 100,
+                np.mean((day_gluc >= 70) & (day_gluc <= 180)) * 100,
+                np.mean(day_gluc > 180) * 100,
+                np.mean(day_gluc > 250) * 100,
+            ])
+            bins = np.linspace(40, 400, 9)
+            hist, _ = np.histogram(np.clip(day_gluc, 40, 400), bins=bins)
+            hist_norm = hist / hist.sum()
+            feats.extend(hist_norm.tolist())
+            quarter = len(day_gluc) // 4
+            for q in range(4):
+                qstart = q * quarter
+                qend = (q + 1) * quarter if q < 3 else len(day_gluc)
+                q_gluc = day_gluc[qstart:qend]
+                feats.append(np.mean((q_gluc >= 70) & (q_gluc <= 180)) * 100 if len(q_gluc) > 0 else 50.0)
+            diffs = np.diff(day_gluc)
+            feats.extend([
+                np.mean(np.abs(diffs)),
+                np.mean(diffs > 0) * 100,
+                np.percentile(diffs, 10),
+                np.percentile(diffs, 90),
+            ])
+            dow = date.weekday()
+            feats.extend([np.sin(2*np.pi*dow/7), np.cos(2*np.pi*dow/7)])
+
+            # === PK-derived features (NEW) ===
+            day_treats = treat_by_date.get(date, [])
+
+            # Insulin features
+            boluses = [float(t.get('insulin') or 0) for t in day_treats
+                       if float(t.get('insulin') or 0) > 0]
+            tdd_bolus = sum(boluses) if boluses else 0
+            n_bolus = len(boluses)
+
+            # Basal rate from temp basals
+            temp_basals = [t for t in day_treats if t.get('eventType') == 'Temp Basal']
+            n_temp_basal = len(temp_basals)
+
+            # Carb features
+            carbs = [float(t.get('carbs') or 0) for t in day_treats
+                     if float(t.get('carbs') or 0) > 0]
+            total_carbs = sum(carbs) if carbs else 0
+            n_meals = len(carbs)
+            mean_carbs = np.mean(carbs) if carbs else 0
+            max_carbs = max(carbs) if carbs else 0
+
+            feats.extend([
+                tdd_bolus,                    # total daily bolus dose
+                n_bolus,                      # number of boluses
+                np.mean(boluses) if boluses else 0,  # mean bolus size
+                n_temp_basal,                 # number of temp basal changes
+                total_carbs,                  # total daily carbs
+                n_meals,                      # meal count
+                mean_carbs,                   # mean carb dose
+                max_carbs,                    # largest meal
+                total_carbs / max(tdd_bolus, 0.1),  # carb-to-insulin ratio (daily)
+            ])
+
+            patient_features.append(feats)
+            patient_tir.append(next_tir)
+
+        if len(patient_features) < 10:
+            continue
+
+        start_idx = len(all_features)
+        all_features.extend(patient_features)
+        all_targets.extend(patient_tir)
+        all_patient_ids.extend([pid] * len(patient_features))
+        all_patient_boundaries.append({
+            'name': pid,
+            'start': start_idx,
+            'end': start_idx + len(patient_features),
+            'n_days': len(patient_features),
+        })
+        print(f"  {pid}: {len(patient_features)} days, {n_bolus} bolus/last day, "
+              f"{n_meals} meals/last day, TIR={np.mean(patient_tir):.1f}%")
+
+    X = np.array(all_features, dtype=np.float32)
+    y = np.array(all_targets, dtype=np.float32)
+    return X, y, all_patient_ids, all_patient_boundaries
+
+
+def run_exp447(args):
+    """EXP-447: TIR Prediction with PK-Derived Daily Features.
+
+    Hypothesis: Adding insulin and carb statistics (TDD, meal count, carb-to-
+    insulin ratio) to daily features improves next-day TIR prediction beyond
+    EXP-445's glucose-only features.
+
+    Compare:
+      a) glucose_only: EXP-445 features (28 features)
+      b) glucose+pk: + insulin/carb stats (37 features)
+
+    Uses Ridge and GBR, same chronological per-patient split.
+    """
+    cfg = _get_config(args)
+    print(f"\n{'='*60}")
+    print(f"EXP-447: TIR with PK-Derived Daily Features")
+    print(f"{'='*60}")
+
+    # Glucose-only features (EXP-445 style)
+    print(f"\n  Extracting glucose-only features...")
+    X_gluc, y_gluc, pids_g, bounds_g = _extract_daily_features(
+        args.patients_dir, max_patients=cfg['max_patients'])
+
+    # Glucose + PK features
+    print(f"\n  Extracting glucose+PK features...")
+    X_pk, y_pk, pids_pk, bounds_pk = _extract_daily_features_with_pk(
+        args.patients_dir, max_patients=cfg['max_patients'])
+
+    if len(X_gluc) == 0 or len(X_pk) == 0:
+        print("  No data!")
+        return {'error': 'no_data'}
+
+    print(f"\n  Glucose-only: {X_gluc.shape[1]} features, {len(X_gluc)} samples")
+    print(f"  Glucose+PK: {X_pk.shape[1]} features, {len(X_pk)} samples")
+
+    try:
+        from sklearn.linear_model import Ridge
+        from sklearn.ensemble import GradientBoostingRegressor
+    except ImportError:
+        print("  sklearn required for this experiment")
+        return {'error': 'no_sklearn'}
+
+    result = {}
+
+    for feat_name, X, y, bounds in [
+        ('glucose_only', X_gluc, y_gluc, bounds_g),
+        ('glucose_pk', X_pk, y_pk, bounds_pk),
+    ]:
+        print(f"\n{'─'*40}")
+        print(f"  Features: {feat_name} ({X.shape[1]} dims)")
+        print(f"{'─'*40}")
+
+        for model_name, model_factory in [
+            ('ridge', lambda: Ridge(alpha=1.0)),
+            ('gbr', lambda: GradientBoostingRegressor(
+                n_estimators=100, max_depth=3, learning_rate=0.1,
+                subsample=0.8, random_state=42)),
+        ]:
+            per_patient = {}
+            all_preds, all_trues = [], []
+
+            for pinfo in bounds:
+                pid = pinfo['name']
+                s, e = pinfo['start'], pinfo['end']
+                n = e - s
+                split_idx = int(n * 0.8)
+                if split_idx < 10 or (n - split_idx) < 5:
+                    continue
+
+                X_train, y_train = X[s:s+split_idx], y[s:s+split_idx]
+                X_test, y_test = X[s+split_idx:e], y[s+split_idx:e]
+
+                mdl = model_factory()
+                mdl.fit(X_train, y_train)
+                y_pred = mdl.predict(X_test)
+
+                y_persist = X_test[:, 7]  # today's TIR
+                mae_model = np.mean(np.abs(y_pred - y_test))
+                mae_persist = np.mean(np.abs(y_persist - y_test))
+
+                per_patient[pid] = {
+                    'mae_model': round(float(mae_model), 2),
+                    'mae_persist': round(float(mae_persist), 2),
+                }
+                all_preds.extend(y_pred.tolist())
+                all_trues.extend(y_test.tolist())
+                print(f"    {pid}: {model_name}={mae_model:.1f}% persist={mae_persist:.1f}%")
+
+            if all_preds:
+                overall_mae = np.mean(np.abs(np.array(all_preds) - np.array(all_trues)))
+            else:
+                overall_mae = float('nan')
+
+            key = f"{feat_name}_{model_name}"
+            result[key] = {
+                'per_patient': per_patient,
+                'overall_mae': round(float(overall_mae), 2),
+            }
+
+    # Summary comparison
+    print(f"\n{'='*60}")
+    print(f"EXP-447 Summary: TIR Feature Comparison")
+    print(f"{'='*60}")
+    for key, data in result.items():
+        print(f"  {key}: MAE={data['overall_mae']}%")
+        for pid, pp in data['per_patient'].items():
+            print(f"    {pid}: model={pp['mae_model']}% persist={pp['mae_persist']}%")
+
+    # Delta: PK features vs glucose-only
+    for mn in ['ridge', 'gbr']:
+        g_key = f"glucose_only_{mn}"
+        p_key = f"glucose_pk_{mn}"
+        if g_key in result and p_key in result:
+            delta = result[p_key]['overall_mae'] - result[g_key]['overall_mae']
+            print(f"\n  Δ ({mn} PK vs glucose-only): {delta:+.2f}%")
+            if delta < 0:
+                print(f"  ✓ PK features help {mn} by {-delta:.1f}%!")
+            else:
+                print(f"  ✗ PK features don't help {mn}")
+
+    _save_results(result, 'exp447_tir_pk_features', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -6574,6 +7968,11 @@ EXPERIMENTS = {
     '440': run_exp440,
     '441': run_exp441,
     '442': run_exp442,
+    '443': run_exp443,
+    '444': run_exp444,
+    '445': run_exp445,
+    '446': run_exp446,
+    '447': run_exp447,
 }
 
 
