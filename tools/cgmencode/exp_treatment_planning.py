@@ -3599,6 +3599,249 @@ def run_exp453(args):
     return results
 
 
+# ===================================================================
+# EXP-454: Extended Context for Extended Horizons
+# ===================================================================
+
+def run_exp454(args):
+    """EXP-454: Extended history context for longer-horizon prediction.
+
+    EXP-453 showed throughput lift collapses at 12h — implying the 2h
+    context window is the bottleneck.  Test whether giving the model
+    longer history improves prediction at 6h and 12h horizons.
+
+    Configurations: history 2h/4h/6h/12h/24h × future 12h
+    Also tests: history 2h/4h × future 6h
+    """
+    cfg = _get_config(args)
+
+    print(f"\n{'='*60}")
+    print("EXP-454: Extended Context for Extended Horizons")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    results = {}
+
+    configs = [
+        # (label, history_steps, future_steps)
+        ('2h_hist→6h_fut',  STEPS_2H,  STEPS_6H),
+        ('4h_hist→6h_fut',  STEPS_4H,  STEPS_6H),
+        ('2h_hist→12h_fut', STEPS_2H,  STEPS_12H),
+        ('4h_hist→12h_fut', STEPS_4H,  STEPS_12H),
+        ('6h_hist→12h_fut', STEPS_6H,  STEPS_12H),
+        ('12h_hist→12h_fut', STEPS_12H, STEPS_12H),
+        ('24h_hist→12h_fut', STEPS_24H, STEPS_12H),
+    ]
+
+    for task_name, threshold, above in [('hypo', 70, False), ('high', 180, True)]:
+        print(f"\n  --- {task_name.upper()} ---")
+        print(f"    {'Config':25s} {'AUC':>10s} {'N_train':>10s}")
+        print(f"    {'-'*50}")
+
+        for label, hist_steps, fut_steps in configs:
+            X, y, pids, _ = _build_dataset(
+                patients, hist_steps, fut_steps, threshold, above)
+            if X is None:
+                print(f"    {label:25s}  insufficient data"); continue
+
+            res = _train_xgb_eval(X, y, pids, cfg['seeds'])
+            key = f"{label}_{task_name}"
+            res['history_steps'] = hist_steps
+            res['future_steps'] = fut_steps
+            results[key] = res
+            auc = res['average'].get('auc_roc', 0)
+            print(f"    {label:25s} {auc:>10.4f} {res['n_train']:>10d}")
+
+    # Compare baselines to see lift from extended context
+    print(f"\n  {'='*60}")
+    print(f"  CONTEXT EXTENSION LIFT (vs 2h baseline)")
+    print(f"  {'='*60}")
+    for task in ['hypo', 'high']:
+        print(f"\n  --- {task.upper()} ---")
+        base_6h = results.get(f'2h_hist→6h_fut_{task}', {}).get('average', {}).get('auc_roc', 0)
+        base_12h = results.get(f'2h_hist→12h_fut_{task}', {}).get('average', {}).get('auc_roc', 0)
+        for label, _, fut_steps in configs:
+            key = f'{label}_{task}'
+            r = results.get(key)
+            if not r: continue
+            auc = r['average'].get('auc_roc', 0)
+            base = base_12h if fut_steps == STEPS_12H else base_6h
+            delta = auc - base
+            sign = '+' if delta >= 0 else ''
+            target = '12h' if fut_steps == STEPS_12H else '6h'
+            print(f"    {label:25s}  AUC={auc:.4f}  Δ vs 2h→{target}: {sign}{delta:.4f}")
+
+    save_results(results, 'exp454_extended_context')
+    return results
+
+
+# ===================================================================
+# EXP-455: Multi-Day Recurrence Features
+# ===================================================================
+
+def run_exp455(args):
+    """EXP-455: Multi-day lookback features for classification.
+
+    Leverages the known HIGH recurrence signal (AUC=0.919 at 3d, EXP-415)
+    by adding multi-day summary features to the tabular feature set.
+
+    New features (computed per window, require longer lookback in raw data):
+    - had_high_yesterday: HIGH event in same 6h block 24h ago
+    - had_hypo_yesterday: HYPO event in same 6h block 24h ago
+    - high_count_3d: count of HIGH 6h-blocks in past 3 days
+    - hypo_count_3d: count of HYPO 6h-blocks in past 3 days
+    - tir_24h: time-in-range (70-180) in past 24h
+    - tir_3d: time-in-range in past 3 days
+    - control_trend: tir_24h - tir_3d (improving or worsening?)
+    - glucose_mean_24h: avg glucose in past 24h
+    - glucose_std_24h: glucose variability in past 24h
+    """
+    cfg = _get_config(args)
+
+    print(f"\n{'='*60}")
+    print("EXP-455: Multi-Day Recurrence Features")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    LOOKBACK_3D = STEPS_3D  # 864 steps = 3 days
+
+    def multiday_features(pat, start, ctx_end):
+        """Compute multi-day lookback features. Requires 3d of prior data."""
+        grid = pat['grid']
+        glucose_raw = grid[:, 0] * 400
+
+        # Need at least 3 days of prior data
+        if start < LOOKBACK_3D:
+            return None
+
+        # 24h lookback
+        g_24h = glucose_raw[start - STEPS_24H:start]
+        g_24h_valid = g_24h[~np.isnan(g_24h)]
+        if len(g_24h_valid) < 12:
+            return None
+
+        tir_24h = float(np.mean((g_24h_valid >= 70) & (g_24h_valid <= 180)))
+        mean_24h = float(np.mean(g_24h_valid))
+        std_24h = float(np.std(g_24h_valid))
+
+        # 3-day lookback
+        g_3d = glucose_raw[start - LOOKBACK_3D:start]
+        g_3d_valid = g_3d[~np.isnan(g_3d)]
+        if len(g_3d_valid) < 24:
+            return None
+
+        tir_3d = float(np.mean((g_3d_valid >= 70) & (g_3d_valid <= 180)))
+        control_trend = tir_24h - tir_3d
+
+        # Count HIGH/HYPO blocks in past 3 days (6h blocks)
+        block_size = STEPS_6H
+        high_count = 0
+        hypo_count = 0
+        for bstart in range(start - LOOKBACK_3D, start, block_size):
+            bend = min(bstart + block_size, start)
+            bg = glucose_raw[bstart:bend]
+            bg_v = bg[~np.isnan(bg)]
+            if len(bg_v) > 0:
+                if np.mean(bg_v > 180) > 0.2:
+                    high_count += 1
+                if (bg_v < 70).any():
+                    hypo_count += 1
+
+        # Same-time-yesterday pattern (24h ago, same 6h block)
+        yest_start = start - STEPS_24H
+        yest_end = yest_start + block_size
+        g_yest = glucose_raw[yest_start:yest_end]
+        g_yest_v = g_yest[~np.isnan(g_yest)]
+        had_high_yest = 0
+        had_hypo_yest = 0
+        if len(g_yest_v) > 0:
+            had_high_yest = int(np.mean(g_yest_v > 180) > 0.2)
+            had_hypo_yest = int((g_yest_v < 70).any())
+
+        return [
+            had_high_yest, had_hypo_yest,
+            high_count, hypo_count,
+            tir_24h, tir_3d, control_trend,
+            mean_24h, std_24h,
+        ]
+
+    MULTIDAY_FEAT_NAMES = [
+        'had_high_yesterday', 'had_hypo_yesterday',
+        'high_count_3d', 'hypo_count_3d',
+        'tir_24h', 'tir_3d', 'control_trend',
+        'glucose_mean_24h', 'glucose_std_24h',
+    ]
+
+    results = {}
+    horizons = [
+        ('2h', STEPS_2H),
+        ('6h', STEPS_6H),
+        ('12h', STEPS_12H),
+    ]
+
+    for task_name, threshold, above in [('hypo', 70, False), ('high', 180, True)]:
+        print(f"\n  --- {task_name.upper()} ---")
+        print(f"    {'Horizon':8s} {'Baseline':>10s} {'+MultiDay':>12s} {'Delta':>8s}")
+        print(f"    {'-'*42}")
+
+        for h_name, future_steps in horizons:
+            # Baseline (22 features)
+            X_b, y_b, pids_b, _ = _build_dataset(
+                patients, STEPS_2H, future_steps, threshold, above)
+
+            # +MultiDay (22 + 9 = 31 features)
+            X_m, y_m, pids_m, _ = _build_dataset(
+                patients, STEPS_2H, future_steps, threshold, above,
+                extra_feat_fn=multiday_features)
+
+            if X_b is None or X_m is None:
+                print(f"    {h_name}: insufficient data"); continue
+
+            res_b = _train_xgb_eval(X_b, y_b, pids_b, cfg['seeds'])
+            res_m = _train_xgb_eval(X_m, y_m, pids_m, cfg['seeds'])
+
+            auc_b = res_b['average'].get('auc_roc', 0)
+            auc_m = res_m['average'].get('auc_roc', 0)
+            delta = auc_m - auc_b
+
+            results[f"{h_name}_baseline_{task_name}"] = res_b
+            results[f"{h_name}_multiday_{task_name}"] = res_m
+            results[f"{h_name}_delta_{task_name}"] = {
+                'baseline_auc': auc_b, 'multiday_auc': auc_m,
+                'delta': round(delta, 5), 'horizon': h_name,
+                'multiday_n': int(len(y_m)),
+                'baseline_n': int(len(y_b)),
+            }
+
+            sign = '+' if delta >= 0 else ''
+            print(f"    {h_name:8s} {auc_b:>10.4f} {auc_m:>12.4f} {sign}{delta:>7.4f}  "
+                  f"(N: {len(y_b)}→{len(y_m)})")
+
+    # Summary
+    print(f"\n  {'='*60}")
+    print(f"  MULTI-DAY FEATURE LIFT")
+    print(f"  {'='*60}")
+    print(f"  Note: multiday features require 3d lookback, reducing sample count")
+    for task in ['hypo', 'high']:
+        print(f"\n  --- {task.upper()} ---")
+        for h_name, _ in horizons:
+            d = results.get(f"{h_name}_delta_{task}")
+            if d:
+                sign = '+' if d['delta'] >= 0 else ''
+                print(f"    {h_name:8s}  Δ={sign}{d['delta']:.4f}  "
+                      f"({d['baseline_auc']:.4f} → {d['multiday_auc']:.4f})  "
+                      f"N: {d['baseline_n']}→{d['multiday_n']}")
+
+    save_results(results, 'exp455_multiday_features')
+    return results
+
+
 EXPERIMENTS = {
     '411': run_exp411,
     '412': run_exp412,
@@ -3619,6 +3862,8 @@ EXPERIMENTS = {
     '451': run_exp451,
     '452': run_exp452,
     '453': run_exp453,
+    '454': run_exp454,
+    '455': run_exp455,
 }
 
 
@@ -3656,6 +3901,8 @@ Experiments:
   451  Throughput features for classification (metabolic supply × demand)
   452  Horizon scaling (XGBoost tabular at 2h/4h/6h/12h)
   453  Throughput × horizon interaction (does metabolic signal help more at longer horizons?)
+  454  Extended context for extended horizons (2h-24h history × 6h/12h future)
+  455  Multi-day recurrence features (3d/7d lookback for classification)
 """)
     parser.add_argument('--experiment', '-e', nargs='+', default=['all'],
                         help='Experiment number(s) or "all" (default: all)')
