@@ -3583,6 +3583,321 @@ def run_exp428(args):
     return result
 
 
+
+# ─── EXP-429: Long-History Asymmetric Windows for h60 ───
+
+def run_exp429(args):
+    """EXP-429: Asymmetric long-history windows targeting h60.
+
+    Hypothesis: The w24 champion (10.85 MAE) uses only 1h (12 steps) of history.
+    At w24, the model predicts 12 future steps (h60) from 12 history steps.
+    But insulin DIA is ~5h — the model sees only 20% of the active insulin arc.
+
+    By using w72 with asymmetric split (60 hist + 12 future), we give the model
+    5h of history (complete DIA coverage) while keeping the prediction task
+    identical to w24 (12 future steps = h60). This should improve h60 by
+    providing complete insulin dynamics context.
+
+    The symmetric w72 (EXP-411) got h60=15.0 — WORSE than w24's 10.4, because
+    it predicted 36 future steps (h180), a much harder task. By limiting to
+    12 future steps, we keep the task easy while extending context.
+
+    Variants:
+    - w36_asym: 24 hist (2h) + 12 future → 2h context, h60 max
+    - w48_asym: 36 hist (3h) + 12 future → 3h context, h60 max
+    - w72_asym: 60 hist (5h) + 12 future → 5h context (full DIA), h60 max
+    - w24_control: 12 hist + 12 future → 1h context (EXP-410 match)
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-429: Long-History Asymmetric Windows for h60")
+    print(f"  seeds={cfg['seeds']}")
+    print(f"{'='*60}")
+
+    future_steps = 12  # All variants predict h60 (12 steps × 5min)
+
+    variants = [
+        ('w24_control', 24, 12, '1h hist (EXP-410 match)'),
+        ('w36_asym', 36, 12, '2h hist + h60'),
+        ('w48_asym', 48, 12, '3h hist + h60'),
+        ('w72_asym', 72, 12, '5h hist (full DIA) + h60'),
+    ]
+
+    all_results = {}
+    for vname, ws, fs, desc in variants:
+        hist = ws - fs
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: w{ws} = {hist} hist ({hist*5}min) + {fs} future (h{fs*5})")
+        print(f"  {desc}")
+        print(f"{'─'*40}")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=ws,
+            max_patients=cfg['max_patients'], load_isf=True)
+        has_isf = 'isf_val' in data
+        train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+        isf_v = data.get('isf_val')
+        n_ch = train_x.shape[-1]
+
+        print(f"  {train_x.shape[0]} train, {val_x.shape[0]} val, {n_ch}ch")
+
+        # Phase 1: Base training
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp429_{vname}_base_s{seed}.pth')
+            print(f"\n  Base s{seed} ({vname}):")
+            train_bridge(model, train_x, val_x, sp, f'429-{vname}-s{seed}',
+                         device, pk_mode=True, future_steps=fs,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+            metrics = evaluate_model(model, val_x, device, pk_mode=True,
+                                     isf_val=isf_v, future_steps=fs)
+            print(f"  Base s{seed}: overall={metrics['overall_mae']:.1f}, "
+                  f"h30={metrics.get('h30','?')}, h60={metrics.get('h60','?')}")
+
+        # Phase 2: Per-patient FT + ensemble
+        print(f"\n  === Phase 2: Per-Patient FT ({vname}) ===")
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train_x = train_x[ti:te]
+            p_val_x = val_x[vi:ve]
+            p_isf_v = isf_v[vi:ve] if isf_v is not None else None
+
+            print(f"\n  Patient {pid} ({pinfo['n_train']} train, {pinfo['n_val']} val):")
+            seed_maes = {}
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'],
+                                  f'exp429_{vname}_ft_{pid}_s{seed}.pth')
+                train_bridge(model, p_train_x, p_val_x, sp,
+                             f'429-ft-{pid}-s{seed}', device, pk_mode=True,
+                             lr=1e-4, future_steps=fs,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5)
+                metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                         isf_val=p_isf_v, future_steps=fs)
+                seed_maes[f's{seed}'] = metrics['overall_mae']
+                ft_models.append(copy.deepcopy(model))
+                print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+            ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                    isf_val=p_isf_v, future_steps=fs)
+            per_patient[pid] = {
+                'seeds': seed_maes,
+                'ensemble_mae': ens['overall_mae'],
+                'ensemble_horizons': ens,
+            }
+            print(f"    Ensemble: MAE={ens['overall_mae']:.1f}, "
+                  f"h30={ens.get('h30','?')}, h60={ens.get('h60','?')}")
+
+        all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+        all_results[vname] = {
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'per_patient': per_patient,
+            'window_size': ws,
+            'history_steps': ws - fs,
+            'future_steps': fs,
+            'description': desc,
+        }
+        print(f"\n  {vname} Mean Ensemble: {all_results[vname]['mean_ensemble_mae']:.2f}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-429 SUMMARY — Long History for h60")
+    print(f"{'='*60}")
+    for vn, vr in all_results.items():
+        h = vr['history_steps']
+        print(f"  {vn} ({h*5}min hist): {vr['mean_ensemble_mae']:.2f}")
+    ctrl = all_results.get('w24_control', {}).get('mean_ensemble_mae', 0)
+    for vn, vr in all_results.items():
+        if vn != 'w24_control':
+            delta = vr['mean_ensemble_mae'] - ctrl
+            print(f"    Δ vs w24: {delta:+.2f}")
+    print(f"  EXP-410 full reference: 10.85")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-429: Long-History Asymmetric Windows for h60',
+        'results': all_results,
+    }
+    _save_results(result, 'exp429_long_history_h60', cfg)
+    return result
+
+
+# ─── EXP-430: Asymmetric History Sweep for h120 ───
+
+def run_exp430(args):
+    """EXP-430: Asymmetric long-history windows targeting h120.
+
+    Extends EXP-429's approach to h120: all variants predict 24 future steps
+    (h120) while varying history length from 2h to 7h.
+
+    At h60, EXP-429 showed 2h history was optimal (−0.25) and 5h history hurt
+    (+0.17) due to data scarcity. But at h120, where insulin dynamics dominate,
+    longer history should help MORE because:
+    1. The model needs to see complete DIA arcs to predict 2h ahead
+    2. Future PK channels provide deterministic absorption curves
+    3. The information gain from DIA context outweighs data loss
+
+    The crossover point where "more context > less data" should occur at a
+    longer horizon than h60. This experiment finds that crossover.
+
+    Also tests multi-horizon evaluation: models predict h120 but we evaluate
+    at h30, h60, h90, h120 to see if longer history helps intermediate horizons.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-430: Asymmetric History Sweep for h120")
+    print(f"  seeds={cfg['seeds']}")
+    print(f"{'='*60}")
+
+    future_steps = 24  # All variants predict h120 (24 steps × 5min)
+
+    variants = [
+        ('w48_control', 48, 24, '2h hist + h120 (EXP-411 match)'),
+        ('w60_asym', 60, 24, '3h hist + h120'),
+        ('w84_asym', 84, 24, '5h hist (full DIA) + h120'),
+        ('w108_asym', 108, 24, '7h hist (beyond DIA) + h120'),
+    ]
+
+    all_results = {}
+    for vname, ws, fs, desc in variants:
+        hist = ws - fs
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: w{ws} = {hist} hist ({hist*5}min) + {fs} future (h{fs*5})")
+        print(f"  {desc}")
+        print(f"{'─'*40}")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=ws,
+            max_patients=cfg['max_patients'], load_isf=True)
+        has_isf = 'isf_val' in data
+        train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+        isf_v = data.get('isf_val')
+        n_ch = train_x.shape[-1]
+
+        print(f"  {train_x.shape[0]} train, {val_x.shape[0]} val, {n_ch}ch")
+
+        # Phase 1: Base training
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp430_{vname}_base_s{seed}.pth')
+            print(f"\n  Base s{seed} ({vname}):")
+            train_bridge(model, train_x, val_x, sp, f'430-{vname}-s{seed}',
+                         device, pk_mode=True, future_steps=fs,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+            metrics = evaluate_model(model, val_x, device, pk_mode=True,
+                                     isf_val=isf_v, future_steps=fs)
+            print(f"  Base s{seed}: overall={metrics['overall_mae']:.1f}, "
+                  f"h60={metrics.get('h60','?')}, h120={metrics.get('h120','?')}")
+
+        # Phase 2: Per-patient FT + ensemble
+        print(f"\n  === Phase 2: Per-Patient FT ({vname}) ===")
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train_x = train_x[ti:te]
+            p_val_x = val_x[vi:ve]
+            p_isf_v = isf_v[vi:ve] if isf_v is not None else None
+
+            print(f"\n  Patient {pid} ({pinfo['n_train']} train, {pinfo['n_val']} val):")
+            seed_maes = {}
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'],
+                                  f'exp430_{vname}_ft_{pid}_s{seed}.pth')
+                train_bridge(model, p_train_x, p_val_x, sp,
+                             f'430-ft-{pid}-s{seed}', device, pk_mode=True,
+                             lr=1e-4, future_steps=fs,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5)
+                metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                         isf_val=p_isf_v, future_steps=fs)
+                seed_maes[f's{seed}'] = metrics['overall_mae']
+                ft_models.append(copy.deepcopy(model))
+                print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+            ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                    isf_val=p_isf_v, future_steps=fs)
+            per_patient[pid] = {
+                'seeds': seed_maes,
+                'ensemble_mae': ens['overall_mae'],
+                'ensemble_horizons': ens,
+            }
+            print(f"    Ensemble: MAE={ens['overall_mae']:.1f}, "
+                  f"h60={ens.get('h60','?')}, h90={ens.get('h90','?')}, "
+                  f"h120={ens.get('h120','?')}")
+
+        all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+        # Collect per-horizon averages
+        horizon_avgs = {}
+        for hname in ['h30', 'h60', 'h90', 'h120']:
+            vals = [v['ensemble_horizons'].get(hname)
+                    for v in per_patient.values()
+                    if v['ensemble_horizons'].get(hname) is not None]
+            if vals:
+                horizon_avgs[hname] = round(float(np.mean(vals)), 2)
+
+        all_results[vname] = {
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'horizon_averages': horizon_avgs,
+            'per_patient': per_patient,
+            'window_size': ws,
+            'history_steps': ws - fs,
+            'future_steps': fs,
+            'description': desc,
+        }
+        print(f"\n  {vname} Mean Ensemble: {all_results[vname]['mean_ensemble_mae']:.2f}")
+        print(f"  Per-horizon: {horizon_avgs}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-430 SUMMARY — Long History for h120")
+    print(f"{'='*60}")
+    print(f"  {'Config':<16} {'Hist':>6} {'MAE':>6} {'h60':>6} {'h90':>6} {'h120':>6}")
+    print(f"  {'─'*52}")
+    for vn, vr in all_results.items():
+        h = vr['history_steps']
+        ha = vr['horizon_averages']
+        print(f"  {vn:<16} {h*5:>4}m {vr['mean_ensemble_mae']:>6.2f} "
+              f"{ha.get('h60','?'):>6} {ha.get('h90','?'):>6} {ha.get('h120','?'):>6}")
+    ctrl = all_results.get('w48_control', {}).get('mean_ensemble_mae', 0)
+    for vn, vr in all_results.items():
+        if vn != 'w48_control':
+            delta = vr['mean_ensemble_mae'] - ctrl
+            print(f"    Δ vs w48: {delta:+.2f}")
+    print(f"\n  EXP-411 w48 full reference: 13.50 (symmetric)")
+    print(f"  EXP-429 best h60: 12.78 (w36 asym, 2h hist)")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-430: Asymmetric History Sweep for h120',
+        'results': all_results,
+    }
+    _save_results(result, 'exp430_long_history_h120', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -3604,6 +3919,8 @@ EXPERIMENTS = {
     '426': run_exp426,
     '427': run_exp427,
     '428': run_exp428,
+    '429': run_exp429,
+    '430': run_exp430,
 }
 
 
