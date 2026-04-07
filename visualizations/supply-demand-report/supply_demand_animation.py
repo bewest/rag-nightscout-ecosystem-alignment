@@ -64,8 +64,8 @@ class GlucoseConservation(Scene):
             axis_config={"include_tip": False, "font_size": 20},
             x_axis_config={"numbers_to_include": range(0, 13, 2)},
         ).shift(DOWN * 0.8)
-        x_label = axes.get_x_axis_label("t (hours)", font_size=20)
-        y_label = axes.get_y_axis_label("Net flux", font_size=20, direction=LEFT)
+        x_label = Text("t (hours)", font_size=18).next_to(axes.x_axis, DOWN, buff=0.3)
+        y_label = Text("Net flux", font_size=18).next_to(axes.y_axis, LEFT, buff=0.3).rotate(PI/2)
         self.play(Create(axes), Write(x_label), Write(y_label))
 
         # Animate supply - demand over 12 hours
@@ -134,7 +134,7 @@ class PhaseLagAnimation(Scene):
             y_length=4,
             axis_config={"include_tip": False, "font_size": 18},
         ).shift(DOWN * 0.5)
-        x_label = axes.get_x_axis_label("Minutes from meal", font_size=18)
+        x_label = Text("Minutes from meal", font_size=16).next_to(axes.x_axis, DOWN, buff=0.3)
         self.play(Create(axes), Write(x_label))
 
         # Supply curve (peaks earlier)
@@ -226,7 +226,7 @@ class InvisibleMetabolicWorld(Scene):
             x_length=10, y_length=2.5,
             axis_config={"include_tip": False, "font_size": 16},
         ).shift(UP * 0.5)
-        top_label = Text("Glucose (mg/dL)", font_size=14).next_to(ax_top, LEFT, buff=0.1)
+        top_label = Text("Glucose (mg/dL)", font_size=12).next_to(ax_top, LEFT, buff=0.1).rotate(PI/2)
         self.play(Create(ax_top), Write(top_label))
 
         # Nearly flat glucose with tiny meal bumps
@@ -265,7 +265,7 @@ class InvisibleMetabolicWorld(Scene):
             x_length=10, y_length=2.5,
             axis_config={"include_tip": False, "font_size": 16},
         ).shift(DOWN * 2)
-        bot_label = Text("Metabolic Flux", font_size=14).next_to(ax_bot, LEFT, buff=0.1)
+        bot_label = Text("Metabolic Flux", font_size=12).next_to(ax_bot, LEFT, buff=0.1).rotate(PI/2)
         self.play(Create(ax_bot), Write(bot_label))
 
         def supply(t):
