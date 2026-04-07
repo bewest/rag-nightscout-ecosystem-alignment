@@ -8092,3 +8092,121 @@ This is consistent with the "rising+treated" being the top error contributor in 
 4. **Ensemble over time**: Average predictions from 15min ago (which saw more of the trajectory) with current predictions
 5. **Uncertainty-aware feature engineering**: Encode model confidence at shorter horizons as a feature
 
+
+---
+
+## Part XLIII: Multi-Horizon Cascade & Stacked Generalization (EXP-861–870)
+
+### Objective
+
+Having established multi-horizon predictions as the most effective lever (+0.012 in EXP-857), this batch explores how to maximally exploit this insight. We test stacked generalization (using multi-horizon predictions as meta-features), confidence-weighted horizons, feature interactions, and a comprehensive kitchen-sink benchmark.
+
+### Results Summary
+
+| EXP | Experiment | R² | Δ vs Base | Verdict |
+|-----|-----------|-----|-----------|---------|
+| 861 | Full Multi-Horizon Cascade | 0.551 | +0.017 | ✅ Marginal gain with 7 horizons |
+| 862 | Stacked Generalization | **0.558** | **+0.024** | ✅ **NEW SOTA** |
+| 863 | Horizon Confidence Features | 0.543 | +0.009 | ✅ Moderate |
+| 864 | BG Acceleration Meal-Size Proxy | 0.531 | −0.003 | ❌ Hurts |
+| 865 | Rolling Prediction Update | NaN | NaN | ⚠️ Implementation issue |
+| 866 | Feature Interaction Terms | 0.533 | −0.001 | ❌ No value |
+| 867 | Prediction Disagreement as Uncertainty | 0.547 | +0.013 | ✅ Strong |
+| 868 | Momentum Features | 0.538 | +0.003 | ⚠️ Marginal |
+| 869 | Supply-Demand Imbalance Duration | 0.540 | +0.005 | ⚠️ Minor |
+| 870 | Full Feature Engineering Benchmark | 0.548 | +0.014 | ✅ Good but < stacked |
+
+### Detailed Analysis
+
+#### EXP-861: Full Multi-Horizon Cascade
+
+Tested systematically increasing the number of horizon models:
+- 3 horizons (15, 30, 45 min): R² = 0.547
+- 5 horizons (10, 20, 30, 40, 50 min): R² = 0.550
+- 7 horizons (5, 10, 15, 20, 30, 40, 50 min): R² = 0.551
+
+**Insight**: Diminishing returns after 5 horizons. The marginal value of each additional horizon decreases, confirming that most of the multi-horizon signal is captured by 3-5 well-chosen intermediaries. The 7-horizon configuration adds only +0.001 over 5-horizon while doubling computation.
+
+#### EXP-862: Stacked Generalization — NEW SOTA R²=0.558
+
+**Architecture**: Two-level stacked generalization:
+- **Level 0**: Individual ridge models trained at horizons {10, 20, 30, 40, 50} min, each producing predictions as meta-features
+- **Level 1**: Ridge meta-learner that combines Level-0 predictions with original 16 base features
+
+**Key finding**: Stacking horizon predictions ALONE (without base features) gives R²=0.531 — WORSE than the base model. But combining them with base features yields R²=0.558, a new SOTA. This means the horizon predictions are complementary to base features, not redundant. The meta-learner can learn how to weight different horizons conditionally on the current metabolic state.
+
+**Improvement**: +0.024 over 16-feature baseline, +0.008 over previous SOTA (0.550 from EXP-860).
+
+#### EXP-863: Horizon Confidence Features
+
+Instead of raw predictions, uses confidence metrics from multi-horizon models: prediction spread, min/max range, slope across horizons. Adds +0.009 — useful but less than full stacking. Confidence features capture uncertainty but lose the actual prediction values.
+
+#### EXP-864: BG Acceleration as Meal-Size Proxy — Hurts
+
+Attempted to use BG acceleration (second derivative) peaks as a proxy for meal size, reasoning that larger meals produce larger BG acceleration. Result: −0.003. The BG acceleration is too noisy and already partially captured by existing velocity features.
+
+#### EXP-865: Rolling Prediction Update — NaN
+
+Implementation issue caused NaN propagation. The rolling update concept (averaging recent predictions with current) may have merit but requires careful handling of edge cases.
+
+#### EXP-866: Feature Interaction Terms — No Value
+
+Polynomial interaction terms (bg×supply, demand×velocity, etc.) add no value (−0.001). This confirms the finding from EXP-831-840 that the relationship is fundamentally linear with respect to these features. Nonlinear interactions don't exist at meaningful levels.
+
+#### EXP-867: Prediction Disagreement as Uncertainty
+
+Uses the disagreement (variance) between multi-horizon predictions as an uncertainty feature. Adds +0.013 — the second-best single feature discovered. When short-horizon and long-horizon models disagree, it signals a regime change (meal onset, exercise end), and the model can down-weight accordingly.
+
+#### EXP-868: Momentum Features
+
+EMA-based momentum indicators (short/long crossover): +0.003. Marginal — the momentum signal is mostly captured by existing velocity and lag features.
+
+#### EXP-869: Supply-Demand Imbalance Duration
+
+Tracks how long supply > demand (or vice versa) has persisted: +0.005. Minor but meaningful — prolonged imbalance predicts continued drift in the same direction.
+
+#### EXP-870: Full Feature Engineering Benchmark
+
+Kitchen-sink model with all 32 features (base 16 + horizon predictions + confidence + momentum + imbalance + interactions): R²=0.548. Interestingly WORSE than stacked generalization (0.558), demonstrating that naive feature concatenation suffers from the curse of dimensionality. Stacking's structured approach is superior.
+
+Per-patient breakdown reveals important heterogeneity:
+- Patient i: BEST at +0.048 (0.723 → 0.771) — responds strongly to richer features
+- Patient h: WORST at −0.037 (0.217 → 0.180) — more features HURT (sparse/noisy data)
+- Patients c, g: Near-zero improvement (+0.001-0.002) — baseline already captures available signal
+- Patients a, d, f: Consistent +0.024-0.026 — well-controlled patients benefit from fine-grained features
+
+### Updated Prediction Frontier
+
+```
+Naive persistence:              R² = 0.292  (MAE=33.1)
+Physics-only flux:              R² = 0.372
+Ridge 8-feature:                R² = 0.509  (MAE=28.2)
+Enhanced 16-feature:            R² = 0.534  (MAE≈27)
+Best nonlinear (RFF):           R² = 0.536
+Context-conditioned:            R² = 0.550  (prev SOTA)
+Stacked generalization:         R² = 0.558  ← NEW SOTA
+Linear oracle ceiling:          R² = 0.613
+```
+
+Current performance: **91.0% of oracle ceiling** (up from 89.5%).
+Remaining gap: 0.055 (down from 0.063).
+
+### Key Insights
+
+1. **Stacking > concatenation**: Structured multi-level learning outperforms naive feature engineering. The meta-learner learns to weight horizons adaptively.
+
+2. **Prediction disagreement is informative**: When multiple horizon models disagree, it signals regime transitions. This is essentially uncertainty quantification through model ensemble.
+
+3. **Feature interactions have zero value**: Despite extensive testing (polynomial, multiplicative, ratio features), the relationship remains stubbornly linear. The missing information is not in feature combinations but in missing features entirely.
+
+4. **Patient heterogeneity in feature sensitivity**: Some patients (i, d, f) respond strongly to additional features while others (h, c, g) do not. Patient h consistently degrades with more features, likely due to data quality issues.
+
+5. **Diminishing returns on horizons**: 5 well-chosen horizons capture nearly all available signal. More horizons add computation without proportional benefit.
+
+### Next Directions
+
+1. **Cross-validated stacking**: Current stacking uses simple train/val split. K-fold cross-validation for Level-0 predictions should reduce overfitting
+2. **Bayesian stacking**: Replace ridge meta-learner with Bayesian model averaging for native uncertainty
+3. **Patient-specific feature selection**: Adaptively select features per patient based on data quality
+4. **Temporal stacking**: Use predictions from previous time steps as features (with proper leakage prevention)
+5. **Residual analysis of remaining gap**: The 0.055 gap to oracle — what physiological signals would close it?
