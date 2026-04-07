@@ -4420,6 +4420,444 @@ def run_exp458(args):
     return results
 
 
+# ===================================================================
+# EXP-459: Inference Vignettes — Demonstrate Clinical Use Cases
+# ===================================================================
+
+def run_exp459(args):
+    """EXP-459: Generate clinical inference vignettes on validation data.
+
+    Trains the champion configuration (combined_43 + regularized XGBoost)
+    at each deployable task/horizon, then generates per-window predictions
+    on the validation set with full metadata for clinical demonstration.
+
+    For each task, selects compelling vignettes:
+    - True positives (correct alerts, various risk levels)
+    - True negatives (correctly quiet periods)
+    - False negatives (missed events — illustrate limitations)
+    - Edge cases (probabilities near threshold)
+
+    Output: structured JSON with glucose traces, features, probabilities,
+    and per-patient performance breakdowns.
+    """
+    cfg = _get_config(args)
+
+    print(f"\n{'='*60}")
+    print("EXP-459: Inference Vignettes for Clinical Demonstration")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    # Throughput setup (same as EXP-456/458)
+    try:
+        from exp_metabolic_441 import compute_supply_demand
+    except ImportError:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from exp_metabolic_441 import compute_supply_demand
+
+    patient_sd = {}
+    for pat in patients:
+        sd = compute_supply_demand(pat['df'], pk_array=pat['pk'])
+        patient_sd[pat['name']] = sd
+
+    def combined_43_feats(pat, start, ctx_end):
+        """Build 21 extra features: 12 throughput + 9 multi-day."""
+        sd = patient_sd[pat['name']]
+        tp = sd['product'][start:ctx_end]
+        supply = sd['supply'][start:ctx_end]
+        demand = sd['demand'][start:ctx_end]
+        tp_v = tp[~np.isnan(tp)] if len(tp) > 0 else np.array([0.0])
+        if len(tp_v) == 0: tp_v = np.array([0.0])
+        s_v = supply[~np.isnan(supply)] if len(supply) > 0 else np.array([0.0])
+        d_v = demand[~np.isnan(demand)] if len(demand) > 0 else np.array([0.0])
+        if len(s_v) == 0: s_v = np.array([0.0])
+        if len(d_v) == 0: d_v = np.array([0.0])
+        tp_feats = [
+            float(np.mean(tp_v)), float(np.std(tp_v)), float(np.max(tp_v)),
+            float(tp_v[-1] - tp_v[-min(6, len(tp_v))]),
+            float(np.sum(tp_v)),
+            float(np.max(tp_v) / max(np.mean(tp_v), 1e-8)),
+            float(np.mean(s_v)), float(np.max(s_v)), float(np.sum(s_v)),
+            float(np.mean(d_v)), float(np.max(d_v)), float(np.sum(d_v)),
+        ]
+        grid = pat['grid']
+        glucose_raw = grid[:, 0] * 400
+        if start < STEPS_3D:
+            return None
+        g_24h = glucose_raw[start - STEPS_24H:start]
+        g_24h_v = g_24h[~np.isnan(g_24h)]
+        if len(g_24h_v) < 12:
+            return None
+        tir_24h = float(np.mean((g_24h_v >= 70) & (g_24h_v <= 180)))
+        mean_24h = float(np.mean(g_24h_v))
+        std_24h = float(np.std(g_24h_v))
+        g_3d = glucose_raw[start - STEPS_3D:start]
+        g_3d_v = g_3d[~np.isnan(g_3d)]
+        if len(g_3d_v) < 24:
+            return None
+        tir_3d = float(np.mean((g_3d_v >= 70) & (g_3d_v <= 180)))
+        control_trend = tir_24h - tir_3d
+        block_size = STEPS_6H
+        high_count = 0
+        hypo_count = 0
+        for bstart in range(start - STEPS_3D, start, block_size):
+            bend = min(bstart + block_size, start)
+            bg = glucose_raw[bstart:bend]
+            bg_v = bg[~np.isnan(bg)]
+            if len(bg_v) > 0:
+                if np.mean(bg_v > 180) > 0.2: high_count += 1
+                if (bg_v < 70).any(): hypo_count += 1
+        yest_start = start - STEPS_24H
+        g_yest = glucose_raw[yest_start:yest_start + block_size]
+        g_yest_v = g_yest[~np.isnan(g_yest)]
+        had_high_yest = int(np.mean(g_yest_v > 180) > 0.2) if len(g_yest_v) > 0 else 0
+        had_hypo_yest = int((g_yest_v < 70).any()) if len(g_yest_v) > 0 else 0
+        md_feats = [had_high_yest, had_hypo_yest, high_count, hypo_count,
+                    tir_24h, tir_3d, control_trend, mean_24h, std_24h]
+        return tp_feats + md_feats
+
+    def _build_dataset_with_metadata(patients, history_steps, future_steps,
+                                     threshold, above, extra_feat_fn=None):
+        """Like _build_dataset but also returns per-window metadata.
+
+        Returns: (X, y, pids, fnames, metadata_list)
+        where each metadata entry is a dict with:
+          - patient: name
+          - start: start index in patient grid
+          - ctx_end: end of context window
+          - label_end: end of label window
+          - context_glucose: glucose values in context (mg/dL)
+          - future_glucose: glucose values in prediction window (mg/dL)
+          - hour_of_day: approximate hour when prediction is made
+        """
+        stride = STEPS_PER_HOUR
+        total = history_steps + future_steps
+        all_feats, all_y, all_pids, all_meta = [], [], [], []
+
+        for pat in patients:
+            grid = pat['grid']
+            glucose_raw = grid[:, 0] * 400
+            n_steps = len(grid)
+
+            for start in range(0, n_steps - total, stride):
+                ctx_end = start + history_steps
+                label_end = ctx_end + future_steps
+                future_g = glucose_raw[ctx_end:label_end]
+                if np.isnan(future_g).mean() > 0.3:
+                    continue
+                future_valid = future_g[~np.isnan(future_g)]
+                if len(future_valid) == 0:
+                    continue
+
+                if above:
+                    label = int(np.sum(future_valid > threshold) /
+                                len(future_valid) > 0.2)
+                else:
+                    label = int((future_valid < threshold).any())
+
+                feats = _build_tabular_features(grid, glucose_raw, start, ctx_end)
+                if feats is None:
+                    continue
+
+                if extra_feat_fn is not None:
+                    extra = extra_feat_fn(pat, start, ctx_end)
+                    if extra is None:
+                        continue
+                    feats = feats + extra
+
+                # Context glucose: last 2h (24 samples at 5-min)
+                ctx_g = glucose_raw[start:ctx_end]
+                ctx_g_list = [round(float(v), 1) if not np.isnan(v) else None
+                              for v in ctx_g]
+                fut_g_list = [round(float(v), 1) if not np.isnan(v) else None
+                              for v in future_g]
+
+                # Approximate hour of day (steps from midnight,
+                # assuming grid starts at midnight)
+                steps_in_day = ctx_end % 288
+                hour_of_day = round(steps_in_day / 12.0, 1)
+
+                meta = {
+                    'patient': pat['name'],
+                    'start': int(start),
+                    'ctx_end': int(ctx_end),
+                    'label_end': int(label_end),
+                    'context_glucose': ctx_g_list,
+                    'future_glucose': fut_g_list,
+                    'hour_of_day': hour_of_day,
+                    'day_index': int(start // 288),
+                }
+                all_feats.append(feats)
+                all_y.append(label)
+                all_pids.append(pat['name'])
+                all_meta.append(meta)
+
+        if len(all_y) < 50:
+            return None, None, None, None, None
+
+        X = np.nan_to_num(np.array(all_feats, dtype=np.float32), nan=0.0)
+        y = np.array(all_y)
+        pids = np.array(all_pids)
+        return X, y, pids, TABULAR_FEATURE_NAMES, all_meta
+
+    def _select_vignettes(va_y, va_prob, va_meta, n_per_category=3):
+        """Select compelling vignettes from validation predictions."""
+        vignettes = {}
+
+        # True Positives — highest confidence correct alerts
+        tp_mask = (va_y == 1) & (va_prob >= 0.5)
+        tp_idxs = np.where(tp_mask)[0]
+        if len(tp_idxs) > 0:
+            tp_sorted = tp_idxs[np.argsort(-va_prob[tp_idxs])]
+            # Pick diverse patients
+            seen_patients = set()
+            selected = []
+            for idx in tp_sorted:
+                p = va_meta[idx]['patient']
+                if p not in seen_patients:
+                    seen_patients.add(p)
+                    selected.append(int(idx))
+                if len(selected) >= n_per_category:
+                    break
+            if len(selected) < n_per_category:
+                selected.extend([int(i) for i in tp_sorted[:n_per_category]])
+                selected = selected[:n_per_category]
+            vignettes['true_positive'] = selected
+
+        # True Negatives — highest confidence correct non-alerts
+        tn_mask = (va_y == 0) & (va_prob < 0.5)
+        tn_idxs = np.where(tn_mask)[0]
+        if len(tn_idxs) > 0:
+            tn_sorted = tn_idxs[np.argsort(va_prob[tn_idxs])]
+            seen_patients = set()
+            selected = []
+            for idx in tn_sorted:
+                p = va_meta[idx]['patient']
+                if p not in seen_patients:
+                    seen_patients.add(p)
+                    selected.append(int(idx))
+                if len(selected) >= n_per_category:
+                    break
+            if len(selected) < n_per_category:
+                selected.extend([int(i) for i in tn_sorted[:n_per_category]])
+                selected = selected[:n_per_category]
+            vignettes['true_negative'] = selected
+
+        # False Negatives — missed events (label=1, prob < 0.5)
+        fn_mask = (va_y == 1) & (va_prob < 0.5)
+        fn_idxs = np.where(fn_mask)[0]
+        if len(fn_idxs) > 0:
+            fn_sorted = fn_idxs[np.argsort(va_prob[fn_idxs])]  # lowest prob
+            vignettes['false_negative'] = [int(i) for i in fn_sorted[:n_per_category]]
+
+        # Edge cases — prob closest to 0.5
+        edge_dist = np.abs(va_prob - 0.5)
+        edge_sorted = np.argsort(edge_dist)
+        vignettes['edge_case'] = [int(i) for i in edge_sorted[:n_per_category]]
+
+        return vignettes
+
+    # Tasks to demonstrate
+    tasks = [
+        ('2h_high',  STEPS_2H, STEPS_2H,  180, True),
+        ('2h_hypo',  STEPS_2H, STEPS_2H,  70,  False),
+        ('6h_high',  STEPS_2H, STEPS_6H,  180, True),
+        ('12h_high', STEPS_2H, STEPS_12H, 180, True),
+    ]
+
+    # Champion XGBoost config (EXP-458 regularized)
+    XGB_PARAMS = dict(n_estimators=300, max_depth=6, learning_rate=0.03,
+                      subsample=0.8, colsample_bytree=0.8)
+
+    results = {}
+
+    for task_name, hist_steps, fut_steps, threshold, above in tasks:
+        print(f"\n  --- {task_name.upper()} ---")
+
+        X, y, pids, fnames, all_meta = _build_dataset_with_metadata(
+            patients, hist_steps, fut_steps, threshold, above,
+            extra_feat_fn=combined_43_feats)
+        if X is None:
+            print(f"    Insufficient data for {task_name}"); continue
+
+        # Per-patient temporal split
+        (tr_X, tr_y), (va_X, va_y) = temporal_split(X, y, pids=pids)
+        pids_arr = np.array(pids)
+        # Reconstruct val mask to align metadata
+        train_mask = np.zeros(len(X), dtype=bool)
+        val_mask = np.zeros(len(X), dtype=bool)
+        for pid in np.unique(pids_arr):
+            idxs = np.where(pids_arr == pid)[0]
+            split = int(len(idxs) * 0.8)
+            train_mask[idxs[:split]] = True
+            val_mask[idxs[split:]] = True
+
+        va_meta = [all_meta[i] for i in np.where(val_mask)[0]]
+
+        # Train champion model (single seed for consistency)
+        seed = 42
+        np.random.seed(seed)
+        scale_pos = max(1.0, (tr_y == 0).sum() / max((tr_y == 1).sum(), 1))
+        clf = xgb.XGBClassifier(
+            scale_pos_weight=float(scale_pos),
+            eval_metric='logloss', random_state=seed, verbosity=0,
+            use_label_encoder=False, **XGB_PARAMS)
+        clf.fit(tr_X, tr_y, eval_set=[(va_X, va_y)], verbose=False)
+        va_prob = clf.predict_proba(va_X)[:, 1]
+
+        # Overall metrics
+        try:
+            auc = float(roc_auc_score(va_y, va_prob))
+        except ValueError:
+            auc = 0.0
+        va_pred = (va_prob >= 0.5).astype(int)
+        f1 = float(f1_score(va_y, va_pred, zero_division=0))
+
+        # Per-patient metrics
+        per_patient = {}
+        va_pids = pids_arr[val_mask]
+        for pid in np.unique(va_pids):
+            pmask = va_pids == pid
+            py = va_y[pmask]
+            pp = va_prob[pmask]
+            try:
+                p_auc = float(roc_auc_score(py, pp))
+            except ValueError:
+                p_auc = None
+            pos_rate = float(py.mean())
+            per_patient[pid] = {
+                'n_val': int(pmask.sum()),
+                'pos_rate': round(pos_rate, 4),
+                'auc': round(p_auc, 4) if p_auc else None,
+                'mean_prob': round(float(pp.mean()), 4),
+            }
+
+        # Select vignettes
+        vig_indices = _select_vignettes(va_y, va_prob, va_meta)
+
+        # Build detailed vignette records
+        vignettes_detail = {}
+        for category, indices in vig_indices.items():
+            vignettes_detail[category] = []
+            for idx in indices:
+                meta = va_meta[idx]
+                record = {
+                    'patient': meta['patient'],
+                    'day_index': meta['day_index'],
+                    'hour_of_day': meta['hour_of_day'],
+                    'predicted_probability': round(float(va_prob[idx]), 4),
+                    'actual_outcome': int(va_y[idx]),
+                    'prediction_correct': bool(
+                        (va_prob[idx] >= 0.5) == (va_y[idx] == 1)),
+                    'context_glucose_last5': [
+                        v for v in meta['context_glucose'][-5:] if v is not None],
+                    'future_glucose_summary': {},
+                }
+                fg = [v for v in meta['future_glucose'] if v is not None]
+                if fg:
+                    record['future_glucose_summary'] = {
+                        'min': round(min(fg), 1),
+                        'max': round(max(fg), 1),
+                        'mean': round(float(np.mean(fg)), 1),
+                        'last': round(fg[-1], 1),
+                    }
+                    if threshold == 70:
+                        record['future_glucose_summary']['any_below_70'] = \
+                            any(v < 70 for v in fg)
+                        record['future_glucose_summary']['min_glucose'] = \
+                            round(min(fg), 1)
+                    else:
+                        frac_high = sum(1 for v in fg if v > 180) / len(fg)
+                        record['future_glucose_summary']['frac_above_180'] = \
+                            round(frac_high, 3)
+                # Key features driving this prediction
+                feat_idx_map = {
+                    'gluc_last': 4, 'trend_30min': 5,
+                    'frac_high180': 8, 'frac_hypo70': 7,
+                    'iob_mean': 10, 'cob_mean': 13,
+                }
+                key_feats = {}
+                for fname, fidx in feat_idx_map.items():
+                    key_feats[fname] = round(float(va_X[idx, fidx]), 3)
+                # Multi-day features (indices 34-42 in combined_43)
+                if va_X.shape[1] >= 43:
+                    extra_map = {
+                        'had_high_yest': 22 + 12,
+                        'had_hypo_yest': 22 + 13,
+                        'tir_24h': 22 + 16,
+                        'tir_3d': 22 + 17,
+                        'mean_24h': 22 + 19,
+                    }
+                    for fname, fidx in extra_map.items():
+                        if fidx < va_X.shape[1]:
+                            key_feats[fname] = round(float(va_X[idx, fidx]), 3)
+                record['key_features'] = key_feats
+                vignettes_detail[category].append(record)
+
+        # Operating point analysis
+        thresholds_to_test = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+        operating_points = []
+        for t in thresholds_to_test:
+            preds_t = (va_prob >= t).astype(int)
+            tp = int(((preds_t == 1) & (va_y == 1)).sum())
+            fp = int(((preds_t == 1) & (va_y == 0)).sum())
+            fn = int(((preds_t == 0) & (va_y == 1)).sum())
+            tn = int(((preds_t == 0) & (va_y == 0)).sum())
+            sens = tp / max(tp + fn, 1)
+            spec = tn / max(tn + fp, 1)
+            ppv = tp / max(tp + fp, 1)
+            alerts_per_100 = round(100 * (tp + fp) / max(len(va_y), 1), 1)
+            operating_points.append({
+                'threshold': t,
+                'sensitivity': round(sens, 3),
+                'specificity': round(spec, 3),
+                'ppv': round(ppv, 3),
+                'alerts_per_100_windows': alerts_per_100,
+                'tp': tp, 'fp': fp, 'fn': fn, 'tn': tn,
+            })
+
+        task_result = {
+            'auc': round(auc, 4),
+            'f1': round(f1, 4),
+            'n_train': int(len(tr_y)),
+            'n_val': int(len(va_y)),
+            'pos_rate': round(float(va_y.mean()), 4),
+            'per_patient': per_patient,
+            'vignettes': vignettes_detail,
+            'operating_points': operating_points,
+        }
+        results[task_name] = task_result
+
+        # Print summary
+        print(f"    AUC: {auc:.4f}, F1: {f1:.4f}")
+        print(f"    N_val: {len(va_y)}, Pos_rate: {va_y.mean():.3f}")
+        print(f"    Vignettes: {sum(len(v) for v in vig_indices.values())} selected")
+        print(f"    Per-patient AUCs:")
+        for pid in sorted(per_patient.keys()):
+            pp = per_patient[pid]
+            auc_str = f"{pp['auc']:.3f}" if pp['auc'] else "N/A"
+            print(f"      {pid}: AUC={auc_str}, n={pp['n_val']}, "
+                  f"pos={pp['pos_rate']:.3f}")
+
+    # Print operating point comparison
+    print(f"\n  {'='*60}")
+    print(f"  OPERATING POINT COMPARISON")
+    print(f"  {'='*60}")
+    for task_name in results:
+        print(f"\n  {task_name}:")
+        print(f"    {'Thresh':>8s} {'Sens':>8s} {'Spec':>8s} "
+              f"{'PPV':>8s} {'Alerts/100':>12s}")
+        for op in results[task_name]['operating_points']:
+            print(f"    {op['threshold']:8.2f} {op['sensitivity']:8.3f} "
+                  f"{op['specificity']:8.3f} {op['ppv']:8.3f} "
+                  f"{op['alerts_per_100_windows']:12.1f}")
+
+    save_results(results, 'exp459_inference_vignettes')
+    return results
+
+
 EXPERIMENTS = {
     '411': run_exp411,
     '412': run_exp412,
@@ -4445,6 +4883,7 @@ EXPERIMENTS = {
     '456': run_exp456,
     '457': run_exp457,
     '458': run_exp458,
+    '459': run_exp459,
 }
 
 
@@ -4487,6 +4926,7 @@ Experiments:
   456  Combined throughput + multi-day features (kitchen sink at 2h/6h/12h)
   457  Weekly pattern features (7d lookback, same-time-last-week, weekly trend)
   458  4h HYPO gap-closing (combined_43 + XGBoost hyperparameter sweep)
+  459  Inference vignettes (clinical use case demonstration on validation data)
 """)
     parser.add_argument('--experiment', '-e', nargs='+', default=['all'],
                         help='Experiment number(s) or "all" (default: all)')
