@@ -7958,3 +7958,137 @@ Given the bias-dominated, information-limited nature of the remaining error:
 5. **Patient d investigation**: Why does patient d have 200min decorrelation time? Slower metabolism or different treatment patterns?
 6. **Meal-context features**: BG acceleration patterns that indicate meal size (even without explicit carb data)
 
+
+---
+
+## Part XLII: Context-Conditioned Prediction & Regime Exploitation (EXP-851–860)
+
+### Objective
+
+Given the 99.9% bias-dominated error and 2x MAE ratio between easy/hard regimes (Part XLI), this wave tests whether context-specific models can reduce the systematic error. We compare regime splitting, difficulty weighting, adaptive features, multi-horizon augmentation, and meal phase analysis.
+
+### Results Summary
+
+| EXP | Method | R² | Δ vs Base (0.534) |
+|-----|--------|-----|---------------------|
+| 851 | Regime-Specific (rise/stable/fall) | 0.532 | −0.002 |
+| 852 | BG-Level-Conditioned (low/target/high) | 0.542 | **+0.007** |
+| 853 | Time-of-Day-Conditioned | 0.527 | −0.007 |
+| 854 | Gap-Aware Features | 0.534 | 0.000 |
+| 855 | Difficulty-Weighted Training | 0.532 | −0.002 |
+| 856 | Adaptive Feature Selection | 0.522 | −0.012 |
+| **857** | **Multi-Horizon Predictions** | **0.547** | **+0.012** |
+| 858 | Meal Phase Analysis | (diagnostic) | — |
+| 859 | Personalized vs Pooled Regime | 0.532 / 0.320 | −0.002 / −0.214 |
+| **860** | **Combined Benchmark** | **0.550** | **+0.016** |
+
+### NEW SOTA: R² = 0.550
+
+EXP-860 achieves the new validated best at **R²=0.550** (+0.016 over enhanced baseline), combining multi-horizon predictions with regime-specific modeling and gap features.
+
+### What Works
+
+#### EXP-857: Multi-Horizon Predictions (+0.012)
+
+Using shorter-horizon (5/15/30min) predictions as features for 60min prediction provides the biggest single improvement. This is **leakage-free** because:
+- Short-horizon models are trained on training data only
+- Their predictions use only current-time features
+- They carry forward "how the trajectory is developing" information
+
+This works because 5min predictions (R²=0.978) carry very precise near-future trajectory information that helps disambiguate 60min outcomes.
+
+#### EXP-852: BG-Level Conditioning (+0.007)
+
+Separate models for low/target/high BG levels captures level-dependent dynamics:
+- At high BG: model learns steeper correction slopes
+- At target: model learns stable dynamics
+- At low: model learns recovery patterns
+
+#### EXP-860: Combined Context-Conditioned (+0.016)
+
+Combines multi-horizon predictions + gap features + regime-specific coefficients:
+
+```
+Enhanced 16-feature:    R² = 0.534
++ Multi-horizon:        R² = 0.547  (+0.012)
++ Gap + regime:         R² = 0.550  (+0.003)
+```
+
+### What Doesn't Work
+
+#### EXP-851: Regime-Specific Models (−0.002)
+
+Splitting training data into rising/stable/falling regimes HURTS because each sub-model has only ~1/3 of the training data. The specialization benefit doesn't outweigh the data loss. Ridge regression is already flexible enough to handle regime differences linearly.
+
+#### EXP-853: Time-of-Day Conditioning (−0.007)
+
+Similar problem — 4 time-period models each get ~25% of data. The circadian features (sin_h, cos_h) already capture time-of-day effects more efficiently.
+
+#### EXP-855: Difficulty-Weighted Training (−0.002)
+
+Upweighting hard regimes slightly improves their MAE (rising+high: −0.35 mg/dL) but degrades easy regimes (+0.35 mg/dL stable+target). Net effect is negative because the easy regimes are more common.
+
+#### EXP-856: Adaptive Feature Selection (−0.012)
+
+Using different feature subsets per regime is WORSE than using all features everywhere. Feature selection reduces model capacity without providing specialization benefit.
+
+#### EXP-854: Gap-Aware Features (0.000)
+
+Gap proximity features provide zero improvement — most patients have sufficient data quality. Only patient h has extreme gaps, and 4 features can't compensate for fundamental data absence.
+
+#### EXP-859: Pooled Cross-Patient Models (−0.214)
+
+Pooled regime models using OTHER patients' data collapse to R²=0.320. Glucose dynamics are highly personal — cross-patient transfer provides negative value. This confirms personalized models are essential.
+
+### Meal Phase Analysis (EXP-858)
+
+| Phase | MAE | Frequency | Bias |
+|-------|-----|-----------|------|
+| No meal (>6h) | 25.8 | 47.1% | −1.9 |
+| Late post (3–6h) | 27.1 | 16.4% | −1.2 |
+| Post-absorption (90–180min) | 27.6 | 9.8% | 0.0 |
+| Peak absorption (30–90min) | 29.4 | 7.2% | −0.1 |
+| **Pre-absorption (<30min)** | **35.4** | **19.5%** | **+0.9** |
+
+The hardest phase is **pre-absorption** (0–30min after meal/bolus). This is the period where:
+- Carbs are beginning to enter the bloodstream
+- Insulin is beginning to act
+- The MODEL doesn't yet know how large the meal is
+- The trajectory is most uncertain
+
+This is consistent with the "rising+treated" being the top error contributor in EXP-846.
+
+### Updated Prediction Frontier
+
+| Milestone | R² (60min) | Method | EXP |
+|-----------|------------|--------|-----|
+| Naive persistence | 0.292 | BG(t) → BG(t+60) | — |
+| Physics flux | 0.372 | Supply-demand decomposition | 700s |
+| Ridge 8-feature | 0.509 | bg + flux + circadian | 801 |
+| Enhanced 16-feature | 0.534 | + velocity, accel, lags, BG² | 824 |
+| Best nonlinear (RFF) | 0.536 | Kernel ridge 200D | 831 |
+| **Context-conditioned** | **0.550** | **Multi-horizon + regime + gap** | **860** |
+| Linear oracle ceiling | 0.613 | Future BG velocity | 826 |
+
+**Progress: 0.292 → 0.550 = +0.258 R² units gained (89.5% of oracle ceiling)**
+
+### Key Insights
+
+1. **Multi-horizon is the only remaining lever**: Short-horizon predictions carry trajectory information that directly helps 60min prediction. This is the one type of new information that IS available.
+
+2. **Context splitting hurts more than it helps**: Ridge regression with rich features already captures regime-specific dynamics through feature interactions. Splitting reduces data per model without sufficient specialization.
+
+3. **Prediction is intensely personal**: Cross-patient models are 40% worse than personal models. Each patient has unique metabolic dynamics that dominate over any shared population patterns.
+
+4. **Pre-absorption is the hardest phase**: The first 30 minutes after a meal/bolus event is where the model is most uncertain — exactly when the key unknowns (meal size, insulin timing) determine the trajectory.
+
+5. **The remaining gap (0.063 to oracle) is mostly meal uncertainty**: The oracle knows the future BG trajectory; our model doesn't. The gap is concentrated in the pre-absorption phase where meal size and composition are unknowable from CGM data alone.
+
+### Next Directions
+
+1. **Multi-horizon cascade**: Chain predictions at 5→15→30→60min to accumulate trajectory evidence
+2. **Meal size estimation from BG acceleration patterns**: Can the shape of the initial BG rise predict meal magnitude?
+3. **Prediction horizon adaptation**: Predict only 30min during high-uncertainty periods and 60min during stable periods
+4. **Ensemble over time**: Average predictions from 15min ago (which saw more of the trajectory) with current predictions
+5. **Uncertainty-aware feature engineering**: Encode model confidence at shorter horizons as a feature
+
