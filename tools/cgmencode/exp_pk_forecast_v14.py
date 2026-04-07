@@ -483,7 +483,11 @@ def evaluate_model(model, val_x, device, pk_mode=False, isf_val=None,
     overall = np.mean(np.abs(preds - targets))
 
     report = {'overall_mae': round(float(overall), 2)}
-    for name, step_idx in {'h30': 5, 'h60': 11, 'h90': 17, 'h120': 23}.items():
+    horizon_map = {
+        'h30': 5, 'h60': 11, 'h90': 17, 'h120': 23,
+        'h150': 29, 'h180': 35, 'h240': 47, 'h300': 59, 'h360': 71,
+    }
+    for name, step_idx in horizon_map.items():
         if step_idx < len(mae_per_step):
             report[name] = round(float(mae_per_step[step_idx]), 2)
     return report
@@ -536,7 +540,11 @@ def ensemble_evaluate(models, val_x, device, pk_mode=False, isf_val=None,
     overall = np.mean(np.abs(ens - targets))
 
     report = {'overall_mae': round(float(overall), 2)}
-    for name, step_idx in {'h30': 5, 'h60': 11, 'h90': 17, 'h120': 23}.items():
+    horizon_map = {
+        'h30': 5, 'h60': 11, 'h90': 17, 'h120': 23,
+        'h150': 29, 'h180': 35, 'h240': 47, 'h300': 59, 'h360': 71,
+    }
+    for name, step_idx in horizon_map.items():
         if step_idx < len(mae_per_step):
             report[name] = round(float(mae_per_step[step_idx]), 2)
     return report
@@ -3898,6 +3906,1082 @@ def run_exp430(args):
     return result
 
 
+# ─── EXP-431: Stride Optimization ───
+
+def run_exp431(args):
+    """EXP-431: Stride optimization — more training windows via denser sampling.
+
+    EXP-429/430 proved data volume is THE binding constraint (2h history optimal
+    even at h120 because longer history = fewer windows = worse).
+
+    The default stride is window_size // 3 ≈ 16 steps (80min) for w48.
+    Reducing stride to 6 (30min) should roughly double training windows.
+    Even stride=3 (15min) is valid — windows overlap heavily but each sees
+    slightly different noise/timing, acting like data augmentation.
+
+    Hypothesis: Denser stride will improve MAE proportionally to data increase,
+    without the quality degradation of longer windows.
+
+    Variants:
+      - stride_16: w48 default (control)
+      - stride_12: ~60min overlap  
+      - stride_6:  ~30min overlap (expected winner)
+      - stride_3:  ~15min overlap (diminishing returns expected)
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-431: Stride Optimization (w48)")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    stride_configs = {
+        'stride_16': 16,   # default (control)
+        'stride_12': 12,   # ~60min
+        'stride_6':  6,    # ~30min
+        'stride_3':  3,    # ~15min (heavy overlap)
+    }
+
+    all_results = {}
+    for vname, stride_val in stride_configs.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: stride={stride_val} ({stride_val*5}min)")
+        print(f"{'─'*40}")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=48, stride=stride_val,
+            max_patients=cfg['max_patients'], load_isf=True)
+        has_isf = 'isf_val' in data
+        train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+        isf_v = data.get('isf_val')
+        n_ch = train_x.shape[-1]
+        n_train = train_x.shape[0]
+
+        print(f"  {n_train} train windows, {val_x.shape[0]} val, {n_ch}ch")
+
+        # Base training
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp431_{vname}_base_s{seed}.pth')
+
+            print(f"\n  Base s{seed} ({vname}):")
+            train_bridge(model, train_x, val_x, sp, f'431-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+
+        # Per-patient FT + ensemble
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train_x = train_x[ti:te]
+            p_val_x = val_x[vi:ve]
+            p_isf_v = isf_v[vi:ve] if isf_v is not None else None
+
+            print(f"\n  Patient {pid} ({pinfo['n_train']} train, {pinfo['n_val']} val):")
+            seed_maes = {}
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'],
+                                  f'exp431_{vname}_ft_{pid}_s{seed}.pth')
+                train_bridge(model, p_train_x, p_val_x, sp,
+                             f'431-ft-{pid}-s{seed}', device, pk_mode=True,
+                             lr=1e-4, epochs=cfg['epochs_ft'],
+                             patience=10, lr_patience=5)
+                metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                         isf_val=p_isf_v)
+                seed_maes[f's{seed}'] = metrics['overall_mae']
+                ft_models.append(copy.deepcopy(model))
+                print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+            ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                    isf_val=p_isf_v)
+            per_patient[pid] = {
+                'seeds': seed_maes,
+                'ensemble_mae': ens['overall_mae'],
+                'ensemble_per_horizon': ens,
+            }
+            print(f"    Ensemble: MAE={ens['overall_mae']:.1f}")
+
+        all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+        all_results[vname] = {
+            'stride': stride_val,
+            'stride_min': stride_val * 5,
+            'n_train': n_train,
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'per_patient': per_patient,
+        }
+        print(f"\n  {vname}: Mean Ensemble MAE = {all_results[vname]['mean_ensemble_mae']:.2f} "
+              f"({n_train} train windows)")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-431 SUMMARY — Stride Optimization (w48)")
+    print(f"{'='*60}")
+    print(f"  {'Config':<14} {'Stride':>6} {'Train':>8} {'MAE':>6}")
+    print(f"  {'─'*40}")
+    for vn, vr in all_results.items():
+        print(f"  {vn:<14} {vr['stride']*5:>4}m {vr['n_train']:>8} "
+              f"{vr['mean_ensemble_mae']:>6.2f}")
+    ctrl = all_results.get('stride_16', {}).get('mean_ensemble_mae', 0)
+    if ctrl:
+        for vn, vr in all_results.items():
+            if vn != 'stride_16':
+                delta = vr['mean_ensemble_mae'] - ctrl
+                print(f"    Δ {vn} vs control: {delta:+.2f}")
+    print(f"\n  EXP-411 w48 full ref: 13.50 (stride=16)")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-431: Stride Optimization',
+        'results': all_results,
+    }
+    _save_results(result, 'exp431_stride_optimization', cfg)
+    return result
+
+
+# ─── EXP-432: Patient-Quality-Filtered Base Training ───
+
+def _classify_patient_quality(per_patient_info, patients_dir):
+    """Classify patients by data quality for filtered training.
+
+    Gold: pump + CGM + ISF settings + sufficient data (>2 weeks)
+    Silver: CGM + some pump data, but gaps or MDI periods
+    Bronze: CGM only, or MDI with manual logs
+
+    Returns dict: {patient_name: 'gold'|'silver'|'bronze'}
+    """
+    quality = {}
+    for pinfo in per_patient_info:
+        name = pinfo['name']
+        isf = pinfo.get('isf')
+        n = pinfo.get('n_windows', 0)
+
+        # Heuristic: patients with ISF and substantial data are gold
+        # Patient j is known MDI-only (no pump telemetry)
+        if name == 'j':
+            quality[name] = 'bronze'
+        elif isf is not None and isf > 0 and n >= 200:
+            quality[name] = 'gold'
+        elif isf is not None and isf > 0:
+            quality[name] = 'silver'
+        else:
+            quality[name] = 'bronze'
+    return quality
+
+
+def run_exp432(args):
+    """EXP-432: Patient-quality-filtered base training.
+
+    Hypothesis: Training the base model on gold+silver patients only
+    (those with reliable pump/CGM telemetry) produces cleaner gradients.
+    Then fine-tune on ALL patients including bronze.
+
+    The base model sees only clean training signal → better shared
+    representations → better transfer even to noisy patients.
+
+    Variants:
+      - all_patients: standard training on all (control)
+      - gold_silver:  base on gold+silver only, FT on all
+      - gold_only:    base on gold only, FT on all
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-432: Patient-Quality-Filtered Base Training (w48)")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    # Load ALL data first to classify patients
+    full_data = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    quality = _classify_patient_quality(full_data['per_patient'], args.patients_dir)
+
+    gold_pts = {n for n, q in quality.items() if q == 'gold'}
+    silver_pts = {n for n, q in quality.items() if q == 'silver'}
+    bronze_pts = {n for n, q in quality.items() if q == 'bronze'}
+
+    print(f"\n  Quality classification:")
+    print(f"    Gold ({len(gold_pts)}):   {sorted(gold_pts)}")
+    print(f"    Silver ({len(silver_pts)}): {sorted(silver_pts)}")
+    print(f"    Bronze ({len(bronze_pts)}): {sorted(bronze_pts)}")
+
+    filter_configs = {
+        'all_patients': set(),            # skip nobody
+        'gold_silver':  bronze_pts,       # skip bronze
+        'gold_only':    bronze_pts | silver_pts,  # skip non-gold
+    }
+
+    has_isf = 'isf_val' in full_data
+    # Full data for FT (always uses all patients)
+    full_train_x, full_val_x = prepare_pk_future(full_data, use_isf=has_isf, drop_time=False)
+    full_isf_v = full_data.get('isf_val')
+    n_ch = full_train_x.shape[-1]
+
+    all_results = {}
+    for vname, skip_set in filter_configs.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: skip={sorted(skip_set) if skip_set else 'none'}")
+        print(f"{'─'*40}")
+
+        # Load filtered base data
+        if skip_set:
+            base_data = load_bridge_data(
+                args.patients_dir, window_size=48,
+                max_patients=cfg['max_patients'], load_isf=True,
+                skip_patients=skip_set)
+        else:
+            base_data = full_data
+
+        base_train_x, base_val_x = prepare_pk_future(
+            base_data, use_isf='isf_val' in base_data, drop_time=False)
+        n_base = base_train_x.shape[0]
+        print(f"  Base training: {n_base} windows "
+              f"({len(base_data['per_patient'])} patients)")
+
+        # Phase 1: Base training on filtered data
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp432_{vname}_base_s{seed}.pth')
+
+            print(f"\n  Base s{seed} ({vname}):")
+            train_bridge(model, base_train_x, base_val_x, sp,
+                         f'432-{vname}-s{seed}', device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+
+        # Phase 2: Per-patient FT on ALL patients (including bronze)
+        print(f"\n=== Phase 2: Per-Patient FT (all patients) ===")
+        per_patient = {}
+        for pinfo in full_data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train_x = full_train_x[ti:te]
+            p_val_x = full_val_x[vi:ve]
+            p_isf_v = full_isf_v[vi:ve] if full_isf_v is not None else None
+
+            print(f"\n  Patient {pid} (quality={quality.get(pid,'?')}, "
+                  f"{pinfo['n_train']} train, {pinfo['n_val']} val):")
+            seed_maes = {}
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'],
+                                  f'exp432_{vname}_ft_{pid}_s{seed}.pth')
+                train_bridge(model, p_train_x, p_val_x, sp,
+                             f'432-ft-{pid}-s{seed}', device, pk_mode=True,
+                             lr=1e-4, epochs=cfg['epochs_ft'],
+                             patience=10, lr_patience=5)
+                metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                         isf_val=p_isf_v)
+                seed_maes[f's{seed}'] = metrics['overall_mae']
+                ft_models.append(copy.deepcopy(model))
+                print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+            ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                    isf_val=p_isf_v)
+            per_patient[pid] = {
+                'seeds': seed_maes,
+                'quality': quality.get(pid, '?'),
+                'ensemble_mae': ens['overall_mae'],
+                'ensemble_per_horizon': ens,
+            }
+            print(f"    Ensemble: MAE={ens['overall_mae']:.1f}")
+
+        all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+        gold_ens = [v['ensemble_mae'] for v in per_patient.values()
+                    if v['quality'] == 'gold']
+        bronze_ens = [v['ensemble_mae'] for v in per_patient.values()
+                      if v['quality'] == 'bronze']
+
+        all_results[vname] = {
+            'skip_patients': sorted(skip_set),
+            'n_base_train': n_base,
+            'n_base_patients': len(base_data['per_patient']),
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'gold_mean_mae': round(float(np.mean(gold_ens)), 2) if gold_ens else None,
+            'bronze_mean_mae': round(float(np.mean(bronze_ens)), 2) if bronze_ens else None,
+            'per_patient': per_patient,
+        }
+        print(f"\n  {vname}: Mean MAE = {all_results[vname]['mean_ensemble_mae']:.2f}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-432 SUMMARY — Patient-Quality-Filtered Base Training")
+    print(f"{'='*60}")
+    print(f"  {'Config':<16} {'Base Pts':>8} {'Base Win':>8} {'All MAE':>8} "
+          f"{'Gold MAE':>9} {'Bronze MAE':>10}")
+    print(f"  {'─'*64}")
+    for vn, vr in all_results.items():
+        g = f"{vr['gold_mean_mae']:.2f}" if vr['gold_mean_mae'] else '—'
+        b = f"{vr['bronze_mean_mae']:.2f}" if vr['bronze_mean_mae'] else '—'
+        print(f"  {vn:<16} {vr['n_base_patients']:>8} {vr['n_base_train']:>8} "
+              f"{vr['mean_ensemble_mae']:>8.2f} {g:>9} {b:>10}")
+    ctrl = all_results.get('all_patients', {}).get('mean_ensemble_mae', 0)
+    if ctrl:
+        for vn, vr in all_results.items():
+            if vn != 'all_patients':
+                delta = vr['mean_ensemble_mae'] - ctrl
+                print(f"    Δ {vn} vs control: {delta:+.2f}")
+    print(f"\n  EXP-411 w48 full ref: 13.50")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-432: Patient-Quality-Filtered Base Training',
+        'quality_map': quality,
+        'results': all_results,
+    }
+    _save_results(result, 'exp432_quality_filtered', cfg)
+    return result
+
+
+# ─── EXP-433: State-Dependent Loss Weighting ───
+
+def _classify_metabolic_state(x_batch, half):
+    """Classify each window into metabolic state based on history channels.
+
+    States (based on channels in history half):
+      - 'fasting': IOB < 0.05 AND COB < 0.05 (no active insulin or carbs)
+      - 'correction': IOB > 0.05 AND COB < 0.05 (insulin only)
+      - 'meal': COB > 0.05 (carbs active, with or without bolus)
+      - 'mixed': moderate activity in both
+
+    Returns tensor of weights: [batch_size, 1]
+    Uses channels: IOB=1, COB=2 (both normalized 0-1 in base grid)
+    """
+    # Look at mean of history half
+    hist = x_batch[:, :half, :]
+    mean_iob = hist[:, :, 1].abs().mean(dim=1)  # ch1=IOB
+    mean_cob = hist[:, :, 2].abs().mean(dim=1)  # ch2=COB
+
+    # Thresholds on normalized values
+    iob_active = mean_iob > 0.02
+    cob_active = mean_cob > 0.02
+
+    # State classification
+    fasting = ~iob_active & ~cob_active
+    correction = iob_active & ~cob_active
+    meal = cob_active
+
+    return fasting, correction, meal
+
+
+def train_bridge_state_weighted(model, train_x, val_x, save_path, label, device,
+                                pk_mode=False, lr=1e-3, epochs=200, batch=32,
+                                patience=20, weight_decay=1e-5, lr_patience=7,
+                                future_steps=None,
+                                fasting_weight=1.0, correction_weight=1.5,
+                                meal_weight=2.0):
+    """Train with state-dependent loss weighting.
+
+    Meal windows are harder (more glucose dynamics) and clinically more
+    important (dosing decisions). Correction windows have insulin-only dynamics.
+    Fasting is the easiest baseline.
+
+    Weighting the loss by metabolic state focuses gradient signal on the
+    clinically harder and more important windows.
+    """
+    model.to(device)
+    train_dl = DataLoader(TensorDataset(train_x), batch_size=batch, shuffle=True)
+    val_dl = DataLoader(TensorDataset(val_x), batch_size=batch)
+    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=lr_patience, factor=0.5)
+    best = float('inf')
+    stale = 0
+
+    def _step(batch_data, backward=False, use_weights=False):
+        x = batch_data[0].to(device)
+        half = x.shape[1] - future_steps if future_steps else x.shape[1] // 2
+        x_in = x.clone()
+        mask_future_pk(x_in, half, pk_mode=pk_mode)
+        pred = model(x_in, causal=True)
+
+        target = x[:, half:, :1]
+        output = pred[:, half:, :1]
+
+        if use_weights:
+            fasting, correction, meal = _classify_metabolic_state(x, half)
+            weights = torch.ones(x.size(0), device=device)
+            weights[fasting] = fasting_weight
+            weights[correction] = correction_weight
+            weights[meal] = meal_weight
+            # Per-sample weighted MSE
+            per_sample = ((output - target) ** 2).mean(dim=(1, 2))
+            loss = (per_sample * weights).mean()
+        else:
+            loss = nn.functional.mse_loss(output, target)
+
+        if backward:
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        return loss.item() * x.size(0), x.size(0)
+
+    for ep in range(epochs):
+        model.train()
+        ttl, tn = 0.0, 0
+        for b in train_dl:
+            opt.zero_grad()
+            l, n = _step(b, backward=True, use_weights=True)
+            opt.step()
+            ttl += l; tn += n
+        tl = ttl / tn if tn else float('inf')
+
+        model.eval()
+        vtl, vn = 0.0, 0
+        with torch.no_grad():
+            for b in val_dl:
+                l, n = _step(b, backward=False, use_weights=False)
+                vtl += l; vn += n
+        vl = vtl / vn if vn else float('inf')
+        sched.step(vl)
+
+        if vl < best:
+            best = vl
+            stale = 0
+            os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
+            torch.save({
+                'epoch': ep, 'model_state': model.state_dict(),
+                'val_loss': vl, 'label': label,
+            }, save_path)
+        else:
+            stale += 1
+
+        if (ep + 1) % 10 == 0 or ep == epochs - 1:
+            lr_now = opt.param_groups[0]['lr']
+            mark = ' *' if stale == 0 else ''
+            print(f'  [{label}] {ep+1:3d}/{epochs} '
+                  f'train={tl:.6f} val={vl:.6f} best={best:.6f} '
+                  f'lr={lr_now:.1e}{mark}')
+
+        if patience > 0 and stale >= patience:
+            print(f'  [{label}] Early stop at epoch {ep+1}')
+            break
+
+    if os.path.exists(save_path):
+        ckpt = torch.load(save_path, map_location=device, weights_only=False)
+        model.load_state_dict(ckpt['model_state'])
+    return best, ep + 1
+
+
+def run_exp433(args):
+    """EXP-433: State-dependent loss weighting.
+
+    Hypothesis: Weighting meal/correction windows more heavily in the loss
+    focuses learning on the clinically harder and more important states.
+
+    Fasting periods are easy (BG is relatively flat) but represent a large
+    fraction of training data. Meal periods are hard (rapid BG changes)
+    but clinically critical (dosing decisions happen during meals).
+
+    By upweighting meal and correction windows, we shift gradient signal
+    from the easy-but-boring fasting windows to the hard-but-important
+    active windows.
+
+    Variants:
+      - uniform:        all windows weight 1.0 (control)
+      - meal_2x:        fasting=1.0, correction=1.5, meal=2.0
+      - meal_3x:        fasting=1.0, correction=1.5, meal=3.0
+      - active_focus:   fasting=0.5, correction=2.0, meal=2.0
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-433: State-Dependent Loss Weighting (w48)")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    isf_v = data.get('isf_val')
+    n_ch = train_x.shape[-1]
+
+    # First, profile metabolic state distribution
+    half = 48 // 2
+    fasting, correction, meal = _classify_metabolic_state(train_x, half)
+    n = train_x.shape[0]
+    print(f"\n  Metabolic state distribution (training):")
+    print(f"    Fasting:    {fasting.sum().item():>5} ({fasting.sum().item()/n*100:.1f}%)")
+    print(f"    Correction: {correction.sum().item():>5} ({correction.sum().item()/n*100:.1f}%)")
+    print(f"    Meal:       {meal.sum().item():>5} ({meal.sum().item()/n*100:.1f}%)")
+
+    weight_configs = {
+        'uniform':      {'fasting_weight': 1.0, 'correction_weight': 1.0, 'meal_weight': 1.0},
+        'meal_2x':      {'fasting_weight': 1.0, 'correction_weight': 1.5, 'meal_weight': 2.0},
+        'meal_3x':      {'fasting_weight': 1.0, 'correction_weight': 1.5, 'meal_weight': 3.0},
+        'active_focus': {'fasting_weight': 0.5, 'correction_weight': 2.0, 'meal_weight': 2.0},
+    }
+
+    all_results = {}
+    for vname, weights in weight_configs.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: f={weights['fasting_weight']}, "
+              f"c={weights['correction_weight']}, m={weights['meal_weight']}")
+        print(f"{'─'*40}")
+
+        # Base training with state-weighted loss
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp433_{vname}_base_s{seed}.pth')
+
+            print(f"\n  Base s{seed} ({vname}):")
+            if vname == 'uniform':
+                # Control: standard training
+                train_bridge(model, train_x, val_x, sp, f'433-{vname}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+            else:
+                train_bridge_state_weighted(
+                    model, train_x, val_x, sp, f'433-{vname}-s{seed}',
+                    device, pk_mode=True,
+                    epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                    **weights)
+
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+
+        # Per-patient FT (always uniform — FT is patient-specific)
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train_x = train_x[ti:te]
+            p_val_x = val_x[vi:ve]
+            p_isf_v = isf_v[vi:ve] if isf_v is not None else None
+
+            print(f"\n  Patient {pid} ({pinfo['n_train']} train, {pinfo['n_val']} val):")
+            seed_maes = {}
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'],
+                                  f'exp433_{vname}_ft_{pid}_s{seed}.pth')
+                # FT always uses standard loss (patient-specific already)
+                train_bridge(model, p_train_x, p_val_x, sp,
+                             f'433-ft-{pid}-s{seed}', device, pk_mode=True,
+                             lr=1e-4, epochs=cfg['epochs_ft'],
+                             patience=10, lr_patience=5)
+                metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                         isf_val=p_isf_v)
+                seed_maes[f's{seed}'] = metrics['overall_mae']
+                ft_models.append(copy.deepcopy(model))
+                print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+            ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                    isf_val=p_isf_v)
+            per_patient[pid] = {
+                'seeds': seed_maes,
+                'ensemble_mae': ens['overall_mae'],
+                'ensemble_per_horizon': ens,
+            }
+            print(f"    Ensemble: MAE={ens['overall_mae']:.1f}")
+
+        all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+        all_results[vname] = {
+            'weights': weights,
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'per_patient': per_patient,
+        }
+        print(f"\n  {vname}: Mean MAE = {all_results[vname]['mean_ensemble_mae']:.2f}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-433 SUMMARY — State-Dependent Loss Weighting")
+    print(f"{'='*60}")
+    print(f"  {'Config':<16} {'Fast':>5} {'Corr':>5} {'Meal':>5} {'MAE':>6}")
+    print(f"  {'─'*42}")
+    for vn, vr in all_results.items():
+        w = vr['weights']
+        print(f"  {vn:<16} {w['fasting_weight']:>5.1f} {w['correction_weight']:>5.1f} "
+              f"{w['meal_weight']:>5.1f} {vr['mean_ensemble_mae']:>6.2f}")
+    ctrl = all_results.get('uniform', {}).get('mean_ensemble_mae', 0)
+    if ctrl:
+        for vn, vr in all_results.items():
+            if vn != 'uniform':
+                delta = vr['mean_ensemble_mae'] - ctrl
+                print(f"    Δ {vn} vs uniform: {delta:+.2f}")
+    print(f"\n  EXP-411 w48 full ref: 13.50")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-433: State-Dependent Loss Weighting',
+        'state_distribution': {
+            'fasting_pct': round(fasting.sum().item() / n * 100, 1),
+            'correction_pct': round(correction.sum().item() / n * 100, 1),
+            'meal_pct': round(meal.sum().item() / n * 100, 1),
+        },
+        'results': all_results,
+    }
+    _save_results(result, 'exp433_state_weighted', cfg)
+    return result
+
+
+# ─── EXP-434: PK Conservation Fidelity Filtering ───
+
+def compute_pk_conservation_error(base_windows, pk_windows, isf_array=None,
+                                  half=24, glucose_scale=GLUCOSE_SCALE):
+    """Compute per-window PK conservation error.
+
+    Conservation symmetry: ΔBG ≈ -(insulin_net × ISF) + (carb_rate × CR)
+    When this holds, PK channels carry genuine causal signal.
+    When violated (bad settings, missing data), PK channels are noise.
+
+    Returns per-window conservation error (lower = better fidelity).
+    """
+    n = len(base_windows)
+    errors = np.zeros(n)
+
+    for i in range(n):
+        # Glucose change in history half (actual)
+        gluc = base_windows[i, :half, 0]  # normalized 0-1
+        valid = ~np.isnan(gluc) & (gluc > 0.01)
+        if valid.sum() < 5:
+            errors[i] = float('inf')
+            continue
+
+        # Actual glucose rate of change (per step, normalized)
+        dgluc = np.diff(gluc[valid])
+        actual_roc = np.mean(np.abs(dgluc)) if len(dgluc) > 0 else 0
+
+        # PK-predicted direction: insulin_net (ch1) drives down, carb_rate (ch3) drives up
+        ins_net = pk_windows[i, :half, 1]  # raw insulin_net
+        carb_rt = pk_windows[i, :half, 3]  # raw carb_rate
+
+        # Net PK effect direction over history
+        mean_ins = np.mean(ins_net)
+        mean_carb = np.mean(carb_rt)
+
+        # Predicted direction: positive carbs → glucose up, positive insulin → glucose down
+        pk_direction = mean_carb * 0.5 - mean_ins * 2.0  # rough ISF/CR scaling
+        actual_direction = np.mean(dgluc) if len(dgluc) > 0 else 0
+
+        # Conservation error: direction mismatch + magnitude mismatch
+        # Low when PK and glucose agree; high when they disagree
+        if actual_roc > 0.001:
+            direction_error = abs(np.sign(pk_direction) - np.sign(actual_direction))
+            magnitude_ratio = abs(pk_direction) / (actual_roc * glucose_scale + 1e-6)
+            errors[i] = direction_error + min(abs(np.log(magnitude_ratio + 1e-6)), 5.0)
+        else:
+            # Flat glucose — PK should also be quiet
+            errors[i] = abs(mean_ins) * 10 + abs(mean_carb) * 5
+
+    return errors
+
+
+def run_exp434(args):
+    """EXP-434: PK conservation fidelity filtering.
+
+    Hypothesis: PK channels only help when the patient data has sufficient
+    fidelity to glucose conservation symmetry — ie, ISF × insulin ≈ ΔBG.
+    Windows where PK signal disagrees with glucose movement add noise.
+
+    Filtering approach:
+    1. Compute per-window conservation error (PK vs glucose agreement)
+    2. Remove worst N% of windows from training
+    3. Train on filtered data, evaluate on ALL data (including filtered-out)
+
+    This tests whether signal quality > data quantity for PK-enhanced models.
+
+    Variants:
+      - no_filter:   all windows (control)
+      - filter_10:   remove worst 10% by conservation error
+      - filter_25:   remove worst 25%
+      - filter_50:   remove worst 50% (aggressive — keeps only best half)
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-434: PK Conservation Fidelity Filtering (w48)")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    data = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data
+
+    # Compute conservation errors on raw data BEFORE PK preparation
+    print("\n  Computing PK conservation errors...")
+    train_errors = compute_pk_conservation_error(
+        data['base_train'], data['pk_train'], half=24)
+    val_errors = compute_pk_conservation_error(
+        data['base_val'], data['pk_val'], half=24)
+
+    # Profile the error distribution
+    finite_errors = train_errors[np.isfinite(train_errors)]
+    print(f"  Train conservation errors: mean={np.mean(finite_errors):.3f}, "
+          f"median={np.median(finite_errors):.3f}, "
+          f"p75={np.percentile(finite_errors, 75):.3f}, "
+          f"p90={np.percentile(finite_errors, 90):.3f}")
+    print(f"  Inf errors (missing data): {np.isinf(train_errors).sum()} "
+          f"({np.isinf(train_errors).sum()/len(train_errors)*100:.1f}%)")
+
+    # Prepare full data for evaluation (always evaluate on everything)
+    train_x_full, val_x_full = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+    isf_v = data.get('isf_val')
+    n_ch = train_x_full.shape[-1]
+
+    filter_configs = {
+        'no_filter': 0.0,
+        'filter_10': 0.10,
+        'filter_25': 0.25,
+        'filter_50': 0.50,
+    }
+
+    all_results = {}
+    for vname, filter_pct in filter_configs.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: remove worst {filter_pct*100:.0f}%")
+        print(f"{'─'*40}")
+
+        if filter_pct > 0:
+            threshold = np.percentile(finite_errors, (1 - filter_pct) * 100)
+            keep_mask = train_errors <= threshold
+            train_x = train_x_full[keep_mask]
+            # Also filter ISF for training
+            if has_isf:
+                isf_train_filtered = data['isf_train'][keep_mask[:len(data['isf_train'])]]
+            n_kept = keep_mask.sum()
+            n_removed = len(keep_mask) - n_kept
+            print(f"  Threshold: {threshold:.3f}, kept {n_kept}, removed {n_removed}")
+        else:
+            train_x = train_x_full
+            n_kept = len(train_x)
+
+        # Base training on filtered data
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp434_{vname}_base_s{seed}.pth')
+
+            print(f"\n  Base s{seed} ({vname}, {n_kept} windows):")
+            # Use full val for early stopping (don't filter val)
+            train_bridge(model, train_x, val_x_full, sp,
+                         f'434-{vname}-s{seed}', device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+
+        # Per-patient FT on UNFILTERED per-patient data + evaluate
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train_x = train_x_full[ti:te]  # unfiltered for FT
+            p_val_x = val_x_full[vi:ve]
+            p_isf_v = isf_v[vi:ve] if isf_v is not None else None
+
+            # Compute per-patient conservation quality
+            p_errors = train_errors[ti:te]
+            p_finite = p_errors[np.isfinite(p_errors)]
+            p_quality = np.median(p_finite) if len(p_finite) > 0 else float('inf')
+
+            print(f"\n  Patient {pid} (quality={p_quality:.3f}, "
+                  f"{pinfo['n_train']} train, {pinfo['n_val']} val):")
+            seed_maes = {}
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'],
+                                  f'exp434_{vname}_ft_{pid}_s{seed}.pth')
+                train_bridge(model, p_train_x, p_val_x, sp,
+                             f'434-ft-{pid}-s{seed}', device, pk_mode=True,
+                             lr=1e-4, epochs=cfg['epochs_ft'],
+                             patience=10, lr_patience=5)
+                metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                         isf_val=p_isf_v)
+                seed_maes[f's{seed}'] = metrics['overall_mae']
+                ft_models.append(copy.deepcopy(model))
+                print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+            ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                    isf_val=p_isf_v)
+            per_patient[pid] = {
+                'seeds': seed_maes,
+                'conservation_quality': round(float(p_quality), 3),
+                'ensemble_mae': ens['overall_mae'],
+                'ensemble_per_horizon': ens,
+            }
+            print(f"    Ensemble: MAE={ens['overall_mae']:.1f}")
+
+        all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+        all_results[vname] = {
+            'filter_pct': filter_pct,
+            'n_train_kept': int(n_kept),
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'per_patient': per_patient,
+        }
+        print(f"\n  {vname}: Mean MAE = {all_results[vname]['mean_ensemble_mae']:.2f}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-434 SUMMARY — PK Conservation Fidelity Filtering")
+    print(f"{'='*60}")
+    print(f"  {'Config':<14} {'Filter':>6} {'Train':>8} {'MAE':>6}")
+    print(f"  {'─'*40}")
+    for vn, vr in all_results.items():
+        print(f"  {vn:<14} {vr['filter_pct']*100:>4.0f}% {vr['n_train_kept']:>8} "
+              f"{vr['mean_ensemble_mae']:>6.2f}")
+    ctrl = all_results.get('no_filter', {}).get('mean_ensemble_mae', 0)
+    if ctrl:
+        for vn, vr in all_results.items():
+            if vn != 'no_filter':
+                delta = vr['mean_ensemble_mae'] - ctrl
+                print(f"    Δ {vn} vs no_filter: {delta:+.2f}")
+
+    # Per-patient quality vs MAE correlation
+    print(f"\n  Per-patient conservation quality (no_filter):")
+    no_filt = all_results.get('no_filter', {}).get('per_patient', {})
+    for pid, pr in sorted(no_filt.items(), key=lambda x: x[1]['conservation_quality']):
+        print(f"    {pid}: quality={pr['conservation_quality']:.3f}, "
+              f"MAE={pr['ensemble_mae']:.1f}")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-434: PK Conservation Fidelity Filtering',
+        'error_distribution': {
+            'mean': round(float(np.mean(finite_errors)), 3),
+            'median': round(float(np.median(finite_errors)), 3),
+            'p75': round(float(np.percentile(finite_errors, 75)), 3),
+            'p90': round(float(np.percentile(finite_errors, 90)), 3),
+        },
+        'results': all_results,
+    }
+    _save_results(result, 'exp434_fidelity_filter', cfg)
+    return result
+
+
+# ─── EXP-435: Extended Future PK Projection for h120+ ───
+
+def run_exp435(args):
+    """EXP-435: Extended future PK projection for h120+.
+
+    Key insight: PK channels are DETERMINISTIC — computed from past events,
+    they project absorption forward. We can extend the future PK projection
+    beyond the standard symmetric split without needing more history.
+
+    Current: w48 = 24 hist + 24 future → h120 max
+    Proposed: fixed 24 hist (2h, proven optimal) + extended future:
+      - w48_sym:      24 hist + 24 future → h120 (control)
+      - w60_asym:     24 hist + 36 future → h180
+      - w72_asym:     24 hist + 48 future → h240
+      - w96_asym:     24 hist + 72 future → h360
+
+    The model gets 2h of history (glucose momentum + current PK state) PLUS
+    the complete future PK trajectory showing how insulin/carb absorption
+    will evolve over the next 3-6 hours. This gives it knowledge of the
+    full DIA arc without the data scarcity penalty of longer history.
+
+    Hypothesis: This should dramatically improve h120-h360 because the model
+    can now see the insulin tail — the gradual decay of bolus activity over
+    the complete DIA (5-6h), which determines long-term glucose trajectory.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+
+    print(f"\n{'='*60}")
+    print(f"EXP-435: Extended Future PK Projection")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}, "
+          f"ft_ep={cfg['epochs_ft']}")
+    print(f"{'='*60}")
+
+    # Configurations: (window_size, history_steps, future_steps, label)
+    configs = [
+        (48, 24, 24, 'w48_sym'),      # control: symmetric
+        (60, 24, 36, 'w60_asym'),      # +60min future PK
+        (72, 24, 48, 'w72_asym'),      # +120min future PK (covers full DIA)
+        (96, 24, 72, 'w96_asym'),      # +240min future PK (beyond DIA)
+    ]
+
+    all_results = {}
+    for ws, hist, fut, label in configs:
+        print(f"\n{'─'*40}")
+        print(f"  {label}: {hist*5}min hist + {fut*5}min future = h{fut*5}")
+        print(f"{'─'*40}")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=ws,
+            max_patients=cfg['max_patients'], load_isf=True)
+        has_isf = 'isf_val' in data
+        train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=False)
+        isf_v = data.get('isf_val')
+        n_ch = train_x.shape[-1]
+
+        print(f"  {train_x.shape[0]} train, {val_x.shape[0]} val, {n_ch}ch, "
+              f"seq_len={ws}")
+
+        # Base training with asymmetric future_steps
+        base_states = {}
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+            sp = os.path.join(cfg['output_dir'], f'exp435_{label}_base_s{seed}.pth')
+
+            print(f"\n  Base s{seed} ({label}):")
+            train_bridge(model, train_x, val_x, sp, f'435-{label}-s{seed}',
+                         device, pk_mode=True, future_steps=fut,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            base_states[seed] = ckpt['model_state']
+
+        # Per-patient FT + ensemble
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train_x = train_x[ti:te]
+            p_val_x = val_x[vi:ve]
+            p_isf_v = isf_v[vi:ve] if isf_v is not None else None
+
+            print(f"\n  Patient {pid} ({pinfo['n_train']} train, {pinfo['n_val']} val):")
+            seed_maes = {}
+            ft_models = []
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed)
+                model = PKGroupedEncoder(input_dim=n_ch, d_model=64, nhead=4, num_layers=4)
+                model.load_state_dict(base_states[seed])
+                sp = os.path.join(cfg['output_dir'],
+                                  f'exp435_{label}_ft_{pid}_s{seed}.pth')
+                train_bridge(model, p_train_x, p_val_x, sp,
+                             f'435-ft-{pid}-s{seed}', device, pk_mode=True,
+                             future_steps=fut,
+                             lr=1e-4, epochs=cfg['epochs_ft'],
+                             patience=10, lr_patience=5)
+                metrics = evaluate_model(model, p_val_x, device, pk_mode=True,
+                                         isf_val=p_isf_v, future_steps=fut)
+                seed_maes[f's{seed}'] = metrics['overall_mae']
+                ft_models.append(copy.deepcopy(model))
+                print(f"    s{seed}: MAE={metrics['overall_mae']:.1f}")
+
+            ens = ensemble_evaluate(ft_models, p_val_x, device, pk_mode=True,
+                                    isf_val=p_isf_v, future_steps=fut)
+            per_patient[pid] = {
+                'seeds': seed_maes,
+                'ensemble_mae': ens['overall_mae'],
+                'ensemble_per_horizon': ens,
+            }
+            print(f"    Ensemble: MAE={ens['overall_mae']:.1f}, "
+                  f"h60={ens.get('h60','?')}, h120={ens.get('h120','?')}")
+
+        all_ens = [v['ensemble_mae'] for v in per_patient.values()]
+
+        # Extract per-horizon averages
+        horizon_avgs = {}
+        for hname in ['h30', 'h60', 'h90', 'h120', 'h150', 'h180', 'h240', 'h300', 'h360']:
+            step_idx = {'h30': 5, 'h60': 11, 'h90': 17, 'h120': 23,
+                        'h150': 29, 'h180': 35, 'h240': 47, 'h300': 59, 'h360': 71}.get(hname, -1)
+            if step_idx < fut:
+                vals = [v['ensemble_per_horizon'].get(hname)
+                        for v in per_patient.values()
+                        if v['ensemble_per_horizon'].get(hname) is not None]
+                if vals:
+                    horizon_avgs[hname] = round(float(np.mean(vals)), 2)
+
+        all_results[label] = {
+            'window_size': ws,
+            'history_steps': hist,
+            'future_steps': fut,
+            'max_horizon_min': fut * 5,
+            'n_train': train_x.shape[0],
+            'mean_ensemble_mae': round(float(np.mean(all_ens)), 2),
+            'horizon_averages': horizon_avgs,
+            'per_patient': per_patient,
+        }
+        print(f"\n  {label}: Mean Ensemble MAE = {all_results[label]['mean_ensemble_mae']:.2f}")
+        print(f"  Per-horizon: {horizon_avgs}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("EXP-435 SUMMARY — Extended Future PK Projection")
+    print(f"{'='*60}")
+    hdr = f"  {'Config':<14} {'Hist':>5} {'Fut':>5} {'Train':>6} {'MAE':>6}"
+    # Add horizon columns that exist
+    all_horizons = sorted(set(h for r in all_results.values()
+                              for h in r['horizon_averages']))
+    for h in all_horizons:
+        hdr += f" {h:>6}"
+    print(hdr)
+    print(f"  {'─'*(len(hdr)-2)}")
+    for vn, vr in all_results.items():
+        line = (f"  {vn:<14} {vr['history_steps']*5:>4}m {vr['future_steps']*5:>4}m "
+                f"{vr['n_train']:>6} {vr['mean_ensemble_mae']:>6.2f}")
+        for h in all_horizons:
+            v = vr['horizon_averages'].get(h, '')
+            line += f" {v if v else '—':>6}"
+        print(line)
+
+    ctrl = all_results.get('w48_sym', {}).get('mean_ensemble_mae', 0)
+    if ctrl:
+        for vn, vr in all_results.items():
+            if vn != 'w48_sym':
+                delta = vr['mean_ensemble_mae'] - ctrl
+                print(f"    Δ {vn} vs w48_sym: {delta:+.2f}")
+
+    # Per-horizon improvement analysis
+    ctrl_horizons = all_results.get('w48_sym', {}).get('horizon_averages', {})
+    if ctrl_horizons:
+        print(f"\n  Per-horizon Δ vs w48_sym control:")
+        for vn, vr in all_results.items():
+            if vn == 'w48_sym':
+                continue
+            deltas = []
+            for h in sorted(ctrl_horizons.keys()):
+                if h in vr['horizon_averages']:
+                    d = vr['horizon_averages'][h] - ctrl_horizons[h]
+                    deltas.append(f"{h}:{d:+.1f}")
+            print(f"    {vn}: {', '.join(deltas)}")
+
+    print(f"\n  EXP-411 w48 full ref: 13.50 (symmetric)")
+    print(f"  EXP-429 best h60: 12.78 (w36 asym, 2h hist)")
+    print(f"{'='*60}")
+
+    result = {
+        'experiment': 'EXP-435: Extended Future PK Projection',
+        'results': all_results,
+    }
+    _save_results(result, 'exp435_extended_future_pk', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -3921,6 +5005,11 @@ EXPERIMENTS = {
     '428': run_exp428,
     '429': run_exp429,
     '430': run_exp430,
+    '431': run_exp431,
+    '432': run_exp432,
+    '433': run_exp433,
+    '434': run_exp434,
+    '435': run_exp435,
 }
 
 
