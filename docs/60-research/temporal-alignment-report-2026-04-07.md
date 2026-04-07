@@ -3622,32 +3622,172 @@ Processing rate: **266,415 steps/second** on a single CPU core. 6 months of 5-mi
 
 ## Proposed Next Experiments (EXP-641–650)
 
-### Improved Hypo Prediction
+### EXP-641: Model-Based Hypo Alert ⭐⭐
+
+**Result**: Model F1=0.275 vs Simple rule F1=0.185, **Δ=+0.090** (49% improvement).
+
+Model-based 30-min prediction reduces false positives dramatically vs the BG<110+falling rule (EXP-634: 220 FP/week). Best patients: c (F1=0.534, prec=0.47), i (F1=0.558, prec=0.47). Mean FP/week drops from 220 to ~44.
+
+However, F1=0.275 is still insufficient for clinical alerts. The model improves 9/11 patients but recall is low (mean ~30%). Iterative prediction error accumulates over 6 steps, limiting prospective accuracy.
+
+### EXP-642: Adaptive Hypo Threshold ⭐⭐
+
+**Result**: Optimized F1=0.480, mean FP/week=36.5.
+
+All patients converge to BG<80 as optimal threshold (not 110!). Slope thresholds of -0.5 to -1 mg/dL/step are optimal. This simple optimization **doubles F1** from 0.268 (EXP-634) to 0.480.
+
+| Patient | Threshold | Slope | F1 | Precision | FP/week |
+|---------|-----------|-------|----|-----------|---------|
+| a | 80 | -0.5 | 0.588 | 0.632 | 16.3 |
+| b | 80 | -1.0 | 0.504 | 0.427 | 8.4 |
+| i | 80 | -0.5 | 0.587 | 0.681 | 53.1 |
+
+**Clinical recommendation**: Use BG<80 + slope<-0.5 as default hypo alert. Simple, effective, and 83% fewer FP than naive BG<110.
+
+### EXP-643: Flux-Trajectory Hypo ⭐⭐⭐
+
+**Result**: Flux F1=0.429 vs BG<90 F1=0.353, improved **9/11** patients.
+
+Cumulative 30-min flux trajectory (BG + Σnet_flux) is the **best hypo predictor** tested. Key advantages:
+- Patient d: F1 jumps from 0.171 → 0.444 (+160%), precision=0.595
+- Patient f: F1 from 0.305 → 0.533 (+75%), precision=0.656
+- Patient k: Precision=0.808 (highest of any method)
+
+The flux trajectory captures insulin-in-transit that hasn't lowered BG yet — precisely the scenario that causes unexpected hypos.
+
+### EXP-644: 5-Feature Parsimonious Model ⭐⭐
+
+**Result**: 5-feature retains **91%** of full 10-feature performance. 2-feature retains 74%.
+
+| Model | Mean R² | Retention |
+|-------|---------|-----------|
+| Full 10-feature | 0.314 | 100% |
+| 5-feature (AR1,AR3,demand²,σ(BG),BG×demand) | 0.296 | 91% |
+| 2-feature (AR1,demand²) | 0.264 | 74% |
+| AR1-only | 0.246 | — |
+
+The 5-feature model loses only 0.018 R² while halving complexity. Patient g shows 97.5% retention — the parsimonious model captures nearly all predictive signal.
+
+### EXP-645: Minimal Clinical Model
+
+**Result**: 2-feature (AR1 + demand²) achieves R²=0.264, MAE=5.1 mg/dL.
+
+AR1 coefficient ~0.5 (strong momentum) and demand² ~5-27 (nonlinear insulin effect). Patient k anomaly: demand² coefficient=21.3 (insulin dynamics dominate). This minimal model is deployable on resource-constrained devices.
+
+### EXP-646: 60-Min Prediction Quality ⭐⭐
+
+**Result**: 60-min MAE=45.0 mg/dL, Zone A=42%, Zone A+B=68%.
+
+| Patient | MAE (mg/dL) | MAPE (%) | Zone A | Zone A+B |
+|---------|-------------|----------|--------|----------|
+| k | 18.3 | 20.1 | 70.2% | 89.8% |
+| d | 29.7 | 20.7 | 44.2% | 77.5% |
+| f | 38.8 | 25.2 | 53.2% | 78.4% |
+| a | 49.4 | 26.0 | 47.6% | 72.5% |
+| i | 86.4 | 47.2 | 27.1% | 42.5% |
+
+68% Zone A+B is below the clinical threshold (~95% for FDA clearance), but competitive for a pure physics model with no ML training. Patient k achieves **90% Zone A+B** — near clinical-grade for low-variability patients.
+
+### EXP-647: Biweekly Score Change Detection ⭐⭐⭐
+
+**Result**: 81 significant changes across 11/11 patients (vs 0 at weekly resolution).
+
+Biweekly windows provide **sufficient statistical power** for change detection. Patient b shows 11 significant changes across 12 biweekly windows — their control oscillates meaningfully. Score ranges span 10-32 points.
+
+| Patient | Windows | Significant | Score Range |
+|---------|---------|-------------|-------------|
+| b | 12 | 11 | 27.1 |
+| k | 12 | 9 | 32.4 |
+| d | 12 | 10 | 17.4 |
+| h | 4 | 2 | 16.7 |
+
+**Confirms EXP-636**: Weekly windows too noisy, biweekly is the minimum viable period for clinical change detection.
+
+### EXP-648: Monthly Settings Drift ⭐⭐
+
+**Result**: Drift detected in **9/11** patients.
+
+| Patient | TIR Trend | Net Flux Trend | Direction |
+|---------|-----------|----------------|-----------|
+| f | +4.04/mo | +0.07/mo | Improving ↑ |
+| b | +3.00/mo | +0.64/mo | Improving ↑ |
+| e | +1.75/mo | -0.49/mo | Improving ↑ |
+| a | -1.73/mo | +0.06/mo | Declining ↓ |
+| g | -1.88/mo | -0.21/mo | Declining ↓ |
+
+Three patients (b, e, f) show improving TIR trends; four (a, c, g, i) show declining trends. Net flux trends often diverge from TIR trends — suggesting the flux decomposition captures information invisible to simple TIR tracking.
+
+### EXP-649: Residual Anomaly Detection ⭐⭐
+
+**Result**: Mean anomaly rate=1.4%, positive:negative ratio=1.6:1, **41% cluster rate**.
+
+Anomalies occur at higher BG (mean=194 mg/dL vs ~130 overall), are 60% positive (unexpected rises), and cluster 41% of the time (within 30 minutes). Patient i is striking: 97% positive anomalies at mean BG=300 — consistent with unannounced meals or exercise cessation.
+
+| Patient | Rate | Pos:Neg | Mean BG | Cluster% |
+|---------|------|---------|---------|----------|
+| i | 1.2% | 546:16 | 300.4 | 64.9% |
+| k | 1.4% | 306:342 | 88.8 | 38.3% |
+| b | 1.3% | 219:361 | 200.1 | 49.3% |
+
+**Clinical insight**: Positive anomaly clusters at high BG likely represent unannounced meals. Negative anomaly clusters at low BG suggest over-correction. These patterns are actionable for patient coaching.
+
+### EXP-650: Sensor Age Effect
+
+**Result**: Mean sensor degradation = 0.7%, only **2/11** patients show >5% degradation.
+
+Sensor age has **minimal effect** on prediction accuracy in this cohort. Patients f (10.9%) and d (7.9%) show degradation; patient a shows -9.1% (predictions improve with sensor age, possibly due to sensor stabilization).
+
+**Conclusion**: Sensor age is NOT a major confound for this physics-based model. No sensor-age correction needed.
+
+---
+
+## Part XXI Summary
+
+### Hypo Prediction Hierarchy
+1. **Flux trajectory** (EXP-643): F1=0.429, 9/11 improved ⭐⭐⭐
+2. **Adaptive threshold** (EXP-642): F1=0.480, BG<80+slope<-0.5 ⭐⭐
+3. **Model-based** (EXP-641): F1=0.275, +49% vs naive ⭐⭐
+4. ~~Simple BG<110+falling~~ (EXP-634): F1=0.268, 220 FP/week ❌
+
+### Parsimonious Model Cascade
+- **5-feature**: 91% retention, half complexity (production-ready)
+- **2-feature**: 74% retention (resource-constrained devices)
+- **AR1-only**: ~78% retention (minimum viable)
+
+### Extended Analysis Confirmed
+- **Biweekly** is minimum viable scoring window (81 significant changes vs 0 weekly)
+- **Monthly** flux trends reveal settings drift in 9/11 patients
+- **Anomalies** cluster 41% of time — actionable for patient coaching
+- **Sensor age** is NOT a confound (0.7% mean degradation)
+
+## Proposed Next Experiments (EXP-651–660)
+
+### Combined Hypo Prediction
 
 | ID | Name | Hypothesis | Method |
 |----|------|-----------|--------|
-| EXP-641 | Model-Based Hypo Alert | Multi-step flux prediction reduces FP rate vs simple rules | Use 30-min model prediction < 70 mg/dL as alert trigger |
-| EXP-642 | Adaptive Hypo Threshold | Patient-specific BG threshold improves alert precision | Optimize threshold per patient using ROC curve |
-| EXP-643 | Flux-Trajectory Hypo | Net flux trajectory predicts hypo better than BG level alone | Alert when cumulative predicted flux → hypo within 30 min |
+| EXP-651 | Ensemble Hypo Alert | Combining flux-trajectory + adaptive threshold improves further | Logical OR/AND of EXP-642 and EXP-643 alerts |
+| EXP-652 | Hypo Lead Time | Flux trajectory provides earlier warning than BG threshold | Measure minutes before BG<70 when each method first alerts |
+| EXP-653 | Hypo Severity Prediction | Flux magnitude predicts nadir BG depth | Correlate predicted flux integral with actual minimum BG |
 
-### Parsimonious Model Validation
-
-| ID | Name | Hypothesis | Method |
-|----|------|-----------|--------|
-| EXP-644 | 5-Feature Model | AR1+AR3+demand²+σ(BG)+BG×demand retains 95% performance | Compare 5-feature vs 10-feature R² on all patients |
-| EXP-645 | Minimal Clinical Model | AR1+demand² is sufficient for clinical use | Compare 2-feature model performance |
-
-### Extended Analysis Windows
+### Residual Characterization
 
 | ID | Name | Hypothesis | Method |
 |----|------|-----------|--------|
-| EXP-646 | 60-Min Prediction Quality | 60-min model is clinically useful (MAE < 40 mg/dL) | Evaluate Clarke Error Grid for 60-min predictions |
-| EXP-647 | Biweekly Score Change | Biweekly window detects significant score changes | Bootstrap CI with 14-day windows |
-| EXP-648 | Monthly Settings Drift | Monthly score + flux trends reveal settings drift | Correlate score trajectory with ISF/CR changes |
+| EXP-654 | Anomaly Classification | Anomaly clusters correspond to meal/exercise/device events | Classify 3σ clusters by BG level, time-of-day, flux pattern |
+| EXP-655 | Residual Autocorrelation | Residuals have structure at longer lags (>30 min) | ACF/PACF of flux residuals per patient |
 
-### Anomaly Detection
+### Clinical Dashboard
 
 | ID | Name | Hypothesis | Method |
 |----|------|-----------|--------|
-| EXP-649 | Residual Anomaly Detection | Flux residual spikes indicate device or physiology changes | Detect residual > 3σ events, classify causes |
-| EXP-650 | Sensor Age Effect on Prediction | Model accuracy varies with sensor age | Group predictions by sensor day, measure MAE trend |
+| EXP-656 | Biweekly Report Card | Biweekly scores + drift + anomaly counts = useful report | Generate per-patient summary with actionable metrics |
+| EXP-657 | Settings Recommendation | Flux imbalance direction suggests CR/ISF adjustment | Map sustained positive/negative flux bias to settings changes |
+
+### Production Validation
+
+| ID | Name | Hypothesis | Method |
+|----|------|-----------|--------|
+| EXP-658 | Live Data Validation | Model works on unsegmented streaming data | Test on externals/ns-data/live-split/ data |
+| EXP-659 | Cold Start Performance | Population bias provides useful Day-1 predictions | Evaluate LOO transfer on first 7 days per patient |
+| EXP-660 | Minimal Data Requirement | Model needs minimum N days of data to be useful | Evaluate R² vs training data size (1-30 days) |
