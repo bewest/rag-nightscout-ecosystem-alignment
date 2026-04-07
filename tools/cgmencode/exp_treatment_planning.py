@@ -4022,6 +4022,212 @@ def run_exp456(args):
     return results
 
 
+# ===================================================================
+# EXP-457: Weekly Pattern Features + Extended Multi-Day Hierarchy
+# ===================================================================
+
+def run_exp457(args):
+    """EXP-457: Extend multi-day features to 7-day lookback with weekly patterns.
+
+    The hierarchy principle (EXP-454-456) showed that summary features at
+    longer lookbacks provide additive gains.  EXP-455 used 3d lookback.
+    This experiment extends to 7d and adds weekly-specific features:
+    - Same-day-last-week patterns (7d recurrence)
+    - Weekday vs weekend indicator
+    - 7-day TIR and glucose statistics
+    - Rolling ISF drift proxy (glucose_mean trend over days)
+
+    Tests: combined_43 vs combined_43+weekly(~52 total) at 2h/6h/12h.
+    """
+    cfg = _get_config(args)
+
+    print(f"\n{'='*60}")
+    print("EXP-457: Weekly Pattern Features")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    # Throughput setup
+    try:
+        from exp_metabolic_441 import compute_supply_demand
+    except ImportError:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from exp_metabolic_441 import compute_supply_demand
+
+    patient_sd = {}
+    for pat in patients:
+        sd = compute_supply_demand(pat['df'], pk_array=pat['pk'])
+        patient_sd[pat['name']] = sd
+
+    LOOKBACK_7D = STEPS_7D  # 2016 steps = 7 days
+
+    def combined_43_feats(pat, start, ctx_end):
+        """The EXP-456 champion: throughput(12) + multiday(9) = 21 extra."""
+        # Throughput
+        sd = patient_sd[pat['name']]
+        tp = sd['product'][start:ctx_end]
+        supply = sd['supply'][start:ctx_end]
+        demand = sd['demand'][start:ctx_end]
+        tp_v = tp[~np.isnan(tp)] if len(tp) > 0 else np.array([0.0])
+        if len(tp_v) == 0: tp_v = np.array([0.0])
+        s_v = supply[~np.isnan(supply)] if len(supply) > 0 else np.array([0.0])
+        d_v = demand[~np.isnan(demand)] if len(demand) > 0 else np.array([0.0])
+        if len(s_v) == 0: s_v = np.array([0.0])
+        if len(d_v) == 0: d_v = np.array([0.0])
+        tp_feats = [
+            float(np.mean(tp_v)), float(np.std(tp_v)), float(np.max(tp_v)),
+            float(tp_v[-1] - tp_v[-min(6, len(tp_v))]),
+            float(np.sum(tp_v)),
+            float(np.max(tp_v) / max(np.mean(tp_v), 1e-8)),
+            float(np.mean(s_v)), float(np.max(s_v)), float(np.sum(s_v)),
+            float(np.mean(d_v)), float(np.max(d_v)), float(np.sum(d_v)),
+        ]
+
+        # Multi-day (3d lookback)
+        grid = pat['grid']
+        glucose_raw = grid[:, 0] * 400
+        if start < STEPS_3D:
+            return None
+        g_24h = glucose_raw[start - STEPS_24H:start]
+        g_24h_v = g_24h[~np.isnan(g_24h)]
+        if len(g_24h_v) < 12:
+            return None
+        tir_24h = float(np.mean((g_24h_v >= 70) & (g_24h_v <= 180)))
+        mean_24h = float(np.mean(g_24h_v))
+        std_24h = float(np.std(g_24h_v))
+        g_3d = glucose_raw[start - STEPS_3D:start]
+        g_3d_v = g_3d[~np.isnan(g_3d)]
+        if len(g_3d_v) < 24:
+            return None
+        tir_3d = float(np.mean((g_3d_v >= 70) & (g_3d_v <= 180)))
+        control_trend = tir_24h - tir_3d
+        block_size = STEPS_6H
+        high_count_3d = 0
+        hypo_count_3d = 0
+        for bstart in range(start - STEPS_3D, start, block_size):
+            bend = min(bstart + block_size, start)
+            bg = glucose_raw[bstart:bend]
+            bg_v = bg[~np.isnan(bg)]
+            if len(bg_v) > 0:
+                if np.mean(bg_v > 180) > 0.2: high_count_3d += 1
+                if (bg_v < 70).any(): hypo_count_3d += 1
+        yest_start = start - STEPS_24H
+        g_yest = glucose_raw[yest_start:yest_start + block_size]
+        g_yest_v = g_yest[~np.isnan(g_yest)]
+        had_high_yest = int(np.mean(g_yest_v > 180) > 0.2) if len(g_yest_v) > 0 else 0
+        had_hypo_yest = int((g_yest_v < 70).any()) if len(g_yest_v) > 0 else 0
+
+        md_feats = [had_high_yest, had_hypo_yest, high_count_3d, hypo_count_3d,
+                    tir_24h, tir_3d, control_trend, mean_24h, std_24h]
+
+        return tp_feats + md_feats
+
+    def weekly_feats(pat, start, ctx_end):
+        """combined_43 + weekly lookback features (9 more = 30 extra total)."""
+        base = combined_43_feats(pat, start, ctx_end)
+        if base is None:
+            return None
+
+        grid = pat['grid']
+        glucose_raw = grid[:, 0] * 400
+        if start < LOOKBACK_7D:
+            return None
+
+        # 7-day glucose statistics
+        g_7d = glucose_raw[start - LOOKBACK_7D:start]
+        g_7d_v = g_7d[~np.isnan(g_7d)]
+        if len(g_7d_v) < 48:
+            return None
+        tir_7d = float(np.mean((g_7d_v >= 70) & (g_7d_v <= 180)))
+        mean_7d = float(np.mean(g_7d_v))
+        std_7d = float(np.std(g_7d_v))
+
+        # HIGH/HYPO count over 7 days (6h blocks)
+        block_size = STEPS_6H
+        high_count_7d = 0
+        hypo_count_7d = 0
+        for bstart in range(start - LOOKBACK_7D, start, block_size):
+            bend = min(bstart + block_size, start)
+            bg = glucose_raw[bstart:bend]
+            bg_v = bg[~np.isnan(bg)]
+            if len(bg_v) > 0:
+                if np.mean(bg_v > 180) > 0.2: high_count_7d += 1
+                if (bg_v < 70).any(): hypo_count_7d += 1
+
+        # Same-time-last-week pattern
+        week_start = start - LOOKBACK_7D
+        g_week_ago = glucose_raw[week_start:week_start + block_size]
+        g_week_v = g_week_ago[~np.isnan(g_week_ago)]
+        had_high_lastweek = int(np.mean(g_week_v > 180) > 0.2) if len(g_week_v) > 0 else 0
+        had_hypo_lastweek = int((g_week_v < 70).any()) if len(g_week_v) > 0 else 0
+
+        # Control trend: is 3d better or worse than 7d? (ISF drift proxy)
+        g_3d = glucose_raw[start - STEPS_3D:start]
+        g_3d_v = g_3d[~np.isnan(g_3d)]
+        tir_3d = float(np.mean((g_3d_v >= 70) & (g_3d_v <= 180))) if len(g_3d_v) > 0 else 0
+        weekly_trend = tir_3d - tir_7d  # positive = improving
+
+        weekly_extra = [
+            tir_7d, mean_7d, std_7d,
+            high_count_7d, hypo_count_7d,
+            had_high_lastweek, had_hypo_lastweek,
+            weekly_trend,
+            float(std_7d / max(std_7d, 1e-8)),  # CV_7d (variability relative to mean)
+        ]
+
+        return base + weekly_extra
+
+    results = {}
+    horizons = [
+        ('2h', STEPS_2H),
+        ('6h', STEPS_6H),
+        ('12h', STEPS_12H),
+    ]
+
+    feature_configs = [
+        ('combined_43', combined_43_feats, 43),
+        ('weekly_52', weekly_feats, 52),
+    ]
+
+    for task_name, threshold, above in [('hypo', 70, False), ('high', 180, True)]:
+        print(f"\n  --- {task_name.upper()} ---")
+        print(f"    {'Config':15s} {'2h':>10s} {'6h':>10s} {'12h':>10s}")
+        print(f"    {'-'*50}")
+
+        for fs_name, feat_fn, n_feats in feature_configs:
+            print(f"    {fs_name:15s}", end='')
+            for h_name, future_steps in horizons:
+                X, y, pids, _ = _build_dataset(
+                    patients, STEPS_2H, future_steps, threshold, above,
+                    extra_feat_fn=feat_fn)
+                if X is None:
+                    print(f" {'N/A':>10s}", end=''); continue
+                res = _train_xgb_eval(X, y, pids, cfg['seeds'])
+                key = f"{fs_name}_{h_name}_{task_name}"
+                results[key] = res
+                auc = res['average'].get('auc_roc', 0)
+                print(f" {auc:>10.4f}", end='')
+            print()
+
+    # Delta summary
+    print(f"\n  {'='*60}")
+    print(f"  WEEKLY LIFT vs COMBINED_43")
+    print(f"  {'='*60}")
+    for task in ['hypo', 'high']:
+        print(f"\n  --- {task.upper()} ---")
+        for h_name, _ in horizons:
+            c43 = results.get(f'combined_43_{h_name}_{task}', {}).get('average', {}).get('auc_roc', 0)
+            w52 = results.get(f'weekly_52_{h_name}_{task}', {}).get('average', {}).get('auc_roc', 0)
+            delta = w52 - c43
+            sign = '+' if delta >= 0 else ''
+            print(f"    {h_name:8s}  Δ={sign}{delta:.4f}  ({c43:.4f} → {w52:.4f})")
+
+    save_results(results, 'exp457_weekly_features')
+    return results
+
+
 EXPERIMENTS = {
     '411': run_exp411,
     '412': run_exp412,
@@ -4045,6 +4251,7 @@ EXPERIMENTS = {
     '454': run_exp454,
     '455': run_exp455,
     '456': run_exp456,
+    '457': run_exp457,
 }
 
 
@@ -4085,6 +4292,7 @@ Experiments:
   454  Extended context for extended horizons (2h-24h history × 6h/12h future)
   455  Multi-day recurrence features (3d/7d lookback for classification)
   456  Combined throughput + multi-day features (kitchen sink at 2h/6h/12h)
+  457  Weekly pattern features (7d lookback, same-time-last-week, weekly trend)
 """)
     parser.add_argument('--experiment', '-e', nargs='+', default=['all'],
                         help='Experiment number(s) or "all" (default: all)')
