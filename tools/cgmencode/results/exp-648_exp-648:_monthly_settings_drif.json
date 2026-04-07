@@ -1,0 +1,549 @@
+{
+  "name": "EXP-648: Monthly Settings Drift",
+  "summary": "Drift detected: 9/11, mean TIR trend=0.18/month",
+  "details": [
+    {
+      "patient": "a",
+      "n_months": 6,
+      "tir_trend": -1.73,
+      "net_flux_trend": 0.057,
+      "drift_detected": true,
+      "months": [
+        {
+          "month": 1,
+          "tir": 59.5,
+          "mean_bg": 170.6,
+          "mean_demand": 7.1,
+          "mean_supply": 2.6,
+          "mean_net": -3.4,
+          "sd_net": 5.0
+        },
+        {
+          "month": 2,
+          "tir": 59.4,
+          "mean_bg": 170.7,
+          "mean_demand": 7.1,
+          "mean_supply": 2.9,
+          "mean_net": -3.1,
+          "sd_net": 3.6
+        },
+        {
+          "month": 3,
+          "tir": 55.7,
+          "mean_bg": 184.7,
+          "mean_demand": 8.2,
+          "mean_supply": 3.1,
+          "mean_net": -4.2,
+          "sd_net": 4.3
+        },
+        {
+          "month": 4,
+          "tir": 56.9,
+          "mean_bg": 182.3,
+          "mean_demand": 7.4,
+          "mean_supply": 3.4,
+          "mean_net": -3.0,
+          "sd_net": 3.8
+        },
+        {
+          "month": 5,
+          "tir": 51.1,
+          "mean_bg": 193.1,
+          "mean_demand": 8.4,
+          "mean_supply": 4.0,
+          "mean_net": -3.5,
+          "sd_net": 4.0
+        },
+        {
+          "month": 6,
+          "tir": 52.1,
+          "mean_bg": 184.3,
+          "mean_demand": 7.9,
+          "mean_supply": 3.9,
+          "mean_net": -3.0,
+          "sd_net": 3.8
+        }
+      ]
+    },
+    {
+      "patient": "b",
+      "n_months": 5,
+      "tir_trend": 3.0,
+      "net_flux_trend": 0.64,
+      "drift_detected": true,
+      "months": [
+        {
+          "month": 1,
+          "tir": 47.8,
+          "mean_bg": 183.5,
+          "mean_demand": 8.5,
+          "mean_supply": 8.4,
+          "mean_net": 1.4,
+          "sd_net": 5.3
+        },
+        {
+          "month": 2,
+          "tir": 58.3,
+          "mean_bg": 172.1,
+          "mean_demand": 9.4,
+          "mean_supply": 9.2,
+          "mean_net": 1.2,
+          "sd_net": 6.0
+        },
+        {
+          "month": 3,
+          "tir": 49.4,
+          "mean_bg": 187.4,
+          "mean_demand": 9.4,
+          "mean_supply": 10.2,
+          "mean_net": 2.3,
+          "sd_net": 7.4
+        },
+        {
+          "month": 4,
+          "tir": 65.5,
+          "mean_bg": 160.7,
+          "mean_demand": 8.0,
+          "mean_supply": 9.3,
+          "mean_net": 2.8,
+          "sd_net": 5.1
+        },
+        {
+          "month": 5,
+          "tir": 59.2,
+          "mean_bg": 171.1,
+          "mean_demand": 7.5,
+          "mean_supply": 9.8,
+          "mean_net": 3.8,
+          "sd_net": 6.5
+        }
+      ]
+    },
+    {
+      "patient": "c",
+      "n_months": 6,
+      "tir_trend": -0.43,
+      "net_flux_trend": -0.111,
+      "drift_detected": true,
+      "months": [
+        {
+          "month": 1,
+          "tir": 62.5,
+          "mean_bg": 158.6,
+          "mean_demand": 9.8,
+          "mean_supply": 5.1,
+          "mean_net": -3.6,
+          "sd_net": 6.2
+        },
+        {
+          "month": 2,
+          "tir": 64.9,
+          "mean_bg": 156.1,
+          "mean_demand": 8.4,
+          "mean_supply": 3.6,
+          "mean_net": -3.6,
+          "sd_net": 5.0
+        },
+        {
+          "month": 3,
+          "tir": 59.3,
+          "mean_bg": 165.6,
+          "mean_demand": 10.4,
+          "mean_supply": 4.9,
+          "mean_net": -4.4,
+          "sd_net": 5.7
+        },
+        {
+          "month": 4,
+          "tir": 57.9,
+          "mean_bg": 169.5,
+          "mean_demand": 9.4,
+          "mean_supply": 3.8,
+          "mean_net": -4.5,
+          "sd_net": 5.7
+        },
+        {
+          "month": 5,
+          "tir": 64.7,
+          "mean_bg": 160.0,
+          "mean_demand": 8.9,
+          "mean_supply": 3.5,
+          "mean_net": -4.2,
+          "sd_net": 5.6
+        },
+        {
+          "month": 6,
+          "tir": 59.9,
+          "mean_bg": 162.6,
+          "mean_demand": 9.1,
+          "mean_supply": 4.0,
+          "mean_net": -4.0,
+          "sd_net": 5.7
+        }
+      ]
+    },
+    {
+      "patient": "d",
+      "n_months": 6,
+      "tir_trend": -0.31,
+      "net_flux_trend": -0.186,
+      "drift_detected": true,
+      "months": [
+        {
+          "month": 1,
+          "tir": 76.4,
+          "mean_bg": 151.5,
+          "mean_demand": 4.1,
+          "mean_supply": 1.7,
+          "mean_net": -1.3,
+          "sd_net": 2.7
+        },
+        {
+          "month": 2,
+          "tir": 85.2,
+          "mean_bg": 138.0,
+          "mean_demand": 4.0,
+          "mean_supply": 1.7,
+          "mean_net": -1.1,
+          "sd_net": 2.6
+        },
+        {
+          "month": 3,
+          "tir": 80.6,
+          "mean_bg": 148.0,
+          "mean_demand": 0.5,
+          "mean_supply": 1.5,
+          "mean_net": 2.5,
+          "sd_net": 1.7
+        },
+        {
+          "month": 4,
+          "tir": 76.2,
+          "mean_bg": 148.2,
+          "mean_demand": 2.7,
+          "mean_supply": 1.9,
+          "mean_net": 0.4,
+          "sd_net": 3.4
+        },
+        {
+          "month": 5,
+          "tir": 76.7,
+          "mean_bg": 147.2,
+          "mean_demand": 5.4,
+          "mean_supply": 1.9,
+          "mean_net": -2.4,
+          "sd_net": 3.6
+        },
+        {
+          "month": 6,
+          "tir": 80.2,
+          "mean_bg": 140.9,
+          "mean_demand": 4.3,
+          "mean_supply": 1.8,
+          "mean_net": -1.4,
+          "sd_net": 3.0
+        }
+      ]
+    },
+    {
+      "patient": "e",
+      "n_months": 5,
+      "tir_trend": 1.75,
+      "net_flux_trend": -0.49,
+      "drift_detected": true,
+      "months": [
+        {
+          "month": 1,
+          "tir": 58.0,
+          "mean_bg": 172.0,
+          "mean_demand": 8.5,
+          "mean_supply": 4.3,
+          "mean_net": -3.4,
+          "sd_net": 6.4
+        },
+        {
+          "month": 2,
+          "tir": 66.7,
+          "mean_bg": 161.7,
+          "mean_demand": 9.7,
+          "mean_supply": 4.2,
+          "mean_net": -4.5,
+          "sd_net": 5.8
+        },
+        {
+          "month": 3,
+          "tir": 67.4,
+          "mean_bg": 156.5,
+          "mean_demand": 9.9,
+          "mean_supply": 4.3,
+          "mean_net": -4.7,
+          "sd_net": 6.0
+        },
+        {
+          "month": 4,
+          "tir": 68.2,
+          "mean_bg": 158.8,
+          "mean_demand": 11.0,
+          "mean_supply": 4.4,
+          "mean_net": -5.6,
+          "sd_net": 6.5
+        },
+        {
+          "month": 5,
+          "tir": 66.0,
+          "mean_bg": 160.9,
+          "mean_demand": 10.7,
+          "mean_supply": 4.4,
+          "mean_net": -5.3,
+          "sd_net": 6.1
+        }
+      ]
+    },
+    {
+      "patient": "f",
+      "n_months": 5,
+      "tir_trend": 4.04,
+      "net_flux_trend": 0.07,
+      "drift_detected": true,
+      "months": [
+        {
+          "month": 1,
+          "tir": 53.5,
+          "mean_bg": 181.2,
+          "mean_demand": 5.5,
+          "mean_supply": 3.3,
+          "mean_net": -1.3,
+          "sd_net": 3.2
+        },
+        {
+          "month": 2,
+          "tir": 62.6,
+          "mean_bg": 169.2,
+          "mean_demand": 5.0,
+          "mean_supply": 2.6,
+          "mean_net": -1.4,
+          "sd_net": 3.4
+        },
+        {
+          "month": 3,
+          "tir": 70.5,
+          "mean_bg": 144.5,
+          "mean_demand": 4.5,
+          "mean_supply": 2.6,
+          "mean_net": -0.8,
+          "sd_net": 3.1
+        },
+        {
+          "month": 4,
+          "tir": 73.6,
+          "mean_bg": 137.3,
+          "mean_demand": 4.1,
+          "mean_supply": 2.3,
+          "mean_net": -0.7,
+          "sd_net": 2.7
+        },
+        {
+          "month": 5,
+          "tir": 68.2,
+          "mean_bg": 154.5,
+          "mean_demand": 5.3,
+          "mean_supply": 2.9,
+          "mean_net": -1.3,
+          "sd_net": 3.4
+        }
+      ]
+    },
+    {
+      "patient": "g",
+      "n_months": 6,
+      "tir_trend": -1.88,
+      "net_flux_trend": -0.214,
+      "drift_detected": true,
+      "months": [
+        {
+          "month": 1,
+          "tir": 76.7,
+          "mean_bg": 145.8,
+          "mean_demand": 6.4,
+          "mean_supply": 5.0,
+          "mean_net": -0.3,
+          "sd_net": 3.9
+        },
+        {
+          "month": 2,
+          "tir": 78.6,
+          "mean_bg": 137.2,
+          "mean_demand": 6.4,
+          "mean_supply": 4.8,
+          "mean_net": -0.5,
+          "sd_net": 3.6
+        },
+        {
+          "month": 3,
+          "tir": 79.5,
+          "mean_bg": 135.5,
+          "mean_demand": 6.4,
+          "mean_supply": 5.0,
+          "mean_net": -0.3,
+          "sd_net": 3.9
+        },
+        {
+          "month": 4,
+          "tir": 77.7,
+          "mean_bg": 140.7,
+          "mean_demand": 6.7,
+          "mean_supply": 5.2,
+          "mean_net": -0.4,
+          "sd_net": 3.9
+        },
+        {
+          "month": 5,
+          "tir": 69.9,
+          "mean_bg": 156.6,
+          "mean_demand": 7.5,
+          "mean_supply": 5.2,
+          "mean_net": -1.3,
+          "sd_net": 3.9
+        },
+        {
+          "month": 6,
+          "tir": 69.1,
+          "mean_bg": 158.2,
+          "mean_demand": 7.2,
+          "mean_supply": 4.8,
+          "mean_net": -1.3,
+          "sd_net": 3.7
+        }
+      ]
+    },
+    {
+      "patient": "h",
+      "n_months": 1,
+      "drift_detected": false,
+      "tir_trend": 0
+    },
+    {
+      "patient": "i",
+      "n_months": 6,
+      "tir_trend": -1.7,
+      "net_flux_trend": 0.097,
+      "drift_detected": true,
+      "months": [
+        {
+          "month": 1,
+          "tir": 53.9,
+          "mean_bg": 151.3,
+          "mean_demand": 15.9,
+          "mean_supply": 2.5,
+          "mean_net": -12.3,
+          "sd_net": 10.8
+        },
+        {
+          "month": 2,
+          "tir": 68.9,
+          "mean_bg": 135.5,
+          "mean_demand": 11.1,
+          "mean_supply": 2.0,
+          "mean_net": -8.0,
+          "sd_net": 10.7
+        },
+        {
+          "month": 3,
+          "tir": 65.8,
+          "mean_bg": 150.2,
+          "mean_demand": 11.3,
+          "mean_supply": 1.3,
+          "mean_net": -8.9,
+          "sd_net": 9.2
+        },
+        {
+          "month": 4,
+          "tir": 65.9,
+          "mean_bg": 143.5,
+          "mean_demand": 11.3,
+          "mean_supply": 1.6,
+          "mean_net": -8.6,
+          "sd_net": 10.0
+        },
+        {
+          "month": 5,
+          "tir": 54.0,
+          "mean_bg": 159.4,
+          "mean_demand": 13.4,
+          "mean_supply": 1.5,
+          "mean_net": -10.8,
+          "sd_net": 11.5
+        },
+        {
+          "month": 6,
+          "tir": 50.9,
+          "mean_bg": 162.0,
+          "mean_demand": 12.5,
+          "mean_supply": 1.4,
+          "mean_net": -10.0,
+          "sd_net": 10.8
+        }
+      ]
+    },
+    {
+      "patient": "j",
+      "n_months": 2,
+      "drift_detected": false,
+      "tir_trend": 0
+    },
+    {
+      "patient": "k",
+      "n_months": 5,
+      "tir_trend": -0.73,
+      "net_flux_trend": 0.59,
+      "drift_detected": true,
+      "months": [
+        {
+          "month": 1,
+          "tir": 97.5,
+          "mean_bg": 95.0,
+          "mean_demand": 2.7,
+          "mean_supply": 1.2,
+          "mean_net": -0.4,
+          "sd_net": 2.0
+        },
+        {
+          "month": 2,
+          "tir": 93.2,
+          "mean_bg": 91.3,
+          "mean_demand": 2.3,
+          "mean_supply": 1.1,
+          "mean_net": -0.1,
+          "sd_net": 1.7
+        },
+        {
+          "month": 3,
+          "tir": 97.5,
+          "mean_bg": 93.5,
+          "mean_demand": 2.6,
+          "mean_supply": 1.2,
+          "mean_net": -0.3,
+          "sd_net": 1.9
+        },
+        {
+          "month": 4,
+          "tir": 94.7,
+          "mean_bg": 89.8,
+          "mean_demand": 1.1,
+          "mean_supply": 1.5,
+          "mean_net": 1.8,
+          "sd_net": 1.4
+        },
+        {
+          "month": 5,
+          "tir": 93.1,
+          "mean_bg": 94.8,
+          "mean_demand": 1.2,
+          "mean_supply": 1.4,
+          "mean_net": 1.6,
+          "sd_net": 1.9
+        }
+      ]
+    }
+  ]
+}

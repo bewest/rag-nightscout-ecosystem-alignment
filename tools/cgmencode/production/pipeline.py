@@ -29,10 +29,14 @@ from .hypo_predictor import predict_hypo, calibrate_threshold
 from .clinical_rules import generate_clinical_report
 from .pattern_analyzer import analyze_patterns
 from .patient_onboarding import get_onboarding_state
-from .meal_detector import detect_meal_events, build_meal_history
+from .meal_detector import detect_meal_events, build_meal_history, classify_all_meal_responses
 from .meal_predictor import build_timing_models, predict_next_meal
-from .settings_advisor import generate_settings_advice
+from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented
 from .recommender import generate_recommendations
+from .clinical_rules import (
+    generate_clinical_report, compute_correction_energy,
+    assess_correction_timing, assess_aid_compensation,
+)
 
 
 def run_pipeline(patient: PatientData,
@@ -124,12 +128,17 @@ def run_pipeline(patient: PatientData,
     # ── Stage 5: Meal Detection ───────────────────────────────────
     meal_history = None
     meal_prediction = None
+    meal_responses = None
     if metabolic is not None:
         try:
             meals = detect_meal_events(
                 cleaned.glucose, metabolic, hours,
                 patient.timestamps, patient.profile)
             meal_history = build_meal_history(meals, patient.days_of_data)
+
+            # Meal response phenotyping (EXP-514)
+            meal_responses = classify_all_meal_responses(
+                cleaned.glucose, meals, metabolic)
 
             # Meal timing prediction (needs ≥7 days of meal history)
             if patient.days_of_data >= 7.0 and meal_history.total_detected >= 10:
@@ -141,6 +150,42 @@ def run_pipeline(patient: PatientData,
         except Exception as e:
             warnings.append(f"Meal detection failed: {e}")
 
+    # ── Stage 5b: Advanced Analytics ──────────────────────────────
+    period_metrics = None
+    correction_energy = None
+    bolus_safety = None
+    aid_compensation = None
+
+    # Period-by-period analysis
+    if metabolic is not None and patient.days_of_data >= 3.0:
+        try:
+            period_metrics = analyze_periods(
+                cleaned.glucose, metabolic, hours,
+                clinical_report, patient.profile, patient.days_of_data)
+        except Exception as e:
+            warnings.append(f"Period analysis failed: {e}")
+
+    # Correction energy scoring (EXP-559)
+    if metabolic is not None:
+        try:
+            correction_energy = compute_correction_energy(
+                metabolic, hours, cleaned.glucose, patient.days_of_data)
+        except Exception as e:
+            warnings.append(f"Correction energy failed: {e}")
+
+    # Correction timing safety
+    try:
+        bolus_safety = assess_correction_timing(
+            patient.bolus, cleaned.glucose, patient.timestamps)
+    except Exception as e:
+        warnings.append(f"Bolus safety failed: {e}")
+
+    # AID compensation detection (EXP-747)
+    try:
+        aid_compensation = assess_aid_compensation(clinical_report, metabolic)
+    except Exception as e:
+        warnings.append(f"AID compensation failed: {e}")
+
     # ── Stage 6: Settings Advisor ─────────────────────────────────
     settings_recs = None
     if patient.days_of_data >= 3.0:
@@ -148,6 +193,16 @@ def run_pipeline(patient: PatientData,
             settings_recs = generate_settings_advice(
                 cleaned.glucose, metabolic, hours,
                 clinical_report, patient.profile, patient.days_of_data)
+
+            # ISF segmentation recommendations (EXP-765)
+            isf_segment_recs = advise_isf_segmented(
+                cleaned.glucose, metabolic, hours,
+                clinical_report, patient.profile, patterns, patient.days_of_data)
+            if isf_segment_recs:
+                if settings_recs is None:
+                    settings_recs = []
+                settings_recs.extend(isf_segment_recs)
+                settings_recs.sort(key=lambda r: abs(r.predicted_tir_delta), reverse=True)
         except Exception as e:
             warnings.append(f"Settings advisor failed: {e}")
 
@@ -176,6 +231,11 @@ def run_pipeline(patient: PatientData,
         meal_prediction=meal_prediction,
         settings_recs=settings_recs,
         recommendations=recommendations,
+        period_metrics=period_metrics,
+        correction_energy=correction_energy,
+        meal_responses=meal_responses,
+        bolus_safety=bolus_safety,
+        aid_compensation=aid_compensation,
         pipeline_latency_ms=elapsed,
         warnings=warnings,
     )

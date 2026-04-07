@@ -1,0 +1,116 @@
+{
+  "name": "EXP-642: Adaptive Hypo Threshold",
+  "summary": "Mean optimized F1=0.480, mean FP/week=36.5",
+  "details": [
+    {
+      "patient": "a",
+      "best_threshold": 80,
+      "best_slope_threshold": -0.5,
+      "best_f1": 0.588,
+      "precision": 0.632,
+      "recall": 0.55,
+      "fp_per_week": 16.3,
+      "n_hypo": 262
+    },
+    {
+      "patient": "b",
+      "best_threshold": 80,
+      "best_slope_threshold": -1,
+      "best_f1": 0.504,
+      "precision": 0.427,
+      "recall": 0.615,
+      "fp_per_week": 8.4,
+      "n_hypo": 52
+    },
+    {
+      "patient": "c",
+      "best_threshold": 80,
+      "best_slope_threshold": -0.5,
+      "best_f1": 0.549,
+      "precision": 0.572,
+      "recall": 0.527,
+      "fp_per_week": 33.6,
+      "n_hypo": 438
+    },
+    {
+      "patient": "d",
+      "best_threshold": 80,
+      "best_slope_threshold": -1,
+      "best_f1": 0.444,
+      "precision": 0.36,
+      "recall": 0.581,
+      "fp_per_week": 12.4,
+      "n_hypo": 62
+    },
+    {
+      "patient": "e",
+      "best_threshold": 80,
+      "best_slope_threshold": -0.5,
+      "best_f1": 0.466,
+      "precision": 0.371,
+      "recall": 0.624,
+      "fp_per_week": 29.3,
+      "n_hypo": 125
+    },
+    {
+      "patient": "f",
+      "best_threshold": 80,
+      "best_slope_threshold": -0.5,
+      "best_f1": 0.456,
+      "precision": 0.394,
+      "recall": 0.541,
+      "fp_per_week": 50.9,
+      "n_hypo": 314
+    },
+    {
+      "patient": "g",
+      "best_threshold": 80,
+      "best_slope_threshold": -0.5,
+      "best_f1": 0.558,
+      "precision": 0.515,
+      "recall": 0.609,
+      "fp_per_week": 31.3,
+      "n_hypo": 281
+    },
+    {
+      "patient": "h",
+      "best_threshold": 80,
+      "best_slope_threshold": -0.5,
+      "best_f1": 0.505,
+      "precision": 0.446,
+      "recall": 0.583,
+      "fp_per_week": 63.8,
+      "n_hypo": 453
+    },
+    {
+      "patient": "i",
+      "best_threshold": 80,
+      "best_slope_threshold": -0.5,
+      "best_f1": 0.587,
+      "precision": 0.681,
+      "recall": 0.516,
+      "fp_per_week": 53.1,
+      "n_hypo": 1128
+    },
+    {
+      "patient": "j",
+      "best_threshold": 80,
+      "best_slope_threshold": -2,
+      "best_f1": 0.2,
+      "precision": 0.138,
+      "recall": 0.364,
+      "fp_per_week": 14.3,
+      "n_hypo": 11
+    },
+    {
+      "patient": "k",
+      "best_threshold": 80,
+      "best_slope_threshold": 0,
+      "best_f1": 0.421,
+      "precision": 0.358,
+      "recall": 0.511,
+      "fp_per_week": 88.2,
+      "n_hypo": 493
+    }
+  ]
+}

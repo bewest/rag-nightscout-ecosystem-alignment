@@ -1,0 +1,83 @@
+{
+  "name": "EXP-647: Biweekly Score Change",
+  "summary": "Total significant: 81, patients with changes: 11/11",
+  "details": [
+    {
+      "patient": "a",
+      "n_windows": 12,
+      "significant_changes": 8,
+      "mean_score": 49.4,
+      "score_range": 19.0
+    },
+    {
+      "patient": "b",
+      "n_windows": 12,
+      "significant_changes": 11,
+      "mean_score": 62.7,
+      "score_range": 27.1
+    },
+    {
+      "patient": "c",
+      "n_windows": 12,
+      "significant_changes": 7,
+      "mean_score": 50.8,
+      "score_range": 19.3
+    },
+    {
+      "patient": "d",
+      "n_windows": 12,
+      "significant_changes": 10,
+      "mean_score": 81.7,
+      "score_range": 17.4
+    },
+    {
+      "patient": "e",
+      "n_windows": 11,
+      "significant_changes": 8,
+      "mean_score": 65.7,
+      "score_range": 21.9
+    },
+    {
+      "patient": "f",
+      "n_windows": 12,
+      "significant_changes": 10,
+      "mean_score": 56.2,
+      "score_range": 18.2
+    },
+    {
+      "patient": "g",
+      "n_windows": 12,
+      "significant_changes": 8,
+      "mean_score": 67.0,
+      "score_range": 16.7
+    },
+    {
+      "patient": "h",
+      "n_windows": 4,
+      "significant_changes": 2,
+      "mean_score": 70.8,
+      "score_range": 16.7
+    },
+    {
+      "patient": "i",
+      "n_windows": 12,
+      "significant_changes": 6,
+      "mean_score": 37.1,
+      "score_range": 32.4
+    },
+    {
+      "patient": "j",
+      "n_windows": 4,
+      "significant_changes": 2,
+      "mean_score": 80.7,
+      "score_range": 10.5
+    },
+    {
+      "patient": "k",
+      "n_windows": 12,
+      "significant_changes": 9,
+      "mean_score": 87.7,
+      "score_range": 32.4
+    }
+  ]
+}

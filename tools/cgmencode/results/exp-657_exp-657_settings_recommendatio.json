@@ -1,0 +1,611 @@
+{
+  "name": "EXP-657: Settings Recommendation",
+  "summary": "Mean 2.7 settings adjustments per patient",
+  "details": [
+    {
+      "patient": "a",
+      "n_periods": 6,
+      "n_actions_needed": 5,
+      "recommendations": [
+        {
+          "period": "00-04",
+          "mean_bg": 184.0,
+          "tar": 45.4,
+          "tbr": 1.1,
+          "mean_net": -2.99,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "04-08",
+          "mean_bg": 208.0,
+          "tar": 58.8,
+          "tbr": 2.0,
+          "mean_net": -3.86,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "08-12",
+          "mean_bg": 217.0,
+          "tar": 60.9,
+          "tbr": 3.0,
+          "mean_net": -4.61,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "12-16",
+          "mean_bg": 191.0,
+          "tar": 46.4,
+          "tbr": 6.0,
+          "mean_net": -4.03,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "16-20",
+          "mean_bg": 152.0,
+          "tar": 23.4,
+          "tbr": 4.9,
+          "mean_net": -1.64,
+          "recommendation": "OK"
+        },
+        {
+          "period": "20-24",
+          "mean_bg": 174.0,
+          "tar": 36.6,
+          "tbr": 0.0,
+          "mean_net": -2.49,
+          "recommendation": "decrease_CR"
+        }
+      ]
+    },
+    {
+      "patient": "b",
+      "n_periods": 6,
+      "n_actions_needed": 5,
+      "recommendations": [
+        {
+          "period": "00-04",
+          "mean_bg": 180.0,
+          "tar": 45.0,
+          "tbr": 1.0,
+          "mean_net": 2.34,
+          "recommendation": "increase_basal"
+        },
+        {
+          "period": "04-08",
+          "mean_bg": 174.0,
+          "tar": 38.2,
+          "tbr": 1.1,
+          "mean_net": 1.72,
+          "recommendation": "increase_basal"
+        },
+        {
+          "period": "08-12",
+          "mean_bg": 193.0,
+          "tar": 50.5,
+          "tbr": 0.3,
+          "mean_net": 2.74,
+          "recommendation": "increase_basal"
+        },
+        {
+          "period": "12-16",
+          "mean_bg": 158.0,
+          "tar": 30.3,
+          "tbr": 0.3,
+          "mean_net": -0.66,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "16-20",
+          "mean_bg": 157.0,
+          "tar": 28.9,
+          "tbr": 0.3,
+          "mean_net": 2.38,
+          "recommendation": "OK"
+        },
+        {
+          "period": "20-24",
+          "mean_bg": 186.0,
+          "tar": 47.0,
+          "tbr": 0.3,
+          "mean_net": 2.24,
+          "recommendation": "increase_basal"
+        }
+      ]
+    },
+    {
+      "patient": "c",
+      "n_periods": 6,
+      "n_actions_needed": 4,
+      "recommendations": [
+        {
+          "period": "00-04",
+          "mean_bg": 169.0,
+          "tar": 40.6,
+          "tbr": 3.7,
+          "mean_net": -5.67,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "04-08",
+          "mean_bg": 167.0,
+          "tar": 40.2,
+          "tbr": 5.0,
+          "mean_net": -5.95,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "08-12",
+          "mean_bg": 154.0,
+          "tar": 29.4,
+          "tbr": 4.1,
+          "mean_net": -3.97,
+          "recommendation": "OK"
+        },
+        {
+          "period": "12-16",
+          "mean_bg": 141.0,
+          "tar": 27.3,
+          "tbr": 11.7,
+          "mean_net": -2.64,
+          "recommendation": "decrease_basal"
+        },
+        {
+          "period": "16-20",
+          "mean_bg": 153.0,
+          "tar": 23.2,
+          "tbr": 1.3,
+          "mean_net": -0.43,
+          "recommendation": "OK"
+        },
+        {
+          "period": "20-24",
+          "mean_bg": 176.0,
+          "tar": 40.8,
+          "tbr": 2.3,
+          "mean_net": -4.36,
+          "recommendation": "decrease_CR"
+        }
+      ]
+    },
+    {
+      "patient": "d",
+      "n_periods": 6,
+      "n_actions_needed": 1,
+      "recommendations": [
+        {
+          "period": "00-04",
+          "mean_bg": 145.0,
+          "tar": 14.6,
+          "tbr": 0.4,
+          "mean_net": -2.36,
+          "recommendation": "OK"
+        },
+        {
+          "period": "04-08",
+          "mean_bg": 146.0,
+          "tar": 20.8,
+          "tbr": 0.2,
+          "mean_net": -2.35,
+          "recommendation": "OK"
+        },
+        {
+          "period": "08-12",
+          "mean_bg": 172.0,
+          "tar": 40.0,
+          "tbr": 0.4,
+          "mean_net": -4.35,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "12-16",
+          "mean_bg": 146.0,
+          "tar": 23.0,
+          "tbr": 0.4,
+          "mean_net": -2.16,
+          "recommendation": "OK"
+        },
+        {
+          "period": "16-20",
+          "mean_bg": 115.0,
+          "tar": 9.3,
+          "tbr": 2.9,
+          "mean_net": 0.89,
+          "recommendation": "OK"
+        },
+        {
+          "period": "20-24",
+          "mean_bg": 137.0,
+          "tar": 12.8,
+          "tbr": 0.2,
+          "mean_net": -0.61,
+          "recommendation": "OK"
+        }
+      ]
+    },
+    {
+      "patient": "e",
+      "n_periods": 6,
+      "n_actions_needed": 3,
+      "recommendations": [
+        {
+          "period": "00-04",
+          "mean_bg": 181.0,
+          "tar": 43.8,
+          "tbr": 0.0,
+          "mean_net": -7.19,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "04-08",
+          "mean_bg": 137.0,
+          "tar": 18.5,
+          "tbr": 3.3,
+          "mean_net": -3.35,
+          "recommendation": "OK"
+        },
+        {
+          "period": "08-12",
+          "mean_bg": 157.0,
+          "tar": 32.1,
+          "tbr": 1.1,
+          "mean_net": -5.41,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "12-16",
+          "mean_bg": 139.0,
+          "tar": 24.2,
+          "tbr": 3.4,
+          "mean_net": -4.25,
+          "recommendation": "OK"
+        },
+        {
+          "period": "16-20",
+          "mean_bg": 158.0,
+          "tar": 29.7,
+          "tbr": 0.6,
+          "mean_net": -4.52,
+          "recommendation": "OK"
+        },
+        {
+          "period": "20-24",
+          "mean_bg": 164.0,
+          "tar": 35.8,
+          "tbr": 0.7,
+          "mean_net": -5.76,
+          "recommendation": "decrease_CR"
+        }
+      ]
+    },
+    {
+      "patient": "f",
+      "n_periods": 6,
+      "n_actions_needed": 3,
+      "recommendations": [
+        {
+          "period": "00-04",
+          "mean_bg": 175.0,
+          "tar": 36.9,
+          "tbr": 1.4,
+          "mean_net": -1.84,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "04-08",
+          "mean_bg": 209.0,
+          "tar": 63.0,
+          "tbr": 1.3,
+          "mean_net": -2.48,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "08-12",
+          "mean_bg": 192.0,
+          "tar": 50.4,
+          "tbr": 0.4,
+          "mean_net": -3.45,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "12-16",
+          "mean_bg": 120.0,
+          "tar": 11.6,
+          "tbr": 9.0,
+          "mean_net": -0.43,
+          "recommendation": "OK"
+        },
+        {
+          "period": "16-20",
+          "mean_bg": 116.0,
+          "tar": 11.1,
+          "tbr": 5.9,
+          "mean_net": -0.08,
+          "recommendation": "OK"
+        },
+        {
+          "period": "20-24",
+          "mean_bg": 124.0,
+          "tar": 13.1,
+          "tbr": 1.9,
+          "mean_net": -0.56,
+          "recommendation": "OK"
+        }
+      ]
+    },
+    {
+      "patient": "g",
+      "n_periods": 6,
+      "n_actions_needed": 1,
+      "recommendations": [
+        {
+          "period": "00-04",
+          "mean_bg": 178.0,
+          "tar": 37.6,
+          "tbr": 1.7,
+          "mean_net": 0.01,
+          "recommendation": "OK"
+        },
+        {
+          "period": "04-08",
+          "mean_bg": 161.0,
+          "tar": 27.2,
+          "tbr": 2.9,
+          "mean_net": -2.93,
+          "recommendation": "OK"
+        },
+        {
+          "period": "08-12",
+          "mean_bg": 178.0,
+          "tar": 42.1,
+          "tbr": 1.5,
+          "mean_net": -3.31,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "12-16",
+          "mean_bg": 148.0,
+          "tar": 25.9,
+          "tbr": 3.3,
+          "mean_net": -0.98,
+          "recommendation": "OK"
+        },
+        {
+          "period": "16-20",
+          "mean_bg": 124.0,
+          "tar": 8.0,
+          "tbr": 3.0,
+          "mean_net": 0.85,
+          "recommendation": "OK"
+        },
+        {
+          "period": "20-24",
+          "mean_bg": 147.0,
+          "tar": 23.4,
+          "tbr": 5.4,
+          "mean_net": -0.77,
+          "recommendation": "OK"
+        }
+      ]
+    },
+    {
+      "patient": "h",
+      "n_periods": 6,
+      "n_actions_needed": 0,
+      "recommendations": [
+        {
+          "period": "00-04",
+          "mean_bg": 110.0,
+          "tar": 4.9,
+          "tbr": 5.4,
+          "mean_net": -1.41,
+          "recommendation": "OK"
+        },
+        {
+          "period": "04-08",
+          "mean_bg": 132.0,
+          "tar": 15.0,
+          "tbr": 4.6,
+          "mean_net": -0.92,
+          "recommendation": "OK"
+        },
+        {
+          "period": "08-12",
+          "mean_bg": 123.0,
+          "tar": 9.7,
+          "tbr": 6.5,
+          "mean_net": -3.75,
+          "recommendation": "OK"
+        },
+        {
+          "period": "12-16",
+          "mean_bg": 117.0,
+          "tar": 5.5,
+          "tbr": 5.1,
+          "mean_net": -2.18,
+          "recommendation": "OK"
+        },
+        {
+          "period": "16-20",
+          "mean_bg": 110.0,
+          "tar": 1.4,
+          "tbr": 1.5,
+          "mean_net": -0.8,
+          "recommendation": "OK"
+        },
+        {
+          "period": "20-24",
+          "mean_bg": 126.0,
+          "tar": 12.3,
+          "tbr": 5.9,
+          "mean_net": -1.31,
+          "recommendation": "OK"
+        }
+      ]
+    },
+    {
+      "patient": "i",
+      "n_periods": 6,
+      "n_actions_needed": 6,
+      "recommendations": [
+        {
+          "period": "00-04",
+          "mean_bg": 180.0,
+          "tar": 44.7,
+          "tbr": 9.6,
+          "mean_net": -14.95,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "04-08",
+          "mean_bg": 190.0,
+          "tar": 53.1,
+          "tbr": 9.6,
+          "mean_net": -13.92,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "08-12",
+          "mean_bg": 168.0,
+          "tar": 39.3,
+          "tbr": 8.4,
+          "mean_net": -11.83,
+          "recommendation": "decrease_CR"
+        },
+        {
+          "period": "12-16",
+          "mean_bg": 104.0,
+          "tar": 8.5,
+          "tbr": 21.5,
+          "mean_net": -2.74,
+          "recommendation": "decrease_basal"
+        },
+        {
+          "period": "16-20",
+          "mean_bg": 136.0,
+          "tar": 21.9,
+          "tbr": 12.1,
+          "mean_net": -3.81,
+          "recommendation": "decrease_basal"
+        },
+        {
+          "period": "20-24",
+          "mean_bg": 203.0,
+          "tar": 58.0,
+          "tbr": 10.2,
+          "mean_net": -14.67,
+          "recommendation": "decrease_CR"
+        }
+      ]
+    },
+    {
+      "patient": "j",
+      "n_periods": 6,
+      "n_actions_needed": 1,
+      "recommendations": [
+        {
+          "period": "00-04",
+          "mean_bg": 115.0,
+          "tar": 1.9,
+          "tbr": 0.9,
+          "mean_net": 2.7,
+          "recommendation": "OK"
+        },
+        {
+          "period": "04-08",
+          "mean_bg": 115.0,
+          "tar": 0.0,
+          "tbr": 0.4,
+          "mean_net": 3.78,
+          "recommendation": "OK"
+        },
+        {
+          "period": "08-12",
+          "mean_bg": 150.0,
+          "tar": 13.6,
+          "tbr": 0.0,
+          "mean_net": -3.06,
+          "recommendation": "OK"
+        },
+        {
+          "period": "12-16",
+          "mean_bg": 163.0,
+          "tar": 34.7,
+          "tbr": 0.0,
+          "mean_net": 2.89,
+          "recommendation": "increase_basal"
+        },
+        {
+          "period": "16-20",
+          "mean_bg": 107.0,
+          "tar": 1.9,
+          "tbr": 0.8,
+          "mean_net": 2.62,
+          "recommendation": "OK"
+        },
+        {
+          "period": "20-24",
+          "mean_bg": 146.0,
+          "tar": 22.6,
+          "tbr": 0.0,
+          "mean_net": 3.38,
+          "recommendation": "OK"
+        }
+      ]
+    },
+    {
+      "patient": "k",
+      "n_periods": 6,
+      "n_actions_needed": 1,
+      "recommendations": [
+        {
+          "period": "00-04",
+          "mean_bg": 91.0,
+          "tar": 0.0,
+          "tbr": 8.0,
+          "mean_net": 1.59,
+          "recommendation": "OK"
+        },
+        {
+          "period": "04-08",
+          "mean_bg": 91.0,
+          "tar": 0.0,
+          "tbr": 10.3,
+          "mean_net": 1.58,
+          "recommendation": "decrease_basal"
+        },
+        {
+          "period": "08-12",
+          "mean_bg": 95.0,
+          "tar": 0.0,
+          "tbr": 2.7,
+          "mean_net": 1.12,
+          "recommendation": "OK"
+        },
+        {
+          "period": "12-16",
+          "mean_bg": 98.0,
+          "tar": 0.0,
+          "tbr": 1.7,
+          "mean_net": 0.7,
+          "recommendation": "OK"
+        },
+        {
+          "period": "16-20",
+          "mean_bg": 92.0,
+          "tar": 0.0,
+          "tbr": 4.4,
+          "mean_net": 1.07,
+          "recommendation": "OK"
+        },
+        {
+          "period": "20-24",
+          "mean_bg": 97.0,
+          "tar": 0.0,
+          "tbr": 5.4,
+          "mean_net": 0.97,
+          "recommendation": "OK"
+        }
+      ]
+    }
+  ]
+}

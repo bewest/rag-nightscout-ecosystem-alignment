@@ -27,6 +27,7 @@ import numpy as np
 from .types import (
     BasalAssessment, ClinicalReport, MetabolicState,
     PatientProfile, SettingsParameter, SettingsRecommendation,
+    PeriodMetrics, PatternProfile,
 )
 
 
@@ -38,6 +39,14 @@ DECAY_RATE = 0.005        # per 5-min step
 # Confidence thresholds
 MIN_DATA_DAYS = 3.0       # Minimum data for any recommendation
 HIGH_CONFIDENCE_DAYS = 14.0  # Full confidence threshold
+
+# Period definitions for period-by-period analysis
+PERIODS = [
+    ("fasting",   0.0,  7.0),
+    ("morning",   7.0, 12.0),
+    ("afternoon", 12.0, 17.0),
+    ("evening",  17.0, 24.0),
+]
 
 
 def simulate_tir_with_settings(glucose: np.ndarray,
@@ -320,6 +329,187 @@ def advise_isf(clinical: ClinicalReport,
                    f"Predicted TIR improvement: +{predicted_delta:.1f}pp. "
                    f"Confirmable within 2 weeks of stable use."),
     )
+
+
+def analyze_periods(glucose: np.ndarray,
+                    metabolic: Optional[MetabolicState],
+                    hours: np.ndarray,
+                    clinical: ClinicalReport,
+                    profile: PatientProfile,
+                    days_of_data: float,
+                    ) -> List[PeriodMetrics]:
+    """Analyze glycemic control and basal adequacy for each time-of-day period.
+
+    Decomposes the day into 4 periods and runs independent assessment for each:
+    fasting (00-07), morning (07-12), afternoon (12-17), evening (17-24).
+
+    Uses simulate_tir_with_settings() per-period to find optimal basal adjustments.
+
+    Args:
+        glucose: (N,) cleaned glucose.
+        metabolic: MetabolicState (needed for simulation).
+        hours: (N,) fractional hours.
+        clinical: ClinicalReport for context.
+        profile: current therapy profile.
+        days_of_data: data coverage.
+
+    Returns:
+        List of PeriodMetrics, one per period.
+    """
+    from .clinical_rules import assess_glycemic_control, assess_basal
+
+    periods = []
+    basal_vals = [e.get('value', e.get('rate', 0.8)) for e in profile.basal_schedule]
+    current_basal = float(np.median([float(v) for v in basal_vals])) if basal_vals else 0.8
+
+    for name, h_start, h_end in PERIODS:
+        if h_start < h_end:
+            mask = (hours >= h_start) & (hours < h_end)
+        else:
+            mask = (hours >= h_start) | (hours < h_end)
+
+        period_bg = glucose[mask]
+        valid = period_bg[np.isfinite(period_bg)]
+        if len(valid) < 12:
+            continue
+
+        metrics = assess_glycemic_control(valid)
+
+        # Per-period basal assessment — use BG-only analysis (slope-based)
+        # Note: metabolic flux mask would need full-length arrays, so we use
+        # the simpler slope-based method for per-period assessment
+        basal_assess = assess_basal(period_bg) if len(valid) >= 24 else None
+
+        # Per-period recommendation via simulation
+        rec = None
+        if (metabolic is not None and days_of_data >= MIN_DATA_DAYS
+                and basal_assess and basal_assess != BasalAssessment.APPROPRIATE):
+            direction = "increase" if basal_assess in (BasalAssessment.TOO_LOW,) else "decrease"
+            best_delta, best_mult = 0.0, 1.0
+            for pct in [0.10, 0.15, 0.20]:
+                mult = (1.0 + pct) if direction == "increase" else (1.0 - pct)
+                tir_now, tir_sim = simulate_tir_with_settings(
+                    glucose, metabolic, hours,
+                    basal_multiplier=mult, hour_range=(h_start, h_end))
+                delta = tir_sim - tir_now
+                if delta > best_delta:
+                    best_delta = delta
+                    best_mult = mult
+
+            if best_delta > 0.005:
+                magnitude = abs(best_mult - 1.0) * 100
+                suggested = current_basal * best_mult
+                confidence = min(1.0, days_of_data / HIGH_CONFIDENCE_DAYS) * 0.75
+                rec = SettingsRecommendation(
+                    parameter=SettingsParameter.BASAL_RATE,
+                    direction=direction,
+                    magnitude_pct=magnitude,
+                    current_value=current_basal,
+                    suggested_value=round(suggested, 2),
+                    predicted_tir_delta=round(best_delta * 100, 1),
+                    affected_hours=(h_start, h_end),
+                    confidence=confidence,
+                    evidence=f"Period {name} ({h_start:.0f}:00-{h_end:.0f}:00): "
+                             f"TIR={metrics['tir']*100:.0f}%, basal {basal_assess.value}.",
+                    rationale=f"{direction.capitalize()} basal by {magnitude:.0f}% "
+                              f"during {name} period ({h_start:.0f}:00-{h_end:.0f}:00). "
+                              f"Predicted +{best_delta*100:.1f}pp TIR improvement.",
+                )
+
+        periods.append(PeriodMetrics(
+            name=name,
+            hour_start=h_start,
+            hour_end=h_end,
+            tir=metrics['tir'],
+            tbr=metrics['tbr'],
+            tar=metrics['tar'],
+            mean_glucose=metrics['mean_glucose'],
+            basal_assessment=basal_assess,
+            recommendation=rec,
+        ))
+
+    return periods
+
+
+def advise_isf_segmented(glucose: np.ndarray,
+                         metabolic: Optional[MetabolicState],
+                         hours: np.ndarray,
+                         clinical: ClinicalReport,
+                         profile: PatientProfile,
+                         patterns: Optional[PatternProfile],
+                         days_of_data: float,
+                         ) -> List[SettingsRecommendation]:
+    """Recommend time-segmented ISF when circadian variation is significant.
+
+    Research: ISF varies 29.7% mean across time of day (EXP-765).
+    When variation >50%, recommend 2-4 ISF segments for better control.
+
+    Args:
+        glucose, metabolic, hours: standard pipeline data.
+        clinical: ClinicalReport with effective ISF.
+        profile: current therapy profile.
+        patterns: PatternProfile with isf_by_hour.
+        days_of_data: data coverage.
+
+    Returns:
+        List of ISF SettingsRecommendations for time segments.
+    """
+    if patterns is None or patterns.isf_by_hour is None:
+        return []
+    if days_of_data < 7.0:
+        return []
+    if patterns.isf_variation_pct < 50.0:
+        return []
+
+    isf_by_hour = patterns.isf_by_hour
+    isf_vals = [e.get('value', e.get('sensitivity', 50)) for e in profile.isf_schedule]
+    current_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
+
+    recs = []
+    # Group hours into segments where ISF is consistently above/below mean
+    for name, h_start, h_end in PERIODS:
+        h_range = range(int(h_start), int(h_end) if h_end <= 24 else 24)
+        if not h_range:
+            continue
+        period_isf_mult = float(np.mean([isf_by_hour[h % 24] for h in h_range]))
+
+        # Only recommend if this period's ISF differs >20% from average
+        if abs(period_isf_mult - 1.0) < 0.20:
+            continue
+
+        suggested_isf = current_isf * period_isf_mult
+        direction = "increase" if period_isf_mult > 1.0 else "decrease"
+        magnitude = abs(period_isf_mult - 1.0) * 100
+
+        # Simulate TIR impact
+        if metabolic is not None:
+            tir_now, tir_sim = simulate_tir_with_settings(
+                glucose, metabolic, hours,
+                isf_multiplier=period_isf_mult,
+                hour_range=(h_start, h_end))
+            predicted_delta = round((tir_sim - tir_now) * 100, 1)
+        else:
+            predicted_delta = round(magnitude * 0.1, 1)  # conservative estimate
+
+        confidence = min(0.7, days_of_data / HIGH_CONFIDENCE_DAYS)
+
+        recs.append(SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction=direction,
+            magnitude_pct=round(magnitude, 0),
+            current_value=current_isf,
+            suggested_value=round(suggested_isf, 0),
+            predicted_tir_delta=predicted_delta,
+            affected_hours=(h_start, h_end),
+            confidence=confidence,
+            evidence=f"ISF variation is {patterns.isf_variation_pct:.0f}% across day (EXP-765). "
+                     f"Period {name}: ISF multiplier {period_isf_mult:.2f}×.",
+            rationale=f"{direction.capitalize()} ISF by {magnitude:.0f}% during {name} "
+                      f"({h_start:.0f}:00-{h_end:.0f}:00) from {current_isf:.0f} to "
+                      f"{suggested_isf:.0f} mg/dL/U. Based on observed circadian ISF variation.",
+        ))
+
+    return recs
 
 
 def generate_settings_advice(glucose: np.ndarray,

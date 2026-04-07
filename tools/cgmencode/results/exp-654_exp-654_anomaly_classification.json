@@ -1,0 +1,149 @@
+{
+  "name": "EXP-654: Anomaly Classification",
+  "summary": "Mean categories: {'meal_related': np.float64(39.9), 'high_bg': np.float64(24.6), 'low_bg': np.float64(6.5), 'dawn': np.float64(6.5), 'overnight': np.float64(7.6), 'daytime': np.float64(14.9)}",
+  "details": [
+    {
+      "patient": "a",
+      "total_anomalies": 617,
+      "categories": {
+        "meal_related": 35.0,
+        "high_bg": 33.1,
+        "low_bg": 4.1,
+        "dawn": 8.8,
+        "overnight": 4.7,
+        "daytime": 14.4
+      },
+      "dominant": "meal_related"
+    },
+    {
+      "patient": "b",
+      "total_anomalies": 580,
+      "categories": {
+        "meal_related": 87.4,
+        "high_bg": 4.3,
+        "low_bg": 0.9,
+        "dawn": 0.3,
+        "overnight": 0.0,
+        "daytime": 7.1
+      },
+      "dominant": "meal_related"
+    },
+    {
+      "patient": "c",
+      "total_anomalies": 503,
+      "categories": {
+        "meal_related": 35.6,
+        "high_bg": 39.8,
+        "low_bg": 2.8,
+        "dawn": 5.4,
+        "overnight": 6.4,
+        "daytime": 10.1
+      },
+      "dominant": "high_bg"
+    },
+    {
+      "patient": "d",
+      "total_anomalies": 640,
+      "categories": {
+        "meal_related": 9.5,
+        "high_bg": 19.8,
+        "low_bg": 9.4,
+        "dawn": 3.4,
+        "overnight": 14.1,
+        "daytime": 43.8
+      },
+      "dominant": "daytime"
+    },
+    {
+      "patient": "e",
+      "total_anomalies": 525,
+      "categories": {
+        "meal_related": 23.8,
+        "high_bg": 40.4,
+        "low_bg": 7.0,
+        "dawn": 7.4,
+        "overnight": 7.6,
+        "daytime": 13.7
+      },
+      "dominant": "high_bg"
+    },
+    {
+      "patient": "f",
+      "total_anomalies": 820,
+      "categories": {
+        "meal_related": 45.6,
+        "high_bg": 27.9,
+        "low_bg": 1.6,
+        "dawn": 4.4,
+        "overnight": 7.6,
+        "daytime": 12.9
+      },
+      "dominant": "meal_related"
+    },
+    {
+      "patient": "g",
+      "total_anomalies": 606,
+      "categories": {
+        "meal_related": 71.9,
+        "high_bg": 7.6,
+        "low_bg": 3.1,
+        "dawn": 4.0,
+        "overnight": 6.4,
+        "daytime": 6.9
+      },
+      "dominant": "meal_related"
+    },
+    {
+      "patient": "h",
+      "total_anomalies": 276,
+      "categories": {
+        "meal_related": 65.2,
+        "high_bg": 8.0,
+        "low_bg": 3.6,
+        "dawn": 2.2,
+        "overnight": 5.4,
+        "daytime": 15.6
+      },
+      "dominant": "meal_related"
+    },
+    {
+      "patient": "i",
+      "total_anomalies": 562,
+      "categories": {
+        "meal_related": 19.8,
+        "high_bg": 71.9,
+        "low_bg": 0.5,
+        "dawn": 2.0,
+        "overnight": 4.6,
+        "daytime": 1.2
+      },
+      "dominant": "high_bg"
+    },
+    {
+      "patient": "j",
+      "total_anomalies": 207,
+      "categories": {
+        "meal_related": 42.0,
+        "high_bg": 17.9,
+        "low_bg": 1.0,
+        "dawn": 19.3,
+        "overnight": 13.5,
+        "daytime": 6.3
+      },
+      "dominant": "meal_related"
+    },
+    {
+      "patient": "k",
+      "total_anomalies": 648,
+      "categories": {
+        "meal_related": 2.9,
+        "high_bg": 0.0,
+        "low_bg": 37.5,
+        "dawn": 14.2,
+        "overnight": 13.0,
+        "daytime": 32.4
+      },
+      "dominant": "low_bg"
+    }
+  ]
+}

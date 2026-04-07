@@ -1,0 +1,116 @@
+{
+  "name": "EXP-643: Flux-Trajectory Hypo",
+  "summary": "Flux F1=0.429 vs BG<90 F1=0.353, improved 9/11",
+  "details": [
+    {
+      "patient": "a",
+      "flux_f1": 0.555,
+      "flux_prec": 0.568,
+      "flux_rec": 0.542,
+      "flux_fp_week": 21.0,
+      "simple_f1": 0.542,
+      "improvement": 0.013,
+      "n_hypo": 262
+    },
+    {
+      "patient": "b",
+      "flux_f1": 0.431,
+      "flux_prec": 0.44,
+      "flux_rec": 0.423,
+      "flux_fp_week": 5.4,
+      "simple_f1": 0.261,
+      "improvement": 0.171,
+      "n_hypo": 52
+    },
+    {
+      "patient": "c",
+      "flux_f1": 0.665,
+      "flux_prec": 0.564,
+      "flux_rec": 0.811,
+      "flux_fp_week": 53.3,
+      "simple_f1": 0.555,
+      "improvement": 0.11,
+      "n_hypo": 438
+    },
+    {
+      "patient": "d",
+      "flux_f1": 0.444,
+      "flux_prec": 0.595,
+      "flux_rec": 0.355,
+      "flux_fp_week": 2.9,
+      "simple_f1": 0.171,
+      "improvement": 0.273,
+      "n_hypo": 62
+    },
+    {
+      "patient": "e",
+      "flux_f1": 0.311,
+      "flux_prec": 0.207,
+      "flux_rec": 0.624,
+      "flux_fp_week": 66.3,
+      "simple_f1": 0.277,
+      "improvement": 0.034,
+      "n_hypo": 125
+    },
+    {
+      "patient": "f",
+      "flux_f1": 0.533,
+      "flux_prec": 0.656,
+      "flux_rec": 0.449,
+      "flux_fp_week": 14.4,
+      "simple_f1": 0.305,
+      "improvement": 0.228,
+      "n_hypo": 314
+    },
+    {
+      "patient": "g",
+      "flux_f1": 0.581,
+      "flux_prec": 0.561,
+      "flux_rec": 0.601,
+      "flux_fp_week": 25.7,
+      "simple_f1": 0.445,
+      "improvement": 0.136,
+      "n_hypo": 281
+    },
+    {
+      "patient": "h",
+      "flux_f1": 0.444,
+      "flux_prec": 0.334,
+      "flux_rec": 0.664,
+      "flux_fp_week": 116.9,
+      "simple_f1": 0.365,
+      "improvement": 0.079,
+      "n_hypo": 453
+    },
+    {
+      "patient": "i",
+      "flux_f1": 0.431,
+      "flux_prec": 0.318,
+      "flux_rec": 0.666,
+      "flux_fp_week": 312.4,
+      "simple_f1": 0.657,
+      "improvement": -0.226,
+      "n_hypo": 1128
+    },
+    {
+      "patient": "j",
+      "flux_f1": 0,
+      "flux_prec": 0.0,
+      "flux_rec": 0.0,
+      "flux_fp_week": 5.7,
+      "simple_f1": 0.065,
+      "improvement": -0.065,
+      "n_hypo": 11
+    },
+    {
+      "patient": "k",
+      "flux_f1": 0.327,
+      "flux_prec": 0.808,
+      "flux_rec": 0.205,
+      "flux_fp_week": 4.7,
+      "simple_f1": 0.244,
+      "improvement": 0.083,
+      "n_hypo": 493
+    }
+  ]
+}

@@ -24,6 +24,8 @@ from .types import (
     HypoAlert, PipelineResult, OnboardingState,
     DetectedMeal, MealHistory, MealTimingModel, MealPrediction,
     SettingsRecommendation, ActionRecommendation,
+    MealResponse, MealResponseType, PeriodMetrics, CorrectionEnergy,
+    BolusTimingSafety, AIDCompensation, CompensationType,
     GlycemicGrade, BasalAssessment, EventType, OnboardingPhase, Phenotype,
     MealWindow, SettingsParameter,
 )
@@ -31,12 +33,15 @@ from .data_quality import clean_glucose, detect_spikes, interpolate_spikes
 from .metabolic_engine import compute_metabolic_state
 from .event_detector import classify_risk_simple, build_features
 from .hypo_predictor import predict_hypo, calibrate_threshold
-from .clinical_rules import generate_clinical_report
+from .clinical_rules import (
+    generate_clinical_report, compute_correction_energy,
+    assess_correction_timing, assess_aid_compensation,
+)
 from .pattern_analyzer import analyze_patterns, fit_circadian
 from .patient_onboarding import get_onboarding_state, POPULATION_DEFAULTS
-from .meal_detector import detect_meal_events, build_meal_history
+from .meal_detector import detect_meal_events, build_meal_history, classify_all_meal_responses
 from .meal_predictor import build_timing_models, predict_next_meal
-from .settings_advisor import generate_settings_advice
+from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented
 from .recommender import generate_recommendations
 from .pipeline import run_pipeline, run_pipeline_batch
 from .validators import run_validation
@@ -48,6 +53,8 @@ __all__ = [
     'HypoAlert', 'PipelineResult', 'OnboardingState',
     'DetectedMeal', 'MealHistory', 'MealTimingModel', 'MealPrediction',
     'SettingsRecommendation', 'ActionRecommendation',
+    'MealResponse', 'MealResponseType', 'PeriodMetrics', 'CorrectionEnergy',
+    'BolusTimingSafety', 'AIDCompensation', 'CompensationType',
     'GlycemicGrade', 'BasalAssessment', 'EventType', 'OnboardingPhase', 'Phenotype',
     'MealWindow', 'SettingsParameter',
     # Pipeline
@@ -57,12 +64,13 @@ __all__ = [
     'compute_metabolic_state',
     'classify_risk_simple', 'build_features',
     'predict_hypo', 'calibrate_threshold',
-    'generate_clinical_report',
+    'generate_clinical_report', 'compute_correction_energy',
+    'assess_correction_timing', 'assess_aid_compensation',
     'analyze_patterns', 'fit_circadian',
     'get_onboarding_state', 'POPULATION_DEFAULTS',
-    'detect_meal_events', 'build_meal_history',
+    'detect_meal_events', 'build_meal_history', 'classify_all_meal_responses',
     'build_timing_models', 'predict_next_meal',
-    'generate_settings_advice',
+    'generate_settings_advice', 'analyze_periods', 'advise_isf_segmented',
     'generate_recommendations',
     # Validation
     'run_validation',

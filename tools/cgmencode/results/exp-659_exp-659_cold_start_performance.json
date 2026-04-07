@@ -1,0 +1,116 @@
+{
+  "name": "EXP-659: Cold Start Performance",
+  "summary": "Pop bias improves 7/11 patients in first week, mean \u0394=0.9%",
+  "details": [
+    {
+      "patient": "a",
+      "first_week_steps": 2016,
+      "mae_raw": 7.89,
+      "mae_pop_corrected": 7.12,
+      "improvement_pct": 9.8,
+      "pop_bias_low": 0.028,
+      "pop_bias_mid": 1.301,
+      "pop_bias_high": 5.869
+    },
+    {
+      "patient": "b",
+      "first_week_steps": 2016,
+      "mae_raw": 5.37,
+      "mae_pop_corrected": 7.11,
+      "improvement_pct": -32.4,
+      "pop_bias_low": 0.161,
+      "pop_bias_mid": 1.868,
+      "pop_bias_high": 7.264
+    },
+    {
+      "patient": "c",
+      "first_week_steps": 2016,
+      "mae_raw": 9.67,
+      "mae_pop_corrected": 8.25,
+      "improvement_pct": 14.8,
+      "pop_bias_low": -0.039,
+      "pop_bias_mid": 1.26,
+      "pop_bias_high": 5.606
+    },
+    {
+      "patient": "d",
+      "first_week_steps": 2016,
+      "mae_raw": 4.48,
+      "mae_pop_corrected": 4.15,
+      "improvement_pct": 7.4,
+      "pop_bias_low": 0.144,
+      "pop_bias_mid": 1.594,
+      "pop_bias_high": 6.094
+    },
+    {
+      "patient": "e",
+      "first_week_steps": 2016,
+      "mae_raw": 9.4,
+      "mae_pop_corrected": 8.59,
+      "improvement_pct": 8.6,
+      "pop_bias_low": 0.01,
+      "pop_bias_mid": 1.198,
+      "pop_bias_high": 5.454
+    },
+    {
+      "patient": "f",
+      "first_week_steps": 2016,
+      "mae_raw": 4.23,
+      "mae_pop_corrected": 3.96,
+      "improvement_pct": 6.5,
+      "pop_bias_low": 0.161,
+      "pop_bias_mid": 1.458,
+      "pop_bias_high": 6.186
+    },
+    {
+      "patient": "g",
+      "first_week_steps": 2016,
+      "mae_raw": 7.15,
+      "mae_pop_corrected": 7.55,
+      "improvement_pct": -5.6,
+      "pop_bias_low": 0.115,
+      "pop_bias_mid": 1.604,
+      "pop_bias_high": 6.045
+    },
+    {
+      "patient": "h",
+      "first_week_steps": 2016,
+      "mae_raw": 8.01,
+      "mae_pop_corrected": 7.7,
+      "improvement_pct": 3.8,
+      "pop_bias_low": 0.008,
+      "pop_bias_mid": 1.389,
+      "pop_bias_high": 5.872
+    },
+    {
+      "patient": "i",
+      "first_week_steps": 2016,
+      "mae_raw": 14.63,
+      "mae_pop_corrected": 12.96,
+      "improvement_pct": 11.4,
+      "pop_bias_low": -0.34,
+      "pop_bias_mid": 0.775,
+      "pop_bias_high": 4.06
+    },
+    {
+      "patient": "j",
+      "first_week_steps": 2016,
+      "mae_raw": 6.58,
+      "mae_pop_corrected": 7.45,
+      "improvement_pct": -13.2,
+      "pop_bias_low": 0.134,
+      "pop_bias_mid": 1.587,
+      "pop_bias_high": 6.064
+    },
+    {
+      "patient": "k",
+      "first_week_steps": 2016,
+      "mae_raw": 3.63,
+      "mae_pop_corrected": 3.66,
+      "improvement_pct": -0.9,
+      "pop_bias_low": 0.551,
+      "pop_bias_mid": 1.515,
+      "pop_bias_high": 5.847
+    }
+  ]
+}

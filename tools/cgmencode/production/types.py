@@ -72,6 +72,22 @@ class SettingsParameter(str, Enum):
     CR = "cr"
 
 
+class MealResponseType(str, Enum):
+    """Postprandial glucose response classification (EXP-514)."""
+    FLAT = "flat"           # AID suppresses excursion (<20 mg/dL)
+    FAST = "fast"           # Quick absorbers, peak <60min, low tail
+    BIPHASIC = "biphasic"   # Classic meal + second phase
+    SLOW = "slow"           # Fat/protein, peak >90min or high tail
+    MODERATE = "moderate"   # Standard absorption
+
+class CompensationType(str, Enum):
+    """AID compensation vs genuine under-insulinization (EXP-747)."""
+    AID_COMPENSATING = "aid_compensating"         # high TAR + negative flux
+    UNDER_INSULINIZED = "under_insulinized"       # high TAR + positive flux
+    WELL_CONTROLLED = "well_controlled"           # good TIR
+    OVER_INSULINIZED = "over_insulinized"         # high TBR + negative flux
+
+
 # ── Input Data ────────────────────────────────────────────────────────
 
 @dataclass
@@ -332,6 +348,67 @@ class ActionRecommendation:
     settings_rec: Optional[SettingsRecommendation] = None
 
 
+# ── Advanced Analytics ────────────────────────────────────────────────
+
+@dataclass
+class MealResponse:
+    """Postprandial glucose response classification for a single meal (EXP-514)."""
+    response_type: MealResponseType
+    excursion_mg_dl: float            # peak - baseline (mg/dL)
+    peak_time_min: float              # minutes to peak from meal start
+    tail_ratio: float                 # late demand / early demand
+    has_second_peak: bool             # biphasic indicator
+    confidence: float                 # classification confidence
+
+
+@dataclass
+class PeriodMetrics:
+    """Glycemic metrics for a specific time-of-day period."""
+    name: str                         # "fasting", "morning", "afternoon", "evening"
+    hour_start: float
+    hour_end: float
+    tir: float                        # time in range % for this period
+    tbr: float
+    tar: float
+    mean_glucose: float
+    basal_assessment: Optional[BasalAssessment] = None
+    recommendation: Optional[SettingsRecommendation] = None
+
+
+@dataclass
+class CorrectionEnergy:
+    """Daily metabolic correction effort (EXP-559: r=-0.35 with TIR)."""
+    daily_scores: List[float]         # per-day correction energy
+    mean_daily_score: float           # average across period
+    smoothed_7d: Optional[List[float]] = None  # 7-day rolling average
+    correlation_with_tir: Optional[float] = None  # r value
+    interpretation: str = ""          # human-readable summary
+
+
+@dataclass
+class BolusTimingSafety:
+    """Correction bolus spacing analysis for IOB stacking risk."""
+    total_corrections: int            # number of correction boluses detected
+    stacking_events: int              # corrections <4h apart
+    stacking_fraction: float          # stacking_events / total_corrections
+    min_interval_hours: Optional[float] = None  # shortest interval
+    mean_interval_hours: Optional[float] = None
+    safety_flag: bool = False         # True if stacking is concerning (>25%)
+    interpretation: str = ""
+
+
+@dataclass
+class AIDCompensation:
+    """AID compensation vs genuine under-insulinization analysis (EXP-747)."""
+    compensation_type: CompensationType
+    isf_ratio: Optional[float] = None       # effective/profile ISF
+    mean_net_flux: float = 0.0              # signed average flux
+    flux_polarity: str = "balanced"         # "negative", "positive", "balanced"
+    tar: float = 0.0
+    tbr: float = 0.0
+    interpretation: str = ""
+
+
 # ── Complete Pipeline Result ──────────────────────────────────────────
 
 @dataclass
@@ -349,6 +426,12 @@ class PipelineResult:
     meal_prediction: Optional[MealPrediction] = None  # next meal prediction
     settings_recs: Optional[List[SettingsRecommendation]] = None
     recommendations: Optional[List[ActionRecommendation]] = None
+    # Advanced analytics (Phase 3)
+    period_metrics: Optional[List[PeriodMetrics]] = None
+    correction_energy: Optional[CorrectionEnergy] = None
+    meal_responses: Optional[List[MealResponse]] = None
+    bolus_safety: Optional[BolusTimingSafety] = None
+    aid_compensation: Optional[AIDCompensation] = None
     pipeline_latency_ms: float = 0.0
     warnings: List[str] = field(default_factory=list)
 

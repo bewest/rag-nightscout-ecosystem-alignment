@@ -1,0 +1,127 @@
+{
+  "name": "EXP-641: Model-Based Hypo Alert",
+  "summary": "Model F1=0.275 vs Simple F1=0.185, \u0394=0.090",
+  "details": [
+    {
+      "patient": "a",
+      "threshold": 70,
+      "model_f1": 0.432,
+      "model_prec": 0.445,
+      "model_rec": 0.42,
+      "model_fpr": 0.0147,
+      "model_fp_week": 25.5,
+      "simple_f1": 0.288,
+      "f1_improvement": 0.144
+    },
+    {
+      "patient": "b",
+      "threshold": 70,
+      "model_f1": 0.186,
+      "model_prec": 0.2,
+      "model_rec": 0.173,
+      "model_fpr": 0.0038,
+      "model_fp_week": 7.0,
+      "simple_f1": 0.111,
+      "f1_improvement": 0.075
+    },
+    {
+      "patient": "c",
+      "threshold": 70,
+      "model_f1": 0.534,
+      "model_prec": 0.47,
+      "model_rec": 0.616,
+      "model_fpr": 0.0345,
+      "model_fp_week": 59.1,
+      "simple_f1": 0.297,
+      "f1_improvement": 0.236
+    },
+    {
+      "patient": "d",
+      "threshold": 70,
+      "model_f1": 0.044,
+      "model_prec": 0.051,
+      "model_rec": 0.038,
+      "model_fpr": 0.0045,
+      "model_fp_week": 7.2,
+      "simple_f1": 0.072,
+      "f1_improvement": -0.028
+    },
+    {
+      "patient": "e",
+      "threshold": 70,
+      "model_f1": 0.193,
+      "model_prec": 0.138,
+      "model_rec": 0.32,
+      "model_fpr": 0.0312,
+      "model_fp_week": 55.3,
+      "simple_f1": 0.134,
+      "f1_improvement": 0.059
+    },
+    {
+      "patient": "f",
+      "threshold": 70,
+      "model_f1": 0.338,
+      "model_prec": 0.415,
+      "model_rec": 0.285,
+      "model_fpr": 0.0138,
+      "model_fp_week": 24.1,
+      "simple_f1": 0.163,
+      "f1_improvement": 0.175
+    },
+    {
+      "patient": "g",
+      "threshold": 70,
+      "model_f1": 0.231,
+      "model_prec": 0.282,
+      "model_rec": 0.196,
+      "model_fpr": 0.0156,
+      "model_fp_week": 27.2,
+      "simple_f1": 0.208,
+      "f1_improvement": 0.024
+    },
+    {
+      "patient": "h",
+      "threshold": 70,
+      "model_f1": 0.243,
+      "model_prec": 0.203,
+      "model_rec": 0.302,
+      "model_fpr": 0.0611,
+      "model_fp_week": 104.8,
+      "simple_f1": 0.194,
+      "f1_improvement": 0.049
+    },
+    {
+      "patient": "i",
+      "threshold": 70,
+      "model_f1": 0.558,
+      "model_prec": 0.466,
+      "model_rec": 0.694,
+      "model_fpr": 0.1089,
+      "model_fp_week": 174.2,
+      "simple_f1": 0.409,
+      "f1_improvement": 0.148
+    },
+    {
+      "patient": "j",
+      "threshold": 70,
+      "model_f1": 0,
+      "model_prec": 0.0,
+      "model_rec": 0.0,
+      "model_fpr": 0.0028,
+      "model_fp_week": 5.2,
+      "simple_f1": 0.022,
+      "f1_improvement": -0.022
+    },
+    {
+      "patient": "k",
+      "threshold": 70,
+      "model_f1": 0.267,
+      "model_prec": 0.481,
+      "model_rec": 0.185,
+      "model_fpr": 0.0112,
+      "model_fp_week": 18.8,
+      "simple_f1": 0.134,
+      "f1_improvement": 0.133
+    }
+  ]
+}

@@ -25,7 +25,7 @@ from typing import List, Optional
 import numpy as np
 
 from .types import (
-    DetectedMeal, MealHistory, MealWindow,
+    DetectedMeal, MealHistory, MealResponse, MealResponseType, MealWindow,
     MetabolicState, PatientProfile,
 )
 
@@ -202,3 +202,110 @@ def _median_value(schedule: list, *keys, default: float = 50.0) -> float:
                 values.append(float(v))
                 break
     return float(np.median(values)) if values else default
+
+
+def classify_meal_response(glucose: np.ndarray,
+                           meal: DetectedMeal,
+                           metabolic: MetabolicState,
+                           ) -> Optional[MealResponse]:
+    """Classify postprandial glucose response for a detected meal (EXP-514).
+
+    Analyzes the 3h window after meal detection to classify response:
+    - FLAT: excursion <20 mg/dL (AID suppresses)
+    - FAST: peak <60min, tail_ratio <0.2
+    - BIPHASIC: second peak detected after initial recovery
+    - SLOW: peak >90min or tail_ratio >0.4
+    - MODERATE: standard absorption (none of above)
+
+    Population distribution: Flat 50%, Biphasic 41%, Fast 5%, Slow 2%, Moderate 1%.
+
+    Args:
+        glucose: (N,) full glucose array.
+        meal: DetectedMeal with index.
+        metabolic: MetabolicState for demand analysis.
+
+    Returns:
+        MealResponse or None if insufficient post-meal data.
+    """
+    idx = meal.index
+    N = len(glucose)
+    post_end = min(idx + 36, N)  # 3h post-meal
+    late_end = min(idx + 60, N)  # 5h for tail analysis
+
+    if post_end - idx < 12:  # need at least 1h post-meal
+        return None
+
+    window = glucose[idx:post_end]
+    valid = window[np.isfinite(window)]
+    if len(valid) < 6:
+        return None
+
+    baseline = float(valid[0])
+    peak = float(np.max(valid))
+    excursion = peak - baseline
+    peak_offset = int(np.argmax(valid))
+    peak_time_min = peak_offset * 5.0
+
+    # Tail ratio: late demand (2-5h) / early demand (0-2h)
+    early_end = min(idx + 24, N)  # 2h
+    early_demand = float(np.sum(np.abs(metabolic.demand[idx:early_end])))
+    late_demand = float(np.sum(np.abs(metabolic.demand[early_end:late_end]))) if late_end > early_end else 0.0
+    tail_ratio = late_demand / max(early_demand, 0.01)
+
+    # Second peak detection: is there a demand spike after 2h?
+    has_second_peak = False
+    if late_end - early_end > 6:
+        late_resid = metabolic.residual[early_end:late_end]
+        late_valid = late_resid[np.isfinite(late_resid)]
+        if len(late_valid) > 3:
+            late_std = float(np.std(late_valid))
+            late_max = float(np.max(late_valid))
+            has_second_peak = late_max > late_std * 2.0
+
+    # Classification per EXP-514 thresholds
+    if excursion < 20:
+        rtype = MealResponseType.FLAT
+        confidence = 0.9
+    elif peak_time_min < 60 and tail_ratio < 0.2:
+        rtype = MealResponseType.FAST
+        confidence = 0.8
+    elif has_second_peak:
+        rtype = MealResponseType.BIPHASIC
+        confidence = 0.75
+    elif peak_time_min > 90 or tail_ratio > 0.4:
+        rtype = MealResponseType.SLOW
+        confidence = 0.7
+    else:
+        rtype = MealResponseType.MODERATE
+        confidence = 0.65
+
+    return MealResponse(
+        response_type=rtype,
+        excursion_mg_dl=excursion,
+        peak_time_min=peak_time_min,
+        tail_ratio=tail_ratio,
+        has_second_peak=has_second_peak,
+        confidence=confidence,
+    )
+
+
+def classify_all_meal_responses(glucose: np.ndarray,
+                                meals: List[DetectedMeal],
+                                metabolic: MetabolicState,
+                                ) -> List[MealResponse]:
+    """Classify all detected meals' postprandial responses.
+
+    Args:
+        glucose: (N,) full glucose array.
+        meals: list of DetectedMeal.
+        metabolic: MetabolicState.
+
+    Returns:
+        List of MealResponse (may be shorter than meals if some lack data).
+    """
+    responses = []
+    for meal in meals:
+        resp = classify_meal_response(glucose, meal, metabolic)
+        if resp is not None:
+            responses.append(resp)
+    return responses

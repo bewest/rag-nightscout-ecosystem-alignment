@@ -21,6 +21,7 @@ import numpy as np
 from .types import (
     BasalAssessment, ClinicalReport, GlycemicGrade,
     MetabolicState, PatientProfile,
+    AIDCompensation, BolusTimingSafety, CompensationType, CorrectionEnergy,
 )
 
 
@@ -232,6 +233,225 @@ def compute_effective_isf(glucose: np.ndarray,
         return None
 
     return float(np.median(isf_estimates))
+
+
+def compute_correction_energy(metabolic: MetabolicState,
+                              hours: np.ndarray,
+                              glucose: np.ndarray,
+                              days_of_data: float) -> CorrectionEnergy:
+    """Compute daily correction energy — metabolic effort metric (EXP-559).
+
+    Correction energy = daily integral of |net_flux|.
+    Interpretation: higher energy → AID working harder → worse settings alignment.
+    Research: r=-0.353 correlation with TIR (8/11 patients p<0.05).
+
+    Args:
+        metabolic: MetabolicState with net_flux.
+        hours: (N,) fractional hours.
+        glucose: (N,) glucose for TIR correlation.
+        days_of_data: data coverage.
+
+    Returns:
+        CorrectionEnergy with daily scores and interpretation.
+    """
+    flux = np.abs(np.nan_to_num(metabolic.net_flux, nan=0.0))
+    N = len(flux)
+    steps_per_day = 288
+
+    n_full_days = int(N / steps_per_day)
+    if n_full_days < 1:
+        total_energy = float(np.sum(flux))
+        return CorrectionEnergy(
+            daily_scores=[total_energy],
+            mean_daily_score=total_energy,
+            interpretation="Insufficient data for daily breakdown.",
+        )
+
+    daily_scores = []
+    daily_tir = []
+    for d in range(n_full_days):
+        start = d * steps_per_day
+        end = start + steps_per_day
+        day_flux = flux[start:end]
+        daily_scores.append(float(np.sum(day_flux)))
+
+        day_bg = glucose[start:end]
+        valid = day_bg[np.isfinite(day_bg)]
+        if len(valid) > 0:
+            daily_tir.append(float(np.mean((valid >= 70) & (valid <= 180))))
+
+    mean_score = float(np.mean(daily_scores))
+
+    # 7-day smoothed
+    smoothed = None
+    if len(daily_scores) >= 7:
+        kernel = np.ones(7) / 7.0
+        smoothed = list(np.convolve(daily_scores, kernel, mode='valid').astype(float))
+
+    # Correlation with TIR
+    corr = None
+    if len(daily_scores) >= 5 and len(daily_tir) >= 5:
+        scores_arr = np.array(daily_scores[:len(daily_tir)])
+        tir_arr = np.array(daily_tir)
+        if np.std(scores_arr) > 0 and np.std(tir_arr) > 0:
+            corr = float(np.corrcoef(scores_arr, tir_arr)[0, 1])
+
+    # Interpretation
+    if mean_score < 50:
+        interp = "Low correction energy — AID making minimal adjustments. Settings appear well-aligned."
+    elif mean_score < 150:
+        interp = "Moderate correction energy — AID compensating for some settings mismatch."
+    else:
+        interp = "High correction energy — AID working hard to compensate. Consider settings review."
+
+    if corr is not None:
+        interp += f" Energy-TIR correlation: r={corr:.2f}."
+
+    return CorrectionEnergy(
+        daily_scores=daily_scores,
+        mean_daily_score=mean_score,
+        smoothed_7d=smoothed,
+        correlation_with_tir=corr,
+        interpretation=interp,
+    )
+
+
+def assess_correction_timing(bolus: Optional[np.ndarray],
+                             glucose: np.ndarray,
+                             timestamps: np.ndarray,
+                             ) -> BolusTimingSafety:
+    """Analyze correction bolus spacing for IOB stacking risk.
+
+    Flags when correction boluses (high BG + bolus, no meal) are
+    delivered <4h apart, which risks IOB stacking and subsequent hypos.
+
+    Args:
+        bolus: (N,) bolus Units per interval.
+        glucose: (N,) glucose for context.
+        timestamps: (N,) Unix timestamps (ms).
+
+    Returns:
+        BolusTimingSafety assessment.
+    """
+    if bolus is None:
+        return BolusTimingSafety(
+            total_corrections=0, stacking_events=0, stacking_fraction=0.0,
+            interpretation="No bolus data available.")
+
+    bolus_vals = np.nan_to_num(bolus, nan=0.0)
+    bg_vals = np.nan_to_num(glucose, nan=120.0)
+
+    # Identify correction boluses: bolus > 0.3U when BG > 150 mg/dL
+    correction_mask = (bolus_vals > 0.3) & (bg_vals > 150)
+    correction_indices = np.where(correction_mask)[0]
+
+    total = len(correction_indices)
+    if total < 2:
+        return BolusTimingSafety(
+            total_corrections=total, stacking_events=0, stacking_fraction=0.0,
+            interpretation="Too few corrections to assess timing patterns.")
+
+    # Compute inter-correction intervals (hours)
+    intervals = []
+    for i in range(1, len(correction_indices)):
+        dt_ms = timestamps[correction_indices[i]] - timestamps[correction_indices[i - 1]]
+        intervals.append(float(dt_ms) / 3_600_000.0)  # ms → hours
+
+    intervals = np.array(intervals)
+    stacking = int(np.sum(intervals < 4.0))
+    stacking_frac = stacking / len(intervals) if len(intervals) > 0 else 0.0
+
+    min_interval = float(np.min(intervals)) if len(intervals) > 0 else None
+    mean_interval = float(np.mean(intervals)) if len(intervals) > 0 else None
+
+    safety_flag = stacking_frac > 0.25  # >25% stacking is concerning
+
+    if safety_flag:
+        interp = (f"⚠ {stacking} of {len(intervals)} correction pairs ({stacking_frac*100:.0f}%) "
+                  f"are <4h apart. Risk of IOB stacking and subsequent lows.")
+    elif stacking > 0:
+        interp = (f"{stacking} correction pair(s) <4h apart ({stacking_frac*100:.0f}%). "
+                  f"Occasional stacking — monitor for post-correction lows.")
+    else:
+        interp = "No correction stacking detected. Good bolus spacing."
+
+    return BolusTimingSafety(
+        total_corrections=total,
+        stacking_events=stacking,
+        stacking_fraction=stacking_frac,
+        min_interval_hours=min_interval,
+        mean_interval_hours=mean_interval,
+        safety_flag=safety_flag,
+        interpretation=interp,
+    )
+
+
+def assess_aid_compensation(clinical: ClinicalReport,
+                            metabolic: Optional[MetabolicState],
+                            ) -> AIDCompensation:
+    """Detect AID compensation vs genuine under-insulinization (EXP-747).
+
+    Uses flux polarity + glycemic metrics to classify:
+    - High TAR + negative net flux → AID compensating for bad settings
+    - High TAR + positive net flux → genuinely under-insulinized
+    - High TBR + negative flux → over-insulinized
+    - Good TIR → well controlled
+
+    Args:
+        clinical: ClinicalReport with TIR/TAR/TBR and ISF discrepancy.
+        metabolic: MetabolicState for flux analysis.
+
+    Returns:
+        AIDCompensation assessment.
+    """
+    tar = clinical.tar
+    tbr = clinical.tbr
+    tir = clinical.tir
+    isf_ratio = clinical.isf_discrepancy
+
+    mean_flux = 0.0
+    polarity = "balanced"
+    if metabolic is not None:
+        mean_flux = metabolic.mean_net_flux
+        if mean_flux < -0.5:
+            polarity = "negative"
+        elif mean_flux > 0.5:
+            polarity = "positive"
+
+    # Classification logic
+    if tir >= 0.65:
+        comp_type = CompensationType.WELL_CONTROLLED
+        interp = "Good glycemic control. AID and settings appear well-matched."
+    elif tbr > 0.06 and polarity == "negative":
+        comp_type = CompensationType.OVER_INSULINIZED
+        interp = ("Excessive time below range with net negative flux. "
+                   "Total insulin delivery may be too high. Consider reducing basal or ISF.")
+    elif tar > 0.30 and polarity == "negative":
+        comp_type = CompensationType.AID_COMPENSATING
+        interp = ("High time above range despite AID delivering extra insulin (negative flux). "
+                   "AID is compensating for settings mismatch — underlying settings likely too conservative. "
+                   "Consider adjusting CR/ISF closer to observed effective values.")
+    elif tar > 0.30 and polarity in ("positive", "balanced"):
+        comp_type = CompensationType.UNDER_INSULINIZED
+        interp = ("High time above range with insufficient insulin delivery. "
+                   "Patient may be genuinely under-insulinized. "
+                   "Consider increasing basal rate or adjusting CR for more aggressive dosing.")
+    else:
+        comp_type = CompensationType.WELL_CONTROLLED
+        interp = "Glycemic control is acceptable. No major AID compensation pattern detected."
+
+    if isf_ratio and isf_ratio > 2.0:
+        interp += f" ISF discrepancy: effective ISF is {isf_ratio:.1f}× profile setting."
+
+    return AIDCompensation(
+        compensation_type=comp_type,
+        isf_ratio=isf_ratio,
+        mean_net_flux=mean_flux,
+        flux_polarity=polarity,
+        tar=tar,
+        tbr=tbr,
+        interpretation=interp,
+    )
 
 
 def generate_recommendations(grade: GlycemicGrade,

@@ -387,9 +387,10 @@ def cmd_triage(result: PipelineResult, args) -> dict:
         # Basal
         ba = cr.basal_assessment
         if ba:
+            ba_short = ba.value.replace('basal_', '')
             emoji = {'appropriate': '✅', 'too_low': '⬆️', 'too_high': '⬇️',
-                     'slightly_high': '↘️'}.get(ba.value, '❓')
-            print(f'  Basal:        {emoji} {ba.value}')
+                     'slightly_high': '↘️'}.get(ba_short, '❓')
+            print(f'  Basal:        {emoji} {ba_short}')
             if cr.overnight_tir is not None:
                 print(f'  Overnight TIR: {fmt_pct(cr.overnight_tir)}')
         else:
@@ -429,25 +430,54 @@ def cmd_triage(result: PipelineResult, args) -> dict:
         else:
             print(f'\n  No settings changes recommended.')
 
-        # Period-by-period
-        print(f'\n  Period analysis:')
-        periods = [('Fasting (00-06)', 0, 6), ('Morning (06-12)', 6, 12),
-                   ('Afternoon (12-18)', 12, 18), ('Evening (18-24)', 18, 24)]
-        if result.metabolic:
-            from production.metabolic_engine import _extract_hours
-            hours = _extract_hours(result.cleaned.glucose)
-            # Use pipeline's hours array (same length as cleaned glucose)
-            if hasattr(result, '_hours'):
-                hours = result._hours
-            bg = result.cleaned.glucose
-            for label, h_start, h_end in periods:
-                # Can't reliably extract hours here without timestamps,
-                # but clinical report has overall stats
-                pass
-            # Simplified: show overall clinical recs
+        # Period-by-period (new: Phase 3)
+        if result.period_metrics:
+            print(f'\n  Period-by-period analysis:')
+            print(f'    {"Period":<15s} {"TIR":>5s} {"TBR":>5s} {"TAR":>5s}  {"Basal":>18s}  Action')
+            print(f'    {"─"*15:<15s} {"─"*5:>5s} {"─"*5:>5s} {"─"*5:>5s}  {"─"*18:>18s}  {"─"*25}')
+            for pm in result.period_metrics:
+                ba_str = pm.basal_assessment.value.replace('basal_', '') if pm.basal_assessment else '—'
+                ba_emoji = {'appropriate': '✅', 'too_low': '⬆️', 'too_high': '⬇️',
+                            'slightly_high': '↘️'}.get(ba_str, '❓')
+                rec_str = ''
+                if pm.recommendation:
+                    rec_str = (f'{pm.recommendation.direction} {pm.recommendation.magnitude_pct:.0f}% '
+                               f'→ +{pm.recommendation.predicted_tir_delta:.1f}pp')
+                else:
+                    rec_str = '—'
+                label = f'{pm.name} ({pm.hour_start:.0f}-{pm.hour_end:.0f}h)'
+                print(f'    {label:<15s} {pm.tir*100:>4.0f}% {pm.tbr*100:>4.1f}% {pm.tar*100:>4.0f}%  {ba_emoji} {ba_str:>15s}  {rec_str}')
+        else:
+            print(f'\n  Period analysis:')
             for rec_text in cr.recommendations:
                 print(f'    {rec_text[:78]}')
 
+        # Correction energy (EXP-559)
+        if result.correction_energy:
+            ce = result.correction_energy
+            emoji = '🟢' if ce.mean_daily_score < 50 else ('🟡' if ce.mean_daily_score < 150 else '🔴')
+            print(f'\n  Correction energy: {emoji} {ce.mean_daily_score:.0f}/day')
+            if ce.correlation_with_tir is not None:
+                print(f'    Energy-TIR correlation: r={ce.correlation_with_tir:.2f}')
+            print(f'    {ce.interpretation[:78]}')
+
+        # AID compensation (EXP-747)
+        if result.aid_compensation:
+            ac = result.aid_compensation
+            comp_emoji = {'well_controlled': '✅', 'aid_compensating': '⚠️',
+                          'under_insulinized': '📈', 'over_insulinized': '📉'}
+            emoji = comp_emoji.get(ac.compensation_type.value, '❓')
+            print(f'\n  AID compensation: {emoji} {ac.compensation_type.value.replace("_", " ")}')
+            print(f'    {ac.interpretation[:78]}')
+
+        # Bolus timing safety
+        if result.bolus_safety and result.bolus_safety.total_corrections > 0:
+            bs = result.bolus_safety
+            emoji = '🚨' if bs.safety_flag else '✅'
+            print(f'\n  Correction timing: {emoji} {bs.stacking_events}/{bs.total_corrections} stacking events')
+            if bs.min_interval_hours is not None:
+                print(f'    Min interval: {bs.min_interval_hours:.1f}h, Mean: {bs.mean_interval_hours:.1f}h')
+            print(f'    {bs.interpretation[:78]}')
     if result.settings_recs:
         out['settings_recs'] = [
             {
@@ -462,6 +492,42 @@ def cmd_triage(result: PipelineResult, args) -> dict:
             }
             for sr in result.settings_recs
         ]
+
+    # Advanced analytics JSON
+    if result.period_metrics:
+        out['period_metrics'] = [
+            {'name': pm.name, 'hours': f'{pm.hour_start:.0f}-{pm.hour_end:.0f}',
+             'tir': round(pm.tir * 100, 1), 'tbr': round(pm.tbr * 100, 1),
+             'tar': round(pm.tar * 100, 1), 'mean_glucose': round(pm.mean_glucose, 0),
+             'basal': pm.basal_assessment.value if pm.basal_assessment else None,
+             'recommendation': pm.recommendation.rationale if pm.recommendation else None}
+            for pm in result.period_metrics
+        ]
+    if result.correction_energy:
+        ce = result.correction_energy
+        out['correction_energy'] = {
+            'mean_daily': round(ce.mean_daily_score, 1),
+            'correlation_with_tir': round(ce.correlation_with_tir, 3) if ce.correlation_with_tir else None,
+            'interpretation': ce.interpretation,
+        }
+    if result.aid_compensation:
+        ac = result.aid_compensation
+        out['aid_compensation'] = {
+            'type': ac.compensation_type.value,
+            'isf_ratio': round(ac.isf_ratio, 2) if ac.isf_ratio else None,
+            'flux_polarity': ac.flux_polarity,
+            'interpretation': ac.interpretation,
+        }
+    if result.bolus_safety and result.bolus_safety.total_corrections > 0:
+        bs = result.bolus_safety
+        out['bolus_safety'] = {
+            'total_corrections': bs.total_corrections,
+            'stacking_events': bs.stacking_events,
+            'stacking_fraction': round(bs.stacking_fraction, 3),
+            'min_interval_hours': round(bs.min_interval_hours, 1) if bs.min_interval_hours else None,
+            'safety_flag': bs.safety_flag,
+            'interpretation': bs.interpretation,
+        }
 
     return out
 
@@ -526,9 +592,45 @@ def cmd_meals(result: PipelineResult, args) -> dict:
                   f'confidence: {mp.confidence:.0%}')
             if mp.recommend_eating_soon:
                 print(f'    ✅ RECOMMEND: Pre-bolus now for better post-meal control')
+        # Meal response phenotyping (EXP-514)
+        if result.meal_responses:
+            from collections import Counter
+            types = Counter(r.response_type.value for r in result.meal_responses)
+            total_typed = len(result.meal_responses)
+            print(f'\n  Meal response phenotype ({total_typed} classified):')
+            for rtype, count in sorted(types.items(), key=lambda x: -x[1]):
+                pct = count / total_typed * 100
+                bar = '█' * min(20, int(pct / 5))
+                emoji = {'flat': '➖', 'fast': '⚡', 'biphasic': '🔄',
+                         'slow': '🐢', 'moderate': '📊'}.get(rtype, '•')
+                print(f'    {emoji} {rtype:>9}: {count:>3} ({pct:.0f}%) {bar}')
+
+            # Brief interpretation
+            dominant = types.most_common(1)[0][0] if types else ''
+            if dominant == 'flat':
+                print(f'    → AID suppressing most excursions — good bolus timing')
+            elif dominant == 'biphasic':
+                print(f'    → Second-phase glucose rises — consider extended bolus / fat-protein')
+            elif dominant == 'fast':
+                print(f'    → Quick carb absorption — pre-bolus timing matters most')
+            elif dominant == 'slow':
+                print(f'    → Slow absorption — may benefit from extended/split bolusing')
+
         elif mh.total_detected >= 10:
             # Have meals but no prediction — show why
             print(f'\n  ℹ️  Meal timing too variable for reliable prediction')
+
+    # Add meal phenotype to JSON
+    if result.meal_responses:
+        from collections import Counter
+        types = Counter(r.response_type.value for r in result.meal_responses)
+        out['meal_phenotypes'] = dict(types)
+        out['meal_phenotype_details'] = [
+            {'type': r.response_type.value, 'excursion_mg_dl': round(r.excursion_mg_dl, 0),
+             'peak_time_min': round(r.peak_time_min), 'tail_ratio': round(r.tail_ratio, 2),
+             'confidence': round(r.confidence, 2)}
+            for r in result.meal_responses
+        ]
 
     return out
 

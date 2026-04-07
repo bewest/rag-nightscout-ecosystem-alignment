@@ -1,0 +1,116 @@
+{
+  "name": "EXP-652: Hypo Lead Time",
+  "summary": "Adapt lead=24min, Flux lead=34min, Flux caught=37%",
+  "details": [
+    {
+      "patient": "a",
+      "n_events": 31,
+      "adaptive_alerts": 25,
+      "adaptive_mean_lead_min": 19.0,
+      "flux_alerts": 15,
+      "flux_mean_lead_min": 29.3,
+      "flux_caught_pct": 48.4,
+      "adaptive_caught_pct": 80.6
+    },
+    {
+      "patient": "b",
+      "n_events": 15,
+      "adaptive_alerts": 13,
+      "adaptive_mean_lead_min": 20.0,
+      "flux_alerts": 3,
+      "flux_mean_lead_min": 43.3,
+      "flux_caught_pct": 20.0,
+      "adaptive_caught_pct": 86.7
+    },
+    {
+      "patient": "c",
+      "n_events": 53,
+      "adaptive_alerts": 45,
+      "adaptive_mean_lead_min": 18.6,
+      "flux_alerts": 37,
+      "flux_mean_lead_min": 29.7,
+      "flux_caught_pct": 69.8,
+      "adaptive_caught_pct": 84.9
+    },
+    {
+      "patient": "d",
+      "n_events": 20,
+      "adaptive_alerts": 13,
+      "adaptive_mean_lead_min": 36.2,
+      "flux_alerts": 6,
+      "flux_mean_lead_min": 26.7,
+      "flux_caught_pct": 30.0,
+      "adaptive_caught_pct": 65.0
+    },
+    {
+      "patient": "e",
+      "n_events": 30,
+      "adaptive_alerts": 27,
+      "adaptive_mean_lead_min": 16.9,
+      "flux_alerts": 13,
+      "flux_mean_lead_min": 38.8,
+      "flux_caught_pct": 43.3,
+      "adaptive_caught_pct": 90.0
+    },
+    {
+      "patient": "f",
+      "n_events": 43,
+      "adaptive_alerts": 37,
+      "adaptive_mean_lead_min": 19.7,
+      "flux_alerts": 8,
+      "flux_mean_lead_min": 21.2,
+      "flux_caught_pct": 18.6,
+      "adaptive_caught_pct": 86.0
+    },
+    {
+      "patient": "g",
+      "n_events": 52,
+      "adaptive_alerts": 46,
+      "adaptive_mean_lead_min": 19.8,
+      "flux_alerts": 20,
+      "flux_mean_lead_min": 28.8,
+      "flux_caught_pct": 38.5,
+      "adaptive_caught_pct": 88.5
+    },
+    {
+      "patient": "h",
+      "n_events": 89,
+      "adaptive_alerts": 85,
+      "adaptive_mean_lead_min": 27.7,
+      "flux_alerts": 52,
+      "flux_mean_lead_min": 34.9,
+      "flux_caught_pct": 58.4,
+      "adaptive_caught_pct": 95.5
+    },
+    {
+      "patient": "i",
+      "n_events": 69,
+      "adaptive_alerts": 68,
+      "adaptive_mean_lead_min": 21.1,
+      "flux_alerts": 51,
+      "flux_mean_lead_min": 47.8,
+      "flux_caught_pct": 73.9,
+      "adaptive_caught_pct": 98.6
+    },
+    {
+      "patient": "j",
+      "n_events": 5,
+      "adaptive_alerts": 4,
+      "adaptive_mean_lead_min": 31.2,
+      "flux_alerts": 0,
+      "flux_mean_lead_min": 0,
+      "flux_caught_pct": 0.0,
+      "adaptive_caught_pct": 80.0
+    },
+    {
+      "patient": "k",
+      "n_events": 59,
+      "adaptive_alerts": 52,
+      "adaptive_mean_lead_min": 32.8,
+      "flux_alerts": 4,
+      "flux_mean_lead_min": 35.0,
+      "flux_caught_pct": 6.8,
+      "adaptive_caught_pct": 88.1
+    }
+  ]
+}

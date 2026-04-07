@@ -1,0 +1,105 @@
+{
+  "name": "EXP-653: Hypo Severity Prediction",
+  "summary": "r(flux,nadir)=0.187, r(preBG,nadir)=nan",
+  "details": [
+    {
+      "patient": "a",
+      "n_events": 31,
+      "mean_nadir": 55.0,
+      "mean_duration_min": 51.9,
+      "corr_flux_nadir": 0.385,
+      "corr_prebg_nadir": NaN,
+      "mean_pre_flux": -8.39
+    },
+    {
+      "patient": "b",
+      "n_events": 15,
+      "mean_nadir": 59.3,
+      "mean_duration_min": 23.7,
+      "corr_flux_nadir": 0.272,
+      "corr_prebg_nadir": 0.042,
+      "mean_pre_flux": 14.21
+    },
+    {
+      "patient": "c",
+      "n_events": 53,
+      "mean_nadir": 55.9,
+      "mean_duration_min": 51.6,
+      "corr_flux_nadir": 0.133,
+      "corr_prebg_nadir": -0.35,
+      "mean_pre_flux": -18.52
+    },
+    {
+      "patient": "d",
+      "n_events": 20,
+      "mean_nadir": 62.1,
+      "mean_duration_min": 26.5,
+      "corr_flux_nadir": 0.236,
+      "corr_prebg_nadir": NaN,
+      "mean_pre_flux": 2.27
+    },
+    {
+      "patient": "e",
+      "n_events": 29,
+      "mean_nadir": 60.0,
+      "mean_duration_min": 27.4,
+      "corr_flux_nadir": -0.229,
+      "corr_prebg_nadir": 0.067,
+      "mean_pre_flux": -16.62
+    },
+    {
+      "patient": "f",
+      "n_events": 43,
+      "mean_nadir": 55.9,
+      "mean_duration_min": 48.8,
+      "corr_flux_nadir": 0.415,
+      "corr_prebg_nadir": -0.369,
+      "mean_pre_flux": -0.9
+    },
+    {
+      "patient": "g",
+      "n_events": 52,
+      "mean_nadir": NaN,
+      "mean_duration_min": 35.6,
+      "corr_flux_nadir": 0.264,
+      "corr_prebg_nadir": -0.016,
+      "mean_pre_flux": -3.82
+    },
+    {
+      "patient": "h",
+      "n_events": 89,
+      "mean_nadir": NaN,
+      "mean_duration_min": 51.5,
+      "corr_flux_nadir": 0.258,
+      "corr_prebg_nadir": -0.132,
+      "mean_pre_flux": -13.76
+    },
+    {
+      "patient": "i",
+      "n_events": 69,
+      "mean_nadir": 52.1,
+      "mean_duration_min": 97.3,
+      "corr_flux_nadir": 0.299,
+      "corr_prebg_nadir": NaN,
+      "mean_pre_flux": -40.21
+    },
+    {
+      "patient": "j",
+      "n_events": 5,
+      "mean_nadir": 67.4,
+      "mean_duration_min": 21.0,
+      "corr_flux_nadir": 0.043,
+      "corr_prebg_nadir": NaN,
+      "mean_pre_flux": 17.27
+    },
+    {
+      "patient": "k",
+      "n_events": 59,
+      "mean_nadir": NaN,
+      "mean_duration_min": 76.8,
+      "corr_flux_nadir": -0.022,
+      "corr_prebg_nadir": NaN,
+      "mean_pre_flux": 13.6
+    }
+  ]
+}

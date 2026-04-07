@@ -1,0 +1,105 @@
+{
+  "name": "EXP-644: 5-Feature Parsimonious Model",
+  "summary": "10feat R\u00b2=0.3138, 5feat R\u00b2=0.2959 (91%), 2feat R\u00b2=0.2641 (74%)",
+  "details": [
+    {
+      "patient": "a",
+      "r2_full_10": 0.281,
+      "r2_5feat": 0.261,
+      "r2_2feat": 0.2218,
+      "r2_ar1_only": 0.2079,
+      "retention_5": 92.9,
+      "retention_2": 78.9
+    },
+    {
+      "patient": "b",
+      "r2_full_10": 0.3972,
+      "r2_5feat": 0.3807,
+      "r2_2feat": 0.3426,
+      "r2_ar1_only": 0.3425,
+      "retention_5": 95.8,
+      "retention_2": 86.2
+    },
+    {
+      "patient": "c",
+      "r2_full_10": 0.328,
+      "r2_5feat": 0.3067,
+      "r2_2feat": 0.2662,
+      "r2_ar1_only": 0.2545,
+      "retention_5": 93.5,
+      "retention_2": 81.1
+    },
+    {
+      "patient": "d",
+      "r2_full_10": 0.182,
+      "r2_5feat": 0.169,
+      "r2_2feat": 0.1528,
+      "r2_ar1_only": 0.0876,
+      "retention_5": 92.8,
+      "retention_2": 83.9
+    },
+    {
+      "patient": "e",
+      "r2_full_10": 0.4572,
+      "r2_5feat": 0.4337,
+      "r2_2feat": 0.4084,
+      "r2_ar1_only": 0.3706,
+      "retention_5": 94.9,
+      "retention_2": 89.3
+    },
+    {
+      "patient": "f",
+      "r2_full_10": 0.305,
+      "r2_5feat": 0.2941,
+      "r2_2feat": 0.2811,
+      "r2_ar1_only": 0.2774,
+      "retention_5": 96.4,
+      "retention_2": 92.2
+    },
+    {
+      "patient": "g",
+      "r2_full_10": 0.3668,
+      "r2_5feat": 0.3576,
+      "r2_2feat": 0.3557,
+      "r2_ar1_only": 0.3512,
+      "retention_5": 97.5,
+      "retention_2": 97.0
+    },
+    {
+      "patient": "h",
+      "r2_full_10": 0.2995,
+      "r2_5feat": 0.2862,
+      "r2_2feat": 0.2566,
+      "r2_ar1_only": 0.2557,
+      "retention_5": 95.6,
+      "retention_2": 85.7
+    },
+    {
+      "patient": "i",
+      "r2_full_10": 0.6451,
+      "r2_5feat": 0.6272,
+      "r2_2feat": 0.5975,
+      "r2_ar1_only": 0.5455,
+      "retention_5": 97.2,
+      "retention_2": 92.6
+    },
+    {
+      "patient": "j",
+      "r2_full_10": 0.0949,
+      "r2_5feat": 0.0518,
+      "r2_2feat": 0.026,
+      "r2_ar1_only": 0.0236,
+      "retention_5": 54.6,
+      "retention_2": 27.4
+    },
+    {
+      "patient": "k",
+      "r2_full_10": 0.0953,
+      "r2_5feat": 0.0866,
+      "r2_2feat": -0.0039,
+      "r2_ar1_only": -0.0077,
+      "retention_5": 90.9,
+      "retention_2": -4.1
+    }
+  ]
+}

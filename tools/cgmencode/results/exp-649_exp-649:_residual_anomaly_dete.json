@@ -1,0 +1,116 @@
+{
+  "name": "EXP-649: Residual Anomaly Detection",
+  "summary": "Mean anomaly rate=1.4%, pos:neg=335:209, cluster=41%",
+  "details": [
+    {
+      "patient": "a",
+      "n_anomalies": 617,
+      "anomaly_rate_pct": 1.35,
+      "positive_anomalies": 391,
+      "negative_anomalies": 226,
+      "mean_bg_at_anomaly": 228.5,
+      "sigma": 9.79,
+      "cluster_rate": 35.3
+    },
+    {
+      "patient": "b",
+      "n_anomalies": 580,
+      "anomaly_rate_pct": 1.25,
+      "positive_anomalies": 219,
+      "negative_anomalies": 361,
+      "mean_bg_at_anomaly": 200.1,
+      "sigma": 9.22,
+      "cluster_rate": 49.3
+    },
+    {
+      "patient": "c",
+      "n_anomalies": 503,
+      "anomaly_rate_pct": 1.17,
+      "positive_anomalies": 392,
+      "negative_anomalies": 111,
+      "mean_bg_at_anomaly": 224.8,
+      "sigma": 10.35,
+      "cluster_rate": 33.8
+    },
+    {
+      "patient": "d",
+      "n_anomalies": 640,
+      "anomaly_rate_pct": 1.41,
+      "positive_anomalies": 316,
+      "negative_anomalies": 324,
+      "mean_bg_at_anomaly": 158.3,
+      "sigma": 6.81,
+      "cluster_rate": 36.6
+    },
+    {
+      "patient": "e",
+      "n_anomalies": 525,
+      "anomaly_rate_pct": 1.3,
+      "positive_anomalies": 282,
+      "negative_anomalies": 243,
+      "mean_bg_at_anomaly": 197.2,
+      "sigma": 9.02,
+      "cluster_rate": 42.9
+    },
+    {
+      "patient": "f",
+      "n_anomalies": 820,
+      "anomaly_rate_pct": 1.78,
+      "positive_anomalies": 588,
+      "negative_anomalies": 232,
+      "mean_bg_at_anomaly": 213.2,
+      "sigma": 7.87,
+      "cluster_rate": 47.1
+    },
+    {
+      "patient": "g",
+      "n_anomalies": 606,
+      "anomaly_rate_pct": 1.31,
+      "positive_anomalies": 355,
+      "negative_anomalies": 251,
+      "mean_bg_at_anomaly": 191.2,
+      "sigma": 8.67,
+      "cluster_rate": 34.0
+    },
+    {
+      "patient": "h",
+      "n_anomalies": 276,
+      "anomaly_rate_pct": 1.49,
+      "positive_anomalies": 182,
+      "negative_anomalies": 94,
+      "mean_bg_at_anomaly": 160.1,
+      "sigma": 9.27,
+      "cluster_rate": 42.0
+    },
+    {
+      "patient": "i",
+      "n_anomalies": 562,
+      "anomaly_rate_pct": 1.21,
+      "positive_anomalies": 546,
+      "negative_anomalies": 16,
+      "mean_bg_at_anomaly": 300.4,
+      "sigma": 12.25,
+      "cluster_rate": 64.9
+    },
+    {
+      "patient": "j",
+      "n_anomalies": 207,
+      "anomaly_rate_pct": 1.31,
+      "positive_anomalies": 107,
+      "negative_anomalies": 100,
+      "mean_bg_at_anomaly": 169.9,
+      "sigma": 10.11,
+      "cluster_rate": 23.2
+    },
+    {
+      "patient": "k",
+      "n_anomalies": 648,
+      "anomaly_rate_pct": 1.41,
+      "positive_anomalies": 306,
+      "negative_anomalies": 342,
+      "mean_bg_at_anomaly": 88.8,
+      "sigma": 5.1,
+      "cluster_rate": 38.3
+    }
+  ]
+}

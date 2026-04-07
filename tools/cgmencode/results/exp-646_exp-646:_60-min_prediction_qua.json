@@ -1,0 +1,94 @@
+{
+  "name": "EXP-646: 60-Min Prediction Quality",
+  "summary": "60min MAE=45.0, Zone A=42%, Zone A+B=68%",
+  "details": [
+    {
+      "patient": "a",
+      "n_pairs": 9196,
+      "mae_60min": 49.4,
+      "mape_60min": 26.0,
+      "zone_a_pct": 47.6,
+      "zone_ab_pct": 72.5
+    },
+    {
+      "patient": "b",
+      "n_pairs": 9476,
+      "mae_60min": 46.4,
+      "mape_60min": 29.5,
+      "zone_a_pct": 47.4,
+      "zone_ab_pct": 69.8
+    },
+    {
+      "patient": "c",
+      "n_pairs": 9273,
+      "mae_60min": 53.4,
+      "mape_60min": 31.6,
+      "zone_a_pct": 34.9,
+      "zone_ab_pct": 59.3
+    },
+    {
+      "patient": "d",
+      "n_pairs": 8369,
+      "mae_60min": 29.7,
+      "mape_60min": 20.7,
+      "zone_a_pct": 44.2,
+      "zone_ab_pct": 77.5
+    },
+    {
+      "patient": "e",
+      "n_pairs": 8112,
+      "mae_60min": 56.7,
+      "mape_60min": 33.7,
+      "zone_a_pct": 29.5,
+      "zone_ab_pct": 51.5
+    },
+    {
+      "patient": "f",
+      "n_pairs": 9326,
+      "mae_60min": 38.8,
+      "mape_60min": 25.2,
+      "zone_a_pct": 53.2,
+      "zone_ab_pct": 78.4
+    },
+    {
+      "patient": "g",
+      "n_pairs": 9327,
+      "mae_60min": 41.5,
+      "mape_60min": 27.7,
+      "zone_a_pct": 41.9,
+      "zone_ab_pct": 71.1
+    },
+    {
+      "patient": "h",
+      "n_pairs": 9300,
+      "mae_60min": 37.1,
+      "mape_60min": 31.0,
+      "zone_a_pct": 41.3,
+      "zone_ab_pct": 68.0
+    },
+    {
+      "patient": "i",
+      "n_pairs": 9387,
+      "mae_60min": 86.4,
+      "mape_60min": 47.2,
+      "zone_a_pct": 27.1,
+      "zone_ab_pct": 42.5
+    },
+    {
+      "patient": "j",
+      "n_pairs": 3192,
+      "mae_60min": 37.4,
+      "mape_60min": 31.2,
+      "zone_a_pct": 29.4,
+      "zone_ab_pct": 63.3
+    },
+    {
+      "patient": "k",
+      "n_pairs": 9067,
+      "mae_60min": 18.3,
+      "mape_60min": 20.1,
+      "zone_a_pct": 70.2,
+      "zone_ab_pct": 89.8
+    }
+  ]
+}

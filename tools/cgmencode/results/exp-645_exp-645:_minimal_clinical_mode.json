@@ -1,0 +1,105 @@
+{
+  "name": "EXP-645: Minimal Clinical Model",
+  "summary": "2-feat R\u00b2=0.2640, MAE=5.1, skill=0.0000",
+  "details": [
+    {
+      "patient": "a",
+      "r2": 0.2233,
+      "mae": 5.99,
+      "persist_mae": NaN,
+      "skill": 0,
+      "beta_ar1": 0.5016,
+      "beta_demand2": 5.0503
+    },
+    {
+      "patient": "b",
+      "r2": 0.3424,
+      "mae": 5.39,
+      "persist_mae": NaN,
+      "skill": 0,
+      "beta_ar1": 0.6382,
+      "beta_demand2": -0.2098
+    },
+    {
+      "patient": "c",
+      "r2": 0.2647,
+      "mae": 5.82,
+      "persist_mae": NaN,
+      "skill": 0,
+      "beta_ar1": 0.6133,
+      "beta_demand2": 3.2367
+    },
+    {
+      "patient": "d",
+      "r2": 0.1566,
+      "mae": 4.31,
+      "persist_mae": NaN,
+      "skill": 0,
+      "beta_ar1": 0.4555,
+      "beta_demand2": 26.8659
+    },
+    {
+      "patient": "e",
+      "r2": 0.409,
+      "mae": 4.11,
+      "persist_mae": NaN,
+      "skill": 0,
+      "beta_ar1": 0.6075,
+      "beta_demand2": 6.9769
+    },
+    {
+      "patient": "f",
+      "r2": 0.2792,
+      "mae": 4.76,
+      "persist_mae": NaN,
+      "skill": 0,
+      "beta_ar1": 0.561,
+      "beta_demand2": 4.5069
+    },
+    {
+      "patient": "g",
+      "r2": 0.3545,
+      "mae": 4.74,
+      "persist_mae": NaN,
+      "skill": 0,
+      "beta_ar1": 0.5099,
+      "beta_demand2": 2.1396
+    },
+    {
+      "patient": "h",
+      "r2": 0.2561,
+      "mae": 5.81,
+      "persist_mae": NaN,
+      "skill": 0,
+      "beta_ar1": 0.5667,
+      "beta_demand2": 0.1806
+    },
+    {
+      "patient": "i",
+      "r2": 0.5971,
+      "mae": 5.65,
+      "persist_mae": NaN,
+      "skill": 0,
+      "beta_ar1": 0.6165,
+      "beta_demand2": 9.0606
+    },
+    {
+      "patient": "j",
+      "r2": 0.0265,
+      "mae": 6.56,
+      "persist_mae": NaN,
+      "skill": 0,
+      "beta_ar1": 0.2775,
+      "beta_demand2": -1.7388
+    },
+    {
+      "patient": "k",
+      "r2": -0.0051,
+      "mae": 3.19,
+      "persist_mae": NaN,
+      "skill": 0,
+      "beta_ar1": 0.114,
+      "beta_demand2": 21.2897
+    }
+  ]
+}

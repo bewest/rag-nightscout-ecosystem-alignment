@@ -18141,11 +18141,15 @@ def run_exp619(args):
     }}
 
     # ── Phase 1: Train w48 base (data-rich champion) ──
+    # w48 uses stride=16 (optimal: max data volume for short windows)
+    # w72+ use stride=24 (balanced: enough data for extended context)
+    stride_map = {48: 16, 72: 24, 96: 24, 144: 48}
+    w48_stride = stride_map[48]
     print(f"\n{'─'*50}")
-    print(f"  Phase 1: w48 base training (stride=24)")
+    print(f"  Phase 1: w48 base training (stride={w48_stride})")
     print(f"{'─'*50}")
     data48 = load_bridge_data(
-        args.patients_dir, window_size=48, stride=24,
+        args.patients_dir, window_size=48, stride=w48_stride,
         max_patients=cfg['max_patients'], load_isf=True)
     has_isf = 'isf_val' in data48
     train48, val48 = prepare_pk_future(data48, use_isf=has_isf, drop_time=False)
@@ -18216,11 +18220,11 @@ def run_exp619(args):
 
         print(f"\n{'─'*50}")
         print(f"  Phase 2: {label} ({half} hist + {half} future, "
-              f"max h{half*5}, stride=24)")
+              f"max h{half*5}, stride={stride_map.get(ws, 24)})")
         print(f"{'─'*50}")
 
         data_ext = load_bridge_data(
-            args.patients_dir, window_size=ws, stride=24,
+            args.patients_dir, window_size=ws, stride=stride_map.get(ws, 24),
             max_patients=cfg['max_patients'], load_isf=True)
         train_ext, val_ext = prepare_pk_future(data_ext, use_isf=has_isf, drop_time=False)
         isf_ext = data_ext.get('isf_val')
