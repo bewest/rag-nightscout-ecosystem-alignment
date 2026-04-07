@@ -55,7 +55,7 @@ single features found for UAM classification.
 | r(ISF, CR) < 0 | Lower ISF when higher CR | **2/11** ✗ |
 
 Most clinicians only tune **basal** circadianly. ISF and CR schedules are often flat
-(5/11 have zero ISF variation, 4/11 zero CR variation). Patient **i** is the only one
+(4/11 have zero ISF variation, 4/11 zero CR variation). Patient **i** is the only one
 with all three expected correlation signs.
 
 ### 1.4 Hepatic Model Gap
@@ -91,7 +91,7 @@ relative to the physio model benefit most. Patient b worsened because clinical E
 |---------|:---:|:---:|:---|
 | a | 0 min | 65 min | Traditional (aggressive pre-boluser) |
 | c | 10 min | 45 min | SMB-dominant |
-| f | 5 min | 58 min | Traditional |
+| f | 5 min | 57.5 min | Traditional |
 | k | 15 min | 105 min | SMB-dominant |
 | **Cohort** | **10 min** | **45 min** | **35 min separation** |
 
@@ -203,17 +203,22 @@ takes over automatically.
 
 ### 4.4 Daily Distribution
 
+The **unified detector** (averaging all methods) overcounts because noisy methods
+(residual, glucose_deriv) dominate:
+
 | Days | Count | Fraction |
 |------|:---:|:---:|
 | 0 meals (gaps?) | 9 | 15% |
-| 1 meal | 7 | 11% |
-| **2 meals** | **17** | **28%** |
-| **3 meals** | **10** | **16%** |
-| 4+ meals | 18 | 30% |
+| 1 meal | 1 | 2% |
+| 2 meals | 1 | 2% |
+| 3 meals | 2 | 3% |
+| **4+ meals** | **48** | **79%** |
 
-The mode is 2 meals/day (28% of days), with 3+ on days that likely include
-dessert or snacking. Days with 0 detections correlate with glucose data gaps
-(83% coverage).
+The unified detector's mean is 5.6 meals/day (median 6.0) — far too many.
+This is why §4.2's **per-method results** are more reliable: sum_flux and
+demand_only individually achieve median 2.0/day, but averaging them with the
+noisier residual and glucose_deriv methods inflates the count. Days with
+0 detections correlate with glucose data gaps (83% coverage).
 
 ---
 

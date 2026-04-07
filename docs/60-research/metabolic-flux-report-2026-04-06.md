@@ -23,10 +23,10 @@ and corrections in real time.
 | Throughput (supply×demand) has 18× spectral power at meal frequencies | EXP-444 | Massive SNR advantage for meal-scale tasks |
 | Hepatic production rescues zero-data patients | 11/11 patients have nonzero supply (EXP-441) | Universal applicability |
 | Cross-patient metabolic response shape similarity = 0.987 | EXP-445 | Near-universal physiology despite 4.5× ISF range |
-| Meal counting detects 2.0–2.9 events/day (detrended) | EXP-448 | Improved from 1.3 with hepatic subtraction |
+| Meal counting detects 2.0–2.9 events/day (detrended) | EXP-448 | Improved from carb-only baseline of 1.7/day |
 | Meal phase lag = 20 min median (range 8–70) | EXP-466 | Matches insulin onset; measures bolusing behavior |
 | ALL patients show overnight demand > supply | EXP-450 | AID compensates or hepatic model too low |
-| Most clinicians don't tune CR/ISF circadianly | EXP-465 | 5/11 have zero ISF variation, 4/11 zero CR |
+| Most clinicians don't tune CR/ISF circadianly | EXP-465 | 4/11 have zero ISF variation, 4/11 zero CR |
 | Hepatic model covers only 48% of basal demand | EXP-467 | Need hybrid model incorporating basal schedule |
 | Conservation underpredicts in 9/11 patients | EXP-454 | Systematic: UAM meals + dawn not captured |
 
@@ -640,8 +640,9 @@ physics model can't account for with current settings.
 
 ### 8.1 EXP-448: Hepatic-Detrended Meal Detection
 
-Subtracting hepatic baseline from supply improves meal detection from 1.3 to **2.0–2.9
-events/day** — closer to the expected 2–3 meals. The hepatic floor was the main reason
+Subtracting hepatic baseline from supply improves meal detection from a carb-only
+baseline of **1.7 events/day** to **2.0–2.9 events/day** using sum_flux (mean 2.4/day).
+The hepatic floor was the main reason
 earlier counting underestimated: it constitutes 17–96% of total supply depending on
 the patient and time of day.
 
@@ -732,7 +733,7 @@ Patients b and j have dawn ratio >1.0, suggesting under-treated dawn phenomenon.
 **Critical insight**: Most patients have **flat** ISF and CR schedules. Only basal
 varies circadianly. The coefficient of variation reveals:
 - Basal CV: 0.03–4.8 (always varies, sometimes dramatically)
-- ISF CV: 0.00–0.07 (5/11 patients have **zero** ISF variation)
+- ISF CV: 0.00–0.07 (4/11 patients have **zero** ISF variation)
 - CR CV: 0.00–0.24 (4/11 patients have **zero** CR variation)
 
 **Patient i** is the only one with all three expected correlation signs:

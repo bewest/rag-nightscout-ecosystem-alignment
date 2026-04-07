@@ -1,7 +1,7 @@
-# Asymmetric Windows & Data Quality Report: EXP-417–422
+# Asymmetric Windows & Data Quality Report: EXP-417–425
 
 **Date**: 2026-04-07  
-**Scope**: EXP-417, 419, 421, 422 — training dynamics, asymmetric context, data quality  
+**Scope**: EXP-417, 419, 421, 422, 423, 424, 425 — training dynamics, asymmetric context, data quality  
 **Predecessor**: [gap-closing-report-2026-04-07.md](gap-closing-report-2026-04-07.md) (EXP-409/410, 10.85 MAE)
 
 ## Executive Summary
@@ -40,7 +40,7 @@ the current 8-channel PK feature set at this window size.
 | Metric | EXP-419 (Cosine) | EXP-410 (Plateau) | Δ |
 |--------|:-----------------:|:------------------:|:-:|
 | **Mean Ensemble MAE** | **10.81** | **10.85** | −0.04 |
-| Mean Single Seed | 12.06 | 11.73 | +0.33 |
+| Mean Single Seed | 11.19 | 11.21 | −0.02 |
 | Best Patient (k) | 6.2 | 6.2 | 0.0 |
 | Worst Patient (b) | 17.1 | 17.1 | 0.0 |
 
@@ -48,17 +48,17 @@ the current 8-channel PK feature set at this window size.
 
 | Patient | EXP-410 | EXP-419 | Δ | ISF |
 |:-------:|:-------:|:-------:|:-:|:---:|
-| a | 13.1 | 13.1 | 0.0 | 49 |
+| a | 13.3 | 13.1 | −0.2 | 49 |
 | b | 17.1 | 17.1 | 0.0 | 94 |
-| c | 9.7 | 9.7 | 0.0 | 77 |
+| c | 9.8 | 9.7 | −0.1 | 77 |
 | d | 7.0 | 7.0 | 0.0 | 40 |
-| e | 9.2 | 9.1 | −0.1 | 36 |
-| f | 8.4 | 8.4 | 0.0 | 21 |
-| g | 10.8 | 10.7 | −0.1 | 69 |
-| h | 12.4 | 12.3 | −0.1 | 92 |
+| e | 9.4 | 9.2 | −0.2 | 36 |
+| f | 8.3 | 8.4 | +0.1 | 21 |
+| g | 10.9 | 10.8 | −0.1 | 69 |
+| h | 12.2 | 12.4 | +0.2 | 92 |
 | i | 10.2 | 10.2 | 0.0 | 50 |
-| j | 15.0 | 15.0 | 0.0 | 40 |
-| k | 6.2 | 6.2 | 0.0 | 25 |
+| j | 15.2 | 15.0 | −0.2 | 40 |
+| k | 6.1 | 6.2 | +0.1 | 25 |
 
 ### Why Cosine LR Failed to Translate
 
@@ -70,12 +70,12 @@ LR decay that reaches lower learning rates earlier. But at full scale (200ep):
   different epochs.
 - **Cosine decays immediately** after warmup, regardless of whether the model
   is still making progress at the current LR.
-- Base seeds: cosine avg=12.1 vs plateau avg=11.7 — cosine is **worse** at base.
-- Ensemble compensates, narrowing the gap to −0.04 (within noise).
+- Base seeds: cosine avg=11.19 vs plateau avg=11.21 — **post-FT single seeds are tied**.
+- Ensemble compensates, widening cosine's advantage slightly to −0.04 (within noise).
 
-**Lesson**: ReduceLROnPlateau is the superior LR scheduler for this training
-regime. Its adaptive nature handles the heterogeneous convergence across seeds
-and patients.
+**Lesson**: Cosine annealing and ReduceLROnPlateau produce equivalent results
+at full scale. The quick-mode advantage (−0.37) disappears entirely. Stick with
+ReduceLROnPlateau for its adaptive convergence across heterogeneous patients.
 
 ---
 
