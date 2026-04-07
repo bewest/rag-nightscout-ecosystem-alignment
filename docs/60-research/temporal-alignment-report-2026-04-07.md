@@ -7741,3 +7741,220 @@ Given the model class ceiling has been reached, future experiments should focus 
 5. **Patient stratification**: Why does patient h (R²=0.153) perform so poorly? Data quality audit, treatment pattern analysis.
 6. **Sensor/cannula degradation features**: Device age as explicit feature or separate models per device age.
 
+
+---
+
+## Part XLI: Residual Characterization & Information Frontier (EXP-841–850)
+
+### Objective
+
+With model class exhausted (nonlinear adds Δ=0.002 over linear), this wave shifts from "better models" to "better understanding." We characterize WHERE, WHY, and HOW MUCH the model fails to identify the most promising paths forward.
+
+### Results Summary
+
+| EXP | Method | Key Finding |
+|-----|--------|-------------|
+| 841 | Error by Context | Night/rising worst (MAE=38.4), morning/stable best (MAE=21.7) |
+| 842 | Patient h Deep Dive | **Data completeness outlier** (z=−26.0 on pct_valid) |
+| 843 | Bias-Variance | **99.9% BIAS-DOMINATED** — systematic, not random |
+| 844 | Conformal Prediction | Well-calibrated: 90% target → 90.9% actual, ±64 mg/dL |
+| 845 | Residual Clustering | 2x MAE range between clusters (22.1 vs 44.5) |
+| 846 | Error Attribution | Rising+treated = 20.2% of error; density highest for rising+high |
+| 847 | Sensor Age | **FLAT** — no degradation effect (slope=0.11 mg/dL/day) |
+| 848 | Bolus Timing Feature | **HURTS** (Δ=−0.008) — already captured in supply/demand |
+| 849 | Residual AC Structure | Decorrelation at ~55-60min, AC@60min=0.032 |
+| 850 | Information Ceiling | Theoretical max R²=0.611, current at 87% (gap=0.044) |
+
+### Breakthrough Finding: 99.9% Bias-Dominated Error (EXP-843)
+
+The most significant discovery in this batch. Bootstrap bias-variance decomposition reveals:
+
+| Patient | Bias² | Variance | Bias % |
+|---------|-------|----------|--------|
+| a | 2481 | 1.3 | 99.9% |
+| b | 1665 | 0.7 | 100.0% |
+| c | 2069 | 1.3 | 99.9% |
+| d | 669 | 0.5 | 99.9% |
+| e | 1228 | 0.6 | 99.9% |
+| f | 2039 | 1.2 | 99.9% |
+| g | 1931 | 1.2 | 99.9% |
+| h | 1441 | 3.7 | 99.7% |
+| i | 2073 | 1.1 | 99.9% |
+| j | 820 | 1.3 | 99.8% |
+| k | 158 | 0.1 | 99.9% |
+
+**Implications**: The model is SYSTEMATICALLY wrong, not unstable. It makes the SAME errors regardless of training data sampling. This means:
+- ❌ More data will NOT help
+- ❌ Different regularization will NOT help
+- ❌ Ensembling will NOT help (all models agree on the same wrong answer)
+- ✅ ONLY new features capturing currently-missing information can improve performance
+
+### Error Decomposition (EXP-841)
+
+**By Time of Day** (best to worst):
+
+| Period | MAE | R² | Frequency |
+|--------|-----|-----|-----------|
+| Morning (8–12) | 21.7 | 0.746 | 16.8% |
+| Afternoon (12–17) | 25.6 | 0.561 | 21.0% |
+| Dawn (5–8) | 26.7 | 0.713 | 12.7% |
+| Evening (17–21) | 30.4 | 0.580 | 16.7% |
+| Overnight (0–5) | 33.0 | 0.632 | 20.4% |
+| Night (21–24) | 33.1 | 0.619 | 12.4% |
+
+**By BG Dynamics**:
+
+| State | MAE | R² | Frequency |
+|-------|-----|-----|-----------|
+| Stable | 22.8 | 0.710 | 38.2% |
+| Falling | 29.9 | 0.550 | 32.6% |
+| Rising | 33.8 | 0.619 | 29.2% |
+
+**By BG Level**:
+
+| Level | MAE | R² | Frequency |
+|-------|-----|-----|-----------|
+| Target (70–180) | 24.6 | 0.423 | 68.9% |
+| Low (<70) | 29.4 | 0.212 | 3.8% |
+| High (>180) | 37.5 | 0.504 | 27.3% |
+
+**Worst Combinations**: Night+rising (38.4), overnight+rising (37.9), night+falling (35.0) — all nighttime rising/falling BG events.
+
+### Patient h Mystery Solved (EXP-842)
+
+Patient h's R²=0.202 outlier is explained by **data completeness**: z-score of −26.0 on pct_valid. This is an extreme outlier in data quality, not metabolic unusualness.
+
+| Metric | Patient h | Others (mean) | z-score |
+|--------|-----------|---------------|---------|
+| pct_valid | extreme gap | ~99%+ | **−26.02** |
+| bg_cv | 0.370 | 0.380 | −0.10 |
+| supply_std | elevated | moderate | +1.74 |
+| demand_std | elevated | moderate | +1.49 |
+| tir | 0.850 | 0.705 | +1.28 |
+
+Patient h actually has GOOD glycemic control (TIR=85%, highest in cohort) but terrible data completeness. The massive gaps make it impossible for the model to establish context, because:
+1. Features from gap-adjacent points are unreliable
+2. The 80/20 chronological split may place gaps asymmetrically
+3. PK curves lose accuracy across gaps (treatments during gaps are unobserved)
+
+### Error Attribution (EXP-846)
+
+The error budget shows WHERE the model fails most:
+
+| Regime | % of Total Error | % of Data | Error Density |
+|--------|-----------------|-----------|---------------|
+| Rising + Target + Treated | 20.2% | 18.6% | 1.09 |
+| Falling + Target + Treated | 18.2% | 21.4% | 0.85 |
+| **Rising + High + Treated** | **17.9%** | **10.0%** | **1.80** |
+| Stable + Target + Treated | 15.7% | 29.0% | 0.54 |
+| **Falling + High + Treated** | **14.9%** | **9.9%** | **1.50** |
+
+Key insight: **Rising+High+Treated has 1.80x error density** — the model struggles most when BG is already high AND rising despite active treatment. This represents post-meal spikes where the model underestimates:
+- How much carbs will raise BG (meal size uncertainty)
+- How slowly insulin will bring it down (timing uncertainty)
+- Whether additional corrections will be given (future treatment uncertainty)
+
+### Conformal Prediction Intervals (EXP-844)
+
+Well-calibrated prediction intervals:
+
+| Target Coverage | Actual Coverage | Interval Width (±) |
+|----------------|-----------------|---------------------|
+| 50% | 51.1% | ±21.5 mg/dL |
+| 80% | 81.0% | ±45.7 mg/dL |
+| 90% | 90.9% | ±64.0 mg/dL |
+| 95% | 95.6% | ±81.2 mg/dL |
+
+The 90% interval of ±64 mg/dL is clinically relevant — if BG is 120 mg/dL, the 90% confidence band is 56–184 mg/dL. This is a wide range for clinical decision-making, reinforcing that 60-minute predictions have fundamental uncertainty.
+
+### Residual Clustering (EXP-845)
+
+Five natural error clusters (k=5, explained variance = 0.815):
+
+| Cluster | % of Data | MAE | Avg BG | Avg Velocity | Character |
+|---------|-----------|-----|--------|--------------|-----------|
+| 0 (Best) | 58.9% | 22.2 | 120.4 | −0.06 | Target, stable |
+| 2 | 23.5% | 33.3 | 191.5 | −0.33 | High, drifting down |
+| 4 | 11.1% | 41.6 | 178.3 | +0.68 | High, rising |
+| 3 (Worst) | 2.9% | 42.0 | 266.6 | −1.07 | Very high, correcting |
+| 1 | 3.6% | 44.5 | 194.8 | +1.29 | High, rising fast |
+
+The 2x MAE ratio (22.2 vs 44.5) between best and worst clusters confirms that prediction difficulty is regime-dependent. Nearly 60% of data falls in the "easy" target-stable cluster.
+
+### Sensor Age: No Effect (EXP-847)
+
+| Sensor Day | MAE | n |
+|------------|-----|---|
+| 0 | 28.6 | 18,680 |
+| 1 | 27.8 | 16,979 |
+| 5 | 26.6 | 8,165 |
+| 7 | 29.8 | 4,071 |
+| 8 | 28.4 | 3,319 |
+
+Slope = 0.11 mg/dL/day — essentially zero. Sensor degradation does NOT measurably affect prediction accuracy at this resolution.
+
+### Residual Autocorrelation (EXP-849)
+
+| Patient | Decorrelation Time | AC @ 60min |
+|---------|-------------------|------------|
+| Mean | 55–60 min | 0.032 |
+| Min (k) | 50 min | −0.083 |
+| Max (d) | 200 min | +0.111 |
+
+Residuals decorrelate in approximately ONE prediction horizon (~60min). At the prediction horizon, AC=0.032 — essentially zero. This confirms that 60-minute prediction residuals are temporally independent noise. Patient d is an exception (decorrelation at 200min) — may have slower metabolic dynamics worth investigating.
+
+### Information Ceiling Confirmed (EXP-850)
+
+Multiple ceiling estimates converge:
+
+| Method | R² | Gap from Base |
+|--------|-----|---------------|
+| Base (current SOTA) | 0.534 | — |
+| + Oracle velocity | 0.578 | +0.044 |
+| + Oracle vel + accel | 0.620 | +0.086 |
+| KNN oracle | 0.427 | −0.107 (worse!) |
+| Theoretical max (KNN variance) | 0.611 | +0.077 |
+
+The oracle with velocity+acceleration (R²=0.620) and the theoretical maximum (R²=0.611) bracket the true ceiling at approximately **R²≈0.61–0.62**. Our current model at 0.534 captures **87% of the achievable information**.
+
+KNN oracle being WORSE than ridge (0.427 vs 0.534) means nearest-neighbor matching in the current feature space FAILS — similar features don't guarantee similar outcomes. The unobserved factors (meal size, exercise, stress) dominate.
+
+### Synthesis: The Information Deficit Map
+
+```
+Total variance of 60-min BG prediction:
+
+  ┌──────────────────────────────────────────────────────────┐
+  │  EXPLAINED by current model (53.4%)                      │
+  │  ┌────────────────────────┐                              │
+  │  │ BG state: +25.1%       │  ← Current BG, lags, trends │
+  │  │ Physics flux: +15.0%   │  ← Supply/demand/hepatic    │
+  │  │ Engineering: +13.3%    │  ← Velocity, acceleration   │
+  │  └────────────────────────┘                              │
+  │                                                          │
+  │  REACHABLE with perfect knowledge (+8.6%)                │
+  │  ┌────────────────────────┐                              │
+  │  │ Future BG trajectory   │  ← Oracle vel+accel         │
+  │  └────────────────────────┘                              │
+  │                                                          │
+  │  IRREDUCIBLE (~38%)                                      │
+  │  ┌────────────────────────┐                              │
+  │  │ Meal size/timing       │  ← Unobserved               │
+  │  │ Exercise/stress        │  ← Unobserved               │
+  │  │ Sensor noise           │  ← Irreducible              │
+  │  │ Metabolic variation    │  ← Day-to-day changes       │
+  │  └────────────────────────┘                              │
+  └──────────────────────────────────────────────────────────┘
+```
+
+### Next Directions
+
+Given the bias-dominated, information-limited nature of the remaining error:
+
+1. **Context-conditioned models**: Separate models for rising/stable/falling × target/high — exploit the 2x MAE ratio between clusters
+2. **Gap-aware features**: Explicit data completeness features to handle patients like h
+3. **Prediction difficulty estimation**: Pre-classify each prediction into easy/hard and provide appropriate uncertainty bounds
+4. **Multi-horizon information**: Use shorter-horizon (5/15min) predictions to detect regime transitions earlier
+5. **Patient d investigation**: Why does patient d have 200min decorrelation time? Slower metabolism or different treatment patterns?
+6. **Meal-context features**: BG acceleration patterns that indicate meal size (even without explicit carb data)
+
