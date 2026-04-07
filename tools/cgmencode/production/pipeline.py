@@ -1,21 +1,21 @@
 """
 pipeline.py — Orchestrator chaining all production inference modules.
 
-Chains: ingest → clean → flux → [detect, predict, assess, analyze] → report
+Chains: ingest → clean → flux → [detect, predict, assess, analyze, meals, advise] → recommend
 
-Target latency: <200ms per patient (research baseline: 118.5ms).
+Target latency: <500ms per patient (with all new modules).
 
 The pipeline handles missing data gracefully:
 - No insulin data? Skip metabolic engine, use BG-only risk assessment
 - No carbs? Skip CR scoring, use neutral score
-- < 2 weeks data? Skip pattern analysis
+- < 1 week data? Skip pattern analysis and meal prediction
 - New patient? Use population defaults via onboarding
 """
 
 from __future__ import annotations
 
 import time
-from typing import Optional
+from typing import List, Optional
 
 import numpy as np
 
@@ -29,11 +29,16 @@ from .hypo_predictor import predict_hypo, calibrate_threshold
 from .clinical_rules import generate_clinical_report
 from .pattern_analyzer import analyze_patterns
 from .patient_onboarding import get_onboarding_state
+from .meal_detector import detect_meal_events, build_meal_history
+from .meal_predictor import build_timing_models, predict_next_meal
+from .settings_advisor import generate_settings_advice
+from .recommender import generate_recommendations
 
 
 def run_pipeline(patient: PatientData,
                  personal_params: Optional[dict] = None,
                  skip_patterns: bool = False,
+                 current_hour: Optional[float] = None,
                  ) -> PipelineResult:
     """Run complete inference pipeline on a single patient.
 
@@ -44,12 +49,13 @@ def run_pipeline(patient: PatientData,
         patient: PatientData with at minimum glucose + timestamps + profile.
         personal_params: optional calibrated personal parameters.
         skip_patterns: skip pattern analysis (faster, for real-time use).
+        current_hour: fractional hour for meal prediction (default: last timestamp).
 
     Returns:
         PipelineResult with all available inference outputs.
     """
     start = time.perf_counter()
-    warnings = []
+    warnings: List[str] = []
 
     # ── Stage 1: Data Quality (spike cleaning) ────────────────────
     cleaned = clean_glucose(patient.glucose)
@@ -83,11 +89,9 @@ def run_pipeline(patient: PatientData,
     # ── Stage 4b: Hypo Prediction ─────────────────────────────────
     hypo_alert = None
     try:
-        # Personalized threshold if enough data
         threshold = None
         if patient.days_of_data >= 3.0:
             threshold = calibrate_threshold(patient.glucose)
-
         hypo_alert = predict_hypo(
             cleaned.glucose,
             metabolic=metabolic,
@@ -107,7 +111,7 @@ def run_pipeline(patient: PatientData,
         hours=hours,
     )
 
-    # ── Stage 4d: Pattern Analysis (requires ≥2 weeks) ───────────
+    # ── Stage 4d: Pattern Analysis ────────────────────────────────
     patterns = None
     if not skip_patterns and patient.days_of_data >= 7.0:
         try:
@@ -115,10 +119,49 @@ def run_pipeline(patient: PatientData,
         except Exception as e:
             warnings.append(f"Pattern analysis failed: {e}")
     elif not skip_patterns:
-        warnings.append(f"Only {patient.days_of_data:.1f} days of data — patterns need ≥7 days")
+        warnings.append(f"Only {patient.days_of_data:.1f} days — patterns need ≥7 days")
+
+    # ── Stage 5: Meal Detection ───────────────────────────────────
+    meal_history = None
+    meal_prediction = None
+    if metabolic is not None:
+        try:
+            meals = detect_meal_events(
+                cleaned.glucose, metabolic, hours,
+                patient.timestamps, patient.profile)
+            meal_history = build_meal_history(meals, patient.days_of_data)
+
+            # Meal timing prediction (needs ≥7 days of meal history)
+            if patient.days_of_data >= 7.0 and meal_history.total_detected >= 10:
+                timing_models = build_timing_models(meal_history, patient.days_of_data)
+                if timing_models:
+                    c_hour = current_hour if current_hour is not None else float(hours[-1])
+                    meal_prediction = predict_next_meal(
+                        timing_models, c_hour, meal_history)
+        except Exception as e:
+            warnings.append(f"Meal detection failed: {e}")
+
+    # ── Stage 6: Settings Advisor ─────────────────────────────────
+    settings_recs = None
+    if patient.days_of_data >= 3.0:
+        try:
+            settings_recs = generate_settings_advice(
+                cleaned.glucose, metabolic, hours,
+                clinical_report, patient.profile, patient.days_of_data)
+        except Exception as e:
+            warnings.append(f"Settings advisor failed: {e}")
+
+    # ── Stage 7: Action Recommendations ───────────────────────────
+    recommendations = generate_recommendations(
+        clinical=clinical_report,
+        hypo_alert=hypo_alert,
+        meal_prediction=meal_prediction,
+        settings_recs=settings_recs,
+        meal_history=meal_history,
+    )
 
     # ── Assemble result ───────────────────────────────────────────
-    elapsed = (time.perf_counter() - start) * 1000.0  # ms
+    elapsed = (time.perf_counter() - start) * 1000.0
 
     return PipelineResult(
         patient_id=patient.patient_id,
@@ -129,6 +172,10 @@ def run_pipeline(patient: PatientData,
         clinical_report=clinical_report,
         patterns=patterns,
         onboarding=onboarding,
+        meal_history=meal_history,
+        meal_prediction=meal_prediction,
+        settings_recs=settings_recs,
+        recommendations=recommendations,
         pipeline_latency_ms=elapsed,
         warnings=warnings,
     )
@@ -136,13 +183,5 @@ def run_pipeline(patient: PatientData,
 
 def run_pipeline_batch(patients: list[PatientData],
                        **kwargs) -> list[PipelineResult]:
-    """Run pipeline on multiple patients sequentially.
-
-    Args:
-        patients: list of PatientData.
-        **kwargs: passed to run_pipeline.
-
-    Returns:
-        List of PipelineResults, one per patient.
-    """
+    """Run pipeline on multiple patients sequentially."""
     return [run_pipeline(p, **kwargs) for p in patients]

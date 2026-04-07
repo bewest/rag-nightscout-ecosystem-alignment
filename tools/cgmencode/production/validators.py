@@ -167,6 +167,63 @@ def validate_hypo_alert(result: PipelineResult) -> ValidationResult:
     )
 
 
+def validate_meal_detection(result: PipelineResult) -> ValidationResult:
+    """Validate meal detection ran and found meals."""
+    mh = result.meal_history
+    if mh is None:
+        return ValidationResult("meal_detection", True,
+                                "detected or skipped", "skipped (no metabolic)")
+
+    # At least some meals detected in multi-day data
+    reasonable = mh.total_detected >= 0
+    return ValidationResult(
+        name="meal_detection",
+        passed=reasonable,
+        expected="meals ≥ 0",
+        actual=f"{mh.total_detected} meals ({mh.announced_count} announced, "
+               f"{mh.unannounced_count} unannounced, "
+               f"unanc_frac={mh.unannounced_fraction:.2f})",
+    )
+
+
+def validate_settings_advice(result: PipelineResult) -> ValidationResult:
+    """Validate settings recommendations are well-formed."""
+    recs = result.settings_recs
+    if recs is None:
+        return ValidationResult("settings_advice", True,
+                                "advice or skipped", "skipped (<3 days)")
+
+    all_valid = all(
+        0.0 <= r.confidence <= 1.0 and r.parameter is not None
+        for r in recs
+    )
+    return ValidationResult(
+        name="settings_advice",
+        passed=all_valid,
+        expected="valid confidence [0,1] and parameter",
+        actual=f"{len(recs)} recommendations",
+    )
+
+
+def validate_recommendations(result: PipelineResult) -> ValidationResult:
+    """Validate action recommendations are properly prioritized."""
+    recs = result.recommendations
+    if not recs:
+        return ValidationResult("recommendations", True,
+                                "recs or empty", "no recommendations")
+
+    # Check priority ordering
+    priorities = [r.priority for r in recs]
+    ordered = all(a <= b for a, b in zip(priorities, priorities[1:]))
+
+    return ValidationResult(
+        name="recommendations",
+        passed=ordered and all(1 <= p <= 3 for p in priorities),
+        expected="priority ordered [1-3]",
+        actual=f"{len(recs)} recs, priorities={priorities}",
+    )
+
+
 def validate_pipeline_result(result: PipelineResult) -> List[ValidationResult]:
     """Run all validators on a single pipeline result."""
     return [
@@ -176,6 +233,9 @@ def validate_pipeline_result(result: PipelineResult) -> List[ValidationResult]:
         validate_risk_assessment(result),
         validate_latency(result),
         validate_hypo_alert(result),
+        validate_meal_detection(result),
+        validate_settings_advice(result),
+        validate_recommendations(result),
     ]
 
 

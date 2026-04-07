@@ -59,6 +59,19 @@ class Phenotype(str, Enum):
     STABLE = "stable"
 
 
+class MealWindow(str, Enum):
+    BREAKFAST = "breakfast"  # 05:00-10:00
+    LUNCH = "lunch"          # 10:00-14:00
+    DINNER = "dinner"        # 17:00-21:00
+    SNACK = "snack"          # any other time
+
+
+class SettingsParameter(str, Enum):
+    BASAL_RATE = "basal_rate"
+    ISF = "isf"
+    CR = "cr"
+
+
 # ── Input Data ────────────────────────────────────────────────────────
 
 @dataclass
@@ -232,6 +245,93 @@ class OnboardingState:
     ready_for_production: bool = False
 
 
+# ── Meal Detection & Prediction ───────────────────────────────────────
+
+@dataclass
+class DetectedMeal:
+    """A single detected meal event from physics residual analysis."""
+    index: int                           # index in glucose array
+    timestamp_ms: float                  # Unix timestamp (ms)
+    window: MealWindow                   # breakfast/lunch/dinner/snack
+    estimated_carbs_g: float             # estimated carb grams from residual integral
+    announced: bool                      # True if matching carb entry found
+    residual_integral: float             # raw residual burst integral
+    confidence: float                    # detection confidence (0-1)
+    hour_of_day: float                   # fractional hour
+
+
+@dataclass
+class MealHistory:
+    """Aggregated meal detection results over a time period."""
+    meals: List[DetectedMeal]
+    total_detected: int
+    announced_count: int
+    unannounced_count: int
+    unannounced_fraction: float          # EXP-748: ~46.5% of glucose rises
+    meals_per_day: float
+    mean_carbs_g: float                  # estimated mean meal size
+    by_window: Dict[str, int]            # count per meal window
+
+
+@dataclass
+class MealTimingModel:
+    """Learned meal timing pattern from 2+ weeks of data.
+
+    For each meal window, stores the typical timing distribution
+    (mean hour, std) and inter-meal interval statistics.
+    """
+    window: MealWindow
+    mean_hour: float                     # average meal time (fractional hour)
+    std_hour: float                      # timing variability
+    frequency_per_day: float             # how often this meal occurs
+    days_observed: int                   # data coverage
+    last_observed_hour: Optional[float] = None
+
+
+@dataclass
+class MealPrediction:
+    """Prediction of upcoming meal with eating-soon recommendation."""
+    predicted_window: MealWindow
+    predicted_hour: float                # expected meal time (fractional hour)
+    minutes_until: float                 # minutes from now until predicted meal
+    confidence: float                    # prediction confidence (0-1)
+    recommend_eating_soon: bool          # True if 30-60 min before predicted meal
+    estimated_carbs_g: float             # expected meal size from history
+    timing_models: List[MealTimingModel]  # underlying per-window models
+    rationale: str                       # human-readable explanation
+
+
+# ── Settings Advisor ──────────────────────────────────────────────────
+
+@dataclass
+class SettingsRecommendation:
+    """Recommendation to change a therapy setting, with predicted TIR impact."""
+    parameter: SettingsParameter         # which setting to change
+    direction: str                       # "increase" or "decrease"
+    magnitude_pct: float                 # suggested change magnitude (%)
+    current_value: float                 # current profile value
+    suggested_value: float               # recommended new value
+    predicted_tir_delta: float           # predicted TIR improvement (pp)
+    affected_hours: Tuple[float, float]  # (start_hour, end_hour) most affected
+    confidence: float                    # recommendation confidence (0-1)
+    evidence: str                        # what data supports this
+    rationale: str                       # human-readable explanation
+
+
+@dataclass
+class ActionRecommendation:
+    """A prioritized action recommendation from the recommender engine."""
+    action_type: str                     # "eating_soon", "adjust_basal", "adjust_cr", etc.
+    priority: int                        # 1=highest (safety), 2=TIR, 3=convenience
+    description: str                     # human-readable action
+    predicted_tir_delta: float           # expected TIR improvement (pp)
+    confidence: float                    # 0-1
+    time_sensitive: bool                 # True if action has a deadline
+    deadline_minutes: Optional[float] = None  # minutes until action should be taken
+    meal_prediction: Optional[MealPrediction] = None
+    settings_rec: Optional[SettingsRecommendation] = None
+
+
 # ── Complete Pipeline Result ──────────────────────────────────────────
 
 @dataclass
@@ -245,7 +345,11 @@ class PipelineResult:
     clinical_report: ClinicalReport
     patterns: Optional[PatternProfile]      # None if < 2 weeks data
     onboarding: OnboardingState
-    pipeline_latency_ms: float
+    meal_history: Optional[MealHistory] = None       # detected meals
+    meal_prediction: Optional[MealPrediction] = None  # next meal prediction
+    settings_recs: Optional[List[SettingsRecommendation]] = None
+    recommendations: Optional[List[ActionRecommendation]] = None
+    pipeline_latency_ms: float = 0.0
     warnings: List[str] = field(default_factory=list)
 
     @property
