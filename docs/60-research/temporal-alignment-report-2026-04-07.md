@@ -7429,3 +7429,144 @@ Practically useful findings:
 - **The full 8-feature physics-derived set** cannot be improved by subset selection
 
 **The true SOTA at 60min remains R²≈0.52–0.54 with MAE≈27–28 mg/dL.**
+
+## Part XXXIX: Validated Extensions & Final Benchmark (EXP-821–830)
+
+### Motivation
+
+After discovering data leakage in EXP-811's AR correction, this batch focuses exclusively on leakage-free improvements: proper causal AR (lag ≥ h_steps), extended history windows, combined feature engineering, residual decomposition, and oracle ceiling analysis.
+
+### Results Summary
+
+#### EXP-821: Multi-Horizon Cascade
+
+| Horizon | Independent | Cascade | Δ |
+|---------|------------|---------|---|
+| 5min | 0.978 | 0.978 | +0.000 |
+| 15min | 0.899 | 0.900 | +0.001 |
+| 30min | 0.765 | 0.766 | +0.001 |
+| 60min | 0.509 | 0.511 | +0.002 |
+
+Cascade provides negligible improvement. The properly-lagged previous-horizon errors decorrelate too much by the time they're usable, consistent with the leakage analysis.
+
+#### EXP-822: Proper Causal AR (Verified Leakage-Free)
+
+| Horizon | h_steps | Base R² | Best Lag | AR R² | Δ |
+|---------|---------|---------|----------|-------|---|
+| 15min | 3 | 0.899 | lag_3 | 0.900 | +0.001 |
+| 30min | 6 | 0.765 | lag_6 | 0.770 | **+0.005** |
+| 60min | 12 | 0.509 | lag_12 | 0.522 | **+0.013** |
+
+Properly-lagged AR does provide small but real improvements. At 60min, using the residual from 60 minutes ago (which is now observable) adds +0.013 — far less than the leaky +0.432, but genuinely causal.
+
+#### EXP-823: Extended History Window
+
+| Window | R² at 60min |
+|--------|-------------|
+| None (base) | 0.509 |
+| 1h | **0.521** |
+| 2h | 0.521 |
+| 4h | 0.520 |
+
+Summary statistics (mean, std, min, max, slope) over a 1h window add +0.012. Longer windows don't help further — the relevant context for 60min prediction is within the last hour.
+
+#### EXP-824: Combined Best Features
+
+| Horizon | Base (8 feat) | Combined (18 feat) | Δ |
+|---------|-------------|-------------------|---|
+| 30min | 0.765 | 0.775 | **+0.010** |
+| 60min | 0.509 | 0.531 | **+0.022** |
+
+Combining velocity, acceleration, lagged BG, window statistics, and quadratic features yields the best validated improvement. The gains stack approximately linearly:
+- Velocity+accel: +0.009
+- Lagged BG: +0.015
+- Window stats: +0.012
+- Combined: +0.022 (subadditive, as expected with correlated features)
+
+#### EXP-825: Residual Decomposition
+
+| Context | MAE (mg/dL) | P90 Error | n |
+|---------|-------------|-----------|---|
+| Stable BG | **24.4** | 56.3 | 45,981 |
+| Low BG (<80) | 26.6 | 62.2 | 7,430 |
+| Post-meal | 29.7 | 68.2 | 93,795 |
+| Falling BG | 33.3 | 72.3 | 24,873 |
+| Rising BG | 36.3 | 82.2 | 22,941 |
+| High BG (>200) | **41.7** | **89.1** | 19,217 |
+
+The model performs best during stable periods (MAE=24.4) and worst during high BG (MAE=41.7). Rising BG is harder than falling, likely because rises are meal-driven (unpredictable timing) while falls follow insulin dynamics (more predictable).
+
+#### EXP-826: Per-Patient Oracle Ceiling
+
+| Metric | R² at 60min |
+|--------|-------------|
+| Base (current features) | 0.509 |
+| Oracle (with future BG velocity + future flux) | **0.613** |
+| Gap | +0.104 |
+
+The oracle model with future information achieves R²=0.613 — this represents the ceiling achievable by a linear model with perfect knowledge of future dynamics. The remaining gap of 0.387 is due to: (a) nonlinear dynamics, (b) unmeasured confounders, and (c) measurement noise.
+
+#### EXP-827: Meal-Aware Features
+
+Adding time-since-meal, peak supply magnitude, and post-meal flag: **Δ=+0.006**. Modest improvement — meal timing information is partially captured by the supply integral feature.
+
+#### EXP-828: Time-of-Day Stratified
+
+| Band | R² |
+|------|-----|
+| Morning (6–12) | **0.596** |
+| Night (0–6) | 0.463 |
+| Evening (18–24) | 0.412 |
+| Afternoon (12–18) | 0.397 |
+| **Global** | **0.509** |
+
+Morning is easiest to predict (R²=0.596), afternoon hardest (0.397). However, stratified models don't beat global (Δ=0.000) — the global model already adapts via circadian features.
+
+#### EXP-829: Adaptive λ
+
+Per-patient cross-validated λ provides **zero improvement** (Δ=0.000). The default λ=10 is already near-optimal for most patients.
+
+#### EXP-830: Final Validated Benchmark
+
+| Method | 5min | 15min | 30min | 60min |
+|--------|------|-------|-------|-------|
+| Naive (last BG) | 0.931 | 0.830 | 0.652 | 0.292 |
+| Ridge (8 features) | 0.978 | 0.899 | 0.765 | 0.509 |
+| Ridge Enhanced (16 feat) | **0.978** | **0.902** | **0.775** | **0.534** |
+| Improvement over naive | +0.047 | +0.072 | +0.123 | **+0.242** |
+
+**The validated SOTA at 60min is R²=0.534** — a +0.025 improvement over the 8-feature baseline, achieved with 16 physics-derived and trajectory-based features. All improvements are leakage-free and causally valid.
+
+### Program-Wide Summary: The Prediction Frontier
+
+After 830 experiments across the autoresearch program:
+
+```
+60min Prediction R² Timeline:
+  EXP-001:  Naive baseline               → 0.292
+  EXP-400s: Physics simulation           → 0.372  (+0.080)
+  EXP-700s: Physics + AR                 → 0.510  (+0.138)
+  EXP-781:  + Circadian correction       → 0.627  (+0.117)
+  EXP-792:  Ridge regression             → 0.519  (+0.009 validated)
+  EXP-824:  + Combined features          → 0.531  (+0.012)
+  EXP-830:  Final validated benchmark    → 0.534  (+0.003)
+  EXP-826:  Oracle ceiling (linear)      → 0.613  (gap: 0.079)
+```
+
+### Key Lessons from EXP-821–830
+
+1. **Leakage-free AR adds +0.013 at 60min** — real but small; residuals decorrelate at the prediction horizon
+2. **Feature combination is subadditive** — individual improvements of +0.009, +0.015, +0.012 combine to +0.022, not +0.036
+3. **Oracle ceiling is R²=0.613** — only +0.079 above current, meaning we're at 87% of the linear model ceiling
+4. **Morning predictions are easiest** (R²=0.596), afternoon hardest (0.397)
+5. **Error scales with BG dynamics** — stable periods MAE=24, high BG MAE=42
+6. **Adaptive λ and time stratification provide zero benefit** — the base model is already well-tuned
+
+### What Remains: The Nonlinear Frontier
+
+The validated R²=0.534 is 87% of the linear oracle ceiling (0.613). To go further requires:
+
+1. **Nonlinear models** (CNN, Transformer) to capture dynamics beyond linear combinations
+2. **Additional sensors** (activity, meal photos, insulin pump confirmations)
+3. **Patient-specific nonlinear features** (personalized metabolic response curves)
+4. **Longer training data** — current 6-month windows may not capture seasonal variation
