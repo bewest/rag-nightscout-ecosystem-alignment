@@ -3842,6 +3842,186 @@ def run_exp455(args):
     return results
 
 
+# ===================================================================
+# EXP-456: Combined Throughput + Multi-Day Features (Kitchen Sink)
+# ===================================================================
+
+def run_exp456(args):
+    """EXP-456: Stack all beneficial features — throughput + multi-day.
+
+    EXP-451 showed throughput adds +0.005-0.016 (peaks at 6h).
+    EXP-455 showed multi-day adds +0.003-0.014 (monotonically increasing).
+    These capture ORTHOGONAL dimensions:
+      - Throughput: current metabolic activity intensity
+      - Multi-day: historical control quality and recurrence patterns
+
+    Tests: baseline_22 vs +throughput(34) vs +multiday(31) vs ALL(43)
+    at 2h, 6h, 12h horizons.
+    """
+    cfg = _get_config(args)
+
+    print(f"\n{'='*60}")
+    print("EXP-456: Combined Throughput + Multi-Day Features")
+    print(f"{'='*60}")
+
+    patients = load_patients(args.patients_dir, cfg['max_patients'])
+    if not patients:
+        print("  No patient data found."); return {}
+
+    # Throughput features (reuse from EXP-451/453)
+    try:
+        from exp_metabolic_441 import compute_supply_demand
+    except ImportError:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from exp_metabolic_441 import compute_supply_demand
+
+    patient_sd = {}
+    for pat in patients:
+        sd = compute_supply_demand(pat['df'], pk_array=pat['pk'])
+        patient_sd[pat['name']] = sd
+
+    LOOKBACK_3D = STEPS_3D
+
+    def throughput_feats(pat, start, ctx_end):
+        sd = patient_sd[pat['name']]
+        tp = sd['product'][start:ctx_end]
+        supply = sd['supply'][start:ctx_end]
+        demand = sd['demand'][start:ctx_end]
+        tp_v = tp[~np.isnan(tp)] if len(tp) > 0 else np.array([0.0])
+        if len(tp_v) == 0: tp_v = np.array([0.0])
+        s_v = supply[~np.isnan(supply)] if len(supply) > 0 else np.array([0.0])
+        d_v = demand[~np.isnan(demand)] if len(demand) > 0 else np.array([0.0])
+        if len(s_v) == 0: s_v = np.array([0.0])
+        if len(d_v) == 0: d_v = np.array([0.0])
+        return [
+            float(np.mean(tp_v)), float(np.std(tp_v)), float(np.max(tp_v)),
+            float(tp_v[-1] - tp_v[-min(6, len(tp_v))]),
+            float(np.sum(tp_v)),
+            float(np.max(tp_v) / max(np.mean(tp_v), 1e-8)),
+            float(np.mean(s_v)), float(np.max(s_v)), float(np.sum(s_v)),
+            float(np.mean(d_v)), float(np.max(d_v)), float(np.sum(d_v)),
+        ]
+
+    def multiday_feats(pat, start, ctx_end):
+        grid = pat['grid']
+        glucose_raw = grid[:, 0] * 400
+        if start < LOOKBACK_3D:
+            return None
+        g_24h = glucose_raw[start - STEPS_24H:start]
+        g_24h_valid = g_24h[~np.isnan(g_24h)]
+        if len(g_24h_valid) < 12:
+            return None
+        tir_24h = float(np.mean((g_24h_valid >= 70) & (g_24h_valid <= 180)))
+        mean_24h = float(np.mean(g_24h_valid))
+        std_24h = float(np.std(g_24h_valid))
+        g_3d = glucose_raw[start - LOOKBACK_3D:start]
+        g_3d_valid = g_3d[~np.isnan(g_3d)]
+        if len(g_3d_valid) < 24:
+            return None
+        tir_3d = float(np.mean((g_3d_valid >= 70) & (g_3d_valid <= 180)))
+        control_trend = tir_24h - tir_3d
+        block_size = STEPS_6H
+        high_count = 0
+        hypo_count = 0
+        for bstart in range(start - LOOKBACK_3D, start, block_size):
+            bend = min(bstart + block_size, start)
+            bg = glucose_raw[bstart:bend]
+            bg_v = bg[~np.isnan(bg)]
+            if len(bg_v) > 0:
+                if np.mean(bg_v > 180) > 0.2:
+                    high_count += 1
+                if (bg_v < 70).any():
+                    hypo_count += 1
+        yest_start = start - STEPS_24H
+        yest_end = yest_start + block_size
+        g_yest = glucose_raw[yest_start:yest_end]
+        g_yest_v = g_yest[~np.isnan(g_yest)]
+        had_high_yest = 0
+        had_hypo_yest = 0
+        if len(g_yest_v) > 0:
+            had_high_yest = int(np.mean(g_yest_v > 180) > 0.2)
+            had_hypo_yest = int((g_yest_v < 70).any())
+        return [
+            had_high_yest, had_hypo_yest,
+            high_count, hypo_count,
+            tir_24h, tir_3d, control_trend,
+            mean_24h, std_24h,
+        ]
+
+    def combined_feats(pat, start, ctx_end):
+        tp = throughput_feats(pat, start, ctx_end)
+        md = multiday_feats(pat, start, ctx_end)
+        if md is None:
+            return None
+        return tp + md  # 12 + 9 = 21 extra features
+
+    results = {}
+    horizons = [
+        ('2h', STEPS_2H),
+        ('6h', STEPS_6H),
+        ('12h', STEPS_12H),
+    ]
+
+    feature_sets = [
+        ('baseline_22', None, 22),
+        ('throughput_34', throughput_feats, 34),
+        ('multiday_31', multiday_feats, 31),
+        ('combined_43', combined_feats, 43),
+    ]
+
+    for task_name, threshold, above in [('hypo', 70, False), ('high', 180, True)]:
+        print(f"\n  --- {task_name.upper()} ---")
+        print(f"    {'Config':15s}", end='')
+        for h_name, _ in horizons:
+            print(f" {h_name:>10s}", end='')
+        print()
+        print(f"    {'-'*50}")
+
+        for fs_name, feat_fn, n_feats in feature_sets:
+            print(f"    {fs_name:15s}", end='')
+            for h_name, future_steps in horizons:
+                X, y, pids, _ = _build_dataset(
+                    patients, STEPS_2H, future_steps, threshold, above,
+                    extra_feat_fn=feat_fn)
+                if X is None:
+                    print(f" {'N/A':>10s}", end=''); continue
+
+                res = _train_xgb_eval(X, y, pids, cfg['seeds'])
+                key = f"{fs_name}_{h_name}_{task_name}"
+                results[key] = res
+                auc = res['average'].get('auc_roc', 0)
+                print(f" {auc:>10.4f}", end='')
+            print()
+
+    # Compute deltas vs baseline
+    print(f"\n  {'='*60}")
+    print(f"  LIFT vs BASELINE_22")
+    print(f"  {'='*60}")
+    for task in ['hypo', 'high']:
+        print(f"\n  --- {task.upper()} ---")
+        print(f"    {'Config':15s}", end='')
+        for h_name, _ in horizons:
+            print(f" {h_name:>10s}", end='')
+        print()
+        for fs_name, _, _ in feature_sets[1:]:  # skip baseline
+            print(f"    {fs_name:15s}", end='')
+            for h_name, _ in horizons:
+                base_key = f"baseline_22_{h_name}_{task}"
+                test_key = f"{fs_name}_{h_name}_{task}"
+                base_r = results.get(base_key)
+                test_r = results.get(test_key)
+                if base_r and test_r:
+                    delta = test_r['average'].get('auc_roc', 0) - base_r['average'].get('auc_roc', 0)
+                    sign = '+' if delta >= 0 else ''
+                    print(f" {sign}{delta:>9.4f}", end='')
+                else:
+                    print(f" {'N/A':>10s}", end='')
+            print()
+
+    save_results(results, 'exp456_combined_features')
+    return results
+
+
 EXPERIMENTS = {
     '411': run_exp411,
     '412': run_exp412,
@@ -3864,6 +4044,7 @@ EXPERIMENTS = {
     '453': run_exp453,
     '454': run_exp454,
     '455': run_exp455,
+    '456': run_exp456,
 }
 
 
@@ -3903,6 +4084,7 @@ Experiments:
   453  Throughput × horizon interaction (does metabolic signal help more at longer horizons?)
   454  Extended context for extended horizons (2h-24h history × 6h/12h future)
   455  Multi-day recurrence features (3d/7d lookback for classification)
+  456  Combined throughput + multi-day features (kitchen sink at 2h/6h/12h)
 """)
     parser.add_argument('--experiment', '-e', nargs='+', default=['all'],
                         help='Experiment number(s) or "all" (default: all)')
