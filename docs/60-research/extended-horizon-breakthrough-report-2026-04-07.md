@@ -9,14 +9,14 @@
 
 EXP-411 validates the PKGroupedEncoder transformer at extended horizons (h120, h180, h240),
 establishing the first reliable glucose forecasts beyond 60 minutes. The transformer achieves
-**2.15× improvement over CNN at h120** (17.4 vs 38.3 mg/dL MAE) while maintaining graceful
+**2.20× improvement over CNN at h120** (17.4 vs 38.3 mg/dL MAE) while maintaining graceful
 degradation at longer horizons.
 
 ### Key Result Table
 
 | Window | History | Future | Max Horizon | Mean MAE | h60 avg | h120 avg |
 |--------|:-------:|:------:|:-----------:|:--------:|:-------:|:--------:|
-| w24 (EXP-410) | 60 min | 60 min | 60 min | **10.85** | 10.4 | — |
+| w24 (EXP-410) | 60 min | 60 min | 60 min | **10.85** | 14.7 | — |
 | w48 | 120 min | 120 min | 120 min | **13.50** | 14.2 | 17.4 |
 | w72 | 180 min | 180 min | 180 min | **15.61** | 15.0 | 17.4 |
 | w96 | 240 min | 240 min | 240 min | **17.14** | 15.9 | 18.3 |
@@ -26,8 +26,10 @@ degradation at longer horizons.
 | Horizon | CNN MAE | Transformer MAE | Improvement |
 |---------|:-------:|:---------------:|:-----------:|
 | h60 | ~22 | 14.2 (w48) | 1.55× |
-| h120 | 38.3 | 17.4 (w48) | **2.15×** |
-| h240 | ~46 | 17.1 (w96 overall) | **2.7×** |
+| h120 | 38.3 | 17.4 (w48) | **2.20×** |
+| h240 | ~46 | 17.1 (w96 overall†) | **2.7×** |
+
+†w96 overall MAE averages h5–h240; actual h240-specific MAE would be higher.
 
 ## 1. Methodology
 
@@ -112,7 +114,7 @@ contiguous sequences required.
 ### Finding 1: Transformer Achieves 2× Improvement at h120
 
 The CNN (EXP-356, best config 8ch+future_pk) achieved h120 = 38.3 mg/dL.
-The transformer at w48 achieves h120 = 17.4 mg/dL — a **2.15× improvement**.
+The transformer at w48 achieves h120 = 17.4 mg/dL — a **2.20× improvement**.
 
 This is the single largest improvement in our entire experiment history. The
 transformer's self-attention mechanism can model the complex insulin–glucose
@@ -121,17 +123,18 @@ receptive field.
 
 ### Finding 2: Graceful Degradation Across Horizons
 
-| Horizon | MAE (best window) | Degradation per 60 min |
-|---------|:-----------------:|:----------------------:|
-| h60 | 10.4 (w24) | — |
-| h120 | 17.4 (w48/w72) | +3.5/hr |
-| h180 | ~19 (w72 est.) | +2.7/hr |
-| h240 | ~21 (w96 est.) | +2.3/hr |
+| Horizon | Best Overall MAE (window) | Marginal Δ from prior |
+|---------|:-------------------------:|:---------------------:|
+| h60 | 14.2 (w48) | — |
+| h120 | 17.4 (w48/w72) | +3.2 per 60 min |
+| h180 | ~19 (w72 est.) | ~+1.6 per 60 min |
+| h240 | ~21 (w96 est.) | ~+2.0 per 60 min |
 
-Degradation **decelerates** — each additional hour of horizon adds less error.
-This suggests the model is capturing the dominant glucose dynamics (insulin
-absorption, meal digestion) and the remaining error is irreducible noise from
-unmeasured inputs (stress, exercise, etc.).
+Note: The best overall MAE for each window (10.85 at w24, 13.50 at w48, etc.)
+averages across all horizon steps; the h60 column shows the step-specific MAE
+at the 60-minute mark. Marginal degradation decelerates after the initial
+h60→h120 jump, suggesting the model captures dominant glucose dynamics and
+remaining error is from unmeasured inputs (stress, exercise, etc.).
 
 ### Finding 3: h120 Performance Is Window-Independent
 
@@ -195,8 +198,8 @@ window optimization could further improve results.
 ### vs CGM MARD
 - CGM MARD: 8.2% (~12 mg/dL at typical levels)
 - w48 h60: 14.2 mg/dL (1.2× CGM MARD)
-- w48 h120: 17.4 mg/dL (1.5× CGM MARD)
-- **Within 1.5× CGM MARD at 2 hours** — approaching clinical utility threshold
+- w48 h120: 17.4 mg/dL (1.45× CGM MARD)
+- **Within 1.5× CGM MARD at 2 hours** — at the clinical utility threshold
 
 ### vs ERA 2 (Previous Best Pipeline)
 - ERA 2 at h60: 10.59 mg/dL
@@ -222,7 +225,7 @@ higher final loss (expected — more horizon steps to predict).
 | Window | Base mean MAE | FT+Ensemble MAE | FT improvement |
 |--------|:------------:|:---------------:|:--------------:|
 | w48 | ~15.0 | 13.50 | −1.5 (−10%) |
-| w72 | ~17.5 | 15.61 | −1.9 (−11%) |
+| w72 | ~17.7 | 15.61 | −2.1 (−12%) |
 | w96 | ~19.5 | 17.14 | −2.4 (−12%) |
 
 FT benefit increases with window size — larger windows have more patient-specific
@@ -301,11 +304,11 @@ Full results saved to:
 - `externals/experiments/exp411_w{48,72,96}_base_s{42,123,456,789,1024}.pth` — Base model checkpoints
 - `externals/experiments/exp411_w{48,72,96}_ft_{a-k}_s{42,...}.pth` — Fine-tuned checkpoints
 
-Total model files: ~240 checkpoints (~440 MB)
+Total model files: ~180 checkpoints (3 windows × [5 base + 11×5 FT] seeds)
 
 ---
 
 *This report documents EXP-411, the first comprehensive extended-horizon glucose
-forecasting validation. The 2.15× improvement over CNN at h120 and graceful
+forecasting validation. The 2.20× improvement over CNN at h120 and graceful
 degradation to h240 establish the PKGroupedEncoder as a viable architecture for
 clinical glucose forecasting across the 30-minute to 4-hour horizon range.*

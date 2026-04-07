@@ -85,7 +85,7 @@ CGM sensors degrade over their 10-day life. Day 0 (warmup) and days 7-9
 | d | 17 | improving | +1.48 | −0.40 |
 | e | 16 | flat | +1.45 | +1.28 |
 | f | 21 | flat | +1.29 | −0.09 |
-| g | 15 | flat | +0.97 | +1.06 |
+| g | 15 | flat | +0.69 | +1.06 |
 | h | 25 | improving | +1.05 | −0.48 |
 | i | 22 | flat | +1.17 | +0.57 |
 | k | 23 | flat | +0.77 | +0.35 |
@@ -93,7 +93,7 @@ CGM sensors degrade over their 10-day life. Day 0 (warmup) and days 7-9
 **Key findings**:
 - **0/10 degrading** — sensor end-of-life is NOT a significant residual source
 - **5/10 improving** — residual actually DECREASES with sensor age (burn-in effect)
-- **Warmup noise is universal**: all patients show +0.7 to +1.5 excess residual
+- **Warmup noise is universal**: all patients show +0.69 to +1.48 excess residual
   on day 0, confirming the well-known "sensor warmup" artifact
 - Late-life excess is mixed: some patients show mild increase (e, g), most show
   decrease or no change
@@ -185,7 +185,7 @@ causing BG to overshoot downward. Our approach:
 
 | Patient | Fidelity | CR Assessment | Consistent? |
 |---------|----------|---------------|-------------|
-| k | 84 | adequate | ✓ |
+| k | 80 | adequate | ✓ |
 | d | 51 | adequate (best balance) | ✓ |
 | f | 33 | too_high | ✓ |
 | i | 15 | too_aggressive | ✓ |
@@ -212,8 +212,8 @@ CR assessment aligns perfectly with the composite fidelity score.
 
 **Key findings**:
 - **10/11 stable** over 6 months — therapy settings don't deteriorate
-- **Patient g: degrading** — loses 0.6 points/week (p=0.032), from 61 to 26
-  over 26 weeks. This matches EXP-495 showing ISF drift of −42%.
+- **Patient g: degrading** — loses 0.6 points/week (p=0.032), from ~41 to ~30
+  over 26 weeks (peak 61, trough 26). This matches EXP-495 showing ISF drift of −42%.
 - Patient k: most stable (80 ± 6, range 65-90), consistent with gold standard
 - Patient f: borderline (p=0.020) but classified stable by slope criterion
 
@@ -229,11 +229,11 @@ residual to specific causes:
 | Meal absorption mismatch | 25% | EXP-488 |
 | Dawn phenomenon | 13% | EXP-488 |
 | Settings misalignment | variable | EXP-492 (15–84/100 range) |
-| Sensor warmup | day-0 only | EXP-497 (+1.1 average excess) |
+| Sensor warmup | day-0 only | EXP-497 (+1.1 average excess, range 0.69–1.48) |
 | Sensor degradation | **none detected** | EXP-497 (0/10) |
 | Site/cannula degradation | **none detected** | EXP-498 (0/10) |
 | ISF temporal drift | 3/8 patients | EXP-495 |
-| CR misalignment | 2/11 patients | EXP-496 |
+| CR misalignment | 2–3/11 patients | EXP-496 (f, i flagged; c borderline) |
 | Unexplained noise | ~53% | EXP-488 |
 
 ### Patient Archetypes
@@ -241,9 +241,9 @@ residual to specific causes:
 The experiments reveal distinct patient archetypes:
 
 **Gold Standard (patient k)**:
-- Fidelity 84/100, CR adequate, ISF stable, weekly trend 80±6
+- Fidelity 80/100, CR adequate, ISF stable, weekly trend 80±6
 - Tiny excursions (+4 mg/dL), low hypoglycemia (18%)
-- 431 detected meals despite near-zero bolusing (97% UAM)
+- 431 detected meals despite near-zero bolusing (82% unannounced per EXP-502)
 - Longest site duration (143h) — minimal intervention
 
 **Well-Tuned (patient d)**:
@@ -253,7 +253,7 @@ The experiments reveal distinct patient archetypes:
 
 **Misaligned (patient i)**:
 - Fidelity 15/100, CR too_aggressive (67% lows), ISF stable but offset
-- Persistent positive residual (ACF=0.63, skew=+1.06)
+- Persistent positive residual (ACF=0.64, skew=+1.03)
 - Settings need comprehensive review
 
 **Degrading (patient g)**:
@@ -331,8 +331,8 @@ be detectable as structured patterns in the residual time series.
 
 ### EXP-505: Dawn Phenomenon
 - Dawn rise: +15 (k) to +70 (a) mg/dL on clean fasting nights
-- Only 1-3% of nights are truly 'clean' (no carb/insulin activity)
-- No seasonal trend detected
+- Only 0.8–2.9% of nights are truly 'clean' (no carb/insulin activity)
+- Patient d shows a decreasing seasonal trend (slope −0.6); remaining 6/7 patients stable
 
 ### EXP-506: Fat/Protein Tail
 - 27% of meals show extended absorption tails
@@ -346,7 +346,8 @@ be detectable as structured patterns in the residual time series.
 
 ### EXP-509: Absorption Window
 - 4-5h optimal for 10/11 patients (not default 3h)
-- Correlation improves monotonically from 1h → 5h
+- Correlation generally increases from 1h → 4-5h for most patients, though
+  4/11 patients peak at 4h with slight decline at 5h
 - Extended absorption tails significant for meal modeling
 
 ### EXP-510: Hepatic Production Scoring

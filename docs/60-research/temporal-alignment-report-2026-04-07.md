@@ -280,7 +280,7 @@ R² progression:
 |-----|--------|-----------|
 | 511 | exp_residual_511.py | 5 residual clusters: 44% moderate, 25% volatile |
 | 514 | exp_residual_511.py | 50% flat meals (AID-suppressed), 41% biphasic |
-| 518 | exp_residual_511.py | R²<0 baseline — temporal misalignment confirmed |
+| 518 | exp_residual_511.py | R²≤0 baseline — temporal misalignment confirmed |
 | 521 | exp_leadlag_521.py | Population lag +10min, supply lags negative |
 | 522 | exp_leadlag_521.py | Lag correction +0.006 R² (modest) |
 | 523 | exp_leadlag_521.py | Morning lag +10-20min, afternoon +0-5min |
@@ -293,7 +293,7 @@ R² progression:
 | 530 | exp_fir_528.py | **State-dependent: R²=0.105** (+59% over global) |
 | 531 | exp_combined_531.py | **State-FIR+BG: R²=0.161** — best deterministic model |
 | 532 | exp_combined_531.py | Noise floor: 18-74% per patient; ceiling ~0.60 |
-| 533 | exp_combined_531.py | Markov: 0.6 trans/hr, fasting dwell 155min |
+| 533 | exp_combined_531.py | Markov: 0.75 trans/hr, fasting dwell 155min |
 | 534 | exp_autoresearch_534.py | **AR(24)+flux: R²=0.570** — MAJOR BREAKTHROUGH |
 | 535 | exp_autoresearch_534.py | State bilinear FIR: R²=0.176 (+73% over linear) |
 | 536 | exp_autoresearch_534.py | Cross-patient transfer: 66% ratio (physics shared) |
@@ -676,23 +676,23 @@ This experiment needs redesign — the flux decomposition guarantees balance.
 |-----|--------|-----------|
 | 511 | exp_residual_511.py | 5 residual clusters: 44% moderate, 25% volatile |
 | 514 | exp_residual_511.py | 50% flat meals (AID-suppressed), 41% biphasic |
-| 518 | exp_residual_511.py | R²<0 baseline — temporal misalignment confirmed |
+| 518 | exp_residual_511.py | R²≤0 baseline — temporal misalignment confirmed |
 | 521 | exp_leadlag_521.py | Population lag +10min, supply lags negative |
 | 522 | exp_leadlag_521.py | Lag correction +0.006 R² (modest) |
 | 523 | exp_leadlag_521.py | Morning lag +10-20min, afternoon +0-5min |
 | 524 | exp_leadlag_521.py | TDD normalization r=-0.806, no improvement over raw |
 | 525 | exp_nonlinear_525.py | Meal lag=0, fasting lag=+10-15min |
 | 526 | exp_nonlinear_525.py | bg_dependent interaction +40% R²; full model 0.065 |
-| 527 | exp_nonlinear_525.py | Hepatic lag 30-50min; multi-channel barely helps |
+| 527 | exp_nonlinear_525.py | Hepatic lag 0-50min; multi-channel barely helps |
 | 528 | exp_fir_528.py | **3ch×6 FIR: R²=0.102**, patient c: 0.222 |
 | 529 | exp_fir_528.py | 41% high-freq noise; 0% circadian — hepatic works |
 | 530 | exp_fir_528.py | **State-dependent: R²=0.105** (+59% over global) |
 | 531 | exp_combined_531.py | **State-FIR+BG: R²=0.161** — best deterministic |
 | 532 | exp_combined_531.py | Noise floor: 18-74% per patient; ceiling ~0.60 |
-| 533 | exp_combined_531.py | Markov: 0.6 trans/hr, fasting dwell 155min |
+| 533 | exp_combined_531.py | Markov: 0.75 trans/hr, fasting dwell 155min |
 | 534 | exp_autoresearch_534.py | **AR(24)+flux: R²=0.570** — MAJOR BREAKTHROUGH |
 | 535 | exp_autoresearch_534.py | State bilinear FIR: R²=0.176 (+73% over linear) |
-| 536 | exp_autoresearch_534.py | Cross-patient transfer: 65% ratio (physics shared) |
+| 536 | exp_autoresearch_534.py | Cross-patient transfer: 66% ratio (physics shared) |
 | 537 | exp_autoresearch_534.py | **Divergence=5.25** — deterministic chaos confirmed |
 | 538 | exp_autoresearch_538.py | Temporal CV: test R²≈0.55, gap=3.5%. Generalizes |
 | 539 | exp_autoresearch_538.py | **AR(6)=30min sufficient** (plateau; BIC=13) |
