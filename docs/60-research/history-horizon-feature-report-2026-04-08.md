@@ -290,7 +290,7 @@ include only patients that meet minimum data quality:
 
 | Technique | Effect Size | Horizon Range | Evidence |
 |-----------|:----------:|:------------:|----------|
-| Transformer architecture | 2.15× vs CNN | All | EXP-411 |
+| Transformer architecture | 2.20× vs CNN | All | EXP-411 |
 | Future PK projection | −10 MAE at h120 | h60+ | EXP-356 |
 | ISF normalization | −0.4 to −1.2 | All | EXP-361, 410 |
 | Per-patient fine-tuning | −10-15% | All | EXP-408, 410 |
@@ -467,9 +467,9 @@ Priority shifts:
 
 ### The Full Spectrum
 
-| Tier | Config | h60 MAE | Training Cost | Inference | Data Required |
-|------|--------|:-------:|:------------:|:---------:|---------------|
-| **Champion** | EXP-410 (5-seed + FT) | ~10.4 | 5×200ep + 11×5×30ep FT | 5 models | Glucose + PK + ISF |
+| Tier | Config | Overall MAE | Training Cost | Inference | Data Required |
+|------|--------|:-----------:|:------------:|:---------:|---------------|
+| **Champion** | EXP-410 (5-seed + FT) | ~10.9 | 5×200ep + 11×5×30ep FT | 5 models | Glucose + PK + ISF |
 | **Near-champion** | EXP-410 (1-seed + FT) | ~11.5 | 200ep + 11×30ep FT | 1 model | Glucose + PK + ISF |
 | **Good** | EXP-407 (1-seed, no FT) | ~14-15 | 200ep only | 1 model | Glucose + PK + ISF |
 | **Basic** | EXP-406 (no ISF) | ~15-16 | 200ep only | 1 model | Glucose + PK |
@@ -488,14 +488,14 @@ PKGroupedEncoder: 134,648 parameters
 
 ### Cost-Accuracy Trade-off
 
-The **5-seed ensemble + per-patient FT** gives ~10.4 MAE but costs 50× the
+The **5-seed ensemble + per-patient FT** gives ~10.9 overall MAE but costs 50× the
 compute of a single base model. The diminishing returns curve:
 
 ```
 Single base model (no FT):   ~15 MAE (1× cost)
 Single base + FT:            ~11.5 MAE (1.5× cost, −23% MAE)
-3-seed ensemble + FT:        ~10.8 MAE (4.5× cost, −6% more)
-5-seed ensemble + FT:        ~10.4 MAE (7.5× cost, −4% more)
+3-seed ensemble + FT:        ~11.0 MAE (4.5× cost, −4% more)
+5-seed ensemble + FT:        ~10.9 MAE (7.5× cost, −1% more)
 ```
 
 **Recommendation**: For production, **1-seed + per-patient FT** captures 80%
@@ -580,7 +580,7 @@ The temporal alignment report (EXP-521-537) and metabolic flux synthesis reveal:
 ```
 What we've learned about extending forecasts beyond 60 minutes:
 
-h60:  SOLVED (10.4 MAE, below CGM MARD)
+h60:  SOLVED (overall 10.9 MAE below CGM MARD; h60-step 14.7 = 1.2× MARD)
       → Glucose momentum dominates
       → 1h history sufficient
       → Single model + FT is production-viable
@@ -588,7 +588,7 @@ h60:  SOLVED (10.4 MAE, below CGM MARD)
 h120: GOOD (17.4 MAE full validation)
       → Future PK is the key enabler (−10 MAE vs without)
       → 2h history sufficient (more history hurts!)
-      → Transformer architecture essential (2.15× vs CNN)
+      → Transformer architecture essential (2.20× vs CNN)
 
 h180-h480: POSSIBLE but data-limited
       → Same 2h history + future PK pattern
@@ -605,7 +605,7 @@ h180-h480: POSSIBLE but data-limited
 
 | Window | Overall | h60 | h120 | Train Windows |
 |--------|:-------:|:---:|:----:|:------------:|
-| w24 (EXP-410) | **10.85** | **10.4** | — | 33,547 |
+| w24 (EXP-410) | **10.85** | **14.7** | — | 33,547 |
 | w48 | 13.50 | 14.2 | **17.4** | 26,425 |
 | w72 | 15.61 | 15.0 | **17.4** | 17,609 |
 | w96 | 17.14 | 15.9 | 18.3 | 13,161 |

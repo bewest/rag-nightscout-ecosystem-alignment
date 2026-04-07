@@ -293,7 +293,7 @@ R² progression:
 | 530 | exp_fir_528.py | **State-dependent: R²=0.105** (+59% over global) |
 | 531 | exp_combined_531.py | **State-FIR+BG: R²=0.161** — best deterministic model |
 | 532 | exp_combined_531.py | Noise floor: 18-74% per patient; ceiling ~0.60 |
-| 533 | exp_combined_531.py | Markov: 0.75 trans/hr, fasting dwell 155min |
+| 533 | exp_combined_531.py | Markov: 0.6 trans/hr, fasting dwell 155min |
 | 534 | exp_autoresearch_534.py | **AR(24)+flux: R²=0.570** — MAJOR BREAKTHROUGH |
 | 535 | exp_autoresearch_534.py | State bilinear FIR: R²=0.176 (+73% over linear) |
 | 536 | exp_autoresearch_534.py | Cross-patient transfer: 66% ratio (physics shared) |
@@ -341,6 +341,7 @@ Per-patient noise floor (high-frequency sensor noise as % of dBG variance):
 | Post-meal | 150 min | 0.97 | Full meal cycles |
 | Correction | 40 min | 0.92 | Brief high-BG episodes |
 | Recovery | 10 min | 0.62 | Transient passage state |
+| Stable | 15 min | 0.83 | Brief normoglycemic windows |
 
 ---
 
@@ -689,7 +690,7 @@ This experiment needs redesign — the flux decomposition guarantees balance.
 | 530 | exp_fir_528.py | **State-dependent: R²=0.105** (+59% over global) |
 | 531 | exp_combined_531.py | **State-FIR+BG: R²=0.161** — best deterministic |
 | 532 | exp_combined_531.py | Noise floor: 18-74% per patient; ceiling ~0.60 |
-| 533 | exp_combined_531.py | Markov: 0.75 trans/hr, fasting dwell 155min |
+| 533 | exp_combined_531.py | Markov: 0.6 trans/hr, fasting dwell 155min |
 | 534 | exp_autoresearch_534.py | **AR(24)+flux: R²=0.570** — MAJOR BREAKTHROUGH |
 | 535 | exp_autoresearch_534.py | State bilinear FIR: R²=0.176 (+73% over linear) |
 | 536 | exp_autoresearch_534.py | Cross-patient transfer: 66% ratio (physics shared) |
@@ -889,24 +890,25 @@ This experiment needs redesign — the flux decomposition guarantees balance.
 
 | ID | Name | Key Result |
 |----|------|------------|
-| 511 | Raw Variance Ratio | 97% glucose vs 3% insulin variance |
-| 512–515 | PK Channel Analysis | 8 channels, hepatic most diagnostic |
-| 516–517 | Temporal Alignment | Lead/lag structure confirmed |
-| 518 | Net Balance Correlation | r=0.04, instantaneous correlation weak |
-| 519–521 | Windowed Analysis | 2h optimal, 30min+ shows signal |
-| 522 | Linear Flux Regression | R²=0.04, raw net insufficient |
-| 523–525 | Nonlinear Features | R²=0.065, BG level helps |
-| 526 | Multi-Channel FIR | R²=0.102, 3ch×18 taps |
-| 527 | Tap Selection | 6 taps (30min) sufficient |
-| 528 | Optimal FIR | R²=0.102, 3ch×6 |
-| 529 | Noise Floor | ~60% theoretical ceiling |
-| 530 | State-Dependent FIR | R²=0.105, 5 metabolic states |
-| 531 | Combined State+BG FIR | R²=0.161, BG level key |
-| 532 | State-Adaptive | R²=0.123, per-state beats single |
-| 533 | Product Features | Product terms don't help |
+| 511 | Residual Clustering | 5 clusters: 44% moderate, 25% volatile |
+| 514 | Meal Classification | 50% flat meals (AID-suppressed), 41% biphasic |
+| 518 | Compression Ratio | R²≤0 baseline — temporal misalignment confirmed |
+| 521 | Lead-Lag Analysis | Population lag +10min, supply lags negative |
+| 522 | Lag Correction | Lag correction +0.006 R² (modest) |
+| 523 | Circadian Lag Pattern | Morning lag +10-20min, afternoon +0-5min |
+| 524 | TDD Normalization | TDD normalization r=-0.806, no improvement over raw |
+| 525 | State-Dependent Lag | Meal lag=0, fasting lag=+10-15min |
+| 526 | Nonlinear Features | bg_dependent interaction +40% R²; full model 0.065 |
+| 527 | Multi-Channel Lags | Hepatic lag 0-50min; multi-channel barely helps |
+| 528 | FIR Baseline | **3ch×6 FIR: R²=0.102**, patient c: 0.222 |
+| 529 | Spectral Analysis | 41% high-freq noise; 0% circadian — hepatic works |
+| 530 | State-Dependent FIR | **R²=0.105** (+59% over global) |
+| 531 | Combined State+BG FIR | **R²=0.161**, BG level key — best deterministic |
+| 532 | Noise-Adjusted R² | Noise floor: 18-74% per patient; ceiling ~0.60 |
+| 533 | Markov Transitions | 0.6 trans/hr, fasting dwell 155min |
 | 534 | **Residual AR** | **R²=0.570, AR(24) on residuals** |
 | 535 | Bilinear FIR | R²=0.176, state-bilinear +73% |
-| 536 | Cross-Patient Transfer | 65% physics transfers |
+| 536 | Cross-Patient Transfer | 66% ratio (physics shared) |
 | 537 | Phase-Space Chaos | Divergence=5.25, deterministic chaos |
 | 538 | Temporal CV | Generalizes, gap=3.5% |
 | 539 | AR Order Selection | **AR(6)=30min sufficient** |
@@ -1119,24 +1121,25 @@ After 45 experiments across 11 patients (~180 days each, ~50K timesteps per pati
 
 | ID | Name | Key Result |
 |----|------|------------|
-| 511 | Raw Variance Ratio | 97% glucose vs 3% insulin variance |
-| 512–515 | PK Channel Analysis | 8 channels, hepatic most diagnostic |
-| 516–517 | Temporal Alignment | Lead/lag structure confirmed |
-| 518 | Net Balance Correlation | r=0.04, instantaneous correlation weak |
-| 519–521 | Windowed Analysis | 2h optimal, 30min+ shows signal |
-| 522 | Linear Flux Regression | R²=0.04, raw net insufficient |
-| 523–525 | Nonlinear Features | R²=0.065, BG level helps |
-| 526 | Multi-Channel FIR | R²=0.102, 3ch×18 taps |
-| 527 | Tap Selection | 6 taps (30min) sufficient |
-| 528 | Optimal FIR | R²=0.102, 3ch×6 |
-| 529 | Noise Floor | ~60% theoretical ceiling |
-| 530 | State-Dependent FIR | R²=0.105, 5 metabolic states |
-| 531 | Combined State+BG FIR | R²=0.161, BG level key |
-| 532 | State-Adaptive | R²=0.123, per-state beats single |
-| 533 | Product Features | Product terms don't help |
+| 511 | Residual Clustering | 5 clusters: 44% moderate, 25% volatile |
+| 514 | Meal Classification | 50% flat meals (AID-suppressed), 41% biphasic |
+| 518 | Compression Ratio | R²≤0 baseline — temporal misalignment confirmed |
+| 521 | Lead-Lag Analysis | Population lag +10min, supply lags negative |
+| 522 | Lag Correction | Lag correction +0.006 R² (modest) |
+| 523 | Circadian Lag Pattern | Morning lag +10-20min, afternoon +0-5min |
+| 524 | TDD Normalization | TDD normalization r=-0.806, no improvement over raw |
+| 525 | State-Dependent Lag | Meal lag=0, fasting lag=+10-15min |
+| 526 | Nonlinear Features | bg_dependent interaction +40% R²; full model 0.065 |
+| 527 | Multi-Channel Lags | Hepatic lag 0-50min; multi-channel barely helps |
+| 528 | FIR Baseline | **3ch×6 FIR: R²=0.102**, patient c: 0.222 |
+| 529 | Spectral Analysis | 41% high-freq noise; 0% circadian — hepatic works |
+| 530 | State-Dependent FIR | **R²=0.105** (+59% over global) |
+| 531 | Combined State+BG FIR | **R²=0.161**, BG level key — best deterministic |
+| 532 | Noise-Adjusted R² | Noise floor: 18-74% per patient; ceiling ~0.60 |
+| 533 | Markov Transitions | 0.6 trans/hr, fasting dwell 155min |
 | 534 | **Residual AR** | **R²=0.570, AR(24) on residuals** |
 | 535 | Bilinear FIR | R²=0.176, state-bilinear +73% |
-| 536 | Cross-Patient Transfer | 65% physics transfers |
+| 536 | Cross-Patient Transfer | 66% ratio (physics shared) |
 | 537 | Phase-Space Chaos | Divergence=5.25, deterministic chaos |
 | 538 | Temporal CV | Generalizes, gap=3.5% |
 | 539 | AR Order Selection | **AR(6)=30min sufficient** |
