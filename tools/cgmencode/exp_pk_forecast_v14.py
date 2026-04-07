@@ -364,19 +364,20 @@ def mask_future_pk(x_in, half, pk_mode=False):
 def train_bridge(model, train_x, val_x, save_path, label, device,
                  pk_mode=False, lr=1e-3, epochs=200, batch=32,
                  patience=20, weight_decay=1e-5, lr_patience=7,
-                 future_steps=None, augment_std=0.0):
+                 future_steps=None, augment_std=0.0, loss_fn=None):
     """ERA 2-style masked-sequence forecast training with PK-aware masking.
 
     future_steps: if set, use asymmetric split (seq_len - future_steps history).
                   Default None = symmetric (seq_len // 2).
     augment_std: if > 0, add Gaussian noise to training inputs each batch.
+    loss_fn: if provided, use instead of MSELoss. Signature: loss_fn(pred, target).
     """
     model.to(device)
     train_dl = DataLoader(TensorDataset(train_x), batch_size=batch, shuffle=True)
     val_dl = DataLoader(TensorDataset(val_x), batch_size=batch)
     opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=lr_patience, factor=0.5)
-    crit = nn.MSELoss()
+    crit = loss_fn if loss_fn is not None else nn.MSELoss()
     best = float('inf')
     stale = 0
 
@@ -12492,6 +12493,976 @@ def run_exp470(args):
     return result
 
 
+# ─── EXP-471: Horizon-Focused Loss with Asymmetric Window ───
+
+def run_exp471(args):
+    """EXP-471: Combine h60-focused loss with asymmetric window + transfer.
+
+    Related research (EXP-424) showed h60_focus loss (3× weight on h60)
+    improves BOTH h30 (−0.42) and h60 (−0.83). Our asymmetric windows
+    (EXP-468/469) also dramatically help h60. Do they compound?
+
+    Tests on asym w96 (64h+32f) — the proven sweet spot for h5-h120.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-471: Horizon-Focused Loss + Asymmetric Window + Transfer")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    # Train w48 base
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    train48, val48 = prepare_pk_future(data48, use_isf=has_isf, drop_time=True)
+    n_ch = train48.shape[-1]
+
+    print(f"\n  Train w48 base ({n_ch}ch)")
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp471_w48_s{seed}.pth')
+        train_bridge(m48, train48, val48, sp, f'471-w48-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # Load w96 data
+    data96 = load_bridge_data(
+        args.patients_dir, window_size=96,
+        max_patients=cfg['max_patients'], load_isf=True)
+    isf_v96 = data96.get('isf_val')
+    train96, val96 = prepare_pk_future(data96, use_isf=has_isf, drop_time=True)
+    future_steps = 32  # asymmetric: 64h+32f
+
+    # Custom horizon-weighted loss
+    def h60_weighted_loss(pred, target, future_steps_n):
+        """MSE with 3× weight on h60 position (step 12 in future)."""
+        mse = (pred - target) ** 2
+        weights = torch.ones_like(mse)
+        # h60 = step 12 in future (60min / 5min = 12)
+        h60_idx = min(11, future_steps_n - 1)  # 0-indexed
+        weights[:, h60_idx, :] = 3.0
+        return (mse * weights).mean()
+
+    variants = OrderedDict([
+        ('uniform_loss', {'weighted': False, 'label': 'asym 64+32, uniform MSE'}),
+        ('h60_focus', {'weighted': True, 'label': 'asym 64+32, h60 3× weight'}),
+    ])
+
+    result = {}
+    for vname, vcfg in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {vcfg['label']}")
+        print(f"{'─'*40}")
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, **arch)
+            # Transfer
+            w48_sd = w48_states[seed]
+            m_sd = model.state_dict()
+            for key in w48_sd:
+                if 'pos_encoder' in key: continue
+                if key in m_sd and w48_sd[key].shape == m_sd[key].shape:
+                    m_sd[key] = w48_sd[key]
+            model.load_state_dict(m_sd)
+
+            sp = os.path.join(cfg['output_dir'], f'exp471_{vname}_s{seed}.pth')
+            print(f"\n  Base s{seed}:")
+
+            if vcfg['weighted']:
+                # Custom training with weighted loss
+                train_bridge(model, train96, val96, sp, f'471-{vname}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                             future_steps=future_steps,
+                             loss_fn=lambda p, t: h60_weighted_loss(p, t, future_steps))
+            else:
+                train_bridge(model, train96, val96, sp, f'471-{vname}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                             future_steps=future_steps)
+
+        per_patient = {}
+        for pinfo in data96['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train96[ti:te]
+            p_val = val96[vi:ve]
+            p_isf = isf_v96[vi:ve] if isf_v96 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp471_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp471_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'471-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                         isf_val=p_isf, future_steps=future_steps)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[vname] = {'per_patient': per_patient, 'average': avg}
+        print(f"\n  {vname} avg: overall={avg.get('overall_mae','?')}, "
+              f"h30={avg.get('h30','?')}, h60={avg.get('h60','?')}, "
+              f"h120={avg.get('h120','?')}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-471 Summary: Horizon-Focused Loss + Asymmetric")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    uni = result.get('uniform_loss', {}).get('average', {})
+    h60f = result.get('h60_focus', {}).get('average', {})
+    if uni and h60f:
+        print(f"\n  Delta (h60_focus - uniform):")
+        for k in sorted(uni.keys()):
+            if k in h60f:
+                d = round(h60f[k] - uni[k], 2)
+                print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp471_h60_focus_asym', cfg)
+    return result
+
+
+# ─── EXP-472: Autoregressive Rollout from Short Specialist ───
+
+def run_exp472(args):
+    """EXP-472: Can rolling forward a short specialist beat direct long prediction?
+
+    Related research (EXP-439) showed AR rollout competitive at h240/h360.
+    Our asym_64_32 gives h60=18.49 and h120=23.31.
+    What if we roll it forward 3× to reach h360?
+
+    Rollout: predict h160, shift window by 32, predict again from shifted context.
+    This requires using the model's own predictions as future glucose context.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-472: Autoregressive Rollout from Short Specialist")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    # Train w48 base + transfer to asym w96 (64h+32f)
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    train48, val48 = prepare_pk_future(data48, use_isf=has_isf, drop_time=True)
+    n_ch = train48.shape[-1]
+
+    print(f"\n  Train w48 base ({n_ch}ch)")
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp472_w48_s{seed}.pth')
+        train_bridge(m48, train48, val48, sp, f'472-w48-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+    # Train asym w96 (64h+32f) with transfer
+    data96 = load_bridge_data(
+        args.patients_dir, window_size=96,
+        max_patients=cfg['max_patients'], load_isf=True)
+    isf_v96 = data96.get('isf_val')
+    train96, val96 = prepare_pk_future(data96, use_isf=has_isf, drop_time=True)
+    future_steps = 32
+
+    print(f"\n  Train asym w96 (64h+32f) with transfer")
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        model = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp48 = os.path.join(cfg['output_dir'], f'exp472_w48_s{seed}.pth')
+        ckpt48 = torch.load(sp48, map_location=device, weights_only=False)
+        m_sd = model.state_dict()
+        for key in ckpt48['model_state']:
+            if 'pos_encoder' in key: continue
+            if key in m_sd and ckpt48['model_state'][key].shape == m_sd[key].shape:
+                m_sd[key] = ckpt48['model_state'][key]
+        model.load_state_dict(m_sd)
+
+        sp = os.path.join(cfg['output_dir'], f'exp472_asym_s{seed}.pth')
+        train_bridge(model, train96, val96, sp, f'472-asym-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                     future_steps=future_steps)
+
+    # Per-patient FT
+    per_patient_models = {}
+    for pinfo in data96['per_patient']:
+        pid = pinfo['name']
+        ti, te = pinfo['train_idx']
+        vi, ve = pinfo['val_idx']
+        p_train = train96[ti:te]
+        p_val = val96[vi:ve]
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            m = PKGroupedEncoder(input_dim=n_ch, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp472_asym_s{seed}.pth')
+            ckpt = torch.load(sp, map_location=device, weights_only=False)
+            m.load_state_dict(ckpt['model_state'])
+            fp = os.path.join(cfg['output_dir'], f'exp472_asym_{pid}_s{seed}.pth')
+            train_bridge(m, p_train, p_val, fp, f'472-asym-{pid}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                         lr=1e-4, future_steps=future_steps)
+            per_patient_models[(pid, seed)] = fp
+
+    # Evaluate: direct prediction + autoregressive rollout
+    # For AR, we need longer validation windows to evaluate at h240+
+    # We'll use the w96 validation data and check which horizons we can reach
+    result = {'direct': {}, 'ar_rollout': {}}
+
+    for pinfo in data96['per_patient']:
+        pid = pinfo['name']
+        vi, ve = pinfo['val_idx']
+        p_val = val96[vi:ve]
+        p_isf = isf_v96[vi:ve] if isf_v96 is not None else None
+
+        for seed in cfg['seeds']:
+            # Load FT model
+            m = PKGroupedEncoder(input_dim=n_ch, **arch)
+            fp = per_patient_models[(pid, seed)]
+            ckpt = torch.load(fp, map_location=device, weights_only=False)
+            m.load_state_dict(ckpt['model_state'])
+            m.eval().to(device)
+
+            # Direct evaluation
+            report = evaluate_model(m, p_val, device, pk_mode=True,
+                                     isf_val=p_isf, future_steps=future_steps)
+            result['direct'][pid] = report
+
+            # AR rollout: use model predictions as new history
+            # This is a simplified version — we shift the window and feed predictions
+            half = 96 // 2  # = 48 for the w96 window
+            ar_preds_all = []
+            with torch.no_grad():
+                for i in range(len(p_val)):
+                    x = p_val[i:i+1].clone().to(device)
+                    mask_future_pk(x, half, pk_mode=True)
+
+                    # First pass: predict steps 0-31 of future
+                    pred1 = m(x, causal=True)  # [1, 96, 1]
+                    direct_future = pred1[0, half:half+future_steps, 0].cpu()
+
+                    # For AR: shift window by future_steps, use predictions as new glucose
+                    x2 = x.clone()
+                    # Shift history: old future becomes new history
+                    x2[0, :half-future_steps, :] = x[0, future_steps:half, :]
+                    x2[0, half-future_steps:half, 0] = direct_future
+                    # Zero out PK channels in shifted portion (unknown future PK)
+                    x2[0, half-future_steps:half, 1:] = 0
+                    mask_future_pk(x2, half, pk_mode=True)
+
+                    pred2 = m(x2, causal=True)
+                    ar_future = pred2[0, half:half+future_steps, 0].cpu()
+
+                    # Combined: steps 0-31 direct, steps 32-63 AR
+                    combined = torch.cat([direct_future, ar_future])
+                    ar_preds_all.append(combined)
+
+            # Evaluate AR at extended horizons
+            ar_report = {}
+            isf = p_isf[0].item() if p_isf is not None else 1.0
+            scale = isf if isf > 1 else 400.0
+
+            for step, label in [(5, 'h25'), (11, 'h55'), (23, 'h115'),
+                                (31, 'h155'), (39, 'h195'), (47, 'h235'),
+                                (55, 'h275'), (63, 'h315')]:
+                errors = []
+                for i in range(len(p_val)):
+                    if step < len(ar_preds_all[i]):
+                        pred_val = ar_preds_all[i][step].item() * scale
+                        actual = p_val[i, half + min(step, p_val.shape[1]-half-1), 0].item() * scale
+                        errors.append(abs(pred_val - actual))
+                if errors:
+                    ar_report[label] = round(float(np.mean(errors)), 2)
+
+            result['ar_rollout'][pid] = ar_report
+
+    # Average results
+    for mode in ['direct', 'ar_rollout']:
+        avg = {}
+        for pid, rep in result[mode].items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+        result[f'{mode}_avg'] = avg
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-472 Summary: Direct vs AR Rollout")
+    print(f"{'='*60}")
+    print(f"  Direct avg: {result.get('direct_avg', {})}")
+    print(f"  AR rollout avg: {result.get('ar_rollout_avg', {})}")
+
+    _save_results(result, 'exp472_ar_rollout', cfg)
+    return result
+
+
+# ─── EXP-473: Per-ISF Window Routing ───
+
+def run_exp473(args):
+    """EXP-473: Route patients to optimal window based on ISF.
+
+    Related research (EXP-429) found:
+    - Low ISF (25-40): w48 optimal
+    - Medium ISF (49-77): w24-w36 optimal
+    - High ISF (94): w72 optimal (slow insulin needs full DIA context)
+
+    Hypothesis: Using ISF to route patients to their optimal asymmetric
+    window will outperform a single universal window.
+
+    Tests: Train asym w96 (64h+32f) and asym w144 (112h+32f),
+    then route patients based on ISF threshold.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-473: Per-ISF Window Routing")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    # Train w48 base
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    train48, val48 = prepare_pk_future(data48, use_isf=has_isf, drop_time=True)
+    n_ch = train48.shape[-1]
+
+    print(f"\n  Train w48 base ({n_ch}ch)")
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp473_w48_s{seed}.pth')
+        train_bridge(m48, train48, val48, sp, f'473-w48-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # Train two specialists with transfer
+    window_configs = OrderedDict([
+        ('w96_asym', {'window': 96, 'future_steps': 32,
+                      'label': 'w96 64h+32f (low-medium ISF)'}),
+        ('w144_asym', {'window': 144, 'future_steps': 32,
+                       'label': 'w144 112h+32f (high ISF)'}),
+    ])
+
+    specialist_results = {}
+    for sname, scfg in window_configs.items():
+        ws = scfg['window']
+        fs = scfg['future_steps']
+        print(f"\n{'─'*40}")
+        print(f"  {sname}: {scfg['label']}")
+        print(f"{'─'*40}")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=ws,
+            max_patients=cfg['max_patients'], load_isf=True)
+        isf_v = data.get('isf_val')
+        train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=True)
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, **arch)
+            w48_sd = w48_states[seed]
+            m_sd = model.state_dict()
+            for key in w48_sd:
+                if 'pos_encoder' in key: continue
+                if key in m_sd and w48_sd[key].shape == m_sd[key].shape:
+                    m_sd[key] = w48_sd[key]
+            model.load_state_dict(m_sd)
+
+            sp = os.path.join(cfg['output_dir'], f'exp473_{sname}_s{seed}.pth')
+            train_bridge(model, train_x, val_x, sp, f'473-{sname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=fs)
+
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]
+            p_val = val_x[vi:ve]
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+            isf_val = int(round(p_isf[0].item())) if p_isf is not None else 0
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp473_{sname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp473_{sname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'473-{sname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=fs)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                         isf_val=p_isf, future_steps=fs)
+                report['isf'] = isf_val
+                per_patient[pid] = report
+
+        specialist_results[sname] = per_patient
+
+    # ISF-based routing: high ISF (>70) → w144, low ISF (≤70) → w96
+    print(f"\n{'='*60}")
+    print(f"EXP-473 Summary: Per-ISF Window Routing")
+    print(f"{'='*60}")
+
+    # Show per-patient results from both specialists
+    patients = sorted(set(list(specialist_results['w96_asym'].keys()) +
+                         list(specialist_results['w144_asym'].keys())))
+
+    isf_threshold = 70
+    routed_results = {}
+    print(f"\n  ISF threshold: {isf_threshold}")
+    print(f"  {'Patient':<8} {'ISF':<6} {'Route':<12} {'w96 h60':<10} {'w144 h60':<10} {'Best':<10}")
+
+    for pid in patients:
+        r96 = specialist_results['w96_asym'].get(pid, {})
+        r144 = specialist_results['w144_asym'].get(pid, {})
+        isf = r96.get('isf', r144.get('isf', 0))
+        route = 'w144_asym' if isf > isf_threshold else 'w96_asym'
+        h60_96 = r96.get('h60', '—')
+        h60_144 = r144.get('h60', '—')
+
+        routed = specialist_results[route].get(pid, {})
+        routed_results[pid] = routed
+        best = 'w144' if isinstance(h60_144, (int, float)) and isinstance(h60_96, (int, float)) and h60_144 < h60_96 else 'w96'
+        print(f"  {pid:<8} {isf:<6} {route:<12} {h60_96!s:<10} {h60_144!s:<10} {best:<10}")
+
+    # Compute routed average
+    routed_avg = {}
+    for pid, rep in routed_results.items():
+        for k, v in rep.items():
+            if isinstance(v, (int, float)) and k != 'isf':
+                if k not in routed_avg: routed_avg[k] = []
+                routed_avg[k].append(v)
+    routed_avg = {k: round(np.mean(v), 2) for k, v in routed_avg.items()}
+
+    # Universal averages
+    for sname in ['w96_asym', 'w144_asym']:
+        avg = {}
+        for pid, rep in specialist_results[sname].items():
+            for k, v in rep.items():
+                if isinstance(v, (int, float)) and k != 'isf':
+                    if k not in avg: avg[k] = []
+                    avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+        print(f"\n  {sname} universal avg: overall={avg.get('overall_mae','?')}, h60={avg.get('h60','?')}")
+
+    print(f"\n  ISF-routed avg: overall={routed_avg.get('overall_mae','?')}, h60={routed_avg.get('h60','?')}")
+
+    result = {
+        'specialist_results': {k: {pid: {kk: vv for kk, vv in v.items()}
+                                    for pid, v in sv.items()}
+                                for k, sv in specialist_results.items()},
+        'routed_average': routed_avg,
+        'isf_threshold': isf_threshold,
+    }
+
+    _save_results(result, 'exp473_isf_routing', cfg)
+    return result
+
+
+# ─── EXP-474: Best Combination — w144 asym + h60 focus + transfer ───
+
+def run_exp474(args):
+    """EXP-474: Combine all proven techniques on w144 asymmetric.
+
+    EXP-469: asym_112_32 (w144) = h60 18.05 (best so far)
+    EXP-471: h60_focus helped h120 (−0.46) on w96
+    EXP-473: w144_asym universally beats w96_asym (17.80 vs 18.49 h60)
+
+    Now combine: w144 asym_112_32 + h60_focus loss + w48 transfer.
+    Also test h90_focus (upweight h90 position) since h120+ is where
+    the remaining improvement lives.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-474: w144 Asymmetric + Horizon Focus + Transfer")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    # Train w48 base
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    train48, val48 = prepare_pk_future(data48, use_isf=has_isf, drop_time=True)
+    n_ch = train48.shape[-1]
+
+    print(f"\n  Train w48 base ({n_ch}ch)")
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp474_w48_s{seed}.pth')
+        train_bridge(m48, train48, val48, sp, f'474-w48-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # Load w144 data
+    data144 = load_bridge_data(
+        args.patients_dir, window_size=144,
+        max_patients=cfg['max_patients'], load_isf=True)
+    isf_v144 = data144.get('isf_val')
+    train144, val144 = prepare_pk_future(data144, use_isf=has_isf, drop_time=True)
+    future_steps = 32  # 112h + 32f
+
+    # Loss functions
+    def make_horizon_focus_loss(focus_step, weight=3.0):
+        """Create loss that upweights a specific horizon step."""
+        def loss_fn(pred, target):
+            mse = (pred - target) ** 2
+            w = torch.ones_like(mse)
+            idx = min(focus_step, pred.shape[1] - 1)
+            w[:, idx, :] = weight
+            return (mse * w).mean()
+        return loss_fn
+
+    variants = OrderedDict([
+        ('uniform', {'loss_fn': None, 'label': 'asym 112+32, uniform MSE'}),
+        ('h60_focus', {'loss_fn': make_horizon_focus_loss(11, 3.0),
+                       'label': 'asym 112+32, h60 3× weight'}),
+        ('h90_focus', {'loss_fn': make_horizon_focus_loss(17, 3.0),
+                       'label': 'asym 112+32, h90 3× weight'}),
+        ('h120_focus', {'loss_fn': make_horizon_focus_loss(23, 3.0),
+                        'label': 'asym 112+32, h120 3× weight'}),
+    ])
+
+    result = {}
+    for vname, vcfg in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {vcfg['label']}")
+        print(f"{'─'*40}")
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, **arch)
+            w48_sd = w48_states[seed]
+            m_sd = model.state_dict()
+            for key in w48_sd:
+                if 'pos_encoder' in key: continue
+                if key in m_sd and w48_sd[key].shape == m_sd[key].shape:
+                    m_sd[key] = w48_sd[key]
+            model.load_state_dict(m_sd)
+
+            sp = os.path.join(cfg['output_dir'], f'exp474_{vname}_s{seed}.pth')
+            print(f"\n  Base s{seed}:")
+            train_bridge(model, train144, val144, sp, f'474-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps, loss_fn=vcfg['loss_fn'])
+
+        per_patient = {}
+        for pinfo in data144['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train144[ti:te]
+            p_val = val144[vi:ve]
+            p_isf = isf_v144[vi:ve] if isf_v144 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp474_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp474_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'474-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                         isf_val=p_isf, future_steps=future_steps)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[vname] = {'per_patient': per_patient, 'average': avg}
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {vname} avg: {', '.join(vals)}")
+
+    # Summary & deltas
+    print(f"\n{'='*60}")
+    print(f"EXP-474 Summary: w144 Asymmetric + Horizon Focus")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    uni = result.get('uniform', {}).get('average', {})
+    for vname in ['h60_focus', 'h90_focus', 'h120_focus']:
+        vavg = result.get(vname, {}).get('average', {})
+        if uni and vavg:
+            print(f"\n  Delta ({vname} - uniform):")
+            for k in sorted(uni.keys()):
+                if k in vavg:
+                    d = round(vavg[k] - uni[k], 2)
+                    print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp474_w144_horizon_focus', cfg)
+    return result
+
+
+# ─── EXP-475: Extended History Sweep w192/w240 ───
+
+def run_exp475(args):
+    """EXP-475: Does even more history help? w192 (16h) and w240 (20h).
+
+    EXP-469: asym_112_32 (w144, 9h20m history) = best so far.
+    EXP-473: w144 universally beat w96.
+    
+    Hypothesis: More history continues to help, especially for high-ISF
+    patients where insulin action spans the full DIA (~6h).
+    w192 = 160h+32f = 13h20m history.
+    w240 = 208h+32f = 17h20m history (covers 2× DIA).
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-475: Extended History w192/w240 + Transfer")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    # Train w48 base
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    train48, val48 = prepare_pk_future(data48, use_isf=has_isf, drop_time=True)
+    n_ch = train48.shape[-1]
+
+    print(f"\n  Train w48 base ({n_ch}ch)")
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp475_w48_s{seed}.pth')
+        train_bridge(m48, train48, val48, sp, f'475-w48-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # Window variants: w144 (control) + w192 + w240
+    window_configs = OrderedDict([
+        ('w144_112_32', {'window': 144, 'future_steps': 32,
+                         'label': '9h20m history + 2h40m future'}),
+        ('w192_160_32', {'window': 192, 'future_steps': 32,
+                         'label': '13h20m history + 2h40m future'}),
+        ('w240_208_32', {'window': 240, 'future_steps': 32,
+                         'label': '17h20m history + 2h40m future'}),
+    ])
+
+    result = {}
+    for wname, wcfg in window_configs.items():
+        ws = wcfg['window']
+        fs = wcfg['future_steps']
+        print(f"\n{'─'*40}")
+        print(f"  {wname}: {wcfg['label']} (window={ws})")
+        print(f"{'─'*40}")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=ws,
+            max_patients=cfg['max_patients'], load_isf=True)
+        isf_v = data.get('isf_val')
+        train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=True)
+        print(f"  {train_x.shape[0]} train, {val_x.shape[0]} val windows")
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, **arch)
+            w48_sd = w48_states[seed]
+            m_sd = model.state_dict()
+            transferred = 0
+            for key in w48_sd:
+                if 'pos_encoder' in key: continue
+                if key in m_sd and w48_sd[key].shape == m_sd[key].shape:
+                    m_sd[key] = w48_sd[key]
+                    transferred += 1
+            model.load_state_dict(m_sd)
+            print(f"  Transferred {transferred}/{len(w48_sd)} tensors")
+
+            sp = os.path.join(cfg['output_dir'], f'exp475_{wname}_s{seed}.pth')
+            train_bridge(model, train_x, val_x, sp, f'475-{wname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=fs)
+
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]
+            p_val = val_x[vi:ve]
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp475_{wname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp475_{wname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'475-{wname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=fs)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                         isf_val=p_isf, future_steps=fs)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[wname] = {'per_patient': per_patient, 'average': avg,
+                         'n_train': int(train_x.shape[0]),
+                         'n_val': int(val_x.shape[0])}
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {wname} avg: {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-475 Summary: Extended History Sweep")
+    print(f"{'='*60}")
+    for wname, wdata in result.items():
+        avg = wdata['average']
+        nt = wdata['n_train']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {wname} (n={nt}): {', '.join(vals)}")
+
+    # Delta vs w144 baseline
+    base = result.get('w144_112_32', {}).get('average', {})
+    for wname in ['w192_160_32', 'w240_208_32']:
+        wavg = result.get(wname, {}).get('average', {})
+        if base and wavg:
+            print(f"\n  Delta ({wname} - w144):")
+            for k in sorted(base.keys()):
+                if k in wavg:
+                    d = round(wavg[k] - base[k], 2)
+                    print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp475_extended_history', cfg)
+    return result
+
+
+# ─── EXP-476: Longer Future Window Sweep ───
+
+def run_exp476(args):
+    """EXP-476: Does expanding the future window help long horizons?
+
+    All our asymmetric experiments used 32 future steps (h160).
+    What if we expand to 48 (h240) or 64 (h320) future steps
+    while keeping ~9h history?
+
+    More future steps = model sees further into PK absorption curves.
+    But it also means less history at fixed window size.
+
+    w144: 112h+32f (9h20m + 2h40m) vs 96h+48f (8h + 4h) vs 80h+64f (6h40m + 5h20m)
+    w192: 160h+32f vs 144h+48f vs 128h+64f
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-476: Future Window Size Sweep")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    # Train w48 base
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    train48, val48 = prepare_pk_future(data48, use_isf=has_isf, drop_time=True)
+    n_ch = train48.shape[-1]
+
+    print(f"\n  Train w48 base ({n_ch}ch)")
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp476_w48_s{seed}.pth')
+        train_bridge(m48, train48, val48, sp, f'476-w48-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # Test on w192 with different future windows
+    # w192 chosen because it gives enough room for both history and future
+    ws = 192
+    data = load_bridge_data(
+        args.patients_dir, window_size=ws,
+        max_patients=cfg['max_patients'], load_isf=True)
+    isf_v = data.get('isf_val')
+    train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=True)
+
+    future_configs = OrderedDict([
+        ('f32_h160', {'future_steps': 32,
+                      'label': '13h20m history + 2h40m future'}),
+        ('f48_h144', {'future_steps': 48,
+                      'label': '12h history + 4h future'}),
+        ('f64_h128', {'future_steps': 64,
+                      'label': '10h40m history + 5h20m future'}),
+        ('f96_h96', {'future_steps': 96,
+                     'label': '8h history + 8h future (symmetric)'}),
+    ])
+
+    result = {}
+    for fname, fcfg in future_configs.items():
+        fs = fcfg['future_steps']
+        hs = ws - fs
+        print(f"\n{'─'*40}")
+        print(f"  {fname}: {fcfg['label']} ({hs}h + {fs}f)")
+        print(f"{'─'*40}")
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, **arch)
+            w48_sd = w48_states[seed]
+            m_sd = model.state_dict()
+            for key in w48_sd:
+                if 'pos_encoder' in key: continue
+                if key in m_sd and w48_sd[key].shape == m_sd[key].shape:
+                    m_sd[key] = w48_sd[key]
+            model.load_state_dict(m_sd)
+
+            sp = os.path.join(cfg['output_dir'], f'exp476_{fname}_s{seed}.pth')
+            train_bridge(model, train_x, val_x, sp, f'476-{fname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=fs)
+
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]
+            p_val = val_x[vi:ve]
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp476_{fname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp476_{fname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'476-{fname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=fs)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                         isf_val=p_isf, future_steps=fs)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[fname] = {'per_patient': per_patient, 'average': avg}
+        # Show horizons that exist for this future window
+        print(f"\n  {fname} avg:")
+        for k in sorted(avg.keys()):
+            print(f"    {k}: {avg[k]}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-476 Summary: Future Window Size Sweep (w192)")
+    print(f"{'='*60}")
+    for fname, fdata in result.items():
+        avg = fdata['average']
+        common = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150']
+        vals = [f"{k}={avg.get(k,'—')}" for k in common if k in avg]
+        print(f"  {fname}: {', '.join(vals)}")
+
+    # Also show extended horizons
+    print(f"\n  Extended horizons (where available):")
+    for fname, fdata in result.items():
+        avg = fdata['average']
+        ext = [k for k in sorted(avg.keys()) if k.startswith('h') and
+               int(k[1:]) > 160]
+        if ext:
+            vals = [f"{k}={avg[k]}" for k in ext]
+            print(f"  {fname}: {', '.join(vals)}")
+
+    _save_results(result, 'exp476_future_window_sweep', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -12555,6 +13526,12 @@ EXPERIMENTS = {
     '468': run_exp468,
     '469': run_exp469,
     '470': run_exp470,
+    '471': run_exp471,
+    '472': run_exp472,
+    '473': run_exp473,
+    '474': run_exp474,
+    '475': run_exp475,
+    '476': run_exp476,
 }
 
 
