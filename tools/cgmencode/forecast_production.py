@@ -2,13 +2,19 @@
 """Production Forecast Inference Pipeline
 
 Lightweight inference-only module for glucose forecasting.
-Implements the 3-window routing system validated in EXP-614/615.
+Implements the composite champion routing system validated in EXP-619.
+
+Champion architecture (settled from 600+ experiments):
+  - PKGroupedEncoder (134K params) with prepare_pk_future (8ch)
+  - pk_mode=True (future PK channels visible)
+  - ISF normalization + per-patient fine-tuning
+  - Horizon-adaptive routing with transfer learning
 
 Inference engines:
-  - Ridge: h5-h60 (Tier 1, <1ms, ~200 coefficients)
-  - w48 PKGroupedEncoder: h30-h120 (11ch d1, ~134K params)
-  - w96 PKGroupedEncoder: h120-h200 (11ch d1, ~134K params)
-  - w144 PKGroupedEncoder: h200-h360 (11ch d1, ~134K params)
+  - w48 PKGroupedEncoder: h30-h120 (8ch pk_mode, ~134K params)
+  - w72 PKGroupedEncoder: h30-h180 (8ch pk_mode, transfer from w48)
+  - w96 PKGroupedEncoder: h120-h240 (8ch pk_mode, transfer from w48)
+  - w144 PKGroupedEncoder: h240-h360 (8ch pk_mode, transfer from w48)
 
 Usage:
   # Export models from training
@@ -51,6 +57,10 @@ def _ensure_torch():
 GLUCOSE_SCALE = 400.0
 PK_NORMS = [0.05, 0.05, 2.0, 0.5, 0.05, 3.0, 20.0, 200.0]
 
+# Champion feature channels (8ch from prepare_pk_future):
+# [glucose, IOB, COB, net_basal, insulin_net, carb_rate, sin_time, net_balance]
+CHAMPION_CHANNELS = 8
+
 # Horizon map: name → step index in future prediction array
 HORIZON_MAP = {
     'h5': 0, 'h10': 1, 'h15': 2, 'h20': 3, 'h25': 4,
@@ -69,7 +79,7 @@ class EngineConfig:
     window_size: int
     history_steps: int
     future_steps: int
-    channels: int = 11
+    channels: int = CHAMPION_CHANNELS  # 8ch pk_mode (champion)
     horizons: List[str] = field(default_factory=list)
     model_path: Optional[str] = None
     d_model: int = 64
@@ -85,7 +95,7 @@ class EngineConfig:
         return self.history_steps * 5
 
 
-# Default routing configuration from EXP-614/615 results
+# Default routing configuration from EXP-619 composite champion
 DEFAULT_ROUTING = {
     'engines': [
         EngineConfig(
@@ -94,33 +104,52 @@ DEFAULT_ROUTING = {
             window_size=48,
             history_steps=24,
             future_steps=24,
-            channels=11,
+            channels=8,
             horizons=['h30', 'h60', 'h90', 'h120'],
         ),
         EngineConfig(
-            name='w96_mid',
+            name='w72_mid',
             engine_type='transformer',
-            window_size=96,
-            history_steps=56,
-            future_steps=40,
-            channels=11,
-            horizons=['h150', 'h180'],
+            window_size=72,
+            history_steps=36,
+            future_steps=36,
+            channels=8,
+            horizons=['h30', 'h60', 'h90', 'h120', 'h150', 'h180'],
         ),
         EngineConfig(
-            name='w144_long',
+            name='w96_extended',
+            engine_type='transformer',
+            window_size=96,
+            history_steps=48,
+            future_steps=48,
+            channels=8,
+            horizons=['h120', 'h150', 'h180', 'h240'],
+        ),
+        EngineConfig(
+            name='w144_strategic',
             engine_type='transformer',
             window_size=144,
             history_steps=72,
             future_steps=72,
-            channels=11,
+            channels=8,
             horizons=['h240', 'h300', 'h360'],
         ),
     ],
+    # Routing map based on EXP-619 quick-mode + EXP-411 full validation
+    # w72 wins h30-h90 with transfer, w48 wins h120, w96 wins h150+
     'routing_map': {
+        'h30': 'w72_mid', 'h60': 'w72_mid',
+        'h90': 'w72_mid', 'h120': 'w48_short',
+        'h150': 'w96_extended', 'h180': 'w96_extended',
+        'h240': 'w96_extended',
+        'h300': 'w144_strategic', 'h360': 'w144_strategic',
+    },
+    # Simplified 2-engine routing (minimal deployment)
+    'routing_map_simple': {
         'h30': 'w48_short', 'h60': 'w48_short',
         'h90': 'w48_short', 'h120': 'w48_short',
-        'h150': 'w96_mid', 'h180': 'w96_mid',
-        'h240': 'w144_long', 'h300': 'w144_long', 'h360': 'w144_long',
+        'h150': 'w96_extended', 'h180': 'w96_extended',
+        'h240': 'w96_extended',
     },
 }
 
@@ -187,10 +216,14 @@ class PKGroupedEncoderInference:
 class ForecastRouter:
     """Routes horizon requests to appropriate specialist engines.
 
-    Production architecture:
-      h30-h120  → w48 specialist (10,360 training windows, 2h context)
-      h150-h180 → w96 specialist (6,900 windows, 4h40m context)
-      h240-h360 → w144 specialist (3,448 windows, 6h context)
+    Production architecture (EXP-619 composite champion):
+      h30-h90   → w72 specialist (transfer from w48, 3h context)
+      h120      → w48 specialist (26K training windows, 2h context)
+      h150-h240 → w96 specialist (transfer from w48, 4h context)
+      h240-h360 → w144 specialist (transfer from w48, 6h context)
+
+    All engines: PKGroupedEncoder 134K params, 8ch pk_mode,
+    ISF normalized, per-patient fine-tuned.
     """
 
     def __init__(self, models_dir: str, device: str = 'cpu',
