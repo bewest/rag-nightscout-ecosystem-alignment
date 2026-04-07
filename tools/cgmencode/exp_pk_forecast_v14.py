@@ -13992,6 +13992,286 @@ def run_exp479(args):
     return result
 
 
+# ─── EXP-480: Stride Reduction for w144 Data Volume ───
+
+def run_exp480(args):
+    """EXP-480: Reduce stride to increase w144 training data.
+
+    w144 uses stride=48 (4h), giving 3448 windows from 4 patients.
+    Reducing stride to 24 (2h) or 12 (1h) should roughly double/quadruple data.
+
+    The key question: does more (overlapping) data help, or does it just
+    add correlated samples that don't improve generalization?
+
+    EXP-478 showed w48 (stride=16, 10360 windows) beats w144 at h60.
+    If stride reduction closes the data gap, w144 should win.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-480: Stride Reduction for w144")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    # Train w48 base (always stride=16)
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    train48, val48 = prepare_pk_future(data48, use_isf=has_isf, drop_time=True)
+    n_ch = train48.shape[-1]
+
+    print(f"\n  Train w48 base ({n_ch}ch, {train48.shape[0]} windows)")
+    w48_states = {}
+    for seed in cfg['seeds']:
+        torch.manual_seed(seed); np.random.seed(seed)
+        m48 = PKGroupedEncoder(input_dim=n_ch, **arch)
+        sp = os.path.join(cfg['output_dir'], f'exp480_w48_s{seed}.pth')
+        train_bridge(m48, train48, val48, sp, f'480-w48-s{seed}',
+                     device, pk_mode=True,
+                     epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+        ckpt = torch.load(sp, map_location=device, weights_only=False)
+        w48_states[seed] = ckpt['model_state']
+
+    # Test different strides for w144
+    stride_configs = OrderedDict([
+        ('stride48', {'stride': 48, 'label': 'stride=48 (default, ~4h)'}),
+        ('stride24', {'stride': 24, 'label': 'stride=24 (~2h)'}),
+        ('stride12', {'stride': 12, 'label': 'stride=12 (~1h)'}),
+    ])
+
+    future_steps = 32
+
+    result = {}
+    for sname, scfg in stride_configs.items():
+        print(f"\n{'─'*40}")
+        print(f"  {sname}: {scfg['label']}")
+        print(f"{'─'*40}")
+
+        data = load_bridge_data(
+            args.patients_dir, window_size=144,
+            stride=scfg['stride'],
+            max_patients=cfg['max_patients'], load_isf=True)
+        isf_v = data.get('isf_val')
+        train_x, val_x = prepare_pk_future(data, use_isf=has_isf, drop_time=True)
+        print(f"  {train_x.shape[0]} train, {val_x.shape[0]} val windows")
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=n_ch, **arch)
+            w48_sd = w48_states[seed]
+            m_sd = model.state_dict()
+            for key in w48_sd:
+                if 'pos_encoder' in key: continue
+                if key in m_sd and w48_sd[key].shape == m_sd[key].shape:
+                    m_sd[key] = w48_sd[key]
+            model.load_state_dict(m_sd)
+
+            sp = os.path.join(cfg['output_dir'], f'exp480_{sname}_s{seed}.pth')
+            train_bridge(model, train_x, val_x, sp, f'480-{sname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7,
+                         future_steps=future_steps)
+
+        per_patient = {}
+        for pinfo in data['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_x[ti:te]
+            p_val = val_x[vi:ve]
+            p_isf = isf_v[vi:ve] if isf_v is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=n_ch, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp480_{sname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp480_{sname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'480-{sname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4, future_steps=future_steps)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                         isf_val=p_isf, future_steps=future_steps)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[sname] = {'per_patient': per_patient, 'average': avg,
+                         'n_train': int(train_x.shape[0]),
+                         'n_val': int(val_x.shape[0])}
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {sname} ({train_x.shape[0]} train): {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-480 Summary: Stride Reduction for w144")
+    print(f"{'='*60}")
+    for sname, sdata in result.items():
+        avg = sdata['average']
+        nt = sdata['n_train']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120', 'h150']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {sname} (n={nt}): {', '.join(vals)}")
+
+    base = result.get('stride48', {}).get('average', {})
+    for sname in ['stride24', 'stride12']:
+        savg = result.get(sname, {}).get('average', {})
+        if base and savg:
+            print(f"\n  Delta ({sname} - stride48):")
+            for k in sorted(base.keys()):
+                if k in savg:
+                    d = round(savg[k] - base[k], 2)
+                    print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp480_stride_reduction', cfg)
+    return result
+
+
+# ─── EXP-481: w48 with PK-Aware 2nd-Order Derivatives ───
+
+def run_exp481(args):
+    """EXP-481: Add 2nd-order PK derivatives to w48 for extended horizon.
+
+    w48 has the best data volume (10360 windows) and wins h5-h90.
+    But it only has 2h history — can we compensate with richer PK features?
+
+    2nd-order PK derivatives encode acceleration/jerk of insulin/carb absorption.
+    These were marginally helpful in prior experiments (EXP-461: -0.55 overall).
+
+    With w48's data advantage, the 2nd-order features might help h60-h120
+    where the PK dynamics matter most, without the data scarcity problem.
+    """
+    cfg = _get_config(args)
+    device = get_device(args.device)
+    print(f"\n{'='*60}")
+    print(f"EXP-481: w48 + 2nd-Order PK Derivatives")
+    print(f"  seeds={cfg['seeds']}, base_ep={cfg['epochs_base']}")
+    print(f"{'='*60}")
+
+    arch = {'d_model': 64, 'nhead': 4, 'num_layers': 4}
+
+    # Load w48 data
+    data48 = load_bridge_data(
+        args.patients_dir, window_size=48,
+        max_patients=cfg['max_patients'], load_isf=True)
+    has_isf = 'isf_val' in data48
+    isf_v48 = data48.get('isf_val')
+
+    # Variant 1: standard 7ch
+    train_std, val_std = prepare_pk_future(data48, use_isf=has_isf, drop_time=True)
+    n_ch_std = train_std.shape[-1]
+
+    # Variant 2: add 1st-order PK derivatives (11ch)
+    history_steps = 24  # w48 = 24 history + 24 future
+    train_d1_aug, val_d1_aug = _prepare_pk_derivatives_asymmetric(
+        data48, history_steps, use_isf=has_isf)
+    n_ch_d1 = train_d1_aug.shape[-1]
+
+    # Variant 3: add 2nd-order PK derivatives (13ch)
+    train_d2_aug, val_d2_aug = _prepare_pk_second_order(
+        data48, history_steps, use_isf=has_isf)
+    n_ch_d2 = train_d2_aug.shape[-1]
+
+    variants = OrderedDict([
+        ('std_7ch', {'train': train_std, 'val': val_std,
+                     'n_ch': n_ch_std, 'label': '7ch standard'}),
+        ('d1_9ch', {'train': train_d1_aug, 'val': val_d1_aug,
+                    'n_ch': n_ch_d1, 'label': '9ch (+1st PK derivatives)'}),
+        ('d2_13ch', {'train': train_d2_aug, 'val': val_d2_aug,
+                     'n_ch': n_ch_d2, 'label': '13ch (+1st+2nd PK derivatives)'}),
+    ])
+
+    result = {}
+    for vname, vcfg in variants.items():
+        print(f"\n{'─'*40}")
+        print(f"  {vname}: {vcfg['label']} ({vcfg['train'].shape[0]} windows)")
+        print(f"{'─'*40}")
+
+        train_v = vcfg['train']
+        val_v = vcfg['val']
+        nc = vcfg['n_ch']
+
+        for seed in cfg['seeds']:
+            torch.manual_seed(seed); np.random.seed(seed)
+            model = PKGroupedEncoder(input_dim=nc, **arch)
+            sp = os.path.join(cfg['output_dir'], f'exp481_{vname}_s{seed}.pth')
+            train_bridge(model, train_v, val_v, sp, f'481-{vname}-s{seed}',
+                         device, pk_mode=True,
+                         epochs=cfg['epochs_base'], patience=20, lr_patience=7)
+
+        per_patient = {}
+        for pinfo in data48['per_patient']:
+            pid = pinfo['name']
+            ti, te = pinfo['train_idx']
+            vi, ve = pinfo['val_idx']
+            p_train = train_v[ti:te]
+            p_val = val_v[vi:ve]
+            p_isf = isf_v48[vi:ve] if isf_v48 is not None else None
+
+            for seed in cfg['seeds']:
+                torch.manual_seed(seed); np.random.seed(seed)
+                m = PKGroupedEncoder(input_dim=nc, **arch)
+                sp = os.path.join(cfg['output_dir'], f'exp481_{vname}_s{seed}.pth')
+                ckpt = torch.load(sp, map_location=device, weights_only=False)
+                m.load_state_dict(ckpt['model_state'])
+                fp = os.path.join(cfg['output_dir'], f'exp481_{vname}_{pid}_s{seed}.pth')
+                train_bridge(m, p_train, p_val, fp, f'481-{vname}-{pid}-s{seed}',
+                             device, pk_mode=True,
+                             epochs=cfg['epochs_ft'], patience=10, lr_patience=5,
+                             lr=1e-4)
+
+                report = evaluate_model(m, p_val, device, pk_mode=True,
+                                         isf_val=p_isf)
+                per_patient[pid] = report
+
+        avg = {}
+        for pid, rep in per_patient.items():
+            for k, v in rep.items():
+                if k not in avg: avg[k] = []
+                avg[k].append(v)
+        avg = {k: round(np.mean(v), 2) for k, v in avg.items()}
+
+        result[vname] = {'per_patient': per_patient, 'average': avg}
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"\n  {vname} avg: {', '.join(vals)}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"EXP-481 Summary: w48 + PK Derivatives")
+    print(f"{'='*60}")
+    for vname, vdata in result.items():
+        avg = vdata['average']
+        keys = ['overall_mae', 'h30', 'h60', 'h90', 'h120']
+        vals = [f"{k}={avg.get(k,'—')}" for k in keys if k in avg]
+        print(f"  {vname}: {', '.join(vals)}")
+
+    base = result.get('std_7ch', {}).get('average', {})
+    for vname in ['d1_9ch', 'd2_13ch']:
+        vavg = result.get(vname, {}).get('average', {})
+        if base and vavg:
+            print(f"\n  Delta ({vname} - std_7ch):")
+            for k in sorted(base.keys()):
+                if k in vavg:
+                    d = round(vavg[k] - base[k], 2)
+                    print(f"    {k}: {d:+.2f}")
+
+    _save_results(result, 'exp481_w48_pk_derivatives', cfg)
+    return result
+
+
 EXPERIMENTS = {
     '405': run_exp405,
     '406': run_exp406,
@@ -14064,6 +14344,8 @@ EXPERIMENTS = {
     '477': run_exp477,
     '478': run_exp478,
     '479': run_exp479,
+    '480': run_exp480,
+    '481': run_exp481,
 }
 
 
