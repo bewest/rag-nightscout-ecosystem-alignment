@@ -412,6 +412,26 @@ class AIDCompensation:
     interpretation: str = ""
 
 
+# ── Glucose Forecast ──────────────────────────────────────────────────
+
+@dataclass
+class ForecastResult:
+    """Ensemble glucose forecast from PKGroupedEncoder (EXP-619).
+
+    Research basis: 134K-param transformer, 5-seed ensemble, routed windows.
+    Validated MAE: h30=11.1, h90=16.1, h180=18.5, h360=21.9 mg/dL.
+    """
+    predicted_glucose: np.ndarray       # (future_steps,) mean mg/dL
+    ensemble_std: np.ndarray            # (future_steps,) std across seeds
+    horizons_minutes: np.ndarray        # (future_steps,) [5, 10, ..., N*5]
+    timestamps_ms: List[int]            # epoch ms for each forecast step
+    ensemble_size: int                  # number of seed models loaded
+    mae_expected: Dict[str, float]      # per-horizon validated MAE
+    confidence: float                   # 0-1, inverse of ensemble spread
+    model_window: str                   # e.g. 'w48', 'w96'
+    uses_isf_norm: bool = False
+
+
 # ── Complete Pipeline Result ──────────────────────────────────────────
 
 @dataclass
@@ -435,6 +455,7 @@ class PipelineResult:
     meal_responses: Optional[List[MealResponse]] = None
     bolus_safety: Optional[BolusTimingSafety] = None
     aid_compensation: Optional[AIDCompensation] = None
+    forecast: Optional[ForecastResult] = None
     pipeline_latency_ms: float = 0.0
     warnings: List[str] = field(default_factory=list)
 

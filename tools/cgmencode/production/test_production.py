@@ -30,7 +30,7 @@ from cgmencode.production.types import (
     MealTimingModel, MealPrediction, SettingsRecommendation,
     ActionRecommendation, MealResponse, PeriodMetrics,
     CorrectionEnergy, BolusTimingSafety, AIDCompensation,
-    PipelineResult,
+    PipelineResult, ForecastResult,
     GlycemicGrade, BasalAssessment, EventType, OnboardingPhase,
     Phenotype, MealWindow, SettingsParameter, MealResponseType,
     CompensationType,
@@ -265,11 +265,161 @@ class TestPipelineResultContract(unittest.TestCase):
             "clinical_report", "patterns", "onboarding", "meal_history",
             "meal_prediction", "settings_recs", "recommendations",
             "period_metrics", "correction_energy", "meal_responses",
-            "bolus_safety", "aid_compensation", "pipeline_latency_ms",
-            "warnings",
+            "bolus_safety", "aid_compensation", "forecast",
+            "pipeline_latency_ms", "warnings",
         }
         self.assertTrue(expected.issubset(field_names),
                         f"Missing: {expected - field_names}")
+
+
+class TestForecastResultContract(unittest.TestCase):
+    """ForecastResult type contract — fields, shapes, invariants."""
+
+    def test_required_fields(self):
+        import dataclasses
+        field_names = {f.name for f in dataclasses.fields(ForecastResult)}
+        expected = {
+            "predicted_glucose", "ensemble_std", "horizons_minutes",
+            "timestamps_ms", "ensemble_size", "mae_expected",
+            "confidence", "model_window", "uses_isf_norm",
+        }
+        self.assertEqual(expected, field_names)
+
+    def test_instantiation(self):
+        n = 24  # w48 future steps
+        fr = ForecastResult(
+            predicted_glucose=np.full(n, 120.0),
+            ensemble_std=np.full(n, 5.0),
+            horizons_minutes=np.arange(1, n + 1) * 5,
+            timestamps_ms=[1000 * i for i in range(n)],
+            ensemble_size=5,
+            mae_expected={'h30': 11.1, 'h60': 14.2},
+            confidence=0.85,
+            model_window='w48',
+        )
+        self.assertEqual(len(fr.predicted_glucose), n)
+        self.assertEqual(fr.ensemble_size, 5)
+        self.assertFalse(fr.uses_isf_norm)  # default
+        self.assertEqual(fr.model_window, 'w48')
+
+    def test_glucose_range_physiological(self):
+        """Predicted glucose should be clippable to 30-400 mg/dL."""
+        fr = ForecastResult(
+            predicted_glucose=np.array([120.0, 180.0, 250.0]),
+            ensemble_std=np.array([5.0, 10.0, 15.0]),
+            horizons_minutes=np.array([5, 10, 15]),
+            timestamps_ms=[0, 1, 2],
+            ensemble_size=3,
+            mae_expected={},
+            confidence=0.9,
+            model_window='w48',
+        )
+        self.assertTrue(np.all(fr.predicted_glucose >= 30))
+        self.assertTrue(np.all(fr.predicted_glucose <= 400))
+
+
+class TestGlucoseForecastModule(unittest.TestCase):
+    """glucose_forecast.py: input preparation, constants, architecture."""
+
+    def test_constants_match_exp619(self):
+        from cgmencode.production.glucose_forecast import (
+            GLUCOSE_SCALE, PK_NORMS, PRODUCTION_SEEDS,
+            HORIZON_ROUTING, WINDOW_CONFIG, ROUTED_MAE,
+        )
+        self.assertEqual(GLUCOSE_SCALE, 400.0)
+        self.assertEqual(len(PK_NORMS), 8)
+        self.assertEqual(len(PRODUCTION_SEEDS), 5)
+        self.assertEqual(HORIZON_ROUTING['h30'], 'w48')
+        self.assertEqual(HORIZON_ROUTING['h180'], 'w96')
+        self.assertEqual(WINDOW_CONFIG['w48']['total'], 48)
+        self.assertAlmostEqual(ROUTED_MAE['h30'], 11.13, places=1)
+
+    def test_build_model(self):
+        """PKGroupedEncoder can be constructed and runs forward."""
+        try:
+            import torch
+            from cgmencode.production.glucose_forecast import _build_model
+        except ImportError:
+            self.skipTest("PyTorch not available")
+
+        model = _build_model(input_dim=8)
+        x = torch.randn(1, 48, 8)
+        out = model(x, causal=True)
+        self.assertEqual(out.shape, (1, 48, 8))
+
+    def test_prepare_input_window_shape(self):
+        from cgmencode.production.glucose_forecast import prepare_input_window
+        patient = make_patient(n=2000)
+        hours = _make_hours(2000)
+        metabolic = _make_metabolic(2000)
+        arr, hist_len = prepare_input_window(
+            glucose=patient.glucose, metabolic=metabolic,
+            patient=patient, hours=hours, window='w48')
+        self.assertEqual(arr.shape, (48, 8))
+        self.assertEqual(hist_len, 24)
+        # Glucose channel should be normalized
+        self.assertTrue(np.all(np.abs(arr[:, 0]) < 10.0))
+
+    def test_prepare_input_window_short_data(self):
+        """Handles data shorter than history window via zero-padding."""
+        from cgmencode.production.glucose_forecast import prepare_input_window
+        patient = make_patient(n=10)  # very short
+        hours = _make_hours(10)
+        metabolic = _make_metabolic(10)
+        arr, hist_len = prepare_input_window(
+            glucose=patient.glucose, metabolic=metabolic,
+            patient=patient, hours=hours, window='w48')
+        self.assertEqual(arr.shape, (48, 8))
+        # First 14 rows should be zero-padded (24 - 10 = 14)
+        self.assertTrue(np.all(arr[:14, 0] == 0.0))
+
+    def test_predict_no_models(self):
+        """predict_trajectory returns None if no models found."""
+        from cgmencode.production.glucose_forecast import predict_trajectory
+        patient = make_patient(n=2000)
+        hours = _make_hours(2000)
+        metabolic = _make_metabolic(2000)
+        result = predict_trajectory(
+            patient=patient, metabolic=metabolic, hours=hours,
+            glucose=patient.glucose, patient_id='z',  # no models for z
+            window='w48', models_dir='/nonexistent',
+        )
+        self.assertIsNone(result)
+
+    def test_pipeline_no_forecast_by_default(self):
+        """Pipeline runs without forecast when no config provided."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(n=4320)
+        result = run_pipeline(patient)
+        self.assertIsNone(result.forecast)
+
+    def test_pipeline_forecast_skips_gracefully(self):
+        """Pipeline handles bad forecast config without crashing."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(n=4320)
+        result = run_pipeline(patient, forecast_config={
+            'patient_id': 'z', 'models_dir': '/nonexistent'})
+        self.assertIsNone(result.forecast)
+        # Should have a warning about models not found
+        forecast_warnings = [w for w in result.warnings if 'orecast' in w]
+        self.assertTrue(len(forecast_warnings) > 0)
+
+
+def _make_hours(n: int) -> np.ndarray:
+    """Helper: fractional hours cycling 0-24."""
+    return np.arange(n) * 5.0 / 60.0 % 24.0
+
+
+def _make_metabolic(n: int) -> MetabolicState:
+    """Helper: minimal metabolic state for forecast tests."""
+    return MetabolicState(
+        supply=np.full(n, 0.02),
+        demand=np.full(n, 0.01),
+        hepatic=np.full(n, 0.5),
+        carb_supply=np.full(n, 0.5),
+        net_flux=np.full(n, 0.01),
+        residual=np.full(n, 0.0),
+    )
 
 
 # ── 2. Module Contract Tests ──────────────────────────────────────────

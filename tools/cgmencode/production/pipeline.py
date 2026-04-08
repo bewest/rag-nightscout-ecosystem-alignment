@@ -43,6 +43,7 @@ def run_pipeline(patient: PatientData,
                  personal_params: Optional[dict] = None,
                  skip_patterns: bool = False,
                  current_hour: Optional[float] = None,
+                 forecast_config: Optional[dict] = None,
                  ) -> PipelineResult:
     """Run complete inference pipeline on a single patient.
 
@@ -54,6 +55,10 @@ def run_pipeline(patient: PatientData,
         personal_params: optional calibrated personal parameters.
         skip_patterns: skip pattern analysis (faster, for real-time use).
         current_hour: fractional hour for meal prediction (default: last timestamp).
+        forecast_config: optional dict to enable glucose forecasting.
+            Keys: patient_id (str), window (str, default 'w48'),
+            models_dir (str), device (str, default 'cpu'),
+            isf (float, optional).
 
     Returns:
         PipelineResult with all available inference outputs.
@@ -124,6 +129,30 @@ def run_pipeline(patient: PatientData,
             warnings.append(f"Pattern analysis failed: {e}")
     elif not skip_patterns:
         warnings.append(f"Only {patient.days_of_data:.1f} days — patterns need ≥7 days")
+
+    # ── Stage 4e: Glucose Forecast (transformer ensemble) ─────────
+    forecast = None
+    if forecast_config and metabolic is not None:
+        try:
+            from .glucose_forecast import predict_trajectory
+            fc = forecast_config
+            forecast = predict_trajectory(
+                patient=patient,
+                metabolic=metabolic,
+                hours=hours,
+                glucose=cleaned.glucose,
+                patient_id=fc.get('patient_id', patient.patient_id),
+                window=fc.get('window', 'w48'),
+                models_dir=fc.get('models_dir'),
+                device=fc.get('device', 'cpu'),
+                isf=fc.get('isf'),
+            )
+            if forecast is None:
+                warnings.append("Forecast models not found — skipped")
+        except ImportError:
+            warnings.append("PyTorch not available — forecast skipped")
+        except Exception as e:
+            warnings.append(f"Glucose forecast failed: {e}")
 
     # ── Stage 5: Meal Detection ───────────────────────────────────
     meal_history = None
@@ -288,6 +317,7 @@ def run_pipeline(patient: PatientData,
         meal_responses=meal_responses,
         bolus_safety=bolus_safety,
         aid_compensation=aid_compensation,
+        forecast=forecast,
         pipeline_latency_ms=elapsed,
         warnings=warnings,
     )
