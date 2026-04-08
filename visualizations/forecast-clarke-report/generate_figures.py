@@ -70,73 +70,35 @@ clarke_1043 = {d['patient']: d for d in exp1043['results']['per_patient']}
 # Use empirical calibration from EXP-929 + EXP-1043 to estimate
 # Clarke zones at each horizon based on MAE
 
-def estimate_clarke_zones(mae, mean_glucose=155.0):
+def estimate_clarke_zones(mae):
     """Estimate Clarke zone percentages from MAE.
 
-    Calibrated against EXP-929 (actual Clarke) and EXP-1043 measured data.
-    Uses error distribution model from rescore_forecasts.py.
+    Uses empirical calibration from EXP-929 measured per-patient data
+    (11 patients, h60) rather than simulation.  Linear regression on
+    MAE → zone% (R²=0.877 for Zone A).
 
-    The Clarke grid has glucose-dependent boundaries:
-      Zone A: within 20% if ref>70, or within ±15 if ref≤70
-      Zone B: clinically acceptable action, outside A
-      Zone C/D/E: increasingly dangerous errors
+    Previous version used a Monte Carlo Gaussian error model with
+    re-implemented Clarke boundaries. That had three bugs:
+      1. Simplified Clarke boundaries (±40% for Zone B, ±110 for D)
+      2. Zone B catch-all hiding D/E errors
+      3. Gaussian tails too thin → D+E showed 0.1% vs measured ~4%
+
+    Calibration data (EXP-929, measured):
+      MAE=27.3 → A=64.6%, A+B=91.5%, D+E≈4.4%
+      Per-patient R² for A% fit: 0.877
     """
-    from scipy import stats
+    # Empirical fits from EXP-929 per-patient (MAE, Zone%)
+    # See audit in commit message for derivation
+    #   Zone_A%  = -1.19 × MAE + 97.0  (R²=0.877)
+    #   Zone_AB% = -0.42 × MAE + 102.9 (R²=0.625)
+    #   Zone_DE% =  0.17 × MAE + 0.1   (R²=0.31, weak but directional)
+    a_pct = np.clip(-1.19 * mae + 97.0, 40, 95)
+    ab_pct = np.clip(-0.42 * mae + 102.9, 60, 99)
+    de_pct = np.clip(0.17 * mae + 0.1, 0.5, 15)  # floor at 0.5% — never truly zero
+    b_pct = max(0, ab_pct - a_pct)
+    c_pct = max(0, 100 - ab_pct - de_pct)
 
-    sigma = 1.25 * mae
-    # For a distribution of reference glucoses, compute zone membership
-    # Simplified: assume typical glucose distribution N(155, 45)
-    n_sim = 50000
-    rng = np.random.RandomState(42)
-    refs = rng.normal(mean_glucose, 45, n_sim)
-    refs = np.clip(refs, 40, 400)
-    errors = rng.normal(0, sigma, n_sim)
-    preds = refs + errors
-    preds = np.clip(preds, 30, 500)
-
-    zones = np.full(n_sim, 'E', dtype='U1')
-
-    for i in range(n_sim):
-        r, p = refs[i], preds[i]
-
-        # Zone A: within 20% or both ≤70
-        if r <= 70:
-            if abs(p - r) <= 15:
-                zones[i] = 'A'; continue
-        else:
-            if abs(p - r) / r <= 0.20:
-                zones[i] = 'A'; continue
-
-        # Zone B: clinically benign
-        if r >= 180 and p >= 70:
-            zones[i] = 'B'; continue
-        if r <= 70 and p <= 180:
-            zones[i] = 'B'; continue
-        if 70 < r < 180:
-            upper = 1.2 * r
-            lower = 0.5831 * r - 18.81 if r > 100 else 0.8 * r - 30
-            if lower <= p <= upper:
-                zones[i] = 'B'; continue
-
-        # Zone D: dangerous failure to detect hypo/hyper
-        if r >= 240 and p <= 70:
-            zones[i] = 'D'; continue
-        if r <= 70 and p >= 180:
-            zones[i] = 'D'; continue
-
-        # Zone C: overcorrection
-        if r >= 70 and p <= 70 and r <= 180:
-            zones[i] = 'C'; continue
-        if r <= 180 and p >= 180 and r >= 70:
-            zones[i] = 'C'; continue
-
-        zones[i] = 'B'  # remaining edge cases → B
-
-    zone_pcts = {}
-    for z in ['A', 'B', 'C', 'D', 'E']:
-        zone_pcts[z] = float(np.mean(zones == z) * 100)
-
-    return zone_pcts
+    return {'A': a_pct, 'B': b_pct, 'C': c_pct, 'D': de_pct * 0.85, 'E': de_pct * 0.15}
 
 
 # ── Figure 1: MAE Decay Curve with Clarke Zone Shading ────────────────
@@ -201,7 +163,8 @@ def fig2_clarke_zones_by_horizon():
         zones = estimate_clarke_zones(mae)
         zone_data[h] = zones
 
-    fig, ax = plt.subplots(figsize=(12, 6))
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(16, 6),
+                                   gridspec_kw={'width_ratios': [3, 1]})
 
     zone_colors = {
         'A': '#27ae60', 'B': '#3498db', 'C': '#f39c12',
@@ -216,7 +179,7 @@ def fig2_clarke_zones_by_horizon():
     e_pcts = [zone_data[h]['E'] for h in horizons]
 
     ax.fill_between(h_minutes, 0, a_pcts, alpha=0.7, color=zone_colors['A'],
-                    label=f'Zone A (clinically accurate)')
+                    label='Zone A (clinically accurate)')
     ab = [a + b for a, b in zip(a_pcts, b_pcts)]
     ax.fill_between(h_minutes, a_pcts, ab, alpha=0.7, color=zone_colors['B'],
                     label='Zone B (benign error)')
@@ -230,36 +193,70 @@ def fig2_clarke_zones_by_horizon():
     ax.fill_between(h_minutes, abcd, abcde, alpha=0.7, color=zone_colors['E'],
                     label='Zone E (erroneous treatment)')
 
-    # Add actual measured point from EXP-929 at h60
+    # Measured EXP-929 calibration point at h60 (different model, MAE=27.3)
+    # Show as reference — the star is from a higher-MAE model
     ax.plot(60, exp929['results']['mean_clarke_A_pct'], '*', color='white',
-            markersize=12, markeredgecolor='black', markeredgewidth=1.5, zorder=10)
-    ax.annotate(f"Measured: {exp929['results']['mean_clarke_A_pct']:.1f}% A",
+            markersize=14, markeredgecolor='black', markeredgewidth=2, zorder=10)
+    ax.annotate(f"EXP-929 measured\n(MAE=27.3): {exp929['results']['mean_clarke_A_pct']:.1f}% A",
                 xy=(60, exp929['results']['mean_clarke_A_pct']),
-                xytext=(85, exp929['results']['mean_clarke_A_pct'] - 10),
+                xytext=(100, 55),
                 fontsize=9, fontweight='bold',
-                arrowprops=dict(arrowstyle='->', color='black'))
-
-    # 95% A+B threshold line
-    ax.axhline(y=95, color='gray', linestyle=':', alpha=0.5)
-    ax.text(370, 95.5, '95% A+B', fontsize=8, color='gray', ha='right')
+                arrowprops=dict(arrowstyle='->', color='black', lw=1.5))
 
     # Annotate zone percentages at key horizons
     for h_idx, h in enumerate([horizons[0], horizons[2], horizons[5], horizons[-1]]):
         m = int(h[1:])
         z = zone_data[h]
-        ax.text(m, z['A'] / 2, f"{z['A']:.0f}%", fontsize=9,
+        ax.text(m, z['A'] / 2, f"{z['A']:.0f}%", fontsize=10,
                 ha='center', va='center', fontweight='bold', color='white')
+
+    # Mark A+B boundary
+    ax.plot(h_minutes, ab, '-', color='white', linewidth=1.5, alpha=0.8)
+    for h_idx, h in enumerate([horizons[0], horizons[-1]]):
+        m = int(h[1:])
+        z = zone_data[h]
+        ab_val = z['A'] + z['B']
+        ax.text(m, ab_val + 1.5, f"A+B={ab_val:.0f}%", fontsize=8,
+                ha='center', va='bottom', color='#2c3e50', fontweight='bold')
 
     ax.set_xlabel('Forecast Horizon (minutes)', fontsize=12)
     ax.set_ylabel('Cumulative Zone Percentage (%)', fontsize=12)
     ax.set_title('Clarke Error Grid Zone Distribution by Forecast Horizon\n'
-                 'Estimated from EXP-619 MAE, Calibrated vs EXP-929 Measured',
+                 'Empirically calibrated from EXP-929 (11 patients, R²=0.88)',
                  fontsize=13, fontweight='bold')
     ax.set_xlim(25, 370)
     ax.set_ylim(0, 100)
     ax.set_xticks([30, 60, 90, 120, 150, 180, 240, 300, 360])
     ax.legend(loc='lower left', fontsize=9)
     ax.grid(True, alpha=0.2)
+
+    # Right panel: D+E detail (zoomed)
+    de = [d + e for d, e in zip(d_pcts, e_pcts)]
+    ax2.fill_between(h_minutes, 0, d_pcts, alpha=0.7, color=zone_colors['D'],
+                     label='Zone D')
+    ax2.fill_between(h_minutes, d_pcts, de, alpha=0.7, color=zone_colors['E'],
+                     label='Zone E')
+    ax2.plot(h_minutes, de, 'o-', color='#2c3e50', linewidth=2, markersize=5)
+
+    # Measured D+E from EXP-929
+    measured_de = np.mean([d['clarke_zones']['D'] + d['clarke_zones']['E']
+                           for d in exp929['results']['per_patient']])
+    ax2.axhline(y=measured_de, color='black', linestyle='--', alpha=0.5)
+    ax2.text(200, measured_de + 0.3, f'EXP-929 mean D+E={measured_de:.1f}%',
+             fontsize=8, ha='center')
+
+    for m, de_val in zip(h_minutes, de):
+        ax2.text(m, de_val + 0.2, f'{de_val:.1f}', fontsize=7,
+                 ha='center', va='bottom', color='#e74c3c')
+
+    ax2.set_xlabel('Horizon (min)', fontsize=10)
+    ax2.set_ylabel('Dangerous Zone %', fontsize=10)
+    ax2.set_title('Zone D+E Detail\n(clinically dangerous)', fontsize=11, fontweight='bold')
+    ax2.set_xlim(25, 370)
+    ax2.set_ylim(0, max(de) * 1.8)
+    ax2.set_xticks([30, 120, 240, 360])
+    ax2.legend(fontsize=8)
+    ax2.grid(True, alpha=0.3)
 
     plt.tight_layout()
     fig.savefig(OUT / 'fig2_clarke_zones_by_horizon.png', dpi=150, bbox_inches='tight')
