@@ -4,12 +4,15 @@
 
 We survey how four different algorithms estimate meal carbohydrate magnitude
 from the same CGM/AID data, comparing their qualitative behavior across
-12,060 detected meals in 11 patients (180 days each).
+12,060 detected meals in 11 patients (typically 180 days each; range 61–180).
 
-**Key finding**: All algorithmic estimates are 27–65% of user-entered carbs,
-and correlations with entered carbs are weak (r = 0.09–0.33).  This confirms
-entered carbs are **not** reliable ground truth.  The four methods form a
-clear hierarchy of aggressiveness, reflecting their design philosophies.
+**Key finding**: All algorithmic estimates are 27–93% of user-entered carbs,
+and correlations with entered carbs are weak to moderate (r = 0.09–0.37).
+This confirms entered carbs are **not** reliable ground truth.  The four
+methods form a clear hierarchy of aggressiveness, reflecting their design
+philosophies.  After correcting the oref0 BGI calculation, **oref0 deviation
+achieves the highest correlation with entered carbs** (r=0.368), surpassing
+Loop IRC (r=0.334).
 
 ## Methods
 
@@ -17,8 +20,8 @@ clear hierarchy of aggressiveness, reflecting their design philosophies.
 |---|--------|-----------------|--------|
 | 1 | **Physics residual** | Unexplained glucose rise after subtracting modeled insulin/hepatic effects | EXP-441/753 supply–demand decomposition |
 | 2 | **Glucose excursion** | Simple peak minus nadir glucose rise | Baseline / naive |
-| 3 | **Loop IRC** | Retrospective prediction error (actual − predicted_30) integrated with PID damping | `IntegralRetrospectiveCorrection.swift` (P=1, I=2, D=2, τ_forget=60 min) |
-| 4 | **oref0 deviation** | Glucose rate of change minus expected insulin effect (BGI) | `determine-basal.js` deviation logic, `min_5m_carbimpact` floor |
+| 3 | **Loop IRC** | Retrospective prediction error (actual − predicted_30), simplified integral of positive deviations | `IntegralRetrospectiveCorrection.swift` (currentDiscrepancyGain=1, persistentDiscrepancyGain=2, differentialGain=2, τ=60 min) |
+| 4 | **oref0 deviation** | Glucose rate of change minus expected insulin effect (BGI) | `determine-basal.js` deviation logic (`bgi = -activity * sens * 5`) |
 
 All methods convert the glucose-domain integral to grams via `carbs_g = integral × CR / ISF`.
 
@@ -27,15 +30,16 @@ All methods convert the glucose-domain integral to grams via `carbs_g = integral
 | Method | All meals | Announced | UAM | vs Entered (ratio) | Corr w/ entered |
 |--------|----------|-----------|-----|---------------------|-----------------|
 | Physics | **22.6g** | 19.5g | 23.6g | 0.65× | 0.093 |
+| oref0 | **21.8g** | 27.9g | 19.9g | 0.93× | **0.368** |
 | Excursion | 7.8g | 10.0g | 7.2g | 0.33× | 0.263 |
-| Loop IRC | 5.6g | 8.0g | 5.2g | 0.27× | **0.334** |
-| oref0 | **17.3g** | 19.1g | 16.7g | 0.64× | 0.246 |
+| Loop IRC | 5.6g | 8.0g | 5.2g | 0.27× | 0.334 |
 | *(Entered)* | *—* | *30.0g* | *—* | — | — |
 
 - **12,060 meals** detected across 11 patients (**76.5% unannounced**)
-- Physics and oref0 give the largest estimates (18–23g); Loop IRC the smallest (6g)
-- **Loop IRC has the highest correlation with entered carbs** (r=0.334) despite
-  the lowest magnitude — less noisy, more conservative
+- Physics and oref0 give the largest estimates (22–23g); Loop IRC the smallest (6g)
+- **oref0 has the highest correlation with entered carbs** (r=0.368) and
+  the closest ratio (0.93×), suggesting it best captures the insulin-adjusted
+  magnitude of carb absorption
 - Physics has the **lowest correlation** (r=0.093) — it captures non-meal
   glucose rises too (dawn phenomenon, stress, exercise rebounds)
 
@@ -43,10 +47,10 @@ All methods convert the glucose-domain integral to grams via `carbs_g = integral
 
 | Window | n | % UAM | Physics | Excursion | Loop IRC | oref0 |
 |--------|---|-------|---------|-----------|----------|-------|
-| Breakfast | 2,476 | 73% | 26g | 8g | 6g | 17g |
-| Lunch | 1,783 | 87% | 20g | 7g | 5g | 14g |
-| Dinner | 2,096 | 70% | 22g | 9g | 6g | 20g |
-| Snack/other | 5,705 | 77% | 22g | 8g | 6g | 18g |
+| Breakfast | 2,476 | 73% | 26g | 8g | 6g | 23g |
+| Lunch | 1,783 | 87% | 20g | 7g | 5g | 17g |
+| Dinner | 2,096 | 70% | 22g | 9g | 6g | 24g |
+| Snack/other | 5,705 | 77% | 22g | 8g | 6g | 22g |
 
 Breakfast shows the largest physics estimates, consistent with dawn phenomenon
 amplifying post-meal glucose rise.  47% of detected events fall in "snack/other"
@@ -99,24 +103,31 @@ CR is too high or the person regularly underreports carbs.
    conservative approach means **Loop is slow to ramp up insulin for unannounced
    meals**, relying on repeated correction cycles.
 
-4. **oref0 deviation** — Balanced middle ground.  Direct deviation (actual ΔBG
-   minus insulin effect) without PID damping.  Captures more signal than Loop IRC
-   (17g vs 6g) but noisier.  The `min_5m_carbimpact` floor ensures slow meals
-   still register.  In UAM mode, oref0 responds faster than Loop because it
-   accumulates deviation without forgetting.
+4. **oref0 deviation** — Most insulin-aware.  Direct deviation (actual ΔBG
+   minus expected insulin effect BGI) without PID damping.  With corrected
+   BGI calculation (`bgi = -activity * sens * 5`), oref0 properly accounts
+   for how much glucose *should* be dropping due to insulin.  When glucose
+   stays stable or rises despite insulin activity, the full deviation is
+   attributed to carb absorption.  This yields estimates (22g) close to
+   physics (23g), but with the **highest correlation** to entered carbs
+   (r=0.368) — because insulin-adjustment removes non-meal noise that
+   inflates physics estimates.  The `min_5m_carbimpact` floor (8 mg/dL/5min)
+   is used only in COB decay tracking, not in the deviation calculation.
 
 ### What This Means for UAM Handling
 
-The 4× difference between oref0 (17g) and Loop IRC (6g) in UAM cases explains
+The ~4× difference between oref0 (22g) and Loop IRC (6g) in UAM cases explains
 a known clinical observation: **AAPS/Trio respond faster to unannounced meals
 than Loop**.  Loop's PID-dampened IRC requires more evidence (higher glucose,
-longer duration) before it "believes" a significant meal is occurring.
+longer duration) before it "believes" a significant meal is occurring.  oref0's
+insulin-aware deviation properly credits glucose stability during insulin
+activity as carb absorption, giving it a more complete picture of meal impact.
 
 ### Entered Carbs Are Unreliable
 
-- Median entered carbs (30g) are 1.3–5.4× the algorithmic estimates
-- Correlation with all methods is weak (r < 0.34)
-- Patient j enters 80g median but algorithms see 6–20g
+- Median entered carbs (30g) are 1.1–3.7× the announced-meal algorithmic estimates
+- Correlation with all methods is weak to moderate (r < 0.37)
+- Patient j enters 80g median but algorithms see 6–18g
 - Patient k enters only 15g — surprisingly close to excursion estimate (10g)
 
 This reflects: (a) people round up carb entries, (b) AID insulin delivery
@@ -133,30 +144,39 @@ are pre-boluses where insulin acts before glucose rises.
    Actual values vary by time of day and change over months.
 
 3. **Loop IRC approximation**: We integrate positive retrospective deviations
-   directly, while actual Loop IRC uses a PID controller with specific gains
-   (P=1, I=2, D=2).  Our estimate captures the direction but not the exact
-   dynamics of Loop's correction logic.
+   directly, while actual Loop IRC uses a PID controller with proportional,
+   integral (with exponential forgetting, τ=60 min), and differential terms.
+   Our estimate captures the direction but not the exact dynamics of Loop's
+   correction logic.  See `IntegralRetrospectiveCorrection.swift` for the
+   full implementation.
 
 4. **Patient j has 0% predicted_30 coverage**: No Loop IRC estimates available.
 
 5. **Physics captures non-meal signals**: Dawn phenomenon, stress, exercise
    rebounds all contribute to physics estimates.
 
+6. **oref0 uses IOB differences as activity proxy**: The experiment derives
+   insulin activity from `diff(IOB)` rather than the activity curve model
+   used by actual oref0.  This conflates new bolus additions with absorption,
+   introducing noise at bolus times.  During basal-only periods the proxy is
+   reasonable.
+
 ## Implications
 
 1. **For algorithm design**: The conservative Loop IRC approach trades
-   responsiveness for safety.  oref0's more aggressive deviation tracking
-   reaches faster but risks overreaction.  Physics shows the theoretical
-   maximum signal available.
+   responsiveness for safety.  oref0's insulin-aware deviation tracking
+   produces estimates closest to entered carbs (r=0.368, ratio=0.93×),
+   suggesting it best captures actual carb magnitude.  Physics captures
+   the theoretical maximum signal but includes non-meal noise.
 
-2. **For carb estimation**: No single algorithm produces reliable carb
-   estimates.  The best approach may be an ensemble that uses physics for
-   detection, excursion for magnitude scaling, and Loop/oref0 deviation
-   for real-time response.
+2. **For carb estimation**: oref0 deviation provides the best single
+   estimator of carb magnitude.  An ensemble approach could combine
+   physics for detection sensitivity with oref0 for calibrated magnitude.
 
 3. **For UAM handling**: The 5–6g median IRC estimate for UAM events means
-   Loop treats most unannounced meals as negligible.  This is intentionally
-   conservative but frustrating for patients who don't announce meals.
+   Loop treats most unannounced meals as negligible.  oref0 sees 20g median
+   for the same events — a ~4× difference that explains Loop's slower
+   response to unannounced meals.
 
 ## Files
 

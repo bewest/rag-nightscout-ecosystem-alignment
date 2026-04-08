@@ -20,7 +20,7 @@ Compares 4 approaches to estimating meal carbohydrate magnitude:
    to carb absorption, with a min_5m_carbimpact floor.
 
 Key insight: entered carbs are NOT ground truth — they are noisy,
-often missing (62% UAM), and frequently inaccurate.  This is a
+often missing (76.5% UAM), and frequently inaccurate.  This is a
 qualitative survey of how each algorithm perceives meal magnitude.
 
 Builds on:
@@ -53,7 +53,9 @@ MEAL_MERGE_STEPS = 6      # 30 min
 POST_MEAL_WINDOW = 36     # 3 hours (36 × 5 min)
 
 # oref0 min_5m_carbimpact default (mg/dL per 5 min)
-MIN_5M_CARBIMPACT = 8.0 / STEPS_PER_HOUR  # ~0.67 mg/dL per 5 min
+# oref0 profile default: 8 mg/dL per 5min (oref1/SMB mode)
+# See: externals/oref0/lib/profile/index.js:35
+MIN_5M_CARBIMPACT = 8.0  # mg/dL per 5 min (already per-step, no conversion needed)
 
 # Patient therapy settings from profile data
 PATIENT_SETTINGS = {
@@ -216,11 +218,15 @@ def est_oref0_carbs(glucose, iob, start, peak_idx, isf, cr):
     """oref0 deviation: unexplained glucose change after accounting for insulin.
 
     oref0's determine-basal computes:
-      bgi = -iob_activity * isf  (expected insulin effect on glucose)
-      deviation = actual_delta - bgi
+      bgi = -iob_data.activity * sens * 5  (expected insulin effect per 5 min)
+      deviation = 6 * (minDelta - bgi)      (projected over 30 min)
     Positive deviation → unannounced carbs.
 
-    Uses min_5m_carbimpact as floor for carb absorption rate.
+    Note: min_5m_carbimpact is NOT used in oref0's deviation calculation
+    (determine-basal.js:398-400).  It's only used in COB decay tracking
+    (cob.js:189-190), which is a separate mechanism.
+
+    Ref: externals/oref0/lib/determine-basal/determine-basal.js:398-400
     """
     end = min(len(glucose), peak_idx + STEPS_PER_HOUR * 2)
     if end <= start + 2:
@@ -232,13 +238,16 @@ def est_oref0_carbs(glucose, iob, start, peak_idx, isf, cr):
     iob_activity = -np.diff(iob_window)  # positive = insulin being used
     iob_activity = np.nan_to_num(iob_activity, nan=0)
 
-    bgi = -iob_activity * isf / STEPS_PER_HOUR  # expected BG impact per step
+    # BGI = expected glucose change per 5-min step from insulin absorption.
+    # iob_activity is U per step; ISF is mg/dL per U.
+    # oref0: bgi = -activity_U_per_min * sens * 5; since iob_activity ≈ activity*5,
+    # the *5 and /5 cancel: bgi = -iob_activity * isf.
+    # Ref: externals/oref0/lib/determine-basal/determine-basal.js:398
+    bgi = -iob_activity * isf  # expected BG impact per step (mg/dL)
     deviation = actual_delta - bgi
 
-    # Apply min_5m_carbimpact floor
-    carb_impact = np.maximum(deviation, MIN_5M_CARBIMPACT)
-    # Only count positive net impact (carb absorption)
-    carb_impact = np.clip(carb_impact, 0, None)
+    # Only count positive deviations (unexplained glucose rise → carb absorption)
+    carb_impact = np.clip(deviation, 0, None)
 
     integral_mg = float(np.nansum(carb_impact))
     carbs_g = integral_mg * cr / isf
