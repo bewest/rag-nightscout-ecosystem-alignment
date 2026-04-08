@@ -1,0 +1,470 @@
+{
+  "experiment": "EXP-1138",
+  "title": "Honest Evaluation: Bootstrap CI and Baseline Comparison",
+  "timestamp": "2026-04-08T17:54:42.451199Z",
+  "per_patient": {
+    "a": {
+      "n_samples": 155,
+      "n_folds": 4,
+      "model": {
+        "auc_bootstrap": {
+          "auc": 0.6121251993708333,
+          "ci_lower": 0.48304778204988297,
+          "ci_upper": 0.7246543832844142,
+          "std": 0.06379830229190071,
+          "n_boot": 1000
+        },
+        "sensitivity_bootstrap": {
+          "mean": 0.940864478114478,
+          "ci_lower": 0.9132996632996633,
+          "ci_upper": 0.9814814814814815
+        },
+        "specificity_bootstrap": {
+          "mean": 0.21002777777777773,
+          "ci_lower": 0.05555555555555555,
+          "ci_upper": 0.4027777777777778
+        },
+        "fold_aucs": [
+          0.5924,
+          0.6263,
+          0.75,
+          0.5556
+        ]
+      },
+      "baselines": {
+        "same_as_yesterday": {
+          "auc": 0.4484848484848485
+        },
+        "dow_historical": {
+          "auc": 0.4068686868686868
+        },
+        "always_good": {
+          "auc": 0.5
+        }
+      }
+    },
+    "b": {
+      "n_samples": 155,
+      "n_folds": 4,
+      "model": {
+        "auc_bootstrap": {
+          "auc": 0.6314542090577532,
+          "ci_lower": 0.5310508310213707,
+          "ci_upper": 0.7229613421267658,
+          "std": 0.04917160417194435,
+          "n_boot": 1000
+        },
+        "sensitivity_bootstrap": {
+          "mean": 0.8182864145658264,
+          "ci_lower": 0.680672268907563,
+          "ci_upper": 0.9583333333333333
+        },
+        "specificity_bootstrap": {
+          "mean": 0.2496321428571428,
+          "ci_lower": 0.17142857142857143,
+          "ci_upper": 0.32857142857142857
+        },
+        "fold_aucs": [
+          0.6726,
+          0.6,
+          0.7083,
+          0.5294
+        ]
+      },
+      "baselines": {
+        "same_as_yesterday": {
+          "auc": 0.5384615384615384
+        },
+        "dow_historical": {
+          "auc": 0.5
+        },
+        "always_good": {
+          "auc": 0.5
+        }
+      }
+    },
+    "c": {
+      "n_samples": 144,
+      "n_folds": 4,
+      "model": {
+        "auc_bootstrap": {
+          "auc": 0.4871084674845646,
+          "ci_lower": 0.32142530088958665,
+          "ci_upper": 0.6451264890967828,
+          "std": 0.08212145301826554,
+          "n_boot": 1000
+        },
+        "sensitivity_bootstrap": {
+          "mean": 0.8938044349586342,
+          "ci_lower": 0.8294534412955467,
+          "ci_upper": 0.9482608695652174
+        },
+        "specificity_bootstrap": {
+          "mean": 0.15539999999999998,
+          "ci_lower": 0.0,
+          "ci_upper": 0.44999999999999996
+        },
+        "fold_aucs": [
+          0.6696,
+          0.7692,
+          0.5439,
+          0.56
+        ]
+      },
+      "baselines": {
+        "same_as_yesterday": {
+          "auc": 0.5073571024335031
+        },
+        "dow_historical": {
+          "auc": 0.5506508205998868
+        },
+        "always_good": {
+          "auc": 0.5
+        }
+      }
+    },
+    "d": {
+      "n_samples": 152,
+      "n_folds": 4,
+      "model": {
+        "auc_bootstrap": {
+          "auc": 0.543830947805714,
+          "ci_lower": 0.4302352941176471,
+          "ci_upper": 0.6703109599019311,
+          "std": 0.06024798205090818,
+          "n_boot": 1000
+        },
+        "sensitivity_bootstrap": {
+          "mean": 0.5847833333333334,
+          "ci_lower": 0.4083333333333333,
+          "ci_upper": 0.8541666666666667
+        },
+        "specificity_bootstrap": {
+          "mean": 0.4963629161043635,
+          "ci_lower": 0.3348684210526316,
+          "ci_upper": 0.657051282051282
+        },
+        "fold_aucs": [
+          0.7512,
+          0.4231,
+          0.39,
+          0.6296
+        ]
+      },
+      "baselines": {
+        "same_as_yesterday": {
+          "auc": 0.5747313578638881
+        },
+        "dow_historical": {
+          "auc": 0.5
+        },
+        "always_good": {
+          "auc": 0.5
+        }
+      }
+    },
+    "e": {
+      "n_samples": 134,
+      "n_folds": 4,
+      "model": {
+        "auc_bootstrap": {
+          "auc": 0.438421518999146,
+          "ci_lower": 0.3242897197054532,
+          "ci_upper": 0.5531258793464839,
+          "std": 0.05642732062741021,
+          "n_boot": 1000
+        },
+        "sensitivity_bootstrap": {
+          "mean": 0.6372377899877899,
+          "ci_lower": 0.5833333333333334,
+          "ci_upper": 0.6904761904761905
+        },
+        "specificity_bootstrap": {
+          "mean": 0.14545032051282053,
+          "ci_lower": 0.08712121212121211,
+          "ci_upper": 0.21022727272727273
+        },
+        "fold_aucs": [
+          0.3136,
+          0.4375,
+          0.5818,
+          0.506
+        ]
+      },
+      "baselines": {
+        "same_as_yesterday": {
+          "auc": 0.4492424242424242
+        },
+        "dow_historical": {
+          "auc": 0.44772727272727275
+        },
+        "always_good": {
+          "auc": 0.5
+        }
+      }
+    },
+    "f": {
+      "n_samples": 154,
+      "n_folds": 4,
+      "model": {
+        "auc_bootstrap": {
+          "auc": 0.5034931412087182,
+          "ci_lower": 0.3976176449881558,
+          "ci_upper": 0.6065903918945781,
+          "std": 0.05139610124260447,
+          "n_boot": 1000
+        },
+        "sensitivity_bootstrap": {
+          "mean": 0.6933075980392157,
+          "ci_lower": 0.5397058823529413,
+          "ci_upper": 0.8458333333333333
+        },
+        "specificity_bootstrap": {
+          "mean": 0.3674698717948718,
+          "ci_lower": 0.2730769230769231,
+          "ci_upper": 0.4583333333333333
+        },
+        "fold_aucs": [
+          0.588,
+          0.515,
+          0.4208,
+          0.535
+        ]
+      },
+      "baselines": {
+        "same_as_yesterday": {
+          "auc": 0.46462063086104
+        },
+        "dow_historical": {
+          "auc": 0.5281329923273657
+        },
+        "always_good": {
+          "auc": 0.5
+        }
+      }
+    },
+    "g": {
+      "n_samples": 155,
+      "n_folds": 4,
+      "model": {
+        "auc_bootstrap": {
+          "auc": 0.5406043541789215,
+          "ci_lower": 0.4108796917368346,
+          "ci_upper": 0.6654789281722171,
+          "std": 0.06361680816875051,
+          "n_boot": 1000
+        },
+        "sensitivity_bootstrap": {
+          "mean": 0.69795143921095,
+          "ci_lower": 0.5597826086956521,
+          "ci_upper": 0.8159722222222223
+        },
+        "specificity_bootstrap": {
+          "mean": 0.2853291396103896,
+          "ci_lower": 0.1964285714285714,
+          "ci_upper": 0.3693181818181819
+        },
+        "fold_aucs": [
+          0.5409,
+          0.5163,
+          0.4702,
+          0.4722
+        ]
+      },
+      "baselines": {
+        "same_as_yesterday": {
+          "auc": 0.5070921985815604
+        },
+        "dow_historical": {
+          "auc": 0.5
+        },
+        "always_good": {
+          "auc": 0.5
+        }
+      }
+    },
+    "h": {
+      "n_samples": 49,
+      "n_folds": 3,
+      "model": {
+        "auc_bootstrap": {
+          "auc": 0.5532710077129994,
+          "ci_lower": 0.2982393839712919,
+          "ci_upper": 0.7857473544973544,
+          "std": 0.1279263269245536,
+          "n_boot": 1000
+        },
+        "sensitivity_bootstrap": {
+          "mean": 1.0,
+          "ci_lower": 1.0,
+          "ci_upper": 1.0
+        },
+        "specificity_bootstrap": {
+          "mean": 0.1595,
+          "ci_lower": 0.0,
+          "ci_upper": 0.5
+        },
+        "fold_aucs": [
+          0.5,
+          0.8,
+          0.6
+        ]
+      },
+      "baselines": {
+        "same_as_yesterday": {
+          "auc": 0.6944444444444445
+        },
+        "dow_historical": {
+          "auc": 0.5
+        },
+        "always_good": {
+          "auc": 0.5
+        }
+      }
+    },
+    "i": {
+      "n_samples": 155,
+      "n_folds": 4,
+      "model": {
+        "auc_bootstrap": {
+          "auc": 0.47934101946172797,
+          "ci_lower": 0.24733177221009087,
+          "ci_upper": 0.7192113933264376,
+          "std": 0.12207072248307314,
+          "n_boot": 1000
+        },
+        "sensitivity_bootstrap": {
+          "mean": 0.9834333333333334,
+          "ci_lower": 0.9660919540229885,
+          "ci_upper": 1.0
+        },
+        "specificity_bootstrap": {
+          "mean": 0.0630625,
+          "ci_lower": 0.0,
+          "ci_upper": 0.1875
+        },
+        "fold_aucs": [
+          0.7241,
+          0.4722,
+          0.3966,
+          0.3333
+        ]
+      },
+      "baselines": {
+        "same_as_yesterday": {
+          "auc": 0.4043478260869565
+        },
+        "dow_historical": {
+          "auc": 0.4584541062801933
+        },
+        "always_good": {
+          "auc": 0.5
+        }
+      }
+    },
+    "j": {
+      "n_samples": 48,
+      "n_folds": 4,
+      "model": {
+        "auc_bootstrap": {
+          "auc": 0.44502017522987775,
+          "ci_lower": 0.26400855654761907,
+          "ci_upper": 0.6371331521739131,
+          "std": 0.094770656177126,
+          "n_boot": 1000
+        },
+        "sensitivity_bootstrap": {
+          "mean": 0.755625,
+          "ci_lower": 0.5,
+          "ci_upper": 1.0
+        },
+        "specificity_bootstrap": {
+          "mean": 0.24657142857142855,
+          "ci_lower": 0.0,
+          "ci_upper": 0.5357142857142857
+        },
+        "fold_aucs": [
+          0.5,
+          0.5,
+          0.2857,
+          0.4286
+        ]
+      },
+      "baselines": {
+        "same_as_yesterday": {
+          "auc": 0.5194805194805195
+        },
+        "dow_historical": {
+          "auc": 0.5
+        },
+        "always_good": {
+          "auc": 0.5
+        }
+      }
+    },
+    "k": {
+      "n_samples": 153,
+      "n_folds": 4,
+      "model": {
+        "auc_bootstrap": {
+          "auc": 0.51608347256829,
+          "ci_lower": 0.41174100641162265,
+          "ci_upper": 0.6259826711664146,
+          "std": 0.054329422242770126,
+          "n_boot": 1000
+        },
+        "sensitivity_bootstrap": {
+          "mean": 0.6315383126934985,
+          "ci_lower": 0.4721362229102167,
+          "ci_upper": 0.7990196078431373
+        },
+        "specificity_bootstrap": {
+          "mean": 0.3485638111888112,
+          "ci_lower": 0.1987179487179487,
+          "ci_upper": 0.5192307692307693
+        },
+        "fold_aucs": [
+          0.5294,
+          0.4211,
+          0.4722,
+          0.629
+        ]
+      },
+      "baselines": {
+        "same_as_yesterday": {
+          "auc": 0.5916930152342628
+        },
+        "dow_historical": {
+          "auc": 0.5
+        },
+        "always_good": {
+          "auc": 0.5
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "n_patients": 11,
+    "model_auc": {
+      "mean": 0.5230137453284094,
+      "ci_lower": 0.4866558139013547,
+      "ci_upper": 0.5579367639985002
+    },
+    "baseline_comparison": {
+      "same_as_yesterday": {
+        "mean_auc": 0.5181778096522714,
+        "improvement_over_baseline": 0.004617964263960106
+      },
+      "dow_historical": {
+        "mean_auc": 0.49016671625485503,
+        "improvement_over_baseline": 0.032629057661376526
+      },
+      "always_good": {
+        "mean_auc": 0.5,
+        "improvement_over_baseline": 0.022795773916231554
+      }
+    },
+    "conclusion": "Model AUC: 0.523 [0.487, 0.558]. Does not outperform naive baselines."
+  },
+  "elapsed_seconds": 158.9
+}

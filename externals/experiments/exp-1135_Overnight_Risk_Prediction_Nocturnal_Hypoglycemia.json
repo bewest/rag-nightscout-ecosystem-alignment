@@ -1,0 +1,371 @@
+{
+  "experiment": "EXP-1135",
+  "title": "Overnight Risk Prediction: Nocturnal Hypoglycemia",
+  "timestamp": "2026-04-08T17:42:49.360123Z",
+  "per_patient": {
+    "a": {
+      "n_days": 180,
+      "n_samples": 160,
+      "overnight_hypo_rate": 0.29375,
+      "prediction": {
+        "auc": 0.596153846153846,
+        "sensitivity": 0.5,
+        "specificity": 0.8076923076923077,
+        "tp": 3,
+        "fp": 5,
+        "fn": 3,
+        "tn": 21,
+        "n_train": 128,
+        "n_val": 32,
+        "pos_rate_train": 0.3203125,
+        "pos_rate_val": 0.1875
+      },
+      "sensitivity_at_ppv50": 0.5,
+      "feature_importance": {
+        "dt_glucose_mean": 0.1481,
+        "dt_flux_trend": 0.1443,
+        "dt_demand_at_6pm": 0.1407,
+        "dt_glucose_cv": 0.1192,
+        "dt_supply_integral": 0.1104,
+        "dt_time_below_100": 0.0892,
+        "dt_glucose_min": 0.0858,
+        "dt_mean_flux": 0.0802,
+        "dt_last_meal_step": 0.0403,
+        "dt_total_flux_integral": 0.0367,
+        "dt_meal_count": 0.005
+      }
+    },
+    "b": {
+      "n_days": 180,
+      "n_samples": 161,
+      "overnight_hypo_rate": 0.16770186335403728,
+      "prediction": {
+        "auc": 0.489010989010989,
+        "sensitivity": 0.14285714285714285,
+        "specificity": 0.9615384615384616,
+        "tp": 1,
+        "fp": 1,
+        "fn": 6,
+        "tn": 25,
+        "n_train": 128,
+        "n_val": 33,
+        "pos_rate_train": 0.15625,
+        "pos_rate_val": 0.21212121212121213
+      },
+      "sensitivity_at_ppv50": 0.2857142857142857,
+      "feature_importance": {
+        "dt_supply_integral": 0.199,
+        "dt_glucose_cv": 0.1762,
+        "dt_demand_at_6pm": 0.1689,
+        "dt_glucose_mean": 0.1174,
+        "dt_glucose_min": 0.0865,
+        "dt_flux_trend": 0.0751,
+        "dt_total_flux_integral": 0.0648,
+        "dt_mean_flux": 0.0627,
+        "dt_last_meal_step": 0.0363,
+        "dt_time_below_100": 0.0092,
+        "dt_meal_count": 0.0038
+      }
+    },
+    "c": {
+      "n_days": 180,
+      "n_samples": 147,
+      "overnight_hypo_rate": 0.4897959183673469,
+      "prediction": {
+        "auc": 0.67420814479638,
+        "sensitivity": 0.5294117647058824,
+        "specificity": 0.6153846153846154,
+        "tp": 9,
+        "fp": 5,
+        "fn": 8,
+        "tn": 8,
+        "n_train": 117,
+        "n_val": 30,
+        "pos_rate_train": 0.4700854700854701,
+        "pos_rate_val": 0.5666666666666667
+      },
+      "sensitivity_at_ppv50": 1.0,
+      "feature_importance": {
+        "dt_glucose_cv": 0.128,
+        "dt_demand_at_6pm": 0.1207,
+        "dt_total_flux_integral": 0.1195,
+        "dt_last_meal_step": 0.1055,
+        "dt_mean_flux": 0.0958,
+        "dt_flux_trend": 0.0918,
+        "dt_glucose_min": 0.085,
+        "dt_supply_integral": 0.0834,
+        "dt_glucose_mean": 0.0754,
+        "dt_time_below_100": 0.0713,
+        "dt_meal_count": 0.0237
+      }
+    },
+    "d": {
+      "n_days": 180,
+      "n_samples": 157,
+      "overnight_hypo_rate": 0.08280254777070063,
+      "prediction": {
+        "auc": 0.3548387096774194,
+        "sensitivity": 0.0,
+        "specificity": 0.967741935483871,
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "tn": 30,
+        "n_train": 125,
+        "n_val": 32,
+        "pos_rate_train": 0.096,
+        "pos_rate_val": 0.03125
+      },
+      "sensitivity_at_ppv50": 0.0,
+      "feature_importance": {
+        "dt_glucose_mean": 0.1614,
+        "dt_glucose_cv": 0.1444,
+        "dt_flux_trend": 0.1372,
+        "dt_glucose_min": 0.1356,
+        "dt_time_below_100": 0.1047,
+        "dt_total_flux_integral": 0.0821,
+        "dt_supply_integral": 0.071,
+        "dt_last_meal_step": 0.056,
+        "dt_meal_count": 0.0481,
+        "dt_mean_flux": 0.0334,
+        "dt_demand_at_6pm": 0.0262
+      }
+    },
+    "e": {
+      "n_days": 157,
+      "n_samples": 124,
+      "overnight_hypo_rate": 0.21774193548387097,
+      "prediction": {
+        "auc": 0.6956521739130435,
+        "sensitivity": 0.0,
+        "specificity": 0.8695652173913043,
+        "tp": 0,
+        "fp": 3,
+        "fn": 2,
+        "tn": 20,
+        "n_train": 99,
+        "n_val": 25,
+        "pos_rate_train": 0.25252525252525254,
+        "pos_rate_val": 0.08
+      },
+      "sensitivity_at_ppv50": 0.0,
+      "feature_importance": {
+        "dt_glucose_cv": 0.152,
+        "dt_flux_trend": 0.1495,
+        "dt_glucose_mean": 0.1306,
+        "dt_supply_integral": 0.1035,
+        "dt_demand_at_6pm": 0.0928,
+        "dt_last_meal_step": 0.0894,
+        "dt_glucose_min": 0.0807,
+        "dt_total_flux_integral": 0.0749,
+        "dt_time_below_100": 0.0728,
+        "dt_mean_flux": 0.0521,
+        "dt_meal_count": 0.0019
+      }
+    },
+    "f": {
+      "n_days": 179,
+      "n_samples": 160,
+      "overnight_hypo_rate": 0.25625,
+      "prediction": {
+        "auc": 0.29142857142857137,
+        "sensitivity": 0.0,
+        "specificity": 0.96,
+        "tp": 0,
+        "fp": 1,
+        "fn": 7,
+        "tn": 24,
+        "n_train": 128,
+        "n_val": 32,
+        "pos_rate_train": 0.265625,
+        "pos_rate_val": 0.21875
+      },
+      "sensitivity_at_ppv50": 0.0,
+      "feature_importance": {
+        "dt_glucose_cv": 0.1453,
+        "dt_supply_integral": 0.1391,
+        "dt_flux_trend": 0.1284,
+        "dt_total_flux_integral": 0.1195,
+        "dt_glucose_mean": 0.0998,
+        "dt_glucose_min": 0.0937,
+        "dt_last_meal_step": 0.0851,
+        "dt_mean_flux": 0.076,
+        "dt_time_below_100": 0.0546,
+        "dt_demand_at_6pm": 0.0528,
+        "dt_meal_count": 0.0059
+      }
+    },
+    "g": {
+      "n_days": 180,
+      "n_samples": 160,
+      "overnight_hypo_rate": 0.5375,
+      "prediction": {
+        "auc": 0.44313725490196076,
+        "sensitivity": 0.6666666666666666,
+        "specificity": 0.29411764705882354,
+        "tp": 10,
+        "fp": 12,
+        "fn": 5,
+        "tn": 5,
+        "n_train": 128,
+        "n_val": 32,
+        "pos_rate_train": 0.5546875,
+        "pos_rate_val": 0.46875
+      },
+      "sensitivity_at_ppv50": 0.4666666666666667,
+      "feature_importance": {
+        "dt_demand_at_6pm": 0.1517,
+        "dt_glucose_mean": 0.1455,
+        "dt_flux_trend": 0.1337,
+        "dt_supply_integral": 0.1091,
+        "dt_mean_flux": 0.083,
+        "dt_last_meal_step": 0.0826,
+        "dt_time_below_100": 0.0752,
+        "dt_glucose_cv": 0.0749,
+        "dt_glucose_min": 0.0721,
+        "dt_total_flux_integral": 0.0596,
+        "dt_meal_count": 0.0126
+      }
+    },
+    "h": {
+      "n_days": 179,
+      "n_samples": 63,
+      "overnight_hypo_rate": 0.6666666666666666,
+      "prediction": {
+        "auc": 0.4444444444444445,
+        "sensitivity": 1.0,
+        "specificity": 0.0,
+        "tp": 4,
+        "fp": 9,
+        "fn": 0,
+        "tn": 0,
+        "n_train": 50,
+        "n_val": 13,
+        "pos_rate_train": 0.76,
+        "pos_rate_val": 0.3076923076923077
+      },
+      "sensitivity_at_ppv50": 0.5,
+      "feature_importance": {
+        "dt_mean_flux": 0.1831,
+        "dt_supply_integral": 0.1664,
+        "dt_glucose_cv": 0.1638,
+        "dt_glucose_mean": 0.1237,
+        "dt_glucose_min": 0.0799,
+        "dt_demand_at_6pm": 0.0694,
+        "dt_total_flux_integral": 0.0682,
+        "dt_flux_trend": 0.0654,
+        "dt_last_meal_step": 0.0538,
+        "dt_time_below_100": 0.0264,
+        "dt_meal_count": 0.0
+      }
+    },
+    "i": {
+      "n_days": 180,
+      "n_samples": 161,
+      "overnight_hypo_rate": 0.6273291925465838,
+      "prediction": {
+        "auc": 0.5296296296296297,
+        "sensitivity": 0.8666666666666667,
+        "specificity": 0.16666666666666666,
+        "tp": 13,
+        "fp": 15,
+        "fn": 2,
+        "tn": 3,
+        "n_train": 128,
+        "n_val": 33,
+        "pos_rate_train": 0.671875,
+        "pos_rate_val": 0.45454545454545453
+      },
+      "sensitivity_at_ppv50": 0.7333333333333333,
+      "feature_importance": {
+        "dt_supply_integral": 0.1637,
+        "dt_glucose_cv": 0.1612,
+        "dt_flux_trend": 0.1438,
+        "dt_mean_flux": 0.1253,
+        "dt_glucose_mean": 0.098,
+        "dt_glucose_min": 0.083,
+        "dt_demand_at_6pm": 0.0766,
+        "dt_total_flux_integral": 0.0645,
+        "dt_time_below_100": 0.0455,
+        "dt_last_meal_step": 0.0384,
+        "dt_meal_count": 0.0
+      }
+    },
+    "j": {
+      "n_days": 61,
+      "n_samples": 54,
+      "overnight_hypo_rate": 0.18518518518518517,
+      "prediction": {
+        "auc": 0.9166666666666666,
+        "sensitivity": 0.0,
+        "specificity": 1.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "tn": 8,
+        "n_train": 43,
+        "n_val": 11,
+        "pos_rate_train": 0.16279069767441862,
+        "pos_rate_val": 0.2727272727272727
+      },
+      "sensitivity_at_ppv50": 1.0,
+      "feature_importance": {
+        "dt_demand_at_6pm": 0.2304,
+        "dt_total_flux_integral": 0.2114,
+        "dt_supply_integral": 0.1279,
+        "dt_last_meal_step": 0.1166,
+        "dt_glucose_cv": 0.0955,
+        "dt_glucose_min": 0.0756,
+        "dt_flux_trend": 0.0492,
+        "dt_glucose_mean": 0.0383,
+        "dt_time_below_100": 0.0316,
+        "dt_mean_flux": 0.0234,
+        "dt_meal_count": 0.0
+      }
+    },
+    "k": {
+      "n_days": 179,
+      "n_samples": 158,
+      "overnight_hypo_rate": 0.35443037974683544,
+      "prediction": {
+        "auc": 0.7408906882591093,
+        "sensitivity": 0.5384615384615384,
+        "specificity": 0.8421052631578947,
+        "tp": 7,
+        "fp": 3,
+        "fn": 6,
+        "tn": 16,
+        "n_train": 126,
+        "n_val": 32,
+        "pos_rate_train": 0.3412698412698413,
+        "pos_rate_val": 0.40625
+      },
+      "sensitivity_at_ppv50": 0.9230769230769231,
+      "feature_importance": {
+        "dt_time_below_100": 0.2356,
+        "dt_flux_trend": 0.1463,
+        "dt_glucose_min": 0.1413,
+        "dt_glucose_mean": 0.1017,
+        "dt_demand_at_6pm": 0.0876,
+        "dt_glucose_cv": 0.0733,
+        "dt_mean_flux": 0.0723,
+        "dt_supply_integral": 0.0697,
+        "dt_total_flux_integral": 0.0387,
+        "dt_last_meal_step": 0.0311,
+        "dt_meal_count": 0.0027
+      }
+    }
+  },
+  "aggregate": {
+    "n_patients": 11,
+    "auc": {
+      "mean": 0.5614601017165509,
+      "std": 0.175772261887766
+    },
+    "sensitivity_at_ppv50": {
+      "mean": 0.4917082917082917,
+      "std": 0.372913800550645
+    }
+  },
+  "elapsed_seconds": 160.0
+}

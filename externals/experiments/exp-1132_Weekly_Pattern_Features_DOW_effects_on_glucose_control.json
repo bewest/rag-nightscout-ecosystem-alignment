@@ -1,0 +1,926 @@
+{
+  "experiment": "EXP-1132",
+  "title": "Weekly Pattern Features: DOW effects on glucose control",
+  "timestamp": "2026-04-08T17:24:44.055347Z",
+  "per_patient": {
+    "a": {
+      "n_samples": 155,
+      "dow_only_auc": 0.37962962962962965,
+      "daily_only_auc": 0.40740740740740744,
+      "combined_auc": 0.48148148148148145,
+      "auc_improvement_from_dow": 0.07407407407407401,
+      "feature_importance": {
+        "yesterday_overnight_mean": 0.0708,
+        "yesterday_mean_flux": 0.0681,
+        "tir_trend": 0.0659,
+        "overnight_trend": 0.0552,
+        "mean_flux_trend": 0.0506,
+        "yesterday_supply_integral": 0.0417,
+        "supply_trend": 0.0396,
+        "yesterday_mean_glucose": 0.039,
+        "meal_count_std": 0.0389,
+        "tir_mean": 0.0386,
+        "yesterday_tir": 0.0356,
+        "glucose_cv_trend": 0.0341,
+        "dow_sin": 0.0232,
+        "yesterday_daytime_variability": 0.0292,
+        "mean_flux_mean": 0.0263,
+        "glucose_cv_std": 0.0247,
+        "glucose_cv_mean": 0.0245,
+        "yesterday_glucose_cv": 0.0228,
+        "yesterday_flux_variability": 0.0213
+      },
+      "weekend_effect": {
+        "weekday_tir_mean": 0.5596785752187962,
+        "weekend_tir_mean": 0.5434847682902351,
+        "ttest_statistic": 0.5134297382397609,
+        "ttest_pvalue": 0.6083589945428551,
+        "significant": "False",
+        "n_weekdays": 117,
+        "n_weekends": 45
+      },
+      "dow_profiles": {
+        "0": {
+          "tir": 0.5699642003919486,
+          "hypo_events": 2.6,
+          "glucose_cv": 0.45428221754025494,
+          "n_samples": 15
+        },
+        "1": {
+          "tir": 0.6274918247463326,
+          "hypo_events": 1.8571428571428572,
+          "glucose_cv": 0.35951861155646947,
+          "n_samples": 14
+        },
+        "2": {
+          "tir": 0.6568190124331567,
+          "hypo_events": 2.4,
+          "glucose_cv": 0.3815070568858231,
+          "n_samples": 15
+        },
+        "3": {
+          "tir": 0.5576433593506764,
+          "hypo_events": 2.1538461538461537,
+          "glucose_cv": 0.39584593494275205,
+          "n_samples": 13
+        },
+        "4": {
+          "tir": 0.6022818884922801,
+          "hypo_events": 2.076923076923077,
+          "glucose_cv": 0.42468122328366475,
+          "n_samples": 13
+        },
+        "5": {
+          "tir": 0.49329660691147625,
+          "hypo_events": 1.8571428571428572,
+          "glucose_cv": 0.38656462488533483,
+          "n_samples": 14
+        },
+        "6": {
+          "tir": 0.606383214526368,
+          "hypo_events": 1.3846153846153846,
+          "glucose_cv": 0.42786324674488235,
+          "n_samples": 13
+        }
+      }
+    },
+    "b": {
+      "n_samples": 155,
+      "dow_only_auc": 0.48319327731092443,
+      "daily_only_auc": 0.4201680672268907,
+      "combined_auc": 0.5126050420168067,
+      "auc_improvement_from_dow": 0.09243697478991597,
+      "feature_importance": {
+        "tir_mean": 0.1075,
+        "mean_flux_std": 0.083,
+        "glucose_cv_trend": 0.0612,
+        "bad_days_7": 0.0567,
+        "yesterday_overnight_min": 0.0524,
+        "tir_trend": 0.0514,
+        "meal_count_trend": 0.0447,
+        "tir_std": 0.0443,
+        "hypo_events_trend": 0.0375,
+        "mean_flux_mean": 0.036,
+        "mean_flux_trend": 0.0355,
+        "overnight_trend": 0.0346,
+        "hypo_events_std": 0.0318,
+        "yesterday_mean_flux": 0.03,
+        "yesterday_glucose_cv": 0.0288,
+        "hypo_events_mean": 0.0263,
+        "yesterday_flux_variability": 0.0254,
+        "glucose_cv_std": 0.021,
+        "meal_count_std": 0.0166,
+        "supply_trend": 0.0166
+      },
+      "weekend_effect": {
+        "weekday_tir_mean": 0.5533332731511101,
+        "weekend_tir_mean": 0.5998389217039009,
+        "ttest_statistic": -1.20144800336966,
+        "ttest_pvalue": 0.23135285913123352,
+        "significant": "False",
+        "n_weekdays": 117,
+        "n_weekends": 45
+      },
+      "dow_profiles": {
+        "0": {
+          "tir": 0.5497108184444948,
+          "hypo_events": 1.2,
+          "glucose_cv": 0.3058578867510134,
+          "n_samples": 15
+        },
+        "1": {
+          "tir": 0.5437862187075574,
+          "hypo_events": 0.8571428571428571,
+          "glucose_cv": 0.29396318097678703,
+          "n_samples": 14
+        },
+        "2": {
+          "tir": 0.4964963858594975,
+          "hypo_events": 1.1333333333333333,
+          "glucose_cv": 0.26102891227610053,
+          "n_samples": 15
+        },
+        "3": {
+          "tir": 0.4765359974165906,
+          "hypo_events": 0.9230769230769231,
+          "glucose_cv": 0.28429826892326626,
+          "n_samples": 13
+        },
+        "4": {
+          "tir": 0.5598306734374934,
+          "hypo_events": 1.5384615384615385,
+          "glucose_cv": 0.2964436764871168,
+          "n_samples": 13
+        },
+        "5": {
+          "tir": 0.5622910554790874,
+          "hypo_events": 1.2857142857142858,
+          "glucose_cv": 0.3025958276989637,
+          "n_samples": 14
+        },
+        "6": {
+          "tir": 0.5849921277552856,
+          "hypo_events": 1.0,
+          "glucose_cv": 0.3336468227199909,
+          "n_samples": 13
+        }
+      }
+    },
+    "c": {
+      "n_samples": 144,
+      "dow_only_auc": 0.6833333333333333,
+      "daily_only_auc": 0.4583333333333333,
+      "combined_auc": 0.5,
+      "auc_improvement_from_dow": 0.041666666666666685,
+      "feature_importance": {
+        "yesterday_tbr": 0.1175,
+        "supply_trend": 0.0785,
+        "yesterday_mean_flux": 0.0752,
+        "yesterday_demand_integral": 0.0697,
+        "yesterday_hypo_minutes": 0.0591,
+        "tir_trend": 0.0542,
+        "meal_count_trend": 0.0426,
+        "glucose_cv_trend": 0.0425,
+        "mean_flux_mean": 0.0413,
+        "yesterday_supply_integral": 0.0382,
+        "yesterday_tar": 0.0281,
+        "meal_count_std": 0.0267,
+        "yesterday_hypo_events": 0.0265,
+        "hypo_events_std": 0.0258,
+        "yesterday_glucose_cv": 0.0232,
+        "tir_std": 0.0226,
+        "mean_flux_trend": 0.0196,
+        "yesterday_flux_variability": 0.0184,
+        "meal_count_mean": 0.0166,
+        "dow_hist_cv": 0.0163
+      },
+      "weekend_effect": {
+        "weekday_tir_mean": 0.6300034149021341,
+        "weekend_tir_mean": 0.5790644229555907,
+        "ttest_statistic": 2.0159887999135355,
+        "ttest_pvalue": 0.04561063573644237,
+        "significant": "True",
+        "n_weekdays": 108,
+        "n_weekends": 42
+      },
+      "dow_profiles": {
+        "0": {
+          "tir": 0.6381011889332616,
+          "hypo_events": 2.8461538461538463,
+          "glucose_cv": 0.40437104742217256,
+          "n_samples": 13
+        },
+        "1": {
+          "tir": 0.6387569257123252,
+          "hypo_events": 2.5833333333333335,
+          "glucose_cv": 0.4058601993144029,
+          "n_samples": 12
+        },
+        "2": {
+          "tir": 0.615224358974359,
+          "hypo_events": 2.3846153846153846,
+          "glucose_cv": 0.40176466564279445,
+          "n_samples": 13
+        },
+        "3": {
+          "tir": 0.6703455687830687,
+          "hypo_events": 3.1666666666666665,
+          "glucose_cv": 0.3975088924735703,
+          "n_samples": 12
+        },
+        "4": {
+          "tir": 0.5804010604997208,
+          "hypo_events": 2.8333333333333335,
+          "glucose_cv": 0.3969671884852957,
+          "n_samples": 12
+        },
+        "5": {
+          "tir": 0.6203517357061059,
+          "hypo_events": 2.4285714285714284,
+          "glucose_cv": 0.39519382912276935,
+          "n_samples": 14
+        },
+        "6": {
+          "tir": 0.517737621990734,
+          "hypo_events": 2.769230769230769,
+          "glucose_cv": 0.42942575361156177,
+          "n_samples": 13
+        }
+      }
+    },
+    "d": {
+      "n_samples": 152,
+      "dow_only_auc": 0.3931818181818182,
+      "daily_only_auc": 0.5636363636363636,
+      "combined_auc": 0.5499999999999999,
+      "auc_improvement_from_dow": -0.013636363636363669,
+      "feature_importance": {
+        "supply_trend": 0.1224,
+        "overnight_trend": 0.0996,
+        "mean_flux_trend": 0.0638,
+        "mean_flux_std": 0.0604,
+        "yesterday_tbr": 0.0573,
+        "tir_trend": 0.0527,
+        "glucose_cv_trend": 0.0521,
+        "yesterday_tar": 0.0467,
+        "mean_flux_mean": 0.0452,
+        "hypo_events_trend": 0.0357,
+        "yesterday_overnight_mean": 0.0316,
+        "dow_hist_cv": 0.0305,
+        "glucose_cv_std": 0.0297,
+        "yesterday_daytime_variability": 0.0276,
+        "yesterday_supply_integral": 0.027,
+        "hypo_events_std": 0.0255,
+        "yesterday_glucose_cv": 0.0241,
+        "yesterday_tir": 0.0157,
+        "tir_mean": 0.0136,
+        "meal_count_std": 0.013
+      },
+      "weekend_effect": {
+        "weekday_tir_mean": 0.7887715532736821,
+        "weekend_tir_mean": 0.7917162758629981,
+        "ttest_statistic": -0.10766383663291584,
+        "ttest_pvalue": 0.914399820273954,
+        "significant": "False",
+        "n_weekdays": 115,
+        "n_weekends": 44
+      },
+      "dow_profiles": {
+        "0": {
+          "tir": 0.8053048701692677,
+          "hypo_events": 1.1333333333333333,
+          "glucose_cv": 0.24179760718869134,
+          "n_samples": 15
+        },
+        "1": {
+          "tir": 0.7962281609652812,
+          "hypo_events": 0.8571428571428571,
+          "glucose_cv": 0.2542475040775586,
+          "n_samples": 14
+        },
+        "2": {
+          "tir": 0.7742790538607782,
+          "hypo_events": 1.1333333333333333,
+          "glucose_cv": 0.2591270265937766,
+          "n_samples": 15
+        },
+        "3": {
+          "tir": 0.8050797802062986,
+          "hypo_events": 0.46153846153846156,
+          "glucose_cv": 0.25578834398393047,
+          "n_samples": 13
+        },
+        "4": {
+          "tir": 0.8354191890198781,
+          "hypo_events": 0.8461538461538461,
+          "glucose_cv": 0.2425047462731455,
+          "n_samples": 13
+        },
+        "5": {
+          "tir": 0.7961071753449803,
+          "hypo_events": 1.0,
+          "glucose_cv": 0.2275580035023928,
+          "n_samples": 14
+        },
+        "6": {
+          "tir": 0.8392163237038842,
+          "hypo_events": 1.0769230769230769,
+          "glucose_cv": 0.24951823700038697,
+          "n_samples": 13
+        }
+      }
+    },
+    "e": {
+      "n_samples": 134,
+      "dow_only_auc": 0.5989010989010989,
+      "daily_only_auc": 0.6153846153846154,
+      "combined_auc": 0.6263736263736264,
+      "auc_improvement_from_dow": 0.01098901098901095,
+      "feature_importance": {
+        "hypo_events_std": 0.0795,
+        "glucose_cv_mean": 0.0762,
+        "supply_trend": 0.071,
+        "meal_count_trend": 0.0662,
+        "yesterday_glucose_cv": 0.0592,
+        "yesterday_flux_variability": 0.0477,
+        "glucose_cv_std": 0.0472,
+        "yesterday_overnight_min": 0.041,
+        "yesterday_hypo_minutes": 0.0391,
+        "tir_std": 0.0329,
+        "glucose_cv_trend": 0.0312,
+        "yesterday_overnight_mean": 0.0292,
+        "hypo_events_mean": 0.0277,
+        "overnight_trend": 0.0251,
+        "tir_mean": 0.0245,
+        "mean_flux_mean": 0.0244,
+        "yesterday_supply_integral": 0.0203,
+        "yesterday_demand_integral": 0.0199,
+        "meal_count_std": 0.0193,
+        "mean_flux_trend": 0.0192
+      },
+      "weekend_effect": {
+        "weekday_tir_mean": 0.6550603066559872,
+        "weekend_tir_mean": 0.6501480574455911,
+        "ttest_statistic": 0.15845681938256706,
+        "ttest_pvalue": 0.8743268252591607,
+        "significant": "False",
+        "n_weekdays": 101,
+        "n_weekends": 40
+      },
+      "dow_profiles": {
+        "0": {
+          "tir": 0.5579281564127744,
+          "hypo_events": 2.0833333333333335,
+          "glucose_cv": 0.33986360937181076,
+          "n_samples": 12
+        },
+        "1": {
+          "tir": 0.6409263070634308,
+          "hypo_events": 1.2307692307692308,
+          "glucose_cv": 0.2975396048870237,
+          "n_samples": 13
+        },
+        "2": {
+          "tir": 0.6727994851247937,
+          "hypo_events": 1.6153846153846154,
+          "glucose_cv": 0.33048826766335737,
+          "n_samples": 13
+        },
+        "3": {
+          "tir": 0.6522025253456414,
+          "hypo_events": 1.2727272727272727,
+          "glucose_cv": 0.30488964639734617,
+          "n_samples": 11
+        },
+        "4": {
+          "tir": 0.6711084784921887,
+          "hypo_events": 1.4166666666666667,
+          "glucose_cv": 0.3363193549960993,
+          "n_samples": 12
+        },
+        "5": {
+          "tir": 0.6412653784223906,
+          "hypo_events": 2.0,
+          "glucose_cv": 0.3231996596276087,
+          "n_samples": 12
+        },
+        "6": {
+          "tir": 0.6368098949289754,
+          "hypo_events": 2.8181818181818183,
+          "glucose_cv": 0.3426982534916631,
+          "n_samples": 11
+        }
+      }
+    },
+    "f": {
+      "n_samples": 154,
+      "dow_only_auc": 0.3113636363636364,
+      "daily_only_auc": 0.37272727272727274,
+      "combined_auc": 0.34090909090909094,
+      "auc_improvement_from_dow": -0.0318181818181818,
+      "feature_importance": {
+        "tir_trend": 0.1314,
+        "yesterday_flux_variability": 0.1041,
+        "meal_count_std": 0.0772,
+        "yesterday_mean_flux": 0.0616,
+        "yesterday_glucose_cv": 0.059,
+        "meal_count_mean": 0.0549,
+        "glucose_cv_std": 0.0528,
+        "glucose_cv_trend": 0.048,
+        "tir_std": 0.0345,
+        "overnight_trend": 0.0308,
+        "yesterday_tir": 0.0275,
+        "dow_hist_hypo": 0.0247,
+        "yesterday_demand_integral": 0.0236,
+        "hypo_events_std": 0.0233,
+        "yesterday_hypo_minutes": 0.0205,
+        "meal_count_trend": 0.0191,
+        "mean_flux_std": 0.017,
+        "hypo_events_trend": 0.0148,
+        "yesterday_supply_integral": 0.0145,
+        "hypo_events_mean": 0.0141
+      },
+      "weekend_effect": {
+        "weekday_tir_mean": 0.6580237644947079,
+        "weekend_tir_mean": 0.6491431038341944,
+        "ttest_statistic": 0.2927126177358795,
+        "ttest_pvalue": 0.770125877983403,
+        "significant": "False",
+        "n_weekdays": 115,
+        "n_weekends": 45
+      },
+      "dow_profiles": {
+        "0": {
+          "tir": 0.6591253686349902,
+          "hypo_events": 1.3571428571428572,
+          "glucose_cv": 0.43836017850730796,
+          "n_samples": 14
+        },
+        "1": {
+          "tir": 0.5756570777838903,
+          "hypo_events": 2.857142857142857,
+          "glucose_cv": 0.46268025167125565,
+          "n_samples": 14
+        },
+        "2": {
+          "tir": 0.62003613545303,
+          "hypo_events": 1.9285714285714286,
+          "glucose_cv": 0.42816969239163966,
+          "n_samples": 14
+        },
+        "3": {
+          "tir": 0.7102055581838881,
+          "hypo_events": 0.9230769230769231,
+          "glucose_cv": 0.4287170199366637,
+          "n_samples": 13
+        },
+        "4": {
+          "tir": 0.6225238185222646,
+          "hypo_events": 1.4615384615384615,
+          "glucose_cv": 0.3351143993656045,
+          "n_samples": 13
+        },
+        "5": {
+          "tir": 0.6069420411222781,
+          "hypo_events": 1.1428571428571428,
+          "glucose_cv": 0.4044651522575967,
+          "n_samples": 14
+        },
+        "6": {
+          "tir": 0.6548946634173908,
+          "hypo_events": 1.0769230769230769,
+          "glucose_cv": 0.3831315048224633,
+          "n_samples": 13
+        }
+      }
+    },
+    "g": {
+      "n_samples": 155,
+      "dow_only_auc": 0.4444444444444444,
+      "daily_only_auc": 0.5462962962962963,
+      "combined_auc": 0.5185185185185186,
+      "auc_improvement_from_dow": -0.02777777777777768,
+      "feature_importance": {
+        "tir_trend": 0.1212,
+        "yesterday_tir": 0.0985,
+        "supply_trend": 0.0657,
+        "mean_flux_trend": 0.0634,
+        "mean_flux_std": 0.0501,
+        "yesterday_tar": 0.0471,
+        "mean_flux_mean": 0.0423,
+        "dow_hist_cv": 0.03,
+        "meal_count_mean": 0.0294,
+        "hypo_events_std": 0.0292,
+        "yesterday_supply_integral": 0.0281,
+        "glucose_cv_std": 0.0264,
+        "tir_std": 0.0257,
+        "tir_mean": 0.0232,
+        "hypo_events_trend": 0.0223,
+        "meal_count_std": 0.0219,
+        "yesterday_demand_integral": 0.0214,
+        "yesterday_glucose_cv": 0.0203,
+        "meal_count_trend": 0.0197,
+        "yesterday_mean_flux": 0.0185
+      },
+      "weekend_effect": {
+        "weekday_tir_mean": 0.7487477687989056,
+        "weekend_tir_mean": 0.7709142921964692,
+        "ttest_statistic": -0.8315306970007711,
+        "ttest_pvalue": 0.40691314724017047,
+        "significant": "False",
+        "n_weekdays": 117,
+        "n_weekends": 45
+      },
+      "dow_profiles": {
+        "0": {
+          "tir": 0.7878458258425112,
+          "hypo_events": 2.0,
+          "glucose_cv": 0.33082242612086643,
+          "n_samples": 15
+        },
+        "1": {
+          "tir": 0.7629517996128884,
+          "hypo_events": 2.5,
+          "glucose_cv": 0.33876758486741665,
+          "n_samples": 14
+        },
+        "2": {
+          "tir": 0.8169293005022972,
+          "hypo_events": 2.7333333333333334,
+          "glucose_cv": 0.32676882832365284,
+          "n_samples": 15
+        },
+        "3": {
+          "tir": 0.7430368514013406,
+          "hypo_events": 3.0,
+          "glucose_cv": 0.3269871412229734,
+          "n_samples": 13
+        },
+        "4": {
+          "tir": 0.767392119511761,
+          "hypo_events": 3.076923076923077,
+          "glucose_cv": 0.34949737557139926,
+          "n_samples": 13
+        },
+        "5": {
+          "tir": 0.7597054103417714,
+          "hypo_events": 2.5,
+          "glucose_cv": 0.32181526638230695,
+          "n_samples": 14
+        },
+        "6": {
+          "tir": 0.8029524043696907,
+          "hypo_events": 1.6923076923076923,
+          "glucose_cv": 0.3028739952301395,
+          "n_samples": 13
+        }
+      }
+    },
+    "h": {
+      "n_samples": 49,
+      "dow_only_auc": 0.5,
+      "daily_only_auc": 0.6875,
+      "combined_auc": 0.625,
+      "auc_improvement_from_dow": -0.0625,
+      "feature_importance": {
+        "tir_mean": 0.2435,
+        "meal_count_std": 0.1405,
+        "mean_flux_mean": 0.1233,
+        "tir_trend": 0.0592,
+        "meal_count_trend": 0.0576,
+        "glucose_cv_mean": 0.0501,
+        "yesterday_tbr": 0.0365,
+        "hypo_events_trend": 0.0296,
+        "mean_flux_std": 0.0295,
+        "hypo_events_std": 0.0286,
+        "yesterday_glucose_cv": 0.027,
+        "yesterday_daytime_variability": 0.0229,
+        "supply_trend": 0.021,
+        "yesterday_tir": 0.0163,
+        "yesterday_mean_flux": 0.0147,
+        "overnight_trend": 0.0136,
+        "yesterday_mean_glucose": 0.0113,
+        "yesterday_demand_integral": 0.0109,
+        "yesterday_flux_variability": 0.0104,
+        "yesterday_hypo_minutes": 0.008
+      },
+      "weekend_effect": {
+        "weekday_tir_mean": 0.8588961043422852,
+        "weekend_tir_mean": 0.8295705205155289,
+        "ttest_statistic": 1.4189121114324317,
+        "ttest_pvalue": 0.16093242565533936,
+        "significant": "False",
+        "n_weekdays": 47,
+        "n_weekends": 17
+      },
+      "dow_profiles": {
+        "0": {
+          "tir": 0.7291666666666666,
+          "hypo_events": 2.0,
+          "glucose_cv": 0.3779787348795494,
+          "n_samples": 3
+        },
+        "1": {
+          "tir": 0.8572089947089947,
+          "hypo_events": 4.0,
+          "glucose_cv": 0.3456369498667033,
+          "n_samples": 3
+        },
+        "2": {
+          "tir": 0.8211805555555556,
+          "hypo_events": 3.0,
+          "glucose_cv": 0.306089205577334,
+          "n_samples": 2
+        },
+        "3": {
+          "tir": 0.7291666666666666,
+          "hypo_events": 9.0,
+          "glucose_cv": 0.44759557773137953,
+          "n_samples": 1
+        },
+        "4": {
+          "tir": 0.84085009733939,
+          "hypo_events": 4.5,
+          "glucose_cv": 0.29321392766894205,
+          "n_samples": 2
+        },
+        "5": {
+          "tir": 0.7260529127305443,
+          "hypo_events": 5.5,
+          "glucose_cv": 0.46428890516486565,
+          "n_samples": 2
+        },
+        "6": {
+          "tir": 0.7829861111111112,
+          "hypo_events": 3.0,
+          "glucose_cv": 0.3849911618231425,
+          "n_samples": 2
+        }
+      }
+    },
+    "i": {
+      "n_samples": 155,
+      "dow_only_auc": 0.95,
+      "daily_only_auc": 0.5333333333333333,
+      "combined_auc": 0.4666666666666667,
+      "auc_improvement_from_dow": -0.06666666666666665,
+      "feature_importance": {
+        "glucose_cv_mean": 0.1056,
+        "meal_count_trend": 0.1029,
+        "yesterday_mean_glucose": 0.0931,
+        "glucose_cv_std": 0.0863,
+        "yesterday_tar": 0.0805,
+        "yesterday_overnight_min": 0.054,
+        "glucose_cv_trend": 0.0495,
+        "dow_cos": 0.0336,
+        "mean_flux_std": 0.0332,
+        "yesterday_overnight_mean": 0.0323,
+        "tir_mean": 0.0313,
+        "dow_hist_tir": 0.0284,
+        "meal_count_std": 0.0257,
+        "overnight_trend": 0.025,
+        "mean_flux_mean": 0.0205,
+        "tir_std": 0.0202,
+        "yesterday_tir": 0.0199,
+        "yesterday_daytime_variability": 0.0162,
+        "yesterday_flux_variability": 0.016,
+        "yesterday_demand_integral": 0.015
+      },
+      "weekend_effect": {
+        "weekday_tir_mean": 0.6001422360808786,
+        "weekend_tir_mean": 0.5988329307602547,
+        "ttest_statistic": 0.04246217513718371,
+        "ttest_pvalue": 0.9661832076643431,
+        "significant": "False",
+        "n_weekdays": 117,
+        "n_weekends": 45
+      },
+      "dow_profiles": {
+        "0": {
+          "tir": 0.6020618264439594,
+          "hypo_events": 3.7333333333333334,
+          "glucose_cv": 0.40067063146829424,
+          "n_samples": 15
+        },
+        "1": {
+          "tir": 0.6581214877994379,
+          "hypo_events": 2.0714285714285716,
+          "glucose_cv": 0.4257778006126852,
+          "n_samples": 14
+        },
+        "2": {
+          "tir": 0.5785217703286128,
+          "hypo_events": 3.6,
+          "glucose_cv": 0.4324121278451055,
+          "n_samples": 15
+        },
+        "3": {
+          "tir": 0.7142381233658531,
+          "hypo_events": 3.6923076923076925,
+          "glucose_cv": 0.39613181816967374,
+          "n_samples": 13
+        },
+        "4": {
+          "tir": 0.6947313232035455,
+          "hypo_events": 3.0,
+          "glucose_cv": 0.4258758949358057,
+          "n_samples": 13
+        },
+        "5": {
+          "tir": 0.614855373535929,
+          "hypo_events": 3.5,
+          "glucose_cv": 0.4520323052818516,
+          "n_samples": 14
+        },
+        "6": {
+          "tir": 0.670918294732792,
+          "hypo_events": 5.3076923076923075,
+          "glucose_cv": 0.4186950079865097,
+          "n_samples": 13
+        }
+      }
+    },
+    "j": {
+      "n_samples": 48,
+      "dow_only_auc": 0.03125,
+      "daily_only_auc": 0.625,
+      "combined_auc": 0.5625,
+      "auc_improvement_from_dow": -0.0625,
+      "feature_importance": {
+        "mean_flux_mean": 0.1767,
+        "hypo_events_std": 0.1063,
+        "yesterday_glucose_cv": 0.0697,
+        "meal_count_mean": 0.0669,
+        "hypo_events_trend": 0.0602,
+        "yesterday_overnight_min": 0.0543,
+        "tir_trend": 0.0507,
+        "yesterday_flux_variability": 0.0491,
+        "yesterday_supply_integral": 0.0481,
+        "dow_hist_hypo": 0.0355,
+        "meal_count_trend": 0.0331,
+        "supply_trend": 0.0292,
+        "yesterday_mean_glucose": 0.0251,
+        "yesterday_mean_flux": 0.0244,
+        "tir_mean": 0.0235,
+        "glucose_cv_std": 0.022,
+        "yesterday_tbr": 0.0179,
+        "mean_flux_std": 0.0164,
+        "tir_std": 0.0139,
+        "meal_count_std": 0.0118
+      },
+      "weekend_effect": {
+        "weekday_tir_mean": 0.8134641442568272,
+        "weekend_tir_mean": 0.7694143634186293,
+        "ttest_statistic": 1.11525772420745,
+        "ttest_pvalue": 0.2697714551181175,
+        "significant": "False",
+        "n_weekdays": 41,
+        "n_weekends": 14
+      },
+      "dow_profiles": {
+        "0": {
+          "tir": 0.8316862535612536,
+          "hypo_events": 2.3333333333333335,
+          "glucose_cv": 0.26670084319800946,
+          "n_samples": 6
+        },
+        "1": {
+          "tir": 0.7965277777777777,
+          "hypo_events": 2.2,
+          "glucose_cv": 0.2848258532824917,
+          "n_samples": 5
+        },
+        "2": {
+          "tir": 0.7595486111111112,
+          "hypo_events": 0.25,
+          "glucose_cv": 0.23176208317966568,
+          "n_samples": 4
+        },
+        "3": {
+          "tir": 0.7136752136752136,
+          "hypo_events": 1.0,
+          "glucose_cv": 0.293402875496587,
+          "n_samples": 4
+        },
+        "4": {
+          "tir": 0.761965811965812,
+          "hypo_events": 0.8,
+          "glucose_cv": 0.2700573581263156,
+          "n_samples": 5
+        },
+        "5": {
+          "tir": 0.7598086277521762,
+          "hypo_events": 0.75,
+          "glucose_cv": 0.3038267600316431,
+          "n_samples": 4
+        },
+        "6": {
+          "tir": 0.7292334401709402,
+          "hypo_events": 2.25,
+          "glucose_cv": 0.3056987241894442,
+          "n_samples": 4
+        }
+      }
+    },
+    "k": {
+      "n_samples": 153,
+      "dow_only_auc": 0.4895833333333333,
+      "daily_only_auc": 0.47916666666666663,
+      "combined_auc": 0.43333333333333335,
+      "auc_improvement_from_dow": -0.04583333333333328,
+      "feature_importance": {
+        "overnight_trend": 0.0985,
+        "mean_flux_std": 0.0559,
+        "glucose_cv_std": 0.0513,
+        "yesterday_daytime_variability": 0.051,
+        "yesterday_mean_flux": 0.04,
+        "yesterday_overnight_min": 0.0395,
+        "glucose_cv_mean": 0.0386,
+        "hypo_events_mean": 0.0349,
+        "yesterday_tir": 0.033,
+        "yesterday_mean_glucose": 0.0329,
+        "tir_std": 0.0328,
+        "mean_flux_trend": 0.0324,
+        "glucose_cv_trend": 0.0317,
+        "meal_count_mean": 0.0289,
+        "supply_trend": 0.0282,
+        "meal_count_std": 0.0254,
+        "hypo_events_std": 0.0253,
+        "yesterday_supply_integral": 0.0243,
+        "yesterday_glucose_cv": 0.0235,
+        "yesterday_flux_variability": 0.0235
+      },
+      "weekend_effect": {
+        "weekday_tir_mean": 0.9460124038740115,
+        "weekend_tir_mean": 0.9596084524521621,
+        "ttest_statistic": -0.9556945706878702,
+        "ttest_pvalue": 0.34068651668668437,
+        "significant": "False",
+        "n_weekdays": 115,
+        "n_weekends": 45
+      },
+      "dow_profiles": {
+        "0": {
+          "tir": 0.9586442937403892,
+          "hypo_events": 2.857142857142857,
+          "glucose_cv": 0.13037977059077818,
+          "n_samples": 14
+        },
+        "1": {
+          "tir": 0.9577094260772563,
+          "hypo_events": 3.0,
+          "glucose_cv": 0.1369493392620855,
+          "n_samples": 14
+        },
+        "2": {
+          "tir": 0.9372166793763769,
+          "hypo_events": 3.7142857142857144,
+          "glucose_cv": 0.12601435434354644,
+          "n_samples": 14
+        },
+        "3": {
+          "tir": 0.9567447505859914,
+          "hypo_events": 3.6153846153846154,
+          "glucose_cv": 0.13189440297543653,
+          "n_samples": 13
+        },
+        "4": {
+          "tir": 0.9654942452241148,
+          "hypo_events": 2.7857142857142856,
+          "glucose_cv": 0.13002506172760012,
+          "n_samples": 14
+        },
+        "5": {
+          "tir": 0.9609381392035437,
+          "hypo_events": 2.6153846153846154,
+          "glucose_cv": 0.14039987324338712,
+          "n_samples": 13
+        },
+        "6": {
+          "tir": 0.9511479339659944,
+          "hypo_events": 2.5,
+          "glucose_cv": 0.1392277095289655,
+          "n_samples": 14
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "n_patients": 11,
+    "dow_only_auc": {
+      "mean": 0.47862550649983804,
+      "std": 0.2185809112974278
+    },
+    "daily_only_auc": {
+      "mean": 0.5189957596374709,
+      "std": 0.09570061668347209
+    },
+    "combined_auc": {
+      "mean": 0.5106716144817749,
+      "std": 0.07888948402216134
+    },
+    "mean_auc_improvement": -0.00832414515569595,
+    "patients_with_weekend_effect": 1
+  },
+  "elapsed_seconds": 169.8
+}
