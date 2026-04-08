@@ -4,8 +4,13 @@
 Produces 12 matplotlib figures illustrating how throughput (supply × demand)
 enables meal detection even for 100% UAM patients.  Synthetic data is
 calibrated to documented experimental results from EXP-441 through EXP-488.
+
+Imports pharmacokinetic models directly from tools/cgmencode/continuous_pk.py
+to guarantee figures always match the source of truth.
 """
 
+import sys
+from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -13,6 +18,19 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from scipy.signal import find_peaks
 import os
+
+# ── import PK models from the codebase (source of truth) ───────────────
+_REPO_ROOT = str(Path(__file__).resolve().parents[2])
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+from tools.cgmencode.continuous_pk import (
+    _build_activity_kernel,
+    _build_carb_kernel,
+    _convolve_doses_with_kernel,
+    _insulin_activity_at_t,
+    _carb_absorption_rate_at_t,
+    compute_hepatic_production,
+)
 
 OUT = os.path.dirname(os.path.abspath(__file__))
 np.random.seed(42)
@@ -30,109 +48,119 @@ C_DC      = '#95a5a6'   # grey
 
 DPI = 150
 
+# ── PK parameters (continuous_pk.py defaults) ───────────────────────────
+DIA_HOURS = 5.0          # Duration of Insulin Action (hours)
+PEAK_MIN  = 55.0         # Time to peak insulin activity (minutes)
+CARB_ABS_HOURS = 3.0     # Carb absorption time (hours)
+INTERVAL_MIN   = 5       # Grid interval (minutes)
+STEPS_PER_DAY  = 288     # 24h / 5min
+
+# Pre-compute kernels once (reused by all figures)
+_INSULIN_KERNEL = _build_activity_kernel(DIA_HOURS, PEAK_MIN, INTERVAL_MIN)
+_CARB_KERNEL    = _build_carb_kernel(CARB_ABS_HOURS, INTERVAL_MIN)
+
 # ═══════════════════════════════════════════════════════════════════════
-# Helper functions (calibrated to codebase implementations)
+# Thin wrappers around continuous_pk for synthetic data generation
 # ═══════════════════════════════════════════════════════════════════════
 
-def insulin_activity(t, dose=1.0, dia_min=360, peak_min=75):
-    """Exponential insulin activity curve (oref0/LoopKit style).
+_DIA_MIN = DIA_HOURS * 60
+_ABS_MIN = CARB_ABS_HOURS * 60
 
-    Uses the oref0 model: activity ~ t*(1-t/dia)*exp(-t/tau) which peaks
-    at approximately ``peak_min`` and reaches zero at ``dia_min``.
-    Matches the supply-demand-report implementation and continuous_pk.py.
+
+def insulin_curve(t_min, dose=1.0):
+    """Vectorized insulin activity at arbitrary time resolution.
+
+    Calls continuous_pk._insulin_activity_at_t per point.
+    Use for relative-time figures (phase lag, dessert detection).
     """
-    peak_min = min(peak_min, dia_min * 0.49)  # guard against invalid peak
-    tau = peak_min * (1 - peak_min / dia_min) / (1 - 2 * peak_min / dia_min)
-    t_safe = np.clip(t, 0, dia_min)
-    norm = tau**2 / (dia_min * (1 - 2 * peak_min / dia_min))
-    activity = dose * (norm / tau**2) * t_safe * (1 - t_safe/dia_min) * np.exp(-t_safe/tau)
-    activity = np.where(t < 0, 0.0, activity)
-    activity = np.where(t > dia_min, 0.0, activity)
-    return np.maximum(activity, 0)
+    return np.array([_insulin_activity_at_t(float(ti), dose, _DIA_MIN, PEAK_MIN)
+                     for ti in t_min])
 
-def carb_absorption(t, carbs=50.0, peak_min=30.0, duration_min=180.0):
-    """Smooth carb absorption curve (gamma-distribution shape).
 
-    Uses a gamma(k=3) shape that peaks at ``peak_min`` and tapers
-    smoothly to zero by ``duration_min``.  More physiological than the
-    original trapezoidal model (Dalla Man 2006 two-compartment produces
-    gamma-like curves).
+def carb_curve(t_min, carbs=50.0):
+    """Vectorized carb absorption at arbitrary time resolution.
+
+    Calls continuous_pk._carb_absorption_rate_at_t per point.
     """
-    k = 3.0
-    theta = max(peak_min / (k - 1), 1.0)  # scale so peak at peak_min
-    rate = np.where(
-        t > 0,
-        (t / theta)**(k - 1) * np.exp(-t / theta) / theta,
-        0.0,
-    )
-    # Soft taper near duration to avoid abrupt cutoff
-    taper = np.where(t < duration_min * 0.85, 1.0,
-                     np.where(t < duration_min,
-                              (duration_min - t) / (0.15 * duration_min),
-                              0.0))
-    rate = np.maximum(rate * taper, 0)
-    total = np.trapezoid(rate, t) if np.any(rate > 0) else 1.0
-    if total > 0:
-        rate = rate * carbs / total
-    return rate
+    return np.array([_carb_absorption_rate_at_t(float(ti), carbs, _ABS_MIN)
+                     for ti in t_min])
 
-def hepatic_production(hours, iob=None, base_rate=1.5, max_supp=0.65,
-                       circ_amp=0.20):
-    """Hill equation + circadian hepatic production (matches continuous_pk.py)."""
-    circadian = 1.0 + circ_amp * np.sin(2 * np.pi * hours / 24.0)
-    if iob is not None:
-        half_max = 2.0
-        hill = 1.5
-        act = np.maximum(iob, 0) / 0.7
-        supp = (act**hill / (half_max**hill + act**hill)) * max_supp
-        prod_factor = np.maximum(1.0 - supp, 0.35)
-    else:
-        prod_factor = np.ones_like(hours) * 0.7
-    return base_rate * prod_factor * circadian
+def make_insulin_activity(hours, boluses, isf=40, basal_rate=0.0):
+    """Compute insulin demand signal from a list of (hour, dose) boluses.
+
+    Returns demand in mg/dL per 5-min step (activity × ISF × interval).
+    Optionally includes a steady-state basal contribution.
+    """
+    N = len(hours)
+    bolus_arr = np.zeros(N)
+    for bol_hr, bol_u in boluses:
+        idx = int(round(bol_hr * 60 / INTERVAL_MIN))
+        if 0 <= idx < N:
+            bolus_arr[idx] += bol_u
+    bolus_activity = _convolve_doses_with_kernel(bolus_arr, _INSULIN_KERNEL)
+
+    basal_activity = np.zeros(N)
+    if basal_rate > 0:
+        micro_dose = basal_rate * INTERVAL_MIN / 60.0  # U per 5min
+        basal_arr = np.full(N, micro_dose)
+        basal_activity = _convolve_doses_with_kernel(basal_arr, _INSULIN_KERNEL)
+
+    total_activity = bolus_activity + basal_activity
+    return total_activity * INTERVAL_MIN * isf  # U/min × min × mg/dL/U → mg/dL per step
+
+
+def make_carb_supply(hours, meals, isf=40, cr=10):
+    """Compute carb supply signal from a list of (hour, grams) meals.
+
+    Returns supply in mg/dL per 5-min step (rate × ISF/CR × interval).
+    """
+    N = len(hours)
+    carb_arr = np.zeros(N)
+    for meal_hr, meal_g in meals:
+        idx = int(round(meal_hr * 60 / INTERVAL_MIN))
+        if 0 <= idx < N:
+            carb_arr[idx] += meal_g
+    rate = _convolve_doses_with_kernel(carb_arr, _CARB_KERNEL)
+    return rate * INTERVAL_MIN * (isf / max(cr, 1.0))  # g/min × min × (mg/dL)/g → mg/dL per step
+
+
+def make_hepatic(hours, iob=None):
+    """Hepatic glucose production using compute_hepatic_production().
+
+    If iob is None, uses a reasonable default (steady-state ~0.5U).
+    Returns mg/dL per 5-min step.
+    """
+    if iob is None:
+        iob = np.full(len(hours), 0.5)
+    return compute_hepatic_production(iob, hours, weight_kg=70.0)
+
 
 def simulate_day(meals, boluses, hours, basal_rate=1.0, isf=40, cr=10):
     """Simulate a full day of supply, demand, glucose for visualization.
 
-    Uses a simple AID proportional-feedback loop so glucose stays in
-    range, matching the report's premise that AID keeps glucose flat
-    while metabolic flux is active underneath.
+    Uses the real PK models from continuous_pk.py and keeps glucose
+    near-flat (AID premise).
     """
     N = len(hours)
-    t_min = hours * 60  # convert to minutes
 
-    # Hepatic production (always on)
-    hep = hepatic_production(hours)
-
-    # Carb supply from meals
-    carb_sup = np.zeros(N)
-    for meal_hr, meal_g in meals:
-        t_rel = t_min - meal_hr * 60
-        carb_sup += carb_absorption(t_rel, carbs=meal_g) * (isf / cr)
-
+    hep = make_hepatic(hours)
+    carb_sup = make_carb_supply(hours, meals, isf=isf, cr=cr)
     supply = hep + carb_sup
 
-    # Insulin demand: baseline = hepatic (steady-state equilibrium)
-    # plus bolus-driven perturbations
-    demand = hep.copy()
-    for bol_hr, bol_u in boluses:
-        t_rel = t_min - bol_hr * 60
-        mask = t_rel >= 0
-        act = np.zeros(N)
-        act[mask] = insulin_activity(t_rel[mask], dose=bol_u)
-        demand += act * isf
+    demand = make_insulin_activity(hours, boluses, isf=isf, basal_rate=basal_rate)
+    # Add hepatic baseline so demand ≈ supply at steady state
+    demand += hep
 
     # Glucose: AID keeps glucose near-flat despite active flux underneath.
-    # Model as small perturbations around target (the figure's whole point).
     target = 115
     glucose = np.full(N, float(target))
+    t_min = hours * 60
     for meal_hr, meal_g in meals:
         t_rel = t_min - meal_hr * 60
-        # Tiny post-meal bump — AID can't prevent the first ~10 min rise
         bump = np.where(t_rel > 0,
                         (meal_g / 20) * (t_rel / 20) * np.exp(1 - t_rel / 20),
                         0.0)
         glucose += bump
-    # Gentle random walk (zero-mean, no drift)
     noise = np.cumsum(np.random.normal(0, 0.15, N))
     noise -= np.linspace(noise[0], noise[-1], N)
     glucose += noise
@@ -369,31 +397,25 @@ def fig04_method_comparison():
 # ═══════════════════════════════════════════════════════════════════════
 
 def fig05_ac_dc_decomposition():
-    hours = np.linspace(0, 24, 288)
-    # DC component: steady-state insulin activity from basal infusion
-    # At 1.8 U/hr with ISF=40, steady-state activity ≈ 3-4 mg/dL per 5min
-    basal = np.ones(288) * 3.5
-    basal *= (1 + 0.15 * np.sin(2 * np.pi * (hours - 4) / 24))
+    hours = np.linspace(0, 24, STEPS_PER_DAY)
+    # DC component: fasting-period demand baseline (hepatic equilibrium)
+    # The 9.1× ratio from EXP-474 is meal-demand / fasting-demand
+    dc = make_hepatic(hours)
 
-    # AC component: meal boluses create sharp peaks with corrected insulin
-    ac = np.zeros(288)
+    # AC component: meal boluses (the signal we detect)
     meal_times = [8, 12.5, 18.5]
     meal_doses = [6, 5, 7]
-    for mh, md in zip(meal_times, meal_doses):
-        t_rel = (hours - mh) * 60
-        mask = t_rel >= 0
-        act = np.zeros(288)
-        act[mask] = insulin_activity(t_rel[mask], dose=md, peak_min=75)
-        ac += act * 40  # ISF=40
+    boluses = list(zip(meal_times, meal_doses))
+    ac = make_insulin_activity(hours, boluses, isf=40, basal_rate=0.0)
 
-    total_demand = basal + ac
+    total_demand = dc + ac
 
     fig, axes = plt.subplots(2, 1, figsize=(14, 8), sharex=True)
 
     # Panel 1: Full demand with AC/DC decomposition
     ax = axes[0]
-    ax.fill_between(hours, basal, alpha=0.3, color=C_DC, label='DC (basal)')
-    ax.fill_between(hours, basal, total_demand, alpha=0.3, color=C_AC,
+    ax.fill_between(hours, dc, alpha=0.3, color=C_DC, label='DC (basal)')
+    ax.fill_between(hours, dc, total_demand, alpha=0.3, color=C_AC,
                     label='AC (meal + correction)')
     ax.plot(hours, total_demand, color='black', linewidth=1.5,
             label='Total Demand')
@@ -407,7 +429,7 @@ def fig05_ac_dc_decomposition():
 
     # Panel 2: AC/DC ratio
     ax = axes[1]
-    ac_ratio = ac / (np.maximum(basal, 0.01))
+    ac_ratio = ac / (np.maximum(dc, 0.01))
     ax.fill_between(hours, ac_ratio, alpha=0.3, color=C_AC)
     ax.plot(hours, ac_ratio, color=C_AC, linewidth=2)
     ax.axhline(1.0, color='grey', linestyle='--', alpha=0.5)
@@ -439,25 +461,20 @@ def fig06_phase_lag():
     t = np.linspace(-30, 240, 300)  # minutes relative to meal
 
     # Common carb absorption curve (supply component)
-    carb_s = carb_absorption(t, carbs=50, peak_min=25)
-    hep_const = hepatic_production(np.full_like(t, 12))
+    carb_s = carb_curve(t, carbs=50)
+    hep_const = compute_hepatic_production(np.full(len(t), 0.5),
+                                           np.full(len(t), 12.0))
 
     # Announced meal: bolus given 15 min before eating
-    bolus_act_ann = np.zeros_like(t)
     t_bol_ann = t + 15  # bolus was 15 min before meal
-    mask_ann = t_bol_ann >= 0
-    bolus_act_ann[mask_ann] = insulin_activity(t_bol_ann[mask_ann], dose=5,
-                                               peak_min=75) * 40
+    bolus_act_ann = insulin_curve(t_bol_ann, dose=5) * 40  # × ISF
     supply_ann = carb_s * 4 + hep_const
     demand_ann = bolus_act_ann + hep_const * 0.8
 
     # UAM meal: no bolus, AID reacts ~30 min after carb absorption starts
     supply_uam = carb_s * 4 + hep_const
-    demand_uam = np.zeros_like(t)
     t_react = t - 30  # AID starts reacting 30 min after meal
-    mask_react = t_react >= 0
-    demand_uam[mask_react] = insulin_activity(t_react[mask_react], dose=4,
-                                              peak_min=75) * 40
+    demand_uam = insulin_curve(t_react, dose=4) * 40
     demand_uam += hep_const * 0.8
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
@@ -564,10 +581,9 @@ def fig07_precondition_gating():
 
 def fig08_live_split_day():
     """Simulate a realistic UAM patient day with AID-only insulin."""
-    hours = np.linspace(0, 24, 288)
-    dt = 5  # minutes per step
+    hours = np.linspace(0, 24, STEPS_PER_DAY)
 
-    # Patient profile: ISF=40, CR=10, DIA=6h, basal~1.8 U/hr
+    # Patient profile: ISF=40, CR=10, DIA=5h, basal~1.8 U/hr
     isf = 40
     basal_rate = 1.8  # U/hr
 
@@ -575,38 +591,30 @@ def fig08_live_split_day():
     meal_carbs = [(12, 55), (18.5, 65)]
 
     # Hepatic production
-    iob_approx = np.ones(288) * (basal_rate * 6 / 2)  # rough steady-state IOB
-    hep = hepatic_production(hours, iob=iob_approx)
+    hep = make_hepatic(hours)
 
     # Carb absorption (unannounced)
-    carb_sup = np.zeros(288)
-    for mh, mg in meal_carbs:
-        t_rel = (hours - mh) * 60
-        carb_sup += carb_absorption(t_rel, carbs=mg) * (isf / 10)
-
+    carb_sup = make_carb_supply(hours, meal_carbs, isf=isf, cr=10)
     supply = hep + carb_sup
 
     # AID-driven demand: baseline matches hepatic (steady state)
     # plus reactive SMBs after glucose rises from meals
-    demand = hep.copy()
-    for mh, mg in meal_carbs:
-        # AID reacts ~25 min after carbs start absorbing
+    smb_boluses = []
+    for mh, _mg in meal_carbs:
         for smb_offset in range(0, 120, 15):
-            t_smb = (hours - mh) * 60 - 25 - smb_offset
-            mask_smb = t_smb >= 0
-            act = np.zeros(288)
-            act[mask_smb] = insulin_activity(t_smb[mask_smb], dose=0.3,
-                                             peak_min=75)
-            demand += act * isf
+            smb_hr = mh + (25 + smb_offset) / 60.0
+            smb_boluses.append((smb_hr, 0.3))
+    demand = make_insulin_activity(hours, smb_boluses, isf=isf, basal_rate=basal_rate)
+    demand += hep  # baseline matches hepatic
 
     # Product (throughput)
     product = supply * demand
 
     # Glucose with AID feedback (keeps glucose in range)
     target = 155  # this patient runs a bit high (TIR 65%)
-    glucose = np.zeros(288)
+    glucose = np.zeros(STEPS_PER_DAY)
     glucose[0] = target + np.random.normal(0, 3)
-    for i in range(1, 288):
+    for i in range(1, STEPS_PER_DAY):
         net = supply[i] - demand[i]
         feedback = 0.10 * (glucose[i-1] - target)
         glucose[i] = glucose[i-1] + (net - feedback) * 0.15 + np.random.normal(0, 0.8)
@@ -739,18 +747,13 @@ def fig09_residual_decomposition():
 def fig10_dessert_detection():
     t = np.linspace(0, 360, 360)  # 6 hours in minutes
 
-    # Dinner at t=0, dessert at t=123 min (using corrected insulin model)
-    dinner_demand = insulin_activity(t, dose=6, peak_min=75) * 40 + 1.2
-    dessert_demand = np.zeros_like(t)
-    mask = t >= 123
-    dessert_demand[mask] = insulin_activity(t[mask] - 123, dose=2.5,
-                                           peak_min=75) * 40
+    # Dinner at t=0, dessert at t=123 min (using real PK model)
+    dinner_demand = insulin_curve(t, dose=6) * 40 + 1.2
+    dessert_demand = insulin_curve(t - 123, dose=2.5) * 40
     total = dinner_demand + dessert_demand
 
-    dinner_carb = carb_absorption(t, carbs=65, peak_min=30) * 4
-    dessert_carb = np.zeros_like(t)
-    dessert_carb[mask] = carb_absorption(t[mask] - 123, carbs=30,
-                                        peak_min=20) * 4
+    dinner_carb = carb_curve(t, carbs=65) * 4
+    dessert_carb = carb_curve(t - 123, carbs=30) * 4
     total_supply = dinner_carb + dessert_carb + 1.0
 
     product = total_supply * total

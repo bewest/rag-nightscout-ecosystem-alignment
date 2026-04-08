@@ -102,15 +102,15 @@ classification feature (EXP-466):
 
 | Meal Type | Supply→Demand Lag | Mechanism |
 |:----------|:-----------------:|:----------|
-| Announced | ~35 min | Bolus precedes carb absorption by 15 min |
-| UAM | ~80 min | AID reacts ~30 min after glucose rises |
-| **Separation** | **~45 min** | **Strong UAM classifier feature** |
+| Announced | ~13 min | Bolus precedes carb absorption by 15 min |
+| UAM | ~57 min | AID reacts ~30 min after glucose rises |
+| **Separation** | **~44 min** | **Strong UAM classifier feature** |
 
 ![Phase Lag](../../visualizations/meal-detection-report/fig06_phase_lag.png)
 
-*Figure 6: Left — announced meal with ~35-min lag (bolus delivered 15 min
-before carbs, insulin peaks ~75 min post-dose). Right — UAM meal with
-~80-min lag (AID reacts ~30 min after glucose rises). The ~45-minute
+*Figure 6: Left — announced meal with ~13-min lag (bolus delivered 15 min
+before carbs, insulin peaks ~55 min post-dose). Right — UAM meal with
+~57-min lag (AID reacts ~30 min after glucose rises). The ~44-minute
 separation is one of the strongest single features for classifying meal
 announcement behavior.*
 
