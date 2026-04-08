@@ -175,7 +175,7 @@ class PositionalEncoding:
 class PKGroupedEncoderInference:
     """Inference-only PKGroupedEncoder (no nn.Module overhead when not training)."""
 
-    def __init__(self, state_dict, input_dim=11, d_model=64, nhead=4,
+    def __init__(self, state_dict, input_dim=CHAMPION_CHANNELS, d_model=64, nhead=4,
                  num_layers=4, dim_feedforward=128, device='cpu'):
         _ensure_torch()
         from cgmencode.exp_pk_forecast_v14 import PKGroupedEncoder
@@ -189,7 +189,6 @@ class PKGroupedEncoderInference:
         self.device = device
         self.input_dim = input_dim
 
-    @torch.no_grad()
     def predict(self, x_input, future_steps=None):
         """Run inference on prepared input tensor.
 
@@ -200,10 +199,11 @@ class PKGroupedEncoderInference:
         Returns:
             predictions: (batch, future_steps) glucose predictions in normalized units
         """
-        x = x_input.to(self.device)
-        half = x.shape[1] - future_steps if future_steps else x.shape[1] // 2
-        pred = self.model(x, causal=True)
-        return pred[:, half:, 0].cpu()
+        with torch.no_grad():
+            x = x_input.to(self.device)
+            half = x.shape[1] - future_steps if future_steps else x.shape[1] // 2
+            pred = self.model(x, causal=True)
+            return pred[:, half:, 0].cpu()
 
     def memory_bytes(self):
         """Total memory footprint of model parameters."""
@@ -441,10 +441,69 @@ class ForecastRouter:
         }
 
 
-# ─── PK Derivative Computation (inference version) ───
+# ─── Feature Preparation (production inference) ───
+
+def prepare_pk_future_inference(glucose: np.ndarray, iob: np.ndarray,
+                                 cob: np.ndarray, net_basal: np.ndarray,
+                                 insulin_net: np.ndarray, carb_rate: np.ndarray,
+                                 net_balance: np.ndarray,
+                                 window_size: int = 48,
+                                 isf: float = 50.0) -> np.ndarray:
+    """Prepare 8ch input for production inference.
+
+    Mirrors prepare_pk_future from training. All arrays must be same length
+    (= window_size) at 5-minute intervals.
+
+    Channels: [glucose, IOB, COB, net_basal, insulin_net, carb_rate, sin_time, net_balance]
+
+    Args:
+        glucose: BG values in mg/dL (NaN allowed in future portion)
+        iob: Insulin on board (U)
+        cob: Carbs on board (g)
+        net_basal: Net basal rate (U/hr above programmed)
+        insulin_net: Net insulin absorption rate
+        carb_rate: Carb absorption rate
+        net_balance: insulin_net + carb_rate (supply/demand)
+        window_size: Total window length (history + future)
+        isf: Patient ISF for normalization (mg/dL per U)
+
+    Returns:
+        (1, window_size, 8) float32 array ready for model input
+    """
+    half = window_size // 2
+    n = len(glucose)
+    assert n == window_size, f"Expected {window_size} timesteps, got {n}"
+
+    # Normalize glucose by ISF
+    gluc_norm = glucose / (isf / GLUCOSE_SCALE) / GLUCOSE_SCALE
+
+    # Compute sin_time from position
+    positions = np.arange(n, dtype=np.float32)
+    sin_time = np.sin(2 * np.pi * positions / 288)  # 288 = 24h at 5min
+
+    # Stack channels and normalize
+    norms = np.array(PK_NORMS, dtype=np.float32)
+    window = np.stack([
+        gluc_norm, iob, cob, net_basal,
+        insulin_net, carb_rate, sin_time, net_balance
+    ], axis=-1).astype(np.float32)
+
+    # Apply PK normalization (channels 1-7)
+    for ch in range(1, 8):
+        if norms[ch] > 0:
+            window[:, ch] /= norms[ch]
+
+    return window[np.newaxis, :, :]  # (1, window_size, 8)
+
+
+# ─── PK Derivative Computation (LEGACY — 11ch approach, superseded by 8ch pk_mode) ───
 
 def compute_pk_derivatives(window: np.ndarray, history_steps: int) -> np.ndarray:
-    """Compute PK derivative channels for a single window.
+    """[LEGACY] Compute PK derivative channels for a single window.
+
+    NOTE: The 11ch d1-derivative approach was superseded by the 8ch pk_mode
+    champion validated in EXP-619. This function is retained for backward
+    compatibility with pre-EXP-619 model checkpoints.
 
     Takes an 8ch base window and returns 11ch (base + d_ins + d_carb + d_gluc).
     Matches _prepare_pk_derivatives_asymmetric from v14 but for single windows.
@@ -661,8 +720,11 @@ def cmd_benchmark(args):
 def cmd_export_config(args):
     """Export production configuration."""
     config = {
-        'version': '1.0',
+        'version': '2.0',
+        'experiment': 'EXP-619',
+        'validated': '11pt, 5-seed, 200ep base + 30ep FT',
         'routing': DEFAULT_ROUTING['routing_map'],
+        'routing_simple': DEFAULT_ROUTING['routing_map_simple'],
         'engines': [
             {
                 'name': ecfg.name,
@@ -677,11 +739,27 @@ def cmd_export_config(args):
             }
             for ecfg in DEFAULT_ROUTING['engines']
         ],
+        'validated_maes': {
+            'h30': 11.1, 'h60': 14.2, 'h90': 16.1, 'h120': 17.4,
+            'h150': 17.9, 'h180': 18.5, 'h240': 20.0,
+            'h300': 20.2, 'h360': 21.9,
+        },
+        'champion': {
+            'model': 'PKGroupedEncoder',
+            'params': 134891,
+            'channels': CHAMPION_CHANNELS,
+            'feature_prep': 'prepare_pk_future',
+            'pk_mode': True,
+            'isf_normalize': True,
+            'd_model': 64,
+            'nhead': 4,
+            'num_layers': 4,
+        },
         'production_notes': {
-            'tier1': 'Ridge h5-h60: <1ms, <1KB, any device',
-            'tier2': 'Transformer routing h30-h360: <15ms, <3MB, GPU optional',
-            'total_params': '~600K (3 × ~134K transformers + Ridge)',
-            'validated_at': 'quick-mode (4pt, 1 seed) — full validation pending',
+            'tier2': 'Transformer routing h30-h360: ~1ms/engine, ~540KB/engine',
+            'total_params': f'~{134891 * 4} (4 × 134K transformers)',
+            'validated_at': 'EXP-619 full-scale (11pt, 5-seed, 162min)',
+            'scaling_factor': '0.74x (quick → full)',
         },
     }
     out_path = os.path.join(args.output_dir, 'production_config.json')
@@ -689,6 +767,107 @@ def cmd_export_config(args):
     with open(out_path, 'w') as f:
         json.dump(config, f, indent=2)
     print(f"Exported: {out_path}")
+
+
+def cmd_export_models(args):
+    """Export production models from EXP-619 checkpoints.
+
+    Packages best-seed checkpoints into a production directory structure:
+      models/production/
+        w48_short.pth          — base model for h30-h120
+        w96_extended.pth       — base model for h150-h240
+        w144_strategic.pth     — base model for h300-h360
+        w48_short_ft_{pid}.pth — per-patient fine-tuned (optional)
+        production_config.json — routing + metadata
+    """
+    src_dir = Path(args.source_dir)
+    out_dir = Path(args.output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    _ensure_torch()
+    seed = args.seed
+
+    # Map engine names to window sizes
+    engine_windows = {
+        'w48_short': 48,
+        'w72_mid': 72,
+        'w96_extended': 96,
+        'w144_strategic': 144,
+    }
+
+    exported = {}
+    patients = list('abcdefghijk')
+
+    for engine_name, wsize in engine_windows.items():
+        # Export base model
+        base_path = src_dir / f'exp619_w{wsize}_base_s{seed}.pth'
+        if base_path.exists():
+            ckpt = torch.load(str(base_path), map_location='cpu', weights_only=False)
+            out_path = out_dir / f'{engine_name}.pth'
+            torch.save({
+                'model_state': ckpt['model_state'],
+                'input_dim': CHAMPION_CHANNELS,
+                'd_model': 64,
+                'nhead': 4,
+                'num_layers': 4,
+                'window_size': wsize,
+                'source': f'EXP-619 w{wsize} base s{seed}',
+                'val_loss': ckpt.get('val_loss'),
+                'epoch': ckpt.get('epoch'),
+            }, str(out_path))
+            size_kb = out_path.stat().st_size / 1024
+            print(f"  ✓ {engine_name}: {size_kb:.0f}KB (epoch {ckpt.get('epoch')})")
+            exported[engine_name] = True
+
+            # Export per-patient fine-tuned models
+            if args.include_ft:
+                ft_count = 0
+                for pid in patients:
+                    ft_path = src_dir / f'exp619_w{wsize}_ft_{pid}_s{seed}.pth'
+                    if ft_path.exists():
+                        ft_ckpt = torch.load(str(ft_path), map_location='cpu',
+                                             weights_only=False)
+                        ft_out = out_dir / f'{engine_name}_ft_{pid}.pth'
+                        torch.save({
+                            'model_state': ft_ckpt['model_state'],
+                            'input_dim': CHAMPION_CHANNELS,
+                            'd_model': 64,
+                            'nhead': 4,
+                            'num_layers': 4,
+                            'window_size': wsize,
+                            'patient': pid,
+                            'source': f'EXP-619 w{wsize} ft_{pid} s{seed}',
+                            'val_loss': ft_ckpt.get('val_loss'),
+                            'epoch': ft_ckpt.get('epoch'),
+                        }, str(ft_out))
+                        ft_count += 1
+                if ft_count:
+                    print(f"    + {ft_count} fine-tuned models")
+        else:
+            print(f"  ⚠ {engine_name}: checkpoint not found ({base_path})")
+            exported[engine_name] = False
+
+    # Export production config alongside models
+    config = {
+        'version': '2.0',
+        'experiment': 'EXP-619',
+        'seed': seed,
+        'routing': DEFAULT_ROUTING['routing_map'],
+        'routing_simple': DEFAULT_ROUTING['routing_map_simple'],
+        'channels': CHAMPION_CHANNELS,
+        'pk_mode': True,
+        'validated_maes': {
+            'h30': 11.1, 'h60': 14.2, 'h90': 16.1, 'h120': 17.4,
+            'h150': 17.9, 'h180': 18.5, 'h240': 20.0,
+            'h300': 20.2, 'h360': 21.9,
+        },
+        'engines': {name: {'exported': v} for name, v in exported.items()},
+    }
+    cfg_path = out_dir / 'production_config.json'
+    with open(str(cfg_path), 'w') as f:
+        json.dump(config, f, indent=2)
+    print(f"\n  Config: {cfg_path}")
+    print(f"  Exported {sum(exported.values())}/{len(exported)} engines to {out_dir}")
 
 
 def main():
@@ -701,14 +880,26 @@ def main():
     bench.add_argument('--iterations', type=int, default=100)
     bench.add_argument('--output-dir', default='externals/experiments')
 
-    export = sub.add_parser('export-config', help='Export production config')
-    export.add_argument('--output-dir', default='externals/experiments')
+    export_cfg = sub.add_parser('export-config', help='Export production config')
+    export_cfg.add_argument('--output-dir', default='externals/experiments')
+
+    export_mdl = sub.add_parser('export', help='Export models from EXP-619')
+    export_mdl.add_argument('--source-dir', default='externals/experiments',
+                            help='Directory containing EXP-619 checkpoints')
+    export_mdl.add_argument('--output-dir', default='externals/models/production',
+                            help='Production model output directory')
+    export_mdl.add_argument('--seed', type=int, default=42,
+                            help='Seed to export (default: 42)')
+    export_mdl.add_argument('--include-ft', action='store_true',
+                            help='Include per-patient fine-tuned models')
 
     args = parser.parse_args()
     if args.command == 'benchmark':
         cmd_benchmark(args)
     elif args.command == 'export-config':
         cmd_export_config(args)
+    elif args.command == 'export':
+        cmd_export_models(args)
     else:
         parser.print_help()
 
