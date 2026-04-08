@@ -140,6 +140,9 @@ class MealMLModel:
         self.trained = False
         self.n_meals = 0
         self.last_alert_step = -9999   # for alert suppression
+        # Per-patient calibrated thresholds (EXP-1141)
+        self.proactive_threshold_30 = PROACTIVE_THRESHOLD_30
+        self.proactive_threshold_60 = PROACTIVE_THRESHOLD_60
 
     def train(self, meal_history: MealHistory,
               glucose: np.ndarray,
@@ -247,8 +250,78 @@ class MealMLModel:
         self.clf_reactive_60 = GradientBoostingClassifier(**gbt_params)
         self.clf_reactive_60.fit(X_train, y60)
 
+        # Per-patient threshold calibration (EXP-1141)
+        self._calibrate_thresholds(X_train, y30, y60)
+
         self.trained = True
         return True
+
+    def _calibrate_thresholds(self, X_train: np.ndarray,
+                              y30: np.ndarray, y60: np.ndarray,
+                              target_max_alerts_per_day: float = 5.0,
+                              ) -> None:
+        """Sweep thresholds on training data to find per-patient optimum.
+
+        Strategy from EXP-1141: find lowest threshold that yields
+        ≤ target_max_alerts_per_day. If no threshold achieves this,
+        pick the threshold with highest PPV.
+
+        Args:
+            X_train: training feature matrix.
+            y30: 30-min labels.
+            y60: 60-min labels.
+            target_max_alerts_per_day: max acceptable alerts/day.
+        """
+        n_steps = len(X_train)
+        n_days = max(n_steps / STEPS_PER_DAY, 1.0)
+        X_pro = X_train[:, _PROACTIVE_IDX]
+
+        for horizon, y_true, attr in [
+            (30, y30, 'proactive_threshold_30'),
+            (60, y60, 'proactive_threshold_60'),
+        ]:
+            clf = (self.clf_proactive_30 if horizon == 30
+                   else self.clf_proactive_60)
+            scores = clf.predict_proba(X_pro)[:, 1]
+
+            best_thresh = getattr(self, attr)  # fallback to default
+            best_ppv = 0.0
+
+            for thresh_int in range(5, 96, 5):
+                thresh = thresh_int / 100.0
+                alerts = scores >= thresh
+                n_alerts = int(alerts.sum())
+                alerts_per_day = n_alerts / n_days
+
+                if n_alerts == 0:
+                    continue
+
+                tp = int((alerts & (y_true == 1)).sum())
+                ppv = tp / n_alerts
+
+                # Pick lowest threshold with ≤ target alerts/day
+                if alerts_per_day <= target_max_alerts_per_day:
+                    if ppv > best_ppv or (ppv == best_ppv
+                                          and thresh < best_thresh):
+                        best_thresh = thresh
+                        best_ppv = ppv
+                    break  # lowest threshold that satisfies constraint
+
+            # If nothing met the constraint, use highest-PPV threshold
+            if best_ppv == 0.0:
+                for thresh_int in range(95, 4, -5):
+                    thresh = thresh_int / 100.0
+                    alerts = scores >= thresh
+                    n_alerts = int(alerts.sum())
+                    if n_alerts == 0:
+                        continue
+                    tp = int((alerts & (y_true == 1)).sum())
+                    ppv = tp / n_alerts
+                    if ppv > best_ppv:
+                        best_ppv = ppv
+                        best_thresh = thresh
+
+            setattr(self, attr, best_thresh)
 
     def _build_features(self, N: int, glucose: np.ndarray,
                         net_flux: np.ndarray, supply: np.ndarray,
@@ -505,9 +578,13 @@ def predict_next_meal(timing_models: List[MealTimingModel],
         p_pro_60 = ml_scores.get('proactive_60', 0.0)
         p_react_30 = ml_scores.get('reactive_30', 0.0)
 
+        # Use per-patient calibrated thresholds (EXP-1141)
+        thresh_30 = ml_model.proactive_threshold_30
+        thresh_60 = ml_model.proactive_threshold_60
+
         proactive_recommend = (
-            (p_pro_30 >= PROACTIVE_THRESHOLD_30
-             or p_pro_60 >= PROACTIVE_THRESHOLD_60)
+            (p_pro_30 >= thresh_30
+             or p_pro_60 >= thresh_60)
             and not suppressed
         )
         reactive_confirm = p_react_30 >= REACTIVE_THRESHOLD

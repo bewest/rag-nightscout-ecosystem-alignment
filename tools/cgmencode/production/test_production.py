@@ -568,6 +568,17 @@ class TestMealPredictor(unittest.TestCase):
         imp = model.feature_importance()
         self.assertIsInstance(imp, dict)
 
+    def test_calibrated_thresholds(self):
+        """Per-patient threshold calibration sets valid thresholds (EXP-1141)."""
+        model, success, *_ = self._train_model()
+        if not success:
+            self.skipTest("Model training failed on synthetic data")
+        # Thresholds should be in (0, 1) and potentially differ from defaults
+        self.assertGreater(model.proactive_threshold_30, 0.0)
+        self.assertLess(model.proactive_threshold_30, 1.0)
+        self.assertGreater(model.proactive_threshold_60, 0.0)
+        self.assertLess(model.proactive_threshold_60, 1.0)
+
 
 class TestRecommender(unittest.TestCase):
     """recommender.py: output contracts."""
