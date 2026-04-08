@@ -1,0 +1,136 @@
+{
+  "status": "OK",
+  "summary": "Mean entropy=0.986; KDE reveals more in 0/11 patients",
+  "results": {
+    "a": {
+      "n_meals": 172,
+      "entropy": 4.521,
+      "normalized_entropy": 0.986,
+      "n_peaks": 0,
+      "peaks": [],
+      "binary_acf_24h": -0.0033,
+      "week_to_week_corr": 0.4715,
+      "kde_reveals_more": "False"
+    },
+    "b": {
+      "n_meals": 605,
+      "entropy": 4.549,
+      "normalized_entropy": 0.992,
+      "n_peaks": 0,
+      "peaks": [],
+      "binary_acf_24h": 0.0084,
+      "week_to_week_corr": 0.5043,
+      "kde_reveals_more": "False"
+    },
+    "c": {
+      "n_meals": 312,
+      "entropy": 4.548,
+      "normalized_entropy": 0.992,
+      "n_peaks": 0,
+      "peaks": [],
+      "binary_acf_24h": 0.0037,
+      "week_to_week_corr": 0.135,
+      "kde_reveals_more": "False"
+    },
+    "d": {
+      "n_meals": 225,
+      "entropy": 4.501,
+      "normalized_entropy": 0.982,
+      "n_peaks": 1,
+      "peaks": [
+        {
+          "hour": 18.15,
+          "density": 0.0689
+        }
+      ],
+      "binary_acf_24h": 0.0002,
+      "week_to_week_corr": 0.5956,
+      "kde_reveals_more": "False"
+    },
+    "e": {
+      "n_meals": 297,
+      "entropy": 4.558,
+      "normalized_entropy": 0.994,
+      "n_peaks": 0,
+      "peaks": [],
+      "binary_acf_24h": 0.0003,
+      "week_to_week_corr": 0.2047,
+      "kde_reveals_more": "False"
+    },
+    "f": {
+      "n_meals": 388,
+      "entropy": 4.567,
+      "normalized_entropy": 0.996,
+      "n_peaks": 0,
+      "peaks": [],
+      "binary_acf_24h": 0.0003,
+      "week_to_week_corr": 0.2551,
+      "kde_reveals_more": "False"
+    },
+    "g": {
+      "n_meals": 571,
+      "entropy": 4.535,
+      "normalized_entropy": 0.989,
+      "n_peaks": 0,
+      "peaks": [],
+      "binary_acf_24h": 0.0155,
+      "week_to_week_corr": 0.5739,
+      "kde_reveals_more": "False"
+    },
+    "h": {
+      "n_meals": 354,
+      "entropy": 4.562,
+      "normalized_entropy": 0.995,
+      "n_peaks": 0,
+      "peaks": [],
+      "binary_acf_24h": 0.0018,
+      "week_to_week_corr": 0.1706,
+      "kde_reveals_more": "False"
+    },
+    "i": {
+      "n_meals": 150,
+      "entropy": 4.516,
+      "normalized_entropy": 0.985,
+      "n_peaks": 1,
+      "peaks": [
+        {
+          "hour": 14.05,
+          "density": 0.0672
+        }
+      ],
+      "binary_acf_24h": 0.0038,
+      "week_to_week_corr": 0.3044,
+      "kde_reveals_more": "False"
+    },
+    "j": {
+      "n_meals": 169,
+      "entropy": 4.362,
+      "normalized_entropy": 0.951,
+      "n_peaks": 1,
+      "peaks": [
+        {
+          "hour": 11.46,
+          "density": 0.077
+        }
+      ],
+      "binary_acf_24h": 0.0441,
+      "week_to_week_corr": 0.8958,
+      "kde_reveals_more": "False"
+    },
+    "k": {
+      "n_meals": 253,
+      "entropy": 4.509,
+      "normalized_entropy": 0.983,
+      "n_peaks": 1,
+      "peaks": [
+        {
+          "hour": 7.86,
+          "density": 0.0629
+        }
+      ],
+      "binary_acf_24h": -0.0009,
+      "week_to_week_corr": 0.4942,
+      "kde_reveals_more": "False"
+    }
+  }
+}

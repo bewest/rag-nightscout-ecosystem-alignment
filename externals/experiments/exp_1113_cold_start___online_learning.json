@@ -1,0 +1,582 @@
+{
+  "status": "OK",
+  "summary": "Median ML>Gaussian crossover: 3 days; 11/11 patients cross over",
+  "results": {
+    "a": {
+      "curves": [
+        {
+          "train_days": 3,
+          "ml_auc": 0.8531,
+          "gauss_auc": 0.5,
+          "ml_wins": true,
+          "n_train_meals": 4,
+          "n_val_positives": 185
+        },
+        {
+          "train_days": 7,
+          "ml_auc": 0.9225,
+          "gauss_auc": 0.5215,
+          "ml_wins": true,
+          "n_train_meals": 9,
+          "n_val_positives": 197
+        },
+        {
+          "train_days": 14,
+          "ml_auc": 0.944,
+          "gauss_auc": 0.5881,
+          "ml_wins": true,
+          "n_train_meals": 19,
+          "n_val_positives": 192
+        },
+        {
+          "train_days": 30,
+          "ml_auc": 0.9408,
+          "gauss_auc": 0.5297,
+          "ml_wins": true,
+          "n_train_meals": 33,
+          "n_val_positives": 162
+        },
+        {
+          "train_days": 60,
+          "ml_auc": 0.8994,
+          "gauss_auc": 0.546,
+          "ml_wins": true,
+          "n_train_meals": 60,
+          "n_val_positives": 132
+        },
+        {
+          "train_days": 90,
+          "ml_auc": 0.9633,
+          "gauss_auc": 0.5248,
+          "ml_wins": true,
+          "n_train_meals": 82,
+          "n_val_positives": 185
+        }
+      ],
+      "crossover_day": 3
+    },
+    "b": {
+      "curves": [
+        {
+          "train_days": 3,
+          "ml_auc": 0.7221,
+          "gauss_auc": 0.504,
+          "ml_wins": true,
+          "n_train_meals": 14,
+          "n_val_positives": 582
+        },
+        {
+          "train_days": 7,
+          "ml_auc": 0.8074,
+          "gauss_auc": 0.4661,
+          "ml_wins": true,
+          "n_train_meals": 27,
+          "n_val_positives": 558
+        },
+        {
+          "train_days": 14,
+          "ml_auc": 0.859,
+          "gauss_auc": 0.4619,
+          "ml_wins": true,
+          "n_train_meals": 45,
+          "n_val_positives": 594
+        },
+        {
+          "train_days": 30,
+          "ml_auc": 0.8678,
+          "gauss_auc": 0.4596,
+          "ml_wins": true,
+          "n_train_meals": 99,
+          "n_val_positives": 594
+        },
+        {
+          "train_days": 60,
+          "ml_auc": 0.8951,
+          "gauss_auc": 0.4835,
+          "ml_wins": true,
+          "n_train_meals": 198,
+          "n_val_positives": 581
+        },
+        {
+          "train_days": 90,
+          "ml_auc": 0.8861,
+          "gauss_auc": 0.4774,
+          "ml_wins": true,
+          "n_train_meals": 295,
+          "n_val_positives": 648
+        }
+      ],
+      "crossover_day": 3
+    },
+    "c": {
+      "curves": [
+        {
+          "train_days": 3,
+          "ml_auc": 0.7292,
+          "gauss_auc": 0.5582,
+          "ml_wins": true,
+          "n_train_meals": 8,
+          "n_val_positives": 360
+        },
+        {
+          "train_days": 7,
+          "ml_auc": 0.7149,
+          "gauss_auc": 0.5634,
+          "ml_wins": true,
+          "n_train_meals": 11,
+          "n_val_positives": 378
+        },
+        {
+          "train_days": 14,
+          "ml_auc": 0.8195,
+          "gauss_auc": 0.528,
+          "ml_wins": true,
+          "n_train_meals": 23,
+          "n_val_positives": 378
+        },
+        {
+          "train_days": 30,
+          "ml_auc": 0.8758,
+          "gauss_auc": 0.5109,
+          "ml_wins": true,
+          "n_train_meals": 59,
+          "n_val_positives": 354
+        },
+        {
+          "train_days": 60,
+          "ml_auc": 0.8995,
+          "gauss_auc": 0.5098,
+          "ml_wins": true,
+          "n_train_meals": 118,
+          "n_val_positives": 300
+        },
+        {
+          "train_days": 90,
+          "ml_auc": 0.94,
+          "gauss_auc": 0.5341,
+          "ml_wins": true,
+          "n_train_meals": 168,
+          "n_val_positives": 282
+        }
+      ],
+      "crossover_day": 3
+    },
+    "d": {
+      "curves": [
+        {
+          "train_days": 3,
+          "ml_auc": 0.7247,
+          "gauss_auc": 0.5805,
+          "ml_wins": true,
+          "n_train_meals": 5,
+          "n_val_positives": 174
+        },
+        {
+          "train_days": 7,
+          "ml_auc": 0.7588,
+          "gauss_auc": 0.6079,
+          "ml_wins": true,
+          "n_train_meals": 9,
+          "n_val_positives": 180
+        },
+        {
+          "train_days": 14,
+          "ml_auc": 0.8318,
+          "gauss_auc": 0.5263,
+          "ml_wins": true,
+          "n_train_meals": 17,
+          "n_val_positives": 222
+        },
+        {
+          "train_days": 30,
+          "ml_auc": 0.9326,
+          "gauss_auc": 0.6008,
+          "ml_wins": true,
+          "n_train_meals": 29,
+          "n_val_positives": 282
+        },
+        {
+          "train_days": 60,
+          "ml_auc": 0.9996,
+          "gauss_auc": 0.5232,
+          "ml_wins": true,
+          "n_train_meals": 76,
+          "n_val_positives": 24
+        },
+        {
+          "train_days": 90,
+          "ml_auc": 0.9437,
+          "gauss_auc": 0.5034,
+          "ml_wins": true,
+          "n_train_meals": 80,
+          "n_val_positives": 252
+        }
+      ],
+      "crossover_day": 3
+    },
+    "e": {
+      "curves": [
+        {
+          "train_days": 3,
+          "ml_auc": 0.6101,
+          "gauss_auc": 0.4664,
+          "ml_wins": true,
+          "n_train_meals": 7,
+          "n_val_positives": 438
+        },
+        {
+          "train_days": 7,
+          "ml_auc": 0.704,
+          "gauss_auc": 0.4654,
+          "ml_wins": true,
+          "n_train_meals": 15,
+          "n_val_positives": 444
+        },
+        {
+          "train_days": 14,
+          "ml_auc": 0.8192,
+          "gauss_auc": 0.5891,
+          "ml_wins": true,
+          "n_train_meals": 31,
+          "n_val_positives": 414
+        },
+        {
+          "train_days": 30,
+          "ml_auc": 0.8939,
+          "gauss_auc": 0.5703,
+          "ml_wins": true,
+          "n_train_meals": 74,
+          "n_val_positives": 276
+        },
+        {
+          "train_days": 60,
+          "ml_auc": 0.9056,
+          "gauss_auc": 0.522,
+          "ml_wins": true,
+          "n_train_meals": 120,
+          "n_val_positives": 324
+        },
+        {
+          "train_days": 90,
+          "ml_auc": 0.9061,
+          "gauss_auc": 0.565,
+          "ml_wins": true,
+          "n_train_meals": 174,
+          "n_val_positives": 276
+        }
+      ],
+      "crossover_day": 3
+    },
+    "f": {
+      "curves": [
+        {
+          "train_days": 3,
+          "ml_auc": 0.7547,
+          "gauss_auc": 0.4775,
+          "ml_wins": true,
+          "n_train_meals": 10,
+          "n_val_positives": 444
+        },
+        {
+          "train_days": 7,
+          "ml_auc": 0.8147,
+          "gauss_auc": 0.5002,
+          "ml_wins": true,
+          "n_train_meals": 12,
+          "n_val_positives": 480
+        },
+        {
+          "train_days": 14,
+          "ml_auc": 0.8689,
+          "gauss_auc": 0.4754,
+          "ml_wins": true,
+          "n_train_meals": 28,
+          "n_val_positives": 456
+        },
+        {
+          "train_days": 30,
+          "ml_auc": 0.9464,
+          "gauss_auc": 0.4562,
+          "ml_wins": true,
+          "n_train_meals": 77,
+          "n_val_positives": 372
+        },
+        {
+          "train_days": 60,
+          "ml_auc": 0.9128,
+          "gauss_auc": 0.4656,
+          "ml_wins": true,
+          "n_train_meals": 139,
+          "n_val_positives": 402
+        },
+        {
+          "train_days": 90,
+          "ml_auc": 0.9099,
+          "gauss_auc": 0.4971,
+          "ml_wins": true,
+          "n_train_meals": 206,
+          "n_val_positives": 352
+        }
+      ],
+      "crossover_day": 3
+    },
+    "g": {
+      "curves": [
+        {
+          "train_days": 3,
+          "ml_auc": 0.7423,
+          "gauss_auc": 0.5061,
+          "ml_wins": true,
+          "n_train_meals": 15,
+          "n_val_positives": 612
+        },
+        {
+          "train_days": 7,
+          "ml_auc": 0.8715,
+          "gauss_auc": 0.5079,
+          "ml_wins": true,
+          "n_train_meals": 28,
+          "n_val_positives": 600
+        },
+        {
+          "train_days": 14,
+          "ml_auc": 0.8525,
+          "gauss_auc": 0.4771,
+          "ml_wins": true,
+          "n_train_meals": 53,
+          "n_val_positives": 576
+        },
+        {
+          "train_days": 30,
+          "ml_auc": 0.8719,
+          "gauss_auc": 0.4607,
+          "ml_wins": true,
+          "n_train_meals": 106,
+          "n_val_positives": 610
+        },
+        {
+          "train_days": 60,
+          "ml_auc": 0.9287,
+          "gauss_auc": 0.4571,
+          "ml_wins": true,
+          "n_train_meals": 208,
+          "n_val_positives": 544
+        },
+        {
+          "train_days": 90,
+          "ml_auc": 0.9057,
+          "gauss_auc": 0.4773,
+          "ml_wins": true,
+          "n_train_meals": 299,
+          "n_val_positives": 686
+        }
+      ],
+      "crossover_day": 3
+    },
+    "h": {
+      "curves": [
+        {
+          "train_days": 3,
+          "ml_auc": 0.7398,
+          "gauss_auc": 0.5342,
+          "ml_wins": true,
+          "n_train_meals": 6,
+          "n_val_positives": 306
+        },
+        {
+          "train_days": 7,
+          "ml_auc": 0.8103,
+          "gauss_auc": 0.54,
+          "ml_wins": true,
+          "n_train_meals": 13,
+          "n_val_positives": 306
+        },
+        {
+          "train_days": 14,
+          "ml_auc": 0.7979,
+          "gauss_auc": 0.5255,
+          "ml_wins": true,
+          "n_train_meals": 24,
+          "n_val_positives": 306
+        },
+        {
+          "train_days": 30,
+          "ml_auc": 0.8584,
+          "gauss_auc": 0.4519,
+          "ml_wins": true,
+          "n_train_meals": 51,
+          "n_val_positives": 413
+        },
+        {
+          "train_days": 60,
+          "ml_auc": 0.8711,
+          "gauss_auc": 0.4922,
+          "ml_wins": true,
+          "n_train_meals": 120,
+          "n_val_positives": 414
+        },
+        {
+          "train_days": 90,
+          "ml_auc": 0.7952,
+          "gauss_auc": 0.5438,
+          "ml_wins": true,
+          "n_train_meals": 189,
+          "n_val_positives": 198
+        }
+      ],
+      "crossover_day": 3
+    },
+    "i": {
+      "curves": [
+        {
+          "train_days": 3,
+          "ml_auc": 0.8865,
+          "gauss_auc": 0.5938,
+          "ml_wins": true,
+          "n_train_meals": 5,
+          "n_val_positives": 156
+        },
+        {
+          "train_days": 7,
+          "ml_auc": 0.9369,
+          "gauss_auc": 0.6286,
+          "ml_wins": true,
+          "n_train_meals": 9,
+          "n_val_positives": 166
+        },
+        {
+          "train_days": 14,
+          "ml_auc": 0.9342,
+          "gauss_auc": 0.6879,
+          "ml_wins": true,
+          "n_train_meals": 14,
+          "n_val_positives": 186
+        },
+        {
+          "train_days": 30,
+          "ml_auc": 0.947,
+          "gauss_auc": 0.6743,
+          "ml_wins": true,
+          "n_train_meals": 28,
+          "n_val_positives": 180
+        },
+        {
+          "train_days": 60,
+          "ml_auc": 0.962,
+          "gauss_auc": 0.583,
+          "ml_wins": true,
+          "n_train_meals": 58,
+          "n_val_positives": 78
+        },
+        {
+          "train_days": 90,
+          "ml_auc": 0.9716,
+          "gauss_auc": 0.5239,
+          "ml_wins": true,
+          "n_train_meals": 71,
+          "n_val_positives": 120
+        }
+      ],
+      "crossover_day": 3
+    },
+    "j": {
+      "curves": [
+        {
+          "train_days": 3,
+          "ml_auc": 0.5999,
+          "gauss_auc": 0.5949,
+          "ml_wins": true,
+          "n_train_meals": 4,
+          "n_val_positives": 504
+        },
+        {
+          "train_days": 7,
+          "ml_auc": 0.591,
+          "gauss_auc": 0.5878,
+          "ml_wins": true,
+          "n_train_meals": 8,
+          "n_val_positives": 552
+        },
+        {
+          "train_days": 14,
+          "ml_auc": 0.9636,
+          "gauss_auc": 0.7369,
+          "ml_wins": true,
+          "n_train_meals": 30,
+          "n_val_positives": 534
+        },
+        {
+          "train_days": 30,
+          "ml_auc": 0.969,
+          "gauss_auc": 0.711,
+          "ml_wins": true,
+          "n_train_meals": 78,
+          "n_val_positives": 532
+        },
+        {
+          "train_days": 60,
+          "ml_auc": 0.9888,
+          "gauss_auc": 0.7686,
+          "ml_wins": true,
+          "n_train_meals": 167,
+          "n_val_positives": 12
+        }
+      ],
+      "crossover_day": 3
+    },
+    "k": {
+      "curves": [
+        {
+          "train_days": 3,
+          "ml_auc": 0.5579,
+          "gauss_auc": 0.5391,
+          "ml_wins": true,
+          "n_train_meals": 4,
+          "n_val_positives": 312
+        },
+        {
+          "train_days": 7,
+          "ml_auc": 0.832,
+          "gauss_auc": 0.5634,
+          "ml_wins": true,
+          "n_train_meals": 10,
+          "n_val_positives": 312
+        },
+        {
+          "train_days": 14,
+          "ml_auc": 0.9057,
+          "gauss_auc": 0.5733,
+          "ml_wins": true,
+          "n_train_meals": 16,
+          "n_val_positives": 312
+        },
+        {
+          "train_days": 30,
+          "ml_auc": 0.9624,
+          "gauss_auc": 0.4888,
+          "ml_wins": true,
+          "n_train_meals": 53,
+          "n_val_positives": 282
+        },
+        {
+          "train_days": 60,
+          "ml_auc": 0.9552,
+          "gauss_auc": 0.5414,
+          "ml_wins": true,
+          "n_train_meals": 100,
+          "n_val_positives": 294
+        },
+        {
+          "train_days": 90,
+          "ml_auc": 0.9708,
+          "gauss_auc": 0.4571,
+          "ml_wins": true,
+          "n_train_meals": 149,
+          "n_val_positives": 270
+        }
+      ],
+      "crossover_day": 3
+    }
+  },
+  "median_crossover_days": 3
+}

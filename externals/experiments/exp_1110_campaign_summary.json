@@ -1,0 +1,432 @@
+{
+  "experiment": "EXP-1110",
+  "name": "Campaign Summary",
+  "status": "OK",
+  "detail": "Recommendation: deploy_xgboost",
+  "results": {
+    "periodicity": {
+      "significant_24h_count": 0,
+      "total_patients": 11,
+      "mean_acf_24h": 0.0031,
+      "mean_snr_24h": 1.0
+    },
+    "phase_stability": {
+      "mean_stability_score": 27.2
+    },
+    "regularity": {
+      "mean_composite": 48.5,
+      "regular_patients": [],
+      "moderate_patients": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "i",
+        "j",
+        "k"
+      ],
+      "irregular_patients": []
+    },
+    "xgboost": {
+      "mean_auc_30": 0.8611,
+      "mean_lift_30": 0.2564
+    },
+    "point_process": {
+      "status": "OK",
+      "detail": "LSTM MAE=384.7min vs baseline=401.7min, wins 9/11",
+      "results": {
+        "a": {
+          "n_meals": 386,
+          "n_sequences": 377,
+          "lstm_mae_hours": 6.614,
+          "lstm_mae_minutes": 396.8,
+          "baseline_mae_hours": 6.847,
+          "baseline_mae_minutes": 410.8,
+          "improvement_minutes": 14.0,
+          "improvement_pct": 3.4,
+          "mean_interval_h": 10.04
+        },
+        "b": {
+          "n_meals": 315,
+          "n_sequences": 306,
+          "lstm_mae_hours": 5.249,
+          "lstm_mae_minutes": 314.9,
+          "baseline_mae_hours": 6.234,
+          "baseline_mae_minutes": 374.0,
+          "improvement_minutes": 59.1,
+          "improvement_pct": 15.8,
+          "mean_interval_h": 11.31
+        },
+        "c": {
+          "n_meals": 352,
+          "n_sequences": 343,
+          "lstm_mae_hours": 6.896,
+          "lstm_mae_minutes": 413.7,
+          "baseline_mae_hours": 6.896,
+          "baseline_mae_minutes": 413.8,
+          "improvement_minutes": 0.0,
+          "improvement_pct": 0.0,
+          "mean_interval_h": 10.16
+        },
+        "d": {
+          "n_meals": 296,
+          "n_sequences": 287,
+          "lstm_mae_hours": 7.871,
+          "lstm_mae_minutes": 472.2,
+          "baseline_mae_hours": 7.991,
+          "baseline_mae_minutes": 479.5,
+          "improvement_minutes": 7.2,
+          "improvement_pct": 1.5,
+          "mean_interval_h": 10.57
+        },
+        "e": {
+          "n_meals": 182,
+          "n_sequences": 173,
+          "lstm_mae_hours": 6.946,
+          "lstm_mae_minutes": 416.8,
+          "baseline_mae_hours": 7.154,
+          "baseline_mae_minutes": 429.2,
+          "improvement_minutes": 12.4,
+          "improvement_pct": 2.9,
+          "mean_interval_h": 13.36
+        },
+        "f": {
+          "n_meals": 376,
+          "n_sequences": 367,
+          "lstm_mae_hours": 4.74,
+          "lstm_mae_minutes": 284.4,
+          "baseline_mae_hours": 5.933,
+          "baseline_mae_minutes": 356.0,
+          "improvement_minutes": 71.6,
+          "improvement_pct": 20.1,
+          "mean_interval_h": 10.35
+        },
+        "g": {
+          "n_meals": 418,
+          "n_sequences": 409,
+          "lstm_mae_hours": 5.185,
+          "lstm_mae_minutes": 311.1,
+          "baseline_mae_hours": 5.656,
+          "baseline_mae_minutes": 339.3,
+          "improvement_minutes": 28.2,
+          "improvement_pct": 8.3,
+          "mean_interval_h": 9.56
+        },
+        "h": {
+          "n_meals": 154,
+          "n_sequences": 145,
+          "lstm_mae_hours": 6.437,
+          "lstm_mae_minutes": 386.2,
+          "baseline_mae_hours": 6.605,
+          "baseline_mae_minutes": 396.3,
+          "improvement_minutes": 10.0,
+          "improvement_pct": 2.5,
+          "mean_interval_h": 9.86
+        },
+        "i": {
+          "n_meals": 156,
+          "n_sequences": 147,
+          "lstm_mae_hours": 7.177,
+          "lstm_mae_minutes": 430.6,
+          "baseline_mae_hours": 6.767,
+          "baseline_mae_minutes": 406.0,
+          "improvement_minutes": -24.6,
+          "improvement_pct": -6.1,
+          "mean_interval_h": 17.77
+        },
+        "j": {
+          "n_meals": 140,
+          "n_sequences": 131,
+          "lstm_mae_hours": 6.256,
+          "lstm_mae_minutes": 375.4,
+          "baseline_mae_hours": 6.217,
+          "baseline_mae_minutes": 373.0,
+          "improvement_minutes": -2.4,
+          "improvement_pct": -0.6,
+          "mean_interval_h": 9.3
+        },
+        "k": {
+          "n_meals": 299,
+          "n_sequences": 290,
+          "lstm_mae_hours": 7.152,
+          "lstm_mae_minutes": 429.1,
+          "baseline_mae_hours": 7.345,
+          "baseline_mae_minutes": 440.7,
+          "improvement_minutes": 11.6,
+          "improvement_pct": 2.6,
+          "mean_interval_h": 10.03
+        }
+      }
+    },
+    "eating_soon": {
+      "status": "OK",
+      "detail": "Eating-soon AUC=0.7355, Recall@Prec70=0.0004",
+      "results": {
+        "a": {
+          "n_meals": 386,
+          "auc": 0.7157,
+          "recall_at_prec70": 0,
+          "best_threshold": 0.5,
+          "positive_rate": 0.0428,
+          "feature_importance": {
+            "hour_sin": 0.1358,
+            "hour_cos": 0.0772,
+            "min_since_meal": 0.1298,
+            "glucose": 0.1137,
+            "trend_15": 0.0413,
+            "trend_30": 0.0991,
+            "net_flux": 0.088,
+            "supply": 0.1333,
+            "demand": 0.068,
+            "carb_supply": 0.009,
+            "throughput": 0.0627,
+            "dow": 0.0421
+          },
+          "mean_lead_time_min": 0,
+          "lead_time_coverage": 0.0
+        },
+        "b": {
+          "n_meals": 315,
+          "auc": 0.7344,
+          "recall_at_prec70": 0,
+          "best_threshold": 0.5,
+          "positive_rate": 0.0434,
+          "feature_importance": {
+            "hour_sin": 0.084,
+            "hour_cos": 0.09,
+            "min_since_meal": 0.1095,
+            "glucose": 0.0927,
+            "trend_15": 0.0394,
+            "trend_30": 0.0495,
+            "net_flux": 0.2685,
+            "supply": 0.0584,
+            "demand": 0.0844,
+            "carb_supply": 0.0338,
+            "throughput": 0.0602,
+            "dow": 0.0296
+          },
+          "mean_lead_time_min": 0,
+          "lead_time_coverage": 0.0
+        },
+        "c": {
+          "n_meals": 352,
+          "auc": 0.6595,
+          "recall_at_prec70": 0,
+          "best_threshold": 0.5,
+          "positive_rate": 0.0376,
+          "feature_importance": {
+            "hour_sin": 0.1082,
+            "hour_cos": 0.0922,
+            "min_since_meal": 0.1132,
+            "glucose": 0.1538,
+            "trend_15": 0.0682,
+            "trend_30": 0.0744,
+            "net_flux": 0.1135,
+            "supply": 0.103,
+            "demand": 0.0494,
+            "carb_supply": 0.0103,
+            "throughput": 0.0691,
+            "dow": 0.0447
+          },
+          "mean_lead_time_min": 0,
+          "lead_time_coverage": 0.0
+        },
+        "d": {
+          "n_meals": 296,
+          "auc": 0.7451,
+          "recall_at_prec70": 0,
+          "best_threshold": 0.5,
+          "positive_rate": 0.0353,
+          "feature_importance": {
+            "hour_sin": 0.0723,
+            "hour_cos": 0.0853,
+            "min_since_meal": 0.1085,
+            "glucose": 0.1313,
+            "trend_15": 0.0584,
+            "trend_30": 0.1056,
+            "net_flux": 0.1038,
+            "supply": 0.1633,
+            "demand": 0.0659,
+            "carb_supply": 0.0133,
+            "throughput": 0.0677,
+            "dow": 0.0245
+          },
+          "mean_lead_time_min": 0,
+          "lead_time_coverage": 0.0
+        },
+        "e": {
+          "n_meals": 182,
+          "auc": 0.7822,
+          "recall_at_prec70": 0.0042,
+          "best_threshold": 0.7029,
+          "positive_rate": 0.0264,
+          "feature_importance": {
+            "hour_sin": 0.098,
+            "hour_cos": 0.0842,
+            "min_since_meal": 0.1261,
+            "glucose": 0.0844,
+            "trend_15": 0.0723,
+            "trend_30": 0.0896,
+            "net_flux": 0.1955,
+            "supply": 0.1053,
+            "demand": 0.062,
+            "carb_supply": 0.0012,
+            "throughput": 0.0586,
+            "dow": 0.0228
+          },
+          "mean_lead_time_min": 0,
+          "lead_time_coverage": 0.0
+        },
+        "f": {
+          "n_meals": 376,
+          "auc": 0.6856,
+          "recall_at_prec70": 0,
+          "best_threshold": 0.5,
+          "positive_rate": 0.0561,
+          "feature_importance": {
+            "hour_sin": 0.1008,
+            "hour_cos": 0.0951,
+            "min_since_meal": 0.0982,
+            "glucose": 0.1564,
+            "trend_15": 0.0618,
+            "trend_30": 0.0719,
+            "net_flux": 0.0704,
+            "supply": 0.1221,
+            "demand": 0.0931,
+            "carb_supply": 0.0125,
+            "throughput": 0.0936,
+            "dow": 0.0239
+          },
+          "mean_lead_time_min": 0,
+          "lead_time_coverage": 0.0
+        },
+        "g": {
+          "n_meals": 418,
+          "auc": 0.7281,
+          "recall_at_prec70": 0,
+          "best_threshold": 0.5,
+          "positive_rate": 0.0606,
+          "feature_importance": {
+            "hour_sin": 0.1027,
+            "hour_cos": 0.0965,
+            "min_since_meal": 0.0991,
+            "glucose": 0.1125,
+            "trend_15": 0.0575,
+            "trend_30": 0.0741,
+            "net_flux": 0.0984,
+            "supply": 0.1557,
+            "demand": 0.0624,
+            "carb_supply": 0.0568,
+            "throughput": 0.0535,
+            "dow": 0.0308
+          },
+          "mean_lead_time_min": 0,
+          "lead_time_coverage": 0.0
+        },
+        "h": {
+          "n_meals": 154,
+          "auc": 0.6464,
+          "recall_at_prec70": 0,
+          "best_threshold": 0.5,
+          "positive_rate": 0.0405,
+          "feature_importance": {
+            "hour_sin": 0.0852,
+            "hour_cos": 0.1158,
+            "min_since_meal": 0.1116,
+            "glucose": 0.186,
+            "trend_15": 0.0555,
+            "trend_30": 0.0979,
+            "net_flux": 0.0741,
+            "supply": 0.0928,
+            "demand": 0.0474,
+            "carb_supply": 0.0133,
+            "throughput": 0.0631,
+            "dow": 0.0572
+          },
+          "mean_lead_time_min": 0,
+          "lead_time_coverage": 0.0
+        },
+        "i": {
+          "n_meals": 156,
+          "auc": 0.8171,
+          "recall_at_prec70": 0,
+          "best_threshold": 0.5,
+          "positive_rate": 0.0231,
+          "feature_importance": {
+            "hour_sin": 0.0778,
+            "hour_cos": 0.0552,
+            "min_since_meal": 0.1318,
+            "glucose": 0.0781,
+            "trend_15": 0.0821,
+            "trend_30": 0.091,
+            "net_flux": 0.1246,
+            "supply": 0.1583,
+            "demand": 0.081,
+            "carb_supply": 0.0106,
+            "throughput": 0.0885,
+            "dow": 0.021
+          },
+          "mean_lead_time_min": 0,
+          "lead_time_coverage": 0.0
+        },
+        "j": {
+          "n_meals": 140,
+          "auc": 0.8307,
+          "recall_at_prec70": 0,
+          "best_threshold": 0.5,
+          "positive_rate": 0.0426,
+          "feature_importance": {
+            "hour_sin": 0.1008,
+            "hour_cos": 0.044,
+            "min_since_meal": 0.1181,
+            "glucose": 0.0966,
+            "trend_15": 0.0471,
+            "trend_30": 0.0686,
+            "net_flux": 0.1512,
+            "supply": 0.1499,
+            "demand": 0.069,
+            "carb_supply": 0.0371,
+            "throughput": 0.0725,
+            "dow": 0.0451
+          },
+          "mean_lead_time_min": 0,
+          "lead_time_coverage": 0.0
+        },
+        "k": {
+          "n_meals": 299,
+          "auc": 0.7454,
+          "recall_at_prec70": 0,
+          "best_threshold": 0.5,
+          "positive_rate": 0.0244,
+          "feature_importance": {
+            "hour_sin": 0.0633,
+            "hour_cos": 0.1065,
+            "min_since_meal": 0.1229,
+            "glucose": 0.0718,
+            "trend_15": 0.0695,
+            "trend_30": 0.1114,
+            "net_flux": 0.1255,
+            "supply": 0.0898,
+            "demand": 0.0863,
+            "carb_supply": 0.0128,
+            "throughput": 0.0896,
+            "dow": 0.0507
+          },
+          "mean_lead_time_min": 0,
+          "lead_time_coverage": 0.0
+        }
+      }
+    },
+    "personal_vs_pooled": {
+      "personal_wins": 10,
+      "total": 11,
+      "mean_personal_auc": 0.8018,
+      "mean_pooled_auc": 0.7777
+    }
+  },
+  "recommendation": "deploy_xgboost"
+}
