@@ -34,8 +34,9 @@ from cgmencode.continuous_pk import build_continuous_pk_features
 from cgmencode.metrics import clarke_zone
 from cgmencode.exp_pk_forecast_v14 import (
     PKGroupedEncoder, mask_future_pk, PK_NORMS, GLUCOSE_SCALE,
-    PRODUCTION_SEEDS,
 )
+
+PRODUCTION_SEEDS = [42, 123, 456, 789, 1024]
 
 PATIENTS = list('abcdefghijk')
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -134,6 +135,10 @@ def build_verification_windows(patient_id, window_size, stride=12):
             isf = 50.0
     else:
         isf = 50.0
+
+    # Convert mmol/L → mg/dL if needed (matches exp_pk_forecast_v14.py:92)
+    if isf < 15:
+        isf *= 18.0182
 
     # Apply ISF normalization to glucose channel
     isf_factor = GLUCOSE_SCALE / isf
