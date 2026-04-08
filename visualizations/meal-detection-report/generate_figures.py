@@ -484,7 +484,7 @@ def fig06_phase_lag():
          'Announced Meal\n(bolus precedes carbs)', None),
         (axes[1], supply_uam, demand_uam,
          'Unannounced Meal (UAM)\n(AID reacts after glucose rises)',
-         '35-min gap\n= UAM classifier\nfeature (EXP-471)'),
+         '~44-min gap\n= UAM classifier\nfeature (EXP-471)'),
     ]:
         ax.plot(t, supply, color=C_SUPPLY, linewidth=2, label='Supply')
         ax.plot(t, demand, color=C_DEMAND, linewidth=2, label='Demand')
@@ -494,10 +494,17 @@ def fig06_phase_lag():
         ax.axvline(d_peak, color=C_DEMAND, linestyle=':', alpha=0.5)
         lag = d_peak - s_peak
         y_arrow = max(np.max(demand), np.max(supply)) * 0.55
-        ax.annotate('', xy=(d_peak, y_arrow), xytext=(s_peak, y_arrow),
-                    arrowprops=dict(arrowstyle='<->', color='black', lw=2))
-        ax.text((s_peak + d_peak) / 2, y_arrow * 1.08,
-                f'{lag:.0f} min', ha='center', fontsize=12, fontweight='bold')
+        # For short lags, offset the label above the arrow to avoid cramping
+        if abs(d_peak - s_peak) < 20:
+            ax.annotate('', xy=(d_peak, y_arrow), xytext=(s_peak, y_arrow),
+                        arrowprops=dict(arrowstyle='<->', color='black', lw=2))
+            ax.text((s_peak + d_peak) / 2, y_arrow * 1.18,
+                    f'{lag:.0f} min', ha='center', fontsize=12, fontweight='bold')
+        else:
+            ax.annotate('', xy=(d_peak, y_arrow), xytext=(s_peak, y_arrow),
+                        arrowprops=dict(arrowstyle='<->', color='black', lw=2))
+            ax.text((s_peak + d_peak) / 2, y_arrow * 1.08,
+                    f'{lag:.0f} min', ha='center', fontsize=12, fontweight='bold')
         ax.set_title(title, fontsize=12, fontweight='bold')
         ax.set_ylabel('Flux (mg/dL per 5min)', fontsize=11)
         ax.set_xlabel('Minutes from Meal', fontsize=11)
@@ -559,7 +566,7 @@ def fig07_precondition_gating():
     for i in range(len(metrics)):
         diff = ready_days[i] - all_days[i]
         pct = '+' if diff > 0 else ''
-        ax.annotate(f'{pct}{diff}', xy=(x[i], max(all_days[i], ready_days[i]) + 5),
+        ax.annotate(f'{pct}{diff:.4g}', xy=(x[i], max(all_days[i], ready_days[i]) + 5),
                     fontsize=10, ha='center', color='#8e44ad', fontweight='bold')
 
     ax.set_xticks(x)
@@ -665,10 +672,11 @@ def fig08_live_split_day():
             label=f'{len(peaks)} meals detected', zorder=5)
     ax.set_ylabel('Demand\n(mg/dL/5min)', fontsize=11)
     ax.legend(fontsize=9)
-    # Annotate peaks
+    # Annotate peaks (offset labels above markers to avoid overlap)
     for p in peaks:
-        ax.annotate(f'{hours[p]:.0f}h', (hours[p], dem_smooth[p] + 0.2),
-                    fontsize=9, ha='center', fontweight='bold')
+        ax.annotate(f'{hours[p]:.0f}h', (hours[p], dem_smooth[p] + 0.5),
+                    fontsize=9, ha='center', fontweight='bold',
+                    xytext=(0, 8), textcoords='offset points')
 
     # Panel 4: Throughput (product)
     ax = axes[3]
@@ -773,8 +781,12 @@ def fig10_dessert_detection():
     ax.legend(fontsize=10, loc='upper right')
     ax.annotate('Dinner\npeak', (25, np.max(dinner_carb)*0.8), fontsize=9,
                 ha='center')
-    ax.annotate('Dessert\npeak', (148, np.max(dessert_demand)*0.6 + 2),
-                fontsize=9, ha='center', color='#8e44ad')
+    # Position dessert label above curves with an arrow pointing down
+    dessert_y = total_supply[int(150)] if 150 < len(total_supply) else 2.5
+    ax.annotate('Dessert\npeak', xy=(140, dessert_y),
+                xytext=(190, np.max(total_supply) * 0.95),
+                fontsize=9, ha='center', color='#8e44ad',
+                arrowprops=dict(arrowstyle='->', color='#8e44ad', lw=1.2))
 
     ax = axes[1]
     ax.fill_between(t, product, alpha=0.3, color=C_PRODUCT)
