@@ -1,0 +1,408 @@
+{
+  "experiment_id": "EXP-1143",
+  "title": "Meal Frequency-Based Suppression",
+  "status": "OK",
+  "per_patient": {
+    "a": {
+      "threshold": 0.3,
+      "n_meals": 172,
+      "median_imi_min": 1100.0,
+      "p25_imi_min": 492.5,
+      "fixed_120": {
+        "alerts_per_day": 0.67,
+        "ppv": 0.1667,
+        "sensitivity": 0.0196,
+        "missed_meals": 267,
+        "missed_rate": 0.8725
+      },
+      "median_75": {
+        "alerts_per_day": 0.48,
+        "ppv": 0.2308,
+        "sensitivity": 0.0196,
+        "missed_meals": 275,
+        "missed_rate": 0.8987
+      },
+      "p25": {
+        "alerts_per_day": 0.52,
+        "ppv": 0.2143,
+        "sensitivity": 0.0196,
+        "missed_meals": 273,
+        "missed_rate": 0.8922
+      },
+      "adaptive": {
+        "alerts_per_day": 0.65,
+        "ppv": 0.1714,
+        "sensitivity": 0.0196,
+        "missed_meals": 267,
+        "missed_rate": 0.8725
+      }
+    },
+    "b": {
+      "threshold": 0.3,
+      "n_meals": 605,
+      "median_imi_min": 332.5,
+      "p25_imi_min": 185.0,
+      "fixed_120": {
+        "alerts_per_day": 1.5,
+        "ppv": 0.2099,
+        "sensitivity": 0.0155,
+        "missed_meals": 988,
+        "missed_rate": 0.8998
+      },
+      "median_75": {
+        "alerts_per_day": 1.26,
+        "ppv": 0.2353,
+        "sensitivity": 0.0146,
+        "missed_meals": 995,
+        "missed_rate": 0.9062
+      },
+      "p25": {
+        "alerts_per_day": 1.41,
+        "ppv": 0.2368,
+        "sensitivity": 0.0164,
+        "missed_meals": 989,
+        "missed_rate": 0.9007
+      },
+      "adaptive": {
+        "alerts_per_day": 1.46,
+        "ppv": 0.2025,
+        "sensitivity": 0.0146,
+        "missed_meals": 988,
+        "missed_rate": 0.8998
+      }
+    },
+    "c": {
+      "threshold": 0.35,
+      "n_meals": 312,
+      "median_imi_min": 640.0,
+      "p25_imi_min": 305.0,
+      "fixed_120": {
+        "alerts_per_day": 0.81,
+        "ppv": 0.3636,
+        "sensitivity": 0.0293,
+        "missed_meals": 442,
+        "missed_rate": 0.8095
+      },
+      "median_75": {
+        "alerts_per_day": 0.76,
+        "ppv": 0.3902,
+        "sensitivity": 0.0293,
+        "missed_meals": 446,
+        "missed_rate": 0.8168
+      },
+      "p25": {
+        "alerts_per_day": 0.76,
+        "ppv": 0.3902,
+        "sensitivity": 0.0293,
+        "missed_meals": 446,
+        "missed_rate": 0.8168
+      },
+      "adaptive": {
+        "alerts_per_day": 0.8,
+        "ppv": 0.3721,
+        "sensitivity": 0.0293,
+        "missed_meals": 442,
+        "missed_rate": 0.8095
+      }
+    },
+    "d": {
+      "threshold": 0.3,
+      "n_meals": 225,
+      "median_imi_min": 702.5,
+      "p25_imi_min": 338.8,
+      "fixed_120": {
+        "alerts_per_day": 1.35,
+        "ppv": 0.2055,
+        "sensitivity": 0.0266,
+        "missed_meals": 462,
+        "missed_rate": 0.8191
+      },
+      "median_75": {
+        "alerts_per_day": 1.04,
+        "ppv": 0.25,
+        "sensitivity": 0.0248,
+        "missed_meals": 475,
+        "missed_rate": 0.8422
+      },
+      "p25": {
+        "alerts_per_day": 1.15,
+        "ppv": 0.2097,
+        "sensitivity": 0.023,
+        "missed_meals": 469,
+        "missed_rate": 0.8316
+      },
+      "adaptive": {
+        "alerts_per_day": 1.48,
+        "ppv": 0.2375,
+        "sensitivity": 0.0337,
+        "missed_meals": 440,
+        "missed_rate": 0.7801
+      }
+    },
+    "e": {
+      "threshold": 0.75,
+      "n_meals": 297,
+      "median_imi_min": 515.0,
+      "p25_imi_min": 296.2,
+      "fixed_120": {
+        "alerts_per_day": 0.04,
+        "ppv": 0.0,
+        "sensitivity": 0.0,
+        "missed_meals": 552,
+        "missed_rate": 0.9892
+      },
+      "median_75": {
+        "alerts_per_day": 0.04,
+        "ppv": 0.0,
+        "sensitivity": 0.0,
+        "missed_meals": 552,
+        "missed_rate": 0.9892
+      },
+      "p25": {
+        "alerts_per_day": 0.04,
+        "ppv": 0.0,
+        "sensitivity": 0.0,
+        "missed_meals": 552,
+        "missed_rate": 0.9892
+      },
+      "adaptive": {
+        "alerts_per_day": 0.04,
+        "ppv": 0.0,
+        "sensitivity": 0.0,
+        "missed_meals": 552,
+        "missed_rate": 0.9892
+      }
+    },
+    "f": {
+      "threshold": 0.75,
+      "n_meals": 388,
+      "median_imi_min": 455.0,
+      "p25_imi_min": 276.2,
+      "fixed_120": {
+        "alerts_per_day": 0.13,
+        "ppv": 0.2857,
+        "sensitivity": 0.0031,
+        "missed_meals": 645,
+        "missed_rate": 0.9862
+      },
+      "median_75": {
+        "alerts_per_day": 0.13,
+        "ppv": 0.2857,
+        "sensitivity": 0.0031,
+        "missed_meals": 645,
+        "missed_rate": 0.9862
+      },
+      "p25": {
+        "alerts_per_day": 0.13,
+        "ppv": 0.2857,
+        "sensitivity": 0.0031,
+        "missed_meals": 645,
+        "missed_rate": 0.9862
+      },
+      "adaptive": {
+        "alerts_per_day": 0.13,
+        "ppv": 0.2857,
+        "sensitivity": 0.0031,
+        "missed_meals": 645,
+        "missed_rate": 0.9862
+      }
+    },
+    "g": {
+      "threshold": 0.3,
+      "n_meals": 571,
+      "median_imi_min": 317.5,
+      "p25_imi_min": 225.0,
+      "fixed_120": {
+        "alerts_per_day": 2.57,
+        "ppv": 0.2158,
+        "sensitivity": 0.0351,
+        "missed_meals": 623,
+        "missed_rate": 0.7295
+      },
+      "median_75": {
+        "alerts_per_day": 2.22,
+        "ppv": 0.225,
+        "sensitivity": 0.0316,
+        "missed_meals": 642,
+        "missed_rate": 0.7518
+      },
+      "p25": {
+        "alerts_per_day": 2.28,
+        "ppv": 0.2276,
+        "sensitivity": 0.0328,
+        "missed_meals": 635,
+        "missed_rate": 0.7436
+      },
+      "adaptive": {
+        "alerts_per_day": 2.98,
+        "ppv": 0.2733,
+        "sensitivity": 0.0515,
+        "missed_meals": 581,
+        "missed_rate": 0.6803
+      }
+    },
+    "h": {
+      "threshold": 0.3,
+      "n_meals": 354,
+      "median_imi_min": 492.5,
+      "p25_imi_min": 281.2,
+      "fixed_120": {
+        "alerts_per_day": 0.74,
+        "ppv": 0.225,
+        "sensitivity": 0.0115,
+        "missed_meals": 728,
+        "missed_rate": 0.9262
+      },
+      "median_75": {
+        "alerts_per_day": 0.65,
+        "ppv": 0.2571,
+        "sensitivity": 0.0115,
+        "missed_meals": 731,
+        "missed_rate": 0.93
+      },
+      "p25": {
+        "alerts_per_day": 0.72,
+        "ppv": 0.2308,
+        "sensitivity": 0.0115,
+        "missed_meals": 722,
+        "missed_rate": 0.9186
+      },
+      "adaptive": {
+        "alerts_per_day": 0.74,
+        "ppv": 0.225,
+        "sensitivity": 0.0115,
+        "missed_meals": 728,
+        "missed_rate": 0.9262
+      }
+    },
+    "i": {
+      "threshold": 0.65,
+      "n_meals": 150,
+      "median_imi_min": 1492.5,
+      "p25_imi_min": 772.5,
+      "fixed_120": {
+        "alerts_per_day": 0.24,
+        "ppv": 0.3077,
+        "sensitivity": 0.0121,
+        "missed_meals": 304,
+        "missed_rate": 0.9212
+      },
+      "median_75": {
+        "alerts_per_day": 0.22,
+        "ppv": 0.25,
+        "sensitivity": 0.0091,
+        "missed_meals": 309,
+        "missed_rate": 0.9364
+      },
+      "p25": {
+        "alerts_per_day": 0.22,
+        "ppv": 0.25,
+        "sensitivity": 0.0091,
+        "missed_meals": 309,
+        "missed_rate": 0.9364
+      },
+      "adaptive": {
+        "alerts_per_day": 0.28,
+        "ppv": 0.3333,
+        "sensitivity": 0.0152,
+        "missed_meals": 303,
+        "missed_rate": 0.9182
+      }
+    },
+    "j": {
+      "threshold": 0.2,
+      "n_meals": 169,
+      "median_imi_min": 430.0,
+      "p25_imi_min": 245.0,
+      "fixed_120": {
+        "alerts_per_day": 2.62,
+        "ppv": 0.3333,
+        "sensitivity": 0.0516,
+        "missed_meals": 165,
+        "missed_rate": 0.5323
+      },
+      "median_75": {
+        "alerts_per_day": 2.02,
+        "ppv": 0.3243,
+        "sensitivity": 0.0387,
+        "missed_meals": 188,
+        "missed_rate": 0.6065
+      },
+      "p25": {
+        "alerts_per_day": 2.29,
+        "ppv": 0.2857,
+        "sensitivity": 0.0387,
+        "missed_meals": 182,
+        "missed_rate": 0.5871
+      },
+      "adaptive": {
+        "alerts_per_day": 3.93,
+        "ppv": 0.3472,
+        "sensitivity": 0.0806,
+        "missed_meals": 125,
+        "missed_rate": 0.4032
+      }
+    },
+    "k": {
+      "threshold": 0.3,
+      "n_meals": 253,
+      "median_imi_min": 517.5,
+      "p25_imi_min": 245.0,
+      "fixed_120": {
+        "alerts_per_day": 3.35,
+        "ppv": 0.0611,
+        "sensitivity": 0.0353,
+        "missed_meals": 239,
+        "missed_rate": 0.766
+      },
+      "median_75": {
+        "alerts_per_day": 1.64,
+        "ppv": 0.0795,
+        "sensitivity": 0.0224,
+        "missed_meals": 265,
+        "missed_rate": 0.8494
+      },
+      "p25": {
+        "alerts_per_day": 2.18,
+        "ppv": 0.0769,
+        "sensitivity": 0.0288,
+        "missed_meals": 247,
+        "missed_rate": 0.7917
+      },
+      "adaptive": {
+        "alerts_per_day": 4.17,
+        "ppv": 0.058,
+        "sensitivity": 0.0417,
+        "missed_meals": 234,
+        "missed_rate": 0.75
+      }
+    }
+  },
+  "summary": {
+    "fixed_120": {
+      "mean_ppv": 0.2158,
+      "mean_sensitivity": 0.0218,
+      "mean_alerts_per_day": 1.27,
+      "mean_missed_rate": 0.8411
+    },
+    "median_75": {
+      "mean_ppv": 0.2298,
+      "mean_sensitivity": 0.0186,
+      "mean_alerts_per_day": 0.95,
+      "mean_missed_rate": 0.8649
+    },
+    "p25": {
+      "mean_ppv": 0.2189,
+      "mean_sensitivity": 0.0193,
+      "mean_alerts_per_day": 1.06,
+      "mean_missed_rate": 0.854
+    },
+    "adaptive": {
+      "mean_ppv": 0.2278,
+      "mean_sensitivity": 0.0273,
+      "mean_alerts_per_day": 1.51,
+      "mean_missed_rate": 0.8196
+    }
+  },
+  "key_finding": "Best strategy: fixed_120 \u2192 1.3 alerts/day, PPV=0.22, missed=84.11%"
+}

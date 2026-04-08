@@ -1,0 +1,147 @@
+{
+  "experiment_id": "EXP-1141",
+  "title": "Per-Patient Threshold Optimization",
+  "status": "OK",
+  "per_patient": {
+    "a": {
+      "auc": 0.864,
+      "optimal_threshold_ppv": 0.25,
+      "ppv_at_optimal": 0.2286,
+      "sensitivity_at_optimal": 0.183,
+      "alerts_per_day_at_optimal": 4.54,
+      "threshold_for_5alerts": 0.25,
+      "ppv_at_5alerts": 0.2286,
+      "sensitivity_at_5alerts": 0.183,
+      "n_meals": 172,
+      "n_test": 15549
+    },
+    "b": {
+      "auc": 0.7614,
+      "optimal_threshold_ppv": 0.3,
+      "ppv_at_optimal": 0.2473,
+      "sensitivity_at_optimal": 0.1038,
+      "alerts_per_day_at_optimal": 8.54,
+      "threshold_for_5alerts": 0.4,
+      "ppv_at_5alerts": 0.2237,
+      "sensitivity_at_5alerts": 0.0446,
+      "n_meals": 605,
+      "n_test": 15549
+    },
+    "c": {
+      "auc": 0.8185,
+      "optimal_threshold_ppv": 0.5,
+      "ppv_at_optimal": 0.5205,
+      "sensitivity_at_optimal": 0.163,
+      "alerts_per_day_at_optimal": 3.17,
+      "threshold_for_5alerts": 0.4,
+      "ppv_at_5alerts": 0.4962,
+      "sensitivity_at_5alerts": 0.2399,
+      "n_meals": 312,
+      "n_test": 15549
+    },
+    "d": {
+      "auc": 0.851,
+      "optimal_threshold_ppv": 0.95,
+      "ppv_at_optimal": 0.3636,
+      "sensitivity_at_optimal": 0.0071,
+      "alerts_per_day_at_optimal": 0.2,
+      "threshold_for_5alerts": 0.4,
+      "ppv_at_5alerts": 0.3581,
+      "sensitivity_at_5alerts": 0.1365,
+      "n_meals": 225,
+      "n_test": 15549
+    },
+    "e": {
+      "auc": 0.8209,
+      "optimal_threshold_ppv": 0.75,
+      "ppv_at_optimal": 0.5,
+      "sensitivity_at_optimal": 0.0036,
+      "alerts_per_day_at_optimal": 0.08,
+      "threshold_for_5alerts": 0.4,
+      "ppv_at_5alerts": 0.2738,
+      "sensitivity_at_5alerts": 0.0824,
+      "n_meals": 297,
+      "n_test": 13624
+    },
+    "f": {
+      "auc": 0.8229,
+      "optimal_threshold_ppv": 0.75,
+      "ppv_at_optimal": 0.4667,
+      "sensitivity_at_optimal": 0.0107,
+      "alerts_per_day_at_optimal": 0.28,
+      "threshold_for_5alerts": 0.4,
+      "ppv_at_5alerts": 0.2415,
+      "sensitivity_at_5alerts": 0.0979,
+      "n_meals": 388,
+      "n_test": 15548
+    },
+    "g": {
+      "auc": 0.8793,
+      "optimal_threshold_ppv": 0.5,
+      "ppv_at_optimal": 0.371,
+      "sensitivity_at_optimal": 0.1499,
+      "alerts_per_day_at_optimal": 6.39,
+      "threshold_for_5alerts": 0.55,
+      "ppv_at_5alerts": 0.3686,
+      "sensitivity_at_5alerts": 0.1101,
+      "n_meals": 571,
+      "n_test": 15549
+    },
+    "h": {
+      "auc": 0.6908,
+      "optimal_threshold_ppv": 0.95,
+      "ppv_at_optimal": 1.0,
+      "sensitivity_at_optimal": 0.0013,
+      "alerts_per_day_at_optimal": 0.02,
+      "threshold_for_5alerts": 0.25,
+      "ppv_at_5alerts": 0.2556,
+      "sensitivity_at_5alerts": 0.0725,
+      "n_meals": 354,
+      "n_test": 15542
+    },
+    "i": {
+      "auc": 0.9162,
+      "optimal_threshold_ppv": 0.75,
+      "ppv_at_optimal": 0.4828,
+      "sensitivity_at_optimal": 0.0424,
+      "alerts_per_day_at_optimal": 0.54,
+      "threshold_for_5alerts": 0.3,
+      "ppv_at_5alerts": 0.3822,
+      "sensitivity_at_5alerts": 0.2606,
+      "n_meals": 150,
+      "n_test": 15549
+    },
+    "j": {
+      "auc": 0.9329,
+      "optimal_threshold_ppv": 0.3,
+      "ppv_at_optimal": 0.5385,
+      "sensitivity_at_optimal": 0.5645,
+      "alerts_per_day_at_optimal": 17.73,
+      "threshold_for_5alerts": 0.7,
+      "ppv_at_5alerts": 0.4778,
+      "sensitivity_at_5alerts": 0.1387,
+      "n_meals": 169,
+      "n_test": 5278
+    },
+    "k": {
+      "auc": 0.6841,
+      "optimal_threshold_ppv": 0.35,
+      "ppv_at_optimal": 0.0413,
+      "sensitivity_at_optimal": 0.1763,
+      "alerts_per_day_at_optimal": 24.83,
+      "threshold_for_5alerts": 0.8,
+      "ppv_at_5alerts": 0.0082,
+      "sensitivity_at_5alerts": 0.0064,
+      "n_meals": 253,
+      "n_test": 15464
+    }
+  },
+  "summary": {
+    "mean_optimal_threshold": 0.577,
+    "mean_ppv": 0.4328,
+    "mean_sensitivity": 0.1278,
+    "mean_alerts_per_day": 6.03,
+    "n_patients": 11
+  },
+  "key_finding": "Per-patient thresholds reduce alerts from 23.7 to 6.0/day while achieving PPV=0.43"
+}
