@@ -135,11 +135,11 @@ DEFAULT_ROUTING = {
             horizons=['h240', 'h300', 'h360'],
         ),
     ],
-    # Routing map based on EXP-619 quick-mode + EXP-411 full validation
-    # w72 wins h30-h90 with transfer, w48 wins h120, w96 wins h150+
+    # Routing map from EXP-619 full-scale validation (11pt, 5-seed)
+    # w48 wins h30-h120, w96 wins h150-h240, w144 wins h300-h360
     'routing_map': {
-        'h30': 'w72_mid', 'h60': 'w72_mid',
-        'h90': 'w72_mid', 'h120': 'w48_short',
+        'h30': 'w48_short', 'h60': 'w48_short',
+        'h90': 'w48_short', 'h120': 'w48_short',
         'h150': 'w96_extended', 'h180': 'w96_extended',
         'h240': 'w96_extended',
         'h300': 'w144_strategic', 'h360': 'w144_strategic',
@@ -216,14 +216,14 @@ class PKGroupedEncoderInference:
 class ForecastRouter:
     """Routes horizon requests to appropriate specialist engines.
 
-    Production architecture (EXP-619 composite champion):
-      h30-h90   → w72 specialist (transfer from w48, 3h context)
-      h120      → w48 specialist (26K training windows, 2h context)
+    Production architecture (EXP-619 full-scale validated):
+      h30-h120  → w48 specialist (26K windows, 2h context, 134K params)
       h150-h240 → w96 specialist (transfer from w48, 4h context)
-      h240-h360 → w144 specialist (transfer from w48, 6h context)
+      h300-h360 → w144 specialist (transfer from w48, 6h context)
 
-    All engines: PKGroupedEncoder 134K params, 8ch pk_mode,
-    ISF normalized, per-patient fine-tuned.
+    Validated MAEs (11pt, 5-seed):
+      h30=11.1, h60=14.2, h90=16.1, h120=17.4,
+      h150=17.9, h180=18.5, h240=20.0, h300=20.2, h360=21.9
     """
 
     def __init__(self, models_dir: str, device: str = 'cpu',
