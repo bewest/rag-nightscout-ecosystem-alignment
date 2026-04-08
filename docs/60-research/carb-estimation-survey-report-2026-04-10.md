@@ -161,5 +161,5 @@ are pre-boluses where insulin acts before glucose rises.
 ## Files
 
 - Script: `tools/cgmencode/exp_clinical_1341.py`
-- Summary JSON: `exp-1341_carb_survey.json`
-- Detail JSON: `exp-1341_carb_survey_detail.json` (12,060 per-meal records)
+- Summary JSON: `externals/experiments/exp-1341_carb_survey.json`
+- Detail JSON: `externals/experiments/exp-1341_carb_survey_detail.json` (12,060 per-meal records)

@@ -483,8 +483,9 @@ def run_survey(patients):
         'elapsed_sec': round(elapsed, 1),
     }
 
-    # Save
-    out_dir = os.path.join(os.path.dirname(__file__), '..', '..')
+    # Save to externals/experiments/ (git-ignored)
+    out_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'externals', 'experiments')
+    os.makedirs(out_dir, exist_ok=True)
     summary_path = os.path.join(out_dir, 'exp-1341_carb_survey.json')
     detail_path = os.path.join(out_dir, 'exp-1341_carb_survey_detail.json')
 
