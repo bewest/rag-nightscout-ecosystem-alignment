@@ -39,7 +39,7 @@ TBR-L2<1%, TAR-L1<25%, TAR-L2<5%, CV<36%.
 
 ### EXP-1492: TBR-Integrated Grading (Pipeline v10)
 
-v10 formula: `TIR×0.5 + (100−CV×2)×0.2 + overnight_TIR×0.1 + safety_score×0.2`
+v10 formula: `TIR×0.5 + max(0, 100−CV×2)×0.2 + overnight_TIR×0.1 + safety_score×0.2`
 
 | Patient | v9 Grade (Score) | v10 Grade (Score) | Safety Score | Change |
 |---------|-----------------|------------------|-------------|--------|
@@ -127,7 +127,7 @@ Safety gate prevents ISF decreases when TBR is already elevated:
 |---------|------|-----------------|----------------|-----------|
 | k | 4.87 | Decrease | **Increase** | ⚠️ YES |
 | Others (7/11) | >1% | Increase | Increase | No |
-| b, d, j | <1.1% | Maintain | Maintain | No |
+| b, d, j | ≤1.1% | Maintain | Maintain | No |
 
 **Patient k override**: v9 pipeline would have recommended decreasing ISF (make corrections
 stronger) because TIR is excellent. But TBR=4.87% means corrections are already too strong.
@@ -155,7 +155,7 @@ patients who would otherwise get tuning that could worsen hypos.
 | i | 341 | **25 min** | 4.4% | 42.5% | -0.483 |
 | b | 64 | 15 min | **60.9%** | 21.9% | -0.137 |
 | j | 34 | 15 min | **58.8%** | 8.8% | -0.141 |
-| Others | 51-229 | 15 min | 2-28% | 18-37% | -0.3 to -0.4 |
+| Others | 51-229 | 15 min | 0.4-28% | 18-38% | -0.01 to -0.43 |
 
 **Two recovery phenotypes**:
 1. **Active treaters** (b, j): >58% carb-treated, faster recovery, lower nadir severity
@@ -228,22 +228,22 @@ incorrectly redirected away from needed tuning).
 
 ```
 v10_score = TIR × 0.5
-          + (100 - CV×2) × 0.2
+          + max(0, 100 - CV×2) × 0.2
           + overnight_TIR × 0.1
           + safety_score × 0.2
 
 safety_score = max(0, 100 - TBR_L1×10 - TBR_L2×50 - overcorrection_rate)
 
-Safety tiers:
-  Low:      TBR < 2%
-  Moderate: 2% ≤ TBR < 4%
-  High:     4% ≤ TBR < 8%
-  Critical: TBR ≥ 8%
+Safety tiers (compound logic — also considers severe episode count and frequency):
+  Low:      TBR < 2%, no severe episodes
+  Moderate: 2% ≤ TBR < 4%, OR severe episodes ≤3/week
+  High:     4% ≤ TBR < 8%, OR severe episodes >3/week
+  Critical: TBR ≥ 8% AND severe episodes present
 
 Safety-first protocol:
   IF TBR > 4%: override standard rec → "reduce aggressiveness"
-  IF nocturnal TBR > 4%: add "reduce overnight basal 10%"
-  IF AID-induced > 40%: flag "reduce max IOB / increase target"
+  IF any nocturnal hypo episodes: add "reduce overnight basal 10%"
+  IF insulin stacking detected: flag "add stacking alert"
 ```
 
 ## Campaign Progress

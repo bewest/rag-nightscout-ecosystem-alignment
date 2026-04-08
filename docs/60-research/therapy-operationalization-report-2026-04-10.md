@@ -46,7 +46,7 @@ This batch resolves key open questions from EXP-1291-1320. The central finding i
 - Well-calibrated mean drift: **-0.29 mg/dL/h** (nearly zero — confirming basal is correct)
 - Needs-tuning patients: drift varies widely by patient
 
-**UAM contamination**: 24-65% of fasting windows contain UAM events, explaining why UAM filtering is so destructive.
+**UAM contamination**: 24-66% of fasting windows contain UAM events, explaining why UAM filtering is so destructive.
 
 ### EXP-1332: UAM-Clean Response-Curve ISF
 
@@ -93,6 +93,7 @@ This batch resolves key open questions from EXP-1291-1320. The central finding i
 | c | 5 | 1.25 | 3.8 | 0.767 | -24% |
 | f | 63 | 2.75 | 8.2 | 0.766 | +64% |
 | h | 1 | 2.00 | 6.0 | 0.969 | +20% |
+| i | 1 | 2.00 | 6.0 | 0.935 | +20% |
 | j | 5 | 1.00 | 3.0 | 0.761 | -40% |
 
 **Population**: Median DIA = **6.0h** (vs 5h standard profile), τ = 2.0h, fit R² = 0.751
@@ -130,20 +131,20 @@ Generated per-patient, per-time-block basal rate recommendations using both phys
 
 | Pattern | Patients |
 |---------|----------|
-| Morning dip (dawn effect) | d, e (ratio <0.3) |
-| Reverse dawn (morning higher) | b, j (ratio >1.5) |
+| Morning dip (dawn effect) | d, e (ratio ≤0.3) |
+| Reverse dawn (morning higher) | j (ratio >1.5); b borderline (ratio 1.49) |
 | No clear pattern | Most patients |
 
 - **Only 2/11 show classical dawn effect** (ISF lower in morning)
-- The enormous intraday variation (53-430% range) suggests ISF should NOT be treated as a single value
+- The enormous intraday variation (34-430% range) suggests ISF should NOT be treated as a single value
 - Afternoon and evening ISF are often very different from overnight
 
 ### EXP-1338: Multi-Week Stability
 
-| Stability | Patients | TIR Trend | ISF CV |
-|-----------|----------|-----------|--------|
-| Stable | a, b, c, d, g, i (6/11) | Small | <0.16 |
-| Drifting | e, f, h, j, k (5/11) | Variable | >0.16 |
+| Stability | Patients | TIR Trend | Criterion |
+|-----------|----------|-----------|-----------|
+| Stable | a, b, c, d, g, i (6/11) | Small (|trend|<2.0) | |tir_trend|<2.0 AND |isf_trend|<3.0 AND isf_cv<0.3 |
+| Drifting | e, f, h, j, k (5/11) | Variable | Fails ≥1 stability criterion |
 
 - Patient k: TIR 90-98% but ISF CV=0.47 — well-controlled despite ISF drift (robust settings)
 - Patient h: ISF CV=0.42 with TIR trend +1.58 — improving over time
@@ -183,7 +184,7 @@ Generated per-patient, per-time-block basal rate recommendations using both phys
 ### Physics Model Limitations (Confirmed)
 1. **Systematic bias**: ~25% magnitude error in net flux, even for well-calibrated patients
 2. **DIA mismatch**: Most patients have effective DIA ≠ profile DIA (median 6h vs 5h)
-3. **UAM ubiquity**: 24-65% of "fasting" windows contain UAM events
+3. **UAM ubiquity**: 24-66% of "fasting" windows contain UAM events
 4. **AID loop confounding**: The loop's adaptive response makes all static analysis methods approximate
 
 ### What Actually Works

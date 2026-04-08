@@ -496,23 +496,26 @@ def fig6_clarke_grid_schematic():
         ax.text(x, y, label, fontsize=size, fontweight='bold', color=color,
                 ha='center', va='center', alpha=0.7)
 
-    # Our results annotation box
+    # Our results annotation box — EXP-929 used Ridge regression, NOT PKGroupedEncoder
     z929 = exp929['results']
-    textstr = (f"EXP-929 Results (h60, 11 patients)\n"
-               f"━━━━━━━━━━━━━━━━━━━━━━━\n"
-               f"Zone A: {z929['mean_clarke_A_pct']:.1f}%\n"
+    measured_de = np.mean([d['clarke_zones']['D'] + d['clarke_zones']['E']
+                           for d in z929['per_patient']])
+    textstr = (f"EXP-929 Measured (h60, 11 patients)\n"
+               f"━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+               f"Zone A:   {z929['mean_clarke_A_pct']:.1f}%\n"
                f"Zone A+B: {z929['mean_clarke_AB_pct']:.1f}%\n"
-               f"Zone D+E: <1%\n"
-               f"MAE: {z929['mean_mae_mgdl']:.1f} mg/dL\n"
-               f"MARD: {z929['mean_mard_pct']:.1f}%")
+               f"Zone D+E: {measured_de:.1f}%\n"
+               f"MAE:  {z929['mean_mae_mgdl']:.1f} mg/dL\n"
+               f"MARD: {z929['mean_mard_pct']:.1f}%\n"
+               f"Model: Ridge baseline (not PKGroupedEncoder)")
     props = dict(boxstyle='round', facecolor='white', alpha=0.9, edgecolor='#2c3e50')
-    ax.text(250, 120, textstr, fontsize=10, verticalalignment='top',
+    ax.text(250, 120, textstr, fontsize=9, verticalalignment='top',
             bbox=props, family='monospace')
 
     ax.set_xlabel('Reference Glucose (mg/dL)', fontsize=12)
     ax.set_ylabel('Predicted Glucose (mg/dL)', fontsize=12)
     ax.set_title('Clarke Error Grid — Zone Definitions\n'
-                 'with PKGroupedEncoder h60 Performance',
+                 'with EXP-929 Measured h60 Performance',
                  fontsize=13, fontweight='bold')
     ax.set_aspect('equal')
     ax.grid(True, alpha=0.15)
@@ -524,6 +527,29 @@ def fig6_clarke_grid_schematic():
 
 
 # ── Figure 7: MAE Decay Rate Analysis ─────────────────────────────────
+
+# Load measured naive MAE from EXP-637 for horizon-matched skill calculation
+_exp637_path = ROOT / 'externals/experiments/exp-637_multi-step_prediction.json'
+if _exp637_path.exists():
+    with open(_exp637_path) as f:
+        _exp637 = json.load(f)
+    # Fit naive_mae = a * sqrt(h_min) + b from measured data (h5–h60)
+    _step_to_min = {1: 5, 2: 10, 3: 15, 6: 30, 12: 60}
+    _naive_pts = {}
+    for p in _exp637['patients']:
+        for steps, mae in p['naive_mae'].items():
+            h = _step_to_min.get(int(steps), int(steps) * 5)
+            _naive_pts.setdefault(h, []).append(mae)
+    _h_arr = np.array(sorted(_naive_pts.keys()), dtype=float)
+    _mae_arr = np.array([np.mean(_naive_pts[h]) for h in sorted(_naive_pts.keys())])
+    _naive_coeffs = np.polyfit(np.sqrt(_h_arr), _mae_arr, 1)  # [slope, intercept]
+    def naive_mae_at(horizon_min):
+        """Horizon-matched naive (last-value predictor) MAE from EXP-637 fit."""
+        return max(1.0, _naive_coeffs[0] * np.sqrt(horizon_min) + _naive_coeffs[1])
+else:
+    def naive_mae_at(horizon_min):
+        return 4.99 * np.sqrt(horizon_min) - 6.36  # fallback coefficients
+
 
 def fig7_mae_decay_rate():
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
@@ -550,25 +576,34 @@ def fig7_mae_decay_rate():
                  xytext=(280, gains_per_30[-1] + 1.5),
                  fontsize=9, arrowprops=dict(arrowstyle='->', color='#27ae60'))
 
-    # Right: cumulative information content (1 - MAE/naive_mae)
-    naive_mae = 42.0  # naive mean predictor MAE (population std)
-    info = [1 - m / naive_mae for m in h_mae]
+    # Right: forecast skill (1 - model_mae / naive_mae) with horizon-matched naive
+    # Naive MAE from EXP-637 fit: naive_mae = 4.99*sqrt(h) - 6.36
+    naive_maes = [naive_mae_at(m) for m in h_minutes]
+    skill = [1 - model / naive for model, naive in zip(h_mae, naive_maes)]
 
-    ax2.plot(h_minutes, [i * 100 for i in info], 'o-', color='#9b59b6',
+    ax2.plot(h_minutes, [s * 100 for s in skill], 'o-', color='#9b59b6',
              linewidth=2.5, markersize=8)
-    ax2.fill_between(h_minutes, 0, [i * 100 for i in info],
+    ax2.fill_between(h_minutes, 0, [s * 100 for s in skill],
                      alpha=0.15, color='#9b59b6')
+    # Show naive MAE reference on secondary y-axis
+    ax2b = ax2.twinx()
+    ax2b.plot(h_minutes, naive_maes, '--', color='#bdc3c7', linewidth=1.5,
+              label='Naive MAE', alpha=0.7)
+    ax2b.set_ylabel('Naive MAE (mg/dL)', fontsize=10, color='#bdc3c7')
+    ax2b.tick_params(axis='y', labelcolor='#bdc3c7')
+    ax2b.set_ylim(0, max(naive_maes) * 1.3)
+
     ax2.set_xlabel('Forecast Horizon (minutes)', fontsize=11)
-    ax2.set_ylabel('Information Retained vs Naive (%)', fontsize=11)
-    ax2.set_title('Forecast Information Content\n'
-                  '(% improvement over mean predictor)',
+    ax2.set_ylabel('Forecast Skill vs Naive (%)', fontsize=11)
+    ax2.set_title('Forecast Skill\n'
+                  '(% improvement over last-value predictor, EXP-637)',
                   fontsize=12, fontweight='bold')
     ax2.set_ylim(0, 100)
     ax2.set_xticks([30, 60, 90, 120, 150, 180, 240, 300, 360])
     ax2.grid(True, alpha=0.3)
 
     # Annotate
-    for i, (m, pct) in enumerate(zip(h_minutes, [i * 100 for i in info])):
+    for i, (m, pct) in enumerate(zip(h_minutes, [s * 100 for s in skill])):
         if i % 2 == 0 or m == 360:
             ax2.text(m, pct + 2, f'{pct:.0f}%', ha='center', fontsize=9,
                      fontweight='bold', color='#9b59b6')

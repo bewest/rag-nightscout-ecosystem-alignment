@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-This batch explores population-level insights and advanced analytics, reaching the **200-experiment milestone**. Key findings: 4 natural patient clusters emerge from therapy profiles, recommendation direction transfers perfectly between similar patients (10/10), weekend vs weekday differences are statistically insignificant (0/11 p<0.05), insulin stacking is prevalent (9/11) with 10-18% hypo risk, and all patients have low glycemic risk (LBGI/HBGI). The sequential fix protocol (Strategy C) outperforms single-parameter fixes by 40-90% for multi-flag patients.
+This batch explores population-level insights and advanced analytics, reaching the **200-experiment milestone**. Key findings: 4 natural patient clusters emerge from therapy profiles, recommendation direction transfers perfectly between similar patients (10/10), weekend vs weekday differences are statistically insignificant (0/11 p<0.05), insulin stacking is prevalent (9/11) with 2-18% hypo risk, and all patients have low glycemic risk (LBGI/HBGI). The sequential fix protocol (Strategy C) outperforms single-parameter fixes by 40-90% for multi-flag patients.
 
 ## Experiment Results
 
@@ -64,7 +64,7 @@ This batch explores population-level insights and advanced analytics, reaching t
 - Detection rate: 1.8-7.5 events/day (high — likely includes non-exercise drops)
 - Mean glucose drop: 18-52 mg/dL per event
 - Post-event TIR: 62-86% (higher TIR patients have better post-event recovery)
-- Most common timing: variable by patient (morning for f, afternoon for b/e/i, overnight for d/g)
+- Most common timing: variable by patient (morning for f, afternoon for b/e/i, overnight for d, evening for g)
 
 **Clinical Implication**: The proxy detection is too sensitive — 7+ events/day likely includes insulin-driven and AID-driven drops, not just exercise. Tighter criteria (>3 mg/dL/5min sustained >20min, no IOB >2U) needed for clinical use.
 
@@ -108,7 +108,7 @@ This batch explores population-level insights and advanced analytics, reaching t
 - LBGI range: 0.04-0.26 (all <2.5 threshold)
 - HBGI range: 0.00-1.14 (all <4.5 threshold)
 - Patient a has highest HBGI (1.14) — consistent with grade D
-- Patient k has highest LBGI (0.24) — tight control causes mild low risk
+- Patient i has highest LBGI (0.26) — tight control causes mild low risk
 
 **Clinical Implication**: All patients are in the low-risk category by standard LBGI/HBGI metrics. This is expected for AID users — the algorithm prevents extreme values. LBGI/HBGI may not discriminate well within AID populations where extremes are actively mitigated.
 
@@ -133,7 +133,7 @@ This batch explores population-level insights and advanced analytics, reaching t
 **Objective**: Quantify glycemic complexity via information-theoretic measures.
 
 **Findings**:
-- **Sample entropy correlates positively with TIR** (r≈0.73): higher entropy = more random = better control
+- **Sample entropy correlates positively with TIR** (r≈0.76): higher entropy = more random = better control
 - Patient k: highest SampEn (0.81) and PermEn (0.94) — most "random" (well-controlled)
 - Patient f: lowest SampEn (0.22) — most predictable/structured glucose patterns
 - PermEn range: 0.75-0.94 (less discriminating than SampEn)
@@ -151,7 +151,7 @@ This batch explores population-level insights and advanced analytics, reaching t
 - **All 11 patients: low glycemic risk** (LBGI/HBGI both low)
 - **Deployment ready**: 2/11 (h, k) — grade B+ and stable recommendations
 - **Failure modes**: 6 mixed, 2 well-controlled, 2 correction-dominant, 1 basal-dominant
-- **Top recommendation**: basal adjustment for 7/11, ISF for 2/11, none for 2/11
+- **First-fix priority**: basal adjustment for 7/11, ISF for 2/11, none for 2/11 (note: top overall recommendation by impact is CR adjustment for 6/11)
 
 **Campaign Statistics**:
 - Total experiments: 200 (EXP-1281 through EXP-1480)
@@ -170,10 +170,10 @@ This batch explores population-level insights and advanced analytics, reaching t
 | 3 | Meal logging varies enormously (0.4-23.4/day) | CR analysis needs logging quality filter |
 | 4 | Exercise proxy too sensitive (7+/day) | Needs tighter criteria for clinical use |
 | 5 | Weekend≠weekday: 0/11 significant | No schedule-based protocol needed |
-| 6 | Insulin stacking in 9/11, 10-18% hypo risk | Stacking alerts high priority |
+| 6 | Insulin stacking in 9/11, 2-18% hypo risk | Stacking alerts high priority |
 | 7 | All patients low LBGI/HBGI | Standard risk scores don't discriminate AID users |
 | 8 | Sequential fix +40-90% for multi-flag patients | Validates protocol for complex cases |
-| 9 | Higher entropy = better control (r≈0.73) | Low-entropy patients have targetable patterns |
+| 9 | Higher entropy = better control (r≈0.76) | Low-entropy patients have targetable patterns |
 | 10 | 200 experiments complete, pipeline v9 validated | Campaign milestone reached |
 
 ## 200-Experiment Campaign Summary

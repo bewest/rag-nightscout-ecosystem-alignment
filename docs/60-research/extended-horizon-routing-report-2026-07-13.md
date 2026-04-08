@@ -1,7 +1,7 @@
 # Extended Horizon Forecasting: Supply/Demand, Routing, and Productionization
 
-**Date**: 2026-07-13
-**Experiments**: EXP-600–615 (16 experiments)
+**Date**: 2026-04-07
+**Experiments**: EXP-600–615 (16 experiments, forecasting track; note: this ID range is shared with a separate clinical experiment series in `externals/experiments/exp-6NN_*.json` — the forecasting results are in separately-named files like `exp610_stride_reduction.json` etc.)
 **Prior report**: `forecasting-state-of-art-report-2026-04-11.md` (EXP-352–481)
 **Script**: `tools/cgmencode/exp_pk_forecast_v14.py`
 
@@ -17,7 +17,7 @@ This campaign tested **supply/demand decomposition**, **multi-window routing**, 
 
 2. **A 3-window routing system** (w48 → w96 → w144) delivers the best predictions at every horizon from h30 to h360, with each specialist dominating its natural zone.
 
-3. **w96 is the critical discovery** — it fills the h120–h200 gap with 50% more training data than w144, achieving h180=23.79 MAE (vs w144's 26.46, a **-2.67 improvement**).
+3. **w96 is the critical discovery** — it fills the h120–h200 gap with 100% more training data than w144 (6,900 vs 3,448 windows in champion config), achieving h180=23.79 MAE (vs w144's 26.46, a **-2.67 improvement**).
 
 4. **Supply/demand decomposition provides marginal signal only at h300+** (−0.85 MAE) — not worth the complexity for production.
 
@@ -78,7 +78,7 @@ w48 (2h history) consistently beat w144 (9h history) at horizons through h120, d
 
 | Window | Default Stride | Training Windows | Max Horizon |
 |:------:|:--------------:|:----------------:|:-----------:|
-| w48 | 48 | 10,360 | h120 |
+| w48 | 16 | 10,360 | h120 |
 | w96 | 32 | 5,176 | h160–h240 |
 | w144 | 48 | 3,448 | h360 |
 
@@ -242,7 +242,7 @@ This confirms the fundamental physics: glucose dynamics beyond 90 minutes are **
 
 ### 4. Transfer Learning Is Uniformly Beneficial
 
-Every w96 and w144 model benefits from w48 pre-training (56 params transferred). The mechanism: w48 models see 3× more training windows, learning robust feature representations that transfer to longer-context models. This is analogous to ImageNet pre-training for computer vision.
+Every w96 and w144 model benefits from w48 pre-training (56 parameter tensors transferred, ~134K scalar parameters total). The mechanism: w48 models see 3× more training windows, learning robust feature representations that transfer to longer-context models. This is analogous to ImageNet pre-training for computer vision.
 
 ---
 
@@ -262,7 +262,7 @@ Input: 6h CGM + PK history at inference time
 │  h120-h200: w96_specialist (d1+transfer+FT)   │
 │  h200-h360: w144_specialist (d1+transfer+FT)  │
 │                                               │
-│  All models: PKGroupedEncoder (134K params)    │
+│  All models: PKGroupedEncoder (~135K params)    │
 │  All models: 11ch d1 PK derivatives            │
 │  All models: Per-patient fine-tuned            │
 └─────────────────────────────────────────────┘
@@ -282,10 +282,10 @@ Output: Point prediction + uncertainty band
 
 | Model | Params | Forward Pass | Memory |
 |-------|:------:|:------------:|:------:|
-| w48 specialist | 134K | ~2ms | ~0.5MB |
-| w96 specialist | 134K | ~3ms | ~0.5MB |
-| w144 specialist | 134K | ~5ms | ~0.5MB |
-| **Total (routed)** | **134K** | **~5ms** | **~1.5MB** |
+| w48 specialist | ~135K | ~1ms | ~0.5MB |
+| w96 specialist | ~135K | ~1ms | ~0.5MB |
+| w144 specialist | ~135K | ~1ms | ~0.5MB |
+| **Total (routed)** | **~135K** | **~1ms (single model)** | **~1.5MB** |
 
 All 3 models share the same architecture (PKGroupedEncoder), differing only in positional encoding size and trained weights. At inference, only one model runs per request based on the requested horizon.
 

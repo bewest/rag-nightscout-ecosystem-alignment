@@ -141,7 +141,7 @@ activity as carb absorption, giving it a more complete picture of meal impact.
 *Figure 2: Each method's estimate vs user-entered carbs (announced meals only).
 oref0 tracks the diagonal best (r=0.368); Physics is nearly flat (r=0.093).*
 
-- Median entered carbs (30g) are 1.1–3.7× the announced-meal algorithmic estimates
+- Median entered carbs (30g) are 1.1–3.8× the announced-meal algorithmic estimates
 - Correlation with all methods is weak to moderate (r < 0.37)
 - Patient j enters 80g median but algorithms see 6–18g
 - Patient k enters only 15g — surprisingly close to excursion estimate (10g)

@@ -69,15 +69,15 @@ Even the "best" patient (k) has R²=-0.119. This means the raw supply-demand con
 - `total_insulin = bolus + ∫(temp_rate - scheduled_rate) × dt` over DIA window
 - `ISF_deconfounded = ΔBG / total_insulin` (vs raw `ISF = ΔBG / bolus`)
 
-**Precondition filter**: `isf_estimation` — 5/11 patients skipped (b, e, h, i, j)
+**Precondition filter**: `isf_estimation` and `physics_model_valid` — 5/11 patients skipped (b, e, h, i, j). Patients b, h, j fail `isf_estimation`; patients e, i fail `physics_model_valid` (R²=-0.98, R²=-2.77 respectively).
 
 | Patient | Corrections | Raw ISF | Deconf ISF | Profile ISF | Raw Ratio | Deconf Ratio |
 |---|---|---|---|---|---|---|
 | a | 57 | 69.7 | 27.1 | 48.6 | 1.43 | **0.56** |
-| c | 65 | 288.6 | — | 78.9 | 3.66 | — |
+| c | 65 | 288.6 | — | 78.8 | 3.66 | — |
 | d | 6 | 163.8 | — | 40.0 | 4.09 | — |
 | f | 89 | 38.2 | 136.2 | 20.6 | 1.85 | **6.68** |
-| g | 26 | 177.2 | — | 68.5 | 2.59 | — |
+| g | 26 | 177.2 | — | 68.6 | 2.59 | — |
 | k | 25 | 67.7 | — | 25.0 | 2.71 | — |
 
 **Findings**:
@@ -112,7 +112,7 @@ Even the "best" patient (k) has R²=-0.119. This means the raw supply-demand con
 - 7/11 need basal decrease, 4 need increase — consistent with EXP-1281 (10/11 suspension-dominant) after accounting for methodology differences
 - Patient **i** at -115% is obviously erroneous (can't reduce basal by more than 100%) — flagged by physics precondition failure
 - Patients a, b, e, f need *increased* basal — these are the patients where the loop is running high temps more than suspending
-- Mean absolute change magnitude: 33.5% — significant settings drift across the cohort
+- Mean absolute change magnitude: 33.7% — significant settings drift across the cohort
 
 ---
 
@@ -167,7 +167,7 @@ Composite score combining basal adequacy, ISF calibration, CR effectiveness, and
 | 5 | e | 54.1 | needs_tuning |
 | 6 | g | 53.8 | needs_tuning |
 | 7 | h | 49.5 | significantly_miscalibrated |
-| 8 | a | 48.6 | significantly_miscalibrated |
+| 8 | a | 48.8 | significantly_miscalibrated |
 | 9 | f | 48.5 | significantly_miscalibrated |
 | 10 | c | 39.7 | significantly_miscalibrated |
 | 11 | i | **2.8** | critically_miscalibrated |
@@ -209,9 +209,9 @@ Compared to EXP-990 fidelity score (range 37.5–76.4):
 | j | 75.7 | +3.5 (improving) | 8 |
 | k | 74.2 | -3.8 (worsening) | 25 |
 | e | 64.4 | +4.1 (improving) | 22 |
-| b | 61.0 | +6.4 (**improving**) | 25 |
 | g | 61.6 | +0.2 (stable) | 25 |
 | h | 61.3 | +6.2 (**improving**) | 9 |
+| b | 61.0 | +6.4 (**improving**) | 25 |
 | f | 54.0 | -2.8 (worsening) | 25 |
 | a | 47.8 | +0.1 (stable) | 25 |
 | c | 47.4 | +1.1 (stable) | 25 |
@@ -230,7 +230,7 @@ Compared to EXP-990 fidelity score (range 37.5–76.4):
 
 | Patient | Basal (1292) | ISF (1298) | Fasting (1296) | Integrated (1300) | Weekly (1297) | Preconditions |
 |---|---|---|---|---|---|---|
-| a | ↑ increase | calibrated | flat | 48.6 sig_miscal | 47.8 stable | 6/6 ✓ |
+| a | ↑ increase | calibrated | flat | 48.8 sig_miscal | 47.8 stable | 6/6 ✓ |
 | b | ↑ increase | conservative | no data | 62.2 needs_tune | 61.0 improving | 4/6 |
 | c | ↓ decrease | aggressive | too high | 39.7 sig_miscal | 47.4 stable | 6/6 ✓ |
 | d | ↓ decrease | aggressive | appropriate | 67.9 needs_tune | 77.1 worsening | 6/6 ✓ |
