@@ -1425,7 +1425,7 @@ EXPERIMENTS = [
     ('EXP-1042', 'Attention Over Physics Channels', exp_1042_attention_over_physics),
     ('EXP-1043', 'Clarke Error Grid Analysis', exp_1043_clarke_error_grid),
     ('EXP-1044', 'Selective Prediction with Reject Option', exp_1044_selective_prediction),
-    ('EXP-1045', 'Hypo/Hyper Alert Prediction', exp_1045_hypo_hyper_alerts),
+    ('EXP-1045', 'Hypo-Hyper Alert Prediction', exp_1045_hypo_hyper_alerts),
     ('EXP-1046', 'Longer Context Windows', exp_1046_longer_context_windows),
     ('EXP-1047', 'Gap-Aware Architecture for Patient h', exp_1047_gap_aware_patient_h),
     ('EXP-1048', 'Residual Structure Analysis', exp_1048_residual_structure_analysis),
