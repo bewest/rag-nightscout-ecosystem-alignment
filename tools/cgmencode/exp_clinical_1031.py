@@ -708,7 +708,7 @@ def exp_1035_patient_specific_dia(patients, detail=False):
         for dia in dia_values:
             df.attrs['patient_dia'] = float(dia)
             try:
-                pk_new = build_continuous_pk_features(df)
+                pk_new = build_continuous_pk_features(df, dia_hours=float(dia))
             except Exception:
                 continue
 
