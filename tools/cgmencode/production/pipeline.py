@@ -30,7 +30,7 @@ from .clinical_rules import generate_clinical_report
 from .pattern_analyzer import analyze_patterns
 from .patient_onboarding import get_onboarding_state
 from .meal_detector import detect_meal_events, build_meal_history, classify_all_meal_responses
-from .meal_predictor import build_timing_models, predict_next_meal
+from .meal_predictor import build_timing_models, predict_next_meal, MealMLModel
 from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented
 from .recommender import generate_recommendations
 from .clinical_rules import (
@@ -143,10 +143,39 @@ def run_pipeline(patient: PatientData,
             # Meal timing prediction (needs ≥7 days of meal history)
             if patient.days_of_data >= 7.0 and meal_history.total_detected >= 10:
                 timing_models = build_timing_models(meal_history, patient.days_of_data)
+
+                # Train ML model if enough data (EXP-1106: AUC=0.861)
+                ml_model = None
+                if patient.days_of_data >= 14.0 and meal_history.total_detected >= 20:
+                    ml_model = MealMLModel()
+                    net_flux = metabolic.net_flux if hasattr(metabolic, 'net_flux') else None
+                    if not ml_model.train(meal_history, cleaned.glucose,
+                                          net_flux=net_flux,
+                                          days_of_data=patient.days_of_data):
+                        ml_model = None
+
                 if timing_models:
                     c_hour = current_hour if current_hour is not None else float(hours[-1])
+
+                    # Gather ML context for prediction
+                    ml_kwargs = {}
+                    if ml_model is not None:
+                        N = len(cleaned.glucose)
+                        last_meal_idx = max(m.index for m in meal_history.meals)
+                        ml_kwargs = dict(
+                            ml_model=ml_model,
+                            glucose_current=float(cleaned.glucose[-1]),
+                            glucose_15min_ago=float(cleaned.glucose[-4]) if N > 3 else float(cleaned.glucose[-1]),
+                            glucose_30min_ago=float(cleaned.glucose[-7]) if N > 6 else float(cleaned.glucose[-1]),
+                            minutes_since_last_meal=float((N - 1 - last_meal_idx) * 5),
+                            meals_today_count=int(sum(1 for m in meal_history.meals
+                                                      if m.index >= N - 288)),
+                            net_flux_current=float(net_flux[-1]) if net_flux is not None and len(net_flux) > 0 else 0.0,
+                            day_index=N // 288,
+                        )
+
                     meal_prediction = predict_next_meal(
-                        timing_models, c_hour, meal_history)
+                        timing_models, c_hour, meal_history, **ml_kwargs)
         except Exception as e:
             warnings.append(f"Meal detection failed: {e}")
 
