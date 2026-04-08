@@ -102,16 +102,17 @@ classification feature (EXP-466):
 
 | Meal Type | Supply→Demand Lag | Mechanism |
 |:----------|:-----------------:|:----------|
-| Announced | 10 min | Bolus precedes carb absorption |
-| UAM | 45 min | AID reacts after glucose rises |
-| **Separation** | **35 min** | **Strong UAM classifier feature** |
+| Announced | ~35 min | Bolus precedes carb absorption by 15 min |
+| UAM | ~80 min | AID reacts ~30 min after glucose rises |
+| **Separation** | **~45 min** | **Strong UAM classifier feature** |
 
 ![Phase Lag](../../visualizations/meal-detection-report/fig06_phase_lag.png)
 
-*Figure 6: Left — announced meal with 10-min lag (bolus delivered before
-carbs absorb). Right — UAM meal with 45-min lag (AID reacts to rising
-glucose). The 35-minute separation is one of the strongest single features
-for classifying meal announcement behavior.*
+*Figure 6: Left — announced meal with ~35-min lag (bolus delivered 15 min
+before carbs, insulin peaks ~75 min post-dose). Right — UAM meal with
+~80-min lag (AID reacts ~30 min after glucose rises). The ~45-minute
+separation is one of the strongest single features for classifying meal
+announcement behavior.*
 
 ---
 
@@ -384,6 +385,7 @@ THROUGHPUT(t) = SUPPLY(t) × DEMAND(t)              [metabolic power]
 | Base hepatic rate | 1.5 mg/dL per 5 min | cgmsim-lib liver.ts |
 | Max insulin suppression | 65% | UVA/Padova EGP model |
 | Hill coefficient | 1.5 | Fitted to simulator |
+| Hepatic floor | 35% of basal rate | continuous_pk.py:404 |
 | Circadian amplitude | ±20% | cgmsim-lib sinus.ts |
 | Smoothing window | 30 min (6 steps) | EXP-483 optimization |
 | Peak threshold | 50th percentile (day-local) | EXP-483 |
