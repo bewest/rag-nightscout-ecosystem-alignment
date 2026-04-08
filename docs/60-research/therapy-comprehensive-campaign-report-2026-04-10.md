@@ -16,11 +16,11 @@ This report synthesizes findings from the largest systematic investigation of AI
 3. **Recommends** specific, magnitude-gated setting adjustments with confidence intervals
 4. **Gates** recommendations through safety-first protocols that prevent dangerous suggestions
 
-The pipeline achieves **100% grade stability** (10/11 patients) under bootstrap resampling, requires **minimum 14 days** of data for initial triage, and runs in **<100ms per patient**.
+The pipeline achieves **100% grade stability** (10/11 patients) under bootstrap resampling, requires **minimum 14 days** of data for initial triage, and runs in **<20ms per patient**.
 
 ### Key Headline Findings
 
-- **CR is the most reliable signal**: 11/11 patients have carb ratio assessments where confidence intervals exclude zero
+- **CR is the most reliable signal**: 10/11 patients have carb ratio assessments where confidence intervals exclude zero (patient k has insufficient CR events)
 - **ISF varies 131% within a day**: Single ISF values are fundamentally insufficient; time-block ISF is necessary
 - **TBR reveals hidden danger**: 3/11 patients downgraded when hypoglycemia is properly accounted for (patient k: 95% TIR but 4.87% TBR)
 - **AID causes its own hypos**: In 2 patients, >40% of hypoglycemic episodes are algorithm-induced
@@ -71,8 +71,8 @@ This **supply/demand decomposition** (metabolic flux) provides the foundation fo
 
 | Finding | Evidence |
 |---------|----------|
-| CR is the most reliable intervention | 11/11 CIs exclude zero (EXP-1451) |
-| Dinner CR is worst: 77 mg/dL excursion | vs. lunch 46 mg/dL (EXP-1361) |
+| CR is the most reliable intervention | 10/11 CIs exclude zero; patient k has insufficient CR events (EXP-1451) |
+| Dinner CR is worst: 77 mg/dL excursion | vs. lunch 46 mg/dL (EXP-1353) |
 | 8/11 patients systematically overcount carbs | EXP-1486 |
 | CR triage works with just 14 days of data | EXP-1453 minimum data analysis |
 
@@ -84,8 +84,8 @@ This **supply/demand decomposition** (metabolic flux) provides the foundation fo
 
 | Finding | Evidence |
 |---------|----------|
-| Effective ISF = 2.66× profile value | EXP-1291 deconfounded analysis |
-| ISF varies 131% within a single day | EXP-1371 time-block analysis |
+| Effective ISF = 2.72× profile value (mean) | EXP-1291 deconfounded analysis |
+| ISF varies 131% within a single day | EXP-1337 time-block analysis |
 | AID loop amplifies apparent ISF by 3.62× | AID adjusts temp basal, confounding (EXP-1291) |
 | Dose-response R²<0.08 for bolus outcomes | AID confounds individual bolus analysis (EXP-1487) |
 
@@ -97,7 +97,7 @@ This **supply/demand decomposition** (metabolic flux) provides the foundation fo
 |---------|----------|
 | Population DIA = 6.0h (not 5h as commonly profiled) | EXP-1331 |
 | DIA varies 3-7h across time of day | EXP-1361 |
-| Incorrect DIA explains ~25% of physics model bias | EXP-1341 |
+| Incorrect DIA explains ~25% of physics model bias | EXP-1341, EXP-1351 |
 
 ### 1.3 The TIR-TBR Paradox
 
@@ -227,7 +227,7 @@ Grades: A (≥80) | B (65-79) | C (50-64) | D (<50)
 ```
 IF TBR > 4%: override standard rec → "reduce aggressiveness"
 IF nocturnal TBR > 4%: add "reduce overnight basal 10%"
-IF AID-induced > 40%: flag "reduce max IOB / increase target"
+IF AID-induced > 40%: flag "reduce max IOB / increase target" *(planned; not yet in code)*
 ```
 
 ### 3.3 Recommendation Engine
@@ -301,7 +301,7 @@ Magnitude-gated recommendations with confidence intervals:
 - **Minimum data**: 14 days for CR triage; 90 days for full multi-parameter assessment
 - **CGM coverage**: ≥80% (gated by preconditions)
 - **Insulin telemetry**: ≥70% (bolus + temp basal + IOB)
-- **Latency**: <100ms per patient
+- **Latency**: <20ms per patient (measured EXP-1470/1500)
 - **Grade stability**: 100% (10/11) under bootstrap resampling
 
 ---
