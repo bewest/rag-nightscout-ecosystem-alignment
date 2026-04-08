@@ -223,13 +223,16 @@ def exp_1101_periodicity(patients, detail=False):
             if 0 <= idx < N:
                 meal_signal[idx] = 1.0
 
-        # --- 3. Autocorrelation of meal signal ---
-        # Compute autocorrelation at key lags
+        # --- 3. Autocorrelation of meal signal (FFT-based, O(N log N)) ---
         max_lag = min(STEPS_PER_DAY * 3, N // 2)  # up to 3 days
-        acf = np.correlate(meal_signal - meal_signal.mean(),
-                           meal_signal - meal_signal.mean(),
-                           mode='full')
-        acf = acf[len(acf)//2:]  # positive lags only
+        centered = meal_signal - meal_signal.mean()
+        # FFT-based autocorrelation
+        fft_size = 1
+        while fft_size < 2 * N:
+            fft_size *= 2
+        fft_x = np.fft.rfft(centered, n=fft_size)
+        acf_full = np.fft.irfft(fft_x * np.conj(fft_x))
+        acf = acf_full[:N]  # positive lags only
         acf = acf / acf[0] if acf[0] > 0 else acf  # normalize
 
         # Key lags: 4h, 5h, 6h (inter-meal), 12h, 24h, 48h
@@ -281,16 +284,14 @@ def exp_1101_periodicity(patients, detail=False):
         n_perm = 200
         perm_acfs = []
         rng = np.random.RandomState(42)
+        lag_24 = int(24 * 12)
         for _ in range(n_perm):
             shuffled = rng.permutation(meal_signal)
-            sc = np.correlate(shuffled - shuffled.mean(),
-                              shuffled - shuffled.mean(),
-                              mode='full')
-            sc = sc[len(sc)//2:]
-            sc = sc / sc[0] if sc[0] > 0 else sc
-            lag_24 = int(24 * 12)
-            if lag_24 < len(sc):
-                perm_acfs.append(float(sc[lag_24]))
+            sc_centered = shuffled - shuffled.mean()
+            fft_sc = np.fft.rfft(sc_centered, n=fft_size)
+            sc_acf = np.fft.irfft(fft_sc * np.conj(fft_sc))
+            if sc_acf[0] > 0 and lag_24 < len(sc_acf):
+                perm_acfs.append(float(sc_acf[lag_24] / sc_acf[0]))
         if perm_acfs:
             p_value_24h = float(np.mean(np.array(perm_acfs) >= acf_24h))
         else:
@@ -981,6 +982,9 @@ def exp_1106_xgboost_predictor(patients, detail=False):
             h_idx = int(hour) % 24
             features[i, 9] = hour_hist[h_idx]
 
+        # Clean NaN/inf in features
+        features = np.nan_to_num(features, nan=0.0, posinf=0.0, neginf=0.0)
+
         # Labels: meal within next 30 min and 60 min
         label_30 = (next_meal_dist <= 30).astype(int)
         label_60 = (next_meal_dist <= 60).astype(int)
@@ -1166,6 +1170,10 @@ def exp_1107_point_process(patients, detail=False):
         X = torch.tensor(sequences, dtype=torch.float32)
         y = torch.tensor(targets, dtype=torch.float32)
 
+        # Clean NaN/inf in LSTM inputs
+        X = torch.nan_to_num(X, nan=0.0, posinf=24.0, neginf=0.0)
+        y = torch.nan_to_num(y, nan=4.0, posinf=24.0, neginf=0.0)
+
         # Temporal split
         split = int(len(X) * 0.8)
         X_train, X_val = X[:split], X[split:]
@@ -1204,6 +1212,9 @@ def exp_1107_point_process(patients, detail=False):
             with torch.no_grad():
                 val_pred = model(X_val)
                 val_mae = float(torch.abs(val_pred - y_val).mean())
+
+            if not np.isfinite(val_mae):
+                break
 
             if val_mae < best_val_mae:
                 best_val_mae = val_mae
@@ -1249,8 +1260,10 @@ def exp_1107_point_process(patients, detail=False):
         print(f"{row['patient']:>8s} {row['n']:5d} {row['lstm_mae']:8.1f} "
               f"{row['base_mae']:8.1f} {row['Δ_min']:7.1f} {row['Δ%']:6.1f}%")
 
-    mean_lstm = np.mean([r['lstm_mae'] for r in summary_rows])
-    mean_base = np.mean([r['base_mae'] for r in summary_rows])
+    valid_lstm = [r['lstm_mae'] for r in summary_rows if np.isfinite(r['lstm_mae'])]
+    valid_base = [r['base_mae'] for r in summary_rows if np.isfinite(r['base_mae'])]
+    mean_lstm = np.mean(valid_lstm) if valid_lstm else float('inf')
+    mean_base = np.mean(valid_base) if valid_base else float('inf')
     wins = sum(1 for r in summary_rows if r['Δ_min'] > 0)
     print(f"\nMean LSTM MAE: {mean_lstm:.1f} min vs Baseline: {mean_base:.1f} min")
     print(f"LSTM wins: {wins}/{len(summary_rows)}")
@@ -1335,6 +1348,9 @@ def exp_1108_eating_soon(patients, detail=False):
             # Throughput (supply × demand)
             features[i, 10] = sd['product'][i] if i < len(sd['product']) else 0
             features[i, 11] = (i // STEPS_PER_DAY) % 7  # day of week
+
+        # Clean NaN/inf in features
+        features = np.nan_to_num(features, nan=0.0, posinf=0.0, neginf=0.0)
 
         # Temporal split
         split = int(N * 0.8)
@@ -1489,6 +1505,9 @@ def exp_1109_personal_vs_population(patients, detail=False):
             features[i, 5] = sd['net'][i] if i < len(sd['net']) else 0
             features[i, 6] = sd['product'][i] if i < len(sd['product']) else 0
             features[i, 7] = (i // STEPS_PER_DAY) % 7
+
+        # Clean NaN/inf in features
+        features = np.nan_to_num(features, nan=0.0, posinf=0.0, neginf=0.0)
 
         label_60 = (next_meal_dist <= 60).astype(int)
         split = int(N * 0.8)
