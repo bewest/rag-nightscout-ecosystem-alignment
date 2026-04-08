@@ -14,6 +14,10 @@ philosophies.  After correcting the oref0 BGI calculation, **oref0 deviation
 achieves the highest correlation with entered carbs** (r=0.368), surpassing
 Loop IRC (r=0.334).
 
+![Summary Dashboard](../../visualizations/carb-estimation-survey/fig4_summary_dashboard.png)
+*Figure 4: Six-panel summary — method hierarchy, correlation ranking, calibration ratios,
+announced vs UAM split, meal window breakdown, and key findings.*
+
 ## Methods
 
 | # | Method | What it measures | Source |
@@ -43,6 +47,10 @@ All methods convert the glucose-domain integral to grams via `carbs_g = integral
 - Physics has the **lowest correlation** (r=0.093) — it captures non-meal
   glucose rises too (dawn phenomenon, stress, exercise rebounds)
 
+![Method Distributions](../../visualizations/carb-estimation-survey/fig1_method_distributions.png)
+*Figure 1: Distribution of carb estimates by method (violin + box plots), split by announced vs UAM meals.
+Physics and oref0 have broad, overlapping distributions; Excursion and Loop IRC are tightly clustered near zero.*
+
 ## By Meal Window
 
 | Window | n | % UAM | Physics | Excursion | Loop IRC | oref0 |
@@ -57,6 +65,10 @@ amplifying post-meal glucose rise.  47% of detected events fall in "snack/other"
 — many are likely not true meals (exercise, stress, sensor noise).
 
 ## Per-Patient Highlights
+
+![Per-Patient Comparison](../../visualizations/carb-estimation-survey/fig3_per_patient_comparison.png)
+*Figure 3: Per-patient median carb estimates across methods, with UAM% and meal detection rates.
+Patient i is a physics outlier (60.8g); patient j has no Loop IRC data (0% pred30 coverage).*
 
 | Patient | Meals | UAM% | Physics | Loop IRC | Entered | Notes |
 |---------|-------|------|---------|----------|---------|-------|
@@ -124,6 +136,10 @@ insulin-aware deviation properly credits glucose stability during insulin
 activity as carb absorption, giving it a more complete picture of meal impact.
 
 ### Entered Carbs Are Unreliable
+
+![Correlation Scatter](../../visualizations/carb-estimation-survey/fig2_correlation_scatter.png)
+*Figure 2: Each method's estimate vs user-entered carbs (announced meals only).
+oref0 tracks the diagonal best (r=0.368); Physics is nearly flat (r=0.093).*
 
 - Median entered carbs (30g) are 1.1–3.7× the announced-meal algorithmic estimates
 - Correlation with all methods is weak to moderate (r < 0.37)
