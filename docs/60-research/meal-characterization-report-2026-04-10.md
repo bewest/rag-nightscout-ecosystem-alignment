@@ -25,6 +25,8 @@ averages **1.7 meals/day** — closer to real eating frequency.
 
 ## Phase-of-Day Periodicity
 
+![Phase-of-Day Histograms](../../visualizations/meal-characterization/fig1_phase_of_day_histograms.png)
+
 The population histogram shows clear diurnal structure:
 - **Morning peak: hours 6–9** (breakfast + dawn phenomenon)
 - **Afternoon trough: hours 14–18** (fewest detections)
@@ -47,6 +49,8 @@ uses `hist_meal_prob` as a feature, which captures exactly this pattern.
 
 ### Population Templates (baseline-subtracted, centered on glucose peak)
 
+![Population Meal Templates](../../visualizations/meal-characterization/fig2_population_meal_templates.png)
+
 All four meal windows show remarkably similar canonical shapes:
 
 | Window | n | Median peak rise | IQR |
@@ -68,6 +72,10 @@ subset of meals with dramatic post-bolus crashes.
 
 ### Cross-Patient Template Signatures
 
+![Cross-Patient Templates](../../visualizations/meal-characterization/fig4_cross_patient_templates.png)
+
+![Dinner Overlays](../../visualizations/meal-characterization/fig3_dinner_overlays.png)
+
 Each patient has a distinctive post-meal "fingerprint":
 
 - **Flat responders** (d, k): Minimal excursion (+10–16 mg/dL), tight AID control
@@ -80,6 +88,8 @@ correction combined with ISF mismatch (effective ISF 2.2× profile from EXP-1291
 
 ## Carb Estimate Distributions
 
+![Carb Distributions](../../visualizations/meal-characterization/fig5_carb_distributions.png)
+
 The physics residual method produces a roughly log-normal distribution:
 - **Announced meals**: bell-shaped, centered ~20–30g, tight distribution
 - **UAM meals**: flatter, wider distribution (5–80g), reflecting the full
@@ -89,6 +99,8 @@ Excursion-based estimates are heavily right-skewed with most mass near 0–5g,
 because AID insulin blunts the observed glucose rise.
 
 ## Rise Rate vs Excursion
+
+![Rise Rate vs Excursion](../../visualizations/meal-characterization/fig6_rise_rate_vs_excursion.png)
 
 Linear relationship (r ≈ 0.6): faster rise → bigger excursion.  All meal
 windows overlap — **meal window does not predict rise characteristics**.
