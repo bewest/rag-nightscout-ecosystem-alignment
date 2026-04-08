@@ -271,6 +271,8 @@ Closing this gap requires one or more of:
 - **Longer training windows**: More training data per patient (currently ~106 days train, 36 days test)
 - **Non-linear AR**: Currently fails (EXP-1192), but with careful regularization may capture non-linear correction patterns
 
+**Noise Ceiling Caveat**: The R²=0.854 ceiling assumes additive Gaussian CGM noise (σ=15 mg/dL) as the sole irreducible error source. Real CGM noise is non-Gaussian (includes drift, compression artifacts) and σ=15 may be conservative — modern Dexcom G7 MARD ~8-9% at mean glucose ~153 mg/dL gives σ≈13-14 mg/dL, which would raise the ceiling to ~0.88 and widen the gap to ~0.10. The remaining 0.073 gap between ensemble+AR (0.781) and ceiling (0.854) is small relative to estimated unmodeled variance from meals (~0.03-0.05 R²), exercise (~0.01-0.02), and AID decisions (~0.01-0.02), suggesting either: (a) the 2h glucose window implicitly captures most meal effects, or (b) the ceiling is underestimated, or (c) the ensemble+AR exploits some data-specific autocorrelation patterns.
+
 ## Promising Unrun Experiments
 
 ### High Priority (Expected Impact)

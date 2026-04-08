@@ -134,6 +134,8 @@ fasting deviations during 4–8am vs midnight–4am, consistent with the univers
 dawn phenomenon finding (71.3±18.7 mg/dL amplitude) from previous research.
 Patients: b, d, h.
 
+**Deviation Magnitude**: Hourly deviations vary widely across patients (0–21 U/hr range), with median values typically 3–6 U/hr. The large range reflects inter-patient variability in basal needs, dawn phenomenon intensity, and AID loop compensation behavior.
+
 ### 2.4 Effective ISF vs Profile ISF
 
 | Patient | Profile ISF (mg/dL) | Effective ISF (mg/dL) | Ratio | Interpretation |

@@ -73,7 +73,7 @@ Even the "best" patient (k) has R²=-0.119. This means the raw supply-demand con
 
 | Patient | Corrections | Raw ISF | Deconf ISF | Profile ISF | Raw Ratio | Deconf Ratio |
 |---|---|---|---|---|---|---|
-| a | 57 | 69.7 | 27.1 | 48.8 | 1.43 | **0.56** |
+| a | 57 | 69.7 | 27.1 | 48.6 | 1.43 | **0.56** |
 | c | 65 | 288.6 | — | 78.9 | 3.66 | — |
 | d | 6 | 163.8 | — | 40.0 | 4.09 | — |
 | f | 89 | 38.2 | 136.2 | 20.6 | 1.85 | **6.68** |
@@ -167,7 +167,7 @@ Composite score combining basal adequacy, ISF calibration, CR effectiveness, and
 | 5 | e | 54.1 | needs_tuning |
 | 6 | g | 53.8 | needs_tuning |
 | 7 | h | 49.5 | significantly_miscalibrated |
-| 8 | a | 48.8 | significantly_miscalibrated |
+| 8 | a | 48.6 | significantly_miscalibrated |
 | 9 | f | 48.5 | significantly_miscalibrated |
 | 10 | c | 39.7 | significantly_miscalibrated |
 | 11 | i | **2.8** | critically_miscalibrated |
@@ -230,7 +230,7 @@ Compared to EXP-990 fidelity score (range 37.5–76.4):
 
 | Patient | Basal (1292) | ISF (1298) | Fasting (1296) | Integrated (1300) | Weekly (1297) | Preconditions |
 |---|---|---|---|---|---|---|
-| a | ↑ increase | calibrated | flat | 48.8 sig_miscal | 47.8 stable | 6/6 ✓ |
+| a | ↑ increase | calibrated | flat | 48.6 sig_miscal | 47.8 stable | 6/6 ✓ |
 | b | ↑ increase | conservative | no data | 62.2 needs_tune | 61.0 improving | 4/6 |
 | c | ↓ decrease | aggressive | too high | 39.7 sig_miscal | 47.4 stable | 6/6 ✓ |
 | d | ↓ decrease | aggressive | appropriate | 67.9 needs_tune | 77.1 worsening | 6/6 ✓ |

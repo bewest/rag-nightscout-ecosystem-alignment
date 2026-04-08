@@ -121,6 +121,8 @@ Noise ceiling (σ=15 mg/dL):            R² ≈ 0.854
 
 **Why depth 2 wins**: With 186 features and ~30K training samples, depth-3 trees overfit by creating too many interaction terms. Depth-2 restricts to pairwise feature interactions, which is sufficient for the linear metabolic dynamics.
 
+*Note: This finding supersedes EXP-1112 which found depth-3 optimal on a single train/test split. The difference (0.006 R²) reflects depth-2's regularization advantage under 5-fold CV and is within noise margins for most patients.*
+
 ---
 
 ### EXP-1256: Longer Prediction Horizons ★★★

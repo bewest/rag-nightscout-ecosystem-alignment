@@ -23,6 +23,8 @@ The causal PK projection (projecting IOB/COB forward using known absorption curv
 **exactly zero** information beyond what the model already extracts from the PK window.
 All R²=0.658 improvement from EXP-1151 was future information leakage.
 
+> **Clarification**: The "100% leakage" finding applies specifically to the causal projection method (projecting current IOB forward using known decay curves), which adds zero information because XGBoost already learns decay patterns from the 2h PK window. The raw PK lead feature (EXP-1154) still shows +0.045 R² in 5-fold CV, but this improvement derives from learnable future bolus patterns — information unavailable at prediction time in production. This constitutes *causal leakage* (future decisions encoded in features) rather than *temporal contamination* (train/test data overlap), which is why it survives cross-validation.
+
 ### ✅ Causal Alternatives That Work
 
 | Feature | Δ R² | Wins | Mechanism |

@@ -135,6 +135,8 @@ Rigorous TimeSeriesSplit validation confirms PK lead is real (even if partially 
 The +0.045 improvement under 5-fold CV is robust and universal. Even if some of this comes
 from leakage, the PK trajectory information (knowable decay curves) provides genuine signal.
 
+> **Note**: Subsequent causal decomposition analysis (EXP-1161–1169, see [Causal PK Leakage Report](causal-pk-leakage-report-2026-04-10.md)) determined that the +0.045 R² improvement from PK lead predominantly reflects learnable future bolus patterns rather than legitimate causal PK dynamics. The causal projection method (using only known insulin decay curves) adds exactly +0.000 R², confirming XGBoost already captures PK decay from the 2h window. The improvement survives 5-fold CV because future bolus patterns are statistically consistent across time folds (causal leakage, not temporal contamination).
+
 ---
 
 ### EXP-1155: Full SOTA Ensemble Pipeline ★★★

@@ -5,9 +5,13 @@
 **Campaign**: Physics-Based Metabolic Flux Decomposition (Experiments 121–130 of campaign)  
 **Status**: 9/10 completed successfully, 1 failed (NaN in feature engineering)
 
+> **⚠️ Errata (2026-04-10)**: The XGBoost→LSTM pipeline results (R²=0.581 single-split, R²=0.549 5-fold CV) reported below were later invalidated by EXP-1180 in the [Causal Benchmark Report](causal-benchmark-report-2026-04-10.md). Rigorous 5-fold CV showed LSTM *hurts* performance (−0.068 R², 0/11 patients improve). The LSTM memorized temporal boundary artifacts in the single train/test split. The validated single-model SOTA is Enhanced XGBoost at R²=0.477 (5-fold CV). The production SOTA is Horizon Ensemble+AR at R²=0.781 (5-fold CV, EXP-1211).
+
 ## Executive Summary
 
-This batch tested advanced architectures (transformers, wavelets, curriculum learning, learned embeddings) and combined all winning techniques into definitive pipelines. The key finding: **simple stacking of proven winners outperforms every exotic architecture**. The XGBoost→LSTM pipeline achieves R²=0.581 (single split), the highest ever recorded in this campaign. The definitive 5-fold cross-validation benchmark confirms R²=0.549.
+This batch tested advanced architectures (transformers, wavelets, curriculum learning, learned embeddings) and combined all winning techniques into definitive pipelines. The key finding: **simple stacking of proven winners outperforms every exotic architecture**. The XGBoost→LSTM pipeline achieves R²=0.581 (single split), the highest ever recorded in this campaign.†  The definitive 5-fold cross-validation benchmark confirms R²=0.549.†
+
+*†Later invalidated — see errata above. LSTM memorized split-boundary artifacts; validated SOTA is Enhanced XGBoost R²=0.477 (5-fold CV).*
 
 ### SOTA Progression Update
 
@@ -18,7 +22,7 @@ Glucose-only Ridge:                     R² = 0.485
 + Weighted ensemble (Ridge+GB+CNN):     R² = 0.507  ← EXP-1108
 + Grand combined (block CV):           R² = 0.547  ← EXP-1120
 + Full pipeline (all winners stacked):  R² = 0.578  ← EXP-1121 ★
-+ XGBoost→LSTM pipeline:               R² = 0.581  ← EXP-1128 ★★ CAMPAIGN BEST
++ XGBoost→LSTM pipeline:               R² = 0.581  ← EXP-1128 ★★ CAMPAIGN BEST †INVALIDATED
 + 5-fold CV definitive benchmark:       R² = 0.549  ← EXP-1130 (rigorous)
 + Online AR correction:                R² ≈ 0.69   ← Production-only
 Noise ceiling (σ=15 mg/dL):            R² = 0.854
@@ -157,11 +161,11 @@ Noise ceiling (σ=15 mg/dL):            R² = 0.854
 
 - **11/11 wins** over Ridge baseline
 - **10/11 LSTM correction wins** (only j regresses)
-- **R²=0.581** — CAMPAIGN BEST (single split)
+- **R²=0.581** — CAMPAIGN BEST (single split) †later invalidated, see errata
 - Simpler than EXP-1121 full pipeline (no TCN/CNN/ensemble), nearly identical performance
 - LSTM adds +0.011 mean, with largest gains on hard patients
 
-**Key Insight**: The 2-stage XGBoost→LSTM pipeline captures 96% of the full pipeline's gains with 1/3 the complexity. XGBoost handles the main prediction, LSTM captures temporal residual patterns. This is the **recommended production architecture**.
+**Key Insight**: The 2-stage XGBoost→LSTM pipeline captures 96% of the full pipeline's gains with 1/3 the complexity. XGBoost handles the main prediction, LSTM captures temporal residual patterns. ~~This is the **recommended production architecture**.~~ †Later invalidated, see errata — LSTM gains were artifacts of the single train/test split.
 
 ---
 
@@ -219,8 +223,8 @@ Noise ceiling (σ=15 mg/dL):            R² = 0.854
 |------|-----------|------|------|--------|
 | 1 | Online AR correction | +0.156 | 11/11 | ★★★ Production-only |
 | 2 | Full pipeline (all winners) | +0.043 | 11/11 | ★★★★★ NEW |
-| 3 | XGBoost→LSTM pipeline | +0.038 | 11/11 | ★★★★★ RECOMMENDED |
-| 4 | Residual LSTM correction | +0.024 | 10/11 | ★★★★ |
+| 3 | XGBoost→LSTM pipeline | +0.038 | 11/11 | ~~★★★★★ RECOMMENDED~~ †INVALIDATED |
+| 4 | Residual LSTM correction | +0.024 | 10/11 | ★★★★ †INVALIDATED |
 | 5 | Residual stacking | +0.015 | 9/11 | ★★★ |
 | 6 | Residual CNN | +0.015 | 11/11 | ★★★ |
 | 7 | XGBoost tuning | +0.011 | 11/11 | ★★★ |
@@ -238,10 +242,10 @@ Noise ceiling (σ=15 mg/dL):            R² = 0.854
 ## Key Conclusions
 
 ### 1. Simplicity Wins
-The XGBoost→LSTM 2-stage pipeline (EXP-1128, R²=0.581) achieves 96% of the full 4-model pipeline (EXP-1121, R²=0.578) with far less complexity. Every exotic architecture (transformers, wavelets, embeddings, curriculum) underperforms this simple stack.
+The XGBoost→LSTM 2-stage pipeline (EXP-1128, R²=0.581†) achieves 96% of the full 4-model pipeline (EXP-1121, R²=0.578†) with far less complexity. Every exotic architecture (transformers, wavelets, embeddings, curriculum) underperforms this simple stack. *†Later invalidated, see errata.*
 
 ### 2. The Information Frontier is Real
-The 5-fold CV benchmark (EXP-1130) confirms R²=0.549, consistent with our earlier block CV estimate of 0.547. The gap between single-split (0.581) and cross-validated (0.549) estimates reflects genuine evaluation variance, not overfitting — the techniques are robust.
+The 5-fold CV benchmark (EXP-1130) confirms R²=0.549, consistent with our earlier block CV estimate of 0.547. The gap between single-split (0.581) and cross-validated (0.549) estimates reflects genuine evaluation variance, not overfitting — the techniques are robust. *†Later invalidated: this gap was in fact caused by LSTM memorizing temporal boundary artifacts in the single split.*
 
 ### 3. Patient Stratification is Stable
 | Tier | Patients | 5-fold R² | Insight |
@@ -265,21 +269,23 @@ Based on the information frontier analysis, the main remaining gains likely come
 - **Stacked generalization** (level-2 meta-learner over diverse base models)
 - **Patient-adaptive online learning** (continual fine-tuning on recent data)
 
-## Recommended Production Architecture
+## ~~Recommended Production Architecture~~ (INVALIDATED)
+
+> **⚠️ Note**: This architecture was invalidated by EXP-1180. The LSTM stage memorized split-boundary artifacts and does not generalize. See the [Causal Benchmark Report](causal-benchmark-report-2026-04-10.md) for the validated production architecture (Horizon Ensemble+AR, R²=0.781).
 
 ```
 Input: 2h glucose window (24 steps × 5min) + 8 PK channels + physics features
   ↓
 Stage 1: Per-patient XGBoost (depth=3, lr=0.08, n=300, Δg target)
   ↓
-Stage 2: Residual LSTM (32 hidden, 2 layers, 10 epochs on validation residuals)
+Stage 2: Residual LSTM (32 hidden, 2 layers, 10 epochs on validation residuals)  ← INVALIDATED
   ↓
 Output: 1h-ahead glucose prediction
   ↓
 Post-processing: Conformal prediction intervals (90% coverage)
 ```
 
-**Expected Performance**: R²=0.55±0.03 (5-fold CV), MAE=26±3 mg/dL, Clarke A=62±5%
+~~**Expected Performance**: R²=0.55±0.03 (5-fold CV), MAE=26±3 mg/dL, Clarke A=62±5%~~
 
 ## Files
 
