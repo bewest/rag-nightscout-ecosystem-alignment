@@ -315,6 +315,9 @@ class MealPrediction:
     estimated_carbs_g: float             # expected meal size from history
     timing_models: List[MealTimingModel]  # underlying per-window models
     rationale: str                       # human-readable explanation
+    proactive_score: float = 0.0         # P(meal) from proactive model (no net_flux)
+    reactive_score: float = 0.0          # P(meal) from reactive model (with net_flux)
+    prediction_mode: str = 'gaussian'    # 'gaussian', 'proactive', 'reactive', 'dual'
 
 
 # ── Settings Advisor ──────────────────────────────────────────────────

@@ -144,13 +144,15 @@ def run_pipeline(patient: PatientData,
             if patient.days_of_data >= 7.0 and meal_history.total_detected >= 10:
                 timing_models = build_timing_models(meal_history, patient.days_of_data)
 
-                # Train ML model if enough data (EXP-1106: AUC=0.861)
+                # Train ML model if enough data (EXP-1129: dual-mode AUC=0.846/0.942)
                 ml_model = None
                 if patient.days_of_data >= 14.0 and meal_history.total_detected >= 20:
                     ml_model = MealMLModel()
                     net_flux = metabolic.net_flux if hasattr(metabolic, 'net_flux') else None
+                    supply = metabolic.supply if hasattr(metabolic, 'supply') else None
                     if not ml_model.train(meal_history, cleaned.glucose,
                                           net_flux=net_flux,
+                                          supply=supply,
                                           days_of_data=patient.days_of_data):
                         ml_model = None
 
@@ -162,6 +164,23 @@ def run_pipeline(patient: PatientData,
                     if ml_model is not None:
                         N = len(cleaned.glucose)
                         last_meal_idx = max(m.index for m in meal_history.meals)
+
+                        # 60-min glucose window (13 steps) for pre-meal features
+                        win_start = max(0, N - 13)
+                        glucose_window = cleaned.glucose[win_start:N]
+
+                        # Supply window for IOB proxy
+                        supply_arr = supply if supply is not None else np.zeros(N)
+                        supply_window = supply_arr[win_start:N]
+
+                        # Fasting duration estimate
+                        mean_g = float(np.nanmean(cleaned.glucose[max(0, N - 288):N]))
+                        fasting_steps = 0
+                        for j in range(N - 1, max(0, N - 288), -1):
+                            if not np.isnan(cleaned.glucose[j]) and cleaned.glucose[j] > mean_g + 15:
+                                break
+                            fasting_steps += 1
+
                         ml_kwargs = dict(
                             ml_model=ml_model,
                             glucose_current=float(cleaned.glucose[-1]),
@@ -172,6 +191,10 @@ def run_pipeline(patient: PatientData,
                                                       if m.index >= N - 288)),
                             net_flux_current=float(net_flux[-1]) if net_flux is not None and len(net_flux) > 0 else 0.0,
                             day_index=N // 288,
+                            glucose_window=glucose_window,
+                            supply_window=supply_window,
+                            fasting_hours=fasting_steps * 5.0 / 60.0,
+                            current_step=N - 1,
                         )
 
                     meal_prediction = predict_next_meal(
