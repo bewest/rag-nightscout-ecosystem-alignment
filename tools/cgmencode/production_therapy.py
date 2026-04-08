@@ -61,13 +61,92 @@ TAR_L1_LO = 181
 TAR_L1_HI = 250
 TAR_L2_LO = 251
 
-# ADA targets (%)
+# ADA targets (%) — defaults, overridden by TargetProfile
 ADA_TIR_TARGET = 70.0
 ADA_TBR_L1_TARGET = 4.0
 ADA_TBR_L2_TARGET = 1.0
 ADA_TAR_L1_TARGET = 25.0
 ADA_TAR_L2_TARGET = 5.0
 ADA_CV_TARGET = 36.0
+
+
+@dataclass
+class TargetProfile:
+    """Configurable target profile for different clinical contexts.
+
+    Profiles control both the target thresholds and the safety response
+    behavior. The ADA targets are the clinical gold standard; AID-aware
+    profiles adjust how the pipeline *responds* to those targets rather
+    than changing the targets themselves.
+    """
+    name: str
+    tir_target: float = 70.0
+    tbr_l1_target: float = 4.0
+    tbr_l2_target: float = 1.0
+    tar_l1_target: float = 25.0
+    tar_l2_target: float = 5.0
+    cv_target: float = 36.0
+    # Safety response behavior
+    safety_override: bool = True     # TBR>threshold fires hard override
+    tbr_sustained_only: bool = False # Only count episodes >15min for safety
+    sustained_min_minutes: int = 15  # Duration threshold for "sustained"
+    # Safety tier boundaries (total TBR %)
+    safety_critical: float = 8.0
+    safety_high: float = 4.0
+    safety_moderate: float = 2.0
+
+    def safety_tier_from_tbr(self, tbr_pct: float) -> 'SafetyTier':
+        """Compute safety tier using this profile's boundaries."""
+        if tbr_pct >= self.safety_critical:
+            return SafetyTier.CRITICAL
+        if tbr_pct >= self.safety_high:
+            return SafetyTier.HIGH
+        if tbr_pct >= self.safety_moderate:
+            return SafetyTier.MODERATE
+        return SafetyTier.LOW
+
+
+# ── Built-in profiles ──────────────────────────────────────────────────────
+
+ADA_CLINICAL = TargetProfile(
+    name='ADA Clinical (2019 Consensus)',
+    tir_target=70.0, tbr_l1_target=4.0, tbr_l2_target=1.0,
+    tar_l1_target=25.0, tar_l2_target=5.0, cv_target=36.0,
+    safety_override=True, tbr_sustained_only=False,
+)
+
+AID_AWARE = TargetProfile(
+    name='AID-Aware (Loop/Trio/AAPS)',
+    tir_target=70.0, tbr_l1_target=4.0, tbr_l2_target=1.0,
+    tar_l1_target=25.0, tar_l2_target=5.0, cv_target=40.0,
+    safety_override=True, tbr_sustained_only=True,
+    sustained_min_minutes=15,
+    # Shift safety tiers: brief algorithmic lows don't escalate
+    safety_critical=10.0, safety_high=6.0, safety_moderate=3.0,
+)
+
+PREGNANCY = TargetProfile(
+    name='Pregnancy (tighter targets)',
+    tir_target=70.0, tbr_l1_target=3.0, tbr_l2_target=0.5,
+    tar_l1_target=20.0, tar_l2_target=3.0, cv_target=33.0,
+    safety_override=True, tbr_sustained_only=False,
+    safety_critical=6.0, safety_high=3.0, safety_moderate=1.5,
+)
+
+PEDIATRIC = TargetProfile(
+    name='Pediatric',
+    tir_target=65.0, tbr_l1_target=4.0, tbr_l2_target=1.0,
+    tar_l1_target=30.0, tar_l2_target=5.0, cv_target=40.0,
+    safety_override=True, tbr_sustained_only=False,
+)
+
+TARGET_PROFILES = {
+    'ada': ADA_CLINICAL,
+    'aid': AID_AWARE,
+    'pregnancy': PREGNANCY,
+    'pediatric': PEDIATRIC,
+}
+DEFAULT_PROFILE = ADA_CLINICAL
 
 # v10 scoring
 GRADE_BOUNDARIES = {'D': 0, 'C': 50, 'B': 65, 'A': 80}
@@ -130,7 +209,10 @@ class SafetyTier(str, Enum):
     CRITICAL = 'critical'
 
     @classmethod
-    def from_tbr(cls, tbr_pct: float) -> 'SafetyTier':
+    def from_tbr(cls, tbr_pct: float,
+                 profile: 'TargetProfile | None' = None) -> 'SafetyTier':
+        if profile is not None:
+            return profile.safety_tier_from_tbr(tbr_pct)
         if tbr_pct >= 8.0:
             return cls.CRITICAL
         if tbr_pct >= 4.0:
@@ -196,6 +278,31 @@ class TimeInRanges:
     @property
     def ada_status(self) -> str:
         met = self.ada_targets_met
+        if met == 4:
+            return 'meets_all_targets'
+        if met >= 3:
+            return 'partially_meets'
+        if met >= 2:
+            return 'below_targets'
+        return 'significantly_below'
+
+    def meets_targets(self, profile: 'TargetProfile | None' = None) -> dict:
+        """Check targets against a specific profile (default: ADA)."""
+        p = profile or DEFAULT_PROFILE
+        return {
+            'tir': self.tir >= p.tir_target,
+            'tbr': (self.tbr_l1 < p.tbr_l1_target
+                    and self.tbr_l2 < p.tbr_l2_target),
+            'tar': (self.tar_l1 < p.tar_l1_target
+                    and self.tar_l2 < p.tar_l2_target),
+            'cv': self.cv < p.cv_target,
+        }
+
+    def targets_met_count(self, profile: 'TargetProfile | None' = None) -> int:
+        return sum(self.meets_targets(profile).values())
+
+    def target_status(self, profile: 'TargetProfile | None' = None) -> str:
+        met = self.targets_met_count(profile)
         if met == 4:
             return 'meets_all_targets'
         if met >= 3:
@@ -665,23 +772,38 @@ def assess_preconditions(glucose: np.ndarray, bolus: np.ndarray,
 def generate_recommendations(flags: TherapyFlags, grade: Grade,
                              overnight_drift: float, max_excursion: float,
                              cv: float, total_tbr: float,
-                             safety_tier: SafetyTier) -> List[Recommendation]:
+                             safety_tier: SafetyTier,
+                             profile: 'TargetProfile | None' = None,
+                             sustained_tbr: float | None = None,
+                             ) -> List[Recommendation]:
     """Generate prioritized therapy recommendations with safety-first protocol.
 
     Fix order (validated EXP-1479): basal → CR → ISF
-    Safety override (validated EXP-1496): TBR>4% → reduce aggressiveness first
+    Safety override (validated EXP-1496): TBR>threshold → reduce aggressiveness
+
+    Args:
+        profile: Target profile controlling thresholds and behavior.
+        sustained_tbr: If provided and profile.tbr_sustained_only is True,
+            use this (episodes >15min only) instead of total_tbr for safety.
     """
+    p = profile or DEFAULT_PROFILE
     recs = []
     priority = 1
 
-    # Safety-first: if TBR exceeds ADA target, override all other recs
-    if total_tbr >= ADA_TBR_L1_TARGET:
-        tbr_excess = total_tbr - ADA_TBR_L1_TARGET
+    # Determine which TBR to use for safety decisions
+    effective_tbr = total_tbr
+    if p.tbr_sustained_only and sustained_tbr is not None:
+        effective_tbr = sustained_tbr
+
+    # Safety-first: if TBR exceeds profile target, override all other recs
+    if p.safety_override and effective_tbr >= p.tbr_l1_target:
+        tbr_excess = effective_tbr - p.tbr_l1_target
         recs.append(Recommendation(
             parameter='aggressiveness',
             direction='decrease',
             magnitude_pct=min(20, tbr_excess * 5),
-            rationale=(f"TBR {total_tbr:.1f}% exceeds ADA 4% target — "
+            rationale=(f"TBR {effective_tbr:.1f}% exceeds {p.tbr_l1_target}% target"
+                       f" ({p.name}) — "
                        f"reduce AID aggressiveness before other changes"),
             priority=priority,
             confidence=0.9,
@@ -714,16 +836,16 @@ def generate_recommendations(flags: TherapyFlags, grade: Grade,
         priority += 1
 
     # 3. ISF (from overcorrection / CV)
+    cv_threshold = p.cv_target
     if flags.cv_flag or flags.isf_flag:
-        # Safety gate: don't decrease ISF if TBR already high
         direction = 'increase'
-        if total_tbr >= ADA_TBR_L1_TARGET and direction == 'decrease':
-            direction = 'increase'  # override
+        if effective_tbr >= p.tbr_l1_target and direction == 'decrease':
+            direction = 'increase'
         recs.append(Recommendation(
             parameter='isf',
             direction=direction,
             magnitude_pct=ISF_ADJUST_PCT,
-            rationale=f"CV {cv:.1f}% {'>' if cv > CV_THRESHOLD else '<'} {CV_THRESHOLD}%",
+            rationale=f"CV {cv:.1f}% {'>' if cv > cv_threshold else '<'} {cv_threshold}%",
             priority=priority,
             confidence=0.7,
         ))
@@ -749,9 +871,10 @@ def generate_recommendations(flags: TherapyFlags, grade: Grade,
 class TherapyPipeline:
     """Production therapy detection and recommendation pipeline (v10)."""
 
-    def __init__(self):
+    def __init__(self, profile: 'TargetProfile | None' = None):
         self._patients: Dict[str, Dict[str, np.ndarray]] = {}
         self._assessments: Dict[str, TherapyAssessment] = {}
+        self.profile = profile or DEFAULT_PROFILE
 
     def load_patients(self, patients_dir: str,
                       max_patients: int = 50) -> List[str]:
@@ -827,11 +950,12 @@ class TherapyPipeline:
         overcorr = compute_overcorrection_rate(glucose, bolus, carbs)
 
         # 4. Flags
+        p = self.profile
         flags = TherapyFlags(
             basal_flag=abs(drift) >= DRIFT_THRESHOLD,
             cr_flag=excursion >= EXCURSION_THRESHOLD,
-            cv_flag=tir_data.cv >= CV_THRESHOLD,
-            tbr_flag=tir_data.total_tbr >= ADA_TBR_L1_TARGET,
+            cv_flag=tir_data.cv >= p.cv_target,
+            tbr_flag=tir_data.total_tbr >= p.tbr_l1_target,
         )
 
         # 5. Safety & scoring
@@ -839,15 +963,26 @@ class TherapyPipeline:
         v10 = compute_v10_score(tir_data.tir, tir_data.cv,
                                 tir_data.overnight_tir, safety)
         grade = Grade.from_score(v10)
-        safety_tier = SafetyTier.from_tbr(tir_data.total_tbr)
+        safety_tier = SafetyTier.from_tbr(tir_data.total_tbr, profile=p)
 
         # 6. Hypo episodes
         hypos = detect_hypo_episodes(glucose, carbs, temp_rate)
 
+        # 6b. Compute sustained TBR if profile requires it
+        sustained_tbr = None
+        if p.tbr_sustained_only:
+            sustained_steps = p.sustained_min_minutes // 5
+            sustained_hypos = [h for h in hypos
+                               if h.duration_steps >= sustained_steps]
+            total_sustained_steps = sum(h.duration_steps for h in sustained_hypos)
+            valid_n = max(1, int(np.sum(~np.isnan(glucose))))
+            sustained_tbr = float(total_sustained_steps / valid_n * 100)
+
         # 7. Recommendations
         recs = generate_recommendations(
             flags, grade, drift, excursion, tir_data.cv,
-            tir_data.total_tbr, safety_tier)
+            tir_data.total_tbr, safety_tier,
+            profile=p, sustained_tbr=sustained_tbr)
 
         assessment = TherapyAssessment(
             patient_id=patient_id,
@@ -882,13 +1017,14 @@ class TherapyPipeline:
         """Generate a patient-facing therapy report."""
         if patient_id not in self._assessments:
             self.assess(patient_id)
-        return PatientReport(self._assessments[patient_id])
+        return PatientReport(self._assessments[patient_id], profile=self.profile)
 
     def cohort_report(self) -> 'CohortReport':
         """Generate a clinician-facing cohort summary."""
         if not self._assessments:
             self.assess_all()
-        return CohortReport(list(self._assessments.values()))
+        return CohortReport(list(self._assessments.values()),
+                            profile=self.profile)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -903,18 +1039,22 @@ class PatientReport:
     and safety alerts.
     """
 
-    def __init__(self, assessment: TherapyAssessment):
+    def __init__(self, assessment: TherapyAssessment,
+                 profile: 'TargetProfile | None' = None):
         self.a = assessment
+        self.profile = profile or DEFAULT_PROFILE
 
     def text_summary(self) -> str:
         """Generate human-readable text report."""
         a = self.a
         tir = a.time_in_ranges
+        p = self.profile
 
         lines = []
         lines.append("=" * 70)
         lines.append(f"  THERAPY SETTINGS REPORT — Patient {a.patient_id}")
-        lines.append(f"  Pipeline v10 | {a.preconditions.n_days} days analyzed")
+        lines.append(f"  Pipeline v10 | {a.preconditions.n_days} days analyzed"
+                     f" | {p.name}")
         lines.append("=" * 70)
         lines.append("")
 
@@ -934,7 +1074,7 @@ class PatientReport:
             lines.append("  ⚠️  SAFETY ALERT  ⚠️")
             lines.append(f"  Hypoglycemia risk: {a.safety_tier.value.upper()}")
             lines.append(f"  Time below 70 mg/dL: {tir.total_tbr:.1f}% "
-                         f"(ADA target: <4%)")
+                         f"(target: <{p.tbr_l1_target}%)")
             if a.n_hypo_episodes > 0:
                 lines.append(f"  Hypo episodes: {a.n_hypo_episodes} "
                              f"({a.hypo_rate_per_day:.1f}/day), "
@@ -950,21 +1090,22 @@ class PatientReport:
                 return '✅' if val >= target else '❌'
             return '✅' if val < target else '❌'
 
-        lines.append(f"  {_ada_check(tir.tir, 70)} Time in Range (70-180):  "
-                     f"{tir.tir:.1f}%  (target: ≥70%)")
-        lines.append(f"  {_ada_check(tir.total_tbr, 4, '<')} Time Below Range (<70):  "
-                     f"{tir.total_tbr:.1f}%  (target: <4%)")
+        lines.append(f"  {_ada_check(tir.tir, p.tir_target)} Time in Range (70-180):  "
+                     f"{tir.tir:.1f}%  (target: ≥{p.tir_target:.0f}%)")
+        lines.append(f"  {_ada_check(tir.total_tbr, p.tbr_l1_target, '<')} Time Below Range (<70):  "
+                     f"{tir.total_tbr:.1f}%  (target: <{p.tbr_l1_target}%)")
         lines.append(f"    └─ Level 1 (54-69):  {tir.tbr_l1:.1f}%  "
-                     f"(target: <4%)")
+                     f"(target: <{p.tbr_l1_target}%)")
         lines.append(f"    └─ Level 2 (<54):    {tir.tbr_l2:.1f}%  "
-                     f"(target: <1%)")
-        lines.append(f"  {_ada_check(tir.total_tar, 30, '<')} Time Above Range (>180):  "
-                     f"{tir.total_tar:.1f}%  (target: <30%)")
-        lines.append(f"  {_ada_check(tir.cv, 36, '<')} Glucose Variability (CV):  "
-                     f"{tir.cv:.1f}%  (target: <36%)")
+                     f"(target: <{p.tbr_l2_target}%)")
+        lines.append(f"  {_ada_check(tir.total_tar, p.tar_l1_target + p.tar_l2_target, '<')} "
+                     f"Time Above Range (>180):  "
+                     f"{tir.total_tar:.1f}%  (target: <{p.tar_l1_target + p.tar_l2_target:.0f}%)")
+        lines.append(f"  {_ada_check(tir.cv, p.cv_target, '<')} Glucose Variability (CV):  "
+                     f"{tir.cv:.1f}%  (target: <{p.cv_target:.0f}%)")
         lines.append(f"  Estimated A1C:  {tir.estimated_a1c:.1f}%")
         lines.append(f"  Overnight TIR:  {tir.overnight_tir:.1f}%")
-        lines.append(f"  ADA Status:     {tir.ada_status.replace('_', ' ').title()}")
+        lines.append(f"  Target Status:  {tir.target_status(p).replace('_', ' ').title()}")
         lines.append("")
 
         # Detected issues
@@ -1064,20 +1205,23 @@ class CohortReport:
     and per-patient action summaries.
     """
 
-    def __init__(self, assessments: List[TherapyAssessment]):
+    def __init__(self, assessments: List[TherapyAssessment],
+                 profile: 'TargetProfile | None' = None):
         self.assessments = sorted(assessments, key=lambda a: a.v10_score)
+        self.profile = profile or DEFAULT_PROFILE
 
     def text_summary(self) -> str:
         """Generate clinician-facing cohort summary."""
         aa = self.assessments
         n = len(aa)
+        p = self.profile
         if n == 0:
             return "No patients assessed."
 
         lines = []
         lines.append("=" * 78)
         lines.append("  THERAPY COHORT SUMMARY — Clinician Report")
-        lines.append(f"  {n} patients | Pipeline v10")
+        lines.append(f"  {n} patients | Pipeline v10 | {p.name}")
         lines.append("=" * 78)
         lines.append("")
 
@@ -1244,11 +1388,17 @@ def main():
                         help='Output JSON instead of text')
     parser.add_argument('--save', type=str,
                         help='Save report to file')
+    parser.add_argument('--profile', type=str, default='ada',
+                        choices=list(TARGET_PROFILES.keys()),
+                        help='Target profile: ada (default), aid, pregnancy, pediatric')
     args = parser.parse_args()
 
-    pipeline = TherapyPipeline()
+    profile = TARGET_PROFILES[args.profile]
+    pipeline = TherapyPipeline(profile=profile)
     patients = pipeline.load_patients(args.patients_dir, args.max_patients)
     print(f"Loaded {len(patients)} patients: {', '.join(patients)}")
+    if args.profile != 'ada':
+        print(f"Using target profile: {profile.name}")
 
     if args.patient:
         report = pipeline.patient_report(args.patient)
