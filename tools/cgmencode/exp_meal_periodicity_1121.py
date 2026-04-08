@@ -830,12 +830,10 @@ def exp_1125_premeal_glucose(patients, detail=False):
             if len(gluc_window) >= 2:
                 x_fit = np.arange(len(gluc_window))
                 try:
-                    slope, _, _, _, _ = np.polyfit(x_fit, gluc_window, 1, full=True)[:2]
-                    premeal_features[i, 2] = slope if np.isfinite(slope) else 0.0
-                except (np.linalg.LinAlgError, TypeError):
-                    # polyfit returns coefficients as first element
-                    coeffs = np.polyfit(x_fit, gluc_window, 1)
+                    coeffs = np.polyfit(x_fit, np.nan_to_num(gluc_window, nan=0.0), 1)
                     premeal_features[i, 2] = coeffs[0] if np.isfinite(coeffs[0]) else 0.0
+                except (np.linalg.LinAlgError, TypeError, ValueError):
+                    premeal_features[i, 2] = 0.0
 
             # glucose_flatness: 1/std (capped)
             std_val = premeal_features[i, 1]

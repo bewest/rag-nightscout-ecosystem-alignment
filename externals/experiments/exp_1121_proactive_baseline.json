@@ -1,0 +1,101 @@
+{
+  "status": "OK",
+  "summary": "proactive=0.806 vs full=0.936 vs time=0.642, glucose_lift=+0.164",
+  "results": {
+    "a": {
+      "auc_full": 0.9602,
+      "auc_proactive": 0.8394,
+      "auc_time_only": 0.6082,
+      "glucose_lift": 0.2312,
+      "reactive_gap": 0.1208,
+      "n_meals": 172
+    },
+    "b": {
+      "auc_full": 0.9082,
+      "auc_proactive": 0.7143,
+      "auc_time_only": 0.6462,
+      "glucose_lift": 0.0681,
+      "reactive_gap": 0.1939,
+      "n_meals": 605
+    },
+    "c": {
+      "auc_full": 0.8735,
+      "auc_proactive": 0.7829,
+      "auc_time_only": 0.5838,
+      "glucose_lift": 0.1991,
+      "reactive_gap": 0.0906,
+      "n_meals": 312
+    },
+    "d": {
+      "auc_full": 0.9561,
+      "auc_proactive": 0.8282,
+      "auc_time_only": 0.6399,
+      "glucose_lift": 0.1884,
+      "reactive_gap": 0.1279,
+      "n_meals": 225
+    },
+    "e": {
+      "auc_full": 0.946,
+      "auc_proactive": 0.8226,
+      "auc_time_only": 0.5688,
+      "glucose_lift": 0.2538,
+      "reactive_gap": 0.1234,
+      "n_meals": 297
+    },
+    "f": {
+      "auc_full": 0.9129,
+      "auc_proactive": 0.773,
+      "auc_time_only": 0.557,
+      "glucose_lift": 0.216,
+      "reactive_gap": 0.1399,
+      "n_meals": 388
+    },
+    "g": {
+      "auc_full": 0.9259,
+      "auc_proactive": 0.8618,
+      "auc_time_only": 0.6998,
+      "glucose_lift": 0.162,
+      "reactive_gap": 0.0641,
+      "n_meals": 571
+    },
+    "h": {
+      "auc_full": 0.8749,
+      "auc_proactive": 0.6913,
+      "auc_time_only": 0.6003,
+      "glucose_lift": 0.091,
+      "reactive_gap": 0.1835,
+      "n_meals": 354
+    },
+    "i": {
+      "auc_full": 0.9882,
+      "auc_proactive": 0.8809,
+      "auc_time_only": 0.6042,
+      "glucose_lift": 0.2767,
+      "reactive_gap": 0.1073,
+      "n_meals": 150
+    },
+    "j": {
+      "auc_full": 0.977,
+      "auc_proactive": 0.8947,
+      "auc_time_only": 0.8945,
+      "glucose_lift": 0.0002,
+      "reactive_gap": 0.0823,
+      "n_meals": 169
+    },
+    "k": {
+      "auc_full": 0.9719,
+      "auc_proactive": 0.7754,
+      "auc_time_only": 0.6577,
+      "glucose_lift": 0.1177,
+      "reactive_gap": 0.1964,
+      "n_meals": 253
+    }
+  },
+  "aggregate": {
+    "mean_auc_full": 0.9359,
+    "mean_auc_proactive": 0.8059,
+    "mean_auc_time_only": 0.6419,
+    "mean_glucose_lift": 0.164,
+    "n_patients": 11
+  }
+}
