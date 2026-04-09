@@ -59,6 +59,7 @@ from typing import Dict, List, Optional, Tuple
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from cgmencode.exp_metabolic_flux import load_patients as _load_patients
+from cgmencode.exp_metabolic_flux import _extract_isf_scalar
 from cgmencode.exp_metabolic_441 import compute_supply_demand
 
 # ---------------------------------------------------------------------------
@@ -1653,9 +1654,235 @@ def exp_1559_meal_sensitivity(patients):
     }
 
 
-# ---------------------------------------------------------------------------
-# Shared detector runner (caches across experiments within a session)
-# ---------------------------------------------------------------------------
+@register(1561, 'Meal Response Metabolic Characterization')
+def exp_1561_meal_metabolic(patients):
+    """Compare carb ranges by ISF-normalized excursion and supply×demand spectral power.
+
+    Extends EXP-1559's excursion-by-carb-range with two new dimensions:
+
+    1. ISF-Normalized Excursion = excursion_mg_dl / patient_ISF
+       Dimensionless: "how many correction-units is this excursion?"
+       Enables cross-patient comparison regardless of insulin sensitivity.
+
+    2. Supply×Demand Spectral Power = Σ(supply[t] × demand[t])² over meal window
+       Captures metabolic interaction intensity: how much push-pull between
+       insulin and carbs during the meal. High = active AID response.
+       Normalized to per-hour for duration-invariant comparison.
+
+    Uses therapy config (≥18g / 90min) for highest-quality meals.
+    """
+    CARB_RANGES = [
+        ('<10g',    0,   10),
+        ('10-19g', 10,   20),
+        ('20-29g', 20,   30),
+        ('30-49g', 30,   50),
+        ('≥50g',   50, 9999),
+    ]
+
+    # Collect per-meal metabolic measurements
+    meal_records = []  # list of dicts
+
+    for pat in patients:
+        name = pat['name']
+        df = pat['df']
+        bg = _bg(df)
+        N = len(bg)
+        bolus = np.nan_to_num(df['bolus'].values.astype(np.float64), nan=0.0)
+        carbs_arr = np.nan_to_num(df['carbs'].values.astype(np.float64), nan=0.0)
+        sd = compute_supply_demand(df, pat['pk'])
+
+        # ISF in mg/dL (handles mmol/L auto-detection)
+        isf = _extract_isf_scalar(df)
+
+        # Detect meals with therapy config (high-quality)
+        meals = detect_meal_windows(name, df, bg, bolus, carbs_arr, sd,
+                                    min_carbs=18.0, cluster_gap=18)
+
+        supply = sd['supply']
+        demand = sd['demand']
+
+        for m in meals:
+            exc = m.measurements.get('excursion_mg_dl')
+            if exc is None or math.isnan(exc):
+                continue
+            carbs_g = m.measurements['carbs_g']
+
+            # ISF-normalized excursion (dimensionless: correction-equivalents)
+            isf_norm_exc = exc / isf if isf > 0 else float('nan')
+
+            # Supply×demand spectral power over meal window
+            s_start = m.start_idx
+            s_end = min(m.end_idx, N)
+            if s_end - s_start < 6:  # need ≥30 min
+                continue
+
+            win_supply = supply[s_start:s_end]
+            win_demand = demand[s_start:s_end]
+
+            # Element-wise product: metabolic interaction signal
+            interaction = win_supply * win_demand
+
+            # Spectral power = sum of squared FFT coefficients (Parseval's)
+            # Excludes DC (mean) component to capture dynamics, not baseline
+            fft_coeffs = np.fft.rfft(interaction)
+            # Drop DC component (index 0)
+            spectral_power = float(np.sum(np.abs(fft_coeffs[1:]) ** 2))
+
+            # Normalize to per-hour for duration invariance
+            duration_hours = (s_end - s_start) * STEP_MINUTES / 60.0
+            spectral_power_per_hour = spectral_power / max(duration_hours, 0.5)
+
+            # Also compute signal energy (simpler metric) and mean interaction
+            signal_energy = float(np.sum(interaction ** 2))
+            mean_interaction = float(np.mean(interaction))
+            interaction_cv = float(np.std(interaction) / max(abs(mean_interaction), 1e-6) * 100)
+
+            # Net flux metrics during meal window
+            net = sd['net'][s_start:s_end]
+            net_mean = float(np.nanmean(net))
+            net_std = float(np.nanstd(net))
+
+            # Classify carb range
+            carb_range = None
+            for label, lo, hi in CARB_RANGES:
+                if lo <= carbs_g < hi:
+                    carb_range = label
+                    break
+
+            meal_records.append({
+                'patient': name,
+                'isf_mgdl': round(isf, 1),
+                'carbs_g': carbs_g,
+                'carb_range': carb_range,
+                'excursion_mg_dl': round(exc, 1),
+                'isf_norm_excursion': round(isf_norm_exc, 3),
+                'spectral_power_per_hour': round(spectral_power_per_hour, 2),
+                'signal_energy': round(signal_energy, 2),
+                'mean_interaction': round(mean_interaction, 3),
+                'interaction_cv_pct': round(interaction_cv, 1),
+                'net_flux_mean': round(net_mean, 3),
+                'net_flux_std': round(net_std, 3),
+                'quality': m.quality,
+                'peak_time_min': m.measurements['peak_time_min'],
+                'bolus_u': m.measurements['bolus_u'],
+                'is_announced': m.measurements.get('is_announced', False),
+                'hour_of_day': m.hour_of_day,
+                'duration_hours': round(duration_hours, 2),
+            })
+
+    print(f"\n  Total meal records with metabolic data: {len(meal_records)}")
+
+    # Per-patient ISF summary
+    per_patient_isf = {}
+    for pat in patients:
+        name = pat['name']
+        isf = _extract_isf_scalar(pat['df'])
+        pat_meals = [r for r in meal_records if r['patient'] == name]
+        per_patient_isf[name] = {
+            'isf_mgdl': round(isf, 1),
+            'n_meals': len(pat_meals),
+            'mean_raw_excursion': round(float(np.mean([r['excursion_mg_dl'] for r in pat_meals])), 1) if pat_meals else None,
+            'mean_isf_norm_excursion': round(float(np.mean([r['isf_norm_excursion'] for r in pat_meals])), 3) if pat_meals else None,
+            'mean_spectral_power': round(float(np.mean([r['spectral_power_per_hour'] for r in pat_meals])), 2) if pat_meals else None,
+        }
+
+    # Summary by carb range
+    range_labels = [r[0] for r in CARB_RANGES]
+    by_carb_range = {}
+    for label in range_labels:
+        subset = [r for r in meal_records if r['carb_range'] == label]
+        if not subset:
+            by_carb_range[label] = {'n': 0}
+            continue
+
+        raw_exc = [r['excursion_mg_dl'] for r in subset]
+        isf_exc = [r['isf_norm_excursion'] for r in subset]
+        spec_pow = [r['spectral_power_per_hour'] for r in subset]
+        sig_eng = [r['signal_energy'] for r in subset]
+        mean_int = [r['mean_interaction'] for r in subset]
+        net_mean = [r['net_flux_mean'] for r in subset]
+
+        by_carb_range[label] = {
+            'n': len(subset),
+            # Raw excursion
+            'raw_excursion_mean': round(float(np.mean(raw_exc)), 1),
+            'raw_excursion_median': round(float(np.median(raw_exc)), 1),
+            'raw_excursion_p25': round(float(np.percentile(raw_exc, 25)), 1),
+            'raw_excursion_p75': round(float(np.percentile(raw_exc, 75)), 1),
+            # ISF-normalized excursion
+            'isf_norm_mean': round(float(np.mean(isf_exc)), 3),
+            'isf_norm_median': round(float(np.median(isf_exc)), 3),
+            'isf_norm_p25': round(float(np.percentile(isf_exc, 25)), 3),
+            'isf_norm_p75': round(float(np.percentile(isf_exc, 75)), 3),
+            # Supply×demand spectral power
+            'spectral_power_mean': round(float(np.mean(spec_pow)), 2),
+            'spectral_power_median': round(float(np.median(spec_pow)), 2),
+            'spectral_power_p25': round(float(np.percentile(spec_pow, 25)), 2),
+            'spectral_power_p75': round(float(np.percentile(spec_pow, 75)), 2),
+            # Signal energy
+            'signal_energy_mean': round(float(np.mean(sig_eng)), 2),
+            'signal_energy_median': round(float(np.median(sig_eng)), 2),
+            # Mean interaction
+            'mean_interaction_mean': round(float(np.mean(mean_int)), 3),
+            # Net flux
+            'net_flux_mean': round(float(np.mean(net_mean)), 3),
+        }
+
+    # Cross-metric correlations (Pearson)
+    if len(meal_records) >= 10:
+        carbs_arr_corr = np.array([r['carbs_g'] for r in meal_records])
+        raw_exc_arr = np.array([r['excursion_mg_dl'] for r in meal_records])
+        isf_norm_arr = np.array([r['isf_norm_excursion'] for r in meal_records])
+        spec_arr = np.array([r['spectral_power_per_hour'] for r in meal_records])
+        energy_arr = np.array([r['signal_energy'] for r in meal_records])
+
+        def _pearson(a, b):
+            mask = np.isfinite(a) & np.isfinite(b)
+            if mask.sum() < 5:
+                return None
+            a2, b2 = a[mask], b[mask]
+            return round(float(np.corrcoef(a2, b2)[0, 1]), 3)
+
+        correlations = {
+            'carbs_vs_raw_excursion': _pearson(carbs_arr_corr, raw_exc_arr),
+            'carbs_vs_isf_norm_excursion': _pearson(carbs_arr_corr, isf_norm_arr),
+            'carbs_vs_spectral_power': _pearson(carbs_arr_corr, spec_arr),
+            'raw_excursion_vs_isf_norm': _pearson(raw_exc_arr, isf_norm_arr),
+            'raw_excursion_vs_spectral_power': _pearson(raw_exc_arr, spec_arr),
+            'isf_norm_vs_spectral_power': _pearson(isf_norm_arr, spec_arr),
+            'spectral_power_vs_signal_energy': _pearson(spec_arr, energy_arr),
+        }
+    else:
+        correlations = {}
+
+    # Announced vs unannounced comparison
+    announced = [r for r in meal_records if r['is_announced']]
+    unannounced = [r for r in meal_records if not r['is_announced']]
+
+    announcement_comparison = {}
+    for label, subset in [('announced', announced), ('unannounced', unannounced)]:
+        if not subset:
+            announcement_comparison[label] = {'n': 0}
+            continue
+        announcement_comparison[label] = {
+            'n': len(subset),
+            'mean_raw_excursion': round(float(np.mean([r['excursion_mg_dl'] for r in subset])), 1),
+            'mean_isf_norm_excursion': round(float(np.mean([r['isf_norm_excursion'] for r in subset])), 3),
+            'mean_spectral_power': round(float(np.mean([r['spectral_power_per_hour'] for r in subset])), 2),
+        }
+
+    return {
+        'experiment': 'EXP-1561',
+        'title': 'Meal Response Metabolic Characterization',
+        'n_meals': len(meal_records),
+        'n_patients': len(patients),
+        'config': 'therapy (≥18g / 90min)',
+        'per_patient_isf': per_patient_isf,
+        'by_carb_range': by_carb_range,
+        'correlations': correlations,
+        'announcement_comparison': announcement_comparison,
+        'meal_records': meal_records,
+    }
 
 _CACHED_EXPERIMENTS = None
 
@@ -2096,9 +2323,214 @@ def generate_sensitivity_visualizations(results):
     print("    ✓ fig8_meal_sensitivity.png")
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
+def generate_metabolic_visualizations(results):
+    """Generate visualizations for EXP-1561 metabolic characterization."""
+    try:
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("  matplotlib not available — skipping metabolic visualizations")
+        return
+
+    if 1561 not in results:
+        return
+
+    d = results[1561]
+    by_range = d['by_carb_range']
+    records = d['meal_records']
+    correlations = d.get('correlations', {})
+    per_patient = d.get('per_patient_isf', {})
+
+    carb_ranges = ['<10g', '10-19g', '20-29g', '30-49g', '≥50g']
+    os.makedirs(str(VIZ_DIR), exist_ok=True)
+
+    # ── Figure 9: Three-panel carb range comparison ──────────────────
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5.5))
+    fig.suptitle('EXP-1561: Meal Response by Carb Range — Raw vs ISF-Normalized vs Spectral',
+                 fontsize=13, fontweight='bold')
+
+    valid_ranges = [r for r in carb_ranges if by_range.get(r, {}).get('n', 0) > 0]
+    x = np.arange(len(valid_ranges))
+
+    # Panel A: Raw excursion (baseline)
+    ax = axes[0]
+    medians = [by_range[r]['raw_excursion_median'] for r in valid_ranges]
+    p25 = [by_range[r]['raw_excursion_p25'] for r in valid_ranges]
+    p75 = [by_range[r]['raw_excursion_p75'] for r in valid_ranges]
+    yerr_lo = [m - lo for m, lo in zip(medians, p25)]
+    yerr_hi = [hi - m for m, hi in zip(medians, p75)]
+    ax.bar(x, medians, color='#4C72B0', alpha=0.85)
+    ax.errorbar(x, medians, yerr=[yerr_lo, yerr_hi], fmt='none', ecolor='black',
+                capsize=4, capthick=1.2)
+    ns = [by_range[r]['n'] for r in valid_ranges]
+    for i, n in enumerate(ns):
+        ax.text(i, medians[i] + yerr_hi[i] + 2, f'n={n}', ha='center', fontsize=8)
+    ax.set_xticks(x)
+    ax.set_xticklabels(valid_ranges, fontsize=9)
+    ax.set_xlabel('Carb Range')
+    ax.set_ylabel('Median Excursion (mg/dL)')
+    ax.set_title('A) Raw Excursion')
+    ax.grid(axis='y', alpha=0.3)
+
+    # Panel B: ISF-normalized excursion
+    ax = axes[1]
+    isf_med = [by_range[r]['isf_norm_median'] for r in valid_ranges]
+    isf_p25 = [by_range[r]['isf_norm_p25'] for r in valid_ranges]
+    isf_p75 = [by_range[r]['isf_norm_p75'] for r in valid_ranges]
+    yerr_lo = [m - lo for m, lo in zip(isf_med, isf_p25)]
+    yerr_hi = [hi - m for m, hi in zip(isf_med, isf_p75)]
+    ax.bar(x, isf_med, color='#55A868', alpha=0.85)
+    ax.errorbar(x, isf_med, yerr=[yerr_lo, yerr_hi], fmt='none', ecolor='black',
+                capsize=4, capthick=1.2)
+    ax.set_xticks(x)
+    ax.set_xticklabels(valid_ranges, fontsize=9)
+    ax.set_xlabel('Carb Range')
+    ax.set_ylabel('Median ISF-Normalized Excursion\n(correction-equivalents)')
+    ax.set_title('B) ISF-Normalized Excursion')
+    ax.grid(axis='y', alpha=0.3)
+
+    # Panel C: Supply×demand spectral power
+    ax = axes[2]
+    spec_med = [by_range[r]['spectral_power_median'] for r in valid_ranges]
+    spec_p25 = [by_range[r]['spectral_power_p25'] for r in valid_ranges]
+    spec_p75 = [by_range[r]['spectral_power_p75'] for r in valid_ranges]
+    yerr_lo = [m - lo for m, lo in zip(spec_med, spec_p25)]
+    yerr_hi = [hi - m for m, hi in zip(spec_med, spec_p75)]
+    ax.bar(x, spec_med, color='#C44E52', alpha=0.85)
+    ax.errorbar(x, spec_med, yerr=[yerr_lo, yerr_hi], fmt='none', ecolor='black',
+                capsize=4, capthick=1.2)
+    ax.set_xticks(x)
+    ax.set_xticklabels(valid_ranges, fontsize=9)
+    ax.set_xlabel('Carb Range')
+    ax.set_ylabel('Median Spectral Power / Hour\n(supply×demand FFT²)')
+    ax.set_title('C) Supply×Demand Spectral Power')
+    ax.grid(axis='y', alpha=0.3)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig9_metabolic_carb_range.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig9_metabolic_carb_range.png")
+
+    # ── Figure 10: Per-patient ISF normalization effect ──────────────
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
+    fig.suptitle('EXP-1561: ISF Normalization Effect Across Patients',
+                 fontsize=13, fontweight='bold')
+
+    pnames = sorted([p for p in per_patient if per_patient[p]['n_meals'] > 0])
+    if pnames:
+        x = np.arange(len(pnames))
+        width = 0.35
+
+        # Panel A: Raw vs ISF-normalized excursion per patient
+        ax = axes[0]
+        raw_vals = [per_patient[p].get('mean_raw_excursion') or 0 for p in pnames]
+        isf_vals_scaled = []
+        for p in pnames:
+            isf_norm = per_patient[p].get('mean_isf_norm_excursion')
+            isf_mgdl = per_patient[p].get('isf_mgdl', 50)
+            if isf_norm is not None:
+                # Scale back for visual comparison: show as mg/dL equivalent at median ISF
+                isf_vals_scaled.append(isf_norm)
+            else:
+                isf_vals_scaled.append(0)
+
+        ax.bar(x - width / 2, raw_vals, width, label='Raw (mg/dL)', color='#4C72B0', alpha=0.85)
+        # Use twin axis for ISF-normalized since units differ
+        ax2 = ax.twinx()
+        ax2.bar(x + width / 2, isf_vals_scaled, width, label='ISF-Normalized', color='#55A868', alpha=0.85)
+        ax.set_xticks(x)
+        ax.set_xticklabels(pnames)
+        ax.set_xlabel('Patient')
+        ax.set_ylabel('Mean Raw Excursion (mg/dL)', color='#4C72B0')
+        ax2.set_ylabel('Mean ISF-Normalized (U equiv)', color='#55A868')
+        ax.set_title('A) Patient Excursion: Raw vs ISF-Normalized')
+        # Combined legend
+        lines1, labels1 = ax.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax.legend(lines1 + lines2, labels1 + labels2, fontsize=8, loc='upper right')
+
+        # Panel B: ISF values annotated
+        ax = axes[1]
+        isf_values = [per_patient[p]['isf_mgdl'] for p in pnames]
+        spec_values = [per_patient[p].get('mean_spectral_power') or 0 for p in pnames]
+
+        ax.bar(x - width / 2, isf_values, width, label='Profile ISF (mg/dL/U)',
+               color='#ffbb78', alpha=0.85)
+        ax3 = ax.twinx()
+        ax3.bar(x + width / 2, spec_values, width, label='Mean Spectral Power/hr',
+                color='#C44E52', alpha=0.85)
+        ax.set_xticks(x)
+        ax.set_xticklabels(pnames)
+        ax.set_xlabel('Patient')
+        ax.set_ylabel('Profile ISF (mg/dL/U)', color='#ffbb78')
+        ax3.set_ylabel('Mean Spectral Power/hr', color='#C44E52')
+        ax.set_title('B) Patient ISF vs Metabolic Activity')
+        lines1, labels1 = ax.get_legend_handles_labels()
+        lines2, labels2 = ax3.get_legend_handles_labels()
+        ax.legend(lines1 + lines2, labels1 + labels2, fontsize=8, loc='upper right')
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig10_isf_normalization.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig10_isf_normalization.png")
+
+    # ── Figure 11: Scatter correlation plots ─────────────────────────
+    if len(records) >= 10:
+        fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+        fig.suptitle('EXP-1561: Cross-Metric Correlations',
+                     fontsize=13, fontweight='bold')
+
+        carbs_a = np.array([r['carbs_g'] for r in records])
+        raw_exc_a = np.array([r['excursion_mg_dl'] for r in records])
+        isf_norm_a = np.array([r['isf_norm_excursion'] for r in records])
+        spec_a = np.array([r['spectral_power_per_hour'] for r in records])
+
+        # Color by patient
+        patient_names = sorted(set(r['patient'] for r in records))
+        cmap = plt.cm.get_cmap('tab10', len(patient_names))
+        pat_colors = {p: cmap(i) for i, p in enumerate(patient_names)}
+        colors = [pat_colors[r['patient']] for r in records]
+
+        # Panel A: Carbs vs ISF-normalized excursion
+        ax = axes[0]
+        ax.scatter(carbs_a, isf_norm_a, c=colors, alpha=0.4, s=15, edgecolors='none')
+        r_val = correlations.get('carbs_vs_isf_norm_excursion')
+        ax.set_xlabel('Carbs (g)')
+        ax.set_ylabel('ISF-Normalized Excursion')
+        ax.set_title(f'A) Carbs vs ISF-Norm Exc (r={r_val})')
+        ax.grid(alpha=0.3)
+
+        # Panel B: Carbs vs spectral power
+        ax = axes[1]
+        ax.scatter(carbs_a, spec_a, c=colors, alpha=0.4, s=15, edgecolors='none')
+        r_val = correlations.get('carbs_vs_spectral_power')
+        ax.set_xlabel('Carbs (g)')
+        ax.set_ylabel('Spectral Power / Hour')
+        ax.set_title(f'B) Carbs vs Spectral Power (r={r_val})')
+        ax.grid(alpha=0.3)
+
+        # Panel C: ISF-norm excursion vs spectral power
+        ax = axes[2]
+        ax.scatter(isf_norm_a, spec_a, c=colors, alpha=0.4, s=15, edgecolors='none')
+        r_val = correlations.get('isf_norm_vs_spectral_power')
+        ax.set_xlabel('ISF-Normalized Excursion')
+        ax.set_ylabel('Spectral Power / Hour')
+        ax.set_title(f'C) ISF-Norm Exc vs Spectral (r={r_val})')
+        ax.grid(alpha=0.3)
+
+        # Add patient legend
+        import matplotlib.patches as mpatches
+        legend_patches = [mpatches.Patch(color=pat_colors[p], label=p)
+                          for p in patient_names]
+        fig.legend(handles=legend_patches, loc='lower center',
+                   ncol=min(len(patient_names), 6), fontsize=8,
+                   bbox_to_anchor=(0.5, -0.02))
+
+        plt.tight_layout(rect=[0, 0.05, 1, 0.93])
+        plt.savefig(str(VIZ_DIR / 'fig11_metabolic_correlations.png'), dpi=150)
+        plt.close()
+        print("    ✓ fig11_metabolic_correlations.png")
 
 def main():
     parser = argparse.ArgumentParser(description='EXP-1551-1559: Natural Experiment Census')
@@ -2149,7 +2581,13 @@ def main():
             out_path = RESULTS_DIR / f'exp-{exp_id}_natural_experiments.json'
             with open(str(out_path), 'w') as f:
                 # For 1551, skip all_experiments (too large) — save summary only
-                save_result = {k: v for k, v in result.items() if k != 'all_experiments'}
+                # For 1561, skip meal_records (large per-meal detail)
+                skip_keys = set()
+                if exp_id == 1551:
+                    skip_keys.add('all_experiments')
+                if exp_id == 1561:
+                    skip_keys.add('meal_records')
+                save_result = {k: v for k, v in result.items() if k not in skip_keys}
                 json.dump(save_result, f, indent=2, default=str)
             print(f"  ✓ Saved → {out_path}  ({elapsed:.1f}s)")
         except Exception as e:
@@ -2171,6 +2609,11 @@ def main():
             generate_sensitivity_visualizations(all_results)
         except Exception as e:
             print(f"  Sensitivity visualization error: {e}")
+            traceback.print_exc()
+        try:
+            generate_metabolic_visualizations(all_results)
+        except Exception as e:
+            print(f"  Metabolic visualization error: {e}")
             traceback.print_exc()
 
     # Summary
@@ -2200,11 +2643,30 @@ def main():
                   f"{p['mean_carbs_g']:9.1f} "
                   f"{p['mean_excursion']:10.1f}")
 
+    if 1561 in all_results and 'by_carb_range' in all_results[1561]:
+        print(f"\n  Meal Metabolic Characterization (EXP-1561):")
+        print(f"  {'Carb Range':10s} {'n':>5s} {'RawExc':>8s} {'ISFNorm':>8s} {'SpecPow':>10s}")
+        print(f"  {'─'*45}")
+        for rng, stats in all_results[1561]['by_carb_range'].items():
+            if stats.get('n', 0) == 0:
+                continue
+            print(f"  {rng:10s} {stats['n']:5d} "
+                  f"{stats['raw_excursion_median']:8.1f} "
+                  f"{stats['isf_norm_median']:8.3f} "
+                  f"{stats['spectral_power_median']:10.1f}")
+        corr = all_results[1561].get('correlations', {})
+        if corr:
+            print(f"\n  Correlations:")
+            for key, val in corr.items():
+                if val is not None:
+                    print(f"    {key}: r={val}")
+
     # Save combined results
     combined_path = RESULTS_DIR / 'exp-1551_natural_experiments_combined.json'
     save_combined = {}
+    skip_large = {'all_experiments', 'meal_records'}
     for k, v in all_results.items():
-        save_combined[k] = {kk: vv for kk, vv in v.items() if kk != 'all_experiments'}
+        save_combined[k] = {kk: vv for kk, vv in v.items() if kk not in skip_large}
     with open(str(combined_path), 'w') as f:
         json.dump(save_combined, f, indent=2, default=str)
     print(f"\nCombined results → {combined_path}")
