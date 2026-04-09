@@ -86,7 +86,7 @@ Naive ISF estimation (glucose drop / insulin dose) fails under AID because the l
 - `deduplicate_alert_bursts()` suppresses alerts within 30-min windows
 - `score_alert_multi_feature()` with LR coefficients from EXP-1613
 - Quality score blended into `predict_hypo()` probability
-- Features: current glucose, rate, acceleration, 1h std, 1h min, IOB, below-100 flag, net flux
+- Features: current glucose (bg_level), rate (trend_30min), acceleration, net flux signal
 
 **This is the only ML module** — justified because feature interactions (rate × IOB × trend) are complex and LR provides the largest single improvement in the pipeline.
 
@@ -151,18 +151,18 @@ During report preparation, discovered that Patient a's ISF profile uses **mmol/L
 **Fix** (commit `7246a46`):
 - Added `units` field and `isf_mgdl()` method to `PatientProfile`
 - Auto-detection: all ISF values < 15 → mmol/L (matches research heuristic)
-- Updated all 5 consumer modules to use `profile.isf_mgdl()`
+- Updated all 4 consumer modules to use `profile.isf_mgdl()`
 - Added 8 regression tests (72 total, all passing)
 
 ## Test Coverage
 
 | Category | Tests |
 |----------|-------|
-| Type contracts | 22 |
-| Module contracts | 25 |
-| Unit handling (NEW) | 8 |
+| Type contracts | 21 |
+| Module contracts | 28 |
+| Unit handling (NEW) | 7 |
 | Pipeline regression | 9 |
-| Forecast module | 8 |
+| Forecast module | 7 |
 | **Total** | **72** |
 
 ## Files Modified
