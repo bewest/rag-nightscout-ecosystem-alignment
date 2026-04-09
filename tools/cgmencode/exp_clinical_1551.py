@@ -2090,6 +2090,71 @@ def _mealtime_periodicity(records, patients):
     }
 
 
+def _compute_personal_regularity(hours):
+    """Compute meal clock regularity from an array of meal hours.
+
+    Returns dict with n_peaks, weighted_std, normalized_entropy, personal_peaks,
+    hour_histogram.  Reusable across EXP-1567 and EXP-1569.
+    """
+    from scipy.ndimage import uniform_filter1d
+    hours = np.asarray(hours, dtype=float)
+    n = len(hours)
+    if n == 0:
+        return {'n_peaks': 0, 'weighted_std': float('nan'),
+                'normalized_entropy': float('nan'), 'personal_peaks': [],
+                'hour_histogram': [0]*24}
+
+    hist = np.zeros(24)
+    for h in hours:
+        hist[int(h) % 24] += 1
+    hist_norm = hist / max(hist.sum(), 1)
+    entropy = -sum(p * np.log2(p) for p in hist_norm if p > 0)
+    norm_entropy = entropy / np.log2(24)
+
+    smoothed = uniform_filter1d(np.concatenate([hist, hist, hist]),
+                                size=4, mode='wrap')[24:48]
+    peaks = []
+    for i in range(24):
+        left = smoothed[(i - 1) % 24]
+        right = smoothed[(i + 1) % 24]
+        if smoothed[i] > left and smoothed[i] > right and smoothed[i] >= 2:
+            peaks.append(i)
+
+    peak_clusters = {}
+    if peaks:
+        for h in hours:
+            dists = [min(abs(h - p), 24 - abs(h - p)) for p in peaks]
+            nearest = peaks[int(np.argmin(dists))]
+            peak_clusters.setdefault(nearest, []).append(float(h))
+
+    personal_peaks = []
+    for pk in sorted(peak_clusters.keys()):
+        ch = peak_clusters[pk]
+        m = float(np.mean(ch))
+        personal_peaks.append({
+            'peak_hour': pk,
+            'n_meals': len(ch),
+            'mean_hour': round(m, 2),
+            'std_hour': round(float(np.std(ch)), 2),
+            'within_3hr_pct': round(100 * sum(
+                1 for h in ch if min(abs(h - m), 24 - abs(h - m)) <= 1.5
+            ) / len(ch), 1),
+        })
+
+    if personal_peaks:
+        weighted_std = sum(p['std_hour'] * p['n_meals'] for p in personal_peaks) / n
+    else:
+        weighted_std = float(np.std(hours))
+
+    return {
+        'n_peaks': len(peaks),
+        'weighted_std': round(weighted_std, 3),
+        'normalized_entropy': round(norm_entropy, 3),
+        'personal_peaks': personal_peaks,
+        'hour_histogram': [int(x) for x in hist],
+    }
+
+
 @register(1563, 'Multi-Config Metabolic Characterization')
 def exp_1563_multi_config_metabolic(patients):
     """Compare ISF-normalized excursion, spectral power, and meal periodicity
@@ -2426,53 +2491,11 @@ def exp_1567_within_patient_periodicity(patients):
         hours = np.array([r['hour_of_day'] for r in pat_recs])
         n_meals = len(pat_recs)
 
-        # Overall timing stats
-        hist = np.zeros(24)
-        for h in hours:
-            hist[int(h) % 24] += 1
-        hist_norm = hist / max(hist.sum(), 1)
-        entropy = -sum(p * np.log2(p) for p in hist_norm if p > 0)
-        norm_entropy = entropy / np.log2(24)
-
-        # Find personal meal peaks using simple histogram peak detection
-        # Smooth with 2-hour window, then find local maxima
-        from scipy.ndimage import uniform_filter1d
-        smoothed = uniform_filter1d(np.concatenate([hist, hist, hist]), size=4, mode='wrap')[24:48]
-        peaks = []
-        for i in range(24):
-            left = smoothed[(i - 1) % 24]
-            right = smoothed[(i + 1) % 24]
-            if smoothed[i] > left and smoothed[i] > right and smoothed[i] >= 2:
-                peaks.append(i)
-
-        # Assign each meal to nearest peak, compute std within each cluster
-        peak_clusters = {}
-        if peaks:
-            for h in hours:
-                dists = [min(abs(h - p), 24 - abs(h - p)) for p in peaks]
-                nearest = peaks[np.argmin(dists)]
-                peak_clusters.setdefault(nearest, []).append(h)
-
-        personal_peaks = []
-        for peak_hour in sorted(peak_clusters.keys()):
-            cluster_hours = peak_clusters[peak_hour]
-            personal_peaks.append({
-                'peak_hour': peak_hour,
-                'n_meals': len(cluster_hours),
-                'mean_hour': round(float(np.mean(cluster_hours)), 2),
-                'std_hour': round(float(np.std(cluster_hours)), 2),
-                'within_3hr_pct': round(100 * sum(
-                    1 for h in cluster_hours
-                    if min(abs(h - np.mean(cluster_hours)),
-                           24 - abs(h - np.mean(cluster_hours))) <= 1.5
-                ) / len(cluster_hours), 1),
-            })
-
-        # Mean within-peak std (overall "clock tightness")
-        if personal_peaks:
-            weighted_std = sum(p['std_hour'] * p['n_meals'] for p in personal_peaks) / n_meals
-        else:
-            weighted_std = float(np.std(hours))
+        reg = _compute_personal_regularity(hours)
+        norm_entropy = reg['normalized_entropy']
+        personal_peaks = reg['personal_peaks']
+        weighted_std = reg['weighted_std']
+        hist = reg['hour_histogram']
 
         # Per-zone analysis
         zone_regularity = {}
@@ -2592,6 +2615,226 @@ def exp_1567_within_patient_periodicity(patients):
         'zone_variation': zone_variation,
         'wd_we_regularity_comparison': wd_we_comparison,
         'pct_weekend_less_regular': pct_less_regular,
+    }
+
+
+@register(1569, 'Detection Sensitivity Benchmark')
+def exp_1569_detection_benchmark(patients):
+    """Systematic sweep of meal detection parameters to benchmark their effect
+    on meals/day, size distribution, within-patient regularity, and metabolic
+    signal quality.
+
+    Grid: 9 min_carb_g × 8 hysteresis_min = 72 configs × 11 patients.
+
+    Hypotheses:
+      H1: Regularity (weighted_std) monotonically decreases with strictness
+      H2: Diminishing returns — a knee in regularity-vs-count
+      H3: Clock-like patients are threshold-robust
+      H4: Hysteresis merges (conserves carbs); min_carb filters (drops carbs)
+      H5: meals/day × mean_size approx conserved under hysteresis
+    """
+    MIN_CARB_VALUES = [0, 3, 5, 10, 15, 18, 25, 30, 40]
+    HYSTERESIS_VALUES = [15, 30, 45, 60, 90, 120, 150, 180]  # minutes
+
+    grid = []
+    total = len(MIN_CARB_VALUES) * len(HYSTERESIS_VALUES)
+    done = 0
+    for mc in MIN_CARB_VALUES:
+        for hyst in HYSTERESIS_VALUES:
+            cluster_gap = max(1, hyst // 5)  # convert minutes to 5-min steps
+            done += 1
+            if done % 12 == 0 or done == 1:
+                print(f"    Config {done}/{total}: min_carb={mc}g, hysteresis={hyst}min")
+
+            records = _collect_meal_metabolic_records(
+                patients, min_carbs=float(mc), cluster_gap=cluster_gap)
+
+            n_meals = len(records)
+            days_total = sum(len(p['df']) / STEPS_PER_DAY for p in patients)
+
+            # Size distribution
+            carbs_list = [r['carbs_g'] for r in records]
+            if carbs_list:
+                carbs_arr = np.array(carbs_list)
+                size_stats = {
+                    'mean': round(float(np.mean(carbs_arr)), 1),
+                    'median': round(float(np.median(carbs_arr)), 1),
+                    'p25': round(float(np.percentile(carbs_arr, 25)), 1),
+                    'p75': round(float(np.percentile(carbs_arr, 75)), 1),
+                    'total_carbs_per_day': round(float(np.sum(carbs_arr)) / days_total, 1),
+                }
+            else:
+                size_stats = {'mean': 0, 'median': 0, 'p25': 0, 'p75': 0,
+                              'total_carbs_per_day': 0}
+
+            # Per-patient regularity using shared helper
+            pat_names = sorted(set(r['patient'] for r in records))
+            pat_regularity = {}
+            pat_meals_per_day = {}
+            for pat in pat_names:
+                pat_recs = [r for r in records if r['patient'] == pat]
+                pat_days = len([p for p in patients if p['name'] == pat][0]['df']) / STEPS_PER_DAY
+                hours = np.array([r['hour_of_day'] for r in pat_recs])
+                reg = _compute_personal_regularity(hours)
+                pat_regularity[pat] = {
+                    'n_meals': len(pat_recs),
+                    'meals_per_day': round(len(pat_recs) / pat_days, 2),
+                    'weighted_std': reg['weighted_std'],
+                    'n_peaks': reg['n_peaks'],
+                    'normalized_entropy': reg['normalized_entropy'],
+                }
+                pat_meals_per_day[pat] = len(pat_recs) / pat_days
+
+            # Population regularity (all meals pooled)
+            all_hours = np.array([r['hour_of_day'] for r in records])
+            pop_reg = _compute_personal_regularity(all_hours) if n_meals > 0 else {
+                'weighted_std': float('nan'), 'normalized_entropy': float('nan'), 'n_peaks': 0}
+
+            # Population periodicity (zone-based)
+            periodicity = _mealtime_periodicity(records, patients) if n_meals > 0 else {}
+
+            # Metabolic quality
+            if records:
+                isf_norms = [r['isf_norm_excursion'] for r in records]
+                spec_powers = [r['spectral_power_per_hour'] for r in records]
+                metabolic = {
+                    'mean_isf_norm': round(float(np.mean(isf_norms)), 3),
+                    'median_isf_norm': round(float(np.median(isf_norms)), 3),
+                    'mean_spectral_power': round(float(np.mean(spec_powers)), 2),
+                }
+            else:
+                metabolic = {'mean_isf_norm': 0, 'median_isf_norm': 0,
+                             'mean_spectral_power': 0}
+
+            # Per-patient weighted_std list for robustness analysis
+            pat_stds = [v['weighted_std'] for v in pat_regularity.values()
+                        if not np.isnan(v['weighted_std'])]
+
+            grid.append({
+                'min_carb_g': mc,
+                'hysteresis_min': hyst,
+                'cluster_gap': cluster_gap,
+                'n_meals': n_meals,
+                'meals_per_day': round(n_meals / days_total, 2),
+                'size': size_stats,
+                'pop_weighted_std': pop_reg['weighted_std'],
+                'pop_entropy': pop_reg['normalized_entropy'],
+                'pop_n_peaks': pop_reg['n_peaks'],
+                'zone_fraction_pct': periodicity.get('zone_fraction_pct', 0),
+                'metabolic': metabolic,
+                'mean_patient_std': round(float(np.mean(pat_stds)), 3) if pat_stds else float('nan'),
+                'std_patient_std': round(float(np.std(pat_stds)), 3) if pat_stds else float('nan'),
+                'per_patient': pat_regularity,
+            })
+
+    # Hypothesis testing summaries
+    # H1: Regularity vs strictness — compute Spearman correlation
+    from scipy.stats import spearmanr
+    strictness = [g['min_carb_g'] + g['hysteresis_min'] / 10 for g in grid]
+    reg_vals = [g['mean_patient_std'] for g in grid]
+    valid = [(s, r) for s, r in zip(strictness, reg_vals) if not np.isnan(r)]
+    if len(valid) >= 3:
+        s_arr, r_arr = zip(*valid)
+        h1_rho, h1_p = spearmanr(s_arr, r_arr)
+    else:
+        h1_rho, h1_p = float('nan'), float('nan')
+
+    # H2: Find knee — largest drop in mean_patient_std per unit meals_per_day lost
+    sorted_by_mpd = sorted([g for g in grid if not np.isnan(g['mean_patient_std'])],
+                           key=lambda g: -g['meals_per_day'])
+    knee_idx = None
+    best_ratio = 0
+    for i in range(1, len(sorted_by_mpd)):
+        d_std = sorted_by_mpd[i-1]['mean_patient_std'] - sorted_by_mpd[i]['mean_patient_std']
+        d_mpd = sorted_by_mpd[i-1]['meals_per_day'] - sorted_by_mpd[i]['meals_per_day']
+        if d_mpd > 0 and d_std > 0:
+            ratio = d_std / d_mpd
+            if ratio > best_ratio:
+                best_ratio = ratio
+                knee_idx = i
+
+    knee_config = None
+    if knee_idx is not None:
+        k = sorted_by_mpd[knee_idx]
+        knee_config = {
+            'min_carb_g': k['min_carb_g'],
+            'hysteresis_min': k['hysteresis_min'],
+            'meals_per_day': k['meals_per_day'],
+            'mean_patient_std': k['mean_patient_std'],
+            'efficiency_ratio': round(best_ratio, 4),
+        }
+
+    # H3: Per-patient robustness — std of each patient's std across all configs
+    all_pats = sorted(set(p for g in grid for p in g['per_patient']))
+    pat_robustness = {}
+    for pat in all_pats:
+        stds_across = [g['per_patient'][pat]['weighted_std']
+                       for g in grid if pat in g['per_patient']
+                       and not np.isnan(g['per_patient'][pat]['weighted_std'])]
+        if stds_across:
+            pat_robustness[pat] = {
+                'mean_std': round(float(np.mean(stds_across)), 3),
+                'std_of_std': round(float(np.std(stds_across)), 3),
+                'range': f"{min(stds_across):.2f}-{max(stds_across):.2f}",
+                'n_configs': len(stds_across),
+            }
+
+    # H4/H5: Carbs conservation — compare total_carbs_per_day across hysteresis at fixed min_carb
+    carb_conservation = {}
+    for mc in MIN_CARB_VALUES:
+        mc_configs = [g for g in grid if g['min_carb_g'] == mc]
+        cpd = [g['size']['total_carbs_per_day'] for g in mc_configs]
+        if cpd:
+            carb_conservation[str(mc)] = {
+                'mean_cpd': round(float(np.mean(cpd)), 1),
+                'std_cpd': round(float(np.std(cpd)), 1),
+                'range': f"{min(cpd):.1f}-{max(cpd):.1f}",
+                'cv_pct': round(100 * float(np.std(cpd)) / max(float(np.mean(cpd)), 0.01), 1),
+            }
+
+    print(f"\n  Sweep complete: {len(grid)} configs")
+    print(f"  H1 regularity-strictness: rho={h1_rho:.3f}, p={h1_p:.4f}")
+    if knee_config:
+        print(f"  H2 knee: min_carb={knee_config['min_carb_g']}g, "
+              f"hyst={knee_config['hysteresis_min']}min, "
+              f"mpd={knee_config['meals_per_day']}, std={knee_config['mean_patient_std']}")
+    print(f"  H3 robustness (std_of_std): "
+          + ", ".join(f"{p}={v['std_of_std']}" for p, v in sorted(pat_robustness.items())))
+
+    return {
+        'experiment': 'EXP-1569',
+        'title': 'Detection Sensitivity Benchmark',
+        'min_carb_values': MIN_CARB_VALUES,
+        'hysteresis_values': HYSTERESIS_VALUES,
+        'n_configs': len(grid),
+        'n_patients': len(patients),
+        '_grid': grid,  # stripped before JSON save
+        'hypothesis_tests': {
+            'H1_regularity_vs_strictness': {
+                'spearman_rho': round(h1_rho, 4) if not np.isnan(h1_rho) else None,
+                'p_value': round(h1_p, 6) if not np.isnan(h1_p) else None,
+                'direction': 'negative' if h1_rho < 0 else 'positive',
+                'interpretation': 'Stricter detection → lower weighted_std (more regular)'
+                                  if h1_rho < 0 else 'No clear monotonic relationship',
+            },
+            'H2_knee_config': knee_config,
+            'H3_patient_robustness': pat_robustness,
+            'H4_H5_carb_conservation': carb_conservation,
+        },
+        'grid_summary': [{
+            'min_carb_g': g['min_carb_g'],
+            'hysteresis_min': g['hysteresis_min'],
+            'n_meals': g['n_meals'],
+            'meals_per_day': g['meals_per_day'],
+            'mean_carbs': g['size']['mean'],
+            'median_carbs': g['size']['median'],
+            'total_carbs_per_day': g['size']['total_carbs_per_day'],
+            'mean_patient_std': g['mean_patient_std'],
+            'pop_entropy': g['pop_entropy'],
+            'zone_fraction_pct': g['zone_fraction_pct'],
+            'mean_isf_norm': g['metabolic']['mean_isf_norm'],
+            'mean_spectral_power': g['metabolic']['mean_spectral_power'],
+        } for g in grid],
     }
 
 
@@ -4192,8 +4435,324 @@ def generate_within_patient_visualizations(results):
         print("    ✓ fig27_wd_we_regularity.png")
 
 
+def generate_benchmark_visualizations(results):
+    """Generate fig28-33 for EXP-1569 detection sensitivity benchmark."""
+    if 1569 not in results or '_grid' not in results[1569]:
+        return
+
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
+    d = results[1569]
+    grid = d['_grid']
+    mc_vals = d['min_carb_values']
+    hyst_vals = d['hysteresis_values']
+
+    # Build 2D arrays for heatmaps
+    mc_idx = {v: i for i, v in enumerate(mc_vals)}
+    hy_idx = {v: i for i, v in enumerate(hyst_vals)}
+    mpd_map = np.full((len(mc_vals), len(hyst_vals)), np.nan)
+    std_map = np.full((len(mc_vals), len(hyst_vals)), np.nan)
+    ent_map = np.full((len(mc_vals), len(hyst_vals)), np.nan)
+    zf_map = np.full((len(mc_vals), len(hyst_vals)), np.nan)
+    cpd_map = np.full((len(mc_vals), len(hyst_vals)), np.nan)
+    isf_map = np.full((len(mc_vals), len(hyst_vals)), np.nan)
+
+    for g in grid:
+        r, c = mc_idx[g['min_carb_g']], hy_idx[g['hysteresis_min']]
+        mpd_map[r, c] = g['meals_per_day']
+        std_map[r, c] = g['mean_patient_std'] if not np.isnan(g['mean_patient_std']) else np.nan
+        ent_map[r, c] = g['pop_entropy'] if not np.isnan(g['pop_entropy']) else np.nan
+        zf_map[r, c] = g['zone_fraction_pct']
+        cpd_map[r, c] = g['size']['total_carbs_per_day']
+        isf_map[r, c] = g['metabolic']['mean_isf_norm']
+
+    mc_labels = [str(v) for v in mc_vals]
+    hy_labels = [str(v) for v in hyst_vals]
+
+    # --- fig28: Meals/day heatmap ---
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    fig.suptitle('EXP-1569: Detection Parameter Sweep — Count & Structure', fontsize=14)
+
+    im0 = axes[0].imshow(mpd_map, aspect='auto', cmap='YlOrRd')
+    axes[0].set_xticks(range(len(hy_labels)))
+    axes[0].set_xticklabels(hy_labels)
+    axes[0].set_yticks(range(len(mc_labels)))
+    axes[0].set_yticklabels(mc_labels)
+    axes[0].set_xlabel('Hysteresis (min)')
+    axes[0].set_ylabel('Min Carbs (g)')
+    axes[0].set_title('A) Meals per Day')
+    for i in range(len(mc_vals)):
+        for j in range(len(hyst_vals)):
+            v = mpd_map[i, j]
+            if not np.isnan(v):
+                axes[0].text(j, i, f'{v:.1f}', ha='center', va='center', fontsize=6)
+    plt.colorbar(im0, ax=axes[0], shrink=0.8)
+
+    im1 = axes[1].imshow(zf_map, aspect='auto', cmap='YlGn')
+    axes[1].set_xticks(range(len(hy_labels)))
+    axes[1].set_xticklabels(hy_labels)
+    axes[1].set_yticks(range(len(mc_labels)))
+    axes[1].set_yticklabels(mc_labels)
+    axes[1].set_xlabel('Hysteresis (min)')
+    axes[1].set_ylabel('Min Carbs (g)')
+    axes[1].set_title('B) Zone Fraction (%)')
+    for i in range(len(mc_vals)):
+        for j in range(len(hyst_vals)):
+            v = zf_map[i, j]
+            if not np.isnan(v):
+                axes[1].text(j, i, f'{v:.0f}', ha='center', va='center', fontsize=6)
+    plt.colorbar(im1, ax=axes[1], shrink=0.8)
+
+    im2 = axes[2].imshow(cpd_map, aspect='auto', cmap='Blues')
+    axes[2].set_xticks(range(len(hy_labels)))
+    axes[2].set_xticklabels(hy_labels)
+    axes[2].set_yticks(range(len(mc_labels)))
+    axes[2].set_yticklabels(mc_labels)
+    axes[2].set_xlabel('Hysteresis (min)')
+    axes[2].set_ylabel('Min Carbs (g)')
+    axes[2].set_title('C) Total Carbs/Day')
+    for i in range(len(mc_vals)):
+        for j in range(len(hyst_vals)):
+            v = cpd_map[i, j]
+            if not np.isnan(v):
+                axes[2].text(j, i, f'{v:.0f}', ha='center', va='center', fontsize=6)
+    plt.colorbar(im2, ax=axes[2], shrink=0.8)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig28_benchmark_count_structure.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig28_benchmark_count_structure.png")
+
+    # --- fig29: Regularity heatmaps ---
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    fig.suptitle('EXP-1569: Detection Parameter Sweep — Regularity Metrics', fontsize=14)
+
+    im0 = axes[0].imshow(std_map, aspect='auto', cmap='RdYlGn_r')
+    axes[0].set_xticks(range(len(hy_labels)))
+    axes[0].set_xticklabels(hy_labels)
+    axes[0].set_yticks(range(len(mc_labels)))
+    axes[0].set_yticklabels(mc_labels)
+    axes[0].set_xlabel('Hysteresis (min)')
+    axes[0].set_ylabel('Min Carbs (g)')
+    axes[0].set_title('A) Mean Patient Weighted Std (h)\n(lower = more regular)')
+    for i in range(len(mc_vals)):
+        for j in range(len(hyst_vals)):
+            v = std_map[i, j]
+            if not np.isnan(v):
+                axes[0].text(j, i, f'{v:.1f}', ha='center', va='center', fontsize=6)
+    plt.colorbar(im0, ax=axes[0], shrink=0.8)
+
+    im1 = axes[1].imshow(ent_map, aspect='auto', cmap='RdYlGn_r')
+    axes[1].set_xticks(range(len(hy_labels)))
+    axes[1].set_xticklabels(hy_labels)
+    axes[1].set_yticks(range(len(mc_labels)))
+    axes[1].set_yticklabels(mc_labels)
+    axes[1].set_xlabel('Hysteresis (min)')
+    axes[1].set_ylabel('Min Carbs (g)')
+    axes[1].set_title('B) Population Entropy\n(lower = more periodic)')
+    for i in range(len(mc_vals)):
+        for j in range(len(hyst_vals)):
+            v = ent_map[i, j]
+            if not np.isnan(v):
+                axes[1].text(j, i, f'{v:.2f}', ha='center', va='center', fontsize=6)
+    plt.colorbar(im1, ax=axes[1], shrink=0.8)
+
+    im2 = axes[2].imshow(isf_map, aspect='auto', cmap='YlOrRd')
+    axes[2].set_xticks(range(len(hy_labels)))
+    axes[2].set_xticklabels(hy_labels)
+    axes[2].set_yticks(range(len(mc_labels)))
+    axes[2].set_yticklabels(mc_labels)
+    axes[2].set_xlabel('Hysteresis (min)')
+    axes[2].set_ylabel('Min Carbs (g)')
+    axes[2].set_title('C) Mean ISF-Norm Excursion')
+    for i in range(len(mc_vals)):
+        for j in range(len(hyst_vals)):
+            v = isf_map[i, j]
+            if not np.isnan(v):
+                axes[2].text(j, i, f'{v:.2f}', ha='center', va='center', fontsize=6)
+    plt.colorbar(im2, ax=axes[2], shrink=0.8)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig29_benchmark_regularity.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig29_benchmark_regularity.png")
+
+    # --- fig30: Regularity vs meals/day "knee" curve ---
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig.suptitle('EXP-1569: Regularity vs Detection Sensitivity', fontsize=14)
+
+    mpd_arr = [g['meals_per_day'] for g in grid]
+    std_arr = [g['mean_patient_std'] for g in grid]
+    colors_mc = [g['min_carb_g'] for g in grid]
+
+    sc = axes[0].scatter(mpd_arr, std_arr, c=colors_mc, cmap='viridis',
+                         s=40, alpha=0.7, edgecolors='k', linewidths=0.3)
+    axes[0].set_xlabel('Meals per Day')
+    axes[0].set_ylabel('Mean Patient Weighted Std (h)')
+    axes[0].set_title('A) Regularity vs Count\n(each point = one config)')
+    axes[0].grid(alpha=0.3)
+    cb = plt.colorbar(sc, ax=axes[0])
+    cb.set_label('Min Carbs (g)')
+
+    # Mark the 3 canonical configs
+    canonical = {'A': (5, 30), 'B': (5, 90), 'C': (18, 90)}
+    for label, (mc, hy) in canonical.items():
+        match = [g for g in grid if g['min_carb_g'] == mc and g['hysteresis_min'] == hy]
+        if match:
+            g = match[0]
+            axes[0].annotate(label, (g['meals_per_day'], g['mean_patient_std']),
+                             fontsize=11, fontweight='bold', color='red',
+                             textcoords='offset points', xytext=(8, 4))
+
+    # Knee annotation
+    knee = d['hypothesis_tests'].get('H2_knee_config')
+    if knee:
+        axes[0].axhline(knee['mean_patient_std'], color='red', ls='--', alpha=0.4)
+        axes[0].axvline(knee['meals_per_day'], color='red', ls='--', alpha=0.4)
+
+    # Right panel: color by hysteresis
+    colors_hy = [g['hysteresis_min'] for g in grid]
+    sc2 = axes[1].scatter(mpd_arr, std_arr, c=colors_hy, cmap='plasma',
+                          s=40, alpha=0.7, edgecolors='k', linewidths=0.3)
+    axes[1].set_xlabel('Meals per Day')
+    axes[1].set_ylabel('Mean Patient Weighted Std (h)')
+    axes[1].set_title('B) Same data, colored by hysteresis')
+    axes[1].grid(alpha=0.3)
+    cb2 = plt.colorbar(sc2, ax=axes[1])
+    cb2.set_label('Hysteresis (min)')
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig30_benchmark_knee.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig30_benchmark_knee.png")
+
+    # --- fig31: Per-patient regularity trajectories ---
+    all_pats = sorted(set(p for g in grid for p in g['per_patient']))
+    n_pats = len(all_pats)
+    cols = 4
+    rows = (n_pats + cols - 1) // cols
+    fig, axes = plt.subplots(rows, cols, figsize=(16, 3.5 * rows))
+    fig.suptitle('EXP-1569: Per-Patient Regularity Across Configs', fontsize=14)
+    axes_flat = axes.flatten() if n_pats > 1 else [axes]
+
+    for idx, pat in enumerate(all_pats):
+        ax = axes_flat[idx]
+        # Group by min_carb, plot std vs hysteresis
+        for mc in mc_vals:
+            mc_grid = sorted([g for g in grid if g['min_carb_g'] == mc
+                              and pat in g['per_patient']],
+                             key=lambda g: g['hysteresis_min'])
+            if not mc_grid:
+                continue
+            xs = [g['hysteresis_min'] for g in mc_grid]
+            ys = [g['per_patient'][pat]['weighted_std'] for g in mc_grid]
+            ax.plot(xs, ys, marker='.', markersize=4, label=f'{mc}g', alpha=0.7)
+        ax.set_title(f'Patient {pat}', fontsize=10)
+        ax.set_xlabel('Hysteresis (min)', fontsize=8)
+        ax.set_ylabel('Weighted Std (h)', fontsize=8)
+        ax.tick_params(labelsize=7)
+        ax.grid(alpha=0.3)
+        if idx == 0:
+            ax.legend(fontsize=6, ncol=3, title='min_carb', title_fontsize=6)
+
+    for idx in range(len(all_pats), len(axes_flat)):
+        axes_flat[idx].set_visible(False)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.savefig(str(VIZ_DIR / 'fig31_benchmark_per_patient.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig31_benchmark_per_patient.png")
+
+    # --- fig32: Meal size distributions for selected configs ---
+    selected = [
+        ('0g/15m', 0, 15), ('5g/30m (A)', 5, 30), ('5g/90m (B)', 5, 90),
+        ('18g/90m (C)', 18, 90), ('30g/90m', 30, 90), ('40g/180m', 40, 180),
+    ]
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig.suptitle('EXP-1569: Meal Size Distributions by Config', fontsize=14)
+
+    box_data = []
+    box_labels = []
+    for label, mc, hy in selected:
+        match = [g for g in grid if g['min_carb_g'] == mc and g['hysteresis_min'] == hy]
+        if match:
+            g = match[0]
+            carbs = [r['carbs_g'] for pat in g['per_patient']
+                     for r in [rr for rr in [{'carbs_g': g['size']['mean']}]]]
+            box_data.append([g['size']['p25'], g['size']['median'],
+                            g['size']['mean'], g['size']['p75']])
+            box_labels.append(f"{label}\n(n={g['n_meals']})")
+
+    # Bar chart of median & mean
+    x = np.arange(len(box_labels))
+    medians = [bd[1] for bd in box_data]
+    means = [bd[2] for bd in box_data]
+    p25s = [bd[0] for bd in box_data]
+    p75s = [bd[3] for bd in box_data]
+
+    axes[0].bar(x - 0.15, medians, 0.3, label='Median', color='steelblue')
+    axes[0].bar(x + 0.15, means, 0.3, label='Mean', color='coral')
+    axes[0].errorbar(x - 0.15, medians, yerr=[np.array(medians) - np.array(p25s),
+                     np.array(p75s) - np.array(medians)],
+                     fmt='none', color='black', capsize=3)
+    axes[0].set_xticks(x)
+    axes[0].set_xticklabels(box_labels, fontsize=8)
+    axes[0].set_ylabel('Carbs (g)')
+    axes[0].set_title('A) Meal Size Summary')
+    axes[0].legend()
+    axes[0].grid(axis='y', alpha=0.3)
+
+    # Total carbs/day across configs
+    cpd_by_mc = {}
+    for g in grid:
+        cpd_by_mc.setdefault(g['min_carb_g'], []).append(
+            (g['hysteresis_min'], g['size']['total_carbs_per_day']))
+    for mc in sorted(cpd_by_mc.keys()):
+        pts = sorted(cpd_by_mc[mc])
+        axes[1].plot([p[0] for p in pts], [p[1] for p in pts],
+                     marker='o', markersize=4, label=f'{mc}g')
+    axes[1].set_xlabel('Hysteresis (min)')
+    axes[1].set_ylabel('Total Carbs per Day (g)')
+    axes[1].set_title('B) Carb Conservation Test (H5)')
+    axes[1].legend(fontsize=7, ncol=3, title='min_carb')
+    axes[1].grid(alpha=0.3)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig32_benchmark_size.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig32_benchmark_size.png")
+
+    # --- fig33: Patient robustness ranking ---
+    h3 = d['hypothesis_tests'].get('H3_patient_robustness', {})
+    if h3:
+        fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+        fig.suptitle('EXP-1569: Patient Threshold Robustness (H3)', fontsize=14)
+
+        pats = sorted(h3.keys())
+        mean_stds = [h3[p]['mean_std'] for p in pats]
+        std_of_stds = [h3[p]['std_of_std'] for p in pats]
+
+        axes[0].barh(pats, mean_stds, xerr=std_of_stds, color='steelblue',
+                     edgecolor='black', capsize=3)
+        axes[0].set_xlabel('Mean Weighted Std Across Configs (h)')
+        axes[0].set_title('A) Mean Regularity ± Variability')
+        axes[0].grid(axis='x', alpha=0.3)
+
+        axes[1].barh(pats, std_of_stds, color='coral', edgecolor='black')
+        axes[1].set_xlabel('Std of Weighted Std Across Configs (h)')
+        axes[1].set_title('B) Threshold Sensitivity\n(lower = more robust)')
+        axes[1].grid(axis='x', alpha=0.3)
+
+        plt.tight_layout(rect=[0, 0, 1, 0.93])
+        plt.savefig(str(VIZ_DIR / 'fig33_benchmark_robustness.png'), dpi=150)
+        plt.close()
+        print("    ✓ fig33_benchmark_robustness.png")
+
+
 def main():
-    parser = argparse.ArgumentParser(description='EXP-1551-1567: Natural Experiment Census')
+    parser = argparse.ArgumentParser(description='EXP-1551-1569: Natural Experiment Census')
     parser.add_argument('--exp', type=int, default=0, help='Run single experiment (0=all)')
     parser.add_argument('--max-patients', type=int, default=11)
     parser.add_argument('--patients-dir', type=str, default=None)
@@ -4251,6 +4810,8 @@ def main():
                     skip_keys.add('_config_records')
                 if exp_id == 1565:
                     skip_keys.add('_records')
+                if exp_id == 1569:
+                    skip_keys.add('_grid')
                 save_result = {k: v for k, v in result.items() if k not in skip_keys}
                 json.dump(save_result, f, indent=2, default=str)
             print(f"  ✓ Saved → {out_path}  ({elapsed:.1f}s)")
@@ -4293,6 +4854,11 @@ def main():
             generate_within_patient_visualizations(all_results)
         except Exception as e:
             print(f"  Within-patient visualization error: {e}")
+            traceback.print_exc()
+        try:
+            generate_benchmark_visualizations(all_results)
+        except Exception as e:
+            print(f"  Benchmark visualization error: {e}")
             traceback.print_exc()
 
     # Summary
@@ -4423,10 +4989,33 @@ def main():
         if pct_lr is not None:
             print(f"\n  Weekend less regular: {pct_lr:.1f}% of patient×zone pairs")
 
+    if 1569 in all_results and 'hypothesis_tests' in all_results[1569]:
+        ht = all_results[1569]['hypothesis_tests']
+        gs = all_results[1569].get('grid_summary', [])
+        print(f"\n  Detection Sensitivity Benchmark (EXP-1569):")
+        print(f"  {all_results[1569].get('n_configs', 0)} configs swept")
+        h1 = ht.get('H1_regularity_vs_strictness', {})
+        print(f"  H1 regularity~strictness: rho={h1.get('spearman_rho')}, p={h1.get('p_value')}")
+        knee = ht.get('H2_knee_config')
+        if knee:
+            print(f"  H2 knee: {knee['min_carb_g']}g/{knee['hysteresis_min']}min "
+                  f"(mpd={knee['meals_per_day']}, std={knee['mean_patient_std']}h)")
+        h3 = ht.get('H3_patient_robustness', {})
+        if h3:
+            robust = sorted(h3.items(), key=lambda x: x[1]['std_of_std'])
+            print(f"  H3 most robust: {robust[0][0]} (σσ={robust[0][1]['std_of_std']}), "
+                  f"least: {robust[-1][0]} (σσ={robust[-1][1]['std_of_std']})")
+        h45 = ht.get('H4_H5_carb_conservation', {})
+        if h45:
+            cv_0 = h45.get('0', {}).get('cv_pct', '?')
+            cv_18 = h45.get('18', {}).get('cv_pct', '?')
+            print(f"  H5 carb conservation CV: min_carb=0g → {cv_0}%, "
+                  f"min_carb=18g → {cv_18}%")
+
     # Save combined results
     combined_path = RESULTS_DIR / 'exp-1551_natural_experiments_combined.json'
     save_combined = {}
-    skip_large = {'all_experiments', 'meal_records', '_config_records', '_records'}
+    skip_large = {'all_experiments', 'meal_records', '_config_records', '_records', '_grid'}
     for k, v in all_results.items():
         save_combined[k] = {kk: vv for kk, vv in v.items() if kk not in skip_large}
     with open(str(combined_path), 'w') as f:
