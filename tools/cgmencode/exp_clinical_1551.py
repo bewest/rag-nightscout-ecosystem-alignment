@@ -313,18 +313,27 @@ def detect_overnight_windows(patient_name, df, bg, bolus, carbs):
     return experiments
 
 
-def detect_meal_windows(patient_name, df, bg, bolus, carbs, sd):
-    """Detect glucose tolerance test windows: meals with post-prandial observation."""
+def detect_meal_windows(patient_name, df, bg, bolus, carbs, sd,
+                        min_carbs=None, cluster_gap=None):
+    """Detect glucose tolerance test windows: meals with post-prandial observation.
+
+    Args:
+        min_carbs: Minimum carb entry to trigger a meal (default: MEAL_CARB_THRESH=5g).
+        cluster_gap: Steps within which carb entries merge into one meal
+                     (default: 6 steps = 30 min). Use 18 for 90-min hysteresis.
+    """
     N = len(bg)
     experiments = []
+    _min_carbs = min_carbs if min_carbs is not None else MEAL_CARB_THRESH
+    _cluster_gap = cluster_gap if cluster_gap is not None else 6
 
     # Find carb events
-    carb_events = np.where(carbs >= MEAL_CARB_THRESH)[0]
+    carb_events = np.where(carbs >= _min_carbs)[0]
     if len(carb_events) == 0:
         return experiments
 
-    # Cluster events within 30 min
-    clusters = _cluster_events(carb_events, gap=6)
+    # Cluster events within specified gap
+    clusters = _cluster_events(carb_events, gap=_cluster_gap)
 
     for cluster in clusters:
         meal_idx = cluster[0]  # first event in cluster
@@ -1483,6 +1492,167 @@ def exp_1558_production(patients):
     }
 
 
+@register(1559, 'Meal Detection Sensitivity')
+def exp_1559_meal_sensitivity(patients):
+    """Compare meal detection under 3 threshold configurations.
+
+    Configs:
+      A – Comprehensive census  : ≥5g carbs, 30-min clustering gap (current default)
+      B – Medium hysteresis     : ≥5g carbs, 90-min clustering gap
+      C – Therapy assessment    : ≥18g carbs, 90-min clustering gap
+    """
+    CONFIGS = {
+        'A_census_5g_30m':   {'min_carbs': 5.0,  'cluster_gap': 6},
+        'B_medium_5g_90m':   {'min_carbs': 5.0,  'cluster_gap': 18},
+        'C_therapy_18g_90m': {'min_carbs': 18.0, 'cluster_gap': 18},
+    }
+
+    config_results = {}
+    for cfg_name, cfg in CONFIGS.items():
+        per_patient = {}
+        all_meals = []
+        for pat in patients:
+            name = pat['name']
+            df = pat['df']
+            bg = _bg(df)
+            bolus = np.nan_to_num(df['bolus'].values.astype(np.float64), nan=0.0)
+            carbs_arr = np.nan_to_num(df['carbs'].values.astype(np.float64), nan=0.0)
+            sd = compute_supply_demand(df, pat['pk'])
+            days = len(df) / STEPS_PER_DAY
+
+            meals = detect_meal_windows(name, df, bg, bolus, carbs_arr, sd,
+                                        min_carbs=cfg['min_carbs'],
+                                        cluster_gap=cfg['cluster_gap'])
+            all_meals.extend(meals)
+
+            # Per-patient summary
+            carbs_list = [m.measurements['carbs_g'] for m in meals]
+            excursions = [m.measurements['excursion_mg_dl'] for m in meals
+                          if m.measurements.get('excursion_mg_dl') is not None]
+            qualities = [m.quality for m in meals]
+            peak_times = [m.measurements['peak_time_min'] for m in meals]
+            announced = sum(1 for m in meals if m.measurements.get('is_announced'))
+
+            per_patient[name] = {
+                'count': len(meals),
+                'per_day': round(len(meals) / days, 2) if days > 0 else 0,
+                'mean_carbs_g': round(float(np.mean(carbs_list)), 1) if carbs_list else 0,
+                'median_carbs_g': round(float(np.median(carbs_list)), 1) if carbs_list else 0,
+                'mean_excursion': round(float(np.mean(excursions)), 1) if excursions else 0,
+                'median_excursion': round(float(np.median(excursions)), 1) if excursions else 0,
+                'mean_quality': round(float(np.mean(qualities)), 3) if qualities else 0,
+                'mean_peak_time_min': round(float(np.mean(peak_times)), 1) if peak_times else 0,
+                'pct_announced': round(100 * announced / len(meals), 1) if meals else 0,
+            }
+
+        # Population summary
+        all_carbs = [m.measurements['carbs_g'] for m in all_meals]
+        all_exc = [m.measurements['excursion_mg_dl'] for m in all_meals
+                    if m.measurements.get('excursion_mg_dl') is not None]
+        all_q = [m.quality for m in all_meals]
+        all_pt = [m.measurements['peak_time_min'] for m in all_meals]
+        all_announced = sum(1 for m in all_meals if m.measurements.get('is_announced'))
+
+        # Quality grade distribution
+        grades = {'excellent': 0, 'good': 0, 'acceptable': 0, 'poor': 0}
+        for q in all_q:
+            if q >= 0.80:
+                grades['excellent'] += 1
+            elif q >= 0.60:
+                grades['good'] += 1
+            elif q >= 0.40:
+                grades['acceptable'] += 1
+            else:
+                grades['poor'] += 1
+
+        # Excursion distribution by carb range
+        excursion_by_carb_range = {}
+        for m in all_meals:
+            cg = m.measurements['carbs_g']
+            exc = m.measurements.get('excursion_mg_dl')
+            if exc is None:
+                continue
+            if cg < 10:
+                rng = '<10g'
+            elif cg < 20:
+                rng = '10-19g'
+            elif cg < 30:
+                rng = '20-29g'
+            elif cg < 50:
+                rng = '30-49g'
+            else:
+                rng = '≥50g'
+            excursion_by_carb_range.setdefault(rng, []).append(exc)
+
+        exc_summary = {}
+        for rng, vals in sorted(excursion_by_carb_range.items()):
+            exc_summary[rng] = {
+                'n': len(vals),
+                'mean': round(float(np.mean(vals)), 1),
+                'median': round(float(np.median(vals)), 1),
+                'p25': round(float(np.percentile(vals, 25)), 1),
+                'p75': round(float(np.percentile(vals, 75)), 1),
+            }
+
+        # Time-of-day distribution (24 bins)
+        hour_hist = [0] * 24
+        for m in all_meals:
+            hour_hist[int(m.hour_of_day) % 24] += 1
+
+        config_results[cfg_name] = {
+            'config': cfg,
+            'total_meals': len(all_meals),
+            'per_patient': per_patient,
+            'population': {
+                'mean_carbs_g': round(float(np.mean(all_carbs)), 1) if all_carbs else 0,
+                'median_carbs_g': round(float(np.median(all_carbs)), 1) if all_carbs else 0,
+                'mean_excursion': round(float(np.mean(all_exc)), 1) if all_exc else 0,
+                'median_excursion': round(float(np.median(all_exc)), 1) if all_exc else 0,
+                'mean_quality': round(float(np.mean(all_q)), 3) if all_q else 0,
+                'mean_peak_time_min': round(float(np.mean(all_pt)), 1) if all_pt else 0,
+                'pct_announced': round(100 * all_announced / len(all_meals), 1) if all_meals else 0,
+                'quality_grades': grades,
+                'grade_pcts': {k: round(100 * v / len(all_meals), 1) if all_meals else 0
+                               for k, v in grades.items()},
+            },
+            'excursion_by_carb_range': exc_summary,
+            'hour_of_day_histogram': hour_hist,
+        }
+
+    # Comparison delta table
+    baseline = config_results['A_census_5g_30m']
+    deltas = {}
+    for cfg_name in ['B_medium_5g_90m', 'C_therapy_18g_90m']:
+        cfg_r = config_results[cfg_name]
+        deltas[cfg_name] = {
+            'total_meals_delta': cfg_r['total_meals'] - baseline['total_meals'],
+            'total_meals_pct_change': round(
+                100 * (cfg_r['total_meals'] - baseline['total_meals']) / baseline['total_meals'], 1
+            ) if baseline['total_meals'] > 0 else 0,
+            'quality_delta': round(
+                cfg_r['population']['mean_quality'] - baseline['population']['mean_quality'], 3),
+            'excursion_delta': round(
+                cfg_r['population']['mean_excursion'] - baseline['population']['mean_excursion'], 1),
+            'carbs_g_delta': round(
+                cfg_r['population']['mean_carbs_g'] - baseline['population']['mean_carbs_g'], 1),
+            'per_patient_deltas': {
+                pat: {
+                    'count_delta': cfg_r['per_patient'][pat]['count'] - baseline['per_patient'][pat]['count'],
+                    'quality_delta': round(
+                        cfg_r['per_patient'][pat]['mean_quality'] - baseline['per_patient'][pat]['mean_quality'], 3),
+                }
+                for pat in baseline['per_patient']
+            },
+        }
+
+    return {
+        'experiment': 'EXP-1559',
+        'title': 'Meal Detection Sensitivity',
+        'configs': config_results,
+        'deltas_vs_baseline': deltas,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Shared detector runner (caches across experiments within a session)
 # ---------------------------------------------------------------------------
@@ -1805,12 +1975,133 @@ def _viz_archetypes(result, plt):
     print("    ✓ fig7_patient_profiles.png")
 
 
+def generate_sensitivity_visualizations(results):
+    """Generate visualizations for EXP-1559 meal detection sensitivity."""
+    try:
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("  matplotlib not available — skipping sensitivity visualizations")
+        return
+
+    if 1559 not in results:
+        return
+
+    d = results[1559]
+    configs = d['configs']
+    cfg_names = list(configs.keys())
+    cfg_labels = ['≥5g / 30min', '≥5g / 90min', '≥18g / 90min']
+    colors = ['#4C72B0', '#55A868', '#C44E52']
+
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig.suptitle('EXP-1559: Meal Detection Sensitivity Analysis', fontsize=14, fontweight='bold')
+
+    # --- Panel A: Meal counts per patient ---
+    ax = axes[0, 0]
+    pnames = sorted(configs[cfg_names[0]]['per_patient'].keys())
+    x = np.arange(len(pnames))
+    width = 0.25
+    for j, (cn, lbl) in enumerate(zip(cfg_names, cfg_labels)):
+        counts = [configs[cn]['per_patient'][p]['per_day'] for p in pnames]
+        ax.bar(x + j * width, counts, width, label=lbl, color=colors[j], alpha=0.85)
+    ax.set_xticks(x + width)
+    ax.set_xticklabels(pnames)
+    ax.set_xlabel('Patient')
+    ax.set_ylabel('Meals / Day')
+    ax.set_title('A) Daily Meal Rate by Config')
+    ax.legend(fontsize=8)
+
+    # --- Panel B: Quality comparison ---
+    ax = axes[0, 1]
+    qual_data = []
+    for cn in cfg_names:
+        qual_data.append(configs[cn]['population']['mean_quality'])
+    bars = ax.bar(cfg_labels, qual_data, color=colors, alpha=0.85)
+    ax.set_ylabel('Mean Quality Score')
+    ax.set_title('B) Population Quality by Config')
+    ax.set_ylim(0.8, 1.0)
+    for bar, val in zip(bars, qual_data):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.003,
+                f'{val:.3f}', ha='center', fontsize=10)
+
+    # Grade breakdown stacked
+    ax2 = ax.twinx()
+    grade_order = ['excellent', 'good', 'acceptable', 'poor']
+    grade_colors = ['#2ca02c', '#ffbb78', '#ff7f0e', '#d62728']
+    bottom = np.zeros(3)
+    for gi, grade in enumerate(grade_order):
+        vals = [configs[cn]['population']['grade_pcts'].get(grade, 0) for cn in cfg_names]
+        ax2.bar(cfg_labels, vals, bottom=bottom, color=grade_colors[gi], alpha=0.3,
+                width=0.3, label=grade)
+        bottom += np.array(vals)
+    ax2.set_ylabel('Grade %')
+    ax2.set_ylim(0, 110)
+    ax2.legend(fontsize=7, loc='upper right')
+
+    # --- Panel C: Excursion by carb range ---
+    ax = axes[1, 0]
+    carb_ranges = ['<10g', '10-19g', '20-29g', '30-49g', '≥50g']
+    for j, (cn, lbl) in enumerate(zip(cfg_names, cfg_labels)):
+        exc_data = configs[cn].get('excursion_by_carb_range', {})
+        medians = []
+        xpos = []
+        for ri, rng in enumerate(carb_ranges):
+            if rng in exc_data:
+                medians.append(exc_data[rng]['median'])
+                xpos.append(ri)
+        if medians:
+            ax.plot(xpos, medians, 'o-', color=colors[j], label=lbl, markersize=6)
+    ax.set_xticks(range(len(carb_ranges)))
+    ax.set_xticklabels(carb_ranges, fontsize=9)
+    ax.set_xlabel('Carb Range')
+    ax.set_ylabel('Median Excursion (mg/dL)')
+    ax.set_title('C) Excursion by Carb Range')
+    ax.legend(fontsize=8)
+    ax.grid(True, alpha=0.3)
+
+    # --- Panel D: Population summary table ---
+    ax = axes[1, 1]
+    ax.axis('off')
+    rows = []
+    row_labels = ['Total Meals', 'Meals/Day (pop)', 'Mean Carbs (g)',
+                  'Mean Excursion', 'Mean Quality', '% Announced',
+                  'Mean Peak Time']
+    for cn in cfg_names:
+        c = configs[cn]
+        p = c['population']
+        total_days = sum(len(pat['df']) for pat in []) if False else 0  # placeholder
+        rows_data = [
+            f"{c['total_meals']:,}",
+            f"{p['mean_carbs_g']:.0f}",  # use carbs as proxy
+            f"{p['mean_carbs_g']:.1f}",
+            f"{p['mean_excursion']:.1f}",
+            f"{p['mean_quality']:.3f}",
+            f"{p['pct_announced']:.0f}%",
+            f"{p['mean_peak_time_min']:.0f} min",
+        ]
+        rows.append(rows_data)
+
+    table_data = list(zip(*rows))  # transpose
+    table = ax.table(cellText=table_data, rowLabels=row_labels,
+                     colLabels=cfg_labels, loc='center', cellLoc='center')
+    table.auto_set_font_size(False)
+    table.set_fontsize(9)
+    table.scale(1, 1.4)
+    ax.set_title('D) Configuration Comparison', pad=20)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.savefig(str(VIZ_DIR / 'fig8_meal_sensitivity.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig8_meal_sensitivity.png")
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser(description='EXP-1551-1558: Natural Experiment Census')
+    parser = argparse.ArgumentParser(description='EXP-1551-1559: Natural Experiment Census')
     parser.add_argument('--exp', type=int, default=0, help='Run single experiment (0=all)')
     parser.add_argument('--max-patients', type=int, default=11)
     parser.add_argument('--patients-dir', type=str, default=None)
@@ -1820,7 +2111,7 @@ def main():
     _patients_dir = args.patients_dir
 
     print(f"\n{'='*70}")
-    print(f"EXP-1551-1558: Natural Experiment Census & Characterization")
+    print(f"EXP-1551-1559: Natural Experiment Census & Characterization")
     print(f"{'='*70}\n")
 
     patients = load_patients(args.max_patients, _patients_dir)
@@ -1876,6 +2167,11 @@ def main():
         except Exception as e:
             print(f"  Visualization error: {e}")
             traceback.print_exc()
+        try:
+            generate_sensitivity_visualizations(all_results)
+        except Exception as e:
+            print(f"  Sensitivity visualization error: {e}")
+            traceback.print_exc()
 
     # Summary
     print(f"\n{'='*70}")
@@ -1892,6 +2188,17 @@ def main():
             print(f"  {etype:15s} {stats['total_count']:7,d} "
                   f"{stats['mean_quality']:8.3f} "
                   f"{stats['median_duration_min']:10.0f}m")
+
+    if 1559 in all_results and 'configs' in all_results[1559]:
+        print(f"\n  Meal Detection Sensitivity (EXP-1559):")
+        print(f"  {'Config':25s} {'Meals':>7s} {'Quality':>8s} {'Carbs(g)':>9s} {'Excursion':>10s}")
+        print(f"  {'─'*62}")
+        for cfg_name, cfg_data in all_results[1559]['configs'].items():
+            p = cfg_data['population']
+            print(f"  {cfg_name:25s} {cfg_data['total_meals']:7,d} "
+                  f"{p['mean_quality']:8.3f} "
+                  f"{p['mean_carbs_g']:9.1f} "
+                  f"{p['mean_excursion']:10.1f}")
 
     # Save combined results
     combined_path = RESULTS_DIR / 'exp-1551_natural_experiments_combined.json'
