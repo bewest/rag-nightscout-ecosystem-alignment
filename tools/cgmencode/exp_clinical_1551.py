@@ -1884,6 +1884,326 @@ def exp_1561_meal_metabolic(patients):
         'meal_records': meal_records,
     }
 
+
+# ---------------------------------------------------------------------------
+# Shared helpers for multi-config metabolic analysis (EXP-1563)
+# ---------------------------------------------------------------------------
+
+def _metabolic_by_carb_range(meal_records):
+    """Compute ISF-norm, spectral power, and other metrics grouped by carb range."""
+    CARB_RANGES = [
+        ('<10g',    0,   10),
+        ('10-19g', 10,   20),
+        ('20-29g', 20,   30),
+        ('30-49g', 30,   50),
+        ('≥50g',   50, 9999),
+    ]
+    by_range = {}
+    for label, lo, hi in CARB_RANGES:
+        subset = [r for r in meal_records if r['carb_range'] == label]
+        if not subset:
+            by_range[label] = {'n': 0}
+            continue
+
+        raw_exc = [r['excursion_mg_dl'] for r in subset]
+        isf_exc = [r['isf_norm_excursion'] for r in subset]
+        spec_pow = [r['spectral_power_per_hour'] for r in subset]
+        mean_int = [r['mean_interaction'] for r in subset]
+        net_mean = [r['net_flux_mean'] for r in subset]
+
+        by_range[label] = {
+            'n': len(subset),
+            'raw_excursion_mean': round(float(np.mean(raw_exc)), 1),
+            'raw_excursion_median': round(float(np.median(raw_exc)), 1),
+            'raw_excursion_p25': round(float(np.percentile(raw_exc, 25)), 1),
+            'raw_excursion_p75': round(float(np.percentile(raw_exc, 75)), 1),
+            'isf_norm_mean': round(float(np.mean(isf_exc)), 3),
+            'isf_norm_median': round(float(np.median(isf_exc)), 3),
+            'isf_norm_p25': round(float(np.percentile(isf_exc, 25)), 3),
+            'isf_norm_p75': round(float(np.percentile(isf_exc, 75)), 3),
+            'spectral_power_mean': round(float(np.mean(spec_pow)), 2),
+            'spectral_power_median': round(float(np.median(spec_pow)), 2),
+            'spectral_power_p25': round(float(np.percentile(spec_pow, 25)), 2),
+            'spectral_power_p75': round(float(np.percentile(spec_pow, 75)), 2),
+            'mean_interaction_mean': round(float(np.mean(mean_int)), 3),
+            'net_flux_mean': round(float(np.mean(net_mean)), 3),
+        }
+    return by_range
+
+
+def _collect_meal_metabolic_records(patients, min_carbs, cluster_gap):
+    """Detect meals with given config and collect metabolic measurements."""
+    CARB_RANGES = [
+        ('<10g',    0,   10),
+        ('10-19g', 10,   20),
+        ('20-29g', 20,   30),
+        ('30-49g', 30,   50),
+        ('≥50g',   50, 9999),
+    ]
+    records = []
+    for pat in patients:
+        name = pat['name']
+        df = pat['df']
+        bg = _bg(df)
+        N = len(bg)
+        bolus = np.nan_to_num(df['bolus'].values.astype(np.float64), nan=0.0)
+        carbs_arr = np.nan_to_num(df['carbs'].values.astype(np.float64), nan=0.0)
+        sd = compute_supply_demand(df, pat['pk'])
+        isf = _extract_isf_scalar(df)
+
+        meals = detect_meal_windows(name, df, bg, bolus, carbs_arr, sd,
+                                    min_carbs=min_carbs, cluster_gap=cluster_gap)
+        supply = sd['supply']
+        demand = sd['demand']
+
+        for m in meals:
+            exc = m.measurements.get('excursion_mg_dl')
+            if exc is None or math.isnan(exc):
+                continue
+            carbs_g = m.measurements['carbs_g']
+            isf_norm_exc = exc / isf if isf > 0 else float('nan')
+
+            s_start = m.start_idx
+            s_end = min(m.end_idx, N)
+            if s_end - s_start < 6:
+                continue
+
+            win_supply = supply[s_start:s_end]
+            win_demand = demand[s_start:s_end]
+            interaction = win_supply * win_demand
+
+            fft_coeffs = np.fft.rfft(interaction)
+            spectral_power = float(np.sum(np.abs(fft_coeffs[1:]) ** 2))
+            duration_hours = (s_end - s_start) * STEP_MINUTES / 60.0
+            spectral_power_per_hour = spectral_power / max(duration_hours, 0.5)
+
+            mean_interaction = float(np.mean(interaction))
+            net = sd['net'][s_start:s_end]
+            net_mean = float(np.nanmean(net))
+
+            carb_range = None
+            for label, lo, hi in CARB_RANGES:
+                if lo <= carbs_g < hi:
+                    carb_range = label
+                    break
+
+            records.append({
+                'patient': name,
+                'isf_mgdl': round(isf, 1),
+                'carbs_g': carbs_g,
+                'carb_range': carb_range,
+                'excursion_mg_dl': round(exc, 1),
+                'isf_norm_excursion': round(isf_norm_exc, 3),
+                'spectral_power_per_hour': round(spectral_power_per_hour, 2),
+                'mean_interaction': round(mean_interaction, 3),
+                'net_flux_mean': round(net_mean, 3),
+                'quality': m.quality,
+                'peak_time_min': m.measurements['peak_time_min'],
+                'bolus_u': m.measurements['bolus_u'],
+                'is_announced': m.measurements.get('is_announced', False),
+                'hour_of_day': m.hour_of_day,
+                'duration_hours': round(duration_hours, 2),
+            })
+    return records
+
+
+# Canonical mealtime zones for periodicity analysis
+MEALTIME_ZONES = {
+    'breakfast': (6, 10),    # 6:00–10:00
+    'lunch':     (11, 14),   # 11:00–14:00
+    'dinner':    (17, 21),   # 17:00–21:00
+}
+
+
+def _mealtime_periodicity(records, patients):
+    """Analyze meal periodicity within canonical mealtime zones.
+
+    Returns metrics per zone measuring how concentrated/regular meals are:
+    - zone_fraction: % of meals that fall in any mealtime zone
+    - zone_counts: meals per zone
+    - per_patient_regularity: std of meal hour within each zone (lower = more regular)
+    - zone_entropy: Shannon entropy of 24-bin hourly histogram (lower = more periodic)
+    - peak_to_mean: ratio of peak hourly bin to mean (higher = more concentrated)
+    """
+    if not records:
+        return {}
+
+    hours = [r['hour_of_day'] for r in records]
+
+    # 24-bin hourly histogram
+    hist = np.zeros(24)
+    for h in hours:
+        hist[int(h) % 24] += 1
+    hist_norm = hist / max(hist.sum(), 1)
+
+    # Shannon entropy (lower = more periodic/concentrated)
+    entropy = 0.0
+    for p in hist_norm:
+        if p > 0:
+            entropy -= p * np.log2(p)
+    max_entropy = np.log2(24)  # uniform distribution
+
+    # Peak-to-mean ratio
+    peak_to_mean = float(hist.max() / max(hist.mean(), 1))
+
+    # Zone analysis
+    zone_stats = {}
+    in_any_zone = 0
+    for zone_name, (start_h, end_h) in MEALTIME_ZONES.items():
+        zone_meals = [r for r in records if start_h <= r['hour_of_day'] < end_h]
+        in_any_zone += len(zone_meals)
+
+        zone_hours = [r['hour_of_day'] for r in zone_meals]
+
+        # Per-patient regularity: mean of per-patient std within zone
+        patient_stds = []
+        pat_names = sorted(set(r['patient'] for r in records))
+        for pat in pat_names:
+            pat_hours = [r['hour_of_day'] for r in zone_meals if r['patient'] == pat]
+            if len(pat_hours) >= 3:
+                patient_stds.append(float(np.std(pat_hours)))
+
+        zone_stats[zone_name] = {
+            'n_meals': len(zone_meals),
+            'pct_of_total': round(100 * len(zone_meals) / len(records), 1),
+            'mean_hour': round(float(np.mean(zone_hours)), 2) if zone_hours else None,
+            'std_hour': round(float(np.std(zone_hours)), 2) if len(zone_hours) >= 2 else None,
+            'per_patient_mean_std': round(float(np.mean(patient_stds)), 2) if patient_stds else None,
+            'mean_isf_norm': round(float(np.mean(
+                [r['isf_norm_excursion'] for r in zone_meals])), 3) if zone_meals else None,
+            'mean_spectral_power': round(float(np.mean(
+                [r['spectral_power_per_hour'] for r in zone_meals])), 2) if zone_meals else None,
+        }
+
+    return {
+        'total_meals': len(records),
+        'in_mealtime_zones': in_any_zone,
+        'zone_fraction_pct': round(100 * in_any_zone / len(records), 1),
+        'entropy_bits': round(entropy, 3),
+        'max_entropy_bits': round(max_entropy, 3),
+        'normalized_entropy': round(entropy / max_entropy, 3),  # 0=perfect periodicity, 1=uniform
+        'peak_to_mean_ratio': round(peak_to_mean, 2),
+        'hour_histogram': [int(x) for x in hist],
+        'zones': zone_stats,
+    }
+
+
+@register(1563, 'Multi-Config Metabolic Characterization')
+def exp_1563_multi_config_metabolic(patients):
+    """Compare ISF-normalized excursion, spectral power, and meal periodicity
+    across 3 detection configs.
+
+    Extends EXP-1561 (therapy-only) to all 3 configs from EXP-1559:
+      A – ≥5g / 30min  (census, includes micro-meals)
+      B – ≥5g / 90min  (medium, longer hysteresis)
+      C – ≥18g / 90min (therapy, high-quality only)
+
+    Additional question: Does stricter detection increase meal periodicity
+    within canonical mealtime zones (breakfast, lunch, dinner)?
+    """
+    CONFIGS = {
+        'A_census_5g_30m':   {'min_carbs': 5.0,  'cluster_gap': 6},
+        'B_medium_5g_90m':   {'min_carbs': 5.0,  'cluster_gap': 18},
+        'C_therapy_18g_90m': {'min_carbs': 18.0, 'cluster_gap': 18},
+    }
+
+    config_results = {}
+    for cfg_name, cfg in CONFIGS.items():
+        print(f"\n  Config {cfg_name}:")
+        records = _collect_meal_metabolic_records(
+            patients, cfg['min_carbs'], cfg['cluster_gap'])
+        by_range = _metabolic_by_carb_range(records)
+        periodicity = _mealtime_periodicity(records, patients)
+
+        # Population summary
+        if records:
+            pop_raw = [r['excursion_mg_dl'] for r in records]
+            pop_isf = [r['isf_norm_excursion'] for r in records]
+            pop_spec = [r['spectral_power_per_hour'] for r in records]
+            pop_net = [r['net_flux_mean'] for r in records]
+            population = {
+                'mean_raw_excursion': round(float(np.mean(pop_raw)), 1),
+                'median_raw_excursion': round(float(np.median(pop_raw)), 1),
+                'mean_isf_norm': round(float(np.mean(pop_isf)), 3),
+                'median_isf_norm': round(float(np.median(pop_isf)), 3),
+                'mean_spectral_power': round(float(np.mean(pop_spec)), 2),
+                'median_spectral_power': round(float(np.median(pop_spec)), 2),
+                'mean_net_flux': round(float(np.mean(pop_net)), 3),
+            }
+        else:
+            population = {}
+
+        config_results[cfg_name] = {
+            'config': cfg,
+            'n_meals': len(records),
+            'by_carb_range': by_range,
+            'population': population,
+            'periodicity': periodicity,
+            'records': records,  # keep for viz
+        }
+        ent = periodicity.get('normalized_entropy', 'N/A')
+        zf = periodicity.get('zone_fraction_pct', 'N/A')
+        print(f"    {len(records)} meals, median ISF-norm={population.get('median_isf_norm', 'N/A')}, "
+              f"entropy={ent}, zone%={zf}")
+
+    # Config comparison delta table
+    baseline = config_results['A_census_5g_30m']
+    deltas = {}
+    for cfg_name in ['B_medium_5g_90m', 'C_therapy_18g_90m']:
+        cfg_r = config_results[cfg_name]
+        bp = baseline.get('population', {})
+        cp = cfg_r.get('population', {})
+        bper = baseline.get('periodicity', {})
+        cper = cfg_r.get('periodicity', {})
+        if bp and cp:
+            deltas[cfg_name] = {
+                'n_meals_delta': cfg_r['n_meals'] - baseline['n_meals'],
+                'isf_norm_delta': round(
+                    cp.get('median_isf_norm', 0) - bp.get('median_isf_norm', 0), 3),
+                'spectral_delta_pct': round(
+                    100 * (cp.get('median_spectral_power', 0) - bp.get('median_spectral_power', 0))
+                    / max(bp.get('median_spectral_power', 1), 1), 1),
+                'entropy_delta': round(
+                    cper.get('normalized_entropy', 0) - bper.get('normalized_entropy', 0), 3),
+                'zone_fraction_delta': round(
+                    cper.get('zone_fraction_pct', 0) - bper.get('zone_fraction_pct', 0), 1),
+            }
+
+    # Small-meal characterization (5-18g only, present in A/B but not C)
+    small_meals_a = [r for r in config_results['A_census_5g_30m']['records']
+                     if r['carbs_g'] < 18]
+    large_meals_a = [r for r in config_results['A_census_5g_30m']['records']
+                     if r['carbs_g'] >= 18]
+    small_vs_large = {}
+    for label, subset in [('small_5_to_18g', small_meals_a), ('large_18g_plus', large_meals_a)]:
+        if not subset:
+            small_vs_large[label] = {'n': 0}
+            continue
+        small_vs_large[label] = {
+            'n': len(subset),
+            'median_raw_excursion': round(float(np.median([r['excursion_mg_dl'] for r in subset])), 1),
+            'median_isf_norm': round(float(np.median([r['isf_norm_excursion'] for r in subset])), 3),
+            'median_spectral_power': round(float(np.median([r['spectral_power_per_hour'] for r in subset])), 2),
+            'mean_net_flux': round(float(np.mean([r['net_flux_mean'] for r in subset])), 3),
+            'pct_announced': round(100 * sum(1 for r in subset if r['is_announced']) / len(subset), 1),
+        }
+
+    # Strip records from output (too large for JSON)
+    save_configs = {}
+    for cn, cv in config_results.items():
+        save_configs[cn] = {k: v for k, v in cv.items() if k != 'records'}
+
+    return {
+        'experiment': 'EXP-1563',
+        'title': 'Multi-Config Metabolic Characterization',
+        'n_patients': len(patients),
+        'configs': save_configs,
+        'deltas_vs_baseline': deltas,
+        'small_vs_large_meals': small_vs_large,
+        '_config_records': config_results,  # internal, for viz
+    }
+
+
 _CACHED_EXPERIMENTS = None
 
 
@@ -2703,8 +3023,280 @@ def generate_metabolic_visualizations(results):
     plt.close()
     print("    ✓ fig14_announced_vs_unannounced.png")
 
+
+def generate_multiconfig_visualizations(results):
+    """Generate EXP-1563 multi-config comparison + periodicity figures."""
+    if 1563 not in results:
+        return
+
+    r = results[1563]
+    config_records = r.get('_config_records', {})
+    if not config_records:
+        print("  ⚠ No _config_records for multi-config viz")
+        return
+
+    os.makedirs(str(VIZ_DIR), exist_ok=True)
+
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
+    cfg_names = list(config_records.keys())
+    cfg_labels = {
+        'A_census_5g_30m': '≥5g / 30min',
+        'B_medium_5g_90m': '≥5g / 90min',
+        'C_therapy_18g_90m': '≥18g / 90min',
+    }
+    CARB_RANGE_ORDER = ['<10g', '10-19g', '20-29g', '30-49g', '≥50g']
+
+    # ── Figure 15: Multi-config metric comparison (3×3 bar grid) ─────
+    metrics = [
+        ('isf_norm_mean',      'ISF-Norm Excursion'),
+        ('spectral_power_mean', 'Spectral Power/hr'),
+        ('net_flux_mean',       'Net Flux Mean'),
+    ]
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5.5))
+    fig.suptitle('EXP-1563: Metabolic Metrics by Carb Range × Detection Config',
+                 fontsize=13, fontweight='bold')
+
+    colors = ['#4C72B0', '#55A868', '#C44E52']
+
+    for ax_idx, (metric_key, metric_label) in enumerate(metrics):
+        ax = axes[ax_idx]
+        x = np.arange(len(CARB_RANGE_ORDER))
+        n_cfgs = len(cfg_names)
+        width = 0.8 / n_cfgs
+
+        for ci, cfg_name in enumerate(cfg_names):
+            by_range = config_records[cfg_name].get('by_carb_range', {})
+            vals = []
+            for rng in CARB_RANGE_ORDER:
+                rd = by_range.get(rng, {})
+                vals.append(rd.get(metric_key, 0) if rd.get('n', 0) > 0 else 0)
+            ax.bar(x + ci * width, vals, width, label=cfg_labels.get(cfg_name, cfg_name),
+                   color=colors[ci], alpha=0.85)
+
+        ax.set_xticks(x + width * (n_cfgs - 1) / 2)
+        ax.set_xticklabels(CARB_RANGE_ORDER, fontsize=9)
+        ax.set_xlabel('Carb Range')
+        ax.set_ylabel(metric_label)
+        ax.set_title(f'{chr(65 + ax_idx)}) {metric_label}')
+        ax.legend(fontsize=7, loc='upper left')
+        ax.grid(axis='y', alpha=0.3)
+
+        if 'spectral' in metric_key:
+            ax.set_yscale('log')
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig15_multiconfig_metrics.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig15_multiconfig_metrics.png")
+
+    # ── Figure 16: Multi-config box plots (ISF-norm and spectral) ────
+    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+    fig.suptitle('EXP-1563: Metric Distributions by Config × Carb Range',
+                 fontsize=13, fontweight='bold')
+
+    for row_idx, (metric_key, metric_label) in enumerate([
+        ('isf_norm_excursion', 'ISF-Norm Excursion'),
+        ('spectral_power_per_hour', 'Spectral Power/hr'),
+    ]):
+        for col_idx, cfg_name in enumerate(cfg_names):
+            ax = axes[row_idx, col_idx]
+            records = config_records[cfg_name]['records']
+
+            box_data = []
+            box_labels = []
+            for rng in CARB_RANGE_ORDER:
+                vals = [r[metric_key] for r in records
+                        if r['carb_range'] == rng and np.isfinite(r[metric_key])]
+                if vals:
+                    box_data.append(vals)
+                    box_labels.append(rng)
+
+            if box_data:
+                bp = ax.boxplot(box_data, tick_labels=box_labels, patch_artist=True,
+                                showfliers=False)
+                for patch, c in zip(bp['boxes'],
+                                    [colors[col_idx]] * len(box_data)):
+                    patch.set_facecolor(c)
+                    patch.set_alpha(0.4)
+
+            ax.set_xlabel('Carb Range')
+            ax.set_ylabel(metric_label)
+            lbl = cfg_labels.get(cfg_name, cfg_name)
+            ax.set_title(f'{lbl}  (n={config_records[cfg_name]["n_meals"]})')
+            ax.grid(axis='y', alpha=0.3)
+            if 'spectral' in metric_key:
+                ax.set_yscale('log')
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.savefig(str(VIZ_DIR / 'fig16_multiconfig_boxplots.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig16_multiconfig_boxplots.png")
+
+    # ── Figure 17: Meal periodicity — hourly histograms by config ────
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5.5))
+    fig.suptitle('EXP-1563: Meal Time-of-Day Distribution by Detection Config',
+                 fontsize=13, fontweight='bold')
+
+    for ax_idx, cfg_name in enumerate(cfg_names):
+        ax = axes[ax_idx]
+        periodicity = config_records[cfg_name].get('periodicity', {})
+        hist = periodicity.get('hour_histogram', [0] * 24)
+
+        ax.bar(range(24), hist, color=colors[ax_idx], alpha=0.7, edgecolor='black',
+               linewidth=0.5)
+
+        # Shade mealtime zones
+        for zone_name, (start_h, end_h) in MEALTIME_ZONES.items():
+            ax.axvspan(start_h - 0.5, end_h - 0.5, alpha=0.1, color='gold',
+                       label=zone_name if ax_idx == 0 else None)
+            ax.text((start_h + end_h) / 2, ax.get_ylim()[1] * 0.85 if hist else 1,
+                    zone_name.capitalize(), ha='center', fontsize=8, style='italic',
+                    color='#8B6914')
+
+        lbl = cfg_labels.get(cfg_name, cfg_name)
+        ent = periodicity.get('normalized_entropy', 0)
+        zf = periodicity.get('zone_fraction_pct', 0)
+        ax.set_title(f'{lbl}\nEntropy={ent:.3f}, Zone%={zf:.1f}%')
+        ax.set_xlabel('Hour of Day')
+        ax.set_ylabel('Meal Count')
+        ax.set_xticks(range(0, 24, 3))
+        ax.grid(axis='y', alpha=0.3)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig17_meal_periodicity.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig17_meal_periodicity.png")
+
+    # ── Figure 18: Periodicity — per-patient mealtime regularity ─────
+    # For each config, scatter per-patient std-of-hour within each zone
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5.5))
+    fig.suptitle('EXP-1563: Per-Patient Mealtime Regularity by Zone × Config',
+                 fontsize=13, fontweight='bold')
+
+    zone_names = list(MEALTIME_ZONES.keys())
+    zone_colors = {'breakfast': '#FF9F1C', 'lunch': '#2EC4B6', 'dinner': '#E71D36'}
+
+    for ax_idx, cfg_name in enumerate(cfg_names):
+        ax = axes[ax_idx]
+        records = config_records[cfg_name]['records']
+        pat_names = sorted(set(r['patient'] for r in records))
+
+        for zone_name, (start_h, end_h) in MEALTIME_ZONES.items():
+            stds = []
+            counts = []
+            pat_labels = []
+            for pat in pat_names:
+                pat_hours = [r['hour_of_day'] for r in records
+                             if r['patient'] == pat and start_h <= r['hour_of_day'] < end_h]
+                if len(pat_hours) >= 3:
+                    stds.append(float(np.std(pat_hours)))
+                    counts.append(len(pat_hours))
+                    pat_labels.append(pat)
+
+            if stds:
+                ax.scatter(counts, stds, label=zone_name.capitalize(),
+                           color=zone_colors[zone_name], alpha=0.7, s=50, edgecolors='black',
+                           linewidth=0.5)
+                for i, pl in enumerate(pat_labels):
+                    ax.annotate(pl, (counts[i], stds[i]), fontsize=6,
+                                textcoords='offset points', xytext=(3, 3))
+
+        lbl = cfg_labels.get(cfg_name, cfg_name)
+        ax.set_title(f'{lbl}')
+        ax.set_xlabel('# Meals in Zone')
+        ax.set_ylabel('Std(Hour) within Zone')
+        ax.legend(fontsize=8)
+        ax.grid(alpha=0.3)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig18_mealtime_regularity.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig18_mealtime_regularity.png")
+
+    # ── Figure 19: Small vs large meal metabolic profile ─────────────
+    small_vs_large = r.get('small_vs_large_meals', {})
+    if small_vs_large.get('small_5_to_18g', {}).get('n', 0) > 0:
+        fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+        fig.suptitle('EXP-1563: Small (5-18g) vs Large (≥18g) Meal Metabolic Profile',
+                     fontsize=13, fontweight='bold')
+
+        sm = small_vs_large['small_5_to_18g']
+        lg = small_vs_large.get('large_18g_plus', {'n': 0})
+        chart_metrics = [
+            ('median_raw_excursion', 'Raw Excursion (mg/dL)'),
+            ('median_isf_norm', 'ISF-Norm Excursion'),
+            ('median_spectral_power', 'Spectral Power/hr'),
+        ]
+
+        for ax_idx, (mk, mlabel) in enumerate(chart_metrics):
+            ax = axes[ax_idx]
+            vals = [sm.get(mk, 0), lg.get(mk, 0)]
+            bars = ax.bar(['Small\n5-18g', 'Large\n≥18g'], vals,
+                          color=['#55A868', '#C44E52'], alpha=0.8, edgecolor='black')
+            for b, v in zip(bars, vals):
+                ax.text(b.get_x() + b.get_width() / 2, b.get_height(),
+                        f'{v:.1f}' if v > 1 else f'{v:.3f}',
+                        ha='center', va='bottom', fontsize=10, fontweight='bold')
+            ax.set_ylabel(mlabel)
+            ax.set_title(f'{chr(65 + ax_idx)}) {mlabel.split("(")[0].strip()}')
+            ax.grid(axis='y', alpha=0.3)
+            n_sm = sm.get('n', 0)
+            n_lg = lg.get('n', 0)
+            ax.set_xlabel(f'n={n_sm} / n={n_lg}')
+            if 'spectral' in mk.lower():
+                ax.set_yscale('log')
+
+        plt.tight_layout(rect=[0, 0, 1, 0.93])
+        plt.savefig(str(VIZ_DIR / 'fig19_small_vs_large_meals.png'), dpi=150)
+        plt.close()
+        print("    ✓ fig19_small_vs_large_meals.png")
+    else:
+        print("    ⚠ No small meals (5-18g) found — skipping fig19")
+
+    # ── Figure 20: Periodicity summary — entropy + zone fraction ─────
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    fig.suptitle('EXP-1563: Does Stricter Detection Increase Meal Periodicity?',
+                 fontsize=13, fontweight='bold')
+
+    cfg_x = [cfg_labels.get(cn, cn) for cn in cfg_names]
+    entropies = [config_records[cn].get('periodicity', {}).get('normalized_entropy', 0)
+                 for cn in cfg_names]
+    zone_fracs = [config_records[cn].get('periodicity', {}).get('zone_fraction_pct', 0)
+                  for cn in cfg_names]
+
+    ax = axes[0]
+    bars = ax.bar(cfg_x, entropies, color=colors, alpha=0.8, edgecolor='black')
+    for b, v in zip(bars, entropies):
+        ax.text(b.get_x() + b.get_width() / 2, b.get_height(),
+                f'{v:.3f}', ha='center', va='bottom', fontsize=11, fontweight='bold')
+    ax.set_ylabel('Normalized Entropy (0=periodic, 1=uniform)')
+    ax.set_title('A) Temporal Concentration')
+    ax.set_ylim(0, 1)
+    ax.grid(axis='y', alpha=0.3)
+    ax.axhline(y=1.0, color='gray', linestyle='--', alpha=0.5, label='Uniform')
+    ax.legend(fontsize=8)
+
+    ax = axes[1]
+    bars = ax.bar(cfg_x, zone_fracs, color=colors, alpha=0.8, edgecolor='black')
+    for b, v in zip(bars, zone_fracs):
+        ax.text(b.get_x() + b.get_width() / 2, b.get_height(),
+                f'{v:.1f}%', ha='center', va='bottom', fontsize=11, fontweight='bold')
+    ax.set_ylabel('% Meals in Mealtime Zones')
+    ax.set_title('B) Mealtime Zone Concentration')
+    ax.set_ylim(0, 100)
+    ax.grid(axis='y', alpha=0.3)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig20_periodicity_summary.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig20_periodicity_summary.png")
+
 def main():
-    parser = argparse.ArgumentParser(description='EXP-1551-1559: Natural Experiment Census')
+    parser = argparse.ArgumentParser(description='EXP-1551-1563: Natural Experiment Census')
     parser.add_argument('--exp', type=int, default=0, help='Run single experiment (0=all)')
     parser.add_argument('--max-patients', type=int, default=11)
     parser.add_argument('--patients-dir', type=str, default=None)
@@ -2758,6 +3350,8 @@ def main():
                     skip_keys.add('all_experiments')
                 if exp_id == 1561:
                     skip_keys.add('meal_records')
+                if exp_id == 1563:
+                    skip_keys.add('_config_records')
                 save_result = {k: v for k, v in result.items() if k not in skip_keys}
                 json.dump(save_result, f, indent=2, default=str)
             print(f"  ✓ Saved → {out_path}  ({elapsed:.1f}s)")
@@ -2785,6 +3379,11 @@ def main():
             generate_metabolic_visualizations(all_results)
         except Exception as e:
             print(f"  Metabolic visualization error: {e}")
+            traceback.print_exc()
+        try:
+            generate_multiconfig_visualizations(all_results)
+        except Exception as e:
+            print(f"  Multi-config visualization error: {e}")
             traceback.print_exc()
 
     # Summary
@@ -2832,10 +3431,42 @@ def main():
                 if val is not None:
                     print(f"    {key}: r={val}")
 
+    if 1563 in all_results and 'configs' in all_results[1563]:
+        print(f"\n  Multi-Config Metabolic Characterization (EXP-1563):")
+        print(f"  {'Config':25s} {'Meals':>7s} {'ISFNorm':>8s} {'SpecPow':>10s} {'Entropy':>8s} {'Zone%':>7s}")
+        print(f"  {'─'*68}")
+        for cfg_name, cfg_data in all_results[1563]['configs'].items():
+            p = cfg_data.get('population', {})
+            per = cfg_data.get('periodicity', {})
+            print(f"  {cfg_name:25s} {cfg_data['n_meals']:7,d} "
+                  f"{p.get('median_isf_norm', 0):8.3f} "
+                  f"{p.get('median_spectral_power', 0):10.1f} "
+                  f"{per.get('normalized_entropy', 0):8.3f} "
+                  f"{per.get('zone_fraction_pct', 0):7.1f}")
+        deltas = all_results[1563].get('deltas_vs_baseline', {})
+        if deltas:
+            print(f"\n  Deltas vs baseline (A_census):")
+            for cfg_name, d in deltas.items():
+                print(f"    {cfg_name}: meals={d['n_meals_delta']:+d}, "
+                      f"ISF-norm={d['isf_norm_delta']:+.3f}, "
+                      f"spectral={d['spectral_delta_pct']:+.1f}%, "
+                      f"entropy={d.get('entropy_delta', 0):+.3f}, "
+                      f"zone%={d.get('zone_fraction_delta', 0):+.1f}")
+        svl = all_results[1563].get('small_vs_large_meals', {})
+        if svl:
+            print(f"\n  Small vs Large Meals:")
+            for label, data in svl.items():
+                if data.get('n', 0) > 0:
+                    print(f"    {label}: n={data['n']}, "
+                          f"rawExc={data['median_raw_excursion']:.1f}, "
+                          f"ISFnorm={data['median_isf_norm']:.3f}, "
+                          f"spectral={data['median_spectral_power']:.1f}, "
+                          f"ann%={data['pct_announced']:.1f}")
+
     # Save combined results
     combined_path = RESULTS_DIR / 'exp-1551_natural_experiments_combined.json'
     save_combined = {}
-    skip_large = {'all_experiments', 'meal_records'}
+    skip_large = {'all_experiments', 'meal_records', '_config_records'}
     for k, v in all_results.items():
         save_combined[k] = {kk: vv for kk, vv in v.items() if kk not in skip_large}
     with open(str(combined_path), 'w') as f:
