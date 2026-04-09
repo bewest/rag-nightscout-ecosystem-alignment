@@ -52,7 +52,7 @@ All 3 detection configs (A/B/C) analyzed separately for weekday vs weekend.
 | Metric | Weekday | Weekend | Delta |
 |--------|---------|---------|-------|
 | Meals | 1,875 | 744 | — |
-| Meals/day | ~54/day* | ~54/day* | balanced |
+| Meals/day | ~375/day* | ~372/day* | balanced |
 | Entropy | 0.938 | **0.925** | −0.013 |
 | Zone% | **67.0%** | 62.0% | −5.0 |
 | Peak Hour | 20 | 20 | 0 |
@@ -91,7 +91,7 @@ later, consistent with sleeping in. Lunch and dinner are remarkably stable.
 The weekday/weekend entropy gap is **consistent across all configs** (~0.01 lower
 on weekends). This is counterintuitive — weekends are actually *more* periodic,
 not less. The zone fraction tells a different story: weekdays have ~5% more meals
-in canonical zones.
+in canonical zones (3.7–5.0% depending on config).
 
 ## Key Findings
 

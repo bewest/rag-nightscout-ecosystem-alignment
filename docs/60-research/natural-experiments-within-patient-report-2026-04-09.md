@@ -42,7 +42,7 @@ Per-zone analysis repeats this for breakfast (6–10h), lunch (11–14h), dinner
 | f       | 263   | 3     | 4.32              | 0.906   | Diffuse          |
 | c       | 204   | 3     | 4.43              | 0.960   | Diffuse          |
 | d       | 196   | 1     | 4.65              | 0.696   | Diffuse          |
-| e       | 283   | 1     | 6.03              | 0.884   | Diffuse          |
+| e       | 283   | 1     | 6.03              | 0.884   | Random           |
 | a       | 137   | 1     | 7.29              | 0.867   | Random           |
 
 **Population**: mean std = 3.97h, range 1.00–7.29h, mean 2.0 peaks per patient.
@@ -51,8 +51,8 @@ Per-zone analysis repeats this for breakfast (6–10h), lunch (11–14h), dinner
 
 - **Clock-like** (std < 2h): Patients g, j — meals fall within a tight 2-hour window around personal peaks. Patient g has 3 clear peaks at 9h, 14h, 20h with std ≈ 1.0h each.
 - **Moderate** (2–4h): Patients b, h, i — identifiable meal patterns but with ±2h jitter.
-- **Diffuse** (4–6h): Patients c, d, e, f — some structure but wide spread; personal peaks overlap.
-- **Random** (>6h): Patient a — single peak with 7.29h std covers nearly the entire day. Effectively no personal meal clock.
+- **Diffuse** (4–6h): Patients c, d, f — some structure but wide spread; personal peaks overlap.
+- **Random** (>6h): Patients a, e — single peak with wide std covers nearly the entire day. Effectively no personal meal clock.
 
 ### Patient g — The Most Regular Eater
 
