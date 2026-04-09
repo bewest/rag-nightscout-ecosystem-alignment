@@ -2402,6 +2402,199 @@ def exp_1565_weekday_weekend_periodicity(patients):
     }
 
 
+@register(1567, 'Within-Patient Meal Clock Regularity')
+def exp_1567_within_patient_periodicity(patients):
+    """Measure per-patient meal timing regularity: does each individual eat at
+    consistent personal times?
+
+    For each patient, identifies their personal "meal clock" — the typical
+    hour they eat in each mealtime zone — and measures how tightly they
+    adhere to it (std of hour). Also detects per-patient peaks via KDE
+    and measures whether weekday/weekend regularity differs.
+
+    Key question: Are individual patients periodic within ~2hr windows,
+    even though population-level timing looks spread out?
+    """
+    records = _collect_meal_metabolic_records(patients, min_carbs=18.0, cluster_gap=18)
+    print(f"  {len(records)} meals (therapy config)")
+
+    pat_names = sorted(set(r['patient'] for r in records))
+    per_patient = {}
+
+    for pat in pat_names:
+        pat_recs = [r for r in records if r['patient'] == pat]
+        hours = np.array([r['hour_of_day'] for r in pat_recs])
+        n_meals = len(pat_recs)
+
+        # Overall timing stats
+        hist = np.zeros(24)
+        for h in hours:
+            hist[int(h) % 24] += 1
+        hist_norm = hist / max(hist.sum(), 1)
+        entropy = -sum(p * np.log2(p) for p in hist_norm if p > 0)
+        norm_entropy = entropy / np.log2(24)
+
+        # Find personal meal peaks using simple histogram peak detection
+        # Smooth with 2-hour window, then find local maxima
+        from scipy.ndimage import uniform_filter1d
+        smoothed = uniform_filter1d(np.concatenate([hist, hist, hist]), size=4, mode='wrap')[24:48]
+        peaks = []
+        for i in range(24):
+            left = smoothed[(i - 1) % 24]
+            right = smoothed[(i + 1) % 24]
+            if smoothed[i] > left and smoothed[i] > right and smoothed[i] >= 2:
+                peaks.append(i)
+
+        # Assign each meal to nearest peak, compute std within each cluster
+        peak_clusters = {}
+        if peaks:
+            for h in hours:
+                dists = [min(abs(h - p), 24 - abs(h - p)) for p in peaks]
+                nearest = peaks[np.argmin(dists)]
+                peak_clusters.setdefault(nearest, []).append(h)
+
+        personal_peaks = []
+        for peak_hour in sorted(peak_clusters.keys()):
+            cluster_hours = peak_clusters[peak_hour]
+            personal_peaks.append({
+                'peak_hour': peak_hour,
+                'n_meals': len(cluster_hours),
+                'mean_hour': round(float(np.mean(cluster_hours)), 2),
+                'std_hour': round(float(np.std(cluster_hours)), 2),
+                'within_3hr_pct': round(100 * sum(
+                    1 for h in cluster_hours
+                    if min(abs(h - np.mean(cluster_hours)),
+                           24 - abs(h - np.mean(cluster_hours))) <= 1.5
+                ) / len(cluster_hours), 1),
+            })
+
+        # Mean within-peak std (overall "clock tightness")
+        if personal_peaks:
+            weighted_std = sum(p['std_hour'] * p['n_meals'] for p in personal_peaks) / n_meals
+        else:
+            weighted_std = float(np.std(hours))
+
+        # Per-zone analysis
+        zone_regularity = {}
+        for zone_name, (s, e) in MEALTIME_ZONES.items():
+            zone_hours = [r['hour_of_day'] for r in pat_recs if s <= r['hour_of_day'] < e]
+            if len(zone_hours) >= 3:
+                zone_regularity[zone_name] = {
+                    'n': len(zone_hours),
+                    'mean_hour': round(float(np.mean(zone_hours)), 2),
+                    'std_hour': round(float(np.std(zone_hours)), 2),
+                    'within_3hr_pct': round(100 * sum(
+                        1 for h in zone_hours if abs(h - np.mean(zone_hours)) <= 1.5
+                    ) / len(zone_hours), 1),
+                }
+            else:
+                zone_regularity[zone_name] = {'n': len(zone_hours)}
+
+        # Weekday vs weekend regularity
+        wd_hours = [r['hour_of_day'] for r in pat_recs if r.get('day_of_week', 0) < 5]
+        we_hours = [r['hour_of_day'] for r in pat_recs if r.get('day_of_week', 0) >= 5]
+
+        wd_regularity = {}
+        we_regularity = {}
+        for zone_name, (s, e) in MEALTIME_ZONES.items():
+            wd_z = [h for h in wd_hours if s <= h < e]
+            we_z = [h for h in we_hours if s <= h < e]
+            if len(wd_z) >= 3:
+                wd_regularity[zone_name] = {
+                    'n': len(wd_z),
+                    'mean_hour': round(float(np.mean(wd_z)), 2),
+                    'std_hour': round(float(np.std(wd_z)), 2),
+                }
+            if len(we_z) >= 3:
+                we_regularity[zone_name] = {
+                    'n': len(we_z),
+                    'mean_hour': round(float(np.mean(we_z)), 2),
+                    'std_hour': round(float(np.std(we_z)), 2),
+                }
+
+        per_patient[pat] = {
+            'n_meals': n_meals,
+            'normalized_entropy': round(norm_entropy, 3),
+            'n_personal_peaks': len(personal_peaks),
+            'personal_peaks': personal_peaks,
+            'weighted_mean_std': round(weighted_std, 2),
+            'zone_regularity': zone_regularity,
+            'weekday_zones': wd_regularity,
+            'weekend_zones': we_regularity,
+            'hour_histogram': [int(x) for x in hist],
+        }
+
+        print(f"    {pat}: {n_meals} meals, {len(personal_peaks)} peaks, "
+              f"weighted_std={weighted_std:.2f}h, entropy={norm_entropy:.3f}")
+
+    # Population summary: how much do patients differ?
+    all_stds = [pp['weighted_mean_std'] for pp in per_patient.values()]
+    all_entropies = [pp['normalized_entropy'] for pp in per_patient.values()]
+    all_n_peaks = [pp['n_personal_peaks'] for pp in per_patient.values()]
+
+    # Per-zone inter-patient variation
+    zone_variation = {}
+    for zone_name in MEALTIME_ZONES:
+        zone_means = []
+        zone_stds = []
+        for pat, pp in per_patient.items():
+            zr = pp['zone_regularity'].get(zone_name, {})
+            if zr.get('n', 0) >= 3:
+                zone_means.append(zr['mean_hour'])
+                zone_stds.append(zr['std_hour'])
+        if zone_means:
+            zone_variation[zone_name] = {
+                'n_patients_with_data': len(zone_means),
+                'inter_patient_std_of_mean_hour': round(float(np.std(zone_means)), 2),
+                'mean_within_patient_std': round(float(np.mean(zone_stds)), 2),
+                'range_of_mean_hours': f"{min(zone_means):.1f}-{max(zone_means):.1f}",
+            }
+
+    # Weekday vs weekend regularity comparison across patients
+    wd_we_comparison = []
+    for pat in pat_names:
+        pp = per_patient[pat]
+        for zone_name in MEALTIME_ZONES:
+            wd_z = pp['weekday_zones'].get(zone_name, {})
+            we_z = pp['weekend_zones'].get(zone_name, {})
+            if wd_z.get('n', 0) >= 3 and we_z.get('n', 0) >= 3:
+                wd_we_comparison.append({
+                    'patient': pat,
+                    'zone': zone_name,
+                    'wd_std': wd_z['std_hour'],
+                    'we_std': we_z['std_hour'],
+                    'std_delta': round(we_z['std_hour'] - wd_z['std_hour'], 2),
+                    'wd_mean': wd_z['mean_hour'],
+                    'we_mean': we_z['mean_hour'],
+                    'mean_shift': round(we_z['mean_hour'] - wd_z['mean_hour'], 2),
+                })
+
+    # Fraction of patients where weekends are LESS regular (higher std)
+    if wd_we_comparison:
+        weekend_less_regular = sum(1 for x in wd_we_comparison if x['std_delta'] > 0)
+        pct_less_regular = round(100 * weekend_less_regular / len(wd_we_comparison), 1)
+    else:
+        pct_less_regular = None
+
+    return {
+        'experiment': 'EXP-1567',
+        'title': 'Within-Patient Meal Clock Regularity',
+        'n_patients': len(patients),
+        'n_meals': len(records),
+        'per_patient': per_patient,
+        'population_summary': {
+            'mean_weighted_std': round(float(np.mean(all_stds)), 2),
+            'std_weighted_std': round(float(np.std(all_stds)), 2),
+            'range_weighted_std': f"{min(all_stds):.2f}-{max(all_stds):.2f}",
+            'mean_entropy': round(float(np.mean(all_entropies)), 3),
+            'mean_n_peaks': round(float(np.mean(all_n_peaks)), 1),
+        },
+        'zone_variation': zone_variation,
+        'wd_we_regularity_comparison': wd_we_comparison,
+        'pct_weekend_less_regular': pct_less_regular,
+    }
+
+
 _CACHED_EXPERIMENTS = None
 
 
@@ -3767,8 +3960,240 @@ def generate_weekday_weekend_visualizations(results):
     print("    ✓ fig24_weekday_weekend_metabolic.png")
 
 
+def generate_within_patient_visualizations(results):
+    """Generate EXP-1567 within-patient meal clock regularity figures."""
+    if 1567 not in results:
+        return
+
+    r = results[1567]
+    per_patient = r.get('per_patient', {})
+    if not per_patient:
+        return
+
+    os.makedirs(str(VIZ_DIR), exist_ok=True)
+
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    from scipy.ndimage import uniform_filter1d
+
+    pat_names = sorted(per_patient.keys())
+    n_pats = len(pat_names)
+
+    # ── Figure 25: Per-patient hourly histograms (small multiples) ───
+    cols = 4
+    rows = (n_pats + cols - 1) // cols
+    fig, axes = plt.subplots(rows, cols, figsize=(16, 3.5 * rows))
+    fig.suptitle('EXP-1567: Per-Patient Meal Timing (Personal Meal Clocks)',
+                 fontsize=14, fontweight='bold')
+    if rows == 1:
+        axes = axes.reshape(1, -1)
+
+    cmap = matplotlib.colormaps['tab10']
+    for idx, pat in enumerate(pat_names):
+        ax = axes[idx // cols, idx % cols]
+        pp = per_patient[pat]
+        hist = np.array(pp['hour_histogram'], dtype=float)
+        smoothed = uniform_filter1d(np.concatenate([hist, hist, hist]),
+                                    size=4, mode='wrap')[24:48]
+
+        ax.bar(range(24), hist, color=cmap(idx % 10), alpha=0.5, edgecolor='none')
+        ax.plot(range(24), smoothed, color=cmap(idx % 10), linewidth=2)
+
+        # Mark personal peaks
+        for peak in pp.get('personal_peaks', []):
+            ph = peak['peak_hour']
+            ax.axvline(x=ph, color='red', linestyle='--', alpha=0.6, linewidth=1)
+            ax.text(ph, ax.get_ylim()[1] * 0.9 if hist.max() > 0 else 1,
+                    f"{peak['mean_hour']:.1f}h\n±{peak['std_hour']:.1f}",
+                    fontsize=6, ha='center', color='red')
+
+        # Shade mealtime zones
+        for zone_name, (s, e) in MEALTIME_ZONES.items():
+            ax.axvspan(s - 0.5, e - 0.5, alpha=0.06, color='gold')
+
+        ent = pp['normalized_entropy']
+        ws = pp['weighted_mean_std']
+        ax.set_title(f'{pat}  (n={pp["n_meals"]}, std={ws:.1f}h, H={ent:.2f})',
+                     fontsize=9)
+        ax.set_xlim(-0.5, 23.5)
+        ax.set_xticks(range(0, 24, 6))
+        ax.tick_params(labelsize=7)
+        if idx // cols == rows - 1:
+            ax.set_xlabel('Hour', fontsize=8)
+
+    # Hide empty subplots
+    for idx in range(n_pats, rows * cols):
+        axes[idx // cols, idx % cols].set_visible(False)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.savefig(str(VIZ_DIR / 'fig25_personal_meal_clocks.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig25_personal_meal_clocks.png")
+
+    # ── Figure 26: Inter-patient variation summary ───────────────────
+    fig, axes = plt.subplots(1, 3, figsize=(17, 5.5))
+    fig.suptitle('EXP-1567: Inter-Patient Variation in Meal Regularity',
+                 fontsize=13, fontweight='bold')
+
+    # Panel A: Weighted std per patient (clock tightness)
+    ax = axes[0]
+    stds = [per_patient[p]['weighted_mean_std'] for p in pat_names]
+    colors_a = [cmap(i % 10) for i in range(n_pats)]
+    bars = ax.barh(pat_names, stds, color=colors_a, alpha=0.8, edgecolor='black',
+                   linewidth=0.5)
+    ax.axvline(x=np.mean(stds), color='black', linestyle='--', alpha=0.5,
+               label=f'Mean={np.mean(stds):.2f}h')
+    ax.set_xlabel('Weighted Mean Std(Hour)')
+    ax.set_title('A) Meal Clock Tightness\n(lower = more regular)')
+    ax.legend(fontsize=8)
+    ax.grid(axis='x', alpha=0.3)
+    for b, v in zip(bars, stds):
+        ax.text(v + 0.02, b.get_y() + b.get_height() / 2,
+                f'{v:.2f}h', va='center', fontsize=8)
+
+    # Panel B: Per-zone within-patient std
+    ax = axes[1]
+    zone_colors = {'breakfast': '#FF9F1C', 'lunch': '#2EC4B6', 'dinner': '#E71D36'}
+    x = np.arange(n_pats)
+    width = 0.25
+    for zi, zone_name in enumerate(MEALTIME_ZONES):
+        zone_stds = []
+        for pat in pat_names:
+            zr = per_patient[pat]['zone_regularity'].get(zone_name, {})
+            zone_stds.append(zr.get('std_hour', float('nan')))
+        ax.bar(x + zi * width, zone_stds, width, label=zone_name.capitalize(),
+               color=zone_colors[zone_name], alpha=0.8)
+
+    ax.set_xticks(x + width)
+    ax.set_xticklabels(pat_names, fontsize=9)
+    ax.set_ylabel('Std(Hour) within Zone')
+    ax.set_title('B) Within-Zone Regularity by Patient')
+    ax.legend(fontsize=8)
+    ax.grid(axis='y', alpha=0.3)
+
+    # Panel C: Within_3hr_pct per zone per patient (heatmap)
+    ax = axes[2]
+    matrix = np.full((n_pats, 3), np.nan)
+    zone_list = list(MEALTIME_ZONES.keys())
+    for pi, pat in enumerate(pat_names):
+        for zi, zone_name in enumerate(zone_list):
+            zr = per_patient[pat]['zone_regularity'].get(zone_name, {})
+            val = zr.get('within_3hr_pct')
+            if val is not None:
+                matrix[pi, zi] = val
+
+    im = ax.imshow(matrix, aspect='auto', cmap='RdYlGn', vmin=40, vmax=100)
+    ax.set_xticks(range(3))
+    ax.set_xticklabels([z.capitalize() for z in zone_list])
+    ax.set_yticks(range(n_pats))
+    ax.set_yticklabels(pat_names)
+    ax.set_title('C) % Meals Within ±1.5h of Mean')
+    for pi in range(n_pats):
+        for zi in range(3):
+            val = matrix[pi, zi]
+            if not np.isnan(val):
+                color = 'white' if val < 60 else 'black'
+                ax.text(zi, pi, f'{val:.0f}%', ha='center', va='center',
+                        fontsize=8, color=color)
+    plt.colorbar(im, ax=ax, shrink=0.8)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig26_interpatient_variation.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig26_interpatient_variation.png")
+
+    # ── Figure 27: Weekday vs weekend regularity per patient/zone ────
+    wd_we = r.get('wd_we_regularity_comparison', [])
+    if wd_we:
+        fig, axes = plt.subplots(1, 3, figsize=(17, 5.5))
+        fig.suptitle('EXP-1567: Weekday vs Weekend Regularity (Per Patient × Zone)',
+                     fontsize=13, fontweight='bold')
+
+        # Panel A: Scatter of WD std vs WE std
+        ax = axes[0]
+        for zone_name in zone_list:
+            zone_pts = [x for x in wd_we if x['zone'] == zone_name]
+            if zone_pts:
+                wd_s = [x['wd_std'] for x in zone_pts]
+                we_s = [x['we_std'] for x in zone_pts]
+                ax.scatter(wd_s, we_s, label=zone_name.capitalize(),
+                           color=zone_colors[zone_name], s=60, alpha=0.7,
+                           edgecolors='black', linewidth=0.5)
+                for x_pt in zone_pts:
+                    ax.annotate(x_pt['patient'], (x_pt['wd_std'], x_pt['we_std']),
+                                fontsize=6, textcoords='offset points', xytext=(3, 3))
+        max_val = max(max(x['wd_std'] for x in wd_we), max(x['we_std'] for x in wd_we)) * 1.1
+        ax.plot([0, max_val], [0, max_val], 'k--', alpha=0.3, label='Equal')
+        ax.set_xlabel('Weekday Std(Hour)')
+        ax.set_ylabel('Weekend Std(Hour)')
+        ax.set_title('A) Regularity: WD vs WE\n(above line = less regular on weekends)')
+        ax.legend(fontsize=7)
+        ax.grid(alpha=0.3)
+
+        # Panel B: Std delta bars per patient (grouped by zone)
+        ax = axes[1]
+        zone_data = {z: [] for z in zone_list}
+        zone_pats = {z: [] for z in zone_list}
+        for x_pt in wd_we:
+            zone_data[x_pt['zone']].append(x_pt['std_delta'])
+            zone_pats[x_pt['zone']].append(x_pt['patient'])
+
+        y_pos = 0
+        y_ticks = []
+        y_labels = []
+        for zone_name in zone_list:
+            deltas = zone_data[zone_name]
+            pats = zone_pats[zone_name]
+            for i, (d, p) in enumerate(zip(deltas, pats)):
+                color = '#C44E52' if d > 0 else '#4C72B0'
+                ax.barh(y_pos, d, color=color, alpha=0.7, height=0.7)
+                ax.text(d + (0.02 if d >= 0 else -0.02), y_pos,
+                        f'{p}', va='center', ha='left' if d >= 0 else 'right',
+                        fontsize=7)
+                y_pos += 1
+            # Zone separator
+            if zone_name != zone_list[-1]:
+                ax.axhline(y=y_pos - 0.5, color='gray', linestyle='-', alpha=0.3)
+            y_ticks.append(y_pos - len(deltas) / 2 - 0.5)
+            y_labels.append(zone_name.capitalize())
+            y_pos += 0.5
+
+        ax.axvline(x=0, color='black', linewidth=0.8)
+        ax.set_xlabel('ΔStd(Hour) (Weekend − Weekday)')
+        ax.set_title('B) Regularity Change\n(>0 = less regular on weekends)')
+        ax.grid(axis='x', alpha=0.3)
+
+        # Panel C: Mean hour shift bars per patient/zone
+        ax = axes[2]
+        y_pos = 0
+        for zone_name in zone_list:
+            shifts = [x['mean_shift'] for x in wd_we if x['zone'] == zone_name]
+            pats_z = [x['patient'] for x in wd_we if x['zone'] == zone_name]
+            for i, (s, p) in enumerate(zip(shifts, pats_z)):
+                color = '#C44E52' if s > 0 else '#4C72B0'
+                ax.barh(y_pos, s * 60, color=color, alpha=0.7, height=0.7)
+                ax.text(s * 60 + (1 if s >= 0 else -1), y_pos,
+                        f'{p}', va='center', ha='left' if s >= 0 else 'right',
+                        fontsize=7)
+                y_pos += 1
+            if zone_name != zone_list[-1]:
+                ax.axhline(y=y_pos - 0.5, color='gray', linestyle='-', alpha=0.3)
+            y_pos += 0.5
+
+        ax.axvline(x=0, color='black', linewidth=0.8)
+        ax.set_xlabel('Meal Time Shift (minutes, Weekend − Weekday)')
+        ax.set_title('C) Per-Patient Timing Shift\n(>0 = later on weekends)')
+        ax.grid(axis='x', alpha=0.3)
+
+        plt.tight_layout(rect=[0, 0, 1, 0.93])
+        plt.savefig(str(VIZ_DIR / 'fig27_wd_we_regularity.png'), dpi=150)
+        plt.close()
+        print("    ✓ fig27_wd_we_regularity.png")
+
+
 def main():
-    parser = argparse.ArgumentParser(description='EXP-1551-1565: Natural Experiment Census')
+    parser = argparse.ArgumentParser(description='EXP-1551-1567: Natural Experiment Census')
     parser.add_argument('--exp', type=int, default=0, help='Run single experiment (0=all)')
     parser.add_argument('--max-patients', type=int, default=11)
     parser.add_argument('--patients-dir', type=str, default=None)
@@ -3863,6 +4288,11 @@ def main():
             generate_weekday_weekend_visualizations(all_results)
         except Exception as e:
             print(f"  Weekday/weekend visualization error: {e}")
+            traceback.print_exc()
+        try:
+            generate_within_patient_visualizations(all_results)
+        except Exception as e:
+            print(f"  Within-patient visualization error: {e}")
             traceback.print_exc()
 
     # Summary
@@ -3969,6 +4399,29 @@ def main():
             for zone_name, zd in zs.items():
                 print(f"    {zone_name.capitalize():12s}: {zd['shift_minutes']:+.0f} min "
                       f"(WD={zd['weekday_mean_hour']:.1f}h, WE={zd['weekend_mean_hour']:.1f}h)")
+
+    if 1567 in all_results and 'per_patient' in all_results[1567]:
+        pp = all_results[1567]['per_patient']
+        ps = all_results[1567].get('population_summary', {})
+        print(f"\n  Within-Patient Meal Clock Regularity (EXP-1567):")
+        print(f"  Population: mean_std={ps.get('mean_weighted_std', '?')}h, "
+              f"range={ps.get('range_weighted_std', '?')}")
+        print(f"  {'Patient':>8s} {'Meals':>6s} {'Peaks':>6s} {'Std(h)':>7s} {'Entropy':>8s}")
+        print(f"  {'─'*40}")
+        for pat in sorted(pp.keys()):
+            p = pp[pat]
+            print(f"  {pat:>8s} {p['n_meals']:6d} {p['n_personal_peaks']:6d} "
+                  f"{p['weighted_mean_std']:7.2f} {p['normalized_entropy']:8.3f}")
+        zv = all_results[1567].get('zone_variation', {})
+        if zv:
+            print(f"\n  Zone Variation (inter-patient):")
+            for zone_name, zd in zv.items():
+                print(f"    {zone_name.capitalize():12s}: inter-pat std={zd['inter_patient_std_of_mean_hour']:.2f}h, "
+                      f"mean within-pat std={zd['mean_within_patient_std']:.2f}h, "
+                      f"range={zd['range_of_mean_hours']}")
+        pct_lr = all_results[1567].get('pct_weekend_less_regular')
+        if pct_lr is not None:
+            print(f"\n  Weekend less regular: {pct_lr:.1f}% of patient×zone pairs")
 
     # Save combined results
     combined_path = RESULTS_DIR / 'exp-1551_natural_experiments_combined.json'
