@@ -2841,6 +2841,167 @@ def exp_1569_detection_benchmark(patients):
 _CACHED_EXPERIMENTS = None
 
 
+
+@register(1571, 'Robustness Archetype Characterization')
+def exp_1571_robustness_archetypes(patients):
+    """Characterize the distribution of meal-clock robustness across patients.
+
+    Robustness = σσ (std of weighted_std across 72 detection configs from EXP-1569).
+    Low σσ means a patient's measured regularity is stable regardless of detection
+    parameters.  High σσ means regularity is an artifact of the config chosen.
+
+    This experiment:
+      1. Runs the EXP-1569 sweep (or reuses cached data)
+      2. Computes archetype tiers from σσ distribution
+      3. Correlates robustness with n_peaks, meals/day, zone regularity, metabolic metrics
+      4. Characterizes each tier: what makes a patient robust?
+      5. Builds per-patient stability curves (regularity vs config strictness)
+    """
+    from scipy.stats import spearmanr
+
+    # Run the 1569 sweep to get the grid
+    _, exp_1569_fn = EXPERIMENTS[1569]
+    result_1569 = exp_1569_fn(patients)
+    grid = result_1569['_grid']
+    h3 = result_1569['hypothesis_tests']['H3_patient_robustness']
+
+    # Also run 1567 for per-patient zone regularity
+    _, exp_1567_fn = EXPERIMENTS[1567]
+    result_1567 = exp_1567_fn(patients)
+    pp_1567 = result_1567['per_patient']
+
+    all_pats = sorted(h3.keys())
+
+    # --- Tier classification ---
+    # Use natural breaks: robust < 0.6, moderate 0.6-1.0, sensitive >= 1.0
+    TIERS = {'robust': (0, 0.6), 'moderate': (0.6, 1.0), 'sensitive': (1.0, float('inf'))}
+    tier_members = {t: [] for t in TIERS}
+    pat_tier = {}
+    for pat in all_pats:
+        ss = h3[pat]['std_of_std']
+        for tier_name, (lo, hi) in TIERS.items():
+            if lo <= ss < hi:
+                tier_members[tier_name].append(pat)
+                pat_tier[pat] = tier_name
+                break
+
+    # --- Per-patient profile ---
+    # Gather traits for correlation analysis
+    traits = {}
+    for pat in all_pats:
+        rob = h3[pat]
+        pp = pp_1567.get(pat, {})
+        # Therapy config metrics from grid
+        therapy_g = [g for g in grid if g['min_carb_g'] == 18 and g['hysteresis_min'] == 90
+                     and pat in g['per_patient']]
+        t_mpd = therapy_g[0]['per_patient'][pat]['meals_per_day'] if therapy_g else 0
+
+        # Census config metrics
+        census_g = [g for g in grid if g['min_carb_g'] == 5 and g['hysteresis_min'] == 30
+                    and pat in g['per_patient']]
+        c_mpd = census_g[0]['per_patient'][pat]['meals_per_day'] if census_g else 0
+
+        # Zone coverage: how many zones have ≥3 meals?
+        zr = pp.get('zone_regularity', {})
+        zones_covered = sum(1 for z in zr.values() if z.get('n', 0) >= 3)
+
+        # Mean within-zone std
+        zone_stds = [z['std_hour'] for z in zr.values() if z.get('std_hour') is not None]
+        mean_zone_std = float(np.mean(zone_stds)) if zone_stds else float('nan')
+
+        traits[pat] = {
+            'tier': pat_tier[pat],
+            'sigma_sigma': rob['std_of_std'],
+            'mean_std': rob['mean_std'],
+            'range': rob['range'],
+            'n_peaks': pp.get('n_personal_peaks', 0),
+            'normalized_entropy': pp.get('normalized_entropy', float('nan')),
+            'therapy_mpd': t_mpd,
+            'census_mpd': c_mpd,
+            'mpd_ratio': round(t_mpd / max(c_mpd, 0.01), 2),
+            'zones_covered': zones_covered,
+            'mean_zone_std': round(mean_zone_std, 3) if not np.isnan(mean_zone_std) else None,
+            'n_meals_therapy': pp.get('n_meals', 0),
+        }
+
+    # --- Correlation matrix ---
+    numeric_keys = ['sigma_sigma', 'mean_std', 'n_peaks', 'therapy_mpd',
+                    'census_mpd', 'zones_covered', 'normalized_entropy']
+    correlations = {}
+    for key in numeric_keys:
+        if key == 'sigma_sigma':
+            continue
+        vals = [(traits[p]['sigma_sigma'], traits[p][key]) for p in all_pats
+                if not np.isnan(traits[p].get(key, float('nan')))]
+        if len(vals) >= 4:
+            ss_arr, v_arr = zip(*vals)
+            rho, pval = spearmanr(ss_arr, v_arr)
+            correlations[key] = {
+                'spearman_rho': round(rho, 3),
+                'p_value': round(pval, 4),
+                'significant': pval < 0.05,
+            }
+
+    # --- Stability curves: per-patient regularity vs aggregate strictness ---
+    # For each patient, extract (strictness, weighted_std) across all 72 configs
+    stability_curves = {}
+    for pat in all_pats:
+        curve = []
+        for g in grid:
+            if pat in g['per_patient']:
+                pp = g['per_patient'][pat]
+                strictness = g['min_carb_g'] + g['hysteresis_min'] / 10.0
+                curve.append({
+                    'min_carb_g': g['min_carb_g'],
+                    'hysteresis_min': g['hysteresis_min'],
+                    'strictness': round(strictness, 1),
+                    'weighted_std': pp['weighted_std'],
+                    'meals_per_day': pp['meals_per_day'],
+                    'n_peaks': pp['n_peaks'],
+                })
+        stability_curves[pat] = sorted(curve, key=lambda x: x['strictness'])
+
+    # --- Tier summaries ---
+    tier_summaries = {}
+    for tier_name, members in tier_members.items():
+        if not members:
+            tier_summaries[tier_name] = {'n': 0}
+            continue
+        tier_traits = [traits[p] for p in members]
+        tier_summaries[tier_name] = {
+            'n': len(members),
+            'members': members,
+            'mean_sigma_sigma': round(float(np.mean([t['sigma_sigma'] for t in tier_traits])), 3),
+            'mean_n_peaks': round(float(np.mean([t['n_peaks'] for t in tier_traits])), 1),
+            'mean_therapy_mpd': round(float(np.mean([t['therapy_mpd'] for t in tier_traits])), 2),
+            'mean_zones_covered': round(float(np.mean([t['zones_covered'] for t in tier_traits])), 1),
+            'mean_mean_std': round(float(np.mean([t['mean_std'] for t in tier_traits])), 2),
+        }
+
+    # Print summary
+    print(f"\n  Robustness Tiers:")
+    for tier_name, ts in tier_summaries.items():
+        if ts['n'] > 0:
+            print(f"    {tier_name.upper()} (n={ts['n']}): σσ={ts['mean_sigma_sigma']:.3f}, "
+                  f"peaks={ts['mean_n_peaks']:.1f}, mpd={ts['mean_therapy_mpd']:.2f}, "
+                  f"zones={ts['mean_zones_covered']:.1f}")
+    print(f"\n  Key correlations with σσ:")
+    for key, c in sorted(correlations.items(), key=lambda x: abs(x[1]['spearman_rho']), reverse=True):
+        sig = '***' if c['p_value'] < 0.01 else '**' if c['p_value'] < 0.05 else ''
+        print(f"    {key:25s}: ρ={c['spearman_rho']:+.3f}, p={c['p_value']:.4f} {sig}")
+
+    return {
+        'experiment': 'EXP-1571',
+        'title': 'Robustness Archetype Characterization',
+        'n_patients': len(all_pats),
+        'tier_thresholds': {t: {'lo': lo, 'hi': hi} for t, (lo, hi) in TIERS.items()},
+        'tier_summaries': tier_summaries,
+        'per_patient': traits,
+        'correlations_with_sigma_sigma': correlations,
+        '_stability_curves': stability_curves,  # stripped before save
+    }
+
+
 def _run_all_detectors(patients):
     global _CACHED_EXPERIMENTS
     if _CACHED_EXPERIMENTS is not None:
@@ -4751,8 +4912,171 @@ def generate_benchmark_visualizations(results):
         print("    ✓ fig33_benchmark_robustness.png")
 
 
+def generate_archetype_visualizations(results):
+    """Generate fig34-36 for EXP-1571 robustness archetype characterization."""
+    if 1571 not in results or 'per_patient' not in results[1571]:
+        return
+
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
+    d = results[1571]
+    traits = d['per_patient']
+    tiers = d['tier_summaries']
+    curves = d.get('_stability_curves', {})
+    corrs = d.get('correlations_with_sigma_sigma', {})
+
+    pats = sorted(traits.keys())
+    tier_colors = {'robust': '#2ecc71', 'moderate': '#f39c12', 'sensitive': '#e74c3c'}
+
+    # --- fig34: Robustness distribution + correlation scatter ---
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5.5))
+    fig.suptitle('EXP-1571: Meal-Clock Robustness Archetypes', fontsize=14)
+
+    # A) σσ distribution with tier boundaries
+    ss_vals = [traits[p]['sigma_sigma'] for p in pats]
+    colors = [tier_colors[traits[p]['tier']] for p in pats]
+    axes[0].barh(pats, ss_vals, color=colors, edgecolor='black', linewidth=0.5)
+    axes[0].axvline(0.6, color='orange', ls='--', alpha=0.7, label='Robust/Moderate')
+    axes[0].axvline(1.0, color='red', ls='--', alpha=0.7, label='Moderate/Sensitive')
+    axes[0].set_xlabel('σσ (Std of Weighted Std Across 72 Configs)')
+    axes[0].set_title('A) Robustness Distribution\n(lower = more robust)')
+    axes[0].legend(fontsize=7)
+    axes[0].grid(axis='x', alpha=0.3)
+
+    # B) σσ vs n_peaks (strongest correlate)
+    n_peaks = [traits[p]['n_peaks'] for p in pats]
+    for p in pats:
+        axes[1].scatter(traits[p]['n_peaks'], traits[p]['sigma_sigma'],
+                       c=tier_colors[traits[p]['tier']], s=80, edgecolors='black',
+                       linewidths=0.5, zorder=3)
+        axes[1].annotate(p, (traits[p]['n_peaks'], traits[p]['sigma_sigma']),
+                        fontsize=8, textcoords='offset points', xytext=(5, 3))
+    rho = corrs.get('n_peaks', {}).get('spearman_rho', '?')
+    pval = corrs.get('n_peaks', {}).get('p_value', '?')
+    axes[1].set_xlabel('Number of Personal Meal Peaks')
+    axes[1].set_ylabel('σσ (Robustness)')
+    axes[1].set_title(f'B) σσ vs Meal Peaks\n(ρ={rho}, p={pval})')
+    axes[1].grid(alpha=0.3)
+
+    # C) σσ vs mean_std (regularity vs robustness 2D)
+    for p in pats:
+        axes[2].scatter(traits[p]['mean_std'], traits[p]['sigma_sigma'],
+                       c=tier_colors[traits[p]['tier']], s=80, edgecolors='black',
+                       linewidths=0.5, zorder=3)
+        axes[2].annotate(p, (traits[p]['mean_std'], traits[p]['sigma_sigma']),
+                        fontsize=8, textcoords='offset points', xytext=(5, 3))
+    # Quadrant labels
+    axes[2].axhline(0.6, color='gray', ls=':', alpha=0.5)
+    axes[2].axvline(3.0, color='gray', ls=':', alpha=0.5)
+    axes[2].text(1.5, 0.2, 'Regular &\nRobust', ha='center', fontsize=7, color='green', alpha=0.7)
+    axes[2].text(5.0, 0.2, 'Irregular but\nConsistent', ha='center', fontsize=7, color='orange', alpha=0.7)
+    axes[2].text(1.5, 1.8, 'Regular but\nFragile', ha='center', fontsize=7, color='orange', alpha=0.7)
+    axes[2].text(5.0, 1.8, 'Irregular &\nUnstable', ha='center', fontsize=7, color='red', alpha=0.7)
+    axes[2].set_xlabel('Mean Weighted Std (h) — Regularity')
+    axes[2].set_ylabel('σσ — Robustness')
+    axes[2].set_title('C) Regularity × Robustness Quadrants')
+    axes[2].grid(alpha=0.3)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig34_archetype_distribution.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig34_archetype_distribution.png")
+
+    # --- fig35: Stability curves (per-patient regularity vs strictness) ---
+    if curves:
+        fig, axes = plt.subplots(3, 4, figsize=(18, 12))
+        fig.suptitle('EXP-1571: Per-Patient Stability Curves\n'
+                     '(Weighted Std vs Detection Strictness)', fontsize=14)
+        axes_flat = axes.flatten()
+
+        for idx, pat in enumerate(sorted(curves.keys())):
+            ax = axes_flat[idx]
+            curve = curves[pat]
+            if not curve:
+                ax.set_visible(False)
+                continue
+
+            xs = [c['strictness'] for c in curve]
+            ys = [c['weighted_std'] for c in curve]
+            tier = traits[pat]['tier']
+            ax.plot(xs, ys, 'o-', color=tier_colors[tier], markersize=3, alpha=0.7)
+            ax.fill_between(xs, ys, alpha=0.15, color=tier_colors[tier])
+            ax.set_title(f'{pat} ({tier}, σσ={traits[pat]["sigma_sigma"]:.2f})',
+                        fontsize=9, color=tier_colors[tier])
+            ax.set_xlabel('Strictness', fontsize=7)
+            ax.set_ylabel('Weighted Std (h)', fontsize=7)
+            ax.tick_params(labelsize=7)
+            ax.set_ylim(bottom=0)
+            ax.grid(alpha=0.3)
+
+        # Hide unused subplot
+        for idx in range(len(curves), len(axes_flat)):
+            axes_flat[idx].set_visible(False)
+
+        plt.tight_layout(rect=[0, 0, 1, 0.94])
+        plt.savefig(str(VIZ_DIR / 'fig35_stability_curves.png'), dpi=150)
+        plt.close()
+        print("    ✓ fig35_stability_curves.png")
+
+    # --- fig36: Tier comparison radar/bar chart ---
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig.suptitle('EXP-1571: Robustness Tier Profiles', fontsize=14)
+
+    tier_names = ['robust', 'moderate', 'sensitive']
+    tier_data = {t: tiers.get(t, {}) for t in tier_names}
+    x = np.arange(len(tier_names))
+
+    # A) Tier comparison bars
+    metrics = [
+        ('mean_sigma_sigma', 'Mean σσ', 'steelblue'),
+        ('mean_n_peaks', 'Mean Peaks', 'coral'),
+        ('mean_therapy_mpd', 'Mean MPD', 'green'),
+        ('mean_zones_covered', 'Mean Zones', 'purple'),
+    ]
+    width = 0.18
+    for mi, (key, label, color) in enumerate(metrics):
+        vals = [tier_data[t].get(key, 0) for t in tier_names]
+        axes[0].bar(x + mi * width - 0.27, vals, width, label=label, color=color, alpha=0.8)
+
+    axes[0].set_xticks(x)
+    xl = []
+    for t in tier_names:
+        n = tier_data[t].get('n', 0)
+        members = tier_data[t].get('members', [])
+        xl.append(f'{t.capitalize()}\n(n={n}: {",".join(members)})')
+    axes[0].set_xticklabels(xl, fontsize=8)
+    axes[0].set_ylabel('Value')
+    axes[0].set_title('A) Tier Metric Comparison')
+    axes[0].legend(fontsize=8)
+    axes[0].grid(axis='y', alpha=0.3)
+
+    # B) Correlation waterfall
+    sorted_corrs = sorted(corrs.items(), key=lambda x: abs(x[1]['spearman_rho']), reverse=True)
+    corr_names = [c[0].replace('_', '\n') for c in sorted_corrs]
+    corr_vals = [c[1]['spearman_rho'] for c in sorted_corrs]
+    corr_sig = [c[1]['p_value'] < 0.05 for c in sorted_corrs]
+    bar_colors = ['darkgreen' if (v < 0 and s) else 'darkred' if (v > 0 and s)
+                  else 'gray' for v, s in zip(corr_vals, corr_sig)]
+
+    axes[1].barh(range(len(corr_names)), corr_vals, color=bar_colors, edgecolor='black',
+                 linewidth=0.5)
+    axes[1].set_yticks(range(len(corr_names)))
+    axes[1].set_yticklabels(corr_names, fontsize=8)
+    axes[1].set_xlabel('Spearman ρ with σσ')
+    axes[1].set_title('B) What Predicts Robustness?\n(green=protective, red=harmful)')
+    axes[1].axvline(0, color='black', linewidth=0.5)
+    axes[1].grid(axis='x', alpha=0.3)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig36_tier_profiles.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig36_tier_profiles.png")
+
+
 def main():
-    parser = argparse.ArgumentParser(description='EXP-1551-1569: Natural Experiment Census')
+    parser = argparse.ArgumentParser(description='EXP-1551-1571: Natural Experiment Census')
     parser.add_argument('--exp', type=int, default=0, help='Run single experiment (0=all)')
     parser.add_argument('--max-patients', type=int, default=11)
     parser.add_argument('--patients-dir', type=str, default=None)
@@ -4812,6 +5136,8 @@ def main():
                     skip_keys.add('_records')
                 if exp_id == 1569:
                     skip_keys.add('_grid')
+                if exp_id == 1571:
+                    skip_keys.add('_stability_curves')
                 save_result = {k: v for k, v in result.items() if k not in skip_keys}
                 json.dump(save_result, f, indent=2, default=str)
             print(f"  ✓ Saved → {out_path}  ({elapsed:.1f}s)")
@@ -4859,6 +5185,11 @@ def main():
             generate_benchmark_visualizations(all_results)
         except Exception as e:
             print(f"  Benchmark visualization error: {e}")
+            traceback.print_exc()
+        try:
+            generate_archetype_visualizations(all_results)
+        except Exception as e:
+            print(f"  Archetype visualization error: {e}")
             traceback.print_exc()
 
     # Summary
@@ -5012,10 +5343,26 @@ def main():
             print(f"  H5 carb conservation CV: min_carb=0g → {cv_0}%, "
                   f"min_carb=18g → {cv_18}%")
 
+    if 1571 in all_results and 'per_patient' in all_results[1571]:
+        print(f"\n  Robustness Archetypes (EXP-1571):")
+        d = all_results[1571]
+        traits = d['per_patient']
+        tier_list = {'robust': [], 'moderate': [], 'sensitive': []}
+        for p, t in sorted(traits.items()):
+            tier_list[t['tier']].append(p)
+        for tier in ['robust', 'moderate', 'sensitive']:
+            members = tier_list[tier]
+            print(f"    {tier.capitalize():10s} (n={len(members)}): {', '.join(members)}")
+        corrs = d.get('correlations_with_sigma_sigma', {})
+        print(f"  Top correlates of σσ:")
+        sorted_c = sorted(corrs.items(), key=lambda x: abs(x[1].get('spearman_rho', 0)), reverse=True)
+        for name, c in sorted_c[:3]:
+            print(f"    {name}: ρ={c.get('spearman_rho', '?'):.3f}, p={c.get('p_value', '?'):.4f}")
+
     # Save combined results
     combined_path = RESULTS_DIR / 'exp-1551_natural_experiments_combined.json'
     save_combined = {}
-    skip_large = {'all_experiments', 'meal_records', '_config_records', '_records', '_grid'}
+    skip_large = {'all_experiments', 'meal_records', '_config_records', '_records', '_grid', '_stability_curves'}
     for k, v in all_results.items():
         save_combined[k] = {kk: vv for kk, vv in v.items() if kk not in skip_large}
     with open(str(combined_path), 'w') as f:
