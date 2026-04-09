@@ -91,11 +91,17 @@ This has practical implications for meal detection algorithms:
 
 ## Visualizations
 
-| Figure | File | Content |
-|--------|------|---------|
-| fig34 | `fig34_archetype_distribution.png` | Robustness distribution (σσ bars + tier boundaries), σσ vs n_peaks scatter, regularity × robustness quadrant plot |
-| fig35 | `fig35_stability_curves.png` | Per-patient stability curves (weighted_std vs strictness, colored by tier, small multiples) |
-| fig36 | `fig36_tier_profiles.png` | Tier metric comparison (grouped bars) + correlation waterfall (what predicts robustness) |
+### Fig 34: Archetype Distribution
+
+![Robustness distribution (σ bars + tier boundaries), σ vs n_peaks scatter, regularity × robustness quadrant plot](../../visualizations/natural-experiments/fig34_archetype_distribution.png)
+
+### Fig 35: Stability Curves
+
+![Per-patient stability curves (weighted_std vs strictness, colored by tier, small multiples)](../../visualizations/natural-experiments/fig35_stability_curves.png)
+
+### Fig 36: Tier Profiles
+
+![Tier metric comparison (grouped bars) + correlation waterfall (what predicts robustness)](../../visualizations/natural-experiments/fig36_tier_profiles.png)
 
 ## Key Findings
 

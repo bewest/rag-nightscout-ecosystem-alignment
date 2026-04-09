@@ -87,7 +87,7 @@ carb magnitude is non-identifiable from glucose alone.
 (111/192 episodes). This patient also has the best TIR (84.7%) — suggesting that
 controlled rescue behavior is a key differentiator in outcomes.
 
-**Figure**: `figures/hypo2-fig1-phenotypes.png`
+![Hypo recovery phenotype distribution across patients](figures/hypo2-fig1-phenotypes.png)
 
 ---
 
@@ -139,7 +139,7 @@ is too weak for practical prediction.
 **This confirms the EXP-1641–1648 conclusion**: the rebound is dominated by the
 unknown rescue carb input, not by observable metabolic state at nadir.
 
-**Figure**: `figures/hypo2-fig2-hyperglycemia-prediction.png`
+![Post-hypo hyperglycemia prediction model performance](figures/hypo2-fig2-hyperglycemia-prediction.png)
 
 ---
 
@@ -187,7 +187,7 @@ catches up.
 these patients frequently have zero-crossing or negative IOB during hypo — the AID
 system has been suspending insulin long enough to create a true insulin deficit.
 
-**Figure**: `figures/hypo2-fig3-demand-vacuum.png`
+![Demand vacuum characterization by IOB tertile](figures/hypo2-fig3-demand-vacuum.png)
 
 ---
 
@@ -232,7 +232,7 @@ are more metabolically active.
 lower than expected. This may reflect logging behavior (meals aren't logged) rather
 than actual meal patterns.
 
-**Figure**: `figures/hypo2-fig4-temporal.png`
+![Temporal hypo patterns — time-of-day and pre-meal distribution](figures/hypo2-fig4-temporal.png)
 
 ---
 
@@ -317,7 +317,7 @@ recovery before completion.
 Low oscillation count (mean 0.9) is reassuring — the system doesn't "ring" back
 and forth between supply and demand dominance. Recovery is predominantly monotonic.
 
-**Figure**: `figures/hypo2-fig5-equilibrium.png`
+![Supply-demand equilibrium restoration after hypo](figures/hypo2-fig5-equilibrium.png)
 
 ---
 
@@ -400,7 +400,7 @@ This separates two distinct problems:
 1. **Hypo prevention**: Requires better prediction (hard, limited by EXP-1641–1648)
 2. **Hypo recovery management**: Requires better rescue behavior (actionable today)
 
-**Figure**: `figures/hypo2-fig6-risk-profile.png`
+![Per-patient hypo risk profile and rescue behavior](figures/hypo2-fig6-risk-profile.png)
 
 ---
 

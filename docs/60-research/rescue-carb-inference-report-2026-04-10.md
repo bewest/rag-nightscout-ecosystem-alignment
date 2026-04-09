@@ -103,7 +103,7 @@ reflecting individual differences in:
 - Residual insulin on board at nadir
 - Gastric emptying rate
 
-**Figure**: `figures/rescue-fig1-trajectory.png`
+![Rescue carb trajectory patterns by patient](figures/rescue-fig1-trajectory.png)
 
 ---
 
@@ -142,7 +142,7 @@ enough to be diagnostic, because the counter-regulatory floor takes time to mani
 and glucose typically continues falling for several minutes after physiological nadir
 due to CGM sensor lag.
 
-**Figure**: `figures/rescue-fig2-onset-detection.png`
+![Rescue carb onset detection — rate-of-change thresholds](figures/rescue-fig2-onset-detection.png)
 
 ---
 
@@ -251,7 +251,7 @@ The high variance (std dev ≈ rate magnitude) reflects the fundamental heteroge
 of rescue behavior — some patients eat immediately, some wait, some eat huge amounts,
 some eat nothing.
 
-**Figure**: `figures/rescue-fig3-counterreg.png`
+![Counter-regulatory response characterization](figures/rescue-fig3-counterreg.png)
 
 ---
 
@@ -331,7 +331,7 @@ to systematic over-prediction.
 **binary alert** ("rescue carbs detected, expect rebound") rather than a **quantitative
 forecast** ("glucose will reach X mg/dL in Y minutes").
 
-**Figure**: `figures/rescue-fig4-forecast.png`
+![Rescue carb forecast — binary alert vs quantitative prediction](figures/rescue-fig4-forecast.png)
 
 ---
 
@@ -381,7 +381,7 @@ patient-specific**:
 This means a practical rescue detector must be **personalized** — either trained on
 each patient's historical episodes or using rapid online adaptation.
 
-**Figure**: `figures/rescue-fig5-cross-patient.png`
+![Cross-patient rescue behavior consistency](figures/rescue-fig5-cross-patient.png)
 
 ---
 
@@ -440,7 +440,7 @@ clinical experience that hypoglycemia frequently triggers over-treatment, creati
 that the rebound intensity is visible early and could trigger a "expect high glucose"
 alert.
 
-**Figure**: `figures/rescue-fig6-rebound.png`
+![Post-rescue rebound intensity and early detection](figures/rescue-fig6-rebound.png)
 
 ---
 

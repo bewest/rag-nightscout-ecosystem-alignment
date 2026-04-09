@@ -355,19 +355,49 @@ The key advantage: **it works with the data patients actually have** — CGM + p
 
 ### Static Figures (Matplotlib)
 
-| Figure | File | Description |
-|:-------|:-----|:------------|
-| Fig 1 | `fig01_ac_circuit_analogy.png` | AC circuit analogy — glucose as voltage, flux as current |
-| Fig 2 | `fig02_supply_demand_decomposition.png` | Anatomy of a meal in supply-demand terms |
-| Fig 3 | `fig03_conservation_law.png` | Conservation law validation (EXP-421) |
-| Fig 4 | `fig04_four_symmetries.png` | The four symmetries in diabetes data |
-| Fig 5 | `fig05_spectral_power.png` | Spectral power analysis (EXP-444) |
-| Fig 6 | `fig06_cross_patient_similarity.png` | Cross-patient universality (EXP-445) |
-| Fig 7 | `fig07_phase_lag.png` | Phase lag classification (EXP-466, 471) |
-| Fig 8 | `fig08_evolution_timeline.png` | PK → Flux → Supply-Demand timeline |
-| Fig 9 | `fig09_hepatic_hill_curve.png` | Hepatic production Hill equation |
-| Fig 10 | `fig10_fidelity_diagnostic.png` | Conservation-based diagnostics (EXP-492) |
-| Fig 11 | `fig11_eight_pk_channels.png` | The 8-channel PK feature system |
+### Fig 1: AC Circuit Analogy
+
+![AC circuit analogy — glucose as voltage, flux as current](../../visualizations/supply-demand-report/fig01_ac_circuit_analogy.png)
+
+### Fig 2: Supply-Demand Decomposition
+
+![Anatomy of a meal in supply-demand terms](../../visualizations/supply-demand-report/fig02_supply_demand_decomposition.png)
+
+### Fig 3: Conservation Law
+
+![Conservation law validation (EXP-421)](../../visualizations/supply-demand-report/fig03_conservation_law.png)
+
+### Fig 4: Four Symmetries
+
+![The four symmetries in diabetes data](../../visualizations/supply-demand-report/fig04_four_symmetries.png)
+
+### Fig 5: Spectral Power
+
+![Spectral power analysis (EXP-444)](../../visualizations/supply-demand-report/fig05_spectral_power.png)
+
+### Fig 6: Cross-Patient Similarity
+
+![Cross-patient universality (EXP-445)](../../visualizations/supply-demand-report/fig06_cross_patient_similarity.png)
+
+### Fig 7: Phase Lag
+
+![Phase lag classification (EXP-466, 471)](../../visualizations/supply-demand-report/fig07_phase_lag.png)
+
+### Fig 8: Evolution Timeline
+
+![PK → Flux → Supply-Demand timeline](../../visualizations/supply-demand-report/fig08_evolution_timeline.png)
+
+### Fig 9: Hepatic Hill Curve
+
+![Hepatic production Hill equation](../../visualizations/supply-demand-report/fig09_hepatic_hill_curve.png)
+
+### Fig 10: Fidelity Diagnostic
+
+![Conservation-based diagnostics (EXP-492)](../../visualizations/supply-demand-report/fig10_fidelity_diagnostic.png)
+
+### Fig 11: Eight PK Channels
+
+![The 8-channel PK feature system](../../visualizations/supply-demand-report/fig11_eight_pk_channels.png)
 
 ### Animated Figures (Manim)
 
