@@ -616,6 +616,8 @@ class PipelineResult:
     bolus_safety: Optional[BolusTimingSafety] = None
     aid_compensation: Optional[AIDCompensation] = None
     forecast: Optional[ForecastResult] = None
+    # Natural experiments (EXP-1551)
+    natural_experiments: Optional[object] = None  # NaturalExperimentCensus (avoid circular import)
     pipeline_latency_ms: float = 0.0
     warnings: List[str] = field(default_factory=list)
 

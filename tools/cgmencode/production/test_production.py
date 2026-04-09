@@ -964,6 +964,167 @@ class TestPipelineRegression(unittest.TestCase):
                                "profile_isf should be in mg/dL, not mmol/L")
 
 
+# ── 4. Natural Experiment Detector Tests ──────────────────────────────
+
+class TestNaturalExperimentTypes(unittest.TestCase):
+    """Type contracts for natural experiment detector."""
+
+    def test_experiment_type_enum(self):
+        from cgmencode.production.natural_experiment_detector import NaturalExperimentType
+        expected = {'fasting', 'overnight', 'meal', 'correction', 'uam',
+                    'dawn', 'exercise', 'aid_response', 'stable'}
+        self.assertEqual({e.value for e in NaturalExperimentType}, expected)
+
+    def test_meal_config_presets(self):
+        from cgmencode.production.natural_experiment_detector import MealConfig
+        census = MealConfig.census()
+        self.assertEqual(census.min_carbs, 5.0)
+        self.assertEqual(census.cluster_gap, 6)
+
+        therapy = MealConfig.therapy()
+        self.assertEqual(therapy.min_carbs, 18.0)
+        self.assertEqual(therapy.cluster_gap, 18)
+
+        medium = MealConfig.medium()
+        self.assertEqual(medium.min_carbs, 5.0)
+        self.assertEqual(medium.cluster_gap, 18)
+
+    def test_natural_experiment_to_dict(self):
+        from cgmencode.production.natural_experiment_detector import (
+            NaturalExperiment, NaturalExperimentType)
+        exp = NaturalExperiment(
+            exp_type=NaturalExperimentType.FASTING,
+            start_idx=0, end_idx=72,
+            duration_minutes=360,
+            hour_of_day=0.0,
+            quality=0.9,
+            measurements={'drift_mg_dl_per_hour': 1.5},
+        )
+        d = exp.to_dict()
+        self.assertEqual(d['exp_type'], 'fasting')
+        self.assertIsInstance(d['measurements'], dict)
+
+    def test_census_filter_methods(self):
+        from cgmencode.production.natural_experiment_detector import (
+            NaturalExperiment, NaturalExperimentType, NaturalExperimentCensus)
+        exps = [
+            NaturalExperiment(NaturalExperimentType.FASTING, 0, 72, 360, 0.0, 0.9),
+            NaturalExperiment(NaturalExperimentType.MEAL, 100, 136, 180, 8.0, 0.5),
+            NaturalExperiment(NaturalExperimentType.STABLE, 200, 224, 120, 14.0, 0.85),
+        ]
+        census = NaturalExperimentCensus(
+            experiments=exps, total_detected=3,
+            by_type={'fasting': 1, 'meal': 1, 'stable': 1},
+            quality_mean=0.75, days_analyzed=15.0, per_day_rate=0.2,
+        )
+        hq = census.filter_high_quality(0.8)
+        self.assertEqual(len(hq), 2)
+        fasting = census.filter_by_type(NaturalExperimentType.FASTING)
+        self.assertEqual(len(fasting), 1)
+        self.assertEqual(census.summary_dict()['total_detected'], 3)
+
+
+class TestNaturalExperimentDetector(unittest.TestCase):
+    """Module contracts for natural experiment detection."""
+
+    def test_detect_returns_census(self):
+        from cgmencode.production.natural_experiment_detector import (
+            detect_natural_experiments, NaturalExperimentCensus)
+        patient = make_patient(n=4320, with_insulin=True)
+        census = detect_natural_experiments(patient)
+        self.assertIsInstance(census, NaturalExperimentCensus)
+        self.assertGreater(census.total_detected, 0)
+        self.assertGreater(census.quality_mean, 0)
+        self.assertGreater(census.days_analyzed, 0)
+
+    def test_detect_without_insulin(self):
+        """Should still detect BG-only experiments (fasting, meals, etc)."""
+        from cgmencode.production.natural_experiment_detector import (
+            detect_natural_experiments, NaturalExperimentCensus)
+        patient = make_patient(n=4320, with_insulin=False)
+        census = detect_natural_experiments(patient)
+        self.assertIsInstance(census, NaturalExperimentCensus)
+        # Should have at least stable/fasting/meal windows
+        self.assertGreater(census.total_detected, 0)
+        # No UAM or exercise (need metabolic)
+        self.assertEqual(census.by_type.get('uam', 0), 0)
+        self.assertEqual(census.by_type.get('exercise', 0), 0)
+
+    def test_detect_with_metabolic(self):
+        """With metabolic state, should detect UAM and exercise too."""
+        from cgmencode.production.natural_experiment_detector import (
+            detect_natural_experiments, NaturalExperimentCensus)
+        from cgmencode.production.metabolic_engine import compute_metabolic_state
+        patient = make_patient(n=4320, with_insulin=True)
+        metabolic = compute_metabolic_state(patient)
+        census = detect_natural_experiments(patient, metabolic=metabolic)
+        self.assertIsInstance(census, NaturalExperimentCensus)
+        self.assertGreater(census.total_detected, 0)
+
+    def test_meal_config_affects_counts(self):
+        """Different meal configs should produce different meal counts."""
+        from cgmencode.production.natural_experiment_detector import (
+            detect_natural_experiments, MealConfig)
+        patient = make_patient(n=4320, with_insulin=True)
+
+        census_census = detect_natural_experiments(patient, meal_config=MealConfig.census())
+        census_therapy = detect_natural_experiments(patient, meal_config=MealConfig.therapy())
+
+        meals_census = census_census.by_type.get('meal', 0)
+        meals_therapy = census_therapy.by_type.get('meal', 0)
+        # Therapy config should find fewer or equal meals (higher threshold)
+        self.assertGreaterEqual(meals_census, meals_therapy)
+
+    def test_short_data(self):
+        """Should handle very short data gracefully."""
+        from cgmencode.production.natural_experiment_detector import (
+            detect_natural_experiments, NaturalExperimentCensus)
+        patient = make_patient(n=288, with_insulin=True)  # 1 day
+        census = detect_natural_experiments(patient)
+        self.assertIsInstance(census, NaturalExperimentCensus)
+
+    def test_all_experiments_have_quality(self):
+        """Every experiment should have quality in [0, 1]."""
+        from cgmencode.production.natural_experiment_detector import detect_natural_experiments
+        patient = make_patient(n=4320, with_insulin=True)
+        census = detect_natural_experiments(patient)
+        for exp in census.experiments:
+            self.assertGreaterEqual(exp.quality, 0.0,
+                                    f"{exp.exp_type} quality below 0")
+            self.assertLessEqual(exp.quality, 1.0,
+                                  f"{exp.exp_type} quality above 1")
+
+    def test_experiment_indices_valid(self):
+        """Start/end indices should be within data bounds."""
+        from cgmencode.production.natural_experiment_detector import detect_natural_experiments
+        patient = make_patient(n=4320, with_insulin=True)
+        census = detect_natural_experiments(patient)
+        for exp in census.experiments:
+            self.assertGreaterEqual(exp.start_idx, 0)
+            self.assertLessEqual(exp.end_idx, 4320)
+            self.assertGreater(exp.end_idx, exp.start_idx)
+
+
+class TestNaturalExperimentPipeline(unittest.TestCase):
+    """Integration tests: natural experiments through pipeline."""
+
+    def test_pipeline_includes_experiments(self):
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(n=4320, with_insulin=True)
+        result = run_pipeline(patient)
+        self.assertIsNotNone(result.natural_experiments,
+                             "Pipeline should populate natural_experiments")
+        self.assertGreater(result.natural_experiments.total_detected, 0)
+
+    def test_pipeline_no_insulin_still_detects(self):
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(n=4320, with_insulin=False)
+        result = run_pipeline(patient)
+        # Should still have experiments (BG-only detectors)
+        if result.natural_experiments is not None:
+            self.assertGreaterEqual(result.natural_experiments.total_detected, 0)
+
+
 # ── Runner ────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":

@@ -782,6 +782,46 @@ def cmd_recommend(result: PipelineResult, args) -> dict:
     return out
 
 
+def cmd_experiments(result: PipelineResult, args) -> dict:
+    """Natural experiment census — detected windows and quality stats."""
+    census = result.natural_experiments
+    out = {'natural_experiments': None}
+
+    if not getattr(args, 'json_output', False):
+        print(section_header('NATURAL EXPERIMENTS'))
+
+        if census is None:
+            print('  ⚠ Natural experiment detection not available')
+            return out
+
+        print(f'  Total detected: {census.total_detected:,}')
+        print(f'  Rate: {census.per_day_rate:.1f}/day')
+        print(f'  Mean quality: {census.quality_mean:.3f}')
+        print(f'  Days analyzed: {census.days_analyzed:.1f}')
+        print()
+        print(f'  {"Type":15s} {"Count":>7s} {"Avg Quality":>11s}')
+        print(f'  {"─" * 35}')
+
+        for etype in ['fasting', 'overnight', 'meal', 'correction', 'uam',
+                      'dawn', 'exercise', 'aid_response', 'stable']:
+            count = census.by_type.get(etype, 0)
+            if count == 0:
+                print(f'  {etype:15s} {0:7d} {"—":>11s}')
+                continue
+            subset = [e for e in census.experiments
+                      if e.exp_type.value == etype]
+            avg_q = float(np.mean([e.quality for e in subset]))
+            print(f'  {etype:15s} {count:7,d} {avg_q:11.3f}')
+
+        # High-quality window highlights
+        hq = census.filter_high_quality(0.8)
+        print(f'\n  High-quality (≥0.8): {len(hq):,} ({100*len(hq)/max(census.total_detected,1):.0f}%)')
+
+    if census is not None:
+        out['natural_experiments'] = census.summary_dict()
+    return out
+
+
 def cmd_report(result: PipelineResult, args) -> dict:
     """Full clinical summary — all capabilities at once."""
     out = {}
@@ -798,6 +838,7 @@ def cmd_report(result: PipelineResult, args) -> dict:
     out['triage'] = cmd_triage(result, args)
     out['meals'] = cmd_meals(result, args)
     out['patterns'] = cmd_patterns(result, args)
+    out['experiments'] = cmd_experiments(result, args)
     out['recommendations'] = cmd_recommend(result, args)
 
     if not getattr(args, 'json_output', False):
@@ -818,6 +859,7 @@ COMMANDS = {
     'meals': ('Meal detection, timing patterns, predictions', cmd_meals),
     'patterns': ('Circadian analysis, phenotype, drift detection', cmd_patterns),
     'quality': ('Data quality assessment', cmd_quality),
+    'experiments': ('Natural experiment census and quality stats', cmd_experiments),
     'recommend': ('Action recommendations ranked by priority', cmd_recommend),
     'report': ('Full clinical summary (all capabilities)', cmd_report),
 }

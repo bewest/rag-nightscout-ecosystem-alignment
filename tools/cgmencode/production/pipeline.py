@@ -38,6 +38,7 @@ from .clinical_rules import (
     assess_correction_timing, assess_aid_compensation,
     compute_fidelity_grade,
 )
+from .natural_experiment_detector import detect_natural_experiments
 
 
 def run_pipeline(patient: PatientData,
@@ -286,6 +287,17 @@ def run_pipeline(patient: PatientData,
     except Exception as e:
         warnings.append(f"AID compensation failed: {e}")
 
+    # ── Stage 5c: Natural Experiment Detection (EXP-1551) ─────────
+    natural_experiments = None
+    if patient.days_of_data >= 1.0:
+        try:
+            natural_experiments = detect_natural_experiments(
+                patient=patient,
+                metabolic=metabolic,
+            )
+        except Exception as e:
+            warnings.append(f"Natural experiment detection failed: {e}")
+
     # ── Stage 6: Settings Advisor ─────────────────────────────────
     settings_recs = None
     if patient.days_of_data >= 3.0:
@@ -337,6 +349,7 @@ def run_pipeline(patient: PatientData,
         bolus_safety=bolus_safety,
         aid_compensation=aid_compensation,
         forecast=forecast,
+        natural_experiments=natural_experiments,
         pipeline_latency_ms=elapsed,
         warnings=warnings,
     )

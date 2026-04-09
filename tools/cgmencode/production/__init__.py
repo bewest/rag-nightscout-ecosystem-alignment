@@ -43,6 +43,10 @@ from .meal_detector import detect_meal_events, build_meal_history, classify_all_
 from .meal_predictor import build_timing_models, predict_next_meal
 from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented
 from .recommender import generate_recommendations
+from .natural_experiment_detector import (
+    detect_natural_experiments, NaturalExperiment, NaturalExperimentCensus,
+    NaturalExperimentType, MealConfig,
+)
 from .pipeline import run_pipeline, run_pipeline_batch
 from .validators import run_validation
 
@@ -72,6 +76,9 @@ __all__ = [
     'build_timing_models', 'predict_next_meal',
     'generate_settings_advice', 'analyze_periods', 'advise_isf_segmented',
     'generate_recommendations',
+    # Natural Experiments
+    'detect_natural_experiments', 'NaturalExperiment', 'NaturalExperimentCensus',
+    'NaturalExperimentType', 'MealConfig',
     # Validation
     'run_validation',
 ]
