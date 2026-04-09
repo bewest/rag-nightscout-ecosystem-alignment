@@ -38,19 +38,23 @@ with open(ROOT / 'externals/experiments/exp_exp_929_clarke_error_grid.json') as 
 with open(ROOT / 'externals/experiments/exp-1043_clarke_error_grid_analysis.json') as f:
     exp1043 = json.load(f)
 
+with open(ROOT / 'externals/experiments/exp1401_clarke_production.json') as f:
+    exp1401 = json.load(f)
+
 # ── Derived data ───────────────────────────────────────────────────────
 
-# Routed MAE by horizon
+# Routed MAE by horizon (from EXP-1401 measured, not EXP-619 training)
 routing = exp619['routing']
 horizons = sorted(routing.keys(), key=lambda x: int(x[1:]))
 h_minutes = [int(h[1:]) for h in horizons]
-h_mae = [routing[h]['mae'] for h in horizons]
+
+# Use EXP-1401 measured MAE (on verification data)
+h_mae = [exp1401['routed_aggregate'][h]['mean_mae_mgdl'] for h in horizons]
 h_windows = [routing[h]['best_window'] for h in horizons]
 
-# Per-patient routed MAE at each horizon
+# Per-patient routed MAE at each horizon (from EXP-619 training for heatmap)
 patients = sorted(exp619['window_results']['w48']['per_patient'].keys())
 
-# Build per-patient routed MAE matrix
 patient_routed = {}
 for p in patients:
     patient_routed[p] = {}
@@ -60,11 +64,30 @@ for p in patients:
         if p in pp and h in pp[p]:
             patient_routed[p][h] = pp[p][h]
 
-# Clarke data from EXP-929 (h60)
+# Clarke data — EXP-1401 is now primary (measured on verification data)
+clarke_1401 = exp1401['routed_aggregate']
+
+# Clarke data from EXP-929 (Ridge baseline, h60 only, for comparison)
 clarke_929 = {d['patient']: d for d in exp929['results']['per_patient']}
 
 # Clarke data from EXP-1043 (h60, different eval method)
 clarke_1043 = {d['patient']: d for d in exp1043['results']['per_patient']}
+
+# ── Measured Clarke Zones from EXP-1401 ───────────────────────────────
+
+def get_measured_clarke(horizon):
+    """Get measured Clarke zone percentages from EXP-1401 at a given horizon."""
+    if horizon not in clarke_1401:
+        return None
+    agg = clarke_1401[horizon]
+    zones = agg['mean_zone_pcts']
+    return {
+        'A': zones['A'],
+        'B': zones['B'],
+        'C': zones['C'],
+        'D': zones['D'],
+        'E': zones['E'],
+    }
 
 # ── Clarke Zone Estimation ─────────────────────────────────────────────
 # Use empirical calibration from EXP-929 + EXP-1043 to estimate
@@ -140,7 +163,7 @@ def fig1_mae_with_clarke_zones():
     ax1.set_xlabel('Forecast Horizon (minutes)', fontsize=12)
     ax1.set_ylabel('Mean Absolute Error (mg/dL)', fontsize=12)
     ax1.set_title('Glucose Forecast Accuracy by Horizon\n'
-                  'PKGroupedEncoder (EXP-619), 11 Patients, 5-Seed Ensemble',
+                  'PKGroupedEncoder (EXP-1401), 11 Patients, Verification Data',
                   fontsize=13, fontweight='bold')
     ax1.set_xlim(20, 380)
     ax1.set_ylim(5, 45)
@@ -154,13 +177,15 @@ def fig1_mae_with_clarke_zones():
     print('  ✓ fig1_mae_horizon_curve.png')
 
 
-# ── Figure 2: Clarke Zone Stacked Area Chart ──────────────────────────
+# ── Figure 2: Clarke Zone Stacked Area Chart (MEASURED) ───────────────
 
 def fig2_clarke_zones_by_horizon():
+    # Use MEASURED data from EXP-1401 (PKGroupedEncoder on verification data)
     zone_data = {}
     for h in horizons:
-        mae = routing[h]['mae']
-        zones = estimate_clarke_zones(mae)
+        zones = get_measured_clarke(h)
+        if zones is None:
+            continue
         zone_data[h] = zones
 
     fig, (ax, ax2) = plt.subplots(1, 2, figsize=(16, 6),
@@ -193,18 +218,17 @@ def fig2_clarke_zones_by_horizon():
     ax.fill_between(h_minutes, abcd, abcde, alpha=0.7, color=zone_colors['E'],
                     label='Zone E (erroneous treatment)')
 
-    # Measured EXP-929 calibration point at h60 (different model, MAE=27.3)
-    # Show as reference — the star is from a higher-MAE model
+    # EXP-929 Ridge baseline reference at h60
     ax.plot(60, exp929['results']['mean_clarke_A_pct'], '*', color='white',
             markersize=14, markeredgecolor='black', markeredgewidth=2, zorder=10)
-    ax.annotate(f"EXP-929 measured\n(MAE=27.3): {exp929['results']['mean_clarke_A_pct']:.1f}% A",
+    ax.annotate(f"Ridge baseline (EXP-929)\n{exp929['results']['mean_clarke_A_pct']:.1f}% A, MAE=27.3",
                 xy=(60, exp929['results']['mean_clarke_A_pct']),
-                xytext=(100, 55),
+                xytext=(120, 55),
                 fontsize=9, fontweight='bold',
                 arrowprops=dict(arrowstyle='->', color='black', lw=1.5))
 
     # Annotate zone percentages at key horizons
-    for h_idx, h in enumerate([horizons[0], horizons[2], horizons[5], horizons[-1]]):
+    for h in [horizons[0], horizons[2], horizons[5], horizons[-1]]:
         m = int(h[1:])
         z = zone_data[h]
         ax.text(m, z['A'] / 2, f"{z['A']:.0f}%", fontsize=10,
@@ -212,7 +236,7 @@ def fig2_clarke_zones_by_horizon():
 
     # Mark A+B boundary
     ax.plot(h_minutes, ab, '-', color='white', linewidth=1.5, alpha=0.8)
-    for h_idx, h in enumerate([horizons[0], horizons[-1]]):
+    for h in [horizons[0], horizons[-1]]:
         m = int(h[1:])
         z = zone_data[h]
         ab_val = z['A'] + z['B']
@@ -222,7 +246,7 @@ def fig2_clarke_zones_by_horizon():
     ax.set_xlabel('Forecast Horizon (minutes)', fontsize=12)
     ax.set_ylabel('Cumulative Zone Percentage (%)', fontsize=12)
     ax.set_title('Clarke Error Grid Zone Distribution by Forecast Horizon\n'
-                 'Empirically calibrated from EXP-929 (11 patients, R²=0.88)',
+                 'MEASURED: PKGroupedEncoder (EXP-1401), 11 patients, verification data',
                  fontsize=13, fontweight='bold')
     ax.set_xlim(25, 370)
     ax.set_ylim(0, 100)
@@ -238,22 +262,22 @@ def fig2_clarke_zones_by_horizon():
                      label='Zone E')
     ax2.plot(h_minutes, de, 'o-', color='#2c3e50', linewidth=2, markersize=5)
 
-    # Measured D+E from EXP-929
-    measured_de = np.mean([d['clarke_zones']['D'] + d['clarke_zones']['E']
-                           for d in exp929['results']['per_patient']])
-    ax2.axhline(y=measured_de, color='black', linestyle='--', alpha=0.5)
-    ax2.text(200, measured_de + 0.3, f'EXP-929 mean D+E={measured_de:.1f}%',
-             fontsize=8, ha='center')
+    # EXP-929 Ridge D+E reference
+    measured_de_929 = np.mean([d['clarke_zones']['D'] + d['clarke_zones']['E']
+                               for d in exp929['results']['per_patient']])
+    ax2.axhline(y=measured_de_929, color='gray', linestyle='--', alpha=0.5)
+    ax2.text(200, measured_de_929 + 0.15, f'Ridge baseline D+E={measured_de_929:.1f}%',
+             fontsize=8, ha='center', color='gray')
 
     for m, de_val in zip(h_minutes, de):
-        ax2.text(m, de_val + 0.2, f'{de_val:.1f}', fontsize=7,
+        ax2.text(m, de_val + 0.05, f'{de_val:.1f}', fontsize=7,
                  ha='center', va='bottom', color='#e74c3c')
 
     ax2.set_xlabel('Horizon (min)', fontsize=10)
     ax2.set_ylabel('Dangerous Zone %', fontsize=10)
     ax2.set_title('Zone D+E Detail\n(clinically dangerous)', fontsize=11, fontweight='bold')
     ax2.set_xlim(25, 370)
-    ax2.set_ylim(0, max(de) * 1.8)
+    ax2.set_ylim(0, max(max(de) * 2.0, measured_de_929 * 1.5))
     ax2.set_xticks([30, 120, 240, 360])
     ax2.legend(fontsize=8)
     ax2.grid(True, alpha=0.3)
@@ -263,19 +287,20 @@ def fig2_clarke_zones_by_horizon():
     plt.close()
     print('  ✓ fig2_clarke_zones_by_horizon.png')
 
-
 # ── Figure 3: Per-Patient Clarke at h60 (Measured) ────────────────────
 
 def fig3_patient_clarke_h60():
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
-    # Left: EXP-929 Clarke zones per patient (stacked bar)
+    # Get EXP-1401 per-patient data at h60
+    pp_1401 = clarke_1401['h60']['per_patient']
+
+    # Left: EXP-1401 Clarke zones per patient (stacked bar)
     ax = axes[0]
     zone_colors = ['#27ae60', '#3498db', '#f39c12', '#e74c3c', '#8e44ad']
     zone_names = ['A', 'B', 'C', 'D', 'E']
 
-    pp_929 = exp929['results']['per_patient']
-    pp_sorted = sorted(pp_929, key=lambda d: d['clarke_A_pct'])
+    pp_sorted = sorted(pp_1401, key=lambda d: d['clarke_A_pct'])
     names = [d['patient'] for d in pp_sorted]
     x = np.arange(len(names))
 
@@ -284,7 +309,6 @@ def fig3_patient_clarke_h60():
         vals = [d['clarke_zones'][zone] for d in pp_sorted]
         ax.bar(x, vals, bottom=bottoms, color=zone_colors[z_idx],
                label=f'Zone {zone}', alpha=0.85, width=0.7)
-        # Label Zone A percentage
         if zone == 'A':
             for i, v in enumerate(vals):
                 if v > 8:
@@ -296,24 +320,36 @@ def fig3_patient_clarke_h60():
     ax.set_xticks(x)
     ax.set_xticklabels(names, fontsize=11, fontweight='bold')
     ax.set_ylabel('Zone %', fontsize=11)
-    ax.set_title('EXP-929: Clarke Zones at h60\n(Measured)', fontsize=12, fontweight='bold')
+    ax.set_title('EXP-1401: Clarke Zones at h60\n(PKGroupedEncoder, verification data)',
+                 fontsize=12, fontweight='bold')
     ax.set_ylim(0, 105)
     ax.legend(loc='upper left', fontsize=8, ncol=5)
 
-    # Right: MAE vs Clarke A% scatter with patient labels
+    # Right: MAE vs Clarke A% scatter — both EXP-1401 and EXP-929
     ax2 = axes[1]
-    mae_vals = [d['mae_mgdl'] for d in pp_929]
-    a_vals = [d['clarke_A_pct'] for d in pp_929]
-    names_all = [d['patient'] for d in pp_929]
 
-    ax2.scatter(mae_vals, a_vals, s=100, c='#2c3e50', alpha=0.8, zorder=5)
-    for i, name in enumerate(names_all):
-        ax2.annotate(name, (mae_vals[i], a_vals[i]),
+    # EXP-1401 (PKGroupedEncoder)
+    mae_1401 = [d['mae_mgdl'] for d in pp_1401]
+    a_1401 = [d['clarke_A_pct'] for d in pp_1401]
+    names_1401 = [d['patient'] for d in pp_1401]
+    ax2.scatter(mae_1401, a_1401, s=100, c='#2c3e50', alpha=0.8, zorder=5,
+                label='PKGroupedEncoder (EXP-1401)')
+    for i, name in enumerate(names_1401):
+        ax2.annotate(name, (mae_1401[i], a_1401[i]),
                      textcoords="offset points", xytext=(8, 4),
                      fontsize=10, fontweight='bold')
 
-    # Fit trend line
-    z = np.polyfit(mae_vals, a_vals, 1)
+    # EXP-929 (Ridge baseline) for comparison
+    pp_929 = exp929['results']['per_patient']
+    mae_929 = [d['mae_mgdl'] for d in pp_929]
+    a_929 = [d['clarke_A_pct'] for d in pp_929]
+    ax2.scatter(mae_929, a_929, s=60, c='#bdc3c7', alpha=0.6, marker='s',
+                zorder=3, label='Ridge baseline (EXP-929)')
+
+    # Combined trend line
+    all_mae = mae_1401 + mae_929
+    all_a = a_1401 + a_929
+    z = np.polyfit(all_mae, all_a, 1)
     x_line = np.linspace(5, 42, 100)
     ax2.plot(x_line, np.polyval(z, x_line), '--', color='#e74c3c', alpha=0.5,
              label=f'Trend: A% ≈ {z[0]:.1f}×MAE + {z[1]:.0f}')
@@ -496,18 +532,16 @@ def fig6_clarke_grid_schematic():
         ax.text(x, y, label, fontsize=size, fontweight='bold', color=color,
                 ha='center', va='center', alpha=0.7)
 
-    # Our results annotation box — EXP-929 used Ridge regression, NOT PKGroupedEncoder
-    z929 = exp929['results']
-    measured_de = np.mean([d['clarke_zones']['D'] + d['clarke_zones']['E']
-                           for d in z929['per_patient']])
-    textstr = (f"EXP-929 Measured (h60, 11 patients)\n"
-               f"━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-               f"Zone A:   {z929['mean_clarke_A_pct']:.1f}%\n"
-               f"Zone A+B: {z929['mean_clarke_AB_pct']:.1f}%\n"
-               f"Zone D+E: {measured_de:.1f}%\n"
-               f"MAE:  {z929['mean_mae_mgdl']:.1f} mg/dL\n"
-               f"MARD: {z929['mean_mard_pct']:.1f}%\n"
-               f"Model: Ridge baseline (not PKGroupedEncoder)")
+    # Results annotation box — EXP-1401 measured on verification data
+    z1401 = clarke_1401['h60']
+    textstr = (f"EXP-1401 Measured (h60, verification)\n"
+               f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+               f"Zone A:   {z1401['mean_clarke_A_pct']:.1f}%\n"
+               f"Zone A+B: {z1401['mean_clarke_AB_pct']:.1f}%\n"
+               f"Zone D+E: {z1401['mean_clarke_DE_pct']:.1f}%\n"
+               f"MAE:  {z1401['mean_mae_mgdl']:.1f} mg/dL\n"
+               f"MARD: {z1401['mean_mard_pct']:.1f}%\n"
+               f"Model: PKGroupedEncoder (5-seed)")
     props = dict(boxstyle='round', facecolor='white', alpha=0.9, edgecolor='#2c3e50')
     ax.text(250, 120, textstr, fontsize=9, verticalalignment='top',
             bbox=props, family='monospace')
@@ -515,7 +549,7 @@ def fig6_clarke_grid_schematic():
     ax.set_xlabel('Reference Glucose (mg/dL)', fontsize=12)
     ax.set_ylabel('Predicted Glucose (mg/dL)', fontsize=12)
     ax.set_title('Clarke Error Grid — Zone Definitions\n'
-                 'with EXP-929 Measured h60 Performance',
+                 'with PKGroupedEncoder h60 Performance (EXP-1401, measured)',
                  fontsize=13, fontweight='bold')
     ax.set_aspect('equal')
     ax.grid(True, alpha=0.15)

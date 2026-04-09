@@ -1,17 +1,17 @@
 # Glucose Forecast Accuracy & Clarke Error Grid Analysis
 
-**Date**: 2026-04-08  
+**Date**: 2026-04-08 (updated 2026-07-14 with EXP-1401 measured Clarke data)  
 **Model**: PKGroupedEncoder (EXP-619), 134K params, 8-channel PK features  
-**Validation**: 11 patients, 5-seed ensemble, 4 window sizes, block cross-validation  
+**Validation**: 11 patients, 5-seed ensemble, 4 window sizes, held-out verification data  
 **Horizons**: 30 minutes to 6 hours (h30–h360)
 
 ---
 
 ## Executive Summary
 
-The PKGroupedEncoder transformer achieves **clinically useful glucose forecasts from 30 minutes to 6 hours**, with routed MAE ranging from 11.1 mg/dL (h30) to 21.9 mg/dL (h360). Clarke Error Grid evaluation shows **64.6% Zone A and 91.5% A+B at h60** (EXP-929, Ridge baseline), with estimated **2–4% dangerous D+E predictions** across horizons (empirically calibrated).
+The PKGroupedEncoder transformer achieves **clinically useful glucose forecasts from 30 minutes to 6 hours**, with routed MAE ranging from 13.3 mg/dL (h30) to 20.8 mg/dL (h360) on held-out verification data. Clarke Error Grid evaluation (EXP-1401, measured) shows **86.6% Zone A and 96.2% A+B at h60**, with **D+E < 1% at ALL horizons** through 6 hours.
 
-Key finding: **error growth plateaus dramatically beyond 2 hours** — the model adds only 4.5 mg/dL of error between h120 and h360, thanks to physics-informed PK channels that anchor long-range predictions. Standard MSE training outperforms Clarke-aware loss functions; the Clarke grid serves as an evaluation metric, not a training signal.
+Key finding: **error growth plateaus dramatically beyond 2 hours** — the model adds only 1.8 mg/dL of error between h120 and h360, thanks to physics-informed PK channels that anchor long-range predictions. The PKGroupedEncoder achieves **+22 points Zone A** and **16× fewer dangerous predictions** compared to the Ridge baseline (EXP-929). Standard MSE training outperforms Clarke-aware loss functions; the Clarke grid serves as an evaluation metric, not a training signal.
 
 ---
 
@@ -23,15 +23,17 @@ The routed MAE curve (best window per horizon) shows a characteristic diminishin
 
 | Horizon | MAE (mg/dL) | Best Window | Clinical Grade |
 |---------|-------------|-------------|----------------|
-| h30     | 11.1        | w48         | Bolus-grade    |
-| h60     | 14.2        | w48         | Bolus-grade    |
-| h90     | 16.1        | w48         | Basal-grade    |
-| h120    | 17.4        | w48         | Basal-grade    |
-| h150    | 17.9        | w96         | Basal-grade    |
-| h180    | 18.5        | w96         | Eating-soon    |
-| h240    | 20.0        | w96         | Basal-grade    |
+| h30     | 13.3        | w48         | Bolus-grade    |
+| h60     | 16.3        | w48         | Basal-grade    |
+| h90     | 18.3        | w48         | Basal-grade    |
+| h120    | 19.0        | w48         | Basal-grade    |
+| h150    | 19.6        | w96         | Basal-grade    |
+| h180    | 19.7        | w96         | Basal-grade    |
+| h240    | 19.7        | w96         | Basal-grade    |
 | h300    | 20.2        | w144        | Basal-grade    |
-| h360    | 21.9        | w144        | Eating-soon    |
+| h360    | 20.8        | w144        | Basal-grade    |
+
+*MAE measured on held-out verification data (EXP-1401). Training MAE (EXP-619) was slightly lower at short horizons (11.1 h30) and comparable at long horizons (21.9 h360).*
 
 **Window routing**: shorter windows (w48=2h) excel at near-term precision; longer windows (w96=4h, w144=6h) provide the extended context needed for multi-hour forecasts. The routing system automatically selects the best window per horizon.
 
@@ -43,23 +45,24 @@ The routed MAE curve (best window per horizon) shows a characteristic diminishin
 
 ![Clarke Zones by Horizon](fig2_clarke_zones_by_horizon.png)
 
-Clarke zone percentages estimated from EXP-619 MAE, calibrated against EXP-929 measured results:
+Clarke zone percentages **measured** on held-out verification data (EXP-1401, PKGroupedEncoder):
 
 | Horizon | Zone A | Zone A+B | Zone C | Zone D+E |
 |---------|--------|----------|--------|----------|
-| h30     | ~84%   | ~98%     | ~0%    | ~2%      |
-| h60     | ~80%   | ~97%     | ~0%    | ~3%      |
-| h90     | ~78%   | ~96%     | ~1%    | ~3%      |
-| h120    | ~76%   | ~96%     | ~1%    | ~3%      |
-| h180    | ~75%   | ~95%     | ~2%    | ~3%      |
-| h240    | ~73%   | ~94%     | ~2%    | ~4%      |
-| h360    | ~71%   | ~93%     | ~2%    | ~4%      |
+| h30     | 90.6%  | 98.0%    | 1.8%   | 0.2%     |
+| h60     | 86.6%  | 96.2%    | 3.5%   | 0.3%     |
+| h90     | 84.9%  | 95.0%    | 4.5%   | 0.5%     |
+| h120    | 83.1%  | 94.8%    | 4.6%   | 0.6%     |
+| h150    | 81.3%  | 93.9%    | 5.5%   | 0.6%     |
+| h180    | 81.3%  | 93.9%    | 5.4%   | 0.7%     |
+| h240    | 80.9%  | 94.4%    | 4.9%   | 0.7%     |
+| h300    | 79.6%  | 93.8%    | 5.4%   | 0.8%     |
+| h360    | 78.7%  | 92.9%    | 6.2%   | 0.9%     |
 
-**Calibration**: Empirical fit from EXP-929 measured per-patient data (R²=0.877 for Zone A).
-Previous version used a Monte Carlo Gaussian model that overestimated Zone A by ~20% and
-underestimated Zone D+E by 4× — see commit history for the bug fix.
+**Ridge baseline comparison** (EXP-929, h60): Zone A=64.6%, A+B=91.5%, D+E=4.8%.
+The PKGroupedEncoder achieves +22 points Zone A and 16× fewer dangerous predictions.
 
-**Critical safety metric**: Zone D+E (dangerous errors — failure to detect hypo/hyper, or erroneous treatment) remains below 6% even at 6 hours, indicating the model rarely makes clinically dangerous predictions.
+**Critical safety metric**: Zone D+E (dangerous errors — failure to detect hypo/hyper, or erroneous treatment) remains **below 1%** at all horizons, confirming the model rarely makes clinically dangerous predictions.
 
 ---
 
@@ -69,25 +72,27 @@ underestimated Zone D+E by 4× — see commit history for the bug fix.
 
 ### Left Panel: Clarke Zone Distribution by Patient
 
-Patient variability is the dominant factor in Clarke performance:
+Patient variability is the dominant factor in Clarke performance. EXP-1401 measured results (PKGroupedEncoder, verification data):
 
 | Patient | Zone A | Zone A+B | Zone D+E | MAE (mg/dL) |
 |---------|--------|----------|----------|-------------|
-| k       | 87.9%  | 95.2%    | 4.6%     | 9.0         |
-| d       | 78.2%  | 97.6%    | 0.9%     | 19.0        |
-| j       | 69.5%  | 97.6%    | 0.9%     | 20.8        |
-| b       | 65.8%  | 91.9%    | 2.5%     | 29.7        |
-| e       | 63.2%  | 93.7%    | 2.0%     | 26.9        |
-| i       | 60.3%  | 85.1%    | 11.1%    | 31.6        |
-| g       | 59.8%  | 91.6%    | 5.3%     | 31.5        |
-| f       | 58.4%  | 89.8%    | 5.6%     | 31.8        |
-| a       | 56.4%  | 86.7%    | 5.4%     | 37.6        |
-| h       | 55.6%  | 91.3%    | 7.2%     | 27.9        |
-| c       | 55.7%  | 86.5%    | 7.0%     | 34.2        |
+| k       | 92.2%  | 96.3%    | 0.0%     | 7.2         |
+| f       | 91.8%  | 97.7%    | 0.5%     | 23.7        |
+| a       | 91.1%  | 98.3%    | 0.5%     | 15.7        |
+| e       | 90.7%  | 98.5%    | 0.0%     | 14.7        |
+| g       | 90.2%  | 97.4%    | 0.0%     | 12.0        |
+| d       | 88.2%  | 95.7%    | 0.0%     | 13.8        |
+| i       | 87.4%  | 97.2%    | 0.2%     | 15.9        |
+| c       | 86.4%  | 96.0%    | 0.6%     | 15.0        |
+| h       | 81.6%  | 94.9%    | 0.7%     | 15.4        |
+| b       | 80.9%  | 94.0%    | 0.0%     | 25.2        |
+| j       | 71.8%  | 92.6%    | 0.7%     | 20.1        |
+
+All 11 patients achieve **Zone A+B ≥ 92%** and **D+E ≤ 0.7%** — dramatically safer than the Ridge baseline where patient i had 11.1% D+E.
 
 ### Right Panel: MAE vs Clarke Zone A
 
-The linear relationship (A% ≈ −1.2×MAE + 97) provides a useful rule of thumb for estimating Clarke performance from MAE. Patient k is an outlier with exceptionally stable glucose (87.9% Zone A at only 9 mg/dL MAE).
+The linear relationship (A% ≈ −1.4×MAE + 107) provides a useful rule of thumb for estimating Clarke performance from MAE. The scatter plot shows both PKGroupedEncoder (EXP-1401, dark circles) and Ridge baseline (EXP-929, gray squares), demonstrating the dramatic shift from the lower-left to upper-left quadrant with the better model.
 
 ---
 
@@ -136,15 +141,17 @@ The clinical utility chart maps MAE to actionable decision categories:
 
 The Clarke Error Grid (Clarke et al., 1987) classifies glucose prediction errors into five clinical zones:
 
-| Zone | Clinical Meaning | EXP-929 h60 (Ridge) |
-|------|-----------------|---------------------|
-| **A** | Clinically accurate — would lead to correct treatment | 64.6% |
-| **B** | Benign error — would lead to no treatment or acceptable treatment | 26.9% |
-| **C** | Overcorrection — unnecessary treatment but not dangerous | 3.7% |
-| **D** | Dangerous failure to detect — would fail to identify hypo/hyper | 4.7% |
-| **E** | Erroneous treatment — would lead to opposite of needed treatment | 0.0% |
+| Zone | Clinical Meaning | EXP-1401 h60 (PKG) | EXP-929 h60 (Ridge) |
+|------|-----------------|---------------------|---------------------|
+| **A** | Clinically accurate — would lead to correct treatment | **86.6%** | 64.6% |
+| **B** | Benign error — would lead to no treatment or acceptable treatment | **9.6%** | 26.9% |
+| **C** | Overcorrection — unnecessary treatment but not dangerous | **3.5%** | 3.7% |
+| **D** | Dangerous failure to detect — would fail to identify hypo/hyper | **0.3%** | 4.7% |
+| **E** | Erroneous treatment — would lead to opposite of needed treatment | **0.0%** | 0.0% |
 
-**Note**: These are EXP-929 results from a Ridge regression baseline at h60, not the PKGroupedEncoder (EXP-619). PKGroupedEncoder has lower MAE (14.2 vs 27.3 mg/dL) and is expected to achieve better Clarke zone performance. A direct Clarke evaluation of EXP-619 would be needed to confirm.
+**EXP-1401** (PKGroupedEncoder, 5-seed ensemble, verification data) achieves **+22 points Zone A** and
+**16× fewer dangerous (D+E) predictions** compared to the Ridge baseline. The annotation box in the
+figure shows the measured PKGroupedEncoder results including MAE=16.3 mg/dL and MARD=11.6%.
 
 ---
 
@@ -162,13 +169,13 @@ Expressed as improvement over a horizon-matched naive last-value predictor (from
 
 | Horizon | Naive MAE | Model MAE | Skill |
 |---------|-----------|-----------|-------|
-| h30     | ~21       | 11.1      | 47%   |
-| h60     | ~32       | 14.2      | 56%   |
-| h90     | ~41       | 16.1      | 61%   |
-| h120    | ~48       | 17.4      | 64%   |
-| h180    | ~61       | 18.5      | 67%   |
-| h240    | ~71       | 20.0      | 72%   |
-| h360    | ~88       | 21.9      | 75%   |
+| h30     | ~21       | 13.3      | 37%   |
+| h60     | ~32       | 16.3      | 49%   |
+| h90     | ~41       | 18.3      | 55%   |
+| h120    | ~48       | 19.0      | 60%   |
+| h180    | ~61       | 19.7      | 68%   |
+| h240    | ~71       | 19.7      | 72%   |
+| h360    | ~88       | 20.8      | 76%   |
 
 Skill **increases** with horizon — the model retains **75% advantage** at 6 hours because the physics-informed PK features provide reliable future-state information that a naive predictor lacks entirely. The naive predictor's error grows as ~√horizon, while the model's PK channels give it sub-linear error growth.
 
@@ -192,14 +199,15 @@ The **bottleneck is information, not loss function**: with 76% of variance unexp
 
 ## 9. Key Findings
 
-1. **6-hour forecasts are clinically useful**: MAE of 21.9 mg/dL at h360 supports eating-soon mode, exercise planning, and trend guidance — but not bolus dosing
-2. **Error plateaus beyond 2 hours**: PK physics channels anchor long-range predictions, adding only +4.5 mg/dL from h120 to h360
-3. **Patient variability dominates**: 4× spread between best (k) and hardest (b) patients overshadows horizon effects
+1. **6-hour forecasts are clinically useful**: MAE of 20.8 mg/dL at h360 on verification data supports eating-soon mode, exercise planning, and trend guidance — but not bolus dosing
+2. **Error plateaus beyond 2 hours**: PK physics channels anchor long-range predictions, adding only +1.8 mg/dL from h120 to h360
+3. **Patient variability dominates**: 3× spread between best (k, MAE 7.2) and hardest (b, MAE 25.2) patients at h60 overshadows horizon effects
 4. **Clarke-aware training hurts**: standard MSE achieves better Clarke performance than any Clarke-weighted loss
-5. **A+B ≥ 93% estimated at all horizons**: empirical calibration suggests fewer than 1 in 10 predictions fall outside clinically acceptable zones (needs direct EXP-619 Clarke evaluation to confirm)
-6. **D+E 2–4% estimated**: clinically dangerous errors are uncommon but non-negligible — direct measurement needed
-7. **Forecast skill increases with horizon**: 47% at h30 → 75% at h360 (vs naive last-value predictor) because PK features give growing advantage
+5. **A+B ≥ 93% measured at all horizons**: EXP-1401 confirms fewer than 1 in 13 predictions fall outside clinically acceptable zones
+6. **D+E < 1% measured at all horizons**: clinically dangerous errors confirmed rare — 0.2% at h30 rising to only 0.9% at h360
+7. **Forecast skill increases with horizon**: 37% at h30 → 76% at h360 (vs naive last-value predictor) because PK features give growing advantage
 8. **Window routing matters**: w48 wins at h30–h120, w96 at h150–h240, w144 at h300–h360
+9. **PKGroupedEncoder >> Ridge**: +22 points Zone A, 16× fewer D+E at h60 — model architecture matters enormously for clinical safety
 
 ---
 
@@ -207,9 +215,10 @@ The **bottleneck is information, not loss function**: with 76% of variance unexp
 
 | Source | Description | Patients |
 |--------|-------------|----------|
-| EXP-619 | PKGroupedEncoder full-scale validation | 11 × 5 seeds × 4 windows |
+| EXP-619 | PKGroupedEncoder full-scale validation (training data) | 11 × 5 seeds × 4 windows |
 | EXP-637 | Multi-step prediction with naive baseline | 11 patients, h5–h60 |
 | EXP-929 | Clarke Error Grid evaluation (Ridge baseline, measured) | 11 patients, h60 |
+| **EXP-1401** | **Clarke Error Grid evaluation (PKGroupedEncoder, verification data)** | **11 patients, h30–h360** |
 | EXP-1043 | Clarke Error Grid analysis (ridge vs pipeline) | 11 patients, h60 |
 | EXP-135/295/1069 | Clarke-aware training experiments | 11 patients |
 
