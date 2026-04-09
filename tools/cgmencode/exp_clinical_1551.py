@@ -1767,6 +1767,7 @@ def exp_1561_meal_metabolic(patients):
                 'bolus_u': m.measurements['bolus_u'],
                 'is_announced': m.measurements.get('is_announced', False),
                 'hour_of_day': m.hour_of_day,
+                'day_of_week': m.day_of_week,
                 'duration_hours': round(duration_hours, 2),
             })
 
@@ -2002,6 +2003,7 @@ def _collect_meal_metabolic_records(patients, min_carbs, cluster_gap):
                 'bolus_u': m.measurements['bolus_u'],
                 'is_announced': m.measurements.get('is_announced', False),
                 'hour_of_day': m.hour_of_day,
+                'day_of_week': m.day_of_week,
                 'duration_hours': round(duration_hours, 2),
             })
     return records
@@ -2201,6 +2203,202 @@ def exp_1563_multi_config_metabolic(patients):
         'deltas_vs_baseline': deltas,
         'small_vs_large_meals': small_vs_large,
         '_config_records': config_results,  # internal, for viz
+    }
+
+
+def _weekday_weekend_periodicity(records):
+    """Compute periodicity metrics separately for weekdays vs weekends.
+
+    Returns dict with 'weekday', 'weekend', and 'comparison' sub-dicts.
+    day_of_week: 0=Monday … 6=Sunday.
+    """
+    if not records:
+        return {}
+
+    weekday_records = [r for r in records if r.get('day_of_week', 0) < 5]
+    weekend_records = [r for r in records if r.get('day_of_week', 0) >= 5]
+
+    results = {}
+    for label, subset in [('weekday', weekday_records), ('weekend', weekend_records)]:
+        if not subset:
+            results[label] = {'n': 0}
+            continue
+
+        hours = [r['hour_of_day'] for r in subset]
+        hist = np.zeros(24)
+        for h in hours:
+            hist[int(h) % 24] += 1
+        hist_norm = hist / max(hist.sum(), 1)
+
+        entropy = 0.0
+        for p in hist_norm:
+            if p > 0:
+                entropy -= p * np.log2(p)
+        max_entropy = np.log2(24)
+
+        peak_hour = int(np.argmax(hist))
+        peak_to_mean = float(hist.max() / max(hist.mean(), 1))
+
+        # Zone analysis
+        in_zone = 0
+        zone_detail = {}
+        for zone_name, (s, e) in MEALTIME_ZONES.items():
+            zone_meals = [r for r in subset if s <= r['hour_of_day'] < e]
+            in_zone += len(zone_meals)
+            zone_hours = [r['hour_of_day'] for r in zone_meals]
+            zone_detail[zone_name] = {
+                'n': len(zone_meals),
+                'mean_hour': round(float(np.mean(zone_hours)), 2) if zone_hours else None,
+                'std_hour': round(float(np.std(zone_hours)), 2) if len(zone_hours) >= 2 else None,
+            }
+
+        # Metabolic metrics
+        isf_norms = [r['isf_norm_excursion'] for r in subset if np.isfinite(r['isf_norm_excursion'])]
+        spectral = [r['spectral_power_per_hour'] for r in subset if np.isfinite(r['spectral_power_per_hour'])]
+
+        results[label] = {
+            'n': len(subset),
+            'entropy': round(entropy, 3),
+            'normalized_entropy': round(entropy / max_entropy, 3),
+            'peak_hour': peak_hour,
+            'peak_to_mean': round(peak_to_mean, 2),
+            'zone_fraction_pct': round(100 * in_zone / len(subset), 1),
+            'zones': zone_detail,
+            'hour_histogram': [int(x) for x in hist],
+            'mean_isf_norm': round(float(np.mean(isf_norms)), 3) if isf_norms else None,
+            'mean_spectral': round(float(np.mean(spectral)), 2) if spectral else None,
+            'median_hour': round(float(np.median(hours)), 1),
+        }
+
+    # Comparison
+    wd = results.get('weekday', {})
+    we = results.get('weekend', {})
+    if wd.get('n', 0) > 0 and we.get('n', 0) > 0:
+        results['comparison'] = {
+            'entropy_delta': round(we.get('normalized_entropy', 0) - wd.get('normalized_entropy', 0), 3),
+            'zone_fraction_delta': round(we.get('zone_fraction_pct', 0) - wd.get('zone_fraction_pct', 0), 1),
+            'peak_hour_shift': we.get('peak_hour', 0) - wd.get('peak_hour', 0),
+            'median_hour_shift': round(we.get('median_hour', 0) - wd.get('median_hour', 0), 1),
+            'meals_per_day_weekday': round(wd['n'] / 5, 1),  # normalized to days in week
+            'meals_per_day_weekend': round(we['n'] / 2, 1),
+        }
+
+    return results
+
+
+def _per_patient_dow_analysis(records):
+    """Per-patient weekday vs weekend breakdown."""
+    pat_names = sorted(set(r['patient'] for r in records))
+    per_patient = {}
+    for pat in pat_names:
+        pat_records = [r for r in records if r['patient'] == pat]
+        wd = [r for r in pat_records if r.get('day_of_week', 0) < 5]
+        we = [r for r in pat_records if r.get('day_of_week', 0) >= 5]
+
+        wd_hours = [r['hour_of_day'] for r in wd]
+        we_hours = [r['hour_of_day'] for r in we]
+
+        per_patient[pat] = {
+            'n_weekday': len(wd),
+            'n_weekend': len(we),
+            'weekday_mean_hour': round(float(np.mean(wd_hours)), 1) if wd_hours else None,
+            'weekend_mean_hour': round(float(np.mean(we_hours)), 1) if we_hours else None,
+            'hour_shift': round(float(np.mean(we_hours)) - float(np.mean(wd_hours)), 1)
+                if wd_hours and we_hours else None,
+            'weekday_std_hour': round(float(np.std(wd_hours)), 2) if len(wd_hours) >= 2 else None,
+            'weekend_std_hour': round(float(np.std(we_hours)), 2) if len(we_hours) >= 2 else None,
+        }
+
+        # ISF-norm comparison
+        wd_isf = [r['isf_norm_excursion'] for r in wd if np.isfinite(r['isf_norm_excursion'])]
+        we_isf = [r['isf_norm_excursion'] for r in we if np.isfinite(r['isf_norm_excursion'])]
+        if wd_isf and we_isf:
+            per_patient[pat]['weekday_isf_norm'] = round(float(np.mean(wd_isf)), 3)
+            per_patient[pat]['weekend_isf_norm'] = round(float(np.mean(we_isf)), 3)
+            per_patient[pat]['isf_norm_delta'] = round(float(np.mean(we_isf)) - float(np.mean(wd_isf)), 3)
+
+    return per_patient
+
+
+@register(1565, 'Weekday vs Weekend Meal Periodicity')
+def exp_1565_weekday_weekend_periodicity(patients):
+    """Test hypothesis: meal timing is bimodal (weekday vs weekend) with
+    different periodicity, meal timing shifts, and metabolic profiles.
+
+    Hypothesis: Weekend meals are later, less periodic (higher entropy),
+    and may have different ISF-norm / spectral power characteristics
+    (less structured eating, more snacking, different activity levels).
+    """
+    # Use therapy config for cleanest signal
+    records = _collect_meal_metabolic_records(patients, min_carbs=18.0, cluster_gap=18)
+    print(f"  {len(records)} meals (therapy config)")
+
+    # Check day_of_week coverage
+    dow_counts = [0] * 7
+    for r in records:
+        dow_counts[r.get('day_of_week', 0)] += 1
+    dow_labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    print(f"  DOW distribution: {dict(zip(dow_labels, dow_counts))}")
+
+    # Population-level weekday vs weekend
+    pop_analysis = _weekday_weekend_periodicity(records)
+
+    # Per-patient analysis
+    per_patient = _per_patient_dow_analysis(records)
+
+    # Per-config comparison (all 3 configs)
+    config_dow = {}
+    CONFIGS = {
+        'A_census_5g_30m':   {'min_carbs': 5.0,  'cluster_gap': 6},
+        'B_medium_5g_90m':   {'min_carbs': 5.0,  'cluster_gap': 18},
+        'C_therapy_18g_90m': {'min_carbs': 18.0, 'cluster_gap': 18},
+    }
+    for cfg_name, cfg in CONFIGS.items():
+        cfg_records = _collect_meal_metabolic_records(
+            patients, cfg['min_carbs'], cfg['cluster_gap'])
+        config_dow[cfg_name] = _weekday_weekend_periodicity(cfg_records)
+        wd = config_dow[cfg_name].get('weekday', {})
+        we = config_dow[cfg_name].get('weekend', {})
+        print(f"  {cfg_name}: WD entropy={wd.get('normalized_entropy', 'N/A')}, "
+              f"WE entropy={we.get('normalized_entropy', 'N/A')}, "
+              f"WD zone%={wd.get('zone_fraction_pct', 'N/A')}, "
+              f"WE zone%={we.get('zone_fraction_pct', 'N/A')}")
+
+    # Mealtime zone shift analysis
+    zone_shifts = {}
+    for zone_name in MEALTIME_ZONES:
+        wd_zone = pop_analysis.get('weekday', {}).get('zones', {}).get(zone_name, {})
+        we_zone = pop_analysis.get('weekend', {}).get('zones', {}).get(zone_name, {})
+        if wd_zone.get('mean_hour') is not None and we_zone.get('mean_hour') is not None:
+            zone_shifts[zone_name] = {
+                'weekday_mean_hour': wd_zone['mean_hour'],
+                'weekend_mean_hour': we_zone['mean_hour'],
+                'shift_minutes': round((we_zone['mean_hour'] - wd_zone['mean_hour']) * 60, 0),
+                'weekday_std': wd_zone.get('std_hour'),
+                'weekend_std': we_zone.get('std_hour'),
+            }
+
+    # Day-of-week meal rate (per day, normalized by number of each DOW in dataset)
+    # Approximate: ~26 weeks of data → ~26 of each DOW
+    total_days = sum(len(p['df']) for p in patients) / (288 * len(patients))  # rough days
+    weeks = total_days / 7
+    dow_rate = {}
+    for i, label in enumerate(dow_labels):
+        dow_rate[label] = round(dow_counts[i] / max(weeks, 1), 2)
+
+    return {
+        'experiment': 'EXP-1565',
+        'title': 'Weekday vs Weekend Meal Periodicity',
+        'n_patients': len(patients),
+        'n_meals': len(records),
+        'dow_distribution': dict(zip(dow_labels, dow_counts)),
+        'dow_meals_per_week': dow_rate,
+        'population': pop_analysis,
+        'per_patient': per_patient,
+        'zone_shifts': zone_shifts,
+        'config_comparison': {k: {kk: vv for kk, vv in v.items()}
+                              for k, v in config_dow.items()},
+        '_records': records,  # internal, for viz
     }
 
 
@@ -3295,8 +3493,282 @@ def generate_multiconfig_visualizations(results):
     plt.close()
     print("    ✓ fig20_periodicity_summary.png")
 
+
+def generate_weekday_weekend_visualizations(results):
+    """Generate EXP-1565 weekday vs weekend periodicity figures."""
+    if 1565 not in results:
+        return
+
+    r = results[1565]
+    records = r.get('_records', [])
+    if not records:
+        print("  ⚠ No _records for weekday/weekend viz")
+        return
+
+    os.makedirs(str(VIZ_DIR), exist_ok=True)
+
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
+    DOW_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    WD_COLOR = '#4C72B0'
+    WE_COLOR = '#C44E52'
+
+    weekday_recs = [rec for rec in records if rec.get('day_of_week', 0) < 5]
+    weekend_recs = [rec for rec in records if rec.get('day_of_week', 0) >= 5]
+
+    pop = r.get('population', {})
+    wd_hist = pop.get('weekday', {}).get('hour_histogram', [0] * 24)
+    we_hist = pop.get('weekend', {}).get('hour_histogram', [0] * 24)
+
+    # ── Figure 21: Weekday vs Weekend hourly histograms ──────────────
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5.5))
+    fig.suptitle('EXP-1565: Weekday vs Weekend Meal Timing',
+                 fontsize=13, fontweight='bold')
+
+    # Panel A: Overlay histograms (normalized)
+    ax = axes[0]
+    hours = np.arange(24)
+    wd_norm = np.array(wd_hist, dtype=float) / max(sum(wd_hist), 1)
+    we_norm = np.array(we_hist, dtype=float) / max(sum(we_hist), 1)
+    ax.bar(hours - 0.2, wd_norm, 0.4, label=f'Weekday (n={len(weekday_recs)})',
+           color=WD_COLOR, alpha=0.7)
+    ax.bar(hours + 0.2, we_norm, 0.4, label=f'Weekend (n={len(weekend_recs)})',
+           color=WE_COLOR, alpha=0.7)
+    for zone_name, (s, e) in MEALTIME_ZONES.items():
+        ax.axvspan(s - 0.5, e - 0.5, alpha=0.08, color='gold')
+        ax.text((s + e) / 2, ax.get_ylim()[1] * 0.9 if max(wd_norm) > 0 else 0.1,
+                zone_name.capitalize(), ha='center', fontsize=7, style='italic',
+                color='#8B6914')
+    ax.set_xlabel('Hour of Day')
+    ax.set_ylabel('Fraction of Meals')
+    ax.set_title('A) Normalized Hourly Distribution')
+    ax.set_xticks(range(0, 24, 3))
+    ax.legend(fontsize=8)
+    ax.grid(axis='y', alpha=0.3)
+
+    # Panel B: Difference (weekend - weekday)
+    ax = axes[1]
+    diff = we_norm - wd_norm
+    colors_diff = [WE_COLOR if d > 0 else WD_COLOR for d in diff]
+    ax.bar(hours, diff, color=colors_diff, alpha=0.7, edgecolor='black', linewidth=0.3)
+    ax.axhline(y=0, color='black', linewidth=0.8)
+    for zone_name, (s, e) in MEALTIME_ZONES.items():
+        ax.axvspan(s - 0.5, e - 0.5, alpha=0.08, color='gold')
+    ax.set_xlabel('Hour of Day')
+    ax.set_ylabel('Δ Fraction (Weekend − Weekday)')
+    ax.set_title('B) Weekend Shift Pattern')
+    ax.set_xticks(range(0, 24, 3))
+    ax.grid(axis='y', alpha=0.3)
+
+    # Panel C: DOW meal rate
+    ax = axes[2]
+    dow_dist = r.get('dow_distribution', {})
+    dow_counts = [dow_dist.get(d, 0) for d in DOW_LABELS]
+    bar_colors = [WD_COLOR] * 5 + [WE_COLOR] * 2
+    ax.bar(DOW_LABELS, dow_counts, color=bar_colors, alpha=0.8, edgecolor='black',
+           linewidth=0.5)
+    ax.set_xlabel('Day of Week')
+    ax.set_ylabel('Total Meals')
+    ax.set_title('C) Meals by Day of Week')
+    ax.grid(axis='y', alpha=0.3)
+    mean_wd = np.mean(dow_counts[:5]) if dow_counts[:5] else 0
+    mean_we = np.mean(dow_counts[5:]) if dow_counts[5:] else 0
+    ax.axhline(y=mean_wd, color=WD_COLOR, linestyle='--', alpha=0.5, label=f'WD mean={mean_wd:.0f}')
+    ax.axhline(y=mean_we, color=WE_COLOR, linestyle='--', alpha=0.5, label=f'WE mean={mean_we:.0f}')
+    ax.legend(fontsize=8)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig21_weekday_weekend_timing.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig21_weekday_weekend_timing.png")
+
+    # ── Figure 22: Per-patient weekday vs weekend comparison ─────────
+    per_patient = r.get('per_patient', {})
+    pat_names = sorted(per_patient.keys())
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5.5))
+    fig.suptitle('EXP-1565: Per-Patient Weekday vs Weekend Meal Patterns',
+                 fontsize=13, fontweight='bold')
+
+    # Panel A: Hour shift per patient
+    ax = axes[0]
+    shifts = [per_patient[p].get('hour_shift', 0) or 0 for p in pat_names]
+    bar_colors_shift = [WE_COLOR if s > 0 else WD_COLOR for s in shifts]
+    ax.barh(pat_names, shifts, color=bar_colors_shift, alpha=0.8, edgecolor='black',
+            linewidth=0.5)
+    ax.axvline(x=0, color='black', linewidth=0.8)
+    ax.set_xlabel('Mean Hour Shift (Weekend − Weekday)')
+    ax.set_title('A) Meal Timing Shift (hours)')
+    ax.grid(axis='x', alpha=0.3)
+    for i, (p, s) in enumerate(zip(pat_names, shifts)):
+        ax.text(s + (0.05 if s >= 0 else -0.05), i,
+                f'{s:+.1f}h', va='center', ha='left' if s >= 0 else 'right',
+                fontsize=8)
+
+    # Panel B: ISF-norm delta
+    ax = axes[1]
+    isf_deltas = [per_patient[p].get('isf_norm_delta', 0) or 0 for p in pat_names]
+    bar_colors_isf = [WE_COLOR if d > 0 else WD_COLOR for d in isf_deltas]
+    ax.barh(pat_names, isf_deltas, color=bar_colors_isf, alpha=0.8, edgecolor='black',
+            linewidth=0.5)
+    ax.axvline(x=0, color='black', linewidth=0.8)
+    ax.set_xlabel('ΔISF-Norm Excursion (Weekend − Weekday)')
+    ax.set_title('B) Excursion Severity Shift')
+    ax.grid(axis='x', alpha=0.3)
+    for i, (p, d) in enumerate(zip(pat_names, isf_deltas)):
+        ax.text(d + (0.02 if d >= 0 else -0.02), i,
+                f'{d:+.3f}', va='center', ha='left' if d >= 0 else 'right',
+                fontsize=8)
+
+    # Panel C: Meal count weekday vs weekend
+    ax = axes[2]
+    y_pos = np.arange(len(pat_names))
+    wd_counts_pp = [per_patient[p].get('n_weekday', 0) for p in pat_names]
+    we_counts_pp = [per_patient[p].get('n_weekend', 0) for p in pat_names]
+    ax.barh(y_pos - 0.2, wd_counts_pp, 0.35, label='Weekday', color=WD_COLOR, alpha=0.8)
+    ax.barh(y_pos + 0.2, we_counts_pp, 0.35, label='Weekend', color=WE_COLOR, alpha=0.8)
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(pat_names)
+    ax.set_xlabel('Meal Count')
+    ax.set_title('C) Meal Volume')
+    ax.legend(fontsize=8)
+    ax.grid(axis='x', alpha=0.3)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig22_per_patient_weekday_weekend.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig22_per_patient_weekday_weekend.png")
+
+    # ── Figure 23: Mealtime zone shift detail ────────────────────────
+    zone_shifts = r.get('zone_shifts', {})
+    if zone_shifts:
+        fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+        fig.suptitle('EXP-1565: Mealtime Zone Timing Shifts (Weekend vs Weekday)',
+                     fontsize=13, fontweight='bold')
+
+        zone_names = list(zone_shifts.keys())
+        zone_colors = {'breakfast': '#FF9F1C', 'lunch': '#2EC4B6', 'dinner': '#E71D36'}
+
+        # Panel A: Mean hour comparison
+        ax = axes[0]
+        x = np.arange(len(zone_names))
+        wd_means = [zone_shifts[z]['weekday_mean_hour'] for z in zone_names]
+        we_means = [zone_shifts[z]['weekend_mean_hour'] for z in zone_names]
+        ax.bar(x - 0.2, wd_means, 0.35, label='Weekday', color=WD_COLOR, alpha=0.8)
+        ax.bar(x + 0.2, we_means, 0.35, label='Weekend', color=WE_COLOR, alpha=0.8)
+        ax.set_xticks(x)
+        ax.set_xticklabels([z.capitalize() for z in zone_names])
+        ax.set_ylabel('Mean Hour')
+        ax.set_title('A) Mean Meal Time by Zone')
+        ax.legend(fontsize=8)
+        ax.grid(axis='y', alpha=0.3)
+        for i, z in enumerate(zone_names):
+            shift = zone_shifts[z]['shift_minutes']
+            ax.text(i, max(wd_means[i], we_means[i]) + 0.1,
+                    f'{shift:+.0f}min', ha='center', fontsize=9, fontweight='bold')
+
+        # Panel B: Shift in minutes
+        ax = axes[1]
+        shifts_min = [zone_shifts[z]['shift_minutes'] for z in zone_names]
+        bar_c = [zone_colors.get(z, 'gray') for z in zone_names]
+        bars = ax.bar([z.capitalize() for z in zone_names], shifts_min,
+                      color=bar_c, alpha=0.8, edgecolor='black')
+        ax.axhline(y=0, color='black', linewidth=0.8)
+        ax.set_ylabel('Shift (minutes)')
+        ax.set_title('B) Weekend Timing Shift')
+        ax.grid(axis='y', alpha=0.3)
+        for b, v in zip(bars, shifts_min):
+            ax.text(b.get_x() + b.get_width() / 2, v,
+                    f'{v:+.0f}m', ha='center',
+                    va='bottom' if v >= 0 else 'top',
+                    fontsize=11, fontweight='bold')
+
+        # Panel C: Std comparison (regularity)
+        ax = axes[2]
+        wd_stds = [zone_shifts[z].get('weekday_std', 0) or 0 for z in zone_names]
+        we_stds = [zone_shifts[z].get('weekend_std', 0) or 0 for z in zone_names]
+        ax.bar(x - 0.2, wd_stds, 0.35, label='Weekday', color=WD_COLOR, alpha=0.8)
+        ax.bar(x + 0.2, we_stds, 0.35, label='Weekend', color=WE_COLOR, alpha=0.8)
+        ax.set_xticks(x)
+        ax.set_xticklabels([z.capitalize() for z in zone_names])
+        ax.set_ylabel('Std(Hour)')
+        ax.set_title('C) Timing Regularity (lower=more regular)')
+        ax.legend(fontsize=8)
+        ax.grid(axis='y', alpha=0.3)
+
+        plt.tight_layout(rect=[0, 0, 1, 0.93])
+        plt.savefig(str(VIZ_DIR / 'fig23_zone_shift_detail.png'), dpi=150)
+        plt.close()
+        print("    ✓ fig23_zone_shift_detail.png")
+
+    # ── Figure 24: Weekday vs weekend metabolic comparison ───────────
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+    fig.suptitle('EXP-1565: Weekday vs Weekend Metabolic Profile',
+                 fontsize=13, fontweight='bold')
+
+    wd_isf = [rec['isf_norm_excursion'] for rec in weekday_recs
+              if np.isfinite(rec['isf_norm_excursion'])]
+    we_isf = [rec['isf_norm_excursion'] for rec in weekend_recs
+              if np.isfinite(rec['isf_norm_excursion'])]
+    wd_spec = [rec['spectral_power_per_hour'] for rec in weekday_recs
+               if np.isfinite(rec['spectral_power_per_hour'])]
+    we_spec = [rec['spectral_power_per_hour'] for rec in weekend_recs
+               if np.isfinite(rec['spectral_power_per_hour'])]
+    wd_net = [rec['net_flux_mean'] for rec in weekday_recs
+              if np.isfinite(rec['net_flux_mean'])]
+    we_net = [rec['net_flux_mean'] for rec in weekend_recs
+              if np.isfinite(rec['net_flux_mean'])]
+
+    # Panel A: ISF-norm box
+    ax = axes[0]
+    if wd_isf and we_isf:
+        bp = ax.boxplot([wd_isf, we_isf], tick_labels=['Weekday', 'Weekend'],
+                        patch_artist=True, showfliers=False)
+        bp['boxes'][0].set_facecolor(WD_COLOR)
+        bp['boxes'][0].set_alpha(0.4)
+        bp['boxes'][1].set_facecolor(WE_COLOR)
+        bp['boxes'][1].set_alpha(0.4)
+    ax.set_ylabel('ISF-Norm Excursion')
+    ax.set_title('A) ISF-Normalized Excursion')
+    ax.grid(axis='y', alpha=0.3)
+
+    # Panel B: Spectral power box
+    ax = axes[1]
+    if wd_spec and we_spec:
+        bp = ax.boxplot([wd_spec, we_spec], tick_labels=['Weekday', 'Weekend'],
+                        patch_artist=True, showfliers=False)
+        bp['boxes'][0].set_facecolor(WD_COLOR)
+        bp['boxes'][0].set_alpha(0.4)
+        bp['boxes'][1].set_facecolor(WE_COLOR)
+        bp['boxes'][1].set_alpha(0.4)
+        ax.set_yscale('log')
+    ax.set_ylabel('Spectral Power / Hour')
+    ax.set_title('B) Supply×Demand Spectral Power')
+    ax.grid(axis='y', alpha=0.3)
+
+    # Panel C: Net flux box
+    ax = axes[2]
+    if wd_net and we_net:
+        bp = ax.boxplot([wd_net, we_net], tick_labels=['Weekday', 'Weekend'],
+                        patch_artist=True, showfliers=False)
+        bp['boxes'][0].set_facecolor(WD_COLOR)
+        bp['boxes'][0].set_alpha(0.4)
+        bp['boxes'][1].set_facecolor(WE_COLOR)
+        bp['boxes'][1].set_alpha(0.4)
+    ax.set_ylabel('Net Flux Mean')
+    ax.set_title('C) Net Flux (>0 = carb-dominant)')
+    ax.grid(axis='y', alpha=0.3)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig24_weekday_weekend_metabolic.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig24_weekday_weekend_metabolic.png")
+
+
 def main():
-    parser = argparse.ArgumentParser(description='EXP-1551-1563: Natural Experiment Census')
+    parser = argparse.ArgumentParser(description='EXP-1551-1565: Natural Experiment Census')
     parser.add_argument('--exp', type=int, default=0, help='Run single experiment (0=all)')
     parser.add_argument('--max-patients', type=int, default=11)
     parser.add_argument('--patients-dir', type=str, default=None)
@@ -3352,6 +3824,8 @@ def main():
                     skip_keys.add('meal_records')
                 if exp_id == 1563:
                     skip_keys.add('_config_records')
+                if exp_id == 1565:
+                    skip_keys.add('_records')
                 save_result = {k: v for k, v in result.items() if k not in skip_keys}
                 json.dump(save_result, f, indent=2, default=str)
             print(f"  ✓ Saved → {out_path}  ({elapsed:.1f}s)")
@@ -3384,6 +3858,11 @@ def main():
             generate_multiconfig_visualizations(all_results)
         except Exception as e:
             print(f"  Multi-config visualization error: {e}")
+            traceback.print_exc()
+        try:
+            generate_weekday_weekend_visualizations(all_results)
+        except Exception as e:
+            print(f"  Weekday/weekend visualization error: {e}")
             traceback.print_exc()
 
     # Summary
@@ -3463,10 +3942,38 @@ def main():
                           f"spectral={data['median_spectral_power']:.1f}, "
                           f"ann%={data['pct_announced']:.1f}")
 
+    if 1565 in all_results and 'population' in all_results[1565]:
+        pop = all_results[1565]['population']
+        wd = pop.get('weekday', {})
+        we = pop.get('weekend', {})
+        print(f"\n  Weekday vs Weekend Periodicity (EXP-1565):")
+        print(f"  {'':15s} {'Weekday':>10s} {'Weekend':>10s} {'Delta':>10s}")
+        print(f"  {'─'*48}")
+        print(f"  {'Meals':15s} {wd.get('n', 0):10d} {we.get('n', 0):10d} "
+              f"{'':>10s}")
+        print(f"  {'Entropy':15s} {wd.get('normalized_entropy', 0):10.3f} "
+              f"{we.get('normalized_entropy', 0):10.3f} "
+              f"{we.get('normalized_entropy', 0) - wd.get('normalized_entropy', 0):+10.3f}")
+        print(f"  {'Zone%':15s} {wd.get('zone_fraction_pct', 0):10.1f} "
+              f"{we.get('zone_fraction_pct', 0):10.1f} "
+              f"{we.get('zone_fraction_pct', 0) - wd.get('zone_fraction_pct', 0):+10.1f}")
+        print(f"  {'Peak Hour':15s} {wd.get('peak_hour', 0):10d} "
+              f"{we.get('peak_hour', 0):10d} "
+              f"{we.get('peak_hour', 0) - wd.get('peak_hour', 0):+10d}")
+        print(f"  {'ISF-Norm':15s} {wd.get('mean_isf_norm', 0):10.3f} "
+              f"{we.get('mean_isf_norm', 0):10.3f} "
+              f"{(we.get('mean_isf_norm', 0) or 0) - (wd.get('mean_isf_norm', 0) or 0):+10.3f}")
+        zs = all_results[1565].get('zone_shifts', {})
+        if zs:
+            print(f"\n  Mealtime Zone Shifts (weekend - weekday):")
+            for zone_name, zd in zs.items():
+                print(f"    {zone_name.capitalize():12s}: {zd['shift_minutes']:+.0f} min "
+                      f"(WD={zd['weekday_mean_hour']:.1f}h, WE={zd['weekend_mean_hour']:.1f}h)")
+
     # Save combined results
     combined_path = RESULTS_DIR / 'exp-1551_natural_experiments_combined.json'
     save_combined = {}
-    skip_large = {'all_experiments', 'meal_records', '_config_records'}
+    skip_large = {'all_experiments', 'meal_records', '_config_records', '_records'}
     for k, v in all_results.items():
         save_combined[k] = {kk: vv for kk, vv in v.items() if kk not in skip_large}
     with open(str(combined_path), 'w') as f:
