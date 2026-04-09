@@ -296,7 +296,7 @@ def advise_isf(clinical: ClinicalReport,
     if clinical.isf_discrepancy is None or clinical.isf_discrepancy < 1.5:
         return None  # Discrepancy not significant
 
-    isf_vals = [e.get('value', e.get('sensitivity', 50)) for e in profile.isf_schedule]
+    isf_vals = [e.get('value', e.get('sensitivity', 50)) for e in profile.isf_mgdl()]
     current_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
     effective = clinical.effective_isf or current_isf
 
@@ -462,7 +462,7 @@ def advise_isf_segmented(glucose: np.ndarray,
         return []
 
     isf_by_hour = patterns.isf_by_hour
-    isf_vals = [e.get('value', e.get('sensitivity', 50)) for e in profile.isf_schedule]
+    isf_vals = [e.get('value', e.get('sensitivity', 50)) for e in profile.isf_mgdl()]
     current_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
 
     recs = []

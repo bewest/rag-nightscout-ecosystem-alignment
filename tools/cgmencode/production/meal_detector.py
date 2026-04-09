@@ -115,7 +115,7 @@ def detect_meal_events(glucose: np.ndarray,
     events.append((current_start, current_end))
 
     # ── Step 3: Classify and size each event ──────────────────────
-    isf = _median_value(profile.isf_schedule, 'value', 'sensitivity', default=50.0)
+    isf = _median_value(profile.isf_mgdl(), 'value', 'sensitivity', default=50.0)
     cr = _median_value(profile.cr_schedule, 'value', 'carbratio', default=10.0)
 
     meals = []

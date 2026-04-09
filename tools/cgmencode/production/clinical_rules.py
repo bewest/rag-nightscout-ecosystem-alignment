@@ -863,7 +863,7 @@ def generate_clinical_report(glucose: np.ndarray,
         else:
             effective_isf = compute_effective_isf(glucose, bolus, profile)
     profile_isf_vals = [e.get('value', e.get('sensitivity', 50))
-                        for e in profile.isf_schedule if e.get('value') or e.get('sensitivity')]
+                        for e in profile.isf_mgdl() if e.get('value') or e.get('sensitivity')]
     profile_isf = float(np.median(profile_isf_vals)) if profile_isf_vals else None
     isf_discrepancy = (effective_isf / profile_isf
                        if effective_isf and profile_isf and profile_isf > 0

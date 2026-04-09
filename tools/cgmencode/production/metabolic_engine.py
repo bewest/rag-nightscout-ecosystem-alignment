@@ -94,8 +94,8 @@ def compute_metabolic_state(patient: PatientData) -> MetabolicState:
     hours = _extract_hours(patient.timestamps)
     profile = patient.profile
 
-    # Extract scalar ISF and CR from profile schedules
-    isf = _median_schedule_value(profile.isf_schedule, default=50.0)
+    # Extract scalar ISF (always mg/dL) and CR from profile schedules
+    isf = _median_schedule_value(profile.isf_mgdl(), default=50.0)
     cr = _median_schedule_value(profile.cr_schedule, default=10.0)
 
     # ── Hepatic production ────────────────────────────────────────

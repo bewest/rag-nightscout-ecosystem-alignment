@@ -153,15 +153,53 @@ class CompensationType(str, Enum):
 
 # ── Input Data ────────────────────────────────────────────────────────
 
+MMOL_TO_MGDL = 18.0182
+
+
 @dataclass
 class PatientProfile:
-    """Therapy settings from Nightscout profile.json."""
+    """Therapy settings from Nightscout profile.json.
+
+    ISF may arrive in mg/dL or mmol/L depending on the Nightscout profile.
+    Use ``isf_mgdl()`` to always get values in mg/dL.
+    """
     isf_schedule: List[Dict]       # [{time: "00:00", value: 50}, ...]
     cr_schedule: List[Dict]        # [{time: "00:00", value: 10}, ...]
     basal_schedule: List[Dict]     # [{time: "00:00", value: 0.8}, ...]
     dia_hours: float = 5.0
     target_low: float = 70.0
     target_high: float = 180.0
+    units: str = 'mg/dL'          # 'mg/dL' or 'mmol/L'
+
+    @property
+    def is_mmol(self) -> bool:
+        return 'mmol' in self.units.lower()
+
+    def isf_mgdl(self) -> List[Dict]:
+        """Return ISF schedule guaranteed in mg/dL.
+
+        Uses explicit ``units`` field if available. Falls back to
+        auto-detection: any schedule where ALL values < 15 is treated
+        as mmol/L (research heuristic from exp_metabolic_flux.py).
+        """
+        need_convert = self.is_mmol
+        if not need_convert and self.units == 'mg/dL':
+            # Auto-detect: if all ISF values < 15, almost certainly mmol/L
+            vals = [e.get('value') or e.get('sensitivity')
+                    for e in self.isf_schedule]
+            vals = [v for v in vals if v is not None]
+            if vals and all(v < 15 for v in vals):
+                need_convert = True
+        if not need_convert:
+            return self.isf_schedule
+        out = []
+        for entry in self.isf_schedule:
+            e = dict(entry)
+            for key in ('value', 'sensitivity'):
+                if key in e and e[key] is not None:
+                    e[key] = e[key] * MMOL_TO_MGDL
+            out.append(e)
+        return out
 
 
 @dataclass

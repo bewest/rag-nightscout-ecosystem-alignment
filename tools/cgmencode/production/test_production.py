@@ -165,6 +165,82 @@ class TestEnumContracts(unittest.TestCase):
                                      f"{enum_cls.__name__}.{member.name}")
 
 
+class TestPatientProfileUnits(unittest.TestCase):
+    """PatientProfile mmol/L ↔ mg/dL conversion for ISF."""
+
+    def test_mgdl_profile_passthrough(self):
+        """mg/dL profile returns ISF unchanged."""
+        profile = PatientProfile(
+            isf_schedule=[{"time": "00:00", "value": 50.0}],
+            cr_schedule=[{"time": "00:00", "value": 10.0}],
+            basal_schedule=[{"time": "00:00", "value": 0.8}],
+            units='mg/dL',
+        )
+        result = profile.isf_mgdl()
+        self.assertAlmostEqual(result[0]['value'], 50.0)
+
+    def test_mmol_profile_converts(self):
+        """mmol/L profile converts ISF to mg/dL."""
+        profile = PatientProfile(
+            isf_schedule=[{"time": "00:00", "value": 2.7}],
+            cr_schedule=[{"time": "00:00", "value": 4.0}],
+            basal_schedule=[{"time": "00:00", "value": 0.8}],
+            units='mmol/L',
+        )
+        result = profile.isf_mgdl()
+        self.assertAlmostEqual(result[0]['value'], 2.7 * 18.0182, places=1)
+
+    def test_autodetect_small_isf(self):
+        """Auto-detect mmol/L when all ISF values < 15 even if units say mg/dL."""
+        profile = PatientProfile(
+            isf_schedule=[{"time": "00:00", "value": 2.7},
+                          {"time": "12:00", "value": 3.0}],
+            cr_schedule=[{"time": "00:00", "value": 4.0}],
+            basal_schedule=[{"time": "00:00", "value": 0.8}],
+            units='mg/dL',  # mislabeled or default
+        )
+        result = profile.isf_mgdl()
+        self.assertGreater(result[0]['value'], 40)  # converted to mg/dL
+
+    def test_no_false_autodetect_large_isf(self):
+        """ISF=50 mg/dL should NOT trigger auto-detect."""
+        profile = make_profile()  # ISF=50
+        result = profile.isf_mgdl()
+        self.assertAlmostEqual(result[0]['value'], 50.0)
+
+    def test_is_mmol_property(self):
+        p1 = PatientProfile(
+            isf_schedule=[], cr_schedule=[], basal_schedule=[],
+            units='mmol/L')
+        p2 = PatientProfile(
+            isf_schedule=[], cr_schedule=[], basal_schedule=[],
+            units='mg/dL')
+        self.assertTrue(p1.is_mmol)
+        self.assertFalse(p2.is_mmol)
+
+    def test_sensitivity_key_also_converts(self):
+        """Nightscout profiles may use 'sensitivity' instead of 'value'."""
+        profile = PatientProfile(
+            isf_schedule=[{"time": "00:00", "sensitivity": 2.7}],
+            cr_schedule=[{"time": "00:00", "value": 4.0}],
+            basal_schedule=[{"time": "00:00", "value": 0.8}],
+            units='mmol/L',
+        )
+        result = profile.isf_mgdl()
+        self.assertAlmostEqual(result[0]['sensitivity'], 2.7 * 18.0182, places=1)
+
+    def test_cr_unaffected_by_units(self):
+        """CR schedule should NOT be converted — it's always g/U."""
+        profile = PatientProfile(
+            isf_schedule=[{"time": "00:00", "value": 2.7}],
+            cr_schedule=[{"time": "00:00", "value": 4.0}],
+            basal_schedule=[{"time": "00:00", "value": 0.8}],
+            units='mmol/L',
+        )
+        # CR should remain 4.0
+        self.assertEqual(profile.cr_schedule[0]['value'], 4.0)
+
+
 class TestPatientDataContracts(unittest.TestCase):
     """PatientData invariants: computed properties, optional degradation."""
 
@@ -867,6 +943,25 @@ class TestPipelineRegression(unittest.TestCase):
                 self.assertIsInstance(result.clinical_report.tir, float)
                 self.assertGreaterEqual(result.clinical_report.tir, 0.0)
                 self.assertLessEqual(result.clinical_report.tir, 1.0)
+
+
+    def test_pipeline_mmol_profile(self):
+        """Pipeline works correctly with mmol/L ISF profile (patient a)."""
+        profile = PatientProfile(
+            isf_schedule=[{"time": "00:00", "value": 2.7}],
+            cr_schedule=[{"time": "00:00", "value": 4.0}],
+            basal_schedule=[{"time": "00:00", "value": 0.8}],
+            dia_hours=5.0,
+            units='mmol/L',
+        )
+        patient = make_patient(n=4320, with_insulin=True, patient_id="synth_mmol")
+        patient.profile = profile
+        result = self.run(patient)
+        self.assertIsInstance(result, PipelineResult)
+        # ISF in clinical report should be in mg/dL range (>15)
+        if result.clinical_report.profile_isf is not None:
+            self.assertGreater(result.clinical_report.profile_isf, 15,
+                               "profile_isf should be in mg/dL, not mmol/L")
 
 
 # ── Runner ────────────────────────────────────────────────────────────
