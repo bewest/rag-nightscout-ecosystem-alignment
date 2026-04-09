@@ -686,8 +686,8 @@ def exp_1536(patients):
                     pp_rmse, pp_ce / pp_days)
                 if pp_rmse is not None else 'Insufficient data',
             }
-            print(f"  {p['name']}: Fasting R²={fasting_r2:.3f if fasting_r2 else 0:.3f}  "
-                  f"Postprandial R²={pp_r2:.3f if pp_r2 else 0:.3f}")
+            print(f"  {p['name']}: Fasting R²={fasting_r2 if fasting_r2 is not None else 0:.3f}  "
+                  f"Postprandial R²={pp_r2 if pp_r2 is not None else 0:.3f}")
         except Exception as e:
             print(f"  {p['name']}: FAILED — {e}")
 
