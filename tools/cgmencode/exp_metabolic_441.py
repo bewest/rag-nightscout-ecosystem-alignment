@@ -67,7 +67,51 @@ RESULTS_DIR = Path(__file__).parent.parent.parent / 'externals' / 'experiments'
 
 # ── Core: Supply-Demand Decomposition ─────────────────────────────────
 
-def compute_supply_demand(df, pk_array=None):
+# Hepatic base rate from compute_hepatic_production() in continuous_pk.py.
+# This is a universal constant (1.5 mg/dL per 5-min step at zero insulin),
+# used as the reference for patient-specific demand calibration.
+_HEPATIC_BASE_RATE = 1.5  # mg/dL per 5-min step
+
+
+def _compute_demand_calibration(df):
+    """Compute patient-specific demand calibration factor.
+
+    The demand formula (insulin_activity × 5min × ISF) is dimensionally correct
+    but produces values inconsistent with the hepatic production model, because:
+
+      - ISF (Insulin Sensitivity Factor) from the patient's therapy profile
+        represents the TOTAL glucose drop from 1U over its full DIA (5 hours)
+      - The hepatic base rate (1.5 mg/dL/step) is a fixed physiological constant
+      - At steady state: demand_per_step = (basal_U_h × ISF) / 12
+        but hepatic_per_step = 1.5 (constant)
+
+    For patients with high basal × ISF product (e.g., 125 for patient i),
+    uncalibrated demand exceeds hepatic by 10×, making the model predict
+    rapidly falling glucose even during stable fasting — which is unphysical.
+
+    The calibration factor = hepatic_base / demand_at_scheduled_basal ensures
+    that at the patient's scheduled basal rate, insulin demand equals hepatic
+    glucose production — the definition of metabolic steady state.
+
+    Returns:
+        float: multiplicative factor for demand (typically 0.14–1.12)
+    """
+    isf = _extract_isf_scalar(df)
+
+    basal_sched = df.attrs.get('basal_schedule', [])
+    if basal_sched:
+        vals = [e.get('value', e.get('rate', 0.5)) for e in basal_sched]
+        mean_basal = float(np.mean(vals))
+    else:
+        mean_basal = 0.5  # conservative default
+
+    demand_at_basal = mean_basal * isf / 12.0  # mg/dL per step at steady state
+    if demand_at_basal < 0.01:
+        return 1.0
+    return _HEPATIC_BASE_RATE / demand_at_basal
+
+
+def compute_supply_demand(df, pk_array=None, calibrate=True):
     """Decompose glucose dynamics into supply and demand harmonics.
 
     Supply = hepatic_production + carb_absorption (glucose appearance, always > 0)
@@ -80,6 +124,11 @@ def compute_supply_demand(df, pk_array=None):
             and attrs containing isf_schedule, cr_schedule, basal_schedule
         pk_array: Optional (N, 8) PK array. If provided, extracts channels
                   directly (faster). Otherwise recomputes from df.
+        calibrate: If True (default), apply patient-specific demand calibration
+            so that demand ≈ hepatic production at the patient's scheduled basal
+            rate. This corrects for the mismatch between the fixed hepatic base
+            rate (1.5 mg/dL/step) and the patient-specific basal × ISF product.
+            Set to False to reproduce legacy (uncalibrated) behavior.
 
     Returns:
         dict with keys:
@@ -91,6 +140,7 @@ def compute_supply_demand(df, pk_array=None):
             ratio: (N,) supply / demand (balance, >1 rising, <1 falling)
             sum_flux: (N,) |supply - demand| + hepatic (original-style for comparison)
             net: (N,) supply - demand (signed, same as net_balance)
+            demand_calibration: float, the calibration factor applied (1.0 if uncalibrated)
     """
     N = len(df)
 
@@ -154,6 +204,11 @@ def compute_supply_demand(df, pk_array=None):
         delta_iob[1:] = iob[:-1] - iob[1:]  # positive = insulin being absorbed
         demand = np.abs(delta_iob * isf)
 
+    # Patient-specific demand calibration: scale demand so that at the
+    # patient's scheduled basal rate, demand ≈ hepatic base rate.
+    demand_cal = _compute_demand_calibration(df) if calibrate else 1.0
+    demand = demand * demand_cal
+
     # Ensure non-negative
     supply = np.maximum(supply, 0)
     demand = np.maximum(demand, 0)
@@ -181,6 +236,7 @@ def compute_supply_demand(df, pk_array=None):
         'ratio': ratio,
         'sum_flux': sum_flux,
         'net': net,
+        'demand_calibration': demand_cal,
     }
 
 
