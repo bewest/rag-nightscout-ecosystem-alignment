@@ -68,10 +68,11 @@ def _extract_hours(timestamps: np.ndarray) -> np.ndarray:
     try:
         import pandas as pd
         dt = pd.to_datetime(timestamps, unit='ms')
-        return dt.hour + dt.minute / 60.0
+        return np.asarray(dt.hour + dt.minute / 60.0, dtype=np.float64)
     except Exception:
         # Fallback: assume timestamps are already in seconds or ms
-        seconds = timestamps / 1000.0 if timestamps.max() > 1e12 else timestamps
+        ts = np.asarray(timestamps, dtype=np.float64)
+        seconds = ts / 1000.0 if ts.max() > 1e12 else ts
         return (seconds % 86400) / 3600.0
 
 
@@ -127,7 +128,7 @@ def compute_metabolic_state(patient: PatientData) -> MetabolicState:
     # Ensure non-negative
     supply = np.maximum(supply, 0.0)
     demand = np.maximum(demand, 0.0)
-    net_flux = supply - demand
+    net_flux = np.asarray(supply - demand, dtype=np.float64)
 
     # ── Residual: actual ΔBG vs physics prediction ────────────────
     bg_decay = (_DECAY_TARGET - glucose) * _DECAY_RATE
