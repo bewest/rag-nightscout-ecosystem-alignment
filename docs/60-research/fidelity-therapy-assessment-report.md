@@ -12,7 +12,7 @@ Traditional diabetes therapy assessment grades patients against ADA consensus ta
 
 1. **ADA grades mask calibration quality**: Patient h (ADA=C, TIR=85%) has better physics fidelity than patient c (ADA=B, TIR=62%). ADA penalizes h for TBR while c's settings are more miscalibrated.
 
-2. **R² is universally negative** (mean=-0.495): The raw physics supply-demand model cannot predict per-timestep dBG/dt better than a constant — this is expected because ~76.5% of glucose rises are unannounced meals (EXP-1320). R² is a relative ranking signal, not an absolute quality metric.
+2. **R² is universally negative** (mean=-0.495): The raw physics supply-demand model cannot predict per-timestep dBG/dt better than a constant — this is expected because a large fraction of glucose rises are unmeasured. The EXP-1320 UAM analysis found 76.5% of glucose rises are unannounced meals using a broader metric (UAM threshold 1.0 mg/dL/5min); the fidelity context sees ~46.5% unmeasured meals using the supply-demand decomposition. R² is a relative ranking signal, not an absolute quality metric.
 
 3. **RMSE and correction energy are the actionable fidelity signals**: RMSE ranges 5.0–16.0 mg/dL per 5-min step; correction energy (∫|net_flux|) correlates r=0.94 with RMSE (p<0.001) but only r=-0.59 with TIR (p=0.054). Fidelity measures something **different** from glycemic outcomes.
 
@@ -82,11 +82,11 @@ High R² variability is not a weakness — it's a **feature**. Periods of high R
 | Patient | Fasting R² | Postprandial R² | Fasting RMSE | PP RMSE |
 |---------|-----------|-----------------|--------------|---------|
 | k | -0.104 | -0.146 | 5.06 | 4.88 |
-| g | -0.032 | -0.081 | 8.00 | 8.84 |
-| f | -0.063 | -0.089 | 7.23 | 8.52 |
-| i | -2.536 | -3.649 | 14.86 | 18.24 |
+| g | -0.032 | -0.081 | 6.11 | 9.92 |
+| f | -0.063 | -0.089 | 6.82 | 10.31 |
+| i | -2.536 | -3.649 | 15.05 | 21.97 |
 
-**All patients have worse postprandial R²** — confirming that carb ratio calibration and meal timing are the dominant error sources. Fasting periods better isolate basal rate fidelity.
+**Most patients have worse postprandial R²** — confirming that carb ratio calibration and meal timing are the dominant error sources. Two exceptions (patients c and e) have better postprandial R² (closer to zero), possibly due to lower fasting stability in those patients. Fasting periods better isolate basal rate fidelity.
 
 ## Fidelity Grading System
 

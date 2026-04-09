@@ -36,7 +36,7 @@ Established pre-integration baseline by measuring existing pipeline outputs with
 | j | 0% | 36% | 35% | 0.0/1.9% |
 | k | 0% | 5% | 25% | 0.0/1.6% |
 
-**Finding**: All events classified as EventType.NONE pre-integration. Hypo rates vary 2–10× between fasting and postprandial periods, motivating event-aware differentiation.
+**Finding**: All events classified as EventType.NONE pre-integration. Only 2/11 patients (g, i) have nonzero fasting hypo rates (5.0% and 7.1% respectively), while the rest show 0%. This limited differentiation motivates event-aware classification to better capture metabolic context.
 
 ### EXP-1542: Event State Enrichment
 
@@ -85,8 +85,8 @@ Compared baseline hypo predictor AUC-ROC against event-aware variant with fastin
 | j | 0.729 | 0.725 | -0.004 | 115 |
 | k | 0.729 | 0.729 | -0.000 | 719 |
 
-**Mean baseline AUC**: 0.760 ± 0.048
-**Mean event-aware AUC**: 0.759 ± 0.049
+**Mean baseline AUC**: 0.760 ± 0.047 (pop.) / 0.049 (sample)
+**Mean event-aware AUC**: 0.759 ± 0.048 (pop.) / 0.050 (sample)
 **Mean Δ**: -0.001
 
 **Finding**: Event-aware weighting provides negligible improvement (and slight degradation) to hypo prediction. The analytical hypo predictor already uses trend + flux + acceleration features that implicitly capture event context. **Conclusion**: Simple event-context weighting is insufficient — this is an area where ML (Batch 4) could provide meaningful lift through learned, non-linear feature interactions.
@@ -121,7 +121,7 @@ Measured alert suppression and enhancement from event context.
 |---------|--------------|------------|------------|----------|
 | Mean | 48.0 | 48.5 | 0 | 0.5 |
 
-**Finding**: Minimal impact — only 5 enhanced recommendations across 11 patients, zero suppressions. The current event classification produces states too coarsely for effective alert filtering. **Confirms Batch 4 hypothesis**: multi-stage alert filtering needs finer-grained event states and learned suppression thresholds.
+**Finding**: Minimal impact — only 5 enhanced recommendations across 11 patients, zero suppressions. Mean event alerts = 48.45 (rounds to 48.5). The current event classification produces states too coarsely for effective alert filtering. **Confirms Batch 4 hypothesis**: multi-stage alert filtering needs finer-grained event states and learned suppression thresholds.
 
 ### EXP-1546: Fidelity Assessment in Pipeline Context
 
@@ -171,7 +171,7 @@ Ran the complete production pipeline with fidelity assessment integrated.
 
 **Finding**: All pipeline stages execute successfully for all patients. Fidelity assessment integrates cleanly. Mean processing time: 34.8s per patient (~180 days of data each). Patient j processes fastest (17K steps vs 51K for others).
 
-**Note**: Pipeline fidelity grades differ slightly from EXP-1546 because the pipeline uses its own MetabolicState computation path vs the direct supply-demand path used in EXP-1546.
+**Note**: Pipeline fidelity grades differ materially from EXP-1546 — 5/11 grades change, and RMSE values diverge by 2–5× in some cases (e.g., patient f: 10.2→53.0, patient k: 5.5→10.2). This is because the pipeline uses its own MetabolicState computation path (including spike cleaning and different windowing) vs the direct supply-demand path used in EXP-1546. This discrepancy warrants investigation in future batches.
 
 ### EXP-1548: Integration Impact Measurement
 

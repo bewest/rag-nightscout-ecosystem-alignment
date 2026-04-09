@@ -35,7 +35,9 @@ The system isolates overnight periods (no meals, no corrections) and analyzes th
 | Basal too high | 1–2 patients | TBR > 5%, negative BG drift |
 | Basal slightly high | 2 patients | TBR 3–5%, modest negative drift |
 
-**Critical finding** (EXP-747): Effective ISF is **2.91× profile ISF** on average. AID systems compensate so aggressively that the ISF patients have configured understates their true insulin sensitivity by nearly 3×. Patient a: profile ISF = 49, effective ISF = 178 (3.65× ratio).
+**Critical finding** (EXP-747): Effective ISF is **2.91× profile ISF** on average using the total-insulin method. AID systems compensate so aggressively that the ISF patients have configured understates their true insulin sensitivity by nearly 3×. Patient a: profile ISF = 49, effective ISF = 178 (3.65× ratio).
+
+> **Methodological note**: Later analysis (EXP-1301) using response-curve fitting found a lower ratio of **1.36×** profile ISF. The total-insulin method degenerates when AID loop reduces basal during corrections (denominator→0). The 1.36× response-curve value is considered more reliable; see `therapy-advanced-report-2026-04-10.md`.
 
 ---
 
@@ -110,4 +112,4 @@ Reframing from "predict user behavior" to "assess physiological benefit" transfo
 
 ## Key Insight
 
-The most impactful finding is the **ISF discrepancy**: effective ISF is 2.91× the configured profile ISF. AID systems mask bad settings by compensating automatically — patients appear controlled (decent TIR) while the underlying settings are fundamentally wrong. The clinical rule engine exposes this hidden dysfunction by decomposing the AID's compensatory actions from the patient's underlying physiology.
+The most impactful finding is the **ISF discrepancy**: effective ISF is 2.91× the configured profile ISF (total-insulin method, EXP-747; revised to 1.36× via response-curve method in EXP-1301). AID systems mask bad settings by compensating automatically — patients appear controlled (decent TIR) while the underlying settings are fundamentally wrong. The clinical rule engine exposes this hidden dysfunction by decomposing the AID's compensatory actions from the patient's underlying physiology.

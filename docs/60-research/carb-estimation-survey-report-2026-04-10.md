@@ -128,7 +128,7 @@ CR is too high or the person regularly underreports carbs.
 
 ### What This Means for UAM Handling
 
-The ~4× difference between oref0 (22g) and Loop IRC (6g) in UAM cases explains
+The ~4× difference between oref0 (20g) and Loop IRC (5g) in UAM cases explains
 a known clinical observation: **AAPS/Trio respond faster to unannounced meals
 than Loop**.  Loop's PID-dampened IRC requires more evidence (higher glucose,
 longer duration) before it "believes" a significant meal is occurring.  oref0's

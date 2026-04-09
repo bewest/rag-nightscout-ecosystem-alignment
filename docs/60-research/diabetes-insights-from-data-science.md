@@ -73,7 +73,7 @@ These unmeasured hormones create a non-linear floor effect: glucose doesn't just
 
 ### 6. AID Systems Mask Bad Settings
 
-**Effective ISF is 2.91× profile ISF.** AID systems compensate so aggressively that the ISF patients have configured understates their true insulin sensitivity by nearly 3×.
+**Effective ISF is 2.91× profile ISF** (total-insulin method, EXP-747; revised to **1.36×** via response-curve method in EXP-1301). AID systems compensate so aggressively that the ISF patients have configured understates their true insulin sensitivity.
 
 This produces a paradox: patients appear controlled (decent TIR) while running fundamentally incorrect settings. The AID fights itself — aggressive settings cause lows, which trigger counter-regulatory rebounds, which trigger more aggressive corrections. Breaking the cycle requires reducing base settings, not more tuning.
 
@@ -132,7 +132,7 @@ The overnight batch (EXP-800–875) deepened these biological insights:
 |---------|---------------------------|
 | Dawn amplitude 71.3 mg/dL | Nighttime settings must differ from daytime |
 | ISF varies 29.7% by time of day | Time-segmented ISF profiles essential |
-| Effective ISF ≠ profile ISF (2.91×) | AID settings auditing needed |
+| Effective ISF ≠ profile ISF (2.91× total-insulin / 1.36× response-curve) | AID settings auditing needed |
 | 46.5% unannounced meals | UAM detection is the critical path |
 | Pre-bolus 6.5–28.9 min | System should encourage/track pre-bolus timing |
 | Population parameters 99.4% universal | Population defaults viable from day 1 |

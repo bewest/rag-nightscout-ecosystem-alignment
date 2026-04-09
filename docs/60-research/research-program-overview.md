@@ -62,7 +62,7 @@ Decomposed glucose into supply (carbs + hepatic) and demand (insulin) metabolic 
 
 4. **AR residual correction is data leakage at long horizons.** Two-stage Ridge+AR produces R²=0.941 at 60 min, but uses future glucose. Properly causal AR yields only +0.013.
 
-5. **Effective ISF is 2.91× profile ISF.** AID systems compensate so aggressively that configured settings wildly understate actual insulin sensitivity. The AID masks bad settings.
+5. **Effective ISF is 2.91× profile ISF** (total-insulin method, EXP-747; revised to **1.36×** via response-curve method in EXP-1301). AID systems compensate so aggressively that configured settings wildly understate actual insulin sensitivity. The AID masks bad settings.
 
 6. **46.5% of glucose rises are unannounced.** Nearly half of meal events have no carb entry. This is the irreducible blind spot for predictive detection.
 
