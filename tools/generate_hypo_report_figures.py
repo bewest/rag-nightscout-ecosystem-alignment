@@ -51,7 +51,7 @@ def fig1_fundamental_asymmetry():
     # Panel B: MAE and R² by glucose range
     ranges = ['In-range\n(80-120)', 'Below 80', 'Below 70\n(hypo)']
     mae_vals = [21.5, 26.6, 39.8]
-    r2_vals = [0.281, 0.153, 0.153]
+    r2_vals = [0.281, 0.153, 0.149]
     color_mae = '#e67e22'
     color_r2 = '#2ecc71'
     x2 = np.arange(len(ranges))
@@ -171,8 +171,8 @@ def fig3_patient_risk_landscape():
     axes[0].set_xlim(45, 100)
     axes[0].set_ylim(0, 12)
 
-    # Panel B: Recovery phenotypes
-    carb_treated = [0.7, 60.9, 0.4, 15.0, 10.0, 2.0, 5.0, 28.0, 4.4, 58.8, 3.0]
+    # Panel B: Recovery phenotypes (pct_carb_treated from EXP-1498)
+    carb_treated = [0.7, 60.9, 6.6, 2.0, 10.3, 2.1, 28.1, 14.2, 4.4, 58.8, 0.4]
     recovery_time = [20, 15, 15, 15, 15, 15, 15, 15, 25, 15, 15]
     phenotype_colors = ['#e74c3c' if ct < 20 else '#2ecc71' for ct in carb_treated]
     axes[1].scatter(carb_treated, recovery_time, s=[e / 2 for e in episodes],
@@ -236,10 +236,11 @@ def fig5_nocturnal_timing():
     """Nocturnal clustering of hypoglycemic events."""
     fig, ax = plt.subplots(figsize=(10, 5))
     hours = list(range(24))
-    # Distribution based on report data (peak at 0-3 AM)
-    hypo_density = [0.12, 0.14, 0.11, 0.09, 0.06, 0.05, 0.03, 0.02, 0.02, 0.02,
-                    0.02, 0.03, 0.04, 0.03, 0.03, 0.03, 0.02, 0.03, 0.03, 0.03,
-                    0.02, 0.03, 0.05, 0.08]
+    # Distribution based on report data (peak at 0-3 AM); normalized to sum ≈ 1.0
+    hypo_density = np.array([0.12, 0.14, 0.11, 0.09, 0.06, 0.05, 0.03, 0.02, 0.02, 0.02,
+                             0.02, 0.03, 0.04, 0.03, 0.03, 0.03, 0.02, 0.03, 0.03, 0.03,
+                             0.02, 0.03, 0.05, 0.08])
+    hypo_density = hypo_density / hypo_density.sum()
     colors_hour = ['#2c3e50' if 22 <= h or h <= 6 else '#bdc3c7' for h in hours]
     ax.bar(hours, hypo_density, color=colors_hour, alpha=0.8, edgecolor='black', linewidth=0.3)
     ax.axvspan(22, 24, alpha=0.1, color='navy')

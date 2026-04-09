@@ -42,8 +42,8 @@ international consensus guidelines (we assume these are correct):
 
 | Level | Threshold | Our Label | Prevalence in Our Data |
 |-------|-----------|-----------|----------------------|
-| **Level 1** | < 70 mg/dL (3.9 mmol/L) | `HYPO` / `hypo_risk` | 2.5–10.7% of readings |
-| **Level 2** | < 54 mg/dL (3.0 mmol/L) | Severe hypo | 0.2–4.1% of readings |
+| **Level 1** | < 70 mg/dL (3.9 mmol/L) | `HYPO` / `hypo_risk` | 0.8–10.7% of readings |
+| **Level 2** | < 54 mg/dL (3.0 mmol/L) | Severe hypo | 0.0–4.1% of readings |
 
 ### What This Definition Captures (and Misses)
 
@@ -154,8 +154,8 @@ at predicted glucose of 80–100 mg/dL, depending on the system).
 The lowest glucose point in the episode. In our data:
 - **Median nadir**: Varies from ~48 mg/dL (patient i) to ~62 mg/dL (patient j)
 - **Mean time to nadir from entry**: ~20 minutes
-- **Nadir-severity correlation with IOB**: r = −0.483 (patient i) — more IOB at
-  entry correlates with deeper nadir
+- **Nadir-recovery correlation**: r = −0.483 (patient i) — deeper nadir
+  correlates with longer recovery time
 
 ### Phase 5: Counter-Regulatory Recovery (+50 to +100 minutes)
 
@@ -219,7 +219,7 @@ with prediction horizon.
 | Below 80 mg/dL | 26.6 mg/dL | 0.153 | **−45%** |
 | Below 70 mg/dL | 39.8 mg/dL | ~0.15 | **−47%** |
 
-At the hypo range, prediction error increases **2.54×** compared to in-range, and
+At the hypo range, prediction error increases **1.9×** compared to in-range, and
 R² nearly halves. This is not a model problem — three independent architectures
 (XGBoost, CNN, Transformer) all converge at the same ceiling.
 
@@ -494,7 +494,7 @@ was appropriate (e.g., for a meal) and the hypo was caused by something else
 
 **Why this happens** (our hypothesis): The AID's basal rate settings may be too
 high, so it oscillates between aggressive delivery and emergency suspension. In
-10/11 patients, we find the AID suspends insulin 33–96% of the time (EXP-1281),
+10/11 patients, the AID runs at a rate below scheduled basal for extended periods,
 suggesting the programmed basal rate is consistently higher than needed. The AID
 compensates by suspending frequently, but sometimes the correction comes too late
 and glucose drops below 70.
@@ -528,7 +528,7 @@ different hypo profiles:
 | Tier | Patients | TBR (%) | Episodes | Characteristics |
 |------|----------|---------|----------|----------------|
 | **Low** | j | 1.1% | 34 | Rare, no severe, low nocturnal |
-| **Moderate** | b, d | 0.8–1.0% | 51–64 | Some severe, moderate stacking |
+| **Moderate** | b, d | 0.75–1.04% | 51–64 | Some severe, moderate stacking |
 | **High** | a, c, e, f, g, h, k | 1.8–5.9% | 97–229 | Frequent, nocturnal, stacking |
 | **Critical** | i | **10.7%** | **341** | 1.9/day, 177 severe, crisis-level |
 
@@ -540,14 +540,14 @@ Patients divide into two distinct behavioral groups during hypo recovery:
 - Treat >58% of episodes with carbohydrates
 - Median recovery: 15 minutes
 - Shallower nadirs
-- Lower nadir-severity correlation
+- Lower nadir-recovery correlation
 
 **Passive reliers** (patients a, f, i, k, and most others):
 - Treat <5% of episodes with carbohydrates
 - Median recovery: 15–25 minutes
 - Deeper nadirs
 - Rely on AID insulin suspension + counter-regulatory response
-- Deeper nadir-severity correlation (r = −0.483 for patient i)
+- Stronger nadir-recovery correlation (r = −0.483 for patient i)
 
 **Our assumption**: We classify "carb-treated" based on a carbohydrate entry
 appearing in the data within 30 minutes of the nadir. If a patient eats fast-acting
