@@ -17,6 +17,9 @@ Across 8 research phases and 30+ experiments, we have built a complete data-scie
 
 ## 1. The Meal Counting Problem: 2,619 or 12,060?
 
+![Meal Counting Problem](../../visualizations/natural-experiments/fig37_synthesis_meal_counting.png)
+*Figure 37: (A) Total meals detected varies 3× across detection methods. (B) Quality and quantity trade inversely. (C) The 72-config parameter space with the optimal knee marked.*
+
 The single most important methodological finding is that **meal count depends enormously on how you look**.
 
 | Detection Method | Meals | Per Patient/Day | What It Captures |
@@ -33,6 +36,9 @@ The 72-configuration benchmark (EXP-1569) showed this isn't just academic: **the
 ---
 
 ## 2. ISF Normalization Fundamentally Re-Ranks Patients
+
+![ISF Normalization](../../visualizations/natural-experiments/fig38_synthesis_isf_normalization.png)
+*Figure 38: (A) Bump chart showing how patient rankings shift when normalizing by ISF — patient f jumps from 3rd to 1st. (B) The 4.5× ISF variation across patients. (C) ISF-normalized thresholds classify metabolic burden.*
 
 Raw glucose excursion (mg/dL) is the standard way to assess meal impact, but it ignores a 4.5× variation in insulin sensitivity across patients. ISF-normalized excursion (correction-equivalents) reveals who is actually metabolically struggling.
 
@@ -55,6 +61,9 @@ The ISF-normalized framework creates clinically meaningful thresholds:
 ---
 
 ## 3. Supply × Demand Spectral Power Is Orthogonal to Excursion
+
+![2D Quality Framework](../../visualizations/natural-experiments/fig39_synthesis_2d_quality.png)
+*Figure 39: (A) Per-patient scatter in the 2D quality space — ISF-normalized excursion and spectral power are orthogonal (r = −0.039), creating 4 clinically meaningful quadrants. (B) Spectral power scales super-linearly (~11×) with carb size.*
 
 The supply×demand spectral power (FFT-based energy of insulin-glucose interaction) captures something entirely different from excursion: **how hard the AID loop is working during a meal**.
 
@@ -93,6 +102,9 @@ This orthogonality creates a powerful 2D meal quality framework:
 
 ## 4. Carb Estimation: Four Algorithms, Four Different Realities
 
+![Carb Algorithm Disagreement](../../visualizations/natural-experiments/fig40_synthesis_carb_algorithms.png)
+*Figure 40: (A) Four algorithms produce median estimates from 5.6g to 22.6g — oref0 has the best correlation with entered carbs (r=0.368). (B) The ~4× gap between oref0 and Loop IRC for unannounced meals explains clinical behavior differences between AID systems.*
+
 Comparing four carb estimation algorithms on 12,060 meals (EXP-1341) reveals fundamental disagreements about meal size:
 
 | Algorithm | Median Estimate | Correlation with Entered | What It Actually Measures |
@@ -111,6 +123,9 @@ The **4× gap between oref0 (22g) and Loop IRC (6g)** for unannounced meals has 
 ---
 
 ## 5. 76.5% of Meals Are Unannounced — And They Look Different
+
+![UAM Dominance and Timing](../../visualizations/natural-experiments/fig41_synthesis_uam_timing.png)
+*Figure 41: (A) Over three-quarters of meals lack carb entries. (B) The paradox: announced meals have higher raw excursion but lower ISF-normalized cost (selection bias). (C) Bolus timing explains 11× more excursion variance than dose.*
 
 Across 12,060 detected meals, only 23.5% have matching carb entries. The unannounced majority (76.5%) has distinct characteristics:
 
@@ -134,6 +149,9 @@ From meal clustering (EXP-1591–1598), all meals partition into exactly **2 res
 ---
 
 ## 6. The Meal Clock: 45% of Patients Are Robust, 36% Need Personalization
+
+![Robustness Archetypes](../../visualizations/natural-experiments/fig42_synthesis_robustness.png)
+*Figure 42: (A) Patient robustness distribution with tier boundaries. (B) n_peaks is THE predictor of robustness (ρ = −0.851, p = 0.0009) — 3+ peaks means parameter-resilient. (C) Clinical triage decision tree: count peaks to determine personalization needs.*
 
 The most surprising finding of the entire research program is how **binary** patients are in their meal-clock behavior. There is no smooth continuum — patients cluster sharply into archetypes.
 
@@ -180,6 +198,9 @@ Patient c is the most informative outlier: **high entropy (0.96) but low σσ (0
 ---
 
 ## 7. The AID Loop Is the Dominant Confound — And the Dominant Signal
+
+![AID Loop as Signal](../../visualizations/natural-experiments/fig43_synthesis_aid_signal.png)
+*Figure 43: (A) How AID distorts every meal signal — from 15% peak shift to 75% carb estimate gap. (B) The detection-sensitivity-insight trade-off curve with the knee. (C) The personalization gradient from universal thresholds to fully per-patient configs.*
 
 Every meal analysis confronts the same fundamental challenge: **the AID loop is always active, and it changes everything**.
 
@@ -328,6 +349,13 @@ All 36 figures in `visualizations/natural-experiments/`:
 | fig34 | Archetype distribution | Tier classification + σσ vs n_peaks |
 | fig35 | Stability curves | Per-patient regularity vs strictness |
 | fig36 | Tier profiles | Tier metric comparison + correlation waterfall |
+| **fig37** | **Synthesis: Meal counting** | **Detection method comparison, quality/quantity trade-off, 72-config landscape** |
+| **fig38** | **Synthesis: ISF normalization** | **Rank-change bump chart, ISF variation, metabolic burden thresholds** |
+| **fig39** | **Synthesis: 2D quality** | **Excursion × spectral power quadrants, super-linear carb scaling** |
+| **fig40** | **Synthesis: Carb algorithms** | **4-algorithm comparison, announced vs UAM gap** |
+| **fig41** | **Synthesis: UAM + timing** | **76.5% unannounced, metabolic paradox, 11× timing vs dose** |
+| **fig42** | **Synthesis: Robustness** | **Tier distribution, n_peaks scatter, clinical triage tree** |
+| **fig43** | **Synthesis: AID signal** | **AID distortion magnitudes, trade-off curve, personalization gradient** |
 
 ---
 
@@ -350,6 +378,7 @@ Together, these findings define a complete framework for meal analysis in AID pa
 ## Source Files
 
 - `tools/cgmencode/exp_clinical_1551.py` — Natural experiment census and characterization (EXP-1551–1571)
+- `tools/cgmencode/viz_synthesis.py` — Synthesis visualization generator (fig37–43)
 - `tools/cgmencode/exp_clinical_1341.py` — Carb estimation survey
 - `tools/cgmencode/exp_clinical_1301.py` — ISF and therapy assessment
 - `tools/cgmencode/exp_clinical_1291.py` — AID-deconfounded therapy analysis
