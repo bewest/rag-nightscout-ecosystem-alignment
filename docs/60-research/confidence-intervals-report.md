@@ -9,10 +9,10 @@
 Therapy recommendations require confidence intervals to communicate reliability. This batch quantifies uncertainty in ISF and CR estimates using bootstrap, conformal prediction, and leave-one-out analysis.
 
 **Key Findings**:
-1. **ISF CIs are wide**: median 95% CI width = 46% of point estimate (range 26-201%)
+1. **ISF CIs are wide**: median 95% CI width = 47% of point estimate (range 26-201%)
 2. **CR CIs are tight**: median 95% CI width = 5% (range 2-26%) — CR is far more reliable than ISF
 3. **8/10 patients are LOO-robust** (max single-correction influence <10%)
-4. **Conformal prediction achieves calibrated coverage** (actual ≥ target for 9/9 patients at 90%)
+4. **Conformal prediction achieves broad coverage** (actual ≥82% for 9/9 patients; 7/9 meet the 90% target — patients c and i fall short at 88% and 82%)
 5. **No sample size achieves <20% CI width** for ISF — inherent variance is too high
 6. **7/11 patients grade B**, 1 grades C, 3 grade D — no patient reaches grade A
 7. **ISF direction is consistent** for 7/10 patients (all CI scenarios agree on direction of change)
@@ -33,6 +33,7 @@ Therapy recommendations require confidence intervals to communicate reliability.
 | g | 278 | [218, 336] | 42% | 49 |
 | h | 181 | [74, 320] | **136%** | 12 |
 | i | 260 | [200, 320] | 46% | 55 |
+| j | 95 | [41, 115] | 78% | 7 |
 
 **Patient c** has the tightest ISF CI (26%) with 111 corrections — highest sample size. **Patients b and h** have CIs wider than the estimate itself due to small samples (n=12-13).
 
@@ -45,7 +46,7 @@ Therapy recommendations require confidence intervals to communicate reliability.
 | g | 8.6 | [8.4, 8.7] | 4% | 708 |
 | k | 10.4 | [9.4, 12.1] | 26% | 61 |
 
-CR estimates are **10× tighter** than ISF. Meals are more frequent than corrections (61-808 vs 7-111), and the ratio carbs/bolus is less variable than the exponential decay response.
+CR estimates are **~9× tighter** than ISF. Meals are more frequent than corrections (61-808 vs 7-111), and the ratio carbs/bolus is less variable than the exponential decay response.
 
 ### EXP-1624: Leave-One-Out Robustness
 
@@ -102,7 +103,7 @@ No patient achieves grade A (≥0.70). The primary bottleneck is temporal stabil
 Every ISF/CR recommendation should show its confidence grade (A-D) and CI width. Current production code gives point estimates without uncertainty — this is misleading.
 
 ### 2. CR Recommendations Are More Reliable
-CR CIs are 10× tighter than ISF. Production should weight CR advice more heavily and be more conservative with ISF recommendations.
+CR CIs are ~9× tighter than ISF. Production should weight CR advice more heavily and be more conservative with ISF recommendations.
 
 ### 3. Minimum Data Requirements
 - ISF: Need ≥30 corrections for grade B (CI ~45%)
@@ -114,8 +115,8 @@ Even with unlimited data, ISF CI width floors at ~30%. Production should present
 
 ## Conclusions
 
-1. **ISF uncertainty is substantial and irreducible** — 46% median CI width at n=55 corrections
-2. **CR is the reliable parameter** — 5% median CI width, 10× tighter than ISF
+1. **ISF uncertainty is substantial and irreducible** — 47% median CI width at n=7-111 corrections
+2. **CR is the reliable parameter** — 5% median CI width, ~9× tighter than ISF
 3. **8/10 patients are LOO-robust** — individual corrections rarely dominate
 4. **Conformal prediction works but is too wide** for clinical use — bootstrap is more practical
 5. **The confidence grade system provides actionable quality signals** — grade D patients should not receive ISF recommendations

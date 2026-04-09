@@ -9,10 +9,10 @@
 Six alert filtering strategies were compared across 11 AID patients. The fundamental challenge: AID systems already prevent most hypos, making prediction-before-the-fact extremely hard.
 
 **Key Findings**:
-1. **Multi-feature logistic regression wins**: AUC=0.90, PPV=0.47, 5.0 alerts/day — the only method approaching the PPV≥0.50 target
+1. **Multi-feature logistic regression wins**: AUC=0.89, PPV=0.47, 5.0 alerts/day — the only method approaching the PPV≥0.50 target
 2. **Baseline rate-of-change alerts are terrible**: PPV=0.19, 12.6/day — 81% false alarms
-3. **93% of raw alerts are burst duplicates** — alert suppression alone eliminates most noise
-4. **Only 7-46% of alerts are actionable** (followed by actual hypo within 1h)
+3. **Up to 93% of raw alerts are burst duplicates** (mean 90%) — alert suppression alone eliminates most noise
+4. **Only 7-46% of alerts are actionable** (mean 21%, followed by actual hypo within 1h)
 5. **State-aware filtering doubles PPV** (0.19→0.33) but kills sensitivity (0.10→0.07)
 6. **Per-patient optimization failed** at the composite score level — threshold search didn't converge within ≤5/day constraint
 7. **Time-of-day modulation adds no value** — hypo timing is too variable across patients
@@ -53,10 +53,10 @@ Alerts restricted to high-risk metabolic states (>5% hypo rate within state).
 
 | State | Mean Hypo Rate | High-Risk In |
 |-------|---------------|--------------|
-| Low risk (<80) | 15-42% | 11/11 patients |
-| Postprandial | 5-12% | 7/11 patients |
-| Correction active | 6-11% | 5/11 patients |
-| Fasting | 3-8% | 4/11 patients |
+| Low risk (<80) | 45-79% | 11/11 patients |
+| Postprandial | 1-10% | 7/11 patients |
+| Correction active | 0-8% | 5/11 patients |
+| Fasting | 2-11% | 5/11 patients |
 
 State filtering **doubles PPV** (0.19→0.33) but reduces alert volume unevenly — patients b and d drop to <1 alert/day with near-zero sensitivity.
 
@@ -72,14 +72,14 @@ Cross-validated LR using 8 features: current glucose, rate, acceleration, 1h std
 | k | 0.870 | 0.83 | 4.9 | **0.67** | 0.10 |
 | d | 0.865 | 0.74 | 5.0 | 0.18 | 0.13 |
 
-**Population**: AUC=0.90±0.04, PPV=0.47, sensitivity=0.12, 5.0 alerts/day.
+**Population**: AUC=0.89±0.04, PPV=0.47, sensitivity=0.12, 5.0 alerts/day.
 
 **Feature importance** (mean |coefficient|):
 1. `current` glucose — strongest predictor (proximity to 70)
 2. `min_1h` — recent minimum
-3. `rate` — rate of change
-4. `iob` — insulin on board
-5. `acceleration` — rate of rate change
+3. `std_1h` — 1-hour glucose standard deviation
+4. `rate` — rate of change
+5. `iob` — insulin on board
 
 ### EXP-1614: Time-of-Day Alert Modulation
 
@@ -92,25 +92,25 @@ Adaptive thresholds by hour based on historical hypo patterns.
 Stage 1 (broad): any glucose drop + high IOB + low glucose → ~100 triggers/day  
 Stage 2 (precision): composite risk score ≥2.5 → ~14 alerts/day
 
-**84-87% reduction** from stage 1 to stage 2, but still 14 alerts/day mean. The composite score threshold needs to be higher, but then sensitivity drops to near-zero.
+**83-87% reduction** from stage 1 to stage 2, but still 14 alerts/day mean. The composite score threshold needs to be higher, but then sensitivity drops to near-zero.
 
 ### EXP-1616: Per-Patient Threshold Optimization
 
 Optimized composite risk score threshold per patient targeting PPV≥0.50 at ≤5/day.
 
-**Result: 0/11 patients meet both targets**. The composite score search converges to threshold=2.0 for all patients (minimum), producing 25-33 alerts/day. The score distribution doesn't have enough separation between true hypo precursors and false alarms at the 5/day level.
+**Result: 0/11 patients meet both targets**. The composite score search converges to threshold=2.0 for all patients (minimum), producing 11-33 alerts/day. The score distribution doesn't have enough separation between true hypo precursors and false alarms at the 5/day level.
 
 ### EXP-1617: Alert Fatigue Analysis
 
 | Metric | Mean | Range |
 |--------|------|-------|
-| Burst rate | 91% | 77-93% |
-| Actionability | 19% | 7-46% |
+| Burst rate | 90% | 77-93% |
+| Actionability | 21% | 7-46% |
 | Peak hour | Variable | 00-22h |
 
-**93% of raw alerts are burst duplicates** — the same hypo event triggers 5-10 consecutive alerts. Simple 30-min suppression eliminates this.
+**Up to 93% of raw alerts are burst duplicates** (mean 90%) — the same hypo event triggers 5-10 consecutive alerts. Simple 30-min suppression eliminates this.
 
-**Only 19% of alerts are actionable** — followed by actual hypo within 1 hour. Patient k has the highest actionability (46%) because they have the most frequent actual hypos.
+**Only 21% of alerts are actionable** — followed by actual hypo within 1 hour. Patient k has the highest actionability (46%) because they have the most frequent actual hypos.
 
 ### EXP-1618: Method Comparison
 
@@ -143,7 +143,7 @@ The current production hypo predictor should use the 8-feature logistic regressi
 - Per-patient AUC 0.80-0.94
 
 ### 2. Mandatory Burst Suppression
-Any alert system must enforce minimum 30-min gaps between alerts. 93% of raw alerts are burst duplicates that provide zero additional information.
+Any alert system must enforce minimum 30-min gaps between alerts. Up to 93% of raw alerts are burst duplicates that provide zero additional information.
 
 ### 3. Accept Sensitivity Ceiling
 At ≤5 alerts/day, sensitivity is capped at ~12% across all methods. This is a fundamental ceiling: AID loops prevent most hypos, and the remaining ones are genuinely unpredictable. Communicating this limitation is important — these are "early warnings" not "guaranteed predictions."
@@ -157,7 +157,7 @@ While metabolic state doesn't improve prediction, it provides valuable context f
 2. **The PPV-sensitivity tradeoff is fundamental**: at 5 alerts/day, no method exceeds 13% sensitivity
 3. **AID creates a prediction floor**: the easy hypos are already prevented by the loop; what remains are unpredictable events
 4. **Feature engineering > model complexity**: 8 simple features with LR matches or exceeds what more complex approaches achieve
-5. **Burst suppression is table stakes**: 93% of alert volume is redundant
+5. **Burst suppression is table stakes**: up to 93% (mean 90%) of alert volume is redundant
 
 ## Source Files
 

@@ -51,8 +51,8 @@ Adds 12h, 8h, and 6h harmonics progressively:
 | k | 0.275 | 0.875 | 0.934 | 0.978 | +0.703 |
 
 **Key findings**:
-- The 12h harmonic contributes the largest single improvement (+0.195 mean)
-- The 8h harmonic provides the second-largest gain (+0.178 mean)
+- The 12h harmonic contributes the largest single improvement (+0.289 mean)
+- The 8h harmonic provides the second-largest gain (+0.122 mean)
 - Every patient reaches R²>0.88 with 4 harmonics
 - Patients with worst sinusoidal fit benefit most (e: +0.725, k: +0.703)
 
@@ -80,7 +80,7 @@ Adds 12h, 8h, and 6h harmonics progressively:
 
 ### EXP-1635: Glucose Variability by Time Period
 
-Six time periods analyzed: late_night (0-3h), dawn (3-6h), morning (6-12h), afternoon (12-17h), evening (17-21h), overnight (21-24h).
+Six time periods analyzed: overnight (0-6h), dawn (6-9h), morning (9-12h), afternoon (12-17h), evening (17-21h), late_night (21-24h).
 
 | Patient | Most Variable | CV | Least Variable | CV |
 |---------|---------------|-----|----------------|-----|
@@ -98,7 +98,7 @@ Six time periods analyzed: late_night (0-3h), dawn (3-6h), morning (6-12h), afte
 
 **Key findings**:
 - No universal "most variable" period — highly patient-specific
-- Afternoon and overnight are the most commonly variable periods (4 and 4 patients)
+- Overnight and afternoon are the most commonly variable periods (4 and 3 patients)
 - CV ranges from 0.15 (patient k, afternoon) to 0.51 (patient i, overnight)
 - This variability pattern should inform per-patient alert sensitivity windows
 
@@ -154,7 +154,7 @@ Rationale:
   - 12h: meal-driven oscillation (lunch/dinner)
   - 8h: insulin sensitivity periodicity
   - 6h: sub-meal oscillation patterns
-- 8 parameters total (4 amplitudes + 4 phases) vs 12 (spline) vs 2 (sinusoidal)
+- 9 parameters total (4 amplitudes + 4 phases + intercept) vs 12 (spline) vs 3 (sinusoidal: amplitude, phase, offset)
 
 Per-patient improvement over sinusoidal:
 - Mean: **+44.4 percentage points** (range: +6% to +73%)
@@ -175,8 +175,8 @@ Per-patient improvement over sinusoidal:
 ### Recommended Changes
 
 1. **Replace sinusoidal circadian model with 4-harmonic model**
-   - Current: `A·sin(2πt/24 + φ) + B` (2 parameters)
-   - Proposed: `Σ_{k=1}^{4} A_k·sin(2πt/P_k + φ_k) + B` where P=[24,12,8,6]h (8 parameters)
+   - Current: `A·sin(2πt/24 + φ) + B` (3 parameters)
+   - Proposed: `Σ_{k=1}^{4} A_k·sin(2πt/P_k + φ_k) + B` where P=[24,12,8,6]h (9 parameters)
    - Impact: R² from 0.515 → 0.959 mean
 
 2. **Remove DOW features from any temporal analysis**
