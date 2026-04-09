@@ -10,19 +10,19 @@
 
 We conducted the first systematic census of **natural experiments** in real-world CGM/AID
 data — event windows where patient data naturally mimics controlled clinical tests. Across
-11 patients and 1,858 patient-days, we detected **50,810 natural experiments** of 9
+11 patients and 1,838 patient-days, we detected **50,810 natural experiments** of 9
 distinct types using automated detectors calibrated against prior experimental findings.
 
 **Key findings:**
 
-1. **Every patient produces analyzable natural experiments daily** — a median of 26.5
+1. **Every patient produces analyzable natural experiments daily** — a median of 27.0
    natural experiments per patient per day across all types
 2. **UAM dominates** — 39% of all detected windows (19,916) are unannounced meals,
    confirming that real-world glucose management operates largely without carb entries
 3. **Meal windows are highest quality** (mean 0.923) while corrections are lowest (0.537)
    due to AID loop interference confounding isolated correction response measurement
-4. **Patient variability is enormous** — correction rates range from 0.1/day (k) to
-   18.5/day (i), a 185× difference reflecting fundamentally different management styles
+4. **Patient variability is enormous** — correction rates range from 0.06/day (k) to
+   18.5/day (i), a ~309× difference reflecting fundamentally different management styles
 5. **Cross-type correlations reveal physiology** — dawn effect correlates with ISF
    (r=0.41), and UAM frequency inversely correlates with exercise (r=−0.54)
 6. **7–30 days of data yields stable estimates** for most experiment types; fasting
@@ -67,7 +67,7 @@ analyzable window with type, quality score, duration, and key measurements.
 | i | 180 | 51,841 | ~100% |
 | j | 61 | 17,605 | ~100% |
 | k | 179 | 51,559 | ~100% |
-| **Total** | **1,858** | **529,288** | |
+| **Total** | **1,838** | **529,288** | |
 
 All patients use AID systems (Loop-based) except patient j (manual pump management, no
 AID response data). Patient h has significant CGM gaps (35.8% coverage per EXP-1291).
@@ -214,7 +214,7 @@ Quality grades:
   insulin response. This confirms the finding from EXP-1301 that response-curve modeling
   is needed rather than simple before/after measurement
 - **Fasting windows are surprisingly high quality** when they occur, but they're rare
-  for most patients (only a,b,f,j produce ≥1/day)
+  for most patients (only a, j produce ≥1/day; f is marginally below at 0.98/day)
 
 ![Quality Distributions](../../visualizations/natural-experiments/fig4_quality_distributions.png)
 *Figure 4: Quality score distributions by window type.*
@@ -273,11 +273,11 @@ K-means clustering (k=3) on normalized yield rates identified three patient arch
 
 | Archetype | Characteristics | Example Patients |
 |-----------|----------------|-----------------|
-| **High-frequency AID** | High UAM, high AID response, moderate meals | a, f (highly active AID loops) |
-| **Correction-heavy** | Very high correction rate, many UAM, few fasting | c, d, e, i (aggressive correction dosing) |
-| **Moderate/Manual** | Moderate across all types, more fasting/exercise | b, g, j, k (less reliance on aggressive dosing) |
+| **High-frequency AID** | High UAM, high AID response, moderate meals | a, f, g (highly active AID loops) |
+| **Correction-heavy** | Very high correction rate, many UAM, few fasting | c, d, e, i, k (aggressive correction dosing) |
+| **Moderate/Manual** | Moderate across all types, more fasting/exercise | b, h, j (less reliance on aggressive dosing) |
 
-Patient h is an outlier (low yield across all types due to CGM gaps).
+Patient h clusters with the Moderate/Manual group due to lower overall yields (CGM gaps reduce detection).
 
 ![Patient Profiles](../../visualizations/natural-experiments/fig7_patient_profiles.png)
 *Figure 7: Patient profiles — radar chart of normalized experiment yields per type.*
@@ -289,9 +289,9 @@ windows of each type:
 
 | Type | Template Duration | N windows | Key Shape |
 |------|------------------|-----------|-----------|
-| Fasting | 6h (72 steps) | 658 | Slow decline, median −0.5 mg/dL/h |
+| Fasting | 6h (72 steps) | 658 | Decline, median −3.5 mg/dL/h |
 | Overnight | 6h (72 steps) | 1,527 | U-shaped (slight decline then dawn rise) |
-| Meal | 3h (36 steps) | 4,072 | Classic spike-and-return, peak at ~45 min |
+| Meal | 3h (36 steps) | 4,072 | Classic spike-and-return, peak at ~65 min |
 | Correction | 4h (48 steps) | 3,715 | Exponential decay, τ ≈ 2h (confirms EXP-1301) |
 | UAM | 3h (36 steps) | 8,576 | Sharp rise then slow decay |
 
@@ -299,10 +299,10 @@ windows of each type:
 *Figure 6: Canonical glucose response templates with median ± IQR bands.*
 
 **Notable findings:**
-- The meal template peak at 45 minutes is remarkably consistent across the population
+- The meal template peak at 65 minutes is remarkably consistent across the population
 - The correction template's exponential decay with τ≈2h independently validates the
   response-curve ISF finding from EXP-1301
-- Fasting windows show a slight negative drift (median −0.5 mg/dL/h), suggesting
+- Fasting windows show a negative drift (median −3.5 mg/dL/h), suggesting
   systematic over-basaling in the population — consistent with EXP-1331's overnight drift
   finding
 
@@ -311,9 +311,9 @@ windows of each type:
 ### 4.1 The Natural Experiment Yield
 
 The central finding is that **every AID patient generates an enormous volume of
-analyzable physiological experiments daily** — a median of 26.5 per day. This is not
+analyzable physiological experiments daily** — a median of 27.0 per day. This is not
 an artifact of loose detection criteria; the quality grades show that the majority of
-detected windows are genuinely analyzable (overall mean quality 0.77).
+detected windows are genuinely analyzable (overall mean quality 0.76).
 
 The practical implication is that formal clinical tests (fasting basal tests, correction
 tests, OGTT) are **unnecessary for parameter estimation** in AID patients. The same
@@ -389,11 +389,11 @@ class NaturalExperimentDetector:
 | Fasting | 400ms | 0.4 | 0.825 |
 | Overnight | 70ms | 0.8 | 0.786 |
 | Meal | 30ms | 2.2 | 0.923 |
-| Correction | 150ms | 4.2 | 0.537 |
+| Correction | 150ms | 4.0 | 0.537 |
 | UAM | 120ms | 10.7 | 0.774 |
 | Dawn | 7,200ms | 0.8 | 0.716 |
 | Exercise | 10ms | 0.7 | 0.835 |
-| AID Response | 120ms | 5.1 | 0.843 |
+| AID Response | 120ms | 4.8 | 0.843 |
 | Stable | 70ms | 2.5 | 0.607 |
 
 The dawn detector dominates runtime (87%) due to per-date iteration. Optimization would
@@ -415,8 +415,8 @@ focus on vectorizing the dawn detector.
 
 ### Conclusions
 
-1. **Natural experiments are abundant** — 50,810 across 11 patients (27.4/patient-day)
-2. **Quality is generally high** — 77% mean quality, with meals at 92% and fasting at 83%
+1. **Natural experiments are abundant** — 50,810 across 11 patients (27.6/patient-day)
+2. **Quality is generally high** — 76% mean quality, with meals at 92% and fasting at 83%
 3. **Corrections are problematic** — AID confounding limits quality to 54% mean
 4. **Patient diversity is extreme** — management styles differ by orders of magnitude
 5. **Cross-type correlations reveal physiology** — exercise reduces UAM, ISF predicts dawn effect
