@@ -171,7 +171,7 @@ than meal-derived ISF predicts.
 **Findings**:
 1. **ISF from corrections ≠ ISF from meals** — 14% mean discrepancy
 2. Clinical implication: ISF settings derived from correction-only data will
-   be too aggressive (assume more sensitivity than actually exists during meals)
+   be too aggressive (assume less sensitivity than actually exists during meals)
 3. Patients d, f have corrections > meals — may have insulin resistance
    during meals (carb-insulin interaction) but normal sensitivity otherwise
 4. **Dual-ISF model may be warranted**: separate ISF for corrections vs meals
@@ -184,11 +184,11 @@ than meal-derived ISF predicts.
 
 | Patient | Aggressiveness | Temp CV | Override % | TIR | Grade |
 |---------|:--------------:|:-------:|:----------:|:---:|:-----:|
-| a | **87** | 59% | 62% | 56% | D |
+| a | **87** | 60% | 62% | 56% | D |
 | e | 83 | 52% | 48% | 65% | C |
 | c | 79 | 55% | 38% | 62% | C |
 | i | 77 | 59% | 39% | 60% | C |
-| k | 64 | 53% | 26% | 95% | A |
+| k | 64 | 54% | 26% | 95% | A |
 | j | **14** | 0% | 4% | 81% | C |
 
 **Findings**:
@@ -259,7 +259,7 @@ Naive same-grade accuracy: **56%**. Score-based: 56% (no improvement).
 | CR (30%) | **+2.4%** | b (+7.4%) |
 | Basal (10%) | -1.2% | — |
 | ISF (10%) | -0.1% | — |
-| Combined | +0.9% | b (+7.4%) |
+| Combined | +1.0% | b (+7.4%) |
 
 **Findings**:
 1. **CR is the only reliably positive intervention** in simulation (+2.4%)
@@ -279,7 +279,7 @@ Naive same-grade accuracy: **56%**. Score-based: 56% (no improvement).
 
 | Patient | Grade | Urgency | Top Action | Est. TIR Gain | AID Ceiling |
 |---------|:-----:|:-------:|------------|:-------------:|:-----------:|
-| a | D | **MEDIUM** | CR@30% | +0.1% | — |
+| a | D | **MEDIUM** | Basal@10% | +0.1% | — |
 | b | C | LOW | CR@30% | +7.4% | — |
 | c | C | LOW | CR@30% | +1.3% | — |
 | d | C | LOW | Basal+CR | +3.3% | ⚠ YES |

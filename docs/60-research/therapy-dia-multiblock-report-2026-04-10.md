@@ -14,7 +14,7 @@ recommendation systems, and began separating exercise from UAM violations.
 **Key results**:
 - DIA correction **worsened** the physics model (R² -0.189 → -0.24)  
 - Multi-block basal simulation still fails (0/11 improved)  
-- CR tightening by 20% reduces dinner excursion by 37% (64→40 mg/dL)  
+- CR tightening by 20% reduces dinner excursion by 48% (77→40 mg/dL)  
 - UAM threshold should be 90% (not 20%) — filtering was far too aggressive  
 - AID loop dampens ~30% of recommended changes  
 - Exercise accounts for 18% of physics violations; removing it shifts ISF +9.4%  
@@ -27,7 +27,7 @@ recommendation systems, and began separating exercise from UAM violations.
 **Hypothesis**: If actual DIA ≠ profile DIA (5h), scaling demand by `actual_DIA / profile_DIA`
 should reduce the physics model bias.
 
-**Result**: **Worsened** model fit for every patient.
+**Result**: **Worsened** model fit for 10 of 11 patients (patient h slightly improved).
 
 | Metric | Original | DIA-Corrected |
 |--------|----------|---------------|
@@ -52,7 +52,7 @@ recommendations.
 
 | Patient | Current TIR | Simulated TIR | Change |
 |---------|------------|---------------|--------|
-| d (well-cal) | 86.4% | 86.1% | -0.3 |
+| d (well-cal) | 79.2% | 79.6% | +0.5 |
 | a (miscal) | 55.8% | 55.0% | -0.8 |
 | b (needs-tuning) | 56.7% | 54.2% | -2.5 |
 
@@ -72,7 +72,7 @@ in real settings changes.
 
 | CR Reduction | Mean Excursion | % Above 60 mg/dL |
 |-------------|----------------|-------------------|
-| Baseline | 64.3 mg/dL | 47.6% |
+| Baseline | 77.2 mg/dL | 53.8% |
 | 10% tighter | 58.2 mg/dL | 41.3% |
 | 20% tighter | 40.4 mg/dL | 26.0% |
 | 30% tighter | 26.3 mg/dL | 18.2% |
@@ -81,9 +81,9 @@ Per-patient detail — patients with worst dinners:
 
 | Patient | Dinners | Baseline Excursion | 20% Reduction |
 |---------|---------|-------------------|---------------|
-| c | 61 | 101.2 mg/dL | ~70 mg/dL |
-| b | 226 | 77.4 mg/dL | ~54 mg/dL |
-| e | 73 | 68.9 mg/dL | ~48 mg/dL |
+| c | 61 | 101.2 mg/dL | ~57 mg/dL |
+| b | 226 | 77.4 mg/dL | ~43 mg/dL |
+| e | 61 | 59.5 mg/dL | ~18 mg/dL |
 
 **Implication**: CR tightening is the highest-confidence actionable recommendation.
 A 20% dinner CR reduction is a strong first intervention for patients with excursions >60 mg/dL.
@@ -168,8 +168,8 @@ Generated per-patient 6-block ISF schedules from response-curve analysis. Exampl
 | Patient | Profile ISF | Overall Measured |
 |---------|------------|------------------|
 | a | 48.6 | 69.6 (+43%) |
-| d | 40.0 | 238.2 (+496%) |
-| j | 40.0 | 98.1 (+145%) |
+| d | 40.0 | 238.3 (+496%) |
+| j | 40.0 | 97.9 (+145%) |
 
 The extreme ratios (d: 6×, g: 4.7×) indicate the response-curve method systematically
 overestimates ISF when corrections are small and AID loop modifies temp basal during the
@@ -208,11 +208,11 @@ recommended setting changes.
 **Key findings**:
 1. **Patient a** has K=-1.081 (inverted gain, 52% dampening, aggressiveness 3.74×) — the loop
    is fighting the wrong direction, consistent with "miscalibrated" archetype
-2. **Negative K** (patients a, f, k) means the loop increases delivery when glucose is already
+2. **Negative K** (patients a, f, i, k) means the loop increases delivery when glucose is already
    low — suggests either settings or algorithm misconfiguration
 3. Mean 30% dampening means we should recommend 1.43× the calculated change
    (1 / 0.70 = 1.43) to achieve the desired net effect
-4. Loop aggressiveness correlates with archetype: well-cal 0.31, needs-tuning 0.47, miscal 3.74
+4. Loop aggressiveness correlates with archetype: well-cal 0.31, needs-tuning 0.44, miscal 3.74
 
 **Implication**: Account for ~30% AID dampening when making recommendations. Patients with
 negative K need settings review as a priority.
@@ -251,7 +251,7 @@ because exercise effect is mixed in).
 | Method | Evidence | Confidence |
 |--------|----------|------------|
 | **Drift-based basal assessment** | Bypasses physics bias, near-zero for well-cal | High |
-| **Excursion-based CR assessment** | 20% tightening → 37% excursion reduction | High |
+| **Excursion-based CR assessment** | 20% tightening → 48% excursion reduction | High |
 | **UAM threshold 90%** | 8/11 patients, maximizes events × R² | High |
 | **Exercise filtering for ISF** | +9.4% ISF shift, confirms deconfounding | Medium |
 | **AID loop dampening ~30%** | Scale recs by 1.43× to compensate | Medium |

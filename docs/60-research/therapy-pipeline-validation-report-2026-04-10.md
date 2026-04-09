@@ -45,7 +45,7 @@ Per-patient basal stability at k=2:
 
 | Patient | Archetype | k=2 basal | k=2 CR |
 |---------|-----------|-----------|--------|
-| b | needs-tuning | 1.00 | 1.00 |
+| b | needs-tuning | 1.00 | 0.67 |
 | j | well-calibrated | 1.00 | 1.00 |
 | k | well-calibrated | 1.00 | 1.00 |
 | f | needs-tuning | 0.89 | — |
@@ -58,7 +58,7 @@ Per-patient basal stability at k=2:
 | c | needs-tuning | 0.40 | — |
 
 **Findings**:
-1. Well-calibrated patients b/j/k are perfectly stable across ALL smoothing
+1. Well-calibrated patients j/k are perfectly stable across ALL smoothing
    levels — their (few) flags persist consistently
 2. k=2 is optimal: removes 28% of transient flags without over-smoothing
 3. k=3 is too aggressive (45% of flags lost), would miss real issues in c, d
@@ -112,7 +112,7 @@ recommendations from t1, measure therapy health score at t1 and t3.
 - **Mean accuracy**: 62%
 - **Natural trend**: -0.2 (essentially flat — scores aren't systematically
   drifting, changes reflect real therapy shifts)
-- **3/10 improving**, **4/10 declining**, **3/10 stable**
+- **4/10 improving**, **4/10 declining**, **2/10 stable**
 
 **Findings**:
 1. Patient e showed largest natural improvement (+17 points) — likely a real
@@ -144,8 +144,8 @@ data_ISF` — at alpha = {0.0, 0.25, 0.5, 0.75, 1.0}.
 
 **Findings**:
 1. ISF estimation remains extremely noisy regardless of Bayesian blending
-2. For 6/11 patients, the data-derived ISF is best, but "best" still has >100%
-   error
+2. For 6/9 patients (with deconfounded events), the data-derived ISF is best,
+   but "best" still has >100% error
 3. Confirms EXP-1371 finding: ISF should only be estimated from deconfounded
    events (bolus ≥2U, ≥5 events), never from raw correction data
 4. **Recommendation**: Do not use Bayesian ISF blending. Use deconfounded ISF
@@ -167,18 +167,18 @@ size for archetype separation.
 | Config | Weights (TIR/basal/CR/ISF/CV) | Cohen's d |
 |--------|-------------------------------|-----------|
 | **tir_heavy** | **60/15/15/5/5** | **4.03** |
-| original | 40/20/20/10/10 | 3.67 |
-| equal | 20/20/20/20/20 | 3.41 |
-| component_heavy | 20/25/25/15/15 | 3.52 |
-| variability_heavy | 30/15/15/15/25 | 3.48 |
+| default | 40/20/20/10/10 | 2.83 |
+| clinical | 35/25/25/10/5 | 2.66 |
+| balanced | 30/20/20/15/15 | 2.37 |
+| basal_cr_focused | 25/30/30/10/5 | 2.35 |
 
 **Findings**:
 1. TIR-heavy weights (60%) are optimal — TIR is the most reliably measured
    component and the most clinically meaningful outcome
 2. Cohen's d=4.03 means archetypes are separated by >4 standard deviations —
    essentially zero overlap in distributions
-3. The original weights (40/20/20/10/10) were already good (d=3.67), but
-   increasing TIR weight adds 10% more separation
+3. The default weights (40/20/20/10/10) were already good (d=2.83), but
+   increasing TIR weight adds 42% more separation
 4. **Updated scoring formula**: `Score = TIR/100*60 + basal_ok*15 + cr_ok*15 +
    isf_ok*5 + cv_ok*5`
 
@@ -213,7 +213,7 @@ each parameter.
 1. **Basal is universally the highest-impact lever** — top action for 10/11
    patients
 2. Only patient j has dinner_cr as top action — already well-calibrated basals
-3. Estimated TIR gains of 4.7-6.0% for needs-tuning patients are clinically
+3. Estimated TIR gains of 3.9-6.0% for needs-tuning patients are clinically
    meaningful (equivalent to ~1 hour more time-in-range per day)
 4. Well-calibrated patients have diminishing returns (<2.5% gain)
 5. **Triage priority**: Always fix basal first, then CR

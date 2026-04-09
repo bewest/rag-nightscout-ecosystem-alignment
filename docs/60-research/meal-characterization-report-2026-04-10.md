@@ -2,7 +2,7 @@
 
 ## Summary
 
-Peak-centered meal analysis across **3,074 meals** in 11 patients (180 days each)
+Peak-centered meal analysis across **3,074 meals** in 11 patients (up to 180 days each; patient e: 158 days, patient j: 61 days)
 using the physics residual detector (F1=0.939, 2σ threshold).  Compared to
 the 12,060 events from EXP-1341's simple threshold, this selective detector
 averages **1.7 meals/day** — closer to real eating frequency.
@@ -61,13 +61,13 @@ All four meal windows show remarkably similar canonical shapes:
 | Snack | 1,384 | +23.3 mg/dL | [+12.3, +39.3] |
 
 **Canonical meal template shape:**
-1. **Pre-peak** (−30 to 0 min): ~15 mg/dL rise over 30 min
+1. **Pre-peak** (−30 to 0 min): ~35 mg/dL rise over 30 min
 2. **Peak** (t=0): median +23 mg/dL above baseline
 3. **Post-peak descent** (0 to +90 min): AID insulin action drives glucose down
-4. **Overcorrection** (+90 to +180 min): glucose drops **60 mg/dL below baseline**
-   (median), indicating systematic AID overcorrection
+4. **Overcorrection** (+90 to +180 min): glucose drops **50–56 mg/dL below baseline**
+   (median, varying by window), indicating systematic AID overcorrection
 
-The mean template is pulled below the median by 10–15 mg/dL, indicating a
+The mean template is pulled below the median by 6–15 mg/dL, indicating a
 subset of meals with dramatic post-bolus crashes.
 
 ### Cross-Patient Template Signatures
@@ -80,10 +80,10 @@ Each patient has a distinctive post-meal "fingerprint":
 
 - **Flat responders** (d, k): Minimal excursion (+10–16 mg/dL), tight AID control
 - **Standard responders** (a, b, g, j): +20–30 mg/dL rise, steady 60-min descent
-- **Overcorrectors** (c, e, i): Drop 100–150 mg/dL below baseline by +180 min
+- **Overcorrectors** (c, e, i): Drop 85–190 mg/dL below baseline by +180 min
 - **Slow responders** (f, h): Higher peaks but gradual, extended descent
 
-Patient i's dramatic post-peak drop (−150 mg/dL) reflects aggressive AID
+Patient i's dramatic post-peak drop (−189 mg/dL avg) reflects aggressive AID
 correction combined with ISF mismatch (effective ISF 2.2× profile from EXP-1291).
 
 ## Carb Estimate Distributions
@@ -102,7 +102,7 @@ because AID insulin blunts the observed glucose rise.
 
 ![Rise Rate vs Excursion](../../visualizations/meal-characterization/fig6_rise_rate_vs_excursion.png)
 
-Linear relationship (r ≈ 0.6): faster rise → bigger excursion.  All meal
+Linear relationship (r ≈ 0.92): faster rise → bigger excursion.  All meal
 windows overlap — **meal window does not predict rise characteristics**.
 The relationship is driven by meal composition (simple vs complex carbs,
 fat/protein content) rather than time of day.

@@ -159,9 +159,9 @@ patients who would otherwise get tuning that could worsen hypos.
 
 **Two recovery phenotypes**:
 1. **Active treaters** (b, j): >58% carb-treated, faster recovery, lower nadir severity
-2. **Passive reliers** (a, c, f, i, k): <5% carb-treated, rely on AID suspend, deeper nadirs
+2. **Passive reliers** (a, f, i, k): <5% carb-treated, rely on AID suspend, deeper nadirs
 
-Patient i has slowest recovery (25 min) with lowest carb treatment (4.4%) and deepest
+Patient i has slowest recovery (25 min) with low carb treatment (4.4%) and deepest
 nadirs (r=-0.483). Active self-management correlates with better outcomes.
 
 ### EXP-1499: Re-Validation Against ADA with TBR
