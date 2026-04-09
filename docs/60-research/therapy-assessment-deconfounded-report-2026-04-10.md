@@ -118,7 +118,7 @@ Even the "best" patient (k) has R²=-0.119. This means the raw supply-demand con
 
 ## 4. EXP-1296: Fasting Glucose Trends
 
-**Method**: Identify overnight fasting windows (0–5 AM, no carbs/bolus ±2h), compute glucose slope.
+**Method**: Identify overnight fasting windows (0–6 AM, no carbs/bolus ±2h), compute glucose slope.
 
 | Patient | Nights | Slope (mg/dL/h) | Assessment |
 |---|---|---|---|
@@ -131,10 +131,10 @@ Even the "best" patient (k) has R²=-0.119. This means the raw supply-demand con
 | c | 2 | -34.06 | basal_too_high |
 | e | 2 | -22.32 | basal_too_high |
 
-**Notes**: b, g, h had 0 qualifying fasting nights (always have carbs or insulin activity during overnight). Patients c, e have only 2 qualifying nights — unreliable. Patients a, d, f, j, k have sufficient volume (≥25 nights).
+**Notes**: b, g, h had 0 qualifying fasting nights (always have carbs or insulin activity during overnight). Patients c, e have only 2 qualifying nights — unreliable. Patients a, d, f, j, k have sufficient volume (≥25 nights). Assessment uses **median** slope, while "Slope" column shows mean; these can diverge with skewed distributions.
 
 **Reliable assessments** (≥25 qualifying nights):
-- a: essentially flat (-0.05) but classified "too_low" — threshold may need adjustment
+- a: mean slope -0.05 but median slope > 3.0 (skewed: more rising nights) → classified "too_low"
 - d: slight drift down (-2.17 mg/dL/h) — appropriate
 - f: stable (+0.32) — appropriate
 - j: rising (+5.55) — basal too low overnight (dawn phenomenon?)
@@ -197,7 +197,7 @@ Compared to EXP-990 fidelity score (range 37.5–76.4):
 | f | 259 | -0.9 min | 4.6% |
 | j | 141 | 0.0 min | 0.0% |
 
-**Note**: Negative timing means bolus comes AFTER carbs appear in data. Patient j at 0.0 min/0% pre-bolus may reflect SMB-only (no manual boluses with meals). Large variation: 0–68% pre-bolus rate across patients.
+**Note**: Negative timing means bolus comes BEFORE carbs (pre-bolus). Patient j at 0.0 min/0% pre-bolus may reflect SMB-only (no manual boluses with meals). Large variation: 0–68% pre-bolus rate across patients.
 
 ---
 

@@ -1379,7 +1379,9 @@ def main():
                              'population_summary', 'block_recs'):
                     print(f"  {k}: {v}")
             if args.save:
-                fname = f'exp-{eid}_therapy.json'
+                outdir = Path(__file__).resolve().parent.parent.parent / 'externals' / 'experiments'
+                outdir.mkdir(parents=True, exist_ok=True)
+                fname = outdir / f'exp-{eid}_therapy.json'
                 with open(fname, 'w') as f:
                     json.dump(result, f, indent=2, default=str)
                 print(f"  Saved → {fname}")

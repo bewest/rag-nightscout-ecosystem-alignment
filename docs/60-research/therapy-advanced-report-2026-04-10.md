@@ -30,8 +30,8 @@ This batch delivers three breakthroughs and confirms one fundamental limitation:
 
 **Method**: Instead of ISF = ΔBG / insulin, fit exponential decay to post-correction glucose:
 ```
-BG(t) = BG_peak + amplitude × (1 - exp(-t/τ))
-ISF_curve = |amplitude| / bolus_dose
+BG(t) = BG_start - amplitude × (1 - exp(-t/τ))
+ISF_curve = amplitude / bolus_dose
 ```
 
 **Precondition**: `correction_validation` (≥5 corrections from BG>150, no carbs)
@@ -126,34 +126,35 @@ A "calm window" requires basal_ratio to stay within 0.8–1.2 for the entire DIA
 
 **Method**: When actual dBG/dt >> predicted net_flux AND no carbs logged, attribute the difference to implicit UAM supply:
 ```
-UAM_supply(t) = max(0, actual_dBG/dt - predicted_net_flux)  [when no carbs]
-augmented_supply = original_supply + UAM_supply
-augmented_R² = R²(augmented prediction vs actual)
+excess(t) = actual_dBG/dt - predicted_net_flux
+UAM_supply(t) = excess(t)  if excess(t) > 3.0 mg/dL/5min AND carbs ≤ 1g within ±1h
+augmented_flux = net_flux + UAM_supply
+augmented_R² = R²(augmented_flux vs actual_dBG/dt)
 ```
 
 ### Per-Patient Results
 
 | Patient | Baseline R² | Augmented R² | Δ R² | UAM Events | UAM/day |
 |---|---|---|---|---|---|
-| b | — | — | +0.137 | 4,438 | 24.7 |
-| j | — | — | +0.362 | 3,260 | 53.4 |
-| g | — | — | +0.383 | 11,087 | 61.6 |
-| h | — | — | +0.536 | 6,090 | 33.9 |
-| f | — | — | +0.548 | 13,980 | 77.7 |
-| k | — | — | +0.584 | 10,232 | 56.8 |
-| a | — | — | +0.625 | 17,172 | 95.4 |
-| d | — | — | +0.640 | 13,316 | 74.0 |
-| c | — | — | +0.783 | 18,509 | 102.8 |
-| e | — | — | +1.520 | 20,761 | 131.0 |
-| i | — | — | **+3.333** | 32,189 | **178.8** |
+| b | — | — | +0.137 | 4,438 | 27.5 |
+| j | — | — | +0.362 | 3,260 | 59.2 |
+| g | — | — | +0.383 | 11,087 | 69.3 |
+| h | — | — | +0.536 | 6,090 | 94.7 |
+| f | — | — | +0.548 | 13,980 | 87.5 |
+| k | — | — | +0.584 | 10,232 | 64.3 |
+| a | — | — | +0.625 | 17,172 | 108.2 |
+| d | — | — | +0.640 | 13,316 | 84.8 |
+| c | — | — | +0.783 | 18,509 | 124.6 |
+| e | — | — | +1.520 | 20,761 | 148.1 |
+| i | — | — | **+3.333** | 32,189 | **200.1** |
 
 **Summary**: Mean R² improvement = **+0.859** (from -0.508 to +0.351)
 
 **Key findings**:
 - **ALL patients improve** — UAM augmentation universally helps
-- **Patient i improves most** (Δ=+3.333): The worst-fidelity patient has the most UAM events (179/day!). This explains why the physics model failed — nearly all glucose dynamics were from unmodeled meals
+- **Patient i improves most** (Δ=+3.333): The worst-fidelity patient has the most UAM events (200/day!). This explains why the physics model failed — nearly all glucose dynamics were from unmodeled meals
 - **Even best patient (k)** improves +0.584 — UAM supply is significant even for well-calibrated patients
-- **Mean 97 UAM events/day** across cohort — roughly every 15 minutes. Many of these are likely not discrete meals but continuous glucose input from slow carb absorption, hepatic production variations, and sensor artifacts
+- **Mean 97 UAM events/day** across cohort (per valid data day) — roughly every 15 minutes. Many of these are likely not discrete meals but continuous glucose input from slow carb absorption, hepatic production variations, and sensor artifacts
 
 **Implication**: The physics model's poor R² was primarily due to missing UAM supply, not fundamental model failure. With UAM augmentation, R² crosses zero for the first time — the model now explains more variance than a constant prediction. This validates the supply-demand framework as the right foundation for therapy assessment.
 

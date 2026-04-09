@@ -156,13 +156,13 @@ Generated per-patient, per-time-block basal rate recommendations using both phys
 - **Peak hepatic output: midnight (0 AM) for 9/11 patients** — not dawn (4-6 AM) as clinically expected
 - This likely reflects PK channel encoding rather than true hepatic timing
 - Dawn effect detected in 2/11 patients via glucose drift method
-- Mean dawn magnitude: 11.1 mg/dL/h for detected patients
+- Mean dawn magnitude: 11.1 mg/dL/h across 3 patients with non-NaN data (e=5.9, h=0.0, i=27.4); for the 2 detected patients only, mean=16.7 mg/dL/h
 
 ### EXP-1340: Therapy Simulation
 
 **Approach**: Apply overnight drift correction across entire day with exponential decay.
 
-**Result**: TIR 70.9% → 69.5% (Δ=-1.4%), **0/11 improved**
+**Result**: TIR 70.9% → 69.5% (Δ=-1.4%), **0/11 improved** (using >1% TIR improvement threshold; 3 patients had sub-threshold gains of 0.3–0.8%)
 
 | Patient | Current TIR | Simulated TIR | Change |
 |---------|------------|--------------|--------|

@@ -1,518 +1,1346 @@
 #!/usr/bin/env python3
-"""EXP-1341: Multi-Algorithm Meal Carb Estimation Survey.
+"""EXP-1341-1350: Therapy Refinement -- DIA Correction, Multi-Block, Triage
 
-Compares 4 approaches to estimating meal carbohydrate magnitude:
+Builds on findings from EXP-1331-1340:
+1. Physics model has ~25% systematic bias -- net flux overestimates demand
+2. DIA mismatch: population median effective DIA = 6.0h vs 5.0h profile
+3. Overnight glucose drift is the best single signal for basal assessment
+4. Dinner CR is worst -- 77.3 mg/dL mean excursion, 53.6% flagged
+5. ISF varies 131% within day -- single ISF values are insufficient
+6. UAM filtering at 20% loses 84.6% of events -- too aggressive
+7. Overnight-only simulation gives TIR delta=-1.4% -- need multi-block approach
 
-1. **Physics residual integral** — integrates unexplained glucose rise
-   (actual delta minus modeled supply/demand net flux) over meal window.
-   Converts via CR/ISF.
-
-2. **Glucose excursion** — simple peak-minus-nadir glucose rise during
-   meal window, converted to carbs via CR/ISF.
-
-3. **Loop IRC (retrospective correction)** — computes deviation between
-   actual glucose and Loop's 30-min prediction (from `predicted_30`).
-   Positive deviations = "unexpected glucose rise" → carb absorption.
-   Approximates Loop's IntegralRetrospectiveCorrection PID controller.
-
-4. **oref0 deviation** — glucose rate of change minus expected BGI from
-   insulin activity.  The "unexplained" positive deviation is attributed
-   to carb absorption, with a min_5m_carbimpact floor.
-
-Key insight: entered carbs are NOT ground truth — they are noisy,
-often missing (76.5% UAM), and frequently inaccurate.  This is a
-qualitative survey of how each algorithm perceives meal magnitude.
-
-Builds on:
-- EXP-753: physics residual integral
-- EXP-441: supply/demand decomposition
-- EXP-1129: proactive meal prediction (F1=0.939 meal_detector)
-- Loop IRC: IntegralRetrospectiveCorrection.swift (P=1, I=2, D=2)
-- oref0: determine-basal.js deviation logic
+Resolves:
+- Can DIA correction reduce the 25% physics bias? (EXP-1341)
+- Does multi-block simulation beat overnight-only? (EXP-1342)
+- What CR tightening actually improves dinner excursions? (EXP-1343)
+- Can we do therapy triage WITHOUT physics at all? (EXP-1344)
+- What is the optimal UAM threshold? (EXP-1345)
+- Does DIA vary by bolus size or time of day? (EXP-1346)
+- Actionable ISF schedules from response curves (EXP-1347)
+- Unified confidence-weighted recommendations (EXP-1348)
+- AID loop dampening model (EXP-1349)
+- Exercise vs UAM violation classification (EXP-1350)
 """
-
-import sys, os, json, time
+import argparse, json, os, sys, time, warnings
 import numpy as np
+from pathlib import Path
+from collections import defaultdict
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+warnings.filterwarnings('ignore')
+
 from cgmencode.exp_metabolic_flux import load_patients
 from cgmencode.exp_metabolic_441 import compute_supply_demand
+from cgmencode.exp_clinical_1291 import (
+    assess_preconditions, check_precondition, get_fidelity_metrics,
+    get_scheduled_basal_rate, get_time_blocks
+)
+from cgmencode.exp_clinical_1311 import compute_uam_supply
 
-PATIENTS_DIR = os.path.join(os.path.dirname(__file__),
-                            '..', '..', 'externals', 'ns-data', 'patients')
+PATIENTS_DIR = str(Path(__file__).resolve().parent.parent.parent
+                   / 'externals' / 'ns-data' / 'patients')
 
-STEPS_PER_HOUR = 12    # 5-min intervals
+GLUCOSE_SCALE = 400.0
+STEPS_PER_HOUR = 12
 STEPS_PER_DAY = 288
-DT_HOURS = 1 / STEPS_PER_HOUR  # 5 min in hours
+DIA_STEPS = STEPS_PER_HOUR * 5  # 5-hour DIA
 
-# Meal detection: glucose must rise ≥ this threshold
-MEAL_RISE_THRESHOLD = 15  # mg/dL
-# Merge meals closer than this
-MEAL_MERGE_STEPS = 6      # 30 min
-# Post-meal integration window
-POST_MEAL_WINDOW = 36     # 3 hours (36 × 5 min)
+BLOCK_NAMES = ['overnight(0-6)', 'morning(6-10)', 'midday(10-14)',
+               'afternoon(14-18)', 'evening(18-22)', 'night(22-24)']
+BLOCK_RANGES = [(0, 6), (6, 10), (10, 14), (14, 18), (18, 22), (22, 24)]
 
-# oref0 min_5m_carbimpact default (mg/dL per 5 min)
-# oref0 profile default: 8 mg/dL per 5min (oref1/SMB mode)
-# See: externals/oref0/lib/profile/index.js:35
-MIN_5M_CARBIMPACT = 8.0  # mg/dL per 5 min (already per-step, no conversion needed)
+# Archetype assignments from EXP-1310
+ARCHETYPES = {
+    'well-calibrated': ['d', 'h', 'j', 'k'],
+    'needs-tuning': ['b', 'c', 'e', 'f', 'g', 'i'],
+    'miscalibrated': ['a'],
+}
+PATIENT_ARCHETYPE = {}
+for arch, members in ARCHETYPES.items():
+    for m in members:
+        PATIENT_ARCHETYPE[m] = arch
 
-# Patient therapy settings from profile data
-PATIENT_SETTINGS = {
-    'a': {'isf': 49, 'cr': 4},
-    'b': {'isf': 95, 'cr': 12},
-    'c': {'isf': 75, 'cr': 4},
-    'd': {'isf': 40, 'cr': 14},
-    'e': {'isf': 33, 'cr': 3},
-    'f': {'isf': 20, 'cr': 5},
-    'g': {'isf': 65, 'cr': 8},
-    'h': {'isf': 90, 'cr': 10},
-    'i': {'isf': 50, 'cr': 8},
-    'j': {'isf': 40, 'cr': 6},
-    'k': {'isf': 25, 'cr': 10},
+
+def get_time_block(step_in_day):
+    """Map a step within a day to a 6-block time block index."""
+    hour = (step_in_day / STEPS_PER_HOUR) % 24
+    for i, (lo, hi) in enumerate(BLOCK_RANGES):
+        if lo <= hour < hi:
+            return i
+    return 5
+
+
+def get_overnight_mask(df, n):
+    """Return boolean mask for overnight hours (0-6 AM)."""
+    mask = np.zeros(n, dtype=bool)
+    for i in range(n):
+        hour = (i % STEPS_PER_DAY) / STEPS_PER_HOUR
+        if 0 <= hour < 6:
+            mask[i] = True
+    return mask
+
+
+def _fit_correction_tau(glucose, bolus, carbs, n, tau_range=None):
+    """Fit exponential decay to correction events.
+
+    Returns list of dicts with tau_h, amplitude, fit_r2, bolus_u, hour.
+    """
+    if tau_range is None:
+        tau_range = np.arange(0.5, 6.1, 0.25)
+    events = []
+    for i in range(n):
+        if bolus[i] < 0.5 or np.isnan(glucose[i]) or glucose[i] <= 150:
+            continue
+        cw = slice(max(0, i - 6), min(n, i + 6))
+        if np.sum(carbs[cw]) > 2:
+            continue
+        max_window = 8 * STEPS_PER_HOUR
+        if i + max_window >= n:
+            continue
+        if np.sum(bolus[i + 1:i + max_window]) > 0.5:
+            continue
+        if np.sum(carbs[i + 1:i + max_window]) > 2:
+            continue
+        traj = glucose[i:i + max_window]
+        tv = ~np.isnan(traj)
+        if tv.sum() < max_window * 0.4:
+            continue
+        bg_start = float(traj[0])
+        t_hours = np.arange(max_window) * (5.0 / 60.0)
+        best_sse, best_amp, best_tau = np.inf, 0.0, 2.0
+        for tau_c in tau_range:
+            basis = 1.0 - np.exp(-t_hours / tau_c)
+            bv = basis[tv]
+            denom = float(np.sum(bv ** 2))
+            if denom < 1e-6:
+                continue
+            amp = float(np.sum(bv * (bg_start - traj[tv])) / denom)
+            if amp < 10:
+                continue
+            sse = float(np.sum((traj[tv] - (bg_start - amp * basis[tv])) ** 2))
+            if sse < best_sse:
+                best_sse, best_amp, best_tau = sse, amp, tau_c
+        if best_amp >= 10:
+            pred = bg_start - best_amp * (1 - np.exp(-t_hours / best_tau))
+            ss_res = float(np.sum((traj[tv] - pred[tv]) ** 2))
+            ss_tot = float(np.sum((traj[tv] - np.mean(traj[tv])) ** 2))
+            fit_r2 = 1 - ss_res / (ss_tot + 1e-10)
+            hour = (i % STEPS_PER_DAY) / STEPS_PER_HOUR
+            events.append({
+                'step': int(i), 'bolus_u': float(bolus[i]),
+                'bg_start': bg_start, 'amplitude': round(best_amp, 1),
+                'tau_h': round(best_tau, 2),
+                'effective_dia_h': round(best_tau * 3.0, 1),
+                'fit_r2': round(fit_r2, 3),
+                'isf_observed': round(best_amp / float(bolus[i]), 1),
+                'hour': round(hour, 1),
+            })
+    return events
+
+
+def _compute_fasting_mask(bolus, carbs, n, lookback_h=2):
+    """Return boolean mask for fasting periods."""
+    fasting = np.ones(n, dtype=bool)
+    for i in range(n):
+        ws = max(0, i - STEPS_PER_HOUR * lookback_h)
+        we = min(n, i + STEPS_PER_HOUR * lookback_h)
+        if np.any(bolus[ws:we] > 0) or np.any(carbs[ws:we] > 0):
+            fasting[i] = False
+    return fasting
+
+
+def _compute_block_mask(n, blo, bhi):
+    """Return boolean mask for a time-of-day block."""
+    mask = np.zeros(n, dtype=bool)
+    for i in range(n):
+        hour = (i % STEPS_PER_DAY) / STEPS_PER_HOUR
+        if blo <= hour < bhi:
+            mask[i] = True
+    return mask
+
+
+# --- EXP-1341: DIA-Corrected Physics Model ---------------------------
+
+def exp_1341_dia_corrected(patients, detail=False, preconditions=None):
+    """Use per-patient actual DIA instead of 5h profile DIA to reduce physics bias.
+
+    EXP-1334 found population median effective DIA = 6.0h vs 5.0h profile.
+    If well-calibrated patients (d,h,j,k) show recommended change closer to 0%
+    after DIA correction, the correction works.
+    """
+    PROFILE_DIA_H = 5.0
+    results = {'name': 'EXP-1341: DIA-corrected physics model',
+               'n_patients': len(patients), 'per_patient': []}
+    for p in patients:
+        df = p['df']
+        pk = p['pk']
+        glucose = df['glucose'].values.astype(float)
+        bolus = df['bolus'].values
+        carbs = df['carbs'].values
+        n = len(glucose)
+        archetype = PATIENT_ARCHETYPE.get(p['name'], 'unknown')
+        events = _fit_correction_tau(glucose, bolus, carbs, n)
+        if events:
+            patient_tau = float(np.median([e['tau_h'] for e in events]))
+            actual_dia = patient_tau * 3.0
+            mean_fit_r2 = float(np.mean([e['fit_r2'] for e in events]))
+        else:
+            patient_tau = PROFILE_DIA_H / 3.0
+            actual_dia = PROFILE_DIA_H
+            mean_fit_r2 = 0.0
+        dia_ratio = PROFILE_DIA_H / max(actual_dia, 1.0)
+        sd, uam_sup, uam_mask, aug_supply = compute_uam_supply(df, pk)
+        net_flux = sd['net']
+        demand = sd['demand']
+        dg = np.diff(glucose)
+        dg = np.append(dg, 0)
+        valid = ~np.isnan(glucose) & ~np.isnan(dg) & (np.abs(dg) < 50)
+        if valid.sum() < STEPS_PER_DAY:
+            results['per_patient'].append({
+                'patient': p['name'], 'archetype': archetype,
+                'note': 'Insufficient data'})
+            continue
+        fasting = _compute_fasting_mask(bolus, carbs, n)
+        raw_fasting = fasting & valid
+        if raw_fasting.sum() < STEPS_PER_HOUR:
+            results['per_patient'].append({
+                'patient': p['name'], 'archetype': archetype,
+                'note': 'Insufficient fasting data'})
+            continue
+        raw_mean_net = float(np.mean(net_flux[raw_fasting]))
+        raw_mean_demand = float(np.mean(demand[raw_fasting]))
+        original_change = -raw_mean_net / (raw_mean_demand + 1e-6)
+        original_change = max(-0.5, min(0.5, original_change))
+        corrected_demand = demand * dia_ratio
+        corrected_net = sd['supply'] - corrected_demand
+        corrected_mean_net = float(np.mean(corrected_net[raw_fasting]))
+        corrected_mean_demand = float(np.mean(corrected_demand[raw_fasting]))
+        corrected_change = -corrected_mean_net / (corrected_mean_demand + 1e-6)
+        corrected_change = max(-0.5, min(0.5, corrected_change))
+        dg_fasting = dg[raw_fasting]
+        net_fasting_orig = net_flux[raw_fasting]
+        net_fasting_corr = corrected_net[raw_fasting]
+        def _r2(predicted, actual):
+            ss_res = float(np.sum((actual - predicted) ** 2))
+            ss_tot = float(np.sum((actual - np.mean(actual)) ** 2))
+            return 1 - ss_res / (ss_tot + 1e-10)
+        r2_original = _r2(net_fasting_orig, dg_fasting)
+        r2_corrected = _r2(net_fasting_corr, dg_fasting)
+        results['per_patient'].append({
+            'patient': p['name'], 'archetype': archetype,
+            'n_correction_events': len(events),
+            'patient_tau_h': round(patient_tau, 2),
+            'actual_dia_h': round(actual_dia, 1),
+            'dia_ratio': round(dia_ratio, 3),
+            'mean_fit_r2': round(mean_fit_r2, 3),
+            'original_change_pct': round(original_change * 100, 1),
+            'corrected_change_pct': round(corrected_change * 100, 1),
+            'bias_reduction_pct': round(
+                (abs(original_change) - abs(corrected_change)) /
+                (abs(original_change) + 1e-6) * 100, 1),
+            'r2_original': round(r2_original, 3),
+            'r2_corrected': round(r2_corrected, 3),
+            'r2_improved': r2_corrected > r2_original,
+        })
+    pp = results['per_patient']
+    well_cal = [r for r in pp if r.get('archetype') == 'well-calibrated'
+                and 'original_change_pct' in r]
+    if well_cal:
+        results['well_cal_original_mean_abs'] = round(
+            float(np.mean([abs(r['original_change_pct']) for r in well_cal])), 1)
+        results['well_cal_corrected_mean_abs'] = round(
+            float(np.mean([abs(r['corrected_change_pct']) for r in well_cal])), 1)
+        results['well_cal_bias_reduction'] = round(
+            float(np.mean([r['bias_reduction_pct'] for r in well_cal])), 1)
+    all_valid = [r for r in pp if 'original_change_pct' in r]
+    if all_valid:
+        results['population_original_bias_abs'] = round(
+            float(np.mean([abs(r['original_change_pct']) for r in all_valid])), 1)
+        results['population_corrected_bias_abs'] = round(
+            float(np.mean([abs(r['corrected_change_pct']) for r in all_valid])), 1)
+        results['population_mean_dia'] = round(
+            float(np.mean([r['actual_dia_h'] for r in all_valid])), 1)
+        results['n_r2_improved'] = sum(1 for r in all_valid if r.get('r2_improved'))
+        results['n_patients_analyzed'] = len(all_valid)
+    return results
+
+
+# --- EXP-1342: Multi-Block Basal Simulation ---------------------------
+
+def exp_1342_multiblock_sim(patients, detail=False, preconditions=None):
+    """Simulate per-block basal corrections instead of overnight-only.
+
+    EXP-1340 showed overnight-only TIR change = -1.4% (0/11 improved).
+    Apply per-block drift corrections with exponential decay and capping.
+    """
+    results = {'name': 'EXP-1342: Multi-block basal simulation',
+               'n_patients': len(patients), 'per_patient': []}
+    for p in patients:
+        df = p['df']
+        pk = p['pk']
+        glucose = df['glucose'].values.astype(float)
+        bolus = df['bolus'].values
+        carbs = df['carbs'].values
+        n = len(glucose)
+        dg = np.diff(glucose)
+        dg = np.append(dg, 0)
+        valid = ~np.isnan(glucose) & ~np.isnan(dg) & (np.abs(dg) < 50)
+        fasting = _compute_fasting_mask(bolus, carbs, n)
+        gv = glucose[~np.isnan(glucose)]
+        if len(gv) < STEPS_PER_DAY:
+            results['per_patient'].append({
+                'patient': p['name'], 'note': 'Insufficient data'})
+            continue
+        current_tir = float(np.sum((gv >= 70) & (gv <= 180))) / len(gv) * 100
+        current_mean_bg = float(np.mean(gv))
+        current_tbr = float(np.sum(gv < 70)) / len(gv) * 100
+        block_drifts = {}
+        block_corrections = {}
+        for bi, (bname, (blo, bhi)) in enumerate(zip(BLOCK_NAMES, BLOCK_RANGES)):
+            block_mask = _compute_block_mask(n, blo, bhi)
+            bfv = block_mask & fasting & valid
+            if bfv.sum() < STEPS_PER_HOUR:
+                block_drifts[bname] = 0.0
+                block_corrections[bname] = 0.0
+                continue
+            drift_per_5min = float(np.mean(dg[bfv]))
+            drift_per_hour = drift_per_5min * STEPS_PER_HOUR
+            block_drifts[bname] = round(drift_per_hour, 3)
+            correction_per_step = -drift_per_5min
+            correction_per_step = max(-0.5, min(0.5, correction_per_step))
+            block_corrections[bname] = round(correction_per_step, 4)
+        simulated_glucose = glucose.copy()
+        cumulative_correction = 0.0
+        for i in range(n):
+            if np.isnan(glucose[i]):
+                continue
+            bi = get_time_block(i % STEPS_PER_DAY)
+            bname = BLOCK_NAMES[bi]
+            step_correction = block_corrections.get(bname, 0.0)
+            cumulative_correction = cumulative_correction * 0.95 + step_correction
+            simulated_glucose[i] = glucose[i] + cumulative_correction
+        sv = simulated_glucose[~np.isnan(simulated_glucose)]
+        sim_tir = float(np.sum((sv >= 70) & (sv <= 180))) / len(sv) * 100
+        sim_mean_bg = float(np.mean(sv))
+        sim_tbr = float(np.sum(sv < 70)) / len(sv) * 100
+        results['per_patient'].append({
+            'patient': p['name'],
+            'current_tir': round(current_tir, 1),
+            'simulated_tir': round(sim_tir, 1),
+            'tir_change': round(sim_tir - current_tir, 1),
+            'current_mean_bg': round(current_mean_bg, 1),
+            'simulated_mean_bg': round(sim_mean_bg, 1),
+            'current_tbr': round(current_tbr, 1),
+            'simulated_tbr': round(sim_tbr, 1),
+            'block_drifts': block_drifts,
+            'block_corrections': block_corrections,
+        })
+    pp = [r for r in results['per_patient'] if 'current_tir' in r]
+    if pp:
+        results['n_patients_with_data'] = len(pp)
+        results['mean_tir_change'] = round(float(np.mean([r['tir_change'] for r in pp])), 1)
+        results['mean_current_tir'] = round(float(np.mean([r['current_tir'] for r in pp])), 1)
+        results['mean_simulated_tir'] = round(float(np.mean([r['simulated_tir'] for r in pp])), 1)
+        results['n_improved'] = sum(1 for r in pp if r['tir_change'] > 1)
+        results['n_worsened'] = sum(1 for r in pp if r['tir_change'] < -1)
+        results['mean_tbr_change'] = round(
+            float(np.mean([r['simulated_tbr'] - r['current_tbr'] for r in pp])), 1)
+        block_avg = {}
+        for bname in BLOCK_NAMES:
+            dvals = [r['block_drifts'].get(bname, 0.0) for r in pp]
+            block_avg[bname] = round(float(np.mean(dvals)), 3)
+        results['population_block_drifts'] = block_avg
+    return results
+
+
+# --- EXP-1343: CR Tightening Simulation ------------------------------
+
+def exp_1343_cr_tightening(patients, detail=False, preconditions=None):
+    """Simulate reducing dinner CR by 10%, 20%, 30% to reduce excursions.
+
+    EXP-1336 found dinner CR is worst: 77.3 mg/dL mean excursion, 53.6% flagged.
+    """
+    TAU_H = 2.0
+    CR_REDUCTIONS = [0.10, 0.20, 0.30]
+    results = {'name': 'EXP-1343: CR tightening simulation',
+               'n_patients': len(patients), 'per_patient': []}
+    for p in patients:
+        df = p['df']
+        pk = p['pk']
+        glucose = df['glucose'].values.astype(float)
+        bolus = df['bolus'].values
+        carbs = df['carbs'].values
+        isf_profile = float(np.nanmean(pk[:, 7] * 200.0))
+        cr_profile = float(np.nanmean(pk[:, 3] * 0.5))
+        if cr_profile < 1.0:
+            cr_profile = 10.0
+        n = len(glucose)
+        dinner_meals = []
+        last_meal_step = -3 * STEPS_PER_HOUR
+        for i in range(n):
+            if carbs[i] < 10 or (i - last_meal_step) < 2 * STEPS_PER_HOUR:
+                continue
+            hour = (i % STEPS_PER_DAY) / STEPS_PER_HOUR
+            if not (14 <= hour < 20):
+                continue
+            last_meal_step = i
+            post_end = min(n, i + 3 * STEPS_PER_HOUR)
+            if post_end - i < STEPS_PER_HOUR:
+                continue
+            post_g = glucose[i:post_end]
+            pre_valid = glucose[max(0, i - 3):i + 1]
+            pre_valid = pre_valid[~np.isnan(pre_valid)]
+            if len(pre_valid) == 0:
+                continue
+            bg_start = float(np.mean(pre_valid))
+            bg_peak = float(np.nanmax(post_g)) if np.any(~np.isnan(post_g)) else bg_start
+            excursion = bg_peak - bg_start
+            if np.isnan(excursion):
+                continue
+            dinner_meals.append({'step': int(i), 'carbs_g': float(carbs[i]),
+                                 'bg_start': round(bg_start, 1), 'excursion': round(excursion, 1)})
+        if not dinner_meals:
+            results['per_patient'].append({'patient': p['name'], 'n_dinners': 0,
+                                           'note': 'No qualifying dinner meals'})
+            continue
+        reduction_results = {}
+        for cr_red in CR_REDUCTIONS:
+            new_cr = cr_profile * (1 - cr_red)
+            sim_excursions = []
+            for meal in dinner_meals:
+                extra_insulin = meal['carbs_g'] * (1.0 / new_cr - 1.0 / cr_profile)
+                peak_reduction = extra_insulin * isf_profile * (1 - np.exp(-1.0 / TAU_H))
+                sim_excursion = max(0, meal['excursion'] - peak_reduction)
+                sim_excursions.append(sim_excursion)
+            reduction_results[f'{int(cr_red * 100)}pct'] = {
+                'new_cr': round(new_cr, 1),
+                'mean_excursion': round(float(np.mean(sim_excursions)), 1),
+                'median_excursion': round(float(np.median(sim_excursions)), 1),
+                'pct_above_60': round(sum(1 for e in sim_excursions if e > 60) / len(sim_excursions) * 100, 1),
+                'excursion_reduction': round(float(np.mean([m['excursion'] for m in dinner_meals])) -
+                                             float(np.mean(sim_excursions)), 1),
+            }
+        original_mean = float(np.mean([m['excursion'] for m in dinner_meals]))
+        original_pct_high = sum(1 for m in dinner_meals if m['excursion'] > 60) / len(dinner_meals) * 100
+        results['per_patient'].append({
+            'patient': p['name'], 'n_dinners': len(dinner_meals),
+            'cr_profile': round(cr_profile, 1), 'isf_profile': round(isf_profile, 1),
+            'original_mean_excursion': round(original_mean, 1),
+            'original_pct_above_60': round(original_pct_high, 1),
+            'reductions': reduction_results,
+        })
+    pp = [r for r in results['per_patient'] if r.get('n_dinners', 0) > 0]
+    if pp:
+        results['n_patients_with_data'] = len(pp)
+        results['population_original_excursion'] = round(
+            float(np.mean([r['original_mean_excursion'] for r in pp])), 1)
+        for pct in ['10pct', '20pct', '30pct']:
+            vals = [r['reductions'][pct]['mean_excursion'] for r in pp if pct in r.get('reductions', {})]
+            if vals:
+                results[f'population_{pct}_excursion'] = round(float(np.mean(vals)), 1)
+                results[f'population_{pct}_above_60'] = round(
+                    float(np.mean([r['reductions'][pct]['pct_above_60'] for r in pp if pct in r.get('reductions', {})])), 1)
+    return results
+
+
+# --- EXP-1344: Drift-Only Triage -------------------------------------
+
+def exp_1344_drift_triage(patients, detail=False, preconditions=None):
+    """Build complete recommendation system using ONLY drift and excursion.
+
+    No physics model -- just:
+    - Basal: overnight drift direction and magnitude
+    - CR: meal excursion by block, flag blocks with mean >60 mg/dL
+    - ISF: correction bolus drop/dose ratio
+    Compare triage cards vs physics-based recommendations.
+    """
+    MEAL_BLOCKS = [('breakfast', 6, 10), ('lunch', 10, 14), ('dinner', 14, 20)]
+    results = {'name': 'EXP-1344: Drift-only triage',
+               'n_patients': len(patients), 'per_patient': []}
+    for p in patients:
+        df = p['df']
+        pk = p['pk']
+        glucose = df['glucose'].values.astype(float)
+        bolus = df['bolus'].values
+        carbs = df['carbs'].values
+        n = len(glucose)
+        dg = np.diff(glucose)
+        dg = np.append(dg, 0)
+        valid = ~np.isnan(glucose) & ~np.isnan(dg) & (np.abs(dg) < 50)
+        fasting = _compute_fasting_mask(bolus, carbs, n)
+        overnight = get_overnight_mask(df, n)
+        ovn_fasting = overnight & fasting & valid
+        if ovn_fasting.sum() > STEPS_PER_HOUR:
+            drift_per_hour = float(np.mean(dg[ovn_fasting])) * STEPS_PER_HOUR
+            if np.isnan(drift_per_hour):
+                drift_per_hour = 0.0
+        else:
+            drift_per_hour = 0.0
+        basal_rec = 'increase' if drift_per_hour > 3.0 else ('decrease' if drift_per_hour < -3.0 else 'ok')
+        cr_recs = {}
+        for bname, blo, bhi in MEAL_BLOCKS:
+            meal_excursions = []
+            last_meal = -3 * STEPS_PER_HOUR
+            for i in range(n):
+                if carbs[i] < 5 or (i - last_meal) < 2 * STEPS_PER_HOUR:
+                    continue
+                hour = (i % STEPS_PER_DAY) / STEPS_PER_HOUR
+                if not (blo <= hour < bhi):
+                    continue
+                last_meal = i
+                post_end = min(n, i + 3 * STEPS_PER_HOUR)
+                if post_end - i < STEPS_PER_HOUR:
+                    continue
+                post_g = glucose[i:post_end]
+                pre_g = glucose[max(0, i - 3):i + 1]
+                pre_valid = pre_g[~np.isnan(pre_g)]
+                if len(pre_valid) == 0:
+                    continue
+                bg_start = float(np.mean(pre_valid))
+                bg_peak = float(np.nanmax(post_g)) if np.any(~np.isnan(post_g)) else bg_start
+                exc = bg_peak - bg_start
+                if not np.isnan(exc):
+                    meal_excursions.append(exc)
+            if meal_excursions:
+                mean_exc = float(np.mean(meal_excursions))
+                cr_recs[bname] = {'n_meals': len(meal_excursions), 'mean_excursion': round(mean_exc, 1),
+                                  'recommendation': 'adjust' if mean_exc > 60 else 'ok'}
+            else:
+                cr_recs[bname] = {'n_meals': 0, 'recommendation': 'insufficient_data'}
+        isf_estimates = []
+        for i in range(n):
+            if bolus[i] < 0.3 or np.isnan(glucose[i]) or glucose[i] <= 150:
+                continue
+            cw = slice(max(0, i - 6), min(n, i + 6))
+            if np.sum(carbs[cw]) > 2:
+                continue
+            post_end = min(n, i + 3 * STEPS_PER_HOUR)
+            if post_end - i < STEPS_PER_HOUR:
+                continue
+            if np.sum(bolus[i + 1:post_end]) > 0.5:
+                continue
+            post_g = glucose[i:post_end]
+            pv = ~np.isnan(post_g)
+            if pv.sum() < STEPS_PER_HOUR // 2:
+                continue
+            drop = float(post_g[0] - np.nanmin(post_g))
+            if drop > 10:
+                isf_estimates.append(drop / float(bolus[i]))
+        isf_profile = float(np.nanmean(pk[:, 7] * 200.0))
+        if isf_estimates:
+            observed_isf = float(np.median(isf_estimates))
+            isf_ratio = observed_isf / (isf_profile + 1e-6)
+            isf_rec = 'adjust' if abs(isf_ratio - 1.0) > 0.2 else 'ok'
+        else:
+            observed_isf, isf_ratio, isf_rec = isf_profile, 1.0, 'insufficient_data'
+        sd = compute_supply_demand(df, pk)
+        net_flux = sd['net']
+        demand = sd['demand']
+        raw_fasting = fasting & valid
+        if raw_fasting.sum() > STEPS_PER_HOUR:
+            physics_net = float(np.mean(net_flux[raw_fasting]))
+            physics_demand = float(np.mean(demand[raw_fasting]))
+            physics_change = -physics_net / (physics_demand + 1e-6)
+            physics_change = max(-0.5, min(0.5, physics_change))
+            physics_rec = 'increase' if physics_change > 0.05 else ('decrease' if physics_change < -0.05 else 'ok')
+        else:
+            physics_change, physics_rec = 0.0, 'insufficient_data'
+        triage_card = {
+            'basal': basal_rec,
+            'CR_breakfast': cr_recs.get('breakfast', {}).get('recommendation', 'insufficient_data'),
+            'CR_lunch': cr_recs.get('lunch', {}).get('recommendation', 'insufficient_data'),
+            'CR_dinner': cr_recs.get('dinner', {}).get('recommendation', 'insufficient_data'),
+            'ISF': isf_rec,
+        }
+        results['per_patient'].append({
+            'patient': p['name'], 'archetype': PATIENT_ARCHETYPE.get(p['name'], 'unknown'),
+            'drift_mg_per_hour': round(drift_per_hour, 2), 'triage_card': triage_card,
+            'cr_details': cr_recs, 'observed_isf': round(observed_isf, 1),
+            'isf_profile': round(isf_profile, 1), 'isf_ratio': round(isf_ratio, 2),
+            'n_isf_events': len(isf_estimates), 'physics_basal_rec': physics_rec,
+            'physics_change_pct': round(physics_change * 100, 1),
+            'drift_vs_physics_agree': basal_rec == physics_rec,
+        })
+    pp = results['per_patient']
+    valid_pp = [r for r in pp if 'triage_card' in r]
+    if valid_pp:
+        results['n_patients_analyzed'] = len(valid_pp)
+        results['drift_physics_agreement_pct'] = round(
+            sum(1 for r in valid_pp if r.get('drift_vs_physics_agree')) / len(valid_pp) * 100, 1)
+        for param in ['basal', 'CR_breakfast', 'CR_dinner', 'ISF']:
+            dist = defaultdict(int)
+            for r in valid_pp:
+                dist[r['triage_card'].get(param, 'unknown')] += 1
+            results[f'{param}_distribution'] = dict(dist)
+    return results
+
+
+# --- EXP-1345: Gentle UAM Threshold Sweep ----------------------------
+
+def exp_1345_uam_sweep(patients, detail=False, preconditions=None):
+    """Find optimal UAM contamination threshold for ISF response-curve filtering.
+
+    EXP-1332 used 20% threshold, losing 84.6% of events.
+    Sweep 20%-80% to find threshold maximizing (events_retained * fit_R2).
+    """
+    THRESHOLDS = [0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80]
+    TAU_CANDIDATES = [0.3, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0]
+    results = {'name': 'EXP-1345: UAM threshold sweep',
+               'n_patients': len(patients), 'per_patient': []}
+    for p in patients:
+        df = p['df']
+        pk = p['pk']
+        glucose = df['glucose'].values.astype(float)
+        bolus = df['bolus'].values
+        carbs = df['carbs'].values
+        n = len(glucose)
+        sd, uam_sup, uam_mask, _ = compute_uam_supply(df, pk)
+        raw_events = []
+        for i in range(n):
+            if bolus[i] < 0.3 or np.isnan(glucose[i]) or glucose[i] <= 150:
+                continue
+            cw = slice(max(0, i - 6), min(n, i + 6))
+            if np.sum(carbs[cw]) > 2:
+                continue
+            window = 3 * STEPS_PER_HOUR
+            if i + window >= n:
+                continue
+            if np.sum(bolus[i + 1:i + window]) > 0.5:
+                continue
+            if np.sum(carbs[i + 1:i + window]) > 2:
+                continue
+            traj = glucose[i:i + window]
+            tv = ~np.isnan(traj)
+            if tv.sum() < window * 0.5:
+                continue
+            uam_frac = float(uam_mask[i:i + window].sum()) / window
+            bg_start = float(traj[0])
+            t_hours = np.arange(window) * (5.0 / 60.0)
+            best_sse, best_amp, best_tau = np.inf, 0.0, 1.0
+            for tau_c in TAU_CANDIDATES:
+                basis = 1.0 - np.exp(-t_hours / tau_c)
+                bv = basis[tv]
+                denom = float(np.sum(bv ** 2))
+                if denom < 1e-6:
+                    continue
+                amp = float(np.sum(bv * (bg_start - traj[tv])) / denom)
+                if amp < 5:
+                    continue
+                sse = float(np.sum((traj[tv] - (bg_start - amp * basis[tv])) ** 2))
+                if sse < best_sse:
+                    best_sse, best_amp, best_tau = sse, amp, tau_c
+            if best_amp >= 5:
+                isf_est = best_amp / float(bolus[i])
+                pred = bg_start - best_amp * (1 - np.exp(-t_hours / best_tau))
+                ss_res = float(np.sum((traj[tv] - pred[tv]) ** 2))
+                ss_tot = float(np.sum((traj[tv] - np.mean(traj[tv])) ** 2))
+                fit_r2 = 1 - ss_res / (ss_tot + 1e-10)
+                raw_events.append({'isf': isf_est, 'tau': best_tau, 'fit_r2': fit_r2, 'uam_frac': uam_frac})
+        if not raw_events:
+            results['per_patient'].append({'patient': p['name'], 'n_total_events': 0, 'note': 'No correction events'})
+            continue
+        sweep_results = {}
+        best_score, best_threshold = -1, 0.20
+        for thresh in THRESHOLDS:
+            filtered = [e for e in raw_events if e['uam_frac'] <= thresh]
+            n_retained = len(filtered)
+            frac_retained = n_retained / len(raw_events)
+            if n_retained >= 2:
+                median_isf = float(np.median([e['isf'] for e in filtered]))
+                mean_r2 = float(np.mean([e['fit_r2'] for e in filtered]))
+            else:
+                median_isf, mean_r2 = 0.0, 0.0
+            score = frac_retained * mean_r2
+            sweep_results[f'{int(thresh * 100)}pct'] = {
+                'n_retained': n_retained, 'pct_retained': round(frac_retained * 100, 1),
+                'median_isf': round(median_isf, 1), 'mean_fit_r2': round(mean_r2, 3),
+                'score': round(score, 3),
+            }
+            if score > best_score:
+                best_score, best_threshold = score, thresh
+        results['per_patient'].append({
+            'patient': p['name'], 'n_total_events': len(raw_events),
+            'optimal_threshold': round(best_threshold, 2),
+            'optimal_score': round(best_score, 3), 'sweep': sweep_results,
+        })
+    pp = [r for r in results['per_patient'] if r.get('n_total_events', 0) > 0]
+    if pp:
+        results['n_patients_with_data'] = len(pp)
+        thresholds = [r['optimal_threshold'] for r in pp]
+        results['population_optimal_threshold'] = round(float(np.median(thresholds)), 2)
+        results['threshold_distribution'] = {
+            f'{int(t * 100)}pct': sum(1 for x in thresholds if x == t)
+            for t in THRESHOLDS if any(x == t for x in thresholds)
+        }
+        orig_scores = [r['sweep'].get('20pct', {}).get('score', 0) for r in pp]
+        results['mean_score_at_20pct'] = round(float(np.mean(orig_scores)), 3)
+        results['mean_score_at_optimal'] = round(float(np.mean([r['optimal_score'] for r in pp])), 3)
+    return results
+
+
+# --- EXP-1346: Patient-Specific DIA Profiles --------------------------
+
+def exp_1346_dia_profiles(patients, detail=False, preconditions=None):
+    """Build continuous DIA curve per patient by bolus size and time of day.
+
+    Test if DIA varies with bolus magnitude or circadian rhythm.
+    """
+    results = {'name': 'EXP-1346: Patient-specific DIA profiles',
+               'n_patients': len(patients), 'per_patient': []}
+    BOLUS_GROUPS = [('small', 0, 1.0), ('medium', 1.0, 3.0), ('large', 3.0, 100.0)]
+    TOD_GROUPS = [('morning', 6, 12), ('afternoon', 12, 18), ('evening', 18, 24)]
+    for p in patients:
+        df = p['df']
+        glucose = df['glucose'].values.astype(float)
+        bolus = df['bolus'].values
+        carbs = df['carbs'].values
+        n = len(glucose)
+        events = _fit_correction_tau(glucose, bolus, carbs, n)
+        if not events:
+            results['per_patient'].append({'patient': p['name'], 'n_events': 0, 'note': 'No correction events'})
+            continue
+        bolus_groups = {}
+        for gname, lo, hi in BOLUS_GROUPS:
+            group = [e for e in events if lo <= e['bolus_u'] < hi]
+            if group:
+                taus = [e['tau_h'] for e in group]
+                bolus_groups[gname] = {
+                    'n': len(group), 'median_tau': round(float(np.median(taus)), 2),
+                    'median_dia': round(float(np.median(taus)) * 3.0, 1),
+                    'iqr_tau': round(float(np.percentile(taus, 75) - np.percentile(taus, 25)), 2) if len(taus) >= 4 else None,
+                }
+        tod_groups = {}
+        for gname, lo, hi in TOD_GROUPS:
+            group = [e for e in events if lo <= e['hour'] < hi]
+            if group:
+                taus = [e['tau_h'] for e in group]
+                tod_groups[gname] = {
+                    'n': len(group), 'median_tau': round(float(np.median(taus)), 2),
+                    'median_dia': round(float(np.median(taus)) * 3.0, 1),
+                    'iqr_tau': round(float(np.percentile(taus, 75) - np.percentile(taus, 25)), 2) if len(taus) >= 4 else None,
+                }
+        all_taus = [e['tau_h'] for e in events]
+        total_var = float(np.var(all_taus)) if len(all_taus) >= 2 else 0.0
+        bg_taus_bolus = [bolus_groups[g]['median_tau'] for g, _, _ in BOLUS_GROUPS if g in bolus_groups]
+        bolus_between_var = float(np.var(bg_taus_bolus)) if len(bg_taus_bolus) >= 2 else 0.0
+        bg_taus_tod = [tod_groups[g]['median_tau'] for g, _, _ in TOD_GROUPS if g in tod_groups]
+        tod_between_var = float(np.var(bg_taus_tod)) if len(bg_taus_tod) >= 2 else 0.0
+        results['per_patient'].append({
+            'patient': p['name'], 'n_events': len(events),
+            'overall_tau': round(float(np.median(all_taus)), 2),
+            'overall_dia': round(float(np.median(all_taus)) * 3.0, 1),
+            'bolus_groups': bolus_groups, 'tod_groups': tod_groups,
+            'total_tau_variance': round(total_var, 4),
+            'bolus_size_variance_explained': round(bolus_between_var / (total_var + 1e-10), 3),
+            'tod_variance_explained': round(tod_between_var / (total_var + 1e-10), 3),
+            'primary_factor': 'bolus_size' if bolus_between_var > tod_between_var else 'time_of_day',
+        })
+    pp = [r for r in results['per_patient'] if r.get('n_events', 0) > 0]
+    if pp:
+        results['n_patients_with_data'] = len(pp)
+        results['mean_bolus_var_explained'] = round(float(np.mean([r['bolus_size_variance_explained'] for r in pp])), 3)
+        results['mean_tod_var_explained'] = round(float(np.mean([r['tod_variance_explained'] for r in pp])), 3)
+        results['primary_factor_distribution'] = {
+            f: sum(1 for r in pp if r.get('primary_factor') == f) for f in ['bolus_size', 'time_of_day']
+        }
+        results['population_dia_median'] = round(float(np.median([r['overall_dia'] for r in pp])), 1)
+    return results
+
+
+# --- EXP-1347: ISF Time-Block Recommendations ------------------------
+
+def exp_1347_isf_schedule(patients, detail=False, preconditions=None):
+    """Generate actionable time-of-day ISF profiles from response curves.
+
+    For each block with >= 3 correction events, compute median ISF and CI.
+    Compare to profile ISF and generate recommendation.
+    """
+    TAU_CANDIDATES = [0.5, 0.75, 1.0, 1.5, 2.0, 3.0]
+    results = {'name': 'EXP-1347: ISF time-block recommendations',
+               'n_patients': len(patients), 'per_patient': []}
+    for p in patients:
+        df = p['df']
+        pk = p['pk']
+        glucose = df['glucose'].values.astype(float)
+        bolus = df['bolus'].values
+        carbs = df['carbs'].values
+        isf_profile = float(np.nanmean(pk[:, 7] * 200.0))
+        n = len(glucose)
+        block_isfs = defaultdict(list)
+        for i in range(n):
+            if bolus[i] < 0.3 or np.isnan(glucose[i]) or glucose[i] <= 150:
+                continue
+            cw = slice(max(0, i - 6), min(n, i + 6))
+            if np.sum(carbs[cw]) > 2:
+                continue
+            window = 3 * STEPS_PER_HOUR
+            if i + window >= n:
+                continue
+            if np.sum(bolus[i + 1:i + window]) > 0.5:
+                continue
+            if np.sum(carbs[i + 1:i + window]) > 2:
+                continue
+            traj = glucose[i:i + window]
+            tv = ~np.isnan(traj)
+            if tv.sum() < window * 0.5:
+                continue
+            bg_start = float(traj[0])
+            t_hours = np.arange(window) * (5.0 / 60.0)
+            best_amp, best_tau, best_sse = 0.0, 1.0, np.inf
+            for tau_c in TAU_CANDIDATES:
+                basis = 1.0 - np.exp(-t_hours / tau_c)
+                bv = basis[tv]
+                denom = float(np.sum(bv ** 2))
+                if denom < 1e-6:
+                    continue
+                amp = float(np.sum(bv * (bg_start - traj[tv])) / denom)
+                if amp < 5:
+                    continue
+                sse = float(np.sum((traj[tv] - (bg_start - amp * basis[tv])) ** 2))
+                if sse < best_sse:
+                    best_sse, best_amp, best_tau = sse, amp, tau_c
+            if best_amp >= 5:
+                isf_est = best_amp / float(bolus[i])
+                bi = get_time_block(i % STEPS_PER_DAY)
+                block_isfs[BLOCK_NAMES[bi]].append(isf_est)
+        if not block_isfs:
+            results['per_patient'].append({'patient': p['name'], 'n_events': 0, 'note': 'No correction events'})
+            continue
+        block_recs = {}
+        for bname in BLOCK_NAMES:
+            vals = block_isfs.get(bname, [])
+            if len(vals) < 3:
+                block_recs[bname] = {'n_events': len(vals), 'recommendation': 'insufficient_data'}
+                continue
+            median_isf = float(np.median(vals))
+            p25 = float(np.percentile(vals, 25))
+            p75 = float(np.percentile(vals, 75))
+            ratio = median_isf / (isf_profile + 1e-6)
+            if ratio > 1.2:
+                rec, direction = 'increase', round(median_isf - isf_profile, 1)
+            elif ratio < 0.8:
+                rec, direction = 'decrease', round(median_isf - isf_profile, 1)
+            else:
+                rec, direction = 'maintain', 0.0
+            recommended_isf = round(median_isf / 5) * 5
+            block_recs[bname] = {
+                'n_events': len(vals), 'median_isf': round(median_isf, 1),
+                'ci_25_75': [round(p25, 1), round(p75, 1)],
+                'profile_isf': round(isf_profile, 1), 'ratio_to_profile': round(ratio, 2),
+                'recommendation': rec, 'recommended_isf': recommended_isf,
+                'change_mg_dl_u': round(direction, 1),
+            }
+        total_events = sum(len(v) for v in block_isfs.values())
+        blocks_with_recs = sum(1 for b in block_recs.values() if b.get('recommendation') not in ('insufficient_data',))
+        results['per_patient'].append({
+            'patient': p['name'], 'n_events': total_events, 'profile_isf': round(isf_profile, 1),
+            'blocks_with_recommendations': blocks_with_recs, 'block_recs': block_recs,
+        })
+    pp = [r for r in results['per_patient'] if r.get('n_events', 0) > 0]
+    if pp:
+        results['n_patients_with_data'] = len(pp)
+        results['mean_blocks_with_recs'] = round(float(np.mean([r['blocks_with_recommendations'] for r in pp])), 1)
+        adj_counts = defaultdict(int)
+        for r in pp:
+            for bname, brec in r.get('block_recs', {}).items():
+                adj_counts[brec.get('recommendation', 'insufficient_data')] += 1
+        results['recommendation_distribution'] = dict(adj_counts)
+    return results
+
+
+# --- EXP-1348: Confidence-Weighted Multi-Parameter Recommendations ----
+
+def exp_1348_unified_recs(patients, detail=False, preconditions=None):
+    """Unified recommendation combining basal + ISF + CR with confidence.
+
+    Confidence sources:
+    - Basal: # overnight windows and drift consistency
+    - ISF: # corrections and fit R2
+    - CR: # meals per block and excursion consistency
+    """
+    results = {'name': 'EXP-1348: Confidence-weighted unified recommendations',
+               'n_patients': len(patients), 'per_patient': []}
+    for p in patients:
+        df = p['df']
+        pk = p['pk']
+        glucose = df['glucose'].values.astype(float)
+        bolus = df['bolus'].values
+        carbs = df['carbs'].values
+        n = len(glucose)
+        archetype = PATIENT_ARCHETYPE.get(p['name'], 'unknown')
+        dg = np.diff(glucose)
+        dg = np.append(dg, 0)
+        valid = ~np.isnan(glucose) & ~np.isnan(dg) & (np.abs(dg) < 50)
+        fasting = _compute_fasting_mask(bolus, carbs, n)
+        overnight = get_overnight_mask(df, n)
+        isf_profile = float(np.nanmean(pk[:, 7] * 200.0))
+        scheduled_rate = get_scheduled_basal_rate(p)
+        # Basal assessment
+        ovn_fasting = overnight & fasting & valid
+        n_ovn_windows = 0
+        drifts = []
+        if ovn_fasting.sum() > STEPS_PER_HOUR:
+            in_window = False
+            for i in range(n):
+                if ovn_fasting[i]:
+                    if not in_window:
+                        n_ovn_windows += 1
+                        in_window = True
+                    drifts.append(float(dg[i]))
+                else:
+                    in_window = False
+        if drifts:
+            mean_drift = float(np.mean(drifts)) * STEPS_PER_HOUR
+            drift_std = float(np.std(drifts)) * STEPS_PER_HOUR
+            if np.isnan(mean_drift): mean_drift = 0.0
+            if np.isnan(drift_std): drift_std = 999.0
+            drift_cv = abs(drift_std / (abs(mean_drift) + 1e-6))
+            basal_change = mean_drift / (isf_profile + 1e-6)
+            basal_change = round(basal_change * 40) / 40
+            basal_confidence = 'high' if n_ovn_windows >= 5 and drift_cv < 2.0 else ('medium' if n_ovn_windows >= 3 else 'low')
+        else:
+            mean_drift, basal_change = 0.0, 0.0
+            basal_confidence = 'none'
+        # ISF assessment
+        events = _fit_correction_tau(glucose, bolus, carbs, n, tau_range=[0.5, 0.75, 1.0, 1.5, 2.0, 3.0])
+        if events:
+            isf_vals = [e['isf_observed'] for e in events]
+            r2_vals = [e['fit_r2'] for e in events]
+            observed_isf = float(np.median(isf_vals))
+            mean_r2 = float(np.mean(r2_vals))
+            isf_change = observed_isf - isf_profile
+            isf_change = max(-0.5 * isf_profile, min(0.5 * isf_profile, isf_change))
+            isf_confidence = 'high' if len(events) >= 5 and mean_r2 > 0.5 else ('medium' if len(events) >= 3 else 'low')
+        else:
+            observed_isf, mean_r2, isf_change = isf_profile, 0.0, 0.0
+            isf_confidence = 'none'
+        # CR assessment
+        MEAL_BLOCKS = [('breakfast', 6, 10), ('dinner', 14, 20)]
+        cr_recs = {}
+        for bname, blo, bhi in MEAL_BLOCKS:
+            excursions = []
+            last_meal = -3 * STEPS_PER_HOUR
+            for i in range(n):
+                if carbs[i] < 5 or (i - last_meal) < 2 * STEPS_PER_HOUR:
+                    continue
+                hour = (i % STEPS_PER_DAY) / STEPS_PER_HOUR
+                if not (blo <= hour < bhi):
+                    continue
+                last_meal = i
+                post_end = min(n, i + 3 * STEPS_PER_HOUR)
+                if post_end - i < STEPS_PER_HOUR:
+                    continue
+                post_g = glucose[i:post_end]
+                pre_g = glucose[max(0, i - 3):i + 1]
+                pre_valid = pre_g[~np.isnan(pre_g)]
+                if len(pre_valid) == 0:
+                    continue
+                bg_start = float(np.mean(pre_valid))
+                bg_peak = float(np.nanmax(post_g)) if np.any(~np.isnan(post_g)) else bg_start
+                exc = bg_peak - bg_start
+                if not np.isnan(exc):
+                    excursions.append(exc)
+            if excursions:
+                mean_exc = float(np.mean(excursions))
+                exc_std = float(np.std(excursions))
+                exc_cv = exc_std / (abs(mean_exc) + 1e-6)
+                cr_confidence = 'high' if len(excursions) >= 5 and exc_cv < 1.5 else ('medium' if len(excursions) >= 3 else 'low')
+                cr_assessment = 'tighten' if mean_exc > 60 else ('loosen' if mean_exc < 20 else 'ok')
+                cr_recs[bname] = {'n_meals': len(excursions), 'mean_excursion': round(mean_exc, 1),
+                                  'assessment': cr_assessment, 'confidence': cr_confidence}
+            else:
+                cr_recs[bname] = {'n_meals': 0, 'assessment': 'insufficient_data', 'confidence': 'none'}
+        conf_scores = {'high': 3, 'medium': 2, 'low': 1, 'none': 0}
+        all_confs = [conf_scores.get(basal_confidence, 0), conf_scores.get(isf_confidence, 0)]
+        for brec in cr_recs.values():
+            all_confs.append(conf_scores.get(brec.get('confidence', 'none'), 0))
+        composite_confidence = round(float(np.mean(all_confs)), 1)
+        results['per_patient'].append({
+            'patient': p['name'], 'archetype': archetype,
+            'basal': {'drift_mg_per_h': round(mean_drift, 2), 'change_u_per_h': round(basal_change, 3),
+                      'confidence': basal_confidence},
+            'isf': {'profile': round(isf_profile, 1), 'observed': round(observed_isf, 1),
+                    'change': round(isf_change, 1), 'n_events': len(events),
+                    'mean_r2': round(mean_r2, 3), 'confidence': isf_confidence},
+            'cr': cr_recs, 'composite_confidence': composite_confidence,
+        })
+    pp = results['per_patient']
+    valid_pp = [r for r in pp if 'composite_confidence' in r]
+    if valid_pp:
+        results['n_patients_analyzed'] = len(valid_pp)
+        results['mean_composite_confidence'] = round(float(np.mean([r['composite_confidence'] for r in valid_pp])), 1)
+        for param, key in [('basal', 'basal'), ('isf', 'isf')]:
+            dist = defaultdict(int)
+            for r in valid_pp:
+                dist[r[key].get('confidence', 'none')] += 1
+            results[f'{param}_confidence_dist'] = dict(dist)
+    return results
+
+
+# --- EXP-1349: Simple AID Loop Model ---------------------------------
+
+def exp_1349_aid_loop_model(patients, detail=False, preconditions=None):
+    """Model AID loop as proportional controller to predict recommendation interaction.
+
+    Model: temp_basal = scheduled_basal * (1 + K * (target - BG) / ISF)
+    K from EXP-1310: well-calibrated K ~ 0.31, miscalibrated K ~ 2.2.
+    If scheduled_basal changes, loop DAMPENS the change.
+    """
+    TARGET_BG = 110.0
+    results = {'name': 'EXP-1349: AID loop dampening model',
+               'n_patients': len(patients), 'per_patient': []}
+    for p in patients:
+        df = p['df']
+        pk = p['pk']
+        glucose = df['glucose'].values.astype(float)
+        temp_rate_col = df['temp_rate'].values if 'temp_rate' in df.columns else np.zeros(len(glucose))
+        n = len(glucose)
+        archetype = PATIENT_ARCHETYPE.get(p['name'], 'unknown')
+        isf_profile = float(np.nanmean(pk[:, 7] * 200.0))
+        scheduled_rate = get_scheduled_basal_rate(p)
+        valid = ~np.isnan(glucose)
+        if valid.sum() < STEPS_PER_DAY:
+            results['per_patient'].append({'patient': p['name'], 'archetype': archetype, 'note': 'Insufficient data'})
+            continue
+        k_estimates = []
+        for i in range(n):
+            if np.isnan(glucose[i]) or glucose[i] < 50 or glucose[i] > 350:
+                continue
+            if temp_rate_col[i] <= 0:
+                continue
+            bg_error = TARGET_BG - glucose[i]
+            if abs(bg_error) < 10:
+                continue
+            ratio = temp_rate_col[i] / (scheduled_rate + 1e-6)
+            k_est = (ratio - 1) * isf_profile / (bg_error + 1e-6)
+            if 0.01 <= abs(k_est) <= 10:
+                k_estimates.append(abs(k_est))
+        K = float(np.median(k_estimates)) if k_estimates else (0.31 if archetype == 'well-calibrated' else 1.0)
+        test_changes = [0.05, 0.10, 0.20, 0.30]
+        dampening_results = {}
+        for pct_change in test_changes:
+            new_rate = scheduled_rate * (1 + pct_change)
+            effective_changes = []
+            for i in range(n):
+                if not valid[i]:
+                    continue
+                bg = glucose[i]
+                loop_mult = 1 + K * (TARGET_BG - bg) / (isf_profile + 1e-6)
+                eff_new = new_rate * max(0, loop_mult)
+                eff_orig = scheduled_rate * max(0, loop_mult)
+                if eff_orig > 0:
+                    eff_change = (eff_new - eff_orig) / eff_orig
+                    eff_change = max(-0.5, min(0.5, eff_change))
+                    effective_changes.append(eff_change)
+            if effective_changes:
+                mean_eff = float(np.mean(effective_changes))
+                dampening = 1 - mean_eff / pct_change if pct_change > 0 else 0
+            else:
+                mean_eff, dampening = pct_change, 0.0
+            dampening_results[f'{int(pct_change * 100)}pct'] = {
+                'intended_change': round(pct_change * 100, 1),
+                'effective_change': round(mean_eff * 100, 1),
+                'dampening_pct': round(dampening * 100, 1),
+            }
+        results['per_patient'].append({
+            'patient': p['name'], 'archetype': archetype,
+            'estimated_K': round(K, 3), 'isf_profile': round(isf_profile, 1),
+            'scheduled_rate': round(scheduled_rate, 3), 'n_k_samples': len(k_estimates),
+            'dampening': dampening_results,
+        })
+    pp = [r for r in results['per_patient'] if 'estimated_K' in r]
+    if pp:
+        results['n_patients_analyzed'] = len(pp)
+        results['mean_K'] = round(float(np.mean([r['estimated_K'] for r in pp])), 3)
+        well_cal = [r for r in pp if r.get('archetype') == 'well-calibrated']
+        needs_tun = [r for r in pp if r.get('archetype') == 'needs-tuning']
+        if well_cal:
+            results['well_cal_mean_K'] = round(float(np.mean([r['estimated_K'] for r in well_cal])), 3)
+        if needs_tun:
+            results['needs_tuning_mean_K'] = round(float(np.mean([r['estimated_K'] for r in needs_tun])), 3)
+        damp_10 = [r['dampening']['10pct']['dampening_pct'] for r in pp if '10pct' in r.get('dampening', {})]
+        if damp_10:
+            results['mean_dampening_at_10pct'] = round(float(np.mean(damp_10)), 1)
+    return results
+
+
+# --- EXP-1350: Exercise Detection ------------------------------------
+
+def exp_1350_exercise_detection(patients, detail=False, preconditions=None):
+    """Separate exercise-type violations from UAM-type in conservation analysis.
+
+    From EXP-1305: 47% of timesteps violate conservation.
+    Exercise: BG drops rapidly while insulin is LOW (supply up, demand low).
+    UAM: BG rises while insulin adequate (supply up, no logged carbs).
+    Test if excluding exercise windows improves ISF estimation.
+    """
+    TAU_CANDIDATES = [0.5, 0.75, 1.0, 1.5, 2.0, 3.0]
+    results = {'name': 'EXP-1350: Exercise detection',
+               'n_patients': len(patients), 'per_patient': []}
+    for p in patients:
+        df = p['df']
+        pk = p['pk']
+        glucose = df['glucose'].values.astype(float)
+        bolus = df['bolus'].values
+        carbs = df['carbs'].values
+        n = len(glucose)
+        sd, uam_sup, uam_mask, _ = compute_uam_supply(df, pk)
+        net_flux = sd['net']
+        supply = sd['supply']
+        demand = sd['demand']
+        dg = np.diff(glucose)
+        dg = np.append(dg, 0)
+        valid = ~np.isnan(glucose) & ~np.isnan(dg)
+        violation_mask = np.abs(dg - net_flux) > 2.0
+        n_violations = int((violation_mask & valid).sum())
+        n_valid = int(valid.sum())
+        exercise_mask = np.zeros(n, dtype=bool)
+        uam_violation_mask = np.zeros(n, dtype=bool)
+        median_demand = float(np.median(demand[valid]))
+        for i in range(1, n):
+            if not valid[i] or not violation_mask[i]:
+                continue
+            if dg[i] < -1.0 and demand[i] < median_demand:
+                exercise_mask[i] = True
+            elif dg[i] > 1.0 and carbs[max(0, i - 6):i + 1].sum() < 2:
+                uam_violation_mask[i] = True
+        n_exercise = int((exercise_mask & valid).sum())
+        n_uam_violations = int((uam_violation_mask & valid).sum())
+        n_days = n / STEPS_PER_DAY
+        exercise_per_day = n_exercise / max(n_days, 1)
+        exercise_by_block = {}
+        for bi, (bname, (blo, bhi)) in enumerate(zip(BLOCK_NAMES, BLOCK_RANGES)):
+            block_mask = _compute_block_mask(n, blo, bhi)
+            ex_in_block = int((exercise_mask & block_mask & valid).sum())
+            block_total = int((block_mask & valid).sum())
+            exercise_by_block[bname] = {
+                'n_exercise_steps': ex_in_block,
+                'pct_of_block': round(ex_in_block / (block_total + 1e-6) * 100, 1),
+            }
+        def _estimate_isf(exclude_mask):
+            estimates = []
+            for i in range(n):
+                if bolus[i] < 0.3 or np.isnan(glucose[i]) or glucose[i] <= 150:
+                    continue
+                cw = slice(max(0, i - 6), min(n, i + 6))
+                if np.sum(carbs[cw]) > 2:
+                    continue
+                window = 3 * STEPS_PER_HOUR
+                if i + window >= n:
+                    continue
+                if np.sum(bolus[i + 1:i + window]) > 0.5:
+                    continue
+                if exclude_mask is not None:
+                    exc_frac = float(exclude_mask[i:i + window].sum()) / window
+                    if exc_frac > 0.1:
+                        continue
+                traj = glucose[i:i + window]
+                tv = ~np.isnan(traj)
+                if tv.sum() < window * 0.5:
+                    continue
+                bg_start = float(traj[0])
+                t_hours = np.arange(window) * (5.0 / 60.0)
+                best_amp, best_tau, best_sse = 0.0, 1.0, np.inf
+                for tau_c in TAU_CANDIDATES:
+                    basis = 1.0 - np.exp(-t_hours / tau_c)
+                    bv = basis[tv]
+                    denom = float(np.sum(bv ** 2))
+                    if denom < 1e-6:
+                        continue
+                    amp = float(np.sum(bv * (bg_start - traj[tv])) / denom)
+                    if amp < 5:
+                        continue
+                    sse = float(np.sum((traj[tv] - (bg_start - amp * basis[tv])) ** 2))
+                    if sse < best_sse:
+                        best_sse, best_amp, best_tau = sse, amp, tau_c
+                if best_amp >= 5:
+                    isf_est = best_amp / float(bolus[i])
+                    pred = bg_start - best_amp * (1 - np.exp(-t_hours / best_tau))
+                    ss_res = float(np.sum((traj[tv] - pred[tv]) ** 2))
+                    ss_tot = float(np.sum((traj[tv] - np.mean(traj[tv])) ** 2))
+                    r2 = 1 - ss_res / (ss_tot + 1e-10)
+                    estimates.append({'isf': isf_est, 'r2': r2})
+            return estimates
+        all_isf = _estimate_isf(None)
+        ex_clean_isf = _estimate_isf(exercise_mask)
+        pr = {
+            'patient': p['name'],
+            'n_violations': n_violations,
+            'violation_pct': round(n_violations / (n_valid + 1e-6) * 100, 1),
+            'n_exercise': n_exercise, 'n_uam_violations': n_uam_violations,
+            'exercise_pct': round(n_exercise / (n_violations + 1e-6) * 100, 1),
+            'uam_pct': round(n_uam_violations / (n_violations + 1e-6) * 100, 1),
+            'exercise_per_day': round(exercise_per_day, 1),
+            'exercise_by_block': exercise_by_block,
+        }
+        if all_isf:
+            pr['all_isf_median'] = round(float(np.median([e['isf'] for e in all_isf])), 1)
+            pr['all_isf_r2'] = round(float(np.mean([e['r2'] for e in all_isf])), 3)
+            pr['all_n_events'] = len(all_isf)
+        else:
+            pr['all_n_events'] = 0
+        if ex_clean_isf:
+            pr['ex_clean_isf_median'] = round(float(np.median([e['isf'] for e in ex_clean_isf])), 1)
+            pr['ex_clean_isf_r2'] = round(float(np.mean([e['r2'] for e in ex_clean_isf])), 3)
+            pr['ex_clean_n_events'] = len(ex_clean_isf)
+            if all_isf:
+                pr['r2_improvement'] = round(pr['ex_clean_isf_r2'] - pr['all_isf_r2'], 3)
+                pr['events_lost_pct'] = round((1 - len(ex_clean_isf) / (len(all_isf) + 1e-6)) * 100, 1)
+        else:
+            pr['ex_clean_n_events'] = 0
+        results['per_patient'].append(pr)
+    pp = [r for r in results['per_patient'] if r.get('n_violations', 0) > 0]
+    if pp:
+        results['n_patients_with_data'] = len(pp)
+        results['mean_violation_pct'] = round(float(np.mean([r['violation_pct'] for r in pp])), 1)
+        results['mean_exercise_pct'] = round(float(np.mean([r['exercise_pct'] for r in pp])), 1)
+        results['mean_uam_pct'] = round(float(np.mean([r['uam_pct'] for r in pp])), 1)
+        results['mean_exercise_per_day'] = round(float(np.mean([r['exercise_per_day'] for r in pp])), 1)
+        with_both = [r for r in pp if r.get('all_n_events', 0) > 0 and r.get('ex_clean_n_events', 0) > 0]
+        if with_both:
+            results['mean_r2_improvement'] = round(float(np.mean([r['r2_improvement'] for r in with_both])), 3)
+            results['mean_events_lost_pct'] = round(float(np.mean([r['events_lost_pct'] for r in with_both])), 1)
+            results['exercise_exclusion_improves_isf'] = results['mean_r2_improvement'] > 0
+    return results
+
+
+# --- Experiment Registry ----------------------------------------------
+
+EXPERIMENTS = {
+    1341: ('DIA-corrected physics', exp_1341_dia_corrected),
+    1342: ('Multi-block basal simulation', exp_1342_multiblock_sim),
+    1343: ('CR tightening simulation', exp_1343_cr_tightening),
+    1344: ('Drift-only triage', exp_1344_drift_triage),
+    1345: ('UAM threshold sweep', exp_1345_uam_sweep),
+    1346: ('Patient-specific DIA profiles', exp_1346_dia_profiles),
+    1347: ('ISF time-block recommendations', exp_1347_isf_schedule),
+    1348: ('Confidence-weighted unified recs', exp_1348_unified_recs),
+    1349: ('AID loop dampening model', exp_1349_aid_loop_model),
+    1350: ('Exercise detection', exp_1350_exercise_detection),
 }
 
 
-def classify_meal_window(hour):
-    """Classify hour of day into meal window."""
-    if 5 <= hour < 10:
-        return 'breakfast'
-    elif 10 <= hour < 14:
-        return 'lunch'
-    elif 17 <= hour < 21:
-        return 'dinner'
-    else:
-        return 'snack'
+def main():
+    parser = argparse.ArgumentParser(
+        description='EXP-1341-1350: Therapy Refinement')
+    parser.add_argument('--exp', type=int, help='Run single experiment')
+    parser.add_argument('--detail', action='store_true')
+    parser.add_argument('--save', action='store_true')
+    parser.add_argument('--max-patients', type=int, default=11)
+    args = parser.parse_args()
 
+    print(f"Loading patients (max={args.max_patients})...")
+    patients = load_patients(PATIENTS_DIR, max_patients=args.max_patients)
+    print(f"Loaded {len(patients)} patients")
 
-def detect_meals(glucose, min_rise=MEAL_RISE_THRESHOLD, merge_gap=MEAL_MERGE_STEPS):
-    """Detect meal events as sustained glucose rises.
-
-    Returns list of dicts with:
-      start: index where rise begins
-      peak_idx: index of peak glucose
-      pre_bg: glucose at start
-      peak_bg: glucose at peak
-      excursion: peak_bg - pre_bg
-    """
-    n = len(glucose)
-    delta = np.diff(glucose, prepend=glucose[0])
-    # Smooth delta with 3-step rolling mean
-    kernel = np.ones(3) / 3
-    delta_smooth = np.convolve(delta, kernel, mode='same')
-
-    # Find rising segments
-    rising = delta_smooth > 0.5  # slight positive threshold
-    meals = []
-    i = 0
-    while i < n - 6:
-        if rising[i]:
-            # Find start of rise (local minimum before)
-            start = i
-            while start > 0 and glucose[start] > glucose[start - 1]:
-                start -= 1
-
-            # Find peak (local maximum after)
-            j = i + 1
-            # Allow brief dips (up to 2 steps negative)
-            dip_count = 0
-            while j < n - 1:
-                if delta_smooth[j] > 0:
-                    dip_count = 0
-                    j += 1
-                elif dip_count < 2:
-                    dip_count += 1
-                    j += 1
-                else:
-                    break
-            peak_idx = start + int(np.argmax(glucose[start:j + 1]))
-
-            pre_bg = glucose[start]
-            peak_bg = glucose[peak_idx]
-            excursion = peak_bg - pre_bg
-
-            if excursion >= min_rise and not np.isnan(excursion):
-                # Merge with previous if close enough
-                if meals and start - meals[-1]['peak_idx'] < merge_gap:
-                    if peak_bg > meals[-1]['peak_bg']:
-                        meals[-1]['peak_idx'] = peak_idx
-                        meals[-1]['peak_bg'] = peak_bg
-                        meals[-1]['excursion'] = peak_bg - meals[-1]['pre_bg']
-                else:
-                    meals.append({
-                        'start': start,
-                        'peak_idx': peak_idx,
-                        'pre_bg': float(pre_bg),
-                        'peak_bg': float(peak_bg),
-                        'excursion': float(excursion),
-                    })
-            i = max(j, i + 3)
-        else:
-            i += 1
-    return meals
-
-
-def est_physics_carbs(net_flux, glucose, start, peak_idx, isf, cr):
-    """Physics residual integral: unexplained glucose rise → carbs.
-
-    Integrates (actual_delta - net_flux) where positive, from start
-    to peak + 2h (absorption window).
-    """
-    end = min(len(glucose), peak_idx + STEPS_PER_HOUR * 2)
-    if end <= start + 2:
-        return np.nan
-    actual_delta = np.diff(glucose[start:end])
-    model_flux = net_flux[start:start + len(actual_delta)]
-    residual = actual_delta - model_flux
-    # Only count positive residuals (unexplained rise)
-    pos_residual = np.clip(residual, 0, None)
-    integral_mg = float(np.nansum(pos_residual))  # mg/dL total rise
-    carbs_g = integral_mg * cr / isf
-    return round(carbs_g, 1)
-
-
-def est_excursion_carbs(excursion_mg, isf, cr):
-    """Simple excursion → carbs: peak-nadir rise converted via CR/ISF."""
-    if np.isnan(excursion_mg) or excursion_mg <= 0:
-        return np.nan
-    carbs_g = excursion_mg * cr / isf
-    return round(carbs_g, 1)
-
-
-def est_loop_irc_carbs(glucose, predicted_30, start, peak_idx, isf, cr):
-    """Loop IRC approximation: integrate retrospective prediction error.
-
-    Loop's IntegralRetrospectiveCorrection computes:
-      deviation = actual_glucose[t] - predicted_30[t - 6]
-    where predicted_30 was Loop's 30-min prediction from 6 steps ago.
-
-    Positive deviation = glucose rose more than Loop expected → carb absorption.
-
-    We accumulate positive deviations over the meal window (start to peak + 2h)
-    and convert to carb estimate via CR/ISF.
-    """
-    end = min(len(glucose), peak_idx + STEPS_PER_HOUR * 2)
-    if end <= start + 6:
-        return np.nan
-
-    # Compute retrospective deviation: actual now vs predicted 30min ago
-    retro_dev = np.full(len(glucose), np.nan)
-    retro_dev[6:] = glucose[6:] - predicted_30[:-6]
-
-    window_dev = retro_dev[start:end]
-    valid = ~np.isnan(window_dev)
-    if valid.sum() < 3:
-        return np.nan
-
-    # Integrate positive deviations (glucose higher than predicted)
-    pos_dev = np.clip(np.nan_to_num(window_dev, nan=0), 0, None)
-    # Each step's deviation represents 5-min accumulation
-    # Total "unexpected rise" in mg/dL·steps → convert to mg/dL equivalent
-    # IRC uses integral with forgetting (τ=60min), we simplify to sum
-    integral_mg = float(np.sum(pos_dev)) / STEPS_PER_HOUR  # normalize to hourly
-    carbs_g = integral_mg * cr / isf
-    return round(carbs_g, 1)
-
-
-def est_oref0_carbs(glucose, iob, start, peak_idx, isf, cr):
-    """oref0 deviation: unexplained glucose change after accounting for insulin.
-
-    oref0's determine-basal computes:
-      bgi = -iob_data.activity * sens * 5  (expected insulin effect per 5 min)
-      deviation = 6 * (minDelta - bgi)      (projected over 30 min)
-    Positive deviation → unannounced carbs.
-
-    Note: min_5m_carbimpact is NOT used in oref0's deviation calculation
-    (determine-basal.js:398-400).  It's only used in COB decay tracking
-    (cob.js:189-190), which is a separate mechanism.
-
-    Ref: externals/oref0/lib/determine-basal/determine-basal.js:398-400
-    """
-    end = min(len(glucose), peak_idx + STEPS_PER_HOUR * 2)
-    if end <= start + 2:
-        return np.nan
-
-    actual_delta = np.diff(glucose[start:end])
-    # Estimate insulin activity from IOB change (proxy for activity curve)
-    iob_window = iob[start:end]
-    iob_activity = -np.diff(iob_window)  # positive = insulin being used
-    iob_activity = np.nan_to_num(iob_activity, nan=0)
-
-    # BGI = expected glucose change per 5-min step from insulin absorption.
-    # iob_activity is U per step; ISF is mg/dL per U.
-    # oref0: bgi = -activity_U_per_min * sens * 5; since iob_activity ≈ activity*5,
-    # the *5 and /5 cancel: bgi = -iob_activity * isf.
-    # Ref: externals/oref0/lib/determine-basal/determine-basal.js:398
-    bgi = -iob_activity * isf  # expected BG impact per step (mg/dL)
-    deviation = actual_delta - bgi
-
-    # Only count positive deviations (unexplained glucose rise → carb absorption)
-    carb_impact = np.clip(deviation, 0, None)
-
-    integral_mg = float(np.nansum(carb_impact))
-    carbs_g = integral_mg * cr / isf
-    return round(carbs_g, 1)
-
-
-def compute_stats(values):
-    """Compute summary statistics for a list of values."""
-    arr = np.array([v for v in values if not np.isnan(v)])
-    if len(arr) == 0:
-        return {}
-    return {
-        'n': int(len(arr)),
-        'median': round(float(np.median(arr)), 1),
-        'mean': round(float(np.mean(arr)), 1),
-        'p10': round(float(np.percentile(arr, 10)), 1),
-        'p25': round(float(np.percentile(arr, 25)), 1),
-        'p75': round(float(np.percentile(arr, 75)), 1),
-        'p90': round(float(np.percentile(arr, 90)), 1),
-        'std': round(float(np.std(arr)), 1),
-    }
-
-
-def run_survey(patients):
-    """Run the multi-algorithm carb estimation survey."""
-    t0 = time.time()
-    all_meals = []
-    per_patient = []
-    methods = ['physics', 'excursion', 'loop_irc', 'oref0']
-
+    # Precondition assessment
+    print(f"\n{'='*60}")
+    print("PRECONDITION ASSESSMENT")
+    print(f"{'='*60}")
+    precond_results = {}
     for p in patients:
-        name = p['name']
-        df = p['df']
-        pk = p['pk']
-        settings = PATIENT_SETTINGS.get(name, {'isf': 50, 'cr': 8})
-        isf = settings['isf']
-        cr = settings['cr']
+        pc = assess_preconditions(p)
+        precond_results[p['name']] = pc
+        met = sum(1 for v in pc['preconditions'].values() if v['met'])
+        total = len(pc['preconditions'])
+        m = pc['metrics']
+        print(f"  {p['name']}: {met}/{total} met | "
+              f"CGM={m['cgm_coverage_pct']}% ins={m['insulin_telemetry_pct']}% "
+              f"R2={m['fidelity_r2']}")
 
-        glucose = df['glucose'].values.astype(float)
-        carbs_col = df['carbs'].values.astype(float)
-        bolus = df['bolus'].values.astype(float)
-        iob = df['iob'].values.astype(float)
-        n = len(glucose)
-        n_days = n / STEPS_PER_DAY
+    # Run experiments
+    exps_to_run = [args.exp] if args.exp else sorted(EXPERIMENTS.keys())
+    all_results = {}
+    for eid in exps_to_run:
+        if eid not in EXPERIMENTS:
+            print(f"Unknown experiment: {eid}")
+            continue
+        name, func = EXPERIMENTS[eid]
+        print(f"\n{'='*60}")
+        print(f"EXP-{eid}: {name}")
+        print(f"{'='*60}")
+        t0 = time.time()
+        try:
+            result = func(patients, detail=args.detail,
+                          preconditions=precond_results)
+            result['elapsed_sec'] = round(time.time() - t0, 1)
+            all_results[eid] = result
+            print(f"  Completed in {result['elapsed_sec']}s")
+            for k, v in result.items():
+                if k not in ('per_patient', 'elapsed_sec', 'name',
+                             'windows', 'hourly', 'blocks',
+                             'population_summary', 'block_recs',
+                             'population_block_drifts', 'sweep',
+                             'dampening', 'exercise_by_block'):
+                    print(f"  {k}: {v}")
+            if args.save:
+                fname = f'exp-{eid}_therapy.json'
+                with open(fname, 'w') as f:
+                    json.dump(result, f, indent=2, default=str)
+                print(f"  Saved -> {fname}")
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            all_results[eid] = {'error': str(e)}
 
-        # Get predicted_30 for Loop IRC
-        predicted_30 = df['predicted_30'].values.astype(float) if 'predicted_30' in df.columns else np.full(n, np.nan)
-        pred30_coverage = np.sum(~np.isnan(predicted_30)) / n
-
-        # Compute supply/demand for physics method
-        sd = compute_supply_demand(df, pk_array=pk)
-        net_flux = sd['net']
-
-        # Detect meals
-        glucose_filled = glucose.copy()
-        nan_mask = np.isnan(glucose_filled)
-        if nan_mask.any():
-            # Simple forward fill for meal detection
-            for i in range(1, len(glucose_filled)):
-                if np.isnan(glucose_filled[i]):
-                    glucose_filled[i] = glucose_filled[i - 1]
-        meal_events = detect_meals(glucose_filled)
-
-        # Classify each meal
-        patient_meals = []
-        for m in meal_events:
-            start = m['start']
-            peak_idx = m['peak_idx']
-
-            # Hour of day
-            hour = (start % STEPS_PER_DAY) / STEPS_PER_HOUR
-            window = classify_meal_window(hour)
-
-            # Check if announced (carbs entered within ±30 min of start)
-            announce_window = slice(max(0, start - 6), min(n, start + 12))
-            entered = float(np.nansum(carbs_col[announce_window]))
-            announced = entered > 0
-
-            # Estimate carbs with each method
-            c_physics = est_physics_carbs(net_flux, glucose_filled, start, peak_idx, isf, cr)
-            c_excursion = est_excursion_carbs(m['excursion'], isf, cr)
-            c_loop = est_loop_irc_carbs(glucose_filled, predicted_30, start, peak_idx, isf, cr)
-            c_oref0 = est_oref0_carbs(glucose_filled, iob, start, peak_idx, isf, cr)
-
-            meal_rec = {
-                'patient': name,
-                'start': int(start),
-                'peak_idx': int(peak_idx),
-                'hour': round(hour, 1),
-                'window': window,
-                'pre_bg': m['pre_bg'],
-                'peak_bg': m['peak_bg'],
-                'excursion': m['excursion'],
-                'announced': announced,
-                'entered_carbs': round(entered, 1),
-                'physics': c_physics,
-                'excursion_est': c_excursion,
-                'loop_irc': c_loop,
-                'oref0': c_oref0,
+    # Summary
+    print(f"\n{'='*60}")
+    print("THERAPY REFINEMENT SUMMARY")
+    print(f"{'='*60}")
+    for eid, result in sorted(all_results.items()):
+        name = EXPERIMENTS[eid][0]
+        if 'error' in result:
+            print(f"  EXP-{eid} {name}: FAILED - {result['error']}")
+        else:
+            key_metrics = {
+                1341: (f"bias: {result.get('population_original_bias_abs','?')}->"
+                       f"{result.get('population_corrected_bias_abs','?')}%, "
+                       f"R2 improved={result.get('n_r2_improved','?')}/"
+                       f"{result.get('n_patients_analyzed','?')}"),
+                1342: (f"TIR: {result.get('mean_current_tir','?')}->"
+                       f"{result.get('mean_simulated_tir','?')} "
+                       f"(d={result.get('mean_tir_change','?')}), "
+                       f"improved={result.get('n_improved','?')}/"
+                       f"{result.get('n_patients_with_data','?')}"),
+                1343: (f"dinner excursion: "
+                       f"{result.get('population_original_excursion','?')}->"
+                       f"10%:{result.get('population_10pct_excursion','?')} "
+                       f"20%:{result.get('population_20pct_excursion','?')} "
+                       f"30%:{result.get('population_30pct_excursion','?')}"),
+                1344: (f"drift/physics agree="
+                       f"{result.get('drift_physics_agreement_pct','?')}%, "
+                       f"basal dist="
+                       f"{result.get('basal_distribution','?')}"),
+                1345: (f"optimal threshold="
+                       f"{result.get('population_optimal_threshold','?')}, "
+                       f"score: 20%="
+                       f"{result.get('mean_score_at_20pct','?')}->"
+                       f"opt={result.get('mean_score_at_optimal','?')}"),
+                1346: (f"DIA={result.get('population_dia_median','?')}h, "
+                       f"bolus_var="
+                       f"{result.get('mean_bolus_var_explained','?')}, "
+                       f"tod_var="
+                       f"{result.get('mean_tod_var_explained','?')}"),
+                1347: (f"mean blocks with recs="
+                       f"{result.get('mean_blocks_with_recs','?')}, "
+                       f"dist="
+                       f"{result.get('recommendation_distribution','?')}"),
+                1348: (f"mean confidence="
+                       f"{result.get('mean_composite_confidence','?')}, "
+                       f"basal conf="
+                       f"{result.get('basal_confidence_dist','?')}"),
+                1349: (f"mean K={result.get('mean_K','?')}, "
+                       f"dampening@10%="
+                       f"{result.get('mean_dampening_at_10pct','?')}%"),
+                1350: (f"exercise={result.get('mean_exercise_pct','?')}%, "
+                       f"UAM={result.get('mean_uam_pct','?')}%, "
+                       f"R2 improve="
+                       f"{result.get('mean_r2_improvement','?')}"),
             }
-            patient_meals.append(meal_rec)
+            print(f"  EXP-{eid} {name}: {key_metrics.get(eid, 'done')}")
 
-        all_meals.extend(patient_meals)
-
-        n_announced = sum(1 for m in patient_meals if m['announced'])
-        n_uam = len(patient_meals) - n_announced
-
-        # Per-patient summary
-        psummary = {
-            'patient': name,
-            'isf': isf,
-            'cr': cr,
-            'n_days': round(n_days, 1),
-            'n_meals': len(patient_meals),
-            'meals_per_day': round(len(patient_meals) / max(n_days, 1), 1),
-            'n_announced': n_announced,
-            'n_uam': n_uam,
-            'pct_uam': round(100 * n_uam / max(len(patient_meals), 1), 1),
-            'pred30_coverage': round(pred30_coverage * 100, 1),
-        }
-
-        for method in methods:
-            key = method if method != 'excursion' else 'excursion_est'
-            vals = [m[key] for m in patient_meals]
-            psummary[f'{method}_stats'] = compute_stats(vals)
-
-            # Announced vs UAM breakdown
-            ann_vals = [m[key] for m in patient_meals if m['announced']]
-            uam_vals = [m[key] for m in patient_meals if not m['announced']]
-            psummary[f'{method}_announced'] = compute_stats(ann_vals)
-            psummary[f'{method}_uam'] = compute_stats(uam_vals)
-
-        # Entered carbs stats (announced only)
-        entered_vals = [m['entered_carbs'] for m in patient_meals if m['announced'] and m['entered_carbs'] > 0]
-        psummary['entered_stats'] = compute_stats(entered_vals)
-
-        per_patient.append(psummary)
-
-        # Print patient summary
-        ps = psummary
-        print(f"\nPatient {name}: {ps['n_meals']} meals in {ps['n_days']:.0f} days "
-              f"({ps['meals_per_day']}/day), ISF={isf}, CR={cr}")
-        print(f"  Announced: {n_announced}, UAM: {n_uam} ({ps['pct_uam']}%), "
-              f"pred30 coverage: {ps['pred30_coverage']}%")
-        for method in methods:
-            s = psummary[f'{method}_stats']
-            if s:
-                print(f"  {method:12s}: median {s['median']:5.1f}g  "
-                      f"(IQR {s['p25']:.0f}–{s['p75']:.0f}g)")
-        if entered_vals:
-            es = psummary['entered_stats']
-            print(f"  {'entered':12s}: median {es['median']:5.1f}g  "
-                  f"(IQR {es['p25']:.0f}–{es['p75']:.0f}g)")
-
-    # ─── Population summary ───────────────────────────────────────────
-    n_total = len(all_meals)
-    n_announced = sum(1 for m in all_meals if m['announced'])
-    n_uam = n_total - n_announced
-
-    print(f"\n{'=' * 70}")
-    print(f"POPULATION SUMMARY: {n_total} meals across {len(patients)} patients")
-    print(f"  Announced: {n_announced}, UAM: {n_uam} ({100*n_uam/n_total:.1f}%)")
-
-    pop_stats = {}
-    for method in methods:
-        key = method if method != 'excursion' else 'excursion_est'
-        vals = [m[key] for m in all_meals]
-        ann_vals = [m[key] for m in all_meals if m['announced']]
-        uam_vals = [m[key] for m in all_meals if not m['announced']]
-        pop_stats[method] = {
-            'all': compute_stats(vals),
-            'announced': compute_stats(ann_vals),
-            'uam': compute_stats(uam_vals),
-        }
-
-    entered_vals = [m['entered_carbs'] for m in all_meals if m['announced'] and m['entered_carbs'] > 0]
-    pop_stats['entered'] = compute_stats(entered_vals)
-
-    print(f"\n  {'Method':<14s}  {'All meals':>10s}  {'Announced':>10s}  {'UAM':>10s}")
-    print(f"  {'-'*50}")
-    for method in methods:
-        ps = pop_stats[method]
-        a = ps['all']
-        ann = ps['announced']
-        uam = ps['uam']
-        def _fmt(d, k='median'):
-            v = d.get(k)
-            return f"{v:.1f}" if v is not None else "—"
-        print(f"  {method:<14s}  {_fmt(a):>8s}g  "
-              f"{_fmt(ann):>8s}g  {_fmt(uam):>8s}g")
-    es = pop_stats['entered']
-    print(f"  {'(entered)':14s}  {'—':>10s}  {_fmt(es):>8s}g  {'—':>10s}")
-
-    # By meal window
-    print(f"\n  By meal window:")
-    windows = ['breakfast', 'lunch', 'dinner', 'snack']
-    for w in windows:
-        w_meals = [m for m in all_meals if m['window'] == w]
-        if not w_meals:
-            continue
-        n_w_uam = sum(1 for m in w_meals if not m['announced'])
-        print(f"    {w:<12s}: n={len(w_meals):>4d}, {100*n_w_uam/len(w_meals):3.0f}% UAM", end='')
-        for method in methods:
-            key = method if method != 'excursion' else 'excursion_est'
-            vals = [m[key] for m in w_meals if not np.isnan(m[key])]
-            if vals:
-                print(f"  | {method}: {np.median(vals):.0f}g", end='')
-        print()
-
-    # Correlation with entered carbs (announced only)
-    print(f"\n  Method vs entered carbs (announced meals, n={len(entered_vals)}):")
-    print(f"  {'Method':<14s}  {'Corr (r)':>10s}  {'Ratio':>8s}")
-    print(f"  {'-'*40}")
-    for method in methods:
-        key = method if method != 'excursion' else 'excursion_est'
-        pairs = [(m[key], m['entered_carbs'])
-                 for m in all_meals
-                 if m['announced'] and m['entered_carbs'] > 0
-                 and not np.isnan(m[key])]
-        if len(pairs) < 10:
-            print(f"  {method:<14s}  {'N/A':>10s}  {'N/A':>8s}")
-            continue
-        est = np.array([p[0] for p in pairs])
-        ent = np.array([p[1] for p in pairs])
-        corr = float(np.corrcoef(est, ent)[0, 1])
-        ratio = float(np.median(est)) / float(np.median(ent))
-        print(f"  {method:<14s}  {corr:>10.3f}  {ratio:>7.2f}×")
-
-    elapsed = time.time() - t0
-    print(f"\n  Elapsed: {elapsed:.1f}s")
-
-    # ─── Build result JSON ────────────────────────────────────────────
-    result = {
-        'name': 'EXP-1341: Multi-Algorithm Meal Carb Estimation Survey',
-        'n_patients': len(patients),
-        'n_meals': n_total,
-        'n_announced': n_announced,
-        'n_uam': n_uam,
-        'pct_uam': round(100 * n_uam / n_total, 1),
-        'population': pop_stats,
-        'per_patient': per_patient,
-        'elapsed_sec': round(elapsed, 1),
-    }
-
-    # Save to externals/experiments/ (git-ignored)
-    out_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'externals', 'experiments')
-    os.makedirs(out_dir, exist_ok=True)
-    summary_path = os.path.join(out_dir, 'exp-1341_carb_survey.json')
-    detail_path = os.path.join(out_dir, 'exp-1341_carb_survey_detail.json')
-
-    with open(summary_path, 'w') as f:
-        json.dump(result, f, indent=2, default=str)
-    print(f"\nSaved summary: {summary_path}")
-
-    detail = {
-        'name': 'EXP-1341: Detail — per-meal records',
-        'meals': all_meals,
-    }
-    with open(detail_path, 'w') as f:
-        json.dump(detail, f, indent=2, default=str)
-    print(f"Saved detail:  {detail_path}")
-
-    return result
+    return all_results
 
 
 if __name__ == '__main__':
-    patients = load_patients(PATIENTS_DIR)
-    run_survey(patients)
+    main()
