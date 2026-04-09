@@ -302,11 +302,20 @@ The fix was verified through:
 
 ## Figures
 
-1. `corrected-fig1-calibration.png` — Per-patient β optimization landscape
-2. `corrected-fig2-deconfound.png` — Calibrated deconfounding by context
-3. `corrected-fig3-hypo-cal.png` — Hypo S×D with calibrated model
-4. `corrected-fig4-glycogen-deconfound.png` — Glycogen proxy after insulin deconfounding
-5. `corrected-fig5-variance.png` — Variance decomposition waterfall
+### Fig 1: Per-Patient β Optimization
+![Per-patient β optimization landscape](figures/corrected-fig1-calibration.png)
+
+### Fig 2: Calibrated Deconfounding
+![Calibrated deconfounding by context](figures/corrected-fig2-deconfound.png)
+
+### Fig 3: Hypo S×D Calibrated
+![Hypo S×D with calibrated model](figures/corrected-fig3-hypo-cal.png)
+
+### Fig 4: Glycogen Proxy
+![Glycogen proxy after insulin deconfounding](figures/corrected-fig4-glycogen-deconfound.png)
+
+### Fig 5: Variance Decomposition
+![Variance decomposition waterfall](figures/corrected-fig5-variance.png)
 
 ## Conclusion
 
