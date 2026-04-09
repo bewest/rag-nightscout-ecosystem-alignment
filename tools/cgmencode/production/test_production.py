@@ -806,6 +806,60 @@ class TestMealPredictor(unittest.TestCase):
         self.assertLess(model.proactive_threshold_60, 1.0)
 
 
+class TestBasalAssessment(unittest.TestCase):
+    """clinical_rules.assess_basal: slope-based assessment, AID-safe."""
+
+    def setUp(self):
+        from cgmencode.production.clinical_rules import assess_basal
+        self.assess = assess_basal
+
+    def test_flat_glucose_is_appropriate(self):
+        """Constant overnight glucose → APPROPRIATE."""
+        bg = np.full(500, 120.0) + np.random.RandomState(0).normal(0, 2, 500)
+        result = self.assess(bg)
+        self.assertEqual(result, BasalAssessment.APPROPRIATE)
+
+    def test_rising_glucose_is_too_low(self):
+        """Steep overnight rise → TOO_LOW."""
+        bg = np.linspace(100, 160, 72)  # +60 over 6h = +10/hr
+        hours = np.linspace(0.0, 6.0, 72)
+        result = self.assess(bg, hours=hours)
+        self.assertEqual(result, BasalAssessment.TOO_LOW)
+
+    def test_falling_glucose_is_too_high(self):
+        """Steep overnight fall → TOO_HIGH."""
+        bg = np.linspace(180, 120, 72)  # -60 over 6h = -10/hr
+        hours = np.linspace(0.0, 6.0, 72)
+        result = self.assess(bg, hours=hours)
+        self.assertEqual(result, BasalAssessment.TOO_HIGH)
+
+    def test_metabolic_flux_does_not_override_slope(self):
+        """Negative metabolic flux should NOT override flat glucose slope.
+
+        Regression test: AID patients have large negative net_flux because
+        Loop modulates insulin delivery. The actual glucose slope (which
+        reflects total delivery including loop adjustments) should be the
+        primary signal.
+        """
+        bg = np.full(500, 120.0) + np.random.RandomState(1).normal(0, 2, 500)
+        hours = np.tile(np.linspace(0, 6, 72), 7)[:500]
+
+        # Create metabolic state with large negative flux
+        metabolic = MetabolicState(
+            supply=np.full(500, 0.7),
+            demand=np.full(500, 6.0),
+            hepatic=np.full(500, 0.7),
+            carb_supply=np.zeros(500),
+            net_flux=np.full(500, -5.3),
+            residual=np.zeros(500),
+        )
+        result = self.assess(bg, metabolic=metabolic, hours=hours)
+        # With flat glucose, result should be APPROPRIATE regardless of flux
+        self.assertEqual(result, BasalAssessment.APPROPRIATE,
+                         "Flat glucose should be APPROPRIATE even with negative metabolic flux "
+                         "(AID loop compensation is expected)")
+
+
 class TestRecommender(unittest.TestCase):
     """recommender.py: output contracts."""
 

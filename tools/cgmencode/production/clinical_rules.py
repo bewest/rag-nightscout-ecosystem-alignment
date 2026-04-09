@@ -80,13 +80,14 @@ def assess_basal(glucose: np.ndarray,
                  hours: Optional[np.ndarray] = None) -> BasalAssessment:
     """Assess basal rate adequacy from overnight glucose behavior.
 
-    The key insight from research: analyze glucose during fasting periods
-    (typically 00:00-06:00) where carb/bolus effects are minimal.
-    If glucose drifts up → basal too low. Drifts down → too high.
+    Uses the actual glucose slope during fasting hours (00:00-06:00) as
+    the primary signal. For AID patients, the metabolic net_flux includes
+    loop adjustments and is NOT a reliable indicator of programmed basal
+    adequacy — the slope of actual glucose is more reliable.
 
     Args:
         glucose: (N,) glucose values.
-        metabolic: optional metabolic state for flux analysis.
+        metabolic: optional metabolic state (not used for primary assessment).
         hours: (N,) fractional hours for overnight window selection.
 
     Returns:
@@ -111,16 +112,13 @@ def assess_basal(glucose: np.ndarray,
     slope = np.polyfit(x, valid, 1)[0]  # mg/dL per 5-min step
     slope_per_hour = slope * 12.0  # convert to mg/dL per hour
 
-    # Use metabolic flux if available for more precise assessment
-    if metabolic is not None and hours is not None:
-        mask = (hours >= 0) & (hours < 6)
-        if np.sum(mask) > 0:
-            overnight_net = np.mean(metabolic.net_flux[mask])
-            # Net flux should be near zero during fasting with correct basal
-            if overnight_net > 1.5:
-                return BasalAssessment.TOO_LOW
-            elif overnight_net < -1.5:
-                return BasalAssessment.TOO_HIGH
+    # NOTE: We intentionally do NOT use metabolic.net_flux here.
+    # For AID patients, net_flux includes loop automated adjustments
+    # (temp basals, SMBs) which dominate over the programmed basal.
+    # The actual glucose slope is a more reliable indicator of whether
+    # the TOTAL insulin delivery (programmed + loop) is appropriate.
+    # The metabolic flux analysis is used separately in the fidelity
+    # assessment to understand WHY glucose behaves as it does.
 
     # Threshold: ±5 mg/dL/hr drift is clinically significant
     if slope_per_hour > 5.0:

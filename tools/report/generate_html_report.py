@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
 
 from report.ns_loader import load_from_dir
+from report.therapy_analyzer import analyze_therapy
 from cgmencode.production.pipeline import run_pipeline
 
 DATA_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'externals' / 'ns-data' / 'live-recent'
@@ -50,6 +51,14 @@ result = run_pipeline(patient)
 elapsed = time.time() - t0
 print(f"  Done in {elapsed:.1f}s")
 print(f"  Warnings: {result.warnings}")
+
+# ═════════════════════════════════════════════════════════════════════
+# 2b. Run therapy analysis
+# ═════════════════════════════════════════════════════════════════════
+print(f"\n=== Running therapy analysis ===")
+therapy = analyze_therapy(patient, result)
+print(f"  Basal: {therapy.basal_assessment}, ISF ratio: {therapy.isf_ratio:.2f}x")
+print(f"  Recommendations: {len(therapy.recommendations)}")
 
 cr = result.clinical_report
 fid = cr.fidelity
@@ -197,6 +206,29 @@ for r in result.settings_recs:
         'evidence': r.evidence,
         'rationale': r.rationale,
     })
+
+# ── Therapy analysis data ──
+# IOB circadian profile
+iob_hourly_mean = therapy.iob_profile.hourly_mean
+iob_hourly_median = therapy.iob_profile.hourly_median
+
+# Weekly TIR for trend chart
+weekly_chart = [{'w': w.week, 'tir': round(w.tir * 100, 1),
+                 'tbr': round(w.tbr * 100, 1), 'tar': round(w.tar * 100, 1),
+                 'mean': round(w.mean_bg, 0)} for w in therapy.weekly_summaries]
+
+# Overnight drift per night (last 30 nights)
+night_chart = [{'d': n.date, 'slope': round(n.slope_per_hour, 1),
+                'tir': round(n.tir * 100, 0), 'start': round(n.start_bg, 0),
+                'end': round(n.end_bg, 0)} for n in therapy.nights[-30:]]
+
+# Therapy recommendations
+therapy_recs_data = therapy.recommendations
+
+# Hypo events by hour
+hypo_by_hour = [0] * 24
+for h in therapy.hypo_events:
+    hypo_by_hour[h.hour] += 1
 
 # ═════════════════════════════════════════════════════════════════════
 # 4. Build the HTML
@@ -410,13 +442,77 @@ footer{{text-align:center;padding:20px 0;color:var(--muted);font-size:11px;borde
 <!-- ── Analysis Tabs ── -->
 <div class="panel">
   <div class="tabs">
-    <div class="tab on" onclick="showTab('settings',this)">⚙️ Settings</div>
+    <div class="tab on" onclick="showTab('therapy',this)">💊 Therapy</div>
+    <div class="tab" onclick="showTab('settings',this)">⚙️ Settings</div>
     <div class="tab" onclick="showTab('circadian',this)">🌙 Circadian</div>
     <div class="tab" onclick="showTab('meals',this)">🍽️ Meals</div>
     <div class="tab" onclick="showTab('fidelity',this)">🔬 Fidelity</div>
   </div>
 
-  <div id="tab-settings" class="tab-content on">
+  <!-- ── Therapy Tab ── -->
+  <div id="tab-therapy" class="tab-content on">
+    <div class="g2">
+      <div>
+        <h3 style="font-size:13px;color:var(--muted);margin-bottom:8px">Therapy Overview</h3>
+        <div class="info-grid">
+          <div class="info-row"><span class="k">Basal Assessment</span><span class="v" style="color:{"var(--green)" if therapy.basal_assessment == "appropriate" else "var(--yellow)" if therapy.basal_assessment == "mixed" else "var(--red)"}">{therapy.basal_assessment.replace("_"," ").title()}</span></div>
+          <div class="info-row"><span class="k">Overnight Drift</span><span class="v">{therapy.median_overnight_drift:+.1f} mg/dL/hr</span></div>
+          <div class="info-row"><span class="k">Nights Rising</span><span class="v">{therapy.rising_nights_pct:.0f}%</span></div>
+          <div class="info-row"><span class="k">Nights Falling</span><span class="v">{therapy.falling_nights_pct:.0f}%</span></div>
+          <div class="info-row"><span class="k">ISF Profile</span><span class="v">{therapy.isf_value:.0f} mg/dL/U</span></div>
+          <div class="info-row"><span class="k">ISF Effective</span><span class="v">{therapy.effective_isf_simple:.0f} mg/dL/U ({therapy.isf_ratio:.2f}×)</span></div>
+          <div class="info-row"><span class="k">CR</span><span class="v">{therapy.cr_value:.0f} g/U</span></div>
+          <div class="info-row"><span class="k">Hypo/Day</span><span class="v" style="color:{"var(--red)" if therapy.hypo_per_day > 0.5 else "var(--green)"}">{therapy.hypo_per_day:.1f} ({therapy.serious_hypo_count} serious)</span></div>
+          <div class="info-row"><span class="k">Manual Boluses</span><span class="v">{therapy.manual_bolus_count} in {len(therapy.nights)} days</span></div>
+          <div class="info-row"><span class="k">Carb Entries</span><span class="v">{therapy.carb_entry_count}</span></div>
+          <div class="info-row"><span class="k">Loop Reliance</span><span class="v">{"High" if therapy.manual_bolus_count < 20 else "Moderate"} (IOB peak {therapy.iob_profile.peak_hour}:00)</span></div>
+          <div class="info-row"><span class="k">Weekly Trend</span><span class="v">{therapy.trend_direction.replace("_"," ").title()}</span></div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:13px;color:var(--muted);margin-bottom:8px">Recommendations</h3>
+        <div id="therapyRecs"></div>
+      </div>
+    </div>
+    <div class="g3" style="margin-top:12px">
+      <div>
+        <h3 style="font-size:13px;color:var(--muted);margin-bottom:8px">IOB Circadian Profile</h3>
+        <div class="chart-wrap h250"><canvas id="cIOBCircadian"></canvas></div>
+      </div>
+      <div>
+        <h3 style="font-size:13px;color:var(--muted);margin-bottom:8px">Weekly TIR Trend</h3>
+        <div class="chart-wrap h250"><canvas id="cWeeklyTIR"></canvas></div>
+      </div>
+      <div>
+        <h3 style="font-size:13px;color:var(--muted);margin-bottom:8px">Overnight Drift (Last 30 Nights)</h3>
+        <div class="chart-wrap h250"><canvas id="cNightDrift"></canvas></div>
+      </div>
+    </div>
+    <div class="g2" style="margin-top:12px">
+      <div>
+        <h3 style="font-size:13px;color:var(--muted);margin-bottom:8px">Hypoglycemia by Hour</h3>
+        <div class="chart-wrap h250"><canvas id="cHypoHist"></canvas></div>
+      </div>
+      <div>
+        <h3 style="font-size:13px;color:var(--muted);margin-bottom:8px">Dawn Phenomenon (IOB 1-3AM vs 4-7AM)</h3>
+        <div class="info-grid" style="margin-top:8px">
+          <div class="info-row"><span class="k">IOB Trough (1-3 AM)</span><span class="v">{np.mean(therapy.iob_profile.hourly_mean[1:4]):.2f} U</span></div>
+          <div class="info-row"><span class="k">IOB Dawn (4-7 AM)</span><span class="v">{np.mean(therapy.iob_profile.hourly_mean[4:8]):.2f} U</span></div>
+          <div class="info-row"><span class="k">Dawn IOB Rise</span><span class="v">{np.mean(therapy.iob_profile.hourly_mean[4:8]) - np.mean(therapy.iob_profile.hourly_mean[1:4]):.2f} U</span></div>
+          <div class="info-row"><span class="k">IOB Peak Hour</span><span class="v">{therapy.iob_profile.peak_hour}:00 ({therapy.iob_profile.hourly_mean[therapy.iob_profile.peak_hour]:.2f} U)</span></div>
+          <div class="info-row"><span class="k">IOB Max Observed</span><span class="v">{therapy.iob_profile.max_iob:.1f} U</span></div>
+          <div class="info-row"><span class="k">IOB Min Observed</span><span class="v">{therapy.iob_profile.min_iob:.1f} U</span></div>
+        </div>
+        <p style="color:var(--muted);font-size:12px;margin-top:12px;line-height:1.6">
+          The IOB circadian profile shows how the Loop system modulates insulin delivery throughout
+          the day. A large dawn rise indicates the Loop is compensating for dawn phenomenon. The
+          trough at {therapy.iob_profile.trough_hour}:00 shows when the Loop suspends or reduces basal the most.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-settings" class="tab-content">
     <div class="g2">
       <div>
         <h3 style="font-size:13px;color:var(--muted);margin-bottom:8px">Profile vs Effective</h3>
@@ -520,6 +616,12 @@ const RESID = {json.dumps(residual_hourly)};
 const TREATS = {json.dumps(treat_chart)};
 const RECS = {json.dumps(recs_data)};
 const ARCH = {json.dumps(archetype_summary)};
+const IOB_CIRC = {json.dumps([round(v, 2) for v in iob_hourly_mean])};
+const IOB_CIRC_MED = {json.dumps([round(v, 2) for v in iob_hourly_median])};
+const WEEKLY = {json.dumps(weekly_chart)};
+const NIGHTS = {json.dumps(night_chart)};
+const THERAPY_RECS = {json.dumps(therapy_recs_data)};
+const HYPO_HOUR = {json.dumps(hypo_by_hour)};
 
 // ══════════════════════════════════════════════════════════
 // Chart defaults
@@ -677,6 +779,92 @@ new Chart(document.getElementById('cMealHist'),{{
     scales:{{x:{{grid:{{display:false}}}},y:{{grid:gridOpt,title:{{display:true,text:'Count'}}}}}}
   }}
 }});
+
+// ══════════════════════════════════════════════════════════
+// Therapy: IOB Circadian Profile
+// ══════════════════════════════════════════════════════════
+new Chart(document.getElementById('cIOBCircadian'),{{
+  type:'line',
+  data:{{
+    labels:hrs,
+    datasets:[
+      {{label:'Mean IOB',data:IOB_CIRC,borderColor:'#bc8cff',backgroundColor:'rgba(188,140,255,.15)',borderWidth:2,pointRadius:3,pointBackgroundColor:'#bc8cff',fill:true,tension:.3}},
+      {{label:'Median IOB',data:IOB_CIRC_MED,borderColor:'#58a6ff',borderWidth:1.5,borderDash:[4,4],pointRadius:0,fill:false,tension:.3}},
+    ]
+  }},
+  options:{{responsive:true,maintainAspectRatio:false,
+    plugins:{{legend:{{position:'top',labels:{{boxWidth:10}}}},
+      tooltip:{{callbacks:{{label:i=>i.dataset.label+': '+i.parsed.y.toFixed(2)+' U'}}}}}},
+    scales:{{x:{{grid:gridOpt}},y:{{grid:gridOpt,title:{{display:true,text:'IOB (U)'}}}}}}
+  }}
+}});
+
+// ══════════════════════════════════════════════════════════
+// Therapy: Weekly TIR Trend
+// ══════════════════════════════════════════════════════════
+new Chart(document.getElementById('cWeeklyTIR'),{{
+  type:'bar',
+  data:{{
+    labels:WEEKLY.map(w=>w.w),
+    datasets:[
+      {{label:'TIR',data:WEEKLY.map(w=>w.tir),backgroundColor:'rgba(63,185,80,.6)',borderRadius:2,stack:'s'}},
+      {{label:'TAR',data:WEEKLY.map(w=>w.tar),backgroundColor:'rgba(210,153,34,.4)',borderRadius:2,stack:'s'}},
+      {{label:'TBR',data:WEEKLY.map(w=>w.tbr),backgroundColor:'rgba(248,81,73,.4)',borderRadius:2,stack:'s'}},
+    ]
+  }},
+  options:{{responsive:true,maintainAspectRatio:false,
+    plugins:{{legend:{{position:'top',labels:{{boxWidth:10}}}}}},
+    scales:{{x:{{grid:{{display:false}},ticks:{{maxRotation:45}}}},
+      y:{{stacked:true,max:100,grid:gridOpt,title:{{display:true,text:'%'}}}}}}
+  }}
+}});
+
+// ══════════════════════════════════════════════════════════
+// Therapy: Overnight Drift
+// ══════════════════════════════════════════════════════════
+const nightColors = NIGHTS.map(n=>n.slope>2?'rgba(63,185,80,.6)':n.slope<-2?'rgba(248,81,73,.6)':'rgba(88,166,255,.4)');
+new Chart(document.getElementById('cNightDrift'),{{
+  type:'bar',
+  data:{{
+    labels:NIGHTS.map(n=>n.d.slice(5)),
+    datasets:[{{label:'Drift (mg/dL/hr)',data:NIGHTS.map(n=>n.slope),backgroundColor:nightColors,borderRadius:2}}]
+  }},
+  options:{{responsive:true,maintainAspectRatio:false,
+    plugins:{{legend:{{display:false}},
+      tooltip:{{callbacks:{{label:i=>{{const n=NIGHTS[i.dataIndex];return `${{n.start}}→${{n.end}} mg/dL, slope ${{n.slope>0?'+':''}}${{n.slope}}/hr, TIR ${{n.tir}}%`}}}}}}}},
+    scales:{{x:{{grid:{{display:false}},ticks:{{maxRotation:45}}}},
+      y:{{grid:gridOpt,title:{{display:true,text:'mg/dL/hr'}}}}}}
+  }}
+}});
+
+// ══════════════════════════════════════════════════════════
+// Therapy: Hypo by Hour
+// ══════════════════════════════════════════════════════════
+new Chart(document.getElementById('cHypoHist'),{{
+  type:'bar',
+  data:{{labels:hrs,datasets:[{{label:'Hypo events',data:HYPO_HOUR,backgroundColor:'rgba(248,81,73,.5)',borderRadius:3}}]}},
+  options:{{responsive:true,maintainAspectRatio:false,
+    plugins:{{legend:{{display:false}}}},
+    scales:{{x:{{grid:{{display:false}}}},y:{{grid:gridOpt,title:{{display:true,text:'Count'}}}}}}
+  }}
+}});
+
+// ══════════════════════════════════════════════════════════
+// Therapy Recommendations
+// ══════════════════════════════════════════════════════════
+const trb=document.getElementById('therapyRecs');
+if(THERAPY_RECS.length===0){{
+  trb.innerHTML='<div class="rec ok">✅ No actionable therapy recommendations.</div>';
+}} else {{
+  THERAPY_RECS.forEach(r=>{{
+    const pcolor = r.priority==='high'?'#f85149':r.priority==='medium'?'#d29922':'#58a6ff';
+    const div=document.createElement('div');
+    div.className='rec';
+    div.style.borderLeft='3px solid '+pcolor;
+    div.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:4px"><b style="color:${{pcolor}}">${{r.priority.toUpperCase()}}</b><span style="color:var(--muted);font-size:11px">${{r.category}}</span></div><div style="margin-bottom:6px">${{r.finding}}</div><div style="color:var(--blue);font-size:12px">→ ${{r.recommendation}}</div><div class="detail" style="margin-top:6px;font-size:11px;color:var(--muted)">Evidence: ${{r.evidence}}</div>`;
+    trb.appendChild(div);
+  }});
+}}
 
 // ══════════════════════════════════════════════════════════
 // Fidelity chart — RMSE distribution
