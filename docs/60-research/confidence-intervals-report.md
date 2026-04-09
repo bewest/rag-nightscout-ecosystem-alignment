@@ -90,12 +90,17 @@ No patient achieves grade A (≥0.70). The primary bottleneck is temporal stabil
 
 ## Visualizations
 
-| Figure | File | Contents |
-|--------|------|----------|
-| Fig 1 | `visualizations/confidence-intervals/fig1_isf_bootstrap_ci.png` | ISF point estimates with 95% error bars |
-| Fig 2 | `visualizations/confidence-intervals/fig2_ci_width_loo.png` | ISF vs CR CI width; LOO robustness |
-| Fig 3 | `visualizations/confidence-intervals/fig3_confidence_grades.png` | Grade assignments with component breakdown |
-| Fig 4 | `visualizations/confidence-intervals/fig4_sample_size_ci.png` | Learning curve: corrections needed vs CI width |
+### Fig 1: ISF Bootstrap CI
+![ISF point estimates with 95% error bars](../../visualizations/confidence-intervals/fig1_isf_bootstrap_ci.png)
+
+### Fig 2: CI Width and LOO Robustness
+![ISF vs CR CI width; LOO robustness](../../visualizations/confidence-intervals/fig2_ci_width_loo.png)
+
+### Fig 3: Confidence Grades
+![Grade assignments with component breakdown](../../visualizations/confidence-intervals/fig3_confidence_grades.png)
+
+### Fig 4: Sample Size vs CI Width
+![Learning curve: corrections needed vs CI width](../../visualizations/confidence-intervals/fig4_sample_size_ci.png)
 
 ## Production Implications
 

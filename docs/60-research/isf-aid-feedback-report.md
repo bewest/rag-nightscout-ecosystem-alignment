@@ -180,12 +180,17 @@ Only patient k (1 correction total) cannot be recovered. The standard response-c
 
 ## Visualizations
 
-| Figure | File | Contents |
-|--------|------|----------|
-| Fig 1 | `visualizations/isf-aid-feedback/fig1_aid_feedback_corrections.png` | AID basal deviation during corrections; correction frequency vs bolus size |
-| Fig 2 | `visualizations/isf-aid-feedback/fig2_isf_comparison.png` | Profile vs raw vs AID-corrected ISF per patient |
-| Fig 3 | `visualizations/isf-aid-feedback/fig3_isf_circadian.png` | 24-hour ISF profiles per patient with dawn phenomenon marking |
-| Fig 4 | `visualizations/isf-aid-feedback/fig4_isf_stability_recovery.png` | Temporal stability CV; recovery rate summary |
+### Fig 1: AID Feedback Corrections
+![AID basal deviation during corrections; correction frequency vs bolus size](../../visualizations/isf-aid-feedback/fig1_aid_feedback_corrections.png)
+
+### Fig 2: ISF Comparison
+![Profile vs raw vs AID-corrected ISF per patient](../../visualizations/isf-aid-feedback/fig2_isf_comparison.png)
+
+### Fig 3: ISF Circadian Profiles
+![24-hour ISF profiles per patient with dawn phenomenon marking](../../visualizations/isf-aid-feedback/fig3_isf_circadian.png)
+
+### Fig 4: ISF Stability and Recovery
+![Temporal stability CV; recovery rate summary](../../visualizations/isf-aid-feedback/fig4_isf_stability_recovery.png)
 
 ## Production Implications
 

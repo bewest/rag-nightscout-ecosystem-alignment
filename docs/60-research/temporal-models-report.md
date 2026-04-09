@@ -163,12 +163,17 @@ Per-patient improvement over sinusoidal:
 
 ## Visualizations
 
-| Figure | File | Description |
-|--------|------|-------------|
-| 1 | `visualizations/temporal-models/fig1_model_comparison.png` | Grouped bar chart of R² across 3 models |
-| 2 | `visualizations/temporal-models/fig2_harmonic_detail.png` | Incremental harmonic contribution + polar phase plot |
-| 3 | `visualizations/temporal-models/fig3_variability_heatmap.png` | Time-of-day glucose variability heatmap |
-| 4 | `visualizations/temporal-models/fig4_production_recommendation.png` | Improvement distribution + DOW non-significance |
+### Fig 1: Model Comparison
+![Grouped bar chart of R² across 3 models](../../visualizations/temporal-models/fig1_model_comparison.png)
+
+### Fig 2: Harmonic Detail
+![Incremental harmonic contribution + polar phase plot](../../visualizations/temporal-models/fig2_harmonic_detail.png)
+
+### Fig 3: Variability Heatmap
+![Time-of-day glucose variability heatmap](../../visualizations/temporal-models/fig3_variability_heatmap.png)
+
+### Fig 4: Production Recommendation
+![Improvement distribution + DOW non-significance](../../visualizations/temporal-models/fig4_production_recommendation.png)
 
 ## Production Integration
 

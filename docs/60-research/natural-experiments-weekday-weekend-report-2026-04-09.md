@@ -159,7 +159,7 @@ not quantity.
 ## Visualizations
 
 ### Figure 21: Weekday vs Weekend Meal Timing
-`visualizations/natural-experiments/fig21_weekday_weekend_timing.png`
+![Weekday vs Weekend Meal Timing](../../visualizations/natural-experiments/fig21_weekday_weekend_timing.png)
 
 Three-panel figure:
 - A) Normalized hourly histograms overlaid (weekday blue, weekend red)
@@ -167,7 +167,7 @@ Three-panel figure:
 - C) DOW meal counts with weekday/weekend mean lines
 
 ### Figure 22: Per-Patient Weekday vs Weekend Patterns
-`visualizations/natural-experiments/fig22_per_patient_weekday_weekend.png`
+![Per-Patient Weekday vs Weekend](../../visualizations/natural-experiments/fig22_per_patient_weekday_weekend.png)
 
 Three-panel per-patient comparison:
 - A) Mean hour shift per patient (horizontal bars)
@@ -175,7 +175,7 @@ Three-panel per-patient comparison:
 - C) Meal volume weekday vs weekend
 
 ### Figure 23: Mealtime Zone Shift Detail
-`visualizations/natural-experiments/fig23_zone_shift_detail.png`
+![Zone Shift Detail](../../visualizations/natural-experiments/fig23_zone_shift_detail.png)
 
 Three-panel zone analysis:
 - A) Mean meal time by zone (weekday vs weekend bars)
@@ -183,7 +183,7 @@ Three-panel zone analysis:
 - C) Timing regularity (std of hour) per zone
 
 ### Figure 24: Weekday vs Weekend Metabolic Profile
-`visualizations/natural-experiments/fig24_weekday_weekend_metabolic.png`
+![Weekday vs Weekend Metabolic](../../visualizations/natural-experiments/fig24_weekday_weekend_metabolic.png)
 
 Three-panel metabolic comparison (box plots):
 - A) ISF-normalized excursion

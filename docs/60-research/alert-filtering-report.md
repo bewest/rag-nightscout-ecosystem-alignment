@@ -127,12 +127,17 @@ Optimized composite risk score threshold per patient targeting PPV≥0.50 at ≤
 
 ## Visualizations
 
-| Figure | File | Contents |
-|--------|------|----------|
-| Fig 1 | `visualizations/alert-filtering/fig1_method_comparison.png` | Side-by-side method comparison |
-| Fig 2 | `visualizations/alert-filtering/fig2_multi_feature_performance.png` | LR AUC and PPV-sensitivity per patient |
-| Fig 3 | `visualizations/alert-filtering/fig3_alert_fatigue_features.png` | Burst rate, actionability, feature importance |
-| Fig 4 | `visualizations/alert-filtering/fig4_state_risk_profile.png` | Hypo risk by metabolic state |
+### Fig 1: Method Comparison
+![Side-by-side method comparison](../../visualizations/alert-filtering/fig1_method_comparison.png)
+
+### Fig 2: Multi-Feature Performance
+![LR AUC and PPV-sensitivity per patient](../../visualizations/alert-filtering/fig2_multi_feature_performance.png)
+
+### Fig 3: Alert Fatigue Features
+![Burst rate, actionability, feature importance](../../visualizations/alert-filtering/fig3_alert_fatigue_features.png)
+
+### Fig 4: State Risk Profile
+![Hypo risk by metabolic state](../../visualizations/alert-filtering/fig4_state_risk_profile.png)
 
 ## Production Implications
 
