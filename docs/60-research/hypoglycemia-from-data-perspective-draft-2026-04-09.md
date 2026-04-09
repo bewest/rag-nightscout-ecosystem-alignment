@@ -1,7 +1,7 @@
 # What Are Hypoglycemic Events? A Data-First Perspective
 
-**Status**: DRAFT — Written by AI, pending expert review  
-**Date**: 2026-04-09  
+**Status**: DRAFT v2 — Written by AI, pending expert review  
+**Date**: 2026-04-09 (revised)  
 **Evidence base**: ~1,500 experiments on 11 AID patients (~180 days each, 5-min CGM intervals)  
 **Data sources**: CGM glucose, insulin delivery (basal + bolus), carbohydrate entries, AID system state  
 **Authors**: AI analysis (GitHub Copilot) — views are naive, data-derived, and may contain errors  
@@ -223,35 +223,86 @@ At the hypo range, prediction error increases **1.9×** compared to in-range, an
 R² nearly halves. This is not a model problem — three independent architectures
 (XGBoost, CNN, Transformer) all converge at the same ceiling.
 
-### Why The Asymmetry Exists (Our Hypothesis)
+### Important Distinction: Two Different "Hard" Problems
 
-We believe this asymmetry exists because of a fundamental difference in **what drives
-glucose in each direction**:
+Our earlier analysis conflated two problems that have **different root causes**. We
+now believe it is important to separate them:
 
-**Hyperglycemia (>180 mg/dL)** is driven primarily by:
-- Carbohydrate absorption (measurable via COB)
-- Insulin insufficiency (measurable via IOB, basal rate)
-- Hepatic glucose production during dawn phenomenon (follows a clock)
+| Problem | Question | What Makes It Hard | Where It Bites |
+|---------|----------|-------------------|----------------|
+| **Predicting hypo onset** | "Will BG go below 70 in the next N hours?" | Future actions are unknown | Long-horizon prediction (6h+, overnight) |
+| **Forecasting glucose through hypo** | "What will BG be at time T while in the hypo range?" | Counter-regulatory hormones change the physics | Trajectory modeling, recovery prediction |
 
-These are all either **directly measured** in our data or follow **predictable
-patterns**. The physics of high glucose is approximately linear and driven by
-observable inputs.
+These problems share the same data and the same "hypo" label, but they fail for
+entirely different reasons.
 
-**Hypoglycemia (<70 mg/dL)** is driven by the same measurable inputs (insulin excess
-relative to carbs), BUT the *recovery* from hypoglycemia is driven by:
-- **Glucagon** release from pancreatic alpha cells
-- **Epinephrine** (adrenaline) triggering hepatic glucose output
-- **Cortisol** extending the recovery period
-- **Growth hormone** modulating insulin sensitivity
+### Problem 1: Predicting Whether Hypo Will Happen (Classification)
 
-None of these hormones are measured by any consumer device in our data pipeline.
-They activate **non-linearly** below approximately 70 mg/dL and create dynamics
-that our models cannot anticipate from CGM + insulin data alone.
+At **2-hour horizons**, this is actually a solved problem (AUC 0.860). When glucose
+is already falling or IOB is already excessive, the signal is in the data — the
+descent has momentum and the model can see it.
 
-**Our key assumption**: We believe these counter-regulatory responses are the primary
-reason for the prediction ceiling. We have no direct proof — we are inferring the
-existence of an unmeasured force from the pattern of model failures. A domain expert
-might identify other explanations.
+At **overnight horizons** (AUC 0.69), the problem becomes much harder, but **not
+because of counter-regulatory hormones**. The descent hasn't started yet at
+prediction time. What makes it hard:
+
+1. **Future actions are unknown.** The single worst false negative in our clinical
+   vignettes (Patient a, Day 167) shows glucose at 239 mg/dL — clearly not
+   approaching hypo. Then a large correction bolus is delivered *after* the
+   prediction, crashing glucose to 59 mg/dL. No model can foresee a treatment
+   decision that hasn't been made yet. At long horizons, the descent trigger is
+   often a future bolus, a future meal that doesn't arrive, or future exercise —
+   none of which exist in the data at prediction time.
+
+2. **The AID is actively preventing the events we're trying to predict.** Successful
+   prevention is invisible in the data — glucose never reaches 70, so no event is
+   recorded. The events we *do* see are a censored, biased sample: only the cases
+   where prevention failed. This is a classic censored-outcome problem in
+   observational data (see [Section 6](#6-the-aid-system-confound)).
+
+3. **Class imbalance is structural.** Hypo readings represent 1.2–13.9% of windows
+   depending on the patient. At the safety-sensitive operating point (threshold 0.30),
+   catching 84% of hypos requires accepting a PPV of only 28% — roughly 3 out of 4
+   alerts are false alarms. The model has to find a needle in a haystack, and the
+   haystack is enormous.
+
+4. **Hyperglycemia doesn't have these problems.** HIGH events are driven by
+   carbohydrate absorption (measurable via COB), insulin insufficiency (measurable
+   via IOB), and dawn phenomenon (follows a clock). These inputs are all in our data
+   at prediction time and don't require knowing future actions. Meals that are
+   *already eaten* cause highs; insulin that is *already delivered* causes lows.
+   The temporal asymmetry matters: the cause of HIGH is in the past; the cause of
+   HYPO may be in the future.
+
+### Problem 2: Forecasting Glucose Values During Hypo (Regression)
+
+Once glucose is already below 70, a different problem emerges: **what will the
+glucose trajectory look like?** This is where counter-regulatory hormones matter.
+
+The forecast MAE in the hypo range is 39.8 mg/dL — **2.54× worse** than in-range
+(EXP-817). The physics model shows a systematic +5.1 mg/dL bias below 70 (EXP-601):
+the model consistently under-predicts actual glucose in the hypo range, as if an
+unmeasured glucose source is active. This is the counter-regulatory response at work
+(see [Section 5](#5-the-counter-regulatory-response-what-we-see-but-cannot-model)).
+
+But this problem affects **trajectory forecasting**, not onset prediction. By the
+time counter-regulatory hormones are relevant, the patient is already hypoglycemic —
+the prediction question ("will they go low?") has already been answered.
+
+### Why The Gap Widens With Horizon
+
+The 2h-vs-overnight gap (0.860 → 0.690) is best explained by **how much of the
+causal chain is visible at prediction time**:
+
+| Horizon | What the model can see | What it can't see | AUC |
+|---------|----------------------|-------------------|-----|
+| 2-hour | Glucose momentum, current IOB excess, active descent | Nothing critical — descent already underway | 0.860 |
+| 6-hour | Current glucose, basal rate, recent history | Future boluses, future meals, future exercise | 0.668 |
+| Overnight | Evening glucose, bedtime IOB | Whether patient will snack, AID behavior overnight, dawn effect timing | 0.690 |
+
+The pattern is clear: **the further ahead we predict, the more of the causal chain
+is hidden in future decisions**. Counter-regulatory hormones are not the primary
+cause of this degradation — they're relevant only after the event is already underway.
 
 ![Observable vs Unobservable Factors](figures/hypo-fig4-observable-vs-unobservable.png)
 
@@ -374,6 +425,13 @@ is acceptable in practice.
 
 ## 5. The Counter-Regulatory Response: What We See But Cannot Model
 
+> **Scope clarification**: As discussed in [Section 3](#3-why-hypoglycemia-is-fundamentally-harder-than-hyperglycemia),
+> counter-regulatory hormones are **not** the primary reason hypo *onset prediction*
+> is hard at long horizons — that's caused by future actions being unknown. This
+> section addresses a different problem: why **forecasting glucose values and
+> trajectories through and after a hypo event** is unreliable. These are the dynamics
+> that make hypo events *clinically unpredictable* once they begin.
+
 ### What We Observe in the Data
 
 When glucose drops below approximately 70 mg/dL, we consistently observe dynamics
@@ -430,9 +488,25 @@ and (c) references in diabetes literature. A clinician would know whether this
 description is accurate and whether the activation threshold really is ~70 mg/dL
 or varies by individual.
 
-### Why This Makes Hypo Prediction Structurally Hard
+### What This Means in Practice: The Trajectory Problem
 
-The counter-regulatory response creates a **regime change** in glucose dynamics:
+The counter-regulatory response creates a **regime change** in glucose dynamics.
+This doesn't prevent us from *predicting that hypo will happen* (at short horizons
+we can see it coming from momentum), but it does prevent us from answering useful
+follow-up questions:
+
+| Question | Why Counter-Regulation Makes It Hard |
+|----------|--------------------------------------|
+| "How deep will the nadir be?" | Glucagon response varies by glycogen stores, individual physiology |
+| "How fast will they recover?" | Depends on epinephrine magnitude — unmeasured |
+| "Will they rebound into hyperglycemia?" | Cortisol/GH effects are delayed and variable (65 → 324 in one case) |
+| "Is another hypo likely within 6h?" | Counter-regulatory exhaustion (glycogen depletion) is unmeasured |
+| "Was this event dangerous?" | Symptom severity depends on hormone levels we can't see |
+
+This matters for AID system design: an AID that suspends insulin when glucose
+hits 80 is making the right call, but it cannot predict *how much* extra glucose
+the counter-regulatory response will produce, making post-hypo insulin dosing a
+guessing game.
 
 | Above 70 mg/dL | Below 70 mg/dL |
 |-----------------|-----------------|
@@ -445,6 +519,23 @@ Our attempt at a **two-stage model** (EXP-136: first classify hypo risk, then
 apply specialized forecaster) reduced hypo-range MAE by 32%. This is consistent
 with the "different physics" hypothesis — a model trained on in-range data and
 applied to hypo range performs poorly because the governing equations change.
+
+### The Rebound as a Downstream Problem
+
+The hypo → rebound → hyperglycemia cycle creates a **cascade of downstream harm**
+that our simple episode counting may understate:
+
+1. **The hypo itself** — immediate danger (confusion, seizure risk)
+2. **The rebound high** — extended time above range (65 → 324 in our data)
+3. **The correction of the rebound** — risk of another overcorrection → second hypo
+4. **Glycemic variability** — the oscillation itself may cause more harm than
+   sustained mild hyperglycemia (this is debated in clinical literature)
+
+When we count "224 hypo episodes" for patient k, we are counting problem #1.
+Problems #2–#4 are downstream consequences that multiply the clinical burden but
+are not captured in our hypo metrics. A domain expert might argue that the *total
+cost* of a hypo event includes the rebound — which would make hypo even more
+clinically significant than our episode counts suggest.
 
 ---
 
@@ -630,17 +721,31 @@ nearly all nocturnal hypos have a clear mechanical cause.
 
 Our most sobering finding: the overnight HYPO prediction ceiling of AUC ≈ 0.69
 appears **structural**. Three architectures, five feature sets, three loss functions
-all converge to the same result. We believe this ceiling reflects the fundamental
-information content of CGM + insulin data: you cannot predict what you cannot measure.
+all converge to the same result.
 
-Breaking this ceiling likely requires new data streams — continuous glucagon sensing,
-cortisol monitors, activity trackers, or other measurements that capture the
-counter-regulatory response and its triggers.
+However, we now believe the **explanation** for this ceiling is more nuanced than
+"counter-regulatory hormones." The ceiling likely reflects two distinct information
+gaps:
 
-The 2-hour prediction window (AUC 0.860) is the exception: at short horizons,
+1. **Future actions are unknowable** (the dominant factor): At 6+ hour horizons,
+   the descent trigger (a future bolus, a skipped meal, exercise) often hasn't
+   happened yet. This is an information gap that no sensor can close — it requires
+   knowing the patient's future decisions. Even continuous glucagon monitoring would
+   not help here, because glucagon doesn't activate until *after* the hypo begins.
+
+2. **Counter-regulatory dynamics are unmeasured** (secondary factor): Once hypo
+   begins, the trajectory through and out of hypo is governed by hormones we can't
+   see. This affects trajectory forecasting and recovery prediction, but not the
+   binary "will hypo occur?" question at prediction time.
+
+Breaking the onset-prediction ceiling likely requires **intent signals** — pending
+boluses, meal announcements, exercise plans — more than new biosensors. Breaking the
+trajectory-forecasting ceiling likely requires **hormone measurements** — glucagon,
+cortisol, epinephrine.
+
+The 2-hour prediction window (AUC 0.860) succeeds because at short horizons,
 the glucose trace already encodes enough momentum information to predict most
-events. The counter-regulatory response hasn't had time to materially alter the
-trajectory within this window.
+events — the descent is underway and visible in the data.
 
 ---
 
@@ -656,7 +761,7 @@ could correct our data-derived understanding:
 | 3 | Counter-regulatory hormones activate non-linearly below ~70 | Medium | Inferred from model bias pattern | Core hypothesis may be wrong |
 | 4 | The +5.1 mg/dL bias below 70 reflects hepatic glucose output | Low | Correlation, not causation | Could be CGM artifact |
 | 5 | CGM interstitial lag is 5–15 minutes | High | Published CGM literature | Low risk |
-| 6 | Rebound hyperglycemia is caused by counter-regulatory hormones | Medium | Pattern-based inference | Could be overtreament with carbs |
+| 6 | Rebound hyperglycemia is caused by counter-regulatory hormones | Medium | Pattern-based inference | Could be overtreatment with carbs |
 | 7 | "Episode" boundaries at 70 mg/dL crossing are clinically meaningful | Low | Operational convenience | May fragment continuous events |
 | 8 | 15-minute sustained ≥70 defines recovery | Low | Arbitrary choice | May not match patient experience |
 | 9 | AID suspension timing can be inferred from basal delivery data | Medium | We see delivery drops in pump data | Timing may be inexact |
@@ -666,6 +771,8 @@ could correct our data-derived understanding:
 | 13 | 4% of CGM readings are noise artifacts | Medium | Statistical outlier detection | Could discard real extreme readings |
 | 14 | Passive recovery phenotype = patient doesn't treat lows | Low | Based on carb entries | Unlogged treatments would cause misclassification |
 | 15 | Overnight ceiling of 0.69 AUC is a data limitation, not a model limitation | High | 3 architectures converge | Could be wrong featurization |
+| **16** | **Long-horizon prediction is hard because of future unknowns, not counter-regulatory biology** | **High** | **Vignette analysis: worst misses involve future boluses** | **If wrong, hormone sensing might help onset prediction** |
+| **17** | **Counter-regulatory response affects trajectory forecasting, not onset prediction** | **Medium** | **+5.1 bias only appears below 70 (after onset)** | **May understate role of hormones in pre-hypo dynamics** |
 
 ---
 
