@@ -21,10 +21,10 @@ of natural glucose tolerance test (GTT) windows. We compare three configurations
 - 90-min hysteresis alone (B) removes 20% of meals but boosts quality 0.923→0.973
 - Adding ≥18g threshold (C) further reduces to 2,632 meals (−35% vs A) with
   highest quality (0.979) and 99.2% excellent grade
-- Patient impact is highly uneven: patients with micro-entries (a, k) lose 50–70%
-  of meals; patients with large meals (e, f, i) lose <10%
+- Patient impact is highly uneven: patients with micro-entries (a, k) lose ~69–72%
+  of meals; patients with large meals (e, i) lose <10% (f loses 16%)
 - Excursion-by-carb-range is remarkably consistent across configs: ≥50g meals
-  produce ~90 mg/dL excursion regardless of detection method
+  produce ~85 mg/dL excursion regardless of detection method
 
 ## Background
 
@@ -80,7 +80,7 @@ The meal detector works as follows:
 | g | 3.8 | 3.0 | 2.7 | −30% |
 | h | 1.3 | 1.0 | 0.9 | −32% |
 | i | 0.6 | 0.5 | 0.5 | −8% |
-| j | 3.0 | 2.8 | 2.3 | −25% |
+| j | 3.0 | 2.8 | 2.3 | −23% |
 | k | 0.4 | 0.4 | 0.1 | −69% |
 
 **Observations:**
@@ -146,8 +146,8 @@ complete glycemic landscape.
 ### For Therapy Assessment
 **Use Config C (≥18g/90m)**. Only clinically meaningful meals remain. The
 99.2% excellent quality rate ensures reliable excursion metrics. The 2,632 meals
-still provide ample statistical power (mean 1.3 meals/patient/day across
-11 patients × 180 days).
+still provide ample statistical power (mean ~1.4 meals/patient/day across
+11 patients and ~1,835 patient-days).
 
 ### For ISF/CR Estimation
 **Use Config B (≥5g/90m)**. The 90-min hysteresis correctly separates distinct
@@ -196,7 +196,7 @@ Meal window quality is scored based on:
 
 1. **Carb entry accuracy**: We rely on user-entered carbs. Patient b's micro-entry
    pattern is a Loop workflow, not actual separate meals.
-2. **Unannounced meals**: ~9–11% of detected meals lack carb entries (UAM-triggered).
+2. **Unannounced meals**: ~8–11% of detected meals lack carb entries (UAM-triggered).
    These are excluded from carb-range analysis.
 3. **Config C eliminates small meals entirely**: Legitimate snacks (granola bar,
    fruit) that do produce glycemic responses are lost. This is by design for
