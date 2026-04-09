@@ -4,7 +4,7 @@
 **Date**: 2026-04-10  
 **Experiments**: EXP-1621 through EXP-1628  
 **Script**: `tools/cgmencode/exp_demand_rescue_1621.py`  
-**Data**: 11 AID patients, ~180 days each, 5-minute resolution  
+**Data**: 11 AID patients, 55–161 days each (mean ~140), 5-minute resolution  
 **Prior work**: EXP-1601–1606 (hypo decomposition), EXP-1611–1616 (deconfounding)
 
 ---
@@ -52,17 +52,17 @@ The `insulin_total` PK channel represents the *instantaneous insulin activity ra
 
 ### 1.3 Concrete Example
 
-For patient a (basal=0.33 U/h, ISF=49 mg/dL/U) during clean fasting with IOB≈0:
+For patient a (basal=0.33 U/h, ISF=48.6 mg/dL/U) during clean fasting with IOB≈0:
 
 | Step | Value | Expected |
 |------|-------|----------|
 | insulin_total (U/min) | 0.0106 | ~basal/60 = 0.0055 |
 | × 5.0 (min) | 0.053 | — |
-| × ISF (49 mg/dL/U) | **2.60 mg/dL/step** | — |
-| Hepatic supply | 1.30 mg/dL/step | ~1.5 |
-| **Net balance** | **−1.30** (glucose falling) | **≈0** (should be stable) |
+| × ISF (48.6 mg/dL/U) | **2.60 mg/dL/step** | — |
+| Hepatic supply | 1.68 mg/dL/step | ~1.5 |
+| **Net balance** | **−0.92** (glucose falling) | **≈0** (should be stable) |
 
-The model predicts glucose should fall by 1.3 mg/dL every 5 minutes during fasting — approximately 15 mg/dL/hour. Actual observed dBG ≈ −0.03 mg/dL/step.
+The model predicts glucose should fall by ~0.9 mg/dL every 5 minutes during fasting — approximately 11 mg/dL/hour. Actual observed dBG ≈ −0.03 mg/dL/step.
 
 ### 1.4 Patient Variability in the Bug
 
@@ -204,7 +204,7 @@ Output normalized to [0, 1]: 0 = depleted, 1 = saturated.
 |-----------|-------|----------------|
 | ANOVA F | **1,207** | Highly significant (p ≈ 0) |
 | r(proxy, residual) | −0.021 | Small linear correlation |
-| N records | ~450,000 | Very high power |
+| N records | ~431,000 | Very high power |
 
 The ANOVA is massive (F=1,207) confirming that glycogen bins produce significantly different mean residuals. However, the linear correlation is tiny (r=−0.02), suggesting the relationship is:
 1. Real but nonlinear, or
@@ -436,7 +436,7 @@ When depleted:
 
 | EXP | Title | Key Result |
 |-----|-------|------------|
-| 1621 | Demand chain diagnosis | demand/expected = 0.47× (highly variable), eff β = 0.995 |
+| 1621 | Demand chain diagnosis | demand/expected = 0.47× (highly variable), eff β median = 1.78 |
 | 1622 | Steady-state balance | β-correction fixes fasting (R² → −0.08) but not others |
 | 1623 | Rescue carb inference | Median 16g, 52% > 15g, 9% meal-sized |
 | 1624 | β-corrected model validation | Fasting-β makes meals R² = −16.6 (catastrophic) |

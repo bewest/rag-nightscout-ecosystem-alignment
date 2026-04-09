@@ -195,7 +195,7 @@ Every meal analysis confronts the same fundamental challenge: **the AID loop is 
 
 ### Key AID Confounding Results
 
-- **Effective ISF is 1.36× profile ISF** (population mean, range 1.0–2.2×). AID masks inadequate settings by adjusting temp basals.
+- **Effective ISF is 1.36× profile ISF** (population mean, range 0.7–2.2×). AID masks inadequate settings by adjusting temp basals.
 - **Physics ML UAM detection (F1=0.513) outperforms oref0 UAM (F1=0.344)** by 49% — but oref0 has 31% longer lead time (38 vs 29 min).
 - **Response-curve ISF** (exponential fit, R²=0.805) is the correct method for AID patients. The traditional total-insulin denominator degenerates because the loop suspends basal during corrections.
 - **Population effective DIA = 6.0h** (vs 5h profile). 4/7 patients have DIA longer than profile, meaning the insulin tail extends further than their settings assume.
