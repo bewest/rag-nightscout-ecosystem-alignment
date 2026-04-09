@@ -43,7 +43,7 @@ Stricter detection (higher min_carb + longer hysteresis) strongly and monotonica
 
 | Config | Meals/Day | Mean Pat Std (h) | Entropy | Zone % |
 |--------|-----------|-------------------|---------|--------|
-| 3g/15m | 2.7 | 4.07 | 0.945 | 61.2 |
+| 3g/15m | 2.7 | 4.30 | 0.944 | 57.3 |
 | 5g/30m (A) | 2.2 | 4.09 | 0.946 | 61.0 |
 | 5g/90m (B) | 1.8 | 3.74 | 0.948 | 63.3 |
 | 18g/90m (C) | 1.4 | 3.98 | 0.938 | 65.6 |
@@ -76,7 +76,7 @@ Practical interpretation: The knee configuration suggests ~1.5 meals/day is the 
 | d | 2.63 | 1.52 | 1.17–4.70 | Moderate, very sensitive |
 | a | 5.32 | 2.24 | 0.00–7.95 | Random, extremely sensitive |
 
-Key insight: **Robustness correlates with regularity** (r ≈ −0.7). Clock-like eaters (g, j) produce consistent regularity measurements regardless of detection parameters. Irregular eaters' regularity scores are heavily threshold-dependent — an artifact of measurement, not biology.
+Key insight: **Robustness correlates with regularity** (r ≈ +0.54). Clock-like eaters (g, j) produce consistent regularity measurements regardless of detection parameters. Irregular eaters' regularity scores are heavily threshold-dependent — an artifact of measurement, not biology.
 
 Patient a (std_of_std=2.24) is the most sensitive: its regularity score swings from 0 to 7.95 depending on config, meaning any single-config analysis could be misleading.
 
@@ -84,12 +84,12 @@ Patient a (std_of_std=2.24) is the most sensitive: its regularity score swings f
 
 **Hysteresis** (horizontal axis in heatmaps):
 - Merges adjacent events → reduces count, increases mean size
-- Minimal effect on regularity at fixed min_carb (Δstd ≈ 0.3h across full range)
+- Modest effect on regularity at fixed min_carb (Δstd ≈ 0.5h across full range)
 - Near-perfect carb conservation (CV ≤ 0.2%)
 
 **Min-carb** (vertical axis in heatmaps):
 - Filters small events → reduces count AND total carbs
-- Strong effect on regularity (Δstd ≈ 1.5h from 3g to 40g)
+- Strong effect on regularity (Δstd ≈ 1.25h from 3g to 40g)
 - Monotonically drops total carbs/day (79.2g → 39.3g)
 
 This confirms they are **independent mechanisms**: hysteresis is a temporal filter (repackages), min-carb is an amplitude filter (removes).
@@ -102,6 +102,7 @@ This confirms they are **independent mechanisms**: hysteresis is a temporal filt
 | 3g | 79.2 | 0.2 | Near-perfect conservation |
 | 5g | 77.8 | 0.2 | Near-perfect conservation |
 | 10g | 75.9 | 0.1 | Near-perfect conservation |
+| 15g | 71.4 | 0.1 | Near-perfect conservation |
 | 18g | 68.4 | 0.1 | Near-perfect conservation |
 | 25g | 59.5 | 0.1 | Near-perfect conservation |
 | 30g | 54.6 | 0.1 | Near-perfect conservation |
@@ -117,7 +118,7 @@ ISF-normalized excursion increases monotonically with strictness:
 
 | Config | Mean ISF-Norm | Interpretation |
 |--------|--------------|----------------|
-| 3g/15m | 1.41 | Diluted by micro-meals |
+| 3g/15m | 1.30 | Diluted by micro-meals |
 | 5g/30m (A) | 1.43 | Baseline |
 | 18g/90m (C) | 1.68 | +17% stronger signal |
 | 40g/180m | 2.19 | +53% strongest signal |
@@ -178,8 +179,8 @@ Small multiples showing each patient's weighted_std vs hysteresis, with lines pe
 | Finding | EXP-1563 (3 configs) | EXP-1569 (72 configs) |
 |---------|---------------------|----------------------|
 | Regularity trend | Therapy < Census | ρ = −0.812, monotonic confirmed |
-| Zone fraction | 61% → 66% | 60% → 68% (full range) |
-| ISF-norm | +27% (A→C) | +53% (3g→40g, full range) |
+| Zone fraction | 61% → 66% | 57% → 68% (full range) |
+| ISF-norm | +27% (A→C) | +68% (3g→40g, full range) |
 | Patient variation | Not measured | σσ range: 0.28–2.24 |
 
 ## Data & Reproducibility

@@ -58,15 +58,15 @@ These provide a total of **~170,000 5-minute analysis steps** within controlled 
 
 | Context | Mean Residual | Std | n |
 |---|---|---|---|
-| Fasting | +1.33 mg/dL/step | 2.16 | 474 |
+| Fasting | +1.33 mg/dL/step | 2.15 | 474 |
 | Overnight | +2.19 | 4.71 | 991 |
 | Meal | +2.19 | 5.68 | 2,834 |
-| Stable | +2.84 | 5.20 | 4,730 |
+| Stable | +2.83 | 5.20 | 4,730 |
 | **Correction** | **+6.91** | **6.30** | **522** |
 
 **Key insight**: All residuals are positive (the model over-predicts glucose *lowering*), but corrections show 5× larger residual than fasting. This means **the insulin demand model is the dominant error source**, not hepatic production.
 
-All 10 pairwise comparisons are significant (p < 0.001). The largest effect: correction vs fasting (Cohen's d = 1.18 — a "large" effect). The model behaves qualitatively differently depending on metabolic context.
+8 of 10 pairwise comparisons are significant (p < 0.001); meal-vs-overnight is non-significant (p = 0.98, d = 0.001), confirming these two contexts have indistinguishable residuals. The largest effect: correction vs fasting (Cohen's d = 1.18 — a "large" effect). The model behaves qualitatively differently depending on metabolic context.
 
 ![Figure 1: Context-dependent residual profiles](figures/deconfound-fig1-context-residuals.png)
 
@@ -236,8 +236,8 @@ How much data is needed for stable calibration parameters?
 | 14 | 1.97 ± 0.79 | 0.40 ± 0.29 | 5–8 |
 | 30 | 1.31 ± 1.05 | 0.26 ± 0.10 | 8–9 |
 | 60 | 1.12 ± 0.99 | 0.26 ± 0.11 | 10 |
-| 90 | 1.38 ± 1.08 | 0.27 ± 0.13 | 9–10 |
-| 180 | 1.48 ± 1.25 | 0.16 ± 0.09 | 6 |
+| 90 | 1.37 ± 1.08 | 0.27 ± 0.13 | 9–10 |
+| 180 | 1.47 ± 1.25 | 0.16 ± 0.09 | 6 |
 
 **β converges faster than α**: By 30 days, β stabilizes around 0.26 (±0.10), while α continues varying. This makes sense — correction windows are well-defined events with clear boundaries, while fasting window detection is noisier.
 
@@ -287,7 +287,7 @@ After calibration, most drifts fall to ±20 mg/dL/h range — still clinically l
 
 3. **Errors are context-dependent**: α and β learned from carb-free windows don't transfer to meal windows. The carb absorption model introduces independent error modes (CR error, gastric emptying variation, ISF/CR interaction).
 
-4. **Cross-patient heterogeneity is extreme**: α varies 160× across patients; β varies 3× (excluding patient d). No universal calibration exists.
+4. **Cross-patient heterogeneity is extreme**: α varies 160× across patients (excluding patient d at |α|=0.002, which would give >1,400×); β varies 3× (excluding patient d). No universal calibration exists.
 
 ### Why Absolute R² Is Always Negative
 
@@ -342,7 +342,7 @@ Our experiments reveal a clear hierarchy of what's learnable from observational 
 
 3. **Separate meal recommendations from correction-based ISF**: The CR and ISF errors are confounded during meals. Use meal-specific excursion analysis (not physics model) for CR tuning.
 
-4. **Trust patient archetypes**: The d/k cluster (α ≈ 0, β ≈ 0) behaves fundamentally differently from the a/f/i cluster (α > 1.5, β < 0.25). Treatment recommendations should be archetype-aware.
+4. **Trust patient archetypes**: The d/k cluster (α ≈ 0, minimal hepatic signal) behaves fundamentally differently from the a/f/i cluster (α > 1.5, strong hepatic). Treatment recommendations should be archetype-aware, noting that patient k has no valid β estimate (0 correction windows) and patient f has β = 0.38 (above the 0.25 threshold for this cluster).
 
 ### What Should Stay the Same
 
