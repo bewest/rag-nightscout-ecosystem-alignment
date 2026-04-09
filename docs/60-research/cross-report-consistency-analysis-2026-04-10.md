@@ -88,7 +88,7 @@ These reports use different methodologies and reach incompatible conclusions:
 
 2. **The causal-leakage report** (written later) decomposes the signal into:
    - **Causal projection**: project current IOB forward using known decay curves → +0.000 (zero benefit, because XGBoost already learns the decay from the 2h PK window)
-   - **Leaked component**: future bolus decisions that change the IOB trajectory → +0.134
+   - **Leaked component**: future bolus decisions that change the IOB trajectory → +0.125 (single-split; +0.134 in 5-fold CV per EXP-1169)
 
 3. **How "100% leakage" and "+0.045 CV" coexist**: The "100% leakage" refers specifically to the *causal projection method* — the model can already predict IOB decay internally, so the projection adds zero *new* information. But the raw PK lead (+0.045 in CV) contains *both* the redundant decay signal AND future bolus information. The +0.045 CV improvement comes from learnable bolus patterns in historical data, which is technically leakage (future information unavailable at prediction time) but survives CV because bolus patterns are statistically consistent across time folds.
 
@@ -209,12 +209,12 @@ None — this is the best-explained paradox in the report set. The only minor im
 
 | Report | Claim | Evidence |
 |--------|-------|----------|
-| `combined-winners-ensemble-report` | Depth-3 dominates for 7/11 patients | EXP-1112 |
-| `winner-stacking-production-report` | Depth-2 optimal for 7/11 patients; +0.006 R² over depth-3 | EXP-1255 |
+| `combined-winners-ensemble-report` | Depth-3 dominates for 6/11 patients | EXP-1112 |
+| `winner-stacking-production-report` | Depth-2 optimal for 7/11 patients; +0.005 R² over depth-3 | EXP-1255 |
 
 ### Analysis: **REAL CONTRADICTION — partially explained**
 
-The reports give opposite recommendations using similar language ("7/11 patients"):
+The reports give opposite recommendations using different patient counts ("6/11" vs "7/11"):
 
 1. **Same feature set**: Both experiments use the same 186-feature builder. This rules out "different features" as the explanation.
 
@@ -226,11 +226,11 @@ The reports give opposite recommendations using similar language ("7/11 patients
    - **Different evaluation metric**: Though both report R², the aggregation method may differ
    - **Feature count growth**: The 186-feature count may have grown between experiments, pushing the optimal depth down
 
-4. **The magnitude is small**: The difference is only 0.006 R² — within the noise band for many patients. This suggests both depths are near-equivalent, and the "winner" depends on subtle evaluation details.
+4. **The magnitude is small**: The difference is only 0.005 R² — within the noise band for many patients. This suggests both depths are near-equivalent, and the "winner" depends on subtle evaluation details.
 
 ### Verdict
 
-**Real but minor contradiction.** The flip from depth-3 to depth-2 is not adequately explained by the reports. The most likely cause is a change in CV methodology (single-split → 5-fold), where depth-2's stronger regularization shows its advantage. The practical impact is small (0.006 R²).
+**Real but minor contradiction.** The flip from depth-3 to depth-2 is not adequately explained by the reports. The most likely cause is a change in CV methodology (single-split → 5-fold), where depth-2's stronger regularization shows its advantage. The practical impact is small (0.005 R²).
 
 ### Corrections Needed
 
