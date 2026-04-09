@@ -13,7 +13,7 @@ The fix adds patient-specific demand calibration (β = hepatic_base / (mean_basa
 
 **Key results after fix**:
 - R² improvement: **+0.335** from demand calibration alone (largest single improvement)
-- Patient i: R² from **-2.73 → +0.015** (most dramatic individual improvement)
+- Patient i: R² from **-2.71 → +0.009** (most dramatic individual improvement)
 - Oracle rescue carbs during hypo episodes: R² = **0.80** → rescue carbs are the primary missing signal
 - Glycogen proxy **survives deconfounding** from insulin delivery — captures a real metabolic effect
 - Even with all corrections, **97.6% of glucose variance remains unexplained** without rescue carb data
@@ -218,11 +218,11 @@ Across all 431,153 timesteps and all metabolic contexts:
 |-----------|---------------|-------------|
 | Original (uncalibrated) | -0.453 | — |
 | + Demand calibration | -0.118 | **+0.335** |
-| + Glycogen modulation | -0.146 | +0.000 |
+| + Glycogen modulation | -0.146 | −0.028 |
 | Per-context ceiling | +0.024 | +0.169 |
 | **Remaining unexplained** | | **97.6%** |
 
-**Demand calibration is the single largest improvement (+0.335 R²)**. Context-specific optimization adds another +0.169. Glycogen modulation adds nothing in this aggregate analysis (though it's significant within specific contexts per EXP-1634).
+**Demand calibration is the single largest improvement (+0.335 R²)**. Context-specific optimization adds another +0.169. Glycogen modulation slightly worsens aggregate R² (−0.028), though it is significant within specific contexts per EXP-1634.
 
 Even at the context-optimized ceiling, R² = +0.024 — the supply-demand model explains only **2.4% of total glucose variance**. The remaining 97.6% comes from:
 - Unannounced/rescue carbs (estimated 60-70% from EXP-1635 oracle analysis)
@@ -239,7 +239,7 @@ Even at the context-optimized ceiling, R² = +0.024 — the supply-demand model 
 | Population β | 1613 | 0.191 | ~1.0 | β was absorbing calibration error |
 | Cross-context transfer | 1614 | -38% degradation | Smaller degradation | Some transfer failure was calibration error |
 | Demand 5× over-prediction | 1621 | "×5.0 is a bug" | ×5.0 is correct, hepatic was miscalibrated | Reframed as calibration, not formula error |
-| Patient i R² | 1621 | -2.73 | +0.015 | Fixed worst outlier |
+| Patient i R² | 1621 | -2.71 | +0.009 | Fixed worst outlier |
 
 ### Findings that REMAIN VALID
 
@@ -295,7 +295,7 @@ The current auto-calibration uses a single β per patient. EXP-1632 shows that p
 
 The fix was verified through:
 1. **Steady-state balance check**: D/H ratio moves toward 1.0 for all patients
-2. **R² improvement**: Patient i improved from -2.73 to +0.015 (most extreme case)
+2. **R² improvement**: Patient i improved from -2.71 to +0.009 (most extreme case)
 3. **Production test suite**: All 89 tests pass
 4. **Residual structure preservation**: Hypo nadir residual flip is preserved and amplified
 5. **Backward compatibility**: `calibrate=False` reproduces legacy behavior exactly

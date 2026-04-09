@@ -140,42 +140,42 @@ Canonical zone statistics (Config C, therapy):
 ## Visualizations
 
 ### Figure 15: Multi-Config Metabolic Metrics by Carb Range
-`visualizations/natural-experiments/fig15_multiconfig_metrics.png`
+![Multi-Config Metabolic Metrics](../../visualizations/natural-experiments/fig15_multiconfig_metrics.png)
 
 Three-panel grouped bar chart comparing ISF-normalized excursion, spectral power (log),
 and net flux mean across 5 carb ranges × 3 configs. Shows how small-meal inclusion (A)
 dilutes metabolic signal compared to therapy-only (C).
 
 ### Figure 16: Multi-Config Box Plot Distributions
-`visualizations/natural-experiments/fig16_multiconfig_boxplots.png`
+![Multi-Config Box Plots](../../visualizations/natural-experiments/fig16_multiconfig_boxplots.png)
 
 2×3 grid of box plots (ISF-norm and spectral power × 3 configs) showing full
 distributions by carb range. Reveals that variance increases with carb size across
 all configs, and that spectral power spans ~4 orders of magnitude.
 
 ### Figure 17: Meal Time-of-Day Distributions
-`visualizations/natural-experiments/fig17_meal_periodicity.png`
+![Meal Periodicity](../../visualizations/natural-experiments/fig17_meal_periodicity.png)
 
 Three-panel hourly histogram with mealtime zones shaded. Shows the characteristic
 three-peak (breakfast/lunch/dinner) pattern becoming more pronounced with stricter
 detection. Annotated with normalized entropy and zone fraction.
 
 ### Figure 18: Per-Patient Mealtime Regularity
-`visualizations/natural-experiments/fig18_mealtime_regularity.png`
+![Mealtime Regularity](../../visualizations/natural-experiments/fig18_mealtime_regularity.png)
 
 Scatter plots of meal count vs std(hour) within each mealtime zone, colored by zone,
 labeled by patient. Shows which patients have the most regular eating patterns and
 how regularity changes across configs.
 
 ### Figure 19: Small vs Large Meal Metabolic Profile
-`visualizations/natural-experiments/fig19_small_vs_large_meals.png`
+![Small vs Large Meals](../../visualizations/natural-experiments/fig19_small_vs_large_meals.png)
 
 Three-panel bar chart comparing 5-18g meals (n=1,036) vs ≥18g meals (n=3,020) on
 raw excursion, ISF-normalized excursion, and spectral power. Quantifies the metabolic
 gap between snacks and proper meals.
 
 ### Figure 20: Periodicity Summary
-`visualizations/natural-experiments/fig20_periodicity_summary.png`
+![Periodicity Summary](../../visualizations/natural-experiments/fig20_periodicity_summary.png)
 
 Two-panel summary answering the periodicity question directly:
 - Panel A: Normalized entropy by config (lower = more periodic)
