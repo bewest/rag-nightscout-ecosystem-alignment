@@ -18,7 +18,7 @@ from typing import List, Optional
 
 import numpy as np
 
-from .types import CircadianFit, MetabolicState, PatternProfile, Phenotype
+from .types import CircadianFit, HarmonicFit, MetabolicState, PatternProfile, Phenotype
 
 
 def fit_circadian(residuals: np.ndarray,
@@ -70,6 +70,114 @@ def fit_circadian(residuals: np.ndarray,
         amplitude=amplitude,
         phase_hours=phase,
         r2_improvement=r2_improvement,
+    )
+
+
+def fit_harmonic_circadian(glucose: np.ndarray,
+                           hours: np.ndarray,
+                           periods: list = None) -> HarmonicFit:
+    """Fit multi-frequency harmonic circadian model (EXP-1631–1638).
+
+    Model: glucose(h) = offset + Σ_k [a_k·sin(2πh/P_k) + b_k·cos(2πh/P_k)]
+
+    Research finding: 4-harmonic (24+12+8+6h) captures 96% of circadian
+    glucose variance (R²=0.959 mean) vs 51% for single sinusoidal.
+    Improvement is universal: all 11 patients benefit (+6% to +73%).
+
+    Args:
+        glucose: (N,) glucose values (mg/dL).
+        hours: (N,) fractional hour of day (0-24).
+        periods: list of harmonic periods in hours (default [24, 12, 8, 6]).
+
+    Returns:
+        HarmonicFit with amplitudes, phases, and R² per harmonic.
+    """
+    if periods is None:
+        periods = [24.0, 12.0, 8.0, 6.0]
+
+    valid = np.isfinite(glucose) & np.isfinite(hours)
+    if np.sum(valid) < 48:
+        return HarmonicFit(
+            amplitudes=[0.0] * len(periods),
+            phases=[0.0] * len(periods),
+            offset=float(np.nanmean(glucose)) if len(glucose) > 0 else 120.0,
+            periods=periods,
+            r2=0.0,
+            r2_by_harmonic={f'{int(p)}h': 0.0 for p in periods},
+            dominant_amplitude=0.0,
+            dominant_period=periods[0],
+        )
+
+    # Bin glucose by fractional hour (288 bins = 5-min resolution over 24h)
+    g = glucose[valid]
+    h = hours[valid]
+
+    # Build design matrix: [sin(2πh/P1), cos(2πh/P1), sin(2πh/P2), ...]
+    columns = []
+    for p in periods:
+        angle = 2.0 * np.pi * h / p
+        columns.append(np.sin(angle))
+        columns.append(np.cos(angle))
+    columns.append(np.ones(len(h)))  # offset
+
+    A = np.column_stack(columns)
+
+    try:
+        coeffs, _, _, _ = np.linalg.lstsq(A, g, rcond=None)
+    except np.linalg.LinAlgError:
+        return HarmonicFit(
+            amplitudes=[0.0] * len(periods),
+            phases=[0.0] * len(periods),
+            offset=float(np.mean(g)),
+            periods=periods,
+            r2=0.0,
+            r2_by_harmonic={f'{int(p)}h': 0.0 for p in periods},
+            dominant_amplitude=0.0,
+            dominant_period=periods[0],
+        )
+
+    offset = float(coeffs[-1])
+    amplitudes = []
+    phases = []
+    for i, p in enumerate(periods):
+        a_coeff = float(coeffs[2 * i])
+        b_coeff = float(coeffs[2 * i + 1])
+        amp = float(np.sqrt(a_coeff**2 + b_coeff**2))
+        phase_h = float(np.arctan2(a_coeff, b_coeff) * p / (2.0 * np.pi)) % p
+        amplitudes.append(amp)
+        phases.append(phase_h)
+
+    # Compute R² for full model
+    predicted = A @ coeffs
+    ss_res = np.sum((g - predicted) ** 2)
+    ss_tot = np.sum((g - np.mean(g)) ** 2)
+    r2_full = float(1.0 - ss_res / max(ss_tot, 1e-12))
+
+    # Compute cumulative R² adding one harmonic at a time
+    r2_by_harmonic = {}
+    for k in range(len(periods)):
+        n_cols = 2 * (k + 1) + 1  # sin/cos pairs + offset
+        A_sub = np.column_stack(columns[:2 * (k + 1)] + [columns[-1]])
+        try:
+            c_sub, _, _, _ = np.linalg.lstsq(A_sub, g, rcond=None)
+            pred_sub = A_sub @ c_sub
+            ss_r = np.sum((g - pred_sub) ** 2)
+            r2_by_harmonic[f'{int(periods[k])}h'] = float(1.0 - ss_r / max(ss_tot, 1e-12))
+        except np.linalg.LinAlgError:
+            r2_by_harmonic[f'{int(periods[k])}h'] = 0.0
+
+    # Dominant harmonic
+    max_idx = int(np.argmax(amplitudes))
+
+    return HarmonicFit(
+        amplitudes=amplitudes,
+        phases=phases,
+        offset=offset,
+        periods=periods,
+        r2=r2_full,
+        r2_by_harmonic=r2_by_harmonic,
+        dominant_amplitude=amplitudes[max_idx],
+        dominant_period=periods[max_idx],
     )
 
 
@@ -234,9 +342,12 @@ def analyze_patterns(glucose: np.ndarray,
         PatternProfile with circadian fit, changepoints, ISF variation,
         weekly trend, and phenotype.
     """
-    # Circadian fit
+    # Circadian fit (legacy sinusoidal)
     residuals = metabolic.residual if metabolic is not None else np.zeros(len(glucose))
     circadian = fit_circadian(residuals, hours)
+
+    # Multi-harmonic circadian fit (EXP-1631–1638: R²=0.959 vs 0.515)
+    harmonic = fit_harmonic_circadian(glucose, hours)
 
     # Changepoints
     changepoints = detect_changepoints(glucose)
@@ -276,4 +387,5 @@ def analyze_patterns(glucose: np.ndarray,
         phenotype=phenotype,
         tir_first_half=tir_first,
         tir_second_half=tir_second,
+        harmonic=harmonic,
     )

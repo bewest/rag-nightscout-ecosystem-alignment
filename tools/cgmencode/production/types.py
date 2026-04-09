@@ -22,10 +22,36 @@ import numpy as np
 # ── Enums ─────────────────────────────────────────────────────────────
 
 class GlycemicGrade(str, Enum):
+    """ADA consensus grade — used as safety floor only.
+
+    Production note: FidelityGrade is the PRIMARY therapy quality metric.
+    GlycemicGrade is retained as a safety baseline (EXP-1531: only 36%
+    concordance between fidelity and ADA grading).
+    """
     A = "A"  # TIR >= 70%, TBR < 4%
     B = "B"  # TIR >= 60%, TBR < 5%
     C = "C"  # TIR >= 50%
     D = "D"  # Below all thresholds
+
+
+class FidelityGrade(str, Enum):
+    """Physics-model fidelity grade (EXP-1531–1538).
+
+    Measures how well therapy settings match the physics of glucose
+    dynamics, independent of patient outcomes. A patient can have
+    excellent fidelity (well-tuned settings) but choose to prioritize
+    quality of life over tight control.
+
+    Thresholds calibrated from 11-patient population:
+      Excellent: RMSE ≤ 6 mg/dL AND correction_energy ≤ 600
+      Good:      RMSE ≤ 9 AND CE ≤ 1000
+      Acceptable: RMSE ≤ 11 AND CE ≤ 1600
+      Poor:      Above all thresholds
+    """
+    EXCELLENT = "excellent"
+    GOOD = "good"
+    ACCEPTABLE = "acceptable"
+    POOR = "poor"
 
 
 class BasalAssessment(str, Enum):
@@ -72,6 +98,32 @@ class SettingsParameter(str, Enum):
     CR = "cr"
 
 
+class ConfidenceGrade(str, Enum):
+    """Recommendation confidence grade based on bootstrap CI width (EXP-1621–1628).
+
+    Research findings:
+    - ISF: CI width 46% median (irreducible floor ~30%); grades calibrated to ISF scale
+    - CR: CI width 5% (10× tighter); grades calibrated to CR scale
+    - 8/10 patients LOO-robust
+
+    Grade thresholds for ISF CI width:
+      A: ≤ 30%   (narrow, highly confident)
+      B: ≤ 46%   (population median)
+      C: ≤ 60%   (wide, moderate confidence)
+      D: > 60%   (very wide, low confidence)
+
+    Grade thresholds for CR CI width:
+      A: ≤ 5%    (narrow)
+      B: ≤ 10%   (typical)
+      C: ≤ 15%   (wide)
+      D: > 15%   (very wide)
+    """
+    A = "A"  # High confidence
+    B = "B"  # Moderate confidence
+    C = "C"  # Low confidence
+    D = "D"  # Very low confidence
+
+
 class MealResponseType(str, Enum):
     """Postprandial glucose response classification (EXP-514)."""
     FLAT = "flat"           # AID suppresses excursion (<20 mg/dL)
@@ -79,6 +131,17 @@ class MealResponseType(str, Enum):
     BIPHASIC = "biphasic"   # Classic meal + second phase
     SLOW = "slow"           # Fat/protein, peak >90min or high tail
     MODERATE = "moderate"   # Standard absorption
+
+
+class MealArchetype(str, Enum):
+    """Meal-response cluster archetype (EXP-1591–1598).
+
+    Research finding: 5,369 meals → 2 robust archetypes.
+    Timing explains 9× more variance than dose.
+    Clusters transfer perfectly across patients (ARI=0.976).
+    """
+    CONTROLLED_RISE = "controlled_rise"   # 53% of meals: modest excursion, good recovery
+    HIGH_EXCURSION = "high_excursion"     # 47% of meals: large spike, slow return
 
 class CompensationType(str, Enum):
     """AID compensation vs genuine under-insulinization (EXP-747)."""
@@ -218,19 +281,74 @@ class ClinicalReport:
     isf_discrepancy: Optional[float] = None    # ratio effective/profile
     recommendations: List[str] = field(default_factory=list)
     overnight_tir: Optional[float] = None      # nighttime TIR for basal
+    fidelity: Optional['FidelityAssessment'] = None  # physics-model fidelity
+
+
+@dataclass
+class FidelityAssessment:
+    """Physics-model fidelity assessment (EXP-1531–1538).
+
+    Measures how closely the physics supply-demand model predicts
+    observed glucose changes. High fidelity = well-tuned settings.
+
+    Key insight: fidelity correlates r=0.94 with RMSE but only
+    r=-0.59 with TIR — fidelity measures settings quality,
+    not outcomes.
+    """
+    fidelity_grade: FidelityGrade
+    rmse: float                                # mg/dL prediction RMSE
+    correction_energy: float                   # daily integral of |net_flux|
+    r2: Optional[float] = None                 # R² (often negative due to UAM)
+    conservation_integral: Optional[float] = None  # physics conservation check
+    ada_grade: Optional[GlycemicGrade] = None  # ADA safety floor
+    concordance: Optional[bool] = None         # True if fidelity matches ADA direction
 
 
 # ── Pattern Analysis ──────────────────────────────────────────────────
 
 @dataclass
 class CircadianFit:
-    """3-parameter circadian model: a·sin(2πh/24) + b·cos(2πh/24) + c."""
+    """3-parameter circadian model: a·sin(2πh/24) + b·cos(2πh/24) + c.
+
+    Legacy type — prefer HarmonicFit for production use.
+    """
     a: float       # sin coefficient
     b: float       # cos coefficient
     c: float       # offset
     amplitude: float  # sqrt(a² + b²)
     phase_hours: float  # peak hour
     r2_improvement: Optional[float] = None  # R² gain from correction
+
+
+@dataclass
+class HarmonicFit:
+    """Multi-frequency harmonic circadian model (EXP-1631–1638).
+
+    Model: glucose(h) = offset + Σ_{k} A_k·sin(2πh/P_k + φ_k)
+    Periods: [24, 12, 8, 6] hours.
+
+    Research finding: 4-harmonic captures 96% of circadian variance
+    (mean R²=0.959) vs 51% for single sinusoidal (EXP-1637).
+    """
+    amplitudes: List[float]        # [A_24, A_12, A_8, A_6]
+    phases: List[float]            # [φ_24, φ_12, φ_8, φ_6] in hours
+    offset: float                  # baseline glucose
+    periods: List[float]           # [24, 12, 8, 6]
+    r2: float                      # overall R² of harmonic fit
+    r2_by_harmonic: Dict[str, float]  # {'24h': R², '12h': R², ...} cumulative
+    dominant_amplitude: float      # max amplitude across harmonics
+    dominant_period: float         # period with largest amplitude
+
+    @property
+    def n_harmonics(self) -> int:
+        return len(self.periods)
+
+    def predict(self, hours: np.ndarray) -> np.ndarray:
+        """Predict glucose from harmonic model at given hours."""
+        result = np.full(len(hours), self.offset)
+        for amp, phase, period in zip(self.amplitudes, self.phases, self.periods):
+            result += amp * np.sin(2.0 * np.pi * hours / period + phase * 2.0 * np.pi / period)
+        return result
 
 
 @dataclass
@@ -245,6 +363,7 @@ class PatternProfile:
     phenotype: Phenotype = Phenotype.STABLE
     tir_first_half: Optional[float] = None
     tir_second_half: Optional[float] = None
+    harmonic: Optional[HarmonicFit] = None  # 4-harmonic model (preferred over circadian)
 
 
 # ── Patient Onboarding ────────────────────────────────────────────────
@@ -274,6 +393,7 @@ class DetectedMeal:
     residual_integral: float             # raw residual burst integral
     confidence: float                    # detection confidence (0-1)
     hour_of_day: float                   # fractional hour
+    archetype: Optional[MealArchetype] = None  # cluster assignment (EXP-1591)
 
 
 @dataclass
@@ -335,6 +455,8 @@ class SettingsRecommendation:
     confidence: float                    # recommendation confidence (0-1)
     evidence: str                        # what data supports this
     rationale: str                       # human-readable explanation
+    confidence_grade: Optional[ConfidenceGrade] = None  # bootstrap CI grade (EXP-1621)
+    ci_width_pct: Optional[float] = None  # bootstrap CI width as %
 
 
 @dataclass

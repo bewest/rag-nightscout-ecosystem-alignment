@@ -29,13 +29,14 @@ from .hypo_predictor import predict_hypo, calibrate_threshold
 from .clinical_rules import generate_clinical_report
 from .pattern_analyzer import analyze_patterns
 from .patient_onboarding import get_onboarding_state
-from .meal_detector import detect_meal_events, build_meal_history, classify_all_meal_responses
+from .meal_detector import detect_meal_events, build_meal_history, classify_all_meal_responses, classify_meal_archetypes
 from .meal_predictor import build_timing_models, predict_next_meal, MealMLModel
 from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented
 from .recommender import generate_recommendations
 from .clinical_rules import (
     generate_clinical_report, compute_correction_energy,
     assess_correction_timing, assess_aid_compensation,
+    compute_fidelity_grade,
 )
 
 
@@ -120,6 +121,20 @@ def run_pipeline(patient: PatientData,
         hours=hours,
     )
 
+    # ── Stage 4c′: Fidelity Assessment (EXP-1531–1538) ───────────
+    if metabolic is not None:
+        try:
+            fidelity = compute_fidelity_grade(
+                metabolic=metabolic,
+                glucose=cleaned.glucose,
+                hours=hours,
+                days_of_data=patient.days_of_data,
+                ada_grade=clinical_report.grade,
+            )
+            clinical_report.fidelity = fidelity
+        except Exception as e:
+            warnings.append(f"Fidelity assessment failed: {e}")
+
     # ── Stage 4d: Pattern Analysis ────────────────────────────────
     patterns = None
     if not skip_patterns and patient.days_of_data >= 7.0:
@@ -163,6 +178,10 @@ def run_pipeline(patient: PatientData,
             meals = detect_meal_events(
                 cleaned.glucose, metabolic, hours,
                 patient.timestamps, patient.profile)
+
+            # Meal archetype clustering (EXP-1591–1598)
+            classify_meal_archetypes(cleaned.glucose, meals)
+
             meal_history = build_meal_history(meals, patient.days_of_data)
 
             # Meal response phenotyping (EXP-514)

@@ -25,8 +25,8 @@ from typing import List, Optional
 import numpy as np
 
 from .types import (
-    DetectedMeal, MealHistory, MealResponse, MealResponseType, MealWindow,
-    MetabolicState, PatientProfile,
+    DetectedMeal, MealArchetype, MealHistory, MealResponse, MealResponseType,
+    MealWindow, MetabolicState, PatientProfile,
 )
 
 
@@ -309,3 +309,54 @@ def classify_all_meal_responses(glucose: np.ndarray,
         if resp is not None:
             responses.append(resp)
     return responses
+
+
+def classify_meal_archetypes(glucose: np.ndarray,
+                             meals: List[DetectedMeal],
+                             ) -> List[DetectedMeal]:
+    """Assign meal archetype (controlled_rise vs high_excursion) to each meal.
+
+    Research basis: EXP-1591–1598.
+    - 5,369 meals → 2 robust archetypes via k-means on [excursion, peak_time, recovery]
+    - Timing explains 9× more variance than dose
+    - Clusters transfer perfectly across patients (ARI=0.976)
+    - Controlled_rise: 53% of meals, excursion < 60 mg/dL, faster recovery
+    - High_excursion: 47% of meals, excursion ≥ 60 mg/dL, slower recovery
+
+    Uses simple threshold (no ML needed — EXP-1597 shows ARI=0.976 transferability):
+    - excursion < 60 mg/dL → CONTROLLED_RISE
+    - excursion ≥ 60 mg/dL → HIGH_EXCURSION
+
+    Args:
+        glucose: (N,) glucose values.
+        meals: list of DetectedMeal (mutated in place with archetype field).
+
+    Returns:
+        Same list of DetectedMeal with archetype assigned.
+    """
+    N = len(glucose)
+
+    for meal in meals:
+        idx = meal.index
+        # 2h post-meal window (24 steps)
+        post_end = min(idx + 24, N)
+        if post_end - idx < 6:
+            meal.archetype = MealArchetype.CONTROLLED_RISE
+            continue
+
+        window = glucose[idx:post_end]
+        valid = window[np.isfinite(window)]
+        if len(valid) < 3:
+            meal.archetype = MealArchetype.CONTROLLED_RISE
+            continue
+
+        pre_bg = float(valid[0])
+        peak = float(np.max(valid))
+        excursion = peak - pre_bg
+
+        if excursion >= 60.0:
+            meal.archetype = MealArchetype.HIGH_EXCURSION
+        else:
+            meal.archetype = MealArchetype.CONTROLLED_RISE
+
+    return meals

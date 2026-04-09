@@ -19,8 +19,9 @@ from typing import List, Optional
 import numpy as np
 
 from .types import (
-    BasalAssessment, ClinicalReport, GlycemicGrade,
-    MetabolicState, PatientProfile,
+    BasalAssessment, ClinicalReport, ConfidenceGrade, FidelityAssessment,
+    FidelityGrade, GlycemicGrade, MetabolicState, PatientProfile,
+    SettingsParameter,
     AIDCompensation, BolusTimingSafety, CompensationType, CorrectionEnergy,
 )
 
@@ -137,11 +138,15 @@ def score_cr_effectiveness(glucose: np.ndarray,
                            bolus: np.ndarray) -> float:
     """Score carb ratio effectiveness (0-100).
 
-    Analyzes post-meal glucose excursions:
-    - Low score: large post-meal spikes and/or slow recovery
-    - High score: modest excursions with clean recovery to baseline
+    Analyzes post-meal glucose excursions with archetype-aware scoring
+    (EXP-1591–1598): timing explains 9× more variance than dose, so
+    pre-bolus timing is weighted more heavily than excursion magnitude.
 
-    Research finding: CR scores range 9.1 to 61.5 across patients (EXP-694).
+    Research findings:
+    - CR scores range 9.1 to 61.5 across patients (EXP-694)
+    - Meals cluster into 2 archetypes (controlled_rise 53%, high_excursion 47%)
+    - Timing (peak_time) explains 9× more variance than dose
+    - ARI=0.976: clusters are universal across patients
 
     Args:
         glucose, carbs, bolus: aligned (N,) arrays.
@@ -178,11 +183,20 @@ def score_cr_effectiveness(glucose: np.ndarray,
         # Recovery: BG at 3h should be near pre-meal level
         recovery = abs(valid_w[-1] - pre_meal)
 
-        # Score: penalize large excursion and slow recovery
-        # Perfect meal: excursion < 30 mg/dL, recovery < 20 mg/dL
+        # Peak timing: earlier peak suggests better pre-bolus timing
+        peak_idx = int(np.argmax(valid_w))
+        peak_time_min = peak_idx * 5.0
+
+        # Archetype-aware scoring (EXP-1591):
+        # - Timing penalty weighted 3× more than excursion (timing explains 9× variance)
+        # - Pre-bolus timing: peak < 45 min is ideal, > 90 min penalized
         excursion_penalty = max(0, excursion - 30) / 200.0  # 0-1
         recovery_penalty = max(0, recovery - 20) / 100.0    # 0-1
-        meal_score = max(0, 100 * (1.0 - excursion_penalty - recovery_penalty))
+        timing_penalty = max(0, peak_time_min - 45) / 135.0  # 0-1, penalizes late peaks
+
+        # Weight: 30% excursion + 20% recovery + 50% timing (timing-dominant)
+        combined_penalty = 0.30 * excursion_penalty + 0.20 * recovery_penalty + 0.50 * timing_penalty
+        meal_score = max(0, 100 * (1.0 - combined_penalty))
         excursion_scores.append(meal_score)
 
     return float(np.mean(excursion_scores)) if excursion_scores else 50.0
@@ -233,6 +247,157 @@ def compute_effective_isf(glucose: np.ndarray,
         return None
 
     return float(np.median(isf_estimates))
+
+
+def compute_response_curve_isf(glucose: np.ndarray,
+                               bolus: np.ndarray,
+                               basal_rate: Optional[np.ndarray] = None,
+                               profile: Optional[PatientProfile] = None,
+                               ) -> dict:
+    """AID-aware ISF estimation via response-curve fitting (EXP-1601–1608).
+
+    The naive drop/dose method underestimates ISF because AID loops
+    reduce basal during 92-100% of correction windows, dampening the
+    observed BG drop. This method fits an exponential decay curve:
+
+        BG(t) = BG_start - amplitude × (1 - exp(-t/τ))
+
+    and computes ISF = amplitude / bolus_dose.
+
+    Research findings:
+    - AID reduces basal during 92-100% of corrections
+    - Correction factor ranges 0.61-2.49× (patient-dependent)
+    - 7/11 patients show ISF mismatch >2× profile
+    - Response-curve R² = 0.68-0.98 (excellent fit)
+    - τ is bimodal: 1.5h fast responders, 4.0h slow responders
+
+    Args:
+        glucose: (N,) glucose values (mg/dL).
+        bolus: (N,) bolus units per interval.
+        basal_rate: (N,) actual basal rate U/hr (for AID dampening detection).
+        profile: PatientProfile for scheduled basal comparison.
+
+    Returns:
+        dict with keys: isf, tau_hours, r2, n_corrections, aid_dampening_pct,
+        correction_factor, isf_estimates (per-correction). Returns empty dict
+        if insufficient data.
+    """
+    if bolus is None:
+        return {}
+
+    bolus_vals = np.nan_to_num(bolus, nan=0.0)
+    correction_indices = np.where(bolus_vals > 0.5)[0]
+
+    if len(correction_indices) < 3:
+        return {}
+
+    # Determine scheduled basal for AID dampening detection
+    scheduled_basal = 0.8  # default fallback
+    if profile is not None and profile.basal_schedule:
+        scheduled_basal = float(np.median([
+            e.get('value', e.get('rate', 0.8))
+            for e in profile.basal_schedule
+            if e.get('value') or e.get('rate')
+        ] or [0.8]))
+
+    isf_estimates = []
+    tau_estimates = []
+    dampening_count = 0
+    total_corrections = 0
+
+    for idx in correction_indices:
+        # Need 2h (24 steps) post-bolus window
+        post_end = min(idx + 24, len(glucose))
+        if post_end - idx < 12:
+            continue
+
+        pre_bg = float(glucose[idx])
+        if not np.isfinite(pre_bg) or pre_bg < 120:
+            continue  # only corrections from elevated BG
+
+        dose = float(bolus_vals[idx])
+        if dose < 0.1:
+            continue
+
+        total_corrections += 1
+
+        # Check for AID dampening: was basal reduced during correction?
+        if basal_rate is not None:
+            window_basal = basal_rate[idx:post_end]
+            valid_basal = window_basal[np.isfinite(window_basal)]
+            if len(valid_basal) > 0:
+                mean_basal = float(np.mean(valid_basal))
+                if mean_basal < scheduled_basal * 0.85:
+                    dampening_count += 1
+
+        # Extract BG trajectory
+        bg_window = glucose[idx:post_end].copy()
+        valid_mask = np.isfinite(bg_window)
+        if valid_mask.sum() < 6:
+            continue
+
+        t = np.arange(len(bg_window)) * 5.0 / 60.0  # hours
+        bg_vals = bg_window.copy()
+
+        # Fit exponential decay: BG(t) = BG_start - A*(1 - exp(-t/τ))
+        # Linearize: let y = BG_start - BG(t), fit y = A*(1 - exp(-t/τ))
+        y = pre_bg - bg_vals
+        y_valid = y[valid_mask]
+        t_valid = t[valid_mask]
+
+        if len(y_valid) < 6:
+            continue
+
+        # Grid search for τ (0.5h to 6h)
+        best_r2 = -np.inf
+        best_tau = 2.0
+        best_amp = 0.0
+
+        for tau_candidate in np.arange(0.5, 6.5, 0.25):
+            basis = 1.0 - np.exp(-t_valid / tau_candidate)
+            if np.sum(basis ** 2) < 1e-10:
+                continue
+            # Least squares for amplitude
+            amp = float(np.sum(y_valid * basis) / np.sum(basis ** 2))
+            if amp <= 0:
+                continue
+            predicted = amp * basis
+            ss_res = np.sum((y_valid - predicted) ** 2)
+            ss_tot = np.sum((y_valid - np.mean(y_valid)) ** 2)
+            if ss_tot > 0:
+                r2 = 1.0 - ss_res / ss_tot
+                if r2 > best_r2:
+                    best_r2 = r2
+                    best_tau = tau_candidate
+                    best_amp = amp
+
+        if best_r2 > 0.3 and best_amp > 0:
+            isf_est = best_amp / dose
+            isf_estimates.append(isf_est)
+            tau_estimates.append(best_tau)
+
+    if not isf_estimates:
+        return {}
+
+    median_isf = float(np.median(isf_estimates))
+    median_tau = float(np.median(tau_estimates))
+    dampening_pct = dampening_count / max(total_corrections, 1)
+
+    # Correction factor: how much AID dampening reduces observed drop
+    # Simple estimate: naive ISF / response-curve ISF
+    correction_factor = 1.0
+    if dampening_pct > 0.5:
+        correction_factor = 1.0 + 0.5 * dampening_pct  # 1.0-1.5×
+
+    return {
+        'isf': median_isf,
+        'tau_hours': median_tau,
+        'n_corrections': total_corrections,
+        'aid_dampening_pct': dampening_pct,
+        'correction_factor': correction_factor,
+        'isf_estimates': isf_estimates,
+        'tau_estimates': tau_estimates,
+    }
 
 
 def compute_correction_energy(metabolic: MetabolicState,
@@ -454,6 +619,164 @@ def assess_aid_compensation(clinical: ClinicalReport,
     )
 
 
+def compute_fidelity_grade(metabolic: MetabolicState,
+                           glucose: np.ndarray,
+                           hours: np.ndarray,
+                           days_of_data: float,
+                           ada_grade: Optional[GlycemicGrade] = None,
+                           ) -> FidelityAssessment:
+    """Compute physics-model fidelity grade (EXP-1531–1538).
+
+    Measures how well the supply-demand physics model predicts observed
+    glucose changes. This is the PRIMARY therapy quality metric.
+
+    Research findings:
+    - RMSE+CE thresholds calibrated from 11-patient population
+    - Fidelity correlates r=0.94 with RMSE but only r=-0.59 with TIR
+    - Fidelity/ADA concordance is only 36%
+    - R² is universally negative (mean=-0.495) due to 76.5% UAM
+
+    Args:
+        metabolic: MetabolicState with residual and net_flux.
+        glucose: (N,) glucose values for R² computation.
+        hours: (N,) fractional hours.
+        days_of_data: data coverage.
+        ada_grade: optional ADA grade for concordance check.
+
+    Returns:
+        FidelityAssessment with grade, RMSE, CE, and concordance.
+    """
+    # RMSE: prediction error of physics model
+    residual = np.nan_to_num(metabolic.residual, nan=0.0)
+    rmse = float(np.sqrt(np.mean(residual ** 2)))
+
+    # Correction energy: daily integral of |net_flux|
+    flux = np.abs(np.nan_to_num(metabolic.net_flux, nan=0.0))
+    steps_per_day = 288
+    if len(flux) >= steps_per_day:
+        n_days = max(1, len(flux) / steps_per_day)
+        ce = float(np.sum(flux) / n_days)
+    else:
+        ce = float(np.sum(flux))
+
+    # R² (informational — often negative due to UAM)
+    bg_change = np.zeros(len(glucose))
+    bg_change[1:] = np.diff(glucose)
+    valid = np.isfinite(bg_change) & np.isfinite(metabolic.net_flux)
+    r2 = None
+    if valid.sum() > 48:
+        actual = bg_change[valid]
+        predicted = metabolic.net_flux[valid]
+        ss_res = np.sum((actual - predicted) ** 2)
+        ss_tot = np.sum((actual - np.mean(actual)) ** 2)
+        if ss_tot > 0:
+            r2 = float(1.0 - ss_res / ss_tot)
+
+    # Conservation integral
+    conservation = float(np.sum(np.nan_to_num(metabolic.residual, nan=0.0)))
+
+    # Grade assignment (EXP-1535 thresholds)
+    if rmse <= 6.0 and ce <= 600.0:
+        grade = FidelityGrade.EXCELLENT
+    elif rmse <= 9.0 and ce <= 1000.0:
+        grade = FidelityGrade.GOOD
+    elif rmse <= 11.0 and ce <= 1600.0:
+        grade = FidelityGrade.ACCEPTABLE
+    else:
+        grade = FidelityGrade.POOR
+
+    # Concordance check: does fidelity direction match ADA?
+    concordance = None
+    if ada_grade is not None:
+        fidelity_good = grade in (FidelityGrade.EXCELLENT, FidelityGrade.GOOD)
+        ada_good = ada_grade in (GlycemicGrade.A, GlycemicGrade.B)
+        concordance = (fidelity_good == ada_good)
+
+    return FidelityAssessment(
+        fidelity_grade=grade,
+        rmse=rmse,
+        correction_energy=ce,
+        r2=r2,
+        conservation_integral=conservation,
+        ada_grade=ada_grade,
+        concordance=concordance,
+    )
+
+
+def grade_recommendation_confidence(parameter: SettingsParameter,
+                                    estimates: list,
+                                    n_bootstrap: int = 100,
+                                    ) -> tuple:
+    """Grade recommendation confidence via bootstrap CI width (EXP-1621–1628).
+
+    Bootstraps the estimate list to compute 95% CI width, then assigns
+    a confidence grade based on parameter-specific thresholds.
+
+    Research findings:
+    - ISF: CI width 46% median (irreducible floor ~30%)
+    - CR: CI width 5% (10× tighter than ISF)
+    - 8/10 patients LOO-robust
+
+    Args:
+        parameter: SettingsParameter (ISF, CR, BASAL_RATE).
+        estimates: list of individual measurements (ISF values, CR values, etc.).
+        n_bootstrap: number of bootstrap iterations.
+
+    Returns:
+        (ConfidenceGrade, ci_width_pct) tuple.
+    """
+    if len(estimates) < 3:
+        return ConfidenceGrade.D, 100.0
+
+    estimates_arr = np.array(estimates, dtype=float)
+    median_val = float(np.median(estimates_arr))
+    if median_val == 0:
+        return ConfidenceGrade.D, 100.0
+
+    # Bootstrap
+    rng = np.random.RandomState(42)
+    boot_medians = []
+    for _ in range(n_bootstrap):
+        sample = rng.choice(estimates_arr, size=len(estimates_arr), replace=True)
+        boot_medians.append(float(np.median(sample)))
+
+    boot_medians = np.array(boot_medians)
+    ci_low = float(np.percentile(boot_medians, 2.5))
+    ci_high = float(np.percentile(boot_medians, 97.5))
+    ci_width_pct = (ci_high - ci_low) / abs(median_val) * 100.0
+
+    # Parameter-specific thresholds
+    if parameter == SettingsParameter.ISF:
+        if ci_width_pct <= 30:
+            grade = ConfidenceGrade.A
+        elif ci_width_pct <= 46:
+            grade = ConfidenceGrade.B
+        elif ci_width_pct <= 60:
+            grade = ConfidenceGrade.C
+        else:
+            grade = ConfidenceGrade.D
+    elif parameter == SettingsParameter.CR:
+        if ci_width_pct <= 5:
+            grade = ConfidenceGrade.A
+        elif ci_width_pct <= 10:
+            grade = ConfidenceGrade.B
+        elif ci_width_pct <= 15:
+            grade = ConfidenceGrade.C
+        else:
+            grade = ConfidenceGrade.D
+    else:  # BASAL_RATE
+        if ci_width_pct <= 10:
+            grade = ConfidenceGrade.A
+        elif ci_width_pct <= 20:
+            grade = ConfidenceGrade.B
+        elif ci_width_pct <= 30:
+            grade = ConfidenceGrade.C
+        else:
+            grade = ConfidenceGrade.D
+
+    return grade, ci_width_pct
+
+
 def generate_recommendations(grade: GlycemicGrade,
                              basal: BasalAssessment,
                              cr_score: float,
@@ -525,8 +848,20 @@ def generate_clinical_report(glucose: np.ndarray,
     basal = assess_basal(glucose, metabolic, hours)
     cr_score = score_cr_effectiveness(glucose, carbs, bolus) if carbs is not None else 50.0
 
-    # ISF analysis
-    effective_isf = compute_effective_isf(glucose, bolus, profile) if bolus is not None else None
+    # ISF analysis — use response-curve method first, fall back to naive
+    effective_isf = None
+    isf_confidence_grade = None
+    isf_ci_width = None
+    if bolus is not None:
+        rc_result = compute_response_curve_isf(glucose, bolus, profile=profile)
+        if rc_result and 'isf' in rc_result:
+            effective_isf = rc_result['isf']
+            # Confidence grade from bootstrap CI (EXP-1621)
+            if 'isf_estimates' in rc_result and len(rc_result['isf_estimates']) >= 3:
+                isf_confidence_grade, isf_ci_width = grade_recommendation_confidence(
+                    SettingsParameter.ISF, rc_result['isf_estimates'])
+        else:
+            effective_isf = compute_effective_isf(glucose, bolus, profile)
     profile_isf_vals = [e.get('value', e.get('sensitivity', 50))
                         for e in profile.isf_schedule if e.get('value') or e.get('sensitivity')]
     profile_isf = float(np.median(profile_isf_vals)) if profile_isf_vals else None
