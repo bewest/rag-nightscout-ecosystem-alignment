@@ -397,13 +397,13 @@ def fig05_spectral_power():
     style_ax(ax, 'Spectral Power: Throughput Concentrates Energy at Meal Frequencies',
              xlabel='Period (hours)', ylabel='Power Ratio (Throughput / Glucose)')
 
-    # Documented values from EXP-444
-    periods = [1, 3, 4, 5, 12, 24]
-    ratios =  [7.7, 17.6, 18.8, 17.6, 6.1, 8.3]
-    labels = ['Noise\n1h', 'Meal\n3h', 'Meal\n4h', 'Meal\n5h', 'Basal\n12h', 'Circadian\n24h']
+    # Documented values from EXP-444 (5 bands; no 4h band exists in data)
+    periods = [1, 3, 5, 12, 24]
+    ratios =  [7.7, 18.8, 17.6, 6.1, 8.3]
+    labels = ['Noise\n1h', 'Meal\n3h', 'Meal\n5h', 'Basal\n12h', 'Circadian\n24h']
 
     bars = ax.bar(range(len(periods)), ratios, color=[
-        C['grid'], C['carb'], C['carb'], C['carb'], C['accent1'], C['glucose']
+        C['grid'], C['carb'], C['carb'], C['accent1'], C['glucose']
     ], edgecolor='white', linewidth=2, width=0.7)
 
     ax.set_xticks(range(len(periods)))
@@ -411,8 +411,8 @@ def fig05_spectral_power():
     ax.axhline(1, color=C['text'], linewidth=1, linestyle='--', alpha=0.3)
 
     # Highlight the meal band
-    ax.axvspan(0.5, 3.5, alpha=0.08, color=C['carb'])
-    ax.text(2, max(ratios)*0.95, 'MEAL BAND\n18× glucose power',
+    ax.axvspan(0.5, 2.5, alpha=0.08, color=C['carb'])
+    ax.text(1.5, max(ratios)*0.95, 'MEAL BAND\n19× glucose power',
             ha='center', fontsize=13, fontweight='bold', color=C['accent2'],
             bbox=dict(boxstyle='round,pad=0.4', facecolor='#FFF3E0', alpha=0.9))
 
@@ -695,9 +695,9 @@ def fig09_hepatic_hill_curve():
 def fig10_fidelity_diagnostic():
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
-    # Documented fidelity scores from EXP-492
-    patients = ['k', 'd', 'j', 'b', 'f', 'g', 'h', 'a', 'c', 'e', 'i']
-    scores = [84, 52, 50, 44, 42, 38, 32, 20, 19, 18, 15]
+    # Documented fidelity scores from EXP-492 (rounded from raw composites)
+    patients = ['k', 'd', 'j', 'h', 'g', 'b', 'f', 'e', 'c', 'a', 'i']
+    scores = [84, 52, 50, 44, 36, 35, 32, 20, 17, 17, 15]
     tiers = ['Gold', 'Marginal', 'Marginal', 'Noisy', 'Noisy',
              'Noisy', 'Noisy', 'Misaligned', 'Misaligned', 'Misaligned', 'Misaligned']
     tier_colors = {'Gold': '#4CAF50', 'Marginal': '#FF9800',

@@ -38,7 +38,7 @@ def generate_synthesis_visualizations():
 
     # A) Bar chart of detection methods
     methods = ['Census\n(≥5g, 30m)', 'Medium\n(≥5g, 90m)', 'Therapy\n(≥18g, 90m)', 'UAM-inclusive\n(all excursions)']
-    counts = [4072, 3272, 2619, 12060]
+    counts = [4072, 3272, 2632, 12060]
     colors = ['#3498db', '#2ecc71', '#e67e22', '#e74c3c']
     bars = axes[0].bar(methods, counts, color=colors, edgecolor='black', linewidth=0.5)
     for bar, cnt in zip(bars, counts):
