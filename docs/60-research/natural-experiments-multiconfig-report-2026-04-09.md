@@ -80,7 +80,7 @@ For the periodicity question, we compute:
 ### 1. Small Meals Have Distinct Metabolic Profiles
 
 The 1,036 meals between 5-18g (excluded from therapy config) show:
-- **64% lower raw excursion** (43 vs 71 mg/dL)
+- **39% lower raw excursion** (43 vs 71 mg/dL)
 - **36% lower ISF-normalized excursion** (0.71 vs 1.10 correction-equivalents)
 - **6.2× lower spectral power** (341K vs 2.1M) — disproportionate reduction
 - **Lower announcement rate** (83.9% vs 90.8%)
