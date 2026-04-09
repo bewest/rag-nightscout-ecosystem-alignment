@@ -11,7 +11,7 @@ This batch analyzed 5,369 detected meals across 11 AID patients to discover dist
 **Key Findings**:
 
 1. **Meals cluster into 2 main profiles** (best k=3, silhouette=0.334): "controlled rise" (53%, excursion=35mg, peak=28min) and "high excursion" (47%, excursion=102mg, peak=102min)
-2. **Bolus timing explains 9× more excursion variance than dose** (R²=8.9% timing vs 0.8% dose) — pre-bolus advice is the highest-leverage recommendation
+2. **Bolus timing explains 11× more excursion variance than dose** (R²=8.9% timing vs 0.8% dose) — pre-bolus advice is the highest-leverage recommendation
 3. **Clusters transfer perfectly across patients** (ARI=0.976, silhouette=0.348) — population-level models are valid
 4. **Announced meals paradoxically show HIGHER excursions** than unannounced (-17% to -19% "benefit") — likely because patients announce larger meals and AID handles small meals silently
 5. **No time-of-day dependence** in clusters (0/3 significant) — meal response phenotype is driven by meal size and AID state, not circadian timing
@@ -38,7 +38,7 @@ Detected and featurized 5,369 meals across 11 patients using the production `det
 
 **Total**: 5,369 meals, 3,060 announced (57%), 2,309 unannounced (43%)
 
-**Per-meal feature vector** (17 features): glucose response (excursion, peak_time, rtb, auc_above, pre_trend, pre_cv), metabolic state (early_demand, tail_ratio, early_supply, total_supply, resid_integral, iob_at_meal, net_flux_early, net_flux_post, demand_ramp), and context (hour_of_day, estimated_carbs_g).
+**Per-meal feature vector** (18 features): glucose response (bg_start, excursion, peak_time, rtb, auc_above, pre_trend, pre_cv), metabolic state (early_demand, tail_ratio, early_supply, total_supply, resid_integral, iob_at_meal, net_flux_early, net_flux_post, demand_ramp), and context (hour_of_day, estimated_carbs_g).
 
 ![Meal Detection](../../visualizations/meal-clustering/fig1_meal_detection.png)
 
@@ -97,13 +97,13 @@ Separated timing effects from dose effects using demand_ramp as a timing proxy.
 
 | Predictor | R² | Interpretation |
 |-----------|-----|----------------|
-| Timing only | 8.9% | Explains 9× more than dose |
+| Timing only | 8.9% | Explains 11× more than dose |
 | Dose only | 0.8% | Carb amount barely matters |
 | Both | 9.3% | Minimal additive benefit |
 
 **Interpretation**: High demand_ramp (rapid insulin ramp-up = "early bolus") correlates with HIGHER excursion (+26mg). This appears counterintuitive but makes sense: rapid insulin ramp occurs when the AID loop is responding aggressively to a rising glucose — the meal is already winning. The "late bolus" group has lower excursion because those are meals where insulin was already on board (pre-bolus or overlap with prior dose).
 
-**Key insight**: Timing explains 9× more variance than dose (R²=8.9% vs 0.8%), confirming that **pre-bolus advice is the highest-leverage recommendation** the system can make.
+**Key insight**: Timing explains 11× more variance than dose (R²=8.9% vs 0.8%), confirming that **pre-bolus advice is the highest-leverage recommendation** the system can make.
 
 ![Bolus Timing](../../visualizations/meal-clustering/fig3_bolus_timing.png)
 
@@ -127,7 +127,7 @@ Leave-one-patient-out validation: train clusters on 10 patients, test on held-ou
 
 **Mean silhouette: 0.348 | Mean ARI: 0.976**
 
-**Finding**: Near-perfect cluster transferability (ARI=0.976 means 97.6% agreement with global labels). This validates using population-level cluster models — no need for per-patient clustering. Patient k has highest silhouette (0.549) because its meals are almost entirely "controlled_rise" (low excursions, well-managed).
+**Finding**: Near-perfect cluster transferability (ARI=0.976 means 97.6% agreement with global labels). This validates using population-level cluster models — no need for per-patient clustering. Patient k has highest silhouette (0.549) because its meals are predominantly "controlled_rise" (73%, low excursions, well-managed).
 
 ![Transferability](../../visualizations/meal-clustering/fig4_transferability.png)
 
@@ -190,7 +190,7 @@ This 53/47 split is remarkably consistent across patients (ARI=0.976), suggestin
 
 ### 2. Timing > Dose for Excursion Control
 
-Bolus timing explains 9× more excursion variance than bolus dose (8.9% vs 0.8%). This means:
+Bolus timing explains 11× more excursion variance than bolus dose (8.9% vs 0.8%). This means:
 - Adjusting CR (dose) has minimal impact on excursion outcomes
 - **Pre-bolusing** (timing) is the highest-leverage recommendation
 - This finding aligns with clinical practice: pre-bolusing 15-20 minutes before eating is the most effective user action

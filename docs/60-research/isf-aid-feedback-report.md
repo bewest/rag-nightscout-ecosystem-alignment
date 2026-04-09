@@ -78,9 +78,9 @@ Exponential decay fit: BG(t) = BG_start − amplitude × (1 − exp(−t/τ))
 | j | 7/8 | 95 ± 49 | 1.5 | 0.837 |
 | k | 1/1 | 56 ± 0 | 1.5 | 0.984 |
 
-**Pass rate**: 77% of corrections produce usable ISF fits (R²>0.3, 5<ISF<500).
+**Pass rate**: 75% of corrections produce usable ISF fits (R²>0.3, 5<ISF<500).
 
-**Bimodal τ**: Patients cluster at τ≈1.5h (rapid insulin action: b,c,d,g,h,i,j,k) or τ≈4.0h (slow: a,e,f). This may reflect insulin type or injection site differences.
+**Bimodal τ**: Patients cluster at τ≈1.0–2.0h (rapid insulin action: b,c,d,g,h,i,j,k) or τ≈4.0h (slow: a,e,f). This may reflect insulin type or injection site differences.
 
 ### EXP-1603: AID Loop Feedback Quantification
 
@@ -128,7 +128,7 @@ Circadian ISF variation using response-curve method per hourly block.
 | h | 3 | 170% | 85 | 251 | **Yes** |
 | i | 16 | 101% | 254 | 339 | **Yes** |
 
-**Dawn phenomenon** (lower ISF in morning = more insulin needed): Detected in patients d, h, i. Dawn ISF is 56-68% of evening ISF in these patients.
+**Dawn phenomenon** (lower ISF in morning = more insulin needed): Detected in patients d, h, i. Dawn ISF is 34–75% of evening ISF in these patients (d=56%, h=34%, i=75%).
 
 **Extreme variation** in patients e (319%) and f (221%) — these may benefit most from time-of-day ISF schedules rather than flat profiles.
 
