@@ -167,6 +167,38 @@ Color-coded by patient showing:
 
 The orthogonality in Panel C is the key finding: these are independent dimensions.
 
+### Figure 12: Full Distributions by Carb Range
+
+![Carb Range Distributions](../../visualizations/natural-experiments/fig12_carb_range_distributions.png)
+
+Box plots with jittered individual meals (n=2,619) across 6 metrics:
+- A) Raw excursion — steady climb with carbs, wide IQR
+- B) ISF-normalized excursion — tighter distribution than raw
+- C) Spectral power (log scale) — orders-of-magnitude separation between ranges
+- D) Mean supply×demand interaction — linear scaling with carbs
+- E) Mean net flux — shifts from negative (insulin-dominant) to positive (carb-dominant) at ≥50g
+- F) Time to peak — relatively stable ~45–55 min regardless of carb size
+
+### Figure 13: Patient × Carb Range Heatmaps
+
+![Patient Carb Heatmap](../../visualizations/natural-experiments/fig13_patient_carb_heatmap.png)
+
+Cell-annotated heatmaps showing median values per patient per carb range:
+- A) ISF-normalized excursion — patient f dominates (4–6× across all ranges)
+- B) Log₁₀ spectral power — patient h highest, d/k near-zero
+- C) Raw excursion — patient i and c highest raw values
+
+Reveals which patients are outliers on which dimension and at which carb range.
+
+### Figure 14: Announced vs Unannounced by Carb Range
+
+![Announced vs Unannounced](../../visualizations/natural-experiments/fig14_announced_vs_unannounced.png)
+
+Side-by-side comparison of bolus-announced vs unannounced meals:
+- A) Raw excursion — unannounced consistently higher (~25 mg/dL gap)
+- B) ISF-normalized excursion — gap narrows (ISF-sensitive patients bolus more)
+- C) Spectral power (log scale) — announced meals drive more AID activity
+
 ## Clinical Implications
 
 ### 1. ISF-Normalized Excursion for Cross-Patient Comparison
@@ -205,7 +237,7 @@ This framework could inform per-meal feedback in AID systems.
 
 - Experiment: `tools/cgmencode/exp_clinical_1551.py` (EXP-1561, `exp_1561_meal_metabolic`)
 - Results: `externals/experiments/exp-1561_natural_experiments.json`
-- Visualizations: `visualizations/natural-experiments/fig{9,10,11}_*.png`
+- Visualizations: `visualizations/natural-experiments/fig{9,10,11,12,13,14}_*.png`
 - Production detector: `tools/cgmencode/production/natural_experiment_detector.py`
 
 ## Gaps Identified

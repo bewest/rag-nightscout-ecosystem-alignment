@@ -2532,6 +2532,177 @@ def generate_metabolic_visualizations(results):
         plt.close()
         print("    ✓ fig11_metabolic_correlations.png")
 
+    # ── Figure 12: Box/violin distributions by carb range ────────────
+    # Group raw records by carb range for distribution plots
+    carb_ranges_ordered = ['10-19g', '20-29g', '30-49g', '≥50g']
+    grouped = {r: [] for r in carb_ranges_ordered}
+    for rec in records:
+        cr = rec.get('carb_range')
+        if cr in grouped:
+            grouped[cr].append(rec)
+
+    # Only plot ranges with data
+    plot_ranges = [r for r in carb_ranges_ordered if len(grouped[r]) >= 3]
+    if not plot_ranges:
+        return
+
+    fig, axes = plt.subplots(2, 3, figsize=(18, 11))
+    fig.suptitle('EXP-1561: Meal Metabolic Distributions by Carb Range',
+                 fontsize=14, fontweight='bold')
+
+    metrics = [
+        ('excursion_mg_dl',       'Raw Excursion (mg/dL)',              '#4C72B0'),
+        ('isf_norm_excursion',    'ISF-Normalized Excursion (U equiv)', '#55A868'),
+        ('spectral_power_per_hour', 'Spectral Power / Hour',           '#C44E52'),
+        ('mean_interaction',      'Mean Supply×Demand',                '#8172B2'),
+        ('net_flux_mean',         'Mean Net Flux (mg/dL/5min)',        '#CCB974'),
+        ('peak_time_min',         'Time to Peak (min)',                '#64B5CD'),
+    ]
+
+    for ax_idx, (key, label, color) in enumerate(metrics):
+        ax = axes[ax_idx // 3, ax_idx % 3]
+        box_data = []
+        box_labels = []
+        for rng in plot_ranges:
+            vals = [r[key] for r in grouped[rng]
+                    if r.get(key) is not None and np.isfinite(r[key])]
+            if vals:
+                box_data.append(vals)
+                box_labels.append(f'{rng}\n(n={len(vals)})')
+            else:
+                box_data.append([0])
+                box_labels.append(f'{rng}\n(n=0)')
+
+        bp = ax.boxplot(box_data, tick_labels=box_labels, patch_artist=True,
+                        showfliers=False, widths=0.6)
+        for patch in bp['boxes']:
+            patch.set_facecolor(color)
+            patch.set_alpha(0.6)
+        for median_line in bp['medians']:
+            median_line.set_color('black')
+            median_line.set_linewidth(2)
+
+        # Overlay individual points (jittered)
+        for i, vals in enumerate(box_data):
+            jitter = np.random.normal(0, 0.05, size=len(vals))
+            ax.scatter(np.full(len(vals), i + 1) + jitter, vals,
+                       alpha=0.15, s=8, color=color, edgecolors='none')
+
+        ax.set_ylabel(label, fontsize=9)
+        ax.set_xlabel('Carb Range')
+        ax.set_title(f'{chr(65 + ax_idx)}) {label.split("(")[0].strip()}')
+        ax.grid(axis='y', alpha=0.3)
+
+        # Log scale for spectral power (spans orders of magnitude)
+        if 'spectral' in key.lower() or 'interaction' in key.lower():
+            ax.set_yscale('log')
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.savefig(str(VIZ_DIR / 'fig12_carb_range_distributions.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig12_carb_range_distributions.png")
+
+    # ── Figure 13: Patient × Carb Range heatmaps ────────────────────
+    patient_names = sorted(set(r['patient'] for r in records))
+    if len(patient_names) < 2:
+        return
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    fig.suptitle('EXP-1561: Patient × Carb Range Heatmaps',
+                 fontsize=13, fontweight='bold')
+
+    hm_metrics = [
+        ('isf_norm_excursion',      'ISF-Normalized Excursion', 'YlOrRd'),
+        ('spectral_power_per_hour', 'Log₁₀ Spectral Power/hr', 'YlOrRd'),
+        ('excursion_mg_dl',         'Raw Excursion (mg/dL)',    'YlOrRd'),
+    ]
+
+    for ax_idx, (key, label, cmap_name) in enumerate(hm_metrics):
+        ax = axes[ax_idx]
+        matrix = np.full((len(patient_names), len(plot_ranges)), np.nan)
+
+        for pi, pat in enumerate(patient_names):
+            for ri, rng in enumerate(plot_ranges):
+                vals = [r[key] for r in records
+                        if r['patient'] == pat and r['carb_range'] == rng
+                        and r.get(key) is not None and np.isfinite(r[key])]
+                if vals:
+                    v = float(np.median(vals))
+                    if 'spectral' in key:
+                        v = np.log10(max(v, 1))  # log scale
+                    matrix[pi, ri] = v
+
+        im = ax.imshow(matrix, aspect='auto', cmap=cmap_name, interpolation='nearest')
+        ax.set_xticks(range(len(plot_ranges)))
+        ax.set_xticklabels(plot_ranges, fontsize=9)
+        ax.set_yticks(range(len(patient_names)))
+        ax.set_yticklabels(patient_names, fontsize=9)
+        ax.set_xlabel('Carb Range')
+        ax.set_ylabel('Patient')
+        ax.set_title(f'{chr(65 + ax_idx)}) {label}')
+
+        # Annotate cells
+        for pi in range(len(patient_names)):
+            for ri in range(len(plot_ranges)):
+                val = matrix[pi, ri]
+                if not np.isnan(val):
+                    fmt = f'{val:.2f}' if 'isf_norm' in key or 'spectral' in key else f'{val:.0f}'
+                    color = 'white' if val > np.nanpercentile(matrix, 70) else 'black'
+                    ax.text(ri, pi, fmt, ha='center', va='center',
+                            fontsize=7, color=color)
+
+        plt.colorbar(im, ax=ax, shrink=0.8)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig13_patient_carb_heatmap.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig13_patient_carb_heatmap.png")
+
+    # ── Figure 14: Announced vs Unannounced by carb range ────────────
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5.5))
+    fig.suptitle('EXP-1561: Announced vs Unannounced Meals by Carb Range',
+                 fontsize=13, fontweight='bold')
+
+    ann_metrics = [
+        ('excursion_mg_dl',         'Raw Excursion (mg/dL)'),
+        ('isf_norm_excursion',      'ISF-Normalized Excursion'),
+        ('spectral_power_per_hour', 'Spectral Power / Hour'),
+    ]
+
+    for ax_idx, (key, label) in enumerate(ann_metrics):
+        ax = axes[ax_idx]
+        x = np.arange(len(plot_ranges))
+        width = 0.35
+
+        for gi, (grp_label, grp_color) in enumerate([
+            ('Announced', '#4C72B0'), ('Unannounced', '#C44E52')
+        ]):
+            is_ann = (grp_label == 'Announced')
+            medians = []
+            for rng in plot_ranges:
+                vals = [r[key] for r in grouped[rng]
+                        if r.get('is_announced') == is_ann
+                        and r.get(key) is not None and np.isfinite(r[key])]
+                medians.append(float(np.median(vals)) if vals else 0)
+            ax.bar(x + gi * width, medians, width, label=grp_label,
+                   color=grp_color, alpha=0.85)
+
+        ax.set_xticks(x + width / 2)
+        ax.set_xticklabels(plot_ranges, fontsize=9)
+        ax.set_xlabel('Carb Range')
+        ax.set_ylabel(label)
+        ax.set_title(f'{chr(65 + ax_idx)}) {label.split("(")[0].strip()}')
+        ax.legend(fontsize=8)
+        ax.grid(axis='y', alpha=0.3)
+
+        if 'spectral' in key:
+            ax.set_yscale('log')
+
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    plt.savefig(str(VIZ_DIR / 'fig14_announced_vs_unannounced.png'), dpi=150)
+    plt.close()
+    print("    ✓ fig14_announced_vs_unannounced.png")
+
 def main():
     parser = argparse.ArgumentParser(description='EXP-1551-1559: Natural Experiment Census')
     parser.add_argument('--exp', type=int, default=0, help='Run single experiment (0=all)')
