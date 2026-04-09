@@ -663,13 +663,77 @@ def exp_1528_minimum_data_sensitivity():
     return result
 
 
+@register(1529)
+def exp_1529_precondition_quality():
+    """EXP-1529: Data quality preconditions and gated analysis.
+
+    Assess data quality for each patient and compare gated vs ungated results.
+    """
+    t0 = time.time()
+    pipe = TherapyPipeline()
+    pipe.load_patients(str(PATIENTS_DIR))
+
+    per_patient = []
+    for pid in sorted(pipe._patients.keys()):
+        a = pipe.assess(pid)
+        d = assessment_to_dict(a)
+        per_patient.append({
+            'patient': pid,
+            'cgm_coverage': d['preconditions']['cgm_coverage'],
+            'insulin_coverage': d['preconditions']['insulin_coverage'],
+            'n_days': d['preconditions']['n_days'],
+            'n_meals': d['preconditions']['n_meals'],
+            'n_corrections': d['preconditions']['n_corrections'],
+            'sufficient_for_triage': d['preconditions']['sufficient_for_triage'],
+            'sufficient_for_full': d['preconditions']['sufficient_for_full'],
+            'issues': d['preconditions']['issues'],
+            'grade': d['grade'],
+            'v10_score': d['v10_score'],
+            'tir': d['tir'],
+            'cv': d['cv'],
+            'overnight_drift': d['overnight_drift'],
+            'isf_ratio': d['isf_ratio'],
+            'max_excursion': d['max_excursion'],
+        })
+
+    n_triage = sum(1 for p in per_patient if p['sufficient_for_triage'])
+    n_full = sum(1 for p in per_patient if p['sufficient_for_full'])
+
+    # Compare gated vs ungated grade distributions
+    all_grades = [p['grade'] for p in per_patient]
+    full_grades = [p['grade'] for p in per_patient if p['sufficient_for_full']]
+    triage_grades = [p['grade'] for p in per_patient if p['sufficient_for_triage']]
+
+    from collections import Counter
+    result = {
+        'name': 'EXP-1529: Data quality preconditions and gated analysis',
+        'n_patients': len(per_patient),
+        'n_sufficient_triage': n_triage,
+        'n_sufficient_full': n_full,
+        'ungated_grade_dist': dict(Counter(all_grades)),
+        'triage_grade_dist': dict(Counter(triage_grades)),
+        'full_grade_dist': dict(Counter(full_grades)),
+        'quality_thresholds': {
+            'min_cgm_coverage': 0.80,
+            'min_insulin_coverage': 0.70,
+            'min_days_triage': 14,
+            'min_days_full': 90,
+            'min_isf_events': 5,
+            'min_bolus_isf': 2.0,
+        },
+        'per_patient': per_patient,
+    }
+    _save(1529, result, time.time() - t0)
+    return result
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Main
 # ═══════════════════════════════════════════════════════════════════════════
 
 def main():
     parser = argparse.ArgumentParser(
-        description='EXP-1521–1528: Therapy holdout validation')
+        description='EXP-1521–1529: Therapy holdout validation')
     parser.add_argument('-e', '--experiments', nargs='*', type=int,
                         help='Run specific experiments (default: all)')
     parser.add_argument('--summary', action='store_true',

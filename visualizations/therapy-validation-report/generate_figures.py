@@ -819,6 +819,102 @@ def fig10_evidence_synthesis():
 
 
 # ═════════════════════════════════════════════════════════════════════════
+# Figure 11: Data Quality Preconditions
+# ═════════════════════════════════════════════════════════════════════════
+
+def fig11_data_quality():
+    """Data quality preconditions: coverage, days, pass/fail gates."""
+    data_1529 = _load('exp-1529_therapy.json')
+    if data_1529 is None:
+        return
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6), facecolor=C_BG)
+    pp = sorted(data_1529['per_patient'], key=lambda p: p['patient'])
+    pids = [p['patient'] for p in pp]
+
+    # Panel A: CGM & Insulin coverage side-by-side
+    ax = axes[0]
+    ax.set_facecolor(C_BG)
+    x = np.arange(len(pids))
+    w = 0.35
+    cgm = [p['cgm_coverage'] * 100 for p in pp]
+    ins = [p['insulin_coverage'] * 100 for p in pp]
+    bars_cgm = ax.bar(x - w/2, cgm, w, color=C_BLUE, label='CGM coverage', edgecolor='white')
+    bars_ins = ax.bar(x + w/2, ins, w, color=C_ORANGE, label='Insulin coverage', edgecolor='white')
+    ax.axhline(y=80, color=C_BLUE, linestyle='--', alpha=0.5, linewidth=1)
+    ax.axhline(y=70, color=C_ORANGE, linestyle='--', alpha=0.5, linewidth=1)
+    ax.set_xticks(x)
+    ax.set_xticklabels(pids, fontsize=10)
+    ax.set_ylabel('Coverage (%)', fontsize=11)
+    ax.set_ylim(0, 105)
+    ax.set_title('Data Coverage by Patient', fontsize=12, fontweight='bold')
+    ax.legend(fontsize=9)
+    for bar, val in zip(bars_cgm, cgm):
+        if val < 80:
+            ax.text(bar.get_x() + bar.get_width()/2, val + 1,
+                    '✗', ha='center', va='bottom', fontsize=10, color=C_RED, fontweight='bold')
+    for bar, val in zip(bars_ins, ins):
+        if val < 70:
+            ax.text(bar.get_x() + bar.get_width()/2, val + 1,
+                    '✗', ha='center', va='bottom', fontsize=10, color=C_RED, fontweight='bold')
+
+    # Panel B: Quality gate pass/fail heatmap
+    ax = axes[1]
+    ax.set_facecolor(C_BG)
+    gate_names = ['CGM ≥80%', 'Insulin ≥70%', 'Days ≥90', 'Days ≥14', 'Triage', 'Full']
+    matrix = np.zeros((len(gate_names), len(pids)))
+    for j, p in enumerate(pp):
+        matrix[0, j] = 1.0 if p['cgm_coverage'] >= 0.80 else 0.0
+        matrix[1, j] = 1.0 if p['insulin_coverage'] >= 0.70 else 0.0
+        matrix[2, j] = 1.0 if p['n_days'] >= 90 else 0.0
+        matrix[3, j] = 1.0 if p['n_days'] >= 14 else 0.0
+        matrix[4, j] = 1.0 if p['sufficient_for_triage'] else 0.0
+        matrix[5, j] = 1.0 if p['sufficient_for_full'] else 0.0
+
+    im = ax.imshow(matrix, aspect='auto', cmap='RdYlGn', vmin=0, vmax=1)
+    ax.set_xticks(range(len(pids)))
+    ax.set_xticklabels(pids, fontsize=10)
+    ax.set_yticks(range(len(gate_names)))
+    ax.set_yticklabels(gate_names, fontsize=10)
+    n_full = sum(1 for p in pp if p['sufficient_for_full'])
+    n_tri = sum(1 for p in pp if p['sufficient_for_triage'])
+    ax.set_title(f'Quality Gates\n(Triage: {n_tri}/11, Full: {n_full}/11)',
+                fontsize=12, fontweight='bold')
+    for i in range(len(gate_names)):
+        for j in range(len(pids)):
+            symbol = '✓' if matrix[i, j] == 1.0 else '✗'
+            color = C_DARK if matrix[i, j] == 1.0 else 'white'
+            ax.text(j, i, symbol, ha='center', va='center',
+                    fontsize=11, fontweight='bold', color=color)
+
+    # Panel C: Grade distribution gated vs ungated
+    ax = axes[2]
+    ax.set_facecolor(C_BG)
+    grade_order = ['A', 'B', 'C', 'D']
+    ungated = data_1529.get('ungated_grade_dist', {})
+    full_gated = data_1529.get('full_grade_dist', {})
+    triage_gated = data_1529.get('triage_grade_dist', {})
+
+    x = np.arange(len(grade_order))
+    w = 0.25
+    vals_u = [ungated.get(g, 0) for g in grade_order]
+    vals_t = [triage_gated.get(g, 0) for g in grade_order]
+    vals_f = [full_gated.get(g, 0) for g in grade_order]
+    ax.bar(x - w, vals_u, w, color=C_GRAY, label=f'All (n={sum(vals_u)})', edgecolor='white')
+    ax.bar(x, vals_t, w, color=C_BLUE, label=f'Triage (n={sum(vals_t)})', edgecolor='white')
+    ax.bar(x + w, vals_f, w, color=C_GREEN, label=f'Full (n={sum(vals_f)})', edgecolor='white')
+    ax.set_xticks(x)
+    ax.set_xticklabels([f'Grade {g}' for g in grade_order], fontsize=10)
+    ax.set_ylabel('Count', fontsize=11)
+    ax.set_title('Grade Distribution by Quality Gate', fontsize=12, fontweight='bold')
+    ax.legend(fontsize=9)
+
+    fig.suptitle('EXP-1529: Data Quality Preconditions & Gated Analysis',
+                 fontsize=14, fontweight='bold', y=1.02)
+    _savefig(fig, 'fig11_data_quality.png')
+
+
+# ═════════════════════════════════════════════════════════════════════════
 # Main
 # ═════════════════════════════════════════════════════════════════════════
 
@@ -833,6 +929,7 @@ FIGURES = [
     ('fig08', fig08_minimum_data),
     ('fig09', fig09_safety),
     ('fig10', fig10_evidence_synthesis),
+    ('fig11', fig11_data_quality),
 ]
 
 

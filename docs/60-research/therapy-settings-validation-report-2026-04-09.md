@@ -26,9 +26,65 @@ This report validates the inference capabilities of the production therapy asses
 
 **Bottom line**: Basal rate assessment is highly reproducible and actionable. ISF assessment is accurate with sufficient data (R² = 0.805 for response curves) but requires ≥90 days with ≥5 isolated correction boluses. CR assessment via post-meal excursion is the noisiest signal and requires careful interpretation.
 
+**Important caveat**: Only **3 of 11 patients** (a, e, g) pass all data quality preconditions for full analysis. The primary bottleneck is insulin data coverage (§1.1). Results for patients failing quality gates should be interpreted with reduced confidence.
+
 ---
 
 ## 1. Cohort Baseline (EXP-1521)
+
+### 1.1 Data Quality Preconditions (EXP-1529)
+
+Before interpreting therapy assessments, the pipeline evaluates data quality through a formal precondition gate system. This ensures recommendations are grounded in sufficient evidence.
+
+![Data Quality](../../visualizations/therapy-validation-report/fig11_data_quality.png)
+*Figure 11: Data quality preconditions. Left: CGM and insulin coverage per patient. Center: Quality gate pass/fail matrix. Right: Grade distribution filtered by quality tier.*
+
+#### Quality Gates
+
+| Gate | Threshold | Purpose |
+|------|-----------|---------|
+| CGM coverage | ≥80% | Sufficient glucose data for TIR, drift, excursion |
+| Insulin coverage | ≥70% | Sufficient insulin data for ISF, IOB, overcorrection |
+| Days (triage) | ≥14 | Minimum for basic pattern recognition |
+| Days (full) | ≥90 | Required for stable assessment (EXP-1453, EXP-1528) |
+
+#### Patient Quality Summary
+
+| Patient | CGM% | Insulin% | Days | Corrections | Triage | Full | Issues |
+|---------|------|----------|------|-------------|--------|------|--------|
+| **a** | 88% | **79%** | 180 | 710 | ✅ | ✅ | — |
+| b | 90% | **6%** | 180 | 739 | ✅ | ❌ | Insulin 6% |
+| c | 83% | 59% | 180 | 343 | ✅ | ❌ | Insulin 59% |
+| d | 87% | 58% | 180 | 206 | ✅ | ❌ | Insulin 58% |
+| **e** | 89% | **75%** | 157 | 694 | ✅ | ✅ | — |
+| f | 89% | 68% | 179 | 506 | ✅ | ❌ | Insulin 68% |
+| **g** | 89% | **80%** | 180 | 586 | ✅ | ✅ | — |
+| h | **36%** | 58% | 179 | 647 | ❌ | ❌ | CGM 36%, Insulin 58% |
+| i | 90% | 64% | 180 | 605 | ✅ | ❌ | Insulin 64% |
+| j | 90% | **1%** | **61** | 158 | ✅ | ❌ | Insulin 1%, only 61 days |
+| k | 89% | 59% | 179 | 45 | ✅ | ❌ | Insulin 59%, only 45 corrections |
+
+**Key findings**:
+- **10/11** pass triage (≥14 days + CGM ≥80%). Patient h fails due to 36% CGM coverage.
+- **Only 3/11** (a, e, g) pass full analysis (all thresholds met).
+- **Insulin coverage is the primary bottleneck**: 8/11 fail. This reflects incomplete insulin data upload to Nightscout, not necessarily missing insulin delivery. Many AID systems don't consistently log IOB/bolus data upstream.
+- **Patient j**: Only 61 days of data and 1% insulin coverage — highest uncertainty.
+- **Patient k**: Despite passing CGM/days, only 45 correction boluses (vs 710 for patient a).
+
+#### Impact on Assessment Confidence
+
+| Assessment | Depends On | Affected Patients | Confidence Level |
+|-----------|-----------|-------------------|-----------------|
+| TIR, CV, TBR | CGM only | h (36% CGM) | High for 10/11 |
+| Overnight drift (basal) | CGM only | h | High for 10/11 |
+| Post-meal excursion (CR) | CGM + carbs | All with carb data | Moderate |
+| ISF ratio | Bolus + CGM | b, j, k (low insulin data) | Low for 8/11 |
+| Overcorrection rate | Bolus + CGM | b, j, k | Low for 8/11 |
+| IOB-dependent metrics | IOB signal | b, j (1-6% coverage) | Very low |
+
+**Recommendation**: The pipeline should prominently display precondition status alongside every assessment. Assessments failing the full quality gate should be marked as "triage-level" with explicit confidence caveats. This is already implemented in the `Preconditions` class but should be surfaced more prominently in reports.
+
+### 1.2 Cohort Overview
 
 The production pipeline assessed all 11 patients using full data (~180 days each, ~2.3 GB total).
 
