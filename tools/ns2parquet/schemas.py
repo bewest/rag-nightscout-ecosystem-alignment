@@ -150,6 +150,25 @@ PROFILES_SCHEMA = pa.schema([
     pa.field('units', pa.string()),            # always 'mg/dL' after conversion
 ])
 
+# ── Site Settings (from /api/v1/status.json) ───────────────────────────
+SETTINGS_SCHEMA = pa.schema([
+    pa.field('patient_id', pa.string(), nullable=False),
+    pa.field('fetched_at', pa.timestamp('ms', tz='UTC')),
+    pa.field('server_version', pa.string()),
+    pa.field('units', pa.string()),            # mg/dl or mmol/L — site preference
+    pa.field('data_mode', pa.string()),        # AID, pump, or MDI
+    pa.field('has_pump', pa.bool_()),
+    pa.field('has_loop', pa.bool_()),
+    pa.field('has_openaps', pa.bool_()),
+    pa.field('enabled_plugins', pa.string()),  # comma-separated sorted list
+    pa.field('bg_high', pa.float32()),         # mg/dL (converted if mmol)
+    pa.field('bg_target_top', pa.float32()),   # mg/dL
+    pa.field('bg_target_bottom', pa.float32()),# mg/dL
+    pa.field('bg_low', pa.float32()),          # mg/dL
+    pa.field('timezone', pa.string()),
+    pa.field('language', pa.string()),
+])
+
 # ── Research Grid (5-min intervals, all features) ──────────────────────
 GRID_SCHEMA = pa.schema([
     pa.field('patient_id', pa.string(), nullable=False),

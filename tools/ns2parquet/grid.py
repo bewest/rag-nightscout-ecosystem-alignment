@@ -319,9 +319,23 @@ def build_grid(data_path: str, patient_id: str,
     # Convert mmol/L profiles to mg/dL for cross-patient consistency.
     # Glucose in the grid is always mg/dL (Nightscout entries store sgv in mg/dL).
     # Profile values (ISF, targets) may be in mmol/L if that's the user's display unit.
-    profile_units = (default_profile.get('units') or 'mg/dL').lower().replace('/', '')
+    profile_units = (default_profile.get('units') or '').lower().replace('/', '')
+
+    # Fallback: if profile has no units field, check settings.json from the site
+    if not profile_units:
+        settings_path = data_dir / 'settings.json'
+        if settings_path.exists():
+            with open(settings_path) as f:
+                status_doc = json.load(f)
+            site_settings = status_doc.get('settings', status_doc)
+            profile_units = (site_settings.get('units') or 'mg/dL').lower().replace('/', '')
+            if verbose:
+                print(f'  Units from settings.json: {site_settings.get("units", "?")}')
+        else:
+            profile_units = 'mgdl'
+
     is_mmol = profile_units in ('mmoll', 'mmol')
-    MMOLL_TO_MGDL = 18.0182
+    MMOLL_TO_MGDL = 18.01559  # Nightscout canonical constant (lib/constants.json)
     if is_mmol:
         for sched in [isf_schedule, target_low_schedule, target_high_schedule]:
             for entry in sched:

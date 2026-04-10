@@ -463,7 +463,7 @@ def normalize_profiles(records, patient_id: str) -> pd.DataFrame:
             # Detect mmol/L profiles — ISF and targets need conversion to mg/dL
             profile_units = (profile.get('units') or 'mg/dL').lower().replace('/', '')
             is_mmol = profile_units in ('mmoll', 'mmol')
-            MMOLL_TO_MGDL = 18.0182
+            MMOLL_TO_MGDL = 18.01559  # Nightscout canonical constant
             # Schedule types where values are glucose-unit-dependent
             _glucose_unit_schedules = {'isf', 'target_low', 'target_high'}
 
@@ -505,3 +505,54 @@ def normalize_profiles(records, patient_id: str) -> pd.DataFrame:
         return pd.DataFrame()
 
     return pd.DataFrame(rows)
+
+
+def normalize_settings(status_doc: dict, patient_id: str) -> pd.DataFrame:
+    """Normalize Nightscout /api/v1/status.json → site metadata row.
+
+    Extracts key settings that inform data interpretation:
+    - units: display preference (mg/dL or mmol/L)
+    - enable: active plugins (indicates pump/MDI, CGM source, AID system)
+    - thresholds: BG target ranges configured on the site
+
+    One row per patient per fetch, enabling unit verification and
+    MDI-vs-pump classification without inspecting devicestatus.
+    """
+    settings = status_doc.get('settings', status_doc)
+    if not settings:
+        return pd.DataFrame()
+
+    enabled = settings.get('enable', [])
+    has_loop = 'loop' in enabled
+    has_openaps = 'openaps' in enabled
+    has_pump = any(p in enabled for p in ['pump', 'iob', 'loop', 'openaps'])
+
+    # Classify data mode
+    if has_loop or has_openaps:
+        data_mode = 'AID'
+    elif has_pump:
+        data_mode = 'pump'
+    else:
+        data_mode = 'MDI'
+
+    thresholds = settings.get('thresholds', {})
+
+    row = {
+        'patient_id': patient_id,
+        'fetched_at': pd.Timestamp.now(tz='UTC'),
+        'server_version': status_doc.get('version', None),
+        'units': settings.get('units', 'mg/dL'),
+        'data_mode': data_mode,
+        'has_pump': has_pump,
+        'has_loop': has_loop,
+        'has_openaps': has_openaps,
+        'enabled_plugins': ','.join(sorted(enabled)) if enabled else None,
+        'bg_high': float(thresholds.get('bgHigh', 260)),
+        'bg_target_top': float(thresholds.get('bgTargetTop', 180)),
+        'bg_target_bottom': float(thresholds.get('bgTargetBottom', 80)),
+        'bg_low': float(thresholds.get('bgLow', 55)),
+        'timezone': settings.get('timeFormat', None),
+        'language': settings.get('language', None),
+    }
+
+    return pd.DataFrame([row])

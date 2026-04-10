@@ -20,12 +20,13 @@ def cmd_convert(args):
     from .normalize import (
         normalize_entries, normalize_treatments,
         normalize_devicestatus, normalize_profiles,
+        normalize_settings,
     )
     from .grid import build_grid
     from .writer import write_parquet
     from .schemas import (
         ENTRIES_SCHEMA, TREATMENTS_SCHEMA,
-        DEVICESTATUS_SCHEMA, PROFILES_SCHEMA, GRID_SCHEMA,
+        DEVICESTATUS_SCHEMA, PROFILES_SCHEMA, SETTINGS_SCHEMA, GRID_SCHEMA,
     )
 
     data_dir = Path(args.input)
@@ -51,6 +52,32 @@ def cmd_convert(args):
                 collections[name] = json.load(f)
         else:
             collections[name] = [] if name != 'profile' else {}
+
+    # Load site settings if available (from /api/v1/status.json)
+    site_settings = None
+    settings_path = data_dir / 'settings.json'
+    if settings_path.exists():
+        with open(settings_path) as f:
+            status_doc = json.load(f)
+        site_settings = status_doc.get('settings', status_doc)
+        if verbose:
+            site_units = site_settings.get('units', '?')
+            enabled = site_settings.get('enable', [])
+            has_pump = any(p in enabled for p in ['pump', 'iob', 'loop', 'openaps'])
+            mode = 'AID/pump' if has_pump else 'MDI/CGM-only'
+            print(f'  Site settings: units={site_units}, mode={mode}')
+
+    # Cross-check: if site_settings has units, verify profile units agree
+    if site_settings:
+        site_units = (site_settings.get('units') or '').lower().replace('/', '')
+        profile_data = collections['profile']
+        if isinstance(profile_data, list) and profile_data:
+            store = profile_data[0].get('store', {})
+            for pname, pval in store.items():
+                prof_units = (pval.get('units') or '').lower().replace('/', '')
+                if prof_units and site_units and prof_units != site_units:
+                    print(f'  ⚠ Unit mismatch: site={site_units}, '
+                          f'profile "{pname}"={prof_units}')
 
     # Normalize each collection
     if verbose:
@@ -79,6 +106,17 @@ def cmd_convert(args):
         print(f'  profiles: {len(profiles_df)} rows')
     write_parquet(profiles_df, output, 'profiles', PROFILES_SCHEMA,
                   append=args.append, verbose=verbose)
+
+    # Normalize site settings if available
+    if site_settings:
+        settings_df = normalize_settings(
+            {'settings': site_settings}, patient_id)
+        if verbose:
+            print(f'  settings: {len(settings_df)} rows '
+                  f'(units={site_settings.get("units", "?")}, '
+                  f'mode={settings_df["data_mode"].iloc[0] if len(settings_df) else "?"})')
+        write_parquet(settings_df, output, 'settings', SETTINGS_SCHEMA,
+                      append=args.append, verbose=verbose)
 
     # Build research grid
     if not args.skip_grid:
@@ -227,6 +265,15 @@ def cmd_ingest(args):
     start_ms = int(start.timestamp() * 1000)
 
     if verbose:
+        print(f'Fetching site status/settings...')
+    try:
+        status = fetch_json(f'{base_url}/api/v1/status.json')
+    except Exception as e:
+        if verbose:
+            print(f'  WARNING: Could not fetch status: {e}')
+        status = None
+
+    if verbose:
         print(f'Fetching entries...')
     entries = fetch_entries(base_url, start_ms, now_ms, verbose=verbose)
 
@@ -249,6 +296,19 @@ def cmd_ingest(args):
                            ('devicestatus', devicestatus), ('profile', profile)]:
             with open(Path(tmpdir) / f'{name}.json', 'w') as f:
                 json.dump(data, f)
+
+        # Save site settings if available
+        if status:
+            with open(Path(tmpdir) / 'settings.json', 'w') as f:
+                json.dump(status, f)
+            if verbose:
+                settings = status.get('settings', {})
+                site_units = settings.get('units', '?')
+                enabled = settings.get('enable', [])
+                has_pump = any(p in enabled for p in ['pump', 'iob', 'loop', 'openaps'])
+                mode = 'AID/pump' if has_pump else 'MDI/CGM-only'
+                print(f'  Site: units={site_units}, mode={mode}, '
+                      f'plugins={len(enabled)}')
 
         class ConvertArgs:
             pass
