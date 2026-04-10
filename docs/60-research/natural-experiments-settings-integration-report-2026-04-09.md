@@ -63,19 +63,19 @@ We leveraged 50,810 naturally-occurring experiment windows to extract insulin pu
 
 | Patient | Profile ISF (mg/dL/U) | Effective ISF | Mismatch Ratio | Intra-day CV (%) | n Corrections |
 |---------|---------------------:|---------------:|---------------:|-----------------:|--------------:|
-| a | 48.6 | 55.9 | 1.15× | 12.3 | 153 |
-| b | 48.6 | 53.0 | 1.09× | 25.1 | 87 |
-| c | 48.6 | 103.1 | 2.12× | 4.6 | 1,194 |
-| d | 48.6 | 160.9 | 3.31× | 14.5 | 813 |
-| e | 48.6 | 188.1 | 3.87× | 6.5 | 1,534 |
-| f | 48.6 | 68.5 | 1.41× | 29.3 | 155 |
-| g | 48.6 | 123.4 | 2.54× | 15.7 | 387 |
-| h | 48.6 | 72.9 | 1.50× | 24.5 | 51 |
-| i | 48.6 | 141.4 | 2.91× | 13.1 | 3,337 |
-| j | 48.6 | 53.0 | 1.09× | 0.0 | 8 |
-| k | 48.6 | 77.8 | 1.60× | 29.2 | 11 |
+| a | 48.6 | 56.1 | 1.15× | 12.3 | 153 |
+| b | 95.0 | 103.5 | 1.09× | 25.1 | 87 |
+| c | 75.0 | 159.1 | 2.12× | 4.6 | 1,194 |
+| d | 40.0 | 132.2 | 3.31× | 14.5 | 813 |
+| e | 35.5 | 137.2 | 3.87× | 6.5 | 1,534 |
+| f | 21.0 | 29.7 | 1.41× | 29.3 | 155 |
+| g | 70.0 | 178.1 | 2.54× | 15.7 | 387 |
+| h | 91.0 | 136.7 | 1.50× | 24.5 | 51 |
+| i | 50.0 | 145.6 | 2.91× | 13.1 | 3,337 |
+| j | 40.0 | 43.6 | 1.09× | 0.0 | 8 |
+| k | 25.0 | 40.0 | 1.60× | 29.2 | 11 |
 
-**Population**: Mean mismatch = 2.05×, 100% of patients underestimate ISF. Intra-day CV ranges from 0–29%, mean 17.5%.
+**Population**: Mean mismatch = 2.05×, 100% of patients underestimate ISF. Intra-day CV ranges from 0–29%, mean 15.9%.
 
 **Key insight**: This confirms EXP-1301's response-curve ISF finding. AID loops compensate by reducing basal, masking the miscalibration. Natural experiment windows bypass this compensation, revealing the true insulin sensitivity.
 

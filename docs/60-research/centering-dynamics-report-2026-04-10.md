@@ -33,7 +33,7 @@ distribution toward the center increases TBR more than it decreases TAR.
 | EXP-1754 | Acceleration-based UAM detection: 25 min earlier, 99% of events |
 | EXP-1755 | Glycogen proxy adds nothing (ΔR²=+0.002) |
 | EXP-1756 | Morning is worst for TAR (38%); fed state mean BG = 182 mg/dL |
-| EXP-1757 | Naive centering hurts 7/11 patients (mean ΔTIR = -2.7%) |
+| EXP-1757 | Naive centering hurts 6/11 patients (mean ΔTIR = -2.7%) |
 | EXP-1758 | Personalization gap = 0.23; cross-patient models fail (LOPO R²=-0.01) |
 
 ---
@@ -304,13 +304,13 @@ recalculated TIR.
 | j | 141 | -16 | 81.0% | 79.8% | -1.2% |
 | k | 93 | +32 | 95.1% | 99.7% | +4.6% |
 
-**Mean ΔTIR: -2.7%. Centering HURTS 7 of 11 patients.**
+**Mean ΔTIR: -2.7%. Centering HURTS 6 of 11 patients.**
 
 **Why centering fails**: For high-variability patients (f: CV=49%, i:
 CV=51%), shifting the distribution down brings the *upper tail* below
 180 (reducing TAR) but pushes the *lower tail* below 70 (increasing TBR).
 Because these patients' distributions are wide, the TBR increase exceeds
-the TAR decrease. The asymmetric range (70-180, 55 below center, 55
+the TAR decrease. The symmetric range (70-180, 55 below center, 55
 above center) means centering is only net-beneficial when CV is low enough
 that the tails don't extend beyond the range boundaries.
 
@@ -525,7 +525,7 @@ its intervention confidence threshold during stable periods.
 
 | Finding | Confirms | Extends |
 |---------|----------|---------|
-| Centering ≠ better TIR | EXP-1745 (stability ≠ TIR) | Quantifies: 7/11 patients harmed |
+| Centering ≠ better TIR | EXP-1745 (stability ≠ TIR) | Quantifies: 6/11 patients harmed |
 | ISF mismatch ~2× | EXP-1301 (effective ISF ≠ profile) | Shows AID compensates for mismatch |
 | Cross-patient fails | EXP-1647 (LOPO R²=-1.02) | Generalizes to all glucose prediction |
 | Morning worst | Clinical literature (dawn phenomenon) | Quantifies: 38.4% TAR, +16pp vs daytime |
@@ -541,7 +541,7 @@ its intervention confidence threshold during stable periods.
    addressing them in the wrong order is harmful.
 
 2. **36% of TAR is centering-fixable** in theory, but naive centering
-   hurts 7/11 patients by increasing TBR. Variability must be reduced
+   hurts 6/11 patients by increasing TBR. Variability must be reduced
    first (CV target: <28%).
 
 3. **Acceleration-based UAM detection has enormous potential**: 25-min

@@ -74,10 +74,12 @@ Stacked ALL winning techniques: Δg target + Ridge + XGBoost + TCN with optimize
 **Key findings**:
 - 11/11 wins — every patient benefits from tuning
 - No single universal config — optimal varies per patient
-- Shallow trees (depth 3) dominate for 7/11 patients
+- Shallow trees (depth 3) dominate for 6/11 patients (b, d, e, f, i, j)
 - Subsample 0.7 prevents overfitting for larger patients
 - Hard patients (j, k) prefer fewer trees with no subsampling
 - Total sweep time: 28 min (vs ~31 hours with sklearn GB)
+
+> **Note**: EXP-1255 (see [Winner Stacking Report](winner-stacking-production-report-2026-04-10.md)) later found depth-2 optimal for 7/11 patients under 5-fold CV (+0.005 R² over depth-3), reflecting depth-2's regularization advantage. The difference is within noise margins for most patients.
 
 ### EXP-1113: Multi-Horizon Joint Prediction ★★
 

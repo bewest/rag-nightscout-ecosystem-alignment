@@ -14,7 +14,7 @@
 This batch addresses three critical follow-ups from prior experiments:
 
 1. **The acceleration detector's false positive rate** (from EXP-1754's
-   promising 25-min lead time): FPR is **34%** at the best F1 threshold.
+   promising 25-min lead time): FPR is **28%** at the best F1 threshold.
    Two out of three alerts are false alarms. The 25-minute lead time is
    real but clinically unusable without additional filtering.
 
@@ -334,8 +334,8 @@ phenotype classification captures the *more frequent* pattern.
 
 ### The Information Gap Quantified
 
-Only **22% of rescue carbs are logged** across all patients (ranging from
-3% to 73%). This is the single largest information gap in AID therapy:
+Only **22% of rescue carbs are logged** among under-rescuer patients (ranging from
+3% to 73% across the full population; episode-weighted population rate: ~24%). This is the single largest information gap in AID therapy:
 
 - Without rescue carb data, the system cannot adjust insulin delivery
   to compensate for incoming carbohydrates
