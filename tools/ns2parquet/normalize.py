@@ -15,21 +15,16 @@ Key transformations:
 - Profiles: expands time-varying schedules to one row per segment
 """
 
+import logging
 import warnings
 
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Optional
 
+from .constants import DIRECTION_MAP, MMOLL_TO_MGDL  # noqa: F401 — re-export
 
-# ── Direction mapping (string → ordinal for trend_direction feature) ─────
-DIRECTION_MAP = {
-    'DoubleUp': 2, 'SingleUp': 1, 'FortyFiveUp': 0.5,
-    'Flat': 0,
-    'FortyFiveDown': -0.5, 'SingleDown': -1, 'DoubleDown': -2,
-    'NOT COMPUTABLE': np.nan, 'RATE OUT OF RANGE': np.nan,
-    'NONE': np.nan, 'None': np.nan, '': np.nan,
-}
+logger = logging.getLogger(__name__)
 
 
 def _parse_ts(record: dict, *fields) -> Optional[pd.Timestamp]:
@@ -486,7 +481,6 @@ def normalize_profiles(records, patient_id: str) -> pd.DataFrame:
             # Detect mmol/L profiles — ISF and targets need conversion to mg/dL
             profile_units = (profile.get('units') or 'mg/dL').lower().replace('/', '')
             is_mmol = profile_units in ('mmoll', 'mmol')
-            MMOLL_TO_MGDL = 18.01559  # Nightscout canonical constant
             # Schedule types where values are glucose-unit-dependent
             _glucose_unit_schedules = {'isf', 'target_low', 'target_high'}
 

@@ -10,12 +10,17 @@ is done at consumption time using the scales from cgmencode.schema.
 """
 
 import json
+import logging
 import warnings
 
 import numpy as np
 import pandas as pd
 from pathlib import Path
 from typing import Optional, Tuple
+
+from .constants import DIRECTION_MAP, MMOLL_TO_MGDL
+
+logger = logging.getLogger(__name__)
 
 
 def _normalize_timezone(tz_str: str) -> str:
@@ -59,13 +64,6 @@ def _lookup_schedule(sec_of_day: int, schedule: list, default: float = 0.0) -> f
             v = entry.get('value', val)
             val = float(v) if not isinstance(v, (int, float)) else v
     return float(val)
-
-
-DIRECTION_MAP = {
-    'DoubleUp': 2.0, 'SingleUp': 1.0, 'FortyFiveUp': 0.5,
-    'Flat': 0.0,
-    'FortyFiveDown': -0.5, 'SingleDown': -1.0, 'DoubleDown': -2.0,
-}
 
 
 def build_grid(data_path: str, patient_id: str,
@@ -393,7 +391,6 @@ def build_grid(data_path: str, patient_id: str,
             profile_units = 'mgdl'
 
     is_mmol = profile_units in ('mmoll', 'mmol')
-    MMOLL_TO_MGDL = 18.01559  # Nightscout canonical constant (lib/constants.json)
     if is_mmol:
         for sched in [isf_schedule, target_low_schedule, target_high_schedule]:
             for entry in sched:

@@ -22,9 +22,9 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-logger = logging.getLogger(__name__)
+from .constants import MMOLL_TO_MGDL
 
-MMOLL_TO_MGDL = 18.01559
+logger = logging.getLogger(__name__)
 
 
 # ── Discovery ────────────────────────────────────────────────────────────
