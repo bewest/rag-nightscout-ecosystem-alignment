@@ -391,9 +391,10 @@ def classify_rescue_phenotype(glucose: np.ndarray,
     # (rebound without carbs = counter-regulatory, NOT over-rescue)
     if rebound_carb_rate > 0.2 and mean_rescue > _OVER_RESCUE_MIN_G:
         return RescuePhenotype.OVER_RESCUER
-    # Under-rescuer: most episodes have no logged carbs (22% logged per EXP-1766)
-    # OR prolonged hypo episodes are common (no effective rescue)
-    elif no_rescue_rate > 0.5 or mean_rescue < _UNDER_RESCUE_MAX_G or prolonged_rate > 0.3:
+    # Under-rescuer: prolonged hypo episodes (still <70 after 30min) indicate
+    # insufficient rescue. We focus on OUTCOME rather than logging, because
+    # only 22% of rescue carbs are logged (EXP-1766).
+    elif prolonged_rate > 0.4 or (no_rescue_rate > 0.8 and prolonged_rate > 0.2):
         return RescuePhenotype.UNDER_RESCUER
     else:
         return RescuePhenotype.APPROPRIATE_RESCUER
