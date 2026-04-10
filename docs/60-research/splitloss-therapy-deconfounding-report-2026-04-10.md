@@ -13,8 +13,7 @@ parameter estimation** — specifically ISF, CR, and basal rate.
 
 The central insight: **supply and demand losses want DIFFERENT optimal ISF scales**
 (mean disagreement 0.32×), while they **agree on CR** (disagreement only 0.09×).
-The AID loop inflates supply loss when active but reduces demand loss. Split-loss
-captures 97% of exhaustive grid-search optimization with per-component estimation.
+The AID loop inflates supply loss when active but reduces demand loss. Split-loss captures ~97% of exhaustive grid-search optimization with per-component estimation.
 
 **This is NOT about improving glucose forecasting.** It's about getting cleaner
 gradients for determining whether a patient's ISF, CR, or basal settings are correct.
@@ -85,7 +84,13 @@ hiding the misspecification.
 
 ![Basal Fasting](figures/splitloss-fig02-basal-fasting.png)
 
-**Verdict: METHODS_DISAGREE**
+> **⚠ Data caveat**: EXP-1842 failed at runtime (`unsupported operand type(s)
+> for -: 'float' and 'NoneType'`). The JSON record contains only the failure
+> verdict — no per-patient data was persisted. The values below were captured
+> from partial stdout before the crash and **cannot be independently verified**
+> from the experiment record.
+
+**Verdict: FAILED** (reported as METHODS_DISAGREE, but experiment did not complete)
 
 Three methods for assessing basal rate:
 1. **Fasting drift** (traditional): +3.24 ± 5.32 mg/dL/h mean drift
@@ -119,9 +124,10 @@ Unlike ISF (0.32 disagreement), CR estimation gives similar answers from both
 loss components. This is because carb absorption dominates the supply side during
 meals, while the insulin bolus dominates demand — both directly depend on CR.
 
-Most excursion values are NaN because the meal window analysis requires glucose
-data that crosses specific thresholds. Only patients j (46.8 mg/dL) and k
-(18.2 mg/dL) had well-characterized meal excursions.
+Most excursion values are NaN because the code uses `np.mean` (not `np.nanmean`)
+on per-meal rises, so any NaN glucose value at a meal start propagates through
+the entire patient average. Only patients j (46.8 mg/dL) and k (18.2 mg/dL)
+had fully NaN-free meal glucose data, yielding well-characterized excursions.
 
 **Implication**: Split-loss doesn't add much for CR estimation. Traditional
 total-loss approaches work fine for carb ratio.
@@ -136,13 +142,15 @@ total-loss approaches work fine for carb ratio.
 |--------|-----------|------------|--------|
 | 30 min | 0.187 | 0.135 | Supply |
 | 1h | 0.158 | 0.122 | Supply |
+| 2h | 0.175 | 0.148 | Supply |
 | 3h | 0.202 | 0.173 | Supply |
+| 5h | 0.257 | 0.214 | Supply |
 | 8h | 0.322 | 0.274 | Supply |
 | 12h | 0.381 | 0.336 | Supply |
 | 24h | 0.475 | 0.422 | Supply |
 
-Both losses have monotonically increasing ISF gradient SNR with window size,
-peaking at 24h (our maximum). Supply loss consistently has higher SNR than
+Both losses generally increase in ISF gradient SNR with window size,
+peaking at 24h (our maximum), but dip from 30 min to 1h before recovering. Supply loss consistently has higher SNR than
 demand at all timescales. This means:
 
 1. **Longer windows give cleaner therapy gradients** — averaging over circadian
@@ -289,9 +297,10 @@ appropriate given the ISF variability documented in EXP-1834.
 
 ### What Doesn't Work
 
-1. **Basal estimation** (EXP-1842): Neither drift-zero nor supply-optimal
-   scales give reasonable answers. Demand-optimal is promising but needs
-   validation against known-good basal rates.
+1. **Basal estimation** (EXP-1842): Experiment **failed at runtime** — no
+   persisted results. Neither drift-zero nor supply-optimal scales gave
+   reasonable answers in partial output. Demand-optimal is promising but
+   needs a successful re-run and validation against known-good basal rates.
 
 2. **CR deconfounding** (EXP-1843): Split-loss doesn't add much — both
    components agree. Traditional methods are sufficient for CR.
