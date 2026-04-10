@@ -13,14 +13,20 @@ methodological lesson:
 
 **Breakthrough**: ISF is dose-dependent — **10/10 patients** show insulin
 saturation with mean log-log slope = -0.89. Small corrections (< 2U) have
-3–6× higher ISF per unit than large corrections (> 5U). This means ISF is NOT
+3–7.5× higher ISF per unit than large corrections (> 5U). This means ISF is NOT
 a constant, and AID systems that assume linear insulin response are fundamentally
 misspecified.
 
 **Critical lesson**: Demand-side loss alone is **degenerate** for therapy
 parameter optimization. Minimizing demand loss trivially favors reducing ISF
 toward zero. The correct approach requires BOTH supply and demand losses as
-joint constraints (confirmed by EXP-1848's 97% optimality).
+joint constraints (confirmed by EXP-1848's ~97% optimality).
+
+> **⚠ Data caveat**: The experiment JSON (`exp-1851_harmonic_therapy.json`)
+> contains only EXP-1858 results. Per-patient tables for EXP-1851 through
+> EXP-1857 (dose-response, overnight drift, UAM residuals, loop compensation,
+> context spreads, harmonic R², combined improvement) **were not persisted** and
+> cannot be independently verified from the experiment record.
 
 ## Key Findings
 
@@ -50,7 +56,7 @@ of dose size**. Doubling the insulin dose does NOT double the glucose effect.
 **Implications for AID systems**:
 
 1. **All current AID algorithms assume linear ISF** — ISF × dose = expected drop.
-   Our data shows this is wrong by 3–6× across the dose range.
+   Our data shows this is wrong by 3–7.5× across the dose range.
 
 2. **Small Micro-Boluses (SMBs) are more efficient per unit** — This provides
    a data-driven justification for the SMB approach used by oref0/AAPS/Trio.
@@ -61,8 +67,10 @@ of dose size**. Doubling the insulin dose does NOT double the glucose effect.
    size. Much of what looks like ISF variability is actually dose-response
    saturation.
 
-4. **The Hill equation is the correct model** — ISF(dose) = ISF_max × Kd / (Kd + dose)
-   fits the data. This could replace the linear ISF assumption in production.
+4. **A power-law model fits the data** — the code fits log(ISF) = a − b·log(dose)
+   (i.e. ISF ∝ dose^(−0.89)), which is a power law. A Hill-equation ISF(dose) =
+   ISF_max × Kd / (Kd + dose) could also be explored as it provides a finite
+   asymptote, but the current implementation uses the power-law form.
 
 ### 2. Loop Compensation Is Asymmetric (EXP-1854)
 
@@ -137,7 +145,7 @@ ISF in production.
 **Verdict: CONTEXT_INDEPENDENT** — mean spread = 0.14
 
 When we optimize ISF separately per metabolic context (fasting, post-meal,
-correction, hypo_recovery), 8/10 patients get the **same optimal ISF** across
+correction, hypo_recovery), 9/10 patients get the **same optimal ISF** across
 all contexts. Only patient f shows meaningful context variation (correction
 ISF = 0.30× vs fasting ISF = 0.85×).
 
@@ -150,7 +158,8 @@ to use COMBINED supply+demand loss (per the lesson from EXP-1857).
 
 **EXP-1855**: Demand-optimal basal = 0.50× for ALL patients (lower bound)
 **EXP-1857**: Combined estimator worsens 7/10 patients (mean -155%)
-**EXP-1858**: Temporal validation fails — 6/10 worse on held-out data
+**EXP-1858**: Temporal validation fails — 5/10 worse on held-out data, 1/10
+unchanged (j: 0.0%), 4/10 improved
 
 This is the critical methodological lesson: **you cannot optimize therapy
 parameters from demand-side loss alone**.
@@ -171,8 +180,8 @@ The constraint must come from BOTH sides:
 - Demand loss penalizes under-prediction of glucose falls
 - Together, they force ISF to balance between over- and under-prediction
 
-This is exactly what EXP-1848 showed: combined split-loss captures 97% of
-optimal. The per-component estimation in EXP-1857/1858 fails because it
+This is exactly what EXP-1848 showed: combined split-loss captures ~97% of
+optimal (96.6% aggregate). The per-component estimation in EXP-1857/1858 fails because it
 lacks the opposing constraint.
 
 ### 7. Overnight Drift Reveals Basal Issues (EXP-1855)
@@ -204,13 +213,13 @@ less) is a straightforward clinical signal that doesn't require split-loss.
 
 1. **ISF is not a constant — it saturates with dose** (EXP-1856, 10/10 patients)
    - This is the highest-value finding for production
-   - Replace linear ISF with Hill-equation ISF(dose) in therapy assessment
-   - Explains 3–6× of apparent ISF "variability"
+   - Replace linear ISF with power-law ISF(dose) in therapy assessment
+   - Explains 3–7.5× of apparent ISF "variability"
 
 2. **Split-loss deconfounding requires BOTH components** (EXP-1848 vs 1857)
    - Demand-side alone is degenerate (always wants ISF → 0)
    - Supply-side alone is degenerate (always wants ISF → ∞)
-   - Combined: 97% of optimal. Per-component: worse than profile.
+   - Combined: ~97% of optimal. Per-component: worse than profile.
    - Use EXP-1848's combined approach, not per-component optimization
 
 3. **Fix CR first, ISF second** (EXP-1845 + 1853)
@@ -222,7 +231,7 @@ less) is a straightforward clinical signal that doesn't require split-loss.
 
 | Priority | Finding | Action |
 |----------|---------|--------|
-| 1 | ISF dose-dependent (EXP-1856) | Implement Hill-equation ISF(dose) |
+| 1 | ISF dose-dependent (EXP-1856) | Implement power-law ISF(dose) |
 | 2 | CR most-wrong (EXP-1845) | Better carb absorption modeling |
 | 3 | Combined split-loss (EXP-1848) | Use for therapy assessment |
 | 4 | Loop asymmetry (EXP-1854) | Detect compensation direction |
@@ -248,7 +257,7 @@ Figures: `docs/60-research/figures/harmonic-fig01` through `fig08`
 - **EXP-1841–1848**: Split-loss therapy deconfounding (predecessor)
 - **EXP-1834**: ISF drivers — dose was #1 predictor (validated by EXP-1856)
 - **EXP-1845**: CR is most-wrong parameter for 8/11 patients
-- **EXP-1848**: Combined split-loss captures 97% of optimal
+- **EXP-1848**: Combined split-loss captures ~97% of optimal
 - **EXP-1833**: Context classification (AUC 0.71–0.95)
 - **EXP-1341**: 76.5% of meals are UAM
 - **EXP-1301**: Response-curve ISF (R² = 0.805)
