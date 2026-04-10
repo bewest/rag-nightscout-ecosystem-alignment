@@ -216,7 +216,7 @@ than meal-derived ISF predicts.
 
 **Notable**:
 - Patient i: basal CV = **69.5%** — enormous overnight variability
-- Patient k: all components ≈16-18% — uniformly low variability
+- Patient k: all components ≈15.6-18.3% — uniformly low variability
 - Unexplained component = 0% for all patients (decomposition captures all)
 
 **Finding**: Variability decomposition **correctly routes** recommendations —
@@ -257,8 +257,8 @@ Naive same-grade accuracy: **56%**. Score-based: 56% (no improvement).
 | Intervention | Mean TIR Gain | Best Patient |
 |-------------|:-------------:|:------------:|
 | CR (30%) | **+2.4%** | b (+7.4%) |
-| Basal (10%) | -1.2% | — |
-| ISF (10%) | -0.1% | — |
+| Basal (100%) | -1.2% | — |
+| ISF (30%) | -0.1% | — |
 | Combined | +1.0% | b (+7.4%) |
 
 **Findings**:
@@ -364,6 +364,7 @@ GRADE D PROTOCOL (EXP-1434):
 | 1331-1340 | 10 | Operationalization | Thresholds, scoring |
 | 1341-1350 | 10 | Colleague's work | — |
 | 1351-1360 | 10 | DIA/multiblock | Multi-scale analysis |
+| 1361-1370 | 10 | Meal characterization | Meal templates, timing |
 | 1371-1380 | 10 | ISF deconfounding | Bolus≥2U, ≥5 events |
 | 1381-1390 | 10 | Pipeline validation | End-to-end 91% accuracy |
 | 1391-1400 | 10 | Production refinement | Grade stability, data quality |
