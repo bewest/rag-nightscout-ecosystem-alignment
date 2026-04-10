@@ -48,8 +48,16 @@ def _lookup_schedule(sec_of_day: int, schedule: list, default: float = 0.0) -> f
         return default
     val = schedule[0].get('value', default)
     for entry in schedule:
-        if entry.get('timeAsSeconds', 0) <= sec_of_day:
-            val = entry.get('value', val)
+        tas = entry.get('timeAsSeconds', 0)
+        # NS-export profiles store these as strings
+        if isinstance(tas, str):
+            try:
+                tas = int(tas)
+            except ValueError:
+                tas = 0
+        if tas <= sec_of_day:
+            v = entry.get('value', val)
+            val = float(v) if not isinstance(v, (int, float)) else v
     return float(val)
 
 
@@ -390,7 +398,7 @@ def build_grid(data_path: str, patient_id: str,
         for sched in [isf_schedule, target_low_schedule, target_high_schedule]:
             for entry in sched:
                 if 'value' in entry:
-                    entry['value'] = entry['value'] * MMOLL_TO_MGDL
+                    entry['value'] = float(entry['value']) * MMOLL_TO_MGDL
         if verbose:
             print(f'  Profile units: mmol/L → converted ISF/targets to mg/dL')
     local_index = _to_local_index(df.index, patient_tz)

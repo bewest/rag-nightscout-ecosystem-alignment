@@ -390,29 +390,204 @@ def _epoch_to_iso(epoch_ms) -> str:
     return dt.isoformat()
 
 
+# ── Flattened CSV devicestatus loader ────────────────────────────────────
+
+def _load_flattened_devicestatus_csv(patient_dir: str,
+                                     verbose: bool = False
+                                     ) -> List[dict]:
+    """Load devicestatus from ODC flattened CSV files.
+
+    ODC Nightscout-export format stores devicestatus as multi-part CSVs
+    with 350+ flattened columns like 'openaps/suggested/bg'. This function
+    reconstructs the nested Nightscout devicestatus structure.
+    """
+    import csv
+
+    csv.field_size_limit(10 * 1024 * 1024)  # 10MB — reason fields can be large
+
+    # Find CSV directories
+    csv_files = []
+    for root, dirs, files in os.walk(patient_dir):
+        for fn in sorted(files):
+            if fn.endswith('.csv') and 'devicestatus' in root.lower():
+                csv_files.append(os.path.join(root, fn))
+
+    if not csv_files:
+        return []
+
+    if verbose:
+        print(f'  Found {len(csv_files)} devicestatus CSV parts')
+
+    seen_ids = set()
+    records = []
+
+    for csv_path in csv_files:
+        try:
+            with open(csv_path, newline='') as f:
+                reader = csv.DictReader(f)
+                cols = reader.fieldnames or []
+
+                # Pre-compute column groups for this file
+                sug_cols = [c for c in cols
+                            if c.startswith('openaps/suggested/')
+                            and 'predBGs' not in c]
+                ena_cols = [c for c in cols
+                            if c.startswith('openaps/enacted/')
+                            and 'predBGs' not in c
+                            and 'requested' not in c]
+                iob_cols = [c for c in cols
+                            if c.startswith('openaps/iob/')
+                            and 'iobWithZeroTemp' not in c
+                            and 'lastTemp' not in c]
+
+                # Find predBGs indexed columns grouped by source/curve
+                # Key: ('suggested'|'enacted', curve_name) → {index: col}
+                pred_cols_sug: Dict[str, Dict[int, str]] = {}
+                pred_cols_ena: Dict[str, Dict[int, str]] = {}
+                for c in cols:
+                    if 'predBGs' not in c:
+                        continue
+                    parts = c.split('/')
+                    # openaps/suggested/predBGs/IOB/0  or
+                    # openaps/enacted/predBGs/IOB/0
+                    if len(parts) >= 5:
+                        source = parts[1]  # suggested or enacted
+                        curve = parts[3]   # IOB, COB, ZT, UAM
+                        try:
+                            idx = int(parts[4])
+                        except ValueError:
+                            continue
+                        target = (pred_cols_sug if source == 'suggested'
+                                  else pred_cols_ena)
+                        target.setdefault(curve, {})[idx] = c
+
+                for row in reader:
+                    # Dedup by _id
+                    rid = row.get('_id', '')
+                    if rid:
+                        if rid in seen_ids:
+                            continue
+                        seen_ids.add(rid)
+
+                    # Skip rows with no algorithm data
+                    has_algo = any(row.get(c) for c in sug_cols[:3])
+                    has_enacted = any(row.get(c) for c in ena_cols[:3])
+                    if not has_algo and not has_enacted:
+                        continue
+
+                    # Reconstruct suggested
+                    suggested = _unflatten_group(
+                        row, sug_cols, 'openaps/suggested/')
+                    enacted = _unflatten_group(
+                        row, ena_cols, 'openaps/enacted/')
+                    iob = _unflatten_group(
+                        row, iob_cols, 'openaps/iob/')
+
+                    # Reconstruct predBGs arrays for both suggested and enacted
+                    for src_cols, target_dict in [
+                        (pred_cols_sug, suggested),
+                        (pred_cols_ena, enacted),
+                    ]:
+                        if not target_dict or not src_cols:
+                            continue
+                        pred_bgs = {}
+                        for curve, idx_map in src_cols.items():
+                            arr = []
+                            for i in sorted(idx_map.keys()):
+                                val = row.get(idx_map[i], '')
+                                if val:
+                                    try:
+                                        arr.append(float(val))
+                                    except ValueError:
+                                        break
+                                else:
+                                    break  # Stop at first empty
+                            if arr:
+                                pred_bgs[curve] = arr
+                        if pred_bgs:
+                            target_dict['predBGs'] = pred_bgs
+
+                    ds = {
+                        'created_at': row.get('created_at', ''),
+                        'device': row.get('device', ''),
+                        '_id': rid,
+                        'openaps': {},
+                    }
+                    if suggested:
+                        ds['openaps']['suggested'] = suggested
+                    if enacted:
+                        ds['openaps']['enacted'] = enacted
+                    if iob:
+                        ds['openaps']['iob'] = iob
+
+                    records.append(ds)
+
+        except Exception as e:
+            logger.warning('Failed to read %s: %s', csv_path, e)
+            continue
+
+    if verbose:
+        print(f'  Parsed {len(records)} devicestatus records '
+              f'with algorithm data (from {len(seen_ids)} unique)')
+    return records
+
+
+def _unflatten_group(row: dict, columns: list, prefix: str) -> dict:
+    """Extract a flat CSV column group into a nested dict.
+
+    Converts numeric strings to float, preserves strings.
+    """
+    result = {}
+    for col in columns:
+        val = row.get(col, '')
+        if not val:
+            continue
+        key = col[len(prefix):]  # Strip prefix
+        # Try numeric conversion
+        try:
+            result[key] = float(val)
+        except ValueError:
+            result[key] = val
+    return result
+
+
 # ── Main entry point ─────────────────────────────────────────────────────
 
 def load_odc_patient(patient_dir: str, verbose: bool = False
                      ) -> Optional[Dict[str, list]]:
     """Load an ODC patient directory and return Nightscout-shaped data.
 
-    Args:
-        patient_dir: Path to ODC patient directory (e.g., '39819048/')
-        verbose: Print progress messages
+    Supports two ODC sub-formats:
+      1. AAPS uploads: BgReadings.json, Treatments.json, APSData.json
+         in upload-num* directories (needs full conversion)
+      2. Nightscout exports: {pid}_{collection}_{daterange}.json files
+         already in Nightscout format (needs concatenation + dedup)
 
     Returns:
         Dict with keys: 'entries', 'treatments', 'devicestatus', 'profile'
         Each value is a list of Nightscout-shaped dicts.
         Returns None if insufficient data.
     """
+    # Try AAPS upload format first
     uploads = _discover_uploads(patient_dir)
-    if not uploads:
-        if verbose:
-            print(f'  SKIP: no uploads found in {patient_dir}')
-        return None
+    if uploads:
+        return _load_aaps_format(patient_dir, uploads, verbose)
+
+    # Fall back to Nightscout export format
+    ns_files = _discover_ns_export_files(patient_dir)
+    if ns_files:
+        return _load_ns_export_format(patient_dir, ns_files, verbose)
 
     if verbose:
-        print(f'  Found {len(uploads)} upload(s) in {patient_dir}')
+        print(f'  SKIP: no recognized format in {patient_dir}')
+    return None
+
+
+def _load_aaps_format(patient_dir: str, uploads: List[Path],
+                      verbose: bool) -> Optional[Dict[str, list]]:
+    """Load AAPS-upload format (BgReadings, APSData, etc.)."""
+    if verbose:
+        print(f'  Found {len(uploads)} AAPS upload(s) in {patient_dir}')
 
     # Load and deduplicate across overlapping uploads
     bg_raw = _load_and_merge_json(uploads, 'BgReadings.json')
@@ -455,6 +630,101 @@ def load_odc_patient(patient_dir: str, verbose: bool = False
         'devicestatus': devicestatus,
         'profile': profile,
     }
+
+
+def _discover_ns_export_files(patient_dir: str) -> Dict[str, List[Path]]:
+    """Discover Nightscout-export format files ({pid}_{collection}_{range}.json).
+
+    Returns dict mapping collection name → list of JSON file paths.
+    """
+    import re
+    result: Dict[str, List[Path]] = {}
+    collection_map = {
+        'entries': 'entries',
+        'treatments': 'treatments',
+        'devicestatus': 'devicestatus',
+        'profile': 'profile',
+    }
+
+    for root, dirs, files in os.walk(patient_dir):
+        for fn in files:
+            if not fn.endswith('.json'):
+                continue
+            # Match: {pid}_{collection}_{daterange}.json
+            for key, coll_name in collection_map.items():
+                if f'_{key}' in fn.lower():
+                    result.setdefault(coll_name, []).append(
+                        Path(root) / fn)
+                    break
+
+    # Sort files within each collection for deterministic ordering
+    for k in result:
+        result[k] = sorted(result[k])
+    return result
+
+
+def _load_ns_export_format(patient_dir: str,
+                           ns_files: Dict[str, List[Path]],
+                           verbose: bool) -> Optional[Dict[str, list]]:
+    """Load Nightscout-export format (already Nightscout-shaped JSON).
+
+    Concatenates multiple date-ranged files and deduplicates by _id.
+    """
+    if verbose:
+        total = sum(len(v) for v in ns_files.values())
+        colls = ', '.join(f'{k}={len(v)}' for k, v in ns_files.items())
+        print(f'  Found {total} Nightscout-export file(s): {colls}')
+
+    data: Dict[str, list] = {
+        'entries': [],
+        'treatments': [],
+        'devicestatus': [],
+        'profile': [],
+    }
+
+    for collection, paths in ns_files.items():
+        seen_ids = set()
+        for fp in paths:
+            try:
+                with open(fp) as f:
+                    records = json.load(f)
+            except (json.JSONDecodeError, IOError):
+                logger.warning('Failed to read %s', fp)
+                continue
+            if not isinstance(records, list):
+                # Profile may be a single object
+                if isinstance(records, dict):
+                    records = [records]
+                else:
+                    continue
+            for r in records:
+                if not isinstance(r, dict):
+                    continue
+                # Deduplicate by _id (Nightscout primary key)
+                rid = r.get('_id')
+                if rid:
+                    if rid in seen_ids:
+                        continue
+                    seen_ids.add(rid)
+                data[collection].append(r)
+
+    # If no devicestatus from JSON, try flattened CSV
+    if not data['devicestatus']:
+        csv_ds = _load_flattened_devicestatus_csv(patient_dir, verbose)
+        if csv_ds:
+            data['devicestatus'] = csv_ds
+
+    if verbose:
+        for k, v in data.items():
+            if v:
+                print(f'  {k}: {len(v)} records')
+
+    if not data['entries']:
+        if verbose:
+            print(f'  SKIP: no entries in {patient_dir}')
+        return None
+
+    return data
 
 
 def write_odc_as_nightscout(patient_dir: str, output_dir: str,

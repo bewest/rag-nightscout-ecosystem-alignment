@@ -956,5 +956,161 @@ class TestODCIntegration(unittest.TestCase):
         self.assertLess(span_days, 30)
 
 
+# ── CSV Devicestatus Unit Tests ──────────────────────────────────────
+
+class TestCSVDevicestatusParser(unittest.TestCase):
+    """Unit tests for flattened CSV devicestatus reconstruction."""
+
+    def test_unflatten_group_numeric(self):
+        """Numeric values should be converted to float."""
+        from tools.ns2parquet.odc_loader import _unflatten_group
+        row = {
+            'openaps/suggested/bg': '120',
+            'openaps/suggested/eventualBG': '95',
+            'openaps/suggested/rate': '1.35',
+            'openaps/suggested/reason': 'some text here',
+            'openaps/suggested/empty': '',
+        }
+        cols = [k for k in row.keys() if k.startswith('openaps/suggested/')]
+        result = _unflatten_group(row, cols, 'openaps/suggested/')
+        self.assertEqual(result['bg'], 120.0)
+        self.assertEqual(result['eventualBG'], 95.0)
+        self.assertAlmostEqual(result['rate'], 1.35)
+        self.assertEqual(result['reason'], 'some text here')
+        self.assertNotIn('empty', result)
+
+    def test_unflatten_group_empty_row(self):
+        """All-empty row should return empty dict."""
+        from tools.ns2parquet.odc_loader import _unflatten_group
+        row = {'openaps/suggested/bg': '', 'openaps/suggested/eventualBG': ''}
+        cols = list(row.keys())
+        result = _unflatten_group(row, cols, 'openaps/suggested/')
+        self.assertEqual(result, {})
+
+
+class TestScheduleLookupStringValues(unittest.TestCase):
+    """Profile values and timeAsSeconds may be strings (NS-export format)."""
+
+    def test_string_time_as_seconds(self):
+        """timeAsSeconds stored as string should still work."""
+        from tools.ns2parquet.grid import _lookup_schedule
+        schedule = [
+            {'timeAsSeconds': '0', 'value': '1.4'},
+            {'timeAsSeconds': '28800', 'value': '1.2'},  # 8am
+        ]
+        # Before 8am → should get '1.4'
+        val = _lookup_schedule(3600, schedule)
+        self.assertAlmostEqual(val, 1.4)
+        # After 8am → should get '1.2'
+        val = _lookup_schedule(36000, schedule)
+        self.assertAlmostEqual(val, 1.2)
+
+    def test_mixed_types(self):
+        """Mix of int and string values should work."""
+        from tools.ns2parquet.grid import _lookup_schedule
+        schedule = [
+            {'timeAsSeconds': 0, 'value': 45},
+            {'timeAsSeconds': '43200', 'value': '55'},  # noon
+        ]
+        val = _lookup_schedule(50000, schedule)
+        self.assertAlmostEqual(val, 55.0)
+
+
+# ── NS-Export Integration Tests ──────────────────────────────────────
+
+ODC_NS_EXPORT_PID = '74077367'  # Best NS-export patient (99% coverage)
+ODC_NS_EXPORT_DIR = os.path.join(
+    os.getenv('ODC_DATA',
+              '/home/bewest/Downloads/openaps-data-commons-2023-samples'),
+    ODC_NS_EXPORT_PID, 'direct-sharing-31')
+
+
+@unittest.skipUnless(
+    os.path.isdir(ODC_NS_EXPORT_DIR),
+    f'ODC NS-export data not available at {ODC_NS_EXPORT_DIR}')
+class TestNSExportIntegration(unittest.TestCase):
+    """Integration test: build grid from NS-export patient (CSV devicestatus)."""
+
+    @classmethod
+    def setUpClass(cls):
+        import tempfile
+        from tools.ns2parquet.odc_loader import write_odc_as_nightscout
+        from tools.ns2parquet.grid import build_grid
+        cls._tmpdir = tempfile.mkdtemp()
+        ns_dir = os.path.join(cls._tmpdir, 'data')
+        write_odc_as_nightscout(ODC_NS_EXPORT_DIR, ns_dir)
+        cls.grid = build_grid(ns_dir, f'odc-{ODC_NS_EXPORT_PID}')
+
+    @classmethod
+    def tearDownClass(cls):
+        import shutil
+        shutil.rmtree(cls._tmpdir, ignore_errors=True)
+
+    def test_grid_built_successfully(self):
+        self.assertIsNotNone(self.grid)
+        self.assertGreater(len(self.grid), 50000)
+
+    def test_grid_has_49_columns(self):
+        self.assertEqual(self.grid.shape[1], 49)
+
+    def test_glucose_populated(self):
+        """NS-export entries should give >95% glucose coverage."""
+        pct = self.grid['glucose'].notna().mean()
+        self.assertGreater(pct, 0.95)
+
+    def test_iob_from_csv_devicestatus(self):
+        """IOB reconstructed from flattened CSV should be >90% non-zero."""
+        nonzero_pct = (self.grid['iob'] != 0).mean()
+        self.assertGreater(nonzero_pct, 0.90)
+
+    def test_predictions_from_csv(self):
+        """predBGs reconstructed from indexed CSV columns should be >90%."""
+        for col in ['loop_predicted_30', 'loop_predicted_60', 'loop_predicted_min']:
+            pct = self.grid[col].notna().mean()
+            self.assertGreater(pct, 0.90,
+                               f'{col} should be >90% for NS-export patient')
+
+    def test_eventual_bg_from_csv(self):
+        """eventualBG reconstructed from CSV should be >90%."""
+        pct = self.grid['eventual_bg'].notna().mean()
+        self.assertGreater(pct, 0.90)
+
+    def test_spans_months(self):
+        """NS-export patient should span multiple months."""
+        time_col = self.grid['time']
+        span_days = (time_col.max() - time_col.min()).total_seconds() / 86400
+        self.assertGreater(span_days, 100)
+
+    def test_profile_values_reasonable(self):
+        """Profile should have reasonable mg/dL values."""
+        isf = self.grid['scheduled_isf'].dropna()
+        self.assertTrue(len(isf) > 0)
+        self.assertTrue((isf > 5).all(), f'ISF too low: min={isf.min()}')
+        self.assertTrue((isf < 500).all(), f'ISF too high: max={isf.max()}')
+
+    def test_all_8_patients_loadable(self):
+        """Verify all 8 ODC patients produce a grid (not None)."""
+        from tools.ns2parquet.odc_loader import (discover_odc_patients,
+                                                  write_odc_as_nightscout)
+        from tools.ns2parquet.grid import build_grid
+        import tempfile, shutil
+        odc_root = os.getenv(
+            'ODC_DATA',
+            '/home/bewest/Downloads/openaps-data-commons-2023-samples')
+        patients = discover_odc_patients(odc_root)
+        ok = 0
+        for pid, pdir in patients:
+            tmpd = tempfile.mkdtemp()
+            try:
+                ns_dir = os.path.join(tmpd, 'data')
+                if write_odc_as_nightscout(pdir, ns_dir):
+                    grid = build_grid(ns_dir, pid)
+                    if grid is not None and len(grid) > 0:
+                        ok += 1
+            finally:
+                shutil.rmtree(tmpd, ignore_errors=True)
+        self.assertEqual(ok, 8, f'Expected 8/8 patients, got {ok}/{len(patients)}')
+
+
 if __name__ == '__main__':
     unittest.main()
