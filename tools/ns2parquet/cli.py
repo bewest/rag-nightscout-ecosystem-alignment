@@ -161,7 +161,12 @@ def cmd_convert_all(args):
 
     verbose = not args.quiet
     output = args.output
-    subset = args.subset  # training, verification, raw, or None (auto-detect)
+    subset = args.subset  # training, verification, both, raw, or None (auto-detect)
+
+    # Parse --patients filter
+    patient_filter = None
+    if getattr(args, 'patients', None):
+        patient_filter = set(p.strip() for p in args.patients.split(',') if p.strip())
 
     # Find patient directories (contain ns_url.env or JSON files)
     patient_dirs = sorted([
@@ -169,10 +174,26 @@ def cmd_convert_all(args):
         if d.is_dir() and not d.name.startswith('.')
     ])
 
+    # Apply patient filter
+    if patient_filter:
+        patient_dirs = [d for d in patient_dirs if d.name in patient_filter]
+        if verbose:
+            print(f'Filtered to {len(patient_dirs)} patients: {", ".join(sorted(patient_filter))}')
+
+    # Determine subsets to process
+    if subset == 'both':
+        subsets_to_run = ['training', 'verification']
+    elif subset:
+        subsets_to_run = [subset]
+    else:
+        subsets_to_run = [None]  # auto-detect
+
     if verbose:
         print(f'Found {len(patient_dirs)} patient directories in {patients_dir}')
         print(f'Output: {output}/')
-        if subset:
+        if subset == 'both':
+            print(f'Subsets: training + verification')
+        elif subset:
             print(f'Subset: {subset}')
         print()
 
@@ -180,64 +201,80 @@ def cmd_convert_all(args):
     success = 0
     failed = 0
 
-    for pdir in patient_dirs:
-        raw_name = pdir.name
-        patient_id = _generate_opaque_id(raw_name) if args.opaque_ids else raw_name
+    for current_subset in subsets_to_run:
+        if len(subsets_to_run) > 1 and verbose:
+            print(f'{"━" * 60}')
+            print(f'  Subset: {current_subset}')
+            print(f'{"━" * 60}')
+            print()
 
-        # Determine data subdirectory
-        if subset:
-            data_dir = pdir / subset
+        # For "both" mode, output to subdirectories
+        if subset == 'both':
+            current_output = str(Path(output) / current_subset)
         else:
-            # Auto-detect: prefer training, then raw, then root
-            for sub in ['training', 'raw', '']:
-                candidate = pdir / sub if sub else pdir
-                if (candidate / 'entries.json').exists():
-                    data_dir = candidate
-                    break
+            current_output = output
+
+        for pdir in patient_dirs:
+            raw_name = pdir.name
+            patient_id = _generate_opaque_id(raw_name) if args.opaque_ids else raw_name
+
+            # Determine data subdirectory
+            if current_subset:
+                data_dir = pdir / current_subset
             else:
+                # Auto-detect: prefer training, then raw, then root
+                for sub in ['training', 'raw', '']:
+                    candidate = pdir / sub if sub else pdir
+                    if (candidate / 'entries.json').exists():
+                        data_dir = candidate
+                        break
+                else:
+                    if verbose:
+                        print(f'  SKIP {patient_id}: no JSON files found')
+                    failed += 1
+                    continue
+
+            if not (data_dir / 'entries.json').exists():
                 if verbose:
-                    print(f'  SKIP {patient_id}: no JSON files found')
+                    print(f'  SKIP {patient_id}: no entries.json in {data_dir}')
                 failed += 1
                 continue
 
-        if not (data_dir / 'entries.json').exists():
             if verbose:
-                print(f'  SKIP {patient_id}: no entries.json in {data_dir}')
-            failed += 1
-            continue
+                print(f'── Patient {patient_id} ({data_dir.relative_to(patients_dir)}) ──')
 
-        if verbose:
-            print(f'── Patient {patient_id} ({data_dir.relative_to(patients_dir)}) ──')
+            # Create a fake args for cmd_convert
+            class ConvertArgs:
+                pass
+            conv_args = ConvertArgs()
+            conv_args.input = str(data_dir)
+            conv_args.patient_id = patient_id
+            conv_args.output = current_output
+            conv_args.append = True  # always append in batch mode
+            conv_args.quiet = args.quiet
+            conv_args.skip_grid = args.skip_grid
 
-        # Create a fake args for cmd_convert
-        class ConvertArgs:
-            pass
-        conv_args = ConvertArgs()
-        conv_args.input = str(data_dir)
-        conv_args.patient_id = patient_id
-        conv_args.output = output
-        conv_args.append = True  # always append in batch mode
-        conv_args.quiet = args.quiet
-        conv_args.skip_grid = args.skip_grid
-
-        try:
-            rc = cmd_convert(conv_args)
-            if rc == 0:
-                success += 1
-            else:
+            try:
+                rc = cmd_convert(conv_args)
+                if rc == 0:
+                    success += 1
+                else:
+                    failed += 1
+            except Exception as e:
+                print(f'  ERROR {patient_id}: {e}', file=sys.stderr)
                 failed += 1
-        except Exception as e:
-            print(f'  ERROR {patient_id}: {e}', file=sys.stderr)
-            failed += 1
 
-        if verbose:
-            print()
+            if verbose:
+                print()
 
     elapsed = time.time() - t0
     if verbose:
         print(f'{"═" * 60}')
         print(f'  Converted {success}/{success + failed} patients in {elapsed:.1f}s')
-        print(f'  Output: {output}/')
+        if subset == 'both':
+            print(f'  Output: {output}/training/ + {output}/verification/')
+        else:
+            print(f'  Output: {output}/')
         print(f'{"═" * 60}')
 
     return 0 if failed == 0 else 1
@@ -347,8 +384,77 @@ def cmd_ingest(args):
         return cmd_convert(conv_args)
 
 
+def cmd_merge(args):
+    """Merge parquet files from multiple directories into one."""
+    import pandas as pd
+    from .writer import write_parquet, _dedup_key
+
+    verbose = not args.quiet
+    output = args.output
+    sources = args.sources
+
+    if verbose:
+        print(f'Merging {len(sources)} sources → {output}/')
+        print()
+
+    t0 = time.time()
+    # Discover all collections across all sources
+    collections = set()
+    for src in sources:
+        src_path = Path(src)
+        if not src_path.exists():
+            print(f'  WARNING: {src} does not exist, skipping', file=sys.stderr)
+            continue
+        for pf in src_path.glob('*.parquet'):
+            collections.add(pf.stem)
+
+    if not collections:
+        print('ERROR: No parquet files found in any source directory', file=sys.stderr)
+        return 1
+
+    for collection in sorted(collections):
+        frames = []
+        for src in sources:
+            pf = Path(src) / f'{collection}.parquet'
+            if pf.exists():
+                df = pd.read_parquet(pf)
+                frames.append(df)
+                if verbose:
+                    print(f'  {collection}: {len(df):,} rows from {src}')
+
+        if not frames:
+            continue
+
+        merged = pd.concat(frames, ignore_index=True)
+
+        # Deduplicate
+        dedup_cols = _dedup_key(collection)
+        valid_cols = [c for c in dedup_cols if c in merged.columns]
+        before = len(merged)
+        if valid_cols:
+            merged = merged.drop_duplicates(subset=valid_cols, keep='last')
+
+        if verbose:
+            deduped = before - len(merged)
+            dedup_str = f' ({deduped:,} duplicates removed)' if deduped else ''
+            print(f'  → {collection}: {len(merged):,} rows merged{dedup_str}')
+
+        write_parquet(merged, output, collection, append=False, verbose=False)
+
+    elapsed = time.time() - t0
+    if verbose:
+        print()
+        print(f'{"═" * 60}')
+        print(f'  Merged {len(collections)} collections in {elapsed:.1f}s')
+        print(f'  Output: {output}/')
+        print(f'{"═" * 60}')
+
+    return 0
+
+
 def cmd_info(args):
     """Show summary of existing Parquet files."""
+    import pandas as pd
     from .writer import parquet_info
 
     info = parquet_info(args.input)
@@ -356,6 +462,7 @@ def cmd_info(args):
         print(f'No parquet files found in {args.input}')
         return 1
 
+    detail = getattr(args, 'detail', False)
     total_rows = 0
     total_size = 0
 
@@ -372,6 +479,32 @@ def cmd_info(args):
               f'{stats["num_patients"]} patients')
         if patients_str:
             print(f'  {"":20s}  patients: {patients_str}')
+
+        # Per-patient detail
+        if detail and stats['num_patients'] > 0:
+            pf = Path(args.input) / f'{collection}.parquet'
+            try:
+                # Pick timestamp column for date range
+                ts_col = None
+                for candidate in ['time', 'date', 'created_at']:
+                    if candidate in pd.read_parquet(pf, columns=None).columns:
+                        ts_col = candidate
+                        break
+
+                df = pd.read_parquet(pf)
+                for pid in sorted(stats['patients']):
+                    pdf = df[df['patient_id'] == pid]
+                    row_info = f'{len(pdf):>8,} rows'
+                    if ts_col and ts_col in pdf.columns:
+                        ts_min = pdf[ts_col].min()
+                        ts_max = pdf[ts_col].max()
+                        if pd.notna(ts_min) and pd.notna(ts_max):
+                            days = (ts_max - ts_min).total_seconds() / 86400
+                            row_info += f'  {str(ts_min.date())} → {str(ts_max.date())} ({days:.0f}d)'
+                    print(f'  {"":20s}    {pid:>12s}: {row_info}')
+            except Exception:
+                pass  # graceful fallback if detail fails
+
     print(f'{"─" * 70}')
     print(f'  {"TOTAL":20s}  {total_rows:>10,} rows  '
           f'{total_size / (1024*1024):>8.1f} MB')
@@ -409,8 +542,10 @@ def main():
         help='Convert all patients in a directory')
     p_all.add_argument('--patients-dir', '-d', required=True,
         help='Directory containing patient subdirectories')
-    p_all.add_argument('--subset', '-s', choices=['training', 'verification', 'raw'],
-        help='Data subset to use (default: auto-detect)')
+    p_all.add_argument('--subset', '-s', choices=['training', 'verification', 'raw', 'both'],
+        help='Data subset to use (default: auto-detect). "both" converts training + verification to separate subdirs.')
+    p_all.add_argument('--patients',
+        help='Comma-separated list of patient IDs to include (default: all)')
     p_all.add_argument('--output', '-o', default='output',
         help='Output directory for Parquet files')
     p_all.add_argument('--opaque-ids', action='store_true', default=False,
@@ -440,6 +575,17 @@ def main():
         help='Show summary of Parquet files')
     p_info.add_argument('--input', '-i', default='output',
         help='Directory containing Parquet files')
+    p_info.add_argument('--detail', action='store_true',
+        help='Show per-patient row counts and date ranges')
+
+    # merge
+    p_merge = subparsers.add_parser('merge',
+        help='Merge parquet files from multiple directories')
+    p_merge.add_argument('sources', nargs='+',
+        help='Source directories containing Parquet files')
+    p_merge.add_argument('--output', '-o', required=True,
+        help='Output directory for merged Parquet files')
+    p_merge.add_argument('--quiet', '-q', action='store_true')
 
     args = parser.parse_args()
 
@@ -451,6 +597,8 @@ def main():
         return cmd_ingest(args)
     elif args.command == 'info':
         return cmd_info(args)
+    elif args.command == 'merge':
+        return cmd_merge(args)
     else:
         parser.print_help()
         return 1
