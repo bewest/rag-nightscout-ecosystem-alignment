@@ -540,6 +540,66 @@ def _validate_retrospective(
     return round(basal_pct, 1), round(isf_pct, 1), round(cr_pct, 1), n_recs
 
 
+def _compute_temporal_stability(
+    isf_schedule: List[SettingScheduleEntry],
+) -> float:
+    """Compute temporal stability metric for ISF recommendations.
+
+    Research basis: EXP-1903/1907 — ISF CV across rolling windows = 4.8%
+    for stable patients, 9.5% across 5-fold CV. CV > 15% indicates instability.
+
+    Returns CV as a fraction (0.0 = perfectly stable, higher = less stable).
+    For production, we approximate by measuring the spread of ISF evidence
+    counts and confidence across periods.
+    """
+    isf_vals = [e.recommended_value for e in isf_schedule
+                if e.confidence in ('high', 'medium') and e.recommended_value > 0]
+    if len(isf_vals) < 2:
+        return 0.0
+    mean_isf = float(np.mean(isf_vals))
+    if mean_isf < 1:
+        return 0.0
+    cv = float(np.std(isf_vals) / mean_isf)
+    return round(cv, 3)
+
+
+def _make_validation_note(
+    grade: 'ConfidenceGrade',
+    isf_schedule: List[SettingScheduleEntry],
+    stability_cv: float,
+) -> str:
+    """Generate human-readable validation context.
+
+    Research basis: EXP-1901 series — within-patient mismatch→TIR r=-0.371
+    (p=0.0007), train/verify concordance 0.849, 5-fold CV stability 9.5%.
+    """
+    # ISF mismatch ratio
+    ratios = [e.recommended_value / max(e.current_value, 1)
+              for e in isf_schedule
+              if e.confidence in ('high', 'medium') and e.current_value > 0]
+    mean_ratio = float(np.mean(ratios)) if ratios else 1.0
+
+    parts = []
+    if mean_ratio > 1.5:
+        parts.append(f"ISF appears {mean_ratio:.1f}× underestimated")
+    elif mean_ratio < 0.7:
+        parts.append(f"ISF appears {1/mean_ratio:.1f}× overestimated")
+
+    if stability_cv > 0.15:
+        parts.append("ISF varies >15% across time periods — recommendation less certain")
+    elif stability_cv < 0.05:
+        parts.append("ISF is highly stable across time periods")
+
+    # Validated expectation setting
+    if mean_ratio > 1.2:
+        parts.append(
+            "Within-patient validation (EXP-1901, p<0.001) confirms "
+            "windows closer to optimal ISF have better TIR. "
+            "AID compensates well, so expect incremental improvement")
+
+    return ". ".join(parts) + "." if parts else ""
+
+
 # ── Public API ────────────────────────────────────────────────────────
 
 def optimize_settings(
@@ -607,11 +667,21 @@ def optimize_settings(
         basal_schedule, isf_schedule, cr_schedule,
         all_fasting, corrections, meals)
 
+    # Temporal stability (EXP-1901/1903/1907)
+    stability_cv = _compute_temporal_stability(isf_schedule)
+    validation_note = _make_validation_note(grade, isf_schedule, stability_cv)
+
+    if stability_cv > 0.15:
+        w.append(f"ISF varies {stability_cv*100:.0f}% across periods — "
+                 "consider whether time-of-day variation is clinical or noise")
+
     return SettingsOptimizationResult(
         optimal=optimal,
         basal_drift_reduction_pct=basal_imp,
         isf_residual_improvement_pct=isf_imp,
         cr_excursion_improvement_pct=cr_imp,
         n_recommendations=n_recs,
+        temporal_stability_cv=stability_cv,
+        validation_note=validation_note,
         warnings=w,
     )

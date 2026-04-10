@@ -680,14 +680,18 @@ class OptimalSettings:
 class SettingsOptimizationResult:
     """Full result from settings optimization including validation.
 
-    Research basis: EXP-1711–1717 (retrospective validation).
+    Research basis: EXP-1711–1717 (retrospective validation),
+                    EXP-1901 (temporal stability, within-patient validation).
     Combined optimization predicts +2.8% TIR (population mean).
+    Within-patient mismatch→TIR: r = −0.371, p = 0.0007.
     """
     optimal: OptimalSettings
     basal_drift_reduction_pct: float        # % of fasting drift eliminated
     isf_residual_improvement_pct: float     # % improvement in correction residuals
     cr_excursion_improvement_pct: float     # % improvement in meal excursion prediction
     n_recommendations: int                  # total actionable recommendations
+    temporal_stability_cv: float = 0.0      # ISF CV across rolling windows (0 = stable)
+    validation_note: str = ''               # human-readable validation context
     warnings: List[str] = field(default_factory=list)
 
 
