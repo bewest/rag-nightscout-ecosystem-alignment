@@ -3,7 +3,7 @@
 **Experiments**: EXP-1821 through EXP-1826  
 **Date**: 2026-04-10  
 **Status**: Draft (AI-generated from data-first analysis)  
-**Population**: 11 AID patients, 18-day CGM windows
+**Population**: 11 AID patients, ~180-day CGM windows
 
 ---
 
@@ -75,7 +75,7 @@ predictive information about 24h-ahead glucose than raw glucose?
 
 **Method**: Compute running cumulative sums of supply, demand, and balance over
 windows from 1h to 7d. Measure mutual information (MI) with mean glucose over the
-next 6h, 12h, and 24h horizons.
+next 2h, 6h, and 24h horizons.
 
 **Results** (MI in bits, predicting next-24h mean glucose):
 
@@ -157,13 +157,13 @@ more episodic and less autocorrelated.
 glucose for long-horizon prediction?
 
 **Method**: Compute 12 candidate features mixing raw and cumulative signals. Measure
-MI with future mean glucose at 6h, 12h, and 24h horizons.
+MI with future mean glucose at 2h, 6h, and 24h horizons.
 
 **Results** (MI in bits, ranked by 24h predictive power):
 
-| Rank | Feature | 6h | 12h | 24h |
+| Rank | Feature | 2h | 6h | 24h |
 |------|---------|-----|------|------|
-| 1 | time_above_range_24h | 0.095 | 0.117 | **0.220** |
+| 1 | time_above_range_24h | 0.116 | 0.160 | **0.220** |
 | 2 | cum_carb_balance_24h | 0.130 | 0.164 | **0.220** |
 | 3 | supply_integral_24h | 0.102 | 0.134 | 0.181 |
 | 4 | insulin_load_24h | 0.108 | 0.135 | 0.177 |
@@ -270,9 +270,8 @@ metabolic balance accumulated over the past 24 hours.
 **Question**: Does PCA reveal a low-rank manifold in long-window cumulative features
 that might represent the slow metabolic state?
 
-**Method**: Build feature matrices at 12h, 24h, and 48h windows (including cumulative
-supply, demand, balance, raw glucose statistics, and their interactions). Apply PCA
-and measure dimensionality (PCs needed for 80% variance).
+**Method**: Build feature matrices at 12h, 24h, and 48h windows from raw glucose
+statistics. Apply PCA and measure dimensionality (PCs needed for 80% variance).
 
 **Results**:
 
