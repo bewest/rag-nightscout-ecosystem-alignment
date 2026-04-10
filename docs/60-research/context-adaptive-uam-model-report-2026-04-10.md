@@ -46,7 +46,7 @@ If these contexts have different physics, a single model is suboptimal.
 
 **Question**: Do post-meal model residuals have systematic structure (not random noise)?
 
-**Method**: Extract 2h residual profiles after each meal onset. Average across
+**Method**: Extract 4h residual profiles after each meal onset. Average across
 all meals per patient to find the "template residual" — the systematic pattern
 the model consistently misses.
 
@@ -70,9 +70,9 @@ average washes out. The problem isn't a systematic bias but meal-to-meal varianc
 **Question**: Does selecting different model parameters per metabolic context improve
 predictions?
 
-**Method**: Classify each timestep into one of five contexts (fasting, post_meal,
-correction, hypo_recovery, other). Fit separate supply/demand scaling parameters
-for each context. Compare uniform vs adaptive predictions.
+**Method**: Classify each timestep into one of six contexts (fasting, post_meal,
+correction, hypo_recovery, exercise_like, stable). Fit separate supply/demand scaling
+parameters for each context. Compare uniform vs adaptive predictions.
 
 **Results**:
 
@@ -85,10 +85,10 @@ for each context. Compare uniform vs adaptive predictions.
 
 | Context | Uniform R² | Adaptive R² | Improvement |
 |---------|-----------|-------------|-------------|
-| Fasting | ~ −2.0 | ~ −1.5 | Modest |
-| Post-meal | −20.10 | −16.78 | −3.3 |
+| Fasting | −0.32 | −0.32 | Negligible |
+| Post-meal | −20.10 | −16.78 | +3.3 |
 | Hypo recovery | **−7.12** | **−0.003** | **Nearly solved** |
-| Correction | ~ −4.0 | ~ −3.0 | Moderate |
+| Correction | −3.65 | −1.39 | +2.3 |
 
 **Key insight**: Hypo recovery improves dramatically because counter-regulatory
 response has predictable dynamics once you know you're in that context. Post-meal
@@ -133,13 +133,14 @@ This is why template correction (EXP-1791) doesn't help — there is no single t
 **Question**: Can we improve post-meal predictions by using glucose acceleration
 (UAM detection) instead of relying on carb entry logs?
 
-**Background**: 89.5% of glucose rises occur without a corresponding carb entry
-within ±30 minutes. In AID systems, carb entries are unreliable — patients often
+**Background**: Approximately 77% of detected glucose rises occur without a corresponding
+carb entry within ±30 minutes. In AID systems, carb entries are unreliable — patients often
 pre-bolus, forget to log, or use the system in "UAM mode" where the algorithm
-detects unannounced meals via glucose acceleration.
+detects unannounced meals via glucose trajectory changes.
 
 **Method**: Instead of using logged carbs as the meal signal, detect meals via
-glucose acceleration (dG/dt > threshold → UAM active). When UAM is active,
+model residual exceeding a threshold combined with positive glucose acceleration
+(residual > 1.0 AND acceleration > 0.3 → UAM active). When UAM is active,
 attribute residual glucose rise to supply rather than pure demand mismatch.
 
 **Results**:
@@ -149,15 +150,15 @@ attribute residual glucose rise to supply rather than pure demand mismatch.
 | **Overall R²** | −6.64 | **−3.46** | **+3.18** |
 | Post-meal R² | −20.09 | −11.67 | +8.42 |
 | Patients improved | — | **11/11** | 100% |
-| UAM-active fraction | — | 89.5% | — |
+| UAM-active fraction | — | 89.5% of timesteps | — |
 
 **Per-patient improvements (overall R²):**
 
 | Patient | Base R² | UAM R² | Δ |
 |---------|---------|--------|---|
 | Best (b) | −0.48 | +0.20 | +0.68 |
-| Median (f) | −2.79 | −0.73 | +2.06 |
-| Worst (i) | −20.62 | −12.74 | +7.88 |
+| Median (f) | −2.54 | −0.93 | +1.61 |
+| Worst (h) | −20.62 | −12.74 | +7.88 |
 
 **Why this works**: The UAM-aware model doesn't need to know what the patient ate or
 when. It observes the glucose trace accelerating upward and attributes the excess
