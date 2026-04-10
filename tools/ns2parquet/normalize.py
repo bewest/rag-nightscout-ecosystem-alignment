@@ -15,6 +15,8 @@ Key transformations:
 - Profiles: expands time-varying schedules to one row per segment
 """
 
+import warnings
+
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Optional
@@ -436,6 +438,20 @@ def _normalize_timezone(tz_str: str) -> str:
     return tz_str
 
 
+def _resolve_timezone(settings: dict, patient_id: str) -> Optional[str]:
+    """Extract IANA timezone from settings, NOT timeFormat.
+
+    Nightscout settings.timeFormat is 12/24 (clock format), not a timezone.
+    The actual timezone lives in the profile store.  If the status doc
+    doesn't carry it directly, return None rather than a wrong value.
+    """
+    # Some deployments surface timezone at the settings level
+    tz = settings.get('timezone')
+    if isinstance(tz, str) and tz:
+        return _normalize_timezone(tz)
+    return None
+
+
 def normalize_profiles(records, patient_id: str) -> pd.DataFrame:
     """Normalize Nightscout profile JSON → expanded schedule rows.
 
@@ -551,7 +567,7 @@ def normalize_settings(status_doc: dict, patient_id: str) -> pd.DataFrame:
         'bg_target_top': float(thresholds.get('bgTargetTop', 180)),
         'bg_target_bottom': float(thresholds.get('bgTargetBottom', 80)),
         'bg_low': float(thresholds.get('bgLow', 55)),
-        'timezone': settings.get('timeFormat', None),
+        'timezone': _resolve_timezone(settings, patient_id),
         'language': settings.get('language', None),
     }
 

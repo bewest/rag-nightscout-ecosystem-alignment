@@ -8,6 +8,8 @@ Supports two modes:
 Deduplication uses (patient_id, timestamp) as composite key for each collection.
 """
 
+import warnings
+
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq

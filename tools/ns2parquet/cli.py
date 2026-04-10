@@ -16,14 +16,14 @@ import time
 from pathlib import Path
 
 
-def _generate_opaque_id(url: str) -> str:
-    """Generate a deterministic but opaque patient ID from a Nightscout URL.
+def _generate_opaque_id(source: str) -> str:
+    """Generate a deterministic but opaque patient ID from a source string.
 
-    Uses a keyed hash so the same URL always produces the same ID (enabling
-    append/dedup across runs), but the URL cannot be recovered from the ID.
-    The 'ns2parquet' prefix is included in the hash to namespace it.
+    Works with URLs, directory names, or any string. The same input always
+    produces the same ID (enabling append/dedup across runs), but the
+    source cannot be recovered from the ID.
     """
-    normalized = url.strip().rstrip('/').lower()
+    normalized = source.strip().rstrip('/').lower()
     digest = hashlib.sha256(f'ns2parquet:{normalized}'.encode()).hexdigest()[:12]
     return f'ns-{digest}'
 
@@ -47,7 +47,10 @@ def cmd_convert(args):
         print(f'ERROR: Input directory not found: {data_dir}', file=sys.stderr)
         return 1
 
-    patient_id = args.patient_id or data_dir.parent.name
+    patient_id = args.patient_id
+    if not patient_id:
+        raw_name = data_dir.parent.name
+        patient_id = _generate_opaque_id(raw_name) if args.opaque_ids else raw_name
     verbose = not args.quiet
     output = args.output
 
@@ -178,7 +181,8 @@ def cmd_convert_all(args):
     failed = 0
 
     for pdir in patient_dirs:
-        patient_id = pdir.name
+        raw_name = pdir.name
+        patient_id = _generate_opaque_id(raw_name) if args.opaque_ids else raw_name
 
         # Determine data subdirectory
         if subset:
@@ -389,7 +393,9 @@ def main():
     p_conv.add_argument('--input', '-i', required=True,
         help='Input directory with entries.json, treatments.json, etc.')
     p_conv.add_argument('--patient-id', '-p',
-        help='Patient identifier (default: parent directory name)')
+        help='Patient identifier (default: parent directory name, or hash with --opaque-ids)')
+    p_conv.add_argument('--opaque-ids', action='store_true', default=False,
+        help='Hash directory names into opaque IDs (e.g., ns-a1b2c3d4e5f6)')
     p_conv.add_argument('--output', '-o', default='output',
         help='Output directory for Parquet files (default: output/)')
     p_conv.add_argument('--append', action='store_true', default=False,
@@ -407,6 +413,8 @@ def main():
         help='Data subset to use (default: auto-detect)')
     p_all.add_argument('--output', '-o', default='output',
         help='Output directory for Parquet files')
+    p_all.add_argument('--opaque-ids', action='store_true', default=False,
+        help='Hash directory names into opaque IDs (e.g., ns-a1b2c3d4e5f6)')
     p_all.add_argument('--skip-grid', action='store_true',
         help='Skip building the research grid')
     p_all.add_argument('--quiet', '-q', action='store_true')
