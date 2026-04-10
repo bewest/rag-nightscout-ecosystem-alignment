@@ -70,7 +70,7 @@ than predicting the mean). The top drivers are:
 
 1. **Dose size** — larger boluses show smaller per-unit effect (saturation)
 2. **Glucose at correction** — higher starting glucose → larger apparent ISF
-3. **IOB at correction** — stacking reduces marginal effect
+3. **24h mean glucose** — background glucose level modulates insulin response
 
 This confirms EXP-1301's finding that response-curve fitting (R² = 0.805) is
 the correct approach, while per-event ISF estimation is fundamentally noisy.
@@ -79,19 +79,21 @@ the correct approach, while per-event ISF estimation is fundamentally noisy.
 
 ![Nonlinear Phase](figures/dualscale-fig05-nonlinear-phase.png)
 
-Hill-equation and other nonlinear transformations of supply/demand features
-add complexity without improving predictions. Linear features are sufficient,
-consistent with the observation that our metabolic model already captures the
-nonlinearity — further nonlinear processing double-counts.
+Nonlinear transformations of supply/demand features (products S×D, ratios S/D,
+squares S², D², and RMS) add complexity without improving predictions. Linear
+features are sufficient, consistent with the observation that our metabolic model
+already captures the nonlinearity — further nonlinear processing double-counts.
 
-### 6. Early Meal Detection Is Possible (EXP-1836)
+### 6. Meal Type Classification Is Possible (EXP-1836)
 
 ![Meal Decomposition](figures/dualscale-fig06-meal-decomp.png)
 
-Using a 15-minute glucose slope window, we can detect meals within 15 minutes
-of onset with AUC = 0.786. This is consistent with EXP-1773 (UAM threshold)
-and suggests that fast meal detection + context classification could enable
-proactive insulin dosing recommendations.
+Using a 15-minute glucose slope window on already-identified meals (carb
+entries > 5 g), we can classify meal *type* — fast vs medium/slow peak timing —
+with AUC = 0.786. Note: this is meal type classification, not meal detection.
+Meals are identified by announced carb entries; the model then predicts whether
+the absorption profile will be fast-peaking. This is consistent with EXP-1773
+(UAM threshold) and could enable absorption-profile-aware bolus strategies.
 
 ### 7. Insulin Falls Are Overshoot-Dominated (EXP-1837)
 
@@ -122,11 +124,12 @@ Selecting the best features from each experiment and combining them:
 | 30 min | 0.890 | 10/11 patients improved |
 | 1 hour | 0.761 | 10/11 patients improved |
 | 3 hours | 0.257 | 10/11 patients improved |
-| 6 hours | -0.176 | Worse than mean (horizon too long) |
+| 6 hours | -0.176 | 10/11 patients improved (but both models below mean) |
 
-The combined model improves over single-feature models at all horizons ≤ 3h.
-The 6h degradation is expected — glucose beyond 3h depends on future meals and
-insulin decisions that are unknowable from current state alone.
+The combined model improves over single-feature models at all horizons tested
+(10/11 patients at 30 min through 6h). At 6h, population R² is negative (worse
+than predicting the mean), but the combined model is still substantially less
+bad than single-feature models — 10/11 patients show relative improvement.
 
 ## Synthesis
 
