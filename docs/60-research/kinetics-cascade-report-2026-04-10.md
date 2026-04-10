@@ -84,8 +84,9 @@ position (right).
 | Mean magnitude | 61.2 mg/dL | 70.4 mg/dL | +9.2 mg/dL |
 
 The cascade penalty per event is modest (+9% TAR, +2 min), but the volume is
-large: 15,520 cascade events × 2.0 min = **525 extra hours of TAR** from
-cascade dynamics alone.
+large: 15,520 cascade events × ~2.03 min = **525 extra hours of TAR** from
+cascade dynamics alone. (The per-event penalty rounds to 2.0 min for display
+but the unrounded value of 2.03 min drives the aggregate.)
 
 **TAR by position in chain**: Positions 0-1 have the highest TAR (24-25 min)
 because they include the initial rise/fall that started the cascade. Later
@@ -124,9 +125,10 @@ while isolated events rarely involve hypoglycemia.
    doesn't require patient behavior change — it requires better algorithms.
 
 3. **hypo_recovery → hypo_entry** (713h): Preventing double-dip hypos. This
-   transition occurs 520 times — once a hypo is rescued, 31% of the time
-   another hypo follows. This could be addressed by AID systems maintaining
-   reduced insulin delivery for longer after hypo recovery.
+   transition occurs 520 times (32.2% of the 1,613 hypo→recovery transitions).
+   Separately, EXP-1738 finds 31.3% of hypo-initiated *chains* contain a
+   second hypo. This could be addressed by AID systems maintaining reduced
+   insulin delivery for longer after hypo recovery.
 
 4. **rebound_rise → insulin_fall** (616h): After a rebound spike, the AID
    corrects aggressively, but this correction creates 574h of kinetics TAR.
@@ -233,7 +235,7 @@ not from therapy parameters.
 | Metric | Value |
 |--------|-------|
 | Total hypo-initiated chains | 1,017 |
-| With rebound spike | 12.4% |
+| With rebound or UAM spike | 12.4% |
 | With double-dip hypo | **31.3%** |
 | Reaching hyperglycemia (>180) | **61.2%** |
 | Mean nadir-to-peak range | **160.6 mg/dL** |
