@@ -190,7 +190,7 @@ The divergence is **clinically negligible**. Worst case at 400 mg/dL:
 | 18.0182 | 22.20 | < 0.01 mmol/L |
 | 18.02 | 22.20 | < 0.01 mmol/L |
 
-Maximum rounding difference: **0.1 mmol/L** (at extreme glucose values), which is within CGM sensor error margins (±20 mg/dL / ±1.1 mmol/L). No clinical risk, but it means that the same glucose value may display as e.g., "22.2" in one app and "22.2" in another, or occasionally "22.1" vs "22.2" due to rounding.
+Maximum rounding difference: **0.1 mmol/L** (at regularly spaced glucose values), which is within CGM sensor error margins (±20 mg/dL / ±1.1 mmol/L). No clinical risk, but it means that the same glucose value may display as "5.6" in oref0 (factor 18) and "5.5" in xDrip+ (factor 18.0182) for 100 mg/dL, due to rounding at the 0.05 boundary. This 0.1 mmol/L divergence recurs approximately every 9 mg/dL across the clinical range.
 
 ---
 

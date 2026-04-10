@@ -12,8 +12,8 @@ This batch projects the outcomes of applying the therapy recommendations from EX
 
 **Key projections**:
 - **51% of hypoglycemic events are preventable** (population average) through settings correction
-- **9/11 patients projected to meet TIR ≥70%** after correction (vs 4/11 currently)
-- **Oscillation cycles reduced 70–87%** in the two most oscillating patients (a, f)
+- **10/11 patients projected to meet TIR ≥70%** after correction (vs 5/11 currently)
+- **Oscillation cycles reduced 84–87%** in the two most oscillating patients (a, f)
 - **Graduated 4-step transition** recommended for 7/11 patients (basal first, then ISF)
 - **Patient j**: no changes needed — settings already well-calibrated
 
@@ -126,13 +126,13 @@ Classifies each hypoglycemic event by cause and projects which are preventable.
 | a | 0.77/day | 0.28/day | **64%** | Basal (58%) |
 | b | 0.37/day | 0.33/day | 11% | Meal (39%) |
 | c | 1.27/day | 0.57/day | **55%** | Bolus (36%) |
-| d | 0.28/day | 0.18/day | 37% | Bolus (39%) |
+| d | 0.28/day | 0.18/day | 36% | Bolus (39%) |
 | e | 0.61/day | 0.28/day | **54%** | Bolus (35%) |
 | f | 0.81/day | 0.26/day | **68%** | Basal (64%) |
-| g | 1.11/day | 0.55/day | **51%** | Meal (31%) |
+| g | 1.11/day | 0.55/day | **50%** | Meal (31%) |
 | h | 0.71/day | 0.44/day | 38% | Meal (36%) |
 | i | 1.92/day | 0.66/day | **66%** | Bolus (54%) |
-| j | 0.56/day | 0.49/day | 12% | Meal (44%) |
+| j | 0.56/day | 0.49/day | 13% | Meal (44%) |
 | k | 1.28/day | 0.75/day | **41%** | Bolus (46%) |
 
 **Population average: 51% of hypos are preventable** through settings correction.
@@ -148,7 +148,7 @@ Three prevention mechanisms:
 
 ### EXP-2246: Time-in-Range Improvement Projection
 
-Projects TIR improvement from combined settings correction.
+Projects TIR improvement from combined settings correction, including cascade effects from oscillation reduction (EXP-2244) and hypo prevention (EXP-2245) that are not captured by the direct replay in EXP-2243. This explains the larger gains — e.g., patient a gains +14.8% TIR primarily from eliminating 84% of oscillation cycles.
 
 | Patient | Current TIR | Projected TIR | Gain | Meets ≥70%? |
 |---------|-------------|---------------|------|-------------|
@@ -164,7 +164,7 @@ Projects TIR improvement from combined settings correction.
 | j | 81.0% | 81.3% | +0.3% | ✅ Yes |
 | k | 95.1% | 100.0% | +4.9% | ✅ Yes |
 
-**9/11 patients projected to meet the TIR ≥70% clinical guideline** after correction (vs 4/11 currently). Patient b is the only non-trivial miss — their ISF is already well-calibrated, so the improvement is mainly from basal correction alone.
+**10/11 patients projected to meet the TIR ≥70% clinical guideline** after correction (vs 5/11 currently). Patient b is the only miss — their ISF is already well-calibrated, so the improvement is mainly from basal correction alone.
 
 **Average projected TIR gain: +9.2%** across the population.
 
@@ -222,7 +222,7 @@ Designs per-patient stepwise transition plans with safety gates.
 3. **Week 3**: Raise ISF to 50% toward target. Safety gate: no correction drops glucose below 70.
 4. **Week 4**: Apply full ISF correction. Safety gate: TIR ≥70% and TBR <4%.
 
-Patients with ISF ratio <1.3 (a, b, f, j) only need 1–2 steps (basal only).
+Patients with ISF ratio ≤1.4 (a, b, f, j) only need 1–2 steps (basal only).
 
 ![Graduated Transition](figures/sim-fig08-graduated-transition.png)
 
@@ -234,12 +234,12 @@ If all recommendations were applied across the cohort:
 
 | Metric | Current | Projected | Change |
 |--------|---------|-----------|--------|
-| Mean TIR | 71.4% | 80.9% | **+9.5%** |
-| Patients meeting TIR ≥70% | 4/11 (36%) | 9/11 (82%) | **+5 patients** |
-| Mean TBR | 3.6% | 2.0% | **−1.6%** |
+| Mean TIR | 70.9% | 80.0% | **+9.1%** |
+| Patients meeting TIR ≥70% | 5/11 (45%) | 10/11 (91%) | **+5 patients** |
+| Mean TBR | 3.6% | 2.4% | **−1.2%** |
 | Patients meeting TBR <4% | 7/11 (64%) | 10/11 (91%) | **+3 patients** |
-| Mean hypo rate | 0.93/day | 0.44/day | **−53%** |
-| Mean oscillation cycles | 6.7/day | 1.6/day | **−76%** |
+| Mean hypo rate | 0.88/day | 0.44/day | **−50%** |
+| Mean oscillation cycles | 6.7/day | 1.8/day | **−73%** |
 
 ### Why Conservative Transition?
 
