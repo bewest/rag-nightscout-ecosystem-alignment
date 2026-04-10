@@ -151,6 +151,50 @@ class CompensationType(str, Enum):
     OVER_INSULINIZED = "over_insulinized"         # high TBR + negative flux
 
 
+class ExcursionType(str, Enum):
+    """10-type excursion taxonomy (EXP-1691, validated on 11 patients).
+
+    Classifies every glucose excursion (rise or fall ≥15 mg/dL) by its
+    metabolic cause. Enables cascade chain detection and targeted
+    intervention planning.
+    """
+    HYPO_ENTRY = "hypo_entry"           # Fall crossing below 70 mg/dL
+    HYPO_RECOVERY = "hypo_recovery"     # Rise from below 70 back to range
+    MEAL_RISE = "meal_rise"             # Rise with carbs within ±30 min
+    CORRECTION_DROP = "correction_drop" # Fall after correction bolus
+    UAM_RISE = "uam_rise"              # Rise without carbs (unannounced meal)
+    REBOUND_RISE = "rebound_rise"      # Rise following hypo recovery or correction
+    DRIFT_RISE = "drift_rise"          # Slow rise without clear trigger
+    INSULIN_FALL = "insulin_fall"      # Fall driven by active insulin
+    POST_RISE_FALL = "post_rise_fall"  # Natural return after meal/UAM peak
+    NATURAL_FALL = "natural_fall"      # Fall without insulin (gravity/decay)
+
+
+class RescuePhenotype(str, Enum):
+    """Rescue carb behavior classification (EXP-1766).
+
+    Dominant phenotype is under-rescuer (6/11 patients). Only 22% of
+    rescue carbs are logged. This informs algorithm compensation
+    strategy rather than behavior change recommendations.
+    """
+    UNDER_RESCUER = "under_rescuer"       # Insufficient rescue, prolonged hypo
+    APPROPRIATE_RESCUER = "appropriate"    # ~15g rescue, returns to range
+    OVER_RESCUER = "over_rescuer"         # Excess rescue, rebound hyperglycemia
+
+
+class OptimizationPhase(str, Enum):
+    """Three-phase optimization sequence (EXP-1765).
+
+    Research finding: 9/11 patients need variability reduction BEFORE
+    centering. Cross-patient models always fail (LOPO R²=-0.01).
+
+    Phase order matters — centering before CV reduction hurts 7/11 patients.
+    """
+    REDUCE_VARIABILITY = "reduce_variability"  # CV > 28%: cascade breaking, etc.
+    CENTER = "center"                          # CV ≤ 28%: adjust ISF, CR, basal
+    PERSONALIZE = "personalize"                # Calibrated: per-patient tuning
+
+
 # ── Input Data ────────────────────────────────────────────────────────
 
 MMOL_TO_MGDL = 18.0182

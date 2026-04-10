@@ -25,7 +25,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 
 from .types import (
-    BasalAssessment, ClinicalReport, MetabolicState,
+    BasalAssessment, ClinicalReport, MetabolicState, OptimizationPhase,
     PatientProfile, SettingsParameter, SettingsRecommendation,
     PeriodMetrics, PatternProfile,
 )
@@ -57,13 +57,20 @@ def simulate_tir_with_settings(glucose: np.ndarray,
                                basal_multiplier: float = 1.0,
                                hour_range: Optional[Tuple[float, float]] = None,
                                ) -> Tuple[float, float]:
-    """Simulate TIR under modified settings using physics forward model.
+    """Simulate TIR under modified settings using perturbation model.
 
-    Uses the metabolic flux decomposition to predict how glucose would
-    behave if insulin delivery (demand) or carb sensitivity (supply)
-    were different.
+    Uses a perturbation approach rather than full forward simulation to
+    avoid error accumulation over long time series. The key insight is
+    that changing a setting creates a per-step delta on glucose; we
+    apply that delta to the ACTUAL glucose trace with exponential decay
+    to account for the body's homeostatic response.
 
-    Physics: dBG/dt ≈ supply/cr_mult - demand×isf_mult×basal_mult + decay
+    For ISF changes: the insulin effect per step changes by (isf_mult - 1)
+    For CR changes: carb absorption changes by (1/cr_mult - 1)
+    For basal changes: basal insulin effect changes by (basal_mult - 1)
+
+    The perturbation decays with a half-life of ~2 hours (24 steps)
+    reflecting renal clearance and hepatic glucose production feedback.
 
     Args:
         glucose: (N,) current glucose trajectory.
@@ -92,27 +99,31 @@ def simulate_tir_with_settings(glucose: np.ndarray,
     else:
         mask = np.ones(N, dtype=bool)
 
-    # Simulate modified glucose trajectory
-    sim_bg = np.zeros(N)
-    sim_bg[0] = bg[0]
+    # Perturbation model: compute cumulative delta from settings change.
+    # Each timestep where mask applies gets a perturbation from the
+    # difference in metabolic flux. The perturbation decays exponentially
+    # with half-life ~2h (homeostatic feedback).
+    DECAY_HALF_LIFE_STEPS = 24  # 2 hours at 5-min intervals
+    decay_factor = np.exp(-np.log(2) / DECAY_HALF_LIFE_STEPS)
 
+    delta = np.zeros(N)
     for t in range(1, N):
-        s = supply[t - 1]
-        d = demand[t - 1]
+        # Carry forward decayed perturbation
+        delta[t] = delta[t - 1] * decay_factor
 
         if mask[t]:
-            # Apply modified settings
-            # CR decrease → more insulin per carb → more demand
-            effective_supply = s
-            effective_demand = d * isf_multiplier * basal_multiplier / max(cr_multiplier, 0.1)
-        else:
-            effective_supply = s
-            effective_demand = d
+            s = float(supply[t - 1]) if np.isfinite(supply[t - 1]) else 0.0
+            d = float(demand[t - 1]) if np.isfinite(demand[t - 1]) else 0.0
 
-        decay = (DECAY_TARGET - sim_bg[t - 1]) * DECAY_RATE
-        sim_bg[t] = sim_bg[t - 1] + effective_supply - effective_demand + decay
-        # Clamp to physiological range
-        sim_bg[t] = np.clip(sim_bg[t], 40.0, 400.0)
+            # ISF change: more sensitive → each unit of demand drops BG more
+            demand_delta = d * (isf_multiplier * basal_multiplier - 1.0)
+            # CR change: higher CR → less glucose rise per carb
+            supply_delta = s * (1.0 / max(cr_multiplier, 0.1) - 1.0)
+            # Net perturbation: supply goes up, demand goes up → BG goes down
+            delta[t] += supply_delta - demand_delta
+
+    # Apply perturbation to actual glucose
+    sim_bg = np.clip(bg + delta, 40.0, 400.0)
 
     # Compute TIR for both
     valid_orig = bg[np.isfinite(bg)]
@@ -555,3 +566,81 @@ def generate_settings_advice(glucose: np.ndarray,
     # Sort by predicted impact
     recs.sort(key=lambda r: abs(r.predicted_tir_delta), reverse=True)
     return recs
+
+
+# ── Optimization Sequence (EXP-1765) ─────────────────────────────────
+
+# CV threshold that determines optimization phase
+_CV_THRESHOLD = 28.0  # %
+
+
+def determine_optimization_phase(glucose: np.ndarray) -> OptimizationPhase:
+    """Determine which optimization phase a patient needs (EXP-1765).
+
+    Three-phase sequence (order matters — 7/11 patients harmed by wrong order):
+    1. REDUCE_VARIABILITY (CV > 28%): break cascades, reduce overnight swings
+    2. CENTER (CV ≤ 28%): adjust ISF, CR, basal rates to center glucose
+    3. PERSONALIZE: per-patient tuning of all parameters
+
+    Research finding: 9/11 patients need variability reduction BEFORE centering.
+    Cross-patient models always fail (LOPO R² = -0.01). Combined ceiling: +17.6% TIR.
+
+    Args:
+        glucose: (N,) glucose values (mg/dL).
+
+    Returns:
+        OptimizationPhase indicating what to focus on.
+    """
+    valid = glucose[np.isfinite(glucose)]
+    if len(valid) < 288:  # < 1 day
+        return OptimizationPhase.REDUCE_VARIABILITY
+
+    cv = float(np.std(valid) / np.mean(valid) * 100.0)
+    tir = float(np.mean((valid >= 70) & (valid <= 180)))
+
+    if cv > _CV_THRESHOLD:
+        return OptimizationPhase.REDUCE_VARIABILITY
+    elif tir < 0.70:
+        return OptimizationPhase.CENTER
+    else:
+        return OptimizationPhase.PERSONALIZE
+
+
+def prioritize_recommendations(recs: List[SettingsRecommendation],
+                               phase: OptimizationPhase,
+                               ) -> List[SettingsRecommendation]:
+    """Re-order recommendations based on optimization phase (EXP-1765).
+
+    In REDUCE_VARIABILITY phase, prioritize basal adjustments and cascade-
+    breaking changes. In CENTER phase, prioritize ISF and CR. In PERSONALIZE,
+    keep impact-sorted order.
+
+    Args:
+        recs: existing recommendations sorted by predicted TIR delta.
+        phase: current optimization phase.
+
+    Returns:
+        Re-prioritized recommendations list.
+    """
+    if not recs or phase == OptimizationPhase.PERSONALIZE:
+        return recs
+
+    phase_priority = {
+        OptimizationPhase.REDUCE_VARIABILITY: {
+            SettingsParameter.BASAL: 0,
+            SettingsParameter.ISF: 2,
+            SettingsParameter.CR: 1,
+        },
+        OptimizationPhase.CENTER: {
+            SettingsParameter.ISF: 0,
+            SettingsParameter.CR: 1,
+            SettingsParameter.BASAL: 2,
+        },
+    }
+    priority_map = phase_priority.get(phase, {})
+
+    def sort_key(rec: SettingsRecommendation) -> Tuple[int, float]:
+        p = priority_map.get(rec.parameter, 99)
+        return (p, -abs(rec.predicted_tir_delta))
+
+    return sorted(recs, key=sort_key)

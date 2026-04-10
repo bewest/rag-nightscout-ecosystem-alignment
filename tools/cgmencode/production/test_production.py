@@ -725,8 +725,8 @@ class TestMealPredictor(unittest.TestCase):
         return model, success, history, patient, metabolic
 
     def test_feature_count(self):
-        """16 features in dual-mode model."""
-        self.assertEqual(len(self.ML_FEATURE_NAMES), 16)
+        """22 features in dual-mode model (EXP-1774: 4-harmonic upgrade from 16)."""
+        self.assertEqual(len(self.ML_FEATURE_NAMES), 22)
 
     def test_train_returns_bool(self):
         _, success, _, _, _ = self._train_model()

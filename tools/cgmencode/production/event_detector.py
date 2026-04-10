@@ -2,19 +2,20 @@
 event_detector.py — XGBoost risk classification and event detection.
 
 Research basis: EXP-682 (adaptive spike thresholds), EXP-685 (AID-aware rules),
-               EXP-692 (hypo prediction), event_classifier.py (XGBoost training)
+               EXP-692 (hypo prediction), event_classifier.py (XGBoost training),
+               EXP-1691 (excursion taxonomy), EXP-1774 (4-harmonic temporal)
 
 SOTA metrics (validated):
   - 2h HIGH AUC: 0.907 (combined_43 feature set)
   - 2h HYPO AUC: 0.860
   - Weighted F1: 0.710
 
-Feature set (43 features = combined_43):
+Feature set (49 features = combined_49):
   - BG statistics: current, Δ5, Δ15, Δ30, mean/std at 30/60/120 windows
   - Metabolic flux: supply, demand, net, ratio, product, hepatic
   - Insulin: IOB, recent bolus, basal deviation
   - Carbs: COB, recent carbs, time since meal
-  - Temporal: hour sin/cos, time since last event
+  - Temporal: 4-harmonic sin/cos (24h+12h+8h+6h), time since last event
   - Physics: residual magnitude, flux imbalance
 """
 
@@ -38,7 +39,7 @@ DEFAULT_XGB_PARAMS = {
     'use_label_encoder': False,
 }
 
-# Feature names for the combined_43 set
+# Feature names for the combined_49 set (upgraded from combined_43 with 4-harmonic)
 FEATURE_NAMES = [
     'bg_current', 'bg_delta_5', 'bg_delta_15', 'bg_delta_30',
     'bg_mean_30', 'bg_std_30', 'bg_mean_60', 'bg_std_60',
@@ -49,7 +50,10 @@ FEATURE_NAMES = [
     'carbs_recent_60', 'time_since_meal',
     'supply', 'demand', 'net_flux', 'ratio', 'product', 'hepatic',
     'residual_mag', 'flux_imbalance',
-    'hour_sin', 'hour_cos',
+    'hour_sin_24', 'hour_cos_24',
+    'hour_sin_12', 'hour_cos_12',     # 12h harmonic (EXP-1774)
+    'hour_sin_8', 'hour_cos_8',       # 8h harmonic
+    'hour_sin_6', 'hour_cos_6',       # 6h harmonic
     'bg_acceleration', 'bg_jerk',
     'supply_demand_cross', 'residual_trend_30',
     'iob_x_bg', 'cob_x_bg', 'net_flux_x_delta',
@@ -66,10 +70,13 @@ def build_features(glucose: np.ndarray,
                    basal_rate: Optional[np.ndarray] = None,
                    hours: Optional[np.ndarray] = None,
                    ) -> np.ndarray:
-    """Build combined_43 feature array for event detection.
+    """Build combined_49 feature array for event detection.
 
     Computes rolling statistics and metabolic features at each timepoint.
     Missing inputs are zero-filled (graceful degradation).
+
+    Upgraded from combined_43: 4-harmonic temporal features (EXP-1774:
+    +77% R², all 11 patients improve) replace single sin/cos pair.
 
     Args:
         glucose: (N,) cleaned glucose values (mg/dL).
@@ -78,11 +85,12 @@ def build_features(glucose: np.ndarray,
         hours: (N,) fractional hour of day.
 
     Returns:
-        (N, 43) feature array.
+        (N, 49) feature array.
     """
     N = len(glucose)
+    n_features = len(FEATURE_NAMES)  # 49
     bg = np.nan_to_num(glucose.astype(np.float64), nan=120.0)
-    feat = np.zeros((N, 43), dtype=np.float32)
+    feat = np.zeros((N, n_features), dtype=np.float32)
 
     # Zero-fill optional inputs
     _iob = np.nan_to_num(iob, nan=0.0) if iob is not None else np.zeros(N)
@@ -144,33 +152,34 @@ def build_features(glucose: np.ndarray,
         feat[:, 29] = np.abs(metabolic.residual)                   # residual_mag
         feat[:, 30] = metabolic.supply - metabolic.demand - metabolic.hepatic  # flux_imbalance
 
-    # ── Temporal features ─────────────────────────────────────────
-    feat[:, 31] = np.sin(2.0 * np.pi * _hours / 24.0)  # hour_sin
-    feat[:, 32] = np.cos(2.0 * np.pi * _hours / 24.0)  # hour_cos
+    # ── Temporal features (4-harmonic, EXP-1774) ────────────────────
+    from .pattern_analyzer import compute_harmonic_features
+    harmonic = compute_harmonic_features(_hours)  # (N, 8)
+    feat[:, 31:39] = harmonic  # sin/cos for 24h, 12h, 8h, 6h
 
     # ── Derived features ──────────────────────────────────────────
     # Acceleration (2nd derivative of BG)
-    feat[2:, 33] = feat[2:, 1] - feat[1:-1, 1]           # bg_acceleration
-    feat[3:, 34] = feat[3:, 33] - feat[2:-1, 33]         # bg_jerk
+    feat[2:, 39] = feat[2:, 1] - feat[1:-1, 1]           # bg_acceleration
+    feat[3:, 40] = feat[3:, 39] - feat[2:-1, 39]         # bg_jerk
 
     # Cross features
     if metabolic is not None:
-        feat[:, 35] = metabolic.supply * metabolic.demand  # supply_demand_cross
+        feat[:, 41] = metabolic.supply * metabolic.demand  # supply_demand_cross
         for i in range(N):
             w = metabolic.residual[max(0, i-6):i+1]
-            feat[i, 36] = np.mean(w) if len(w) > 0 else 0  # residual_trend_30
+            feat[i, 42] = np.mean(w) if len(w) > 0 else 0  # residual_trend_30
 
-    feat[:, 37] = _iob * bg / 10000.0                     # iob_x_bg
-    feat[:, 38] = _cob * bg / 10000.0                     # cob_x_bg
-    feat[:, 39] = feat[:, 25] * feat[:, 1]                # net_flux_x_delta
+    feat[:, 43] = _iob * bg / 10000.0                     # iob_x_bg
+    feat[:, 44] = _cob * bg / 10000.0                     # cob_x_bg
+    feat[:, 45] = feat[:, 25] * feat[:, 1]                # net_flux_x_delta
 
     # TIR metrics in recent window
     for i in range(N):
         w = bg[max(0, i-12):i+1]
         if len(w) > 0:
-            feat[i, 40] = np.mean((w >= 70) & (w <= 180))  # tir_recent_60
-            feat[i, 41] = np.mean(w < 70)                  # tbr_recent_60
-            feat[i, 42] = np.mean(w > 180)                 # tar_recent_60
+            feat[i, 46] = np.mean((w >= 70) & (w <= 180))  # tir_recent_60
+            feat[i, 47] = np.mean(w < 70)                  # tbr_recent_60
+            feat[i, 48] = np.mean(w > 180)                 # tar_recent_60
 
     return feat
 
@@ -216,5 +225,5 @@ def classify_risk_simple(glucose: np.ndarray,
         current_event=EventType.NONE,
         event_probabilities={'none': 1.0 - high_prob - hypo_prob,
                              'high': high_prob, 'hypo': hypo_prob},
-        features_used=43 if metabolic is not None else 15,
+        features_used=len(FEATURE_NAMES) if metabolic is not None else 15,
     )

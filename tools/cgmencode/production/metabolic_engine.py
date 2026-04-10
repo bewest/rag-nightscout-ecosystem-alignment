@@ -60,8 +60,15 @@ def _compute_hepatic_production(iob: np.ndarray,
     suppression = iob_safe ** _HILL_N / (iob_safe ** _HILL_N + _HILL_K ** _HILL_N)
     egp_insulin = base_rate * (1.0 - suppression)
 
-    # Circadian modulation: peaks ~5 AM (dawn phenomenon)
-    circadian = 1.0 + _CIRCADIAN_AMP * np.sin(2.0 * np.pi * (hours - 5.0) / 24.0)
+    # 4-harmonic circadian modulation (EXP-1774: +77% R², all 11 patients improve)
+    # Periods: 24h (dawn phenomenon), 12h (post-prandial), 8h (tri-daily), 6h (quad)
+    # Phase-shifted so 24h component peaks ~5 AM (dawn phenomenon)
+    _HARMONIC_PERIODS = [24.0, 12.0, 8.0, 6.0]
+    _HARMONIC_AMPS = [_CIRCADIAN_AMP, _CIRCADIAN_AMP * 0.4,
+                      _CIRCADIAN_AMP * 0.2, _CIRCADIAN_AMP * 0.1]
+    circadian = np.ones_like(hours, dtype=np.float64)
+    for amp, period in zip(_HARMONIC_AMPS, _HARMONIC_PERIODS):
+        circadian += amp * np.sin(2.0 * np.pi * (hours - 5.0) / period)
 
     return np.maximum(egp_insulin * circadian, 0.0)
 

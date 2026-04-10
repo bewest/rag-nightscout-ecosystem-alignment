@@ -53,10 +53,14 @@ ALERT_SUPPRESSION_MIN = 120.0  # Minimum minutes between eating-soon alerts
 STEPS_PER_DAY = 288          # 5-min intervals per day
 GLUCOSE_SCALE = 400.0        # Glucose normalization divisor
 
-# 16-feature union model (EXP-1129)
+# 22-feature union model (EXP-1129 + EXP-1774 4-harmonic upgrade)
 ML_FEATURE_NAMES = [
-    # Time features (6)
-    'hour_sin', 'hour_cos', 'min_since_meal', 'meals_today',
+    # Time features (12): 4-harmonic sin/cos + min_since_meal + meals_today + dow + hist
+    'hour_sin_24', 'hour_cos_24',
+    'hour_sin_12', 'hour_cos_12',     # 12h harmonic (EXP-1774)
+    'hour_sin_8', 'hour_cos_8',       # 8h harmonic
+    'hour_sin_6', 'hour_cos_6',       # 6h harmonic
+    'min_since_meal', 'meals_today',
     'dow', 'hist_meal_prob',
     # Instantaneous glucose (3)
     'gluc_trend_15', 'gluc_trend_30', 'glucose',
@@ -68,11 +72,11 @@ ML_FEATURE_NAMES = [
 ]
 
 # Feature index groups
-_TIME_IDX = list(range(0, 6))
-_GLUCOSE_IDX = list(range(6, 9))
-_WINDOW_IDX = list(range(9, 15))
-_PROACTIVE_IDX = list(range(0, 15))   # all except net_flux
-_REACTIVE_IDX = list(range(0, 16))    # all features
+_TIME_IDX = list(range(0, 12))
+_GLUCOSE_IDX = list(range(12, 15))
+_WINDOW_IDX = list(range(15, 21))
+_PROACTIVE_IDX = list(range(0, 21))   # all except net_flux
+_REACTIVE_IDX = list(range(0, 22))    # all features
 
 
 def build_timing_models(meal_history: MealHistory,
@@ -327,42 +331,48 @@ class MealMLModel:
                         net_flux: np.ndarray, supply: np.ndarray,
                         prev_meal_dist: np.ndarray,
                         meals_today: np.ndarray) -> np.ndarray:
-        """Build 16-feature matrix for all timesteps."""
-        features = np.zeros((N, 16))
-        for i in range(N):
-            hour = (i % STEPS_PER_DAY) * 5.0 / 60.0
+        """Build 22-feature matrix for all timesteps (4-harmonic upgrade)."""
+        n_feat = len(ML_FEATURE_NAMES)  # 22
+        features = np.zeros((N, n_feat))
+        from .pattern_analyzer import compute_harmonic_features
 
-            # Time features (6)
-            features[i, 0] = np.sin(2 * np.pi * hour / 24)
-            features[i, 1] = np.cos(2 * np.pi * hour / 24)
-            features[i, 2] = prev_meal_dist[i]
-            features[i, 3] = meals_today[i]
-            features[i, 4] = (i // STEPS_PER_DAY) % 7
-            features[i, 5] = self.hour_hist[int(hour) % 24]
+        # Pre-compute 4-harmonic features for all timesteps
+        step_hours = np.array([(i % STEPS_PER_DAY) * 5.0 / 60.0 for i in range(N)])
+        harmonics = compute_harmonic_features(step_hours)  # (N, 8)
+
+        for i in range(N):
+            hour = step_hours[i]
+
+            # Time features: 4-harmonic (8) + 4 others = 12
+            features[i, 0:8] = harmonics[i]           # sin/cos for 24,12,8,6h
+            features[i, 8] = prev_meal_dist[i]        # min_since_meal
+            features[i, 9] = meals_today[i]            # meals_today
+            features[i, 10] = (i // STEPS_PER_DAY) % 7  # dow
+            features[i, 11] = self.hour_hist[int(hour) % 24]  # hist_meal_prob
 
             # Instantaneous glucose (3)
             if i >= 3:
-                features[i, 6] = glucose[i] - glucose[i - 3]  # trend_15
+                features[i, 12] = glucose[i] - glucose[i - 3]  # trend_15
             if i >= 6:
-                features[i, 7] = glucose[i] - glucose[i - 6]  # trend_30
-            features[i, 8] = glucose[i] / GLUCOSE_SCALE
+                features[i, 13] = glucose[i] - glucose[i - 6]  # trend_30
+            features[i, 14] = glucose[i] / GLUCOSE_SCALE
 
             # Pre-meal window features (6) — 60 min lookback
             window_start = max(0, i - 12)
             gluc_window = np.nan_to_num(
                 glucose[window_start:i + 1], nan=0.0)
             if len(gluc_window) >= 3:
-                features[i, 9] = np.mean(gluc_window) / GLUCOSE_SCALE
-                features[i, 10] = np.std(gluc_window)
+                features[i, 15] = np.mean(gluc_window) / GLUCOSE_SCALE
+                features[i, 16] = np.std(gluc_window)
                 try:
                     coeffs = np.polyfit(
                         np.arange(len(gluc_window)), gluc_window, 1)
-                    features[i, 11] = (coeffs[0]
+                    features[i, 17] = (coeffs[0]
                                        if np.isfinite(coeffs[0]) else 0.0)
                 except (np.linalg.LinAlgError, ValueError):
-                    features[i, 11] = 0.0
-                std_val = max(features[i, 10], 0.1)
-                features[i, 12] = min(1.0 / std_val, 100.0)  # flatness
+                    features[i, 17] = 0.0
+                std_val = max(features[i, 16], 0.1)
+                features[i, 18] = min(1.0 / std_val, 100.0)  # flatness
 
                 # Fasting duration
                 mean_g = np.mean(np.nan_to_num(
@@ -372,15 +382,15 @@ class MealMLModel:
                     if not np.isnan(glucose[j]) and glucose[j] > mean_g + 15:
                         break
                     fasting += 1
-                features[i, 13] = fasting * 5.0 / 60.0  # hours
+                features[i, 19] = fasting * 5.0 / 60.0  # hours
 
                 # IOB proxy: sum of supply in window
                 sup_window = supply[window_start:i + 1]
-                features[i, 14] = np.sum(
+                features[i, 20] = np.sum(
                     np.nan_to_num(sup_window, nan=0.0))
 
             # Net flux (reactive feature)
-            features[i, 15] = net_flux[i] if i < len(net_flux) else 0
+            features[i, 21] = net_flux[i] if i < len(net_flux) else 0
 
         return features
 
@@ -446,24 +456,32 @@ class MealMLModel:
 
         h_idx = int(hour) % 24
 
-        # Full 16-feature vector
+        # Full 22-feature vector (4-harmonic upgrade)
+        from .pattern_analyzer import compute_harmonic_features
+        harmonics = compute_harmonic_features(np.array([hour]))  # (1, 8)
         feat = np.array([[
-            np.sin(2 * np.pi * hour / 24),    # 0
-            np.cos(2 * np.pi * hour / 24),     # 1
-            minutes_since_last_meal,           # 2
-            meals_today_count,                 # 3
-            day_index % 7,                     # 4
-            self.hour_hist[h_idx],             # 5
-            glucose_current - glucose_15min_ago,   # 6
-            glucose_current - glucose_30min_ago,   # 7
-            glucose_current / GLUCOSE_SCALE,       # 8
-            w_mean,                            # 9
-            w_std,                             # 10
-            w_slope,                           # 11
-            w_flat,                            # 12
-            fasting_hours,                     # 13
-            iob_proxy,                         # 14
-            net_flux_current,                  # 15
+            harmonics[0, 0],                       # 0: sin_24
+            harmonics[0, 1],                       # 1: cos_24
+            harmonics[0, 2],                       # 2: sin_12
+            harmonics[0, 3],                       # 3: cos_12
+            harmonics[0, 4],                       # 4: sin_8
+            harmonics[0, 5],                       # 5: cos_8
+            harmonics[0, 6],                       # 6: sin_6
+            harmonics[0, 7],                       # 7: cos_6
+            minutes_since_last_meal,               # 8
+            meals_today_count,                     # 9
+            day_index % 7,                         # 10
+            self.hour_hist[h_idx],                 # 11
+            glucose_current - glucose_15min_ago,   # 12
+            glucose_current - glucose_30min_ago,   # 13
+            glucose_current / GLUCOSE_SCALE,       # 14
+            w_mean,                                # 15
+            w_std,                                 # 16
+            w_slope,                               # 17
+            w_flat,                                # 18
+            fasting_hours,                         # 19
+            iob_proxy,                             # 20
+            net_flux_current,                      # 21
         ]])
         feat = np.nan_to_num(feat, nan=0.0, posinf=0.0, neginf=0.0)
 

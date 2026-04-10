@@ -905,3 +905,78 @@ def generate_clinical_report(glucose: np.ndarray,
         recommendations=recommendations,
         overnight_tir=overnight_tir,
     )
+
+
+# ── Three Ceilings Framework (EXP-1731–1738) ─────────────────────────
+
+def compute_three_ceilings(glucose: np.ndarray,
+                           metabolic: Optional[MetabolicState] = None,
+                           ) -> dict:
+    """Compute three performance ceilings that bound achievable TIR (EXP-1731).
+
+    Three independent ceilings on time-above-range (TAR) improvement:
+
+    1. **Kinetics ceiling**: TAR that is unavoidable given insulin pharmacokinetics.
+       Even with perfect dosing, insulin takes 15-90 min to act. Research finding:
+       53.9% of TAR is kinetics-unavoidable (EXP-1731).
+
+    2. **Information ceiling**: TAR reducible with perfect CGM data but current
+       algorithms. Limited by prediction horizon and sensor lag.
+
+    3. **Algorithm ceiling**: TAR reducible with perfect algorithms but current
+       data. Combined optimization ceiling: +17.6% TIR (EXP-1765).
+
+    The combined ceiling = min(kinetics, information, algorithm).
+    Anything above the ceiling requires fundamental changes (faster insulin,
+    better sensors, or structural algorithm redesign).
+
+    Args:
+        glucose: (N,) glucose values (mg/dL).
+        metabolic: MetabolicState for flux analysis.
+
+    Returns:
+        Dict with ceiling values, achievable TIR, and headroom.
+    """
+    valid = glucose[np.isfinite(glucose)]
+    if len(valid) < 288:
+        return {
+            'kinetics_unavoidable_tar_frac': 0.539,
+            'current_tar': 0.0,
+            'achievable_tar_reduction': 0.0,
+            'combined_ceiling_tir_gain': 0.176,
+            'headroom': 0.0,
+        }
+
+    current_tir = float(np.mean((valid >= 70) & (valid <= 180)))
+    current_tar = float(np.mean(valid > 180))
+
+    # Kinetics ceiling (EXP-1731): 53.9% of TAR is unavoidable
+    kinetics_unavoidable_frac = 0.539
+    achievable_tar_reduction = current_tar * (1.0 - kinetics_unavoidable_frac)
+
+    # Algorithm ceiling (EXP-1765): +17.6% TIR maximum from settings optimization
+    combined_ceiling_tir_gain = 0.176
+
+    # Actual headroom: min of what kinetics allows and what algorithms can deliver
+    headroom = min(achievable_tar_reduction, combined_ceiling_tir_gain)
+
+    # If metabolic data available, estimate information ceiling from residual
+    info_ceiling = None
+    if metabolic is not None:
+        # High residual variance = information gap (sensor noise, unannounced meals)
+        res_std = float(np.nanstd(metabolic.residual))
+        # Empirical: each mg/dL/step of residual std costs ~2% TIR
+        info_loss = min(res_std * 0.02, 0.20)
+        info_ceiling = headroom * (1.0 - info_loss)
+        headroom = min(headroom, info_ceiling)
+
+    return {
+        'kinetics_unavoidable_tar_frac': kinetics_unavoidable_frac,
+        'current_tir': current_tir,
+        'current_tar': current_tar,
+        'achievable_tar_reduction': achievable_tar_reduction,
+        'combined_ceiling_tir_gain': combined_ceiling_tir_gain,
+        'information_ceiling': info_ceiling,
+        'headroom': headroom,
+        'theoretical_best_tir': min(1.0, current_tir + headroom),
+    }

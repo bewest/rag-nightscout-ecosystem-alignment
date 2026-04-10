@@ -25,7 +25,7 @@ from typing import List, Optional
 
 import numpy as np
 
-from .types import HypoAlert, MetabolicState
+from .types import HypoAlert, MetabolicState, RescuePhenotype
 
 
 # Default alert threshold (from EXP-695)
@@ -35,6 +35,10 @@ CONSERVATIVE_THRESHOLD = 0.20  # For hypo-unaware patients
 # Burst dedup parameters (EXP-1614: 93% of raw alerts are bursts)
 BURST_WINDOW_STEPS = 6     # 30 minutes — alerts within this window are one burst
 MIN_BURST_GAP_STEPS = 12   # 60 minutes — minimum gap between independent alerts
+
+# Counter-regulatory floor (EXP-1644: validated threshold for rescue detection)
+COUNTER_REG_FLOOR = 1.68   # mg/dL per 5-min step — hepatic glucose release rate
+                           # during counter-regulatory response to hypoglycemia
 
 # Multi-feature LR coefficients (from EXP-1613: AUC=0.90, PPV=0.47)
 LR_COEFFICIENTS = {
@@ -93,12 +97,22 @@ def predict_hypo(glucose: np.ndarray,
 
     # ── Factor 2: Supply-demand imbalance (physics boost) ─────────
     flux_signal = 0.0
+    counter_reg_active = False
     if metabolic is not None:
         recent_window = min(6, len(metabolic.net_flux))
         if recent_window > 0:
             recent_net = np.mean(metabolic.net_flux[-recent_window:])
             # Negative net flux = insulin winning = glucose dropping
             flux_signal = -recent_net  # positive = hypo risk
+
+        # Counter-regulatory detection (EXP-1644): if the residual exceeds
+        # the hepatic counter-regulatory floor while near hypo, the body is
+        # actively fighting the low — recovery is likely even without rescue carbs
+        if bg < 85 and len(metabolic.residual) > 4:
+            recent_residual = metabolic.residual[-4:]
+            max_residual = float(np.nanmax(recent_residual))
+            if max_residual > COUNTER_REG_FLOOR:
+                counter_reg_active = True
 
     # ── Factor 3: Acceleration (is descent speeding up?) ──────────
     acceleration = 0.0
@@ -129,6 +143,13 @@ def predict_hypo(glucose: np.ndarray,
         base_prob * flux_boost * accel_boost * proximity,
         0.0, 0.99
     ))
+
+    # Counter-regulatory damping (EXP-1644): when the body's hepatic
+    # counter-regulatory response is active, the probability of CONTINUED
+    # descent is lower — the liver is already releasing glucose to fight
+    # the low. This reduces false alerts during the recovery phase.
+    if counter_reg_active:
+        probability *= 0.5
 
     # ── Multi-feature quality score (EXP-1613: AUC=0.90) ─────────
     quality_score = score_alert_multi_feature(glucose, metabolic)
@@ -270,3 +291,93 @@ def score_alert_multi_feature(glucose: np.ndarray,
 
     score = 1.0 / (1.0 + np.exp(-logit))
     return float(np.clip(score, 0.0, 1.0))
+
+
+# ── Rescue Phenotype Classification (EXP-1766) ──────────────────────
+
+# Standard rescue dose: ~15g fast-acting carbs
+_STANDARD_RESCUE_G = 15.0
+# Thresholds for classification
+_UNDER_RESCUE_MAX_G = 8.0     # < 8g or no logged rescue
+_OVER_RESCUE_MIN_G = 25.0     # > 25g suggests over-rescuing
+
+
+def classify_rescue_phenotype(glucose: np.ndarray,
+                              carbs: np.ndarray,
+                              ) -> RescuePhenotype:
+    """Classify patient's rescue carb behavior (EXP-1766).
+
+    Analyzes hypo episodes and subsequent carb intake to determine if
+    the patient tends to under-rescue, appropriately rescue, or over-rescue.
+
+    Research finding: 6/11 patients are under-rescuers, only 22% of rescue
+    carbs are logged. Algorithm compensation is preferred over behavior change.
+
+    Args:
+        glucose: (N,) glucose values (mg/dL).
+        carbs: (N,) carb grams per 5-min step.
+
+    Returns:
+        RescuePhenotype classification.
+    """
+    bg = np.nan_to_num(glucose.astype(np.float64), nan=120.0)
+    c = np.nan_to_num(carbs.astype(np.float64), nan=0.0)
+    N = len(bg)
+
+    rescue_amounts = []
+    rebound_count = 0
+    prolonged_count = 0
+
+    i = 0
+    while i < N - 24:  # need 2h post-episode window
+        if bg[i] >= 70:
+            i += 1
+            continue
+
+        # Found hypo entry — look for nadir
+        nadir_idx = i
+        nadir_bg = bg[i]
+        j = i + 1
+        while j < min(i + 36, N):
+            if bg[j] < nadir_bg:
+                nadir_bg = bg[j]
+                nadir_idx = j
+            if bg[j] > 100:
+                break
+            j += 1
+
+        # Post-nadir window: 2 hours
+        post_end = min(N, nadir_idx + 24)
+        if post_end - nadir_idx < 6:
+            i = j + 12
+            continue
+
+        # Rescue carbs in post-nadir window
+        post_carbs = float(np.sum(c[nadir_idx:post_end]))
+        rescue_amounts.append(post_carbs)
+
+        # Check for rebound (glucose > 180 within 3h of nadir)
+        rebound_end = min(N, nadir_idx + 36)
+        if np.any(bg[nadir_idx:rebound_end] > 180):
+            rebound_count += 1
+
+        # Check for prolonged hypo (still < 70 after 30min)
+        check_idx = min(nadir_idx + 6, N - 1)
+        if bg[check_idx] < 70:
+            prolonged_count += 1
+
+        i = j + 12
+
+    if not rescue_amounts:
+        return RescuePhenotype.UNDER_RESCUER  # no episodes or no data
+
+    mean_rescue = float(np.mean(rescue_amounts))
+    total_episodes = len(rescue_amounts)
+    rebound_rate = rebound_count / max(total_episodes, 1)
+
+    if rebound_rate > 0.3 or mean_rescue > _OVER_RESCUE_MIN_G:
+        return RescuePhenotype.OVER_RESCUER
+    elif mean_rescue < _UNDER_RESCUE_MAX_G or prolonged_count / max(total_episodes, 1) > 0.4:
+        return RescuePhenotype.UNDER_RESCUER
+    else:
+        return RescuePhenotype.APPROPRIATE_RESCUER

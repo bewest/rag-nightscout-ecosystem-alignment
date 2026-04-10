@@ -14,11 +14,13 @@ Key findings:
 
 from __future__ import annotations
 
-from typing import List, Optional
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional
 
 import numpy as np
 
-from .types import CircadianFit, HarmonicFit, MetabolicState, PatternProfile, Phenotype
+from .types import (CircadianFit, ExcursionType, HarmonicFit, MetabolicState,
+                    PatternProfile, Phenotype)
 
 
 def fit_circadian(residuals: np.ndarray,
@@ -179,6 +181,327 @@ def fit_harmonic_circadian(glucose: np.ndarray,
         dominant_amplitude=amplitudes[max_idx],
         dominant_period=periods[max_idx],
     )
+
+
+# ── Excursion Detection & Cascade Analysis (EXP-1691) ────────────────
+
+STEPS_PER_HOUR = 12
+STEPS_PER_DAY = 288
+
+# Transitions that form metabolic cascades (EXP-1691: 62% participation)
+CASCADE_TRANSITIONS = {
+    ('hypo_entry', 'hypo_recovery'),
+    ('hypo_recovery', 'rebound_rise'),
+    ('hypo_recovery', 'uam_rise'),
+    ('hypo_recovery', 'hypo_entry'),
+    ('hypo_recovery', 'meal_rise'),
+    ('rebound_rise', 'insulin_fall'),
+    ('rebound_rise', 'post_rise_fall'),
+    ('rebound_rise', 'natural_fall'),
+    ('rebound_rise', 'correction_drop'),
+    ('insulin_fall', 'hypo_entry'),
+    ('post_rise_fall', 'hypo_entry'),
+    ('natural_fall', 'hypo_entry'),
+    ('correction_drop', 'hypo_entry'),
+    ('meal_rise', 'correction_drop'),
+    ('meal_rise', 'insulin_fall'),
+    ('uam_rise', 'insulin_fall'),
+    ('uam_rise', 'post_rise_fall'),
+    ('uam_rise', 'correction_drop'),
+}
+
+
+@dataclass
+class Excursion:
+    """A single classified glucose excursion."""
+    start_idx: int
+    end_idx: int
+    start_bg: float
+    end_bg: float
+    direction: str            # 'rise' or 'fall'
+    magnitude: float          # mg/dL
+    duration_steps: int
+    rate: float               # mg/dL per 5-min step
+    excursion_type: str       # matches ExcursionType values
+    has_carbs: bool
+    carb_amount: float
+    iob_at_start: float
+    iob_delta: float
+    supply_mean: float
+    demand_mean: float
+    net_mean: float
+    tod_hour: float
+
+
+@dataclass
+class CascadeChain:
+    """A sequence of linked excursions forming a metabolic cascade."""
+    excursions: List[Excursion]
+    length: int
+    total_magnitude: float
+    duration_steps: int
+    root_type: str            # type of first excursion in chain
+
+
+@dataclass
+class CascadeAnalysis:
+    """Summary of excursion and cascade detection over a glucose trace."""
+    excursions: List[Excursion] = field(default_factory=list)
+    chains: List[CascadeChain] = field(default_factory=list)
+    total_excursions: int = 0
+    in_chain_count: int = 0
+    isolated_count: int = 0
+    cascade_participation: float = 0.0   # fraction of excursions in chains
+    type_counts: Dict[str, int] = field(default_factory=dict)
+
+
+def detect_excursions(glucose: np.ndarray,
+                      carbs: np.ndarray,
+                      iob: np.ndarray,
+                      metabolic: Optional[MetabolicState] = None,
+                      min_excursion: float = 15.0) -> List[Excursion]:
+    """Detect and classify all glucose excursions (EXP-1691).
+
+    An excursion is a contiguous rise or fall ≥ min_excursion mg/dL.
+    Classification uses priority-ordered rules based on glucose level,
+    carb timing, IOB changes, and preceding excursion context.
+
+    Args:
+        glucose: (N,) glucose values (mg/dL), may contain NaN.
+        carbs: (N,) carb grams per step.
+        iob: (N,) insulin on board (Units).
+        metabolic: MetabolicState for supply/demand context.
+        min_excursion: minimum magnitude to qualify (mg/dL).
+
+    Returns:
+        List of Excursion in chronological order.
+    """
+    N = len(glucose)
+    excursions: List[Excursion] = []
+
+    g = glucose.copy().astype(np.float64)
+    for i in range(1, N):
+        if np.isnan(g[i]) and not np.isnan(g[i - 1]):
+            g[i] = g[i - 1]
+
+    _carbs = np.nan_to_num(carbs, nan=0.0) if carbs is not None else np.zeros(N)
+    _iob = np.nan_to_num(iob, nan=0.0) if iob is not None else np.zeros(N)
+
+    # Supply/demand context
+    if metabolic is not None:
+        supply = metabolic.supply
+        demand = metabolic.demand
+        net = metabolic.net_flux
+    else:
+        supply = np.zeros(N)
+        demand = np.zeros(N)
+        net = np.zeros(N)
+
+    i = 0
+    while i < N - 2:
+        if np.isnan(g[i]):
+            i += 1
+            continue
+
+        start_idx = i
+        start_bg = g[i]
+        peak_bg = start_bg
+        trough_bg = start_bg
+        peak_idx = i
+        trough_idx = i
+
+        j = i + 1
+        direction = None
+        while j < N:
+            if np.isnan(g[j]):
+                j += 1
+                continue
+            if g[j] > peak_bg:
+                peak_bg = g[j]
+                peak_idx = j
+            if g[j] < trough_bg:
+                trough_bg = g[j]
+                trough_idx = j
+
+            if direction is None:
+                if g[j] - start_bg >= min_excursion:
+                    direction = 'rise'
+                elif start_bg - g[j] >= min_excursion:
+                    direction = 'fall'
+
+            if direction == 'rise' and peak_bg - g[j] >= min_excursion:
+                break
+            elif direction == 'fall' and g[j] - trough_bg >= min_excursion:
+                break
+            j += 1
+
+        if direction is None:
+            i = j
+            continue
+
+        if direction == 'rise':
+            end_idx, end_bg = peak_idx, peak_bg
+            magnitude = peak_bg - start_bg
+        else:
+            end_idx, end_bg = trough_idx, trough_bg
+            magnitude = start_bg - trough_bg
+
+        duration_steps = end_idx - start_idx
+        if duration_steps < 1:
+            i = j
+            continue
+
+        rate = magnitude / duration_steps
+
+        # Context for classification
+        s_mean = float(np.nanmean(supply[start_idx:end_idx + 1]))
+        d_mean = float(np.nanmean(demand[start_idx:end_idx + 1]))
+        n_mean = float(np.nanmean(net[start_idx:end_idx + 1]))
+
+        carb_window = _carbs[max(0, start_idx - 6):min(N, end_idx + 6)]
+        has_carbs = float(np.nansum(carb_window)) > 1.0
+        carb_amount = float(np.nansum(carb_window))
+
+        iob_start = float(_iob[start_idx])
+        iob_end = float(_iob[min(end_idx, N - 1)])
+        iob_delta = iob_end - iob_start
+        tod_hour = (start_idx % STEPS_PER_DAY) / STEPS_PER_HOUR
+
+        # Priority-ordered classification
+        if direction == 'fall' and end_bg < 70:
+            exc_type = ExcursionType.HYPO_ENTRY.value
+        elif direction == 'rise' and start_bg < 70:
+            exc_type = ExcursionType.HYPO_RECOVERY.value
+        elif direction == 'rise' and has_carbs:
+            exc_type = ExcursionType.MEAL_RISE.value
+        elif direction == 'fall' and iob_delta > 0.5:
+            exc_type = ExcursionType.CORRECTION_DROP.value
+        elif direction == 'rise' and not has_carbs:
+            pre_bg = glucose[max(0, start_idx - 12):start_idx + 1]
+            valid_pre = ~np.isnan(pre_bg)
+            if valid_pre.sum() >= 2:
+                pre_change = float(pre_bg[valid_pre][-1] - pre_bg[valid_pre][0])
+                if pre_change < -20:
+                    exc_type = ExcursionType.REBOUND_RISE.value
+                else:
+                    exc_type = ExcursionType.UAM_RISE.value
+            else:
+                exc_type = ExcursionType.UAM_RISE.value
+        elif direction == 'fall':
+            pre_bg = glucose[max(0, start_idx - 18):start_idx + 1]
+            valid_pre = ~np.isnan(pre_bg)
+            if d_mean > s_mean * 0.8 and d_mean > 2.0:
+                exc_type = ExcursionType.INSULIN_FALL.value
+            elif valid_pre.sum() >= 2 and float(pre_bg[valid_pre][-1] - pre_bg[valid_pre][0]) > 15:
+                exc_type = ExcursionType.POST_RISE_FALL.value
+            else:
+                exc_type = ExcursionType.NATURAL_FALL.value
+        else:
+            exc_type = f'unclassified_{direction}'
+
+        excursions.append(Excursion(
+            start_idx=start_idx, end_idx=end_idx,
+            start_bg=float(start_bg), end_bg=float(end_bg),
+            direction=direction, magnitude=float(magnitude),
+            duration_steps=duration_steps, rate=float(rate),
+            excursion_type=exc_type, has_carbs=has_carbs,
+            carb_amount=carb_amount, iob_at_start=iob_start,
+            iob_delta=iob_delta, supply_mean=s_mean,
+            demand_mean=d_mean, net_mean=n_mean, tod_hour=tod_hour,
+        ))
+        i = end_idx + 1
+
+    return excursions
+
+
+def detect_cascade_chains(excursions: List[Excursion]) -> CascadeAnalysis:
+    """Detect metabolic cascade chains from classified excursions (EXP-1691).
+
+    Cascades are sequences of excursions linked by CASCADE_TRANSITIONS.
+    Research finding: 62% of excursions participate in cascades;
+    breaking cascade roots reduces downstream excursions.
+
+    Args:
+        excursions: chronologically ordered list from detect_excursions().
+
+    Returns:
+        CascadeAnalysis with chains, participation rate, and type counts.
+    """
+    if not excursions:
+        return CascadeAnalysis()
+
+    chains: List[CascadeChain] = []
+    current_chain = [excursions[0]]
+
+    for i in range(1, len(excursions)):
+        prev_type = excursions[i - 1].excursion_type
+        curr_type = excursions[i].excursion_type
+        if (prev_type, curr_type) in CASCADE_TRANSITIONS:
+            current_chain.append(excursions[i])
+        else:
+            if len(current_chain) >= 2:
+                chains.append(_build_chain(current_chain))
+            current_chain = [excursions[i]]
+
+    if len(current_chain) >= 2:
+        chains.append(_build_chain(current_chain))
+
+    in_chain = sum(c.length for c in chains)
+    total = len(excursions)
+    isolated = total - in_chain
+
+    type_counts: Dict[str, int] = {}
+    for exc in excursions:
+        type_counts[exc.excursion_type] = type_counts.get(exc.excursion_type, 0) + 1
+
+    return CascadeAnalysis(
+        excursions=excursions,
+        chains=chains,
+        total_excursions=total,
+        in_chain_count=in_chain,
+        isolated_count=isolated,
+        cascade_participation=in_chain / max(total, 1),
+        type_counts=type_counts,
+    )
+
+
+def _build_chain(excursions: List[Excursion]) -> CascadeChain:
+    """Build a CascadeChain from a sequence of linked excursions."""
+    total_mag = sum(e.magnitude for e in excursions)
+    duration = excursions[-1].end_idx - excursions[0].start_idx
+    return CascadeChain(
+        excursions=excursions,
+        length=len(excursions),
+        total_magnitude=total_mag,
+        duration_steps=duration,
+        root_type=excursions[0].excursion_type,
+    )
+
+
+def compute_harmonic_features(hours: np.ndarray,
+                              periods: Optional[List[float]] = None,
+                              ) -> np.ndarray:
+    """Compute 4-harmonic temporal features for use across modules (EXP-1774).
+
+    Replaces single sin/cos pair with 8 features (sin+cos for each period).
+    Research: +77% relative R² improvement, all 11 patients benefit.
+
+    Args:
+        hours: (N,) fractional hour of day (0-24).
+        periods: harmonic periods (default [24, 12, 8, 6] hours).
+
+    Returns:
+        (N, 8) array: [sin_24, cos_24, sin_12, cos_12, sin_8, cos_8, sin_6, cos_6].
+    """
+    if periods is None:
+        periods = [24.0, 12.0, 8.0, 6.0]
+    h = np.asarray(hours, dtype=np.float64)
+    features = np.zeros((len(h), 2 * len(periods)))
+    for k, p in enumerate(periods):
+        angle = 2.0 * np.pi * h / p
+        features[:, 2 * k] = np.sin(angle)
+        features[:, 2 * k + 1] = np.cos(angle)
+    return features
 
 
 def detect_changepoints(glucose: np.ndarray,
