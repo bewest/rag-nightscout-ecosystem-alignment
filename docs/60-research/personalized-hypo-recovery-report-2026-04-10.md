@@ -26,7 +26,7 @@ tell us about overall glycemic control?**
 | **Overnight hypos rebound worst**: 69% cause hyperglycemia | EXP-1684 | Circadian timing is the strongest contextual factor |
 | **Can't predict rebound at nadir**: AUC=0.54 | EXP-1682 | The rescue behavior itself is unpredictable |
 | **Demand vacuum is weak**: r=−0.127 | EXP-1683 | IOB depletion matters less than expected |
-| **Equilibrium restored in 1.7h** median | EXP-1686 | S×D rebalancing is faster than the glucose trajectory |
+| **Equilibrium restored in 1.7h** mean (median 1.0h) | EXP-1686 | S×D rebalancing is faster than the glucose trajectory |
 
 ### The Cascade Cycle
 
@@ -215,14 +215,14 @@ highest mean rebound (165 mg/dL). This likely reflects:
 3. No insulin delivery adjustment (patient isn't awake to intervene)
 
 **Afternoon hypos are safest**: 42% hyper rate, lowest rebound (131 mg/dL).
-Patients are awake, alert, and can manage rescue carefully. The most negative IOB
-(−0.41 U) suggests these are pre-meal hypos where the AID system has been
-suspending insulin.
+Patients are awake, alert, and can manage rescue carefully. Afternoon IOB
+(−0.41 U) is low, suggesting these are pre-meal hypos where the AID system has
+been suspending insulin.
 
-**Evening hypos (16–20) are the second most dangerous**: 64% hyper rate. This
-coincides with dinner time — the combination of pre-meal hunger (lower glycogen
-stores from afternoon fasting) plus the transition to an actual meal may amplify
-rescue behavior.
+**Evening hypos (16–20) are the second most dangerous**: 64% hyper rate, with
+the most negative IOB (−0.54 U). This coincides with dinner time — the
+combination of pre-meal hunger (lower glycogen stores from afternoon fasting)
+plus the transition to an actual meal may amplify rescue behavior.
 
 **Severity is highest mid-day** (morning 46%, afternoon 44% severe) despite better
 outcomes — daytime hypos go deeper but recover better, perhaps because patients

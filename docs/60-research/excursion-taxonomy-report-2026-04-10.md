@@ -45,10 +45,11 @@ An excursion is a contiguous rise or fall of ≥15 mg/dL. The detector uses a
 state machine that tracks glucose from each local extremum until a reversal of
 ≥15 mg/dL is observed, then records the excursion from start to peak/trough.
 
-**Important assumption**: With a 15 mg/dL threshold, excursions are contiguous
-— every timestep belongs to some excursion (0% unaccounted time). This is by
-construction: the next excursion begins where the previous one ended. This
-means that glucose behavior is fully decomposed into excursion segments.
+**Important assumption**: With a 15 mg/dL threshold, excursions are nearly
+contiguous — the next excursion begins where the previous one ended. However,
+NaN timesteps and sub-threshold movements create a small fraction of
+unaccounted time (tracked explicitly in the code). The decomposition captures
+the vast majority of glucose behavior.
 
 ### Classification Rules (Priority-Ordered)
 
@@ -56,7 +57,7 @@ means that glucose behavior is fully decomposed into excursion segments.
 |----------|------|------|
 | 1 | `hypo_entry` | Fall ending below 70 mg/dL |
 | 2 | `hypo_recovery` | Rise starting below 70 mg/dL |
-| 3 | `meal_rise` | Rise with carbs announced ±30 min |
+| 3 | `meal_rise` | Rise with carbs within 30 min before onset to 30 min after end |
 | 4 | `correction_drop` | Fall with IOB increase > 0.5 U |
 | 5 | `rebound_rise` | Rise preceded by ≥20 mg/dL fall in prior hour |
 | 6 | `uam_rise` | Rise without carbs (Unannounced Meal) |
@@ -190,7 +191,7 @@ The single largest TAR contributor is `insulin_fall` at 22.9%. This seems
 paradoxical — how can a *falling* glucose contribute the most time above range?
 
 The answer: when glucose is at 250 mg/dL and insulin is actively bringing it
-down at 2 mg/dL per 5 minutes, it takes **35 minutes** to reach 180 mg/dL
+down at 2 mg/dL per minute, it takes **35 minutes** to reach 180 mg/dL
 (target range). During those 35 minutes, every timestep counts as TAR. The
 *rise* puts glucose above range, but the *fall back down* is where glucose
 spends the most time above range because insulin action is slow.
@@ -398,7 +399,7 @@ handling, and fundamentally faster insulin action).
 | Prior Finding | Connection to Taxonomy |
 |---------------|----------------------|
 | Hyper-rebound predicts TAR (r=0.791, EXP-1688) | Rebound_rise → insulin_fall cascades explain this |
-| 53% over-rescue (EXP-1681) | hypo_recovery → rebound_rise transition (1,057 instances) |
+| 53% over-rescue (EXP-1681) | rebound_rise → insulin_fall transition (1,057 instances) |
 | 43% post-hypo hyperglycemia (EXP-1648) | 26% of hypo chains reach length ≥3 |
 | Cross-patient transfer fails (EXP-1647) | Patient profiles don't cluster (silhouette=0.289) |
 | 97.6% variance unexplained (EXP-1636) | 10 distinct types with different S×D — model needs type-aware prediction |
