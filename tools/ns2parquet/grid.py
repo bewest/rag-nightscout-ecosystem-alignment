@@ -10,6 +10,8 @@ is done at consumption time using the scales from cgmencode.schema.
 """
 
 import json
+import warnings
+
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -33,6 +35,10 @@ def _to_local_index(index: pd.DatetimeIndex, patient_tz: str) -> pd.DatetimeInde
         else:
             return index.tz_localize('UTC').tz_convert(patient_tz)
     except Exception:
+        warnings.warn(
+            f'Invalid patient timezone {patient_tz!r} — '
+            f'circadian features (time_sin/cos) will use UTC.',
+        )
         return index
 
 
@@ -241,7 +247,12 @@ def build_grid(data_path: str, patient_id: str,
         ts_str = tx.get('created_at') or tx.get('timestamp')
         if not ts_str:
             continue
-        ts = pd.Timestamp(ts_str).round('5min')
+        ts = pd.Timestamp(ts_str)
+        if ts.tzinfo is None:
+            ts = ts.tz_localize('UTC')
+        else:
+            ts = ts.tz_convert('UTC')
+        ts = ts.round('5min')
         if ts not in df.index:
             continue
 

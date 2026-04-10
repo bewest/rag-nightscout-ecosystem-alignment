@@ -79,8 +79,13 @@ def write_parquet(df: pd.DataFrame, output_path: str,
     if schema:
         try:
             table = pa.Table.from_pandas(df, schema=schema, preserve_index=False)
-        except (pa.ArrowInvalid, pa.ArrowTypeError, KeyError):
+        except (pa.ArrowInvalid, pa.ArrowTypeError, KeyError) as exc:
             # Schema mismatch — write without strict schema enforcement
+            warnings.warn(
+                f'Schema enforcement failed for {collection}: {exc}. '
+                f'Writing without schema — column types may be inferred.',
+                stacklevel=2,
+            )
             table = pa.Table.from_pandas(df, preserve_index=False)
     else:
         table = pa.Table.from_pandas(df, preserve_index=False)
