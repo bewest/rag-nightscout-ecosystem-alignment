@@ -49,6 +49,8 @@ recommendations.
 **Hypothesis**: Per-time-block drift corrections should outperform overnight-only (EXP-1340).
 
 **Result**: Still fails — 0/11 improved, 4 worsened (mean TIR Δ = -1.1%).
+Note: "improved"/"worsened" use a ±1% significance threshold; 2 patients show
+sub-threshold gains (d +0.5%, k +0.4%) but 9/11 worsened by any amount.
 
 | Patient | Current TIR | Simulated TIR | Change |
 |---------|------------|---------------|--------|
@@ -132,7 +134,8 @@ but needs better ISF deconfounding.
 | 60% | 1/11 | — |
 | 50% | 1/11 | — |
 
-This means the previous 20% threshold (EXP-1332) threw away **84.6%** of events unnecessarily.
+This means the previous 20% threshold (EXP-1332) threw away **~90%** of events unnecessarily
+(51 events at 20% vs 523 at 90%, population-level).
 Most correction events produce good ISF estimates even when UAM activity is high in the window.
 UAM contamination within the correction window doesn't significantly corrupt the exponential
 decay fit because the correction signal (bolus-driven) dominates.
