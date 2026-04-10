@@ -1,7 +1,9 @@
 """
 metabolic_engine.py — Supply/demand flux decomposition (physics layer).
 
-Research basis: EXP-441 (metabolic throughput), EXP-601+ (flux residuals)
+Research basis: EXP-441 (metabolic throughput), EXP-601+ (flux residuals),
+               EXP-1771 (hepatic base rate validation: 1.5 wins 9/11 patients),
+               EXP-1772 (demand calibration: 48% fasting RMSE reduction)
 Key finding: 107ms per patient, captures insulin-glucose tug-of-war
 
 This module computes the instantaneous supply (hepatic + carbs) and
@@ -12,7 +14,7 @@ noise, and unannounced meals.
 Physics model:
     dBG/dt ≈ supply - demand + decay_toward_120
     supply = hepatic_production + carb_absorption
-    demand = insulin_action
+    demand = insulin_action (calibrated to patient's basal rate)
     residual = actual_dBG - predicted_dBG
 """
 
@@ -26,7 +28,8 @@ from .types import MetabolicState, PatientData, PatientProfile
 # Hill equation parameters for hepatic production (from continuous_pk.py)
 _HILL_N = 1.5          # Hill coefficient
 _HILL_K = 2.0          # Half-max IOB (Units)
-_BASE_EGP = 1.0        # mg/dL per 5-min step at zero insulin
+_BASE_EGP = 1.5        # mg/dL per 5-min step at zero insulin
+                       # EXP-1771: 1.5 wins 9/11 patients vs 1.0 (fasting RMSE)
 _CIRCADIAN_AMP = 0.15  # Dawn phenomenon amplitude (15% variation)
 
 # Glucose decay toward equilibrium (from exp_autoresearch_681.py:50)
@@ -76,6 +79,36 @@ def _extract_hours(timestamps: np.ndarray) -> np.ndarray:
         return (seconds % 86400) / 3600.0
 
 
+def _calibrate_demand(demand: np.ndarray,
+                      basal_rate: float,
+                      isf: float,
+                      hours: np.ndarray) -> np.ndarray:
+    """Apply patient-specific demand calibration (EXP-1772).
+
+    At the patient's scheduled basal rate, insulin demand should equal
+    hepatic glucose production — the definition of metabolic steady state.
+
+    Without calibration, demand = |ΔIOB| × ISF can be far from hepatic
+    output (e.g., patient i: 10× overshoot). This normalizes demand so
+    that fasting periods show near-zero predicted drift.
+
+    EXP-1772 validation: fasting RMSE 19.6 → 10.2 (48% reduction),
+    fasting bias -5.2 → -0.1, 10/11 patients improve.
+    """
+    demand_at_basal = basal_rate * isf / 12.0  # mg/dL per step at scheduled basal
+    if demand_at_basal < 0.01:
+        return demand
+
+    # Mean hepatic production at typical IOB (basal accumulation ≈ rate × DIA/2)
+    typical_iob = basal_rate * 2.5  # ~half of 5h DIA accumulation
+    reference_hours = np.linspace(0, 24, 288)
+    mean_hepatic = float(np.mean(_compute_hepatic_production(
+        np.full(288, typical_iob), reference_hours)))
+
+    cal_factor = mean_hepatic / demand_at_basal
+    return demand * cal_factor
+
+
 def compute_metabolic_state(patient: PatientData) -> MetabolicState:
     """Compute full supply-demand flux decomposition.
 
@@ -122,6 +155,13 @@ def compute_metabolic_state(patient: PatientData) -> MetabolicState:
         delta_iob = np.zeros(N)
         delta_iob[1:] = iob[:-1] - iob[1:]  # positive = being absorbed
         demand = np.abs(delta_iob * isf)
+
+        # Demand calibration (EXP-1772: reduces fasting RMSE 48%, 10/11 patients)
+        # At scheduled basal rate, demand should equal hepatic production
+        # (steady-state definition). Without calibration, |ΔIOB|×ISF may
+        # not balance the Hill-equation hepatic output.
+        basal_rate = _median_schedule_value(profile.basal_schedule, default=0.8)
+        demand = _calibrate_demand(demand, basal_rate, isf, hours)
     else:
         demand = np.zeros(N)
 
