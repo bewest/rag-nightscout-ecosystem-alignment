@@ -30,7 +30,7 @@ recommendations.
 **Question**: Does requiring multiple consecutive windows to flag the same
 parameter reduce recommendation instability?
 
-**Method**: Slide 15-day windows across each patient's data. Flag parameters
+**Method**: Slide 30-day windows (with 15-day stride) across each patient's data. Flag parameters
 (basal, CR, ISF) independently. Compute stability at k=1 (any single window),
 k=2 (2 consecutive), k=3 (3 consecutive).
 
@@ -349,10 +349,10 @@ Per-patient detail:
 **Findings**:
 1. **91% grade accuracy** — the pipeline correctly assigns therapy grades to
    10/11 patients
-2. **Single failure**: Patient a (miscalibrated) gets grade C and score 63, but
-   generates 0 recommendations. This is the known inverted-gain patient (K=-1.081)
-   where deconfounding correctly filters out all events — the system knows
-   something is wrong but can't prescribe a simple fix
+2. **Single failure**: Patient b (needs-tuning) gets grade B and score 65.5 —
+   a grade accuracy failure because needs-tuning should map to C/D, not B.
+   (Note: patient a is separately the *appropriateness* failure — 0 recs when
+   2–6 expected — but its grade mapping C for needs-tuning is correct.)
 3. **Precondition gating works**: h (35.8% CGM) and i (high model error)
    correctly excluded from full analysis
 4. **Grade distribution**: A(1), B(4), C(4), D(2) — reasonable spread
@@ -374,7 +374,7 @@ INPUT: CGM + insulin telemetry (≥60 days, CGM≥70%, insulin≥50%)
   │
   ├─ SCORING: Therapy Health Score 0-100
   │   Formula: TIR/100×60 + basal_ok×15 + cr_ok×15 + isf_ok×5 + cv_ok×5
-  │   Grade: A(≥80) B(65-79) C(50-64) D(<50)
+  │   Grade: A(≥80) B(65-79) C(50-64) D(35-49) F(<35)
   │
   ├─ STAGE 1 – BASAL: Overnight drift ≥5 mg/dL/h
   │   Scale by 1.43× for AID dampening
