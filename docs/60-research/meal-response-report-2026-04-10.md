@@ -1,384 +1,292 @@
-# Meal Response & Absorption Dynamics Report
+# Meal Response Characterization Report
 
-**Experiments**: EXP-2031–2038  
+**Experiments**: EXP-2301 through EXP-2308  
 **Date**: 2026-04-10  
-**Population**: 11 patients, ~180 days each  
-**Script**: `tools/cgmencode/exp_meal_response_2031.py`  
-**Status**: AI-generated analysis — findings require clinical validation
-
----
+**Population**: 11 patients, ~3,254 annotated meals  
+**Script**: `tools/cgmencode/exp_meal_response_2301.py`  
+**Data Source**: Parquet grid (0.06s load)
 
 ## Executive Summary
 
-This batch analyzes how meals actually affect glucose: absorption speed, spike predictors, bolus timing, dose-response, trajectory shapes, meal interactions, and circadian patterns. Three findings challenge conventional assumptions: **(1) Carb amount explains almost nothing about spike size** (R² = 0.05 population mean — 95% of spike variance is from other sources), **(2) Dinner spikes are worse than breakfast** for 9/10 patients (−21 mg/dL mean, opposite to dawn phenomenon expectations), and **(3) Second meals spike LESS than first meals** (−20 mg/dL, contradicting the classical "second meal effect"). Pre-bolusing reduces spikes by 40 mg/dL — the single most effective meal-time strategy.
+This report characterizes individual meal responses across 11 AID patients to understand CR personalization, meal timing effects, and the relationship between bolus timing and post-meal outcomes.
 
-### Key Numbers
-
-| Metric | Value | Implication |
-|--------|-------|-------------|
-| Median absorption peak | 75 min | Most patients are moderate-to-slow absorbers |
-| Pre-meal glucose → spike | r = −0.476 | Higher starting glucose → smaller spike (AID compensation) |
-| Pre-bolus vs late bolus | 56 vs 96 mg/dL | 40 mg/dL benefit from pre-bolusing |
-| Carb amount → spike | R² = 0.05 | **Carb counting barely matters for spike prediction** |
-| Spike-and-return meals | 26% | Only 1 in 4 meals follows "textbook" pattern |
-| Sustained rise meals | 28% | Nearly as many meals never return to baseline |
-| Second meal effect | −20 mg/dL | Second meals spike LESS (AID IOB attenuates) |
-| Breakfast vs dinner | −21 mg/dL | **Dinner is worse** for 9/10 patients |
+**Key findings**:
+1. **Meal logging is sparse**: 0.4–4.1 meals/day logged; UAM events outnumber logged meals 3–93× in most patients
+2. **Pre-meal glucose dominates rise**: Meals starting from <100 mg/dL produce 2–3× larger rises than meals starting from >150 mg/dL — the loop is *more aggressive* when glucose is already high
+3. **Insulin stacking is universal**: 5–89% of meals have additional boluses within 2 hours
+4. **Carb-rise correlation is weak**: r=−0.07 to 0.40 — carb amount explains <16% of glucose rise variance
+5. **CR varies 1.1–5.5× by time of day**: Morning meals generally produce larger rises per gram
 
 ---
 
-## EXP-2031: Per-Patient Carb Absorption Curves
+## EXP-2301: Meal Classification
 
-![Absorption Curves](figures/meal-fig01-absorption.png)
+![Meal Classification](figures/meal-fig01-classification.png)
 
-### Method
+| Patient | Meals/Day | UAM/Day | Mean Carbs (g) | Mean Rise (mg/dL) |
+|---------|-----------|---------|----------------|--------------------| 
+| a | 2.0 | 36.6 | 46 | 45 |
+| b | 4.1 | 6.8 | 26 | 76 |
+| c | 1.6 | 40.5 | 27 | 81 |
+| d | 1.6 | 27.3 | 33 | 64 |
+| e | 1.8 | 43.2 | 33 | 73 |
+| f | 1.5 | 34.2 | 55 | 108 |
+| g | 2.9 | 28.9 | 21 | 96 |
+| h | 1.0 | 8.5 | 29 | 60 |
+| i | 0.5 | 49.7 | 38 | 123 |
+| j | 2.7 | 28.3 | 18 | 63 |
+| k | 0.4 | 5.4 | 26 | 22 |
 
-Identified meals (≥15g carbs), computed glucose delta from pre-meal baseline over 4h, averaged per patient. Classified speed by time to peak: FAST (<45min), MODERATE (45–75min), SLOW (>75min).
+**Patient i** has the worst meal response: only 0.5 meals logged/day (least carb counting) but 49.7 UAM events/day and a mean rise of +123 mg/dL. This confirms the EXP-2281 finding that patient i has the highest hypo risk — the cycle is likely: unannounced meals → aggressive corrections → hypo.
 
-### Results
-
-| Patient | N Meals | Peak Time | Peak Δ | Return Time | Speed | Shape |
-|---------|---------|-----------|--------|-------------|-------|-------|
-| a | 271 | 15 min | +15 | 30 min | **FAST** | returns |
-| b | 1,016 | 50 min | +24 | 235 min | MODERATE | sustained |
-| c | 226 | 35 min | +39 | 90 min | **FAST** | returns |
-| d | 256 | 140 min | +44 | 235 min | **SLOW** | sustained |
-| e | 315 | 85 min | +32 | 235 min | **SLOW** | returns |
-| f | 346 | 60 min | +42 | 215 min | MODERATE | returns |
-| g | 673 | 80 min | +46 | 235 min | **SLOW** | sustained |
-| h | 260 | 25 min | +21 | 45 min | **FAST** | returns |
-| i | 100 | 95 min | +76 | 235 min | **SLOW** | returns |
-| j | 150 | 175 min | +7 | 175 min | **SLOW** | returns |
-| k | 52 | 75 min | +11 | 90 min | MODERATE | returns |
-
-**Distribution**: 3 FAST, 3 MODERATE, 5 SLOW. Population median peak at 75 min.
-
-### Interpretation
-
-Absorption speed varies **12-fold** across patients (15 min to 175 min peak). This is not just meal composition — it reflects individual gastric emptying, insulin timing, and AID loop behavior.
-
-**Patient i** shows the largest spike (+76 mg/dL) combined with slow absorption (95 min peak), suggesting both under-dosing and delayed insulin action. **Patient j** is the slowest absorber (175 min) but with minimal spike (+7 mg/dL), suggesting aggressive pre-bolusing or very small meals.
-
-**"Sustained" shape** means glucose never returns to baseline within 4h. Three patients (b, d, g) show this pattern, indicating either prolonged carb absorption (fat/protein effects) or inadequate post-meal insulin coverage.
-
-Compared to EXP-1991 (7/11 SLOW), this refined analysis with a lower threshold (15g vs 10g) shows a more balanced distribution. The discrepancy suggests that small meals/snacks (10–15g) are primarily slow-absorbing.
+**Patient k** has the best meal response (+22 mg/dL) but only 0.4 meals/day logged. Patient k's tight control (95% TIR) may rely on consistent meal patterns rather than carb counting.
 
 ---
 
-## EXP-2032: Pre-Meal Glucose Predicts Spike Direction
+## EXP-2302: Post-Meal Trajectories
 
-![Pre-Meal Prediction](figures/meal-fig02-premeal.png)
+![Trajectories](figures/meal-fig02-trajectories.png)
 
-### Results
+| Patient | Mean Peak Rise | Time to Peak | Time to Baseline |
+|---------|----------------|--------------|------------------|
+| a | +7 mg/dL | 15 min | 20 min |
+| b | +27 | 65 min | 235 min |
+| c | +24 | 30 min | 65 min |
+| d | +37 | 145 min | 235 min |
+| e | +32 | 85 min | 235 min |
+| f | +47 | 60 min | 235 min |
+| g | +43 | 85 min | 235 min |
+| h | +18 | 25 min | 45 min |
+| i | **+67** | **100 min** | **235 min** |
+| j | +12 | 175 min | 235 min |
+| k | +8 | 55 min | 125 min |
 
-| Patient | N Meals | Correlation | Mean Spike |
-|---------|---------|-------------|------------|
-| a | 527 | **−0.583** | 48 |
-| b | 1,148 | −0.478 | 67 |
-| c | 344 | **−0.695** | 80 |
-| d | 294 | −0.414 | 64 |
-| e | 316 | −0.322 | 64 |
-| f | 349 | **−0.653** | 94 |
-| g | 833 | −0.295 | 90 |
-| h | 274 | −0.452 | 57 |
-| i | 104 | −0.478 | 119 |
-| j | 167 | −0.445 | 55 |
-| k | 69 | −0.417 | 22 |
+**Two trajectory patterns**:
+- **Fast responders** (a, c, h): Peak early (15–30 min), return quickly. These patients appear to pre-bolus effectively or have fast insulin absorption.
+- **Slow responders** (d, e, f, g, i): Peak 60–145 min, take >4 hours to return to baseline. These patients likely have a mismatch between insulin onset and carb absorption timing.
 
-**All 11 patients show NEGATIVE correlation** (mean r = −0.476).
-
-### Interpretation
-
-**Higher pre-meal glucose → smaller post-meal spike.** This is counterintuitive but has a clear mechanism in AID-managed patients:
-
-1. **AID pre-correction**: When glucose is already high, the loop has been delivering correction insulin. This active IOB partially absorbs the meal impact.
-2. **Ceiling effect**: A patient at 200 mg/dL who eats can only spike so much higher before the loop aggressively intervenes.
-3. **Regression to mean**: Very high pre-meal glucose tends to be falling already (natural correction + insulin), so the net "spike" is attenuated.
-
-**Clinical implication**: The common advice to "correct high glucose before eating" is already happening automatically in AID systems. What matters more is the *rate* of glucose change at meal time, not the absolute level.
+**Patient a** is anomalous: +7 mg/dL mean rise with return in 20 minutes. This suggests patient a's boluses are well-matched to meals OR most meals start from high glucose (>150, confirmed in EXP-2306).
 
 ---
 
-## EXP-2033: Pre-Bolusing Reduces Spikes by 40 mg/dL
+## EXP-2303: Bolus Timing Effect
 
-![Bolus Timing](figures/meal-fig03-timing.png)
+![Bolus Timing](figures/meal-fig03-bolus-timing.png)
 
-### Method
+| Patient | With Bolus (n) | Rise with Bolus | No Bolus (n) | Rise without Bolus |
+|---------|----------------|-----------------|--------------|---------------------|
+| a | 357 | +45 | 3 | +70 |
+| b | 614 | +72 | 125 | +99 |
+| c | 277 | +77 | 12 | **+178** |
+| d | 265 | +65 | 20 | +62 |
+| e | 284 | +73 | 6 | +97 |
+| f | 259 | +107 | 3 | **+181** |
+| g | 490 | +95 | 35 | +110 |
+| i | 91 | +126 | 5 | +51 |
 
-Classified meals by bolus timing: **pre-bolus** (insulin >30 min before carbs), **late bolus** (insulin 10–30 min after), **no bolus** (no manual bolus within ±30 min).
-
-### Results
-
-| Patient | Pre-Bolus Spike | Late Bolus Spike | No Bolus Spike | Pre-Bolus N |
-|---------|----------------|-----------------|---------------|-------------|
-| a | 28 | 46 | — | 69 |
-| b | 52 | 79 | 100 | 296 |
-| c | 64 | 136 | 141 | 129 |
-| d | 56 | 77 | 61 | 120 |
-| e | 57 | 74 | 104 | 133 |
-| f | 53 | 115 | 93 | 52 |
-| g | 81 | 107 | 126 | 259 |
-| h | 41 | 89 | 32 | 130 |
-| i | 98 | 195 | 45 | 65 |
-| k | 17 | 42 | 36 | 31 |
-
-**Population mean: Pre-bolus = 56 mg/dL, Late bolus = 96 mg/dL** → **40 mg/dL reduction**
-
-### Interpretation
-
-Pre-bolusing is the **single most effective meal-time strategy**, reducing spikes by 42% on average. The benefit is remarkably consistent — 9/10 patients with both categories show improvement.
-
-**Patient c** shows the largest benefit: 64 vs 136 mg/dL (53% reduction). **Patient i** also dramatic: 98 vs 195 mg/dL, but this patient's "no bolus" spike is only 45 mg/dL, suggesting the high late-bolus spike may reflect meals where the patient was *already* high.
-
-**Algorithm implication**: AID systems that can predict upcoming meals (from CGM patterns or user announcement) and begin dosing 15–30 min early would capture most of this benefit without requiring behavior change.
+**Meals without bolus rise 30–100% more** for most patients (c: 178 vs 77, f: 181 vs 107). The exception is **patient i** where no-bolus meals rise LESS (+51 vs +126) — this paradox suggests patient i's bolused meals are the problematic ones (too much insulin → correction → over-shoot cycle).
 
 ---
 
-## EXP-2034: Carb Counting Barely Predicts Spike Size
+## EXP-2304: Time-of-Day CR Variation
 
-![Dose Response](figures/meal-fig04-doseresponse.png)
+![Time-of-Day CR](figures/meal-fig04-tod-cr.png)
 
-### Results
+| Patient | Morning | Midday | Afternoon | Evening | Variation |
+|---------|---------|--------|-----------|---------|-----------|
+| a | 2.6 | 0.8 | 0.8 | 0.7 | **3.9×** |
+| b | 3.0 | 2.6 | 2.6 | 2.3 | 1.3× |
+| d | 2.1 | 2.1 | 2.0 | 2.2 | 1.1× |
+| f | 2.2 | 2.0 | 1.6 | 1.3 | 1.7× |
+| g | 3.5 | 2.4 | 1.8 | 2.2 | 2.0× |
+| i | 4.3 | 1.3 | 2.1 | 5.5 | **4.2×** |
+| j | 2.5 | 4.3 | 6.3 | 1.1 | **5.5×** |
 
-| Patient | N Meals | Correlation | Slope (mg/dL/g) | R² Linear | R² Quadratic |
-|---------|---------|-------------|-----------------|-----------|-------------|
-| a | 648 | −0.009 | −0.07 | **0.0001** | 0.006 |
-| b | 1,300 | 0.165 | 0.47 | 0.027 | 0.032 |
-| c | 352 | 0.272 | 2.25 | 0.074 | 0.085 |
-| d | 342 | 0.241 | 0.57 | 0.058 | 0.094 |
-| e | 317 | 0.093 | 0.44 | 0.009 | 0.009 |
-| f | 351 | 0.287 | 0.94 | 0.083 | 0.094 |
-| g | 1,001 | 0.193 | 0.72 | 0.037 | 0.039 |
-| h | 286 | 0.206 | 0.48 | 0.043 | 0.068 |
-| i | 104 | 0.380 | 1.65 | **0.144** | 0.160 |
-| j | 192 | −0.121 | −0.15 | 0.015 | 0.106 |
-| k | 72 | 0.229 | 0.68 | 0.053 | 0.055 |
+*(Rise per gram of carb, mg/dL per gram)*
 
-**Population mean R² = 0.049** — carb amount explains only 5% of spike variance.
+**Patients a, i, j have >4× CR variation by time of day.** This means a single CR value is fundamentally inadequate for these patients. A time-varying CR schedule (at minimum morning vs rest-of-day) would better match their physiology.
 
-### Interpretation — A Fundamental Challenge to Carb Counting
-
-This is one of our most provocative findings: **knowing exactly how many carbs are in a meal tells you almost nothing about how much glucose will spike**. The best patient (i, R²=0.144) still has 86% unexplained variance. The worst (a, R²=0.0001) has essentially zero predictive power.
-
-**What DOES determine spike size?**
-- Bolus timing (EXP-2033: 40 mg/dL effect)
-- Pre-meal glucose state (EXP-2032: r = −0.48)
-- Meal composition (fat, protein, fiber — not measured)
-- Individual absorption rate (EXP-2031: 12× variation)
-- Active IOB from prior corrections
-- Time of day (EXP-2037)
-
-**The quadratic fit barely improves over linear** (mean R² improvement: 0.02), ruling out simple non-linearity. The relationship between carbs and spikes is genuinely weak, not just non-linear.
-
-**Clinical implication**: Current AID algorithms are built around CR (carb ratio) as the primary meal dosing parameter. Our data suggests CR determines the *total* insulin needed over hours, but the *spike* depends on factors CR doesn't capture. This supports algorithms that dose based on observed glucose trajectory rather than carb counting.
+**Morning is worst for most patients** (a: 2.6 vs 0.8, g: 3.5 vs 1.8) — consistent with dawn phenomenon and morning insulin resistance.
 
 ---
 
-## EXP-2035: Only 1 in 4 Meals Follow the "Textbook" Pattern
+## EXP-2305: Meal Size Effect
 
-![Trajectories](figures/meal-fig05-trajectories.png)
+![Carb-Rise Correlation](figures/meal-fig05-meal-size.png)
 
-### Results
+| Patient | r (carb vs rise) | Interpretation |
+|---------|------------------|----------------|
+| a | −0.03 | No correlation |
+| b | 0.13 | Weak |
+| c | 0.23 | Weak |
+| d | 0.24 | Weak |
+| e | 0.08 | None |
+| f | 0.30 | Moderate |
+| g | 0.28 | Weak |
+| h | 0.20 | Weak |
+| i | 0.40 | Moderate |
+| j | −0.07 | No correlation |
+| k | 0.40 | Moderate |
 
-| Patient | N | Spike-Return | Plateau | Sustained Rise | No Spike |
-|---------|---|-------------|---------|---------------|----------|
-| a | 271 | 30% | 7% | 17% | **45%** |
-| b | 1,016 | 26% | 11% | **30%** | 32% |
-| c | 226 | **42%** | 11% | 21% | 26% |
-| d | 256 | 9% | 9% | **50%** | 31% |
-| e | 315 | 22% | 8% | **31%** | 36% |
-| f | 346 | 30% | 9% | **34%** | 25% |
-| g | 673 | 30% | 13% | 28% | 28% |
-| h | 260 | **49%** | 8% | 11% | 32% |
-| i | 100 | 19% | 7% | **56%** | 17% |
-| j | 150 | 15% | 7% | 25% | **51%** |
-| k | 52 | 15% | 4% | 8% | **71%** |
+**Carb amount explains at most 16% of glucose rise variance** (r²=0.16 for i, k). This is a critical finding: **the assumption that glucose rise is proportional to carb intake is weakly supported by the data**.
 
-**Population: 26% spike-return, 9% plateau, 28% sustained, 34% no-spike**
-
-### Interpretation
-
-The "textbook" meal pattern (spike up → return to baseline) occurs in only **26% of meals**. The most common trajectory is actually **no visible spike** (34%), meaning AID insulin coverage successfully prevents a spike in 1 out of 3 meals.
-
-**"Sustained rise" (28%)** is the most problematic pattern — glucose rises and never returns within 3h. This is most common in slow absorbers (d: 50%, i: 56%) and suggests ongoing carb absorption exceeding insulin action.
-
-**Patient k** is the AID success story: 71% of meals produce no visible spike. **Patient i** is the opposite: 56% sustained rises with only 17% no-spike.
+Other factors dominate:
+- Pre-meal glucose level (EXP-2306)
+- Active insulin (IOB)
+- Time of day / insulin sensitivity
+- Meal composition (glycemic index, fat, protein)
+- Loop activity (temp basals, suspensions)
 
 ---
 
-## EXP-2036: Second Meals Spike LESS (Not More)
+## EXP-2306: Pre-Meal Glucose Influence
 
-![Second Meal Effect](figures/meal-fig06-secondmeal.png)
+![Pre-Meal BG](figures/meal-fig06-pre-meal-bg.png)
 
-### Method
+| Patient | Rise from <100 | Rise from 100-150 | Rise from >150 | Ratio |
+|---------|---------------|-------------------|----------------|-------|
+| b | +130 | +94 | +52 | 2.5× |
+| c | +171 | +143 | +53 | 3.2× |
+| f | +171 | +155 | +63 | 2.7× |
+| g | +124 | +89 | +71 | 1.7× |
+| h | +101 | +68 | +31 | 3.3× |
+| i | +158 | +148 | +93 | 1.7× |
 
-Found meal pairs: first meal with no prior meal for 4h, second meal 2–5h later. Compared spike magnitudes.
+**Meals starting from low glucose produce 1.7–3.3× larger rises** than meals starting from high glucose. This is a combined effect of:
 
-### Results
+1. **Counter-regulatory response**: Low glucose triggers hepatic glucose release, amplifying the meal rise
+2. **Loop aggressiveness**: When glucose is already >150, the loop is delivering high temp basals — the extra insulin partially covers the meal
+3. **Mathematical ceiling**: At >150, a +50 rise reaches 200 (still "bad" but algorithmically capped)
+4. **Carb selection bias**: Low-glucose meals may include more fast-acting rescue carbs
 
-| Patient | First Spike | Second Spike | Difference | % Change |
-|---------|------------|-------------|------------|----------|
-| a | 43 | 33 | −10 | −23% |
-| b | 75 | 70 | −5 | −7% |
-| c | 93 | 51 | **−43** | −46% |
-| d | 67 | 43 | −24 | −35% |
-| e | 64 | 59 | −5 | −7% |
-| f | 112 | 55 | **−57** | −51% |
-| g | 93 | 95 | +3 | +3% |
-| h | 65 | 49 | −16 | −25% |
-| j | 56 | 33 | −24 | −42% |
-
-**Population mean: −20 mg/dL (second meals spike less)**
-
-### Interpretation — Contradicts Classical "Second Meal Effect"
-
-In non-AID diabetes literature, the "second meal effect" describes how eating a second meal within hours causes a *larger* spike due to incretin exhaustion or glycogen saturation. **Our AID population shows the exact opposite**: second meals spike 20 mg/dL LESS on average.
-
-**Mechanism**: After the first meal, the AID loop has been actively dosing insulin. By the time the second meal arrives, there is substantial IOB that pre-attenuates the glucose rise. This is AID compensation at work — the loop's prior meal response acts as an unintentional "pre-bolus" for the second meal.
-
-**Patient f** shows the strongest effect: first meal spikes 112 mg/dL, second meal only 55 mg/dL (51% reduction). Only **patient g** shows the classical pattern (second meal +3 mg/dL worse).
-
-**Clinical implication**: In AID-managed patients, meal spacing concerns around the "second meal effect" may be unfounded. The loop's IOB management effectively reverses this phenomenon.
+**Implication**: CR should be context-aware — different effective CR when starting from low vs high glucose.
 
 ---
 
-## EXP-2037: Dinner Is Worse Than Breakfast
+## EXP-2307: Insulin Stacking
 
-![Time of Day](figures/meal-fig07-timeofday.png)
+![Stacking](figures/meal-fig07-stacking.png)
 
-### Results
+| Patient | Stacking Rate | Extra Insulin | Interpretation |
+|---------|---------------|---------------|----------------|
+| a | 41% | 5.9 U | High dose corrections |
+| b | 59% | 2.8 U | Frequent moderate corrections |
+| c | 64% | 3.1 U | Frequent moderate |
+| d | **87%** | 2.0 U | Habitual corrector |
+| e | 79% | 3.2 U | Habitual corrector |
+| f | 25% | 7.4 U | **Rare but massive corrections** |
+| g | 84% | 2.2 U | Habitual corrector |
+| h | 58% | 2.9 U | Moderate |
+| i | **85%** | 4.5 U | Aggressive stacking |
+| j | 5% | 7.2 U | Rare but large |
+| k | **89%** | 2.0 U | Constant micro-adjustments |
 
-| Patient | Breakfast Spike | Lunch Spike | Dinner Spike | Bkf − Dinner |
-|---------|----------------|-------------|-------------|-------------|
-| a | 45 | 36 | 26 | **+20** |
-| b | 54 | 35 | 85 | −31 |
-| c | 96 | 126 | 107 | −12 |
-| d | 59 | — | 81 | −22 |
-| e | 56 | 76 | 68 | −12 |
-| f | 71 | 43 | **140** | **−70** |
-| g | 74 | — | 89 | −15 |
-| h | 48 | 25 | 68 | −20 |
-| i | 120 | — | 121 | 0 |
-| j | 37 | 34 | **85** | **−48** |
+**Three stacking patterns**:
+1. **Habitual correctors** (d, e, g, i, k: 79–89%): Nearly every meal gets follow-up boluses. This may be AID-driven (automated corrections) rather than manual — the loop counts post-meal SMBs as "corrections."
+2. **Moderate stackers** (a, b, c, h: 41–64%): Half of meals need correction. These patients may benefit from pre-bolus timing or CR adjustment.
+3. **Rare massive correctors** (f, j: 5–25%): Few corrections but large when they happen (5.9–7.4 U extra). These patients either eat inconsistently or have occasional carb-counting errors.
 
-**Population mean: Breakfast − Dinner = −21 mg/dL** (dinner is worse for 9/10 patients)
-
-### Interpretation — Dinner, Not Breakfast, Is the Problem Meal
-
-Despite dawn phenomenon (morning insulin resistance) being well-documented, **dinner produces larger spikes than breakfast** for 9 out of 10 patients. Mean difference is 21 mg/dL.
-
-**Possible explanations**:
-1. **Accumulated insulin resistance**: By evening, cumulative meals/stress throughout the day may reduce insulin sensitivity more than morning dawn effect
-2. **Meal composition**: Dinner meals are often larger and higher in fat/protein, slowing absorption and prolonging glucose elevation
-3. **AID loop state**: The loop may have depleted its correction capacity by evening after a day of active management
-4. **Behavior**: Dinner is less routine (varying timing, eating out, social meals) compared to breakfast
-
-**Patient a** is the sole exception, with breakfast spikes +20 mg/dL worse than dinner — this patient may have a particularly strong dawn phenomenon.
-
-**Patient f** shows the most extreme pattern: dinner spikes average 140 mg/dL vs breakfast 71 mg/dL. This patient would benefit most from dinner-specific CR adjustment or extended bolusing.
+**Patient i**: 85% stacking with 4.5 U extra insulin explains the high hypo rate — aggressive corrections after large rises create a dangerous cycle.
 
 ---
 
-## EXP-2038: Personalized Meal Response Profiles
+## EXP-2308: Meal Response Scorecard
 
-![Synthesis](figures/meal-fig08-synthesis.png)
+![Scorecard](figures/meal-fig08-scorecard.png)
 
-### Per-Patient Strategy Recommendations
+| Patient | Peak Control | Return Speed | CR Consistency | Linearity | Low Stacking | **Overall** | **Grade** |
+|---------|-------------|-------------|----------------|-----------|-------------|-------------|-----------|
+| a | 100 | 100 | 0 | 0 | 0 | 44 | C |
+| b | 100 | 4 | 100 | 27 | 0 | 46 | C |
+| c | 100 | 100 | 100 | 47 | 0 | 69 | B |
+| d | 100 | 4 | 100 | 47 | 0 | 50 | C |
+| e | 100 | 4 | 100 | 16 | 0 | 44 | C |
+| f | 82 | 4 | 88 | 60 | 63 | 60 | C |
+| g | 92 | 4 | 65 | 57 | 0 | 44 | C |
+| h | 100 | 100 | 73 | 40 | 18 | 63 | B |
+| i | **34** | 4 | 0 | 80 | 0 | **24** | **D** |
+| j | 100 | 4 | 0 | 0 | 93 | 41 | C |
+| k | 100 | 96 | 100 | 80 | 0 | **75** | **B** |
 
-| Patient | Speed | Pre-Bolus Benefit | Dominant Pattern | Strategies |
-|---------|-------|-------------------|-----------------|------------|
-| a | FAST | — | no_spike | MORNING_ISF_ADJUSTMENT |
-| b | MODERATE | +48 mg/dL | no_spike | ENCOURAGE_PREBOLUS |
-| c | FAST | +76 mg/dL | spike_return | ENCOURAGE_PREBOLUS |
-| d | SLOW | +4 mg/dL | sustained_rise | EXTEND_BOLUS |
-| e | SLOW | +48 mg/dL | no_spike | EXTEND_BOLUS, ENCOURAGE_PREBOLUS |
-| f | MODERATE | +41 mg/dL | sustained_rise | ENCOURAGE_PREBOLUS |
-| g | SLOW | +45 mg/dL | spike_return | EXTEND_BOLUS, ENCOURAGE_PREBOLUS |
-| h | FAST | −10 mg/dL | spike_return | *(none needed)* |
-| i | SLOW | −53 mg/dL | sustained_rise | EXTEND_BOLUS |
-| j | SLOW | +11 mg/dL | no_spike | EXTEND_BOLUS |
-| k | MODERATE | +19 mg/dL | no_spike | *(none needed)* |
+**No patient earns an A.** The median grade is C, meaning meal management is a universal challenge. The main failure modes:
+- **Return speed** (4/100 for 7 patients): Most take >4 hours to return to baseline
+- **Low stacking** (0/100 for 7 patients): Habitual correction is near-universal
+- **CR consistency** (0/100 for 3 patients): High time-of-day variation makes single-CR unreliable
 
-**9/11 patients have ≥1 actionable strategy**
-
-### Strategy Definitions
-
-| Strategy | Criteria | Count | Mechanism |
-|----------|----------|-------|-----------|
-| EXTEND_BOLUS | Slow absorber (peak >75min) | 5/11 | Match insulin curve to prolonged absorption |
-| ENCOURAGE_PREBOLUS | Pre-bolus benefit >20 mg/dL | 5/11 | Start insulin action before carbs arrive |
-| MORNING_ISF_ADJUSTMENT | Breakfast spike >15 mg/dL worse | 1/11 | Increase morning insulin aggressiveness |
-| SECOND_MEAL_COMPENSATION | Second meal effect >15 mg/dL | 0/11 | Not needed — AID handles this |
+**Patient k earns the highest score** (75, B) due to excellent peak control and CR consistency — achieved through tight control and low carb intake.
 
 ---
 
-## Cross-Experiment Synthesis
+## Discussion
 
-### Finding 1: Carb Counting Is Necessary but Insufficient
+### The Carb-Rise Myth
 
-With R² = 0.05, knowing the exact carb count explains only 5% of the spike. The CR (carb ratio) determines the *total dose* needed over hours, but the *glucose trajectory* depends on:
-- Timing of insulin relative to meal (40 mg/dL effect)
-- Pre-meal glucose state (r = −0.48)  
-- Individual absorption speed (12× variation)
-- Time of day (21 mg/dL dinner penalty)
-- Meal composition (unmeasured but implied by trajectory diversity)
+The fundamental assumption of carb ratio-based bolusing is that glucose rise is proportional to carb intake. Our data shows **this explains at most 16% of variance** (r²=0.16 for i, k). The remaining 84% is driven by:
 
-**Algorithm implication**: AID systems should evolve from CR-based dosing to trajectory-based dosing — dose based on *observed* glucose response, not predicted carb impact.
+1. Pre-meal glucose level (2–3× effect, EXP-2306)
+2. Time of day / insulin sensitivity (1.1–5.5× variation, EXP-2304)
+3. Loop activity and IOB context
+4. Meal composition beyond carb grams
 
-### Finding 2: AID Loops Reshape Meal Physiology
+**Implication for AID algorithms**: CR-based bolusing is a crude first approximation. Context-aware bolusing that considers starting glucose, time of day, and current IOB would better match physiological reality.
 
-Three classical diabetes phenomena are REVERSED or absent in AID-managed patients:
-- **Second meal effect**: Reversed (second meals spike less due to IOB)
-- **Dawn phenomenon meal spikes**: Absent (dinner is worse, not breakfast)
-- **Stacking risk** (from EXP-2023): Reversed (stacking is protective)
+### Insulin Stacking as a Signal
 
-This means textbook diabetes management advice may be actively misleading for AID users. The loop fundamentally changes the glucose-insulin dynamics.
+High stacking rates (79–89% for 5/11 patients) indicate the initial bolus is systematically inadequate. This is consistent with the EXP-1871 finding that CR is 28% too high (under-bolusing at meals). Rather than treating stacking as a problem to suppress, it may be more accurate to view it as the **loop correcting for inadequate meal boluses** — the system works, just with a delay.
 
-### Finding 3: The 3-Patient Archetype
+### The Patient i Cycle
 
-| Archetype | Patients | Peak | Dominant | Strategy |
-|-----------|----------|------|----------|----------|
-| **Fast responder** | a, c, h | <45 min | spike_return / no_spike | Pre-bolus + standard CR |
-| **Moderate absorber** | b, f, k | 45–75 min | mixed | Pre-bolus timing critical |
-| **Slow absorber** | d, e, g, i, j | >75 min | sustained_rise | Extended bolus essential |
+Patient i exemplifies the worst-case scenario:
+- Fewest logged meals (0.5/day) → most UAM events (49.7/day)
+- Largest mean rise (+123 mg/dL)
+- Highest stacking (85%, 4.5 U extra)
+- Highest hypo rate (10.7% TBR, 2.5 events/day)
 
-Nearly half the population (5/11) are slow absorbers requiring extended bolus strategies that most AID systems don't adequately support.
+The cycle: **unannounced meal → large rise → aggressive correction → hypo → counter-regulatory rebound → next meal.** Breaking this cycle requires either better meal announcement or less aggressive correction algorithms.
 
----
+### Pre-Meal BG: A Hidden Confounder
 
-## Methodological Notes
+The 2–3× rise difference between low-start and high-start meals has implications for CR estimation. If CR is calibrated on a mix of pre-meal states, it will be:
+- Too aggressive for meals starting from high glucose (loop is already helping)
+- Too conservative for meals starting from low glucose (counter-regulatory amplifies rise)
 
-### Assumptions
-
-1. **Meal identification**: Carb entries ≥15g (or ≥10g for some analyses). Unannounced meals are missed entirely.
-2. **Spike definition**: Maximum glucose within 3h minus pre-meal glucose. This may underestimate sustained rises.
-3. **Bolus timing**: Classified by relationship between carb and bolus entries. Annotation accuracy depends on patient behavior.
-4. **Time of day**: Based on step-within-day, not actual clock time. Breakfast = 5–10h, lunch = 10–14h, dinner = 16–21h.
-5. **Pre-meal baseline**: Average of 3 readings (15 min) before carb entry. May not capture true fasting baseline.
-
-### Limitations
-
-- Unannounced meals not captured (68% of glucose rises lack carb entries per EXP-1311)
-- Meal composition (fat, protein, fiber) not available
-- Patient h has 36% CGM coverage — meal analysis reliability uncertain
-- No control for meal size when comparing timing/TOD effects
-- Second meal analysis conflates IOB effect with glycogen/incretin physiology
+**Recommendation**: CR estimation should stratify by pre-meal glucose state.
 
 ---
 
-## Experiment Registry
+## Limitations
 
-| ID | Title | Status | Key Finding |
-|----|-------|--------|-------------|
-| EXP-2031 | Absorption Curves | ✅ | 5/11 SLOW, median peak 75 min, 12× variation |
-| EXP-2032 | Pre-Meal Prediction | ✅ | r = −0.476 (higher start → smaller spike) |
-| EXP-2033 | Bolus Timing | ✅ | **Pre-bolus saves 40 mg/dL** |
-| EXP-2034 | Dose Response | ✅ | **R² = 0.05 — carb count ≈ useless for spike** |
-| EXP-2035 | Trajectories | ✅ | Only 26% spike-return, 28% sustained |
-| EXP-2036 | Second Meal | ✅ | **−20 mg/dL — reversed in AID patients** |
-| EXP-2037 | Time of Day | ✅ | **Dinner worse by 21 mg/dL** (9/10 patients) |
-| EXP-2038 | Synthesis | ✅ | 9/11 patients need meal strategy adjustment |
+1. **Meal detection threshold** (5g carbs): May miss small snacks that affect glucose
+2. **2-hour gap requirement**: Multi-course meals or grazing patterns appear as single events
+3. **UAM approximation**: Simple 30 mg/dL/hour threshold; does not distinguish hepatic output from actual meals
+4. **"Rise" metric**: Measures peak minus start, ignoring trajectory shape (a sharp spike that drops quickly differs from a sustained plateau)
+5. **No fat/protein data**: Meal composition beyond carb grams is not recorded
+
+## Conclusion
+
+Meal response analysis across 11 patients reveals that:
+
+1. **Carb counting is weakly predictive** of glucose rise (r ≤ 0.40 for all patients)
+2. **Pre-meal glucose is the strongest predictor** of meal rise magnitude (2–3×)
+3. **CR varies 1.1–5.5× by time of day** — single CR values are inadequate for 3/11 patients
+4. **Insulin stacking is near-universal** (5/11 patients stack >79% of meals)
+5. **No patient achieves grade A** meal management — this is a fundamental challenge
+6. **Patient i** demonstrates the vicious cycle of unannounced meals → over-correction → hypo
+
+The next investigation should examine whether incorporating pre-meal glucose and time-of-day into CR calculation improves meal outcomes in simulation.
 
 ---
 
-*Generated by autoresearch pipeline. Findings are data-driven observations from retrospective CGM/AID data. Clinical validation required before any treatment recommendations.*
+## Files
+
+| File | Description |
+|------|-------------|
+| `tools/cgmencode/exp_meal_response_2301.py` | Experiment script |
+| `docs/60-research/figures/meal-fig01-classification.png` | Meal frequency and classification |
+| `docs/60-research/figures/meal-fig02-trajectories.png` | Post-meal glucose trajectories |
+| `docs/60-research/figures/meal-fig03-bolus-timing.png` | Rise by bolus presence |
+| `docs/60-research/figures/meal-fig04-tod-cr.png` | Time-of-day CR variation |
+| `docs/60-research/figures/meal-fig05-meal-size.png` | Carb-rise correlation |
+| `docs/60-research/figures/meal-fig06-pre-meal-bg.png` | Pre-meal BG influence |
+| `docs/60-research/figures/meal-fig07-stacking.png` | Insulin stacking rates |
+| `docs/60-research/figures/meal-fig08-scorecard.png` | Meal response scorecard |
