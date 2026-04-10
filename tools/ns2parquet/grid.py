@@ -138,6 +138,7 @@ def build_grid(data_path: str, patient_id: str,
         'ts', 'iob', 'cob', 'predicted_30', 'predicted_60', 'predicted_min',
         'hypo_risk', 'recommended_bolus', 'enacted_rate', 'enacted_bolus',
         'pump_battery', 'pump_reservoir',
+        'eventual_bg', 'sensitivity_ratio', 'insulin_req',
     ]}
 
     for ds in devicestatus:
@@ -206,6 +207,12 @@ def build_grid(data_path: str, patient_id: str,
             float(batt.get('percent', np.nan)) if isinstance(batt, dict) else np.nan)
         ds_data['pump_reservoir'].append(float(pump.get('reservoir', np.nan)))
 
+        # oref0 algorithm context (Trio/AAPS/OpenAPS)
+        _suggested = (openaps.get('suggested', {}) or {}) if openaps and isinstance(openaps, dict) else {}
+        ds_data['eventual_bg'].append(float(_suggested['eventualBG']) if 'eventualBG' in _suggested else np.nan)
+        ds_data['sensitivity_ratio'].append(float(_suggested['sensitivityRatio']) if 'sensitivityRatio' in _suggested else np.nan)
+        ds_data['insulin_req'].append(float(_suggested['insulinReq']) if 'insulinReq' in _suggested else np.nan)
+
     if ds_data['ts']:
         ds_df = pd.DataFrame({k: v for k, v in ds_data.items() if k != 'ts'},
                              index=pd.DatetimeIndex(ds_data['ts']))
@@ -236,8 +243,12 @@ def build_grid(data_path: str, patient_id: str,
         treatments = json.load(f)
 
     df['bolus'] = 0.0
+    df['bolus_smb'] = 0.0
     df['carbs'] = 0.0
     df['temp_rate'] = np.nan
+    df['exercise_active'] = 0.0
+    df['override_active'] = 0.0
+    df['override_type'] = 0.0
     site_change_times = []
     sensor_start_times = []
     suspension_times = []
@@ -256,8 +267,14 @@ def build_grid(data_path: str, patient_id: str,
         if ts not in df.index:
             continue
 
-        if 'Bolus' in et and (tx.get('insulin') or 0) > 0:
-            df.loc[ts, 'bolus'] += float(tx['insulin'])
+        # Capture ALL insulin delivery (SMB, Bolus, Correction Bolus, etc.)
+        insulin = float(tx.get('insulin') or 0)
+        if insulin > 0:
+            df.loc[ts, 'bolus'] += insulin
+            is_smb = (et == 'SMB') or (bool(tx.get('automatic')) and insulin < 5.0)
+            if is_smb:
+                df.loc[ts, 'bolus_smb'] += insulin
+
         if (tx.get('carbs') or 0) > 0:
             df.loc[ts, 'carbs'] += float(tx['carbs'])
         if et == 'Temp Basal' and 'rate' in tx:
@@ -275,6 +292,28 @@ def build_grid(data_path: str, patient_id: str,
             sensor_start_times.append(pd.Timestamp(ts_str))
         if et == 'Temp Basal' and (tx.get('reason') == 'suspend' or float(tx.get('rate', 1)) == 0):
             suspension_times.append(pd.Timestamp(ts_str))
+
+        # Exercise events — mark duration window (cap at 6 hours)
+        if et == 'Exercise':
+            dur_min = min(float(tx.get('duration', 60)), 360.0)
+            n_slots = max(1, int(dur_min / 5))
+            slot_idx = df.index.get_loc(ts)
+            if isinstance(slot_idx, int):
+                end_idx = min(slot_idx + n_slots, len(df))
+                df.iloc[slot_idx:end_idx, df.columns.get_loc('exercise_active')] = 1.0
+
+        # Temporary Targets and Overrides — mark duration window (cap at 24 hours)
+        if et in ('Temporary Target', 'Temporary Override'):
+            dur_min = min(float(tx.get('duration', 0)), 1440.0)
+            if dur_min > 0:
+                n_slots = max(1, int(dur_min / 5))
+                slot_idx = df.index.get_loc(ts)
+                if isinstance(slot_idx, int):
+                    end_idx = min(slot_idx + n_slots, len(df))
+                    df.iloc[slot_idx:end_idx, df.columns.get_loc('override_active')] = 1.0
+                    # 1.0 = Temporary Target, 2.0 = Temporary Override
+                    otype = 1.0 if et == 'Temporary Target' else 2.0
+                    df.iloc[slot_idx:end_idx, df.columns.get_loc('override_type')] = otype
 
     site_change_times.sort()
     sensor_start_times.sort()
@@ -428,11 +467,7 @@ def build_grid(data_path: str, patient_id: str,
     df['time_since_bolus_min'] = time_since_bolus
     df['time_since_carb_min'] = time_since_carb
 
-    # ── 8. Override (placeholder — requires treatment parsing) ───────
-    df['override_active'] = 0.0
-    df['override_type'] = 0.0
-
-    # ── 9. Profile-derived context ───────────────────────────────────
+    # ── 8. Profile-derived context ───────────────────────────────────
     isf_vals = np.zeros(len(df))
     cr_vals = np.zeros(len(df))
     target_mid = np.zeros(len(df))
@@ -451,7 +486,8 @@ def build_grid(data_path: str, patient_id: str,
     # ── 10. Loop/AID context (from devicestatus) ─────────────────────
     for col in ['predicted_30', 'predicted_60', 'predicted_min',
                 'hypo_risk', 'recommended_bolus', 'enacted_rate', 'enacted_bolus',
-                'pump_battery', 'pump_reservoir']:
+                'pump_battery', 'pump_reservoir',
+                'eventual_bg', 'sensitivity_ratio', 'insulin_req']:
         if col not in df.columns:
             df[col] = np.nan
 
@@ -497,9 +533,9 @@ def build_grid(data_path: str, patient_id: str,
     # Select and order columns to match GRID_SCHEMA
     grid_columns = [
         'patient_id', 'time',
-        'glucose', 'iob', 'cob', 'net_basal', 'bolus', 'carbs',
+        'glucose', 'iob', 'cob', 'net_basal', 'bolus', 'bolus_smb', 'carbs',
         'time_sin', 'time_cos',
-        'day_sin', 'day_cos', 'override_active', 'override_type',
+        'day_sin', 'day_cos', 'override_active', 'override_type', 'exercise_active',
         'glucose_roc', 'glucose_accel', 'time_since_bolus_min', 'time_since_carb_min',
         'cage_hours', 'sage_hours', 'sensor_warmup',
         'month_sin', 'month_cos',
@@ -507,6 +543,7 @@ def build_grid(data_path: str, patient_id: str,
         'loop_predicted_30', 'loop_predicted_60', 'loop_predicted_min',
         'loop_hypo_risk', 'loop_recommended',
         'loop_enacted_rate', 'loop_enacted_bolus',
+        'eventual_bg', 'sensitivity_ratio', 'insulin_req',
         'scheduled_isf', 'scheduled_cr', 'glucose_vs_target',
         'pump_battery', 'pump_reservoir',
         'sensor_phase', 'suspension_time_min',

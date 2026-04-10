@@ -179,6 +179,7 @@ GRID_SCHEMA = pa.schema([
     pa.field('cob', pa.float32()),             # grams
     pa.field('net_basal', pa.float32()),       # U/hr deviation from scheduled
     pa.field('bolus', pa.float32()),           # units (at this 5-min slot)
+    pa.field('bolus_smb', pa.float32()),       # units from SMB auto-boluses
     pa.field('carbs', pa.float32()),           # grams (at this 5-min slot)
     # Circadian (computed from patient timezone)
     pa.field('time_sin', pa.float32()),
@@ -188,6 +189,7 @@ GRID_SCHEMA = pa.schema([
     pa.field('day_cos', pa.float32()),
     pa.field('override_active', pa.float32()),
     pa.field('override_type', pa.float32()),
+    pa.field('exercise_active', pa.float32()),  # 1.0 during exercise events
     pa.field('glucose_roc', pa.float32()),     # mg/dL per 5 min
     pa.field('glucose_accel', pa.float32()),
     pa.field('time_since_bolus_min', pa.float32()),
@@ -210,6 +212,10 @@ GRID_SCHEMA = pa.schema([
     pa.field('loop_recommended', pa.float32()),
     pa.field('loop_enacted_rate', pa.float32()),
     pa.field('loop_enacted_bolus', pa.float32()),
+    # oref0 algorithm context (Trio/AAPS/OpenAPS)
+    pa.field('eventual_bg', pa.float32()),          # predicted eventual BG (mg/dL)
+    pa.field('sensitivity_ratio', pa.float32()),    # autosens ratio (1.0 = normal)
+    pa.field('insulin_req', pa.float32()),          # insulin required (U)
     # Profile-derived
     pa.field('scheduled_isf', pa.float32()),
     pa.field('scheduled_cr', pa.float32()),

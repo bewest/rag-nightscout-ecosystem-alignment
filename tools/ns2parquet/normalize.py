@@ -303,9 +303,16 @@ def _extract_oref0_ds(ds: dict) -> dict:
     enacted = openaps.get('enacted', {}) or {}
     pred_bgs = suggested.get('predBGs', {}) or {}
 
-    def _pred_at_30(curve_name):
+    def _pred_at(curve_name, idx):
         vals = pred_bgs.get(curve_name, [])
-        return float(vals[6]) if len(vals) > 6 else None
+        return float(vals[idx]) if len(vals) > idx else None
+
+    # Select best available prediction curve (same priority as grid.py)
+    best_curve = None
+    for _cn in ['COB', 'UAM', 'IOB', 'ZT']:
+        if pred_bgs.get(_cn):
+            best_curve = pred_bgs[_cn]
+            break
 
     # oref0 durations are in MINUTES (no conversion needed)
     return {
@@ -325,14 +332,14 @@ def _extract_oref0_ds(ds: dict) -> dict:
         'enacted_duration_min': float(enacted['duration']) if 'duration' in enacted else None,
         'enacted_smb': float(enacted.get('units', 0)) if enacted else None,
         'enacted_received': enacted.get('received') if enacted else None,
-        'predicted_30': _pred_at_30('COB') or _pred_at_30('IOB'),
-        'predicted_60': None,  # would need index 12 from best curve
-        'predicted_min': None,
-        'hypo_risk_count': None,
-        'pred_iob_30': _pred_at_30('IOB'),
-        'pred_cob_30': _pred_at_30('COB'),
-        'pred_uam_30': _pred_at_30('UAM'),
-        'pred_zt_30': _pred_at_30('ZT'),
+        'predicted_30': float(best_curve[6]) if best_curve and len(best_curve) > 6 else None,
+        'predicted_60': float(best_curve[12]) if best_curve and len(best_curve) > 12 else None,
+        'predicted_min': float(min(best_curve)) if best_curve else None,
+        'hypo_risk_count': sum(1 for v in best_curve if v < 70) if best_curve else None,
+        'pred_iob_30': _pred_at('IOB', 6),
+        'pred_cob_30': _pred_at('COB', 6),
+        'pred_uam_30': _pred_at('UAM', 6),
+        'pred_zt_30': _pred_at('ZT', 6),
         'loop_failure_reason': None,
         'loop_version': None,
         'recommended_bolus': None,

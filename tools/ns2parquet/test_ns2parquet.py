@@ -555,5 +555,139 @@ class TestClinicalMetricsMatch(unittest.TestCase):
         self.assertEqual(j_carbs, p_carbs)
 
 
+class TestOref0PredictionExtraction(unittest.TestCase):
+    """Test oref0 prediction parity — predicted_60, predicted_min, hypo_risk."""
+
+    def setUp(self):
+        from tools.ns2parquet.normalize import _extract_oref0_ds
+        self.extract = _extract_oref0_ds
+
+    def test_predicted_60_from_best_curve(self):
+        """oref0: predicted_60 extracted from best curve at index 12."""
+        pred_vals = [120.0] * 6 + [130.0] + [125.0] * 5 + [140.0] + [135.0] * 35
+        ds = {'openaps': {
+            'iob': {'iob': 1.0},
+            'suggested': {'COB': 5, 'predBGs': {'COB': pred_vals}},
+        }}
+        result = self.extract(ds)
+        self.assertAlmostEqual(result['predicted_60'], 140.0)
+
+    def test_predicted_min_from_best_curve(self):
+        """oref0: predicted_min is minimum of the best curve."""
+        pred_vals = [120, 110, 100, 90, 85, 80, 75, 80, 85, 90, 95, 100, 105]
+        ds = {'openaps': {
+            'iob': {'iob': 0.5},
+            'suggested': {'COB': 3, 'predBGs': {'COB': pred_vals}},
+        }}
+        result = self.extract(ds)
+        self.assertAlmostEqual(result['predicted_min'], 75.0)
+
+    def test_hypo_risk_count(self):
+        """oref0: hypo_risk_count is count of values < 70 in best curve."""
+        pred_vals = [120, 100, 80, 65, 55, 60, 68, 72, 90, 110, 120, 130, 140]
+        ds = {'openaps': {
+            'iob': {'iob': 2.0},
+            'suggested': {'COB': 0, 'predBGs': {'IOB': pred_vals}},
+        }}
+        result = self.extract(ds)
+        # Values < 70: 65, 55, 60, 68 = 4
+        self.assertEqual(result['hypo_risk_count'], 4)
+
+    def test_curve_priority_cob_first(self):
+        """oref0: COB curve used when available, even if IOB also present."""
+        ds = {'openaps': {
+            'iob': {'iob': 1.0},
+            'suggested': {'COB': 5, 'predBGs': {
+                'COB': [100] * 13,
+                'IOB': [200] * 13,
+            }},
+        }}
+        result = self.extract(ds)
+        self.assertAlmostEqual(result['predicted_30'], 100.0)
+
+    def test_no_predictions_returns_none(self):
+        """oref0: missing predBGs → None for all prediction fields."""
+        ds = {'openaps': {
+            'iob': {'iob': 0.5},
+            'suggested': {'COB': 0},
+        }}
+        result = self.extract(ds)
+        self.assertIsNone(result['predicted_60'])
+        self.assertIsNone(result['predicted_min'])
+        self.assertIsNone(result['hypo_risk_count'])
+
+
+@unittest.skipUnless(HAS_PATIENT_DATA, 'Real patient data not available')
+class TestPatientBMixedController(unittest.TestCase):
+    """Integration: patient b (Trio + Loop) validates new columns."""
+
+    HAS_B = os.path.isfile(
+        os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json'))
+
+    @classmethod
+    def setUpClass(cls):
+        if not cls.HAS_B:
+            return
+        from tools.ns2parquet.grid import build_grid
+        cls.df = build_grid(
+            os.path.join(PATIENTS_DIR, 'b', 'training'), 'b', verbose=False)
+
+    @unittest.skipUnless(
+        os.path.isfile(os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json')),
+        'Patient b data not available')
+    def test_new_columns_present(self):
+        """All new columns exist in grid output."""
+        for col in ['bolus_smb', 'exercise_active', 'eventual_bg',
+                     'sensitivity_ratio', 'insulin_req']:
+            self.assertIn(col, self.df.columns, f'Missing: {col}')
+
+    @unittest.skipUnless(
+        os.path.isfile(os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json')),
+        'Patient b data not available')
+    def test_oref0_algo_context_populated(self):
+        """Patient b (Trio) has oref0 algorithm context populated."""
+        for col in ['eventual_bg', 'sensitivity_ratio', 'insulin_req']:
+            valid = self.df[col].notna().sum()
+            self.assertGreater(valid, len(self.df) * 0.5,
+                               f'{col} should be >50% populated for Trio patient')
+
+    @unittest.skipUnless(
+        os.path.isfile(os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json')),
+        'Patient b data not available')
+    def test_smb_insulin_captured(self):
+        """Patient b SMBs are captured in both bolus and bolus_smb."""
+        smb_total = self.df['bolus_smb'].sum()
+        bolus_total = self.df['bolus'].sum()
+        self.assertGreater(smb_total, 0, 'Expected SMB insulin for Trio patient')
+        self.assertGreater(bolus_total, smb_total, 'Total bolus should exceed SMBs')
+        self.assertGreater(smb_total / bolus_total, 0.1, 'SMBs should be >10% of bolus')
+
+    @unittest.skipUnless(
+        os.path.isfile(os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json')),
+        'Patient b data not available')
+    def test_exercise_detected(self):
+        """Patient b has exercise events detected."""
+        ex_slots = (self.df['exercise_active'] > 0).sum()
+        self.assertGreater(ex_slots, 0, 'Expected exercise events for patient b')
+
+    @unittest.skipUnless(
+        os.path.isfile(os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json')),
+        'Patient b data not available')
+    def test_override_detected(self):
+        """Patient b has temporary target/override events detected."""
+        ov_slots = (self.df['override_active'] > 0).sum()
+        self.assertGreater(ov_slots, 0, 'Expected overrides for patient b')
+
+    @unittest.skipUnless(
+        os.path.isfile(os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json')),
+        'Patient b data not available')
+    def test_predictions_populated_for_oref0(self):
+        """Patient b (mostly Trio) has predictions at 30 and 60 minutes."""
+        for col in ['loop_predicted_30', 'loop_predicted_60', 'loop_predicted_min']:
+            valid = self.df[col].notna().sum()
+            self.assertGreater(valid, len(self.df) * 0.5,
+                               f'{col} should be >50% populated for Trio patient')
+
+
 if __name__ == '__main__':
     unittest.main()
