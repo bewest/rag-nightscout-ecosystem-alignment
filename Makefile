@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests
+.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info
 
 # Default target
 help:
@@ -61,6 +61,10 @@ help:
 	@echo "  make sdqctl-cycle-multi N=5 - Run N backlog cycles"
 	@echo "  make sdqctl-gen         - Run generation workflows"
 	@echo "  make sdqctl-analysis    - Run analysis workflows"
+	@echo ""
+	@echo "Data Terrarium:"
+	@echo "  make terrarium      - Build parquet data store (externals/ns-parquet/)"
+	@echo "  make terrarium-info - Show summary of terrarium contents"
 	@echo ""
 	@echo "  make help       - Show this help message"
 	@echo ""
@@ -548,3 +552,33 @@ loop-smoke: xval-build ## Quick Loop smoke test (10 vectors)
 	@echo ""
 	@echo "Loop smoke test (10 vectors)..."
 	@cd $(HARNESS_DIR) && node loop-xval.js --count 10
+
+# ── Data Terrarium ──────────────────────────────────────────────────
+NS_DATA     ?= externals/ns-data/patients
+NS_PARQUET  ?= externals/ns-parquet
+
+terrarium: ## Build parquet data store from ns-data JSON
+	@echo "Building data terrarium → $(NS_PARQUET)/"
+	@python3 -m tools.ns2parquet convert-all \
+		--patients-dir $(NS_DATA) \
+		--subset both \
+		--output $(NS_PARQUET)
+	@cp tools/ns2parquet/terrarium-README.md $(NS_PARQUET)/README.md
+	@python3 -c "\
+import json, datetime, subprocess, os; \
+sha = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip(); \
+patients = sorted(d for d in os.listdir('$(NS_DATA)') if os.path.isdir(os.path.join('$(NS_DATA)', d))); \
+json.dump({'built': datetime.datetime.utcnow().isoformat() + 'Z', 'git_sha': sha, 'source': '$(NS_DATA)', 'patients': patients}, \
+  open('$(NS_PARQUET)/manifest.json', 'w'), indent=2); \
+print('  Wrote manifest.json')"
+	@echo ""
+	@python3 -m tools.ns2parquet info -i $(NS_PARQUET)/training --detail
+	@echo ""
+	@echo "Terrarium ready: $(NS_PARQUET)/"
+
+terrarium-info: ## Show summary of terrarium contents
+	@echo "Training:"
+	@python3 -m tools.ns2parquet info -i $(NS_PARQUET)/training --detail
+	@echo ""
+	@echo "Verification:"
+	@python3 -m tools.ns2parquet info -i $(NS_PARQUET)/verification --detail

@@ -617,6 +617,109 @@ def build_nightscout_grid(data_path: str,
     return df, features
 
 
+# ── Parquet bridge ─────────────────────────────────────────────────────
+# Fast-path loader that reads pre-built grid.parquet from the data terrarium
+# instead of re-parsing JSON.  Drop-in replacement for the JSON code path.
+# Usage:
+#   patients = load_parquet_patients('externals/ns-parquet/training')
+
+def load_parquet_grid(parquet_dir: str,
+                      patient_filter: str = None,
+                      verbose: bool = True,
+                      ) -> Dict[str, Tuple[pd.DataFrame, np.ndarray]]:
+    """Load pre-built 5-min grids from a ns-parquet terrarium directory.
+
+    Returns dict mapping patient_id → (df, features) in the same format
+    as build_nightscout_grid(), so callers can swap seamlessly.
+
+    Args:
+        parquet_dir: Directory containing grid.parquet (e.g. externals/ns-parquet/training)
+        patient_filter: Optional single patient ID to load
+        verbose: Print progress
+
+    Returns:
+        Dict of {patient_id: (df, features_8col)} where df has DatetimeIndex
+        and features is (N, 8) float32 normalized array.
+    """
+    grid_path = Path(parquet_dir) / 'grid.parquet'
+    if not grid_path.exists():
+        raise FileNotFoundError(
+            f"No grid.parquet in {parquet_dir}. Run 'make terrarium' first.")
+
+    grid = pd.read_parquet(grid_path)
+    if patient_filter:
+        grid = grid[grid['patient_id'] == patient_filter]
+
+    results = {}
+    for pid, pdf in grid.groupby('patient_id'):
+        pdf = pdf.sort_values('time').copy()
+        pdf.index = pd.DatetimeIndex(pdf['time'])
+
+        # Build the 8-feature normalized array matching build_nightscout_grid output
+        features = np.column_stack([
+            pdf['glucose'].values / SCALE['glucose'],
+            pdf['iob'].values / SCALE['iob'],
+            pdf['cob'].values / SCALE['cob'],
+            pdf['net_basal'].values / SCALE['net_basal'],
+            pdf['bolus'].values / SCALE['bolus'],
+            pdf['carbs'].values / SCALE['carbs'],
+            pdf['time_sin'].values,
+            pdf['time_cos'].values,
+        ]).astype(np.float32)
+
+        results[pid] = (pdf, features)
+        if verbose:
+            print(f"  Loaded {pid}: {len(pdf)} steps (parquet)")
+
+    return results
+
+
+def load_parquet_patients(parquet_dir: str,
+                          max_patients: int = None,
+                          patient_filter: str = None,
+                          verbose: bool = True) -> list:
+    """Drop-in replacement for exp_metabolic_flux.load_patients() using parquet.
+
+    Returns the same [{name, df, grid, pk}] list format that all cgmencode
+    experiments expect, but reads from pre-built parquet (~16ms) instead of
+    re-parsing JSON (~3s per patient).
+
+    Args:
+        parquet_dir: Path to terrarium subset (e.g. 'externals/ns-parquet/training')
+        max_patients: Limit number of patients loaded
+        patient_filter: Load only this patient ID
+        verbose: Print progress
+    """
+    from .continuous_pk import build_continuous_pk_features
+
+    grids = load_parquet_grid(parquet_dir, patient_filter=patient_filter,
+                              verbose=verbose)
+
+    patients = []
+    for pid in sorted(grids.keys()):
+        if max_patients and len(patients) >= max_patients:
+            break
+        df, features = grids[pid]
+        if len(df) < 100:
+            continue
+        try:
+            pk = build_continuous_pk_features(df)
+            if pk is None:
+                continue
+            n = min(len(features), len(pk))
+            patients.append({
+                'name': pid,
+                'df':   df.iloc[:n],
+                'grid': features[:n],
+                'pk':   pk[:n],
+            })
+        except Exception as exc:
+            if verbose:
+                print(f"  Skip {pid}: {exc}")
+
+    return patients
+
+
 def build_extended_features(df: pd.DataFrame, features: np.ndarray,
                             treatments: list = None,
                             verbose: bool = False,
