@@ -44,7 +44,7 @@ This report combines all findings from EXP-1841–1888 into a unified therapy as
 | h | 92 → 276 (+200%) | 10 → 7.2 (−28%) | 0.85 → 0.86 (+1%) |
 | i | 55 → 66 (+20%) | 6 → 4.9 (−19%) | 2.10 → 2.16 (+3%) |
 | j | 40 → 4 (−90%) | 6 → 3.2 (−47%) | 0.00 → 1.18 — |
-| k | 25 → 2 (−90%) | 10 → 1.2 (−88%) | 0.55 → 0.78 (+43%) |
+| k | 25 → 2.5 (−90%) | 10 → 1.2 (−88%) | 0.55 → 0.78 (+43%) |
 
 **Population**: ISF mismatch **+62%** (profile ISF too low for most), CR mismatch **−40%** (profile CR too high), basal mismatch **+11%** (slightly too low).
 
@@ -74,15 +74,17 @@ The dominant pattern: **ISF is set too low** (insulin is more sensitive than set
 | f | 1.40 | 216 | 223 | −3.5% |
 | g | 1.90 | 824 | 560 | **+32%** |
 | h | 3.00 | 1743 | 661 | **+62%** |
+| i | 1.70 | 190 | 212 | −11.4% |
+| j | 0.10 | 83 | 83 | 0.0% |
 | k | 0.10 | 36 | 29 | **+20%** |
 
-**7/11 patients show positive transfer** (mean +21% improvement). This confirms that optimized parameters are NOT overfit — they generalize to unseen data.
+**7/11 patients show positive transfer** (mean +20.6% improvement). This confirms that optimized parameters are NOT overfit — they generalize to unseen data.
 
 ![Temporal Cross-Validation](figures/integrated-fig02-temporal-crossval.png)
 
 ### Interpretation
 
-The 4 patients that don't transfer (b, d, f, i) are interesting: they're already close to optimal with profile settings (low improvement potential). The patients with the most improvement potential (a, c, e, h) show the strongest temporal transfer — meaning their settings are consistently wrong in the same direction.
+The 4 patients that don't transfer (b, f, i, j) are interesting: b, f, and i show slight negative transfer (settings slightly overfit to H1), while j shows exactly 0% improvement (only 2 months of data, scale at grid floor 0.1). The patients with the most improvement potential (a, c, e, h) show the strongest temporal transfer — meaning their settings are consistently wrong in the same direction.
 
 ## EXP-1893: Cross-Patient Transfer
 
@@ -132,7 +134,7 @@ This is the strongest argument for personalized therapy: population-level parame
 ### Interpretation
 
 - **5/11 patients** meet the TIR≥70% target (d, g, h, j, k)
-- **CV threshold** (36%): 6/11 exceed the variability threshold
+- **CV threshold** (36%): 7/11 exceed the variability threshold
 - **LBGI** (hypo risk): Generally low (AID loops prevent most hypos)
 - **HBGI** (hyper risk): High for a, b — these patients spend significant time above range
 - Patient k is exceptional: 95.1% TIR, 4.9 eA1c — near-perfect glucose management
@@ -181,8 +183,10 @@ The improvement is NOT correlated with current TIR — patient h (85% TIR) has t
 | b | 0.10 × 5, then 2.90 | **1.841** | 2.80 |
 | i | 2.90, 1.30, 0.20, 0.70, 0.60, 0.40 | **0.893** | 2.50 |
 | k | 0.10 × 3, 0.40, 0.10, 0.20 | **0.663** | 0.10 |
+| h | 3.00, 3.00, 1.00, 3.00, 3.00, 3.00 | **0.280** | 0.00 |
+| j | 0.10, 0.10 | 0.000 | 0.00 |
 
-**6/11 patients have stable parameters** (CV < 0.15). Three patients (b, i, k) show substantial temporal variability.
+**6/11 patients have stable parameters** (CV < 0.15). Three patients (b, i, k) show substantial temporal variability. Patient h has CV=0.28 (moderately unstable) due to a single anomalous month. Patient j has only 2 months of data.
 
 ![Parameter Evolution](figures/integrated-fig06-parameter-evolution.png)
 
@@ -340,6 +344,6 @@ CR = carbs * ISF / (excursion + bolus * ISF)
 ### AID Fingerprinting Features
 ```python
 zero_fraction = mean(temp_rate == 0)
-smb_ratio = count(bolus < 0.5) / count(bolus >= 0.5)
+smb_ratio = count((bolus > 0) & (bolus < 0.5)) / count(bolus >= 0.5)
 rate_change_freq = count(|diff(temp_rate)| > 0.01) / n_steps
 ```
