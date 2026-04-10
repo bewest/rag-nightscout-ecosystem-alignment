@@ -33,7 +33,8 @@ from cgmencode.production.types import (
     PipelineResult, ForecastResult,
     GlycemicGrade, BasalAssessment, EventType, OnboardingPhase,
     Phenotype, MealWindow, SettingsParameter, MealResponseType,
-    CompensationType,
+    CompensationType, ConfidenceGrade,
+    OptimalSettings, SettingScheduleEntry, SettingsOptimizationResult,
 )
 
 
@@ -1177,6 +1178,286 @@ class TestNaturalExperimentPipeline(unittest.TestCase):
         # Should still have experiments (BG-only detectors)
         if result.natural_experiments is not None:
             self.assertGreaterEqual(result.natural_experiments.total_detected, 0)
+
+
+# ── Settings Optimizer Tests (EXP-1701) ──────────────────────────────
+
+class TestSettingsOptimizerTypes(unittest.TestCase):
+    """Type contracts for settings optimization types."""
+
+    def test_setting_schedule_entry_fields(self):
+        from cgmencode.production.types import SettingScheduleEntry
+        entry = SettingScheduleEntry(
+            period="overnight", start_hour=0,
+            current_value=0.8, recommended_value=0.85,
+            change_pct=6.25, confidence="high", n_evidence=15,
+            ci_low=0.78, ci_high=0.92,
+        )
+        self.assertEqual(entry.period, "overnight")
+        self.assertEqual(entry.start_hour, 0)
+        self.assertAlmostEqual(entry.change_pct, 6.25)
+        self.assertEqual(entry.confidence, "high")
+
+    def test_optimal_settings_properties(self):
+        from cgmencode.production.types import (
+            OptimalSettings, SettingScheduleEntry, ConfidenceGrade)
+        isf_entries = [
+            SettingScheduleEntry("overnight", 0, 50.0, 100.0, 100.0, "high", 20),
+            SettingScheduleEntry("morning", 6, 50.0, 80.0, 60.0, "medium", 8),
+        ]
+        optimal = OptimalSettings(
+            basal_schedule=[], isf_schedule=isf_entries, cr_schedule=[],
+            confidence_grade=ConfidenceGrade.B,
+            total_evidence=100,
+            predicted_tir_delta=2.8,
+            tir_contributions={"basal": 0.2, "isf": 2.4, "cr": 0.2},
+        )
+        self.assertAlmostEqual(optimal.isf_mismatch_ratio, 1.8)  # (100/50 + 80/50) / 2
+        self.assertEqual(optimal.dominant_lever, "isf")
+
+    def test_optimal_settings_to_dict(self):
+        from cgmencode.production.types import (
+            OptimalSettings, SettingScheduleEntry, ConfidenceGrade)
+        optimal = OptimalSettings(
+            basal_schedule=[],
+            isf_schedule=[
+                SettingScheduleEntry("overnight", 0, 50.0, 100.0, 100.0, "high", 20),
+            ],
+            cr_schedule=[],
+            confidence_grade=ConfidenceGrade.A,
+            total_evidence=200,
+            predicted_tir_delta=3.0,
+            tir_contributions={"basal": 0.5, "isf": 2.0, "cr": 0.5},
+        )
+        d = optimal.to_dict()
+        self.assertEqual(d['confidence_grade'], 'A')
+        self.assertIn('isf_mismatch_ratio', d)
+        self.assertIn('dominant_lever', d)
+
+    def test_settings_optimization_result_fields(self):
+        from cgmencode.production.types import (
+            OptimalSettings, SettingScheduleEntry, ConfidenceGrade,
+            SettingsOptimizationResult)
+        optimal = OptimalSettings(
+            basal_schedule=[], isf_schedule=[], cr_schedule=[],
+            confidence_grade=ConfidenceGrade.D,
+            total_evidence=5, predicted_tir_delta=0.1,
+            tir_contributions={"basal": 0, "isf": 0.1, "cr": 0},
+        )
+        result = SettingsOptimizationResult(
+            optimal=optimal,
+            basal_drift_reduction_pct=10.0,
+            isf_residual_improvement_pct=50.0,
+            cr_excursion_improvement_pct=30.0,
+            n_recommendations=3,
+        )
+        self.assertEqual(result.n_recommendations, 3)
+        self.assertEqual(len(result.warnings), 0)
+
+
+class TestSettingsOptimizerModule(unittest.TestCase):
+    """Module contracts for settings_optimizer."""
+
+    def _make_census(self):
+        """Build a synthetic census with fasting, correction, and meal windows."""
+        from cgmencode.production.natural_experiment_detector import (
+            NaturalExperiment, NaturalExperimentType, NaturalExperimentCensus)
+
+        exps = []
+        # Fasting windows (overnight, positive drift = basal too low)
+        for i in range(15):
+            exps.append(NaturalExperiment(
+                exp_type=NaturalExperimentType.FASTING,
+                start_idx=i * 288, end_idx=i * 288 + 72,
+                duration_minutes=360, hour_of_day=2.0, quality=0.85,
+                measurements={
+                    'drift_mg_dl_per_hour': 3.0 + (i % 5) * 0.5,
+                    'mean_bg': 110.0, 'cgm_coverage': 0.95,
+                },
+            ))
+        # Overnight fasting windows
+        for i in range(10):
+            exps.append(NaturalExperiment(
+                exp_type=NaturalExperimentType.OVERNIGHT,
+                start_idx=i * 288, end_idx=i * 288 + 60,
+                duration_minutes=300, hour_of_day=1.0, quality=0.8,
+                measurements={
+                    'drift_mg_dl_per_hour': 2.5,
+                    'is_fasting': True, 'mean_bg': 105.0, 'cgm_coverage': 0.9,
+                },
+            ))
+        # Correction windows (ISF ~100 mg/dL/U, profile has 50)
+        for i in range(20):
+            hour = 8.0 + (i % 12)  # spread across morning/midday/afternoon
+            exps.append(NaturalExperiment(
+                exp_type=NaturalExperimentType.CORRECTION,
+                start_idx=i * 50, end_idx=i * 50 + 36,
+                duration_minutes=180, hour_of_day=hour, quality=0.75,
+                measurements={
+                    'bolus_u': 2.0, 'start_bg': 250.0, 'nadir_bg': 150.0,
+                    'simple_isf': 50.0, 'curve_isf': 100.0, 'curve_r2': 0.8,
+                    'cgm_coverage': 0.9,
+                },
+            ))
+        # Meal windows (carbs=40g, bolus=4U, excursion=60 → eff CR = 40/(4+60/50) = 40/5.2 ≈ 7.7)
+        for i in range(25):
+            hour = 7.0 + (i % 15)
+            exps.append(NaturalExperiment(
+                exp_type=NaturalExperimentType.MEAL,
+                start_idx=i * 60, end_idx=i * 60 + 36,
+                duration_minutes=180, hour_of_day=hour, quality=0.7,
+                measurements={
+                    'carbs_g': 40.0, 'bolus_u': 4.0, 'is_announced': True,
+                    'pre_meal_bg': 120.0, 'peak_bg': 180.0,
+                    'excursion_mg_dl': 60.0, 'peak_time_min': 45,
+                    'cgm_coverage': 0.85,
+                },
+            ))
+
+        return NaturalExperimentCensus(
+            experiments=exps, total_detected=len(exps),
+            by_type={'fasting': 15, 'overnight': 10, 'correction': 20, 'meal': 25},
+            quality_mean=0.78, days_analyzed=15.0, per_day_rate=4.7,
+        )
+
+    def test_optimize_settings_returns_result(self):
+        from cgmencode.production.settings_optimizer import optimize_settings
+        census = self._make_census()
+        profile = make_profile()
+        result = optimize_settings(census, profile)
+        self.assertIsInstance(result, SettingsOptimizationResult)
+        self.assertIsInstance(result.optimal, OptimalSettings)
+
+    def test_schedule_has_five_periods(self):
+        from cgmencode.production.settings_optimizer import optimize_settings
+        census = self._make_census()
+        profile = make_profile()
+        result = optimize_settings(census, profile)
+        self.assertEqual(len(result.optimal.basal_schedule), 5)
+        self.assertEqual(len(result.optimal.isf_schedule), 5)
+        self.assertEqual(len(result.optimal.cr_schedule), 5)
+
+    def test_period_names_correct(self):
+        from cgmencode.production.settings_optimizer import optimize_settings
+        census = self._make_census()
+        profile = make_profile()
+        result = optimize_settings(census, profile)
+        expected = {"overnight", "morning", "midday", "afternoon", "evening"}
+        actual = {e.period for e in result.optimal.basal_schedule}
+        self.assertEqual(actual, expected)
+
+    def test_isf_detects_underestimation(self):
+        """ISF should be recommended higher when curve_isf > profile_isf."""
+        from cgmencode.production.settings_optimizer import optimize_settings
+        census = self._make_census()
+        profile = make_profile()  # ISF = 50
+        result = optimize_settings(census, profile)
+        # At least some periods should recommend ISF > profile
+        isf_higher = [e for e in result.optimal.isf_schedule
+                      if e.recommended_value > e.current_value and e.confidence != "low"]
+        self.assertGreater(len(isf_higher), 0,
+                           "Should detect ISF underestimation from correction windows")
+
+    def test_basal_responds_to_drift(self):
+        """Positive drift should recommend basal increase."""
+        from cgmencode.production.settings_optimizer import optimize_settings
+        census = self._make_census()  # drift = +3 mg/dL/h
+        profile = make_profile()
+        result = optimize_settings(census, profile)
+        overnight = [e for e in result.optimal.basal_schedule
+                     if e.period == "overnight"]
+        self.assertEqual(len(overnight), 1)
+        # Positive drift → basal increase
+        if overnight[0].confidence != "low":
+            self.assertGreater(overnight[0].recommended_value,
+                               overnight[0].current_value)
+
+    def test_confidence_grade_with_evidence(self):
+        """70 experiments across types should grade B or higher."""
+        from cgmencode.production.settings_optimizer import optimize_settings
+        census = self._make_census()  # 70 total experiments
+        profile = make_profile()
+        result = optimize_settings(census, profile)
+        self.assertIn(result.optimal.confidence_grade,
+                      [ConfidenceGrade.A, ConfidenceGrade.B])
+
+    def test_tir_prediction_positive(self):
+        """Settings correction should predict positive TIR improvement."""
+        from cgmencode.production.settings_optimizer import optimize_settings
+        census = self._make_census()
+        profile = make_profile()
+        result = optimize_settings(census, profile)
+        self.assertGreater(result.optimal.predicted_tir_delta, 0,
+                           "Correcting ISF 2× should predict TIR improvement")
+
+    def test_dominant_lever_is_isf(self):
+        """ISF should be dominant lever (85% of gain per EXP-1717)."""
+        from cgmencode.production.settings_optimizer import optimize_settings
+        census = self._make_census()
+        profile = make_profile()
+        result = optimize_settings(census, profile)
+        self.assertEqual(result.optimal.dominant_lever, "isf")
+
+    def test_empty_census(self):
+        """Empty census should still return valid result with low confidence."""
+        from cgmencode.production.settings_optimizer import optimize_settings
+        from cgmencode.production.natural_experiment_detector import NaturalExperimentCensus
+        census = NaturalExperimentCensus(
+            experiments=[], total_detected=0,
+            by_type={}, quality_mean=0.0,
+            days_analyzed=15.0, per_day_rate=0.0,
+        )
+        profile = make_profile()
+        result = optimize_settings(census, profile)
+        self.assertEqual(result.optimal.confidence_grade, ConfidenceGrade.D)
+        self.assertEqual(result.optimal.total_evidence, 0)
+
+    def test_retrospective_validation_fields(self):
+        """Validation metrics should be populated."""
+        from cgmencode.production.settings_optimizer import optimize_settings
+        census = self._make_census()
+        profile = make_profile()
+        result = optimize_settings(census, profile)
+        self.assertGreaterEqual(result.basal_drift_reduction_pct, 0)
+        self.assertGreaterEqual(result.isf_residual_improvement_pct, 0)
+        self.assertGreaterEqual(result.cr_excursion_improvement_pct, 0)
+        self.assertGreater(result.n_recommendations, 0)
+
+    def test_bootstrap_ci_populated(self):
+        """ISF schedule entries with evidence should have CI bounds."""
+        from cgmencode.production.settings_optimizer import optimize_settings
+        census = self._make_census()
+        profile = make_profile()
+        result = optimize_settings(census, profile)
+        entries_with_ci = [e for e in result.optimal.isf_schedule
+                           if e.ci_low is not None and e.ci_high is not None]
+        self.assertGreater(len(entries_with_ci), 0)
+        for e in entries_with_ci:
+            self.assertLessEqual(e.ci_low, e.recommended_value)
+            self.assertGreaterEqual(e.ci_high, e.recommended_value)
+
+
+class TestSettingsOptimizerPipeline(unittest.TestCase):
+    """Integration: settings optimizer through pipeline."""
+
+    def test_pipeline_includes_optimal_settings(self):
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(n=4320, with_insulin=True)
+        result = run_pipeline(patient)
+        # Should have optimal_settings populated (or None with warning if no NEs)
+        if result.natural_experiments and result.natural_experiments.total_detected > 0:
+            # With enough data, optimizer should run
+            if result.optimal_settings is not None:
+                self.assertEqual(len(result.optimal_settings.optimal.basal_schedule), 5)
+                self.assertEqual(len(result.optimal_settings.optimal.isf_schedule), 5)
+                self.assertEqual(len(result.optimal_settings.optimal.cr_schedule), 5)
+
+    def test_pipeline_result_has_field(self):
+        """PipelineResult should have optimal_settings field."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(n=4320, with_insulin=True)
+        result = run_pipeline(patient)
+        self.assertTrue(hasattr(result, 'optimal_settings'))
 
 
 # ── Runner ────────────────────────────────────────────────────────────

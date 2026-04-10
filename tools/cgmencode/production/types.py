@@ -572,6 +572,81 @@ class AIDCompensation:
     interpretation: str = ""
 
 
+# ── Settings Optimization (EXP-1701–1721) ────────────────────────────
+
+@dataclass
+class SettingScheduleEntry:
+    """A single time-period setting with confidence metrics.
+
+    Research basis: EXP-1701 (basal), EXP-1703 (ISF), EXP-1705 (CR).
+    Quality-weighted extraction from natural experiment windows.
+    """
+    period: str                         # "overnight", "morning", "midday", "afternoon", "evening"
+    start_hour: int                     # 0, 6, 10, 14, 18
+    current_value: float                # current profile value
+    recommended_value: float            # optimal value from natural experiments
+    change_pct: float                   # (recommended - current) / current * 100
+    confidence: str                     # "high", "medium", "low"
+    n_evidence: int                     # number of natural experiment windows
+    ci_low: Optional[float] = None      # 95% bootstrap CI lower bound
+    ci_high: Optional[float] = None     # 95% bootstrap CI upper bound
+
+
+@dataclass
+class OptimalSettings:
+    """Complete optimized settings schedule for one patient.
+
+    Research basis: EXP-1701–1707 (extraction + confidence scoring).
+    Key finding: ISF universally underestimated 2.3×, CR 27% too aggressive,
+    basal mostly well-calibrated. ISF correction yields 85% of TIR gain.
+    """
+    basal_schedule: List[SettingScheduleEntry]
+    isf_schedule: List[SettingScheduleEntry]
+    cr_schedule: List[SettingScheduleEntry]
+    confidence_grade: ConfidenceGrade       # A/B/C/D
+    total_evidence: int                     # total NE windows used
+    predicted_tir_delta: float              # predicted TIR improvement (pp)
+    tir_contributions: Dict[str, float]     # {"basal": x, "isf": y, "cr": z}
+
+    @property
+    def isf_mismatch_ratio(self) -> float:
+        """Mean effective/profile ISF ratio across periods."""
+        ratios = []
+        for e in self.isf_schedule:
+            if e.current_value > 0 and e.confidence != 'low':
+                ratios.append(e.recommended_value / e.current_value)
+        return float(np.mean(ratios)) if ratios else 1.0
+
+    @property
+    def dominant_lever(self) -> str:
+        """Which setting contributes most to predicted TIR gain."""
+        c = self.tir_contributions
+        return max(c, key=lambda k: abs(c[k])) if c else "isf"
+
+    def to_dict(self) -> dict:
+        from dataclasses import asdict
+        d = asdict(self)
+        d['confidence_grade'] = self.confidence_grade.value
+        d['isf_mismatch_ratio'] = self.isf_mismatch_ratio
+        d['dominant_lever'] = self.dominant_lever
+        return d
+
+
+@dataclass
+class SettingsOptimizationResult:
+    """Full result from settings optimization including validation.
+
+    Research basis: EXP-1711–1717 (retrospective validation).
+    Combined optimization predicts +2.8% TIR (population mean).
+    """
+    optimal: OptimalSettings
+    basal_drift_reduction_pct: float        # % of fasting drift eliminated
+    isf_residual_improvement_pct: float     # % improvement in correction residuals
+    cr_excursion_improvement_pct: float     # % improvement in meal excursion prediction
+    n_recommendations: int                  # total actionable recommendations
+    warnings: List[str] = field(default_factory=list)
+
+
 # ── Glucose Forecast ──────────────────────────────────────────────────
 
 @dataclass
@@ -618,6 +693,8 @@ class PipelineResult:
     forecast: Optional[ForecastResult] = None
     # Natural experiments (EXP-1551)
     natural_experiments: Optional[object] = None  # NaturalExperimentCensus (avoid circular import)
+    # Settings optimization (EXP-1701)
+    optimal_settings: Optional[SettingsOptimizationResult] = None
     pipeline_latency_ms: float = 0.0
     warnings: List[str] = field(default_factory=list)
 

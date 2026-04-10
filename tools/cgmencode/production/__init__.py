@@ -28,6 +28,7 @@ from .types import (
     BolusTimingSafety, AIDCompensation, CompensationType,
     GlycemicGrade, BasalAssessment, EventType, OnboardingPhase, Phenotype,
     MealWindow, SettingsParameter,
+    OptimalSettings, SettingScheduleEntry, SettingsOptimizationResult,
 )
 from .data_quality import clean_glucose, detect_spikes, interpolate_spikes
 from .metabolic_engine import compute_metabolic_state
@@ -47,6 +48,7 @@ from .natural_experiment_detector import (
     detect_natural_experiments, NaturalExperiment, NaturalExperimentCensus,
     NaturalExperimentType, MealConfig,
 )
+from .settings_optimizer import optimize_settings
 from .pipeline import run_pipeline, run_pipeline_batch
 from .validators import run_validation
 
@@ -79,6 +81,9 @@ __all__ = [
     # Natural Experiments
     'detect_natural_experiments', 'NaturalExperiment', 'NaturalExperimentCensus',
     'NaturalExperimentType', 'MealConfig',
+    # Settings Optimization (EXP-1701)
+    'optimize_settings',
+    'OptimalSettings', 'SettingScheduleEntry', 'SettingsOptimizationResult',
     # Validation
     'run_validation',
 ]

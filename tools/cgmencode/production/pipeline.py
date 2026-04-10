@@ -39,6 +39,7 @@ from .clinical_rules import (
     compute_fidelity_grade,
 )
 from .natural_experiment_detector import detect_natural_experiments
+from .settings_optimizer import optimize_settings
 
 
 def run_pipeline(patient: PatientData,
@@ -298,6 +299,17 @@ def run_pipeline(patient: PatientData,
         except Exception as e:
             warnings.append(f"Natural experiment detection failed: {e}")
 
+    # ── Stage 6a: Settings Optimization from NE (EXP-1701) ──────
+    optimal_settings = None
+    if natural_experiments is not None and patient.days_of_data >= 3.0:
+        try:
+            optimal_settings = optimize_settings(
+                census=natural_experiments,
+                profile=patient.profile,
+            )
+        except Exception as e:
+            warnings.append(f"Settings optimization failed: {e}")
+
     # ── Stage 6: Settings Advisor ─────────────────────────────────
     settings_recs = None
     if patient.days_of_data >= 3.0:
@@ -350,6 +362,7 @@ def run_pipeline(patient: PatientData,
         aid_compensation=aid_compensation,
         forecast=forecast,
         natural_experiments=natural_experiments,
+        optimal_settings=optimal_settings,
         pipeline_latency_ms=elapsed,
         warnings=warnings,
     )
