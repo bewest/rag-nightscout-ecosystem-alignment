@@ -623,6 +623,65 @@ def build_nightscout_grid(data_path: str,
 # Usage:
 #   patients = load_parquet_patients('externals/ns-parquet/training')
 
+def _reconstruct_attrs(profiles_df: pd.DataFrame, patient_id: str) -> dict:
+    """Reconstruct df.attrs from profiles.parquet for a single patient.
+
+    The JSON path stores therapy schedules in df.attrs (isf_schedule,
+    cr_schedule, basal_schedule, etc.).  Parquet doesn't preserve attrs,
+    so we rebuild them from the profiles collection.
+    """
+    pf = profiles_df[profiles_df['patient_id'] == patient_id]
+    if pf.empty:
+        return {}
+
+    # Use latest profile snapshot only
+    if 'created_at' in pf.columns:
+        pf = pf[pf['created_at'] == pf['created_at'].max()]
+
+    attrs = {}
+
+    # Scalar fields from first row (all rows have same value per patient)
+    row0 = pf.iloc[0]
+    attrs['patient_dia'] = float(row0.get('dia_hours', 5.0))
+    attrs['patient_tz'] = str(row0.get('timezone', ''))
+    attrs['profile_units'] = str(row0.get('units', 'mg/dL'))
+
+    # Rebuild schedule lists from long-format rows
+    for sched_type, attr_name in [
+        ('basal', 'basal_schedule'),
+        ('isf', 'isf_schedule'),
+        ('cr', 'cr_schedule'),
+        ('target_low', 'target_low_schedule'),
+        ('target_high', 'target_high_schedule'),
+    ]:
+        rows = pf[pf['schedule_type'] == sched_type].sort_values('time_seconds')
+        schedule = []
+        for _, r in rows.iterrows():
+            schedule.append({
+                'time': str(r.get('time_str', '00:00')),
+                'timeAsSeconds': int(r.get('time_seconds', 0)),
+                'value': float(r.get('value', 0)),
+            })
+        if schedule:
+            attrs[attr_name] = schedule
+
+    return attrs
+
+
+# Column mapping: ns2parquet grid → real_data_adapter expected names
+_PARQUET_COL_MAP = {
+    'actual_basal_rate': 'temp_rate',
+    'loop_predicted_30': 'predicted_30',
+    'loop_predicted_60': 'predicted_60',
+    'loop_predicted_min': 'predicted_min',
+    'loop_hypo_risk': 'hypo_risk',
+    'loop_recommended': 'recommended_bolus',
+    'loop_enacted_rate': 'enacted_rate',
+    'loop_enacted_bolus': 'enacted_bolus',
+    'trend_rate': 'trend_rate_raw',
+}
+
+
 def load_parquet_grid(parquet_dir: str,
                       patient_filter: str = None,
                       verbose: bool = True,
@@ -631,6 +690,9 @@ def load_parquet_grid(parquet_dir: str,
 
     Returns dict mapping patient_id → (df, features) in the same format
     as build_nightscout_grid(), so callers can swap seamlessly.
+
+    Reconstructs df.attrs from profiles.parquet so that
+    build_continuous_pk_features() gets correct therapy schedules.
 
     Args:
         parquet_dir: Directory containing grid.parquet (e.g. externals/ns-parquet/training)
@@ -641,7 +703,8 @@ def load_parquet_grid(parquet_dir: str,
         Dict of {patient_id: (df, features_8col)} where df has DatetimeIndex
         and features is (N, 8) float32 normalized array.
     """
-    grid_path = Path(parquet_dir) / 'grid.parquet'
+    parquet_dir = Path(parquet_dir)
+    grid_path = parquet_dir / 'grid.parquet'
     if not grid_path.exists():
         raise FileNotFoundError(
             f"No grid.parquet in {parquet_dir}. Run 'make terrarium' first.")
@@ -650,10 +713,22 @@ def load_parquet_grid(parquet_dir: str,
     if patient_filter:
         grid = grid[grid['patient_id'] == patient_filter]
 
+    # Load profiles for attrs reconstruction
+    profiles_path = parquet_dir / 'profiles.parquet'
+    profiles = pd.read_parquet(profiles_path) if profiles_path.exists() else pd.DataFrame()
+
     results = {}
     for pid, pdf in grid.groupby('patient_id'):
         pdf = pdf.sort_values('time').copy()
         pdf.index = pd.DatetimeIndex(pdf['time'])
+
+        # Rename columns to match real_data_adapter conventions
+        pdf = pdf.rename(columns={k: v for k, v in _PARQUET_COL_MAP.items()
+                                  if k in pdf.columns})
+
+        # Reconstruct df.attrs from profiles
+        attrs = _reconstruct_attrs(profiles, pid)
+        pdf.attrs.update(attrs)
 
         # Build the 8-feature normalized array matching build_nightscout_grid output
         features = np.column_stack([
