@@ -21,14 +21,14 @@ Key findings:
 
 | Finding | Evidence | Significance |
 |---------|----------|--------------|
-| Demand chain has ×5.0 time-integration bug | PK audit of continuous_pk.py | Root cause of all negative R² values |
+| Demand chain has ×5.0 calibration mismatch | PK audit of continuous_pk.py | Root cause of all negative R² values |
 | 52% of hypo rescues exceed standard 15g dose | n=1,605 unannounced episodes | Confirms clinical intuition about over-treatment |
-| Glycogen proxy predicts insulin effectiveness with perfect monotonic trend | Spearman r=1.000 across quintiles | β doubles from depleted→full glycogen |
+| Glycogen proxy predicts insulin effectiveness with overall increasing trend | Spearman r=1.000 across quintiles | β more than doubles (2.6×) from depleted→full glycogen |
 | Higher glycogen at hypo onset → 43% larger rebound | r=0.182, p=10⁻¹⁶ | Glycogen modulates counter-regulatory response |
 
 ---
 
-## 1. The 5× Demand Over-Prediction: Root Cause Found
+## 1. The 5× Demand Over-Prediction: Calibration Mismatch Found
 
 ### 1.1 Background
 
@@ -36,7 +36,7 @@ EXP-1613 (prior report) revealed that the supply × demand model's insulin deman
 
 ### 1.2 The Computation Chain
 
-The demand formula in `exp_metabolic_441.py:108`:
+The demand formula in `exp_metabolic_441.py:158`:
 
 ```python
 insulin_total = pk[:, 0] × 0.05     # PK channel → U/min
@@ -46,9 +46,7 @@ demand        = |insulin_total × 5.0 × isf_curve|   # mg/dL per 5-min step
 
 **Dimensional analysis**: (U/min) × (min) × (mg/dL/U) = mg/dL ✓ — units are correct.
 
-**Physiological analysis**: The **×5.0 multiplier is the bug**.
-
-The `insulin_total` PK channel represents the *instantaneous insulin activity rate* computed by convolving all past insulin doses with the oref0 activity kernel. This convolution already integrates the insulin effect over time. Multiplying by 5 minutes creates a *double integration* — treating an already-integrated activity level as a raw rate.
+**Physiological analysis**: The ×5.0 multiplier is **dimensionally correct** (U/min × min × mg/dL/U = mg/dL/step) — the `insulin_total` channel is a rate in U/min, and the ×5.0 converts to per-step. The actual issue is a **calibration mismatch**: the demand formula uses a universal hepatic constant (1.5 mg/dL/step) while demand scales with patient-specific ISF and basal rate. The companion report (`demand-calibration-fix-impact`) confirms that removing ×5.0 makes R² *worse* (−0.47 → −0.71); the correct fix is patient-specific calibration β = 1.5 / (mean_basal × ISF / 12).
 
 ### 1.3 Concrete Example
 
@@ -62,9 +60,9 @@ For patient a (basal=0.33 U/h, ISF=48.6 mg/dL/U) during clean fasting with IOB�
 | Hepatic supply | 1.68 mg/dL/step | ~1.5 |
 | **Net balance** | **−0.92** (glucose falling) | **≈0** (should be stable) |
 
-The model predicts glucose should fall by ~0.9 mg/dL every 5 minutes during fasting — approximately 11 mg/dL/hour. Actual observed dBG ≈ −0.03 mg/dL/step.
+The model predicts glucose should fall by ~0.9 mg/dL every 5 minutes during fasting — approximately 11 mg/dL/hour. Actual observed dBG ≈ +0.12 mg/dL/step (glucose slightly rising on average during fasting).
 
-### 1.4 Patient Variability in the Bug
+### 1.4 Patient Variability in the Calibration Mismatch
 
 EXP-1621 reveals the bug manifests very differently across patients:
 
@@ -76,7 +74,7 @@ EXP-1621 reveals the bug manifests very differently across patients:
 | d | 0.00× | 149.3 | 10,704 |
 | k | 0.00× | 152.5 | 8,452 |
 
-Patients d and k show demand ≈ 0 during clean fasting, meaning their insulin_total PK channel drops to near-zero when IOB is near zero. This is actually *correct behavior* — the PK channel properly reflects negligible insulin activity. For these patients, the ×5.0 bug is irrelevant at fasting, but would amplify dramatically during bolus peaks.
+Patients d and k show demand ≈ 0 during clean fasting, meaning their insulin_total PK channel drops to near-zero when IOB is near zero. This is actually *correct behavior* — the PK channel properly reflects negligible insulin activity. For these patients, the calibration mismatch is irrelevant at fasting, but would amplify dramatically during bolus peaks.
 
 Patients a, f, and h show demand > expected, suggesting their insulin_total channel retains residual activity from prior doses even during "clean" fasting windows.
 
@@ -224,7 +222,7 @@ EXP-1627 reveals a **perfect monotonic trend** in effective insulin sensitivity 
 
 **Spearman rank correlation: r = 1.000 (p < 0.0001)**
 
-10 of 11 patients show the same monotonic increase. Only patient k (who has unusual characteristics) shows a flat/reversed pattern.
+10 of 11 patients show an overall increasing trend (Q5 > Q1), though only 7 are strictly monotonic across all quintiles. Only patient k shows a reversed pattern.
 
 ### 3.5 Interpretation and Confound Warning
 
@@ -280,17 +278,17 @@ The rescue residual also increases with glycogen (+46%), which could mean:
 
 ---
 
-## 4. The Demand Bug in Detail
+## 4. The Demand Calibration Issue in Detail
 
 ### 4.1 Audit Trail
 
 The explore agent traced the complete computation chain through `continuous_pk.py`:
 
 1. **insulin_total channel** (line 708): Computed by `compute_insulin_activity()['total']` — the sum of all insulin sources (scheduled basal, temp deviations, boluses) convolved with the oref0 biexponential activity kernel
-2. **Normalization** (line 544): `PK_NORMALIZATION['insulin_total'] = 0.05 U/min` — typical range is [-0.05, +0.05] U/min
+2. **Normalization** (line 546): `PK_NORMALIZATION['insulin_total'] = 0.05 U/min` — typical range is [-0.05, +0.05] U/min
 3. **ISF curve** (line 744): Expanded from patient's therapy schedule, normalized by 200 mg/dL/U
-4. **The ×5.0**: `exp_metabolic_441.py:108`: `demand = abs(insulin_total * 5.0 * isf_curve)`
-5. **Same bug in**: `compute_net_metabolic_balance()` (line 454): `insulin_effect = insulin_activity * 5.0 * isf`
+4. **The ×5.0**: `exp_metabolic_441.py:158`: `demand = abs(insulin_total * 5.0 * isf_curve)`
+5. **Same pattern in**: `compute_net_metabolic_balance()` (line 455): `insulin_effect = insulin_activity * 5.0 * isf`
 
 ### 4.2 Why ×5.0 Was Added
 
@@ -299,20 +297,17 @@ The ×5.0 converts "per minute" to "per 5-minute step":
 - Multiplying by 5 gives U per 5-min step
 - Then × ISF gives mg/dL per 5-min step
 
-The dimensional analysis is correct. The conceptual error is that `insulin_total` already represents integrated activity from the convolution — it's not a simple rate that needs time-scaling.
+The dimensional analysis is correct. The `insulin_total` channel IS a rate in U/min, so multiplying by 5 minutes is the correct time-integration. The issue is not the ×5.0 itself but the lack of patient-specific calibration: the demand scale depends on each patient's basal rate and ISF, while the hepatic supply uses a universal constant (1.5 mg/dL/step).
 
-### 4.3 Correct Formula (Proposed)
+### 4.3 Correct Fix (Implemented in companion report)
 
 ```python
-# Option 1: Remove ×5.0 (if insulin_total already represents step-integrated activity)
-demand = abs(insulin_total * isf_curve)
-
-# Option 2: Use insulin_total as rate, but with proper steady-state calibration
-# At steady basal, demand should equal hepatic_production ≈ 1.5 mg/dL/step
-demand = abs(insulin_total * calibration_factor * isf_curve)
+# Patient-specific calibration: at steady basal, demand should equal hepatic supply
+beta = 1.5 / (mean_basal * ISF / 12.0)  # calibration factor
+demand = abs(insulin_total * 5.0 * isf_curve * beta)
 ```
 
-We do NOT implement this fix in this report — it requires careful validation with the PK model author to understand whether `insulin_total` represents a rate or an integrated quantity.
+The ×5.0 is retained. The calibration factor β normalizes demand so that steady-state basal matches hepatic production (~1.5 mg/dL/step). Population optimal β = 1.05 (EXP-1631).
 
 ---
 
@@ -390,16 +385,17 @@ When depleted:
 | A4 | Glycogen proxy weights are arbitrary (not fit to data) | May mis-weight components |
 | A5 | Glycogen proxy is confounded with insulin delivery state | Spearman r=1.0 may be artifact |
 | A6 | Glycogen→rebound may reflect context, not glycogen per se | Post-meal vs fasting hypo dynamics |
-| A7 | The ×5.0 is a bug, not a design choice | Requires PK author confirmation |
+| A7 | The ×5.0 is dimensionally correct; the issue is missing calibration | Confirmed by companion report (demand-calibration-fix-impact) |
 
 ---
 
 ## 7. Recommendations
 
-### 7.1 Immediate (Model Fix)
-- Validate the ×5.0 hypothesis with the continuous_pk.py author
-- Test removing ×5.0 from both `compute_supply_demand()` and `compute_net_metabolic_balance()`
-- Re-run the full 100-experiment battery with corrected demand
+### 7.1 Immediate (Model Fix — Now Implemented)
+- ~~Validate the ×5.0 hypothesis with the continuous_pk.py author~~
+  **Done**: The ×5.0 is dimensionally correct (U/min × 5 min = U/step). The fix is patient-specific calibration β, not removing ×5.0.
+- ~~Test removing ×5.0~~ **Done**: Removing ×5.0 worsens R² (−0.47 → −0.71, EXP-1631). Adding calibration β instead improves R² to −0.09.
+- Re-run the full 100-experiment battery with calibrated demand
 
 ### 7.2 Short-term (Glycogen Proxy)
 - Deconfound the proxy by conditioning on insulin delivery quartile
