@@ -40,23 +40,23 @@ ISF_curve = amplitude / bolus_dose
 
 | Patient | Corrections | Curve ISF | Simple ISF | Profile ISF | τ (hours) | Fit R² |
 |---|---|---|---|---|---|---|
-| a | 65 | 77.1 | 69.7 | 48.8 | 2.09 | 0.661 |
-| b | 14 | 139.9 | — | — | 1.70 | 0.660 |
-| c | 169 | 399.5 | 288.6 | 78.9 | 2.11 | 0.864 |
-| d | 21 | 256.9 | 163.8 | 40.0 | 1.93 | 0.862 |
-| e | 85 | 197.9 | — | — | 2.44 | 0.832 |
-| f | 92 | 43.7 | 38.2 | 20.6 | 2.53 | 0.705 |
-| g | 63 | 305.7 | 177.2 | 68.5 | 2.18 | 0.777 |
-| h | 13 | 229.5 | — | — | 1.47 | 0.802 |
-| i | 75 | 383.8 | — | — | 2.00 | **0.936** |
-| j | 7 | 76.2 | — | — | 2.07 | 0.775 |
-| k | 1 | 56.3 | — | — | 1.50 | 0.984 |
+| a | 65 | 77.1 | 74.2 | 48.6 | 2.09 | 0.661 |
+| b | 14 | 139.9 | 126.6 | 92.0 | 1.70 | 0.660 |
+| c | 169 | 399.5 | 303.6 | 77.2 | 2.11 | 0.864 |
+| d | 21 | 256.9 | 203.6 | 40.0 | 1.93 | 0.862 |
+| e | 85 | 197.9 | 152.5 | 35.2 | 2.44 | 0.832 |
+| f | 92 | 43.7 | 35.6 | 20.6 | 2.53 | 0.705 |
+| g | 63 | 305.7 | 247.5 | 68.5 | 2.18 | 0.777 |
+| h | 13 | 229.5 | 229.6 | 91.6 | 1.47 | 0.802 |
+| i | 75 | 383.8 | 287.9 | 50.5 | 2.00 | **0.936** |
+| j | 7 | 76.2 | 60.6 | 40.0 | 2.07 | 0.775 |
+| k | 1 | 56.3 | 48.3 | 25.0 | 1.50 | 0.984 |
 
 **Key findings**:
 - **Fit quality excellent**: Mean R²=0.805 across all patients — exponential decay accurately models correction responses
 - **τ = 2.0h mean** (range 1.5–2.5h): Corrections take ~2 hours to peak effect, consistent with rapid-acting insulin pharmacokinetics
 - **Curve ISF > Simple ISF > Profile ISF**: Curve fitting gives HIGHER ISF estimates than simple ΔBG/bolus, because the exponential captures the full trajectory including partial recovery
-- **Patient c has ISF 399.5** (profile: 78.9, ratio 5.1×) — extremely insulin-sensitive or loop is doing heavy work
+- **Patient c has ISF 399.5** (profile: 77.2, ratio 5.2×) — extremely insulin-sensitive or loop is doing heavy work
 - **Patient i R²=0.936**: Despite failing physics preconditions, correction events individually are very well-modeled — the problem is in the inter-event periods
 
 **Advantage over EXP-1291**: Response-curve ISF avoids the total_insulin denominator problem entirely. No deconfounding needed — we measure the glucose response directly.
@@ -114,7 +114,7 @@ ISF_curve = amplitude / bolus_dose
 
 ## 4. EXP-1306: Calm-Window ISF (Negative Result)
 
-**Finding**: **Zero calm correction windows exist** across all 11 patients.
+**Finding**: **Zero calm correction windows exist** across the 8 assessed patients (3 skipped: b and j for insufficient insulin telemetry, h for CGM coverage).
 
 A "calm window" requires basal_ratio to stay within 0.8–1.2 for the entire DIA period (5 hours) after a correction. This never happens — the AID loop ALWAYS adjusts basal in response to corrections.
 
@@ -197,7 +197,7 @@ All 6 qualifying patients show **0% optimal adjustment** — the simulation find
 
 ### EXP-1307: CR by Time-of-Day
 - 2,077 meals analyzed across 9 patients
-- **All time blocks flagged** for all patients — post-meal excursions consistently exceed 180 mg/dL
+- **7/9 patients have all 4 time blocks flagged**; e has 2/4, g and j have 3/4, h and k have 0/4 — post-meal excursions frequently exceed 180 mg/dL
 - This may indicate the threshold is too aggressive, or that no patient achieves consistently good post-meal control
 - Need to recalibrate with realistic targets (e.g., <250 mg/dL for flagging)
 
@@ -276,7 +276,7 @@ EXP-1301–1310: "We understand why" → UAM is the missing factor, curves work
 | 1304 | Multi-week stability | ✅ | 1/9 high confidence |
 | 1305 | Violation decomposition | ✅ | 47% violated, 70% UAM |
 | 1306 | Calm-window ISF | ✅ | 0 calm windows (negative result) |
-| 1307 | CR by time-of-day | ✅ | 2077 meals, all blocks flagged |
+| 1307 | CR by time-of-day | ✅ | 2077 meals, 5/9 all blocks flagged |
 | 1308 | Fidelity tracking | ✅ | 8 stable, 2 improving |
 | 1309 | UAM-augmented conservation | ✅ | **R² -0.508→+0.351** |
 | 1310 | Patient archetype clustering | ✅ | 3 clusters: 4/6/1 split |
