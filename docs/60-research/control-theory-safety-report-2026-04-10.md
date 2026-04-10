@@ -16,13 +16,13 @@ This analysis examines AID (Automated Insulin Delivery) systems from a control-t
 
 | Finding | Evidence | Implication |
 |---------|----------|-------------|
-| 12–31 oscillation cycles/day | Suspend-surge detection (EXP-2213) | AID constantly fighting over-basaling |
-| 54–87% time in oscillation cycles | Cycle duty cycle analysis | Current operation is fundamentally suboptimal |
+| 12–31 oscillation cycles/day | Suspend-surge detection, 9/11 patients (EXP-2213) | AID constantly fighting over-basaling |
+| 53–87% time in oscillation cycles | Cycle duty cycle, 9/11 patients | Current operation is fundamentally suboptimal |
 | 10/11 temporally stable | 80/20 holdout TIR drift <10% (EXP-2217) | Settings recommendations transfer across time |
 | 90.9% LOO accuracy | Cross-patient rule validation (EXP-2218) | Universal rules work, not just per-patient |
 | Decorrelation 0.3–2.2h | Glucose autocorrelation (EXP-2212) | Fast controller response despite instability |
 | Meal recovery 26–68% in 3h | Disturbance rejection (EXP-2214) | Meals are the dominant uncontrolled disturbance |
-| IOB model degenerate in 5/11 | Exponential fit diverges (EXP-2215) | IOB tracking unreliable under stacking |
+| IOB model degenerate in 4/11 | Exponential fit diverges (EXP-2215) | IOB tracking unreliable under stacking |
 
 ---
 
@@ -121,7 +121,7 @@ This analysis examines AID (Automated Insulin Delivery) systems from a control-t
 
 ### This is the Most Important Finding
 
-**AID loops operate in chronic oscillation**. For 9/10 patients (excluding b and j), the loop cycles between suspended and active delivery **12–31 times per day**, spending **54–87% of all time** within these oscillation cycles.
+**AID loops operate in chronic oscillation**. For 9/10 patients (excluding b and j), the loop cycles between suspended and active delivery **12–31 times per day**, spending **53–87% of all time** within these oscillation cycles.
 
 **What a cycle looks like**:
 1. **Suspend** (40–70 min): Glucose is falling or at target → loop suspends all insulin delivery

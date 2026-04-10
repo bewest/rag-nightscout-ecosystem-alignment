@@ -10,15 +10,15 @@
 
 ## Executive Summary
 
-Integrating findings from ~170 experiments, this analysis generates concrete, patient-specific AID setting recommendations. The results confirm a consistent pattern across all patients: **basal rates are 2–15× too high** (delivery ratio 0.07–0.45 in 9/10 patients), **ISF profiles underestimate insulin sensitivity by 2–4.5×** in 8/10 patients, and **CR profiles need adjustment in 7/11 patients**. The priority matrix shows **basal reduction as the #1 intervention for 9/10 patients**, with projected TBR reduction of 30–50% from basal correction alone. Conservative simulation projects TIR improvements of +5 pp and TBR reductions of 50% across the population.
+Integrating findings from ~170 experiments, this analysis generates concrete, patient-specific AID setting recommendations. The results confirm a consistent pattern across all patients: **basal rates are 2–15× too high** (delivery ratio 0.07–0.45 in 9/10 patients), **ISF profiles underestimate insulin sensitivity by 2.1–4.5×** in 7/10 patients, and **CR profiles need adjustment in 6/11 patients**. The priority matrix shows **basal reduction as the #1 intervention for 9/10 patients**, with projected TBR reduction of 30–50% from basal correction alone. Conservative simulation projects TIR improvements of +5 pp and TBR reductions of 50% across the population.
 
 ## Key Findings
 
 | Finding | Evidence | Impact |
 |---------|----------|--------|
 | Basal 2–15× too high (9/10) | Delivery ratio 0.07–0.45 | Loop suspends most of the time to compensate |
-| ISF underestimated 2–4.5× (8/10) | Effective/profile ratio 2.1–4.5 | Every correction overshoots, causing hypos |
-| CR needs adjustment (7/11) | Net post-meal change ±30–103 mg/dL | Meals cause persistent highs or lows |
+| ISF underestimated 2.1–4.5× (7/10) | Effective/profile ratio 2.1–4.5 | Every correction overshoots, causing hypos |
+| CR needs adjustment (6/11) | Net post-meal change ±30–103 mg/dL | Meals cause persistent highs or lows |
 | DIA unmeasurable in most | Only 3/11 have enough isolated corrections | Stacking prevents clean DIA measurement |
 | Basal = first intervention (9/10) | Priority matrix convergence | Safest change with highest impact |
 | HIGH confidence in 6/11 | CGM >87%, stable TIR, >5 months data | Recommendations are data-supported |
@@ -41,6 +41,8 @@ Integrating findings from ~170 experiments, this analysis generates concrete, pa
 | h | 0.09 | Loop delivers 9% — basal **11× too high** | Cut basal 50% |
 | i | 0.24 | Loop delivers 24% — basal **4× too high** | Cut basal 50% |
 | k | 0.15 | Loop delivers 15% — basal **7× too high** | Cut basal 50% |
+
+> **Note**: Patient j is excluded from this analysis due to insufficient basal delivery data in their devicestatus records.
 
 **Patient a is the only under-basaled patient** (delivery ratio 2.09×). The loop has to increase delivery above scheduled basal to maintain glucose control. All 9 other patients have the opposite problem — scheduled basal is so high that the loop must suspend delivery 55–93% of the time.
 
@@ -67,7 +69,7 @@ Integrating findings from ~170 experiments, this analysis generates concrete, pa
 | i | 4,992 | 50 | 143 | **2.85×** | Insulin 2.9× more effective than set |
 | k | 622 | 25 | 69 | **2.76×** | Insulin 2.8× more effective than set |
 
-**8/10 patients have ISF miscalibration >2×**: The profile dramatically underestimates how effective insulin is. When the loop delivers a correction expecting a 40 mg/dL drop, the actual drop is 88–178 mg/dL. This is why corrections cause hypoglycemia.
+**7/10 patients have ISF miscalibration >2×**: The profile dramatically underestimates how effective insulin is. When the loop delivers a correction expecting a 40 mg/dL drop, the actual drop is 88–178 mg/dL. This is why corrections cause hypoglycemia.
 
 **However**: This ISF mismatch is partially an artifact of the AID itself. The loop's aggressive basal suspension AMPLIFIES the apparent ISF by removing background insulin. When correction insulin is the ONLY insulin on board (because basal is suspended), it appears more effective. The true ISF likely lies between profile and effective values.
 
@@ -168,7 +170,7 @@ Integrating findings from ~170 experiments, this analysis generates concrete, pa
 
 **Conservative estimates**: These projections assume modest 50% TBR reduction from basal correction and +5 pp TIR from better ISF. In practice, combining basal reduction + ISF correction + circadian ISF could yield larger improvements.
 
-**Patients reaching goals**: With projected improvements, 5 patients (d, e, f, g, h) would achieve TIR ≥70% AND TBR <4% simultaneously — up from 3/11 currently.
+**Patients reaching goals**: With projected improvements, 6 patients (d, e, f, g, h, k) would achieve TIR ≥70% AND TBR <4% simultaneously — 7/11 total including patient j (already at goal), up from 3/11 currently.
 
 ![Simulation](figures/recal-fig06-simulation.png)
 
