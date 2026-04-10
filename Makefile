@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests
+.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests
 
 # Default target
 help:
@@ -26,6 +26,7 @@ help:
 	@echo "  make verify-unit   - Run verification tool unit tests (isolated)"
 	@echo "  make unit-tests    - Run all unit tests (hygiene + verify)"
 	@echo "  make cgmencode-tests - Run cgmencode ML pipeline tests (66 tests)"
+	@echo "  make ns2parquet-tests - Run ns2parquet pipeline tests"
 	@echo "  make hygiene-tests - Run hygiene tool integration tests (real files)"
 	@echo "  make hygiene-all   - Run all hygiene tests (unit + integration)"
 	@echo "  make coverage   - Generate coverage matrix"
@@ -171,6 +172,10 @@ unit-tests:
 cgmencode-tests:
 	@echo "Running cgmencode ML pipeline tests..."
 	@python3 tools/cgmencode/test_cgmencode.py
+
+ns2parquet-tests:
+	@echo "Running ns2parquet pipeline tests..."
+	@python3 -m pytest tools/ns2parquet/test_ns2parquet.py -v
 
 # Start mock Nightscout server
 mock-nightscout:
