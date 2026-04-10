@@ -10,17 +10,17 @@
 
 ## Executive Summary
 
-Meals are the dominant uncontrolled disturbance in AID systems (EXP-2214: only 26–68% recover within 3h). This analysis characterizes individual carb absorption profiles, meal response variability, and pre-bolus optimization. The headline findings: **pre-bolus timing significantly reduces spikes in 9/11 patients** (r = −0.22 to −0.43, all p < 0.001), **meal response variability is enormous** (CV 67–98% even for same carb amounts), and **pre-meal glucose is the universal best predictor of recovery speed** (10/11 patients, r = −0.32 to −0.64). The most actionable finding: **overshoot is the dominant meal pattern** (27–56% of meals) — the bolus overcorrects, suggesting CR is systematically too low for many patients.
+Meals are the dominant uncontrolled disturbance in AID systems (EXP-2214: only 26–68% recover within 3h). This analysis characterizes individual carb absorption profiles, meal response variability, and pre-bolus optimization. The headline findings: **pre-bolus timing significantly reduces spikes in 9/11 patients** (r = −0.22 to −0.43, all p < 0.001), **meal response variability is enormous** (CV 67–108% even for same carb amounts), and **pre-meal glucose is the universal best predictor of recovery speed** (10/11 patients, r = −0.32 to −0.64). The most actionable finding: **overshoot is the dominant meal pattern** (41–56% of meals in 6/11 patients) — the bolus overcorrects, suggesting CR is systematically too low for many patients.
 
 ## Key Findings
 
 | Finding | Evidence | Implication |
 |---------|----------|-------------|
 | Pre-bolus timing works (9/11) | r = −0.22 to −0.43, all p < 10⁻⁴ | Longer pre-bolus → smaller spike |
-| Overshoot is dominant (6/11) | 27–56% of meals overshoot baseline | CR too low (over-bolusing meals) |
+| Overshoot is dominant (6/11) | 41–56% of meals overshoot baseline | CR too low (over-bolusing meals) |
 | Pre-meal glucose predicts recovery | Best predictor in 10/11, r = −0.32 to −0.64 | Higher starting glucose → faster recovery |
-| Meal variability is enormous | CV 67–98% for same carb amounts | Perfect CR is impossible; need adaptive approach |
-| Peak absorption time varies 5× | 0.25h (patient a) to 3.0h (patient j) | One DIA model can't fit all patients |
+| Meal variability is enormous | CV 67–108% for same carb amounts | Perfect CR is impossible; need adaptive approach |
+| Peak absorption time varies 12× | 0.25h (patient a) to 3.0h (patient j) | One DIA model can't fit all patients |
 | Large baseline spike regardless of carbs | Intercept 34–70 mg/dL (dose-response) | ~50 mg/dL spike even for tiny meals |
 
 ---

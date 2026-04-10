@@ -165,23 +165,23 @@ Analyzes whether glucose control is degrading or improving over the 6-month obse
 | Patient | Months | TIR Slope | TBR Slope | Drift? |
 |---------|--------|-----------|-----------|--------|
 | a | 6 | −1.7%/mo | −0.37%/mo | No |
-| b | 6 | +2.3%/mo | −0.20%/mo | No |
+| b | 6 | +2.3%/mo | −0.20%/mo | No† |
 | c | 6 | −0.4%/mo | −0.39%/mo | No |
 | d | 6 | −0.3%/mo | −0.02%/mo | No |
 | e | 5 | +1.8%/mo | −0.07%/mo | No |
-| f | 5 | +4.0%/mo | +0.65%/mo | No* |
+| f | 5 | +4.0%/mo | +0.65%/mo | No† |
 | g | 6 | −1.9%/mo | −0.06%/mo | No |
 | h | 5 | +3.6%/mo | +0.08%/mo | No |
 | i | 6 | −1.7%/mo | −0.21%/mo | No |
 | j | 2 | 0.0%/mo | 0.00%/mo | No |
 | k | 5 | −0.7%/mo | +0.73%/mo | No |
 
-**No patient shows statistically significant drift** over the observation period. This means current settings, while potentially miscalibrated, are at least stable — recalibration would be a one-time correction, not a continuous process.
+**No patient shows statistically significant drift** (p > 0.05) over the observation period, though two patients exceed the flagging thresholds. This means current settings, while potentially miscalibrated, are at least stable — recalibration would be a one-time correction, not a continuous process.
 
-**Notable trends** (not significant):
-- **Patient f**: TIR improving +4.0%/mo (adapting to system?)
-- **Patient k**: TBR increasing +0.73%/mo (concerning trend toward more lows)
-- **Patient b**: TIR improving +2.3%/mo while TBR decreasing
+†**Trends exceeding thresholds** (not statistically significant given limited months of data):
+- **Patient b**: TIR slope +2.3%/mo exceeds >2%/mo flag, while TBR decreasing — benign improvement
+- **Patient f**: TIR slope +4.0%/mo exceeds >2%/mo flag; TBR slope +0.65%/mo exceeds >0.5%/mo flag — improving TIR but at cost of increasing lows
+- **Patient k**: TBR increasing +0.73%/mo exceeds >0.5%/mo flag (concerning trend toward more lows)
 
 ![Settings Drift](figures/algo-fig06-drift.png)
 
