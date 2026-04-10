@@ -20,7 +20,7 @@ by metabolic context to identify where the model fails most severely.
 
 | Finding | Experiment | Evidence |
 |---------|-----------|----------|
-| Glycogen→β vanishes when conditioning on IOB | EXP-1783 | **0/44** strata significant |
+| Glycogen→β vanishes when conditioning on IOB | EXP-1783 | **0/5** testable strata significant (39/44 degenerate) |
 | Both proxies show tiny negative r (≈−0.08) | EXP-1784 | Confounded by insulin delivery |
 | Counter-reg capacity unaffected by glycogen state | EXP-1787 | Depleted=7.83, full=7.78 mg/dL/step |
 | Multi-day glycogen predicts nothing useful | EXP-1788 | gly→TIR r=−0.115, 1/11 sig |
@@ -58,7 +58,7 @@ with insulin delivery state. This batch of experiments tests that concern.
 stratum. If glycogen independently affects insulin sensitivity, the correlation
 should survive within IOB strata.
 
-**Result**: **0 out of 44 testable patient×IOB strata show significance (p<0.05).**
+**Result**: **0 out of 5 testable patient×IOB strata show significance (p<0.05).** (Only 5 of 44 total strata produced computable correlations; the remaining 39 had degenerate glycogen distributions within IOB bins.)
 
 This is the definitive deconfounding test. The EXP-1627 Spearman r=1.000 was
 entirely driven by insulin delivery covariance: when glycogen is "high" (recent
@@ -76,8 +76,8 @@ insulin delivery (no glucose terms). Test whether this alternative proxy
 predicts effective β.
 
 **Result**: Both proxies show weak **negative** correlations:
-- Original proxy (with glucose): 8/11 significant, mean r ≈ −0.09
-- Glucose-free proxy: 8/11 significant, mean r ≈ −0.07
+- Original proxy (with glucose): 8/11 significant, mean r ≈ −0.08
+- Glucose-free proxy: 8/11 significant, mean r ≈ −0.05
 - Proxy inter-correlation: r = 0.640
 
 The negative sign means higher "glycogen" → LOWER effective β. This is opposite
@@ -105,7 +105,7 @@ negligible for prediction.
 
 The counter-regulatory floor (1.68 mg/dL/step from EXP-1644) does not vary with
 glycogen state. The 4 significant patients show opposing directions: some have
-stronger recovery at low glycogen (e, h, k), others at high glycogen (a, f).
+stronger recovery at low glycogen (e, h, k), others at high glycogen (f).
 
 ### 2.4 Multi-Day Dynamics (EXP-1788)
 
@@ -204,16 +204,16 @@ absorption uncertainty**. This has two implications:
 | Factor | R² Gain | Fraction of Total Residual |
 |--------|---------|---------------------------|
 | Base S×D model | −6.64 (reference) | — |
-| + Glycogen proxy | +0.43 | 5.6% |
-| + 4-Harmonic circadian | +0.07 | 0.9% |
+| + Glycogen proxy | +0.43 | 4.2% |
+| + 4-Harmonic circadian | +0.07 | 0.5% |
 | Rescue carb events | — | 1.2% |
 | Sensor noise (est.) | — | 0.6% |
-| **Unexplained** | — | **91.7%** |
+| **Unexplained** | — | **93.5%** |
 
 ![Variance Decomposition](figures/glycogen-fig12-variance-decomposition.png)
 *Figure 12: Left: Variance components by patient. Right: Population mean decomposition.*
 
-**91.7% of the model's residual variance is unexplained** by glycogen state,
+**93.5% of the model's residual variance is unexplained** by glycogen state,
 circadian patterns, rescue carbs, and sensor noise combined. The overwhelmingly
 dominant source is carb absorption variability during post-meal periods (as
 confirmed by EXP-1789).
@@ -273,7 +273,7 @@ captures this behavior.
    variance lives. Better absorption models (UAM detection, glycemic index,
    mixed-meal kinetics) have the highest potential payoff.
 3. **Weight fasting evidence heavily** for therapy assessment — fasting R² is
-   60× better than post-meal R², making fasting-derived settings recommendations
+   62× better than post-meal R², making fasting-derived settings recommendations
    dramatically more reliable.
 4. **Consider context-adaptive models** — a model that switches behavior by
    metabolic context (e.g., use supply/demand for fasting, use UAM features
@@ -298,14 +298,14 @@ captures this behavior.
 
 | EXP | Title | Key Result |
 |-----|-------|------------|
-| 1783 | IOB-conditioned glycogen sensitivity | **0/44 strata significant** — confound confirmed |
-| 1784 | Glucose-independent glycogen proxy | Both proxies: weak negative r ≈ −0.08, not useful |
+| 1783 | IOB-conditioned glycogen sensitivity | **0/5 testable strata significant** — confound confirmed |
+| 1784 | Glucose-independent glycogen proxy | Both proxies: weak negative r (−0.08/−0.05), not useful |
 | 1785 | Exercise-like vs feast natural experiments | Hepatic 1.33 vs 0.83 — captured by IOB model |
 | 1786 | Glycogen state → cascade patterns | 5/11 significant but effect = 0–2 mg/dL |
 | 1787 | Counter-reg capacity by glycogen | Depleted=7.83, full=7.78 — no difference |
 | 1788 | Multi-day glycogen dynamics | gly→TIR r=−0.115, 1/11 significant |
 | 1789 | **Metabolic context R²** | **Fasting −0.32, post-meal −20.1** |
-| 1790 | Residual variance decomposition | 91.7% unexplained by known factors |
+| 1790 | Residual variance decomposition | 93.5% unexplained by known factors |
 
 ---
 

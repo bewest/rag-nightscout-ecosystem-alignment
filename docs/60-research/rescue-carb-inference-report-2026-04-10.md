@@ -65,8 +65,8 @@ hypoglycemic nadir?
 
 ### Method
 
-For each of 1,920 hypo episodes (glucose < 70 mg/dL), we extract the 60-minute
-post-nadir trajectory and fit three models:
+For each of 1,920 hypo episodes (glucose < 70 mg/dL), we extract the 3-hour
+post-nadir trajectory (36 steps × 5 min) and fit three models:
 
 1. **Linear**: ΔBG(t) = a·t + b
 2. **Exponential**: ΔBG(t) = A·(1 − e^{−t/τ})
@@ -153,7 +153,7 @@ was consumed from the glucose trajectory?
 
 ### Method
 
-For episodes with annotated carbohydrate entries within ±30 minutes of nadir (n=517),
+For episodes with annotated carbohydrate entries within the 3-hour post-nadir window (n=517),
 we compute the correlation between the actual logged carbs and the glucose rise at
 30, 60, and 90 minutes post-nadir. We also estimate what the "equivalent carb dose"
 would be for unannotated episodes.
@@ -262,8 +262,9 @@ trajectory prediction?
 
 ### Method
 
-We use the glycogen proxy from EXP-1621: cumulative glucose balance over the preceding
-6 hours as a proxy for liver glycogen state. We compare linear regression models for
+We use the glycogen proxy from EXP-1626: a weighted composite of mean glucose score,
+carb intake score, time-below-range, and IOB penalty over the preceding 6 hours as a
+proxy for liver glycogen state. We compare linear regression models for
 60-minute rebound magnitude with and without the glycogen feature.
 
 ### Results
@@ -342,8 +343,8 @@ forecast** ("glucose will reach X mg/dL in Y minutes").
 ### Method
 
 For each patient, we train a rebound prediction model on the other 10 patients and
-test on the held-out patient. Features include: nadir depth, IOB at nadir, time-of-day,
-glycogen proxy, and early (0–10 min) trajectory features.
+test on the held-out patient. Features include: nadir depth, IOB at nadir, 30-minute
+recovery rate, and supply at nadir.
 
 ### Results
 
@@ -471,13 +472,15 @@ information value of different rescue carb signals:
 | Signal level | R² gain | Feasibility |
 |-------------|---------|-------------|
 | Oracle (exact grams + timing) | +6.2 (−5.4 → 0.80) | Requires patient logging |
-| Binary detection (yes/no) | +0.08 (15 min) | ✅ Automated |
+| Binary detection (yes/no) | +7.9% MAE¹ (15 min) | ✅ Automated |
 | Magnitude from trajectory | ≈ 0 | ❌ Not identifiable |
 | Glycogen-aware model | +0.03 | Marginal |
 
-The gap between oracle (+6.2 R²) and binary detection (+0.08 R²) represents the
+The gap between oracle (+6.2 R²) and binary detection (+7.9% MAE improvement) represents the
 **irrecoverable information loss** from not knowing magnitude. This is the core
 reason why post-hypo trajectory prediction remains fundamentally limited.
+
+¹ Binary detection metric is MAE reduction (21.1→19.4 mg/dL), not R² gain; other rows use R².
 
 ### Counter-Regulatory Response Characterization
 
@@ -578,8 +581,8 @@ Post-nadir recovery follows a logistic (S-curve) trajectory with:
 - Total: 1,920 episodes across 11 patients (~180 days each)
 
 ### "Annotated" vs "Unannotated" Classification
-- **Annotated**: Carbohydrate entry logged within ±30 minutes of nadir (n ≈ 517, ~27%)
-- **Unannotated**: No logged carbs (n ≈ 1,398, ~73%)
+- **Annotated**: Carbohydrate entry logged within the 3-hour post-nadir window (n ≈ 517, ~27%)
+- **Unannotated**: No logged carbs in post-nadir window (n ≈ 1,398, ~73%)
 - WARNING: "Unannotated" does NOT mean "no rescue carbs consumed" — it means the
   patient didn't log them. This is the central problem.
 

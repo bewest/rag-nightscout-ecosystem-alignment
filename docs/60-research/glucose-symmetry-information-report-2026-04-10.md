@@ -16,9 +16,9 @@ Glucose obeys an approximate conservation law: **dBG/dt ≈ supply(t) − demand
 | **Rises are spectrally "rougher" than falls** | Spectral slope: rising −1.05 vs falling −1.34 (Δ=0.29, 11/11 patients) | Meals inject high-frequency energy; insulin acts as a low-pass filter |
 | **Supply and demand models learn DIFFERENT things** | Supply specialization: 9.5 R² units; Demand: 6.2 R² units | Split losses ARE complementary — each learns its own direction |
 | **Meals couple supply and demand; fasting decouples them** | 78.5% of decoupled events are fasting; 52.5% of coupled events are post-meal | The AID loop creates coupling; without it, supply and demand are independent |
-| **The physics model systematically under-estimates supply** | Residual×supply correlation: r=−0.56 (population mean) | There is a MISSING supply channel (likely variable hepatic output) |
+| **The physics model systematically over-estimates supply** | Residual×supply correlation: r=−0.55 (population mean) | There is a MISSING supply-dampening channel (likely glycogen buffering) |
 | **Demand dominates glucose variance at ALL timescales** | Demand R² > Supply R² from 5min to 2 days (no crossover) | Insulin is the primary controller; supply modulates around it |
-| **Information horizon is SHORT for both channels** | Glucose MI half-life: 4h; IOB: 2h; supply/demand proxies: ~10min | Long windows add little — the action is in the last few hours |
+| **Information horizon is SHORT for both channels** | Glucose MI half-life: 4h; IOB: 2h; supply/demand proxies: ~15min | Long windows add little — the action is in the last few hours |
 
 ### Verdict for the User's Hypothesis
 
@@ -118,10 +118,10 @@ This supports the hypothesis that a dual-head architecture (one for supply dynam
 | Channel | Peak MI (bits) | Half-Life | Long-Range (7d) |
 |---------|---------------|-----------|-----------------|
 | Glucose | 0.076 @ 30min | **4.0 h** | 0.016 |
-| IOB | 0.056 @ 15min | **2.0 h** | 0.012 |
+| IOB | 0.056 @ 30min | **2.0 h** | 0.012 |
 | Carbs | 0.004 @ 30min | **4.0 h** | 0.002 |
-| Supply proxy | 0.154 @ 5min | **10 min** | 0.012 |
-| Demand proxy | 0.161 @ 5min | **10 min** | 0.010 |
+| Supply proxy | 0.154 @ 5min | **15 min** | 0.012 |
+| Demand proxy | 0.161 @ 5min | **15 min** | 0.010 |
 
 ### Key Insight: The "Long Window" Question
 
@@ -183,7 +183,7 @@ The signal is very weak (< 0.01 bits), which means the AID loop's feedback is fa
 
 Demand (insulin) peaks at the **5.3h scale** (R²=0.188) — right at DIA. Supply never exceeds R²=0.12. This means insulin action explains ~2.7× more glucose variance than supply at the timescale where it matters most.
 
-The gap narrows at very long scales (>21h), consistent with the idea that day-level variance is driven by meal patterns (supply) rather than insulin patterns (demand). But neither channel explains much at that scale — both R² < 0.1.
+The gap narrows at very long scales (>21h), consistent with the idea that day-level variance is driven by meal patterns (supply) rather than insulin patterns (demand). But neither channel explains much at that scale — supply R² = 0.068 and demand R² = 0.103, both near the noise floor.
 
 **Regarding glycogen vs insulin sensitivity**: The user's hypothesis was that these operate on different phases. This experiment shows that from wavelet-decomposed CGM alone, we can't distinguish supply-phase from demand-phase variations at multi-day scales. Both are at R² ≈ 0.07. To separate them, we'd need to construct explicit state variables (cumulative carb balance for glycogen proxy; rolling ISF estimate for sensitivity) and test those at these timescales.
 
@@ -203,12 +203,12 @@ The gap narrows at very long scales (>21h), consistent with the idea that day-le
 |--------|-------|----------------|
 | White-noise fraction | **8/11** (73%) | Model is adequate for most patients |
 | Mean spectral slope | −0.21 | Mild pink noise (not perfectly white) |
-| Residual × supply correlation | **−0.56** | **MODEL UNDER-ESTIMATES SUPPLY** |
+| Residual × supply correlation | **−0.55** | **MODEL OVER-ESTIMATES SUPPLY** |
 | Residual × demand correlation | NaN (mixed) | Patient-dependent |
 
 ### The Missing Channel
 
-The strong negative correlation between residuals and supply (r=−0.56) means: when supply is high, the model's residual is negative (model over-predicts glucose change). In other words, **the model's supply estimate is too large** — or equivalently, there is a supply-dampening mechanism that the model doesn't capture.
+The strong negative correlation between residuals and supply (r=−0.55) means: when supply is high, the model's residual is negative (model over-predicts glucose change). In other words, **the model's supply estimate is too large** — or equivalently, there is a supply-dampening mechanism that the model doesn't capture.
 
 This could be:
 1. **Glycogen buffering**: When glycogen stores are saturated (post-feast), excess glucose is stored rather than appearing in blood → effective supply is lower than modeled
@@ -330,9 +330,9 @@ This means:
 | **Primary driver** | Meals + hepatic output | Insulin action |
 | **Spectral signature** | Broad-band (rough, slope −1.05) | Narrow-band (smooth, slope −1.34) |
 | **Time asymmetry** | Positive TRA (sharp rises) | Negative TRA at corrections |
-| **Information horizon** | ~4h (glucose), ~10min (proxy) | ~2h (IOB), ~10min (proxy) |
+| **Information horizon** | ~4h (glucose), ~15min (proxy) | ~2h (IOB), ~15min (proxy) |
 | **Variance dominance** | Secondary at all scales | **Primary at all scales** (peaks at 5.3h) |
-| **Model residual** | **Under-estimated** (r=−0.56) | Adequately captured |
+| **Model residual** | **Over-estimated** (r=−0.55) | Adequately captured |
 | **When separable** | During fasting (78.5%) | During meals (AID couples them) |
 
 ### Answers to the User's Questions
@@ -344,7 +344,7 @@ This means:
 **A: The split WORKS (EXP-1817: COMPLEMENTARY), but long windows DON'T HELP (EXP-1813).** Both channels hit diminishing returns by ~6h. The information structure is fundamentally local.
 
 **Q: Can we detect glycogen pool vs insulin sensitivity as separate phases?**  
-**A: NOT from raw CGM alone at current resolution.** The multi-scale analysis (EXP-1815) shows both channels converge to R² ≈ 0.07 at day+ timescales. However, the residual analysis (EXP-1816) reveals a missing supply channel (r=−0.56) that could BE the glycogen/hepatic variation the user describes. To capture it, we need explicit cumulative state features, not longer raw windows.
+**A: NOT from raw CGM alone at current resolution.** The multi-scale analysis (EXP-1815) shows both channels converge to R² ≈ 0.07 at day+ timescales. However, the residual analysis (EXP-1816) reveals a missing supply-dampening channel (r=−0.55) that could BE the glycogen/hepatic variation the user describes. To capture it, we need explicit cumulative state features, not longer raw windows.
 
 ### Implications for Model Architecture
 
@@ -357,7 +357,7 @@ This means:
 ### For the Glycogen Pool / Insulin Sensitivity Hypothesis
 
 The user's intuition maps cleanly onto this framework:
-- **Glycogen pool** → supply-side slow state → detectable as a **supply residual** (EXP-1816: r=−0.56)
+- **Glycogen pool** → supply-side slow state → detectable as a **supply residual** (EXP-1816: r=−0.55)
 - **Insulin sensitivity** → demand-side slow state → partially captured by IOB model already
 - **Different phases** → these are DIFFERENT channels with DIFFERENT timescales
 - **"Overflowing" state** (post-feast) → maps to high supply residual during coupled (post-meal) periods

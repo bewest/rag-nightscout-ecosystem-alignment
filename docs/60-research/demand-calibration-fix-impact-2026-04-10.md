@@ -23,7 +23,7 @@ The fix adds patient-specific demand calibration (β = hepatic_base / (mean_basa
 ### What the code computes
 
 ```python
-# In compute_supply_demand() [exp_metabolic_441.py, line 108]:
+# In compute_supply_demand() [exp_metabolic_441.py, line 158]:
 demand = abs(insulin_total * 5.0 * isf_curve)   # U/min × 5min × mg/dL/U = mg/dL/step
 
 # Hepatic production [continuous_pk.py, line 383]:
@@ -239,7 +239,7 @@ Even at the context-optimized ceiling, R² = +0.024 — the supply-demand model 
 | Population β | 1613 | 0.191 | ~1.0 | β was absorbing calibration error |
 | Cross-context transfer | 1614 | -38% degradation | Smaller degradation | Some transfer failure was calibration error |
 | Demand 5× over-prediction | 1621 | "×5.0 is a bug" | ×5.0 is correct, hepatic was miscalibrated | Reframed as calibration, not formula error |
-| Patient i R² | 1621 | -2.71 | +0.009 | Fixed worst outlier |
+| Patient i R² | 1612 | -2.71 | +0.009 | Fixed worst outlier |
 
 ### Findings that REMAIN VALID
 
