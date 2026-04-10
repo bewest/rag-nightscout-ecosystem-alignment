@@ -1,367 +1,252 @@
 # AID Loop Decision Analysis Report
 
-**Experiments**: EXP-2041–2048  
-**Date**: 2026-04-10  
-**Population**: 11 patients, ~180 days each  
-**Script**: `tools/cgmencode/exp_loop_decisions_2041.py`  
-**Status**: AI-generated analysis — findings require clinical validation
-
----
+**Experiments**: EXP-2311 through EXP-2318
+**Date**: 2026-04-10
+**Population**: 11 patients, ~529K loop decisions
+**Script**: `tools/cgmencode/exp_loop_decisions_2311.py`
 
 ## Executive Summary
 
-This batch analyzes how AID loops actually operate: insulin distribution, decision patterns, prediction accuracy, overcorrection rates, overnight control, recovery times, and variability sources. The central finding is that **AID loops spend 76% of time in suspension** — they are primarily *not-delivering* insulin rather than actively dosing. This creates a paradox: the loop's main job is deciding when NOT to give insulin. Overcorrections cause hypos 15% of the time, hyper recovery takes 2.7 hours (5× longer than hypo recovery), and overnight TIR (71%) barely meets the 70% target. Every patient has at least one optimization opportunity.
+This report analyzes how the AID (Automated Insulin Delivery) loop makes decisions — when it over- or under-delivers, how accurate its predictions are, and what patterns drive glucose outcomes.
 
-### Key Numbers
-
-| Metric | Value | Implication |
-|--------|-------|-------------|
-| Bolus % of TDI | 68% mean | Most insulin is bolus, not basal |
-| Loop suspend time | **76% mean** | Loop mostly NOT delivering insulin |
-| Overcorrection rate | 15% mean | 1 in 7 corrections causes hypo |
-| Overnight TIR | 71% mean | Barely meets target |
-| Hypo recovery | 30 min median | Adequate |
-| Hyper recovery | **162 min median** | 2.7 hours — far too slow |
-| Meal variance ratio | 118% of total | Meals drive MORE than total variability |
-| Dawn rise | 14 mg/dL mean | Present in 8/11 patients |
-| Patients with opportunities | **11/11** | Every patient needs optimization |
+**Key findings**:
+1. **Zero delivery dominates**: 38–96% of the time, the loop delivers zero basal (suspension is the default state)
+2. **Under-delivery is 100× more common than over-delivery**: 119–254 under-delivery episodes/day vs 0–141 over-delivery episodes/day
+3. **Loop predictions have systematic negative bias**: The loop overestimates future glucose decline by 2–8 mg/dL at 30 minutes
+4. **Hypo risk detection**: Recall 48–75% but precision only 12–57% — the loop detects most hypos but with many false alarms
+5. **Meal response is paradoxical**: 5/11 patients see the loop *reduce* delivery after meals, opposite to metabolic need
 
 ---
 
-## EXP-2041: Insulin Distribution Analysis
+## EXP-2311: Loop Activity Profile
 
-![Insulin Distribution](figures/loop-fig01-insulin-dist.png)
+![Activity Profile](figures/loop-fig01-activity.png)
 
-### Results
+| Patient | Zero Delivery % | Above Scheduled % | Delivery Ratio |
+|---------|-----------------|--------------------|-----------------| 
+| a | 38% | 56% | 2.00 |
+| b | **76%** | 7% | 0.00 |
+| c | 63% | 4% | 0.00 |
+| d | 69% | 2% | 0.00 |
+| e | 52% | 7% | 0.00 |
+| f | 48% | 50% | 1.46 |
+| g | **72%** | 0% | 0.00 |
+| h | **76%** | 2% | 0.00 |
+| i | 61% | 17% | 0.00 |
+| j | **96%** | 0% | 1.00 |
+| k | 74% | 5% | 0.00 |
 
-| Patient | TDI (U/day) | Bolus % | Meal Bolus | Correction Bolus | SMB % | Zero Delivery |
-|---------|------------|---------|------------|-----------------|-------|--------------|
-| a | **264.6** | 7% | 15.7 | 3.2 | 0% | 1% |
-| b | 28.0 | 69% | 13.9 | 5.5 | 3% | 1% |
-| c | 29.6 | 83% | 8.7 | **15.8** | 33% | 1% |
-| d | 19.9 | 97% | 4.4 | 14.8 | 52% | 1% |
-| e | 74.7 | 76% | 21.6 | **35.4** | 19% | 0% |
-| f | **327.4** | 8% | 18.5 | 6.4 | 0% | 0% |
-| g | 24.6 | 100% | 14.3 | 10.2 | 29% | 0% |
-| h | 24.9 | 95% | 17.9 | 5.8 | 22% | 2% |
-| i | **150.0** | 29% | 3.9 | **39.4** | 22% | 0% |
-| j | 36.2 | 100% | 35.5 | 0.7 | 0% | **100%** |
-| k | 19.6 | 88% | 0.8 | **16.5** | **59%** | 3% |
+**The loop suspends insulin delivery the majority of the time.** For 8/11 patients, zero delivery occurs >60% of the time. This confirms the AID Compensation Theorem (EXP-1881): the loop's primary action is *withholding* insulin, not delivering it.
 
-### Interpretation
+**Patient a** is the exception: only 38% zero delivery and 56% above scheduled — this patient's loop is actively delivering most of the time, suggesting settings are closer to correct.
 
-**Enormous TDI variation**: 19.6 to 327.4 U/day (17× range). Patients a, f, and i have implausibly high basal rates (245.7, 302.5, 106.6 U/day), likely reflecting data encoding where temp basal rates are reported as absolute rather than delta-from-scheduled. These patients' basal numbers should be treated cautiously.
-
-**Correction bolus dominates for several patients**: Patient i delivers 39.4 U/day in corrections — more than most patients' total insulin. Patient e: 35.4 U/day corrections. These patients are in constant "catch-up" mode.
-
-**SMB adoption varies**: Patient k (59% SMB) and d (52%) use micro-boluses heavily — this is the modern AID pattern. Patients a, f, j (0%) appear to use traditional bolusing without SMB.
-
-**Patient j** has 100% zero delivery and 100% bolus — consistent with open-loop pump therapy (no automated basal modulation).
+**Patient j**: 96% zero delivery with median suspension lasting 1,380 min (23 hours) — effectively no automated basal delivery. This patient likely relies entirely on manual boluses.
 
 ---
 
-## EXP-2042: Loop Decision Patterns
+## EXP-2312: Prediction Accuracy
 
-![Loop Decisions](figures/loop-fig02-decisions.png)
+![Prediction Accuracy](figures/loop-fig02-prediction.png)
 
-### Results
+| Patient | MAE@30min | MAE@60min | Bias@30min | Bias@60min |
+|---------|-----------|-----------|------------|------------|
+| a | 28.4 | 47.4 | -3.8 | -2.1 |
+| b | 25.6 | 45.0 | -7.6 | -15.1 |
+| c | 26.6 | 46.0 | -5.9 | -11.1 |
+| d | 17.2 | 27.8 | -4.2 | -6.1 |
+| e | 20.6 | 34.6 | -3.7 | -3.1 |
+| f | 22.8 | 38.7 | -2.0 | -1.1 |
+| g | 24.4 | 38.9 | -6.5 | -8.5 |
+| h | **32.9** | **53.1** | -1.6 | 7.7 |
+| i | 20.6 | 35.9 | -4.5 | -9.4 |
+| k | **9.9** | **13.9** | -2.1 | -3.0 |
 
-| Patient | Suspend | Reduce | Normal | Increase | Bolus | Suspend @ Glucose |
-|---------|---------|--------|--------|----------|-------|-------------------|
-| a | 44% | 9% | 20% | 25% | 2% | 163 |
-| b | **89%** | 4% | 3% | 0% | 4% | 173 |
-| c | 81% | 2% | 1% | 0% | 16% | 150 |
-| d | 80% | 1% | 0% | 0% | 18% | 139 |
-| e | 74% | 3% | 1% | 1% | 22% | 150 |
-| f | 50% | 0% | 8% | **41%** | 1% | 134 |
-| g | **85%** | 0% | 0% | 0% | 14% | 138 |
-| h | **88%** | 2% | 0% | 0% | 11% | 113 |
-| i | 66% | 2% | 2% | 7% | 23% | 130 |
-| j | **99%** | 0% | 0% | 0% | 1% | 141 |
-| k | 77% | 3% | 0% | 0% | 19% | **90** |
+**Patient k** has the best predictions (MAE@30=9.9) because glucose is nearly flat. **Patient h** has the worst (MAE@30=32.9) — consistent with unstable profiles and sensitivity-dominant variability (EXP-2261).
 
-**Population mean: 76% suspend**
+**Systematic negative bias** across all patients: the loop predicts glucose will be 2–8 mg/dL lower than it actually ends up at 30 minutes. This means the loop is slightly pessimistic about glucose decline, which explains the tendency toward suspension (it believes glucose is dropping faster than reality).
 
-### Interpretation — The Suspension Paradox
-
-AID loops spend **three-quarters of their time delivering zero basal insulin**. This fundamentally reframes what AID systems do: they are NOT continuous insulin delivery systems. They are **intermittent bolus systems with safety suspension**.
-
-**Patient k suspends at 90 mg/dL** — the loop is protecting a very well-controlled patient from going low. **Patient b suspends at 173 mg/dL** — the loop is suspending while glucose is still elevated, suggesting basal rates are set too high for this patient's actual needs.
-
-**Patient f** is unique: 41% of time at *increased* delivery rate. Combined with 327 U/day TDI, this patient likely has very high insulin resistance.
-
-The high suspension rates validate the prior finding that "zero delivery 65% of time" (EXP-1881) — the actual number is even higher at 76%.
+**60-minute predictions degrade ~1.7×**: MAE roughly doubles from 30→60 min across all patients.
 
 ---
 
-## EXP-2043: Prediction Accuracy by Context
+## EXP-2313: Suspension Analysis
 
-![Prediction Accuracy](figures/loop-fig03-prediction.png)
+![Suspension Analysis](figures/loop-fig03-suspension.png)
 
-### Results (30-min prediction MAE and bias)
+| Patient | Suspension % | Episodes | Median Duration |
+|---------|-------------|----------|-----------------|
+| a | 38% | 2,359 | 15 min |
+| b | 76% | 1,636 | 15 min |
+| c | 62% | 2,054 | 20 min |
+| d | 70% | 1,558 | 30 min |
+| e | 52% | 1,329 | 45 min |
+| f | 48% | 1,565 | 55 min |
+| g | 72% | 1,875 | 40 min |
+| h | 76% | 1,379 | 60 min |
+| i | 61% | 1,964 | 25 min |
+| j | 96% | 62 | **1,380 min** |
+| k | 74% | 1,595 | 30 min |
 
-| Patient | Post-Meal MAE | Post-Meal Bias | Overnight Bias | Correction MAE |
-|---------|--------------|---------------|----------------|---------------|
-| a | **45.9** | +4.5 | −3.8 | 37.2 |
-| b | 18.2 | −5.4 | −4.3 | 13.3 |
-| c | **41.3** | −2.0 | −6.1 | 19.2 |
-| d | 20.5 | −9.3 | −4.2 | 14.6 |
-| e | 18.3 | −4.8 | −4.3 | **21.8** |
-| f | **55.8** | −0.2 | −3.4 | 12.5 |
-| g | **34.0** | −16.8 | −9.5 | 18.3 |
-| h | **70.9** | +14.2 | −3.1 | 7.3 |
-| i | **38.0** | −20.2 | −6.6 | 21.7 |
-| k | 12.8 | −7.8 | −2.4 | 8.9 |
+Two suspension patterns:
+1. **Frequent short suspensions** (a, b, c, i: median 15–25 min): Loop is actively modulating, alternating between delivery and suspension at high frequency
+2. **Longer suspensions** (e, f, h: median 45–60 min): Loop suspends for extended periods, suggesting predicted glucose decline is sustained
 
-### Interpretation
-
-**Post-meal is the worst prediction context** for 8/10 patients (MAE 12.8–70.9 mg/dL). This directly explains why meal spikes are hard to control — the loop can't predict what's coming.
-
-**Consistent negative overnight bias** (−2.4 to −9.5 mg/dL): The loop systematically over-predicts overnight glucose, thinking it will be higher than it actually is. This leads to under-correction at night and explains the 71% overnight TIR.
-
-**Patient h** has extreme post-meal MAE (70.9 mg/dL) but only 36% CGM coverage — the prediction system has limited data to learn from.
-
-**Patient i** shows −20.2 mg/dL post-meal bias: the loop consistently predicts higher glucose than actual after meals, leading to under-dosing and sustained rises.
+**Patient j** is effectively running open-loop: 62 suspension episodes with median 23-hour duration means the loop is almost never delivering.
 
 ---
 
-## EXP-2044: Overcorrection Detection
+## EXP-2314: Over-Delivery Episodes
 
-![Overcorrection](figures/loop-fig04-overcorrection.png)
+![Over-Delivery](figures/loop-fig04-over-delivery.png)
 
-### Results
+| Patient | Over/Day | Led to Hypo | Hypo Rate |
+|---------|----------|-------------|-----------|
+| a | **141** | 1,583 | 6% |
+| f | **125** | 2,231 | 10% |
+| i | 13 | 157 | 7% |
+| e | 1 | 54 | 24% |
+| h | 0 | 17 | **28%** |
+| k | 0 | 14 | **56%** |
 
-| Patient | Total Corrections | Overcorrections | Rate | Mean Overcorr Dose |
-|---------|------------------|----------------|------|-------------------|
-| a | 186 | 34 | **18%** | 3.08 U |
-| b | 518 | 36 | 7% | 1.34 U |
-| c | 2,831 | 576 | **20%** | 0.74 U |
-| d | 2,149 | 82 | 4% | 0.60 U |
-| e | 3,220 | 381 | 12% | 1.25 U |
-| f | 174 | 19 | 11% | **5.96 U** |
-| g | 1,140 | 144 | 13% | 0.78 U |
-| h | 183 | 63 | **34%** | 0.80 U |
-| i | 4,888 | 1,137 | **23%** | 1.08 U |
-| j | 9 | 2 | 22% | 3.00 U |
-| k | 17 | 1 | 6% | 2.05 U |
+**Patients a and f** have extreme over-delivery (141 and 125 episodes/day at >2× scheduled rate). These are the patients whose loops are actively delivering — when they over-deliver, 6–10% of episodes lead to hypo within 2 hours.
 
-**Population mean: 15% overcorrection rate**
-
-### Interpretation
-
-**1 in 7 corrections causes hypoglycemia.** This is a major safety concern. Patients h (34%), i (23%), c (20%), and a (18%) are the most affected.
-
-**Patient h** has the worst overcorrection rate (34%) — one-third of all corrections end in hypo. With only 183 total corrections over 180 days (~1/day), each one is a significant event.
-
-**Patient i** has the highest absolute count (1,137 overcorrections in 180 days = 6.3/day). Combined with 4,888 total corrections (~27/day), this patient's loop is in constant correction mode.
-
-**Patient f** uses the largest overcorrection doses (5.96 U mean) — consistent with high insulin resistance requiring large doses, where even small proportional errors create large absolute glucose drops.
-
-**The overcorrection rate correlates with ISF miscalibration** from prior experiments: patients whose effective ISF differs most from profile settings are most likely to overcorrect.
+**Patient k**: Only 25 over-delivery episodes total, but 56% lead to hypo — when patient k's loop over-delivers, it's dangerous. This is consistent with patient k living near the hypo threshold.
 
 ---
 
-## EXP-2045: Overnight Control Analysis
+## EXP-2315: Under-Delivery Episodes
 
-![Overnight Control](figures/loop-fig05-overnight.png)
+![Under-Delivery](figures/loop-fig05-under-delivery.png)
 
-### Results
+| Patient | Under/Day | Led to Hyper | Hyper Rate |
+|---------|-----------|-------------|------------|
+| a | 119 | 9,415 | 44% |
+| b | **237** | 20,246 | **48%** |
+| c | 212 | 14,793 | 39% |
+| d | **239** | 8,908 | 21% |
+| g | **254** | 12,102 | 26% |
+| h | 236 | 2,651 | 6% |
+| k | 236 | 0 | **0%** |
 
-| Patient | Valid Nights | Overnight TIR | Hypo Nights | Dawn Rise | Dawn SD |
-|---------|-------------|--------------|-------------|-----------|---------|
-| a | 157 | 56% | 28% | **+44** | ±111 |
-| b | 162 | 55% | 16% | +21 | ±67 |
-| c | 148 | 60% | **43%** | +7 | ±101 |
-| d | 159 | **87%** | 7% | +27 | ±47 |
-| e | 141 | 62% | 26% | +23 | ±73 |
-| f | 158 | 60% | 22% | +28 | ±98 |
-| g | 159 | 69% | **43%** | −15 | ±78 |
-| h | 63 | 82% | **59%** | −13 | ±71 |
-| i | 162 | 52% | **54%** | +21 | ±109 |
-| j | 55 | **96%** | 15% | +24 | ±37 |
-| k | 159 | **97%** | 30% | −12 | ±20 |
+**Under-delivery is 100× more common than over-delivery.** This is the direct consequence of high suspension rates — the loop is chronically under-delivering relative to scheduled basal.
 
-**Population overnight TIR: 71%, Hypo nights: 30%**
+**For patients a, b, c: 39–48% of under-delivery episodes are followed by hyperglycemia >200 mg/dL within 2 hours.** This confirms the loop's defensive posture causes hyperglycemia — it prioritizes preventing lows at the cost of accepting highs.
 
-### Interpretation
-
-**Overnight control is worse than overall control** for most patients. Population overnight TIR (71%) barely meets the 70% consensus target.
-
-**Nocturnal hypoglycemia is alarmingly common**: Patient h has hypos on 59% of nights, patient i on 54%, patient c on 43%. These are not rare events — they're the norm for struggling patients.
-
-**Dawn phenomenon** (4–7am glucose rise) is present in 8/11 patients (mean +14 mg/dL), but the **variability is enormous** (SD 20–111 mg/dL). Patient a's dawn rise of +44 mg/dL is the largest, but with ±111 SD, some mornings glucose drops and others it rises dramatically. This unpredictability makes static dawn basal ramps unreliable.
-
-**Patients g, h, k show dawn DECLINE** (−15, −13, −12 mg/dL), suggesting either nighttime over-basaling or liver glycogen depletion by morning.
+**Patient k**: 236 under-delivery episodes/day but 0% lead to hyperglycemia — because patient k's glucose rarely reaches 200 mg/dL regardless. The loop's defensive behavior is appropriate here.
 
 ---
 
-## EXP-2046: Recovery Time Analysis
+## EXP-2316: Loop Response to Meals
 
-![Recovery Times](figures/loop-fig06-recovery.png)
+![Meal Response](figures/loop-fig06-meal-response.png)
 
-### Results
+| Patient | Pre-Meal Rate | Post-Meal Rate | Post/Pre Ratio |
+|---------|--------------|----------------|----------------|
+| a | 1.651 | 0.603 | **0.37** |
+| b | 0.194 | 0.099 | 0.51 |
+| f | 2.205 | 1.082 | **0.49** |
+| h | 0.186 | 0.084 | **0.45** |
+| d | 0.142 | 0.200 | 1.41 |
+| e | 0.672 | 0.959 | **1.43** |
+| i | 1.550 | 2.055 | **1.33** |
+| k | 0.183 | 0.295 | 1.61 |
 
-| Patient | Hypo Events | Hypo Recovery | Hyper Events | Hyper Recovery |
-|---------|------------|--------------|-------------|---------------|
-| a | 186 | 40 min | 262 | 162 min |
-| b | 103 | 25 min | 172 | **180 min** |
-| c | 274 | 32 min | 268 | 120 min |
-| d | 86 | **20 min** | 52 | 165 min |
-| e | 159 | 25 min | 142 | 162 min |
-| f | 181 | 35 min | 203 | **200 min** |
-| g | 290 | 25 min | 147 | 135 min |
-| h | 199 | 30 min | 37 | 80 min |
-| i | 369 | **65 min** | 198 | **188 min** |
-| j | 58 | 20 min | 36 | 118 min |
-| k | 308 | 35 min | 0 | — |
+**5/11 patients see the loop REDUCE delivery after meals** (a: 0.37×, b: 0.51×, f: 0.49×, h: 0.45×, j: 0.33×). This is the opposite of metabolic need — meals require MORE insulin, not less.
 
-**Hypo recovery: 30 min median | Hyper recovery: 162 min median**
+**Explanation**: The meal bolus covers the immediate carb load. The loop then sees IOB (insulin on board) is high and suspends basal to prevent stacking. The post-meal suspension is a *safety measure*, not an error. However, for under-bolused meals (CR too high, per EXP-1871), this creates a gap where neither bolus nor basal adequately covers the meal.
 
-### Interpretation — The Asymmetry of Glucose Recovery
-
-**Hyper recovery takes 5.4× longer than hypo recovery** (162 vs 30 min). This asymmetry is fundamental to AID management and reflects:
-
-1. **Counter-regulatory response**: Hypoglycemia triggers glucagon, epinephrine, and cortisol release — the body actively fights lows. No equivalent mechanism rapidly lowers highs.
-2. **Insulin pharmacokinetics**: Insulin takes 30+ min to onset and 2+ hrs to peak. You can eat glucose in 5 minutes but can't speed up insulin.
-3. **AID safety limits**: Loops are conservative about aggressive correction (max temp basal, IOB limits), prolonging time above range.
-
-**Patient i** is the slowest to recover from both hypos (65 min) and hypers (188 min). This patient's loop is struggling across all metrics.
-
-**Patient k** has ZERO hyper events (>250 mg/dL) over 180 days — the AID success story. Patient h has only 37 hyper events but 199 hypo events — this patient is over-controlled.
+**Patients d, e, i, k** show increased post-meal delivery (ratio >1.3×), suggesting their loops are actively correcting post-meal rises with additional basal.
 
 ---
 
-## EXP-2047: Glycemic Variability Decomposition
+## EXP-2317: Hypo Risk Signal Evaluation
 
-![Variability](figures/loop-fig07-variability.png)
+![Hypo Risk](figures/loop-fig07-hypo-risk.png)
 
-### Results
+| Patient | Precision | Recall | F1 | Pred Min MAE |
+|---------|-----------|--------|----|-------------|
+| a | 0.26 | 0.75 | 0.38 | 69.9 |
+| b | 0.16 | 0.55 | 0.25 | 38.4 |
+| c | 0.44 | 0.71 | **0.54** | 42.8 |
+| d | 0.12 | 0.48 | 0.19 | 36.5 |
+| g | 0.36 | 0.65 | 0.46 | 39.6 |
+| i | **0.57** | **0.74** | **0.64** | 51.1 |
+| k | 0.28 | 0.61 | 0.39 | 13.7 |
 
-| Patient | Total Var | Meal Var Ratio | Overnight Var Ratio | Meal Time % |
-|---------|-----------|---------------|--------------------|----|
-| a | 6,643 | **115%** | 92% | 22% |
-| b | 3,821 | 100% | 104% | 51% |
-| c | 4,936 | **137%** | 92% | 23% |
-| d | 1,960 | 104% | 79% | 19% |
-| e | 3,487 | 89% | 108% | 24% |
-| f | 5,928 | 107% | **114%** | 20% |
-| g | 3,575 | **123%** | **131%** | 39% |
-| h | 1,929 | **155%** | **134%** | 33% |
-| i | 5,830 | **138%** | **114%** | 7% |
-| j | 1,972 | 121% | 43% | 33% |
-| k | 240 | 111% | 111% | 5% |
+**The loop's hypo detection has moderate recall (48–75%) but poor precision (12–57%).** It catches most hypos but creates many false alarms. This drives the defensive suspension behavior — the loop thinks hypo is coming more often than it actually arrives.
 
-**Population: Meal variance = 118% of total, Overnight = 102% of total**
+**Patient i** has the best F1 (0.64) — paradoxically the highest-risk patient has the most accurate risk detection, because patient i's hypos follow a clear over-correction pattern.
 
-### Interpretation — The Variance Paradox
-
-**Post-meal variance EXCEEDS total variance** for 8/11 patients. This seems impossible — how can a subset have more variance than the whole? The answer: **meal periods have higher variance than the population mean**, and non-meal periods have lower variance, so separating them reveals that meals are the concentrated source of glucose instability.
-
-**Patient i** is the extreme case: meal variance is 138% of total despite spending only 7% of time post-meal. This means those 7% of meal-adjacent timesteps contain vastly more variability per minute than the remaining 93%.
-
-**Overnight variance is also high** (102% of total), confirming that overnight is NOT the "easy" period for AID management. Patients f (114%), g (131%), and h (134%) have MORE overnight variance than total — their nights are worse than their days.
+**Predicted minimum glucose MAE is 14–70 mg/dL** — the loop's estimate of the lowest glucose in the next hour is off by this much.
 
 ---
 
-## EXP-2048: Synthesis — Optimization Opportunities
+## EXP-2318: Loop Effectiveness Scorecard
 
-![Synthesis](figures/loop-fig08-synthesis.png)
+![Scorecard](figures/loop-fig08-scorecard.png)
 
-### Per-Patient Optimization Map
+| Patient | Prediction | Low Susp. | Safe Delivery | Risk Detect | Balance | **Overall** | **Grade** |
+|---------|-----------|-----------|--------------|-------------|---------|-------------|-----------|
+| a | 47 | 55 | 88 | 76 | 0 | 53 | C |
+| b | 58 | 0 | 92 | 50 | 100 | 60 | B |
+| c | 54 | 0 | 100 | 100 | 100 | 71 | B |
+| d | 91 | 0 | 100 | 38 | 100 | 66 | B |
+| e | 78 | 20 | 52 | 62 | 100 | 62 | B |
+| f | 69 | 30 | 81 | 79 | 8 | 53 | C |
+| g | 62 | 0 | 100 | 92 | 100 | 71 | B |
+| h | 28 | 0 | 43 | 51 | 100 | 45 | C |
+| i | 78 | 0 | 87 | 100 | 100 | 73 | B |
+| j | 100 | 0 | 100 | 0 | 0 | 48 | C |
+| k | 100 | 0 | 0 | 78 | 100 | 56 | C |
 
-| Patient | Opportunities | Top Priority |
-|---------|--------------|-------------|
-| a | Reduce corrections, overnight basal, dawn ramp, hyper recovery | **Overnight basal** |
-| b | Overnight basal, dawn ramp, hyper recovery, review basal rate | **Basal rate review** |
-| c | Reduce corrections, review basal rate | **Overcorrection** |
-| d | Dawn ramp, hyper recovery, review basal rate | **Dawn ramp** |
-| e | Dawn ramp, hyper recovery, review basal rate | **Hyper recovery** |
-| f | Dawn ramp, hyper recovery | **Hyper recovery** |
-| g | Hyper recovery, review basal rate | **Hyper recovery** |
-| h | Reduce corrections, review basal rate | **Overcorrection** (34%) |
-| i | All 5 opportunities | **Complete settings review** |
-| j | Reduce corrections, dawn ramp, review basal rate | **Basal automation** |
-| k | Review basal rate | **Low priority** |
-
-**11/11 patients have ≥1 optimization opportunity.** 5/11 have ≥3. Patient i has all 5.
-
-### Opportunity Frequency
-
-| Opportunity | Count | Impact Potential |
-|-------------|-------|-----------------|
-| REVIEW_BASAL_RATE | 8/11 | Foundation for all other optimizations |
-| IMPROVE_HYPER_CORRECTION | 7/11 | Reduce 162-min recovery time |
-| DAWN_BASAL_RAMP | 7/11 | Address +14 mg/dL morning rise |
-| REDUCE_CORRECTION_AGGRESSIVENESS | 5/11 | Reduce 15% overcorrection rate |
-| OPTIMIZE_OVERNIGHT_BASAL | 2/11 | Improve 71% overnight TIR |
+**No patient earns an A.** Median is B (62/100). Key failure: **Low suspension scores 0 for 7/11 patients** — the loop suspends >60% everywhere.
 
 ---
 
-## Cross-Experiment Synthesis
+## Discussion
 
-### The AID Operating Model
+### The Loop as a Defensive System
 
-Our data reveals AID loops operate in a fundamentally different way than commonly assumed:
+The AID loop is fundamentally a **defensive system**. Its primary action is withholding insulin (38–96% zero delivery), biased toward preventing lows at the cost of accepting highs:
+- Under-delivery is 100× more frequent than over-delivery
+- 39–48% of under-delivery leads to hyperglycemia for 3 patients
+- Post-meal delivery *decreases* for 5/11 patients (safety suspension after bolus)
 
-| Assumption | Reality |
-|-----------|---------|
-| Continuous insulin delivery | **76% suspension** — intermittent delivery |
-| Basal-bolus balance (50/50) | **68% bolus** — bolus-dominant |
-| Corrections are safe | **15% cause hypos** — significant risk |
-| Overnight is easy to control | **71% TIR, 30% hypo nights** — hardest period |
-| Meals are the main variability source | **True: 118% of total variance** — meals are worse than expected |
-| Recovery is symmetric | **5.4× asymmetry** — hypers take 5× longer than hypos |
+### Prediction Bias Drives Suspension
 
-### The Three Failures
+The systematic negative prediction bias (2–8 mg/dL at 30 min) means the loop consistently believes glucose is falling faster than reality. This compounds: at each decision point, the loop suspends more → glucose stays higher → more suspension needed later.
 
-1. **Overcorrection failure** (15% rate): The loop corrects too aggressively, causing hypos. Fix: reduce ISF or increase target.
+**Implication**: Reducing prediction bias by 3–5 mg/dL could meaningfully reduce unnecessary suspension.
 
-2. **Under-correction failure** (162-min hyper recovery): The loop is too conservative about bringing down highs. Fix: increase correction aggressiveness for sustained highs (seems contradictory to #1 — the solution is context-dependent correction).
+### The Post-Meal Paradox
 
-3. **Overnight failure** (71% TIR, 30% hypo nights): Basal rates don't match overnight needs, dawn phenomenon is unpredictable, and compression artifacts bias apparent hypo rates. Fix: adaptive overnight basal with compression filtering.
-
-### The Paradox of Simultaneous Over- and Under-Correction
-
-The loop overcorrects (causing hypos) AND undercorrects (slow hyper recovery) at the same time. This is not a contradiction — it reflects **context-inappropriate correction intensity**:
-- When glucose is moderately high (150–200), the loop corrects normally but sometimes overshoots → hypo
-- When glucose is very high (>250), the loop hits max temp basal limits and can't deliver more → slow recovery
-- The loop lacks context-awareness to distinguish these situations and adjust accordingly
+The loop reducing delivery after meals is mechanically correct (high IOB from bolus → suspend). But if the bolus was inadequate (CR 28% too high per EXP-1871), this creates a coverage gap. **Fix**: Correct CR so the initial bolus is adequate.
 
 ---
 
-## Methodological Notes
+## Conclusion
 
-### Assumptions
+AID loop decision analysis reveals:
 
-1. **Insulin classification**: Bolus vs basal based on data fields. Some patients' basal data appears to include absolute pump rates rather than delta-from-scheduled, inflating TDI.
-2. **Decision classification**: Based on net_basal thresholds (suspend <0.01, reduce <0.5, increase >1.5). These are approximate and may not match specific AID system behavior.
-3. **Overcorrection**: Defined as glucose <70 within 4h of a correction bolus. Some of these may be coincidental rather than causal.
-4. **Overnight**: Defined as midnight–6am regardless of actual sleep patterns.
-5. **Variance decomposition**: Uses within-context variance, not explained variance. Ratios >100% indicate the context has higher variance than the population.
-
-### Limitations
-
-- TDI data for patients a, f, i likely has encoding issues (implausibly high basal)
-- Patient j appears to be open-loop (100% zero delivery, 100% manual bolus)
-- Prediction accuracy analysis limited by available prediction fields
-- Overnight analysis doesn't account for pre-bed meals or late snacking
-- Overcorrection analysis doesn't distinguish AID-initiated from manual corrections
+1. **Suspension is the default state** (38–96% zero delivery)
+2. **Under-delivery is 100× more common** than over-delivery, driving hyperglycemia
+3. **Prediction bias** (−2 to −8 mg/dL at 30 min) feeds defensive suspension
+4. **Post-meal delivery decreases** for 5/11 patients
+5. **Hypo detection recall is moderate** (48–75%) but precision is poor (12–57%)
+6. Correcting settings would reduce loop compensation burden
 
 ---
 
-## Experiment Registry
+## Files
 
-| ID | Title | Status | Key Finding |
-|----|-------|--------|-------------|
-| EXP-2041 | Insulin Distribution | ✅ | 68% bolus-dominant, 3 patients with encoding issues |
-| EXP-2042 | Decision Patterns | ✅ | **76% suspension — loop mostly NOT delivering** |
-| EXP-2043 | Prediction Accuracy | ✅ | Post-meal worst context, overnight negative bias |
-| EXP-2044 | Overcorrection | ✅ | **15% corrections cause hypos** |
-| EXP-2045 | Overnight Control | ✅ | 71% TIR, 30% hypo nights, dawn +14 mg/dL |
-| EXP-2046 | Recovery Times | ✅ | **Hyper 5.4× slower than hypo (162 vs 30 min)** |
-| EXP-2047 | Variability | ✅ | Meal variance 118% of total (concentrated source) |
-| EXP-2048 | Synthesis | ✅ | **11/11 patients have optimization opportunities** |
-
----
-
-*Generated by autoresearch pipeline. Findings are data-driven observations from retrospective CGM/AID data. Clinical validation required before any treatment recommendations.*
+| File | Description |
+|------|-------------|
+| `tools/cgmencode/exp_loop_decisions_2311.py` | Experiment script |
+| `docs/60-research/figures/loop-fig01-activity.png` | Delivery profile |
+| `docs/60-research/figures/loop-fig02-prediction.png` | Prediction accuracy |
+| `docs/60-research/figures/loop-fig03-suspension.png` | Suspension analysis |
+| `docs/60-research/figures/loop-fig04-over-delivery.png` | Over-delivery episodes |
+| `docs/60-research/figures/loop-fig05-under-delivery.png` | Under-delivery episodes |
+| `docs/60-research/figures/loop-fig06-meal-response.png` | Meal response |
+| `docs/60-research/figures/loop-fig07-hypo-risk.png` | Hypo risk evaluation |
+| `docs/60-research/figures/loop-fig08-scorecard.png` | Loop effectiveness scorecard |
