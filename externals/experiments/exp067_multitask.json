@@ -1,9 +1,0 @@
-{
-  "experiment": "EXP-067",
-  "timestamp": "2026-04-02T02:19:58Z",
-  "hypothesis": "joint training: MAE<12 AND F1>0.72",
-  "forecast_mae": 16.3734130859375,
-  "classifier_f1": 0.8771137300776535,
-  "success": false,
-  "elapsed_seconds": 235.7
-}
