@@ -1,6 +1,6 @@
 # Retrospective Validation of Settings Recommendations
 
-**EXP-1901 Series | 11 Patients, 1,838 Training + 198 Verification Patient-Days**
+**EXP-1901 Series | 11 Patients, ~1,640 Training + ~198 Verification Patient-Days**
 
 ## Executive Summary
 
@@ -62,24 +62,24 @@ from verification data?
 
 | Patient | Train ISF | Verify ISF | Concordance | Train Evidence | Verify Evidence |
 |---------|-----------|------------|-------------|----------------|-----------------|
-| a | 43.0 | 42.0 | 0.977 | 265 | 370 |
-| b | 80.0 | 63.0 | 0.738 | 289 | 326 |
-| c | 53.4 | 64.5 | 0.828 | 320 | 334 |
-| d | 140.0 | 138.0 | 0.987 | 172 | 297 |
-| e | 101.2 | 115.6 | 0.876 | 64 | 112 |
-| f | 50.0 | 49.6 | 0.992 | 199 | 368 |
-| g | 53.0 | 67.0 | 0.791 | 273 | 296 |
-| h | 74.4 | 71.5 | 0.961 | 18 | 57 |
-| i | 69.0 | 53.3 | 0.773 | 206 | 307 |
-| j | 82.0 | 71.0 | 0.866 | 22 | 78 |
-| k | 115.0 | 70.6 | 0.612 | 116 | 158 |
+| a | 52.0 | 38.4 | 0.738 | 1007 | 86 |
+| b | 190.0 | 160.8 | 0.846 | 1208 | 104 |
+| c | 200.0 | 217.1 | 0.921 | 5888 | 544 |
+| d | 160.0 | 152.6 | 0.954 | 6930 | 643 |
+| e | 156.5 | 103.6 | 0.662 | 7168 | 630 |
+| f | 26.2 | 31.8 | 0.824 | 740 | 69 |
+| g | 246.8 | 228.3 | 0.925 | 5048 | 562 |
+| h | 230.0 | 238.3 | 0.965 | 1823 | 175 |
+| i | 172.8 | 175.1 | 0.987 | 9853 | 1023 |
+| j | 65.4 | 40.0 | 0.612 | 302 | 23 |
+| k | 72.0 | 80.0 | 0.900 | 8497 | 1019 |
 
 **Mean concordance: 0.849 ± 0.121**
 
 8/11 patients exceed 0.80 concordance. The three lower concordance patients
-(b, k, i) have high ISF ratios (2.0–2.9×), suggesting their effective ISF
-has more natural variability — precisely the patients where miscalibration
-matters most.
+(j, e, a) have concordances 0.61–0.74, with j having the smallest evidence
+count (23 verification events) — suggesting low concordance may partly reflect
+limited verification data.
 
 ![Train/Verify Concordance](../../visualizations/natural-experiments/fig66_train_verify_concordance.png)
 *Figure 66: Left — Train vs Verify ISF scatter plot (diagonal = perfect concordance). Right — Per-patient concordance bars.*
@@ -100,22 +100,22 @@ per patient). Coefficient of variation (CV) measures dispersion.
 
 | Patient | Windows | ISF CV (%) | Temporal r | Temporal p | ISF Range |
 |---------|---------|-----------|------------|------------|-----------|
-| a | 5 | 3.2 | −0.123 | 0.844 | 2.7 |
-| b | 5 | 3.2 | −0.236 | 0.702 | 5.5 |
-| c | 5 | 2.3 | 0.112 | 0.858 | 2.5 |
-| d | 5 | 6.6 | −0.618 | 0.266 | 21.3 |
-| e | 4 | 3.3 | 0.327 | 0.673 | 6.7 |
-| f | 4 | 6.3 | −0.913 | 0.087 | 7.2 |
-| g | 5 | 6.0 | −0.518 | 0.372 | 7.0 |
-| h | 4 | 4.6 | 0.424 | 0.576 | 6.3 |
-| i | 5 | 6.3 | 0.155 | 0.803 | 8.5 |
-| k | 4 | 71.3 | 0.948 | 0.052 | 167.8 |
+| a | 5 | 31.4 | 0.770 | 0.128 | 43.8 |
+| b | 5 | 70.6 | 0.820 | 0.089 | 194.7 |
+| c | 5 | 5.1 | 0.648 | 0.237 | 28.7 |
+| d | 5 | 8.9 | −0.961 | **0.009** | 38.5 |
+| e | 4 | 4.3 | −0.518 | 0.482 | 18.6 |
+| f | 4 | 7.2 | −0.225 | 0.775 | 4.4 |
+| g | 5 | 7.6 | 0.644 | 0.241 | 46.7 |
+| h | 4 | 31.0 | −0.193 | 0.807 | 144.1 |
+| i | 5 | 6.8 | −0.678 | 0.209 | 27.3 |
+| k | 4 | 4.1 | 0.755 | 0.245 | 7.6 |
 
-**Mean ISF CV: 17.7% ± 20.2%** (excluding outlier k: **4.6%**)
+**Mean ISF CV: 17.7% ± 20.2%** (excluding outlier b: **11.8%**)
 
 - 7/10 patients have ISF CV < 10% — highly stable
-- Only 1/10 shows significant temporal drift (k, p=0.052, borderline)
-- Patient k is the outlier (CV=71.3%) — likely due to actual settings changes
+- Only 1/10 shows significant temporal drift (d, p=0.009)
+- Patient b is the outlier (CV=70.6%) — likely due to actual settings changes
   during the study period
 
 **Conclusion**: NE-derived settings are temporally stable for 90% of patients.
@@ -198,24 +198,24 @@ produce consistent settings?
 
 | Patient | Folds | ISF CV (%) | ISF Mean | ISF Std |
 |---------|-------|-----------|----------|---------|
-| a | 5 | 3.9 | 42.5 | 1.7 |
-| b | 5 | 3.9 | 80.5 | 3.2 |
-| c | 5 | 2.9 | 53.8 | 1.6 |
-| d | 5 | 6.1 | 142.9 | 8.7 |
-| e | 5 | 8.2 | 95.1 | 7.8 |
-| f | 5 | 4.2 | 51.1 | 2.2 |
-| g | 5 | 3.2 | 54.9 | 1.7 |
-| h | 5 | 3.3 | 71.3 | 2.3 |
-| i | 5 | 2.1 | 70.8 | 1.5 |
-| j | 5 | 10.1 | 75.5 | 7.7 |
-| k | 5 | 56.3 | 124.3 | 69.9 |
+| a | 5 | 8.1 | 49.3 | 4.0 |
+| b | 5 | 39.1 | 172.8 | 67.6 |
+| c | 5 | 1.8 | 198.9 | 3.5 |
+| d | 5 | 5.2 | 161.3 | 8.4 |
+| e | 5 | 3.0 | 157.2 | 4.8 |
+| f | 5 | 8.5 | 25.0 | 2.1 |
+| g | 5 | 2.4 | 243.4 | 5.9 |
+| h | 5 | 1.8 | 229.2 | 4.2 |
+| i | 5 | 7.0 | 163.1 | 11.3 |
+| j | 5 | 24.9 | 71.0 | 17.7 |
+| k | 5 | 2.3 | 71.0 | 1.7 |
 
-**Mean ISF CV across folds: 9.5% ± 11.3%** (excluding k: **4.8%**)
+**Mean ISF CV across folds: 9.5% ± 11.3%** (excluding b: **6.5%**)
 
 - **9/11 patients have CV < 15%** — excellent cross-fold stability
-- Patient k is again the outlier (CV = 56.3%), consistent with actual settings
+- Patient b is again the outlier (CV = 39.1%), consistent with actual settings
   changes during the study period
-- Patient j has slightly higher CV (10.1%) with only 61 days total
+- Patient j has the second highest CV (24.9%)
 
 **Conclusion**: Settings are highly reproducible across temporal folds for
 90% of patients. The median ISF varies by only ±3–8 mg/dL/U between folds.
@@ -234,17 +234,17 @@ verification day TIR?
 
 | Patient | Train TIR | Verify TIR | Δ TIR | Mismatch | ISF Ratio |
 |---------|-----------|------------|-------|----------|-----------|
-| a | 56.0 | 55.4 | −0.6 | 0.301 | 1.07 |
-| b | 55.9 | 52.3 | −3.6 | 0.901 | 2.00 |
-| c | 62.2 | 62.4 | +0.2 | 2.023 | 2.67 |
-| d | 79.0 | 77.6 | −1.4 | 2.226 | 4.00 |
-| e | 65.6 | 67.2 | +1.6 | 2.928 | 4.41 |
-| f | 67.5 | 67.5 | 0.0 | 0.451 | 1.25 |
-| g | 75.3 | 68.6 | −6.7 | 2.309 | 3.53 |
-| h | 87.3 | 86.8 | −0.5 | 1.505 | 2.57 |
-| i | 60.0 | 55.6 | −4.4 | 1.974 | 3.46 |
-| j | 82.3 | 85.6 | +3.3 | 0.616 | 1.64 |
-| k | 94.5 | 94.8 | +0.3 | 1.321 | 2.88 |
+| a | 55.8 | 55.4 | −0.4 | 0.301 | 1.07 |
+| b | 56.7 | 52.3 | −4.4 | 0.901 | 2.00 |
+| c | 61.6 | 62.4 | +0.8 | 2.023 | 2.67 |
+| d | 79.2 | 77.6 | −1.6 | 2.226 | 4.00 |
+| e | 65.4 | 67.2 | +1.8 | 2.928 | 4.41 |
+| f | 65.5 | 67.5 | +2.0 | 0.451 | 1.25 |
+| g | 75.2 | 68.6 | −6.6 | 2.309 | 3.53 |
+| h | 85.0 | 86.8 | +1.8 | 1.505 | 2.53 |
+| i | 59.9 | 55.6 | −4.3 | 1.974 | 3.46 |
+| j | 81.0 | 85.6 | +4.6 | 0.616 | 1.64 |
+| k | 95.1 | 94.8 | −0.3 | 1.321 | 2.88 |
 
 ### Cross-Patient Correlations
 
@@ -258,7 +258,7 @@ verification day TIR?
 
 1. **Train TIR → Verify TIR: r = 0.973** — This is the strongest finding in
    the entire series. Training-period glucose control nearly perfectly predicts
-   held-out verification-period control. Mean absolute Δ = 2.1 percentage points.
+   held-out verification-period control. Mean absolute Δ = 2.6 percentage points.
 
 2. **Mismatch does NOT predict TIR cross-patient** (r = 0.018). This is
    expected: the AID compensates for miscalibration at the patient level.
@@ -284,9 +284,9 @@ effective (higher mismatch) show measurably worse control.
 
 | Claim | Evidence | Confidence |
 |-------|----------|------------|
-| NE-derived settings are stable over time | CV = 4.8% (excluding k), 1/10 drift | High |
+| NE-derived settings are stable over time | CV = 11.8% (excluding b), 1/10 drift (d, p=0.009) | High |
 | Settings reproduce across train/verify split | Concordance = 0.849 | High |
-| Settings reproduce across CV folds | CV = 4.8% (excluding k), 9/11 stable | High |
+| Settings reproduce across CV folds | CV = 6.5% (excluding b), 9/11 stable | High |
 | Within-patient: closer to optimal → better TIR | Combined r = −0.371, p = 0.0007 | **High** |
 | Training TIR predicts verification TIR | r = 0.973 | Very high |
 
@@ -323,7 +323,7 @@ settings accuracy on glucose control: when the AID has less room to compensate
    Patients should expect incremental improvement, not transformation.
 
 2. **Patient k demonstrates the ceiling.** With TIR = 94.9% and strong
-   mismatch→TIR correlation (r = −0.939), correcting ISF from 40 → 115
+   mismatch→TIR correlation (r = −0.939), correcting ISF from 25 → 72
    could push an already-excellent patient toward the theoretical limit.
 
 3. **Patient f demonstrates the floor.** With ISF ratio = 1.25 (nearly
