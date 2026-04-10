@@ -104,6 +104,39 @@ class CorrectionISF:
 
 
 @dataclass
+class PeriodAnalysis:
+    """Deep analysis of a time-of-day period."""
+    name: str
+    hour_start: int
+    hour_end: int
+    tir: float
+    tbr: float
+    tar: float
+    mean_bg: float
+    bg_p10: float
+    bg_p25: float
+    bg_p50: float
+    bg_p75: float
+    bg_p90: float
+    mean_iob: float
+    basal_assessment: str
+    n_points: int
+
+
+@dataclass
+class CounterfactualResult:
+    """Result of a "what if" settings simulation."""
+    parameter: str  # "isf", "cr", "basal"
+    period: str     # "all", "overnight", "morning", etc.
+    multiplier: float
+    current_value: float
+    simulated_value: float
+    tir_current: float
+    tir_simulated: float
+    tir_delta_pp: float  # percentage points change
+
+
+@dataclass
 class TherapyInsights:
     """Complete therapy analysis results."""
     # Glycemic overview
@@ -139,6 +172,8 @@ class TherapyInsights:
     effective_isf_simple: float
     effective_isf_curve: Optional[float]
     isf_ratio: float
+    response_curve_isf: Optional[float]
+    response_curve_tau: Optional[float]
 
     # Hypo safety
     hypo_events: List[HypoEvent]
@@ -155,6 +190,12 @@ class TherapyInsights:
     correction_count: int
     overnight_count: int
     uam_count: int
+
+    # Period analysis
+    period_analyses: List[PeriodAnalysis]
+
+    # Counterfactual simulations
+    counterfactuals: List[CounterfactualResult]
 
     # Fidelity
     fidelity_grade: str
@@ -245,6 +286,17 @@ def analyze_therapy(patient, result) -> TherapyInsights:
     eff_curve = float(np.median(curve_isfs)) if curve_isfs else None
     isf_ratio = eff_simple / isf_val if isf_val > 0 else 1.0
 
+    # ── Response-curve ISF (AID-aware) ──
+    rc_isf, rc_tau = None, None
+    try:
+        from cgmencode.production.clinical_rules import compute_response_curve_isf
+        rc = compute_response_curve_isf(glucose, patient.bolus, patient.iob, profile)
+        if rc:
+            rc_isf = float(rc['isf'])
+            rc_tau = float(rc['tau_hours'])
+    except Exception:
+        pass
+
     # ── Hypo events ──
     hypo_events = _detect_hypo_events(timestamps, glucose)
     hypo_per_day = len(hypo_events) / max(n_days, 1)
@@ -262,12 +314,23 @@ def analyze_therapy(patient, result) -> TherapyInsights:
     fidelity_rmse = fid.rmse if fid else 0.0
     corr_energy = fid.correction_energy if fid else 0.0
 
-    # ── Recommendations ──
+    # ── Period analysis (with BG percentiles and IOB) ──
+    hours_arr = np.array([(datetime.fromtimestamp(t/1000, tz=timezone.utc).hour +
+                           datetime.fromtimestamp(t/1000, tz=timezone.utc).minute/60.0)
+                          for t in timestamps])
+    period_analyses = _analyze_periods(glucose, patient.iob, hours_arr, result)
+
+    # ── Counterfactual simulations ──
+    counterfactuals = _run_counterfactuals(
+        glucose, result.metabolic, hours_arr, isf_val, cr_val)
+
+    # ── Recommendations (enhanced with counterfactual evidence) ──
     recs = _generate_recommendations(
         basal_assessment, isf_ratio, eff_simple, isf_val, cr_val,
         tir, tbr, tar, hypo_per_day, serious, median_drift,
         iob_profile, daily_bolus, len(bolus_vals), len(carb_vals),
-        correction_isfs, nights, weekly
+        correction_isfs, nights, weekly, counterfactuals,
+        rc_isf, period_analyses
     )
 
     return TherapyInsights(
@@ -288,6 +351,8 @@ def analyze_therapy(patient, result) -> TherapyInsights:
         effective_isf_simple=eff_simple,
         effective_isf_curve=eff_curve,
         isf_ratio=isf_ratio,
+        response_curve_isf=rc_isf,
+        response_curve_tau=rc_tau,
         hypo_events=hypo_events,
         hypo_per_day=hypo_per_day,
         serious_hypo_count=serious,
@@ -298,6 +363,8 @@ def analyze_therapy(patient, result) -> TherapyInsights:
         correction_count=len(corrections),
         overnight_count=len(ne.filter_by_type('overnight')),
         uam_count=len(ne.filter_by_type('uam')),
+        period_analyses=period_analyses,
+        counterfactuals=counterfactuals,
         fidelity_grade=fidelity_grade,
         fidelity_rmse=fidelity_rmse,
         correction_energy=corr_energy,
@@ -469,10 +536,12 @@ def _generate_recommendations(
     basal_assessment, isf_ratio, eff_isf, profile_isf, cr_val,
     tir, tbr, tar, hypo_per_day, serious_hypo, median_drift,
     iob_profile, daily_bolus, n_boluses, n_carbs,
-    correction_isfs, nights, weekly
+    correction_isfs, nights, weekly, counterfactuals=None,
+    rc_isf=None, period_analyses=None
 ) -> List[Dict]:
     """Generate evidence-based therapy recommendations."""
     recs = []
+    cf = counterfactuals or []
 
     # ── Basal assessment ──
     if basal_assessment == "too_low":
@@ -512,31 +581,80 @@ def _generate_recommendations(
 
     # ── Hypo safety ──
     if hypo_per_day > 0.5:
+        hypo_by_period = {}
+        if period_analyses:
+            for pa in period_analyses:
+                hypo_by_period[pa.name] = pa.tbr * 100
+        worst_period = max(hypo_by_period, key=hypo_by_period.get) if hypo_by_period else "unknown"
         recs.append({
             'category': 'safety',
             'priority': 'high',
             'finding': (f'{hypo_per_day:.1f} hypo events/day, {serious_hypo} serious (<54 mg/dL). '
-                        f'Peak hour: {iob_profile.peak_hour}:00'),
-            'recommendation': 'Hypoglycemia frequency exceeds safety threshold. Review IOB limits and basal.',
-            'evidence': f'97 hypo events in {len(nights)} days including {serious_hypo} below 54 mg/dL',
+                        f'Peak hour: {iob_profile.peak_hour}:00. '
+                        f'Highest TBR in {worst_period} period.'),
+            'recommendation': ('Hypoglycemia frequency exceeds safety threshold. '
+                               'Consider raising glucose target by 5-10 mg/dL in Loop settings, '
+                               'especially during overnight hours when most hypos occur.'),
+            'evidence': (f'{int(hypo_per_day * len(nights))} hypo events in {len(nights)} days '
+                         f'including {serious_hypo} below 54 mg/dL. '
+                         f'TBR by period: ' +
+                         ', '.join(f'{k}={v:.1f}%' for k, v in hypo_by_period.items())),
             'confirmable': 'Reduction in TBR and hypo event count within 1-2 weeks',
         })
 
-    # ── ISF assessment ──
-    if isf_ratio > 1.25 or isf_ratio < 0.75:
-        direction = "higher" if isf_ratio > 1 else "lower"
-        suggested = round(profile_isf + (eff_isf - profile_isf) * 0.25, 0)
+    # ── ISF assessment (enhanced with response-curve and counterfactuals) ──
+    best_isf = rc_isf or eff_isf
+    best_isf_ratio = best_isf / profile_isf if profile_isf > 0 else 1.0
+    isf_cf = [c for c in cf if c.parameter == 'isf' and c.tir_delta_pp > 0]
+    best_isf_cf = max(isf_cf, key=lambda c: c.tir_delta_pp) if isf_cf else None
+
+    if best_isf_ratio > 1.15 or best_isf_ratio < 0.85:
+        direction = "higher" if best_isf_ratio > 1 else "lower"
+        conservative_step = round(profile_isf + (best_isf - profile_isf) * 0.3, 0)
+        method = "response-curve analysis" if rc_isf else "correction bolus analysis"
+
+        cf_text = ""
+        if best_isf_cf:
+            cf_text = (f' Counterfactual simulation: ISF {best_isf_cf.simulated_value:.0f} '
+                       f'→ TIR +{best_isf_cf.tir_delta_pp:.1f}pp.')
+
         recs.append({
             'category': 'isf',
-            'priority': 'medium',
-            'finding': (f'Effective ISF ({eff_isf:.0f} mg/dL/U) is {isf_ratio:.2f}× profile ISF '
-                        f'({profile_isf:.0f}). Loop is compensating for the mismatch.'),
-            'recommendation': (f'Consider adjusting ISF from {profile_isf:.0f} toward {suggested:.0f} '
-                               f'mg/dL/U (25% correction toward observed effective value)'),
-            'evidence': (f'Based on {len(correction_isfs)} correction bolus analyses. '
-                         f'AID loop is consistently delivering {direction} insulin than settings predict.'),
-            'confirmable': 'Reduced correction energy and improved fidelity grade within 2 weeks',
+            'priority': 'high' if abs(best_isf_ratio - 1) > 0.3 else 'medium',
+            'finding': (f'Effective ISF ~{best_isf:.0f} mg/dL/U vs profile {profile_isf:.0f} '
+                        f'({best_isf_ratio:.2f}× ratio). '
+                        f'Method: {method} from {len(correction_isfs)} correction events.'),
+            'recommendation': (f'Consider adjusting ISF from {profile_isf:.0f} toward '
+                               f'{conservative_step:.0f} mg/dL/U '
+                               f'(conservative 30% step toward measured value).{cf_text}'),
+            'evidence': (f'Profile ISF={profile_isf:.0f} but natural experiments show '
+                         f'ISF={best_isf:.0f}. Loop is consistently '
+                         f'{"over" if direction == "higher" else "under"}-correcting '
+                         f'relative to the actual insulin sensitivity.'),
+            'confirmable': 'Reduced correction energy and improved fidelity within 2 weeks',
         })
+
+    # ── Morning problem (period-specific) ──
+    if period_analyses:
+        morning = next((p for p in period_analyses if p.name == 'morning'), None)
+        if morning and morning.tar > 0.40:
+            recs.append({
+                'category': 'morning',
+                'priority': 'high',
+                'finding': (f'Morning (7-12) is the worst period: TIR={morning.tir*100:.0f}%, '
+                            f'TAR={morning.tar*100:.0f}%, mean BG={morning.mean_bg:.0f}. '
+                            f'BG p75={morning.bg_p75:.0f}, p90={morning.bg_p90:.0f}. '
+                            f'Mean IOB={morning.mean_iob:.1f}U.'),
+                'recommendation': ('Morning hyperglycemia likely from dawn phenomenon + '
+                                   'unannounced breakfast. Consider: (1) higher morning ISF, '
+                                   '(2) pre-bolusing breakfast, or (3) increasing Loop '
+                                   'aggressiveness during 6-10 AM.'),
+                'evidence': ('Loop is already delivering peak IOB during morning hours '
+                             f'(~{morning.mean_iob:.1f}U) but glucose remains elevated. '
+                             'This suggests either ISF is too low during this period '
+                             'or meal carbs exceed what Loop can handle reactively.'),
+                'confirmable': 'Morning TIR improvement within 1-2 weeks',
+            })
 
     # ── Loop reliance ──
     if n_boluses < 20 and n_carbs < 20:
@@ -547,7 +665,8 @@ def _generate_recommendations(
             'finding': (f'Only {n_boluses} manual boluses and {n_carbs} carb entries in '
                         f'{n_days} days. Nearly all insulin delivery is via Loop automation.'),
             'recommendation': ('Consider pre-bolusing for meals when possible. '
-                               'Pre-bolus timing explains 9× more variance in post-meal control than dose.'),
+                               'Pre-bolus timing explains 9× more variance in '
+                               'post-meal control than dose size.'),
             'evidence': ('98% of detected meals are Unannounced Meals (UAM). '
                          'Loop can manage these but with larger excursions than pre-bolused meals.'),
             'confirmable': 'Reduced post-meal excursion amplitude with pre-bolused meals',
@@ -579,7 +698,7 @@ def _generate_recommendations(
     trough_iob = iob_profile.hourly_mean[1:4]
     if np.mean(dawn_iob) - np.mean(trough_iob) > 1.0:
         recs.append({
-            'category': 'basal',
+            'category': 'dawn',
             'priority': 'low',
             'finding': (f'IOB rises from {np.mean(trough_iob):.1f}U (1-3 AM) to '
                         f'{np.mean(dawn_iob):.1f}U (4-7 AM), suggesting Loop compensates for dawn phenomenon'),
@@ -590,3 +709,82 @@ def _generate_recommendations(
         })
 
     return recs
+
+
+def _analyze_periods(glucose, iob, hours_arr, result) -> List[PeriodAnalysis]:
+    """Compute per-period analysis with BG percentiles and IOB."""
+    periods = []
+    for pm in result.period_metrics:
+        h_start, h_end = pm.hour_start, pm.hour_end
+        mask = (hours_arr >= h_start) & (hours_arr < h_end)
+        period_bg = glucose[mask]
+        valid = period_bg[np.isfinite(period_bg)]
+        period_iob = iob[mask]
+        valid_iob = period_iob[np.isfinite(period_iob)]
+
+        if len(valid) < 10:
+            continue
+        periods.append(PeriodAnalysis(
+            name=pm.name,
+            hour_start=int(h_start),
+            hour_end=int(h_end),
+            tir=pm.tir,
+            tbr=pm.tbr,
+            tar=pm.tar,
+            mean_bg=pm.mean_glucose,
+            bg_p10=float(np.percentile(valid, 10)),
+            bg_p25=float(np.percentile(valid, 25)),
+            bg_p50=float(np.percentile(valid, 50)),
+            bg_p75=float(np.percentile(valid, 75)),
+            bg_p90=float(np.percentile(valid, 90)),
+            mean_iob=float(np.mean(valid_iob)) if len(valid_iob) > 0 else 0.0,
+            basal_assessment=pm.basal_assessment.value if hasattr(pm.basal_assessment, 'value') else str(pm.basal_assessment),
+            n_points=len(valid),
+        ))
+    return periods
+
+
+def _run_counterfactuals(glucose, metabolic, hours_arr,
+                          isf_val, cr_val) -> List[CounterfactualResult]:
+    """Run counterfactual simulations for ISF, CR, and basal changes."""
+    from cgmencode.production.settings_advisor import simulate_tir_with_settings
+
+    results = []
+
+    # ISF sweep
+    for mult in [0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5]:
+        tir_now, tir_sim = simulate_tir_with_settings(
+            glucose, metabolic, hours_arr, isf_multiplier=mult)
+        results.append(CounterfactualResult(
+            parameter='isf', period='all', multiplier=mult,
+            current_value=isf_val, simulated_value=isf_val * mult,
+            tir_current=tir_now, tir_simulated=tir_sim,
+            tir_delta_pp=(tir_sim - tir_now) * 100,
+        ))
+
+    # CR sweep (daytime only)
+    for mult in [0.7, 0.8, 0.9, 1.0, 1.1, 1.2]:
+        tir_now, tir_sim = simulate_tir_with_settings(
+            glucose, metabolic, hours_arr, cr_multiplier=mult, hour_range=(5, 21))
+        results.append(CounterfactualResult(
+            parameter='cr', period='daytime', multiplier=mult,
+            current_value=cr_val, simulated_value=cr_val * mult,
+            tir_current=tir_now, tir_simulated=tir_sim,
+            tir_delta_pp=(tir_sim - tir_now) * 100,
+        ))
+
+    # Basal by period
+    for period_name, h_s, h_e in [("overnight", 0, 6), ("morning", 6, 12),
+                                    ("afternoon", 12, 18), ("evening", 18, 24)]:
+        for mult in [0.85, 0.90, 1.0, 1.10, 1.15, 1.20]:
+            tir_now, tir_sim = simulate_tir_with_settings(
+                glucose, metabolic, hours_arr,
+                basal_multiplier=mult, hour_range=(h_s, h_e))
+            results.append(CounterfactualResult(
+                parameter='basal', period=period_name, multiplier=mult,
+                current_value=1.0, simulated_value=mult,
+                tir_current=tir_now, tir_simulated=tir_sim,
+                tir_delta_pp=(tir_sim - tir_now) * 100,
+            ))
+
+    return results
