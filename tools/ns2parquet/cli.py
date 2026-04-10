@@ -9,10 +9,23 @@ Commands:
 """
 
 import argparse
+import hashlib
 import json
 import sys
 import time
 from pathlib import Path
+
+
+def _generate_opaque_id(url: str) -> str:
+    """Generate a deterministic but opaque patient ID from a Nightscout URL.
+
+    Uses a keyed hash so the same URL always produces the same ID (enabling
+    append/dedup across runs), but the URL cannot be recovered from the ID.
+    The 'ns2parquet' prefix is included in the hash to namespace it.
+    """
+    normalized = url.strip().rstrip('/').lower()
+    digest = hashlib.sha256(f'ns2parquet:{normalized}'.encode()).hexdigest()[:12]
+    return f'ns-{digest}'
 
 
 def cmd_convert(args):
@@ -235,7 +248,6 @@ def cmd_ingest(args):
 
     verbose = not args.quiet
     output = args.output
-    patient_id = args.patient_id
 
     # Resolve URL
     if args.env:
@@ -251,8 +263,16 @@ def cmd_ingest(args):
     else:
         base_url = args.url.rstrip('/')
 
+    # Generate or use patient ID
+    if args.patient_id:
+        patient_id = args.patient_id
+    else:
+        patient_id = _generate_opaque_id(base_url)
+
     if verbose:
         print(f'Ingesting {args.days} days from {base_url}')
+        print(f'Patient ID: {patient_id}'
+              f'{" (auto-generated)" if not args.patient_id else ""}')
 
     now = datetime.now(timezone.utc)
     start = now - timedelta(days=args.days)
@@ -399,8 +419,8 @@ def main():
     url_group.add_argument('--env', help='Path to env file with NS_URL=...')
     p_ing.add_argument('--days', type=int, default=90,
         help='Days of history to fetch (default: 90)')
-    p_ing.add_argument('--patient-id', '-p', required=True,
-        help='Patient identifier for this site')
+    p_ing.add_argument('--patient-id', '-p',
+        help='Patient identifier (default: auto-generated opaque hash of URL)')
     p_ing.add_argument('--output', '-o', default='output',
         help='Output directory for Parquet files')
     p_ing.add_argument('--skip-grid', action='store_true',
