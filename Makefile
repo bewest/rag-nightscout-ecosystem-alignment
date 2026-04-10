@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info
+.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke
 
 # Default target
 help:
@@ -65,6 +65,8 @@ help:
 	@echo "Data Terrarium:"
 	@echo "  make terrarium      - Build parquet data store (externals/ns-parquet/)"
 	@echo "  make terrarium-info - Show summary of terrarium contents"
+	@echo "  make terrarium-tiny - Build tiny smoke-test terrarium (~800KB)"
+	@echo "  make terrarium-tiny-smoke - Smoke test: load tiny + verify"
 	@echo ""
 	@echo "  make help       - Show this help message"
 	@echo ""
@@ -582,3 +584,23 @@ terrarium-info: ## Show summary of terrarium contents
 	@echo ""
 	@echo "Verification:"
 	@python3 -m tools.ns2parquet info -i $(NS_PARQUET)/verification --detail
+
+NS_PARQUET_TINY ?= externals/ns-parquet-tiny
+
+terrarium-tiny: ## Build tiny terrarium for smoke tests (~800KB, 2 patients, 7 days)
+	@echo "Building tiny terrarium → $(NS_PARQUET_TINY)/"
+	@python3 -m tools.ns2parquet.tiny_terrarium \
+		--input $(NS_PARQUET)/training \
+		--output $(NS_PARQUET_TINY)/training \
+		--patients a,b --days 7
+
+terrarium-tiny-smoke: ## Smoke test: load tiny terrarium + build PK features
+	@python3 -c "\
+import time, sys; sys.path.insert(0, 'tools'); \
+from cgmencode.real_data_adapter import load_parquet_patients; \
+t0 = time.perf_counter(); \
+patients = load_parquet_patients('$(NS_PARQUET_TINY)/training', verbose=False); \
+elapsed = time.perf_counter() - t0; \
+ok = all(p['grid'].shape[1]==8 and p['pk'].shape[1]==8 and p['df'].attrs.get('isf_schedule') for p in patients); \
+n_rows = sum(len(p['df']) for p in patients); \
+print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\"PASS\" if ok else \"FAIL\"}')"
