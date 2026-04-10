@@ -58,7 +58,7 @@ v10 formula: `TIR×0.5 + max(0, 100−CV×2)×0.2 + overnight_TIR×0.1 + safety_
 **Critical insight**: 3 downgrades reveal hidden safety problems:
 - **k**: A→B — 95% TIR but 4.87% TBR; safety score = 0
 - **h**: B→C — 85% TIR but 5.87% TBR; safety score = 0
-- **g**: C→D — 75% TIR but 3.24% TBR with high nocturnal stacking
+- **g**: C→D — 75% TIR but 3.24% TBR with high overcorrection rate (39.7%)
 
 ### EXP-1493: Hypo Risk Stratification
 
@@ -234,16 +234,18 @@ v10_score = TIR × 0.5
 
 safety_score = max(0, 100 - TBR_L1×10 - TBR_L2×50 - overcorrection_rate)
 
-Safety tiers (compound logic — also considers severe episode count and frequency):
-  Low:      TBR < 2%, no severe episodes
-  Moderate: 2% ≤ TBR < 4%, OR severe episodes ≤3/week
-  High:     4% ≤ TBR < 8%, OR severe episodes >3/week
-  Critical: TBR ≥ 8% AND severe episodes present
+Safety tiers (TBR-only thresholds for Low/Moderate/High; compound only for Critical):
+  Low:      TBR ≤ 2%
+  Moderate: 2% < TBR ≤ 4%
+  High:     4% < TBR ≤ 8%
+  Critical: TBR > 8% AND severe episodes present
 
-Safety-first protocol:
+Safety-first protocol (cascading elif — only the first matching condition fires):
   IF TBR > 4%: override standard rec → "reduce aggressiveness"
-  IF any nocturnal hypo episodes: add "reduce overnight basal 10%"
-  IF insulin stacking detected: flag "add stacking alert"
+  ELIF any nocturnal hypo episodes: override → "reduce overnight basal"
+  ELIF standard recommendations exist: use those
+  ELSE: no change
+  (Note: insulin stacking alert is NOT implemented in v10 pipeline)
 ```
 
 ## Campaign Progress
