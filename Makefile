@@ -558,6 +558,7 @@ loop-smoke: xval-build ## Quick Loop smoke test (10 vectors)
 # ── Data Terrarium ──────────────────────────────────────────────────
 NS_DATA     ?= externals/ns-data/patients
 NS_PARQUET  ?= externals/ns-parquet
+ODC_DATA    ?= /home/bewest/Downloads/openaps-data-commons-2023-samples
 
 terrarium: ## Build parquet data store from ns-data JSON
 	@echo "Building data terrarium → $(NS_PARQUET)/"
@@ -565,6 +566,12 @@ terrarium: ## Build parquet data store from ns-data JSON
 		--patients-dir $(NS_DATA) \
 		--subset both \
 		--output $(NS_PARQUET)
+	@if [ -d "$(ODC_DATA)" ]; then \
+		echo "Appending OpenAPS Data Commons patients..."; \
+		python3 -m tools.ns2parquet convert-odc \
+			--odc-dir "$(ODC_DATA)" \
+			--output $(NS_PARQUET)/training; \
+	fi
 	@cp tools/ns2parquet/terrarium-README.md $(NS_PARQUET)/README.md
 	@python3 -c "\
 import json, datetime, subprocess, os; \

@@ -4,6 +4,7 @@ cli.py — Command-line interface for ns2parquet.
 Commands:
     convert     Convert a single patient's JSON directory to Parquet
     convert-all Convert all patients in a patients directory
+    convert-odc Convert OpenAPS Data Commons patients to Parquet
     ingest      Fetch from live Nightscout API and convert to Parquet
     info        Show summary of existing Parquet files
 """
@@ -513,6 +514,125 @@ def cmd_info(args):
     return 0
 
 
+def cmd_convert_odc(args):
+    """Convert OpenAPS Data Commons patients to Parquet.
+
+    Discovers ODC patient directories (numeric IDs), converts AAPS-native
+    JSON to Nightscout-shaped dicts, then builds grids+Parquet using the
+    standard pipeline.
+    """
+    import tempfile
+    from .odc_loader import discover_odc_patients, write_odc_as_nightscout
+    from .grid import build_grid
+    from .normalize import (
+        normalize_entries, normalize_treatments,
+        normalize_devicestatus, normalize_profiles,
+    )
+    from .writer import write_parquet
+    from .schemas import (
+        ENTRIES_SCHEMA, TREATMENTS_SCHEMA,
+        DEVICESTATUS_SCHEMA, PROFILES_SCHEMA, GRID_SCHEMA,
+    )
+
+    odc_dir = Path(args.odc_dir)
+    if not odc_dir.exists():
+        print(f'ERROR: ODC directory not found: {odc_dir}', file=sys.stderr)
+        return 1
+
+    verbose = not args.quiet
+    output = args.output
+
+    # Discover patients
+    all_patients = discover_odc_patients(str(odc_dir))
+    if not all_patients:
+        print(f'ERROR: No patient directories found in {odc_dir}', file=sys.stderr)
+        return 1
+
+    # Filter
+    patient_filter = None
+    if getattr(args, 'patients', None):
+        patient_filter = set(p.strip() for p in args.patients.split(',') if p.strip())
+        all_patients = [(pid, pp) for pid, pp in all_patients if pid in patient_filter]
+
+    if verbose:
+        print(f'Found {len(all_patients)} ODC patient(s) in {odc_dir}')
+        print(f'Output: {output}/')
+        print()
+
+    t0 = time.time()
+    success = 0
+    failed = 0
+
+    for odc_pid, patient_path in all_patients:
+        patient_id = (_generate_opaque_id(f'odc-{odc_pid}')
+                      if args.opaque_ids else f'odc-{odc_pid}')
+        if verbose:
+            print(f'── ODC Patient {odc_pid} → {patient_id} ──')
+
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                ns_dir = str(Path(tmpdir) / 'data')
+                ok = write_odc_as_nightscout(patient_path, ns_dir,
+                                             verbose=verbose)
+                if not ok:
+                    if verbose:
+                        print(f'  SKIP: insufficient data')
+                    failed += 1
+                    continue
+
+                # Load converted JSON for raw Parquet tables
+                import json as _json
+                entries_list = _json.load(open(Path(ns_dir) / 'entries.json'))
+                treatments_list = _json.load(open(Path(ns_dir) / 'treatments.json'))
+                ds_list = _json.load(open(Path(ns_dir) / 'devicestatus.json'))
+                profile_list = _json.load(open(Path(ns_dir) / 'profile.json'))
+
+                # Normalize raw tables
+                entries_df = normalize_entries(entries_list, patient_id)
+                treatments_df = normalize_treatments(treatments_list, patient_id)
+                devicestatus_df = normalize_devicestatus(ds_list, patient_id)
+                profiles_df = normalize_profiles(profile_list, patient_id)
+
+                # Write raw Parquet tables
+                for name, df, schema in [
+                    ('entries', entries_df, ENTRIES_SCHEMA),
+                    ('treatments', treatments_df, TREATMENTS_SCHEMA),
+                    ('devicestatus', devicestatus_df, DEVICESTATUS_SCHEMA),
+                    ('profiles', profiles_df, PROFILES_SCHEMA),
+                ]:
+                    if df is not None and len(df) > 0:
+                        df['patient_id'] = patient_id
+                        write_parquet(df, output, name,
+                                      schema=schema, append=True)
+
+                # Build research grid
+                if not args.skip_grid:
+                    grid = build_grid(ns_dir, patient_id)
+                    write_parquet(grid.reset_index(drop=True),
+                                 output, 'grid',
+                                 schema=GRID_SCHEMA, append=True)
+                    if verbose:
+                        print(f'  Grid: {len(grid)} rows × {grid.shape[1]} cols')
+
+            success += 1
+        except Exception as e:
+            print(f'  ERROR {odc_pid}: {e}', file=sys.stderr)
+            failed += 1
+
+        if verbose:
+            print()
+
+    elapsed = time.time() - t0
+    if verbose:
+        print(f'{"═" * 60}')
+        print(f'  Converted {success}/{success + failed} ODC patients '
+              f'in {elapsed:.1f}s')
+        print(f'  Output: {output}/')
+        print(f'{"═" * 60}')
+
+    return 0 if failed == 0 else 1
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog='ns2parquet',
@@ -587,6 +707,21 @@ def main():
         help='Output directory for merged Parquet files')
     p_merge.add_argument('--quiet', '-q', action='store_true')
 
+    # convert-odc
+    p_odc = subparsers.add_parser('convert-odc',
+        help='Convert OpenAPS Data Commons patients to Parquet')
+    p_odc.add_argument('--odc-dir', '-d', required=True,
+        help='Root directory of ODC dataset (contains numeric patient dirs)')
+    p_odc.add_argument('--patients',
+        help='Comma-separated list of ODC patient IDs to include (default: all)')
+    p_odc.add_argument('--output', '-o', default='output',
+        help='Output directory for Parquet files')
+    p_odc.add_argument('--opaque-ids', action='store_true', default=False,
+        help='Hash patient IDs into opaque IDs')
+    p_odc.add_argument('--skip-grid', action='store_true',
+        help='Skip building the research grid')
+    p_odc.add_argument('--quiet', '-q', action='store_true')
+
     args = parser.parse_args()
 
     if args.command == 'convert':
@@ -599,6 +734,8 @@ def main():
         return cmd_info(args)
     elif args.command == 'merge':
         return cmd_merge(args)
+    elif args.command == 'convert-odc':
+        return cmd_convert_odc(args)
     else:
         parser.print_help()
         return 1

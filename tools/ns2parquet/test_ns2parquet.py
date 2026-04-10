@@ -22,6 +22,7 @@ import json
 import os
 import tempfile
 import unittest
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -687,6 +688,272 @@ class TestPatientBMixedController(unittest.TestCase):
             valid = self.df[col].notna().sum()
             self.assertGreater(valid, len(self.df) * 0.5,
                                f'{col} should be >50% populated for Trio patient')
+
+
+
+# ──────────────────── ODC Loader Unit Tests ────────────────────────────
+
+class TestODCLoaderConversion(unittest.TestCase):
+    """Unit tests for odc_loader format adapter using synthetic data."""
+
+    def test_bg_readings_to_entries(self):
+        """BgReadings value → entries sgv, date epoch preserved."""
+        from tools.ns2parquet.odc_loader import _convert_bg_readings
+        records = [
+            {'date': 1611698181000, 'value': 191.7, 'direction': 'Flat',
+             'isValid': True, 'nsId': 'abc123'},
+            {'date': 1611698481000, 'value': 88.5, 'direction': 'FortyFiveUp'},
+        ]
+        entries = _convert_bg_readings(records)
+        self.assertEqual(len(entries), 2)
+        self.assertEqual(entries[0]['sgv'], 191.7)
+        self.assertEqual(entries[0]['date'], 1611698181000)
+        self.assertEqual(entries[0]['_id'], 'abc123')
+        self.assertEqual(entries[0]['type'], 'sgv')
+        self.assertEqual(entries[1]['direction'], 'FortyFiveUp')
+
+    def test_treatments_smb_detection(self):
+        """ODC isSMB=true → eventType='SMB'."""
+        from tools.ns2parquet.odc_loader import _convert_treatments
+        records = [
+            {'date': 1000, 'insulin': 0.2, 'carbs': 0, 'isSMB': True,
+             'mealBolus': False, 'isValid': True},
+            {'date': 2000, 'insulin': 0, 'carbs': 45, 'isSMB': False,
+             'mealBolus': True, 'isValid': True},
+            {'date': 3000, 'insulin': 3.5, 'carbs': 0, 'isSMB': False,
+             'mealBolus': False, 'isValid': True},
+        ]
+        treatments = _convert_treatments(records)
+        self.assertEqual(len(treatments), 3)
+        self.assertEqual(treatments[0]['eventType'], 'SMB')
+        self.assertTrue(treatments[0].get('automatic'))
+        self.assertEqual(treatments[1]['eventType'], 'Meal Bolus')
+        self.assertEqual(treatments[2]['eventType'], 'Correction Bolus')
+
+    def test_treatments_skip_empty(self):
+        """Skip records with no insulin/carbs."""
+        from tools.ns2parquet.odc_loader import _convert_treatments
+        records = [
+            {'date': 1000, 'insulin': 0, 'carbs': 0, 'isSMB': False,
+             'mealBolus': False, 'isValid': True},
+        ]
+        treatments = _convert_treatments(records)
+        self.assertEqual(len(treatments), 0)
+
+    def test_aps_data_to_devicestatus(self):
+        """APSData result → openaps.suggested mapping."""
+        from tools.ns2parquet.odc_loader import _convert_aps_data
+        records = [{
+            'queuedOn': 1611698181000,
+            'result': {
+                'bg': 150, 'eventualBG': 120, 'targetBG': 100,
+                'IOB': 2.5, 'COB': 30, 'sensitivityRatio': 0.95,
+                'insulinReq': 0.5, 'rate': 1.2, 'duration': 30,
+                'reason': 'test', 'predBGs': {'IOB': [150, 140, 130]},
+            },
+            'iobData': [{'iob': 2.5, 'basaliob': 1.0, 'activity': 0.01}],
+            'autosensData': {'ratio': 0.95},
+            'profile': {},
+            'glucoseStatus': {'glucose': 150},
+        }]
+        ds = _convert_aps_data(records)
+        self.assertEqual(len(ds), 1)
+        sug = ds[0]['openaps']['suggested']
+        self.assertEqual(sug['bg'], 150)
+        self.assertEqual(sug['eventualBG'], 120)
+        self.assertEqual(sug['IOB'], 2.5)
+        self.assertEqual(sug['COB'], 30)
+        self.assertEqual(sug['sensitivityRatio'], 0.95)
+        self.assertIn('IOB', sug['predBGs'])
+        iob = ds[0]['openaps']['iob']
+        self.assertEqual(iob['iob'], 2.5)
+        self.assertEqual(iob['basaliob'], 1.0)
+
+    def test_temp_basals_converted(self):
+        """TemporaryBasals absoluteRate → Temp Basal treatments."""
+        from tools.ns2parquet.odc_loader import _convert_temp_basals
+        records = [
+            {'date': 1000, 'isAbsolute': True, 'absoluteRate': 1.5,
+             'durationInMinutes': 30, 'isValid': True},
+        ]
+        result = _convert_temp_basals(records)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['eventType'], 'Temp Basal')
+        self.assertEqual(result[0]['rate'], 1.5)
+        self.assertEqual(result[0]['duration'], 30)
+
+    def test_temp_targets_converted(self):
+        """TempTargets → Temporary Target treatments."""
+        from tools.ns2parquet.odc_loader import _convert_temp_targets
+        records = [
+            {'date': 1000, 'low': 100, 'high': 120,
+             'durationInMinutes': 60, 'reason': 'Eating Soon', 'isValid': True},
+        ]
+        result = _convert_temp_targets(records)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['eventType'], 'Temporary Target')
+        self.assertEqual(result[0]['targetBottom'], 100)
+        self.assertEqual(result[0]['targetTop'], 120)
+
+    def test_profile_mmol_conversion(self):
+        """Profile with mmol units → sens/targets converted to mg/dL."""
+        from tools.ns2parquet.odc_loader import _build_profile_from_switch
+        prof = {
+            'units': 'mmol',
+            'dia': 6,
+            'timezone': 'UTC',
+            'sens': [{'time': '00:00', 'value': 2.1, 'timeAsSeconds': 0}],
+            'carbratio': [{'time': '00:00', 'value': 8, 'timeAsSeconds': 0}],
+            'basal': [{'time': '00:00', 'value': 0.85, 'timeAsSeconds': 0}],
+            'target_low': [{'time': '00:00', 'value': 4.5, 'timeAsSeconds': 0}],
+            'target_high': [{'time': '00:00', 'value': 5.5, 'timeAsSeconds': 0}],
+        }
+        result = _build_profile_from_switch(prof, {})
+        store = result['store']['Default']
+        # 2.1 mmol × 18.01559 ≈ 37.83
+        self.assertAlmostEqual(store['sens'][0]['value'], 37.83, places=0)
+        # CR should not be converted
+        self.assertEqual(store['carbratio'][0]['value'], 8)
+        # Basal should not be converted
+        self.assertEqual(store['basal'][0]['value'], 0.85)
+        # Target converted: 4.5 × 18.01559 ≈ 81
+        self.assertAlmostEqual(store['target_low'][0]['value'], 81, places=0)
+        self.assertEqual(store['units'], 'mg/dL')
+
+    def test_profile_mgdl_passthrough(self):
+        """Profile with mg/dL units → values unchanged."""
+        from tools.ns2parquet.odc_loader import _build_profile_from_switch
+        prof = {
+            'units': 'mg/dl',
+            'dia': 5,
+            'sens': [{'time': '00:00', 'value': 34, 'timeAsSeconds': 0}],
+            'carbratio': [{'time': '00:00', 'value': 10, 'timeAsSeconds': 0}],
+            'basal': [{'time': '00:00', 'value': 1.0, 'timeAsSeconds': 0}],
+            'target_low': [{'time': '00:00', 'value': 100, 'timeAsSeconds': 0}],
+            'target_high': [{'time': '00:00', 'value': 100, 'timeAsSeconds': 0}],
+        }
+        result = _build_profile_from_switch(prof, {})
+        store = result['store']['Default']
+        self.assertEqual(store['sens'][0]['value'], 34)
+        self.assertEqual(store['target_low'][0]['value'], 100)
+
+    def test_dedup_across_uploads(self):
+        """Records with same date are deduplicated across uploads."""
+        from tools.ns2parquet.odc_loader import _load_and_merge_json
+        import tempfile, json
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for i, name in enumerate(['upload1', 'upload2']):
+                d = Path(tmpdir) / name
+                d.mkdir()
+                with open(d / 'BgReadings.json', 'w') as f:
+                    json.dump([
+                        {'date': 1000, 'value': 100, 'isValid': True},
+                        {'date': 2000 + i * 1000, 'value': 110 + i * 10,
+                         'isValid': True},
+                    ], f)
+            uploads = [Path(tmpdir) / 'upload1', Path(tmpdir) / 'upload2']
+            merged = _load_and_merge_json(uploads, 'BgReadings.json')
+            self.assertEqual(len(merged), 3)
+            dates = {r['date'] for r in merged}
+            self.assertEqual(dates, {1000, 2000, 3000})
+
+    def test_discover_patients(self):
+        """discover_odc_patients finds numeric directories."""
+        from tools.ns2parquet.odc_loader import discover_odc_patients
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            (Path(tmpdir) / '12345').mkdir()
+            (Path(tmpdir) / '67890').mkdir()
+            (Path(tmpdir) / 'readme.txt').touch()
+            patients = discover_odc_patients(tmpdir)
+            self.assertEqual(len(patients), 2)
+            self.assertEqual(patients[0][0], '12345')
+
+
+# ──────────── ODC Integration Test (real data) ─────────────────────────
+
+ODC_DIR = '/home/bewest/Downloads/openaps-data-commons-2023-samples'
+
+
+@unittest.skipUnless(
+    os.path.isdir(os.path.join(ODC_DIR, '39819048')),
+    'ODC sample data not available'
+)
+class TestODCIntegration(unittest.TestCase):
+    """Integration test: build grid from real ODC patient 39819048."""
+
+    @classmethod
+    def setUpClass(cls):
+        import tempfile
+        from tools.ns2parquet.odc_loader import write_odc_as_nightscout
+        from tools.ns2parquet.grid import build_grid
+        cls._tmpdir = tempfile.mkdtemp()
+        ns_dir = os.path.join(cls._tmpdir, 'data')
+        write_odc_as_nightscout(os.path.join(ODC_DIR, '39819048'), ns_dir)
+        cls.grid = build_grid(ns_dir, 'odc-39819048')
+
+    @classmethod
+    def tearDownClass(cls):
+        import shutil
+        shutil.rmtree(cls._tmpdir, ignore_errors=True)
+
+    def test_grid_has_49_columns(self):
+        self.assertEqual(self.grid.shape[1], 49)
+
+    def test_glucose_populated(self):
+        """SGV should be ~100% populated (ODC has dense CGM)."""
+        pct = self.grid['glucose'].notna().sum() / len(self.grid)
+        self.assertGreater(pct, 0.95)
+
+    def test_iob_populated(self):
+        """IOB should be populated (from APSData)."""
+        nonzero = (self.grid['iob'] != 0).sum()
+        self.assertGreater(nonzero, len(self.grid) * 0.5)
+
+    def test_eventual_bg_populated(self):
+        """eventualBG from APSData should be >95% populated."""
+        pct = self.grid['eventual_bg'].notna().sum() / len(self.grid)
+        self.assertGreater(pct, 0.95)
+
+    def test_sensitivity_ratio_populated(self):
+        """sensitivityRatio from autosens should be populated."""
+        pct = self.grid['sensitivity_ratio'].notna().sum() / len(self.grid)
+        self.assertGreater(pct, 0.95)
+
+    def test_predictions_populated(self):
+        """oref0 predBGs should give us predicted_30/60/min."""
+        for col in ['loop_predicted_30', 'loop_predicted_60', 'loop_predicted_min']:
+            pct = self.grid[col].notna().sum() / len(self.grid)
+            self.assertGreater(pct, 0.90,
+                               f'{col} should be >90% populated for ODC AAPS patient')
+
+    def test_bolus_and_smb_counts(self):
+        """ODC patient should have boluses and SMBs."""
+        bolus_n = (self.grid['bolus'] > 0).sum()
+        smb_n = (self.grid['bolus_smb'] > 0).sum()
+        self.assertGreater(bolus_n, 100)
+        self.assertGreater(smb_n, 100)
+
+    def test_override_from_temp_targets(self):
+        """TempTargets should populate override_active."""
+        override_n = (self.grid['override_active'] > 0).sum()
+        self.assertGreater(override_n, 10)
+
+    def test_profile_isf_reasonable(self):
+        """Scheduled ISF should be in mg/dL range (converted from mmol)."""
+        isf = self.grid['scheduled_isf'].dropna()
+        self.assertTrue(len(isf) > 0)
+        self.assertTrue((isf > 20).all(),
+                        f'ISF should be in mg/dL range, got min={isf.min()}')
+        self.assertTrue((isf < 200).all(),
+                        f'ISF should be <200 mg/dL, got max={isf.max()}')
+
+    def test_date_range_10_days(self):
+        """Patient 39819048 spans ~10 days of data."""
+        time_col = self.grid['time']
+        span_days = (time_col.max() - time_col.min()).total_seconds() / 86400
+        self.assertGreater(span_days, 7)
+        self.assertLess(span_days, 30)
 
 
 if __name__ == '__main__':
