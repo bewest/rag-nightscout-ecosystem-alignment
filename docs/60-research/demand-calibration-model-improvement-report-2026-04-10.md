@@ -187,7 +187,7 @@ We built a linear model: `scale = f(S/D ratio, characteristics)`
 
 - **Model R² = 0.165** — explains only 16.5% of variance
 - **LOO MAE = 111.97** — leave-one-out mean absolute error is enormous
-- The model essentially predicts the population mean (1.95) for everyone except patient j
+- The model essentially predicts the population mean (1.5) for everyone except patient j
 
 ![Adaptive model](figures/demand-fig07-adaptive-model.png)
 
@@ -206,8 +206,8 @@ This rules out a "one-size-fits-all" or "predict-from-features" approach to dema
 |----------|-------------|------|
 | **Optimized** | Per-patient scale from training data | **5/11** |
 | **Profile** | Original model (scale=1.0) | **4/11** |
-| **Population** | Mean population scale (1.95×) | 1/11 |
-| **Adaptive** | Feature-predicted scale | 1/11 |
+| **Population** | Mean population scale (1.5×) | 1/11 |
+| **Adaptive** | H1 supply/demand ratio (clamped 0.1–5.0) | 1/11 |
 
 ![Validated comparison](figures/demand-fig08-validated-model.png)
 
