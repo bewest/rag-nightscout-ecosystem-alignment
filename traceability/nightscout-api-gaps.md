@@ -1774,3 +1774,45 @@ The bug originates in client-side CGM parsing, not server validation:
 - LoopKit/Loop#2087
 - nightscout/cgm-remote-monitor#8453
 - LoopKit/CGMBLEKit#191 (G6 stopgap, merged)
+
+---
+
+### GAP-ENTRY-010: No Explicit Unit Field on Entries Collection
+
+**Description**: The Nightscout `entries` collection stores `sgv` values without an explicit `units` field. The mg/dL convention is implied by all producers but never formally declared in the schema or API.
+
+**Affected Systems**: All consumers of the entries API (Loop, AAPS, Trio, xDrip+, Reporter, followers).
+
+**Impact**: Low — the convention is universally followed by all current producers. However, a formal schema declaration would prevent future ambiguity if new producers natively use mmol/L.
+
+**Remediation**: Add an optional `units` field to the entries schema, defaulting to `"mg/dl"`. Validate on ingestion that if `units` is `"mmol"` and `sgv` < 50, auto-convert to mg/dL.
+
+**Deep Dive**: [`docs/10-domain/glucose-unit-conversion-deep-dive.md`](../docs/10-domain/glucose-unit-conversion-deep-dive.md)
+
+---
+
+### GAP-ENTRY-011: Inconsistent Conversion Factors Across Ecosystem
+
+**Description**: Six different mg/dL ↔ mmol/L conversion factors are used across the ecosystem: 18 (oref0), 18.0 (AAPS), 18.01559 (Nightscout, Loop/HealthKit), 18.0182 (xDrip+, DiaBLE, tconnectsync), 18.018018... (Trio, xDrip4iOS via 1/0.0555), and 18.02 (Nightscout Reporter).
+
+**Affected Systems**: All apps performing glucose unit conversion for display.
+
+**Impact**: Negligible clinical impact (max 0.1 mmol/L at extreme glucose values). However, the same glucose value may display slightly differently across apps, confusing users.
+
+**Remediation**: Standardize on **18.01559** (glucose molar mass 180.1559 g/mol ÷ 10), consistent with Nightscout server and Apple HealthKit. Document this as a normative constant in the OpenAPI spec.
+
+**Deep Dive**: [`docs/10-domain/glucose-unit-conversion-deep-dive.md`](../docs/10-domain/glucose-unit-conversion-deep-dive.md)
+
+---
+
+### GAP-ENTRY-012: oref0 Integer Conversion Factor Causes Rounding Artifacts
+
+**Description**: oref0 uses integer `18` for mg/dL → mmol/L conversion in its `convert_bg()` function, while all other apps use a more precise value (18.0+). This means oref0 output fields (BGI, ISF, target_bg, deviation) in mmol/L mode may differ from other apps by up to 0.1 mmol/L.
+
+**Affected Systems**: oref0, AAPS (inherits oref0's conversion in JS algorithm), Trio (bridges to oref1).
+
+**Impact**: Low — affects display formatting only, not algorithm calculations (which remain in mg/dL). Most visible in devicestatus `reason` strings.
+
+**Remediation**: Update `convert_bg()` in `oref0/lib/determine-basal/determine-basal.js:43` to use `18.01559` instead of `18`.
+
+**Deep Dive**: [`docs/10-domain/glucose-unit-conversion-deep-dive.md`](../docs/10-domain/glucose-unit-conversion-deep-dive.md)

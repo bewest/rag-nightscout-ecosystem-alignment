@@ -16,7 +16,7 @@ This document is an index of gaps organized by domain.
 
 | Domain | Gap Count | File | Last Verified |
 |--------|-----------|------|---------------|
-| nightscout-api | 75 | [nightscout-api-gaps.md](nightscout-api-gaps.md) | 2026-03-15 |
+| nightscout-api | 78 | [nightscout-api-gaps.md](nightscout-api-gaps.md) | 2026-04-10 |
 | sync-identity | 71 | [sync-identity-gaps.md](sync-identity-gaps.md) | 2026-02-01 |
 | aid-algorithms | 71 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-02-08 |
 | connectors | 68 | [connectors-gaps.md](connectors-gaps.md) | 2026-02-01 |
@@ -24,7 +24,7 @@ This document is an index of gaps organized by domain.
 | treatments | 26 | [treatments-gaps.md](treatments-gaps.md) | 2026-03-10 |
 | pumps | 13 | [pumps-gaps.md](pumps-gaps.md) | 2026-02-03 |
 
-Total: 348 unique GAP IDs across 7 domains (5 GAP-EFFECT-* added 2026-02-08)
+Total: 351 unique GAP IDs across 7 domains (3 GAP-ENTRY-* added 2026-04-10, 5 GAP-EFFECT-* added 2026-02-08)
 
 ## Duplicate Resolution (2026-02-01)
 
