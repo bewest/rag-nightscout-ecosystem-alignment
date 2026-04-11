@@ -67,7 +67,7 @@ Per-patient detail (best config selected by lowest ISF CV with ≥5 events):
 
 | Patient | K | Dampening | Compensated Change | TIR Change |
 |---------|------|-----------|-------------------|------------|
-| d (well) | 0.495 | 33% | 0.000 | +0.0% |
+| d (well) | 0.495 | 33% | −0.021 | −0.5% |
 | e (needs) | 0.216 | 18% | -0.500 | -3.2% |
 | a (miscal) | -1.081 | 52% | 0.159 | +0.1% |
 
