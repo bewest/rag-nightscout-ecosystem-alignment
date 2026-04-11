@@ -31,12 +31,14 @@ def _parse_ts(record: dict, *fields) -> Optional[pd.Timestamp]:
     """Try multiple timestamp fields, return first valid UTC timestamp."""
     for field in fields:
         val = record.get(field)
-        if val is None:
+        if val is None or val == '':
             continue
         try:
             if isinstance(val, (int, float)) and val > 1e10:
                 return pd.Timestamp(val, unit='ms', tz='UTC')
             ts = pd.Timestamp(val)
+            if pd.isna(ts):
+                continue
             if ts.tzinfo is None:
                 ts = ts.tz_localize('UTC')
             return ts.tz_convert('UTC')

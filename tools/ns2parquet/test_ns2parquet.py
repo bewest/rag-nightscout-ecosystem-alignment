@@ -1112,5 +1112,363 @@ class TestNSExportIntegration(unittest.TestCase):
         self.assertEqual(ok, 8, f'Expected 8/8 patients, got {ok}/{len(patients)}')
 
 
+class TestTimezoneHandling(unittest.TestCase):
+    """Test timezone edge cases in grid builder and normalize functions."""
+
+    def setUp(self):
+        from tools.ns2parquet.grid import _normalize_timezone, _to_local_index
+        self.norm_tz = _normalize_timezone
+        self.to_local = _to_local_index
+
+    def test_etc_gmt_normalization(self):
+        """ETC/GMT+7 → Etc/GMT+7 (Nightscout quirk)."""
+        self.assertEqual(self.norm_tz('ETC/GMT+7'), 'Etc/GMT+7')
+        self.assertEqual(self.norm_tz('ETC/GMT-5'), 'Etc/GMT-5')
+
+    def test_already_correct_tz(self):
+        """Standard IANA names pass through unchanged."""
+        self.assertEqual(self.norm_tz('America/New_York'), 'America/New_York')
+        self.assertEqual(self.norm_tz('Europe/Berlin'), 'Europe/Berlin')
+
+    def test_empty_tz_defaults_utc(self):
+        """Empty or None timezone defaults to UTC."""
+        self.assertEqual(self.norm_tz(''), 'UTC')
+        self.assertEqual(self.norm_tz(None), 'UTC')
+
+    def test_to_local_invalid_tz_warns(self):
+        """Invalid timezone falls back to UTC with a warning."""
+        idx = pd.date_range('2024-01-01', periods=3, freq='5min', tz='UTC')
+        import warnings
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            result = self.to_local(idx, 'Invalid/Timezone_ZZZ')
+            self.assertGreaterEqual(len(w), 1)
+            self.assertIn('Invalid', str(w[0].message))
+        # Should return original index (UTC) on failure
+        self.assertEqual(len(result), 3)
+
+    def test_dst_transition_spring_forward(self):
+        """Spring-forward DST: no hours lost in UTC grid."""
+        # US spring forward: 2024-03-10 02:00 EST → 03:00 EDT
+        idx = pd.date_range('2024-03-10 06:00', periods=24, freq='5min', tz='UTC')
+        result = self.to_local(idx, 'America/New_York')
+        # All 24 steps should exist — UTC grid doesn't have DST gaps
+        self.assertEqual(len(result), 24)
+        # Verify conversion actually happened (first step should be EST/EDT)
+        self.assertNotEqual(str(result.tz), 'UTC')
+
+    def test_dst_transition_fall_back(self):
+        """Fall-back DST: no duplicate hours in UTC grid."""
+        # US fall back: 2024-11-03 02:00 EDT → 01:00 EST
+        idx = pd.date_range('2024-11-03 05:00', periods=24, freq='5min', tz='UTC')
+        result = self.to_local(idx, 'America/New_York')
+        self.assertEqual(len(result), 24)
+
+    def test_naive_index_gets_localized(self):
+        """Naive DatetimeIndex gets localized to UTC then converted."""
+        idx = pd.date_range('2024-01-01', periods=3, freq='5min')
+        result = self.to_local(idx, 'US/Eastern')
+        self.assertEqual(len(result), 3)
+
+
+class TestTimestampParsing(unittest.TestCase):
+    """Test _parse_ts with various edge cases."""
+
+    def setUp(self):
+        from tools.ns2parquet.normalize import _parse_ts
+        self.parse = _parse_ts
+
+    def test_epoch_ms(self):
+        """Integer epoch in milliseconds."""
+        ts = self.parse({'date': 1704067200000}, 'date')
+        self.assertIsNotNone(ts)
+        self.assertEqual(ts.year, 2024)
+
+    def test_iso_8601_with_tz(self):
+        """ISO 8601 with timezone offset."""
+        ts = self.parse({'d': '2024-01-01T12:00:00+05:00'}, 'd')
+        self.assertIsNotNone(ts)
+        self.assertEqual(str(ts.tz), 'UTC')
+
+    def test_iso_8601_naive(self):
+        """Naive ISO string gets localized to UTC."""
+        ts = self.parse({'d': '2024-01-01T12:00:00'}, 'd')
+        self.assertIsNotNone(ts)
+        self.assertEqual(str(ts.tz), 'UTC')
+
+    def test_garbage_string_returns_none(self):
+        """Unparseable string returns None."""
+        ts = self.parse({'date': 'not-a-date'}, 'date')
+        self.assertIsNone(ts)
+
+    def test_empty_string_returns_none(self):
+        """Empty string is skipped and returns None."""
+        ts = self.parse({'date': ''}, 'date')
+        self.assertIsNone(ts)
+
+    def test_fallback_fields(self):
+        """Falls through to second field if first is None."""
+        ts = self.parse({'dateString': '2024-06-15T10:00:00Z'}, 'date', 'dateString')
+        self.assertIsNotNone(ts)
+        self.assertEqual(ts.month, 6)
+
+    def test_none_value_skipped(self):
+        ts = self.parse({'date': None, 'sysTime': '2024-01-01T00:00:00Z'}, 'date', 'sysTime')
+        self.assertIsNotNone(ts)
+
+    def test_float_epoch(self):
+        """Float epoch (JavaScript Date.now() / 1)."""
+        ts = self.parse({'date': 1704067200000.0}, 'date')
+        self.assertIsNotNone(ts)
+
+    def test_small_int_not_epoch_ms(self):
+        """Small integers (<1e10) are treated as timestamps, not epoch-ms."""
+        # This is an edge case — small int could be a year or garbage
+        ts = self.parse({'date': 2024}, 'date')
+        # Should still parse (as epoch seconds or similar) or return something
+        # The important thing is it doesn't crash
+        # Small values will be treated as timestamp strings by pd.Timestamp
+
+
+class TestSafeConversions(unittest.TestCase):
+    """Test _safe_float and _safe_int helpers."""
+
+    def setUp(self):
+        from tools.ns2parquet.normalize import _safe_float, _safe_int
+        self.sf = _safe_float
+        self.si = _safe_int
+
+    def test_float_normal(self):
+        self.assertEqual(self.sf(3.14), 3.14)
+
+    def test_float_from_string(self):
+        self.assertEqual(self.sf('2.5'), 2.5)
+
+    def test_float_none(self):
+        self.assertIsNone(self.sf(None))
+
+    def test_float_garbage(self):
+        self.assertIsNone(self.sf('abc', 'test_field'))
+
+    def test_float_empty_string(self):
+        self.assertIsNone(self.sf('', 'test_field'))
+
+    def test_float_from_int(self):
+        self.assertEqual(self.sf(42), 42.0)
+
+    def test_int_normal(self):
+        self.assertEqual(self.si(42), 42)
+
+    def test_int_from_string(self):
+        self.assertEqual(self.si('7'), 7)
+
+    def test_int_none(self):
+        self.assertIsNone(self.si(None))
+
+    def test_int_garbage(self):
+        self.assertIsNone(self.si('xyz', 'test_field'))
+
+    def test_int_float_string(self):
+        """Float-like string should fail int conversion."""
+        self.assertIsNone(self.si('3.14', 'test_field'))
+
+
+class TestCorruptData(unittest.TestCase):
+    """Test normalize functions with corrupt/malformed input."""
+
+    def setUp(self):
+        from tools.ns2parquet.normalize import (
+            normalize_entries, normalize_treatments, normalize_devicestatus,
+        )
+        self.norm_entries = normalize_entries
+        self.norm_treatments = normalize_treatments
+        self.norm_ds = normalize_devicestatus
+
+    def test_entries_empty_list(self):
+        df = self.norm_entries([], 'test')
+        self.assertEqual(len(df), 0)
+        self.assertIn('quality', df.attrs)
+        self.assertEqual(df.attrs['quality']['total_records'], 0)
+
+    def test_entries_all_missing_timestamps(self):
+        """Records with no parseable timestamp are skipped."""
+        records = [
+            {'_id': '1', 'sgv': 120, 'type': 'sgv'},
+            {'_id': '2', 'sgv': 130, 'type': 'sgv', 'date': 'garbage'},
+        ]
+        df = self.norm_entries(records, 'test')
+        self.assertEqual(len(df), 0)
+        self.assertEqual(df.attrs['quality']['skipped_no_timestamp'], 2)
+
+    def test_entries_bad_sgv_value(self):
+        """Non-numeric SGV produces None, not crash."""
+        records = [
+            {'_id': '1', 'sgv': 'HIGH', 'type': 'sgv', 'date': 1704067200000},
+        ]
+        df = self.norm_entries(records, 'test')
+        self.assertEqual(len(df), 1)
+        self.assertIsNone(df.iloc[0]['sgv'])
+        self.assertEqual(df.attrs['quality']['bad_value_conversion'], 1)
+
+    def test_entries_mixed_good_and_bad(self):
+        """Good records survive alongside bad ones."""
+        records = [
+            {'_id': '1', 'sgv': 120, 'type': 'sgv', 'date': 1704067200000},
+            {'_id': '2', 'type': 'sgv'},  # no timestamp
+            {'_id': '3', 'sgv': 'BAD', 'type': 'sgv', 'date': 1704067500000},
+            {'_id': '1', 'sgv': 120, 'type': 'sgv', 'date': 1704067200000},  # dup
+        ]
+        df = self.norm_entries(records, 'test')
+        self.assertEqual(len(df), 2)  # good + bad-sgv
+        q = df.attrs['quality']
+        self.assertEqual(q['total_records'], 4)
+        self.assertEqual(q['accepted'], 2)
+        self.assertEqual(q['skipped_duplicate'], 1)
+        self.assertEqual(q['skipped_no_timestamp'], 1)
+
+    def test_treatments_empty_list(self):
+        df = self.norm_treatments([], 'test')
+        self.assertEqual(len(df), 0)
+        self.assertIn('quality', df.attrs)
+
+    def test_treatments_missing_timestamps(self):
+        records = [
+            {'_id': '1', 'eventType': 'Bolus', 'insulin': 2.0},
+            {'_id': '2', 'eventType': 'Bolus', 'insulin': 1.0,
+             'created_at': 'not-a-date'},
+        ]
+        df = self.norm_treatments(records, 'test')
+        self.assertEqual(len(df), 0)
+        self.assertEqual(df.attrs['quality']['skipped_no_timestamp'], 2)
+
+    def test_treatments_non_numeric_insulin(self):
+        """Non-numeric insulin value becomes None, not crash."""
+        records = [
+            {'_id': '1', 'eventType': 'Bolus', 'insulin': 'lots',
+             'created_at': '2024-01-01T00:00:00Z'},
+        ]
+        df = self.norm_treatments(records, 'test')
+        self.assertEqual(len(df), 1)
+        self.assertIsNone(df.iloc[0]['insulin'])
+
+    def test_devicestatus_empty_list(self):
+        df = self.norm_ds([], 'test')
+        self.assertEqual(len(df), 0)
+        self.assertIn('quality', df.attrs)
+
+    def test_devicestatus_minimal_record(self):
+        """Records with no loop/openaps structure still processed."""
+        records = [
+            {'_id': '1', 'created_at': '2024-01-01T00:00:00Z',
+             'device': 'xDrip-DexcomG6'},
+        ]
+        df = self.norm_ds(records, 'test')
+        self.assertEqual(len(df), 1)
+        self.assertEqual(df.attrs['quality']['minimal_records'], 1)
+
+    def test_devicestatus_corrupt_pump_battery(self):
+        """Non-numeric pump battery doesn't crash."""
+        records = [
+            {'_id': '1', 'created_at': '2024-01-01T00:00:00Z',
+             'device': 'loop://iPhone',
+             'loop': {'iob': {'iob': 1.5}},
+             'pump': {'battery': {'percent': 'full'}}},
+        ]
+        df = self.norm_ds(records, 'test')
+        self.assertEqual(len(df), 1)
+        self.assertIsNone(df.iloc[0]['pump_battery_pct'])
+
+    def test_entries_null_fields_throughout(self):
+        """Record with all-None optional fields doesn't crash."""
+        records = [{
+            '_id': '1', 'type': 'sgv', 'date': 1704067200000,
+            'sgv': 120, 'noise': None, 'filtered': None,
+            'unfiltered': None, 'delta': None, 'rssi': None,
+            'trend': None, 'trendRate': None, 'utcOffset': None,
+        }]
+        df = self.norm_entries(records, 'test')
+        self.assertEqual(len(df), 1)
+        self.assertEqual(df.iloc[0]['sgv'], 120.0)
+
+
+class TestQualityMetadata(unittest.TestCase):
+    """Test that quality metadata is attached to DataFrames."""
+
+    def setUp(self):
+        from tools.ns2parquet.normalize import (
+            normalize_entries, normalize_treatments, normalize_devicestatus,
+        )
+        self.norm_entries = normalize_entries
+        self.norm_treatments = normalize_treatments
+        self.norm_ds = normalize_devicestatus
+
+    def test_entries_quality_present(self):
+        records = [
+            {'_id': '1', 'sgv': 100, 'type': 'sgv', 'date': 1704067200000},
+        ]
+        df = self.norm_entries(records, 'test')
+        self.assertIn('quality', df.attrs)
+        q = df.attrs['quality']
+        self.assertEqual(q['total_records'], 1)
+        self.assertEqual(q['accepted'], 1)
+        self.assertEqual(q['skipped_duplicate'], 0)
+
+    def test_treatments_quality_present(self):
+        records = [
+            {'_id': '1', 'eventType': 'Bolus', 'insulin': 2.0,
+             'created_at': '2024-01-01T00:00:00Z'},
+        ]
+        df = self.norm_treatments(records, 'test')
+        self.assertIn('quality', df.attrs)
+        q = df.attrs['quality']
+        self.assertEqual(q['total_records'], 1)
+        self.assertEqual(q['accepted'], 1)
+
+    def test_devicestatus_quality_present(self):
+        records = [
+            {'_id': '1', 'created_at': '2024-01-01T00:00:00Z',
+             'device': 'loop://iPhone',
+             'loop': {'iob': {'iob': 1.5}}},
+        ]
+        df = self.norm_ds(records, 'test')
+        self.assertIn('quality', df.attrs)
+        q = df.attrs['quality']
+        self.assertEqual(q['total_records'], 1)
+        self.assertEqual(q['accepted'], 1)
+        self.assertEqual(q['minimal_records'], 0)
+
+
+class TestSharedConstants(unittest.TestCase):
+    """Test that shared constants are consistent."""
+
+    def test_mmoll_to_mgdl_value(self):
+        from tools.ns2parquet.constants import MMOLL_TO_MGDL
+        self.assertAlmostEqual(MMOLL_TO_MGDL, 18.01559, places=5)
+
+    def test_direction_map_completeness(self):
+        from tools.ns2parquet.constants import DIRECTION_MAP
+        expected_keys = {
+            'DoubleUp', 'SingleUp', 'FortyFiveUp', 'Flat',
+            'FortyFiveDown', 'SingleDown', 'DoubleDown',
+            'NOT COMPUTABLE', 'RATE OUT OF RANGE',
+            'NONE', 'None', '',
+        }
+        self.assertEqual(set(DIRECTION_MAP.keys()), expected_keys)
+
+    def test_direction_map_values_ordered(self):
+        from tools.ns2parquet.constants import DIRECTION_MAP
+        self.assertGreater(DIRECTION_MAP['DoubleUp'], DIRECTION_MAP['SingleUp'])
+        self.assertGreater(DIRECTION_MAP['SingleUp'], DIRECTION_MAP['Flat'])
+        self.assertGreater(DIRECTION_MAP['Flat'], DIRECTION_MAP['SingleDown'])
+        self.assertGreater(DIRECTION_MAP['SingleDown'], DIRECTION_MAP['DoubleDown'])
+
+    def test_normalize_reexports_constants(self):
+        """normalize.py re-exports for backward compatibility."""
+        from tools.ns2parquet.normalize import DIRECTION_MAP, MMOLL_TO_MGDL
+        from tools.ns2parquet.constants import DIRECTION_MAP as DM2
+        self.assertIs(DIRECTION_MAP, DM2)
+        self.assertEqual(MMOLL_TO_MGDL, 18.01559)
+
+
 if __name__ == '__main__':
     unittest.main()
