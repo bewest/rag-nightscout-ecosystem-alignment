@@ -157,20 +157,20 @@ more episodic and less autocorrelated.
 glucose for long-horizon prediction?
 
 **Method**: Compute 12 candidate features mixing raw and cumulative signals. Measure
-MI with future mean glucose at 2h, 6h, and 24h horizons.
+MI with future mean glucose at 6h, 12h, and 24h horizons.
 
 **Results** (MI in bits, ranked by 24h predictive power):
 
-| Rank | Feature | 2h | 6h | 24h |
+| Rank | Feature | 6h | 12h | 24h |
 |------|---------|-----|------|------|
 | 1 | time_above_range_24h | 0.116 | 0.160 | **0.220** |
-| 2 | cum_carb_balance_24h | 0.130 | 0.164 | **0.220** |
+| 2 | cum_carb_balance_24h | 0.130 | 0.163 | **0.220** |
 | 3 | supply_integral_24h | 0.102 | 0.134 | 0.181 |
 | 4 | insulin_load_24h | 0.108 | 0.135 | 0.177 |
 | 5 | balance_integral_24h | 0.101 | 0.128 | 0.168 |
 | 6 | glucose_volatility_12h | 0.100 | 0.129 | 0.154 |
 | 7 | demand_integral_24h | 0.093 | 0.115 | 0.152 |
-| 8 | time_below_range_12h | 0.091 | 0.115 | 0.152 |
+| 8 | time_below_range_12h | 0.091 | 0.115 | 0.151 |
 | 9 | time_above_range_12h | 0.095 | 0.117 | 0.151 |
 | 10 | insulin_load_12h | 0.080 | 0.108 | 0.123 |
 | 11 | **raw_glucose** | **0.232** | 0.137 | 0.119 |
